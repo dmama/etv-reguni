@@ -7,10 +7,11 @@ import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
+import javax.persistence.OrderColumn;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import java.util.Date;
-import java.util.Set;
+import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.ForeignKey;
@@ -58,7 +59,7 @@ public class EvenementOrganisation extends HibernateEntity {
 	private EtatEvenementOrganisation etat;
 	private Date dateTraitement;
 	private String commentaireTraitement;
-	private Set<EvenementOrganisationErreur> erreurs;
+	private List<EvenementOrganisationErreur> erreurs;
 
 	/**
 	  Réservé à Hibernate
@@ -183,11 +184,12 @@ public class EvenementOrganisation extends HibernateEntity {
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
 	@JoinColumn(name = "EVT_ORGANISATION_ID", nullable = false)
 	@ForeignKey(name = "FK_EV_ERR_EV_ORGA_ID")
-	public Set<EvenementOrganisationErreur> getErreurs() {
+	@OrderColumn(name = "LIST_INDEX", nullable = true)
+	public List<EvenementOrganisationErreur> getErreurs() {
 		return erreurs;
 	}
 
-	public void setErreurs(Set<EvenementOrganisationErreur> erreurs) {
+	public void setErreurs(List<EvenementOrganisationErreur> erreurs) {
 		this.erreurs = erreurs;
 	}
 }

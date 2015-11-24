@@ -1,9 +1,12 @@
 package ch.vd.uniregctb.evenement.organisation.engine;
 
+import java.util.ArrayList;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
@@ -14,6 +17,7 @@ import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.data.DataEventService;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
+import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationErreur;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationException;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationOptions;
 import ch.vd.uniregctb.evenement.organisation.engine.translator.EvenementOrganisationTranslatorImpl;
@@ -27,9 +31,12 @@ import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.EtatEvenementOrganisation;
+import ch.vd.uniregctb.type.TypeEvenementErreur;
+import ch.vd.uniregctb.type.TypeEvenementOrganisation;
 
 import static ch.vd.uniregctb.type.EmetteurEvenementOrganisation.FOSC;
 import static ch.vd.uniregctb.type.EtatEvenementOrganisation.A_TRAITER;
+import static ch.vd.uniregctb.type.EtatEvenementOrganisation.EN_ERREUR;
 import static ch.vd.uniregctb.type.TypeEvenementOrganisation.FOSC_COMMUNICATION_DANS_FAILLITE;
 
 /**
@@ -196,5 +203,168 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 			                             }
 		                             }
 		);
+	}
+
+	@Test
+	public void testClearAndAddOrderedErrors() throws Exception {
+		// Mise en place service mock
+		final Long noOrganisation = 101202100L;
+
+		// Création de l'événement
+		final Long evtId = 12344321L;
+
+		// Persistence événement
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			public void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
+				final EvenementOrganisation eventCreation = createEvent(evtId, noOrganisation, TypeEvenementOrganisation.FOSC_NOUVELLE_ENTREPRISE, RegDate.get(2015, 6, 24), EN_ERREUR, FOSC, "abcdefgh");
+				EvenementOrganisation event = hibernateTemplate.merge(eventCreation);
+				event.setErreurs(new ArrayList<EvenementOrganisationErreur>());
+				{
+					final EvenementOrganisationErreur e = new EvenementOrganisationErreur();
+					e.setMessage("Erreur 1");
+					e.setType(TypeEvenementErreur.ERROR);
+					event.getErreurs().add(e);
+				}
+				{
+					final EvenementOrganisationErreur e = new EvenementOrganisationErreur();
+					e.setMessage("Erreur 2");
+					e.setType(TypeEvenementErreur.ERROR);
+					event.getErreurs().add(e);
+				}
+				{
+					final EvenementOrganisationErreur e = new EvenementOrganisationErreur();
+					e.setMessage("Erreur 3");
+					e.setType(TypeEvenementErreur.ERROR);
+					event.getErreurs().add(e);
+				}
+			}
+		});
+
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
+				EvenementOrganisation event = evtOrganisationDAO.get(evtId);
+				Assert.assertEquals(3, event.getErreurs().size());
+
+				event.getErreurs().clear();
+
+				{
+					final EvenementOrganisationErreur e = new EvenementOrganisationErreur();
+					e.setMessage("4");
+					e.setType(TypeEvenementErreur.ERROR);
+					event.getErreurs().add(e);
+				}
+				{
+					final EvenementOrganisationErreur e = new EvenementOrganisationErreur();
+					e.setMessage("5");
+					e.setType(TypeEvenementErreur.ERROR);
+					event.getErreurs().add(e);
+				}
+				{
+					final EvenementOrganisationErreur e = new EvenementOrganisationErreur();
+					e.setMessage("6");
+					e.setType(TypeEvenementErreur.ERROR);
+					event.getErreurs().add(e);
+				}
+				{
+					final EvenementOrganisationErreur e = new EvenementOrganisationErreur();
+					e.setMessage("7");
+					e.setType(TypeEvenementErreur.ERROR);
+					event.getErreurs().add(e);
+				}
+				{
+					final EvenementOrganisationErreur e = new EvenementOrganisationErreur();
+					e.setMessage("8");
+					e.setType(TypeEvenementErreur.ERROR);
+					event.getErreurs().add(e);
+				}
+				{
+					final EvenementOrganisationErreur e = new EvenementOrganisationErreur();
+					e.setMessage("9");
+					e.setType(TypeEvenementErreur.ERROR);
+					event.getErreurs().add(e);
+				}
+				{
+					final EvenementOrganisationErreur e = new EvenementOrganisationErreur();
+					e.setMessage("10");
+					e.setType(TypeEvenementErreur.ERROR);
+					event.getErreurs().add(e);
+				}
+				{
+					final EvenementOrganisationErreur e = new EvenementOrganisationErreur();
+					e.setMessage("11");
+					e.setType(TypeEvenementErreur.ERROR);
+					event.getErreurs().add(e);
+				}
+				{
+					final EvenementOrganisationErreur e = new EvenementOrganisationErreur();
+					e.setMessage("12");
+					e.setType(TypeEvenementErreur.ERROR);
+					event.getErreurs().add(e);
+				}
+				{
+					final EvenementOrganisationErreur e = new EvenementOrganisationErreur();
+					e.setMessage("13");
+					e.setType(TypeEvenementErreur.ERROR);
+					event.getErreurs().add(e);
+				}
+				{
+					final EvenementOrganisationErreur e = new EvenementOrganisationErreur();
+					e.setMessage("14");
+					e.setType(TypeEvenementErreur.ERROR);
+					event.getErreurs().add(e);
+				}
+				{
+					final EvenementOrganisationErreur e = new EvenementOrganisationErreur();
+					e.setMessage("15");
+					e.setType(TypeEvenementErreur.ERROR);
+					event.getErreurs().add(e);
+				}
+				{
+					final EvenementOrganisationErreur e = new EvenementOrganisationErreur();
+					e.setMessage("16");
+					e.setType(TypeEvenementErreur.ERROR);
+					event.getErreurs().add(e);
+				}
+				{
+					final EvenementOrganisationErreur e = new EvenementOrganisationErreur();
+					e.setMessage("17");
+					e.setType(TypeEvenementErreur.ERROR);
+					event.getErreurs().add(e);
+				}
+				{
+					final EvenementOrganisationErreur e = new EvenementOrganisationErreur();
+					e.setMessage("18");
+					e.setType(TypeEvenementErreur.ERROR);
+					event.getErreurs().add(e);
+				}
+				{
+					final EvenementOrganisationErreur e = new EvenementOrganisationErreur();
+					e.setMessage("19");
+					e.setType(TypeEvenementErreur.ERROR);
+					event.getErreurs().add(e);
+				}
+				{
+					final EvenementOrganisationErreur e = new EvenementOrganisationErreur();
+					e.setMessage("20");
+					e.setType(TypeEvenementErreur.ERROR);
+					event.getErreurs().add(e);
+				}
+			}
+		});
+
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
+				EvenementOrganisation evenement = evtOrganisationDAO.get(evtId);
+				Assert.assertEquals(17, evenement.getErreurs().size());
+				StringBuilder orderSignature = new StringBuilder();
+				for (EvenementOrganisationErreur err : evenement.getErreurs()) {
+					orderSignature.append(err.getMessage());
+				}
+				Assert.assertEquals("4567891011121314151617181920", orderSignature.toString());
+			}
+		});
 	}
 }

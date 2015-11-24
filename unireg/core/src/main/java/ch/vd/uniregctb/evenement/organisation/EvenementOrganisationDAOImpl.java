@@ -124,8 +124,6 @@ public class EvenementOrganisationDAOImpl extends BaseDAOImpl<EvenementOrganisat
 			queryObject.setFirstResult(firstResult);
 			queryObject.setMaxResults(maxResult);
 		}
-
-
 		return queryObject.list();
 	}
 
