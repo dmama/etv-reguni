@@ -863,6 +863,21 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		final EntityKey entrepriseKey = buildEntrepriseKey(entreprise);
 		return doInLogContext(entrepriseKey, mr, idMapper, () -> {
 
+			final boolean isAssujettissementIccOuvert = entreprise.getAssujettissements().stream()
+					.filter(ass -> ass.getType() == RegpmTypeAssujettissement.LILIC)
+					.filter(ass -> ass.getDateFin() == null)
+					.findAny()
+					.isPresent();
+
+			// La date de fin du dernier assujettissement ICC qui a été fermé (s'il existe un assujettissement ouvert
+			// alors cette date de fin d'assujettissement ne doit pas être utilisée...)
+			final RegDate dateFinDernierAssujettissementFerme = entreprise.getAssujettissements().stream()
+					.filter(ass -> ass.getType() == RegpmTypeAssujettissement.LILIC)
+					.map(RegpmAssujettissement::getDateFin)
+					.filter(Objects::nonNull)
+					.max(Comparator.naturalOrder())
+					.orElse(null);
+
 			// on retrie les sièges par date de validité (le tri naturel est fait par numéro de séquence) en ignorant au passage les sièges annulés ou dont la date de début est dans le futur
 			final NavigableMap<RegDate, List<RegpmSiegeEntreprise>> strict = entreprise.getSieges().stream()
 					.filter(s -> !s.isRectifiee())
@@ -880,6 +895,17 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 							              String.format("Le siège %d est ignoré car il a une date de début de validité dans le futur (%s).",
 							                            s.getId().getSeqNo(),
 							                            StringRenderers.DATE_RENDERER.toString(s.getDateValidite())));
+							return false;
+						}
+						return true;
+					})
+					.filter(s -> {
+						if (!isAssujettissementIccOuvert && RegDateHelper.isAfter(s.getDateValidite(), dateFinDernierAssujettissementFerme, NullDateBehavior.LATEST)) {
+							mr.addMessage(LogCategory.SUIVI, LogLevel.WARN,
+							              String.format("Le siège %d est ignoré car sa date de début de validité (%s) est postérieure à la date de fin d'assujettissement ICC de l'entreprise (%s).",
+							                            s.getId().getSeqNo(),
+							                            StringRenderers.DATE_RENDERER.toString(s.getDateValidite()),
+							                            StringRenderers.DATE_RENDERER.toString(dateFinDernierAssujettissementFerme)));
 							return false;
 						}
 						return true;
@@ -905,7 +931,9 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 					})
 					.collect(Collectors.toMap(Pair::getKey,
 					                          Pair::getValue,
-					                          (t1, t2) -> { throw new IllegalArgumentException("Erreur dans l'algorithme, on ne devrait pas pouvoir de collision de clé ici..."); },
+					                          (t1, t2) -> {
+						                          throw new IllegalArgumentException("Erreur dans l'algorithme, on ne devrait pas pouvoir de collision de clé ici...");
+					                          },
 					                          TreeMap::new));
 
 			return new SiegesHistoData(reduced);
