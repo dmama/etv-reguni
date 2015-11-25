@@ -94,8 +94,6 @@ import ch.vd.unireg.xml.party.taxresidence.v2.IndividualTaxLiabilityType;
 import ch.vd.unireg.xml.party.taxresidence.v2.LiabilityChangeReason;
 import ch.vd.unireg.xml.party.taxresidence.v2.ManagingTaxResidence;
 import ch.vd.unireg.xml.party.taxresidence.v2.OrdinaryResident;
-import ch.vd.unireg.xml.party.taxresidence.v2.SimplifiedTaxLiability;
-import ch.vd.unireg.xml.party.taxresidence.v2.SimplifiedTaxLiabilityType;
 import ch.vd.unireg.xml.party.taxresidence.v2.TaxLiability;
 import ch.vd.unireg.xml.party.taxresidence.v2.TaxLiabilityReason;
 import ch.vd.unireg.xml.party.taxresidence.v2.TaxResidence;
@@ -1949,11 +1947,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 
 		final Taxpayer tpSans = (Taxpayer) partySans;
 		Assert.assertNotNull(tpSans.getTaxLiabilities());
-		Assert.assertNotNull(tpSans.getSimplifiedTaxLiabilityCH());
-		Assert.assertNotNull(tpSans.getSimplifiedTaxLiabilityVD());
 		Assert.assertEquals(0, tpSans.getTaxLiabilities().size());
-		Assert.assertEquals(0, tpSans.getSimplifiedTaxLiabilityCH().size());
-		Assert.assertEquals(0, tpSans.getSimplifiedTaxLiabilityVD().size());
 
 		final Party partyAvec = service.getParty(userLogin, ids.mc, EnumSet.of(PartyPart.TAX_LIABILITIES));
 		Assert.assertNotNull(partyAvec);
@@ -1961,11 +1955,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 
 		final Taxpayer tpAvec = (Taxpayer) partyAvec;
 		Assert.assertNotNull(tpAvec.getTaxLiabilities());
-		Assert.assertNotNull(tpAvec.getSimplifiedTaxLiabilityCH());
-		Assert.assertNotNull(tpAvec.getSimplifiedTaxLiabilityVD());
 		Assert.assertEquals(1, tpAvec.getTaxLiabilities().size());
-		Assert.assertEquals(0, tpAvec.getSimplifiedTaxLiabilityCH().size());
-		Assert.assertEquals(0, tpAvec.getSimplifiedTaxLiabilityVD().size());
 
 		final TaxLiability tl = tpAvec.getTaxLiabilities().get(0);
 		Assert.assertNotNull(tl);
@@ -1974,92 +1964,6 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		Assert.assertNull(tl.getDateTo());
 		Assert.assertNull(tl.getEndReason());
 		Assert.assertEquals(OrdinaryResident.class, tl.getClass());
-	}
-
-	@Test
-	public void testGetPartyWithSimplifiedTaxLiabilities() throws Exception {
-
-		final long noIndividuLui = 32672456L;
-		final long noIndividuElle = 46245L;
-		final RegDate dateNaissance = date(1965, 3, 12);
-		final RegDate dateMariage = date(1999, 8, 3);
-
-		serviceCivil.setUp(new MockServiceCivil() {
-			@Override
-			protected void init() {
-				final MockIndividu lui = addIndividu(noIndividuLui, dateNaissance, "Delagrange", "Marcel", Sexe.MASCULIN);
-				addAdresse(lui, TypeAdresseCivil.PRINCIPALE, MockRue.CossonayVille.AvenueDuFuniculaire, null, dateNaissance, null);
-
-				final MockIndividu elle = addIndividu(noIndividuElle, null, "Delagrange", "Marceline", Sexe.FEMININ);
-				marieIndividus(lui, elle, dateMariage);
-			}
-		});
-
-		final class Ids {
-			int lui;
-			int elle;
-			int mc;
-		}
-
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final PersonnePhysique lui = addHabitant(noIndividuLui);
-				addForPrincipal(lui, dateNaissance.addYears(18), MotifFor.MAJORITE, dateMariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Aigle);
-
-				final PersonnePhysique elle = addHabitant(noIndividuElle);
-				final EnsembleTiersCouple couple = addEnsembleTiersCouple(lui, elle, dateMariage, null);
-				final MenageCommun mc = couple.getMenage();
-				addForPrincipal(mc, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Aubonne);
-
-				final Ids ids = new Ids();
-				ids.lui = lui.getNumero().intValue();
-				ids.elle = elle.getNumero().intValue();
-				ids.mc = mc.getNumero().intValue();
-				return ids;
-			}
-		});
-
-		final UserLogin userLogin = new UserLogin(getDefaultOperateurName(), 22);
-
-		final Party partySans = service.getParty(userLogin, ids.mc, null);
-		Assert.assertNotNull(partySans);
-		Assert.assertEquals(CommonHousehold.class, partySans.getClass());
-
-		final Taxpayer tpSans = (Taxpayer) partySans;
-		Assert.assertNotNull(tpSans.getTaxLiabilities());
-		Assert.assertNotNull(tpSans.getSimplifiedTaxLiabilityCH());
-		Assert.assertNotNull(tpSans.getSimplifiedTaxLiabilityVD());
-		Assert.assertEquals(0, tpSans.getTaxLiabilities().size());
-		Assert.assertEquals(0, tpSans.getSimplifiedTaxLiabilityCH().size());
-		Assert.assertEquals(0, tpSans.getSimplifiedTaxLiabilityVD().size());
-
-		final Party partyAvec = service.getParty(userLogin, ids.mc, EnumSet.of(PartyPart.SIMPLIFIED_TAX_LIABILITIES));
-		Assert.assertNotNull(partyAvec);
-		Assert.assertEquals(CommonHousehold.class, partyAvec.getClass());
-
-		final Taxpayer tpAvec = (Taxpayer) partyAvec;
-		Assert.assertNotNull(tpAvec.getTaxLiabilities());
-		Assert.assertNotNull(tpAvec.getSimplifiedTaxLiabilityCH());
-		Assert.assertNotNull(tpAvec.getSimplifiedTaxLiabilityVD());
-		Assert.assertEquals(0, tpAvec.getTaxLiabilities().size());
-		Assert.assertEquals(1, tpAvec.getSimplifiedTaxLiabilityCH().size());
-		Assert.assertEquals(1, tpAvec.getSimplifiedTaxLiabilityVD().size());
-
-		{
-			final SimplifiedTaxLiability tl = tpAvec.getSimplifiedTaxLiabilityCH().get(0);
-			Assert.assertNotNull(tl);
-			Assert.assertEquals(date(dateMariage.year(), 1, 1), ch.vd.uniregctb.xml.DataHelper.xmlToCore(tl.getDateFrom()));
-			Assert.assertNull(tl.getDateTo());
-			Assert.assertEquals(SimplifiedTaxLiabilityType.UNLIMITED, tl.getType());
-		}
-		{
-			final SimplifiedTaxLiability tl = tpAvec.getSimplifiedTaxLiabilityVD().get(0);
-			Assert.assertNotNull(tl);
-			Assert.assertEquals(date(dateMariage.year(), 1, 1), ch.vd.uniregctb.xml.DataHelper.xmlToCore(tl.getDateFrom()));
-			Assert.assertNull(tl.getDateTo());
-			Assert.assertEquals(SimplifiedTaxLiabilityType.UNLIMITED, tl.getType());
-		}
 	}
 
 	@Test

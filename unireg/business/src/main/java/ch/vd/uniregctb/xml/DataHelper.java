@@ -841,7 +841,6 @@ public abstract class DataHelper {
 			case VIRTUAL_TAX_RESIDENCES:
 			case MANAGING_TAX_RESIDENCES:
 			case TAX_LIABILITIES:
-			case SIMPLIFIED_TAX_LIABILITIES:
 			case TAXATION_PERIODS:
 				results.add(TiersDAO.Parts.FORS_FISCAUX);
 				break;

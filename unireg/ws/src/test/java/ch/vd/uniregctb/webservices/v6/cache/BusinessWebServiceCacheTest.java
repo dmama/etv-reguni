@@ -1261,7 +1261,6 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 
 		boolean checkAddresses = PartyPart.ADDRESSES == p;
 		boolean checkTaxLiabilities = PartyPart.TAX_LIABILITIES == p;
-		boolean checkSimplifiedTaxLiabilities = PartyPart.SIMPLIFIED_TAX_LIABILITIES == p;
 		boolean checkHouseholdMembers = PartyPart.HOUSEHOLD_MEMBERS == p;
 		boolean checkBankAccounts = PartyPart.BANK_ACCOUNTS == p;
 		boolean checkTaxDeclarations = PartyPart.TAX_DECLARATIONS == p;
@@ -1287,7 +1286,7 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 		boolean checkCorporationStatuses = PartyPart.CORPORATION_STATUSES == p;
 		Assert.isTrue(checkAddresses || checkTaxLiabilities || checkHouseholdMembers || checkBankAccounts || checkTaxDeclarations || checkTaxDeclarationsStatuses || checkTaxDeclarationsDeadlines
 				              || checkTaxResidences || checkVirtualTaxResidences || checkManagingTaxResidences || checkTaxationPeriods || checkRelationsBetweenParties || checkFamilyStatuses || checkCapitals
-				              || checkTaxLightenings || checkLegalForms || checkTaxSystems || checkLegalSeats || checkDebtorPeriodicities || checkSimplifiedTaxLiabilities || checkImmovableProperties ||
+				              || checkTaxLightenings || checkLegalForms || checkTaxSystems || checkLegalSeats || checkDebtorPeriodicities || checkImmovableProperties ||
 				              checkChildren || checkParents || checkWithholdingTaxDeclarationPeriods || checkEbillingStatuses || checkCorporationStatuses, "La partie [" + p + "] est inconnue");
 
 		assertNullOrNotNull(checkAddresses, tiers.getMailAddresses(), "mailAddresses");
@@ -1303,8 +1302,6 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 		if (tiers instanceof Taxpayer) {
 			final Taxpayer ctb = (Taxpayer) tiers;
 			assertNullOrNotNull(checkTaxLiabilities, ctb.getTaxLiabilities(), "taxLiabilities");
-			assertNullOrNotNull(checkSimplifiedTaxLiabilities, ctb.getSimplifiedTaxLiabilityVD(), "simplifiedTaxLiabilityVD");
-			assertNullOrNotNull(checkSimplifiedTaxLiabilities, ctb.getSimplifiedTaxLiabilityCH(), "simplifiedTaxLiabilityCH");
 			assertNullOrNotNull(checkTaxDeclarations || checkTaxDeclarationsStatuses || checkTaxDeclarationsDeadlines, ctb.getTaxDeclarations(), "taxDeclarations");
 			assertNullOrNotNull(checkTaxationPeriods, ctb.getTaxationPeriods(), "taxationPeriods");
 			assertNullOrNotNull(checkFamilyStatuses, ctb.getFamilyStatuses(), "familyStatuses");
