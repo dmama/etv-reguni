@@ -1,5 +1,7 @@
 package ch.vd.uniregctb.evenement.organisation.engine.processor;
 
+import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationBasicInfo;
+
 /**
  * Interface du processeur asynchrone des événements organisation
  */
@@ -43,4 +45,12 @@ public interface EvenementOrganisationProcessor {
 	 * @param aggressiveKill si <code>true</code>, force l'interruption du thread, sinon un stop en douceur est demandé
 	 */
 	void restartProcessingThread(boolean aggressiveKill);
+
+	/**
+	 * Force un évenement
+	 *
+	 * @param evt Descripteur de l'événement à forcer
+	 */
+	void forceEvenement(EvenementOrganisationBasicInfo evt);
+
 }

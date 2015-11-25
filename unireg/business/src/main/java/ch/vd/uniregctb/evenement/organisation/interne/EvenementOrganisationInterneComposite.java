@@ -16,7 +16,7 @@ import ch.vd.uniregctb.tiers.Entreprise;
  * Classe utile pour les evenements donnant lieu a la creation de plusieurs
  * evenements internes
  */
-public class EvenementOrganisationInterneComposite extends EvenementOrganisationInterne {
+public class EvenementOrganisationInterneComposite extends EvenementOrganisationInterneSansImpactUnireg {
 
 	private List<EvenementOrganisationInterne> listEvtEch;
 

@@ -51,11 +51,4 @@ public interface EvenementOrganisationService {
      */
     int count(EvenementOrganisationCriteria<TypeEvenementOrganisation> criterion);
 
-    /**
-     * Force un évenement
-     *
-     * @param id id de l'événement à forcer
-     */
-    void forceEvenement(long id);
-
 }

@@ -21,6 +21,7 @@ import ch.vd.unireg.interfaces.organisation.mock.MockServiceOrganisation;
 import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockOrganisationFactory;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
+import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationBasicInfo;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationDAO;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationProcessingMode;
 import ch.vd.uniregctb.evenement.organisation.engine.processor.EvenementOrganisationProcessor;
@@ -120,6 +121,11 @@ public class EvenementOrganisationRetryProcessorTest extends BusinessTest {
 			@Override
 			public void restartProcessingThread(boolean agressiveKill) {
 				throw new NotImplementedException();
+			}
+
+			@Override
+			public void forceEvenement(EvenementOrganisationBasicInfo evt) {
+				throw new UnsupportedOperationException();
 			}
 
 			private void notifyTraitement(Long noOrganisation) {

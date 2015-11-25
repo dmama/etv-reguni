@@ -42,15 +42,16 @@ import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
 
 /**
- * Classe de base pour l'implémentation des événements organisation en provenance du RCEnt.
+ * Classe de base des événements organisation en provenance du RCEnt.
  *
- * Note importante: - Le status de l'événement est à REDONDANT dès le départ. Lors du traitement il faut, lorsque des données
+ * Note importante: - Cette classe NE doit PAS être étendue directement. Utiliser une des deux classes dérivées
+ *                    officielles, EvenementOrganisationInterneAvecImpactUnireg et EvenementOrganisationInterneSansImpactUnireg.
+ *
+ *                  - Le status de l'événement est à REDONDANT dès le départ. Lors du traitement il faut, lorsque des données
  *                    sont modifiées et / ou quelque action est entreprise en réaction à l'événement, faire passer le status
  *                    à TRAITE au moyen de la méthode raiseStatusTo().
  *
- *                  - Le "context" est privé à cette classe. C'est intentionnel qu'il n'y a pas d'accesseur. Toutes les opérations
- *                  qui ont un impact Unireg (sur la BD ou qui emettent des événements) doivent être exécutée dans une méthode
- *                  qui:
+ *                  - Le "context" est privé à cette classe. C'est intentionnel qu'il n'y a pas d'accesseur.
  *                    1) suivis.addSuivi() proprement ce qui va être fait (il faut donc passer en paramètre le collector de suivi),
  *                    2) Vérifie s'il y a redondance, le rapport dans les logs et sort le cas échéant,
  *                    3) Fait ce qui doit être fait s'il y a lieu,
@@ -73,9 +74,11 @@ public abstract class EvenementOrganisationInterne {
 	private final EvenementOrganisationContext context;
 	private final EvenementOrganisationOptions options;
 
+	private final TypeImpact typeImpact;
+
 	protected static final String MSG_GENERIQUE_A_VERIFIER = "Veuillez vérifier que le traitement automatique de création de l'entreprise donne bien le résultat escompté.";
 
-	protected EvenementOrganisationInterne(EvenementOrganisation evenement, Organisation organisation, Entreprise entreprise, EvenementOrganisationContext context, EvenementOrganisationOptions options) throws EvenementOrganisationException {
+	protected EvenementOrganisationInterne(EvenementOrganisation evenement, Organisation organisation, Entreprise entreprise, EvenementOrganisationContext context, EvenementOrganisationOptions options, TypeImpact typeImpact) throws EvenementOrganisationException {
 		this.context = context;
 		this.options = options;
 
@@ -88,11 +91,16 @@ public abstract class EvenementOrganisationInterne {
 
 		/* Champs précalculés */
 		this.organisationDescription = context.getServiceOrganisation().createOrganisationDescription(organisation, getDateEvt());
+
+		this.typeImpact = typeImpact;
 	}
 
 	public final void validate(EvenementOrganisationErreurCollector erreurs, EvenementOrganisationWarningCollector warnings) throws EvenementOrganisationException {
 		validateCommon(erreurs);
 		if (!erreurs.hasErreurs()) {
+			if (options.isSansEffetUnireg() && typeImpact == TypeImpact.AVEC_IMPACT_UNIREG) {
+				return;
+			}
 			validateSpecific(erreurs, warnings);
 		}
 	}
@@ -112,6 +120,9 @@ public abstract class EvenementOrganisationInterne {
 	 * A noter que cette méthode est finale. Le traitement à proprement parler est effectué dans la méthode doHandle().
 	 * </p>
 	 * <p>
+	 * Cette méthode vérifie s'il faut bien exécuter le traitement, ou non s'il a un effet dans Unireg et qu'on est en mode "sans impact Unireg".
+	 * </p>
+	 * <p>
 	 * Quelques règles à respecter dans doHandle() pour que tout se passe bien:
 	 * <ul>
 	 *     <li>Chaque traitement entraînant la création d'objet en base, ou tout autre action métier, doit être effectué au sein d'une méthode dédiée à l'opération
@@ -128,10 +139,28 @@ public abstract class EvenementOrganisationInterne {
 	 */
 	@NotNull
 	public final HandleStatus handle(EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) throws EvenementOrganisationException {
+
+		if (options.isSansEffetUnireg() && typeImpact == TypeImpact.AVEC_IMPACT_UNIREG) {
+			suivis.addSuivi(String.format("Opération de type %s avec impact Unireg ignorée car l'événement est forcé.", this.getClass().getSimpleName()));
+			return HandleStatus.REDONDANT;
+		}
+
 		this.doHandle(warnings, suivis);
 		Assert.notNull(status, "Status inconnu après le traitement de l'événement interne!");
 		return status;
 	}
+
+	enum TypeImpact {
+		AVEC_IMPACT_UNIREG,
+		SANS_IMPACT_UNIREG
+	}
+
+
+
+	/*
+			Méthode à redéfinir pour implémenter le traitement concret. Voir ci-dessus handle().
+		 */
+	public abstract void doHandle(EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) throws EvenementOrganisationException;
 
 	@NotNull
 	protected List<RegimeFiscal> extractRegimesFiscauxVD() {
@@ -158,11 +187,6 @@ public abstract class EvenementOrganisationInterne {
 		}
 		return regimesFiscauxVD;
 	}
-
-	/*
-			Méthode à redéfinir pour implémenter le traitement concret. Voir ci-dessus handle().
-		 */
-	public abstract void doHandle(EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) throws EvenementOrganisationException;
 
 	@NotNull
 	protected MotifFor determineMotifOuvertureFor() throws EvenementOrganisationException {

@@ -8,14 +8,10 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.uniregctb.audit.Audit;
-import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.common.ParamPagination;
 import ch.vd.uniregctb.interfaces.service.ServiceOrganisationService;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersService;
-import ch.vd.uniregctb.type.EtatEvenementOrganisation;
 import ch.vd.uniregctb.type.TypeEvenementOrganisation;
 
 public class EvenementOrganisationServiceImpl implements EvenementOrganisationService {
@@ -99,19 +95,5 @@ public class EvenementOrganisationServiceImpl implements EvenementOrganisationSe
     @Override
     public int count(EvenementOrganisationCriteria<TypeEvenementOrganisation> criterion) {
         return evenementOrganisationDAO.count(criterion);
-    }
-
-    @Override
-    public void forceEvenement(long id) {
-	    final EvenementOrganisation evt = evenementOrganisationDAO.get(id);
-        if (evt == null) {
-            throw new ObjectNotFoundException("Evénement organisation " + id);
-        }
-	    if (evt.getEtat().isTraite() && evt.getEtat() != EtatEvenementOrganisation.A_VERIFIER) {
-            throw new IllegalArgumentException("L'état de l'événement " + id + " ne lui permet pas d'être forcé");
-        }
-        evt.setEtat(EtatEvenementOrganisation.FORCE);
-
-	    Audit.info(id, String.format("Forçage manuel de l'événement organisation %d de type %s au %s sur l'organisation %d", id, evt.getType(), RegDateHelper.dateToDisplayString(evt.getDateEvenement()), evt.getNoOrganisation()));
     }
 }

@@ -20,7 +20,7 @@ import ch.vd.uniregctb.tiers.Entreprise;
  *
  * @author Raphaël Marmier, 2015-09-04
  */
-public class Indexation extends EvenementOrganisationInterne {
+public class Indexation extends EvenementOrganisationInterneSansImpactUnireg {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(Indexation.class);
 

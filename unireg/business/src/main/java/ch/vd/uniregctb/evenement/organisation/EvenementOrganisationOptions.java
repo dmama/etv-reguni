@@ -5,14 +5,18 @@ package ch.vd.uniregctb.evenement.organisation;
  */
 public class EvenementOrganisationOptions {
 
-	private final boolean refreshCache;
+	private final boolean sansEffetUnireg;
 
-	public EvenementOrganisationOptions(boolean refreshCache) {
-		this.refreshCache = refreshCache;
+	public EvenementOrganisationOptions(boolean sansEffetUnireg) {
+		this.sansEffetUnireg = sansEffetUnireg;
 	}
 
-	public boolean isRefreshCache() {
-		return refreshCache;
+	/**
+	 * Signale que les événements internes ayant un impact Unireg ne doivent pas être exécutés.
+	 * handle() doit retourner sans effet.
+	 * @return
+	 */
+	public boolean isSansEffetUnireg() {
+		return sansEffetUnireg;
 	}
-
 }

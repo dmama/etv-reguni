@@ -43,7 +43,6 @@ import ch.vd.uniregctb.transaction.TransactionTemplate;
 import ch.vd.uniregctb.type.EtatEvenementOrganisation;
 
 /**
- * TODO: A faire: bien vérifier tout le code
  * @author Raphaël Marmier, 2015-07-27
  */
 public class EvenementOrganisationProcessorInternal implements ProcessorInternal, InitializingBean {
@@ -92,17 +91,12 @@ public class EvenementOrganisationProcessorInternal implements ProcessorInternal
 	}
 
 	/**
-	 * Traitement de l'événement donné
-	 *
-	 * @param evt descripteur de l'événement organisation cible à traiter
-	 * @param evts liste des descripteurs d'événements (en cas d'échec sur le traitement de l'événement cible, ceux qui sont après lui dans cette liste seront passés en attente, voir {@link #errorPostProcessing(List)})
-	 * @param pointer indicateur de la position de l'événement organisation cible dans la liste des événements
-	 * @return <code>true</code> si tout s'est bien passé, <code>false</code> si l'un au moins des événements a terminé en erreur
+	 * {@inheritDoc}
 	 */
 	public boolean processEventAndDoPostProcessingOnError(EvenementOrganisationBasicInfo evt, List<EvenementOrganisationBasicInfo> evts, int pointer) {
 		AuthenticationHelper.pushPrincipal(String.format("EvtOrganisation-%d", evt.getId()));
 		try {
-			final boolean success = processEvent(evt);
+			final boolean success = processEvent(evt, false);
 			if (!success) {
 				errorPostProcessing(evts.subList(pointer + 1, evts.size()));
 			}
@@ -111,6 +105,26 @@ public class EvenementOrganisationProcessorInternal implements ProcessorInternal
 		finally {
 			AuthenticationHelper.popPrincipal();
 		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public boolean processEventForceDoNeutralOnlyOperations(EvenementOrganisationBasicInfo evt) {
+		AuthenticationHelper.pushPrincipal(String.format("EvtOrganisation-%d", evt.getId()));
+		try {
+			return doForceEvenement(evt);
+		}
+		finally {
+			AuthenticationHelper.popPrincipal();
+		}
+	}
+
+	private boolean doForceEvenement(EvenementOrganisationBasicInfo evt) {
+		if (evt.getEtat().isTraite() && evt.getEtat() != EtatEvenementOrganisation.A_VERIFIER) {
+			throw new IllegalArgumentException("L'état de l'événement " + evt.getId() + " ne lui permet pas d'être forcé");
+		}
+		return processEvent(evt, true);
 	}
 
 	/**
@@ -132,13 +146,13 @@ public class EvenementOrganisationProcessorInternal implements ProcessorInternal
 	 * @param info description de l'événement organisation à traiter maintenant
 	 * @return <code>true</code> si tout s'est bien passé et que l'on peut continuer sur les événements suivants, <code>false</code> si on ne doit pas continuer
 	 */
-	private boolean processEvent(final EvenementOrganisationBasicInfo info) {
+	private boolean processEvent(final EvenementOrganisationBasicInfo info, final boolean sansEffetUnireg) {
 		try {
 			return doInNewTransaction(new TransactionCallback<Boolean>() {
 				@Override
 				public Boolean doInTransaction(TransactionStatus status) {
 
-					// première chose, on invalide le cache de l'individu (afin que les stratégies aient déjà une version à jour des individus)
+					// première chose, on invalide le cache de l'organisation (afin que les stratégies aient déjà une version à jour de l'organisation)
 					dataEventService.onOrganisationChange(info.getNoOrganisation());
 
 					final EvenementOrganisation evt = fetchDatabaseEvent(info);
@@ -148,7 +162,11 @@ public class EvenementOrganisationProcessorInternal implements ProcessorInternal
 					}
 
 					try {
-						return processEvent(evt);
+						if (sansEffetUnireg) {
+							return processEventSansEffetUnireg(evt);
+						} else {
+							return processEvent(evt);
+						}
 					}
 					catch (EvenementOrganisationException e) {
 						throw new EvenementOrganisationWrappingException(e);
@@ -169,7 +187,7 @@ public class EvenementOrganisationProcessorInternal implements ProcessorInternal
 	}
 
 	/**
-	 * Récupère l'événement organisation depuis la DB, et rattrappe éventuellement le numéro d'individu absent
+	 * Récupère l'événement organisation depuis la DB
 	 * @param info information sur l'événement organisation à récupérer
 	 * @return événement organisation tiré de la DB
 	 */
@@ -294,7 +312,7 @@ public class EvenementOrganisationProcessorInternal implements ProcessorInternal
 		cleanupAvantTraitement(event);
 
 		final EvenementOrganisationMessageCollector<EvenementOrganisationErreur> collector = new EvenementOrganisationMessageCollector<>(ERREUR_FACTORY);
-		final EtatEvenementOrganisation etat = processEventAndCollectMessages(event, collector, collector, collector);
+		final EtatEvenementOrganisation etat = processEventAndCollectMessages(event, collector, collector, collector, false);
 
 		addDateTraitement(event);
 
@@ -302,6 +320,63 @@ public class EvenementOrganisationProcessorInternal implements ProcessorInternal
 		final List<EvenementOrganisationErreur> entrees = EvenementCivilHelper.eliminerDoublons(collector.getEntrees());
 		event.getErreurs().addAll(entrees);
 
+		auditErreurs(event, entrees);
+
+		final EtatEvenementOrganisation etatEffectif = determineEtatEffectif(collector, etat);
+
+		assignerEtatApresTraitement(etatEffectif, event);
+
+		// dans les cas "redondants", on n'a touché à rien, mais il est peut-être utile de forcer une ré-indexation quand-même, non ? //
+		if (etatEffectif == EtatEvenementOrganisation.REDONDANT) {
+			scheduleIndexation(event.getNoOrganisation());
+		}
+
+		return ! (etatEffectif == EtatEvenementOrganisation.EN_ERREUR);
+	}
+
+	/**
+	 * Appelé dans une transaction pour lancer le traitement de l'événement organisation
+	 * @param event événement à traiter
+	 * @return <code>true</code> si tout s'est bien passé, <code>false</code> si l'événement a été mis en erreur
+	 * @throws EvenementOrganisationException en cas de problème métier
+	 */
+	private boolean processEventSansEffetUnireg(EvenementOrganisation event) throws EvenementOrganisationException {
+		Audit.info(event.getId(), String.format("Début du traitement de l'événement organisation %d de type %s au %s sur l'organisation %d",
+		                                        event.getId(), event.getType(),
+		                                        RegDateHelper.dateToDisplayString(event.getDateEvenement()),
+		                                        event.getNoOrganisation()));
+
+		final EvenementOrganisationMessageCollector<EvenementOrganisationErreur> collector = new EvenementOrganisationMessageCollector<>(ERREUR_FACTORY);
+		final EtatEvenementOrganisation etat = processEventAndCollectMessages(event, collector, collector, collector, true);
+
+		addDateTraitement(event);
+
+		// les erreurs et warnings collectés sont maintenant associés à l'événement en base
+		final List<EvenementOrganisationErreur> entrees = EvenementCivilHelper.eliminerDoublons(collector.getEntrees());
+		event.getErreurs().addAll(entrees);
+
+		auditErreurs(event, entrees);
+
+		final EtatEvenementOrganisation etatEffectif = determineEtatEffectifSansEffetUnireg(collector, etat);
+		assignerEtatApresTraitement(etatEffectif, event);
+
+		// dans les cas "redondants", on n'a touché à rien, mais il est peut-être utile de forcer une ré-indexation quand-même, non ? //
+		if (etatEffectif == EtatEvenementOrganisation.REDONDANT) {
+			scheduleIndexation(event.getNoOrganisation());
+		}
+
+		return ! (etatEffectif == EtatEvenementOrganisation.EN_ERREUR);
+	}
+
+	private EtatEvenementOrganisation determineEtatEffectif(EvenementOrganisationMessageCollector<EvenementOrganisationErreur> collector, EtatEvenementOrganisation etat) {
+		return collector.hasErreurs() ? EtatEvenementOrganisation.EN_ERREUR : (collector.hasWarnings() ? EtatEvenementOrganisation.A_VERIFIER : etat);
+	}
+
+	private EtatEvenementOrganisation determineEtatEffectifSansEffetUnireg(EvenementOrganisationMessageCollector<EvenementOrganisationErreur> collector, EtatEvenementOrganisation etat) {
+		return collector.hasErreurs() ? EtatEvenementOrganisation.EN_ERREUR : EtatEvenementOrganisation.FORCE;
+	}
+
+	private void auditErreurs(EvenementOrganisation event, List<EvenementOrganisationErreur> entrees) {
 		for (EvenementOrganisationErreur e : entrees) {
 			switch (e.getType()) {
 			case ERROR:
@@ -317,17 +392,6 @@ public class EvenementOrganisationProcessorInternal implements ProcessorInternal
 				throw new IllegalArgumentException(String.format("Type d'erreur inconnu: %s", e.getType()));
 			}
 		}
-
-		final boolean hasErrors = collector.hasErreurs();
-		final EtatEvenementOrganisation etatEffectif = hasErrors ? EtatEvenementOrganisation.EN_ERREUR : (collector.hasWarnings() ? EtatEvenementOrganisation.A_VERIFIER : etat);
-		assignerEtatApresTraitement(etatEffectif, event);
-
-		// dans les cas "redondants", on n'a touché à rien, mais il est peut-être utile de forcer une ré-indexation quand-même, non ?
-		if (etatEffectif == EtatEvenementOrganisation.REDONDANT) {
-			scheduleIndexation(event.getNoOrganisation());
-		}
-
-		return !hasErrors;
 	}
 
 	private static void assignerEtatApresTraitement(EtatEvenementOrganisation etat, EvenementOrganisation event) {
@@ -348,9 +412,10 @@ public class EvenementOrganisationProcessorInternal implements ProcessorInternal
 	private EtatEvenementOrganisation processEventAndCollectMessages(EvenementOrganisation event,
 	                                                                 EvenementOrganisationErreurCollector erreurs,
 	                                                                 EvenementOrganisationWarningCollector warnings,
-	                                                                 EvenementOrganisationSuiviCollector suivis) throws EvenementOrganisationException {
+	                                                                 EvenementOrganisationSuiviCollector suivis,
+	                                                                 boolean sansEffetUnireg) throws EvenementOrganisationException {
 		// Translate event
-		final EvenementOrganisationInterne evtInterne = buildInterne(event);
+		final EvenementOrganisationInterne evtInterne = buildInterne(event, sansEffetUnireg);
 		if (evtInterne == null) {
 			LOGGER.error(String.format("Aucun code de traitement trouvé pour l'événement %d", event.getId()));
 			erreurs.addErreur("Aucun code de traitement trouvé.");
@@ -373,9 +438,8 @@ public class EvenementOrganisationProcessorInternal implements ProcessorInternal
 		}
 	}
 
-	private EvenementOrganisationInterne buildInterne(EvenementOrganisation event) throws EvenementOrganisationException {
-		final EvenementOrganisationOptions options = new EvenementOrganisationOptions(true);
-		return translator.toInterne(event, options);
+	private EvenementOrganisationInterne buildInterne(EvenementOrganisation event, boolean sansEffetUnireg) throws EvenementOrganisationException {
+		return translator.toInterne(event, new EvenementOrganisationOptions(sansEffetUnireg));
 	}
 
 	@Override

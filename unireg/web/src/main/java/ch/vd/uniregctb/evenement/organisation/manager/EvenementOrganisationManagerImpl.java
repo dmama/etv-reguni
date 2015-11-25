@@ -198,7 +198,11 @@ public class EvenementOrganisationManagerImpl implements EvenementOrganisationMa
     @Override
     @Transactional
 	public void forceEvenement(Long id) {
-        evenementService.forceEvenement(id);
+	    final EvenementOrganisation evt = evenementService.get(id);
+	    if (evt == null) {
+		    throw new ObjectNotFoundException("Evénement organisation " + id);
+	    }
+	    evenementProcessor.forceEvenement(new EvenementOrganisationBasicInfo(evt, evt.getNoOrganisation()));
 	}
 
 	@Override
