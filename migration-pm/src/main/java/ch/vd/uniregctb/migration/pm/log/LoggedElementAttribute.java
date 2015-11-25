@@ -9,7 +9,9 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.common.StringRenderer;
 import ch.vd.uniregctb.migration.pm.engine.collector.EntityLinkCollector;
 import ch.vd.uniregctb.migration.pm.regpm.NumeroIDE;
+import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.Sexe;
+import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
 /**
  * Les différents champs loggués pour tous les éléments
@@ -86,8 +88,13 @@ public enum LoggedElementAttribute {
 
 	RAISON_SOCIALE(String.class, s -> s, LoggedElementHelper.<String>exceptionThrowing()),
 	NOM_COMMUNE(String.class, s -> s, LoggedElementHelper.<String>exceptionThrowing()),
+	TYPE_AUTORITE_FISCALE(TypeAutoriteFiscale.class, Enum::name, LoggedElementHelper.<TypeAutoriteFiscale>exceptionThrowing()),
+	NO_OFS(Number.class, Object::toString, LoggedElementHelper.<Number>exceptionThrowing()),
 	DATE_DEBUT_FOR(RegDate.class, RegDateHelper::dateToDashString, LoggedElementHelper.<RegDate>exceptionThrowing()),
+	DATE_FIN_FOR(RegDate.class, RegDateHelper::dateToDashString, LoggedElementHelper.<RegDate>exceptionThrowing()),
 	DATE_FIN_ASSUJETTISSEMENT(RegDate.class, RegDateHelper::dateToDashString, LoggedElementHelper.<RegDate>exceptionThrowing()),
+	MOTIF_RATTACHEMENT(MotifRattachement.class, Enum::name, LoggedElementHelper.<MotifRattachement>exceptionThrowing()),
+	TYPE_ENTITE(Class.class, Class::getSimpleName, LoggedElementHelper.<Class>exceptionThrowing()),
 
 	;
 

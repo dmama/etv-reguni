@@ -14,7 +14,8 @@ import ch.vd.uniregctb.migration.pm.log.AdresseLoggedElement;
 import ch.vd.uniregctb.migration.pm.log.EmptyValuedLoggedElement;
 import ch.vd.uniregctb.migration.pm.log.EntrepriseLoggedElement;
 import ch.vd.uniregctb.migration.pm.log.EtablissementLoggedElement;
-import ch.vd.uniregctb.migration.pm.log.ForPrincipalOuvertApresFinAssujLoggedElement;
+import ch.vd.uniregctb.migration.pm.log.ForFiscalIgnoreAbsenceAssujettissementLoggedElement;
+import ch.vd.uniregctb.migration.pm.log.ForPrincipalOuvertApresFinAssujettissementLoggedElement;
 import ch.vd.uniregctb.migration.pm.log.IndividuLoggedElement;
 import ch.vd.uniregctb.migration.pm.log.LogCategory;
 import ch.vd.uniregctb.migration.pm.log.LoggedElement;
@@ -63,7 +64,8 @@ public abstract class LogStructure {
 		final Function<LogContexte, LoggedElement> donneesIndividu = new FromContextInformationSource(IndividuLoggedElement.class, IndividuLoggedElement.EMPTY);
 		final Function<LogContexte, LoggedElement> donneesAdresse = new FromContextInformationSource(AdresseLoggedElement.class, AdresseLoggedElement.EMPTY);
 		final Function<LogContexte, LoggedElement> donneesRapportEntreTiers = new FromContextInformationSource(RapportEntreTiersLoggedElement.class, RapportEntreTiersLoggedElement.EMPTY);
-		final Function<LogContexte, LoggedElement> donneesForsOuvertsApresFinAssuj = new FromContextInformationSource(ForPrincipalOuvertApresFinAssujLoggedElement.class, ForPrincipalOuvertApresFinAssujLoggedElement.EMPTY);
+		final Function<LogContexte, LoggedElement> donneesForsOuvertsApresFinAssuj = new FromContextInformationSource(ForPrincipalOuvertApresFinAssujettissementLoggedElement.class, ForPrincipalOuvertApresFinAssujettissementLoggedElement.EMPTY);
+		final Function<LogContexte, LoggedElement> donneesForsIgnoresAucunAssujettissement = new FromContextInformationSource(ForFiscalIgnoreAbsenceAssujettissementLoggedElement.class, ForFiscalIgnoreAbsenceAssujettissementLoggedElement.EMPTY);
 
 		final Map<LogCategory, List<Function<LogContexte, LoggedElement>>> map = new EnumMap<>(LogCategory.class);
 
@@ -102,6 +104,9 @@ public abstract class LogStructure {
 
 		// Liste des fors ouverts après la fermeture de tous les assujettissements
 		map.put(LogCategory.FORS_OUVERTS_APRES_FIN_ASSUJETTISSEMENT, Arrays.asList(donneesNiveau, donneesForsOuvertsApresFinAssuj));
+
+		// Liste des fors ignorés/non-migrés/non-générés car aucun assujettissement n'était présent dans RegPM
+		map.put(LogCategory.FORS_IGNORES_AUCUN_ASSUJETTISSEMENT, Arrays.asList(donneesNiveau, donneesForsIgnoresAucunAssujettissement));
 
 		// Dans le log des erreurs, on ne met aucun contexte -> seul le texte sera affiché
 		map.put(LogCategory.EXCEPTIONS, Collections.singletonList(donneesNiveau));

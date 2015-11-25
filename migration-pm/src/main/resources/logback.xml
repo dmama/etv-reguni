@@ -151,6 +151,17 @@
 		<appender-ref ref="FORS_OUVERTS_APRES_FIN_ASSUJETTISSEMENT"/>
 	</logger>
 
+	<appender name="FORS_IGNORES_AUCUN_ASSUJETTISSEMENT" class="ch.qos.logback.core.FileAppender">
+		<file>log/fors-ignores-aucun-assuj.csv</file>
+		<append>true</append>
+		<encoder>
+			<pattern>%msg%n</pattern>
+		</encoder>
+	</appender>
+	<logger name="ch.vd.uniregctb.migration.pm.log.LogCategory.FORS_IGNORES_AUCUN_ASSUJETTISSEMENT" additivity="false">
+		<appender-ref ref="FORS_IGNORES_AUCUN_ASSUJETTISSEMENT"/>
+	</logger>
+
 	<appender name="EXCEPTIONS" class="ch.qos.logback.core.FileAppender">
 		<file>log/exceptions.log</file>
 		<append>true</append>

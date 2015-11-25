@@ -85,7 +85,8 @@ import ch.vd.uniregctb.migration.pm.engine.helpers.AdresseHelper;
 import ch.vd.uniregctb.migration.pm.engine.helpers.DoublonProvider;
 import ch.vd.uniregctb.migration.pm.engine.helpers.StringRenderers;
 import ch.vd.uniregctb.migration.pm.extractor.IbanExtractor;
-import ch.vd.uniregctb.migration.pm.log.ForPrincipalOuvertApresFinAssujLoggedElement;
+import ch.vd.uniregctb.migration.pm.log.ForFiscalIgnoreAbsenceAssujettissementLoggedElement;
+import ch.vd.uniregctb.migration.pm.log.ForPrincipalOuvertApresFinAssujettissementLoggedElement;
 import ch.vd.uniregctb.migration.pm.log.LogCategory;
 import ch.vd.uniregctb.migration.pm.log.LogLevel;
 import ch.vd.uniregctb.migration.pm.mapping.IdMapping;
@@ -240,19 +241,19 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 	}
 
 	private static final class ComparaisonAssujettissementsData {
+		private final RegpmEntreprise regpm;
 		private final boolean active;
 		private final KeyedSupplier<Entreprise> entrepriseSupplier;
-		public ComparaisonAssujettissementsData(boolean active, KeyedSupplier<Entreprise> entrepriseSupplier) {
+		public ComparaisonAssujettissementsData(RegpmEntreprise regpm, boolean active, KeyedSupplier<Entreprise> entrepriseSupplier) {
+			this.regpm = regpm;
 			this.active = active;
 			this.entrepriseSupplier = entrepriseSupplier;
 		}
 	}
 
 	private static final class AnnulationDonneesFiscalesPourInactifsData {
-		private final RegpmEntreprise regpm;
 		private final KeyedSupplier<Entreprise> entrepriseSupplier;
-		public AnnulationDonneesFiscalesPourInactifsData(RegpmEntreprise regpm, KeyedSupplier<Entreprise> entrepriseSupplier) {
-			this.regpm = regpm;
+		public AnnulationDonneesFiscalesPourInactifsData(KeyedSupplier<Entreprise> entrepriseSupplier) {
 			this.entrepriseSupplier = entrepriseSupplier;
 		}
 	}
@@ -1190,12 +1191,12 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 							                            StringRenderers.DATE_RENDERER.toString(assujettissementData.getDateFin())));
 
 							// [SIFISC-17110] On veut une liste...
-							mr.pushContextValue(ForPrincipalOuvertApresFinAssujLoggedElement.class, new ForPrincipalOuvertApresFinAssujLoggedElement(regpm, ff, assujettissementData.getDateFin()));
+							mr.pushContextValue(ForPrincipalOuvertApresFinAssujettissementLoggedElement.class, new ForPrincipalOuvertApresFinAssujettissementLoggedElement(regpm, ff, assujettissementData.getDateFin()));
 							try {
 								mr.addMessage(LogCategory.FORS_OUVERTS_APRES_FIN_ASSUJETTISSEMENT, LogLevel.INFO, StringUtils.EMPTY);
 							}
 							finally {
-								mr.popContexteValue(ForPrincipalOuvertApresFinAssujLoggedElement.class);
+								mr.popContexteValue(ForPrincipalOuvertApresFinAssujettissementLoggedElement.class);
 							}
 
 							return false;
@@ -1363,9 +1364,27 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 				if (lilic.isEmpty() || calcules.isEmpty()) {
 					if (!calcules.isEmpty()) {
 						// apparition totale d'assujettissement
-						mr.addMessage(LogCategory.ASSUJETTISSEMENTS, LogLevel.ERROR,
-						              String.format("Apparition d'assujettissement sur une entreprise auparavant complètement non-assujettie : %s.",
-						                            CollectionsUtils.toString(calcules, StringRenderers.DATE_RANGE_RENDERER, ",")));
+
+						// [SIFISC-17114] Dans ce cas, il ne faut pas migrer les fors vers Unireg, mais les lister
+						// on commence par les lister
+						entreprise.getForsFiscauxNonAnnules(true).stream()
+								.sorted(Comparator.comparing(ForFiscal::isPrincipal).thenComparing(DateRangeComparator::compareRanges))       // les fors secondaires d'abord, puis les dates...
+								.peek(ff -> mr.addMessage(LogCategory.FORS, LogLevel.WARN,
+								                          String.format("Abandon de la migration du for fiscal %s en raison de l'absence totale d'assujettissement ICC dans RegPM pour cette entreprise.",
+								                                        StringRenderers.LOCALISATION_DATEE_RENDERER.toString(ff))))
+								.peek(ff -> {
+									mr.pushContextValue(ForFiscalIgnoreAbsenceAssujettissementLoggedElement.class, new ForFiscalIgnoreAbsenceAssujettissementLoggedElement(data.regpm, ff));
+									try {
+										mr.addMessage(LogCategory.FORS_IGNORES_AUCUN_ASSUJETTISSEMENT, LogLevel.INFO, StringUtils.EMPTY);
+									}
+									finally {
+										mr.popContexteValue(ForFiscalIgnoreAbsenceAssujettissementLoggedElement.class);
+									}
+								})
+								.forEach(ff -> ff.setAnnule(true));
+
+						// c'est fini, on a enlevé tout l'assujettissement calculé par Unireg...
+						return;
 					}
 					if (!lilic.isEmpty()) {
 						// disparition totale d'assujettissement
@@ -1742,10 +1761,10 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		mr.addPreTransactionCommitData(new RecalculMotifsForsIndeterminesData(regpm, moi));
 
 		// enregistrement de cette entreprise pour l'annulation éventuelle des données fiscales (fors, dis...) pour les inactifs
-		mr.addPreTransactionCommitData(new AnnulationDonneesFiscalesPourInactifsData(regpm, moi));
+		mr.addPreTransactionCommitData(new AnnulationDonneesFiscalesPourInactifsData(moi));
 
 		// enregistrement de cette entreprise pour la comparaison des assujettissements avant/après
-		mr.addPreTransactionCommitData(new ComparaisonAssujettissementsData(activityManager.isActive(regpm), moi));
+		mr.addPreTransactionCommitData(new ComparaisonAssujettissementsData(regpm, activityManager.isActive(regpm), moi));
 
 		// TODO migrer les documents (questionnaires SNC...)
 

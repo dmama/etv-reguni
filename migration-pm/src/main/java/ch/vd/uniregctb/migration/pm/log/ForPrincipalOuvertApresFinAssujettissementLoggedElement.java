@@ -15,7 +15,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmEntreprise;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmForPrincipal;
 
-public class ForPrincipalOuvertApresFinAssujLoggedElement implements LoggedElement {
+public class ForPrincipalOuvertApresFinAssujettissementLoggedElement implements LoggedElement {
 
 	private static final List<LoggedElementAttribute> NAMES = Collections.unmodifiableList(Arrays.asList(LoggedElementAttribute.ENTREPRISE_ID,
 	                                                                                                     LoggedElementAttribute.RAISON_SOCIALE,
@@ -27,7 +27,7 @@ public class ForPrincipalOuvertApresFinAssujLoggedElement implements LoggedEleme
 
 	private final Map<LoggedElementAttribute, Object> values;
 
-	public ForPrincipalOuvertApresFinAssujLoggedElement(RegpmEntreprise entreprise, RegpmForPrincipal forPrincipal, RegDate finAssujettissement) {
+	public ForPrincipalOuvertApresFinAssujettissementLoggedElement(RegpmEntreprise entreprise, RegpmForPrincipal forPrincipal, RegDate finAssujettissement) {
 		this.values = buildItemValues(entreprise, forPrincipal, finAssujettissement);
 	}
 

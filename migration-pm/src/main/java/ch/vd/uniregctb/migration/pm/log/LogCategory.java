@@ -69,6 +69,11 @@ public enum LogCategory {
 	/**
 	 * Liste des fors principaux ignorés car ouverts postérieurement à toute date de fin d'assujettissement ICC
 	 */
-	FORS_OUVERTS_APRES_FIN_ASSUJETTISSEMENT
+	FORS_OUVERTS_APRES_FIN_ASSUJETTISSEMENT,
+
+	/**
+	 * Liste des fors fiscaux ignorés/non-repris/non-générés car aucun assujettissement ICC n'était présent dans RegPP
+	 */
+	FORS_IGNORES_AUCUN_ASSUJETTISSEMENT
 
 }
