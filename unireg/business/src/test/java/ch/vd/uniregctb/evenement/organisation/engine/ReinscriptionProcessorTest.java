@@ -307,7 +307,7 @@ public class ReinscriptionProcessorTest extends AbstractEvenementOrganisationPro
 
 				                             final EvenementOrganisation evt = evtOrganisationDAO.get(evtId);
 				                             Assert.assertNotNull(evt);
-				                             Assert.assertEquals(EtatEvenementOrganisation.REDONDANT, evt.getEtat());
+				                             Assert.assertEquals(EtatEvenementOrganisation.A_VERIFIER, evt.getEtat());
 
 				                             final Entreprise entreprise = tiersDAO.getEntrepriseByNumeroOrganisation(evt.getNoOrganisation());
 
