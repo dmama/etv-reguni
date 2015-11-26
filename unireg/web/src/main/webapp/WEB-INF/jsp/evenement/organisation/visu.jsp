@@ -40,10 +40,12 @@
             <td width="25%"><fmt:message key="label.etat.evenement"/> :</td>
             <td width="25%"><fmt:message key="option.etat.evenement.${command.evtEtat}"/></td>
         </tr>
+<%--
         <tr class="<unireg:nextRowClass/>">
             <td width="25%"><fmt:message key="label.commentaire.traitement"/> :</td>
             <td colspan="3"><em><c:out value="${command.evtCommentaireTraitement}"/></em></td>
         </tr>
+--%>
     </table>
 
     <c:if test="${not empty command.evtErreurs}">
