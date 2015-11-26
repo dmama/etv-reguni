@@ -916,7 +916,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		final EntityKey entrepriseKey = buildEntrepriseKey(entreprise);
 		return doInLogContext(entrepriseKey, mr, idMapper, () -> {
 
-			final AssujettissementData assujettissementData = mr.getExtractedData(AssujettissementData.class, entrepriseKey);
+			final RegDate datefinActivite = mr.getExtractedData(DateFinActiviteData.class, entrepriseKey).date;
 
 			// on retrie les sièges par date de validité (le tri naturel est fait par numéro de séquence) en ignorant au passage les sièges annulés ou dont la date de début est dans le futur
 			final NavigableMap<RegDate, List<RegpmSiegeEntreprise>> strict = entreprise.getSieges().stream()
@@ -940,12 +940,12 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 						return true;
 					})
 					.filter(s -> {
-						if (assujettissementData.hasSome() && RegDateHelper.isAfter(s.getDateValidite(), assujettissementData.getDateFin(), NullDateBehavior.LATEST)) {
+						if (datefinActivite != null && RegDateHelper.isAfter(s.getDateValidite(), datefinActivite, NullDateBehavior.LATEST)) {
 							mr.addMessage(LogCategory.SUIVI, LogLevel.WARN,
-							              String.format("Le siège %d est ignoré car sa date de début de validité (%s) est postérieure à la date de fin d'assujettissement ICC de l'entreprise (%s).",
+							              String.format("Le siège %d est ignoré car sa date de début de validité (%s) est postérieure à la date de fin d'activité de l'entreprise (%s).",
 							                            s.getId().getSeqNo(),
 							                            StringRenderers.DATE_RENDERER.toString(s.getDateValidite()),
-							                            StringRenderers.DATE_RENDERER.toString(assujettissementData.getDateFin())));
+							                            StringRenderers.DATE_RENDERER.toString(datefinActivite)));
 							return false;
 						}
 						return true;

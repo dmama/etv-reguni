@@ -4594,4 +4594,163 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 			Assert.assertEquals("For principal COMMUNE_OU_FRACTION_VD/5518 [27.08.2004 -> ?] généré.", textes.get(1));
 		}
 	}
+
+	/**
+	 * Cas du départ HC...
+	 */
+	@Test
+	public void testSiegePosterieurFinAssujettissementICC() throws Exception {
+
+		final long noEntreprise = 74984L;
+		final RegpmEntreprise e = buildEntreprise(noEntreprise);
+		final RegDate dateDebut = RegDate.get(2004, 8, 27);
+		final RegDate dateDepartHC = dateDebut.addYears(3);
+
+		addRaisonSociale(e, dateDebut, "Toto SA", null, null, true);
+		addFormeJuridique(e, dateDebut, createTypeFormeJuridique("S.A.", RegpmCategoriePersonneMorale.PM));
+		addForPrincipalSuisse(e, dateDebut, RegpmTypeForPrincipal.SIEGE, Commune.ECHALLENS);
+		addForPrincipalSuisse(e, dateDepartHC.getOneDayAfter(), RegpmTypeForPrincipal.SIEGE, Commune.BERN);
+		addSiegeSuisse(e, dateDebut, Commune.ECHALLENS);
+		addSiegeSuisse(e, dateDepartHC.getOneDayAfter(), Commune.BERN);
+		addAssujettissement(e, dateDebut, dateDepartHC, RegpmTypeAssujettissement.LILIC);
+
+		final MockGraphe graphe = new MockGraphe(Collections.singletonList(e),
+		                                         null,
+		                                         null);
+		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
+		final EntityLinkCollector linkCollector = new EntityLinkCollector();
+		final IdMapper idMapper = new IdMapper();
+		migrator.initMigrationResult(mr, idMapper);
+		migrate(e, migrator, mr, linkCollector, idMapper);
+
+		final MutableLong noEtablissementPrincipal = new MutableLong();
+		doInUniregTransaction(true, status -> {
+			final Entreprise entreprise = uniregStore.getEntityFromDb(Entreprise.class, noEntreprise);
+			Assert.assertNotNull(entreprise);
+
+			final List<ForFiscalPrincipalPM> forsPrincipaux = entreprise.getForsFiscauxPrincipauxActifsSorted();
+			Assert.assertNotNull(forsPrincipaux);
+			Assert.assertEquals(2, forsPrincipaux.size());
+
+			{
+				final ForFiscalPrincipalPM ffp = forsPrincipaux.get(0);
+				Assert.assertNotNull(ffp);
+				Assert.assertEquals(dateDebut, ffp.getDateDebut());
+				Assert.assertEquals(dateDepartHC, ffp.getDateFin());
+				Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
+				Assert.assertEquals(Commune.ECHALLENS.getNoOfs(), ffp.getNumeroOfsAutoriteFiscale());
+				Assert.assertEquals(MotifFor.DEPART_HC, ffp.getMotifFermeture());
+				Assert.assertFalse(ffp.isAnnule());
+			}
+			{
+				final ForFiscalPrincipalPM ffp = forsPrincipaux.get(1);
+				Assert.assertNotNull(ffp);
+				Assert.assertEquals(dateDepartHC.getOneDayAfter(), ffp.getDateDebut());
+				Assert.assertNull(ffp.getDateFin());
+				Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_HC, ffp.getTypeAutoriteFiscale());
+				Assert.assertEquals(Commune.BERN.getNoOfs(), ffp.getNumeroOfsAutoriteFiscale());
+				Assert.assertEquals(MotifFor.DEPART_HC, ffp.getMotifOuverture());
+				Assert.assertFalse(ffp.isAnnule());
+			}
+
+			noEtablissementPrincipal.setValue(uniregStore.getEntitiesFromDb(Etablissement.class, null).get(0).getNumero());
+		});
+
+		// vérification des messages dans le contexte "FORS"
+		{
+			final List<MigrationResultCollector.Message> messages = mr.getMessages().get(LogCategory.FORS);
+			Assert.assertNotNull(messages);
+			final List<String> textes = messages.stream().map(msg -> msg.text).collect(Collectors.toList());
+			Assert.assertEquals(2, textes.size());
+			Assert.assertEquals("For principal COMMUNE_OU_FRACTION_VD/5518 [27.08.2004 -> 27.08.2007] généré.", textes.get(0));
+			Assert.assertEquals("For principal COMMUNE_HC/351 [28.08.2007 -> ?] généré.", textes.get(1));
+		}
+		// vérification des messages dans le contexte "SUIVI"
+		{
+			final List<MigrationResultCollector.Message> messages = mr.getMessages().get(LogCategory.SUIVI);
+			Assert.assertNotNull(messages);
+			final List<String> textes = messages.stream().map(msg -> msg.text).collect(Collectors.toList());
+			Assert.assertEquals(6, textes.size());
+			Assert.assertEquals("L'entreprise n'existait pas dans Unireg avec ce numéro de contribuable.", textes.get(0));
+			Assert.assertEquals("Entreprise sans exercice commercial ni date de bouclement futur.", textes.get(1));
+			Assert.assertEquals("Siège 1 non-migré car on ne prend en compte que le dernier.", textes.get(2));
+			Assert.assertEquals("Création de l'établissement principal " + FormatNumeroHelper.numeroCTBToDisplay(noEtablissementPrincipal.getValue()) + " d'après le siège 2.", textes.get(3));
+			Assert.assertEquals("Domicile de l'établissement principal " + FormatNumeroHelper.numeroCTBToDisplay(noEtablissementPrincipal.getValue()) + " : [28.08.2007 -> ?] sur COMMUNE_HC/351.", textes.get(4));
+			Assert.assertEquals("Entreprise migrée : 749.84.", textes.get(5));
+		}
+	}
+
+	/**
+	 * Cas de la fin d'activité (= réquisition de radiation)
+	 */
+	@Test
+	public void testSiegePosterieurFinActivite() throws Exception {
+
+		final long noEntreprise = 74984L;
+		final RegpmEntreprise e = buildEntreprise(noEntreprise);
+		final RegDate dateDebut = RegDate.get(2004, 8, 27);
+		final RegDate dateFinActivite = dateDebut.addYears(3);
+
+		addRaisonSociale(e, dateDebut, "Toto SA", null, null, true);
+		addFormeJuridique(e, dateDebut, createTypeFormeJuridique("S.A.", RegpmCategoriePersonneMorale.PM));
+		addForPrincipalSuisse(e, dateDebut, RegpmTypeForPrincipal.SIEGE, Commune.ECHALLENS);
+		addSiegeSuisse(e, dateDebut, Commune.ECHALLENS);
+		addSiegeSuisse(e, dateFinActivite.getOneDayAfter(), Commune.BERN);
+		addAssujettissement(e, dateDebut, dateFinActivite, RegpmTypeAssujettissement.LILIC);
+		e.setDateRequisitionRadiation(dateFinActivite);
+
+		final MockGraphe graphe = new MockGraphe(Collections.singletonList(e),
+		                                         null,
+		                                         null);
+		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
+		final EntityLinkCollector linkCollector = new EntityLinkCollector();
+		final IdMapper idMapper = new IdMapper();
+		migrator.initMigrationResult(mr, idMapper);
+		migrate(e, migrator, mr, linkCollector, idMapper);
+
+		final MutableLong noEtablissementPrincipal = new MutableLong();
+		doInUniregTransaction(true, status -> {
+			final Entreprise entreprise = uniregStore.getEntityFromDb(Entreprise.class, noEntreprise);
+			Assert.assertNotNull(entreprise);
+
+			final List<ForFiscalPrincipalPM> forsPrincipaux = entreprise.getForsFiscauxPrincipauxActifsSorted();
+			Assert.assertNotNull(forsPrincipaux);
+			Assert.assertEquals(1, forsPrincipaux.size());
+
+			{
+				final ForFiscalPrincipalPM ffp = forsPrincipaux.get(0);
+				Assert.assertNotNull(ffp);
+				Assert.assertEquals(dateDebut, ffp.getDateDebut());
+				Assert.assertEquals(dateFinActivite, ffp.getDateFin());
+				Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
+				Assert.assertEquals(Commune.ECHALLENS.getNoOfs(), ffp.getNumeroOfsAutoriteFiscale());
+				Assert.assertFalse(ffp.isAnnule());
+			}
+
+			noEtablissementPrincipal.setValue(uniregStore.getEntitiesFromDb(Etablissement.class, null).get(0).getNumero());
+		});
+
+		// vérification des messages dans le contexte "FORS"
+		{
+			final List<MigrationResultCollector.Message> messages = mr.getMessages().get(LogCategory.FORS);
+			Assert.assertNotNull(messages);
+			final List<String> textes = messages.stream().map(msg -> msg.text).collect(Collectors.toList());
+			Assert.assertEquals(1, textes.size());
+			Assert.assertEquals("For principal COMMUNE_OU_FRACTION_VD/5518 [27.08.2004 -> 27.08.2007] généré.", textes.get(0));
+		}
+		// vérification des messages dans le contexte "SUIVI"
+		{
+			final List<MigrationResultCollector.Message> messages = mr.getMessages().get(LogCategory.SUIVI);
+			Assert.assertNotNull(messages);
+			final List<String> textes = messages.stream().map(msg -> msg.text).collect(Collectors.toList());
+			Assert.assertEquals(7, textes.size());
+			Assert.assertEquals("L'entreprise n'existait pas dans Unireg avec ce numéro de contribuable.", textes.get(0));
+			Assert.assertEquals("Date de fin d'activité proposée (date de réquisition de radiation) : 27.08.2007.", textes.get(1));
+			Assert.assertEquals("Entreprise sans exercice commercial ni date de bouclement futur.", textes.get(2));
+			Assert.assertEquals("Le siège 2 est ignoré car sa date de début de validité (28.08.2007) est postérieure à la date de fin d'activité de l'entreprise (27.08.2007).", textes.get(3));
+			Assert.assertEquals("Création de l'établissement principal " + FormatNumeroHelper.numeroCTBToDisplay(noEtablissementPrincipal.getValue()) + " d'après le siège 1.", textes.get(4));
+			Assert.assertEquals("Domicile de l'établissement principal " + FormatNumeroHelper.numeroCTBToDisplay(noEtablissementPrincipal.getValue()) + " : [27.08.2004 -> 27.08.2007] sur COMMUNE_OU_FRACTION_VD/5518.", textes.get(5));
+			Assert.assertEquals("Entreprise migrée : 749.84.", textes.get(6));
+		}
+	}
 }
