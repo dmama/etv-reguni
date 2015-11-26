@@ -3730,7 +3730,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 			final EtatEntreprise previous = snap.getPrevious();
 			if (previous != null && previous.getType() == current.getType()) {
 				mr.addMessage(LogCategory.SUIVI, LogLevel.INFO,
-				              String.format("Fusion des deux états d'entreprise '%s' obtenus les %s et %s.",
+				              String.format("Fusion des deux états d'entreprise '%s' successifs obtenus les %s et %s.",
 				                            current.getType(),
 				                            StringRenderers.DATE_RENDERER.toString(previous.getDateObtention()),
 				                            StringRenderers.DATE_RENDERER.toString(current.getDateObtention())));

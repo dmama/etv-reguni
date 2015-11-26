@@ -4450,7 +4450,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 			Assert.assertEquals("Entreprise sans exercice commercial ni for principal.", textes.get(1));
 			Assert.assertEquals("Entreprise sans exercice commercial ni date de bouclement futur.", textes.get(2));
 			Assert.assertEquals("Pas de siège associé, pas d'établissement principal créé.", textes.get(3));
-			Assert.assertEquals("Fusion des deux états d'entreprise 'INSCRITE_RC' obtenus les 01.03.2005 et 01.03.2007.", textes.get(4));
+			Assert.assertEquals("Fusion des deux états d'entreprise 'INSCRITE_RC' successifs obtenus les 01.03.2005 et 01.03.2007.", textes.get(4));
 			Assert.assertEquals("Etat 'FONDEE' migré, dès le 27.08.2004.", textes.get(5));
 			Assert.assertEquals("Etat 'INSCRITE_RC' migré, dès le 01.03.2005.", textes.get(6));
 			Assert.assertEquals("Entreprise migrée : 26.23.", textes.get(7));
