@@ -98,7 +98,7 @@ public abstract class EvenementOrganisationInterne {
 	public final void validate(EvenementOrganisationErreurCollector erreurs, EvenementOrganisationWarningCollector warnings) throws EvenementOrganisationException {
 		validateCommon(erreurs);
 		if (!erreurs.hasErreurs()) {
-			if (options.isSansEffetUnireg() && typeImpact == TypeImpact.AVEC_IMPACT_UNIREG) {
+			if (options.isSeulementEvtFiscaux() && typeImpact == TypeImpact.AVEC_IMPACT_UNIREG) {
 				return;
 			}
 			validateSpecific(erreurs, warnings);
@@ -140,9 +140,11 @@ public abstract class EvenementOrganisationInterne {
 	@NotNull
 	public final HandleStatus handle(EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) throws EvenementOrganisationException {
 
-		if (options.isSansEffetUnireg() && typeImpact == TypeImpact.AVEC_IMPACT_UNIREG) {
+		if (options.isSeulementEvtFiscaux() && typeImpact == TypeImpact.AVEC_IMPACT_UNIREG) {
 			suivis.addSuivi(String.format("Opération de type %s avec impact Unireg ignorée car l'événement est forcé.", this.getClass().getSimpleName()));
 			return HandleStatus.REDONDANT;
+		} else {
+			suivis.addSuivi(String.format("Opération de type %s lancée.", this.getClass().getSimpleName()));
 		}
 
 		this.doHandle(warnings, suivis);

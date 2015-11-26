@@ -30,5 +30,5 @@ interface ProcessorInternal {
 	 * @param evt descripteur de l'événement organisation cible à traiter
 	 * @return <code>true</code> si tout s'est bien passé, <code>false</code> si l'événement a terminé en erreur
 	 */
-	boolean processEventForceDoNeutralOnlyOperations(EvenementOrganisationBasicInfo evt);
+	boolean forceEvent(EvenementOrganisationBasicInfo evt);
 }

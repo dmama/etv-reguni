@@ -5,10 +5,10 @@ package ch.vd.uniregctb.evenement.organisation;
  */
 public class EvenementOrganisationOptions {
 
-	private final boolean sansEffetUnireg;
+	private final boolean seulementEvtFiscaux;
 
-	public EvenementOrganisationOptions(boolean sansEffetUnireg) {
-		this.sansEffetUnireg = sansEffetUnireg;
+	public EvenementOrganisationOptions(boolean seulementEvtFiscaux) {
+		this.seulementEvtFiscaux = seulementEvtFiscaux;
 	}
 
 	/**
@@ -16,7 +16,7 @@ public class EvenementOrganisationOptions {
 	 * handle() doit retourner sans effet.
 	 * @return
 	 */
-	public boolean isSansEffetUnireg() {
-		return sansEffetUnireg;
+	public boolean isSeulementEvtFiscaux() {
+		return seulementEvtFiscaux;
 	}
 }

@@ -8,7 +8,6 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationBasicInfo;
 import ch.vd.uniregctb.evenement.organisation.engine.EvenementOrganisationNotificationQueue;
-import ch.vd.uniregctb.type.EtatEvenementOrganisation;
 
 /**
  * Classe de façade du processing des événements organisation reçus de RCEnt
@@ -112,12 +111,9 @@ public class EvenementOrganisationProcessorFacade implements EvenementOrganisati
 
 	@Override
 	public void forceEvenement(EvenementOrganisationBasicInfo evt) {
-		if (evt.getEtat().isTraite() && evt.getEtat() != EtatEvenementOrganisation.A_VERIFIER) {
-			throw new IllegalArgumentException("L'état de l'événement " + evt.getId() + " ne lui permet pas d'être forcé");
-		}
 		Audit.info(evt.getId(),
 		           String.format("Forçage manuel de l'événement organisation %d de type %s au %s sur l'organisation %d",
 		                         evt.getId(), evt.getType(), RegDateHelper.dateToDisplayString(evt.getDate()), evt.getNoOrganisation()));
-		internalProcessor.processEventForceDoNeutralOnlyOperations(evt);
+		internalProcessor.forceEvent(evt);
 	}
 }
