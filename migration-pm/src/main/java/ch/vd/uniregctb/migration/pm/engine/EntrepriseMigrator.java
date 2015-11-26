@@ -3718,7 +3718,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 			final EtatEntreprise dernier = liste.get(liste.size() - 1);
 			if (dateFinActivite.isBefore(dernier.getDateObtention())) {
 				mr.addMessage(LogCategory.SUIVI, LogLevel.WARN,
-				              String.format("Au moins un état existe après la date de validité (%s) de l'entreprise.", StringRenderers.DATE_RENDERER.toString(dateFinActivite)));
+				              String.format("Au moins un état existe après la date de fin de validité (%s) de l'entreprise.", StringRenderers.DATE_RENDERER.toString(dateFinActivite)));
 			}
 		}
 
