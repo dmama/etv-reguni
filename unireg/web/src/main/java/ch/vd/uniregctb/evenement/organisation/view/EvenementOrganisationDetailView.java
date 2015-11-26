@@ -30,6 +30,7 @@ public class EvenementOrganisationDetailView implements Serializable {
 	private Long refEvtId;
 	private EtatEvenementOrganisation evtEtat;
 	private boolean recyclable;
+	private boolean forcable;
 	private Date evtDateTraitement;
 	private String evtCommentaireTraitement;
 	private List<ErreurEvenementOrganisationView> evtErreurs = new ArrayList<>();
@@ -113,6 +114,14 @@ public class EvenementOrganisationDetailView implements Serializable {
 
 	public void setRecyclable(boolean recyclable) {
 		this.recyclable = recyclable;
+	}
+
+	public boolean isForcable() {
+		return forcable;
+	}
+
+	public void setForcable(boolean forcable) {
+		this.forcable = forcable;
 	}
 
 	@SuppressWarnings("UnusedDeclaration")

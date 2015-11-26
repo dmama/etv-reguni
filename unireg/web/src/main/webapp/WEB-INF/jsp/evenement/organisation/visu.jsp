@@ -284,7 +284,7 @@
         <input type="submit" name="recycler" value="${labelBoutonRecyler}"/>
     </form:form>
 </c:if>
-<c:if test="${command.recyclable && command.evtEtat != 'TRAITE' && command.evtEtat != 'FORCE' && command.evtEtat != 'REDONDANT'}">
+<c:if test="${command.forcable && command.evtEtat != 'TRAITE' && command.evtEtat != 'FORCE' && command.evtEtat != 'REDONDANT'}">
     <form:form method="post" action="forcer.do" style="display: inline">
         <input type="hidden" name="id" value="${command.evtId}"/>
         <fmt:message key="label.bouton.forcer" var="labelBoutonForcer"/>

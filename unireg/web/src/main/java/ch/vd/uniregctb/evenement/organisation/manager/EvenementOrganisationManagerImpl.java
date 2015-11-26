@@ -48,6 +48,7 @@ import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.PlusieursPersonnesPhysiquesAvecMemeNumeroIndividuException;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersService;
+import ch.vd.uniregctb.type.EtatEvenementOrganisation;
 import ch.vd.uniregctb.utils.WebContextUtils;
 
 public class EvenementOrganisationManagerImpl implements EvenementOrganisationManager {
@@ -149,13 +150,16 @@ public class EvenementOrganisationManagerImpl implements EvenementOrganisationMa
 					final EvenementOrganisationBasicInfo evtPrioritaire = list.get(0);
 					if (evtView.getEvtId() == evtPrioritaire.getId()) {
 						evtView.setRecyclable(true);
+						evtView.setForcable(true);
 					}
 				}
 			}
 			catch (Exception e) {
 				evtView.setOrganisationError(e.getMessage());
 			}
-        }
+        } else if (evt.getEtat().isTraite() && evt.getEtat() == EtatEvenementOrganisation.A_VERIFIER) {
+			evtView.setForcable(true);
+		}
 		return evtView;
 	}
 
