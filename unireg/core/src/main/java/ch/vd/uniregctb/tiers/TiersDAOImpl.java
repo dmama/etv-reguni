@@ -587,7 +587,7 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 		}
 
 		if (parts != null && parts.contains(Parts.DONNEES_RC)) {
-			// on charge les états fiscaux en vrac
+			// on charge les données civiles en vrac
 			final List<DonneesRegistreCommerce> donnees = queryObjectsByIds("from DonneesRegistreCommerce as rc where rc.entreprise.id in (:ids)", ids, session);
 
 			final TiersIdGetter<DonneesRegistreCommerce> getter = new TiersIdGetter<DonneesRegistreCommerce>() {
@@ -608,6 +608,30 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 
 			// associations manuelles
 			associate(session, donnees, tiers, getter, setter);
+		}
+
+		if (parts != null && parts.contains(Parts.CAPITAUX)) {
+			// on charge les capitaux en vrac
+			final List<CapitalEntreprise> capitaux = queryObjectsByIds("from CapitalEntreprise as ce where ce.entreprise.id in (:ids)", ids, session);
+
+			final TiersIdGetter<CapitalEntreprise> getter = new TiersIdGetter<CapitalEntreprise>() {
+				@Override
+				public Long getTiersId(CapitalEntreprise entity) {
+					return entity.getEntreprise().getId();
+				}
+			};
+
+			final EntitySetSetter<CapitalEntreprise> setter = new EntitySetSetter<CapitalEntreprise>() {
+				@Override
+				public void setEntitySet(Tiers tiers, Set<CapitalEntreprise> set) {
+					if (tiers instanceof Entreprise) {
+						((Entreprise) tiers).setCapitaux(set);
+					}
+				}
+			};
+
+			// associations manuelles
+			associate(session, capitaux, tiers, getter, setter);
 		}
 
 		return tiers;

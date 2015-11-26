@@ -670,6 +670,8 @@ public abstract class DataHelper {
 				results.add(TiersDAO.Parts.ETATS_FISCAUX);
 				break;
 			case CAPITALS:
+				results.add(TiersDAO.Parts.CAPITAUX);
+				break;
 			case LEGAL_FORMS:
 				results.add(TiersDAO.Parts.DONNEES_RC);
 				break;
@@ -733,6 +735,8 @@ public abstract class DataHelper {
 				results.add(TiersDAO.Parts.ETATS_FISCAUX);
 				break;
 			case CAPITALS:
+				results.add(TiersDAO.Parts.CAPITAUX);
+				break;
 			case LEGAL_FORMS:
 				results.add(TiersDAO.Parts.DONNEES_RC);
 				break;
@@ -800,6 +804,8 @@ public abstract class DataHelper {
 				results.add(TiersDAO.Parts.ETATS_FISCAUX);
 				break;
 			case CAPITALS:
+				results.add(TiersDAO.Parts.CAPITAUX);
+				break;
 			case LEGAL_FORMS:
 				results.add(TiersDAO.Parts.DONNEES_RC);
 				break;
@@ -870,6 +876,8 @@ public abstract class DataHelper {
 				results.add(TiersDAO.Parts.ETATS_FISCAUX);
 				break;
 			case CAPITALS:
+				results.add(TiersDAO.Parts.CAPITAUX);
+				break;
 			case LEGAL_FORMS:
 				results.add(TiersDAO.Parts.DONNEES_RC);
 				break;
