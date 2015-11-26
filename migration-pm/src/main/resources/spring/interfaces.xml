@@ -47,8 +47,18 @@
 		<property name="baseUrl" value="${rcent.url}"/>
 		<property name="username" value="${rcent.user}"/>
 		<property name="password" value="${rcent.password}"/>
-		<property name="organisationPath" value="organisation/ct.vd.party"/>
-		<property name="organisationsOfNoticePath" value="organisationsOfNotice"/>
+		<property name="organisationPath" value="/organisation/CT.VD.PARTY"/>
+		<property name="organisationsOfNoticePath" value="/organisationsOfNotice"/>
+		<property name="validationEnabled" value="${rcent.validate}"/>
+		<property name="schemasLocations">
+			<list>
+				<value>eVD-0004-3-0.xsd</value>
+				<value>eVD-0021-1-1.xsd</value>
+				<value>eVD-0022-1-1.xsd</value>
+				<value>eVD-0023-1-1.xsd</value>
+				<value>eVD-0024-1-1.xsd</value>
+			</list>
+		</property>
 	</bean>
 
 	<bean id="rcentClientTracing" class="ch.vd.uniregctb.migration.pm.utils.TracingFactory">
