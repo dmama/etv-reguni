@@ -40,7 +40,7 @@
 		<property name="parametreAppService" ref="parametreAppService"/>
 	</bean>
 
-	<bean id="parametreAppService" class="ch.vd.uniregctb.parametrage.ParametreAppServiceImpl">
+	<bean id="parametreAppService" class="ch.vd.uniregctb.parametrage.ParametreAppServiceImpl" depends-on="modificationLogInterceptor">
 		<property name="transactionManager" ref="uniregTransactionManager"/>
 		<property name="dao" ref="parametreAppDAO"/>
 	</bean>
