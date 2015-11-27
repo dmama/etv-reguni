@@ -11,7 +11,7 @@ import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationOptions;
 import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationErreurCollector;
 import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationSuiviCollector;
 import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationWarningCollector;
-import ch.vd.uniregctb.evenement.organisation.interne.EvenementOrganisationInterneAvecImpactUnireg;
+import ch.vd.uniregctb.evenement.organisation.interne.EvenementOrganisationInterneDeTraitement;
 import ch.vd.uniregctb.tiers.CategorieEntrepriseHelper;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.RegimeFiscal;
@@ -22,7 +22,7 @@ import ch.vd.uniregctb.type.CategorieEntreprise;
  *
  * @author Raphaël Marmier, 2015-10-15
  */
-public class ChangementCategorieAPMVersPM extends EvenementOrganisationInterneAvecImpactUnireg {
+public class ChangementCategorieAPMVersPM extends EvenementOrganisationInterneDeTraitement {
 
 	private final RegDate dateAvant;
 	private final RegDate dateApres;

@@ -10,7 +10,7 @@ import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationOptions;
 import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationErreurCollector;
 import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationSuiviCollector;
 import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationWarningCollector;
-import ch.vd.uniregctb.evenement.organisation.interne.EvenementOrganisationInterneSansImpactUnireg;
+import ch.vd.uniregctb.evenement.organisation.interne.EvenementOrganisationInterneInformationPure;
 import ch.vd.uniregctb.tiers.Entreprise;
 
 import static ch.vd.uniregctb.evenement.fiscal.EvenementFiscalInformationComplementaire.TypeInformationComplementaire;
@@ -18,7 +18,7 @@ import static ch.vd.uniregctb.evenement.fiscal.EvenementFiscalInformationComplem
 /**
  * @author Raphaël Marmier, 2015-10-15
  */
-public class InformationComplementaire extends EvenementOrganisationInterneSansImpactUnireg {
+public class InformationComplementaire extends EvenementOrganisationInterneInformationPure {
 
 	private final TypeInformationComplementaire typeInfo;
 

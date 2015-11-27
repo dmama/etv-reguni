@@ -13,7 +13,7 @@ import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationOptions;
 import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationErreurCollector;
 import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationSuiviCollector;
 import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationWarningCollector;
-import ch.vd.uniregctb.evenement.organisation.interne.EvenementOrganisationInterneAvecImpactUnireg;
+import ch.vd.uniregctb.evenement.organisation.interne.EvenementOrganisationInterneDeTraitement;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.Etablissement;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
@@ -23,7 +23,7 @@ import ch.vd.uniregctb.type.MotifRattachement;
 /**
  * @author Raphaël Marmier, 2015-10-13
  */
-public abstract class Demenagement extends EvenementOrganisationInterneAvecImpactUnireg {
+public abstract class Demenagement extends EvenementOrganisationInterneDeTraitement {
 
 	private final RegDate dateAvant;
 	private final RegDate dateApres;

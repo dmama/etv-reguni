@@ -64,7 +64,7 @@ public class FailliteConcordatStrategyTest extends WithoutSpringTest {
 
 	private final EvenementOrganisationContext context = new EvenementOrganisationContext(new MockServiceOrganisationService(), null, null);
 
-	private final EvenementOrganisationOptions options = new EvenementOrganisationOptions(false);
+	private final EvenementOrganisationOptions options = new EvenementOrganisationOptions();
 
 	MockOrganisation organisation = MockOrganisationFactory
 			.createOrganisation(1L, 1L, "Synergy SA", RegDate.get(2010, 6, 24), null, FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITE,

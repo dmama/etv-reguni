@@ -52,7 +52,7 @@ public abstract class AbstractEvenementOrganisationInterneTest extends BusinessT
 	}
 
 	protected EvenementOrganisationOptions buildOptions() {
-		return new EvenementOrganisationOptions(false);
+		return new EvenementOrganisationOptions();
 	}
 
 	public EvenementFiscalService getEvenementFiscalService() {

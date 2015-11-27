@@ -8,14 +8,14 @@ import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationOptions;
 import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationErreurCollector;
 import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationSuiviCollector;
 import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationWarningCollector;
-import ch.vd.uniregctb.evenement.organisation.interne.EvenementOrganisationInterneSansImpactUnireg;
+import ch.vd.uniregctb.evenement.organisation.interne.EvenementOrganisationInterneInformationPure;
 import ch.vd.uniregctb.evenement.organisation.interne.HandleStatus;
 import ch.vd.uniregctb.tiers.Entreprise;
 
 /**
  * @author Raphaël Marmier, 2015-11-10
  */
-public class RadiationRC extends EvenementOrganisationInterneSansImpactUnireg {
+public class RadiationRC extends EvenementOrganisationInterneInformationPure {
 
 	protected RadiationRC(EvenementOrganisation evenement, Organisation organisation,
 	                      Entreprise entreprise, EvenementOrganisationContext context,

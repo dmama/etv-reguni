@@ -10,7 +10,7 @@ import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationSuiviCo
 import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationWarningCollector;
 import ch.vd.uniregctb.tiers.Entreprise;
 
-public class TraitementManuel extends EvenementOrganisationInterneAvecImpactUnireg {
+public class TraitementManuel extends EvenementOrganisationInterneDeTraitement {
 
 	private static final String DEFAULT_MSG = "Cette opération doit être effectuée manuellement.";
 

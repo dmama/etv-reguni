@@ -16,7 +16,7 @@ import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationOptions;
 import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationErreurCollector;
 import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationSuiviCollector;
 import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationWarningCollector;
-import ch.vd.uniregctb.evenement.organisation.interne.EvenementOrganisationInterneAvecImpactUnireg;
+import ch.vd.uniregctb.evenement.organisation.interne.EvenementOrganisationInterneDeTraitement;
 import ch.vd.uniregctb.evenement.organisation.interne.HandleStatus;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipalPM;
@@ -24,7 +24,7 @@ import ch.vd.uniregctb.tiers.ForFiscalPrincipalPM;
 /**
  * @author Raphaël Marmier, 2015-11-11
  */
-public class Reinscription extends EvenementOrganisationInterneAvecImpactUnireg {
+public class Reinscription extends EvenementOrganisationInterneDeTraitement {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(ReinscriptionStrategy.class);
 	private final RegDate dateAvant;

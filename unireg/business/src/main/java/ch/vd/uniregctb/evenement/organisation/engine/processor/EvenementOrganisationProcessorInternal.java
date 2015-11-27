@@ -330,7 +330,7 @@ public class EvenementOrganisationProcessorInternal implements ProcessorInternal
 		final EtatEvenementOrganisation etatEffectif;
 
 		if (force) {
-			etatEffectif = determineEtatEffectifSeulementEvtFiscaux(collector, etat);
+			etatEffectif = determineEtatEffectifForce(collector, etat);
 		} else {
 			etatEffectif = determineEtatEffectif(collector, etat);
 		}
@@ -342,14 +342,14 @@ public class EvenementOrganisationProcessorInternal implements ProcessorInternal
 			scheduleIndexation(event.getNoOrganisation());
 		}
 
-		return ! (etatEffectif == EtatEvenementOrganisation.EN_ERREUR);
+		return etatEffectif != EtatEvenementOrganisation.EN_ERREUR;
 	}
 
 	private EtatEvenementOrganisation determineEtatEffectif(EvenementOrganisationMessageCollector<EvenementOrganisationErreur> collector, EtatEvenementOrganisation etat) {
 		return collector.hasErreurs() ? EtatEvenementOrganisation.EN_ERREUR : (collector.hasWarnings() ? EtatEvenementOrganisation.A_VERIFIER : etat);
 	}
 
-	private EtatEvenementOrganisation determineEtatEffectifSeulementEvtFiscaux(EvenementOrganisationMessageCollector<EvenementOrganisationErreur> collector, EtatEvenementOrganisation etat) {
+	private EtatEvenementOrganisation determineEtatEffectifForce(EvenementOrganisationMessageCollector<EvenementOrganisationErreur> collector, EtatEvenementOrganisation etat) {
 		return collector.hasErreurs() ? EtatEvenementOrganisation.EN_ERREUR : EtatEvenementOrganisation.FORCE;
 	}
 
@@ -390,15 +390,26 @@ public class EvenementOrganisationProcessorInternal implements ProcessorInternal
 	                                                                 EvenementOrganisationErreurCollector erreurs,
 	                                                                 EvenementOrganisationWarningCollector warnings,
 	                                                                 EvenementOrganisationSuiviCollector suivis,
-	                                                                 boolean seulementEvtFiscaux) throws EvenementOrganisationException {
+	                                                                 boolean force) throws EvenementOrganisationException {
 		// Translate event
-		final EvenementOrganisationInterne evtInterne = buildInterne(event, seulementEvtFiscaux); // FIXME On ne sera plus obligé de le passer avec le nouveau système.
+		final EvenementOrganisationInterne evtInterne = buildInterne(event);
 		if (evtInterne == null) {
 			LOGGER.error(String.format("Aucun code de traitement trouvé pour l'événement %d", event.getId()));
 			erreurs.addErreur("Aucun code de traitement trouvé.");
 			return EtatEvenementOrganisation.EN_ERREUR;
 		}
 		else {
+			// Filtrage des événements à traiter
+			EvenementOrganisationInterne toProcess;
+			if (force) {
+				toProcess = evtInterne.seulementEvenementsFiscaux();
+				if (toProcess == null) {
+					return EtatEvenementOrganisation.FORCE;
+				}
+			} else {
+				toProcess = evtInterne;
+			}
+
 			// validation et traitement
 			final EtatEvenementOrganisation etat;
 			evtInterne.validate(erreurs, warnings);
@@ -406,7 +417,7 @@ public class EvenementOrganisationProcessorInternal implements ProcessorInternal
 				etat = EtatEvenementOrganisation.EN_ERREUR;
 			}
 			else {
-				etat = evtInterne.handle(warnings, suivis).toEtat();
+				etat = toProcess.handle(warnings, suivis).toEtat();
 			}
 			if (StringUtils.isNotBlank(event.getCommentaireTraitement()) && evtInterne.shouldResetCommentaireTraitement(etat, event.getCommentaireTraitement())) {
 				event.setCommentaireTraitement(null);
@@ -415,8 +426,8 @@ public class EvenementOrganisationProcessorInternal implements ProcessorInternal
 		}
 	}
 
-	private EvenementOrganisationInterne buildInterne(EvenementOrganisation event, boolean seulementEvtFiscaux) throws EvenementOrganisationException {
-		return translator.toInterne(event, new EvenementOrganisationOptions(seulementEvtFiscaux));
+	private EvenementOrganisationInterne buildInterne(EvenementOrganisation event) throws EvenementOrganisationException {
+		return translator.toInterne(event, new EvenementOrganisationOptions());
 	}
 
 	@Override

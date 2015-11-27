@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.evenement.organisation.interne;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
@@ -16,44 +17,67 @@ import ch.vd.uniregctb.tiers.Entreprise;
  * Classe utile pour les evenements donnant lieu a la creation de plusieurs
  * evenements internes
  */
-public class EvenementOrganisationInterneComposite extends EvenementOrganisationInterneSansImpactUnireg {
+public final class EvenementOrganisationInterneComposite extends EvenementOrganisationInterne {
 
-	private List<EvenementOrganisationInterne> listEvtEch;
+	private List<EvenementOrganisationInterne> listEvtOrganisation;
 
 	public EvenementOrganisationInterneComposite(EvenementOrganisation evenement,
 	                                             Organisation organisation,
 	                                             Entreprise entreprise, 
 	                                             EvenementOrganisationContext context,
 	                                             EvenementOrganisationOptions options,
-	                                             List<EvenementOrganisationInterne> listEvtEch) throws EvenementOrganisationException {
+	                                             List<EvenementOrganisationInterne> listEvtOrganisation) throws EvenementOrganisationException {
 		super(evenement, organisation, entreprise, context, options);
-		if (listEvtEch == null) {
+		if (listEvtOrganisation == null) {
 			throw new NullPointerException("Impossible de construire un événement composite sans une liste d'événements le composant");
 		}
-		if (listEvtEch.size() < 2) {
+		if (listEvtOrganisation.size() < 2) {
 			throw new IllegalArgumentException("Un événement composite doit être constitué d'au moins 2 événements");
 		}
-		this.listEvtEch = listEvtEch;
+		this.listEvtOrganisation = listEvtOrganisation;
 	}
 
 	@Override
 	public void doHandle(EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) throws EvenementOrganisationException {
-		for (EvenementOrganisationInterne evt : listEvtEch) {
+		for (EvenementOrganisationInterne evt : listEvtOrganisation) {
 			raiseStatusTo(evt.handle(warnings,suivis));
 		}
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public final EvenementOrganisationInterne seulementEvenementsFiscaux() throws EvenementOrganisationException {
+		/*
+		 Notre cas est un peu plus compliqué, car on délègue. On ne doit renvoyer un nouvel evenement
+		 composite avec uniquemenent ceux qui envoient uniquement des evts fiscaux.
+		  */
+		List<EvenementOrganisationInterne> listFiltree = new ArrayList<>();
+		for (EvenementOrganisationInterne evtInterne : this.listEvtOrganisation) {
+			EvenementOrganisationInterne e = evtInterne.seulementEvenementsFiscaux();
+			if (e != null) {
+				listFiltree.add(e);
+			}
+		}
+		if (listFiltree.isEmpty()) {
+			return null;
+		} else if (listFiltree.size() == 1) {
+			return listFiltree.get(0);
+		}
+		return new EvenementOrganisationInterneComposite(getEvenement(), getOrganisation(), getEntreprise(), getContext(), getOptions(), listFiltree);
+	}
 
 	@Override
 	protected void validateCommon(EvenementOrganisationErreurCollector erreurs) {
-		for (EvenementOrganisationInterne evt : listEvtEch) {
+		for (EvenementOrganisationInterne evt : listEvtOrganisation) {
 			evt.validateCommon(erreurs);
 		}
 	}
 
 	@Override
 	protected void validateSpecific(EvenementOrganisationErreurCollector erreurs, EvenementOrganisationWarningCollector warnings) throws EvenementOrganisationException {
-		for (EvenementOrganisationInterne evt : listEvtEch) {
+		for (EvenementOrganisationInterne evt : listEvtOrganisation) {
 			evt.validateSpecific(erreurs, warnings);
 		}
 	}

@@ -156,6 +156,86 @@ public class ForcedEventProcessorTest extends AbstractEvenementOrganisationProce
 	}
 
 	@Test(timeout = 10000L)
+	public void testForcerNeCreePasForAucunEvtFiscauxAEnvoyer() throws Exception {
+
+		// Mise en place service mock
+		final Long noOrganisation = 101202100L;
+		final Long noSite = noOrganisation + 1000000;
+
+		serviceOrganisation.setUp(new MockServiceOrganisation() {
+			@Override
+			protected void init() {
+				MockOrganisation organisation =
+						MockOrganisationFactory.createOrganisation(noOrganisation, noSite, "Synergy SA", RegDate.get(2010, 6, 24), null, FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITE,
+						                                           TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusRC.INSCRIT, StatusInscriptionRC.RADIE,
+						                                           StatusRegistreIDE.RADIE,
+						                                           TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, BigDecimal.valueOf(50000), "CHF");
+				MockDonneesRC rc = (MockDonneesRC) organisation.getDonneesSites().get(0).getDonneesRC();
+				rc.changeStatusInscription(RegDate.get(2012, 1, 26), StatusInscriptionRC.RADIE);
+				rc.changeStatusInscription(RegDate.get(2015, 7, 5), StatusInscriptionRC.PROVISOIRE);
+				rc.changeDateRadiation(RegDate.get(2012, 1, 26), RegDate.get(2012, 1, 26));
+				rc.changeDateRadiation(RegDate.get(2015, 7, 5), null);
+				MockDonneesRegistreIDE donneesRegistreIDE = (MockDonneesRegistreIDE) organisation.getDonneesSites().get(0).getDonneesRegistreIDE();
+				donneesRegistreIDE.changeStatus(RegDate.get(2012, 1, 26), StatusRegistreIDE.RADIE);
+				donneesRegistreIDE.changeStatus(RegDate.get(2015, 7, 5), StatusRegistreIDE.DEFINITIF);
+				addOrganisation(organisation);
+			}
+		});
+
+		// Création de l'entreprise
+
+		final Entreprise entreprise = doInNewTransactionAndSession(new TransactionCallback<Entreprise>() {
+			@Override
+			public Entreprise doInTransaction(TransactionStatus transactionStatus) {
+				final Entreprise entreprise = addEntrepriseConnueAuCivil(noOrganisation);
+				addForPrincipal(entreprise, RegDate.get(2010, 6, 25), MotifFor.DEBUT_EXPLOITATION, RegDate.get(2012, 1, 1), MotifFor.FIN_EXPLOITATION, MockCommune.Lausanne, MotifRattachement.DOMICILE);
+				return entreprise;
+			}
+		});
+
+		// Création de l'événement
+		final Long evtId = 12344321L;
+
+		// Persistence événement
+		EvenementOrganisation evt = doInNewTransactionAndSession(new TransactionCallback<EvenementOrganisation>() {
+			@Override
+			public EvenementOrganisation doInTransaction(TransactionStatus transactionStatus) {
+				final EvenementOrganisation event =
+						createEvent(evtId, noOrganisation, TypeEvenementOrganisation.FOSC_AUTRE_MUTATION, RegDate.get(2015, 7, 5), EN_ERREUR, FOSC, "rcent-ut");
+				return hibernateTemplate.merge(event);
+			}
+		});
+
+		// Traitement synchrone de l'événement
+		processor.forceEvenement(new EvenementOrganisationBasicInfo(evt, evt.getNoOrganisation()));
+
+		// Vérification du traitement de l'événement
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			                             @Override
+			                             public Object doInTransaction(TransactionStatus status) {
+
+				                             final EvenementOrganisation evt = evtOrganisationDAO.get(evtId);
+				                             Assert.assertNotNull(evt);
+				                             Assert.assertEquals(EtatEvenementOrganisation.FORCE, evt.getEtat());
+
+				                             final Entreprise entreprise = tiersDAO.getEntrepriseByNumeroOrganisation(evt.getNoOrganisation());
+
+				                             // Si la réinscription devait être traitée et non forcée, on trouverait un for.
+				                             Assert.assertEquals(0, entreprise.getForsFiscauxValidAt(RegDate.get(2015, 7, 5)).size());
+
+				                             // vérification des événements fiscaux
+				                             final List<EvenementFiscal> evtsFiscaux = evtFiscalDAO.getAll();
+				                             Assert.assertNotNull(evtsFiscaux);
+				                             // Si la réinscription devait être traitée et non forcée, on trouverait deux événements de for.
+				                             Assert.assertEquals(0, evtsFiscaux.size());
+
+				                             return null;
+			                             }
+		                             }
+		);
+	}
+
+	@Test(timeout = 10000L)
 	public void testForcerAVERIFIERNeRienFaire() throws Exception {
 
 		// Mise en place service mock

@@ -16,7 +16,7 @@ import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationOptions;
 import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationErreurCollector;
 import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationSuiviCollector;
 import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationWarningCollector;
-import ch.vd.uniregctb.evenement.organisation.interne.EvenementOrganisationInterneAvecImpactUnireg;
+import ch.vd.uniregctb.evenement.organisation.interne.EvenementOrganisationInterneDeTraitement;
 import ch.vd.uniregctb.tiers.CategorieEntrepriseHelper;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.type.CategorieEntreprise;
@@ -30,7 +30,7 @@ import ch.vd.uniregctb.type.CategorieEntreprise;
  *
  * @author Raphaël Marmier, 2015-09-02
  */
-public abstract class CreateEntreprise extends EvenementOrganisationInterneAvecImpactUnireg {
+public abstract class CreateEntreprise extends EvenementOrganisationInterneDeTraitement {
 
 	final private RegDate dateDeDebut;
 	final private CategorieEntreprise category;

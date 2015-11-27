@@ -45,7 +45,18 @@ import ch.vd.uniregctb.type.MotifRattachement;
  * Classe de base des événements organisation en provenance du RCEnt.
  *
  * Note importante: - Cette classe NE doit PAS être étendue directement. Utiliser une des deux classes dérivées
- *                    officielles, EvenementOrganisationInterneAvecImpactUnireg et EvenementOrganisationInterneSansImpactUnireg.
+ *                    officielles selon le type de traitement:
+ *
+ *                    @see EvenementOrganisationInterneDeTraitement est à étendre pour le traitement d'événement en utilisant
+ *                    les services Unireg sauf celui servant à l'envoi d'événements fiscaux. (Les services d'Unireg appelés
+ *                    dans le cadre du traitement émetteront eux-même, le cas échéant, des événements fiscaux)
+ *
+ *                    @see EvenementOrganisationInterneDeTraitement est à étendre pour le traitement d'événement sans appel
+ *                    à des services Unireg autre que le service d'émission d'événement fiscaux. Les classe dérivée s'engagent
+ *                    à avoir pour seul but l'envoi d'événements fiscaux Unireg.
+ *
+ *                    @see EvenementOrganisationInterneComposite sert à porter une suite d'événements internes et ne doit pas
+ *                    être étendu.
  *
  *                  - Le status de l'événement est à REDONDANT dès le départ. Lors du traitement il faut, lorsque des données
  *                    sont modifiées et / ou quelque action est entreprise en réaction à l'événement, faire passer le status
@@ -61,46 +72,34 @@ public abstract class EvenementOrganisationInterne {
 
 //	private static final Logger LOGGER = LoggerFactory.getLogger(EvenementOrganisationInterne.class);
 
-	private final long noOrganisation;
+	private EvenementOrganisation evenement;
 	private Entreprise entreprise;
 	private Organisation organisation;
 	private String organisationDescription;
-
-	private final RegDate dateEvt;
-	private final Long numeroEvenement;
 
 	private HandleStatus status = HandleStatus.REDONDANT;
 
 	private final EvenementOrganisationContext context;
 	private final EvenementOrganisationOptions options;
 
-	private final TypeImpact typeImpact;
-
 	protected static final String MSG_GENERIQUE_A_VERIFIER = "Veuillez vérifier que le traitement automatique de création de l'entreprise donne bien le résultat escompté.";
 
-	protected EvenementOrganisationInterne(EvenementOrganisation evenement, Organisation organisation, Entreprise entreprise, EvenementOrganisationContext context, EvenementOrganisationOptions options, TypeImpact typeImpact) throws EvenementOrganisationException {
+	protected EvenementOrganisationInterne(EvenementOrganisation evenement, Organisation organisation, Entreprise entreprise, EvenementOrganisationContext context, EvenementOrganisationOptions options) throws EvenementOrganisationException {
 		this.context = context;
 		this.options = options;
 
 		/* récupération des informations liés à l'événement */
-		this.dateEvt = evenement.getDateEvenement();
-		this.numeroEvenement = evenement.getId();
-		this.noOrganisation = evenement.getNoOrganisation();
+		this.evenement = evenement;
 		this.organisation = organisation;
 		this.entreprise = entreprise;
 
 		/* Champs précalculés */
 		this.organisationDescription = context.getServiceOrganisation().createOrganisationDescription(organisation, getDateEvt());
-
-		this.typeImpact = typeImpact;
 	}
 
 	public final void validate(EvenementOrganisationErreurCollector erreurs, EvenementOrganisationWarningCollector warnings) throws EvenementOrganisationException {
 		validateCommon(erreurs);
 		if (!erreurs.hasErreurs()) {
-			if (options.isSeulementEvtFiscaux() && typeImpact == TypeImpact.AVEC_IMPACT_UNIREG) {
-				return;
-			}
 			validateSpecific(erreurs, warnings);
 		}
 	}
@@ -140,29 +139,23 @@ public abstract class EvenementOrganisationInterne {
 	@NotNull
 	public final HandleStatus handle(EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) throws EvenementOrganisationException {
 
-		if (options.isSeulementEvtFiscaux() && typeImpact == TypeImpact.AVEC_IMPACT_UNIREG) {
-			suivis.addSuivi(String.format("Opération de type %s avec impact Unireg ignorée car l'événement est forcé.", this.getClass().getSimpleName()));
-			return HandleStatus.REDONDANT;
-		} else {
-			suivis.addSuivi(String.format("Opération de type %s lancée.", this.getClass().getSimpleName()));
-		}
-
 		this.doHandle(warnings, suivis);
 		Assert.notNull(status, "Status inconnu après le traitement de l'événement interne!");
 		return status;
 	}
 
-	enum TypeImpact {
-		AVEC_IMPACT_UNIREG,
-		SANS_IMPACT_UNIREG
-	}
-
-
-
 	/*
 			Méthode à redéfinir pour implémenter le traitement concret. Voir ci-dessus handle().
 		 */
 	public abstract void doHandle(EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) throws EvenementOrganisationException;
+
+	/**
+	 * Méthode renvoyant un événement dont la seule action de l'événement est d'émettre un ou des événements fiscaux. Sinon,
+	 * null. (Cf. ci-dessus)
+	 *
+	 * @return Un événement, ou null.
+	 */
+	public abstract EvenementOrganisationInterne seulementEvenementsFiscaux() throws EvenementOrganisationException;
 
 	@NotNull
 	protected List<RegimeFiscal> extractRegimesFiscauxVD() {
@@ -278,16 +271,20 @@ public abstract class EvenementOrganisationInterne {
 		return options;
 	}
 
+	public EvenementOrganisation getEvenement() {
+		return evenement;
+	}
+
 	public Long getNumeroEvenement() {
-		return numeroEvenement;
+		return evenement.getId();
 	}
 
 	public RegDate getDateEvt() {
-		return dateEvt;
+		return evenement.getDateEvenement();
 	}
 
 	public long getNoOrganisation() {
-		return noOrganisation;
+		return organisation.getNumeroOrganisation();
 	}
 
 	public Organisation getOrganisation() {
@@ -334,8 +331,8 @@ public abstract class EvenementOrganisationInterne {
 		Assert.notNull(organisation);
 		Assert.notNull(dateDebut);
 
-		final Entreprise entreprise = createEntreprise(noOrganisation);
-		suivis.addSuivi(String.format("Entreprise créée avec le numéro %s pour l'organisation %s", entreprise.getNumero(), noOrganisation));
+		final Entreprise entreprise = createEntreprise(getNoOrganisation());
+		suivis.addSuivi(String.format("Entreprise créée avec le numéro %s pour l'organisation %s", entreprise.getNumero(), getNoOrganisation()));
 		setEntreprise(entreprise);
 		raiseStatusTo(HandleStatus.TRAITE);
 
@@ -398,10 +395,10 @@ public abstract class EvenementOrganisationInterne {
 			context.getTiersService().openRegimeFiscal(entreprise, RegimeFiscal.Portee.CH, typeRegimeFiscal, dateDebut);
 			context.getTiersService().openRegimeFiscal(entreprise, RegimeFiscal.Portee.VD, typeRegimeFiscal, dateDebut);
 			suivis.addSuivi(
-					String.format("Régimes fiscaux ordinaires VD et CH ouverts pour l'entreprise %s (civil: %d)", FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()), noOrganisation));
+					String.format("Régimes fiscaux ordinaires VD et CH ouverts pour l'entreprise %s (civil: %d)", FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()), getNoOrganisation()));
 		}
 		else {
-			suivis.addSuivi(String.format("Aucun régime fiscal ouvert pour l'entreprise %s (civil: %d)", FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()), noOrganisation));
+			suivis.addSuivi(String.format("Aucun régime fiscal ouvert pour l'entreprise %s (civil: %d)", FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()), getNoOrganisation()));
 		}
 		raiseStatusTo(HandleStatus.TRAITE);
 	}
@@ -411,7 +408,7 @@ public abstract class EvenementOrganisationInterne {
 		context.getTiersService().closeRegimeFiscal(regimeFiscalCH, dateFin);
 		context.getTiersService().closeRegimeFiscal(regimeFiscalVD, dateFin);
 
-		suivis.addSuivi(String.format("Régimes fiscaux VD et CH fermés pour l'entreprise numéro %s (civil: %s)", entreprise.getNumero(), noOrganisation));
+		suivis.addSuivi(String.format("Régimes fiscaux VD et CH fermés pour l'entreprise numéro %s (civil: %s)", entreprise.getNumero(), getNoOrganisation()));
 		raiseStatusTo(HandleStatus.TRAITE);
 	}
 
