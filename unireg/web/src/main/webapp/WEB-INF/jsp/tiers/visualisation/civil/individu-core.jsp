@@ -148,7 +148,7 @@
 						<display:column titleKey="label.pays" style="width: 33%">
 							<c:out value="${row.pays}"/>
 						</display:column>
-						<display:column titleKey="label.date.debut.validite" style="width: 33%">
+						<display:column titleKey="label.date.annonce" style="width: 33%">
 							<unireg:regdate regdate="${row.dateDebut}" />
 						</display:column>
 						<display:column titleKey="label.date.fin.validite" style="width: 33%">
@@ -171,7 +171,7 @@
 						<display:column titleKey="label.type" style="width: 33%">
 							<fmt:message key="option.type.permis.${row.typePermis}"/>
 						</display:column>
-						<display:column titleKey="label.date.debut.validite" style="width: 33%">
+						<display:column titleKey="label.date.annonce" style="width: 33%">
 							<unireg:regdate regdate="${row.dateDebutValidite}" />
 						</display:column>
 						<display:column titleKey="label.date.fin.validite" style="width: 33%">
