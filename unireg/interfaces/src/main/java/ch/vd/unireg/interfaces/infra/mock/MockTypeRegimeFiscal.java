@@ -1,5 +1,6 @@
 package ch.vd.unireg.interfaces.infra.mock;
 
+import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
@@ -10,7 +11,9 @@ import org.jetbrains.annotations.Nullable;
 
 import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
 
-public class MockTypeRegimeFiscal implements TypeRegimeFiscal {
+public class MockTypeRegimeFiscal implements TypeRegimeFiscal, Serializable {
+
+	private static final long serialVersionUID = 209393847438028286L;
 
 	private final String code;
 	private final Integer premierePF;
