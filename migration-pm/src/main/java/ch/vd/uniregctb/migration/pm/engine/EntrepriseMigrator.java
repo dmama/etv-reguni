@@ -2054,7 +2054,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 				.peek(capital -> mr.addMessage(LogCategory.DONNEES_CIVILES_REGPM, LogLevel.INFO,
 				                               String.format("Donnée de capital migrée : sur la période %s, %s.",
 				                                             StringRenderers.DATE_RANGE_RENDERER.toString(capital),
-				                                             capital.getMontant())))
+				                                             StringRenderers.MONTANT_MONETAIRE_RENDERER.toString(capital.getMontant()))))
 				.forEach(unireg::addCapital);
 	}
 
