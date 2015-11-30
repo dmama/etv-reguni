@@ -36,6 +36,7 @@
 		<property name="probes">
 			<util:map>
 				<entry key="migration" value-ref="migrationProgressMeasurement"/>
+				<entry key="indexation" value-ref="indexationProgressMeasurement"/>
 			</util:map>
 		</property>
 	</bean>

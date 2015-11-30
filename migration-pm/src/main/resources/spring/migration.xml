@@ -4,6 +4,7 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans	http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
 
 	<bean id="migrationProgressMeasurement" class="ch.vd.uniregctb.migration.pm.engine.probe.ProgressMeasurementProbeImpl"/>
+	<bean id="indexationProgressMeasurement" class="ch.vd.uniregctb.migration.pm.engine.probe.ProgressMeasurementProbeImpl"/>
 
 	<bean id="migrator" class="ch.vd.uniregctb.migration.pm.Migrator">
 		<property name="mode" value="${migration.mode}"/>
@@ -138,6 +139,8 @@
 	<bean id="migrationInitializer" class="ch.vd.uniregctb.migration.pm.MigrationInitializer">
 		<property name="nonHabitantIndex" ref="nonHabitantIndex"/>
 		<property name="nonHabitantIndexToBeCleared" value="${indexeur.nh.create}"/>
+		<property name="nbThreadsIndexation" value="8"/>
+		<property name="indexationProgressMonitor" ref="indexationProgressMeasurement"/>
 		<property name="registrar" ref="migrator"/>
 		<property name="uniregTransactionManager" ref="uniregTransactionManager"/>
 		<property name="uniregSessionFactory" ref="uniregSessionFactory"/>
