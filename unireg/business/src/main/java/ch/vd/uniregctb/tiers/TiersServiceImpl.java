@@ -5445,7 +5445,7 @@ public class TiersServiceImpl implements TiersService {
 		final Organisation organisation = getOrganisation(entreprise);
 		final List<DateRange> brutto = new LinkedList<>();
 		if (organisation != null) {
-			final Set<FormeLegale> sp = EnumSet.of(FormeLegale.N_0103_SOCIETE_NOM_COLLECIF, FormeLegale.N_0104_SOCIETE_EN_COMMANDITE);
+			final Set<FormeLegale> sp = EnumSet.of(FormeLegale.N_0103_SOCIETE_NOM_COLLECTIF, FormeLegale.N_0104_SOCIETE_EN_COMMANDITE);
 
 			// connue au civil -> les données civiles reignent en maître
 			final List<DateRanged<FormeLegale>> all = organisation.getFormeLegale();

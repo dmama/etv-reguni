@@ -32,7 +32,7 @@ public class CategorieEntrepriseHelper {
 			case N_0101_ENTREPRISE_INDIVIDUELLE:
 				return CategorieEntreprise.PP;
 			/* Société de personnes */
-			case N_0103_SOCIETE_NOM_COLLECIF:
+			case N_0103_SOCIETE_NOM_COLLECTIF:
 			case N_0104_SOCIETE_EN_COMMANDITE:
 				return CategorieEntreprise.SP;
 			/* Personne morale */

@@ -45,7 +45,7 @@ public class CreateEntrepriseSPProcessorTest extends AbstractEvenementOrganisati
 			@Override
 			protected void init() {
 				addOrganisation(
-						MockOrganisationFactory.createSimpleEntrepriseRC(noOrganisation, noOrganisation + 1000000, "Robert Alkan et autres", RegDate.get(2015, 6, 24), null, FormeLegale.N_0103_SOCIETE_NOM_COLLECIF,
+						MockOrganisationFactory.createSimpleEntrepriseRC(noOrganisation, noOrganisation + 1000000, "Robert Alkan et autres", RegDate.get(2015, 6, 24), null, FormeLegale.N_0103_SOCIETE_NOM_COLLECTIF,
 						                                                 MockCommune.Lausanne));
 			}
 		});
@@ -108,7 +108,7 @@ public class CreateEntrepriseSPProcessorTest extends AbstractEvenementOrganisati
 			@Override
 			protected void init() {
 				addOrganisation(
-						MockOrganisationFactory.createOrganisation(noOrganisation, noOrganisation + 1000000, "Robert Alkan et autres", RegDate.get(2015, 6, 24), null, FormeLegale.N_0103_SOCIETE_NOM_COLLECIF,
+						MockOrganisationFactory.createOrganisation(noOrganisation, noOrganisation + 1000000, "Robert Alkan et autres", RegDate.get(2015, 6, 24), null, FormeLegale.N_0103_SOCIETE_NOM_COLLECTIF,
 						                                           TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), null, null, StatusRegistreIDE.DEFINITIF,
 						                                           TypeOrganisationRegistreIDE.ASSOCIATION));
 			}
