@@ -42,31 +42,46 @@ import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
 
 /**
- * Classe de base des événements organisation en provenance du RCEnt.
+ * Classe de base de traitement des événements organisation en provenance du RCEnt.
  *
- * Note importante: - Cette classe NE doit PAS être étendue directement. Utiliser une des deux classes dérivées
- *                    officielles selon le type de traitement:
- *
- *                    @see EvenementOrganisationInterneDeTraitement est à étendre pour le traitement d'événement en utilisant
- *                    les services Unireg sauf celui servant à l'envoi d'événements fiscaux. (Les services d'Unireg appelés
- *                    dans le cadre du traitement émetteront eux-même, le cas échéant, des événements fiscaux)
- *
- *                    @see EvenementOrganisationInterneDeTraitement est à étendre pour le traitement d'événement sans appel
- *                    à des services Unireg autre que le service d'émission d'événement fiscaux. Les classe dérivée s'engagent
+ * <p>
+ * <b>Notes importantes:</b>
+ * </p>
+ * <ul><li>
+ *                Cette classe <b>NE</b> doit <b>PAS</b> être étendue directement. Utiliser une des deux classes dérivées
+ *                officielles selon le type de traitement:
+ * <ul><li>
+ *                    {@link EvenementOrganisationInterneDeTraitement} est à étendre pour le traitement d'événements utilisant
+ *                    les services Unireg à l'exception de celui servant à l'envoi d'événements fiscaux. (Les services d'Unireg appelés
+ *                    dans le cadre du traitement émetteront eux-même, le cas échéant, des événements fiscaux via ce service)
+ *     </li><li>
+ *                    {@link EvenementOrganisationInterneInformationPure} est à étendre pour le traitement d'événements sans appel
+ *                    à des services Unireg autres que le service d'émission d'événement fiscaux. Les classes dérivées s'engagent
  *                    à avoir pour seul but l'envoi d'événements fiscaux Unireg.
- *
- *                    @see EvenementOrganisationInterneComposite sert à porter une suite d'événements internes et ne doit pas
- *                    être étendu.
- *
- *                  - Le status de l'événement est à REDONDANT dès le départ. Lors du traitement il faut, lorsque des données
- *                    sont modifiées et / ou quelque action est entreprise en réaction à l'événement, faire passer le status
- *                    à TRAITE au moyen de la méthode raiseStatusTo().
- *
- *                  - Le "context" est privé à cette classe. C'est intentionnel qu'il n'y a pas d'accesseur.
+ *     </li><li>
+ *                    {@link EvenementOrganisationInterneComposite} sert à porter une suite d'événements internes et ne doit pas
+ *                    être étendue.
+ * </li></ul>
+ * </li><li>
+ *                Le status de l'événement est à REDONDANT dès le départ. Lors du traitement il faut, lorsque des données
+ *                sont modifiées et / ou quelque action est entreprise en réaction à l'événement, faire passer le status
+ *                à TRAITE au moyen de la méthode raiseStatusTo().
+ * </li><li>
+ *                Le "context" est privé à cette classe. C'est intentionnel qu'il n'y a pas d'accesseur. Toutes les opérations
+ *                qui ont un impact Unireg (sur la BD ou qui emettent des événements) doivent être exécutée dans une méthode
+ *                qui:
+ * <ul>
+ *     <li>
  *                    1) suivis.addSuivi() proprement ce qui va être fait (il faut donc passer en paramètre le collector de suivi),
+ *     </li><li>
  *                    2) Vérifie s'il y a redondance, le rapport dans les logs et sort le cas échéant,
+ *     </li><li>
  *                    3) Fait ce qui doit être fait s'il y a lieu,
+ *     </li><li>
  *                    4) Utilise la méthode raiseStatusTo() pour régler le statut en fonction de ce qui a été fait.
+ *     </li>
+ * </ul>
+ * </li></ul>
  */
 public abstract class EvenementOrganisationInterne {
 
@@ -106,14 +121,26 @@ public abstract class EvenementOrganisationInterne {
 
 	/**
 	 * Effectue le traitement métier voulu pour l'événement organisation courant.
-	 * <p/>
-	 * Cette méthode lève une exception en cas d'erreur inattendue dans le traitement (la majorité des erreurs prévisibles devraient avoir été traitées dans la méthode {@link
-	 * #validate(EvenementOrganisationErreurCollector, EvenementOrganisationWarningCollector)}). Les éventuels avertissement sont renseignés dans la
+	 * <p>
+	 * Cette méthode lève une exception en cas d'erreur inattendue dans le traitement (la majorité des erreurs prévisibles devraient avoir été traitées
+	 * dans la méthode {@link #validate(EvenementOrganisationErreurCollector, EvenementOrganisationWarningCollector)}).
+	 * </p><p/>
+	 * Les éventuels avertissement sont renseignés dans la
 	 * collection de warnings passée en paramètre. Cette méthode retourne un status qui permet de savoir si l'événement est redondant ou non.
 	 * <p/>
-	 * En fonction des différentes valeurs renseignées par cette méthode, le framework de traitement des événements va déterminer l'état de l'événement organisation de la manière suivante : <ul>
-	 * <li>exception => état de l'événement = EN_ERREUR</li><li>status = TRAITE et pas de warnings => état de l'événement = TRAITE</li> <li>status = REDONDANT et pas de warnings => état de l'événement =
-	 * REDONDANT</li> <li>status = TRAITE avec warnings => état de l'événement = A_VERIFIER</li> <li>status = REDONDANT avec warnings => état de l'événement = A_VERIFIER</li> </ul>
+	 * En fonction des différentes valeurs renseignées par cette méthode, le framework de traitement des événements va déterminer l'état de l'événement organisation de la manière suivante :
+	 * <ul>
+	 *     <li>
+	 *                  exception => état de l'événement = EN_ERREUR
+	 *     </li><li>
+	 *                  status = TRAITE et pas de warnings => état de l'événement = TRAITE
+	 *     </li><li>
+	 *                  status = REDONDANT et pas de warnings => état de l'événement = REDONDANT
+	 *     </li><li>
+	 *                  status = TRAITE avec warnings => état de l'événement = A_VERIFIER
+	 *     </li><li>
+	 *                  status = REDONDANT avec warnings => état de l'événement = A_VERIFIER
+	 *     </li></ul>
 	 * </p>
 	 * <p>
 	 * A noter que cette méthode est finale. Le traitement à proprement parler est effectué dans la méthode doHandle().
@@ -124,15 +151,25 @@ public abstract class EvenementOrganisationInterne {
 	 * <p>
 	 * Quelques règles à respecter dans doHandle() pour que tout se passe bien:
 	 * <ul>
-	 *     <li>Chaque traitement entraînant la création d'objet en base, ou tout autre action métier, doit être effectué au sein d'une méthode dédiée à l'opération
-	 *     métier correspondante, et nommée en fonction d'elle.</li>
-	 *     <li>Chaque méthode métier doit impérativement se terminer par un appel à raiseStatusTo() pour établir le status résultant de l'opération.</li>
-	 *     <li>D'une manière générale, les décisions métier doivent ressortir clairement de la lecture de la méthode doHandle().</li>
-	 *     <li>Les paramètres métier sont passés en paramètres des méthodes métier. En particulier les dates. En revanche, ces méthodes accédent au contexte directement.</li>
+	 *     <li>
+	 *                  Chaque traitement entraînant la création d'objet en base, ou tout autre action métier, doit être effectué au sein d'une
+	 *                  méthode dédiée à l'opération métier correspondante, et nommée en fonction d'elle.
+	 *     </li><li>
+	 *                  Chaque méthode métier doit impérativement se terminer par un appel à raiseStatusTo() pour établir le status résultant de
+	 *                  l'opération.
+	 *     </li><li>
+	 *                  D'une manière générale, les décisions métier doivent ressortir clairement de la lecture de la méthode doHandle().
+	 *     </li><li>
+	 *                  Les paramètres métier sont passés en paramètres des méthodes métier. En particulier les dates. En revanche, ces méthodes
+	 *                  accédent au contexte directement.
+	 *     </li><li>
+	 *                  Les methodes handle() et les méthodes metiers ajouteront des messages de suivis permettant à l'utilisateur de suivre le
+	 *                  déroulement du traitement dans l'interface de gestion des événements RCEnt.
+	 *     </li>
 	 * </ul>
 	 * </p>
 	 * @param warnings une liste de warnings qui sera remplie - si nécessaire - par la méthode.
-	 * @param suivis       Le collector pour le suivi
+	 * @param suivis   une liste de messages de suivi pour l'utilisateur, qui sera renseigné au fur et à mesure du traitement.
 	 * @return un code de status permettant de savoir si lévénement a été traité ou s'il était redondant.
 	 * @throws EvenementOrganisationException si le traitement de l'événement est impossible pour une raison ou pour une autre.
 	 */
@@ -209,10 +246,10 @@ public abstract class EvenementOrganisationInterne {
 
 	/**
 	 * Trouve le range en cours de validité et vérifie qu'il est ouvert.
-	 *
+	 * <p>
 	 * A utiliser pour s'assurer qu'on est en présence d'une situation "propre", c'est-à-dire d'une valeur en cours de validité. N'est valable
 	 * que pour une liste représentant l'historique d'une donnée (une seule valeur à la fois). La liste n'a pas besoin d'être dans l'ordre chronologique.
-	 *
+	 * </p>
 	 * @param list La liste des valeurs représentant l'historique
 	 * @param date La date de référence
 	 * @param <T> Le type des valeurs de la liste, implémentant {@link DateRange}
@@ -574,9 +611,9 @@ public abstract class EvenementOrganisationInterne {
 
 	/**
 	 * Opère un changement de domicile sur un établissement donné.
-	 *
-	 * Note: La méthode utilise les dates avant/après de l'événement interne en cours de traitement.
-	 *
+	 * <p>
+	 * <b>Note:</b> La méthode utilise les dates avant/après de l'événement interne en cours de traitement.
+	 * </p>
 	 * @param etablissement L'établissement concerné par le changement de domicile
 	 * @param siegeApres    Le siège d'où extrapoler le domicile.
 	 * @param dateAvant     La date du dernier jour du domicile précédant
