@@ -21,6 +21,7 @@
 		<property name="beans">
 			<util:map>
 				<entry key="ch.vd.unireg.migration.pm:type=Monitoring,name=Engine" value-ref="engineJmxBean" />
+				<entry key="ch.vd.unireg.migration.pm:type=Monitoring,name=Progress" value-ref="progressJmxBean" />
 			</util:map>
 		</property>
 	</bean>
@@ -29,6 +30,14 @@
 
 	<bean id="engineJmxBean" class="ch.vd.uniregctb.migration.pm.jmx.EngineJmxBean">
 		<property name="worker" ref="migrationWorker"/>
+	</bean>
+
+	<bean id="progressJmxBean" class="ch.vd.uniregctb.migration.pm.jmx.ProgressMeasurementProbesJmxBean">
+		<property name="probes">
+			<util:map>
+				<entry key="migration" value-ref="migrationProgressMeasurement"/>
+			</util:map>
+		</property>
 	</bean>
 
 </beans>

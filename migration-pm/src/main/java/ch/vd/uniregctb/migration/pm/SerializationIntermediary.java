@@ -27,6 +27,8 @@ import java.util.stream.Collectors;
 import org.apache.commons.io.filefilter.RegexFileFilter;
 import org.apache.commons.lang3.StringUtils;
 
+import ch.vd.uniregctb.common.GentilIterator;
+import ch.vd.uniregctb.migration.pm.engine.probe.ProgressMeasurementProbe;
 import ch.vd.uniregctb.migration.pm.regpm.WithLongId;
 
 /**
@@ -37,6 +39,7 @@ public class SerializationIntermediary implements Worker, Feeder {
 	private Path fsDirectory;
 	private final AtomicInteger index = new AtomicInteger(0);
 	private final Map<File, Ids> map = new TreeMap<>();
+	private ProgressMeasurementProbe progressMonitor;
 
 	private static class Ids {
 
@@ -90,6 +93,10 @@ public class SerializationIntermediary implements Worker, Feeder {
 		}
 	}
 
+	public void setProgressMonitor(ProgressMeasurementProbe progressMonitor) {
+		this.progressMonitor = progressMonitor;
+	}
+
 	private File buildNewFile() {
 		final int newIndex = index.incrementAndGet();
 		final String filename = String.format("%08d.data", newIndex);
@@ -106,9 +113,16 @@ public class SerializationIntermediary implements Worker, Feeder {
 		Arrays.sort(files, Comparator.comparing(File::getName));
 
 		// on envoie chaque graphe dans le worker
-		for (File file : files) {
+		final GentilIterator<File> fileIterator = new GentilIterator<>(Arrays.asList(files));
+		while (fileIterator.hasNext()) {
+			final File file = fileIterator.next();
 			final Graphe graphe = deserialize(file);
 			worker.onGraphe(graphe);
+
+			// un peu de monitoring
+			if (fileIterator.isAtNewPercent()) {
+				progressMonitor.setPercentProgress(fileIterator.getPercent());
+			}
 
 			// en cas de demande d'arrêt du programme, le thread de feed est interrompu
 			if (Thread.currentThread().isInterrupted()) {

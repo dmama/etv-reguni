@@ -30,6 +30,7 @@ import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.uniregctb.common.GentilIterator;
+import ch.vd.uniregctb.migration.pm.engine.probe.ProgressMeasurementProbe;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmAppartenanceGroupeProprietaire;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmAssocieSC;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmDossierFiscal;
@@ -62,6 +63,7 @@ public class FromDbFeeder implements Feeder, DisposableBean {
 	private String nomFichierIdentifiantsAExtraire;
 	private MigrationMode mode;
 	private volatile boolean shutdownInProgress = false;
+	private ProgressMeasurementProbe progressMonitor;
 
 	/**
 	 * Interface de remplissage du cache
@@ -403,6 +405,10 @@ public class FromDbFeeder implements Feeder, DisposableBean {
 		this.mode = mode;
 	}
 
+	public void setProgressMonitor(ProgressMeasurementProbe progressMonitor) {
+		this.progressMonitor = progressMonitor;
+	}
+
 	@Override
 	public void destroy() throws Exception {
 		this.shutdownInProgress = true;
@@ -450,6 +456,7 @@ public class FromDbFeeder implements Feeder, DisposableBean {
 			// un peu de log pour mesurer l'avancement...
 			if (idIterator.isAtNewPercent()) {
 				LOGGER.info(String.format("Avancement de l'extraction des entreprises depuis la base : %d %%", idIterator.getPercent()));
+				progressMonitor.setPercentProgress(idIterator.getPercent());
 			}
 		}
 	}
