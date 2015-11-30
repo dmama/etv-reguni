@@ -85,7 +85,7 @@
             <jxb:typesafeEnumMember name="N_00_AUTRE" value="00"/>
             <jxb:typesafeEnumMember name="N_01_FORMES_JUR_DE_DROIT_PRIVE_UTILISEES_DANS_RC" value="01"/>
             <jxb:typesafeEnumMember name="N_0101_ENTREPRISE_INDIVIDUELLE" value="0101"/>
-            <jxb:typesafeEnumMember name="N_0103_SOCIETE_NOM_COLLECIF" value="0103"/>
+            <jxb:typesafeEnumMember name="N_0103_SOCIETE_NOM_COLLECTIF" value="0103"/>
             <jxb:typesafeEnumMember name="N_0104_SOCIETE_EN_COMMANDITE" value="0104"/>
             <jxb:typesafeEnumMember name="N_0105_SOCIETE_EN_COMMANDITE_PAR_ACTIONS" value="0105"/>
             <jxb:typesafeEnumMember name="N_0106_SOCIETE_ANONYME" value="0106"/>
