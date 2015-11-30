@@ -139,7 +139,7 @@
 	<bean id="migrationInitializer" class="ch.vd.uniregctb.migration.pm.MigrationInitializer">
 		<property name="nonHabitantIndex" ref="nonHabitantIndex"/>
 		<property name="nonHabitantIndexToBeCleared" value="${indexeur.nh.create}"/>
-		<property name="nbThreadsIndexation" value="8"/>
+		<property name="nbThreadsIndexation" value="${indexeur.nh.threads.nb}"/>
 		<property name="indexationProgressMonitor" ref="indexationProgressMeasurement"/>
 		<property name="registrar" ref="migrator"/>
 		<property name="uniregTransactionManager" ref="uniregTransactionManager"/>

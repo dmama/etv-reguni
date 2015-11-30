@@ -149,8 +149,8 @@ public class MigrationInitializer implements InitializingBean {
 			}
 			finally {
 				executor.shutdownNow();
-				while (!executor.awaitTermination(1, TimeUnit.SECONDS)) {
-					// on attend...
+				while (!executor.isTerminated()) {
+					executor.awaitTermination(1, TimeUnit.SECONDS);
 				}
 			}
 		}
