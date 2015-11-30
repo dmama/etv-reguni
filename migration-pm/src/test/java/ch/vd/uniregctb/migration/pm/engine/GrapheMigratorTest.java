@@ -3813,6 +3813,42 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 	}
 
 	/**
+	 * [SIFISC-17153] La date de réquisition de radiation avait été oubliée comme déclencheur du motif CESSATION_ACTIVITE_FUSION_FAILLITE
+	 */
+	@Test
+	public void testMotifFermetureForPrincipalSurRequisitionDeRadiation() throws Exception {
+
+		final long idEntreprise = 5410L;
+		final RegDate dateRequisitionRadiation = RegDate.get(2010, 9, 28);
+		final RegDate dateBouclementFutur = RegDate.get(2010, 12, 31);
+
+		final RegpmEntreprise entreprise = EntrepriseMigratorTest.buildEntreprise(idEntreprise);
+		entreprise.setDateRequisitionRadiation(dateRequisitionRadiation);
+		entreprise.setDateRadiationRC(dateRequisitionRadiation.addMonths(3));
+		entreprise.setDateBouclementFutur(dateBouclementFutur);
+		EntrepriseMigratorTest.addForPrincipalSuisse(entreprise, RegDate.get(1995, 5, 17), RegpmTypeForPrincipal.SIEGE, Commune.LAUSANNE);
+		EntrepriseMigratorTest.addAssujettissement(entreprise, RegDate.get(1995, 5, 17), null, RegpmTypeAssujettissement.LILIC);
+
+		final Graphe graphe = new MockGraphe(Collections.singletonList(entreprise),
+		                                     null,
+		                                     null);
+
+		final LoggedMessages lms = grapheMigrator.migrate(graphe);
+		Assert.assertNotNull(lms);
+
+		// vérification du for principal et de son motif de fermeture
+		doInUniregTransaction(true, status -> {
+			final Entreprise e = uniregStore.getEntityFromDb(Entreprise.class, idEntreprise);
+			Assert.assertNotNull(e);
+
+			final ForFiscalPrincipalPM ffp = e.getDernierForFiscalPrincipal();
+			Assert.assertNotNull(ffp);
+			Assert.assertEquals(dateRequisitionRadiation, ffp.getDateFin());
+			Assert.assertEquals(MotifFor.CESSATION_ACTIVITE_FUSION_FAILLITE, ffp.getMotifFermeture());
+		});
+	}
+
+	/**
 	 * Ceci est un test utile au debugging, on charge un graphe depuis un fichier sur disque (identique à ce que
 	 * l'on peut envoyer dans la vraie migration) et on tente la migration du graphe en question
 	 */

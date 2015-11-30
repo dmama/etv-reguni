@@ -1038,7 +1038,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 					.collect(Collectors.toSet());
 
 			// les dates assimilables à une radiation du RC / dissolution de l'entreprise / fusion (fermante)
-			final Set<RegDate> dateRadiationFusionFermante = Stream.concat(Stream.of(data.regpm.getDateRadiationRC(), data.regpm.getDateDissolution()),
+			final Set<RegDate> dateRadiationFusionFermante = Stream.concat(Stream.of(data.regpm.getDateRadiationRC(), data.regpm.getDateRequisitionRadiation(), data.regpm.getDateDissolution()),
 			                                                               Stream.concat(data.regpm.getRadiationsRC().stream()
 					                                                                             .filter(radiation -> !radiation.isRectifiee())
 					                                                                             .map(RadiationRC::getDateRadiation),
@@ -1081,7 +1081,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 				// motif de fermeture
 				if (ffp.getMotifFermeture() == MotifFor.INDETERMINE) {
 
-					// contexte : en général, c'est le dernier for de l'entreprise
+					// contexte : en général, c'est le dernier for de l'entreprise                   date de dissolution
 
 					// radiation ou fusion fermante ?
 					if (dateRadiationFusionFermante.contains(ffp.getDateFin())) {
