@@ -2270,7 +2270,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		// TODO peut-être pourra-t-on faire mieux avec les données de RCEnt, mais pour le moment, on suppose l'existence d'UN SEUL établissement principal avec, au besoin, plusieurs domiciles successifs
 
 		// la spécification ne parle pas de l'attribut commune ni des fors principaux pour la génération de l'établissement principal
-		// mais seulement de la récupération du dernier siège depuis la table SIEGE_ENTREPRISE
+		// mais seulement de la récupération des sièges depuis la table SIEGE_ENTREPRISE
 
 		// voyons l'historique des sièges
 		final EntityKey moi = buildEntrepriseKey(regpm);
@@ -2282,13 +2282,6 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 			return;
 		}
 
-		// on ne prend en compte que le dernier (on loggue les autres...)
-		final Map.Entry<RegDate, RegpmSiegeEntreprise> donneesSiegeReference = sieges.lastEntry();
-		sieges.headMap(donneesSiegeReference.getKey(), false).values().stream()
-				.forEach(siege -> mr.addMessage(LogCategory.SUIVI, LogLevel.INFO,
-				                                String.format("Siège %d non-migré car on ne prend en compte que le dernier.", siege.getId().getSeqNo())));
-		final RegpmSiegeEntreprise siege = donneesSiegeReference.getValue();
-
 		// récupération de la raison sociale
 		final NavigableMap<RegDate, String> raisonsSociales = mr.getExtractedData(RaisonSocialeHistoData.class, moi).histo;
 		final String raisonSociale = Optional.ofNullable(raisonsSociales.lastEntry()).map(Map.Entry::getValue).orElse(null);
@@ -2299,22 +2292,33 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		etbPrincipal.setRaisonSociale(raisonSociale);
 
 		// un peu de log pour indiquer la création de l'établissement principal
-		mr.addMessage(LogCategory.SUIVI, LogLevel.INFO, String.format("Création de l'établissement principal %s d'après le siège %d.",
-		                                                              FormatNumeroHelper.numeroCTBToDisplay(etbPrincipal.getNumero()),
-		                                                              siege.getId().getSeqNo()));
+		mr.addMessage(LogCategory.SUIVI, LogLevel.INFO, String.format("Création de l'établissement principal %s.",
+		                                                              FormatNumeroHelper.numeroCTBToDisplay(etbPrincipal.getNumero())));
 
 		// lien entre l'établissement principal et son entreprise
 		final KeyedSupplier<Entreprise> entrepriseSupplier = getEntrepriseSupplier(idMapper, regpm);
 		final RegDate dateFinActivite = mr.getExtractedData(DateFinActiviteData.class, moi).date;
-		linkCollector.addLink(new EntityLinkCollector.EtablissementEntiteJuridiqueLink<>(etbPrincipalSupplier, entrepriseSupplier, donneesSiegeReference.getKey(), dateFinActivite, true));
+		linkCollector.addLink(new EntityLinkCollector.EtablissementEntiteJuridiqueLink<>(etbPrincipalSupplier, entrepriseSupplier, sieges.firstKey(), dateFinActivite, true));
 
-		// domiciles selon les localisations trouvées plus haut (pour l'instant, sans date de fin... qui seront assignées juste après...)
-		final CommuneOuPays cop = buildCommuneOuPays(siege.getDateValidite(), siege::getCommune, siege::getNoOfsPays, "siège", mr, LogCategory.SUIVI);
-		final DomicileEtablissement domicile = new DomicileEtablissement(siege.getDateValidite(), dateFinActivite, cop.getTypeAutoriteFiscale(), cop.getNumeroOfsAutoriteFiscale(), null);
-		checkFractionCommuneVaudoise(domicile, mr, LogCategory.SUIVI);
+		// création des domiciles (pour l'instant sans date de fin, celle-ci sera ajouté ensuite)
+		final List<DomicileEtablissement> domicilesBruts = sieges.entrySet().stream()
+				.map(entry -> Pair.of(entry.getKey(), buildCommuneOuPays(entry.getKey(),
+				                                                         entry.getValue()::getCommune,
+				                                                         entry.getValue()::getNoOfsPays,
+				                                                         String.format("siège %d", entry.getValue().getId().getSeqNo()),
+				                                                         mr,
+				                                                         LogCategory.SUIVI)))
+				.map(pair -> new DomicileEtablissement(pair.getLeft(), null, pair.getRight().getTypeAutoriteFiscale(), pair.getRight().getNumeroOfsAutoriteFiscale(), null))
+				.collect(Collectors.toList());
 
-		// liaison des domiciles à l'établissement
-		adapterAutourFusionsCommunes(domicile, mr, LogCategory.SUIVI, null).stream()
+		// ajout des dates de fin
+		assigneDatesFin(dateFinActivite, domicilesBruts);
+
+		// finalisation
+		domicilesBruts.stream()
+				.peek(d -> checkFractionCommuneVaudoise(d, mr, LogCategory.SUIVI))
+				.map(d -> adapterAutourFusionsCommunes(d, mr, LogCategory.SUIVI, null))
+				.flatMap(List::stream)
 				.peek(d -> mr.addMessage(LogCategory.SUIVI, LogLevel.INFO, String.format("Domicile de l'établissement principal %s : %s sur %s/%d.",
 				                                                                         FormatNumeroHelper.numeroCTBToDisplay(etbPrincipal.getNumero()),
 				                                                                         StringRenderers.DATE_RANGE_RENDERER.toString(d),

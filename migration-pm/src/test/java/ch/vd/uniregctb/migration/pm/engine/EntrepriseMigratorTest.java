@@ -19,6 +19,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import ch.vd.registre.base.date.DateHelper;
+import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
@@ -2105,7 +2106,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		Assert.assertEquals("L'entreprise n'existait pas dans Unireg avec ce numéro de contribuable.", textes.get(0));
 		Assert.assertEquals("Ajout d'une date de bouclement estimée au 31.03.2015 pour combler l'absence d'exercice commercial dans RegPM sur la période [01.04.2014 -> 31.03.2016].", textes.get(1));
 		Assert.assertEquals("Cycle de bouclements créé, applicable dès le 01.03.2000 : tous les 12 mois, à partir du premier 31.03.", textes.get(2));
-		Assert.assertEquals(String.format("Création de l'établissement principal %s d'après le siège 1.", FormatNumeroHelper.numeroCTBToDisplay(noEtablissementPrincipal.longValue())), textes.get(3));
+		Assert.assertEquals(String.format("Création de l'établissement principal %s.", FormatNumeroHelper.numeroCTBToDisplay(noEtablissementPrincipal.longValue())), textes.get(3));
 		Assert.assertEquals(String.format("Domicile de l'établissement principal %s : [01.01.2000 -> ?] sur COMMUNE_OU_FRACTION_VD/5586.", FormatNumeroHelper.numeroCTBToDisplay(noEtablissementPrincipal.longValue())), textes.get(4));
 		Assert.assertEquals("Entreprise migrée : 47.84.", textes.get(5));
 	}
@@ -2288,7 +2289,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		Assert.assertEquals("Ajout d'une date de bouclement estimée au 31.12.1998 pour combler l'absence d'exercice commercial dans RegPM sur la période [01.04.1998 -> 31.12.2007].", textes.get(11));
 		Assert.assertEquals("Cycle de bouclements créé, applicable dès le 01.03.1997 : tous les 12 mois, à partir du premier 31.03.", textes.get(12));
 		Assert.assertEquals("Cycle de bouclements créé, applicable dès le 01.12.1998 : tous les 12 mois, à partir du premier 31.12.", textes.get(13));
-		Assert.assertEquals(String.format("Création de l'établissement principal %s d'après le siège 1.", FormatNumeroHelper.numeroCTBToDisplay(noEtablissementPrincipal.longValue())), textes.get(14));
+		Assert.assertEquals(String.format("Création de l'établissement principal %s.", FormatNumeroHelper.numeroCTBToDisplay(noEtablissementPrincipal.longValue())), textes.get(14));
 		Assert.assertEquals(String.format("Domicile de l'établissement principal %s : [01.01.1997 -> ?] sur COMMUNE_HC/2701.", FormatNumeroHelper.numeroCTBToDisplay(noEtablissementPrincipal.longValue())), textes.get(15));
 		Assert.assertEquals("Entreprise migrée : 246.71.", textes.get(16));
 	}
@@ -2831,8 +2832,8 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 			Assert.assertEquals("L'entreprise n'existait pas dans Unireg avec ce numéro de contribuable.", textes.get(0));
 			Assert.assertEquals("Entreprise sans exercice commercial ni for principal.", textes.get(1));
 			Assert.assertEquals("Entreprise sans exercice commercial ni date de bouclement futur.", textes.get(2));
-			Assert.assertEquals("Création de l'établissement principal " + FormatNumeroHelper.numeroCTBToDisplay(noEtablissementPrincipal.longValue()) + " d'après le siège 1.", textes.get(3));
-			Assert.assertEquals("Le pays 8213 (siège) n'est pas un état souverain, remplacé par l'état 8215.", textes.get(4));
+			Assert.assertEquals("Création de l'établissement principal " + FormatNumeroHelper.numeroCTBToDisplay(noEtablissementPrincipal.longValue()) + ".", textes.get(3));
+			Assert.assertEquals("Le pays 8213 (siège 1) n'est pas un état souverain, remplacé par l'état 8215.", textes.get(4));
 			Assert.assertEquals("Domicile de l'établissement principal " + FormatNumeroHelper.numeroCTBToDisplay(noEtablissementPrincipal.longValue()) + " : [07.04.1977 -> ?] sur PAYS_HS/8215.", textes.get(5));
 			Assert.assertEquals("Entreprise migrée : " + FormatNumeroHelper.numeroCTBToDisplay(noEntreprise) + ".", textes.get(6));
 		}
@@ -2932,8 +2933,8 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 			Assert.assertEquals(6, textes.size());
 			Assert.assertEquals("L'entreprise n'existait pas dans Unireg avec ce numéro de contribuable.", textes.get(0));
 			Assert.assertEquals("Entreprise sans exercice commercial ni date de bouclement futur.", textes.get(1));
-			Assert.assertEquals("Création de l'établissement principal " + FormatNumeroHelper.numeroCTBToDisplay(noEtablissementPrincipal.longValue()) + " d'après le siège 1.", textes.get(2));
-			Assert.assertEquals("Le pays 8997 (siège) n'est pas un état souverain, remplacé par l'état 8215.", textes.get(3));
+			Assert.assertEquals("Création de l'établissement principal " + FormatNumeroHelper.numeroCTBToDisplay(noEtablissementPrincipal.longValue()) + ".", textes.get(2));
+			Assert.assertEquals("Le pays 8997 (siège 1) n'est pas un état souverain, remplacé par l'état 8215.", textes.get(3));
 			Assert.assertEquals("Domicile de l'établissement principal " + FormatNumeroHelper.numeroCTBToDisplay(noEtablissementPrincipal.longValue()) + " : [07.04.1977 -> ?] sur PAYS_HS/8215.", textes.get(4));
 			Assert.assertEquals("Entreprise migrée : " + FormatNumeroHelper.numeroCTBToDisplay(noEntreprise) + ".", textes.get(5));
 		}
@@ -2997,7 +2998,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		addRaisonSociale(e, dateDebut, "Mon entreprise qui bouge", null, null, true);
 		addFormeJuridique(e, dateDebut, createTypeFormeJuridique("S.A.", RegpmCategoriePersonneMorale.PM));
 		addSiegeSuisse(e, dateDebut, Commune.MORGES);
-		addSiegeSuisse(e, RegDate.get(2004, 2, 23), Commune.LAUSANNE);      // de par la date, c'est celui-ci qui doit être conservé
+		addSiegeSuisse(e, RegDate.get(2004, 2, 23), Commune.LAUSANNE);
 		addSiegeSuisse(e, RegDate.get(2001, 5, 2), Commune.ECHALLENS);
 
 		final MockGraphe graphe = new MockGraphe(Collections.singletonList(e),
@@ -3061,15 +3062,38 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 			// vérification du domicile généré
 			final Set<DomicileEtablissement> domiciles = etablissementPrincipal.getDomiciles();
 			Assert.assertNotNull(domiciles);
-			Assert.assertEquals(1, domiciles.size());       // on ne garde que le dernier
+			Assert.assertEquals(3, domiciles.size());
 
-			final DomicileEtablissement domicile = domiciles.iterator().next();
-			Assert.assertNotNull(domicile);
-			Assert.assertEquals(RegDate.get(2004, 2, 23), domicile.getDateDebut());
-			Assert.assertNull(domicile.getDateFin());
-			Assert.assertEquals(Commune.LAUSANNE.getNoOfs(), domicile.getNumeroOfsAutoriteFiscale());
-			Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, domicile.getTypeAutoriteFiscale());
-			Assert.assertFalse(domicile.isAnnule());
+			final List<DomicileEtablissement> domicilesTries = new ArrayList<>(domiciles);
+			Collections.sort(domicilesTries, new DateRangeComparator<>());
+
+			{
+				final DomicileEtablissement domicile = domicilesTries.get(0);
+				Assert.assertNotNull(domicile);
+				Assert.assertEquals(dateDebut, domicile.getDateDebut());
+				Assert.assertEquals(RegDate.get(2001, 5, 1), domicile.getDateFin());
+				Assert.assertEquals(Commune.MORGES.getNoOfs(), domicile.getNumeroOfsAutoriteFiscale());
+				Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, domicile.getTypeAutoriteFiscale());
+				Assert.assertFalse(domicile.isAnnule());
+			}
+			{
+				final DomicileEtablissement domicile = domicilesTries.get(1);
+				Assert.assertNotNull(domicile);
+				Assert.assertEquals(RegDate.get(2001, 5, 2), domicile.getDateDebut());
+				Assert.assertEquals(RegDate.get(2004, 2, 22), domicile.getDateFin());
+				Assert.assertEquals(Commune.ECHALLENS.getNoOfs(), domicile.getNumeroOfsAutoriteFiscale());
+				Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, domicile.getTypeAutoriteFiscale());
+				Assert.assertFalse(domicile.isAnnule());
+			}
+			{
+				final DomicileEtablissement domicile = domicilesTries.get(2);
+				Assert.assertNotNull(domicile);
+				Assert.assertEquals(RegDate.get(2004, 2, 23), domicile.getDateDebut());
+				Assert.assertNull(domicile.getDateFin());
+				Assert.assertEquals(Commune.LAUSANNE.getNoOfs(), domicile.getNumeroOfsAutoriteFiscale());
+				Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, domicile.getTypeAutoriteFiscale());
+				Assert.assertFalse(domicile.isAnnule());
+			}
 		});
 		Assert.assertNotNull(noEtablissementPrincipal.getValue());
 
@@ -3101,9 +3125,9 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 			Assert.assertEquals("L'entreprise n'existait pas dans Unireg avec ce numéro de contribuable.", textes.get(0));
 			Assert.assertEquals("Entreprise sans exercice commercial ni for principal.", textes.get(1));
 			Assert.assertEquals("Entreprise sans exercice commercial ni date de bouclement futur.", textes.get(2));
-			Assert.assertEquals("Siège 1 non-migré car on ne prend en compte que le dernier.", textes.get(3));
-			Assert.assertEquals("Siège 3 non-migré car on ne prend en compte que le dernier.", textes.get(4));
-			Assert.assertEquals("Création de l'établissement principal " + FormatNumeroHelper.numeroCTBToDisplay(noEtablissementPrincipal.longValue()) + " d'après le siège 2.", textes.get(5));
+			Assert.assertEquals("Création de l'établissement principal " + FormatNumeroHelper.numeroCTBToDisplay(noEtablissementPrincipal.longValue()) + ".", textes.get(3));
+			Assert.assertEquals("Domicile de l'établissement principal " + FormatNumeroHelper.numeroCTBToDisplay(noEtablissementPrincipal.longValue()) + " : [01.01.2000 -> 01.05.2001] sur COMMUNE_OU_FRACTION_VD/5642.", textes.get(4));
+			Assert.assertEquals("Domicile de l'établissement principal " + FormatNumeroHelper.numeroCTBToDisplay(noEtablissementPrincipal.longValue()) + " : [02.05.2001 -> 22.02.2004] sur COMMUNE_OU_FRACTION_VD/5518.", textes.get(5));
 			Assert.assertEquals("Domicile de l'établissement principal " + FormatNumeroHelper.numeroCTBToDisplay(noEtablissementPrincipal.longValue()) + " : [23.02.2004 -> ?] sur COMMUNE_OU_FRACTION_VD/5586.", textes.get(6));
 			Assert.assertEquals("Entreprise migrée : " + FormatNumeroHelper.numeroCTBToDisplay(noEntreprise) + ".", textes.get(7));
 		}
@@ -3117,7 +3141,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		addRaisonSociale(e, RegDate.get(2003, 1, 1), "Mon entreprise qui bouge", null, null, true);
 		addFormeJuridique(e, RegDate.get(2003, 1, 1), createTypeFormeJuridique("S.A.", RegpmCategoriePersonneMorale.PM));
 		addSiegeSuisse(e, RegDate.get(2003, 1, 1), Commune.MORGES);
-		addSiegeSuisse(e, RegDate.get(2104, 2, 23), Commune.LAUSANNE);      // de par la date, c'est celui-ci qui doit être conservé, mais il est dans le futur
+		addSiegeSuisse(e, RegDate.get(2104, 2, 23), Commune.LAUSANNE);      // de par la date, celui-ci devrait être conservé, mais il est dans le futur
 		addSiegeSuisse(e, RegDate.get(2001, 5, 2), Commune.ECHALLENS);
 
 		final MockGraphe graphe = new MockGraphe(Collections.singletonList(e),
@@ -3172,15 +3196,29 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 			// vérification du domicile généré
 			final Set<DomicileEtablissement> domiciles = etablissementPrincipal.getDomiciles();
 			Assert.assertNotNull(domiciles);
-			Assert.assertEquals(1, domiciles.size());       // on ne garde que le dernier
+			Assert.assertEquals(2, domiciles.size());
 
-			final DomicileEtablissement domicile = domiciles.iterator().next();
-			Assert.assertNotNull(domicile);
-			Assert.assertEquals(RegDate.get(2003, 1, 1), domicile.getDateDebut());
-			Assert.assertNull(domicile.getDateFin());
-			Assert.assertEquals(Commune.MORGES.getNoOfs(), domicile.getNumeroOfsAutoriteFiscale());
-			Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, domicile.getTypeAutoriteFiscale());
-			Assert.assertFalse(domicile.isAnnule());
+			final List<DomicileEtablissement> domicilesTries = new ArrayList<>(domiciles);
+			Collections.sort(domicilesTries, new DateRangeComparator<>());
+
+			{
+				final DomicileEtablissement domicile = domicilesTries.get(0);
+				Assert.assertNotNull(domicile);
+				Assert.assertEquals(RegDate.get(2001, 5, 2), domicile.getDateDebut());
+				Assert.assertEquals(RegDate.get(2002, 12, 31), domicile.getDateFin());
+				Assert.assertEquals(Commune.ECHALLENS.getNoOfs(), domicile.getNumeroOfsAutoriteFiscale());
+				Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, domicile.getTypeAutoriteFiscale());
+				Assert.assertFalse(domicile.isAnnule());
+			}
+			{
+				final DomicileEtablissement domicile = domicilesTries.get(1);
+				Assert.assertNotNull(domicile);
+				Assert.assertEquals(RegDate.get(2003, 1, 1), domicile.getDateDebut());
+				Assert.assertNull(domicile.getDateFin());
+				Assert.assertEquals(Commune.MORGES.getNoOfs(), domicile.getNumeroOfsAutoriteFiscale());
+				Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, domicile.getTypeAutoriteFiscale());
+				Assert.assertFalse(domicile.isAnnule());
+			}
 		});
 		Assert.assertNotNull(noEtablissementPrincipal.getValue());
 
@@ -3210,8 +3248,8 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 			Assert.assertEquals("Entreprise sans exercice commercial ni for principal.", textes.get(1));
 			Assert.assertEquals("Entreprise sans exercice commercial ni date de bouclement futur.", textes.get(2));
 			Assert.assertEquals("Le siège 2 est ignoré car il a une date de début de validité dans le futur (23.02.2104).", textes.get(3));
-			Assert.assertEquals("Siège 3 non-migré car on ne prend en compte que le dernier.", textes.get(4));
-			Assert.assertEquals("Création de l'établissement principal " + FormatNumeroHelper.numeroCTBToDisplay(noEtablissementPrincipal.longValue()) + " d'après le siège 1.", textes.get(5));
+			Assert.assertEquals("Création de l'établissement principal " + FormatNumeroHelper.numeroCTBToDisplay(noEtablissementPrincipal.longValue()) + ".", textes.get(4));
+			Assert.assertEquals("Domicile de l'établissement principal " + FormatNumeroHelper.numeroCTBToDisplay(noEtablissementPrincipal.longValue()) + " : [02.05.2001 -> 31.12.2002] sur COMMUNE_OU_FRACTION_VD/5518.", textes.get(5));
 			Assert.assertEquals("Domicile de l'établissement principal " + FormatNumeroHelper.numeroCTBToDisplay(noEtablissementPrincipal.longValue()) + " : [01.01.2003 -> ?] sur COMMUNE_OU_FRACTION_VD/5642.", textes.get(6));
 			Assert.assertEquals("Entreprise migrée : " + FormatNumeroHelper.numeroCTBToDisplay(noEntreprise) + ".", textes.get(7));
 		}
@@ -3360,7 +3398,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 			Assert.assertEquals("Entreprise sans exercice commercial ni date de bouclement futur.", textes.get(2));
 			Assert.assertEquals("Le siège 1 est ignoré car il est suivi d'un autre à la même date.", textes.get(3));
 			Assert.assertEquals("Le siège 2 est ignoré car il est suivi d'un autre à la même date.", textes.get(4));
-			Assert.assertEquals("Création de l'établissement principal " + FormatNumeroHelper.numeroCTBToDisplay(noEtablissementPrincipal.longValue()) + " d'après le siège 3.", textes.get(5));
+			Assert.assertEquals("Création de l'établissement principal " + FormatNumeroHelper.numeroCTBToDisplay(noEtablissementPrincipal.longValue()) + ".", textes.get(5));
 			Assert.assertEquals("Domicile de l'établissement principal " + FormatNumeroHelper.numeroCTBToDisplay(noEtablissementPrincipal.longValue()) + " : [01.01.2000 -> ?] sur COMMUNE_OU_FRACTION_VD/5518.", textes.get(6));
 			Assert.assertEquals("Entreprise migrée : " + FormatNumeroHelper.numeroCTBToDisplay(noEntreprise) + ".", textes.get(7));
 		}
@@ -3456,7 +3494,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 			Assert.assertEquals(5, textes.size());
 			Assert.assertEquals("L'entreprise n'existait pas dans Unireg avec ce numéro de contribuable.", textes.get(0));
 			Assert.assertEquals("Entreprise sans exercice commercial ni date de bouclement futur.", textes.get(1));
-			Assert.assertEquals("Création de l'établissement principal " + FormatNumeroHelper.numeroCTBToDisplay(noEtablissementPrincipal.longValue()) + " d'après le siège 1.", textes.get(2));
+			Assert.assertEquals("Création de l'établissement principal " + FormatNumeroHelper.numeroCTBToDisplay(noEtablissementPrincipal.longValue()) + ".", textes.get(2));
 			Assert.assertEquals("Domicile de l'établissement principal " + FormatNumeroHelper.numeroCTBToDisplay(noEtablissementPrincipal.longValue()) + " : [01.07.2001 -> ?] sur COMMUNE_HC/261.", textes.get(3));
 			Assert.assertEquals("Entreprise migrée : " + FormatNumeroHelper.numeroCTBToDisplay(noEntreprise) + ".", textes.get(4));
 		}
@@ -3900,15 +3938,29 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 			// cet établissement ne doit avoir qu'un seul domicile (on ne prend que le premier)
 			final Set<DomicileEtablissement> domiciles = etablissementPrincipal.getDomiciles();
 			Assert.assertNotNull(domiciles);
-			Assert.assertEquals(1, domiciles.size());
+			Assert.assertEquals(2, domiciles.size());
 
-			final DomicileEtablissement domicile = domiciles.iterator().next();
-			Assert.assertNotNull(domicile);
-			Assert.assertEquals(dateCreationDeuxiemeFor, domicile.getDateDebut());
-			Assert.assertNull(domicile.getDateFin());
-			Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, domicile.getTypeAutoriteFiscale());
-			Assert.assertEquals(Commune.MORGES.getNoOfs(), domicile.getNumeroOfsAutoriteFiscale());
-			Assert.assertFalse(domicile.isAnnule());
+			final List<DomicileEtablissement> domicilesTries = new ArrayList<>(domiciles);
+			Collections.sort(domicilesTries, new DateRangeComparator<>());
+
+			{
+				final DomicileEtablissement domicile = domicilesTries.get(0);
+				Assert.assertNotNull(domicile);
+				Assert.assertEquals(dateCreationFor, domicile.getDateDebut());
+				Assert.assertEquals(dateCreationDeuxiemeFor.getOneDayBefore(), domicile.getDateFin());
+				Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, domicile.getTypeAutoriteFiscale());
+				Assert.assertEquals(Commune.LAUSANNE.getNoOfs(), domicile.getNumeroOfsAutoriteFiscale());
+				Assert.assertFalse(domicile.isAnnule());
+			}
+			{
+				final DomicileEtablissement domicile = domicilesTries.get(1);
+				Assert.assertNotNull(domicile);
+				Assert.assertEquals(dateCreationDeuxiemeFor, domicile.getDateDebut());
+				Assert.assertNull(domicile.getDateFin());
+				Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, domicile.getTypeAutoriteFiscale());
+				Assert.assertEquals(Commune.MORGES.getNoOfs(), domicile.getNumeroOfsAutoriteFiscale());
+				Assert.assertFalse(domicile.isAnnule());
+			}
 		});
 		Assert.assertNotNull(noEtablissementPrincipal.getValue());
 
@@ -3922,8 +3974,8 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 			Assert.assertEquals("Date de fin d'activité proposée (date de dissolution) : 12.06.2006.", textes.get(1));
 			Assert.assertEquals("La date de fin d'activité proposée (12.06.2006) est antérieure à la date de début du for principal 2 (17.06.2006), cette date de fin d'activité sera donc ignorée.", textes.get(2));
 			Assert.assertEquals("Entreprise sans exercice commercial ni date de bouclement futur.", textes.get(3));
-			Assert.assertEquals("Siège 1 non-migré car on ne prend en compte que le dernier.", textes.get(4));
-			Assert.assertEquals("Création de l'établissement principal " + FormatNumeroHelper.numeroCTBToDisplay(noEtablissementPrincipal.longValue()) + " d'après le siège 2.", textes.get(5));
+			Assert.assertEquals("Création de l'établissement principal " + FormatNumeroHelper.numeroCTBToDisplay(noEtablissementPrincipal.longValue()) + ".", textes.get(4));
+			Assert.assertEquals("Domicile de l'établissement principal " + FormatNumeroHelper.numeroCTBToDisplay(noEtablissementPrincipal.longValue()) + " : [01.02.2005 -> 16.06.2006] sur COMMUNE_OU_FRACTION_VD/5586.", textes.get(5));
 			Assert.assertEquals("Domicile de l'établissement principal " + FormatNumeroHelper.numeroCTBToDisplay(noEtablissementPrincipal.longValue()) + " : [17.06.2006 -> ?] sur COMMUNE_OU_FRACTION_VD/5642.", textes.get(6));
 			Assert.assertEquals("Entreprise migrée : 26.23.", textes.get(7));
 		}
@@ -4673,8 +4725,8 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 			Assert.assertEquals(6, textes.size());
 			Assert.assertEquals("L'entreprise n'existait pas dans Unireg avec ce numéro de contribuable.", textes.get(0));
 			Assert.assertEquals("Entreprise sans exercice commercial ni date de bouclement futur.", textes.get(1));
-			Assert.assertEquals("Siège 1 non-migré car on ne prend en compte que le dernier.", textes.get(2));
-			Assert.assertEquals("Création de l'établissement principal " + FormatNumeroHelper.numeroCTBToDisplay(noEtablissementPrincipal.getValue()) + " d'après le siège 2.", textes.get(3));
+			Assert.assertEquals("Création de l'établissement principal " + FormatNumeroHelper.numeroCTBToDisplay(noEtablissementPrincipal.getValue()) + ".", textes.get(2));
+			Assert.assertEquals("Domicile de l'établissement principal " + FormatNumeroHelper.numeroCTBToDisplay(noEtablissementPrincipal.getValue()) + " : [27.08.2004 -> 27.08.2007] sur COMMUNE_OU_FRACTION_VD/5518.", textes.get(3));
 			Assert.assertEquals("Domicile de l'établissement principal " + FormatNumeroHelper.numeroCTBToDisplay(noEtablissementPrincipal.getValue()) + " : [28.08.2007 -> ?] sur COMMUNE_HC/351.", textes.get(4));
 			Assert.assertEquals("Entreprise migrée : 749.84.", textes.get(5));
 		}
@@ -4748,7 +4800,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 			Assert.assertEquals("Date de fin d'activité proposée (date de réquisition de radiation) : 27.08.2007.", textes.get(1));
 			Assert.assertEquals("Entreprise sans exercice commercial ni date de bouclement futur.", textes.get(2));
 			Assert.assertEquals("Le siège 2 est ignoré car sa date de début de validité (28.08.2007) est postérieure à la date de fin d'activité de l'entreprise (27.08.2007).", textes.get(3));
-			Assert.assertEquals("Création de l'établissement principal " + FormatNumeroHelper.numeroCTBToDisplay(noEtablissementPrincipal.getValue()) + " d'après le siège 1.", textes.get(4));
+			Assert.assertEquals("Création de l'établissement principal " + FormatNumeroHelper.numeroCTBToDisplay(noEtablissementPrincipal.getValue()) + ".", textes.get(4));
 			Assert.assertEquals("Domicile de l'établissement principal " + FormatNumeroHelper.numeroCTBToDisplay(noEtablissementPrincipal.getValue()) + " : [27.08.2004 -> 27.08.2007] sur COMMUNE_OU_FRACTION_VD/5518.", textes.get(5));
 			Assert.assertEquals("Entreprise migrée : 749.84.", textes.get(6));
 		}
