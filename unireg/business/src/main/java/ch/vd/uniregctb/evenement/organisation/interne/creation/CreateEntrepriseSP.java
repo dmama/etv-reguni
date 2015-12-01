@@ -29,6 +29,12 @@ public class CreateEntrepriseSP extends CreateEntreprise {
 	}
 
 	@Override
+	public String describe() {
+		return "Création d'une entreprise de catégorie SP";
+	}
+
+
+	@Override
 	public void doHandle(EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) throws EvenementOrganisationException {
 		super.doHandle(warnings, suivis);
 	}

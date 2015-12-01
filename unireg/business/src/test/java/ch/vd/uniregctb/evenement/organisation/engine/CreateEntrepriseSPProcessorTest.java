@@ -99,7 +99,7 @@ public class CreateEntrepriseSPProcessorTest extends AbstractEvenementOrganisati
 	}
 
 	@Test(timeout = 10000L)
-	public void testCreationAPMNonRC() throws Exception {
+	public void testCreationSPNonRC() throws Exception {
 
 		// Mise en place service mock
 		final Long noOrganisation = 101202100L;

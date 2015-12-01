@@ -31,6 +31,11 @@ public class CreateEntrepriseDPPM extends CreateEntreprise {
 	}
 
 	@Override
+	public String describe() {
+		return "Création d'une entreprise de catégorie DPPM";
+	}
+
+	@Override
 	public void doHandle(EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) throws EvenementOrganisationException {
 		super.doHandle(warnings, suivis);
 

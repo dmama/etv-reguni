@@ -188,6 +188,10 @@ public abstract class EvenementOrganisationInterne {
 	@NotNull
 	public final HandleStatus handle(EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) throws EvenementOrganisationException {
 
+		if (!(this instanceof EvenementOrganisationInterneComposite)) {
+			suivis.addSuivi(String.format("Traitement : %s", this.describe()));
+		}
+
 		this.doHandle(warnings, suivis);
 		Assert.notNull(status, "Status inconnu après le traitement de l'événement interne!");
 		return status;
@@ -205,6 +209,16 @@ public abstract class EvenementOrganisationInterne {
 	 * @return Un événement, ou null.
 	 */
 	public abstract EvenementOrganisationInterne seulementEvenementsFiscaux() throws EvenementOrganisationException;
+
+
+	/**
+	 * Fourni une courte (env. 30-40 lettres max.) description humaine de la mutation couverte par cet événement interne. Cette méthode est destinée
+	 * à être redéfinie par les classes dérivées. Cette description apparaît dans le compte rendu utilisateur du traitement de l'événement RCEnt.
+	 * @return La description de la mutation.
+	 */
+	public String describe() {
+		return this.getClass().getSimpleName();
+	}
 
 	@NotNull
 	protected List<RegimeFiscal> extractRegimesFiscauxVD() {
@@ -381,7 +395,7 @@ public abstract class EvenementOrganisationInterne {
 		Assert.notNull(dateDebut);
 
 		final Entreprise entreprise = createEntreprise(getNoOrganisation());
-		suivis.addSuivi(String.format("Entreprise créée avec le numéro %s pour l'organisation %s", entreprise.getNumero(), getNoOrganisation()));
+		suivis.addSuivi(String.format("Entreprise créée avec le numéro de contribuable %s pour l'organisation %s", entreprise.getNumero(), getNoOrganisation()));
 		setEntreprise(entreprise);
 		raiseStatusTo(HandleStatus.TRAITE);
 

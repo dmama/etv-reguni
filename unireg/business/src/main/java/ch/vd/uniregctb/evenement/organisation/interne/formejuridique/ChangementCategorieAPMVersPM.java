@@ -61,6 +61,11 @@ public class ChangementCategorieAPMVersPM extends EvenementOrganisationInterneDe
 	}
 
 	@Override
+	public String describe() {
+		return "Changement de catégorie APM vers PM";
+	}
+
+	@Override
 	public void doHandle(EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) throws EvenementOrganisationException {
 
 		closeRegimesFiscauxOrdinairesCHVD(regimeFiscalCHAvant, regimeFiscalVDAvant, dateAvant, suivis);

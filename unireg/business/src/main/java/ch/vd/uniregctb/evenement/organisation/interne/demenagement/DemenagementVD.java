@@ -16,4 +16,9 @@ public class DemenagementVD extends DemenagementSansChangementDeTypeAutoriteFisc
 	                      EvenementOrganisationOptions options) throws EvenementOrganisationException {
 		super(evenement, organisation, entreprise, context, options);
 	}
+
+	@Override
+	public String describe() {
+		return "Déménagement VD";
+	}
 }

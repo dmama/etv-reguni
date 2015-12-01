@@ -28,6 +28,12 @@ public class CreateEntrepriseFDSPLAC extends CreateEntreprise {
 		super(evenement, organisation, entreprise, context, options);
 	}
 
+
+	@Override
+	public String describe() {
+		return "Création d'un Fond De Placement (FDSPLAC)";
+	}
+
 	@Override
 	public void doHandle(EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) throws EvenementOrganisationException {
 		super.doHandle(warnings, suivis);

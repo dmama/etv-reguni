@@ -21,7 +21,7 @@ import ch.vd.uniregctb.tiers.Entreprise;
  */
 public class IndexationPure extends Indexation {
 
-	private static final String MESSAGE_PAS_INDEXEE = "Événement traité sans impact Unireg. L'entité visée n'est pas significative pour Unireg. Pas d'indexation.";
+	private static final String MESSAGE_PAS_INDEXEE = "Événement traité sans impact Unireg. L'entité visée n'est pas significative pour Unireg.";
 	private static final String MESSAGE_INDEXATION_PURE = "Événement traité sans impact Unireg. L'entité a été réindexée.";
 
 	public IndexationPure(EvenementOrganisation evenement, Organisation organisation, Entreprise entreprise,

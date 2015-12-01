@@ -23,6 +23,11 @@ public class TraitementManuel extends EvenementOrganisationInterneDeTraitement {
 	}
 
 	@Override
+	public String describe() {
+		return "Traitement manuel";
+	}
+
+	@Override
 	public void doHandle(EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) throws EvenementOrganisationException {
 		throw new IllegalStateException("Le traitement n'aurait jamais dû arriver jusqu'ici !");
 	}

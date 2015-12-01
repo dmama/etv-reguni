@@ -58,6 +58,12 @@ public class Reinscription extends EvenementOrganisationInterneDeTraitement {
 	}
 
 	@Override
+	public String describe() {
+		return "Réinscription au RC";
+	}
+
+
+	@Override
 	public void doHandle(EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) throws EvenementOrganisationException {
 
 		ForFiscalPrincipalPM dernierForPrincipal = getEntreprise().getDernierForFiscalPrincipal();

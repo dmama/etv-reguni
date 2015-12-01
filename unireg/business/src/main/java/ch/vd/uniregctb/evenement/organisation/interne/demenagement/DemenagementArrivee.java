@@ -16,4 +16,9 @@ public class DemenagementArrivee extends DemenagementArriveeDepartVD {
 	                           EvenementOrganisationOptions options) throws EvenementOrganisationException {
 		super(evenement, organisation, entreprise, context, options);
 	}
+
+	@Override
+	public String describe() {
+		return "Déménagement arrivée VD";
+	}
 }

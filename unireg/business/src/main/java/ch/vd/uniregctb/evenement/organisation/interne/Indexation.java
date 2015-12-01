@@ -34,6 +34,11 @@ public class Indexation extends EvenementOrganisationInterneInformationPure {
 	}
 
 	@Override
+	public String describe() {
+		return "Indexation";
+	}
+
+	@Override
 	public void doHandle(EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) throws EvenementOrganisationException {
 		final Entreprise pm = getEntreprise();
 		if (pm != null) {

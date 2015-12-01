@@ -38,6 +38,12 @@ public class CreateEntreprisePM extends CreateEntreprise {
 	}
 
 	@Override
+	public String describe() {
+		return "Création d'une entreprise de catégorie PM";
+	}
+
+
+	@Override
 	public void doHandle(EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) throws EvenementOrganisationException {
 		super.doHandle(warnings, suivis);
 

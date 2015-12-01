@@ -28,6 +28,11 @@ public class ChangementNeutreFormeJuridique extends EvenementOrganisationInterne
 	}
 
 	@Override
+	public String describe() {
+		return "Changement de forme jurique sans changement de catégorie";
+	}
+
+	@Override
 	public void doHandle(EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) throws EvenementOrganisationException {
 		String message = String.format("Envoi d'un événement d'information: %s. Changement neutre de forme juridique. Entreprise %s (civil: %s).",  typeInfo.name(), getEntreprise().getNumero(),
 		                               getNoOrganisation());
