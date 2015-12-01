@@ -31,8 +31,7 @@ public class RadiationRC extends EvenementOrganisationInterneInformationPure {
 
 	@Override
 	public void doHandle(EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) throws EvenementOrganisationException {
-		warnings.addWarning(String.format("Une vérification est requise pour contrôler la radiation de l'entreprise %s (civil: %s).",
-		                                  getEntreprise().getNumero(), getEntreprise().getNumeroEntreprise()));
+		warnings.addWarning("Une vérification manuelle est requise pour cause de Radiation de l'entreprise.");
 		raiseStatusTo(HandleStatus.TRAITE);
 	}
 

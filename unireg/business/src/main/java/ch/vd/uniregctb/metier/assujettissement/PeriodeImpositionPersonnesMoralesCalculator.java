@@ -136,7 +136,7 @@ public class PeriodeImpositionPersonnesMoralesCalculator implements PeriodeImpos
 		switch (categorie) {
 		case APM:
 		case FP:
-		case DP:
+		case DPAPM:
 			return TypeDocument.DECLARATION_IMPOT_APM;
 		case PM:
 		case DPPM:

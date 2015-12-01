@@ -50,7 +50,7 @@ public class CreateEntrepriseDPPM extends CreateEntreprise {
 		// Création du bouclement
 		createAddBouclement(getDateDeDebut(), suivis);
 
-		warnings.addWarning(MSG_GENERIQUE_A_VERIFIER);
+		warnings.addWarning("Une vérification manuelle est requise pour nouvelle entreprise de type DP/PM.");
 	}
 
 	@Override

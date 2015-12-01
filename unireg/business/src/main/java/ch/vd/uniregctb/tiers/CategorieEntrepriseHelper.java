@@ -57,7 +57,7 @@ public class CategorieEntrepriseHelper {
 			case N_0222_ADMINISTRATION_DISTRICT:
 			case N_0223_ADMINISTRATION_COMMUNE:
 			case N_0224_CORPORATION_DE_DROIT_PUBLIC_ADMINISTRATION:
-				return CategorieEntreprise.DP;
+				return CategorieEntreprise.DPAPM;
 			/* APM de droit public */
 			case N_0234_CORPORATION_DE_DROIT_PUBLIC_ENTREPRISE:
 				return CategorieEntreprise.DPPM;
@@ -108,7 +108,7 @@ public class CategorieEntrepriseHelper {
 		case ADM_CT:
 		case ADM_DI:
 		case CORP_DP_ADM:
-			return CategorieEntreprise.DP;
+			return CategorieEntreprise.DPAPM;
 		case CORP_DP_ENT:
 			return CategorieEntreprise.DPPM;
 		default:

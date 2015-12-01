@@ -93,7 +93,9 @@ public class CreateOrganisationStrategy extends AbstractOrganisationStrategy {
 					return new CreateEntrepriseDPPM(event, organisation, null, context, options);
 
 				// Catégories qu'on ne peut pas traiter automatiquement, catégories éventuellement inconnues.
-				case DP:
+				case DPAPM:
+					return new TraitementManuel(event, organisation, null, context, options,
+					                            "Traitement manuel requis pour nouvelle DP/APM ou organisation sans catégorie d’entreprise avec siège VD.");
 				default:
 					LOGGER.info("L'entité organisation {} est installée sur Vaud. Catégorie [{}] -> Traitement manuel.", organisation.getNumeroOrganisation(), category);
 					return new TraitementManuel(event, organisation, null, context, options, MSG_CREATION_AUTOMATIQUE_IMPOSSIBLE);

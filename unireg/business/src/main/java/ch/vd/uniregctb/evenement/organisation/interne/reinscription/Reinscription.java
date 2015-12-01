@@ -74,7 +74,7 @@ public class Reinscription extends EvenementOrganisationInterneDeTraitement {
 			} else {
 				reopenForFiscalPrincipal(dernierForPrincipal, suivis);
 			}
-			warnings.addWarning("Veuillez vérifier la réinscription au RC de l'entreprise précédemment radiée.");
+			warnings.addWarning("Une vérification manuelle est requise pour la réinscription au RC d’une entreprise radiée.");
 		} else {
 			LOGGER.info(String.format("Réinscription RC de l'entreprise %s: aucun for trouvé. Pas de changement.", getEntreprise().getNumero()));
 			raiseStatusTo(HandleStatus.TRAITE);

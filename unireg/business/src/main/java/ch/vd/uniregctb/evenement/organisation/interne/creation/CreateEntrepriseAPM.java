@@ -61,7 +61,7 @@ public class CreateEntrepriseAPM extends CreateEntreprise {
 			createAddBouclement(getDateDeDebut(), suivis);
 			raiseStatusTo(HandleStatus.TRAITE);
 		} else {
-			warnings.addWarning("Organisation non inscrite au RC. Pas de création automatique du for fiscal. Veuillez traiter le cas manuellement.");
+			warnings.addWarning("Le traitement manuel est requis pour nouvelle entreprise de type APM non inscrite au RC.");
 		}
 
 		// Gestion des sites secondaires non supportée pour l'instant, en attente du métier.

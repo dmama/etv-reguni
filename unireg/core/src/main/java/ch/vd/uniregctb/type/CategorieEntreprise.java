@@ -11,7 +11,7 @@ public enum CategorieEntreprise {
 	APM("Association/fondation"),
 	FP("Fonds de placement"),
 	DPPM("Personne morale de droit public"),      // DP/PM
-	DP("Institut de droit public"),               // DP/APM
+	DPAPM("Entité de droit public"),               // DP/APM
 	AUTRE("-");
 
 	private final String libelle;

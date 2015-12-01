@@ -38,7 +38,7 @@ public class CreateEntrepriseFDSPLAC extends CreateEntreprise {
 	public void doHandle(EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) throws EvenementOrganisationException {
 		super.doHandle(warnings, suivis);
 
-		warnings.addWarning(MSG_GENERIQUE_A_VERIFIER);
+		warnings.addWarning("Une vérification manuelle est requise pour nouvelle entreprise de type FDS PLAC.");
 	}
 
 	@Override

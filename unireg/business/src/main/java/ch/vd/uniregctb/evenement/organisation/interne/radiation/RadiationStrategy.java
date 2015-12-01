@@ -73,7 +73,7 @@ public class RadiationStrategy extends AbstractOrganisationStrategy {
 
 				if (isAssujetti(entreprise, dateApres, context)) {
 					return new TraitementManuel(event, organisation, entreprise, context, options,
-					                            String.format("Entreprise %s radiée. Assujettissement en cours!", entreprise.getNumero()));
+					                            "Traitement manuel requis pour le contrôle de la radiation d’une entreprise encore assujettie.");
 				}
 
 				LOGGER.info(String.format("Entreprise %s radiée. Pas d'assujettissement en cours.", entreprise.getNumero()));

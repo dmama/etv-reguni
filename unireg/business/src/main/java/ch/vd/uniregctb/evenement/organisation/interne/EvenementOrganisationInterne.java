@@ -108,8 +108,6 @@ public abstract class EvenementOrganisationInterne {
 	private final EvenementOrganisationContext context;
 	private final EvenementOrganisationOptions options;
 
-	protected static final String MSG_GENERIQUE_A_VERIFIER = "Veuillez vérifier que le traitement automatique de création de l'entreprise donne bien le résultat escompté.";
-
 	protected EvenementOrganisationInterne(EvenementOrganisation evenement, Organisation organisation, Entreprise entreprise, EvenementOrganisationContext context, EvenementOrganisationOptions options) throws EvenementOrganisationException {
 		this.context = context;
 		this.options = options;
@@ -420,7 +418,7 @@ public abstract class EvenementOrganisationInterne {
 		case DPPM:
 		case PM:
 			return getRegimeFiscalParDefaultPM();
-		case DP:
+		case DPAPM:
 		case APM:
 		case FP:
 			return getRegimeFiscalParDefaultAPM();
