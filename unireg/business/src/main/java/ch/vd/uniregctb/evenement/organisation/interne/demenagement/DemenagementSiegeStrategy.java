@@ -27,9 +27,6 @@ public class DemenagementSiegeStrategy extends AbstractOrganisationStrategy {
 	/**
 	 * Détecte les mutations pour lesquelles la création d'un événement interne est pertinente.
 	 *
-	 * Spécifications:
-	 *  - Ti01SE03-Identifier et traiter les mutations entreprise.doc
-	 *
 	 * @param event   un événement organisation reçu de RCEnt
 	 * @param organisation
 	 * @param context le context d'exécution de l'événement

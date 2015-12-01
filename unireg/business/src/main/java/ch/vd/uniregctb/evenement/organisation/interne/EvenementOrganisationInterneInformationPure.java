@@ -8,12 +8,14 @@ import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationOptions;
 import ch.vd.uniregctb.tiers.Entreprise;
 
 /**
- /**
- * Classe à étendre pour le traitement d'événement sans appel à des services Unireg autre que le service d'émission d'événement fiscaux.
- * Les classe dérivée s'engagent à avoir pour seule action l'envoi d'événements fiscaux Unireg.
- *
- * La distinction existe pour pouvoir relancer les événements fiscaux d'information qui sinon seraient
- * perdus lorsque l'utilisateur force un événement RCEnt.
+ * <p>
+ *      Classe à étendre pour le traitement d'événement sans appel à des services Unireg autre que le service d'émission d'événement fiscaux.
+ *      Les classe dérivée s'engagent à avoir pour seule action l'envoi d'événements fiscaux Unireg.
+ * </p>
+ * <p>
+ *      La distinction existe pour pouvoir relancer les événements fiscaux d'information qui sinon seraient
+ *      perdus lorsque l'utilisateur force un événement RCEnt.
+ * </p>
  */
 public abstract class EvenementOrganisationInterneInformationPure extends EvenementOrganisationInterne {
 

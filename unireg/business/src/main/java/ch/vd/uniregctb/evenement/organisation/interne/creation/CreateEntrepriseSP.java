@@ -18,9 +18,6 @@ import ch.vd.uniregctb.type.CategorieEntreprise;
 /**
  * Evénement interne de création d'entreprise de catégorie "Société de personnes" (SP)
  *
- *  Spécification:
- *  - Ti01SE03-Identifier et traiter les mutations entreprise.doc - Version 0.6 - 08.09.2015
- *
  * @author Raphaël Marmier, 2015-09-02
  */
 public class CreateEntrepriseSP extends CreateEntreprise {

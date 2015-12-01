@@ -17,7 +17,6 @@ import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 /**
  * Classe regroupant des méthodes communes. Certaines sont clairement des paliatifs en attendant une meilleure
  * solution.
- * TODO: Trouver de vraies solutions aux problèmes pointés ci-dessous.
  *
  * @author Raphaël Marmier, 2015-10-02
  */
@@ -26,9 +25,6 @@ public abstract class AbstractOrganisationStrategy implements EvenementOrganisat
 	/**
 	 * Détecte les mutations pour lesquelles la création d'un événement interne {@link CreateEntreprise} est
 	 * pertinente.
-	 *
-	 * Spécifications:
-	 *  - Ti01SE03-Identifier et traiter les mutations entreprise.doc - Version 1.1 - 23.09.2015
 	 *
 	 * @param event   un événement organisation reçu de RCEnt
 	 * @param organisation
@@ -44,17 +40,11 @@ public abstract class AbstractOrganisationStrategy implements EvenementOrganisat
 	                                                   EvenementOrganisationContext context,
 	                                                   EvenementOrganisationOptions options) throws EvenementOrganisationException;
 
-	/*
-	TODO: Implémenter au niveau de l'adapteur?
-	 */
 	protected boolean hasSitePrincipalVD(Organisation organisation, RegDate date) {
 		Siege siegePrincipal = organisation.getSiegePrincipal(date);
 		return siegePrincipal != null && siegePrincipal.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD;
 	}
 
-	/*
-	Todo: Implémenter au niveau de l'adapteur?
-	 */
 	protected boolean hasSiteVD(Organisation organisation, RegDate date) {
 		for (SiteOrganisation site : organisation.getDonneesSites()) {
 			final Siege siege = site.getSiege(date);
@@ -67,6 +57,7 @@ public abstract class AbstractOrganisationStrategy implements EvenementOrganisat
 
 	/**
 	 * Est-ce que cette organisation existant d'aujourd'hui existait déjà hier, selon RCEnt?
+	 *
 	 * @param organisation Une organisation existant pour la date fournie
 	 * @param date La date "aujourd'hui"
 	 * @return Vrai si existait hier

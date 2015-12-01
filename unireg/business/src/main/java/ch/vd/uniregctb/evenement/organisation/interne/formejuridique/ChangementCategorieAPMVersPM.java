@@ -41,10 +41,6 @@ public class ChangementCategorieAPMVersPM extends EvenementOrganisationInterneDe
 		regimeFiscalCHAvant = getAndValidateOpen(extractRegimesFiscauxCH(), dateAvant);
 		regimeFiscalVDAvant = getAndValidateOpen(extractRegimesFiscauxVD(), dateApres);
 
-		// TODO: Ecrire plus de tests?
-
-		// TODO: Générer événements fiscaux
-
 		// TODO: Générer documents éditique
 	}
 

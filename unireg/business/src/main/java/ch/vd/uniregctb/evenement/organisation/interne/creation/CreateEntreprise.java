@@ -24,10 +24,6 @@ import ch.vd.uniregctb.type.CategorieEntreprise;
 /**
  * Classe de base implémentant la création d'une entreprise et de son établissement principal dans Unireg.
  *
- *  Spécification:
- *  - Ti01SE03-Identifier et traiter les mutations entreprise.doc - Version 1.1 - 23.09.2015
- *  - Ti02SE01-Créer automatiquement une entreprise.doc - Version 1.1 - 23.09.2015
- *
  * @author Raphaël Marmier, 2015-09-02
  */
 public abstract class CreateEntreprise extends EvenementOrganisationInterneDeTraitement {

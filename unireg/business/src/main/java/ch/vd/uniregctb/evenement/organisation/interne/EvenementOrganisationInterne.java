@@ -47,41 +47,52 @@ import ch.vd.uniregctb.type.MotifRattachement;
  * <p>
  * <b>Notes importantes:</b>
  * </p>
- * <ul><li>
+ * <ul>
+ *    <li>
  *                Cette classe <b>NE</b> doit <b>PAS</b> être étendue directement. Utiliser une des deux classes dérivées
  *                officielles selon le type de traitement:
- * <ul><li>
+ *       <ul>
+ *          <li>
  *                    {@link EvenementOrganisationInterneDeTraitement} est à étendre pour le traitement d'événements utilisant
  *                    les services Unireg à l'exception de celui servant à l'envoi d'événements fiscaux. (Les services d'Unireg appelés
  *                    dans le cadre du traitement émetteront eux-même, le cas échéant, des événements fiscaux via ce service)
- *     </li><li>
+ *          </li>
+ *          <li>
  *                    {@link EvenementOrganisationInterneInformationPure} est à étendre pour le traitement d'événements sans appel
  *                    à des services Unireg autres que le service d'émission d'événement fiscaux. Les classes dérivées s'engagent
  *                    à avoir pour seul but l'envoi d'événements fiscaux Unireg.
- *     </li><li>
+ *          </li>
+ *          <li>
  *                    {@link EvenementOrganisationInterneComposite} sert à porter une suite d'événements internes et ne doit pas
  *                    être étendue.
- * </li></ul>
- * </li><li>
+ *          </li>
+ *       </ul>
+ *    </li>
+ *    <li>
  *                Le status de l'événement est à REDONDANT dès le départ. Lors du traitement il faut, lorsque des données
  *                sont modifiées et / ou quelque action est entreprise en réaction à l'événement, faire passer le status
  *                à TRAITE au moyen de la méthode raiseStatusTo().
- * </li><li>
+ *    </li>
+ *    <li>
  *                Le "context" est privé à cette classe. C'est intentionnel qu'il n'y a pas d'accesseur. Toutes les opérations
  *                qui ont un impact Unireg (sur la BD ou qui emettent des événements) doivent être exécutée dans une méthode
  *                qui:
- * <ul>
- *     <li>
- *                    1) suivis.addSuivi() proprement ce qui va être fait (il faut donc passer en paramètre le collector de suivi),
- *     </li><li>
- *                    2) Vérifie s'il y a redondance, le rapport dans les logs et sort le cas échéant,
- *     </li><li>
- *                    3) Fait ce qui doit être fait s'il y a lieu,
- *     </li><li>
- *                    4) Utilise la méthode raiseStatusTo() pour régler le statut en fonction de ce qui a été fait.
- *     </li>
+ *    <ol>
+ *       <li>
+ *                    suivis.addSuivi() proprement ce qui va être fait (il faut donc passer en paramètre le collector de suivi),
+ *       </li>
+ *       <li>
+ *                    Vérifie s'il y a redondance, le rapport dans les logs et sort le cas échéant,
+ *       </li>
+ *       <li>
+ *                    Fait ce qui doit être fait s'il y a lieu,
+ *       </li>
+ *       <li>
+ *                    Utilise la méthode raiseStatusTo() pour régler le statut en fonction de ce qui a été fait.
+ *       </li>
+ *    </ol>
+ *    </li>
  * </ul>
- * </li></ul>
  */
 public abstract class EvenementOrganisationInterne {
 
@@ -140,7 +151,8 @@ public abstract class EvenementOrganisationInterne {
 	 *                  status = TRAITE avec warnings => état de l'événement = A_VERIFIER
 	 *     </li><li>
 	 *                  status = REDONDANT avec warnings => état de l'événement = A_VERIFIER
-	 *     </li></ul>
+	 *     </li>
+	 * </ul>
 	 * </p>
 	 * <p>
 	 * A noter que cette méthode est finale. Le traitement à proprement parler est effectué dans la méthode doHandle().

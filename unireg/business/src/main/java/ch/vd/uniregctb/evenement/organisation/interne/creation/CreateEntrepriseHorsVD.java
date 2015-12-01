@@ -16,9 +16,6 @@ import ch.vd.uniregctb.type.CategorieEntreprise;
 /**
  * Evénement interne de création d'entreprises dont le siège principal est hors VD
  *
- *  Spécification:
- *  - Ti01SE03-Identifier et traiter les mutations entreprise.doc - Version 0.6 - 08.09.2015
- *
  * @author Raphaël Marmier, 2015-09-02
  */
 public class CreateEntrepriseHorsVD extends CreateEntreprise {
