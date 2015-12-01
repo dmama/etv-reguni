@@ -967,7 +967,7 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 				}
 
 				// cas des déclarations PM
-				else if (di instanceof DeclarationImpotOrdinairePM) {
+				else if (di instanceof DeclarationImpotOrdinairePM && annee >= DeclarationImpotOrdinairePM.PREMIERE_ANNEE_RETOUR_ELECTRONIQUE) {
 					// nouveau numéro pour chaque déclaration
 					di.setCodeControle(DeclarationImpotOrdinairePM.generateCodeControle());
 				}

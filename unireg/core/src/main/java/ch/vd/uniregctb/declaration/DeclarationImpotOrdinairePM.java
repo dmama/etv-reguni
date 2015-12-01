@@ -10,6 +10,11 @@ import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesMorales;
 @DiscriminatorValue("DIPM")
 public class DeclarationImpotOrdinairePM extends DeclarationImpotOrdinaire {
 
+	/**
+	 * Première année où le retour par courrier électronique des déclarations d'impôt est possible.
+	 */
+	public static final int PREMIERE_ANNEE_RETOUR_ELECTRONIQUE = 2016;
+
 	@Transient
 	@Override
 	public ContribuableImpositionPersonnesMorales getTiers() {
