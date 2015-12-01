@@ -188,7 +188,8 @@ public abstract class EvenementOrganisationInterne {
 	@NotNull
 	public final HandleStatus handle(EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) throws EvenementOrganisationException {
 
-		if (!(this instanceof EvenementOrganisationInterneComposite)) {
+		if (!(this instanceof EvenementOrganisationInterneComposite ||
+				this instanceof Indexation)) {
 			suivis.addSuivi(String.format("Traitement : %s", this.describe()));
 		}
 
