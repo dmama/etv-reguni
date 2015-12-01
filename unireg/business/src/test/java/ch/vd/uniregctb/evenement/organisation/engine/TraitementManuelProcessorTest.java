@@ -64,7 +64,7 @@ public class TraitementManuelProcessorTest extends AbstractEvenementOrganisation
 				                             final EvenementOrganisation evt = evtOrganisationDAO.get(evtId);
 				                             Assert.assertNotNull(evt);
 				                             Assert.assertEquals(EtatEvenementOrganisation.EN_ERREUR, evt.getEtat());
-				                             Assert.assertEquals("Création automatique non prise en charge.", evt.getErreurs().iterator().next().getMessage());
+				                             Assert.assertEquals("Traitement manuel requis pour nouvelle DP/APM ou organisation sans catégorie d’entreprise avec siège VD.", evt.getErreurs().iterator().next().getMessage());
 				                             return null;
 			                             }
 		                             }
