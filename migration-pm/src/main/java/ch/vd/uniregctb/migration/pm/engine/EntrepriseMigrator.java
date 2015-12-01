@@ -1081,7 +1081,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 				// motif de fermeture
 				if (ffp.getMotifFermeture() == MotifFor.INDETERMINE) {
 
-					// contexte : en général, c'est le dernier for de l'entreprise                   date de dissolution
+					// contexte : en général, c'est le dernier for de l'entreprise
 
 					// radiation ou fusion fermante ?
 					if (dateRadiationFusionFermante.contains(ffp.getDateFin())) {

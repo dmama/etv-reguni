@@ -609,6 +609,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 			Assert.assertEquals(RegDate.get(pf, 7, 12), declaration.getDateExpedition());
 			Assert.assertEquals(RegDate.get(pf - 1, 7, 1), declaration.getDateDebut());
 			Assert.assertEquals(RegDate.get(pf, 6, 30), declaration.getDateFin());
+			Assert.assertNull(((DeclarationImpotOrdinairePM) declaration).getCodeControle());
 
 			final EtatDeclaration etat = declaration.getDernierEtat();
 			Assert.assertNotNull(etat);
@@ -681,6 +682,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 			Assert.assertEquals(RegDate.get(pf, 7, 12), declaration.getDateExpedition());
 			Assert.assertEquals(RegDate.get(pf - 1, 7, 1), declaration.getDateDebut());
 			Assert.assertEquals(RegDate.get(pf, 6, 30), declaration.getDateFin());
+			Assert.assertNull(((DeclarationImpotOrdinairePM) declaration).getCodeControle());
 
 			final List<EtatDeclaration> etats = declaration.getEtatsSorted();
 			Assert.assertNotNull(etats);
@@ -777,6 +779,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 			Assert.assertEquals(RegDate.get(pf, 7, 12), declaration.getDateExpedition());
 			Assert.assertEquals(RegDate.get(pf - 1, 7, 1), declaration.getDateDebut());
 			Assert.assertEquals(RegDate.get(pf, 6, 30), declaration.getDateFin());
+			Assert.assertNull(((DeclarationImpotOrdinairePM) declaration).getCodeControle());
 
 			final List<EtatDeclaration> etats = declaration.getEtatsSorted();
 			Assert.assertNotNull(etats);
