@@ -151,7 +151,7 @@
 						<display:column titleKey="label.date.annonce" style="width: 33%">
 							<unireg:regdate regdate="${row.dateDebut}" />
 						</display:column>
-						<display:column titleKey="label.date.fin.validite" style="width: 33%">
+						<display:column titleKey="label.date.fin" style="width: 33%">
 							<unireg:regdate regdate="${row.dateFin}" />
 						</display:column>
 						<display:setProperty name="paging.banner.all_items_found" value=""/>
@@ -174,7 +174,7 @@
 						<display:column titleKey="label.date.annonce" style="width: 33%">
 							<unireg:regdate regdate="${row.dateDebutValidite}" />
 						</display:column>
-						<display:column titleKey="label.date.fin.validite" style="width: 33%">
+						<display:column titleKey="label.date.fin" style="width: 33%">
 							<unireg:regdate regdate="${row.dateFinValidite}" />
 						</display:column>
 						<display:setProperty name="paging.banner.all_items_found" value=""/>
