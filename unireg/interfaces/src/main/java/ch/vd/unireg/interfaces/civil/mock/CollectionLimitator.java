@@ -34,7 +34,7 @@ public class CollectionLimitator {
 	public static final Limitator<Permis> PERMIS_LIMITATOR = new Limitator<Permis>() {
 		@Override
 		public boolean keep(Permis element, RegDate date) {
-			return element.getDateDebut() == null || element.getDateDebut().isBeforeOrEqual(date);
+			return element.getDateDebut() == null || element.getDateValeur().isBeforeOrEqual(date);
 		}
 	};
 

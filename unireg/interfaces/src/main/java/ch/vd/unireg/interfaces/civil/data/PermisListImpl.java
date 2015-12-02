@@ -197,7 +197,9 @@ public class PermisListImpl implements PermisList, Serializable {
 			if (candidate.getDateAnnulation() != null) {
 				continue;
 			}
-			if (RegDateHelper.isBetween(date, candidate.getDateDebut(), candidate.getDateFin(), NullDateBehavior.LATEST)) {
+			//SIFISC-161109 Utiliser la reporting Date(date valeur et non la date de début)
+
+			if (RegDateHelper.isBetween(date, candidate.getDateValeur(), candidate.getDateFin(), NullDateBehavior.LATEST)) {
 				permis = candidate;
 				break;
 			}
