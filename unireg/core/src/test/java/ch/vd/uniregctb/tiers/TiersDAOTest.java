@@ -324,6 +324,144 @@ public class TiersDAOTest extends CoreDAOTest {
 
 	@Test
 	@Transactional(rollbackFor = Throwable.class)
+	public void testGetEntrepriseByNumeroOrganisation() throws Exception {
+
+		final Long noOrganisation = 12345654123L;
+
+		/*
+		Cas nominal
+		 */
+		doInNewTransaction(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				Entreprise entreprise = new Entreprise();
+				entreprise.setNumeroEntreprise(noOrganisation);
+
+				dao.save(entreprise);
+				return null;
+			}
+		});
+
+		// On a bien récupéré le tiers
+		Entreprise tiers = dao.getEntrepriseByNumeroOrganisation(noOrganisation);
+		assertNotNull(tiers);
+		final Long numeroEntreprise = tiers.getNumero();
+		assertTrue(tiers.getNumeroEntreprise().equals(noOrganisation));
+
+		/*
+		Ajout d'une entrée en doublon
+		 */
+		doInNewTransaction(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				Entreprise entreprise = new Entreprise();
+				entreprise.setNumeroEntreprise(noOrganisation);
+
+				dao.save(entreprise);
+				return null;
+			}
+		});
+
+		try {
+			Entreprise tiersNonUnique = dao.getEntrepriseByNumeroOrganisation(noOrganisation);
+		} catch (Exception e) {
+			// On a bien l'exception correspondant à la situation de doublon
+			assertTrue(e instanceof PlusieursEntreprisesAvecMemeNumeroOrganisationException);
+			assertTrue(e.getMessage().startsWith(String.format("Plusieurs entreprises non-annulées partagent le même numéro d'organisation %d ", noOrganisation)));
+		}
+
+		/*
+		 Annulation d'une des deux entrée
+		  */
+		doInNewTransaction(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				Entreprise entreprise = (Entreprise) dao.get(numeroEntreprise);
+				entreprise.setAnnulationDate(new Date());
+
+				dao.save(entreprise);
+				return null;
+			}
+		});
+
+		// Une des deux entrées étant annulé, on doit recevoir l'entrée valide sans encombre
+		Entreprise tiersNonAnnule = dao.getEntrepriseByNumeroOrganisation(noOrganisation);
+		assertNotNull(tiersNonAnnule);
+		assertTrue(tiersNonAnnule.getNumero() != numeroEntreprise.longValue());
+		assertTrue(tiersNonAnnule.getNumeroEntreprise().equals(noOrganisation));
+	}
+
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testGetEtablissementByNumeroSite() throws Exception {
+
+		final Long noSite = 12345654123L;
+
+		/*
+		Cas nominal
+		 */
+		doInNewTransaction(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				Etablissement etablissement = new Etablissement();
+				etablissement.setNumeroEtablissement(noSite);
+
+				dao.save(etablissement);
+				return null;
+			}
+		});
+
+		// On a bien récupéré le tiers
+		Etablissement tiers = dao.getEtablissementByNumeroSite(noSite);
+		assertNotNull(tiers);
+		final Long numeroEtablissement = tiers.getNumero();
+		assertTrue(tiers.getNumeroEtablissement().equals(noSite));
+
+		/*
+		Ajout d'une entrée en doublon
+		 */
+		doInNewTransaction(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				Etablissement etablissement = new Etablissement();
+				etablissement.setNumeroEtablissement(noSite);
+
+				dao.save(etablissement);
+				return null;
+			}
+		});
+
+		try {
+			Etablissement tiersNonUnique = dao.getEtablissementByNumeroSite(noSite);
+		} catch (Exception e) {
+			// On a bien l'exception correspondant à la situation de doublon
+			assertTrue(e instanceof PlusieursEtablissementsAvecMemeNumeroSitesException);
+			assertTrue(e.getMessage().startsWith(String.format("Plusieurs établissements non-annulés partagent le même numéro de site %d ", noSite)));
+		}
+
+		/*
+		 Annulation d'une des deux entrée
+		  */
+		doInNewTransaction(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				Etablissement etablissement = (Etablissement) dao.get(numeroEtablissement);
+				etablissement.setAnnulationDate(new Date());
+
+				dao.save(etablissement);
+				return null;
+			}
+		});
+
+		// Une des deux entrées étant annulé, on doit recevoir l'entrée valide sans encombre
+		Etablissement tiersNonAnnule = dao.getEtablissementByNumeroSite(noSite);
+		assertNotNull(tiersNonAnnule);
+		assertTrue(!tiersNonAnnule.getNumero().equals(numeroEtablissement));
+		assertTrue(tiersNonAnnule.getNumeroEtablissement().equals(noSite));
+	}
+
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetNonHabitant() throws Exception {
 
 		loadDatabase();

@@ -20,6 +20,7 @@ import ch.vd.unireg.interfaces.organisation.data.DateRanged;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.uniregctb.adresse.AdresseTiers;
 import ch.vd.uniregctb.declaration.Periodicite;
+import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
 import ch.vd.uniregctb.indexer.IndexerException;
 import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
 import ch.vd.uniregctb.metier.assujettissement.Assujettissement;
@@ -81,6 +82,26 @@ public interface TiersService {
      * @return la liste des établissements secondaires (avec leurs dates de validité) associés à l'entreprise
      */
     List<DateRanged<Etablissement>> getEtablissementsSecondairesEntreprise(Entreprise entreprise);
+
+    Entreprise createEntreprisePourEvenementOrganisation(EvenementOrganisation evt);
+
+    /**
+     * Créer une entreprise pour le numéro d'organisation fourni. La méthode refuse de la créer si une entreprise est déjà associée à l'organisation.
+     *
+     * @param noOrganisation
+     * @return L'entreprise créée.
+     */
+    @NotNull
+    Entreprise createEntreprise(long noOrganisation);
+
+    /**
+     * Créer un établissement pour le numéro de site fourni. La méthode refuse de le créer si un établissement est déjà associé au site.
+     *
+     * @param numeroSite
+     * @return L'établissement créé.
+     */
+    @NotNull
+    Etablissement createEtablissement(Long numeroSite);
 
     /**
      * @param etablissement établissement ciblé

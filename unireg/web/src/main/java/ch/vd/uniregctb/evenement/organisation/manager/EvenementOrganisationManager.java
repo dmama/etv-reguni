@@ -9,6 +9,7 @@ import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationException;
 import ch.vd.uniregctb.evenement.organisation.view.EvenementOrganisationCriteriaView;
 import ch.vd.uniregctb.evenement.organisation.view.EvenementOrganisationDetailView;
 import ch.vd.uniregctb.evenement.organisation.view.EvenementOrganisationElementListeRechercheView;
+import ch.vd.uniregctb.tiers.Entreprise;
 
 /**
  * Classe qui permet de collecter les informations nécessaires à l'affichage
@@ -64,4 +65,12 @@ public interface EvenementOrganisationManager {
 	 * @return le nombre d'évenements correspondant aux critères
 	 */
 	int count(EvenementOrganisationCriteriaView bean);
+
+	/**
+	 * Créé "à la main" l'entreprise correspondant à l'événement organisation. C'est une création simple, avec établissement dans la
+	 * mesure du possible.
+	 * @param id Le numéro de l'événement
+	 * @return L'entreprise créée.
+	 */
+	Entreprise creerEntreprisePourEvenementOrganisation(Long id);
 }

@@ -60,6 +60,8 @@ import ch.vd.unireg.interfaces.organisation.data.Capital;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
+import ch.vd.unireg.interfaces.organisation.data.Siege;
+import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdresseGenerique;
 import ch.vd.uniregctb.adresse.AdresseService;
@@ -87,6 +89,8 @@ import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchDAO;
 import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
 import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPPDAO;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
+import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
+import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationErreur;
 import ch.vd.uniregctb.hibernate.HibernateCallback;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.indexer.IndexerException;
@@ -129,6 +133,7 @@ import ch.vd.uniregctb.type.PeriodiciteDecompte;
 import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.StatutMenageCommun;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
+import ch.vd.uniregctb.type.TypeEvenementErreur;
 import ch.vd.uniregctb.type.TypeFlagEntreprise;
 import ch.vd.uniregctb.type.TypePermis;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
@@ -314,6 +319,75 @@ public class TiersServiceImpl implements TiersService {
 		else {
 			return etablissements;
 		}
+	}
+
+	/**
+	 * Créée une nouvelle entreprise pour l'organisation de l'événement dont l'id est passé en paramètre.
+	 * Rapporte cette création dans une entrée "suivi" dans les erreurs de l'événement.
+	 *
+	 * <p>
+	 *     La méthode vérifie que l'entreprise n'existe pas déjà et lance une {@link IllegalStateException} si c'est le cas.
+	 * </p>
+	 * @param evt L'événement organisation
+	 * @return L'entreprise créé
+	 */
+	@Override
+	public Entreprise createEntreprisePourEvenementOrganisation(EvenementOrganisation evt) {
+		final RegDate dateDebut = evt.getDateEvenement().getOneDayAfter();
+
+		final long noOrganisation = evt.getNoOrganisation();
+		final Organisation organisation = serviceOrganisationService.getOrganisationHistory(noOrganisation);
+		final SiteOrganisation sitePrincipal = organisation.getSitePrincipal(dateDebut).getPayload();
+		final Siege autoriteFiscale = sitePrincipal.getSiege(dateDebut);
+
+		final Entreprise entreprise = createEntreprise(noOrganisation);
+		final Etablissement etablissement = createEtablissement(sitePrincipal.getNumeroSite());
+		tiersDAO.addAndSave(etablissement, new DomicileEtablissement(dateDebut, null, autoriteFiscale.getTypeAutoriteFiscale(), autoriteFiscale.getNoOfs(), etablissement));
+
+		// L'activité économique
+		addRapport(new ActiviteEconomique(dateDebut, null, entreprise, etablissement, true), entreprise, etablissement);
+
+		final EvenementOrganisationErreur evtErreur = new EvenementOrganisationErreur();
+		evtErreur.setType(TypeEvenementErreur.SUIVI);
+		evtErreur.setMessage(String.format("Entreprise créée manuellement avec le numéro de contribuable %s pour l'organisation %s", entreprise.getNumero(), noOrganisation));
+		evt.getErreurs().add(evtErreur);
+		return entreprise;
+	}
+
+	/**
+	 * Créer une entreprise pour le numéro d'organisation fourni. La méthode refuse de la créer si une entreprise est déjà associée à l'organisation.
+	 *
+	 * @param noOrganisation
+	 * @return L'entreprise créée.
+	 */
+	@NotNull
+	@Override
+	public Entreprise createEntreprise(long noOrganisation) {
+		Entreprise entreprise = tiersDAO.getEntrepriseByNumeroOrganisation(noOrganisation);
+		if (entreprise != null) {
+			throw new IllegalStateException(String.format("Il existe déjà une entreprise pour l'organisation %s", noOrganisation));
+		}
+		entreprise = new Entreprise();
+		entreprise.setNumeroEntreprise(noOrganisation);
+		return (Entreprise) tiersDAO.save(entreprise);
+	}
+
+	/**
+	 * Créer un établissement pour le numéro de site fourni. La méthode refuse de le créer si un établissement est déjà associé au site.
+	 *
+	 * @param numeroSite
+	 * @return L'établissement créé.
+	 */
+	@NotNull
+	@Override
+	public Etablissement createEtablissement(Long numeroSite) {
+		Etablissement etablissement = tiersDAO.getEtablissementByNumeroSite(numeroSite);
+		if (etablissement != null) {
+			throw new IllegalStateException(String.format("Il existe déjà un établissement pour le site %s", numeroSite));
+		}
+		etablissement = new Etablissement();
+		etablissement.setNumeroEtablissement(numeroSite);
+		return (Etablissement) tiersDAO.save(etablissement);
 	}
 
 	@Override

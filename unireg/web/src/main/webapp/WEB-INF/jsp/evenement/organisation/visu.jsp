@@ -202,7 +202,7 @@
 <!-- Fin Organisation -->
 
 <!-- Debut List tiers -->
-<c:if test="${not empty command.tiersAssocies || not empty command.erreursTiersAssocies}">
+
     <fieldset>
         <legend><span><fmt:message key="label.tiers.associes"/></span></legend>
         <c:if test="${not empty command.erreursTiersAssocies}">
@@ -232,7 +232,6 @@
             </display:column>
         </display:table>
     </fieldset>
-</c:if>
 <!-- Fin List tiers -->
 
 <!-- Début de la liste des événements dans un état non final sur ce même individu -->
@@ -292,6 +291,13 @@
         <fmt:message key="label.bouton.forcer" var="labelBoutonForcer"/>
         <input type="submit" name="forcer" value="${labelBoutonForcer}" onclick="return confirm('Voulez-vous réellement forcer l\'état de cet événement civil ?');"/>
     </form:form>
+</c:if>
+<c:if test="${empty command.tiersAssocie && command.forcable && command.evtEtat == 'EN_ERREUR'}">
+	<form:form method="post" action="creer.do" style="display: inline">
+		<input type="hidden" name="id" value="${command.evtId}"/>
+		<fmt:message key="label.bouton.creer" var="labelBoutonCreer"/>
+		<input type="submit" name="creer" value="${labelBoutonCreer}" onclick="return confirm('Voulez-vous réellement créer le tiers Entreprise pour l\' événement organisation?');"/>
+	</form:form>
 </c:if>
 <!-- Fin Boutons -->
 

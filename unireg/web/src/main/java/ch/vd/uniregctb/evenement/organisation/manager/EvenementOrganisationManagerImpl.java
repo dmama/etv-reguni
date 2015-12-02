@@ -44,8 +44,6 @@ import ch.vd.uniregctb.organisation.OrganisationView;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.OrganisationNotFoundException;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.tiers.PlusieursPersonnesPhysiquesAvecMemeNumeroIndividuException;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.EtatEvenementOrganisation;
@@ -243,6 +241,23 @@ public class EvenementOrganisationManagerImpl implements EvenementOrganisationMa
 		}
 	}
 
+	/**
+	 * Créée une nouvelle entreprise pour l'organisation de l'événement dont l'id est passé en paramètre.
+	 * Rapporte cette création dans une entrée "suivi" dans les erreurs de l'événement.
+	 *
+	 * <p>
+	 *     La méthode vérifie que l'entreprise n'existe pas déjà et lance une {@link IllegalStateException} si c'est le cas.
+	 * </p>
+	 * @param id Le numéro de l'événement
+	 * @return L'entreprise créé
+	 */
+	@Transactional
+	@Override
+	public Entreprise creerEntreprisePourEvenementOrganisation(Long id) {
+		EvenementOrganisation evt = evenementService.get(id);
+		return tiersService.createEntreprisePourEvenementOrganisation(evt);
+	}
+
 	private EvenementOrganisationElementListeRechercheView buildElementRechercheView(EvenementOrganisation evt) throws AdresseException {
 		final EvenementOrganisationElementListeRechercheView view = new EvenementOrganisationElementListeRechercheView(evt);
 		final long numeroOrganisation = evt.getNoOrganisation();
@@ -286,24 +301,14 @@ public class EvenementOrganisationManagerImpl implements EvenementOrganisationMa
 
 	protected void retrieveTiersAssocie(Long idEvenement, Long numeroIndividu, EvenementOrganisationDetailView evtView) throws AdresseException {
 		try {
-			final PersonnePhysique habitantPrincipal = tiersService.getPersonnePhysiqueByNumeroIndividu(numeroIndividu);
-			if (habitantPrincipal != null) {
-				final TiersAssocieView tiersAssocie = createTiersAssocieView(habitantPrincipal);
-				final ForFiscalPrincipal forFiscalPrincipal = habitantPrincipal.getDernierForFiscalPrincipal();
-				if (forFiscalPrincipal != null) {
-					final Integer numeroOfsAutoriteFiscale = forFiscalPrincipal.getNumeroOfsAutoriteFiscale();
-					final Commune commune = serviceInfrastructureService.getCommuneByNumeroOfs(numeroOfsAutoriteFiscale, forFiscalPrincipal.getDateFin());
-					if (commune != null) {
-						tiersAssocie.setForPrincipal(commune.getNomOfficiel());
-					}
-					tiersAssocie.setDateOuvertureFor(forFiscalPrincipal.getDateDebut());
-					tiersAssocie.setDateFermetureFor(forFiscalPrincipal.getDateFin());
-				}
-				evtView.addTiersAssocies(tiersAssocie);
+			final Entreprise entreprise = tiersService.getEntrepriseByNumeroOrganisation(numeroIndividu);
+			if (entreprise != null) {
+				final TiersAssocieView tiersAssocie = createTiersAssocieView(entreprise);
+				evtView.setTiersAssocie(tiersAssocie);
 			}
 		}
-		catch (PlusieursPersonnesPhysiquesAvecMemeNumeroIndividuException e) {
-			LOGGER.warn(String.format("Détermination impossible des tiers associés à l'événement civil %d : %s", idEvenement, e.getMessage()));
+		catch (RuntimeException e) {
+			LOGGER.warn(String.format("Détermination impossible des tiers associés à l'événement civil organisation %d : %s", idEvenement, e.getMessage()));
 			evtView.addErreursTiersAssocies(e.getMessage());
 		}
 	}

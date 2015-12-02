@@ -30,6 +30,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.uniregctb.adresse.AdresseException;
+import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.common.Flash;
 import ch.vd.uniregctb.common.ParamPagination;
 import ch.vd.uniregctb.common.WebParamPagination;
@@ -39,6 +40,7 @@ import ch.vd.uniregctb.evenement.organisation.view.EvenementOrganisationCriteria
 import ch.vd.uniregctb.evenement.organisation.view.EvenementOrganisationElementListeRechercheView;
 import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.security.SecurityCheck;
+import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.TiersMapHelper;
 import ch.vd.uniregctb.type.EtatEvenementOrganisation;
 
@@ -212,6 +214,27 @@ public class EvenementOrganisationController extends AbstractEvenementCivilContr
 			Flash.message("Événement recyclé");
 		} else {
 			Flash.warning("Demande prise en compte, l'événement est en attente de recyclage");
+		}
+		return "redirect:/evenement/organisation/visu.do?id=" + id;
+	}
+
+	@RequestMapping(value = {"/creer.do"}, method = RequestMethod.POST)
+	@SecurityCheck(rolesToCheck = {Role.EVEN}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
+	public String onCreerEntreprisePourEvenementOrganisation(@RequestParam("id")  Long id) throws AdresseException, EvenementOrganisationException {
+
+		String errorMessage = "";
+		Entreprise entreprise = null;
+		try {
+			entreprise = manager.creerEntreprisePourEvenementOrganisation(id);
+		} catch (Exception e) {
+			errorMessage = e.getMessage();
+			Audit.error(id, e);
+		}
+
+		if (entreprise != null) {
+			Flash.message(String.format("Entreprise crée avec le numéro %s", entreprise.getNumero()));
+		} else {
+			Flash.warning(String.format("L'entreprise n'a pu être créée. %s", errorMessage));
 		}
 		return "redirect:/evenement/organisation/visu.do?id=" + id;
 	}

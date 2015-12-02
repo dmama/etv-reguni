@@ -39,7 +39,7 @@ public class EvenementOrganisationDetailView implements Serializable {
 	private OrganisationView organisation;
 	private String organisationError;
 	private AdresseEnvoi adresse;
-	private List<TiersAssocieView> tiersAssocies = new ArrayList<>();
+	private TiersAssocieView tiersAssocie;
 	private Set<String> erreursTiersAssocies = new LinkedHashSet<>();     // pour éviter les doublons mais conserver l'ordre d'insertion
 
 	private List<EvenementOrganisationBasicInfo> nonTraitesSurMemeOrganisation;
@@ -133,13 +133,18 @@ public class EvenementOrganisationDetailView implements Serializable {
 		this.refEvtId = refEvtId;
 	}
 
-	@SuppressWarnings("unused")
-	public List<TiersAssocieView> getTiersAssocies() {
-		return Collections.unmodifiableList(tiersAssocies);
+	@SuppressWarnings("UnusedDeclaration")
+	public TiersAssocieView getTiersAssocie() {
+		return tiersAssocie;
 	}
 
-	public void addTiersAssocies(TiersAssocieView tiersAssocie) {
-		tiersAssocies.add(tiersAssocie);
+	@SuppressWarnings("unused")
+	public List<TiersAssocieView> getTiersAssocies() {
+		return tiersAssocie == null ? Collections.<TiersAssocieView>emptyList() : Collections.singletonList(tiersAssocie);
+	}
+
+	public void setTiersAssocie(TiersAssocieView tiersAssocie) {
+		this.tiersAssocie = tiersAssocie;
 	}
 
 	@SuppressWarnings("unused")

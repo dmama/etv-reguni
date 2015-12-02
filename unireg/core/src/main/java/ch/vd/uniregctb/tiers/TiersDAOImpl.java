@@ -1051,19 +1051,35 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 	/**
 	 * Recherche l'Entreprise par son numéro d'organisation au régistre des entreprises.
 	 *
+	 * <p>
+	 * Ne tiens pas compte des tiers entreprise annulés.
+	 * </p>
 	 * @param numeroOrganisation Le numéro RCEnt
 	 * @return L'entreprise correspondant au numéro, ou null si aucune n'est trouvée.
 	 */
 	public Entreprise getEntrepriseByNumeroOrganisation(long numeroOrganisation) {
 		final Criteria crit = getCurrentSession().createCriteria(Entreprise.class);
 		crit.add(Restrictions.eq("numeroEntreprise", numeroOrganisation));
+		crit.add(Restrictions.isNull("annulationDate"));
 
-		return (Entreprise) crit.uniqueResult();
+		List<Entreprise> result = crit.list();
+
+		if (result.size() > 1) {
+			long[] noEntreprises = new long[result.size()];
+			for (int i = 0; i < result.size(); i++) {
+				noEntreprises[i] = result.get(i).getNumero();
+			}
+			throw new PlusieursEntreprisesAvecMemeNumeroOrganisationException(numeroOrganisation, noEntreprises);
+		}
+		return result.size() == 0 ? null : result.get(0);
 	}
 
 	/**
 	 * Recherche l'établissement par son numéro de site au régistre des entreprises.
 	 *
+	 * <p>
+	 * Ne tiens pas compte des tiers etablissement annulés.
+	 * </p>
 	 * @param numeroSite Le numéro RCEnt
 	 * @return L'établissement correspondant au numéro, ou null si aucune n'est trouvée.
 	 */
@@ -1071,8 +1087,18 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 	public Etablissement getEtablissementByNumeroSite(long numeroSite) {
 		final Criteria crit = getCurrentSession().createCriteria(Etablissement.class);
 		crit.add(Restrictions.eq("numeroEtablissement", numeroSite));
+		crit.add(Restrictions.isNull("annulationDate"));
 
-		return (Etablissement) crit.uniqueResult();
+		List<Etablissement> result = crit.list();
+
+		if (result.size() > 1) {
+			long[] noEtablissements = new long[result.size()];
+			for (int i = 0; i < result.size(); i++) {
+				noEtablissements[i] = result.get(i).getNumero();
+			}
+			throw new PlusieursEtablissementsAvecMemeNumeroSitesException(numeroSite, noEtablissements);
+		}
+		return result.size() == 0 ? null : result.get(0);
 	}
 
 	@Override
