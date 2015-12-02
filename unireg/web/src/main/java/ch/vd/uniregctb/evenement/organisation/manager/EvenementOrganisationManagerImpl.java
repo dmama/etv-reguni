@@ -57,11 +57,11 @@ public class EvenementOrganisationManagerImpl implements EvenementOrganisationMa
 
 	private static final long TIMEOUT_RECYCLAGE = 5000; // ms
 
-	protected AdresseService adresseService;
-	protected TiersService tiersService;
-	protected ServiceOrganisationService serviceOrganisationService;
-	protected ServiceInfrastructureService serviceInfrastructureService;
-	protected MessageSource messageSource;
+	private AdresseService adresseService;
+	private TiersService tiersService;
+	private ServiceOrganisationService serviceOrganisationService;
+	private ServiceInfrastructureService serviceInfrastructureService;
+	private MessageSource messageSource;
 
 	private EvenementOrganisationService evenementService;
 	private EvenementOrganisationNotificationQueue evenementNotificationQueue;

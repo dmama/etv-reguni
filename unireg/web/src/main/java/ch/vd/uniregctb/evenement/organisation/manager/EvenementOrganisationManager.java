@@ -26,7 +26,7 @@ public interface EvenementOrganisationManager {
 	 * @throws ch.vd.uniregctb.adresse.AdressesResolutionException ...
 	 * @throws ServiceInfrastructureException ...
 	 */
-	public EvenementOrganisationDetailView get(Long id) throws AdresseException, ServiceInfrastructureException;
+	EvenementOrganisationDetailView get(Long id) throws AdresseException, ServiceInfrastructureException;
 
 	/**
 	 * Recycle l'evenement civil designe par l'id
@@ -38,14 +38,14 @@ public interface EvenementOrganisationManager {
 	 * @return true si l'evenement a été recyclé avant la sortie de la méthode (le traitement est asynchrone)
 	 * false si l'evenement est toujours en attente de traitement une fois sortie de la méthode
 	 */
-	public boolean recycleEvenementOrganisation(Long id) throws EvenementOrganisationException;
+	boolean recycleEvenementOrganisation(Long id) throws EvenementOrganisationException;
 
 	/**
 	 * Force l'etat de l'evenement à TRAITE
 	 *
 	 * @param id id de l'evt à forcer
 	 */
-	public void forceEvenement(Long id);
+	void forceEvenement(Long id);
 
 	/**
 	 * Recherche des événements correspondant aux critères
@@ -55,7 +55,7 @@ public interface EvenementOrganisationManager {
 	 * @return une liste d'evenement pret à afficher
 	 * @throws ch.vd.uniregctb.adresse.AdressesResolutionException ...
 	 */
-	public List<EvenementOrganisationElementListeRechercheView> find(EvenementOrganisationCriteriaView bean, ParamPagination pagination) throws AdresseException;
+	List<EvenementOrganisationElementListeRechercheView> find(EvenementOrganisationCriteriaView bean, ParamPagination pagination) throws AdresseException;
 
 	/**
 	 * Compte le nombre d'evenements correspondant aux criteres
@@ -63,5 +63,5 @@ public interface EvenementOrganisationManager {
 	 * @param bean les critères en question
 	 * @return le nombre d'évenements correspondant aux critères
 	 */
-	public int count(EvenementOrganisationCriteriaView bean);
+	int count(EvenementOrganisationCriteriaView bean);
 }

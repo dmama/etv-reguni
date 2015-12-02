@@ -21,7 +21,7 @@ public class EvenementOrganisationCriteriaValidator extends EvenementCivilCriter
 		EvenementOrganisationCriteriaView bean = (EvenementOrganisationCriteriaView) target;
 
 		if (bean.isModeLotEvenement() && StringUtils.isBlank(bean.getNumeroOrganisationFormatte())) {
-			errors.rejectValue("numeroIndividuFormatte", "error.champ.obligatoire");
+			errors.rejectValue("numeroOrganisationFormatte", "error.champ.obligatoire");
 		}
 
 	}
