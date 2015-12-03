@@ -32,14 +32,14 @@
             <td width="25%"><fmt:message key="option.type.evenement.organisation.${command.evtType}"/></td>
 
             <td width="25%"><fmt:message key="label.date.traitement"/> :</td>
-            <td width="25%"><fmt:formatDate value="${command.evtDateTraitement}" pattern="dd.MM.yyyy HH:mm:ss"/></td>
+	        <td width="25%"><fmt:formatDate value="${command.evtDateTraitement}" pattern="dd.MM.yyyy HH:mm:ss"/></td>
         </tr>
-        <tr class="<unireg:nextRowClass/>">
-            <td width="25%"></td>
-            <td width="25%"></td>
-            <td width="25%"><fmt:message key="label.etat.evenement"/> :</td>
-            <td width="25%"><fmt:message key="option.etat.evenement.${command.evtEtat}"/></td>
-        </tr>
+	    <tr class="<unireg:nextRowClass/>">
+		    <td width="25%"></td>
+		    <td width="25%"></td>
+		    <td width="25%"><fmt:message key="label.etat.evenement"/> :</td>
+		    <td width="25%"><fmt:message key="option.etat.evenement.${command.evtEtat}"/></td>
+	    </tr>
 <%--
         <tr class="<unireg:nextRowClass/>">
             <td width="25%"><fmt:message key="label.commentaire.traitement"/> :</td>
@@ -47,22 +47,30 @@
         </tr>
 --%>
     </table>
-
-    <c:if test="${not empty command.evtErreurs}">
-        <display:table name="command.evtErreurs" id="row">
-            <display:column titleKey="label.suivi">
-                <c:if test="${empty row.callstack}">
-                    ${row.message}
-                </c:if>
-                <c:if test="${not empty row.callstack}">
-                    <span class="error"><unireg:callstack headerMessage="${row.message}" callstack="${row.callstack}"/></span>
-                </c:if>
-            </display:column>
-        </display:table>
-    </c:if>
-
 </fieldset>
 <!-- Fin Caracteristiques generales -->
+
+<!-- Debut détail du traitement -->
+<fieldset>
+	<legend><span><fmt:message key="label.detail.traitement"/></span></legend>
+	<unireg:nextRowClass reset="1"/>
+	<c:if test="${not empty command.evtErreurs}">
+		<table>
+			<c:forEach items="${command.evtErreurs}" var="entry">
+				<tr class="<unireg:nextRowClass/>" >
+					<c:if test="${empty entry.callstack}">
+						<td>${entry.message}</td>
+					</c:if>
+					<c:if test="${not empty entry.callstack}">
+						<td><span class="error"><unireg:callstack headerMessage="${entry.message}" callstack="${entry.callstack}"/></span></td>
+					</c:if>
+				</tr>
+			</c:forEach>
+			</ul>
+		</table>
+	</c:if>
+</fieldset>
+<!-- Fin détail du traitement -->
 
 <!-- Début visualisation grappe -->
 <%--
