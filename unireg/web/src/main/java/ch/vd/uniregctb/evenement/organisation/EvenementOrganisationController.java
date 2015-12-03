@@ -234,7 +234,7 @@ public class EvenementOrganisationController extends AbstractEvenementCivilContr
 		if (entreprise != null) {
 			Flash.message(String.format("Entreprise crée avec le numéro %s", entreprise.getNumero()));
 		} else {
-			Flash.warning(String.format("L'entreprise n'a pu être créée. %s", errorMessage));
+			Flash.error(String.format("L'entreprise n'a pu être créée. %s", errorMessage));
 		}
 		return "redirect:/evenement/organisation/visu.do?id=" + id;
 	}
