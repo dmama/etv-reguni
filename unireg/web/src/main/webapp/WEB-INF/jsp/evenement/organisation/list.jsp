@@ -56,7 +56,7 @@
 				<c:out value="${tableEvtsOrganisation.source}" />
 			</display:column>
 			<!-- NO Organisation -->
-			<display:column sortable ="${sortable}" titleKey="label.organisation" sortProperty="numeroOrganisation" sortName="numeroOrganisation">
+			<display:column sortable ="${sortable}" titleKey="label.organisation" sortProperty="noOrganisation" sortName="noOrganisation">
 				${tableEvtsOrganisation.numeroOrganisation}
 			</display:column>
 			<!-- NO CTB -->
