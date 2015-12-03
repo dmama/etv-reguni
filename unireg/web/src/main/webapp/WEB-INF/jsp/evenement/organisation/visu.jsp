@@ -174,7 +174,7 @@
 		        <td class="error"><c:out value="${command.organisationError}"/></td>
 	        </c:if>
 	        <c:if test="${command.organisation != null}">
-		        <td><fmt:message key="option.categorie.entreprise.${command.organisation.categorie}"/></td>
+		        <td>${command.organisation.categorie} (<fmt:message key="option.categorie.entreprise.${command.organisation.categorie}"/>)</td>
 	        </c:if>
         </tr>
         <tr class="<unireg:nextRowClass/>">
