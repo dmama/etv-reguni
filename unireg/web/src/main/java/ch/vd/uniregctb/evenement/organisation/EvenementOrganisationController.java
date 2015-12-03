@@ -218,7 +218,7 @@ public class EvenementOrganisationController extends AbstractEvenementCivilContr
 		return "redirect:/evenement/organisation/visu.do?id=" + id;
 	}
 
-	@RequestMapping(value = {"/creer.do"}, method = RequestMethod.POST)
+	@RequestMapping(value = {"/creer-entreprise.do"}, method = RequestMethod.POST)
 	@SecurityCheck(rolesToCheck = {Role.EVEN}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
 	public String onCreerEntreprisePourEvenementOrganisation(@RequestParam("id")  Long id) throws AdresseException, EvenementOrganisationException {
 

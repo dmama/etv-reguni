@@ -1093,8 +1093,10 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 
 		if (result.size() > 1) {
 			long[] noEtablissements = new long[result.size()];
-			for (int i = 0; i < result.size(); i++) {
-				noEtablissements[i] = result.get(i).getNumero();
+			int i = 0;
+			for (Etablissement etablissement : result) { // Usage de l'itérateur. Performant quel que soit l'implémentation de List.
+				noEtablissements[i] = etablissement.getNumero();
+				++i;
 			}
 			throw new PlusieursEtablissementsAvecMemeNumeroSitesException(numeroSite, noEtablissements);
 		}

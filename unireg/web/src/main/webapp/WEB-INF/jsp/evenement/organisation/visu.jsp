@@ -293,10 +293,10 @@
     </form:form>
 </c:if>
 <c:if test="${empty command.tiersAssocie && command.forcable && command.evtEtat == 'EN_ERREUR'}">
-	<form:form method="post" action="creer.do" style="display: inline">
+	<form:form method="post" action="creer-entreprise.do" style="display: inline">
 		<input type="hidden" name="id" value="${command.evtId}"/>
 		<fmt:message key="label.bouton.creer" var="labelBoutonCreer"/>
-		<input type="submit" name="creer" value="${labelBoutonCreer}" onclick="return confirm('Voulez-vous réellement créer le tiers Entreprise pour l\' événement organisation?');"/>
+		<input type="submit" name="creer" value="${labelBoutonCreer}" onclick="return confirm('Voulez-vous réellement créer le tiers Entreprise pour l\'événement organisation?');"/>
 	</form:form>
 </c:if>
 <!-- Fin Boutons -->
