@@ -20,8 +20,14 @@ public enum TypeDocumentEditique {
 	// Autour des déclarations d'impôt des personnes morales
 	//
 
-	DI_PM("PMPU1501", null, "impressionDI"),
-	DI_APM("PMPU1502", null, "impressionDI"),
+	DI_PM("U1P1DIPM", null, "impressionDI"),
+	DI_APM("U1P2DIAP", null, "impressionDI"),
+	LETTRE_BIENVENUE("U1P3BIEN", null, "lettreBienvenue"),
+	SOMMATION_DI_PM("U1P4SOMM", null, "sommationDI"),
+	ACCORD_DELAI_PM("U1P5DLAI", null, "accordDelai"),
+	REFUS_DELAI_PM("U1P6REFU", null, "refusDelai"),
+	RAPPEL("U1P7RAPL", null, "rappel"),
+	SURSIS("U1P8ADAS", null, "sursis"),                 // ADAS = Accord de Délai Après Sommation
 
 	//
 	// Autour des listes récapitulatives IS

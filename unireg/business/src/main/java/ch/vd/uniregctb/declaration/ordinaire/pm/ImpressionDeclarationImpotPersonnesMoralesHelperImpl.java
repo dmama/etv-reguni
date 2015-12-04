@@ -58,8 +58,8 @@ import ch.vd.uniregctb.type.TypeDocument;
 public class ImpressionDeclarationImpotPersonnesMoralesHelperImpl extends EditiqueAbstractHelper implements ImpressionDeclarationImpotPersonnesMoralesHelper {
 
 	private static final String DI = "DI";
-	private static final String COD_DOC_DI_PM = "DI_PM";
-	private static final String COD_DOC_DI_APM = "DI_APM";            // TODO reste à valider...
+	private static final String COD_DOC_DI_PM = "U1P1";
+	private static final String COD_DOC_DI_APM = "U1P2";
 
 	private IbanValidator ibanValidator;
 	private ServiceInfrastructureService infraService;
