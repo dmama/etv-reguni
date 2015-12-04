@@ -4808,4 +4808,317 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 			Assert.assertEquals("Entreprise migrée : 749.84.", textes.get(6));
 		}
 	}
+
+	@Test
+	public void testDeplacementDateDebutPremierForPrincipalPremierJanvier1900SansForSecondaire() throws Exception {
+
+		final long noEntreprise = 74984L;
+		final RegpmEntreprise e = buildEntreprise(noEntreprise);
+		final RegDate dateDebut = RegDate.get(1900, 1, 1);
+
+		addRaisonSociale(e, dateDebut, "Toto SA", null, null, true);
+		addFormeJuridique(e, dateDebut, createTypeFormeJuridique("S.A.", RegpmCategoriePersonneMorale.PM));
+		addForPrincipalEtranger(e, dateDebut, RegpmTypeForPrincipal.SIEGE, MockPays.Russie.getNoOFS());
+
+		final MockGraphe graphe = new MockGraphe(Collections.singletonList(e),
+		                                         null,
+		                                         null);
+		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
+		final EntityLinkCollector linkCollector = new EntityLinkCollector();
+		final IdMapper idMapper = new IdMapper();
+		migrator.initMigrationResult(mr, idMapper);
+		migrate(e, migrator, mr, linkCollector, idMapper);
+
+		// la date du for principal de l'entreprise ne doit pas avoir été modifiée
+		doInUniregTransaction(true, status -> {
+			final Entreprise entreprise = uniregStore.getEntityFromDb(Entreprise.class, noEntreprise);
+			Assert.assertNotNull(entreprise);
+
+			final ForFiscalPrincipalPM ffp = entreprise.getDernierForFiscalPrincipal();
+			Assert.assertNotNull(ffp);
+			Assert.assertFalse(ffp.isAnnule());
+			Assert.assertEquals(dateDebut, ffp.getDateDebut());
+			Assert.assertNull(ffp.getDateFin());
+			Assert.assertEquals(TypeAutoriteFiscale.PAYS_HS, ffp.getTypeAutoriteFiscale());
+			Assert.assertEquals((Integer) MockPays.Russie.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale());
+		});
+
+		// vérification des messages dans le contexte "FORS"
+		{
+			final List<MigrationResultCollector.Message> messages = mr.getMessages().get(LogCategory.FORS);
+			Assert.assertNotNull(messages);
+			final List<String> textes = messages.stream().map(msg -> msg.text).collect(Collectors.toList());
+			Assert.assertEquals(1, textes.size());
+			Assert.assertEquals("For principal PAYS_HS/8264 [01.01.1900 -> ?] généré.", textes.get(0));
+		}
+	}
+
+	@Test
+	public void testDeplacementDateDebutPremierForPrincipalHorsSuissePremierJanvier1900AvecForSecondaire() throws Exception {
+
+		final long noEntreprise = 74984L;
+		final RegpmEntreprise e = buildEntreprise(noEntreprise);
+		final RegDate dateDebut = RegDate.get(1900, 1, 1);
+		final RegDate dateDebutForSecondaire = RegDate.get(1917, 11, 6);
+
+		addRaisonSociale(e, dateDebut, "Toto SA", null, null, true);
+		addFormeJuridique(e, dateDebut, createTypeFormeJuridique("S.A.", RegpmCategoriePersonneMorale.PM));
+		addForPrincipalEtranger(e, dateDebut, RegpmTypeForPrincipal.SIEGE, MockPays.Russie.getNoOFS());
+		addForSecondaire(e, dateDebutForSecondaire, null, Commune.LAUSANNE);
+
+		final MockGraphe graphe = new MockGraphe(Collections.singletonList(e),
+		                                         null,
+		                                         null);
+		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
+		final EntityLinkCollector linkCollector = new EntityLinkCollector();
+		final IdMapper idMapper = new IdMapper();
+		migrator.initMigrationResult(mr, idMapper);
+		migrate(e, migrator, mr, linkCollector, idMapper);
+
+		// la date du for principal de l'entreprise ne doit pas avoir été modifiée
+		doInUniregTransaction(true, status -> {
+			final Entreprise entreprise = uniregStore.getEntityFromDb(Entreprise.class, noEntreprise);
+			Assert.assertNotNull(entreprise);
+
+			final ForFiscalPrincipalPM ffp = entreprise.getDernierForFiscalPrincipal();
+			Assert.assertNotNull(ffp);
+			Assert.assertFalse(ffp.isAnnule());
+			Assert.assertEquals(dateDebutForSecondaire, ffp.getDateDebut());
+			Assert.assertNull(ffp.getDateFin());
+			Assert.assertEquals(TypeAutoriteFiscale.PAYS_HS, ffp.getTypeAutoriteFiscale());
+			Assert.assertEquals((Integer) MockPays.Russie.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale());
+		});
+
+		// vérification des messages dans le contexte "FORS"
+		{
+			final List<MigrationResultCollector.Message> messages = mr.getMessages().get(LogCategory.FORS);
+			Assert.assertNotNull(messages);
+			final List<String> textes = messages.stream().map(msg -> msg.text).collect(Collectors.toList());
+			Assert.assertEquals(2, textes.size());
+			Assert.assertEquals("La date de début de validité du for principal 1 est passée du 01.01.1900 au 06.11.1917 pour suivre le premier for secondaire existant.", textes.get(0));
+			Assert.assertEquals("For principal PAYS_HS/8264 [06.11.1917 -> ?] généré.", textes.get(1));
+		}
+	}
+
+	@Test
+	public void testDeplacementDateDebutPremierForPrincipalHorsSuissePremierJanvier1900AvecForSecondaireEtAutreForPrincipalEnsuite() throws Exception {
+
+		final long noEntreprise = 74984L;
+		final RegpmEntreprise e = buildEntreprise(noEntreprise);
+		final RegDate dateDebut = RegDate.get(1900, 1, 1);
+		final RegDate dateDebutDeuxiemeForPrincipal = RegDate.get(1922, 7, 1);
+		final RegDate dateDebutForSecondaire = RegDate.get(1917, 11, 6);
+
+		addRaisonSociale(e, dateDebut, "Toto SA", null, null, true);
+		addFormeJuridique(e, dateDebut, createTypeFormeJuridique("S.A.", RegpmCategoriePersonneMorale.PM));
+		addForPrincipalEtranger(e, dateDebut, RegpmTypeForPrincipal.SIEGE, MockPays.Russie.getNoOFS());
+		addForPrincipalEtranger(e, dateDebutDeuxiemeForPrincipal, RegpmTypeForPrincipal.SIEGE, MockPays.RoyaumeUni.getNoOFS());
+		addForSecondaire(e, dateDebutForSecondaire, null, Commune.LAUSANNE);
+
+		final MockGraphe graphe = new MockGraphe(Collections.singletonList(e),
+		                                         null,
+		                                         null);
+		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
+		final EntityLinkCollector linkCollector = new EntityLinkCollector();
+		final IdMapper idMapper = new IdMapper();
+		migrator.initMigrationResult(mr, idMapper);
+		migrate(e, migrator, mr, linkCollector, idMapper);
+
+		// la date du for principal de l'entreprise ne doit pas avoir été modifiée
+		doInUniregTransaction(true, status -> {
+			final Entreprise entreprise = uniregStore.getEntityFromDb(Entreprise.class, noEntreprise);
+			Assert.assertNotNull(entreprise);
+
+			final List<ForFiscalPrincipalPM> forsPrincipaux = entreprise.getForsFiscauxPrincipauxActifsSorted();
+			Assert.assertNotNull(forsPrincipaux);
+			Assert.assertEquals(2, forsPrincipaux.size());
+
+			{
+				final ForFiscalPrincipalPM ffp = forsPrincipaux.get(0);
+				Assert.assertNotNull(ffp);
+				Assert.assertFalse(ffp.isAnnule());
+				Assert.assertEquals(dateDebutForSecondaire, ffp.getDateDebut());
+				Assert.assertEquals(dateDebutDeuxiemeForPrincipal.getOneDayBefore(), ffp.getDateFin());
+				Assert.assertEquals(TypeAutoriteFiscale.PAYS_HS, ffp.getTypeAutoriteFiscale());
+				Assert.assertEquals((Integer) MockPays.Russie.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale());
+			}
+			{
+				final ForFiscalPrincipalPM ffp = forsPrincipaux.get(1);
+				Assert.assertNotNull(ffp);
+				Assert.assertFalse(ffp.isAnnule());
+				Assert.assertEquals(dateDebutDeuxiemeForPrincipal, ffp.getDateDebut());
+				Assert.assertNull(ffp.getDateFin());
+				Assert.assertEquals(TypeAutoriteFiscale.PAYS_HS, ffp.getTypeAutoriteFiscale());
+				Assert.assertEquals((Integer) MockPays.RoyaumeUni.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale());
+			}
+		});
+
+		// vérification des messages dans le contexte "FORS"
+		{
+			final List<MigrationResultCollector.Message> messages = mr.getMessages().get(LogCategory.FORS);
+			Assert.assertNotNull(messages);
+			final List<String> textes = messages.stream().map(msg -> msg.text).collect(Collectors.toList());
+			Assert.assertEquals(3, textes.size());
+			Assert.assertEquals("La date de début de validité du for principal 1 est passée du 01.01.1900 au 06.11.1917 pour suivre le premier for secondaire existant.", textes.get(0));
+			Assert.assertEquals("For principal PAYS_HS/8264 [06.11.1917 -> 30.06.1922] généré.", textes.get(1));
+			Assert.assertEquals("For principal PAYS_HS/8215 [01.07.1922 -> ?] généré.", textes.get(2));
+		}
+	}
+
+	@Test
+	public void testDeplacementDateDebutPremierForPrincipalHorsSuissePremierJanvier1900AvecForSecondaireEtAutreForPrincipalEntre() throws Exception {
+
+		final long noEntreprise = 74984L;
+		final RegpmEntreprise e = buildEntreprise(noEntreprise);
+		final RegDate dateDebut = RegDate.get(1900, 1, 1);
+		final RegDate dateDebutDeuxiemeForPrincipal = RegDate.get(1914, 8, 31);
+		final RegDate dateDebutForSecondaire = RegDate.get(1917, 11, 6);
+
+		addRaisonSociale(e, dateDebut, "Toto SA", null, null, true);
+		addFormeJuridique(e, dateDebut, createTypeFormeJuridique("S.A.", RegpmCategoriePersonneMorale.PM));
+		addForPrincipalEtranger(e, dateDebut, RegpmTypeForPrincipal.SIEGE, MockPays.Russie.getNoOFS());
+		addForPrincipalEtranger(e, dateDebutDeuxiemeForPrincipal, RegpmTypeForPrincipal.SIEGE, MockPays.RoyaumeUni.getNoOFS());
+		addForSecondaire(e, dateDebutForSecondaire, null, Commune.LAUSANNE);
+
+		final MockGraphe graphe = new MockGraphe(Collections.singletonList(e),
+		                                         null,
+		                                         null);
+		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
+		final EntityLinkCollector linkCollector = new EntityLinkCollector();
+		final IdMapper idMapper = new IdMapper();
+		migrator.initMigrationResult(mr, idMapper);
+		migrate(e, migrator, mr, linkCollector, idMapper);
+
+		// la date du for principal de l'entreprise ne doit pas avoir été modifiée
+		doInUniregTransaction(true, status -> {
+			final Entreprise entreprise = uniregStore.getEntityFromDb(Entreprise.class, noEntreprise);
+			Assert.assertNotNull(entreprise);
+
+			final List<ForFiscalPrincipalPM> forsPrincipaux = entreprise.getForsFiscauxPrincipauxActifsSorted();
+			Assert.assertNotNull(forsPrincipaux);
+			Assert.assertEquals(2, forsPrincipaux.size());
+
+			{
+				final ForFiscalPrincipalPM ffp = forsPrincipaux.get(0);
+				Assert.assertNotNull(ffp);
+				Assert.assertFalse(ffp.isAnnule());
+				Assert.assertEquals(dateDebut, ffp.getDateDebut());
+				Assert.assertEquals(dateDebutDeuxiemeForPrincipal.getOneDayBefore(), ffp.getDateFin());
+				Assert.assertEquals(TypeAutoriteFiscale.PAYS_HS, ffp.getTypeAutoriteFiscale());
+				Assert.assertEquals((Integer) MockPays.Russie.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale());
+			}
+			{
+				final ForFiscalPrincipalPM ffp = forsPrincipaux.get(1);
+				Assert.assertNotNull(ffp);
+				Assert.assertFalse(ffp.isAnnule());
+				Assert.assertEquals(dateDebutDeuxiemeForPrincipal, ffp.getDateDebut());
+				Assert.assertNull(ffp.getDateFin());
+				Assert.assertEquals(TypeAutoriteFiscale.PAYS_HS, ffp.getTypeAutoriteFiscale());
+				Assert.assertEquals((Integer) MockPays.RoyaumeUni.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale());
+			}
+		});
+
+		// vérification des messages dans le contexte "FORS"
+		{
+			final List<MigrationResultCollector.Message> messages = mr.getMessages().get(LogCategory.FORS);
+			Assert.assertNotNull(messages);
+			final List<String> textes = messages.stream().map(msg -> msg.text).collect(Collectors.toList());
+			Assert.assertEquals(3, textes.size());
+			Assert.assertEquals("La date de début de validité du for principal 1, bien qu'au 01.01.1900, ne sera pas déplacée à la date de début du premier for secondaire (06.11.1917) en raison de la présence d'un autre for principal dès le 31.08.1914.", textes.get(0));
+			Assert.assertEquals("For principal PAYS_HS/8264 [01.01.1900 -> 30.08.1914] généré.", textes.get(1));
+			Assert.assertEquals("For principal PAYS_HS/8215 [31.08.1914 -> ?] généré.", textes.get(2));
+		}
+	}
+
+	@Test
+	public void testDeplacementDateDebutPremierForPrincipalHorsCantonPremierJanvier1900AvecForSecondaire() throws Exception {
+
+		final long noEntreprise = 74984L;
+		final RegpmEntreprise e = buildEntreprise(noEntreprise);
+		final RegDate dateDebut = RegDate.get(1900, 1, 1);
+		final RegDate dateDebutForSecondaire = RegDate.get(1917, 11, 6);
+
+		addRaisonSociale(e, dateDebut, "Toto SA", null, null, true);
+		addFormeJuridique(e, dateDebut, createTypeFormeJuridique("S.A.", RegpmCategoriePersonneMorale.PM));
+		addForPrincipalSuisse(e, dateDebut, RegpmTypeForPrincipal.SIEGE, Commune.BERN);
+		addForSecondaire(e, dateDebutForSecondaire, null, Commune.LAUSANNE);
+
+		final MockGraphe graphe = new MockGraphe(Collections.singletonList(e),
+		                                         null,
+		                                         null);
+		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
+		final EntityLinkCollector linkCollector = new EntityLinkCollector();
+		final IdMapper idMapper = new IdMapper();
+		migrator.initMigrationResult(mr, idMapper);
+		migrate(e, migrator, mr, linkCollector, idMapper);
+
+		// la date du for principal de l'entreprise ne doit pas avoir été modifiée
+		doInUniregTransaction(true, status -> {
+			final Entreprise entreprise = uniregStore.getEntityFromDb(Entreprise.class, noEntreprise);
+			Assert.assertNotNull(entreprise);
+
+			final ForFiscalPrincipalPM ffp = entreprise.getDernierForFiscalPrincipal();
+			Assert.assertNotNull(ffp);
+			Assert.assertFalse(ffp.isAnnule());
+			Assert.assertEquals(dateDebut, ffp.getDateDebut());         // for HC -> on ne change rien
+			Assert.assertNull(ffp.getDateFin());
+			Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_HC, ffp.getTypeAutoriteFiscale());
+			Assert.assertEquals(Commune.BERN.getNoOfs(), ffp.getNumeroOfsAutoriteFiscale());
+		});
+
+		// vérification des messages dans le contexte "FORS"
+		{
+			final List<MigrationResultCollector.Message> messages = mr.getMessages().get(LogCategory.FORS);
+			Assert.assertNotNull(messages);
+			final List<String> textes = messages.stream().map(msg -> msg.text).collect(Collectors.toList());
+			Assert.assertEquals(1, textes.size());
+			Assert.assertEquals("For principal COMMUNE_HC/351 [01.01.1900 -> ?] généré.", textes.get(0));
+		}
+	}
+
+	@Test
+	public void testDeplacementDateDebutPremierForPrincipalVaudoisPremierJanvier1900AvecForSecondaire() throws Exception {
+
+		final long noEntreprise = 74984L;
+		final RegpmEntreprise e = buildEntreprise(noEntreprise);
+		final RegDate dateDebut = RegDate.get(1900, 1, 1);
+		final RegDate dateDebutForSecondaire = RegDate.get(1917, 11, 6);
+
+		addRaisonSociale(e, dateDebut, "Toto SA", null, null, true);
+		addFormeJuridique(e, dateDebut, createTypeFormeJuridique("S.A.", RegpmCategoriePersonneMorale.PM));
+		addForPrincipalSuisse(e, dateDebut, RegpmTypeForPrincipal.SIEGE, Commune.ECHALLENS);
+		addForSecondaire(e, dateDebutForSecondaire, null, Commune.LAUSANNE);
+
+		final MockGraphe graphe = new MockGraphe(Collections.singletonList(e),
+		                                         null,
+		                                         null);
+		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
+		final EntityLinkCollector linkCollector = new EntityLinkCollector();
+		final IdMapper idMapper = new IdMapper();
+		migrator.initMigrationResult(mr, idMapper);
+		migrate(e, migrator, mr, linkCollector, idMapper);
+
+		// la date du for principal de l'entreprise ne doit pas avoir été modifiée
+		doInUniregTransaction(true, status -> {
+			final Entreprise entreprise = uniregStore.getEntityFromDb(Entreprise.class, noEntreprise);
+			Assert.assertNotNull(entreprise);
+
+			final ForFiscalPrincipalPM ffp = entreprise.getDernierForFiscalPrincipal();
+			Assert.assertNotNull(ffp);
+			Assert.assertFalse(ffp.isAnnule());
+			Assert.assertEquals(dateDebut, ffp.getDateDebut());         // for VD -> on ne change rien
+			Assert.assertNull(ffp.getDateFin());
+			Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
+			Assert.assertEquals(Commune.ECHALLENS.getNoOfs(), ffp.getNumeroOfsAutoriteFiscale());
+		});
+
+		// vérification des messages dans le contexte "FORS"
+		{
+			final List<MigrationResultCollector.Message> messages = mr.getMessages().get(LogCategory.FORS);
+			Assert.assertNotNull(messages);
+			final List<String> textes = messages.stream().map(msg -> msg.text).collect(Collectors.toList());
+			Assert.assertEquals(1, textes.size());
+			Assert.assertEquals("For principal COMMUNE_OU_FRACTION_VD/5518 [01.01.1900 -> ?] généré.", textes.get(0));
+		}
+	}
 }

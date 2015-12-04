@@ -1323,11 +1323,55 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 						}
 						return true;
 					})
-					.peek(ff -> checkDateLouche(ff.getDateValidite(),
-					                            () -> String.format("Le for principal %d a une date de début", ff.getId().getSeqNo()),
-					                            LogCategory.FORS,
-					                            mr))
 					.collect(Collectors.toList());
+
+			// [SIFISC-16860] on veut une adaptation de la date du premier for, si celui-ci est HS et qu'il débute au 01.01.1900
+			if (!liste.isEmpty()) {
+				final RegpmForPrincipal premierForPrincipal = liste.get(0);
+				if (premierForPrincipal.getOfsPays() != null && premierForPrincipal.getDateValidite() == RegDate.get(1900, 1, 1)) {
+					// s'il existe des fors secondaires, il faut plutôt prendre la date de début du premier for secondaire...
+					final RegpmForSecondaire premierForSecondaire = regpm.getForsSecondaires().stream()
+							.min(Comparator.comparing(RegpmForSecondaire::getDateDebut))
+							.orElse(null);
+					if (premierForSecondaire != null) {
+						final RegDate dateDebutPremierForSecondaire = premierForSecondaire.getDateDebut();
+						final RegDate nouvelleDateDebut;
+						if (premierForPrincipal.getDateValidite().isBefore(dateDebutPremierForSecondaire)) {
+							// attention, il peut y avoir un conflit avec le for principal suivant, s'il existe
+							if (liste.size() > 1 && liste.get(1).getDateValidite().isBeforeOrEqual(dateDebutPremierForSecondaire)) {
+								mr.addMessage(LogCategory.FORS, LogLevel.WARN,
+								              String.format("La date de début de validité du for principal %d, bien qu'au %s, ne sera pas déplacée à la date de début du premier for secondaire (%s) en raison de la présence d'un autre for principal dès le %s.",
+								                            premierForPrincipal.getId().getSeqNo(),
+								                            StringRenderers.DATE_RENDERER.toString(premierForPrincipal.getDateValidite()),
+								                            StringRenderers.DATE_RENDERER.toString(dateDebutPremierForSecondaire),
+								                            StringRenderers.DATE_RENDERER.toString(liste.get(1).getDateValidite())));
+								nouvelleDateDebut = premierForPrincipal.getDateValidite();
+							}
+							else {
+								nouvelleDateDebut = dateDebutPremierForSecondaire;
+							}
+						}
+						else {
+							nouvelleDateDebut = dateDebutPremierForSecondaire;
+						}
+
+						if (nouvelleDateDebut != premierForPrincipal.getDateValidite()) {
+							mr.addMessage(LogCategory.FORS, LogLevel.WARN,
+							              String.format("La date de début de validité du for principal %d est passée du %s au %s pour suivre le premier for secondaire existant.",
+							                            premierForPrincipal.getId().getSeqNo(),
+							                            StringRenderers.DATE_RENDERER.toString(premierForPrincipal.getDateValidite()),
+							                            StringRenderers.DATE_RENDERER.toString(nouvelleDateDebut)));
+							premierForPrincipal.setDateValidite(nouvelleDateDebut);
+						}
+					}
+				}
+			}
+
+			// log des dates louches
+			liste.forEach(ff -> checkDateLouche(ff.getDateValidite(),
+			                                    () -> String.format("Le for principal %d a une date de début", ff.getId().getSeqNo()),
+			                                    LogCategory.FORS,
+			                                    mr));
 
 			return new ForsPrincipauxData(liste);
 		});
