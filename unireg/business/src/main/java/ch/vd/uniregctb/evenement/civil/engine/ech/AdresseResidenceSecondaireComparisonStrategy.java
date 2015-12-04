@@ -1,6 +1,6 @@
 package ch.vd.uniregctb.evenement.civil.engine.ech;
 
-import ch.vd.unireg.interfaces.common.Adresse;
+import ch.vd.unireg.interfaces.civil.data.Adresse;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
 

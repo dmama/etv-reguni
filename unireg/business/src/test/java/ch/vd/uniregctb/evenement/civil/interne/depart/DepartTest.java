@@ -29,20 +29,18 @@ import ch.vd.unireg.interfaces.infra.mock.MockLocalite;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.uniregctb.adresse.AdressesCiviles;
+import ch.vd.uniregctb.evenement.EvenementFiscal;
+import ch.vd.uniregctb.evenement.civil.EvenementCivilErreur;
 import ch.vd.uniregctb.evenement.civil.EvenementCivilErreurCollector;
 import ch.vd.uniregctb.evenement.civil.EvenementCivilWarningCollector;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.interne.AbstractEvenementCivilInterneTest;
 import ch.vd.uniregctb.evenement.civil.interne.MessageCollector;
-import ch.vd.uniregctb.evenement.common.EvenementErreur;
-import ch.vd.uniregctb.evenement.fiscal.EvenementFiscal;
-import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalFor;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.Tiers;
@@ -52,6 +50,7 @@ import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
+import ch.vd.uniregctb.type.TypeEvenementFiscal;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -391,7 +390,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 
 		assertEquals(1, collector.getErreurs().size());
 
-		final EvenementErreur erreur = collector.getErreurs().get(0);
+		final EvenementCivilErreur erreur = collector.getErreurs().get(0);
 		assertNotNull(erreur);
 		assertEquals("Adresse de résidence avant départ inconnue", erreur.getMessage());
 	}
@@ -621,9 +620,9 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 
 		Depart depart = createValidDepart(NUMERO_INDIVIDU_SEUL, DATE_EVENEMENT, true, null, true);
 
-		ForFiscalPrincipalPP forFiscalPrincipal = handleDepart(depart);
+		ForFiscalPrincipal forFiscalPrincipal = handleDepart(depart);
 		PersonnePhysique tiers = tiersDAO.getPPByNumeroIndividu(depart.getNoIndividu());
-		ForFiscalPrincipalPP forFiscalPrincipalFerme = tiers.getForFiscalPrincipalAt(depart.getDate());
+		ForFiscalPrincipal forFiscalPrincipalFerme = tiers.getForFiscalPrincipalAt(depart.getDate());
 
 		assertTrue("Pas de nouveau for fiscal ouvert", forFiscalPrincipal.getDateDebut() == depart.getDate().getOneDayAfter());
 		assertEquals(forFiscalPrincipalFerme.getModeImposition(), forFiscalPrincipal.getModeImposition());
@@ -646,9 +645,9 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 
 		Depart depart = createValidDepart(NO_IND_PAUL, DATE_EVENEMENT, true, null, true);
 
-		ForFiscalPrincipalPP forFiscalPrincipal = handleDepart(depart);
+		ForFiscalPrincipal forFiscalPrincipal = handleDepart(depart);
 		PersonnePhysique tiers = tiersDAO.getPPByNumeroIndividu(depart.getNoIndividu());
-		ForFiscalPrincipalPP forFiscalPrincipalFerme = tiers.getForFiscalPrincipalAt(depart.getDate());
+		ForFiscalPrincipal forFiscalPrincipalFerme = tiers.getForFiscalPrincipalAt(depart.getDate());
 
 		assertTrue("Pas de nouveau for fiscal ouvert", forFiscalPrincipal.getDateDebut() == depart.getDate().getOneDayAfter());
 		assertEquals(forFiscalPrincipalFerme.getModeImposition(), forFiscalPrincipal.getModeImposition());
@@ -679,10 +678,10 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 
 		Depart depart = createValidDepart(1241, DATE_EVENEMENT, false, null, true);
 
-		ForFiscalPrincipalPP forFiscalPrincipal = handleDepart(depart);
+		ForFiscalPrincipal forFiscalPrincipal = handleDepart(depart);
 
 		PersonnePhysique tiers = tiersDAO.getPPByNumeroIndividu(depart.getNoIndividu());
-		ForFiscalPrincipalPP forFiscalPrincipalFerme = tiers.getForFiscalPrincipalAt(depart.getDate());
+		ForFiscalPrincipal forFiscalPrincipalFerme = tiers.getForFiscalPrincipalAt(depart.getDate());
 		assertEquals(MotifFor.DEPART_HC, forFiscalPrincipalFerme.getMotifFermeture());
 
 		assertNotNull(forFiscalPrincipal.getMotifOuverture());
@@ -729,9 +728,9 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 	 * @param message
 	 * @return
 	 */
-	private boolean findMessage(List<? extends EvenementErreur> erreurs, String message) {
+	private boolean findMessage(List<? extends EvenementCivilErreur> erreurs, String message) {
 		boolean isPresent = false;
-		for (EvenementErreur evenementErreur : erreurs) {
+		for (EvenementCivilErreur evenementErreur : erreurs) {
 			if (evenementErreur.getMessage().contains(message)) {
 				isPresent = true;
 				break;
@@ -741,7 +740,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 	}
 
 	private ForFiscalPrincipal addForPrincipal(Contribuable tiers, RegDate ouverture, Integer noOFS, ModeImposition modeImposition) {
-		ForFiscalPrincipalPP f = new ForFiscalPrincipalPP();
+		ForFiscalPrincipal f = new ForFiscalPrincipal();
 		f.setDateDebut(ouverture);
 		f.setMotifOuverture(MotifFor.ARRIVEE_HC);
 		f.setGenreImpot(GenreImpot.REVENU_FORTUNE);
@@ -977,9 +976,9 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 		assertNotNull(fors);
 		assertEquals(2, fors.size());
 		assertForPrincipal(date(2000, 1, 1), MotifFor.ARRIVEE_HC, dateDepart, MotifFor.DEPART_HS, MockCommune.Lausanne, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE,
-		                   (ForFiscalPrincipalPP) fors.get(0));
+		                   (ForFiscalPrincipal) fors.get(0));
 		assertForPrincipal(dateDepart.getOneDayAfter(), MotifFor.DEPART_HS, TypeAutoriteFiscale.PAYS_HS, MockPays.France.getNoOFS(), MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE,
-		                   (ForFiscalPrincipalPP) fors.get(1));
+		                   (ForFiscalPrincipal) fors.get(1));
 	}
 
 	/**
@@ -1067,7 +1066,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 
 		final ForFiscal ffp = ff.iterator().next();
 		assertNotNull(ffp);
-		assertTrue("Class " + ffp.getClass(), ffp instanceof ForFiscalPrincipalPP);
+		assertTrue("Class " + ffp.getClass(), ffp instanceof ForFiscalPrincipal);
 		assertTrue(ffp.isAnnule());
 	}
 
@@ -1121,7 +1120,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 
 		final ForFiscal ffp = ff.iterator().next();
 		assertNotNull(ffp);
-		assertTrue("Class " + ffp.getClass(), ffp instanceof ForFiscalPrincipalPP);
+		assertTrue("Class " + ffp.getClass(), ffp instanceof ForFiscalPrincipal);
 		assertFalse(ffp.isAnnule());
 		assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
 		assertEquals(MockCommune.Bex.getNoOFS(), (int) ffp.getNumeroOfsAutoriteFiscale());
@@ -1178,7 +1177,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 
 		final ForFiscal ffp = ff.iterator().next();
 		assertNotNull(ffp);
-		assertTrue("Class " + ffp.getClass(), ffp instanceof ForFiscalPrincipalPP);
+		assertTrue("Class " + ffp.getClass(), ffp instanceof ForFiscalPrincipal);
 		assertFalse(ffp.isAnnule());
 		assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
 		assertEquals(MockCommune.Bex.getNoOFS(), (int) ffp.getNumeroOfsAutoriteFiscale());
@@ -1246,7 +1245,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 
 		final ForFiscal ffp = ffmc.iterator().next();
 		assertNotNull(ffp);
-		assertTrue("Class " + ffp.getClass(), ffp instanceof ForFiscalPrincipalPP);
+		assertTrue("Class " + ffp.getClass(), ffp instanceof ForFiscalPrincipal);
 		assertFalse(ffp.isAnnule());
 		assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
 		assertEquals(MockCommune.Bex.getNoOFS(), (int) ffp.getNumeroOfsAutoriteFiscale());
@@ -1303,7 +1302,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 
 		final ForFiscal ffp = ff.iterator().next();
 		assertNotNull(ffp);
-		assertTrue("Class " + ffp.getClass(), ffp instanceof ForFiscalPrincipalPP);
+		assertTrue("Class " + ffp.getClass(), ffp instanceof ForFiscalPrincipal);
 		assertFalse(ffp.isAnnule());
 		assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
 		assertEquals(MockCommune.Leysin.getNoOFS(), (int) ffp.getNumeroOfsAutoriteFiscale());
@@ -1467,7 +1466,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 		final PersonnePhysique pp = tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividu);
 		assertNotNull(pp);
 
-		final List<ForFiscalPrincipalPP> ff = pp.getForsFiscauxPrincipauxActifsSorted();
+		final List<ForFiscalPrincipal> ff = pp.getForsFiscauxPrincipauxActifsSorted();
 		assertNotNull(ff);
 		assertEquals(2, ff.size());
 		assertForPrincipal(date(2000, 1, 1), MotifFor.DEMENAGEMENT_VD, dateDepart, MotifFor.DEPART_HC, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Echallens.getNoOFS(),
@@ -1516,7 +1515,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 		final PersonnePhysique pp = tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividu);
 		assertNotNull(pp);
 
-		final List<ForFiscalPrincipalPP> ff = pp.getForsFiscauxPrincipauxActifsSorted();
+		final List<ForFiscalPrincipal> ff = pp.getForsFiscauxPrincipauxActifsSorted();
 		assertNotNull(ff);
 		assertEquals(3, ff.size());
 		assertForPrincipal(date(1976, 4, 30), MotifFor.MAJORITE, date(1999, 12, 31), MotifFor.DEMENAGEMENT_VD, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(),
@@ -1561,7 +1560,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 		final PersonnePhysique pp = tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividu);
 		assertNotNull(pp);
 
-		final List<ForFiscalPrincipalPP> ff = pp.getForsFiscauxPrincipauxActifsSorted();
+		final List<ForFiscalPrincipal> ff = pp.getForsFiscauxPrincipauxActifsSorted();
 		assertNotNull(ff);
 		assertEquals(2, ff.size());
 		assertForPrincipal(date(1976, 4, 30), MotifFor.MAJORITE, dateDepart, MotifFor.DEPART_HC, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(),
@@ -1606,7 +1605,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 				handleDepart(depart, collector, collector);
 				assertEquals(1, collector.getErreurs().size());
 
-				final EvenementErreur erreur = collector.getErreurs().get(0);
+				final EvenementCivilErreur erreur = collector.getErreurs().get(0);
 				assertEquals("Un départ HC/HS ne peut être traité qu'à partir du lendemain de sa date d'effet", erreur.getMessage());
 
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppid);
@@ -1676,7 +1675,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 	 * @param depart
 	 * @return le fort fiscal après le traitement du départ
 	 */
-	private ForFiscalPrincipalPP handleDepart(Depart depart) throws EvenementCivilException {
+	private ForFiscalPrincipal handleDepart(Depart depart) throws EvenementCivilException {
 		LOGGER.debug("Test de traitement d'un événement de départ vaudois.");
 
 		final MessageCollector collector = buildMessageCollector();
@@ -1687,7 +1686,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 		PersonnePhysique tiers = tiersDAO.getPPByNumeroIndividu(depart.getNoIndividu());
 		assertNotNull(tiers);
 
-		ForFiscalPrincipalPP forFiscalPrincipal = tiers.getForFiscalPrincipalAt(depart.getDate().getOneDayAfter());
+		ForFiscalPrincipal forFiscalPrincipal = tiers.getForFiscalPrincipalAt(depart.getDate().getOneDayAfter());
 		assertNotNull("Le contribuable n'a aucun for fiscal", forFiscalPrincipal);
 
 		return forFiscalPrincipal;
@@ -1706,7 +1705,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 		handleDepart(depart, collector, collector);
 
 		if (collector.hasErreurs()) {
-			for (EvenementErreur erreur : collector.getErreurs()) {
+			for (EvenementCivilErreur erreur : collector.getErreurs()) {
 				LOGGER.error("Erreur trouvée : " + erreur.getMessage());
 			}
 			fail("Une erreur est survenue lors du traitement du départ");
@@ -1727,7 +1726,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 		EvenementFiscal evenement = null;
 		while (iteEvFiscal.hasNext()) {
 			evenement = iteEvFiscal.next();
-			if (evenement instanceof EvenementFiscalFor && evenement.getDateValeur() == depart.getDate() && ((EvenementFiscalFor) evenement).getType() == EvenementFiscalFor.TypeEvenementFiscalFor.FERMETURE) {
+			if (evenement.getType() == TypeEvenementFiscal.FERMETURE_FOR && evenement.getDateEvenement()==depart.getDate()) {
 				isPresent = true;
 				break;
 			}

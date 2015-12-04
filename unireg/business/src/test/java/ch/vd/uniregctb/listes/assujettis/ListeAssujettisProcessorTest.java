@@ -15,6 +15,7 @@ import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
 import ch.vd.uniregctb.metier.assujettissement.TypeAssujettissement;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
+import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.ModeImposition;
@@ -318,7 +319,8 @@ public class ListeAssujettisProcessorTest extends BusinessTest {
 			@Override
 			public Long doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addHabitant(noIndividu);
-				addForPrincipal(pp, date(2005, 1, 1), MotifFor.INDETERMINE, MockCommune.Aigle, ModeImposition.SOURCE);
+				final ForFiscalPrincipal ffp = addForPrincipal(pp, date(2005, 1, 1), MotifFor.INDETERMINE, MockCommune.Aigle);
+				ffp.setModeImposition(ModeImposition.SOURCE);
 				return pp.getNumero();
 			}
 		});
@@ -357,7 +359,8 @@ public class ListeAssujettisProcessorTest extends BusinessTest {
 			@Override
 			public Long doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addHabitant(noIndividu);
-				addForPrincipal(pp, date(2005, 1, 1), MotifFor.INDETERMINE, MockCommune.Aigle, ModeImposition.SOURCE);
+				final ForFiscalPrincipal ffp = addForPrincipal(pp, date(2005, 1, 1), MotifFor.INDETERMINE, MockCommune.Aigle);
+				ffp.setModeImposition(ModeImposition.SOURCE);
 				return pp.getNumero();
 			}
 		});

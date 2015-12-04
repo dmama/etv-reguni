@@ -14,7 +14,6 @@ import ch.vd.uniregctb.norentes.annotation.Etape;
 import ch.vd.uniregctb.norentes.common.EvenementCivilScenario;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.EtatCivil;
@@ -108,7 +107,8 @@ public class Ec_2000_03_Deces_Membre_Marie_Depense_Surv_Suisse_Scenario extends 
 			noMenage = menage.getNumero();
 			tiersService.addTiersToCouple(menage, hamlet, dateMariage, null);
 			tiersService.addTiersToCouple(menage, heidi, dateMariage, null);
-			addForFiscalPrincipal(menage, commune, dateArriveeVD, null, MotifFor.ARRIVEE_HC, null, ModeImposition.DEPENSE);
+			final ForFiscalPrincipal ffp = addForFiscalPrincipal(menage, commune, dateArriveeVD, null, MotifFor.ARRIVEE_HC, null);
+			ffp.setModeImposition(ModeImposition.DEPENSE);
 
 			addSituationFamille(menage, dateMariage, null, EtatCivil.MARIE, 0, null, null);
 			menage.setBlocageRemboursementAutomatique(false);
@@ -143,7 +143,7 @@ public class Ec_2000_03_Deces_Membre_Marie_Depense_Surv_Suisse_Scenario extends 
 		{
 			final MenageCommun mc = (MenageCommun)tiersDAO.get(noMenage);
 			assertEquals(1, mc.getForsFiscaux().size(), "Le ménage a plus d'un for principal");
-			final ForFiscalPrincipalPP ffp = mc.getDernierForFiscalPrincipal();
+			final ForFiscalPrincipal ffp = mc.getDernierForFiscalPrincipal();
 			assertNotNull(ffp, "For principal du Ménage " + mc.getNumero() + " null");
 			assertEquals(dateArriveeVD, ffp.getDateDebut(), "Date de début du dernier for fausse");
 			assertNull(ffp.getDateFin(), "Date de fin du dernier for fausse");
@@ -192,7 +192,7 @@ public class Ec_2000_03_Deces_Membre_Marie_Depense_Surv_Suisse_Scenario extends 
 
 		// for ouvert sur le survivant
 		final PersonnePhysique survivant = (PersonnePhysique) tiersDAO.get(noHabHeidi);
-		final ForFiscalPrincipalPP ffpSurvivant = survivant.getDernierForFiscalPrincipal();
+		final ForFiscalPrincipal ffpSurvivant = survivant.getDernierForFiscalPrincipal();
 		assertNotNull(ffpSurvivant, "Le survivant n'a pas de for principal");
 		assertEquals(MotifFor.VEUVAGE_DECES, ffpSurvivant.getMotifOuverture(), "Le for principal du survivant devrait être ouvert pour cause de veuvage/décès");
 		assertEquals(dateDeces.getOneDayAfter(), ffpSurvivant.getDateDebut(), "Le for principal du survivant devrait être ouvert au lendemain du décès");

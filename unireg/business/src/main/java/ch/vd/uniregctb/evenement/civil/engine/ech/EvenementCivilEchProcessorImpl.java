@@ -36,8 +36,8 @@ import ch.vd.uniregctb.common.HibernateEntity;
 import ch.vd.uniregctb.common.LengthConstants;
 import ch.vd.uniregctb.common.PollingThread;
 import ch.vd.uniregctb.data.DataEventService;
-import ch.vd.uniregctb.evenement.EvenementCivilHelper;
 import ch.vd.uniregctb.evenement.civil.EvenementCivilErreurCollector;
+import ch.vd.uniregctb.evenement.civil.EvenementCivilHelper;
 import ch.vd.uniregctb.evenement.civil.EvenementCivilMessageCollector;
 import ch.vd.uniregctb.evenement.civil.EvenementCivilWarningCollector;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
@@ -533,7 +533,7 @@ public class EvenementCivilEchProcessorImpl implements EvenementCivilEchProcesso
 		return template.execute(action);
 	}
 
-	private interface GroupAction {
+	private static interface GroupAction {
 		void execute(boolean principal, boolean hasReferrers, EvenementCivilEch evt);
 	}
 

@@ -19,23 +19,11 @@ public class ParametrePeriodeFiscaleDAOImpl extends BaseDAOImpl<ParametrePeriode
 	}
 
 	@SuppressWarnings("unchecked")
-	private ParametrePeriodeFiscalePP getPPByPeriodeFiscaleAndTypeContribuable(PeriodeFiscale periodeFiscale, TypeContribuable typeCtb) {
-		final List<ParametrePeriodeFiscalePP> list = find("FROM ParametrePeriodeFiscalePP p WHERE p.periodefiscale = :pf and p.typeContribuable = :typeCtb",
-		                                                  buildNamedParameters(Pair.<String, Object>of("pf", periodeFiscale),
-		                                                                       Pair.<String, Object>of("typeCtb", typeCtb)),
-		                                                  null);
-		if (list == null || list.isEmpty()) {
-			return null;
-		}
-		return list.get(0);
-	}
-
-	@SuppressWarnings("unchecked")
-	private ParametrePeriodeFiscalePM getPMByPeriodeFiscaleAndTypeContribuable(PeriodeFiscale periodeFiscale, TypeContribuable typeCtb) {
-		final List<ParametrePeriodeFiscalePM> list = find("FROM ParametrePeriodeFiscalePM p WHERE p.periodefiscale = :pf and p.typeContribuable = :typeCtb",
-		                                                  buildNamedParameters(Pair.<String, Object>of("pf", periodeFiscale),
-		                                                                       Pair.<String, Object>of("typeCtb", typeCtb)),
-		                                                  null);
+	private ParametrePeriodeFiscale getByPeriodeFiscaleAndTypeContribuable(PeriodeFiscale periodeFiscale, TypeContribuable typeCtb) {
+		final List<ParametrePeriodeFiscale> list = find("FROM ParametrePeriodeFiscale p WHERE p.periodefiscale = :pf and p.typeContribuable = :typeCtb",
+		                                                buildNamedParameters(Pair.<String, Object>of("pf", periodeFiscale),
+		                                                                     Pair.<String, Object>of("typeCtb", typeCtb)),
+		                                                null);
 		if (list == null || list.isEmpty()) {
 			return null;
 		}
@@ -43,42 +31,28 @@ public class ParametrePeriodeFiscaleDAOImpl extends BaseDAOImpl<ParametrePeriode
 	}
 
 	@Override
-	public ParametrePeriodeFiscalePP getPPDepenseByPeriodeFiscale(PeriodeFiscale periodeFiscale) {
-		return getPPByPeriodeFiscaleAndTypeContribuable(periodeFiscale, TypeContribuable.VAUDOIS_DEPENSE);
+	public ParametrePeriodeFiscale getDepenseByPeriodeFiscale(PeriodeFiscale periodeFiscale) {
+		return getByPeriodeFiscaleAndTypeContribuable(periodeFiscale, TypeContribuable.VAUDOIS_DEPENSE);
 	}
 
 	@Override
-	public ParametrePeriodeFiscalePP getPPHorsCantonByPeriodeFiscale(PeriodeFiscale periodeFiscale) {
-		return getPPByPeriodeFiscaleAndTypeContribuable(periodeFiscale, TypeContribuable.HORS_CANTON);
+	public ParametrePeriodeFiscale getHorsCantonByPeriodeFiscale(PeriodeFiscale periodeFiscale) {
+		return getByPeriodeFiscaleAndTypeContribuable(periodeFiscale, TypeContribuable.HORS_CANTON);
 	}
 
 	@Override
-	public ParametrePeriodeFiscalePP getPPHorsSuisseByPeriodeFiscale(PeriodeFiscale periodeFiscale) {
-		return getPPByPeriodeFiscaleAndTypeContribuable(periodeFiscale, TypeContribuable.HORS_SUISSE);
+	public ParametrePeriodeFiscale getHorsSuisseByPeriodeFiscale(PeriodeFiscale periodeFiscale) {
+		return getByPeriodeFiscaleAndTypeContribuable(periodeFiscale, TypeContribuable.HORS_SUISSE);
 	}
 
 	@Override
-	public ParametrePeriodeFiscalePP getPPDiplomateSuisseByPeriodeFiscale(PeriodeFiscale periodeFiscale) {
-		return getPPByPeriodeFiscaleAndTypeContribuable(periodeFiscale, TypeContribuable.DIPLOMATE_SUISSE);
+	public ParametrePeriodeFiscale getDiplomateSuisseByPeriodeFiscale(PeriodeFiscale periodeFiscale) {
+		return getByPeriodeFiscaleAndTypeContribuable(periodeFiscale, TypeContribuable.DIPLOMATE_SUISSE);
 	}
 	
 	@Override
-	public ParametrePeriodeFiscalePP getPPVaudByPeriodeFiscale(PeriodeFiscale periodeFiscale) {
-		return getPPByPeriodeFiscaleAndTypeContribuable(periodeFiscale, TypeContribuable.VAUDOIS_ORDINAIRE);
+	public ParametrePeriodeFiscale getVaudByPeriodeFiscale(PeriodeFiscale periodeFiscale) {
+		return getByPeriodeFiscaleAndTypeContribuable(periodeFiscale, TypeContribuable.VAUDOIS_ORDINAIRE);
 	}
 
-	@Override
-	public ParametrePeriodeFiscalePM getPMVaudByPeriodeFiscale(PeriodeFiscale periodeFiscale) {
-		return getPMByPeriodeFiscaleAndTypeContribuable(periodeFiscale, TypeContribuable.VAUDOIS_ORDINAIRE);
-	}
-
-	@Override
-	public ParametrePeriodeFiscalePM getPMHorsCantonByPeriodeFiscale(PeriodeFiscale periodeFiscale) {
-		return getPMByPeriodeFiscaleAndTypeContribuable(periodeFiscale, TypeContribuable.HORS_CANTON);
-	}
-
-	@Override
-	public ParametrePeriodeFiscalePM getPMHorsSuisseByPeriodeFiscale(PeriodeFiscale periodeFiscale) {
-		return getPMByPeriodeFiscaleAndTypeContribuable(periodeFiscale, TypeContribuable.HORS_SUISSE);
-	}
 }

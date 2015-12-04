@@ -10,7 +10,6 @@ import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.document.ImportImmeublesRapport;
 import ch.vd.uniregctb.rapport.RapportService;
-import ch.vd.uniregctb.scheduler.JobCategory;
 import ch.vd.uniregctb.scheduler.JobDefinition;
 import ch.vd.uniregctb.scheduler.JobParam;
 import ch.vd.uniregctb.scheduler.JobParamFile;
@@ -19,6 +18,7 @@ import ch.vd.uniregctb.scheduler.JobParamString;
 public class ImportImmeublesJob extends JobDefinition {
 
 	private static final String NAME = "ImportImmeublesJob";
+	private static final String CATEGORIE = "RF";
 
 	private static final String FILE = "File";
 	private static final String ENCODING = "Encoding";
@@ -37,7 +37,7 @@ public class ImportImmeublesJob extends JobDefinition {
 	}
 
 	public ImportImmeublesJob(int sortOrder, String description) {
-		super(NAME, JobCategory.RF, sortOrder, description);
+		super(NAME, CATEGORIE, sortOrder, description);
 
 		final JobParam param1 = new JobParam();
 		param1.setDescription("Fichier d'import (*.zip)");

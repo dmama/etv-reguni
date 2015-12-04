@@ -8,7 +8,7 @@ import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.uniregctb.norentes.annotation.Check;
 import ch.vd.uniregctb.norentes.annotation.Etape;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
+import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
@@ -68,17 +68,20 @@ public class Ec_16001_01_AnnulationPermis_Celibataire_Scenario extends Annulatio
 	public void etape1() {
 		PersonnePhysique julie = addHabitant(noIndJulie);
 		noHabJulie = julie.getNumero();
-		addForFiscalPrincipal(julie, commune, dateDebutSuisse, dateObtentionPermis.getOneDayBefore(), MotifFor.DEBUT_EXPLOITATION, MotifFor.PERMIS_C_SUISSE, ModeImposition.SOURCE);
-		addForFiscalPrincipal(julie, commune, dateObtentionPermis, null, MotifFor.PERMIS_C_SUISSE, null);
+		ForFiscalPrincipal f = addForFiscalPrincipal(julie, commune, dateDebutSuisse, dateObtentionPermis.getOneDayBefore(), MotifFor.DEBUT_EXPLOITATION, MotifFor.PERMIS_C_SUISSE);
+		f.setModeImposition(ModeImposition.SOURCE);
+
+		f = addForFiscalPrincipal(julie, commune, dateObtentionPermis, null, MotifFor.PERMIS_C_SUISSE, null);
+		f.setModeImposition(ModeImposition.ORDINAIRE);
 	}
 
 	@Check(id=1, descr="Vérifie que l'habitant possède bien un for courant avec le mode d'imposition ORDINAIRE")
 	public void check1() {
-		PersonnePhysique julie = (PersonnePhysique) tiersDAO.get(noHabJulie);
-		ForFiscalPrincipalPP ffp = julie.getDernierForFiscalPrincipal();
-		assertNotNull(ffp, "For principal de l'habitant " + julie.getNumero() + " null");
-		assertNull(ffp.getDateFin(), "Le for principal l'habitant " + julie.getNumero() + " est fermé");
-		assertEquals(ModeImposition.ORDINAIRE, ffp.getModeImposition(), "Le mode d'imposition n'est pas ORDINAIRE");
+			PersonnePhysique julie = (PersonnePhysique) tiersDAO.get(noHabJulie);
+			ForFiscalPrincipal ffp = julie.getDernierForFiscalPrincipal();
+			assertNotNull(ffp, "For principal de l'habitant " + julie.getNumero() + " null");
+			assertNull(ffp.getDateFin(), "Le for principal l'habitant " + julie.getNumero() + " est fermé");
+			assertEquals(ModeImposition.ORDINAIRE, ffp.getModeImposition(), "Le mode d'imposition n'est pas ORDINAIRE");
 	}
 
 	@Etape(id=2, descr="Envoi de l'événement Annulation Permis")
@@ -97,7 +100,7 @@ public class Ec_16001_01_AnnulationPermis_Celibataire_Scenario extends Annulatio
 	@Check(id=2, descr="Vérification des fors fiscaux")
 	public void check2() {
 		PersonnePhysique julie = (PersonnePhysique) tiersDAO.get(noHabJulie);
-		ForFiscalPrincipalPP ffp = julie.getDernierForFiscalPrincipal();
+		ForFiscalPrincipal ffp = julie.getDernierForFiscalPrincipal();
 		assertNotNull(ffp, "For principal de l'habitant " + julie.getNumero() + " null");
 		assertEquals(ffp.getDateDebut(), dateDebutSuisse, "Date de début for fausse");
 		assertNull(ffp.getDateFin(), "Le for de l'habitant " + julie.getNumero() + " est fermé");

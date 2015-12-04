@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:util="http://www.springframework.org/schema/util"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
 
 	<!--
 		Configuration des beans pour : Paramètre d'application 
@@ -34,8 +34,7 @@
 	</bean>
 
 	<!-- Les validators -->
-	<bean id="parametrePeriodeFiscalePPValidator" class="ch.vd.uniregctb.param.validator.ParametrePeriodeFiscalePPValidator" />
-	<bean id="parametrePeriodeFiscalePMValidator" class="ch.vd.uniregctb.param.validator.ParametrePeriodeFiscalePMValidator" />
+	<bean id="parametrePeriodeFiscaleValidator" class="ch.vd.uniregctb.param.validator.ParametrePeriodeFiscaleValidator" />
 	<bean id="modeleFeuilleDocumentValidator" class="ch.vd.uniregctb.param.validator.ModeleFeuilleDocumentValidator">
 		<property name="modeleDocumentDAO" ref="modeleDocumentDAO" />
 	</bean>
@@ -49,13 +48,6 @@
 		<property name="manager" ref="paramPeriodeManager" />
 		<property name="tiersMapHelper" ref="tiersMapHelper" />
 		<property name="messageSource" ref="messageSource" />
-		<property name="validators">
-			<util:list>
-				<ref bean="parametrePeriodeFiscalePPValidator"/>
-				<ref bean="parametrePeriodeFiscalePMValidator"/>
-				<ref bean="modeleDocumentValidator"/>
-			</util:list>
-		</property>
 	</bean>
 
 	<bean id="modeleFeuilleDocumentController" class="ch.vd.uniregctb.param.ModeleFeuilleDocumentController">

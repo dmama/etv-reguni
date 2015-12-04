@@ -16,7 +16,7 @@ public class EvenementCivilEchIssuDe99Strategy implements EvenementCivilEchTrans
 
 	private final TiersService tiersService;
 
-	private static final EvenementCivilEchTranslationStrategy INDEXATION_ONLY = new IndexationPureCivilEchTranslationStrategy();
+	private static final EvenementCivilEchTranslationStrategy INDEXATION_ONLY = new IndexationPureTranslationStrategy();
 
 	public EvenementCivilEchIssuDe99Strategy(TiersService tiersService) {
 		this.tiersService = tiersService;

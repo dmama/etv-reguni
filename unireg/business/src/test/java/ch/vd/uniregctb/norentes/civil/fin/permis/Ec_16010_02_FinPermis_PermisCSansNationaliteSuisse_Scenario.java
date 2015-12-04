@@ -16,7 +16,6 @@ import ch.vd.uniregctb.norentes.annotation.Etape;
 import ch.vd.uniregctb.norentes.common.EvenementCivilScenario;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
 import ch.vd.uniregctb.type.ModeImposition;
@@ -89,8 +88,11 @@ public class Ec_16010_02_FinPermis_PermisCSansNationaliteSuisse_Scenario extends
 	public void step1() {
 		PersonnePhysique rosa = addHabitant(noIndRosa);
 		noHabRosa = rosa.getNumero();
-		addForFiscalPrincipal(rosa, communePermis, dateArrivee, dateObtentionPermisC.getOneDayBefore(), MotifFor.ARRIVEE_HC, MotifFor.PERMIS_C_SUISSE, ModeImposition.SOURCE);
-		addForFiscalPrincipal(rosa, communePermis, dateObtentionPermisC, null, MotifFor.PERMIS_C_SUISSE, null);
+		ForFiscalPrincipal f = addForFiscalPrincipal(rosa, communePermis, dateArrivee, dateObtentionPermisC.getOneDayBefore(), MotifFor.ARRIVEE_HC, MotifFor.PERMIS_C_SUISSE);
+		f.setModeImposition(ModeImposition.SOURCE);
+
+		f = addForFiscalPrincipal(rosa, communePermis, dateObtentionPermisC, null, MotifFor.PERMIS_C_SUISSE, null);
+		f.setModeImposition(ModeImposition.ORDINAIRE);
 	}
 
 	@Check(id=1, descr="Vérifie l'habitant Roberto")
@@ -121,7 +123,7 @@ public class Ec_16010_02_FinPermis_PermisCSansNationaliteSuisse_Scenario extends
 			final List<ForFiscal> fors = roberto.getForsFiscauxSorted();
 			assertEquals(2, fors.size(), "Il devrait y avoir 2 fors fiscaux");
 
-			final ForFiscalPrincipalPP premier = (ForFiscalPrincipalPP) fors.get(0);
+			final ForFiscalPrincipal premier = (ForFiscalPrincipal) fors.get(0);
 			assertEquals(dateArrivee, premier.getDateDebut(), "La date d'ouverture du premier for fiscal n'est pas la bonne");
 			assertEquals(MotifFor.ARRIVEE_HC, premier.getMotifOuverture(), "Le motif d'ouverture du premier for fiscal n'est pas le bon");
 			assertEquals(dateObtentionPermisC.getOneDayBefore(), premier.getDateFin(),
@@ -130,7 +132,7 @@ public class Ec_16010_02_FinPermis_PermisCSansNationaliteSuisse_Scenario extends
 					"Le motif de fermeture du premier for fiscal n'est pas le bon");
 			assertEquals(ModeImposition.SOURCE, premier.getModeImposition(), "Le mode d'imposition du premier for fiscal n'est pas le bon");
 
-			final ForFiscalPrincipalPP second = (ForFiscalPrincipalPP) fors.get(1);
+			final ForFiscalPrincipal second = (ForFiscalPrincipal) fors.get(1);
 			assertEquals(dateObtentionPermisC, second.getDateDebut(), "La date d'ouverture du premier for fiscal n'est pas la bonne");
 			assertEquals(MotifFor.PERMIS_C_SUISSE, second.getMotifOuverture(),
 					"Le motif d'ouverture du premier for fiscal n'est pas le bon");

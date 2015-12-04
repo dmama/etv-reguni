@@ -122,7 +122,7 @@ public class ListeRecapServiceImpl implements ListeRecapService {
 		 */
 
 		editiqueCompositionService.imprimeLRForBatch(lrSaved);
-		evenementFiscalService.publierEvenementFiscalEmissionListeRecapitulative(lrSaved, RegDate.get());
+		evenementFiscalService.publierEvenementFiscalOuverturePeriodeDecompteLR(dpi, lrSaved, RegDate.get());
 	}
 
 	private DeclarationImpotSource saveLR(DebiteurPrestationImposable dpi, RegDate dateDebutPeriode, RegDate dateFinPeriode) throws Exception {
@@ -190,8 +190,9 @@ public class ListeRecapServiceImpl implements ListeRecapService {
 		final EtatDeclarationSommee etat = new EtatDeclarationSommee(dateTraitement,dateExpedition);
 		lr.addEtat(etat);
 		editiqueCompositionService.imprimeSommationLRForBatch(lr, RegDate.get());
-		evenementFiscalService.publierEvenementFiscalSommationListeRecapitulative(lr, etat.getDateObtention());
+		evenementFiscalService.publierEvenementFiscalSommationLR((DebiteurPrestationImposable) lr.getTiers(), lr, etat.getDateObtention());
 	}
+
 
 	/**
 	 * {@inheritDoc}

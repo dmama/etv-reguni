@@ -6,7 +6,7 @@ public enum Sexe {
 
 	private final String displayName;
 
-	Sexe(String displayName) {
+	private Sexe(String displayName) {
 		this.displayName = displayName;
 	}
 

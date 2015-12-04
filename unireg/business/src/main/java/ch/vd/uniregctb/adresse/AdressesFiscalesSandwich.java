@@ -52,7 +52,7 @@ public class AdressesFiscalesSandwich {
 			return;
 		}
 
-		@SuppressWarnings({"unchecked"}) final List<AdresseGenerique>[] array = new List[defaults.length];
+		@SuppressWarnings({"unchecked"}) final List<AdresseGenerique> array[] = new List[defaults.length];
 		for (int i = 0, defaultsLength = defaults.length; i < defaultsLength; i++) {
 			array[i] = defaults[i].emballe();
 		}

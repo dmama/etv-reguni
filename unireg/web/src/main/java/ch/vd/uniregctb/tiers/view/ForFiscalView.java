@@ -10,7 +10,7 @@ import ch.vd.uniregctb.common.Annulable;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalAutreImpot;
 import ch.vd.uniregctb.tiers.ForFiscalAvecMotifs;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
+import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.ForFiscalRevenuFortune;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
 import ch.vd.uniregctb.tiers.NatureTiers;
@@ -116,8 +116,8 @@ public class ForFiscalView implements Comparable<ForFiscalView>, DateRange, Annu
 			this.forGestion = isForGestion;
 		}
 
-		if (forFiscal instanceof ForFiscalPrincipalPP) {
-			final ForFiscalPrincipalPP forFiscalPrincipal = (ForFiscalPrincipalPP) forFiscal;
+		if (forFiscal instanceof ForFiscalPrincipal) {
+			final ForFiscalPrincipal forFiscalPrincipal = (ForFiscalPrincipal) forFiscal;
 			this.modeImposition = forFiscalPrincipal.getModeImposition();
 		}
 
@@ -161,7 +161,7 @@ public class ForFiscalView implements Comparable<ForFiscalView>, DateRange, Annu
 	}
 
 	/**
-	 * @param typeAutoriteFiscale the typeAutoriteFiscale to set
+	 * @param typeForFiscal the typeForFiscal to set
 	 */
 	public void setTypeAutoriteFiscale(TypeAutoriteFiscale typeAutoriteFiscale) {
 		this.typeAutoriteFiscale = typeAutoriteFiscale;

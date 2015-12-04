@@ -27,7 +27,7 @@ public abstract class ListesProcessor<R extends ListesResults<R>, T extends List
 	 * @param <R> classe des Results
 	 * @param <T> classe des Threads
 	 */
-	protected interface Customizer<R extends ListesResults<R>, T extends ListesThread<R>> {
+	protected static interface Customizer<R extends ListesResults<R>, T extends ListesThread<R>> {
 
 		/**
 		 * Renvoie un itérateur des identifiants de contribuables à lister

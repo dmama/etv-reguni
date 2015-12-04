@@ -17,7 +17,7 @@ import ch.vd.uniregctb.indexer.GlobalIndex;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer.Mode;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexerImpl;
 import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
+import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersCriteria;
@@ -68,7 +68,7 @@ public class MassTiersIndexerTest extends BusinessTest {
 
 		loadDatabase(DBUNIT_FILENAME);
 
-		indexer = new MassTiersIndexer(gti, transactionManager, sessionFactory, 4, 10, Mode.FULL, dialect, null);
+		indexer = new MassTiersIndexer(gti, transactionManager, sessionFactory, 4, 10, Mode.FULL, dialect, null, false, tiersDAO, servicePM);
 	}
 
 	@Override
@@ -188,7 +188,7 @@ public class MassTiersIndexerTest extends BusinessTest {
 				nh = new PersonnePhysique(false);
 				nh.setNom("Duclou");
 				{
-					ForFiscalPrincipalPP f = new ForFiscalPrincipalPP();
+					ForFiscalPrincipal f = new ForFiscalPrincipal();
 					f.setDateDebut(date(2000, 1, 1));
 					f.setDateFin(null);
 					f.setGenreImpot(GenreImpot.REVENU_FORTUNE);

@@ -15,8 +15,8 @@ public class TiersAdresseController extends AbstractTiersController {
 
 	protected final Logger LOGGER = LoggerFactory.getLogger(TiersAdresseController.class);
 
-	private static final String NUMERO_CTB_PARAMETER_NAME = "numero";
-	private static final String ID_ADRESSE_PARAMETER_NAME = "idAdresse";
+	private final static String NUMERO_CTB_PARAMETER_NAME = "numero";
+	private final static String ID_ADRESSE_PARAMETER_NAME = "idAdresse";
 
 	private AdresseManager adresseManager;
 

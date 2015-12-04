@@ -7,13 +7,13 @@ public enum EvenementCivilEchProcessingMode {
 
 	/**
 	 * A traiter sur la voie à trafic léger sans aucun délai (à utiliser pour les relances d'événements
-	 * demandées par un opérateur UNIREG)
+	 * demandées par un opérateur)
 	 */
 	IMMEDIATE,
 
 	/**
 	 * A traiter sur la voie à trafic léger avec délai normal (à utiliser pour les arrivées d'événements
-	 * à faible trafic générés par l'opérateur du référenciel civil)
+	 * à faible trafic)
 	 */
 	MANUAL,
 

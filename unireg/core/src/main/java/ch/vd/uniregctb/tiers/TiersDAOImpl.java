@@ -455,8 +455,8 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 			final EntitySetSetter<SituationFamille> setter = new EntitySetSetter<SituationFamille>() {
 				@Override
 				public void setEntitySet(Tiers tiers, Set<SituationFamille> set) {
-					if (tiers instanceof ContribuableImpositionPersonnesPhysiques) {
-						((ContribuableImpositionPersonnesPhysiques) tiers).setSituationsFamille(set);
+					if (tiers instanceof Contribuable) {
+						((Contribuable) tiers).setSituationsFamille(set);
 					}
 				}
 			};
@@ -513,127 +513,6 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 			// on associe les immeubles avec les tiers à la main
 			associate(session, immeubles, tiers, getter, setter);
 		}
-
-		if (parts != null && parts.contains(Parts.ALLEGEMENTS_FISCAUX)) {
-			// on charge les allègements fiscaux en vrac
-			final List<AllegementFiscal> allegements = queryObjectsByIds("from AllegementFiscal as af where af.entreprise.id in (:ids)", ids, session);
-
-			final TiersIdGetter<AllegementFiscal> getter = new TiersIdGetter<AllegementFiscal>() {
-				@Override
-				public Long getTiersId(AllegementFiscal entity) {
-					return entity.getEntreprise().getId();
-				}
-			};
-
-			final EntitySetSetter<AllegementFiscal> setter = new EntitySetSetter<AllegementFiscal>() {
-				@Override
-				public void setEntitySet(Tiers tiers, Set<AllegementFiscal> set) {
-					if (tiers instanceof Entreprise) {
-						((Entreprise) tiers).setAllegementsFiscaux(set);
-					}
-				}
-			};
-
-			// associations manuelles
-			associate(session, allegements, tiers, getter, setter);
-		}
-
-		if (parts != null && parts.contains(Parts.ETATS_FISCAUX)) {
-			// on charge les états fiscaux en vrac
-			final List<EtatEntreprise> etats = queryObjectsByIds("from EtatEntreprise as ee where ee.entreprise.id in (:ids)", ids, session);
-
-			final TiersIdGetter<EtatEntreprise> getter = new TiersIdGetter<EtatEntreprise>() {
-				@Override
-				public Long getTiersId(EtatEntreprise entity) {
-					return entity.getEntreprise().getId();
-				}
-			};
-
-			final EntitySetSetter<EtatEntreprise> setter = new EntitySetSetter<EtatEntreprise>() {
-				@Override
-				public void setEntitySet(Tiers tiers, Set<EtatEntreprise> set) {
-					if (tiers instanceof Entreprise) {
-						((Entreprise) tiers).setEtats(set);
-					}
-				}
-			};
-
-			// associations manuelles
-			associate(session, etats, tiers, getter, setter);
-		}
-
-		if (parts != null && parts.contains(Parts.REGIMES_FISCAUX)) {
-			// on charge les régimes fiscaux en vrac
-			final List<RegimeFiscal> regimes = queryObjectsByIds("from RegimeFiscal as rf where rf.entreprise.id in (:ids)", ids, session);
-
-			final TiersIdGetter<RegimeFiscal> getter = new TiersIdGetter<RegimeFiscal>() {
-				@Override
-				public Long getTiersId(RegimeFiscal entity) {
-					return entity.getEntreprise().getId();
-				}
-			};
-
-			final EntitySetSetter<RegimeFiscal> setter = new EntitySetSetter<RegimeFiscal>() {
-				@Override
-				public void setEntitySet(Tiers tiers, Set<RegimeFiscal> set) {
-					if (tiers instanceof Entreprise) {
-						((Entreprise) tiers).setRegimesFiscaux(set);
-					}
-				}
-			};
-
-			// associations manuelles
-			associate(session, regimes, tiers, getter, setter);
-		}
-
-		if (parts != null && parts.contains(Parts.DONNEES_RC)) {
-			// on charge les données civiles en vrac
-			final List<DonneesRegistreCommerce> donnees = queryObjectsByIds("from DonneesRegistreCommerce as rc where rc.entreprise.id in (:ids)", ids, session);
-
-			final TiersIdGetter<DonneesRegistreCommerce> getter = new TiersIdGetter<DonneesRegistreCommerce>() {
-				@Override
-				public Long getTiersId(DonneesRegistreCommerce entity) {
-					return entity.getEntreprise().getId();
-				}
-			};
-
-			final EntitySetSetter<DonneesRegistreCommerce> setter = new EntitySetSetter<DonneesRegistreCommerce>() {
-				@Override
-				public void setEntitySet(Tiers tiers, Set<DonneesRegistreCommerce> set) {
-					if (tiers instanceof Entreprise) {
-						((Entreprise) tiers).setDonneesRC(set);
-					}
-				}
-			};
-
-			// associations manuelles
-			associate(session, donnees, tiers, getter, setter);
-		}
-
-		if (parts != null && parts.contains(Parts.CAPITAUX)) {
-			// on charge les capitaux en vrac
-			final List<CapitalEntreprise> capitaux = queryObjectsByIds("from CapitalEntreprise as ce where ce.entreprise.id in (:ids)", ids, session);
-
-			final TiersIdGetter<CapitalEntreprise> getter = new TiersIdGetter<CapitalEntreprise>() {
-				@Override
-				public Long getTiersId(CapitalEntreprise entity) {
-					return entity.getEntreprise().getId();
-				}
-			};
-
-			final EntitySetSetter<CapitalEntreprise> setter = new EntitySetSetter<CapitalEntreprise>() {
-				@Override
-				public void setEntitySet(Tiers tiers, Set<CapitalEntreprise> set) {
-					if (tiers instanceof Entreprise) {
-						((Entreprise) tiers).setCapitaux(set);
-					}
-				}
-			};
-
-			// associations manuelles
-			associate(session, capitaux, tiers, getter, setter);
-		}
-
 		return tiers;
 	}
 
@@ -1048,61 +927,6 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 		return pp;
 	}
 
-	/**
-	 * Recherche l'Entreprise par son numéro d'organisation au régistre des entreprises.
-	 *
-	 * <p>
-	 * Ne tiens pas compte des tiers entreprise annulés.
-	 * </p>
-	 * @param numeroOrganisation Le numéro RCEnt
-	 * @return L'entreprise correspondant au numéro, ou null si aucune n'est trouvée.
-	 */
-	public Entreprise getEntrepriseByNumeroOrganisation(long numeroOrganisation) {
-		final Criteria crit = getCurrentSession().createCriteria(Entreprise.class);
-		crit.add(Restrictions.eq("numeroEntreprise", numeroOrganisation));
-		crit.add(Restrictions.isNull("annulationDate"));
-
-		List<Entreprise> result = crit.list();
-
-		if (result.size() > 1) {
-			long[] noEntreprises = new long[result.size()];
-			for (int i = 0; i < result.size(); i++) {
-				noEntreprises[i] = result.get(i).getNumero();
-			}
-			throw new PlusieursEntreprisesAvecMemeNumeroOrganisationException(numeroOrganisation, noEntreprises);
-		}
-		return result.size() == 0 ? null : result.get(0);
-	}
-
-	/**
-	 * Recherche l'établissement par son numéro de site au régistre des entreprises.
-	 *
-	 * <p>
-	 * Ne tiens pas compte des tiers etablissement annulés.
-	 * </p>
-	 * @param numeroSite Le numéro RCEnt
-	 * @return L'établissement correspondant au numéro, ou null si aucune n'est trouvée.
-	 */
-	@Override
-	public Etablissement getEtablissementByNumeroSite(long numeroSite) {
-		final Criteria crit = getCurrentSession().createCriteria(Etablissement.class);
-		crit.add(Restrictions.eq("numeroEtablissement", numeroSite));
-		crit.add(Restrictions.isNull("annulationDate"));
-
-		List<Etablissement> result = crit.list();
-
-		if (result.size() > 1) {
-			long[] noEtablissements = new long[result.size()];
-			int i = 0;
-			for (Etablissement etablissement : result) { // Usage de l'itérateur. Performant quel que soit l'implémentation de List.
-				noEtablissements[i] = etablissement.getNumero();
-				++i;
-			}
-			throw new PlusieursEtablissementsAvecMemeNumeroSitesException(numeroSite, noEtablissements);
-		}
-		return result.size() == 0 ? null : result.get(0);
-	}
-
 	@Override
 	public void updateOids(final Map<Long, Integer> tiersOidsMapping) {
 
@@ -1364,14 +1188,14 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 		return addAndSave(debiteur, periodicite, PERIODICITE_ACCESSOR);
 	}
 
-	private static final EntityAccessor<ContribuableImpositionPersonnesPhysiques, SituationFamille> SITUATION_FAMILLE_ACCESSOR = new EntityAccessor<ContribuableImpositionPersonnesPhysiques, SituationFamille>() {
+	private static final EntityAccessor<Contribuable, SituationFamille> SITUATION_FAMILLE_ACCESSOR = new EntityAccessor<Contribuable, SituationFamille>() {
 		@Override
-		public Collection<SituationFamille> getEntities(ContribuableImpositionPersonnesPhysiques ctb) {
+		public Collection<SituationFamille> getEntities(Contribuable ctb) {
 			return ctb.getSituationsFamille();
 		}
 
 		@Override
-		public void addEntity(ContribuableImpositionPersonnesPhysiques ctb, SituationFamille entity) {
+		public void addEntity(Contribuable ctb, SituationFamille entity) {
 			ctb.addSituationFamille(entity);
 		}
 
@@ -1386,7 +1210,7 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public SituationFamille addAndSave(ContribuableImpositionPersonnesPhysiques contribuable, SituationFamille situation) {
+	public SituationFamille addAndSave(Contribuable contribuable, SituationFamille situation) {
 		return addAndSave(contribuable, situation, SITUATION_FAMILLE_ACCESSOR);
 	}
 
@@ -1459,151 +1283,6 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 	@Override
 	public IdentificationEntreprise addAndSave(Contribuable ctb, IdentificationEntreprise ident) {
 		return addAndSave(ctb, ident, IDENTIFICATION_ENTREPRISE_ACCESSOR);
-	}
-
-	private static final EntityAccessor<Etablissement, DomicileEtablissement> DOMICILE_ETABLISSEMENT_ACCESSOR = new EntityAccessor<Etablissement, DomicileEtablissement>() {
-		@Override
-		public Collection<DomicileEtablissement> getEntities(Etablissement tiers) {
-			return tiers.getDomiciles();
-		}
-
-		@Override
-		public void addEntity(Etablissement etablissement, DomicileEtablissement domicile) {
-			etablissement.addDomicile(domicile);
-		}
-
-		@Override
-		public void assertSame(DomicileEtablissement entity1, DomicileEtablissement entity2) {
-			Assert.isSame(entity1.getDateDebut(), entity2.getDateDebut());
-			Assert.isSame(entity1.getDateFin(), entity2.getDateFin());
-			Assert.isSame(entity1.getTypeAutoriteFiscale(), entity2.getTypeAutoriteFiscale());
-			Assert.isSame(entity1.getNumeroOfsAutoriteFiscale(), entity2.getNumeroOfsAutoriteFiscale());
-		}
-	};
-
-	@Override
-	public DomicileEtablissement addAndSave(Etablissement etb, DomicileEtablissement domicile) {
-		return addAndSave(etb, domicile, DOMICILE_ETABLISSEMENT_ACCESSOR);
-	}
-
-	private static final EntityAccessor<Entreprise, AllegementFiscal> ALLEGEMENT_FISCAL_ACCESSOR = new EntityAccessor<Entreprise, AllegementFiscal>() {
-		@Override
-		public Collection<AllegementFiscal> getEntities(Entreprise tiers) {
-			return tiers.getAllegementsFiscaux();
-		}
-
-		@Override
-		public void addEntity(Entreprise tiers, AllegementFiscal entity) {
-			tiers.addAllegementFiscal(entity);
-		}
-
-		@Override
-		public void assertSame(AllegementFiscal entity1, AllegementFiscal entity2) {
-			Assert.isSame(entity1.getDateDebut(), entity2.getDateDebut());
-			Assert.isSame(entity1.getDateFin(), entity2.getDateFin());
-			Assert.isSame(entity1.getNoOfsCommune(), entity2.getNoOfsCommune());
-			Assert.isSame(entity1.getTypeCollectivite(), entity2.getTypeCollectivite());
-			Assert.isSame(entity1.getTypeImpot(), entity2.getTypeImpot());
-		}
-	};
-
-	@Override
-	public AllegementFiscal addAndSave(Entreprise entreprise, AllegementFiscal allegement) {
-		return addAndSave(entreprise, allegement, ALLEGEMENT_FISCAL_ACCESSOR);
-	}
-
-	private static final EntityAccessor<Entreprise, Bouclement> BOUCLEMENT_ACCESSOR = new EntityAccessor<Entreprise, Bouclement>() {
-		@Override
-		public Collection<Bouclement> getEntities(Entreprise tiers) {
-			return tiers.getBouclements();
-		}
-
-		@Override
-		public void addEntity(Entreprise tiers, Bouclement entity) {
-			tiers.addBouclement(entity);
-		}
-
-		@Override
-		public void assertSame(Bouclement entity1, Bouclement entity2) {
-			Assert.isSame(entity1.getDateDebut(), entity2.getDateDebut());
-			Assert.isSame(entity1.getAncrage(), entity2.getAncrage());
-			Assert.isSame(entity1.getPeriodeMois(), entity2.getPeriodeMois());
-		}
-	};
-
-	@Override
-	public Bouclement addAndSave(Entreprise entreprise, Bouclement bouclement) {
-		return addAndSave(entreprise, bouclement, BOUCLEMENT_ACCESSOR);
-	}
-
-	private static final EntityAccessor<Entreprise, RegimeFiscal> REGIME_FISCAL_ACCESSOR = new EntityAccessor<Entreprise, RegimeFiscal>() {
-		@Override
-		public Collection<RegimeFiscal> getEntities(Entreprise tiers) {
-			return tiers.getRegimesFiscaux();
-		}
-
-		@Override
-		public void addEntity(Entreprise tiers, RegimeFiscal entity) {
-			tiers.addRegimeFiscal(entity);
-		}
-
-		@Override
-		public void assertSame(RegimeFiscal entity1, RegimeFiscal entity2) {
-			Assert.isSame(entity1.getPortee(), entity2.getPortee());
-			Assert.isSame(entity1.getCode(), entity2.getCode());
-		}
-	};
-
-	@Override
-	public RegimeFiscal addAndSave(Entreprise entreprise, RegimeFiscal regime) {
-		return addAndSave(entreprise, regime, REGIME_FISCAL_ACCESSOR);
-	}
-
-	private static final EntityAccessor<Entreprise, EtatEntreprise> ETAT_ENTREPRISE_ACCESSOR = new EntityAccessor<Entreprise, EtatEntreprise>() {
-		@Override
-		public Collection<EtatEntreprise> getEntities(Entreprise tiers) {
-			return tiers.getEtats();
-		}
-
-		@Override
-		public void addEntity(Entreprise tiers, EtatEntreprise entity) {
-			tiers.addEtat(entity);
-		}
-
-		@Override
-		public void assertSame(EtatEntreprise entity1, EtatEntreprise entity2) {
-			Assert.isSame(entity1.getDateObtention(), entity2.getDateObtention());
-			Assert.isSame(entity1.getType(), entity2.getType());
-		}
-	};
-
-	@Override
-	public EtatEntreprise addAndSave(Entreprise entreprise, EtatEntreprise etat) {
-		return addAndSave(entreprise, etat, ETAT_ENTREPRISE_ACCESSOR);
-	}
-
-	private static final EntityAccessor<Entreprise, FlagEntreprise> FLAG_ENTREPRISE_ACCESSOR = new EntityAccessor<Entreprise, FlagEntreprise>() {
-		@Override
-		public Collection<FlagEntreprise> getEntities(Entreprise tiers) {
-			return tiers.getFlags();
-		}
-
-		@Override
-		public void addEntity(Entreprise tiers, FlagEntreprise entity) {
-			tiers.addFlag(entity);
-		}
-
-		@Override
-		public void assertSame(FlagEntreprise entity1, FlagEntreprise entity2) {
-			Assert.isSame(entity1.getAnneeDebutValidite(), entity2.getAnneeDebutValidite());
-			Assert.isSame(entity1.getAnneeFinValidite(), entity2.getAnneeFinValidite());
-			Assert.isSame(entity1.getType(), entity2.getType());
-		}
-	};
-
-	@Override
-	public FlagEntreprise addAndSave(Entreprise entreprise, FlagEntreprise flag) {
-		return addAndSave(entreprise, flag, FLAG_ENTREPRISE_ACCESSOR);
 	}
 
 	@SuppressWarnings({"unchecked"})
@@ -1697,8 +1376,6 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 			LOGGER.info(String.format("Date de debut: %s ; Date de fin: %s ; Nombre de ctb modifiés: %d", dateDebutRech, dateFinRech, listeCtbModifies.size()));
 		}
 
-		// TODO les allègements fiscaux des PM doivent-ils être pris en compte ?
-
 		return listeCtbModifies;
 	}
 
@@ -1739,7 +1416,7 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 		}
 	}
 
-	private interface EntityAccessor<T extends Tiers, E extends HibernateEntity> {
+	private static interface EntityAccessor<T extends Tiers, E extends HibernateEntity> {
 		Collection<E> getEntities(T tiers);
 
 		void addEntity(T tiers, E entity);

@@ -15,7 +15,7 @@
 		class="display" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator">
 
 	<display:column style="width:16px;">
-		<c:if test="${forFiscal.natureForFiscal == 'ForFiscalPrincipalPP' || forFiscal.natureForFiscal == 'ForFiscalPrincipalPM'}">
+		<c:if test="${forFiscal.natureForFiscal == 'ForFiscalPrincipal'}">
 			<div id="ffid-${forFiscal.id}" class="forPrincipalIconSmall" title="For fiscal principal"/>
 		</c:if>
 		<c:if test="${forFiscal.natureForFiscal == 'ForFiscalSecondaire'}">
@@ -36,20 +36,19 @@
 				<fmt:message key="option.rattachement.${forFiscal.motifRattachement}" />
 		</c:if>
 	</display:column>
-	<c:if test="${command.natureTiers != 'Entreprise'}">
-		<display:column sortable ="true" titleKey="label.mode.imposition">
-			<c:if test="${forFiscal.natureForFiscal == 'ForFiscalPrincipalPP'}">
+	<display:column sortable ="true" titleKey="label.mode.imposition">
+		<c:if test="${forFiscal.natureForFiscal == 'ForFiscalPrincipal'}">
 				<fmt:message key="option.mode.imposition.${forFiscal.modeImposition}" />
-			</c:if>
-		</display:column>
-	</c:if>
+		</c:if>
+	</display:column>
 	<display:column sortable ="true" titleKey="label.for.abrege">
 			<c:choose>
 				<c:when test="${forFiscal.typeAutoriteFiscale == 'COMMUNE_OU_FRACTION_VD' }">			
 					<unireg:commune ofs="${forFiscal.numeroForFiscalCommune}" displayProperty="nomOfficiel" titleProperty="noOFS" date="${forFiscal.regDateOuverture}"/>
 				</c:when>
 				<c:when test="${forFiscal.typeAutoriteFiscale == 'COMMUNE_HC' }">
-					<unireg:commune ofs="${forFiscal.numeroForFiscalCommuneHorsCanton}" displayProperty="nomOfficielAvecCanton" titleProperty="noOFS" date="${forFiscal.regDateOuverture}"/>
+					<unireg:commune ofs="${forFiscal.numeroForFiscalCommuneHorsCanton}" displayProperty="nomOfficiel" titleProperty="noOFS" date="${forFiscal.regDateOuverture}"/>
+					(<unireg:commune ofs="${forFiscal.numeroForFiscalCommuneHorsCanton}" displayProperty="sigleCanton" date="${forFiscal.regDateOuverture}"/>)
 				</c:when>
 				<c:when test="${forFiscal.typeAutoriteFiscale == 'PAYS_HS' }">
 					<unireg:pays ofs="${forFiscal.numeroForFiscalPays}" displayProperty="nomCourt" titleProperty="noOFS" date="${forFiscal.regDateOuverture}"/>
@@ -76,22 +75,20 @@
 				</c:if>
 			</c:if>
 	</display:column>
-	<c:if test="${command.natureTiers != 'Entreprise'}">
-		<display:column sortable ="true" titleKey="label.for.gestion">
-			<c:if test="${!forFiscal.annule}">
-				<c:if test="${forFiscal.natureForFiscal != 'ForFiscalAutreImpot'}">
-					<input type="checkbox" <c:if test="${forFiscal.forGestion}">checked</c:if> disabled="disabled">
-				</c:if>
+	<display:column sortable ="true" titleKey="label.for.gestion">
+		<c:if test="${!forFiscal.annule}">
+			<c:if test="${forFiscal.natureForFiscal != 'ForFiscalAutreImpot'}">
+				<input type="checkbox" <c:if test="${forFiscal.forGestion}">checked</c:if> disabled="disabled">
 			</c:if>
-		</display:column>
-	</c:if>
+		</c:if>
+	</display:column>
 	<display:column class="action">
 		<c:if test="${page == 'visu' }">
 			<unireg:consulterLog entityNature="ForFiscal" entityId="${forFiscal.id}"/>
 		</c:if>
 		<c:if test="${page == 'edit' }">
 			<c:if test="${!forFiscal.annule}">
-				<c:if test="${(forFiscal.natureForFiscal == 'ForFiscalPrincipalPP' || forFiscal.natureForFiscal == 'ForFiscalPrincipalPM') && autorisations.forsPrincipaux}">
+				<c:if test="${forFiscal.natureForFiscal == 'ForFiscalPrincipal' && autorisations.forsPrincipaux}">
 					<unireg:linkTo name="" action="/fors/principal/edit.do" method="GET" params="{forId:${forFiscal.id}}" link_class="edit" title="Edition de for" />
 					<c:if test="${forFiscal.dernierForPrincipalOuDebiteur}">
 						<unireg:linkTo name="" action="/fors/principal/cancel.do" method="POST" params="{forId:${forFiscal.id}}" link_class="delete"

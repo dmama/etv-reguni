@@ -29,12 +29,6 @@
 		</xs:complexContent>
 	</xs:complexType>
 
-	<xs:complexType name="organisationChangeEvent">
-		<xs:complexContent>
-			<xs:extension base="dataChangeEvent"/>
-		</xs:complexContent>
-	</xs:complexType>
-
 	<xs:complexType name="pmChangeEvent">
 		<xs:complexContent>
 			<xs:extension base="dataChangeEvent"/>
@@ -83,9 +77,6 @@
 			<xs:enumeration value="ANNULE_ET_REMPLACE"/>
 			<xs:enumeration value="PARENTE"/>
 			<xs:enumeration value="ASSUJETTISSEMENT_PAR_SUBSTITUTION"/>
-			<xs:enumeration value="ACTIVITE_ECONOMIQUE"/>
-			<xs:enumeration value="MANDAT"/>
-			<xs:enumeration value="FUSION_ENTREPRISES"/>
 		</xs:restriction>
 	</xs:simpleType>
 

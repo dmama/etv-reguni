@@ -7,5 +7,5 @@ public interface ServiceCivilLogger {
 	 *
 	 * @param value <b>vrai</b> si le dump est activé; <b>faux</b> s'il n'est pas activé.
 	 */
-	void setIndividuLogging(boolean value);
+	public void setIndividuLogging(boolean value);
 }

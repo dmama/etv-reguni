@@ -1,12 +1,9 @@
 package ch.vd.uniregctb.tiers;
 
-import javax.persistence.AttributeOverride;
-import javax.persistence.AttributeOverrides;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorColumn;
 import javax.persistence.DiscriminatorType;
-import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -42,13 +39,10 @@ import ch.vd.uniregctb.adresse.AdresseTiers;
 import ch.vd.uniregctb.common.AnnulableHelper;
 import ch.vd.uniregctb.common.BusinessComparable;
 import ch.vd.uniregctb.common.CollectionsUtils;
-import ch.vd.uniregctb.common.ComparisonHelper;
 import ch.vd.uniregctb.common.HibernateEntity;
 import ch.vd.uniregctb.common.LengthConstants;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
-import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePM;
-import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.TypeAdresseTiers;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
@@ -56,13 +50,11 @@ import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 
 /**
  * Personne avec laquelle l'ACI entretien une relation, de nature fiscale ou autre. Cette
- * personne peut être:
- * <ul>
- *     <li>Une personne physique, connue ou non du contrôle des habitants</li>
- *     <li>Une organisation (personne morale ou entité sans personnalité juridique, connue ou non du registre des personnes morales)</li>
- *     <li>Une autre communauté de personnes sans personnalité juridique complète (Pour le moment, limité au couple de personnes mariées ou liées par un partenariat enregistré, vivant en ménage commun
- *     (c'est-à-dire non séparées ou dont le partenariat n'est pas pas dissous)).</li>
- * </ul>
+ * personne peut être: - Une personne physique, connu ou non du contrôle des habitants - Une organisation (personne morale ou entité sans
+ * personnalité juridique, connue ou non du registre des personnes morales). - Une autre communauté de personnes sans personnalité juridique
+ * complète (Pour le moment, limité au couple de personnes mariées ou liées par un partenariat enregistré, vivant en ménage commun
+ * (c'est-à-dire non séparées ou dont le partenariat n'est pas pas dissous)).
+ *
  */
 @Entity
 @Table(name = "TIERS")
@@ -89,13 +81,14 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 	/**
 	 * Numero de compte bancaire ou du compte postal au format international IBAN (longueur maximum 21 pour les comptes suisses)
 	 */
-	private CoordonneesFinancieres coordonneesFinancieres;
+	private String numeroCompteBancaire;
 
 	/**
 	 * Titulaire du compte bancaire ou du compte postal
 	 */
 	private String titulaireCompteBancaire;
 
+	private String adresseBicSwift;
 	private boolean debiteurInactif = false;
 	private Boolean indexDirty;
 
@@ -223,27 +216,13 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 		adresseCourrierElectronique = theAdresseCourrierElectronique;
 	}
 
-	@Embedded
-	@AttributeOverrides({
-			@AttributeOverride(name = "iban", column = @Column(name = "NUMERO_COMPTE_BANCAIRE", length = LengthConstants.TIERS_NUMCOMPTE)),
-			@AttributeOverride(name = "bicSwift", column = @Column(name = "ADRESSE_BIC_SWIFT", length = LengthConstants.TIERS_ADRESSEBICSWIFT))
-	})
-	public CoordonneesFinancieres getCoordonneesFinancieres() {
-		return coordonneesFinancieres;
-	}
-
-	public void setCoordonneesFinancieres(CoordonneesFinancieres coordonneesFinancieres) {
-		this.coordonneesFinancieres = coordonneesFinancieres;
-	}
-
-	@Transient
+	@Column(name = "NUMERO_COMPTE_BANCAIRE", length = LengthConstants.TIERS_NUMCOMPTE)
 	public String getNumeroCompteBancaire() {
-		return coordonneesFinancieres != null ? coordonneesFinancieres.getIban() : null;
+		return numeroCompteBancaire;
 	}
 
-	@Transient
-	public String getAdresseBicSwift() {
-		return coordonneesFinancieres != null ? coordonneesFinancieres.getBicSwift() : null;
+	public void setNumeroCompteBancaire(String theNumeroCompteBancaire) {
+		numeroCompteBancaire = theNumeroCompteBancaire;
 	}
 
 	@Column(name = "TITULAIRE_COMPTE_BANCAIRE", length = LengthConstants.TIERS_PERSONNE)
@@ -358,6 +337,15 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 		blocageRemboursementAutomatique = theBlocageRemboursementAutomatique;
 	}
 
+	@Column(name = "ADRESSE_BIC_SWIFT", length = LengthConstants.TIERS_ADRESSEBICSWIFT)
+	public String getAdresseBicSwift() {
+		return adresseBicSwift;
+	}
+
+	public void setAdresseBicSwift(String theAdresseBicSwift) {
+		adresseBicSwift = theAdresseBicSwift;
+	}
+
 	@OneToMany(fetch = FetchType.LAZY)
 	@ForeignKey(name = "FK_RET_TRS_OBJ_ID")
 	@JoinColumn(name = "TIERS_OBJET_ID")
@@ -442,7 +430,8 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 		for (RapportEntreTiers rapportSujet : rapportsSujet) {
 			if (!rapportSujet.isAnnule() && type == rapportSujet.getType()) {
 				if (dernierRapport == null
-						|| RegDateHelper.isAfterOrEqual(rapportSujet.getDateDebut(), dernierRapport.getDateDebut(), NullDateBehavior.EARLIEST)) {
+						|| RegDateHelper.isAfterOrEqual(rapportSujet.getDateDebut(), dernierRapport.getDateDebut(),
+						NullDateBehavior.EARLIEST)) {
 					dernierRapport = rapportSujet;
 				}
 			}
@@ -650,7 +639,7 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 	 * @return Renvoie les fors principaux
 	 */
 	@Transient
-	public List<? extends ForFiscalPrincipal> getForsFiscauxPrincipauxActifsSorted() {
+	public List<ForFiscalPrincipal> getForsFiscauxPrincipauxActifsSorted() {
 		List<ForFiscalPrincipal> ffps = null;
 		if (forsFiscaux != null) {
 			ffps = new ArrayList<>();
@@ -659,7 +648,7 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 					ffps.add((ForFiscalPrincipal) ff);
 				}
 			}
-			Collections.sort(ffps, new DateRangeComparator<ForFiscal>());
+			Collections.sort(ffps, new DateRangeComparator<ForFiscalPrincipal>());
 		}
 		return ffps;
 	}
@@ -672,7 +661,8 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 	public List<ForFiscal> getForsFiscauxSorted() {
 		List<ForFiscal> fors = null;
 		if (forsFiscaux != null) {
-			fors = new ArrayList<>(forsFiscaux);
+			fors = new ArrayList<>();
+			fors.addAll(forsFiscaux);
 			Collections.sort(fors, new DateRangeComparator<ForFiscal>() {
 				@Override
 				public int compare(ForFiscal o1, ForFiscal o2) {
@@ -929,48 +919,35 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 				di.setNumero(numero + 1);
 			}
 
-			// les déclarations d'impôt ordinaires se voient parfois affublées d'un code de contrôle
-			if (di.getCodeControle() == null) {
+			// [SIFISC-1368] Les déclaration d'impôt ordinaires possèdent un code contrôle (un pour chaque pair contribuable/période fiscale) qui doit
+			// être générée/assigné au moment de l'insertion
+			if (annee >= DeclarationImpotOrdinaire.PREMIERE_ANNEE_RETOUR_ELECTRONIQUE && di.getCodeControle() == null) {
+				final List<Declaration> declsPeriode = getDeclarationsForPeriode(annee, true); // on veut les déclarations annulées !
 
-				// cas des déclarations PP depuis 2011
-				if (di instanceof DeclarationImpotOrdinairePP && annee >= DeclarationImpotOrdinairePP.PREMIERE_ANNEE_RETOUR_ELECTRONIQUE) {
-					// [SIFISC-1368] Les déclaration d'impôt ordinaires possèdent un code contrôle (un pour chaque pair contribuable/période fiscale) qui doit
-					// être générée/assigné au moment de l'insertion
+				// on recherche un code de contrôle déjà généré sur les déclarations préexistantes de la période
+				String codeControle = null;
+				if (declsPeriode != null) {
+					for (Declaration d : declsPeriode) {
+						final DeclarationImpotOrdinaire dio = (DeclarationImpotOrdinaire) d;
+						if (dio.getCodeControle() != null) {
+							codeControle = dio.getCodeControle();
+							break;
+						}
+					}
+				}
 
-					final List<Declaration> declsPeriode = getDeclarationsForPeriode(annee, true); // on veut les déclarations annulées !
-
-					// on recherche un code de contrôle déjà généré sur les déclarations préexistantes de la période
-					String codeControle = null;
+				if (codeControle == null) {
+					// pas de code déjà généré : on en génère un nouveau
+					codeControle = DeclarationImpotOrdinaire.generateCodeControle();
 					if (declsPeriode != null) {
+						// on profite pour assigner le code de contrôle généré à toutes les déclarations préexistantes de la période (= rattrapage de données)
 						for (Declaration d : declsPeriode) {
-							final DeclarationImpotOrdinairePP dio = (DeclarationImpotOrdinairePP) d;
-							if (dio.getCodeControle() != null) {
-								codeControle = dio.getCodeControle();
-								break;
-							}
+							final DeclarationImpotOrdinaire dio = (DeclarationImpotOrdinaire) d;
+							dio.setCodeControle(codeControle);
 						}
 					}
-
-					if (codeControle == null) {
-						// pas de code déjà généré : on en génère un nouveau
-						codeControle = DeclarationImpotOrdinairePP.generateCodeControle();
-						if (declsPeriode != null) {
-							// on profite pour assigner le code de contrôle généré à toutes les déclarations préexistantes de la période (= rattrapage de données)
-							for (Declaration d : declsPeriode) {
-								final DeclarationImpotOrdinairePP dio = (DeclarationImpotOrdinairePP) d;
-								dio.setCodeControle(codeControle);
-							}
-						}
-					}
-
-					di.setCodeControle(codeControle);
 				}
-
-				// cas des déclarations PM
-				else if (di instanceof DeclarationImpotOrdinairePM && annee >= DeclarationImpotOrdinairePM.PREMIERE_ANNEE_RETOUR_ELECTRONIQUE) {
-					// nouveau numéro pour chaque déclaration
-					di.setCodeControle(DeclarationImpotOrdinairePM.generateCodeControle());
-				}
+				di.setCodeControle(codeControle);
 			}
 		}
 		
@@ -1108,7 +1085,7 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 	/**
 	 * @return vrai s'il existe un for principal (ou une succession ininterrompue de fors principaux) durant la période spécifiée.
 	 */
-	public static boolean existForPrincipal(List<? extends ForFiscalPrincipal> principaux, @Nullable RegDate dateDebut, @Nullable RegDate dateFin) {
+	public static boolean existForPrincipal(List<ForFiscalPrincipal> principaux, @Nullable RegDate dateDebut, @Nullable RegDate dateFin) {
 
 		int indexCandidat = -1;
 
@@ -1397,29 +1374,116 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 	 */
 	@Override
 	public boolean equalsTo(Tiers obj) {
-		if (this == obj) {
+		if (this == obj)
 			return true;
-		}
-		if (getClass() != obj.getClass()) {
+		if (getClass() != obj.getClass())
 			return false;
+        if (adresseBicSwift == null) {
+			if (obj.adresseBicSwift != null)
+				return false;
 		}
-
-		return ComparisonHelper.areEqual(coordonneesFinancieres, obj.coordonneesFinancieres)
-				&& ComparisonHelper.areEqual(adresseCourrierElectronique, obj.adresseCourrierElectronique)
-				&& ComparisonHelper.areEqual(adressesTiers, obj.adressesTiers)
-				&& ComparisonHelper.areEqual(blocageRemboursementAutomatique, obj.blocageRemboursementAutomatique)
-				&& ComparisonHelper.areEqual(complementNom, obj.complementNom)
-				&& ComparisonHelper.areEqual(debiteurInactif, obj.debiteurInactif)
-				&& ComparisonHelper.areEqual(declarations, obj.declarations)
-				&& ComparisonHelper.areEqual(forsFiscaux, obj.forsFiscaux)
-				&& ComparisonHelper.areEqual(numero, obj.numero)
-				&& ComparisonHelper.areEqual(numeroTelecopie, obj.numeroTelecopie)
-				&& ComparisonHelper.areEqual(numeroTelephonePortable, obj.numeroTelephonePortable)
-				&& ComparisonHelper.areEqual(numeroTelephonePrive, obj.numeroTelephonePrive)
-				&& ComparisonHelper.areEqual(numeroTelephoneProfessionnel, obj.numeroTelephoneProfessionnel)
-				&& ComparisonHelper.areEqual(personneContact, obj.personneContact)
-				&& ComparisonHelper.areEqual(rapportsObjet, obj.rapportsObjet)
-				&& ComparisonHelper.areEqual(rapportsSujet, obj.rapportsSujet)
-				&& ComparisonHelper.areEqual(titulaireCompteBancaire, obj.titulaireCompteBancaire);
+		else if (!adresseBicSwift.equals(obj.adresseBicSwift))
+			return false;
+		if (adresseCourrierElectronique == null) {
+			if (obj.adresseCourrierElectronique != null)
+				return false;
+		}
+		else if (!adresseCourrierElectronique.equals(obj.adresseCourrierElectronique))
+			return false;
+		if (adressesTiers == null) {
+			if (obj.adressesTiers != null)
+				return false;
+		}
+		else if (!adressesTiers.equals(obj.adressesTiers))
+			return false;
+		if (blocageRemboursementAutomatique == null) {
+			if (obj.blocageRemboursementAutomatique != null)
+				return false;
+		}
+		else if (!blocageRemboursementAutomatique.equals(obj.blocageRemboursementAutomatique))
+			return false;
+		if (complementNom == null) {
+			if (obj.complementNom != null)
+				return false;
+		}
+		else if (!complementNom.equals(obj.complementNom))
+			return false;
+		if (debiteurInactif != obj.debiteurInactif)
+			return false;
+		if (declarations == null) {
+			if (obj.declarations != null)
+				return false;
+		}
+		else if (!declarations.equals(obj.declarations))
+			return false;
+		if (forsFiscaux == null) {
+			if (obj.forsFiscaux != null)
+				return false;
+		}
+		else if (!forsFiscaux.equals(obj.forsFiscaux))
+			return false;
+		if (numero == null) {
+			if (obj.numero != null)
+				return false;
+		}
+		else if (!numero.equals(obj.numero))
+			return false;
+		if (numeroCompteBancaire == null) {
+			if (obj.numeroCompteBancaire != null)
+				return false;
+		}
+		else if (!numeroCompteBancaire.equals(obj.numeroCompteBancaire))
+			return false;
+		if (numeroTelecopie == null) {
+			if (obj.numeroTelecopie != null)
+				return false;
+		}
+		else if (!numeroTelecopie.equals(obj.numeroTelecopie))
+			return false;
+		if (numeroTelephonePortable == null) {
+			if (obj.numeroTelephonePortable != null)
+				return false;
+		}
+		else if (!numeroTelephonePortable.equals(obj.numeroTelephonePortable))
+			return false;
+		if (numeroTelephonePrive == null) {
+			if (obj.numeroTelephonePrive != null)
+				return false;
+		}
+		else if (!numeroTelephonePrive.equals(obj.numeroTelephonePrive))
+			return false;
+		if (numeroTelephoneProfessionnel == null) {
+			if (obj.numeroTelephoneProfessionnel != null)
+				return false;
+		}
+		else if (!numeroTelephoneProfessionnel.equals(obj.numeroTelephoneProfessionnel))
+			return false;
+		if (personneContact == null) {
+			if (obj.personneContact != null)
+				return false;
+		}
+		else if (!personneContact.equals(obj.personneContact))
+			return false;
+		if (rapportsObjet == null) {
+			if (obj.rapportsObjet != null)
+				return false;
+		}
+		else if (!rapportsObjet.equals(obj.rapportsObjet))
+			return false;
+		if (rapportsSujet == null) {
+			if (obj.rapportsSujet != null)
+				return false;
+		}
+		else if (!rapportsSujet.equals(obj.rapportsSujet))
+			return false;
+		if (titulaireCompteBancaire == null) {
+			if (obj.titulaireCompteBancaire != null)
+				return false;
+		}
+		else if (!titulaireCompteBancaire.equals(obj.titulaireCompteBancaire))
+			return false;
+		return true;
 	}
+
+
 }

@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.declaration;
 
 import javax.persistence.Column;
+import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.Transient;
 import java.util.Date;
@@ -10,25 +11,37 @@ import org.hibernate.annotations.Type;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.LengthConstants;
-import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.type.Qualification;
 import ch.vd.uniregctb.type.TypeContribuable;
 import ch.vd.uniregctb.type.TypeDocument;
 
 @Entity
-public abstract class DeclarationImpotOrdinaire extends Declaration {
+@DiscriminatorValue("DI")
+public class DeclarationImpotOrdinaire extends Declaration {
+
+	private static final long serialVersionUID = -4869699873165367700L;
+
+	/**
+	 * [SIFISC-1368] première année où le retour par courrier électronique des déclarations d'impôt est possible.
+	 */
+	public static final int PREMIERE_ANNEE_RETOUR_ELECTRONIQUE = 2011;
 
 	/**
 	 * Numéro de séquence de la déclaration pour une période fiscale. La première déclaration prends le numéro 1.
 	 */
 	private Integer numero;
 
+	private Integer numeroOfsForGestion;
+
+	private TypeContribuable typeContribuable;
+
 	private Date dateImpressionChemiseTaxationOffice;
+
+	private Qualification qualification;
 
 	private RegDate delaiRetourImprime;
 
 	private Long retourCollectiviteAdministrativeId;
-
-	private TypeContribuable typeContribuable;
 
 	/**
 	 * <code>true</code> si la DI a été créée comme une "di libre", c'est-à-dire une DI sur la période courante (au moment de sa création) sans fin d'assujettissement connue (comme un décès ou un départ
@@ -37,14 +50,14 @@ public abstract class DeclarationImpotOrdinaire extends Declaration {
 	private boolean libre;
 
 	/**
-	 * Code pour le contrôle du retour électronique de la DI. L'unicité de ce code de contrôle au travers des différentes DI d'un contribuable
-	 * dépend du type de contribuable :
-	 * <ul>
-	 *     <li>il est différent pour toutes les DI d'un contribuable PM, toutes PF confondues&nbsp;;</li>
-	 *     <li>il est le même sur toutes les déclarations d'une période fiscale et d'un contribuable PP donné.</li>
-	 * </ul>
+	 * [SIFISC-1368] Code pour le contrôle du retour électronique de la DI. Ce code est le même sur toutes les déclarations d'une période fiscale et d'un contribuable donné.
 	 */
 	private String codeControle;
+
+	/**
+	 * [SIFISC-2100] Code de segmentation, ou Code Segment, fourni par TAO et utilisé lors de l'émission de la DI suivante
+	 */
+	private Integer codeSegment;
 
 	@Column(name = "RETOUR_COLL_ADMIN_ID")
 	@ForeignKey(name = "FK_DECL_RET_COLL_ADMIN_ID")
@@ -65,6 +78,16 @@ public abstract class DeclarationImpotOrdinaire extends Declaration {
 		numero = theNumero;
 	}
 
+	@Column(name = "TYPE_CTB", length = LengthConstants.DI_TYPE)
+	@Type(type = "ch.vd.uniregctb.hibernate.TypeContribuableUserType")
+	public TypeContribuable getTypeContribuable() {
+		return typeContribuable;
+	}
+
+	public void setTypeContribuable(TypeContribuable theTypeContribuable) {
+		typeContribuable = theTypeContribuable;
+	}
+
 	@Column(name = "DATE_IMPR_CHEMISE_TO")
 	public Date getDateImpressionChemiseTaxationOffice() {
 		return dateImpressionChemiseTaxationOffice;
@@ -72,6 +95,25 @@ public abstract class DeclarationImpotOrdinaire extends Declaration {
 
 	public void setDateImpressionChemiseTaxationOffice(Date theDateImpressionChemiseTaxationOffice) {
 		dateImpressionChemiseTaxationOffice = theDateImpressionChemiseTaxationOffice;
+	}
+
+	@Column(name = "QUALIFICATION", length = LengthConstants.DI_QUALIF)
+	@Type(type = "ch.vd.uniregctb.hibernate.QualificationUserType")
+	public Qualification getQualification() {
+		return qualification;
+	}
+
+	public void setQualification(Qualification qualification) {
+		this.qualification = qualification;
+	}
+
+	@Column(name = "CODE_SEGMENT")
+	public Integer getCodeSegment() {
+		return codeSegment;
+	}
+
+	public void setCodeSegment(Integer codeSegment) {
+		this.codeSegment = codeSegment;
 	}
 
 	/**
@@ -89,14 +131,13 @@ public abstract class DeclarationImpotOrdinaire extends Declaration {
 		this.delaiRetourImprime = delaiRetourImprime;
 	}
 
-	@Column(name = "TYPE_CTB", length = LengthConstants.DI_TYPE_CTB)
-	@Type(type = "ch.vd.uniregctb.hibernate.TypeContribuableUserType")
-	public TypeContribuable getTypeContribuable() {
-		return typeContribuable;
+	@Column(name = "NO_OFS_FOR_GESTION")
+	public Integer getNumeroOfsForGestion() {
+		return numeroOfsForGestion;
 	}
 
-	public void setTypeContribuable(TypeContribuable theTypeContribuable) {
-		typeContribuable = theTypeContribuable;
+	public void setNumeroOfsForGestion(Integer theNumeroOfsForGestion) {
+		numeroOfsForGestion = theNumeroOfsForGestion;
 	}
 
 	@Column(name = "LIBRE")
@@ -108,21 +149,6 @@ public abstract class DeclarationImpotOrdinaire extends Declaration {
 		this.libre = libre;
 	}
 
-	@Transient
-	public TypeDocument getTypeDeclaration() {
-		final ModeleDocument modele = getModeleDocument();
-		if (modele == null) {
-			return null;
-		}
-		return modele.getTypeDocument();
-	}
-
-	@Transient
-	@Override
-	public Contribuable getTiers() {
-		return (Contribuable) super.getTiers();
-	}
-
 	@Column(name = "CODE_CONTROLE", length = LengthConstants.DI_CODE_CONTROLE)
 	public String getCodeControle() {
 		return codeControle;
@@ -130,6 +156,15 @@ public abstract class DeclarationImpotOrdinaire extends Declaration {
 
 	public void setCodeControle(String codeControle) {
 		this.codeControle = codeControle;
+	}
+
+	@Transient
+	public TypeDocument getTypeDeclaration() {
+		final ModeleDocument modele = getModeleDocument();
+		if (modele == null) {
+			return null;
+		}
+		return modele.getTypeDocument();
 	}
 
 	// Toutes les lettres, sauf le 'O' qui peut être confondu avec le '0'.
@@ -153,23 +188,11 @@ public abstract class DeclarationImpotOrdinaire extends Declaration {
 	 *     <li>...</li>
 	 * </ul>
 	 *
-	 * @return un code de contrôle composé d'une lettre et de cinq chiffres
+	 * @return un code de contrôle
 	 */
-	protected static String generateCodeControleUneLettreCinqChiffres() {
+	public static String generateCodeControle() {
 		final int letter_index = (int) (CODE_LETTERS.length * Math.random());
 		final int number = (int) (100000 * Math.random());
 		return String.format("%s%05d", CODE_LETTERS[letter_index], number);
-	}
-
-	@Transient
-	@Override
-	public boolean isSommable() {
-		return true;
-	}
-
-	@Transient
-	@Override
-	public boolean isRappelable() {
-		return false;
 	}
 }

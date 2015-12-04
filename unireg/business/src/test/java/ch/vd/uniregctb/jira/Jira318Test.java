@@ -8,7 +8,7 @@ import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.metier.MetierService;
 import ch.vd.uniregctb.metier.MetierServiceException;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
+import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.TiersDAO;
@@ -55,7 +55,7 @@ public class Jira318Test extends BusinessTest {
 			PersonnePhysique nh = new PersonnePhysique(false);
 			nh.setNom("Conjoint");
 			nh.setNumeroOfsNationalite(MockPays.Suisse.getNoOFS());
-			ForFiscalPrincipalPP ff = new ForFiscalPrincipalPP();
+			ForFiscalPrincipal ff = new ForFiscalPrincipal();
 			ff.setDateDebut(dateOuvFor);
 			ff.setMotifOuverture(MotifFor.DEMENAGEMENT_VD);
 			ff.setGenreImpot(GenreImpot.REVENU_FORTUNE);
@@ -100,7 +100,7 @@ public class Jira318Test extends BusinessTest {
 			PersonnePhysique nh = new PersonnePhysique(false);
 			nh.setNom("Conjoint");
 			nh.setNumeroOfsNationalite(MockPays.Suisse.getNoOFS());
-			ForFiscalPrincipalPP ff = new ForFiscalPrincipalPP();
+			ForFiscalPrincipal ff = new ForFiscalPrincipal();
 			ff.setDateDebut(dateOuvFor);
 			ff.setMotifOuverture(MotifFor.DEMENAGEMENT_VD);
 			ff.setGenreImpot(GenreImpot.REVENU_FORTUNE);

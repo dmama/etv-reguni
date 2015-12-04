@@ -2,10 +2,10 @@ package ch.vd.uniregctb.evenement.civil.regpp;
 
 import org.jetbrains.annotations.Nullable;
 
-import ch.vd.uniregctb.evenement.common.EvenementRegistreErreurFactory;
+import ch.vd.uniregctb.evenement.civil.EvenementCivilErreurFactory;
 import ch.vd.uniregctb.type.TypeEvenementErreur;
 
-public class EvenementCivilRegPPErreurFactory extends EvenementRegistreErreurFactory<EvenementCivilRegPPErreur> {
+public class EvenementCivilRegPPErreurFactory extends EvenementCivilErreurFactory<EvenementCivilRegPPErreur> {
 
 	@Override
 	protected EvenementCivilRegPPErreur createErreur(String message, @Nullable Exception e, TypeEvenementErreur type) {

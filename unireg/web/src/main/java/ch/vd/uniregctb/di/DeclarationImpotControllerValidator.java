@@ -155,15 +155,13 @@ public class DeclarationImpotControllerValidator implements Validator {
 			}
 		}
 
-		if (view.isTypeDocumentEditable()) {
-			final TypeDocument typeDocument = view.getTypeDocument();
-			if (typeDocument == null) {
-				errors.rejectValue("typeDocument", "error.type.document.vide");
-			}
-			else if (di.getTypeDeclaration() != typeDocument) { // [SIFISC-7486] on ne vérifie le type de document que s'il est différent
-				if (typeDocument != TypeDocument.DECLARATION_IMPOT_COMPLETE_LOCAL && typeDocument != TypeDocument.DECLARATION_IMPOT_VAUDTAX) {
-					errors.rejectValue("typeDocument", "error.type.document.invalide");
-				}
+		final TypeDocument typeDocument = view.getTypeDocument();
+		if (typeDocument == null) {
+			errors.rejectValue("typeDocument", "error.type.document.vide");
+		}
+		else if (di.getTypeDeclaration() != typeDocument) { // [SIFISC-7486] on ne vérifie le type de document que s'il est différent
+			if (typeDocument != TypeDocument.DECLARATION_IMPOT_COMPLETE_LOCAL && typeDocument != TypeDocument.DECLARATION_IMPOT_VAUDTAX) {
+				errors.rejectValue("typeDocument", "error.type.document.invalide");
 			}
 		}
 	}

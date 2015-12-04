@@ -14,7 +14,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.adresse.AdresseSuisse;
 import ch.vd.uniregctb.common.WithoutSpringTest;
 import ch.vd.uniregctb.declaration.Declaration;
-import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP;
+import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.mouvement.EnvoiDossier;
 import ch.vd.uniregctb.mouvement.EnvoiDossierVersCollaborateur;
@@ -48,7 +48,7 @@ public class TiersTest extends WithoutSpringTest {
 		{
 			PersonnePhysique tiers = new PersonnePhysique(true);
 			{
-				ForFiscalPrincipalPP forFiscal = new ForFiscalPrincipalPP();
+				ForFiscalPrincipal forFiscal = new ForFiscalPrincipal();
 				forFiscal.setDateDebut(RegDate.get(1990, 1, 1));
 				forFiscal.setDateFin(null);
 				forFiscal.setAnnulationDate(DateHelper.getDate(1993, 1, 1));
@@ -62,7 +62,7 @@ public class TiersTest extends WithoutSpringTest {
 		{
 			PersonnePhysique tiers = new PersonnePhysique(true);
 			{
-				ForFiscalPrincipalPP forFiscal = new ForFiscalPrincipalPP();
+				ForFiscalPrincipal forFiscal = new ForFiscalPrincipal();
 				forFiscal.setDateDebut(RegDate.get(1990, 1, 1));
 				forFiscal.setDateFin(null);
 				tiers.addForFiscal(forFiscal);
@@ -75,7 +75,7 @@ public class TiersTest extends WithoutSpringTest {
 		{
 			PersonnePhysique tiers = new PersonnePhysique(true);
 			{
-				ForFiscalPrincipalPP forFiscal = new ForFiscalPrincipalPP();
+				ForFiscalPrincipal forFiscal = new ForFiscalPrincipal();
 				forFiscal.setDateDebut(RegDate.get(1990, 1, 1));
 				forFiscal.setDateFin(RegDate.get(2002, 3, 21));
 				tiers.addForFiscal(forFiscal);
@@ -88,7 +88,7 @@ public class TiersTest extends WithoutSpringTest {
 		{
 			PersonnePhysique tiers = new PersonnePhysique(true);
 			{
-				ForFiscalPrincipalPP forFiscal = new ForFiscalPrincipalPP();
+				ForFiscalPrincipal forFiscal = new ForFiscalPrincipal();
 				forFiscal.setDateDebut(null);
 				forFiscal.setDateFin(null);
 				tiers.addForFiscal(forFiscal);
@@ -101,7 +101,7 @@ public class TiersTest extends WithoutSpringTest {
 		{
 			PersonnePhysique tiers = new PersonnePhysique(true);
 			{
-				ForFiscalPrincipalPP forFiscal = new ForFiscalPrincipalPP();
+				ForFiscalPrincipal forFiscal = new ForFiscalPrincipal();
 				forFiscal.setDateDebut(null);
 				forFiscal.setDateFin(RegDate.get(2002, 3, 21));
 				tiers.addForFiscal(forFiscal);
@@ -114,12 +114,12 @@ public class TiersTest extends WithoutSpringTest {
 		{
 			PersonnePhysique tiers = new PersonnePhysique(true);
 			{
-				ForFiscalPrincipalPP forFiscal1 = new ForFiscalPrincipalPP();
+				ForFiscalPrincipal forFiscal1 = new ForFiscalPrincipal();
 				forFiscal1.setDateDebut(RegDate.get(1990, 1, 1));
 				forFiscal1.setDateFin(RegDate.get(2002, 3, 21));
 				tiers.addForFiscal(forFiscal1);
 
-				ForFiscalPrincipalPP forFiscal2 = new ForFiscalPrincipalPP();
+				ForFiscalPrincipal forFiscal2 = new ForFiscalPrincipal();
 				forFiscal2.setDateDebut(RegDate.get(2002, 3, 22));
 				forFiscal2.setDateFin(null);
 				tiers.addForFiscal(forFiscal2);
@@ -132,12 +132,12 @@ public class TiersTest extends WithoutSpringTest {
 		{
 			PersonnePhysique tiers = new PersonnePhysique(true);
 			{
-				ForFiscalPrincipalPP forFiscal1 = new ForFiscalPrincipalPP();
+				ForFiscalPrincipal forFiscal1 = new ForFiscalPrincipal();
 				forFiscal1.setDateDebut(RegDate.get(1990, 1, 1));
 				forFiscal1.setDateFin(RegDate.get(2002, 3, 21));
 				tiers.addForFiscal(forFiscal1);
 
-				ForFiscalPrincipalPP forFiscal2 = new ForFiscalPrincipalPP();
+				ForFiscalPrincipal forFiscal2 = new ForFiscalPrincipal();
 				forFiscal2.setDateDebut(RegDate.get(2002, 3, 22));
 				forFiscal2.setDateFin(RegDate.get(2005, 12, 31));
 				tiers.addForFiscal(forFiscal2);
@@ -243,30 +243,30 @@ public class TiersTest extends WithoutSpringTest {
 
 		// 2008
 
-		DeclarationImpotOrdinairePP d1 = new DeclarationImpotOrdinairePP();
+		DeclarationImpotOrdinaire d1 = new DeclarationImpotOrdinaire();
 		d1.setPeriode(periode2008);
 		tiers.addDeclaration(d1);
 		assertEquals(Integer.valueOf(1), d1.getNumero());
 
-		DeclarationImpotOrdinairePP d2 = new DeclarationImpotOrdinairePP();
+		DeclarationImpotOrdinaire d2 = new DeclarationImpotOrdinaire();
 		d2.setPeriode(periode2008);
 		tiers.addDeclaration(d2);
 		assertEquals(Integer.valueOf(2), d2.getNumero());
 		d2.setAnnule(true);
 
-		DeclarationImpotOrdinairePP d3 = new DeclarationImpotOrdinairePP();
+		DeclarationImpotOrdinaire d3 = new DeclarationImpotOrdinaire();
 		d3.setPeriode(periode2008);
 		tiers.addDeclaration(d3);
 		assertEquals(Integer.valueOf(3), d3.getNumero()); // le numéro 3, même si la déclaration précédente est annulée
 
 		// 2009
 
-		DeclarationImpotOrdinairePP d4 = new DeclarationImpotOrdinairePP();
+		DeclarationImpotOrdinaire d4 = new DeclarationImpotOrdinaire();
 		d4.setPeriode(periode2009);
 		tiers.addDeclaration(d4);
 		assertEquals(Integer.valueOf(1), d4.getNumero()); // recommence à 1 en début d'année
 
-		DeclarationImpotOrdinairePP d5 = new DeclarationImpotOrdinairePP();
+		DeclarationImpotOrdinaire d5 = new DeclarationImpotOrdinaire();
 		d5.setPeriode(periode2009);
 		tiers.addDeclaration(d5);
 		assertEquals(Integer.valueOf(2), d5.getNumero());
@@ -289,30 +289,31 @@ public class TiersTest extends WithoutSpringTest {
 
 		// 2009
 
-		final DeclarationImpotOrdinairePP d1 = new DeclarationImpotOrdinairePP();
+		final DeclarationImpotOrdinaire d1 = new DeclarationImpotOrdinaire();
 		d1.setPeriode(periode2008);
 		tiers.addDeclaration(d1);
 		assertNull(d1.getCodeControle());
 
-		final DeclarationImpotOrdinairePP d2 = new DeclarationImpotOrdinairePP();
+		final DeclarationImpotOrdinaire d2 = new DeclarationImpotOrdinaire();
 		d2.setPeriode(periode2008);
 		tiers.addDeclaration(d2);
 		assertNull(d2.getCodeControle());
 		d2.setAnnule(true);
 
-		final DeclarationImpotOrdinairePP d3 = new DeclarationImpotOrdinairePP();
+		final DeclarationImpotOrdinaire d3 = new DeclarationImpotOrdinaire();
 		d3.setPeriode(periode2008);
 		tiers.addDeclaration(d3);
 		assertNull(d3.getCodeControle());
 
 		// 2010
 
-		final DeclarationImpotOrdinairePP d4 = new DeclarationImpotOrdinairePP();
+
+		final DeclarationImpotOrdinaire d4 = new DeclarationImpotOrdinaire();
 		d4.setPeriode(periode2010);
 		tiers.addDeclaration(d4);
 		assertNull(d4.getCodeControle());
 
-		final DeclarationImpotOrdinairePP d5 = new DeclarationImpotOrdinairePP();
+		final DeclarationImpotOrdinaire d5 = new DeclarationImpotOrdinaire();
 		d5.setPeriode(periode2010);
 		tiers.addDeclaration(d5);
 		assertNull(d5.getCodeControle());
@@ -338,21 +339,21 @@ public class TiersTest extends WithoutSpringTest {
 		final String codeControle2011;
 
 		// test la génération du code de contrôle
-		final DeclarationImpotOrdinairePP d1 = new DeclarationImpotOrdinairePP();
+		final DeclarationImpotOrdinaire d1 = new DeclarationImpotOrdinaire();
 		d1.setPeriode(periode2011);
 		tiers.addDeclaration(d1);
 		codeControle2011 = d1.getCodeControle();
 		assertTrue(StringUtils.isNotBlank(codeControle2011));
 
 		// test la réutilisation du code contrôle dans la même année
-		final DeclarationImpotOrdinairePP d2 = new DeclarationImpotOrdinairePP();
+		final DeclarationImpotOrdinaire d2 = new DeclarationImpotOrdinaire();
 		d2.setPeriode(periode2011);
 		tiers.addDeclaration(d2);
 		assertEquals(codeControle2011, d2.getCodeControle());
 		d2.setAnnule(true);
 
 		// test la réutilisation du code contrôle dans la même année, même en cas de DI annulée
-		final DeclarationImpotOrdinairePP d3 = new DeclarationImpotOrdinairePP();
+		final DeclarationImpotOrdinaire d3 = new DeclarationImpotOrdinaire();
 		d3.setPeriode(periode2011);
 		tiers.addDeclaration(d3);
 		assertEquals(codeControle2011, d3.getCodeControle()); // le même code de contrôle, même si la déclaration précédente est annulée
@@ -362,13 +363,13 @@ public class TiersTest extends WithoutSpringTest {
 		final String codeControle2012;
 
 		// test la génération d'un autre code de contrôle
-		final DeclarationImpotOrdinairePP d4 = new DeclarationImpotOrdinairePP();
+		final DeclarationImpotOrdinaire d4 = new DeclarationImpotOrdinaire();
 		d4.setPeriode(periode2012);
 		tiers.addDeclaration(d4);
 		codeControle2012 = d4.getCodeControle();
 		assertTrue(StringUtils.isNotBlank(codeControle2012));
 
-		final DeclarationImpotOrdinairePP d5 = new DeclarationImpotOrdinairePP();
+		final DeclarationImpotOrdinaire d5 = new DeclarationImpotOrdinaire();
 		d5.setPeriode(periode2012);
 		tiers.addDeclaration(d5);
 		assertEquals(codeControle2012, d5.getCodeControle());
@@ -389,12 +390,12 @@ public class TiersTest extends WithoutSpringTest {
 
 		// Déclarations préexistantes SANS code de contrôle
 
-		final DeclarationImpotOrdinairePP d1 = new DeclarationImpotOrdinairePP();
+		final DeclarationImpotOrdinaire d1 = new DeclarationImpotOrdinaire();
 		d1.setPeriode(periode);
 		declarations.add(d1);
 
 		// Ajout d'une seconde déclaration et test que le code de contrôle a bien été généré et assigné sur les DEUX déclarations
-		final DeclarationImpotOrdinairePP d2 = new DeclarationImpotOrdinairePP();
+		final DeclarationImpotOrdinaire d2 = new DeclarationImpotOrdinaire();
 		d2.setPeriode(periode);
 		tiers.addDeclaration(d2);
 		final String codeControle = d2.getCodeControle();
@@ -415,16 +416,16 @@ public class TiersTest extends WithoutSpringTest {
 
 		// 2008
 
-		DeclarationImpotOrdinairePP d1 = new DeclarationImpotOrdinairePP();
+		DeclarationImpotOrdinaire d1 = new DeclarationImpotOrdinaire();
 		d1.setPeriode(periode2008);
 		tiers.addDeclaration(d1);
 
 		 // 2009
-		DeclarationImpotOrdinairePP d2 = new DeclarationImpotOrdinairePP();
+		DeclarationImpotOrdinaire d2 = new DeclarationImpotOrdinaire();
 		d2.setPeriode(periode2009);
 		tiers.addDeclaration(d2);
 		assertEquals(d2.getId(),tiers.getDerniereDeclaration().getId());
-		DeclarationImpotOrdinairePP d3 = new DeclarationImpotOrdinairePP();
+		DeclarationImpotOrdinaire d3 = new DeclarationImpotOrdinaire();
 		d3.setPeriode(periode2009);
 		tiers.addDeclaration(d3);
 		d3.setAnnule(true);
@@ -471,7 +472,7 @@ public class TiersTest extends WithoutSpringTest {
 		// Principaux
 		// 2002, 1, 1 - 2005, 8, 11
 		{
-			ForFiscalPrincipalPP forFiscal = new ForFiscalPrincipalPP();
+			ForFiscalPrincipal forFiscal = new ForFiscalPrincipal();
 			forFiscal.setDateDebut(RegDate.get(2002, 1, 1));
 			forFiscal.setDateFin(RegDate.get(2005, 8, 11));
 			forFiscal.setGenreImpot(GenreImpot.REVENU_FORTUNE);
@@ -486,7 +487,7 @@ public class TiersTest extends WithoutSpringTest {
 		}
 		// Annule : 2004, 6, 6 - 2005, 9, 9
 		{
-			ForFiscalPrincipalPP forFiscal = new ForFiscalPrincipalPP();
+			ForFiscalPrincipal forFiscal = new ForFiscalPrincipal();
 			forFiscal.setAnnule(true);
 			forFiscal.setDateDebut(RegDate.get(2004, 6, 6));
 			forFiscal.setDateFin(RegDate.get(2005, 9, 9));
@@ -499,7 +500,7 @@ public class TiersTest extends WithoutSpringTest {
 		}
 		// 2005, 8, 12 - 2007, 2, 28
 		{
-			ForFiscalPrincipalPP forFiscal = new ForFiscalPrincipalPP();
+			ForFiscalPrincipal forFiscal = new ForFiscalPrincipal();
 			forFiscal.setDateDebut(RegDate.get(2005, 8, 12));
 			forFiscal.setDateFin(RegDate.get(2007, 2, 28));
 			forFiscal.setGenreImpot(GenreImpot.REVENU_FORTUNE);
@@ -512,7 +513,7 @@ public class TiersTest extends WithoutSpringTest {
 		}
 		// 2007, 3, 1 -> 2007, 3, 1 (1 jour)
 		{
-			ForFiscalPrincipalPP forFiscal = new ForFiscalPrincipalPP();
+			ForFiscalPrincipal forFiscal = new ForFiscalPrincipal();
 			forFiscal.setDateDebut(RegDate.get(2007, 3, 1));
 			forFiscal.setDateFin(RegDate.get(2007, 3, 1));
 			forFiscal.setGenreImpot(GenreImpot.REVENU_FORTUNE);
@@ -524,7 +525,7 @@ public class TiersTest extends WithoutSpringTest {
 		}
 		// 2007, 3, 2 -> Ouvert
 		{
-			ForFiscalPrincipalPP forFiscal = new ForFiscalPrincipalPP();
+			ForFiscalPrincipal forFiscal = new ForFiscalPrincipal();
 			forFiscal.setDateDebut(RegDate.get(2007, 3, 2));
 			forFiscal.setGenreImpot(GenreImpot.REVENU_FORTUNE);
 			forFiscal.setModeImposition(ModeImposition.ORDINAIRE);
@@ -555,7 +556,7 @@ public class TiersTest extends WithoutSpringTest {
 	public void testGetForsFiscauxPrincipaux() {
 		PersonnePhysique hab = createHabitantWithFors();
 
-		List<ForFiscalPrincipalPP> ffps = hab.getForsFiscauxPrincipauxActifsSorted();
+		List<ForFiscalPrincipal> ffps = hab.getForsFiscauxPrincipauxActifsSorted();
 		assertEquals(4, ffps.size());
 		assertForFiscauxInSortOrder(ffps);
 	}
@@ -620,7 +621,7 @@ public class TiersTest extends WithoutSpringTest {
 	public void testExistForPrincipalSurUnFor() {
 		List<ForFiscalPrincipal> list = new ArrayList<>();
 		{
-			final ForFiscalPrincipalPP f = new ForFiscalPrincipalPP();
+			final ForFiscalPrincipal f = new ForFiscalPrincipal();
 			f.setDateDebut(RegDate.get(2000, 1, 1));
 			f.setDateFin(RegDate.get(2004, 12, 31));
 			f.setModeImposition(ModeImposition.ORDINAIRE);
@@ -646,7 +647,7 @@ public class TiersTest extends WithoutSpringTest {
 	public void testExistForPrincipalSurUnForOuvertAGauche() {
 		List<ForFiscalPrincipal> list = new ArrayList<>();
 		{
-			final ForFiscalPrincipalPP f = new ForFiscalPrincipalPP();
+			final ForFiscalPrincipal f = new ForFiscalPrincipal();
 			f.setDateDebut(null);
 			f.setDateFin(RegDate.get(2004, 12, 31));
 			f.setModeImposition(ModeImposition.ORDINAIRE);
@@ -672,7 +673,7 @@ public class TiersTest extends WithoutSpringTest {
 	public void testExistForPrincipalSurUnForOuvertADroite() {
 		List<ForFiscalPrincipal> list = new ArrayList<>();
 		{
-			final ForFiscalPrincipalPP f = new ForFiscalPrincipalPP();
+			final ForFiscalPrincipal f = new ForFiscalPrincipal();
 			f.setDateDebut(RegDate.get(2000, 1, 1));
 			f.setDateFin(null);
 			f.setModeImposition(ModeImposition.ORDINAIRE);
@@ -698,7 +699,7 @@ public class TiersTest extends WithoutSpringTest {
 	public void testExistForPrincipalSurUnForOuvertDesDeuxCotes() {
 		List<ForFiscalPrincipal> list = new ArrayList<>();
 		{
-			final ForFiscalPrincipalPP f = new ForFiscalPrincipalPP();
+			final ForFiscalPrincipal f = new ForFiscalPrincipal();
 			f.setDateDebut(null);
 			f.setDateFin(null);
 			f.setModeImposition(ModeImposition.ORDINAIRE);
@@ -724,14 +725,14 @@ public class TiersTest extends WithoutSpringTest {
 	public void testExistForPrincipalSurDeuxForsAccoles() {
 		List<ForFiscalPrincipal> list = new ArrayList<>();
 		{
-			final ForFiscalPrincipalPP f = new ForFiscalPrincipalPP();
+			final ForFiscalPrincipal f = new ForFiscalPrincipal();
 			f.setDateDebut(RegDate.get(2000, 1, 1));
 			f.setDateFin(RegDate.get(2002, 12, 31));
 			f.setModeImposition(ModeImposition.ORDINAIRE);
 			list.add(f);
 		}
 		{
-			final ForFiscalPrincipalPP f = new ForFiscalPrincipalPP();
+			final ForFiscalPrincipal f = new ForFiscalPrincipal();
 			f.setDateDebut(RegDate.get(2003, 1, 1));
 			f.setDateFin(RegDate.get(2004, 12, 31));
 			f.setModeImposition(ModeImposition.ORDINAIRE);
@@ -756,14 +757,14 @@ public class TiersTest extends WithoutSpringTest {
 	public void testExistForPrincipalSurDeuxForsAccolesOuvertsAGauche() {
 		List<ForFiscalPrincipal> list = new ArrayList<>();
 		{
-			final ForFiscalPrincipalPP f = new ForFiscalPrincipalPP();
+			final ForFiscalPrincipal f = new ForFiscalPrincipal();
 			f.setDateDebut(null);
 			f.setDateFin(RegDate.get(2002, 12, 31));
 			f.setModeImposition(ModeImposition.ORDINAIRE);
 			list.add(f);
 		}
 		{
-			final ForFiscalPrincipalPP f = new ForFiscalPrincipalPP();
+			final ForFiscalPrincipal f = new ForFiscalPrincipal();
 			f.setDateDebut(RegDate.get(2003, 1, 1));
 			f.setDateFin(RegDate.get(2004, 12, 31));
 			f.setModeImposition(ModeImposition.ORDINAIRE);
@@ -788,14 +789,14 @@ public class TiersTest extends WithoutSpringTest {
 	public void testExistForPrincipalSurDeuxForsAccolesOuvertsADroite() {
 		List<ForFiscalPrincipal> list = new ArrayList<>();
 		{
-			final ForFiscalPrincipalPP f = new ForFiscalPrincipalPP();
+			final ForFiscalPrincipal f = new ForFiscalPrincipal();
 			f.setDateDebut(RegDate.get(2000, 1, 1));
 			f.setDateFin(RegDate.get(2002, 12, 31));
 			f.setModeImposition(ModeImposition.ORDINAIRE);
 			list.add(f);
 		}
 		{
-			final ForFiscalPrincipalPP f = new ForFiscalPrincipalPP();
+			final ForFiscalPrincipal f = new ForFiscalPrincipal();
 			f.setDateDebut(RegDate.get(2003, 1, 1));
 			f.setDateFin(null);
 			f.setModeImposition(ModeImposition.ORDINAIRE);
@@ -820,14 +821,14 @@ public class TiersTest extends WithoutSpringTest {
 	public void testExistForPrincipalSurDeuxForsNonAccoles() {
 		List<ForFiscalPrincipal> list = new ArrayList<>();
 		{
-			final ForFiscalPrincipalPP f = new ForFiscalPrincipalPP();
+			final ForFiscalPrincipal f = new ForFiscalPrincipal();
 			f.setDateDebut(RegDate.get(2000, 1, 1));
 			f.setDateFin(RegDate.get(2002, 12, 31));
 			f.setModeImposition(ModeImposition.ORDINAIRE);
 			list.add(f);
 		}
 		{
-			final ForFiscalPrincipalPP f = new ForFiscalPrincipalPP();
+			final ForFiscalPrincipal f = new ForFiscalPrincipal();
 			f.setDateDebut(RegDate.get(2003, 1, 2));
 			f.setDateFin(RegDate.get(2004, 12, 31));
 			f.setModeImposition(ModeImposition.ORDINAIRE);
@@ -853,14 +854,14 @@ public class TiersTest extends WithoutSpringTest {
 	public void testExistForPrincipalSurDeuxForsNonAccolesOuvertsAGauche() {
 		List<ForFiscalPrincipal> list = new ArrayList<>();
 		{
-			final ForFiscalPrincipalPP f = new ForFiscalPrincipalPP();
+			final ForFiscalPrincipal f = new ForFiscalPrincipal();
 			f.setDateDebut(null);
 			f.setDateFin(RegDate.get(2002, 12, 31));
 			f.setModeImposition(ModeImposition.ORDINAIRE);
 			list.add(f);
 		}
 		{
-			final ForFiscalPrincipalPP f = new ForFiscalPrincipalPP();
+			final ForFiscalPrincipal f = new ForFiscalPrincipal();
 			f.setDateDebut(RegDate.get(2003, 1, 2));
 			f.setDateFin(RegDate.get(2004, 12, 31));
 			f.setModeImposition(ModeImposition.ORDINAIRE);
@@ -886,14 +887,14 @@ public class TiersTest extends WithoutSpringTest {
 	public void testExistForPrincipalSurDeuxForsNonAccolesOvertsADroite() {
 		List<ForFiscalPrincipal> list = new ArrayList<>();
 		{
-			final ForFiscalPrincipalPP f = new ForFiscalPrincipalPP();
+			final ForFiscalPrincipal f = new ForFiscalPrincipal();
 			f.setDateDebut(RegDate.get(2000, 1, 1));
 			f.setDateFin(RegDate.get(2002, 12, 31));
 			f.setModeImposition(ModeImposition.ORDINAIRE);
 			list.add(f);
 		}
 		{
-			final ForFiscalPrincipalPP f = new ForFiscalPrincipalPP();
+			final ForFiscalPrincipal f = new ForFiscalPrincipal();
 			f.setDateDebut(RegDate.get(2003, 1, 2));
 			f.setDateFin(null);
 			f.setModeImposition(ModeImposition.ORDINAIRE);

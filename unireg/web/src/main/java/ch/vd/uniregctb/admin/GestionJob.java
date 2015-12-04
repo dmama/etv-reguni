@@ -10,7 +10,6 @@ import org.springframework.context.support.MessageSourceAccessor;
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.uniregctb.common.TimeHelper;
 import ch.vd.uniregctb.document.Document;
-import ch.vd.uniregctb.scheduler.JobCategory;
 import ch.vd.uniregctb.scheduler.JobDefinition;
 import ch.vd.uniregctb.scheduler.JobParam;
 
@@ -46,7 +45,7 @@ public class GestionJob {
 		return job.getName();
 	}
 
-	public JobCategory getCategorie() {
+	public String getCategorie() {
 		return job.getCategorie();
 	}
 

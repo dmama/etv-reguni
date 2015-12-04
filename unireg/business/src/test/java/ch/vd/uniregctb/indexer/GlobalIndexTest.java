@@ -105,7 +105,7 @@ public class GlobalIndexTest extends BusinessTest {
 		}
 	};
 	
-	private static final int maxHits = 100;
+	private final static int maxHits = 100;
 
 	// Deletes all files and subdirectories under dir.
 	// Returns true if all deletions were successful.

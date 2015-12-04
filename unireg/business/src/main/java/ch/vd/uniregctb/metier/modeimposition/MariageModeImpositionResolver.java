@@ -6,9 +6,9 @@ import org.jetbrains.annotations.Nullable;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
-import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
+import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
+import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.TiersException;
@@ -35,10 +35,10 @@ public class MariageModeImpositionResolver extends CreationCoupleModeImpositionR
 	 * @param contribuable le nouveau MenageCommun
 	 * @param date la date de mariage
 	 *
-	 * @see CreationCoupleModeImpositionResolver#resolve(ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques, ch.vd.registre.base.date.RegDate)
+	 * @see CreationCoupleModeImpositionResolver#resolve(ch.vd.uniregctb.tiers.Contribuable, ch.vd.registre.base.date.RegDate)
 	 */
 	@Override
-	public Imposition resolve(ContribuableImpositionPersonnesPhysiques contribuable, RegDate date) throws ModeImpositionResolverException {
+	public Imposition resolve(Contribuable contribuable, RegDate date) throws ModeImpositionResolverException {
 		if (!(contribuable instanceof MenageCommun)) {
 			throw new ModeImpositionResolverException("Le contribuable n° " + FormatNumeroHelper.numeroCTBToDisplay(contribuable.getNumero()) + " n'est pas un ménage commun");
 		}
@@ -60,7 +60,7 @@ public class MariageModeImpositionResolver extends CreationCoupleModeImpositionR
 
 	private Imposition resolveSeul(PersonnePhysique principal, RegDate date) throws ModeImpositionResolverException {
 		Audit.info(numeroEvenement, "Mariage seul détecté");
-		final ForFiscalPrincipalPP forFPPrincipal = principal.getForFiscalPrincipalAt(null);
+		final ForFiscalPrincipal forFPPrincipal = principal.getForFiscalPrincipalAt(null);
 		/*
 		 * le contribuable est assujetti
 		 */
@@ -85,7 +85,7 @@ public class MariageModeImpositionResolver extends CreationCoupleModeImpositionR
 	@Nullable
 	private ModeImposition getModeImposition(PersonnePhysique pp, RegDate date, MutableBoolean sansFor) {
 
-		final ForFiscalPrincipalPP ffp = pp.getForFiscalPrincipalAt(null);
+		final ForFiscalPrincipal ffp = pp.getForFiscalPrincipalAt(null);
 		sansFor.setValue(ffp == null);
 
 		final ModeImposition modeImposition;

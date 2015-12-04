@@ -7,7 +7,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.declaration.ParametrePeriodeFiscale;
-import ch.vd.uniregctb.declaration.ParametrePeriodeFiscalePP;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.declaration.PeriodeFiscaleDAO;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
@@ -86,24 +85,21 @@ public class PeriodeFiscaleServiceTest extends BusinessTest {
 			public Object execute(TransactionStatus status) throws Exception {
 				PeriodeFiscale periodeFiscale = periodeFiscaleService.initNouvellePeriodeFiscale();
 				assertEquals(anneeDernierePeriode + 1, periodeFiscale.getAnnee().intValue());
-				checkParametresPeriodeFiscalePP(periodeFiscale);
+				checkParametrePeriodeFiscale(periodeFiscale);
 				return null;
 			}
 		});
 	}
 
 	/**
-	 * Verifie que la coherence ds {@link ch.vd.uniregctb.declaration.ParametrePeriodeFiscalePP} en fonction de leur {@link PeriodeFiscale}.
+	 * Verifie que la coherence ds {@link ch.vd.uniregctb.declaration.ParametrePeriodeFiscale} en fonction de leur {@link PeriodeFiscale}.
 	 * => les années des termes doivent bien être l'année suivante.
 	 */
-	private void checkParametresPeriodeFiscalePP(PeriodeFiscale pf) {
-		for (ParametrePeriodeFiscale ppf : pf.getParametrePeriodeFiscale()) {
-			if (ppf instanceof ParametrePeriodeFiscalePP) {
-				final ParametrePeriodeFiscalePP ppfpp = (ParametrePeriodeFiscalePP) ppf;
-				Assert.assertEquals(pf.getAnnee() + 1, ppfpp.getTermeGeneralSommationEffectif().year());
-				Assert.assertEquals(pf.getAnnee() + 1, ppfpp.getTermeGeneralSommationReglementaire().year());
-				Assert.assertEquals(pf.getAnnee() + 1, ppfpp.getDateFinEnvoiMasseDI().year());
-			}
+	private void checkParametrePeriodeFiscale(PeriodeFiscale pf) {
+		for (ParametrePeriodeFiscale ppf : pf.getParametrePeriodeFiscale() ) {
+			Assert.assertEquals(pf.getAnnee() + 1, ppf.getTermeGeneralSommationEffectif().year());
+			Assert.assertEquals(pf.getAnnee() + 1, ppf.getTermeGeneralSommationReglementaire().year());
+			Assert.assertEquals(pf.getAnnee() + 1, ppf.getDateFinEnvoiMasseDI().year());
 		}
 	}
 

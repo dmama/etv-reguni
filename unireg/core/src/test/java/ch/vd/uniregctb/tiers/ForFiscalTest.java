@@ -13,7 +13,7 @@ public class ForFiscalTest extends WithoutSpringTest {
 	@Test
 	public void testIsValid() {
 
-		final ForFiscal forFiscal = new ForFiscalPrincipalPP();
+		final ForFiscal forFiscal = new ForFiscalPrincipal();
 		forFiscal.setDateDebut(RegDate.get(2000, 1, 1));
 		forFiscal.setDateFin(RegDate.get(2009, 12, 31));
 

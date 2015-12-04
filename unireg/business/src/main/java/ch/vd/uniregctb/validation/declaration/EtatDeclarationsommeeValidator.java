@@ -15,10 +15,10 @@ public class EtatDeclarationsommeeValidator extends EtatDeclarationValidator<Eta
 	public ValidationResults validate(EtatDeclarationSommee ed) {
 		final ValidationResults results = super.validate(ed);
 		if (!ed.isAnnule()) {
-			final RegDate dateEnvoi = ed.getDateEnvoiCourrier();
+			RegDate dateEnvoi = ed.getDateEnvoiCourrier();
 			if (dateEnvoi == null) {
-				final String dateObtention = RegDateHelper.dateToDisplayString(ed.getDateObtention());
-				results.addError(String.format("L'etat sommé le %s de la déclaration possède une date d'envoi de courrier nulle", dateObtention));
+				String dateObtention= RegDateHelper.dateToDisplayString(ed.getDateObtention());
+				results.addError(String.format("L'etat sommé le %s de la déclaration possède une date d'envoi de courrier nulle",dateObtention));
 			}
 		}
 		return results;

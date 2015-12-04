@@ -51,7 +51,7 @@ public class SommationDIsTestApp extends BusinessItTestApplication {
 		final long start = System.currentTimeMillis();
 		LOGGER.info("Sommation de toutes les DIs ...");
 
-		service.envoyerSommationsPP(RegDate.get(2009, 6, 5), false, 0, new LoggingStatusManager(LOGGER));
+		service.envoyerSommations(RegDate.get(2009, 6, 5), false, 0, new LoggingStatusManager(LOGGER));
 
 		long duree = (System.currentTimeMillis() - start);
 		LOGGER.info("Sommation terminée : " + (duree / 1000) + " secondes.");

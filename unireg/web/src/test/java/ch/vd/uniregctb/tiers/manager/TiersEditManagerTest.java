@@ -55,7 +55,7 @@ import static org.junit.Assert.assertTrue;
 @SuppressWarnings({"JavaDoc"})
 public class TiersEditManagerTest extends WebTest {
 
-	private static final String DB_UNIT_FILE = "TiersEditManagerTest.xml";
+	private final static String DB_UNIT_FILE = "TiersEditManagerTest.xml";
 
 	private TiersEditManager tiersEditManager;
 	private TiersMapHelper tiersMapHelper;

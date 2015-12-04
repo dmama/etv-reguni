@@ -67,7 +67,8 @@ public class Ec_10001_02_AnnulationVeuvage_NonMarie_Scenario extends EvenementCi
 		// momo
 		PersonnePhysique momo = addHabitant(noIndMomo);
 		noHabMomo = momo.getNumero();
-		addForFiscalPrincipal(momo, MockCommune.VillarsSousYens, dateArriveeVillars, dateAvantMariage, MotifFor.ARRIVEE_HS, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, ModeImposition.SOURCE);
+		ForFiscalPrincipal f = addForFiscalPrincipal(momo, MockCommune.VillarsSousYens, dateArriveeVillars, dateAvantMariage, MotifFor.ARRIVEE_HS, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
+		f.setModeImposition(ModeImposition.SOURCE);
 		// bea
 		PersonnePhysique bea = addHabitant(noIndBea);
 		noHabBea = bea.getNumero();
@@ -78,7 +79,8 @@ public class Ec_10001_02_AnnulationVeuvage_NonMarie_Scenario extends EvenementCi
 		noMenage = menage.getNumero();
 		tiersService.addTiersToCouple(menage, momo, dateMariage, null);
 		tiersService.addTiersToCouple(menage, bea, dateMariage, null);
-		addForFiscalPrincipal(menage, commune, dateMariage, null, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, null);
+		f = addForFiscalPrincipal(menage, commune, dateMariage, null, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, null);
+		f.setModeImposition(ModeImposition.ORDINAIRE);
 	}
 
 	@Check(id=1, descr="Vérifie que l'habitant Maurice est marié a Béatrice et le For du menage existe")

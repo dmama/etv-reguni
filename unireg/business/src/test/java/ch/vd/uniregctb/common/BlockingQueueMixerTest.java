@@ -29,7 +29,6 @@ public class BlockingQueueMixerTest extends WithoutSpringTest {
 			final Random rnd = new Random();
 			final int number = rnd.nextInt();
 			input.add(number);
-			Thread.sleep(100);      // pour laisser le temps à l'élément de passer dans l'espace de transit (dans certains cas, mixer.size() peut le compter à double)
 			Assert.assertEquals(1, mixer.size());
 			final Integer found = output.poll(1000, TimeUnit.MILLISECONDS);
 			Assert.assertNotNull(found);

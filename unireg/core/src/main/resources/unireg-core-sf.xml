@@ -7,8 +7,6 @@
 							http://www.springframework.org/schema/util/spring-util-3.1.xsd">
 
 	<util:list id="hibernateAnnotatedClasses">
-		<value>ch.vd.uniregctb.common.HibernateEntity</value>
-		<value>ch.vd.uniregctb.common.HibernateDateRangeEntity</value>
 		<value>ch.vd.uniregctb.migreg.MigrationError</value>
 		<value>ch.vd.uniregctb.adresse.AdresseAutreTiers</value>
 		<value>ch.vd.uniregctb.adresse.AdresseCivile</value>
@@ -20,56 +18,40 @@
 		<value>ch.vd.uniregctb.audit.AuditLine</value>
 		<value>ch.vd.uniregctb.declaration.Declaration</value>
 		<value>ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire</value>
-		<value>ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePM</value>
-		<value>ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP</value>
 		<value>ch.vd.uniregctb.declaration.DeclarationImpotSource</value>
-		<value>ch.vd.uniregctb.declaration.QuestionnaireSNC</value>
 		<value>ch.vd.uniregctb.declaration.DelaiDeclaration</value>
 		<value>ch.vd.uniregctb.declaration.EtatDeclaration</value>
 		<value>ch.vd.uniregctb.declaration.EtatDeclarationSommee</value>
-		<value>ch.vd.uniregctb.declaration.EtatDeclarationRappelee</value>
 		<value>ch.vd.uniregctb.declaration.EtatDeclarationEchue</value>
 		<value>ch.vd.uniregctb.declaration.EtatDeclarationEmise</value>
-		<value>ch.vd.uniregctb.declaration.EtatDeclarationSuspendue</value>
 		<value>ch.vd.uniregctb.declaration.EtatDeclarationRetournee</value>
 		<value>ch.vd.uniregctb.declaration.PeriodeFiscale</value>
 		<value>ch.vd.uniregctb.declaration.ParametrePeriodeFiscale</value>
-		<value>ch.vd.uniregctb.declaration.ParametrePeriodeFiscalePP</value>
-		<value>ch.vd.uniregctb.declaration.ParametrePeriodeFiscalePM</value>
 		<value>ch.vd.uniregctb.declaration.ModeleDocument</value>
 		<value>ch.vd.uniregctb.declaration.ModeleFeuilleDocument</value>
 		<value>ch.vd.uniregctb.declaration.Periodicite</value>
-		<value>ch.vd.uniregctb.evenement.fiscal.EvenementFiscal</value>
-		<value>ch.vd.uniregctb.evenement.fiscal.EvenementFiscalAllegementFiscal</value>
-		<value>ch.vd.uniregctb.evenement.fiscal.EvenementFiscalDeclaration</value>
-		<value>ch.vd.uniregctb.evenement.fiscal.EvenementFiscalFor</value>
-		<value>ch.vd.uniregctb.evenement.fiscal.EvenementFiscalInformationComplementaire</value>
-		<value>ch.vd.uniregctb.evenement.fiscal.EvenementFiscalParente</value>
-		<value>ch.vd.uniregctb.evenement.fiscal.EvenementFiscalRegimeFiscal</value>
-		<value>ch.vd.uniregctb.evenement.fiscal.EvenementFiscalSituationFamille</value>
+		<value>ch.vd.uniregctb.evenement.EvenementFiscal</value>
+		<value>ch.vd.uniregctb.evenement.EvenementFiscalFor</value>
+		<value>ch.vd.uniregctb.evenement.EvenementFiscalSituationFamille</value>
+		<value>ch.vd.uniregctb.evenement.EvenementFiscalDI</value>
+		<value>ch.vd.uniregctb.evenement.EvenementFiscalLR</value>
+		<value>ch.vd.uniregctb.evenement.EvenementFiscalFinAutoriteParentale</value>
+		<value>ch.vd.uniregctb.evenement.EvenementFiscalNaissance</value>
 		<value>ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEch</value>
 		<value>ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchErreur</value>
-		<value>ch.vd.uniregctb.evenement.organisation.EvenementOrganisation</value>
-		<value>ch.vd.uniregctb.evenement.organisation.EvenementOrganisationErreur</value>
 		<value>ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP</value>
 		<value>ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPPErreur</value>
 		<value>ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuable</value>
 		<value>ch.vd.uniregctb.tiers.AutreCommunaute</value>
 		<value>ch.vd.uniregctb.tiers.CollectiviteAdministrative</value>
 		<value>ch.vd.uniregctb.tiers.Contribuable</value>
-		<value>ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques</value>
-		<value>ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesMorales</value>
 		<value>ch.vd.uniregctb.tiers.DebiteurPrestationImposable</value>
 		<value>ch.vd.uniregctb.tiers.Entreprise</value>
 		<value>ch.vd.uniregctb.tiers.Etablissement</value>
-		<value>ch.vd.uniregctb.tiers.EtatEntreprise</value>
-		<value>ch.vd.uniregctb.tiers.FlagEntreprise</value>
 		<value>ch.vd.uniregctb.tiers.ForFiscal</value>
 		<value>ch.vd.uniregctb.tiers.ForFiscalAutreImpot</value>
 		<value>ch.vd.uniregctb.tiers.ForFiscalRevenuFortune</value>
 		<value>ch.vd.uniregctb.tiers.ForFiscalPrincipal</value>
-		<value>ch.vd.uniregctb.tiers.ForFiscalPrincipalPP</value>
-		<value>ch.vd.uniregctb.tiers.ForFiscalPrincipalPM</value>
 		<value>ch.vd.uniregctb.tiers.ForFiscalSecondaire</value>
 		<value>ch.vd.uniregctb.tiers.ForFiscalAutreElementImposable</value>
 		<value>ch.vd.uniregctb.tiers.ForDebiteurPrestationImposable</value>
@@ -88,24 +70,15 @@
 		<value>ch.vd.uniregctb.tiers.ConseilLegal</value>
 		<value>ch.vd.uniregctb.tiers.ContactImpotSource</value>
 		<value>ch.vd.uniregctb.tiers.AnnuleEtRemplace</value>
-		<value>ch.vd.uniregctb.tiers.ActiviteEconomique</value>
-		<value>ch.vd.uniregctb.tiers.Mandat</value>
-		<value>ch.vd.uniregctb.tiers.FusionEntreprises</value>
 		<value>ch.vd.uniregctb.tiers.SituationFamille</value>
 		<value>ch.vd.uniregctb.tiers.SituationFamilleMenageCommun</value>
 		<value>ch.vd.uniregctb.tiers.SituationFamillePersonnePhysique</value>
 		<value>ch.vd.uniregctb.tiers.Tiers</value>
 		<value>ch.vd.uniregctb.tiers.Tache</value>
-		<value>ch.vd.uniregctb.tiers.TacheAnnulationDeclaration</value>
 		<value>ch.vd.uniregctb.tiers.TacheAnnulationDeclarationImpot</value>
-		<value>ch.vd.uniregctb.tiers.TacheAnnulationQuestionnaireSNC</value>
 		<value>ch.vd.uniregctb.tiers.TacheControleDossier</value>
 		<value>ch.vd.uniregctb.tiers.TacheTransmissionDossier</value>
-		<value>ch.vd.uniregctb.tiers.TacheEnvoiDocument</value>
 		<value>ch.vd.uniregctb.tiers.TacheEnvoiDeclarationImpot</value>
-		<value>ch.vd.uniregctb.tiers.TacheEnvoiDeclarationImpotPP</value>
-		<value>ch.vd.uniregctb.tiers.TacheEnvoiDeclarationImpotPM</value>
-		<value>ch.vd.uniregctb.tiers.TacheEnvoiQuestionnaireSNC</value>
 		<value>ch.vd.uniregctb.tiers.TacheNouveauDossier</value>
 		<value>ch.vd.uniregctb.tiers.DroitAcces</value>
 		<value>ch.vd.uniregctb.tiers.Remarque</value>
@@ -125,13 +98,10 @@
 		<value>ch.vd.uniregctb.document.DatabaseDump</value>
 		<value>ch.vd.uniregctb.document.ImportCodesSegmentRapport</value>
 		<value>ch.vd.uniregctb.document.ImportImmeublesRapport</value>
-		<value>ch.vd.uniregctb.document.DeterminationDIsPPRapport</value>
-		<value>ch.vd.uniregctb.document.DeterminationDIsPMRapport</value>
-		<value>ch.vd.uniregctb.document.EnvoiDIsPPRapport</value>
-		<value>ch.vd.uniregctb.document.EnvoiDIsPMRapport</value>
+		<value>ch.vd.uniregctb.document.DeterminationDIsRapport</value>
+		<value>ch.vd.uniregctb.document.EnvoiDIsRapport</value>
 		<value>ch.vd.uniregctb.document.EnvoiAnnexeImmeubleRapport</value>
-		<value>ch.vd.uniregctb.document.EchoirDIsPPRapport</value>
-		<value>ch.vd.uniregctb.document.EchoirDIsPMRapport</value>
+		<value>ch.vd.uniregctb.document.EchoirDIsRapport</value>
 		<value>ch.vd.uniregctb.document.MajoriteRapport</value>
 		<value>ch.vd.uniregctb.document.FusionDeCommunesRapport</value>
 		<value>ch.vd.uniregctb.document.RolesCommunesRapport</value>
@@ -140,8 +110,7 @@
 		<value>ch.vd.uniregctb.document.StatistiquesCtbsRapport</value>
 		<value>ch.vd.uniregctb.document.ListeDIsNonEmisesRapport</value>
 		<value>ch.vd.uniregctb.document.ListeTachesEnIsntanceParOIDRapport</value>
-		<value>ch.vd.uniregctb.document.EnvoiSommationsDIsPPRapport</value>
-		<value>ch.vd.uniregctb.document.EnvoiSommationsDIsPMRapport</value>
+		<value>ch.vd.uniregctb.document.EnvoiSommationsDIsRapport</value>
 		<value>ch.vd.uniregctb.document.ValidationJobRapport</value>
 		<value>ch.vd.uniregctb.document.EnvoiLRsRapport</value>
 		<value>ch.vd.uniregctb.document.EnvoiSommationLRsRapport</value>
@@ -188,13 +157,6 @@
 		<value>ch.vd.uniregctb.reqdes.UniteTraitement</value>
 		<value>ch.vd.uniregctb.tiers.DecisionAci</value>
 		<value>ch.vd.uniregctb.tiers.AssujettissementParSubstitution</value>
-		<value>ch.vd.uniregctb.tiers.Bouclement</value>
-		<value>ch.vd.uniregctb.tiers.LocalisationDatee</value>
-		<value>ch.vd.uniregctb.tiers.DomicileEtablissement</value>
-		<value>ch.vd.uniregctb.tiers.RegimeFiscal</value>
-		<value>ch.vd.uniregctb.tiers.DonneesRegistreCommerce</value>
-		<value>ch.vd.uniregctb.tiers.CapitalEntreprise</value>
-		<value>ch.vd.uniregctb.tiers.AllegementFiscal</value>
 	</util:list>
 
 	<!-- La session factory -->

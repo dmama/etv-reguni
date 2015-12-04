@@ -22,7 +22,7 @@ import ch.vd.uniregctb.common.BatchTransactionTemplateWithResults;
 import ch.vd.uniregctb.common.LoggingStatusManager;
 import ch.vd.uniregctb.hibernate.HibernateCallback;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
-import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
+import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.SituationFamilleMenageCommun;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.transaction.TransactionTemplate;
@@ -126,7 +126,7 @@ public class ReinitialiserBaremeDoubleGainProcessor {
 			return;
 		}
 
-		final ContribuableImpositionPersonnesPhysiques contribuable = situation.getContribuable();
+		final Contribuable contribuable = situation.getContribuable();
 		Assert.notNull(contribuable, "La situation de famille n'est pas rattachée à un contribuable.");
 
 		// Crée une nouvelle situation de famille identique à la précédente, mais avec le tarif NORMAL

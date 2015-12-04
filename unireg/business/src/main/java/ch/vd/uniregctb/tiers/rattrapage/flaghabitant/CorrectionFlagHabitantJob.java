@@ -6,7 +6,6 @@ import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.document.CorrectionFlagHabitantRapport;
 import ch.vd.uniregctb.rapport.RapportService;
-import ch.vd.uniregctb.scheduler.JobCategory;
 import ch.vd.uniregctb.scheduler.JobDefinition;
 import ch.vd.uniregctb.scheduler.JobParam;
 import ch.vd.uniregctb.scheduler.JobParamInteger;
@@ -20,6 +19,8 @@ public class CorrectionFlagHabitantJob extends JobDefinition {
 
 	private static final String NAME = "CorrectionFlagHabitantJob";
 
+	private static final String CATEGORIE = "Database";
+
 	public static final String I_NB_THREADS = "nbThreads";
 
 	private TiersService tiersService;
@@ -27,7 +28,7 @@ public class CorrectionFlagHabitantJob extends JobDefinition {
 	private RapportService rapportService;
 
 	public CorrectionFlagHabitantJob(int sortOrder, String description) {
-		super(NAME, JobCategory.DB, sortOrder, description);
+		super(NAME, CATEGORIE, sortOrder, description);
 
 		final JobParam param = new JobParam();
 		param.setDescription("Nombre de threads");

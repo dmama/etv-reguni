@@ -43,14 +43,6 @@
         overflowToDisk="false"
         />
 
-    <cache name="serviceOrganisation"
-           maxElementsInMemory="1000"
-           eternal="false"
-           timeToIdleSeconds="500"
-           timeToLiveSeconds="500"
-           overflowToDisk="false"
-            />
-
 	<cache name="servicePM"
 		maxElementsInMemory="2500"
 		eternal="false"
@@ -108,14 +100,6 @@
         />
 
 	<cache name="webService5"
-	       maxElementsInMemory="1000"
-	       eternal="false"
-	       timeToIdleSeconds="300"
-	       timeToLiveSeconds="300"
-	       overflowToDisk="false"
-			/>
-
-	<cache name="webService6"
 	       maxElementsInMemory="1000"
 	       eternal="false"
 	       timeToIdleSeconds="300"

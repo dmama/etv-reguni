@@ -10,7 +10,7 @@ import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.unireg.interfaces.common.CasePostale;
+import ch.vd.unireg.interfaces.civil.data.CasePostale;
 import ch.vd.uniregctb.interfaces.model.AdresseEntreprise;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.Entreprise;
@@ -31,7 +31,7 @@ public class AdressePMAdapter implements AdresseGenerique {
 		this.adresse = adresse;
 		this.debutValiditeSurcharge = null;
 		this.finValiditeSurcharge = null;
-		this.source = new Source(SourceType.CIVILE_ORG, entreprise);
+		this.source = new Source(SourceType.PM, entreprise);
 		this.isDefault = isDefault;
 		this.rue = StringUtils.trimToNull(adresse.getRue());
 		DateRangeHelper.assertValidRange(getDateDebut(), getDateFin());

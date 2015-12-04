@@ -23,8 +23,6 @@ import ch.vd.uniregctb.metier.assujettissement.PeriodeImposition;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionService;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.tiers.Contribuable;
-import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesMorales;
-import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.transaction.TransactionTemplate;
@@ -43,8 +41,7 @@ public class ValidationJobThread extends Thread {
 	private final TiersDAO tiersDAO;
 	private final PlatformTransactionManager transactionManager;
 	private final AdresseService adresseService;
-	private final int premiereAnneeFiscalePP;
-	private final int premiereAnneeFiscalePM;
+	private final int premiereAnneeFiscale;
 	private final ValidationService validationService;
 	private final PeriodeImpositionService periodeImpositionService;
 
@@ -63,8 +60,7 @@ public class ValidationJobThread extends Thread {
 		this.validationService = validationService;
 		this.periodeImpositionService = periodeImpositionService;
 
-		this.premiereAnneeFiscalePP = parametreService.getPremierePeriodeFiscalePersonnesPhysiques();
-		this.premiereAnneeFiscalePM = parametreService.getPremierePeriodeFiscalePersonnesMorales();
+		this.premiereAnneeFiscale = parametreService.getPremierePeriodeFiscale();
 	}
 
 	@Override
@@ -145,26 +141,11 @@ public class ValidationJobThread extends Thread {
 		}
 	}
 
-	private int getPremierePeriodeFiscalePourPeriodesImposition(Contribuable contribuable) {
-		if (contribuable instanceof ContribuableImpositionPersonnesPhysiques) {
-			return premiereAnneeFiscalePP;
-		}
-		else if (contribuable instanceof ContribuableImpositionPersonnesMorales) {
-			return premiereAnneeFiscalePM;
-		}
-		else {
-			// bizarre... établissement, peut-être ? au pire, on lève des problèmes...
-			return Math.min(premiereAnneeFiscalePP, premiereAnneeFiscalePM);
-		}
-	}
-
 	private void checkPeriodesImposition(final Contribuable contribuable, ValidationJobResults results) {
 
 		final RegDate aujourdhui = RegDate.get();
 		final RegDate dateDebut = contribuable.getDateDebutActivite();
 		final RegDate dateFin = contribuable.getDateFinActivite();
-
-		final int premiereAnneeFiscale = getPremierePeriodeFiscalePourPeriodesImposition(contribuable);
 
 		final int anneeDebut = Math.max(premiereAnneeFiscale, (dateDebut == null ? aujourdhui.year() : dateDebut.year()));
 		final int anneeFin = Math.max(premiereAnneeFiscale, (dateFin == null ? aujourdhui.year() : dateFin.year()));
@@ -179,7 +160,7 @@ public class ValidationJobThread extends Thread {
 			}
 			catch (Exception e) {
 				if (LOGGER.isDebugEnabled()) {
-					LOGGER.debug("Calcul impossible de la période d'imposition pour le contribuable n°" + contribuable.getNumero() + " et l'année " + annee);
+					LOGGER.debug("Calcul impossible de la période d'imposition pour le contribuable n°" + contribuable.getNumero() + " et l'année" + annee);
 				}
 				results.addErrorPeriodeImposition(contribuable, annee, e);
 			}
@@ -221,7 +202,7 @@ public class ValidationJobThread extends Thread {
 			// au moins une période d'imposition, mais pas de DI (pas grave si c'est l'année en cours...)
 			if (annee < RegDate.get().year()) {
 				for (PeriodeImposition pi : periodesImposition) {
-					if (pi.isDeclarationMandatory()) {
+					if (!pi.isOptionnelle() && !pi.isRemplaceeParNote() && !pi.isDiplomateSuisseSansImmeuble()) {
 						addErrorCoherenceDiPeriodeImpositionSansDi(contribuable, results, pi);
 					}
 				}
@@ -301,7 +282,7 @@ public class ValidationJobThread extends Thread {
 			if (nbDeclarationNonAssociees < periodesImposition.size()) {
 				// il ne reste que des périodes d'imposition sans DI
 				for (PeriodeImposition pi : periodesImposition.subList(nbDeclarationNonAssociees, periodesImposition.size())) {
-					if (pi.isDeclarationMandatory()) {
+					if (!pi.isOptionnelle() && !pi.isRemplaceeParNote() && !pi.isDiplomateSuisseSansImmeuble()) {
 						addErrorCoherenceDiPeriodeImpositionSansDi(contribuable, results, pi);
 					}
 				}

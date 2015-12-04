@@ -11,15 +11,11 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.validation.ValidationException;
 import ch.vd.uniregctb.declaration.DeclarationException;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
-import ch.vd.uniregctb.declaration.ordinaire.pp.ModeleFeuilleDocumentEditique;
+import ch.vd.uniregctb.declaration.ordinaire.ModeleFeuilleDocumentEditique;
 import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.EditiqueResultat;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImposition;
-import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionPersonnesMorales;
-import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionPersonnesPhysiques;
 import ch.vd.uniregctb.tiers.Contribuable;
-import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesMorales;
-import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
 import ch.vd.uniregctb.type.TypeAdresseRetour;
 import ch.vd.uniregctb.type.TypeDocument;
 
@@ -30,7 +26,7 @@ import ch.vd.uniregctb.type.TypeDocument;
  */
 public interface DeclarationImpotEditManager {
 
-	String CANNOT_ADD_NEW_DI = "Le contribuable n'est pas assujetti, ou toutes ses déclarations sont déjà créées.";
+	public static final String CANNOT_ADD_NEW_DI = "Le contribuable n'est pas assujetti, ou toutes ses déclarations sont déjà créées.";
 
 	/**
 	 * [UNIREG-832] Calcule les dates de début et de fin pour la création de la prochaine d'impôt sur un contribuable. Si plusieurs déclarations n'ont pas été envoyées durant les années précédentes,
@@ -48,6 +44,7 @@ public interface DeclarationImpotEditManager {
 	 * Crée, sauve en base et imprime une DI vierge, ou imprime un duplicat de DI existante.
 	 *
 	 * @param ctbId le numéro de contribuable concerné
+	 * @param id le numéro de la déclaration s'ils s'agit d'imprimer un duplicat; ou <b>null</b> s'il s'agit de créer une nouvelle déclaration vierge.
 	 * @param dateDebut la date de début de validité de la déclaration
 	 * @param dateFin la date de fin de validité de la déclaration
 	 * @param typeDocument le type de document de la déclaration
@@ -57,11 +54,8 @@ public interface DeclarationImpotEditManager {
 	 * @throws Exception
 	 */
 	@Transactional(rollbackFor = Throwable.class)
-	EditiqueResultat envoieImpressionLocaleDI(Long ctbId, RegDate dateDebut, RegDate dateFin, TypeDocument typeDocument, TypeAdresseRetour adresseRetour,
-	                                          RegDate delaiAccorde, @Nullable RegDate dateRetour) throws Exception;
-
-	@Transactional(rollbackFor = Throwable.class)
-	void genererDISansImpression(Long ctbId, RegDate dateDebut, RegDate dateFin, RegDate delaiAccorde, @Nullable RegDate dateRetour) throws Exception;
+	EditiqueResultat envoieImpressionLocalDI(Long ctbId, @Nullable Long id, RegDate dateDebut, RegDate dateFin, TypeDocument typeDocument, TypeAdresseRetour adresseRetour,
+	                                         RegDate delaiAccorde, @Nullable RegDate dateRetour) throws Exception;
 
 	/**
 	 * Persiste en base le delai
@@ -75,13 +69,13 @@ public interface DeclarationImpotEditManager {
 	 * @param id l'id de la déclaration d'impôt à sommer.
 	 */
 	@Transactional(rollbackFor = Throwable.class)
-	EditiqueResultat envoieImpressionLocalSommationDI(Long id) throws EditiqueException, DeclarationException;
+	EditiqueResultat envoieImpressionLocalSommationDI(Long id) throws EditiqueException;
 
 	/**
 	 * Imprimer la lettre de confirmation de délai
 	 */
 	@Transactional(rollbackFor = Throwable.class)
-	EditiqueResultat envoieImpressionLocalConfirmationDelai(Long idDI, Long idDelai) throws EditiqueException;
+	public EditiqueResultat envoieImpressionLocalConfirmationDelai(Long idDI, Long idDelai) throws EditiqueException;
 
 	@Transactional(rollbackFor = Throwable.class)
 	EditiqueResultat envoieImpressionLocalDuplicataDI(Long id, TypeDocument typeDocument, List<ModeleFeuilleDocumentEditique> annexes, boolean saveModele) throws DeclarationException;
@@ -94,24 +88,6 @@ public interface DeclarationImpotEditManager {
 	 * @throws ValidationException si le contribuable ne valide pas, n'est pas du tout assujetti, si les dates ne correspondent pas à l'assujettissement calculé ou s'il existe déjà une déclaration.
 	 */
 	PeriodeImposition checkRangeDi(Contribuable contribuable, DateRange range) throws ValidationException;
-
-	/**
-	 * [UNIREG-832] Vérifie que les dates de début et de fin pour la création d'une déclaration d'impôt sont correctes.
-	 *
-	 * @param contribuable le contribuable
-	 * @param range        le range de de validité de la déclaration à créer.
-	 * @throws ValidationException si le contribuable ne valide pas, n'est pas du tout assujetti, si les dates ne correspondent pas à l'assujettissement calculé ou s'il existe déjà une déclaration.
-	 */
-	PeriodeImpositionPersonnesPhysiques checkRangeDi(ContribuableImpositionPersonnesPhysiques contribuable, DateRange range) throws ValidationException;
-
-	/**
-	 * Vérifie que les dates de début et de fin pour la création d'une déclaration d'impôt sont correctes.
-	 *
-	 * @param contribuable le contribuable
-	 * @param range        le range de de validité de la déclaration à créer.
-	 * @throws ValidationException si le contribuable ne valide pas, n'est pas du tout assujetti, si les dates ne correspondent pas à l'assujettissement calculé ou s'il existe déjà une déclaration.
-	 */
-	PeriodeImpositionPersonnesMorales checkRangeDi(ContribuableImpositionPersonnesMorales contribuable, DateRange range) throws ValidationException;
 
 	/**
 	 * Quittancer (= ajout un état 'retourné') manuellement une déclaration.

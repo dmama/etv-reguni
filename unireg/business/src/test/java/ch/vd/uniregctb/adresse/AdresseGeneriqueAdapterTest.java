@@ -19,7 +19,7 @@ public class AdresseGeneriqueAdapterTest {
 		final RegDate debut = RegDate.get(2000, 1, 1);
 		final RegDate fin = RegDate.get(2005, 1, 1);
 
-		AdresseGenerique adresse = new MockAdresseGeneric(debut, fin, new AdresseGenerique.Source(AdresseGenerique.SourceType.CIVILE_PERS, null));
+		AdresseGenerique adresse = new MockAdresseGeneric(debut, fin, new AdresseGenerique.Source(AdresseGenerique.SourceType.CIVILE, null));
 
 		// Constructeur n°1
 		AdresseGeneriqueAdapter adapter1 = new AdresseGeneriqueAdapter(adresse, new AdresseGenerique.Source(AdresseGenerique.SourceType.FISCALE, null), true);
@@ -33,7 +33,7 @@ public class AdresseGeneriqueAdapterTest {
 				1), false);
 		assertEquals(RegDate.get(2002, 1, 1), adapter2.getDateDebut());
 		assertEquals(RegDate.get(2003, 1, 1), adapter2.getDateFin());
-		assertEquals(AdresseGenerique.SourceType.CIVILE_PERS, adapter2.getSource().getType());
+		assertEquals(AdresseGenerique.SourceType.CIVILE, adapter2.getSource().getType());
 		assertFalse(adapter2.isDefault());
 
 		// Constructeur n°3
@@ -53,16 +53,16 @@ public class AdresseGeneriqueAdapterTest {
 		final RegDate _2005_01_01 = RegDate.get(2005, 1, 1);
 		final RegDate _2010_01_01 = RegDate.get(2010, 1, 1);
 
-		AdresseGenerique adresse_00_05 = new MockAdresseGeneric(_2000_01_01, _2005_01_01, new AdresseGenerique.Source(AdresseGenerique.SourceType.CIVILE_PERS, null));
-		AdresseGenerique adresse_05_00 = new MockAdresseGeneric(_2005_01_01, _2000_01_01, new AdresseGenerique.Source(AdresseGenerique.SourceType.CIVILE_PERS, null));
-		AdresseGenerique adresse_null_05 = new MockAdresseGeneric(null, _2005_01_01, new AdresseGenerique.Source(AdresseGenerique.SourceType.CIVILE_PERS, null));
-		AdresseGenerique adresse_00_null = new MockAdresseGeneric(_2000_01_01, null, new AdresseGenerique.Source(AdresseGenerique.SourceType.CIVILE_PERS, null));
+		AdresseGenerique adresse_00_05 = new MockAdresseGeneric(_2000_01_01, _2005_01_01, new AdresseGenerique.Source(AdresseGenerique.SourceType.CIVILE, null));
+		AdresseGenerique adresse_05_00 = new MockAdresseGeneric(_2005_01_01, _2000_01_01, new AdresseGenerique.Source(AdresseGenerique.SourceType.CIVILE, null));
+		AdresseGenerique adresse_null_05 = new MockAdresseGeneric(null, _2005_01_01, new AdresseGenerique.Source(AdresseGenerique.SourceType.CIVILE, null));
+		AdresseGenerique adresse_00_null = new MockAdresseGeneric(_2000_01_01, null, new AdresseGenerique.Source(AdresseGenerique.SourceType.CIVILE, null));
 
 		// ok
-		new AdresseGeneriqueAdapter(adresse_00_05, new AdresseGenerique.Source(AdresseGenerique.SourceType.CIVILE_PERS, null), true);
-		new AdresseGeneriqueAdapter(adresse_05_00, null, _2010_01_01, new AdresseGenerique.Source(AdresseGenerique.SourceType.CIVILE_PERS, null), true);
-		new AdresseGeneriqueAdapter(adresse_null_05, _2000_01_01, null, new AdresseGenerique.Source(AdresseGenerique.SourceType.CIVILE_PERS, null), true);
-		new AdresseGeneriqueAdapter(adresse_00_null, null, _2010_01_01, new AdresseGenerique.Source(AdresseGenerique.SourceType.CIVILE_PERS, null), true);
+		new AdresseGeneriqueAdapter(adresse_00_05, new AdresseGenerique.Source(AdresseGenerique.SourceType.CIVILE, null), true);
+		new AdresseGeneriqueAdapter(adresse_05_00, null, _2010_01_01, new AdresseGenerique.Source(AdresseGenerique.SourceType.CIVILE, null), true);
+		new AdresseGeneriqueAdapter(adresse_null_05, _2000_01_01, null, new AdresseGenerique.Source(AdresseGenerique.SourceType.CIVILE, null), true);
+		new AdresseGeneriqueAdapter(adresse_00_null, null, _2010_01_01, new AdresseGenerique.Source(AdresseGenerique.SourceType.CIVILE, null), true);
 
 		// ko
 		assertAdresseKo(adresse_05_00, null, null);
@@ -72,7 +72,7 @@ public class AdresseGeneriqueAdapterTest {
 
 	private void assertAdresseKo(AdresseGenerique adresse, RegDate debut, RegDate fin) {
 		try {
-			new AdresseGeneriqueAdapter(adresse, debut, fin, new AdresseGenerique.Source(AdresseGenerique.SourceType.CIVILE_PERS, null), true);
+			new AdresseGeneriqueAdapter(adresse, debut, fin, new AdresseGenerique.Source(AdresseGenerique.SourceType.CIVILE, null), true);
 			fail();
 		}
 		catch (IllegalArgumentException ignored) {
@@ -83,9 +83,9 @@ public class AdresseGeneriqueAdapterTest {
 	@Test
 	public void testOptimize() {
 
-		AdresseGenerique adresse = new MockAdresseGeneric(RegDate.get(2000, 1, 1), RegDate.get(2005, 1, 1), new AdresseGenerique.Source(AdresseGenerique.SourceType.CIVILE_PERS, null));
+		AdresseGenerique adresse = new MockAdresseGeneric(RegDate.get(2000, 1, 1), RegDate.get(2005, 1, 1), new AdresseGenerique.Source(AdresseGenerique.SourceType.CIVILE, null));
 		AdresseGeneriqueAdapter embedded = new AdresseGeneriqueAdapter(adresse, RegDate.get(1998, 1, 1), RegDate.get(2015,
-				12, 31), new AdresseGenerique.Source(AdresseGenerique.SourceType.CIVILE_PERS, null), false);
+				12, 31), new AdresseGenerique.Source(AdresseGenerique.SourceType.CIVILE, null), false);
 
 		// Toutes les valeurs surchargées
 		AdresseGeneriqueAdapter adapter1 = new AdresseGeneriqueAdapter(embedded, RegDate.get(2002, 1, 1), RegDate.get(2003,
@@ -100,7 +100,7 @@ public class AdresseGeneriqueAdapterTest {
 		AdresseGeneriqueAdapter adapter2 = new AdresseGeneriqueAdapter(embedded, null, null);
 		assertEquals(RegDate.get(1998, 1, 1), adapter2.getDateDebut());
 		assertEquals(RegDate.get(2015, 12, 31), adapter2.getDateFin());
-		assertEquals(AdresseGenerique.SourceType.CIVILE_PERS, adapter2.getSource().getType());
+		assertEquals(AdresseGenerique.SourceType.CIVILE, adapter2.getSource().getType());
 		assertFalse(adapter2.isDefault());
 		assertSame(adresse, adapter2.getTarget());
 	}
@@ -110,7 +110,7 @@ public class AdresseGeneriqueAdapterTest {
 	 */
 	@Test
 	public void testGetters() {
-		AdresseGenerique adresse = new MockAdresseGeneric(null, null, new AdresseGenerique.Source(AdresseGenerique.SourceType.CIVILE_PERS, null));
+		AdresseGenerique adresse = new MockAdresseGeneric(null, null, new AdresseGenerique.Source(AdresseGenerique.SourceType.CIVILE, null));
 		AdresseGeneriqueAdapter adapter = new AdresseGeneriqueAdapter(adresse, null, null);
 
 		assertNull(adapter.getNumeroAppartement());

@@ -2,7 +2,7 @@ package ch.vd.unireg.interfaces.infra.data;
 
 public interface EntiteFiscale {
 
-	Integer getCode();
+	public Integer getCode();
 
-	String getDesignation();
+	public String getDesignation();
 }

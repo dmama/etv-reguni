@@ -8,7 +8,7 @@ import ch.vd.uniregctb.type.TypeEvenementCivilEch;
 
 public abstract class AbstractAdresseComparisonStrategyTest extends AbstractIndividuComparisonStrategyTest {
 
-	protected interface AddressBuilder {
+	protected static interface AddressBuilder {
 		void buildAdresses(MockIndividu individu);
 	}
 

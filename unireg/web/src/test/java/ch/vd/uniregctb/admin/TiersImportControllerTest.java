@@ -24,6 +24,7 @@ import ch.vd.unireg.interfaces.infra.mock.MockLocalite;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.uniregctb.common.WebTestSpring3;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersSearcher;
+import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServicePM;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
@@ -36,9 +37,9 @@ public class TiersImportControllerTest extends WebTestSpring3 {
 	/**
 	 * Le nom du controller à tester.
 	 */
-	private static final String CONTROLLER_NAME = "tiersImportController";
+	private final static String CONTROLLER_NAME = "tiersImportController";
 
-	private static final String DB_UNIT_FILE = "tiers-basic.xml";
+	private final static String DB_UNIT_FILE = "tiers-basic.xml";
 
 	private GlobalTiersSearcher globalTiersSearcher;
 	private TiersDAO tiersDAO;
@@ -52,6 +53,8 @@ public class TiersImportControllerTest extends WebTestSpring3 {
 
 		globalTiersSearcher = getBean(GlobalTiersSearcher.class, "globalTiersSearcher");
 		tiersDAO = getBean(TiersDAO.class, "tiersDAO");
+
+		servicePM.setUp(new DefaultMockServicePM());
 
 		serviceInfra.setUp(new DefaultMockServiceInfrastructureService() {
 			@Override
@@ -155,7 +158,6 @@ public class TiersImportControllerTest extends WebTestSpring3 {
 			}
 		});
 	}
-
 	@Test
 	public void testImportUploadedScript() throws Exception {
 

@@ -10,12 +10,13 @@ public class LoggingJob extends JobDefinition {
 	private final Logger LOGGER = LoggerFactory.getLogger(LoggingJob.class);
 
 	public static final String NAME = "Logging";
+	private static final String CATEGORIE = "Debug";
 
 	public static final String I_DELAY = "delay";
 	public static final String I_INT_DELAY = "interruption_delay";
 
 	public LoggingJob(int sortOrder) {
-		super(NAME, JobCategory.DEBUG, sortOrder, "Logger des lignes dans le LOGGER (pour le test)");
+		super(NAME, CATEGORIE, sortOrder, "Logger des lignes dans le LOGGER (pour le test)");
 
 		{
 			final JobParam param = new JobParam();

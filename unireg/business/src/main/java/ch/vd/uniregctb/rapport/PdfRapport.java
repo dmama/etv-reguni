@@ -105,8 +105,8 @@ public abstract class PdfRapport extends Document {
 		add(p);
 	}
 
-	public interface TableSimpleCallback {
-		void fillTable(PdfTableSimple table) throws DocumentException;
+	public abstract interface TableSimpleCallback {
+		abstract void fillTable(PdfTableSimple table) throws DocumentException;
 	}
 
 	/**

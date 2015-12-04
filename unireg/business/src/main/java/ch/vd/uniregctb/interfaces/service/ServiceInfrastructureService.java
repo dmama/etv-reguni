@@ -7,7 +7,7 @@ import org.jetbrains.annotations.Nullable;
 
 import ch.vd.infrastructure.model.EnumTypeCollectivite;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.common.Adresse;
+import ch.vd.unireg.interfaces.civil.data.Adresse;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
 import ch.vd.unireg.interfaces.infra.data.ApplicationFiscale;
@@ -21,34 +21,34 @@ import ch.vd.unireg.interfaces.infra.data.LogicielMetier;
 import ch.vd.unireg.interfaces.infra.data.OfficeImpot;
 import ch.vd.unireg.interfaces.infra.data.Pays;
 import ch.vd.unireg.interfaces.infra.data.Rue;
+import ch.vd.unireg.interfaces.infra.data.TypeEtatPM;
 import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
 import ch.vd.uniregctb.adresse.AdresseGenerique;
 
 public interface ServiceInfrastructureService {
 
-	String SERVICE_NAME = ServiceInfrastructureRaw.SERVICE_NAME;
+	static final String SERVICE_NAME = ServiceInfrastructureRaw.SERVICE_NAME;
 
-	int noOIPM = ServiceInfrastructureRaw.noOIPM;
-	int noACI = ServiceInfrastructureRaw.noACI;
-	int noACIImpotSource = ServiceInfrastructureRaw.noACIImpotSource;
-	int noACISuccessions = ServiceInfrastructureRaw.noACISuccessions;
-	int noCEDI = ServiceInfrastructureRaw.noCEDI;
-	int noTuteurGeneral = ServiceInfrastructureRaw.noTuteurGeneral;
-	int noCAT = ServiceInfrastructureRaw.noCAT;
+	final static int noACI = ServiceInfrastructureRaw.noACI;
+	final static int noACIImpotSource = ServiceInfrastructureRaw.noACIImpotSource;
+	final static int noACISuccessions = ServiceInfrastructureRaw.noACISuccessions;
+	final static int noCEDI = ServiceInfrastructureRaw.noCEDI;
+	final static int noTuteurGeneral = ServiceInfrastructureRaw.noTuteurGeneral;
+	final static int noCAT = ServiceInfrastructureRaw.noCAT;
 
-	int noOfsSuisse = ServiceInfrastructureRaw.noOfsSuisse;
-	int noPaysApatride = ServiceInfrastructureRaw.noPaysApatride;
-	int noPaysInconnu = ServiceInfrastructureRaw.noPaysInconnu;
+	final static int noOfsSuisse = ServiceInfrastructureRaw.noOfsSuisse;
+	final static int noPaysApatride = ServiceInfrastructureRaw.noPaysApatride;
+	final static int noPaysInconnu = ServiceInfrastructureRaw.noPaysInconnu;
 
 	/**
 	 * Constante sigle du canton de Vaud
 	 */
-	String SIGLE_CANTON_VD = ServiceInfrastructureRaw.SIGLE_CANTON_VD;
+	static final String SIGLE_CANTON_VD = ServiceInfrastructureRaw.SIGLE_CANTON_VD;
 
 	/**
 	 * Constante sigle du pays Suisse
 	 */
-	String SIGLE_SUISSE = ServiceInfrastructureRaw.SIGLE_SUISSE;
+	static final String SIGLE_SUISSE = ServiceInfrastructureRaw.SIGLE_SUISSE;
 
 	/**
 	 * @return la liste des pays.
@@ -246,12 +246,6 @@ public interface ServiceInfrastructureService {
 	CollectiviteAdministrative getACISuccessions() throws ServiceInfrastructureException;
 
 	/**
-	 * @return la collectivite administrative OIPM, service de l'ACI
-	 * @throws ServiceInfrastructureException en cas de problème d'accès à l'infrastructure
-	 */
-	CollectiviteAdministrative getACIOIPM() throws ServiceInfrastructureException;
-
-	/**
 	 * @return la collectivite administrative du CEDI
 	 * @throws ServiceInfrastructureException en cas de problème d'accès à l'infrastructure
 	 */
@@ -426,7 +420,7 @@ public interface ServiceInfrastructureService {
 	 */
 	boolean estEnSuisse(Adresse adresse) throws ServiceInfrastructureException;
 
-	enum Zone {
+	static enum Zone {
 		VAUD,
 		HORS_CANTON,
 		HORS_SUISSE
@@ -480,8 +474,28 @@ public interface ServiceInfrastructureService {
 	List<InstitutionFinanciere> getInstitutionsFinancieres(String noClearing) throws ServiceInfrastructureException;
 
 	/**
-	 * @return l'ensemble des différents régimes fiscaux disponibles
-	 * @throws ServiceInfrastructureException en cas de souci
+	 * @return la liste des types de régimes fiscaux qui existent pour les personnes morales.
+	 * @throws ServiceInfrastructureException en cas de problème
 	 */
-	List<TypeRegimeFiscal> getRegimesFiscaux() throws ServiceInfrastructureException;
+	List<TypeRegimeFiscal> getTypesRegimesFiscaux() throws ServiceInfrastructureException;
+
+	/**
+	 * @param code un code de régime fiscal
+	 * @return le régime fiscal pour le code demandé; ou <null> si le code ne correspond à aucun régime fiscal connu,
+	 * @throws ServiceInfrastructureException en cas de problème
+	 */
+	TypeRegimeFiscal getTypeRegimeFiscal(String code) throws ServiceInfrastructureException;
+
+	/**
+	 * @return la liste des types d'états qui existent pour les personnes morales.
+	 * @throws ServiceInfrastructureException en cas de problème
+	 */
+	List<TypeEtatPM> getTypesEtatsPM() throws ServiceInfrastructureException;
+
+	/**
+	 * @param code un code de type d'état PM
+	 * @return le type d'état PM pour le code demandé; ou <null> si le code ne correspond à aucun type d'état connu,
+	 * @throws ServiceInfrastructureException en cas de problème
+	 */
+	TypeEtatPM getTypeEtatPM(String code) throws ServiceInfrastructureException;
 }

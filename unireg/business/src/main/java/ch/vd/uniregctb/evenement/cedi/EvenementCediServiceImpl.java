@@ -25,7 +25,6 @@ import ch.vd.uniregctb.jms.BamMessageSender;
 import ch.vd.uniregctb.jms.EsbBusinessCode;
 import ch.vd.uniregctb.jms.EsbMessageHelper;
 import ch.vd.uniregctb.tiers.Contribuable;
-import ch.vd.uniregctb.tiers.CoordonneesFinancieres;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.type.TypeDocument;
 import ch.vd.uniregctb.validation.ValidationService;
@@ -171,9 +170,7 @@ public class EvenementCediServiceImpl implements EvenementCediService {
 				replaceIban = !ibanValidator.isValidIban(ctb.getNumeroCompteBancaire());
 			}
 			if (replaceIban) {
-				// TODO est-il juste de conserver le vieux BIC/SWIFT (ne faudrait-il pas le remettre à 'null' systématiquement) ?
-				ctb.setCoordonneesFinancieres(new CoordonneesFinancieres(LengthConstants.streamlineField(IbanHelper.normalize(scan.getIban()), LengthConstants.TIERS_NUMCOMPTE, false),
-				                                                         ctb.getAdresseBicSwift()));
+				ctb.setNumeroCompteBancaire(LengthConstants.streamlineField(IbanHelper.normalize(scan.getIban()), LengthConstants.TIERS_NUMCOMPTE, false));
 			}
 		}
 

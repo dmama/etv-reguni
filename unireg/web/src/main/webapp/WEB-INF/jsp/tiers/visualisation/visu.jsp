@@ -115,12 +115,10 @@
 						<a href="#tabContent_dossiersApparentesTab"><fmt:message key="label.dossiers.apparentes" /></a>
 					</li>
 					<authz:authorize ifAnyGranted="ROLE_VISU_ALL">
-						<c:if test="${command.natureTiers == 'Habitant' || command.natureTiers == 'NonHabitant' || command.natureTiers == 'MenageCommun' || command.natureTiers == 'Entreprise'}">
+						<c:if test="${command.natureTiers != 'Entreprise'}">
 							<li id="diTab">
 								<a href="#tabContent_diTab"><fmt:message key="label.di" /></a>
 							</li>
-						</c:if>
-						<c:if test="${command.natureTiers == 'Habitant' || command.natureTiers == 'NonHabitant' || command.natureTiers == 'MenageCommun'}">
 							<li id="mouvementTab">
 								<a href="#tabContent_mouvementTab"><fmt:message key="label.mouvement" /></a>
 							</li>
@@ -128,12 +126,6 @@
 						<c:if test="${command.natureTiers == 'Entreprise'}">
 							<li id="regimesFiscauxTab">
 								<a href="#tabContent_regimesFiscauxTab"><fmt:message key="label.regimes.fiscaux" /></a>
-							</li>
-							<li id="allegementsFiscauxTab">
-								<a href="#tabContent_allegementsFiscauxTab"><fmt:message key="label.allegements.fiscaux" /></a>
-							</li>
-							<li id="bouclementsTab">
-								<a href="#tabContent_bouclementsTab"><fmt:message key="label.bouclements" /></a>
 							</li>
 							<li id="etatsPMTab">
 								<a href="#tabContent_etatsPMTab"><fmt:message key="label.etats.pm" /></a>
@@ -202,12 +194,10 @@
 					<jsp:include page="dossiers-apparentes.jsp"/>
 				</div>
 				<authz:authorize ifAnyGranted="ROLE_VISU_ALL">
-					<c:if test="${command.natureTiers == 'Habitant' || command.natureTiers == 'NonHabitant' || command.natureTiers == 'MenageCommun' || command.natureTiers == 'Entreprise'}">
+					<c:if test="${command.natureTiers != 'Entreprise'}">
 						<div id="tabContent_diTab" class="visuTiers">
 							<jsp:include page="di/dis.jsp"/>
 						</div>
-					</c:if>
-					<c:if test="${command.natureTiers == 'Habitant' || command.natureTiers == 'NonHabitant' || command.natureTiers == 'MenageCommun'}">
 						<div id="tabContent_mouvementTab" class="visuTiers">
 							<jsp:include page="mouvement/mouvements.jsp"/>
 						</div>
@@ -216,12 +206,6 @@
 						<div id="tabContent_regimesFiscauxTab" class="visuTiers">
 							<jsp:include page="pm/regimes-fiscaux.jsp"/>
 						</div>
-						<div id="tabContent_allegementsFiscauxTab" class="visuTiers">
-							<jsp:include page="pm/allegements-fiscaux.jsp"/>
-						</div>
-						<li id="tabContent_bouclementsTab" class="visuTiers">
-							<jsp:include page="pm/bouclements.jsp"/>
-						</li>
 						<div id="tabContent_etatsPMTab" class="visuTiers">
 							<jsp:include page="pm/etats.jsp"/>
 						</div>

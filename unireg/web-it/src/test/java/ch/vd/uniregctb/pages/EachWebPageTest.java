@@ -391,12 +391,12 @@ public class EachWebPageTest extends WebitTest {
 	// Page d'impression d'une DI
 	@Test
 	public void testDiImpression() throws Exception {
-		assertPage("/di/duplicata-pp.do?id=2", "");
+		assertPage("/di/duplicata.do?id=2", "");
 	}
 
 	@Test
 	public void testDiImpressionInexistante() throws Exception {
-		assertPage("/di/duplicata-pp.do?id=12345678", "Page d'erreur", "La DI spécifiée n'existe pas");
+		assertPage("/di/duplicata.do?id=12345678", "Page d'erreur", "La DI spécifiée n'existe pas");
 	}
 
 	/*-----------------------------------------

@@ -4,25 +4,13 @@ import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
 
 public class RegimeFiscalView implements DateRange {
-
-	private final Long id;
-	private RegDate dateDebut;
-	private RegDate dateFin;
-	private TypeRegimeFiscal type;
-
-	public RegimeFiscalView(Long id, RegDate dateDebut, RegDate dateFin, TypeRegimeFiscal type) {
-		this.id = id;
-		this.dateDebut = dateDebut;
-		this.dateFin = dateFin;
-		this.type = type;
-	}
-
-	public Long getId() {
-		return id;
-	}
+	
+	public RegDate dateDebut;
+	public RegDate dateFin;
+	public String code;
+	public String libelle;
 
 	@Override
 	public RegDate getDateDebut() {
@@ -42,12 +30,20 @@ public class RegimeFiscalView implements DateRange {
 		this.dateFin = dateFin;
 	}
 
-	public TypeRegimeFiscal getType() {
-		return type;
+	public String getCode() {
+		return code;
 	}
 
-	public void setType(TypeRegimeFiscal type) {
-		this.type = type;
+	public void setCode(String code) {
+		this.code = code;
+	}
+
+	public String getLibelle() {
+		return libelle;
+	}
+
+	public void setLibelle(String libelle) {
+		this.libelle = libelle;
 	}
 
 	@Override

@@ -29,16 +29,12 @@ public class ParamApplicationView {
 	private String nouvelAn;
 	private String lendemainNouvelAn;
 	private String feteNationale;
-	private String premierePeriodeFiscalePersonnesPhysiques;
-	private String premierePeriodeFiscalePersonnesMorales;
-	private String premierePeriodeFiscaleDeclarationPersonnesMorales;
+	private String premierePeriodeFiscale;
 	private String anneeMinimaleForDebiteur;
 	private String delaiAttenteDeclarationImpotPersonneDecedee;
 	private String delaiRetourDeclarationImpotEmiseManuellement;
-	private String delaiEnvoiSommationDeclarationImpotPP;
-	private String delaiEnvoiSommationDeclarationImpotPM;
-	private String delaiEcheanceSommationDeclarationImpotPP;
-	private String delaiEcheanceSommationDeclarationImpotPM;
+	private String delaiEnvoiSommationDeclarationImpot;
+	private String delaiEcheanceSommationDeclarationImpot;
 	private String jourDuMoisEnvoiListesRecapitulatives;
 	private String delaiCadevImpressionDeclarationImpot;
 	private String delaiCadevImpressionListesRecapitulatives;
@@ -52,7 +48,6 @@ public class ParamApplicationView {
 	private String dateExclusionDecedeEnvoiDI;
 	private String ageRentierFemme;
 	private String ageRentierHomme;
-	private String delaiMinimalRetourDeclarationImpotPM;
 
 	public ParamApplicationView() {}
 
@@ -61,16 +56,14 @@ public class ParamApplicationView {
 		this.nouvelAn = ParametreEnum.nouvelAn.convertirValeurTypeeVersString(service.getNouvelAn());
 		this.lendemainNouvelAn = ParametreEnum.lendemainNouvelAn.convertirValeurTypeeVersString(service.getLendemainNouvelAn());
 		this.feteNationale = ParametreEnum.feteNationale.convertirValeurTypeeVersString(service.getFeteNationale());
-		this.premierePeriodeFiscalePersonnesPhysiques = ParametreEnum.premierePeriodeFiscalePersonnesPhysiques.convertirValeurTypeeVersString(service.getPremierePeriodeFiscalePersonnesPhysiques());
-		this.premierePeriodeFiscalePersonnesMorales = ParametreEnum.premierePeriodeFiscalePersonnesMorales.convertirValeurTypeeVersString(service.getPremierePeriodeFiscalePersonnesMorales());
-		this.premierePeriodeFiscaleDeclarationPersonnesMorales = ParametreEnum.premierePeriodeFiscaleDeclarationPersonnesMorales.convertirValeurTypeeVersString(service.getPremierePeriodeFiscaleDeclarationsPersonnesMorales());
+		this.premierePeriodeFiscale = ParametreEnum.premierePeriodeFiscale.convertirValeurTypeeVersString(service.getPremierePeriodeFiscale());
 		this.anneeMinimaleForDebiteur = ParametreEnum.anneeMinimaleForDebiteur.convertirValeurTypeeVersString(service.getAnneeMinimaleForDebiteur());
 		this.delaiAttenteDeclarationImpotPersonneDecedee =
 				ParametreEnum.delaiAttenteDeclarationImpotPersonneDecedee.convertirValeurTypeeVersString(service.getDelaiAttenteDeclarationImpotPersonneDecedee());
 		this.delaiRetourDeclarationImpotEmiseManuellement =
 				ParametreEnum.delaiRetourDeclarationImpotEmiseManuellement.convertirValeurTypeeVersString(service.getDelaiRetourDeclarationImpotEmiseManuellement());
-		this.delaiEnvoiSommationDeclarationImpotPP = ParametreEnum.delaiEnvoiSommationDeclarationImpotPP.convertirValeurTypeeVersString(service.getDelaiEnvoiSommationDeclarationImpotPP());
-		this.delaiEcheanceSommationDeclarationImpotPP = ParametreEnum.delaiEcheanceSommationDeclarationImpotPP.convertirValeurTypeeVersString(service.getDelaiEcheanceSommationDeclarationImpotPP());
+		this.delaiEnvoiSommationDeclarationImpot = ParametreEnum.delaiEnvoiSommationDeclarationImpot.convertirValeurTypeeVersString(service.getDelaiEnvoiSommationDeclarationImpot());
+		this.delaiEcheanceSommationDeclarationImpot = ParametreEnum.delaiEcheanceSommationDeclarationImpot.convertirValeurTypeeVersString(service.getDelaiEcheanceSommationDeclarationImpot());
 		this.jourDuMoisEnvoiListesRecapitulatives = ParametreEnum.jourDuMoisEnvoiListesRecapitulatives.convertirValeurTypeeVersString(service.getJourDuMoisEnvoiListesRecapitulatives());
 		this.delaiCadevImpressionDeclarationImpot = ParametreEnum.delaiCadevImpressionDeclarationImpot.convertirValeurTypeeVersString(service.getDelaiCadevImpressionDeclarationImpot());
 		this.delaiCadevImpressionListesRecapitulatives = ParametreEnum.delaiCadevImpressionListesRecapitulatives.convertirValeurTypeeVersString(service.getDelaiCadevImpressionListesRecapitulatives());
@@ -84,9 +77,6 @@ public class ParamApplicationView {
 		this.dateExclusionDecedeEnvoiDI = ParametreEnum.dateExclusionDecedeEnvoiDI.convertirValeurTypeeVersString(service.getDateExclusionDecedeEnvoiDI());
 		this.ageRentierFemme = ParametreEnum.ageRentierFemme.convertirValeurTypeeVersString(service.getAgeRentierFemme());
 		this.ageRentierHomme = ParametreEnum.ageRentierHomme.convertirValeurTypeeVersString(service.getAgeRentierHomme());
-		this.delaiMinimalRetourDeclarationImpotPM = ParametreEnum.delaiMinimalRetourDeclarationImpotPM.convertirValeurTypeeVersString(service.getDelaiMinimalRetourDeclarationImpotPM());
-		this.delaiEnvoiSommationDeclarationImpotPM = ParametreEnum.delaiEnvoiSommationDeclarationImpotPM.convertirValeurTypeeVersString(service.getDelaiEnvoiSommationDeclarationImpotPM());
-		this.delaiEcheanceSommationDeclarationImpotPM = ParametreEnum.delaiEcheanceSommationDeclarationImpotPM.convertirValeurTypeeVersString(service.getDelaiEcheanceSommationDeclarationImpotPM());
 	}
 
 	public void saveTo(ParametreAppService service) {
@@ -94,16 +84,14 @@ public class ParamApplicationView {
 		service.setNouvelAn((Integer[]) ParametreEnum.nouvelAn.convertirStringVersValeurTypee(this.nouvelAn));
 		service.setLendemainNouvelAn((Integer[]) ParametreEnum.lendemainNouvelAn.convertirStringVersValeurTypee(this.lendemainNouvelAn));
 		service.setFeteNationale((Integer[]) ParametreEnum.feteNationale.convertirStringVersValeurTypee(this.feteNationale));
-		service.setPremierePeriodeFiscalePersonnesPhysiques((Integer) ParametreEnum.premierePeriodeFiscalePersonnesPhysiques.convertirStringVersValeurTypee(this.premierePeriodeFiscalePersonnesPhysiques));
-		service.setPremierePeriodeFiscalePersonnesMorales((Integer) ParametreEnum.premierePeriodeFiscalePersonnesMorales.convertirStringVersValeurTypee(this.premierePeriodeFiscalePersonnesMorales));
-		service.setPremierePeriodeFiscaleDeclarationsPersonnesMorales((Integer) ParametreEnum.premierePeriodeFiscaleDeclarationPersonnesMorales.convertirStringVersValeurTypee(this.premierePeriodeFiscaleDeclarationPersonnesMorales));
+		service.setPremierePeriodeFiscale((Integer) ParametreEnum.premierePeriodeFiscale.convertirStringVersValeurTypee(this.premierePeriodeFiscale));
 		service.setAnneeMinimaleForDebiteur((Integer) ParametreEnum.anneeMinimaleForDebiteur.convertirStringVersValeurTypee(this.anneeMinimaleForDebiteur));
 		service.setDelaiAttenteDeclarationImpotPersonneDecedee(
 				(Integer) ParametreEnum.delaiAttenteDeclarationImpotPersonneDecedee.convertirStringVersValeurTypee(this.delaiAttenteDeclarationImpotPersonneDecedee));
 		service.setDelaiRetourDeclarationImpotEmiseManuellement(
 				(Integer) ParametreEnum.delaiRetourDeclarationImpotEmiseManuellement.convertirStringVersValeurTypee(this.delaiRetourDeclarationImpotEmiseManuellement));
-		service.setDelaiEnvoiSommationDeclarationImpotPP((Integer) ParametreEnum.delaiEnvoiSommationDeclarationImpotPP.convertirStringVersValeurTypee(this.delaiEnvoiSommationDeclarationImpotPP));
-		service.setDelaiEcheanceSommationDeclarationImpotPP((Integer) ParametreEnum.delaiEcheanceSommationDeclarationImpotPP.convertirStringVersValeurTypee(this.delaiEcheanceSommationDeclarationImpotPP));
+		service.setDelaiEnvoiSommationDeclarationImpot((Integer) ParametreEnum.delaiEnvoiSommationDeclarationImpot.convertirStringVersValeurTypee(this.delaiEnvoiSommationDeclarationImpot));
+		service.setDelaiEcheanceSommationDeclarationImpot((Integer) ParametreEnum.delaiEcheanceSommationDeclarationImpot.convertirStringVersValeurTypee(this.delaiEcheanceSommationDeclarationImpot));
 		service.setJourDuMoisEnvoiListesRecapitulatives((Integer) ParametreEnum.jourDuMoisEnvoiListesRecapitulatives.convertirStringVersValeurTypee(this.jourDuMoisEnvoiListesRecapitulatives));
 		service.setDelaiCadevImpressionDeclarationImpot((Integer) ParametreEnum.delaiCadevImpressionDeclarationImpot.convertirStringVersValeurTypee(this.delaiCadevImpressionDeclarationImpot));
 		service.setDelaiCadevImpressionListesRecapitulatives(
@@ -120,9 +108,6 @@ public class ParamApplicationView {
 		service.setDateExclusionDecedeEnvoiDI((Integer[])ParametreEnum.dateExclusionDecedeEnvoiDI.convertirStringVersValeurTypee(this.dateExclusionDecedeEnvoiDI));
 		service.setAgeRentierFemme((Integer) ParametreEnum.ageRentierFemme.convertirStringVersValeurTypee(this.ageRentierFemme));
 		service.setAgeRentierHomme((Integer) ParametreEnum.ageRentierHomme.convertirStringVersValeurTypee(this.ageRentierHomme));
-		service.setDelaiMinimalRetourDeclarationImpotPM((Integer) ParametreEnum.delaiMinimalRetourDeclarationImpotPM.convertirStringVersValeurTypee(this.delaiMinimalRetourDeclarationImpotPM));
-		service.setDelaiEnvoiSommationDeclarationImpotPM((Integer) ParametreEnum.delaiEnvoiSommationDeclarationImpotPM.convertirStringVersValeurTypee(this.delaiEnvoiSommationDeclarationImpotPM));
-		service.setDelaiEcheanceSommationDeclarationImpotPM((Integer) ParametreEnum.delaiEcheanceSommationDeclarationImpotPM.convertirStringVersValeurTypee(this.delaiEcheanceSommationDeclarationImpotPM));
 	}
 
 	public String getNoel() {
@@ -157,28 +142,12 @@ public class ParamApplicationView {
 		this.feteNationale = feteNationale;
 	}
 
-	public String getPremierePeriodeFiscalePersonnesPhysiques() {
-		return premierePeriodeFiscalePersonnesPhysiques;
+	public String getPremierePeriodeFiscale() {
+		return premierePeriodeFiscale;
 	}
 
-	public void setPremierePeriodeFiscalePersonnesPhysiques(String premierePeriodeFiscalePersonnesPhysiques) {
-		this.premierePeriodeFiscalePersonnesPhysiques = premierePeriodeFiscalePersonnesPhysiques;
-	}
-
-	public String getPremierePeriodeFiscalePersonnesMorales() {
-		return premierePeriodeFiscalePersonnesMorales;
-	}
-
-	public void setPremierePeriodeFiscalePersonnesMorales(String premierePeriodeFiscalePersonnesMorales) {
-		this.premierePeriodeFiscalePersonnesMorales = premierePeriodeFiscalePersonnesMorales;
-	}
-
-	public String getPremierePeriodeFiscaleDeclarationPersonnesMorales() {
-		return premierePeriodeFiscaleDeclarationPersonnesMorales;
-	}
-
-	public void setPremierePeriodeFiscaleDeclarationPersonnesMorales(String premierePeriodeFiscaleDeclarationPersonnesMorales) {
-		this.premierePeriodeFiscaleDeclarationPersonnesMorales = premierePeriodeFiscaleDeclarationPersonnesMorales;
+	public void setPremierePeriodeFiscale(String premierePeriodeFiscale) {
+		this.premierePeriodeFiscale = premierePeriodeFiscale;
 	}
 
 	public String getAnneeMinimaleForDebiteur() {
@@ -205,20 +174,20 @@ public class ParamApplicationView {
 		this.delaiRetourDeclarationImpotEmiseManuellement = delaiRetourDeclarationImpotEmiseManuellement;
 	}
 
-	public String getDelaiEnvoiSommationDeclarationImpotPP() {
-		return delaiEnvoiSommationDeclarationImpotPP;
+	public String getDelaiEnvoiSommationDeclarationImpot() {
+		return delaiEnvoiSommationDeclarationImpot;
 	}
 
-	public void setDelaiEnvoiSommationDeclarationImpotPP(String delaiEnvoiSommationDeclarationImpotPP) {
-		this.delaiEnvoiSommationDeclarationImpotPP = delaiEnvoiSommationDeclarationImpotPP;
+	public void setDelaiEnvoiSommationDeclarationImpot(String delaiEnvoiSommationDeclarationImpot) {
+		this.delaiEnvoiSommationDeclarationImpot = delaiEnvoiSommationDeclarationImpot;
 	}
 
-	public String getDelaiEcheanceSommationDeclarationImpotPP() {
-		return delaiEcheanceSommationDeclarationImpotPP;
+	public String getDelaiEcheanceSommationDeclarationImpot() {
+		return delaiEcheanceSommationDeclarationImpot;
 	}
 
-	public void setDelaiEcheanceSommationDeclarationImpotPP(String delaiEcheanceSommationDeclarationImpotPP) {
-		this.delaiEcheanceSommationDeclarationImpotPP = delaiEcheanceSommationDeclarationImpotPP;
+	public void setDelaiEcheanceSommationDeclarationImpot(String delaiEcheanceSommationDeclarationImpot) {
+		this.delaiEcheanceSommationDeclarationImpot = delaiEcheanceSommationDeclarationImpot;
 	}
 
 	public String getJourDuMoisEnvoiListesRecapitulatives() {
@@ -323,29 +292,5 @@ public class ParamApplicationView {
 
 	public void setAgeRentierHomme(String ageRentierHomme) {
 		this.ageRentierHomme = ageRentierHomme;
-	}
-
-	public String getDelaiMinimalRetourDeclarationImpotPM() {
-		return delaiMinimalRetourDeclarationImpotPM;
-	}
-
-	public void setDelaiMinimalRetourDeclarationImpotPM(String delaiMinimalRetourDeclarationImpotPM) {
-		this.delaiMinimalRetourDeclarationImpotPM = delaiMinimalRetourDeclarationImpotPM;
-	}
-
-	public String getDelaiEnvoiSommationDeclarationImpotPM() {
-		return delaiEnvoiSommationDeclarationImpotPM;
-	}
-
-	public void setDelaiEnvoiSommationDeclarationImpotPM(String delaiEnvoiSommationDeclarationImpotPM) {
-		this.delaiEnvoiSommationDeclarationImpotPM = delaiEnvoiSommationDeclarationImpotPM;
-	}
-
-	public String getDelaiEcheanceSommationDeclarationImpotPM() {
-		return delaiEcheanceSommationDeclarationImpotPM;
-	}
-
-	public void setDelaiEcheanceSommationDeclarationImpotPM(String delaiEcheanceSommationDeclarationImpotPM) {
-		this.delaiEcheanceSommationDeclarationImpotPM = delaiEcheanceSommationDeclarationImpotPM;
 	}
 }

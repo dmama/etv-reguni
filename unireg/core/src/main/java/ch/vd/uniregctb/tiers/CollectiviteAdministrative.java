@@ -5,8 +5,6 @@ import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.Transient;
 
-import ch.vd.uniregctb.common.ComparisonHelper;
-
 /**
  *
  */
@@ -119,8 +117,13 @@ public class CollectiviteAdministrative extends Contribuable {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-
-		final CollectiviteAdministrative other = (CollectiviteAdministrative) obj;
-		return ComparisonHelper.areEqual(numeroCollectiviteAdministrative, other.numeroCollectiviteAdministrative);
+		CollectiviteAdministrative other = (CollectiviteAdministrative) obj;
+		if (numeroCollectiviteAdministrative == null) {
+			if (other.numeroCollectiviteAdministrative != null)
+				return false;
+		}
+		else if (!numeroCollectiviteAdministrative.equals(other.numeroCollectiviteAdministrative))
+			return false;
+		return true;
 	}
 }

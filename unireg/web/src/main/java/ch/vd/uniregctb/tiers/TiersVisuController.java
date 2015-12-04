@@ -33,14 +33,14 @@ public class TiersVisuController extends AbstractTiersController {
 	 */
 	protected final Logger LOGGER = LoggerFactory.getLogger(TiersVisuController.class);
 
-	public static final String BUTTON_ANNULER_TIERS = "annulerTiers";
-	private static final String ADRESSES_HISTO_PARAM = "adressesHisto";
-	private static final String ADRESSES_CIVILES_HISTO_PARAM = "adressesHistoCiviles";
-	private static final String ADRESSES_CIVILES_HISTO_CONJ_PARAM = "adressesHistoCivilesConjoint";
-	private static final String TACHE_ID_TRAITE_PARAM = "idTacheTraite";
-	private static final String RAPPORTS_PREST_HISTO_PARAM = "rapportsPrestationHisto";
-	private static final String CTB_ASSOCIE_HISTO_PARAM = "ctbAssocieHisto";
-	private static final String MODE_IMPRESSION = "printview";
+	public final static String BUTTON_ANNULER_TIERS = "annulerTiers";
+	private final static String ADRESSES_HISTO_PARAM = "adressesHisto";
+	private final static String ADRESSES_CIVILES_HISTO_PARAM = "adressesHistoCiviles";
+	private final static String ADRESSES_CIVILES_HISTO_CONJ_PARAM = "adressesHistoCivilesConjoint";
+	private final static String TACHE_ID_TRAITE_PARAM = "idTacheTraite";
+	private final static String RAPPORTS_PREST_HISTO_PARAM = "rapportsPrestationHisto";
+	private final static String CTB_ASSOCIE_HISTO_PARAM = "ctbAssocieHisto";
+	private final static String MODE_IMPRESSION = "printview";
 
 	private TiersEditManager tiersEditManager;
 	private TiersVisuManager tiersVisuManager;

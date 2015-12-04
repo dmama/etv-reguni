@@ -117,7 +117,7 @@ public class ProduireRolesProcessor {
 		this.assujettissementService = assujettissementService;
 	}
 
-	private interface GroupementCommunes {
+	private static interface GroupementCommunes {
 		boolean isDansGroupementDeCommunes(Integer ofsCandidat, Integer ofsReference);
 		Set<Integer> getCommunes(Integer ofsReference);
 	}
@@ -155,7 +155,7 @@ public class ProduireRolesProcessor {
 	/**
 	 * Interface implémentée par les variantes de la production des rôles (tous, pour un OID, pour une commune)
 	 */
-	private interface VarianteProductionRole<T extends ProduireRolesResults> {
+	private static interface VarianteProductionRole<T extends ProduireRolesResults> {
 		/**
 		 * Renvoie la liste des ID techniques des contribuables listés dans la variante concernée
 		 */
@@ -387,7 +387,7 @@ public class ProduireRolesProcessor {
 	 * Interface utilisable pour calculer, à partir d'un nombre de cas traités et d'un nombre total de cas,
 	 * l'avancement de l'opération
 	 */
-	private interface ProgressCalculator {
+	private static interface ProgressCalculator {
 		int getProgressPercentage(int nbTreated, int size);
 	}
 
@@ -395,7 +395,7 @@ public class ProduireRolesProcessor {
 	 * Interface utilisable pour calculer, en plus d'un avancement global, une partie locale
 	 * (cas d'un job global décomposé en plusieurs phases)
 	 */
-	private interface DifferenciatingProgressCalculator extends ProgressCalculator {
+	private static interface DifferenciatingProgressCalculator extends ProgressCalculator {
 		int getLocalProgressPercentage(int nbTreated, int size);
 	}
 
@@ -404,7 +404,7 @@ public class ProduireRolesProcessor {
 	 * les éléments fournis (nombre de cas traités et nombre total de cas), en d'autres termes
 	 * qui ne fait pas de différences entre la progression locale et la progression globale
 	 */
-	private static final ProgressCalculator DEFAULT_PROGRESS_CALCULATOR = new ProgressCalculator() {
+	private final static ProgressCalculator DEFAULT_PROGRESS_CALCULATOR = new ProgressCalculator() {
 		@Override
 		public int getProgressPercentage(int nbTreated, int size) {
 			return size == 0 ? 0 : nbTreated * 100 / size;
@@ -1040,7 +1040,7 @@ public class ProduireRolesProcessor {
 	protected List<Long> getIdsOfAllContribuables(final int annee) {
 
 		final StringBuilder b = new StringBuilder();
-		b.append("SELECT DISTINCT cont.id FROM ContribuableImpositionPersonnesPhysiques AS cont INNER JOIN cont.forsFiscaux AS for");
+		b.append("SELECT DISTINCT cont.id FROM Contribuable AS cont INNER JOIN cont.forsFiscaux AS for");
 		b.append(" WHERE cont.annulationDate IS NULL");
 		b.append(" AND for.annulationDate IS NULL AND for.typeAutoriteFiscale = 'COMMUNE_OU_FRACTION_VD'");
 		b.append(" AND (for.dateDebut IS NULL OR for.dateDebut <= :finPeriode)");
@@ -1083,7 +1083,7 @@ public class ProduireRolesProcessor {
 		}
 		else {
 			final StringBuilder b = new StringBuilder();
-			b.append("SELECT DISTINCT cont.id FROM ContribuableImpositionPersonnesPhysiques AS cont INNER JOIN cont.forsFiscaux AS for");
+			b.append("SELECT DISTINCT cont.id FROM Contribuable AS cont INNER JOIN cont.forsFiscaux AS for");
 			b.append(" WHERE cont.annulationDate IS NULL");
 			b.append(" AND for.annulationDate IS NULL AND for.typeAutoriteFiscale = 'COMMUNE_OU_FRACTION_VD'");
 			b.append(" AND for.numeroOfsAutoriteFiscale IN (:noOfsCommune)");

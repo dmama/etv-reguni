@@ -11,7 +11,6 @@ import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.Entreprise;
-import ch.vd.uniregctb.tiers.Etablissement;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.Tiers;
@@ -81,9 +80,6 @@ public class AvatarServiceImpl implements AvatarService {
 		}
 		else if (tiers instanceof Entreprise) {
 			type = TypeAvatar.ENTREPRISE;
-		}
-		else if (tiers instanceof Etablissement) {
-			type = TypeAvatar.ETABLISSEMENT;
 		}
 		else if (tiers instanceof AutreCommunaute) {
 			type = TypeAvatar.AUTRE_COMM;

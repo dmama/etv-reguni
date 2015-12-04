@@ -20,12 +20,11 @@ import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementException;
 import ch.vd.uniregctb.tache.TacheService;
 import ch.vd.uniregctb.tache.sync.SynchronizeAction;
-import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
+import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalAutreElementImposable;
 import ch.vd.uniregctb.tiers.ForFiscalDAO;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersService;
@@ -94,14 +93,14 @@ public class SimulationController {
 				status.setRollbackOnly();
 
 				final ForFiscal ff = forFiscalDAO.get(idFor);
-				if (!(ff instanceof ForFiscalPrincipalPP)) {
+				if (!(ff instanceof ForFiscalPrincipal)) {
 					return null;
 				}
 				final Tiers tiers = ff.getTiers();
-				if (!(tiers instanceof ContribuableImpositionPersonnesPhysiques)) {
+				if (!(tiers instanceof Contribuable)) {
 					return null;
 				}
-				final ContribuableImpositionPersonnesPhysiques ctb = (ContribuableImpositionPersonnesPhysiques) tiers;
+				final Contribuable ctb = (Contribuable) tiers;
 
 				SimulationResults table;
 				try {
@@ -143,10 +142,10 @@ public class SimulationController {
 
 				final ForFiscal ff = forFiscalDAO.get(idFor);
 				final Tiers tiers = ff.getTiers();
-				if (!(tiers instanceof ContribuableImpositionPersonnesPhysiques)) {
+				if (!(tiers instanceof Contribuable)) {
 					return null;
 				}
-				final ContribuableImpositionPersonnesPhysiques ctb = (ContribuableImpositionPersonnesPhysiques) tiers;
+				final Contribuable ctb = (Contribuable) tiers;
 
 				SimulationResults table;
 				try {
@@ -179,7 +178,7 @@ public class SimulationController {
 		});
 	}
 
-	private SimulationResults buildSynchronizeActionsTable(ContribuableImpositionPersonnesPhysiques ctb) {
+	private SimulationResults buildSynchronizeActionsTable(Contribuable ctb) {
 
 		final SimulationResults table;
 

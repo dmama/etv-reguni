@@ -46,18 +46,6 @@
 		</jxb:bindings>
 	</jxb:bindings>
 
-	<jxb:bindings schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/party/unireg-party-4.xsd">
-		<jxb:schemaBindings>
-			<jxb:package name="ch.vd.unireg.xml.party.v4" />
-		</jxb:schemaBindings>
-		<jxb:bindings node="//xs:complexType[@name='partyType']">
-			<inheritance:implements>ch.vd.unireg.xml.common.v2.Cancelable</inheritance:implements>
-		</jxb:bindings>
-		<jxb:bindings>
-			<namespace:prefix name="party-4" />
-		</jxb:bindings>
-	</jxb:bindings>
-
 	<jxb:bindings schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/party/unireg-party-debtor-1.xsd">
 		<jxb:schemaBindings>
 			<jxb:package name="ch.vd.unireg.xml.party.debtor.v1" />
@@ -90,15 +78,6 @@
 		</jxb:schemaBindings>
 		<jxb:bindings>
 			<namespace:prefix name="debtor-3" />
-		</jxb:bindings>
-	</jxb:bindings>
-
-	<jxb:bindings schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/party/unireg-party-debtor-4.xsd">
-		<jxb:schemaBindings>
-			<jxb:package name="ch.vd.unireg.xml.party.debtor.v4" />
-		</jxb:schemaBindings>
-		<jxb:bindings>
-			<namespace:prefix name="debtor-4" />
 		</jxb:bindings>
 	</jxb:bindings>
 
@@ -174,19 +153,6 @@
 		</jxb:bindings>
 	</jxb:bindings>
 
-	<jxb:bindings schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/party/unireg-party-taxpayer-4.xsd">
-		<jxb:schemaBindings>
-			<jxb:package name="ch.vd.unireg.xml.party.taxpayer.v4" />
-		</jxb:schemaBindings>
-		<jxb:bindings node="//xs:complexType[@name='familyStatusType']">
-			<inheritance:implements>ch.vd.unireg.xml.common.v2.DateRange</inheritance:implements>
-			<inheritance:implements>ch.vd.unireg.xml.common.v2.Cancelable</inheritance:implements>
-		</jxb:bindings>
-		<jxb:bindings>
-			<namespace:prefix name="taxpay-4" />
-		</jxb:bindings>
-	</jxb:bindings>
-
 	<jxb:bindings schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/party/unireg-party-person-1.xsd">
 		<jxb:schemaBindings>
 			<jxb:package name="ch.vd.unireg.xml.party.person.v1" />
@@ -223,21 +189,6 @@
 		</jxb:bindings>
 		<jxb:bindings>
 			<namespace:prefix name="person-3" />
-		</jxb:bindings>
-	</jxb:bindings>
-
-	<jxb:bindings schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/party/unireg-party-person-4.xsd">
-		<jxb:schemaBindings>
-			<jxb:package name="ch.vd.unireg.xml.party.person.v4" />
-		</jxb:schemaBindings>
-		<jxb:bindings node="//xs:complexType[@name='naturalPersonCategoryType']">
-			<inheritance:implements>ch.vd.unireg.xml.common.v2.DateRange</inheritance:implements>
-		</jxb:bindings>
-		<jxb:bindings node="//xs:complexType[@name='nationalityType']">
-			<inheritance:implements>ch.vd.unireg.xml.common.v2.DateRange</inheritance:implements>
-		</jxb:bindings>
-		<jxb:bindings>
-			<namespace:prefix name="person-4" />
 		</jxb:bindings>
 	</jxb:bindings>
 
@@ -313,30 +264,6 @@
 		</jxb:bindings>
 	</jxb:bindings>
 
-	<jxb:bindings schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/party/unireg-party-corporation-4.xsd">
-		<jxb:schemaBindings>
-			<jxb:package name="ch.vd.unireg.xml.party.corporation.v4" />
-		</jxb:schemaBindings>
-		<jxb:bindings node="//xs:complexType[@name='legalSeatType']">
-			<inheritance:implements>ch.vd.unireg.xml.common.v2.DateRange</inheritance:implements>
-		</jxb:bindings>
-		<jxb:bindings node="//xs:complexType[@name='legalFormType']">
-			<inheritance:implements>ch.vd.unireg.xml.common.v2.DateRange</inheritance:implements>
-		</jxb:bindings>
-		<jxb:bindings node="//xs:complexType[@name='capitalType']">
-			<inheritance:implements>ch.vd.unireg.xml.common.v2.DateRange</inheritance:implements>
-		</jxb:bindings>
-		<jxb:bindings node="//xs:complexType[@name='taxSystemType']">
-			<inheritance:implements>ch.vd.unireg.xml.common.v2.DateRange</inheritance:implements>
-		</jxb:bindings>
-		<jxb:bindings node="//xs:complexType[@name='taxLighteningType']">
-			<inheritance:implements>ch.vd.unireg.xml.common.v2.DateRange</inheritance:implements>
-		</jxb:bindings>
-		<jxb:bindings>
-			<namespace:prefix name="corp-4" />
-		</jxb:bindings>
-	</jxb:bindings>
-
 	<jxb:bindings schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/party/unireg-party-administrativeauthority-1.xsd">
 		<jxb:schemaBindings>
 			<jxb:package name="ch.vd.unireg.xml.party.adminauth.v1" />
@@ -361,24 +288,6 @@
 		</jxb:schemaBindings>
 		<jxb:bindings>
 			<namespace:prefix name="adminauth-3" />
-		</jxb:bindings>
-	</jxb:bindings>
-
-	<jxb:bindings schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/party/unireg-party-administrativeauthority-4.xsd">
-		<jxb:schemaBindings>
-			<jxb:package name="ch.vd.unireg.xml.party.adminauth.v4" />
-		</jxb:schemaBindings>
-		<jxb:bindings>
-			<namespace:prefix name="adminauth-4" />
-		</jxb:bindings>
-	</jxb:bindings>
-
-	<jxb:bindings schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/party/unireg-party-establishment-1.xsd">
-		<jxb:schemaBindings>
-			<jxb:package name="ch.vd.unireg.xml.party.establishment.v1" />
-		</jxb:schemaBindings>
-		<jxb:bindings>
-			<namespace:prefix name="establishment-1" />
 		</jxb:bindings>
 	</jxb:bindings>
 
@@ -415,15 +324,6 @@
 		</jxb:bindings>
 	</jxb:bindings>
 
-	<jxb:bindings schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/party/unireg-party-othercommunity-2.xsd">
-		<jxb:schemaBindings>
-			<jxb:package name="ch.vd.unireg.xml.party.othercomm.v2" />
-		</jxb:schemaBindings>
-		<jxb:bindings>
-			<namespace:prefix name="othercomm-2" />
-		</jxb:bindings>
-	</jxb:bindings>
-
 	<jxb:bindings schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/party/unireg-party-relation-1.xsd">
 		<jxb:schemaBindings>
 			<jxb:package name="ch.vd.unireg.xml.party.relation.v1" />
@@ -447,19 +347,6 @@
 		</jxb:bindings>
 		<jxb:bindings>
 			<namespace:prefix name="relation-2" />
-		</jxb:bindings>
-	</jxb:bindings>
-
-	<jxb:bindings schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/party/unireg-party-relation-3.xsd">
-		<jxb:schemaBindings>
-			<jxb:package name="ch.vd.unireg.xml.party.relation.v3" />
-		</jxb:schemaBindings>
-		<jxb:bindings node="//xs:complexType[@name='relationBetweenPartiesType']">
-			<inheritance:implements>ch.vd.unireg.xml.common.v2.DateRange</inheritance:implements>
-			<inheritance:implements>ch.vd.unireg.xml.common.v2.Cancelable</inheritance:implements>
-		</jxb:bindings>
-		<jxb:bindings>
-			<namespace:prefix name="relation-3" />
 		</jxb:bindings>
 	</jxb:bindings>
 
@@ -517,25 +404,6 @@
 		</jxb:bindings>
 		<jxb:bindings>
 			<namespace:prefix name="taxdecl-3" />
-		</jxb:bindings>
-	</jxb:bindings>
-
-	<jxb:bindings schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/party/unireg-party-taxdeclaration-4.xsd">
-		<jxb:schemaBindings>
-			<jxb:package name="ch.vd.unireg.xml.party.taxdeclaration.v4" />
-		</jxb:schemaBindings>
-		<jxb:bindings node="//xs:complexType[@name='taxDeclarationType']">
-			<inheritance:implements>ch.vd.unireg.xml.common.v2.DateRange</inheritance:implements>
-			<inheritance:implements>ch.vd.unireg.xml.common.v2.Cancelable</inheritance:implements>
-		</jxb:bindings>
-		<jxb:bindings node="//xs:complexType[@name='taxDeclarationStatusType']">
-			<inheritance:implements>ch.vd.unireg.xml.common.v2.Cancelable</inheritance:implements>
-		</jxb:bindings>
-		<jxb:bindings node="//xs:complexType[@name='taxDeclarationDeadlineType']">
-			<inheritance:implements>ch.vd.unireg.xml.common.v2.Cancelable</inheritance:implements>
-		</jxb:bindings>
-		<jxb:bindings>
-			<namespace:prefix name="taxdecl-4" />
 		</jxb:bindings>
 	</jxb:bindings>
 

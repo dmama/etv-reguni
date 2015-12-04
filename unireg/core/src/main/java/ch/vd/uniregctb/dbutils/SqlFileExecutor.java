@@ -17,7 +17,7 @@ import ch.vd.uniregctb.transaction.TransactionTemplate;
 
 public class SqlFileExecutor {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(SqlFileExecutor.class);
+    private final static Logger LOGGER = LoggerFactory.getLogger(SqlFileExecutor.class);
 
     public static void execute(PlatformTransactionManager transactionManager, DataSource ds, final String fileResource) throws Exception {
 

@@ -60,7 +60,7 @@ public class RecuperationOriginesNonHabitantsResults extends AbstractJobResults<
 		}
 	}
 
-	public abstract static class Info implements Comparable<Info> {
+	public static abstract class Info implements Comparable<Info> {
 		public final long noCtb;
 
 		protected Info(long noCtb) {

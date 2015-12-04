@@ -8,9 +8,4 @@ public class DeclarationImpotSourceValidator extends DeclarationValidator<Declar
 	protected Class<DeclarationImpotSource> getValidatedClass() {
 		return DeclarationImpotSource.class;
 	}
-
-	@Override
-	protected String getEntityCategoryName() {
-		return "La LR";
-	}
 }

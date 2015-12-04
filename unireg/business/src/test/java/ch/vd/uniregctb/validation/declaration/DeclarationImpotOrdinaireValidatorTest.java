@@ -3,22 +3,27 @@ package ch.vd.uniregctb.validation.declaration;
 import org.junit.Test;
 import org.springframework.transaction.annotation.Transactional;
 
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.ModeleDocument;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.validation.AbstractValidatorTest;
 
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
-public abstract class DeclarationImpotOrdinaireValidatorTest<T extends DeclarationImpotOrdinaire> extends AbstractValidatorTest<T> {
+public class DeclarationImpotOrdinaireValidatorTest extends AbstractValidatorTest<DeclarationImpotOrdinaire> {
 
-	protected abstract T newDeclarationInstance();
+	@Override
+	protected String getValidatorBeanName() {
+		return "declarationImpotOrdinaireValidator";
+	}
 
 	@Test
 	@Transactional(rollbackFor = Throwable.class)
 	public void testValidateDeclarationAnnulee() {
 
-		final T di = newDeclarationInstance();
+		final DeclarationImpotOrdinaire di = new DeclarationImpotOrdinaire();
 
 		// Déclaration invalide (numéro de séquence nul) mais annulée => pas d'erreur
 		{
@@ -36,4 +41,30 @@ public abstract class DeclarationImpotOrdinaireValidatorTest<T extends Declarati
 			assertFalse(validate(di).hasErrors());
 		}
 	}
+
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testValidateCodeSegmentation() {
+		final DeclarationImpotOrdinaire di = new DeclarationImpotOrdinaire();
+		di.setNumero(1);
+		di.setAnnule(false);
+
+		int annee = DeclarationImpotOrdinaire.PREMIERE_ANNEE_RETOUR_ELECTRONIQUE - 1;
+		di.setModeleDocument(new ModeleDocument());
+		di.setDateDebut(RegDate.get(annee, 1, 1));
+		di.setDateFin(RegDate.get(annee, 12, 31));
+		di.setCodeSegment(null);
+		PeriodeFiscale pf = new PeriodeFiscale();
+		di.setPeriode(pf);
+		pf.setAnnee(annee);
+		assertFalse(validate(di).hasErrors());
+		annee = DeclarationImpotOrdinaire.PREMIERE_ANNEE_RETOUR_ELECTRONIQUE;
+		di.setDateDebut(RegDate.get(annee, 1, 1));
+		di.setDateFin(RegDate.get(annee, 12, 31));
+		pf.setAnnee(annee);
+		assertTrue(validate(di).hasErrors());
+		di.setCodeSegment(2);
+		assertFalse(validate(di).hasErrors());
+	}
+
 }

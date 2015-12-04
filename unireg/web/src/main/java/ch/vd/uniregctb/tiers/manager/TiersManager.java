@@ -4,15 +4,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.collections4.comparators.ReverseComparator;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,15 +16,13 @@ import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceAware;
 
 import ch.vd.registre.base.date.DateRange;
-import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.interfaces.civil.ServiceCivilException;
-import ch.vd.unireg.interfaces.common.Adresse;
+import ch.vd.unireg.interfaces.civil.data.Adresse;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.Logiciel;
-import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdresseGenerique;
 import ch.vd.uniregctb.adresse.AdresseGenerique.SourceType;
@@ -49,8 +43,8 @@ import ch.vd.uniregctb.declaration.DeclarationImpotSource;
 import ch.vd.uniregctb.declaration.DelaiDeclaration;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
 import ch.vd.uniregctb.declaration.Periodicite;
-import ch.vd.uniregctb.entreprise.EntrepriseService;
 import ch.vd.uniregctb.entreprise.EntrepriseView;
+import ch.vd.uniregctb.entreprise.HostPersonneMoraleService;
 import ch.vd.uniregctb.general.manager.TiersGeneralManager;
 import ch.vd.uniregctb.general.view.TiersGeneralView;
 import ch.vd.uniregctb.iban.IbanValidator;
@@ -60,10 +54,9 @@ import ch.vd.uniregctb.interfaces.model.AdressesCivilesActives;
 import ch.vd.uniregctb.interfaces.model.AdressesCivilesHistoriques;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.interfaces.service.ServiceOrganisationService;
+import ch.vd.uniregctb.interfaces.service.ServicePersonneMoraleService;
 import ch.vd.uniregctb.lr.view.ListeRecapDetailComparator;
 import ch.vd.uniregctb.lr.view.ListeRecapDetailView;
-import ch.vd.uniregctb.metier.bouclement.ExerciceCommercial;
 import ch.vd.uniregctb.rapport.SensRapportEntreTiers;
 import ch.vd.uniregctb.rapport.TypeRapportEntreTiersWeb;
 import ch.vd.uniregctb.rapport.view.RapportView;
@@ -72,17 +65,14 @@ import ch.vd.uniregctb.security.SecurityProviderInterface;
 import ch.vd.uniregctb.situationfamille.SituationFamilleService;
 import ch.vd.uniregctb.situationfamille.VueSituationFamille;
 import ch.vd.uniregctb.situationfamille.VueSituationFamilleMenageCommun;
-import ch.vd.uniregctb.tiers.AllegementFiscal;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.ContactImpotSource;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.DecisionAci;
 import ch.vd.uniregctb.tiers.DecisionAciView;
-import ch.vd.uniregctb.tiers.DomicileEtablissement;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.Entreprise;
-import ch.vd.uniregctb.tiers.Etablissement;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
@@ -93,7 +83,6 @@ import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.tiers.RapportEntreTiersDAO;
 import ch.vd.uniregctb.tiers.RapportPrestationImposable;
-import ch.vd.uniregctb.tiers.RegimeFiscal;
 import ch.vd.uniregctb.tiers.RepresentationConventionnelle;
 import ch.vd.uniregctb.tiers.RepresentationLegale;
 import ch.vd.uniregctb.tiers.Tiers;
@@ -104,17 +93,14 @@ import ch.vd.uniregctb.tiers.view.AdresseCivilView;
 import ch.vd.uniregctb.tiers.view.AdresseCivilViewComparator;
 import ch.vd.uniregctb.tiers.view.AdresseView;
 import ch.vd.uniregctb.tiers.view.AdresseViewComparator;
-import ch.vd.uniregctb.tiers.view.AllegementFiscalView;
 import ch.vd.uniregctb.tiers.view.ComplementView;
 import ch.vd.uniregctb.tiers.view.DebiteurView;
-import ch.vd.uniregctb.tiers.view.DomicileEtablissementView;
 import ch.vd.uniregctb.tiers.view.ForDebiteurViewComparator;
 import ch.vd.uniregctb.tiers.view.ForFiscalView;
 import ch.vd.uniregctb.tiers.view.ForFiscalViewComparator;
 import ch.vd.uniregctb.tiers.view.LogicielView;
 import ch.vd.uniregctb.tiers.view.PeriodiciteView;
 import ch.vd.uniregctb.tiers.view.PeriodiciteViewComparator;
-import ch.vd.uniregctb.tiers.view.RegimeFiscalView;
 import ch.vd.uniregctb.tiers.view.SituationFamilleView;
 import ch.vd.uniregctb.tiers.view.TiersEditView;
 import ch.vd.uniregctb.tiers.view.TiersView;
@@ -138,11 +124,9 @@ public class TiersManager implements MessageSourceAware {
 
 	private WebCivilService webCivilService;
 
-	private EntrepriseService entrepriseService;
+	private HostPersonneMoraleService hostPersonneMoraleService;
 
 	protected ServiceCivilService serviceCivilService;
-
-	protected ServiceOrganisationService serviceOrganisationService;
 
 	protected TiersDAO tiersDAO;
 
@@ -164,6 +148,7 @@ public class TiersManager implements MessageSourceAware {
 
 	protected RapportEntreTiersDAO rapportEntreTiersDAO;
 	protected IbanValidator ibanValidator;
+	private ServicePersonneMoraleService servicePM;
 	private AutorisationManager autorisationManager;
 	protected SecurityProviderInterface securityProvider;
 
@@ -188,7 +173,13 @@ public class TiersManager implements MessageSourceAware {
 	 * Recupere l'entreprise correspondant au tiers
 	 */
 	protected EntrepriseView getEntrepriseView(Entreprise entreprise) {
-		return getEntrepriseService().get(entreprise);
+
+		EntrepriseView entrepriseView = null;
+		Long noEntreprise = entreprise.getNumero();
+		if (noEntreprise != null) {
+			entrepriseView = getHostPersonneMoraleService().get(noEntreprise);
+		}
+		return entrepriseView;
 	}
 
 	/**
@@ -514,82 +505,8 @@ public class TiersManager implements MessageSourceAware {
 	 */
 	protected void setEntreprise(TiersView tiersView, Entreprise entreprise) {
 		tiersView.setTiers(entreprise);
-
-		// comparateur qui mets les ranges les plus récents devant
-		final Comparator<DateRange> reverseComparator = new ReverseComparator<>(new DateRangeComparator<>());
-
-		// map des régimes fiscaux existants indexés par code
-		final List<TypeRegimeFiscal> typesRegime = serviceInfrastructureService.getRegimesFiscaux();
-		final Map<String, TypeRegimeFiscal> mapRegimesParCode = new HashMap<>(typesRegime.size());
-		for (TypeRegimeFiscal type : typesRegime) {
-			mapRegimesParCode.put(type.getCode(), type);
-		}
-
-		// les régimes fiscaux
-		final Set<RegimeFiscal> regimes = entreprise.getRegimesFiscaux();
-		if (regimes != null) {
-			final List<RegimeFiscalView> vd = new ArrayList<>(regimes.size());
-			final List<RegimeFiscalView> ch = new ArrayList<>(regimes.size());
-			for (RegimeFiscal regime : regimes) {
-				final RegimeFiscalView rfView = new RegimeFiscalView(regime.getId(), regime.getDateDebut(), regime.getDateFin(), mapRegimesParCode.get(regime.getCode()));
-				if (regime.getPortee() == RegimeFiscal.Portee.VD) {
-					vd.add(rfView);
-				}
-				else if (regime.getPortee() == RegimeFiscal.Portee.CH) {
-					ch.add(rfView);
-				}
-				else {
-					throw new IllegalArgumentException("Portée inconnue sur un régime fiscal : " + regime.getPortee());
-				}
-			}
-			Collections.sort(vd, reverseComparator);
-			Collections.sort(ch, reverseComparator);
-
-			tiersView.setRegimesFiscauxVD(vd);
-			tiersView.setRegimesFiscauxCH(ch);
-		}
-
-		// les allègements fiscaux
-		final Set<AllegementFiscal> allegements = entreprise.getAllegementsFiscaux();
-		if (allegements != null) {
-			final List<AllegementFiscalView> views = new ArrayList<>(allegements.size());
-			for (AllegementFiscal af : allegements) {
-				final AllegementFiscalView afView = new AllegementFiscalView(af.getId(), af.getDateDebut(), af.getDateFin(), af.getTypeImpot(), af.getTypeCollectivite(), af.getNoOfsCommune(), af.getPourcentageAllegement());
-				views.add(afView);
-			}
-			Collections.sort(views, reverseComparator);
-			tiersView.setAllegementsFiscaux(views);
-		}
-
-		// les exercices commerciaux et la date de bouclement futur
-		final List<ExerciceCommercial> exercices = tiersService.getExercicesCommerciaux(entreprise);
-		Collections.sort(exercices, reverseComparator);
-		tiersView.setExercicesCommerciaux(exercices);
-
-		final ExerciceCommercial courant = DateRangeHelper.rangeAt(exercices, RegDate.get());
-		if (courant != null) {
-			tiersView.setDateBouclementFutur(courant.getDateFin());
-		}
-
-		tiersView.setEntreprise(getEntrepriseView(entreprise)); // OrganisationView
-	}
-
-	/**
-	 * Mise à jour en fonction des données de l'établissement
-	 */
-	protected void setEtablissement(TiersView tiersView, Etablissement etb) {
-		tiersView.setTiers(etb);
-
-		// les domiciles de l'établissement
-		final Set<DomicileEtablissement> domiciles = etb.getDomiciles();
-		if (domiciles != null && !domiciles.isEmpty()) {
-			final List<DomicileEtablissementView> views = new ArrayList<>(domiciles.size());
-			for (DomicileEtablissement dom : domiciles) {
-				views.add(new DomicileEtablissementView(dom));
-			}
-			Collections.sort(views, new ReverseComparator<>(new DateRangeComparator<>()));
-			tiersView.setDomicilesEtablissement(views);
-		}
+		EntrepriseView entrepriseView = getEntrepriseView(entreprise);
+		tiersView.setEntreprise(entrepriseView);
 	}
 
 	/**
@@ -777,7 +694,12 @@ public class TiersManager implements MessageSourceAware {
 	}
 
 	protected ComplementView buildComplement(Tiers tiers) {
-		return new ComplementView(tiers, ibanValidator);
+		return new ComplementView(tiers, servicePM, serviceInfrastructureService, ibanValidator);
+	}
+
+	@SuppressWarnings({"UnusedDeclaration"})
+	public void setServicePM(ServicePersonneMoraleService servicePM) {
+		this.servicePM = servicePM;
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
@@ -823,7 +745,7 @@ public class TiersManager implements MessageSourceAware {
 	}
 
 
-	protected interface AdressesResolverCallback {
+	protected static interface AdressesResolverCallback {
 		AdressesFiscalesHisto getAdresses(AdresseService service) throws AdresseException;
 
 		void setAdressesView(List<AdresseView> adresses);
@@ -1079,7 +1001,7 @@ public class TiersManager implements MessageSourceAware {
 		for (AdresseView view : adresses) {
 			//UNIREG-1813 L'adresse domicile est retiré du bloc fiscal
 			if (TypeAdresseTiers.DOMICILE != view.getUsage()) {
-				if (view.getDateFin() == null || AdresseGenerique.SourceType.CIVILE_PERS != view.getSource()) {
+				if (view.getDateFin() == null || AdresseGenerique.SourceType.CIVILE != view.getSource()) {
 					resultat.add(view);
 				}
 
@@ -1133,13 +1055,13 @@ public class TiersManager implements MessageSourceAware {
 		this.serviceInfrastructureService = serviceInfrastructureService;
 	}
 
-	public EntrepriseService getEntrepriseService() {
-		return entrepriseService;
+	public HostPersonneMoraleService getHostPersonneMoraleService() {
+		return hostPersonneMoraleService;
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
-	public void setEntrepriseService(EntrepriseService entrepriseService) {
-		this.entrepriseService = entrepriseService;
+	public void setHostPersonneMoraleService(HostPersonneMoraleService hostPersonneMoraleService) {
+		this.hostPersonneMoraleService = hostPersonneMoraleService;
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
@@ -1199,9 +1121,4 @@ public class TiersManager implements MessageSourceAware {
 	public void setSecurityProvider(SecurityProviderInterface securityProvider) {
 		this.securityProvider = securityProvider;
 	}
-
-	public void setServiceOrganisationService(ServiceOrganisationService serviceOrganisationService) {
-		this.serviceOrganisationService = serviceOrganisationService;
-	}
 }
-

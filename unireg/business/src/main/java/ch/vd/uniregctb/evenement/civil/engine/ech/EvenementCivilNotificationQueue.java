@@ -21,7 +21,7 @@ public interface EvenementCivilNotificationQueue {
 	/**
 	 * Lot d'événements civils à traiter pour un individu donné
 	 */
-	final class Batch {
+	public static final class Batch {
 
 		/**
 		 * Identifiant de l'individu pour lequel le lot est constitué

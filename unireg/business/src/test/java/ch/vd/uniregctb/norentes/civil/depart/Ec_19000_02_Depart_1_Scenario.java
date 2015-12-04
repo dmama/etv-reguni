@@ -4,9 +4,9 @@ import java.util.Collection;
 import java.util.List;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.interfaces.civil.data.Adresse;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
-import ch.vd.unireg.interfaces.common.Adresse;
 import ch.vd.unireg.interfaces.infra.mock.MockAdresse;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
@@ -17,7 +17,6 @@ import ch.vd.uniregctb.norentes.annotation.Etape;
 import ch.vd.uniregctb.norentes.common.EvenementCivilScenario;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
 import ch.vd.uniregctb.type.GenreImpot;
@@ -162,7 +161,7 @@ public class Ec_19000_02_Depart_1_Scenario extends EvenementCivilScenario {
 			assertEquals(dateDepartBex, ffpFerme.getDateFin(), "Le for sur Bex n'est pas fermé à la bonne date");
 
 			// For ouvert sur PaysInconnu
-			final ForFiscalPrincipalPP ffpOuvert = (ForFiscalPrincipalPP)list.get(list.size()-1);
+			final ForFiscalPrincipal ffpOuvert = (ForFiscalPrincipal)list.get(list.size()-1);
 			assertEquals(dateDepartBex.addDays(1), ffpOuvert.getDateDebut(), "Le for sur Le pay inconnue n'est pas ouvert à la bonne date");
 			assertEquals(NumOfsPaysInconnue, ffpOuvert.getNumeroOfsAutoriteFiscale(), "Le for ouvert n'est pas sur Zurich");
 			assertEquals(MotifRattachement.DOMICILE, ffpOuvert.getMotifRattachement(), "Le MotifRattachement du for est faux");

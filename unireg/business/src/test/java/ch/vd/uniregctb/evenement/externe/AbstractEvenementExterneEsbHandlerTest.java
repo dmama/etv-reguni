@@ -53,7 +53,7 @@ public abstract class AbstractEvenementExterneEsbHandlerTest extends BusinessTes
 
 	protected abstract EvenementExterneConnector<?> getTestedConnector();
 
-	protected interface MessageCreator {
+	protected static interface MessageCreator {
 		EsbMessage createNewMessage(long dpiId, RegDate dateDebut, RegDate dateFin, RegDate dateQuittancement) throws Exception;
 	}
 

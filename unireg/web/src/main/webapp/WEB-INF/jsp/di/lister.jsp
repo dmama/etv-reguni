@@ -11,24 +11,13 @@
 		<!-- Debut Caracteristiques generales -->
 		<fieldset>
 			<legend><span><fmt:message key="caracteristiques.di" /></span></legend>
-			<c:if test="${command.ctbPP}">
-				<authz:authorize ifAnyGranted="ROLE_DI_EMIS_PP">
-					<table border="0">
-						<tr><td>
-							<unireg:linkTo name="Ajouter" action="/di/choisir-pp.do" method="get" params="{tiersId:${command.ctbId}}" title="Ajouter une déclaration" link_class="add noprint"/>
-						</td></tr>
-					</table>
-				</authz:authorize>
-			</c:if>
-			<c:if test="${command.ctbPM}">
-				<authz:authorize ifAnyGranted="ROLE_DI_EMIS_PM">
-					<table border="0">
-						<tr><td>
-							<unireg:linkTo name="Ajouter" action="/di/choisir-pm.do" method="get" params="{tiersId:${command.ctbId}}" title="Ajouter une déclaration" link_class="add noprint"/>
-						</td></tr>
-					</table>
-				</authz:authorize>
-			</c:if>
+			<authz:authorize ifAnyGranted="ROLE_DI_EMIS_PP">
+				<table border="0">
+					<tr><td>
+						<unireg:linkTo name="Ajouter" action="/di/choisir.do" method="get" params="{tiersId:${command.ctbId}}" title="Ajouter une déclaration" link_class="add noprint"/>
+					</td></tr>
+				</table>
+			</authz:authorize>
 
 			<c:if test="${not empty command.dis}">
 				<display:table name="command.dis" id="di" class="display" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator" requestURI="/di/list.do" sort="list">
@@ -64,22 +53,12 @@
 						<c:if test="${!di.annule}">
 							<unireg:linkTo name="" action="/di/editer.do" method="get" params="{id:${di.id}}" title="Editer la déclaration" link_class="edit"/>
 						</c:if>
-						<c:if test="${di.diPP}">
-							<authz:authorize ifAnyGranted="ROLE_DI_DESANNUL_PP">
-								<c:if test="${di.annule}">
-									<unireg:linkTo name="" title="Désannuler la déclaration" action="/di/desannuler-pp.do" method="post" params="{id:${di.id}}"
-									               confirm="Voulez-vous vraiment désannuler cette déclaration d'impôt ?" link_class="undelete" />
-								</c:if>
-							</authz:authorize>
-						</c:if>
-						<c:if test="${di.diPM}">
-							<authz:authorize ifAnyGranted="ROLE_DI_DESANNUL_PM">
-								<c:if test="${di.annule}">
-									<unireg:linkTo name="" title="Désannuler la déclaration" action="/di/desannuler-pm.do" method="post" params="{id:${di.id}}"
-									               confirm="Voulez-vous vraiment désannuler cette déclaration d'impôt ?" link_class="undelete" />
-								</c:if>
-							</authz:authorize>
-						</c:if>
+						<authz:authorize ifAnyGranted="ROLE_DI_DESANNUL_PP">
+							<c:if test="${di.annule}">
+								<unireg:linkTo name="" title="Désannuler la déclaration" action="/di/desannuler.do" method="post" params="{id:${di.id}}"
+								               confirm="Voulez-vous vraiment désannuler cette déclaration d'impôt ?" link_class="undelete" />
+							</c:if>
+						</authz:authorize>
 					</display:column>
 					<display:setProperty name="paging.banner.all_items_found" value=""/>
 					<display:setProperty name="paging.banner.one_item_found" value=""/>

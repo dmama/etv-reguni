@@ -134,11 +134,11 @@ public class ExtractionDonneesRptProcessor extends ListesProcessor<ExtractionDon
 	@SuppressWarnings({"unchecked"})
 	private Iterator<Long> getIdsContribuablesAvecForOrdinaireValideUnJourAuMoins(Session session, int pf) {
 		final StringBuilder b = new StringBuilder();
-		b.append("SELECT DISTINCT ctb.id FROM ContribuableImpositionPersonnesPhysiques AS ctb");
+		b.append("SELECT DISTINCT ctb.id FROM Contribuable AS ctb");
 		b.append(" INNER JOIN ctb.forsFiscaux AS for");
 		b.append(" WHERE for.annulationDate IS NULL");
 		b.append(" AND for.typeAutoriteFiscale = 'COMMUNE_OU_FRACTION_VD'");
-		b.append(" AND for.class IN (ForFiscalPrincipalPP, ForFiscalSecondaire)");
+		b.append(" AND for.class IN (ForFiscalPrincipal, ForFiscalSecondaire)");
 		b.append(" AND (for.modeImposition IS NULL OR for.modeImposition != 'SOURCE')");
 		b.append(" AND for.motifRattachement != 'DIPLOMATE_ETRANGER'");
 		b.append(" AND for.dateDebut <= :finPeriode");
@@ -168,10 +168,10 @@ public class ExtractionDonneesRptProcessor extends ListesProcessor<ExtractionDon
 	@SuppressWarnings({"unchecked"})
 	private Iterator<Long> getIdsTiersCandidatsPourExtractionRevenuSourcePure(Session session, int pf) {
 		final StringBuilder b = new StringBuilder();
-		b.append("SELECT DISTINCT ctb.id FROM ContribuableImpositionPersonnesPhysiques AS ctb");
+		b.append("SELECT DISTINCT ctb.id FROM Contribuable AS ctb");
 		b.append(" INNER JOIN ctb.forsFiscaux AS for");
 		b.append(" WHERE for.annulationDate IS NULL");
-		b.append(" AND for.class = ForFiscalPrincipalPP");
+		b.append(" AND for.class = ForFiscalPrincipal");
 		b.append(" AND for.modeImposition = 'SOURCE'");
 		b.append(" AND for.dateDebut <= :finPeriode");
 		b.append(" AND (for.dateFin IS NULL OR for.dateFin >= :debutPeriode)");

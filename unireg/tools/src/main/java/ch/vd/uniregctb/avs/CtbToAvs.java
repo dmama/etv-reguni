@@ -12,7 +12,6 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.unireg.ws.parties.v1.Entry;
@@ -125,9 +124,6 @@ public class CtbToAvs {
 	}
 
 	private static void dumpTiers(@Nullable Party party, long tiersNumber, @Nullable Object exceptionInfo, String tail, PrintStream ps) {
-		if (tail == null) {
-			tail = StringUtils.EMPTY;
-		}
 		if (party == null) {
 			System.err.println(String.format("%d n'a pas été trouvé (%s)", tiersNumber, exceptionInfo));
 			ps.println(String.format("%d%s;", tiersNumber, tail));

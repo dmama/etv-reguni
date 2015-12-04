@@ -28,7 +28,7 @@ public class PermisListImpl implements PermisList, Serializable {
 		}
 	};
 
-	private final List<Permis> list;
+	final private List<Permis> list;
 
 	public PermisListImpl(List<Permis> list) {
 		this.list = new ArrayList<>(list);

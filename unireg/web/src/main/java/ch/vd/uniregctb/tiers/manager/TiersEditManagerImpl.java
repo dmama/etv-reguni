@@ -24,7 +24,6 @@ import ch.vd.uniregctb.iban.IbanHelper;
 import ch.vd.uniregctb.interfaces.InterfaceDataException;
 import ch.vd.uniregctb.tiers.AutreCommunaute;
 import ch.vd.uniregctb.tiers.Contribuable;
-import ch.vd.uniregctb.tiers.CoordonneesFinancieres;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.Entreprise;
@@ -379,7 +378,7 @@ public class TiersEditManagerImpl extends TiersManager implements TiersEditManag
 		}
 		else if (ctbAssocie instanceof Entreprise) {
 			final Entreprise entreprise = (Entreprise) ctbAssocie;
-			final EntrepriseView entrepriseView = getEntrepriseService().get(entreprise);
+			final EntrepriseView entrepriseView = getHostPersonneMoraleService().get(entreprise.getNumero());
 			debiteur.setNom1(entrepriseView.getRaisonSociale());
 		}
 	
@@ -472,16 +471,9 @@ public class TiersEditManagerImpl extends TiersManager implements TiersEditManag
 		// compte bancaire
 		final CompteBancaireView compteBancaire = complement.getCompteBancaire();
 		if (compteBancaire != null) {
+			tiers.setNumeroCompteBancaire(IbanHelper.normalize(compteBancaire.getIban()));
 			tiers.setTitulaireCompteBancaire(StringUtils.trimToNull(compteBancaire.getTitulaireCompteBancaire()));
-
-			final String iban = IbanHelper.normalize(compteBancaire.getIban());
-			final String bicSwift = StringUtils.trimToNull(FormatNumeroHelper.removeSpaceAndDash(compteBancaire.getAdresseBicSwift()));
-			if (iban != null || bicSwift != null) {
-				tiers.setCoordonneesFinancieres(new CoordonneesFinancieres(iban, bicSwift));
-			}
-			else {
-				tiers.setCoordonneesFinancieres(null);
-			}
+			tiers.setAdresseBicSwift(StringUtils.trimToNull(FormatNumeroHelper.removeSpaceAndDash(compteBancaire.getAdresseBicSwift())));
 		}
 	}
 

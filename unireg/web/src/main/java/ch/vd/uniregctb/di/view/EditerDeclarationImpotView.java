@@ -11,8 +11,6 @@ import org.springframework.context.MessageSource;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
-import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePM;
-import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP;
 import ch.vd.uniregctb.declaration.DelaiDeclaration;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
 import ch.vd.uniregctb.declaration.EtatDeclarationRetournee;
@@ -48,9 +46,6 @@ public class EditerDeclarationImpotView {
 	private boolean isAllowedSommation;
 	private boolean isAllowedDuplicata;
 
-	private boolean isDiPP;
-	private boolean isDiPM;
-
 	public EditerDeclarationImpotView() {
 	}
 
@@ -79,8 +74,6 @@ public class EditerDeclarationImpotView {
 		this.isAllowedDuplicata = allowedDuplicata;
 		this.isSommable = isSommable(di);
 		this.wasSommee = initWasSommee(di);
-		this.isDiPP = di instanceof DeclarationImpotOrdinairePP;
-		this.isDiPM = di instanceof DeclarationImpotOrdinairePM;
 	}
 
 	private static boolean initIsAllowedDelai(TypeEtatDeclaration dernierEtat, boolean allowedDelai) {
@@ -235,17 +228,5 @@ public class EditerDeclarationImpotView {
 
 	public boolean isWasSommee() {
 		return wasSommee;
-	}
-
-	public boolean isDiPP() {
-		return isDiPP;
-	}
-
-	public boolean isDiPM() {
-		return isDiPM;
-	}
-
-	public boolean isAllowedDuplicataDirect() {
-		return isDiPM && isAllowedDuplicata;
 	}
 }

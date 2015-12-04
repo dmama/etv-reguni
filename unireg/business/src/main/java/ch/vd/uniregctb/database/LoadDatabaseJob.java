@@ -9,7 +9,6 @@ import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.document.Document;
 import ch.vd.uniregctb.document.DocumentService;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer;
-import ch.vd.uniregctb.scheduler.JobCategory;
 import ch.vd.uniregctb.scheduler.JobDefinition;
 import ch.vd.uniregctb.scheduler.JobParam;
 import ch.vd.uniregctb.scheduler.JobParamLong;
@@ -20,6 +19,7 @@ import ch.vd.uniregctb.scheduler.JobParamLong;
 public class LoadDatabaseJob extends JobDefinition {
 
 	public static final String NAME = "LoadDatabaseJob";
+	private static final String CATEGORIE = "Database";
 
 	public static final String DOC_ID = "DocId";
 
@@ -28,7 +28,7 @@ public class LoadDatabaseJob extends JobDefinition {
 	private GlobalTiersIndexer globalIndexer;
 
 	public LoadDatabaseJob(int sortOrder, String description) {
-		super(NAME, JobCategory.DB, sortOrder, description);
+		super(NAME, CATEGORIE, sortOrder, description);
 
 		final JobParam param = new JobParam();
 		param.setDescription("Numéro du document");
@@ -77,7 +77,7 @@ public class LoadDatabaseJob extends JobDefinition {
 		});
 
 		status.setMessage("Reindexation de la base en cours...");
-		globalIndexer.indexAllDatabase(status, 2, GlobalTiersIndexer.Mode.FULL);
+		globalIndexer.indexAllDatabase(status, 2, GlobalTiersIndexer.Mode.FULL, true);
 
 		Audit.success("La base de données a été rechargée et indexée à partir du fichier " + doc.getNom() + " (document #" + doc.getId()
 				+ ").");

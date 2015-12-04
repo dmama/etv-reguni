@@ -23,7 +23,6 @@ import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.complements.ComplementsEditCommunicationsView;
 import ch.vd.uniregctb.complements.ComplementsEditCoordonneesFinancieresView;
 import ch.vd.uniregctb.declaration.Periodicite;
-import ch.vd.uniregctb.iban.IbanHelper;
 import ch.vd.uniregctb.iban.IbanValidator;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.security.AccessDeniedException;
@@ -168,15 +167,9 @@ public class TiersCreateController {
 		pp.setAdresseCourrierElectronique(cpltCommView.getAdresseCourrierElectronique());
 
 		final ComplementsEditCoordonneesFinancieresView cpltCoordFinView = view.getComplementCoordFinanciere();
-		final String iban = IbanHelper.normalize(cpltCoordFinView.getIban());
-		final String bicSwift = StringUtils.trimToNull(FormatNumeroHelper.removeSpaceAndDash(cpltCoordFinView.getAdresseBicSwift()));
-		if (iban != null || bicSwift != null) {
-			pp.setCoordonneesFinancieres(new CoordonneesFinancieres(iban, bicSwift));
-		}
-		else {
-			pp.setCoordonneesFinancieres(null);
-		}
+		pp.setNumeroCompteBancaire(cpltCoordFinView.getIban());
 		pp.setTitulaireCompteBancaire(cpltCoordFinView.getTitulaireCompteBancaire());
+		pp.setAdresseBicSwift(cpltCoordFinView.getAdresseBicSwift());
 
 		final PersonnePhysique saved = (PersonnePhysique) tiersDAO.save(pp);
 		return "redirect:/tiers/visu.do?id=" + saved.getNumero();
@@ -223,15 +216,9 @@ public class TiersCreateController {
 		ac.setAdresseCourrierElectronique(cpltCommView.getAdresseCourrierElectronique());
 
 		final ComplementsEditCoordonneesFinancieresView cpltCoordFinView = view.getComplementCoordFinanciere();
-		final String iban = IbanHelper.normalize(cpltCoordFinView.getIban());
-		final String bicSwift = StringUtils.trimToNull(FormatNumeroHelper.removeSpaceAndDash(cpltCoordFinView.getAdresseBicSwift()));
-		if (iban != null || bicSwift != null) {
-			ac.setCoordonneesFinancieres(new CoordonneesFinancieres(iban, bicSwift));
-		}
-		else {
-			ac.setCoordonneesFinancieres(null);
-		}
+		ac.setNumeroCompteBancaire(cpltCoordFinView.getIban());
 		ac.setTitulaireCompteBancaire(cpltCoordFinView.getTitulaireCompteBancaire());
+		ac.setAdresseBicSwift(cpltCoordFinView.getAdresseBicSwift());
 
 		final AutreCommunaute saved = (AutreCommunaute) tiersDAO.save(ac);
 		return "redirect:/tiers/visu.do?id=" + saved.getNumero();
@@ -285,15 +272,9 @@ public class TiersCreateController {
 		dpi.setAdresseCourrierElectronique(cpltCommView.getAdresseCourrierElectronique());
 
 		final ComplementsEditCoordonneesFinancieresView cpltCoordFinView = view.getComplementCoordFinanciere();
-		final String iban = IbanHelper.normalize(cpltCoordFinView.getIban());
-		final String bicSwift = StringUtils.trimToNull(FormatNumeroHelper.removeSpaceAndDash(cpltCoordFinView.getAdresseBicSwift()));
-		if (iban != null || bicSwift != null) {
-			dpi.setCoordonneesFinancieres(new CoordonneesFinancieres(iban, bicSwift));
-		}
-		else {
-			dpi.setCoordonneesFinancieres(null);
-		}
+		dpi.setNumeroCompteBancaire(cpltCoordFinView.getIban());
 		dpi.setTitulaireCompteBancaire(cpltCoordFinView.getTitulaireCompteBancaire());
+		dpi.setAdresseBicSwift(cpltCoordFinView.getAdresseBicSwift());
 
 		final DebiteurPrestationImposable saved = (DebiteurPrestationImposable) tiersDAO.save(dpi);
 		final Contribuable ctbAss = (Contribuable) tiersDAO.get(noCtbAssocie);

@@ -15,7 +15,7 @@ import ch.vd.uniregctb.type.TypeEvenementCivilEch;
 
 public class StatsEvenementsCivilsEchResults {
 	
-	public abstract static class EvenementCivilInfo {
+	public static abstract class EvenementCivilInfo {
 
 		public final long id;
 		public final TypeEvenementCivilEch type;

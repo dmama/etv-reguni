@@ -2,18 +2,6 @@
 <%@ include file="/WEB-INF/jsp/include/common.jsp" %>
 
 <fieldset>
-	<legend><span><fmt:message key="label.source.donnees"/></span></legend>
-
-	<unireg:nextRowClass reset="1"/>
-	<table>
-		<tr>
-			<td width="30%"><fmt:message key="label.source.donnees.provenance"/>&nbsp;:</td>
-			<td><fmt:message key="${command.entreprise.sourceKey}"/></td>
-		</tr>
-	</table>
-</fieldset>
-
-<fieldset>
 	<legend><span><fmt:message key="label.entreprise"/></span></legend>
 
 	<unireg:nextRowClass reset="1"/>
@@ -27,15 +15,41 @@
 			</td>
 		</tr>
 		<tr class="<unireg:nextRowClass/>" >
-			<td width="30%"><fmt:message key="label.raison.sociale"/>&nbsp;:</td>
+			<td width="30%"><fmt:message key="label.numero.ipmro"/>&nbsp;:</td>
+			<td><c:out value="${command.entreprise.numeroIPMRO}"/></td>
+		</tr>
+		<tr class="<unireg:nextRowClass/>" >
+			<td width="30%"><fmt:message key="label.designation.abregee"/>&nbsp;:</td>
+			<td><c:out value="${command.entreprise.designationAbregee}"/></td>
+		</tr>
+		<tr class="<unireg:nextRowClass/>" >
+			<td width="30%"><fmt:message key="label.raison.sociale.courte"/>&nbsp;:</td>
 			<td><c:out value="${command.entreprise.raisonSociale}"/></td>
 		</tr>
-		<c:forEach items="${command.entreprise.autresRaisonsSociales}" var="autreRaisonSociale">
+		<tr class="<unireg:nextRowClass/>" >
+			<td width="30%"><fmt:message key="label.raison.sociale.complete"/>&nbsp;:</td>
+			<td><c:out value="${command.entreprise.raisonSociale1}"/></td>
+		</tr>
+		<c:if test="${command.entreprise.raisonSociale2 != null}">
 			<tr class="<unireg:nextRowClass/>" >
-				<td width="30%"><fmt:message key="label.raison.sociale.autre"/>&nbsp;:</td>
-				<td><c:out value="${autreRaisonSociale}"/></td>
+				<td width="30%"></td>
+				<td><c:out value="${command.entreprise.raisonSociale2}"/></td>
 			</tr>
-		</c:forEach>
+		</c:if>
+		<c:if test="${command.entreprise.raisonSociale3 != null}">
+			<tr class="<unireg:nextRowClass/>" >
+				<td width="30%"></td>
+				<td><c:out value="${command.entreprise.raisonSociale3}"/></td>
+			</tr>
+		</c:if>
+		<tr class="<unireg:nextRowClass/>" >
+			<td width="30%"><fmt:message key="label.date.fin.dernier.exercice.commercial"/>&nbsp;:</td>
+			<td><unireg:regdate regdate="${command.entreprise.dateFinDernierExerciceCommercial}"/></td>
+		</tr>
+		<tr class="<unireg:nextRowClass/>" >
+			<td width="30%"><fmt:message key="label.date.bouclement.futur"/>&nbsp;:</td>
+			<td><unireg:regdate regdate="${command.entreprise.dateBouclementFuture}"/></td>
+		</tr>
 	</table>
 
 </fieldset>
@@ -56,7 +70,8 @@
 		<display:column titleKey="label.commune.pays">
 			<c:choose>
 				<c:when test="${sieges.type == 'COMMUNE_CH' }">
-					<unireg:commune ofs="${sieges.noOfsSiege}" displayProperty="nomOfficielAvecCanton" date="${sieges.dateFin}"/>
+					<unireg:commune ofs="${sieges.noOfsSiege}" displayProperty="nomOfficiel" date="${sieges.dateFin}"/>
+					(<unireg:commune ofs="${sieges.noOfsSiege}" displayProperty="sigleCanton" date="${sieges.dateFin}"/>)
 				</c:when>
 				<c:when test="${sieges.type == 'PAYS_HS' }">
 					<unireg:pays ofs="${sieges.noOfsSiege}" displayProperty="nomCourt" date="${sieges.dateFin}"/>
@@ -79,7 +94,7 @@
 		<display:column sortable="true" titleKey="label.date.fin" sortProperty="dateFin">
 			<unireg:regdate regdate="${formesJuridiques.dateFin}"/>
 		</display:column>
-		<display:column sortable="true" titleKey="label.forme.juridique" property="type"/>
+		<display:column sortable="true" titleKey="label.forme.juridique" property="code"/>
 	</display:table>
 </fieldset>
 
@@ -97,18 +112,15 @@
 		<display:column sortable="true" titleKey="label.date.fin" sortProperty="dateFin">
 			<unireg:regdate regdate="${capitaux.dateFin}"/>
 		</display:column>
-		<display:column sortable="true" titleKey="label.capital.libere" style="text-align:right" sortProperty="capitalLibere.montant">
-			<c:if test="${capitaux.capitalLibere != null}">
-				<unireg:currency value="${capitaux.capitalLibere.montant}"/>&nbsp;<c:out value="${capitaux.capitalLibere.monnaie}"/>
-			</c:if>
+		<display:column sortable="true" titleKey="label.capital.action" style="text-align:right" sortProperty="capitalAction">
+			<unireg:currency value="${capitaux.capitalAction}"/>
 		</display:column>
-		<c:if test="${command.entreprise.source == 'RCENT'}" >
-			<display:column titleKey="label.source">
-				<fmt:message key="option.capital.source.${capitaux.source}"/>
-			</display:column>
-		</c:if>
-		<display:column class="action">
-			<unireg:consulterLog entityNature="Capital" entityId="${capitaux.id}"/>
+		<display:column sortable="true" titleKey="label.capital.libere" style="text-align:right" sortProperty="capitalLibere">
+			<unireg:currency value="${capitaux.capitalLibere}"/>
+		</display:column>
+		<display:column sortable="true" titleKey="label.absence.capital.libere.normale" property="absenceCapitalLibereNormale"/>
+		<display:column sortable="true" titleKey="label.edition.fosc" sortProperty="editionFosc.dateParution">
+			N°<c:out value="${capitaux.editionFosc.numero}"/> du <unireg:regdate regdate="${capitaux.editionFosc.dateParution}"/>
 		</display:column>
 	</display:table>
 

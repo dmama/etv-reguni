@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.di;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.util.ArrayList;
@@ -44,8 +45,6 @@ import ch.vd.uniregctb.declaration.DeclarationGenerationOperation;
 import ch.vd.uniregctb.declaration.DeclarationImpotCriteria;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaireDAO;
-import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePM;
-import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
 import ch.vd.uniregctb.declaration.EtatDeclarationRetournee;
 import ch.vd.uniregctb.declaration.ModeleDocumentDAO;
@@ -64,8 +63,6 @@ import ch.vd.uniregctb.editique.EditiqueResultatErreur;
 import ch.vd.uniregctb.editique.EditiqueResultatReroutageInbox;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImposition;
-import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionPersonnesMorales;
-import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionPersonnesPhysiques;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionService;
 import ch.vd.uniregctb.parametrage.DelaisService;
 import ch.vd.uniregctb.security.AccessDeniedException;
@@ -73,8 +70,6 @@ import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.security.SecurityHelper;
 import ch.vd.uniregctb.security.SecurityProviderInterface;
 import ch.vd.uniregctb.tiers.Contribuable;
-import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesMorales;
-import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersMapHelper;
 import ch.vd.uniregctb.transaction.TransactionTemplate;
@@ -180,46 +175,6 @@ public class DeclarationImpotController {
 		binder.registerCustomEditor(RegDate.class, "delaiAccordeAu", new RegDateEditor(true, false, false, RegDateHelper.StringFormat.DISPLAY));
 	}
 
-	private void checkAccessRights(DeclarationImpotOrdinaire di, boolean emission, boolean quittancement, boolean delais, boolean sommation, boolean duplicata) {
-		if (di instanceof DeclarationImpotOrdinairePP) {
-			if (emission && !SecurityHelper.isGranted(securityProvider, Role.DI_EMIS_PP)) {
-				throw new AccessDeniedException("vous ne possédez pas le droit IfoSec d'émission des déclarations d'impôt des personnes physiques.");
-			}
-			if (quittancement && !SecurityHelper.isGranted(securityProvider, Role.DI_QUIT_PP)) {
-				throw new AccessDeniedException("vous ne possédez pas le droit IfoSec de quittancement des déclarations d'impôt des personnes physiques.");
-			}
-			if (delais && !SecurityHelper.isGranted(securityProvider, Role.DI_DELAI_PP)) {
-				throw new AccessDeniedException("vous ne possédez pas le droit IfoSec de gestion des délais des déclarations d'impôt des personnes physiques.");
-			}
-			if (sommation && !SecurityHelper.isGranted(securityProvider, Role.DI_SOM_PP)) {
-				throw new AccessDeniedException("vous ne possédez pas le droit IfoSec de sommation des déclarations d'impôt des personnes physiques.");
-			}
-			if (duplicata && !SecurityHelper.isGranted(securityProvider, Role.DI_DUPLIC_PP)) {
-				throw new AccessDeniedException("vous ne possédez pas le droit IfoSec d'émission de duplicata des déclarations d'impôt des personnes physiques.");
-			}
-		}
-		else if (di instanceof DeclarationImpotOrdinairePM) {
-			if (emission && !SecurityHelper.isGranted(securityProvider, Role.DI_EMIS_PM)) {
-				throw new AccessDeniedException("vous ne possédez pas le droit IfoSec d'émission des déclarations d'impôt des personnes morales.");
-			}
-			if (quittancement && !SecurityHelper.isGranted(securityProvider, Role.DI_QUIT_PM)) {
-				throw new AccessDeniedException("vous ne possédez pas le droit IfoSec de quittancement des déclarations d'impôt des personnes morales.");
-			}
-			if (delais && !SecurityHelper.isGranted(securityProvider, Role.DI_DELAI_PM)) {
-				throw new AccessDeniedException("vous ne possédez pas le droit IfoSec de gestion des délais des déclarations d'impôt des personnes morales.");
-			}
-			if (sommation && !SecurityHelper.isGranted(securityProvider, Role.DI_SOM_PM)) {
-				throw new AccessDeniedException("vous ne possédez pas le droit IfoSec de sommation des déclarations d'impôt des personnes morales.");
-			}
-			if (duplicata && !SecurityHelper.isGranted(securityProvider, Role.DI_DUPLIC_PM)) {
-				throw new AccessDeniedException("vous ne possédez pas le droit IfoSec d'émission de duplicata des déclarations d'impôt des personnes morales.");
-			}
-		}
-		else {
-			throw new ObjectNotFoundException(messageSource.getMessage("error.di.inexistante", null, WebContextUtils.getDefaultLocale()));
-		}
-	}
-
 	/**
 	 * Liste les déclarations d'impôt d'un contribuable
 	 * @param tiersId le numéro d'un contribuable
@@ -228,7 +183,7 @@ public class DeclarationImpotController {
 	@RequestMapping(value = "/di/list.do", method = RequestMethod.GET)
 	public String list(@RequestParam("tiersId") long tiersId, Model model) throws AccessDeniedException {
 
-		if (!SecurityHelper.isAnyGranted(securityProvider, Role.VISU_ALL)) {
+		if (!SecurityHelper.isAnyGranted(securityProvider, Role.DI_DELAI_PP, Role.DI_DUPLIC_PP, Role.DI_QUIT_PP, Role.DI_SOM_PP)) {
 			throw new AccessDeniedException("vous ne possédez aucun droit IfoSec de consultation pour l'application Unireg");
 		}
 
@@ -257,7 +212,7 @@ public class DeclarationImpotController {
 	@ResponseBody
 	public DeclarationView details(@RequestParam("id") long id) throws AccessDeniedException {
 
-		if (!SecurityHelper.isAnyGranted(securityProvider, Role.VISU_ALL)) {
+		if (!SecurityHelper.isAnyGranted(securityProvider, Role.VISU_ALL, Role.VISU_LIMITE)) {
 			throw new AccessDeniedException("vous ne possédez aucun droit IfoSec de consultation pour l'application Unireg");
 		}
 
@@ -283,7 +238,7 @@ public class DeclarationImpotController {
 	@RequestMapping(value = "/di/annuler.do", method = RequestMethod.POST)
 	public String annuler(@RequestParam("id") long id, @RequestParam(value = "tacheId", required = false) Long tacheId) throws AccessDeniedException {
 
-		if (!SecurityHelper.isAnyGranted(securityProvider, Role.VISU_ALL)) {
+		if (!SecurityHelper.isAnyGranted(securityProvider, Role.VISU_ALL, Role.VISU_LIMITE)) {
 			throw new AccessDeniedException("vous ne possédez aucun droit IfoSec de consultation pour l'application Unireg");
 		}
 
@@ -303,7 +258,7 @@ public class DeclarationImpotController {
 		controllerUtils.checkAccesDossierEnEcriture(tiersId);
 
 		// annulation de la déclaration
-		final Contribuable tiers = di.getTiers();
+		final Contribuable tiers = (Contribuable) di.getTiers();
 		diService.annulationDI(tiers, di, tacheId, RegDate.get());
 
 		if (tacheId != null) {
@@ -315,50 +270,30 @@ public class DeclarationImpotController {
 	}
 
 	/**
-	 * Désannuler une déclaration d'impôt ordinaire PP.
+	 * Désannuler une déclaration d'impôt ordinaire.
 	 *
 	 * @param id l'id de la déclaration d'impôt ordinaire à désannuler
 	 */
 	@Transactional(rollbackFor = Throwable.class)
-	@RequestMapping(value = "/di/desannuler-pp.do", method = RequestMethod.POST)
-	public String desannulerDeclarationImpotPP(@RequestParam("id") long id) throws AccessDeniedException {
+	@RequestMapping(value = "/di/desannuler.do", method = RequestMethod.POST)
+	public String desannuler(@RequestParam("id") long id) throws AccessDeniedException {
 
 		if (!SecurityHelper.isGranted(securityProvider, Role.DI_DESANNUL_PP)) {
-			throw new AccessDeniedException("vous ne possédez pas le droit IfoSec de désannulation des déclarations d'impôt PP.");
+			throw new AccessDeniedException("vous ne possédez pas le droit IfoSec de désannulation des déclarations d'impôt.");
 		}
 
-		return desannuler(id, DeclarationImpotOrdinairePP.class);
-	}
-
-	/**
-	 * Désannuler une déclaration d'impôt ordinaire PM.
-	 *
-	 * @param id l'id de la déclaration d'impôt ordinaire à désannuler
-	 */
-	@Transactional(rollbackFor = Throwable.class)
-	@RequestMapping(value = "/di/desannuler-pm.do", method = RequestMethod.POST)
-	public String desannulerDeclarationImpotPM(@RequestParam("id") long id) throws AccessDeniedException {
-
-		if (!SecurityHelper.isGranted(securityProvider, Role.DI_DESANNUL_PM)) {
-			throw new AccessDeniedException("vous ne possédez pas le droit IfoSec de désannulation des déclarations d'impôt PM.");
+		final Declaration decl = hibernateTemplate.get(Declaration.class, id);
+		if (decl == null) {
+			throw new IllegalArgumentException("La déclaration n°" + id + " n'existe pas.");
 		}
 
-		return desannuler(id, DeclarationImpotOrdinairePM.class);
-	}
-
-	/**
-	 * Désannuler une déclaration d'impôt ordinaire.
-	 * @param diId l'id de la déclaration d'impôt ordinaire à désannuler
-	 * @param clazz la classe de la déclaration d'impôt
-	 */
-	private String desannuler(long diId, Class<? extends DeclarationImpotOrdinaire> clazz) throws AccessDeniedException {
-
-		final DeclarationImpotOrdinaire di = hibernateTemplate.get(clazz, diId);
-		if (di == null) {
-			throw new IllegalArgumentException("La déclaration n°" + diId + " n'existe pas.");
+		if (!(decl instanceof DeclarationImpotOrdinaire)) {
+			throw new IllegalArgumentException("La déclaration n°" + id + " n'est pas une déclaration d'impôt ordinaire.");
 		}
+
+		final DeclarationImpotOrdinaire di = (DeclarationImpotOrdinaire) decl;
 		if (!di.isAnnule()) {
-			throw new IllegalArgumentException("La déclaration n°" + diId + " n'est pas annulée.");
+			throw new IllegalArgumentException("La déclaration n°" + id + " n'est pas annulée.");
 		}
 
 		// vérification des droits en écriture
@@ -366,7 +301,7 @@ public class DeclarationImpotController {
 		controllerUtils.checkAccesDossierEnEcriture(tiersId);
 
 		// désannulation de la déclaration
-		final Contribuable tiers = di.getTiers();
+		final Contribuable tiers = (Contribuable) di.getTiers();
 		diService.desannulationDI(tiers, di, RegDate.get());
 
 		return "redirect:/di/list.do?tiersId=" + tiersId;
@@ -381,45 +316,12 @@ public class DeclarationImpotController {
 	 * @throws AccessDeniedException si l'utilisateur ne possède pas les droits d'accès sur le contribuable
 	 */
 	@Transactional(rollbackFor = Throwable.class, readOnly = true)
-	@RequestMapping(value = "/di/choisir-pp.do", method = RequestMethod.GET)
-	public String choisirDeclarationAEmettrePP(@RequestParam("tiersId") long tiersId, Model model) throws AccessDeniedException {
+	@RequestMapping(value = "/di/choisir.do", method = RequestMethod.GET)
+	public String choisir(@RequestParam("tiersId") long tiersId, Model model) throws AccessDeniedException {
 
 		if (!SecurityHelper.isGranted(securityProvider, Role.DI_EMIS_PP)) {
 			throw new AccessDeniedException("vous ne possédez pas le droit IfoSec d'ajout des déclarations d'impôt sur les personnes physiques.");
 		}
-
-		return choisirDeclarationAEmettre(tiersId, model, "imprimer-pp");
-	}
-
-	/**
-	 * Affiche un écran qui permet de choisir une déclaration parmis une liste dans le but de l'ajouter sur le contribuable spécifié.
-	 *
-	 * @param tiersId le numéro de contribuable
-	 * @param model   le modèle sous-jacent
-	 * @return la vue à afficher
-	 * @throws AccessDeniedException si l'utilisateur ne possède pas les droits d'accès sur le contribuable
-	 */
-	@Transactional(rollbackFor = Throwable.class, readOnly = true)
-	@RequestMapping(value = "/di/choisir-pm.do", method = RequestMethod.GET)
-	public String choisirDeclarationAEmettrePM(@RequestParam("tiersId") long tiersId, Model model) throws AccessDeniedException {
-
-		if (!SecurityHelper.isGranted(securityProvider, Role.DI_EMIS_PM)) {
-			throw new AccessDeniedException("vous ne possédez pas le droit IfoSec d'ajout des déclarations d'impôt sur les personnes morales.");
-		}
-
-		return choisirDeclarationAEmettre(tiersId, model, "imprimer-pm");
-	}
-
-	/**
-	 * Affiche un écran qui permet de choisir une déclaration parmis une liste dans le but de l'ajouter sur le contribuable spécifié.
-	 *
-	 * @param tiersId le numéro de contribuable
-	 * @param model   le modèle sous-jacent
-	 * @return la vue à afficher
-	 * @throws AccessDeniedException si l'utilisateur ne possède pas les droits d'accès sur le contribuable
-	 */
-	public String choisirDeclarationAEmettre(long tiersId, Model model, String actionImpression) throws AccessDeniedException {
-
 		controllerUtils.checkAccesDossierEnEcriture(tiersId);
 
 		final List<PeriodeImposition> ranges = manager.calculateRangesProchainesDIs(tiersId);
@@ -428,23 +330,21 @@ public class DeclarationImpotController {
 			Flash.warning(DeclarationImpotEditManager.CANNOT_ADD_NEW_DI);
 			model.addAttribute("tiersId", tiersId);
 			model.addAttribute("ranges", Collections.emptyList());
-			model.addAttribute("actionImpression", actionImpression);
 			return "/di/choisir";
 		}
 		else if (ranges.size() == 1) {
 			final DateRange range = ranges.get(0);
 			// il reste exactement une DI à créer : on continue directement sur l'écran d'impression
-			return String.format("redirect:/di/%s.do?tiersId=%d&debut=%d&fin=%d", actionImpression, tiersId, range.getDateDebut().index(), range.getDateFin().index());
+			return "redirect:/di/imprimer.do?tiersId=" + tiersId + "&debut=" + range.getDateDebut().index() + "&fin=" + range.getDateFin().index();
 		}
 		else {
 			// [UNIREG-889] il y reste plusieurs DIs à créer : on demande à l'utilisateur de choisir
 			final ArrayList<ChoixDeclarationImpotView> views = new ArrayList<>(ranges.size());
 			for (PeriodeImposition r : ranges) {
-				views.add(new ChoixDeclarationImpotView(r, r.isDeclarationOptionnelle()));
+				views.add(new ChoixDeclarationImpotView(r, r.isOptionnelle()));
 			}
 			model.addAttribute("tiersId", tiersId);
 			model.addAttribute("ranges", views);
-			model.addAttribute("actionImpression", actionImpression);
 			return "/di/choisir";
 		}
 	}
@@ -453,14 +353,14 @@ public class DeclarationImpotController {
 	 * Affiche un écran qui permet de prévisualiser une déclaration avant son impression (et donc son ajout sur le contribuable).
 	 */
 	@Transactional(rollbackFor = Throwable.class, readOnly = true)
-	@RequestMapping(value = "/di/imprimer-pp.do", method = RequestMethod.GET)
-	public String imprimerDeclarationPP(@RequestParam("tiersId") long tiersId,
-	                                    @RequestParam("debut") RegDate dateDebut,
-	                                    @RequestParam("fin") RegDate dateFin,
-	                                    @RequestParam(value = "typeDocument", required = false) TypeDocument typeDocument,
-	                                    @RequestParam(value = "delaiRetour", required = false) Integer delaiRetour,
-	                                    @RequestParam(value = "depuisTache", required = false, defaultValue = "false") boolean depuisTache,
-	                                    Model model) throws AccessDeniedException {
+	@RequestMapping(value = "/di/imprimer.do", method = RequestMethod.GET)
+	public String imprimer(@RequestParam("tiersId") long tiersId,
+	                       @RequestParam("debut") RegDate dateDebut,
+	                       @RequestParam("fin") RegDate dateFin,
+	                       @RequestParam(value = "typeDocument", required = false) TypeDocument typeDocument,
+	                       @RequestParam(value = "delaiRetour", required = false) Integer delaiRetour,
+	                       @RequestParam(value = "depuisTache", required = false, defaultValue = "false") boolean depuisTache,
+	                       Model model) throws AccessDeniedException {
 
 		if (!SecurityHelper.isGranted(securityProvider, Role.DI_EMIS_PP)) {
 			throw new AccessDeniedException("vous ne possédez pas le droit IfoSec d'ajout des déclarations d'impôt sur les personnes physiques.");
@@ -471,19 +371,18 @@ public class DeclarationImpotController {
 		if (tiers == null) {
 			throw new TiersNotFoundException(tiersId);
 		}
-		if (!(tiers instanceof ContribuableImpositionPersonnesPhysiques)) {
-			throw new IllegalArgumentException("Le tiers spécifié n'est pas un contribuable soumis au régime des personnes physiques.");
+		if (!(tiers instanceof Contribuable)) {
+			throw new IllegalArgumentException("Le tiers spécifié n'est pas un contribuable.");
 		}
-		final ContribuableImpositionPersonnesPhysiques ctb = (ContribuableImpositionPersonnesPhysiques) tiers;
+		final Contribuable ctb = (Contribuable) tiers;
 
 		final ImprimerNouvelleDeclarationImpotView view = new ImprimerNouvelleDeclarationImpotView(tiersId, depuisTache, SecurityHelper.isGranted(securityProvider, Role.DI_QUIT_PP));
-		view.setTypeContribuable(ImprimerNouvelleDeclarationImpotView.TypeContribuable.PP);
 		model.addAttribute("command", view);
-		model.addAttribute("typesDeclarationImpot", tiersMapHelper.getTypesDeclarationImpotPP());
+		model.addAttribute("typesDeclarationImpot", tiersMapHelper.getTypesDeclarationImpot());
 		model.addAttribute("typesAdresseRetour", tiersMapHelper.getTypesAdresseRetour());
 
 		// Vérifie que les paramètres reçus sont valides
-		final PeriodeImpositionPersonnesPhysiques periode;
+		final PeriodeImposition periode;
 		try {
 			periode = manager.checkRangeDi(ctb, new DateRangeHelper.Range(dateDebut, dateFin));
 		}
@@ -503,7 +402,7 @@ public class DeclarationImpotController {
 		}
 
 		if (typeDocument == null) {
-			typeDocument = determineTypeDocumentPPParDefaut(tiersId);
+			typeDocument = determineTypeDocumentParDefaut(tiersId);
 		}
 
 		view.setPeriode(periode);
@@ -524,99 +423,20 @@ public class DeclarationImpotController {
 	}
 
 	/**
-	 * Affiche un écran qui permet de prévisualiser une déclaration avant son impression (et donc son ajout sur le contribuable).
-	 */
-	@Transactional(rollbackFor = Throwable.class, readOnly = true)
-	@RequestMapping(value = "/di/imprimer-pm.do", method = RequestMethod.GET)
-	public String imprimerDeclarationPM(@RequestParam("tiersId") long tiersId,
-	                                    @RequestParam("debut") RegDate dateDebut,
-	                                    @RequestParam("fin") RegDate dateFin,
-	                                    @RequestParam(value = "typeDocument", required = false) TypeDocument typeDocument,
-	                                    @RequestParam(value = "delaiRetour", required = false) Integer delaiRetour,
-	                                    @RequestParam(value = "depuisTache", required = false, defaultValue = "false") boolean depuisTache,
-	                                    Model model) throws AccessDeniedException {
-
-		if (!SecurityHelper.isGranted(securityProvider, Role.DI_EMIS_PM)) {
-			throw new AccessDeniedException("vous ne possédez pas le droit IfoSec d'ajout des déclarations d'impôt sur les personnes morales.");
-		}
-		controllerUtils.checkAccesDossierEnEcriture(tiersId);
-
-		final Tiers tiers = hibernateTemplate.get(Tiers.class, tiersId);
-		if (tiers == null) {
-			throw new TiersNotFoundException(tiersId);
-		}
-		if (!(tiers instanceof ContribuableImpositionPersonnesMorales)) {
-			throw new IllegalArgumentException("Le tiers spécifié n'est pas un contribuable soumis au régime des personnes morales.");
-		}
-		final ContribuableImpositionPersonnesMorales ctb = (ContribuableImpositionPersonnesMorales) tiers;
-
-		final ImprimerNouvelleDeclarationImpotView view = new ImprimerNouvelleDeclarationImpotView(tiersId, depuisTache, SecurityHelper.isGranted(securityProvider, Role.DI_QUIT_PM));
-		view.setTypeContribuable(ImprimerNouvelleDeclarationImpotView.TypeContribuable.PM);
-		model.addAttribute("command", view);
-		model.addAttribute("typesAdresseRetour", tiersMapHelper.getTypesAdresseRetour());
-
-		// Vérifie que les paramètres reçus sont valides
-		final PeriodeImpositionPersonnesMorales periode;
-		try {
-			periode = manager.checkRangeDi(ctb, new DateRangeHelper.Range(dateDebut, dateFin));
-		}
-		catch (ValidationException e) {
-			view.setImprimable(false);
-			Flash.error(e.getMessage());
-			return "di/imprimer";
-		}
-
-		// Détermine quelques valeurs par défaut si nécessaires
-		final RegDate delaiAccorde;
-		if (delaiRetour != null) {
-			delaiAccorde = RegDate.get().addDays(delaiRetour);
-		}
-		else {
-			delaiAccorde = delaisService.getDateFinDelaiRetourDeclarationImpotEmiseManuellement(RegDate.get());
-		}
-
-		if (typeDocument == null) {
-			typeDocument = periode.getTypeDocumentDeclaration();
-		}
-
-		view.setPeriode(periode);
-		view.setDelaiAccorde(delaiAccorde);
-		view.setTypeDocument(typeDocument);
-
-		// [UNIREG-2705] s'il existe une DI retournée annulée pour le même contribuable et la même
-		// période, alors on propose de marquer cette nouvelle DI comme déjà retournée
-		if (SecurityHelper.isGranted(securityProvider, Role.DI_QUIT_PM)) {
-			final DeclarationImpotOrdinaire diAnnulee = findDeclarationRetourneeEtAnnulee(tiersId, periode);
-			if (diAnnulee != null) {
-				view.setDateRetour(RegDate.get());
-				view.setDateRetourProposeeCarDeclarationRetourneeAnnuleeExiste(true);
-			}
-		}
-
-		return "di/imprimer";
-	}
-
-	/**
 	 * Crée, sauve en base et imprime la déclaration d'impôt.
 	 */
 	@RequestMapping(value = "/di/imprimer.do", method = RequestMethod.POST)
-	public String imprimer(@Valid @ModelAttribute("command") final ImprimerNouvelleDeclarationImpotView view, BindingResult result, HttpServletResponse response, Model model) throws Exception {
+	public String imprimer(@Valid @ModelAttribute("command") final ImprimerNouvelleDeclarationImpotView view, BindingResult result,
+	                       HttpServletRequest request, HttpServletResponse response, Model model) throws Exception {
 
-		if ((view.getTypeContribuable() == ImprimerNouvelleDeclarationImpotView.TypeContribuable.PM && !SecurityHelper.isGranted(securityProvider, Role.DI_EMIS_PM))
-				|| (view.getTypeContribuable() == ImprimerNouvelleDeclarationImpotView.TypeContribuable.PP && !SecurityHelper.isGranted(securityProvider, Role.DI_EMIS_PP))) {
-			throw new AccessDeniedException("vous ne possédez pas le droit IfoSec d'ajout des déclarations d'impôt.");
+		if (!SecurityHelper.isGranted(securityProvider, Role.DI_EMIS_PP)) {
+			throw new AccessDeniedException("vous ne possédez pas le droit IfoSec d'ajout des déclarations d'impôt sur les personnes physiques.");
 		}
-		if (view.getTypeContribuable() == null) {
-			throw new IllegalArgumentException("Un type de contribuable doit être fourni...");
-		}
-
 		final Long tiersId = view.getTiersId();
 		controllerUtils.checkAccesDossierEnEcriture(tiersId);
 
 		if (result.hasErrors()) {
-			if (view.getTypeContribuable() == ImprimerNouvelleDeclarationImpotView.TypeContribuable.PP) {
-				model.addAttribute("typesDeclarationImpot", tiersMapHelper.getTypesDeclarationImpotPP());
-			}
+			model.addAttribute("typesDeclarationImpot", tiersMapHelper.getTypesDeclarationImpot());
 			model.addAttribute("typesAdresseRetour", tiersMapHelper.getTypesAdresseRetour());
 			return "di/imprimer";
 		}
@@ -626,43 +446,26 @@ public class DeclarationImpotController {
 		try {
 			final TicketService.Ticket ticket = ticketService.getTicket(tickettingKey, 500);
 			try {
+				final EditiqueResultat resultat = manager.envoieImpressionLocalDI(tiersId, null, view.getDateDebutPeriodeImposition(), view.getDateFinPeriodeImposition(), view.getTypeDocument(),
+				                                                                  view.getTypeAdresseRetour(), view.getDelaiAccorde(), view.getDateRetour());
 
-				// ... sauf que si on n'a pas de type de document, on n'est pas capable d'imprimer quoi que ce soit...
-				// (effectivement, pour les PM par exemple, il y a une période pendant laquelle on doit être capable de
-				// générer les DI pour les suivre (sommation...) mais sans possibilité d'impression de la fourre de DI,
-				// qui doit être remplie et envoyée à la main...)
+				final RetourEditiqueControllerHelper.TraitementRetourEditique<EditiqueResultatReroutageInbox> inbox =
+						new RetourEditiqueControllerHelper.TraitementRetourEditique<EditiqueResultatReroutageInbox>() {
+							@Override
+							public String doJob(EditiqueResultatReroutageInbox resultat) {
+								return "redirect:/di/list.do?tiersId=" + tiersId;
+							}
+						};
 
-				if (view.getTypeDocument() != null) {
-					final EditiqueResultat resultat = manager.envoieImpressionLocaleDI(tiersId, view.getDateDebutPeriodeImposition(), view.getDateFinPeriodeImposition(), view.getTypeDocument(),
-					                                                                   view.getTypeAdresseRetour(), view.getDelaiAccorde(), view.getDateRetour());
+				final RetourEditiqueControllerHelper.TraitementRetourEditique<EditiqueResultatErreur> erreur = new RetourEditiqueControllerHelper.TraitementRetourEditique<EditiqueResultatErreur>() {
+					@Override
+					public String doJob(EditiqueResultatErreur resultat) {
+						Flash.error(String.format("%s Veuillez imprimer un duplicata de la déclaration d'impôt.", EditiqueErrorHelper.getMessageErreurEditique(resultat)));
+						return "redirect:/di/list.do?tiersId=" + tiersId;
+					}
+				};
 
-					final RetourEditiqueControllerHelper.TraitementRetourEditique<EditiqueResultatReroutageInbox> inbox =
-							new RetourEditiqueControllerHelper.TraitementRetourEditique<EditiqueResultatReroutageInbox>() {
-								@Override
-								public String doJob(EditiqueResultatReroutageInbox resultat) {
-									return "redirect:/di/list.do?tiersId=" + tiersId;
-								}
-							};
-
-					final RetourEditiqueControllerHelper.TraitementRetourEditique<EditiqueResultatErreur> erreur = new RetourEditiqueControllerHelper.TraitementRetourEditique<EditiqueResultatErreur>() {
-						@Override
-						public String doJob(EditiqueResultatErreur resultat) {
-							Flash.error(String.format("%s Veuillez imprimer un duplicata de la déclaration d'impôt.", EditiqueErrorHelper.getMessageErreurEditique(resultat)));
-							return "redirect:/di/list.do?tiersId=" + tiersId;
-						}
-					};
-
-					return retourEditiqueControllerHelper.traiteRetourEditique(resultat, response, "di", inbox, null, erreur);
-				}
-				else {
-
-					// ici, nous sommes donc dans le cas intermédiaire où nous avons une période d'imposition mais pas de modèle de document
-					// -> nous devons générer une DI en base mais nous ne pouvons pas l'imprimer...
-
-					manager.genererDISansImpression(tiersId, view.getDateDebutPeriodeImposition(), view.getDateFinPeriodeImposition(), view.getDelaiAccorde(), view.getDateRetour());
-					Flash.warning("La déclaration a maintenant été générée dans le système, mais aucune impression n'est prévue pour cette période fiscale. Veuillez procéder si nécessaire à l'envoi de la fourre de déclaration manuellement.");
-					return "redirect:/di/list.do?tiersId=" + tiersId;
-				}
+				return retourEditiqueControllerHelper.traiteRetourEditique(resultat, response, "di", inbox, null, erreur);
 			}
 			finally {
 				ticketService.releaseTicket(ticket);
@@ -673,7 +476,7 @@ public class DeclarationImpotController {
 		}
 	}
 
-	private TypeDocument determineTypeDocumentPPParDefaut(long tiersId) {
+	private TypeDocument determineTypeDocumentParDefaut(long tiersId) {
 		//Par défaut le type de DI est celui de la dernière DI émise
 		final TypeDocument typeDocument;
 		EtatDeclaration etatDiPrecedente = diDAO.findDerniereDiEnvoyee(tiersId);
@@ -723,30 +526,19 @@ public class DeclarationImpotController {
 	@RequestMapping(value = "/di/etat/ajouter.do", method = RequestMethod.GET)
 	public String ajouterEtat(@RequestParam("id") long id, Model model) throws AccessDeniedException {
 
-		if (!SecurityHelper.isAnyGranted(securityProvider, Role.DI_QUIT_PP, Role.DI_QUIT_PM)) {
-			throw new AccessDeniedException("vous ne possédez pas le droit IfoSec de quittancement des déclarations d'impôt.");
+		if (!SecurityHelper.isAnyGranted(securityProvider, Role.DI_QUIT_PP)) {
+			throw new AccessDeniedException("vous ne possédez pas le droit IfoSec de quittancement des déclarations d'impôt sur les personnes physiques.");
 		}
 
 		final DeclarationImpotOrdinaire di = diDAO.get(id);
 		if (di == null) {
 			throw new ObjectNotFoundException(messageSource.getMessage("error.di.inexistante", null, WebContextUtils.getDefaultLocale()));
 		}
-		checkAccessRights(di, false, true, false, false, false);
 
-		final Contribuable ctb = di.getTiers();
+		final Contribuable ctb = (Contribuable) di.getTiers();
 		controllerUtils.checkAccesDossierEnEcriture(ctb.getId());
 
-		final AjouterEtatDeclarationView view;
-		if (di instanceof DeclarationImpotOrdinairePP) {
-			view = new AjouterEtatDeclarationView((DeclarationImpotOrdinairePP) di, messageSource);
-		}
-		else if (di instanceof DeclarationImpotOrdinairePM) {
-			view = new AjouterEtatDeclarationView((DeclarationImpotOrdinairePM) di, messageSource);
-		}
-		else {
-			throw new ObjectNotFoundException(messageSource.getMessage("error.di.inexistante", null, WebContextUtils.getDefaultLocale()));
-		}
-
+		final AjouterEtatDeclarationView view = new AjouterEtatDeclarationView(di, messageSource);
 		model.addAttribute("command", view);
 		model.addAttribute("typesDeclarationImpotOrdinaire", tiersMapHelper.getTypesDeclarationsImpotOrdinaires());
 
@@ -758,25 +550,25 @@ public class DeclarationImpotController {
 	 */
 	@Transactional(rollbackFor = Throwable.class)
 	@RequestMapping(value = "/di/etat/ajouter.do", method = RequestMethod.POST)
-	public String ajouterEtat(@Valid @ModelAttribute("command") final AjouterEtatDeclarationView view, BindingResult result, Model model) throws AccessDeniedException {
+	public String ajouterEtat(@Valid @ModelAttribute("command") final AjouterEtatDeclarationView view, BindingResult result,
+	                     Model model) throws AccessDeniedException {
 
-		if (!SecurityHelper.isAnyGranted(securityProvider, Role.DI_QUIT_PP, Role.DI_QUIT_PM)) {
-			throw new AccessDeniedException("vous ne possédez pas le droit IfoSec de quittancement des déclarations d'impôt.");
+		if (!SecurityHelper.isAnyGranted(securityProvider, Role.DI_QUIT_PP)) {
+			throw new AccessDeniedException("vous ne possédez pas le droit IfoSec de quittancement des déclarations d'impôt sur les personnes physiques.");
 		}
 
 		final DeclarationImpotOrdinaire di = diDAO.get(view.getId());
 		if (di == null) {
 			throw new ObjectNotFoundException(messageSource.getMessage("error.di.inexistante", null, WebContextUtils.getDefaultLocale()));
 		}
-		checkAccessRights(di, false, true, false, false, false);
 
 		if (result.hasErrors()) {
-			view.initReadOnlyValues(di, view.isTypeDocumentEditable(), messageSource);
+			view.initReadOnlyValues(di, messageSource);
 			model.addAttribute("typesDeclarationImpotOrdinaire", tiersMapHelper.getTypesDeclarationsImpotOrdinaires());
 			return "di/etat/ajouter";
 		}
 
-		final Contribuable ctb = di.getTiers();
+		final Contribuable ctb = (Contribuable) di.getTiers();
 		controllerUtils.checkAccesDossierEnEcriture(ctb.getId());
 
 		// On quittance la DI
@@ -797,10 +589,10 @@ public class DeclarationImpotController {
 	 */
 	@Transactional(rollbackFor = Throwable.class)
 	@RequestMapping(value = "/di/etat/annuler.do", method = RequestMethod.POST)
-	public String annulerEtat(@RequestParam("id") final long id) throws Exception {
+	public String annulerEtat(@RequestParam("id") final long id, HttpServletResponse response) throws Exception {
 
-		if (!SecurityHelper.isAnyGranted(securityProvider, Role.DI_QUIT_PP, Role.DI_QUIT_PM)) {
-			throw new AccessDeniedException("vous ne possédez pas le droit IfoSec de quittancement des déclarations d'impôt.");
+		if (!SecurityHelper.isGranted(securityProvider, Role.DI_QUIT_PP)) {
+			throw new AccessDeniedException("vous ne possédez pas le droit IfoSec d'édition des délais sur les déclarations d'impôt des personnes physiques.");
 		}
 
 		// Vérifie les paramètres
@@ -813,8 +605,8 @@ public class DeclarationImpotController {
 		}
 
 		final DeclarationImpotOrdinaire di = (DeclarationImpotOrdinaire) etat.getDeclaration();
-		checkAccessRights(di, false, true, false, false, false);
-		final Contribuable ctb = di.getTiers();
+
+		final Contribuable ctb = (Contribuable) di.getTiers();
 		controllerUtils.checkAccesDossierEnEcriture(ctb.getId());
 
 		// On annule le quittancement
@@ -834,50 +626,33 @@ public class DeclarationImpotController {
 	                     @RequestParam(value = "tacheId", required = false) Long tacheId,
 	                     Model model) throws AccessDeniedException {
 
-		if (!SecurityHelper.isAnyGranted(securityProvider, Role.DI_QUIT_PP, Role.DI_QUIT_PM, Role.DI_DELAI_PP, Role.DI_DELAI_PM, Role.DI_SOM_PP, Role.DI_SOM_PM, Role.DI_DUPLIC_PP, Role.DI_DUPLIC_PM)) {
-			throw new AccessDeniedException("vous ne possédez pas le droit IfoSec d'édition des déclarations d'impôt.");
+		if (!SecurityHelper.isAnyGranted(securityProvider, Role.DI_QUIT_PP, Role.DI_DELAI_PP)) {
+			throw new AccessDeniedException("vous ne possédez pas le droit IfoSec d'édition des déclarations d'impôt sur les personnes physiques.");
 		}
 
 		final DeclarationImpotOrdinaire di = diDAO.get(id);
 		if (di == null) {
 			throw new ObjectNotFoundException(messageSource.getMessage("error.di.inexistante", null, WebContextUtils.getDefaultLocale()));
 		}
-		checkAccessRights(di, false, true, true, false, false);
 
-		final Contribuable ctb = di.getTiers();
+		final Contribuable ctb = (Contribuable) di.getTiers();
 		controllerUtils.checkAccesDossierEnEcriture(ctb.getId());
 
-		final EditerDeclarationImpotView view;
-		if (di instanceof DeclarationImpotOrdinairePP) {
-			view = new EditerDeclarationImpotView(di, tacheId, messageSource,
-			                                      SecurityHelper.isGranted(securityProvider, Role.DI_QUIT_PP),
-			                                      SecurityHelper.isGranted(securityProvider, Role.DI_DELAI_PP),
-			                                      SecurityHelper.isGranted(securityProvider, Role.DI_SOM_PP),
-			                                      SecurityHelper.isGranted(securityProvider, Role.DI_DUPLIC_PP));
-		}
-		else if (di instanceof DeclarationImpotOrdinairePM) {
-			view = new EditerDeclarationImpotView(di, tacheId, messageSource,
-			                                      SecurityHelper.isGranted(securityProvider, Role.DI_QUIT_PM),
-			                                      SecurityHelper.isGranted(securityProvider, Role.DI_DELAI_PM),
-			                                      SecurityHelper.isGranted(securityProvider, Role.DI_SOM_PM),
-			                                      SecurityHelper.isGranted(securityProvider, Role.DI_DUPLIC_PM) && di.getTypeDeclaration() != null);
-		}
-		else {
-			throw new IllegalArgumentException("La déclaration n°" + id + " n'est pas une déclaration d'impôt ordinaire PP ou PM.");
-		}
-
+		final EditerDeclarationImpotView view = new EditerDeclarationImpotView(di, tacheId, messageSource, SecurityHelper.isGranted(securityProvider, Role.DI_QUIT_PP),
+				SecurityHelper.isGranted(securityProvider, Role.DI_DELAI_PP), SecurityHelper.isGranted(securityProvider, Role.DI_SOM_PP), SecurityHelper.isGranted(securityProvider, Role.DI_DUPLIC_PP));
 		model.addAttribute("command", view);
+
 		return "di/editer";
 	}
 
 	/**
-	 * Sommer la déclaration d'impôt spécifiée.
+	 * Sommer la déclaration spécifiée.
 	 */
 	@RequestMapping(value = "/di/sommer.do", method = RequestMethod.POST)
-	public String sommerDeclarationImpotPersonnesPhysiques(@RequestParam("id") final long id, HttpServletResponse response) throws Exception {
+	public String sommer(@RequestParam("id") final long id, HttpServletResponse response) throws Exception {
 
-		if (!SecurityHelper.isAnyGranted(securityProvider, Role.DI_SOM_PP, Role.DI_SOM_PM)) {
-			throw new AccessDeniedException("vous ne possédez pas le droit IfoSec de sommation des déclarations d'impôt.");
+		if (!SecurityHelper.isGranted(securityProvider, Role.DI_SOM_PP)) {
+			throw new AccessDeniedException("vous ne possédez pas le droit IfoSec de sommation des déclarations d'impôt sur les personnes physiques.");
 		}
 
 		// Vérifie les paramètres
@@ -889,108 +664,79 @@ public class DeclarationImpotController {
 				if (di == null) {
 					throw new ObjectNotFoundException(messageSource.getMessage("error.di.inexistante", null, WebContextUtils.getDefaultLocale()));
 				}
-				checkAccessRights(di, false, false, false, true, false);
 
 				if (!EditerDeclarationImpotView.isSommable(di)) {
 					throw new IllegalArgumentException("La déclaration n°" + id + " n'est pas dans un état sommable.");
 				}
 
-				final Contribuable ctb = di.getTiers();
+				final Contribuable ctb = (Contribuable) di.getTiers();
 				controllerUtils.checkAccesDossierEnEcriture(ctb.getId());
 				return null;
 			}
 		});
 
 		// On imprime la sommation
+
 		final EditiqueResultat resultat = manager.envoieImpressionLocalSommationDI(id);
+
 		final RedirectEditDI inbox = new RedirectEditDI(id);
 		final RedirectEditDIApresErreur erreur = new RedirectEditDIApresErreur(id, messageSource);
 		return retourEditiqueControllerHelper.traiteRetourEditique(resultat, response, "sommationDi", inbox, null, erreur);
 	}
 
 	/**
-	 * Imprime un duplicata de DI PM (= sans possibilité de choisir les annexes ou le type de document, repris de l'original)
-	 */
-	@RequestMapping(value = "/di/duplicata-pm.do", method = RequestMethod.POST)
-	public String duplicataDeclarationPersonnesMorales(@RequestParam("id") final long id, HttpServletResponse response) throws Exception {
-
-		if (!SecurityHelper.isAnyGranted(securityProvider, Role.DI_DUPLIC_PM)) {
-			throw new AccessDeniedException("vous ne possédez pas le droit IfoSec pour imprimer des duplicata de déclarations d'impôt des personnes morales.");
-		}
-
-		final TransactionTemplate template = new TransactionTemplate(transactionManager);
-		final TypeDocument typeDocument = template.execute(new TxCallback<TypeDocument>() {
-			@Override
-			public TypeDocument execute(TransactionStatus status) throws Exception {
-				final DeclarationImpotOrdinaire di = diDAO.get(id);
-				if (di == null || !(di instanceof DeclarationImpotOrdinairePM)) {
-					throw new ObjectNotFoundException(messageSource.getMessage("error.di.inexistante", null, WebContextUtils.getDefaultLocale()));
-				}
-
-				final ContribuableImpositionPersonnesMorales ctb = (ContribuableImpositionPersonnesMorales) di.getTiers();
-				controllerUtils.checkAccesDossierEnEcriture(ctb.getId());
-				return di.getTypeDeclaration();
-			}
-		});
-
-		final EditiqueResultat resultat = manager.envoieImpressionLocalDuplicataDI(id, typeDocument, null, false);
-		final RedirectEditDI inbox = new RedirectEditDI(id);
-		final RedirectEditDIApresErreur erreur = new RedirectEditDIApresErreur(id, messageSource);
-		return retourEditiqueControllerHelper.traiteRetourEditique(resultat, response, "di", inbox, null, erreur);
-	}
-
-	/**
 	 * Affiche un écran qui permet de choisir les paramètres pour l'impression d'un duplicata de DI
 	 */
 	@Transactional(rollbackFor = Throwable.class, readOnly = true)
-	@RequestMapping(value = "/di/duplicata-pp.do", method = RequestMethod.GET)
-	public String choixDuplicata(@RequestParam("id") long id, Model model) throws AccessDeniedException {
+	@RequestMapping(value = "/di/duplicata.do", method = RequestMethod.GET)
+	public String duplicata(@RequestParam("id") long id,
+	                       Model model) throws AccessDeniedException {
 
-		if (!SecurityHelper.isAnyGranted(securityProvider, Role.DI_DUPLIC_PP)) {
-			throw new AccessDeniedException("vous ne possédez pas le droit IfoSec pour imprimer des duplicata de déclarations d'impôt des personnes physiques.");
+		if (!SecurityHelper.isGranted(securityProvider, Role.DI_DUPLIC_PP)) {
+			throw new AccessDeniedException("vous ne possédez pas le droit IfoSec pour imprimer des duplicats de déclarations d'impôt sur les personnes physiques.");
 		}
 
 		final DeclarationImpotOrdinaire di = diDAO.get(id);
 		if (di == null) {
 			throw new ObjectNotFoundException(messageSource.getMessage("error.di.inexistante", null, WebContextUtils.getDefaultLocale()));
 		}
-		checkAccessRights(di, false, false, false, false, true);
 
-		final Contribuable ctb = di.getTiers();
+		final Contribuable ctb = (Contribuable) di.getTiers();
 		controllerUtils.checkAccesDossierEnEcriture(ctb.getId());
 
 		model.addAttribute("command", new ImprimerDuplicataDeclarationImpotView(di, modeleDocumentDAO));
-		model.addAttribute("typesDeclarationImpot", tiersMapHelper.getTypesDeclarationImpotPP());       // seules les DI PP en ont besoin, les autres sont en duplicata "direct"
+		model.addAttribute("typesDeclarationImpot", tiersMapHelper.getTypesDeclarationImpot());
 		return "di/duplicata";
 	}
 
 	/**
-	 * Imprime un duplicata de DI (avec annexes et potentiellement nouveau type de document).
+	 * Imprime un duplicata de DI.
 	 */
-	@RequestMapping(value = "/di/duplicata-pp.do", method = RequestMethod.POST)
-	public String duplicataDeclarationPersonnesPhysiques(@Valid @ModelAttribute("command") final ImprimerDuplicataDeclarationImpotView view,
-	                                                     BindingResult result, HttpServletResponse response) throws Exception {
+	@RequestMapping(value = "/di/duplicata.do", method = RequestMethod.POST)
+	public String duplicata(@Valid @ModelAttribute("command") final ImprimerDuplicataDeclarationImpotView view,
+	                        BindingResult result, HttpServletResponse response) throws Exception {
 
-		if (!SecurityHelper.isAnyGranted(securityProvider, Role.DI_DUPLIC_PP)) {
-			throw new AccessDeniedException("vous ne possédez pas le droit IfoSec pour imprimer des duplicata de déclarations d'impôt des personnes physiques.");
+		if (!SecurityHelper.isGranted(securityProvider, Role.DI_DUPLIC_PP)) {
+			throw new AccessDeniedException("vous ne possédez pas le droit IfoSec pour imprimer des duplicats de déclarations d'impôt sur les personnes physiques.");
 		}
+
+		final Long id = view.getIdDI();
 
 		if (result.hasErrors()) {
 			return "di/duplicata";
 		}
 
 		// Vérifie les paramètres
-		final Long id = view.getIdDI();
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		final String redirect = template.execute(new TxCallback<String>() {
 			@Override
 			public String execute(TransactionStatus status) throws Exception {
 				final DeclarationImpotOrdinaire di = diDAO.get(id);
-				if (di == null || !(di instanceof DeclarationImpotOrdinairePP)) {
+				if (di == null) {
 					throw new ObjectNotFoundException(messageSource.getMessage("error.di.inexistante", null, WebContextUtils.getDefaultLocale()));
 				}
 
-				final ContribuableImpositionPersonnesPhysiques ctb = (ContribuableImpositionPersonnesPhysiques) di.getTiers();
+				final Contribuable ctb = (Contribuable) di.getTiers();
 				controllerUtils.checkAccesDossierEnEcriture(ctb.getId());
 
 				// Vérification de la période d'imposition du contribuable
@@ -1006,8 +752,9 @@ public class DeclarationImpotController {
 			return redirect;
 		}
 
+
 		//Si la valeur de toSave est nulle c'est que nous sommes sur le même type de document, on a pas besoin de le sauvegarder
-		final boolean saveTypeDoc = (view.getToSave() == null ? false : view.getToSave());
+		final boolean saveTypeDoc = (view.getToSave()==null?false:view.getToSave());
 		// On imprime le duplicata
 
 		final EditiqueResultat resultat = manager.envoieImpressionLocalDuplicataDI(view.getIdDI(), view.getSelectedTypeDocument(), view.getSelectedAnnexes(), saveTypeDoc);
@@ -1025,7 +772,7 @@ public class DeclarationImpotController {
 	public String ajouterDelai(@RequestParam("id") long id,
 	                        Model model) throws AccessDeniedException {
 
-		if (!SecurityHelper.isAnyGranted(securityProvider, Role.DI_DELAI_PP, Role.DI_DELAI_PM)) {
+		if (!SecurityHelper.isGranted(securityProvider, Role.DI_DELAI_PP)) {
 			throw new AccessDeniedException("vous n'avez pas le droit d'ajouter un delai à une DI");
 		}
 
@@ -1033,9 +780,8 @@ public class DeclarationImpotController {
 		if (di == null) {
 			throw new ObjectNotFoundException(messageSource.getMessage("error.di.inexistante", null, WebContextUtils.getDefaultLocale()));
 		}
-		checkAccessRights(di, false, false, true, false, false);
 
-		final Contribuable ctb = di.getTiers();
+		final Contribuable ctb = (Contribuable) di.getTiers();
 		controllerUtils.checkAccesDossierEnEcriture(ctb.getId());
 
 		final RegDate delaiAccordeAu = delaisService.getDateFinDelaiRetourDeclarationImpotEmiseManuellement(RegDate.get());
@@ -1044,13 +790,13 @@ public class DeclarationImpotController {
 	}
 
 	/**
-	 * Ajoute un délai sur une DI
+	 * Imprime un duplicata de DI.
 	 */
 	@RequestMapping(value = "/di/delai/ajouter.do", method = RequestMethod.POST)
 	public String ajouterDelai(@Valid @ModelAttribute("command") final AjouterDelaiDeclarationView view,
 	                        BindingResult result, HttpServletResponse response) throws Exception {
 
-		if (!SecurityHelper.isAnyGranted(securityProvider, Role.DI_DELAI_PP, Role.DI_DELAI_PM)) {
+		if (!SecurityHelper.isGranted(securityProvider, Role.DI_DELAI_PP)) {
 			throw new AccessDeniedException("vous n'avez pas le droit d'ajouter un delai à une DI");
 		}
 
@@ -1070,9 +816,8 @@ public class DeclarationImpotController {
 				if (di == null) {
 					throw new ObjectNotFoundException(messageSource.getMessage("error.di.inexistante", null, WebContextUtils.getDefaultLocale()));
 				}
-				checkAccessRights(di, false, false, true, false, false);
 
-				final Contribuable ctb = di.getTiers();
+				final Contribuable ctb = (Contribuable) di.getTiers();
 				controllerUtils.checkAccesDossierEnEcriture(ctb.getId());
 
 				return null;

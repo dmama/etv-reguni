@@ -1,8 +1,5 @@
 package ch.vd.uniregctb.webservices.party4.data;
 
-import java.util.EnumSet;
-import java.util.Set;
-
 import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
@@ -12,13 +9,11 @@ import ch.vd.uniregctb.declaration.EtatDeclarationEchue;
 import ch.vd.uniregctb.declaration.EtatDeclarationEmise;
 import ch.vd.uniregctb.declaration.EtatDeclarationRetournee;
 import ch.vd.uniregctb.declaration.EtatDeclarationSommee;
-import ch.vd.uniregctb.type.TypeEtatDeclaration;
 import ch.vd.uniregctb.webservices.party4.EnumTest;
 import ch.vd.uniregctb.webservices.party4.impl.EnumHelper;
 import ch.vd.uniregctb.xml.party.v2.TaxDeclarationBuilder;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 
@@ -27,17 +22,7 @@ public class TaxDeclarationStatusTypeTest extends EnumTest {
 
 	@Test
 	public void testTypeCoherence() {
-
-		// deux types ne sont pas envoyés par cette version du WS : RAPPELEE et SUSPENDUE
-		final Set<TypeEtatDeclaration> ignored = EnumSet.of(TypeEtatDeclaration.RAPPELEE, TypeEtatDeclaration.SUSPENDUE);
-		assertEquals(TaxDeclarationStatusType.values().length + ignored.size(), TypeEtatDeclaration.values().length);
-
-		// vérification que toutes les valeurs officiellement renvoyées sont mappées sur quelque chose
-		for (TypeEtatDeclaration type : TypeEtatDeclaration.values()) {
-			if (!ignored.contains(type)) {
-				assertNotNull(type.name(), EnumHelper.coreToWeb(type));
-			}
-		}
+		assertEnumLengthEquals(TaxDeclarationStatusType.class, ch.vd.uniregctb.type.TypeEtatDeclaration.class);
 	}
 
 	@Test

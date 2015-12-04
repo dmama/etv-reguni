@@ -1305,7 +1305,7 @@ var Histo = {
 
 			if (showHisto || !isHisto) {
 				// on adapte le style des lignes odd/even
-				line.className = (++visibleCount % 2 == 0 ? 'even' : 'odd');
+				line.className = (visibleCount++ % 2 == 0 ? 'even' : 'odd');
 			}
 		}
 		if (!showHisto && !foundSomething && rows.length > 1) { // si toutes les valeurs sont historiques, on affiche au minimum la plus récente
@@ -2529,7 +2529,6 @@ var Decl = {
 				/** @namespace d.delaiAccordeAu */
 				/** @namespace d.dateDemande */
 				/** @namespace d.confirmationEcrite */
-				/** @namespace d.dateTraitement */
 				html += '<tr class="' + (i % 2 == 0 ? 'even' : 'odd') + (d.annule ? ' strike' : '') + '">';
 				html += '<td>' + RegDate.format(d.dateDemande) + '</td><td>' + RegDate.format(d.delaiAccordeAu) + '</td>';
 				html += '<td>';
@@ -2542,9 +2541,7 @@ var Decl = {
 				else {
 					html += '<input type="checkbox" disabled="disabled">';
 				}
-				html += '</td>';
-				html += '<td>' + RegDate.format(d.dateTraitement) + '</td>';
-				html += '<td>' + Link.consulterLog('DelaiDeclaration', d.id) + '</td></tr>';
+				html += '</td><td>' + Link.consulterLog('DelaiDeclaration', d.id) + '</td></tr>';
 			}
 			html += '</tbody></table></fieldset>\n';
 		}

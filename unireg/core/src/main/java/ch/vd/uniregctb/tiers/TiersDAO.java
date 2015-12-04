@@ -50,19 +50,14 @@ public interface TiersDAO extends GenericDAO<Tiers, Long> {
 	/**
 	 * Liste des collections associées à un tiers.
 	 */
-	enum Parts {
+	public enum Parts {
 		FORS_FISCAUX,
 		RAPPORTS_ENTRE_TIERS,
 		ADRESSES,
 		SITUATIONS_FAMILLE,
 		DECLARATIONS,
 		PERIODICITES,
-		IMMEUBLES,
-		ALLEGEMENTS_FISCAUX,
-		ETATS_FISCAUX,
-		DONNEES_RC,
-		CAPITAUX,
-		REGIMES_FISCAUX;
+		IMMEUBLES;
 
 		public static Parts fromValue(String v) {
 			return valueOf(v);
@@ -190,10 +185,6 @@ public interface TiersDAO extends GenericDAO<Tiers, Long> {
 
 	PersonnePhysique getPPByNumeroIndividu(long numeroIndividu, boolean doNotAutoFlush);
 
-	Entreprise getEntrepriseByNumeroOrganisation(long numeroOrganisation);
-
-	Etablissement getEtablissementByNumeroSite(long numeroSite);
-
 	/**
 	 * Renvoie le numéro de la personne physique dont le numéro d'individu est passé en paramètre
 	 *
@@ -297,13 +288,14 @@ public interface TiersDAO extends GenericDAO<Tiers, Long> {
 	 */
 	Immeuble addAndSave(Contribuable tiers, Immeuble immeuble);
 
+
 	/**
 	 * Ajoute une nouvelle decision Aci sur un tiers
 	 * @param tiers
 	 * @param decisionAci
 	 * @return la nouvelle décision avec un numéro
 	 */
-	DecisionAci addAndSave(Contribuable tiers, DecisionAci decisionAci);
+	DecisionAci addAndSave(Contribuable tiers,DecisionAci decisionAci);
 
 	/**
 	 * Ajoute une nouvelle déclaration à un tiers
@@ -330,7 +322,7 @@ public interface TiersDAO extends GenericDAO<Tiers, Long> {
 	 * @param situation    la nouvelle situation de famille
 	 * @return une nouvelle instance de la situation de famille avec son id renseigné.
 	 */
-	SituationFamille addAndSave(ContribuableImpositionPersonnesPhysiques contribuable, SituationFamille situation);
+	SituationFamille addAndSave(Contribuable contribuable, SituationFamille situation);
 
 	/**
 	 * Ajoute une nouvelle adresse à un tiers.
@@ -357,54 +349,6 @@ public interface TiersDAO extends GenericDAO<Tiers, Long> {
 	 * @return une nouvelle instance de l'identifiant avec son ID renseigné
 	 */
 	IdentificationEntreprise addAndSave(Contribuable ctb, IdentificationEntreprise ident);
-
-	/**
-	 * Ajoute un nouveau domicile à l'établissement fourni
-	 * @param etb l'établissement
-	 * @param domicile le domicile à ajouter
-	 * @return une nouvelle instance du domicile avec son ID renseigné
-	 */
-	DomicileEtablissement addAndSave(Etablissement etb, DomicileEtablissement domicile);
-
-	/**
-	 * Ajoute un nouvel allègement fiscal à l'entreprise fournie
-	 * @param entreprise l'entreprise en question
-	 * @param allegement l'allègement fiscal à ajouter
-	 * @return une nouvelle instance de l'allègement fiscal avec son ID renseigné
-	 */
-	AllegementFiscal addAndSave(Entreprise entreprise, AllegementFiscal allegement);
-
-	/**
-	 * Ajoute une nouvelle donnée de bouclement à l'entreprise fournie
-	 * @param entreprise l'entreprise en question
-	 * @param bouclement la donnée de bouclement à ajouter
-	 * @return une nouvelle instance de bouclement avec son ID renseigné
-	 */
-	Bouclement addAndSave(Entreprise entreprise, Bouclement bouclement);
-
-	/**
-	 * Ajoute un nouveau régime fiscal à l'entreprise fournie
-	 * @param entreprise l'entreprise en question
-	 * @param regime le régime fiscal à ajouter
-	 * @return une nouvelle instance de régime fiscal avec son ID renseigné
-	 */
-	RegimeFiscal addAndSave(Entreprise entreprise, RegimeFiscal regime);
-
-	/**
-	 * Ajoute un nouvau flag à l'entrprise fournie
-	 * @param entreprise l'entreprise en question
-	 * @param etat l'état à ajouter
-	 * @return une nouvelle instance de flag avec son ID renseigné
-	 */
-	EtatEntreprise addAndSave(Entreprise entreprise, EtatEntreprise etat);
-
-	/**
-	 * Ajoute un nouvau flag à l'entrprise fournie
-	 * @param entreprise l'entreprise en question
-	 * @param flag le flag à ajouter
-	 * @return une nouvelle instance de flag avec son ID renseigné
-	 */
-	FlagEntreprise addAndSave(Entreprise entreprise, FlagEntreprise flag);
 
 	/**
 	 * Retourne les numéros des contribuables modifiés entre un intervalle de temps passé en paramètre.

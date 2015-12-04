@@ -1,7 +1,0 @@
-<catalog xmlns="urn:oasis:names:tc:entity:xmlns:xml:catalog" prefer="public">
-
-	<system systemId="http://www.vd.ch/xmlns/editique/pm/UniregPM_FichierImpression.xsd" uri="editique/UniregPM_FichierImpression.xsd" />
-
-	<delegateSystem systemIdStartString="http://ressources.etat-de-vaud.ch/fiscalite/registre/" catalog="../../../../common/src/main/resources/catalog.xml" />
-
-</catalog>

@@ -16,7 +16,6 @@ import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.document.DatabaseDump;
 import ch.vd.uniregctb.document.DocumentService;
-import ch.vd.uniregctb.scheduler.JobCategory;
 import ch.vd.uniregctb.scheduler.JobDefinition;
 import ch.vd.uniregctb.scheduler.JobParam;
 import ch.vd.uniregctb.scheduler.JobParamBoolean;
@@ -26,6 +25,8 @@ import ch.vd.uniregctb.scheduler.JobParamString;
 public class DumpTiersListJob extends JobDefinition {
 
 	public static final String NAME = "DumpTiersListJob";
+	
+	private static final String CATEGORIE = "Database";
 	
 	public static final String PARAM_TIERS_LIST  = "PARAM_TIERS_LIST";
 	public static final String FILE_TIERS_LIST  = "FILE_TIERS_LIST";
@@ -41,7 +42,7 @@ public class DumpTiersListJob extends JobDefinition {
 	private DocumentService docService;
 	
 	public DumpTiersListJob(int sortOrder, String description) {
-		super(NAME, JobCategory.DB, sortOrder, description);
+		super(NAME, CATEGORIE, sortOrder, description);
 
 		{
 			final JobParam param = new JobParam();

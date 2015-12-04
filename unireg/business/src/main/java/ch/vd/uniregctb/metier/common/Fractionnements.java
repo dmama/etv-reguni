@@ -18,7 +18,7 @@ import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 /**
  * Les fractionnements déterminés pour un contribuable donné.
  */
-public abstract class Fractionnements<FFP extends ForFiscalPrincipal> implements Iterable<Fraction> {
+public abstract class Fractionnements implements Iterable<Fraction> {
 
 	private final Map<RegDate, Fraction> map = new HashMap<>();
 
@@ -27,15 +27,15 @@ public abstract class Fractionnements<FFP extends ForFiscalPrincipal> implements
 	 *
 	 * @param principaux une liste de fors fiscaux principaux
 	 */
-	protected Fractionnements(List<FFP> principaux) {
+	protected Fractionnements(List<ForFiscalPrincipal> principaux) {
 
 		// Détermine les assujettissements pour le rattachement de type domicile
-		final MovingWindow<FFP> iter = new MovingWindow<>(principaux);
+		final MovingWindow<ForFiscalPrincipal> iter = new MovingWindow<>(principaux);
 		while (iter.hasNext()) {
-			final MovingWindow.Snapshot<FFP> snapshot = iter.next();
+			final MovingWindow.Snapshot<ForFiscalPrincipal> snapshot = iter.next();
 
 			// on détermine les fors principaux qui précèdent et suivent immédiatement
-			final ForFiscalPrincipalContext<FFP> forPrincipal = new ForFiscalPrincipalContext<>(snapshot);
+			final ForFiscalPrincipalContext forPrincipal = new ForFiscalPrincipalContext(snapshot);
 
 			// on détecte une éventuelle date de fractionnement à l'ouverture
 			final Fraction fractionOuverture = isFractionOuverture(forPrincipal);
@@ -51,8 +51,8 @@ public abstract class Fractionnements<FFP extends ForFiscalPrincipal> implements
 		}
 	}
 
-	protected abstract Fraction isFractionOuverture(ForFiscalPrincipalContext<FFP> forPrincipal);
-	protected abstract Fraction isFractionFermeture(ForFiscalPrincipalContext<FFP> forPrincipal);
+	protected abstract Fraction isFractionOuverture(ForFiscalPrincipalContext forPrincipal);
+	protected abstract Fraction isFractionFermeture(ForFiscalPrincipalContext forPrincipal);
 
 	private void addFractionOuverture(Fraction fraction) {
 

@@ -29,7 +29,7 @@ public abstract class IndividuComparisonHelper {
 	 * Comparateur de données qui peuvent être nulles
 	 * @param <T> le type de la donnée
 	 */
-	public abstract static class NullableComparator<T> implements Comparator<T> {
+	public static abstract class NullableComparator<T> implements Comparator<T> {
 
 		private final boolean nullAtEnd;
 
@@ -86,7 +86,7 @@ public abstract class IndividuComparisonHelper {
 	 * Interface de vérification d'égalité
 	 * @param <T> type de la donnée à vérifier
 	 */
-	public interface Equalator<T> {
+	public static interface Equalator<T> {
 		boolean areEqual(T o1, T o2, @Nullable FieldMonitor monitor, String fieldName);
 	}
 
@@ -118,7 +118,7 @@ public abstract class IndividuComparisonHelper {
 	 * Vérificateur d'égalité de données qui peuvent être nulles
 	 * @param <T> type de la donnée à vérifier
 	 */
-	public abstract static class NullableEqualator<T> implements Equalator<T> {
+	public static abstract class NullableEqualator<T> implements Equalator<T> {
 
 		@Override
 		public final boolean areEqual(T o1, T o2, @Nullable FieldMonitor monitor, String fieldName) {

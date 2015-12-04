@@ -11,7 +11,6 @@ import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
 import ch.vd.uniregctb.tiers.IdentificationEntreprise;
 import ch.vd.uniregctb.tiers.TiersService;
 
@@ -30,9 +29,7 @@ public abstract class ContribuableIndexable<T extends Contribuable> extends Tier
 		final ForFiscalPrincipal ffp = tiers.getDernierForFiscalPrincipal();
 		if (ffp != null) {
 			final boolean isActif = ffp.isValidAt(null);
-			if (ffp instanceof ForFiscalPrincipalPP) {
-				data.setModeImposition(IndexerFormatHelper.enumToString(((ForFiscalPrincipalPP) ffp).getModeImposition()));
-			}
+			data.setModeImposition(IndexerFormatHelper.enumToString(ffp.getModeImposition()));
 			data.setTiersActif(IndexerFormatHelper.booleanToString(isActif));
 		}
 		else {

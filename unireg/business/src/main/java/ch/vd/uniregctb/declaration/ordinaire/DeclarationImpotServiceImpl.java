@@ -20,54 +20,15 @@ import ch.vd.uniregctb.common.TicketService;
 import ch.vd.uniregctb.declaration.DeclarationException;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaireDAO;
-import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePM;
-import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP;
 import ch.vd.uniregctb.declaration.DelaiDeclaration;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
 import ch.vd.uniregctb.declaration.EtatDeclarationEchue;
 import ch.vd.uniregctb.declaration.EtatDeclarationRetournee;
+import ch.vd.uniregctb.declaration.InformationsDocumentAdapter;
+import ch.vd.uniregctb.declaration.ListeNoteResults;
 import ch.vd.uniregctb.declaration.ModeleDocumentDAO;
 import ch.vd.uniregctb.declaration.ModeleFeuilleDocument;
 import ch.vd.uniregctb.declaration.PeriodeFiscaleDAO;
-import ch.vd.uniregctb.declaration.ordinaire.common.DemandeDelaiCollectiveProcessor;
-import ch.vd.uniregctb.declaration.ordinaire.common.DemandeDelaiCollectiveResults;
-import ch.vd.uniregctb.declaration.ordinaire.pm.DeterminationDIsPMAEmettreProcessor;
-import ch.vd.uniregctb.declaration.ordinaire.pm.DeterminationDIsPMResults;
-import ch.vd.uniregctb.declaration.ordinaire.pm.EchoirDIsPMProcessor;
-import ch.vd.uniregctb.declaration.ordinaire.pm.EchoirDIsPMResults;
-import ch.vd.uniregctb.declaration.ordinaire.pm.EnvoiDIsPMResults;
-import ch.vd.uniregctb.declaration.ordinaire.pm.EnvoiDeclarationsPMProcessor;
-import ch.vd.uniregctb.declaration.ordinaire.pm.EnvoiSommationsDIsPMProcessor;
-import ch.vd.uniregctb.declaration.ordinaire.pm.EnvoiSommationsDIsPMResults;
-import ch.vd.uniregctb.declaration.ordinaire.pm.TypeDeclarationImpotPM;
-import ch.vd.uniregctb.declaration.ordinaire.pp.ContribuableAvecCodeSegment;
-import ch.vd.uniregctb.declaration.ordinaire.pp.ContribuableAvecImmeuble;
-import ch.vd.uniregctb.declaration.ordinaire.pp.DeterminationDIsPPAEmettreProcessor;
-import ch.vd.uniregctb.declaration.ordinaire.pp.DeterminationDIsPPResults;
-import ch.vd.uniregctb.declaration.ordinaire.pp.EchoirDIsPPProcessor;
-import ch.vd.uniregctb.declaration.ordinaire.pp.EchoirDIsPPResults;
-import ch.vd.uniregctb.declaration.ordinaire.pp.EnvoiAnnexeImmeubleEnMasseProcessor;
-import ch.vd.uniregctb.declaration.ordinaire.pp.EnvoiAnnexeImmeubleResults;
-import ch.vd.uniregctb.declaration.ordinaire.pp.EnvoiDIsPPEnMasseProcessor;
-import ch.vd.uniregctb.declaration.ordinaire.pp.EnvoiDIsPPResults;
-import ch.vd.uniregctb.declaration.ordinaire.pp.EnvoiSommationsDIsPPProcessor;
-import ch.vd.uniregctb.declaration.ordinaire.pp.EnvoiSommationsDIsPPResults;
-import ch.vd.uniregctb.declaration.ordinaire.pp.ImportCodesSegmentProcessor;
-import ch.vd.uniregctb.declaration.ordinaire.pp.ImportCodesSegmentResults;
-import ch.vd.uniregctb.declaration.ordinaire.pp.ImpressionConfirmationDelaiHelper;
-import ch.vd.uniregctb.declaration.ordinaire.pp.ImpressionConfirmationDelaiHelperParams;
-import ch.vd.uniregctb.declaration.ordinaire.pp.ImpressionDeclarationImpotPersonnesPhysiquesHelper;
-import ch.vd.uniregctb.declaration.ordinaire.pp.ImpressionSommationDeclarationImpotPersonnesPhysiquesHelper;
-import ch.vd.uniregctb.declaration.ordinaire.pp.InformationsDocumentAdapter;
-import ch.vd.uniregctb.declaration.ordinaire.pp.ListeDIsPPNonEmises;
-import ch.vd.uniregctb.declaration.ordinaire.pp.ListeNoteProcessor;
-import ch.vd.uniregctb.declaration.ordinaire.pp.ListeNoteResults;
-import ch.vd.uniregctb.declaration.ordinaire.pp.ModeleFeuilleDocumentEditique;
-import ch.vd.uniregctb.declaration.ordinaire.pp.ProduireListeDIsNonEmisesProcessor;
-import ch.vd.uniregctb.declaration.ordinaire.pp.ProduireStatsCtbsProcessor;
-import ch.vd.uniregctb.declaration.ordinaire.pp.ProduireStatsDIsProcessor;
-import ch.vd.uniregctb.declaration.ordinaire.pp.StatistiquesCtbs;
-import ch.vd.uniregctb.declaration.ordinaire.pp.StatistiquesDIs;
 import ch.vd.uniregctb.editique.EditiqueCompositionService;
 import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.EditiqueResultat;
@@ -84,7 +45,6 @@ import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionService;
 import ch.vd.uniregctb.parametrage.DelaisService;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.tiers.Contribuable;
-import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
 import ch.vd.uniregctb.tiers.Tache;
 import ch.vd.uniregctb.tiers.TacheDAO;
 import ch.vd.uniregctb.tiers.TiersService;
@@ -109,8 +69,8 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 	private DelaisService delaisService;
 	private ServiceInfrastructureService infraService;
 	private AdresseService adresseService;
-	private ImpressionDeclarationImpotPersonnesPhysiquesHelper impressionDIPPHelper;
-	private ImpressionSommationDeclarationImpotPersonnesPhysiquesHelper impressionSommationDIHelper;
+	private ImpressionDeclarationImpotOrdinaireHelper impressionDIHelper;
+	private ImpressionSommationDIHelper impressionSommationDIHelper;
 	private ServiceCivilCacheWarmer serviceCivilCacheWarmer;
 	private TiersService tiersService;
 	private ParametreAppService parametres;
@@ -130,7 +90,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 
 	public DeclarationImpotServiceImpl(EditiqueCompositionService editiqueCompositionService, HibernateTemplate hibernateTemplate, PeriodeFiscaleDAO periodeDAO,
 	                                   TacheDAO tacheDAO, ModeleDocumentDAO modeleDAO, DelaisService delaisService, ServiceInfrastructureService infraService,
-	                                   TiersService tiersService, ImpressionDeclarationImpotPersonnesPhysiquesHelper impressionDIPPHelper, PlatformTransactionManager transactionManager,
+	                                   TiersService tiersService, ImpressionDeclarationImpotOrdinaireHelper impressionDIHelper, PlatformTransactionManager transactionManager,
 	                                   ParametreAppService parametres, ServiceCivilCacheWarmer serviceCivilCacheWarmer, ValidationService validationService,
 	                                   EvenementFiscalService evenementFiscalService, EvenementDeclarationSender evenementDeclarationSender, PeriodeImpositionService periodeImpositionService,
 	                                   AssujettissementService assujettissementService, TicketService ticketService) {
@@ -142,7 +102,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 		this.delaisService = delaisService;
 		this.infraService = infraService;
 		this.tiersService = tiersService;
-		this.impressionDIPPHelper = impressionDIPPHelper;
+		this.impressionDIHelper = impressionDIHelper;
 		this.transactionManager = transactionManager;
 		this.parametres = parametres;
 		this.serviceCivilCacheWarmer = serviceCivilCacheWarmer;
@@ -191,19 +151,19 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 		this.infraService = infraService;
 	}
 
-	public ImpressionDeclarationImpotPersonnesPhysiquesHelper getImpressionDIPPHelper() {
-		return impressionDIPPHelper;
+	public ImpressionDeclarationImpotOrdinaireHelper getImpressionDIHelper() {
+		return impressionDIHelper;
 	}
 
-	public void setImpressionDIPPHelper(ImpressionDeclarationImpotPersonnesPhysiquesHelper impressionDIPPHelper) {
-		this.impressionDIPPHelper = impressionDIPPHelper;
+	public void setImpressionDIHelper(ImpressionDeclarationImpotOrdinaireHelper impressionDIHelper) {
+		this.impressionDIHelper = impressionDIHelper;
 	}
 
 	public void setTiersService(TiersService tiersService) {
 		this.tiersService = tiersService;
 	}
 
-	public void setImpressionSommationDIHelper(ImpressionSommationDeclarationImpotPersonnesPhysiquesHelper impressionSommationDIHelper) {
+	public void setImpressionSommationDIHelper(ImpressionSommationDIHelper impressionSommationDIHelper) {
 		this.impressionSommationDIHelper = impressionSommationDIHelper;
 	}
 
@@ -258,27 +218,26 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 		this.tailleLot = tailleLot;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
-	public DeterminationDIsPPResults determineDIsPPAEmettre(int anneePeriode, RegDate dateTraitement, int nbThreads, @Nullable StatusManager status) throws DeclarationException {
-		final DeterminationDIsPPAEmettreProcessor processer = new DeterminationDIsPPAEmettreProcessor(hibernateTemplate, periodeDAO, tacheDAO,
-		                                                                                              parametres, tiersService, transactionManager, validationService,
-		                                                                                              periodeImpositionService, adresseService);
+	public DeterminationDIsResults determineDIsAEmettre(int anneePeriode, RegDate dateTraitement, int nbThreads, @Nullable StatusManager status)
+			throws DeclarationException {
+
+		final DeterminationDIsAEmettreProcessor processer = new DeterminationDIsAEmettreProcessor(hibernateTemplate, periodeDAO, tacheDAO,
+				parametres, tiersService, transactionManager, validationService, periodeImpositionService, adresseService);
 		return processer.run(anneePeriode, dateTraitement, nbThreads, status);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
-	public DeterminationDIsPMResults determineDIsPMAEmettre(int anneePeriode, RegDate dateTraitement, int nbThreads, StatusManager status) throws DeclarationException {
-		final DeterminationDIsPMAEmettreProcessor processer = new DeterminationDIsPMAEmettreProcessor(hibernateTemplate, periodeDAO, tacheDAO,
-		                                                                                              parametres, tiersService, transactionManager, validationService,
-		                                                                                              periodeImpositionService, adresseService);
-		return processer.run(anneePeriode, dateTraitement, nbThreads, status);
-	}
+	public EnvoiDIsResults envoyerDIsEnMasse(int anneePeriode, CategorieEnvoiDI categorie, @Nullable Long noCtbMin, @Nullable Long noCtbMax, int nbMax, RegDate dateTraitement, boolean exclureDecedes,
+	                                         int nbThreads, @Nullable StatusManager status) throws DeclarationException {
 
-	@Override
-	public EnvoiDIsPPResults envoyerDIsPPEnMasse(int anneePeriode, CategorieEnvoiDI categorie, @Nullable Long noCtbMin, @Nullable Long noCtbMax, int nbMax, RegDate dateTraitement, boolean exclureDecedes,
-	                                             int nbThreads, @Nullable StatusManager status) throws DeclarationException {
-
-		final EnvoiDIsPPEnMasseProcessor processor = new EnvoiDIsPPEnMasseProcessor(tiersService, hibernateTemplate, modeleDAO, periodeDAO,
+		final EnvoiDIsEnMasseProcessor processor = new EnvoiDIsEnMasseProcessor(tiersService, hibernateTemplate, modeleDAO, periodeDAO,
 		                                                                        delaisService, this, tailleLot, transactionManager, parametres, serviceCivilCacheWarmer, adresseService, ticketService);
 		return processor.run(anneePeriode, categorie, noCtbMin, noCtbMax, nbMax, dateTraitement, exclureDecedes, nbThreads, status);
 	}
@@ -314,7 +273,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public ListeDIsPPNonEmises produireListeDIsNonEmises(Integer anneePeriode, RegDate dateTraitement, StatusManager status) throws DeclarationException {
+	public ListeDIsNonEmises produireListeDIsNonEmises(Integer anneePeriode, RegDate dateTraitement, StatusManager status) throws DeclarationException {
 		final ProduireListeDIsNonEmisesProcessor processor = new ProduireListeDIsNonEmisesProcessor(hibernateTemplate, periodeDAO, modeleDAO,
 		                                                                                            tacheDAO, tiersService, delaisService, this, transactionManager, parametres,
 		                                                                                            serviceCivilCacheWarmer, validationService, periodeImpositionService,
@@ -327,14 +286,8 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public EchoirDIsPPResults echoirDIsPPHorsDelai(RegDate dateTraitement, StatusManager status) throws DeclarationException {
-		final EchoirDIsPPProcessor processor = new EchoirDIsPPProcessor(hibernateTemplate, delaisService, this, transactionManager, tiersService, adresseService);
-		return processor.run(dateTraitement, status);
-	}
-
-	@Override
-	public EchoirDIsPMResults echoirDIsPMHorsDelai(RegDate dateTraitement, StatusManager status) throws DeclarationException {
-		final EchoirDIsPMProcessor processor = new EchoirDIsPMProcessor(hibernateTemplate, delaisService, this, transactionManager, tiersService, adresseService);
+	public EchoirDIsResults echoirDIsHorsDelai(RegDate dateTraitement, StatusManager status) throws DeclarationException {
+		final EchoirDIsProcessor processor = new EchoirDIsProcessor(hibernateTemplate, delaisService, this, transactionManager, tiersService, adresseService);
 		return processor.run(dateTraitement, status);
 	}
 
@@ -342,82 +295,55 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public EditiqueResultat envoiDIOnline(DeclarationImpotOrdinairePP declaration, RegDate dateEvenement) throws DeclarationException {
+	public EditiqueResultat envoiDIOnline(DeclarationImpotOrdinaire declaration, RegDate dateEvenement) throws DeclarationException {
 
-		final ContribuableImpositionPersonnesPhysiques ctb = declaration.getTiers();
+		final Contribuable ctb = (Contribuable) declaration.getTiers();
 
+		EditiqueResultat resultat;
 		try {
-			final EditiqueResultat resultat = editiqueCompositionService.imprimeDIOnline(declaration);
-			evenementFiscalService.publierEvenementFiscalEmissionDeclarationImpot(declaration, dateEvenement);
+			resultat = editiqueCompositionService.imprimeDIOnline(declaration);
+			evenementFiscalService.publierEvenementFiscalEnvoiDI(ctb, declaration, dateEvenement);
 
 			// [SIFISC-3103] Pour les périodes fiscales avant 2011, on n'envoie aucun événement de création de DI (pour le moment, il ne s'agit que d'ADDI)
 			final int pf = declaration.getPeriode().getAnnee();
-			if (pf >= DeclarationImpotOrdinairePP.PREMIERE_ANNEE_RETOUR_ELECTRONIQUE) {
+			if (pf >= DeclarationImpotOrdinaire.PREMIERE_ANNEE_RETOUR_ELECTRONIQUE) {
 				final String codeSegmentString = Integer.toString(declaration.getCodeSegment() != null ? declaration.getCodeSegment() : VALEUR_DEFAUT_CODE_SEGMENT);
 				evenementDeclarationSender.sendEmissionEvent(ctb.getNumero(), pf, dateEvenement, declaration.getCodeControle(), codeSegmentString);
 			}
-
-			// [UNIREG-2705] il est maintenant possible de créer des déclarations déjà retournées (et pas seulement pour les indigents)
-			final EtatDeclaration etatRetour = declaration.getDernierEtatOfType(TypeEtatDeclaration.RETOURNEE);
-			if (etatRetour != null) {
-				evenementFiscalService.publierEvenementFiscalQuittancementDeclarationImpot(declaration, etatRetour.getDateObtention());
-			}
-
-			return resultat;
 		}
 		catch (EditiqueException | EvenementDeclarationException | JMSException e) {
 			throw new DeclarationException(e);
 		}
-	}
 
-	@Override
-	public EditiqueResultat envoiDIOnline(DeclarationImpotOrdinairePM declaration, RegDate dateEvenement) throws DeclarationException {
-		try {
-			final EditiqueResultat resultat = editiqueCompositionService.imprimeDIOnline(declaration);
-			evenementFiscalService.publierEvenementFiscalEmissionDeclarationImpot(declaration, dateEvenement);
-
-			// [UNIREG-2705] il est maintenant possible de créer des déclarations déjà retournées (et pas seulement pour les indigents)
-			final EtatDeclaration etatRetour = declaration.getDernierEtatOfType(TypeEtatDeclaration.RETOURNEE);
-			if (etatRetour != null) {
-				evenementFiscalService.publierEvenementFiscalQuittancementDeclarationImpot(declaration, etatRetour.getDateObtention());
-			}
-
-			return resultat;
+		// [UNIREG-2705] il est maintenant possible de créer des déclarations déjà retournées (et pas seulement pour les indigents) 
+		final EtatDeclaration etatRetour = declaration.getDernierEtatOfType(TypeEtatDeclaration.RETOURNEE);
+		if (etatRetour != null) {
+			evenementFiscalService.publierEvenementFiscalRetourDI(ctb, declaration, etatRetour.getDateObtention());
 		}
-		catch (EditiqueException | JMSException e) {
-			throw new DeclarationException(e);
-		}
+		return resultat;
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public EditiqueResultat envoiDuplicataDIOnline(DeclarationImpotOrdinairePP declaration, TypeDocument typeDocument, List<ModeleFeuilleDocumentEditique> annexes) throws DeclarationException {
+	public EditiqueResultat envoiDuplicataDIOnline(DeclarationImpotOrdinaire declaration, TypeDocument typeDocument, List<ModeleFeuilleDocumentEditique> annexes) throws DeclarationException {
+		final EditiqueResultat resultat;
 		try {
-			return editiqueCompositionService.imprimeDuplicataDIOnline(declaration, typeDocument, annexes);
+			resultat = editiqueCompositionService.imprimeDuplicataDIOnline(declaration, typeDocument, annexes);
 		}
 		catch (EditiqueException | JMSException e) {
 			throw new DeclarationException(e);
 		}
+		return resultat;
 	}
 
 	@Override
-	public EditiqueResultat envoiDuplicataDIOnline(DeclarationImpotOrdinairePM declaration) throws DeclarationException {
+	public void envoiDIForBatch(DeclarationImpotOrdinaire declaration, RegDate dateEvenement) throws DeclarationException {
 		try {
-			return editiqueCompositionService.imprimeDuplicataDIOnline(declaration);
-		}
-		catch (EditiqueException | JMSException e) {
-			throw new DeclarationException(e);
-		}
-	}
-
-	@Override
-	public void envoiDIForBatch(DeclarationImpotOrdinairePP declaration, RegDate dateEvenement) throws DeclarationException {
-		try {
-			final Contribuable tiers = declaration.getTiers();
+			final Contribuable tiers = (Contribuable) declaration.getTiers();
 			editiqueCompositionService.imprimeDIForBatch(declaration);
-			evenementFiscalService.publierEvenementFiscalEmissionDeclarationImpot(declaration, dateEvenement);
+			evenementFiscalService.publierEvenementFiscalEnvoiDI(tiers, declaration, dateEvenement);
 
 			final String codeSegmentString = Integer.toString(declaration.getCodeSegment() != null ? declaration.getCodeSegment() : VALEUR_DEFAUT_CODE_SEGMENT);
 			evenementDeclarationSender.sendEmissionEvent(tiers.getNumero(), declaration.getPeriode().getAnnee(), dateEvenement, declaration.getCodeControle(), codeSegmentString);
@@ -427,37 +353,18 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 		}
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
-	public void envoiDIForBatch(DeclarationImpotOrdinairePM declaration, RegDate dateEvenement) throws DeclarationException {
-		try {
-			editiqueCompositionService.imprimeDIForBatch(declaration);
-			evenementFiscalService.publierEvenementFiscalEmissionDeclarationImpot(declaration, dateEvenement);
-		}
-		catch (EditiqueException e) {
-			throw new DeclarationException(e);
-		}
-	}
-
-	@Override
-	public void envoiSommationDIPPForBatch(DeclarationImpotOrdinairePP declaration, boolean miseSousPliImpossible, RegDate dateEvenement) throws DeclarationException {
+	public void envoiSommationDIForBatch(DeclarationImpotOrdinaire declaration, boolean miseSousPliImpossible, RegDate dateEvenement) throws DeclarationException {
 		try {
 			editiqueCompositionService.imprimeSommationDIForBatch(declaration, miseSousPliImpossible, dateEvenement);
 		}
 		catch (EditiqueException e) {
 			throw new DeclarationException(e);
 		}
-		evenementFiscalService.publierEvenementFiscalSommationDeclarationImpot(declaration, dateEvenement);
-	}
-
-	@Override
-	public void envoiSommationDIPMForBatch(DeclarationImpotOrdinairePM declaration, RegDate dateEvenement) throws DeclarationException {
-		try {
-			editiqueCompositionService.imprimeSommationDIForBatch(declaration, dateEvenement);
-		}
-		catch (EditiqueException e) {
-			throw new DeclarationException(e);
-		}
-		evenementFiscalService.publierEvenementFiscalSommationDeclarationImpot(declaration, dateEvenement);
+		evenementFiscalService.publierEvenementFiscalSommationDI((Contribuable) declaration.getTiers(), declaration, dateEvenement);
 	}
 
 	/**
@@ -465,14 +372,14 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 	 */
 	@Override
 	public void echoirDI(DeclarationImpotOrdinaire declaration, RegDate dateTraitement) {
-		final EtatDeclaration etat = new EtatDeclarationEchue();
+		EtatDeclaration etat = new EtatDeclarationEchue();
 		etat.setDateObtention(dateTraitement);
 		declaration.addEtat(etat);
-		evenementFiscalService.publierEvenementFiscalEcheanceDeclarationImpot(declaration, dateTraitement);
+		evenementFiscalService.publierEvenementFiscalEcheanceDI((Contribuable) declaration.getTiers(), declaration, dateTraitement);
 	}
 
 	@Override
-	public void quittancementDI(Contribuable contribuable, DeclarationImpotOrdinaire di, final RegDate dateEvenement, String source, boolean evtFiscal) {
+	public DeclarationImpotOrdinaire quittancementDI(Contribuable contribuable, DeclarationImpotOrdinaire di, final RegDate dateEvenement, String source, boolean evtFiscal) {
 		// [SIFISC-5208] Dorénavant, on stocke scrupuleusement tous les états de quittancement de type 'retournés', *sans* annuler les états précédents.
 		// [SIFISC-8436] certaines sources ne supportent pas le multi-quittancement
 		if (sourcesMonoQuittancement.contains(source)) {
@@ -486,8 +393,9 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 		di.addEtat(etat);
 
 		if (evtFiscal) {
-			evenementFiscalService.publierEvenementFiscalQuittancementDeclarationImpot(di, dateEvenement);
+			evenementFiscalService.publierEvenementFiscalRetourDI(contribuable, di, dateEvenement);
 		}
+		return di;
 	}
 
 	/**
@@ -500,9 +408,9 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 	 * @return la déclaration nouvellement annulée
 	 */
 	@Override
-	public void annulationDI(Contribuable contribuable, DeclarationImpotOrdinaire di, @Nullable Long tacheId, RegDate dateEvenement) {
+	public DeclarationImpotOrdinaire annulationDI(Contribuable contribuable, DeclarationImpotOrdinaire di, @Nullable Long tacheId, RegDate dateEvenement) {
 		di.setAnnule(true);
-		evenementFiscalService.publierEvenementFiscalAnnulationDeclarationImpot(di);
+		evenementFiscalService.publierEvenementFiscalAnnulationDI(contribuable, di, dateEvenement);
 
 		// traitement de la tâche...
 		if (tacheId != null) {
@@ -515,13 +423,14 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 		try {
 			// [SIFISC-3103] Pour les périodes fiscales avant 2011, on n'envoie aucun événement d'annulation de DI (pour le moment, il ne s'agit que d'ADDI)
 			final int pf = di.getPeriode().getAnnee();
-			if (di instanceof DeclarationImpotOrdinairePP && pf >= DeclarationImpotOrdinairePP.PREMIERE_ANNEE_RETOUR_ELECTRONIQUE) {
+			if (pf >= DeclarationImpotOrdinaire.PREMIERE_ANNEE_RETOUR_ELECTRONIQUE) {
 				evenementDeclarationSender.sendAnnulationEvent(contribuable.getNumero(), pf, dateEvenement);
 			}
 		}
 		catch (EvenementDeclarationException e) {
 			throw new RuntimeException(e);
 		}
+		return di;
 	}
 
 	@Override
@@ -532,17 +441,14 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 		}
 
 		di.setAnnule(false);
-		evenementFiscalService.publierEvenementFiscalEmissionDeclarationImpot(di, dateEvenement);
+		evenementFiscalService.publierEvenementFiscalEnvoiDI(ctb, di, dateEvenement);
 		try {
 			// [SIFISC-3103] Pour les périodes fiscales avant 2011, on n'envoie aucun événement de désannulation de DI (pour le moment, il ne s'agit que d'ADDI)
 			// [SIFISC-8598] Les DI de la PF 2011 qui ont été émises avant l'envoi de masse de début 2012 n'ont pas forcément de code de contrôle, il est donc inutile de les signaler à ADDI
 			final int pf = di.getPeriode().getAnnee();
-			if (di instanceof DeclarationImpotOrdinairePP) {
-				final DeclarationImpotOrdinairePP dipp = (DeclarationImpotOrdinairePP) di;
-				if (pf > DeclarationImpotOrdinairePP.PREMIERE_ANNEE_RETOUR_ELECTRONIQUE || (pf == DeclarationImpotOrdinairePP.PREMIERE_ANNEE_RETOUR_ELECTRONIQUE && dipp.getCodeControle() != null)) {
-					final String codeSegmentString = Integer.toString(dipp.getCodeSegment() != null ? dipp.getCodeSegment() : VALEUR_DEFAUT_CODE_SEGMENT);
-					evenementDeclarationSender.sendEmissionEvent(ctb.getNumero(), pf, dateEvenement, dipp.getCodeControle(), codeSegmentString);
-				}
+			if (pf > DeclarationImpotOrdinaire.PREMIERE_ANNEE_RETOUR_ELECTRONIQUE || (pf == DeclarationImpotOrdinaire.PREMIERE_ANNEE_RETOUR_ELECTRONIQUE && di.getCodeControle() != null)) {
+				final String codeSegmentString = Integer.toString(di.getCodeSegment() != null ? di.getCodeSegment() : VALEUR_DEFAUT_CODE_SEGMENT);
+				evenementDeclarationSender.sendEmissionEvent(ctb.getNumero(), pf, dateEvenement, di.getCodeControle(), codeSegmentString);
 			}
 		}
 		catch (EvenementDeclarationException e) {
@@ -554,9 +460,9 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public EnvoiSommationsDIsPPResults envoyerSommationsPP(RegDate dateTraitement, boolean miseSousPliImpossible, int nombreMax, StatusManager statusManager) {
+	public EnvoiSommationsDIsResults envoyerSommations(RegDate dateTraitement, boolean miseSousPliImpossible, int nombreMax, StatusManager statusManager) {
 		final DeclarationImpotService diService = this;
-		EnvoiSommationsDIsPPProcessor processor = new EnvoiSommationsDIsPPProcessor(hibernateTemplate, diDAO, delaisService, diService, tiersService, transactionManager, assujettissementService,
+		EnvoiSommationsDIsProcessor processor = new EnvoiSommationsDIsProcessor(hibernateTemplate, diDAO, delaisService, diService, tiersService, transactionManager, assujettissementService,
 				periodeImpositionService, adresseService);
 		return processor.run(dateTraitement, miseSousPliImpossible, nombreMax, statusManager);
 	}
@@ -615,10 +521,10 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public DemandeDelaiCollectiveResults traiterDemandeDelaiCollective(List<Long> ids, int pf, RegDate dateDelai,
+	public DemandeDelaiCollectiveResults traiterDemandeDelaiCollective(List<Long> ids, int annee, RegDate dateDelai,
 	                                                                   RegDate dateTraitement, StatusManager s) {
-		final DemandeDelaiCollectiveProcessor processor = new DemandeDelaiCollectiveProcessor(periodeDAO, hibernateTemplate, transactionManager, tiersService, adresseService);
-		return processor.run(ids, pf, dateDelai, dateTraitement, s);
+		DemandeDelaiCollectiveProcessor processor = new DemandeDelaiCollectiveProcessor(periodeDAO, hibernateTemplate, transactionManager, tiersService, adresseService);
+		return processor.run(ids, annee, dateDelai, dateTraitement, s);
 	}
 
 	/**
@@ -641,7 +547,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 	}
 
 
-	private interface EntityAccessor<T extends DeclarationImpotOrdinaire, E extends HibernateEntity> {
+	private static interface EntityAccessor<T extends DeclarationImpotOrdinaire, E extends HibernateEntity> {
 		Collection<E> getEntities(T declaration);
 
 		void addEntity(T declaration, E entity);
@@ -741,27 +647,5 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 	public ImportCodesSegmentResults importerCodesSegment(List<ContribuableAvecCodeSegment> input, StatusManager s) {
 		final ImportCodesSegmentProcessor processor = new ImportCodesSegmentProcessor(hibernateTemplate, transactionManager, tiersService, adresseService);
 		return processor.run(input, s);
-	}
-
-	@Override
-	public EnvoiDIsPMResults envoyerDIsPMEnMasse(int periodeFiscale,
-	                                             TypeDeclarationImpotPM typeDeclaration,
-	                                             RegDate dateLimiteBouclements,
-	                                             @Nullable Integer nbMaxEnvois,
-	                                             RegDate dateTraitement,
-	                                             int nbThreads,
-	                                             StatusManager statusManager) throws DeclarationException {
-		final EnvoiDeclarationsPMProcessor processor = new EnvoiDeclarationsPMProcessor(tiersService, hibernateTemplate, modeleDAO, periodeDAO,
-		                                                                                delaisService, this, assujettissementService, periodeImpositionService,
-		                                                                                tailleLot, transactionManager, parametres, adresseService, ticketService);
-		return processor.run(periodeFiscale, typeDeclaration, dateLimiteBouclements, nbMaxEnvois, dateTraitement, nbThreads, statusManager);
-	}
-
-	@Override
-	public EnvoiSommationsDIsPMResults envoyerSommationsPM(RegDate dateTraitement, Integer nombreMax, StatusManager statusManager) {
-		final EnvoiSommationsDIsPMProcessor processor = new EnvoiSommationsDIsPMProcessor(hibernateTemplate, diDAO, delaisService, this, tiersService, transactionManager,
-		                                                                                  periodeImpositionService, adresseService);
-
-		return processor.run(dateTraitement, nombreMax, statusManager);
 	}
 }

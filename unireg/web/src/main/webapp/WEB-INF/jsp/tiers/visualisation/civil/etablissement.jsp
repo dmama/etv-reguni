@@ -5,12 +5,20 @@
 	<unireg:nextRowClass reset="1"/>
 	<table>
 		<tr class="<unireg:nextRowClass/>" >
-			<td><fmt:message key="label.raison.sociale" />&nbsp;:</td>
-			<td><c:out value="${command.tiers.raisonSociale}"/></td>
+			<td><fmt:message key="label.nom" />&nbsp;:</td>
+			<td></td>
 		</tr>
 		<tr class="<unireg:nextRowClass/>" >
-			<td><fmt:message key="label.nom.enseigne" />&nbsp;:</td>
-			<td><c:out value="${command.tiers.enseigne}"/></td>
+			<td></td>
+			<td></td>
+		</tr>
+		<tr class="<unireg:nextRowClass/>" >
+			<td></td>
+			<td></td>
+		</tr>
+		<tr class="<unireg:nextRowClass/>" >
+			<td><fmt:message key="label.forme.juridique" />&nbsp;:</td>
+			<td></td>
 		</tr>
 	</table>
 </fieldset>

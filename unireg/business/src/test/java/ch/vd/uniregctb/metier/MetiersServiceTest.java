@@ -31,12 +31,10 @@ import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.tiers.CoordonneesFinancieres;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
 import ch.vd.uniregctb.tiers.ForsParType;
 import ch.vd.uniregctb.tiers.MenageCommun;
@@ -137,11 +135,10 @@ public class MetiersServiceTest extends BusinessTest {
 
 				final ForsParType fors = menage.getForsParType(true);
 				assertNotNull(fors);
-				assertEquals(1, fors.principauxPP.size());
-				assertEquals(0, fors.principauxPM.size());
+				assertEquals(1, fors.principaux.size());
 				assertEquals(1, fors.secondaires.size());
 				assertForPrincipal(date(2008, 11, 23), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, TypeAutoriteFiscale.COMMUNE_HC,
-				                   MockCommune.Neuchatel.getNoOFS(), MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, fors.principauxPP.get(0));
+				                   MockCommune.Neuchatel.getNoOFS(), MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, fors.principaux.get(0));
 				assertForSecondaire(date(2008, 11, 23), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION,
 				                    TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Renens.getNoOFS(), MotifRattachement.ACTIVITE_INDEPENDANTE,
 				                    fors.secondaires.get(0));
@@ -207,18 +204,16 @@ public class MetiersServiceTest extends BusinessTest {
 				{
 					final ForsParType fors = fabrice.getForsParType(true);
 					assertNotNull(fors);
-					assertEquals(1, fors.principauxPP.size());
-					assertEquals(0, fors.principauxPM.size());
+					assertEquals(1, fors.principaux.size());
 					assertForPrincipal(date(2008, 11, 23), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, TypeAutoriteFiscale.COMMUNE_HC,
-					                   MockCommune.Neuchatel.getNoOFS(), MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, fors.principauxPP.get(0));
+					                   MockCommune.Neuchatel.getNoOFS(), MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, fors.principaux.get(0));
 				}
 				{
 					final ForsParType fors = georgette.getForsParType(true);
 					assertNotNull(fors);
-					assertEquals(1, fors.principauxPP.size());
-					assertEquals(0, fors.principauxPM.size());
+					assertEquals(1, fors.principaux.size());
 					assertForPrincipal(date(2008, 11, 23), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, TypeAutoriteFiscale.COMMUNE_HC,
-					                   MockCommune.Neuchatel.getNoOFS(), MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, fors.principauxPP.get(0));
+					                   MockCommune.Neuchatel.getNoOFS(), MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, fors.principaux.get(0));
 				}
 
 			}
@@ -283,18 +278,16 @@ public class MetiersServiceTest extends BusinessTest {
 				{
 					final ForsParType fors = fabrice.getForsParType(true);
 					assertNotNull(fors);
-					assertEquals(1, fors.principauxPP.size());
-					assertEquals(0, fors.principauxPM.size());
+					assertEquals(1, fors.principaux.size());
 					assertForPrincipal(date(2008, 11, 23), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, TypeAutoriteFiscale.PAYS_HS,
-					                   MockPays.Allemagne.getNoOFS(), MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, fors.principauxPP.get(0));
+					                   MockPays.Allemagne.getNoOFS(), MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, fors.principaux.get(0));
 				}
 				{
 					final ForsParType fors = georgette.getForsParType(true);
 					assertNotNull(fors);
-					assertEquals(1, fors.principauxPP.size());
-					assertEquals(0, fors.principauxPM.size());
+					assertEquals(1, fors.principaux.size());
 					assertForPrincipal(date(2008, 11, 23), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, TypeAutoriteFiscale.PAYS_HS,
-					                   MockPays.Allemagne.getNoOFS(), MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, fors.principauxPP.get(0));
+					                   MockPays.Allemagne.getNoOFS(), MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, fors.principaux.get(0));
 				}
 			}
 		});
@@ -329,8 +322,9 @@ public class MetiersServiceTest extends BusinessTest {
 					ids.noMenageAlfredo = menage.getNumero();
 					tiersService.addTiersToCouple(menage, alfredo, dateMariageAlfredo, null);
 
-					addForPrincipal(menage, dateMariageAlfredo, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, date(2009, 3, 1), MotifFor.INDETERMINE, MockCommune.Lausanne,
-					                MotifRattachement.DOMICILE);
+					final ForFiscalPrincipal f = addForPrincipal(menage, dateMariageAlfredo, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION,
+					                                             date(2009, 3, 1), MotifFor.INDETERMINE, MockCommune.Lausanne, MotifRattachement.DOMICILE);
+					f.setModeImposition(ModeImposition.ORDINAIRE);
 					menage.setBlocageRemboursementAutomatique(false);
 				}
 
@@ -344,8 +338,10 @@ public class MetiersServiceTest extends BusinessTest {
 					ids.noMenageArmando = menage.getNumero();
 					tiersService.addTiersToCouple(menage, armando, dateMariageArmando, null);
 
-					addForPrincipal(menage, dateMariageArmando, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, date(2009, 3, 1), MotifFor.INDETERMINE, MockCommune.Lausanne,
-					                MotifRattachement.DOMICILE);
+					final ForFiscalPrincipal f = addForPrincipal(menage, dateMariageArmando, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION,
+					                                             date(2009, 3, 1), MotifFor.INDETERMINE, MockCommune.Lausanne, MotifRattachement.DOMICILE);
+
+					f.setModeImposition(ModeImposition.ORDINAIRE);
 					menage.setBlocageRemboursementAutomatique(false);
 				}
 				return null;
@@ -423,10 +419,9 @@ public class MetiersServiceTest extends BusinessTest {
 
 				final ForsParType fors = georgette.getForsParType(true);
 				assertNotNull(fors);
-				assertEquals(1, fors.principauxPP.size());
-				assertEquals(0, fors.principauxPM.size());
+				assertEquals(1, fors.principaux.size());
 				assertForPrincipal(date(2008, 11, 24), MotifFor.VEUVAGE_DECES, TypeAutoriteFiscale.COMMUNE_HC, MockCommune.Neuchatel.getNoOFS(),
-				                   MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, fors.principauxPP.get(0));
+				                   MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, fors.principaux.get(0));
 			}
 		});
 	}
@@ -628,10 +623,9 @@ public class MetiersServiceTest extends BusinessTest {
 
 				final ForsParType fors = georgette.getForsParType(true);
 				assertNotNull(fors);
-				assertEquals(1, fors.principauxPP.size());
-				assertEquals(0, fors.principauxPM.size());
+				assertEquals(1, fors.principaux.size());
 				assertForPrincipal(date(2008, 11, 24), MotifFor.VEUVAGE_DECES, TypeAutoriteFiscale.PAYS_HS, MockPays.Allemagne.getNoOFS(),
-				                   MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, fors.principauxPP.get(0));
+				                   MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, fors.principaux.get(0));
 			}
 		});
 	}
@@ -689,10 +683,9 @@ public class MetiersServiceTest extends BusinessTest {
 
 				final ForsParType fors = georgette.getForsParType(true);
 				assertNotNull(fors);
-				assertEquals(1, fors.principauxPP.size());
-				assertEquals(0, fors.principauxPM.size());
+				assertEquals(1, fors.principaux.size());
 				assertForPrincipal(date(2008, 11, 24), MotifFor.VEUVAGE_DECES, TypeAutoriteFiscale.COMMUNE_HC, MockCommune.Neuchatel.getNoOFS(),
-				                   MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, fors.principauxPP.get(0));
+				                   MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, fors.principaux.get(0));
 			}
 		});
 	}
@@ -1454,7 +1447,7 @@ public class MetiersServiceTest extends BusinessTest {
 						final MenageCommun mc = (MenageCommun) tiersDAO.get(ids.menage);
 						assertNotNull(mc);
 
-						final ForFiscalPrincipalPP ffp = mc.getDernierForFiscalPrincipal();
+						final ForFiscalPrincipal ffp = mc.getDernierForFiscalPrincipal();
 						assertForPrincipal(dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, dateSeparation.getOneDayBefore(), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT,
 						                   MockCommune.Grandvaux, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, ffp);
 					}
@@ -1464,7 +1457,7 @@ public class MetiersServiceTest extends BusinessTest {
 						final PersonnePhysique fabrice = (PersonnePhysique) tiersDAO.get(ids.fabrice);
 						assertNotNull(fabrice);
 
-						final ForFiscalPrincipalPP ffp = fabrice.getDernierForFiscalPrincipal();
+						final ForFiscalPrincipal ffp = fabrice.getDernierForFiscalPrincipal();
 						assertForPrincipal(dateSeparation, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Riex, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, ffp);
 					}
 
@@ -1473,7 +1466,7 @@ public class MetiersServiceTest extends BusinessTest {
 						final PersonnePhysique georgette = (PersonnePhysique) tiersDAO.get(ids.georgette);
 						assertNotNull(georgette);
 
-						final ForFiscalPrincipalPP ffp = georgette.getDernierForFiscalPrincipal();
+						final ForFiscalPrincipal ffp = georgette.getDernierForFiscalPrincipal();
 						assertForPrincipal(dateSeparation, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Grandvaux, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, ffp);
 					}
 				}
@@ -1563,7 +1556,7 @@ public class MetiersServiceTest extends BusinessTest {
 					final MenageCommun mc = (MenageCommun) tiersDAO.get(ids.menage);
 					assertNotNull(mc);
 
-					final ForFiscalPrincipalPP ffp = mc.getDernierForFiscalPrincipal();
+					final ForFiscalPrincipal ffp = mc.getDernierForFiscalPrincipal();
 					assertForPrincipal(MockCommune.Grandvaux.getDateFinValidite().getOneDayAfter(), MotifFor.FUSION_COMMUNES, dateSeparation.getOneDayBefore(),
 					                   MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT,
 					                   MockCommune.BourgEnLavaux, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, ffp);
@@ -1574,7 +1567,7 @@ public class MetiersServiceTest extends BusinessTest {
 					final PersonnePhysique fabrice = (PersonnePhysique) tiersDAO.get(ids.fabrice);
 					assertNotNull(fabrice);
 
-					final ForFiscalPrincipalPP ffp = fabrice.getDernierForFiscalPrincipal();
+					final ForFiscalPrincipal ffp = fabrice.getDernierForFiscalPrincipal();
 					assertForPrincipal(dateSeparation, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.BourgEnLavaux, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, ffp);
 				}
 
@@ -1583,7 +1576,7 @@ public class MetiersServiceTest extends BusinessTest {
 					final PersonnePhysique georgette = (PersonnePhysique) tiersDAO.get(ids.georgette);
 					assertNotNull(georgette);
 
-					final ForFiscalPrincipalPP ffp = georgette.getDernierForFiscalPrincipal();
+					final ForFiscalPrincipal ffp = georgette.getDernierForFiscalPrincipal();
 					assertForPrincipal(dateSeparation, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.BourgEnLavaux, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, ffp);
 				}
 			}
@@ -2883,14 +2876,12 @@ public class MetiersServiceTest extends BusinessTest {
 
 				final ForsParType fors = mc.getForsParType(false);
 				Assert.assertNotNull(fors);
-				Assert.assertNotNull(fors.principauxPP);
-				Assert.assertNotNull(fors.principauxPM);
+				Assert.assertNotNull(fors.principaux);
 				Assert.assertNotNull(fors.secondaires);
-				Assert.assertEquals(1, fors.principauxPP.size());
-				Assert.assertEquals(0, fors.principauxPM.size());
+				Assert.assertEquals(1, fors.principaux.size());
 				Assert.assertEquals(1, fors.secondaires.size());
 
-				final ForFiscalPrincipal ffp = fors.principauxPP.get(0);
+				final ForFiscalPrincipal ffp = fors.principaux.get(0);
 				Assert.assertNotNull(ffp);
 				Assert.assertEquals(TypeAutoriteFiscale.PAYS_HS, ffp.getTypeAutoriteFiscale());
 				Assert.assertEquals(MockPays.RoyaumeUni.getNoOFS(), (int) ffp.getNumeroOfsAutoriteFiscale());
@@ -2973,14 +2964,12 @@ public class MetiersServiceTest extends BusinessTest {
 
 				final ForsParType fors = mc.getForsParType(false);
 				Assert.assertNotNull(fors);
-				Assert.assertNotNull(fors.principauxPP);
-				Assert.assertNotNull(fors.principauxPM);
+				Assert.assertNotNull(fors.principaux);
 				Assert.assertNotNull(fors.secondaires);
-				Assert.assertEquals(1, fors.principauxPP.size());
-				Assert.assertEquals(0, fors.principauxPM.size());
+				Assert.assertEquals(1, fors.principaux.size());
 				Assert.assertEquals(2, fors.secondaires.size());
 
-				final ForFiscalPrincipal ffp = fors.principauxPP.get(0);
+				final ForFiscalPrincipal ffp = fors.principaux.get(0);
 				Assert.assertNotNull(ffp);
 				Assert.assertEquals(TypeAutoriteFiscale.PAYS_HS, ffp.getTypeAutoriteFiscale());
 				Assert.assertEquals(MockPays.RoyaumeUni.getNoOFS(), (int) ffp.getNumeroOfsAutoriteFiscale());
@@ -3079,14 +3068,12 @@ public class MetiersServiceTest extends BusinessTest {
 
 				final ForsParType fors = mc.getForsParType(false);
 				Assert.assertNotNull(fors);
-				Assert.assertNotNull(fors.principauxPP);
-				Assert.assertNotNull(fors.principauxPM);
+				Assert.assertNotNull(fors.principaux);
 				Assert.assertNotNull(fors.secondaires);
-				Assert.assertEquals(1, fors.principauxPP.size());
-				Assert.assertEquals(0, fors.principauxPM.size());
+				Assert.assertEquals(1, fors.principaux.size());
 				Assert.assertEquals(2, fors.secondaires.size());
 
-				final ForFiscalPrincipal ffp = fors.principauxPP.get(0);
+				final ForFiscalPrincipal ffp = fors.principaux.get(0);
 				Assert.assertNotNull(ffp);
 				Assert.assertEquals(TypeAutoriteFiscale.PAYS_HS, ffp.getTypeAutoriteFiscale());
 				Assert.assertEquals(MockPays.RoyaumeUni.getNoOFS(), (int) ffp.getNumeroOfsAutoriteFiscale());
@@ -3186,14 +3173,12 @@ public class MetiersServiceTest extends BusinessTest {
 
 				final ForsParType fors = mc.getForsParType(false);
 				Assert.assertNotNull(fors);
-				Assert.assertNotNull(fors.principauxPP);
-				Assert.assertNotNull(fors.principauxPM);
+				Assert.assertNotNull(fors.principaux);
 				Assert.assertNotNull(fors.secondaires);
-				Assert.assertEquals(1, fors.principauxPP.size());
-				Assert.assertEquals(0, fors.principauxPM.size());
+				Assert.assertEquals(1, fors.principaux.size());
 				Assert.assertEquals(2, fors.secondaires.size());
 
-				final ForFiscalPrincipal ffp = fors.principauxPP.get(0);
+				final ForFiscalPrincipal ffp = fors.principaux.get(0);
 				Assert.assertNotNull(ffp);
 				Assert.assertEquals(TypeAutoriteFiscale.PAYS_HS, ffp.getTypeAutoriteFiscale());
 				Assert.assertEquals(MockPays.RoyaumeUni.getNoOFS(), (int) ffp.getNumeroOfsAutoriteFiscale());
@@ -3400,7 +3385,7 @@ public class MetiersServiceTest extends BusinessTest {
 				final MenageCommun menage = etc.getMenage();
 				assertNotNull(menage);
 
-				final ForFiscalPrincipalPP ffp = menage.getForFiscalPrincipalAt(null);
+				final ForFiscalPrincipal ffp = menage.getForFiscalPrincipalAt(null);
 				assertForPrincipal(date(2007, 2, 12), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Echallens, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, ffp);
 				return null;
 			}
@@ -4032,8 +4017,8 @@ public class MetiersServiceTest extends BusinessTest {
 				addForPrincipal(lui, date(2000, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Aigle);
 				addForPrincipal(elle, date(2000, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Aigle);
 
-				lui.setCoordonneesFinancieres(new CoordonneesFinancieres("CH9308440717427290198", null));
-				elle.setCoordonneesFinancieres(new CoordonneesFinancieres("CH9308440717427290198", null));
+				lui.setNumeroCompteBancaire("CH9308440717427290198");
+				elle.setNumeroCompteBancaire("CH9308440717427290198");
 
 				final Ids ids = new Ids();
 				ids.lui = lui.getNumero();
@@ -4062,13 +4047,13 @@ public class MetiersServiceTest extends BusinessTest {
 				assertTrue(lui.getBlocageRemboursementAutomatique());
 				assertTrue(elle.getBlocageRemboursementAutomatique());
 
-				final ForFiscalPrincipalPP ffpLui = lui.getDernierForFiscalPrincipal();
+				final ForFiscalPrincipal ffpLui = lui.getDernierForFiscalPrincipal();
 				assertNotNull(ffpLui);
 				assertEquals(dateMariage.getOneDayBefore(), ffpLui.getDateFin());
 				assertEquals(MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, ffpLui.getMotifFermeture());
 				assertEquals(ModeImposition.ORDINAIRE, ffpLui.getModeImposition());
 
-				final ForFiscalPrincipalPP ffpElle = elle.getDernierForFiscalPrincipal();
+				final ForFiscalPrincipal ffpElle = elle.getDernierForFiscalPrincipal();
 				assertNotNull(ffpElle);
 				assertEquals(dateMariage.getOneDayBefore(), ffpElle.getDateFin());
 				assertEquals(MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, ffpElle.getMotifFermeture());
@@ -4083,7 +4068,7 @@ public class MetiersServiceTest extends BusinessTest {
 				assertNotNull(mc);
 				assertFalse(mc.getBlocageRemboursementAutomatique());
 
-				final ForFiscalPrincipalPP ffpMc = mc.getDernierForFiscalPrincipal();
+				final ForFiscalPrincipal ffpMc = mc.getDernierForFiscalPrincipal();
 				assertNotNull(ffpMc);
 				assertEquals(dateMariage, ffpMc.getDateDebut());
 				assertEquals(MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, ffpMc.getMotifOuverture());
@@ -4129,8 +4114,8 @@ public class MetiersServiceTest extends BusinessTest {
 				addForPrincipal(lui, date(2000, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Aigle, ModeImposition.SOURCE);
 				addForPrincipal(elle, date(2000, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Aigle, ModeImposition.SOURCE);
 
-				lui.setCoordonneesFinancieres(new CoordonneesFinancieres("CH9308440717427290198", null));
-				elle.setCoordonneesFinancieres(new CoordonneesFinancieres("CH9308440717427290198", null));
+				lui.setNumeroCompteBancaire("CH9308440717427290198");
+				elle.setNumeroCompteBancaire("CH9308440717427290198");
 
 				final Ids ids = new Ids();
 				ids.lui = lui.getNumero();
@@ -4160,13 +4145,13 @@ public class MetiersServiceTest extends BusinessTest {
 				assertFalse(lui.getBlocageRemboursementAutomatique());
 				assertFalse(elle.getBlocageRemboursementAutomatique());
 
-				final ForFiscalPrincipalPP ffpLui = lui.getDernierForFiscalPrincipal();
+				final ForFiscalPrincipal ffpLui = lui.getDernierForFiscalPrincipal();
 				assertNotNull(ffpLui);
 				assertEquals(dateMariage.getOneDayBefore(), ffpLui.getDateFin());
 				assertEquals(MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, ffpLui.getMotifFermeture());
 				assertEquals(ModeImposition.SOURCE, ffpLui.getModeImposition());
 
-				final ForFiscalPrincipalPP ffpElle = elle.getDernierForFiscalPrincipal();
+				final ForFiscalPrincipal ffpElle = elle.getDernierForFiscalPrincipal();
 				assertNotNull(ffpElle);
 				assertEquals(dateMariage.getOneDayBefore(), ffpElle.getDateFin());
 				assertEquals(MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, ffpElle.getMotifFermeture());
@@ -4181,7 +4166,7 @@ public class MetiersServiceTest extends BusinessTest {
 				assertNotNull(mc);
 				assertFalse(mc.getBlocageRemboursementAutomatique());
 
-				final ForFiscalPrincipalPP ffpMc = mc.getDernierForFiscalPrincipal();
+				final ForFiscalPrincipal ffpMc = mc.getDernierForFiscalPrincipal();
 				assertNotNull(ffpMc);
 				assertEquals(dateMariage, ffpMc.getDateDebut());
 				assertEquals(MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, ffpMc.getMotifOuverture());
@@ -4227,8 +4212,8 @@ public class MetiersServiceTest extends BusinessTest {
 				addForPrincipal(lui, date(2000, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Aigle);
 				addForPrincipal(elle, date(2000, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Aigle, ModeImposition.SOURCE);
 
-				lui.setCoordonneesFinancieres(new CoordonneesFinancieres("CH9308440717427290198", null));
-				elle.setCoordonneesFinancieres(new CoordonneesFinancieres("CH9308440717427290198", null));
+				lui.setNumeroCompteBancaire("CH9308440717427290198");
+				elle.setNumeroCompteBancaire("CH9308440717427290198");
 
 				final Ids ids = new Ids();
 				ids.lui = lui.getNumero();
@@ -4258,13 +4243,13 @@ public class MetiersServiceTest extends BusinessTest {
 				assertTrue(lui.getBlocageRemboursementAutomatique());
 				assertTrue(elle.getBlocageRemboursementAutomatique());
 
-				final ForFiscalPrincipalPP ffpLui = lui.getDernierForFiscalPrincipal();
+				final ForFiscalPrincipal ffpLui = lui.getDernierForFiscalPrincipal();
 				assertNotNull(ffpLui);
 				assertEquals(dateMariage.getOneDayBefore(), ffpLui.getDateFin());
 				assertEquals(MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, ffpLui.getMotifFermeture());
 				assertEquals(ModeImposition.ORDINAIRE, ffpLui.getModeImposition());
 
-				final ForFiscalPrincipalPP ffpElle = elle.getDernierForFiscalPrincipal();
+				final ForFiscalPrincipal ffpElle = elle.getDernierForFiscalPrincipal();
 				assertNotNull(ffpElle);
 				assertEquals(dateMariage.getOneDayBefore(), ffpElle.getDateFin());
 				assertEquals(MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, ffpElle.getMotifFermeture());
@@ -4279,7 +4264,7 @@ public class MetiersServiceTest extends BusinessTest {
 				assertNotNull(mc);
 				assertFalse(mc.getBlocageRemboursementAutomatique());
 
-				final ForFiscalPrincipalPP ffpMc = mc.getDernierForFiscalPrincipal();
+				final ForFiscalPrincipal ffpMc = mc.getDernierForFiscalPrincipal();
 				assertNotNull(ffpMc);
 				assertEquals(dateMariage, ffpMc.getDateDebut());
 				assertEquals(MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, ffpMc.getMotifOuverture());

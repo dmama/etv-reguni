@@ -7,7 +7,6 @@ import org.slf4j.LoggerFactory;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.shared.batchtemplate.StatusManager;
-import ch.vd.uniregctb.scheduler.JobCategory;
 import ch.vd.uniregctb.scheduler.JobDefinition;
 import ch.vd.uniregctb.scheduler.JobParam;
 import ch.vd.uniregctb.scheduler.JobParamEnum;
@@ -20,6 +19,7 @@ public class ItBatchClientJob extends JobDefinition {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ItBatchClientJob.class);
 
 	public static final String NAME = "IT-BatchClientJob";
+	private static final String CATEGORIE = "Test";
 
 	public static final String PARAM_DATE_DEBUT = "dateDebut";
 	public static final String PARAM_COUNT = "count";
@@ -28,14 +28,14 @@ public class ItBatchClientJob extends JobDefinition {
 	public static final String PARAM_SALUTATIONS = "salutations"; // paramètre bidon pour tester les enums
 	public static final String PARAM_ATTACHEMENT = "attachement"; // paramètre bidon pour tester les fichiers
 
-	public enum Salutations {
+	public static enum Salutations {
 		HELLO,
 		COUCOU,
 		BONJOUR
 	}
 
 	public ItBatchClientJob(int sortOrder, String description) {
-		super(NAME, JobCategory.TEST, sortOrder, description);
+		super(NAME, CATEGORIE, sortOrder, description);
 
 		// Date debut
 		{

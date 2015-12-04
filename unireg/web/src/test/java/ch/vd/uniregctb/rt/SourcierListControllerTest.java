@@ -12,7 +12,7 @@ public class SourcierListControllerTest extends AbstractRapportPrestationControl
 	/**
 	 * Le nom du controller a tester.
 	 */
-	private static final String CONTROLLER_NAME = "sourcierListController";
+	private final static String CONTROLLER_NAME = "sourcierListController";
 	private SourcierListController controller;
 
 	@Override

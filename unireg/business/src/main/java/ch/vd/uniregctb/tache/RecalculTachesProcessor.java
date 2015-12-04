@@ -1,7 +1,7 @@
 package ch.vd.uniregctb.tache;
 
 import java.sql.SQLException;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -39,14 +39,6 @@ public class RecalculTachesProcessor {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(RecalculTachesProcessor.class);
 	private static final int BATCH_SIZE = 100;
-
-	/**
-	 * Détermine le scope de recalcul des tâches d'envoi/d'annulation de documents
-	 */
-	public enum Scope {
-		PP,
-		PM
-	}
 
 	private final PlatformTransactionManager transactionManager;
 	private final HibernateTemplate hibernateTemplate;
@@ -95,12 +87,12 @@ public class RecalculTachesProcessor {
 		this.tacheSynchronizerInterceptor = tacheSynchronizerInterceptor;
 	}
 
-	public TacheSyncResults run(boolean existingTasksCleanup, int nbThreads, Scope scope, @Nullable StatusManager s) {
+	public TacheSyncResults run(boolean existingTasksCleanup, int nbThreads, @Nullable StatusManager s) {
 		final StatusManager status = s != null ? s : new LoggingStatusManager(LOGGER);
 		final TacheSyncResults finalResults = new TacheSyncResults(existingTasksCleanup);
 
-		final List<Long> ctbIds = getCtbIds(existingTasksCleanup, scope);
-		LOGGER.info(String.format("%d contribuable(s) %s concerné(s) par le traitement de recalcul de tâches", ctbIds.size(), scope));
+		final List<Long> ctbIds = getCtbIds(existingTasksCleanup);
+		LOGGER.info(String.format("%d contribuable(s) concernés par le traitement de recalcul de tâche", ctbIds.size()));
 
 		final BatchIterator<Long> iterator = new StandardBatchIterator<>(ctbIds, BATCH_SIZE);
 		boolean interrupted = false;
@@ -162,7 +154,7 @@ public class RecalculTachesProcessor {
 
 	private TacheSyncResults doRunWithRetry(List<Long> ids) {
 		try {
-			return tacheService.synchronizeTachesDeclarations(ids);
+			return tacheService.synchronizeTachesDIs(ids);
 		}
 		catch (RuntimeException e) {
 			final TacheSyncResults results = new TacheSyncResults(false);
@@ -174,45 +166,32 @@ public class RecalculTachesProcessor {
 			else {
 				// on essaie un par un
 				for (Long id : ids) {
-					results.addAll(doRunWithRetry(Collections.singletonList(id)));
+					results.addAll(doRunWithRetry(Arrays.asList(id)));
 				}
 			}
 			return results;
 		}
 	}
 
-	private List<Long> getCtbIds(final boolean existingTasksCleanup, final Scope scope) {
+	private List<Long> getCtbIds(final boolean existingTasksCleanup) {
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
 		template.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
 		return template.execute(new TransactionCallback<List<Long>>() {
 			@Override
 			public List<Long> doInTransaction(TransactionStatus status) {
-				return extractCtbIds(existingTasksCleanup, scope);
+				return extractCtbIds(existingTasksCleanup);
 			}
 		});
 	}
 
-	private List<Long> extractCtbIds(boolean existingTasksCleanup, Scope scope) {
-		final String ctbClassPart = scope == Scope.PP
-				? "(PersonnePhysique, MenageCommun)"
-				: "(Entreprise)";
-
-
+	private List<Long> extractCtbIds(boolean existingTasksCleanup) {
 		final String hql;
 		if (existingTasksCleanup) {
-			hql = String.format("select distinct t.contribuable.id from Tache as t where etat = '%s' and t.annulationDate is null and t.contribuable.class in %s order by t.contribuable.id",
-			                    TypeEtatTache.EN_INSTANCE.name(),
-			                    ctbClassPart);
+			hql = "select distinct t.contribuable.id from Tache as t where etat = '" + TypeEtatTache.EN_INSTANCE.name() + "' and t.annulationDate is null order by t.contribuable.id";
 		}
 		else {
-			final String forClassPart = scope == Scope.PP
-					? "(ForFiscalPrincipalPP, ForFiscalSecondaire)"
-					: "(ForFiscalPrincipalPM, ForFiscalSecondaire)";
-
-			hql = String.format("select distinct ctb.id from Contribuable as ctb inner join ctb.forsFiscaux as for where for.class in %s and for.typeAutoriteFiscale = 'COMMUNE_OU_FRACTION_VD' and ctb.class in %s order by ctb.id",
-		                        forClassPart,
-		                        ctbClassPart);
+			hql = "select distinct ctb.id from Contribuable as ctb inner join ctb.forsFiscaux as for where for.class in (ForFiscalPrincipal, ForFiscalSecondaire) and for.typeAutoriteFiscale = 'COMMUNE_OU_FRACTION_VD' order by ctb.id";
 		}
 
 		return hibernateTemplate.executeWithNewSession(new HibernateCallback<List<Long>>() {

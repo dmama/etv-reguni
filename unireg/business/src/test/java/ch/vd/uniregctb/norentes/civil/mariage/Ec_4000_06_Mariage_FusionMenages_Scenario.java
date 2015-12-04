@@ -16,6 +16,7 @@ import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.SituationFamille;
 import ch.vd.uniregctb.type.EtatCivil;
+import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
@@ -113,7 +114,8 @@ public class Ec_4000_06_Mariage_FusionMenages_Scenario extends EvenementCivilSce
 			noMenageAlfredo = menage.getNumero();
 			tiersService.addTiersToCouple(menage, alfredo, dateMariageAlfredo, null);
 
-			addForFiscalPrincipal(menage, commune, dateMariageAlfredo, null, MotifFor.INDETERMINE, null);
+			final ForFiscalPrincipal f = addForFiscalPrincipal(menage, commune, dateMariageAlfredo, null, MotifFor.INDETERMINE, null);
+			f.setModeImposition(ModeImposition.ORDINAIRE);
 			menage.setBlocageRemboursementAutomatique(false);
 		}
 
@@ -128,7 +130,8 @@ public class Ec_4000_06_Mariage_FusionMenages_Scenario extends EvenementCivilSce
 			noMenageArmando = menage.getNumero();
 			tiersService.addTiersToCouple(menage, armando, dateMariageArmando, null);
 
-			addForFiscalPrincipal(menage, commune, dateMariageArmando, null, MotifFor.INDETERMINE, null);
+			final ForFiscalPrincipal f = addForFiscalPrincipal(menage, commune, dateMariageArmando, null, MotifFor.INDETERMINE, null);
+			f.setModeImposition(ModeImposition.ORDINAIRE);
 			menage.setBlocageRemboursementAutomatique(false);
 		}
 	}

@@ -32,7 +32,7 @@ public class ListeRecapServiceTest extends BusinessTest {
 
 	private ListeRecapService lrService = null;
 	private TiersDAO tiersDAO;
-	private static final String DB_UNIT_FILE = "ListeRecapServiceTest.xml";
+	private final static String DB_UNIT_FILE = "ListeRecapServiceTest.xml";
 
 	@Override
 	public void onSetUp() throws Exception {

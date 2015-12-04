@@ -1,9 +1,6 @@
 package ch.vd.uniregctb.metier.assujettissement;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
-
-import org.jetbrains.annotations.NotNull;
+import java.util.List;
 
 import ch.vd.registre.base.date.CollatableDateRange;
 import ch.vd.registre.base.date.DateRange;
@@ -11,7 +8,12 @@ import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.registre.base.utils.Assert;
+import ch.vd.uniregctb.declaration.Declaration;
+import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.type.Qualification;
+import ch.vd.uniregctb.type.TypeAdresseRetour;
 import ch.vd.uniregctb.type.TypeContribuable;
 import ch.vd.uniregctb.type.TypeDocument;
 
@@ -37,13 +39,30 @@ import ch.vd.uniregctb.type.TypeDocument;
  * <li><b>période d'imposition:</b> une seule période couvrant toute l'année avec le type de document DECLARATION_IMPOT_COMPLETE car les
  * deux assujettissements VaudoisOrdinaire et HorsSuisse génèrent le même type de DI au final.</li>
  * </ul>
+ *
+ * @author Manuel Siggen <manuel.siggen@vd.ch>
  */
-public abstract class PeriodeImposition implements CollatableDateRange {
+public class PeriodeImposition implements CollatableDateRange {
+
+	private final RegDate debut;
+	private final RegDate fin;
+	private final CategorieEnvoiDI categorieEnvoiDI;
+	private final Contribuable contribuable;
+	private final Qualification qualification;
+	private final Integer codeSegment;  // [SIFISC-2100]
+	private final TypeAdresseRetour adresseRetour; // [UNIREG-1741]
 
 	/**
-	 * Description des différents cas intéressants de fermeture de la période d'imposition
+	 * <code>vrai</code> si la période d'imposition est optionnelle (= une DI n'est émise que sur demande du contribuable).
 	 */
-	public enum CauseFermeture {
+	private final boolean optionnelle;
+
+	/**
+	 * <code>vrai</code> si la déclaration correspondante à la période d'imposition est remplacée par une note à l'administration fiscale d'une autre canton (= la DI n'est émise).
+	 */
+	private final boolean remplaceeParNote;
+
+	protected static enum CauseFermeture {
 		/**
 		 * si la période d'imposition se termine à cause d'un décès (ou d'un veuvage).
 		 */
@@ -55,199 +74,199 @@ public abstract class PeriodeImposition implements CollatableDateRange {
 		FIN_ASSUJETTISSEMENT_HS,
 
 		/**
-		 * si la période d'imposition se termine pour une autre raison (c'est bien-sûr le cas le plus fréquent)
+		 * si la période d'imposition se termine pour une autre raison
 		 */
 		AUTRE
 	}
-
-	/**
-	 * Date de début de la période de déclaration, s'il y a une déclaration
-	 */
-	private final RegDate debut;
-
-	/**
-	 * Date de fin de la période de déclaration, s'il y a une déclaration
-	 */
-	private final RegDate fin;
-
-	/**
-	 * Contribuable concerné par l'imposition
-	 */
-	private final Contribuable contribuable;
-
-	/**
-	 * <code>true</code> si la déclaration n'est émise que sur demande du contribuable (cas des forfaitaires hors-Suisse, par exemple...)
-	 */
-	private final boolean declarationOptionnelle;
-
-	/**
-	 * <code>true</code> si la déclaration correspondante à la période d'imposition est remplacée par une note à l'administration fiscale d'un autre canton (= la DI n'est émise).
-	 */
-	private final boolean declarationRemplaceeParNote;
 
 	/**
 	 * Cause pour laquelle la période d'imposition se termine
 	 */
 	private final CauseFermeture causeFermeture;
 
-	/**
-	 * Code segment fourni par la taxation pour la déclaration suivante
-	 */
-	private final Integer codeSegment;
 
-
-
-	public PeriodeImposition(RegDate debut, RegDate fin, Contribuable contribuable, boolean declarationOptionnelle, boolean declarationRemplaceeParNote,
-	                         CauseFermeture causeFermeture, Integer codeSegment) {
-		if (debut == null || fin == null) {
-			throw new IllegalArgumentException("Une période d'imposition est toujours bornée : " + DateRangeHelper.toDisplayString(debut, fin));
+	private static Qualification getQualification(Contribuable contribuable, int anneePrecedente) {
+		Qualification qualification = null;
+		DeclarationImpotOrdinaire precedente = getDeclarationPrecedente(contribuable, anneePrecedente);
+		if (precedente != null) {
+			qualification = precedente.getQualification();
 		}
-		if (contribuable == null) {
-			throw new IllegalArgumentException("Une période d'imposition est toujours liée à un contribuable !");
+		return qualification;
+	}
+
+	private static Integer getCodeSegment(Contribuable contribuable, int anneePrecedente) {
+		Integer codeSegment = null;
+		final DeclarationImpotOrdinaire precedente = getDeclarationPrecedente(contribuable, anneePrecedente);
+		if (precedente != null) {
+			codeSegment = precedente.getCodeSegment();
+		}
+		return codeSegment;
+	}
+
+	private static DeclarationImpotOrdinaire getDeclarationPrecedente(Contribuable contribuable, int anneePrecedente) {
+		DeclarationImpotOrdinaire precedenteDI = null;
+		final List<Declaration> declarations = contribuable.getDeclarationsForPeriode(anneePrecedente, false);
+		if (declarations != null && !declarations.isEmpty()) {
+			Declaration precedenteDeclaration = declarations.get(declarations.size() - 1);
+			if (precedenteDeclaration instanceof DeclarationImpotOrdinaire) {
+				precedenteDI = (DeclarationImpotOrdinaire) precedenteDeclaration;
+			}
+		}
+		return precedenteDI;
+	}
+
+	public static Qualification determineQualification(Contribuable contribuable, int annee) {
+
+		Qualification qualification = getQualification(contribuable, annee - 1);
+		if (qualification == null) {
+			qualification = getQualification(contribuable, annee - 2);
 		}
 
-		this.debut = debut;
-		this.fin = fin;
+		return qualification;
+	}
+
+	public static Integer determineCodeSegment(Contribuable contribuable, int annee) {
+		Integer codeSegment = getCodeSegment(contribuable, annee - 1);
+		if (codeSegment == null) {
+			codeSegment = getCodeSegment(contribuable, annee - 2);
+		}
+		return codeSegment;
+	}
+
+	protected PeriodeImposition(RegDate dateDebut, RegDate dateFin, CategorieEnvoiDI categorieEnvoiDI, Contribuable contribuable, Qualification qualification, Integer codeSegment,
+	                          TypeAdresseRetour adresseRetour, CauseFermeture causeFermeture) {
+		this(dateDebut, dateFin, categorieEnvoiDI, contribuable, qualification, codeSegment, adresseRetour, false, false, causeFermeture);
+	}
+
+	protected PeriodeImposition(RegDate dateDebut, RegDate dateFin, CategorieEnvoiDI categorieEnvoiDI, Contribuable contribuable, Qualification qualification, Integer codeSegment,
+	                          TypeAdresseRetour adresseRetour, boolean optionnelle, boolean remplaceeParNote, CauseFermeture causeFermeture) {
+		DateRangeHelper.assertValidRange(dateDebut, dateFin);
+		this.debut = dateDebut;
+		this.fin = dateFin;
+		this.categorieEnvoiDI = categorieEnvoiDI;
 		this.contribuable = contribuable;
-		this.declarationOptionnelle = declarationOptionnelle;
-		this.declarationRemplaceeParNote = declarationRemplaceeParNote;
-		this.causeFermeture = causeFermeture;
+		this.qualification = qualification;
 		this.codeSegment = codeSegment;
+		this.adresseRetour = adresseRetour;
+		this.optionnelle = optionnelle;
+		this.remplaceeParNote = remplaceeParNote;
+		this.causeFermeture = causeFermeture;
 	}
 
-	/**
-	 * @return la période fiscale (sous la forme d'un numéro d'année) à laquelle cette période d'imposition est liée
-	 */
-	public final int getPeriodeFiscale() {
-		// c'est l'année de la fin de la période
-		return fin.year();
-	}
-
-	@Override
-	public final boolean isCollatable(DateRange next) {
-		final PeriodeImposition nextPeriode = (PeriodeImposition) next;
-
-		// on accepte les ranges qui se touchent *et* ceux qui se chevauchent, ceci parce que les périodes d'impositions peuvent être plus
-		// larges que les assujettissement sous-jacents (cas des HorsCanton et HorsSuisse) et qu'il s'agit de pouvoir les
-		// collater malgré tout (mais jamais sur deux périodes fiscales différentes).
-		return fin.getOneDayAfter().isAfterOrEqual(next.getDateDebut()) && getPeriodeFiscale() == nextPeriode.getPeriodeFiscale() && isCompatibleWith(nextPeriode);
-	}
-
-	/**
-	 * @param next la période d'imposition qui vient après (les dates ont déjà été vérifiées)
-	 * @return si oui ou non la période courante et compatible avec la suivante (= si, les dates jouant, elles pourraient être fusionnées ensemble)
-	 */
-	protected abstract boolean isCompatibleWith(PeriodeImposition next);
-
-	@Override
-	public boolean isValidAt(RegDate date) {
-		return RegDateHelper.isBetween(date, debut, fin, NullDateBehavior.LATEST);
-	}
-
-	@NotNull
 	@Override
 	public RegDate getDateDebut() {
 		return debut;
 	}
 
-	@NotNull
 	@Override
 	public RegDate getDateFin() {
 		return fin;
 	}
 
-	@NotNull
+	public CategorieEnvoiDI getCategorieEnvoiDI() {
+		return categorieEnvoiDI;
+	}
+
+	public TypeContribuable getTypeContribuable() {
+		return categorieEnvoiDI.getTypeContribuable();
+	}
+
+	public TypeDocument getTypeDocument() {
+		return categorieEnvoiDI.getTypeDocument();
+	}
+
+	public boolean isOptionnelle() {
+		return optionnelle;
+	}
+
+	public boolean isRemplaceeParNote() {
+		return remplaceeParNote;
+	}
+
+	/**
+	 * @return <b>vrai</b> si la période d'imposition est celle d'un diplomate suisse sans immeuble (et donc qui ne reçoit pas de déclaration d'impôt ordinaire).
+	 */
+	public boolean isDiplomateSuisseSansImmeuble() {
+		return categorieEnvoiDI == CategorieEnvoiDI.DIPLOMATE_SUISSE;
+	}
+
+	public boolean isFermetureCauseDeces() {
+		return causeFermeture == CauseFermeture.VEUVAGE_DECES;
+	}
+
+	public boolean isFermetureCauseFinAssujettissementHorsSuisse() {
+		return causeFermeture == CauseFermeture.FIN_ASSUJETTISSEMENT_HS;
+	}
+
 	public Contribuable getContribuable() {
 		return contribuable;
 	}
 
-	/**
-	 * @return le type de contribuable, (VD, HC, HS...) concerné par cette période d'imposition
-	 */
-	public abstract TypeContribuable getTypeContribuable();
-
-	/**
-	 * @return le type de document de la déclaration concernée par cette période d'imposition
-	 */
-	public abstract TypeDocument getTypeDocumentDeclaration();
-
-	public boolean isDeclarationOptionnelle() {
-		return declarationOptionnelle;
-	}
-
-	public boolean isDeclarationRemplaceeParNote() {
-		return declarationRemplaceeParNote;
-	}
-
-	/**
-	 * @return <code>true</code> si la période correspond à celle d'un diplomate suisse sans immeuble
-	 */
-	public abstract boolean isDiplomateSuisseSansImmeuble();
-
-	/**
-	 * @return <code>true</code> si aucune des condition d'optionalité ne sont remplies pour la déclaration
-	 */
-	public boolean isDeclarationMandatory() {
-		return !declarationOptionnelle && !declarationRemplaceeParNote;
-	}
-
-	/**
-	 * @return <code>true</code> si la période d'imposition se termine avant la fin de la période fiscale
-	 */
-	public boolean isFermetureAnticipee() {
-		return fin.isBefore(getDernierJourPourPeriodeFiscale());
-	}
-
-	/**
-	 * @return le dernier jour comptant pour la période fiscale (31.12.pf pour les PP, fin de l'exercice commercial courant pour les PM)
-	 */
-	@NotNull
-	protected abstract RegDate getDernierJourPourPeriodeFiscale();
-
-	public CauseFermeture getCauseFermeture() {
-		return causeFermeture;
+	public Qualification getQualification() {
+		return qualification;
 	}
 
 	public Integer getCodeSegment() {
 		return codeSegment;
 	}
 
+	public TypeAdresseRetour getAdresseRetour() {
+		return adresseRetour;
+	}
+
 	@Override
-	public final String toString() {
-		return String.format("%s{%s}", getClass().getSimpleName(), dumpValuesToString(getDisplayValues()));
+	public DateRange collate(DateRange n) {
+		final PeriodeImposition next = (PeriodeImposition) n;
+		final TypeAdresseRetour adresseRetour = next.adresseRetour; // [UNIREG-1741] en prenant le second type, on est aussi correct en cas de décès. 
+		Assert.isTrue(isCollatable(next));
+		return new PeriodeImposition(debut, next.getDateFin(), collateCategorieEnvoi(categorieEnvoiDI, next.categorieEnvoiDI), contribuable, qualification, codeSegment, adresseRetour,
+				optionnelle && next.optionnelle, remplaceeParNote && next.remplaceeParNote, next.causeFermeture);
+	}
+
+	@Override
+	public boolean isCollatable(DateRange n) {
+		final PeriodeImposition next = (PeriodeImposition) n;
+		return isEquivalent(categorieEnvoiDI, next.categorieEnvoiDI) && isRangeCollatable(next);
+	}
+
+	private boolean isRangeCollatable(final PeriodeImposition next) {
+		// on accepte les ranges qui se touchent *et* ceux qui se chevauchent, ceci parce que les périodes d'impositions peuvent être plus
+		// larges que les assujettissement sous-jacents (cas des HorsCanton et HorsSuisse) et qu'il s'agit de pouvoir les
+		// collater malgré tout.
+		return this.getDateFin() != null && this.getDateFin().getOneDayAfter().isAfterOrEqual(next.getDateDebut());
 	}
 
 	/**
-	 * @return une map (ordonnée) des données à afficher pour cette période d'imposition
+	 * @param left  le type de gauche
+	 * @param right le type de droite
+	 * @return <b>vrai</b> si les deux types de documents sont égaux, en <b>ne faisant pas</b> de différence entre DECLARATION_IMPOT_COMPLETE et DECLARATION_IMPOT_VAUDTAX.
 	 */
-	public final Map<String, String> getDisplayValues() {
-		final Map<String, String> values = new LinkedHashMap<>();
-		fillDisplayValues(values);
-		return values;
+	private boolean isEquivalent(CategorieEnvoiDI left, CategorieEnvoiDI right) {
+		return (left == right) || (isCompleteOuVaudTax(left.getTypeDocument()) && isCompleteOuVaudTax(right.getTypeDocument()));
 	}
 
-	/**
-	 * Remplit la map (ordonnée) avec les éléments à afficher pour cette période d'imposition
-	 * @param map map à remplir
-	 */
-	protected void fillDisplayValues(@NotNull Map<String, String> map) {
-		map.put("debut", RegDateHelper.dateToDisplayString(debut));
-		map.put("fin", RegDateHelper.dateToDisplayString(fin));
-		map.put("periodeFiscale", String.valueOf(getPeriodeFiscale()));
-		map.put("declarationOptionnelle", String.valueOf(declarationOptionnelle));
-		map.put("declarationRemplaceeParNote", String.valueOf(declarationRemplaceeParNote));
+	private boolean isCompleteOuVaudTax(TypeDocument doc) {
+		return doc == TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH || doc == TypeDocument.DECLARATION_IMPOT_COMPLETE_LOCAL || doc == TypeDocument.DECLARATION_IMPOT_VAUDTAX;
 	}
 
-	@NotNull
-	private static String dumpValuesToString(@NotNull Map<String, String> map) {
-		final StringBuilder b = new StringBuilder();
-		for (Map.Entry<String, String> entry : map.entrySet()) {
-			if (b.length() > 0) {
-				b.append(", ");
-			}
-			b.append(entry.getKey()).append("=").append(entry.getValue());
+	private CategorieEnvoiDI collateCategorieEnvoi(CategorieEnvoiDI left, CategorieEnvoiDI right) {
+		// Dans la plupart des cas, on prend le type de contribuable le plus à jour, c'est-à-dire la valeur 'right'.
+		// Sauf lorsque on a le choix entre en déclaration d'impôt vaudtax et une complète; dans ce cas on préfère la vaudtax.
+		if (left == CategorieEnvoiDI.VAUDOIS_VAUDTAX && right == CategorieEnvoiDI.VAUDOIS_COMPLETE) {
+			return CategorieEnvoiDI.VAUDOIS_VAUDTAX;
 		}
-		return b.toString();
+		else {
+			return right;
+		}
 	}
 
+	@Override
+	public boolean isValidAt(RegDate date) {
+		return RegDateHelper.isBetween(date, debut, fin, NullDateBehavior.LATEST);
+	}
+
+	@Override
+	public String toString() {
+		return String.format("PeriodeImposition{debut=%s, fin=%s, categorieEnvoiDI=%s, optionnelle=%s, remplaceeParNote=%s}", debut, fin, categorieEnvoiDI, optionnelle, remplaceeParNote);
+	}
 }

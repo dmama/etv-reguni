@@ -32,7 +32,7 @@
     <column>LOG_MDATE</column>
     <column>ID</column>
     <column>ANNEE</column>
-    <column>CODE_CTRL_SOMM_DI_PP</column>
+    <column>CODE_CTRL_SOMM_DI</column>
     <row>
       <value>2008-01-01</value>
       <value>1</value>
@@ -60,7 +60,6 @@
     <column>DATE_FIN_ENVOI_MASSE</column>
     <column>TYPE_CTB</column>
     <column>PERIODE_ID</column>
-    <column>PPF_TYPE</column>
     <row>
       <value>2008-01-01</value>
       <value>1</value>
@@ -69,7 +68,6 @@
       <value>20060430</value>
       <value>VAUDOIS_ORDINAIRE</value>
       <value>1</value>
-      <value>PP</value>
     </row>
     <row>
       <value>2008-01-01</value>
@@ -79,7 +77,6 @@
       <value>20060430</value>
       <value>VAUDOIS_DEPENSE</value>
       <value>1</value>
-      <value>PP</value>
     </row>
     <row>
       <value>2008-01-01</value>
@@ -89,7 +86,6 @@
       <value>20060430</value>
       <value>HORS_CANTON</value>
       <value>1</value>
-      <value>PP</value>
     </row>
     <row>
       <value>2008-01-01</value>
@@ -99,7 +95,6 @@
       <value>20060430</value>
       <value>HORS_SUISSE</value>
       <value>1</value>
-      <value>PP</value>
     </row>
     <row>
       <value>2008-01-01</value>
@@ -109,7 +104,6 @@
       <value>20070430</value>
       <value>VAUDOIS_ORDINAIRE</value>
       <value>2</value>
-      <value>PP</value>
     </row>
     <row>
       <value>2008-01-01</value>
@@ -119,7 +113,6 @@
       <value>20070430</value>
       <value>VAUDOIS_DEPENSE</value>
       <value>2</value>
-      <value>PP</value>
     </row>
     <row>
       <value>2008-01-01</value>
@@ -129,7 +122,6 @@
       <value>20070430</value>
       <value>HORS_CANTON</value>
       <value>2</value>
-      <value>PP</value>
     </row>
     <row>
       <value>2008-01-01</value>
@@ -139,7 +131,6 @@
       <value>20070430</value>
       <value>HORS_SUISSE</value>
       <value>2</value>
-      <value>PP</value>
     </row>
     <row>
       <value>2008-01-01</value>
@@ -149,7 +140,6 @@
       <value>20080430</value>
       <value>VAUDOIS_ORDINAIRE</value>
       <value>3</value>
-      <value>PP</value>
     </row>
     <row>
       <value>2008-01-01</value>
@@ -159,7 +149,6 @@
       <value>20080430</value>
       <value>VAUDOIS_DEPENSE</value>
       <value>3</value>
-      <value>PP</value>
     </row>
     <row>
       <value>2008-01-01</value>
@@ -169,7 +158,6 @@
       <value>20080430</value>
       <value>HORS_CANTON</value>
       <value>3</value>
-      <value>PP</value>
     </row>
     <row>
       <value>2008-01-01</value>
@@ -179,7 +167,6 @@
       <value>20080430</value>
       <value>HORS_SUISSE</value>
       <value>3</value>
-      <value>PP</value>
     </row>
   </table>
   <table name="DECLARATION">

@@ -82,7 +82,7 @@ public class DeclarationImpotControllerTest extends WebTestSpring3 {
 		request.addParameter("typeDocument", TypeDocument.DECLARATION_IMPOT_COMPLETE_LOCAL.toString());
 		request.addParameter("delaiRetour", "60");
 		request.addParameter("imprimable", "false");
-		request.setRequestURI("/di/imprimer-pp.do");
+		request.setRequestURI("/di/imprimer.do");
 
 		// Appel au contrôleur
 		final ModelAndView mav = handle(request, response);
@@ -124,7 +124,6 @@ public class DeclarationImpotControllerTest extends WebTestSpring3 {
 		request.addParameter("typeDocument", TypeDocument.DECLARATION_IMPOT_COMPLETE_LOCAL.toString());
 		request.addParameter("typeAdresseRetour", TypeAdresseRetour.CEDI.toString());
 		request.addParameter("delaiAccorde", RegDateHelper.dateToDisplayString(RegDate.get().addMonths(1)));
-		request.addParameter("typeContribuable", "PP");
 		request.setRequestURI("/di/imprimer.do");
 
 		// exécution de la requête
@@ -166,7 +165,7 @@ public class DeclarationImpotControllerTest extends WebTestSpring3 {
 		request.setMethod("POST");
 		request.addParameter("idDI", diId.toString());
 		request.addParameter("selectedTypeDocument", TypeDocument.DECLARATION_IMPOT_VAUDTAX.toString());
-		request.setRequestURI("/di/duplicata-pp.do");
+		request.setRequestURI("/di/duplicata.do");
 
 		// exécution de la requête
 		final ModelAndView results = handle(request, response);

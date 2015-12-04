@@ -4,7 +4,6 @@ import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
@@ -30,7 +29,7 @@ public class EditModeImpositionView {
 	public EditModeImpositionView() {
 	}
 
-	public EditModeImpositionView(ForFiscalPrincipalPP ffp) {
+	public EditModeImpositionView(ForFiscalPrincipal ffp) {
 		this.id = ffp.getId();
 		this.tiersId = ffp.getTiers().getNumero();
 		this.dateDebut = ffp.getDateDebut();

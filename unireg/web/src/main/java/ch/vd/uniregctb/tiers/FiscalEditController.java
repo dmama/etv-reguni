@@ -24,7 +24,7 @@ public class FiscalEditController extends AbstractTiersController {
 	 */
 	protected final Logger LOGGER = LoggerFactory.getLogger(FiscalEditController.class);
 
-	public static final String TARGET_ANNULER_SIT_FAM = "annulerSituationFamille";
+	public final static String TARGET_ANNULER_SIT_FAM = "annulerSituationFamille";
 
 	private TiersEditManager tiersEditManager;
 

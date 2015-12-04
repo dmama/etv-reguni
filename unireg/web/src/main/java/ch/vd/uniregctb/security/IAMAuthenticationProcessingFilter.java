@@ -30,13 +30,13 @@ import ch.vd.uniregctb.common.EncodingFixHelper;
  */
 public class IAMAuthenticationProcessingFilter extends GenericFilterBean {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(IAMAuthenticationProcessingFilter.class);
+	private final static Logger LOGGER = LoggerFactory.getLogger(IAMAuthenticationProcessingFilter.class);
 
-	private static final String visaHeaderKey = "iam-userid";
+	private final static String visaHeaderKey = "iam-userid";
 	private static final String firstnameHeaderKey = "iam-firstname";
 	private static final String lastnameHeaderKey = "iam-lastname";
-	private static final String applicationHeaderKey = "iam-application";
-	private static final String rolesHeaderKey = "iam-roles";
+	private final static String applicationHeaderKey = "iam-application";
+	private final static String rolesHeaderKey = "iam-roles";
 	private static final String ACEGI_SECURITY_FORM_USERNAME_KEY = "j_username";
 
 	private Class<? extends IAMDetails> detailsClass;

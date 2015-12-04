@@ -7,12 +7,12 @@ import org.junit.Assert;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.data.DataEventService;
+import ch.vd.uniregctb.evenement.civil.EvenementCivilErreur;
 import ch.vd.uniregctb.evenement.civil.EvenementCivilErreurCollector;
 import ch.vd.uniregctb.evenement.civil.EvenementCivilWarningCollector;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
-import ch.vd.uniregctb.evenement.common.EvenementErreur;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
 import ch.vd.uniregctb.evenement.fiscal.MockEvenementFiscalSender;
 import ch.vd.uniregctb.metier.MetierService;
@@ -89,7 +89,7 @@ public abstract class AbstractEvenementCivilInterneTest extends BusinessTest {
 
 		for (int i = 0 ; i < messagesErreurs.size() ; ++ i) {
 			final String expected = messagesErreurs.get(i);
-			final EvenementErreur erreurTrouvee = erreurs.getErreurs().get(i);
+			final EvenementCivilErreur erreurTrouvee = erreurs.getErreurs().get(i);
 			Assert.assertEquals("Index " + i, expected, erreurTrouvee.getMessage());
 		}
 	}

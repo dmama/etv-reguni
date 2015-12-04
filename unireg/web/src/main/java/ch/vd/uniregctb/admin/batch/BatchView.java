@@ -4,7 +4,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import ch.vd.uniregctb.scheduler.JobCategory;
 import ch.vd.uniregctb.scheduler.JobDefinition;
 
 @SuppressWarnings("UnusedDeclaration")
@@ -12,7 +11,7 @@ public class BatchView {
 
 	// static
 	private String name;
-	private JobCategory categorie;
+	private String categorie;
 	private String description;
 
 	// dynamic
@@ -47,7 +46,7 @@ public class BatchView {
 		return name;
 	}
 
-	public JobCategory getCategorie() {
+	public String getCategorie() {
 		return categorie;
 	}
 

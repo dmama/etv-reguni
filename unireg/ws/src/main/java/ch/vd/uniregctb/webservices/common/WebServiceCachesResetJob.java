@@ -5,17 +5,17 @@ import java.util.Map;
 
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.cache.UniregCacheInterface;
-import ch.vd.uniregctb.scheduler.JobCategory;
 import ch.vd.uniregctb.scheduler.JobDefinition;
 
 public class WebServiceCachesResetJob extends JobDefinition {
 
 	public static final String NAME = "WebServiceCachesResetJob";
+	private static final String CATEGORIE = "Cache";
 
 	private List<UniregCacheInterface> caches;
 
 	public WebServiceCachesResetJob(int sortOrder, String description) {
-		super(NAME, JobCategory.CACHE, sortOrder, description);
+		super(NAME, CATEGORIE, sortOrder, description);
 	}
 
 	@Override

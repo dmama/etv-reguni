@@ -6,10 +6,9 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotService;
-import ch.vd.uniregctb.declaration.ordinaire.pp.EnvoiSommationsDIsPPResults;
-import ch.vd.uniregctb.document.EnvoiSommationsDIsPPRapport;
+import ch.vd.uniregctb.declaration.ordinaire.EnvoiSommationsDIsResults;
+import ch.vd.uniregctb.document.EnvoiSommationsDIsRapport;
 import ch.vd.uniregctb.rapport.RapportService;
-import ch.vd.uniregctb.scheduler.JobCategory;
 import ch.vd.uniregctb.scheduler.JobDefinition;
 import ch.vd.uniregctb.scheduler.JobParam;
 import ch.vd.uniregctb.scheduler.JobParamBoolean;
@@ -19,6 +18,7 @@ import ch.vd.uniregctb.scheduler.JobParamRegDate;
 public class EditiqueSommationDIJob extends JobDefinition {
 
 	public static final String NAME = "EditiqueSommationDIJob";
+	private static final String CATEGORIE = "DI";
 
 	public static final String PARAM_MISE_SS_PLI  = "PARAM_MISE_SS_PLI";
 	public static final String PARAM_NB_MAX_SOMMATIONS  = "PARAM_NB_MAX_SOMMATIONS";
@@ -27,7 +27,7 @@ public class EditiqueSommationDIJob extends JobDefinition {
 	private RapportService rapportService;
 
 	public EditiqueSommationDIJob(int sortOrder) {
-		super(NAME, JobCategory.DI_PP, sortOrder, "Imprimer les sommations des déclarations d'impôt");
+		super(NAME, CATEGORIE, sortOrder, "Imprimer les sommations des déclarations d'impôt");
 
 		final JobParam param0 = new JobParam();
 		param0.setDescription("Mise sous pli automatique impossible");
@@ -62,7 +62,7 @@ public class EditiqueSommationDIJob extends JobDefinition {
 		final RegDate dateTraitment = getDateTraitement(params);
 		final boolean miseSousPliAutomatiqueImpossible = getBooleanValue(params, PARAM_MISE_SS_PLI);
 		final Integer nombreMax = getOptionalIntegerValue(params, PARAM_NB_MAX_SOMMATIONS);
-		final EnvoiSommationsDIsPPResults results = declarationImpotService.envoyerSommationsPP(dateTraitment, miseSousPliAutomatiqueImpossible, nombreMax == null ? 0 : nombreMax, getStatusManager());
+		final EnvoiSommationsDIsResults results = declarationImpotService.envoyerSommations(dateTraitment, miseSousPliAutomatiqueImpossible, nombreMax == null ? 0 : nombreMax, getStatusManager());
 		if (results == null) {
 			Audit.error( String.format(
 					"L'envoi en masse des sommations DIs  pour le %s a échoué"
@@ -71,7 +71,7 @@ public class EditiqueSommationDIJob extends JobDefinition {
 			return;
 		}
 
-		final EnvoiSommationsDIsPPRapport rapport = rapportService.generateRapport(results, getStatusManager());
+		final EnvoiSommationsDIsRapport rapport = rapportService.generateRapport(results, getStatusManager());
 		setLastRunReport(rapport);
 		Audit.success(
 				"L'envoi en masse des sommations DIs  pour le "

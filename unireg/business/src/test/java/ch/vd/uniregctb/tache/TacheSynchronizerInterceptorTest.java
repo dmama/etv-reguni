@@ -24,8 +24,9 @@ import ch.vd.uniregctb.evenement.cedi.EvenementCediEsbMessageHandler;
 import ch.vd.uniregctb.evenement.cedi.EvenementCediService;
 import ch.vd.uniregctb.evenement.cedi.V1Handler;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementException;
-import ch.vd.uniregctb.tache.sync.AddDIPP;
+import ch.vd.uniregctb.tache.sync.AddDI;
 import ch.vd.uniregctb.tache.sync.SynchronizeAction;
+import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.Tache;
 import ch.vd.uniregctb.tiers.TacheDAO;
@@ -108,13 +109,13 @@ public class TacheSynchronizerInterceptorTest extends BusinessTest {
 		doInNewTransaction(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
-				final PersonnePhysique ralf = hibernateTemplate.get(PersonnePhysique.class, CTB_ID);
+				final Contribuable ralf = hibernateTemplate.get(Contribuable.class, CTB_ID);
 				assertNotNull(ralf);
 				try {
 					final List<SynchronizeAction> list = tacheService.determineSynchronizeActionsForDIs(ralf);
 					assertNotNull(list);
 					assertEquals(1, list.size());
-					final AddDIPP action = (AddDIPP) list.get(0);
+					final AddDI action = (AddDI) list.get(0);
 					assertEquals(date(2008, 1, 1), action.periodeImposition.getDateDebut());
 					assertEquals(date(2008, 12, 31), action.periodeImposition.getDateFin());
 				}

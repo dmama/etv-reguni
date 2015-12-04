@@ -52,7 +52,6 @@ import ch.vd.uniregctb.supergra.view.AttributeView;
 import ch.vd.uniregctb.supergra.view.CollectionView;
 import ch.vd.uniregctb.supergra.view.EntityView;
 import ch.vd.uniregctb.taglibs.formInput.MultilineString;
-import ch.vd.uniregctb.tiers.ActiviteEconomique;
 import ch.vd.uniregctb.tiers.AnnuleEtRemplace;
 import ch.vd.uniregctb.tiers.AppartenanceMenage;
 import ch.vd.uniregctb.tiers.AssujettissementParSubstitution;
@@ -62,11 +61,7 @@ import ch.vd.uniregctb.tiers.ContactImpotSource;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.Curatelle;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
-import ch.vd.uniregctb.tiers.Entreprise;
-import ch.vd.uniregctb.tiers.Etablissement;
-import ch.vd.uniregctb.tiers.FusionEntreprises;
 import ch.vd.uniregctb.tiers.LinkedEntity;
-import ch.vd.uniregctb.tiers.Mandat;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RapportPrestationImposable;
@@ -139,7 +134,7 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 	 */
 	private Map<AttributeKey, AttributeBuilder> attributeCustomBuilders = null;
 
-	private interface AttributeBuilder {
+	private static interface AttributeBuilder {
 		AttributeView build(Property p, Object value, SuperGraContext context);
 	}
 
@@ -937,54 +932,6 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 			public AttributeView build(Property p, Object value, SuperGraContext context) {
 				final HibernateEntity entity = (value == null ? null : context.getEntity(new EntityKey(EntityType.Tiers, (Long) value)));
 				return new AttributeView(p.getName(), "substituant", Tiers.class, entity, false, false, false);
-			}
-		});
-
-		// Activité économique
-		builders.put(new AttributeKey(ActiviteEconomique.class, "sujetId"), new AttributeBuilder() {
-			@Override
-			public AttributeView build(Property p, Object value, SuperGraContext context) {
-				final HibernateEntity entity = (value == null ? null : context.getEntity(new EntityKey(EntityType.Tiers, (Long) value)));
-				return new AttributeView(p.getName(), "personne", Tiers.class, entity, false, false, false);
-			}
-		});
-		builders.put(new AttributeKey(ActiviteEconomique.class, "objetId"), new AttributeBuilder() {
-			@Override
-			public AttributeView build(Property p, Object value, SuperGraContext context) {
-				final HibernateEntity entity = (value == null ? null : context.getEntity(new EntityKey(EntityType.Tiers, (Long) value)));
-				return new AttributeView(p.getName(), "établissement", Etablissement.class, entity, false, false, false);
-			}
-		});
-
-		// Mandat
-		builders.put(new AttributeKey(Mandat.class, "sujetId"), new AttributeBuilder() {
-			@Override
-			public AttributeView build(Property p, Object value, SuperGraContext context) {
-				final HibernateEntity entity = (value == null ? null : context.getEntity(new EntityKey(EntityType.Tiers, (Long) value)));
-				return new AttributeView(p.getName(), "mandant", Tiers.class, entity, false, false, false);
-			}
-		});
-		builders.put(new AttributeKey(Mandat.class, "objetId"), new AttributeBuilder() {
-			@Override
-			public AttributeView build(Property p, Object value, SuperGraContext context) {
-				final HibernateEntity entity = (value == null ? null : context.getEntity(new EntityKey(EntityType.Tiers, (Long) value)));
-				return new AttributeView(p.getName(), "mandataire", Tiers.class, entity, false, false, false);
-			}
-		});
-
-		// fusion d'entreprises
-		builders.put(new AttributeKey(FusionEntreprises.class, "sujetId"), new AttributeBuilder() {
-			@Override
-			public AttributeView build(Property p, Object value, SuperGraContext context) {
-				final HibernateEntity entity = (value == null ? null : context.getEntity(new EntityKey(EntityType.Tiers, (Long) value)));
-				return new AttributeView(p.getName(), "avant fusion", Entreprise.class, entity, false, false, false);
-			}
-		});
-		builders.put(new AttributeKey(FusionEntreprises.class, "objetId"), new AttributeBuilder() {
-			@Override
-			public AttributeView build(Property p, Object value, SuperGraContext context) {
-				final HibernateEntity entity = (value == null ? null : context.getEntity(new EntityKey(EntityType.Tiers, (Long) value)));
-				return new AttributeView(p.getName(), "après fusion", Etablissement.class, entity, false, false, false);
 			}
 		});
 

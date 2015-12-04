@@ -21,7 +21,6 @@ import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.uniregctb.common.ComparisonHelper;
 import ch.vd.uniregctb.common.LengthConstants;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.Periodicite;
@@ -397,13 +396,43 @@ public class DebiteurPrestationImposable extends Tiers {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-
-		final DebiteurPrestationImposable other = (DebiteurPrestationImposable) obj;
-		return ComparisonHelper.areEqual(categorieImpotSource, other.categorieImpotSource)
-				&& ComparisonHelper.areEqual(modeCommunication, other.modeCommunication)
-				&& ComparisonHelper.areEqual(nom1, other.nom1)
-				&& ComparisonHelper.areEqual(nom2, other.nom2)
-				&& ComparisonHelper.areEqual(periodeDecompteAvantMigration, other.periodeDecompteAvantMigration)
-				&& ComparisonHelper.areEqual(periodiciteDecompteAvantMigration, other.periodiciteDecompteAvantMigration);
+		DebiteurPrestationImposable other = (DebiteurPrestationImposable) obj;
+		if (categorieImpotSource == null) {
+			if (other.categorieImpotSource != null)
+				return false;
+		}
+		else if (categorieImpotSource != other.categorieImpotSource)
+			return false;
+		if (modeCommunication == null) {
+			if (other.modeCommunication != null)
+				return false;
+		}
+		else if (modeCommunication != other.modeCommunication)
+			return false;
+		if (nom1 == null) {
+			if (other.nom1 != null)
+				return false;
+		}
+		else if (!nom1.equals(other.nom1))
+			return false;
+		if (nom2 == null) {
+			if (other.nom2 != null)
+				return false;
+		}
+		else if (!nom2.equals(other.nom2))
+			return false;
+		if (periodeDecompteAvantMigration == null) {
+			if (other.periodeDecompteAvantMigration != null)
+				return false;
+		}
+		else if (periodeDecompteAvantMigration != other.periodeDecompteAvantMigration)
+			return false;
+		if (periodiciteDecompteAvantMigration == null) {
+			if (other.periodiciteDecompteAvantMigration != null)
+				return false;
+		}
+		else if (periodiciteDecompteAvantMigration != other.periodiciteDecompteAvantMigration)
+			return false;
+		return true;
 	}
 }

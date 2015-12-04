@@ -1,53 +1,144 @@
+/**
+ *
+ */
 package ch.vd.uniregctb.type;
 
+/**
+ * <!-- begin-user-doc --> Longueur de colonne : 29 <!-- end-user-doc -->
+ *
+ * @author jec
+ * @uml.annotations derived_abstraction="platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_EM7REC4AEd2H4bonmeBdag"
+ * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_EM7REC4AEd2H4bonmeBdag"
+ */
 public enum TypeDocument {
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 *
+	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_bJc3MC4AEd2H4bonmeBdag"
+	 */
+	DECLARATION_IMPOT_COMPLETE_BATCH {
+		@Override
+		public boolean isOrdinaire() {
+			return true;
+		}
 
-	//
-	// Déclarations d'impôt pour les contribuables assimilés "Personnes Physiques"
-	//
+		@Override
+		public String getDescription() {
+			return "déclaration d'impôt ordinaire complète";
+		}
+	},
 
-	DECLARATION_IMPOT_COMPLETE_BATCH("déclaration d'impôt ordinaire complète"),
-	DECLARATION_IMPOT_COMPLETE_LOCAL("déclaration d'impôt ordinaire complète"),
-	DECLARATION_IMPOT_VAUDTAX("déclaration d'impôt ordinaire VaudTax"),
-	DECLARATION_IMPOT_DEPENSE("déclaration d'impôt dépense"),
-	DECLARATION_IMPOT_HC_IMMEUBLE("déclaration d'impôt hors-canton immeuble"),
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 *
+	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_bJc3MC4AEd2H4bonmeBdag"
+	 */
+	DECLARATION_IMPOT_COMPLETE_LOCAL {
+		@Override
+		public boolean isOrdinaire() {
+			return true;
+		}
 
-	//
-	// Déclarations d'impôt pour les contribuables assimilés "Personnes Morales"
-	//
+		@Override
+		public String getDescription() {
+			return "déclaration d'impôt ordinaire complète";
+		}
+	},
 
-	DECLARATION_IMPOT_PM("déclaration d'impôt PM"),
-	DECLARATION_IMPOT_APM("déclaration d'impôt APM"),
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 *
+	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_grXAkC4AEd2H4bonmeBdag"
+	 */
+	DECLARATION_IMPOT_VAUDTAX {
+		@Override
+		public boolean isOrdinaire() {
+			return true;
+		}
 
-	//
-	// Questionnaire SNC
-	//
+		@Override
+		public String getDescription() {
+			return "déclaration d'impôt ordinaire VaudTax";
+		}
+	},
 
-	QUESTIONNAIRE_SNC("questionnaire SNC"),
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 *
+	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_lVZGwC4AEd2H4bonmeBdag"
+	 */
+	DECLARATION_IMPOT_DEPENSE {
+		@Override
+		public boolean isOrdinaire() {
+			return false;
+		}
 
-	//
-	// Documents IS
-	//
+		@Override
+		public String getDescription() {
+			return "déclaration d'impôt dépense";
+		}
+	},
 
-	LISTE_RECAPITULATIVE("liste récapitulative"),
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 *
+	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_qAwpsC4AEd2H4bonmeBdag"
+	 */
+	DECLARATION_IMPOT_HC_IMMEUBLE {
+		@Override
+		public boolean isOrdinaire() {
+			return false;
+		}
 
-	//
-	// E-facture
-	//
+		@Override
+		public String getDescription() {
+			return "déclaration d'impôt hors-canton immeuble";
+		}
+	},
 
-	E_FACTURE_ATTENTE_CONTACT("document de demande de contact pour E-facture"),
-	E_FACTURE_ATTENTE_SIGNATURE("document de demande de signature pour confirmation E-facture");
+	LISTE_RECAPITULATIVE {
+		@Override
+		public boolean isOrdinaire() {
+			return false;
+		}
 
-	private final String description;
+		@Override
+		public String getDescription() {
+			return "liste récapitulative";
+		}
+	},
 
-	TypeDocument(String description) {
-		this.description = description;
-	}
+	E_FACTURE_ATTENTE_CONTACT{
+		@Override
+		public boolean isOrdinaire() {
+			return false;
+		}
+
+		@Override
+		public String getDescription() {
+			return "Document de demande de contact pour E-facture";
+		}
+	},
+
+	E_FACTURE_ATTENTE_SIGNATURE{
+		@Override
+		public boolean isOrdinaire() {
+			return false;
+		}
+
+		@Override
+		public String getDescription() {
+			return "Document de demande de signature pour confirmation E-facture";
+		}
+	};
+
+	/**
+	 * @return <b>vrai</b> si le type de document correspond à une déclaration ordinaire (complète manuelle, complète batch ou vaudtax).
+	 */
+	public abstract boolean isOrdinaire();
 
 	/**
 	 * @return une description textuelle du type de document
 	 */
-	public String getDescription() {
-		return description;
-	}
+	public abstract String getDescription();
 }

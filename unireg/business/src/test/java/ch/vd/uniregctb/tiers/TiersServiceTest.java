@@ -1,6 +1,5 @@
 package ch.vd.uniregctb.tiers;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -31,6 +30,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.tx.TxCallbackWithoutResult;
 import ch.vd.registre.base.validation.ValidationException;
+import ch.vd.unireg.interfaces.civil.data.Adresse;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
 import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.unireg.interfaces.civil.data.Localisation;
@@ -40,7 +40,6 @@ import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockNationalite;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
-import ch.vd.unireg.interfaces.common.Adresse;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.interfaces.infra.mock.DefaultMockServiceInfrastructureService;
 import ch.vd.unireg.interfaces.infra.mock.MockAdresse;
@@ -50,15 +49,6 @@ import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockLocalite;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
-import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
-import ch.vd.unireg.interfaces.organisation.data.StatusInscriptionRC;
-import ch.vd.unireg.interfaces.organisation.data.StatusRC;
-import ch.vd.unireg.interfaces.organisation.data.StatusRegistreIDE;
-import ch.vd.unireg.interfaces.organisation.data.TypeOrganisationRegistreIDE;
-import ch.vd.unireg.interfaces.organisation.mock.MockServiceOrganisation;
-import ch.vd.unireg.interfaces.organisation.mock.data.MockOrganisation;
-import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockOrganisationFactory;
-import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockSiteOrganisationFactory;
 import ch.vd.uniregctb.adresse.AdresseGenerique;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.adresse.AdresseSuisse;
@@ -67,15 +57,15 @@ import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.declaration.Periodicite;
-import ch.vd.uniregctb.evenement.fiscal.EvenementFiscal;
-import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalDAO;
-import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalFor;
-import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalParente;
+import ch.vd.uniregctb.evenement.EvenementFiscal;
+import ch.vd.uniregctb.evenement.EvenementFiscalDAO;
+import ch.vd.uniregctb.evenement.EvenementFiscalFinAutoriteParentale;
+import ch.vd.uniregctb.evenement.EvenementFiscalFor;
+import ch.vd.uniregctb.interfaces.model.mock.MockPersonneMorale;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilImpl;
-import ch.vd.uniregctb.metier.bouclement.ExerciceCommercial;
+import ch.vd.uniregctb.interfaces.service.mock.MockServicePM;
 import ch.vd.uniregctb.tiers.dao.DecisionAciDAO;
 import ch.vd.uniregctb.type.CategorieImpotSource;
-import ch.vd.uniregctb.type.DayMonth;
 import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
@@ -178,7 +168,7 @@ public class TiersServiceTest extends BusinessTest {
 			tiers.setNumeroIndividu(noIndividu);
 			tiers = (PersonnePhysique) tiersDAO.save(tiers);
 
-			ForFiscalPrincipalPP premierForFiscal = new ForFiscalPrincipalPP();
+			ForFiscalPrincipal premierForFiscal = new ForFiscalPrincipal();
 			premierForFiscal.setAnnule(false);
 			premierForFiscal.setDateFin(null);
 			premierForFiscal.setDateDebut(RegDate.get(2008, 1, 1));
@@ -197,7 +187,7 @@ public class TiersServiceTest extends BusinessTest {
 			forFiscalPrincipal.setDateFin(RegDate.get().getOneDayBefore());
 			forFiscalPrincipal.setMotifFermeture(MotifFor.DEMENAGEMENT_VD);
 
-			ForFiscalPrincipalPP nouveauForFiscal = new ForFiscalPrincipalPP();
+			ForFiscalPrincipal nouveauForFiscal = new ForFiscalPrincipal();
 			nouveauForFiscal.setAnnule(false);
 			nouveauForFiscal.setDateFin(null);
 			nouveauForFiscal.setDateDebut(RegDate.get());
@@ -634,10 +624,10 @@ public class TiersServiceTest extends BusinessTest {
 		assertEquals(0, habitant.getForsFiscaux().size());
 
 		tiersService.openForFiscalPrincipal(habitant, dateOuverture, MotifRattachement.DOMICILE, MockCommune.Cossonay.getNoOFS(),
-		                                    TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ModeImposition.ORDINAIRE, MotifFor.ARRIVEE_HC);
+				TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ModeImposition.ORDINAIRE, MotifFor.ARRIVEE_HC);
 		assertEquals(1, habitant.getForsFiscaux().size());
 
-		ForFiscalPrincipalPP ff = (ForFiscalPrincipalPP) habitant.getForsFiscaux().toArray()[0];
+		ForFiscalPrincipal ff = (ForFiscalPrincipal) habitant.getForsFiscaux().toArray()[0];
 		assertEquals(new Integer(MockCommune.Cossonay.getNoOFS()), ff.getNumeroOfsAutoriteFiscale());
 		assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ff.getTypeAutoriteFiscale());
 		assertEquals(GenreImpot.REVENU_FORTUNE, ff.getGenreImpot());
@@ -1313,7 +1303,7 @@ public class TiersServiceTest extends BusinessTest {
 			public Object execute(TransactionStatus status) throws Exception {
 
 				// Un contribuable avec deux fors principaux adjacent
-				PersonnePhysique eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
+				Contribuable eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
 
 				ForFiscalPrincipal premierForPrincipal = addForPrincipal(eric, date(1983, 4, 13), MotifFor.MAJORITE, date(2008, 3, 31),
 						MotifFor.DEMENAGEMENT_VD, MockCommune.Lausanne);
@@ -1367,14 +1357,14 @@ public class TiersServiceTest extends BusinessTest {
 			public Object execute(TransactionStatus status) throws Exception {
 
 				// Un contribuable avec deux fors principaux non-adjacents
-				PersonnePhysique eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
+				Contribuable eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
 
 				ForFiscalPrincipal forPrincipal = addForPrincipal(eric, date(1983, 4, 13), MotifFor.MAJORITE, date(2008, 2, 28), MotifFor.VEUVAGE_DECES, MockCommune.Lausanne);
 				forPrincipal.setTiers(eric);
 
 				ForFiscalSecondaire forFiscalSecondaire =
 						addForSecondaire(eric, date(1990, 4, 13), MotifFor.ACHAT_IMMOBILIER, date(2008, 2, 28), MotifFor.VEUVAGE_DECES, MockCommune.Lausanne.getNoOFS(),
-						                 MotifRattachement.IMMEUBLE_PRIVE);
+								MotifRattachement.IMMEUBLE_PRIVE);
 				id.forSecondaire = forFiscalSecondaire.getId();
 				forFiscalSecondaire.setTiers(eric);
 				return null;
@@ -1409,7 +1399,7 @@ public class TiersServiceTest extends BusinessTest {
 			public Object execute(TransactionStatus status) throws Exception {
 
 				// Un contribuable décédé
-				PersonnePhysique eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
+				Contribuable eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
 				id.idEric = eric.getId();
 				ForFiscalPrincipal forPrincipal = addForPrincipal(eric, date(1983, 4, 13), MotifFor.MAJORITE, date(2008, 2, 28), MotifFor.VEUVAGE_DECES, MockCommune.Lausanne);
 				forPrincipal.setTiers(eric);
@@ -1450,10 +1440,10 @@ public class TiersServiceTest extends BusinessTest {
 			public Object execute(TransactionStatus status) throws Exception {
 
 				// Un contribuable avec deux fors principaux non-adjacents
-				PersonnePhysique eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
+				Contribuable eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
 
 				ForFiscalPrincipal premierForPrincipal = addForPrincipal(eric, date(1983, 4, 13), MotifFor.MAJORITE, date(2008, 2, 28),
-				                                                         MotifFor.DEPART_HC, MockCommune.Lausanne);
+						MotifFor.DEPART_HC, MockCommune.Lausanne);
 				ids.premierForPrincipalId = premierForPrincipal.getId();
 				premierForPrincipal.setTiers(eric);
 
@@ -1503,7 +1493,7 @@ public class TiersServiceTest extends BusinessTest {
 			public Object execute(TransactionStatus status) throws Exception {
 
 				// Un contribuable avec deux fors principaux adjacent
-				PersonnePhysique eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
+				Contribuable eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
 
 				ForFiscalPrincipal premierForPrincipal = addForPrincipal(eric, date(1983, 4, 13), MotifFor.MAJORITE, date(2008, 3, 31),
 						MotifFor.DEMENAGEMENT_VD, MockCommune.Lausanne);
@@ -2637,7 +2627,7 @@ debut PF                                                                        
 				ModeImposition.ORDINAIRE);
 		addForPrincipal(c, date(2001, 1, 2), MotifFor.DEPART_HS, null, null, MockPays.CoreeSud);
 		addForSecondaire(c,date(2000, 1, 1),MotifFor.ACHAT_IMMOBILIER,date(2003, 12, 31), MotifFor.VENTE_IMMOBILIER,MockCommune.Bussigny.getNoOFS(),MotifRattachement.IMMEUBLE_PRIVE);
-		addForSecondaire(c, date(2002, 1, 1), MotifFor.ACHAT_IMMOBILIER, null, null, MockCommune.Renens.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+		addForSecondaire(c,date(2002, 1, 1),MotifFor.ACHAT_IMMOBILIER,null, null,MockCommune.Renens.getNoOFS(),MotifRattachement.IMMEUBLE_PRIVE);
 
 		assertNull(tiersService.getForGestionActif(c, date(1950, 1, 1)));
 		assertNull(tiersService.getForGestionActif(c, date(1989, 12, 31)));
@@ -2954,6 +2944,8 @@ debut PF                                                                        
 		return for0;
 	}
 
+
+
 	private static void assertForGestion(RegDate debut, @Nullable RegDate fin, int noOfsCommune, ForGestion f) {
 		assertNotNull(f);
 		assertEquals(debut, f.getDateDebut());
@@ -3126,7 +3118,7 @@ debut PF                                                                        
 				tiersService.closeForFiscalPrincipal(mc, date(2001, 12, 31), MotifFor.DEMENAGEMENT_VD);
 				tiersService
 						.openForFiscalPrincipal(mc, date(2002, 1, 1), MotifRattachement.DOMICILE, MockCommune.Aubonne.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ModeImposition.ORDINAIRE,
-						                        MotifFor.DEMENAGEMENT_VD);
+								MotifFor.DEMENAGEMENT_VD);
 				return null;
 			}
 		});
@@ -3299,13 +3291,15 @@ debut PF                                                                        
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique achille = addHabitant(noIndAchille);
-				addForPrincipal(achille, date(2008, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Lausanne, ModeImposition.SOURCE);
+				final ForFiscalPrincipal ffpAchille = addForPrincipal(achille, date(2008, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
+				ffpAchille.setModeImposition(ModeImposition.SOURCE);
 				idCtbHabitant.setValue(achille.getNumero());
 
 
 				final PersonnePhysique huguette = addNonHabitant("Huguette", "Marcot", date(1950, 4, 12), Sexe.FEMININ);
 				huguette.setNumeroIndividu(noIndHuguette);
-				addForPrincipal(huguette, date(2008, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Lausanne, ModeImposition.SOURCE);
+				final ForFiscalPrincipal ffpHuguette = addForPrincipal(huguette, date(2008, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
+				ffpHuguette.setModeImposition(ModeImposition.SOURCE);
 				idCtbNonHabitantAvecNumeroInd.setValue(huguette.getNumero());
 				return null;
 			}
@@ -3326,7 +3320,8 @@ debut PF                                                                        
 			@Override
 			public Long execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique nh = addNonHabitant("Achille", "Talon", date(1950, 3, 24), Sexe.MASCULIN);
-				addForPrincipal(nh, date(2008, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Lausanne, ModeImposition.SOURCE);
+				final ForFiscalPrincipal ffp = addForPrincipal(nh, date(2008, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
+				ffp.setModeImposition(ModeImposition.SOURCE);
 				return nh.getNumero();
 			}
 		});
@@ -3343,7 +3338,8 @@ debut PF                                                                        
 			@Override
 			public Long execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique nh = addNonHabitant("Achille", "Talon", date(1950, 3, 24), Sexe.MASCULIN);
-				addForPrincipal(nh, date(2008, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Neuchatel, ModeImposition.SOURCE);
+				final ForFiscalPrincipal ffp = addForPrincipal(nh, date(2008, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Neuchatel);
+				ffp.setModeImposition(ModeImposition.SOURCE);
 				return nh.getNumero();
 			}
 		});
@@ -3360,7 +3356,8 @@ debut PF                                                                        
 			@Override
 			public Long execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique nh = addNonHabitant("Achille", "Talon", date(1950, 3, 24), Sexe.MASCULIN);
-				addForPrincipal(nh, date(2008, 1, 1), MotifFor.MAJORITE, MockPays.Espagne, ModeImposition.SOURCE);
+				final ForFiscalPrincipal ffp = addForPrincipal(nh, date(2008, 1, 1), MotifFor.MAJORITE, MockPays.Espagne);
+				ffp.setModeImposition(ModeImposition.SOURCE);
 				return nh.getNumero();
 			}
 		});
@@ -3381,11 +3378,13 @@ debut PF                                                                        
 			public Long execute(TransactionStatus status) throws Exception {
 
 				final PersonnePhysique nh1 = addNonHabitant("Achille", "Talon", date(1950, 3, 24), Sexe.MASCULIN);
-				addForPrincipal(nh1, date(2008, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Lausanne, ModeImposition.MIXTE_137_1);
+				final ForFiscalPrincipal ffp1 = addForPrincipal(nh1, date(2008, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
+				ffp1.setModeImposition(ModeImposition.MIXTE_137_1);
 				idCtbMixte1.setValue(nh1.getNumero());
 
 				final PersonnePhysique nh2 = addNonHabitant("Achille", "Talon-Deux", date(1950, 3, 24), Sexe.MASCULIN);
-				addForPrincipal(nh2, date(2008, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Lausanne, ModeImposition.MIXTE_137_2);
+				final ForFiscalPrincipal ffp2 = addForPrincipal(nh2, date(2008, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
+				ffp2.setModeImposition(ModeImposition.MIXTE_137_2);
 				idCtbMixte2.setValue(nh2.getNumero());
 
 				return null;
@@ -3421,7 +3420,9 @@ debut PF                                                                        
 				final MenageCommun mc = ensemble.getMenage();
 				idCtbCouple.setValue(mc.getNumero());
 
-				addForPrincipal(mc, date(1975, 1, 5), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne, ModeImposition.SOURCE);
+				final ForFiscalPrincipal ffp = addForPrincipal(mc, date(1975, 1, 5), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne);
+				ffp.setModeImposition(ModeImposition.SOURCE);
+
 				return null;
 			}
 		});
@@ -3454,7 +3455,9 @@ debut PF                                                                        
 				final MenageCommun mc = ensemble.getMenage();
 				idCtbCouple.setValue(mc.getNumero());
 
-				addForPrincipal(mc, date(1975, 1, 5), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne, ModeImposition.SOURCE);
+				final ForFiscalPrincipal ffp = addForPrincipal(mc, date(1975, 1, 5), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne);
+				ffp.setModeImposition(ModeImposition.SOURCE);
+
 				return null;
 			}
 		});
@@ -3498,7 +3501,9 @@ debut PF                                                                        
 				final MenageCommun mc = ensemble.getMenage();
 				idCtbCouple.setValue(mc.getNumero());
 
-				addForPrincipal(mc, date(1975, 1, 5), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne, ModeImposition.SOURCE);
+				final ForFiscalPrincipal ffp = addForPrincipal(mc, date(1975, 1, 5), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne);
+				ffp.setModeImposition(ModeImposition.SOURCE);
+
 				return null;
 			}
 		});
@@ -3541,7 +3546,9 @@ debut PF                                                                        
 				final MenageCommun mc = ensemble.getMenage();
 				idCtbCouple.setValue(mc.getNumero());
 
-				addForPrincipal(mc, date(1975, 1, 5), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne, ModeImposition.SOURCE);
+				final ForFiscalPrincipal ffp = addForPrincipal(mc, date(1975, 1, 5), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne);
+				ffp.setModeImposition(ModeImposition.SOURCE);
+
 				return null;
 			}
 		});
@@ -4057,10 +4064,10 @@ debut PF                                                                        
 	public void testGetRaisonSocialeDebiteurAvecTiersReferentPM() throws Exception {
 
 		// mise en place du service PM
-		serviceOrganisation.setUp(new MockServiceOrganisation() {
+		servicePM.setUp(new MockServicePM() {
 			@Override
 			protected void init() {
-				addOrganisation(MockOrganisationFactory.NESTLE);
+				addPM(MockPersonneMorale.NestleSuisse);
 			}
 		});
 
@@ -4074,7 +4081,7 @@ debut PF                                                                        
 				dpi.setComplementNom("Titi");
 
 				// on indique le tiers référent
-				final Entreprise pm = addEntrepriseConnueAuCivil(MockOrganisationFactory.NESTLE.getNumeroOrganisation());
+				final Entreprise pm = addEntreprise(MockPersonneMorale.NestleSuisse.getNumeroEntreprise());
 				tiersService.addContactImpotSource(dpi, pm, date(2009, 1, 1));
 
 				return dpi.getNumero();
@@ -4089,7 +4096,9 @@ debut PF                                                                        
 				final List<String> raisonSociale = tiersService.getRaisonSociale(dpi);
 				Assert.assertNotNull(raisonSociale);
 				Assert.assertEquals(1, raisonSociale.size());
-				Assert.assertEquals(MockOrganisationFactory.NESTLE.getNom().get(0).getPayload(), raisonSociale.get(0));
+				Assert.assertEquals(MockPersonneMorale.NestleSuisse.getRaisonSociale1(), raisonSociale.get(0));
+				Assert.assertNull(MockPersonneMorale.NestleSuisse.getRaisonSociale2());
+				Assert.assertNull(MockPersonneMorale.NestleSuisse.getRaisonSociale3());
 				return null;
 			}
 		});
@@ -4258,7 +4267,7 @@ debut PF                                                                        
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
 				Assert.assertTrue(pp.getBlocageRemboursementAutomatique());
 				tiersService.openForFiscalPrincipal(pp, date(2000, 5, 12), MotifRattachement.DOMICILE, MockCommune.Bale.getNoOFS(), TypeAutoriteFiscale.COMMUNE_HC, ModeImposition.ORDINAIRE,
-				                                    MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT);
+						MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT);
 				Assert.assertTrue(pp.getBlocageRemboursementAutomatique());
 				return null;
 			}
@@ -4287,7 +4296,7 @@ debut PF                                                                        
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
 				Assert.assertTrue(pp.getBlocageRemboursementAutomatique());
 				tiersService.openForFiscalPrincipal(pp, date(2000, 5, 12), MotifRattachement.DOMICILE, MockPays.RoyaumeUni.getNoOFS(), TypeAutoriteFiscale.PAYS_HS, ModeImposition.ORDINAIRE,
-				                                    MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT);
+						MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT);
 				Assert.assertTrue(pp.getBlocageRemboursementAutomatique());
 				return null;
 			}
@@ -4417,7 +4426,8 @@ debut PF                                                                        
 				final PersonnePhysique pp = addNonHabitant("Alastor", "Maugrey", date(1956, 9, 3), Sexe.MASCULIN);
 				addForPrincipal(pp, date(2000, 5, 12), MotifFor.ACHAT_IMMOBILIER, date(2005, 6, 1), MotifFor.ARRIVEE_HC, MockCommune.Bern, MotifRattachement.DOMICILE);
 				addForPrincipal(pp, date(2005, 6, 2), MotifFor.ARRIVEE_HC, MockCommune.Renens);
-				addForSecondaire(pp, date(2000, 5, 12), MotifFor.ACHAT_IMMOBILIER, date(2007, 12, 31), MotifFor.VENTE_IMMOBILIER, MockCommune.CheseauxSurLausanne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(pp, date(2000, 5, 12), MotifFor.ACHAT_IMMOBILIER, date(2007, 12, 31), MotifFor.VENTE_IMMOBILIER, MockCommune.CheseauxSurLausanne.getNoOFS(),
+						MotifRattachement.IMMEUBLE_PRIVE);
 				pp.setBlocageRemboursementAutomatique(false);
 				return pp.getNumero();
 			}
@@ -4463,7 +4473,7 @@ debut PF                                                                        
 				addForPrincipal(pp, date(2000, 5, 12), MotifFor.ACHAT_IMMOBILIER, date(2005, 6, 1), MotifFor.ARRIVEE_HS, MockPays.Allemagne);
 				addForPrincipal(pp, date(2005, 6, 2), MotifFor.ARRIVEE_HS, MockCommune.Renens);
 				addForSecondaire(pp, date(2000, 5, 12), MotifFor.ACHAT_IMMOBILIER, date(2007, 12, 31), MotifFor.VENTE_IMMOBILIER, MockCommune.CheseauxSurLausanne.getNoOFS(),
-				                 MotifRattachement.IMMEUBLE_PRIVE);
+						MotifRattachement.IMMEUBLE_PRIVE);
 				pp.setBlocageRemboursementAutomatique(false);
 				return pp.getNumero();
 			}
@@ -4644,7 +4654,7 @@ debut PF                                                                        
 
 				tiersService.closeForFiscalPrincipal(pp, date(2010, 5, 23), MotifFor.DEMENAGEMENT_VD);
 				tiersService.addForPrincipal(pp, date(2010, 5, 24), MotifFor.DEMENAGEMENT_VD, null, null, MotifRattachement.DOMICILE, MockCommune.Bex.getNoOFS(),
-				                             TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ModeImposition.ORDINAIRE);
+						TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ModeImposition.ORDINAIRE);
 
 				final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
 				Assert.assertNotNull(ffp);
@@ -4757,7 +4767,7 @@ debut PF                                                                        
 	@Test
 	public void testAddAndSaveForSurCommuneFaitiereFractions() throws Exception {
 
-		final ForFiscalPrincipalPP f = new ForFiscalPrincipalPP();
+		final ForFiscalPrincipal f = new ForFiscalPrincipal();
 		f.setDateDebut(date(1998, 10, 4));
 		f.setMotifOuverture(MotifFor.ARRIVEE_HS);
 		f.setGenreImpot(GenreImpot.REVENU_FORTUNE);
@@ -4778,7 +4788,7 @@ debut PF                                                                        
 		}
 		catch (ValidationException e) {
 			final String message =
-					String.format("[E] Le for fiscal %s ne peut pas être sur une commune faîtière de fractions de commune (ici %s / OFS %d), une fraction est attendue dans ce cas\n",
+					String.format("[E] Le for fiscal %s ne peut pas être ouvert sur une commune faîtière de fractions de commune (ici %s / OFS %d), une fraction est attendue dans ce cas\n",
 							f, MockCommune.LeLieu.getNomOfficiel(), MockCommune.LeLieu.getNoOFS());
 			Assert.assertTrue(e.getMessage(), e.getMessage().endsWith(message));
 		}
@@ -5120,23 +5130,14 @@ debut PF                                                                        
 				assertNotNull(events);
 				assertEquals(2, events.size());
 
-				final List<EvenementFiscal> tries = new ArrayList<>(events);
-				Collections.sort(tries, new Comparator<EvenementFiscal>() {
-					@Override
-					public int compare(EvenementFiscal o1, EvenementFiscal o2) {
-						return Long.compare(o1.getId(), o2.getId());
-					}
-				});
-
-				final EvenementFiscalFor event0 = (EvenementFiscalFor) tries.get(0);
+				final EvenementFiscalFor event0 = (EvenementFiscalFor) events.get(0);
 				assertNotNull(event0);
 
-				final EvenementFiscalParente event1 = (EvenementFiscalParente) tries.get(1);
+				final EvenementFiscalFinAutoriteParentale event1 = (EvenementFiscalFinAutoriteParentale) events.get(1);
 				assertNotNull(event1);
 				assertEquals(ids.mere, event1.getTiers().getNumero());
 				assertEquals(ids.fils, event1.getEnfant().getNumero());
-				assertEquals(EvenementFiscalParente.TypeEvenementFiscalParente.FIN_AUTORITE_PARENTALE, event1.getType());
-				assertEquals(date(2011, 2, 8), event1.getDateValeur());
+				assertEquals(date(2011, 2, 8), event1.getDateEvenement());
 				return null;
 			}
 		});
@@ -5293,23 +5294,14 @@ debut PF                                                                        
 				assertNotNull(events);
 				assertEquals(2, events.size());
 
-				final List<EvenementFiscal> tries = new ArrayList<>(events);
-				Collections.sort(tries, new Comparator<EvenementFiscal>() {
-					@Override
-					public int compare(EvenementFiscal o1, EvenementFiscal o2) {
-						return Long.compare(o1.getId(), o2.getId());
-					}
-				});
-
-				final EvenementFiscalFor event0 = (EvenementFiscalFor) tries.get(0);
+				final EvenementFiscalFor event0 = (EvenementFiscalFor) events.get(0);
 				assertNotNull(event0);
 
-				final EvenementFiscalParente event1 = (EvenementFiscalParente) tries.get(1);
+				final EvenementFiscalFinAutoriteParentale event1 = (EvenementFiscalFinAutoriteParentale) events.get(1);
 				assertNotNull(event1);
 				assertEquals(ids.menage, event1.getTiers().getNumero());
 				assertEquals(ids.fils, event1.getEnfant().getNumero());
-				assertEquals(EvenementFiscalParente.TypeEvenementFiscalParente.FIN_AUTORITE_PARENTALE, event1.getType());
-				assertEquals(date(2011, 2, 8), event1.getDateValeur());
+				assertEquals(date(2011, 2, 8), event1.getDateEvenement());
 				return null;
 			}
 		});
@@ -6543,7 +6535,7 @@ debut PF                                                                        
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
 				assertNotNull(pp);
 
-				final ForFiscalPrincipalPP ffp = pp.getDernierForFiscalPrincipal();
+				final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
 				assertEquals(ModeImposition.SOURCE, ffp.getModeImposition());
 				assertEquals(TypeAutoriteFiscale.PAYS_HS, ffp.getTypeAutoriteFiscale());
 				assertNull(ffp.getDateFin());
@@ -8465,7 +8457,7 @@ debut PF                                                                        
 				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2009, 1, 1));
 				addRapportPrestationImposable(dpi, pp, date(2009, 1, 1), date(2011, 12, 31), false);
 				addForPrincipal(pp, date(2009, 1, 1), MotifFor.ARRIVEE_HS, date(2010, 12, 31), MotifFor.DEPART_HC, MockCommune.Lausanne, ModeImposition.SOURCE);
-				pp.setCoordonneesFinancieres(new CoordonneesFinancieres("CH8109000000177448451", null));
+				pp.setNumeroCompteBancaire("CH8109000000177448451");
 				pp.setBlocageRemboursementAutomatique(true);        // pour partir d'une situation bloquée
 				return pp.getNumero();
 			}
@@ -8479,7 +8471,7 @@ debut PF                                                                        
 				assertTrue(pp.getBlocageRemboursementAutomatique());
 
 				tiersService.addForPrincipal(pp, date(2012, 1, 1), MotifFor.DEPART_HC, null, null, MotifRattachement.DOMICILE, MockCommune.Bern.getNoOFS(), TypeAutoriteFiscale.COMMUNE_HC,
-				                             ModeImposition.SOURCE);
+						ModeImposition.SOURCE);
 			}
 		});
 
@@ -8516,7 +8508,7 @@ debut PF                                                                        
 				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2009, 1, 1));
 				addRapportPrestationImposable(dpi, pp, date(2009, 1, 1), date(2011, 12, 31), false);
 				addForPrincipal(pp, date(2009, 1, 1), MotifFor.ARRIVEE_HS, date(2010, 12, 31), MotifFor.DEPART_HC, MockCommune.Lausanne, ModeImposition.SOURCE);
-				pp.setCoordonneesFinancieres(new CoordonneesFinancieres("CH810900000017744845123", null));      // trop long!
+				pp.setNumeroCompteBancaire("CH810900000017744845123");      // trop long!
 				pp.setBlocageRemboursementAutomatique(false);        // pour partir d'une situation débloquée
 				return pp.getNumero();
 			}
@@ -8566,7 +8558,7 @@ debut PF                                                                        
 				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2009, 1, 1));
 				addRapportPrestationImposable(dpi, pp, date(2009, 1, 1), date(2011, 12, 31), false);
 				addForPrincipal(pp, date(2009, 1, 1), MotifFor.ARRIVEE_HS, date(2010, 12, 31), MotifFor.DEPART_HC, MockCommune.Lausanne, ModeImposition.SOURCE);
-				pp.setCoordonneesFinancieres(new CoordonneesFinancieres("CH8109000000177448451", null));
+				pp.setNumeroCompteBancaire("CH8109000000177448451");
 				pp.setBlocageRemboursementAutomatique(false);        // pour partir d'une situation débloquée
 				return pp.getNumero();
 			}
@@ -8616,7 +8608,7 @@ debut PF                                                                        
 			public Long doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addNonHabitant("Albert", "Dayatsu", null, Sexe.MASCULIN);
 				addForPrincipal(pp, date(2009, 1, 1), MotifFor.ARRIVEE_HS, date(2010, 12, 31), MotifFor.DEPART_HC, MockCommune.Lausanne, ModeImposition.ORDINAIRE);
-				pp.setCoordonneesFinancieres(new CoordonneesFinancieres("CH8109000000177448451", null));
+				pp.setNumeroCompteBancaire("CH8109000000177448451");
 				pp.setBlocageRemboursementAutomatique(false);        // pour partir d'une situation débloquée
 				return pp.getNumero();
 			}
@@ -8666,7 +8658,7 @@ debut PF                                                                        
 				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2009, 1, 1));
 				addRapportPrestationImposable(dpi, pp, date(2009, 1, 1), null, false);
 				addForPrincipal(pp, date(2009, 1, 1), MotifFor.ARRIVEE_HS, date(2010, 12, 31), MotifFor.DEPART_HC, MockCommune.Lausanne, ModeImposition.ORDINAIRE);
-				pp.setCoordonneesFinancieres(new CoordonneesFinancieres("CH8109000000177448451", null));
+				pp.setNumeroCompteBancaire("CH8109000000177448451");
 				pp.setBlocageRemboursementAutomatique(false);        // pour partir d'une situation débloquée
 				return pp.getNumero();
 			}
@@ -8718,8 +8710,8 @@ debut PF                                                                        
 				final PersonnePhysique mme = addNonHabitant("Philomène", "Dubourg", null, Sexe.FEMININ);
 
 				// il faut un IBAN pour débloquer la situation...
-				m.setCoordonneesFinancieres(new CoordonneesFinancieres("CH6100767000K51392545", null));
-				mme.setCoordonneesFinancieres(new CoordonneesFinancieres("CH250025525510075340X", null));
+				m.setNumeroCompteBancaire("CH6100767000K51392545");
+				mme.setNumeroCompteBancaire("CH250025525510075340X");
 
 				final EnsembleTiersCouple couple = addEnsembleTiersCouple(m, mme, dateMariage, null);
 				final MenageCommun menage = couple.getMenage();
@@ -8751,7 +8743,7 @@ debut PF                                                                        
 				// départ du couple vers l'étranger
 				tiersService.closeForFiscalPrincipal(mc, dateDepart, MotifFor.DEPART_HS);
 				tiersService.openForFiscalPrincipal(mc, dateDepart.getOneDayAfter(), MotifRattachement.DOMICILE, MockPays.Allemagne.getNoOFS(), TypeAutoriteFiscale.PAYS_HS, ModeImposition.SOURCE,
-				                                    MotifFor.DEPART_HS);
+						MotifFor.DEPART_HS);
 			}
 		});
 
@@ -9039,7 +9031,7 @@ debut PF                                                                        
 				DecisionAci dOriginal = decisionAciDAO.get(idsDecision.idOriginal);
 				DecisionAci dNouvelle = decisionAciDAO.get(idsDecision.idNouvel);
 				assertTrue(dOriginal.isAnnule());
-				assertEquals(MockCommune.Aubonne.getNoOFS(), dNouvelle.getNumeroOfsAutoriteFiscale().intValue());
+				assertEquals(MockCommune.Aubonne.getNoOFS(),dNouvelle.getNumeroOfsAutoriteFiscale().intValue());
 
 			}
 		});
@@ -9086,7 +9078,7 @@ debut PF                                                                        
 			@Override
 			protected void doInTransactionWithoutResult(TransactionStatus status) {
 				DecisionAci amodifier = decisionAciDAO.get(idsDecision.idOriginal);
-				DecisionAci modifiee =tiersService.updateDecisionAci(amodifier, date(2013, 5, 6), "Ma remarque", null);
+				DecisionAci modifiee =tiersService.updateDecisionAci(amodifier,date(2013,5,6),"Ma remarque",null);
 				idsDecision.idNouvel = modifiee.getId();
 			}
 		});
@@ -9169,7 +9161,7 @@ debut PF                                                                        
 				DecisionAci dNouvelle = decisionAciDAO.get(idsDecision.idNouvel);
 				assertTrue(dOriginal.isAnnule());
 				assertEquals(MockCommune.Lausanne.getNoOFS(), dNouvelle.getNumeroOfsAutoriteFiscale().intValue());
-				assertEquals(date(2012, 12, 10), dNouvelle.getDateFin());
+				assertEquals(date(2012,12,10),dNouvelle.getDateFin());
 				assertEquals("finalement rien",dNouvelle.getRemarque());
 
 
@@ -9335,288 +9327,5 @@ debut PF                                                                        
 		});
 	}
 
-	@Test
-	public void testExercicesCommerciauxSansForNiBouclement() throws Exception {
-
-		// mise en place
-		final long id = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				return entreprise.getNumero();
-			}
-		});
-
-		// vérification du calcul : rien
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(id);
-				Assert.assertNotNull(entreprise);
-
-				final List<ExerciceCommercial> exercices = tiersService.getExercicesCommerciaux(entreprise);
-				Assert.assertNotNull(exercices);
-				Assert.assertEquals(0, exercices.size());
-			}
-		});
-	}
-
-	@Test
-	public void testExercicesCommerciauxSansForMaisAvecBouclements() throws Exception {
-
-		// mise en place
-		final long id = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addBouclement(entreprise, date(2000, 12, 1), DayMonth.get(12, 31), 12);
-				return entreprise.getNumero();
-			}
-		});
-
-		// vérification du calcul : le premier exercice commercial commence au lendemain de la première date de bouclement connue, et se termine cette année
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(id);
-				Assert.assertNotNull(entreprise);
-
-				final List<ExerciceCommercial> exercices = tiersService.getExercicesCommerciaux(entreprise);
-				Assert.assertNotNull(exercices);
-
-				final int nbExercicesAttendus = RegDate.get().year() - 2000;
-				Assert.assertEquals(nbExercicesAttendus, exercices.size());
-				for (int i = 0 ; i < nbExercicesAttendus ; ++ i) {
-					final ExerciceCommercial ex = exercices.get(i);
-					Assert.assertNotNull(ex);
-					Assert.assertEquals(date(i + 2001, 1, 1), ex.getDateDebut());
-					Assert.assertEquals(date(i + 2001, 12, 31), ex.getDateFin());
-				}
-			}
-		});
-	}
-
-	@Test
-	public void testExercicesCommerciauxAvecForOuvertMaisSansBouclements() throws Exception {
-
-		// mise en place
-		final long id = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addForPrincipal(entreprise, date(2000, 1, 3), null, MockCommune.Bale);
-				return entreprise.getNumero();
-			}
-		});
-
-		// vérification du calcul : un seul exercice commercial qui couvre l'intervale maximal des fors principaux et se ferme à la fin de cette année (décision arbitraire)
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(id);
-				Assert.assertNotNull(entreprise);
-
-				final List<ExerciceCommercial> exercices = tiersService.getExercicesCommerciaux(entreprise);
-				Assert.assertNotNull(exercices);
-				Assert.assertEquals(1, exercices.size());
-
-				final ExerciceCommercial ex = exercices.get(0);
-				Assert.assertNotNull(ex);
-				Assert.assertEquals(date(2000, 1, 3), ex.getDateDebut());
-				Assert.assertEquals(date(RegDate.get().year(), 12, 31), ex.getDateFin());
-			}
-		});
-	}
-
-	@Test
-	public void testExercicesCommerciauxAvecForsFermesMaisSansBouclements() throws Exception {
-
-		// mise en place
-		final long id = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addForPrincipal(entreprise, date(2000, 1, 3), null, date(2006, 12, 5), MotifFor.CESSATION_ACTIVITE_FUSION_FAILLITE, MockCommune.Bale);
-				return entreprise.getNumero();
-			}
-		});
-
-		// vérification du calcul : un seul exercice commercial qui couvre l'intervale maximal des fors principaux et se ferme à la date de fermeture du for
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(id);
-				Assert.assertNotNull(entreprise);
-
-				final List<ExerciceCommercial> exercices = tiersService.getExercicesCommerciaux(entreprise);
-				Assert.assertNotNull(exercices);
-				Assert.assertEquals(1, exercices.size());
-
-				final ExerciceCommercial ex = exercices.get(0);
-				Assert.assertNotNull(ex);
-				Assert.assertEquals(date(2000, 1, 3), ex.getDateDebut());
-				Assert.assertEquals(date(2006, 12, 5), ex.getDateFin());
-			}
-		});
-	}
-
-	@Test
-	public void testExercicesCommerciauxAvecForOuvertEtBouclements() throws Exception {
-
-		// mise en place
-		final long id = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addForPrincipal(entreprise, date(2000, 5, 3), null, MockCommune.Bale);
-				addBouclement(entreprise, date(2001, 6, 1), DayMonth.get(6, 30), 12);       // tous les ans depuis le 30.06.2001
-				return entreprise.getNumero();
-			}
-		});
-
-		// vérification du calcul : exercices commerciaux annuels 01.07 -> 30.06 (sauf le premier qui commence au 03.05)
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(id);
-				Assert.assertNotNull(entreprise);
-
-				final List<ExerciceCommercial> exercices = tiersService.getExercicesCommerciaux(entreprise);
-				Assert.assertNotNull(exercices);
-
-				final int nbExercicesAttendus = RegDate.get().year() - 2000 + (DayMonth.get().compareTo(DayMonth.get(6, 30)) > 0 ? 1 : 0);
-				Assert.assertEquals(nbExercicesAttendus, exercices.size());
-				{
-					final ExerciceCommercial ex = exercices.get(0);
-					Assert.assertNotNull(ex);
-					Assert.assertEquals(date(2000, 5, 3), ex.getDateDebut());
-					Assert.assertEquals(date(2001, 6, 30), ex.getDateFin());
-				}
-				for (int i = 1 ; i < nbExercicesAttendus ; ++ i) {
-					final ExerciceCommercial ex = exercices.get(i);
-					Assert.assertNotNull(ex);
-					Assert.assertEquals(date(i + 2000, 7, 1), ex.getDateDebut());
-					Assert.assertEquals(date(i + 2001, 6, 30), ex.getDateFin());
-				}
-			}
-		});
-	}
-
-	@Test
-	public void testExercicesCommerciauxAvecForsFermesEtBouclements() throws Exception {
-
-		// mise en place
-		final long id = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addForPrincipal(entreprise, date(2000, 5, 3), null, date(2006, 12, 5), MotifFor.CESSATION_ACTIVITE_FUSION_FAILLITE, MockCommune.Bale);
-				addBouclement(entreprise, date(2001, 6, 1), DayMonth.get(6, 30), 12);       // tous les ans depuis le 30.06.2001
-				return entreprise.getNumero();
-			}
-		});
-
-		// vérification du calcul : exercices commerciaux annuels 01.07 -> 30.06 (sauf le premier qui commence au 03.05, et le dernier qui se termine avec le for)
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(id);
-				Assert.assertNotNull(entreprise);
-
-				final List<ExerciceCommercial> exercices = tiersService.getExercicesCommerciaux(entreprise);
-				Assert.assertNotNull(exercices);
-
-				Assert.assertEquals(7, exercices.size());
-				{
-					final ExerciceCommercial ex = exercices.get(0);
-					Assert.assertNotNull(ex);
-					Assert.assertEquals(date(2000, 5, 3), ex.getDateDebut());
-					Assert.assertEquals(date(2001, 6, 30), ex.getDateFin());
-				}
-				for (int i = 1 ; i < 6 ; ++ i) {
-					final ExerciceCommercial ex = exercices.get(i);
-					Assert.assertNotNull(ex);
-					Assert.assertEquals(date(i + 2000, 7, 1), ex.getDateDebut());
-					Assert.assertEquals(date(i + 2001, 6, 30), ex.getDateFin());
-				}
-				{
-					final ExerciceCommercial ex = exercices.get(6);
-					Assert.assertNotNull(ex);
-					Assert.assertEquals(date(2006, 7, 1), ex.getDateDebut());
-					Assert.assertEquals(date(2006, 12, 5), ex.getDateFin());
-				}
-			}
-		});
-	}
-
-	@Test
-	public void testGetCapitaux() throws Exception {
-
-		final long noOrganisation = 48518745L;
-		final long noSite = 346742L;
-		final RegDate dateDebut = date(2000, 1, 1);
-		final RegDate dateDebutSurchargeCapital = date(2005, 3, 1);
-		final RegDate dateFinSurchargeCapital = date(2012, 6, 30);
-
-		// mise en place civile
-		serviceOrganisation.setUp(new MockServiceOrganisation() {
-			@Override
-			protected void init() {
-				final MockOrganisation org = addOrganisation(noOrganisation, dateDebut, "Turlututu SARL", FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITE);
-				MockSiteOrganisationFactory.addSite(noSite, org, dateDebut, null, "Turlututu SARL", true,
-				                                    TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Aubonne.getNoOFS(),
-				                                    StatusRC.INSCRIT, StatusInscriptionRC.ACTIF, StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.SITE,
-				                                    BigDecimal.valueOf(10000000L), MontantMonetaire.CHF);
-			}
-		});
-
-		// mise en place fiscale
-		final long pmId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise entreprise = addEntrepriseConnueAuCivil(noOrganisation);
-				addCapitalEntreprise(entreprise, dateDebutSurchargeCapital, dateFinSurchargeCapital, new MontantMonetaire(42L, MontantMonetaire.CHF));
-				return entreprise.getNumero();
-			}
-		});
-
-		// récupération des capitaux d'après le tiers service
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(pmId);
-				final List<CapitalHisto> capitaux = tiersService.getCapitaux(entreprise);
-				Assert.assertNotNull(capitaux);
-				Assert.assertEquals(3, capitaux.size());
-				{
-					final CapitalHisto capital = capitaux.get(0);
-					Assert.assertNotNull(capital);
-					Assert.assertEquals(dateDebut, capital.getDateDebut());
-					Assert.assertEquals(dateDebutSurchargeCapital.getOneDayBefore(), capital.getDateFin());
-					Assert.assertEquals((Long) 10000000L, capital.getMontant().getMontant());
-					Assert.assertEquals("CHF", capital.getMontant().getMonnaie());
-					Assert.assertEquals(CapitalHisto.Source.CIVILE, capital.getSource());
-				}
-				{
-					final CapitalHisto capital = capitaux.get(1);
-					Assert.assertNotNull(capital);
-					Assert.assertEquals(dateDebutSurchargeCapital, capital.getDateDebut());
-					Assert.assertEquals(dateFinSurchargeCapital, capital.getDateFin());
-					Assert.assertEquals((Long) 42L, capital.getMontant().getMontant());
-					Assert.assertEquals("CHF", capital.getMontant().getMonnaie());
-					Assert.assertEquals(CapitalHisto.Source.FISCALE, capital.getSource());
-				}
-				{
-					final CapitalHisto capital = capitaux.get(2);
-					Assert.assertNotNull(capital);
-					Assert.assertEquals(dateFinSurchargeCapital.getOneDayAfter(), capital.getDateDebut());
-					Assert.assertNull(capital.getDateFin());
-					Assert.assertEquals((Long) 10000000L, capital.getMontant().getMontant());
-					Assert.assertEquals("CHF", capital.getMontant().getMonnaie());
-					Assert.assertEquals(CapitalHisto.Source.CIVILE, capital.getSource());
-				}
-			}
-		});
-	}
 }
 

@@ -114,7 +114,7 @@ public class DataHelper {
 		else if (tiers instanceof ch.vd.uniregctb.tiers.DebiteurPrestationImposable) {
 			type = PartyType.DEBTOR;
 		}
-		else if (tiers instanceof ch.vd.uniregctb.tiers.Entreprise
+		else if (tiers instanceof ch.vd.uniregctb.tiers.Entreprise || tiers instanceof ch.vd.uniregctb.tiers.Etablissement
 				|| tiers instanceof ch.vd.uniregctb.tiers.AutreCommunaute
 				|| tiers instanceof ch.vd.uniregctb.tiers.CollectiviteAdministrative) {
 			type = PartyType.CORPORATION;

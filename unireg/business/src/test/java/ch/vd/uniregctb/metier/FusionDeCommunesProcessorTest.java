@@ -1,9 +1,6 @@
 package ch.vd.uniregctb.metier;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -13,24 +10,18 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
-import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.BusinessTest;
-import ch.vd.uniregctb.tiers.AllegementFiscal;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.DecisionAci;
-import ch.vd.uniregctb.tiers.DomicileEtablissement;
-import ch.vd.uniregctb.tiers.Entreprise;
-import ch.vd.uniregctb.tiers.Etablissement;
 import ch.vd.uniregctb.tiers.ForDebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalAutreElementImposable;
 import ch.vd.uniregctb.tiers.ForFiscalAutreImpot;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
 import ch.vd.uniregctb.tiers.ForsParType;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
@@ -46,7 +37,6 @@ import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.validation.ValidationService;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -96,7 +86,7 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 				addForPrincipal(bruno, date(1984, 8, 1), MotifFor.MAJORITE, MockCommune.Lausanne);
 
 				// un second for principal qui chevauche le premier -> invalide
-				final ForFiscalPrincipalPP f = new ForFiscalPrincipalPP();
+				final ForFiscalPrincipal f = new ForFiscalPrincipal();
 				f.setDateDebut(date(1997, 10, 29));
 				f.setMotifOuverture(MotifFor.DEMENAGEMENT_VD);
 				f.setDateFin(null);
@@ -118,12 +108,12 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 		final FusionDeCommunesResults rapport = processor.run(anciensNoOfs, nouveauNoOfs, dateFusion, dateTraitement, null);
 		assertNotNull(rapport);
 
-		assertEquals(1, rapport.nbTiersExamines);
-		assertEquals(0, rapport.tiersTraitesPourFors.size());
-		assertEquals(0, rapport.tiersIgnoresPourFors.size());
-		assertEquals(1, rapport.tiersEnErreur.size());
+		assertEquals(1, rapport.getNbTiersTotal());
+		assertEquals(0, rapport.tiersTraites.size());
+		assertEquals(0, rapport.tiersIgnores.size());
+		assertEquals(1, rapport.tiersEnErrors.size());
 
-		final FusionDeCommunesResults.Erreur error = rapport.tiersEnErreur.get(0);
+		final FusionDeCommunesResults.Erreur error = rapport.tiersEnErrors.get(0);
 		assertNotNull(error);
 		assertEquals(FusionDeCommunesResults.ErreurType.VALIDATION, error.raison);
 
@@ -134,14 +124,14 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 				final PersonnePhysique bruno = (PersonnePhysique) tiersDAO.get(ppId);
 				final ForsParType fors = bruno.getForsParType(true);
 				assertNotNull(fors);
-				assertEquals(2, fors.principauxPP.size());
+				assertEquals(2, fors.principaux.size());
 				assertEmpty(fors.secondaires);
 
-				final ForFiscalPrincipalPP ffp0 = fors.principauxPP.get(0);
+				final ForFiscalPrincipal ffp0 = fors.principaux.get(0);
 				assertNotNull(ffp0);
 				assertForPrincipal(date(1984, 8, 1), MotifFor.MAJORITE, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, ffp0);
 
-				final ForFiscalPrincipalPP ffp1 = fors.principauxPP.get(1);
+				final ForFiscalPrincipal ffp1 = fors.principaux.get(1);
 				assertNotNull(ffp1);
 				assertForPrincipal(date(1997, 10, 29), MotifFor.DEMENAGEMENT_VD, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Croy.getNoOFS(), MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, ffp1);
 				return null;
@@ -169,15 +159,15 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 		final FusionDeCommunesResults rapport = processor.run(anciensNoOfs, nouveauNoOfs, dateFusion, dateTraitement, null);
 		assertNotNull(rapport);
 
-		assertEquals(1, rapport.nbTiersExamines);
-		assertEquals(0, rapport.tiersTraitesPourFors.size());
-		assertEquals(0, rapport.tiersIgnoresPourFors.size());
-		assertEquals(1, rapport.tiersEnErreur.size());
+		assertEquals(1, rapport.getNbTiersTotal());
+		assertEquals(0, rapport.tiersTraites.size());
+		assertEquals(0, rapport.tiersIgnores.size());
+		assertEquals(1, rapport.tiersEnErrors.size());
 
-		final FusionDeCommunesResults.Erreur error = rapport.tiersEnErreur.get(0);
+		final FusionDeCommunesResults.Erreur error = rapport.tiersEnErrors.get(0);
 		assertNotNull(error);
 		assertEquals(FusionDeCommunesResults.ErreurType.VALIDATION, error.raison);
-		assertEquals(ppId, error.noTiers);
+		assertEquals(ppId, error.noCtb);
 
 		doInNewTransaction(new TransactionCallback<Object>() {
 			@Override
@@ -186,10 +176,10 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 				final PersonnePhysique bruno = (PersonnePhysique) tiersDAO.get(ppId);
 				final ForsParType fors = bruno.getForsParType(true);
 				assertNotNull(fors);
-				assertEquals(1, fors.principauxPP.size());
+				assertEquals(1, fors.principaux.size());
 				assertEmpty(fors.secondaires);
 
-				final ForFiscalPrincipalPP ffp0 = fors.principauxPP.get(0);
+				final ForFiscalPrincipal ffp0 = fors.principaux.get(0);
 				assertNotNull(ffp0);
 				assertForPrincipal(date(1984, 8, 1), MotifFor.MAJORITE, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Croy.getNoOFS(), MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, ffp0);
 				return null;
@@ -216,16 +206,16 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 			}
 		});
 
-		final Set<Integer> anciennesCommunes = new HashSet<>(Collections.singletonList(MockCommune.Villette.getNoOFS()));
+		final Set<Integer> anciennesCommunes = new HashSet<>(Arrays.asList(MockCommune.Villette.getNoOFS()));
 		final FusionDeCommunesResults rapport = processor.run(anciennesCommunes, MockCommune.BourgEnLavaux.getNoOFS(), dateFusion, dateTraitement, null);
 		assertNotNull(rapport);
 
-		assertEquals(1, rapport.nbTiersExamines);
-		assertEquals(1, rapport.tiersTraitesPourFors.size());
-		assertEquals(0, rapport.tiersIgnoresPourFors.size());
-		assertEquals(0, rapport.tiersEnErreur.size());
+		assertEquals(1, rapport.getNbTiersTotal());
+		assertEquals(1, rapport.tiersTraites.size());
+		assertEquals(0, rapport.tiersIgnores.size());
+		assertEquals(0, rapport.tiersEnErrors.size());
 
-		final long traite = rapport.tiersTraitesPourFors.get(0);
+		final long traite = rapport.tiersTraites.get(0);
 		assertEquals(ppId, traite);
 
 		doInNewTransaction(new TransactionCallback<Object>() {
@@ -234,15 +224,14 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 				final PersonnePhysique bruno = (PersonnePhysique) tiersDAO.get(ppId);
 				final ForsParType fors = bruno.getForsParType(true);
 				assertNotNull(fors);
-				assertEquals(2, fors.principauxPP.size());
+				assertEquals(2, fors.principaux.size());
 				assertEmpty(fors.secondaires);
 
-				final ForFiscalPrincipalPP ffp0 = fors.principauxPP.get(0);
+				final ForFiscalPrincipal ffp0 = fors.principaux.get(0);
 				assertNotNull(ffp0);
-				assertForPrincipal(dateDebut, MotifFor.INDETERMINE, dateFusion.getOneDayBefore(), MotifFor.FUSION_COMMUNES, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Villette.getNoOFS(),
-				                   MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, ffp0);
+				assertForPrincipal(dateDebut, MotifFor.INDETERMINE, dateFusion.getOneDayBefore(), MotifFor.FUSION_COMMUNES, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Villette.getNoOFS(), MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, ffp0);
 
-				final ForFiscalPrincipalPP ffp1 = fors.principauxPP.get(1);
+				final ForFiscalPrincipal ffp1 = fors.principaux.get(1);
 				assertNotNull(ffp1);
 				assertForPrincipal(dateFusion, MotifFor.FUSION_COMMUNES, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.BourgEnLavaux.getNoOFS(), MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, ffp1);
 				return null;
@@ -265,7 +254,7 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 			@Override
 			public FusionDeCommunesResults execute(TransactionStatus status) throws Exception {
 				final FusionDeCommunesResults rapport = new FusionDeCommunesResults(anciensNoOfs, nouveauNoOfs, dateFusion, dateTraitement, tiersService, adresseService);
-				processor.traiteTiers(new FusionDeCommunesProcessor.TiersATraiter(id, true, false, false, false), anciensNoOfs, nouveauNoOfs, dateFusion, rapport);
+				processor.traiteTiers(id, anciensNoOfs, nouveauNoOfs, dateFusion, rapport);
 				return rapport;
 			}
 		});
@@ -278,10 +267,10 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 				assertNotNull(bruno);
 				assertEmpty(bruno.getForsFiscaux());
 
-				assertEquals(1, rapport.nbTiersExamines);
-				assertEquals(0, rapport.tiersTraitesPourFors.size());
-				assertEquals(0, rapport.tiersIgnoresPourFors.size());
-				assertEmpty(rapport.tiersEnErreur);
+				assertEquals(0, rapport.getNbTiersTotal());
+				assertEquals(0, rapport.tiersTraites.size());
+				assertEquals(0, rapport.tiersIgnores.size());
+				assertEmpty(rapport.tiersEnErrors);
 			}
 		});
 	}
@@ -303,7 +292,7 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 			@Override
 			public FusionDeCommunesResults execute(TransactionStatus status) throws Exception {
 				final FusionDeCommunesResults rapport = new FusionDeCommunesResults(anciensNoOfs, nouveauNoOfs, dateFusion, dateTraitement, tiersService, adresseService);
-				processor.traiteTiers(new FusionDeCommunesProcessor.TiersATraiter(id, true, false, false, false), anciensNoOfs, nouveauNoOfs, dateFusion, rapport);
+				processor.traiteTiers(id, anciensNoOfs, nouveauNoOfs, dateFusion, rapport);
 				return rapport;
 			}
 		});
@@ -317,10 +306,10 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 
 				final ForsParType fors = bruno.getForsParType(true);
 				assertNotNull(fors);
-				assertEquals(1, fors.principauxPP.size());
+				assertEquals(1, fors.principaux.size());
 				assertEquals(1, fors.secondaires.size());
 
-				final ForFiscalPrincipalPP ffp = fors.principauxPP.get(0);
+				final ForFiscalPrincipal ffp = fors.principaux.get(0);
 				assertNotNull(ffp);
 				assertForPrincipal(date(1964, 8, 1), MotifFor.MAJORITE, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, ffp);
 
@@ -328,10 +317,10 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 				assertNotNull(ffs);
 				assertForSecondaire(date(1995, 8, 1), MotifFor.ACHAT_IMMOBILIER, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Bex.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE, ffs);
 
-				assertEquals(1, rapport.nbTiersExamines);
-				assertEquals(0, rapport.tiersIgnoresPourFors.size());
-				assertEquals(0, rapport.tiersTraitesPourFors.size());
-				assertEmpty(rapport.tiersEnErreur);
+				assertEquals(0, rapport.getNbTiersTotal());
+				assertEquals(0, rapport.tiersIgnores.size());
+				assertEquals(0, rapport.tiersTraites.size());
+				assertEmpty(rapport.tiersEnErrors);
 			}
 		});
 	}
@@ -354,7 +343,7 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 			@Override
 			public FusionDeCommunesResults execute(TransactionStatus status) throws Exception {
 				final FusionDeCommunesResults rapport = new FusionDeCommunesResults(anciensNoOfs, nouveauNoOfs, dateFusion, dateTraitement, tiersService, adresseService);
-				processor.traiteTiers(new FusionDeCommunesProcessor.TiersATraiter(id, true, false, false, false), anciensNoOfs, nouveauNoOfs, dateFusion, rapport);
+				processor.traiteTiers(id, anciensNoOfs, nouveauNoOfs, dateFusion, rapport);
 				return rapport;
 			}
 		});
@@ -368,15 +357,15 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 
 				final ForsParType fors = bruno.getForsParType(true);
 				assertNotNull(fors);
-				assertEquals(2, fors.principauxPP.size());
+				assertEquals(2, fors.principaux.size());
 				assertEquals(1, fors.secondaires.size());
 
-				final ForFiscalPrincipalPP ffp0 = fors.principauxPP.get(0);
+				final ForFiscalPrincipal ffp0 = fors.principaux.get(0);
 				assertNotNull(ffp0);
 				assertForPrincipal(date(1964, 8, 1), MotifFor.MAJORITE, date(1990, 4, 22), MotifFor.DEMENAGEMENT_VD, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Croy.getNoOFS(),
 				                   MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, ffp0);
 
-				final ForFiscalPrincipalPP ffp1 = fors.principauxPP.get(1);
+				final ForFiscalPrincipal ffp1 = fors.principaux.get(1);
 				assertNotNull(ffp1);
 				assertForPrincipal(date(1990, 4, 23), MotifFor.DEMENAGEMENT_VD, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Renens.getNoOFS(), MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE,
 				                   ffp1);
@@ -386,10 +375,10 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 				assertForSecondaire(date(1995, 8, 1), MotifFor.ACHAT_IMMOBILIER, date(1999, 6, 30), MotifFor.VENTE_IMMOBILIER, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Croy.getNoOFS(),
 				                    MotifRattachement.IMMEUBLE_PRIVE, ffs);
 
-				assertEquals(1, rapport.nbTiersExamines);
-				assertEquals(0, rapport.tiersIgnoresPourFors.size());
-				assertEquals(0, rapport.tiersTraitesPourFors.size());
-				assertEmpty(rapport.tiersEnErreur);
+				assertEquals(0, rapport.getNbTiersTotal());
+				assertEquals(0, rapport.tiersIgnores.size());
+				assertEquals(0, rapport.tiersTraites.size());
+				assertEmpty(rapport.tiersEnErrors);
 			}
 		});
 	}
@@ -411,7 +400,7 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 			@Override
 			public FusionDeCommunesResults execute(TransactionStatus status) throws Exception {
 				final FusionDeCommunesResults rapport = new FusionDeCommunesResults(anciensNoOfs, nouveauNoOfs, dateFusion, dateTraitement, tiersService, adresseService);
-				processor.traiteTiers(new FusionDeCommunesProcessor.TiersATraiter(id, true, false, false, false), anciensNoOfs, nouveauNoOfs, dateFusion, rapport);
+				processor.traiteTiers(id, anciensNoOfs, nouveauNoOfs, dateFusion, rapport);
 				return rapport;
 			}
 		});
@@ -425,10 +414,10 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 
 				final ForsParType fors = bruno.getForsParType(true);
 				assertNotNull(fors);
-				assertEquals(1, fors.principauxPP.size());
+				assertEquals(1, fors.principaux.size());
 				assertEquals(2, fors.secondaires.size());
 
-				final ForFiscalPrincipalPP ffp = fors.principauxPP.get(0);
+				final ForFiscalPrincipal ffp = fors.principaux.get(0);
 				assertNotNull(ffp);
 				assertForPrincipal(date(1964, 8, 1), MotifFor.MAJORITE, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Renens.getNoOFS(), MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, ffp);
 
@@ -441,10 +430,10 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 				assertNotNull(ffs1);
 				assertForSecondaire(dateFusion, MotifFor.FUSION_COMMUNES, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.RomainmotierEnvy.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE, ffs1);
 
-				assertEquals(1, rapport.nbTiersExamines);
-				assertEquals(0, rapport.tiersIgnoresPourFors.size());
-				assertEquals(1, rapport.tiersTraitesPourFors.size());
-				assertEmpty(rapport.tiersEnErreur);
+				assertEquals(1, rapport.getNbTiersTotal());
+				assertEquals(0, rapport.tiersIgnores.size());
+				assertEquals(1, rapport.tiersTraites.size());
+				assertEmpty(rapport.tiersEnErrors);
 			}
 		});
 	}
@@ -465,7 +454,7 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 			@Override
 			public FusionDeCommunesResults execute(TransactionStatus status) throws Exception {
 				final FusionDeCommunesResults rapport = new FusionDeCommunesResults(anciensNoOfs, nouveauNoOfs, dateFusion, dateTraitement, tiersService, adresseService);
-				processor.traiteTiers(new FusionDeCommunesProcessor.TiersATraiter(id, true, false, false, false), anciensNoOfs, nouveauNoOfs, dateFusion, rapport);
+				processor.traiteTiers(id, anciensNoOfs, nouveauNoOfs, dateFusion, rapport);
 				return rapport;
 			}
 		});
@@ -479,24 +468,23 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 
 				final ForsParType fors = bruno.getForsParType(true);
 				assertNotNull(fors);
-				assertEquals(2, fors.principauxPP.size());
+				assertEquals(2, fors.principaux.size());
 				assertEmpty(fors.secondaires);
 
-				final ForFiscalPrincipalPP ffp0 = fors.principauxPP.get(0);
+				final ForFiscalPrincipal ffp0 = fors.principaux.get(0);
 				assertNotNull(ffp0);
 				assertForPrincipal(date(1964, 8, 1), MotifFor.MAJORITE, dateFusion.getOneDayBefore(), MotifFor.FUSION_COMMUNES, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Croy.getNoOFS(),
 				                   MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, ffp0);
 
-				final ForFiscalPrincipalPP ffp1 = fors.principauxPP.get(1);
+				final ForFiscalPrincipal ffp1 = fors.principaux.get(1);
 				assertNotNull(ffp1);
-				assertForPrincipal(dateFusion, MotifFor.FUSION_COMMUNES, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.RomainmotierEnvy.getNoOFS(), MotifRattachement.DOMICILE,
-				                   ModeImposition.ORDINAIRE,
+				assertForPrincipal(dateFusion, MotifFor.FUSION_COMMUNES, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.RomainmotierEnvy.getNoOFS(), MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE,
 				                   ffp1);
 
-				assertEquals(1, rapport.nbTiersExamines);
-				assertEquals(0, rapport.tiersIgnoresPourFors.size());
-				assertEquals(1, rapport.tiersTraitesPourFors.size());
-				assertEmpty(rapport.tiersEnErreur);
+				assertEquals(1, rapport.getNbTiersTotal());
+				assertEquals(0, rapport.tiersIgnores.size());
+				assertEquals(1, rapport.tiersTraites.size());
+				assertEmpty(rapport.tiersEnErrors);
 			}
 		});
 	}
@@ -519,7 +507,7 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 			@Override
 			public FusionDeCommunesResults execute(TransactionStatus status) throws Exception {
 				final FusionDeCommunesResults rapport = new FusionDeCommunesResults(anciensNoOfs, nouveauNoOfs, dateFusion, dateTraitement, tiersService, adresseService);
-				processor.traiteTiers(new FusionDeCommunesProcessor.TiersATraiter(id, true, false, false, false), anciensNoOfs, nouveauNoOfs, dateFusion, rapport);
+				processor.traiteTiers(id, anciensNoOfs, nouveauNoOfs, dateFusion, rapport);
 				return rapport;
 			}
 		});
@@ -533,7 +521,7 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 
 				final ForsParType fors = bruno.getForsParType(true);
 				assertNotNull(fors);
-				assertEquals(1, fors.principauxPP.size());
+				assertEquals(1, fors.principaux.size());
 				assertEmpty(fors.secondaires);
 				assertEquals(1, fors.autresImpots.size()); // les fors autres impôts représentent des impositions ponctuelles valable une seule journée
 				assertEquals(2, fors.autreElementImpot.size());
@@ -544,17 +532,16 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 
 				final ForFiscalAutreElementImposable faei0 = fors.autreElementImpot.get(0);
 				assertNotNull(faei0);
-				assertForAutreElementImposable(date(1992, 4, 6), dateFusion.getOneDayBefore(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Vaulion, MotifRattachement.PRESTATION_PREVOYANCE,
-				                               faei0);
+				assertForAutreElementImposable(date(1992, 4, 6), dateFusion.getOneDayBefore(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Vaulion, MotifRattachement.PRESTATION_PREVOYANCE, faei0);
 
 				final ForFiscalAutreElementImposable faei1 = fors.autreElementImpot.get(1);
 				assertNotNull(faei1);
 				assertForAutreElementImposable(dateFusion, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.RomainmotierEnvy, MotifRattachement.PRESTATION_PREVOYANCE, faei1);
 
-				assertEquals(1, rapport.nbTiersExamines);
-				assertEquals(0, rapport.tiersIgnoresPourFors.size());
-				assertEquals(1, rapport.tiersTraitesPourFors.size());
-				assertEmpty(rapport.tiersEnErreur);
+				assertEquals(1, rapport.getNbTiersTotal());
+				assertEquals(0, rapport.tiersIgnores.size());
+				assertEquals(1, rapport.tiersTraites.size());
+				assertEmpty(rapport.tiersEnErrors);
 			}
 		});
 	}
@@ -583,7 +570,7 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 			@Override
 			public FusionDeCommunesResults execute(TransactionStatus status) throws Exception {
 				final FusionDeCommunesResults rapport = new FusionDeCommunesResults(anciensNoOfs, nouveauNoOfs, dateFusion, dateTraitement, tiersService, adresseService);
-				processor.traiteTiers(new FusionDeCommunesProcessor.TiersATraiter(id, true, false, false, false), anciensNoOfs, nouveauNoOfs, dateFusion, rapport);
+				processor.traiteTiers(id, anciensNoOfs, nouveauNoOfs, dateFusion, rapport);
 				return rapport;
 			}
 		});
@@ -597,20 +584,19 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 
 				final ForsParType fors = bruno.getForsParType(true);
 				assertNotNull(fors);
-				assertEquals(2, fors.principauxPP.size());
+				assertEquals(2, fors.principaux.size());
 				assertEquals(1, fors.secondaires.size());
 				assertEquals(1, fors.autresImpots.size());
 				assertEquals(1, fors.autreElementImpot.size());
 
-				final ForFiscalPrincipalPP ffp0 = fors.principauxPP.get(0);
+				final ForFiscalPrincipal ffp0 = fors.principaux.get(0);
 				assertNotNull(ffp0);
 				assertForPrincipal(date(1964, 8, 1), MotifFor.MAJORITE, veilleDateFutur, MotifFor.DEMENAGEMENT_VD, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(),
 				                   MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, ffp0);
 
-				final ForFiscalPrincipalPP ffp1 = fors.principauxPP.get(1);
+				final ForFiscalPrincipal ffp1 = fors.principaux.get(1);
 				assertNotNull(ffp1);
-				assertForPrincipal(dateFutur, MotifFor.DEMENAGEMENT_VD, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.RomainmotierEnvy.getNoOFS(), MotifRattachement.DOMICILE,
-				                   ModeImposition.ORDINAIRE,
+				assertForPrincipal(dateFutur, MotifFor.DEMENAGEMENT_VD, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.RomainmotierEnvy.getNoOFS(), MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE,
 				                   ffp1);
 
 				final ForFiscalSecondaire ffs = fors.secondaires.get(0);
@@ -625,10 +611,10 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 				assertNotNull(faei);
 				assertForAutreElementImposable(dateFutur, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.RomainmotierEnvy, MotifRattachement.PRESTATION_PREVOYANCE, faei);
 
-				assertEquals(1, rapport.nbTiersExamines);
-				assertEquals(0, rapport.tiersIgnoresPourFors.size());
-				assertEquals(1, rapport.tiersTraitesPourFors.size());
-				assertEmpty(rapport.tiersEnErreur);
+				assertEquals(1, rapport.getNbTiersTotal());
+				assertEquals(0, rapport.tiersIgnores.size());
+				assertEquals(1, rapport.tiersTraites.size());
+				assertEmpty(rapport.tiersEnErrors);
 			}
 		});
 	}
@@ -650,7 +636,7 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 			@Override
 			public FusionDeCommunesResults execute(TransactionStatus status) throws Exception {
 				final FusionDeCommunesResults rapport = new FusionDeCommunesResults(anciensNoOfs, nouveauNoOfs, dateFusion, dateTraitement, tiersService, adresseService);
-				processor.traiteTiers(new FusionDeCommunesProcessor.TiersATraiter(id, true, false, false, false), anciensNoOfs, nouveauNoOfs, dateFusion, rapport);
+				processor.traiteTiers(id, anciensNoOfs, nouveauNoOfs, dateFusion, rapport);
 				return rapport;
 			}
 		});
@@ -664,16 +650,16 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 
 				final ForsParType fors = bruno.getForsParType(true);
 				assertNotNull(fors);
-				assertEquals(1, fors.principauxPP.size());
+				assertEquals(1, fors.principaux.size());
 
-				final ForFiscalPrincipalPP ffp = fors.principauxPP.get(0);
+				final ForFiscalPrincipal ffp = fors.principaux.get(0);
 				assertNotNull(ffp);
 				assertForPrincipal(date(1964, 8, 1), MotifFor.MAJORITE, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.RomainmotierEnvy.getNoOFS(), MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, ffp);
 
-				assertEquals(1, rapport.nbTiersExamines);
-				assertEquals(1, rapport.tiersIgnoresPourFors.size());
-				assertEquals(0, rapport.tiersTraitesPourFors.size());
-				assertEmpty(rapport.tiersEnErreur);
+				assertEquals(1, rapport.getNbTiersTotal());
+				assertEquals(1, rapport.tiersIgnores.size());
+				assertEquals(0, rapport.tiersTraites.size());
+				assertEmpty(rapport.tiersEnErrors);
 			}
 		});
 	}
@@ -694,7 +680,7 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 			@Override
 			public FusionDeCommunesResults execute(TransactionStatus status) throws Exception {
 				final FusionDeCommunesResults rapport = new FusionDeCommunesResults(anciensNoOfs, nouveauNoOfs, dateFusion, dateTraitement, tiersService, adresseService);
-				processor.traiteTiers(new FusionDeCommunesProcessor.TiersATraiter(id, true, false, false, false), anciensNoOfs, nouveauNoOfs, dateFusion, rapport);
+				processor.traiteTiers(id, anciensNoOfs, nouveauNoOfs, dateFusion, rapport);
 				return rapport;
 			}
 		});
@@ -718,10 +704,10 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 				assertNotNull(ffp1);
 				assertForDebiteur(dateFusion, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.RomainmotierEnvy.getNoOFS(), ffp1);
 
-				assertEquals(1, rapport.nbTiersExamines);
-				assertEquals(0, rapport.tiersIgnoresPourFors.size());
-				assertEquals(1, rapport.tiersTraitesPourFors.size());
-				assertEmpty(rapport.tiersEnErreur);
+				assertEquals(1, rapport.getNbTiersTotal());
+				assertEquals(0, rapport.tiersIgnores.size());
+				assertEquals(1, rapport.tiersTraites.size());
+				assertEmpty(rapport.tiersEnErrors);
 			}
 		});
 	}
@@ -734,7 +720,7 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 			final int nouvelleCommune = MockCommune.Lausanne.getNoOFS();
 			final FusionDeCommunesResults results = processor.run(anciennesCommunes, nouvelleCommune, date(2010, 1, 1), RegDate.get(), null);
 			assertNotNull(results);
-			assertEquals(0, results.nbTiersExamines);
+			assertEquals(0, results.getNbTiersTotal());
 		}
 
 		// Communes neuchâteloises
@@ -743,7 +729,7 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 			final int nouvelleCommune = MockCommune.Neuchatel.getNoOFS();
 			final FusionDeCommunesResults results = processor.run(anciennesCommunes, nouvelleCommune, date(2010, 1, 1), RegDate.get(), null);
 			assertNotNull(results);
-			assertEquals(0, results.nbTiersExamines);
+			assertEquals(0, results.getNbTiersTotal());
 		}
 
 		// Communes non-vaudoises réparties sur plusieurs cantons
@@ -810,11 +796,11 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 		doInNewTransaction(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
-				final Set<Integer> anciennesCommunes = new HashSet<>(Collections.singletonList(MockCommune.Cully.getNoOFS()));
+				final Set<Integer> anciennesCommunes = new HashSet<>(Arrays.asList(MockCommune.Cully.getNoOFS()));
 				final int nouvelleCommune = MockCommune.BourgEnLavaux.getNoOFS();
 				final FusionDeCommunesResults results = processor.run(anciennesCommunes, nouvelleCommune, date(2011, 1, 1), RegDate.get(), null);
 				assertNotNull(results);
-				assertEquals(1, results.nbTiersExamines);
+				assertEquals(1, results.getNbTiersTotal());
 				PersonnePhysique bruno = (PersonnePhysique) tiersService.getTiers(id);
 				assertEquals("Bruno doit avoir 2 nouveaux fors ouverts, donc 4 au total", 4, bruno.getForsFiscaux().size());
 				assertEquals("Bruno doit avoir 2 fors ouverts", 2, bruno.getForsFiscauxValidAt(date(2011, 1, 1)).size());
@@ -852,7 +838,7 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 			@Override
 			public FusionDeCommunesResults execute(TransactionStatus status) throws Exception {
 				final FusionDeCommunesResults rapport = new FusionDeCommunesResults(anciensNoOfs, nouveauNoOfs, dateFusion, dateTraitement, tiersService, adresseService);
-				processor.traiteTiers(new FusionDeCommunesProcessor.TiersATraiter(id, false, true, false, false), anciensNoOfs, nouveauNoOfs, dateFusion, rapport);
+				processor.traiteTiersAvecDecision(id, anciensNoOfs, nouveauNoOfs, dateFusion, rapport);
 				return rapport;
 			}
 		});
@@ -870,16 +856,16 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 
 				final DecisionAci d0 = bruno.getDecisionsSorted().get(0);
 				assertNotNull(d0);
-				assertEquals(d0.getDateFin(), dateFusion.getOneDayBefore());
-				assertEquals(d0.getNumeroOfsAutoriteFiscale().intValue(), MockCommune.Croy.getNoOFS());
+				assertEquals(d0.getDateFin(),dateFusion.getOneDayBefore());
+				assertEquals(d0.getNumeroOfsAutoriteFiscale().intValue(),MockCommune.Croy.getNoOFS());
 				final DecisionAci d1 = bruno.getDecisionsSorted().get(1);
-				assertEquals(d1.getDateDebut(), dateFusion);
-				assertEquals(d1.getNumeroOfsAutoriteFiscale().intValue(), MockCommune.RomainmotierEnvy.getNoOFS());
+				assertEquals(d1.getDateDebut(),dateFusion);
+				assertEquals(d1.getNumeroOfsAutoriteFiscale().intValue(),MockCommune.RomainmotierEnvy.getNoOFS());
 
-				assertEquals(1, rapport.nbTiersExamines);
-				assertEquals(0, rapport.tiersIgnoresPourDecisions.size());
-				assertEquals(1, rapport.tiersTraitesPourDecisions.size());
-				assertEmpty(rapport.tiersEnErreur);
+				assertEquals(1, rapport.getNbTiersAvecDecisionTotal());
+				assertEquals(0, rapport.tiersAvecDecisonIgnores.size());
+				assertEquals(1, rapport.tiersAvecDecisionTraites.size());
+				assertEmpty(rapport.tiersAvecDecisionEnErrors);
 			}
 		});
 	}
@@ -901,7 +887,7 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 			@Override
 			public FusionDeCommunesResults execute(TransactionStatus status) throws Exception {
 				final FusionDeCommunesResults rapport = new FusionDeCommunesResults(anciensNoOfs, nouveauNoOfs, dateFusion, dateTraitement, tiersService, adresseService);
-				processor.traiteTiers(new FusionDeCommunesProcessor.TiersATraiter(id, false, true, false, false), anciensNoOfs, nouveauNoOfs, dateFusion, rapport);
+				processor.traiteTiersAvecDecision(id, anciensNoOfs, nouveauNoOfs, dateFusion, rapport);
 				return rapport;
 			}
 		});
@@ -921,10 +907,10 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 				assertNotNull(decisionAci);
 
 				assertEquals(decisionAci.getNumeroOfsAutoriteFiscale().intValue(),MockCommune.RomainmotierEnvy.getNoOFS());
-				assertEquals(1, rapport.nbTiersExamines);
-				assertEquals(1, rapport.tiersIgnoresPourDecisions.size());
-				assertEquals(0, rapport.tiersTraitesPourDecisions.size());
-				assertEmpty(rapport.tiersEnErreur);
+				assertEquals(1, rapport.getNbTiersAvecDecisionTotal());
+				assertEquals(1, rapport.tiersAvecDecisonIgnores.size());
+				assertEquals(0, rapport.tiersAvecDecisionTraites.size());
+				assertEmpty(rapport.tiersAvecDecisionEnErrors);
 			}
 		});
 	}
@@ -949,26 +935,27 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 		final FusionDeCommunesResults rapport = processor.run(anciensNoOfs, nouveauNoOfs, dateFusion, dateTraitement, null);
 		assertNotNull(rapport);
 
-		assertEquals(1, rapport.nbTiersExamines);
+		assertEquals(0, rapport.getNbTiersTotal());
+		assertEquals(0, rapport.tiersTraites.size());
+		assertEquals(0, rapport.tiersIgnores.size());
+		assertEquals(0, rapport.tiersEnErrors.size());
 
-		assertEquals(0, rapport.tiersTraitesPourFors.size());
-		assertEquals(0, rapport.tiersIgnoresPourFors.size());
-		assertEquals(1, rapport.tiersEnErreur.size());
+		assertEquals(1, rapport.getNbTiersAvecDecisionTotal());
+		assertEquals(0, rapport.tiersAvecDecisonIgnores.size());
+		assertEquals(0, rapport.tiersAvecDecisionTraites.size());
+		assertEquals(1, rapport.tiersAvecDecisionEnErrors.size());
 
-		assertEquals(0, rapport.tiersIgnoresPourDecisions.size());
-		assertEquals(0, rapport.tiersTraitesPourDecisions.size());
-
-		final FusionDeCommunesResults.Erreur error = rapport.tiersEnErreur.get(0);
+		final FusionDeCommunesResults.Erreur error = rapport.tiersAvecDecisionEnErrors.get(0);
 		assertNotNull(error);
 		assertEquals(FusionDeCommunesResults.ErreurType.VALIDATION, error.raison);
-		assertEquals(ppId, error.noTiers);
+		assertEquals(ppId, error.noCtb);
 
 		doInNewTransaction(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				// Le contribuable ne valide pas -> il ne devrait pas être traité et apparaître en erreur
 				final PersonnePhysique bruno = (PersonnePhysique) tiersDAO.get(ppId);
-				final List<DecisionAci> decisions = bruno.getDecisionsSorted();
+				final List<DecisionAci> decisions= bruno.getDecisionsSorted();
 				assertNotNull(decisions);
 				assertEquals(1, decisions.size());
 
@@ -980,138 +967,5 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 		});
 	}
 
-	@Test
-	public void testSimpleDomicilesEtablissement() throws Exception {
 
-		final long id = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Etablissement etb = (Etablissement) getCurrentSession().merge(new Etablissement());
-				etb.addDomicile(new DomicileEtablissement(date(1995, 1, 1), null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Croy.getNoOFS(), etb));
-				return etb.getNumero();
-			}
-		});
-
-		final FusionDeCommunesResults rapport = doInNewTransactionAndSession(new TxCallback<FusionDeCommunesResults>() {
-			@Override
-			public FusionDeCommunesResults execute(TransactionStatus status) throws Exception {
-				final FusionDeCommunesResults rapport = new FusionDeCommunesResults(anciensNoOfs, nouveauNoOfs, dateFusion, dateTraitement, tiersService, adresseService);
-				processor.traiteTiers(new FusionDeCommunesProcessor.TiersATraiter(id, false, false, true, false), anciensNoOfs, nouveauNoOfs, dateFusion, rapport);
-				return rapport;
-			}
-		});
-
-		assertEquals(1, rapport.nbTiersExamines);
-		assertEquals(1, rapport.tiersTraitesPourDomicilesEtablissement.size());
-		assertEquals(0, rapport.tiersIgnoresPourDomicilesEtablissement.size());
-		assertEmpty(rapport.tiersEnErreur);
-
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				// Le domicile de l'établissement doit avoir été mis à jour
-				final Etablissement etb = hibernateTemplate.get(Etablissement.class, id);
-				assertNotNull(etb);
-
-				final List<DomicileEtablissement> domiciles = etb.getSortedDomiciles(true);
-				assertNotNull(domiciles);
-				assertEquals(2, domiciles.size());
-
-				{
-					final DomicileEtablissement domicile = domiciles.get(0);
-					assertNotNull(domicile);
-					assertEquals(date(1995, 1, 1), domicile.getDateDebut());
-					assertEquals(dateFusion.getOneDayBefore(), domicile.getDateFin());
-					assertEquals((Integer) MockCommune.Croy.getNoOFS(), domicile.getNumeroOfsAutoriteFiscale());
-					assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, domicile.getTypeAutoriteFiscale());
-					assertFalse(domicile.isAnnule());
-				}
-				{
-					final DomicileEtablissement domicile = domiciles.get(1);
-					assertNotNull(domicile);
-					assertEquals(dateFusion, domicile.getDateDebut());
-					assertNull(domicile.getDateFin());
-					assertEquals((Integer) MockCommune.RomainmotierEnvy.getNoOFS(), domicile.getNumeroOfsAutoriteFiscale());
-					assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, domicile.getTypeAutoriteFiscale());
-					assertFalse(domicile.isAnnule());
-				}
-			}
-		});
-	}
-
-	@Test
-	public void testAllegementFiscal() throws Exception {
-
-		final long id = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise entreprise = (Entreprise) getCurrentSession().merge(new Entreprise(12L));
-				entreprise.addAllegementFiscal(new AllegementFiscal(date(1995, 1, 1), null, BigDecimal.TEN, AllegementFiscal.TypeImpot.CAPITAL, AllegementFiscal.TypeCollectivite.CONFEDERATION, null));
-				entreprise.addAllegementFiscal(new AllegementFiscal(date(1997, 1, 1), null, BigDecimal.ONE, AllegementFiscal.TypeImpot.BENEFICE, AllegementFiscal.TypeCollectivite.COMMUNE, MockCommune.Croy.getNoOFS()));
-				return entreprise.getNumero();
-			}
-		});
-
-		final FusionDeCommunesResults rapport = doInNewTransactionAndSession(new TxCallback<FusionDeCommunesResults>() {
-			@Override
-			public FusionDeCommunesResults execute(TransactionStatus status) throws Exception {
-				final FusionDeCommunesResults rapport = new FusionDeCommunesResults(anciensNoOfs, nouveauNoOfs, dateFusion, dateTraitement, tiersService, adresseService);
-				processor.traiteTiers(new FusionDeCommunesProcessor.TiersATraiter(id, false, false, false, true), anciensNoOfs, nouveauNoOfs, dateFusion, rapport);
-				return rapport;
-			}
-		});
-
-		assertEquals(1, rapport.nbTiersExamines);
-		assertEquals(1, rapport.tiersTraitesPourAllegementsFiscaux.size());
-		assertEquals(0, rapport.tiersIgnoresPourAllegementsFiscaux.size());
-		assertEmpty(rapport.tiersEnErreur);
-
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				// l'un des allègements fiscaux de l'entreprise (celui qui est posé sur la commune) doit avoir été mis à jour
-				final Entreprise entreprise = hibernateTemplate.get(Entreprise.class, id);
-				assertNotNull(entreprise);
-
-				final List<AllegementFiscal> allegements = new ArrayList<>(entreprise.getAllegementsFiscaux());
-				assertNotNull(allegements);
-				assertEquals(3, allegements.size());        // les deux pré-existants + le nouveau
-
-				Collections.sort(allegements, new DateRangeComparator<AllegementFiscal>());
-				{
-					final AllegementFiscal af = allegements.get(0);
-					assertNotNull(af);
-					assertEquals(date(1995, 1, 1), af.getDateDebut());
-					assertNull(af.getDateFin());
-					assertEquals(0, BigDecimal.TEN.compareTo(af.getPourcentageAllegement()));
-					assertEquals(AllegementFiscal.TypeImpot.CAPITAL, af.getTypeImpot());
-					assertEquals(AllegementFiscal.TypeCollectivite.CONFEDERATION, af.getTypeCollectivite());
-					assertNull(af.getNoOfsCommune());
-					assertFalse(af.isAnnule());
-				}
-				{
-					final AllegementFiscal af = allegements.get(1);
-					assertNotNull(af);
-					assertEquals(date(1997, 1, 1), af.getDateDebut());
-					assertEquals(dateFusion.getOneDayBefore(), af.getDateFin());
-					assertEquals(0, BigDecimal.ONE.compareTo(af.getPourcentageAllegement()));
-					assertEquals(AllegementFiscal.TypeImpot.BENEFICE, af.getTypeImpot());
-					assertEquals(AllegementFiscal.TypeCollectivite.COMMUNE, af.getTypeCollectivite());
-					assertEquals((Integer) MockCommune.Croy.getNoOFS(), af.getNoOfsCommune());
-					assertFalse(af.isAnnule());
-				}
-				{
-					final AllegementFiscal af = allegements.get(2);
-					assertNotNull(af);
-					assertEquals(dateFusion, af.getDateDebut());
-					assertNull(af.getDateFin());
-					assertEquals(0, BigDecimal.ONE.compareTo(af.getPourcentageAllegement()));
-					assertEquals(AllegementFiscal.TypeImpot.BENEFICE, af.getTypeImpot());
-					assertEquals(AllegementFiscal.TypeCollectivite.COMMUNE, af.getTypeCollectivite());
-					assertEquals((Integer) MockCommune.RomainmotierEnvy.getNoOFS(), af.getNoOfsCommune());
-					assertFalse(af.isAnnule());
-				}
-			}
-		});
-	}
 }

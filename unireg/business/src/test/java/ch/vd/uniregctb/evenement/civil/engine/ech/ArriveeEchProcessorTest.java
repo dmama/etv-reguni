@@ -27,7 +27,6 @@ import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchErreur;
 import ch.vd.uniregctb.metier.MetierService;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
@@ -2326,7 +2325,7 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 				assertNotNull(pp);
 				assertTrue(pp.isHabitantVD());
 
-				final ForFiscalPrincipalPP ffp = pp.getDernierForFiscalPrincipal();
+				final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
 				assertNotNull(ffp);
 				assertEquals(dateArrivee, ffp.getDateDebut());
 				assertNull(ffp.getDateFin());
@@ -2398,7 +2397,7 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 				assertNotNull(couple.getConjoint());
 				assertNotNull(couple.getMenage());
 
-				final ForFiscalPrincipalPP ffp = couple.getMenage().getDernierForFiscalPrincipal();
+				final ForFiscalPrincipal ffp = couple.getMenage().getDernierForFiscalPrincipal();
 				assertNotNull(ffp);
 				assertEquals(dateArrivee, ffp.getDateDebut());
 				assertNull(ffp.getDateFin());
@@ -2469,7 +2468,7 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 				assertNotNull(couple.getConjoint());
 				assertNotNull(couple.getMenage());
 
-				final ForFiscalPrincipalPP ffp = couple.getMenage().getDernierForFiscalPrincipal();
+				final ForFiscalPrincipal ffp = couple.getMenage().getDernierForFiscalPrincipal();
 				assertNotNull(ffp);
 				assertEquals(dateArrivee, ffp.getDateDebut());
 				assertNull(ffp.getDateFin());
@@ -2518,7 +2517,7 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 				final EnsembleTiersCouple couple = addEnsembleTiersCouple(lui, elle, dateMariage, null);
 				final MenageCommun mc = couple.getMenage();
 
-				addForPrincipal(mc, dateAchat, null, null, null, MockPays.EtatsUnis, MotifRattachement.DIPLOMATE_ETRANGER);
+				addForPrincipal(mc, dateAchat, null, null, null, MockPays.EtatsUnis.getNoOFS(), TypeAutoriteFiscale.PAYS_HS, MotifRattachement.DIPLOMATE_ETRANGER);
 				addForSecondaire(mc, dateAchat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Echallens.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
 
 				return mc.getNumero();
@@ -2554,7 +2553,7 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 				final MenageCommun mc = (MenageCommun) tiersDAO.get(ppMenage);
 				assertNotNull(mc);
 
-				final ForFiscalPrincipalPP ffp = mc.getDernierForFiscalPrincipal();
+				final ForFiscalPrincipal ffp = mc.getDernierForFiscalPrincipal();
 				assertNotNull(ffp);
 				assertEquals(dateArrivee, ffp.getDateDebut());
 				assertEquals(MotifFor.ARRIVEE_HC, ffp.getMotifOuverture());

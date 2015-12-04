@@ -11,7 +11,7 @@ import ch.vd.uniregctb.adresse.AdressePM;
 import ch.vd.uniregctb.adresse.AdresseTiers;
 import ch.vd.uniregctb.tiers.AutreCommunaute;
 
-public class AutreCommunauteValidator extends ContribuableImpositionPersonnesMoralesValidator<AutreCommunaute> {
+public class AutreCommunauteValidator extends ContribuableValidator<AutreCommunaute> {
 
 	@Override
 	public ValidationResults validate(AutreCommunaute communaute) {

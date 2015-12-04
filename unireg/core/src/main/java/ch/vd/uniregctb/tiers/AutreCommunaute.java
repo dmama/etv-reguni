@@ -7,7 +7,6 @@ import javax.persistence.Transient;
 
 import org.hibernate.annotations.Type;
 
-import ch.vd.uniregctb.common.ComparisonHelper;
 import ch.vd.uniregctb.common.LengthConstants;
 import ch.vd.uniregctb.type.FormeJuridique;
 
@@ -22,11 +21,12 @@ import ch.vd.uniregctb.type.FormeJuridique;
  */
 @Entity
 @DiscriminatorValue("AutreCommunaute")
-public class AutreCommunaute extends ContribuableImpositionPersonnesMorales {
+public class AutreCommunaute extends Contribuable {
 
-	// Numéros générés pour AutreCommunauté et CollectiviteAdministrative
-	public static final int CAAC_GEN_FIRST_ID = 2000000;
-	public static final int CAAC_GEN_LAST_ID = 2999999;
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 4939991198494166708L;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -126,9 +126,19 @@ public class AutreCommunaute extends ContribuableImpositionPersonnesMorales {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-
-		final AutreCommunaute other = (AutreCommunaute) obj;
-		return ComparisonHelper.areEqual(formeJuridique, other.formeJuridique)
-				&& ComparisonHelper.areEqual(nom, other.nom);
+		AutreCommunaute other = (AutreCommunaute) obj;
+		if (formeJuridique == null) {
+			if (other.formeJuridique != null)
+				return false;
+		}
+		else if (formeJuridique != other.formeJuridique)
+			return false;
+		if (nom == null) {
+			if (other.nom != null)
+				return false;
+		}
+		else if (!nom.equals(other.nom))
+			return false;
+		return true;
 	}
 }

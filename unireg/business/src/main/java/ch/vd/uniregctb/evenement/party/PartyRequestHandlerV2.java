@@ -23,7 +23,7 @@ import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.iban.IbanValidator;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.interfaces.service.ServiceOrganisationService;
+import ch.vd.uniregctb.interfaces.service.ServicePersonneMoraleService;
 import ch.vd.uniregctb.jms.BamMessageSender;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionService;
@@ -88,11 +88,6 @@ public class PartyRequestHandlerV2 implements RequestHandler<PartyRequest> {
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
-	public void setServiceOrganisation(ServiceOrganisationService service) {
-		context.serviceOrganisationService = service;
-	}
-
-	@SuppressWarnings({"UnusedDeclaration"})
 	public void setHibernateTemplate(HibernateTemplate template) {
 		context.hibernateTemplate = template;
 	}
@@ -118,6 +113,11 @@ public class PartyRequestHandlerV2 implements RequestHandler<PartyRequest> {
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
+	public void setServicePM(ServicePersonneMoraleService service) {
+		context.servicePM = service;
+	}
+
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setAssujettissementService(AssujettissementService service) {
 		context.assujettissementService = service;
 	}
@@ -127,7 +127,6 @@ public class PartyRequestHandlerV2 implements RequestHandler<PartyRequest> {
 		context.periodeImpositionService = service;
 	}
 
-	@SuppressWarnings({"UnusedDeclaration"})
 	public void setSecurityProvider(SecurityProviderInterface securityProvider) {
 		context.securityProvider = securityProvider;
 	}

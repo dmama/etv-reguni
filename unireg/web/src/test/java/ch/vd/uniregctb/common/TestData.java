@@ -9,7 +9,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.uniregctb.adresse.AdresseSuisse;
-import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP;
+import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DeclarationImpotSource;
 import ch.vd.uniregctb.declaration.DelaiDeclaration;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
@@ -19,18 +19,17 @@ import ch.vd.uniregctb.declaration.EtatDeclarationRetournee;
 import ch.vd.uniregctb.declaration.EtatDeclarationSommee;
 import ch.vd.uniregctb.declaration.ModeleDocument;
 import ch.vd.uniregctb.declaration.ModeleFeuilleDocument;
-import ch.vd.uniregctb.declaration.ParametrePeriodeFiscalePP;
+import ch.vd.uniregctb.declaration.ParametrePeriodeFiscale;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.tiers.AppartenanceMenage;
 import ch.vd.uniregctb.tiers.AutreCommunaute;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.ContactImpotSource;
-import ch.vd.uniregctb.tiers.CoordonneesFinancieres;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.ForDebiteurPrestationImposable;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
+import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
 import ch.vd.uniregctb.tiers.IdentificationPersonne;
 import ch.vd.uniregctb.tiers.MenageCommun;
@@ -131,7 +130,7 @@ public class TestData {
 		pf7.setModelesDocument(new HashSet());
 		pf7 = hibernateTemplate.merge(pf7);
 
-		ParametrePeriodeFiscalePP ppf0 = new ParametrePeriodeFiscalePP();
+		ParametrePeriodeFiscale ppf0 = new ParametrePeriodeFiscale();
 		ppf0.setId(1L);
 		ppf0.setDateFinEnvoiMasseDI(RegDate.get(2003, 4, 30));
 		ppf0.setLogModifDate(new Timestamp(1199142000000L));
@@ -141,7 +140,7 @@ public class TestData {
 		pf0.addParametrePeriodeFiscale(ppf0);
 		pf0 = hibernateTemplate.merge(pf0);
 
-		ParametrePeriodeFiscalePP ppf1 = new ParametrePeriodeFiscalePP();
+		ParametrePeriodeFiscale ppf1 = new ParametrePeriodeFiscale();
 		ppf1.setId(2L);
 		ppf1.setDateFinEnvoiMasseDI(RegDate.get(2003, 6, 30));
 		ppf1.setLogModifDate(new Timestamp(1199142000000L));
@@ -151,7 +150,7 @@ public class TestData {
 		pf0.addParametrePeriodeFiscale(ppf1);
 		pf0 = hibernateTemplate.merge(pf0);
 
-		ParametrePeriodeFiscalePP ppf2 = new ParametrePeriodeFiscalePP();
+		ParametrePeriodeFiscale ppf2 = new ParametrePeriodeFiscale();
 		ppf2.setId(3L);
 		ppf2.setDateFinEnvoiMasseDI(RegDate.get(2003, 6, 30));
 		ppf2.setLogModifDate(new Timestamp(1199142000000L));
@@ -161,7 +160,7 @@ public class TestData {
 		pf0.addParametrePeriodeFiscale(ppf2);
 		pf0 = hibernateTemplate.merge(pf0);
 
-		ParametrePeriodeFiscalePP ppf3 = new ParametrePeriodeFiscalePP();
+		ParametrePeriodeFiscale ppf3 = new ParametrePeriodeFiscale();
 		ppf3.setId(4L);
 		ppf3.setDateFinEnvoiMasseDI(RegDate.get(2003, 6, 30));
 		ppf3.setLogModifDate(new Timestamp(1199142000000L));
@@ -171,7 +170,7 @@ public class TestData {
 		pf0.addParametrePeriodeFiscale(ppf3);
 		pf0 = hibernateTemplate.merge(pf0);
 
-		ParametrePeriodeFiscalePP ppf4 = new ParametrePeriodeFiscalePP();
+		ParametrePeriodeFiscale ppf4 = new ParametrePeriodeFiscale();
 		ppf4.setId(5L);
 		ppf4.setDateFinEnvoiMasseDI(RegDate.get(2004, 4, 30));
 		ppf4.setLogModifDate(new Timestamp(1199142000000L));
@@ -181,7 +180,7 @@ public class TestData {
 		pf1.addParametrePeriodeFiscale(ppf4);
 		pf1 = hibernateTemplate.merge(pf1);
 
-		ParametrePeriodeFiscalePP ppf5 = new ParametrePeriodeFiscalePP();
+		ParametrePeriodeFiscale ppf5 = new ParametrePeriodeFiscale();
 		ppf5.setId(6L);
 		ppf5.setDateFinEnvoiMasseDI(RegDate.get(2004, 6, 30));
 		ppf5.setLogModifDate(new Timestamp(1199142000000L));
@@ -191,7 +190,7 @@ public class TestData {
 		pf1.addParametrePeriodeFiscale(ppf5);
 		pf1 = hibernateTemplate.merge(pf1);
 
-		ParametrePeriodeFiscalePP ppf6 = new ParametrePeriodeFiscalePP();
+		ParametrePeriodeFiscale ppf6 = new ParametrePeriodeFiscale();
 		ppf6.setId(7L);
 		ppf6.setDateFinEnvoiMasseDI(RegDate.get(2004, 6, 30));
 		ppf6.setLogModifDate(new Timestamp(1199142000000L));
@@ -201,7 +200,7 @@ public class TestData {
 		pf1.addParametrePeriodeFiscale(ppf6);
 		pf1 = hibernateTemplate.merge(pf1);
 
-		ParametrePeriodeFiscalePP ppf7 = new ParametrePeriodeFiscalePP();
+		ParametrePeriodeFiscale ppf7 = new ParametrePeriodeFiscale();
 		ppf7.setId(8L);
 		ppf7.setDateFinEnvoiMasseDI(RegDate.get(2004, 6, 30));
 		ppf7.setLogModifDate(new Timestamp(1199142000000L));
@@ -211,7 +210,7 @@ public class TestData {
 		pf1.addParametrePeriodeFiscale(ppf7);
 		pf1 = hibernateTemplate.merge(pf1);
 
-		ParametrePeriodeFiscalePP ppf8 = new ParametrePeriodeFiscalePP();
+		ParametrePeriodeFiscale ppf8 = new ParametrePeriodeFiscale();
 		ppf8.setId(9L);
 		ppf8.setDateFinEnvoiMasseDI(RegDate.get(2005, 4, 30));
 		ppf8.setLogModifDate(new Timestamp(1199142000000L));
@@ -221,7 +220,7 @@ public class TestData {
 		pf2.addParametrePeriodeFiscale(ppf8);
 		pf2 = hibernateTemplate.merge(pf2);
 
-		ParametrePeriodeFiscalePP ppf9 = new ParametrePeriodeFiscalePP();
+		ParametrePeriodeFiscale ppf9 = new ParametrePeriodeFiscale();
 		ppf9.setId(10L);
 		ppf9.setDateFinEnvoiMasseDI(RegDate.get(2005, 6, 30));
 		ppf9.setLogModifDate(new Timestamp(1199142000000L));
@@ -231,7 +230,7 @@ public class TestData {
 		pf2.addParametrePeriodeFiscale(ppf9);
 		pf2 = hibernateTemplate.merge(pf2);
 
-		ParametrePeriodeFiscalePP ppf10 = new ParametrePeriodeFiscalePP();
+		ParametrePeriodeFiscale ppf10 = new ParametrePeriodeFiscale();
 		ppf10.setId(11L);
 		ppf10.setDateFinEnvoiMasseDI(RegDate.get(2005, 6, 30));
 		ppf10.setLogModifDate(new Timestamp(1199142000000L));
@@ -241,7 +240,7 @@ public class TestData {
 		pf2.addParametrePeriodeFiscale(ppf10);
 		pf2 = hibernateTemplate.merge(pf2);
 
-		ParametrePeriodeFiscalePP ppf11 = new ParametrePeriodeFiscalePP();
+		ParametrePeriodeFiscale ppf11 = new ParametrePeriodeFiscale();
 		ppf11.setId(12L);
 		ppf11.setDateFinEnvoiMasseDI(RegDate.get(2005, 6, 30));
 		ppf11.setLogModifDate(new Timestamp(1199142000000L));
@@ -251,7 +250,7 @@ public class TestData {
 		pf2.addParametrePeriodeFiscale(ppf11);
 		pf2 = hibernateTemplate.merge(pf2);
 
-		ParametrePeriodeFiscalePP ppf12 = new ParametrePeriodeFiscalePP();
+		ParametrePeriodeFiscale ppf12 = new ParametrePeriodeFiscale();
 		ppf12.setId(13L);
 		ppf12.setDateFinEnvoiMasseDI(RegDate.get(2006, 4, 30));
 		ppf12.setLogModifDate(new Timestamp(1199142000000L));
@@ -261,7 +260,7 @@ public class TestData {
 		pf3.addParametrePeriodeFiscale(ppf12);
 		pf3 = hibernateTemplate.merge(pf3);
 
-		ParametrePeriodeFiscalePP ppf13 = new ParametrePeriodeFiscalePP();
+		ParametrePeriodeFiscale ppf13 = new ParametrePeriodeFiscale();
 		ppf13.setId(14L);
 		ppf13.setDateFinEnvoiMasseDI(RegDate.get(2006, 6, 30));
 		ppf13.setLogModifDate(new Timestamp(1199142000000L));
@@ -271,7 +270,7 @@ public class TestData {
 		pf3.addParametrePeriodeFiscale(ppf13);
 		pf3 = hibernateTemplate.merge(pf3);
 
-		ParametrePeriodeFiscalePP ppf14 = new ParametrePeriodeFiscalePP();
+		ParametrePeriodeFiscale ppf14 = new ParametrePeriodeFiscale();
 		ppf14.setId(15L);
 		ppf14.setDateFinEnvoiMasseDI(RegDate.get(2006, 6, 30));
 		ppf14.setLogModifDate(new Timestamp(1199142000000L));
@@ -281,7 +280,7 @@ public class TestData {
 		pf3.addParametrePeriodeFiscale(ppf14);
 		pf3 = hibernateTemplate.merge(pf3);
 
-		ParametrePeriodeFiscalePP ppf15 = new ParametrePeriodeFiscalePP();
+		ParametrePeriodeFiscale ppf15 = new ParametrePeriodeFiscale();
 		ppf15.setId(16L);
 		ppf15.setDateFinEnvoiMasseDI(RegDate.get(2006, 6, 30));
 		ppf15.setLogModifDate(new Timestamp(1199142000000L));
@@ -291,7 +290,7 @@ public class TestData {
 		pf3.addParametrePeriodeFiscale(ppf15);
 		pf3 = hibernateTemplate.merge(pf3);
 
-		ParametrePeriodeFiscalePP ppf16 = new ParametrePeriodeFiscalePP();
+		ParametrePeriodeFiscale ppf16 = new ParametrePeriodeFiscale();
 		ppf16.setId(17L);
 		ppf16.setDateFinEnvoiMasseDI(RegDate.get(2007, 4, 30));
 		ppf16.setLogModifDate(new Timestamp(1199142000000L));
@@ -301,7 +300,7 @@ public class TestData {
 		pf4.addParametrePeriodeFiscale(ppf16);
 		pf4 = hibernateTemplate.merge(pf4);
 
-		ParametrePeriodeFiscalePP ppf17 = new ParametrePeriodeFiscalePP();
+		ParametrePeriodeFiscale ppf17 = new ParametrePeriodeFiscale();
 		ppf17.setId(18L);
 		ppf17.setDateFinEnvoiMasseDI(RegDate.get(2007, 6, 30));
 		ppf17.setLogModifDate(new Timestamp(1199142000000L));
@@ -311,7 +310,7 @@ public class TestData {
 		pf4.addParametrePeriodeFiscale(ppf17);
 		pf4 = hibernateTemplate.merge(pf4);
 
-		ParametrePeriodeFiscalePP ppf18 = new ParametrePeriodeFiscalePP();
+		ParametrePeriodeFiscale ppf18 = new ParametrePeriodeFiscale();
 		ppf18.setId(19L);
 		ppf18.setDateFinEnvoiMasseDI(RegDate.get(2007, 6, 30));
 		ppf18.setLogModifDate(new Timestamp(1199142000000L));
@@ -321,7 +320,7 @@ public class TestData {
 		pf4.addParametrePeriodeFiscale(ppf18);
 		pf4 = hibernateTemplate.merge(pf4);
 
-		ParametrePeriodeFiscalePP ppf19 = new ParametrePeriodeFiscalePP();
+		ParametrePeriodeFiscale ppf19 = new ParametrePeriodeFiscale();
 		ppf19.setId(20L);
 		ppf19.setDateFinEnvoiMasseDI(RegDate.get(2007, 6, 30));
 		ppf19.setLogModifDate(new Timestamp(1199142000000L));
@@ -331,7 +330,7 @@ public class TestData {
 		pf4.addParametrePeriodeFiscale(ppf19);
 		pf4 = hibernateTemplate.merge(pf4);
 
-		ParametrePeriodeFiscalePP ppf20 = new ParametrePeriodeFiscalePP();
+		ParametrePeriodeFiscale ppf20 = new ParametrePeriodeFiscale();
 		ppf20.setId(21L);
 		ppf20.setDateFinEnvoiMasseDI(RegDate.get(2008, 4, 30));
 		ppf20.setLogModifDate(new Timestamp(1199142000000L));
@@ -341,7 +340,7 @@ public class TestData {
 		pf5.addParametrePeriodeFiscale(ppf20);
 		pf5 = hibernateTemplate.merge(pf5);
 
-		ParametrePeriodeFiscalePP ppf21 = new ParametrePeriodeFiscalePP();
+		ParametrePeriodeFiscale ppf21 = new ParametrePeriodeFiscale();
 		ppf21.setId(22L);
 		ppf21.setDateFinEnvoiMasseDI(RegDate.get(2008, 6, 30));
 		ppf21.setLogModifDate(new Timestamp(1199142000000L));
@@ -351,7 +350,7 @@ public class TestData {
 		pf5.addParametrePeriodeFiscale(ppf21);
 		pf5 = hibernateTemplate.merge(pf5);
 
-		ParametrePeriodeFiscalePP ppf22 = new ParametrePeriodeFiscalePP();
+		ParametrePeriodeFiscale ppf22 = new ParametrePeriodeFiscale();
 		ppf22.setId(23L);
 		ppf22.setDateFinEnvoiMasseDI(RegDate.get(2008, 6, 30));
 		ppf22.setLogModifDate(new Timestamp(1199142000000L));
@@ -361,7 +360,7 @@ public class TestData {
 		pf5.addParametrePeriodeFiscale(ppf22);
 		pf5 = hibernateTemplate.merge(pf5);
 
-		ParametrePeriodeFiscalePP ppf23 = new ParametrePeriodeFiscalePP();
+		ParametrePeriodeFiscale ppf23 = new ParametrePeriodeFiscale();
 		ppf23.setId(24L);
 		ppf23.setDateFinEnvoiMasseDI(RegDate.get(2008, 6, 30));
 		ppf23.setLogModifDate(new Timestamp(1199142000000L));
@@ -371,7 +370,7 @@ public class TestData {
 		pf5.addParametrePeriodeFiscale(ppf23);
 		pf5 = hibernateTemplate.merge(pf5);
 
-		ParametrePeriodeFiscalePP ppf24 = new ParametrePeriodeFiscalePP();
+		ParametrePeriodeFiscale ppf24 = new ParametrePeriodeFiscale();
 		ppf24.setId(25L);
 		ppf24.setDateFinEnvoiMasseDI(RegDate.get(2009, 4, 30));
 		ppf24.setLogModifDate(new Timestamp(1199142000000L));
@@ -381,7 +380,7 @@ public class TestData {
 		pf6.addParametrePeriodeFiscale(ppf24);
 		pf6 = hibernateTemplate.merge(pf6);
 
-		ParametrePeriodeFiscalePP ppf25 = new ParametrePeriodeFiscalePP();
+		ParametrePeriodeFiscale ppf25 = new ParametrePeriodeFiscale();
 		ppf25.setId(26L);
 		ppf25.setDateFinEnvoiMasseDI(RegDate.get(2009, 6, 30));
 		ppf25.setLogModifDate(new Timestamp(1199142000000L));
@@ -391,7 +390,7 @@ public class TestData {
 		pf6.addParametrePeriodeFiscale(ppf25);
 		pf6 = hibernateTemplate.merge(pf6);
 
-		ParametrePeriodeFiscalePP ppf26 = new ParametrePeriodeFiscalePP();
+		ParametrePeriodeFiscale ppf26 = new ParametrePeriodeFiscale();
 		ppf26.setId(27L);
 		ppf26.setDateFinEnvoiMasseDI(RegDate.get(2009, 6, 30));
 		ppf26.setLogModifDate(new Timestamp(1199142000000L));
@@ -401,7 +400,7 @@ public class TestData {
 		pf6.addParametrePeriodeFiscale(ppf26);
 		pf6 = hibernateTemplate.merge(pf6);
 
-		ParametrePeriodeFiscalePP ppf27 = new ParametrePeriodeFiscalePP();
+		ParametrePeriodeFiscale ppf27 = new ParametrePeriodeFiscale();
 		ppf27.setId(28L);
 		ppf27.setDateFinEnvoiMasseDI(RegDate.get(2009, 6, 30));
 		ppf27.setLogModifDate(new Timestamp(1199142000000L));
@@ -411,7 +410,7 @@ public class TestData {
 		pf6.addParametrePeriodeFiscale(ppf27);
 		pf6 = hibernateTemplate.merge(pf6);
 
-		ParametrePeriodeFiscalePP ppf28 = new ParametrePeriodeFiscalePP();
+		ParametrePeriodeFiscale ppf28 = new ParametrePeriodeFiscale();
 		ppf28.setId(29L);
 		ppf28.setDateFinEnvoiMasseDI(RegDate.get(2010, 4, 30));
 		ppf28.setLogModifDate(new Timestamp(1199142000000L));
@@ -421,7 +420,7 @@ public class TestData {
 		pf7.addParametrePeriodeFiscale(ppf28);
 		pf7 = hibernateTemplate.merge(pf7);
 
-		ParametrePeriodeFiscalePP ppf29 = new ParametrePeriodeFiscalePP();
+		ParametrePeriodeFiscale ppf29 = new ParametrePeriodeFiscale();
 		ppf29.setId(30L);
 		ppf29.setDateFinEnvoiMasseDI(RegDate.get(2010, 6, 30));
 		ppf29.setLogModifDate(new Timestamp(1199142000000L));
@@ -431,7 +430,7 @@ public class TestData {
 		pf7.addParametrePeriodeFiscale(ppf29);
 		pf7 = hibernateTemplate.merge(pf7);
 
-		ParametrePeriodeFiscalePP ppf30 = new ParametrePeriodeFiscalePP();
+		ParametrePeriodeFiscale ppf30 = new ParametrePeriodeFiscale();
 		ppf30.setId(31L);
 		ppf30.setDateFinEnvoiMasseDI(RegDate.get(2010, 6, 30));
 		ppf30.setLogModifDate(new Timestamp(1199142000000L));
@@ -441,7 +440,7 @@ public class TestData {
 		pf7.addParametrePeriodeFiscale(ppf30);
 		pf7 = hibernateTemplate.merge(pf7);
 
-		ParametrePeriodeFiscalePP ppf31 = new ParametrePeriodeFiscalePP();
+		ParametrePeriodeFiscale ppf31 = new ParametrePeriodeFiscale();
 		ppf31.setId(32L);
 		ppf31.setDateFinEnvoiMasseDI(RegDate.get(2010, 6, 30));
 		ppf31.setLogModifDate(new Timestamp(1199142000000L));
@@ -852,10 +851,10 @@ public class TestData {
 
 		PersonnePhysique pp2 = new PersonnePhysique();
 		pp2.setNumero(12600001L);
+		pp2.setAdresseBicSwift("CCBPFRPPBDX");
 		pp2.setAdresseCourrierElectronique("dupont@etat-vaud.ch");
 		pp2.setBlocageRemboursementAutomatique(false);
 		pp2.setComplementNom("Chopard");
-		pp2.setCoordonneesFinancieres(new CoordonneesFinancieres("CH9308440717427290198", "CCBPFRPPBDX"));
 		pp2.setMouvementsDossier(new HashSet());
 		pp2.setSituationsFamille(new HashSet());
 		pp2.setDebiteurInactif(false);
@@ -868,6 +867,7 @@ public class TestData {
 		pp2.setPrenomUsuel("Isidor (sourcier gris)");
 		pp2.setSexe(Sexe.MASCULIN);
 		pp2.setIdentificationsPersonnes(new HashSet());
+		pp2.setNumeroCompteBancaire("CH9308440717427290198");
 		pp2.setNumeroTelecopie("0219663629");
 		pp2.setNumeroTelephonePortable("0219663999");
 		pp2.setNumeroTelephonePrive("0219663623");
@@ -989,7 +989,6 @@ public class TestData {
 		PersonnePhysique pp6 = new PersonnePhysique();
 		pp6.setNumero(12900001L);
 		pp6.setBlocageRemboursementAutomatique(false);
-		pp6.setCoordonneesFinancieres(new CoordonneesFinancieres("CH9308440717427290198", null));
 		pp6.setMouvementsDossier(new HashSet());
 		pp6.setSituationsFamille(new HashSet());
 		pp6.setDebiteurInactif(false);
@@ -1002,6 +1001,7 @@ public class TestData {
 		pp6.setPrenomUsuel("Michel");
 		pp6.setSexe(Sexe.MASCULIN);
 		pp6.setIdentificationsPersonnes(new HashSet());
+		pp6.setNumeroCompteBancaire("CH9308440717427290198");
 		pp6.setNumeroTelephonePortable("0764537812");
 		pp6.setNumeroTelephonePrive("032'897'45'32");
 		pp6.setOfficeImpotId(10);
@@ -1039,13 +1039,13 @@ public class TestData {
 		pp8.setNumero(34807810L);
 		pp8.setAdresseCourrierElectronique("pascaline@descloux.ch");
 		pp8.setBlocageRemboursementAutomatique(false);
-		pp8.setCoordonneesFinancieres(new CoordonneesFinancieres("CH9308440717427290198", null));
 		pp8.setMouvementsDossier(new HashSet());
 		pp8.setSituationsFamille(new HashSet());
 		pp8.setDebiteurInactif(false);
 		pp8.setLogCreationDate(new Timestamp(1199142000000L));
 		pp8.setLogModifDate(new Timestamp(1199142000000L));
 		pp8.setIdentificationsPersonnes(new HashSet());
+		pp8.setNumeroCompteBancaire("CH9308440717427290198");
 		pp8.setNumeroIndividu(674417L);
 		pp8.setNumeroTelephonePortable("0792348732");
 		pp8.setNumeroTelephonePrive("0213135489");
@@ -1119,14 +1119,15 @@ public class TestData {
 
 		MenageCommun mc1 = new MenageCommun();
 		mc1.setNumero(86006202L);
+		mc1.setAdresseBicSwift("CCBPFRPPBDX");
 		mc1.setAdresseCourrierElectronique("dupont@etat-vaud.ch");
 		mc1.setBlocageRemboursementAutomatique(false);
-		mc1.setCoordonneesFinancieres(new CoordonneesFinancieres("CH9308440717427290198", "CCBPFRPPBDX"));
 		mc1.setMouvementsDossier(new HashSet());
 		mc1.setSituationsFamille(new HashSet());
 		mc1.setDebiteurInactif(false);
 		mc1.setLogCreationDate(new Timestamp(1199142000000L));
 		mc1.setLogModifDate(new Timestamp(1199142000000L));
+		mc1.setNumeroCompteBancaire("CH9308440717427290198");
 		mc1.setNumeroTelecopie("0219663629");
 		mc1.setNumeroTelephonePortable("0219663999");
 		mc1.setNumeroTelephonePrive("0219663623");
@@ -1144,6 +1145,7 @@ public class TestData {
 		Entreprise e0 = new Entreprise();
 		e0.setNumero(127001L);
 		e0.setMouvementsDossier(new HashSet());
+		e0.setSituationsFamille(new HashSet());
 		e0.setDebiteurInactif(false);
 		e0.setLogCreationDate(new Timestamp(1199142000000L));
 		e0.setLogModifDate(new Timestamp(1199142000000L));
@@ -1157,10 +1159,10 @@ public class TestData {
 
 		PersonnePhysique pp12 = new PersonnePhysique();
 		pp12.setNumero(12600008L);
+		pp12.setAdresseBicSwift("CCBPFRPPBDX");
 		pp12.setAdresseCourrierElectronique("dupont@etat-vaud.ch");
 		pp12.setBlocageRemboursementAutomatique(false);
 		pp12.setComplementNom("Chopard");
-		pp12.setCoordonneesFinancieres(new CoordonneesFinancieres("CH9308440717427290198", "CCBPFRPPBDX"));
 		pp12.setMouvementsDossier(new HashSet());
 		pp12.setSituationsFamille(new HashSet());
 		pp12.setDebiteurInactif(true);
@@ -1173,6 +1175,7 @@ public class TestData {
 		pp12.setPrenomUsuel("De la mort");
 		pp12.setSexe(Sexe.MASCULIN);
 		pp12.setIdentificationsPersonnes(new HashSet());
+		pp12.setNumeroCompteBancaire("CH9308440717427290198");
 		pp12.setNumeroTelecopie("0219663629");
 		pp12.setNumeroTelephonePortable("0219663999");
 		pp12.setNumeroTelephonePrive("0219663623");
@@ -1191,10 +1194,10 @@ public class TestData {
 
 		PersonnePhysique pp13 = new PersonnePhysique();
 		pp13.setNumero(12600002L);
+		pp13.setAdresseBicSwift("CCBPFRPPBDX");
 		pp13.setAdresseCourrierElectronique("dupont@etat-vaud.ch");
 		pp13.setBlocageRemboursementAutomatique(false);
 		pp13.setComplementNom("Chopard");
-		pp13.setCoordonneesFinancieres(new CoordonneesFinancieres("CH9308440717427290198", "CCBPFRPPBDX"));
 		pp13.setMouvementsDossier(new HashSet());
 		pp13.setSituationsFamille(new HashSet());
 		pp13.setDebiteurInactif(false);
@@ -1207,6 +1210,7 @@ public class TestData {
 		pp13.setPrenomUsuel("Conchita");
 		pp13.setSexe(Sexe.FEMININ);
 		pp13.setIdentificationsPersonnes(new HashSet());
+		pp13.setNumeroCompteBancaire("CH9308440717427290198");
 		pp13.setNumeroTelecopie("0219663629");
 		pp13.setNumeroTelephonePortable("0219663999");
 		pp13.setNumeroTelephonePrive("0219663623");
@@ -1228,6 +1232,7 @@ public class TestData {
 		ac0.setFormeJuridique(FormeJuridique.ASS);
 		ac0.setNom("Communaute XYZ");
 		ac0.setMouvementsDossier(new HashSet());
+		ac0.setSituationsFamille(new HashSet());
 		ac0.setDebiteurInactif(false);
 		ac0.setLogCreationDate(new Timestamp(1199142000000L));
 		ac0.setLogModifDate(new Timestamp(1199142000000L));
@@ -1245,6 +1250,7 @@ public class TestData {
 			CollectiviteAdministrative ca0 = new CollectiviteAdministrative();
 			ca0.setNumero(2100001L);
 			ca0.setMouvementsDossier(new HashSet());
+			ca0.setSituationsFamille(new HashSet());
 			ca0.setDebiteurInactif(false);
 			ca0.setLogCreationDate(new Timestamp(1199142000000L));
 			ca0.setLogModifDate(new Timestamp(1199142000000L));
@@ -1259,6 +1265,7 @@ public class TestData {
 			CollectiviteAdministrative ca1 = new CollectiviteAdministrative();
 			ca1.setNumero(2100002L);
 			ca1.setMouvementsDossier(new HashSet());
+			ca1.setSituationsFamille(new HashSet());
 			ca1.setDebiteurInactif(false);
 			ca1.setLogCreationDate(new Timestamp(1199142000000L));
 			ca1.setLogModifDate(new Timestamp(1199142000000L));
@@ -1408,7 +1415,7 @@ public class TestData {
 		dpi0.addDeclaration(dis1);
 		dpi0 = hibernateTemplate.merge(dpi0);
 
-		DeclarationImpotOrdinairePP dio0 = new DeclarationImpotOrdinairePP();
+		DeclarationImpotOrdinaire dio0 = new DeclarationImpotOrdinaire();
 		dio0.setId(2L);
 		dio0.setDateDebut(RegDate.get(2005, 1, 1));
 		dio0.setDateFin(RegDate.get(2005, 12, 31));
@@ -1425,7 +1432,7 @@ public class TestData {
 		mc1.addDeclaration(dio0);
 		mc1 = hibernateTemplate.merge(mc1);
 
-		DeclarationImpotOrdinairePP dio1 = new DeclarationImpotOrdinairePP();
+		DeclarationImpotOrdinaire dio1 = new DeclarationImpotOrdinaire();
 		dio1.setId(3L);
 		dio1.setDateDebut(RegDate.get(2006, 1, 1));
 		dio1.setDateFin(RegDate.get(2006, 12, 31));
@@ -1442,7 +1449,7 @@ public class TestData {
 		mc1.addDeclaration(dio1);
 		mc1 = hibernateTemplate.merge(mc1);
 
-		DeclarationImpotOrdinairePP dio2 = new DeclarationImpotOrdinairePP();
+		DeclarationImpotOrdinaire dio2 = new DeclarationImpotOrdinaire();
 		dio2.setId(4L);
 		dio2.setDateDebut(RegDate.get(2007, 1, 1));
 		dio2.setDateFin(RegDate.get(2007, 12, 31));
@@ -1680,7 +1687,7 @@ public class TestData {
 		pp3.addRapportSujet(cis0);
 		dpi0.addRapportObjet(cis0);
 
-		ForFiscalPrincipalPP ffp0 = new ForFiscalPrincipalPP();
+		ForFiscalPrincipal ffp0 = new ForFiscalPrincipal();
 		ffp0.setId(7L);
 		ffp0.setDateDebut(RegDate.get(2002, 2, 12));
 		ffp0.setGenreImpot(GenreImpot.REVENU_FORTUNE);
@@ -1719,7 +1726,7 @@ public class TestData {
 		pp6.addForFiscal(ffs1);
 		pp6 = hibernateTemplate.merge(pp6);
 
-		ForFiscalPrincipalPP ffp1 = new ForFiscalPrincipalPP();
+		ForFiscalPrincipal ffp1 = new ForFiscalPrincipal();
 		ffp1.setId(107L);
 		ffp1.setDateFin(RegDate.get(2002, 2, 11));
 		ffp1.setDateDebut(RegDate.get(2001, 2, 12));
@@ -1733,7 +1740,7 @@ public class TestData {
 		pp6.addForFiscal(ffp1);
 		pp6 = hibernateTemplate.merge(pp6);
 
-		ForFiscalPrincipalPP ffp2 = new ForFiscalPrincipalPP();
+		ForFiscalPrincipal ffp2 = new ForFiscalPrincipal();
 		ffp2.setId(108L);
 		ffp2.setDateFin(RegDate.get(2001, 2, 11));
 		ffp2.setDateDebut(RegDate.get(2000, 2, 12));
@@ -1748,7 +1755,7 @@ public class TestData {
 		pp6.addForFiscal(ffp2);
 		pp6 = hibernateTemplate.merge(pp6);
 
-		ForFiscalPrincipalPP ffp3 = new ForFiscalPrincipalPP();
+		ForFiscalPrincipal ffp3 = new ForFiscalPrincipal();
 		ffp3.setId(1L);
 		ffp3.setDateDebut(RegDate.get(2008, 1, 29));
 		ffp3.setGenreImpot(GenreImpot.REVENU_FORTUNE);
@@ -1761,7 +1768,7 @@ public class TestData {
 		pp2.addForFiscal(ffp3);
 		pp2 = hibernateTemplate.merge(pp2);
 
-		ForFiscalPrincipalPP ffp4 = new ForFiscalPrincipalPP();
+		ForFiscalPrincipal ffp4 = new ForFiscalPrincipal();
 		ffp4.setId(2L);
 		ffp4.setDateFin(RegDate.get(1985, 2, 14));
 		ffp4.setDateDebut(RegDate.get(1979, 2, 9));
@@ -1776,7 +1783,7 @@ public class TestData {
 		pp9.addForFiscal(ffp4);
 		pp9 = hibernateTemplate.merge(pp9);
 
-		ForFiscalPrincipalPP ffp5 = new ForFiscalPrincipalPP();
+		ForFiscalPrincipal ffp5 = new ForFiscalPrincipal();
 		ffp5.setId(6L);
 		ffp5.setDateFin(RegDate.get(1985, 2, 14));
 		ffp5.setDateDebut(RegDate.get(1978, 10, 20));
@@ -1791,7 +1798,7 @@ public class TestData {
 		pp10.addForFiscal(ffp5);
 		pp10 = hibernateTemplate.merge(pp10);
 
-		ForFiscalPrincipalPP ffp6 = new ForFiscalPrincipalPP();
+		ForFiscalPrincipal ffp6 = new ForFiscalPrincipal();
 		ffp6.setId(5L);
 		ffp6.setDateDebut(RegDate.get(1985, 2, 15));
 		ffp6.setGenreImpot(GenreImpot.REVENU_FORTUNE);
@@ -1804,7 +1811,7 @@ public class TestData {
 		mc1.addForFiscal(ffp6);
 		mc1 = hibernateTemplate.merge(mc1);
 
-		ForFiscalPrincipalPP ffp7 = new ForFiscalPrincipalPP();
+		ForFiscalPrincipal ffp7 = new ForFiscalPrincipal();
 		ffp7.setId(4L);
 		ffp7.setDateDebut(RegDate.get(1997, 6, 24));
 		ffp7.setGenreImpot(GenreImpot.REVENU_FORTUNE);
@@ -1817,7 +1824,7 @@ public class TestData {
 		pp8.addForFiscal(ffp7);
 		pp8 = hibernateTemplate.merge(pp8);
 
-		ForFiscalPrincipalPP ffp8 = new ForFiscalPrincipalPP();
+		ForFiscalPrincipal ffp8 = new ForFiscalPrincipal();
 		ffp8.setId(9L);
 		ffp8.setDateDebut(RegDate.get(2008, 1, 29));
 		ffp8.setGenreImpot(GenreImpot.REVENU_FORTUNE);
@@ -1830,7 +1837,7 @@ public class TestData {
 		mc0.addForFiscal(ffp8);
 		mc0 = hibernateTemplate.merge(mc0);
 
-		ForFiscalPrincipalPP ffp9 = new ForFiscalPrincipalPP();
+		ForFiscalPrincipal ffp9 = new ForFiscalPrincipal();
 		ffp9.setId(10L);
 		ffp9.setDateDebut(RegDate.get(2008, 4, 15));
 		ffp9.setGenreImpot(GenreImpot.REVENU_FORTUNE);
@@ -1844,7 +1851,7 @@ public class TestData {
 		pp13 = hibernateTemplate.merge(pp13);
 
 
-		ForFiscalPrincipalPP ffp10 = new ForFiscalPrincipalPP();
+		ForFiscalPrincipal ffp10 = new ForFiscalPrincipal();
 		ffp10.setId(13L);
 		ffp10.setDateDebut(RegDate.get(2006, 6, 5));
 		ffp10.setGenreImpot(GenreImpot.REVENU_FORTUNE);
@@ -1869,7 +1876,7 @@ public class TestData {
 		pp1.addForFiscal(ffs2);
 		pp1 = hibernateTemplate.merge(pp1);
 
-		ForFiscalPrincipalPP ffp11 = new ForFiscalPrincipalPP();
+		ForFiscalPrincipal ffp11 = new ForFiscalPrincipal();
 		ffp11.setId(15L);
 		ffp11.setDateFin(RegDate.get(1990, 7, 2));
 		ffp11.setDateDebut(RegDate.get(1971, 12, 18));

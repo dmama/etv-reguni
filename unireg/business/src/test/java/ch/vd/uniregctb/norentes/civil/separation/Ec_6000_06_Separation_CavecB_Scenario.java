@@ -11,7 +11,6 @@ import ch.vd.uniregctb.norentes.annotation.Check;
 import ch.vd.uniregctb.norentes.annotation.Etape;
 import ch.vd.uniregctb.norentes.common.EvenementCivilScenario;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.ModeImposition;
@@ -111,7 +110,7 @@ public class Ec_6000_06_Separation_CavecB_Scenario extends EvenementCivilScenari
 			noMenage = menage.getNumero();
 			tiersService.addTiersToCouple(menage, esad, dateDebutCouple, null);
 			tiersService.addTiersToCouple(menage, aida, dateDebutCouple, null);
-			final ForFiscalPrincipalPP f = addForFiscalPrincipal(menage, commune, dateDebutForCouple, null, MotifFor.DEMENAGEMENT_VD, null);
+			final ForFiscalPrincipal f = addForFiscalPrincipal(menage, commune, dateDebutForCouple, null, MotifFor.DEMENAGEMENT_VD, null);
 			f.setModeImposition(ModeImposition.ORDINAIRE);
 
 			menage.setBlocageRemboursementAutomatique(false);
@@ -166,21 +165,23 @@ public class Ec_6000_06_Separation_CavecB_Scenario extends EvenementCivilScenari
 
 		{
 			final PersonnePhysique esad = (PersonnePhysique) tiersDAO.get(noHabEsad);
-			final ForFiscalPrincipalPP ffp = esad.getDernierForFiscalPrincipal();
+			final ForFiscalPrincipal ffp = esad.getDernierForFiscalPrincipal();
 			assertNotNull(ffp, "For principal de l'Habitant " + esad.getNumero() + " null");
 			assertNull(ffp.getDateFin(), "Le for de l'habitant " + esad.getNumero() + " est fermé");
 			// Esad doit passer au mode ordinaire
-			assertEquals(ModeImposition.ORDINAIRE, ffp.getModeImposition(), "Le mode d'imposition n'est pas ordinaire");
+			ModeImposition expected = ModeImposition.ORDINAIRE;
+			assertEquals(expected, ffp.getModeImposition(), "Le mode d'imposition n'est pas " + expected);
 			assertEquals(MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, ffp.getMotifOuverture(), "Le motif de fermeture n'est pas SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT");
 		}
 
 		{
 			final PersonnePhysique aida = (PersonnePhysique) tiersDAO.get(noHabAida);
-			final ForFiscalPrincipalPP ffp = aida.getDernierForFiscalPrincipal();
+			final ForFiscalPrincipal ffp = aida.getDernierForFiscalPrincipal();
 			assertNotNull(ffp, "For principal de l'Habitant " + aida.getNumero() + " null");
 			assertNull(ffp.getDateFin(), "Le for de l'habitant " + aida.getNumero() + " est fermé");
 			// aida doit passer au mode mixte 137 al.1
-			assertEquals(ModeImposition.MIXTE_137_1, ffp.getModeImposition(), "Le mode d'imposition n'est pas mixte 1");
+			ModeImposition expected = ModeImposition.MIXTE_137_1;
+			assertEquals(expected, ffp.getModeImposition(), "Le mode d'imposition n'est pas " + expected);
 			assertEquals(MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, ffp.getMotifOuverture(), "Le motif de fermeture n'est pas SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT");
 		}
 

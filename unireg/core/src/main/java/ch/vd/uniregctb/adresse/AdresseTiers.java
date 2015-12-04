@@ -14,16 +14,20 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.List;
 
 import org.hibernate.annotations.Index;
 import org.hibernate.annotations.Type;
+import org.jetbrains.annotations.Nullable;
 
+import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeComparator;
+import ch.vd.registre.base.date.NullDateBehavior;
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.common.Duplicable;
-import ch.vd.uniregctb.common.HibernateDateRangeEntity;
+import ch.vd.uniregctb.common.HibernateEntity;
 import ch.vd.uniregctb.common.LengthConstants;
 import ch.vd.uniregctb.tiers.LinkedEntity;
 import ch.vd.uniregctb.tiers.Tiers;
@@ -33,9 +37,19 @@ import ch.vd.uniregctb.type.TypeAdresseTiers;
 @Table(name = "ADRESSE_TIERS")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "ADR_TYPE", discriminatorType = DiscriminatorType.STRING)
-public abstract class AdresseTiers extends HibernateDateRangeEntity implements Comparable<AdresseTiers>, Duplicable<AdresseTiers>, LinkedEntity {
+public abstract class AdresseTiers extends HibernateEntity implements Comparable<AdresseTiers>, DateRange, Duplicable<AdresseTiers>, LinkedEntity {
 
 	private Long id;
+
+	/**
+	 * Date de début de la validité de l'adresse postale du tiers
+	 */
+	private RegDate dateDebut;
+
+	/**
+	 * Date de fin de la validité de l'adresse postale du tiers
+	 */
+	private RegDate dateFin;
 
 	private TypeAdresseTiers usage;
 
@@ -49,7 +63,8 @@ public abstract class AdresseTiers extends HibernateDateRangeEntity implements C
 	 * @param src la source de la duplication
 	 */
 	protected AdresseTiers(AdresseTiers src) {
-		super(src);
+		this.dateDebut = src.dateDebut;
+		this.dateFin = src.dateFin;
 		this.usage = src.usage;
 	}
 
@@ -67,6 +82,28 @@ public abstract class AdresseTiers extends HibernateDateRangeEntity implements C
 
 	public void setId(Long theId) {
 		this.id = theId;
+	}
+
+	@Override
+	@Column(name = "DATE_DEBUT", nullable = false)
+	@Type(type = "ch.vd.uniregctb.hibernate.RegDateUserType")
+	public RegDate getDateDebut() {
+		return dateDebut;
+	}
+
+	public void setDateDebut(RegDate theDateDebut) {
+		dateDebut = theDateDebut;
+	}
+
+	@Override
+	@Column(name = "DATE_FIN")
+	@Type(type = "ch.vd.uniregctb.hibernate.RegDateUserType")
+	public RegDate getDateFin() {
+		return dateFin;
+	}
+
+	public void setDateFin(@Nullable RegDate theDateFin) {
+		dateFin = theDateFin;
 	}
 
 	@Column(name = "USAGE_TYPE", length = LengthConstants.ADRESSE_TYPETIERS, nullable = false)
@@ -105,16 +142,24 @@ public abstract class AdresseTiers extends HibernateDateRangeEntity implements C
 	public String toString() {
 		return "AdresseTiers{" +
 				"id=" + id +
-				", dateDebut=" + RegDateHelper.dateToDisplayString(getDateDebut()) +
-				", dateFin=" + RegDateHelper.dateToDisplayString(getDateFin()) +
+				", dateDebut=" + RegDateHelper.dateToDisplayString(dateDebut) +
+				", dateFin=" + RegDateHelper.dateToDisplayString(dateFin) +
 				", usage=" + usage +
 				", tiers=" + tiers +
 				'}';
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public boolean isValidAt(RegDate date) {
+		return !isAnnule() && RegDateHelper.isBetween(date, dateDebut, dateFin, NullDateBehavior.LATEST);
+	}
+
 	@Override
 	@Transient
 	public List<?> getLinkedEntities(boolean includeAnnuled) {
-		return tiers == null ? null : Collections.singletonList(tiers);
+		return tiers == null ? null : Arrays.asList(tiers);
 	}
 }

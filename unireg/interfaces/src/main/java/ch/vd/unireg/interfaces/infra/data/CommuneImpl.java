@@ -3,19 +3,15 @@ package ch.vd.unireg.interfaces.infra.data;
 import java.io.Serializable;
 
 import org.apache.commons.lang3.StringUtils;
-import org.jetbrains.annotations.Nullable;
 
 import ch.vd.infrastructure.model.EnumCanton;
-import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.common.XmlUtils;
 
 public class CommuneImpl extends EntiteOFSImpl implements Commune, Serializable {
 
-	private static final long serialVersionUID = 5489780767000047569L;
-
-	private static final RegDate REFINF_ORIGINE_COMMUNES = RegDate.get(1960, 1, 1);
+	private static final long serialVersionUID = -5224553666590025447L;
 
 	private final RegDate dateDebut;
 	private final RegDate dateFin;
@@ -76,7 +72,7 @@ public class CommuneImpl extends EntiteOFSImpl implements Commune, Serializable 
 
 	public CommuneImpl(ch.vd.evd0012.v1.CommuneFiscale target) {
 		super(target.getNumeroOfs(), target.getNomCourt(), target.getNomOfficiel(), null);
-		this.dateDebut = getDateDebutValiditeCommune(target);
+		this.dateDebut = XmlUtils.xmlcal2regdate(target.getDateDebutValidite());
 		this.dateFin = XmlUtils.xmlcal2regdate(target.getDateFinValidite());
 		this.sigleCanton = target.getSigleCanton();
 		this.noOfsCommuneMere = target.isEstUneFractionDeCommune() ? link2OfsId(target.getCommuneFaitiereLink()) : -1;
@@ -85,20 +81,6 @@ public class CommuneImpl extends EntiteOFSImpl implements Commune, Serializable 
 		this.principale = target.isEstUneCommuneFaitiere();
 		this.codeDistrict = link2OfsId(target.getDistrictFiscalLink());
 		this.codeRegion = link2OfsId(target.getRegionFiscaleLink());
-	}
-
-	@Nullable
-	private static RegDate getDateDebutValiditeCommune(ch.vd.evd0012.v1.CommuneFiscale target) {
-		final RegDate brutto = XmlUtils.xmlcal2regdate(target.getDateDebutValidite());
-
-		// RefInf nous dit que toutes les communes commencent au plus tôt le 01.01.1960 (parce que c'est ainsi qu'est fait le fichier OFS)
-		// Pour les besoins des PM (des fors suisses sont beaucoup plus vieux que ça...) on va supposer qu'une commune créée le 01.01.1960
-		// est en fait valide depuis les origines...
-		if (REFINF_ORIGINE_COMMUNES == brutto) {
-			return null;
-		}
-
-		return brutto;
 	}
 
 	public static Integer link2OfsId(String link) {
@@ -184,20 +166,5 @@ public class CommuneImpl extends EntiteOFSImpl implements Commune, Serializable 
 		return String.format("%s, dateDebut=%s, dateFin=%s, mere=%s, vaudoise=%b, fraction=%b, principale=%b, canton=%s, district=%s, region=%s",
 		                     super.getMemberString(), dateDebut, dateFin, noOfsCommuneMere <= 0 ? null : noOfsCommuneMere, vaudoise, fraction,
 		                     principale, buildQuotedString(sigleCanton), codeDistrict, codeRegion);
-	}
-
-	@Override
-	public boolean isValidAt(RegDate date) {
-		return RegDateHelper.isBetween(date, getDateDebutValidite(), getDateFinValidite(), NullDateBehavior.LATEST);
-	}
-
-	@Override
-	public RegDate getDateDebut() {
-		return getDateDebutValidite();
-	}
-
-	@Override
-	public RegDate getDateFin() {
-		return getDateFinValidite();
 	}
 }

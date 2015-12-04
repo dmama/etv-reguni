@@ -13,7 +13,6 @@ import ch.vd.uniregctb.common.MultipleSwitch;
 import ch.vd.uniregctb.common.Switchable;
 import ch.vd.uniregctb.document.CalculParentesRapport;
 import ch.vd.uniregctb.rapport.RapportService;
-import ch.vd.uniregctb.scheduler.JobCategory;
 import ch.vd.uniregctb.scheduler.JobDefinition;
 import ch.vd.uniregctb.scheduler.JobParam;
 import ch.vd.uniregctb.scheduler.JobParamEnum;
@@ -26,6 +25,7 @@ import ch.vd.uniregctb.transaction.TransactionTemplate;
 public class CalculParentesJob extends JobDefinition {
 
 	private static final String NAME = "CalculParentesJob";
+	private static final String CATEGORIE = "Database";
 
 	public static final String NB_THREADS = "NB_THREADS";
 	public static final String MODE = "MODE";
@@ -38,7 +38,7 @@ public class CalculParentesJob extends JobDefinition {
 	private MultipleSwitch interceptorSwitch;
 
 	public CalculParentesJob(int sortOrder, String description) {
-		super(NAME, JobCategory.DB, sortOrder, description);
+		super(NAME, CATEGORIE, sortOrder, description);
 
 		{
 			final JobParam param = new JobParam();

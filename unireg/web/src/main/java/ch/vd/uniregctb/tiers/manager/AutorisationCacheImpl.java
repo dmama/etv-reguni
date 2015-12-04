@@ -285,11 +285,6 @@ public class AutorisationCacheImpl implements AutorisationCache, DataEventListen
 	}
 
 	@Override
-	public void onOrganisationChange(long id) {
-		// rien à faire
-	}
-
-	@Override
 	public void onPersonneMoraleChange(long id) {
 		// rien à faire
 	}

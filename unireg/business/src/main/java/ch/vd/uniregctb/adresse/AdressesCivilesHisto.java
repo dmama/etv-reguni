@@ -10,7 +10,7 @@ import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.unireg.interfaces.common.Adresse;
+import ch.vd.unireg.interfaces.civil.data.Adresse;
 import ch.vd.uniregctb.common.DonneesCivilesException;
 import ch.vd.uniregctb.interfaces.model.AdressesCivilesHistoriques;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
@@ -244,25 +244,4 @@ public class AdressesCivilesHisto {
 		}
 		return last;
 	}
-	/**
-	 * @param date la date de validité demandée
-	 * @return l'adresse fiscale valide (et non-annulée) à une date donnée.
-	 */
-	public AdressesCiviles at(RegDate date) throws DonneesCivilesException {
-		final AdressesCiviles adresses = new AdressesCiviles();
-		for (TypeAdresseCivil type : TypeAdresseCivil.values()) {
-			final List<Adresse> list = ofType(type);
-			if (list != null) {
-				for (Adresse a : list) {
-					if (a.isValidAt(date)) {
-						adresses.set(a, true);
-						break;
-					}
-				}
-			}
-		}
-		return adresses;
-	}
-
-
 }

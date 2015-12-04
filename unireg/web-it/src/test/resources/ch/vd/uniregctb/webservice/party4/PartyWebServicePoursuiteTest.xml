@@ -895,7 +895,7 @@
     <column>LOG_MDATE</column>
     <column>LOG_MUSER</column>
     <column>ANNEE</column>
-    <column>CODE_CTRL_SOMM_DI_PP</column>
+    <column>CODE_CTRL_SOMM_DI</column>
   </table>
   <table name="PARAMETRE_PERIODE_FISCALE">
     <column>ID</column>
@@ -910,11 +910,6 @@
     <column>TERME_GEN_SOMM_REGL</column>
     <column>TYPE_CTB</column>
     <column>PERIODE_ID</column>
-    <column>PPF_TYPE</column>
-    <column>PM_DELAI_IMPRIME_MOIS</column>
-    <column>PM_DELAI_IMPRIME_FIN_MOIS</column>
-    <column>PM_TOLERANCE_JOURS</column>
-    <column>PM_TOLERANCE_FIN_MOIS</column>
   </table>
   <table name="PARAMETRE">
     <column>NOM</column>
@@ -1106,24 +1101,14 @@
       <value>01.01</value>
     </row>
     <row>
-      <value>premierePeriodeFiscalePersonnesPhysiques</value>
+      <value>premierePeriodeFiscale</value>
       <null/>
       <null/>
-      <value><![CDATA[2009-07-08 17:37:23.271]]></value>
+      <value><![CDATA[2010-03-09 11:26:26.506]]></value>
       <value>[system]</value>
-      <value><![CDATA[2009-07-08 17:37:23.271]]></value>
+      <value><![CDATA[2010-03-09 11:26:26.507]]></value>
       <value>[system]</value>
       <value>2003</value>
-    </row>
-    <row>
-      <value>premierePeriodeFiscalePersonnesMorales</value>
-      <null/>
-      <null/>
-      <value><![CDATA[2015-08-08 17:37:23.271]]></value>
-      <value>[system]</value>
-      <value><![CDATA[2015-08-08 17:37:23.271]]></value>
-      <value>[system]</value>
-      <value>2009</value>
     </row>
   </table>
   <table name="MODELE_DOCUMENT">
@@ -1333,6 +1318,7 @@
     <column>LOG_MUSER</column>
     <column>DATE_DEBUT</column>
     <column>DATE_FIN</column>
+    <column>NOM_DOCUMENT</column>
     <column>DATE_IMPR_CHEMISE_TO</column>
     <column>DELAI_RETOUR_IMPRIME</column>
     <column>NUMERO</column>
@@ -1539,102 +1525,6 @@
       <null/>
       <null/>
       <null/>
-    </row>
-    <row>
-      <value>AdresseSuisse</value>
-      <value>25</value>
-      <null/>
-      <null/>
-      <value><![CDATA[2010-03-09 11:26:30.044]]></value>
-      <value><![CDATA[[UT] AdresseServiceTest]]></value>
-      <value><![CDATA[2010-03-09 11:26:30.044]]></value>
-      <value><![CDATA[[UT] AdresseServiceTest]]></value>
-      <value>20000101</value>
-      <null/>
-      <value>COURRIER</value>
-      <null/>
-      <null/>
-      <null/>
-      <value>132</value>
-      <null/>
-      <value>0</value>
-      <null/>
-      <value>POSTFACH</value>
-      <null/>
-      <null/>
-      <null/>
-      <value>3970</value>
-      <null/>
-      <value>21038</value>
-      <null/>
-      <null/>
-      <null/>
-    </row>
-    <row>
-      <value>AdresseSuisse</value>
-      <value>26</value>
-      <null/>
-      <null/>
-      <value><![CDATA[2010-03-09 11:26:30.044]]></value>
-      <value><![CDATA[[UT] AdresseServiceTest]]></value>
-      <value><![CDATA[2010-03-09 11:26:30.044]]></value>
-      <value><![CDATA[[UT] AdresseServiceTest]]></value>
-      <value>20000101</value>
-      <null/>
-      <value>COURRIER</value>
-      <null/>
-      <null/>
-      <null/>
-      <value>1872</value>
-      <value>172</value>
-      <value>0</value>
-      <value>Badenerstrasse</value>
-      <value>CASE_POSTALE</value>
-      <null/>
-      <null/>
-      <null/>
-      <value>4432</value>
-      <null/>
-      <value>2058</value>
-      <null/>
-      <null/>
-      <null/>
-    </row>
-  </table>
-  <table name="DONNEES_RC">
-    <column>ID</column>
-    <column>LOG_CDATE</column>
-    <column>LOG_CUSER</column>
-    <column>LOG_MDATE</column>
-    <column>LOG_MUSER</column>
-    <column>DATE_DEBUT</column>
-    <column>DATE_FIN</column>
-    <column>ENTREPRISE_ID</column>
-    <column>RAISON_SOCIALE</column>
-    <column>FORME_JURIDIQUE</column>
-    <row>
-      <value>1</value>
-      <value><![CDATA[2010-03-09 11:26:29.761]]></value>
-      <value><![CDATA[[UT] AdresseServiceTest]]></value>
-      <value><![CDATA[2010-03-09 11:26:29.761]]></value>
-      <value><![CDATA[[UT] AdresseServiceTest]]></value>
-      <value>20000101</value>
-      <null/>
-      <value>21038</value>
-      <value>Curia Treuhand AG</value>
-      <value>SA</value>
-    </row>
-    <row>
-      <value>2</value>
-      <value><![CDATA[2010-03-09 11:26:29.761]]></value>
-      <value><![CDATA[[UT] AdresseServiceTest]]></value>
-      <value><![CDATA[2010-03-09 11:26:29.761]]></value>
-      <value><![CDATA[[UT] AdresseServiceTest]]></value>
-      <value>20000101</value>
-      <null/>
-      <value>2058</value>
-      <value>KPMG AG (KPMG SA) (KPMG Ltd)</value>
-      <value>SA</value>
     </row>
   </table>
 </dataset>

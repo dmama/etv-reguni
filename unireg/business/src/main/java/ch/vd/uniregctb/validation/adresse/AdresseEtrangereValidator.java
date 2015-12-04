@@ -16,7 +16,7 @@ public class AdresseEtrangereValidator extends AdresseSupplementaireValidator<Ad
 		if (!adr.isAnnule()) {
 			final Integer numeroOfsPays = adr.getNumeroOfsPays();
 			if (numeroOfsPays == null || numeroOfsPays == 0) {
-				vr.addError(String.format("Le numéro Ofs du pays doit être renseigné sur une adresse étrangère [%s]", getEntityDisplayString(adr)));
+				vr.addError(String.format("Le numéro Ofs du pays doit être renseigné sur une adresse étrangère [%s]", adr));
 			}
 		}
 		return vr;

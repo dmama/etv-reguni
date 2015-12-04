@@ -7,14 +7,12 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,7 +25,9 @@ import org.springframework.transaction.support.TransactionCallback;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.DateRangeHelper;
+import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
 import ch.vd.shared.batchtemplate.Behavior;
@@ -40,11 +40,7 @@ import ch.vd.uniregctb.common.FiscalDateHelper;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaireDAO;
-import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePM;
-import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP;
 import ch.vd.uniregctb.declaration.PeriodeFiscaleDAO;
-import ch.vd.uniregctb.declaration.QuestionnaireSNC;
-import ch.vd.uniregctb.declaration.QuestionnaireSNCDAO;
 import ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotService;
 import ch.vd.uniregctb.hibernate.HibernateCallback;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
@@ -53,50 +49,33 @@ import ch.vd.uniregctb.metier.assujettissement.Assujettissement;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementException;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImposition;
-import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionPersonnesMorales;
-import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionPersonnesPhysiques;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionService;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.tache.sync.AddDI;
-import ch.vd.uniregctb.tache.sync.AddDIPM;
-import ch.vd.uniregctb.tache.sync.AddDIPP;
-import ch.vd.uniregctb.tache.sync.AddQSNC;
 import ch.vd.uniregctb.tache.sync.AnnuleTache;
 import ch.vd.uniregctb.tache.sync.Context;
 import ch.vd.uniregctb.tache.sync.DeleteDI;
-import ch.vd.uniregctb.tache.sync.DeleteDIPM;
-import ch.vd.uniregctb.tache.sync.DeleteDIPP;
-import ch.vd.uniregctb.tache.sync.DeleteQSNC;
 import ch.vd.uniregctb.tache.sync.SynchronizeAction;
 import ch.vd.uniregctb.tache.sync.UpdateDI;
-import ch.vd.uniregctb.tache.sync.UpdateQSNC;
-import ch.vd.uniregctb.tiers.CategorieEntrepriseHisto;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.Contribuable;
-import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesMorales;
-import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
-import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
 import ch.vd.uniregctb.tiers.ForGestion;
 import ch.vd.uniregctb.tiers.ForsParTypeAt;
 import ch.vd.uniregctb.tiers.Tache;
 import ch.vd.uniregctb.tiers.TacheAnnulationDeclarationImpot;
-import ch.vd.uniregctb.tiers.TacheAnnulationQuestionnaireSNC;
 import ch.vd.uniregctb.tiers.TacheControleDossier;
 import ch.vd.uniregctb.tiers.TacheCriteria;
 import ch.vd.uniregctb.tiers.TacheDAO;
 import ch.vd.uniregctb.tiers.TacheDAO.TacheStats;
 import ch.vd.uniregctb.tiers.TacheEnvoiDeclarationImpot;
-import ch.vd.uniregctb.tiers.TacheEnvoiQuestionnaireSNC;
 import ch.vd.uniregctb.tiers.TacheNouveauDossier;
+import ch.vd.uniregctb.tiers.TacheTransmissionDossier;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.transaction.TransactionTemplate;
-import ch.vd.uniregctb.type.CategorieEntreprise;
-import ch.vd.uniregctb.type.DayMonth;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
@@ -113,7 +92,6 @@ public class TacheServiceImpl implements TacheService {
 
 	private TacheDAO tacheDAO;
 	private DeclarationImpotOrdinaireDAO diDAO;
-	private QuestionnaireSNCDAO qsncDAO;
 	private PeriodeFiscaleDAO pfDAO;
 	private DeclarationImpotService diService;
 	private ParametreAppService parametres;
@@ -134,10 +112,6 @@ public class TacheServiceImpl implements TacheService {
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setDiDAO(DeclarationImpotOrdinaireDAO diDAO) {
 		this.diDAO = diDAO;
-	}
-
-	public void setQuestionnaireSNCDAO(QuestionnaireSNCDAO qsncDAO) {
-		this.qsncDAO = qsncDAO;
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
@@ -216,6 +190,8 @@ public class TacheServiceImpl implements TacheService {
     @Override
     public void annuleTachesObsoletes(final Collection<Long> ctbIds) {
 
+        final Map<Long, List<SynchronizeAction>> entityActions = new HashMap<>();
+
         final TransactionTemplate template = new TransactionTemplate(transactionManager);
         template.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
         template.execute(new TransactionCallback<Object>() {
@@ -230,7 +206,7 @@ public class TacheServiceImpl implements TacheService {
                             if (tiers.isDesactive(null)) {
                                 // Si le contribuable est désactivé (ce qui inclus il fait qu'il puisse être annulé)
                                 // alors on annule toutes ses tâches non traitées (autre que annulation de DI).
-                                annuleTachesNonTraitees(ctbId, TypeTache.TacheNouveauDossier, TypeTache.TacheControleDossier, TypeTache.TacheEnvoiDeclarationImpotPP, TypeTache.TacheTransmissionDossier);
+                                annuleTachesNonTraitees(ctbId, TypeTache.TacheNouveauDossier, TypeTache.TacheControleDossier, TypeTache.TacheEnvoiDeclarationImpot, TypeTache.TacheTransmissionDossier);
                             } else {
                                 // [SIFISC-2690] Annule les tâches d'ouverture de dossier pour les contribuables
                                 // qui n'ont plus de for de gestion actifs
@@ -265,15 +241,6 @@ public class TacheServiceImpl implements TacheService {
         }
     }
 
-	/**
-	 * [UNIREG-1888] Aucune tâche générée pour les contribuables dont le mode d'imposition est "SOURCE"
-	 * @param ffp un for principal
-	 * @return <code>true</code> si ce for implique une exclusion de la mécanique des tâches et des calculs d'OID (pour le moment, les fors principaux PP "Source" ont cet effet)
-	 */
-	private static boolean isExcludingFromTaskManagement(@NotNull ForFiscalPrincipal ffp) {
- 		return ffp instanceof ForFiscalPrincipalPP && ((ForFiscalPrincipalPP) ffp).getModeImposition() == ModeImposition.SOURCE;
-	}
-
     /**
 	 * Genere une tache à partir de la fermeture d'un for principal
 	 *
@@ -291,7 +258,9 @@ public class TacheServiceImpl implements TacheService {
 			return;
 		}
 
-		if (isExcludingFromTaskManagement(forPrincipal)) {
+		final ModeImposition modeImposition = forPrincipal.getModeImposition();
+		if (modeImposition == ModeImposition.SOURCE) {
+			// [UNIREG-1888] Aucune tâche générée pour les contribuables dont le mode d'imposition est "SOURCE"
 			return;
 		}
 
@@ -349,6 +318,12 @@ public class TacheServiceImpl implements TacheService {
 		}
 	}
 
+	private void generateTacheTransmissionDossier(Contribuable contribuable, CollectiviteAdministrative collectiviteAssignee) {
+		Assert.notNull(collectiviteAssignee);
+		final TacheTransmissionDossier tache = new TacheTransmissionDossier(TypeEtatTache.EN_INSTANCE, null, contribuable, collectiviteAssignee);
+		tacheDAO.save(tache);
+	}
+
 	/**
 	 * Génère une tâche à partir de la fermeture d'un for secondaire
 	 *
@@ -366,7 +341,9 @@ public class TacheServiceImpl implements TacheService {
 			return;
 		}
 
-		if (isExcludingFromTaskManagement(forsAt.principal)) {
+		final ModeImposition modeImposition = forsAt.principal.getModeImposition();
+		if (modeImposition == ModeImposition.SOURCE) {
+			// [UNIREG-1888] Aucune tâche générée pour les contribuables dont le mode d'imposition est "SOURCE"
 			return;
 		}
 
@@ -423,8 +400,10 @@ public class TacheServiceImpl implements TacheService {
 			return; // rien à faire
 		}
 
-		if (isExcludingFromTaskManagement(forFiscal)) {
-			return;
+		final ModeImposition modeImposition = forFiscal.getModeImposition();
+		if (modeImposition == ModeImposition.SOURCE) {
+			// les sourciers ne recoivent pas de DIs (et donc pas de dossier non plus)
+			return; // pas de tâche sur les sourciers purs [UNIREG-1888]
 		}
 
 		// [UNIREG-2378] Les fors principaux HC ou HS ne donnent pas lieu à des générations de tâches
@@ -516,22 +495,22 @@ public class TacheServiceImpl implements TacheService {
 	}
 
 	@Override
-	public TacheSyncResults synchronizeTachesDeclarations(final Collection<Long> ctbIds) {
+	public TacheSyncResults synchronizeTachesDIs(final Collection<Long> ctbIds) {
 
+		final Map<Long, List<SynchronizeAction>> entityActions = new HashMap<>();
 		final TacheSyncResults results = new TacheSyncResults(false);
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
-		final Map<Long, List<SynchronizeAction>> entityActions = template.execute(new TransactionCallback<Map<Long, List<SynchronizeAction>>>() {
+		template.execute(new TransactionCallback<Object>() {
 			@Override
-			public Map<Long, List<SynchronizeAction>> doInTransaction(TransactionStatus status) {
-				return hibernateTemplate.executeWithNewSession(new HibernateCallback<Map<Long, List<SynchronizeAction>>>() {
+			public Object doInTransaction(TransactionStatus status) {
+				hibernateTemplate.executeWithNewSession(new HibernateCallback<Object>() {
 					@Override
-					public Map<Long, List<SynchronizeAction>> doInHibernate(Session session) throws HibernateException, SQLException {
+					public Object doInHibernate(Session session) throws HibernateException, SQLException {
 
-						// détermine toutes les actions à effectuer sur les contribuables
-						final Map<Long, List<SynchronizeAction>> actions = determineAllSynchronizeActions(ctbIds);
+						// détermine tous les actions à effectuer sur les contribuables
+						final Map<Long, List<SynchronizeAction>> actions = determineAllSynchronizeActionsForDIs(ctbIds);
 						final Map<Long, List<SynchronizeAction>> tacheActions = new HashMap<>(actions.size());
-						final Map<Long, List<SynchronizeAction>> entityActions = new HashMap<>(actions.size());
 						splitActions(actions, tacheActions, entityActions);
 
 						// on exécute toutes les actions sur les tâches dans la transaction courante, car - sauf bug -
@@ -539,9 +518,10 @@ public class TacheServiceImpl implements TacheService {
 						if (!tacheActions.isEmpty()) {
 							results.addAll(executeTacheActions(tacheActions));
 						}
-						return entityActions;
+						return null;
 					}
 				});
+				return null;
 			}
 		});
 
@@ -609,7 +589,8 @@ public class TacheServiceImpl implements TacheService {
 			final Contribuable contribuable = (Contribuable) tiers;
 			final CollectiviteAdministrative collectivite = getOfficeImpot(contribuable);
 
-			final Context context = new Context(contribuable, collectivite, tacheDAO, diService, officeSuccessions, diDAO, qsncDAO, pfDAO);
+			final Context context = new Context(contribuable, collectivite, tacheDAO, diService, officeSuccessions, diDAO, pfDAO);
+
 			for (SynchronizeAction action : actions) {
 				action.execute(context);
 				results.addAction(ctbId, action);
@@ -619,7 +600,7 @@ public class TacheServiceImpl implements TacheService {
 
 	private static void splitActions(Map<Long, List<SynchronizeAction>> actions, Map<Long, List<SynchronizeAction>> tacheActions, Map<Long, List<SynchronizeAction>> entityActions) {
 		for (Map.Entry<Long, List<SynchronizeAction>> entry : actions.entrySet()) {
-			final SplittedActions splittedActions = SplittedActions.splitFrom(entry.getValue());
+			final SplittedActions splittedActions = splitBetweenTaskAndEntityActions(entry.getValue());
 			if (!splittedActions.taskActions.isEmpty()) {
 				tacheActions.put(entry.getKey(), splittedActions.taskActions);
 			}
@@ -637,470 +618,61 @@ public class TacheServiceImpl implements TacheService {
 			this.taskActions = taskActions;
 			this.entityActions = entityActions;
 		}
-
-		public static SplittedActions splitFrom(List<SynchronizeAction> actions) {
-			final List<SynchronizeAction> taches = new ArrayList<>(actions.size());
-			final List<SynchronizeAction> entites = new ArrayList<>(actions.size());
-			for (SynchronizeAction action : actions) {
-				if (action.willChangeEntity()) {
-					entites.add(action);
-				}
-				else {
-					taches.add(action);
-				}
-			}
-			return new SplittedActions(taches, entites);
-		}
 	}
 
-	private Map<Long, List<SynchronizeAction>> determineAllSynchronizeActions(Collection<Long> ctbIds) {
-		final Map<Long, List<SynchronizeAction>> map = new HashMap<>(ctbIds.size());
+	private static SplittedActions splitBetweenTaskAndEntityActions(List<SynchronizeAction> actions) {
+		final List<SynchronizeAction> taches = new ArrayList<>(actions.size());
+		final List<SynchronizeAction> entites = new ArrayList<>(actions.size());
+		for (SynchronizeAction action : actions) {
+			if (action.willChangeEntity()) {
+				entites.add(action);
+			}
+			else {
+				taches.add(action);
+			}
+		}
+		return new SplittedActions(taches, entites);
+	}
+
+	private Map<Long, List<SynchronizeAction>> determineAllSynchronizeActionsForDIs(Collection<Long> ctbIds) {
+		final Map<Long, List<SynchronizeAction>> map = new HashMap<>();
 		for (Long id : ctbIds) {
 			final Tiers tiers = tiersService.getTiers(id);
-			final List<SynchronizeAction> actions = new LinkedList<>();
-
-			// d'abord les tâches autour des déclarations d'impôt
 			if (tiers instanceof Contribuable) {
+				List<SynchronizeAction> actions;
 				try {
-					actions.addAll(determineSynchronizeActionsForDIs((Contribuable) tiers));
+					actions = determineSynchronizeActionsForDIs((Contribuable) tiers);
 				}
 				catch (AssujettissementException e) {
 					Audit.warn("Impossible de calculer les périodes d'imposition théoriques du contribuable n°" + id
-							           + " lors de la mise-à-jour des tâches d'envoi et d'annulation des déclarations d'impôt:"
-							           + " aucune action n'est effectuée.");
+							+ " lors de la mise-à-jour des tâches d'envoi et d'annulation des déclarations d'impôt:"
+							+ " aucune action n'est effectuée.");
 					LOGGER.warn(e.getMessage(), e);
+					actions = null;
 				}
-			}
-
-			// ... puis éventuellement les tâches autour des questionnaires SNC
-			if (tiers instanceof Entreprise) {
-				actions.addAll(determineSynchronizeActionsForQSNCs((Entreprise) tiers));
-			}
-
-			// si quelque action a été collectée, on la garde pour plus tard
-			if (!actions.isEmpty()) {
-				map.put(id, actions);
+				if (actions != null && !actions.isEmpty()) {
+					map.put(id, actions);
+				}
 			}
 		}
 		return map;
 	}
 
-	@NotNull
-	private List<SynchronizeAction> determineSynchronizeActionsForQSNCs(Entreprise entreprise) {
-
-		// le critère de présence d'un questionnaire SNC est l'existence d'un for vaudois ouvert sur une année civile
-		final List<DateRange> periodesSNC = getPeriodesQuestionnaireSNC(entreprise);
-		final List<QuestionnaireSNC> questionnairesExistants = getQuestionnairesSNCExistants(entreprise);
-		final List<TacheEnvoiQuestionnaireSNC> tachesEnvoi = getTachesEnvoiQuestionnairesSNCEnInstance(entreprise);
-		final List<TacheAnnulationQuestionnaireSNC> tachesAnnulation = getTachesAnnulationQuestionnairesSNCEnInstance(entreprise);
-
-		// maintenant il faut comparer les deux
-
-		// si tout est vide... facile, il n'y a rien à faire
-		if (periodesSNC.isEmpty() && questionnairesExistants.isEmpty() && tachesEnvoi.isEmpty() && tachesAnnulation.isEmpty()) {
-			return Collections.emptyList();
-		}
-
-		// ok, l'une au moins des deux collections n'est pas vide... ça devient intéressant.
-
-		final List<AddQSNC> adds = new ArrayList<>(periodesSNC.size());
-		final List<DeleteQSNC> deletes = new ArrayList<>(questionnairesExistants.size());
-		final List<UpdateQSNC> updates = new ArrayList<>(questionnairesExistants.size());
-		final List<AnnuleTache> cancels = new ArrayList<>();
-
-		final RegDate today = RegDate.get();
-
-		// on va boucler sur les périodes théoriques pour comparer à l'existant
-		for (DateRange periode : periodesSNC) {
-			final List<QuestionnaireSNC> questionnaires = getIntersectingRangeAt(questionnairesExistants, periode);
-			if (questionnaires == null) {
-				// il n'y a pas de questionnaire pour la période
-
-				// Le mécanisme ne doit pas créer de tâche d'émission de questionnaire pour l'année en cours (sauf si la
-				// période théorique est interrompue avant la fin de l'année)
-				final int anneePeriode = periode.getDateDebut().year();
-				if (anneePeriode < today.year() || (anneePeriode == today.year() && DayMonth.get(periode.getDateFin()) != DayMonth.get(12, 31))) {
-					adds.add(new AddQSNC(periode));
-				}
-			}
-			else {
-				Assert.isFalse(questionnaires.isEmpty());
-				QuestionnaireSNC toUpdate = null;
-
-				for (QuestionnaireSNC q : questionnaires) {
-					if (!DateRangeHelper.equals(q, periode)) {
-						// la durée du questionnaire et de la période d'imposition ne correspondent pas
-						if (toUpdate != null) {
-							// il y a déjà un questionnaire compatible pouvant être mis-à-jour, inutile de chercher plus loin
-							deletes.add(new DeleteQSNC(q));
-						}
-						else {
-							toUpdate = q;
-						}
-					}
-				}
-				if (toUpdate != null) {
-					updates.add(new UpdateQSNC(toUpdate, periode));
-				}
-			}
-		}
-
-		//
-		// on retranche les actions d'ajout pour lesquelles il existe déjà une tâche d'envoi
-		//
-
-		if (!adds.isEmpty()) {
-			for (int i = adds.size() - 1; i >= 0; i--) {
-				final DateRange periode = adds.get(i).range;
-				final TacheEnvoiQuestionnaireSNC envoi = getMatchingRangeAt(tachesEnvoi, periode);
-				if (envoi != null) {
-					adds.remove(i);
-				}
-			}
-		}
-
-		//
-		// On détermine tous les questionnaires qui ne sont pas valides vis-à-vis des ranges théoriques
-		//
-
-		for (QuestionnaireSNC questionnaire : questionnairesExistants) {
-			final List<DateRange> ps = getIntersectingRangeAt(periodesSNC, questionnaire);
-			if (ps == null) {
-				if (!isQuestionnaireToBeUpdated(updates, questionnaire)) { // [UNIREG-3028]
-					// il n'y a pas de période correspondante
-					deletes.add(new DeleteQSNC(questionnaire));
-				}
-			}
-			else {
-				Assert.isFalse(ps.isEmpty());
-				// s'il y a une intersection entre la déclaration et une période d'imposition, le cas a déjà été traité à partir des périodes d'imposition -> rien d'autre à faire
-			}
-		}
-
-		// on retranche les demandes d'annulation pour lesquelles la tâche d'annulation existe déjà
-		if (!deletes.isEmpty()) {
-			for (int i = deletes.size() - 1; i >= 0; i--) {
-				final Long questionnaireId = deletes.get(i).questionnaireId;
-				for (TacheAnnulationQuestionnaireSNC annulation : tachesAnnulation) {
-					if (annulation.getDeclaration().getId().equals(questionnaireId)) {
-						deletes.remove(i);
-						break;      // pas la peine de l'enlever plusieurs fois...
-					}
-				}
-			}
-		}
-
-		//
-		//  On détermine la liste des tâches qui ne sont plus valides vis-à-vis des périodes d'imposition et des déclarations existantes
-		//
-
-		for (TacheEnvoiQuestionnaireSNC envoi : tachesEnvoi) {
-			if (!isTacheEnvoiQuestionnaireSNCValide(envoi, periodesSNC, questionnairesExistants, updates)) {
-				cancels.add(new AnnuleTache(envoi));
-			}
-		}
-
-		for (TacheAnnulationQuestionnaireSNC annulation : tachesAnnulation) {
-			if (!isTacheAnnulationQuestionnaireSNCValide(annulation, periodesSNC, updates, today)) {
-				cancels.add(new AnnuleTache(annulation));
-			}
-		}
-
-		final int size = adds.size() + updates.size() + deletes.size() + cancels.size();
-		if (size == 0) {
-			return Collections.emptyList();
-		}
-		else {
-			final List<SynchronizeAction> actions = new ArrayList<>(size);
-			actions.addAll(adds);
-			actions.addAll(updates);
-			actions.addAll(deletes);
-			actions.addAll(cancels);
-			return actions;
-		}
-	}
-
-	/**
-	 * @param entreprise Une entreprise
-	 * @return la liste des questionnaires SNC existants, non-annulés, triés
-	 */
-	private List<QuestionnaireSNC> getQuestionnairesSNCExistants(Entreprise entreprise) {
-		final List<Declaration> declarations = entreprise.getDeclarationsSorted();
-		final List<QuestionnaireSNC> questionnaires = new ArrayList<>(declarations.size());
-		for (Declaration declaration : declarations) {
-			if (!declaration.isAnnule() && declaration instanceof QuestionnaireSNC) {
-				questionnaires.add((QuestionnaireSNC) declaration);
-			}
-		}
-		return questionnaires;
-	}
-
-	/**
-	 * @param entreprise une entreprise
-	 * @return la liste des périodes temporelles pour lesquelles Unireg devrait posséder un questionnaire SNC
-	 */
-	@NotNull
-	private List<DateRange> getPeriodesQuestionnaireSNC(Entreprise entreprise) {
-
-		// allons donc chercher les périodes de couverture des fors vaudois qui intersectent :
-		// 1. les années civiles pour lesquelles Unireg doit envoyer les questionnaires SNC (entre la première PF de déclaration PM et l'année courante)
-		// 2. les périodes pendant lesquelles l'entreprise a une forme juridique de type SP
-
-		// quand a-t-on du SP ?
-		final List<CategorieEntrepriseHisto> categories = tiersService.getCategoriesEntrepriseHisto(entreprise);
-		final List<DateRange> rangesSP = new ArrayList<>(categories.size());
-		for (CategorieEntrepriseHisto cat : categories) {
-			if (cat.getCategorie() == CategorieEntreprise.SP) {
-				rangesSP.add(cat);
-			}
-		}
-
-		// y en a-t-il ?
-		if (rangesSP.isEmpty()) {
-			return Collections.emptyList();
-		}
-
-		// quand génère-t-on des questionnaires SNC ?
-		final DateRange periodeGestionUnireg = new DateRangeHelper.Range(RegDate.get(parametres.getPremierePeriodeFiscaleDeclarationsPersonnesMorales(), 1, 1), null);
-
-		// a-t-on des catégories d'entreprise SP dans la période de gestion par Unireg ?
-		final List<DateRange> spDansPeriodeGestion = DateRangeHelper.intersections(periodeGestionUnireg, rangesSP);
-		if (spDansPeriodeGestion == null || spDansPeriodeGestion.isEmpty()) {
-			return Collections.emptyList();
-		}
-
-		// couverture des fors vaudois ?
-		final List<ForFiscal> forsFiscaux = entreprise.getForsFiscauxNonAnnules(true);
-		final List<ForFiscal> forsVaudois = new ArrayList<>(forsFiscaux.size());
-		for (ForFiscal ff : forsFiscaux) {
-			if (ff.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
-				forsVaudois.add(ff);
-			}
-		}
-		final List<DateRange> couvertureVaudoiseFors = DateRangeHelper.merge(forsVaudois);
-		if (couvertureVaudoiseFors == null || couvertureVaudoiseFors.isEmpty()) {
-			return Collections.emptyList();
-		}
-
-		// couverture des fors vaudois pendant les périodes SP intéressantes ?
-		final List<DateRange> spVaudois = DateRangeHelper.intersections(couvertureVaudoiseFors, spDansPeriodeGestion);
-		if (spVaudois == null || spVaudois.isEmpty()) {
-			return Collections.emptyList();
-		}
-
-		// découpons maintenant par année civile ce qui nous reste
-		final List<DateRange> ranges = new LinkedList<>();
-		for (DateRange r : spVaudois) {
-			final RegDate dateFin = r.getDateFin() == null ? RegDate.get(RegDate.get().year(), 12, 31) : r.getDateFin();
-			final RegDate dateDebut = r.getDateDebut();
-			if (dateFin.year() == dateDebut.year()) {
-				ranges.add(r);
-			}
-			else {
-				ranges.add(new DateRangeHelper.Range(dateDebut, RegDate.get(dateDebut.year(), 12, 31)));
-				for (int year = dateDebut.year() + 1; year < dateFin.year() ; ++ year) {
-					ranges.add(new DateRangeHelper.Range(RegDate.get(year, 1, 1), RegDate.get(year, 12, 31)));
-				}
-				ranges.add(new DateRangeHelper.Range(RegDate.get(dateFin.year(), 1, 1), dateFin));
-			}
-		}
-		return ranges;
-	}
-
-	/**
-	 * Les différentes mutations possibles détectées lors de la comparaison entre une DI existante
-	 * et une période d'imposition calculée
-	 */
-	private enum Mutation {
-		/**
-		 * Aucune différence constatée, rien à faire, tout est en ordre
-		 */
-		AUCUNE,
-
-		/**
-		 * Différence compatible constatée -> il suffit de mettre à jour la DI
-		 */
-		COMPATIBLE,
-
-		/**
-		 * Différence trop importante constatée -> il faut impérativement annuler la DI existante et la remplacer
-		 */
-		MAJEURE
-	}
-
-	/**
-	 * Le domaine de contribuable :
-	 * <br/>
-	 * <ul>
-	 *     <li>imposition des personnes physiques&nbsp;</li>
-	 *     <li>imposition des personnes morales.</li>
-	 * </ul>
-	 */
-	private enum DomaineContribuable {
-
-		PERSONNES_PHYSIQUES {
-			@Override
-			public AddDIPP newAddDI(PeriodeImposition pi) {
-				return new AddDIPP((PeriodeImpositionPersonnesPhysiques) pi);
-			}
-
-			@Override
-			public DeleteDIPP newDeleteDI(DeclarationImpotOrdinaire di) {
-				return new DeleteDIPP((DeclarationImpotOrdinairePP) di);
-			}
-
-			@Override
-			public Mutation compare(DeclarationImpotOrdinaire di, PeriodeImposition pi, RegDate dateReference) {
-				if (di.getTypeContribuable() == pi.getTypeContribuable() && DateRangeHelper.equals(di, pi)) {
-					return Mutation.AUCUNE;
-				}
-				else if (peutMettreAJourDeclarationExistante(di, pi, dateReference)) {
-					return Mutation.COMPATIBLE;
-				}
-				else {
-					return Mutation.MAJEURE;
-				}
-			}
-
-			@Override
-			public List<PeriodeImposition> filtrerPeriodes(List<PeriodeImposition> periodes, ParametreAppService paramService) {
-				// il n'y a pas, pour les personnes physiques, de différence entre les périodes calculées et celles
-				// sur lesquelles l'algorithme de calcul automatique est applicable
-				return periodes;
-			}
-
-			@Override
-			public List<DeclarationImpotOrdinaire> filtrerDeclarations(List<DeclarationImpotOrdinaire> declarations, ParametreAppService paramService) {
-				// il n'y a pas, pour les personnes physiques, de différence entre les périodes calculées et celles
-				// sur lesquelles l'algorithme de calcul automatique est applicable
-				return declarations;
-			}
-		},
-
-		PERSONNES_MORALES {
-			@Override
-			public AddDIPM newAddDI(PeriodeImposition pi) {
-				return new AddDIPM((PeriodeImpositionPersonnesMorales) pi);
-			}
-
-			@Override
-			public DeleteDIPM newDeleteDI(DeclarationImpotOrdinaire di) {
-				return new DeleteDIPM((DeclarationImpotOrdinairePM) di);
-			}
-
-			@Override
-			public Mutation compare(DeclarationImpotOrdinaire di, PeriodeImposition pi, RegDate dateReference) {
-				if (di.getTypeDeclaration() != pi.getTypeDocumentDeclaration()) {
-					return Mutation.MAJEURE;
-				}
-				else if (di.getTypeContribuable() != pi.getTypeContribuable()) {
-					return Mutation.COMPATIBLE;
-				}
-				else {
-					return Mutation.AUCUNE;
-				}
-			}
-
-			@Override
-			public List<PeriodeImposition> filtrerPeriodes(List<PeriodeImposition> periodes, ParametreAppService paramService) {
-				final List<PeriodeImposition> apresFiltre = new ArrayList<>(periodes.size());
-				final int premierePeriode = paramService.getPremierePeriodeFiscaleDeclarationsPersonnesMorales();
-				for (PeriodeImposition pi : periodes) {
-					if (pi.getPeriodeFiscale() >= premierePeriode) {
-						apresFiltre.add(pi);
-					}
-				}
-				return apresFiltre;
-			}
-
-			@Override
-			public List<DeclarationImpotOrdinaire> filtrerDeclarations(List<DeclarationImpotOrdinaire> declarations, ParametreAppService paramService) {
-				final List<DeclarationImpotOrdinaire> apresFiltre = new ArrayList<>(declarations.size());
-				final int premierePeriode = paramService.getPremierePeriodeFiscaleDeclarationsPersonnesMorales();
-				for (DeclarationImpotOrdinaire di : declarations) {
-					if (di.getPeriode().getAnnee() >= premierePeriode) {
-						apresFiltre.add(di);
-					}
-				}
-				return apresFiltre;
-			}
-		};
-
-		@Nullable
-		static DomaineContribuable of(Contribuable contribuable) {
-			if (contribuable instanceof ContribuableImpositionPersonnesPhysiques) {
-				return PERSONNES_PHYSIQUES;
-			}
-			if (contribuable instanceof ContribuableImpositionPersonnesMorales) {
-				return PERSONNES_MORALES;
-			}
-
-			// non traité par la mécanique de recalcul des tâches
-			return null;
-		}
-
-		/**
-		 * Création d'une nouvelle action de création de tâche d'envoi de DI d'après la période d'imposition donnée
-		 * @param pi la période d'imposition
-		 * @return une nouvelle tâche d'envoi de DI
-		 * @throws ClassCastException si la période d'imposition n'est pas du type attendu par la catégorie
-		 */
-		public abstract AddDI<?> newAddDI(PeriodeImposition pi);
-
-		/**
-		 * Création d'une nouvelle action de création de tâche d'annulation de la DI donnée
-		 * @param di la déclaration à annuler
-		 * @return une nouvelle tâche d'annulation de DI
-		 * @throws ClassCastException si la déclaration d'impôt n'est pas du type attendu par la catégorie
-		 */
-		public abstract DeleteDI<?> newDeleteDI(DeclarationImpotOrdinaire di);
-
-		/**
-		 * Détection du type d'adéquation entre une DI (= existante) et une PI (= théorique) sans prendre en compte les dates.
-		 * @param di la déclaration d'impôt existante
-		 * @param pi la période d'imposition calculée
-		 * @param dateReference date de référence pour la comparaison
-		 * @return le type de différence constatée entre l'existant et le théorique
-		 */
-		public abstract Mutation compare(DeclarationImpotOrdinaire di, PeriodeImposition pi, RegDate dateReference);
-
-		/**
-		 * @param periodes une liste des périodes d'impositions brutes
-		 * @param paramService le service des paramètres applicatifs
-		 * @return une liste des périodes d'impositions utiles pour le calcul des tâches d'envoi/annulation de DI
-		 */
-		public abstract List<PeriodeImposition> filtrerPeriodes(List<PeriodeImposition> periodes, ParametreAppService paramService);
-
-		/**
-		 * @param declarations une liste des déclarations brutes
-		 * @param paramService le service des paramètres applicatifs
-		 * @return une liste des déclarations utiles pour le calcul des tâches d'envoi/annulation de DI
-		 */
-		public abstract List<DeclarationImpotOrdinaire> filtrerDeclarations(List<DeclarationImpotOrdinaire> declarations, ParametreAppService paramService);
-	}
-
-	@NotNull
 	@Override
 	public List<SynchronizeAction> determineSynchronizeActionsForDIs(Contribuable contribuable) throws AssujettissementException {
 
 		// On récupère les données brutes
-		final DomaineContribuable domaine = DomaineContribuable.of(contribuable);
-		if (domaine == null) {
-			// type de contribuable non traité par la mécanique de recalcul des tâches
-			return Collections.emptyList();
-		}
-
-		final List<PeriodeImposition> periodes = domaine.filtrerPeriodes(getPeriodesImpositionHisto(contribuable), parametres);
-		final List<DeclarationImpotOrdinaire> declarations = domaine.filtrerDeclarations(getDeclarationsActives(contribuable), parametres);
-		final List<TacheEnvoiDeclarationImpot> tachesEnvoi = getTachesEnvoiDIsEnInstance(contribuable);
-		final List<TacheAnnulationDeclarationImpot> tachesAnnulation = getTachesAnnulationDIsEnInstance(contribuable);
+		final List<PeriodeImposition> periodes = getPeriodesImpositionHisto(contribuable);
+		final List<DeclarationImpotOrdinaire> declarations = getDeclarationsActives(contribuable);
+		final List<TacheEnvoiDeclarationImpot> tachesEnvoi = getTachesEnvoiEnInstance(contribuable);
+		final List<TacheAnnulationDeclarationImpot> tachesAnnulation = getTachesAnnulationEnInstance(contribuable);
 
 		final List<AddDI> addActions = new ArrayList<>();
 		final List<UpdateDI> updateActions = new ArrayList<>();
 		final List<DeleteDI> deleteActions = new ArrayList<>();
 		final List<AnnuleTache> annuleActions = new ArrayList<>();
 
-		final RegDate today = RegDate.get();
+		final int anneeCourante = RegDate.get().year();
 
 		//
 		// On détermine les périodes d'imposition qui n'ont pas de déclaration d'impôt valide correspondante
@@ -1110,11 +682,11 @@ public class TacheServiceImpl implements TacheService {
 			final List<DeclarationImpotOrdinaire> dis = getIntersectingRangeAt(declarations, periode);
 			if (dis == null) {
 				// il n'y a pas de déclaration pour la période
-				if (periode.isDeclarationMandatory()) {
+				if (isDeclarationMandatory(periode)) {
 					// on ajoute une DI si elle est obligatoire
 					// [UNIREG-2735] Le mécanisme ne doit pas créer de tâche d'émission de DI pour l'année en cours
-					if (peutCreerTacheEnvoiDI(periode, today)) {
-						addActions.add(domaine.newAddDI(periode));
+					if (peutCreerTacheEnvoiDI(periode, anneeCourante)) {
+						addActions.add(new AddDI(periode));
 					}
 				}
 			}
@@ -1126,21 +698,26 @@ public class TacheServiceImpl implements TacheService {
 				for (DeclarationImpotOrdinaire di : dis) {
 					if (DateRangeHelper.equals(di, periode)) {
 						// la durée de la déclaration et de la période d'imposition correspondent parfaitement
-						final Mutation mutation = domaine.compare(di, periode, today);
-						if (mutation == Mutation.COMPATIBLE) {
-							// mise à jour possible
-							if (toUpdate != null) {
-								deleteActions.add(domaine.newDeleteDI(toUpdate));
-							}
-							toUpdate = di;
-							toAdd = null;
+						if (di.getTypeContribuable() == periode.getTypeContribuable()) {
+							// les types correspondent, rien à faire
 						}
-						else if (mutation == Mutation.MAJEURE) {
-							// on doit passer par une annulation / ré-émission
-							deleteActions.add(domaine.newDeleteDI(di));
-							if (toUpdate == null) {
-								// on prévoit de recréer la déclaration
-								toAdd = periode;
+						else {
+							// les types ne correspondent pas
+							if (peutMettreAJourDeclarationExistante(di, periode, anneeCourante)) {
+								// le type de contribuable peut être mis-à-jour
+								if (toUpdate != null) {
+									deleteActions.add(new DeleteDI(toUpdate));
+								}
+								toUpdate = di;
+								toAdd = null;
+							}
+							else {
+								// le type de contribuable ne peut pas être mis-à-jour : la déclaration doit être annulée
+								deleteActions.add(new DeleteDI(di));
+								if (toUpdate == null) {
+									// on prévoit de recréer la déclaration
+									toAdd = periode;
+								}
 							}
 						}
 					}
@@ -1148,18 +725,17 @@ public class TacheServiceImpl implements TacheService {
 						// la durée de la déclaration et de la période d'imposition ne correspondent pas
 						if (toUpdate != null) {
 							// il y a déjà une déclaration compatible pouvant être mise-à-jour, inutile de chercher plus loin
-							deleteActions.add(domaine.newDeleteDI(di));
+							deleteActions.add(new DeleteDI(di));
 						}
 						else {
-							final Mutation mutation = domaine.compare(di, periode, today);
-							if (mutation == Mutation.AUCUNE || mutation == Mutation.COMPATIBLE) {
+							if (peutMettreAJourDeclarationExistante(di, periode, anneeCourante)) {
 								// si les types sont compatibles, on adapte la déclaration
 								toUpdate = di;
 								toAdd = null;
 							}
-							else if (!isDiLibreSurPeriodeCourante(di, today)) {
+							else if (!isDiLibreSurPeriodeCourante(di, anneeCourante)) {
 								// si les types sont incompatibles, on annule et on prévoit de recréer la déclaration
-								deleteActions.add(domaine.newDeleteDI(di));
+								deleteActions.add(new DeleteDI(di));
 								toAdd = periode;
 							}
 						}
@@ -1170,8 +746,8 @@ public class TacheServiceImpl implements TacheService {
 				}
 				else if (toAdd != null) {
 					// [UNIREG-2735] Le mécanisme ne doit pas créer de tâche d'émission de DI pour l'année en cours
-					if (peutCreerTacheEnvoiDI(periode, today)) {
-						addActions.add(domaine.newAddDI(toAdd));
+					if (peutCreerTacheEnvoiDI(periode, anneeCourante)) {
+						addActions.add(new AddDI(toAdd));
 					}
 				}
 			}
@@ -1182,7 +758,7 @@ public class TacheServiceImpl implements TacheService {
 			for (int i = addActions.size() - 1; i >= 0; i--) {
 				final PeriodeImposition periode = addActions.get(i).periodeImposition;
 				final TacheEnvoiDeclarationImpot envoi = getMatchingRangeAt(tachesEnvoi, periode);
-				if (envoi != null && envoi.getTypeContribuable() == periode.getTypeContribuable() && envoi.getTypeDocument() == periode.getTypeDocumentDeclaration()) {
+				if (envoi != null && envoi.getTypeContribuable() == periode.getTypeContribuable() && envoi.getTypeDocument() == periode.getTypeDocument()) {
 					addActions.remove(i);
 				}
 			}
@@ -1197,7 +773,7 @@ public class TacheServiceImpl implements TacheService {
 			if (ps == null) {
 				if (!isDeclarationToBeUpdated(updateActions, declaration)) { // [UNIREG-3028]
 					// il n'y a pas de période correspondante
-					deleteActions.add(domaine.newDeleteDI(declaration));
+					deleteActions.add(new DeleteDI(declaration));
 				}
 			}
 			else {
@@ -1211,7 +787,7 @@ public class TacheServiceImpl implements TacheService {
 			for (int i = deleteActions.size() - 1; i >= 0; i--) {
 				final Long diId = deleteActions.get(i).diId;
 				for (TacheAnnulationDeclarationImpot annulation : tachesAnnulation) {
-					if (annulation.getDeclaration().getId().equals(diId)) {
+					if (annulation.getDeclarationImpotOrdinaire().getId().equals(diId)) {
 						deleteActions.remove(i);
 						break;      // pas la peine de l'enlever plusieurs fois...
 					}
@@ -1224,13 +800,13 @@ public class TacheServiceImpl implements TacheService {
 		//
 
 		for (TacheEnvoiDeclarationImpot envoi : tachesEnvoi) {
-			if (!isTacheEnvoiDIValide(envoi, periodes, declarations, updateActions)) {
+			if (!isTacheEnvoiValide(envoi, periodes, declarations, updateActions)) {
 				annuleActions.add(new AnnuleTache(envoi));
 			}
 		}
 
 		for (TacheAnnulationDeclarationImpot annulation : tachesAnnulation) {
-			if (!isTacheAnnulationDIValide(annulation, periodes, updateActions, today)) {
+			if (!isTacheAnnulationValide(annulation, periodes, updateActions, anneeCourante)) {
 				annuleActions.add(new AnnuleTache(annulation));
 			}
 		}
@@ -1250,35 +826,11 @@ public class TacheServiceImpl implements TacheService {
 	}
 
 	/**
-	 * Détermine si la tâche d'envoi d'un questionnaire SNC est (toujours) valide en se mettant dans la position où les actions prévues ont été effectuées.
-	 *
-	 * @param envoi         une tâche d'envoi
-	 * @param periodes      les périodes théoriques du contribuable
-	 * @param questionnaires les déclarations existantes
-	 * @param updates les actions prévues de mise-à-jour des questionnaires
-	 * @return <b>vrai</b> si la tâche est valide; <b>faux</b> si elle est invalide et doit être annulée.
+	 * @param periode une période d'imposition
+	 * @return <b>vrai</b> si une déclaration d'impôt doit obligatoirement être envoyée pour la période d'imposition spécifiée; <b>faux</b> dans tous les autres cas.
 	 */
-	private static boolean isTacheEnvoiQuestionnaireSNCValide(TacheEnvoiQuestionnaireSNC envoi, List<DateRange> periodes, List<QuestionnaireSNC> questionnaires, List<UpdateQSNC> updates) {
-
-		final DateRange periode = getMatchingRangeAt(periodes, envoi);
-		if (periode == null) {
-			// pas de période correspondante -> la tâche n'est plus valable
-			return false;
-		}
-
-		final QuestionnaireSNC questionnaire = getMatchingRangeAt(questionnaires, periode);
-		if (questionnaire == null) {
-			// il n'y a pas de questionnaire, la tâche est donc valide
-			return true;
-		}
-
-		if (isQuestionnaireToBeUpdated(updates, questionnaire)) { // [SIFISC-1288]
-			// le questionnaire existant va être mise-à-jour, la tâche est donc invalide
-			return false;
-		}
-
-		// la tâche est valide
-		return true;
+	private static boolean isDeclarationMandatory(PeriodeImposition periode) {
+		return !periode.isOptionnelle() && !periode.isRemplaceeParNote() && !periode.isDiplomateSuisseSansImmeuble();
 	}
 
 	/**
@@ -1290,10 +842,10 @@ public class TacheServiceImpl implements TacheService {
 	 * @param updateActions les actions prévues de mise-à-jour des déclarations
 	 * @return <b>vrai</b> si la tâche est valide; <b>faux</b> si elle est invalide et doit être annulée.
 	 */
-	private static boolean isTacheEnvoiDIValide(TacheEnvoiDeclarationImpot envoi, List<PeriodeImposition> periodes, List<DeclarationImpotOrdinaire> declarations, List<UpdateDI> updateActions) {
+	private static boolean isTacheEnvoiValide(TacheEnvoiDeclarationImpot envoi, List<PeriodeImposition> periodes, List<DeclarationImpotOrdinaire> declarations, List<UpdateDI> updateActions) {
 
 		final PeriodeImposition periode = getMatchingRangeAt(periodes, envoi);
-		if (periode == null || !periode.isDeclarationMandatory()) {
+		if (periode == null || !isDeclarationMandatory(periode)) {
 			// pas de période correspondante -> la tâche n'est plus valable
 			// [SIFISC-1653] déclaration d'impôt pas obligatoire -> la tâche n'est plus valable
 			return false;
@@ -1304,7 +856,7 @@ public class TacheServiceImpl implements TacheService {
 			return false;
 		}
 
-		if (envoi.getTypeDocument() != periode.getTypeDocumentDeclaration()) {
+		if (envoi.getTypeDocument() != periode.getTypeDocument()) {
 			// il y a une période correspondante pour le bon type de contribuable, mais le type de document n'est plus le même -> la tâche n'est plus valable
 			return false;
 		}
@@ -1334,45 +886,13 @@ public class TacheServiceImpl implements TacheService {
 	 *
 	 * @param annulation    une tâche d'annulation
 	 * @param periodes      les périodes d'imposition théorique du contribuable
-	 * @param updates les actions prévues de mise-à-jour des déclarations
-	 * @param dateReference date de référence
-	 * @return <b>vrai</b> si la tâche est valide; <b>faux</b> si elle est invalide et doit être annulée.
-	 */
-	private static boolean isTacheAnnulationQuestionnaireSNCValide(TacheAnnulationQuestionnaireSNC annulation, List<DateRange> periodes, List<UpdateQSNC> updates, RegDate dateReference) {
-
-		final QuestionnaireSNC questionnaire = annulation.getDeclaration();
-		if (questionnaire.isAnnule()) {
-			// la déclaration est déjà annulée -> la tâche ne sert à rien
-			return false;
-		}
-
-		if (isQuestionnaireToBeUpdated(updates, questionnaire)) { // [UNIREG-3028]
-			// la déclaration va être mise-à-jour, la tâche d'annulation est donc invalide
-			return false;
-		}
-
-		final DateRange periode = getMatchingRangeAt(periodes, questionnaire);
-		if (periode == null) {
-			// il n'y a pas de questionnaire théorique correspondant, la tâche d'annulation est donc valide
-			return true;
-		}
-
-		// finalement, la tâche est valide
-		return true;
-	}
-
-	/**
-	 * Détermine si la tâche d'annulation d'une déclaration d'impôt est (toujours) valide en se mettant dans la position où les actions prévues ont été effectuées.
-	 *
-	 * @param annulation    une tâche d'annulation
-	 * @param periodes      les périodes d'imposition théorique du contribuable
 	 * @param updateActions les actions prévues de mise-à-jour des déclarations
-	 * @param dateReference date de référence
+	 * @param anneeCourante l'année courante
 	 * @return <b>vrai</b> si la tâche est valide; <b>faux</b> si elle est invalide et doit être annulée.
 	 */
-	private static boolean isTacheAnnulationDIValide(TacheAnnulationDeclarationImpot annulation, List<PeriodeImposition> periodes, List<UpdateDI> updateActions, RegDate dateReference) {
+	private static boolean isTacheAnnulationValide(TacheAnnulationDeclarationImpot annulation, List<PeriodeImposition> periodes, List<UpdateDI> updateActions, int anneeCourante) {
 
-		final DeclarationImpotOrdinaire declaration = annulation.getDeclaration();
+		final DeclarationImpotOrdinaire declaration = annulation.getDeclarationImpotOrdinaire();
 		if (declaration.isAnnule()) {
 			// la déclaration est déjà annulée
 			return false;
@@ -1390,7 +910,7 @@ public class TacheServiceImpl implements TacheService {
 		}
 
 		//noinspection RedundantIfStatement
-		if (periode.getTypeContribuable() == declaration.getTypeContribuable() || peutMettreAJourDeclarationExistante(declaration, periode, dateReference)) { // [UNIREG-3028]
+		if (periode.getTypeContribuable() == declaration.getTypeContribuable() || peutMettreAJourDeclarationExistante(declaration, periode, anneeCourante)) { // [UNIREG-3028]
 			// le type de contribuable de la période et de la déclaration correspondent, la tâche d'annulation est donc invalide.
 			return false;
 		}
@@ -1417,61 +937,44 @@ public class TacheServiceImpl implements TacheService {
 	}
 
 	/**
-	 * @param updateActions la liste des actions de mise-à-jour
-	 * @param questionnaire   un questionnaire SNC
-	 * @return <b>vrai</b> si le questionnaire spécifié est référencé dans la liste d'actions de mise-à-jour; <b>faux</b> si ce n'est pas le cas.
-	 */
-	private static boolean isQuestionnaireToBeUpdated(List<UpdateQSNC> updateActions, QuestionnaireSNC questionnaire) {
-		boolean declarationUpdated = false;
-		if (!updateActions.isEmpty()) {
-			for (UpdateQSNC updateAction : updateActions) {
-				if (updateAction.questionnaireId == questionnaire.getId()) {
-					declarationUpdated = true;
-					break;
-				}
-			}
-		}
-		return declarationUpdated;
-	}
-
-	/**
 	 * On peut mettre à jour une déclaration existante si elle est sur une période passée ou - sur la période courante - si la nouvelle fin de période n'est pas la fin de l'année (= déplacement de fin
 	 * d'assujettissement). <b>Note:</b> le test sur le type de document n'est plus nécessaire (UNIREG-3281).
 	 *
 	 * @param diExistante   la DI potentiellement à mettre à jour
 	 * @param periode       la période d'imposition avec laquelle la DI serait mise à jour
-	 * @param dateReference date de référence
+	 * @param anneeCourante année de la période dite "courante"
 	 * @return <code>true</code> si la mise à jour est autorisée, <code>false</code> sinon.
 	 */
 	@SuppressWarnings({"UnusedParameters"})
-	private static boolean peutMettreAJourDeclarationExistante(DeclarationImpotOrdinaire diExistante, PeriodeImposition periode, RegDate dateReference) {
-		return isPeriodePasseeOuCouranteIncomplete(periode, dateReference);
+	private static boolean peutMettreAJourDeclarationExistante(DeclarationImpotOrdinaire diExistante, PeriodeImposition periode, int anneeCourante) {
+		return isPeriodePasseeOuCouranteIncomplete(periode, anneeCourante);
 	}
 
-	private static boolean isDiLibreSurPeriodeCourante(DeclarationImpotOrdinaire di, RegDate dateReference) {
-		return di.isLibre() && di.isValidAt(dateReference);
+	private static boolean isDiLibreSurPeriodeCourante(DeclarationImpotOrdinaire di, int anneeCourante) {
+		return di.isLibre() && di.getPeriode().getAnnee() == anneeCourante;
 	}
 
 	/**
 	 * On peut créer une tache d'envoi de DI pour toute période d'imposition dans une année passée.<br/>
-	 * Sur la période courante, il faut que la période d'imposition se termine avant la date de référence.
+	 * Sur la période courante, il faut que la période d'imposition se termine avant la fin de l'année (= fin d'assujettissement)
 	 * @param periode période d'imposition pour laquelle on voudrait peut-être créer une tâche d'envoi de DI
-	 * @param dateReference date de référence
+	 * @param anneeCourante année de la période dite "courante"
 	 * @return <code>true</code> si la création de la tâche est autorisée, <code>false</code> sinon
 	 */
-	private static boolean peutCreerTacheEnvoiDI(PeriodeImposition periode, RegDate dateReference) {
-		return isPeriodePasseeOuCouranteIncomplete(periode, dateReference);
+	private static boolean peutCreerTacheEnvoiDI(PeriodeImposition periode, int anneeCourante) {
+		return isPeriodePasseeOuCouranteIncomplete(periode, anneeCourante);
 	}
 
 	/**
 	 * Une période d'imposition est dite passée si elle fait référence à une année qui n'est pas l'année courante.<br/>
 	 * Une période d'imposition est dite incomplète si elle se termine avant la fin de l'année civile
 	 * @param periode période d'imposition à tester
-	 * @param dateReference date de référence
+	 * @param anneeCourante année considérée comme l'année courante
 	 * @return <code>true</code> si la période est passée ou courante incomplète, <code>false</code> sinon (courante complète ou, pourquoi pas, future)
 	 */
-	private static boolean isPeriodePasseeOuCouranteIncomplete(PeriodeImposition periode, RegDate dateReference) {
-		return periode.getDateFin().isBefore(dateReference) || periode.isFermetureAnticipee();
+	private static boolean isPeriodePasseeOuCouranteIncomplete(PeriodeImposition periode, int anneeCourante) {
+		final RegDate avantDernierJourAnnee = RegDate.get(anneeCourante, 12, 30);
+		return periode.getDateDebut().year() < anneeCourante || RegDateHelper.isBeforeOrEqual(periode.getDateFin(), avantDernierJourAnnee, NullDateBehavior.LATEST);
 	}
 
 	/**
@@ -1484,47 +987,41 @@ public class TacheServiceImpl implements TacheService {
 	 * @return l'office d'impôt du contribuable.
 	 */
 	protected CollectiviteAdministrative getOfficeImpot(Contribuable contribuable) {
-		CollectiviteAdministrative collectivite;
-		if (contribuable instanceof ContribuableImpositionPersonnesMorales) {
-			collectivite = tiersService.getCollectiviteAdministrative(ServiceInfrastructureService.noOIPM, true);
-		}
-		else {
-			collectivite = tiersService.getOfficeImpotAt(contribuable, null);
-			if (collectivite == null) {
+		CollectiviteAdministrative collectivite = tiersService.getOfficeImpotAt(contribuable, null);
+		if (collectivite == null) {
 
-				// [UNIREG-3285] On analyse les fors fiscaux du contribuable à la recherche d'un for qui puisse être utilisé pour déterminer un OID convenable
-				ForFiscal dernierForFiscalVaudois = null;
-				ForFiscal dernierForFiscalVaudoisNonSourceAnnule = null;
+			// [UNIREG-3285] On analyse les fors fiscaux du contribuable à la recherche d'un for qui puisse être utilisé pour déterminer un OID convenable
+			ForFiscal dernierForFiscalVaudois = null;
+			ForFiscal dernierForFiscalVaudoisNonSourceAnnule = null;
 
-				final List<ForFiscal> fors = contribuable.getForsFiscauxSorted();
-				if (fors != null) {
-					for (int i = fors.size() - 1; i >= 0; --i) {
-						final ForFiscal f = fors.get(i);
-						if (f.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
-							if (dernierForFiscalVaudois == null) {
-								dernierForFiscalVaudois = f;
-							}
-							if (f.isAnnule()) {
-								if (f instanceof ForFiscalSecondaire || (f.isPrincipal() && ((ForFiscalPrincipalPP) f).getModeImposition() != ModeImposition.SOURCE)) {
-									dernierForFiscalVaudoisNonSourceAnnule = f;
-									break;
-								}
+			final List<ForFiscal> fors = contribuable.getForsFiscauxSorted();
+			if (fors != null) {
+				for (int i = fors.size() - 1; i >= 0; --i) {
+					final ForFiscal f = fors.get(i);
+					if (f.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
+						if (dernierForFiscalVaudois == null) {
+							dernierForFiscalVaudois = f;
+						}
+						if (f.isAnnule()) {
+							if (f instanceof ForFiscalSecondaire || (f.isPrincipal() && ((ForFiscalPrincipal) f).getModeImposition() != ModeImposition.SOURCE)) {
+								dernierForFiscalVaudoisNonSourceAnnule = f;
+								break;
 							}
 						}
 					}
 				}
-
-				final ForFiscal forConvenable = (dernierForFiscalVaudoisNonSourceAnnule != null ? dernierForFiscalVaudoisNonSourceAnnule : dernierForFiscalVaudois);
-				if (forConvenable == null) {
-					throw new IllegalArgumentException("Impossible de trouver un for fiscal convenable pour la détermination de l'OID du contribuable n°" + contribuable.getNumero());
-				}
-
-				final Integer oid = tiersService.getOfficeImpotId(forConvenable.getNumeroOfsAutoriteFiscale());
-				if (oid == null) {
-					throw new IllegalArgumentException("Impossible de déterminer l'OID pour la commune avec le numéro Ofs n°" + forConvenable.getNumeroOfsAutoriteFiscale());
-				}
-				collectivite = tiersService.getCollectiviteAdministrative(oid);
 			}
+
+			final ForFiscal forConvenable = (dernierForFiscalVaudoisNonSourceAnnule != null ? dernierForFiscalVaudoisNonSourceAnnule : dernierForFiscalVaudois);
+			if (forConvenable == null) {
+				throw new IllegalArgumentException("Impossible de trouver un for fiscal convenable pour la détermination de l'OID du contribuable n°" + contribuable.getNumero());
+			}
+
+			final Integer oid = tiersService.getOfficeImpotId(forConvenable.getNumeroOfsAutoriteFiscale());
+			if (oid == null) {
+				throw new IllegalArgumentException("Impossible de déterminer l'OID pour la commune avec le numéro Ofs n°" + forConvenable.getNumeroOfsAutoriteFiscale());
+			}
+			collectivite = tiersService.getCollectiviteAdministrative(oid);
 		}
 
 		Assert.notNull(collectivite);
@@ -1532,8 +1029,19 @@ public class TacheServiceImpl implements TacheService {
 	}
 
 	private List<PeriodeImposition> getPeriodesImpositionHisto(Contribuable contribuable) throws AssujettissementException {
-		final List<PeriodeImposition> pis = periodeImpositionService.determine(contribuable);
-		return pis == null ? Collections.<PeriodeImposition>emptyList() : pis;
+
+		final RegDate dateCourante = RegDate.get();
+		final int anneeCourante = dateCourante.year();
+		final int anneeDebut = getPremierePeriodeFiscale();
+
+		final List<PeriodeImposition> periodes = new ArrayList<>();
+		for (int annee = anneeDebut; annee <= anneeCourante; ++annee) {
+			final List<PeriodeImposition> list = periodeImpositionService.determine(contribuable, annee);
+			if (list != null) {
+				periodes.addAll(list);
+			}
+		}
+		return periodes;
 	}
 
 	@SuppressWarnings({"unchecked"})
@@ -1549,48 +1057,49 @@ public class TacheServiceImpl implements TacheService {
 			}
 			list.add((DeclarationImpotOrdinaire) d);
 		}
-		Collections.sort(list, new DateRangeComparator<>());
+		Collections.sort(list, new DateRangeComparator<DeclarationImpotOrdinaire>());
 		return list;
 	}
 
-	private List<TacheAnnulationDeclarationImpot> getTachesAnnulationDIsEnInstance(Contribuable contribuable) {
-		return getTachesEnInstance(contribuable, TypeTache.TacheAnnulationDeclarationImpot);
-	}
+	private List<TacheAnnulationDeclarationImpot> getTachesAnnulationEnInstance(Contribuable contribuable) {
+		final List<TacheAnnulationDeclarationImpot> tachesAnnulation;
+		{
+			final TacheCriteria criterion = new TacheCriteria();
+			criterion.setContribuable(contribuable);
+			criterion.setEtatTache(TypeEtatTache.EN_INSTANCE);
+			criterion.setTypeTache(TypeTache.TacheAnnulationDeclarationImpot);
 
-	private List<TacheAnnulationQuestionnaireSNC> getTachesAnnulationQuestionnairesSNCEnInstance(Entreprise entreprise) {
-		return getTachesEnInstance(entreprise, TypeTache.TacheAnnulationQuestionnaireSNC);
-	}
-
-	private List<TacheEnvoiDeclarationImpot> getTachesEnvoiDIsEnInstance(Contribuable contribuable) {
-		if (contribuable instanceof ContribuableImpositionPersonnesPhysiques) {
-			return getTachesEnInstance(contribuable, TypeTache.TacheEnvoiDeclarationImpotPP);
+			final List<Tache> list = tacheDAO.find(criterion, true);
+			if (list.isEmpty()) {
+				tachesAnnulation = Collections.emptyList();
+			}
+			else {
+				tachesAnnulation = new ArrayList<>(list.size());
+				for (Tache t : list) {
+					tachesAnnulation.add((TacheAnnulationDeclarationImpot) t);
+				}
+			}
 		}
-		if (contribuable instanceof ContribuableImpositionPersonnesMorales) {
-			return getTachesEnInstance(contribuable, TypeTache.TacheEnvoiDeclarationImpotPM);
-		}
-		return Collections.emptyList();
+		return tachesAnnulation;
 	}
 
-	private List<TacheEnvoiQuestionnaireSNC> getTachesEnvoiQuestionnairesSNCEnInstance(Entreprise entreprise) {
-		return getTachesEnInstance(entreprise, TypeTache.TacheEnvoiQuestionnaireSNC);
-	}
+	private List<TacheEnvoiDeclarationImpot> getTachesEnvoiEnInstance(Contribuable contribuable) {
+		final List<TacheEnvoiDeclarationImpot> tachesEnvoi;
+		{
+			final TacheCriteria criterion = new TacheCriteria();
+			criterion.setContribuable(contribuable);
+			criterion.setEtatTache(TypeEtatTache.EN_INSTANCE);
+			criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpot);
 
-	private <T extends Tache> List<T> getTachesEnInstance(Contribuable contribuable, TypeTache typeTache) {
-		final TacheCriteria criterion = new TacheCriteria();
-		criterion.setContribuable(contribuable);
-		criterion.setEtatTache(TypeEtatTache.EN_INSTANCE);
-		criterion.setTypeTache(typeTache);
-		criterion.setInclureTachesAnnulees(false);
-
-		final List<T> tachesEnvoi;
-		final List<Tache> list = tacheDAO.find(criterion, true);
-		if (list.isEmpty()) {
-			tachesEnvoi = Collections.emptyList();
-		}
-		else {
-			tachesEnvoi = new ArrayList<>(list.size());
-			for (Tache t : list) {
-				tachesEnvoi.add((T) t);
+			final List<Tache> list = tacheDAO.find(criterion, true);
+			if (list.isEmpty()) {
+				tachesEnvoi = Collections.emptyList();
+			}
+			else {
+				tachesEnvoi = new ArrayList<>(list.size());
+				for (Tache t : list) {
+					tachesEnvoi.add((TacheEnvoiDeclarationImpot) t);
+				}
 			}
 		}
 		return tachesEnvoi;
@@ -1637,7 +1146,7 @@ public class TacheServiceImpl implements TacheService {
 		ForFiscalPrincipal forPrincipal = contribuable.getForFiscalPrincipalAt(null);
 
 		// [UNIREG-1888] Aucune tâche générée pour les contribuables dont le mode d'imposition est "SOURCE"
-		if (forPrincipal != null && forPrincipal.getTypeAutoriteFiscale() != TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD && !isExcludingFromTaskManagement(forPrincipal)) {
+		if (forPrincipal != null && forPrincipal.getTypeAutoriteFiscale() != TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD && forPrincipal.getModeImposition() != ModeImposition.SOURCE) {
 			final MotifRattachement motifRattachement = forFiscal.getMotifRattachement();
 			if (motifRattachement == MotifRattachement.ACTIVITE_INDEPENDANTE || motifRattachement == MotifRattachement.IMMEUBLE_PRIVE) {
 				generateTacheNouveauDossier(contribuable);
@@ -1663,6 +1172,10 @@ public class TacheServiceImpl implements TacheService {
 	public int getDossiersEnInstanceCount(Integer oid) {
 		final TacheStats stats = tacheStatsPerOid.get(oid);
 		return stats == null ? 0: stats.dossiersEnInstance;
+	}
+
+	private int getPremierePeriodeFiscale() {
+		return parametres.getPremierePeriodeFiscale();
 	}
 
 	/**

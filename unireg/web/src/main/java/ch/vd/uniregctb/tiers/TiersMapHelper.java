@@ -26,7 +26,6 @@ import ch.vd.uniregctb.type.CategorieEtranger;
 import ch.vd.uniregctb.type.CategorieImpotSource;
 import ch.vd.uniregctb.type.EtatCivil;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
-import ch.vd.uniregctb.type.EtatEvenementOrganisation;
 import ch.vd.uniregctb.type.FormeJuridique;
 import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.ModeCommunication;
@@ -46,7 +45,6 @@ import ch.vd.uniregctb.type.TypeDroitAcces;
 import ch.vd.uniregctb.type.TypeEtatDeclaration;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
 import ch.vd.uniregctb.type.TypeEvenementCivilEch;
-import ch.vd.uniregctb.type.TypeEvenementOrganisation;
 import ch.vd.uniregctb.type.TypeOperation;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 
@@ -77,16 +75,13 @@ public class TiersMapHelper extends CommonMapHelper {
 	private Map<TypeEvenementCivilEch, String> mapTypeEvenementCivilEch;
 	private Map<ActionEvenementCivilEch, String> mapActionEvenementCivilEch;
 	private Map<EtatEvenementCivil, String> mapStatusEvenementCivil;
-	private Map<TypeEvenementOrganisation, String> mapTypeEvenementOrganisation;
-	private Map<EtatEvenementOrganisation, String> mapEtatEvenementOrganisation;
 	private Map<TypeRapportEntreTiers, String> mapTypeRapportEntreTiers;
 	private Map<EtatEvenementCivil, String> mapEtatsEvenementCivil;
 	private Map<TypeEtatDeclaration, String> mapTypeEtatDeclaration;
 	private Map<EtatCivil, String> mapEtatsCivil;
 	private Map<TypeAdresseTiers, String> mapTypeAdresse;
 	private Map<TypeAdresseTiers, String> mapTypeAdresseFiscale;
-	private Map<TypeDocument, String> mapTypesDeclarationImpotPP;
-	private Map<TypeDocument, String> mapTypesDeclarationImpotPM;
+	private Map<TypeDocument, String> mapTypesDeclarationImpot;
 	private Map<TypeDocument, String> mapTypesDeclarationImpotOrdinaire;
 	private Map<TypeDocument, String> mapTypesDeclarationImpotPourParam;
 	private Map<TypeAdresseRetour, String> mapTypesAdresseRetour;
@@ -414,30 +409,6 @@ public class TiersMapHelper extends CommonMapHelper {
 	}
 
 	/**
-	 * Initialise la map des types d'evenements civils organisation
-	 *
-	 * @return une map
-	 */
-	public Map<TypeEvenementOrganisation, String> getMapTypeEvenementOrganisation() {
-		if (mapTypeEvenementOrganisation == null) {
-			mapTypeEvenementOrganisation = initMapEnum(ApplicationConfig.masterKeyTypeEvenementOrganisation, TypeEvenementOrganisation.class);
-		}
-		return mapTypeEvenementOrganisation;
-	}
-
-	/**
-	 * Initialise la map de etats des evts organisation
-	 *
-	 * @return une map
-	 */
-	public Map<EtatEvenementOrganisation, String> getMapEtatsEvenementOrganisation() {
-		if (mapEtatEvenementOrganisation == null) {
-			mapEtatEvenementOrganisation = initMapEnum(ApplicationConfig.masterKeyEtatEvenementOrganisation, EtatEvenementOrganisation.class);
-		}
-		return mapEtatEvenementOrganisation;
-	}
-
-	/**
 	 * Initialise la map des états des unités de traitement ReqDes
 	 * @return la map
 	 */
@@ -512,48 +483,19 @@ public class TiersMapHelper extends CommonMapHelper {
 	}
 
 	/**
-	 * Initialise la map des types de declaration d'impot pour l'écran d'édition de la DI PP
+	 * Initialise la map des types de declaration d'impot pour l'écran d'édition de la DI
 	 *
 	 * @return une map
 	 */
-	public Map<TypeDocument, String> getTypesDeclarationImpotPP() {
-		if (mapTypesDeclarationImpotPP == null) {
-			mapTypesDeclarationImpotPP = initMapEnum(ApplicationConfig.masterKeyTypeDeclarationImpot, TypeDocument.class,
-			                                         TypeDocument.LISTE_RECAPITULATIVE,
-			                                         TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH,
-			                                         TypeDocument.E_FACTURE_ATTENTE_CONTACT,
-			                                         TypeDocument.E_FACTURE_ATTENTE_SIGNATURE,
-			                                         TypeDocument.DECLARATION_IMPOT_APM,
-			                                         TypeDocument.DECLARATION_IMPOT_PM,
-			                                         TypeDocument.QUESTIONNAIRE_SNC);
-		}
-		return mapTypesDeclarationImpotPP;
-	}
+	public Map<TypeDocument, String> getTypesDeclarationImpot() {
 
-	/**
-	 * Initialise la map des types de declaration d'impot pour l'écran d'édition de la DI PP
-	 *
-	 * @return une map
-	 */
-	public Map<TypeDocument, String> getTypesDeclarationImpotPM() {
-		if (mapTypesDeclarationImpotPM == null) {
-			mapTypesDeclarationImpotPM = initMapEnum(ApplicationConfig.masterKeyTypeDeclarationImpot, TypeDocument.class,
-			                                         TypeDocument.LISTE_RECAPITULATIVE,
-			                                         TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH,
-			                                         TypeDocument.DECLARATION_IMPOT_COMPLETE_LOCAL,
-			                                         TypeDocument.DECLARATION_IMPOT_DEPENSE,
-			                                         TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE,
-			                                         TypeDocument.DECLARATION_IMPOT_VAUDTAX,
-			                                         TypeDocument.QUESTIONNAIRE_SNC,
-			                                         TypeDocument.E_FACTURE_ATTENTE_CONTACT,
-			                                         TypeDocument.E_FACTURE_ATTENTE_SIGNATURE);
+		if (mapTypesDeclarationImpot == null) {
+			mapTypesDeclarationImpot =
+					initMapEnum(ApplicationConfig.masterKeyTypeDeclarationImpot, TypeDocument.class, TypeDocument.LISTE_RECAPITULATIVE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH,
+							TypeDocument.E_FACTURE_ATTENTE_CONTACT, TypeDocument.E_FACTURE_ATTENTE_SIGNATURE);
 		}
-		return mapTypesDeclarationImpotPM;
+		return mapTypesDeclarationImpot;
 	}
-
-	private static final Set<TypeDocument> DI_ORDINAIRE = EnumSet.of(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH,
-	                                                                 TypeDocument.DECLARATION_IMPOT_COMPLETE_LOCAL,
-	                                                                 TypeDocument.DECLARATION_IMPOT_VAUDTAX);
 
 	/**
 	 * Initialise la map des types de declarations d'impôt ordinaires pour l'écran d'édition de la DI (quittancement)
@@ -566,7 +508,7 @@ public class TiersMapHelper extends CommonMapHelper {
 			final List<TypeDocument> typesIgnores = new ArrayList<>();
 			for (TypeDocument type : TypeDocument.values()) {
 				// doivent être ignorées la version batch de la déclaration complète et toutes les déclarations non-ordinaires
-				if (type == TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH || !DI_ORDINAIRE.contains(type)) {
+				if (type == TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH || !type.isOrdinaire()) {
 					typesIgnores.add(type);
 				}
 			}

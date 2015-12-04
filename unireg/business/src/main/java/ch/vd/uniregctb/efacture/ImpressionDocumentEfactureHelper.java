@@ -12,7 +12,7 @@ public interface ImpressionDocumentEfactureHelper {
 	 * @param typeDoc
 	 * @return
 	 */
-	TypeDocumentEditique getTypeDocumentEditique(TypeDocument typeDoc);
+	public TypeDocumentEditique getTypeDocumentEditique(TypeDocument typeDoc);
 
 	/**
 	 * Construit le fichier d'impression

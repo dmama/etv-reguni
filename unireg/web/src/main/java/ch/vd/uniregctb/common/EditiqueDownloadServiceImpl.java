@@ -49,7 +49,7 @@ public class EditiqueDownloadServiceImpl implements EditiqueDownloadService, Ini
 	 * Interface qui permet de spécialiser la manière de télécharger un retour d'éditique
 	 * en fonction du type de contenu
 	 */
-	private interface Downloader {
+	private static interface Downloader {
 
 		/**
 		 * Remplit la réponse HTTP avec le document à charger

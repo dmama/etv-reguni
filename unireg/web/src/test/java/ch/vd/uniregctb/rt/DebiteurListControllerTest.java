@@ -12,7 +12,7 @@ public class DebiteurListControllerTest extends AbstractRapportPrestationControl
 	/**
 	 * Le nom du controller a tester.
 	 */
-	private static final String CONTROLLER_NAME = "debiteurListController";
+	private final static String CONTROLLER_NAME = "debiteurListController";
 	private DebiteurListController controller;
 
 	@Override

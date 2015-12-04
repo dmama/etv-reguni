@@ -16,10 +16,8 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.CoreDAOTest;
 import ch.vd.uniregctb.common.ParamPagination;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
-import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP;
 import ch.vd.uniregctb.declaration.ModeleDocument;
-import ch.vd.uniregctb.declaration.ParametrePeriodeFiscalePM;
-import ch.vd.uniregctb.declaration.ParametrePeriodeFiscalePP;
+import ch.vd.uniregctb.declaration.ParametrePeriodeFiscale;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.hibernate.interceptor.ModificationLogInterceptor;
 import ch.vd.uniregctb.type.Qualification;
@@ -106,7 +104,7 @@ public class TacheDAOTest extends CoreDAOTest {
 		// Type envoi di
 		{
 			TacheCriteria criterion = new TacheCriteria();
-			criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpotPP);
+			criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpot);
 			final List<Tache> list = tacheDAO.find(criterion);
 			assertEquals(2, list.size());
 			assertEquals(ids.tedi0, list.get(0).getId());
@@ -150,7 +148,7 @@ public class TacheDAOTest extends CoreDAOTest {
 		// Type envoi di
 		{
 			TacheCriteria criterion = new TacheCriteria();
-			criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpotPP);
+			criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpot);
 			criterion.setInvertTypeTache(true);
 			final List<Tache> list = tacheDAO.find(criterion);
 			assertEquals(3, list.size());
@@ -260,14 +258,14 @@ public class TacheDAOTest extends CoreDAOTest {
 
 		{
 			TacheCriteria criterion = new TacheCriteria();
-			criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpotPP);
+			criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpot);
 			criterion.setAnnee(2007);
 			final List<Tache> list = tacheDAO.find(criterion);
 			assertEmpty(list);
 		}
 		{
 			TacheCriteria criterion = new TacheCriteria();
-			criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpotPP);
+			criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpot);
 			criterion.setAnnee(2008);
 			final List<Tache> list = tacheDAO.find(criterion);
 			assertEquals(1, list.size());
@@ -275,7 +273,7 @@ public class TacheDAOTest extends CoreDAOTest {
 		}
 		{
 			TacheCriteria criterion = new TacheCriteria();
-			criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpotPP);
+			criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpot);
 			criterion.setAnnee(2009);
 			final List<Tache> list = tacheDAO.find(criterion);
 			assertEquals(1, list.size());
@@ -380,19 +378,19 @@ public class TacheDAOTest extends CoreDAOTest {
 				ids.ca2 = addCollAdm(7777).getNumero();
 				ids.ca3 = addCollAdm(22).getNumero();
 
-				ids.envoiEnInstance = addTacheEnvoiDIPP(ctb, TypeEtatTache.EN_INSTANCE, ca).getId();
+				ids.envoiEnInstance = addTacheEnvoi(ctb, TypeEtatTache.EN_INSTANCE, ca).getId();
 				ids.annulationEnInstance = addTacheAnnulation(ctb, TypeEtatTache.EN_INSTANCE, ca, di).getId();
 				ids.controleEnInstance = addTacheControle(ctb, TypeEtatTache.EN_INSTANCE, ca).getId();
 				ids.nouveauEnInstance = addTacheNouveau(ctb, TypeEtatTache.EN_INSTANCE, ca).getId();
 				ids.transmissionEnInstance = addTacheTransmission(ctb, TypeEtatTache.EN_INSTANCE, ca).getId();
 
-				ids.envoiTraitee = addTacheEnvoiDIPP(ctb, TypeEtatTache.TRAITE, ca).getId();
+				ids.envoiTraitee = addTacheEnvoi(ctb, TypeEtatTache.TRAITE, ca).getId();
 				ids.annulationTraitee = addTacheAnnulation(ctb, TypeEtatTache.TRAITE, ca, di).getId();
 				ids.controleTraitee = addTacheControle(ctb, TypeEtatTache.TRAITE, ca).getId();
 				ids.nouveauTraitee = addTacheNouveau(ctb, TypeEtatTache.TRAITE, ca).getId();
 				ids.transmissionTraitee = addTacheTransmission(ctb, TypeEtatTache.TRAITE, ca).getId();
 
-				final TacheEnvoiDeclarationImpot envoi = addTacheEnvoiDIPP(ctb, TypeEtatTache.EN_INSTANCE, ca);
+				final TacheEnvoiDeclarationImpot envoi = addTacheEnvoi(ctb, TypeEtatTache.EN_INSTANCE, ca);
 				envoi.setAnnule(true);
 				ids.envoiAnnulee = envoi.getId();
 
@@ -492,10 +490,10 @@ public class TacheDAOTest extends CoreDAOTest {
 		return modele;
 	}
 
-	private DeclarationImpotOrdinairePP addDeclaration(RegDate debut, RegDate fin, TypeContribuable typeCtb, Qualification qualif, PeriodeFiscale periode, ModeleDocument modele, ContribuableImpositionPersonnesPhysiques ctb) {
-		DeclarationImpotOrdinairePP di = addDeclarationImpot(ctb, periode, debut, fin, null, typeCtb, modele);
+	private DeclarationImpotOrdinaire addDeclaration(RegDate debut, RegDate fin, TypeContribuable typeCtb, Qualification qualif, PeriodeFiscale periode, ModeleDocument modele, Tiers tiers) {
+		DeclarationImpotOrdinaire di = addDeclarationImpot((Contribuable)tiers, periode, debut, fin, null, typeCtb, modele);
 		di.setQualification(qualif);
-		ctb.addDeclaration(di);
+		tiers.addDeclaration(di);
 		di = hibernateTemplate.merge(di);
 		return di;
 	}
@@ -510,9 +508,9 @@ public class TacheDAOTest extends CoreDAOTest {
 		return addTacheAnnulDI(etat, date(2010, 1, 1), di, ctb, ca);
 	}
 
-	private TacheEnvoiDeclarationImpot addTacheEnvoiDIPP(PersonnePhysique ctb, TypeEtatTache etat, CollectiviteAdministrative ca) {
-		TacheEnvoiDeclarationImpotPP envoi = addTacheEnvoiDIPP(etat, date(2010, 1, 1), date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
-		                                                       TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, ctb, Qualification.AUTOMATIQUE, 0, ca);
+	private TacheEnvoiDeclarationImpot addTacheEnvoi(PersonnePhysique ctb, TypeEtatTache etat, CollectiviteAdministrative ca) {
+		TacheEnvoiDeclarationImpot envoi = addTacheEnvoiDI(etat, date(2010, 1, 1), date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
+				TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, ctb, Qualification.AUTOMATIQUE, 0, ca);
 		envoi.setAdresseRetour(TypeAdresseRetour.CEDI);
 		envoi = hibernateTemplate.merge(envoi);
 		return envoi;
@@ -529,21 +527,45 @@ public class TacheDAOTest extends CoreDAOTest {
 		pf0.setModelesDocument(new HashSet());
 		pf0 = hibernateTemplate.merge(pf0);
 
-		for (TypeContribuable typeCtb : TypeContribuable.values()) {
-			if (typeCtb.isUsedForPP()) {
-				final RegDate dateFinEnvoiMasse = typeCtb == TypeContribuable.VAUDOIS_ORDINAIRE ? RegDate.get(2009, 4, 30) : RegDate.get(2009, 6, 30);
-				final ParametrePeriodeFiscalePP ppf = new ParametrePeriodeFiscalePP(typeCtb, dateFinEnvoiMasse, RegDate.get(2009, 1, 31), RegDate.get(2009, 3, 31), pf0);
-				ppf.setLogModifDate(new Timestamp(1199142000000L));
-				pf0.addParametrePeriodeFiscale(ppf);
-				pf0 = hibernateTemplate.merge(pf0);
-			}
-			if (typeCtb.isUsedForPM()) {
-				final ParametrePeriodeFiscalePM ppf = new ParametrePeriodeFiscalePM(typeCtb, 6, false, 75, false, pf0);
-				ppf.setLogModifDate(new Timestamp(1199142000000L));
-				pf0.addParametrePeriodeFiscale(ppf);
-				pf0 = hibernateTemplate.merge(pf0);
-			}
-		}
+		ParametrePeriodeFiscale ppf0 = new ParametrePeriodeFiscale();
+		ppf0.setId(1L);
+		ppf0.setDateFinEnvoiMasseDI(RegDate.get(2009, 4, 30));
+		ppf0.setLogModifDate(new Timestamp(1199142000000L));
+		ppf0.setTermeGeneralSommationEffectif(RegDate.get(2009, 3, 31));
+		ppf0.setTermeGeneralSommationReglementaire(RegDate.get(2009, 1, 31));
+		ppf0.setTypeContribuable(TypeContribuable.VAUDOIS_ORDINAIRE);
+		pf0.addParametrePeriodeFiscale(ppf0);
+		pf0 = hibernateTemplate.merge(pf0);
+
+		ParametrePeriodeFiscale ppf1 = new ParametrePeriodeFiscale();
+		ppf1.setId(2L);
+		ppf1.setDateFinEnvoiMasseDI(RegDate.get(2009, 6, 30));
+		ppf1.setLogModifDate(new Timestamp(1199142000000L));
+		ppf1.setTermeGeneralSommationEffectif(RegDate.get(2009, 3, 31));
+		ppf1.setTermeGeneralSommationReglementaire(RegDate.get(2009, 1, 31));
+		ppf1.setTypeContribuable(TypeContribuable.VAUDOIS_DEPENSE);
+		pf0.addParametrePeriodeFiscale(ppf1);
+		pf0 = hibernateTemplate.merge(pf0);
+
+		ParametrePeriodeFiscale ppf2 = new ParametrePeriodeFiscale();
+		ppf2.setId(3L);
+		ppf2.setDateFinEnvoiMasseDI(RegDate.get(2009, 6, 30));
+		ppf2.setLogModifDate(new Timestamp(1199142000000L));
+		ppf2.setTermeGeneralSommationEffectif(RegDate.get(2009, 3, 31));
+		ppf2.setTermeGeneralSommationReglementaire(RegDate.get(2009, 1, 31));
+		ppf2.setTypeContribuable(TypeContribuable.HORS_CANTON);
+		pf0.addParametrePeriodeFiscale(ppf2);
+		pf0 = hibernateTemplate.merge(pf0);
+
+		ParametrePeriodeFiscale ppf3 = new ParametrePeriodeFiscale();
+		ppf3.setId(4L);
+		ppf3.setDateFinEnvoiMasseDI(RegDate.get(2009, 6, 30));
+		ppf3.setLogModifDate(new Timestamp(1199142000000L));
+		ppf3.setTermeGeneralSommationEffectif(RegDate.get(2009, 3, 31));
+		ppf3.setTermeGeneralSommationReglementaire(RegDate.get(2009, 1, 31));
+		ppf3.setTypeContribuable(TypeContribuable.HORS_SUISSE);
+		pf0.addParametrePeriodeFiscale(ppf3);
+		pf0 = hibernateTemplate.merge(pf0);
 
 		ModeleDocument md0 = new ModeleDocument();
 		md0.setId(1L);
@@ -597,7 +619,7 @@ public class TacheDAOTest extends CoreDAOTest {
 		pp1.setRapportsSujet(new HashSet());
 		pp1 = hibernateTemplate.merge(pp1);
 
-		DeclarationImpotOrdinairePP dio0 = new DeclarationImpotOrdinairePP();
+		DeclarationImpotOrdinaire dio0 = new DeclarationImpotOrdinaire();
 		dio0.setId(1L);
 		dio0.setDateDebut(RegDate.get(2008, 1, 1));
 		dio0.setDateFin(RegDate.get(2008, 12, 31));
@@ -614,7 +636,7 @@ public class TacheDAOTest extends CoreDAOTest {
 		try {
 			modificationLogInterceptor.setCompleteOnly(true); // par garder les valeur de log creation date (voir test testFindParDateCreation)
 
-			TacheEnvoiDeclarationImpotPP tedi0 = new TacheEnvoiDeclarationImpotPP();
+			TacheEnvoiDeclarationImpot tedi0 = new TacheEnvoiDeclarationImpot();
 			tedi0.setContribuable(pp0);
 			tedi0.setDateEcheance(RegDate.get(2008, 10, 25));
 			tedi0.setDateDebut(RegDate.get(2008, 1, 1));
@@ -630,7 +652,7 @@ public class TacheDAOTest extends CoreDAOTest {
 			TacheAnnulationDeclarationImpot tadi0 = new TacheAnnulationDeclarationImpot();
 			tadi0.setContribuable(pp0);
 			tadi0.setDateEcheance(RegDate.get(2008, 10, 25));
-			tadi0.setDeclaration(dio0);
+			tadi0.setDeclarationImpotOrdinaire(dio0);
 			tadi0.setEtat(TypeEtatTache.TRAITE);
 			tadi0.setLogCreationDate(new Timestamp(1201820400000L));
 			tadi0.setLogModifDate(new Timestamp(1201820400000L));
@@ -658,7 +680,7 @@ public class TacheDAOTest extends CoreDAOTest {
 			ttd0 = hibernateTemplate.merge(ttd0);
 			ids.ttd0 = ttd0.getId();
 
-			TacheEnvoiDeclarationImpotPP tedi1 = new TacheEnvoiDeclarationImpotPP();
+			TacheEnvoiDeclarationImpot tedi1 = new TacheEnvoiDeclarationImpot();
 			tedi1.setContribuable(pp0);
 			tedi1.setDateEcheance(RegDate.get(2009, 3, 31));
 			tedi1.setDateDebut(RegDate.get(2009, 1, 1));

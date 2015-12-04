@@ -10,7 +10,7 @@ import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 
 public final class UniregBlacklistFilter extends TokenFilter {
 
-	private static final Set<String> blacklist = new HashSet<>();
+	private final static Set<String> blacklist = new HashSet<>();
 
 	static {
 		blacklist.add("succ");

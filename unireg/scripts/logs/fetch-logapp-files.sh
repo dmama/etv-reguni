@@ -5,10 +5,10 @@ ENVIRONMENT=$1
 ROOT_DIR=$2
 DEST_DIR=$3
 if [ -z "$ENVIRONMENT" ]; then
-        echo "Syntaxe : $(basename "$0") <env> <root> <dest> avec <env> l'un de PR, VA, PP, TE, <root> le répertoire (relatif à logapp/unireg/<env>) et <dest> le répertoire local de destination" >&2
+        echo "Syntaxe : $(basename "$0") <env> <root> <dest> avec <env> l'un de PR, PO, VA, PP, FO, <root> le répertoire (relatif à logapp/unireg/<env>) et <dest> le répertoire local de destination" >&2
         exit 1
-elif [[ ! "$ENVIRONMENT" =~ ^(PR|VA|PP|TE)$ ]]; then
-        echo "Pour l'environnement, seuls PR, VA, PP et TE sont acceptés (trouvé : '$ENVIRONMENT')" >&2
+elif [[ ! "$ENVIRONMENT" =~ ^(PR|PO|VA|PP|FO)$ ]]; then
+        echo "Pour l'environnement, seuls PR, PO, VA, PP et FO sont acceptés (trouvé : '$ENVIRONMENT')" >&2
         exit 1
 elif [ -z "$DEST_DIR" ]; then
 	echo "Le répertoire de destination doit être donné en paramètre" >&2

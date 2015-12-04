@@ -27,7 +27,8 @@
 	<bean id="serviceCivilLogger" class="ch.vd.uniregctb.interfaces.service.ServiceCivilLoggerImpl"/>
 	<alias alias="serviceCivilInterceptor" name="serviceCivilLogger"/>
 
-	<!-- -->
+	<!-- Bean client ServicePM MOCK -->
+	<bean id="servicePersonneMoraleService" class="ch.vd.uniregctb.interfaces.service.mock.DefaultMockServicePM"  />
 
 	<bean id="serviceSecuriteServiceHost" class="ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceSecurite"  />
 	<alias alias="serviceSecuriteService" name="serviceSecuriteServiceHost"/>
@@ -52,11 +53,5 @@
 	</bean>
 	<bean id="evtCivilEchNotificationQueue" class="ch.vd.uniregctb.evenement.civil.engine.ech.MockEvenementCivilNotificationQueue"/>
 	<bean id="evtCivilEchProcessor" class="ch.vd.uniregctb.evenement.civil.engine.ech.MockEvenementCivilEvenementProcessor"/>
-
-	<!-- Mocks pour la gestion des événements organisation -->
-	<bean id="evtOrganisationProcessorRetry" class="ch.vd.uniregctb.evenement.organisation.engine.MockEvenementOrganisationRetryProcessor"/>
-	<bean id="evtOrganisationNotificationQueue" class="ch.vd.uniregctb.evenement.organisation.engine.MockEvenementOrganisationNotificationQueue"/>
-	<bean id="evtOrganisationProcessor" class="ch.vd.uniregctb.evenement.organisation.engine.MockEvenementOrganisationEvenementProcessor"/>
-
 
 </beans>

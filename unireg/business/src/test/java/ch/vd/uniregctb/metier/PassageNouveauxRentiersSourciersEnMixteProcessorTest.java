@@ -19,7 +19,6 @@ import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
@@ -283,7 +282,7 @@ public class PassageNouveauxRentiersSourciersEnMixteProcessorTest extends Busine
 					Assert.assertNotNull(pp);
 					Assert.assertTrue(pp.getRentierSourcierPasseAuRole());
 
-					final ForFiscalPrincipalPP ffp = pp.getDernierForFiscalPrincipal();
+					final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
 					Assert.assertNotNull(ffp);
 					Assert.assertEquals(dateNaissance.addYears(getAgeRentierFemme(paramAppService)), ffp.getDateDebut());
 					Assert.assertEquals(MotifFor.CHGT_MODE_IMPOSITION, ffp.getMotifOuverture());
@@ -315,7 +314,7 @@ public class PassageNouveauxRentiersSourciersEnMixteProcessorTest extends Busine
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
 				Assert.assertNotNull(pp);
 
-				final ForFiscalPrincipalPP newFfp = pp.getDernierForFiscalPrincipal();
+				final ForFiscalPrincipal newFfp = pp.getDernierForFiscalPrincipal();
 				Assert.assertNotNull(newFfp);
 				Assert.assertEquals(dateNaissance.addYears(18), newFfp.getDateDebut());
 				Assert.assertEquals(MotifFor.MAJORITE, newFfp.getMotifOuverture());
@@ -344,7 +343,7 @@ public class PassageNouveauxRentiersSourciersEnMixteProcessorTest extends Busine
 					Assert.assertNotNull(pp);
 					Assert.assertTrue(pp.getRentierSourcierPasseAuRole());
 
-					final ForFiscalPrincipalPP ffp = pp.getDernierForFiscalPrincipal();
+					final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
 					Assert.assertNotNull(ffp);
 					Assert.assertEquals(dateNaissance.addYears(18), ffp.getDateDebut());
 					Assert.assertEquals(MotifFor.MAJORITE, ffp.getMotifOuverture());

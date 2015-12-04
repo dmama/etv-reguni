@@ -4,7 +4,7 @@ import org.junit.Test;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP;
+import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.TacheAnnulationDeclarationImpot;
@@ -34,7 +34,7 @@ public class TacheAnnulationDeclarationImpotValidatorTest extends AbstractValida
 
 		// Adresse valide et annulée => pas d'erreur
 		{
-			tache.setDeclaration(new DeclarationImpotOrdinairePP());
+			tache.setDeclarationImpotOrdinaire(new DeclarationImpotOrdinaire());
 			tache.setContribuable(new PersonnePhysique());
 			tache.setCollectiviteAdministrativeAssignee(new CollectiviteAdministrative());
 			tache.setAnnule(true);

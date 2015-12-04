@@ -1,35 +1,15 @@
 package ch.vd.uniregctb.editique;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import noNamespace.InfoDocumentDocument1;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.tuple.Pair;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ch.vd.editique.unireg.CTypeAdresse;
-import ch.vd.editique.unireg.CTypeDestinataire;
-import ch.vd.editique.unireg.CTypeExpediteur;
-import ch.vd.editique.unireg.CTypeInfoArchivage;
-import ch.vd.editique.unireg.CTypeInfoEnteteDocument;
-import ch.vd.editique.unireg.STypeZoneAffranchissement;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
-import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative;
-import ch.vd.uniregctb.adresse.AdresseEnvoi;
 import ch.vd.uniregctb.adresse.AdresseEnvoiDetaillee;
-import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
-import ch.vd.uniregctb.common.FormatNumeroHelper;
-import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePM;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.tiers.Contribuable;
-import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersService;
 
@@ -37,9 +17,28 @@ public abstract class EditiqueAbstractHelper {
 
 	public static final Logger LOGGER = LoggerFactory.getLogger(EditiqueAbstractHelper.class);
 
+	//
+	// Différents types de préfixes à générer
+	//
+	private static final String DOCUM = "DOCUM";
+	private static final String FOLDE = "FOLDE";
+	private static final String HAUT1 = "HAUT1";
+	private static final String PERIO = "PERIO";
+	private static final String TITIM = "TITIM";
+	private static final String IMPCC = "IMPCC";
+	private static final String BVRST = "BVRST";
+
+	//
+	// Différentes constantes
+	//
+	protected static final String ORIGINAL = "ORG";
+	protected static final String LOGO_CANTON = "CANT";
+	protected static final String POPULATION_PP = "PP";
+	protected static final String POPULATION_IS = "IS";
+
 	protected AdresseService adresseService;
 	protected TiersService tiersService;
-	protected ServiceInfrastructureService infraService;
+	protected EditiqueHelper editiqueHelper;
 
 	public void setAdresseService(AdresseService adresseService) {
 		this.adresseService = adresseService;
@@ -49,124 +48,72 @@ public abstract class EditiqueAbstractHelper {
 		this.tiersService = tiersService;
 	}
 
-	public void setInfraService(ServiceInfrastructureService infraService) {
-		this.infraService = infraService;
+	public void setEditiqueHelper(EditiqueHelper editiqueHelper) {
+		this.editiqueHelper = editiqueHelper;
 	}
 
-	/**
-	 * @param adresseEnvoi l'adresse à laquelle on veut envoyer un document
-	 * @param idEnvoiSiEtranger <code>true</code> si une adresse à l'étranger doit être en fait traitée par un idEnvoi
-	 * @param valeurIdEnvoi valeur à utiliser
-	 * @return un type d'affranchissement et, éventuellement, un idEnvoi à utiliser pour
-	 */
-	@NotNull
-	protected static Pair<STypeZoneAffranchissement, String> getInformationsAffranchissement(AdresseEnvoiDetaillee adresseEnvoi, boolean idEnvoiSiEtranger, int valeurIdEnvoi) {
+	protected static String buildPrefixeInfoDocument(TypeDocumentEditique typeDocument) {
+		return buildSpecificPrefix(typeDocument, DOCUM);
+	}
 
-		final STypeZoneAffranchissement zoneAffranchissement;
-		final String idEnvoi;
-		if (adresseEnvoi.isIncomplete()) {
-			idEnvoi = String.valueOf(ServiceInfrastructureService.noOIPM);
-			zoneAffranchissement = STypeZoneAffranchissement.NA;
-		}
-		else if (adresseEnvoi.getTypeAffranchissement() == null) {
-			idEnvoi = String.valueOf(ServiceInfrastructureService.noOIPM);
-			zoneAffranchissement = STypeZoneAffranchissement.NA;
-		}
-		else {
-			switch (adresseEnvoi.getTypeAffranchissement()) {
-			case SUISSE:
-				idEnvoi = null;
-				zoneAffranchissement = STypeZoneAffranchissement.CH;
-				break;
-			case EUROPE:
-				idEnvoi = idEnvoiSiEtranger ? String.valueOf(ServiceInfrastructureService.noOIPM) : null;
-				zoneAffranchissement = idEnvoi != null ? STypeZoneAffranchissement.NA : STypeZoneAffranchissement.EU;
-				break;
-			case MONDE:
-				idEnvoi = idEnvoiSiEtranger ? String.valueOf(ServiceInfrastructureService.noOIPM) : null;
-				zoneAffranchissement = idEnvoi != null ? STypeZoneAffranchissement.NA : STypeZoneAffranchissement.RM;
-				break;
-			default:
-				throw new IllegalArgumentException("Type d'affranchissement non supporté : " + adresseEnvoi.getTypeAffranchissement());
+	protected static String buildPrefixeInfoArchivage(TypeDocumentEditique typeDocument) {
+		return buildSpecificPrefix(typeDocument, FOLDE);
+	}
+
+	protected static String buildPrefixeEnteteDocument(TypeDocumentEditique typeDocument) {
+		return buildSpecificPrefix(typeDocument, HAUT1);
+	}
+
+	protected static String buildPrefixePeriode(TypeDocumentEditique typeDocument) {
+		return buildSpecificPrefix(typeDocument, PERIO);
+	}
+
+	protected static String buildPrefixeTitreEntete(TypeDocumentEditique typeDocument) {
+		return buildSpecificPrefix(typeDocument, TITIM);
+	}
+
+	protected static String buildPrefixeImpCcnEntete(TypeDocumentEditique typeDocument) {
+		return buildSpecificPrefix(typeDocument, IMPCC);
+	}
+
+	protected static String buildPrefixeBvrStandard(TypeDocumentEditique typeDocument) {
+		return buildSpecificPrefix(typeDocument, BVRST);
+	}
+
+	private static String buildSpecificPrefix(TypeDocumentEditique typeDocument, String specificSuffix) {
+		return String.format("%s%s", typeDocument.getCodeDocumentEditique(), specificSuffix);
+	}
+
+	protected void remplitAffranchissement(InfoDocumentDocument1.InfoDocument infoDocument, Tiers tiers, @Nullable RegDate dateReference, boolean isMiseSousPliImpossible) throws EditiqueException {
+		try {
+			AdresseEnvoiDetaillee adresseEnvoiDetaillee = adresseService.getAdresseEnvoi(tiers, null, TypeAdresseFiscale.COURRIER, false);
+
+			String idEnvoi = "";
+			//SIFISC-4146
+			// seuls les cas d'adresse incomplète doivent partir aux OIDs,
+			// les autres ne doivent pas avoir le champ idEnvoi renseigné et donc doivent avoir une zone d'affranchissement correcte
+			if (!adresseEnvoiDetaillee.isIncomplete() && !isMiseSousPliImpossible) {
+				idEnvoi = "";
 			}
-		}
-
-		return Pair.of(zoneAffranchissement, idEnvoi);
-	}
-
-	protected AdresseEnvoiDetaillee getAdresseEnvoi(Tiers tiers) throws AdresseException {
-		return adresseService.getAdresseEnvoi(tiers, null, TypeAdresseFiscale.COURRIER, false);
-	}
-
-	protected CTypeAdresse buildAdresse(CollectiviteAdministrative coll) throws AdresseException {
-		final Tiers colAdm = tiersService.getCollectiviteAdministrative(coll.getNoColAdm());
-		return buildAdresse(colAdm);
-	}
-
-	protected CTypeAdresse buildAdresse(Tiers tiers) throws AdresseException {
-		final AdresseEnvoiDetaillee adresse = adresseService.getAdresseEnvoi(tiers, null, TypeAdresseFiscale.COURRIER, false);
-		return buildAdresse(adresse);
-	}
-
-	@Nullable
-	protected CTypeAdresse buildAdresse(AdresseEnvoi adresseEnvoi) {
-		final List<String> lignes = new ArrayList<>(6);
-		for (String ligne : adresseEnvoi.getLignes()) {
-			if (StringUtils.isNotBlank(ligne)) {
-				lignes.add(ligne);
+			else {
+				// [UNIREG-1257] tenir compte de l'OID valide durant la période de validité de la déclaration
+				final Integer officeImpotId = tiersService.getOfficeImpotIdAt(tiers, dateReference);
+				if (officeImpotId != null) {
+					idEnvoi = officeImpotId.toString();
+				}
 			}
+			infoDocument.setIdEnvoi(idEnvoi);
+			editiqueHelper.remplitAffranchissement(infoDocument, adresseEnvoiDetaillee);
 		}
-		return lignes.isEmpty() ? null : new CTypeAdresse(lignes);
-	}
-
-	protected static CTypeInfoArchivage buildInfoArchivage(TypeDocumentEditique typeDocument, String cleArchivage, long noTiers, RegDate dateTraitement) {
-		if (typeDocument.getCodeDocumentArchivage() == null) {
-			throw new IllegalArgumentException("Archivage non-supporté pour le document de type " + typeDocument);
+		catch (EditiqueException e) {
+			throw e;
 		}
-		final CTypeInfoArchivage info = new CTypeInfoArchivage();
-		info.setDatTravail(String.valueOf(dateTraitement.index()));
-		info.setIdDocument(cleArchivage);
-		info.setNomApplication(ConstantesEditique.APPLICATION_ARCHIVAGE);
-		info.setNomDossier(FormatNumeroHelper.numeroCTBToDisplay(noTiers));
-		info.setTypDocument(typeDocument.getCodeDocumentArchivage());
-		info.setTypDossier(ConstantesEditique.TYPE_DOSSIER_ARCHIVAGE);
-		return info;
-	}
-
-	protected CTypeInfoEnteteDocument buildInfoEnteteDocument(DeclarationImpotOrdinairePM declaration, CollectiviteAdministrative expediteur) throws ServiceInfrastructureException, AdresseException {
-		final CTypeInfoEnteteDocument entete = new CTypeInfoEnteteDocument();
-		entete.setDestinataire(buildDestinataire(declaration.getTiers()));
-		entete.setExpediteur(buildExpediteur(expediteur, declaration.getDateExpedition()));
-		entete.setLigReference(null);
-		entete.setPorteAdresse(null);
-		return entete;
-	}
-
-	private CTypeDestinataire buildDestinataire(Contribuable ctb) throws AdresseException {
-		final CTypeDestinataire destinataire = new CTypeDestinataire();
-		destinataire.setAdresse(buildAdresse(ctb));
-		destinataire.setNumContribuable(FormatNumeroHelper.numeroCTBToDisplay(ctb.getNumero()));
-		if (ctb instanceof Entreprise) {
-			final String ide = FormatNumeroHelper.formatNumIDE(tiersService.getNumeroIDE((Entreprise) ctb));
-			if (StringUtils.isNotBlank(ide)) {
-				destinataire.getNumIDE().add(ide);
-			}
+		catch (Exception e) {
+			final String originalMessage = StringUtils.trimToNull(e.getMessage());
+			final String originalMessagePart = originalMessage == null ? StringUtils.EMPTY : String.format(" (%s)", originalMessage);
+			final String message = "Exception lors du calcul de l'affranchissement de l'adresse du tiers " + tiers.getNumero() + originalMessagePart;
+			LOGGER.error("Exception lors du calcul de l'affranchissement de l'adresse du tiers " + tiers.getNumero(), e);
+			throw new EditiqueException(message);
 		}
-		return destinataire;
-	}
-
-	private CTypeExpediteur buildExpediteur(CollectiviteAdministrative ca, RegDate dateExpedition) throws ServiceInfrastructureException, AdresseException {
-		final CTypeExpediteur expediteur = new CTypeExpediteur();
-		final CTypeAdresse adresse = buildAdresse(ca);
-		expediteur.setAdresse(adresse);
-		expediteur.setAdrMes(ca.getAdresseEmail());
-		expediteur.setDateExpedition(RegDateHelper.toIndexString(dateExpedition));
-		expediteur.setLocaliteExpedition(ca.getAdresse().getLocalite());
-		expediteur.setNumCCP(ca.getNoCCP());
-		expediteur.setNumFax(ca.getNoFax());
-		expediteur.setNumIBAN(null);
-		expediteur.setNumTelephone(ca.getNoTelephone());
-		expediteur.setTraitePar("");
-		return expediteur;
 	}
 }

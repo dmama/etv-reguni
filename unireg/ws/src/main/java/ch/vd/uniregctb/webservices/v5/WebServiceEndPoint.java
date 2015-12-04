@@ -119,7 +119,7 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 		}
 	}
 
-	private interface ExecutionCallback {
+	private static interface ExecutionCallback {
 		@NotNull
 		ExecutionResult execute() throws Exception;
 	}
@@ -177,7 +177,7 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 		return null;
 	}
 
-	private interface ExecutionCallbackWithUser {
+	private static interface ExecutionCallbackWithUser {
 		@NotNull
 		ExecutionResult execute(UserLogin userLogin) throws Exception;
 	}

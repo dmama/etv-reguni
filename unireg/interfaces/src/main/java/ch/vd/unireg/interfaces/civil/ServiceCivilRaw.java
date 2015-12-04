@@ -9,7 +9,7 @@ import ch.vd.unireg.interfaces.civil.data.IndividuApresEvenement;
 
 public interface ServiceCivilRaw {
 
-	String SERVICE_NAME = "ServiceCivil";
+	public static final String SERVICE_NAME = "ServiceCivil";
 
 	/**
 	 * Retourne l'individu identifié par le numéro en paramètre avec son historique complet.

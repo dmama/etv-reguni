@@ -1,8 +1,8 @@
 package ch.vd.uniregctb.parametrage;
 
-import java.util.List;
+import java.util.EnumMap;
+import java.util.Map;
 
-import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -12,6 +12,8 @@ import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.transaction.TransactionTemplate;
+
+import static ch.vd.uniregctb.parametrage.ParametreEnum.*;
 
 /**
  * Classe métier representant les paramètres de l'application.
@@ -28,10 +30,7 @@ public class ParametreAppServiceImpl implements ParametreAppService, Initializin
 	private ParametreAppDAO dao;
 	private PlatformTransactionManager transactionManager;
 
-	/**
-	 * C'est là que sont rangées toutes les valeurs...
-	 */
-	private final ParametreAppContainer container = new ParametreAppContainer();
+	private final Map<ParametreEnum, ParametreApp> parametres = new EnumMap<>(ParametreEnum.class);
 
 	/**
 	 * Initialisation des parametres
@@ -41,7 +40,7 @@ public class ParametreAppServiceImpl implements ParametreAppService, Initializin
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		assert dao != null;
-		assert transactionManager != null;
+		assert parametres != null;
 
 		AuthenticationHelper.pushPrincipal(AuthenticationHelper.SYSTEM_USER);
 		try {
@@ -49,25 +48,21 @@ public class ParametreAppServiceImpl implements ParametreAppService, Initializin
 			template.execute(new TransactionCallback<Object>() {
 				@Override
 				public Object doInTransaction(TransactionStatus status) {
-
-					// chargement des paramètres existants
-					final List<ParametreApp> fromDb = dao.getAll();
-					try {
-						container.load(fromDb);
+					for (ParametreApp p : dao.getAll()) {
+						try {
+							parametres.put(ParametreEnum.valueOf(p.getNom()), p);
+						}
+						catch (IllegalArgumentException e) {
+							LOGGER.error(p.getNom() + " n'est pas défini dans ParametreEnum", e);
+							throw e;
+						}
 					}
-					catch (RuntimeException e) {
-						LOGGER.error("Exception au chargement des paramètres applicatifs depuis la base de données", e);
-						throw e;
-					}
-
-					// ajout des paramètres nouvellement créés et pas encore en base
 					for (ParametreEnum p : ParametreEnum.values()) {
-						if (!container.isPresent(p)) {
-							final ParametreApp pa = new ParametreApp(p.name(), p.getDefaut());
-							container.put(p, pa);
+						ParametreApp pa = parametres.get(p);
+						if (pa == null) {
+							pa = new ParametreApp(p.name(), p.getDefaut());
+							parametres.put(p, pa);
 							dao.save(pa);
-
-							LOGGER.info("Nouveau paramètre applicatif ajouté : " + p.name() + " (" + p.getDefaut() + ")");
 						}
 					}
 					return null;
@@ -79,17 +74,156 @@ public class ParametreAppServiceImpl implements ParametreAppService, Initializin
 		}
 	}
 
+	/*
+	 * (non-Javadoc)
+	 *
+	 * @see ch.vd.uniregctb.parametrage.ParametreAppService#getDefaut(ch.vd.uniregctb.parametrage.ParametreEnum)
+	 */
+
+	@Override
+	public String getDefaut(ParametreEnum param) {
+		return param.getDefaut();
+	}
+
+	@Override
+	public Integer getDelaiAttenteDeclarationImpotPersonneDecedee() {
+		return Integer.parseInt(parametres.get(delaiAttenteDeclarationImpotPersonneDecedee).getValeur());
+	}
+
+	@Override
+	public Integer getDelaiRetourDeclarationImpotEmiseManuellement() {
+		return Integer.parseInt(parametres.get(delaiRetourDeclarationImpotEmiseManuellement).getValeur());
+	}
+
+	@Override
+	public Integer getDelaiCadevImpressionDeclarationImpot() {
+		return Integer.parseInt(parametres.get(delaiCadevImpressionDeclarationImpot).getValeur());
+	}
+
+	@Override
+	public Integer getDelaiCadevImpressionListesRecapitulatives() {
+		return Integer.parseInt(parametres.get(delaiCadevImpressionListesRecapitulatives).getValeur());
+	}
+
+	@Override
+	public Integer getDelaiEcheanceSommationDeclarationImpot() {
+		return Integer.parseInt(parametres.get(delaiEcheanceSommationDeclarationImpot).getValeur());
+	}
+
+	@Override
+	public Integer getDelaiEcheanceSommationListeRecapitualtive() {
+		return Integer.parseInt(parametres.get(delaiEcheanceSommationListeRecapitualtive).getValeur());
+	}
+
+	@Override
+	public Integer getDelaiEnvoiSommationDeclarationImpot() {
+		return Integer.parseInt(parametres.get(delaiEnvoiSommationDeclarationImpot).getValeur());
+	}
+
+	@Override
+	public Integer getDelaiEnvoiSommationListeRecapitulative() {
+		return Integer.parseInt(parametres.get(delaiEnvoiSommationListeRecapitulative).getValeur());
+	}
+
+	@Override
+	public Integer getDelaiRetentionRapportTravailInactif() {
+		return Integer.parseInt(parametres.get(delaiRetentionRapportTravailInactif).getValeur());
+	}
+
+	@Override
+	public Integer getDelaiRetourListeRecapitulative() {
+		return Integer.parseInt(parametres.get(delaiRetourListeRecapitulative).getValeur());
+	}
+
+	@Override
+	public Integer getDelaiRetourSommationListeRecapitulative() {
+		return Integer.parseInt(parametres.get(delaiRetourSommationListeRecapitulative).getValeur());
+	}
+
+	@Override
+	public Integer[] getFeteNationale() {
+		return getValeurPourParametreDeTypeJoursDansAnnee(feteNationale);
+	}
+
+	@Override
+	public Integer getJourDuMoisEnvoiListesRecapitulatives() {
+		return Integer.parseInt(parametres.get(jourDuMoisEnvoiListesRecapitulatives).getValeur());
+	}
+
+	@Override
+	public Integer[] getLendemainNouvelAn() {
+		return getValeurPourParametreDeTypeJoursDansAnnee(lendemainNouvelAn);
+	}
+
+	@Override
+	public Integer getNbMaxParListe() {
+		return Integer.parseInt(parametres.get(nbMaxParListe).getValeur());
+	}
+
+	@Override
+	public Integer getNbMaxParPage() {
+		return Integer.parseInt(parametres.get(nbMaxParPage).getValeur());
+	}
+
+	@Override
+	public Integer[] getNoel() {
+		return getValeurPourParametreDeTypeJoursDansAnnee(noel);
+	}
+
+	@Override
+	public String getNom(ParametreEnum param) {
+		return parametres.get(param).getNom();
+	}
+
+	@Override
+	public Integer[] getNouvelAn() {
+		return getValeurPourParametreDeTypeJoursDansAnnee(nouvelAn);
+	}
+
+	@Override
+	public Integer getPremierePeriodeFiscale() {
+		return Integer.parseInt(parametres.get(premierePeriodeFiscale).getValeur());
+	}
+
+	@Override
+	public Integer[] getDateExclusionDecedeEnvoiDI() {
+		return getValeurPourParametreDeTypeJoursDansAnnee(dateExclusionDecedeEnvoiDI);
+	}
+
+	@Override
+	public Integer getAnneeMinimaleForDebiteur() {
+		return Integer.parseInt(parametres.get(ParametreEnum.anneeMinimaleForDebiteur).getValeur());
+	}
+
+	@Override
+	public Integer getAgeRentierFemme() {
+		return Integer.parseInt(parametres.get(ParametreEnum.ageRentierFemme).getValeur());
+	}
+
+	@Override
+	public Integer getAgeRentierHomme() {
+		return Integer.parseInt(parametres.get(ParametreEnum.ageRentierHomme).getValeur());
+	}
+
+	private Integer[] getValeurPourParametreDeTypeJoursDansAnnee(ParametreEnum p) {
+		return (Integer[]) p.convertirStringVersValeurTypee(parametres.get(p).getValeur());
+	}
+
 	@Override
 	public void reset() {
-		container.reset();
+		for (ParametreEnum p : ParametreEnum.values()) {
+			if (p.isResetable()) {
+				setValeur(p, getDefaut(p));
+			}
+		}
 		save();
 	}
 
 	@Override
 	public void save() {
-		for (Pair<String, String> pair : container.getValues()) {
-			final ParametreApp pa = dao.get(pair.getKey());
-			pa.setValeur(pair.getValue());
+		for (ParametreApp p : parametres.values()) {
+			ParametreApp pa = dao.get(p.getNom());
+			pa.setValeur(p.getValeur());
 		}
 	}
 
@@ -102,297 +236,128 @@ public class ParametreAppServiceImpl implements ParametreAppService, Initializin
 	}
 
 	@Override
-	public String getDefaut(ParametreEnum param) {
-		return container.getDefaut(param);
-	}
-
-	@Override
-	public Integer getDelaiAttenteDeclarationImpotPersonneDecedee() {
-		return container.getDelaiAttenteDeclarationImpotPersonneDecedee();
-	}
-
-	@Override
-	public Integer getDelaiRetourDeclarationImpotEmiseManuellement() {
-		return container.getDelaiRetourDeclarationImpotEmiseManuellement();
-	}
-
-	@Override
-	public Integer getDelaiCadevImpressionDeclarationImpot() {
-		return container.getDelaiCadevImpressionDeclarationImpot();
-	}
-
-	@Override
-	public Integer getDelaiCadevImpressionListesRecapitulatives() {
-		return container.getDelaiCadevImpressionListesRecapitulatives();
-	}
-
-	@Override
-	public Integer getDelaiEcheanceSommationDeclarationImpotPP() {
-		return container.getDelaiEcheanceSommationDeclarationImpotPP();
-	}
-
-	@Override
-	public Integer getDelaiEcheanceSommationDeclarationImpotPM() {
-		return container.getDelaiEcheanceSommationDeclarationImpotPM();
-	}
-
-	@Override
-	public Integer getDelaiEcheanceSommationListeRecapitualtive() {
-		return container.getDelaiEcheanceSommationListeRecapitualtive();
-	}
-
-	@Override
-	public Integer getDelaiEnvoiSommationDeclarationImpotPP() {
-		return container.getDelaiEnvoiSommationDeclarationImpotPP();
-	}
-
-	@Override
-	public Integer getDelaiEnvoiSommationDeclarationImpotPM() {
-		return container.getDelaiEnvoiSommationDeclarationImpotPM();
-	}
-
-	@Override
-	public Integer getDelaiEnvoiSommationListeRecapitulative() {
-		return container.getDelaiEnvoiSommationListeRecapitulative();
-	}
-
-	@Override
-	public Integer getDelaiRetentionRapportTravailInactif() {
-		return container.getDelaiRetentionRapportTravailInactif();
-	}
-
-	@Override
-	public Integer getDelaiRetourListeRecapitulative() {
-		return container.getDelaiRetourListeRecapitulative();
-	}
-
-	@Override
-	public Integer getDelaiRetourSommationListeRecapitulative() {
-		return container.getDelaiRetourSommationListeRecapitulative();
-	}
-
-	@Override
-	public Integer[] getFeteNationale() {
-		return container.getFeteNationale();
-	}
-
-	@Override
-	public Integer getJourDuMoisEnvoiListesRecapitulatives() {
-		return container.getJourDuMoisEnvoiListesRecapitulatives();
-	}
-
-	@Override
-	public Integer[] getLendemainNouvelAn() {
-		return container.getLendemainNouvelAn();
-	}
-
-	@Override
-	public Integer getNbMaxParListe() {
-		return container.getNbMaxParListe();
-	}
-
-	@Override
-	public Integer getNbMaxParPage() {
-		return container.getNbMaxParPage();
-	}
-
-	@Override
-	public Integer[] getNoel() {
-		return container.getNoel();
-	}
-
-	@Override
-	public String getNom(ParametreEnum param) {
-		return container.getNom(param);
-	}
-
-	@Override
-	public Integer[] getNouvelAn() {
-		return container.getNouvelAn();
-	}
-
-	@Override
-	public Integer getPremierePeriodeFiscalePersonnesPhysiques() {
-		return container.getPremierePeriodeFiscalePersonnesPhysiques();
-	}
-
-	@Override
-	public Integer getPremierePeriodeFiscalePersonnesMorales() {
-		return container.getPremierePeriodeFiscalePersonnesMorales();
-	}
-
-	@Override
-	public Integer getPremierePeriodeFiscaleDeclarationsPersonnesMorales() {
-		return container.getPremierePeriodeFiscaleDeclarationsPersonnesMorales();
-	}
-
-	@Override
-	public Integer[] getDateExclusionDecedeEnvoiDI() {
-		return container.getDateExclusionDecedeEnvoiDI();
-	}
-
-	@Override
-	public Integer getAnneeMinimaleForDebiteur() {
-		return container.getAnneeMinimaleForDebiteur();
-	}
-
-	@Override
-	public Integer getAgeRentierFemme() {
-		return container.getAgeRentierFemme();
-	}
-
-	@Override
-	public Integer getAgeRentierHomme() {
-		return container.getAgeRentierHomme();
-	}
-
-	@Override
-	public Integer getDelaiMinimalRetourDeclarationImpotPM() {
-		return container.getDelaiMinimalRetourDeclarationImpotPM();
-	}
-
-	@Override
 	public void setDelaiAttenteDeclarationImpotPersonneDecedee(Integer val) {
-		container.setDelaiAttenteDeclarationImpotPersonneDecedee(val);
+		setValeur(delaiAttenteDeclarationImpotPersonneDecedee, val.toString());
 	}
 
 	@Override
 	public void setDelaiRetourDeclarationImpotEmiseManuellement(Integer val) {
-		container.setDelaiRetourDeclarationImpotEmiseManuellement(val);
+		setValeur(delaiRetourDeclarationImpotEmiseManuellement, val.toString());
 	}
 
 	@Override
 	public void setDelaiCadevImpressionDeclarationImpot(Integer val) {
-		container.setDelaiCadevImpressionDeclarationImpot(val);
+		setValeur(delaiCadevImpressionDeclarationImpot, val.toString());
 	}
 
 	@Override
 	public void setDelaiCadevImpressionListesRecapitulatives(Integer val) {
-		container.setDelaiCadevImpressionListesRecapitulatives(val);
+		setValeur(delaiCadevImpressionListesRecapitulatives, val.toString());
 	}
 
 	@Override
-	public void setDelaiEcheanceSommationDeclarationImpotPP(Integer val) {
-		container.setDelaiEcheanceSommationDeclarationImpotPP(val);
-	}
-
-	@Override
-	public void setDelaiEcheanceSommationDeclarationImpotPM(Integer val) {
-		container.setDelaiEcheanceSommationDeclarationImpotPM(val);
+	public void setDelaiEcheanceSommationDeclarationImpot(Integer val) {
+		setValeur(delaiEcheanceSommationDeclarationImpot, val.toString());
 	}
 
 	@Override
 	public void setDelaiEcheanceSommationListeRecapitualtive(Integer val) {
-		container.setDelaiEcheanceSommationListeRecapitualtive(val);
+		setValeur(delaiEcheanceSommationListeRecapitualtive, val.toString());
 	}
 
 	@Override
-	public void setDelaiEnvoiSommationDeclarationImpotPP(Integer val) {
-		container.setDelaiEnvoiSommationDeclarationImpotPP(val);
+	public void setDelaiEnvoiSommationDeclarationImpot(Integer val) {
+		setValeur(delaiEnvoiSommationDeclarationImpot, val.toString());
 	}
 
 	@Override
 	public void setDelaiEnvoiSommationListeRecapitulative(Integer val) {
-		container.setDelaiEnvoiSommationListeRecapitulative(val);
+		setValeur(delaiEnvoiSommationListeRecapitulative, val.toString());
 	}
 
 	@Override
 	public void setDelaiRetentionRapportTravailInactif(Integer val) {
-		container.setDelaiRetentionRapportTravailInactif(val);
+		setValeur(delaiRetentionRapportTravailInactif, val.toString());
 	}
 
 	@Override
 	public void setDelaiRetourListeRecapitulative(Integer val) {
-		container.setDelaiRetourListeRecapitulative(val);
+		setValeur(delaiRetourListeRecapitulative, val.toString());
 	}
 
 	@Override
 	public void setDelaiRetourSommationListeRecapitulative(Integer val) {
-		container.setDelaiRetourSommationListeRecapitulative(val);
+		setValeur(delaiRetourSommationListeRecapitulative, val.toString());
 	}
 
 	@Override
 	public void setFeteNationale(Integer[] val) {
-		container.setFeteNationale(val);
+		assert val.length == 2;
+		setValeur(feteNationale, String.valueOf(val[0]) + '.' + val[1]);
 	}
 
 	@Override
 	public void setJourDuMoisEnvoiListesRecapitulatives(Integer val) {
-		container.setJourDuMoisEnvoiListesRecapitulatives(val);
+		setValeur(jourDuMoisEnvoiListesRecapitulatives, val.toString());
 	}
 
 	@Override
 	public void setLendemainNouvelAn(Integer[] val) {
-		container.setLendemainNouvelAn(val);
+		assert val.length == 2;
+		setValeur(lendemainNouvelAn, String.valueOf(val[0]) + '.' + val[1]);
 	}
 
 	@Override
 	public void setNbMaxParListe(Integer val) {
-		container.setNbMaxParListe(val);
+		setValeur(nbMaxParListe, val.toString());
 	}
 
 	@Override
 	public void setNbMaxParPage(Integer val) {
-		container.setNbMaxParPage(val);
+		setValeur(nbMaxParPage, val.toString());
 	}
 
 	@Override
 	public void setNoel(Integer[] val) {
-		container.setNoel(val);
+		assert val.length == 2;
+		setValeur(noel, String.valueOf(val[0]) + '.' + val[1]);
 	}
 
 	@Override
 	public void setNouvelAn(Integer[] val) {
-		container.setNouvelAn(val);
+		assert val.length == 2;
+		setValeur(nouvelAn, String.valueOf(val[0]) + '.' + val[1]);
 	}
 
 	@Override
-	public void setPremierePeriodeFiscalePersonnesPhysiques(Integer val) {
-		container.setPremierePeriodeFiscalePersonnesPhysiques(val);
-	}
-
-	@Override
-	public void setPremierePeriodeFiscalePersonnesMorales(Integer val) {
-		container.setPremierePeriodeFiscalePersonnesMorales(val);
-	}
-
-	@Override
-	public void setPremierePeriodeFiscaleDeclarationsPersonnesMorales(Integer val) {
-		container.setPremierePeriodeFiscaleDeclarationsPersonnesMorales(val);
+	public void setPremierePeriodeFiscale(Integer val) {
+		setValeur(premierePeriodeFiscale, val.toString());
 	}
 
 	@Override
 	public void setAnneeMinimaleForDebiteur(Integer val) {
-		container.setAnneeMinimaleForDebiteur(val);
+		setValeur(ParametreEnum.anneeMinimaleForDebiteur, val.toString());
 	}
 
 	@Override
 	public void setValeur(ParametreEnum param, String valeur) {
-		container.setValeur(param, valeur);
+		// La validité de la valeur est verifiée dans formaterValeur()
+		parametres.get(param).setValeur(param.formaterValeur(valeur));
 	}
 
 	@Override
 	public void setDateExclusionDecedeEnvoiDI(Integer[] val) {
-		container.setDateExclusionDecedeEnvoiDI(val);
+		   assert val.length == 2;
+		setValeur(dateExclusionDecedeEnvoiDI, String.valueOf(val[0]) + '.' + val[1]);
 	}
 
 	@Override
 	public void setAgeRentierFemme(Integer val) {
-		container.setAgeRentierFemme(val);
+		setValeur(ageRentierFemme, val.toString());
 	}
 
 	@Override
 	public void setAgeRentierHomme(Integer val) {
-		container.setAgeRentierHomme(val);
-	}
-
-	@Override
-	public void setDelaiMinimalRetourDeclarationImpotPM(Integer val) {
-		container.setDelaiMinimalRetourDeclarationImpotPM(val);
-	}
-
-	@Override
-	public void setDelaiEnvoiSommationDeclarationImpotPM(Integer val) {
-		container.setDelaiEnvoiSommationDeclarationImpotPM(val);
+		setValeur(ageRentierHomme, val.toString());
 	}
 }

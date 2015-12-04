@@ -23,14 +23,14 @@ public class AuditLogControllerTest extends WebTest {
 
 	// private static final Logger LOGGER = LoggerFactory.getLogger(AuditLogControllerTest.class);
 
-	private static final String DB_UNIT_FILE = "AuditLogControllerTest.xml";
+	private final static String DB_UNIT_FILE = "AuditLogControllerTest.xml";
 
 	private AuditLineDAO auditLineDAO;
 
 	/**
 	 * Le nom du controller a tester.
 	 */
-	private static final String CONTROLLER_NAME = "auditLogController";
+	private final static String CONTROLLER_NAME = "auditLogController";
 
 	@Override
 	public void onSetUp() throws Exception {

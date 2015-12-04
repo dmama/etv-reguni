@@ -19,7 +19,7 @@ public class CloseAdressesController extends AbstractTiersController {
 	 */
 	protected final Logger LOGGER = LoggerFactory.getLogger(CloseAdressesController.class);
 
-	public static final String TARGET_FERMER_ADRESSE = "fermerAdresse";
+	public final static String TARGET_FERMER_ADRESSE = "fermerAdresse";
 
 	private static final String ID_ADRESSE_PARAMETER_NAME = "idAdresse";
 

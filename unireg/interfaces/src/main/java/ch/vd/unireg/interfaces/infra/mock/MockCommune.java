@@ -5,9 +5,7 @@ import java.util.List;
 
 import org.jetbrains.annotations.Nullable;
 
-import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 
 public class MockCommune extends MockEntityOFS implements Commune {
@@ -306,20 +304,5 @@ public class MockCommune extends MockEntityOFS implements Commune {
 		for (MockBatiment batiment : batiments) {
 			this.liensBatiments.add(new MockLienCommuneBatiment(this, batiment, debutValidite, finValidite));
 		}
-	}
-
-	@Override
-	public boolean isValidAt(RegDate date) {
-		return RegDateHelper.isBetween(date, getDateDebutValidite(), getDateFinValidite(), NullDateBehavior.LATEST);
-	}
-
-	@Override
-	public RegDate getDateDebut() {
-		return getDateDebutValidite();
-	}
-
-	@Override
-	public RegDate getDateFin() {
-		return getDateFinValidite();
 	}
 }

@@ -35,9 +35,7 @@ import ch.vd.unireg.xml.tools.ClasspathCatalogResolver;
 import ch.vd.uniregctb.common.BusinessItTest;
 import ch.vd.uniregctb.tiers.AutreCommunaute;
 import ch.vd.uniregctb.tiers.Entreprise;
-import ch.vd.uniregctb.tiers.MontantMonetaire;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.type.FormeJuridiqueEntreprise;
 import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.xml.DataHelper;
 
@@ -266,9 +264,7 @@ public class IdentificationContribuableRequestV4ListenerItTest extends Identific
 				final PersonnePhysique ppUn = addNonHabitant("Alphonse", "Baudet", null, Sexe.MASCULIN);
 				final PersonnePhysique ppDeux = addNonHabitant("Richard", "Basquette", null, Sexe.MASCULIN);
 				final PersonnePhysique ppTrois = addNonHabitant("Albus", "Trumbledaure", null, Sexe.MASCULIN);
-				final Entreprise pm = addEntrepriseInconnueAuCivil();
-				addDonneesRegistreCommerce(pm, date(1883, 6, 1), null, "Banque cantonale vaudoise", FormeJuridiqueEntreprise.CORP_DP_ENT);
-				addCapitalEntreprise(pm, date(1883, 6, 1), null, new MontantMonetaire(1000000000L, MontantMonetaire.CHF));
+				final Entreprise pm = addEntreprise(20222L);        // BCV
 
 				// on crée 150 "Georges Pittet" pour vérifier aussi le cas du trop grand nombre de résultats
 				for (int i = 0; i < 150; ++i) {

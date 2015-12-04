@@ -1,11 +1,9 @@
 <?xml version="1.0"?>
 <jxb:bindings version="1.0"
 			  xmlns:jxb="http://java.sun.com/xml/ns/jaxb"
-			  xmlns:xs="http://www.w3.org/2001/XMLSchema"
 			  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 			  xmlns:namespace="http://jaxb2-commons.dev.java.net/namespace-prefix"
-			  xmlns:inheritance="http://jaxb2-commons.dev.java.net/basic/inheritance"
-              xsi:schemaLocation="http://java.sun.com/xml/ns/jaxb http://java.sun.com/xml/ns/jaxb/bindingschema_2_0.xsd
+			  xsi:schemaLocation="http://java.sun.com/xml/ns/jaxb http://java.sun.com/xml/ns/jaxb/bindingschema_2_0.xsd
 			  http://jaxb2-commons.dev.java.net/namespace-prefix http://java.net/projects/jaxb2-commons/sources/svn/content/namespace-prefix/trunk/src/main/resources/prefix-namespace-schema.xsd">
 
 	<!-- local XSDs -->
@@ -91,15 +89,6 @@
 		</jxb:bindings>
 	</jxb:bindings>
 
-	<jxb:bindings schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/party-request-4.xsd">
-		<jxb:schemaBindings>
-			<jxb:package name="ch.vd.unireg.xml.event.party.party.v4" />
-		</jxb:schemaBindings>
-		<jxb:bindings>
-			<namespace:prefix name="ev-party-partreq-4" />
-		</jxb:bindings>
-	</jxb:bindings>
-
 	<jxb:bindings schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/party-response-1.xsd">
 		<jxb:schemaBindings>
 			<jxb:package name="ch.vd.unireg.xml.event.party.party.v1" />
@@ -127,15 +116,6 @@
 		</jxb:bindings>
 	</jxb:bindings>
 
-	<jxb:bindings schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/party-response-4.xsd">
-		<jxb:schemaBindings>
-			<jxb:package name="ch.vd.unireg.xml.event.party.party.v4" />
-		</jxb:schemaBindings>
-		<jxb:bindings>
-			<namespace:prefix name="ev-party-partres-4" />
-		</jxb:bindings>
-	</jxb:bindings>
-
 	<jxb:bindings schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/taxliab-common-1.xsd">
 		<jxb:schemaBindings>
 			<jxb:package name="ch.vd.unireg.xml.event.party.taxliab.common.v1" />
@@ -154,6 +134,15 @@
 		</jxb:bindings>
 	</jxb:bindings>
 
+	<jxb:bindings schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/aperiodic-taxliab-request-1.xsd">
+		<jxb:schemaBindings>
+			<jxb:package name="ch.vd.unireg.xml.event.party.taxliab.aperiodic.v1" />
+		</jxb:schemaBindings>
+		<jxb:bindings>
+			<namespace:prefix name="ev-party-aperiodic-taxliab-1" />
+		</jxb:bindings>
+	</jxb:bindings>
+
 	<jxb:bindings schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/aperiodic-taxliab-request-2.xsd">
 		<jxb:schemaBindings>
 			<jxb:package name="ch.vd.unireg.xml.event.party.taxliab.aperiodic.v2" />
@@ -168,6 +157,24 @@
 		</jxb:schemaBindings>
 		<jxb:bindings>
 			<namespace:prefix name="ev-party-aperiodic-taxliab-3" />
+		</jxb:bindings>
+	</jxb:bindings>
+
+	<jxb:bindings schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/aperiodic-taxliab-response-1.xsd">
+		<jxb:schemaBindings>
+			<jxb:package name="ch.vd.unireg.xml.event.party.taxliab.aperiodic.v1" />
+		</jxb:schemaBindings>
+		<jxb:bindings>
+			<namespace:prefix name="ev-party-aperiodic-taxliab-1" />
+		</jxb:bindings>
+	</jxb:bindings>
+
+	<jxb:bindings schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/periodic-taxliab-request-1.xsd">
+		<jxb:schemaBindings>
+			<jxb:package name="ch.vd.unireg.xml.event.party.taxliab.periodic.v1" />
+		</jxb:schemaBindings>
+		<jxb:bindings>
+			<namespace:prefix name="ev-party-periodic-taxliab-1" />
 		</jxb:bindings>
 	</jxb:bindings>
 
@@ -189,6 +196,15 @@
 		</jxb:bindings>
 	</jxb:bindings>
 
+	<jxb:bindings schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/periodic-taxliab-response-1.xsd">
+		<jxb:schemaBindings>
+			<jxb:package name="ch.vd.unireg.xml.event.party.taxliab.periodic.v1" />
+		</jxb:schemaBindings>
+		<jxb:bindings>
+			<namespace:prefix name="ev-party-periodic-taxliab-1" />
+		</jxb:bindings>
+	</jxb:bindings>
+
 	<jxb:bindings schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/taxliab-response-2.xsd">
 		<jxb:schemaBindings>
 			<jxb:package name="ch.vd.unireg.xml.event.party.taxliab.v2" />
@@ -204,33 +220,6 @@
 		</jxb:schemaBindings>
 		<jxb:bindings>
 			<namespace:prefix name="ev-party-taxliab-3" />
-		</jxb:bindings>
-	</jxb:bindings>
-
-	<jxb:bindings schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/fiscact-request-1.xsd">
-		<jxb:schemaBindings>
-			<jxb:package name="ch.vd.unireg.xml.event.party.fiscact.v1" />
-		</jxb:schemaBindings>
-		<jxb:bindings>
-			<namespace:prefix name="ev-party-fiscact-1" />
-		</jxb:bindings>
-	</jxb:bindings>
-
-	<jxb:bindings schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/fiscact-response-1.xsd">
-		<jxb:schemaBindings>
-			<jxb:package name="ch.vd.unireg.xml.event.party.fiscact.v1" />
-		</jxb:schemaBindings>
-		<jxb:bindings>
-			<namespace:prefix name="ev-party-fiscact-1" />
-		</jxb:bindings>
-	</jxb:bindings>
-
-	<jxb:bindings schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/periodic-fiscact-request-1.xsd">
-		<jxb:schemaBindings>
-			<jxb:package name="ch.vd.unireg.xml.event.party.fiscact.periodic.v1" />
-		</jxb:schemaBindings>
-		<jxb:bindings>
-			<namespace:prefix name="ev-party-periodic-fiscact-1" />
 		</jxb:bindings>
 	</jxb:bindings>
 
@@ -258,18 +247,6 @@
 		</jxb:schemaBindings>
 		<jxb:bindings>
 			<namespace:prefix name="ev-di-input-1" />
-		</jxb:bindings>
-	</jxb:bindings>
-
-	<jxb:bindings schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/fiscal/evt-fiscal-2.xsd">
-		<jxb:schemaBindings>
-			<jxb:package name="ch.vd.unireg.xml.event.fiscal.v2" />
-		</jxb:schemaBindings>
-		<jxb:bindings node="//xs:complexType[@name='evenementFiscalDeclarationType']">
-			<inheritance:implements>ch.vd.unireg.xml.common.v2.DateRange</inheritance:implements>
-		</jxb:bindings>
-		<jxb:bindings>
-			<namespace:prefix name="ev-fiscal-2" />
 		</jxb:bindings>
 	</jxb:bindings>
 

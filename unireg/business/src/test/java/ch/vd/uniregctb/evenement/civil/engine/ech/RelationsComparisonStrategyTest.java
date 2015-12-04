@@ -23,7 +23,7 @@ public class RelationsComparisonStrategyTest extends AbstractIndividuComparisonS
 		strategy = new RelationsComparisonStrategy();
 	}
 
-	private interface RelationBuilder {
+	private static interface RelationBuilder {
 		void buildRelations(MockIndividu individu);
 	}
 

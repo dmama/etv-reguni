@@ -25,7 +25,7 @@ public abstract class JsonTaxLiabilityHelper {
 	/**
 	 * Interface pour définir l'attribut "type" en JSON
 	 */
-	public interface JsonTaxLiability {
+	public static interface JsonTaxLiability {
 
 		@JsonProperty(value = "type")
 		IndividualTaxLiabilityType getType();
@@ -35,7 +35,7 @@ public abstract class JsonTaxLiabilityHelper {
 	 * Interface des <i>builders</i> d'équivalents JSON aux sous-classes connues de {@link TaxLiability}
 	 * @param <S> classe source
 	 */
-	private interface JsonTaxLiabilityBuilder<S extends TaxLiability> {
+	private static interface JsonTaxLiabilityBuilder<S extends TaxLiability> {
 		TaxLiability buildJsonEquivalent(S src);
 	}
 

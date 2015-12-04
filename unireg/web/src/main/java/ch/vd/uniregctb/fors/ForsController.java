@@ -36,14 +36,12 @@ import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.security.SecurityHelper;
 import ch.vd.uniregctb.security.SecurityProviderInterface;
 import ch.vd.uniregctb.tiers.Contribuable;
-import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.ForDebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalAutreElementImposable;
 import ch.vd.uniregctb.tiers.ForFiscalAutreImpot;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
 import ch.vd.uniregctb.tiers.NatureTiers;
 import ch.vd.uniregctb.tiers.Tiers;
@@ -229,7 +227,7 @@ public class ForsController {
 
 		final long ctbId = view.getTiersId();
 
-		final ContribuableImpositionPersonnesPhysiques ctb = (ContribuableImpositionPersonnesPhysiques) tiersDAO.get(ctbId);
+		final Contribuable ctb = (Contribuable) tiersDAO.get(ctbId);
 		if (ctb == null) {
 			throw new ObjectNotFoundException("Le contribuable avec l'id=" + ctbId + " n'existe pas.");
 		}
@@ -264,7 +262,7 @@ public class ForsController {
 			throw new ObjectNotFoundException("Le for principal avec l'id = " + forId + " n'existe pas.");
 		}
 
-		final Autorisations auth = getAutorisations(ffp.getTiers());
+		final Autorisations auth = getAutorisations((Contribuable) ffp.getTiers());
 		if (!auth.isForsPrincipaux()) {
 			throw new AccessDeniedException("Vous ne possédez pas les droits IfoSec d'édition de fors principaux.");
 		}
@@ -333,12 +331,12 @@ public class ForsController {
 	@Transactional(readOnly = true, rollbackFor = Throwable.class)
 	public String editModeImposition(@RequestParam(value = "forId", required = true) long forId, Model model) {
 
-		final ForFiscalPrincipalPP ffp = hibernateTemplate.get(ForFiscalPrincipalPP.class, forId);
+		final ForFiscalPrincipal ffp = hibernateTemplate.get(ForFiscalPrincipal.class, forId);
 		if (ffp == null) {
-			throw new ObjectNotFoundException("Le for principal PP avec l'id = " + forId + " n'existe pas.");
+			throw new ObjectNotFoundException("Le for principal avec l'id = " + forId + " n'existe pas.");
 		}
 
-		final Autorisations auth = getAutorisations(ffp.getTiers());
+		final Autorisations auth = getAutorisations((Contribuable) ffp.getTiers());
 		if (!auth.isForsPrincipaux()) {
 			throw new AccessDeniedException("Vous ne possédez pas les droits IfoSec d'édition de fors principaux.");
 		}
@@ -372,7 +370,7 @@ public class ForsController {
 			return "fors/principal/editModeImposition";
 		}
 
-		final ForFiscalPrincipal newFor = tiersService.changeModeImposition((ContribuableImpositionPersonnesPhysiques) ffp.getTiers(), view.getDateChangement(), view.getModeImposition(), view.getMotifChangement());
+		final ForFiscalPrincipal newFor = tiersService.changeModeImposition((Contribuable) ffp.getTiers(), view.getDateChangement(), view.getModeImposition(), view.getMotifChangement());
 
 		return "redirect:/fiscal/edit.do?id=" + ctbId + buildHighlightForParam(newFor);
 	}

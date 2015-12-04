@@ -27,20 +27,15 @@
 							<form:label path="typeDocument"><fmt:message key="label.type.declaration.retournee"/>&nbsp;:</form:label>
 						</td>
 						<td>
-							<c:choose>
-								<c:when test="${command.typeDocumentEditable}">
-									<%--@elvariable id="typesDeclarationImpotOrdinaire" type="java.util.Map<TypeDocument, String>"--%>
-									<form:select path="typeDocument" items="${typesDeclarationImpotOrdinaire}"/>
-								</c:when>
-								<c:otherwise>
-									<form:hidden path="typeDocument"/>
-									<c:if test="${command.typeDocument != null}">
-										<fmt:message key="option.type.document.${command.typeDocument}"/>
-									</c:if>
-								</c:otherwise>
-							</c:choose>
+							<c:if test="${command.typeDocument.ordinaire}">
+								<%--@elvariable id="typesDeclarationImpotOrdinaire" type="java.util.Map<TypeDocument, String>"--%>
+								<form:select path="typeDocument" items="${typesDeclarationImpotOrdinaire}"/>
+							</c:if>
+							<c:if test="${!command.typeDocument.ordinaire}">
+								<form:hidden path="typeDocument"/>
+								<fmt:message key="option.type.document.${command.typeDocument}"/>
+							</c:if>
 							<form:errors path="typeDocument" cssClass="error"/>
-							<form:hidden path="typeDocumentEditable"/>
 						</td>
 					</tr>
 					<tr class="<unireg:nextRowClass/>">

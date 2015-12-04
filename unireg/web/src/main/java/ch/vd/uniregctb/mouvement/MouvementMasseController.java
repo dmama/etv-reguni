@@ -102,7 +102,7 @@ public class MouvementMasseController {
 		return new WebParamPagination(request, TABLE_ID, PAGE_SIZE, "contribuable.numero", true);
 	}
 
-	private interface SearchCriteriaCustomizer {
+	private static interface SearchCriteriaCustomizer {
 		String getSessionAttributeName();
 		MouvementMasseCriteriaView createNewEmptyCriteria();
 		String getViewName();

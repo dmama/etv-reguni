@@ -27,7 +27,7 @@ public class GlobalMessageIdentificationSearcherImpl implements GlobalMessageIde
 
 	private static final Map<String, Pair<String, SortBuilder>> PAGINATION_SORTING_FIELD_MAPPING = buildPaginationSortingFieldMapping();
 
-	private interface SortBuilder {
+	private static interface SortBuilder {
 		Sort build(String fieldName, boolean reverse);
 	}
 

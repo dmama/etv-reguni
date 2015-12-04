@@ -20,13 +20,6 @@
 		<property name="serviceLogger" ref="serviceCivilLogger"/>
 	</bean>
 
-	<!-- Service Organisation -->
-
-	<bean id="serviceOrganisationService" class="ch.vd.uniregctb.interfaces.service.ServiceOrganisationImpl">
-		<property name="target" ref="serviceOrganisationRaw"/>
-		<property name="serviceInfra" ref="serviceInfrastructureService"/>
-	</bean>
-
 	<!-- Service Securité -->
 
 	<bean id="serviceSecuriteServiceHost" class="ch.vd.uniregctb.interfaces.service.host.ServiceSecuriteHostInterfaces">
@@ -48,4 +41,27 @@
 
 	<alias alias="serviceSecuriteService" name="serviceSecuriteCache"/>
 
+	<!-- Service PM -->
+	
+	<bean id="servicePersonneMoraleServiceHost" class="ch.vd.uniregctb.interfaces.service.host.ServicePersonneMoraleHostInterfaces">
+		<property name="servicePersonneMorale" ref="_servicePersonneMorale" />
+		<property name="serviceInfrastructure" ref="_serviceInfrastructure" />
+	</bean>
+
+	<bean id="servicePersonneMoraleServiceTracing" class="ch.vd.uniregctb.interfaces.service.ServicePersonneMoraleTracing">
+		<property name="target" ref="servicePersonneMoraleServiceHost" />
+		<property name="statsService" ref="statsService" />
+	</bean>
+
+	<bean id="servicePersonneMoraleServiceCache" class="ch.vd.uniregctb.interfaces.service.ServicePersonneMoraleCache">
+		<property name="target" ref="servicePersonneMoraleServiceTracing" />
+		<property name="cacheManager" ref="ehCacheManager" />
+		<property name="cacheName" value="servicePM" />
+		<property name="uniregCacheManager" ref="uniregCacheManager" />
+		<property name="statsService" ref="statsService" />
+		<property name="dataEventService" ref="dataEventService" />
+	</bean>
+
+	<alias alias="servicePersonneMoraleService" name="servicePersonneMoraleServiceCache"/>
+	
 </beans>

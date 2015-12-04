@@ -15,14 +15,14 @@ import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.uniregctb.common.CoreDAOTest;
 import ch.vd.uniregctb.migreg.MigrationError;
-import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
+import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 
 import static junit.framework.Assert.assertEquals;
 
 public class FillHoleGeneratorTest extends CoreDAOTest {
 
-	private static final long firstId = ContribuableImpositionPersonnesPhysiques.CTB_GEN_FIRST_ID;
+	private static final long firstId = Contribuable.CTB_GEN_FIRST_ID;
 	private SessionFactory sessionFactory;
 	private FillHoleGenerator generator;
 
@@ -34,7 +34,7 @@ public class FillHoleGeneratorTest extends CoreDAOTest {
 		sessionFactory = getBean(SessionFactory.class, "sessionFactory");
 		rawDataSource = getBean(DataSource.class, "rawDataSource");
 
-		generator = new FillHoleGenerator("TIERS", "S_CTB", ContribuableImpositionPersonnesPhysiques.CTB_GEN_FIRST_ID, ContribuableImpositionPersonnesPhysiques.CTB_GEN_LAST_ID);
+		generator = new FillHoleGenerator("TIERS", "S_CTB", Contribuable.CTB_GEN_FIRST_ID, Contribuable.CTB_GEN_LAST_ID);
 		generator.configure(StandardBasicTypes.LONG, new Properties(), dialect);
 
 		resetSequence();

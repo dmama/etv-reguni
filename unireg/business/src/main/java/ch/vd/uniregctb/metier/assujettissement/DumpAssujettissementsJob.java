@@ -17,7 +17,6 @@ import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.common.AuthenticationInterface;
 import ch.vd.uniregctb.common.ParallelBatchTransactionTemplate;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
-import ch.vd.uniregctb.scheduler.JobCategory;
 import ch.vd.uniregctb.scheduler.JobDefinition;
 import ch.vd.uniregctb.scheduler.JobParam;
 import ch.vd.uniregctb.scheduler.JobParamInteger;
@@ -33,6 +32,7 @@ public class DumpAssujettissementsJob extends JobDefinition {
 	//private final Logger LOGGER = LoggerFactory.getLogger(DumpAssujettissementsJob.class);
 
 	public static final String NAME = "DumpAssujettissementsJob";
+	private static final String CATEGORIE = "Debug";
 
 	public static final String FILENAME = "FILENAME";
 	public static final String NB_THREADS = "NB_THREADS";
@@ -42,7 +42,7 @@ public class DumpAssujettissementsJob extends JobDefinition {
 	private AssujettissementService assujettissementService;
 
 	public DumpAssujettissementsJob(int sortOrder, String description) {
-		super(NAME, JobCategory.DEBUG, sortOrder, description);
+		super(NAME, CATEGORIE, sortOrder, description);
 
 		final JobParam param0 = new JobParam();
 		param0.setDescription("Fichier de sortie (local au serveur)");

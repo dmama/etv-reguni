@@ -18,7 +18,6 @@ import ch.vd.uniregctb.common.WebTest;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaireDAO;
-import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
 import ch.vd.uniregctb.declaration.EtatDeclarationRetournee;
 import ch.vd.uniregctb.declaration.ModeleDocument;
@@ -32,7 +31,7 @@ import ch.vd.uniregctb.metier.assujettissement.PeriodeImposition;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionService;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
-import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
+import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.TacheDAO;
 import ch.vd.uniregctb.type.ModeImposition;
@@ -84,7 +83,6 @@ public class DeclarationImpotEditManagerTest extends WebTest {
 		manager.setTacheDAO(getBean(TacheDAO.class, "tacheDAO"));
 		manager.setPeriodeImpositionService(getBean(PeriodeImpositionService.class, "periodeImpositionService"));
 		manager.setDiService(getBean(DeclarationImpotService.class, "diService"));
-		manager.afterPropertiesSet();
 	}
 
 	@Test
@@ -102,11 +100,11 @@ public class DeclarationImpotEditManagerTest extends WebTest {
 		return new Range(date(year, 1, 1), date(year, 12, 31));
 	}
 
-	public void assertValidRangeDi(ContribuableImpositionPersonnesPhysiques ctb, DateRange range) {
+	public void assertValidRangeDi(Contribuable ctb, DateRange range) {
 		manager.checkRangeDi(ctb, range);
 	}
 
-	public void assertInValidRangeDi(ContribuableImpositionPersonnesPhysiques ctb, DateRange range) {
+	public void assertInValidRangeDi(Contribuable ctb, DateRange range) {
 		try {
 			manager.checkRangeDi(ctb, range);
 			fail();
@@ -120,10 +118,10 @@ public class DeclarationImpotEditManagerTest extends WebTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testCheckRangeDiContribuableAssujettiEnContinu() {
 
-		final PeriodeFiscale periode2003 = addPeriodeFiscale(2003);
-		final PeriodeFiscale periode2014 = addPeriodeFiscale(2014);
-		final ModeleDocument modele2003 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2003);
-		final ModeleDocument modele2014 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2014);
+		final PeriodeFiscale periode2000 = addPeriodeFiscale(2000);
+		final PeriodeFiscale periode2040 = addPeriodeFiscale(2040);
+		final ModeleDocument modele2000 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2000);
+		final ModeleDocument modele2040 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2040);
 
 		// le contribuable est assujetti depuis 1995, il doit être possible d'ajouter une DI et une seule pour chaque année
 		PersonnePhysique paul = addNonHabitant("Paul", "Duruz", date(1977, 3, 15), Sexe.MASCULIN);
@@ -131,13 +129,13 @@ public class DeclarationImpotEditManagerTest extends WebTest {
 
 		assertInValidRangeDi(paul, fullYear(1980));
 
-		assertValidRangeDi(paul, fullYear(2003));
-		addDeclarationImpot(paul, periode2003, date(2003, 1, 1), date(2003, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2003);
-		assertInValidRangeDi(paul, fullYear(2003)); // la déclaration existe maintenant !
+		assertValidRangeDi(paul, fullYear(2000));
+		addDeclarationImpot(paul, periode2000, date(2000, 1, 1), date(2000, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2000);
+		assertInValidRangeDi(paul, fullYear(2000)); // la déclaration existe maintenant !
 
-		assertValidRangeDi(paul, fullYear(2014));
-		addDeclarationImpot(paul, periode2014, date(2014, 1, 1), date(2014, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2014);
-		assertInValidRangeDi(paul, fullYear(2014)); // la déclaration existe maintenant !
+		assertValidRangeDi(paul, fullYear(2040));
+		addDeclarationImpot(paul, periode2040, date(2040, 1, 1), date(2040, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2040);
+		assertInValidRangeDi(paul, fullYear(2040)); // la déclaration existe maintenant !
 	}
 
 	@Test
@@ -152,10 +150,10 @@ public class DeclarationImpotEditManagerTest extends WebTest {
 		// le contribuable est assujetti depuis 1995 et il part au milieu de l'année 2008 : il doit être possible d'ajouter une DI et une
 		// seule pour chaque année
 		PersonnePhysique paul = addNonHabitant("Paul", "Duruz", date(1977, 3, 15), Sexe.MASCULIN);
-		addForPrincipal(paul, date(2004, 3, 15), MotifFor.MAJORITE, date(2008, 6, 30), MotifFor.DEPART_HS, MockCommune.Lausanne);
+		addForPrincipal(paul, date(1995, 3, 15), MotifFor.MAJORITE, date(2008, 6, 30), MotifFor.DEPART_HS, MockCommune.Lausanne);
 
 		// pas encore assujetti
-		assertInValidRangeDi(paul, fullYear(2003));
+		assertInValidRangeDi(paul, fullYear(1980));
 
 		// assujetti sur toute l'année
 		assertValidRangeDi(paul, fullYear(2007));
@@ -533,7 +531,7 @@ public class DeclarationImpotEditManagerTest extends WebTest {
 		assertNotNull(range);
 		assertEquals(debut, range.getDateDebut());
 		assertEquals(fin, range.getDateFin());
-		assertEquals(optionnel, range.isDeclarationOptionnelle());
+		assertEquals(optionnel, range.isOptionnelle());
 	}
 
 	@Test
@@ -610,7 +608,7 @@ public class DeclarationImpotEditManagerTest extends WebTest {
 				final PeriodeFiscale pfAnneeDerniere = addPeriodeFiscale(anneeDerniere);
 				final PeriodeFiscale pfAnneeCourante = addPeriodeFiscale(anneeCourante);
 				final ModeleDocument modeleAnneeDerniere = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, pfAnneeDerniere);
-				final DeclarationImpotOrdinairePP di = addDeclarationImpot(pp, pfAnneeDerniere, debutAnneeDerniere, finAnneeDerniere, cedi, TypeContribuable.VAUDOIS_ORDINAIRE, modeleAnneeDerniere);
+				final DeclarationImpotOrdinaire di = addDeclarationImpot(pp, pfAnneeDerniere, debutAnneeDerniere, finAnneeDerniere, cedi, TypeContribuable.VAUDOIS_ORDINAIRE, modeleAnneeDerniere);
 				di.setCodeSegment(6);
 
 				// pour la DI que l'on créera à la main plus bas
@@ -623,7 +621,7 @@ public class DeclarationImpotEditManagerTest extends WebTest {
 		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				manager.envoieImpressionLocaleDI(ppId, debutAnneeCourante, finAnneeCourante, TypeDocument.DECLARATION_IMPOT_COMPLETE_LOCAL, TypeAdresseRetour.CEDI, RegDate.get(), null);
+				manager.envoieImpressionLocalDI(ppId, null, debutAnneeCourante, finAnneeCourante, TypeDocument.DECLARATION_IMPOT_COMPLETE_LOCAL, TypeAdresseRetour.CEDI, RegDate.get(), null);
 				return null;
 			}
 		});
@@ -634,9 +632,9 @@ public class DeclarationImpotEditManagerTest extends WebTest {
 			public Object doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
 				final Declaration d = pp.getDeclarationActive(finAnneeCourante);
-				assertInstanceOf(DeclarationImpotOrdinairePP.class, d);
+				assertInstanceOf(DeclarationImpotOrdinaire.class, d);
 
-				final DeclarationImpotOrdinairePP di = (DeclarationImpotOrdinairePP) d;
+				final DeclarationImpotOrdinaire di = (DeclarationImpotOrdinaire) d;
 				assertEquals(Integer.valueOf(6), di.getCodeSegment());
 				return null;
 			}
@@ -679,13 +677,12 @@ public class DeclarationImpotEditManagerTest extends WebTest {
 			}
 		});
 
-		final RegDate delaiAccorde = RegDate.get().addMonths(2);
 		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique pp = hibernateTemplate.get(PersonnePhysique.class, ids.ppId);
 				// cet appel levait une exception parce que le for de gestion au 31 décembre 2009 n'était pas connu avant la correction du cas SIFISC-4923
-				manager.creerNouvelleDI(pp, date(2009, 1, 1), date(2009, 12, 31), TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, TypeAdresseRetour.CEDI, delaiAccorde, null);
+				manager.creerNouvelleDI(pp, date(2009, 1, 1), date(2009, 12, 31), TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, TypeAdresseRetour.CEDI, RegDate.get().addMonths(2), null);
 				return null;
 			}
 		});
@@ -697,7 +694,7 @@ public class DeclarationImpotEditManagerTest extends WebTest {
 				final List<Declaration> decls = pp.getDeclarationsForPeriode(2009, false);
 				assertNotNull(decls);
 				assertEquals(1, decls.size());
-				assertDIPP(date(2009, 1, 1), date(2009, 12, 31), TypeEtatDeclaration.EMISE, TypeContribuable.HORS_CANTON, TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, ids.oidCedi, delaiAccorde, decls.get(0));
+				assertDI(date(2009, 1, 1), date(2009, 12, 31), TypeEtatDeclaration.EMISE, TypeContribuable.HORS_CANTON, TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, ids.oidCedi, null, decls.get(0));
 				return null;
 			}
 		});
@@ -733,8 +730,8 @@ public class DeclarationImpotEditManagerTest extends WebTest {
 
 				final PeriodeImposition pi = pis.get(0);
 				assertNotNull(pi);
-				assertTrue(pi.isDeclarationRemplaceeParNote());
-				assertTrue(pi.isDeclarationOptionnelle());
+				assertTrue(pi.isRemplaceeParNote());
+				assertTrue(pi.isOptionnelle());
 				return null;
 			}
 		});

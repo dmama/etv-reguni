@@ -8,11 +8,11 @@ import java.util.List;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.civil.data.AdoptionReconnaissance;
+import ch.vd.unireg.interfaces.civil.data.Adresse;
 import ch.vd.unireg.interfaces.civil.data.EtatCivil;
 import ch.vd.unireg.interfaces.civil.data.Nationalite;
 import ch.vd.unireg.interfaces.civil.data.Permis;
 import ch.vd.unireg.interfaces.civil.data.RelationVersIndividu;
-import ch.vd.unireg.interfaces.common.Adresse;
 
 public class CollectionLimitator {
 
@@ -81,7 +81,7 @@ public class CollectionLimitator {
 		}
 	}
 
-	public interface Limitator<T> {
+	public static interface Limitator<T> {
 		boolean keep(T element, RegDate date);
 	}
 }

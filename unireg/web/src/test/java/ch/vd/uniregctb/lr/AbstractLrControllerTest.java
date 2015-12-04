@@ -8,7 +8,7 @@ public abstract class AbstractLrControllerTest extends WebTest {
 	/**
 	 * DB unit
 	 */
-	private static final String DB_UNIT_FILE = "AbstractLrControllerTest.xml";
+	private final static String DB_UNIT_FILE = "AbstractLrControllerTest.xml";
 
 	protected ListeRecapitulativeDAO lrDAO;
 

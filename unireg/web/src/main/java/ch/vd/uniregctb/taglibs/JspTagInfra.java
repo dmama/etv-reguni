@@ -34,7 +34,7 @@ public class JspTagInfra extends BodyTagSupport {
 	private EscapeMode escapeMode = EscapeMode.HTML;
 	private static ServiceInfrastructureService service; // static -> hack pour obtenir le service infrastructure initialisé par spring dans le context d'appels jsp
 
-	private interface Invocator {
+	private static interface Invocator {
 		Object invoke(ServiceInfrastructureService service, int id) throws InvocationTargetException, IllegalAccessException;
 	}
 

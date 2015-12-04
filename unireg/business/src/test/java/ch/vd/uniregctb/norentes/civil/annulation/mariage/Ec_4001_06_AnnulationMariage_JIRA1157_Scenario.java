@@ -14,7 +14,6 @@ import ch.vd.uniregctb.norentes.common.EvenementCivilScenario;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
 import ch.vd.uniregctb.tiers.ForFiscalRevenuFortune;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
@@ -114,14 +113,15 @@ public class Ec_4001_06_AnnulationMariage_JIRA1157_Scenario extends EvenementCiv
 		final PersonnePhysique sylvie = addHabitant(noIndSylvie);
 		noHabSylvie = sylvie.getNumero();
 
-		addForFiscalPrincipal(sylvie, MockCommune.Vevey, dateArriveeSylvie, null, MotifFor.ARRIVEE_HC, null);
+		final ForFiscalPrincipal ffpSylvie = addForFiscalPrincipal(sylvie, MockCommune.Vevey, dateArriveeSylvie, null, MotifFor.ARRIVEE_HC, null);
+		ffpSylvie.setModeImposition(ModeImposition.ORDINAIRE);
 	}
 
 	@Check(id=1, descr="Vérifie que madame existe et a un for ouvert")
 	public void check1() {
 		{
 			final PersonnePhysique sylvie = (PersonnePhysique) tiersDAO.get(noHabSylvie);
-			final ForFiscalPrincipalPP ffp = sylvie.getDernierForFiscalPrincipal();
+			final ForFiscalPrincipal ffp = sylvie.getDernierForFiscalPrincipal();
 			assertNotNull(ffp, "For principal de l'Habitant " + sylvie.getNumero() + " null");
 			assertNull(ffp.getDateFin(), "Date de fin du dernier for fausse");
 			assertEquals(ModeImposition.ORDINAIRE, ffp.getModeImposition(), "Le mode d'imposition n'est pas ORDINAIRE");
@@ -144,7 +144,7 @@ public class Ec_4001_06_AnnulationMariage_JIRA1157_Scenario extends EvenementCiv
 		assertNotNull(alexandre, "L'individu correspondant à monsieur n'a pas été créé");
 		noHabAlexandre = alexandre.getNumero();
 		{
-			final ForFiscalPrincipalPP ffp = alexandre.getDernierForFiscalPrincipal();
+			final ForFiscalPrincipal ffp = alexandre.getDernierForFiscalPrincipal();
 			assertNotNull(ffp, "For principal de l'Habitant " + alexandre.getNumero() + " null");
 			assertNull(ffp.getDateFin(), "Date de fin du dernier for fausse");
 			assertEquals(ModeImposition.ORDINAIRE, ffp.getModeImposition(), "Le mode d'imposition n'est pas ORDINAIRE");

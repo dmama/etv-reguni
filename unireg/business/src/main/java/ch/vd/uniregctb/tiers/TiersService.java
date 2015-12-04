@@ -1,6 +1,5 @@
 package ch.vd.uniregctb.tiers;
 
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -8,27 +7,20 @@ import java.util.Set;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.validation.ValidationException;
 import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.unireg.common.NomPrenom;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
 import ch.vd.unireg.interfaces.civil.data.Individu;
-import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
-import ch.vd.unireg.interfaces.organisation.data.DateRanged;
-import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.uniregctb.adresse.AdresseTiers;
 import ch.vd.uniregctb.declaration.Periodicite;
-import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
 import ch.vd.uniregctb.indexer.IndexerException;
 import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
 import ch.vd.uniregctb.metier.assujettissement.Assujettissement;
-import ch.vd.uniregctb.metier.bouclement.ExerciceCommercial;
 import ch.vd.uniregctb.tiers.rattrapage.ancienshabitants.RecuperationDonneesAnciensHabitantsResults;
 import ch.vd.uniregctb.tiers.rattrapage.flaghabitant.CorrectionFlagHabitantResults;
 import ch.vd.uniregctb.tiers.rattrapage.origine.RecuperationOriginesNonHabitantsResults;
-import ch.vd.uniregctb.type.CategorieEntreprise;
 import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
@@ -38,7 +30,6 @@ import ch.vd.uniregctb.type.PeriodiciteDecompte;
 import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.StatutMenageCommun;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
-import ch.vd.uniregctb.type.TypeFlagEntreprise;
 
 /**
  * Fournit les differents services d'accès aux données du Tiers.
@@ -62,52 +53,6 @@ public interface TiersService {
      * @return la personne physique (tiers non-annulé) correspondante au numéro d'individu passé en paramètre, ou <b>null</b>.
      */
     PersonnePhysique getPersonnePhysiqueByNumeroIndividu(long numeroIndividu);
-
-    /**
-     * Renvoie l'entreprise (fiscale, donc) correspondant au numéro d'organisation (civile) passé en paramètre.
-     *
-     * @param numeroOrganisation le numéro de l'organisation
-     * @return l'entreprise (tiers non-annulé) correspondante au numéro d'organisation passé en paramètre, ou <b>null</b>.
-     */
-    Entreprise getEntrepriseByNumeroOrganisation(long numeroOrganisation);
-
-    /**
-     * @param entreprise entreprise
-     * @return la liste des établissements principaux (avec leurs dates de validité) associés à l'entreprise
-     */
-    List<DateRanged<Etablissement>> getEtablissementsPrincipauxEntreprise(Entreprise entreprise);
-
-    /**
-     * @param entreprise l'entreprise ciblée
-     * @return la liste des établissements secondaires (avec leurs dates de validité) associés à l'entreprise
-     */
-    List<DateRanged<Etablissement>> getEtablissementsSecondairesEntreprise(Entreprise entreprise);
-
-    Entreprise createEntreprisePourEvenementOrganisation(EvenementOrganisation evt);
-
-    /**
-     * Créer une entreprise pour le numéro d'organisation fourni. La méthode refuse de la créer si une entreprise est déjà associée à l'organisation.
-     *
-     * @param noOrganisation
-     * @return L'entreprise créée.
-     */
-    @NotNull
-    Entreprise createEntreprise(long noOrganisation);
-
-    /**
-     * Créer un établissement pour le numéro de site fourni. La méthode refuse de le créer si un établissement est déjà associé au site.
-     *
-     * @param numeroSite
-     * @return L'établissement créé.
-     */
-    @NotNull
-    Etablissement createEtablissement(Long numeroSite);
-
-    /**
-     * @param etablissement établissement ciblé
-     * @return la liste des entités juridiques (personnes physiques, entreprises...) liées à l'établissement donné
-     */
-    List<DateRanged<Contribuable>> getEntitesJuridiquesEtablissement(Etablissement etablissement);
 
     /**
      * Retourne un tiers en fonction de son numéro de tiers.
@@ -214,7 +159,7 @@ public interface TiersService {
      * @param dateValidite       une date de validité
      * @return le contribuable personne physique ou ménage-commun qui possède l'autorité parentale; ou <b>null</b> si la mère est inconnue.
      */
-    ContribuableImpositionPersonnesPhysiques getAutoriteParentaleDe(PersonnePhysique contribuableEnfant, RegDate dateValidite);
+    Contribuable getAutoriteParentaleDe(PersonnePhysique contribuableEnfant, RegDate dateValidite);
 
     /**
      * Renvoie la collectivité administrative rattachée au numero de collectivité donné.
@@ -502,8 +447,8 @@ public interface TiersService {
     boolean isMemeSexe(PersonnePhysique pp1, PersonnePhysique pp2);
 
     /**
-     * Ouvre un nouveau for fiscal principal sur un contribuable soumis au régime des personnes physiques
-     * <b>Note:</b> pour ajouter un for fiscal fermé voir la méthode {@link #addForPrincipal(ContribuableImpositionPersonnesPhysiques, ch.vd.registre.base.date.RegDate, ch.vd.uniregctb.type.MotifFor,
+     * Ouvre un nouveau for fiscal principal sur un contribuable.
+     * <b>Note:</b> pour ajouter un for fiscal fermé voir la méthode {@link #addForPrincipal(Contribuable, ch.vd.registre.base.date.RegDate, ch.vd.uniregctb.type.MotifFor,
      * ch.vd.registre.base.date.RegDate, ch.vd.uniregctb.type.MotifFor, ch.vd.uniregctb.type.MotifRattachement, int, ch.vd.uniregctb.type.TypeAutoriteFiscale, ch.vd.uniregctb.type.ModeImposition)}
      *
      *
@@ -516,25 +461,8 @@ public interface TiersService {
      * @param motifOuverture           le motif d'ouverture du for fiscal principal
      * @return le nouveau for fiscal principal
      */
-    ForFiscalPrincipalPP openForFiscalPrincipal(ContribuableImpositionPersonnesPhysiques contribuable, RegDate dateOuverture, MotifRattachement motifRattachement, int numeroOfsAutoriteFiscale,
+    ForFiscalPrincipal openForFiscalPrincipal(Contribuable contribuable, RegDate dateOuverture, MotifRattachement motifRattachement, int numeroOfsAutoriteFiscale,
                                               TypeAutoriteFiscale typeAutoriteFiscale, ModeImposition modeImposition, MotifFor motifOuverture);
-
-    /**
-     * Ouvre un nouveau for fiscal principal sur un contribuable soumis au régime des personnes physiques // FIXME: Réparer le commentaire copié-collé
-     * <b>Note:</b> pour ajouter un for fiscal fermé voir la méthode {@link #addForPrincipal(ContribuableImpositionPersonnesPhysiques, ch.vd.registre.base.date.RegDate, ch.vd.uniregctb.type.MotifFor,
-     * ch.vd.registre.base.date.RegDate, ch.vd.uniregctb.type.MotifFor, ch.vd.uniregctb.type.MotifRattachement, int, ch.vd.uniregctb.type.TypeAutoriteFiscale, ch.vd.uniregctb.type.ModeImposition)}
-     *
-     *
-     * @param contribuable             le contribuable sur lequel le nouveau for est ouvert
-     * @param dateOuverture            la date à laquelle le nouveau for est ouvert
-     * @param motifRattachement        le motif de rattachement du nouveau for
-     * @param numeroOfsAutoriteFiscale le numéro OFS de l'autorité fiscale sur laquelle est ouverte le nouveau fort.
-     * @param typeAutoriteFiscale      le type d'autorité fiscale.
-     * @param motifOuverture           le motif d'ouverture du for fiscal principal
-     * @return le nouveau for fiscal principal
-     */
-    ForFiscalPrincipalPM openForFiscalPrincipal(ContribuableImpositionPersonnesMorales contribuable, RegDate dateOuverture, MotifRattachement motifRattachement, int numeroOfsAutoriteFiscale,
-                                              TypeAutoriteFiscale typeAutoriteFiscale, MotifFor motifOuverture);
 
     /**
      * Ouvre un nouveau for fiscal secondaire sur un contribuable.
@@ -636,7 +564,7 @@ public interface TiersService {
      * @param motifFermeture     le motif de fermeture
      * @return le for fiscal principal fermé, ou <b>null</b> si le contribuable n'en possédait pas.
      */
-    <F extends ForFiscalPrincipal> F closeForFiscalPrincipal(F forFiscalPrincipal, RegDate dateFermeture, MotifFor motifFermeture);
+    ForFiscalPrincipal closeForFiscalPrincipal(ForFiscalPrincipal forFiscalPrincipal, RegDate dateFermeture, MotifFor motifFermeture);
 
 	/**
 	 * Ferme la décision d'un contribuable
@@ -710,11 +638,11 @@ public interface TiersService {
      * @param motifFor                     le motif de changement du mode d'imposition
      * @return le nouveau for principal créé
      */
-    ForFiscalPrincipalPP changeModeImposition(ContribuableImpositionPersonnesPhysiques contribuable, RegDate dateChangementModeImposition,
-                                              ModeImposition modeImposition, MotifFor motifFor);
+    ForFiscalPrincipal changeModeImposition(Contribuable contribuable, RegDate dateChangementModeImposition,
+                                            ModeImposition modeImposition, MotifFor motifFor);
 
 	/**
-     * Ajoute un for fiscal principal sur un contribuable soumis au régime des personnes physiques. Le for fiscal principal courant est fermé si nécessaire.
+     * Ajoute un for fiscal principal sur un contribuable. Le for fiscal principal courant est fermé si nécessaire.
      *
      * @param contribuable        un contribuable
      * @param dateDebut           la date d'ouverture du for à créer
@@ -727,25 +655,9 @@ public interface TiersService {
      * @param modeImposition      le mode d'imposition du for à créer
      * @return le nouveau for fiscal principal.
      */
-    ForFiscalPrincipalPP addForPrincipal(ContribuableImpositionPersonnesPhysiques contribuable, RegDate dateDebut, MotifFor motifOuverture, @Nullable RegDate dateFin, @Nullable MotifFor motifFermeture,
-                                         MotifRattachement motifRattachement,
-                                         int autoriteFiscale, TypeAutoriteFiscale typeAutoriteFiscale, ModeImposition modeImposition);
-
-	/**
-     * Ajoute un for fiscal principal sur un contribuable soumis au régime des personnes morales. Le for fiscal principal courant est fermé si nécessaire.
-     *
-     * @param contribuable        un contribuable
-     * @param dateDebut           la date d'ouverture du for à créer
-     * @param motifOuverture      le motif d'ouverture du for à créer
-     * @param dateFin             la date de fermeture du for à créer (peut être nulle)
-     * @param motifFermeture      le motif de fermeture du for à créer (peut être nul)
-     * @param motifRattachement   le motif de rattachement du for à créer
-     * @param autoriteFiscale     le numéro de l'autorité fiscale du for à créer
-     * @param typeAutoriteFiscale le type de l'autorité fiscale du for à créer
-     * @return le nouveau for fiscal principal.
-     */
-    ForFiscalPrincipalPM addForPrincipal(ContribuableImpositionPersonnesMorales contribuable, RegDate dateDebut, MotifFor motifOuverture, @Nullable RegDate dateFin, @Nullable MotifFor motifFermeture,
-                                         MotifRattachement motifRattachement, int autoriteFiscale, TypeAutoriteFiscale typeAutoriteFiscale);
+    ForFiscalPrincipal addForPrincipal(Contribuable contribuable, RegDate dateDebut, MotifFor motifOuverture, @Nullable RegDate dateFin, @Nullable MotifFor motifFermeture,
+                                       MotifRattachement motifRattachement,
+                                       int autoriteFiscale, TypeAutoriteFiscale typeAutoriteFiscale, ModeImposition modeImposition);
 
 	@Nullable
 	ForFiscalSecondaire updateForSecondaire(ForFiscalSecondaire ffs, RegDate dateOuverture, MotifFor motifOuverture, RegDate dateFermeture, MotifFor motifFermeture, int noOfsAutoriteFiscale);
@@ -1081,13 +993,6 @@ public interface TiersService {
 	Assujettissement getAssujettissement(Contribuable contribuable, @Nullable RegDate date);
 
     /**
-     * Ceci est la méthode officielle de calcul des exercices commerciaux d'une entreprise (notamment en ce qui concerne la toute première date et la toute dernière)
-     * @param entreprise une entreprise
-     * @return les exercices commerciaux de cette entreprise (jusqu'à au plus tard l'exercice courant ou, s'il n'y en a plus, le dernier exercice connu)
-     */
-    List<ExerciceCommercial> getExercicesCommerciaux(Entreprise entreprise);
-
-    /**
      * Défini la date limite d'exclusion sur les contribuables spécifiés par leur numéros.
      *
      * @param ctbIds     les numéros des contribuables
@@ -1098,40 +1003,23 @@ public interface TiersService {
     ExclureContribuablesEnvoiResults setDateLimiteExclusion(List<Long> ctbIds, RegDate dateLimite, StatusManager s);
 
     /**
-     * Ouvre et ferme un nouveau for fiscal principal sur un contribuable soumis au régime des personnes physiques.
+     * Ouvre et ferme un nouveau for fiscal principal sur un contribuable .
      *
      *
      * @param contribuable             le contribuable sur lequel le nouveau for est ouvert
      * @param dateOuverture            la date à laquelle le nouveau for est ouvert
      * @param motifRattachement        le motif de rattachement du nouveau for
-     * @param numeroOfsAutoriteFiscale le numéro OFS de l'autorité fiscale sur laquelle est ouverte le nouveau for.
+     * @param numeroOfsAutoriteFiscale le numéro OFS de l'autorité fiscale sur laquelle est ouverte le nouveau fort.
      * @param typeAutoriteFiscale      le type d'autorité fiscale.
      * @param modeImposition           le mode d'imposition du for fiscal principal
      * @param motifOuverture           le motif d'ouverture
-     * @param dateFermeture            la date de fermeture du for
+     * @param dateFermeture            la date de fermeture du for	 *
      * @param motifFermeture           le motif de fermeture
      * @return le nouveau for fiscal principal
      */
-    ForFiscalPrincipalPP openAndCloseForFiscalPrincipal(ContribuableImpositionPersonnesPhysiques contribuable, final RegDate dateOuverture,
-                                                        MotifRattachement motifRattachement, int numeroOfsAutoriteFiscale, TypeAutoriteFiscale typeAutoriteFiscale,
-                                                        ModeImposition modeImposition, MotifFor motifOuverture, RegDate dateFermeture, MotifFor motifFermeture);
-
-    /**
-     * Ouvre et ferme un nouveau for fiscal principal sur un contribuable soumis au régime des personnes morales.
-     *
-     * @param contribuable             le contribuable sur lequel le nouveau for est ouvert
-     * @param dateOuverture            la date à laquelle le nouveau for est ouvert
-     * @param motifRattachement        le motif de rattachement du nouveau for
-     * @param numeroOfsAutoriteFiscale le numéro OFS de l'autorité fiscale sur laquelle est ouverte le nouveau for.
-     * @param typeAutoriteFiscale      le type d'autorité fiscale.
-     * @param motifOuverture           le motif d'ouverture
-     * @param dateFermeture            la date de fermeture du for
-     * @param motifFermeture           le motif de fermeture
-     * @return le nouveau for fiscal principal
-     */
-    ForFiscalPrincipalPM openAndCloseForFiscalPrincipal(ContribuableImpositionPersonnesMorales contribuable, final RegDate dateOuverture,
-                                                        MotifRattachement motifRattachement, int numeroOfsAutoriteFiscale, TypeAutoriteFiscale typeAutoriteFiscale,
-                                                        MotifFor motifOuverture, RegDate dateFermeture, MotifFor motifFermeture);
+    ForFiscalPrincipal openAndCloseForFiscalPrincipal(Contribuable contribuable, final RegDate dateOuverture,
+                                                      MotifRattachement motifRattachement, int numeroOfsAutoriteFiscale, TypeAutoriteFiscale typeAutoriteFiscale,
+                                                      ModeImposition modeImposition, MotifFor motifOuverture, RegDate dateFermeture, MotifFor motifFermeture);
 
     /**
      * Ouvre et ferme un for debiteur préstation imposable sur un débiteur
@@ -1238,10 +1126,16 @@ public interface TiersService {
     List<String> getRaisonSociale(DebiteurPrestationImposable debiteur);
 
     /**
+     * @param pm l'entreprise dont on veut connaître la raison sociale abrégée
+     * @return la raison sociale abrégée de l'entreprise donnée
+     */
+    String getRaisonSocialeAbregee(Entreprise pm);
+
+    /**
      * @param pm l'entreprise dont on veut connaître la raison sociale complète
      * @return la raison sociale complète de l'entreprise donnée, potentiellement sur plusieurs lignes
      */
-    String getRaisonSociale(Entreprise pm);
+    List<String> getRaisonSociale(Entreprise pm);
 
     /**
      * Renvoie une liste des composants du ménage valides à une date donnée.
@@ -1457,7 +1351,8 @@ public interface TiersService {
 	 * @param Remarque
 	 * @return la décision créée
 	 */
-    DecisionAci addDecisionAci(Contribuable ctb, TypeAutoriteFiscale typeAutoriteFiscale, int numeroAutoriteFiscale, RegDate dateDebut, RegDate dateFin, String Remarque);
+DecisionAci addDecisionAci(Contribuable ctb, TypeAutoriteFiscale typeAutoriteFiscale,
+                           int numeroAutoritéFiscale,RegDate dateDebut,RegDate dateFin, String Remarque);
 
 	/**
 	 * Permet de mettre à jour un edécision ACI ou de l'annuler et la recréer en fonction des données modifiéss
@@ -1491,149 +1386,13 @@ public interface TiersService {
 	 */
 	List<MenageCommun> getAllMenagesCommuns(PersonnePhysique pp);
 
-    /**
+    /**!ATTENTION! méthode non utilisée pour le moment mais qui le sera en 15R* afin de répondre à SIFISC-14452
      * Determine si un ctb est sous l'influence d'une décision ACI: soit directement soit par une de ses relations directe
      * Couple ou membre du couple
-     * @param ctb
+      * @param ctb
      * @return vrai si une influence de décision a été détectée false sinon
      */
     boolean isSousInfluenceDecisions(Contribuable ctb);
-
-	/**
-	 * Crée un domicile sur l'établissement passé en paramètre, avec les informations fournies
-	 * @param etb l'établissement destinataire
-	 * @param typeAutoriteFiscale le type d'autorité fiscale du domicile
-	 * @param numeroAutoriteFiscale le numéro d'autorité fiscale du domicile
-	 * @param dateDebut la date de début
-	 * @param dateFin la date de fin (en générale optionnelle)
-	 * @return le domicile nouvellement créé
-	 */
-	DomicileEtablissement addDomicileEtablissement(Etablissement etb, TypeAutoriteFiscale typeAutoriteFiscale, int numeroAutoriteFiscale, RegDate dateDebut, RegDate dateFin);
-
-	/**
-	 * Ferme le domicile à la date indiquée
-	 * @param domicile le domicile d'établissement à fermer
-	 * @param dateFin la date de fin à utiliser
-	 */
-	void closeDomicileEtablissement(DomicileEtablissement domicile, RegDate dateFin);
-
-	/**
-	 * Crée un allègement fiscal sur l'entreprise passée en paramètre, avec les informations fournies
-	 * @param e l'entreprise destinataire
-	 * @param pourcentageAllegement le pourcentage d'allègement souhaité (0 -> 100)
-	 * @param typeCollectivite le type de collectivité (= portée de l'impôt) pour lequel l'allègement est demandé (<code>null</code> pour "TOUS")
-	 * @param typeImpot le type d'impôt concerné par l'allègement (<code>null</code> pour "TOUS")
-	 * @param noOfsCommune le numéro ofs de la commune (vaudoise), valide uniquement si le type de collectivité est {@link AllegementFiscal.TypeCollectivite#COMMUNE} (<code>null</code> pour "TOUTES")
-	 * @param dateDebut la date de début de la validité de l'allègement fiscal
-	 * @param dateFin la date de fin de la validité de l'allègement fiscal
-	 * @return l'allègement nouvellement créé
-	 */
-    AllegementFiscal addAllegementFiscal(Entreprise e,
-                                         BigDecimal pourcentageAllegement, AllegementFiscal.TypeCollectivite typeCollectivite, AllegementFiscal.TypeImpot typeImpot,
-                                         Integer noOfsCommune, RegDate dateDebut, RegDate dateFin);
-
-    /**
-     * Crée un allègement fiscal sur l'entreprise passée en paramètre, avec les informations fournies
-     * @param e l'entreprise destinataire
-     * @param pourcentageAllegement le pourcentage d'allègement souhaité (0 -> 100)
-     * @param typeCollectivite le type de collectivité (= portée de l'impôt) pour lequel l'allègement est demandé (<code>null</code> pour "TOUS")
-     * @param typeImpot le type d'impôt concerné par l'allègement (<code>null</code> pour "TOUS")
-     * @param noOfsCommune le numéro ofs de la commune (vaudoise), valide uniquement si le type de collectivité est {@link AllegementFiscal.TypeCollectivite#COMMUNE} (<code>null</code> pour "TOUTES")
-     * @param dateDebut la date de début de la validité de l'allègement fiscal
-     * @return l'allègement nouvellement créé
-     */
-    AllegementFiscal openAllegementFiscal(Entreprise e,
-                                          BigDecimal pourcentageAllegement, AllegementFiscal.TypeCollectivite typeCollectivite, AllegementFiscal.TypeImpot typeImpot,
-                                          Integer noOfsCommune, RegDate dateDebut);
-
-	/**
-	 * Ferme l'allègement fiscal à la date indiquée
-	 * @param af l'allègement fiscal à fermer
-	 * @param dateFin la date de fin à utiliser
-	 */
-	void closeAllegementFiscal(AllegementFiscal af, RegDate dateFin);
-
-    /**
-     * Annule l'allègement fiscal passé en paramètre
-     * @param af l'allègement fiscal à annuler
-     */
-    void annuleAllegementFiscal(AllegementFiscal af);
-
-    /**
-     * Crée un régime fiscal sur l'entreprise passée en paramètre avec les informations fournies
-     * @param e l'entreprise destinataire
-     * @param portee la portée du régime fiscal
-     * @param type le type de régime fiscal
-     * @param dateDebut la date de début de validité du régime fiscal
-     * @param dateFin la date de fin de validité du régime fiscal
-     * @return le régime fiscal nouvellement créé
-     */
-    RegimeFiscal addRegimeFiscal(Entreprise e, RegimeFiscal.Portee portee, TypeRegimeFiscal type, RegDate dateDebut, RegDate dateFin);
-
-    /**
-     * Crée un régime fiscal valide depuis la date donnée avec les informations fournies
-     * @param e l'entreprise destinataire
-     * @param portee la portée du régime fiscal
-     * @param type le type de régime fiscal
-     * @param dateDebut la date de début de validité du régime fiscal
-     * @return le régime fiscal nouvellement créé
-     */
-    RegimeFiscal openRegimeFiscal(Entreprise e, RegimeFiscal.Portee portee, TypeRegimeFiscal type, RegDate dateDebut);
-
-    /**
-     * Ferme le régime fiscal à la date indiquée
-     * @param rf le régime fiscal à fermer
-     * @param dateFin la date de fin à utiliser
-     */
-    void closeRegimeFiscal(RegimeFiscal rf, RegDate dateFin);
-
-    /**
-     * Annule le régime fiscal passé en paramètre
-     * @param rf le régime fiscal à annuler
-     */
-    void annuleRegimeFiscal(RegimeFiscal rf);
-
-    /**
-     * Crée un nouveau flag sur l'entreprise avec les données fournies
-     * @param e entreprise destinataire
-     * @param type le type de flag
-     * @param anneeDebut l'année de début de validité du flag (incluse)
-     * @param anneeFin (optionnelle) l'année de fin de validité du flag (incluse)
-     * @return le flag nouvellement créé
-     */
-    FlagEntreprise addFlagEntreprise(Entreprise e, TypeFlagEntreprise type, int anneeDebut, @Nullable Integer anneeFin);
-
-    /**
-     * Crée un flag valide depuis l'année donnée avec les informations fournies
-     * @param e entreprise destinataire
-     * @param type le type de flag
-     * @param anneeDebut l'année de début de validité du flag (incluse)
-     * @return le flag nouvellement créé
-     */
-    FlagEntreprise openFlagEntreprise(Entreprise e, TypeFlagEntreprise type, int anneeDebut);
-
-    /**
-     * Ferme le flag à l'année indiquée (incluse)
-     * @param flag le flag à clôturer
-     * @param anneeFin année de clôture
-     */
-    void closeFlagEntreprise(FlagEntreprise flag, int anneeFin);
-
-    /**
-     * Annule le flag entreprise passé en paramètre
-     * @param flag le flag à annuler
-     */
-    void annuleFlagEntreprise(FlagEntreprise flag);
-
-    /**
-     * L'historiques des données civiles fourni par RCEnt (en gros, rien avant leur reprise, quelque part en 2015...) ne nous permet pas de donner
-     * avec certitude les périodes pendant lesquelles une société avait une forme juridique correspondant à une société de personnes. En revanche,
-     * nous pouvons fournir les périodes connues pendant lesquelles on est sûr qu'elle n'était pas dans ce cas, pour au moins ne relâcher certaines
-     * contraintes qu'en dehors de ces périodes...
-     * @param entreprise une entreprise
-     * @return la liste des périodes (triées, non chevauchantes) pendant lesquelles on est certain que la société n'est pas une société de personnes (= SNC, SC)
-     */
-    List<DateRange> getPeriodesNonSocieteDePersonnes(Entreprise entreprise);
 
     /**
      * Permet de récuperer touts les contribuables ayant un lien d'au plus 5 ans avec le contribuable dont l'id est passéen paramètre
@@ -1643,38 +1402,5 @@ public interface TiersService {
      */
     Set<Contribuable> getContribuablesLies(Contribuable ctb, Integer ageLiaison);
 
-    /**
-     * @param entreprise une entreprise fiscale
-     * @return les données civiles de l'entreprise, ou <code>null</code> si cette entreprise est inconnue dans les registres civils
-     */
-    Organisation getOrganisation(@NotNull Entreprise entreprise);
-
-    Organisation getOrganisationPourSite(@NotNull Etablissement etablissement);
-
-    /**
-     * @param entreprise une entreprise fiscale
-     * @return le numéro IDE associé à l'entreprise, ou <code>null</code> si on n'en connait aucun
-     */
-    @Nullable
-    String getNumeroIDE(@NotNull Entreprise entreprise);
-
-    /**
-     * @param entreprise une entreprise fiscale
-     * @return la liste des données de capital de l'entreprise (en tenant compte des données civiles et d'éventuelles surcharges fiscales)
-     */
-    List<CapitalHisto> getCapitaux(@NotNull Entreprise entreprise);
-
-    /**
-     * @param entreprise une entreprise (fiscale)
-     * @param date une date de référence (si <code>null</code>, on prendra la date du jour)
-     * @return la catégorie d'entreprise associée, à la date donnée, à l'entreprise donnée
-     */
-    CategorieEntreprise getCategorieEntreprise(@NotNull Entreprise entreprise, RegDate date);
-
-    /**
-     * @param entreprise une entreprise (fiscale)
-     * @return l'historique des catégories d'entreprise
-     */
-    List<CategorieEntrepriseHisto> getCategoriesEntrepriseHisto(@NotNull Entreprise entreprise);
 }
 

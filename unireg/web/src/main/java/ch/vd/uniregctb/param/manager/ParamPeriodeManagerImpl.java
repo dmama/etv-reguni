@@ -16,17 +16,13 @@ import ch.vd.uniregctb.declaration.ModeleFeuilleDocument;
 import ch.vd.uniregctb.declaration.ModeleFeuilleDocumentDAO;
 import ch.vd.uniregctb.declaration.ParametrePeriodeFiscale;
 import ch.vd.uniregctb.declaration.ParametrePeriodeFiscaleDAO;
-import ch.vd.uniregctb.declaration.ParametrePeriodeFiscalePM;
-import ch.vd.uniregctb.declaration.ParametrePeriodeFiscalePP;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.declaration.PeriodeFiscaleDAO;
 import ch.vd.uniregctb.param.view.ModeleDocumentView;
 import ch.vd.uniregctb.param.view.ModeleFeuilleDocumentView;
-import ch.vd.uniregctb.param.view.ParametrePeriodeFiscalePMEditView;
-import ch.vd.uniregctb.param.view.ParametrePeriodeFiscalePPEditView;
+import ch.vd.uniregctb.param.view.ParametrePeriodeFiscaleView;
 import ch.vd.uniregctb.parametrage.PeriodeFiscaleService;
 import ch.vd.uniregctb.type.ModeleFeuille;
-import ch.vd.uniregctb.type.TypeContribuable;
 
 public class ParamPeriodeManagerImpl implements ParamPeriodeManager {
 
@@ -87,50 +83,32 @@ public class ParamPeriodeManagerImpl implements ParamPeriodeManager {
 
 	@Override
 	@Transactional(readOnly = true)
-	public ParametrePeriodeFiscalePP getPPDepenseByPeriodeFiscale(PeriodeFiscale periodeFiscale) {
-		return parametrePeriodeFiscaleDAO.getPPDepenseByPeriodeFiscale(periodeFiscale);
+	public ParametrePeriodeFiscale getDepenseByPeriodeFiscale(PeriodeFiscale periodeFiscale) {
+		return parametrePeriodeFiscaleDAO.getDepenseByPeriodeFiscale(periodeFiscale);
 	}
 
 	@Override
 	@Transactional(readOnly = true)
-	public ParametrePeriodeFiscalePP getPPHorsCantonByPeriodeFiscale(PeriodeFiscale periodeFiscale) {
-		return parametrePeriodeFiscaleDAO.getPPHorsCantonByPeriodeFiscale(periodeFiscale);
+	public ParametrePeriodeFiscale getHorsCantonByPeriodeFiscale(PeriodeFiscale periodeFiscale) {
+		return parametrePeriodeFiscaleDAO.getHorsCantonByPeriodeFiscale(periodeFiscale);
 	}
 
 	@Override
 	@Transactional(readOnly = true)
-	public ParametrePeriodeFiscalePP getPPHorsSuisseByPeriodeFiscale(PeriodeFiscale periodeFiscale) {
-		return parametrePeriodeFiscaleDAO.getPPHorsSuisseByPeriodeFiscale(periodeFiscale);
+	public ParametrePeriodeFiscale getHorsSuisseByPeriodeFiscale(PeriodeFiscale periodeFiscale) {
+		return parametrePeriodeFiscaleDAO.getHorsSuisseByPeriodeFiscale(periodeFiscale);
 	}
 
 	@Override
 	@Transactional(readOnly = true)
-	public ParametrePeriodeFiscalePP getPPDiplomateSuisseByPeriodeFiscale(PeriodeFiscale periodeFiscale) {
-		return parametrePeriodeFiscaleDAO.getPPDiplomateSuisseByPeriodeFiscale(periodeFiscale);
+	public ParametrePeriodeFiscale getDiplomateSuisseByPeriodeFiscale(PeriodeFiscale periodeFiscale) {
+		return parametrePeriodeFiscaleDAO.getDiplomateSuisseByPeriodeFiscale(periodeFiscale);
 	}
-
+	
 	@Override
 	@Transactional(readOnly = true)
-	public ParametrePeriodeFiscalePM getPMVaudByPeriodeFiscale(PeriodeFiscale periodeFiscale) {
-		return parametrePeriodeFiscaleDAO.getPMVaudByPeriodeFiscale(periodeFiscale);
-	}
-
-	@Override
-	@Transactional(readOnly = true)
-	public ParametrePeriodeFiscalePM getPMHorsCantonByPeriodeFiscale(PeriodeFiscale periodeFiscale) {
-		return parametrePeriodeFiscaleDAO.getPMHorsCantonByPeriodeFiscale(periodeFiscale);
-	}
-
-	@Override
-	@Transactional(readOnly = true)
-	public ParametrePeriodeFiscalePM getPMHorsSuisseByPeriodeFiscale(PeriodeFiscale periodeFiscale) {
-		return parametrePeriodeFiscaleDAO.getPMHorsSuisseByPeriodeFiscale(periodeFiscale);
-	}
-
-	@Override
-	@Transactional(readOnly = true)
-	public ParametrePeriodeFiscalePP getPPVaudByPeriodeFiscale(PeriodeFiscale periodeFiscale) {
-		return parametrePeriodeFiscaleDAO.getPPVaudByPeriodeFiscale(periodeFiscale);
+	public ParametrePeriodeFiscale getVaudByPeriodeFiscale(PeriodeFiscale periodeFiscale) {
+		return parametrePeriodeFiscaleDAO.getVaudByPeriodeFiscale(periodeFiscale);
 	}
 
 	public void setPeriodeFiscaleDAO(PeriodeFiscaleDAO periodeFiscaleDAO) {
@@ -155,67 +133,31 @@ public class ParamPeriodeManagerImpl implements ParamPeriodeManager {
 
 	@Override
 	@Transactional(readOnly = true)
-	public ParametrePeriodeFiscalePPEditView createParametrePeriodeFiscalePPEditView(Long idPeriode) {
-		ParametrePeriodeFiscalePPEditView ppfv = new ParametrePeriodeFiscalePPEditView();
+	public ParametrePeriodeFiscaleView createParametrePeriodeFiscaleViewEdit(Long idPeriode) {
+		ParametrePeriodeFiscaleView ppfv = new ParametrePeriodeFiscaleView();
 		PeriodeFiscale pf = retrievePeriodeFromDAO(idPeriode);
 
 		ppfv.setIdPeriodeFiscale(pf.getId());
 		ppfv.setAnneePeriodeFiscale(pf.getAnnee());
 		ppfv.setCodeControleSurSommationDI(pf.isShowCodeControleSommationDeclaration());
 
-		ppfv.setFinEnvoiMasseDIDepense(pf.getParametrePeriodeFiscalePPDepense().getDateFinEnvoiMasseDI());
-		ppfv.setFinEnvoiMasseDIDiplomate(pf.getParametrePeriodeFiscalePPDiplomateSuisse().getDateFinEnvoiMasseDI());
-		ppfv.setFinEnvoiMasseDIHorsCanton(pf.getParametrePeriodeFiscalePPHorsCanton().getDateFinEnvoiMasseDI());
-		ppfv.setFinEnvoiMasseDIHorsSuisse(pf.getParametrePeriodeFiscalePPHorsSuisse().getDateFinEnvoiMasseDI());
-		ppfv.setFinEnvoiMasseDIVaud(pf.getParametrePeriodeFiscalePPVaudoisOrdinaire().getDateFinEnvoiMasseDI());
+		ppfv.setFinEnvoiMasseDIDepense(pf.getParametrePeriodeFiscaleDepense().getDateFinEnvoiMasseDI());
+		ppfv.setFinEnvoiMasseDIDiplomate(pf.getParametrePeriodeFiscaleDiplomateSuisse().getDateFinEnvoiMasseDI());
+		ppfv.setFinEnvoiMasseDIHorsCanton(pf.getParametrePeriodeFiscaleHorsCanton().getDateFinEnvoiMasseDI());
+		ppfv.setFinEnvoiMasseDIHorsSuisse(pf.getParametrePeriodeFiscaleHorsSuisse().getDateFinEnvoiMasseDI());
+		ppfv.setFinEnvoiMasseDIVaud(pf.getParametrePeriodeFiscaleVaud().getDateFinEnvoiMasseDI());
 
-		ppfv.setSommationEffectiveDepense(pf.getParametrePeriodeFiscalePPDepense().getTermeGeneralSommationEffectif());
-		ppfv.setSommationEffectiveDiplomate(pf.getParametrePeriodeFiscalePPDiplomateSuisse().getTermeGeneralSommationEffectif());
-		ppfv.setSommationEffectiveHorsCanton(pf.getParametrePeriodeFiscalePPHorsCanton().getTermeGeneralSommationEffectif());
-		ppfv.setSommationEffectiveHorsSuisse(pf.getParametrePeriodeFiscalePPHorsSuisse().getTermeGeneralSommationEffectif());
-		ppfv.setSommationEffectiveVaud(pf.getParametrePeriodeFiscalePPVaudoisOrdinaire().getTermeGeneralSommationEffectif());
+		ppfv.setSommationEffectiveDepense(pf.getParametrePeriodeFiscaleDepense().getTermeGeneralSommationEffectif());
+		ppfv.setSommationEffectiveDiplomate(pf.getParametrePeriodeFiscaleDiplomateSuisse().getTermeGeneralSommationEffectif());
+		ppfv.setSommationEffectiveHorsCanton(pf.getParametrePeriodeFiscaleHorsCanton().getTermeGeneralSommationEffectif());
+		ppfv.setSommationEffectiveHorsSuisse(pf.getParametrePeriodeFiscaleHorsSuisse().getTermeGeneralSommationEffectif());
+		ppfv.setSommationEffectiveVaud(pf.getParametrePeriodeFiscaleVaud().getTermeGeneralSommationEffectif());
 
-		ppfv.setSommationReglementaireDepense(pf.getParametrePeriodeFiscalePPDepense().getTermeGeneralSommationReglementaire());
-		ppfv.setSommationReglementaireDiplomate(pf.getParametrePeriodeFiscalePPDiplomateSuisse().getTermeGeneralSommationReglementaire());
-		ppfv.setSommationReglementaireHorsCanton(pf.getParametrePeriodeFiscalePPHorsCanton().getTermeGeneralSommationReglementaire());
-		ppfv.setSommationReglementaireHorsSuisse(pf.getParametrePeriodeFiscalePPHorsSuisse().getTermeGeneralSommationReglementaire());
-		ppfv.setSommationReglementaireVaud(pf.getParametrePeriodeFiscalePPVaudoisOrdinaire().getTermeGeneralSommationReglementaire());
-
-		return ppfv;
-	}
-
-	@Override
-	@Transactional(readOnly = true)
-	public ParametrePeriodeFiscalePMEditView createParametrePeriodeFiscalePMEditView(Long idPeriode) {
-		final ParametrePeriodeFiscalePMEditView ppfv = new ParametrePeriodeFiscalePMEditView();
-		final PeriodeFiscale pf = retrievePeriodeFromDAO(idPeriode);
-
-		ppfv.setIdPeriodeFiscale(idPeriode);
-		ppfv.setAnneePeriodeFiscale(pf.getAnnee());
-
-		final ParametrePeriodeFiscalePM hc = pf.getParametrePeriodeFiscalePM(TypeContribuable.HORS_CANTON);
-		if (hc != null) {
-			ppfv.setDelaiImprimeMoisHorsCanton(hc.getDelaiImprimeMoisDepuisBouclement());
-			ppfv.setDelaiImprimeRepousseFinDeMoisHorsCanton(hc.isDelaiImprimeRepousseFinDeMois());
-			ppfv.setToleranceJoursHorsCanton(hc.getDelaiToleranceJoursEffective());
-			ppfv.setToleranceRepousseeFinDeMoisHorsCanton(hc.isDelaiTolereRepousseFinDeMois());
-		}
-
-		final ParametrePeriodeFiscalePM hs = pf.getParametrePeriodeFiscalePM(TypeContribuable.HORS_SUISSE);
-		if (hs != null) {
-			ppfv.setDelaiImprimeMoisHorsSuisse(hs.getDelaiImprimeMoisDepuisBouclement());
-			ppfv.setDelaiImprimeRepousseFinDeMoisHorsSuisse(hs.isDelaiImprimeRepousseFinDeMois());
-			ppfv.setToleranceJoursHorsSuisse(hs.getDelaiToleranceJoursEffective());
-			ppfv.setToleranceRepousseeFinDeMoisHorsSuisse(hs.isDelaiTolereRepousseFinDeMois());
-		}
-
-		final ParametrePeriodeFiscalePM vd = pf.getParametrePeriodeFiscalePM(TypeContribuable.VAUDOIS_ORDINAIRE);
-		if (vd != null) {
-			ppfv.setDelaiImprimeMoisVaud(vd.getDelaiImprimeMoisDepuisBouclement());
-			ppfv.setDelaiImprimeRepousseFinDeMoisVaud(vd.isDelaiImprimeRepousseFinDeMois());
-			ppfv.setToleranceJoursVaud(vd.getDelaiToleranceJoursEffective());
-			ppfv.setToleranceRepousseeFinDeMoisVaud(vd.isDelaiTolereRepousseFinDeMois());
-		}
+		ppfv.setSommationReglementaireDepense(pf.getParametrePeriodeFiscaleDepense().getTermeGeneralSommationReglementaire());
+		ppfv.setSommationReglementaireDiplomate(pf.getParametrePeriodeFiscaleDiplomateSuisse().getTermeGeneralSommationReglementaire());
+		ppfv.setSommationReglementaireHorsCanton(pf.getParametrePeriodeFiscaleHorsCanton().getTermeGeneralSommationReglementaire());
+		ppfv.setSommationReglementaireHorsSuisse(pf.getParametrePeriodeFiscaleHorsSuisse().getTermeGeneralSommationReglementaire());
+		ppfv.setSommationReglementaireVaud(pf.getParametrePeriodeFiscaleVaud().getTermeGeneralSommationReglementaire());
 
 		return ppfv;
 	}
@@ -255,19 +197,19 @@ public class ParamPeriodeManagerImpl implements ParamPeriodeManager {
 
 	@Override
 	@Transactional(rollbackFor = Throwable.class)
-	public void saveParametrePeriodeFiscaleView(ParametrePeriodeFiscalePPEditView ppfv) {
+	public void saveParametrePeriodeFiscaleView(ParametrePeriodeFiscaleView ppfv) {
 
 		// ATTENTION : L'ordre des elements dans les tableaux est primordiale pour le bon fonctionnement de l'algo
 
 		final PeriodeFiscale pf = periodeFiscaleDAO.get(ppfv.getIdPeriodeFiscale());
 		pf.setShowCodeControleSommationDeclaration(ppfv.isCodeControleSurSommationDI());
 
-		final ParametrePeriodeFiscalePP[] ppfs = new ParametrePeriodeFiscalePP[] {
-				pf.getParametrePeriodeFiscalePPVaudoisOrdinaire(),
-				pf.getParametrePeriodeFiscalePPHorsCanton(),
-				pf.getParametrePeriodeFiscalePPHorsSuisse(),
-				pf.getParametrePeriodeFiscalePPDepense(),
-				pf.getParametrePeriodeFiscalePPDiplomateSuisse()
+		final ParametrePeriodeFiscale[] ppfs = new ParametrePeriodeFiscale[] {
+				pf.getParametrePeriodeFiscaleVaud(),
+				pf.getParametrePeriodeFiscaleHorsCanton(),
+				pf.getParametrePeriodeFiscaleHorsSuisse(),
+				pf.getParametrePeriodeFiscaleDepense(),
+				pf.getParametrePeriodeFiscaleDiplomateSuisse()
 		};
 
 		final RegDate[][] termes = new RegDate [][] {
@@ -281,9 +223,9 @@ public class ParamPeriodeManagerImpl implements ParamPeriodeManager {
 		assert (ppfs.length == termes.length);
 
 		// On verifie que tous les parametres de periode fiscale ne soient pas null
-		for (ParametrePeriodeFiscalePP ppf : ppfs) {
+		for (ParametrePeriodeFiscale ppf : ppfs) {
 			if (ppf == null) {
-				String msgErr = "Impossible de retrouver tous les paramétres PP pour la période fiscale : " + ppfv.getAnneePeriodeFiscale();
+				String msgErr = "Impossible de retrouver tous les paramétres pour la période fiscale : " + ppfv.getAnneePeriodeFiscale();
 				LOGGER.error(msgErr);
 				throw new ObjectNotFoundException(msgErr);
 			}
@@ -299,49 +241,6 @@ public class ParamPeriodeManagerImpl implements ParamPeriodeManager {
 		// Sauvegarde
 		for (ParametrePeriodeFiscale ppf : ppfs) {
 			parametrePeriodeFiscaleDAO.save(ppf);
-		}
-	}
-
-	@Override
-	@Transactional(rollbackFor = Throwable.class)
-	public void saveParametrePeriodeFiscaleView(ParametrePeriodeFiscalePMEditView view) {
-
-		// ATTENTION à l'ordre des évéments dans les différents tableaux, qui doivent se correspondre...
-
-		final PeriodeFiscale pf = periodeFiscaleDAO.get(view.getIdPeriodeFiscale());
-		final ParametrePeriodeFiscalePM[] ppfs = new ParametrePeriodeFiscalePM[] {
-				pf.getParametrePeriodeFiscalePM(TypeContribuable.VAUDOIS_ORDINAIRE),
-				pf.getParametrePeriodeFiscalePM(TypeContribuable.HORS_CANTON),
-				pf.getParametrePeriodeFiscalePM(TypeContribuable.HORS_SUISSE)
-		};
-
-		final int[][] delais = new int[][] {
-				{view.getDelaiImprimeMoisVaud(), view.getToleranceJoursVaud()},
-				{view.getDelaiImprimeMoisHorsCanton(), view.getToleranceJoursHorsCanton()},
-				{view.getDelaiImprimeMoisHorsSuisse(), view.getToleranceJoursHorsSuisse()}
-		};
-
-		final boolean[][] reportsFinDeMois = new boolean[][] {
-				{view.getDelaiImprimeRepousseFinDeMoisVaud(), view.getToleranceRepousseeFinDeMoisVaud()},
-				{view.getDelaiImprimeRepousseFinDeMoisHorsCanton(), view.getToleranceRepousseeFinDeMoisHorsCanton()},
-				{view.getDelaiImprimeRepousseFinDeMoisHorsSuisse(), view.getToleranceRepousseeFinDeMoisHorsSuisse()}
-		};
-
-		// On verifie que tous les parametres de periode fiscale ne soient pas null
-		for (ParametrePeriodeFiscalePM ppf : ppfs) {
-			if (ppf == null) {
-				final String msgErr = "Impossible de retrouver tous les paramétres PM pour la période fiscale : " + pf.getAnnee();
-				LOGGER.error(msgErr);
-				throw new ObjectNotFoundException(msgErr);
-			}
-		}
-
-		// mise à jour des paramètres
-		for (int i = 0 ; i < ppfs.length ; ++ i) {
-			ppfs[i].setDelaiImprimeMoisDepuisBouclement(delais[i][0]);
-			ppfs[i].setDelaiImprimeRepousseFinDeMois(reportsFinDeMois[i][0]);
-			ppfs[i].setDelaiToleranceJoursEffective(delais[i][1]);
-			ppfs[i].setDelaiTolereRepousseFinDeMois(reportsFinDeMois[i][1]);
 		}
 	}
 

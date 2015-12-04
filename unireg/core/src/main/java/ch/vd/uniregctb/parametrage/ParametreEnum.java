@@ -8,9 +8,7 @@ import java.util.Arrays;
  */
 public enum ParametreEnum {
 
-	premierePeriodeFiscalePersonnesPhysiques("2003", Type.annee, false),
-	premierePeriodeFiscalePersonnesMorales("2009", Type.annee, false),
-	premierePeriodeFiscaleDeclarationPersonnesMorales("2016", Type.annee, false),
+	premierePeriodeFiscale("2003", Type.annee, false),
 
 	noel("25.12", Type.jourDansAnnee, false),
 	nouvelAn("01.01", Type.jourDansAnnee, false),
@@ -23,12 +21,8 @@ public enum ParametreEnum {
 	delaiAttenteDeclarationImpotPersonneDecedee("30", Type.delaisEnJour, true),
 	delaiRetourDeclarationImpotEmiseManuellement("60", Type.delaisEnJour, true),
 	delaiCadevImpressionDeclarationImpot("3", Type.delaisEnJour, true),
-	delaiEnvoiSommationDeclarationImpotPP("15", Type.delaisEnJour, true),
-	delaiEcheanceSommationDeclarationImpotPP("30", Type.delaisEnJour, true),
-
-	delaiMinimalRetourDeclarationImpotPM("3", Type.delaisEnMois, true),
-	delaiEnvoiSommationDeclarationImpotPM("15", Type.delaisEnJour, true),
-	delaiEcheanceSommationDeclarationImpotPM("30", Type.delaisEnJour, true),
+	delaiEnvoiSommationDeclarationImpot("15", Type.delaisEnJour, true),
+	delaiEcheanceSommationDeclarationImpot("30", Type.delaisEnJour, true),
 
 	jourDuMoisEnvoiListesRecapitulatives("20", Type.jourDansMois, true),
  	delaiCadevImpressionListesRecapitulatives("3", Type.delaisEnJour, true),

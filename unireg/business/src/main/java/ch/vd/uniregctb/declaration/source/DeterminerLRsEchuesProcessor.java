@@ -132,7 +132,7 @@ public class DeterminerLRsEchuesProcessor {
 
 	/**
 	 * Traite un débiteur : vérifie s'il a encore des LR qui doivent être émises et, si ce n'est pas le cas
-	 * envoie des événements fiscaux "LR échue" pour toutes les LR échues
+	 * envoie des événements fiscaux "LR_MANQUANTE" pour toutes les LR échues
 	 * @param rapport
 	 * @param infoDebiteur
 	 * @param dateTraitement
@@ -162,7 +162,7 @@ public class DeterminerLRsEchuesProcessor {
 					lr.addEtat(etat);
 
 					// publication d'un événement fiscal
-					evenementFiscalService.publierEvenementFiscalEcheanceListeRecapitulative(lr, dateTraitement);
+					evenementFiscalService.publierEvenementFiscalLRManquante(dpi, lr, dateTraitement);
 
 					// génération du rapport d'exécution
 					rapport.addLrEchue(dpi, lr);
@@ -190,7 +190,7 @@ public class DeterminerLRsEchuesProcessor {
 			b.append(" JOIN PERIODE_FISCALE PF ON LR.PERIODE_ID = PF.ID AND PF.ANNEE=:pf");
 		}
 		b.append(" WHERE LR.DOCUMENT_TYPE='LR' AND LR.ANNULATION_DATE IS NULL");
-		b.append(" AND NOT EXISTS (SELECT 1 FROM ETAT_DECLARATION ED WHERE ED.DECLARATION_ID = LR.ID AND ED.ANNULATION_DATE IS NULL AND ED.TYPE IN ('RETOURNEE', 'ECHUE', 'SUSPENDUE'))");
+		b.append(" AND NOT EXISTS (SELECT 1 FROM ETAT_DECLARATION ED WHERE ED.DECLARATION_ID = LR.ID AND ED.ANNULATION_DATE IS NULL AND ED.TYPE IN ('RETOURNEE', 'ECHUE'))");
 		b.append(" ORDER BY LR.TIERS_ID, LR.DATE_DEBUT");
 		final String sql = b.toString();
 

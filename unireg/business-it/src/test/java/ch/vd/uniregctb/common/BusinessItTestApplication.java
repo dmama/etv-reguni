@@ -154,7 +154,7 @@ public abstract class BusinessItTestApplication {
 		}
 		loadDataSet(file);
 
-		databaseService.ensureSequencesUpToDate(true, true, true, true, true);
+		databaseService.ensureSequencesUpToDate(true, true, true);
 	}
 
 	/**
@@ -213,6 +213,6 @@ public abstract class BusinessItTestApplication {
 	}
 
 	protected void reindexDatabase() {
-		indexer.indexAllDatabase(null, 4, Mode.INCREMENTAL);
+		indexer.indexAllDatabase(null, 4, Mode.INCREMENTAL, false);
 	}
 }

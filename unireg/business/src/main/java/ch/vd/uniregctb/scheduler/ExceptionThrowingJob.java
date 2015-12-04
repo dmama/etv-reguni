@@ -10,9 +10,10 @@ public class ExceptionThrowingJob extends JobDefinition {
 	private final Logger LOGGER = LoggerFactory.getLogger(ExceptionThrowingJob.class);
 
 	public static final String NAME = "ExceptionThrowing";
+	private static final String CATEGORIE = "Debug";
 
 	public ExceptionThrowingJob(int sortOrder) {
-		super(NAME, JobCategory.DEBUG, sortOrder, "Envoyer une exception (Pour le test)");
+		super(NAME, CATEGORIE, sortOrder, "Envoyer une exception (Pour le test)");
 	}
 
 	@Override

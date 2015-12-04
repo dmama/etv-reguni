@@ -11,7 +11,7 @@
 		<groupId>ch.vd.uniregctb</groupId>
 		<artifactId>uniregctb</artifactId>
 		<!-- BEGIN_LVERSION -->
-		<version>6.0.6-SNAPSHOT</version>
+		<version>5.15.1-SNAPSHOT</version>
 		<!-- END_LVERSION -->
 		<relativePath>../base/pom.xml</relativePath>
 	</parent>
@@ -43,11 +43,6 @@
 			<version>5.1</version>
 		</dependency>
 		<dependency>
-			<groupId>ch.vd.uniregctb</groupId>
-			<artifactId>unireg-adapter-rcent</artifactId>
-			<version>1.4-SNAPSHOT</version>
-		</dependency>
-		<dependency>
 			<groupId>ch.vd.host-interfaces</groupId>
 			<artifactId>host-interfaces-client</artifactId>
 			<version>${host-interfaces.version-long}</version>
@@ -55,19 +50,12 @@
 		<dependency>
 			<groupId>ch.vd.uniregctb</groupId>
 			<artifactId>unireg-jaxb2-cyber</artifactId>
-			<version>4.4-SNAPSHOT</version>
+			<version>3.5</version>
 		</dependency>
 		<dependency>
 			<groupId>ch.vd.registre</groupId>
 			<artifactId>shared-jmx-common</artifactId>
 			<version>4.0.0</version>
-			<exclusions>
-				<exclusion>
-					<!-- repris dans ch.vd.shared / shared-base ensuite -->
-					<groupId>ch.vd.registre</groupId>
-					<artifactId>shared-base</artifactId>
-				</exclusion>
-			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>commons-codec</groupId>
@@ -113,14 +101,6 @@
 			<artifactId>xalan</artifactId>
 			<version>2.7.1</version>
 		</dependency>
-		<!-- Test dependencies -->
-		<dependency>
-			<groupId>org.hamcrest</groupId>
-			<artifactId>hamcrest-junit</artifactId>
-			<version>2.0.0.0</version>
-			<scope>test</scope>
-		</dependency>
-
 	</dependencies>
 
 	<!-- Build plugins and sources -->
@@ -141,6 +121,7 @@
 					</execution>
 				</executions>
 			</plugin>
+
 		</plugins>
 
 		<!-- Build resources -->

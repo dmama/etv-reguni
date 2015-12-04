@@ -9,10 +9,10 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.utils.Pair;
+import ch.vd.unireg.interfaces.civil.data.Adresse;
 import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.unireg.interfaces.civil.data.Localisation;
 import ch.vd.unireg.interfaces.civil.data.LocalisationType;
-import ch.vd.unireg.interfaces.common.Adresse;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.uniregctb.adresse.AdressesCiviles;
@@ -34,7 +34,6 @@ import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
@@ -390,7 +389,7 @@ public class ArriveePrincipale extends Arrivee {
 
 			MotifFor motifOuverture = getMotifOuvertureFor();
 			final int numeroOfsNouveau = nouvelleCommune.getNoOFS();
-			final ForFiscalPrincipalPP forFiscal = habitant.getForFiscalPrincipalAt(null);
+			final ForFiscalPrincipal forFiscal = habitant.getForFiscalPrincipalAt(null);
 
 			// détermination du mode d'imposition
 			final ModeImposition modeImposition;
@@ -511,9 +510,9 @@ public class ArriveePrincipale extends Arrivee {
 
 			final PersonnePhysique principal = ensemble.getPrincipal();
 			final PersonnePhysique conjoint = ensemble.getConjoint();
-			final ForFiscalPrincipalPP ffpHabitantPrincipal = principal.getForFiscalPrincipalAt(null);
-			final ForFiscalPrincipalPP ffpHabitantConjoint = (conjoint == null ? null : conjoint.getForFiscalPrincipalAt(null));
-			final ForFiscalPrincipalPP ffpMenage = menageCommun.getForFiscalPrincipalAt(null);
+			final ForFiscalPrincipal ffpHabitantPrincipal = principal.getForFiscalPrincipalAt(null);
+			final ForFiscalPrincipal ffpHabitantConjoint = (conjoint == null ? null : conjoint.getForFiscalPrincipalAt(null));
+			final ForFiscalPrincipal ffpMenage = menageCommun.getForFiscalPrincipalAt(null);
 			final int numeroOfsNouveau = commune.getNoOFS();
 
 			// pour un couple, le for principal est toujours sur le ménage commun

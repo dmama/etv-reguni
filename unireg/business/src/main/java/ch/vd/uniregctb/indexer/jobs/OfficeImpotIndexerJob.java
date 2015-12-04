@@ -3,7 +3,6 @@ package ch.vd.uniregctb.indexer.jobs;
 import java.util.Map;
 
 import ch.vd.uniregctb.indexer.tiers.OfficeImpotIndexer;
-import ch.vd.uniregctb.scheduler.JobCategory;
 import ch.vd.uniregctb.scheduler.JobDefinition;
 import ch.vd.uniregctb.scheduler.JobParam;
 import ch.vd.uniregctb.scheduler.JobParamBoolean;
@@ -16,6 +15,7 @@ import ch.vd.uniregctb.scheduler.JobParamBoolean;
 public class OfficeImpotIndexerJob extends JobDefinition {
 
 	public static final String NAME = "OfficeImpotIndexerJob";
+	private static final String CATEGORIE = "OID";
 
 	public static final String FORCE_ALL = "FORCE_ALL";
 
@@ -26,7 +26,7 @@ public class OfficeImpotIndexerJob extends JobDefinition {
 	}
 
 	public OfficeImpotIndexerJob(int sortOrder, String description) {
-		super(NAME, JobCategory.OID, sortOrder, description);
+		super(NAME, CATEGORIE, sortOrder, description);
 
 		final JobParam param = new JobParam();
 		param.setDescription("Force la mise-à-jour de tous les tiers");

@@ -2,7 +2,6 @@ package ch.vd.uniregctb.tache.sync;
 
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaireDAO;
 import ch.vd.uniregctb.declaration.PeriodeFiscaleDAO;
-import ch.vd.uniregctb.declaration.QuestionnaireSNCDAO;
 import ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotService;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.Contribuable;
@@ -16,18 +15,16 @@ public class Context {
 	public final DeclarationImpotService diService;
 	public final CollectiviteAdministrative officeSuccessions;
 	public final DeclarationImpotOrdinaireDAO diDAO;
-	public final QuestionnaireSNCDAO qsncDAO;
 	public final PeriodeFiscaleDAO periodeFiscaleDAO;
 
 	public Context(Contribuable contribuable, CollectiviteAdministrative collectivite, TacheDAO tacheDAO, DeclarationImpotService diService, CollectiviteAdministrative officeSuccessions,
-	               DeclarationImpotOrdinaireDAO diDAO, QuestionnaireSNCDAO qsncDAO, PeriodeFiscaleDAO periodeFiscaleDAO) {
+	               DeclarationImpotOrdinaireDAO diDAO, PeriodeFiscaleDAO periodeFiscaleDAO) {
 		this.contribuable = contribuable;
 		this.collectivite = collectivite;
 		this.tacheDAO = tacheDAO;
 		this.diService = diService;
 		this.officeSuccessions = officeSuccessions;
 		this.diDAO = diDAO;
-		this.qsncDAO = qsncDAO;
 		this.periodeFiscaleDAO = periodeFiscaleDAO;
 	}
 }

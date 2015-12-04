@@ -2,14 +2,10 @@ package ch.vd.uniregctb.tache.sync;
 
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
-import ch.vd.uniregctb.declaration.QuestionnaireSNC;
 import ch.vd.uniregctb.tiers.Tache;
 import ch.vd.uniregctb.tiers.TacheAnnulationDeclarationImpot;
-import ch.vd.uniregctb.tiers.TacheAnnulationQuestionnaireSNC;
 import ch.vd.uniregctb.tiers.TacheControleDossier;
-import ch.vd.uniregctb.tiers.TacheEnvoiDeclarationImpotPM;
-import ch.vd.uniregctb.tiers.TacheEnvoiDeclarationImpotPP;
-import ch.vd.uniregctb.tiers.TacheEnvoiQuestionnaireSNC;
+import ch.vd.uniregctb.tiers.TacheEnvoiDeclarationImpot;
 import ch.vd.uniregctb.tiers.TacheNouveauDossier;
 import ch.vd.uniregctb.tiers.TacheTransmissionDossier;
 import ch.vd.uniregctb.type.TypeContribuable;
@@ -46,36 +42,14 @@ public class AnnuleTache extends SynchronizeAction {
 		final String tacheDetail;
 		if (tache instanceof TacheAnnulationDeclarationImpot) {
 			final TacheAnnulationDeclarationImpot annule = (TacheAnnulationDeclarationImpot) tache;
-			final DeclarationImpotOrdinaire di = annule.getDeclaration();
-			tacheDetail = String.format("d'annulation de la déclaration d'impôt %s couvrant la période du %s au %s",
-			                            toString(di.getTypeContribuable()),
-			                            RegDateHelper.dateToDisplayString(di.getDateDebut()),
-			                            RegDateHelper.dateToDisplayString(di.getDateFin()));
+			final DeclarationImpotOrdinaire di = annule.getDeclarationImpotOrdinaire();
+			tacheDetail = String.format("d'annulation de la déclaration d'impôt %s couvrant la période du %s au %s", toString(di.getTypeContribuable()),
+					RegDateHelper.dateToDisplayString(di.getDateDebut()), RegDateHelper.dateToDisplayString(di.getDateFin()));
 		}
-		else if (tache instanceof TacheAnnulationQuestionnaireSNC) {
-			final TacheAnnulationQuestionnaireSNC annule = (TacheAnnulationQuestionnaireSNC) tache;
-			final QuestionnaireSNC q = annule.getDeclaration();
-			tacheDetail = String.format("d'annulation du questionnaire SNC couvrant la période du %s au %s",
-			                            RegDateHelper.dateToDisplayString(q.getDateDebut()),
-			                            RegDateHelper.dateToDisplayString(q.getDateFin()));
-		}
-		else if (tache instanceof TacheEnvoiDeclarationImpotPP) {
-			final TacheEnvoiDeclarationImpotPP envoi = (TacheEnvoiDeclarationImpotPP) tache;
-			tacheDetail = String.format("d'envoi de la déclaration d'impôt PP %s couvrant la période du %s au %s", toString(envoi.getTypeContribuable()),
+		else if (tache instanceof TacheEnvoiDeclarationImpot) {
+			final TacheEnvoiDeclarationImpot envoi = (TacheEnvoiDeclarationImpot) tache;
+			tacheDetail = String.format("d'envoi de la déclaration d'impôt %s couvrant la période du %s au %s", toString(envoi.getTypeContribuable()),
 					RegDateHelper.dateToDisplayString(envoi.getDateDebut()), RegDateHelper.dateToDisplayString(envoi.getDateFin()));
-		}
-		else if (tache instanceof TacheEnvoiDeclarationImpotPM) {
-			final TacheEnvoiDeclarationImpotPM envoi = (TacheEnvoiDeclarationImpotPM) tache;
-			tacheDetail = String.format("d'envoi de la %s %s couvrant la période du %s au %s",
-			                            envoi.getTypeDocument().getDescription(),
-			                            toString(envoi.getTypeContribuable()),
-			                            RegDateHelper.dateToDisplayString(envoi.getDateDebut()),
-			                            RegDateHelper.dateToDisplayString(envoi.getDateFin()));
-		}
-		else if (tache instanceof TacheEnvoiQuestionnaireSNC) {
-			final TacheEnvoiQuestionnaireSNC envoi = (TacheEnvoiQuestionnaireSNC) tache;
-			tacheDetail = String.format("d'envoi du questionnaire SNC couvrant la période du %s au %s",
-			                            RegDateHelper.dateToDisplayString(envoi.getDateDebut()), RegDateHelper.dateToDisplayString(envoi.getDateFin()));
 		}
 		else if (tache instanceof TacheControleDossier) {
 			tacheDetail = "de contrôle de dossier";
@@ -88,7 +62,7 @@ public class AnnuleTache extends SynchronizeAction {
 			tacheDetail = "de transmission de dossier";
 		}
 		else {
-			throw new IllegalArgumentException("Type de tâche inconnue = [" + tache.getClass().getSimpleName() + ']');
+			throw new IllegalArgumentException("Type de tache inconnue = [" + tache.getClass().getSimpleName() + ']');
 		}
 
 		return "annulation de la tâche " + tacheDetail;

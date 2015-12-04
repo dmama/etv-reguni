@@ -4,8 +4,8 @@ import java.util.EnumSet;
 import java.util.Set;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.interfaces.civil.data.Adresse;
 import ch.vd.unireg.interfaces.civil.data.Individu;
-import ch.vd.unireg.interfaces.common.Adresse;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.uniregctb.adresse.AdressesCiviles;
 import ch.vd.uniregctb.audit.Audit;
@@ -16,9 +16,8 @@ import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchFacade;
 import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
-import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
+import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
@@ -101,7 +100,7 @@ public class DepartSecondaire extends Depart {
 
 
 	@Override
-	protected RegDate doHandleFermetureFors(PersonnePhysique pp, ContribuableImpositionPersonnesPhysiques ctb, RegDate dateFermeture, MotifFor motifFermeture) throws EvenementCivilException {
+	protected RegDate doHandleFermetureFors(PersonnePhysique pp, Contribuable ctb, RegDate dateFermeture, MotifFor motifFermeture) throws EvenementCivilException {
 		Audit.info(getNumeroEvenement(), "Traitement du départ secondaire");
 		handleDepartResidenceSecondaire(pp, ctb, dateFermeture, motifFermeture);
 		return dateFermeture;
@@ -110,19 +109,24 @@ public class DepartSecondaire extends Depart {
 	/**
 	 * Traite un depart d'une residence secondaire
 	 */
-	private void handleDepartResidenceSecondaire(PersonnePhysique pp, ContribuableImpositionPersonnesPhysiques contribuable, RegDate dateFermeture, MotifFor motifFermeture) throws EvenementCivilException {
-
-		// For principal est sur la commune de départ d'une résidence secondaire
-		final ForFiscalPrincipal forPrincipal = contribuable.getForFiscalPrincipalAt(dateFermeture);
+	private void handleDepartResidenceSecondaire(PersonnePhysique pp, Contribuable contribuable, RegDate dateFermeture, MotifFor motifFermeture) throws EvenementCivilException {
 
 		//SIFISC-15850
 		//Dans le cas ou le départ n'est pas complet on ne fait rien, on ne touche à rien
+
 		if (getDateDepartComplet(true) != null) {
+
+			final ForFiscalPrincipal forPrincipal = contribuable.getForFiscalPrincipalAt(dateFermeture);
+			// For principal est sur la commune de départ d'une résidence secondaire
+
+			//TODO (BNM) attention si depart.getNumeroOfsCommuneAnnonce correspond à une commune avec des fractions
+			//ce cas d'arrangement fiscal ne sera pas détecté, il faut mettre l'événement en erreur pour
+			//traitement manuel
 
 			if (forPrincipal != null && forPrincipal.getNumeroOfsAutoriteFiscale().equals(getNumeroOfsEntiteForAnnonce())) {
 
 				final Commune commune = (estEnSuisse() ? getNouvelleCommune() : null);
-				final ForFiscalPrincipalPP ffp = contribuable.getForFiscalPrincipalAt(null);
+				final ForFiscalPrincipal ffp = contribuable.getForFiscalPrincipalAt(null);
 
 				// [UNIREG-1921] si la commune du for principal ne change pas suite au départ secondaire, rien à faire!
 				if (commune != null && ffp.getNumeroOfsAutoriteFiscale() == commune.getNoOFS() && commune.isVaudoise() && ffp.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {

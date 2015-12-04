@@ -11,7 +11,7 @@ import ch.vd.uniregctb.security.IfoSecProfil;
 
 public interface ServiceSecuriteService {
 
-	String SERVICE_NAME = "ServiceSecurite";
+	public static final String SERVICE_NAME = "ServiceSecurite";
 
 	/**
 	 * Retourne la liste des collectivités administrative d'un opérateur.
@@ -48,7 +48,7 @@ public interface ServiceSecuriteService {
 	 * @param typesCollectivite
 	 * @return la liste des utilisateurs
 	 */
-	List<Operateur> getUtilisateurs(List<EnumTypeCollectivite> typesCollectivite) ;
+	public List<Operateur> getUtilisateurs(List<EnumTypeCollectivite> typesCollectivite) ;
 
     /**
 	 * Retourne l'operateur pour l'indivu passé en paramètre.

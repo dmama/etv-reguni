@@ -36,6 +36,6 @@ public class WatchDogUniregIntegrationPostProductionTest extends WatchDogTest {
 		LOGGER.info("Vérification de la connectivité de Unireg en intégration de post-production...");
 
 		// on ne vérifie plus le service SIPF en i2, ils ne sont pas assez souvent là...
-		checkStatus("slv2655v", 54609, false, "serviceBVRPlus");
+		checkStatus("ssv0309v", 54609, false, "serviceBVRPlus");
 	}
 }

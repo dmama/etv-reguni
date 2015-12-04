@@ -9,22 +9,22 @@ import ch.vd.uniregctb.metier.common.ForFiscalPrincipalContext;
 import ch.vd.uniregctb.metier.common.Fraction;
 import ch.vd.uniregctb.metier.common.FractionDecalee;
 import ch.vd.uniregctb.metier.common.FractionSimple;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
+import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
 
-public class FractionnementsRole extends FractionnementsAssujettissementPP {
+public class FractionnementsRole extends FractionnementsAssujettissement {
 
 	private static final int PREMIERE_ANNEE_DECALAGE_FIN_MOIS_POUR_MIXTE2_PARTI_HC = 2014;
 
-	public FractionnementsRole(List<ForFiscalPrincipalPP> principaux) {
+	public FractionnementsRole(List<ForFiscalPrincipal> principaux) {
 		super(principaux);
 	}
 
 	@Override
-	protected Fraction isFractionOuverture(ForFiscalPrincipalContext<ForFiscalPrincipalPP> forPrincipal) {
-		final ForFiscalPrincipalPP previous = forPrincipal.getPrevious();
-		final ForFiscalPrincipalPP current = forPrincipal.getCurrent();
+	protected Fraction isFractionOuverture(ForFiscalPrincipalContext forPrincipal) {
+		final ForFiscalPrincipal previous = forPrincipal.getPrevious();
+		final ForFiscalPrincipal current = forPrincipal.getCurrent();
 
 		final MotifFor motifOuverture = current.getMotifOuverture();
 
@@ -34,9 +34,9 @@ public class FractionnementsRole extends FractionnementsAssujettissementPP {
 			// fractionnement systématique à la date d'ouverture pour ce motif
 			fraction = new FractionSimple(current.getDateDebut(), motifOuverture, null);
 		}
-		else if (AssujettissementPersonnesPhysiquesCalculator.isDepartOuArriveeHorsSuisse(previous, current) &&
-				AssujettissementPersonnesPhysiquesCalculator.isDepartDepuisOuArriveeVersVaud(forPrincipal.slideToPrevious()) &&
-				!AssujettissementPersonnesPhysiquesCalculator.isDepartHCApresArriveHSMemeAnnee(forPrincipal)) {
+		else if (AssujettissementServiceImpl.isDepartOuArriveeHorsSuisse(previous, current) &&
+				AssujettissementServiceImpl.isDepartDepuisOuArriveeVersVaud(forPrincipal.slideToPrevious()) &&
+				!AssujettissementServiceImpl.isDepartHCApresArriveHSMemeAnnee(forPrincipal)) {
 			// De manière générale, les transitions Suisse <-> Hors-Suisse provoquent des fractionnements
 			// [UNIREG-1742] le départ hors-Suisse depuis hors-canton ne doit pas fractionner la période d'assujettissement (car le rattachement économique n'est pas interrompu)
 			// [UNIREG-2759] l'arrivée de hors-Suisse ne doit pas fractionner si le for se ferme dans la même année avec un départ hors-canton
@@ -53,9 +53,9 @@ public class FractionnementsRole extends FractionnementsAssujettissementPP {
 	}
 
 	@Override
-	protected Fraction isFractionFermeture(ForFiscalPrincipalContext<ForFiscalPrincipalPP> forPrincipal) {
-		final ForFiscalPrincipalPP current = forPrincipal.getCurrent();
-		final ForFiscalPrincipalPP next = forPrincipal.getNext();
+	protected Fraction isFractionFermeture(ForFiscalPrincipalContext forPrincipal) {
+		final ForFiscalPrincipal current = forPrincipal.getCurrent();
+		final ForFiscalPrincipal next = forPrincipal.getNext();
 
 		if (current.getDateFin() == null) {
 			return null;
@@ -69,15 +69,15 @@ public class FractionnementsRole extends FractionnementsAssujettissementPP {
 			// fractionnement systématique à la date de fermeture pour ce motif
 			fraction = new FractionSimple(current.getDateFin().getOneDayAfter(), null, motifFermeture);
 		}
-		else if (AssujettissementPersonnesPhysiquesCalculator.isDepartOuArriveeHorsSuisse(current, next) &&
-				AssujettissementPersonnesPhysiquesCalculator.isDepartDepuisOuArriveeVersVaud(forPrincipal) &&
-				!AssujettissementPersonnesPhysiquesCalculator.isDepartHCApresArriveHSMemeAnnee(forPrincipal.slideToNext())) {
+		else if (AssujettissementServiceImpl.isDepartOuArriveeHorsSuisse(current, next) &&
+				AssujettissementServiceImpl.isDepartDepuisOuArriveeVersVaud(forPrincipal) &&
+				!AssujettissementServiceImpl.isDepartHCApresArriveHSMemeAnnee(forPrincipal.slideToNext())) {
 			// De manière générale, les transitions Suisse <-> Hors-Suisse provoquent des fractionnements
 			// [UNIREG-1742] le départ hors-Suisse depuis hors-canton ne doit pas fractionner la période d'assujettissement (car le rattachement économique n'est pas interrompu)
 			// [UNIREG-2759] l'arrivée de hors-Suisse ne doit pas fractionner si le for se ferme dans la même année avec un départ hors-canton
 			fraction = new FractionSimple(current.getDateFin().getOneDayAfter(), null, motifFermeture);
 		}
-		else if (AssujettissementPersonnesPhysiquesCalculator.isDepartDansHorsCanton(current, next) && current.getModeImposition() == ModeImposition.MIXTE_137_2) {
+		else if (AssujettissementServiceImpl.isDepartDansHorsCanton(current, next) && current.getModeImposition() == ModeImposition.MIXTE_137_2) {
 			// [SIFISC-7281] le départ hors-canton d'un sourcier mixte 137 al2 doit fractionner la période d'assujettissement
 			// [SIFISC-10365] dès 2014, ce fractionnement est décalé à la fin du mois
 			if (current.getDateFin().year() < PREMIERE_ANNEE_DECALAGE_FIN_MOIS_POUR_MIXTE2_PARTI_HC) {

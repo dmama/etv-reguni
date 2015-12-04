@@ -14,36 +14,29 @@ import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.unireg.interfaces.civil.data.CasePostale;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.infra.mock.MockCollectiviteAdministrative;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockLocalite;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
-import ch.vd.unireg.interfaces.infra.mock.MockRue;
-import ch.vd.unireg.interfaces.organisation.mock.MockServiceOrganisation;
-import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockOrganisationFactory;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.common.Fuse;
 import ch.vd.uniregctb.indexer.EmptySearchCriteriaException;
+import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServicePM;
 import ch.vd.uniregctb.parametrage.ParametreEnum;
-import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
-import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
-import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.TiersCriteria;
 import ch.vd.uniregctb.tiers.TiersCriteria.TypeRecherche;
 import ch.vd.uniregctb.tiers.TiersCriteria.TypeTiers;
-import ch.vd.uniregctb.type.CategorieImpotSource;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
-import ch.vd.uniregctb.type.NatureJuridique;
-import ch.vd.uniregctb.type.PeriodiciteDecompte;
 import ch.vd.uniregctb.type.Sexe;
+import ch.vd.uniregctb.type.TexteCasePostale;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypeAdresseTiers;
 
@@ -60,6 +53,10 @@ import static org.junit.Assert.fail;
 @SuppressWarnings({"JavaDoc"})
 public class GlobalTiersSearcherTest extends BusinessTest {
 
+	//private static final Logger LOGGER = LoggerFactory.getLogger(GlobalTiersSearcherTest.class);
+
+	private static final String DB_UNIT_DATA_FILE = "GlobalTiersSearcherTest.xml";
+
 	public GlobalTiersSearcherTest() {
 		setWantIndexationTiers(true);
 	}
@@ -68,76 +65,89 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 		return MockCollectiviteAdministrative.getAll().size();
 	}
 
-	@Test
-	public void testRechercheParNumeroContribuable() throws Exception {
+	/**
+	 * @see ch.vd.uniregctb.common.AbstractBusinessTest#onSetUp()
+	 */
+	@Override
+	public void onSetUp() throws Exception {
 
-		final class Ids {
-			long idNestle;
-			long idBcv;
-		}
+		super.onSetUp();
 
-		serviceOrganisation.setUp(new MockServiceOrganisation() {
-			@Override
-			protected void init() {
-				addOrganisation(MockOrganisationFactory.NESTLE);
-				addOrganisation(MockOrganisationFactory.BCV);
-			}
-		});
+		servicePM.setUp(new DefaultMockServicePM());
 
 		serviceCivil.setUp(new MockServiceCivil() {
+			/**
+			 * Indexe des tiers
+			 */
 			@Override
 			protected void init() {
-				// rien...
+				MockIndividu alain = addIndividu(9876, RegDate.get(1976, 2, 27), "Despont", "Alain", true);
+				MockIndividu richard = addIndividu(9734, RegDate.get(1942, 12, 7), "Bolomey", "Richard", true);
+				MockIndividu james = addIndividu(1373, RegDate.get(1992, 1, 14), "Dean", "James", true);
+				MockIndividu francois = addIndividu(403399, RegDate.get(1961, 3, 12), "Lestourgie", "Francois", true);
+				MockIndividu claudine = addIndividu(222, RegDate.get(1975, 11, 30), "Desplatanes", "Claudine", false);
+				MockIndividu alain2 = addIndividu(111, RegDate.get(1965, 5, 21), "Despont", "Alain", true);
+				MockIndividu miro = addIndividu(333, RegDate.get(1972, 7, 15), "Boillat dupain", "Miro", true);
+				MockIndividu claudine2 = addIndividu(444, RegDate.get(1922, 2, 12), "Desplatanes", "Claudine", false);
+
+				addFieldsIndividu(richard, "1234567891023", "98765432109", null);
+
+				addDefaultAdressesTo(alain);
+				addDefaultAdressesTo(richard);
+				addDefaultAdressesTo(james);
+				addDefaultAdressesTo(francois);
+				addDefaultAdressesTo(claudine);
+				addDefaultAdressesTo(alain2);
+				addDefaultAdressesTo(miro);
+				addDefaultAdressesTo(claudine2);
+			}
+
+			@SuppressWarnings("deprecation")
+			private void addDefaultAdressesTo(MockIndividu individu) {
+				addAdresse(individu, TypeAdresseCivil.PRINCIPALE, null, null, MockLocalite.Bex.getNPA(), MockLocalite.Bex, new CasePostale(TexteCasePostale.CASE_POSTALE, 4848),
+				           RegDate.get(1980, 11, 2), null);
+				addAdresse(individu, TypeAdresseCivil.COURRIER, null, null, MockLocalite.Renens.getNPA(), MockLocalite.Renens, new CasePostale(TexteCasePostale.CASE_POSTALE, 5252),
+				           RegDate.get(1980, 11, 2), null);
 			}
 		});
+	}
 
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final Entreprise nestle = addEntrepriseConnueAuCivil(MockOrganisationFactory.NESTLE.getNumeroOrganisation());
-				final Entreprise bcv = addEntrepriseConnueAuCivil(MockOrganisationFactory.BCV.getNumeroOrganisation());
-				final Ids ids = new Ids();
-				ids.idBcv = bcv.getNumero();
-				ids.idNestle = nestle.getNumero();
-				return ids;
-			}
-		});
-		globalTiersIndexer.sync();
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testRechercheParNumeroContribuable() throws Exception {
 
-		final int c = globalTiersSearcher.getExactDocCount();
-		assertEquals(2 + getDefaultCollectivitesAdministrativesNumber(), c);
+		loadDatabase(DB_UNIT_DATA_FILE);
+		int c = globalTiersSearcher.getExactDocCount();
+		assertEquals(8 + getDefaultCollectivitesAdministrativesNumber(), c);
 
 		{
-			final TiersCriteria criteria = new TiersCriteria();
-			criteria.setNumero(ids.idNestle);
-			final List<TiersIndexedData> list = globalTiersSearcher.search(criteria);
+			TiersCriteria criteria = new TiersCriteria();
+			criteria.setNumero(5434L);
+			List<TiersIndexedData> list = globalTiersSearcher.search(criteria);
 			assertEquals(1, list.size());
-			assertEquals((Long) ids.idNestle, list.get(0).getNumero());
-		}
-		{
-			final TiersCriteria criteria = new TiersCriteria();
-			// Le numero prime sur tout le reste
-			criteria.setNumero(ids.idBcv);
-			// Donc le nom n'est pas utilisé
-			criteria.setNomRaison("Bla bla");
-			final List<TiersIndexedData> list = globalTiersSearcher.search(criteria);
-			assertEquals(1, list.size());
-			assertEquals((Long) ids.idBcv, list.get(0).getNumero());
-		}
-		{
-			final TiersCriteria criteria = new TiersCriteria();
-			// Le numero prime sur tout le reste
-			criteria.setNumero(ids.idNestle);
-			// Donc le type de tiers n'est pas utilisé
-			criteria.setTypeTiers(TypeTiers.AUTRE_COMMUNAUTE);
-			final List<TiersIndexedData> list = globalTiersSearcher.search(criteria);
-			assertEquals(1, list.size());
-			assertEquals((Long) ids.idNestle, list.get(0).getNumero());
 		}
 		{
 			TiersCriteria criteria = new TiersCriteria();
 			// Le numero prime sur tout le reste
-			criteria.setNumero(ids.idNestle);
+			criteria.setNumero(5434L);
+			// Donc le nom n'est pas utilisé
+			criteria.setNomRaison("Bla bla");
+			List<TiersIndexedData> list = globalTiersSearcher.search(criteria);
+			assertEquals(1, list.size());
+		}
+		{
+			TiersCriteria criteria = new TiersCriteria();
+			// Le numero prime sur tout le reste
+			criteria.setNumero(5434L);
+			// Donc le type de tiers n'est pas utilisé
+			criteria.setTypeTiers(TypeTiers.AUTRE_COMMUNAUTE);
+			List<TiersIndexedData> list = globalTiersSearcher.search(criteria);
+			assertEquals(1, list.size());
+		}
+		{
+			TiersCriteria criteria = new TiersCriteria();
+			// Le numero prime sur tout le reste
+			criteria.setNumero(5434L);
 			// mais le type de tiers impératif est utilisé
 			criteria.setTypeTiersImperatif(TypeTiers.AUTRE_COMMUNAUTE);
 			List<TiersIndexedData> list = globalTiersSearcher.search(criteria);
@@ -147,193 +157,113 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 			TiersCriteria criteria = new TiersCriteria();
 			// Le numero prime sur tout le reste
 			criteria.setNumero(1234456L); // Inexistant
-			criteria.setNomRaison("Nestlé"); // critère non-utilisé
+			criteria.setNomRaison("Bolomido"); // Bolomido n'est pas utilisé
 			List<TiersIndexedData> list = globalTiersSearcher.search(criteria);
 			assertEquals(0, list.size());
 		}
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testSearchMenage() throws Exception {
 
-		final class Ids {
-			long idmc;
-			long idlui;
-		}
-
-		final long noIndividuLui = 481L;
-		final long noIndividuElle = 451L;
-		final RegDate dateMariage = date(2001, 1, 1);
-
-		serviceCivil.setUp(new MockServiceCivil() {
-			@Override
-			protected void init() {
-				final MockIndividu lui = addIndividu(noIndividuLui, null, "Bolomey", "Marcel", Sexe.MASCULIN);
-				final MockIndividu elle = addIndividu(noIndividuElle, null, "Pittet", "Julie", Sexe.FEMININ);
-				marieIndividus(lui, elle, dateMariage);
-			}
-		});
-
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final PersonnePhysique lui = addHabitant(noIndividuLui);
-				addForPrincipal(lui, date(1998, 7, 12), MotifFor.MAJORITE, dateMariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne);
-
-				final PersonnePhysique elle = addHabitant(noIndividuElle);
-				addForPrincipal(elle, date(1997, 5, 14), MotifFor.ARRIVEE_HS, dateMariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Morges);
-
-				final EnsembleTiersCouple couple = addEnsembleTiersCouple(lui, elle, dateMariage, null);
-				addForPrincipal(couple.getMenage(), dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Moudon);
-
-				final Ids ids = new Ids();
-				ids.idlui = lui.getNumero();
-				ids.idmc = couple.getMenage().getNumero();
-				return ids;
-			}
-		});
-		globalTiersIndexer.sync();
-
-
-		final int c = globalTiersSearcher.getExactDocCount();
-		assertEquals(3 + getDefaultCollectivitesAdministrativesNumber(), c);
+		loadDatabase(DB_UNIT_DATA_FILE);
+		int c = globalTiersSearcher.getExactDocCount();
+		assertEquals(8 + getDefaultCollectivitesAdministrativesNumber(), c);
 
 		// Recherche le couple par numéro
 		{
-			final TiersCriteria criteria = new TiersCriteria();
-			criteria.setNumero(ids.idmc);
-			final List<TiersIndexedData> list = globalTiersSearcher.search(criteria);
+			Long numero = 8901L;
+			TiersCriteria criteria = new TiersCriteria();
+			criteria.setNumero(numero);
+			List<TiersIndexedData> list = globalTiersSearcher.search(criteria);
 			assertEquals(1, list.size());
-			assertEquals((Long) ids.idmc, list.get(0).getNumero());
+			assertEquals(numero, list.get(0).getNumero());
 		}
 
 		// Recherche le mari par for principal fermé
 		{
-			final TiersCriteria criteria = new TiersCriteria();
+			TiersCriteria criteria = new TiersCriteria();
 			criteria.setNomRaison("Bolomey");
-			criteria.setNoOfsFor(String.valueOf(MockCommune.Lausanne.getNoOFS()));
-			final List<TiersIndexedData> list = globalTiersSearcher.search(criteria);
+			criteria.setNoOfsFor("5586");
+			List<TiersIndexedData> list = globalTiersSearcher.search(criteria);
 			assertEquals(1, list.size());
-			final TiersIndexedData data = list.get(0);
+			TiersIndexedData data = list.get(0);
 			assertEquals("Lausanne", data.getForPrincipal());
-			assertEquals((Long) ids.idlui, data.getNumero());
 		}
 
 		// Recherche le couple par for principal
 		{
-			final TiersCriteria criteria = new TiersCriteria();
-			criteria.setNomRaison("Bolomey");
-			criteria.setNoOfsFor(String.valueOf(MockCommune.Moudon.getNoOFS()));
-			final List<TiersIndexedData> list = globalTiersSearcher.search(criteria);
+			TiersCriteria criteria = new TiersCriteria();
+			criteria.setNomRaison("Bolomido");
+			criteria.setNoOfsFor("5652");
+			List<TiersIndexedData> list = globalTiersSearcher.search(criteria);
 			assertEquals(1, list.size());
-			final TiersIndexedData data = list.get(0);
+			TiersIndexedData data = list.get(0);
 			// String nom1 = data.getNom1();
 			// String nom2 = data.getNom2();
-			assertEquals("Moudon", data.getForPrincipal());
-			assertEquals((Long) ids.idmc, data.getNumero());
+			assertEquals("Villars-sous-Yens", data.getForPrincipal());
 		}
 
 		{
-			final TiersCriteria criteria = new TiersCriteria();
-			criteria.setNomRaison("Bolomey");
-			final List<TiersIndexedData> list = globalTiersSearcher.search(criteria);
+			TiersCriteria criteria = new TiersCriteria();
+			criteria.setNomRaison("Bolomido");
+			List<TiersIndexedData> list = globalTiersSearcher.search(criteria);
 			assertEquals(2, list.size());
 
-			final List<TiersIndexedData> listeTriee = new ArrayList<>(list);
-			Collections.sort(listeTriee, new Comparator<TiersIndexedData>() {
-				@Override
-				public int compare(TiersIndexedData o1, TiersIndexedData o2) {
-					return Long.compare(o1.getNumero(), o2.getNumero());
-				}
-			});
-			final TiersIndexedData marcel = listeTriee.get(0);
-			final TiersIndexedData couple = listeTriee.get(1);
+			TiersIndexedData marcel = list.get(0);
+			TiersIndexedData couple = list.get(1);
+			if (list.get(0).getNumero().equals(Long.valueOf(8901L))) {
+				marcel = list.get(1);
+				couple = list.get(0);
+			}
 
-			assertEquals(Long.valueOf(ids.idlui), marcel.getNumero());
-			assertEquals("Marcel Bolomey", marcel.getNom1());
-			assertEquals(Long.valueOf(ids.idmc), couple.getNumero());
-			assertEquals("Marcel Bolomey", couple.getNom1());
-			assertEquals("Julie Pittet", couple.getNom2());
+			assertEquals(Long.valueOf(7823L), marcel.getNumero());
+			assertEquals("Marcel Bolomido", marcel.getNom1());
+			assertEquals(Long.valueOf(8901L), couple.getNumero());
+			assertEquals("Marcel Bolomido", couple.getNom1());
+			assertEquals("Claudine Desplatanes", couple.getNom2());
 		}
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testRechercheParNumeroAVS() throws Exception {
 
-		final class Ids {
-			long idelle;
-			long idlui;
-		}
-
-		final long noIndividuLui = 481L;
-		final long noIndividuElle = 451L;
-
-		serviceCivil.setUp(new MockServiceCivil() {
-			@Override
-			protected void init() {
-				final MockIndividu lui = addIndividu(noIndividuLui, null, "Bolomey", "Marcel", Sexe.MASCULIN);
-				lui.setNoAVS11("98765432109");
-
-				final MockIndividu elle = addIndividu(noIndividuElle, null, "Pittet", "Julie", Sexe.FEMININ);
-				elle.setNoAVS11("11111111113");
-				elle.setNouveauNoAVS("1234567891023");
-			}
-		});
-
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final PersonnePhysique lui = addHabitant(noIndividuLui);
-				addForPrincipal(lui, date(1998, 7, 12), MotifFor.MAJORITE, MockCommune.Lausanne);
-
-				final PersonnePhysique elle = addHabitant(noIndividuElle);
-				addForPrincipal(elle, date(1997, 5, 14), MotifFor.ARRIVEE_HS, MockCommune.Morges);
-
-				final Ids ids = new Ids();
-				ids.idlui = lui.getNumero();
-				ids.idelle = elle.getNumero();
-				return ids;
-			}
-		});
-		globalTiersIndexer.sync();
-
-		final int c = globalTiersSearcher.getExactDocCount();
-		assertEquals(2 + getDefaultCollectivitesAdministrativesNumber(), c);
+		loadDatabase(DB_UNIT_DATA_FILE);
+		int c = globalTiersSearcher.getExactDocCount();
+		assertEquals(8 + getDefaultCollectivitesAdministrativesNumber(), c);
 
 		// Ancien numero
 		{
-			final TiersCriteria criteria = new TiersCriteria();
+			TiersCriteria criteria = new TiersCriteria();
 			criteria.setNumeroAVS("987.65.432.109");
-			final List<TiersIndexedData> list = globalTiersSearcher.search(criteria);
+			List<TiersIndexedData> list = globalTiersSearcher.search(criteria);
 			//dumpResults(list);
 			assertEquals(1, list.size());
-			assertEquals((Long) ids.idlui, list.get(0).getNumero());
 		}
 		{
-			final TiersCriteria criteria = new TiersCriteria();
+			TiersCriteria criteria = new TiersCriteria();
 			criteria.setNumeroAVS("98765432109");
-			final List<TiersIndexedData> list = globalTiersSearcher.search(criteria);
+			List<TiersIndexedData> list = globalTiersSearcher.search(criteria);
 			//dumpResults(list);
 			assertEquals(1, list.size());
-			assertEquals((Long) ids.idlui, list.get(0).getNumero());
 		}
 
 		// Nouveau numero
 		{
-			final TiersCriteria criteria = new TiersCriteria();
+			TiersCriteria criteria = new TiersCriteria();
 			criteria.setNumeroAVS("1234567891023");
-			final List<TiersIndexedData> list = globalTiersSearcher.search(criteria);
+			List<TiersIndexedData> list = globalTiersSearcher.search(criteria);
 			//dumpResults(list);
 			assertEquals(1, list.size());
-			assertEquals((Long) ids.idelle, list.get(0).getNumero());
 		}
 		{
-			final TiersCriteria criteria = new TiersCriteria();
+			TiersCriteria criteria = new TiersCriteria();
 			criteria.setNumeroAVS("123.4567.8910.23");
-			final List<TiersIndexedData> list = globalTiersSearcher.search(criteria);
+			List<TiersIndexedData> list = globalTiersSearcher.search(criteria);
 			//dumpResults(list);
 			assertEquals(1, list.size());
-			assertEquals((Long) ids.idelle, list.get(0).getNumero());
 		}
 	}
 
@@ -356,33 +286,12 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 
 	// Recherche sur le type de tiers
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testRechercheParTypeTiers() throws Exception {
 
-		final long noIndividuDespont = 4278234L;
-
-		serviceCivil.setUp(new MockServiceCivil() {
-			@Override
-			protected void init() {
-				addIndividu(noIndividuDespont, null, "Despont", "Alain", Sexe.MASCULIN);
-			}
-		});
-
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				addHabitant(noIndividuDespont);
-
-				final PersonnePhysique marcel = addNonHabitant("Marcel", "Bolomido", null, Sexe.MASCULIN);
-				final PersonnePhysique claudine = addNonHabitant("Claudine", "Desplatanes", null, Sexe.FEMININ);
-				addEnsembleTiersCouple(marcel, claudine, date(2012, 4, 14), null);
-
-				addDebiteur(CategorieImpotSource.CREANCIERS_HYPOTHECAIRES, PeriodiciteDecompte.ANNUEL, date(2009, 1, 1));
-			}
-		});
-		globalTiersIndexer.sync();
-
-		final int c = globalTiersSearcher.getExactDocCount();
-		assertEquals(5 + getDefaultCollectivitesAdministrativesNumber(), c);
+		loadDatabase(DB_UNIT_DATA_FILE);
+		int c = globalTiersSearcher.getExactDocCount();
+		assertEquals(8 + getDefaultCollectivitesAdministrativesNumber(), c);
 
 		rechercheParTypeTiers("despont", TypeTiers.HABITANT, 1); // Despont Alain
 		rechercheParTypeTiers(null, TypeTiers.NON_HABITANT, 2);
@@ -393,135 +302,65 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testNatureJuridique() throws Exception {
 
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Alfredo", "Parnentiel", null, Sexe.MASCULIN);
-				return pp.getNumero();
-			}
-		});
-		globalTiersIndexer.sync();
-
-		final int c = globalTiersSearcher.getExactDocCount();
-		assertEquals(1 + getDefaultCollectivitesAdministrativesNumber(), c);
+		loadDatabase(DB_UNIT_DATA_FILE);
+		int c = globalTiersSearcher.getExactDocCount();
+		assertEquals(8 + getDefaultCollectivitesAdministrativesNumber(), c);
 
 		// Tiers par Nature Juridique
 		{
 			TiersCriteria criteria = new TiersCriteria();
-			criteria.setNomRaison("Parnentiel");
-			criteria.setNatureJuridique(NatureJuridique.PP.name());
+			criteria.setNomRaison("parnen");
+			criteria.setNatureJuridique("PP");
 			List<TiersIndexedData> list = globalTiersSearcher.search(criteria);
 			assertEquals(1, list.size());
 
-			TiersIndexedData data = list.get(0);
-			assertEquals(Long.valueOf(ppId), data.getNumero());
-		}
-		{
-			TiersCriteria criteria = new TiersCriteria();
-			criteria.setNomRaison("Parnentiel");
-			criteria.setNatureJuridique(NatureJuridique.PM.name());
-			List<TiersIndexedData> list = globalTiersSearcher.search(criteria);
-			assertEquals(0, list.size());
+			TiersIndexedData proxy1 = list.get(0);
+			assertEquals(Long.valueOf(76327L), proxy1.getNumero());
 		}
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testRechercheParAdresse() throws Exception {
 
-		final long noIndividuAndre = 436742L;
-		final long noIndividuMartine = 81541897L;
+		loadDatabase(DB_UNIT_DATA_FILE);
+		int c = globalTiersSearcher.getExactDocCount();
+		assertEquals(8 + getDefaultCollectivitesAdministrativesNumber(), c);
 
-		serviceCivil.setUp(new MockServiceCivil() {
-			@Override
-			protected void init() {
-				final MockIndividu andre = addIndividu(noIndividuAndre, null, "Duval", "André", Sexe.MASCULIN);
-				addAdresse(andre, TypeAdresseCivil.COURRIER, MockRue.Prilly.RueDesMetiers, null, date(2001, 1, 1), null);
-
-				final MockIndividu martine = addIndividu(noIndividuMartine, null, "Duval", "Martine", Sexe.FEMININ);
-				addAdresse(martine, TypeAdresseCivil.COURRIER, MockRue.Renens.QuatorzeAvril, null, date(2001, 1, 1), null);
-			}
-		});
-
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				addHabitant(noIndividuAndre);
-				addHabitant(noIndividuMartine);
-			}
-		});
-		globalTiersIndexer.sync();
-
-		final int c = globalTiersSearcher.getExactDocCount();
-		assertEquals(2 + getDefaultCollectivitesAdministrativesNumber(), c);
-
-		final TiersCriteria criteria = new TiersCriteria();
+		TiersCriteria criteria = new TiersCriteria();
 		criteria.setLocaliteOuPays("Prilly");
 		List<TiersIndexedData> list = globalTiersSearcher.search(criteria);
 		assertEquals(1, list.size());
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testRechercheParNpa() throws Exception {
 
-		final long noIndividuRichard = 436742L;
-		final long noIndividuClaudine = 81541897L;
+		loadDatabase(DB_UNIT_DATA_FILE);
+		int c = globalTiersSearcher.getExactDocCount();
+		assertEquals(8 + getDefaultCollectivitesAdministrativesNumber(), c);
 
-		serviceCivil.setUp(new MockServiceCivil() {
-			@Override
-			protected void init() {
-				final MockIndividu richard = addIndividu(noIndividuRichard, null, "Bolomey", "Richard", Sexe.MASCULIN);
-				addAdresse(richard, TypeAdresseCivil.COURRIER, MockRue.Prilly.RueDesMetiers, null, date(2001, 1, 1), null);
-
-				final MockIndividu claudine = addIndividu(noIndividuClaudine, null, "Duchene", "Claudine", Sexe.FEMININ);
-				addAdresse(claudine, TypeAdresseCivil.COURRIER, MockRue.Renens.QuatorzeAvril, null, date(2001, 1, 1), null);
-				marieIndividu(claudine, date(2001, 1, 1));
-			}
-		});
-
-		final class Ids {
-			long idMarcel;
-			long idRichard;
-			long idClaudine;
-			long idMenage;
-		}
-
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final PersonnePhysique marcel = addNonHabitant("Marcel", "Bolomido", null, Sexe.MASCULIN);
-				final PersonnePhysique richard = addHabitant(noIndividuRichard);
-				final PersonnePhysique claudine = addHabitant(noIndividuClaudine);
-				final EnsembleTiersCouple couple = addEnsembleTiersCouple(marcel, claudine, date(2001, 1, 1), null);
-
-				final Ids ids = new Ids();
-				ids.idMarcel = marcel.getNumero();
-				ids.idRichard = richard.getNumero();
-				ids.idClaudine = claudine.getNumero();
-				ids.idMenage = couple.getMenage().getNumero();
-				return ids;
-			}
-		});
-		globalTiersIndexer.sync();
-
-		final int c = globalTiersSearcher.getExactDocCount();
-		assertEquals(4 + getDefaultCollectivitesAdministrativesNumber(), c);
-
-		final TiersCriteria criteria = new TiersCriteria();
+		TiersCriteria criteria = new TiersCriteria();
 		criteria.setNpaCourrier(String.valueOf(MockLocalite.Renens.getNPA()));
-		final List<TiersIndexedData> list = globalTiersSearcher.search(criteria);
+		List<TiersIndexedData> list = globalTiersSearcher.search(criteria);
 
-		assertEquals(2, list.size());
-		final Set<Long> found = new HashSet<>();
+		assertEquals(3, list.size());
+
+		List<Long> ids = new ArrayList<>();
 		for (TiersIndexedData data : list) {
-			found.add(data.getNumero());
+			ids.add(data.getNumero());
 		}
-		assertTrue(found.contains(Long.valueOf(ids.idMenage))); // ménage commun Bolomido Marcel + Duchene Claudine -> mr non habitant le ménage prend l'adresse de mme
-		assertTrue(found.contains(Long.valueOf(ids.idClaudine))); // habitant Duchene Claudine
+		assertTrue(ids.contains(Long.valueOf(8901))); // ménage commun Bolomido Marcel + Duchene Claudine -> mr non habitant le ménage prend l'adresse de mme
+		assertTrue(ids.contains(Long.valueOf(7239))); // habitant Bolomey Richard
+		assertTrue(ids.contains(Long.valueOf(7632))); // habitant Duchene Claudine
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testRechercheVideException() throws Exception {
 
 		try {
@@ -535,308 +374,132 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testRechercheParAdresseZeroTrouve() throws Exception {
 
-		final long noIndividuAndre = 436742L;
-		final long noIndividuMartine = 81541897L;
+		loadDatabase(DB_UNIT_DATA_FILE);
+		int c = globalTiersSearcher.getExactDocCount();
+		assertEquals(8 + getDefaultCollectivitesAdministrativesNumber(), c);
 
-		serviceCivil.setUp(new MockServiceCivil() {
-			@Override
-			protected void init() {
-				final MockIndividu andre = addIndividu(noIndividuAndre, null, "Duval", "André", Sexe.MASCULIN);
-				addAdresse(andre, TypeAdresseCivil.COURRIER, MockRue.Prilly.RueDesMetiers, null, date(2001, 1, 1), null);
+		TiersCriteria criteria = new TiersCriteria();
 
-				final MockIndividu martine = addIndividu(noIndividuMartine, null, "Duval", "Martine", Sexe.FEMININ);
-				addAdresse(martine, TypeAdresseCivil.COURRIER, MockRue.Renens.QuatorzeAvril, null, date(2001, 1, 1), null);
-			}
-		});
-
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				addHabitant(noIndividuAndre);
-				addHabitant(noIndividuMartine);
-			}
-		});
-		globalTiersIndexer.sync();
-
-		final int c = globalTiersSearcher.getExactDocCount();
-		assertEquals(2 + getDefaultCollectivitesAdministrativesNumber(), c);
-
-		final TiersCriteria criteria = new TiersCriteria();
 		criteria.setLocaliteOuPays("Montreux"); // Ne devrait pas etre trouvé!
-		final List<TiersIndexedData> list = globalTiersSearcher.search(criteria);
+		List<TiersIndexedData> list = globalTiersSearcher.search(criteria);
 		assertEmpty(list);
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testRechercheParFors() throws Exception {
 
-		final long noIndividuAndre = 436742L;
-		final long noIndividuMartine = 81541897L;
+		loadDatabase(DB_UNIT_DATA_FILE);
+		int c = globalTiersSearcher.getExactDocCount();
+		assertEquals(8 + getDefaultCollectivitesAdministrativesNumber(), c);
 
-		serviceCivil.setUp(new MockServiceCivil() {
-			@Override
-			protected void init() {
-				final MockIndividu andre = addIndividu(noIndividuAndre, null, "Duval", "André", Sexe.MASCULIN);
-				addAdresse(andre, TypeAdresseCivil.COURRIER, MockRue.Prilly.RueDesMetiers, null, date(2001, 1, 1), null);
+		TiersCriteria criteria = new TiersCriteria();
 
-				final MockIndividu martine = addIndividu(noIndividuMartine, null, "Duval", "Martine", Sexe.FEMININ);
-				addAdresse(martine, TypeAdresseCivil.COURRIER, MockRue.Renens.QuatorzeAvril, null, date(2001, 1, 1), null);
-			}
-		});
-
-		final long idFred = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique andre = addHabitant(noIndividuAndre);
-				addForPrincipal(andre, date(2005, 4, 2), MotifFor.ARRIVEE_HS, MockCommune.Prilly);
-
-				final PersonnePhysique martine = addHabitant(noIndividuMartine);
-				addForPrincipal(martine, date(2005, 4, 2), MotifFor.ARRIVEE_HS, MockCommune.Renens);
-
-				final PersonnePhysique fred = addNonHabitant("Fred", "Gnagna", null, Sexe.MASCULIN);
-				addForPrincipal(fred, date(2001, 4, 7), MotifFor.INDETERMINE, MockCommune.Prilly);
-
-				return fred.getNumero();
-			}
-		});
-		globalTiersIndexer.sync();
-
-		final int c = globalTiersSearcher.getExactDocCount();
-		assertEquals(3 + getDefaultCollectivitesAdministrativesNumber(), c);
-
-		final TiersCriteria criteria = new TiersCriteria();
-
-		// 2 tiers à Prilly
+		// 3 tiers à Lausanne
 		{
-			criteria.setNoOfsFor(String.valueOf(MockCommune.Prilly.getNoOFS()));
-			final List<TiersIndexedData> list = globalTiersSearcher.search(criteria);
-			assertEquals(2, list.size());
+			criteria.setNoOfsFor("5586"); // Lausanne
+			List<TiersIndexedData> list = globalTiersSearcher.search(criteria);
+			assertEquals(3, list.size());
 		}
 
-		// 1 tiers à Renens
+		// 1 tiers à Cossonay
 		{
-			criteria.setNoOfsFor(String.valueOf(MockCommune.Renens.getNoOFS()));
-			final List<TiersIndexedData> list = globalTiersSearcher.search(criteria);
+			criteria.setNoOfsFor("5477"); // Cossonay
+			List<TiersIndexedData> list = globalTiersSearcher.search(criteria);
 			assertEquals(1, list.size());
 		}
 
-		// 1 tiers pour recherche par numéro (= le for est ignoré)
+		// 1 tiers à Cossonay pour ID=5434
 		{
-			criteria.setNumero(idFred);
-			criteria.setNoOfsFor(String.valueOf(MockCommune.Renens.getNoOFS()));
+			criteria.setNumero(5434L);
+			criteria.setNoOfsFor("5477"); // Cossonay
 			List<TiersIndexedData> list = globalTiersSearcher.search(criteria);
 			assertEquals(1, list.size());
 			TiersIndexedData data = list.get(0);
-			assertEquals("Prilly", data.getForPrincipal());
+			assertEquals("Romainmôtier-Envy", data.getForPrincipal());
 		}
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testRechercheParDateNaissance() throws Exception {
 
-		final long noIndividuAndre = 436742L;
-		final long noIndividuMartine = 81541897L;
-		final RegDate dateNaissanceAndre = date(1965, 4, 12);
-		final RegDate dateNaissanceMartine = date(1966, 4, 30);
-		final RegDate dateNaissanceFred = date(1966, 4, 22);
-
-		serviceCivil.setUp(new MockServiceCivil() {
-			@Override
-			protected void init() {
-				final MockIndividu andre = addIndividu(noIndividuAndre, dateNaissanceAndre, "Duval", "André", Sexe.MASCULIN);
-				addAdresse(andre, TypeAdresseCivil.COURRIER, MockRue.Prilly.RueDesMetiers, null, date(2001, 1, 1), null);
-
-				final MockIndividu martine = addIndividu(noIndividuMartine, dateNaissanceMartine, "Duval", "Martine", Sexe.FEMININ);
-				addAdresse(martine, TypeAdresseCivil.COURRIER, MockRue.Renens.QuatorzeAvril, null, date(2001, 1, 1), null);
-			}
-		});
-
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final PersonnePhysique andre = addHabitant(noIndividuAndre);
-				addForPrincipal(andre, date(2005, 4, 2), MotifFor.ARRIVEE_HS, MockCommune.Prilly);
-
-				final PersonnePhysique martine = addHabitant(noIndividuMartine);
-				addForPrincipal(martine, date(2005, 4, 2), MotifFor.ARRIVEE_HS, MockCommune.Renens);
-
-				final PersonnePhysique fred = addNonHabitant("Fred", "Gnagna", dateNaissanceFred, Sexe.MASCULIN);
-				addForPrincipal(fred, date(2001, 4, 7), MotifFor.INDETERMINE, MockCommune.Prilly);
-			}
-		});
-		globalTiersIndexer.sync();
-
+		loadDatabase(DB_UNIT_DATA_FILE);
 		int c = globalTiersSearcher.getExactDocCount();
-		assertEquals(3 + getDefaultCollectivitesAdministrativesNumber(), c);
+		assertEquals(8 + getDefaultCollectivitesAdministrativesNumber(), c);
 
-		// Recherche sur la date de naissance (complète)
-		{
-			final TiersCriteria criteria = new TiersCriteria();
-			criteria.setDateNaissance(dateNaissanceAndre);
+		// Recherche sur la date de naissance
+		final TiersCriteria criteria = new TiersCriteria();
+		criteria.setDateNaissance(RegDateHelper.indexStringToDate("19421207"));
 
-			final List<TiersIndexedData> list = globalTiersSearcher.search(criteria);
-			assertEquals(1, list.size());
-			final TiersIndexedData data = list.get(0);
-			assertEquals(dateNaissanceAndre, RegDateHelper.indexStringToDate(data.getDateNaissance()));
-			assertEquals("André Duval", data.getNom1());
-		}
-		// Recherche sur la date de naissance (partielle)
-		{
-			final TiersCriteria criteria = new TiersCriteria();
-			criteria.setDateNaissance(RegDate.get(1966, 4));
-
-			final List<TiersIndexedData> list = globalTiersSearcher.search(criteria);
-			assertEquals(2, list.size());
-
-			final List<TiersIndexedData> listeTriee = new ArrayList<>(list);
-			Collections.sort(listeTriee, new Comparator<TiersIndexedData>() {
-				@Override
-				public int compare(TiersIndexedData o1, TiersIndexedData o2) {
-					return o1.getDateNaissance().compareTo(o2.getDateNaissance());
-				}
-			});
-			{
-				final TiersIndexedData data = listeTriee.get(0);
-				assertEquals(dateNaissanceFred, RegDateHelper.indexStringToDate(data.getDateNaissance()));
-				assertEquals("Fred Gnagna", data.getNom1());
-			}
-			{
-				final TiersIndexedData data = listeTriee.get(1);
-				assertEquals(dateNaissanceMartine, RegDateHelper.indexStringToDate(data.getDateNaissance()));
-				assertEquals("Martine Duval", data.getNom1());
-			}
-		}
+		final List<TiersIndexedData> list = globalTiersSearcher.search(criteria);
+		assertEquals(1, list.size());
+		TiersIndexedData proxy1 = list.get(0);
+		String date1 = proxy1.getDateNaissance();
+		assertEquals(date1, RegDateHelper.toIndexString(RegDate.get(1942, 12, 7)));
 	}
 
 	/**
 	 * Effectue une recherche complexe basée sur le nom.
 	 */
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testRechercheNomContient() throws Exception {
 
-		final long noIndividuAndre = 436742L;
-		final long noIndividuMartine = 81541897L;
-
-		serviceCivil.setUp(new MockServiceCivil() {
-			@Override
-			protected void init() {
-				final MockIndividu andre = addIndividu(noIndividuAndre, null, "Duval", "André", Sexe.MASCULIN);
-				addAdresse(andre, TypeAdresseCivil.COURRIER, MockRue.Prilly.RueDesMetiers, null, date(2001, 1, 1), null);
-
-				final MockIndividu martine = addIndividu(noIndividuMartine, null, "Duval", "Martine", Sexe.FEMININ);
-				addAdresse(martine, TypeAdresseCivil.COURRIER, MockRue.Renens.QuatorzeAvril, null, date(2001, 1, 1), null);
-			}
-		});
-
-		final class Ids {
-			long idAndre;
-			long idMartine;
-			long idDpi;
-		}
-
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final PersonnePhysique andre = addHabitant(noIndividuAndre);
-				addForPrincipal(andre, date(2005, 4, 2), MotifFor.ARRIVEE_HS, MockCommune.Prilly);
-
-				final PersonnePhysique martine = addHabitant(noIndividuMartine);
-				addForPrincipal(martine, date(2005, 4, 2), MotifFor.ARRIVEE_HS, MockCommune.Renens);
-
-				final PersonnePhysique fred = addNonHabitant("Fred", "Gnagna", null, Sexe.MASCULIN);
-				addForPrincipal(fred, date(2001, 4, 7), MotifFor.INDETERMINE, MockCommune.Prilly);
-
-				final DebiteurPrestationImposable dpi = addDebiteur("Debiteur IS", martine, date(2010, 5, 1));
-
-				final Ids ids = new Ids();
-				ids.idAndre = andre.getNumero();
-				ids.idMartine = martine.getNumero();
-				ids.idDpi = dpi.getNumero();
-				return ids;
-			}
-		});
-		globalTiersIndexer.sync();
-
-		final int c = globalTiersSearcher.getExactDocCount();
-		assertEquals(4 + getDefaultCollectivitesAdministrativesNumber(), c);
+		loadDatabase(DB_UNIT_DATA_FILE);
+		int c = globalTiersSearcher.getExactDocCount();
+		assertEquals(8 + getDefaultCollectivitesAdministrativesNumber(), c);
 
 		// Recherche "contient" sur le nom
-		final TiersCriteria criteria = new TiersCriteria();
-		criteria.setNomRaison("duv");
+		TiersCriteria criteria = new TiersCriteria();
+		criteria.setNomRaison("pon");
 		criteria.setTypeRechercheDuNom(TiersCriteria.TypeRecherche.CONTIENT);
-		final List<TiersIndexedData> list = globalTiersSearcher.search(criteria);
-		assertEquals(3, list.size());
+		List<TiersIndexedData> list = globalTiersSearcher.search(criteria);
 
-		final List<TiersIndexedData> listeTriee = new ArrayList<>(list);
-		Collections.sort(listeTriee, new Comparator<TiersIndexedData>() {
-			@Override
-			public int compare(TiersIndexedData o1, TiersIndexedData o2) {
-				return Long.compare(o1.getNumero(), o2.getNumero());
-			}
-		});
-		TiersIndexedData dpi = listeTriee.get(0);
-		TiersIndexedData andre = listeTriee.get(1);
-		TiersIndexedData martine = listeTriee.get(2);
-
-		assertEquals(Long.valueOf(ids.idAndre), andre.getNumero());
-		assertEquals("André Duval", andre.getNom1());
-		assertEquals(Long.valueOf(ids.idMartine), martine.getNumero());
-		assertEquals("Martine Duval", martine.getNom1());
-		assertEquals(Long.valueOf(ids.idDpi), dpi.getNumero());
-		assertEquals("Martine Duval", dpi.getNom1()); // [UNIREG-1376] on va chercher les infos sur le contribuable si elles n'existent pas sur le débiteur
+		int z = list.size();
+		assertEquals(2, z);
+		TiersIndexedData tiers1 = list.get(0);
+		TiersIndexedData tiers2 = list.get(1);
+		if (!list.get(0).getNumero().equals(5434L)) {
+			tiers1 = list.get(1);
+			tiers2 = list.get(0);
+		}
+		assertEquals(Long.valueOf(5434L), tiers1.getNumero());
+		assertEquals("Alain Despont", tiers1.getNom1());
+		assertEquals(Long.valueOf(1234L), tiers2.getNumero());
+		assertEquals("Alain Despont", tiers2.getNom1()); // [UNIREG-1376] on va chercher les infos sur le contribuable si elles n'existent pas sur le débiteur
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testRechercheAutresNoms() throws Exception {
 
-		final class Ids {
-			long idAlain;
-			long idDpi;
-		}
-
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final PersonnePhysique alain = addNonHabitant("Alain", "Despont", null, Sexe.MASCULIN);
-				final PersonnePhysique martine = addNonHabitant("Martine", "Dupont", null, Sexe.FEMININ);
-				final DebiteurPrestationImposable dpi = addDebiteur("Débiteur", alain, date(2000, 1, 1));
-
-				final Ids ids = new Ids();
-				ids.idAlain = alain.getNumero();
-				ids.idDpi = dpi.getNumero();
-				return ids;
-			}
-		});
-		globalTiersIndexer.sync();
-
+		loadDatabase(DB_UNIT_DATA_FILE);
 		int c = globalTiersSearcher.getExactDocCount();
-		assertEquals(3 + getDefaultCollectivitesAdministrativesNumber(), c);
+		assertEquals(8 + getDefaultCollectivitesAdministrativesNumber(), c);
 
 		// Recherche "contient" sur le nom
-		final TiersCriteria criteria = new TiersCriteria();
+		TiersCriteria criteria = new TiersCriteria();
 		criteria.setNomRaison("pon ain");
 		criteria.setTypeRechercheDuNom(TiersCriteria.TypeRecherche.CONTIENT);
 
 		final List<TiersIndexedData> list = globalTiersSearcher.search(criteria);
 		assertEquals(2, list.size());
 
-		final List<TiersIndexedData> listeTriee = new ArrayList<>(list);
-		Collections.sort(listeTriee, new Comparator<TiersIndexedData>() {
-			@Override
-			public int compare(TiersIndexedData o1, TiersIndexedData o2) {
-				return Long.compare(o1.getNumero(), o2.getNumero());
-			}
-		});
-
-		final TiersIndexedData debiteur = listeTriee.get(0);
-		final TiersIndexedData contribuable = listeTriee.get(1);
-
-		assertEquals(Long.valueOf(ids.idAlain), contribuable.getNumero());
+		final TiersIndexedData contribuable;
+		final TiersIndexedData debiteur;
+		{
+			final TiersIndexedData premier = list.get(0);
+			final TiersIndexedData deuxieme = list.get(1);
+			contribuable = premier.getRoleLigne1().contains("Contribuable") ? premier : deuxieme;
+			debiteur = (contribuable == premier ? deuxieme : premier);
+		}
+		assertEquals(Long.valueOf(5434), contribuable.getNumero());
 		assertEquals("Alain Despont", contribuable.getNom1());
-		assertEquals(Long.valueOf(ids.idDpi), debiteur.getNumero());
-		assertEquals("Alain Despont", debiteur.getNom1());
+		assertEquals(Long.valueOf(1234), debiteur.getNumero());
 	}
 
 	/**
@@ -846,28 +509,9 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testRechercheNomRessemble() throws Exception {
 
-		final class Ids {
-			long idAlain;
-			long idDpi;
-		}
-
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final PersonnePhysique alain = addNonHabitant("Alain", "Despont", null, Sexe.MASCULIN);
-				final PersonnePhysique martine = addNonHabitant("Martine", "Dupont", null, Sexe.FEMININ);
-				final DebiteurPrestationImposable dpi = addDebiteur("Débiteur", alain, date(2000, 1, 1));
-
-				final Ids ids = new Ids();
-				ids.idAlain = alain.getNumero();
-				ids.idDpi = dpi.getNumero();
-				return ids;
-			}
-		});
-		globalTiersIndexer.sync();
-
+		loadDatabase(DB_UNIT_DATA_FILE);
 		int c = globalTiersSearcher.getExactDocCount();
-		assertEquals(3 + getDefaultCollectivitesAdministrativesNumber(), c);
+		assertEquals(8 + getDefaultCollectivitesAdministrativesNumber(), c);
 
 		// Recherche "phonetique" sur le nom
 		TiersCriteria criteria = new TiersCriteria();
@@ -877,117 +521,74 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 		final List<TiersIndexedData> list = globalTiersSearcher.search(criteria);
 		assertEquals(2, list.size());
 
-		final List<TiersIndexedData> listeTriee = new ArrayList<>(list);
-		Collections.sort(listeTriee, new Comparator<TiersIndexedData>() {
-			@Override
-			public int compare(TiersIndexedData o1, TiersIndexedData o2) {
-				return Long.compare(o1.getNumero(), o2.getNumero());
-			}
-		});
-
-		final TiersIndexedData debiteur = listeTriee.get(0);
-		final TiersIndexedData contribuable = listeTriee.get(1);
-
-		assertEquals(Long.valueOf(ids.idAlain), contribuable.getNumero());
-		assertEquals("Alain Despont", contribuable.getNom1());
-		assertEquals(Long.valueOf(ids.idDpi), debiteur.getNumero());
-		assertEquals("Alain Despont", debiteur.getNom1());
+		final TiersIndexedData contribuable;
+		final TiersIndexedData debiteur;
+		{
+			final TiersIndexedData premier = list.get(0);
+			final TiersIndexedData deuxieme = list.get(1);
+			contribuable = premier.getRoleLigne1().contains("Contribuable") ? premier : deuxieme;
+			debiteur = (contribuable == premier ? deuxieme : premier);
+		}
+		assertEquals(Long.valueOf(5434), contribuable.getNumero());
+		assertNotNull(contribuable.getNom1());
+		assertEquals(Long.valueOf(1234), debiteur.getNumero());
 	}
 
 	/**
-	 * Teste la recherche sur le prénom.
+	 * Teste la recherche sur un numero.
 	 */
 	@Test
 	@Transactional(rollbackFor = Throwable.class)
 	public void testSearchIndividuParPrenom() throws Exception {
 
-		final class Ids {
-			long idAlain;
-			long idDpi;
-		}
-
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final PersonnePhysique alain = addNonHabitant("Alain", "Despont", null, Sexe.MASCULIN);
-				final PersonnePhysique martine = addNonHabitant("Martine", "Dupont", null, Sexe.FEMININ);
-				final DebiteurPrestationImposable dpi = addDebiteur("Débiteur", alain, date(2000, 1, 1));
-
-				final Ids ids = new Ids();
-				ids.idAlain = alain.getNumero();
-				ids.idDpi = dpi.getNumero();
-				return ids;
-			}
-		});
-		globalTiersIndexer.sync();
-
+		loadDatabase(DB_UNIT_DATA_FILE);
 		int c = globalTiersSearcher.getExactDocCount();
-		assertEquals(3 + getDefaultCollectivitesAdministrativesNumber(), c);
+		assertEquals(8 + getDefaultCollectivitesAdministrativesNumber(), c);
 
-		// Recherche "phonetique" sur le nom
+		String prenom = "Richard";
+
 		TiersCriteria criteria = new TiersCriteria();
-		criteria.setNomRaison("alain");
+		criteria.setNomRaison(prenom);
 		criteria.setTypeRechercheDuNom(TypeRecherche.EST_EXACTEMENT);
+		List<TiersIndexedData> list = globalTiersSearcher.search(criteria);
+		assertEquals(1, list.size());
 
-		final List<TiersIndexedData> list = globalTiersSearcher.search(criteria);
-		assertEquals(2, list.size());
-
-		final List<TiersIndexedData> listeTriee = new ArrayList<>(list);
-		Collections.sort(listeTriee, new Comparator<TiersIndexedData>() {
-			@Override
-			public int compare(TiersIndexedData o1, TiersIndexedData o2) {
-				return Long.compare(o1.getNumero(), o2.getNumero());
+		TiersIndexedData proxy1 = null;
+		for (TiersIndexedData v : list) {
+			if (v.getNumero().equals(7239L)) {
+				proxy1 = v;
 			}
-		});
-
-		final TiersIndexedData debiteur = listeTriee.get(0);
-		final TiersIndexedData contribuable = listeTriee.get(1);
-
-		assertEquals(Long.valueOf(ids.idAlain), contribuable.getNumero());
-		assertEquals("Alain Despont", contribuable.getNom1());
-		assertEquals(Long.valueOf(ids.idDpi), debiteur.getNumero());
-		assertEquals("Alain Despont", debiteur.getNom1());
+		}
+		assertEquals(Long.valueOf(7239L), proxy1.getNumero());
+		assertEquals(RegDate.get(1942, 12, 7), RegDateHelper.indexStringToDate(proxy1.getDateNaissance()));
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testSearchEntreprise() throws Exception {
 
-		serviceOrganisation.setUp(new MockServiceOrganisation() {
-			@Override
-			protected void init() {
-				addOrganisation(MockOrganisationFactory.BANQUE_COOP);
-			}
-		});
-
-		final long idpm = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise entreprise = addEntrepriseConnueAuCivil(MockOrganisationFactory.BANQUE_COOP.getNumeroOrganisation());
-				addNonHabitant("Roger", "Rabbit", null, Sexe.MASCULIN);
-				return entreprise.getNumero();
-			}
-		});
-		globalTiersIndexer.sync();
-
-		final int c = globalTiersSearcher.getExactDocCount();
-		assertEquals(2 + getDefaultCollectivitesAdministrativesNumber(), c);
+		loadDatabase(DB_UNIT_DATA_FILE);
+		int c = globalTiersSearcher.getExactDocCount();
+		assertEquals(8 + getDefaultCollectivitesAdministrativesNumber(), c);
 		
+		Long numero = 27769L;
+
 		// Par numero
 		{
-			final TiersCriteria criteria = new TiersCriteria();
-			criteria.setNumero(idpm);
+			TiersCriteria criteria = new TiersCriteria();
+			criteria.setNumero(numero);
 			List<TiersIndexedData> list = globalTiersSearcher.search(criteria);
 			assertEquals(1, list.size());
-			assertEquals(Long.valueOf(idpm), list.get(0).getNumero());
+			assertEquals(numero, list.get(0).getNumero());
 		}
 
 		// Par Nature Juridique
 		{
 			TiersCriteria criteria = new TiersCriteria();
-			criteria.setNatureJuridique(NatureJuridique.PM.name());
+			criteria.setNatureJuridique("PM");
 			List<TiersIndexedData> list = globalTiersSearcher.search(criteria);
 			assertEquals(1, list.size());
-			assertEquals(Long.valueOf(idpm), list.get(0).getNumero());
+			assertEquals(numero, list.get(0).getNumero());
 		}
 	}
 
@@ -1023,7 +624,7 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 		}
 		catch (Exception e) {
 			assertContains("Le nombre max de résultats ne peut pas excéder " +
-					               ParametreEnum.nbMaxParListe.getDefaut() + ". Hits: " + nbDocs, e.getMessage());
+				ParametreEnum.nbMaxParListe.getDefaut() + ". Hits: " + nbDocs, e.getMessage());
 		}
 	}
 
@@ -1304,28 +905,7 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 
 		assertTrue(fusible.isNotBlown());
 
-		final long noIndividuDespont = 4278234L;
-
-		serviceCivil.setUp(new MockServiceCivil() {
-			@Override
-			protected void init() {
-				addIndividu(noIndividuDespont, null, "Despont", "Alain", Sexe.MASCULIN);
-			}
-		});
-
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				addHabitant(noIndividuDespont);
-
-				final PersonnePhysique marcel = addNonHabitant("Marcel", "Bolomido", null, Sexe.MASCULIN);
-				final PersonnePhysique claudine = addNonHabitant("Claudine", "Desplatanes", null, Sexe.FEMININ);
-				addEnsembleTiersCouple(marcel, claudine, date(2012, 4, 14), null);
-
-				addDebiteur(CategorieImpotSource.CREANCIERS_HYPOTHECAIRES, PeriodiciteDecompte.ANNUEL, date(2009, 1, 1));
-			}
-		});
-		globalTiersIndexer.sync();
+		loadDatabase(DB_UNIT_DATA_FILE);
 
 		final TiersCriteria criteria = new TiersCriteria();
 		criteria.setNomRaison("Alain Despont");
@@ -1365,28 +945,7 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 		fusible.blow();
 		assertTrue(fusible.isBlown());
 
-		final long noIndividuDespont = 4278234L;
-
-		serviceCivil.setUp(new MockServiceCivil() {
-			@Override
-			protected void init() {
-				addIndividu(noIndividuDespont, null, "Despont", "Alain", Sexe.MASCULIN);
-			}
-		});
-
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				addHabitant(noIndividuDespont);
-
-				final PersonnePhysique marcel = addNonHabitant("Marcel", "Bolomido", null, Sexe.MASCULIN);
-				final PersonnePhysique claudine = addNonHabitant("Claudine", "Desplatanes", null, Sexe.FEMININ);
-				addEnsembleTiersCouple(marcel, claudine, date(2012, 4, 14), null);
-
-				addDebiteur(CategorieImpotSource.CREANCIERS_HYPOTHECAIRES, PeriodiciteDecompte.ANNUEL, date(2009, 1, 1));
-			}
-		});
-		globalTiersIndexer.sync();
+		loadDatabase(DB_UNIT_DATA_FILE);
 
 		final TiersCriteria criteria = new TiersCriteria();
 		criteria.setNomRaison("Alain Dupont");
@@ -1402,28 +961,7 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 
 		assertTrue(fusible.isNotBlown());
 
-		final long noIndividuDespont = 4278234L;
-
-		serviceCivil.setUp(new MockServiceCivil() {
-			@Override
-			protected void init() {
-				addIndividu(noIndividuDespont, null, "Despont", "Alain", Sexe.MASCULIN);
-			}
-		});
-
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final PersonnePhysique alain = addHabitant(noIndividuDespont);
-
-				final PersonnePhysique marcel = addNonHabitant("Marcel", "Bolomido", null, Sexe.MASCULIN);
-				final PersonnePhysique claudine = addNonHabitant("Claudine", "Desplatanes", null, Sexe.FEMININ);
-				addEnsembleTiersCouple(marcel, claudine, date(2012, 4, 14), null);
-
-				addDebiteur("Débiteur IS", alain, date(2009, 1, 1));
-			}
-		});
-		globalTiersIndexer.sync();
+		loadDatabase(DB_UNIT_DATA_FILE);
 
 		final TiersCriteria criteria = new TiersCriteria();
 		criteria.setNomRaison("Robert Pittet");
@@ -1437,28 +975,7 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 		final BlockingQueue<TiersIndexedData> queue = new SynchronousQueue<>();
 		final Fuse fusible = new Fuse();
 
-		final long noIndividuDespont = 4278234L;
-
-		serviceCivil.setUp(new MockServiceCivil() {
-			@Override
-			protected void init() {
-				addIndividu(noIndividuDespont, null, "Despont", "Alain", Sexe.MASCULIN);
-			}
-		});
-
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final PersonnePhysique alain = addHabitant(noIndividuDespont);
-
-				final PersonnePhysique marcel = addNonHabitant("Marcel", "Bolomido", null, Sexe.MASCULIN);
-				final PersonnePhysique claudine = addNonHabitant("Claudine", "Desplatanes", null, Sexe.FEMININ);
-				addEnsembleTiersCouple(marcel, claudine, date(2012, 4, 14), null);
-
-				addDebiteur("Débiteur IS", alain, date(2009, 1, 1));
-			}
-		});
-		globalTiersIndexer.sync();
+		loadDatabase(DB_UNIT_DATA_FILE);
 
 		final List<TiersIndexedData> found = new ArrayList<>();
 		final Fuse done = new Fuse();

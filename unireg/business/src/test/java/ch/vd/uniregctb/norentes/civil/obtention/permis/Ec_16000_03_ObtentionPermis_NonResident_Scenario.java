@@ -10,7 +10,7 @@ import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
 import ch.vd.uniregctb.norentes.annotation.Check;
 import ch.vd.uniregctb.norentes.annotation.Etape;
 import ch.vd.uniregctb.norentes.common.EvenementCivilScenario;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
+import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
 import ch.vd.uniregctb.type.ModeImposition;
@@ -74,14 +74,15 @@ public class Ec_16000_03_ObtentionPermis_NonResident_Scenario extends EvenementC
 		momo.setNumeroIndividu(noIndMomo);
 		noCtbMomo = momo.getNumero();
 
-		addForFiscalPrincipal(momo, MockCommune.Neuchatel, dateObtentionPermisB, null, MotifFor.ARRIVEE_HS, null, ModeImposition.SOURCE);
+		final ForFiscalPrincipal ffp = addForFiscalPrincipal(momo, MockCommune.Neuchatel, dateObtentionPermisB, null, MotifFor.ARRIVEE_HS, null);
+		ffp.setModeImposition(ModeImposition.SOURCE);
 	}
 
 	@Check(id=1, descr="Vérification de l'état du for")
 	public void check1() throws Exception {
 
 		final PersonnePhysique momo = (PersonnePhysique) tiersDAO.get(noCtbMomo);
-		final ForFiscalPrincipalPP ffp = momo.getDernierForFiscalPrincipal();
+		final ForFiscalPrincipal ffp = momo.getDernierForFiscalPrincipal();
 		assertNotNull(ffp, "Pas de for fiscal principal");
 		assertEquals(ModeImposition.SOURCE, ffp.getModeImposition(), "Mauvais mode d'imposition");
 		assertEquals(TypeAutoriteFiscale.COMMUNE_HC, ffp.getTypeAutoriteFiscale(), "Mauvais type d'autorité fiscale");
@@ -103,7 +104,7 @@ public class Ec_16000_03_ObtentionPermis_NonResident_Scenario extends EvenementC
 		assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat(), "L'événement aurait dû être traité");
 
 		final PersonnePhysique momo = (PersonnePhysique) tiersDAO.get(noCtbMomo);
-		final ForFiscalPrincipalPP ffp = momo.getDernierForFiscalPrincipal();
+		final ForFiscalPrincipal ffp = momo.getDernierForFiscalPrincipal();
 		assertNotNull(ffp, "Pas de for fiscal principal");
 		assertEquals(ModeImposition.ORDINAIRE, ffp.getModeImposition(), "Mauvais mode d'imposition");
 		assertEquals(TypeAutoriteFiscale.COMMUNE_HC, ffp.getTypeAutoriteFiscale(), "Mauvais type d'autorité fiscale");

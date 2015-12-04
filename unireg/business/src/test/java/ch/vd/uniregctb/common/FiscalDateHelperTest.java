@@ -1,9 +1,12 @@
 package ch.vd.uniregctb.common;
 
+import java.util.GregorianCalendar;
+
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
 
 import static org.junit.Assert.assertEquals;
@@ -17,19 +20,42 @@ public class FiscalDateHelperTest extends WithoutSpringTest {
 	@Test
 	public void testGetAnneeCourante() {
 		// Standard cases
-		assertEquals(1990, FiscalDateHelper.getAnneeFiscale(date(1990, 4, 4)));
-		assertEquals(1995, FiscalDateHelper.getAnneeFiscale(date(1995, 10, 11)));
+		GregorianCalendar cal = new GregorianCalendar(1990, 4, 4);
+		assertEquals(1990, FiscalDateHelper.getAnneeCourante(cal));
+		cal = new GregorianCalendar(1995, 10, 11);
+		assertEquals(1995, FiscalDateHelper.getAnneeCourante(cal));
 
 		// Border case
-		assertEquals(1998, FiscalDateHelper.getAnneeFiscale(date(1998, 12, 20)));
+		cal = new GregorianCalendar(1998, 11, 20);
+		assertEquals(1998, FiscalDateHelper.getAnneeCourante(cal));
 
 		// After end of fiscal year
-		assertEquals(1999, FiscalDateHelper.getAnneeFiscale(date(1998, 12, 21)));
-		assertEquals(1999, FiscalDateHelper.getAnneeFiscale(date(1998, 12, 28)));
-		assertEquals(1999, FiscalDateHelper.getAnneeFiscale(date(1998, 12, 31)));
+		cal = new GregorianCalendar(1998, 11, 21);
+		assertEquals(1999, FiscalDateHelper.getAnneeCourante(cal));
+		cal = new GregorianCalendar(1998, 11, 28);
+		assertEquals(1999, FiscalDateHelper.getAnneeCourante(cal));
+		cal = new GregorianCalendar(1998, 11, 31);
+		assertEquals(1999, FiscalDateHelper.getAnneeCourante(cal));
 
 		// Back to standard case
-		assertEquals(1999, FiscalDateHelper.getAnneeFiscale(date(1999, 1, 1)));
+		cal = new GregorianCalendar(1999, 1, 1);
+		assertEquals(1999, FiscalDateHelper.getAnneeCourante(cal));
+	}
+
+	@Test
+	public void testGetDateFiscale() {
+		// Standard cases
+		assertEquals(DateHelper.getDate(1991, 2, 4), FiscalDateHelper.getDateEvenementFiscal(DateHelper.getDate(1991, 2, 4)));
+		assertEquals(DateHelper.getDate(1994, 5, 23), FiscalDateHelper.getDateEvenementFiscal(DateHelper.getDate(1994, 5, 23)));
+		assertEquals(DateHelper.getDate(2008, 2, 18), FiscalDateHelper.getDateEvenementFiscal(DateHelper.getDate(2008, 2, 18)));
+
+		// Border cases
+		assertEquals(DateHelper.getDate(1990, 12, 19), FiscalDateHelper.getDateEvenementFiscal(DateHelper.getDate(1990, 12, 19)));
+		assertEquals(DateHelper.getDate(1990, 12, 20), FiscalDateHelper.getDateEvenementFiscal(DateHelper.getDate(1990, 12, 20)));
+		assertEquals(DateHelper.getDate(1991, 1, 1), FiscalDateHelper.getDateEvenementFiscal(DateHelper.getDate(1990, 12, 21)));
+		assertEquals(DateHelper.getDate(1991, 1, 1), FiscalDateHelper.getDateEvenementFiscal(DateHelper.getDate(1990, 12, 25)));
+		assertEquals(DateHelper.getDate(1991, 1, 1), FiscalDateHelper.getDateEvenementFiscal(DateHelper.getDate(1990, 12, 31)));
+		assertEquals(DateHelper.getDate(1991, 1, 1), FiscalDateHelper.getDateEvenementFiscal(DateHelper.getDate(1991, 1, 1)));
 	}
 
 	@Test

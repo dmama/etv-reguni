@@ -1,7 +1,6 @@
 package ch.vd.uniregctb.param;
 
 import javax.servlet.http.HttpSession;
-import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -15,7 +14,6 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.Validator;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -25,14 +23,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.uniregctb.common.DynamicDelegatingValidator;
 import ch.vd.uniregctb.declaration.ModeleDocument;
 import ch.vd.uniregctb.declaration.ModeleFeuilleDocument;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.param.manager.ParamPeriodeManager;
 import ch.vd.uniregctb.param.view.ModeleDocumentView;
-import ch.vd.uniregctb.param.view.ParametrePeriodeFiscalePMEditView;
-import ch.vd.uniregctb.param.view.ParametrePeriodeFiscalePPEditView;
+import ch.vd.uniregctb.param.view.ParametrePeriodeFiscaleView;
 import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.security.SecurityCheck;
 import ch.vd.uniregctb.tiers.TiersMapHelper;
@@ -50,7 +46,6 @@ public class ParamPeriodeController {
 	private ParamPeriodeManager manager;
 	private TiersMapHelper tiersMapHelper;
 	private MessageSource messageSource;
-	private DynamicDelegatingValidator validator;
 
 	private static PeriodeFiscale findPeriodById(List<PeriodeFiscale> periodes, long id) {
 		for (PeriodeFiscale pf : periodes) {
@@ -82,18 +77,8 @@ public class ParamPeriodeController {
 		this.messageSource = messageSource;
 	}
 
-	public void setValidators(Validator[] validators) {
-		this.validator = new DynamicDelegatingValidator(validators);
-	}
-
 	@InitBinder
 	public void initBinder(WebDataBinder binder) {
-		if (binder.getTarget() != null) {
-			final List<Validator> supportingValidators = validator.getSupportingValidators(binder.getTarget().getClass());
-			if (!supportingValidators.isEmpty()) {
-				binder.addValidators(supportingValidators.toArray(new Validator[supportingValidators.size()]));
-			}
-		}
 		binder.registerCustomEditor(RegDate.class, new RegDateEditor(false, false, false, RegDateHelper.StringFormat.DISPLAY));
 	}
 
@@ -112,17 +97,12 @@ public class ParamPeriodeController {
 		final PeriodeFiscale periodeDemandee = pfId != null ? findPeriodById(periodes, pfId) : null;
 		final PeriodeFiscale periodeSelectionnee = periodeDemandee != null ? periodeDemandee : periodes.get(0);
 		model.addAttribute("periodeSelectionnee", periodeSelectionnee);
-
-		model.addAttribute("codeControleSurSommationDIPP", periodeSelectionnee.isShowCodeControleSommationDeclaration());
-		model.addAttribute("parametrePeriodeFiscalePPVaud", manager.getPPVaudByPeriodeFiscale(periodeSelectionnee));
-		model.addAttribute("parametrePeriodeFiscalePPDepense", manager.getPPDepenseByPeriodeFiscale(periodeSelectionnee));
-		model.addAttribute("parametrePeriodeFiscalePPHorsCanton", manager.getPPHorsCantonByPeriodeFiscale(periodeSelectionnee));
-		model.addAttribute("parametrePeriodeFiscalePPHorsSuisse", manager.getPPHorsSuisseByPeriodeFiscale(periodeSelectionnee));
-		model.addAttribute("parametrePeriodeFiscalePPDiplomateSuisse", manager.getPPDiplomateSuisseByPeriodeFiscale(periodeSelectionnee));
-
-		model.addAttribute("parametrePeriodeFiscalePMVaud", manager.getPMVaudByPeriodeFiscale(periodeSelectionnee));
-		model.addAttribute("parametrePeriodeFiscalePMHorsCanton", manager.getPMHorsCantonByPeriodeFiscale(periodeSelectionnee));
-		model.addAttribute("parametrePeriodeFiscalePMHorsSuisse", manager.getPMHorsSuisseByPeriodeFiscale(periodeSelectionnee));
+		model.addAttribute("codeControleSurSommationDI", periodeSelectionnee.isShowCodeControleSommationDeclaration());
+		model.addAttribute("parametrePeriodeFiscaleVaud", manager.getVaudByPeriodeFiscale(periodeSelectionnee));
+		model.addAttribute("parametrePeriodeFiscaleDepense", manager.getDepenseByPeriodeFiscale(periodeSelectionnee));
+		model.addAttribute("parametrePeriodeFiscaleHorsCanton", manager.getHorsCantonByPeriodeFiscale(periodeSelectionnee));
+		model.addAttribute("parametrePeriodeFiscaleHorsSuisse", manager.getHorsSuisseByPeriodeFiscale(periodeSelectionnee));
+		model.addAttribute("parametrePeriodeFiscaleDiplomateSuisse", manager.getDiplomateSuisseByPeriodeFiscale(periodeSelectionnee));
 
 		final List<ModeleDocument> modeles = new ArrayList<>(manager.getModeleDocuments(periodeSelectionnee));
 		Collections.sort(modeles, new Comparator<ModeleDocument>() {
@@ -176,45 +156,19 @@ public class ParamPeriodeController {
 		return "redirect:/param/periode/list.do";
 	}
 
-	@RequestMapping(value = "/pf-edit-pp.do", method = RequestMethod.GET)
+	@RequestMapping(value = "/pf-edit.do", method = RequestMethod.GET)
 	@SecurityCheck(rolesToCheck = {Role.PARAM_PERIODE}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
-	public String showEditPeriodPP(Model model, @RequestParam(value = PARAMETER_PERIODE_ID) Long pfId) {
-		final ParametrePeriodeFiscalePPEditView view = manager.createParametrePeriodeFiscalePPEditView(pfId);
-		return showEditPeriodPP(model, view);
-	}
-
-	private String showEditPeriodPP(Model model, ParametrePeriodeFiscalePPEditView view) {
+	public String showEditPeriod(Model model, @RequestParam(value = PARAMETER_PERIODE_ID) Long pfId) {
+		final ParametrePeriodeFiscaleView view = manager.createParametrePeriodeFiscaleViewEdit(pfId);
 		model.addAttribute("command", view);
-		return "param/parametres-pf-pp-edit";
+		return "param/parametres-pf-edit";
 	}
 
-	@RequestMapping(value = "/pf-edit-pp.do", method = RequestMethod.POST)
+	@RequestMapping(value = "/pf-edit.do", method = RequestMethod.POST)
 	@SecurityCheck(rolesToCheck = {Role.PARAM_PERIODE}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
-	public String commitEditPeriodPP(Model model, @Valid @ModelAttribute("command") ParametrePeriodeFiscalePPEditView view, BindingResult bindingResult) {
+	public String commitEditPeriod(Model model, @ModelAttribute("command") ParametrePeriodeFiscaleView view, BindingResult bindingResult) {
 		if (bindingResult.hasErrors()) {
-			return showEditPeriodPP(model, view);
-		}
-		manager.saveParametrePeriodeFiscaleView(view);
-		return "redirect:/param/periode/list.do?pf=" + view.getIdPeriodeFiscale();
-	}
-
-	@RequestMapping(value = "/pf-edit-pm.do", method = RequestMethod.GET)
-	@SecurityCheck(rolesToCheck = {Role.PARAM_PERIODE}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
-	public String showEditPeriodPM(Model model, @RequestParam(value = PARAMETER_PERIODE_ID) Long pfId) {
-		final ParametrePeriodeFiscalePMEditView view = manager.createParametrePeriodeFiscalePMEditView(pfId);
-		return showEditPeriodPM(model, view);
-	}
-
-	private String showEditPeriodPM(Model model, ParametrePeriodeFiscalePMEditView view) {
-		model.addAttribute("command", view);
-		return "param/parametres-pf-pm-edit";
-	}
-
-	@RequestMapping(value = "/pf-edit-pm.do", method = RequestMethod.POST)
-	@SecurityCheck(rolesToCheck = {Role.PARAM_PERIODE}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
-	public String commitEditPeriodPM(Model model, @Valid @ModelAttribute("command") ParametrePeriodeFiscalePMEditView view, BindingResult bindingResult) {
-		if (bindingResult.hasErrors()) {
-			return showEditPeriodPM(model, view);
+			return showEditPeriod(model, view.getIdPeriodeFiscale());
 		}
 		manager.saveParametrePeriodeFiscaleView(view);
 		return "redirect:/param/periode/list.do?pf=" + view.getIdPeriodeFiscale();
@@ -231,7 +185,7 @@ public class ParamPeriodeController {
 
 	@RequestMapping(value = "/modele-add.do", method = RequestMethod.POST)
 	@SecurityCheck(rolesToCheck = {Role.PARAM_PERIODE}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
-	public String postAddModel(Model model, @Valid @ModelAttribute("command") ModeleDocumentView view, BindingResult bindingResult) {
+	public String postAddModel(Model model, @ModelAttribute("command") ModeleDocumentView view, BindingResult bindingResult) {
 		if (bindingResult.hasErrors()) {
 			return showAddModel(model, view.getIdPeriode());
 		}

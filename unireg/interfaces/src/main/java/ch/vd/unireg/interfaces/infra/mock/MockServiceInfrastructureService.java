@@ -28,6 +28,7 @@ import ch.vd.unireg.interfaces.infra.data.OfficeImpot;
 import ch.vd.unireg.interfaces.infra.data.Pays;
 import ch.vd.unireg.interfaces.infra.data.Region;
 import ch.vd.unireg.interfaces.infra.data.Rue;
+import ch.vd.unireg.interfaces.infra.data.TypeEtatPM;
 import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
 
 /**
@@ -210,7 +211,7 @@ public abstract class MockServiceInfrastructureService implements ServiceInfrast
 			}
 		}
 		// TODO le jour où on introduira la notion d'historique dans le Mock, il ne faudra pas oublier de trier les valeurs ici...
-		return localite == null ? Collections.<Localite>emptyList() : Collections.singletonList(localite);
+		return Arrays.asList(localite);
 	}
 
 	@Override
@@ -456,6 +457,26 @@ public abstract class MockServiceInfrastructureService implements ServiceInfrast
 	}
 
 	@Override
+	public List<TypeRegimeFiscal> getTypesRegimesFiscaux() throws ServiceInfrastructureException {
+		return null;
+	}
+
+	@Override
+	public TypeRegimeFiscal getTypeRegimeFiscal(String code) throws ServiceInfrastructureException {
+		return null;
+	}
+
+	@Override
+	public List<TypeEtatPM> getTypesEtatsPM() throws ServiceInfrastructureException {
+		return null;
+	}
+
+	@Override
+	public TypeEtatPM getTypeEtatPM(String code) throws ServiceInfrastructureException {
+		return null;
+	}
+
+	@Override
 	public String getUrlVers(ApplicationFiscale application, Long tiersId, Integer oid) {
 		return null;
 	}
@@ -468,11 +489,6 @@ public abstract class MockServiceInfrastructureService implements ServiceInfrast
 	@Override
 	public List<Logiciel> getTousLesLogiciels() throws ServiceInfrastructureException {
 		return null;
-	}
-
-	@Override
-	public List<TypeRegimeFiscal> getTousLesRegimesFiscaux() {
-		return Arrays.<TypeRegimeFiscal>asList(MockTypeRegimeFiscal.ALL);
 	}
 
 	@Override

@@ -59,7 +59,7 @@ public interface DelaisService {
 	RegDate getDateFinDelaiCadevImpressionListesRecapitulatives(RegDate dateDebut);
 
 	/**
-	 * Determine la date d'échéance du délai d’échéance d’une sommation de déposer la déclaration d’impôt PP (art. 174 al. 4 LI).<br>
+	 * Determine la date d'échéance du délai d’échéance d’une sommation de déposer la déclaration d’impôt (art. 174 al. 4 LI).<br>
 	 * <br>
 	 * Les jours fériés sont comptés dans le délai.<br>
 	 * Le délai est repoussé au premier jour ouvrable s'il tombe sur un jour non-ouvré.<br>
@@ -68,19 +68,7 @@ public interface DelaisService {
 	 * 
 	 * @return la date d'échéance du délai
 	 */	
-	RegDate getDateFinDelaiEcheanceSommationDeclarationImpotPP(RegDate dateDebut);
-
-	/**
-	 * Determine la date d'échéance du délai d’échéance d’une sommation de déposer la déclaration d’impôt PM (art. 174 al. 4 LI).<br>
-	 * <br>
-	 * Les jours fériés sont comptés dans le délai.<br>
-	 * Le délai est repoussé au premier jour ouvrable s'il tombe sur un jour non-ouvré.<br>
-	 *
-	 * @param dateDebut date
-	 *
-	 * @return la date d'échéance du délai
-	 */
-	RegDate getDateFinDelaiEcheanceSommationDeclarationImpotPM(RegDate dateDebut);
+	RegDate getDateFinDelaiEcheanceSommationDeclarationImpot(RegDate dateDebut);
 
 	/**
 	 * Determine la date d'échéance du délai administratif avant l’échéance d’une sommation de déposer la liste récapitulative.<br>
@@ -95,7 +83,7 @@ public interface DelaisService {
 	RegDate getDateFinDelaiEcheanceSommationListeRecapitualtive(RegDate dateDebut);
 
 	/**
-	 * Determine la date d'échéance du délai administratif avant l’envoi d’une sommation de déposer la déclaration d’impôt PP.<br>
+	 * Determine la date d'échéance du délai administratif avant l’envoi d’une sommation de déposer la déclaration d’impôt.<br>
 	 * <br>
 	 * Les jours fériés sont comptés dans le délai.<br>
 	 * Le délai est repoussé au premier jour ouvrable s'il tombe sur un jour non-ouvré.<br>
@@ -104,19 +92,7 @@ public interface DelaisService {
 	 * 
 	 * @return la date d'échéance du délai
 	 */	
-	RegDate getDateFinDelaiEnvoiSommationDeclarationImpotPP(RegDate dateDebut);
-
-	/**
-	 * Determine la date d'échéance du délai administratif avant l’envoi d’une sommation de déposer la déclaration d’impôt PM.<br>
-	 * <br>
-	 * Les jours fériés sont comptés dans le délai.<br>
-	 * Le délai est repoussé au premier jour ouvrable s'il tombe sur un jour non-ouvré.<br>
-	 *
-	 * @param dateDebut date
-	 *
-	 * @return la date d'échéance du délai
-	 */
-	RegDate getDateFinDelaiEnvoiSommationDeclarationImpotPM(RegDate dateDebut);
+	RegDate getDateFinDelaiEnvoiSommationDeclarationImpot(RegDate dateDebut);
 
 	/**
 	 * Determine la date d'échéance du délai administratif avant l’envoi d’une sommation de déposer la liste récapitulative.<br>

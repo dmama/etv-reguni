@@ -434,7 +434,7 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 		final long idMarie = doInNewTransaction(new TxCallback<Long>() {
 			@Override
 			public Long execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique m = addHabitant(noIndividu);
+				final Contribuable m = addHabitant(noIndividu);
 				addForPrincipal(m, date(1983, 4, 13), MotifFor.MAJORITE, date(2007, 3, 31), MotifFor.DEPART_HS, MockCommune.Lausanne, ModeImposition.SOURCE);
 				addForPrincipal(m, date(2007, 4, 1), MotifFor.DEPART_HS, date(2007, 9, 30), MotifFor.ARRIVEE_HS, MockPays.Espagne, ModeImposition.SOURCE);
 				addForPrincipal(m, date(2007, 10, 1), MotifFor.ARRIVEE_HS, date(2007, 12, 31), MotifFor.DEMENAGEMENT_VD, MockCommune.Bussigny, ModeImposition.SOURCE);
@@ -486,7 +486,7 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 		final long idMarie = doInNewTransaction(new TxCallback<Long>() {
 			@Override
 			public Long execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique m = addHabitant(noIndividu);
+				final Contribuable m = addHabitant(noIndividu);
 				addForPrincipal(m, date(1983, 4, 13), MotifFor.MAJORITE, date(2007, 3, 31), MotifFor.DEPART_HS, MockCommune.Lausanne, ModeImposition.SOURCE);
 				addForPrincipal(m, date(2007, 4, 1), MotifFor.DEPART_HS, date(2007, 9, 30), MotifFor.ARRIVEE_HS, MockPays.Espagne, ModeImposition.SOURCE);
 				addForPrincipal(m, date(2007, 10, 1), MotifFor.ARRIVEE_HS, date(2008, 5, 15), MotifFor.DEMENAGEMENT_VD, MockCommune.Bussigny, ModeImposition.SOURCE);
@@ -718,7 +718,7 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 			@Override
 			public void execute(TransactionStatus status) throws Exception {
 				// données bidon pour pouvoir instancier les assujettissements
-				final PersonnePhysique toto = addNonHabitant("Toto", "LaRapière", date(1973, 3, 21), Sexe.MASCULIN);
+				final Contribuable toto = addNonHabitant("Toto", "LaRapière", date(1973, 3, 21), Sexe.MASCULIN);
 				addForPrincipal(toto, date(2000, 1, 1), MotifFor.MAJORITE, MockCommune.Lausanne);
 
 				assertEquals(TypeContribuable.ORDINAIRE, ProduireRolesProcessor.getTypeContribuable(new VaudoisOrdinaire(toto, null, null, null, null)));
@@ -806,9 +806,15 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 
 				final PersonnePhysique toto = addNonHabitant("Toto", "Tartempion", date(1950, 9, 3), Sexe.MASCULIN);
 
-				addForPrincipal(toto, arrivee, MotifFor.ARRIVEE_HS, passageMixte.getOneDayBefore(), MotifFor.CHGT_MODE_IMPOSITION, MockCommune.Lausanne, ModeImposition.DEPENSE);
-				addForPrincipal(toto, passageMixte, MotifFor.CHGT_MODE_IMPOSITION, passageRole.getOneDayBefore(), MotifFor.CHGT_MODE_IMPOSITION, MockCommune.Lausanne, ModeImposition.MIXTE_137_2);
-				addForPrincipal(toto, passageRole, MotifFor.CHGT_MODE_IMPOSITION, MockCommune.Lausanne);
+				final ForFiscalPrincipal fficcd = addForPrincipal(toto, arrivee, MotifFor.ARRIVEE_HS, passageMixte.getOneDayBefore(), MotifFor.CHGT_MODE_IMPOSITION, MockCommune.Lausanne);
+				fficcd.setModeImposition(ModeImposition.DEPENSE);
+
+				final ForFiscalPrincipal ffmixte = addForPrincipal(toto, passageMixte, MotifFor.CHGT_MODE_IMPOSITION, passageRole.getOneDayBefore(), MotifFor.CHGT_MODE_IMPOSITION, MockCommune.Lausanne);
+				ffmixte.setModeImposition(ModeImposition.MIXTE_137_2);
+
+				final ForFiscalPrincipal fford = addForPrincipal(toto, passageRole, MotifFor.CHGT_MODE_IMPOSITION, MockCommune.Lausanne);
+				fford.setModeImposition(ModeImposition.ORDINAIRE);
+
 				return toto.getNumero();
 			}
 		});
@@ -993,8 +999,8 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 	/**
 	 * @return un contribuable vaudois dans le canton depuis des années
 	 */
-	private PersonnePhysique newCtbVaudoisOrdinaire(MockCommune commune) {
-		final PersonnePhysique paul = addNonHabitant("Paul", "Duchêne", date(1965, 4, 13), Sexe.MASCULIN);
+	private Contribuable newCtbVaudoisOrdinaire(MockCommune commune) {
+		final Contribuable paul = addNonHabitant("Paul", "Duchêne", date(1965, 4, 13), Sexe.MASCULIN);
 		addForPrincipal(paul, date(1983, 4, 13), MotifFor.MAJORITE, commune);
 		return paul;
 	}
@@ -1002,8 +1008,8 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 	/**
 	 * @return un contribuable vaudois arrivé dans le canton en 2007
 	 */
-	private PersonnePhysique newCtbVaudoisOrdinaireDepuis2007(MockCommune commune) {
-		final PersonnePhysique incognito = addNonHabitant("Incog", "Nito", null, null);
+	private Contribuable newCtbVaudoisOrdinaireDepuis2007(MockCommune commune) {
+		final Contribuable incognito = addNonHabitant("Incog", "Nito", null, null);
 		addForPrincipal(incognito, date(2007, 4, 13), MotifFor.ARRIVEE_HC, commune);
 		return incognito;
 	}
@@ -1011,8 +1017,8 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 	/**
 	 * @return un contribuable vaudois parti hors-canton en 2007
 	 */
-	private PersonnePhysique newCtbVaudoisOrdinairePartiHorsCantonEn2007(MockCommune commune) {
-		final PersonnePhysique raoul = addNonHabitant("Raoul", "Coller", date(1965, 4, 13), Sexe.MASCULIN);
+	private Contribuable newCtbVaudoisOrdinairePartiHorsCantonEn2007(MockCommune commune) {
+		final Contribuable raoul = addNonHabitant("Raoul", "Coller", date(1965, 4, 13), Sexe.MASCULIN);
 		addForPrincipal(raoul, date(1983, 4, 13), MotifFor.ARRIVEE_HC, date(2007, 9, 30), MotifFor.DEPART_HC, commune);
 		addForPrincipal(raoul, date(2007, 10, 1), MotifFor.DEPART_HC, MockCommune.Bern);
 		return raoul;
@@ -1021,8 +1027,8 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 	/**
 	 * @return un contribuable vaudois parti hors-canton au 31.12.2007
 	 */
-	private PersonnePhysique newCtbVaudoisPartiHorsCantonTrenteEtUnDecembre(MockCommune commune) {
-		final PersonnePhysique raoul = addNonHabitant("Marie", "Coller", date(1965, 4, 13), Sexe.FEMININ);
+	private Contribuable newCtbVaudoisPartiHorsCantonTrenteEtUnDecembre(MockCommune commune) {
+		final Contribuable raoul = addNonHabitant("Marie", "Coller", date(1965, 4, 13), Sexe.FEMININ);
 		addForPrincipal(raoul, date(1983, 4, 13), MotifFor.ARRIVEE_HC, date(2007, 12, 31), MotifFor.DEPART_HC, commune);
 		addForPrincipal(raoul, date(2008, 1, 1), MotifFor.DEPART_HC, MockCommune.Bern);
 		return raoul;
@@ -1031,8 +1037,8 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 	/**
 	 * @return un contribuable vaudois parti hors-Suisse au 31.12.2007
 	 */
-	private PersonnePhysique newCtbVaudoisPartiHorsSuisseTrenteEtUnDecembre(MockCommune commune) {
-		final PersonnePhysique marie = addNonHabitant("Marie", "Coller", date(1965, 4, 13), Sexe.FEMININ);
+	private Contribuable newCtbVaudoisPartiHorsSuisseTrenteEtUnDecembre(MockCommune commune) {
+		final Contribuable marie = addNonHabitant("Marie", "Coller", date(1965, 4, 13), Sexe.FEMININ);
 		addForPrincipal(marie, date(1983, 4, 13), MotifFor.ARRIVEE_HC, date(2007, 12, 31), MotifFor.DEPART_HS, commune);
 		addForPrincipal(marie, date(2008, 1, 1), MotifFor.DEPART_HS, MockPays.PaysInconnu);
 		return marie;
@@ -1041,8 +1047,8 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 	/**
 	 * @return un contribuable vaudois parti hors-canton en 2007 mais qui a gardé un immeuble
 	 */
-	private PersonnePhysique newCtbVaudoisOrdinairePartiHorsCantonEtImmeuble(MockCommune communeResidence, MockCommune communeImmeuble) {
-		final PersonnePhysique louis = addNonHabitant("Louis", "Coller", date(1965, 4, 13), Sexe.MASCULIN);
+	private Contribuable newCtbVaudoisOrdinairePartiHorsCantonEtImmeuble(MockCommune communeResidence, MockCommune communeImmeuble) {
+		final Contribuable louis = addNonHabitant("Louis", "Coller", date(1965, 4, 13), Sexe.MASCULIN);
 		addForPrincipal(louis, date(1983, 4, 13), MotifFor.ARRIVEE_HC, date(2007, 9, 30), MotifFor.DEPART_HC, communeResidence);
 		addForPrincipal(louis, date(2007, 10, 1), MotifFor.DEPART_HC, MockCommune.Bern);
 		addForSecondaire(louis, date(2001, 3, 2), MotifFor.ACHAT_IMMOBILIER, communeImmeuble.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
@@ -1052,8 +1058,8 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 	/**
 	 * @return un contribuable vaudois parti hors-Suisse en 2007 mais qui a gardé un immeuble
 	 */
-	private PersonnePhysique newCtbVaudoisOrdinairePartiHorsSuisseEtImmeuble(MockCommune communeResidence, MockCommune communeImmeuble) {
-		final PersonnePhysique louis = addNonHabitant("Albert", "Coller", date(1965, 4, 13), Sexe.MASCULIN);
+	private Contribuable newCtbVaudoisOrdinairePartiHorsSuisseEtImmeuble(MockCommune communeResidence, MockCommune communeImmeuble) {
+		final Contribuable louis = addNonHabitant("Albert", "Coller", date(1965, 4, 13), Sexe.MASCULIN);
 		addForPrincipal(louis, date(1983, 4, 13), MotifFor.ARRIVEE_HC, date(2007, 9, 30), MotifFor.DEPART_HS, communeResidence);
 		addForPrincipal(louis, date(2007, 10, 1), MotifFor.DEPART_HS, MockPays.PaysInconnu);
 		addForSecondaire(louis, date(2001, 3, 2), MotifFor.ACHAT_IMMOBILIER, communeImmeuble.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
@@ -1063,8 +1069,8 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 	/**
 	 * @return un contribuable vaudois parti hors-canton en 2006
 	 */
-	private PersonnePhysique newCtbVaudoisOrdinairePartiHorsCantonEn2006(MockCommune commune) {
-		final PersonnePhysique didier = addNonHabitant("Didier", "Duvolet", date(1965, 4, 13), Sexe.MASCULIN);
+	private Contribuable newCtbVaudoisOrdinairePartiHorsCantonEn2006(MockCommune commune) {
+		final Contribuable didier = addNonHabitant("Didier", "Duvolet", date(1965, 4, 13), Sexe.MASCULIN);
 		addForPrincipal(didier, date(1983, 4, 13), MotifFor.ARRIVEE_HC, date(2006, 9, 30), MotifFor.DEPART_HC, commune);
 		addForPrincipal(didier, date(2006, 10, 1), MotifFor.DEPART_HC, MockCommune.Neuchatel);
 		return didier;
@@ -1073,8 +1079,8 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 	/**
 	 * @return un contribuable vaudois parti hors-canton en 2008
 	 */
-	private PersonnePhysique newCtbVaudoisOrdinairePartiHorsCantonEn2008(MockCommune commune) {
-		final PersonnePhysique laurent = addNonHabitant("Laurent", "Du", date(1965, 4, 13), Sexe.MASCULIN);
+	private Contribuable newCtbVaudoisOrdinairePartiHorsCantonEn2008(MockCommune commune) {
+		final Contribuable laurent = addNonHabitant("Laurent", "Du", date(1965, 4, 13), Sexe.MASCULIN);
 		addForPrincipal(laurent, date(1983, 4, 13), MotifFor.ARRIVEE_HC, date(2008, 9, 30), MotifFor.DEPART_HC, commune);
 		addForPrincipal(laurent, date(2008, 10, 1), MotifFor.DEPART_HC, MockCommune.Neuchatel);
 		return laurent;
@@ -1083,8 +1089,8 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 	/**
 	 * @return un contribuable vaudois parti hors-Suisse et revenue en Suisse la même anneée en 2007
 	 */
-	private PersonnePhysique newCtbVaudoisOrdinairePartiHorsSuisseEtRevenuDansLaMemeAnnee(MockCommune commune) {
-		final PersonnePhysique benjamin = addNonHabitant("Benjamin", "TientPasEnPlace", date(1965, 4, 13), Sexe.MASCULIN);
+	private Contribuable newCtbVaudoisOrdinairePartiHorsSuisseEtRevenuDansLaMemeAnnee(MockCommune commune) {
+		final Contribuable benjamin = addNonHabitant("Benjamin", "TientPasEnPlace", date(1965, 4, 13), Sexe.MASCULIN);
 		addForPrincipal(benjamin, date(1983, 4, 13), MotifFor.MAJORITE, date(2007, 3, 31), MotifFor.DEPART_HS, commune);
 		addForPrincipal(benjamin, date(2007, 4, 1), MotifFor.DEPART_HS, date(2007, 9, 30), MotifFor.ARRIVEE_HS, MockPays.Espagne);
 		addForPrincipal(benjamin, date(2007, 10, 1), MotifFor.ARRIVEE_HS, commune);
@@ -1094,8 +1100,8 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 	/**
 	 * @return un contribuable vaudois parti hors-Suisse et revenue en Suisse la même anneée en 2007
 	 */
-	private PersonnePhysique newCtbVaudoisOrdinairePartiHorsSuisseEtRevenuDansLaMemeAnnee(MockCommune communeAvant, MockCommune communeApres) {
-		final PersonnePhysique benjamin = addNonHabitant("Benjamin", "TientPasEnPlace", date(1965, 4, 13), Sexe.MASCULIN);
+	private Contribuable newCtbVaudoisOrdinairePartiHorsSuisseEtRevenuDansLaMemeAnnee(MockCommune communeAvant, MockCommune communeApres) {
+		final Contribuable benjamin = addNonHabitant("Benjamin", "TientPasEnPlace", date(1965, 4, 13), Sexe.MASCULIN);
 		addForPrincipal(benjamin, date(1983, 4, 13), MotifFor.MAJORITE, date(2007, 3, 31), MotifFor.DEPART_HS, communeAvant);
 		addForPrincipal(benjamin, date(2007, 4, 1), MotifFor.DEPART_HS, date(2007, 9, 30), MotifFor.ARRIVEE_HS, MockPays.Espagne);
 		addForPrincipal(benjamin, date(2007, 10, 1), MotifFor.ARRIVEE_HS, communeApres);
@@ -1105,8 +1111,8 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 	/**
 	 * @return un contribuable sourcier parti hors-Suisse et revenue en Suisse la même anneée en 2007
 	 */
-	private PersonnePhysique newCtbVaudoisSourcierPartiHorsSuisseEtRevenuDansLaMemeAnnee(long noIndividu, MockCommune communeAvant, MockCommune communeApres) {
-		final PersonnePhysique m = addHabitant(noIndividu);
+	private Contribuable newCtbVaudoisSourcierPartiHorsSuisseEtRevenuDansLaMemeAnnee(long noIndividu, MockCommune communeAvant, MockCommune communeApres) {
+		final Contribuable m = addHabitant(noIndividu);
 		addForPrincipal(m, date(1983, 4, 13), MotifFor.MAJORITE, date(2007, 3, 31), MotifFor.DEPART_HS, communeAvant, ModeImposition.SOURCE);
 		addForPrincipal(m, date(2007, 4, 1), MotifFor.DEPART_HS, date(2007, 9, 30), MotifFor.ARRIVEE_HS, MockPays.Espagne, ModeImposition.SOURCE);
 		addForPrincipal(m, date(2007, 10, 1), MotifFor.ARRIVEE_HS, communeApres, ModeImposition.SOURCE);
@@ -1116,8 +1122,8 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 	/**
 	 * @return un contribuable vaudois ordinaire avec for principal et secondaire dans la même commune
 	 */
-	private PersonnePhysique newCtbVaudoisOrdinaireAvecImmeubleDansCommune(MockCommune commune) {
-		final PersonnePhysique genevieve = addNonHabitant("Geneviève", "Maillefer", date(1965, 4, 13), Sexe.FEMININ);
+	private Contribuable newCtbVaudoisOrdinaireAvecImmeubleDansCommune(MockCommune commune) {
+		final Contribuable genevieve = addNonHabitant("Geneviève", "Maillefer", date(1965, 4, 13), Sexe.FEMININ);
 		addForPrincipal(genevieve, date(2003, 10, 1), MotifFor.DEMENAGEMENT_VD, commune);
 		addImmeuble(genevieve, commune, date(2003, 11, 25), null);
 		return genevieve;
@@ -1126,14 +1132,14 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 	/**
 	 * @return un diplomate suisse basé à l'étranger mais rattaché à une commune vaudoise
 	 */
-	private PersonnePhysique newCtbDiplomateSuisse(MockCommune commune) {
-		final PersonnePhysique marc = addNonHabitant("Marc", "Ramatruelle", date(1948, 11, 3), Sexe.MASCULIN);
+	private Contribuable newCtbDiplomateSuisse(MockCommune commune) {
+		final Contribuable marc = addNonHabitant("Marc", "Ramatruelle", date(1948, 11, 3), Sexe.MASCULIN);
 		addForPrincipal(marc, date(1968, 11, 3), MotifFor.MAJORITE, commune, MotifRattachement.DIPLOMATE_SUISSE);
 		return marc;
 	}
 
-	private PersonnePhysique newCtbOrdinaireVaudoisEtImmeuble(MockCommune communeResidence, MockCommune communeImmeuble) {
-		final PersonnePhysique pascal = newCtbVaudoisOrdinaire(communeResidence);
+	private Contribuable newCtbOrdinaireVaudoisEtImmeuble(MockCommune communeResidence, MockCommune communeImmeuble) {
+		final Contribuable pascal = newCtbVaudoisOrdinaire(communeResidence);
 		addImmeuble(pascal, communeImmeuble, date(2000, 1, 1), null);
 		return pascal;
 	}
@@ -1141,36 +1147,39 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 	/**
 	 * @return un contribuable vaudois dans le canton depuis des années avec un mode d'imposition sourcier-mixte
 	 */
-	private PersonnePhysique newCtbVaudoisSourcierMixte(MockCommune commune) {
-		final PersonnePhysique arnold = addNonHabitant("Arnold", "Duplat", date(1965, 4, 13), Sexe.MASCULIN);
-		addForPrincipal(arnold, date(1983, 4, 13), MotifFor.ARRIVEE_HC, commune, ModeImposition.MIXTE_137_2);
+	private Contribuable newCtbVaudoisSourcierMixte(MockCommune commune) {
+		final Contribuable arnold = addNonHabitant("Arnold", "Duplat", date(1965, 4, 13), Sexe.MASCULIN);
+		final ForFiscalPrincipal fors = addForPrincipal(arnold, date(1983, 4, 13), MotifFor.ARRIVEE_HC, commune);
+		fors.setModeImposition(ModeImposition.MIXTE_137_2);
 		return arnold;
 	}
 
 	/**
 	 * @return un contribuable vaudois dans le canton depuis des années avec un mode d'imposition sourcier pur (non gris!)
 	 */
-	private PersonnePhysique newCtbVaudoisSourcier(MockCommune commune) {
+	private Contribuable newCtbVaudoisSourcier(MockCommune commune) {
 		final PersonnePhysique victor = addNonHabitant("Victor", "Duplat", date(1965, 4, 13), Sexe.MASCULIN);
 		victor.setNumeroIndividu(263343L);
-		addForPrincipal(victor, date(1983, 4, 13), MotifFor.ARRIVEE_HC, commune, ModeImposition.SOURCE);
+		final ForFiscalPrincipal fors = addForPrincipal(victor, date(1983, 4, 13), MotifFor.ARRIVEE_HC, commune);
+		fors.setModeImposition(ModeImposition.SOURCE);
 		return victor;
 	}
 
 	/**
 	 * @return un contribuable vaudois dans le canton depuis des années avec un mode d'imposition sourcier pur (gris)
 	 */
-	private PersonnePhysique newCtbVaudoisSourcierGris(MockCommune commune) {
-		final PersonnePhysique albertine = addNonHabitant("Albertine", "Duplat", date(1969, 4, 13), Sexe.FEMININ);
-		addForPrincipal(albertine, date(1983, 4, 13), MotifFor.ARRIVEE_HC, commune, ModeImposition.SOURCE);
+	private Contribuable newCtbVaudoisSourcierGris(MockCommune commune) {
+		final Contribuable albertine = addNonHabitant("Albertine", "Duplat", date(1969, 4, 13), Sexe.FEMININ);
+		final ForFiscalPrincipal fors = addForPrincipal(albertine, date(1983, 4, 13), MotifFor.ARRIVEE_HC, commune);
+		fors.setModeImposition(ModeImposition.SOURCE);
 		return albertine;
 	}
 
 	/**
 	 * @return un contribuable avec un for principal hors canton, et avec un immeuble dans le canton
 	 */
-	private PersonnePhysique newCtbHorsCantonEtImmeuble(MockCommune commune) {
-		final PersonnePhysique geo = addNonHabitant("Geo", "Trouverien", date(1948, 11, 3), Sexe.MASCULIN);
+	private Contribuable newCtbHorsCantonEtImmeuble(MockCommune commune) {
+		final Contribuable geo = addNonHabitant("Geo", "Trouverien", date(1948, 11, 3), Sexe.MASCULIN);
 		addForPrincipal(geo, date(1968, 11, 3), null, MockCommune.Neuchatel);
 		addImmeuble(geo, commune, date(2003, 3, 1), null);
 		return geo;
@@ -1179,8 +1188,8 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 	/**
 	 * @return un contribuable avec un for principal hors canton, et avec deux immeubles dans le canton, dont un acheté et vendu en 2007
 	 */
-	private PersonnePhysique newCtbHorsCantonEtDeuxImmeubles(MockCommune communeImmeuble1, MockCommune communeImmeuble2) {
-		final PersonnePhysique donald = addNonHabitant("Donald", "Trouverien", date(1948, 11, 3), Sexe.MASCULIN);
+	private Contribuable newCtbHorsCantonEtDeuxImmeubles(MockCommune communeImmeuble1, MockCommune communeImmeuble2) {
+		final Contribuable donald = addNonHabitant("Donald", "Trouverien", date(1948, 11, 3), Sexe.MASCULIN);
 		addForPrincipal(donald, date(1968, 11, 3), null, MockCommune.Neuchatel);
 		addImmeuble(donald, communeImmeuble1, date(2007, 3, 1), date(2007, 6, 30));
 		addImmeuble(donald, communeImmeuble2, date(1990, 1, 15), null);
@@ -1190,8 +1199,8 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 	/**
 	 * @return un contribuable avec un for principal hors canton, et avec deux immeubles dans le canton, l'un vendu en 2007, l'autre acheté en 2007, sans chevauchement
 	 */
-	private PersonnePhysique newCtbHorsCantonDeuxImmeublesNonChevauchant(MockCommune communeImmeuble1, MockCommune communeImmeuble2) {
-		final PersonnePhysique georges = addNonHabitant("Georges", "Trouverien", date(1948, 11, 3), Sexe.MASCULIN);
+	private Contribuable newCtbHorsCantonDeuxImmeublesNonChevauchant(MockCommune communeImmeuble1, MockCommune communeImmeuble2) {
+		final Contribuable georges = addNonHabitant("Georges", "Trouverien", date(1948, 11, 3), Sexe.MASCULIN);
 		addForPrincipal(georges, date(1968, 11, 3), null, MockCommune.Neuchatel);
 		addImmeuble(georges, communeImmeuble1, date(1980, 3, 1), date(2007, 6, 30));
 		addImmeuble(georges, communeImmeuble2, date(2007, 11, 15), null);
@@ -1201,8 +1210,8 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 	/**
 	 * @return un contribuable avec un for principal hors canton, et avec un immeuble dans le canton qui a été vendu en 2007
 	 */
-	private PersonnePhysique newCtbHorsCantonEtImmeubleVenduEn2007(MockCommune commune) {
-		final PersonnePhysique johnny = addNonHabitant("Johnny", "Hallyday", date(1948, 11, 3), Sexe.MASCULIN);
+	private Contribuable newCtbHorsCantonEtImmeubleVenduEn2007(MockCommune commune) {
+		final Contribuable johnny = addNonHabitant("Johnny", "Hallyday", date(1948, 11, 3), Sexe.MASCULIN);
 		addForPrincipal(johnny, date(2005, 11, 3), null, MockCommune.Bern);
 		addImmeuble(johnny, commune, date(2005, 11, 3), date(2007, 8, 30));
 		return johnny;
@@ -1211,8 +1220,8 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 	/**
 	 * @return un contribuable avec un for principal hors Suisse, et avec un immeuble dans le canton qui a été vendu le 31.12.2007
 	 */
-	private PersonnePhysique newCtbHorsSuisseImmeubleVenduTrenteEtUnDecembre(MockCommune commune) {
-		final PersonnePhysique tom = addNonHabitant("Tom", "Cruise", date(1948, 11, 3), Sexe.MASCULIN);
+	private Contribuable newCtbHorsSuisseImmeubleVenduTrenteEtUnDecembre(MockCommune commune) {
+		final Contribuable tom = addNonHabitant("Tom", "Cruise", date(1948, 11, 3), Sexe.MASCULIN);
 		addForPrincipal(tom, date(2005, 11, 3), null, MockPays.Albanie);
 		addImmeuble(tom, commune, date(2005, 11, 3), date(2007, 12, 31));
 		return tom;
@@ -1221,8 +1230,8 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 	/**
 	 * @return un contribuable avec un for principal hors canton, et avec une activité indépendente dans le canton qui a été stoppé en 2007
 	 */
-	private PersonnePhysique newCtbHorsCantonEtActiviteIndStoppeeEn2007(MockCommune commune) {
-		final PersonnePhysique tyler = addNonHabitant("Tyler", "Brulé", date(1948, 11, 3), Sexe.MASCULIN);
+	private Contribuable newCtbHorsCantonEtActiviteIndStoppeeEn2007(MockCommune commune) {
+		final Contribuable tyler = addNonHabitant("Tyler", "Brulé", date(1948, 11, 3), Sexe.MASCULIN);
 		addForPrincipal(tyler, date(2005, 11, 3), null, MockCommune.Bern);
 		addForSecondaire(tyler, date(2005, 11, 3), MotifFor.DEBUT_EXPLOITATION, date(2007, 8, 30), MotifFor.FIN_EXPLOITATION, commune.getNoOFS(), MotifRattachement.ACTIVITE_INDEPENDANTE);
 		return tyler;
@@ -1231,8 +1240,8 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 	/**
 	 * @return un contribuable avec un for fermé en 1983
 	 */
-	private PersonnePhysique newCtbVaudoisOrdinairePartiHorsCantonEn1983(MockCommune commune) {
-		final PersonnePhysique pierre = addNonHabitant("Pierre", "Dubateau", date(1948, 11, 3), Sexe.MASCULIN);
+	private Contribuable newCtbVaudoisOrdinairePartiHorsCantonEn1983(MockCommune commune) {
+		final Contribuable pierre = addNonHabitant("Pierre", "Dubateau", date(1948, 11, 3), Sexe.MASCULIN);
 		addForPrincipal(pierre, date(1968, 11, 3), MotifFor.ARRIVEE_HC, date(1983, 7, 1), MotifFor.DEPART_HC, commune);
 		return pierre;
 	}
@@ -1240,9 +1249,10 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 	/**
 	 * @return un contribuable avec un for annulé
 	 */
-	private PersonnePhysique newCtbVaudoisOrdinaireAnnule(MockCommune commune) {
-		final PersonnePhysique jean = addNonHabitant("Jean", "Duchmol", date(1948, 11, 3), Sexe.MASCULIN);
-		final ForFiscalPrincipal fors = addForPrincipal(jean, date(1968, 11, 3), MotifFor.ARRIVEE_HC, commune);
+	private Contribuable newCtbVaudoisOrdinaireAnnule(MockCommune commune) {
+		ForFiscalPrincipal fors;
+		final Contribuable jean = addNonHabitant("Jean", "Duchmol", date(1948, 11, 3), Sexe.MASCULIN);
+		fors = addForPrincipal(jean, date(1968, 11, 3), MotifFor.ARRIVEE_HC, commune);
 		fors.setAnnulationDate(DateHelper.getDate(1967, 1, 1));
 		return jean;
 	}
@@ -1250,8 +1260,8 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 	/**
 	 * @return un contribuable avec un for hors canton
 	 */
-	private PersonnePhysique newCtbHorsCantonSansForSecondaire() {
-		final PersonnePhysique jeans = addNonHabitant("Jean", "Studer", date(1948, 11, 3), Sexe.MASCULIN);
+	private Contribuable newCtbHorsCantonSansForSecondaire() {
+		final Contribuable jeans = addNonHabitant("Jean", "Studer", date(1948, 11, 3), Sexe.MASCULIN);
 		addForPrincipal(jeans, date(1968, 11, 3), null, MockCommune.Neuchatel);
 		return jeans;
 	}
@@ -1259,8 +1269,8 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 	/**
 	 * @return un contribuable avec un for principal hors canton, et avec un immeuble dans le canton mais vendu en 2005
 	 */
-	private PersonnePhysique newCtbHorsCantonEtImmeubleVenduEn2005(MockCommune commune) {
-		final PersonnePhysique popol = addNonHabitant("Popol", "Dillon", date(1948, 11, 3), Sexe.MASCULIN);
+	private Contribuable newCtbHorsCantonEtImmeubleVenduEn2005(MockCommune commune) {
+		final Contribuable popol = addNonHabitant("Popol", "Dillon", date(1948, 11, 3), Sexe.MASCULIN);
 		addForPrincipal(popol, date(1968, 11, 3), null, MockCommune.Neuchatel);
 		addImmeuble(popol, commune, date(2003, 3, 1), date(2005, 5, 31));
 		return popol;
@@ -1269,8 +1279,8 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 	/**
 	 * @return un contribuable avec un for principal hors canton, et avec un for immeuble annulé
 	 */
-	private PersonnePhysique newCtbHorsCantonEtForImmeubleAnnule(MockCommune commune) {
-		final PersonnePhysique rama = addNonHabitant("Rama", "Truelle", date(1948, 11, 3), Sexe.MASCULIN);
+	private Contribuable newCtbHorsCantonEtForImmeubleAnnule(MockCommune commune) {
+		final Contribuable rama = addNonHabitant("Rama", "Truelle", date(1948, 11, 3), Sexe.MASCULIN);
 		addForPrincipal(rama, date(1968, 11, 3), null, MockCommune.Neuchatel);
 		ForFiscalSecondaire fs = addImmeuble(rama, commune, date(2003, 3, 1), null);
 		fs.setAnnule(true);
@@ -1280,9 +1290,9 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 	/**
 	 * @return un contribuable avec un déménagement vaudois d'une commune à l'autre
 	 */
-	private PersonnePhysique newCtbOrdinaireAvecDemenagement(MockCommune avant, MockCommune apres) {
+	private Contribuable newCtbOrdinaireAvecDemenagement(MockCommune avant, MockCommune apres) {
 		final RegDate demenagement = date(2007, 6, 1);
-		final PersonnePhysique ctb = addNonHabitant("Turlu", "Tutu", date(1947, 3, 25), Sexe.MASCULIN);
+		final Contribuable ctb = addNonHabitant("Turlu", "Tutu", date(1947, 3, 25), Sexe.MASCULIN);
 		addForPrincipal(ctb, date(1990, 2, 1), MotifFor.ARRIVEE_HS, demenagement.getOneDayBefore(), MotifFor.DEMENAGEMENT_VD, avant);
 		addForPrincipal(ctb, demenagement, MotifFor.DEMENAGEMENT_VD, apres);
 		return ctb;
@@ -1291,8 +1301,8 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 	/**
 	 * @return un contribuable avec un déménagement vaudois qui garde un immeuble de part et d'autre du déménagement
 	 */
-	private PersonnePhysique newCtbOrdinaireAvecDemenagementEnGardantImmeuble(MockCommune avant, MockCommune apres, MockCommune communeImmeuble) {
-		final PersonnePhysique ctb = newCtbOrdinaireAvecDemenagement(avant, apres);
+	private Contribuable newCtbOrdinaireAvecDemenagementEnGardantImmeuble(MockCommune avant, MockCommune apres, MockCommune communeImmeuble) {
+		final Contribuable ctb = newCtbOrdinaireAvecDemenagement(avant, apres);
 		addForSecondaire(ctb, date(2005, 6, 12), MotifFor.ACHAT_IMMOBILIER, communeImmeuble.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
 		return ctb;
 	}
@@ -1300,9 +1310,9 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 	/**
 	 * @return un contribuable avec un déménagement vaudois d'une commune à l'autre (avant 2007)
 	 */
-	private PersonnePhysique newCtbOrdinaireAvecDemenagementAnterieur(MockCommune avant, MockCommune apres) {
+	private Contribuable newCtbOrdinaireAvecDemenagementAnterieur(MockCommune avant, MockCommune apres) {
 		final RegDate demenagement = date(2005, 6, 1);
-		final PersonnePhysique ctb = addNonHabitant("Turlu", "Tutu", date(1947, 3, 25), Sexe.MASCULIN);
+		final Contribuable ctb = addNonHabitant("Turlu", "Tutu", date(1947, 3, 25), Sexe.MASCULIN);
 		addForPrincipal(ctb, date(1990, 2, 1), MotifFor.ARRIVEE_HS, demenagement.getOneDayBefore(), MotifFor.DEMENAGEMENT_VD, avant);
 		addForPrincipal(ctb, demenagement, MotifFor.DEMENAGEMENT_VD, apres);
 		return ctb;
@@ -1328,8 +1338,8 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 	 * UNIREG-2777
 	 * @return un contribuable HC avec deux fors secondaires immeubles ouverts sur l'OID d'Orbe et un autre fermé l'année des rôles sur l'OID de Lausanne
 	 */
-	private PersonnePhysique getCtbHorsCantonAvecDeuxForsImmeublesOuvertsPourJIRA2777() {
-		final PersonnePhysique pp = addNonHabitant("Fifi", "Brindacier", date(1970, 9, 12), Sexe.FEMININ);
+	private Contribuable getCtbHorsCantonAvecDeuxForsImmeublesOuvertsPourJIRA2777() {
+		final Contribuable pp = addNonHabitant("Fifi", "Brindacier", date(1970, 9, 12), Sexe.FEMININ);
 		addForPrincipal(pp, date(1988, 9, 12), MotifFor.MAJORITE, date(2007, 6, 11), MotifFor.DEPART_HC, MockCommune.Lausanne);
 		addForPrincipal(pp, date(2007, 6, 12), MotifFor.DEPART_HC, MockCommune.Bern);
 		addForSecondaire(pp, date(2005, 1, 1), MotifFor.ACHAT_IMMOBILIER, date(2008, 5, 15), MotifFor.VENTE_IMMOBILIER, MockCommune.Lausanne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
@@ -1360,7 +1370,8 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 				final PersonnePhysique pp = addNonHabitant("Fifi", "Brindacier", date(1970, 9, 12), Sexe.FEMININ);
 				final EnsembleTiersCouple couple = addEnsembleTiersCouple(pp, null, date(1990, 4, 13), null);
 				final MenageCommun mc = couple.getMenage();
-				addForPrincipal(mc, date(2006, 1, 1), MotifFor.ARRIVEE_HS, date(2008, 9, 10), MotifFor.DEPART_HS, MockCommune.Bussigny, ModeImposition.SOURCE);
+				final ForFiscalPrincipal ffp = addForPrincipal(mc, date(2006, 1, 1), MotifFor.ARRIVEE_HS, date(2008, 9, 10), MotifFor.DEPART_HS, MockCommune.Bussigny);
+				ffp.setModeImposition(ModeImposition.SOURCE);
 				return mc.getNumero();
 			}
 		});
@@ -1385,7 +1396,8 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 			@Override
 			public Long doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addNonHabitant("Fifi", "Brindacier", date(1970, 9, 12), Sexe.FEMININ);
-				addForPrincipal(pp, date(2006, 1, 1), MotifFor.ARRIVEE_HS, date(2008, 9, 10), MotifFor.DEPART_HS, MockCommune.Bussigny, ModeImposition.SOURCE);
+				final ForFiscalPrincipal ffp = addForPrincipal(pp, date(2006, 1, 1), MotifFor.ARRIVEE_HS, date(2008, 9, 10), MotifFor.DEPART_HS, MockCommune.Bussigny);
+				ffp.setModeImposition(ModeImposition.SOURCE);
 				return pp.getNumero();
 			}
 		});

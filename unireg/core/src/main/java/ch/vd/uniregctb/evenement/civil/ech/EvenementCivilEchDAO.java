@@ -51,7 +51,7 @@ public interface EvenementCivilEchDAO extends GenericDAO<EvenementCivilEch, Long
 	 * @param paramPagination info de pagination pour la requête
 	 * @return la liste d'evenements correspondant aux critères
 	 */
-	List<EvenementCivilEch> find(EvenementCivilCriteria<TypeEvenementCivilEch> criterion, @Nullable ParamPagination paramPagination);
+	public List<EvenementCivilEch> find(EvenementCivilCriteria<TypeEvenementCivilEch> criterion, @Nullable ParamPagination paramPagination);
 
 	/**
 	 * @param criterion les critères de recherche

@@ -10,7 +10,6 @@
 		<property name="serviceReplyTo" value="${extprop.jms.queue.editique.input}" />
 		<property name="esbTemplate" ref="esbJmsTemplate" />
 		<property name="noTxEsbTemplate" ref="noTxEsbJmsTemplate" />
-		<property name="esbMessageValidator" ref="esbMessageValidator" />
 	</bean>
 
 	<bean id="retourImpressionStorageService" class="ch.vd.uniregctb.editique.impl.EditiqueRetourImpressionStorageServiceImpl">
@@ -29,11 +28,9 @@
 
 	<bean id="editiqueCompositionService" class="ch.vd.uniregctb.editique.impl.EditiqueCompositionServiceImpl" lazy-init="true">
 		<property name="editiqueService" ref="editiqueService" />
-		<property name="impressionDIPPHelper" ref="impressionDIPPHelper" />
-		<property name="impressionDIPMHelper" ref="impressionDIPMHelper"/>
+		<property name="impressionDIHelper" ref="impressionDIHelper" />
 		<property name="impressionLRHelper" ref="impressionLRHelper" />
-		<property name="impressionSommationDIPPHelper" ref="impressionSommationDIPPHelper" />
-		<property name="impressionSommationDIPMHelper" ref="impressionSommationDIPMHelper" />
+		<property name="impressionSommationDIHelper" ref="impressionSommationDIHelper" />
 		<property name="impressionSommationLRHelper" ref="impressionSommationLRHelper" />
 		<property name="impressionNouveauxDossiersHelper" ref="impressionNouveauxDossiersHelper" />
 		<property name="impressionConfirmationDelaiHelper" ref="impressionConfirmationDelaiHelper" />

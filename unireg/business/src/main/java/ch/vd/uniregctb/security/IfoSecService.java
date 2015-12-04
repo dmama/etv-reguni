@@ -16,12 +16,12 @@ public interface IfoSecService {
 	 *
 	 * @return <b>vrai</b> si le rôle spécifié est alloué; <b>faux</b> autrement.
 	 */
-	boolean isGranted(Role role, String visaOperateur, int codeCollectivite);
+	public boolean isGranted(Role role, String visaOperateur, int codeCollectivite);
 
 	/**
 	 * Défini un bypass des procédures IfoSec (pour les environnements de développement et d'intégration uniquement).
 	 */
-	void addBypass(IfoSecBypass bypass);
+	public void addBypass(IfoSecBypass bypass);
 
 	/**
 	 * Retourne la liste des rôles que l'utilisateur spécifié possède pour des raisons de bypass IFOSec (normalement uniquement pour le développement).
@@ -30,5 +30,5 @@ public interface IfoSecService {
 	 * @param visa un visa d'opérateur
 	 * @return une liste de rôles bypassé. Cette liste pour être vide.
 	 */
-	Set<Role> getBypass(String visa);
+	public Set<Role> getBypass(String visa);
 }

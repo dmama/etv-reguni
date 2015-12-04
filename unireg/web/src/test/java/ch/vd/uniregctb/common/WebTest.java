@@ -14,6 +14,7 @@ import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceSecurite;
 import ch.vd.uniregctb.interfaces.service.mock.ProxyServiceCivil;
 import ch.vd.uniregctb.interfaces.service.mock.ProxyServiceInfrastructureService;
+import ch.vd.uniregctb.interfaces.service.mock.ProxyServicePM;
 import ch.vd.uniregctb.interfaces.service.mock.ProxyServiceSecuriteService;
 import ch.vd.uniregctb.security.Role;
 
@@ -68,6 +69,7 @@ public abstract class WebTest extends AbstractBusinessTest {
 	 */
 	protected HttpServletResponse response;
 
+	protected ProxyServicePM servicePM;
 	protected ProxyServiceCivil serviceCivil;
 	protected ProxyServiceInfrastructureService serviceInfra;
 	protected ProxyServiceSecuriteService serviceSecurite;
@@ -87,6 +89,7 @@ public abstract class WebTest extends AbstractBusinessTest {
 		response = new MockHttpServletResponse();
 
 		serviceCivil = getBean(ProxyServiceCivil.class, "serviceCivilService");
+		servicePM = getBean(ProxyServicePM.class, "servicePersonneMoraleService");
 		serviceInfra = getBean(ProxyServiceInfrastructureService.class, "serviceInfrastructureService");
 		serviceSecurite = getBean(ProxyServiceSecuriteService.class, "serviceSecuriteService");
 
@@ -124,11 +127,11 @@ public abstract class WebTest extends AbstractBusinessTest {
 		return (BeanPropertyBindingResult) mav.getModel().get("org.springframework.validation.BindingResult.command");
 	}
 
-	protected interface IndividuModification {
+	protected static interface IndividuModification {
 		void modifyIndividu(MockIndividu individu);
 	}
 
-	protected interface IndividusModification {
+	protected static interface IndividusModification {
 		void modifyIndividus(MockIndividu individu, MockIndividu other);
 	}
 

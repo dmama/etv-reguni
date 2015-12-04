@@ -35,7 +35,6 @@ import ch.vd.uniregctb.common.StringRenderer;
 import ch.vd.uniregctb.jms.EsbBusinessCode;
 import ch.vd.uniregctb.jms.EsbBusinessException;
 import ch.vd.uniregctb.jms.EsbMessageHandler;
-import ch.vd.uniregctb.type.EtatEvenementCivil;
 import ch.vd.uniregctb.type.TypeEvenementCivilEch;
 
 /**
@@ -141,7 +140,7 @@ public class EvenementCivilEchEsbHandler implements EsbMessageHandler, Initializ
 	 * <ol>
 	 *     <li>Décodage de l'XML reçu</li>
 	 *     <li>Les événements de types ignorés provoquent un log et c'est tout...</li>
-	 *     <li>Sauvegarde de l'événement correspondant (dans une transaction séparée) dans l'état {@link EtatEvenementCivil#A_TRAITER A_TRAITER}</li>
+	 *     <li>Sauvegarde de l'événement correspondant (dans une transaction séparée) dans l'état {@link ch.vd.uniregctb.type.EtatEvenementCivil#A_TRAITER A_TRAITER}</li>
 	 *     <li>Récupération de l'individu qui se cache derrière l'événement (appel au service "getEvent" de RCPers)</li>
 	 *     <li>Sauvegarde du numéro d'individu dans l'événement</li>
 	 *     <li>Notification du moteur de traitement de l'arrivée d'un nouvel événement pour l'individu</li>

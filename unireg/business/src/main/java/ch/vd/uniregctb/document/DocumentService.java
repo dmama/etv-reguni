@@ -29,7 +29,7 @@ public interface DocumentService {
 	 *            la méthode de remplissage du document
 	 * @return la référence du nouveau document
 	 */
-	<T extends Document> T newDoc(Class<T> clazz, String nom, String description, String fileExtension, WriteDocCallback<T> callback) throws Exception;
+	public <T extends Document> T newDoc(Class<T> clazz, String nom, String description, String fileExtension, WriteDocCallback<T> callback) throws Exception;
 
 	/**
 	 * Lit le contenu d'un document.
@@ -41,40 +41,40 @@ public interface DocumentService {
 	 * @param callback
 	 *            la méthode de remplissage du document
 	 */
-	<T extends Document> void readDoc(T doc, ReadDocCallback<T> callback) throws Exception;
+	public <T extends Document> void readDoc(T doc, ReadDocCallback<T> callback) throws Exception;
 
 	/**
 	 * @return retourne le document correspondant à l'id spécifié.
 	 */
-	Document get(Long id) throws Exception;
+	public Document get(Long id) throws Exception;
 
 	/**
 	 * Efface le document spécifié de l'index (database) et du filesystem.
 	 */
-	void delete(Document doc) throws Exception;
+	public void delete(Document doc) throws Exception;
 
 	/**
 	 * @return la collection de tous les documents non-annulés.
 	 */
-	Collection<Document> getDocuments() throws Exception;
+	public Collection<Document> getDocuments() throws Exception;
 
 	/**
 	 * Scanne le repository des documents à la recherche de fichiers non-référencés et référence ceux-ci dans la base de données.
 	 *
 	 * @return la liste des documents ramassés.
 	 */
-	Collection<Document> ramasseDocs();
+	public Collection<Document> ramasseDocs();
 
 	/**
 	 * @return la collection de tous les documents non-annulés du type spécifié.
 	 */
-	<T extends Document> Collection<T> getDocuments(Class<T> clazz) throws Exception;
+	public <T extends Document> Collection<T> getDocuments(Class<T> clazz) throws Exception;
 
-	interface WriteDocCallback<T> {
+	public interface WriteDocCallback<T> {
 		void writeDoc(T doc, OutputStream os) throws Exception;
 	}
 
-	interface ReadDocCallback<T> {
+	public interface ReadDocCallback<T> {
 		void readDoc(T doc, InputStream is) throws Exception;
 	}
 }

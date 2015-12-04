@@ -9,8 +9,6 @@ import org.springframework.context.MessageSource;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
-import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePM;
-import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
 import ch.vd.uniregctb.type.TypeDocument;
 import ch.vd.uniregctb.type.TypeEtatDeclaration;
@@ -23,7 +21,6 @@ public class AjouterEtatDeclarationView {
 	private RegDate dateDebutPeriodeImposition;
 	private RegDate dateFinPeriodeImposition;
 	private List<EtatDeclarationView> etats;
-	private boolean typeDocumentEditable;
 
 	// Données modifiables du formulaire
 	private Long id;
@@ -33,28 +30,19 @@ public class AjouterEtatDeclarationView {
 	public AjouterEtatDeclarationView() {
 	}
 
-	public AjouterEtatDeclarationView(DeclarationImpotOrdinairePP di, MessageSource messageSource) {
-		this(di, true, messageSource);
-	}
-
-	public AjouterEtatDeclarationView(DeclarationImpotOrdinairePM di, MessageSource messageSource) {
-		this(di, false, messageSource);
-	}
-
-	private AjouterEtatDeclarationView(DeclarationImpotOrdinaire di, boolean typeDocumentEditable, MessageSource messageSource) {
-		initReadOnlyValues(di, typeDocumentEditable, messageSource);
+	public AjouterEtatDeclarationView(DeclarationImpotOrdinaire di, MessageSource messageSource) {
+		initReadOnlyValues(di, messageSource);
 		this.typeDocument = di.getTypeDeclaration();
 		this.dateRetour = di.getDateRetour();
 	}
 
-	public void initReadOnlyValues(DeclarationImpotOrdinaire di, boolean typeDocumentEditable, MessageSource messageSource) {
+	public void initReadOnlyValues(DeclarationImpotOrdinaire di, MessageSource messageSource) {
 		this.tiersId = di.getTiers().getId();
 		this.id = di.getId();
 		this.periodeFiscale = di.getDateDebut().year();
 		this.dateDebutPeriodeImposition = di.getDateDebut();
 		this.dateFinPeriodeImposition = di.getDateFin();
 		this.etats = initEtats(di.getEtats(), messageSource);
-		this.typeDocumentEditable = typeDocumentEditable;
 	}
 
 	public static TypeEtatDeclaration getDernierEtat(DeclarationImpotOrdinaire di) {
@@ -113,13 +101,5 @@ public class AjouterEtatDeclarationView {
 
 	public List<EtatDeclarationView> getEtats() {
 		return etats;
-	}
-
-	public boolean isTypeDocumentEditable() {
-		return typeDocumentEditable;
-	}
-
-	public void setTypeDocumentEditable(boolean typeDocumentEditable) {
-		this.typeDocumentEditable = typeDocumentEditable;
 	}
 }

@@ -51,7 +51,7 @@ public class DebiteurEditView {
 		final Periodicite periodiciteActive = dpi.getPeriodiciteAt(getDateReferencePourPeriodiciteActive(dpi));
 		this.periodiciteActive = periodiciteActive != null ? periodiciteActive.getPeriodiciteDecompte() : null;
 		this.dateDebutPeriodiciteActive = periodiciteActive != null ? periodiciteActive.getDateDebut() : null;
-		this.complement = new ComplementView(dpi, ibanValidator);
+		this.complement = new ComplementView(dpi, null, null, ibanValidator);
 	}
 
 	private static RegDate getDateReferencePourPeriodiciteActive(DebiteurPrestationImposable dpi) {

@@ -12,8 +12,13 @@ public interface TacheDAO extends GenericDAO<Tache, Long> {
 
 	/**
 	 * Recherche d'un range de toutes les tâches correspondant au critère de sélection
+	 *
+	 * @param criterion
+	 * @param page
+	 * @param pageSize
+	 * @return
 	 */
-	List<Tache> find (TacheCriteria criterion, ParamPagination paramPagination ) ;
+	public List<Tache> find (TacheCriteria criterion, ParamPagination paramPagination ) ;
 
 	/**
 	 * Recherche les tâches correspondant aux critères spécifiés
@@ -21,7 +26,7 @@ public interface TacheDAO extends GenericDAO<Tache, Long> {
 	 * @param criterion
 	 * @return liste de taches
 	 */
-	List<Tache> find(TacheCriteria criterion);
+	public List<Tache> find(TacheCriteria criterion);
 
 	/**
 	 * Recherche les tâches associées au contribuable spécifié.
@@ -30,7 +35,7 @@ public interface TacheDAO extends GenericDAO<Tache, Long> {
 	 *            le numéro de contribuable
 	 * @return liste de tâches
 	 */
-	List<Tache> find(long noContribuable);
+	public List<Tache> find(long noContribuable);
 
 	/**
 	 * Recherche les tâches correspondant aux critères spécifiés
@@ -41,7 +46,7 @@ public interface TacheDAO extends GenericDAO<Tache, Long> {
 	 *            ignorés en conséquence)
 	 * @return liste de taches
 	 */
-	List<Tache> find(TacheCriteria criterion, boolean doNotAutoFlush);
+	public List<Tache> find(TacheCriteria criterion, boolean doNotAutoFlush);
 
 	/**
 	 * Rechercher et retourne les tâches correspondant aux critères spécifiés
@@ -49,7 +54,7 @@ public interface TacheDAO extends GenericDAO<Tache, Long> {
 	 * @param criterion
 	 * @return le nombre de tâches trouvées
 	 */
-	int count(TacheCriteria criterion);
+	public int count(TacheCriteria criterion);
 
 	/**
 	 * Recherche et retourne le nombre de tâches associées au contribuable spécifié.
@@ -58,7 +63,7 @@ public interface TacheDAO extends GenericDAO<Tache, Long> {
 	 *            le numéro de contribuable
 	 * @return le nombre de tâches trouvées
 	 */
-	int count(long noContribuable);
+	public int count(long noContribuable);
 
 	/**
 	 * Rechercher et retourne les tâches correspondant aux critères spécifiés
@@ -69,7 +74,7 @@ public interface TacheDAO extends GenericDAO<Tache, Long> {
 	 *            ignorés en conséquence)
 	 * @return le nombre de tâches trouvées
 	 */
-	int count(TacheCriteria criterion, boolean doNotAutoFlush);
+	public int count(TacheCriteria criterion, boolean doNotAutoFlush);
 
 	/**
 	 * Vérifie s'il existe au moins une tâche en instance (ou en cours) du type spécifié sur le contribuable donnée.
@@ -83,7 +88,7 @@ public interface TacheDAO extends GenericDAO<Tache, Long> {
 	 *            le type de tâche
 	 * @return <b>vrai</b> s'il y a au moins une tâche en instance; <b>faux</b> autrement.
 	 */
-	boolean existsTacheEnInstanceOuEnCours(long noCtb, TypeTache type);
+	public boolean existsTacheEnInstanceOuEnCours(long noCtb, TypeTache type);
 
 	/**
 	 * Vérifie s'il existe au moins une tâche d'annulation de DI en instance (ou en cours) pour le contribuable donné et la déclaration donnée.
@@ -97,7 +102,7 @@ public interface TacheDAO extends GenericDAO<Tache, Long> {
 	 *            le numéro de déclaration
 	 * @return <b>vrai</b> s'il y a au moins une tâche en instance; <b>faux</b> autrement.
 	 */
-	boolean existsTacheAnnulationEnInstanceOuEnCours(long noCtb, long noDi);
+	public boolean existsTacheAnnulationEnInstanceOuEnCours(long noCtb, long noDi);
 
 	/**
 	 * Vérifie s'il existe au moins une tâche d'envoi de DI en instance (ou en cours) pour le contribuable donné et la période donnée.
@@ -113,7 +118,7 @@ public interface TacheDAO extends GenericDAO<Tache, Long> {
 	 *            la date de fin de la période de la déclaration
 	 * @return <b>vrai</b> s'il y a au moins une tâche en instance; <b>faux</b> autrement.
 	 */
-	boolean existsTacheEnvoiDIPPEnInstanceOuEnCours(long noCtb, RegDate dateDebut, RegDate dateFin);
+	public boolean existsTacheEnvoiEnInstanceOuEnCours(long noCtb, RegDate dateDebut, RegDate dateFin);
 
 	/**
 	 * Retourne la liste de toutes les tâches du type spécifié pour le contribuable spécifié.
@@ -126,7 +131,7 @@ public interface TacheDAO extends GenericDAO<Tache, Long> {
 	 *            le type de tâche considéré
 	 * @return une liste de tâches
 	 */
-	<T extends Tache> List<T> listTaches(long noCtb, TypeTache type);
+	public <T extends Tache> List<T> listTaches(long noCtb, TypeTache type);
 
 	/**
 	 * Met-à-jour les collectivités administratives assignées sur les tâches en instance des tiers spécifiés.
@@ -142,7 +147,7 @@ public interface TacheDAO extends GenericDAO<Tache, Long> {
 	 */
 	Map<Integer, TacheStats> getTacheStats();
 
-	class TacheStats {
+	public static class TacheStats {
 		public int tachesEnInstance;
 		public int dossiersEnInstance;
 

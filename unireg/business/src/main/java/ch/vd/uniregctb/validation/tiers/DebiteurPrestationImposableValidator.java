@@ -112,10 +112,7 @@ public class DebiteurPrestationImposableValidator extends TiersValidator<Debiteu
 		}
 
 		// Seuls les for DPI sont autorisés
-		for (ForFiscal f : fors.principauxPP) {
-			vr.addError("Le for " + f + " n'est pas un type de for autorisé sur un débiteur de prestations imposables.");
-		}
-		for (ForFiscal f : fors.principauxPM) {
+		for (ForFiscal f : fors.principaux) {
 			vr.addError("Le for " + f + " n'est pas un type de for autorisé sur un débiteur de prestations imposables.");
 		}
 		for (ForFiscal f : fors.secondaires) {

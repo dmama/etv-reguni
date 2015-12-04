@@ -3,9 +3,9 @@ package ch.vd.uniregctb.norentes.civil.arrivee;
 import java.util.Collection;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.interfaces.civil.data.Adresse;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
-import ch.vd.unireg.interfaces.common.Adresse;
 import ch.vd.unireg.interfaces.infra.mock.MockAdresse;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
@@ -15,7 +15,6 @@ import ch.vd.uniregctb.norentes.annotation.Check;
 import ch.vd.uniregctb.norentes.annotation.Etape;
 import ch.vd.uniregctb.norentes.common.EvenementCivilScenario;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
 import ch.vd.uniregctb.type.GenreImpot;
@@ -139,7 +138,7 @@ public class Ec_18000_07_Arrivee_Commune_Scenario extends EvenementCivilScenario
 			assertEquals(communeDepart.getNoOFS(), ffpFerme.getNumeroOfsAutoriteFiscale(), "le for précédent n'est pas sur " + communeDepart.getNomOfficiel());
 
 			// For ouvert sur Lausanne
-			ForFiscalPrincipalPP ffpOuvert = habitant.getForFiscalPrincipalAt(dateArriveeLausanne);
+			ForFiscalPrincipal ffpOuvert = habitant.getForFiscalPrincipalAt(dateArriveeLausanne);
 			assertEquals(dateDemenagement.addDays(1) , ffpOuvert.getDateDebut(), "Le for sur " + communeArrivee.getNomOfficiel() + " n'est pas ouvert à la bonne date");
 			assertEquals(communeArrivee.getNoOFS(), ffpOuvert.getNumeroOfsAutoriteFiscale(), "Le for ouvert n'est pas sur " + communeArrivee.getNomOfficiel());
 			assertEquals(MotifRattachement.DOMICILE, ffpOuvert.getMotifRattachement(), "Le MotifRattachement du for est faux");

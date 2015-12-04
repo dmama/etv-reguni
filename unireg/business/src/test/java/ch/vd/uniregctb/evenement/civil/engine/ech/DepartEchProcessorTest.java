@@ -13,6 +13,7 @@ import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.civil.cache.ServiceCivilCache;
+import ch.vd.unireg.interfaces.civil.data.Adresse;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
 import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.unireg.interfaces.civil.data.Localisation;
@@ -20,7 +21,6 @@ import ch.vd.unireg.interfaces.civil.data.LocalisationType;
 import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
-import ch.vd.unireg.interfaces.common.Adresse;
 import ch.vd.unireg.interfaces.infra.mock.MockAdresse;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockLocalite;
@@ -34,7 +34,6 @@ import ch.vd.uniregctb.evenement.civil.interne.depart.DepartEchTranslationStrate
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.ActionEvenementCivilEch;
@@ -1571,7 +1570,7 @@ public class DepartEchProcessorTest extends AbstractEvenementCivilEchProcessorTe
 				Assert.assertNotNull(pp);
 				Assert.assertFalse(pp.isHabitantVD());
 
-				final ForFiscalPrincipalPP ffp = pp.getDernierForFiscalPrincipal();
+				final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
 				Assert.assertNotNull(ffp);
 				Assert.assertEquals(MotifFor.DEPART_HS, ffp.getMotifOuverture());
 				Assert.assertEquals(dateDepart.getOneDayAfter(), ffp.getDateDebut());
@@ -1642,7 +1641,7 @@ public class DepartEchProcessorTest extends AbstractEvenementCivilEchProcessorTe
 				Assert.assertNotNull(pp);
 				Assert.assertFalse(pp.isHabitantVD());
 
-				final ForFiscalPrincipalPP ffp = pp.getDernierForFiscalPrincipal();
+				final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
 				Assert.assertNotNull(ffp);
 				Assert.assertEquals(MotifFor.DEPART_HS, ffp.getMotifOuverture());
 				Assert.assertEquals(dateDepart.getOneDayAfter(), ffp.getDateDebut());
@@ -1713,7 +1712,7 @@ public class DepartEchProcessorTest extends AbstractEvenementCivilEchProcessorTe
 				Assert.assertNotNull(pp);
 				Assert.assertFalse(pp.isHabitantVD());
 
-				final ForFiscalPrincipalPP ffp = pp.getDernierForFiscalPrincipal();
+				final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
 				Assert.assertNotNull(ffp);
 				Assert.assertEquals(MotifFor.DEPART_HS, ffp.getMotifOuverture());
 				Assert.assertEquals(dateDepart.getOneDayAfter(), ffp.getDateDebut());

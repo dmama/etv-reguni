@@ -25,7 +25,7 @@ public final class StringComparator implements Comparator<String> {
 	 * Décodeur passé au comparateur qui permet de modifier la string
 	 * avant de la passer dans la moulinette du comparateur
 	 */
-	public interface Decoder {
+	public static interface Decoder {
 		String decode(String source);
 	}
 

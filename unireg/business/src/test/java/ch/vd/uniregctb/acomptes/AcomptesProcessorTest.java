@@ -37,6 +37,7 @@ import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.Sexe;
+import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -123,7 +124,7 @@ public class AcomptesProcessorTest extends BusinessTest {
 				addForPrincipal(ordinaireParti2008, date(2005, 8, 1), MotifFor.ARRIVEE_HS, date(2008, 12, 28), MotifFor.DEPART_HS, MockCommune.Bex);
 
 				final PersonnePhysique diplomateEtranger = addNonHabitant("Diplomate", "Etranger", null, Sexe.MASCULIN);
-				addForPrincipal(diplomateEtranger, date(2006, 6, 13), MotifFor.INDETERMINE, null, null, MockPays.Colombie, MotifRattachement.DIPLOMATE_ETRANGER);
+				addForPrincipal(diplomateEtranger, date(2006, 6, 13), MotifFor.INDETERMINE, null, null, MockPays.Colombie.getNoOFS(), TypeAutoriteFiscale.PAYS_HS, MotifRattachement.DIPLOMATE_ETRANGER);
 
 				final PersonnePhysique sourcierMixte1 = addNonHabitant("Vaudois", "Mixte 1", null, Sexe.FEMININ);
 				addForPrincipal(sourcierMixte1, date(2007, 4, 25), MotifFor.ARRIVEE_HS, null, null, MockCommune.Bex, MotifRattachement.DOMICILE, ModeImposition.MIXTE_137_1);

@@ -10,7 +10,6 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.document.StatistiquesEvenementsRapport;
 import ch.vd.uniregctb.rapport.RapportService;
-import ch.vd.uniregctb.scheduler.JobCategory;
 import ch.vd.uniregctb.scheduler.JobDefinition;
 import ch.vd.uniregctb.scheduler.JobParam;
 import ch.vd.uniregctb.scheduler.JobParamBoolean;
@@ -28,6 +27,7 @@ public class StatistiquesEvenementsJob extends JobDefinition {
 	private PlatformTransactionManager transactionManager;
 
 	public static final String NAME = "StatistiquesEvenementsJob";
+	private static final String CATEGORIE = "Stats";
 
 	private static final String EVTS_CIVILS = "EVTS_CIVILS";
 	private static final String EVTS_EXTERNES = "EVTS_EXTERNES";
@@ -36,7 +36,7 @@ public class StatistiquesEvenementsJob extends JobDefinition {
 	private static final String DUREE_REFERENCE = "DUREE";
 
 	public StatistiquesEvenementsJob(int sortOrder, String description) {
-		super(NAME, JobCategory.STATS, sortOrder, description);
+		super(NAME, CATEGORIE, sortOrder, description);
 
 		{
 			final JobParam param = new JobParam();

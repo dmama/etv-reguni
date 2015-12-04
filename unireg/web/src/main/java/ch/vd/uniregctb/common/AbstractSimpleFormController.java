@@ -37,11 +37,11 @@ import ch.vd.uniregctb.utils.RegDateEditor;
  */
 public abstract class AbstractSimpleFormController extends CommonSimpleFormController {
 
-	public static final String PARAMETER_MODIFIER = "__MODIFIER__";
+	public final static String PARAMETER_MODIFIER = "__MODIFIER__";
 
-	public static final String PARAMETER_TARGET = "__TARGET__";
-	public static final String PARAMETER_EVENT_ARGUMENT = "__EVENT_ARGUMENT__";
-	public static final String PARAMETER_URL_RETOUR = "__URL_RETOUR__";
+	public final static String PARAMETER_TARGET = "__TARGET__";
+	public final static String PARAMETER_EVENT_ARGUMENT = "__EVENT_ARGUMENT__";
+	public final static String PARAMETER_URL_RETOUR = "__URL_RETOUR__";
 
 	private boolean modified = false;
 	protected ControllerUtils controllerUtils;

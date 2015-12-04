@@ -24,7 +24,7 @@ public class ListeRecapManagerTest extends WebTest {
 
 	private ListeRecapEditManager lrEditManager = null;
 
-	private static final String DB_UNIT_FILE = "ListeRecapManagerTest.xml";
+	private final static String DB_UNIT_FILE = "ListeRecapManagerTest.xml";
 
 	@Override
 	public void onSetUp() throws Exception {

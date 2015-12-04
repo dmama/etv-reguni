@@ -2,7 +2,7 @@ package ch.vd.uniregctb.di.view;
 
 import java.util.List;
 
-import ch.vd.uniregctb.declaration.ordinaire.pp.ModeleFeuilleDocumentEditique;
+import ch.vd.uniregctb.declaration.ordinaire.ModeleFeuilleDocumentEditique;
 import ch.vd.uniregctb.type.TypeDocument;
 
 public class ModeleDocumentView {
