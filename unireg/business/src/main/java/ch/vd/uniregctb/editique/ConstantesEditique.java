@@ -31,6 +31,14 @@ public abstract class ConstantesEditique {
 	public static final String ARCHIVE_FLAG = "archive";
 
 	//
+	// Différents types de populations
+	//
+
+	public static final String POPULATION_PP = "PP";
+	public static final String POPULATION_IS = "IS";
+	public static final String POPULATION_PM = "PM";
+
+	//
 	// Données d'archivage
 	//
 

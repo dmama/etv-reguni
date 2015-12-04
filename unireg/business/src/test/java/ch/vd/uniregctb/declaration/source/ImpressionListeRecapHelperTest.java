@@ -17,7 +17,7 @@ import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.declaration.DeclarationImpotSource;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
-import ch.vd.uniregctb.editique.EditiqueHelper;
+import ch.vd.uniregctb.editique.LegacyEditiqueHelper;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.type.CategorieImpotSource;
 import ch.vd.uniregctb.type.MotifFor;
@@ -33,14 +33,14 @@ public class ImpressionListeRecapHelperTest extends BusinessTest {
 
 
 	private ImpressionListeRecapHelperImpl impressionLRHelper;
-	private EditiqueHelper editiqueHelper;
+	private LegacyEditiqueHelper editiqueHelper;
 
 	@Override
 	protected void runOnSetUp() throws Exception {
 		super.runOnSetUp();
-		editiqueHelper =  getBean(EditiqueHelper.class, "editiqueHelper");
+		editiqueHelper =  getBean(LegacyEditiqueHelper.class, "legacyEditiqueHelper");
 		impressionLRHelper = new ImpressionListeRecapHelperImpl();
-		impressionLRHelper.setEditiqueHelper(editiqueHelper);
+		impressionLRHelper.setLegacyEditiqueHelper(editiqueHelper);
 		serviceInfra.setUp(new DefaultMockServiceInfrastructureService());
 	}
 

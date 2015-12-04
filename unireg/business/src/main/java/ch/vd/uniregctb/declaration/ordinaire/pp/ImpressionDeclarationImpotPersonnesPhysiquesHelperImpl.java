@@ -49,9 +49,11 @@ import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP;
 import ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotService;
-import ch.vd.uniregctb.editique.EditiqueAbstractHelper;
+import ch.vd.uniregctb.editique.ConstantesEditique;
+import ch.vd.uniregctb.editique.EditiqueAbstractLegacyHelper;
 import ch.vd.uniregctb.editique.EditiqueException;
-import ch.vd.uniregctb.editique.EditiqueHelper;
+import ch.vd.uniregctb.editique.EditiquePrefixeHelper;
+import ch.vd.uniregctb.editique.LegacyEditiqueHelper;
 import ch.vd.uniregctb.editique.TypeDocumentEditique;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.situationfamille.SituationFamilleService;
@@ -67,7 +69,7 @@ import ch.vd.uniregctb.type.EtatCivil;
 import ch.vd.uniregctb.type.Qualification;
 import ch.vd.uniregctb.type.TypeDocument;
 
-public class ImpressionDeclarationImpotPersonnesPhysiquesHelperImpl extends EditiqueAbstractHelper implements ImpressionDeclarationImpotPersonnesPhysiquesHelper {
+public class ImpressionDeclarationImpotPersonnesPhysiquesHelperImpl extends EditiqueAbstractLegacyHelper implements ImpressionDeclarationImpotPersonnesPhysiquesHelper {
 
 	public static final Logger LOGGER = LoggerFactory.getLogger(ImpressionDeclarationImpotPersonnesPhysiquesHelperImpl.class);
 
@@ -87,12 +89,12 @@ public class ImpressionDeclarationImpotPersonnesPhysiquesHelperImpl extends Edit
 	}
 
 	public ImpressionDeclarationImpotPersonnesPhysiquesHelperImpl(ServiceInfrastructureService infraService, AdresseService adresseService, TiersService tiersService,
-	                                                              SituationFamilleService situationFamilleService, EditiqueHelper editiqueHelper) {
+	                                                              SituationFamilleService situationFamilleService, LegacyEditiqueHelper editiqueHelper) {
 		this.infraService = infraService;
 		this.adresseService = adresseService;
 		this.tiersService = tiersService;
 		this.situationFamilleService = situationFamilleService;
-		this.editiqueHelper = editiqueHelper;
+		this.legacyEditiqueHelper = editiqueHelper;
 	}
 
 
@@ -138,7 +140,7 @@ public class ImpressionDeclarationImpotPersonnesPhysiquesHelperImpl extends Edit
 		final InfoDocument infoDocument = InfoDocumentDocument1.Factory.newInstance().addNewInfoDocument();
 		final TypeDocument typeDoc = informationDocument.getTypeDocument();
 		final TypeDocumentEditique typeDocumentEditique = getTypeDocumentEditique(typeDoc);
-		infoDocument.setPrefixe(buildPrefixeInfoDocument(typeDocumentEditique));
+		infoDocument.setPrefixe(EditiquePrefixeHelper.buildPrefixeInfoDocument(typeDocumentEditique));
 		infoDocument.setTypDoc(DI);
 		final String codDoc;
 		if (typeDoc == TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH || typeDoc == TypeDocument.DECLARATION_IMPOT_COMPLETE_LOCAL) {
@@ -166,7 +168,7 @@ public class ImpressionDeclarationImpotPersonnesPhysiquesHelperImpl extends Edit
 		remplitAffranchissement(infoDocument, tiers, informationDocument.getDateReference(), false);
 		infoDocument.setVersion(VERSION);
 		infoDocument.setLogo(LOGO_CANTON);
-		infoDocument.setPopulations(POPULATION_PP);
+		infoDocument.setPopulations(ConstantesEditique.POPULATION_PP);
 
 		return infoDocument;
 	}
@@ -179,16 +181,16 @@ public class ImpressionDeclarationImpotPersonnesPhysiquesHelperImpl extends Edit
 
 		final TypeDocument typeDoc = informationDocument.getTypeDocument();
 		final TypeDocumentEditique typeDocumentEditique = getTypeDocumentEditique(typeDoc);
-		infoEnteteDocument.setPrefixe(buildPrefixeEnteteDocument(typeDocumentEditique));
+		infoEnteteDocument.setPrefixe(EditiquePrefixeHelper.buildPrefixeEnteteDocument(typeDocumentEditique));
 
 		final Tiers tiers = informationDocument.getTiers();
-		TypAdresse porteAdresse = editiqueHelper.remplitPorteAdresse(tiers, infoEnteteDocument);
+		TypAdresse porteAdresse = legacyEditiqueHelper.remplitPorteAdresse(tiers, infoEnteteDocument);
 		infoEnteteDocument.setPorteAdresse(porteAdresse);
 
 		Expediteur expediteur = remplitExpediteur(informationDocument, infoEnteteDocument);
 		infoEnteteDocument.setExpediteur(expediteur);
 
-		Destinataire destinataire = editiqueHelper.remplitDestinataire(tiers, infoEnteteDocument);
+		Destinataire destinataire = legacyEditiqueHelper.remplitDestinataire(tiers, infoEnteteDocument);
 		infoEnteteDocument.setDestinataire(destinataire);
 
 		return infoEnteteDocument;
@@ -219,7 +221,7 @@ public class ImpressionDeclarationImpotPersonnesPhysiquesHelperImpl extends Edit
 		final AdresseEnvoiDetaillee adresse = adresseService.getAdresseEnvoi(oid, null, TypeAdresseFiscale.COURRIER, false);
 		final Expediteur expediteur = infoEnteteDocument.addNewExpediteur();
 		final TypAdresse.Adresse adresseExpediteur = expediteur.addNewAdresse();
-		editiqueHelper.remplitAdresse(adresse, adresseExpediteur);
+		legacyEditiqueHelper.remplitAdresse(adresse, adresseExpediteur);
 		expediteur.setAdresse(adresseExpediteur);
 
 		final ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative collectivite = infraService.getOfficeImpot(oid.getNumeroCollectiviteAdministrative());

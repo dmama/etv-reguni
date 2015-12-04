@@ -57,7 +57,7 @@ import ch.vd.uniregctb.declaration.ordinaire.pp.ImportCodesSegmentResults;
 import ch.vd.uniregctb.declaration.ordinaire.pp.ImpressionConfirmationDelaiHelper;
 import ch.vd.uniregctb.declaration.ordinaire.pp.ImpressionConfirmationDelaiHelperParams;
 import ch.vd.uniregctb.declaration.ordinaire.pp.ImpressionDeclarationImpotPersonnesPhysiquesHelper;
-import ch.vd.uniregctb.declaration.ordinaire.pp.ImpressionSommationDIHelper;
+import ch.vd.uniregctb.declaration.ordinaire.pp.ImpressionSommationDeclarationImpotPersonnesPhysiquesHelper;
 import ch.vd.uniregctb.declaration.ordinaire.pp.InformationsDocumentAdapter;
 import ch.vd.uniregctb.declaration.ordinaire.pp.ListeDIsPPNonEmises;
 import ch.vd.uniregctb.declaration.ordinaire.pp.ListeNoteProcessor;
@@ -110,7 +110,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 	private ServiceInfrastructureService infraService;
 	private AdresseService adresseService;
 	private ImpressionDeclarationImpotPersonnesPhysiquesHelper impressionDIPPHelper;
-	private ImpressionSommationDIHelper impressionSommationDIHelper;
+	private ImpressionSommationDeclarationImpotPersonnesPhysiquesHelper impressionSommationDIHelper;
 	private ServiceCivilCacheWarmer serviceCivilCacheWarmer;
 	private TiersService tiersService;
 	private ParametreAppService parametres;
@@ -203,7 +203,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 		this.tiersService = tiersService;
 	}
 
-	public void setImpressionSommationDIHelper(ImpressionSommationDIHelper impressionSommationDIHelper) {
+	public void setImpressionSommationDIHelper(ImpressionSommationDeclarationImpotPersonnesPhysiquesHelper impressionSommationDIHelper) {
 		this.impressionSommationDIHelper = impressionSommationDIHelper;
 	}
 
@@ -451,7 +451,12 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 
 	@Override
 	public void envoiSommationDIPMForBatch(DeclarationImpotOrdinairePM declaration, RegDate dateEvenement) throws DeclarationException {
-		// TODO [SIPM] faire l'envoi éditique...
+		try {
+			editiqueCompositionService.imprimeSommationDIForBatch(declaration, dateEvenement);
+		}
+		catch (EditiqueException e) {
+			throw new DeclarationException(e);
+		}
 		evenementFiscalService.publierEvenementFiscalSommationDeclarationImpot(declaration, dateEvenement);
 	}
 

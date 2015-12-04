@@ -72,6 +72,10 @@ public class MockEditiqueCompositionService implements EditiqueCompositionServic
 	}
 
 	@Override
+	public void imprimeSommationDIForBatch(DeclarationImpotOrdinairePM declaration, RegDate dateEvenement) throws EditiqueException {
+	}
+
+	@Override
 	public void imprimeSommationLRForBatch(DeclarationImpotSource lr, RegDate dateEvenement) throws EditiqueException {
 	}
 

@@ -112,7 +112,7 @@ public interface EditiqueCompositionService {
 	EditiqueResultat imprimeNouveauxDossiers(List<Contribuable> contribuables) throws EditiqueException, JMSException;
 
 	/**
-	 * Imprime la sommation pour la déclaration spécifiée pour un envoi en masse. Cette méthode retourne immédiatement et du moment que la transaction est committée, il est de la responsabilité
+	 * Imprime la sommation pour la déclaration PP spécifiée pour un envoi en masse. Cette méthode retourne immédiatement et du moment que la transaction est committée, il est de la responsabilité
 	 * d'éditique d'imprimer la déclaration.
 	 * <p/>
 	 *
@@ -120,6 +120,16 @@ public interface EditiqueCompositionService {
 	 * @param dateEvenement la date d'impression
 	 */
 	void imprimeSommationDIForBatch(DeclarationImpotOrdinairePP declaration, boolean miseSousPliImpossible, RegDate dateEvenement) throws EditiqueException;
+
+	/**
+	 * Imprime la sommation pour la déclaration PM spécifiée pour un envoi en masse. Cette méthode retourne immédiatement et du moment que la transaction est committée, il est de la responsabilité
+	 * d'éditique d'imprimer la déclaration.
+	 * <p/>
+	 *
+	 * @param declaration   la déclaration d'impôt ordinaire dont la sommation est à imprimer
+	 * @param dateEvenement la date d'impression
+	 */
+	void imprimeSommationDIForBatch(DeclarationImpotOrdinairePM declaration, RegDate dateEvenement) throws EditiqueException;
 
 	/**
 	 * Imprime la sommation pour la LR spécifiée pour un envoi en masse. Cette méthode retourne immédiatement et du moment que la transaction est committée, il est de la responsabilité d'éditique

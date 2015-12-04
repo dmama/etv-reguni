@@ -7,7 +7,7 @@ import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.TypeDocumentEditique;
 
 
-public interface ImpressionSommationDIHelper {
+public interface ImpressionSommationDeclarationImpotPersonnesPhysiquesHelper {
 
 	TypeDocumentEditique getTypeDocumentEditique();
 

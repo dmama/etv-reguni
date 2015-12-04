@@ -23,7 +23,7 @@ public enum TypeDocumentEditique {
 	DI_PM("U1P1DIPM", null, "impressionDI"),
 	DI_APM("U1P2DIAP", null, "impressionDI"),
 	LETTRE_BIENVENUE("U1P3BIEN", null, "lettreBienvenue"),
-	SOMMATION_DI_PM("U1P4SOMM", null, "sommationDI"),
+	SOMMATION_DI_PM("U1P4SOMM", "666", "sommationDI"),          // TODO le code archivage est bidon !
 	ACCORD_DELAI_PM("U1P5DLAI", null, "accordDelai"),
 	REFUS_DELAI_PM("U1P6REFU", null, "refusDelai"),
 	RAPPEL("U1P7RAPL", null, "rappel"),
@@ -60,7 +60,7 @@ public enum TypeDocumentEditique {
 	 * @param codeDocumentArchivage code du document pour l'archivage du document, exemple 355 pour les sommations de LR
 	 * @param contexteImpression valeur à assigner au champ "context" du message de demande d'impression envoyé à l'ESB
 	 */
-	private TypeDocumentEditique(String codeDocumentEditique, @Nullable String codeDocumentArchivage, String contexteImpression) {
+	TypeDocumentEditique(String codeDocumentEditique, @Nullable String codeDocumentArchivage, String contexteImpression) {
 		this.codeDocumentEditique = codeDocumentEditique;
 		this.codeDocumentArchivage = codeDocumentArchivage;
 		this.contexteImpression = contexteImpression;

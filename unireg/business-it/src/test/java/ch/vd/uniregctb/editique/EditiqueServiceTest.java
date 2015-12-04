@@ -17,11 +17,11 @@ import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.BusinessItTest;
 import ch.vd.uniregctb.editique.impl.EditiqueCompositionServiceImpl;
-import ch.vd.uniregctb.editique.impl.EditiqueHelperImpl;
 import ch.vd.uniregctb.editique.impl.EditiqueRetourImpressionStorageServiceImpl;
 import ch.vd.uniregctb.editique.impl.EditiqueServiceImpl;
 import ch.vd.uniregctb.editique.impl.EvenementEditiqueEsbHandler;
 import ch.vd.uniregctb.editique.impl.EvenementEditiqueSenderImpl;
+import ch.vd.uniregctb.editique.impl.LegacyEditiqueHelperImpl;
 import ch.vd.uniregctb.evenement.EvenementHelper;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.jms.GentilEsbMessageEndpointListener;
@@ -97,12 +97,12 @@ public class EditiqueServiceTest extends BusinessItTest {
 		service.setRetourImpressionStorage(storageService);
 		service.setSyncReceiveTimeout(RECEIVE_TIMEOUT);
 
-		final EditiqueHelperImpl editiqueHelper = new EditiqueHelperImpl();
+		final LegacyEditiqueHelperImpl editiqueHelper = new LegacyEditiqueHelperImpl();
 		editiqueHelper.setAdresseService(adresseService);
 		editiqueHelper.setInfraService(infraService);
 
 		final ImpressionNouveauxDossiersHelperImpl dossiersHelper = new ImpressionNouveauxDossiersHelperImpl();
-		dossiersHelper.setEditiqueHelper(editiqueHelper);
+		dossiersHelper.setLegacyEditiqueHelper(editiqueHelper);
 		dossiersHelper.setTiersService(tiersService);
 		dossiersHelper.setServiceInfrastructureService(infraService);
 		dossiersHelper.setSituationFamilleService(sfService);

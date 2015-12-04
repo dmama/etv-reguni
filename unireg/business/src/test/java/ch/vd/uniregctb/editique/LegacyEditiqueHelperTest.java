@@ -30,17 +30,17 @@ import ch.vd.uniregctb.type.TypeDocument;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-public class EditiqueHelperTest extends BusinessTest {
+public class LegacyEditiqueHelperTest extends BusinessTest {
 
 	private TiersService tiersService;
-	private EditiqueHelper editiqueHelper;
+	private LegacyEditiqueHelper editiqueHelper;
 
 	@Override
 	protected void runOnSetUp() throws Exception {
 		super.runOnSetUp();
 
 		tiersService = getBean(TiersService.class, "tiersService");
-		editiqueHelper = getBean(EditiqueHelper.class, "editiqueHelper");
+		editiqueHelper = getBean(LegacyEditiqueHelper.class, "legacyEditiqueHelper");
 	}
 
 	@Test

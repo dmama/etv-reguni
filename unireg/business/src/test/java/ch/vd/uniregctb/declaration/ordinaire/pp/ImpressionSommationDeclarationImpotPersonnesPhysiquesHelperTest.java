@@ -27,7 +27,7 @@ import ch.vd.uniregctb.declaration.EtatDeclarationEmise;
 import ch.vd.uniregctb.declaration.ModeleDocument;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.editique.EditiqueException;
-import ch.vd.uniregctb.editique.EditiqueHelper;
+import ch.vd.uniregctb.editique.LegacyEditiqueHelper;
 import ch.vd.uniregctb.parametrage.DelaisService;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.MenageCommun;
@@ -43,14 +43,14 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
-public class ImpressionSommationDIHelperTest extends BusinessTest {
+public class ImpressionSommationDeclarationImpotPersonnesPhysiquesHelperTest extends BusinessTest {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(ImpressionDeclarationImpotPersonnesPhysiquesHelperTest.class);
 
-	private ImpressionSommationDIHelperImpl impressionSommationDIHelper;
+	private ImpressionSommationDeclarationImpotPersonnesPhysiquesHelperImpl impressionSommationDIHelper;
 	private AdresseService adresseService;
 	private TiersService tiersService;
-	private EditiqueHelper editiqueHelper;
+	private LegacyEditiqueHelper editiqueHelper;
 	private DelaisService delaisService;
 	private PeriodeFiscale periodeFiscale;
 	private ModeleDocument modeleDocument;
@@ -61,10 +61,10 @@ public class ImpressionSommationDIHelperTest extends BusinessTest {
 
 		adresseService = getBean(AdresseService.class, "adresseService");
 		tiersService = getBean(TiersService.class, "tiersService");
-		editiqueHelper =  getBean(EditiqueHelper.class, "editiqueHelper");
+		editiqueHelper =  getBean(LegacyEditiqueHelper.class, "legacyEditiqueHelper");
 		delaisService =  getBean(DelaisService.class, "delaisService");
 		serviceInfra.setUp(new DefaultMockServiceInfrastructureService());
-		impressionSommationDIHelper = new ImpressionSommationDIHelperImpl(serviceInfra, adresseService, tiersService,  editiqueHelper, delaisService);
+		impressionSommationDIHelper = new ImpressionSommationDeclarationImpotPersonnesPhysiquesHelperImpl(serviceInfra, adresseService, tiersService,  editiqueHelper, delaisService);
 
 		final Object[] res = doInTransaction(new TransactionCallback<Object[]>() {
 			@Override

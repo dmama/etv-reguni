@@ -19,7 +19,11 @@ import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.Tiers;
 
-public interface EditiqueHelper {
+/**
+ * Interface du Helper éditique pour le bon vieux temps où les XSD éditiques étaient gérées par XmlBeans,
+ * sans namespace (i.e. tous les documents d'avant l'avènement des PM)...
+ */
+public interface LegacyEditiqueHelper {
 
 	/**
 	 * Alimente la partie PorteAdresse du document

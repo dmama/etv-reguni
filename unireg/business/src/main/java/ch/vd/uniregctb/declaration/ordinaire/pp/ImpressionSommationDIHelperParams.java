@@ -4,7 +4,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP;
 
 /**
- * Classe servant à stocker les paramètres à passer à {@link ImpressionSommationDIHelper#remplitSommationDI(ImpressionSommationDIHelperParams)}
+ * Classe servant à stocker les paramètres à passer à {@link ImpressionSommationDeclarationImpotPersonnesPhysiquesHelper#remplitSommationDI(ImpressionSommationDIHelperParams)}
  * 
  * @author xsifnr
  *

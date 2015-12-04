@@ -6,15 +6,13 @@ import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.editique.unireg.CTypeAdresse;
 import ch.vd.editique.unireg.CTypeAffranchissement;
-import ch.vd.editique.unireg.CTypeDestinataire;
-import ch.vd.editique.unireg.CTypeExpediteur;
 import ch.vd.editique.unireg.CTypeInfoDocument;
-import ch.vd.editique.unireg.CTypeInfoEnteteDocument;
 import ch.vd.editique.unireg.FichierImpression;
 import ch.vd.editique.unireg.STypeZoneAffranchissement;
 import ch.vd.registre.base.date.DateHelper;
@@ -23,7 +21,6 @@ import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.interfaces.common.Adresse;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.infra.data.Pays;
@@ -34,42 +31,35 @@ import ch.vd.uniregctb.adresse.AdresseEnvoiDetaillee;
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdresseGenerique;
 import ch.vd.uniregctb.adresse.AdressesCivilesHisto;
-import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
 import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.common.DonneesCivilesException;
-import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.common.XmlUtils;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePM;
+import ch.vd.uniregctb.editique.ConstantesEditique;
 import ch.vd.uniregctb.editique.EditiqueAbstractHelper;
 import ch.vd.uniregctb.editique.EditiqueException;
+import ch.vd.uniregctb.editique.EditiquePrefixeHelper;
 import ch.vd.uniregctb.editique.TypeDocumentEditique;
 import ch.vd.uniregctb.iban.IbanValidator;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.DomicileEtablissement;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.Etablissement;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipalPM;
 import ch.vd.uniregctb.tiers.LocalisationDatee;
-import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeDocument;
 
 public class ImpressionDeclarationImpotPersonnesMoralesHelperImpl extends EditiqueAbstractHelper implements ImpressionDeclarationImpotPersonnesMoralesHelper {
 
-	private static final String DI = "DI";
+	private static final String TYPE_DOC = "DI";
 	private static final String COD_DOC_DI_PM = "U1P1";
 	private static final String COD_DOC_DI_APM = "U1P2";
 
 	private IbanValidator ibanValidator;
-	private ServiceInfrastructureService infraService;
 
 	public void setIbanValidator(IbanValidator ibanValidator) {
 		this.ibanValidator = ibanValidator;
-	}
-
-	public void setInfraService(ServiceInfrastructureService infraService) {
-		this.infraService = infraService;
 	}
 
 	@Override
@@ -113,7 +103,7 @@ public class ImpressionDeclarationImpotPersonnesMoralesHelperImpl extends Editiq
 			final FichierImpression.Document document = new FichierImpression.Document();
 			document.setDeclarationImpot(buildDeclarationImpot(declaration));
 			document.setInfoDocument(buildInfoDocument(declaration, getAdresseEnvoi(declaration.getTiers())));
-			document.setInfoEnteteDocument(buildInfoEnteteDocument(declaration));
+			document.setInfoEnteteDocument(buildInfoEnteteDocument(declaration, infraService.getACIOIPM()));
 			document.setInfoRoutage(null);
 			return document;
 		}
@@ -122,85 +112,20 @@ public class ImpressionDeclarationImpotPersonnesMoralesHelperImpl extends Editiq
 		}
 	}
 
-	private CTypeInfoEnteteDocument buildInfoEnteteDocument(DeclarationImpotOrdinairePM declaration) throws ServiceInfrastructureException, AdresseException {
-		final CTypeInfoEnteteDocument entete = new CTypeInfoEnteteDocument();
-		entete.setDestinataire(buildDestinataire(declaration.getTiers()));
-		entete.setExpediteur(buildExpediteur(declaration.getDateExpedition()));
-		entete.setLigReference(null);
-		entete.setPorteAdresse(null);
-		return entete;
-	}
-
-	private CTypeDestinataire buildDestinataire(Contribuable ctb) throws AdresseException {
-		final CTypeDestinataire destinataire = new CTypeDestinataire();
-		destinataire.setAdresse(buildAdresse(ctb));
-		destinataire.setNumContribuable(FormatNumeroHelper.numeroCTBToDisplay(ctb.getNumero()));
-		if (ctb instanceof Entreprise) {
-			final String ide = FormatNumeroHelper.formatNumIDE(tiersService.getNumeroIDE((Entreprise) ctb));
-			if (StringUtils.isNotBlank(ide)) {
-				destinataire.getNumIDE().add(ide);
-			}
-		}
-		return destinataire;
-	}
-
-	private CTypeExpediteur buildExpediteur(RegDate dateExpedition) throws ServiceInfrastructureException, AdresseException {
-		final CTypeExpediteur expediteur = new CTypeExpediteur();
-		final CollectiviteAdministrative oipm = infraService.getACIOIPM();
-		final CTypeAdresse adresse = buildAdresse(oipm);
-		expediteur.setAdresse(adresse);
-		expediteur.setAdrMes(oipm.getAdresseEmail());
-		expediteur.setDateExpedition(RegDateHelper.toIndexString(dateExpedition));
-		expediteur.setLocaliteExpedition(oipm.getAdresse().getLocalite());
-		expediteur.setNumCCP(oipm.getNoCCP());
-		expediteur.setNumFax(oipm.getNoFax());
-		expediteur.setNumIBAN(null);
-		expediteur.setNumTelephone(oipm.getNoTelephone());
-		expediteur.setTraitePar("");
-		return expediteur;
-	}
-
 	private CTypeInfoDocument buildInfoDocument(DeclarationImpotOrdinairePM declaration, AdresseEnvoiDetaillee adresseContribuable) throws AdresseException {
 		final CTypeInfoDocument infoDoc = new CTypeInfoDocument();
-		final STypeZoneAffranchissement zoneAffranchissement;
-		if (adresseContribuable.isIncomplete()) {
-			infoDoc.setIdEnvoi(String.valueOf(ServiceInfrastructureService.noOIPM));
-			zoneAffranchissement = STypeZoneAffranchissement.NA;
-		}
-		else {
-			if (adresseContribuable.isSuisse()) {
-				zoneAffranchissement = STypeZoneAffranchissement.CH;
-			}
-			else if (adresseContribuable.getPays() != null) {
 
-				// TODO faut-il envoyer les courriers vers HS à l'OIPM ?
+		// TODO faut-il envoyer les courriers vers HS à l'OIPM ?
 
-				switch (adresseContribuable.getPays().getTypeAffranchissement()) {
-				case EUROPE:
-					zoneAffranchissement = STypeZoneAffranchissement.EU;
-					break;
-				case MONDE:
-					zoneAffranchissement = STypeZoneAffranchissement.RM;
-					break;
-				case SUISSE:
-					zoneAffranchissement = STypeZoneAffranchissement.CH;
-					break;
-				default:
-					throw new IllegalArgumentException("Type d'affranchissement associé au pays " + adresseContribuable.getPays() + " non supporté : " + adresseContribuable.getPays().getTypeAffranchissement());
-				}
-			}
-			else {
-				// on fait comme pour les adresses incomplètes
-				infoDoc.setIdEnvoi(String.valueOf(ServiceInfrastructureService.noOIPM));
-				zoneAffranchissement = STypeZoneAffranchissement.NA;
-			}
-		}
+		final Pair<STypeZoneAffranchissement, String> infoAffranchissement = getInformationsAffranchissement(adresseContribuable, false, ServiceInfrastructureService.noOIPM);
+		infoDoc.setIdEnvoi(infoAffranchissement.getRight());
+		infoDoc.setAffranchissement(new CTypeAffranchissement(infoAffranchissement.getLeft(), null));
+
 		final TypeDocumentEditique typeDocumentEditique = getTypeDocumentEditique(declaration);
-		infoDoc.setAffranchissement(new CTypeAffranchissement(zoneAffranchissement, null));
 		infoDoc.setCodDoc(getCodeDocument(typeDocumentEditique));
-		infoDoc.setPopulations(POPULATION_PM);
-		infoDoc.setPrefixe(buildPrefixeInfoDocument(typeDocumentEditique));
-		infoDoc.setTypDoc(DI);
+		infoDoc.setPopulations(ConstantesEditique.POPULATION_PM);
+		infoDoc.setPrefixe(EditiquePrefixeHelper.buildPrefixeInfoDocument(typeDocumentEditique));
+		infoDoc.setTypDoc(TYPE_DOC);
 		return infoDoc;
 	}
 
@@ -215,20 +140,6 @@ public class ImpressionDeclarationImpotPersonnesMoralesHelperImpl extends Editiq
 		}
 	}
 
-	private AdresseEnvoiDetaillee getAdresseEnvoi(Tiers tiers) throws AdresseException {
-		return adresseService.getAdresseEnvoi(tiers, null, TypeAdresseFiscale.COURRIER, false);
-	}
-
-	private CTypeAdresse buildAdresse(CollectiviteAdministrative coll) throws AdresseException {
-		final Tiers colAdm = tiersService.getCollectiviteAdministrative(coll.getNoColAdm());
-		return buildAdresse(colAdm);
-	}
-
-	private CTypeAdresse buildAdresse(Tiers tiers) throws AdresseException {
-		final AdresseEnvoiDetaillee adresse = adresseService.getAdresseEnvoi(tiers, null, TypeAdresseFiscale.COURRIER, false);
-		return buildAdresse(adresse);
-	}
-
 	/**
 	 * @return l'adresse du CEDI à utiliser comme adresse de retour
 	 */
@@ -241,17 +152,6 @@ public class ImpressionDeclarationImpotPersonnesMoralesHelperImpl extends Editiq
 		lignes.add(cedi.getNomCourt() + ' ' + ServiceInfrastructureService.noOIPM);
 		lignes.add(adresse.getNumeroPostal() + ' ' + adresse.getLocalite());
 		return new CTypeAdresse(lignes);
-	}
-
-	@Nullable
-	private CTypeAdresse buildAdresse(AdresseEnvoi adresseEnvoi) {
-		final List<String> lignes = new ArrayList<>(6);
-		for (String ligne : adresseEnvoi.getLignes()) {
-			if (StringUtils.isNotBlank(ligne)) {
-				lignes.add(ligne);
-			}
-		}
-		return lignes.isEmpty() ? null : new CTypeAdresse(lignes);
 	}
 
 	@NotNull

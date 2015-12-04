@@ -48,7 +48,7 @@ import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP;
 import ch.vd.uniregctb.declaration.ModeleDocument;
 import ch.vd.uniregctb.declaration.ModeleFeuilleDocument;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
-import ch.vd.uniregctb.editique.EditiqueHelper;
+import ch.vd.uniregctb.editique.LegacyEditiqueHelper;
 import ch.vd.uniregctb.editique.ZoneAffranchissementEditique;
 import ch.vd.uniregctb.situationfamille.SituationFamilleService;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
@@ -84,7 +84,7 @@ public class ImpressionDeclarationImpotPersonnesPhysiquesHelperTest extends Busi
 	private AdresseService adresseService;
 	private TiersService tiersService;
 	private SituationFamilleService situationFamilleService;
-	private EditiqueHelper editiqueHelper;
+	private LegacyEditiqueHelper editiqueHelper;
 
 	@Override
 	protected void runOnSetUp() throws Exception {
@@ -94,7 +94,7 @@ public class ImpressionDeclarationImpotPersonnesPhysiquesHelperTest extends Busi
 		adresseService = getBean(AdresseService.class, "adresseService");
 		tiersService = getBean(TiersService.class, "tiersService");
 		situationFamilleService = getBean(SituationFamilleService.class, "situationFamilleService");
-		editiqueHelper = getBean(EditiqueHelper.class, "editiqueHelper");
+		editiqueHelper = getBean(LegacyEditiqueHelper.class, "legacyEditiqueHelper");
 		serviceInfra.setUp(new DefaultMockServiceInfrastructureService());
 		impressionDIPPHelper = new ImpressionDeclarationImpotPersonnesPhysiquesHelperImpl(serviceInfra, adresseService, tiersService, situationFamilleService, editiqueHelper);
 	}

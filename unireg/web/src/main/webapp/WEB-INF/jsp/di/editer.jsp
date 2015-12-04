@@ -57,14 +57,7 @@
 								return false;
 							}
 							$(":button").attr('disabled', true);
-							<c:choose>
-								<c:when test="${command.diPP}">
-									Form.dynamicSubmit('post', App.curl('/di/sommer-pp.do'), {id:id});
-								</c:when>
-								<c:when test="${command.diPM}">
-									Form.dynamicSubmit('post', App.curl('/di/sommer-pm.do'), {id:id});
-								</c:when>
-							</c:choose>
+							Form.dynamicSubmit('post', App.curl('/di/sommer.do'), {id:id});
 							return true;
 						}
 					</script>

@@ -26,12 +26,14 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DelaiDeclaration;
-import ch.vd.uniregctb.editique.EditiqueAbstractHelper;
+import ch.vd.uniregctb.editique.ConstantesEditique;
+import ch.vd.uniregctb.editique.EditiqueAbstractLegacyHelper;
 import ch.vd.uniregctb.editique.EditiqueException;
+import ch.vd.uniregctb.editique.EditiquePrefixeHelper;
 import ch.vd.uniregctb.editique.TypeDocumentEditique;
 import ch.vd.uniregctb.type.TypeEtatDeclaration;
 
-public class ImpressionConfirmationDelaiHelperImpl extends EditiqueAbstractHelper implements ImpressionConfirmationDelaiHelper {
+public class ImpressionConfirmationDelaiHelperImpl extends EditiqueAbstractLegacyHelper implements ImpressionConfirmationDelaiHelper {
 
 	private static final String VERSION_XSD = "1.0";
 
@@ -69,7 +71,7 @@ public class ImpressionConfirmationDelaiHelperImpl extends EditiqueAbstractHelpe
 		confirmationDelai.setDateAccord(RegDateHelper.toIndexString(params.getDateAccord()));
 		final TypPeriode periode = confirmationDelai.addNewPeriode();
 		final TypeDocumentEditique typeDocumentEditique = getTypeDocumentEditique();
-		periode.setPrefixe(buildPrefixePeriode(typeDocumentEditique));
+		periode.setPrefixe(EditiquePrefixeHelper.buildPrefixePeriode(typeDocumentEditique));
 		periode.setOrigDuplicat(ORIGINAL);
 		periode.setHorsSuisse("");
 		periode.setHorsCanton("");
@@ -79,14 +81,14 @@ public class ImpressionConfirmationDelaiHelperImpl extends EditiqueAbstractHelpe
 
 		final Entete entete = periode.addNewEntete();
 		final Tit tit = entete.addNewTit();
-		tit.setPrefixe(buildPrefixeTitreEntete(typeDocumentEditique));
+		tit.setPrefixe(EditiquePrefixeHelper.buildPrefixeTitreEntete(typeDocumentEditique));
 		tit.setLibTit("Impôt cantonal et communal / Impôt fédéral direct");
 		final ImpCcn impCcn = entete.addNewImpCcn();
-		impCcn.setPrefixe(buildPrefixeImpCcnEntete(typeDocumentEditique));
+		impCcn.setPrefixe(EditiquePrefixeHelper.buildPrefixeImpCcnEntete(typeDocumentEditique));
 		impCcn.setLibImpCcn(String.format("Délai pour le dépôt de la déclaration d'impôt %d", params.getDi().getPeriode().getAnnee()));
 		final String formuleAppel = adresseService.getFormulePolitesse(params.getDi().getTiers()).formuleAppel();
 		confirmationDelai.setCivil(formuleAppel);
-		confirmationDelai.setOFS(editiqueHelper.getCommune(params.getDi()));
+		confirmationDelai.setOFS(legacyEditiqueHelper.getCommune(params.getDi()));
 		return confirmationDelai;
 	}
 
@@ -94,12 +96,12 @@ public class ImpressionConfirmationDelaiHelperImpl extends EditiqueAbstractHelpe
 		InfoEnteteDocument infoEnteteDocument = InfoEnteteDocumentDocument1.Factory.newInstance().addNewInfoEnteteDocument();
 
 		try {
-			infoEnteteDocument.setPrefixe(buildPrefixeEnteteDocument(getTypeDocumentEditique()));
+			infoEnteteDocument.setPrefixe(EditiquePrefixeHelper.buildPrefixeEnteteDocument(getTypeDocumentEditique()));
 
-			final TypAdresse porteAdresse = editiqueHelper.remplitPorteAdresse(params.getDi().getTiers(), infoEnteteDocument);
+			final TypAdresse porteAdresse = legacyEditiqueHelper.remplitPorteAdresse(params.getDi().getTiers(), infoEnteteDocument);
 			infoEnteteDocument.setPorteAdresse(porteAdresse);
 
-			final Expediteur expediteur = editiqueHelper.remplitExpediteurCAT(infoEnteteDocument);
+			final Expediteur expediteur = legacyEditiqueHelper.remplitExpediteurCAT(infoEnteteDocument);
 			expediteur.setDateExpedition(RegDateHelper.toIndexString(RegDate.get()));
 			expediteur.setTraitePar(params.getTraitePar());
 
@@ -111,7 +113,7 @@ public class ImpressionConfirmationDelaiHelperImpl extends EditiqueAbstractHelpe
 			}
 
 			infoEnteteDocument.setExpediteur(expediteur);
-			Destinataire destinataire = editiqueHelper.remplitDestinataire(params.getDi().getTiers(), infoEnteteDocument);
+			Destinataire destinataire = legacyEditiqueHelper.remplitDestinataire(params.getDi().getTiers(), infoEnteteDocument);
 			infoEnteteDocument.setDestinataire(destinataire);
 		}
 		catch (Exception e) {
@@ -122,20 +124,20 @@ public class ImpressionConfirmationDelaiHelperImpl extends EditiqueAbstractHelpe
 
 	private InfoDocument remplitInfoDocument(ImpressionConfirmationDelaiHelperParams params) throws EditiqueException {
 		final InfoDocument infoDocument = InfoDocumentDocument1.Factory.newInstance().addNewInfoDocument();
-		final String prefixe = buildPrefixeInfoDocument(getTypeDocumentEditique());
+		final String prefixe = EditiquePrefixeHelper.buildPrefixeInfoDocument(getTypeDocumentEditique());
 		infoDocument.setPrefixe(prefixe);
 		infoDocument.setTypDoc("CD");
 		infoDocument.setCodDoc("CONF_DEL");
 		infoDocument.setVersion(VERSION_XSD);
 		infoDocument.setLogo(LOGO_CANTON);
-		infoDocument.setPopulations(POPULATION_PP);
+		infoDocument.setPopulations(ConstantesEditique.POPULATION_PP);
 		infoDocument.setIdEnvoi("");
-		editiqueHelper.remplitAffranchissement(infoDocument, params.getDi().getTiers());
+		legacyEditiqueHelper.remplitAffranchissement(infoDocument, params.getDi().getTiers());
 		return infoDocument;
 	}
 
 	private InfoArchivageDocument.InfoArchivage remplitInfoArchivage(ImpressionConfirmationDelaiHelperParams params) {
-		return editiqueHelper.buildInfoArchivage(getTypeDocumentEditique(), params.getDi().getTiers().getNumero(), construitIdArchivageDocument(params), params.getDateAccord());
+		return legacyEditiqueHelper.buildInfoArchivage(getTypeDocumentEditique(), params.getDi().getTiers().getNumero(), construitIdArchivageDocument(params), params.getDateAccord());
 	}
 
 	@Override

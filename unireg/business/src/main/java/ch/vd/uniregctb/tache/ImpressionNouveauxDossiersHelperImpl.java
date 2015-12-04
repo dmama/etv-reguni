@@ -30,8 +30,10 @@ import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdressesResolutionException;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
-import ch.vd.uniregctb.editique.EditiqueAbstractHelper;
+import ch.vd.uniregctb.editique.ConstantesEditique;
+import ch.vd.uniregctb.editique.EditiqueAbstractLegacyHelper;
 import ch.vd.uniregctb.editique.EditiqueException;
+import ch.vd.uniregctb.editique.EditiquePrefixeHelper;
 import ch.vd.uniregctb.editique.TypeDocumentEditique;
 import ch.vd.uniregctb.editique.ZoneAffranchissementEditique;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
@@ -45,7 +47,7 @@ import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.EtatCivil;
 import ch.vd.uniregctb.type.MotifFor;
 
-public class ImpressionNouveauxDossiersHelperImpl extends EditiqueAbstractHelper implements ImpressionNouveauxDossiersHelper {
+public class ImpressionNouveauxDossiersHelperImpl extends EditiqueAbstractLegacyHelper implements ImpressionNouveauxDossiersHelper {
 
 	private static final String TYPE_DOC_NOUVEAU_DOSSIER = "FO";
 	private static final String CODE_DOC_NOUVEAU_DOSSIER = "FIC_OUV_DOS";
@@ -173,13 +175,13 @@ public class ImpressionNouveauxDossiersHelperImpl extends EditiqueAbstractHelper
 	 */
 	private InfoDocument remplitInfoDocument() {
 		final InfoDocument infoDocument = InfoDocumentDocument1.Factory.newInstance().addNewInfoDocument();
-		final String prefixe = buildPrefixeInfoDocument(getTypeDocumentEditique());
+		final String prefixe = EditiquePrefixeHelper.buildPrefixeInfoDocument(getTypeDocumentEditique());
 		infoDocument.setPrefixe(prefixe);
 		infoDocument.setTypDoc(TYPE_DOC_NOUVEAU_DOSSIER);
 		infoDocument.setCodDoc(CODE_DOC_NOUVEAU_DOSSIER);
 		infoDocument.setVersion(VERSION);
 		infoDocument.setLogo(LOGO_CANTON);
-		infoDocument.setPopulations(POPULATION_PP);
+		infoDocument.setPopulations(ConstantesEditique.POPULATION_PP);
 		// Pour les nouveaux dossiers,la valeur que l'on met dans l'affranchissement n'a aucune importance.
 		final InfoDocumentDocument1.InfoDocument.Affranchissement affranchissement = infoDocument.addNewAffranchissement();
 		affranchissement.setZone(ZoneAffranchissementEditique.SUISSE.getCode());
@@ -199,15 +201,15 @@ public class ImpressionNouveauxDossiersHelperImpl extends EditiqueAbstractHelper
 	 */
 	private InfoEnteteDocument remplitEnteteDocument(Contribuable contribuable) throws AdresseException, ServiceInfrastructureException {
 		final InfoEnteteDocument infoEnteteDocument = InfoEnteteDocumentDocument1.Factory.newInstance().addNewInfoEnteteDocument();
-		infoEnteteDocument.setPrefixe(buildPrefixeEnteteDocument(getTypeDocumentEditique()));
+		infoEnteteDocument.setPrefixe(EditiquePrefixeHelper.buildPrefixeEnteteDocument(getTypeDocumentEditique()));
 
-		TypAdresse porteAdresse = editiqueHelper.remplitPorteAdresse(contribuable, infoEnteteDocument);
+		TypAdresse porteAdresse = legacyEditiqueHelper.remplitPorteAdresse(contribuable, infoEnteteDocument);
 		infoEnteteDocument.setPorteAdresse(porteAdresse);
 
-		Expediteur expediteur = editiqueHelper.remplitExpediteurACI(infoEnteteDocument);
+		Expediteur expediteur = legacyEditiqueHelper.remplitExpediteurACI(infoEnteteDocument);
 		infoEnteteDocument.setExpediteur(expediteur);
 
-		Destinataire destinataire = editiqueHelper.remplitDestinataire(contribuable, infoEnteteDocument);
+		Destinataire destinataire = legacyEditiqueHelper.remplitDestinataire(contribuable, infoEnteteDocument);
 		infoEnteteDocument.setDestinataire(destinataire);
 
 		return infoEnteteDocument;

@@ -158,7 +158,7 @@
 		<property name="editiqueCompositionService" ref="editiqueCompositionService" />
 		<property name="editiqueService" ref="editiqueService" />
 		<property name="impressionDIPPHelper" ref="impressionDIPPHelper" />
-		<property name="impressionSommationDIHelper" ref="impressionSommationDIHelper" />
+		<property name="impressionSommationDIHelper" ref="impressionSommationDIPPHelper" />
 		<property name="periodeDAO" ref="periodeFiscaleDAO" />
 		<property name="tacheDAO" ref="tacheDAO" />
 		<property name="modeleDAO" ref="modeleDocumentDAO" />

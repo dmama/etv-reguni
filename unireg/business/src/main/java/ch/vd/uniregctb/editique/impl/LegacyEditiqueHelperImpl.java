@@ -22,33 +22,52 @@ import ch.vd.unireg.interfaces.infra.data.TypeAffranchissement;
 import ch.vd.uniregctb.adresse.AdresseEnvoi;
 import ch.vd.uniregctb.adresse.AdresseEnvoiDetaillee;
 import ch.vd.uniregctb.adresse.AdresseException;
+import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.EtatDeclarationSommee;
 import ch.vd.uniregctb.editique.ConstantesEditique;
-import ch.vd.uniregctb.editique.EditiqueAbstractHelper;
 import ch.vd.uniregctb.editique.EditiqueException;
-import ch.vd.uniregctb.editique.EditiqueHelper;
+import ch.vd.uniregctb.editique.EditiquePrefixeHelper;
+import ch.vd.uniregctb.editique.LegacyEditiqueHelper;
 import ch.vd.uniregctb.editique.TypeDocumentEditique;
 import ch.vd.uniregctb.editique.ZoneAffranchissementEditique;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.ForGestion;
 import ch.vd.uniregctb.tiers.Tiers;
+import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.TypeEtatDeclaration;
 
 import static noNamespace.InfoDocumentDocument1.InfoDocument;
 import static noNamespace.InfoDocumentDocument1.InfoDocument.Affranchissement;
 
-public class EditiqueHelperImpl extends EditiqueAbstractHelper implements EditiqueHelper {
+/**
+ * Implémentation du Helper éditique pour le bon vieux temps où les XSD éditiques étaient gérées par XmlBeans,
+ * sans namespace (i.e. tous les documents d'avant l'avènement des PM)...
+ */
+public class LegacyEditiqueHelperImpl implements LegacyEditiqueHelper {
 
-	public static final Logger LOGGER = LoggerFactory.getLogger(EditiqueHelperImpl.class);
+	public static final Logger LOGGER = LoggerFactory.getLogger(LegacyEditiqueHelperImpl.class);
 
 	private static final String IMPOT_A_LA_SOURCE_MIN = "Impôt à la source";
 
 	private ServiceInfrastructureService infraService;
+	private AdresseService adresseService;
+	private TiersService tiersService;
 
+	public void setInfraService(ServiceInfrastructureService infraService) {
+		this.infraService = infraService;
+	}
+
+	public void setAdresseService(AdresseService adresseService) {
+		this.adresseService = adresseService;
+	}
+
+	public void setTiersService(TiersService tiersService) {
+		this.tiersService = tiersService;
+	}
 
 	/**
 	 * Alimente la partie Destinataire du document
@@ -88,7 +107,6 @@ public class EditiqueHelperImpl extends EditiqueAbstractHelper implements Editiq
 
 	/**
 	 * Alimente la partie PorteAdresse du document
-	 *
 	 */
 	@Override
 	public TypAdresse remplitPorteAdresse(Tiers tiers, InfoEnteteDocument infoEnteteDocument) throws AdresseException {
@@ -324,7 +342,7 @@ public class EditiqueHelperImpl extends EditiqueAbstractHelper implements Editiq
 		if (typeDocument.getCodeDocumentArchivage() == null) {
 			throw new IllegalArgumentException("Archivage non-supporté pour le document de type " + typeDocument);
 		}
-		infoArchivage.setPrefixe(buildPrefixeInfoArchivage(typeDocument));
+		infoArchivage.setPrefixe(EditiquePrefixeHelper.buildPrefixeInfoArchivage(typeDocument));
 		infoArchivage.setNomApplication(ConstantesEditique.APPLICATION_ARCHIVAGE);
 		infoArchivage.setTypDossier(ConstantesEditique.TYPE_DOSSIER_ARCHIVAGE);
 		infoArchivage.setNomDossier(FormatNumeroHelper.numeroCTBToDisplay(noTiers));
@@ -382,10 +400,6 @@ public class EditiqueHelperImpl extends EditiqueAbstractHelper implements Editiq
 			throw new EditiqueException("Impossible de récuperer l'adresse d'envoi pour le tiers = " + tiers.getNumero() + " erreur: " + e.getMessage());
 		}
 		return remplitAffranchissement(infoDocument, adresse);
-	}
-
-	public void setInfraService(ServiceInfrastructureService infraService) {
-		this.infraService = infraService;
 	}
 
 }

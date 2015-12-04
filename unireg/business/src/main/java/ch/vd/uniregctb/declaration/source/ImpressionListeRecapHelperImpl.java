@@ -39,8 +39,10 @@ import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationImpotSource;
-import ch.vd.uniregctb.editique.EditiqueAbstractHelper;
+import ch.vd.uniregctb.editique.ConstantesEditique;
+import ch.vd.uniregctb.editique.EditiqueAbstractLegacyHelper;
 import ch.vd.uniregctb.editique.EditiqueException;
+import ch.vd.uniregctb.editique.EditiquePrefixeHelper;
 import ch.vd.uniregctb.editique.TypeDocumentEditique;
 import ch.vd.uniregctb.editique.ZoneAffranchissementEditique;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
@@ -50,7 +52,7 @@ import ch.vd.uniregctb.type.CategorieImpotSource;
 import ch.vd.uniregctb.type.ModeCommunication;
 import ch.vd.uniregctb.webservice.sipf.BVRPlusClient;
 
-public class ImpressionListeRecapHelperImpl extends EditiqueAbstractHelper implements ImpressionListeRecapHelper {
+public class ImpressionListeRecapHelperImpl extends EditiqueAbstractLegacyHelper implements ImpressionListeRecapHelper {
 
 	public static final Logger LOGGER = LoggerFactory.getLogger(ImpressionListeRecapHelperImpl.class);
 
@@ -144,7 +146,7 @@ public class ImpressionListeRecapHelperImpl extends EditiqueAbstractHelper imple
 	 */
 	private InfoDocument remplitInfoDocument(DeclarationImpotSource lr) throws EditiqueException {
 		final InfoDocument infoDocument = InfoDocumentDocument1.Factory.newInstance().addNewInfoDocument();
-		infoDocument.setPrefixe(buildPrefixeInfoDocument(getTypeDocumentEditique()));
+		infoDocument.setPrefixe(EditiquePrefixeHelper.buildPrefixeInfoDocument(getTypeDocumentEditique()));
 		infoDocument.setTypDoc(TYPE_DOC_LR);
 
 		final String codeDoc;
@@ -200,9 +202,9 @@ public class ImpressionListeRecapHelperImpl extends EditiqueAbstractHelper imple
 
 		infoDocument.setVersion(VERSION);
 		infoDocument.setLogo(LOGO_CANTON);
-		infoDocument.setPopulations(POPULATION_IS);
+		infoDocument.setPopulations(ConstantesEditique.POPULATION_IS);
 
-		final ZoneAffranchissementEditique zoneAffranchissement = editiqueHelper.remplitAffranchissement(infoDocument, dpi);
+		final ZoneAffranchissementEditique zoneAffranchissement = legacyEditiqueHelper.remplitAffranchissement(infoDocument, dpi);
 		if (zoneAffranchissement == null || zoneAffranchissement == ZoneAffranchissementEditique.INCONNU) {
 			infoDocument.setIdEnvoi(Integer.toString(ServiceInfrastructureService.noACIImpotSource));       // retour à l'ACI IS pour tous les documents qu'ont n'aurait pas su envoyer
 		}
@@ -231,15 +233,15 @@ public class ImpressionListeRecapHelperImpl extends EditiqueAbstractHelper imple
 	 */
 	protected InfoEnteteDocument remplitEnteteDocument(Declaration declaration, String traitePar) throws AdresseException, ServiceInfrastructureException {
 		final InfoEnteteDocument infoEnteteDocument = InfoEnteteDocumentDocument1.Factory.newInstance().addNewInfoEnteteDocument();
-		infoEnteteDocument.setPrefixe(buildPrefixeEnteteDocument(getTypeDocumentEditique()));
+		infoEnteteDocument.setPrefixe(EditiquePrefixeHelper.buildPrefixeEnteteDocument(getTypeDocumentEditique()));
 
-		final TypAdresse porteAdresse = editiqueHelper.remplitPorteAdresse(declaration.getTiers(), infoEnteteDocument);
+		final TypAdresse porteAdresse = legacyEditiqueHelper.remplitPorteAdresse(declaration.getTiers(), infoEnteteDocument);
 		infoEnteteDocument.setPorteAdresse(porteAdresse);
 
-		final Expediteur expediteur = editiqueHelper.remplitExpediteurPourEnvoiLR(declaration, infoEnteteDocument, traitePar);
+		final Expediteur expediteur = legacyEditiqueHelper.remplitExpediteurPourEnvoiLR(declaration, infoEnteteDocument, traitePar);
 		infoEnteteDocument.setExpediteur(expediteur);
 
-		final Destinataire destinataire = editiqueHelper.remplitDestinataire(declaration.getTiers(), infoEnteteDocument);
+		final Destinataire destinataire = legacyEditiqueHelper.remplitDestinataire(declaration.getTiers(), infoEnteteDocument);
 		infoEnteteDocument.setDestinataire(destinataire);
 
 		return infoEnteteDocument;
@@ -256,7 +258,7 @@ public class ImpressionListeRecapHelperImpl extends EditiqueAbstractHelper imple
 		//
 		final TypPeriode typPeriode = lrlcbvr.addNewPeriode();
 		final TypeDocumentEditique typeDocumentEditique = getTypeDocumentEditique();
-		final String prefixePerio = buildPrefixePeriode(typeDocumentEditique);
+		final String prefixePerio = EditiquePrefixeHelper.buildPrefixePeriode(typeDocumentEditique);
 		typPeriode.setPrefixe(prefixePerio);
 		typPeriode.setOrigDuplicat(ORIGINAL);
 		typPeriode.setHorsSuisse("");
@@ -266,7 +268,7 @@ public class ImpressionListeRecapHelperImpl extends EditiqueAbstractHelper imple
 
 		final Entete entete = typPeriode.addNewEntete();
 		final Tit tit = entete.addNewTit();
-		final String prefixeTitim = buildPrefixeTitreEntete(typeDocumentEditique);
+		final String prefixeTitim = EditiquePrefixeHelper.buildPrefixeTitreEntete(typeDocumentEditique);
 		tit.setPrefixe(prefixeTitim);
 
 		String libTit = IMPOT_A_LA_SOURCE_MAJ;
@@ -295,7 +297,7 @@ public class ImpressionListeRecapHelperImpl extends EditiqueAbstractHelper imple
 		entete.setTitArray(tits);
 
 		final ImpCcn impCcn = entete.addNewImpCcn();
-		final String prefixeImpCcn = buildPrefixeImpCcnEntete(typeDocumentEditique);
+		final String prefixeImpCcn = EditiquePrefixeHelper.buildPrefixeImpCcnEntete(typeDocumentEditique);
 		impCcn.setPrefixe(prefixeImpCcn);
 		impCcn.setLibImpCcn(DECOMPTE_LR_MIN);
 		//
@@ -357,7 +359,7 @@ public class ImpressionListeRecapHelperImpl extends EditiqueAbstractHelper imple
 
 		final String noReference = FormatNumeroHelper.extractNoReference(bvrReponse.getLigneCodage());
 		final BVRSTD bvrstd = lrlcbvr.addNewBVRSTD();
-		final String prefixeBVRST = buildPrefixeBvrStandard(typeDocumentEditique);
+		final String prefixeBVRST = EditiquePrefixeHelper.buildPrefixeBvrStandard(typeDocumentEditique);
 		bvrstd.setPrefixe(prefixeBVRST);
 		bvrstd.setLibImp(IMPOT_A_LA_SOURCE_MIN + ' ' + lr.getPeriode().getAnnee().toString());
 		bvrstd.setVersPourLigne1("Département des finances");

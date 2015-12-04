@@ -6,7 +6,7 @@ import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.TypeDocumentEditique;
 
-public class MockImpressionSommationDIHelper implements ImpressionSommationDIHelper {
+public class MockImpressionSommationDIHelper implements ImpressionSommationDeclarationImpotPersonnesPhysiquesHelper {
 	@Override
 	public TypeDocumentEditique getTypeDocumentEditique() {
 		throw new IllegalArgumentException("no meant to be called");

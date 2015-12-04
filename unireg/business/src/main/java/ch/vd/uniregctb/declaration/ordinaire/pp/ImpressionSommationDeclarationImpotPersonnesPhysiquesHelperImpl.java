@@ -32,9 +32,11 @@ import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
-import ch.vd.uniregctb.editique.EditiqueAbstractHelper;
+import ch.vd.uniregctb.editique.ConstantesEditique;
+import ch.vd.uniregctb.editique.EditiqueAbstractLegacyHelper;
 import ch.vd.uniregctb.editique.EditiqueException;
-import ch.vd.uniregctb.editique.EditiqueHelper;
+import ch.vd.uniregctb.editique.EditiquePrefixeHelper;
+import ch.vd.uniregctb.editique.LegacyEditiqueHelper;
 import ch.vd.uniregctb.editique.TypeDocumentEditique;
 import ch.vd.uniregctb.editique.impl.ExpediteurNillableValuesFiller;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
@@ -54,25 +56,25 @@ import ch.vd.uniregctb.type.TypeEtatDeclaration;
  * @author xsifnr
  *
  */
-public class ImpressionSommationDIHelperImpl extends EditiqueAbstractHelper implements ImpressionSommationDIHelper {
+public class ImpressionSommationDeclarationImpotPersonnesPhysiquesHelperImpl extends EditiqueAbstractLegacyHelper implements ImpressionSommationDeclarationImpotPersonnesPhysiquesHelper {
 
 	private static final String VERSION_XSD = "1.0";
 	private static final int OID_LA_VALLEE = 8;
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(ImpressionSommationDIHelperImpl.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(ImpressionSommationDeclarationImpotPersonnesPhysiquesHelperImpl.class);
 
 	private ServiceInfrastructureService serviceInfrastructureService;
 	private DelaisService delaisService;
 
-	public ImpressionSommationDIHelperImpl() {
+	public ImpressionSommationDeclarationImpotPersonnesPhysiquesHelperImpl() {
 	}
 
-	public ImpressionSommationDIHelperImpl(ServiceInfrastructureService serviceInfrastructureService, AdresseService adresseService, TiersService tiersService,
-											EditiqueHelper editiqueHelper, DelaisService delaisService) {
+	public ImpressionSommationDeclarationImpotPersonnesPhysiquesHelperImpl(ServiceInfrastructureService serviceInfrastructureService, AdresseService adresseService, TiersService tiersService,
+	                                                                       LegacyEditiqueHelper editiqueHelper, DelaisService delaisService) {
 		this.serviceInfrastructureService = serviceInfrastructureService;
 		this.adresseService = adresseService;
 		this.tiersService = tiersService;
-		this.editiqueHelper = editiqueHelper;
+		this.legacyEditiqueHelper = editiqueHelper;
 		this.delaisService = delaisService;
 	}
 
@@ -242,8 +244,8 @@ public class ImpressionSommationDIHelperImpl extends EditiqueAbstractHelper impl
 
 		void ajouteInfoEnteteDocument(Document document, ImpressionSommationDIHelperParams params) throws AdresseException, EditiqueException {
 			InfoEnteteDocument infoEnteteDocument = document.addNewInfoEnteteDocument();
-			editiqueHelper.remplitPorteAdresse(params.getDi().getTiers(), infoEnteteDocument);
-			Expediteur expediteur = editiqueHelper.remplitExpediteurACI(infoEnteteDocument);
+			legacyEditiqueHelper.remplitPorteAdresse(params.getDi().getTiers(), infoEnteteDocument);
+			Expediteur expediteur = legacyEditiqueHelper.remplitExpediteurACI(infoEnteteDocument);
 			ExpediteurNillableValuesFiller expNilValues = new ExpediteurNillableValuesFiller();
 			expNilValues.init(expediteur);
 			if (params.isBatch()) {
@@ -263,14 +265,14 @@ public class ImpressionSommationDIHelperImpl extends EditiqueAbstractHelper impl
 			expediteur.setLocaliteExpedition(getLocaliteExpedition(params.getDi()));
 			expNilValues.setAdrMes(params.getAdrMsg());
 			expNilValues.fill(expediteur);
-			editiqueHelper.remplitDestinataire(params.getDi().getTiers(), infoEnteteDocument);
+			legacyEditiqueHelper.remplitDestinataire(params.getDi().getTiers(), infoEnteteDocument);
 		}
 
 		void ajouteSommationDI(Document document, ImpressionSommationDIHelperParams params) throws EditiqueException {
 			final SommationDI sommationDI = document.addNewSommationDI();
 			final TypPeriode periode = sommationDI.addNewPeriode();
 			final TypeDocumentEditique typeDocumentEditique = getTypeDocumentEditique();
-			periode.setPrefixe(buildPrefixePeriode(typeDocumentEditique));
+			periode.setPrefixe(EditiquePrefixeHelper.buildPrefixePeriode(typeDocumentEditique));
 			periode.setOrigDuplicat(ORIGINAL);
 			periode.setHorsSuisse("");
 			periode.setHorsCanton("");
@@ -283,14 +285,14 @@ public class ImpressionSommationDIHelperImpl extends EditiqueAbstractHelper impl
 			periode.setDatDerCalculAc("");
 			final Entete entete = periode.addNewEntete();
 			final Tit tit = entete.addNewTit();
-			tit.setPrefixe(buildPrefixeTitreEntete(typeDocumentEditique));
+			tit.setPrefixe(EditiquePrefixeHelper.buildPrefixeTitreEntete(typeDocumentEditique));
 			tit.setLibTit(String.format("Invitation à déposer la déclaration %s - Sommation", pfStr));
 			final ImpCcn impCcn = entete.addNewImpCcn();
-			impCcn.setPrefixe(buildPrefixeImpCcnEntete(typeDocumentEditique));
+			impCcn.setPrefixe(EditiquePrefixeHelper.buildPrefixeImpCcnEntete(typeDocumentEditique));
 			impCcn.setLibImpCcn("");
 
 			final LettreSom lettreSom = sommationDI.addNewLettreSom();
-			lettreSom.setOFS(editiqueHelper.getCommune(di));
+			lettreSom.setOFS(legacyEditiqueHelper.getCommune(di));
 			final String formuleAppel = adresseService.getFormulePolitesse(di.getTiers()).formuleAppel();
 			lettreSom.setCivil(formuleAppel);
 			lettreSom.setPeriodeFiscal(pfStr);
@@ -302,7 +304,7 @@ public class ImpressionSommationDIHelperImpl extends EditiqueAbstractHelper impl
 
 		void ajouteInfoArchivage(Document document, ImpressionSommationDIHelperParams params) {
 			final DeclarationImpotOrdinaire di = params.getDi();
-			editiqueHelper.fillInfoArchivage(
+			legacyEditiqueHelper.fillInfoArchivage(
 					document.addNewInfoArchivage(),
 					getTypeDocumentEditique(),
 					di.getTiers().getNumero(),
@@ -312,13 +314,13 @@ public class ImpressionSommationDIHelperImpl extends EditiqueAbstractHelper impl
 
 		InfoDocument ajouteInfoDocument(Document document, ImpressionSommationDIHelperParams params) throws EditiqueException {
 			final InfoDocument infoDocument = document.addNewInfoDocument();
-			final String prefixe = buildPrefixeInfoDocument(getTypeDocumentEditique());
+			final String prefixe = EditiquePrefixeHelper.buildPrefixeInfoDocument(getTypeDocumentEditique());
 			infoDocument.setPrefixe(prefixe);
 			infoDocument.setTypDoc("SD");
 			infoDocument.setCodDoc("SOMM_DI");
 			infoDocument.setVersion(VERSION_XSD);
 			infoDocument.setLogo(LOGO_CANTON);
-			infoDocument.setPopulations(POPULATION_PP);
+			infoDocument.setPopulations(ConstantesEditique.POPULATION_PP);
 			final CleRgp cleRgp = infoDocument.addNewCleRgp();
 			cleRgp.setAnneeFiscale(Integer.toString(params.getDi().getPeriode().getAnnee()));
 			return infoDocument;
@@ -418,7 +420,7 @@ public class ImpressionSommationDIHelperImpl extends EditiqueAbstractHelper impl
 			separes.setEnvoieA(tiersService.getNomPrenom(exConjoint));
 			TypAdresse.Adresse adresse = separes.addNewAdresse();
 			AdresseEnvoi adresseEnvoi = adresseService.getAdresseEnvoi(destinataire, null, TypeAdresseFiscale.COURRIER, false);
-			editiqueHelper.remplitAdresse(adresseEnvoi, adresse);
+			legacyEditiqueHelper.remplitAdresse(adresseEnvoi, adresse);
 		}
 
 
