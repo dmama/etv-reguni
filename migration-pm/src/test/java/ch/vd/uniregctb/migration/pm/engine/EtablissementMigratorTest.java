@@ -517,7 +517,7 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 				.findAny()
 				.ifPresent(cat -> Assert.fail(String.format("Il ne devrait pas y avoir de message dans la catégorie %s", cat)));
 
-		assertExistMessageWithContent(mr, LogCategory.ETABLISSEMENTS, "\\bL'établissement stable .* n'est couvert par les domiciles qu'à partir du [0-9.]+\\.$");
+		assertExistMessageWithContent(mr, LogCategory.ETABLISSEMENTS, "\\bL'établissement stable .* n'est couvert par les domiciles qu'à partir du [0-9.]+ \\(on supposera donc le premier domicile déjà valide à la date de début de l'établissement stable\\)\\.$");
 		assertExistMessageWithContent(mr, LogCategory.ADRESSES, "\\bAdresse trouvée sans rue ni localité postale\\.$");
 		assertExistMessageWithContent(mr, LogCategory.SUIVI, "\\bEtablissement migré : [0-9.]+\\.$");
 
@@ -542,7 +542,7 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 
 				final List<DateRange> morgesData = communes.get(Commune.MORGES);
 				Assert.assertNotNull(morgesData);
-				Assert.assertEquals(Collections.<DateRange>singletonList(new DateRangeHelper.Range(dateDebutDomicile, dateFinEtablissementStable)), morgesData);
+				Assert.assertEquals(Collections.<DateRange>singletonList(new DateRangeHelper.Range(dateDebutEtablissementStable, dateFinEtablissementStable)), morgesData);
 			}
 		}
 	}
@@ -691,7 +691,7 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 				.map(Pair::getLeft)
 				.ifPresent(msg -> Assert.fail(String.format("Tous les messages devraient être dans le contexte de l'établissement (trouvé '%s')", msg.text)));
 
-		assertExistMessageWithContent(mr, LogCategory.ETABLISSEMENTS, "\\bL'établissement stable .* n'est couvert par les domiciles qu'à partir du [0-9.]+\\.$");
+		assertExistMessageWithContent(mr, LogCategory.ETABLISSEMENTS, "\\bL'établissement stable .* n'est couvert par les domiciles qu'à partir du [0-9.]+ \\(on supposera donc le premier domicile déjà valide à la date de début de l'établissement stable\\)\\.$");
 		assertExistMessageWithContent(mr, LogCategory.ADRESSES, "\\bAdresse trouvée sans rue ni localité postale\\.$");
 
 		// vérification des demandes de fors secondaires enregistrées
@@ -715,7 +715,7 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 
 				final List<DateRange> lausanne = communes.get(Commune.LAUSANNE);
 				Assert.assertNotNull(lausanne);
-				Assert.assertEquals(Collections.<DateRange>singletonList(new DateRangeHelper.Range(dateDebutDomicile, dateDebutSecondDomicile.getOneDayBefore())), lausanne);
+				Assert.assertEquals(Collections.<DateRange>singletonList(new DateRangeHelper.Range(dateDebutEtablissementStable, dateDebutSecondDomicile.getOneDayBefore())), lausanne);
 
 				final List<DateRange> echallens = communes.get(Commune.ECHALLENS);
 				Assert.assertNotNull(echallens);
@@ -1082,7 +1082,7 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 				.findAny()
 				.ifPresent(cat -> Assert.fail(String.format("Il ne devrait pas y avoir de message dans la catégorie %s", cat)));
 
-		assertExistMessageWithContent(mr, LogCategory.ETABLISSEMENTS, "\\bL'établissement stable \\[01\\.01\\.1995 -> 31\\.12\\.2005\\] n'est couvert par les domiciles qu'à partir du 01\\.01\\.1998\\.$");
+		assertExistMessageWithContent(mr, LogCategory.ETABLISSEMENTS, "\\bL'établissement stable \\[01\\.01\\.1995 -> 31\\.12\\.2005\\] n'est couvert par les domiciles qu'à partir du 01\\.01\\.1998 \\(on supposera donc le premier domicile déjà valide à la date de début de l'établissement stable\\)\\.$");
 		assertExistMessageWithContent(mr, LogCategory.ADRESSES, "\\bAdresse trouvée sans rue ni localité postale\\.$");
 		assertExistMessageWithContent(mr, LogCategory.SUIVI, "\\bEtablissement migré : [0-9.]+\\.$");
 
@@ -1101,14 +1101,14 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 			{
 				final DomicileEtablissement domicile = domiciles.get(0);
 				Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, domicile.getTypeAutoriteFiscale());
-				Assert.assertEquals((Integer) MockCommune.Echallens.getNoOFS(), domicile.getNumeroOfsAutoriteFiscale());
-				Assert.assertEquals(RegDate.get(1998, 1, 1), domicile.getDateDebut());
+				Assert.assertEquals(Commune.ECHALLENS.getNoOfs(), domicile.getNumeroOfsAutoriteFiscale());
+				Assert.assertEquals(RegDate.get(1995, 1, 1), domicile.getDateDebut());      // la date de début de l'établissement stable...
 				Assert.assertEquals(RegDate.get(1999, 12, 31), domicile.getDateFin());
 			}
 			{
 				final DomicileEtablissement domicile = domiciles.get(1);
 				Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, domicile.getTypeAutoriteFiscale());
-				Assert.assertEquals((Integer) MockCommune.Morges.getNoOFS(), domicile.getNumeroOfsAutoriteFiscale());
+				Assert.assertEquals(Commune.MORGES.getNoOfs(), domicile.getNumeroOfsAutoriteFiscale());
 				Assert.assertEquals(RegDate.get(2000, 1, 1), domicile.getDateDebut());
 				Assert.assertEquals(RegDate.get(2005, 12, 31), domicile.getDateFin());
 			}

@@ -1,13 +1,13 @@
 package ch.vd.uniregctb.migration.pm.engine;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.NavigableMap;
-import java.util.Set;
+import java.util.Optional;
+import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -26,12 +26,10 @@ import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.adapter.rcent.model.Organisation;
 import ch.vd.uniregctb.adapter.rcent.model.OrganisationLocation;
 import ch.vd.uniregctb.adapter.rcent.service.RCEntAdapter;
 import ch.vd.uniregctb.adresse.AdresseTiers;
-import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.migration.pm.ConsolidationPhase;
@@ -82,52 +80,19 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 		this.rcEntAdapter = rcEntAdapter;
 	}
 
-	private static List<Pair<RegpmCommune, CollatableDateRange>> buildPeriodesForsSecondaires(NavigableMap<RegDate, RegpmDomicileEtablissement> domicilesValides, DateRange range, MigrationResultProduction mr) {
-		final Map.Entry<RegDate, RegpmDomicileEtablissement> domicileDebut = domicilesValides.floorEntry(range.getDateDebut());
-		final Map.Entry<RegDate, RegpmDomicileEtablissement> domicileFin = range.getDateFin() != null ? domicilesValides.floorEntry(range.getDateFin()) : domicilesValides.lastEntry();
-
-		// si l'une ou l'autre des entrées est nulle, c'est que le range demandé est plus grand que le range couvert par les domiciles...
-		if (domicileFin == null) {
-			// fin == null -> il n'y a absolument rien qui couvre le range demandé
-			mr.addMessage(LogCategory.ETABLISSEMENTS, LogLevel.ERROR, String.format("L'établissement stable %s n'intersecte aucun domicile.", StringRenderers.DATE_RANGE_RENDERER.toString(range)));
-			return Collections.emptyList();
-		}
-
-		// début == null mais fin != null -> on a une intersection, il faut donc raboter un peu
-		final Map.Entry<RegDate, RegpmDomicileEtablissement> domicileDebutEffectif;
-		if (domicileDebut == null) {
-			domicileDebutEffectif = domicilesValides.ceilingEntry(range.getDateDebut());        // il y en a forcément un, puisque domicileFin != null
-			mr.addMessage(LogCategory.ETABLISSEMENTS, LogLevel.WARN, String.format("L'établissement stable %s n'est couvert par les domiciles qu'à partir du %s.",
-			                                                                       StringRenderers.DATE_RANGE_RENDERER.toString(range), StringRenderers.DATE_RENDERER.toString(domicileDebutEffectif.getKey())));
-		}
-		else {
-			domicileDebutEffectif = domicileDebut;
-		}
-
-		// s'il n'y a pas eu de changemenent de commune entre les deux dates, ces entrées sont normalement les mêmes
-		// (comme je ne sais pas si les Map.Entry sont des constructions pour l'extérieur ou des externalisations de données internes, je préfère juste comparer la clé)
-		if (domicileDebutEffectif.getKey() == domicileFin.getKey()) {
-			final RegDate dateDebut = RegDateHelper.maximum(domicileDebutEffectif.getKey(), range.getDateDebut(), NullDateBehavior.EARLIEST);
-			return Collections.singletonList(Pair.<RegpmCommune, CollatableDateRange>of(domicileDebutEffectif.getValue().getCommune(), new DateRangeHelper.Range(dateDebut, range.getDateFin())));
-		}
-		else {
-			// il y a eu changement de communes... il faut donc préparer plusieurs cas
-			final List<Pair<RegpmCommune, CollatableDateRange>> liste = new LinkedList<>();
-			RegDate cursor = range.getDateFin();
-			for (Map.Entry<RegDate, RegpmDomicileEtablissement> step : domicilesValides.subMap(domicileDebutEffectif.getKey(), true, domicileFin.getKey(), true).descendingMap().entrySet()) {
-				final RegDate dateDebut = RegDateHelper.maximum(range.getDateDebut(), step.getKey(), NullDateBehavior.EARLIEST);
-				liste.add(0, Pair.of(step.getValue().getCommune(), new DateRangeHelper.Range(dateDebut, cursor)));
-				cursor = dateDebut.getOneDayBefore();
-			}
-			return liste;
-		}
-	}
-
 	private static final class DatesEtablissementsStables {
 		@NotNull
 		final List<DateRange> liste;
 		public DatesEtablissementsStables(List<DateRange> liste) {
-			this.liste = liste == null ? Collections.emptyList() : liste;
+			this.liste = Optional.ofNullable(liste).orElseGet(Collections::emptyList);
+		}
+	}
+
+	private static final class DomicilesStables {
+		@NotNull
+		final Map<RegpmCommune, List<DateRange>> map;
+		public DomicilesStables(Map<RegpmCommune, List<DateRange>> map) {
+			this.map = Optional.ofNullable(map).orElseGet(Collections::emptyMap);
 		}
 	}
 
@@ -159,11 +124,97 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 		                         e -> extractDatesEtablissementsStables(e, mr, idMapper),
 		                         null);
 
+		// les données des dates de domiciles stables (= plus ou moins l'intersection entre les domiciles et les établissements stables)
+		mr.registerDataExtractor(DomicilesStables.class,
+		                         null,
+		                         e -> extractDomicilesStables(e, mr, idMapper),
+		                         null);
+
 		// données des mandats
 		mr.registerDataExtractor(DonneesMandats.class,
 		                         null,
 		                         e -> extractDonneesMandats(e, mr, idMapper),
 		                         null);
+	}
+
+	@NotNull
+	private DomicilesStables extractDomicilesStables(RegpmEtablissement e, MigrationResultContextManipulation mr, IdMapping idMapper) {
+		final EntityKey key = buildEtablissementKey(e);
+		return doInLogContext(key, mr, idMapper, () -> {
+
+			// on va déjà chercher les domiciles valides
+			final NavigableMap<RegDate, RegpmDomicileEtablissement> mapDomiciles;
+			final SortedSet<RegpmDomicileEtablissement> domiciles = e.getDomicilesEtablissements();
+			if (domiciles != null && !domiciles.isEmpty()) {
+				// on trie les entités avant de les collecter en map afin de s'assurer que, à dates égales,
+				// c'est le dernier qui aura raison...
+				mapDomiciles = domiciles.stream()
+						.filter(de -> !de.isRectifiee())
+						.sorted()
+						.collect(Collectors.toMap(RegpmDomicileEtablissement::getDateValidite, Function.identity(), (u, v) -> v, TreeMap::new));
+			}
+			else {
+				mapDomiciles = Collections.emptyNavigableMap();
+			}
+
+			// on va également chercher les ranges d'établissements stables
+			final List<DateRange> rangesStables = mr.getExtractedData(DatesEtablissementsStables.class, key).liste;
+
+			// ... et finalement on mélange tout ça
+			final Map<RegpmCommune, List<DateRange>> couverture = rangesStables.stream()
+					.map(rangeStabilite -> {
+						final Map.Entry<RegDate, RegpmDomicileEtablissement> domicileDebut = mapDomiciles.floorEntry(rangeStabilite.getDateDebut());
+						final Map.Entry<RegDate, RegpmDomicileEtablissement> domicileFin = rangeStabilite.getDateFin() != null ? mapDomiciles.floorEntry(rangeStabilite.getDateFin()) : mapDomiciles.lastEntry();
+
+						// si l'une ou l'autre des entrées est nulle, c'est que le range demandé est plus grand que le range couvert par les domiciles...
+						if (domicileFin == null) {
+							// fin == null -> il n'y a absolument rien qui couvre le range demandé
+							mr.addMessage(LogCategory.ETABLISSEMENTS, LogLevel.ERROR, String.format("L'établissement stable %s n'intersecte aucun domicile.", StringRenderers.DATE_RANGE_RENDERER.toString(rangeStabilite)));
+							return Collections.<Pair<RegpmCommune, DateRange>>emptyList();
+						}
+
+						// début == null mais fin != null -> on a une intersection, mais pas complète ([SIFISC-16148] dans ce cas, on étend la validité du domicile pour qu'il couvre l'établissement stable complètement)
+						final Map.Entry<RegDate, RegpmDomicileEtablissement> domicileDebutEffectif;
+						if (domicileDebut == null) {
+							domicileDebutEffectif = mapDomiciles.ceilingEntry(rangeStabilite.getDateDebut());        // il y en a forcément un, puisque domicileFin != null
+							mr.addMessage(LogCategory.ETABLISSEMENTS, LogLevel.WARN,
+							              String.format("L'établissement stable %s n'est couvert par les domiciles qu'à partir du %s (on supposera donc le premier domicile déjà valide à la date de début de l'établissement stable).",
+							                            StringRenderers.DATE_RANGE_RENDERER.toString(rangeStabilite), StringRenderers.DATE_RENDERER.toString(domicileDebutEffectif.getKey())));
+						}
+						else {
+							domicileDebutEffectif = domicileDebut;
+						}
+
+						// s'il n'y a pas eu de changemenent de commune entre les deux dates, ces entrées sont normalement les mêmes
+						// (comme je ne sais pas si les Map.Entry sont des constructions pour l'extérieur ou des externalisations de données internes, je préfère juste comparer la clé)
+						if (domicileDebutEffectif.getKey() == domicileFin.getKey()) {
+							return Collections.singletonList(Pair.<RegpmCommune, CollatableDateRange>of(domicileDebutEffectif.getValue().getCommune(), new DateRangeHelper.Range(rangeStabilite)));
+						}
+						else {
+							// il y a eu changement de communes... il faut donc préparer plusieurs cas
+							final List<Pair<RegpmCommune, DateRange>> liste = new LinkedList<>();
+							RegDate cursor = rangeStabilite.getDateFin();
+							for (Map.Entry<RegDate, RegpmDomicileEtablissement> step : mapDomiciles.subMap(domicileDebutEffectif.getKey(), true, domicileFin.getKey(), true).descendingMap().entrySet()) {
+								final RegDate dateDebut;
+								if (step.getKey() == domicileDebutEffectif.getKey()) {
+									dateDebut = rangeStabilite.getDateDebut();
+								}
+								else {
+									dateDebut = step.getKey();
+								}
+								liste.add(0, Pair.of(step.getValue().getCommune(), new DateRangeHelper.Range(dateDebut, cursor)));
+								cursor = dateDebut.getOneDayBefore();
+							}
+							return liste;
+						}
+					})
+					.flatMap(List::stream)
+					.collect(Collectors.toMap(Pair::getLeft,
+					                          pair -> Collections.singletonList(pair.getRight()),
+					                          DATE_RANGE_LIST_MERGER));
+
+			return new DomicilesStables(couverture);
+		});
 	}
 
 	@NotNull
@@ -487,7 +538,8 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 							.forEach(linkCollector::addLink);
 
 					// génération de l'information pour la création des fors secondaires associés à ces établissements stables
-					enregistrerDemandesForsSecondaires(entiteJuridique, regpm.getDomicilesEtablissements(), mr, datesEtablissementsStables);
+					final Map<RegpmCommune, List<DateRange>> domicilesStables = mr.getExtractedData(DomicilesStables.class, moi.getKey()).map;
+					enregistrerDemandesForsSecondaires(entiteJuridique, domicilesStables, mr);
 				}
 				else {
 					mr.addMessage(LogCategory.ETABLISSEMENTS, LogLevel.WARN, "Etablissement sans aucune période de validité d'un établissement stable (lien créé selon rôles de mandataire).");
@@ -637,56 +689,34 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 		// communes de l'établissement (dans la base du mainframe au 12.05.2015, aucun établissement n'a plus d'un domicile non-rectifié)
 		// -> en fait, il n'y a toujours qu'au plus une seule commune...
 
-		// création d'un domicile Unireg depuis un domicile RegPM
-		final Function<RegpmDomicileEtablissement, DomicileEtablissement> mapper = d -> {
-			final DomicileEtablissement domicile = new DomicileEtablissement();
-			domicile.setDateDebut(d.getDateValidite());
-
-			final RegpmCommune commune = d.getCommune();
-			domicile.setTypeAutoriteFiscale(commune.getCanton() == RegpmCanton.VD ? TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD : TypeAutoriteFiscale.COMMUNE_HC);
-			domicile.setNumeroOfsAutoriteFiscale(NO_OFS_COMMUNE_EXTRACTOR.apply(commune));
-			checkFractionCommuneVaudoise(domicile, mr, LogCategory.ETABLISSEMENTS);
-			return domicile;
-		};
-
-		// liste des domiciles Unireg (sans dates de fin pour le moment, elles seront assignées juste après)
-		final List<DomicileEtablissement> domiciles = regpm.getDomicilesEtablissements().stream()
-				.filter(domicile -> !domicile.isRectifiee())
-				.map(mapper)
-				.sorted(Comparator.comparing(DomicileEtablissement::getDateDebut))
-				.collect(Collectors.toList());
-
-		// assignation des dates de fin (la dernière date de fin est par défaut à null, et sera mise à autre chose éventuellement lors de l'intersection
-		// avec les dates des établissements stables plus bas)
-		RegDate dateFinCourante = null;
-		for (DomicileEtablissement domicile : CollectionsUtils.revertedOrder(domiciles)) {
-			domicile.setDateFin(dateFinCourante);
-			dateFinCourante = domicile.getDateDebut().getOneDayBefore();
-		}
-
-		// maintenant, on a des domiciles à mettre en regard des établissements stables
-		// (en partie pour ajouter une date de fin au dernier domicile le cas échéant)
-		final List<DateRange> etablissementsStables = mr.getExtractedData(DatesEtablissementsStables.class, buildEtablissementKey(regpm)).liste;
-		final List<DomicileEtablissement> domicilesStables = domiciles.stream()
-				.map(domicile -> Pair.of(domicile, DateRangeHelper.intersections(domicile, etablissementsStables)))     // intersection avec les établissements stables
-				.filter(pair -> pair.getValue() != null && !pair.getValue().isEmpty())                      // filtrage des domiciles qui n'ont pas d'intersection avec les établissements stables
-				.map(pair -> pair.getValue().stream().map(range -> Pair.of(pair.getKey(), range)))          // duplication en cas d'intersections disjointes
+		final Map<RegpmCommune, List<DateRange>> domicilesStables = mr.getExtractedData(DomicilesStables.class, buildEtablissementKey(regpm)).map;
+		final List<DomicileEtablissement> mappes = domicilesStables.entrySet().stream()
+				.map(entry -> entry.getValue().stream().map(range -> Pair.of(entry.getKey(), range)))
 				.flatMap(Function.identity())
-				.map(pair -> new DomicileEtablissement(pair.getValue().getDateDebut(),                      // ajustement des dates selon les dates d'intersection
-				                                       pair.getValue().getDateFin(),
-				                                       pair.getKey().getTypeAutoriteFiscale(),
-				                                       pair.getKey().getNumeroOfsAutoriteFiscale(),
-				                                       null))
+				.map(pair -> {
+					final RegpmCommune commune = pair.getLeft();
+					final DateRange range = pair.getRight();
+
+					final DomicileEtablissement domicile = new DomicileEtablissement();
+					domicile.setDateDebut(range.getDateDebut());
+					domicile.setDateFin(range.getDateFin());
+
+					domicile.setTypeAutoriteFiscale(commune.getCanton() == RegpmCanton.VD ? TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD : TypeAutoriteFiscale.COMMUNE_HC);
+					domicile.setNumeroOfsAutoriteFiscale(NO_OFS_COMMUNE_EXTRACTOR.apply(commune));
+					checkFractionCommuneVaudoise(domicile, mr, LogCategory.ETABLISSEMENTS);
+					return domicile;
+				})
+				.sorted(Comparator.comparing(DomicileEtablissement::getDateDebut))
 				.map(dom -> adapterAutourFusionsCommunes(dom, mr, LogCategory.ETABLISSEMENTS, null))
 				.flatMap(List::stream)
 				.collect(Collectors.toList());
 
 		// log ou ajout des domiciles dans l'établissement...
-		if (domicilesStables.isEmpty()) {
+		if (mappes.isEmpty()) {
 			mr.addMessage(LogCategory.ETABLISSEMENTS, LogLevel.ERROR, "Etablissement sans domicile stable.");
 		}
 		else {
-			domicilesStables.stream()
+			mappes.stream()
 					.peek(domicile -> mr.addMessage(LogCategory.ETABLISSEMENTS, LogLevel.INFO, String.format("Domicile : %s sur %s/%d.",
 					                                                                                         StringRenderers.DATE_RANGE_RENDERER.toString(domicile),
 					                                                                                         domicile.getTypeAutoriteFiscale(),
@@ -696,35 +726,12 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 	}
 
 	private void enregistrerDemandesForsSecondaires(KeyedSupplier<? extends Tiers> entiteJuridique,
-	                                                Set<RegpmDomicileEtablissement> domiciles,
-	                                                MigrationResultProduction mr,
-	                                                Collection<DateRange> datesEtablissementsStables) {
-
-		// les domiciles avec leurs dates d'établissement
-		final NavigableMap<RegDate, RegpmDomicileEtablissement> mapDomiciles;
-		if (domiciles != null && !domiciles.isEmpty()) {
-			// on trie les entités avant de les collecter en map afin de s'assurer que, à dates égales,
-			// c'est le dernier qui aura raison...
-			mapDomiciles = domiciles.stream()
-					.filter(de -> !de.isRectifiee())
-					.sorted()
-					.collect(Collectors.toMap(RegpmDomicileEtablissement::getDateValidite, Function.identity(), (u, v) -> v, TreeMap::new));
-		}
-		else {
-			mapDomiciles = Collections.emptyNavigableMap();
-		}
-
-		// les informations, par communes, des périodes concernées
-		final Map<RegpmCommune, List<DateRange>> mapFors = datesEtablissementsStables.stream()
-				.map(range -> buildPeriodesForsSecondaires(mapDomiciles, range, mr))
-				.flatMap(List::stream)
-				.collect(Collectors.toMap(Pair::getKey,
-				                          pair -> Collections.singletonList(pair.getValue()),
-				                          DATE_RANGE_LIST_MERGER));
+	                                                Map<RegpmCommune, List<DateRange>> domicilesStables,
+	                                                MigrationResultProduction mr) {
 
 		// s'il y a des données relatives à des fors secondaires, on les envoie...
-		if (!mapFors.isEmpty()) {
-			mr.addPreTransactionCommitData(new ForsSecondairesData.Activite(entiteJuridique, mapFors));
+		if (!domicilesStables.isEmpty()) {
+			mr.addPreTransactionCommitData(new ForsSecondairesData.Activite(entiteJuridique, domicilesStables));
 		}
 	}
 }
