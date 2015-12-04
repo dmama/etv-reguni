@@ -77,6 +77,7 @@ import ch.vd.uniregctb.migration.pm.regpm.RegpmModeImposition;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmMotifEnvoi;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmObjectImpot;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmPrononceFaillite;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmQuestionnaireSNC;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmRattachementProprietaire;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmRegimeFiscalCH;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmRegimeFiscalVD;
@@ -88,6 +89,7 @@ import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeContribution;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeEtatDecisionTaxation;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeEtatDossierFiscal;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeEtatEntreprise;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeEtatQuestionnaireSNC;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeForPrincipal;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeFormeJuridique;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeMandat;
@@ -299,6 +301,24 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		dt.setNatureDecision(nature);
 		et.getDecisionsTaxation().add(dt);
 		return dt;
+	}
+
+	static RegpmQuestionnaireSNC addQuestionnaireSNC(RegpmEntreprise e, int annee, RegpmTypeEtatQuestionnaireSNC etat) {
+		final RegpmQuestionnaireSNC questionnaire = new RegpmQuestionnaireSNC();
+		questionnaire.setId(new RegpmQuestionnaireSNC.PK(computeNewSeqNo(e.getQuestionnairesSNC(), x -> x.getId().getSeqNo()), e.getId()));
+		assignMutationVisa(questionnaire, REGPM_VISA, REGPM_MODIF);
+		questionnaire.setAnneeFiscale(annee);
+		questionnaire.setEtat(etat);
+		if (etat == RegpmTypeEtatQuestionnaireSNC.ANNULE) {
+			questionnaire.setDateAnnulation(RegDate.get());
+		}
+
+		final List<RegpmQuestionnaireSNC> questionnairesMemeAnnee = e.getQuestionnairesSNC().stream()
+				.filter(q -> q.getAnneeFiscale() == annee)
+				.collect(Collectors.toList());
+		questionnaire.setNoParAnnee(computeNewSeqNo(questionnairesMemeAnnee, RegpmQuestionnaireSNC::getNoParAnnee));
+		e.getQuestionnairesSNC().add(questionnaire);
+		return questionnaire;
 	}
 
 	static RegpmMandat addMandat(RegpmEntreprise mandant, RegpmEntity mandataire, RegpmTypeMandat type, String noCCP, RegDate dateDebut, RegDate dateFin) {

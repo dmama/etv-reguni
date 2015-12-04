@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Set;
@@ -19,13 +20,17 @@ import org.slf4j.LoggerFactory;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmCategoriePersonneMorale;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmDecisionTaxation;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmDossierFiscal;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmEntreprise;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmEnvironnementTaxation;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmFormeJuridique;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmModeImposition;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeAssujettissement;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeEtatDecisionTaxation;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeEtatQuestionnaireSNC;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeFormeJuridique;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeNatureDecisionTaxation;
 import ch.vd.uniregctb.migration.pm.utils.DataLoadHelper;
 import ch.vd.uniregctb.migration.pm.utils.DatesParticulieres;
@@ -122,11 +127,31 @@ public class ActivityManagerImpl implements ActivityManager {
 	 * @return <code>true</code> s'il existe un assujettissement significatif à la date donnée ou plus tard
 	 */
 	private static boolean isActiveAssujettissement(RegpmEntreprise entreprise, RegDate seuil) {
-		return entreprise.getAssujettissements().stream()
-				.filter(a -> a.getType() != RegpmTypeAssujettissement.SANS)
-				.filter(a -> NullDateBehavior.LATEST.compare(seuil, a.getDateFin()) <= 0)
-				.findAny()
-				.isPresent();
+		// [SIFISC-17160] En fonction de la catégorie d'entreprise, l'activité n'est pas tout-à-fait mesurée de la même façon
+		final RegpmCategoriePersonneMorale categorie = entreprise.getFormesJuridiques().stream()
+				.filter(fj -> !fj.isRectifiee())
+				.filter(fj -> fj.getDateValidite().isBeforeOrEqual(RegDate.get()))
+				.max(Comparator.naturalOrder())
+				.map(RegpmFormeJuridique::getType)
+				.map(RegpmTypeFormeJuridique::getCategorie)
+				.orElse(null);
+
+		// en particulier, pour les sociétés de personnes (SC, SNC, l'activité ne se mesure pas à l'aune d'un assujettissement)
+		if (categorie == RegpmCategoriePersonneMorale.SP) {
+			return entreprise.getQuestionnairesSNC().stream()
+					.filter(q -> q.getEtat() != RegpmTypeEtatQuestionnaireSNC.ANNULE)
+					.filter(q -> q.getDateAnnulation() == null)
+					.filter(q -> q.getAnneeFiscale() >= seuil.year())
+					.findAny()
+					.isPresent();
+		}
+		else {
+			return entreprise.getAssujettissements().stream()
+					.filter(a -> a.getType() != RegpmTypeAssujettissement.SANS)
+					.filter(a -> NullDateBehavior.LATEST.compare(seuil, a.getDateFin()) <= 0)
+					.findAny()
+					.isPresent();
+		}
 	}
 
 	/**

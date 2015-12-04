@@ -8,8 +8,11 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmCategoriePersonneMorale;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmEntreprise;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeAssujettissement;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeEtatQuestionnaireSNC;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeFormeJuridique;
 
 public class ActivityManagerTest {
 
@@ -108,6 +111,65 @@ public class ActivityManagerTest {
 		{
 			final RegpmEntreprise e = EntrepriseMigratorTest.buildEntreprise(43L);
 			Assert.assertFalse(mgr.isActive(e));
+		}
+	}
+
+	@Test
+	public void testActiviteSNCsansQuestionnaireSNC() throws Exception {
+		final ActivityManager mgr = buildInstance(RegDate.get(2015, 1, 1));
+		{
+			final RegpmEntreprise e = EntrepriseMigratorTest.buildEntreprise(1243L);
+			EntrepriseMigratorTest.addFormeJuridique(e, RegDate.get(2000, 1, 1), EntrepriseMigratorTest.createTypeFormeJuridique("S.N.C.", RegpmCategoriePersonneMorale.SP));
+			EntrepriseMigratorTest.addAssujettissement(e, RegDate.get(2000, 1, 1), null, RegpmTypeAssujettissement.LILIC);
+			Assert.assertFalse(mgr.isActive(e));
+		}
+		{
+			final RegpmEntreprise e = EntrepriseMigratorTest.buildEntreprise(1243L);
+			EntrepriseMigratorTest.addFormeJuridique(e, RegDate.get(2000, 1, 1), EntrepriseMigratorTest.createTypeFormeJuridique("S. COMM.", RegpmCategoriePersonneMorale.SP));
+			EntrepriseMigratorTest.addAssujettissement(e, RegDate.get(2000, 1, 1), null, RegpmTypeAssujettissement.LILIC);
+			Assert.assertFalse(mgr.isActive(e));
+		}
+	}
+
+	@Test
+	public void testActiviteSNCsansQuestionnaireSNCdepuisSeuil() throws Exception {
+		final ActivityManager mgr = buildInstance(RegDate.get(2015, 1, 1));
+		final RegpmTypeFormeJuridique[] formesJuridiques = {
+				EntrepriseMigratorTest.createTypeFormeJuridique("S.N.C", RegpmCategoriePersonneMorale.SP),
+				EntrepriseMigratorTest.createTypeFormeJuridique("S. COMM.", RegpmCategoriePersonneMorale.SP),
+				EntrepriseMigratorTest.createTypeFormeJuridique("S.A.", RegpmCategoriePersonneMorale.PM),
+				EntrepriseMigratorTest.createTypeFormeJuridique("FOND", RegpmCategoriePersonneMorale.APM)
+		};
+
+		for (RegpmTypeFormeJuridique typeFormeJuridique : formesJuridiques) {
+			for (RegpmTypeEtatQuestionnaireSNC etatQuestionnaire : RegpmTypeEtatQuestionnaireSNC.values()) {
+				final RegpmEntreprise e = EntrepriseMigratorTest.buildEntreprise(1243L);
+				EntrepriseMigratorTest.addFormeJuridique(e, RegDate.get(2000, 1, 1), typeFormeJuridique);
+				EntrepriseMigratorTest.addQuestionnaireSNC(e, 2014, etatQuestionnaire);
+				Assert.assertFalse(String.format("%s / %s", typeFormeJuridique, etatQuestionnaire), mgr.isActive(e));         // questionnaire trop vieux !
+			}
+		}
+	}
+
+	@Test
+	public void testActiviteSNCavecQuestionnaireSNCdepuisSeuil() throws Exception {
+		final ActivityManager mgr = buildInstance(RegDate.get(2015, 1, 1));
+		final RegpmTypeFormeJuridique[] formesJuridiques = {
+				EntrepriseMigratorTest.createTypeFormeJuridique("S.N.C", RegpmCategoriePersonneMorale.SP),
+				EntrepriseMigratorTest.createTypeFormeJuridique("S. COMM.", RegpmCategoriePersonneMorale.SP),
+				EntrepriseMigratorTest.createTypeFormeJuridique("S.A.", RegpmCategoriePersonneMorale.PM),
+				EntrepriseMigratorTest.createTypeFormeJuridique("FOND", RegpmCategoriePersonneMorale.APM)
+		};
+
+		for (RegpmTypeFormeJuridique typeFormeJuridique : formesJuridiques) {
+			for (RegpmTypeEtatQuestionnaireSNC etatQuestionnaire : RegpmTypeEtatQuestionnaireSNC.values()) {
+				final RegpmEntreprise e = EntrepriseMigratorTest.buildEntreprise(1243L);
+				EntrepriseMigratorTest.addFormeJuridique(e, RegDate.get(2000, 1, 1), typeFormeJuridique);
+				EntrepriseMigratorTest.addQuestionnaireSNC(e, 2015, etatQuestionnaire);
+				Assert.assertEquals(String.format("%s / %s", typeFormeJuridique, etatQuestionnaire),
+				                    typeFormeJuridique.getCategorie() == RegpmCategoriePersonneMorale.SP && etatQuestionnaire != RegpmTypeEtatQuestionnaireSNC.ANNULE,
+				                    mgr.isActive(e));
+			}
 		}
 	}
 }
