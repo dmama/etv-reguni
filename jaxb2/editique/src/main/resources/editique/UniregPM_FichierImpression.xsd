@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified"
-    targetNamespace="http://vd.ch/Editique/PM/UniregImpression-15.0"
-    xmlns="http://vd.ch/Editique/PM/UniregImpression-15.0">
+    targetNamespace="http://vd.ch/Editique/PM/UniregImpression-15.1"
+    xmlns="http://vd.ch/Editique/PM/UniregImpression-15.1">
     <xs:annotation>
         <xs:appinfo>IMPORTANT : Le namespace par défaut ne doit pas contenir de préfixe !!!</xs:appinfo>
     </xs:annotation>
@@ -37,9 +37,30 @@
         <xs:choice>
             <xs:group ref="DI">
                 <xs:annotation>
-                    <xs:documentation>DI PM : CodDoc=1501, typDoc=DI, prefixeInfoDocument=PMPU1501DOCUM</xs:documentation>
+                    <xs:documentation>DI PM : CodDoc=U1P1, typDoc=DI</xs:documentation>
                 </xs:annotation>
             </xs:group>
+            <xs:group ref="refusDelai">
+                <xs:annotation>
+                    <xs:documentation>Refus de délai : CodDoc=U1P6, typDoc=CO</xs:documentation>
+                </xs:annotation>
+            </xs:group>
+            <xs:group ref="accordDelai">
+                <xs:annotation>
+                    <xs:documentation>Accord Délai : CodDoc=U1P5, typDoc=CO</xs:documentation>
+                </xs:annotation>
+            </xs:group>
+            <xs:group ref="sommation">
+                <xs:annotation>
+                    <xs:documentation>Sommation : CodDoc=U1P4, typDoc=CO</xs:documentation>
+                </xs:annotation>
+            </xs:group>
+            <xs:group ref="accordDelaiApresSomamtion">
+                <xs:annotation>
+                    <xs:documentation>Accord Délai Après Sommation : CodDoc=U1P8, typDoc=CO</xs:documentation>
+                </xs:annotation>
+            </xs:group>
+            <xs:group ref="lettreBienvenue"/>
         </xs:choice>
     </xs:group>
     <xs:group name="DI">
@@ -97,6 +118,145 @@
                         </xs:element>
                         <xs:element minOccurs="0" name="titulaireCompte" type="xs:string"/>
                     </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        </xs:sequence>
+    </xs:group>
+    <xs:group name="refusDelai">
+        <xs:sequence>
+            <xs:element name="refusDelai">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="periodeFiscale" type="xs:gYear">
+                            <xs:annotation>
+                                <xs:documentation>AAAA</xs:documentation>
+                            </xs:annotation>
+                        </xs:element>
+                        <xs:element minOccurs="1" name="debutExerciceCommercial" type="STypeDate">
+                            <xs:annotation>
+                                <xs:documentation>AAAAMMJJ</xs:documentation>
+                            </xs:annotation>
+                        </xs:element>
+                        <xs:element minOccurs="1" name="finExerciceCommercial" type="STypeDate">
+                            <xs:annotation>
+                                <xs:documentation>AAAAMMJJ</xs:documentation>
+                            </xs:annotation>
+                        </xs:element>
+                        <xs:element name="dateEnvoiContribuable" type="STypeDate">
+                            <xs:annotation>
+                                <xs:documentation>AAAAMMJJ</xs:documentation>
+                            </xs:annotation>
+                        </xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        </xs:sequence>
+    </xs:group>
+    <xs:group name="accordDelai">
+        <xs:sequence>
+            <xs:element name="accordDelai">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="periodeFiscale" type="xs:gYear">
+                            <xs:annotation>
+                                <xs:documentation>AAAA</xs:documentation>
+                            </xs:annotation>
+                        </xs:element>
+                        <xs:element minOccurs="1" name="debutExerciceCommercial" type="STypeDate">
+                            <xs:annotation>
+                                <xs:documentation>AAAAMMJJ</xs:documentation>
+                            </xs:annotation>
+                        </xs:element>
+                        <xs:element minOccurs="1" name="finExerciceCommercial" type="STypeDate">
+                            <xs:annotation>
+                                <xs:documentation>AAAAMMJJ</xs:documentation>
+                            </xs:annotation>
+                        </xs:element>
+                        <xs:element name="dateEnvoiContribuable" type="STypeDate">
+                            <xs:annotation>
+                                <xs:documentation>AAAAMMJJ</xs:documentation>
+                            </xs:annotation>
+                        </xs:element>
+                        <xs:element name="dateAccord" type="STypeDate">
+                            <xs:annotation>
+                                <xs:documentation>AAAAMMJJ</xs:documentation>
+                            </xs:annotation>
+                        </xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        </xs:sequence>
+    </xs:group>
+    <xs:group name="sommation">
+        <xs:sequence>
+            <xs:element name="sommation">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="periodeFiscale" type="xs:gYear">
+                            <xs:annotation>
+                                <xs:documentation>AAAA</xs:documentation>
+                            </xs:annotation>
+                        </xs:element>
+                        <xs:element name="dateEnvoiSommation" type="STypeDate">
+                            <xs:annotation>
+                                <xs:documentation>AAAAMMJJ</xs:documentation>
+                            </xs:annotation>
+                        </xs:element>
+                        <xs:element minOccurs="0" name="codeControleNIP" type="STypeCodeNIP">
+                            <xs:annotation>
+                                <xs:documentation>X12345</xs:documentation>
+                            </xs:annotation>
+                        </xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        </xs:sequence>
+    </xs:group>
+    <xs:group name="accordDelaiApresSomamtion">
+        <xs:sequence>
+            <xs:element name="accordDelaiApresSomamtion">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="periodeFiscale" type="xs:gYear">
+                            <xs:annotation>
+                                <xs:documentation>AAAA</xs:documentation>
+                            </xs:annotation>
+                        </xs:element>
+                        <xs:element minOccurs="1" name="debutExerciceCommercial" type="STypeDate">
+                            <xs:annotation>
+                                <xs:documentation>AAAAMMJJ</xs:documentation>
+                            </xs:annotation>
+                        </xs:element>
+                        <xs:element minOccurs="1" name="finExerciceCommercial" type="STypeDate">
+                            <xs:annotation>
+                                <xs:documentation>AAAAMMJJ</xs:documentation>
+                            </xs:annotation>
+                        </xs:element>
+                        <xs:element name="dateEnvoiContribuable" type="STypeDate">
+                            <xs:annotation>
+                                <xs:documentation>AAAAMMJJ</xs:documentation>
+                            </xs:annotation>
+                        </xs:element>
+                        <xs:element name="dateEnvoiSommation" type="STypeDate">
+                            <xs:annotation>
+                                <xs:documentation>AAAAMMJJ</xs:documentation>
+                            </xs:annotation>
+                        </xs:element>
+                        <xs:element name="dateAccord" type="STypeDate">
+                            <xs:annotation>
+                                <xs:documentation>AAAAMMJJ</xs:documentation>
+                            </xs:annotation>
+                        </xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        </xs:sequence>
+    </xs:group>
+    <xs:group name="lettreBienvenue">
+        <xs:sequence>
+            <xs:element name="lettreDeBienvenue">
+                <xs:complexType>
+                    <xs:sequence> </xs:sequence>
                 </xs:complexType>
             </xs:element>
         </xs:sequence>
@@ -180,9 +340,14 @@
             <xs:element name="prefixe" type="STypePrefixeTECHN">
                 <xs:annotation>
                     <xs:appinfo/>
-                    <xs:documentation>PMP10000TECHN
-PMP20000TECHN
-PMP30000TECHN
+                    <xs:documentation>U1P1DIPMTECHN
+U1P2DIAPTECHN
+U1P3BIENTECHN
+U1P4SOMMTECHN
+U1P5DLAITECHN
+U1P6REFUTECHN
+U1P7RAPLTECHN
+U1P8ADASTECHN
 </xs:documentation>
                 </xs:annotation>
             </xs:element>
@@ -224,9 +389,14 @@ PMP21101_aaaammjj.xml</xs:documentation>
             <xs:element name="prefixe" type="STypePrefixeDOCUM">
                 <xs:annotation>
                     <xs:appinfo/>
-                    <xs:documentation>PMP10000TECHN
-PMP20000TECHN
-PMP30000TECHN
+                    <xs:documentation>U1P1DIPMDOCUM
+U1P2DIAPDOCUM
+U1P3BIENDOCUM
+U1P4SOMMDOCUM
+U1P5DLAIDOCUM
+U1P6REFUDOCUM
+U1P7RAPLDOCUM
+U1P8ADASDOCUM
 </xs:documentation>
                 </xs:annotation>
             </xs:element>
@@ -254,7 +424,9 @@ PMP30000TECHN
             </xs:element>
             <xs:element minOccurs="0" name="typDoc" type="STypeTypeDoc">
                 <xs:annotation>
-                    <xs:documentation>Exemple : DT / FA </xs:documentation>
+                    <xs:documentation>Exemple : DI / CO
+
+(DI = Déclaration d'Impôt, CO = Courrier)</xs:documentation>
                 </xs:annotation>
             </xs:element>
             <xs:element name="codDoc" type="STypeCodeDoc">
@@ -385,22 +557,28 @@ PMP30000TECHN
         <xs:sequence>
             <xs:element name="prefixe" type="STypePrefixeROUTE">
                 <xs:annotation>
-                    <xs:documentation>PMP10000ROUTE
-PMP20000ROUTE
-PMP30000ROUTE</xs:documentation>
+                    <xs:documentation>U1P1DIPMROUTE
+U1P2DIAPROUTE
+U1P3BIENROUTE
+U1P4SOMMROUTE
+U1P5DLAIROUTE
+U1P6REFUROUTE
+U1P7RAPLROUTE
+U1P8ADASROUTE
+</xs:documentation>
                 </xs:annotation>
             </xs:element>
         </xs:sequence>
     </xs:complexType>
     <xs:simpleType name="STypePrefixeTECHN">
         <xs:restriction base="xs:string">
-            <xs:pattern value="PMPU[0-9]{4}TECHN"/>
+            <xs:pattern value="[A-Z0-9]{8}TECHN"/>
             <xs:whiteSpace value="preserve"/>
         </xs:restriction>
     </xs:simpleType>
     <xs:simpleType name="STypeFilename">
         <xs:restriction base="xs:string">
-            <xs:pattern value="PMPU[0-9]{4}_[0-9]{8}.xml"/>
+            <xs:pattern value="[A-Z0-9]{8}_[0-9]{8}.xml"/>
         </xs:restriction>
     </xs:simpleType>
     <xs:simpleType name="STypeSigleApplication">
@@ -523,12 +701,12 @@ PMP30000ROUTE</xs:documentation>
     </xs:simpleType>
     <xs:simpleType name="STypePrefixeROUTE">
         <xs:restriction base="xs:string">
-            <xs:pattern value="PMPU[0-9]{4}ROUTE"/>
+            <xs:pattern value="[A-Z0-9]{8}ROUTE"/>
         </xs:restriction>
     </xs:simpleType>
     <xs:simpleType name="STypePrefixeDOCUM">
         <xs:restriction base="xs:string">
-            <xs:pattern value="PMPU[0-9]{4}DOCUM"/>
+            <xs:pattern value="[A-Z0-9]{8}DOCUM"/>
         </xs:restriction>
     </xs:simpleType>
     <xs:simpleType name="STypeNumIDE">

@@ -4,6 +4,6 @@
 	<!-- Ce fichier a la seule fonction d'inclure les schémas locaux qui doivent être compilés.
 	Cette manière de faire indirecte permet de réutiliser les fichiers bindings.xml entre les différents projets -->
 
-	<xs:import namespace="http://vd.ch/Editique/PM/UniregImpression-15.0" schemaLocation="http://www.vd.ch/xmlns/editique/pm/UniregPM_FichierImpression.xsd" />
+	<xs:import namespace="http://vd.ch/Editique/PM/UniregImpression-15.1" schemaLocation="http://www.vd.ch/xmlns/editique/pm/UniregPM_FichierImpression.xsd" />
 
 </xs:schema>
