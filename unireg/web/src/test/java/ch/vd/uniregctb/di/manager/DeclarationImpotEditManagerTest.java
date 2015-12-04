@@ -84,6 +84,7 @@ public class DeclarationImpotEditManagerTest extends WebTest {
 		manager.setTacheDAO(getBean(TacheDAO.class, "tacheDAO"));
 		manager.setPeriodeImpositionService(getBean(PeriodeImpositionService.class, "periodeImpositionService"));
 		manager.setDiService(getBean(DeclarationImpotService.class, "diService"));
+		manager.afterPropertiesSet();
 	}
 
 	@Test
@@ -678,12 +679,13 @@ public class DeclarationImpotEditManagerTest extends WebTest {
 			}
 		});
 
+		final RegDate delaiAccorde = RegDate.get().addMonths(2);
 		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique pp = hibernateTemplate.get(PersonnePhysique.class, ids.ppId);
 				// cet appel levait une exception parce que le for de gestion au 31 décembre 2009 n'était pas connu avant la correction du cas SIFISC-4923
-				manager.creerNouvelleDI(pp, date(2009, 1, 1), date(2009, 12, 31), TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, TypeAdresseRetour.CEDI, RegDate.get().addMonths(2), null);
+				manager.creerNouvelleDI(pp, date(2009, 1, 1), date(2009, 12, 31), TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, TypeAdresseRetour.CEDI, delaiAccorde, null);
 				return null;
 			}
 		});
@@ -695,7 +697,7 @@ public class DeclarationImpotEditManagerTest extends WebTest {
 				final List<Declaration> decls = pp.getDeclarationsForPeriode(2009, false);
 				assertNotNull(decls);
 				assertEquals(1, decls.size());
-				assertDIPP(date(2009, 1, 1), date(2009, 12, 31), TypeEtatDeclaration.EMISE, TypeContribuable.HORS_CANTON, TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, ids.oidCedi, null, decls.get(0));
+				assertDIPP(date(2009, 1, 1), date(2009, 12, 31), TypeEtatDeclaration.EMISE, TypeContribuable.HORS_CANTON, TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, ids.oidCedi, delaiAccorde, decls.get(0));
 				return null;
 			}
 		});
