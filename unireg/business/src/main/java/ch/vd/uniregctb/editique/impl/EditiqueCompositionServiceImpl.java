@@ -162,12 +162,21 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 	}
 
 	@Override
+	public EditiqueResultat imprimeDIOnline(DeclarationImpotOrdinairePM declaration) throws EditiqueException, JMSException {
+		return imprimeDIOnline(declaration, false);
+	}
+
+	@Override
 	public EditiqueResultat imprimeDuplicataDIOnline(DeclarationImpotOrdinairePP declaration, TypeDocument typeDocument, List<ModeleFeuilleDocumentEditique> annexes) throws EditiqueException, JMSException {
 		return imprimeDIOnline(declaration, typeDocument, annexes, true);
 	}
 
-	private EditiqueResultat imprimeDIOnline(DeclarationImpotOrdinairePP declaration, TypeDocument typeDocument, List<ModeleFeuilleDocumentEditique> annexes,
-	                                         boolean isDuplicata) throws EditiqueException, JMSException {
+	@Override
+	public EditiqueResultat imprimeDuplicataDIOnline(DeclarationImpotOrdinairePM declaration) throws EditiqueException, JMSException {
+		return imprimeDIOnline(declaration, true);
+	}
+
+	private EditiqueResultat imprimeDIOnline(DeclarationImpotOrdinairePP declaration, TypeDocument typeDocument, List<ModeleFeuilleDocumentEditique> annexes, boolean isDuplicata) throws EditiqueException, JMSException {
 		final FichierImpressionDocument mainDocument = FichierImpressionDocument.Factory.newInstance();
 		final TypFichierImpression editiqueDI = mainDocument.addNewFichierImpression();
 		final TypFichierImpression.Document document = impressionDIPPHelper.remplitEditiqueSpecifiqueDI(declaration, editiqueDI, typeDocument, annexes);
@@ -190,6 +199,21 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 		                                         declaration.getPeriode().getAnnee(),
 		                                         FormatNumeroHelper.numeroCTBToDisplay(declaration.getTiers().getNumero()));
 		return editiqueService.creerDocumentImmediatementSynchroneOuInbox(nomDocument, typeDocumentMessage, FormatDocumentEditique.PCL, mainDocument, false, description);
+	}
+
+	private EditiqueResultat imprimeDIOnline(DeclarationImpotOrdinairePM declaration, boolean isDuplicata) throws EditiqueException, JMSException {
+		final FichierImpression root = new FichierImpression();
+		final FichierImpression.Document document = impressionDIPMHelper.buildDocument(declaration);
+		root.getDocument().add(document);
+		final TypeDocumentEditique typeDocument = impressionDIPMHelper.getTypeDocumentEditique(declaration);
+		final String nomDocument = impressionDIPMHelper.getIdDocument(declaration);
+
+		final String description = String.format("Document '%s %d' du contribuable %s",
+		                                         declaration.getTypeDeclaration().getDescription(),
+		                                         declaration.getPeriode().getAnnee(),
+		                                         FormatNumeroHelper.numeroCTBToDisplay(declaration.getTiers().getNumero()));
+
+		return editiqueService.creerDocumentImmediatementSynchroneOuInbox(nomDocument, typeDocument, FormatDocumentEditique.PCL, root, false, description);
 	}
 
 	@Override
@@ -288,6 +312,11 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 		final String description = String.format("Sommation de la déclaration d'impôt %d du contribuable %s", declaration.getPeriode().getAnnee(),
 				FormatNumeroHelper.numeroCTBToDisplay(declaration.getTiers().getNumero()));
 		return editiqueService.creerDocumentImmediatementSynchroneOuInbox(nomDocument, typeDocument, FormatDocumentEditique.PDF, document, true, description);
+	}
+
+	@Override
+	public EditiqueResultat imprimeSommationDIOnline(DeclarationImpotOrdinairePM declaration, RegDate dateEvenement) throws EditiqueException, JMSException {
+		throw new EditiqueException("Partie Editique de la sommation des DI PM à implementer...");
 	}
 
 	/**

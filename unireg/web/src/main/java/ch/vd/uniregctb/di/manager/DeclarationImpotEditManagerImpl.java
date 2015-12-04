@@ -3,15 +3,20 @@ package ch.vd.uniregctb.di.manager;
 import javax.jms.JMSException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.Predicate;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceAware;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,6 +38,7 @@ import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationException;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaireDAO;
+import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePM;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP;
 import ch.vd.uniregctb.declaration.DelaiDeclaration;
 import ch.vd.uniregctb.declaration.DelaiDeclarationDAO;
@@ -56,16 +62,21 @@ import ch.vd.uniregctb.jms.BamMessageSender;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementException;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImposition;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionHelper;
+import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionPersonnesMorales;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionPersonnesPhysiques;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionService;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesMorales;
 import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
+import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.ForGestion;
+import ch.vd.uniregctb.tiers.MenageCommun;
+import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.Tache;
 import ch.vd.uniregctb.tiers.TacheCriteria;
 import ch.vd.uniregctb.tiers.TacheDAO;
-import ch.vd.uniregctb.tiers.TacheEnvoiDeclarationImpotPP;
+import ch.vd.uniregctb.tiers.TacheEnvoiDeclarationImpot;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersService;
@@ -82,7 +93,7 @@ import ch.vd.uniregctb.validation.ValidationService;
  *
  * @author xcifde
  */
-public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditManager, MessageSourceAware {
+public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditManager, MessageSourceAware, InitializingBean {
 
 	protected static final Logger LOGGER = LoggerFactory.getLogger(DeclarationImpotEditManagerImpl.class);
 
@@ -103,13 +114,42 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 	private PeriodeImpositionService periodeImpositionService;
 
 	/**
+	 * Interface pour l'implémentation spécifique à l'impression d'une DI PP ou PM
+	 */
+	private interface DeclarationPrinter {
+		EditiqueResultat imprimeNouvelleDeclaration(Tiers tiers, RegDate dateDebut, RegDate dateFin, TypeDocument typeDocument,
+		                                            TypeAdresseRetour adresseRetour, RegDate delaiAccorde, @Nullable RegDate dateRetour) throws DeclarationException, AssujettissementException;
+		EditiqueResultat imprimeDuplicata(DeclarationImpotOrdinaire di, TypeDocument typeDocument, List<ModeleFeuilleDocumentEditique> annexes) throws DeclarationException;
+	}
+
+	/**
+	 * Interface pour les implémentations spécifique de génération d'une nouvelle déclaration PP ou PM (= uniquement la génération en base, on ne s'occupe pas de l'impression ici)
+	 */
+	private interface DeclarationImpotGenerator {
+		DeclarationImpotOrdinaire creerDeclaration(Tiers tiers, RegDate dateDebut, RegDate dateFin,
+		                                           @Nullable TypeDocument typeDocument, @Nullable TypeAdresseRetour typeAdresseRetour,
+		                                           RegDate delaiAccorde, @Nullable RegDate dateRetour) throws DeclarationException, AssujettissementException;
+	}
+
+	/**
+	 * Interface pour les implémentations spécifiques de génération d'un document de sommation pour les DI PP ou PM
+	 */
+	private interface DeclarationSummoner {
+		EditiqueResultat imprimeSommation(Declaration declaration, RegDate date) throws DeclarationException, EditiqueException, JMSException;
+	}
+
+	private Map<TypeDocument, DeclarationPrinter> printers;
+	private Map<Class<? extends Tiers>, DeclarationImpotGenerator> diGenerators;
+	private Map<Class<? extends Declaration>, DeclarationSummoner> summoners;
+
+	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	public List<PeriodeImposition> calculateRangesProchainesDIs(Long numero) throws ValidationException {
 
 		// on charge le tiers
-		final ContribuableImpositionPersonnesPhysiques contribuable = (ContribuableImpositionPersonnesPhysiques) tiersDAO.get(numero);
+		final Contribuable contribuable = (Contribuable) tiersDAO.get(numero);
 		if (contribuable == null) {
 			throw new TiersNotFoundException(numero);
 		}
@@ -117,7 +157,7 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 		return calculateRangesProchainesDIs(contribuable);
 	}
 
-	protected List<PeriodeImposition> calculateRangesProchainesDIs(final ContribuableImpositionPersonnesPhysiques contribuable) throws ValidationException {
+	protected List<PeriodeImposition> calculateRangesProchainesDIs(final Contribuable contribuable) throws ValidationException {
 
 		// le contribuable doit être valide
 		final ValidationResults results = validationService.validate(contribuable);
@@ -126,7 +166,16 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 		}
 
 		// [UNIREG-879] on limite la plage de création des DIs online à la période 'première période fiscale' -> 'année fiscale courante'
-		final int premiereAnnee = parametres.getPremierePeriodeFiscalePersonnesPhysiques();
+		final int premiereAnnee;
+		if (contribuable instanceof ContribuableImpositionPersonnesPhysiques) {
+			premiereAnnee = parametres.getPremierePeriodeFiscalePersonnesPhysiques();
+		}
+		else if (contribuable instanceof ContribuableImpositionPersonnesMorales) {
+			premiereAnnee = parametres.getPremierePeriodeFiscalePersonnesMorales();
+		}
+		else {
+			return Collections.emptyList();
+		}
 		final int derniereAnnee = RegDate.get().year();
 
 		final List<PeriodeImposition> ranges = new ArrayList<>();
@@ -163,7 +212,7 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 	 * @return une liste de ranges (dans 95% des cas, un seul range), ou <b>null</b> s'il n'y a pas de déclarations à envoyer
 	 * @throws ValidationException
 	 */
-	private List<PeriodeImposition> calculateRangesDIsPourAnnee(final ContribuableImpositionPersonnesPhysiques contribuable, int annee) throws ValidationException {
+	private List<PeriodeImposition> calculateRangesDIsPourAnnee(final Contribuable contribuable, int annee) throws ValidationException {
 
 		// on calcul les périodes d'imposition du contribuable
 		final List<PeriodeImposition> periodes;
@@ -194,7 +243,7 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 				}
 			}
 			if (!match) {
-				periodesNonAssociees.add((PeriodeImpositionPersonnesPhysiques) a);
+				periodesNonAssociees.add(a);
 			}
 		}
 
@@ -202,12 +251,32 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 	}
 
 	@Override
-	public PeriodeImpositionPersonnesPhysiques checkRangeDi(ContribuableImpositionPersonnesPhysiques contribuable, DateRange range) throws ValidationException {
+	public PeriodeImposition checkRangeDi(Contribuable contribuable, DateRange range) throws ValidationException {
+		if (contribuable instanceof ContribuableImpositionPersonnesPhysiques) {
+			return checkRangeDi((ContribuableImpositionPersonnesPhysiques) contribuable, range);
+		}
+		else if (contribuable instanceof ContribuableImpositionPersonnesMorales) {
+			return checkRangeDi((ContribuableImpositionPersonnesMorales) contribuable, range);
+		}
+		else {
+			throw new ValidationException(contribuable, "Aucune période d'imposition supportée pour ce contribuable.");
+		}
+	}
 
+	@Override
+	public PeriodeImpositionPersonnesPhysiques checkRangeDi(ContribuableImpositionPersonnesPhysiques contribuable, DateRange range) throws ValidationException {
 		if (range.getDateDebut().year() != range.getDateFin().year()) {
 			throw new ValidationException(contribuable, "La déclaration doit tenir dans une année complète.");
 		}
+		return checkRangeDi(contribuable, PeriodeImpositionPersonnesPhysiques.class, range);
+	}
 
+	@Override
+	public PeriodeImpositionPersonnesMorales checkRangeDi(ContribuableImpositionPersonnesMorales contribuable, DateRange range) throws ValidationException {
+		return checkRangeDi(contribuable, PeriodeImpositionPersonnesMorales.class, range);
+	}
+
+	private <P extends PeriodeImposition> P checkRangeDi(Contribuable contribuable, Class<P> clazz, DateRange range) throws ValidationException {
 		// le contribuable doit être valide
 		final ValidationResults results = validationService.validate(contribuable);
 		if (results.hasErrors()) {
@@ -219,7 +288,7 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 
 		if (ranges == null || ranges.isEmpty()) {
 			throw new ValidationException(contribuable,
-					"Le contribuable n'est pas assujetti du tout sur l'année " + annee + ", ou son assujettissement pour cette année est déjà couvert par les déclarations émises");
+			                              "Le contribuable n'est pas assujetti du tout sur l'année " + annee + ", ou son assujettissement pour cette année est déjà couvert par les déclarations émises");
 		}
 
 		// on vérifie que la range spécifié correspond parfaitement avec l'assujettissement calculé
@@ -256,63 +325,87 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 		}
 
 		if (declaration != null) {
-			throw new ValidationException(contribuable, "Le contribuable possède déjà une déclaration sur la période spécifiée [" + range
-					+ "].");
+			throw new ValidationException(contribuable, "Le contribuable possède déjà une déclaration sur la période spécifiée [" + range + "].");
 		}
-
-		return (PeriodeImpositionPersonnesPhysiques) elu;
+		if (!clazz.isAssignableFrom(elu.getClass())) {
+			throw new IllegalArgumentException("Mauvais type de période d'imposition calculée sur le contribuable " + contribuable.getNumero() + " : " + elu.getClass().getSimpleName() + " (" + clazz.getSimpleName() + " attendu)");
+		}
+		return (P) elu;
 	}
+
+	@NotNull
+	private DeclarationPrinter getPrinter(TypeDocument typeDocument) throws DeclarationException {
+		final DeclarationPrinter printer = printers.get(typeDocument);
+		if (printer == null) {
+			throw new DeclarationException("Impression d'une déclaration de type " + typeDocument + " non-supportée.");
+		}
+		return printer;
+	}
+
+	@NotNull
+	private DeclarationImpotGenerator getDeclarationImpotGenerator(@NotNull Tiers tiers) throws DeclarationException {
+		final DeclarationImpotGenerator generator = diGenerators.get(tiers.getClass());
+		if (generator == null) {
+			throw new DeclarationException("Génération d'une déclaration d'impôt pour un tiers de type " + tiers.getClass().getSimpleName() + " non-supportée.");
+		}
+		return generator;
+	}
+
+	@NotNull
+	private DeclarationSummoner getDeclarationSummoner(@NotNull Declaration declaration) throws DeclarationException {
+		final DeclarationSummoner summoner = summoners.get(declaration.getClass());
+		if (summoner == null) {
+			throw new DeclarationException("Sommation d'une déclaration de type " + declaration.getClass().getSimpleName() + " non-supportée.");
+		}
+		return summoner;
+	}
+
 	@Override
 	@Transactional(rollbackFor = Throwable.class)
 	public EditiqueResultat envoieImpressionLocalDuplicataDI(Long id, TypeDocument typeDocument, List<ModeleFeuilleDocumentEditique> annexes, boolean saveModele) throws DeclarationException {
-		final DeclarationImpotOrdinairePP declaration = (DeclarationImpotOrdinairePP) diDAO.get(id);
 
-		if (tiersService.getOfficeImpotId(declaration.getTiers()) == null) {
-			throw new DeclarationException("Le contribuable ne possède pas de for de gestion");
-		}
+		final DeclarationImpotOrdinaire declaration = diDAO.get(id);
 
 		final PeriodeFiscale periode = periodeFiscaleDAO.getPeriodeFiscaleByYear(declaration.getPeriode().getAnnee());
 		final ModeleDocument modele = modeleDocumentDAO.getModelePourDeclarationImpotOrdinaire(periode, typeDocument);
-		//SIFISC-8176 On ne sauve le nouveau type de document sur la DI qu'à la demande explicite de l'utilisateur
+
+		// SIFISC-8176 On ne sauve le nouveau type de document sur la DI qu'à la demande explicite de l'utilisateur
 		if (saveModele) {
-
 			declaration.setModeleDocument(modele);
-
 		}
 
-
-		 String messageInfoImpression = String.format("Impression (%s/%s) d'un duplicata de DI (%s) pour le contribuable %d et la période [%s ; %s]",
-				AuthenticationHelper.getCurrentPrincipal(), AuthenticationHelper.getCurrentOIDSigle(), modele.getTypeDocument(), declaration.getTiers().getNumero(),
-				RegDateHelper.dateToDashString(declaration.getDateDebut()), RegDateHelper.dateToDashString(declaration.getDateFin()));
+		String messageInfoImpression = String.format("Impression (%s/%s) d'un duplicata de DI (%s) pour le contribuable %d et la période [%s ; %s]",
+		                                             AuthenticationHelper.getCurrentPrincipal(), AuthenticationHelper.getCurrentOIDSigle(), modele.getTypeDocument(), declaration.getTiers().getNumero(),
+		                                             RegDateHelper.dateToDashString(declaration.getDateDebut()), RegDateHelper.dateToDashString(declaration.getDateFin()));
 
 		if (saveModele) {
 			messageInfoImpression = String.format("%s. Sauvegarde du nouveau type de document sur la DI", messageInfoImpression);
 		}
 		Audit.info(messageInfoImpression);
 
-		return diService.envoiDuplicataDIOnline(declaration, typeDocument, annexes);
+		return getPrinter(typeDocument).imprimeDuplicata(declaration, typeDocument, annexes);
 	}
 
 	@Override
 	@Transactional(rollbackFor = Throwable.class)
-	public EditiqueResultat envoieImpressionLocaleDI(Long ctbId, @Nullable Long id, RegDate dateDebut, RegDate dateFin, TypeDocument typeDocument,
+	public EditiqueResultat envoieImpressionLocaleDI(Long ctbId, RegDate dateDebut, RegDate dateFin, TypeDocument typeDocument,
 	                                                 TypeAdresseRetour adresseRetour, RegDate delaiAccorde, @Nullable RegDate dateRetour) throws Exception {
 		final Tiers tiers = tiersDAO.get(ctbId);
 		if (tiers == null) {
 			throw new ObjectNotFoundException(this.getMessageSource().getMessage("error.contribuable.inexistant", null, WebContextUtils.getDefaultLocale()));
 		}
-		if (!(tiers instanceof ContribuableImpositionPersonnesPhysiques)) {
-			throw new DeclarationException("Le tiers n'est pas soumis au régime des personnes physiques");
+
+		return getPrinter(typeDocument).imprimeNouvelleDeclaration(tiers, dateDebut, dateFin, typeDocument, adresseRetour, delaiAccorde, dateRetour);
+	}
+
+	@Override
+	public void genererDISansImpression(Long ctbId, RegDate dateDebut, RegDate dateFin, RegDate delaiAccorde, @Nullable RegDate dateRetour) throws Exception {
+		final Tiers tiers = tiersDAO.get(ctbId);
+		if (tiers == null) {
+			throw new ObjectNotFoundException(this.getMessageSource().getMessage("error.contribuable.inexistant", null, WebContextUtils.getDefaultLocale()));
 		}
 
-		final ContribuableImpositionPersonnesPhysiques ctb = (ContribuableImpositionPersonnesPhysiques) tiers;
-		if (tiersService.getOfficeImpotId(ctb) == null) {
-			throw new DeclarationException("Le contribuable ne possède pas de for de gestion");
-		}
-
-		final DeclarationImpotOrdinairePP di = creerNouvelleDI(ctb, dateDebut, dateFin, typeDocument, adresseRetour, delaiAccorde, dateRetour);
-		//Envoi du flux xml à l'éditique + envoi d'un événement fiscal
-		return diService.envoiDIOnline(di, RegDate.get());
+		getDeclarationImpotGenerator(tiers).creerDeclaration(tiers, dateDebut, dateFin, null, null, delaiAccorde, dateRetour);
 	}
 
 	@Override
@@ -331,7 +424,7 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 		}
 
 		// quittancement de la DI avec envoi d'événement fiscal
-		diService.quittancementDI((Contribuable) di.getTiers(), di, dateRetour, EtatDeclarationRetournee.SOURCE_WEB, true);
+		diService.quittancementDI(di.getTiers(), di, dateRetour, EtatDeclarationRetournee.SOURCE_WEB, true);
 
 		// Envoi du message de quittance au BAM
 		sendQuittancementToBam(di, dateRetour);
@@ -339,11 +432,10 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 		return di;
 	}
 
-	protected DeclarationImpotOrdinairePP creerNouvelleDI(ContribuableImpositionPersonnesPhysiques ctb, RegDate dateDebut, RegDate dateFin, TypeDocument typeDocument, TypeAdresseRetour typeAdresseRetour,
-	                                                    RegDate delaiAccorde, @Nullable RegDate dateRetour) throws AssujettissementException {
-		DeclarationImpotOrdinairePP di = new DeclarationImpotOrdinairePP();
+	private <T extends DeclarationImpotOrdinaire> T creerNouvelleDI(Contribuable ctb, T di, RegDate dateDebut, RegDate dateFin, @Nullable TypeDocument typeDocument, @Nullable TypeAdresseRetour typeAdresseRetour,
+	                                                                RegDate delaiAccorde, @Nullable RegDate dateRetour, TypeTache typeTacheEnvoi) throws AssujettissementException {
 
-		// [SIFISC-1227] ce numéro de séquence ne doit pas être assigné, ainsi il sera re-calculé dans la méthode {@link TiersService#addAndSave(Tiers, Declaration)}
+		// [SIFISC-1227] le numéro de séquence ne doit pas être assigné, ainsi il sera re-calculé dans la méthode {@link TiersService#addAndSave(Tiers, Declaration)}
 		// di.setNumero(1);
 
 		di.setDateDebut(dateDebut);
@@ -351,14 +443,14 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 
 		final TypeContribuable typeContribuable;
 		final boolean diLibre;
-		final List<PeriodeImposition> periodesImposition = periodeImpositionService.determine(ctb, dateDebut.year());
+		final List<PeriodeImposition> periodesImposition = periodeImpositionService.determine(ctb, dateFin.year());
 		if (periodesImposition != null) {
 			final PeriodeImposition dernierePeriode = periodesImposition.get(periodesImposition.size() - 1);
 			typeContribuable = dernierePeriode.getTypeContribuable();
 
 			// une DI est libre si je ne trouve aucune période d'assujettissement qui colle avec les dates de la DI elle-même
 			// (il faut quand-même accessoirement qu'elle soit créée sur la période fiscale courante)
-			if (dateDebut.year() == RegDate.get().year()) {
+			if (dateFin.year() == RegDate.get().year()) {
 				boolean trouveMatch = false;
 				for (PeriodeImposition p : periodesImposition) {
 					trouveMatch = DateRangeHelper.equals(p, di);
@@ -381,24 +473,16 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 		di.setTypeContribuable(typeContribuable);
 		di.setLibre(diLibre);
 
-		// [SIFISC-4923] il faut prendre le dernier for de gestion connu (car il arrive qu'il n'y en ait plus de connu
-		// à la date précise demandée, par exemple dans le cas du ctb HC qui vend son dernier immeuble dans l'année).
-		final ForGestion forGestion = tiersService.getDernierForGestionConnu(ctb, di.getDateFin());
-		if (forGestion != null) {
-			di.setNumeroOfsForGestion(forGestion.getNoOfsCommune());
-		}
-		else {
-			throw new ActionException("le contribuable ne possède pas de for de gestion au " + di.getDateFin());
-		}
-
-		final PeriodeFiscale periode = periodeFiscaleDAO.getPeriodeFiscaleByYear(dateDebut.year());
+		final PeriodeFiscale periode = periodeFiscaleDAO.getPeriodeFiscaleByYear(dateFin.year());
 		if (periode == null) {
-			throw new ActionException("la période fiscale pour l'année " + dateDebut.year() + " n'existe pas.");
+			throw new ActionException("la période fiscale pour l'année " + dateFin.year() + " n'existe pas.");
 		}
 		di.setPeriode(periode);
 
 		// assigne le modèle de document à la DI en fonction de ce que contient la vue
-		assigneModeleDocument(di, typeDocument);
+		if (typeDocument != null) {
+			assigneModeleDocument(di, typeDocument);
+		}
 
 		final ch.vd.uniregctb.tiers.CollectiviteAdministrative collectiviteAdministrative;
 		if (typeAdresseRetour == TypeAdresseRetour.ACI) {
@@ -415,15 +499,6 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 			collectiviteAdministrative = tiersService.getCollectiviteAdministrative(officeImpot);
 		}
 		di.setRetourCollectiviteAdministrativeId(collectiviteAdministrative.getId());
-
-		final Integer codeSegment = PeriodeImpositionHelper.determineCodeSegment(ctb, di.getDateFin().year());
-		if (codeSegment == null && periode.getAnnee() >= DeclarationImpotOrdinairePP.PREMIERE_ANNEE_RETOUR_ELECTRONIQUE) {
-			di.setCodeSegment(DeclarationImpotService.VALEUR_DEFAUT_CODE_SEGMENT);
-		}
-		else {
-			di.setCodeSegment(codeSegment);
-		}
-
 
 		final EtatDeclaration emission = new EtatDeclarationEmise(RegDate.get());
 		di.addEtat(emission);
@@ -442,26 +517,61 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 		delai.setDateDemande(RegDate.get());
 		delai.setDateTraitement(RegDate.get());
 		di.addDelai(delai);
+		di.setDelaiRetourImprime(delaiAccorde);     // pour les DI envoyées manuellement, il y a égalité des délais imprimés et effectifs
 
 		// persistence du lien entre le contribuable et la nouvelle DI
-		di = (DeclarationImpotOrdinairePP) tiersDAO.addAndSave(ctb, di);
+		di = (T) tiersDAO.addAndSave(ctb, di);
 
 		//Mise à jour de l'état de la tâche si il y en a une
 		final TacheCriteria criterion = new TacheCriteria();
-		criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpotPP);
+		criterion.setTypeTache(typeTacheEnvoi);
 		criterion.setAnnee(dateDebut.year());
 		criterion.setEtatTache(TypeEtatTache.EN_INSTANCE);
 		criterion.setContribuable(ctb);
 		final List<Tache> taches = tacheDAO.find(criterion);
 		if (taches != null && !taches.isEmpty()) {
 			for (Tache t : taches) {
-				final TacheEnvoiDeclarationImpotPP tache = (TacheEnvoiDeclarationImpotPP) t;
+				final TacheEnvoiDeclarationImpot tache = (TacheEnvoiDeclarationImpot) t;
 				if (tache.getDateDebut().equals(di.getDateDebut()) && tache.getDateFin().equals(di.getDateFin())) {
 					tache.setEtat(TypeEtatTache.TRAITE);
 				}
 			}
 		}
 		return di;
+	}
+
+	protected DeclarationImpotOrdinairePM creerNouvelleDI(ContribuableImpositionPersonnesMorales ctb, RegDate dateDebut, RegDate dateFin, @Nullable TypeDocument typeDocument, @Nullable TypeAdresseRetour typeAdresseRetour,
+	                                                      RegDate delaiAccorde, @Nullable RegDate dateRetour) throws AssujettissementException {
+
+		final DeclarationImpotOrdinairePM di = new DeclarationImpotOrdinairePM();
+		return creerNouvelleDI(ctb, di, dateDebut, dateFin, typeDocument, typeAdresseRetour, delaiAccorde, dateRetour, TypeTache.TacheEnvoiDeclarationImpotPM);
+
+	}
+
+	protected DeclarationImpotOrdinairePP creerNouvelleDI(ContribuableImpositionPersonnesPhysiques ctb, RegDate dateDebut, RegDate dateFin, @Nullable TypeDocument typeDocument, @Nullable TypeAdresseRetour typeAdresseRetour,
+	                                                    RegDate delaiAccorde, @Nullable RegDate dateRetour) throws AssujettissementException {
+
+		final DeclarationImpotOrdinairePP di = new DeclarationImpotOrdinairePP();
+
+		// [SIFISC-4923] il faut prendre le dernier for de gestion connu (car il arrive qu'il n'y en ait plus de connu
+		// à la date précise demandée, par exemple dans le cas du ctb HC qui vend son dernier immeuble dans l'année).
+		final ForGestion forGestion = tiersService.getDernierForGestionConnu(ctb, dateFin);
+		if (forGestion != null) {
+			di.setNumeroOfsForGestion(forGestion.getNoOfsCommune());
+		}
+		else {
+			throw new ActionException("le contribuable ne possède pas de for de gestion au " + dateFin);
+		}
+
+		final Integer codeSegment = PeriodeImpositionHelper.determineCodeSegment(ctb, dateFin.year());
+		if (codeSegment == null && dateFin.year() >= DeclarationImpotOrdinairePP.PREMIERE_ANNEE_RETOUR_ELECTRONIQUE) {
+			di.setCodeSegment(DeclarationImpotService.VALEUR_DEFAUT_CODE_SEGMENT);
+		}
+		else {
+			di.setCodeSegment(codeSegment);
+		}
+
+		return creerNouvelleDI(ctb, di, dateDebut, dateFin, typeDocument, typeAdresseRetour, delaiAccorde, dateRetour, TypeTache.TacheEnvoiDeclarationImpotPP);
 	}
 
 	private void sendQuittancementToBam(DeclarationImpotOrdinaire di, RegDate dateQuittancement) {
@@ -521,16 +631,15 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 	 */
 	@Override
 	@Transactional(rollbackFor = Throwable.class)
-	public EditiqueResultat envoieImpressionLocalSommationDI(Long id) throws EditiqueException {
+	public EditiqueResultat envoieImpressionLocalSommationDI(Long id) throws EditiqueException, DeclarationException {
 
 		final RegDate dateDuJour = RegDate.get();
-		final DeclarationImpotOrdinairePP di = (DeclarationImpotOrdinairePP) diDAO.get(id);
+		final DeclarationImpotOrdinaire di = diDAO.get(id);
 		final EtatDeclarationSommee etat = new EtatDeclarationSommee(dateDuJour, dateDuJour);
 		di.addEtat(etat);
-		diDAO.save(di);
 
 		try {
-			final EditiqueResultat resultat = editiqueCompositionService.imprimeSommationDIOnline(di, dateDuJour);
+			final EditiqueResultat resultat = getDeclarationSummoner(di).imprimeSommation(di, dateDuJour);
 			evenementFiscalService.publierEvenementFiscalSommationDeclarationImpot(di, etat.getDateObtention());
 			return resultat;
 		}
@@ -635,5 +744,158 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setPeriodeImpositionService(PeriodeImpositionService periodeImpositionService) {
 		this.periodeImpositionService = periodeImpositionService;
+	}
+
+	/**
+	 * Génération d'une déclaration d'impôt PP
+	 */
+	private class DeclarationImpotPersonnesPhysiquesGenerator implements DeclarationImpotGenerator {
+		@Override
+		public DeclarationImpotOrdinairePP creerDeclaration(Tiers tiers, RegDate dateDebut, RegDate dateFin,
+		                                                    @Nullable TypeDocument typeDocument, @Nullable TypeAdresseRetour adresseRetour,
+		                                                    RegDate delaiAccorde, @Nullable RegDate dateRetour) throws DeclarationException, AssujettissementException {
+
+			if (!(tiers instanceof ContribuableImpositionPersonnesPhysiques)) {
+				throw new DeclarationException("Le tiers n'est pas soumis au régime des personnes physiques");
+			}
+
+			return creerNouvelleDI((ContribuableImpositionPersonnesPhysiques) tiers, dateDebut, dateFin, typeDocument, adresseRetour, delaiAccorde, dateRetour);
+		}
+	}
+
+	/**
+	 * Génération d'une déclaration d'impôt PM
+	 */
+	private class DeclarationImpotPersonnesMoralesGenerator implements DeclarationImpotGenerator {
+		@Override
+		public DeclarationImpotOrdinairePM creerDeclaration(Tiers tiers, RegDate dateDebut, RegDate dateFin,
+		                                                    @Nullable TypeDocument typeDocument, @Nullable TypeAdresseRetour adresseRetour,
+		                                                    RegDate delaiAccorde, @Nullable RegDate dateRetour) throws DeclarationException, AssujettissementException {
+
+			if (!(tiers instanceof ContribuableImpositionPersonnesMorales)) {
+				throw new DeclarationException("Le tiers n'est pas soumis au régime des personnes morales");
+			}
+
+			return creerNouvelleDI((ContribuableImpositionPersonnesMorales) tiers, dateDebut, dateFin, typeDocument, adresseRetour, delaiAccorde, dateRetour);
+		}
+	}
+
+	/**
+	 * Impression des déclarations d'impôt PP
+	 */
+	private class DeclarationImpotPersonnesPhysiquesPrinter implements DeclarationPrinter {
+
+		private final DeclarationImpotPersonnesPhysiquesGenerator diGenerator;
+
+		public DeclarationImpotPersonnesPhysiquesPrinter(DeclarationImpotPersonnesPhysiquesGenerator diGenerator) {
+			this.diGenerator = diGenerator;
+		}
+
+		@Override
+		public EditiqueResultat imprimeNouvelleDeclaration(Tiers tiers, RegDate dateDebut, RegDate dateFin, TypeDocument typeDocument, TypeAdresseRetour adresseRetour, RegDate delaiAccorde, @Nullable RegDate dateRetour) throws DeclarationException, AssujettissementException {
+			if (tiersService.getOfficeImpotId(tiers) == null) {
+				throw new DeclarationException("Le contribuable ne possède pas de for de gestion");
+			}
+
+			final DeclarationImpotOrdinairePP di = diGenerator.creerDeclaration(tiers, dateDebut, dateFin, typeDocument, adresseRetour, delaiAccorde, dateRetour);
+			//Envoi du flux xml à l'éditique + envoi d'un événement fiscal
+			return diService.envoiDIOnline(di, RegDate.get());
+		}
+
+		@Override
+		public EditiqueResultat imprimeDuplicata(DeclarationImpotOrdinaire declaration, TypeDocument typeDocument, List<ModeleFeuilleDocumentEditique> annexes) throws DeclarationException {
+			if (!(declaration instanceof DeclarationImpotOrdinairePP)) {
+				throw new DeclarationException("La déclaration n'est pas une déclaration associée aux personnes physiques");
+			}
+
+			if (tiersService.getOfficeImpotId(declaration.getTiers()) == null) {
+				throw new DeclarationException("Le contribuable ne possède pas de for de gestion");
+			}
+
+			return diService.envoiDuplicataDIOnline((DeclarationImpotOrdinairePP) declaration, typeDocument, annexes);
+		}
+	}
+
+	/**
+	 * Impression des déclarations d'impôt PM
+	 */
+	private class DeclarationImpotPersonnesMoralesPrinter implements DeclarationPrinter {
+
+		private final DeclarationImpotPersonnesMoralesGenerator diGenerator;
+
+		public DeclarationImpotPersonnesMoralesPrinter(DeclarationImpotPersonnesMoralesGenerator diGenerator) {
+			this.diGenerator = diGenerator;
+		}
+
+		@Override
+		public EditiqueResultat imprimeNouvelleDeclaration(Tiers tiers, RegDate dateDebut, RegDate dateFin, TypeDocument typeDocument, TypeAdresseRetour adresseRetour, RegDate delaiAccorde, @Nullable RegDate dateRetour) throws DeclarationException, AssujettissementException {
+			final DeclarationImpotOrdinairePM di = diGenerator.creerDeclaration(tiers, dateDebut, dateFin, typeDocument, adresseRetour, delaiAccorde, dateRetour);
+			//Envoi du flux xml à l'éditique + envoi d'un événement fiscal
+			return diService.envoiDIOnline(di, RegDate.get());
+		}
+
+		@Override
+		public EditiqueResultat imprimeDuplicata(DeclarationImpotOrdinaire declaration, TypeDocument typeDocument, List<ModeleFeuilleDocumentEditique> annexes) throws DeclarationException {
+			if (!(declaration instanceof DeclarationImpotOrdinairePM)) {
+				throw new DeclarationException("La déclaration n'est pas une déclaration associée aux personnes morales");
+			}
+			return diService.envoiDuplicataDIOnline((DeclarationImpotOrdinairePM) declaration);
+		}
+	}
+
+	/**
+	 * Sommation des déclarations d'impôt PP
+	 */
+	private class DeclarationImpotPersonnesPhysiquesSummoner implements DeclarationSummoner {
+		@Override
+		public EditiqueResultat imprimeSommation(Declaration declaration, RegDate date) throws DeclarationException, EditiqueException, JMSException {
+			if (!(declaration instanceof DeclarationImpotOrdinairePP)) {
+				throw new DeclarationException("Cette déclaration n'est pas une déclaration d'impôt de personne physique.");
+			}
+			return editiqueCompositionService.imprimeSommationDIOnline((DeclarationImpotOrdinairePP) declaration, date);
+		}
+	}
+
+	/**
+	 * Sommation des déclaration d'impôt PM
+	 */
+	private class DeclarationImpotPersonnesMoralesSummoner implements DeclarationSummoner {
+		@Override
+		public EditiqueResultat imprimeSommation(Declaration declaration, RegDate date) throws DeclarationException, EditiqueException, JMSException {
+			if (!(declaration instanceof DeclarationImpotOrdinairePM)) {
+				throw new DeclarationException("Cette déclaration n'est pas une déclaration d'impôt de personne morales.");
+			}
+			return editiqueCompositionService.imprimeSommationDIOnline((DeclarationImpotOrdinairePM) declaration, date);
+		}
+	}
+
+	@Override
+	public void afterPropertiesSet() throws Exception {
+
+		final DeclarationImpotPersonnesPhysiquesGenerator ppGenerator = new DeclarationImpotPersonnesPhysiquesGenerator();
+		final DeclarationImpotPersonnesMoralesGenerator pmGenerator = new DeclarationImpotPersonnesMoralesGenerator();
+
+		final DeclarationPrinter ppPrinter = new DeclarationImpotPersonnesPhysiquesPrinter(ppGenerator);
+		final DeclarationPrinter pmPrinter = new DeclarationImpotPersonnesMoralesPrinter(pmGenerator);
+
+		this.printers = new EnumMap<>(TypeDocument.class);
+		this.printers.put(TypeDocument.DECLARATION_IMPOT_APM, pmPrinter);
+		this.printers.put(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, ppPrinter);
+		this.printers.put(TypeDocument.DECLARATION_IMPOT_COMPLETE_LOCAL, ppPrinter);
+		this.printers.put(TypeDocument.DECLARATION_IMPOT_DEPENSE, ppPrinter);
+		this.printers.put(TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, ppPrinter);
+		this.printers.put(TypeDocument.DECLARATION_IMPOT_PM, pmPrinter);
+		this.printers.put(TypeDocument.DECLARATION_IMPOT_VAUDTAX, ppPrinter);
+
+		this.diGenerators = new HashMap<>(3);
+		this.diGenerators.put(PersonnePhysique.class, ppGenerator);
+		this.diGenerators.put(MenageCommun.class, ppGenerator);
+		this.diGenerators.put(Entreprise.class, pmGenerator);
+
+		final DeclarationSummoner ppSummoner = new DeclarationImpotPersonnesPhysiquesSummoner();
+		final DeclarationSummoner pmSummoner = new DeclarationImpotPersonnesMoralesSummoner();
+		this.summoners = new HashMap<>(2);
+		this.summoners.put(DeclarationImpotOrdinairePP.class, ppSummoner);
+		this.summoners.put(DeclarationImpotOrdinairePM.class, pmSummoner);
 	}
 }

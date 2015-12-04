@@ -11,6 +11,8 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.Annulable;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
+import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePM;
+import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP;
 import ch.vd.uniregctb.declaration.DelaiDeclaration;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
 import ch.vd.uniregctb.declaration.EtatDeclarationRetournee;
@@ -24,21 +26,23 @@ import ch.vd.uniregctb.utils.WebContextUtils;
 @SuppressWarnings("UnusedDeclaration")
 public class DeclarationView implements Annulable {
 
-	private long id;
-	private Long tiersId;
-	private String codeControle;
-	private int periodeFiscale;
-	private RegDate dateDebut;
-	private RegDate dateFin;
-	private RegDate delaiAccorde;
-	private RegDate dateRetour;
-	private TypeEtatDeclaration etat;
-	private String sourceRetour;
-	private boolean annule;
-	private TypeDocument typeDocument;
-	private String typeDocumentMessage;
-	private List<DelaiDeclarationView> delais;
-	private List<EtatDeclarationView> etats;
+	private final long id;
+	private final Long tiersId;
+	private final String codeControle;
+	private final int periodeFiscale;
+	private final RegDate dateDebut;
+	private final RegDate dateFin;
+	private final RegDate delaiAccorde;
+	private final RegDate dateRetour;
+	private final TypeEtatDeclaration etat;
+	private final String sourceRetour;
+	private final boolean annule;
+	private final TypeDocument typeDocument;
+	private final String typeDocumentMessage;
+	private final List<DelaiDeclarationView> delais;
+	private final List<EtatDeclarationView> etats;
+	private final boolean diPP;
+	private final boolean diPM;
 
 	public DeclarationView(Declaration decl, MessageSource messageSource) {
 		this.id = decl.getId();
@@ -54,6 +58,9 @@ public class DeclarationView implements Annulable {
 		if (etat instanceof EtatDeclarationRetournee) {
 			this.sourceRetour = ((EtatDeclarationRetournee) etat).getSource();
 		}
+		else {
+			this.sourceRetour = null;
+		}
 
 		this.annule = decl.isAnnule();
 		if (decl instanceof DeclarationImpotOrdinaire) {
@@ -63,10 +70,21 @@ public class DeclarationView implements Annulable {
 			if (this.typeDocument != null) {
 				this.typeDocumentMessage = messageSource.getMessage("option.type.document." + this.typeDocument.name(), null, WebContextUtils.getDefaultLocale());
 			}
+			else {
+				this.typeDocumentMessage = null;
+			}
+		}
+		else {
+			this.codeControle = null;
+			this.typeDocument = null;
+			this.typeDocumentMessage = null;
 		}
 
 		this.delais = initDelais(decl.getDelais(), decl.getPremierDelai());
 		this.etats = initEtats(decl.getEtats(), messageSource);
+
+		this.diPP = decl instanceof DeclarationImpotOrdinairePP;
+		this.diPM = decl instanceof DeclarationImpotOrdinairePM;
 	}
 
 	private static List<DelaiDeclarationView> initDelais(Set<DelaiDeclaration> delais, RegDate premierDelai) {
@@ -148,5 +166,13 @@ public class DeclarationView implements Annulable {
 	@Override
 	public boolean isAnnule() {
 		return annule;
+	}
+
+	public boolean isDiPP() {
+		return diPP;
+	}
+
+	public boolean isDiPM() {
+		return diPM;
 	}
 }

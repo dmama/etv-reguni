@@ -31,12 +31,22 @@ public class MockEditiqueCompositionService implements EditiqueCompositionServic
 		return dummyResultat();
 	}
 
+	@Override
+	public EditiqueResultat imprimeDIOnline(DeclarationImpotOrdinairePM declaration) throws EditiqueException, JMSException {
+		return dummyResultat();
+	}
+
 	private static EditiqueResultat dummyResultat() {
 		return new EditiqueResultatDocumentImpl("DUMMY", MimeTypeHelper.MIME_PLAINTEXT, null, "Ceci est un test".getBytes());
 	}
 
 	@Override
 	public EditiqueResultat imprimeDuplicataDIOnline(DeclarationImpotOrdinairePP declaration, TypeDocument typeDocument, List<ModeleFeuilleDocumentEditique> annexes) throws EditiqueException, JMSException {
+		return dummyResultat();
+	}
+
+	@Override
+	public EditiqueResultat imprimeDuplicataDIOnline(DeclarationImpotOrdinairePM declaration) throws EditiqueException, JMSException {
 		return dummyResultat();
 	}
 
@@ -67,6 +77,11 @@ public class MockEditiqueCompositionService implements EditiqueCompositionServic
 
 	@Override
 	public EditiqueResultat imprimeSommationDIOnline(DeclarationImpotOrdinairePP declaration, RegDate dateEvenement) throws EditiqueException, JMSException {
+		return dummyResultat();
+	}
+
+	@Override
+	public EditiqueResultat imprimeSommationDIOnline(DeclarationImpotOrdinairePM declaration, RegDate dateEvenement) throws EditiqueException, JMSException {
 		return dummyResultat();
 	}
 

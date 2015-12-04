@@ -20,7 +20,7 @@ import ch.vd.uniregctb.di.view.DeclarationListView;
 import ch.vd.uniregctb.di.view.EditerDeclarationImpotView;
 import ch.vd.uniregctb.di.view.ImprimerDuplicataDeclarationImpotView;
 import ch.vd.uniregctb.di.view.ImprimerNouvelleDeclarationImpotView;
-import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
+import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.type.TypeDocument;
@@ -85,12 +85,12 @@ public class DeclarationImpotControllerValidator implements Validator {
 			return;
 		}
 
-		if (!(tiers instanceof ContribuableImpositionPersonnesPhysiques)) {
+		if (!(tiers instanceof Contribuable)) {
 			errors.reject("error.tiers.doit.etre.contribuable");
 			return;
 		}
 
-		final ContribuableImpositionPersonnesPhysiques ctb = (ContribuableImpositionPersonnesPhysiques) tiers;
+		final Contribuable ctb = (Contribuable) tiers;
 
 		if (view.getDateDebutPeriodeImposition() == null) {
 			errors.rejectValue("dateDebutPeriodeImposition", "error.date.debut.vide");
@@ -155,13 +155,15 @@ public class DeclarationImpotControllerValidator implements Validator {
 			}
 		}
 
-		final TypeDocument typeDocument = view.getTypeDocument();
-		if (typeDocument == null) {
-			errors.rejectValue("typeDocument", "error.type.document.vide");
-		}
-		else if (di.getTypeDeclaration() != typeDocument) { // [SIFISC-7486] on ne vérifie le type de document que s'il est différent
-			if (typeDocument != TypeDocument.DECLARATION_IMPOT_COMPLETE_LOCAL && typeDocument != TypeDocument.DECLARATION_IMPOT_VAUDTAX) {
-				errors.rejectValue("typeDocument", "error.type.document.invalide");
+		if (view.isTypeDocumentEditable()) {
+			final TypeDocument typeDocument = view.getTypeDocument();
+			if (typeDocument == null) {
+				errors.rejectValue("typeDocument", "error.type.document.vide");
+			}
+			else if (di.getTypeDeclaration() != typeDocument) { // [SIFISC-7486] on ne vérifie le type de document que s'il est différent
+				if (typeDocument != TypeDocument.DECLARATION_IMPOT_COMPLETE_LOCAL && typeDocument != TypeDocument.DECLARATION_IMPOT_VAUDTAX) {
+					errors.rejectValue("typeDocument", "error.type.document.invalide");
+				}
 			}
 		}
 	}

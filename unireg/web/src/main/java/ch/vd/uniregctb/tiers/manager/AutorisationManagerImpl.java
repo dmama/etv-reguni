@@ -22,6 +22,7 @@ import ch.vd.uniregctb.security.SecurityProviderInterface;
 import ch.vd.uniregctb.tiers.AutreCommunaute;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesMorales;
 import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
@@ -453,12 +454,18 @@ public class AutorisationManagerImpl implements AutorisationManager {
 					map.put(FISCAL_SIT_FAMILLLE, Boolean.TRUE);
 				}
 			}
-			if (SecurityHelper.isAnyGranted(securityProvider, visa, oid,  Role.DI_EMIS_PP, Role.DI_DELAI_PM, Role.DI_DUPLIC_PP, Role.DI_QUIT_PP, Role.DI_SOM_PP)) {
+			if (SecurityHelper.isAnyGranted(securityProvider, visa, oid,  Role.DI_EMIS_PP, Role.DI_DELAI_PP, Role.DI_DUPLIC_PP, Role.DI_QUIT_PP, Role.DI_SOM_PP)) {
 				map.put(MODIF_DI, Boolean.TRUE);
 			}
 
 			if (SecurityHelper.isGranted(securityProvider,Role.GEST_DECISION_ACI,visa,oid)) {
 				map.put(FISCAL_DECISION_ACI, Boolean.TRUE);
+			}
+		}
+
+		if (tiers instanceof ContribuableImpositionPersonnesMorales) {
+			if (SecurityHelper.isAnyGranted(securityProvider, visa, oid,  Role.DI_EMIS_PM, Role.DI_DELAI_PM, Role.DI_DUPLIC_PM, Role.DI_QUIT_PM, Role.DI_SOM_PM)) {
+				map.put(MODIF_DI, Boolean.TRUE);
 			}
 		}
 

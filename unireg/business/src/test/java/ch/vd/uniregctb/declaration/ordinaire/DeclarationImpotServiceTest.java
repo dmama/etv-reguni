@@ -423,8 +423,9 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 				final Contribuable eric = hibernateTemplate.get(Contribuable.class, ids.ericId); // ordinaire
 				final RegDate dateEvenement = date(2007, 5, 12);
 				assertTrue(eric.getDeclarationsForPeriode(2006, false).size() == 1);
-				DeclarationImpotOrdinaire di = (DeclarationImpotOrdinaire) eric.getDeclarationsForPeriode(2006, false).get(0);
-				assertNotNull(service.quittancementDI(eric, di, dateEvenement, "TEST", false));
+				final DeclarationImpotOrdinaire di = (DeclarationImpotOrdinaire) eric.getDeclarationsForPeriode(2006, false).get(0);
+				assertNotNull(di);
+				service.quittancementDI(eric, di, dateEvenement, "TEST", false);
 				return null;
 			}
 		});
@@ -457,8 +458,9 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 				final Contribuable eric = hibernateTemplate.get(Contribuable.class, ids.ericId); // ordinaire
 				final RegDate dateEvenement = date(2007, 8, 8);
 				assertTrue(eric.getDeclarationsForPeriode(2006, false).size() == 1);
-				DeclarationImpotOrdinaire di = (DeclarationImpotOrdinaire) eric.getDeclarationsForPeriode(2006, false).get(0);
-				assertNotNull(service.quittancementDI(eric, di, dateEvenement, "TEST2", false));
+				final DeclarationImpotOrdinaire di = (DeclarationImpotOrdinaire) eric.getDeclarationsForPeriode(2006, false).get(0);
+				assertNotNull(di);
+				service.quittancementDI(eric, di, dateEvenement, "TEST2", false);
 				return null;
 			}
 		});
@@ -2046,7 +2048,8 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 				final Contribuable eric = hibernateTemplate.get(Contribuable.class, ids.ericId); // ordinaire
 				assertTrue(eric.getDeclarationsForPeriode(2006, false).size() == 1);
 				final DeclarationImpotOrdinaire di = (DeclarationImpotOrdinaire) eric.getDeclarationsForPeriode(2006, false).get(0);
-				assertNotNull(service.quittancementDI(eric, di, date(2007, 5, 12), "TEST0", true));
+				assertNotNull(di);
+				service.quittancementDI(eric, di, date(2007, 5, 12), "TEST0", true);
 				return null;
 			}
 		});
@@ -2088,7 +2091,8 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 				final Contribuable eric = hibernateTemplate.get(Contribuable.class, ids.ericId); // ordinaire
 				assertTrue(eric.getDeclarationsForPeriode(2006, false).size() == 1);
 				final DeclarationImpotOrdinaire di = (DeclarationImpotOrdinaire) eric.getDeclarationsForPeriode(2006, false).get(0);
-				assertNotNull(service.quittancementDI(eric, di, date(2007, 10, 28), "TEST1", true));
+				assertNotNull(di);
+				service.quittancementDI(eric, di, date(2007, 10, 28), "TEST1", true);
 				return null;
 			}
 		});
@@ -2177,7 +2181,8 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 				final Contribuable eric = hibernateTemplate.get(Contribuable.class, ids.ericId);
 				assertTrue(eric.getDeclarationsForPeriode(2006, false).size() == 1);
 				final DeclarationImpotOrdinaire di = (DeclarationImpotOrdinaire) eric.getDeclarationsForPeriode(2006, false).get(0);
-				assertNotNull(service.quittancementDI(eric, di, date(2007, 5, 12), SOURCE, true));
+				assertNotNull(di);
+				service.quittancementDI(eric, di, date(2007, 5, 12), SOURCE, true);
 				return null;
 			}
 		});
@@ -2219,7 +2224,8 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 				final Contribuable eric = hibernateTemplate.get(Contribuable.class, ids.ericId);
 				assertTrue(eric.getDeclarationsForPeriode(2006, false).size() == 1);
 				final DeclarationImpotOrdinaire di = (DeclarationImpotOrdinaire) eric.getDeclarationsForPeriode(2006, false).get(0);
-				assertNotNull(service.quittancementDI(eric, di, date(2007, 10, 25), "TEST", true));
+				assertNotNull(di);
+				service.quittancementDI(eric, di, date(2007, 10, 25), "TEST", true);
 				return null;
 			}
 		});
@@ -2231,7 +2237,8 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 				final Contribuable eric = hibernateTemplate.get(Contribuable.class, ids.ericId);
 				assertTrue(eric.getDeclarationsForPeriode(2006, false).size() == 1);
 				final DeclarationImpotOrdinaire di = (DeclarationImpotOrdinaire) eric.getDeclarationsForPeriode(2006, false).get(0);
-				assertNotNull(service.quittancementDI(eric, di, date(2007, 10, 28), SOURCE, true));
+				assertNotNull(di);
+				service.quittancementDI(eric, di, date(2007, 10, 28), SOURCE, true);
 				return null;
 			}
 		});

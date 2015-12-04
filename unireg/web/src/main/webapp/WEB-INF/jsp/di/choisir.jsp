@@ -41,7 +41,7 @@
 					return false;
 				}
 				var dates = selection.split('-');
-				window.location.href='<c:url value="/di/imprimer.do?tiersId=${tiersId}"/>&debut=' + dates[0] + '&fin=' + dates[1];
+				window.location.href='<c:url value="/di/${actionImpression}.do?tiersId=${tiersId}"/>&debut=' + dates[0] + '&fin=' + dates[1];
 				return false;
 			}
 		</script>

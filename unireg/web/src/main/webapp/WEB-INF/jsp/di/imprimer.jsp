@@ -17,6 +17,7 @@
 		<input type="hidden" name="periodeFiscale" value="${command.periodeFiscale}"/>
 		<input type="hidden" name="depuisTache" value="${command.depuisTache}"/>
 		<input type="hidden" name="dateRetourProposeeCarDeclarationRetourneeAnnuleeExiste" value="${command.dateRetourProposeeCarDeclarationRetourneeAnnuleeExiste}"/>
+		<input type="hidden" name="typeContribuable" value="${command.typeContribuable}"/>
 
 		<c:if test="${command.periodeFiscale != null}">
 
@@ -67,8 +68,16 @@
 					<tr class="<unireg:nextRowClass/>" >
 						<td width="25%"><fmt:message key="label.type.declaration" />&nbsp;:</td>
 						<td width="25%">
-							<%--@elvariable id="typesDeclarationImpot" type="java.util.Map<TypeDocument, String>"--%>
-							<form:select path="typeDocument" items="${typesDeclarationImpot}" />
+							<c:choose>
+								<c:when test="${command.typeContribuable == 'PP'}">
+									<%--@elvariable id="typesDeclarationImpot" type="java.util.Map<TypeDocument, String>"--%>
+									<form:select path="typeDocument" items="${typesDeclarationImpot}" />
+								</c:when>
+								<c:otherwise>
+									<c:if test="${command.typeDocument != null}"><fmt:message key="option.type.document.${command.typeDocument}"/></c:if>
+									<input type="hidden" name="typeDocument" value="${command.typeDocument}"/>
+								</c:otherwise>
+							</c:choose>
 						</td>
 						<td width="25%"><fmt:message key="label.date.delai.accorde" />&nbsp;:</td>
 						<td width="25%">
@@ -114,8 +123,18 @@
 			<unireg:buttonTo name="Retour" action="/tache/list.do" method="get" />
 		</c:if>
 
-		<input type="button" name="imprimerDI" <c:if test="${!command.imprimable}">disabled="disabled"</c:if>
-		       value="<fmt:message key="label.bouton.imprimer" />" onclick="return Page_ImprimerDI(this);" />
+		<c:choose>
+			<c:when test="${command.imprimable}">
+				<input type="button" name="imprimerDI" value="<fmt:message key="label.bouton.imprimer"/>" onclick="return Page_ImprimerDI(this);"/>
+			</c:when>
+			<c:when test="${command.generableNonImprimable}">
+				<input type="button" name="genererDI" value="<fmt:message key="label.bouton.sauver.sans.imprimer"/>" onclick="return Page_ImprimerDI(this);"/>
+			</c:when>
+			<c:otherwise>
+				<input type="button" disabled="disabled" value="<fmt:message key="label.bouton.imprimer"/>"/>
+			</c:otherwise>
+		</c:choose>
+
 		<!-- Fin Boutons -->
 
 	</form:form>
@@ -141,12 +160,13 @@
 			}
 			
 		 	function Page_ImprimerDI(button) {
-				 $('span.error').hide(); // on cache d'éventuelles erreurs datant d'un ancien submit
-				 Modifier.isModified = false; // du moment qu'on imprie la DI, les valeurs saisies ont été prises en compte
-				 $(button).closest("form").submit();
-				 button.disabled = true;
-				return true;
-		 	}
+			    $('span.error').hide(); // on cache d'éventuelles erreurs datant d'un ancien submit
+			    Modifier.isModified = false; // du moment qu'on imprie la DI, les valeurs saisies ont été prises en compte
+			    $(button).closest("form").submit();
+			    button.disabled = true;
+			    return true;
+		    }
+
 	</script>
 
 	</tiles:put>

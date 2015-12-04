@@ -11,6 +11,7 @@ import org.springframework.context.MessageSource;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
+import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePM;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP;
 import ch.vd.uniregctb.declaration.DelaiDeclaration;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
@@ -47,10 +48,13 @@ public class EditerDeclarationImpotView {
 	private boolean isAllowedSommation;
 	private boolean isAllowedDuplicata;
 
+	private boolean isDiPP;
+	private boolean isDiPM;
+
 	public EditerDeclarationImpotView() {
 	}
 
-	public EditerDeclarationImpotView(DeclarationImpotOrdinairePP di, @Nullable Long tacheId, MessageSource messageSource, boolean allowedQuittancement, boolean allowedDelai, boolean allowedSommation,
+	public EditerDeclarationImpotView(DeclarationImpotOrdinaire di, @Nullable Long tacheId, MessageSource messageSource, boolean allowedQuittancement, boolean allowedDelai, boolean allowedSommation,
 	                                  boolean allowedDuplicata) {
 		initReadOnlyValues(di, messageSource, allowedQuittancement, allowedDelai, allowedSommation, allowedDuplicata);
 		this.typeDocument = di.getTypeDeclaration();
@@ -58,7 +62,7 @@ public class EditerDeclarationImpotView {
 		this.tacheId = tacheId;
 	}
 
-	public void initReadOnlyValues(DeclarationImpotOrdinairePP di, MessageSource messageSource, boolean allowedQuittancement, boolean allowedDelai, boolean allowedSommation, boolean allowedDuplicata) {
+	public void initReadOnlyValues(DeclarationImpotOrdinaire di, MessageSource messageSource, boolean allowedQuittancement, boolean allowedDelai, boolean allowedSommation, boolean allowedDuplicata) {
 		this.tiersId = di.getTiers().getId();
 		this.id = di.getId();
 		this.periodeFiscale = di.getDateDebut().year();
@@ -75,6 +79,8 @@ public class EditerDeclarationImpotView {
 		this.isAllowedDuplicata = allowedDuplicata;
 		this.isSommable = isSommable(di);
 		this.wasSommee = initWasSommee(di);
+		this.isDiPP = di instanceof DeclarationImpotOrdinairePP;
+		this.isDiPM = di instanceof DeclarationImpotOrdinairePM;
 	}
 
 	private static boolean initIsAllowedDelai(TypeEtatDeclaration dernierEtat, boolean allowedDelai) {
@@ -229,5 +235,17 @@ public class EditerDeclarationImpotView {
 
 	public boolean isWasSommee() {
 		return wasSommee;
+	}
+
+	public boolean isDiPP() {
+		return isDiPP;
+	}
+
+	public boolean isDiPM() {
+		return isDiPM;
+	}
+
+	public boolean isAllowedDuplicataDirect() {
+		return isDiPM && isAllowedDuplicata;
 	}
 }

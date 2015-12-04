@@ -622,7 +622,7 @@ public class DeclarationImpotEditManagerTest extends WebTest {
 		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				manager.envoieImpressionLocaleDI(ppId, null, debutAnneeCourante, finAnneeCourante, TypeDocument.DECLARATION_IMPOT_COMPLETE_LOCAL, TypeAdresseRetour.CEDI, RegDate.get(), null);
+				manager.envoieImpressionLocaleDI(ppId, debutAnneeCourante, finAnneeCourante, TypeDocument.DECLARATION_IMPOT_COMPLETE_LOCAL, TypeAdresseRetour.CEDI, RegDate.get(), null);
 				return null;
 			}
 		});
