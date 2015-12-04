@@ -49,6 +49,7 @@ import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalAvecMotifs;
+import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.utils.LogLevel;
 import ch.vd.uniregctb.xml.DataHelper;
@@ -283,6 +284,13 @@ public class EvenementFiscalV2SenderImpl implements EvenementFiscalSender, Initi
 				else if (instance instanceof FermetureFor) {
 					((FermetureFor) instance).setMotifFermeture(EnumHelper.coreToXMLv2(avecMotifs.getMotifFermeture()));
 				}
+			}
+			if (instance instanceof ChangementModeImposition) {
+				if (!(forFiscal instanceof ForFiscalPrincipalPP)) {
+					throw new IllegalArgumentException("On ne peut changer le mode d'imposition que sur un for fiscal principal PP.");
+				}
+				final ForFiscalPrincipalPP ffp = (ForFiscalPrincipalPP) forFiscal;
+				((ChangementModeImposition) instance).setModeImposition(EnumHelper.coreToXMLv2(ffp.getModeImposition()));
 			}
 			return instance;
 		}
