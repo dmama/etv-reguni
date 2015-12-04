@@ -1,0 +1,27 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dataset>
+  <table name="AUDIT_LOG">
+    <column>ID</column>
+    <column>LOG_LEVEL</column>
+    <column>MESSAGE</column>
+    <column>LOG_USER</column>
+    <column>EVT_ID</column>
+    <column>THREAD_ID</column>
+    <row>
+      <value>999999999</value>
+      <value>INFO</value>
+      <value><![CDATA[Error test audit]]></value>
+      <value>XSIKCE</value>
+      <value>1</value>
+      <value>3</value>
+    </row>
+    <row>
+      <value>999999999999999</value>
+      <value>INFO</value>
+      <value><![CDATA[Error test audit]]></value>
+      <value>XSIKCE</value>
+      <value>1</value>
+      <value>3</value>
+    </row>
+  </table>
+</dataset>

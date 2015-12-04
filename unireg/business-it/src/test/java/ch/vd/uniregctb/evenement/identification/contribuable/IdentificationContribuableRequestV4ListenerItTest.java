@@ -1,0 +1,434 @@
+package ch.vd.uniregctb.evenement.identification.contribuable;
+
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBElement;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
+import javax.xml.transform.Source;
+import javax.xml.transform.stream.StreamSource;
+import javax.xml.validation.Schema;
+import javax.xml.validation.SchemaFactory;
+import java.io.ByteArrayOutputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import org.junit.Test;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
+
+import ch.vd.registre.base.date.RegDate;
+import ch.vd.technical.esb.EsbMessage;
+import ch.vd.unireg.xml.event.identification.request.v4.CorporationIdentificationData;
+import ch.vd.unireg.xml.event.identification.request.v4.IdentificationContribuableRequest;
+import ch.vd.unireg.xml.event.identification.request.v4.IdentificationData;
+import ch.vd.unireg.xml.event.identification.request.v4.NaturalPersonIdentificationData;
+import ch.vd.unireg.xml.event.identification.request.v4.ObjectFactory;
+import ch.vd.unireg.xml.event.identification.response.v4.IdentificationContribuableResponse;
+import ch.vd.unireg.xml.event.identification.response.v4.IdentificationResult;
+import ch.vd.unireg.xml.event.identification.response.v4.IdentifiedCorporation;
+import ch.vd.unireg.xml.event.identification.response.v4.IdentifiedNaturalPerson;
+import ch.vd.unireg.xml.event.identification.response.v4.IdentifiedTaxpayer;
+import ch.vd.unireg.xml.tools.ClasspathCatalogResolver;
+import ch.vd.uniregctb.common.BusinessItTest;
+import ch.vd.uniregctb.tiers.AutreCommunaute;
+import ch.vd.uniregctb.tiers.Entreprise;
+import ch.vd.uniregctb.tiers.MontantMonetaire;
+import ch.vd.uniregctb.tiers.PersonnePhysique;
+import ch.vd.uniregctb.type.FormeJuridiqueEntreprise;
+import ch.vd.uniregctb.type.Sexe;
+import ch.vd.uniregctb.xml.DataHelper;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
+
+@SuppressWarnings({"JavaDoc"})
+public class IdentificationContribuableRequestV4ListenerItTest extends IdentificationContribuableRequestListenerItTest {
+
+	private static String requestToString(IdentificationContribuableRequest request) throws JAXBException {
+		JAXBContext context = JAXBContext.newInstance(ObjectFactory.class.getPackage().getName());
+		Marshaller marshaller = context.createMarshaller();
+		ByteArrayOutputStream out = new ByteArrayOutputStream();
+		marshaller.marshal(new ObjectFactory().createIdentificationContribuableRequest(request), out);
+		return out.toString();
+	}
+
+	@Override
+	protected String getRequestXSD() {
+		return "event/identification/identification-contribuable-request-4.xsd";
+	}
+
+	@Override
+	protected String getResponseXSD() {
+		return "event/identification/identification-contribuable-response-4.xsd";
+	}
+
+	@Test(timeout = BusinessItTest.JMS_TIMEOUT)
+	public void testDemandeIdentificationAutomatiquePersonnePhysiqueOK() throws Exception {
+
+		final RegDate dateNaissance = RegDate.get(1982, 6);     // date partielle, pour le faire au moins une fois
+
+		final long id = doInNewTransaction(new TxCallback<Long>() {
+			@Override
+			public Long execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique christophe = addNonHabitant("Christophe", "Monnier Vallard", dateNaissance, Sexe.MASCULIN);
+				return christophe.getNumero();
+			}
+		});
+		globalTiersIndexer.sync();
+
+		final IdentificationData data = new NaturalPersonIdentificationData("MaDemande", 7569396525489L, null, "Monnier", "Christophe", null, null);
+		final IdentificationContribuableRequest request = new IdentificationContribuableRequest(Arrays.asList(data));
+
+		// Envoie le message
+		doInNewTransaction(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				sendTextMessage(getInputQueue(), requestToString(request), getOutputQueue());
+				return null;
+			}
+		});
+
+		final EsbMessage message = getEsbMessage(getOutputQueue());
+		assertNotNull(message);
+		final IdentificationContribuableResponse response = parseResponse(message);
+		assertNotNull(response);
+		assertNotNull(response.getIdentificationResult());
+		assertEquals(1, response.getIdentificationResult().size());
+
+		final IdentificationResult result = response.getIdentificationResult().get(0);
+		if (result.getErreur() != null) {
+			fail(result.getErreur().toString());
+		}
+		assertEquals("MaDemande", result.getId());
+
+		final IdentifiedTaxpayer infoCtb = result.getContribuable();
+		assertNotNull(infoCtb);
+		assertEquals(id, infoCtb.getNumeroContribuable());
+		assertEquals(IdentifiedNaturalPerson.class, infoCtb.getClass());
+
+		final IdentifiedNaturalPerson infoPersonnePhysique = (IdentifiedNaturalPerson) infoCtb;
+		assertEquals("Monnier Vallard", infoPersonnePhysique.getNom());
+		assertEquals("Christophe", infoPersonnePhysique.getPrenom());
+		assertEquals(dateNaissance, DataHelper.xmlToCore(infoPersonnePhysique.getDateNaissance()));
+	}
+
+	@Test(timeout = BusinessItTest.JMS_TIMEOUT)
+	public void testDemandeIdentificationAutomatiqueEntrepriseOK() throws Exception {
+
+		final long id = doInNewTransaction(new TxCallback<Long>() {
+			@Override
+			public Long execute(TransactionStatus status) throws Exception {
+				final AutreCommunaute ac = addAutreCommunaute("Pittet Echaffaudages SA");
+				return ac.getNumero();
+			}
+		});
+		globalTiersIndexer.sync();
+
+		final IdentificationData data = new CorporationIdentificationData("MaDemandePM", null, "Pittet Echaffaudages", null);
+		final IdentificationContribuableRequest request = new IdentificationContribuableRequest(Arrays.asList(data));
+
+		// Envoie le message
+		doInNewTransaction(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				sendTextMessage(getInputQueue(), requestToString(request), getOutputQueue());
+				return null;
+			}
+		});
+
+		final EsbMessage message = getEsbMessage(getOutputQueue());
+		assertNotNull(message);
+		final IdentificationContribuableResponse response = parseResponse(message);
+		assertNotNull(response);
+		assertNotNull(response.getIdentificationResult());
+		assertEquals(1, response.getIdentificationResult().size());
+
+		final IdentificationResult result = response.getIdentificationResult().get(0);
+		if (result.getErreur() != null) {
+			fail(result.getErreur().toString());
+		}
+		assertEquals("MaDemandePM", result.getId());
+
+		final IdentifiedTaxpayer infoCtb = result.getContribuable();
+		assertNotNull(infoCtb);
+		assertEquals(id, infoCtb.getNumeroContribuable());
+		assertEquals(IdentifiedCorporation.class, infoCtb.getClass());
+
+		final IdentifiedCorporation infoEntreprise = (IdentifiedCorporation) infoCtb;
+		assertEquals("Pittet Echaffaudages SA", infoEntreprise.getRaisonSociale());
+	}
+
+	@Test(timeout = BusinessItTest.JMS_TIMEOUT)
+	public void testDemandeIdentificationAutomatiquePlusieurs() throws Exception {
+
+		final Long id1 = doInNewTransaction(new TxCallback<Long>() {
+			@Override
+			public Long execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique christophe = addNonHabitant("Christophe","Monnier",date(1982,6,29), Sexe.MASCULIN);
+				return christophe.getNumero();
+			}
+		});
+		final Long id2 = doInNewTransaction(new TxCallback<Long>() {
+			@Override
+			public Long execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique christophe = addNonHabitant("Christophe","Monnier",date(1964,6,29), Sexe.MASCULIN);
+				return christophe.getNumero();
+			}
+		});
+
+		globalTiersIndexer.sync();
+
+		final IdentificationData data = new NaturalPersonIdentificationData("Monnier, tu dors...?", null, null, "Monnier", "Christophe", null, null);
+		final IdentificationContribuableRequest request = new IdentificationContribuableRequest(Arrays.asList(data));
+
+		// Envoie le message
+		doInNewTransaction(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				sendTextMessage(getInputQueue(), requestToString(request), getOutputQueue());
+				return null;
+			}
+		});
+
+		final EsbMessage message = getEsbMessage(getOutputQueue());
+		assertNotNull(message);
+
+		final IdentificationContribuableResponse response = parseResponse(message);
+		assertNotNull(response);
+		assertNotNull(response.getIdentificationResult());
+		assertEquals(1, response.getIdentificationResult().size());
+
+		final IdentificationResult result = response.getIdentificationResult().get(0);
+		assertNotNull(result.getErreur());
+		assertNull(result.getContribuable());
+		assertNotNull(result.getErreur().getPlusieurs());
+		assertEquals("Monnier, tu dors...?", result.getId());
+	}
+
+	@Test(timeout = BusinessItTest.JMS_TIMEOUT)
+	public void testDemandeIdentificationAutomatiqueAucun() throws Exception {
+
+		final Long id = doInNewTransaction(new TxCallback<Long>() {
+			@Override
+			public Long execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique christophe = addNonHabitant("Christophe","Monnier",date(1982,6,29), Sexe.MASCULIN);
+				return christophe.getNumero();
+			}
+		});
+
+		globalTiersIndexer.sync();
+
+		final IdentificationData data = new NaturalPersonIdentificationData("Raphaello", null, null, "Adam", "Raphaël", null, null);
+		final IdentificationContribuableRequest request = new IdentificationContribuableRequest(Arrays.asList(data));
+
+		// Envoie le message
+		doInNewTransaction(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				sendTextMessage(getInputQueue(), requestToString(request), getOutputQueue());
+				return null;
+			}
+		});
+
+		final EsbMessage message = getEsbMessage(getOutputQueue());
+		assertNotNull(message);
+
+		final IdentificationContribuableResponse response = parseResponse(message);
+		assertNotNull(response);
+		assertNotNull(response.getIdentificationResult());
+		assertEquals(1, response.getIdentificationResult().size());
+
+		final IdentificationResult result = response.getIdentificationResult().get(0);
+		assertNotNull(result.getErreur());
+		assertNull(result.getContribuable());
+		assertNotNull(result.getErreur().getAucun());
+		assertEquals("Raphaello", result.getId());
+	}
+
+	@Test(timeout = BusinessItTest.JMS_TIMEOUT)
+	public void testDemandeMultiple() throws Exception {
+
+		final class Ids {
+			int ppUn;
+			int ppDeux;
+			int ppTrois;
+			int pm;
+		}
+
+		final Ids ids = doInNewTransaction(new TransactionCallback<Ids>() {
+			@Override
+			public Ids doInTransaction(TransactionStatus status) {
+				final PersonnePhysique ppUn = addNonHabitant("Alphonse", "Baudet", null, Sexe.MASCULIN);
+				final PersonnePhysique ppDeux = addNonHabitant("Richard", "Basquette", null, Sexe.MASCULIN);
+				final PersonnePhysique ppTrois = addNonHabitant("Albus", "Trumbledaure", null, Sexe.MASCULIN);
+				final Entreprise pm = addEntrepriseInconnueAuCivil();
+				addDonneesRegistreCommerce(pm, date(1883, 6, 1), null, "Banque cantonale vaudoise", FormeJuridiqueEntreprise.CORP_DP_ENT);
+				addCapitalEntreprise(pm, date(1883, 6, 1), null, new MontantMonetaire(1000000000L, MontantMonetaire.CHF));
+
+				// on crée 150 "Georges Pittet" pour vérifier aussi le cas du trop grand nombre de résultats
+				for (int i = 0; i < 150; ++i) {
+					addNonHabitant("Georges", "Pittet", null, Sexe.MASCULIN);
+				}
+
+				final Ids ids = new Ids();
+				ids.ppUn = ppUn.getNumero().intValue();
+				ids.ppDeux = ppDeux.getNumero().intValue();
+				ids.ppTrois = ppTrois.getNumero().intValue();
+				ids.pm = pm.getNumero().intValue();
+				return ids;
+			}
+		});
+
+		globalTiersIndexer.sync();
+
+		final int nbGroupes = 13;
+		final int tailleGroupe = 6;     // pour chacun des cas et une réponse négative (aucun) et une réponse négative (plusieurs)
+		final List<IdentificationData> identificationDataList = new ArrayList<>(nbGroupes * tailleGroupe);
+		for (int idxGroupe = 0; idxGroupe < nbGroupes; ++idxGroupe) {
+			for (int idx = 0; idx < tailleGroupe; ++idx) {
+				final String nom;
+				final String prenom;
+				final String id;
+				final boolean pp;
+				switch (idx) {
+				case 0:
+					nom = "Baudet";
+					prenom = "Alphonse";
+					id = "AB";
+					pp = true;
+					break;
+				case 1:
+					nom = "Basquette";
+					prenom = "Richard";
+					id = "Riri";
+					pp = true;
+					break;
+				case 2:
+					nom = "Trumbledaure";
+					prenom = "Albus";
+					id = "Shazam";
+					pp = true;
+					break;
+				case 3:
+					nom = "Peticlou";
+					prenom = "Justin";
+					id = null;
+					pp = true;
+					break;
+				case 4:
+					nom = "Pittet";
+					prenom = "Georges";
+					id = "pg";
+					pp = true;
+					break;
+				case 5:
+					nom = "Banque Cantonale Vaudoise";
+					prenom = null;
+					id = "bcv";
+					pp = false;
+					break;
+				default:
+					throw new RuntimeException("On a prévu des groupes de 6... s'ils sont plus gros, il y a des choses à changer ici...");
+				}
+
+				final IdentificationData data;
+				if (pp) {
+					data = new NaturalPersonIdentificationData(id, null, null, nom, prenom, null, null);
+				}
+				else {
+					data = new CorporationIdentificationData(id, null, nom, null);
+				}
+				identificationDataList.add(data);
+			}
+		}
+
+		final IdentificationContribuableRequest request = new IdentificationContribuableRequest(identificationDataList);
+
+		// Envoie le message
+		doInNewTransaction(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				sendTextMessage(getInputQueue(), requestToString(request), getOutputQueue());
+				return null;
+			}
+		});
+
+		final EsbMessage message = getEsbMessage(getOutputQueue());
+		assertNotNull(message);
+
+		final IdentificationContribuableResponse response = parseResponse(message);
+		assertNotNull(response);
+		assertNotNull(response.getIdentificationResult());
+		assertEquals(nbGroupes * tailleGroupe, response.getIdentificationResult().size());
+
+		for (int index = 0 ; index < nbGroupes * tailleGroupe; ++ index) {
+			final IdentificationResult result = response.getIdentificationResult().get(index);
+			assertNotNull(result);
+			switch (index % tailleGroupe) {
+			case 0:
+				// Alphonse Baudet doit avoir été trouvé
+				assertNotNull(Integer.toString(index), result.getContribuable());
+				assertNull(Integer.toString(index), result.getErreur());
+				assertEquals(Integer.toString(index), ids.ppUn, result.getContribuable().getNumeroContribuable());
+				assertEquals("AB", result.getId());
+				break;
+			case 1:
+				// Richard Basquette doit avoir été trouvé
+				assertNotNull(Integer.toString(index), result.getContribuable());
+				assertNull(Integer.toString(index), result.getErreur());
+				assertEquals(Integer.toString(index), ids.ppDeux, result.getContribuable().getNumeroContribuable());
+				assertEquals("Riri", result.getId());
+				break;
+			case 2:
+				// Albus Trumbledaure doit avoir été trouvé
+				assertNotNull(Integer.toString(index), result.getContribuable());
+				assertNull(Integer.toString(index), result.getErreur());
+				assertEquals(Integer.toString(index), ids.ppTrois, result.getContribuable().getNumeroContribuable());
+				assertEquals("Shazam", result.getId());
+				break;
+			case 3:
+				// Personne ne doit avoir été trouvé (aucun)
+				assertNull(Integer.toString(index), result.getContribuable());
+				assertNotNull(Integer.toString(index), result.getErreur());
+				assertNotNull(Integer.toString(index), result.getErreur().getAucun());
+				assertNull(result.getId());
+				break;
+			case 4:
+				// Personne ne doit avoir été trouvé (plusieurs)
+				assertNull(Integer.toString(index), result.getContribuable());
+				assertNotNull(Integer.toString(index), result.getErreur());
+				assertNotNull(Integer.toString(index), result.getErreur().getPlusieurs());
+				assertEquals("pg", result.getId());
+				break;
+			case 5:
+				// La BCV doit avoir été trouvée
+				assertNotNull(Integer.toString(index), result.getContribuable());
+				assertNull(Integer.toString(index), result.getErreur());
+				assertEquals(Integer.toString(index), ids.pm, result.getContribuable().getNumeroContribuable());
+				assertEquals("bcv", result.getId());
+				break;
+			default:
+				throw new RuntimeException("On a prévu des groupes de 6... s'ils sont plus gros, il y a des choses à changer ici...");
+			}
+		}
+	}
+
+	private IdentificationContribuableResponse parseResponse(EsbMessage message) throws Exception {
+		final JAXBContext context = JAXBContext.newInstance(ch.vd.unireg.xml.event.identification.response.v4.ObjectFactory.class.getPackage().getName());
+		final Unmarshaller u = context.createUnmarshaller();
+		final SchemaFactory sf = SchemaFactory.newInstance(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI);
+		sf.setResourceResolver(new ClasspathCatalogResolver());
+		final Schema schema = sf.newSchema(new Source[]{
+				new StreamSource(new ClassPathResource(getRequestXSD()).getURL().toExternalForm()),
+				new StreamSource(new ClassPathResource(getResponseXSD()).getURL().toExternalForm())});
+		u.setSchema(schema);
+
+		final JAXBElement element = (JAXBElement) u.unmarshal(message.getBodyAsSource());
+		return (IdentificationContribuableResponse) element.getValue();
+	}
+}

@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Note: Ces données ont été enrichies pour les tests et ne sont pas nécessairement cohérentes. -->
+<organisationData xmlns="http://evd.vd.ch/xmlns/eVD-0023/1">
+	<eVD-0022:organisationSnapshot xmlns:eVD-0022="http://evd.vd.ch/xmlns/eVD-0022/1">
+		<beginValidityDate xmlns="http://evd.vd.ch/xmlns/eVD-0022/1">2015-08-05</beginValidityDate>
+		<eVD-0022:organisation>
+			<cantonalId xmlns="http://evd.vd.ch/xmlns/eVD-0022/1">100983251</cantonalId>
+			<eVD-0022:organisationIdentifier>
+				<identifierCategory xmlns="http://evd.vd.ch/xmlns/eVD-0022/1">CH.IDE</identifierCategory>
+				<identifierValue xmlns="http://evd.vd.ch/xmlns/eVD-0022/1">CHE113570477</identifierValue>
+			</eVD-0022:organisationIdentifier>
+			<eVD-0022:organisationIdentifier>
+				<identifierCategory xmlns="http://evd.vd.ch/xmlns/eVD-0022/1">CH.RC</identifierCategory>
+				<identifierValue xmlns="http://evd.vd.ch/xmlns/eVD-0022/1">CH55010502284</identifierValue>
+			</eVD-0022:organisationIdentifier>
+			<organisationName xmlns="http://evd.vd.ch/xmlns/eVD-0022/1">Bomaco Sàrl en liquidation</organisationName>
+			<legalForm xmlns="http://evd.vd.ch/xmlns/eVD-0022/1">0107</legalForm>
+			<eVD-0022:organisationLocation>
+				<cantonalId xmlns="http://evd.vd.ch/xmlns/eVD-0022/1">100983252</cantonalId>
+				<eVD-0022:identifier>
+					<identifierCategory xmlns="http://evd.vd.ch/xmlns/eVD-0022/1">CH.IDE</identifierCategory>
+					<identifierValue xmlns="http://evd.vd.ch/xmlns/eVD-0022/1">CHE113570477</identifierValue>
+				</eVD-0022:identifier>
+				<eVD-0022:identifier>
+					<identifierCategory xmlns="http://evd.vd.ch/xmlns/eVD-0022/1">CH.RC</identifierCategory>
+					<identifierValue xmlns="http://evd.vd.ch/xmlns/eVD-0022/1">CH55010502284</identifierValue>
+				</eVD-0022:identifier>
+				<name xmlns="http://evd.vd.ch/xmlns/eVD-0022/1">Bomaco Sàrl en liquidation</name>
+				<kindOfLocation xmlns="http://evd.vd.ch/xmlns/eVD-0022/1">1</kindOfLocation>
+				<eVD-0022:seat>
+					<municipalityId xmlns="http://evd.vd.ch/xmlns/eVD-0022/1">5518</municipalityId>
+					<municipalityName xmlns="http://evd.vd.ch/xmlns/eVD-0022/1">Echallens</municipalityName>
+					<cantonAbbreviation xmlns="http://evd.vd.ch/xmlns/eVD-0022/1">VD</cantonAbbreviation>
+					<historyMunicipalityId xmlns="http://evd.vd.ch/xmlns/eVD-0022/1">14717</historyMunicipalityId>
+				</eVD-0022:seat>
+				<eVD-0022:function>
+					<eVD-0022:party>
+						<eVD-0022:person>
+							<eVD-0022:name>Harrison Ford</eVD-0022:name>
+						</eVD-0022:person>
+						<eVD-0022:placeOfResidence>
+							<eVD-0022:placeOfResidenceName>Lausanne</eVD-0022:placeOfResidenceName>
+						</eVD-0022:placeOfResidence>
+					</eVD-0022:party>
+					<eVD-0022:functionText>Président du Conseil d'Administration</eVD-0022:functionText>
+					<eVD-0022:authorisation>1</eVD-0022:authorisation>
+				</eVD-0022:function>
+				<eVD-0022:function>
+					<eVD-0022:party>
+						<eVD-0022:person>
+							<eVD-0022:name>Harring</eVD-0022:name>
+							<eVD-0022:firstName>Keith</eVD-0022:firstName>
+						</eVD-0022:person>
+						<eVD-0022:placeOfResidence>
+							<eVD-0022:placeOfResidenceName>New York</eVD-0022:placeOfResidenceName>
+						</eVD-0022:placeOfResidence>
+					</eVD-0022:party>
+					<eVD-0022:functionText>Président du Conseil d'Administration</eVD-0022:functionText>
+					<eVD-0022:authorisation>1</eVD-0022:authorisation>
+				</eVD-0022:function>
+				<commercialRegisterData xmlns="http://evd.vd.ch/xmlns/eVD-0022/1">
+					<name>Bomaco Sàrl en liquidation</name>
+					<status>2</status>
+					<entryStatus>1</entryStatus>
+					<entryDate>2007-04-16</entryDate>
+					<capital>
+						<currency>CHF</currency>
+						<capitalAmount>25000</capitalAmount>
+						<cashedInAmount>25000</cashedInAmount>
+						<typeOfCapital>1</typeOfCapital>
+						<division>blah blah division en parts</division>
+					</capital>
+				</commercialRegisterData>
+				<nogaCode xmlns="http://evd.vd.ch/xmlns/eVD-0022/1">469000</nogaCode>
+				<uidRegisterData xmlns="http://evd.vd.ch/xmlns/eVD-0022/1">
+					<status>3</status>
+					<typeOfOrganisation>1</typeOfOrganisation>
+					<eVD-0022:effectiveAddress xmlns:eVD-0021="http://evd.vd.ch/xmlns/eVD-0021/1">
+						<eVD-0021:street>Chemin de l'Arzillier</eVD-0021:street>
+						<eVD-0021:houseNumber>1</eVD-0021:houseNumber>
+						<eVD-0021:town>Echallens</eVD-0021:town>
+						<eVD-0021:swissZipCode>1040</eVD-0021:swissZipCode>
+						<eVD-0021:country>
+							<eVD-0021:countryIdISO2>CH</eVD-0021:countryIdISO2>
+							<eVD-0021:countryName>CH</eVD-0021:countryName>
+						</eVD-0021:country>
+						<eVD-0021:federalBuildingId>868353</eVD-0021:federalBuildingId>
+						<eVD-0021:xCoordinate>538587</eVD-0021:xCoordinate>
+						<eVD-0021:yCoordinate>166384</eVD-0021:yCoordinate>
+					</eVD-0022:effectiveAddress>
+					<publicStatus>1</publicStatus>
+				</uidRegisterData>
+			</eVD-0022:organisationLocation>
+		</eVD-0022:organisation>
+	</eVD-0022:organisationSnapshot>
+	<eVD-0022:organisationSnapshot xmlns:eVD-0022="http://evd.vd.ch/xmlns/eVD-0022/1">
+		<beginValidityDate xmlns="http://evd.vd.ch/xmlns/eVD-0022/1">2015-07-07</beginValidityDate>
+		<eVD-0022:organisation>
+			<cantonalId xmlns="http://evd.vd.ch/xmlns/eVD-0022/1">100983251</cantonalId>
+			<eVD-0022:organisationIdentifier>
+				<identifierCategory xmlns="http://evd.vd.ch/xmlns/eVD-0022/1">CH.IDE</identifierCategory>
+				<identifierValue xmlns="http://evd.vd.ch/xmlns/eVD-0022/1">CHE113570477</identifierValue>
+			</eVD-0022:organisationIdentifier>
+			<eVD-0022:organisationIdentifier>
+				<identifierCategory xmlns="http://evd.vd.ch/xmlns/eVD-0022/1">CH.RC</identifierCategory>
+				<identifierValue xmlns="http://evd.vd.ch/xmlns/eVD-0022/1">CH55010502284</identifierValue>
+			</eVD-0022:organisationIdentifier>
+			<organisationName xmlns="http://evd.vd.ch/xmlns/eVD-0022/1">Bomaco Sàrl en liquidation</organisationName>
+			<legalForm xmlns="http://evd.vd.ch/xmlns/eVD-0022/1">0107</legalForm>
+			<eVD-0022:organisationLocation>
+				<cantonalId xmlns="http://evd.vd.ch/xmlns/eVD-0022/1">100983252</cantonalId>
+				<eVD-0022:identifier>
+					<identifierCategory xmlns="http://evd.vd.ch/xmlns/eVD-0022/1">CH.IDE</identifierCategory>
+					<identifierValue xmlns="http://evd.vd.ch/xmlns/eVD-0022/1">CHE113570477</identifierValue>
+				</eVD-0022:identifier>
+				<eVD-0022:identifier>
+					<identifierCategory xmlns="http://evd.vd.ch/xmlns/eVD-0022/1">CH.RC</identifierCategory>
+					<identifierValue xmlns="http://evd.vd.ch/xmlns/eVD-0022/1">CH55010502284</identifierValue>
+				</eVD-0022:identifier>
+				<name xmlns="http://evd.vd.ch/xmlns/eVD-0022/1">Bomaco Sàrl en liquidation</name>
+				<kindOfLocation xmlns="http://evd.vd.ch/xmlns/eVD-0022/1">1</kindOfLocation>
+				<eVD-0022:seat>
+					<municipalityId xmlns="http://evd.vd.ch/xmlns/eVD-0022/1">5518</municipalityId>
+					<municipalityName xmlns="http://evd.vd.ch/xmlns/eVD-0022/1">Echallens</municipalityName>
+					<cantonAbbreviation xmlns="http://evd.vd.ch/xmlns/eVD-0022/1">VD</cantonAbbreviation>
+					<historyMunicipalityId xmlns="http://evd.vd.ch/xmlns/eVD-0022/1">14717</historyMunicipalityId>
+				</eVD-0022:seat>
+				<eVD-0022:function>
+					<eVD-0022:party>
+						<eVD-0022:person>
+							<eVD-0022:name>Harrison Ford</eVD-0022:name>
+						</eVD-0022:person>
+						<eVD-0022:placeOfResidence>
+							<eVD-0022:placeOfResidenceName>Lausanne</eVD-0022:placeOfResidenceName>
+						</eVD-0022:placeOfResidence>
+					</eVD-0022:party>
+					<eVD-0022:functionText>Président du Conseil d'Administration</eVD-0022:functionText>
+					<eVD-0022:authorisation>1</eVD-0022:authorisation>
+				</eVD-0022:function>
+				<commercialRegisterData xmlns="http://evd.vd.ch/xmlns/eVD-0022/1">
+					<name>Bomaco Sàrl en liquidation</name>
+					<status>2</status>
+					<entryStatus>1</entryStatus>
+					<entryDate>2007-04-16</entryDate>
+					<capital>
+						<currency>CHF</currency>
+						<capitalAmount>25000</capitalAmount>
+						<cashedInAmount>23000</cashedInAmount>
+						<typeOfCapital>1</typeOfCapital>
+						<division>blah blah division en parts</division>
+					</capital>
+				</commercialRegisterData>
+				<nogaCode xmlns="http://evd.vd.ch/xmlns/eVD-0022/1">469000</nogaCode>
+				<uidRegisterData xmlns="http://evd.vd.ch/xmlns/eVD-0022/1">
+					<status>3</status>
+					<typeOfOrganisation>1</typeOfOrganisation>
+					<eVD-0022:effectiveAddress xmlns:eVD-0021="http://evd.vd.ch/xmlns/eVD-0021/1">
+						<eVD-0021:street>Chemin de l'Arzillier</eVD-0021:street>
+						<eVD-0021:houseNumber>1</eVD-0021:houseNumber>
+						<eVD-0021:town>Echallens</eVD-0021:town>
+						<eVD-0021:swissZipCode>1040</eVD-0021:swissZipCode>
+						<eVD-0021:country>
+							<eVD-0021:countryIdISO2>CH</eVD-0021:countryIdISO2>
+							<eVD-0021:countryName>CH</eVD-0021:countryName>
+						</eVD-0021:country>
+						<eVD-0021:federalBuildingId>868353</eVD-0021:federalBuildingId>
+						<eVD-0021:xCoordinate>538587</eVD-0021:xCoordinate>
+						<eVD-0021:yCoordinate>166384</eVD-0021:yCoordinate>
+					</eVD-0022:effectiveAddress>
+					<publicStatus>1</publicStatus>
+				</uidRegisterData>
+			</eVD-0022:organisationLocation>
+		</eVD-0022:organisation>
+	</eVD-0022:organisationSnapshot>
+</organisationData>

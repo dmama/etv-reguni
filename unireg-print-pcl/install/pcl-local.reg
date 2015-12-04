@@ -1,0 +1,17 @@
+Windows Registry Editor Version 5.00
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Classes\MIME\Database\Content Type\application/pcl]
+"Extension"=".pcl"
+
+[HKEY_LOCAL_MACHINE\Software\Classes\.pcl]
+@="pcl_auto_file"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Classes\pcl_auto_file]
+@=""
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Classes\pcl_auto_file\shell]
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Classes\pcl_auto_file\shell\open]
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Classes\pcl_auto_file\shell\open\command]
+@="\"C:\\Program Files\\PrintPCL\\printPCL.bat\" \"%1\""

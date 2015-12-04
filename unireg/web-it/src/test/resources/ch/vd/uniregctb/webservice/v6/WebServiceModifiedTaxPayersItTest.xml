@@ -1,0 +1,1282 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dataset>
+	<table name="TIERS">
+		<column>TIERS_TYPE</column>
+		<column>NUMERO</column>
+		<column>ANNULATION_DATE</column>
+		<column>ANNULATION_USER</column>
+		<column>LOG_CDATE</column>
+		<column>LOG_CUSER</column>
+		<column>LOG_MDATE</column>
+		<column>LOG_MUSER</column>
+		<column>ADRESSE_BIC_SWIFT</column>
+		<column>ADRESSE_EMAIL</column>
+		<column>BLOC_REMB_AUTO</column>
+		<column>COMPLEMENT_NOM</column>
+		<column>DEBITEUR_INACTIF</column>
+		<column>INDEX_DIRTY</column>
+		<column>NUMERO_COMPTE_BANCAIRE</column>
+		<column>NUMERO_TELECOPIE</column>
+		<column>NUMERO_TEL_PORTABLE</column>
+		<column>NUMERO_TEL_PRIVE</column>
+		<column>NUMERO_TEL_PROF</column>
+		<column>OID</column>
+		<column>PERSONNE_CONTACT</column>
+		<column>REINDEX_ON</column>
+		<column>TITULAIRE_COMPTE_BANCAIRE</column>
+		<column>DATE_LIMITE_EXCLUSION</column>
+		<column>AC_FORME_JURIDIQUE</column>
+		<column>AC_NOM</column>
+		<column>DISTRICT_FISCAL_ID</column>
+		<column>REGION_FISCALE_ID</column>
+		<column>NUMERO_CA</column>
+		<column>CATEGORIE_IMPOT_SOURCE</column>
+		<column>LOGICIEL_ID</column>
+		<column>MODE_COM</column>
+		<column>DPI_NOM1</column>
+		<column>DPI_NOM2</column>
+		<column>PERIODE_DECOMPTE</column>
+		<column>PERIODICITE_DECOMPTE</column>
+		<column>SANS_LISTE_RECAP</column>
+		<column>SANS_RAPPEL</column>
+		<column>NUMERO_ETABLISSEMENT</column>
+		<column>ANCIEN_NUMERO_SOURCIER</column>
+		<column>NH_CAT_ETRANGER</column>
+		<column>NH_DATE_DEBUT_VALID_AUTORIS</column>
+		<column>DATE_DECES</column>
+		<column>NH_DATE_NAISSANCE</column>
+		<column>PP_HABITANT</column>
+		<column>MAJORITE_TRAITEE</column>
+		<column>NH_NOM</column>
+		<column>NH_NUMERO_ASSURE_SOCIAL</column>
+		<column>NUMERO_INDIVIDU</column>
+		<column>NH_NO_OFS_NATIONALITE</column>
+		<column>NH_PRENOM</column>
+		<column>NH_SEXE</column>
+		<row>
+			<value>PersonnePhysique</value>
+			<value>12100003</value>
+			<null />
+			<null />
+			<null />
+			<null />
+			<value><![CDATA[2008-01-01 00:00:00.0]]></value>
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<value>0</value>
+			<value>0</value>
+			<value>CH1900767000U01234567</value>
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<value><![CDATA[Emery Lyah]]></value>
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<value>1</value>
+			<null />
+			<null />
+			<null />
+			<value>327706</value>
+			<null />
+			<null />
+			<null />
+		</row>
+		<row>
+			<value>PersonnePhysique</value>
+			<value>12100004</value>
+			<null />
+			<null />
+			<null />
+			<null />
+			<value><![CDATA[2009-01-01 00:00:00.0]]></value>
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<value>0</value>
+			<value>0</value>
+			<value>CH1900767000U01234567</value>
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<value><![CDATA[Emery Lyah]]></value>
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<value>1</value>
+			<null />
+			<null />
+			<null />
+			<value>327707</value>
+			<null />
+			<null />
+			<null />
+		</row>
+	</table>
+	<table name="FOR_FISCAL">
+		<column>FOR_TYPE</column>
+		<column>ID</column>
+		<column>ANNULATION_DATE</column>
+		<column>ANNULATION_USER</column>
+		<column>LOG_CDATE</column>
+		<column>LOG_CUSER</column>
+		<column>LOG_MDATE</column>
+		<column>LOG_MUSER</column>
+		<column>DATE_OUVERTURE</column>
+		<column>DATE_FERMETURE</column>
+		<column>GENRE_IMPOT</column>
+		<column>NUMERO_OFS</column>
+		<column>TYPE_AUT_FISC</column>
+		<column>MOTIF_FERMETURE</column>
+		<column>MOTIF_OUVERTURE</column>
+		<column>MOTIF_RATTACHEMENT</column>
+		<column>MODE_IMPOSITION</column>
+		<column>TIERS_ID</column>
+		<row>
+			<value>ForFiscalPrincipal</value>
+			<value>8839554</value>
+			<null />
+			<null />
+			<value><![CDATA[2003-08-30 00:00:00.0]]></value>
+			<value><![CDATA[IL08426 ]]></value>
+			<value><![CDATA[2003-08-30 00:00:00.0]]></value>
+			<value><![CDATA[IL08426 ]]></value>
+			<value>19760107</value>
+			<null />
+			<value>REVENU_FORTUNE</value>
+			<value>5675</value>
+			<value>COMMUNE_OU_FRACTION_VD</value>
+			<null />
+			<value>INDETERMINE</value>
+			<value>DOMICILE</value>
+			<value>ORDINAIRE</value>
+			<value>12100004</value>
+		</row>
+		<row>
+			<value>ForFiscalPrincipal</value>
+			<value>3342699</value>
+			<null />
+			<null />
+			<value><![CDATA[2005-08-30 00:00:00.0]]></value>
+			<value><![CDATA[ZAIVSC  ]]></value>
+			<value><![CDATA[2005-08-30 00:00:00.0]]></value>
+			<value><![CDATA[ZAIVSC  ]]></value>
+			<value>20040801</value>
+			<value>20050530</value>
+			<value>REVENU_FORTUNE</value>
+			<value>5401</value>
+			<value>COMMUNE_OU_FRACTION_VD</value>
+			<value>ARRIVEE_HS</value>
+			<value>DEPART_HS</value>
+			<value>DOMICILE</value>
+			<value>ORDINAIRE</value>
+			<value>12100003</value>
+		</row>
+	</table>
+	<table name="PERIODE_FISCALE">
+		<column>ID</column>
+		<column>ANNULATION_DATE</column>
+		<column>ANNULATION_USER</column>
+		<column>LOG_CDATE</column>
+		<column>LOG_CUSER</column>
+		<column>LOG_MDATE</column>
+		<column>LOG_MUSER</column>
+		<column>ANNEE</column>
+		<column>CODE_CTRL_SOMM_DI_PP</column>
+		<row>
+			<value>1</value>
+			<null />
+			<null />
+			<null />
+			<null />
+			<value><![CDATA[2011-05-27 10:26:00.462]]></value>
+			<value>[system]</value>
+			<value>2008</value>
+			<value>0</value>
+		</row>
+		<row>
+			<value>2</value>
+			<null />
+			<null />
+			<null />
+			<null />
+			<value><![CDATA[2011-05-27 10:26:00.462]]></value>
+			<value>[system]</value>
+			<value>2002</value>
+			<value>0</value>
+		</row>
+		<row>
+			<value>3</value>
+			<null />
+			<null />
+			<null />
+			<null />
+			<value><![CDATA[2011-05-27 10:26:00.458]]></value>
+			<value>[system]</value>
+			<value>2003</value>
+			<value>0</value>
+		</row>
+		<row>
+			<value>4</value>
+			<null />
+			<null />
+			<null />
+			<null />
+			<value><![CDATA[2011-05-27 10:26:00.461]]></value>
+			<value>[system]</value>
+			<value>2004</value>
+			<value>0</value>
+		</row>
+		<row>
+			<value>5</value>
+			<null />
+			<null />
+			<null />
+			<null />
+			<value><![CDATA[2011-05-27 10:26:00.461]]></value>
+			<value>[system]</value>
+			<value>2005</value>
+			<value>0</value>
+		</row>
+		<row>
+			<value>6</value>
+			<null />
+			<null />
+			<null />
+			<null />
+			<value><![CDATA[2011-05-27 10:26:00.461]]></value>
+			<value>[system]</value>
+			<value>2006</value>
+			<value>0</value>
+		</row>
+		<row>
+			<value>7</value>
+			<null />
+			<null />
+			<null />
+			<null />
+			<value><![CDATA[2011-05-27 10:26:00.461]]></value>
+			<value>[system]</value>
+			<value>2007</value>
+			<value>0</value>
+		</row>
+	</table>
+	<table name="PARAMETRE_PERIODE_FISCALE">
+		<column>ID</column>
+		<column>ANNULATION_DATE</column>
+		<column>ANNULATION_USER</column>
+		<column>LOG_CDATE</column>
+		<column>LOG_CUSER</column>
+		<column>LOG_MDATE</column>
+		<column>LOG_MUSER</column>
+		<column>DATE_FIN_ENVOI_MASSE</column>
+		<column>TERME_GEN_SOMM_EFFECT</column>
+		<column>TERME_GEN_SOMM_REGL</column>
+		<column>TYPE_CTB</column>
+		<column>PERIODE_ID</column>
+		<column>PPF_TYPE</column>
+		<column>PM_DELAI_IMPRIME_MOIS</column>
+		<column>PM_DELAI_IMPRIME_FIN_MOIS</column>
+		<column>PM_TOLERANCE_JOURS</column>
+		<column>PM_TOLERANCE_FIN_MOIS</column>
+		<row>
+			<value>1</value>
+			<null />
+			<null />
+			<null />
+			<null />
+			<value><![CDATA[2008-01-01 00:00:00.0]]></value>
+			<null />
+			<value>20020430</value>
+			<value>20020331</value>
+			<value>20020131</value>
+			<value>VAUDOIS_ORDINAIRE</value>
+			<value>2</value>
+			<value>PP</value>
+			<null/>
+			<null/>
+			<null/>
+			<null/>
+		</row>
+		<row>
+			<value>2</value>
+			<null />
+			<null />
+			<null />
+			<null />
+			<value><![CDATA[2008-01-01 00:00:00.0]]></value>
+			<null />
+			<value>20020430</value>
+			<value>20020331</value>
+			<value>20020131</value>
+			<value>VAUDOIS_DEPENSE</value>
+			<value>2</value>
+			<value>PP</value>
+			<null/>
+			<null/>
+			<null/>
+			<null/>
+		</row>
+		<row>
+			<value>3</value>
+			<null />
+			<null />
+			<null />
+			<null />
+			<value><![CDATA[2008-01-01 00:00:00.0]]></value>
+			<null />
+			<value>20020430</value>
+			<value>20020331</value>
+			<value>20020131</value>
+			<value>HORS_CANTON</value>
+			<value>2</value>
+			<value>PP</value>
+			<null/>
+			<null/>
+			<null/>
+			<null/>
+		</row>
+		<row>
+			<value>4</value>
+			<null />
+			<null />
+			<null />
+			<null />
+			<value><![CDATA[2008-01-01 00:00:00.0]]></value>
+			<null />
+			<value>20020430</value>
+			<value>20020331</value>
+			<value>20020131</value>
+			<value>HORS_SUISSE</value>
+			<value>2</value>
+			<value>PP</value>
+			<null/>
+			<null/>
+			<null/>
+			<null/>
+		</row>
+		<row>
+			<value>5</value>
+			<null />
+			<null />
+			<null />
+			<null />
+			<value><![CDATA[2008-01-01 00:00:00.0]]></value>
+			<null />
+			<value>20030430</value>
+			<value>20030331</value>
+			<value>20030131</value>
+			<value>VAUDOIS_ORDINAIRE</value>
+			<value>3</value>
+			<value>PP</value>
+			<null/>
+			<null/>
+			<null/>
+			<null/>
+		</row>
+		<row>
+			<value>6</value>
+			<null />
+			<null />
+			<null />
+			<null />
+			<value><![CDATA[2008-01-01 00:00:00.0]]></value>
+			<null />
+			<value>20030430</value>
+			<value>20030331</value>
+			<value>20030131</value>
+			<value>VAUDOIS_DEPENSE</value>
+			<value>3</value>
+			<value>PP</value>
+			<null/>
+			<null/>
+			<null/>
+			<null/>
+		</row>
+		<row>
+			<value>7</value>
+			<null />
+			<null />
+			<null />
+			<null />
+			<value><![CDATA[2008-01-01 00:00:00.0]]></value>
+			<null />
+			<value>20030430</value>
+			<value>20030331</value>
+			<value>20030131</value>
+			<value>HORS_CANTON</value>
+			<value>3</value>
+			<value>PP</value>
+			<null/>
+			<null/>
+			<null/>
+			<null/>
+		</row>
+		<row>
+			<value>8</value>
+			<null />
+			<null />
+			<null />
+			<null />
+			<value><![CDATA[2008-01-01 00:00:00.0]]></value>
+			<null />
+			<value>20030430</value>
+			<value>20030331</value>
+			<value>20030131</value>
+			<value>HORS_SUISSE</value>
+			<value>3</value>
+			<value>PP</value>
+			<null/>
+			<null/>
+			<null/>
+			<null/>
+		</row>
+		<row>
+			<value>9</value>
+			<null />
+			<null />
+			<null />
+			<null />
+			<value><![CDATA[2008-01-01 00:00:00.0]]></value>
+			<null />
+			<value>20040430</value>
+			<value>20040331</value>
+			<value>20040131</value>
+			<value>VAUDOIS_ORDINAIRE</value>
+			<value>4</value>
+			<value>PP</value>
+			<null/>
+			<null/>
+			<null/>
+			<null/>
+		</row>
+		<row>
+			<value>10</value>
+			<null />
+			<null />
+			<null />
+			<null />
+			<value><![CDATA[2008-01-01 00:00:00.0]]></value>
+			<null />
+			<value>20040430</value>
+			<value>20040331</value>
+			<value>20040131</value>
+			<value>VAUDOIS_DEPENSE</value>
+			<value>4</value>
+			<value>PP</value>
+			<null/>
+			<null/>
+			<null/>
+			<null/>
+		</row>
+		<row>
+			<value>11</value>
+			<null />
+			<null />
+			<null />
+			<null />
+			<value><![CDATA[2008-01-01 00:00:00.0]]></value>
+			<null />
+			<value>20040430</value>
+			<value>20040331</value>
+			<value>20040131</value>
+			<value>HORS_CANTON</value>
+			<value>4</value>
+			<value>PP</value>
+			<null/>
+			<null/>
+			<null/>
+			<null/>
+		</row>
+		<row>
+			<value>12</value>
+			<null />
+			<null />
+			<null />
+			<null />
+			<value><![CDATA[2008-01-01 00:00:00.0]]></value>
+			<null />
+			<value>20040430</value>
+			<value>20040331</value>
+			<value>20040131</value>
+			<value>HORS_SUISSE</value>
+			<value>4</value>
+			<value>PP</value>
+			<null/>
+			<null/>
+			<null/>
+			<null/>
+		</row>
+		<row>
+			<value>13</value>
+			<null />
+			<null />
+			<null />
+			<null />
+			<value><![CDATA[2008-01-01 00:00:00.0]]></value>
+			<null />
+			<value>20050430</value>
+			<value>20050331</value>
+			<value>20050131</value>
+			<value>VAUDOIS_ORDINAIRE</value>
+			<value>5</value>
+			<value>PP</value>
+			<null/>
+			<null/>
+			<null/>
+			<null/>
+		</row>
+		<row>
+			<value>14</value>
+			<null />
+			<null />
+			<null />
+			<null />
+			<value><![CDATA[2008-01-01 00:00:00.0]]></value>
+			<null />
+			<value>20050430</value>
+			<value>20050331</value>
+			<value>20050131</value>
+			<value>VAUDOIS_DEPENSE</value>
+			<value>5</value>
+			<value>PP</value>
+			<null/>
+			<null/>
+			<null/>
+			<null/>
+		</row>
+		<row>
+			<value>15</value>
+			<null />
+			<null />
+			<null />
+			<null />
+			<value><![CDATA[2008-01-01 00:00:00.0]]></value>
+			<null />
+			<value>20050430</value>
+			<value>20050331</value>
+			<value>20050131</value>
+			<value>HORS_CANTON</value>
+			<value>5</value>
+			<value>PP</value>
+			<null/>
+			<null/>
+			<null/>
+			<null/>
+		</row>
+		<row>
+			<value>16</value>
+			<null />
+			<null />
+			<null />
+			<null />
+			<value><![CDATA[2008-01-01 00:00:00.0]]></value>
+			<null />
+			<value>20050430</value>
+			<value>20050331</value>
+			<value>20050131</value>
+			<value>HORS_SUISSE</value>
+			<value>5</value>
+			<value>PP</value>
+			<null/>
+			<null/>
+			<null/>
+			<null/>
+		</row>
+		<row>
+			<value>17</value>
+			<null />
+			<null />
+			<null />
+			<null />
+			<value><![CDATA[2008-01-01 00:00:00.0]]></value>
+			<null />
+			<value>20060430</value>
+			<value>20060331</value>
+			<value>20060131</value>
+			<value>VAUDOIS_ORDINAIRE</value>
+			<value>6</value>
+			<value>PP</value>
+			<null/>
+			<null/>
+			<null/>
+			<null/>
+		</row>
+		<row>
+			<value>18</value>
+			<null />
+			<null />
+			<null />
+			<null />
+			<value><![CDATA[2008-01-01 00:00:00.0]]></value>
+			<null />
+			<value>20060430</value>
+			<value>20060331</value>
+			<value>20060131</value>
+			<value>VAUDOIS_DEPENSE</value>
+			<value>6</value>
+			<value>PP</value>
+			<null/>
+			<null/>
+			<null/>
+			<null/>
+		</row>
+		<row>
+			<value>19</value>
+			<null />
+			<null />
+			<null />
+			<null />
+			<value><![CDATA[2008-01-01 00:00:00.0]]></value>
+			<null />
+			<value>20060430</value>
+			<value>20060331</value>
+			<value>20060131</value>
+			<value>HORS_CANTON</value>
+			<value>6</value>
+			<value>PP</value>
+			<null/>
+			<null/>
+			<null/>
+			<null/>
+		</row>
+		<row>
+			<value>20</value>
+			<null />
+			<null />
+			<null />
+			<null />
+			<value><![CDATA[2008-01-01 00:00:00.0]]></value>
+			<null />
+			<value>20060430</value>
+			<value>20060331</value>
+			<value>20060131</value>
+			<value>HORS_SUISSE</value>
+			<value>6</value>
+			<value>PP</value>
+			<null/>
+			<null/>
+			<null/>
+			<null/>
+		</row>
+		<row>
+			<value>21</value>
+			<null />
+			<null />
+			<null />
+			<null />
+			<value><![CDATA[2008-01-01 00:00:00.0]]></value>
+			<null />
+			<value>20070430</value>
+			<value>20070331</value>
+			<value>20070131</value>
+			<value>VAUDOIS_ORDINAIRE</value>
+			<value>7</value>
+			<value>PP</value>
+			<null/>
+			<null/>
+			<null/>
+			<null/>
+		</row>
+		<row>
+			<value>22</value>
+			<null />
+			<null />
+			<null />
+			<null />
+			<value><![CDATA[2008-01-01 00:00:00.0]]></value>
+			<null />
+			<value>20070430</value>
+			<value>20070331</value>
+			<value>20070131</value>
+			<value>VAUDOIS_DEPENSE</value>
+			<value>7</value>
+			<value>PP</value>
+			<null/>
+			<null/>
+			<null/>
+			<null/>
+		</row>
+		<row>
+			<value>23</value>
+			<null />
+			<null />
+			<null />
+			<null />
+			<value><![CDATA[2008-01-01 00:00:00.0]]></value>
+			<null />
+			<value>20070430</value>
+			<value>20070331</value>
+			<value>20070131</value>
+			<value>HORS_CANTON</value>
+			<value>7</value>
+			<value>PP</value>
+			<null/>
+			<null/>
+			<null/>
+			<null/>
+		</row>
+		<row>
+			<value>24</value>
+			<null />
+			<null />
+			<null />
+			<null />
+			<value><![CDATA[2008-01-01 00:00:00.0]]></value>
+			<null />
+			<value>20070430</value>
+			<value>20070331</value>
+			<value>20070131</value>
+			<value>HORS_SUISSE</value>
+			<value>7</value>
+			<value>PP</value>
+			<null/>
+			<null/>
+			<null/>
+			<null/>
+		</row>
+		<row>
+			<value>25</value>
+			<null />
+			<null />
+			<null />
+			<null />
+			<value><![CDATA[2008-01-01 00:00:00.0]]></value>
+			<null />
+			<value>20080430</value>
+			<value>20080331</value>
+			<value>20080131</value>
+			<value>VAUDOIS_ORDINAIRE</value>
+			<value>1</value>
+			<value>PP</value>
+			<null/>
+			<null/>
+			<null/>
+			<null/>
+		</row>
+		<row>
+			<value>26</value>
+			<null />
+			<null />
+			<null />
+			<null />
+			<value><![CDATA[2008-01-01 00:00:00.0]]></value>
+			<null />
+			<value>20080430</value>
+			<value>20080331</value>
+			<value>20080131</value>
+			<value>VAUDOIS_DEPENSE</value>
+			<value>1</value>
+			<value>PP</value>
+			<null/>
+			<null/>
+			<null/>
+			<null/>
+		</row>
+		<row>
+			<value>27</value>
+			<null />
+			<null />
+			<null />
+			<null />
+			<value><![CDATA[2008-01-01 00:00:00.0]]></value>
+			<null />
+			<value>20080430</value>
+			<value>20080331</value>
+			<value>20080131</value>
+			<value>HORS_CANTON</value>
+			<value>1</value>
+			<value>PP</value>
+			<null/>
+			<null/>
+			<null/>
+			<null/>
+		</row>
+		<row>
+			<value>28</value>
+			<null />
+			<null />
+			<null />
+			<null />
+			<value><![CDATA[2008-01-01 00:00:00.0]]></value>
+			<null />
+			<value>20080430</value>
+			<value>20080331</value>
+			<value>20080131</value>
+			<value>HORS_SUISSE</value>
+			<value>1</value>
+			<value>PP</value>
+			<null/>
+			<null/>
+			<null/>
+			<null/>
+		</row>
+		<row>
+			<value>34551895</value>
+			<null />
+			<null />
+			<value><![CDATA[2011-05-27 10:26:00.443]]></value>
+			<value>[system]</value>
+			<value><![CDATA[2011-05-27 10:26:00.444]]></value>
+			<value>[system]</value>
+			<value>20030430</value>
+			<value>20030331</value>
+			<value>20030131</value>
+			<value>DIPLOMATE_SUISSE</value>
+			<value>3</value>
+			<value>PP</value>
+			<null/>
+			<null/>
+			<null/>
+			<null/>
+		</row>
+		<row>
+			<value>34551896</value>
+			<null />
+			<null />
+			<value><![CDATA[2011-05-27 10:26:00.445]]></value>
+			<value>[system]</value>
+			<value><![CDATA[2011-05-27 10:26:00.445]]></value>
+			<value>[system]</value>
+			<value>20040430</value>
+			<value>20040331</value>
+			<value>20040131</value>
+			<value>DIPLOMATE_SUISSE</value>
+			<value>4</value>
+			<value>PP</value>
+			<null/>
+			<null/>
+			<null/>
+			<null/>
+		</row>
+		<row>
+			<value>34551897</value>
+			<null />
+			<null />
+			<value><![CDATA[2011-05-27 10:26:00.446]]></value>
+			<value>[system]</value>
+			<value><![CDATA[2011-05-27 10:26:00.446]]></value>
+			<value>[system]</value>
+			<value>20050430</value>
+			<value>20050331</value>
+			<value>20050131</value>
+			<value>DIPLOMATE_SUISSE</value>
+			<value>5</value>
+			<value>PP</value>
+			<null/>
+			<null/>
+			<null/>
+			<null/>
+		</row>
+		<row>
+			<value>34551898</value>
+			<null />
+			<null />
+			<value><![CDATA[2011-05-27 10:26:00.447]]></value>
+			<value>[system]</value>
+			<value><![CDATA[2011-05-27 10:26:00.447]]></value>
+			<value>[system]</value>
+			<value>20060430</value>
+			<value>20060331</value>
+			<value>20060131</value>
+			<value>DIPLOMATE_SUISSE</value>
+			<value>6</value>
+			<value>PP</value>
+			<null/>
+			<null/>
+			<null/>
+			<null/>
+		</row>
+		<row>
+			<value>34551899</value>
+			<null />
+			<null />
+			<value><![CDATA[2011-05-27 10:26:00.449]]></value>
+			<value>[system]</value>
+			<value><![CDATA[2011-05-27 10:26:00.449]]></value>
+			<value>[system]</value>
+			<value>20070430</value>
+			<value>20070331</value>
+			<value>20070131</value>
+			<value>DIPLOMATE_SUISSE</value>
+			<value>7</value>
+			<value>PP</value>
+			<null/>
+			<null/>
+			<null/>
+			<null/>
+		</row>
+		<row>
+			<value>34551900</value>
+			<null />
+			<null />
+			<value><![CDATA[2011-05-27 10:26:00.453]]></value>
+			<value>[system]</value>
+			<value><![CDATA[2011-05-27 10:26:00.453]]></value>
+			<value>[system]</value>
+			<value>20080430</value>
+			<value>20080331</value>
+			<value>20080131</value>
+			<value>DIPLOMATE_SUISSE</value>
+			<value>1</value>
+			<value>PP</value>
+			<null/>
+			<null/>
+			<null/>
+			<null/>
+		</row>
+		<row>
+			<value>34551901</value>
+			<null />
+			<null />
+			<value><![CDATA[2011-05-27 10:26:00.454]]></value>
+			<value>[system]</value>
+			<value><![CDATA[2011-05-27 10:26:00.454]]></value>
+			<value>[system]</value>
+			<value>20020430</value>
+			<value>20020331</value>
+			<value>20020131</value>
+			<value>DIPLOMATE_SUISSE</value>
+			<value>2</value>
+			<value>PP</value>
+			<null/>
+			<null/>
+			<null/>
+			<null/>
+		</row>
+	</table>
+	<table name="PARAMETRE">
+		<column>NOM</column>
+		<column>ANNULATION_DATE</column>
+		<column>ANNULATION_USER</column>
+		<column>LOG_CDATE</column>
+		<column>LOG_CUSER</column>
+		<column>LOG_MDATE</column>
+		<column>LOG_MUSER</column>
+		<column>VALEUR</column>
+		<row>
+			<value>anneeMinimaleForDebiteur</value>
+			<null />
+			<null />
+			<value><![CDATA[2011-05-27 10:25:58.631]]></value>
+			<value>[system]</value>
+			<value><![CDATA[2011-05-27 10:25:58.631]]></value>
+			<value>[system]</value>
+			<value>2009</value>
+		</row>
+		<row>
+			<value>dateExclusionDecedeEnvoiDI</value>
+			<null />
+			<null />
+			<value><![CDATA[2011-05-27 10:25:58.632]]></value>
+			<value>[system]</value>
+			<value><![CDATA[2011-05-27 10:25:58.632]]></value>
+			<value>[system]</value>
+			<value>15.11</value>
+		</row>
+		<row>
+			<value>delaiAttenteDeclarationImpotPersonneDecedee</value>
+			<null />
+			<null />
+			<value><![CDATA[2011-05-27 10:25:58.629]]></value>
+			<value>[system]</value>
+			<value><![CDATA[2011-05-27 10:25:58.629]]></value>
+			<value>[system]</value>
+			<value>30</value>
+		</row>
+		<row>
+			<value>delaiCadevImpressionDeclarationImpot</value>
+			<null />
+			<null />
+			<value><![CDATA[2011-05-27 10:25:58.63]]></value>
+			<value>[system]</value>
+			<value><![CDATA[2011-05-27 10:25:58.63]]></value>
+			<value>[system]</value>
+			<value>3</value>
+		</row>
+		<row>
+			<value>delaiCadevImpressionListesRecapitulatives</value>
+			<null />
+			<null />
+			<value><![CDATA[2011-05-27 10:25:58.63]]></value>
+			<value>[system]</value>
+			<value><![CDATA[2011-05-27 10:25:58.63]]></value>
+			<value>[system]</value>
+			<value>3</value>
+		</row>
+		<row>
+			<value>delaiEcheanceSommationDeclarationImpot</value>
+			<null />
+			<null />
+			<value><![CDATA[2011-05-27 10:25:58.63]]></value>
+			<value>[system]</value>
+			<value><![CDATA[2011-05-27 10:25:58.63]]></value>
+			<value>[system]</value>
+			<value>30</value>
+		</row>
+		<row>
+			<value>delaiEcheanceSommationListeRecapitualtive</value>
+			<null />
+			<null />
+			<value><![CDATA[2011-05-27 10:25:58.631]]></value>
+			<value>[system]</value>
+			<value><![CDATA[2011-05-27 10:25:58.631]]></value>
+			<value>[system]</value>
+			<value>15</value>
+		</row>
+		<row>
+			<value>delaiEnvoiSommationDeclarationImpot</value>
+			<null />
+			<null />
+			<value><![CDATA[2011-05-27 10:25:58.63]]></value>
+			<value>[system]</value>
+			<value><![CDATA[2011-05-27 10:25:58.63]]></value>
+			<value>[system]</value>
+			<value>15</value>
+		</row>
+		<row>
+			<value>delaiEnvoiSommationListeRecapitulative</value>
+			<null />
+			<null />
+			<value><![CDATA[2011-05-27 10:25:58.631]]></value>
+			<value>[system]</value>
+			<value><![CDATA[2011-05-27 10:25:58.631]]></value>
+			<value>[system]</value>
+			<value>15</value>
+		</row>
+		<row>
+			<value>delaiRetentionRapportTravailInactif</value>
+			<null />
+			<null />
+			<value><![CDATA[2011-05-27 10:25:58.631]]></value>
+			<value>[system]</value>
+			<value><![CDATA[2011-05-27 10:25:58.631]]></value>
+			<value>[system]</value>
+			<value>24</value>
+		</row>
+		<row>
+			<value>delaiRetourDeclarationImpotEmiseManuellement</value>
+			<null />
+			<null />
+			<value><![CDATA[2011-05-27 10:25:58.629]]></value>
+			<value>[system]</value>
+			<value><![CDATA[2011-05-27 10:25:58.629]]></value>
+			<value>[system]</value>
+			<value>60</value>
+		</row>
+		<row>
+			<value>delaiRetourListeRecapitulative</value>
+			<null />
+			<null />
+			<value><![CDATA[2011-05-27 10:25:58.63]]></value>
+			<value>[system]</value>
+			<value><![CDATA[2011-05-27 10:25:58.63]]></value>
+			<value>[system]</value>
+			<value>30</value>
+		</row>
+		<row>
+			<value>delaiRetourSommationListeRecapitulative</value>
+			<null />
+			<null />
+			<value><![CDATA[2011-05-27 10:25:58.631]]></value>
+			<value>[system]</value>
+			<value><![CDATA[2011-05-27 10:25:58.631]]></value>
+			<value>[system]</value>
+			<value>10</value>
+		</row>
+		<row>
+			<value>feteNationale</value>
+			<null />
+			<null />
+			<value><![CDATA[2011-05-27 10:25:58.627]]></value>
+			<value>[system]</value>
+			<value><![CDATA[2011-05-27 10:25:58.627]]></value>
+			<value>[system]</value>
+			<value>01.08</value>
+		</row>
+		<row>
+			<value>jourDuMoisEnvoiListesRecapitulatives</value>
+			<null />
+			<null />
+			<value><![CDATA[2011-05-27 10:25:58.63]]></value>
+			<value>[system]</value>
+			<value><![CDATA[2011-05-27 10:25:58.63]]></value>
+			<value>[system]</value>
+			<value>20</value>
+		</row>
+		<row>
+			<value>lendemainNouvelAn</value>
+			<null />
+			<null />
+			<value><![CDATA[2011-05-27 10:25:58.627]]></value>
+			<value>[system]</value>
+			<value><![CDATA[2011-05-27 10:25:58.627]]></value>
+			<value>[system]</value>
+			<value>02.01</value>
+		</row>
+		<row>
+			<value>nbMaxParListe</value>
+			<null />
+			<null />
+			<value><![CDATA[2011-05-27 10:25:58.629]]></value>
+			<value>[system]</value>
+			<value><![CDATA[2011-05-27 10:25:58.629]]></value>
+			<value>[system]</value>
+			<value>100</value>
+		</row>
+		<row>
+			<value>nbMaxParPage</value>
+			<null />
+			<null />
+			<value><![CDATA[2011-05-27 10:25:58.629]]></value>
+			<value>[system]</value>
+			<value><![CDATA[2011-05-27 10:25:58.629]]></value>
+			<value>[system]</value>
+			<value>10</value>
+		</row>
+		<row>
+			<value>noel</value>
+			<null />
+			<null />
+			<value><![CDATA[2011-05-27 10:25:58.625]]></value>
+			<value>[system]</value>
+			<value><![CDATA[2011-05-27 10:25:58.625]]></value>
+			<value>[system]</value>
+			<value>25.12</value>
+		</row>
+		<row>
+			<value>nouvelAn</value>
+			<null />
+			<null />
+			<value><![CDATA[2011-05-27 10:25:58.626]]></value>
+			<value>[system]</value>
+			<value><![CDATA[2011-05-27 10:25:58.626]]></value>
+			<value>[system]</value>
+			<value>01.01</value>
+		</row>
+		<row>
+			<value>premierePeriodeFiscalePersonnesPhysiques</value>
+			<null/>
+			<null/>
+			<value><![CDATA[2009-07-08 17:37:23.271]]></value>
+			<value>[system]</value>
+			<value><![CDATA[2009-07-08 17:37:23.271]]></value>
+			<value>[system]</value>
+			<value>2003</value>
+		</row>
+		<row>
+			<value>premierePeriodeFiscalePersonnesMorales</value>
+			<null/>
+			<null/>
+			<value><![CDATA[2015-08-08 17:37:23.271]]></value>
+			<value>[system]</value>
+			<value><![CDATA[2015-08-08 17:37:23.271]]></value>
+			<value>[system]</value>
+			<value>2009</value>
+		</row>
+	</table>
+	<table name="MODELE_DOCUMENT">
+		<column>ID</column>
+		<column>ANNULATION_DATE</column>
+		<column>ANNULATION_USER</column>
+		<column>LOG_CDATE</column>
+		<column>LOG_CUSER</column>
+		<column>LOG_MDATE</column>
+		<column>LOG_MUSER</column>
+		<column>TYPE_DOCUMENT</column>
+		<column>PERIODE_ID</column>
+		<row>
+			<value>1</value>
+			<null />
+			<null />
+			<null />
+			<null />
+			<value><![CDATA[2008-01-01 00:00:00.0]]></value>
+			<null />
+			<value>DECLARATION_IMPOT_COMPLETE_BATCH</value>
+			<value>1</value>
+		</row>
+		<row>
+			<value>2</value>
+			<null />
+			<null />
+			<null />
+			<null />
+			<value><![CDATA[2008-01-01 00:00:00.0]]></value>
+			<null />
+			<value>DECLARATION_IMPOT_VAUDTAX</value>
+			<value>1</value>
+		</row>
+		<row>
+			<value>3</value>
+			<null />
+			<null />
+			<null />
+			<null />
+			<value><![CDATA[2008-01-01 00:00:00.0]]></value>
+			<null />
+			<value>DECLARATION_IMPOT_DEPENSE</value>
+			<value>1</value>
+		</row>
+		<row>
+			<value>4</value>
+			<null />
+			<null />
+			<null />
+			<null />
+			<value><![CDATA[2008-01-01 00:00:00.0]]></value>
+			<null />
+			<value>DECLARATION_IMPOT_HC_IMMEUBLE</value>
+			<value>1</value>
+		</row>
+	</table>
+</dataset>
