@@ -36,6 +36,13 @@ public interface ServiceOrganisationService {
 	 */
 	AdressesCivilesHistoriques getAdressesOrganisationHisto(long noOrganisation) throws ServiceOrganisationException;
 
+	/**
+	 * @param noSite l'identifiant cantonal d'un site
+	 * @return l'historique des adresses de ce site
+	 * @throws ServiceOrganisationException en cas de souci
+	 */
+	AdressesCivilesHistoriques getAdressesSiteOrganisationHisto(long noSite) throws ServiceOrganisationException;
+
 	@NotNull
 	String createOrganisationDescription(Organisation organisation, RegDate date);
 }

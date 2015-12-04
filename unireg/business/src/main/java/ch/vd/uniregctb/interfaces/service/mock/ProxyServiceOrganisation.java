@@ -49,6 +49,11 @@ public class ProxyServiceOrganisation implements ServiceOrganisationService, Ser
 		return service.getAdressesOrganisationHisto(noOrganisation);
 	}
 
+	@Override
+	public AdressesCivilesHistoriques getAdressesSiteOrganisationHisto(long noSite) throws ServiceOrganisationException {
+		return service.getAdressesSiteOrganisationHisto(noSite);
+	}
+
 	@NotNull
 	@Override
 	public String createOrganisationDescription(Organisation organisation, RegDate date) {

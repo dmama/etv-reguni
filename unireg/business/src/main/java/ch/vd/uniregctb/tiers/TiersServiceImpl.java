@@ -5555,6 +5555,18 @@ public class TiersServiceImpl implements TiersService {
 		return serviceOrganisationService.getOrganisationHistory(numeroOrganisation);
 	}
 
+	@Override
+	public Organisation getOrganisationPourSite(@NotNull Etablissement etablissement) {
+
+		// inconnue au registre civil, pas difficile...
+		if (!etablissement.isConnuAuCivil()) {
+			return null;
+		}
+
+		final long numeroSIteOrganisation = etablissement.getNumeroEtablissement();
+		return serviceOrganisationService.getOrganisationHistory(serviceOrganisationService.getOrganisationPourSite(numeroSIteOrganisation));
+	}
+
 	@Nullable
 	@Override
 	public String getNumeroIDE(@NotNull Entreprise entreprise) {

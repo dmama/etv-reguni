@@ -13,6 +13,7 @@ import ch.vd.unireg.interfaces.organisation.ServiceOrganisationRaw;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.Siege;
+import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 import ch.vd.uniregctb.common.DonneesOrganisationException;
 import ch.vd.uniregctb.interfaces.model.AdressesCivilesHistoriques;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
@@ -58,9 +59,14 @@ public class ServiceOrganisationImpl implements ServiceOrganisationService {
 		if (organisation == null) {
 			return null;
 		}
-
-		final AdressesCivilesHistoriques resultat = new AdressesCivilesHistoriques();
 		final List<Adresse> adresses = organisation.getAdresses();
+
+		return getAdressesCivilesHistoriques(adresses);
+	}
+
+	@NotNull
+	protected AdressesCivilesHistoriques getAdressesCivilesHistoriques(List<Adresse> adresses) {
+		final AdressesCivilesHistoriques resultat = new AdressesCivilesHistoriques();
 		if (adresses != null && !adresses.isEmpty()) {
 			for (Adresse adresse : adresses) {
 				if (adresse.getTypeAdresse() == TypeAdresseCivil.COURRIER) {
@@ -74,6 +80,16 @@ public class ServiceOrganisationImpl implements ServiceOrganisationService {
 		return resultat;
 	}
 
+	@Override
+	public AdressesCivilesHistoriques getAdressesSiteOrganisationHisto(long noSite) throws ServiceOrganisationException {
+		final SiteOrganisation site = getOrganisationHistory(getOrganisationPourSite(noSite)).getSiteForNo(noSite);
+		if (site == null) {
+			return null;
+		}
+		final List<Adresse> adresses =  site.getAdresses();
+
+		return getAdressesCivilesHistoriques(adresses);
+	}
 
 	@Override
 	@NotNull

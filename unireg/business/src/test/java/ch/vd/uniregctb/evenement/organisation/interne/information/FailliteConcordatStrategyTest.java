@@ -53,6 +53,11 @@ public class FailliteConcordatStrategyTest extends WithoutSpringTest {
 			throw new UnsupportedOperationException();
 		}
 
+		@Override
+		public AdressesCivilesHistoriques getAdressesSiteOrganisationHisto(long noSite) throws ServiceOrganisationException {
+			throw new UnsupportedOperationException();
+		}
+
 		@NotNull
 		@Override
 		public String createOrganisationDescription(Organisation organisation, RegDate date) {

@@ -167,6 +167,19 @@ public abstract class OrganisationHelper {
 		return new ArrayList<Adresse>(flat);
 	}
 
+	public static List<Adresse> getAdressesPourSite(SiteOrganisation site) {
+		// la règle dit :
+		// - en l'absence de données IDE, on prend l'adresse légale des données RC
+		// - sinon, c'est l'adresse effective des données IDE qui fait foi
+
+		List<AdresseRCEnt> rcLegale = site.getDonneesRC() == null ? null : site.getDonneesRC().getAdresseLegale();
+		List<AdresseRCEnt> ideEffective = site.getDonneesRegistreIDE() == null ? null : site.getDonneesRegistreIDE().getAdresseEffective();
+
+		final DateRangeLimitatorImpl<AdresseRCEnt> limitator = new DateRangeLimitatorImpl<>();
+		final List<AdresseRCEnt> flat = DateRangeHelper.override(rcLegale, ideEffective, buildAdapterCallbackFromLimitator(limitator));
+		return new ArrayList<Adresse>(flat);
+	}
+
 	/**
 	 * Retourne une liste représantant la succession des valeurs de capital de l'entreprise.
 	 *

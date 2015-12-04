@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.interfaces.common.Adresse;
 
 /**
  *   Utilisez les méthodes des helpers pour produire les données des accesseurs.
@@ -111,6 +112,11 @@ public class SiteOrganisationRCEnt implements Serializable, SiteOrganisation {
 	@Override
 	public Siege getSiege(RegDate date) {
 		return OrganisationHelper.dateRangeForDate(getSieges(), date);
+	}
+
+	@Override
+	public List<Adresse> getAdresses() {
+		return OrganisationHelper.getAdressesPourSite(this);
 	}
 
 	@Override

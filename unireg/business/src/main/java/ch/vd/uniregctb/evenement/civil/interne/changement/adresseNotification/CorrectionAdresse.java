@@ -7,6 +7,7 @@ import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdressesCiviles;
+import ch.vd.uniregctb.common.DonneesCivilesException;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.evenement.civil.EvenementCivilWarningCollector;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
@@ -76,14 +77,20 @@ public class CorrectionAdresse extends ModificationAdresseBase {
 		else {
 			// la commune d'annonce de l'événement n'est pas forcément la commune de domicile
 			// de l'individu, donc il faut aller chercher la commune de domicile...
-			final Commune commune = getCommuneDomicileAtDate(pp, dateTraitement);
+			final Commune commune;
+			try {
+				commune = getCommuneDomicileAtDate(pp, dateTraitement);
+			}
+			catch (DonneesCivilesException e) {
+				throw new EvenementCivilException("Evénement de correction d'adresse avec changement de commune");
+			}
 			if (commune == null || commune.getNoOFS() != ofsCommune) {
 				throw new EvenementCivilException("Evénement de correction d'adresse avec changement de commune");
 			}
 		}
 	}
 
-	private Commune getCommuneDomicileAtDate(PersonnePhysique pp, RegDate date) throws EvenementCivilException {
+	private Commune getCommuneDomicileAtDate(PersonnePhysique pp, RegDate date) throws EvenementCivilException, DonneesCivilesException {
 		try {
 			final AdressesCiviles adresses = context.getAdresseService().getAdressesCiviles(pp, date, false);
 			return context.getServiceInfra().getCommuneByAdresse(adresses.principale, date);

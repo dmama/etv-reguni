@@ -1473,7 +1473,7 @@ public class AdresseServiceImpl implements AdresseService {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public AdressesCiviles getAdressesCiviles(Tiers tiers, RegDate date, boolean strict) throws AdresseException {
+	public AdressesCiviles getAdressesCiviles(Tiers tiers, RegDate date, boolean strict) throws AdresseException, DonneesCivilesException {
 		final AdressesCiviles adressesCiviles;
 		if (tiers instanceof PersonnePhysique) {
 			final PersonnePhysique personne = (PersonnePhysique) tiers;
@@ -1505,8 +1505,7 @@ public class AdresseServiceImpl implements AdresseService {
 		else if (tiers instanceof Entreprise) {
 			final Entreprise entreprise = (Entreprise) tiers;
 			if (entreprise.isConnueAuCivil()) {
-				// TODO [SIPM] récupérer les adresses de RCEnt
-				throw new IllegalArgumentException("Il va falloir coder la recherche des adresses dans RCEnt...");
+				adressesCiviles = getAdressesCiviles(entreprise, date);
 			}
 			else {
 				adressesCiviles = null;
@@ -1515,8 +1514,7 @@ public class AdresseServiceImpl implements AdresseService {
 		else if (tiers instanceof Etablissement) {
 			final Etablissement etb = (Etablissement) tiers;
 			if (etb.isConnuAuCivil()) {
-				// TODO [SIPM] récupérer les adresses de RCEnt
-				throw new IllegalArgumentException("Il va falloir coder la recherche des adresses dans RCEnt...");
+				adressesCiviles = getAdressesCiviles(etb, date);
 			}
 			else {
 				adressesCiviles = null;
@@ -1605,8 +1603,7 @@ public class AdresseServiceImpl implements AdresseService {
 		else if (tiers instanceof Etablissement) {
 			final Etablissement etb = (Etablissement) tiers;
 			if (etb.isConnuAuCivil()) {
-				// TODO [SIPM] récupérer les adresses de RCEnt
-				throw new IllegalArgumentException("Il va falloir coder la recherche des adresses dans RCEnt...");
+				adressesCiviles = getAdressesCivilesHisto(etb);
 			}
 			else {
 				adressesCiviles = new AdressesCivilesHisto();
@@ -1678,17 +1675,40 @@ public class AdresseServiceImpl implements AdresseService {
 		return adresses;
 	}
 
-	/**
-	 * Applique les règles business pour transformer l'adresse surchargée spécifiée en une adresse générique.
-	 *
-	 * @param tiers             le tiers associé à l'adresse
-	 * @param adresseSurchargee l'adresse de tiers à résoudre
-	 * @param callDepth         profondeur d'appel (technique)
-	 * @param strict            si <i>vrai</i>, la cohérence des données est vérifiée de manière stricte et en cas d'incohérence, une exception est levée. Si <i>faux</i>, la méthode essaie de corriger
-	 *                          les données (dans la mesure du possible) pour ne pas lever d'exception.
-	 * @return une adresse générique
-	 * @throws AdresseException en cas de dépendence circulaire
-	 */
+	private AdressesCivilesHisto getAdressesCivilesHisto(Etablissement etablissement) {
+		final Organisation organisation = tiersService.getOrganisationPourSite(etablissement);
+		if (organisation == null) {
+			throw new OrganisationNotFoundException(etablissement);
+		}
+
+		final AdressesCivilesHistoriques adressesCiviles = serviceOrganisationService.getAdressesSiteOrganisationHisto(etablissement.getNumeroEtablissement());
+		final AdressesCivilesHisto adresses = new AdressesCivilesHisto();
+		adresses.principales.addAll(adressesCiviles.principales);
+		adresses.courriers.addAll(adressesCiviles.courriers);
+		return adresses;
+	}
+
+	private AdressesCiviles getAdressesCiviles(Entreprise entreprise, RegDate date) throws DonneesCivilesException {
+		final AdressesCivilesHisto civilesHisto = getAdressesCivilesHisto(entreprise);
+		return civilesHisto.at(date);
+	}
+
+	private AdressesCiviles getAdressesCiviles(Etablissement etablissement, RegDate date) throws DonneesCivilesException {
+		final AdressesCivilesHisto civilesHisto = getAdressesCivilesHisto(etablissement);
+		return civilesHisto.at(date);
+	}
+
+		/**
+		 * Applique les règles business pour transformer l'adresse surchargée spécifiée en une adresse générique.
+		 *
+		 * @param tiers             le tiers associé à l'adresse
+		 * @param adresseSurchargee l'adresse de tiers à résoudre
+		 * @param callDepth         profondeur d'appel (technique)
+		 * @param strict            si <i>vrai</i>, la cohérence des données est vérifiée de manière stricte et en cas d'incohérence, une exception est levée. Si <i>faux</i>, la méthode essaie de corriger
+		 *                          les données (dans la mesure du possible) pour ne pas lever d'exception.
+		 * @return une adresse générique
+		 * @throws AdresseException en cas de dépendence circulaire
+		 */
 	private AdresseGenerique resolveAdresseSurchargee(final Tiers tiers, final AdresseTiers adresseSurchargee, int callDepth, boolean strict) throws AdresseException {
 
 		AdresseGenerique surcharge;

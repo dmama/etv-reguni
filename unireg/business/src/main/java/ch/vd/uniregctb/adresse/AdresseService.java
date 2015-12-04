@@ -7,6 +7,7 @@ import org.jetbrains.annotations.Nullable;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.unireg.interfaces.civil.data.Individu;
+import ch.vd.uniregctb.common.DonneesCivilesException;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.type.FormulePolitesse;
@@ -25,7 +26,7 @@ public interface AdresseService {
 	 * @return les adresses civiles du tiers, ou <b>null</b> si le tiers ne possède pas d'adresse.
 	 * @throws AdresseException en cas d'erreur sur les adresses récupérées du registre civil.
 	 */
-	AdressesCiviles getAdressesCiviles(Tiers tiers, RegDate date, boolean strict) throws AdresseException;
+	AdressesCiviles getAdressesCiviles(Tiers tiers, RegDate date, boolean strict) throws AdresseException, DonneesCivilesException;
 
 	/**
 	 * Extrait les adresses civiles définies pour une date donnée.

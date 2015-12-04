@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.interfaces.common.Adresse;
 
 /**
  * Interface d'un site d'organisation (= un établissement, au sens civil du terme)
@@ -55,6 +56,8 @@ public interface SiteOrganisation {
 	 * @return Le siège, ou null si aucun siège valide à la date donnée
 	 */
 	Siege getSiege(RegDate date);
+
+	List<Adresse> getAdresses();
 
 	List<DateRanged<Long>> getRemplacePar();
 

@@ -244,4 +244,25 @@ public class AdressesCivilesHisto {
 		}
 		return last;
 	}
+	/**
+	 * @param date la date de validité demandée
+	 * @return l'adresse fiscale valide (et non-annulée) à une date donnée.
+	 */
+	public AdressesCiviles at(RegDate date) throws DonneesCivilesException {
+		final AdressesCiviles adresses = new AdressesCiviles();
+		for (TypeAdresseCivil type : TypeAdresseCivil.values()) {
+			final List<Adresse> list = ofType(type);
+			if (list != null) {
+				for (Adresse a : list) {
+					if (a.isValidAt(date)) {
+						adresses.set(a, true);
+						break;
+					}
+				}
+			}
+		}
+		return adresses;
+	}
+
+
 }

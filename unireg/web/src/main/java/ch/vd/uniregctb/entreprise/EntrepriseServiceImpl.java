@@ -146,7 +146,8 @@ public class EntrepriseServiceImpl implements EntrepriseService {
 		if (principaux != null) {
 			final List<DomicileEtablissement> siegeIds = new ArrayList<>(principaux.size());
 			for (DateRanged<Etablissement> principal : principaux) {
-				// FIXME: Extraire et trier spéciallement les domiciles annulés !!
+				// FIXME: Extraire et trier spéciallement les domiciles annulés !!fh
+
 				List<DomicileEtablissement> extractedDomiciles = DateRangeHelper.extract(principal.getPayload().getSortedDomiciles(false),
 				                                                                         principal.getDateDebut(),
 				                                                                         principal.getDateFin(),

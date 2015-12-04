@@ -1,6 +1,7 @@
 package ch.vd.unireg.interfaces.organisation.mock.data;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.NavigableMap;
@@ -9,8 +10,11 @@ import java.util.TreeMap;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 
+import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.NotImplementedException;
+import ch.vd.unireg.interfaces.common.Adresse;
+import ch.vd.unireg.interfaces.infra.mock.MockAdresse;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
 import ch.vd.unireg.interfaces.organisation.data.DonneesRC;
 import ch.vd.unireg.interfaces.organisation.data.DonneesRegistreIDE;
@@ -49,6 +53,7 @@ public class MockSiteOrganisation implements SiteOrganisation {
 	private final DonneesRC donneesRC;
 	private final NavigableMap<RegDate, Long> remplacePar = new TreeMap<>();
 	private final NavigableMap<RegDate, List<Long>> enRemplacementDe = new TreeMap<>();
+	private final List<Adresse> adresses = new ArrayList<>();
 
 	public MockSiteOrganisation(long numeroSite, DonneesRegistreIDE donneesRegistreIDE, DonneesRC donneesRC) {
 		this.numeroSite = numeroSite;
@@ -90,6 +95,11 @@ public class MockSiteOrganisation implements SiteOrganisation {
 
 	public void addSiege(RegDate dateDebut, RegDate dateFin, TypeAutoriteFiscale typeAutoriteFiscale, Integer ofs) {
 		MockOrganisationHelper.addRangedData(siege, dateDebut, dateFin, Pair.of(typeAutoriteFiscale, ofs));
+	}
+
+	public void addAdresse(MockAdresse adresse) {
+		this.adresses.add(adresse);
+		Collections.sort(this.adresses, new DateRangeComparator<>());
 	}
 
 	public void changeTypeDeSite(RegDate date, TypeDeSite nouveauType) {
@@ -154,6 +164,11 @@ public class MockSiteOrganisation implements SiteOrganisation {
 	@Override
 	public Siege getSiege(RegDate date) {
 		return OrganisationHelper.dateRangeForDate(getSieges(), date);	}
+
+	@Override
+	public List<Adresse> getAdresses() {
+		return adresses;
+	}
 
 	@Override
 	public List<DateRanged<Long>> getRemplacePar() {

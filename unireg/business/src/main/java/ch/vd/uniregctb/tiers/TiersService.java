@@ -1649,6 +1649,8 @@ public interface TiersService {
      */
     Organisation getOrganisation(@NotNull Entreprise entreprise);
 
+    Organisation getOrganisationPourSite(@NotNull Etablissement etablissement);
+
     /**
      * @param entreprise une entreprise fiscale
      * @return le numéro IDE associé à l'entreprise, ou <code>null</code> si on n'en connait aucun
