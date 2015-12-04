@@ -10,7 +10,8 @@
 	<bean id="editiqueService" class="ch.vd.uniregctb.editique.mock.MockEditiqueService" />
 	<bean id="editiqueCompositionService" class="ch.vd.uniregctb.editique.mock.MockEditiqueCompositionService" />
 	<bean id="impressionDIPPHelper" class="ch.vd.uniregctb.declaration.ordinaire.pp.MockImpressionDeclarationImpotPersonnesPhysiquesHelper" />
-	<bean id="impressionSommationDIHelper" class="ch.vd.uniregctb.declaration.ordinaire.pp.MockImpressionSommationDIHelper" />
+	<bean id="impressionSommationDIPPHelper" class="ch.vd.uniregctb.declaration.ordinaire.pp.MockImpressionSommationDIPersonnesPhysiquesHelper" />
+	<bean id="impressionSommationDIPMHelper" class="ch.vd.uniregctb.declaration.ordinaire.pm.MockImpressionSommationDIPersonnesMoralesHelper" />
 	<bean id="impressionSommationLRHelper" class="ch.vd.uniregctb.declaration.source.MockImpressionSommationLRHelper" />
 	<bean id="impressionConfirmationDelaiHelper" class="ch.vd.uniregctb.declaration.ordinaire.pp.MockImpressionConfirmationDelaiHelper" />
 
