@@ -30,6 +30,11 @@ export -f avec_premiere_ligne
 # un répertoire de travail temporaire (= destination des fichiers retravaillés)
 WORKDIR=$(mktemp -d)
 
+
+#
+# Découpage et ré-encodage des fichiers csv
+#
+
 # on va traiter les fichiers csv un par un
 (cd "$LOGDIR" && find . -type f -name "*.csv") | while read LOGFILE; do
 
@@ -86,7 +91,23 @@ done
 
 done
 
+
+#
+# Extractions spécifiques
+#
+
+# les fors principaux adaptés pour couvrir les fors secondaires
+(
+	echo "Extraction des fors principaux adaptés à la couverture des fors secondaires..."
+	INPUT_FILE="$LOGDIR/fors.csv"
+	OUTPUT_FILE="$WORKDIR/fors/fors-principaux-adaptes-pour-couverture-fors-secondaires.csv"
+	head -n 1 "$LOGDIR/fors.csv" | iconv -c -t ISO88591 > "$OUTPUT_FILE"
+	grep "date de \(début\|fin\) .* couvrir les fors secondaires" "$INPUT_FILE" | iconv -c -t iso88591 >> "$OUTPUT_FILE"
+)
+
+
 # construction du fichier d'export
+echo "Construction de l'archive $DESTFILE..."
 CURDIR=$(pwd)
 rm -f "$DESTFILE"
 if [[ "$DESTFILE" =~ ^[^/].* ]]; then
