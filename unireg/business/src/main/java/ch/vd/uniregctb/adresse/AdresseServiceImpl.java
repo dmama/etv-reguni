@@ -475,7 +475,7 @@ public class AdresseServiceImpl implements AdresseService {
 			}
 
 			// [SIFISC-16876] On n'utilise que la raison sociale pour l'adresse, l'enseigne ne sert que pour la recherche
-			adresse.addRaisonSociale(etb.getRaisonSociale());
+			adresse.addRaisonSociale(getRaisonSociale(etb));
 		}
 		else {
 			throw new NotImplementedException("Type de tiers [" + tiers.getNatureTiers() + "] inconnu");
@@ -816,6 +816,16 @@ public class AdresseServiceImpl implements AdresseService {
 	 */
 	private String getRaisonSociale(Entreprise entreprise) {
 		return tiersService.getRaisonSociale(entreprise);
+	}
+
+	/**
+	 * Retourne la raison sociale pour l'adressage de l'etablissement spécifié.
+	 *
+	 * @param etablissement un etablissement
+	 * @return la raison sociale de l'etablissement sur une seule ligne
+	 */
+	private String getRaisonSociale(Etablissement etablissement) {
+		return tiersService.getRaisonSociale(etablissement);
 	}
 
 	public static RueEtNumero buildRueEtNumero(AdresseGenerique adresse) {

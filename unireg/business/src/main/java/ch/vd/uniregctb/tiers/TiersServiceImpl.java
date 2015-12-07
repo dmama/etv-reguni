@@ -4781,6 +4781,19 @@ public class TiersServiceImpl implements TiersService {
     }
 
     @Override
+    public String getRaisonSociale(Etablissement etablissement) {
+	    if (etablissement.isConnuAuCivil()) {
+		    final Organisation organisation = serviceOrganisationService.getOrganisationHistory(serviceOrganisationService.getOrganisationPourSite(etablissement.getNumeroEtablissement()));
+		    SiteOrganisation siteOrganisation = organisation.getSiteForNo(etablissement.getNumeroEtablissement());
+		    final List<DateRanged<String>> nom = siteOrganisation.getNom();
+		    return nom.get(nom.size() - 1).getPayload();
+	    }
+	    else {
+		    return etablissement.getRaisonSociale();
+	    }
+    }
+
+    @Override
     public Set<PersonnePhysique> getComposantsMenage(MenageCommun menageCommun, RegDate date) {
         if (menageCommun == null) {
             return null;

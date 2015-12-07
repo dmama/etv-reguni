@@ -1244,6 +1244,12 @@ public interface TiersService {
     String getRaisonSociale(Entreprise pm);
 
     /**
+     * @param etablissement l'établissement dont on veut connaître la raison sociale
+     * @return la raison sociale
+     */
+    String getRaisonSociale(Etablissement etablissement);
+
+    /**
      * Renvoie une liste des composants du ménage valides à une date donnée.
      *
      * @param menageCommun
