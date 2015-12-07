@@ -26,7 +26,6 @@ import ch.vd.uniregctb.adresse.AdresseTiers;
 import ch.vd.uniregctb.adresse.AdressesCiviles;
 import ch.vd.uniregctb.adresse.TypeAdresseRepresentant;
 import ch.vd.uniregctb.common.ActionException;
-import ch.vd.uniregctb.common.DonneesCivilesException;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.common.TiersNotFoundException;
 import ch.vd.uniregctb.security.AccessDeniedException;
@@ -503,7 +502,7 @@ public class AdresseManagerImpl extends TiersManager implements AdresseManager {
 						fillAdressesDisponibleViewFromAddIndividu(adresses, adressesIndividu);
 					}
 				}
-				catch (AdresseException | DonneesCivilesException e) {
+				catch (AdresseException e) {
 					AdresseDisponibleView view = new AdresseDisponibleView();
 					view.setRue(String.format("<erreur: %s", e.getMessage()));
 				}

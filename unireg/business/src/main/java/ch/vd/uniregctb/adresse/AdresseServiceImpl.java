@@ -1473,7 +1473,7 @@ public class AdresseServiceImpl implements AdresseService {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public AdressesCiviles getAdressesCiviles(Tiers tiers, RegDate date, boolean strict) throws AdresseException, DonneesCivilesException {
+	public AdressesCiviles getAdressesCiviles(Tiers tiers, RegDate date, boolean strict) throws AdresseException {
 		final AdressesCiviles adressesCiviles;
 		if (tiers instanceof PersonnePhysique) {
 			final PersonnePhysique personne = (PersonnePhysique) tiers;
@@ -1548,7 +1548,6 @@ public class AdresseServiceImpl implements AdresseService {
 		catch (DonneesCivilesException e) {
 			throw new AdresseDataException(e);
 		}
-
 	}
 
 	/**
@@ -1688,14 +1687,22 @@ public class AdresseServiceImpl implements AdresseService {
 		return adresses;
 	}
 
-	private AdressesCiviles getAdressesCiviles(Entreprise entreprise, RegDate date) throws DonneesCivilesException {
-		final AdressesCivilesHisto civilesHisto = getAdressesCivilesHisto(entreprise);
-		return civilesHisto.at(date);
+	private AdressesCiviles getAdressesCiviles(Entreprise entreprise, RegDate date) throws AdresseDataException {
+		try {
+			return getAdressesCivilesHisto(entreprise).at(date);
+		}
+		catch (DonneesCivilesException e) {
+			throw new AdresseDataException(e);
+		}
 	}
 
-	private AdressesCiviles getAdressesCiviles(Etablissement etablissement, RegDate date) throws DonneesCivilesException {
-		final AdressesCivilesHisto civilesHisto = getAdressesCivilesHisto(etablissement);
-		return civilesHisto.at(date);
+	private AdressesCiviles getAdressesCiviles(Etablissement etablissement, RegDate date) throws AdresseDataException {
+		try {
+			return getAdressesCivilesHisto(etablissement).at(date);
+		}
+		catch (DonneesCivilesException e) {
+			throw new AdresseDataException(e);
+		}
 	}
 
 		/**
