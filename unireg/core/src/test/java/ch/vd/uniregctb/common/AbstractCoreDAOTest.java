@@ -111,6 +111,7 @@ import ch.vd.uniregctb.tiers.TacheTransmissionDossier;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.Tutelle;
+import ch.vd.uniregctb.type.CategorieEntreprise;
 import ch.vd.uniregctb.type.DayMonth;
 import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.ModeImposition;
@@ -831,8 +832,8 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 	 * Ajoute une tâche d'envoi de déclaration d'impôt PP avec les paramètres spécifiés.
 	 */
 	protected TacheEnvoiDeclarationImpotPM addTacheEnvoiDIPM(TypeEtatTache etat, RegDate dateEcheance, RegDate dateDebut, RegDate dateFin, TypeContribuable typeContribuable, TypeDocument typeDocument,
-	                                                         ContribuableImpositionPersonnesMorales contribuable, @Nullable CollectiviteAdministrative colAdm) {
-		TacheEnvoiDeclarationImpotPM tache = new TacheEnvoiDeclarationImpotPM(etat, dateEcheance, contribuable, dateDebut, dateFin, typeContribuable, typeDocument, colAdm);
+	                                                         ContribuableImpositionPersonnesMorales contribuable, CategorieEntreprise categoreEntreprise, @Nullable CollectiviteAdministrative colAdm) {
+		TacheEnvoiDeclarationImpotPM tache = new TacheEnvoiDeclarationImpotPM(etat, dateEcheance, contribuable, dateDebut, dateFin, typeContribuable, typeDocument, categoreEntreprise, colAdm);
 		tache = merge(tache);
 		return tache;
 	}

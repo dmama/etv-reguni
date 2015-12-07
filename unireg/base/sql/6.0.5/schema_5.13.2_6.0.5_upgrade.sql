@@ -216,6 +216,13 @@ UPDATE PARAMETRE SET NOM='delaiEnvoiSommationDeclarationImpotPP', LOG_MDATE=CURR
 UPDATE PARAMETRE SET NOM='delaiEcheanceSommationDeclarationImpotPP', LOG_MDATE=CURRENT_DATE, LOG_MUSER='[system-sipm]' WHERE NOM='delaiEcheanceSommationDeclarationImpot';
 
 --
+-- Pour l'instant, pour les tests, on met 2015, mais cela deviendra 2016 pour la production
+-- TODO effacer ceci pour le cycle 16R2 au plus tard
+--
+INSERT INTO PARAMETRE (NOM, LOG_CDATE, LOG_CUSER, LOG_MDATE, LOG_MUSER, VALEUR)
+	SELECT 'premierePeriodeFiscaleDeclarationPersonnesMorales', CURRENT_DATE, '[system-sipm]', CURRENT_DATE, '[system-sipm]', '2015' FROM DUAL;
+
+--
 -- Nouvelle mouture des événements fiscaux
 --
 

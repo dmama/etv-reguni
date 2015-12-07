@@ -34,6 +34,7 @@ import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.Tache;
 import ch.vd.uniregctb.tiers.TacheDAO;
 import ch.vd.uniregctb.tiers.TacheEnvoiDeclarationImpotPM;
+import ch.vd.uniregctb.type.CategorieEntreprise;
 import ch.vd.uniregctb.type.DayMonth;
 import ch.vd.uniregctb.type.FormeJuridiqueEntreprise;
 import ch.vd.uniregctb.type.MotifFor;
@@ -118,7 +119,7 @@ public class EnvoiDeclarationsPMProcessorTest extends BusinessTest {
 				addPeriodeFiscale(pf);
 
 				// la tâche de DI "pf" (= celle que l'on va traiter)
-				addTacheEnvoiDIPM(TypeEtatTache.EN_INSTANCE, RegDate.get(), date(pf - 1, 5, 3), date(pf, 6, 30), TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_PM, e, oipm);
+				addTacheEnvoiDIPM(TypeEtatTache.EN_INSTANCE, RegDate.get(), date(pf - 1, 5, 3), date(pf, 6, 30), TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_PM, e, CategorieEntreprise.PM, oipm);
 
 				return e.getNumero();
 			}
@@ -286,7 +287,7 @@ public class EnvoiDeclarationsPMProcessorTest extends BusinessTest {
 				addPeriodeFiscale(pf);
 
 				// la tâche de DI "pf" (= celle que l'on va traiter)
-				addTacheEnvoiDIPM(TypeEtatTache.EN_INSTANCE, RegDate.get(), date(pf - 1, 5, 3), date(pf, 6, 30), TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_PM, e, oipm);
+				addTacheEnvoiDIPM(TypeEtatTache.EN_INSTANCE, RegDate.get(), date(pf - 1, 5, 3), date(pf, 6, 30), TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_PM, e, CategorieEntreprise.PM, oipm);
 
 				return e.getNumero();
 			}
@@ -373,7 +374,7 @@ public class EnvoiDeclarationsPMProcessorTest extends BusinessTest {
 				addPeriodeFiscale(pf);
 
 				// la tâche de DI "pf" (= celle que l'on va traiter)
-				addTacheEnvoiDIPM(TypeEtatTache.EN_INSTANCE, RegDate.get(), date(pf - 1, 5, 3), date(pf, 6, 30), TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_PM, e, oipm);
+				addTacheEnvoiDIPM(TypeEtatTache.EN_INSTANCE, RegDate.get(), date(pf - 1, 5, 3), date(pf, 6, 30), TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_PM, e, CategorieEntreprise.PM, oipm);
 
 				return e.getNumero();
 			}
@@ -483,7 +484,7 @@ public class EnvoiDeclarationsPMProcessorTest extends BusinessTest {
 				addPeriodeFiscale(pf);
 
 				// la tâche de DI "pf" (= celle que l'on va traiter)
-				addTacheEnvoiDIPM(TypeEtatTache.EN_INSTANCE, RegDate.get(), date(pf - 1, 5, 3), date(pf, 6, 15), TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_PM, e, oipm);
+				addTacheEnvoiDIPM(TypeEtatTache.EN_INSTANCE, RegDate.get(), date(pf - 1, 5, 3), date(pf, 6, 15), TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_PM, e, CategorieEntreprise.PM, oipm);
 
 				return e.getNumero();
 			}
@@ -593,7 +594,7 @@ public class EnvoiDeclarationsPMProcessorTest extends BusinessTest {
 				addPeriodeFiscale(pf);
 
 				// la tâche de DI "pf" (= celle que l'on va traiter)
-				addTacheEnvoiDIPM(TypeEtatTache.EN_INSTANCE, RegDate.get(), date(pf - 1, 5, 3), date(pf, 6, 15), TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_PM, e, oipm);
+				addTacheEnvoiDIPM(TypeEtatTache.EN_INSTANCE, RegDate.get(), date(pf - 1, 5, 3), date(pf, 6, 15), TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_PM, e, CategorieEntreprise.PM, oipm);
 
 				return e.getNumero();
 			}

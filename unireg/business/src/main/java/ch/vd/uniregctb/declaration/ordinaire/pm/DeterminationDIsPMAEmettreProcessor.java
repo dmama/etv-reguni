@@ -469,7 +469,8 @@ public class DeterminationDIsPMAEmettreProcessor {
 		// Création et sauvegarde de la tâche en base
 		final TacheEnvoiDeclarationImpotPM tache = new TacheEnvoiDeclarationImpotPM(TypeEtatTache.EN_INSTANCE, Tache.getDefaultEcheance(dateTraitement),
 		                                                                            entreprise, pi.getDateDebut(), pi.getDateFin(),
-		                                                                            pi.getTypeContribuable(), pi.getTypeDocumentDeclaration(), oid);
+		                                                                            pi.getTypeContribuable(), pi.getTypeDocumentDeclaration(),
+		                                                                            tiersService.getCategorieEntreprise(entreprise, pi.getDateFin()), oid);
 		if (rapport != null) {
 			rapport.addTacheEnvoiCreee(entreprise, tache);
 		}

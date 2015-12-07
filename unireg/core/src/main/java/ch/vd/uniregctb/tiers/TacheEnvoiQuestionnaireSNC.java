@@ -3,6 +3,8 @@ package ch.vd.uniregctb.tiers;
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.Transient;
 
 import org.hibernate.annotations.Type;
@@ -11,6 +13,8 @@ import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.uniregctb.common.LengthConstants;
+import ch.vd.uniregctb.type.CategorieEntreprise;
 import ch.vd.uniregctb.type.TypeDocument;
 import ch.vd.uniregctb.type.TypeEtatTache;
 import ch.vd.uniregctb.type.TypeTache;
@@ -29,17 +33,22 @@ public class TacheEnvoiQuestionnaireSNC extends TacheEnvoiDocument implements Da
 	 */
 	private RegDate dateFin;
 
+	/**
+	 * Catégorie d'entreprise
+	 */
+	private CategorieEntreprise categorieEntreprise;
 
 	// Ce constructeur est requis par Hibernate
 	protected TacheEnvoiQuestionnaireSNC() {
 	}
 
 	public TacheEnvoiQuestionnaireSNC(TypeEtatTache etat, RegDate dateEcheance, Entreprise contribuable,
-	                                  RegDate dateDebut, RegDate dateFin,
+	                                  RegDate dateDebut, RegDate dateFin, CategorieEntreprise categorieEntreprise,
 	                                  CollectiviteAdministrative collectiviteAdministrativeAssignee) {
 		super(etat, dateEcheance, contribuable, collectiviteAdministrativeAssignee, TypeDocument.QUESTIONNAIRE_SNC);
 		this.dateDebut = dateDebut;
 		this.dateFin = dateFin;
+		this.categorieEntreprise = categorieEntreprise;
 	}
 
 	@Override
@@ -73,5 +82,15 @@ public class TacheEnvoiQuestionnaireSNC extends TacheEnvoiDocument implements Da
 	@Override
 	public TypeTache getTypeTache() {
 		return TypeTache.TacheEnvoiQuestionnaireSNC;
+	}
+
+	@Column(name = "CATEGORIE_ENTREPRISE", length= LengthConstants.TACHE_CATEGORIE_ENTREPRISE)
+	@Enumerated(value = EnumType.STRING)
+	public CategorieEntreprise getCategorieEntreprise() {
+		return categorieEntreprise;
+	}
+
+	public void setCategorieEntreprise(CategorieEntreprise categorieEntreprise) {
+		this.categorieEntreprise = categorieEntreprise;
 	}
 }

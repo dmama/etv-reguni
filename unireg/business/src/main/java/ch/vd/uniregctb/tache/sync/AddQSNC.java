@@ -28,6 +28,7 @@ public class AddQSNC extends SynchronizeAction {
 		                                                                        (Entreprise) context.contribuable,
 		                                                                        range.getDateDebut(),
 		                                                                        range.getDateFin(),
+		                                                                        context.tiersService.getCategorieEntreprise((Entreprise) context.contribuable, range.getDateFin()),
 		                                                                        context.collectivite);
 		context.tacheDAO.save(tache);
 	}

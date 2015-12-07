@@ -609,7 +609,7 @@ public class TacheServiceImpl implements TacheService {
 			final Contribuable contribuable = (Contribuable) tiers;
 			final CollectiviteAdministrative collectivite = getOfficeImpot(contribuable);
 
-			final Context context = new Context(contribuable, collectivite, tacheDAO, diService, officeSuccessions, diDAO, qsncDAO, pfDAO);
+			final Context context = new Context(contribuable, collectivite, tacheDAO, diService, officeSuccessions, tiersService, diDAO, qsncDAO, pfDAO);
 			for (SynchronizeAction action : actions) {
 				action.execute(context);
 				results.addAction(ctbId, action);

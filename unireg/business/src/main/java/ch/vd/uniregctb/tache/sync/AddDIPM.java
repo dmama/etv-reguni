@@ -4,6 +4,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionPersonnesMorales;
 import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesMorales;
+import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.TacheEnvoiDeclarationImpot;
 import ch.vd.uniregctb.tiers.TacheEnvoiDeclarationImpotPM;
 import ch.vd.uniregctb.type.TypeEtatTache;
@@ -28,6 +29,7 @@ public class AddDIPM extends AddDI<PeriodeImpositionPersonnesMorales> {
 		                                                                          periodeImposition.getDateFin(),
 		                                                                          periodeImposition.getTypeContribuable(),
 		                                                                          periodeImposition.getTypeDocumentDeclaration(),
+		                                                                          context.tiersService.getCategorieEntreprise((Entreprise) context.contribuable, periodeImposition.getDateFin()),
 		                                                                          context.collectivite);
 		context.tacheDAO.save(tache);
 	}

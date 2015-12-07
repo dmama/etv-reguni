@@ -139,7 +139,7 @@ public class AddDIPPTest extends BusinessTest {
 				Assert.assertNotNull(periodeImposition);
 				assertInstanceOf(PeriodeImpositionPersonnesPhysiques.class, periodeImposition);
 
-				final Context ctx = new Context(pp, ca, tacheDAO, diService, caSuccessions, diDAO, qsncDAO, pfDAO);
+				final Context ctx = new Context(pp, ca, tacheDAO, diService, caSuccessions, tiersService, diDAO, qsncDAO, pfDAO);
 				final AddDIPP add = new MyAddDIPP((PeriodeImpositionPersonnesPhysiques) periodeImposition, ref);
 				add.execute(ctx);
 				return null;
@@ -231,7 +231,7 @@ public class AddDIPPTest extends BusinessTest {
 				Assert.assertNotNull(periodeImposition);
 				assertInstanceOf(PeriodeImpositionPersonnesPhysiques.class, periodeImposition);
 
-				final Context ctx = new Context(pp, ca, tacheDAO, diService, caSuccessions, diDAO, qsncDAO, pfDAO);
+				final Context ctx = new Context(pp, ca, tacheDAO, diService, caSuccessions, tiersService, diDAO, qsncDAO, pfDAO);
 				final AddDIPP add = new MyAddDIPP((PeriodeImpositionPersonnesPhysiques) periodeImposition, ref);
 				add.execute(ctx);
 				return null;
@@ -314,7 +314,7 @@ public class AddDIPPTest extends BusinessTest {
 				Assert.assertNotNull(periodeImposition);
 				assertInstanceOf(PeriodeImpositionPersonnesPhysiques.class, periodeImposition);
 
-				final Context ctx = new Context(pp, ca, tacheDAO, diService, caSuccessions, diDAO, qsncDAO, pfDAO);
+				final Context ctx = new Context(pp, ca, tacheDAO, diService, caSuccessions, tiersService, diDAO, qsncDAO, pfDAO);
 				final AddDIPP add = new MyAddDIPP((PeriodeImpositionPersonnesPhysiques) periodeImposition, dateReference);
 				add.execute(ctx);
 				return null;
@@ -428,7 +428,7 @@ public class AddDIPPTest extends BusinessTest {
 					assertInstanceOf(PeriodeImpositionPersonnesPhysiques.class, periodeImposition);
 					Assert.assertEquals(TypeContribuable.VAUDOIS_ORDINAIRE, periodeImposition.getTypeContribuable());
 
-					final Context ctx = new Context(pp, ca, tacheDAO, diService, caSuccessions, diDAO, qsncDAO, pfDAO);
+					final Context ctx = new Context(pp, ca, tacheDAO, diService, caSuccessions, tiersService, diDAO, qsncDAO, pfDAO);
 					final AddDIPP add = new MyAddDIPP((PeriodeImpositionPersonnesPhysiques) periodeImposition, ref);
 					add.execute(ctx);
 				}
@@ -444,7 +444,7 @@ public class AddDIPPTest extends BusinessTest {
 					assertInstanceOf(PeriodeImpositionPersonnesPhysiques.class, periodeImposition);
 					Assert.assertEquals(TypeContribuable.VAUDOIS_DEPENSE, periodeImposition.getTypeContribuable());
 
-					final Context ctx = new Context(pp, ca, tacheDAO, diService, caSuccessions, diDAO, qsncDAO, pfDAO);
+					final Context ctx = new Context(pp, ca, tacheDAO, diService, caSuccessions, tiersService, diDAO, qsncDAO, pfDAO);
 					final AddDIPP add = new MyAddDIPP((PeriodeImpositionPersonnesPhysiques) periodeImposition, ref);
 					add.execute(ctx);
 				}
@@ -578,7 +578,7 @@ public class AddDIPPTest extends BusinessTest {
 					assertInstanceOf(PeriodeImpositionPersonnesPhysiques.class, periodeImposition);
 					Assert.assertEquals(TypeContribuable.VAUDOIS_ORDINAIRE, periodeImposition.getTypeContribuable());
 
-					final Context ctx = new Context(pp, ca, tacheDAO, diService, caSuccessions, diDAO, qsncDAO, pfDAO);
+					final Context ctx = new Context(pp, ca, tacheDAO, diService, caSuccessions, tiersService, diDAO, qsncDAO, pfDAO);
 					final AddDIPP add = new MyAddDIPP((PeriodeImpositionPersonnesPhysiques) periodeImposition, dateReference);
 					add.execute(ctx);
 				}
@@ -594,7 +594,7 @@ public class AddDIPPTest extends BusinessTest {
 					assertInstanceOf(PeriodeImpositionPersonnesPhysiques.class, periodeImposition);
 					Assert.assertEquals(TypeContribuable.VAUDOIS_DEPENSE, periodeImposition.getTypeContribuable());
 
-					final Context ctx = new Context(pp, ca, tacheDAO, diService, caSuccessions, diDAO, qsncDAO, pfDAO);
+					final Context ctx = new Context(pp, ca, tacheDAO, diService, caSuccessions, tiersService, diDAO, qsncDAO, pfDAO);
 					final AddDIPP add = new MyAddDIPP((PeriodeImpositionPersonnesPhysiques) periodeImposition, dateReference);
 					add.execute(ctx);
 				}

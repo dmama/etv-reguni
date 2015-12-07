@@ -216,6 +216,13 @@ UPDATE PARAMETRE SET NOM='delaiEnvoiSommationDeclarationImpotPP', LOG_MDATE=CURR
 UPDATE PARAMETRE SET NOM='delaiEcheanceSommationDeclarationImpotPP', LOG_MDATE=CURRENT_DATE, LOG_MUSER='[system-sipm]' WHERE NOM='delaiEcheanceSommationDeclarationImpot';
 
 --
+-- Pour l'instant, pour les tests, on met 2015, mais cela deviendra 2016 pour la production
+-- TODO effacer ceci pour le cycle 16R2 au plus tard
+--
+INSERT INTO PARAMETRE (NOM, LOG_CDATE, LOG_CUSER, LOG_MDATE, LOG_MUSER, VALEUR)
+		SELECT 'premierePeriodeFiscaleDeclarationPersonnesMorales', CURRENT_DATE, '[system-sipm]', CURRENT_DATE, '[system-sipm]', '2015' FROM DUAL;
+
+--
 -- Nouvelle mouture des événements fiscaux
 --
 
@@ -261,6 +268,9 @@ ALTER TABLE EVENEMENT_FISCAL ADD CONSTRAINT FK_EVTFISC_REGFISC_ID FOREIGN KEY (R
 --
 UPDATE TACHE SET TACHE_TYPE='ENVOI_DI_PP' WHERE TACHE_TYPE='ENVOI_DI';
 
+-- Nouvelle colonne dans la table des tâches pour la catégorie d'entreprise
+ALTER TABLE TACHE ADD CATEGORIE_ENTREPRISE NVARCHAR2(10);
+
 --
 -- Distinction entre les paramètrages PP et PM par période fiscale
 --
@@ -305,6 +315,7 @@ CREATE INDEX IDX_ETAENT_ENTR_ID ON ETAT_ENTREPRISE(ENTREPRISE_ID ASC);
 
 --
 -- Modèles de documents pour les DI PM/APM
+-- (TODO pour l'instant,on laisse 2015 comme période minimale, mais pour la production, ce sera 2016 !!!)
 --
 
 INSERT INTO MODELE_DOCUMENT (ID, LOG_CDATE, LOG_MDATE, LOG_CUSER, LOG_MUSER, TYPE_DOCUMENT, PERIODE_ID)
