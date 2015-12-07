@@ -128,13 +128,7 @@ public class ActivityManagerImpl implements ActivityManager {
 	 */
 	private static boolean isActiveAssujettissement(RegpmEntreprise entreprise, RegDate seuil) {
 		// [SIFISC-17160] En fonction de la catégorie d'entreprise, l'activité n'est pas tout-à-fait mesurée de la même façon
-		final RegpmCategoriePersonneMorale categorie = entreprise.getFormesJuridiques().stream()
-				.filter(fj -> !fj.isRectifiee())
-				.filter(fj -> fj.getDateValidite().isBeforeOrEqual(RegDate.get()))
-				.max(Comparator.naturalOrder())
-				.map(RegpmFormeJuridique::getType)
-				.map(RegpmTypeFormeJuridique::getCategorie)
-				.orElse(null);
+		final RegpmCategoriePersonneMorale categorie = getDerniereCategoriePersonneMorale(entreprise);
 
 		// en particulier, pour les sociétés de personnes (SC, SNC, l'activité ne se mesure pas à l'aune d'un assujettissement)
 		if (categorie == RegpmCategoriePersonneMorale.SP) {
@@ -152,6 +146,38 @@ public class ActivityManagerImpl implements ActivityManager {
 					.findAny()
 					.isPresent();
 		}
+	}
+
+	/**
+	 * @param entreprise une entreprise de RegPM
+	 * @return sa dernière catégorie connue
+	 */
+	private static RegpmCategoriePersonneMorale getDerniereCategoriePersonneMorale(RegpmEntreprise entreprise) {
+
+		// d'abord un calcul strict en ignorant les dates de début de validité nulles
+		// (tout comme dans le code de migration de la forme juridique)
+
+		final RegpmCategoriePersonneMorale categorieStricte = entreprise.getFormesJuridiques().stream()
+				.filter(fj -> !fj.isRectifiee())
+				.filter(fj -> NullDateBehavior.LATEST.compare(fj.getDateValidite(), RegDate.get()) <= 0)
+				.max(Comparator.naturalOrder())
+				.map(RegpmFormeJuridique::getType)
+				.map(RegpmTypeFormeJuridique::getCategorie)
+				.orElse(null);
+		if (categorieStricte != null) {
+			return categorieStricte;
+		}
+
+		// dans le cas où aucune catégorie n'a été trouvée en raison d'une date de début de validité nulle,
+		// on va la prendre quand-même...
+
+		return entreprise.getFormesJuridiques().stream()
+				.filter(fj -> !fj.isRectifiee())
+				.filter(fj -> fj.getDateValidite() == null)
+				.max(Comparator.comparingInt(fj -> fj.getPk().getSeqNo()))
+				.map(RegpmFormeJuridique::getType)
+				.map(RegpmTypeFormeJuridique::getCategorie)
+				.orElse(null);
 	}
 
 	/**

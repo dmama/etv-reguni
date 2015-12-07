@@ -102,9 +102,15 @@ import ch.vd.uniregctb.validation.ValidationService;
 @SuppressWarnings("deprecation")
 public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 
+	private static final long INACTIVE_ENTREPRISE_ID = 1832L;
+
+	private static final ActivityManager ALL_ACTIVE = entreprise -> true;
+	private static final ActivityManager ALL_BUT_ONE_ACTIVE = entreprise -> INACTIVE_ENTREPRISE_ID != entreprise.getId();
+
 	private GrapheMigrator grapheMigrator;
 	private ValidationService validationService;
 	private UniregStore uniregStore;
+	private ActivityManagerProxy activityManager;
 
 	private static Map<LogCategory, List<String>> buildTextualMessages(LoggedMessages lms) {
 		final Map<LogCategory, List<LoggedMessage>> map = lms.asMap();
@@ -114,8 +120,6 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		}
 		return messages;
 	}
-
-	private static final long INACTIVE_ENTREPRISE_ID = 1832L;
 
 	@Override
 	protected void onSetup() throws Exception {
@@ -139,7 +143,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		final ParametreAppService parametreAppService = getBean(ParametreAppService.class, "parametreAppService");
 		final DoublonProvider doublonProvider = getBean(DoublonProvider.class, "doublonProvider");
 
-		final ActivityManager activityManager = entreprise -> INACTIVE_ENTREPRISE_ID != entreprise.getId();         // tout le monde est actif dans ces tests, sauf la 1832
+		activityManager = new ActivityManagerProxy();
 
 		grapheMigrator = new GrapheMigrator();
 		grapheMigrator.setEntrepriseMigrator(new EntrepriseMigrator(uniregStore, activityManager, infraService, bouclementService, assujettissementService, rcEntAdapter, adresseHelper,
@@ -183,6 +187,8 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		final Graphe graphe = new MockGraphe(Arrays.asList(mandant, entrepriseMandataire),
 		                                     Collections.singletonList(mandataire),
 		                                     null);
+
+		activityManager.setup(ALL_ACTIVE);
 
 		// Bidouille : on ajoute temporairement un validateur sur les entreprises
 		// Ce validateur va causer une erreur sur l'entreprise mandante si celle-ci a des liens (elle doit en avoir, c'est bien, c'est juste pour pouvoir s'envoyer un message qui décrit ces liens...)
@@ -280,6 +286,8 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 
 		EntrepriseMigratorTest.addMandat(mandant, mandataire, RegpmTypeMandat.GENERAL, null, RegDate.get(2000, 1, 1), RegDate.get(2006, 12, 31));
 		EntrepriseMigratorTest.addMandat(mandant, mandataire, RegpmTypeMandat.GENERAL, null, RegDate.get(2010, 1, 1), null);
+
+		activityManager.setup(ALL_ACTIVE);
 
 		final Graphe graphe = new MockGraphe(Arrays.asList(mandant, entrepriseMandataire),
 		                                     Collections.singletonList(mandataire),
@@ -566,6 +574,8 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		EtablissementMigratorTest.addDomicileEtablissement(etablissement2, RegDate.get(2004, 3, 22), Commune.ECHALLENS, false);
 		EtablissementMigratorTest.addEtablissementStable(etablissement2, RegDate.get(2002, 7, 14), RegDate.get(2010, 11, 25));
 
+		activityManager.setup(ALL_ACTIVE);
+
 		final Graphe graphe = new MockGraphe(Collections.singletonList(entreprise),
 		                                     Arrays.asList(etablissement1, etablissement2),
 		                                     null);
@@ -833,6 +843,8 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		// l'assujettissement
 		EntrepriseMigratorTest.addAssujettissement(entreprise, RegDate.get(1999, 5, 12), null, RegpmTypeAssujettissement.LILIC);
 
+		activityManager.setup(ALL_ACTIVE);
+
 		final Graphe graphe = new MockGraphe(Collections.singletonList(entreprise),
 		                                     Arrays.asList(etablissement1, etablissement2),
 		                                     null);
@@ -1039,6 +1051,8 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		EntrepriseMigratorTest.addRattachementProprietaire(e, debut, null, immeuble);
 		EntrepriseMigratorTest.addAssujettissement(e, debut, null, RegpmTypeAssujettissement.LILIC);
 
+		activityManager.setup(ALL_ACTIVE);
+
 		final Graphe graphe = new MockGraphe(Collections.singletonList(e),
 		                                     null,
 		                                     null);
@@ -1095,6 +1109,8 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		final RegpmEtablissement etb = EtablissementMigratorTest.buildEtablissement(idEtablissement, e);
 		EtablissementMigratorTest.addEtablissementStable(etb, debut, null);
 		EtablissementMigratorTest.addDomicileEtablissement(etb, debut, Commune.Fraction.LE_BRASSUS, false);
+
+		activityManager.setup(ALL_ACTIVE);
 
 		final Graphe graphe = new MockGraphe(Collections.singletonList(e),
 		                                     Collections.singletonList(etb),
@@ -1158,6 +1174,8 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 
 		final RegpmImmeuble immeuble2 = EntrepriseMigratorTest.createImmeuble(Commune.LAUSANNE);
 		EntrepriseMigratorTest.addRattachementProprietaire(regpm, dateAchatImmeuble2, null, immeuble2);
+
+		activityManager.setup(ALL_ACTIVE);
 
 		final Graphe graphe = new MockGraphe(Collections.singletonList(regpm),
 		                                     null,
@@ -1277,6 +1295,8 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 
 		final RegpmImmeuble immeuble2 = EntrepriseMigratorTest.createImmeuble(Commune.LAUSANNE);
 		EntrepriseMigratorTest.addRattachementProprietaire(regpm, dateAchatImmeuble2, null, immeuble2);
+
+		activityManager.setup(ALL_ACTIVE);
 
 		final Graphe graphe = new MockGraphe(Collections.singletonList(regpm),
 		                                     null,
@@ -1421,6 +1441,8 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		final RegpmImmeuble immeuble1 = EntrepriseMigratorTest.createImmeuble(Commune.MORGES);
 		EntrepriseMigratorTest.addRattachementProprietaire(regpm, dateAchatImmeuble, dateVenteImmeuble, immeuble1);
 
+		activityManager.setup(ALL_ACTIVE);
+
 		final Graphe graphe = new MockGraphe(Collections.singletonList(regpm),
 		                                     null,
 		                                     null);
@@ -1540,6 +1562,8 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		EntrepriseMigratorTest.addSiegeSuisse(regpm, dateDebutForPrincipal, Commune.ECHALLENS);
 		EntrepriseMigratorTest.addAssujettissement(regpm, dateDebutForPrincipal, null, RegpmTypeAssujettissement.LILIC);
 
+		activityManager.setup(ALL_ACTIVE);
+
 		final Graphe graphe = new MockGraphe(Collections.singletonList(regpm),
 		                                     null,
 		                                     null);
@@ -1634,6 +1658,8 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		EtablissementMigratorTest.addEtablissementStable(etablissement, RegDate.get(2010, 5, 1), null);
 		EtablissementMigratorTest.addDomicileEtablissement(etablissement, RegDate.get(2005, 3, 12), Commune.LAUSANNE, false);
 
+		activityManager.setup(ALL_ACTIVE);
+
 		final MockGraphe graphe = new MockGraphe(Collections.singletonList(entreprise),
 		                                         Collections.singletonList(etablissement),
 		                                         null);
@@ -1700,6 +1726,8 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		final RegpmGroupeProprietaire groupe2 = createGroupeProprietaire("Zoo", RegpmTypeGroupeProprietaire.CONSORTIUM_SOCIETE_SIMPLE, RegDate.get(2000, 1, 1), null);
 		EtablissementMigratorTest.addAppartenanceGroupeProprietaire(etablissement, groupe2, RegDate.get(2004, 5, 29), RegDate.get(2009, 12, 21), false);
 		EtablissementMigratorTest.addRattachementProprietaire(groupe2, RegDate.get(2004, 7, 1), null, immeuble2);
+
+		activityManager.setup(ALL_ACTIVE);
 
 		final Graphe graphe = new MockGraphe(Collections.singletonList(entreprise),
 		                                     Collections.singletonList(etablissement),
@@ -1891,6 +1919,8 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		EtablissementMigratorTest.addAppartenanceGroupeProprietaire(etablissement, groupe2, RegDate.get(2004, 5, 29), RegDate.get(2009, 12, 21), false);
 		EtablissementMigratorTest.addRattachementProprietaire(groupe2, RegDate.get(2004, 7, 1), null, immeuble2);
 
+		activityManager.setup(ALL_ACTIVE);
+
 		final Graphe graphe = new MockGraphe(Collections.singletonList(entreprise),
 		                                     Collections.singletonList(etablissement),
 		                                     null);
@@ -2018,6 +2048,8 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		EntrepriseMigratorTest.addForPrincipalSuisse(entreprise, RegDate.get(1990, 1, 1), RegpmTypeForPrincipal.SIEGE, Commune.ECHALLENS);
 		EntrepriseMigratorTest.addAssujettissement(entreprise, RegDate.get(1990, 1, 1), null, RegpmTypeAssujettissement.LILIC);
 
+		activityManager.setup(ALL_ACTIVE);
+
 		final Graphe graphe = new MockGraphe(Collections.singletonList(entreprise),
 		                                     null,
 		                                     null);
@@ -2039,6 +2071,8 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		EntrepriseMigratorTest.addForPrincipalEtranger(entreprise, RegDate.get(2000, 1, 1), RegpmTypeForPrincipal.SIEGE, MockPays.France.getNoOFS());
 		EntrepriseMigratorTest.addRattachementProprietaire(entreprise, RegDate.get(1995, 5, 12), null, createImmeuble(Commune.LAUSANNE));
 		EntrepriseMigratorTest.addAssujettissement(entreprise, RegDate.get(1990, 1, 1), null, RegpmTypeAssujettissement.LILIC);
+
+		activityManager.setup(ALL_ACTIVE);
 
 		// avec le calcul Unireg, cela donne un assujettissement VD puis un assujettissement HS (qui donnent tous les deux lieu à de l'ICC)
 		// alors que dans RegPM, il n'y avait qu'une seule période... si seuls les périodes couvertes nous intéressent, alors les deux doivent
@@ -2065,6 +2099,8 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		EntrepriseMigratorTest.addAssujettissement(entreprise, RegDate.get(1980, 1, 1), RegDate.get(1985, 12, 31), RegpmTypeAssujettissement.LILIC);        // que fait-il donc là ?
 		EntrepriseMigratorTest.addAssujettissement(entreprise, RegDate.get(1990, 1, 1), null, RegpmTypeAssujettissement.LILIC);
 
+		activityManager.setup(ALL_ACTIVE);
+
 		final Graphe graphe = new MockGraphe(Collections.singletonList(entreprise),
 		                                     null,
 		                                     null);
@@ -2087,6 +2123,8 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		final RegpmEntreprise entreprise = EntrepriseMigratorTest.buildEntreprise(idEntreprise);
 		EntrepriseMigratorTest.addForPrincipalSuisse(entreprise, RegDate.get(1990, 1, 1), RegpmTypeForPrincipal.SIEGE, Commune.ECHALLENS);
 		EntrepriseMigratorTest.addAssujettissement(entreprise, RegDate.get(1990, 1, 1), RegDate.get(2014, 12, 31), RegpmTypeAssujettissement.LILIC);    // et après 2014 ???
+
+		activityManager.setup(ALL_ACTIVE);
 
 		final Graphe graphe = new MockGraphe(Collections.singletonList(entreprise),
 		                                     null,
@@ -2112,6 +2150,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		EntrepriseMigratorTest.addAssujettissement(entreprise, RegDate.get(1991, 3, 14), RegDate.get(2000, 5, 12), RegpmTypeAssujettissement.LILIC);
 
 		// cette entreprise est inactive (à cause de cet identifiant "magique"), mais a un for principal vaudois ouvert après 2015... -> ERREUR
+		activityManager.setup(ALL_BUT_ONE_ACTIVE);
 
 		final Graphe graphe = new MockGraphe(Collections.singletonList(entreprise),
 		                                     null,
@@ -2137,6 +2176,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		EntrepriseMigratorTest.addAssujettissement(entreprise, RegDate.get(2000, 1, 1), null, RegpmTypeAssujettissement.LILIC);
 
 		// cette entreprise est inactive (à cause de cet identifiant "magique"), mais a un for principal vaudois ouvert après 2015... -> ERREUR
+		activityManager.setup(ALL_BUT_ONE_ACTIVE);
 
 		final Graphe graphe = new MockGraphe(Collections.singletonList(entreprise),
 		                                     null,
@@ -2162,6 +2202,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		EntrepriseMigratorTest.addAssujettissement(entreprise, RegDate.get(2000, 1, 1), RegDate.get(2011, 6, 30), RegpmTypeAssujettissement.LILIC);
 
 		// cette entreprise est inactive (à cause de cet identifiant "magique"), mais a un for principal vaudois ouvert après 2015... -> ERREUR
+		activityManager.setup(ALL_BUT_ONE_ACTIVE);
 
 		final Graphe graphe = new MockGraphe(Collections.singletonList(entreprise),
 		                                     null,
@@ -2227,6 +2268,8 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		EntrepriseMigratorTest.addRattachementProprietaire(entreprise, RegDate.get(1988, 1, 4), null, createImmeuble(Commune.ECHALLENS));
 		EntrepriseMigratorTest.addAssujettissement(entreprise, RegDate.get(1991, 3, 14), null, RegpmTypeAssujettissement.LILIC);
 
+		activityManager.setup(ALL_ACTIVE);
+
 		final Graphe graphe = new MockGraphe(Collections.singletonList(entreprise),
 		                                     null,
 		                                     null);
@@ -2286,6 +2329,8 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		final long idEntreprise = 15781L;
 		final RegpmEntreprise entreprise = EntrepriseMigratorTest.buildEntreprise(idEntreprise);
 		EntrepriseMigratorTest.addForPrincipalSuisse(entreprise, RegDate.get(1998, 4, 12), RegpmTypeForPrincipal.SIEGE, Commune.MONTAGNY);
+
+		activityManager.setup(ALL_ACTIVE);
 
 		final Graphe graphe = new MockGraphe(Collections.singletonList(entreprise),
 		                                     null,
@@ -2358,6 +2403,8 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		EntrepriseMigratorTest.addSiegeSuisse(entreprise, RegDate.get(2000, 1, 1), Commune.BERN);
 		EntrepriseMigratorTest.addRattachementProprietaire(entreprise, RegDate.get(1986, 5, 12), null, createImmeuble(Commune.ECHALLENS));
 		EntrepriseMigratorTest.addAssujettissement(entreprise, RegDate.get(2000, 1, 1), null, RegpmTypeAssujettissement.LILIC);
+
+		activityManager.setup(ALL_ACTIVE);
 
 		final Graphe graphe = new MockGraphe(Collections.singletonList(entreprise),
 		                                     null,
@@ -2512,6 +2559,8 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		EntrepriseMigratorTest.addRattachementProprietaire(entreprise, RegDate.get(2003, 5, 7), RegDate.get(2010, 12, 30), createImmeuble(Commune.ECHALLENS));
 		EntrepriseMigratorTest.addRattachementProprietaire(entreprise, RegDate.get(2011, 1, 1), null, createImmeuble(Commune.MORGES));
 
+		activityManager.setup(ALL_ACTIVE);
+
 		final Graphe graphe = new MockGraphe(Collections.singletonList(entreprise),
 		                                     null,
 		                                     null);
@@ -2635,6 +2684,8 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		EntrepriseMigratorTest.addRaisonSociale(entreprise, dateDebut, "Billards", "&", "co", true);
 		EntrepriseMigratorTest.addFormeJuridique(entreprise, dateDebut, EntrepriseMigratorTest.createTypeFormeJuridique("S.A.", RegpmCategoriePersonneMorale.PM));
 
+		activityManager.setup(ALL_ACTIVE);
+
 		final Graphe graphe = new MockGraphe(Collections.singletonList(entreprise),
 		                                     null,
 		                                     null);
@@ -2693,6 +2744,8 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		EntrepriseMigratorTest.addFormeJuridique(entreprise, dateDebut, EntrepriseMigratorTest.createTypeFormeJuridique("S.A.", RegpmCategoriePersonneMorale.PM));
 		entreprise.setDateRequisitionRadiation(dateRequisitionRadiation);
 
+		activityManager.setup(ALL_ACTIVE);
+
 		final Graphe graphe = new MockGraphe(Collections.singletonList(entreprise),
 		                                     null,
 		                                     null);
@@ -2750,6 +2803,8 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		EntrepriseMigratorTest.addRaisonSociale(entreprise, dateDebut, "Markus", "und", "Söhne", true);
 		EntrepriseMigratorTest.addFormeJuridique(entreprise, dateDebut, EntrepriseMigratorTest.createTypeFormeJuridique("S.A.R.L.", RegpmCategoriePersonneMorale.PM));
 		EntrepriseMigratorTest.addCapital(entreprise, dateDebut, 45678134L);
+
+		activityManager.setup(ALL_ACTIVE);
 
 		final Graphe graphe = new MockGraphe(Collections.singletonList(entreprise),
 		                                     null,
@@ -2835,6 +2890,8 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		EtablissementMigratorTest.addEtablissementStable(etablissement, dateDebut, dateFin1);
 		EtablissementMigratorTest.addEtablissementStable(etablissement, dateDebut2, dateFin2);
 		EtablissementMigratorTest.addEtablissementStable(etablissement, dateDebut3, dateFin3);
+
+		activityManager.setup(ALL_ACTIVE);
 
 		final Graphe graphe = new MockGraphe(Collections.singletonList(entreprise),
 		                                     Collections.singletonList(etablissement),
@@ -3059,6 +3116,8 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		EntrepriseMigratorTest.addFusion(avant1, apres, dateBilanFusion);
 		EntrepriseMigratorTest.addFusion(avant2, apres, dateBilanFusion);
 
+		activityManager.setup(ALL_ACTIVE);
+
 		final Graphe graphe = new MockGraphe(Arrays.asList(avant1, avant2, apres),
 		                                     null,
 		                                     null);
@@ -3174,7 +3233,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		final RegpmAssujettissement assujettissement = EntrepriseMigratorTest.addAssujettissement(entreprise, RegDate.get(2013, 1, 1), null, RegpmTypeAssujettissement.LILIC);
 		final RegpmDossierFiscal df2013 = EntrepriseMigratorTest.addDossierFiscal(entreprise, assujettissement, 2013, RegDate.get(2014, 1, 3), RegpmModeImposition.POST);
 		df2013.setDateRetour(RegDate.get(2014, 5, 12));
-		final RegpmDossierFiscal df2014 = EntrepriseMigratorTest.addDossierFiscal(entreprise, assujettissement, 2014, RegDate.get(2015, 1, 1), RegpmModeImposition.POST);           // celui-ci n'a pas d'exercice commercial associé
+		EntrepriseMigratorTest.addDossierFiscal(entreprise, assujettissement, 2014, RegDate.get(2015, 1, 1), RegpmModeImposition.POST);           // celui-ci n'a pas d'exercice commercial associé
 		EntrepriseMigratorTest.addExerciceCommercial(entreprise, df2013, RegDate.get(2013, 1, 1), RegDate.get(2013, 12, 31));
 		entreprise.setDateBouclementFutur(RegDate.get(2015, 12, 31));       // la DI a été envoyée, donc la date décalée d'un cran
 
@@ -3183,6 +3242,8 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 			addPeriodeFiscale(2013);
 			addPeriodeFiscale(2014);
 		});
+
+		activityManager.setup(ALL_ACTIVE);
 
 		final Graphe graphe = new MockGraphe(Collections.singletonList(entreprise),
 		                                     null,
@@ -3316,6 +3377,8 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 			addPeriodeFiscale(2014);
 		});
 
+		activityManager.setup(ALL_ACTIVE);
+
 		final Graphe graphe = new MockGraphe(Collections.singletonList(entreprise),
 		                                     null,
 		                                     null);
@@ -3435,6 +3498,8 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		EntrepriseMigratorTest.addFormeJuridique(e, dateDebut, EntrepriseMigratorTest.createTypeFormeJuridique("S.A.R.L.", RegpmCategoriePersonneMorale.PM));
 		EntrepriseMigratorTest.addForPrincipalSuisse(e, dateDebut, RegpmTypeForPrincipal.SIEGE, Commune.LAUSANNE);
 
+		activityManager.setup(ALL_ACTIVE);
+
 		final MockGraphe graphe = new MockGraphe(Collections.singletonList(e),
 		                                         null,
 		                                         null);
@@ -3506,6 +3571,8 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		EntrepriseMigratorTest.addAssujettissement(e, dateCreationFor, dateFinAssujettissement, RegpmTypeAssujettissement.LILIC);
 		EntrepriseMigratorTest.addSiegeSuisse(e, dateCreationFor, Commune.LAUSANNE);
 		e.setDateDissolution(dateFinAssujettissement);
+
+		activityManager.setup(ALL_ACTIVE);
 
 		final MockGraphe graphe = new MockGraphe(Collections.singletonList(e),
 		                                         null,
@@ -3629,6 +3696,8 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		// un immeuble
 		final RegpmImmeuble immeuble = createImmeuble(Commune.ECHALLENS);
 		EntrepriseMigratorTest.addRattachementProprietaire(e, RegDate.get(2006, 5, 1), RegDate.get(2010, 12, 31), immeuble);
+
+		activityManager.setup(ALL_ACTIVE);
 
 		final MockGraphe graphe = new MockGraphe(Collections.singletonList(e),
 		                                         Collections.singletonList(etablissement),
@@ -3829,6 +3898,8 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		EntrepriseMigratorTest.addForPrincipalSuisse(entreprise, RegDate.get(1995, 5, 17), RegpmTypeForPrincipal.SIEGE, Commune.LAUSANNE);
 		EntrepriseMigratorTest.addAssujettissement(entreprise, RegDate.get(1995, 5, 17), null, RegpmTypeAssujettissement.LILIC);
 
+		activityManager.setup(ALL_ACTIVE);
+
 		final Graphe graphe = new MockGraphe(Collections.singletonList(entreprise),
 		                                     null,
 		                                     null);
@@ -3866,6 +3937,12 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 				addPeriodeFiscale(pf);
 			}
 		});
+
+		// l'activity manager doit être le bon, avec la véritable implémentation, histoire d'être cohérent avec ce qui se passe en vrai pendant la migration
+		final ActivityManagerImpl activityManager = new ActivityManagerImpl(null, new DatesParticulieres(RegDate.get(2015, 1, 1),
+		                                                                                                 RegDate.get(1900, 1, 1),
+		                                                                                                 RegDate.get(2008, 1, 1)));
+		this.activityManager.setup(activityManager);
 
 		// lancement de la migration du graphe (de la même façon, en ce qui concerne la gestion des exception, que ce qui est fait dans le MigrationWorker)
 		LoggedMessages mr;

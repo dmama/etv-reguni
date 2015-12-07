@@ -132,6 +132,16 @@ public class ActivityManagerTest {
 	}
 
 	@Test
+	public void testActiviteAvecFormeJuridiqueDateNulle() throws Exception {
+		final ActivityManager mgr = buildInstance(RegDate.get(2015, 1, 1));
+		final RegpmTypeFormeJuridique typeFormeJuridique = EntrepriseMigratorTest.createTypeFormeJuridique("S.N.C", RegpmCategoriePersonneMorale.SP);
+		final RegpmEntreprise e = EntrepriseMigratorTest.buildEntreprise(1243L);
+		EntrepriseMigratorTest.addFormeJuridique(e, null, typeFormeJuridique);
+		EntrepriseMigratorTest.addQuestionnaireSNC(e, 2015, RegpmTypeEtatQuestionnaireSNC.RECU);
+		Assert.assertTrue(mgr.isActive(e));         // on a quand-même reconnu la catégorie SP malgré sa date nulle !
+	}
+
+	@Test
 	public void testActiviteSNCsansQuestionnaireSNCdepuisSeuil() throws Exception {
 		final ActivityManager mgr = buildInstance(RegDate.get(2015, 1, 1));
 		final RegpmTypeFormeJuridique[] formesJuridiques = {
