@@ -9,6 +9,8 @@ import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceAware;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -49,6 +51,8 @@ import ch.vd.uniregctb.utils.WebContextUtils;
 public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceAware {
 
 	private static final long serialVersionUID = -7103375494735633544L;
+
+	private final Logger LOGGER = LoggerFactory.getLogger(JspTagBandeauTiers.class);
 
 	/*
 	 * Ces membres sont statiques pour permettre l'injection par Spring des beans accessibles par toutes les instances de ce tag
@@ -404,6 +408,7 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 			}
 		}
 		catch (Exception e) {
+			LOGGER.error(String.format("Une exception est survenue pendant le rendu du bandeau (%s): %s.", tiers.toString(), e.getMessage()), e);
 			s.append("<tr class=\"").append(nextRowClass()).append("\">\n");
 			s.append("\t<td width=\"25%\">").append(message("label.adresse")).append("&nbsp;:</td>\n");
 			s.append("\t<td width=\"75%\" colspan=\"2\" class=\"error\">").append(message("error.adresse.envoi.entete")).append("</td>\n");
