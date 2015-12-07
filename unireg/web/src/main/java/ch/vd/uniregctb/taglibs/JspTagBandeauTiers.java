@@ -32,6 +32,8 @@ import ch.vd.uniregctb.security.SecurityHelper;
 import ch.vd.uniregctb.security.SecurityProviderInterface;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
+import ch.vd.uniregctb.tiers.Entreprise;
+import ch.vd.uniregctb.tiers.Etablissement;
 import ch.vd.uniregctb.tiers.EvenementsCivilsNonTraites;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.MenageCommun;
@@ -288,7 +290,10 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 		}
 
 		if (showEvenementsCivils && SecurityHelper.isGranted(securityProvider, Role.MODIF_VD_ORD)) {
-			final EvenementsCivilsNonTraites evtsCivilNonTraites = tiersService.getIndividusAvecEvenementsCivilsNonTraites(tiers);
+			EvenementsCivilsNonTraites evtsCivilNonTraites = null;
+			if (! (tiers instanceof Entreprise || tiers instanceof Etablissement) ) {
+				evtsCivilNonTraites = tiersService.getIndividusAvecEvenementsCivilsNonTraites(tiers);
+			}
 			if (evtsCivilNonTraites != null && !evtsCivilNonTraites.isEmpty()) {
 				s.append("<tr class=\"evts-civils-non-traites\"><td colspan=\"3\" width=\"100%\"><center>\n");
 				s.append(message("label.tiers.evts.non.traites")).append("&nbsp;: ");
