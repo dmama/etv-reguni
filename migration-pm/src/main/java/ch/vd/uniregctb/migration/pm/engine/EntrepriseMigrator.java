@@ -2055,6 +2055,9 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 			else {
 				// on prend ça...
 				dateDebutEffective = capitalData.firstKey();
+				mr.addMessage(LogCategory.DONNEES_CIVILES_REGPM, LogLevel.INFO,
+				              String.format("Date de début effective des données 'civiles' reprise de la première donnée de capital : %s.",
+				                            StringRenderers.DATE_RENDERER.toString(dateDebutEffective)));
 			}
 		}
 		else {
