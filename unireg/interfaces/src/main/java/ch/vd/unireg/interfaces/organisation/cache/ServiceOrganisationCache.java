@@ -175,6 +175,40 @@ public class ServiceOrganisationCache implements ServiceOrganisationRaw, UniregC
 		}
 	}
 
+	private static class GetSiteOrganisationKey implements Serializable {
+
+		private static final long serialVersionUID = 3198014557405952141L;
+
+		private final long noSite;
+
+		private GetSiteOrganisationKey(long noSite) {
+			this.noSite = noSite;
+		}
+
+		@Override
+		public boolean equals(Object o) {
+			if (this == o) return true;
+			if (o == null || getClass() != o.getClass()) return false;
+
+			final GetSiteOrganisationKey that = (GetSiteOrganisationKey) o;
+
+			return noSite == that.noSite;
+
+		}
+
+		@Override
+		public int hashCode() {
+			return (int) (noSite ^ (noSite >>> 32));
+		}
+
+		@Override
+		public String toString() {
+			return "GetSiteOrganisationKey{" +
+					"noSite=" + noSite +
+					'}';
+		}
+	}
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -195,8 +229,16 @@ public class ServiceOrganisationCache implements ServiceOrganisationRaw, UniregC
 
 	@Override
 	public Long getOrganisationPourSite(Long noSite) throws ServiceOrganisationException {
-		// TODO faut-il cacher cet appel ?
-		return target.getOrganisationPourSite(noSite);
+		final GetSiteOrganisationKey key = new GetSiteOrganisationKey(noSite);
+		final Element element = cache.get(key);
+		if (element == null) {
+			// l'élément n'est pas en cache, on le récupère et on l'insère
+			final Long noSiteRecupere = target.getOrganisationPourSite(noSite);
+			Objects.requireNonNull(noSiteRecupere);
+			cache.put(new Element(key, noSiteRecupere));
+			return noSiteRecupere;
+		}
+		return (Long) element.getObjectValue();
 	}
 
 	@Override
