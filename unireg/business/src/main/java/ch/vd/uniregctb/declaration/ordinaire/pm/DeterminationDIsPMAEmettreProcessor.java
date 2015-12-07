@@ -447,11 +447,24 @@ public class DeterminationDIsPMAEmettreProcessor {
 		if (checkTache != null) {
 			switch (checkTache.status) {
 			case EXISTE_DEJA:
-				// la tâche existe déjà, rien à faire
-				if (rapport != null) {
-					rapport.addIgnoreTacheEnvoiDejaExistante(entreprise);
+				// [SIFISC-17232] une tâche avec les mêmes dates existe déjà... reste à voir si les autres données sont les mêmes
+				if (checkTache.getObject().getTypeDocument() == pi.getTypeDocumentDeclaration()) {
+					// la bonne tâche existe déjà, rien à faire
+					if (rapport != null) {
+						rapport.addIgnoreTacheEnvoiDejaExistante(entreprise);
+					}
+
+					// éventuelle correction de la catégorie d'entreprise
+					if (checkTache.getObject().getCategorieEntreprise() != pi.getCategorieEntreprise() && pi.getCategorieEntreprise() != null) {
+						checkTache.getObject().setCategorieEntreprise(pi.getCategorieEntreprise());
+					}
+					return null;
 				}
-				return null;
+				else {
+					// le type de document n'est pas le bon : on annule la tâche existante et on continue
+					checkTache.getObject().setAnnule(true);
+					break;
+				}
 			case INTERSECTE:
 				// [UNIREG-1984] une autre tâche occupe partiellement le range -> elle sera annulée par le post-processing de vérification des tâches, on continue donc.
 				break;

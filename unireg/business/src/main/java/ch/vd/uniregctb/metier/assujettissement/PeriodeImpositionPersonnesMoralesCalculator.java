@@ -84,6 +84,7 @@ public class PeriodeImpositionPersonnesMoralesCalculator implements PeriodeImpos
 					// détermination du type de contribuable et du type de document
 					final TypeContribuable typeContribuable = computeTypeContribuable(assujettissement);
 					final TypeDocument typeDocument = computeTypeDocument(entreprise, intersection.getDateFin());
+					final CategorieEntreprise categorieEntreprise = tiersService.getCategorieEntreprise(entreprise, intersection.getDateFin());
 
 					// création de la structure pour la période d'imposition
 					resultat.add(new PeriodeImpositionPersonnesMorales(intersection.getDateDebut(),
@@ -95,7 +96,8 @@ public class PeriodeImpositionPersonnesMoralesCalculator implements PeriodeImpos
 					                                                   null,
 					                                                   exercices,
 					                                                   typeContribuable,
-					                                                   typeDocument));
+					                                                   typeDocument,
+					                                                   categorieEntreprise));
 				}
 			}
 		}

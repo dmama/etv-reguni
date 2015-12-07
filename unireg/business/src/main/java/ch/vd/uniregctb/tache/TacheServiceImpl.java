@@ -70,6 +70,8 @@ import ch.vd.uniregctb.tache.sync.DeleteQSNC;
 import ch.vd.uniregctb.tache.sync.SynchronizeAction;
 import ch.vd.uniregctb.tache.sync.UpdateDI;
 import ch.vd.uniregctb.tache.sync.UpdateQSNC;
+import ch.vd.uniregctb.tache.sync.UpdateTacheEnvoiDI;
+import ch.vd.uniregctb.tache.sync.UpdateTacheEnvoiDIPM;
 import ch.vd.uniregctb.tiers.CategorieEntrepriseHisto;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.Contribuable;
@@ -90,6 +92,7 @@ import ch.vd.uniregctb.tiers.TacheCriteria;
 import ch.vd.uniregctb.tiers.TacheDAO;
 import ch.vd.uniregctb.tiers.TacheDAO.TacheStats;
 import ch.vd.uniregctb.tiers.TacheEnvoiDeclarationImpot;
+import ch.vd.uniregctb.tiers.TacheEnvoiDeclarationImpotPM;
 import ch.vd.uniregctb.tiers.TacheEnvoiQuestionnaireSNC;
 import ch.vd.uniregctb.tiers.TacheNouveauDossier;
 import ch.vd.uniregctb.tiers.Tiers;
@@ -950,6 +953,11 @@ public class TacheServiceImpl implements TacheService {
 			}
 
 			@Override
+			public UpdateTacheEnvoiDI newUpdateTacheEnvoi(TacheEnvoiDeclarationImpot tache, AddDI<?> addAction) {
+				return null;
+			}
+
+			@Override
 			public Mutation compare(DeclarationImpotOrdinaire di, PeriodeImposition pi, RegDate dateReference) {
 				if (di.getTypeContribuable() == pi.getTypeContribuable() && DateRangeHelper.equals(di, pi)) {
 					return Mutation.AUCUNE;
@@ -986,6 +994,11 @@ public class TacheServiceImpl implements TacheService {
 			@Override
 			public DeleteDIPM newDeleteDI(DeclarationImpotOrdinaire di) {
 				return new DeleteDIPM((DeclarationImpotOrdinairePM) di);
+			}
+
+			@Override
+			public UpdateTacheEnvoiDI newUpdateTacheEnvoi(TacheEnvoiDeclarationImpot tache, AddDI<?> addAction) {
+				return new UpdateTacheEnvoiDIPM((TacheEnvoiDeclarationImpotPM) tache, (AddDIPM) addAction);
 			}
 
 			@Override
@@ -1042,7 +1055,7 @@ public class TacheServiceImpl implements TacheService {
 		/**
 		 * Création d'une nouvelle action de création de tâche d'envoi de DI d'après la période d'imposition donnée
 		 * @param pi la période d'imposition
-		 * @return une nouvelle tâche d'envoi de DI
+		 * @return une nouvelle action de création de tâche d'envoi de DI
 		 * @throws ClassCastException si la période d'imposition n'est pas du type attendu par la catégorie
 		 */
 		public abstract AddDI<?> newAddDI(PeriodeImposition pi);
@@ -1050,10 +1063,18 @@ public class TacheServiceImpl implements TacheService {
 		/**
 		 * Création d'une nouvelle action de création de tâche d'annulation de la DI donnée
 		 * @param di la déclaration à annuler
-		 * @return une nouvelle tâche d'annulation de DI
+		 * @return une nouvelle action de création de tâche d'annulation de DI
 		 * @throws ClassCastException si la déclaration d'impôt n'est pas du type attendu par la catégorie
 		 */
 		public abstract DeleteDI<?> newDeleteDI(DeclarationImpotOrdinaire di);
+
+		/**
+		 * Création d'une nouvelle action de mise à jour de tâche d'émission de déclaration d'impôt
+		 * @param tache tâche à mettre à jour si nécessaire
+		 * @param addAction action qui contient les données utiles pour la mise à jour
+		 * @return une nouvelle action de mise à jour de tâche d'émission de DI
+		 */
+		public abstract UpdateTacheEnvoiDI newUpdateTacheEnvoi(TacheEnvoiDeclarationImpot tache, AddDI<?> addAction);
 
 		/**
 		 * Détection du type d'adéquation entre une DI (= existante) et une PI (= théorique) sans prendre en compte les dates.
@@ -1099,6 +1120,7 @@ public class TacheServiceImpl implements TacheService {
 		final List<UpdateDI> updateActions = new ArrayList<>();
 		final List<DeleteDI> deleteActions = new ArrayList<>();
 		final List<AnnuleTache> annuleActions = new ArrayList<>();
+		final List<UpdateTacheEnvoiDI> updateTacheActions = new ArrayList<>();
 
 		final RegDate today = RegDate.get();
 
@@ -1183,6 +1205,14 @@ public class TacheServiceImpl implements TacheService {
 				final PeriodeImposition periode = addActions.get(i).periodeImposition;
 				final TacheEnvoiDeclarationImpot envoi = getMatchingRangeAt(tachesEnvoi, periode);
 				if (envoi != null && envoi.getTypeContribuable() == periode.getTypeContribuable() && envoi.getTypeDocument() == periode.getTypeDocumentDeclaration()) {
+
+					// il faut peut-être mettre la tâche existante à jour par rapport aux nouvelles données du contribuable, non ?
+					// par exemple : catégorie d'entreprise...
+					final UpdateTacheEnvoiDI updateTache = domaine.newUpdateTacheEnvoi(envoi, addActions.get(i));
+					if (updateTache != null) {
+						updateTacheActions.add(updateTache);
+					}
+
 					addActions.remove(i);
 				}
 			}
@@ -1235,7 +1265,7 @@ public class TacheServiceImpl implements TacheService {
 			}
 		}
 
-		final int size = addActions.size() + updateActions.size() + deleteActions.size() + annuleActions.size();
+		final int size = addActions.size() + updateActions.size() + deleteActions.size() + annuleActions.size() + updateTacheActions.size();
 		if (size == 0) {
 			return Collections.emptyList();
 		}
@@ -1245,6 +1275,7 @@ public class TacheServiceImpl implements TacheService {
 			actions.addAll(updateActions);
 			actions.addAll(deleteActions);
 			actions.addAll(annuleActions);
+			actions.addAll(updateTacheActions);
 			return actions;
 		}
 	}

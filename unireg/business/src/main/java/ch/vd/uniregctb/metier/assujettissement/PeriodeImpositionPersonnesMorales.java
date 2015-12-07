@@ -10,6 +10,7 @@ import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.metier.bouclement.ExerciceCommercial;
 import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesMorales;
+import ch.vd.uniregctb.type.CategorieEntreprise;
 import ch.vd.uniregctb.type.TypeContribuable;
 import ch.vd.uniregctb.type.TypeDocument;
 
@@ -18,14 +19,17 @@ public class PeriodeImpositionPersonnesMorales extends PeriodeImposition {
 	private final List<ExerciceCommercial> exercicesCommerciaux;
 	private final TypeContribuable typeContribuable;
 	private final TypeDocument typeDocument;
+	private final CategorieEntreprise categorieEntreprise;
 
 	public PeriodeImpositionPersonnesMorales(RegDate debut, RegDate fin, ContribuableImpositionPersonnesMorales contribuable,
 	                                         boolean declarationOptionnelle, boolean declarationRemplaceeParNote, CauseFermeture causeFermeture, Integer codeSegment,
-	                                         List<ExerciceCommercial> exercicesCommerciaux, TypeContribuable typeContribuable, TypeDocument typeDocument) {
+	                                         List<ExerciceCommercial> exercicesCommerciaux, TypeContribuable typeContribuable, TypeDocument typeDocument,
+	                                         CategorieEntreprise categorieEntreprise) {
 		super(debut, fin, contribuable, declarationOptionnelle, declarationRemplaceeParNote, causeFermeture, codeSegment);
 		this.exercicesCommerciaux = exercicesCommerciaux;
 		this.typeContribuable = typeContribuable;
 		this.typeDocument = typeDocument;
+		this.categorieEntreprise = categorieEntreprise;
 
 		if (!typeContribuable.isUsedForPM()) {
 			throw new IllegalArgumentException("Le type de contribuable " + typeContribuable + " n'est pas supporté pour les PM.");
@@ -56,6 +60,10 @@ public class PeriodeImpositionPersonnesMorales extends PeriodeImposition {
 	@Override
 	public boolean isDiplomateSuisseSansImmeuble() {
 		return false;
+	}
+
+	public CategorieEntreprise getCategorieEntreprise() {
+		return categorieEntreprise;
 	}
 
 	@NotNull
@@ -90,7 +98,8 @@ public class PeriodeImpositionPersonnesMorales extends PeriodeImposition {
 		                                             getCodeSegment(),
 		                                             exercicesCommerciaux,
 		                                             typeContribuable,
-		                                             typeDocument);
+		                                             typeDocument,
+		                                             categorieEntreprise);
 	}
 
 	@Override
@@ -98,5 +107,6 @@ public class PeriodeImpositionPersonnesMorales extends PeriodeImposition {
 		super.fillDisplayValues(map);
 		map.put("typeContribuable", String.valueOf(typeContribuable));
 		map.put("typeDocumentDeclaration", String.valueOf(typeDocument));
+		map.put("categorieEntreprise", String.valueOf(categorieEntreprise));
 	}
 }

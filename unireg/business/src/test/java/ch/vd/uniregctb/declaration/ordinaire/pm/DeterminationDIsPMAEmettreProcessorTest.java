@@ -1,10 +1,15 @@
 package ch.vd.uniregctb.declaration.ordinaire.pm;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
+import org.hibernate.FlushMode;
 import org.junit.Test;
+import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
@@ -38,6 +43,7 @@ import ch.vd.uniregctb.type.TypeEtatTache;
 import ch.vd.uniregctb.validation.ValidationService;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -669,7 +675,7 @@ public class DeterminationDIsPMAEmettreProcessorTest extends BusinessTest {
 		final ModeleDocument modele2014 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM, periode2014);
 		final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
 
-		// Un contribuable non-assujetti, mais avec une déclaration d'impôt (invalide) pré-existante
+		// Un contribuable assujetti, mais avec une déclaration d'impôt (annulée) pré-existante
 		final Entreprise entreprise = addEntrepriseInconnueAuCivil();
 		addDonneesRegistreCommerce(entreprise, date(2012, 4, 5), null, "Bricolage SARL", FormeJuridiqueEntreprise.SARL);
 		addBouclement(entreprise, date(2012, 12, 1), DayMonth.get(12, 31), 12);      // bouclements tous les ans depuis le 31.12.2012
@@ -689,5 +695,128 @@ public class DeterminationDIsPMAEmettreProcessorTest extends BusinessTest {
 		// une nouvelle tâche d'envoi de DI doit avoir été créée (la DI pré-existante a été annulée).
 		assertEquals(1, rapport.traites.size());
 		assertEquals(DeterminationDIsPMResults.TraiteType.TACHE_ENVOI_CREEE, rapport.traites.get(0).raison);
+	}
+
+	/**
+	 * [SIFISC-17232] quand on lance le job de détermination des tâches d'envoi de DI, la spécification indique qu'en cas de mauvais
+	 * type de document (PM vs. APM), la tâche existante doit être annulée puis recréée
+	 */
+	@Test
+	public void testChangementDeTypeDocument() throws Exception {
+
+		final long idpm = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				addPeriodeFiscale(2014);
+				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
+
+				// Un contribuable PM assujetti
+				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+				addDonneesRegistreCommerce(entreprise, date(2012, 4, 5), null, "Bricolage SARL", FormeJuridiqueEntreprise.SARL);
+				addBouclement(entreprise, date(2012, 12, 1), DayMonth.get(12, 31), 12);      // bouclements tous les ans depuis le 31.12.2012
+				addForPrincipal(entreprise, date(2012, 4, 5), MotifFor.DEBUT_EXPLOITATION, MockCommune.Bex);
+
+				// tâche pour laquelle le type de document n'est pas le bon...
+				addTacheEnvoiDIPM(TypeEtatTache.EN_INSTANCE, null, date(2014, 1, 1), date(2014, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_APM, entreprise, CategorieEntreprise.DPAPM, oipm);
+				return entreprise.getNumero();
+			}
+		});
+
+		final DeterminationDIsPMResults rapport = service.run(2014, RegDate.get(), 1, null);
+
+		assertEmpty(rapport.erreurs);
+		assertEmpty(rapport.ignores);
+
+		// la tâche existante doit avoir été annulée et une nouvelle tâche créée
+		assertEquals(1, rapport.traites.size());
+		assertEquals(DeterminationDIsPMResults.TraiteType.TACHE_ENVOI_CREEE, rapport.traites.get(0).raison);
+
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final List<Tache> taches = hibernateTemplate.find("select t from Tache t where t.contribuable.id=:idpm order by t.id", Collections.singletonMap("idpm", idpm), FlushMode.AUTO);
+				assertNotNull(taches);
+				assertEquals(2, taches.size());
+				{
+					final Tache tache = taches.get(0);
+					assertNotNull(tache);
+					assertInstanceOf(TacheEnvoiDeclarationImpotPM.class, tache);
+					assertTrue(tache.isAnnule());
+
+					final TacheEnvoiDeclarationImpotPM tacheEnvoi = (TacheEnvoiDeclarationImpotPM) tache;
+					assertEquals(date(2014, 1, 1), tacheEnvoi.getDateDebut());
+					assertEquals(date(2014, 12, 31), tacheEnvoi.getDateFin());
+					assertEquals(TypeDocument.DECLARATION_IMPOT_APM, tacheEnvoi.getTypeDocument());
+					assertEquals(CategorieEntreprise.DPAPM, tacheEnvoi.getCategorieEntreprise());
+				}
+				{
+					final Tache tache = taches.get(1);
+					assertNotNull(tache);
+					assertInstanceOf(TacheEnvoiDeclarationImpotPM.class, tache);
+					assertFalse(tache.isAnnule());
+
+					final TacheEnvoiDeclarationImpotPM tacheEnvoi = (TacheEnvoiDeclarationImpotPM) tache;
+					assertEquals(date(2014, 1, 1), tacheEnvoi.getDateDebut());
+					assertEquals(date(2014, 12, 31), tacheEnvoi.getDateFin());
+					assertEquals(TypeDocument.DECLARATION_IMPOT_PM, tacheEnvoi.getTypeDocument());
+					assertEquals(CategorieEntreprise.PM, tacheEnvoi.getCategorieEntreprise());
+				}
+			}
+		});
+	}
+
+	/**
+	 * [SIFISC-17232] quand on lance le job de détermination des tâches d'envoi de DI, il faut éventuellement recalculer
+	 * la catégorie d'entreprise stockée dans la tâche (la spécification ne le dit pas, mais c'est assez évident, à mon sens)
+	 */
+	@Test
+	public void testChangementDeCategorieEntreprise() throws Exception {
+
+		final long idpm = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				addPeriodeFiscale(2014);
+				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
+
+				// Un contribuable PM assujetti
+				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+				addDonneesRegistreCommerce(entreprise, date(2012, 4, 5), null, "Bricolage SARL", FormeJuridiqueEntreprise.SARL);
+				addBouclement(entreprise, date(2012, 12, 1), DayMonth.get(12, 31), 12);      // bouclements tous les ans depuis le 31.12.2012
+				addForPrincipal(entreprise, date(2012, 4, 5), MotifFor.DEBUT_EXPLOITATION, MockCommune.Bex);
+
+				// tâche pour laquelle les dates et le type de document sont bons, mais pas la catégorie d'entreprise
+				addTacheEnvoiDIPM(TypeEtatTache.EN_INSTANCE, null, date(2014, 1, 1), date(2014, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_PM, entreprise, CategorieEntreprise.DPAPM, oipm);
+				return entreprise.getNumero();
+			}
+		});
+
+		final DeterminationDIsPMResults rapport = service.run(2014, RegDate.get(), 1, null);
+
+		assertEmpty(rapport.erreurs);
+		assertEmpty(rapport.traites);
+
+		// la tâche existante doit avoir été marquée comme ignorée
+		assertEquals(1, rapport.ignores.size());
+
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final List<Tache> taches = hibernateTemplate.find("select t from Tache t where t.contribuable.id=:idpm order by t.id", Collections.singletonMap("idpm", idpm), FlushMode.AUTO);
+				assertNotNull(taches);
+				assertEquals(1, taches.size());
+				{
+					final Tache tache = taches.get(0);
+					assertNotNull(tache);
+					assertInstanceOf(TacheEnvoiDeclarationImpotPM.class, tache);
+					assertFalse(tache.isAnnule());
+
+					final TacheEnvoiDeclarationImpotPM tacheEnvoi = (TacheEnvoiDeclarationImpotPM) tache;
+					assertEquals(date(2014, 1, 1), tacheEnvoi.getDateDebut());
+					assertEquals(date(2014, 12, 31), tacheEnvoi.getDateFin());
+					assertEquals(TypeDocument.DECLARATION_IMPOT_PM, tacheEnvoi.getTypeDocument());
+					assertEquals(CategorieEntreprise.PM, tacheEnvoi.getCategorieEntreprise());          // donnée corrigée
+				}
+			}
+		});
 	}
 }
