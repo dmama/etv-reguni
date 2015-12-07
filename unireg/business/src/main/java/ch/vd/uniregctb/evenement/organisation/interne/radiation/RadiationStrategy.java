@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.interfaces.organisation.data.DateRanged;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 import ch.vd.unireg.interfaces.organisation.data.StatusInscriptionRC;
@@ -56,17 +57,17 @@ public class RadiationStrategy extends AbstractOrganisationStrategy {
 		final RegDate dateApres = event.getDateEvenement();
 		final RegDate dateAvant = event.getDateEvenement().getOneDayBefore();
 
-		final SiteOrganisation sitePrincipalAvant = organisation.getSitePrincipal(dateAvant).getPayload();
-		final SiteOrganisation sitePrincipalApres = organisation.getSitePrincipal(dateApres).getPayload();
+		final SiteOrganisation sitePrincipalAvant = getSitePrincipal(organisation, dateAvant);
+		final SiteOrganisation sitePrincipalApres = getSitePrincipal(organisation, dateApres);
 
-		final StatusRC statusRCAvant = sitePrincipalAvant.getDonneesRC().getStatus(dateAvant);
-		final StatusRC statusRCApres = sitePrincipalApres.getDonneesRC().getStatus(dateApres);
+		final StatusRC statusRCAvant = getStatus(sitePrincipalAvant, dateAvant);
+		final StatusRC statusRCApres = getStatus(sitePrincipalApres, dateApres);
 
-		final StatusInscriptionRC statusInscriptionRCAvant = sitePrincipalAvant.getDonneesRC().getStatusInscription(dateAvant);
-		final StatusInscriptionRC statusInscriptionRCApres = sitePrincipalApres.getDonneesRC().getStatusInscription(dateApres);
+		final StatusInscriptionRC statusInscriptionRCAvant = getStatusInscription(sitePrincipalAvant, dateAvant);
+		final StatusInscriptionRC statusInscriptionRCApres = getStatusInscription(sitePrincipalApres, dateApres);
 
-		final StatusRegistreIDE statusRegistreIDEAvant = sitePrincipalAvant.getDonneesRegistreIDE().getStatus(dateAvant);
-		final StatusRegistreIDE statusRegistreIDEApres = sitePrincipalApres.getDonneesRegistreIDE().getStatus(dateApres);
+		final StatusRegistreIDE statusRegistreIDEAvant = getStatusIde(sitePrincipalAvant, dateAvant);
+		final StatusRegistreIDE statusRegistreIDEApres = getStatusIde(sitePrincipalApres, dateApres);
 
 		final boolean enCoursDeRadiationRC = isInscritRC(statusRCAvant) && ! isRadieRC(statusInscriptionRCAvant) && isRadieRC(statusInscriptionRCApres);
 		final boolean enCoursDeRadiationIDE = ! isRadieIDE(statusRegistreIDEAvant) && isRadieIDE(statusRegistreIDEApres);
@@ -109,5 +110,22 @@ public class RadiationStrategy extends AbstractOrganisationStrategy {
 
 		LOGGER.info("Pas de radiation de l'entreprise.");
 		return null;
+	}
+
+	protected StatusRegistreIDE getStatusIde(SiteOrganisation sitePrincipalAvant, RegDate dateAvant) {
+		return sitePrincipalAvant == null ? null : sitePrincipalAvant.getDonneesRegistreIDE().getStatus(dateAvant);
+	}
+
+	protected StatusInscriptionRC getStatusInscription(SiteOrganisation sitePrincipalAvant, RegDate dateAvant) {
+		return sitePrincipalAvant == null ? null : sitePrincipalAvant.getDonneesRC().getStatusInscription(dateAvant);
+	}
+
+	protected StatusRC getStatus(SiteOrganisation sitePrincipalAvant, RegDate dateAvant) {
+		return sitePrincipalAvant == null ? null : sitePrincipalAvant.getDonneesRC().getStatus(dateAvant);
+	}
+
+	protected SiteOrganisation getSitePrincipal(Organisation organisation, RegDate dateAvant) {
+		final DateRanged<SiteOrganisation> sitePrincipal = organisation.getSitePrincipal(dateAvant);
+		return sitePrincipal == null ? null : sitePrincipal.getPayload();
 	}
 }
