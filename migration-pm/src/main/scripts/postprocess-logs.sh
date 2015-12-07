@@ -101,7 +101,7 @@ done
 	echo "Extraction des fors principaux adaptés à la couverture des fors secondaires..."
 	INPUT_FILE="$LOGDIR/fors.csv"
 	OUTPUT_FILE="$WORKDIR/fors/fors-principaux-adaptes-pour-couverture-fors-secondaires.csv"
-	head -n 1 "$LOGDIR/fors.csv" | iconv -c -t ISO88591 > "$OUTPUT_FILE"
+	head -n 1 "$INPUT_FILE" | iconv -c -t ISO88591 > "$OUTPUT_FILE"
 	grep "date de \(début\|fin\) .* couvrir les fors secondaires" "$INPUT_FILE" | iconv -c -t iso88591 >> "$OUTPUT_FILE"
 )
 
