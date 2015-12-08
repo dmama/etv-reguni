@@ -171,7 +171,7 @@ public class TacheListManagerImpl implements TacheListManager {
 				tacheView.setAnnee(annee);
 				tacheView.setDateDebutImposition(declaration.getDateDebut());
 				tacheView.setDateFinImposition(declaration.getDateFin());
-				tacheView.setTypeDocument(declaration.getModeleDocument().getTypeDocument());
+				tacheView.setTypeDocument(declaration.getModeleDocument() != null ? declaration.getModeleDocument().getTypeDocument() : null);
 				tacheView.setIdDI(declaration.getId());
 
 				if (tache instanceof TacheAnnulationDeclarationImpot) {
