@@ -40,7 +40,7 @@ public class InformationComplementaire extends EvenementOrganisationInterneInfor
 
 	@Override
 	public void doHandle(EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) throws EvenementOrganisationException {
-		String message = String.format("Envoi d'un événement d'information: %s. Entreprise %s (civil: %s).", typeInfo.name(), getEntreprise().getNumero(), getNoOrganisation());
+		String message = String.format("Envoi d'un événement d'information: %s. Entreprise %s (civil: %s).", typeInfo.toString(), getEntreprise().getNumero(), getNoOrganisation());
 		emetEvtFiscalInformation(getDateEvt(), getEntreprise(), typeInfo, message, suivis);
 	}
 

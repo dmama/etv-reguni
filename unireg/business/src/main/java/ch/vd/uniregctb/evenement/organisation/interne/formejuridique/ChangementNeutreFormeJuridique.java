@@ -34,7 +34,7 @@ public class ChangementNeutreFormeJuridique extends EvenementOrganisationInterne
 
 	@Override
 	public void doHandle(EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) throws EvenementOrganisationException {
-		String message = String.format("Envoi d'un événement d'information: %s. Changement neutre de forme juridique. Entreprise %s (civil: %s).",  typeInfo.name(), getEntreprise().getNumero(),
+		String message = String.format("Envoi d'un événement d'information: %s. Changement neutre de forme juridique. Entreprise %s (civil: %s).",  typeInfo.toString(), getEntreprise().getNumero(),
 		                               getNoOrganisation());
 
 		emetEvtFiscalInformation(getDateEvt(), getEntreprise(), typeInfo, message, suivis);

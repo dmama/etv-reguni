@@ -34,7 +34,7 @@ public class OrganisationView implements Serializable {
 		final Siege siegePrincipal = organisation.getSiegePrincipal(date);
 		noOFSSiege = siegePrincipal.getNoOfs();
 		typeSiege = siegePrincipal.getTypeAutoriteFiscale();
-		formeJuridique = organisation.getFormeLegale(date).name();
+		formeJuridique = organisation.getFormeLegale(date).toString();
 		numeroIDE = organisation.getNumeroIDE().isEmpty() ? null : organisation.getNumeroIDE().get(0).getPayload();
 		final StatusRegistreIDE statusRegistreIDE = organisation.getSitePrincipal(date).getPayload().getDonneesRegistreIDE().getStatus(date);
 		canceled = statusRegistreIDE != null && statusRegistreIDE == StatusRegistreIDE.RADIE;
