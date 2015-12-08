@@ -22,12 +22,12 @@ public enum TypeDocumentEditique {
 
 	DI_PM("U1P1DIPM", null, "impressionDI"),
 	DI_APM("U1P2DIAP", null, "impressionDI"),
-	LETTRE_BIENVENUE("U1P3BIEN", null, "lettreBienvenue"),
-	SOMMATION_DI_PM("U1P4SOMM", "666", "sommationDI"),          // TODO le code archivage est bidon !
-	ACCORD_DELAI_PM("U1P5DLAI", null, "accordDelai"),
-	REFUS_DELAI_PM("U1P6REFU", null, "refusDelai"),
-	RAPPEL("U1P7RAPL", null, "rappel"),
-	SURSIS("U1P8ADAS", null, "sursis"),                 // ADAS = Accord de Délai Après Sommation
+	LETTRE_BIENVENUE("U1P3BIEN", "400", "lettreBienvenue"),
+	SOMMATION_DI_PM("U1P4SOMM", "401", "sommationDI"),
+	ACCORD_DELAI_PM("U1P5DLAI", "402", "accordDelai"),
+	REFUS_DELAI_PM("U1P6REFU", "403", "refusDelai"),
+	RAPPEL("U1P7RAPL", "404", "rappel"),
+	SURSIS("U1P8ADAS", "405", "sursis"),                 // ADAS = Accord de Délai Après Sommation
 
 	//
 	// Autour des listes récapitulatives IS
