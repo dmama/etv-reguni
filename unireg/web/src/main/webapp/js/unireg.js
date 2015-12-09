@@ -1427,9 +1427,9 @@ var DateUtils = {
 			day = strDate.substring(8,10);
 		}
 		var d = new Date();
-		d.setDate(day);
-		d.setMonth(month);
-		d.setFullYear(year);
+		d.setDate(day);     // 1..31
+		d.setMonth(month - 1);  // 0..11
+		d.setFullYear(year);    // 4 digits
 		return d;
 	},
 
