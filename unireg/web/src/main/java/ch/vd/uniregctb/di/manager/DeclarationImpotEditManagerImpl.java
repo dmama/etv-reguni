@@ -283,7 +283,7 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 			throw new ValidationException(contribuable, results.getErrors(), results.getWarnings());
 		}
 
-		final int annee = range.getDateDebut().year();
+		final int annee = range.getDateFin().year();
 		final List<PeriodeImposition> ranges = calculateRangesDIsPourAnnee(contribuable, annee);
 
 		if (ranges == null || ranges.isEmpty()) {
