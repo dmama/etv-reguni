@@ -17,11 +17,13 @@ import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.cache.ServiceCivilCacheWarmer;
 import ch.vd.uniregctb.common.HibernateEntity;
 import ch.vd.uniregctb.common.TicketService;
+import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationException;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaireDAO;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePM;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP;
+import ch.vd.uniregctb.declaration.DeclarationImpotSource;
 import ch.vd.uniregctb.declaration.DelaiDeclaration;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
 import ch.vd.uniregctb.declaration.EtatDeclarationEchue;
@@ -54,7 +56,6 @@ import ch.vd.uniregctb.declaration.ordinaire.pp.EnvoiSommationsDIsPPProcessor;
 import ch.vd.uniregctb.declaration.ordinaire.pp.EnvoiSommationsDIsPPResults;
 import ch.vd.uniregctb.declaration.ordinaire.pp.ImportCodesSegmentProcessor;
 import ch.vd.uniregctb.declaration.ordinaire.pp.ImportCodesSegmentResults;
-import ch.vd.uniregctb.declaration.ordinaire.pp.ImpressionConfirmationDelaiHelperParams;
 import ch.vd.uniregctb.declaration.ordinaire.pp.ImpressionConfirmationDelaiPPHelper;
 import ch.vd.uniregctb.declaration.ordinaire.pp.ImpressionDeclarationImpotPersonnesPhysiquesHelper;
 import ch.vd.uniregctb.declaration.ordinaire.pp.ImpressionSommationDeclarationImpotPersonnesPhysiquesHelper;
@@ -88,6 +89,7 @@ import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
 import ch.vd.uniregctb.tiers.Tache;
 import ch.vd.uniregctb.tiers.TacheDAO;
 import ch.vd.uniregctb.tiers.TiersService;
+import ch.vd.uniregctb.type.EtatDelaiDeclaration;
 import ch.vd.uniregctb.type.TypeDocument;
 import ch.vd.uniregctb.type.TypeEtatDeclaration;
 import ch.vd.uniregctb.type.TypeEtatTache;
@@ -721,21 +723,36 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 
 	@Override
 	public EditiqueResultat getCopieConformeConfirmationDelai(DelaiDeclaration delai) throws EditiqueException {
-		return editiqueService.getPDFDeDocumentDepuisArchive(delai.getDeclaration().getTiers().getNumero(), TypeDocumentEditique.CONFIRMATION_DELAI, delai.getCleArchivageCourrier());
+		return editiqueService.getPDFDeDocumentDepuisArchive(delai.getDeclaration().getTiers().getNumero(),
+		                                                     getTypeDocumentEditique(delai),
+		                                                     delai.getCleArchivageCourrier());
 	}
 
-	/**
-	 * Construit l'ID du document pour l'archivage
-	 *
-	 * @param delaiDeclaration
-	 * @return
-	 */
-	private String construitIdArchivageConfirmationDelai(DelaiDeclaration delaiDeclaration) {
-		ImpressionConfirmationDelaiHelperParams params = new ImpressionConfirmationDelaiHelperParams(delaiDeclaration.getDelaiAccordeAu(),
-				delaiDeclaration.getId(), delaiDeclaration.getLogCreationDate());
-		return impressionConfirmationDelaiPPHelper.construitIdArchivageDocument(params);
+	private TypeDocumentEditique getTypeDocumentEditique(DelaiDeclaration delai) {
+		final Declaration declaration = delai.getDeclaration();
+		if (declaration instanceof DeclarationImpotOrdinairePP || declaration instanceof DeclarationImpotSource) {
+			return TypeDocumentEditique.CONFIRMATION_DELAI;
+		}
+		if (!(declaration instanceof DeclarationImpotOrdinairePM)) {
+			throw new IllegalArgumentException("Délai " + delai.getId() + " sur une déclaration non-supportée : " + declaration.getClass().getName());
+		}
+
+		if (delai.getEtat() == EtatDelaiDeclaration.ACCORDE) {
+			if (delai.isSursis()) {
+				return TypeDocumentEditique.SURSIS;
+			}
+			else {
+				return TypeDocumentEditique.ACCORD_DELAI_PM;
+			}
+		}
+		else if (delai.getEtat() == EtatDelaiDeclaration.REFUSE) {
+			return TypeDocumentEditique.REFUS_DELAI_PM;
+		}
+		else {
+			throw new IllegalArgumentException("Délai " + delai.getId() + " sans document (etat " + delai.getEtat() + ")");
+		}
 	}
-	
+
 	@Override
 	public ImportCodesSegmentResults importerCodesSegment(List<ContribuableAvecCodeSegment> input, StatusManager s) {
 		final ImportCodesSegmentProcessor processor = new ImportCodesSegmentProcessor(hibernateTemplate, transactionManager, tiersService, adresseService);
