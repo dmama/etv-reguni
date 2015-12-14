@@ -11,7 +11,7 @@
 		</tr>
 	</table>
 	
-	<jsp:include page="../../tiers/common/delai/delais.jsp">
+	<jsp:include page="../../tiers/common/delai/delais-pp.jsp">
 		<jsp:param name="page" value="edit"/>
 	</jsp:include>
 

@@ -32,6 +32,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.HibernateDateRangeEntity;
 import ch.vd.uniregctb.tiers.LinkedEntity;
 import ch.vd.uniregctb.tiers.Tiers;
+import ch.vd.uniregctb.type.EtatDelaiDeclaration;
 import ch.vd.uniregctb.type.TypeEtatDeclaration;
 
 /**
@@ -399,7 +400,7 @@ public abstract class Declaration extends HibernateDateRangeEntity implements Li
 		Set<DelaiDeclaration> echeances = delais;
 		if (echeances != null) {
 			for (DelaiDeclaration echeance : echeances) {
-				if (!echeance.isAnnule()) {
+				if (!echeance.isAnnule() && echeance.getEtat() == EtatDelaiDeclaration.ACCORDE) {
 					if (dateMax == null) {
 						dateMax = echeance.getDelaiAccordeAu();
 					}
@@ -418,7 +419,7 @@ public abstract class Declaration extends HibernateDateRangeEntity implements Li
 		Set<DelaiDeclaration> delais = this.delais;
 		if (delais != null) {
 			for (DelaiDeclaration delai : delais) {
-				if (!delai.isAnnule()) {
+				if (!delai.isAnnule() && delai.getEtat() == EtatDelaiDeclaration.ACCORDE) {
 					if (premierDelai == null) {
 						premierDelai = delai.getDelaiAccordeAu();
 					}

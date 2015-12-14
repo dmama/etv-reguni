@@ -80,17 +80,17 @@ public class DeclarationView implements Annulable {
 			this.typeDocumentMessage = null;
 		}
 
-		this.delais = initDelais(decl.getDelais(), decl.getPremierDelai());
+		this.delais = initDelais(decl.getDelais(), decl.getPremierDelai(), messageSource);
 		this.etats = initEtats(decl.getEtats(), messageSource);
 
 		this.diPP = decl instanceof DeclarationImpotOrdinairePP;
 		this.diPM = decl instanceof DeclarationImpotOrdinairePM;
 	}
 
-	private static List<DelaiDeclarationView> initDelais(Set<DelaiDeclaration> delais, RegDate premierDelai) {
+	private static List<DelaiDeclarationView> initDelais(Set<DelaiDeclaration> delais, RegDate premierDelai, MessageSource messageSource) {
 		final List<DelaiDeclarationView> list = new ArrayList<>();
 		for (DelaiDeclaration delai : delais) {
-			final DelaiDeclarationView delaiView = new DelaiDeclarationView(delai);
+			final DelaiDeclarationView delaiView = new DelaiDeclarationView(delai, messageSource);
 			delaiView.setFirst(premierDelai == delai.getDelaiAccordeAu());
 			list.add(delaiView);
 		}

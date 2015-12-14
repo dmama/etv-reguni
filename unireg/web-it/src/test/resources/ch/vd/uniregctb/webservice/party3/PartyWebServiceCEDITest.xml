@@ -5161,6 +5161,7 @@
     <column>LOG_MDATE</column>
     <column>LOG_MUSER</column>
     <column>ETAT</column>
+    <column>SURSIS</column>
     <column>DATE_DEMANDE</column>
     <column>DATE_TRAITEMENT</column>
     <column>DELAI_ACCORDE_AU</column>
@@ -5174,6 +5175,7 @@
       <value><![CDATA[2009-07-08 19:46:31.235]]></value>
       <value><![CDATA[[HostContribuableMigrator thread]]]></value>
       <value>ACCORDE</value>
+      <value>0</value>
       <value>20060125</value>
       <value>20060125</value>
       <value>20060315</value>
@@ -5188,6 +5190,7 @@
       <value><![CDATA[2009-07-08 19:46:31.239]]></value>
       <value><![CDATA[[HostContribuableMigrator thread]]]></value>
       <value>ACCORDE</value>
+      <value>0</value>
       <value>20080125</value>
       <value>20080125</value>
       <value>20080930</value>
@@ -5202,6 +5205,7 @@
       <value><![CDATA[2008-08-29 00:00:00.0]]></value>
       <value><![CDATA[CEDI    ]]></value>
       <value>ACCORDE</value>
+      <value>0</value>
       <value>20080513</value>
       <value>20080513</value>
       <value>20080930</value>
@@ -5216,6 +5220,7 @@
       <value><![CDATA[2009-07-08 19:46:31.244]]></value>
       <value><![CDATA[[HostContribuableMigrator thread]]]></value>
       <value>ACCORDE</value>
+      <value>0</value>
       <value>20050113</value>
       <value>20050113</value>
       <value>20050315</value>
@@ -5230,6 +5235,7 @@
       <value><![CDATA[2007-06-06 00:00:00.0]]></value>
       <value><![CDATA[CEDI    ]]></value>
       <value>ACCORDE</value>
+      <value>0</value>
       <value>20070220</value>
       <value>20070220</value>
       <value>20070915</value>
@@ -5244,6 +5250,7 @@
       <value><![CDATA[2009-07-08 19:46:31.253]]></value>
       <value><![CDATA[[HostContribuableMigrator thread]]]></value>
       <value>ACCORDE</value>
+      <value>0</value>
       <value>20070120</value>
       <value>20070120</value>
       <value>20070915</value>
@@ -5258,6 +5265,7 @@
       <value><![CDATA[2009-06-27 00:00:00.0]]></value>
       <value><![CDATA[DELAI_B ]]></value>
       <value>ACCORDE</value>
+      <value>0</value>
       <value>20090627</value>
       <value>20090626</value>
       <value>20090930</value>
@@ -5272,6 +5280,7 @@
       <value><![CDATA[2009-07-08 19:46:31.257]]></value>
       <value><![CDATA[[HostContribuableMigrator thread]]]></value>
       <value>ACCORDE</value>
+      <value>0</value>
       <value>20090128</value>
       <value>20090128</value>
       <value>20090930</value>
@@ -5286,6 +5295,7 @@
       <value><![CDATA[2009-07-08 19:46:31.261]]></value>
       <value><![CDATA[[HostContribuableMigrator thread]]]></value>
       <value>ACCORDE</value>
+      <value>0</value>
       <value>20040117</value>
       <value>20040117</value>
       <value>20040315</value>
@@ -5300,6 +5310,7 @@
       <value><![CDATA[2009-07-08 18:14:39.38]]></value>
       <value><![CDATA[[HostContribuableMigrator thread]]]></value>
       <value>ACCORDE</value>
+      <value>0</value>
       <value>20060113</value>
       <value>20060113</value>
       <value>20060315</value>
@@ -5314,6 +5325,7 @@
       <value><![CDATA[2009-07-08 18:14:39.4]]></value>
       <value><![CDATA[[HostContribuableMigrator thread]]]></value>
       <value>ACCORDE</value>
+      <value>0</value>
       <value>20080125</value>
       <value>20080125</value>
       <value>20080315</value>
@@ -5328,6 +5340,7 @@
       <value><![CDATA[2009-07-08 18:14:39.406]]></value>
       <value><![CDATA[[HostContribuableMigrator thread]]]></value>
       <value>ACCORDE</value>
+      <value>0</value>
       <value>20040121</value>
       <value>20040121</value>
       <value>20040315</value>
@@ -5342,6 +5355,7 @@
       <value><![CDATA[2009-07-08 18:14:39.41]]></value>
       <value><![CDATA[[HostContribuableMigrator thread]]]></value>
       <value>ACCORDE</value>
+      <value>0</value>
       <value>20050114</value>
       <value>20050114</value>
       <value>20050315</value>
@@ -5356,6 +5370,7 @@
       <value><![CDATA[2009-07-08 18:14:39.413]]></value>
       <value><![CDATA[[HostContribuableMigrator thread]]]></value>
       <value>ACCORDE</value>
+      <value>0</value>
       <value>20090116</value>
       <value>20090116</value>
       <value>20090315</value>
@@ -5370,6 +5385,7 @@
       <value><![CDATA[2009-07-08 18:14:39.385]]></value>
       <value><![CDATA[[HostContribuableMigrator thread]]]></value>
       <value>ACCORDE</value>
+      <value>0</value>
       <value>20070115</value>
       <value>20070115</value>
       <value>20070315</value>
@@ -5384,6 +5400,7 @@
       <value><![CDATA[2009-07-08 18:14:39.432]]></value>
       <value><![CDATA[[HostContribuableMigrator thread]]]></value>
       <value>ACCORDE</value>
+      <value>0</value>
       <value>20080125</value>
       <value>20080125</value>
       <value>20080315</value>
@@ -5398,6 +5415,7 @@
       <value><![CDATA[2009-07-08 18:14:39.437]]></value>
       <value><![CDATA[[HostContribuableMigrator thread]]]></value>
       <value>ACCORDE</value>
+      <value>0</value>
       <value>20050114</value>
       <value>20050114</value>
       <value>20050315</value>
@@ -5412,6 +5430,7 @@
       <value><![CDATA[2009-07-08 18:14:39.441]]></value>
       <value><![CDATA[[HostContribuableMigrator thread]]]></value>
       <value>ACCORDE</value>
+      <value>0</value>
       <value>20090128</value>
       <value>20090128</value>
       <value>20090315</value>
@@ -5426,6 +5445,7 @@
       <value><![CDATA[2009-07-08 18:14:39.447]]></value>
       <value><![CDATA[[HostContribuableMigrator thread]]]></value>
       <value>ACCORDE</value>
+      <value>0</value>
       <value>20070120</value>
       <value>20070120</value>
       <value>20070315</value>
@@ -5440,6 +5460,7 @@
       <value><![CDATA[2009-07-08 18:14:39.452]]></value>
       <value><![CDATA[[HostContribuableMigrator thread]]]></value>
       <value>ACCORDE</value>
+      <value>0</value>
       <value>20040121</value>
       <value>20040121</value>
       <value>20040315</value>
@@ -5454,6 +5475,7 @@
       <value><![CDATA[2009-07-08 18:14:39.456]]></value>
       <value><![CDATA[[HostContribuableMigrator thread]]]></value>
       <value>ACCORDE</value>
+      <value>0</value>
       <value>20060125</value>
       <value>20060125</value>
       <value>20060315</value>

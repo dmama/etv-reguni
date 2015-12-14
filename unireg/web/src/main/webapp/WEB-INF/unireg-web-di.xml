@@ -6,6 +6,7 @@
 		<property name="manager" ref="diEditManager"/>
 		<property name="tiersDAO" ref="tiersDAO"/>
 		<property name="diDAO" ref="diDAO"/>
+		<property name="delaiDeclarationDAO" ref="delaiDeclarationDAO" />
 	</bean>
 
 	<bean id="declarationImpotController" class="ch.vd.uniregctb.di.DeclarationImpotController">

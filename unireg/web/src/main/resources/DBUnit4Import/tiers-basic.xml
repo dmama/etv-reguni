@@ -11352,6 +11352,7 @@
     <column>LOG_MDATE</column>
     <column>LOG_MUSER</column>
     <column>ETAT</column>
+    <column>SURSIS</column>
     <column>DATE_DEMANDE</column>
     <column>DATE_TRAITEMENT</column>
     <column>DELAI_ACCORDE_AU</column>
@@ -11365,6 +11366,7 @@
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
       <value>tiers-basic</value>
       <value>ACCORDE</value>
+      <value>0</value>
       <null/>
       <null/>
       <value>20080430</value>
@@ -11379,6 +11381,7 @@
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
       <value>tiers-basic</value>
       <value>ACCORDE</value>
+      <value>0</value>
       <null/>
       <null/>
       <value>20060315</value>
@@ -11393,6 +11396,7 @@
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
       <value>tiers-basic</value>
       <value>ACCORDE</value>
+      <value>0</value>
       <value>20060220</value>
       <value>20060220</value>
       <value>20060731</value>
@@ -11407,6 +11411,7 @@
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
       <value>tiers-basic</value>
       <value>ACCORDE</value>
+      <value>0</value>
       <null/>
       <null/>
       <value>20070315</value>
@@ -11421,6 +11426,7 @@
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
       <value>tiers-basic</value>
       <value>ACCORDE</value>
+      <value>0</value>
       <null/>
       <null/>
       <value>20080315</value>
@@ -11435,6 +11441,7 @@
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
       <value>tiers-basic</value>
       <value>ACCORDE</value>
+      <value>0</value>
       <value>20080412</value>
       <value>20080412</value>
       <value>20080915</value>
@@ -11449,6 +11456,7 @@
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
       <value>tiers-basic</value>
       <value>ACCORDE</value>
+      <value>0</value>
       <null/>
       <null/>
       <value>20080731</value>
@@ -11463,6 +11471,7 @@
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
       <value>tiers-basic</value>
       <value>ACCORDE</value>
+      <value>0</value>
       <value>20080625</value>
       <value>20080625</value>
       <value>20080930</value>

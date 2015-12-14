@@ -25,6 +25,7 @@ import ch.vd.uniregctb.type.ActionEvenementCivilEch;
 import ch.vd.uniregctb.type.CategorieEtranger;
 import ch.vd.uniregctb.type.CategorieImpotSource;
 import ch.vd.uniregctb.type.EtatCivil;
+import ch.vd.uniregctb.type.EtatDelaiDeclaration;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
 import ch.vd.uniregctb.type.EtatEvenementOrganisation;
 import ch.vd.uniregctb.type.FormeJuridique;
@@ -95,6 +96,7 @@ public class TiersMapHelper extends CommonMapHelper {
 	private Map<TypeDroitAcces, String> mapDroitAcces;
 	private Map<TypeOperation, String> mapTypeOperation;
 	private Map<EtatTraitement, String> mapEtatTraitementReqDes;
+	private Map<EtatDelaiDeclaration, String> mapEtatDelaiDeclaration;
 
 	private ServiceInfrastructureService infraService;
 
@@ -662,5 +664,16 @@ public class TiersMapHelper extends CommonMapHelper {
 			LOGGER.error("Impossible de récupérer la liste des logiciels", e);
 			return Collections.emptyMap();
 		}
+	}
+
+	/**
+	 * Initialise la map des différents états que peut prendre une demande de délai de déclaration
+	 * @return une map
+	 */
+	public Map<EtatDelaiDeclaration, String> getTypesEtatsDelaiDeclaration() {
+		if (mapEtatDelaiDeclaration == null) {
+			mapEtatDelaiDeclaration = initMapEnum(ApplicationConfig.masterKeyEtatDelaiDeclaration, EtatDelaiDeclaration.class);
+		}
+		return mapEtatDelaiDeclaration;
 	}
 }

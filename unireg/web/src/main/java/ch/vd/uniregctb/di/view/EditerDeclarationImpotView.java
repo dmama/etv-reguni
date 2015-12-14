@@ -71,24 +71,16 @@ public class EditerDeclarationImpotView {
 		this.codeControle = di.getCodeControle();
 		this.sourceQuittancement = initSourceQuittancement(di);
 		this.dernierEtat = getDernierEtat(di);
-		this.delais = initDelais(di);
+		this.delais = initDelais(di, messageSource);
 		this.etats = initEtats(di.getEtats(), messageSource);
 		this.isAllowedQuittancement = allowedQuittancement;
-		this.isAllowedDelai = initIsAllowedDelai(this.dernierEtat, allowedDelai);
+		this.isAllowedDelai = allowedDelai;
 		this.isAllowedSommation = allowedSommation;
 		this.isAllowedDuplicata = allowedDuplicata;
 		this.isSommable = isSommable(di);
 		this.wasSommee = initWasSommee(di);
 		this.isDiPP = di instanceof DeclarationImpotOrdinairePP;
 		this.isDiPM = di instanceof DeclarationImpotOrdinairePM;
-	}
-
-	private static boolean initIsAllowedDelai(TypeEtatDeclaration dernierEtat, boolean allowedDelai) {
-		boolean d = allowedDelai;
-		if (dernierEtat != TypeEtatDeclaration.EMISE) {
-			d = false;
-		}
-		return d;
 	}
 
 	private static boolean initWasSommee(DeclarationImpotOrdinaire di) {
@@ -123,7 +115,7 @@ public class EditerDeclarationImpotView {
 		return etatRourne == null ? null : etatRourne.getSource();
 	}
 
-	private static List<DelaiDeclarationView> initDelais(DeclarationImpotOrdinaire di) {
+	private static List<DelaiDeclarationView> initDelais(DeclarationImpotOrdinaire di, MessageSource messageSource) {
 		final Set<DelaiDeclaration> delais = di.getDelais();
 		if (delais == null || delais.isEmpty()) {
 			return Collections.emptyList();
@@ -131,16 +123,20 @@ public class EditerDeclarationImpotView {
 		final RegDate first = di.getPremierDelai();
 		final List<DelaiDeclarationView> list = new ArrayList<>(delais.size());
 		for (DelaiDeclaration delai : delais) {
-			final DelaiDeclarationView d = new DelaiDeclarationView(delai);
+			final DelaiDeclarationView d = new DelaiDeclarationView(delai, messageSource);
 			d.setFirst(d.getDelaiAccordeAu() == first);
 			list.add(d);
 		}
 
-		// Trie par ordre décroissant des dates de délai
+		// Trie par ordre décroissant des dates de traitement (pour tenir compte des délais non-accordés)
 		Collections.sort(list, new Comparator<DelaiDeclarationView>() {
 			@Override
 			public int compare(DelaiDeclarationView o1, DelaiDeclarationView o2) {
-				return o2.getDelaiAccordeAu().compareTo(o1.getDelaiAccordeAu());
+				int comparison = o2.getDateTraitement().compareTo(o1.getDateTraitement());
+				if (comparison == 0) {
+					comparison = Long.compare(o2.getId(), o1.getId());
+				}
+				return comparison;
 			}
 		});
 

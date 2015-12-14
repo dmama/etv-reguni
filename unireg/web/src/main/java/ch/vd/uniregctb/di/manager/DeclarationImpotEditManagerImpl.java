@@ -615,15 +615,25 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 	 */
 	@Override
 	@Transactional(rollbackFor = Throwable.class)
-	public Long saveDelai(Long idDeclaration, RegDate dateDemande, RegDate delaiAccordeAu, boolean confirmationEcrite) {
+	public Long saveNouveauDelai(Long idDeclaration, RegDate dateDemande, RegDate delaiAccordeAu, EtatDelaiDeclaration etat, boolean sursis) {
 		final DeclarationImpotOrdinaire di = diDAO.get(idDeclaration);
 		DelaiDeclaration delai = new DelaiDeclaration();
 		delai.setDateTraitement(RegDate.get());
 		delai.setDateDemande(dateDemande);
-		delai.setEtat(EtatDelaiDeclaration.ACCORDE);
+		delai.setEtat(etat);
 		delai.setDelaiAccordeAu(delaiAccordeAu);
+		delai.setSursis(sursis);
 		delai = diService.addAndSave(di, delai);
 		return delai.getId();
+	}
+
+	@Override
+	@Transactional(rollbackFor = Throwable.class)
+	public void saveDelai(Long idDelai, EtatDelaiDeclaration etat, RegDate delaiAccordeAu) {
+		final DelaiDeclaration delai = delaiDeclarationDAO.get(idDelai);
+		delai.setDateTraitement(RegDate.get());
+		delai.setEtat(etat);
+		delai.setDelaiAccordeAu(delaiAccordeAu);
 	}
 
 	/**

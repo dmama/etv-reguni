@@ -20,6 +20,7 @@ import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionPersonnesPhysiqu
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesMorales;
 import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
+import ch.vd.uniregctb.type.EtatDelaiDeclaration;
 import ch.vd.uniregctb.type.TypeAdresseRetour;
 import ch.vd.uniregctb.type.TypeDocument;
 
@@ -64,10 +65,18 @@ public interface DeclarationImpotEditManager {
 	void genererDISansImpression(Long ctbId, RegDate dateDebut, RegDate dateFin, RegDate delaiAccorde, @Nullable RegDate dateRetour) throws Exception;
 
 	/**
-	 * Persiste en base le delai
+	 * Persiste en base la nouvelle demande de delai
 	 */
 	@Transactional(rollbackFor = Throwable.class)
-	Long saveDelai(Long idDeclaration, RegDate dateDemande, RegDate delaiAccordeAu, boolean confirmationEcrite);
+	Long saveNouveauDelai(Long idDeclaration, RegDate dateDemande, RegDate delaiAccordeAu, EtatDelaiDeclaration etat, boolean sursis);
+
+	/**
+	 * Persiste en base une modification d'une demande de délai existante
+	 * @param idDelai identifiant du délai
+	 * @param etat nouvel état de la demande de délai
+	 * @param delaiAccordeAu nouvelle date de délai accordé
+	 */
+	void saveDelai(Long idDelai, EtatDelaiDeclaration etat, RegDate delaiAccordeAu);
 
 	/**
 	 * Sommer une déclaration d'impôt

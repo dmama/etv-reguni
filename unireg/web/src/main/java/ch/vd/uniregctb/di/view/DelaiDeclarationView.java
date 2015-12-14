@@ -3,11 +3,15 @@ package ch.vd.uniregctb.di.view;
 import java.sql.Timestamp;
 
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.NotNull;
+import org.springframework.context.MessageSource;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.Annulable;
 import ch.vd.uniregctb.declaration.DelaiDeclaration;
+import ch.vd.uniregctb.type.EtatDelaiDeclaration;
+import ch.vd.uniregctb.utils.WebContextUtils;
 
 public class DelaiDeclarationView implements Comparable<DelaiDeclarationView>, Annulable {
 
@@ -37,6 +41,10 @@ public class DelaiDeclarationView implements Comparable<DelaiDeclarationView>, A
 
 	private Timestamp logModifDate;
 
+	private EtatDelaiDeclaration etat;
+	private String etatMessage;
+	private boolean sursis;
+
 	private boolean annule;
 
 	private boolean first;
@@ -44,7 +52,7 @@ public class DelaiDeclarationView implements Comparable<DelaiDeclarationView>, A
 	public DelaiDeclarationView() {
 	}
 
-	public DelaiDeclarationView(DelaiDeclaration delai) {
+	public DelaiDeclarationView(DelaiDeclaration delai, MessageSource messageSource) {
 		this.id = delai.getId();
 		this.annule = delai.isAnnule();
 		this.confirmationEcrite = StringUtils.isNotBlank(delai.getCleArchivageCourrier());
@@ -54,6 +62,9 @@ public class DelaiDeclarationView implements Comparable<DelaiDeclarationView>, A
 		this.logModifDate = delai.getLogModifDate();
 		this.logModifUser = delai.getLogModifUser();
 		this.idDeclaration = delai.getDeclaration().getId();
+		this.etat = delai.getEtat();
+		this.etatMessage = messageSource.getMessage("option.etat.delai." + this.etat.name(), null, WebContextUtils.getDefaultLocale());
+		this.sursis = delai.isSursis();
 	}
 
 	public Long getId() {
@@ -177,17 +188,29 @@ public class DelaiDeclarationView implements Comparable<DelaiDeclarationView>, A
 		this.first = first;
 	}
 
+	public EtatDelaiDeclaration getEtat() {
+		return etat;
+	}
+
+	public String getEtatMessage() {
+		return etatMessage;
+	}
+
+	public boolean isSursis() {
+		return sursis;
+	}
+
 	/**
 	 * Compare d'apres la date de DelaiDeclarationView
 	 *
 	 * @see java.lang.Comparable#compareTo(java.lang.Object)
 	 */
 	@Override
-	public int compareTo(DelaiDeclarationView delaiDeclarationView) {
-		RegDate autreDelaiAccordeAu = delaiDeclarationView.getDelaiAccordeAu();
-		int value = (-1) * delaiAccordeAu.compareTo(autreDelaiAccordeAu);
-		return value;
+	public int compareTo(@NotNull DelaiDeclarationView delaiDeclarationView) {
+		int comparison = - dateTraitement.compareTo(delaiDeclarationView.dateTraitement);
+		if (comparison == 0) {
+			comparison = - Long.compare(id, delaiDeclarationView.id);
+		}
+		return comparison;
 	}
-
-
 }

@@ -142,6 +142,7 @@
     <column>DATE_TRAITEMENT</column>
     <column>DELAI_ACCORDE_AU</column>
     <column>ETAT</column>
+    <column>SURSIS</column>
     <column>ANNULATION_DATE</column>
     <row>
       <value>2008-01-01</value>
@@ -151,6 +152,7 @@
       <value>20080215</value>
       <value>20080228</value>
       <value>ACCORDE</value>
+      <value>0</value>
       <null/>
     </row>
     <row>

@@ -1470,6 +1470,7 @@
 		<column>LOG_MDATE</column>
 		<column>LOG_MUSER</column>
 		<column>ETAT</column>
+		<column>SURSIS</column>
 		<column>DATE_DEMANDE</column>
 		<column>DATE_TRAITEMENT</column>
 		<column>DELAI_ACCORDE_AU</column>
@@ -1483,6 +1484,7 @@
 			<value><![CDATA[2008-01-01 00:00:00.0]]></value>
 			<null />
 			<value>ACCORDE</value>
+			<value>0</value>
 			<value>20080215</value>
 			<value>20080215</value>
 			<value>20080228</value>

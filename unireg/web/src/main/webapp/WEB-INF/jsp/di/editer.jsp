@@ -38,7 +38,14 @@
 		<!-- Fin  Declaration impot -->
 
 		<!-- Debut Delais -->
-		<jsp:include page="delai/lister.jsp"/>
+		<c:choose>
+			<c:when test="${command.diPP}">
+				<jsp:include page="delai/lister-pp.jsp"/>
+			</c:when>
+			<c:when test="${command.diPM}">
+				<jsp:include page="delai/lister-pm.jsp"/>
+			</c:when>
+		</c:choose>
 		<!-- Fin Delais -->
 
 		<!-- Debut Etats -->

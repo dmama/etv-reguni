@@ -2437,8 +2437,9 @@ var Decl = {
 	/**
 	 * Cette méthode ouvre un fenêtre popup avec les détails (read-only) de la déclaration d'impôt ordinaire (DI) dont l'id est passé en paramètre.
 	 * @param diId l'id de la déclaration à afficher.
+	 * @param pp <code>false</code> si les délais doivent être affichés sous leur forme simple (= commes pour les PP, sans état...), <code>true</code> sinon (= avec états, pour les PM)
 	 */
-	open_details_di: function(diId) {
+	open_details_di: function(diId, pp) {
 
 		$.getJSON(App.curl("/di/details.do?id=") + diId + "&" + new Date().getTime(), function(di) {
 			/** @namespace di.delais */
@@ -2457,7 +2458,7 @@ var Decl = {
 				info += '<tr class="odd"><td width="25%">Type déclaration&nbsp;:</td><td width="25%">' + StringUtils.escapeHTML(di.typeDocumentMessage) + '</td>';
 				info += '<td width="25%">&nbsp;</td><td width="25%">&nbsp;</td></tr></table></fieldset>\n';
 
-				var delais = Decl._buildDelaisTable(di.delais);
+				var delais = pp ? Decl._buildDelaisPPISTable(di.delais) :  Decl._buildDelaisPMTable(di.delais);
 				var etats = Decl._buidlEtatsTable(di.etats, false);
 
 				var dialog = Dialog.create_dialog_div('details-di-dialog');
@@ -2493,7 +2494,7 @@ var Decl = {
 				info += '<table><tr class="odd"><td width="50%">Date début période&nbsp;:</td><td width="50%">' + RegDate.format(lr.dateDebut) + '</td></tr>';
 				info += '<tr class="even"><td width="50%">Date fin période&nbsp;:</td><td width="50%">' + RegDate.format(lr.dateFin) + '</td></tr></table></fieldset>\n';
 
-				var delais = Decl._buildDelaisTable(lr.delais);
+				var delais = Decl._buildDelaisPPISTable(lr.delais);
 				var etats = Decl._buidlEtatsTable(lr.etats, true);
 
 				var dialog = Dialog.create_dialog_div('details-di-dialog');
@@ -2517,7 +2518,7 @@ var Decl = {
 		.error(Ajax.notifyErrorHandler("affichage des détails de la déclaration"));
 	},
 
-	_buildDelaisTable: function (delais) {
+	_buildDelaisPPISTable: function (delais) {
 		var html = '';
 		if (delais) {
 			html = '<fieldset><legend><span>Délais</span></legend>';
@@ -2544,6 +2545,40 @@ var Decl = {
 				}
 				html += '</td>';
 				html += '<td>' + RegDate.format(d.dateTraitement) + '</td>';
+				html += '<td>' + Link.consulterLog('DelaiDeclaration', d.id) + '</td></tr>';
+			}
+			html += '</tbody></table></fieldset>\n';
+		}
+		return html;
+	},
+
+	_buildDelaisPMTable: function (delais) {
+		var html = '';
+		if (delais) {
+			html = '<fieldset><legend><span>Délais</span></legend>';
+			html +=
+				'<table id="delai" class="display"><thead><tr><th>Date demande</th><th>Date traitement</th><th>Décision</th><th>Confirmation écrite</th><th>Délai accordé</th><th></th></tr></thead><tbody>';
+			for (var i in delais) {
+				//noinspection JSUnfilteredForInLoop
+				var d = delais[i];
+				/** @namespace d.delaiAccordeAu */
+				/** @namespace d.dateDemande */
+				/** @namespace d.confirmationEcrite */
+				/** @namespace d.dateTraitement */
+				/** @namespace d.etat */
+				html += '<tr class="' + (i % 2 == 0 ? 'even' : 'odd') + (d.annule ? ' strike' : '') + '">';
+				html += '<td>' + RegDate.format(d.dateDemande) + '</td><td>' + RegDate.format(d.dateTraitement) + '</td>';
+				html += '<td>' + StringUtils.escapeHTML(d.etatMessage) + '</td>';
+				html += '<td>';
+				if (d.etat != 'DEMANDE') {
+					if (d.confirmationEcrite) {
+						html += '<a href="' + App.curl('/declaration/copie-conforme-delai.do?idDelai=') + d.id + '&url_memorize=false" class="pdf" id="print-delai-' + d.id +
+							'" onclick="Link.tempSwap(this, \'#disabled-print-delai-' + d.id + '\');">&nbsp;</a>';
+						html += '<span class="pdf-grayed" id="disabled-print-delai-' + d.id + '" style="display:none;">&nbsp;</span>';
+					}
+				}
+				html += '</td>';
+				html += '<td>' + RegDate.format(d.delaiAccordeAu) + '</td>';
 				html += '<td>' + Link.consulterLog('DelaiDeclaration', d.id) + '</td></tr>';
 			}
 			html += '</tbody></table></fieldset>\n';

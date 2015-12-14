@@ -35,6 +35,7 @@ public class DelaiDeclaration extends HibernateEntity implements Comparable<Dela
 	private EtatDelaiDeclaration etat;
 	private String cleArchivageCourrier;
 	private Declaration declaration;
+	private boolean sursis;
 
 	@Transient
 	@Override
@@ -99,6 +100,15 @@ public class DelaiDeclaration extends HibernateEntity implements Comparable<Dela
 
 	public void setCleArchivageCourrier(String cleArchivageCourrier) {
 		this.cleArchivageCourrier = cleArchivageCourrier;
+	}
+
+	@Column(name = "SURSIS", nullable = false)
+	public boolean isSursis() {
+		return sursis;
+	}
+
+	public void setSursis(boolean sursis) {
+		this.sursis = sursis;
 	}
 
 	/**

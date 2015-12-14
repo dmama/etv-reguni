@@ -220,6 +220,7 @@
     <column>DATE_TRAITEMENT</column>
     <column>DELAI_ACCORDE_AU</column>
     <column>ETAT</column>
+    <column>SURSIS</column>
     <row>
       <value>2008-01-01</value>
       <value>310</value>
@@ -228,6 +229,7 @@
       <value>20090215</value>
       <value>20090228</value>
       <value>ACCORDE</value>
+      <value>0</value>
     </row>
     <row>
       <value>2008-01-01</value>
@@ -237,6 +239,7 @@
       <value>20090331</value>
       <value>20090331</value>
       <value>ACCORDE</value>
+      <value>0</value>
     </row>
   </table>
   <table name="ETAT_DECLARATION">

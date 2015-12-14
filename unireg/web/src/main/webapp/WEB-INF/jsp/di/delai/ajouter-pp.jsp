@@ -12,7 +12,7 @@
 		</fmt:message>
 	</tiles:put>
 	<tiles:put name="body">
-		<form:form method="post" name="theForm" id="formAddDelai" action="ajouter.do">
+		<form:form method="post" name="theForm" id="formAddDelai" action="ajouter-pp.do">
 
 			<form:errors cssClass="error"/>
 

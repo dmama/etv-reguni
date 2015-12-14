@@ -526,7 +526,7 @@ public class ListeRecapEditManagerImpl implements ListeRecapEditManager, Message
 	private void setDelais(ListeRecapDetailView lrEditView, DeclarationImpotSource lr) {
 		List<DelaiDeclarationView> delaisView = new ArrayList<>();
 		for (DelaiDeclaration delai : lr.getDelais()) {
-			DelaiDeclarationView delaiView = new DelaiDeclarationView(delai);
+			DelaiDeclarationView delaiView = new DelaiDeclarationView(delai, getMessageSource());
 			delaiView.setFirst(lr.getPremierDelai() == delai.getDelaiAccordeAu());
 			delaisView.add(delaiView);
 		}
