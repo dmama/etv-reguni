@@ -12,7 +12,6 @@ import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.declaration.DeclarationImpotSource;
-import ch.vd.uniregctb.declaration.EtatDeclarationRetournee;
 import ch.vd.uniregctb.declaration.EtatDeclarationSommee;
 import ch.vd.uniregctb.declaration.IdentifiantDeclaration;
 import ch.vd.uniregctb.declaration.ListeRecapitulativeDAO;
@@ -20,6 +19,7 @@ import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.parametrage.DelaisService;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.type.CategorieImpotSource;
+import ch.vd.uniregctb.type.EtatDelaiDeclaration;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.PeriodiciteDecompte;
 import ch.vd.uniregctb.type.TypeEtatDeclaration;
@@ -251,7 +251,7 @@ public class EnvoiSommationLRsEnMasseProcessorTest extends BusinessTest {
 		addForDebiteur(admin, date(2007,1,1), MotifFor.INDETERMINE, null, null, MockCommune.Lausanne);
 		DeclarationImpotSource lr = addLR(admin, date(2007, 1, 1), PeriodiciteDecompte.ANNUEL, periode);
 		addEtatDeclarationEmise(lr, date(2008, 1, 5));
-		addDelaiDeclaration(lr, date(2008, 1, 5), date(2008, 3, 15));
+		addDelaiDeclaration(lr, date(2008, 1, 5), date(2008, 3, 15), EtatDelaiDeclaration.ACCORDE);
 		return lr;
 	}
 
@@ -261,7 +261,7 @@ public class EnvoiSommationLRsEnMasseProcessorTest extends BusinessTest {
 		final DeclarationImpotSource lr = addLR(admin, debut, periodicite, periode);
 		final RegDate fin = periodicite.getFinPeriode(debut);
 		addEtatDeclarationEmise(lr, fin.addDays(6));
-		addDelaiDeclaration(lr, fin.addDays(6), fin.addMonths(1));
+		addDelaiDeclaration(lr, fin.addDays(6), fin.addMonths(1), EtatDelaiDeclaration.ACCORDE);
 		return lr;
 	}
 
@@ -270,7 +270,7 @@ public class EnvoiSommationLRsEnMasseProcessorTest extends BusinessTest {
 		addForDebiteur(admin, debut, MotifFor.INDETERMINE, null, null, MockCommune.Lausanne);
 		final DeclarationImpotSource lr = addLRPeriodiciteUnique(admin, debut, fin, periode);
 		addEtatDeclarationEmise(lr, fin.addDays(6));
-		addDelaiDeclaration(lr, fin.addDays(6), fin.addMonths(1));
+		addDelaiDeclaration(lr, fin.addDays(6), fin.addMonths(1), EtatDelaiDeclaration.ACCORDE);
 		return lr;
 	}
 
@@ -285,7 +285,7 @@ public class EnvoiSommationLRsEnMasseProcessorTest extends BusinessTest {
 			public Object doInTransaction(TransactionStatus status) {
 				final PeriodeFiscale pf = addPeriodeFiscale(2007);
 				final DeclarationImpotSource lr = addLRaSommerAvecDebiteur(pf, date(2007, 1, 1), PeriodiciteDecompte.MENSUEL);
-				lr.addEtat(new EtatDeclarationRetournee(date(2007, 1, 12), "TEST"));
+				addEtatDeclarationRetournee(lr, date(2007, 1, 12), "TEST");
 
 				final RegDate dateEmission = lr.getDernierEtatOfType(TypeEtatDeclaration.EMISE).getDateObtention();
 				final RegDate dateRetour = lr.getDernierEtatOfType(TypeEtatDeclaration.RETOURNEE).getDateObtention();
@@ -306,8 +306,8 @@ public class EnvoiSommationLRsEnMasseProcessorTest extends BusinessTest {
 			public Object doInTransaction(TransactionStatus status) {
 				final PeriodeFiscale pf = addPeriodeFiscale(2007);
 				final DeclarationImpotSource lr = addLRaSommerAvecDebiteur(pf, date(2007, 1, 1), PeriodiciteDecompte.MENSUEL);
-				lr.addEtat(new EtatDeclarationSommee(date(2007, 3, 12), date(2007, 3, 15)));
-				return null;  //To change body of implemented methods use File | Settings | File Templates.
+				addEtatDeclarationSommee(lr, date(2007, 3, 12), date(2007, 3, 15));
+				return null;
 			}
 		});
 

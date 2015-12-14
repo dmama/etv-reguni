@@ -115,6 +115,7 @@ import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.transaction.TransactionTemplate;
 import ch.vd.uniregctb.type.CategorieImpotSource;
+import ch.vd.uniregctb.type.EtatDelaiDeclaration;
 import ch.vd.uniregctb.type.Niveau;
 import ch.vd.uniregctb.type.TypeEtatDeclaration;
 import ch.vd.uniregctb.webservices.common.AccessDeniedException;
@@ -493,8 +494,9 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 							}
 							else {
 								final DelaiDeclaration delai = new DelaiDeclaration();
+								delai.setEtat(EtatDelaiDeclaration.ACCORDE);
 								delai.setDateTraitement(RegDate.get());
-								delai.setConfirmationEcrite(false);
+								delai.setCleArchivageCourrier(null);
 								delai.setDateDemande(dateObtention);
 								delai.setDelaiAccordeAu(nouveauDelai);
 								di.addDelai(delai);

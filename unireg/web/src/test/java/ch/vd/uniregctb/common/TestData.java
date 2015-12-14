@@ -42,6 +42,7 @@ import ch.vd.uniregctb.tiers.Tutelle;
 import ch.vd.uniregctb.type.CategorieIdentifiant;
 import ch.vd.uniregctb.type.CategorieImpotSource;
 import ch.vd.uniregctb.type.EtatCivil;
+import ch.vd.uniregctb.type.EtatDelaiDeclaration;
 import ch.vd.uniregctb.type.FormeJuridique;
 import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.ModeCommunication;
@@ -1541,7 +1542,8 @@ public class TestData {
 
 		DelaiDeclaration dd0 = new DelaiDeclaration();
 		dd0.setId(1L);
-		dd0.setConfirmationEcrite(false);
+		dd0.setCleArchivageCourrier(null);
+		dd0.setEtat(EtatDelaiDeclaration.ACCORDE);
 		dd0.setDelaiAccordeAu(RegDate.get(2008, 4, 30));
 		dd0.setLogModifDate(new Timestamp(1199142000000L));
 		dis0.addDelai(dd0);
@@ -1549,7 +1551,8 @@ public class TestData {
 
 		DelaiDeclaration dd1 = new DelaiDeclaration();
 		dd1.setId(7L);
-		dd1.setConfirmationEcrite(false);
+		dd1.setCleArchivageCourrier(null);
+		dd1.setEtat(EtatDelaiDeclaration.ACCORDE);
 		dd1.setDelaiAccordeAu(RegDate.get(2008, 7, 31));
 		dd1.setLogModifDate(new Timestamp(1199142000000L));
 		dis1.addDelai(dd1);
@@ -1557,7 +1560,8 @@ public class TestData {
 
 		DelaiDeclaration dd2 = new DelaiDeclaration();
 		dd2.setId(8L);
-		dd2.setConfirmationEcrite(false);
+		dd2.setCleArchivageCourrier(null);
+		dd2.setEtat(EtatDelaiDeclaration.ACCORDE);
 		dd2.setDateDemande(RegDate.get(2008, 6, 25));
 		dd2.setDateTraitement(RegDate.get(2008, 6, 25));
 		dd2.setDelaiAccordeAu(RegDate.get(2008, 9, 30));
@@ -1567,7 +1571,8 @@ public class TestData {
 
 		DelaiDeclaration dd3 = new DelaiDeclaration();
 		dd3.setId(2L);
-		dd3.setConfirmationEcrite(false);
+		dd3.setCleArchivageCourrier(null);
+		dd3.setEtat(EtatDelaiDeclaration.ACCORDE);
 		dd3.setDelaiAccordeAu(RegDate.get(2006, 3, 15));
 		dd3.setLogModifDate(new Timestamp(1199142000000L));
 		dio0.addDelai(dd3);
@@ -1575,7 +1580,8 @@ public class TestData {
 
 		DelaiDeclaration dd4 = new DelaiDeclaration();
 		dd4.setId(3L);
-		dd4.setConfirmationEcrite(false);
+		dd4.setCleArchivageCourrier(null);
+		dd4.setEtat(EtatDelaiDeclaration.ACCORDE);
 		dd4.setDateDemande(RegDate.get(2006, 2, 20));
 		dd4.setDateTraitement(RegDate.get(2006, 2, 20));
 		dd4.setDelaiAccordeAu(RegDate.get(2006, 7, 31));
@@ -1585,7 +1591,8 @@ public class TestData {
 
 		DelaiDeclaration dd5 = new DelaiDeclaration();
 		dd5.setId(4L);
-		dd5.setConfirmationEcrite(false);
+		dd5.setCleArchivageCourrier(null);
+		dd5.setEtat(EtatDelaiDeclaration.ACCORDE);
 		dd5.setDelaiAccordeAu(RegDate.get(2007, 3, 15));
 		dd5.setLogModifDate(new Timestamp(1199142000000L));
 		dio1.addDelai(dd5);
@@ -1593,7 +1600,8 @@ public class TestData {
 
 		DelaiDeclaration dd6 = new DelaiDeclaration();
 		dd6.setId(5L);
-		dd6.setConfirmationEcrite(false);
+		dd6.setCleArchivageCourrier(null);
+		dd6.setEtat(EtatDelaiDeclaration.ACCORDE);
 		dd6.setDelaiAccordeAu(RegDate.get(2008, 3, 15));
 		dd6.setLogModifDate(new Timestamp(1199142000000L));
 		dio2.addDelai(dd6);
@@ -1601,7 +1609,8 @@ public class TestData {
 
 		DelaiDeclaration dd7 = new DelaiDeclaration();
 		dd7.setId(6L);
-		dd7.setConfirmationEcrite(false);
+		dd7.setCleArchivageCourrier(null);
+		dd7.setEtat(EtatDelaiDeclaration.ACCORDE);
 		dd7.setDateDemande(RegDate.get(2008, 4, 12));
 		dd7.setDateTraitement(RegDate.get(2008, 4, 12));
 		dd7.setDelaiAccordeAu(RegDate.get(2008, 9, 15));

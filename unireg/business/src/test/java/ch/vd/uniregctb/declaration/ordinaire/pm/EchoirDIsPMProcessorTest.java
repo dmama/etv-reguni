@@ -23,6 +23,7 @@ import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.type.DayMonth;
+import ch.vd.uniregctb.type.EtatDelaiDeclaration;
 import ch.vd.uniregctb.type.FormeJuridiqueEntreprise;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.TypeContribuable;
@@ -298,7 +299,7 @@ public class EchoirDIsPMProcessorTest extends BusinessTest {
 				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
 				final DeclarationImpotOrdinaire declaration = addDeclarationImpot(e, periode, date(2014, 1, 1), date(2014, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, modele);
 				addEtatDeclarationEmise(declaration, date(2015, 1, 15));
-				addDelaiDeclaration(declaration, date(2015, 1, 15), date(2015, 3, 15));
+				addDelaiDeclaration(declaration, date(2015, 1, 15), date(2015, 3, 15), EtatDelaiDeclaration.ACCORDE);
 				addEtatDeclarationSommee(declaration, dateSommation, dateSommation.addDays(3));
 				return declaration.getId();
 			}
@@ -333,7 +334,7 @@ public class EchoirDIsPMProcessorTest extends BusinessTest {
 				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
 				final DeclarationImpotOrdinaire declaration = addDeclarationImpot(e, periode, date(2014, 1, 1), date(2014, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, modele);
 				addEtatDeclarationEmise(declaration, date(2015, 1, 15));
-				addDelaiDeclaration(declaration, date(2015, 1, 15), date(2015, 3, 15));
+				addDelaiDeclaration(declaration, date(2015, 1, 15), date(2015, 3, 15), EtatDelaiDeclaration.ACCORDE);
 				addEtatDeclarationSommee(declaration, dateSommation, dateSommation.addDays(3));
 				return declaration.getId();
 			}

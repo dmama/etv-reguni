@@ -5,6 +5,7 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
@@ -17,6 +18,7 @@ import ch.vd.unireg.xml.party.v2.PartyPart;
 import ch.vd.uniregctb.declaration.DelaiDeclaration;
 import ch.vd.uniregctb.declaration.EtatDeclarationRetournee;
 import ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotService;
+import ch.vd.uniregctb.type.EtatDelaiDeclaration;
 import ch.vd.uniregctb.type.TypeEtatDeclaration;
 import ch.vd.uniregctb.xml.DataHelper;
 import ch.vd.uniregctb.xml.EnumHelper;
@@ -84,7 +86,9 @@ public class TaxDeclarationBuilder {
 		if (parts != null && parts.contains(PartyPart.TAX_DECLARATIONS_DEADLINES) && d instanceof OrdinaryTaxDeclaration) {
 			final OrdinaryTaxDeclaration otd = (OrdinaryTaxDeclaration) d;
 			for (DelaiDeclaration delai : declaration.getDelaisSorted()) {
-				otd.getDeadlines().add(newTaxDeclarationDeadline(delai));
+				if (delai.getEtat() == EtatDelaiDeclaration.ACCORDE) {          // les autres états ne sont pas connus à ce niveau de service
+					otd.getDeadlines().add(newTaxDeclarationDeadline(delai));
+				}
 			}
 		}
 	}
@@ -95,7 +99,7 @@ public class TaxDeclarationBuilder {
 		d.setProcessingDate(DataHelper.coreToXMLv1(delai.getDateTraitement()));
 		d.setDeadline(DataHelper.coreToXMLv1(delai.getDelaiAccordeAu()));
 		d.setCancellationDate(DataHelper.coreToXMLv1(delai.getAnnulationDate()));
-		d.setWrittenConfirmation(delai.getConfirmationEcrite() != null && delai.getConfirmationEcrite());
+		d.setWrittenConfirmation(StringUtils.isNotBlank(delai.getCleArchivageCourrier()));
 		return d;
 	}
 

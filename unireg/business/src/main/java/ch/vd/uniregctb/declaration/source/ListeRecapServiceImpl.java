@@ -39,6 +39,7 @@ import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.CategorieImpotSource;
+import ch.vd.uniregctb.type.EtatDelaiDeclaration;
 import ch.vd.uniregctb.type.PeriodeDecompte;
 import ch.vd.uniregctb.type.PeriodiciteDecompte;
 import ch.vd.uniregctb.type.TypeDocument;
@@ -163,6 +164,7 @@ public class ListeRecapServiceImpl implements ListeRecapService {
 		lr.addEtat(etat);
 
 		final DelaiDeclaration delai = new DelaiDeclaration();
+		delai.setEtat(EtatDelaiDeclaration.ACCORDE);
 		delai.setDateTraitement(RegDate.get());
 
 		// si la date de traitement est avant la fin de la période, alors le délai est 1 mois après la fin de la période

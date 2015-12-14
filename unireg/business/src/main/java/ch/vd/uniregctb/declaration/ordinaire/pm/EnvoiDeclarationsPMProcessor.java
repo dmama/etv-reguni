@@ -66,6 +66,7 @@ import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesMorales;
 import ch.vd.uniregctb.tiers.TacheEnvoiDeclarationImpotPM;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.transaction.TransactionTemplate;
+import ch.vd.uniregctb.type.EtatDelaiDeclaration;
 import ch.vd.uniregctb.type.TypeContribuable;
 import ch.vd.uniregctb.type.TypeDocument;
 import ch.vd.uniregctb.type.TypeEtatTache;
@@ -301,7 +302,8 @@ public class EnvoiDeclarationsPMProcessor {
 		savedDi.setDelaiRetourImprime(datesDelaiInitial.getDateImprimee());
 
 		final DelaiDeclaration delaiInitial = new DelaiDeclaration();
-		delaiInitial.setConfirmationEcrite(Boolean.FALSE);
+		delaiInitial.setEtat(EtatDelaiDeclaration.ACCORDE);
+		delaiInitial.setCleArchivageCourrier(null);
 		delaiInitial.setDateDemande(dateTraitement);
 		delaiInitial.setDateTraitement(dateTraitement);
 		delaiInitial.setDelaiAccordeAu(datesDelaiInitial.getDateEffective());

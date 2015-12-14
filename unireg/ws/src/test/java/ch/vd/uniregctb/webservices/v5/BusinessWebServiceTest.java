@@ -141,6 +141,7 @@ import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.CategorieImpotSource;
 import ch.vd.uniregctb.type.EtatCivil;
+import ch.vd.uniregctb.type.EtatDelaiDeclaration;
 import ch.vd.uniregctb.type.FormeJuridique;
 import ch.vd.uniregctb.type.ModeCommunication;
 import ch.vd.uniregctb.type.ModeImposition;
@@ -490,7 +491,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 				addForPrincipal(pp, debut, MotifFor.ARRIVEE_HS, fin, MotifFor.DEPART_HS, MockCommune.Aigle);
 				final DeclarationImpotOrdinaire di1 = addDeclarationImpot(pp, pf, debut, fin, TypeContribuable.VAUDOIS_ORDINAIRE, md);
 				addEtatDeclarationEmise(di1, date(annee + 1, 1, 22));
-				addDelaiDeclaration(di1, date(annee + 1, 1, 22), delaiInitial);
+				addDelaiDeclaration(di1, date(annee + 1, 1, 22), delaiInitial, EtatDelaiDeclaration.ACCORDE);
 				return pp.getNumero();
 			}
 		});
@@ -2477,7 +2478,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, pf);
 				final DeclarationImpotOrdinaire di = addDeclarationImpot(pp, pf, date(pf.getAnnee(), 1, 1), date(pf.getAnnee(), 12, 31), cedi, TypeContribuable.VAUDOIS_ORDINAIRE, md);
 				addEtatDeclarationEmise(di, dateEmissionDi);
-				addDelaiDeclaration(di, dateEmissionDi, dateDelaiDi);
+				addDelaiDeclaration(di, dateEmissionDi, dateDelaiDi, EtatDelaiDeclaration.ACCORDE);
 
 				return pp.getNumero().intValue();
 			}
@@ -2867,7 +2868,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 				final ModeleDocument mdDi = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, pf);
 				final DeclarationImpotOrdinaire di = addDeclarationImpot(pp, pf, date(anneeDI, 1, 1), date(anneeDI, 12, 31), cedi, TypeContribuable.VAUDOIS_ORDINAIRE, mdDi);
 				addEtatDeclarationEmise(di, dateEmissionDI);
-				addDelaiDeclaration(di, dateEmissionDI, dateDelaiDI);
+				addDelaiDeclaration(di, dateEmissionDI, dateDelaiDI, EtatDelaiDeclaration.ACCORDE);
 
 				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2009, 1, 1));
 				addForDebiteur(dpi, date(2009, 1, 1), MotifFor.DEBUT_PRESTATION_IS, null, null, MockCommune.Aubonne);
@@ -2877,7 +2878,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 				final ModeleDocument mdLr = addModeleDocument(TypeDocument.LISTE_RECAPITULATIVE, pf);
 				final DeclarationImpotSource lr = addListeRecapitulative(dpi, pf, date(anneeDI, 1, 1), date(anneeDI, 1, 31), mdLr);
 				addEtatDeclarationEmise(lr, dateEmissionLR);
-				addDelaiDeclaration(lr, dateEmissionLR, dateDelaiLR);
+				addDelaiDeclaration(lr, dateEmissionLR, dateDelaiLR, EtatDelaiDeclaration.ACCORDE);
 				addEtatDeclarationSommee(lr, dateSommationLR, dateSommationLR.addDays(3));
 
 				assertValidInteger(pp.getNumero());
@@ -3167,7 +3168,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 				final ModeleDocument mdDi = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, pf);
 				final DeclarationImpotOrdinaire di = addDeclarationImpot(pp, pf, date(anneeDI, 1, 1), date(anneeDI, 12, 31), cedi, TypeContribuable.VAUDOIS_ORDINAIRE, mdDi);
 				addEtatDeclarationEmise(di, dateEmissionDI);
-				addDelaiDeclaration(di, dateEmissionDI, dateDelaiDI);
+				addDelaiDeclaration(di, dateEmissionDI, dateDelaiDI, EtatDelaiDeclaration.ACCORDE);
 
 				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2009, 1, 1));
 				addForDebiteur(dpi, date(2009, 1, 1), MotifFor.DEBUT_PRESTATION_IS, null, null, MockCommune.Aubonne);
@@ -3177,7 +3178,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 				final ModeleDocument mdLr = addModeleDocument(TypeDocument.LISTE_RECAPITULATIVE, pf);
 				final DeclarationImpotSource lr = addListeRecapitulative(dpi, pf, date(anneeDI, 1, 1), date(anneeDI, 1, 31), mdLr);
 				addEtatDeclarationEmise(lr, dateEmissionLR);
-				addDelaiDeclaration(lr, dateEmissionLR, dateDelaiLR);
+				addDelaiDeclaration(lr, dateEmissionLR, dateDelaiLR, EtatDelaiDeclaration.ACCORDE);
 				addEtatDeclarationSommee(lr, dateSommationLR, dateSommationLR.addDays(3));
 
 				assertValidInteger(pp.getNumero());
@@ -3528,7 +3529,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 				final ModeleDocument mdDi = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, pf);
 				final DeclarationImpotOrdinaire di = addDeclarationImpot(pp, pf, date(anneeDI, 1, 1), date(anneeDI, 12, 31), cedi, TypeContribuable.VAUDOIS_ORDINAIRE, mdDi);
 				addEtatDeclarationEmise(di, dateEmissionDI);
-				addDelaiDeclaration(di, dateEmissionDI, dateDelaiDI);
+				addDelaiDeclaration(di, dateEmissionDI, dateDelaiDI, EtatDelaiDeclaration.ACCORDE);
 
 				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2009, 1, 1));
 				addForDebiteur(dpi, date(2009, 1, 1), MotifFor.DEBUT_PRESTATION_IS, null, null, MockCommune.Aubonne);
@@ -3538,7 +3539,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 				final ModeleDocument mdLr = addModeleDocument(TypeDocument.LISTE_RECAPITULATIVE, pf);
 				final DeclarationImpotSource lr = addListeRecapitulative(dpi, pf, date(anneeDI, 1, 1), date(anneeDI, 1, 31), mdLr);
 				addEtatDeclarationEmise(lr, dateEmissionLR);
-				addDelaiDeclaration(lr, dateEmissionLR, dateDelaiLR);
+				addDelaiDeclaration(lr, dateEmissionLR, dateDelaiLR, EtatDelaiDeclaration.ACCORDE);
 				addEtatDeclarationSommee(lr, dateSommationLR, dateSommationLR.addDays(3));
 
 				assertValidInteger(pp.getNumero());

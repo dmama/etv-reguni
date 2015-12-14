@@ -33,6 +33,7 @@ import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.TiersService;
+import ch.vd.uniregctb.type.EtatDelaiDeclaration;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
@@ -419,6 +420,7 @@ public class ImpressionSommationDeclarationImpotPersonnesPhysiquesHelperTest ext
 				declaration.addEtat(new EtatDeclarationEmise(dateEmission));
 
 				final DelaiDeclaration delai = new DelaiDeclaration();
+				delai.setEtat(EtatDelaiDeclaration.ACCORDE);
 				delai.setDateDemande(dateEmission);
 				delai.setDelaiAccordeAu(dateDelaiInitial);
 				declaration.addDelai(delai);

@@ -96,6 +96,7 @@ import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersDAO.Parts;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.CategorieImpotSource;
+import ch.vd.uniregctb.type.EtatDelaiDeclaration;
 import ch.vd.uniregctb.type.TypeEtatDeclaration;
 import ch.vd.uniregctb.webservices.party4.data.AcknowledgeTaxDeclarationBuilder;
 import ch.vd.uniregctb.webservices.party4.data.BatchPartyBuilder;
@@ -773,8 +774,9 @@ public class PartyWebServiceImpl implements PartyWebService {
 
 		// Le délai est correcte, on l'ajoute
 		final DelaiDeclaration delai = new DelaiDeclaration();
+		delai.setEtat(EtatDelaiDeclaration.ACCORDE);
 		delai.setDateTraitement(RegDate.get());
-		delai.setConfirmationEcrite(false);
+		delai.setCleArchivageCourrier(null);
 		delai.setDateDemande(applicationDate);
 		delai.setDelaiAccordeAu(newDeadline);
 		declaration.addDelai(delai);

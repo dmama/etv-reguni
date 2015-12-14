@@ -405,6 +405,8 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 				new ImpressionConfirmationDelaiHelperParams(di, delai.getDelaiAccordeAu(), infoOperateur[0], getNumeroTelephoneOperateur(), infoOperateur[1],
 						delai.getId(), delai.getLogCreationDate());
 		final FichierImpressionDocument document = impressionConfirmationDelaiHelper.remplitConfirmationDelai(params);
+		// TODO c'est un peu pourri... on devrait pouvoir récupérer la valeur un peu plus élégamment...
+		delai.setCleArchivageCourrier(document.getFichierImpression().getDocumentArray()[0].getInfoArchivage().getIdDocument());
 		final String nomDocument = impressionConfirmationDelaiHelper.construitIdDocument(delai);
 
 		final String description = String.format("Confirmation de délai accordé au %s de la déclaration d'impôt %d du contribuable %s",

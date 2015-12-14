@@ -12,6 +12,7 @@ import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP;
 import ch.vd.uniregctb.declaration.DelaiDeclaration;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
+import ch.vd.uniregctb.type.EtatDelaiDeclaration;
 
 public class ImpressionConfirmationDelaiHelperTest extends BusinessTest {
 
@@ -34,6 +35,7 @@ public class ImpressionConfirmationDelaiHelperTest extends BusinessTest {
 
 		DeclarationImpotOrdinairePP declaration = new DeclarationImpotOrdinairePP();
 		DelaiDeclaration delai = new DelaiDeclaration();
+		delai.setEtat(EtatDelaiDeclaration.ACCORDE);
 		delai.setDeclaration(declaration);
 		delai.setDelaiAccordeAu(date(2011, 9, 21));
 		delai.setId(84512325483L);

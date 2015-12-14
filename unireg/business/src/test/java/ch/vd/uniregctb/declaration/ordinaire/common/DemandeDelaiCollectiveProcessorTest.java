@@ -19,9 +19,6 @@ import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DelaiDeclaration;
-import ch.vd.uniregctb.declaration.EtatDeclaration;
-import ch.vd.uniregctb.declaration.EtatDeclarationHelper;
-import ch.vd.uniregctb.declaration.EtatDeclarationSommee;
 import ch.vd.uniregctb.declaration.ModeleDocument;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.declaration.PeriodeFiscaleDAO;
@@ -29,12 +26,12 @@ import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.DayMonth;
+import ch.vd.uniregctb.type.EtatDelaiDeclaration;
 import ch.vd.uniregctb.type.FormeJuridiqueEntreprise;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeContribuable;
 import ch.vd.uniregctb.type.TypeDocument;
-import ch.vd.uniregctb.type.TypeEtatDeclaration;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -84,9 +81,7 @@ public class DemandeDelaiCollectiveProcessorTest extends BusinessTest {
 		final Declaration d = addDeclarationImpot(mrKong, periode, RegDate.get(2009, 1, 1), RegDate.get(2009, 12, 31), TypeContribuable.HORS_CANTON, modeleDocument);
 		d.setDelais(new HashSet<DelaiDeclaration>());
 		assertNull(d.getDelaiAccordeAu());
-		final EtatDeclaration etatEmis = newEtatDeclaration(TypeEtatDeclaration.EMISE);
-		etatEmis.setDateObtention(date(2010, 1, 7));
-		d.addEtat(etatEmis);
+		addEtatDeclarationEmise(d, date(2010, 1, 7));
 
 		{
 			// TEST : On lui ajoute 1 declaration pour 2009 à l'état émise :
@@ -155,9 +150,8 @@ public class DemandeDelaiCollectiveProcessorTest extends BusinessTest {
 			// TEST : La déclaration passe à l'état reçu :
 			// Resultat attendu :
 			// - aucun accord de délai ne doit passer
-			final EtatDeclaration etatSomme = newEtatDeclaration(TypeEtatDeclaration.SOMMEE);
-			etatSomme.setDateObtention(date(2010, 7, 18));
-			d.addEtat(etatSomme);
+			addEtatDeclarationSommee(d, date(2010, 7, 18), date(2010, 7, 18));
+
 			final DemandeDelaiCollectiveResults rapport = new DemandeDelaiCollectiveResults(2009, dateDelai, ids, dateTraitement, tiersService, adresseService);
 			processor.accorderDelaiDeclaration(mrKong, 2009, date(2010, 12, 4), dateTraitement, rapport);
 			assertEquals(0, rapport.traites.size());
@@ -170,9 +164,8 @@ public class DemandeDelaiCollectiveProcessorTest extends BusinessTest {
 			// TEST : La déclaration passe à l'état reçu :
 			// Resultat attendu :
 			// - aucun accord de délai ne doit passer
-			final EtatDeclaration etatEchu = newEtatDeclaration(TypeEtatDeclaration.ECHUE);
-			etatEchu.setDateObtention(date(2010, 8, 17));
-			d.addEtat(etatEchu);
+			addEtatDeclarationEchue(d, date(2010, 8, 17));
+
 			final DemandeDelaiCollectiveResults rapport = new DemandeDelaiCollectiveResults(2009, dateDelai, ids, dateTraitement, tiersService, adresseService);
 			processor.accorderDelaiDeclaration(mrKong, 2009, date(2010, 12, 4), dateTraitement, rapport);
 			assertEquals(0, rapport.traites.size());
@@ -185,12 +178,8 @@ public class DemandeDelaiCollectiveProcessorTest extends BusinessTest {
 			// TEST : La déclaration passe à l'état reçu :
 			// Resultat attendu :
 			// - aucun accord de délai ne doit passer
-			final EtatDeclaration etatRetourne = newEtatDeclaration(TypeEtatDeclaration.RETOURNEE);
-			etatRetourne.setDateObtention(date(2010, 10, 1));
-			d.addEtat(etatRetourne);
-		}
+			addEtatDeclarationRetournee(d, date(2010, 10, 1));
 
-		{
 			final DemandeDelaiCollectiveResults rapport = new DemandeDelaiCollectiveResults(2009, dateDelai, ids, dateTraitement, tiersService, adresseService);
 			processor.accorderDelaiDeclaration(mrKong, 2009, date(2010, 12, 4), dateTraitement, rapport);
 			assertEquals(0, rapport.traites.size());
@@ -198,16 +187,6 @@ public class DemandeDelaiCollectiveProcessorTest extends BusinessTest {
 			assertEquals(1, rapport.errors.size());
 			Assert.assertEquals(DemandeDelaiCollectiveResults.ErreurType.DECL_RETOURNEE, rapport.errors.get(0).raison);
 		}
-	}
-
-	private static DelaiDeclaration newDelaiDeclaration(RegDate delaiAccordeAu) {
-		final DelaiDeclaration delai = new DelaiDeclaration();
-		delai.setDelaiAccordeAu(delaiAccordeAu);
-		return delai;
-	}
-
-	private static EtatDeclaration newEtatDeclaration(TypeEtatDeclaration typeEtat) {
-		return EtatDeclarationHelper.getInstanceOfEtatDeclaration(typeEtat);
 	}
 
 	@Test
@@ -269,9 +248,8 @@ public class DemandeDelaiCollectiveProcessorTest extends BusinessTest {
 				final Declaration d = addDeclarationImpot(e, periode, RegDate.get(annee, 1, 1), RegDate.get(annee, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, modeleDocument);
 				d.setDelais(new HashSet<DelaiDeclaration>());
 				assertNull(d.getDelaiAccordeAu());
-				final EtatDeclaration etatEmis = newEtatDeclaration(TypeEtatDeclaration.EMISE);
-				etatEmis.setDateObtention(date(annee + 1, 1, 7));
-				d.addEtat(etatEmis);
+
+				addEtatDeclarationEmise(d, date(annee + 1, 1, 7));
 
 				return e.getNumero();
 			}
@@ -332,14 +310,9 @@ public class DemandeDelaiCollectiveProcessorTest extends BusinessTest {
 				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
 				final Declaration d = addDeclarationImpot(e, periode, RegDate.get(annee, 1, 1), RegDate.get(annee, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, modeleDocument);
 
-				final DelaiDeclaration delaiInitial = newDelaiDeclaration(dateDelaiInitial);
-				delaiInitial.setDateDemande(dateTraitement);
-				delaiInitial.setDateTraitement(dateTraitement);
-				d.addDelai(delaiInitial);
+				addDelaiDeclaration(d, dateTraitement, dateDelaiInitial, EtatDelaiDeclaration.ACCORDE);
+				addEtatDeclarationEmise(d, date(annee + 1, 1, 7));
 
-				final EtatDeclaration etatEmis = newEtatDeclaration(TypeEtatDeclaration.EMISE);
-				etatEmis.setDateObtention(date(annee + 1, 1, 7));
-				d.addEtat(etatEmis);
 				return e.getNumero();
 			}
 		});
@@ -435,21 +408,13 @@ public class DemandeDelaiCollectiveProcessorTest extends BusinessTest {
 				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
 				final Declaration d = addDeclarationImpot(e, periode, RegDate.get(annee, 1, 1), RegDate.get(annee, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, modeleDocument);
 
-				final DelaiDeclaration delaiInitial = newDelaiDeclaration(dateDelaiInitial);
-				delaiInitial.setDateDemande(dateTraitement);
-				delaiInitial.setDateTraitement(dateTraitement);
-				d.addDelai(delaiInitial);
-
-				final EtatDeclaration etatEmis = newEtatDeclaration(TypeEtatDeclaration.EMISE);
-				etatEmis.setDateObtention(date(annee + 1, 1, 7));
-				d.addEtat(etatEmis);
+				addDelaiDeclaration(d, dateTraitement, dateDelaiInitial, EtatDelaiDeclaration.ACCORDE);
+				addEtatDeclarationEmise(d, date(annee + 1, 1, 7));
 
 				// TEST : La déclaration passe à l'état reçu :
 				// Resultat attendu :
 				// - aucun accord de délai ne doit passer
-				final EtatDeclaration etatRecu = newEtatDeclaration(TypeEtatDeclaration.RETOURNEE);
-				etatRecu.setDateObtention(date(annee + 1, 7, 18));
-				d.addEtat(etatRecu);
+				addEtatDeclarationRetournee(d, date(annee + 1, 7, 18));
 
 				return e.getNumero();
 			}
@@ -491,22 +456,13 @@ public class DemandeDelaiCollectiveProcessorTest extends BusinessTest {
 				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
 				final Declaration d = addDeclarationImpot(e, periode, RegDate.get(annee, 1, 1), RegDate.get(annee, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, modeleDocument);
 
-				final DelaiDeclaration delaiInitial = newDelaiDeclaration(dateDelaiInitial);
-				delaiInitial.setDateDemande(dateTraitement);
-				delaiInitial.setDateTraitement(dateTraitement);
-				d.addDelai(delaiInitial);
-
-				final EtatDeclaration etatEmis = newEtatDeclaration(TypeEtatDeclaration.EMISE);
-				etatEmis.setDateObtention(date(annee + 1, 1, 7));
-				d.addEtat(etatEmis);
+				addDelaiDeclaration(d, dateTraitement, dateDelaiInitial, EtatDelaiDeclaration.ACCORDE);
+				addEtatDeclarationEmise(d, date(annee + 1, 1, 7));
 
 				// TEST : La déclaration passe à l'état sommée :
 				// Resultat attendu :
 				// - aucun accord de délai ne doit passer
-				final EtatDeclarationSommee etatSomme = (EtatDeclarationSommee) newEtatDeclaration(TypeEtatDeclaration.SOMMEE);
-				etatSomme.setDateObtention(date(annee + 1, 7, 18));
-				etatSomme.setDateEnvoiCourrier(date(annee + 1, 7, 19));
-				d.addEtat(etatSomme);
+				addEtatDeclarationSommee(d, date(annee + 1, 7, 18), date(annee + 1, 7, 19));
 
 				return e.getNumero();
 			}
@@ -548,21 +504,13 @@ public class DemandeDelaiCollectiveProcessorTest extends BusinessTest {
 				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
 				final Declaration d = addDeclarationImpot(e, periode, RegDate.get(annee, 1, 1), RegDate.get(annee, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, modeleDocument);
 
-				final DelaiDeclaration delaiInitial = newDelaiDeclaration(dateDelaiInitial);
-				delaiInitial.setDateDemande(dateTraitement);
-				delaiInitial.setDateTraitement(dateTraitement);
-				d.addDelai(delaiInitial);
-
-				final EtatDeclaration etatEmis = newEtatDeclaration(TypeEtatDeclaration.EMISE);
-				etatEmis.setDateObtention(date(annee + 1, 1, 7));
-				d.addEtat(etatEmis);
+				addDelaiDeclaration(d, dateTraitement, dateDelaiInitial, EtatDelaiDeclaration.ACCORDE);
+				addEtatDeclarationEmise(d, date(annee + 1, 7, 1));
 
 				// TEST : La déclaration passe à l'état échue :
 				// Resultat attendu :
 				// - aucun accord de délai ne doit passer
-				final EtatDeclaration etatEchu = newEtatDeclaration(TypeEtatDeclaration.ECHUE);
-				etatEchu.setDateObtention(date(annee + 1, 7, 18));
-				d.addEtat(etatEchu);
+				addEtatDeclarationEchue(d, date(annee + 1, 7, 18));
 
 				return e.getNumero();
 			}

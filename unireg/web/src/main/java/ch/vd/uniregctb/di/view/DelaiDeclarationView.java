@@ -2,6 +2,8 @@ package ch.vd.uniregctb.di.view;
 
 import java.sql.Timestamp;
 
+import org.apache.commons.lang3.StringUtils;
+
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.Annulable;
@@ -45,7 +47,7 @@ public class DelaiDeclarationView implements Comparable<DelaiDeclarationView>, A
 	public DelaiDeclarationView(DelaiDeclaration delai) {
 		this.id = delai.getId();
 		this.annule = delai.isAnnule();
-		this.confirmationEcrite = delai.getConfirmationEcrite();
+		this.confirmationEcrite = StringUtils.isNotBlank(delai.getCleArchivageCourrier());
 		this.dateDemande = delai.getDateDemande();
 		this.dateTraitement = delai.getDateTraitement();
 		this.delaiAccordeAu = delai.getDelaiAccordeAu();

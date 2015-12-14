@@ -26,6 +26,7 @@ import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.transaction.TransactionTemplate;
+import ch.vd.uniregctb.type.EtatDelaiDeclaration;
 import ch.vd.uniregctb.type.TypeEtatDeclaration;
 
 /**
@@ -134,7 +135,8 @@ public class DemandeDelaiCollectiveProcessor {
 	 */
 	private static DelaiDeclaration newDelaiDeclaration(RegDate delai, RegDate dateTraitement) {
 		final DelaiDeclaration dd = new DelaiDeclaration();
-		dd.setConfirmationEcrite(false);
+		dd.setCleArchivageCourrier(null);
+		dd.setEtat(EtatDelaiDeclaration.ACCORDE);
 		dd.setDateDemande(dateTraitement);
 		dd.setDateTraitement(dateTraitement);
 		dd.setDelaiAccordeAu(delai);

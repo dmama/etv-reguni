@@ -51,6 +51,7 @@ import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.transaction.TransactionTemplate;
 import ch.vd.uniregctb.type.EtatCivil;
+import ch.vd.uniregctb.type.EtatDelaiDeclaration;
 import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
@@ -233,6 +234,7 @@ public abstract class EvenementScenario extends NorentesScenario {
 		di.setEtats(etats);
 
 		final DelaiDeclaration delai = new DelaiDeclaration();
+		delai.setEtat(EtatDelaiDeclaration.ACCORDE);
 		delai.setDateDemande(dateEmission);
 		delai.setDeclaration(di);
 		delai.setDelaiAccordeAu(dateEmission.addDays(delaiEnJours));

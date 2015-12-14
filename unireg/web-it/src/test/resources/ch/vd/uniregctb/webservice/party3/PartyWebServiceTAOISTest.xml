@@ -1660,7 +1660,7 @@
     <column>DATE_DEMANDE</column>
     <column>DATE_TRAITEMENT</column>
     <column>DELAI_ACCORDE_AU</column>
-    <column>CONFIRMATION_ECRITE</column>
+    <column>ETAT</column>
     <row>
       <value>2008-01-01</value>
       <value>1</value>
@@ -1668,7 +1668,7 @@
       <null/>
       <null/>
       <value>20080430</value>
-      <value>0</value>
+      <value>ACCORDE</value>
     </row>
     <row>
       <value>2008-01-01</value>
@@ -1677,7 +1677,7 @@
       <null/>
       <null/>
       <value>20080731</value>
-      <value>0</value>
+      <value>ACCORDE</value>
     </row>
     <row>
       <value>2008-01-01</value>
@@ -1686,7 +1686,7 @@
       <value>20080625</value>
       <value>20080625</value>
       <value>20080930</value>
-      <value>0</value>
+      <value>ACCORDE</value>
     </row>
     <row>
       <value>2008-01-01</value>
@@ -1695,7 +1695,7 @@
       <null/>
       <null/>
       <value>20060315</value>
-      <value>0</value>
+      <value>ACCORDE</value>
     </row>
     <row>
       <value>2008-01-01</value>
@@ -1704,7 +1704,7 @@
       <value>20060220</value>
       <value>20060220</value>
       <value>20060731</value>
-      <value>0</value>
+      <value>ACCORDE</value>
     </row>
     <row>
       <value>2008-01-01</value>
@@ -1713,7 +1713,7 @@
       <null/>
       <null/>
       <value>20070315</value>
-      <value>0</value>
+      <value>ACCORDE</value>
     </row>
     <row>
       <value>2008-01-01</value>
@@ -1722,7 +1722,7 @@
       <null/>
       <null/>
       <value>20080315</value>
-      <value>0</value>
+      <value>ACCORDE</value>
     </row>
     <row>
       <value>2008-01-01</value>
@@ -1731,7 +1731,7 @@
       <value>20080412</value>
       <value>20080412</value>
       <value>20080915</value>
-      <value>0</value>
+      <value>ACCORDE</value>
     </row>
   </table>
   <table name="ETAT_DECLARATION">

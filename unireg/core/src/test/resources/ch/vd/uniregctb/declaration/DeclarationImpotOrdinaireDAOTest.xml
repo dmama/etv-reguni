@@ -255,7 +255,7 @@
     <column>DATE_DEMANDE</column>
     <column>DATE_TRAITEMENT</column>
     <column>DELAI_ACCORDE_AU</column>
-    <column>CONFIRMATION_ECRITE</column>
+    <column>ETAT</column>
     <column>ANNULATION_DATE</column>
     <row>
       <value>2008-01-01</value>
@@ -264,7 +264,7 @@
       <value>20080215</value>
       <value>20080215</value>
       <value>20080228</value>
-      <value>0</value>
+      <value>ACCORDE</value>
       <null/>
     </row>
     <row>
@@ -274,7 +274,7 @@
       <value>20080228</value>
       <value>20080228</value>
       <value>20080315</value>
-      <value>0</value>
+      <value>ACCORDE</value>
       <value>2008-04-11</value>
     </row>
   </table>

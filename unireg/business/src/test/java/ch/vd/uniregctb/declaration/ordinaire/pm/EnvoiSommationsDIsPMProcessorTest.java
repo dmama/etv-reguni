@@ -15,9 +15,6 @@ import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaireDAO;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePM;
-import ch.vd.uniregctb.declaration.DelaiDeclaration;
-import ch.vd.uniregctb.declaration.EtatDeclarationEmise;
-import ch.vd.uniregctb.declaration.EtatDeclarationRetournee;
 import ch.vd.uniregctb.declaration.EtatDeclarationSommee;
 import ch.vd.uniregctb.declaration.ModeleDocument;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
@@ -29,6 +26,7 @@ import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.type.DayMonth;
+import ch.vd.uniregctb.type.EtatDelaiDeclaration;
 import ch.vd.uniregctb.type.FormeJuridiqueEntreprise;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.TypeContribuable;
@@ -93,14 +91,9 @@ public class EnvoiSommationsDIsPMProcessorTest extends BusinessTest {
 				final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM, periode);
 				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
 				final DeclarationImpotOrdinaire declaration = addDeclarationImpot(e, periode, date(2014, 1, 1), date(2014, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, modele);
-				declaration.addEtat(new EtatDeclarationEmise(dateEmission));
-				declaration.addEtat(new EtatDeclarationRetournee(dateDelaiInitial.addDays(5), "TEST"));   // oui, le retour est après le délai initial, mais cela ne doit pas avoir d'influence
-
-				final DelaiDeclaration delai = new DelaiDeclaration();
-				delai.setDateDemande(dateEmission);
-				delai.setDelaiAccordeAu(dateDelaiInitial);
-				declaration.addDelai(delai);
-
+				addEtatDeclarationEmise(declaration, dateEmission);
+				addEtatDeclarationRetournee(declaration, dateDelaiInitial.addDays(5), "TEST");         // oui, le retour est après le délai initial, mais cela ne doit pas avoir d'influence
+				addDelaiDeclaration(declaration, dateEmission, dateDelaiInitial, EtatDelaiDeclaration.ACCORDE);
 				return declaration.getId();
 			}
 		});
@@ -139,15 +132,10 @@ public class EnvoiSommationsDIsPMProcessorTest extends BusinessTest {
 				final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM, periode);
 				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
 				final DeclarationImpotOrdinaire declaration = addDeclarationImpot(e, periode, date(2014, 1, 1), date(2014, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, modele);
-				declaration.addEtat(new EtatDeclarationEmise(dateEmission));
-				declaration.addEtat(new EtatDeclarationRetournee(dateDelaiInitial.addDays(-5), "ADDI"));
-				declaration.addEtat(new EtatDeclarationRetournee(dateDelaiInitial.addDays(5), "TEST"));   // oui, le retour est après le délai initial, mais cela ne doit pas avoir d'influence
-
-				final DelaiDeclaration delai = new DelaiDeclaration();
-				delai.setDateDemande(dateEmission);
-				delai.setDelaiAccordeAu(dateDelaiInitial);
-				declaration.addDelai(delai);
-
+				addEtatDeclarationEmise(declaration, dateEmission);
+				addEtatDeclarationRetournee(declaration, dateDelaiInitial.addDays(-5), "ADDI");
+				addEtatDeclarationRetournee(declaration, dateDelaiInitial.addDays(5), "TEST");             // oui, le retour est après le délai initial, mais cela ne doit pas avoir d'influence
+				addDelaiDeclaration(declaration, dateEmission, dateDelaiInitial, EtatDelaiDeclaration.ACCORDE);
 				return declaration.getId();
 			}
 		});
@@ -184,13 +172,8 @@ public class EnvoiSommationsDIsPMProcessorTest extends BusinessTest {
 				final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM, periode);
 				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
 				final DeclarationImpotOrdinaire declaration = addDeclarationImpot(e, periode, date(anneePf, 1, 1), date(anneePf, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, modele);
-				declaration.addEtat(new EtatDeclarationEmise(dateEmission));
-
-				final DelaiDeclaration delai = new DelaiDeclaration();
-				delai.setDateDemande(dateEmission);
-				delai.setDelaiAccordeAu(delaiInitial);
-				declaration.addDelai(delai);
-
+				addEtatDeclarationEmise(declaration, dateEmission);
+				addDelaiDeclaration(declaration, dateEmission, delaiInitial, EtatDelaiDeclaration.ACCORDE);
 				return e.getNumero();
 			}
 		});
@@ -232,13 +215,8 @@ public class EnvoiSommationsDIsPMProcessorTest extends BusinessTest {
 				final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM, periode);
 				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
 				final DeclarationImpotOrdinaire declaration = addDeclarationImpot(e, periode, date(anneePf, 1, 1), date(anneePf, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, modele);
-				declaration.addEtat(new EtatDeclarationEmise(dateEmission));
-
-				final DelaiDeclaration delai = new DelaiDeclaration();
-				delai.setDateDemande(dateEmission);
-				delai.setDelaiAccordeAu(delaiInitial);
-				declaration.addDelai(delai);
-
+				addEtatDeclarationEmise(declaration, dateEmission);
+				addDelaiDeclaration(declaration, dateEmission, delaiInitial, EtatDelaiDeclaration.ACCORDE);
 				return declaration.getId();
 			}
 		});
@@ -275,13 +253,8 @@ public class EnvoiSommationsDIsPMProcessorTest extends BusinessTest {
 				final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM, periode);
 				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
 				final DeclarationImpotOrdinaire declaration = addDeclarationImpot(e, periode, date(anneePf, 1, 1), date(anneePf, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, modele);
-				declaration.addEtat(new EtatDeclarationEmise(dateEmission));
-
-				final DelaiDeclaration delai = new DelaiDeclaration();
-				delai.setDateDemande(dateEmission);
-				delai.setDelaiAccordeAu(delaiInitial);
-				declaration.addDelai(delai);
-
+				addEtatDeclarationEmise(declaration, dateEmission);
+				addDelaiDeclaration(declaration, dateEmission, delaiInitial, EtatDelaiDeclaration.ACCORDE);
 				return declaration.getId();
 			}
 		});
@@ -326,13 +299,8 @@ public class EnvoiSommationsDIsPMProcessorTest extends BusinessTest {
 				final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM, periode);
 				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
 				final DeclarationImpotOrdinaire declaration = addDeclarationImpot(e, periode, date(anneePf, 1, 1), date(anneePf, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, modele);
-				declaration.addEtat(new EtatDeclarationEmise(dateEmission));
-
-				final DelaiDeclaration delai = new DelaiDeclaration();
-				delai.setDateDemande(dateEmission);
-				delai.setDelaiAccordeAu(delaiInitial);
-				declaration.addDelai(delai);
-
+				addEtatDeclarationEmise(declaration, dateEmission);
+				addDelaiDeclaration(declaration, dateEmission, delaiInitial, EtatDelaiDeclaration.ACCORDE);
 				return declaration.getId();
 			}
 		});
@@ -370,13 +338,8 @@ public class EnvoiSommationsDIsPMProcessorTest extends BusinessTest {
 				final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM, periode);
 				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
 				final DeclarationImpotOrdinaire declaration = addDeclarationImpot(e, periode, date(anneePf, 4, 1), date(anneePf, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, modele);
-				declaration.addEtat(new EtatDeclarationEmise(dateEmission));
-
-				final DelaiDeclaration delai = new DelaiDeclaration();
-				delai.setDateDemande(dateEmission);
-				delai.setDelaiAccordeAu(delaiInitial);
-				declaration.addDelai(delai);			
-
+				addEtatDeclarationEmise(declaration, dateEmission);
+				addDelaiDeclaration(declaration, dateEmission, delaiInitial, EtatDelaiDeclaration.ACCORDE);
 				return declaration.getId();
 			}
 		});
@@ -438,14 +401,9 @@ public class EnvoiSommationsDIsPMProcessorTest extends BusinessTest {
 				final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM, periode);
 				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
 				final DeclarationImpotOrdinaire declaration = addDeclarationImpot(e, periode, date(anneePf, 1, 1), date(anneePf, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, modele);
-				declaration.addEtat(new EtatDeclarationEmise(dateEmission));
-				declaration.addEtat(new EtatDeclarationRetournee(dateEmission.addDays(-5), "TEST"));
-
-				final DelaiDeclaration delai = new DelaiDeclaration();
-				delai.setDateDemande(dateEmission);
-				delai.setDelaiAccordeAu(delaiInitial);
-				declaration.addDelai(delai);
-
+				addEtatDeclarationEmise(declaration, dateEmission);
+				addEtatDeclarationRetournee(declaration, dateEmission.addDays(-5), "TEST");
+				addDelaiDeclaration(declaration, dateEmission, delaiInitial, EtatDelaiDeclaration.ACCORDE);
 				return declaration.getId();
 			}
 		});
@@ -482,14 +440,9 @@ public class EnvoiSommationsDIsPMProcessorTest extends BusinessTest {
 				final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM, periode);
 				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
 				final DeclarationImpotOrdinaire declaration = addDeclarationImpot(e, periode, date(anneePf, 1, 1), date(anneePf, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, modele);
-				declaration.addEtat(new EtatDeclarationEmise(dateEmission));
-				declaration.addEtat(new EtatDeclarationSommee(delaiInitial.addMonths(1), delaiInitial.addMonths(1).addDays(3)));
-
-				final DelaiDeclaration delai = new DelaiDeclaration();
-				delai.setDateDemande(dateEmission);
-				delai.setDelaiAccordeAu(delaiInitial);
-				declaration.addDelai(delai);
-
+				addEtatDeclarationEmise(declaration, dateEmission);
+				addEtatDeclarationSommee(declaration, delaiInitial.addMonths(1), delaiInitial.addMonths(1).addDays(3));
+				addDelaiDeclaration(declaration, dateEmission, delaiInitial, EtatDelaiDeclaration.ACCORDE);
 				return declaration.getId();
 			}
 		});
@@ -528,12 +481,7 @@ public class EnvoiSommationsDIsPMProcessorTest extends BusinessTest {
 				final DeclarationImpotOrdinaire declaration = addDeclarationImpot(e, periode, date(anneePf, 1, 1), date(anneePf, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, modele);
 				addEtatDeclarationEmise(declaration, dateEmission);
 				addEtatDeclarationSuspendue(declaration, dateEmission.addMonths(2));
-
-				final DelaiDeclaration delai = new DelaiDeclaration();
-				delai.setDateDemande(dateEmission);
-				delai.setDelaiAccordeAu(delaiInitial);
-				declaration.addDelai(delai);
-
+				addDelaiDeclaration(declaration, dateEmission, delaiInitial, EtatDelaiDeclaration.ACCORDE);
 				return declaration.getId();
 			}
 		});

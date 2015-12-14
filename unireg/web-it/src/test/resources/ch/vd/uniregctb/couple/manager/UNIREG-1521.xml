@@ -4871,7 +4871,7 @@
     <column>LOG_CUSER</column>
     <column>LOG_MDATE</column>
     <column>LOG_MUSER</column>
-    <column>CONFIRMATION_ECRITE</column>
+    <column>ETAT</column>
     <column>DATE_DEMANDE</column>
     <column>DATE_TRAITEMENT</column>
     <column>DELAI_ACCORDE_AU</column>
@@ -4884,7 +4884,7 @@
       <value><![CDATA[[HostContribuableMigrator thread]]]></value>
       <value><![CDATA[2009-07-09 01:03:25.995]]></value>
       <value><![CDATA[[HostContribuableMigrator thread]]]></value>
-      <null/>
+      <value>ACCORDE</value>
       <value>20080128</value>
       <value>20080128</value>
       <value>20081031</value>
@@ -4898,7 +4898,7 @@
       <value><![CDATA[ZAIRCX  ]]></value>
       <value><![CDATA[2008-12-09 00:00:00.0]]></value>
       <value><![CDATA[ZAIRCX  ]]></value>
-      <null/>
+      <value>ACCORDE</value>
       <value>20080428</value>
       <value>20080428</value>
       <value>20081031</value>
@@ -4912,7 +4912,7 @@
       <value><![CDATA[ZAIJLZ  ]]></value>
       <value><![CDATA[2009-05-26 00:00:00.0]]></value>
       <value><![CDATA[ZAIJLZ  ]]></value>
-      <null/>
+      <value>ACCORDE</value>
       <value>20090526</value>
       <value>20090526</value>
       <value>20090930</value>
@@ -4926,7 +4926,7 @@
       <value><![CDATA[[HostContribuableMigrator thread]]]></value>
       <value><![CDATA[2009-07-09 01:03:26.003]]></value>
       <value><![CDATA[[HostContribuableMigrator thread]]]></value>
-      <null/>
+      <value>ACCORDE</value>
       <value>20090130</value>
       <value>20090130</value>
       <value>20090930</value>

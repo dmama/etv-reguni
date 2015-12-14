@@ -1388,7 +1388,7 @@
     <column>LOG_CUSER</column>
     <column>LOG_MDATE</column>
     <column>LOG_MUSER</column>
-    <column>CONFIRMATION_ECRITE</column>
+    <column>ETAT</column>
     <column>DATE_DEMANDE</column>
     <column>DATE_TRAITEMENT</column>
     <column>DELAI_ACCORDE_AU</column>

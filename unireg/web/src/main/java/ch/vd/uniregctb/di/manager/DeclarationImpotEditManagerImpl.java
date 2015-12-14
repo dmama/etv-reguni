@@ -80,6 +80,7 @@ import ch.vd.uniregctb.tiers.TacheEnvoiDeclarationImpot;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersService;
+import ch.vd.uniregctb.type.EtatDelaiDeclaration;
 import ch.vd.uniregctb.type.TypeAdresseRetour;
 import ch.vd.uniregctb.type.TypeContribuable;
 import ch.vd.uniregctb.type.TypeDocument;
@@ -513,6 +514,7 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 		}
 
 		final DelaiDeclaration delai = new DelaiDeclaration();
+		delai.setEtat(EtatDelaiDeclaration.ACCORDE);
 		delai.setDelaiAccordeAu(delaiAccorde);
 		delai.setDateDemande(RegDate.get());
 		delai.setDateTraitement(RegDate.get());
@@ -617,8 +619,8 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 		final DeclarationImpotOrdinaire di = diDAO.get(idDeclaration);
 		DelaiDeclaration delai = new DelaiDeclaration();
 		delai.setDateTraitement(RegDate.get());
-		delai.setConfirmationEcrite(confirmationEcrite);
 		delai.setDateDemande(dateDemande);
+		delai.setEtat(EtatDelaiDeclaration.ACCORDE);
 		delai.setDelaiAccordeAu(delaiAccordeAu);
 		delai = diService.addAndSave(di, delai);
 		return delai.getId();

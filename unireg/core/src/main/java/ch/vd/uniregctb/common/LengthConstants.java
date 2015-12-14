@@ -128,6 +128,10 @@ public abstract class LengthConstants {
 	public static final int REQDES_TYPE_INSCRIPTION = 15;
 	public static final int REQDES_LIBELLE_ORIGINE = 50;
 
+	public static final int DELAI_DECL_ETAT = 10;
+
+	public static final int CLE_ARCHIVAGE_FOLDERS = 40;
+
 	public static final int ETB_ENSEIGNE = 250;
 	public static final int ETB_RAISON_SOCIALE = 250;
 

@@ -29,6 +29,7 @@ import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
+import ch.vd.uniregctb.type.EtatDelaiDeclaration;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
@@ -197,7 +198,7 @@ public class DeclarationImpotControllerTest extends WebTestSpring3 {
 				final PeriodeFiscale periodeFiscale = addPeriodeFiscale(anneeCourante);
 				final ModeleDocument modeleDocument = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, periodeFiscale);
 				final Declaration declaration = addDeclarationImpot(pp, periodeFiscale, date(anneeCourante, 1, 1), date(anneeCourante, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modeleDocument);
-				addDelaiDeclaration(declaration, RegDate.get(), RegDate.get().addMonths(3));
+				addDelaiDeclaration(declaration, RegDate.get(), RegDate.get().addMonths(3), EtatDelaiDeclaration.ACCORDE);
 				return declaration.getId();
 			}
 		});

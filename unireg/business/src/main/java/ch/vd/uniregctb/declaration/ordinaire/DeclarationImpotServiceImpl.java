@@ -721,8 +721,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 
 	@Override
 	public EditiqueResultat getCopieConformeConfirmationDelai(DelaiDeclaration delai) throws EditiqueException {
-		final String nomDocument = construitIdArchivageConfirmationDelai(delai);
-		return editiqueService.getPDFDeDocumentDepuisArchive(delai.getDeclaration().getTiers().getNumero(), TypeDocumentEditique.CONFIRMATION_DELAI, nomDocument);
+		return editiqueService.getPDFDeDocumentDepuisArchive(delai.getDeclaration().getTiers().getNumero(), TypeDocumentEditique.CONFIRMATION_DELAI, delai.getCleArchivageCourrier());
 	}
 
 	/**

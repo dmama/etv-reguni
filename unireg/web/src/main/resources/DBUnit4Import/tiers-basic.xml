@@ -11351,7 +11351,7 @@
     <column>LOG_CUSER</column>
     <column>LOG_MDATE</column>
     <column>LOG_MUSER</column>
-    <column>CONFIRMATION_ECRITE</column>
+    <column>ETAT</column>
     <column>DATE_DEMANDE</column>
     <column>DATE_TRAITEMENT</column>
     <column>DELAI_ACCORDE_AU</column>
@@ -11364,7 +11364,7 @@
       <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
       <value>tiers-basic</value>
-      <value>0</value>
+      <value>ACCORDE</value>
       <null/>
       <null/>
       <value>20080430</value>
@@ -11378,7 +11378,7 @@
       <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
       <value>tiers-basic</value>
-      <value>0</value>
+      <value>ACCORDE</value>
       <null/>
       <null/>
       <value>20060315</value>
@@ -11392,7 +11392,7 @@
       <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
       <value>tiers-basic</value>
-      <value>0</value>
+      <value>ACCORDE</value>
       <value>20060220</value>
       <value>20060220</value>
       <value>20060731</value>
@@ -11406,7 +11406,7 @@
       <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
       <value>tiers-basic</value>
-      <value>0</value>
+      <value>ACCORDE</value>
       <null/>
       <null/>
       <value>20070315</value>
@@ -11420,7 +11420,7 @@
       <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
       <value>tiers-basic</value>
-      <value>0</value>
+      <value>ACCORDE</value>
       <null/>
       <null/>
       <value>20080315</value>
@@ -11434,7 +11434,7 @@
       <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
       <value>tiers-basic</value>
-      <value>0</value>
+      <value>ACCORDE</value>
       <value>20080412</value>
       <value>20080412</value>
       <value>20080915</value>
@@ -11448,7 +11448,7 @@
       <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
       <value>tiers-basic</value>
-      <value>0</value>
+      <value>ACCORDE</value>
       <null/>
       <null/>
       <value>20080731</value>
@@ -11462,7 +11462,7 @@
       <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
       <value>tiers-basic</value>
-      <value>0</value>
+      <value>ACCORDE</value>
       <value>20080625</value>
       <value>20080625</value>
       <value>20080930</value>

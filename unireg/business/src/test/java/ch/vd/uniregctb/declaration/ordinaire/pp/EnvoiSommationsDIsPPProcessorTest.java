@@ -15,9 +15,6 @@ import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaireDAO;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP;
-import ch.vd.uniregctb.declaration.DelaiDeclaration;
-import ch.vd.uniregctb.declaration.EtatDeclarationEmise;
-import ch.vd.uniregctb.declaration.EtatDeclarationRetournee;
 import ch.vd.uniregctb.declaration.EtatDeclarationSommee;
 import ch.vd.uniregctb.declaration.ModeleDocument;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
@@ -28,6 +25,7 @@ import ch.vd.uniregctb.parametrage.DelaisService;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
+import ch.vd.uniregctb.type.EtatDelaiDeclaration;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
@@ -55,8 +53,7 @@ public class EnvoiSommationsDIsPPProcessorTest extends BusinessTest {
 		assujettissementService = getBean(AssujettissementService.class, "assujettissementService");
 		periodeImpositionService = getBean(PeriodeImpositionService.class, "periodeImpositionService");
 		adresseService = getBean(AdresseService.class, "adresseService");
-		processor = new EnvoiSommationsDIsPPProcessor(hibernateTemplate, diDao, delaisService, diService, tiersService, transactionManager, assujettissementService, periodeImpositionService,
-				adresseService);
+		processor = new EnvoiSommationsDIsPPProcessor(hibernateTemplate, diDao, delaisService, diService, tiersService, transactionManager, assujettissementService, periodeImpositionService, adresseService);
 	}
 
 	@Test
@@ -74,14 +71,9 @@ public class EnvoiSommationsDIsPPProcessorTest extends BusinessTest {
 				final PeriodeFiscale periode = addPeriodeFiscale(2008);
 				final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
 				final DeclarationImpotOrdinaire declaration = addDeclarationImpot(pp, periode, date(2008, 1, 1), date(2008, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
-				declaration.addEtat(new EtatDeclarationEmise(dateEmission));
-				declaration.addEtat(new EtatDeclarationRetournee(dateDelaiInitial.addDays(5), "TEST"));   // oui, le retour est après le délai initial, mais cela ne doit pas avoir d'influence
-
-				final DelaiDeclaration delai = new DelaiDeclaration();
-				delai.setDateDemande(dateEmission);
-				delai.setDelaiAccordeAu(dateDelaiInitial);
-				declaration.addDelai(delai);
-
+				addEtatDeclarationEmise(declaration, dateEmission);
+				addEtatDeclarationRetournee(declaration, dateDelaiInitial.addDays(5), "TEST");   // oui, le retour est après le délai initial, mais cela ne doit pas avoir d'influence
+				addDelaiDeclaration(declaration, dateEmission, dateDelaiInitial, EtatDelaiDeclaration.ACCORDE);
 				return declaration.getId();
 			}
 		});
@@ -116,15 +108,10 @@ public class EnvoiSommationsDIsPPProcessorTest extends BusinessTest {
 				final PeriodeFiscale periode = addPeriodeFiscale(2008);
 				final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
 				final DeclarationImpotOrdinaire declaration = addDeclarationImpot(pp, periode, date(2008, 1, 1), date(2008, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
-				declaration.addEtat(new EtatDeclarationEmise(dateEmission));
-				declaration.addEtat(new EtatDeclarationRetournee(dateDelaiInitial.addDays(-5), "ADDI"));
-				declaration.addEtat(new EtatDeclarationRetournee(dateDelaiInitial.addDays(5), "TEST"));   // oui, le retour est après le délai initial, mais cela ne doit pas avoir d'influence
-
-				final DelaiDeclaration delai = new DelaiDeclaration();
-				delai.setDateDemande(dateEmission);
-				delai.setDelaiAccordeAu(dateDelaiInitial);
-				declaration.addDelai(delai);
-
+				addEtatDeclarationEmise(declaration, dateEmission);
+				addEtatDeclarationRetournee(declaration, dateDelaiInitial.addDays(-5), "ADDI");
+				addEtatDeclarationRetournee(declaration, dateDelaiInitial.addDays(5), "TEST");    // oui, le retour est après le délai initial, mais cela ne doit pas avoir d'influence
+				addDelaiDeclaration(declaration, dateEmission, dateDelaiInitial, EtatDelaiDeclaration.ACCORDE);
 				return declaration.getId();
 			}
 		});
@@ -158,13 +145,8 @@ public class EnvoiSommationsDIsPPProcessorTest extends BusinessTest {
 				final PeriodeFiscale periode = addPeriodeFiscale(anneePf);
 				final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
 				final DeclarationImpotOrdinaire declaration = addDeclarationImpot(pp, periode, date(anneePf, 1, 1), date(anneePf, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
-				declaration.addEtat(new EtatDeclarationEmise(dateEmission));
-
-				final DelaiDeclaration delai = new DelaiDeclaration();
-				delai.setDateDemande(dateEmission);
-				delai.setDelaiAccordeAu(delaiInitial);
-				declaration.addDelai(delai);
-
+				addEtatDeclarationEmise(declaration, dateEmission);
+				addDelaiDeclaration(declaration, dateEmission, delaiInitial, EtatDelaiDeclaration.ACCORDE);
 				return declaration.getId();
 			}
 		});
@@ -198,13 +180,8 @@ public class EnvoiSommationsDIsPPProcessorTest extends BusinessTest {
 				final PeriodeFiscale periode = addPeriodeFiscale(anneePf);
 				final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
 				final DeclarationImpotOrdinaire declaration = addDeclarationImpot(pp, periode, date(anneePf, 1, 1), date(anneePf, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
-				declaration.addEtat(new EtatDeclarationEmise(dateEmission));
-
-				final DelaiDeclaration delai = new DelaiDeclaration();
-				delai.setDateDemande(dateEmission);
-				delai.setDelaiAccordeAu(delaiInitial);
-				declaration.addDelai(delai);
-
+				addEtatDeclarationEmise(declaration, dateEmission);
+				addDelaiDeclaration(declaration, dateEmission, delaiInitial, EtatDelaiDeclaration.ACCORDE);
 				return declaration.getId();
 			}
 		});
@@ -238,13 +215,8 @@ public class EnvoiSommationsDIsPPProcessorTest extends BusinessTest {
 				final PeriodeFiscale periode = addPeriodeFiscale(anneePf);
 				final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
 				final DeclarationImpotOrdinaire declaration = addDeclarationImpot(pp, periode, date(anneePf, 1, 1), date(anneePf, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
-				declaration.addEtat(new EtatDeclarationEmise(dateEmission));
-
-				final DelaiDeclaration delai = new DelaiDeclaration();
-				delai.setDateDemande(dateEmission);
-				delai.setDelaiAccordeAu(delaiInitial);
-				declaration.addDelai(delai);
-
+				addEtatDeclarationEmise(declaration, dateEmission);
+				addDelaiDeclaration(declaration, dateEmission, delaiInitial, EtatDelaiDeclaration.ACCORDE);
 				return declaration.getId();
 			}
 		});
@@ -283,13 +255,8 @@ public class EnvoiSommationsDIsPPProcessorTest extends BusinessTest {
 				final PeriodeFiscale periode = addPeriodeFiscale(anneePf);
 				final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
 				final DeclarationImpotOrdinaire declaration = addDeclarationImpot(pp, periode, date(anneePf, 1, 1), date(anneePf, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
-				declaration.addEtat(new EtatDeclarationEmise(dateEmission));
-
-				final DelaiDeclaration delai = new DelaiDeclaration();
-				delai.setDateDemande(dateEmission);
-				delai.setDelaiAccordeAu(delaiInitial);
-				declaration.addDelai(delai);
-
+				addEtatDeclarationEmise(declaration, dateEmission);
+				addDelaiDeclaration(declaration, dateEmission, delaiInitial, EtatDelaiDeclaration.ACCORDE);
 				return declaration.getId();
 			}
 		});
@@ -323,13 +290,8 @@ public class EnvoiSommationsDIsPPProcessorTest extends BusinessTest {
 				final PeriodeFiscale periode = addPeriodeFiscale(anneePf);
 				final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
 				final DeclarationImpotOrdinaire declaration = addDeclarationImpot(pp, periode, date(anneePf, 1, 1), date(anneePf, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
-				declaration.addEtat(new EtatDeclarationEmise(dateEmission));
-
-				final DelaiDeclaration delai = new DelaiDeclaration();
-				delai.setDateDemande(dateEmission);
-				delai.setDelaiAccordeAu(delaiInitial);
-				declaration.addDelai(delai);
-
+				addEtatDeclarationEmise(declaration, dateEmission);
+				addDelaiDeclaration(declaration, dateEmission, delaiInitial, EtatDelaiDeclaration.ACCORDE);
 				return declaration.getId();
 			}
 		});
@@ -364,13 +326,8 @@ public class EnvoiSommationsDIsPPProcessorTest extends BusinessTest {
 				final PeriodeFiscale periode = addPeriodeFiscale(anneePf);
 				final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
 				final DeclarationImpotOrdinaire declaration = addDeclarationImpot(pp, periode, date(anneePf, 1, 1), date(anneePf, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
-				declaration.addEtat(new EtatDeclarationEmise(dateEmission));
-
-				final DelaiDeclaration delai = new DelaiDeclaration();
-				delai.setDateDemande(dateEmission);
-				delai.setDelaiAccordeAu(delaiInitial);
-				declaration.addDelai(delai);
-
+				addEtatDeclarationEmise(declaration, dateEmission);
+				addDelaiDeclaration(declaration, dateEmission, delaiInitial, EtatDelaiDeclaration.ACCORDE);
 				return declaration.getId();
 			}
 		});
@@ -406,13 +363,8 @@ public class EnvoiSommationsDIsPPProcessorTest extends BusinessTest {
 				final PeriodeFiscale periode = addPeriodeFiscale(anneePf);
 				final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
 				final DeclarationImpotOrdinaire declaration = addDeclarationImpot(pp, periode, date(anneePf, 1, 1), date(anneePf, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
-				declaration.addEtat(new EtatDeclarationEmise(dateEmission));
-
-				final DelaiDeclaration delai = new DelaiDeclaration();
-				delai.setDateDemande(dateEmission);
-				delai.setDelaiAccordeAu(delaiInitial);
-				declaration.addDelai(delai);
-
+				addEtatDeclarationEmise(declaration, dateEmission);
+				addDelaiDeclaration(declaration, dateEmission, delaiInitial, EtatDelaiDeclaration.ACCORDE);
 				return declaration.getId();
 			}
 		});
@@ -452,13 +404,8 @@ public class EnvoiSommationsDIsPPProcessorTest extends BusinessTest {
 				final PeriodeFiscale periode = addPeriodeFiscale(anneePf);
 				final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, periode);
 				final DeclarationImpotOrdinaire declaration = addDeclarationImpot(pp, periode, date(anneePf, 4, 1), date(anneePf, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
-				declaration.addEtat(new EtatDeclarationEmise(dateEmission));
-
-				final DelaiDeclaration delai = new DelaiDeclaration();
-				delai.setDateDemande(dateEmission);
-				delai.setDelaiAccordeAu(delaiInitial);
-				declaration.addDelai(delai);			
-
+				addEtatDeclarationEmise(declaration, dateEmission);
+				addDelaiDeclaration(declaration, dateEmission, delaiInitial, EtatDelaiDeclaration.ACCORDE);
 				return declaration.getId();
 			}
 		});
@@ -511,17 +458,11 @@ public class EnvoiSommationsDIsPPProcessorTest extends BusinessTest {
 
 				addForPrincipalSource(pp, RegDate.get(anneePf, 6, 1), MotifFor.ARRIVEE_HS,null,null, MockCommune.Aubonne.getNoOFS());
 
-
 				final PeriodeFiscale periode = addPeriodeFiscale(anneePf);
 				final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
 				final DeclarationImpotOrdinaire declaration = addDeclarationImpot(pp, periode, date(anneePf, 1, 1), date(anneePf, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
-				declaration.addEtat(new EtatDeclarationEmise(dateEmission));
-
-				final DelaiDeclaration delai = new DelaiDeclaration();
-				delai.setDateDemande(dateEmission);
-				delai.setDelaiAccordeAu(delaiInitial);
-				declaration.addDelai(delai);
-
+				addEtatDeclarationEmise(declaration, dateEmission);
+				addDelaiDeclaration(declaration, dateEmission, delaiInitial, EtatDelaiDeclaration.ACCORDE);
 				return declaration.getId();
 			}
 		});
@@ -561,14 +502,9 @@ public class EnvoiSommationsDIsPPProcessorTest extends BusinessTest {
 				final PeriodeFiscale periode = addPeriodeFiscale(anneePf);
 				final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
 				final DeclarationImpotOrdinaire declaration = addDeclarationImpot(pp, periode, date(anneePf, 1, 1), date(anneePf, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
-				declaration.addEtat(new EtatDeclarationEmise(dateEmission));
-				declaration.addEtat(new EtatDeclarationRetournee(dateEmission.addDays(-5), "TEST"));
-
-				final DelaiDeclaration delai = new DelaiDeclaration();
-				delai.setDateDemande(dateEmission);
-				delai.setDelaiAccordeAu(delaiInitial);
-				declaration.addDelai(delai);
-
+				addEtatDeclarationEmise(declaration, dateEmission);
+				addEtatDeclarationRetournee(declaration, dateEmission.addDays(-5), "TEST");
+				addDelaiDeclaration(declaration, dateEmission, delaiInitial, EtatDelaiDeclaration.ACCORDE);
 				return declaration.getId();
 			}
 		});
@@ -604,14 +540,9 @@ public class EnvoiSommationsDIsPPProcessorTest extends BusinessTest {
 				final PeriodeFiscale periode = addPeriodeFiscale(anneePf);
 				final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
 				final DeclarationImpotOrdinaire declaration = addDeclarationImpot(pp, periode, date(anneePf, 1, 1), date(anneePf, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
-				declaration.addEtat(new EtatDeclarationEmise(dateEmission));
-				declaration.addEtat(new EtatDeclarationSommee(delaiInitial.addMonths(1),delaiInitial.addMonths(1).addDays(3)));
-
-				final DelaiDeclaration delai = new DelaiDeclaration();
-				delai.setDateDemande(dateEmission);
-				delai.setDelaiAccordeAu(delaiInitial);
-				declaration.addDelai(delai);
-
+				addEtatDeclarationEmise(declaration, dateEmission);
+				addEtatDeclarationSommee(declaration, delaiInitial.addMonths(1), delaiInitial.addMonths(1).addDays(3));
+				addDelaiDeclaration(declaration, dateEmission, delaiInitial, EtatDelaiDeclaration.ACCORDE);
 				return declaration.getId();
 			}
 		});
@@ -654,13 +585,8 @@ public class EnvoiSommationsDIsPPProcessorTest extends BusinessTest {
 				final PeriodeFiscale periode = addPeriodeFiscale(2008);
 				final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
 				final DeclarationImpotOrdinaire declaration = addDeclarationImpot(mc, periode, date(2008, 1, 1), date(2008, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
-				declaration.addEtat(new EtatDeclarationEmise(dateEmission));
-
-				final DelaiDeclaration delai = new DelaiDeclaration();
-				delai.setDateDemande(dateEmission);
-				delai.setDelaiAccordeAu(dateDelaiInitial);
-				declaration.addDelai(delai);
-
+				addEtatDeclarationEmise(declaration, dateEmission);
+				addDelaiDeclaration(declaration, dateEmission, dateDelaiInitial, EtatDelaiDeclaration.ACCORDE);
 				return new Ids(mc.getId(), declaration.getId());
 			}
 		});

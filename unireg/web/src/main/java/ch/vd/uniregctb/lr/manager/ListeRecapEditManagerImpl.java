@@ -51,6 +51,7 @@ import ch.vd.uniregctb.tiers.ForDebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersService;
+import ch.vd.uniregctb.type.EtatDelaiDeclaration;
 import ch.vd.uniregctb.type.PeriodeDecompte;
 import ch.vd.uniregctb.type.PeriodiciteDecompte;
 import ch.vd.uniregctb.type.TypeDocument;
@@ -468,6 +469,7 @@ public class ListeRecapEditManagerImpl implements ListeRecapEditManager, Message
 			//delai.setDelaiAccordeAu(lr.getDateFin().addMonths(1));
 
 			DelaiDeclaration delai = new DelaiDeclaration();
+			delai.setEtat(EtatDelaiDeclaration.ACCORDE);
 			delai.setDelaiAccordeAu(lrEditView.getRegDelaiAccorde());
 			delai.setDateDemande(RegDate.get());
 			delai.setDateTraitement(RegDate.get());
@@ -497,11 +499,11 @@ public class ListeRecapEditManagerImpl implements ListeRecapEditManager, Message
 	@Override
 	@Transactional(rollbackFor = Throwable.class)
 	public void saveDelai(DelaiDeclarationView view) {
-		DeclarationImpotSource lr = lrDAO.get(view.getIdDeclaration());
-		DelaiDeclaration delai = new DelaiDeclaration();
+		final DeclarationImpotSource lr = lrDAO.get(view.getIdDeclaration());
+		final DelaiDeclaration delai = new DelaiDeclaration();
+		delai.setEtat(EtatDelaiDeclaration.ACCORDE);
 		delai.setDateTraitement(RegDate.get());
 		delai.setAnnule(view.isAnnule());
-		delai.setConfirmationEcrite(view.getConfirmationEcrite());
 		delai.setDateDemande(view.getDateDemande());
 		delai.setDelaiAccordeAu(view.getDelaiAccordeAu());
 		lr.addDelai(delai);
