@@ -6,7 +6,9 @@ public interface ParametreAppAccessor {
 
 	Integer getDelaiAttenteDeclarationImpotPersonneDecedee();
 
-	Integer getDelaiRetourDeclarationImpotEmiseManuellement();
+	Integer getDelaiRetourDeclarationImpotPPEmiseManuellement();
+
+	Integer getDelaiRetourDeclarationImpotPMEmiseManuellement();
 
 	Integer getDelaiCadevImpressionDeclarationImpot();
 
@@ -69,7 +71,9 @@ public interface ParametreAppAccessor {
 
 	void setDelaiAttenteDeclarationImpotPersonneDecedee(Integer val);
 
-	void setDelaiRetourDeclarationImpotEmiseManuellement(Integer val);
+	void setDelaiRetourDeclarationImpotPPEmiseManuellement(Integer val);
+
+	void setDelaiRetourDeclarationImpotPMEmiseManuellement(Integer val);
 
 	void setDelaiCadevImpressionDeclarationImpot(Integer val);
 

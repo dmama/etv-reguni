@@ -23,7 +23,7 @@ public interface DelaisService {
 	RegDate getDateFinDelaiAttenteDeclarationImpotPersonneDecedee(RegDate dateDebut);
 
 	/**
-	 * Determine la date d'échéance du délai de retour pour une DI émise manuellement.<br>
+	 * Determine la date d'échéance du délai de retour pour une DI PP émise manuellement.<br>
 	 * <br>
 	 * Les jours fériés sont comptés dans le délai.<br>
 	 * Le délai est repoussé au premier jour ouvrable s'il tombe sur un jour non-ouvré.<br>
@@ -32,8 +32,20 @@ public interface DelaisService {
 	 * 
 	 * @return la date d'échéance du délai
 	 */
-	RegDate getDateFinDelaiRetourDeclarationImpotEmiseManuellement(RegDate dateDebut);
+	RegDate getDateFinDelaiRetourDeclarationImpotPPEmiseManuellement(RegDate dateDebut);
 	
+	/**
+	 * Determine la date d'échéance du délai de retour pour une DI PM émise manuellement.<br>
+	 * <br>
+	 * Les jours fériés sont comptés dans le délai.<br>
+	 * Le délai est repoussé au premier jour ouvrable s'il tombe sur un jour non-ouvré.<br>
+	 *
+	 * @param dateDebut date
+	 *
+	 * @return la date d'échéance du délai
+	 */
+	RegDate getDateFinDelaiRetourDeclarationImpotPMEmiseManuellement(RegDate dateDebut);
+
 	/**
 	 * Determine la date d'échéance du délai technique d’impression par la CADEV des déclarations d’impôt.<br>
 	 * <br>
@@ -173,7 +185,7 @@ public interface DelaisService {
 	 * <br>
 	 * Le délai est repoussé au premier jour ouvré s'il tombe sur un jour non-ouvré. 
 	 * 
-	 * @param date La {@link RegDate} representant le point de départ du calcul du délai
+	 * @param dateDebut La {@link RegDate} representant le point de départ du calcul du délai
 	 * @param delaiEnJours le délai exprimé en nombre de jours
 	 * @return
 	 */

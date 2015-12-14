@@ -93,11 +93,16 @@ public class DelaisServiceImpl implements DelaisService {
 	public RegDate getDateFinDelaiAttenteDeclarationImpotPersonneDecedee(RegDate dateDebut){
 		return getFinDelai(dateDebut, parametreAppService.getDelaiAttenteDeclarationImpotPersonneDecedee());		
 	}
-	
+
 	@Override
-	public RegDate getDateFinDelaiRetourDeclarationImpotEmiseManuellement(RegDate dateDebut){
-		return getFinDelai(dateDebut, parametreAppService.getDelaiRetourDeclarationImpotEmiseManuellement());		
-	}	
+	public RegDate getDateFinDelaiRetourDeclarationImpotPPEmiseManuellement(RegDate dateDebut) {
+		return getFinDelai(dateDebut, parametreAppService.getDelaiRetourDeclarationImpotPPEmiseManuellement());
+	}
+
+	@Override
+	public RegDate getDateFinDelaiRetourDeclarationImpotPMEmiseManuellement(RegDate dateDebut) {
+		return getFinDelai(dateDebut, parametreAppService.getDelaiRetourDeclarationImpotPMEmiseManuellement());
+	}
 
 	@Override
 	public RegDate getDateFinDelaiCadevImpressionDeclarationImpot(RegDate dateDebut){

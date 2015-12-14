@@ -677,7 +677,7 @@ public class EnvoiDIsPPEnMasseProcessor {
 			// décès au 31 décembre), le délai de retour est fixé au 60e jour (paramètre) qui suit la date d’expédition. Si cette date tombe un samedi, un dimanche ou un jour légalement férié,
 			// elle est reportée au 1er jour ouvrable qui suit.
 			// [UNIREG-1861] c'est bien la date d'expédition qu'il faut prendre, pas la date de traitement...
-			dateRetourAccorde = delaisService.getDateFinDelaiRetourDeclarationImpotEmiseManuellement(dateExpedition);
+			dateRetourAccorde = delaisService.getDateFinDelaiRetourDeclarationImpotPPEmiseManuellement(dateExpedition);
 			dateRetourImprime = dateRetourAccorde;
 		}
 		else {

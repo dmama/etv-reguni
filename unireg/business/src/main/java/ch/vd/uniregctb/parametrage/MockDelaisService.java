@@ -10,7 +10,12 @@ public class MockDelaisService implements DelaisService {
 	}
 
 	@Override
-	public RegDate getDateFinDelaiRetourDeclarationImpotEmiseManuellement(RegDate dateDebut) {
+	public RegDate getDateFinDelaiRetourDeclarationImpotPPEmiseManuellement(RegDate dateDebut) {
+		throw new IllegalArgumentException("no meant to be called");
+	}
+
+	@Override
+	public RegDate getDateFinDelaiRetourDeclarationImpotPMEmiseManuellement(RegDate dateDebut) {
 		throw new IllegalArgumentException("no meant to be called");
 	}
 

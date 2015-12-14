@@ -214,6 +214,7 @@ CREATE SEQUENCE S_PM START WITH 80000 INCREMENT BY 1;
 UPDATE PARAMETRE SET NOM='premierePeriodeFiscalePersonnesPhysiques', LOG_MDATE=CURRENT_DATE, LOG_MUSER='[system-sipm]' WHERE NOM='premierePeriodeFiscale';
 UPDATE PARAMETRE SET NOM='delaiEnvoiSommationDeclarationImpotPP', LOG_MDATE=CURRENT_DATE, LOG_MUSER='[system-sipm]' WHERE NOM='delaiEnvoiSommationDeclarationImpot';
 UPDATE PARAMETRE SET NOM='delaiEcheanceSommationDeclarationImpotPP', LOG_MDATE=CURRENT_DATE, LOG_MUSER='[system-sipm]' WHERE NOM='delaiEcheanceSommationDeclarationImpot';
+UPDATE PARAMETRE SET NOM='delaiRetourDeclarationImpotPPEmiseManuellement', LOG_MDATE=CURRENT_DATE, LOG_MUSER='[system-sipm]' WHERE NOM='delaiRetourDeclarationImpotEmiseManuellement';
 
 --
 -- Pour l'instant, pour les tests, on met 2015, mais cela deviendra 2016 pour la production

@@ -119,8 +119,13 @@ class ParametreAppContainer implements ParametreAppAccessor {
 	}
 
 	@Override
-	public Integer getDelaiRetourDeclarationImpotEmiseManuellement() {
-		return Integer.parseInt(get(ParametreEnum.delaiRetourDeclarationImpotEmiseManuellement));
+	public Integer getDelaiRetourDeclarationImpotPPEmiseManuellement() {
+		return Integer.parseInt(get(ParametreEnum.delaiRetourDeclarationImpotPPEmiseManuellement));
+	}
+
+	@Override
+	public Integer getDelaiRetourDeclarationImpotPMEmiseManuellement() {
+		return Integer.parseInt(get(ParametreEnum.delaiRetourDeclarationImpotPMEmiseManuellement));
 	}
 
 	@Override
@@ -293,8 +298,13 @@ class ParametreAppContainer implements ParametreAppAccessor {
 	}
 
 	@Override
-	public void setDelaiRetourDeclarationImpotEmiseManuellement(Integer val) {
-		setValeur(ParametreEnum.delaiRetourDeclarationImpotEmiseManuellement, val.toString());
+	public void setDelaiRetourDeclarationImpotPPEmiseManuellement(Integer val) {
+		setValeur(ParametreEnum.delaiRetourDeclarationImpotPPEmiseManuellement, val.toString());
+	}
+
+	@Override
+	public void setDelaiRetourDeclarationImpotPMEmiseManuellement(Integer val) {
+		setValeur(ParametreEnum.delaiRetourDeclarationImpotPMEmiseManuellement, val.toString());
 	}
 
 	@Override

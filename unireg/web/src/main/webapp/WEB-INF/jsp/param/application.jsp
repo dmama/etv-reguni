@@ -150,13 +150,22 @@
 					<td><sf:errors path="delaiAttenteDeclarationImpotPersonneDecedee" cssClass="erreur"/></td>
 				</tr>
 		        <tr class="<unireg:nextRowClass/>">
-		            <td><fmt:message key="label.param.delaiRetourDeclarationImpotEmiseManuellement"/></td>
-		            <%--@elvariable id="delaiRetourDeclarationImpotEmiseManuellementParDefaut" type="java.lang.String"--%>
-					<td class="nombre">${delaiRetourDeclarationImpotEmiseManuellementParDefaut}</td>
+		            <td><fmt:message key="label.param.delaiRetourDeclarationImpotEmiseManuellement.pp"/></td>
+		            <%--@elvariable id="delaiRetourDeclarationImpotPPEmiseManuellementParDefaut" type="java.lang.String"--%>
+					<td class="nombre">${delaiRetourDeclarationImpotPPEmiseManuellementParDefaut}</td>
 		            <td class="valeur">
-		                <sf:input path="delaiRetourDeclarationImpotEmiseManuellement" cssClass="valeur nombre" cssErrorClass="valeur input-with-errors nombre" maxlength="3"/>
+		                <sf:input path="delaiRetourDeclarationImpotPPEmiseManuellement" cssClass="valeur nombre" cssErrorClass="valeur input-with-errors nombre" maxlength="3"/>
 		            </td>
-					<td><sf:errors path="delaiRetourDeclarationImpotEmiseManuellement" cssClass="erreur"/></td>
+					<td><sf:errors path="delaiRetourDeclarationImpotPPEmiseManuellement" cssClass="erreur"/></td>
+		        </tr>
+		        <tr class="<unireg:nextRowClass/>">
+		            <td><fmt:message key="label.param.delaiRetourDeclarationImpotEmiseManuellement.pm"/></td>
+		            <%--@elvariable id="delaiRetourDeclarationImpotPMEmiseManuellementParDefaut" type="java.lang.String"--%>
+					<td class="nombre">${delaiRetourDeclarationImpotPMEmiseManuellementParDefaut}</td>
+		            <td class="valeur">
+		                <sf:input path="delaiRetourDeclarationImpotPMEmiseManuellement" cssClass="valeur nombre" cssErrorClass="valeur input-with-errors nombre" maxlength="3"/>
+		            </td>
+					<td><sf:errors path="delaiRetourDeclarationImpotPMEmiseManuellement" cssClass="erreur"/></td>
 		        </tr>
 		        <tr class="<unireg:nextRowClass/>">
 		            <td><fmt:message key="label.param.delaiCadevImpressionDeclarationImpot"/></td>

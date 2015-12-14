@@ -34,7 +34,8 @@ public class ParamApplicationView {
 	private String premierePeriodeFiscaleDeclarationPersonnesMorales;
 	private String anneeMinimaleForDebiteur;
 	private String delaiAttenteDeclarationImpotPersonneDecedee;
-	private String delaiRetourDeclarationImpotEmiseManuellement;
+	private String delaiRetourDeclarationImpotPPEmiseManuellement;
+	private String delaiRetourDeclarationImpotPMEmiseManuellement;
 	private String delaiEnvoiSommationDeclarationImpotPP;
 	private String delaiEnvoiSommationDeclarationImpotPM;
 	private String delaiEcheanceSommationDeclarationImpotPP;
@@ -65,10 +66,9 @@ public class ParamApplicationView {
 		this.premierePeriodeFiscalePersonnesMorales = ParametreEnum.premierePeriodeFiscalePersonnesMorales.convertirValeurTypeeVersString(service.getPremierePeriodeFiscalePersonnesMorales());
 		this.premierePeriodeFiscaleDeclarationPersonnesMorales = ParametreEnum.premierePeriodeFiscaleDeclarationPersonnesMorales.convertirValeurTypeeVersString(service.getPremierePeriodeFiscaleDeclarationsPersonnesMorales());
 		this.anneeMinimaleForDebiteur = ParametreEnum.anneeMinimaleForDebiteur.convertirValeurTypeeVersString(service.getAnneeMinimaleForDebiteur());
-		this.delaiAttenteDeclarationImpotPersonneDecedee =
-				ParametreEnum.delaiAttenteDeclarationImpotPersonneDecedee.convertirValeurTypeeVersString(service.getDelaiAttenteDeclarationImpotPersonneDecedee());
-		this.delaiRetourDeclarationImpotEmiseManuellement =
-				ParametreEnum.delaiRetourDeclarationImpotEmiseManuellement.convertirValeurTypeeVersString(service.getDelaiRetourDeclarationImpotEmiseManuellement());
+		this.delaiAttenteDeclarationImpotPersonneDecedee = ParametreEnum.delaiAttenteDeclarationImpotPersonneDecedee.convertirValeurTypeeVersString(service.getDelaiAttenteDeclarationImpotPersonneDecedee());
+		this.delaiRetourDeclarationImpotPPEmiseManuellement = ParametreEnum.delaiRetourDeclarationImpotPPEmiseManuellement.convertirValeurTypeeVersString(service.getDelaiRetourDeclarationImpotPPEmiseManuellement());
+		this.delaiRetourDeclarationImpotPMEmiseManuellement = ParametreEnum.delaiRetourDeclarationImpotPMEmiseManuellement.convertirValeurTypeeVersString(service.getDelaiRetourDeclarationImpotPMEmiseManuellement());
 		this.delaiEnvoiSommationDeclarationImpotPP = ParametreEnum.delaiEnvoiSommationDeclarationImpotPP.convertirValeurTypeeVersString(service.getDelaiEnvoiSommationDeclarationImpotPP());
 		this.delaiEcheanceSommationDeclarationImpotPP = ParametreEnum.delaiEcheanceSommationDeclarationImpotPP.convertirValeurTypeeVersString(service.getDelaiEcheanceSommationDeclarationImpotPP());
 		this.jourDuMoisEnvoiListesRecapitulatives = ParametreEnum.jourDuMoisEnvoiListesRecapitulatives.convertirValeurTypeeVersString(service.getJourDuMoisEnvoiListesRecapitulatives());
@@ -98,10 +98,9 @@ public class ParamApplicationView {
 		service.setPremierePeriodeFiscalePersonnesMorales((Integer) ParametreEnum.premierePeriodeFiscalePersonnesMorales.convertirStringVersValeurTypee(this.premierePeriodeFiscalePersonnesMorales));
 		service.setPremierePeriodeFiscaleDeclarationsPersonnesMorales((Integer) ParametreEnum.premierePeriodeFiscaleDeclarationPersonnesMorales.convertirStringVersValeurTypee(this.premierePeriodeFiscaleDeclarationPersonnesMorales));
 		service.setAnneeMinimaleForDebiteur((Integer) ParametreEnum.anneeMinimaleForDebiteur.convertirStringVersValeurTypee(this.anneeMinimaleForDebiteur));
-		service.setDelaiAttenteDeclarationImpotPersonneDecedee(
-				(Integer) ParametreEnum.delaiAttenteDeclarationImpotPersonneDecedee.convertirStringVersValeurTypee(this.delaiAttenteDeclarationImpotPersonneDecedee));
-		service.setDelaiRetourDeclarationImpotEmiseManuellement(
-				(Integer) ParametreEnum.delaiRetourDeclarationImpotEmiseManuellement.convertirStringVersValeurTypee(this.delaiRetourDeclarationImpotEmiseManuellement));
+		service.setDelaiAttenteDeclarationImpotPersonneDecedee((Integer) ParametreEnum.delaiAttenteDeclarationImpotPersonneDecedee.convertirStringVersValeurTypee(this.delaiAttenteDeclarationImpotPersonneDecedee));
+		service.setDelaiRetourDeclarationImpotPPEmiseManuellement((Integer) ParametreEnum.delaiRetourDeclarationImpotPPEmiseManuellement.convertirStringVersValeurTypee(this.delaiRetourDeclarationImpotPPEmiseManuellement));
+		service.setDelaiRetourDeclarationImpotPMEmiseManuellement((Integer) ParametreEnum.delaiRetourDeclarationImpotPMEmiseManuellement.convertirStringVersValeurTypee(this.delaiRetourDeclarationImpotPMEmiseManuellement));
 		service.setDelaiEnvoiSommationDeclarationImpotPP((Integer) ParametreEnum.delaiEnvoiSommationDeclarationImpotPP.convertirStringVersValeurTypee(this.delaiEnvoiSommationDeclarationImpotPP));
 		service.setDelaiEcheanceSommationDeclarationImpotPP((Integer) ParametreEnum.delaiEcheanceSommationDeclarationImpotPP.convertirStringVersValeurTypee(this.delaiEcheanceSommationDeclarationImpotPP));
 		service.setJourDuMoisEnvoiListesRecapitulatives((Integer) ParametreEnum.jourDuMoisEnvoiListesRecapitulatives.convertirStringVersValeurTypee(this.jourDuMoisEnvoiListesRecapitulatives));
@@ -197,12 +196,20 @@ public class ParamApplicationView {
 		this.delaiAttenteDeclarationImpotPersonneDecedee = delaiAttenteDeclarationImpotPersonneDecedee;
 	}
 
-	public String getDelaiRetourDeclarationImpotEmiseManuellement() {
-		return delaiRetourDeclarationImpotEmiseManuellement;
+	public String getDelaiRetourDeclarationImpotPPEmiseManuellement() {
+		return delaiRetourDeclarationImpotPPEmiseManuellement;
 	}
 
-	public void setDelaiRetourDeclarationImpotEmiseManuellement(String delaiRetourDeclarationImpotEmiseManuellement) {
-		this.delaiRetourDeclarationImpotEmiseManuellement = delaiRetourDeclarationImpotEmiseManuellement;
+	public void setDelaiRetourDeclarationImpotPPEmiseManuellement(String delaiRetourDeclarationImpotPPEmiseManuellement) {
+		this.delaiRetourDeclarationImpotPPEmiseManuellement = delaiRetourDeclarationImpotPPEmiseManuellement;
+	}
+
+	public String getDelaiRetourDeclarationImpotPMEmiseManuellement() {
+		return delaiRetourDeclarationImpotPMEmiseManuellement;
+	}
+
+	public void setDelaiRetourDeclarationImpotPMEmiseManuellement(String delaiRetourDeclarationImpotPMEmiseManuellement) {
+		this.delaiRetourDeclarationImpotPMEmiseManuellement = delaiRetourDeclarationImpotPMEmiseManuellement;
 	}
 
 	public String getDelaiEnvoiSommationDeclarationImpotPP() {

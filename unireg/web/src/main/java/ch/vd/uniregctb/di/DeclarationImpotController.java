@@ -507,7 +507,7 @@ public class DeclarationImpotController {
 			delaiAccorde = RegDate.get().addDays(delaiRetour);
 		}
 		else {
-			delaiAccorde = delaisService.getDateFinDelaiRetourDeclarationImpotEmiseManuellement(RegDate.get());
+			delaiAccorde = delaisService.getDateFinDelaiRetourDeclarationImpotPPEmiseManuellement(RegDate.get());
 		}
 
 		if (typeDocument == null) {
@@ -580,7 +580,7 @@ public class DeclarationImpotController {
 			delaiAccorde = RegDate.get().addDays(delaiRetour);
 		}
 		else {
-			delaiAccorde = delaisService.getDateFinDelaiRetourDeclarationImpotEmiseManuellement(RegDate.get());
+			delaiAccorde = delaisService.getDateFinDelaiRetourDeclarationImpotPMEmiseManuellement(RegDate.get());
 		}
 
 		if (typeDocument == null) {
@@ -1055,7 +1055,7 @@ public class DeclarationImpotController {
 		final Contribuable ctb = di.getTiers();
 		controllerUtils.checkAccesDossierEnEcriture(ctb.getId());
 
-		final RegDate delaiAccordeAu = delaisService.getDateFinDelaiRetourDeclarationImpotEmiseManuellement(RegDate.get());
+		final RegDate delaiAccordeAu = delaisService.getDateFinDelaiRetourDeclarationImpotPPEmiseManuellement(RegDate.get());
 		model.addAttribute("command", new AjouterDelaiDeclarationView(di, delaiAccordeAu));
 		return "di/delai/ajouter-pp";
 	}
@@ -1133,7 +1133,7 @@ public class DeclarationImpotController {
 		controllerUtils.checkAccesDossierEnEcriture(ctb.getId());
 
 		final boolean sursis = di.getDernierEtat() != null && di.getDernierEtat().getEtat() == TypeEtatDeclaration.SOMMEE;
-		final RegDate delaiAccordeAu = delaisService.getDateFinDelaiRetourDeclarationImpotEmiseManuellement(RegDate.get());
+		final RegDate delaiAccordeAu = delaisService.getDateFinDelaiRetourDeclarationImpotPMEmiseManuellement(di.getDelaiAccordeAu());
 		model.addAttribute("command", new NouvelleDemandeDelaiDeclarationView(di, delaiAccordeAu, sursis));
 		model.addAttribute("decisionsDelai", tiersMapHelper.getTypesEtatsDelaiDeclaration());
 		return "di/delai/ajouter-pm";
@@ -1207,7 +1207,7 @@ public class DeclarationImpotController {
 		final Contribuable ctb = di.getTiers();
 		controllerUtils.checkAccesDossierEnEcriture(ctb.getId());
 
-		final RegDate delaiAccordeAu = delaisService.getDateFinDelaiRetourDeclarationImpotEmiseManuellement(RegDate.get());
+		final RegDate delaiAccordeAu = delaisService.getDateFinDelaiRetourDeclarationImpotPMEmiseManuellement(di.getDelaiAccordeAu());
 		model.addAttribute("command", new ModifierDemandeDelaiDeclarationView(delai, delaiAccordeAu));
 		model.addAttribute("decisionsDelai", tiersMapHelper.getTypesEtatsDelaiDeclaration());
 		return "di/delai/editer-pm";

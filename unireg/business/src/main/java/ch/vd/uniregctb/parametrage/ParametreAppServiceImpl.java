@@ -112,8 +112,13 @@ public class ParametreAppServiceImpl implements ParametreAppService, Initializin
 	}
 
 	@Override
-	public Integer getDelaiRetourDeclarationImpotEmiseManuellement() {
-		return container.getDelaiRetourDeclarationImpotEmiseManuellement();
+	public Integer getDelaiRetourDeclarationImpotPPEmiseManuellement() {
+		return container.getDelaiRetourDeclarationImpotPPEmiseManuellement();
+	}
+
+	@Override
+	public Integer getDelaiRetourDeclarationImpotPMEmiseManuellement() {
+		return container.getDelaiRetourDeclarationImpotPMEmiseManuellement();
 	}
 
 	@Override
@@ -257,8 +262,13 @@ public class ParametreAppServiceImpl implements ParametreAppService, Initializin
 	}
 
 	@Override
-	public void setDelaiRetourDeclarationImpotEmiseManuellement(Integer val) {
-		container.setDelaiRetourDeclarationImpotEmiseManuellement(val);
+	public void setDelaiRetourDeclarationImpotPPEmiseManuellement(Integer val) {
+		container.setDelaiRetourDeclarationImpotPPEmiseManuellement(val);
+	}
+
+	@Override
+	public void setDelaiRetourDeclarationImpotPMEmiseManuellement(Integer val) {
+		container.setDelaiRetourDeclarationImpotPMEmiseManuellement(val);
 	}
 
 	@Override

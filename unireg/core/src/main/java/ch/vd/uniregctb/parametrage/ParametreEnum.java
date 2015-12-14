@@ -21,11 +21,12 @@ public enum ParametreEnum {
 	nbMaxParPage("10", Type.entierPositif, true),
 
 	delaiAttenteDeclarationImpotPersonneDecedee("30", Type.delaisEnJour, true),
-	delaiRetourDeclarationImpotEmiseManuellement("60", Type.delaisEnJour, true),
+	delaiRetourDeclarationImpotPPEmiseManuellement("60", Type.delaisEnJour, true),
 	delaiCadevImpressionDeclarationImpot("3", Type.delaisEnJour, true),
 	delaiEnvoiSommationDeclarationImpotPP("15", Type.delaisEnJour, true),
 	delaiEcheanceSommationDeclarationImpotPP("30", Type.delaisEnJour, true),
 
+	delaiRetourDeclarationImpotPMEmiseManuellement("30", Type.delaisEnJour, true),
 	delaiMinimalRetourDeclarationImpotPM("3", Type.delaisEnMois, true),
 	delaiEnvoiSommationDeclarationImpotPM("15", Type.delaisEnJour, true),
 	delaiEcheanceSommationDeclarationImpotPM("30", Type.delaisEnJour, true),
