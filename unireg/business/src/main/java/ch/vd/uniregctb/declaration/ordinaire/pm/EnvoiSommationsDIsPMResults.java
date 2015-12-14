@@ -141,6 +141,7 @@ public class EnvoiSommationsDIsPMResults extends JobResults<IdentifiantDeclarati
 	private final Map<Integer, List<Info>> sommationsParPeriode = new HashMap<>();
 	private final List<Info> disContribuablesNonAssujettis = new LinkedList<>();
 	private final List<Info> disOptionnelles = new LinkedList<>();
+	private final List<Info> disSuspendues = new LinkedList<>();
 	private final List<DelaiEffectifNonEchuInfo> disDelaiEffectifNonEchu = new LinkedList<>();
 
 	public EnvoiSommationsDIsPMResults(TiersService tiersService, AdresseService adresseService, RegDate dateTraitement, @Nullable Integer nombreMaxSommations) {
@@ -154,6 +155,7 @@ public class EnvoiSommationsDIsPMResults extends JobResults<IdentifiantDeclarati
 		this.sommationsEnErreur.addAll(right.sommationsEnErreur);
 		this.disContribuablesNonAssujettis.addAll(right.disContribuablesNonAssujettis);
 		this.disOptionnelles.addAll(right.disOptionnelles);
+		this.disSuspendues.addAll(right.disSuspendues);
 		this.disDelaiEffectifNonEchu.addAll(right.disDelaiEffectifNonEchu);
 		List<Integer> annees = new ArrayList<>(sommationsParPeriode.keySet());
 		for (Integer annee : annees) {
@@ -246,7 +248,8 @@ public class EnvoiSommationsDIsPMResults extends JobResults<IdentifiantDeclarati
 				+ getTotalSommationsEnErreur()
 				+ getTotalDelaisEffectifsNonEchus()
 				+ getTotalNonAssujettissement()
-				+ getTotalDisOptionnelles();
+				+ getTotalDisOptionnelles()
+				+ getTotalDisSuspendues();
 	}
 
 	public boolean isInterrompu() {
@@ -279,6 +282,18 @@ public class EnvoiSommationsDIsPMResults extends JobResults<IdentifiantDeclarati
 
 	public List<Info> getDisOptionnelles() {
 		return Collections.unmodifiableList(disOptionnelles);
+	}
+
+	public void addDiSuspendue(DeclarationImpotOrdinaire di) {
+		disSuspendues.add(new Info(di));
+	}
+
+	public int getTotalDisSuspendues() {
+		return disSuspendues.size();
+	}
+
+	public List<Info> getDisSuspendues() {
+		return Collections.unmodifiableList(disSuspendues);
 	}
 
 	public List<Info> getSommations() {

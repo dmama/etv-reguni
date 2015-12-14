@@ -6,6 +6,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
@@ -31,6 +32,7 @@ import ch.vd.uniregctb.type.FormeJuridiqueEntreprise;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.TypeContribuable;
 import ch.vd.uniregctb.type.TypeDocument;
+import ch.vd.uniregctb.type.TypeEtatDeclaration;
 
 public class EnvoiSommationsDIsPMProcessorTest extends BusinessTest {
 
@@ -107,6 +109,7 @@ public class EnvoiSommationsDIsPMProcessorTest extends BusinessTest {
 		Assert.assertEquals(0, results.getTotalNonAssujettissement());
 		Assert.assertEquals(0, results.getTotalSommationsEnErreur());
 		Assert.assertEquals(0, results.getTotalDisOptionnelles());
+		Assert.assertEquals(0, results.getTotalDisSuspendues());
 	}
 
 	/**
@@ -149,6 +152,7 @@ public class EnvoiSommationsDIsPMProcessorTest extends BusinessTest {
 		Assert.assertEquals(0, results.getTotalNonAssujettissement());
 		Assert.assertEquals(0, results.getTotalSommationsEnErreur());
 		Assert.assertEquals(0, results.getTotalDisOptionnelles());
+		Assert.assertEquals(0, results.getTotalDisSuspendues());
 	}
 
 	@Test
@@ -187,6 +191,7 @@ public class EnvoiSommationsDIsPMProcessorTest extends BusinessTest {
 		Assert.assertEquals(0, results.getTotalNonAssujettissement());
 		Assert.assertEquals(0, results.getTotalSommationsEnErreur());
 		Assert.assertEquals(0, results.getTotalDisOptionnelles());
+		Assert.assertEquals(0, results.getTotalDisSuspendues());
 
 		final List<EnvoiSommationsDIsPMResults.DelaiEffectifNonEchuInfo> nonEchus = results.getListeDisDelaiEffectifNonEchu();
 		Assert.assertNotNull(nonEchus);
@@ -230,6 +235,7 @@ public class EnvoiSommationsDIsPMProcessorTest extends BusinessTest {
 		Assert.assertEquals(0, results.getTotalNonAssujettissement());
 		Assert.assertEquals(0, results.getTotalSommationsEnErreur());
 		Assert.assertEquals(0, results.getTotalDisOptionnelles());
+		Assert.assertEquals(0, results.getTotalDisSuspendues());
 	}
 
 	@Test
@@ -314,6 +320,7 @@ public class EnvoiSommationsDIsPMProcessorTest extends BusinessTest {
 		Assert.assertEquals(1, results.getTotalNonAssujettissement());
 		Assert.assertEquals(0, results.getTotalSommationsEnErreur());
 		Assert.assertEquals(0, results.getTotalDisOptionnelles());
+		Assert.assertEquals(0, results.getTotalDisSuspendues());
 	}
 
 	//UNIREG-2466 test sur le log correcte des erreurs notamment les NullPointerException
@@ -374,6 +381,7 @@ public class EnvoiSommationsDIsPMProcessorTest extends BusinessTest {
 		Assert.assertEquals(0, results.getTotalSommations(anneePf));
 		Assert.assertEquals(0, results.getTotalNonAssujettissement());
 		Assert.assertEquals(0, results.getTotalDisOptionnelles());
+		Assert.assertEquals(0, results.getTotalDisSuspendues());
 	}
 
 	/**
@@ -417,6 +425,7 @@ public class EnvoiSommationsDIsPMProcessorTest extends BusinessTest {
 		Assert.assertEquals(0, results.getTotalNonAssujettissement());
 		Assert.assertEquals(0, results.getTotalSommationsEnErreur());
 		Assert.assertEquals(0, results.getTotalDisOptionnelles());
+		Assert.assertEquals(0, results.getTotalDisSuspendues());
 	}
 
 	@Test
@@ -456,6 +465,7 @@ public class EnvoiSommationsDIsPMProcessorTest extends BusinessTest {
 		Assert.assertEquals(0, results.getTotalNonAssujettissement());
 		Assert.assertEquals(0, results.getTotalSommationsEnErreur());
 		Assert.assertEquals(0, results.getTotalDisOptionnelles());
+		Assert.assertEquals(0, results.getTotalDisSuspendues());
 	}
 
 	@Test
@@ -488,12 +498,22 @@ public class EnvoiSommationsDIsPMProcessorTest extends BusinessTest {
 
 		final RegDate dateTraitement = delaiInitial.addYears(1);
 		final EnvoiSommationsDIsPMResults results = processor.run(dateTraitement, null, null);
-		Assert.assertEquals(0, results.getTotalDisTraitees());
+		Assert.assertEquals(1, results.getTotalDisTraitees());
 		Assert.assertEquals(0, results.getTotalDelaisEffectifsNonEchus());
 		Assert.assertEquals(0, results.getTotalDisSommees());
 		Assert.assertEquals(0, results.getTotalSommations(anneePf));
 		Assert.assertEquals(0, results.getTotalNonAssujettissement());
 		Assert.assertEquals(0, results.getTotalSommationsEnErreur());
 		Assert.assertEquals(0, results.getTotalDisOptionnelles());
+		Assert.assertEquals(1, results.getTotalDisSuspendues());
+
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final DeclarationImpotOrdinairePM di = (DeclarationImpotOrdinairePM) diDao.get(diId);
+				Assert.assertNotNull(di);
+				Assert.assertNull(di.getDernierEtatOfType(TypeEtatDeclaration.SOMMEE));
+			}
+		});
 	}
 }

@@ -28,6 +28,7 @@ import ch.vd.uniregctb.declaration.DeclarationException;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaireDAO;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePM;
+import ch.vd.uniregctb.declaration.EtatDeclaration;
 import ch.vd.uniregctb.declaration.EtatDeclarationSommee;
 import ch.vd.uniregctb.declaration.IdentifiantDeclaration;
 import ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotService;
@@ -154,6 +155,12 @@ public class EnvoiSommationsDIsPMProcessor {
 						LOGGER.info(msg);
 						r.addDiOptionelle(di);
 					}
+					else if (isSuspendue(di)) {
+						final String msg = String.format("La di [id: %d] du contribuable [%s] n'a pas été sommée car elle était suspendue",
+						                                 di.getId(), di.getTiers().getNumero());
+						LOGGER.info(msg);
+						r.addDiSuspendue(di);
+					}
 					else {
 						sommerDI(di, dateTraitement);
 						LOGGER.info(String.format(
@@ -206,10 +213,10 @@ public class EnvoiSommationsDIsPMProcessor {
 	}
 
 	private boolean checkEtat(DeclarationImpotOrdinaire di, EnvoiSommationsDIsPMResults r) {
-		if (TypeEtatDeclaration.EMISE != di.getDernierEtat().getEtat()) {
+		if (TypeEtatDeclaration.EMISE != di.getDernierEtat().getEtat() && TypeEtatDeclaration.SUSPENDUE != di.getDernierEtat().getEtat()) {
 			// Ce cas pourrait eventuellement se produire dans le cas où une DI aurait 2 états à la même date,
 			// il s'agirait alors de données corrompues ...
-			final String msg = String.format("La di [id: %s] n'est pas à l'état 'EMISE' et ne peut donc être sommée", di.getId().toString());
+			final String msg = String.format("La di [id: %s] n'est ni à l'état 'EMISE', et ne peut donc être sommée", di.getId().toString());
 			LOGGER.error(msg);
 			r.addError(di, msg);
 			return false;
@@ -244,6 +251,14 @@ public class EnvoiSommationsDIsPMProcessor {
 		return optionnel;
 	}
 
+	/**
+	 * Si la DI est dans un état SUSPENDUE, il ne faut pas la sommer
+	 */
+	private boolean isSuspendue(DeclarationImpotOrdinaire di) {
+		final EtatDeclaration dernierEtat = di.getDernierEtat();
+		return dernierEtat != null && dernierEtat.getEtat() == TypeEtatDeclaration.SUSPENDUE;
+	}
+
 	@SuppressWarnings("unchecked")
 	private List<IdentifiantDeclaration> retrieveListIdDIs(final RegDate dateLimite) {
 
@@ -261,7 +276,7 @@ public class EnvoiSommationsDIsPMProcessor {
 						b.append("SELECT di.id, di.tiers.id FROM DeclarationImpotOrdinairePM AS di");
 						b.append(" WHERE di.annulationDate IS NULL");
 						b.append(" AND EXISTS (SELECT etat.declaration.id FROM EtatDeclaration AS etat WHERE di.id = etat.declaration.id AND etat.annulationDate IS NULL AND etat.class = EtatDeclarationEmise)");
-						b.append(" AND NOT EXISTS (SELECT etat.declaration.id FROM EtatDeclaration AS etat WHERE di.id = etat.declaration.id AND etat.annulationDate IS NULL AND etat.class IN (EtatDeclarationRetournee, EtatDeclarationSommee, EtatDeclarationRappelee, EtatDeclarationSuspendue))");
+						b.append(" AND NOT EXISTS (SELECT etat.declaration.id FROM EtatDeclaration AS etat WHERE di.id = etat.declaration.id AND etat.annulationDate IS NULL AND etat.class IN (EtatDeclarationRetournee, EtatDeclarationSommee, EtatDeclarationRappelee))");
 						b.append(" AND EXISTS (SELECT delai.declaration.id FROM DelaiDeclaration AS delai WHERE di.id = delai.declaration.id AND delai.annulationDate IS NULL AND delai.delaiAccordeAu IS NOT NULL AND delai.etat = 'ACCORDE'");
 						b.append(" GROUP BY delai.declaration.id HAVING MAX(delai.delaiAccordeAu) < :dateLimite)");
 						final String sql = b.toString();
