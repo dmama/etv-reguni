@@ -2578,7 +2578,12 @@ var Decl = {
 					}
 				}
 				html += '</td>';
-				html += '<td>' + RegDate.format(d.delaiAccordeAu) + '</td>';
+				if (d.sursis) {
+					html += '<td>' + RegDate.format(d.delaiAccordeAu) + ' (Sursis)</td>';
+				}
+				else {
+					html += '<td>' + RegDate.format(d.delaiAccordeAu) + '</td>';
+				}
 				html += '<td>' + Link.consulterLog('DelaiDeclaration', d.id) + '</td></tr>';
 			}
 			html += '</tbody></table></fieldset>\n';
