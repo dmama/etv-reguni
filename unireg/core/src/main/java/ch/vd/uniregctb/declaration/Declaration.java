@@ -321,24 +321,22 @@ public abstract class Declaration extends HibernateDateRangeEntity implements Li
 	}
 
 	/**
-	 * @return le dernier délai (= le plus permissif)
+	 * @return le dernier délai accordé (= le plus permissif)
 	 */
 	@Transient
-	public DelaiDeclaration getDernierDelais() {
+	public DelaiDeclaration getDernierDelaiAccorde() {
 		if (delais == null || delais.isEmpty()) {
 			return null;
 		}
 
 		final List<DelaiDeclaration> list = new ArrayList<>(delais.size());
 		for (DelaiDeclaration delai : delais) {
-			if (!delai.isAnnule()) {
+			if (!delai.isAnnule() && delai.getEtat() == EtatDelaiDeclaration.ACCORDE) {
 				list.add(delai);
 			}
 		}
 		Collections.sort(list, new DelaiDeclaration.Comparator());
-
-		final DelaiDeclaration d = list.get(list.size() - 1);
-		return d.isAnnule() ? null : d;
+		return list.isEmpty() ? null : list.get(list.size() - 1);
 	}
 
 	/**

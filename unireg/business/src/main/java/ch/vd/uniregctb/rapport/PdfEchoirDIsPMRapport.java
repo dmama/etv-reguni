@@ -58,6 +58,7 @@ public class PdfEchoirDIsPMRapport extends PdfRapport {
 					table.addLigne("Nombre total de déclarations inspectées:", String.valueOf(results.nbDIsTotal));
 					table.addLigne("Nombre de déclarations passées dans l'état échu:", String.valueOf(results.disEchues.size()));
 					table.addLigne("Nombre de déclarations en erreur:", String.valueOf(results.disEnErrors.size()));
+					table.addLigne("Nombre de déclarations ignorées:", String.valueOf(results.disIgnorees.size()));
 					table.addLigne("Durée d'exécution du job:", formatDureeExecution(results));
 					table.addLigne("Date de génération du rapport:", formatTimestamp(dateGeneration));
 				}
@@ -66,19 +67,29 @@ public class PdfEchoirDIsPMRapport extends PdfRapport {
 
 		// DIs échues
 		{
-			String filename = "dis_echues.csv";
-			String titre = "Liste des déclarations nouvellement échues";
-			String listVide = "(aucun déclaration échue)";
+			final String filename = "dis_echues.csv";
+			final String titre = "Liste des déclarations nouvellement échues";
+			final String listVide = "(aucun déclaration échue)";
 			try (TemporaryFile contenu = disEchuesAsCsvFile(results.disEchues, filename, status)) {
+				addListeDetaillee(writer, titre, listVide, filename, contenu);
+			}
+		}
+
+		// DIs ignorées
+		{
+			final String filename = "dis_ignorees.csv";
+			final String titre = "Liste des déclarations ignorées";
+			final String listVide = "(aucun déclaration ignorée)";
+			try (TemporaryFile contenu = disIgnoreesAsCsvFile(results.disIgnorees, filename, status)) {
 				addListeDetaillee(writer, titre, listVide, filename, contenu);
 			}
 		}
 
 		// DIs en erreur
 		{
-			String filename = "dis_en_erreur.csv";
-			String titre = "Liste des déclarations en erreur";
-			String listVide = "(aucun déclaration en erreur)";
+			final String filename = "dis_en_erreur.csv";
+			final String titre = "Liste des déclarations en erreur";
+			final String listVide = "(aucun déclaration en erreur)";
 			try (TemporaryFile contenu = asCsvFile(results.disEnErrors, filename, status)) {
 				addListeDetaillee(writer, titre, listVide, filename, contenu);
 			}
@@ -97,12 +108,11 @@ public class PdfEchoirDIsPMRapport extends PdfRapport {
 			contenu = CsvHelper.asCsvTemporaryFile(disEchues, filename, status, new CsvHelper.FileFiller<EchoirDIsPMResults.Echue>() {
 				@Override
 				public void fillHeader(CsvHelper.LineFiller b) {
-					b.append("OID").append(COMMA).append("CTB_ID").append(COMMA).append("DI_ID").append(COMMA).append("DEBUT_PERIODE").append(COMMA).append("FIN_PERIODE");
+					b.append("CTB_ID").append(COMMA).append("DI_ID").append(COMMA).append("DEBUT_PERIODE").append(COMMA).append("FIN_PERIODE");
 				}
 
 				@Override
 				public boolean fillLine(CsvHelper.LineFiller b, EchoirDIsPMResults.Echue info) {
-					b.append(info.officeImpotID).append(COMMA);
 					b.append(info.ctbId).append(COMMA);
 					b.append(info.diId).append(COMMA);
 					b.append(info.dateDebut.index()).append(COMMA);
@@ -114,4 +124,27 @@ public class PdfEchoirDIsPMRapport extends PdfRapport {
 		return contenu;
 	}
 
+	private TemporaryFile disIgnoreesAsCsvFile(List<EchoirDIsPMResults.Ignoree> disIgnorees, String filename, StatusManager status) {
+		TemporaryFile contenu = null;
+		final int size = disIgnorees.size();
+		if (size > 0) {
+			contenu = CsvHelper.asCsvTemporaryFile(disIgnorees, filename, status, new CsvHelper.FileFiller<EchoirDIsPMResults.Ignoree>() {
+				@Override
+				public void fillHeader(CsvHelper.LineFiller b) {
+					b.append("CTB_ID").append(COMMA).append("DI_ID").append(COMMA).append("DEBUT_PERIODE").append(COMMA).append("FIN_PERIODE").append(COMMA).append("MOTIF");
+				}
+
+				@Override
+				public boolean fillLine(CsvHelper.LineFiller b, EchoirDIsPMResults.Ignoree info) {
+					b.append(info.ctbId).append(COMMA);
+					b.append(info.diId).append(COMMA);
+					b.append(info.dateDebut.index()).append(COMMA);
+					b.append(info.dateFin.index()).append(COMMA);
+					b.append(CsvHelper.escapeChars(info.motif.getDescription()));
+					return true;
+				}
+			});
+		}
+		return contenu;
+	}
 }

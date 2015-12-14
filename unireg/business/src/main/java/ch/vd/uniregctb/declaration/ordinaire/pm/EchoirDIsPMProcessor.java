@@ -24,6 +24,7 @@ import ch.vd.uniregctb.common.BatchTransactionTemplateWithResults;
 import ch.vd.uniregctb.common.LoggingStatusManager;
 import ch.vd.uniregctb.declaration.DeclarationException;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePM;
+import ch.vd.uniregctb.declaration.DelaiDeclaration;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
 import ch.vd.uniregctb.declaration.IdentifiantDeclaration;
 import ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotService;
@@ -128,10 +129,25 @@ public class EchoirDIsPMProcessor {
 		final EtatDeclaration etat = di.getDernierEtat();
 		Assert.notNull(etat, "La déclaration ne possède pas d'état.");
 
+		if (etat.getEtat() == TypeEtatDeclaration.SUSPENDUE) {
+			rapport.addDISuspendueIgnoree(di);
+			return;
+		}
+
 		// Vérifie l'état de la DI (en cas de bug)
 		if (etat.getEtat() != TypeEtatDeclaration.SOMMEE) {
 			rapport.addErrorEtatIncoherent(di, String.format("Etat attendu=%s, état constaté=%s. Erreur dans la requête SQL ?", TypeEtatDeclaration.SOMMEE, etat.getEtat()));
 			return;
+		}
+
+		// vérification de la présence d'un éventuel sursis accordé
+		final DelaiDeclaration dernierDelai = di.getDernierDelaiAccorde();
+		if (dernierDelai != null) {
+			final RegDate delaiEffectif = getSeuilEcheanceApresDelaiOfficiel(dernierDelai.getDelaiAccordeAu());
+			if (delaiEffectif.isAfterOrEqual(rapport.dateTraitement)) {
+				rapport.addDIAvecSursisAccordeIgnoree(di);
+				return;
+			}
 		}
 
 		// On fait passer la DI à l'état échu
@@ -156,7 +172,7 @@ public class EchoirDIsPMProcessor {
 		b.append(" JOIN ETAT_DECLARATION ES ON ES.DECLARATION_ID = DI.ID AND ES.ANNULATION_DATE IS NULL AND ES.TYPE='SOMMEE'");
 		b.append(" JOIN TIERS T ON T.NUMERO = DI.TIERS_ID ");
 		b.append(" WHERE DI.DOCUMENT_TYPE='DIPM' AND DI.ANNULATION_DATE IS NULL");
-		b.append(" AND NOT EXISTS (SELECT 1 FROM ETAT_DECLARATION ED WHERE ED.DECLARATION_ID = DI.ID AND ED.ANNULATION_DATE IS NULL AND ED.TYPE IN ('RETOURNEE', 'ECHUE', 'SUSPENDUE'))");
+		b.append(" AND NOT EXISTS (SELECT 1 FROM ETAT_DECLARATION ED WHERE ED.DECLARATION_ID = DI.ID AND ED.ANNULATION_DATE IS NULL AND ED.TYPE IN ('RETOURNEE', 'ECHUE'))");
 		b.append(" ORDER BY DI.TIERS_ID");
 		final String sql = b.toString();
 
@@ -197,7 +213,11 @@ public class EchoirDIsPMProcessor {
 
 	private RegDate getSeuilEcheanceSommation(RegDate dateSommation) {
 		// [UNIREG-1468] L'échéance de sommation = date sommation + 30 jours (délai normal) + 15 jours (délai administratif)
-		final RegDate delaiTemp = delaisService.getDateFinDelaiEcheanceSommationDeclarationImpotPM(dateSommation); // 30 jours
-		return delaisService.getDateFinDelaiEnvoiSommationDeclarationImpotPM(delaiTemp); // 15 jours
+		final RegDate delaiSommation = delaisService.getDateFinDelaiEcheanceSommationDeclarationImpotPM(dateSommation); // 30 jours
+		return getSeuilEcheanceApresDelaiOfficiel(delaiSommation);
+	}
+
+	private RegDate getSeuilEcheanceApresDelaiOfficiel(RegDate delaiOfficiel) {
+		return delaisService.getDateFinDelaiEnvoiSommationDeclarationImpotPM(delaiOfficiel); // +15 jours
 	}
 }

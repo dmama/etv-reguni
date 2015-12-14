@@ -753,7 +753,7 @@ public class PartyWebServiceImpl implements PartyWebService {
 		}
 
 		final RegDate newDeadline = ch.vd.uniregctb.xml.DataHelper.xmlToCore(request.getNewDeadline());
-		final RegDate oldDeadline = declaration.getDernierDelais().getDelaiAccordeAu();
+		final RegDate oldDeadline = declaration.getDernierDelaiAccorde().getDelaiAccordeAu();
 		final RegDate today = RegDate.get();
 
 		if (newDeadline.isBefore(today)) {

@@ -11,6 +11,7 @@ import ch.vd.unireg.interfaces.infra.mock.MockOfficeImpot;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
+import ch.vd.uniregctb.declaration.DelaiDeclaration;
 import ch.vd.uniregctb.declaration.IdentifiantDeclaration;
 import ch.vd.uniregctb.declaration.ModeleDocument;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
@@ -206,12 +207,13 @@ public class EchoirDIsPMProcessorTest extends BusinessTest {
 
 		assertEquals(1, rapport.nbDIsTotal);
 		assertEmpty(rapport.disEchues);
-		assertEquals(1, rapport.disEnErrors.size());
+		assertEmpty(rapport.disEnErrors);
+		assertEquals(1, rapport.disIgnorees.size());
 
-		final Erreur erreur = rapport.disEnErrors.get(0);
-		assertNotNull(erreur);
-		assertEquals(id.longValue(), erreur.diId);
-		assertEquals(ErreurType.ETAT_DECLARATION_INCOHERENT, erreur.raison);
+		final EchoirDIsPMResults.Ignoree ignoree = rapport.disIgnorees.get(0);
+		assertNotNull(ignoree);
+		assertEquals(id.longValue(), ignoree.diId);
+		assertEquals(EchoirDIsPMResults.MotifIgnorance.DECLARATION_SUSPENDUE, ignoree.motif);
 	}
 
 	@Test
@@ -243,6 +245,7 @@ public class EchoirDIsPMProcessorTest extends BusinessTest {
 		assertEquals(0, rapport.nbDIsTotal);
 		assertEmpty(rapport.disEchues);
 		assertEmpty(rapport.disEnErrors);
+		assertEmpty(rapport.disIgnorees);
 	}
 
 	@Test
@@ -273,9 +276,15 @@ public class EchoirDIsPMProcessorTest extends BusinessTest {
 
 		final EchoirDIsPMResults rapport = processor.run(dateTraitement, null);
 
-		assertEquals(0, rapport.nbDIsTotal);
+		assertEquals(1, rapport.nbDIsTotal);
 		assertEmpty(rapport.disEchues);
 		assertEmpty(rapport.disEnErrors);
+		assertEquals(1, rapport.disIgnorees.size());
+
+		final EchoirDIsPMResults.Ignoree ignoree = rapport.disIgnorees.get(0);
+		assertNotNull(ignoree);
+		assertEquals(id.longValue(), ignoree.diId);
+		assertEquals(EchoirDIsPMResults.MotifIgnorance.DECLARATION_SUSPENDUE, ignoree.motif);
 	}
 
 	@Test
@@ -311,6 +320,52 @@ public class EchoirDIsPMProcessorTest extends BusinessTest {
 		assertEquals(0, rapport.nbDIsTotal);
 		assertEmpty(rapport.disEchues);
 		assertEmpty(rapport.disEnErrors);
+	}
+
+	@Test
+	public void testDISursisNonDepasse() throws Exception {
+
+		final RegDate dateDebut = RegDate.get(2000, 1, 1);
+		final RegDate dateTraitement = date(2015, 9, 1);
+		final RegDate dateSommation = date(2015, 6, 30); // [UNIREG-1468] le délai s'applique à partir de la date de sommation
+
+		// Crée une déclaration à l'état sommé mais avec un délai non dépassé
+		final Long id = doInNewTransaction(new TxCallback<Long>() {
+			@Override
+			public Long execute(TransactionStatus status) throws Exception {
+				final Entreprise e = addEntrepriseInconnueAuCivil();
+				addDonneesRegistreCommerce(e, dateDebut, null, "Truc machin SA", FormeJuridiqueEntreprise.SA);
+				addBouclement(e, dateDebut, DayMonth.get(12, 31), 12);
+				addForPrincipal(e, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Aubonne);
+
+				final PeriodeFiscale periode = addPeriodeFiscale(2014);
+				final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM, periode);
+				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
+				final DeclarationImpotOrdinaire declaration = addDeclarationImpot(e, periode, date(2014, 1, 1), date(2014, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, modele);
+				addEtatDeclarationEmise(declaration, date(2015, 1, 15));
+				addDelaiDeclaration(declaration, date(2015, 1, 15), date(2015, 3, 15), EtatDelaiDeclaration.ACCORDE);
+				addEtatDeclarationSommee(declaration, dateSommation, dateSommation.addDays(3));
+
+				// on met un sursis à la veille de la date de traitement, pour bien montrer que le délai
+				// administratif de 15 jours est bien pris en compte (= le sursis est toujours actif même au lendemain de sa date officielle)
+				final DelaiDeclaration sursis = addDelaiDeclaration(declaration, dateSommation.addDays(10), dateTraitement.getOneDayBefore(), EtatDelaiDeclaration.ACCORDE);
+				sursis.setSursis(true);
+
+				return declaration.getId();
+			}
+		});
+
+		// la date de traitement (1er août 2015) est avant le délai (dateSommation + 30 jours + 15 jours = 15 août 2015)
+		final EchoirDIsPMResults rapport = processor.run(dateTraitement, null);
+
+		assertEquals(1, rapport.nbDIsTotal);
+		assertEmpty(rapport.disEchues);
+		assertEmpty(rapport.disEnErrors);
+		assertEquals(1, rapport.disIgnorees.size());
+
+		final EchoirDIsPMResults.Ignoree diIgnoree = rapport.disIgnorees.get(0);
+		assertNotNull(diIgnoree);
+		assertEquals(EchoirDIsPMResults.MotifIgnorance.SURSIS_ACCORDE, diIgnoree.motif);
 	}
 
 	@Test
@@ -360,6 +415,47 @@ public class EchoirDIsPMProcessorTest extends BusinessTest {
 				return null;
 			}
 		});
+	}
+
+	@Test
+	public void testDISursisDepasse() throws Exception {
+
+		final RegDate dateDebut = RegDate.get(2000, 1, 1);
+		final RegDate dateTraitement = date(2015, 9, 1);
+		final RegDate dateSommation = date(2015, 6, 30); // [UNIREG-1468] le délai s'applique à partir de la date de sommation
+
+		// Crée une déclaration à l'état sommé mais avec un délai non dépassé
+		final Long id = doInNewTransaction(new TxCallback<Long>() {
+			@Override
+			public Long execute(TransactionStatus status) throws Exception {
+				final Entreprise e = addEntrepriseInconnueAuCivil();
+				addDonneesRegistreCommerce(e, dateDebut, null, "Truc machin SA", FormeJuridiqueEntreprise.SA);
+				addBouclement(e, dateDebut, DayMonth.get(12, 31), 12);
+				addForPrincipal(e, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Aubonne);
+
+				final PeriodeFiscale periode = addPeriodeFiscale(2014);
+				final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM, periode);
+				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
+				final DeclarationImpotOrdinaire declaration = addDeclarationImpot(e, periode, date(2014, 1, 1), date(2014, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, modele);
+				addEtatDeclarationEmise(declaration, date(2015, 1, 15));
+				addDelaiDeclaration(declaration, date(2015, 1, 15), date(2015, 3, 15), EtatDelaiDeclaration.ACCORDE);
+				addEtatDeclarationSommee(declaration, dateSommation, dateSommation.addDays(3));
+
+				// on est obligé de revenir en arrière un gros bout pour coutourner le délai administratif de 15 jours
+				final DelaiDeclaration sursis = addDelaiDeclaration(declaration, dateSommation.addDays(10), dateTraitement.addDays(-20), EtatDelaiDeclaration.ACCORDE);
+				sursis.setSursis(true);
+
+				return declaration.getId();
+			}
+		});
+
+		// la date de traitement (1er août 2015) est avant le délai (dateSommation + 30 jours + 15 jours = 15 août 2015)
+		final EchoirDIsPMResults rapport = processor.run(dateTraitement, null);
+
+		assertEquals(1, rapport.nbDIsTotal);
+		assertEquals(1, rapport.disEchues.size());
+		assertEmpty(rapport.disEnErrors);
+		assertEmpty(rapport.disIgnorees);
 	}
 
 	@Test

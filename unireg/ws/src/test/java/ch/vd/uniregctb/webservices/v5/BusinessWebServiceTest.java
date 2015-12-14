@@ -507,7 +507,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 				final Declaration di = pp.getDeclarationActive(date(annee, 1, 1));
 				Assert.assertNotNull(di);
 
-				final DelaiDeclaration delai = di.getDernierDelais();
+				final DelaiDeclaration delai = di.getDernierDelaiAccorde();
 				Assert.assertNotNull(delai);
 				Assert.assertEquals(delaiInitial, delai.getDelaiAccordeAu());
 			}
@@ -531,7 +531,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 				final Declaration di = pp.getDeclarationActive(date(annee, 1, 1));
 				Assert.assertNotNull(di);
 
-				final DelaiDeclaration delai = di.getDernierDelais();
+				final DelaiDeclaration delai = di.getDernierDelaiAccorde();
 				Assert.assertNotNull(delai);
 				Assert.assertEquals(delaiInitial, delai.getDelaiAccordeAu());
 			}
@@ -557,7 +557,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 				final Declaration di = pp.getDeclarationActive(date(annee, 1, 1));
 				Assert.assertNotNull(di);
 
-				final DelaiDeclaration delai = di.getDernierDelais();
+				final DelaiDeclaration delai = di.getDernierDelaiAccorde();
 				Assert.assertNotNull(delai);
 				Assert.assertEquals(nouveauDelai, delai.getDelaiAccordeAu());
 			}

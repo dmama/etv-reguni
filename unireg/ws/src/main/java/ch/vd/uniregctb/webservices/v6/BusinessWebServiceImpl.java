@@ -486,7 +486,7 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 							response = new DeadlineResponse(DeadlineStatus.ERROR_INVALID_DEADLINE, "Un nouveau délai ne peut pas être demandé dans le passé de la date du jour.");
 						}
 						else {
-							final RegDate delaiActuel = di.getDernierDelais().getDelaiAccordeAu();
+							final RegDate delaiActuel = di.getDernierDelaiAccorde().getDelaiAccordeAu();
 							if (RegDateHelper.isBeforeOrEqual(nouveauDelai, delaiActuel, NullDateBehavior.LATEST)) {
 								response = new DeadlineResponse(DeadlineStatus.ERROR_INVALID_DEADLINE, "Un délai plus lointain existe déjà.");
 							}
