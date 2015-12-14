@@ -36,7 +36,7 @@ public class AbstractListeRecapController extends AbstractSimpleFormEditiqueAwar
 		data.put(MODE_COMMUNICATION_MAP_NAME, getTiersMapHelper().getMapModeCommunication());
 		data.put(PERIODICITE_DECOMPTE_MAP_NAME, getTiersMapHelper().getMapPeriodiciteDecompte());
 		data.put(CATEGORIE_IMPOT_SOURCE_MAP_NAME, getTiersMapHelper().getMapCategorieImpotSource());
-		data.put(ETAT_DOCUMENT_MAP_NAME, getTiersMapHelper().getMapTypeEtatDeclaration());
+		data.put(ETAT_DOCUMENT_MAP_NAME, getTiersMapHelper().getMapTypeEtatListeRecapitulative());
 		// TracingManager.end(tp);
 
 		return data;
@@ -58,7 +58,7 @@ public class AbstractListeRecapController extends AbstractSimpleFormEditiqueAwar
 	public static final String CATEGORIE_IMPOT_SOURCE_MAP_NAME = "categoriesImpotSource";
 
 	/**
-	 * Le nom de l'attribut utilise pour la liste des categories d'impot a la source
+	 * Le nom de l'attribut utilise pour la liste états d'une liste récapitulative
 	 */
 	public static final String ETAT_DOCUMENT_MAP_NAME = "etatsDocument";
 

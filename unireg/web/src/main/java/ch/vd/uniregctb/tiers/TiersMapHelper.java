@@ -82,7 +82,7 @@ public class TiersMapHelper extends CommonMapHelper {
 	private Map<EtatEvenementOrganisation, String> mapEtatEvenementOrganisation;
 	private Map<TypeRapportEntreTiers, String> mapTypeRapportEntreTiers;
 	private Map<EtatEvenementCivil, String> mapEtatsEvenementCivil;
-	private Map<TypeEtatDeclaration, String> mapTypeEtatDeclaration;
+	private Map<TypeEtatDeclaration, String> mapTypeEtatListeRecapitulative;
 	private Map<EtatCivil, String> mapEtatsCivil;
 	private Map<TypeAdresseTiers, String> mapTypeAdresse;
 	private Map<TypeAdresseTiers, String> mapTypeAdresseFiscale;
@@ -451,15 +451,15 @@ public class TiersMapHelper extends CommonMapHelper {
 	}
 
 	/**
-	 * Initialise la map de types d'etat de document
+	 * Initialise la map de types d'etat de document utilisables pour les listes récapitulatives
 	 *
 	 * @return une map
 	 */
-	public Map<TypeEtatDeclaration, String> getMapTypeEtatDeclaration() {
-		if (mapTypeEtatDeclaration == null) {
-			mapTypeEtatDeclaration = initMapEnum(ApplicationConfig.masterKeyTypeEtatDocument, TypeEtatDeclaration.class);
+	public Map<TypeEtatDeclaration, String> getMapTypeEtatListeRecapitulative() {
+		if (mapTypeEtatListeRecapitulative == null) {
+			mapTypeEtatListeRecapitulative = initMapEnum(ApplicationConfig.masterKeyTypeEtatDocument, TypeEtatDeclaration.class, TypeEtatDeclaration.RAPPELEE, TypeEtatDeclaration.SUSPENDUE);
 		}
-		return mapTypeEtatDeclaration;
+		return mapTypeEtatListeRecapitulative;
 	}
 
 	/**
