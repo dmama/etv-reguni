@@ -3,12 +3,14 @@ package ch.vd.uniregctb.editique.impl;
 import javax.jms.JMSException;
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
 import noNamespace.FichierImpressionDocument;
 import noNamespace.TypFichierImpression;
+import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
@@ -26,9 +28,11 @@ import ch.vd.uniregctb.declaration.DeclarationImpotSource;
 import ch.vd.uniregctb.declaration.DelaiDeclaration;
 import ch.vd.uniregctb.declaration.ModeleFeuilleDocument;
 import ch.vd.uniregctb.declaration.ordinaire.pm.ImpressionDeclarationImpotPersonnesMoralesHelper;
+import ch.vd.uniregctb.declaration.ordinaire.pm.ImpressionLettreDecisionDelaiPMHelper;
+import ch.vd.uniregctb.declaration.ordinaire.pm.ImpressionLettreDecisionDelaiPMHelperParams;
 import ch.vd.uniregctb.declaration.ordinaire.pm.ImpressionSommationDeclarationImpotPersonnesMoralesHelper;
-import ch.vd.uniregctb.declaration.ordinaire.pp.ImpressionConfirmationDelaiHelper;
 import ch.vd.uniregctb.declaration.ordinaire.pp.ImpressionConfirmationDelaiHelperParams;
+import ch.vd.uniregctb.declaration.ordinaire.pp.ImpressionConfirmationDelaiPPHelper;
 import ch.vd.uniregctb.declaration.ordinaire.pp.ImpressionDeclarationImpotPersonnesPhysiquesHelper;
 import ch.vd.uniregctb.declaration.ordinaire.pp.ImpressionSommationDIHelperParams;
 import ch.vd.uniregctb.declaration.ordinaire.pp.ImpressionSommationDeclarationImpotPersonnesPhysiquesHelper;
@@ -68,7 +72,8 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 	private ImpressionSommationDeclarationImpotPersonnesMoralesHelper impressionSommationDIPMHelper;
 	private ImpressionSommationLRHelper impressionSommationLRHelper;
 	private ImpressionNouveauxDossiersHelper impressionNouveauxDossiersHelper;
-	private ImpressionConfirmationDelaiHelper impressionConfirmationDelaiHelper;
+	private ImpressionConfirmationDelaiPPHelper impressionConfirmationDelaiPPHelper;
+	private ImpressionLettreDecisionDelaiPMHelper impressionLettreDecisionDelaiPMHelper;
 	private ServiceSecuriteService serviceSecurite;
 	private ImpressionBordereauMouvementDossierHelper impressionBordereauMouvementDossierHelper;
 	private ImpressionDocumentEfactureHelperImpl impressionEfactureHelper;
@@ -114,8 +119,12 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
-	public void setImpressionConfirmationDelaiHelper(ImpressionConfirmationDelaiHelper impressionConfirmationDelaiHelper) {
-		this.impressionConfirmationDelaiHelper = impressionConfirmationDelaiHelper;
+	public void setImpressionConfirmationDelaiPPHelper(ImpressionConfirmationDelaiPPHelper impressionConfirmationDelaiPPHelper) {
+		this.impressionConfirmationDelaiPPHelper = impressionConfirmationDelaiPPHelper;
+	}
+
+	public void setImpressionLettreDecisionDelaiPMHelper(ImpressionLettreDecisionDelaiPMHelper impressionLettreDecisionDelaiPMHelper) {
+		this.impressionLettreDecisionDelaiPMHelper = impressionLettreDecisionDelaiPMHelper;
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
@@ -398,22 +407,51 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 	}
 
 	@Override
-	public EditiqueResultat imprimeConfirmationDelaiOnline(DeclarationImpotOrdinairePP di, DelaiDeclaration delai) throws EditiqueException, JMSException {
-		final TypeDocumentEditique typeDocument = impressionConfirmationDelaiHelper.getTypeDocumentEditique();
+	public Pair<EditiqueResultat, String> imprimeConfirmationDelaiOnline(DeclarationImpotOrdinairePP di, DelaiDeclaration delai) throws EditiqueException, JMSException {
+		final TypeDocumentEditique typeDocument = impressionConfirmationDelaiPPHelper.getTypeDocumentEditique();
 		final String[] infoOperateur = getInfoOperateur();
-		final ImpressionConfirmationDelaiHelperParams params =
-				new ImpressionConfirmationDelaiHelperParams(di, delai.getDelaiAccordeAu(), infoOperateur[0], getNumeroTelephoneOperateur(), infoOperateur[1],
-						delai.getId(), delai.getLogCreationDate());
-		final FichierImpressionDocument document = impressionConfirmationDelaiHelper.remplitConfirmationDelai(params);
-		// TODO c'est un peu pourri... on devrait pouvoir récupérer la valeur un peu plus élégamment...
-		delai.setCleArchivageCourrier(document.getFichierImpression().getDocumentArray()[0].getInfoArchivage().getIdDocument());
-		final String nomDocument = impressionConfirmationDelaiHelper.construitIdDocument(delai);
+		final ImpressionConfirmationDelaiHelperParams params = new ImpressionConfirmationDelaiHelperParams(di, delai.getDelaiAccordeAu(),
+		                                                                                                   infoOperateur[0], getNumeroTelephoneOperateur(), infoOperateur[1],
+		                                                                                                   delai.getId(), delai.getLogCreationDate());
+		final String cleArchivage = impressionConfirmationDelaiPPHelper.construitIdArchivageDocument(params);
+		final FichierImpressionDocument document = impressionConfirmationDelaiPPHelper.remplitConfirmationDelai(params, cleArchivage);
+		final String nomDocument = impressionConfirmationDelaiPPHelper.construitIdDocument(delai);
 
 		final String description = String.format("Confirmation de délai accordé au %s de la déclaration d'impôt %d du contribuable %s",
-				RegDateHelper.dateToDisplayString(delai.getDelaiAccordeAu()), di.getPeriode().getAnnee(), FormatNumeroHelper.numeroCTBToDisplay(di.getTiers().getNumero()));
+		                                         RegDateHelper.dateToDisplayString(delai.getDelaiAccordeAu()),
+		                                         di.getPeriode().getAnnee(),
+		                                         FormatNumeroHelper.numeroCTBToDisplay(di.getTiers().getNumero()));
 
+		final EditiqueResultat resultat = editiqueService.creerDocumentImmediatementSynchroneOuInbox(nomDocument, typeDocument, FormatDocumentEditique.PDF, document, true, description);
+		return Pair.of(resultat, cleArchivage);
+	}
 
-		return editiqueService.creerDocumentImmediatementSynchroneOuInbox(nomDocument, typeDocument, FormatDocumentEditique.PDF, document, true, description);
+	@Override
+	public Pair<EditiqueResultat, String> imprimeLettreDecisionDelaiOnline(DeclarationImpotOrdinairePM di, DelaiDeclaration delai) throws EditiqueException, JMSException {
+		final ImpressionLettreDecisionDelaiPMHelperParams params = new ImpressionLettreDecisionDelaiPMHelperParams(di, delai);
+		final TypeDocumentEditique typeDocument = impressionLettreDecisionDelaiPMHelper.getTypeDocumentEditique(params);
+		final String cleArchivage = impressionLettreDecisionDelaiPMHelper.construitIdArchivageDocument(params);
+
+		final FichierImpression.Document document = impressionLettreDecisionDelaiPMHelper.buildDocument(params, cleArchivage);
+		final FichierImpression root = new FichierImpression(null, Collections.singletonList(document));
+		final String nomDocument = impressionLettreDecisionDelaiPMHelper.construitIdDocument(params);
+
+		final EditiqueResultat resultat = editiqueService.creerDocumentImmediatementSynchroneOuInbox(nomDocument, typeDocument, FormatDocumentEditique.PDF, root, true, params.getDescriptionDocument());
+		return Pair.of(resultat, cleArchivage);
+	}
+
+	@Override
+	public String imprimeLettreDecisionDelaiForBatch(DeclarationImpotOrdinairePM di, DelaiDeclaration delai) throws EditiqueException, JMSException {
+		final ImpressionLettreDecisionDelaiPMHelperParams params = new ImpressionLettreDecisionDelaiPMHelperParams(di, delai);
+		final TypeDocumentEditique typeDocument = impressionLettreDecisionDelaiPMHelper.getTypeDocumentEditique(params);
+		final String cleArchivage = impressionLettreDecisionDelaiPMHelper.construitIdArchivageDocument(params);
+
+		final FichierImpression.Document document = impressionLettreDecisionDelaiPMHelper.buildDocument(params, cleArchivage);
+		final FichierImpression root = new FichierImpression(null, Collections.singletonList(document));
+		final String nomDocument = impressionLettreDecisionDelaiPMHelper.construitIdDocument(params);
+
+		editiqueService.creerDocumentParBatch(nomDocument, typeDocument, root, true);
+		return cleArchivage;
 	}
 
 	@Override

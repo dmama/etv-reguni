@@ -6,6 +6,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.lang3.tuple.Pair;
+
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.MimeTypeHelper;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePM;
@@ -95,8 +97,18 @@ public class MockEditiqueCompositionService implements EditiqueCompositionServic
 	}
 
 	@Override
-	public EditiqueResultat imprimeConfirmationDelaiOnline(DeclarationImpotOrdinairePP di, DelaiDeclaration delai) throws EditiqueException, JMSException {
-		return dummyResultat();
+	public Pair<EditiqueResultat, String> imprimeConfirmationDelaiOnline(DeclarationImpotOrdinairePP di, DelaiDeclaration delai) throws EditiqueException, JMSException {
+		return Pair.of(dummyResultat(), null);
+	}
+
+	@Override
+	public Pair<EditiqueResultat, String> imprimeLettreDecisionDelaiOnline(DeclarationImpotOrdinairePM di, DelaiDeclaration delai) throws EditiqueException, JMSException {
+		return Pair.of(dummyResultat(), null);
+	}
+
+	@Override
+	public String imprimeLettreDecisionDelaiForBatch(DeclarationImpotOrdinairePM di, DelaiDeclaration delai) throws EditiqueException, JMSException {
+		return null;
 	}
 
 	@Override

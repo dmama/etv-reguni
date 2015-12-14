@@ -13,6 +13,6 @@
 	<bean id="impressionSommationDIPPHelper" class="ch.vd.uniregctb.declaration.ordinaire.pp.MockImpressionSommationDIPersonnesPhysiquesHelper" />
 	<bean id="impressionSommationDIPMHelper" class="ch.vd.uniregctb.declaration.ordinaire.pm.MockImpressionSommationDIPersonnesMoralesHelper" />
 	<bean id="impressionSommationLRHelper" class="ch.vd.uniregctb.declaration.source.MockImpressionSommationLRHelper" />
-	<bean id="impressionConfirmationDelaiHelper" class="ch.vd.uniregctb.declaration.ordinaire.pp.MockImpressionConfirmationDelaiHelper" />
+	<bean id="impressionConfirmationDelaiPPHelper" class="ch.vd.uniregctb.declaration.ordinaire.pp.MockImpressionConfirmationDelaiPPHelper" />
 
 </beans>

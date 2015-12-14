@@ -33,7 +33,7 @@ import ch.vd.uniregctb.editique.EditiquePrefixeHelper;
 import ch.vd.uniregctb.editique.TypeDocumentEditique;
 import ch.vd.uniregctb.type.TypeEtatDeclaration;
 
-public class ImpressionConfirmationDelaiHelperImpl extends EditiqueAbstractLegacyHelper implements ImpressionConfirmationDelaiHelper {
+public class ImpressionConfirmationDelaiPPHelperImpl extends EditiqueAbstractLegacyHelper implements ImpressionConfirmationDelaiPPHelper {
 
 	private static final String VERSION_XSD = "1.0";
 
@@ -43,12 +43,12 @@ public class ImpressionConfirmationDelaiHelperImpl extends EditiqueAbstractLegac
 	}
 
 	@Override
-	public FichierImpressionDocument remplitConfirmationDelai(ImpressionConfirmationDelaiHelperParams params) throws EditiqueException {
+	public FichierImpressionDocument remplitConfirmationDelai(ImpressionConfirmationDelaiHelperParams params, String idArchivage) throws EditiqueException {
 		try {
 			final FichierImpressionDocument mainDocument = FichierImpressionDocument.Factory.newInstance();
 			TypFichierImpression typeFichierImpression = mainDocument.addNewFichierImpression();
 			InfoDocument infoDocument = remplitInfoDocument(params);
-			InfoArchivageDocument.InfoArchivage infoArchivage = remplitInfoArchivage(params);
+			InfoArchivageDocument.InfoArchivage infoArchivage = remplitInfoArchivage(params, idArchivage);
 			InfoEnteteDocument infoEnteteDocument;
 			infoEnteteDocument = remplitEnteteDocument(params);
 			Document document = typeFichierImpression.addNewDocument();
@@ -136,13 +136,12 @@ public class ImpressionConfirmationDelaiHelperImpl extends EditiqueAbstractLegac
 		return infoDocument;
 	}
 
-	private InfoArchivageDocument.InfoArchivage remplitInfoArchivage(ImpressionConfirmationDelaiHelperParams params) {
-		return legacyEditiqueHelper.buildInfoArchivage(getTypeDocumentEditique(), params.getDi().getTiers().getNumero(), construitIdArchivageDocument(params), params.getDateAccord());
+	private InfoArchivageDocument.InfoArchivage remplitInfoArchivage(ImpressionConfirmationDelaiHelperParams params, String idArchivage) {
+		return legacyEditiqueHelper.buildInfoArchivage(getTypeDocumentEditique(), params.getDi().getTiers().getNumero(), idArchivage, params.getDateAccord());
 	}
 
 	@Override
 	public String construitIdArchivageDocument(ImpressionConfirmationDelaiHelperParams params) {
-
 		final String idDelai = createStringIdDelai(params);
 		return String.format(
 				"%s %s %s",

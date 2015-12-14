@@ -6,14 +6,14 @@ import ch.vd.uniregctb.declaration.DelaiDeclaration;
 import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.TypeDocumentEditique;
 
-public class MockImpressionConfirmationDelaiHelper implements ImpressionConfirmationDelaiHelper {
+public class MockImpressionConfirmationDelaiPPHelper implements ImpressionConfirmationDelaiPPHelper {
 	@Override
 	public TypeDocumentEditique getTypeDocumentEditique() {
 		throw new IllegalArgumentException("no meant to be called");
 	}
 
 	@Override
-	public FichierImpressionDocument remplitConfirmationDelai(ImpressionConfirmationDelaiHelperParams params) throws EditiqueException {
+	public FichierImpressionDocument remplitConfirmationDelai(ImpressionConfirmationDelaiHelperParams params, String idArchivage) throws EditiqueException {
 		throw new IllegalArgumentException("no meant to be called");
 	}
 

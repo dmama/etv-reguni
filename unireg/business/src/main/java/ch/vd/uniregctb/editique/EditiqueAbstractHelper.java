@@ -26,9 +26,7 @@ import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
-import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePM;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersService;
@@ -65,11 +63,11 @@ public abstract class EditiqueAbstractHelper {
 		final STypeZoneAffranchissement zoneAffranchissement;
 		final String idEnvoi;
 		if (adresseEnvoi.isIncomplete()) {
-			idEnvoi = String.valueOf(ServiceInfrastructureService.noOIPM);
+			idEnvoi = String.valueOf(valeurIdEnvoi);
 			zoneAffranchissement = STypeZoneAffranchissement.NA;
 		}
 		else if (adresseEnvoi.getTypeAffranchissement() == null) {
-			idEnvoi = String.valueOf(ServiceInfrastructureService.noOIPM);
+			idEnvoi = String.valueOf(valeurIdEnvoi);
 			zoneAffranchissement = STypeZoneAffranchissement.NA;
 		}
 		else {
@@ -79,11 +77,11 @@ public abstract class EditiqueAbstractHelper {
 				zoneAffranchissement = STypeZoneAffranchissement.CH;
 				break;
 			case EUROPE:
-				idEnvoi = idEnvoiSiEtranger ? String.valueOf(ServiceInfrastructureService.noOIPM) : null;
+				idEnvoi = idEnvoiSiEtranger ? String.valueOf(valeurIdEnvoi) : null;
 				zoneAffranchissement = idEnvoi != null ? STypeZoneAffranchissement.NA : STypeZoneAffranchissement.EU;
 				break;
 			case MONDE:
-				idEnvoi = idEnvoiSiEtranger ? String.valueOf(ServiceInfrastructureService.noOIPM) : null;
+				idEnvoi = idEnvoiSiEtranger ? String.valueOf(valeurIdEnvoi) : null;
 				zoneAffranchissement = idEnvoi != null ? STypeZoneAffranchissement.NA : STypeZoneAffranchissement.RM;
 				break;
 			default:
@@ -133,21 +131,22 @@ public abstract class EditiqueAbstractHelper {
 		return info;
 	}
 
-	protected CTypeInfoEnteteDocument buildInfoEnteteDocument(DeclarationImpotOrdinairePM declaration, CollectiviteAdministrative expediteur) throws ServiceInfrastructureException, AdresseException {
+	protected CTypeInfoEnteteDocument buildInfoEnteteDocument(Tiers destinataire, RegDate dateExpedition,
+	                                                          String traitePar, CollectiviteAdministrative expediteur) throws ServiceInfrastructureException, AdresseException {
 		final CTypeInfoEnteteDocument entete = new CTypeInfoEnteteDocument();
-		entete.setDestinataire(buildDestinataire(declaration.getTiers()));
-		entete.setExpediteur(buildExpediteur(expediteur, declaration.getDateExpedition()));
+		entete.setDestinataire(buildDestinataire(destinataire));
+		entete.setExpediteur(buildExpediteur(expediteur, dateExpedition, traitePar));
 		entete.setLigReference(null);
 		entete.setPorteAdresse(null);
 		return entete;
 	}
 
-	private CTypeDestinataire buildDestinataire(Contribuable ctb) throws AdresseException {
+	private CTypeDestinataire buildDestinataire(Tiers tiers) throws AdresseException {
 		final CTypeDestinataire destinataire = new CTypeDestinataire();
-		destinataire.setAdresse(buildAdresse(ctb));
-		destinataire.setNumContribuable(FormatNumeroHelper.numeroCTBToDisplay(ctb.getNumero()));
-		if (ctb instanceof Entreprise) {
-			final String ide = FormatNumeroHelper.formatNumIDE(tiersService.getNumeroIDE((Entreprise) ctb));
+		destinataire.setAdresse(buildAdresse(tiers));
+		destinataire.setNumContribuable(FormatNumeroHelper.numeroCTBToDisplay(tiers.getNumero()));
+		if (tiers instanceof Entreprise) {
+			final String ide = FormatNumeroHelper.formatNumIDE(tiersService.getNumeroIDE((Entreprise) tiers));
 			if (StringUtils.isNotBlank(ide)) {
 				destinataire.getNumIDE().add(ide);
 			}
@@ -155,7 +154,7 @@ public abstract class EditiqueAbstractHelper {
 		return destinataire;
 	}
 
-	private CTypeExpediteur buildExpediteur(CollectiviteAdministrative ca, RegDate dateExpedition) throws ServiceInfrastructureException, AdresseException {
+	private CTypeExpediteur buildExpediteur(CollectiviteAdministrative ca, RegDate dateExpedition, String traitePar) throws ServiceInfrastructureException, AdresseException {
 		final CTypeExpediteur expediteur = new CTypeExpediteur();
 		final CTypeAdresse adresse = buildAdresse(ca);
 		expediteur.setAdresse(adresse);
@@ -166,7 +165,7 @@ public abstract class EditiqueAbstractHelper {
 		expediteur.setNumFax(ca.getNoFax());
 		expediteur.setNumIBAN(null);
 		expediteur.setNumTelephone(ca.getNoTelephone());
-		expediteur.setTraitePar("");
+		expediteur.setTraitePar(traitePar);
 		return expediteur;
 	}
 }

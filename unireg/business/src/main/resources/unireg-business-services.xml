@@ -251,8 +251,10 @@
 		<property name="delaisService" ref="delaisService" />
 	</bean>
 
-	<bean id="impressionConfirmationDelaiHelper" parent="editiqueAbstractLegacyHelper" class="ch.vd.uniregctb.declaration.ordinaire.pp.ImpressionConfirmationDelaiHelperImpl"/>
-	
+    <bean id="impressionConfirmationDelaiPPHelper" parent="editiqueAbstractLegacyHelper" class="ch.vd.uniregctb.declaration.ordinaire.pp.ImpressionConfirmationDelaiPPHelperImpl"/>
+
+	<bean id="impressionLettreDecisionDelaiPMHelper" parent="editiqueAbstractHelper" class="ch.vd.uniregctb.declaration.ordinaire.pm.ImpressionLettreDecisionDelaiPMHelperImpl"/>
+
 	<bean id="printPCLService" class="ch.vd.uniregctb.editique.print.PrintPCLServiceImpl">
 	</bean>
 

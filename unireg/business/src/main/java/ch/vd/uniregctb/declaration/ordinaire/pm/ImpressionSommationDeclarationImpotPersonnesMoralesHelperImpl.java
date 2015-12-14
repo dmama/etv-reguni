@@ -32,6 +32,7 @@ public class ImpressionSommationDeclarationImpotPersonnesMoralesHelperImpl exten
 
 	private static final String TYPE_DOCUMENT = "CO";           // pour "Courrier", apparemment
 	private static final String CODE_DOCUMENT_SOMMATION_PM = TypeDocumentEditique.SOMMATION_DI_PM.getCodeDocumentEditique().substring(0, 4);
+	private static final String TRAITE_PAR = "Registre PM";
 
 	private DelaisService delaisService;
 
@@ -50,7 +51,7 @@ public class ImpressionSommationDeclarationImpotPersonnesMoralesHelperImpl exten
 			final ContribuableImpositionPersonnesMorales tiers = declaration.getTiers();
 			final CTypeInfoDocument infoDocument = buildInfoDocument(getAdresseEnvoi(tiers));
 			final CTypeInfoArchivage infoArchivage = buildInfoArchivage(getTypeDocumentEditique(), construitCleArchivageDocument(declaration), tiers.getNumero(), dateSommation);
-			final CTypeInfoEnteteDocument infoEnteteDocument = buildInfoEnteteDocument(declaration, infraService.getACIOIPM());
+			final CTypeInfoEnteteDocument infoEnteteDocument = buildInfoEnteteDocument(tiers, dateSommation, TRAITE_PAR, infraService.getACIOIPM());
 			final FichierImpression.Document.Sommation sommation = buildInfoSommation(declaration, dateSommation, batch);
 			return new FichierImpression.Document(infoDocument, infoArchivage, infoEnteteDocument, null, null, null, sommation, null, null, null);
 		}

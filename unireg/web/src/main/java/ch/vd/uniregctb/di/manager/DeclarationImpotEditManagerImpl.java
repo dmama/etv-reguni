@@ -12,6 +12,7 @@ import java.util.Set;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.Predicate;
+import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -665,11 +666,58 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 	 */
 	@Override
 	@Transactional(rollbackFor = Throwable.class)
-	public EditiqueResultat envoieImpressionLocalConfirmationDelai(Long idDI, Long idDelai) throws EditiqueException {
+	public EditiqueResultat envoieImpressionLocalConfirmationDelaiPP(Long idDI, Long idDelai) throws EditiqueException {
 		try {
 			final DelaiDeclaration delai = delaiDeclarationDAO.get(idDelai);
 			final DeclarationImpotOrdinairePP di = (DeclarationImpotOrdinairePP) diDAO.get(idDI);
-			return editiqueCompositionService.imprimeConfirmationDelaiOnline(di, delai);
+			final Pair<EditiqueResultat, String> resultat = editiqueCompositionService.imprimeConfirmationDelaiOnline(di, delai);
+			delai.setCleArchivageCourrier(resultat.getRight());
+			return resultat.getLeft();
+		}
+		catch (JMSException e) {
+			throw new EditiqueException(e);
+		}
+	}
+
+	@Override
+	@Transactional(rollbackFor = Throwable.class)
+	public EditiqueResultat envoieImpressionLocaleLettreDecisionDelaiPM(Long idDelai) throws EditiqueException {
+		try {
+			final DelaiDeclaration delai = delaiDeclarationDAO.get(idDelai);
+			final DeclarationImpotOrdinairePM di = (DeclarationImpotOrdinairePM) delai.getDeclaration();
+			final Pair<EditiqueResultat, String> resultat;
+			switch (delai.getEtat()) {
+			case ACCORDE:
+			case REFUSE:
+				resultat = editiqueCompositionService.imprimeLettreDecisionDelaiOnline(di, delai);
+				break;
+			default:
+				throw new EditiqueException("Impossible d'imprimer un courrier pour un délai qui n'est ni accordé, ni refusé.");
+			}
+			delai.setCleArchivageCourrier(resultat.getRight());
+			return resultat.getLeft();
+		}
+		catch (JMSException e) {
+			throw new EditiqueException(e);
+		}
+	}
+
+	@Override
+	@Transactional(rollbackFor = Throwable.class)
+	public void envoieImpressionBatchLettreDecisionDelaiPM(Long idDelai) throws EditiqueException {
+		try {
+			final DelaiDeclaration delai = delaiDeclarationDAO.get(idDelai);
+			final DeclarationImpotOrdinairePM di = (DeclarationImpotOrdinairePM) delai.getDeclaration();
+			final String cle;
+			switch (delai.getEtat()) {
+			case ACCORDE:
+			case REFUSE:
+				cle = editiqueCompositionService.imprimeLettreDecisionDelaiForBatch(di, delai);
+				break;
+			default:
+				throw new EditiqueException("Impossible d'imprimer un courrier pour un délai qui n'est ni accordé, ni refusé.");
+			}
+			delai.setCleArchivageCourrier(cle);
 		}
 		catch (JMSException e) {
 			throw new EditiqueException(e);

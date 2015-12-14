@@ -6,19 +6,16 @@ import ch.vd.uniregctb.declaration.DelaiDeclaration;
 import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.TypeDocumentEditique;
 
-public interface ImpressionConfirmationDelaiHelper {
+public interface ImpressionConfirmationDelaiPPHelper {
 
 	TypeDocumentEditique getTypeDocumentEditique();
 
-	FichierImpressionDocument remplitConfirmationDelai(ImpressionConfirmationDelaiHelperParams params) throws EditiqueException;
+	FichierImpressionDocument remplitConfirmationDelai(ImpressionConfirmationDelaiHelperParams params, String idArchivage) throws EditiqueException;
 
 	String construitIdDocument(DelaiDeclaration delai);
 
 	/**
 	 * Construit le champ idDocument pour l'archivage
-	 *
-	 * @param params
-	 * @return
 	 */
-	public String construitIdArchivageDocument(ImpressionConfirmationDelaiHelperParams params);
+	String construitIdArchivageDocument(ImpressionConfirmationDelaiHelperParams params);
 }

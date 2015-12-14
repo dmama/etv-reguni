@@ -87,10 +87,16 @@ public interface DeclarationImpotEditManager {
 	EditiqueResultat envoieImpressionLocalSommationDI(Long id) throws EditiqueException, DeclarationException;
 
 	/**
-	 * Imprimer la lettre de confirmation de délai
+	 * Imprimer la lettre de confirmation de délai de déclaration PP
 	 */
 	@Transactional(rollbackFor = Throwable.class)
-	EditiqueResultat envoieImpressionLocalConfirmationDelai(Long idDI, Long idDelai) throws EditiqueException;
+	EditiqueResultat envoieImpressionLocalConfirmationDelaiPP(Long idDI, Long idDelai) throws EditiqueException;
+
+	@Transactional(rollbackFor = Throwable.class)
+	EditiqueResultat envoieImpressionLocaleLettreDecisionDelaiPM(Long idDelai) throws EditiqueException;
+
+	@Transactional(rollbackFor = Throwable.class)
+	void envoieImpressionBatchLettreDecisionDelaiPM(Long idDelai) throws EditiqueException;
 
 	@Transactional(rollbackFor = Throwable.class)
 	EditiqueResultat envoieImpressionLocalDuplicataDI(Long id, TypeDocument typeDocument, List<ModeleFeuilleDocumentEditique> annexes, boolean saveModele) throws DeclarationException;

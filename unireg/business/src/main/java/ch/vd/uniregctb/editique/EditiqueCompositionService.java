@@ -6,8 +6,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.lang3.tuple.Pair;
+
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePM;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP;
 import ch.vd.uniregctb.declaration.DeclarationImpotSource;
@@ -172,14 +173,34 @@ public interface EditiqueCompositionService {
 	EditiqueResultat imprimeSommationLROnline(DeclarationImpotSource lr, RegDate dateEvenement) throws EditiqueException, JMSException;
 
 	/**
-	 * Imprime la confirmation de délai pour la {@link DeclarationImpotOrdinaire} et le {@link ch.vd.uniregctb.declaration.DelaiDeclaration} spécifié
+	 * Imprime la confirmation de délai pour la {@link DeclarationImpotOrdinairePP} et le {@link ch.vd.uniregctb.declaration.DelaiDeclaration} spécifié
 	 *
 	 * @param di
 	 * @param delai
 	 * @return
 	 * @throws EditiqueException
 	 */
-	EditiqueResultat imprimeConfirmationDelaiOnline(DeclarationImpotOrdinairePP di, DelaiDeclaration delai) throws EditiqueException, JMSException;
+	Pair<EditiqueResultat, String> imprimeConfirmationDelaiOnline(DeclarationImpotOrdinairePP di, DelaiDeclaration delai) throws EditiqueException, JMSException;
+
+	/**
+	 * Imprime la lettre de décision d'accord/refus de délai pour la {@link DeclarationImpotOrdinairePM}
+	 *
+	 * @param di la déclaration d'impôt PM
+	 * @param delai le délai accordé/refusé
+	 * @return un accesseur vers le document éditique généré, et l'identifiant d'archivage du document généré
+	 * @throws EditiqueException en cas de souci
+	 */
+	Pair<EditiqueResultat, String> imprimeLettreDecisionDelaiOnline(DeclarationImpotOrdinairePM di, DelaiDeclaration delai) throws EditiqueException, JMSException;
+
+	/**
+	 * Demande l'impression et l'envoi de la lettre de décision d'accord de délai pour la {@link DeclarationImpotOrdinairePM}
+	 *
+	 * @param di la déclaration d'impôt PM
+	 * @param delai le délai accordé/refusé
+	 * @return l'identifiant d'archivage du document généré
+	 * @throws EditiqueException en cas de souci
+	 */
+	String imprimeLettreDecisionDelaiForBatch(DeclarationImpotOrdinairePM di, DelaiDeclaration delai) throws EditiqueException, JMSException;
 
 	/**
 	 * Imprime la liste récapitulative spécifiée on-line

@@ -55,6 +55,7 @@ public class ImpressionDeclarationImpotPersonnesMoralesHelperImpl extends Editiq
 	private static final String TYPE_DOC = "DI";
 	private static final String COD_DOC_DI_PM = "U1P1";
 	private static final String COD_DOC_DI_APM = "U1P2";
+	private static final String TRAITE_PAR = "Registre PM";
 
 	private IbanValidator ibanValidator;
 
@@ -103,7 +104,7 @@ public class ImpressionDeclarationImpotPersonnesMoralesHelperImpl extends Editiq
 			final FichierImpression.Document document = new FichierImpression.Document();
 			document.setDeclarationImpot(buildDeclarationImpot(declaration));
 			document.setInfoDocument(buildInfoDocument(declaration, getAdresseEnvoi(declaration.getTiers())));
-			document.setInfoEnteteDocument(buildInfoEnteteDocument(declaration, infraService.getACIOIPM()));
+			document.setInfoEnteteDocument(buildInfoEnteteDocument(declaration.getTiers(), declaration.getDateExpedition(), TRAITE_PAR, infraService.getACIOIPM()));
 			document.setInfoRoutage(null);
 			return document;
 		}

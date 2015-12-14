@@ -14,17 +14,17 @@ import ch.vd.uniregctb.declaration.DelaiDeclaration;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.type.EtatDelaiDeclaration;
 
-public class ImpressionConfirmationDelaiHelperTest extends BusinessTest {
+public class ImpressionConfirmationDelaiPPHelperTest extends BusinessTest {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(ImpressionDeclarationImpotPersonnesPhysiquesHelperTest.class);
 
-	private ImpressionConfirmationDelaiHelperImpl impressionConfirmationDelaiHelper;
+	private ImpressionConfirmationDelaiPPHelperImpl impressionConfirmationDelaiHelper;
 
 	@Override
 	protected void runOnSetUp() throws Exception {
 		super.runOnSetUp();
 
-		impressionConfirmationDelaiHelper = getBean(ImpressionConfirmationDelaiHelperImpl.class, "impressionConfirmationDelaiHelper");
+		impressionConfirmationDelaiHelper = getBean(ImpressionConfirmationDelaiPPHelperImpl.class, "impressionConfirmationDelaiPPHelper");
 	}
 
 	@Test

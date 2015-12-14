@@ -172,7 +172,7 @@
 		<property name="serviceCivilCacheWarmer" ref="serviceCivilCacheWarmer" />
 		<property name="validationService" ref="validationService" />
 		<property name="evenementDeclarationSender" ref="evenementDeclarationSender" />
-		<property name="impressionConfirmationDelaiHelper" ref="impressionConfirmationDelaiHelper" />
+		<property name="impressionConfirmationDelaiPPHelper" ref="impressionConfirmationDelaiPPHelper" />
 		<property name="assujettissementService" ref="assujettissementService" />
 		<property name="periodeImpositionService" ref="periodeImpositionService" />
 		<property name="ticketService" ref="ticketService"/>

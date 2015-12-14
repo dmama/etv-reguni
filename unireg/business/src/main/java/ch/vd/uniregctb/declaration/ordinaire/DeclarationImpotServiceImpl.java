@@ -54,8 +54,8 @@ import ch.vd.uniregctb.declaration.ordinaire.pp.EnvoiSommationsDIsPPProcessor;
 import ch.vd.uniregctb.declaration.ordinaire.pp.EnvoiSommationsDIsPPResults;
 import ch.vd.uniregctb.declaration.ordinaire.pp.ImportCodesSegmentProcessor;
 import ch.vd.uniregctb.declaration.ordinaire.pp.ImportCodesSegmentResults;
-import ch.vd.uniregctb.declaration.ordinaire.pp.ImpressionConfirmationDelaiHelper;
 import ch.vd.uniregctb.declaration.ordinaire.pp.ImpressionConfirmationDelaiHelperParams;
+import ch.vd.uniregctb.declaration.ordinaire.pp.ImpressionConfirmationDelaiPPHelper;
 import ch.vd.uniregctb.declaration.ordinaire.pp.ImpressionDeclarationImpotPersonnesPhysiquesHelper;
 import ch.vd.uniregctb.declaration.ordinaire.pp.ImpressionSommationDeclarationImpotPersonnesPhysiquesHelper;
 import ch.vd.uniregctb.declaration.ordinaire.pp.InformationsDocumentAdapter;
@@ -116,7 +116,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 	private ParametreAppService parametres;
 	private ValidationService validationService;
 	private EvenementDeclarationSender evenementDeclarationSender;
-	private ImpressionConfirmationDelaiHelper impressionConfirmationDelaiHelper;
+	private ImpressionConfirmationDelaiPPHelper impressionConfirmationDelaiPPHelper;
 	private PeriodeImpositionService periodeImpositionService;
 	private AssujettissementService assujettissementService;
 	private TicketService ticketService;
@@ -231,8 +231,8 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 		this.evenementDeclarationSender = evenementDeclarationSender;
 	}
 
-	public void setImpressionConfirmationDelaiHelper(ImpressionConfirmationDelaiHelper impressionConfirmationDelaiHelper) {
-		this.impressionConfirmationDelaiHelper = impressionConfirmationDelaiHelper;
+	public void setImpressionConfirmationDelaiPPHelper(ImpressionConfirmationDelaiPPHelper impressionConfirmationDelaiPPHelper) {
+		this.impressionConfirmationDelaiPPHelper = impressionConfirmationDelaiPPHelper;
 	}
 
 	public void setAssujettissementService(AssujettissementService assujettissementService) {
@@ -733,7 +733,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 	private String construitIdArchivageConfirmationDelai(DelaiDeclaration delaiDeclaration) {
 		ImpressionConfirmationDelaiHelperParams params = new ImpressionConfirmationDelaiHelperParams(delaiDeclaration.getDelaiAccordeAu(),
 				delaiDeclaration.getId(), delaiDeclaration.getLogCreationDate());
-		return impressionConfirmationDelaiHelper.construitIdArchivageDocument(params);
+		return impressionConfirmationDelaiPPHelper.construitIdArchivageDocument(params);
 	}
 	
 	@Override

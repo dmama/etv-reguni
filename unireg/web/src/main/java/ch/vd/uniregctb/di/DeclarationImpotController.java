@@ -2,6 +2,7 @@ package ch.vd.uniregctb.di;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -64,6 +65,7 @@ import ch.vd.uniregctb.di.view.ImprimerDuplicataDeclarationImpotView;
 import ch.vd.uniregctb.di.view.ImprimerNouvelleDeclarationImpotView;
 import ch.vd.uniregctb.di.view.ModifierDemandeDelaiDeclarationView;
 import ch.vd.uniregctb.di.view.NouvelleDemandeDelaiDeclarationView;
+import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.EditiqueResultat;
 import ch.vd.uniregctb.editique.EditiqueResultatErreur;
 import ch.vd.uniregctb.editique.EditiqueResultatReroutageInbox;
@@ -1098,7 +1100,7 @@ public class DeclarationImpotController {
 		if (view.isConfirmationEcrite()) {
 
 			// On imprime le document
-			final EditiqueResultat resultat = manager.envoieImpressionLocalConfirmationDelai(id, idDelai);
+			final EditiqueResultat resultat = manager.envoieImpressionLocalConfirmationDelaiPP(id, idDelai);
 
 			final RedirectEditDI inbox = new RedirectEditDI(id);
 			final RedirectEditDIApresErreur erreur = new RedirectEditDIApresErreur(id, messageSource);
@@ -1176,7 +1178,7 @@ public class DeclarationImpotController {
 		// On ajoute le délai
 		final RegDate delaiAccordeAu = view.getDecision() == EtatDelaiDeclaration.ACCORDE ? view.getDelaiAccordeAu() : null;
 		final Long idDelai = manager.saveNouveauDelai(id, view.getDateDemande(), delaiAccordeAu, view.getDecision(), view.isSursis());
-		return gererImpressionCourrierDelaiDeclarationPM(idDelai, id, view.getTypeImpression());
+		return gererImpressionCourrierDelaiDeclarationPM(idDelai, id, view.getTypeImpression(), response);
 	}
 
 	@Transactional(rollbackFor = Throwable.class)
@@ -1257,26 +1259,30 @@ public class DeclarationImpotController {
 		// On modifie le délai
 		final RegDate delaiAccordeAu = view.getDecision() == EtatDelaiDeclaration.ACCORDE ? view.getDelaiAccordeAu() : null;
 		manager.saveDelai(view.getIdDelai(), view.getDecision(), delaiAccordeAu);
-		return gererImpressionCourrierDelaiDeclarationPM(view.getIdDelai(), diId, view.getTypeImpression());
+		return gererImpressionCourrierDelaiDeclarationPM(view.getIdDelai(), diId, view.getTypeImpression(), response);
 	}
 
-	private String gererImpressionCourrierDelaiDeclarationPM(long idDelai, long idDeclaration, AbstractEditionDelaiDeclarationPMView.TypeImpression typeImpression) {
+	private String gererImpressionCourrierDelaiDeclarationPM(long idDelai, long idDeclaration,
+	                                                         AbstractEditionDelaiDeclarationPMView.TypeImpression typeImpression,
+	                                                         HttpServletResponse response) throws EditiqueException, IOException {
 		if (typeImpression != null) {
-			// TODO impression du document, en local ou pas...
-			Flash.error("L'impression du document n'est pas encore implémentée !", 5000);
-			return "redirect:/di/editer.do?id=" + idDeclaration;
+			if (typeImpression == AbstractEditionDelaiDeclarationPMView.TypeImpression.BATCH) {
+				manager.envoieImpressionBatchLettreDecisionDelaiPM(idDelai);
+				Flash.message("L'envoi automatique du document de décision a été programmé.");
+			}
+			else if (typeImpression == AbstractEditionDelaiDeclarationPMView.TypeImpression.LOCAL) {
+				final EditiqueResultat resultat = manager.envoieImpressionLocaleLettreDecisionDelaiPM(idDelai);
+				final RedirectEditDI inbox = new RedirectEditDI(idDeclaration);
+				final RedirectEditDIApresErreur erreur = new RedirectEditDIApresErreur(idDeclaration, messageSource);
+				return retourEditiqueControllerHelper.traiteRetourEditique(resultat, response, "delai", inbox, null, erreur);
+			}
+			else {
+				throw new IllegalArgumentException("Valeur non-supportée pour le type d'impression : " + typeImpression);
+			}
+		}
 
-//			// On imprime le document
-//			final EditiqueResultat resultat = manager.envoieImpressionLocalConfirmationDelai(id, idDelai);
-//
-//			final RedirectEditDI inbox = new RedirectEditDI(id);
-//			final RedirectEditDIApresErreur erreur = new RedirectEditDIApresErreur(id, messageSource);
-//			return retourEditiqueControllerHelper.traiteRetourEditique(resultat, response, "delai", inbox, null, erreur);
-		}
-		else {
-			// Pas de document -> on retourne à l'édition de la DI
-			return "redirect:/di/editer.do?id=" + idDeclaration;
-		}
+		// Pas de document directement en retour -> on retourne à l'édition de la DI
+		return "redirect:/di/editer.do?id=" + idDeclaration;
 	}
 
 	private void fixModel(final long id, final AbstractEditionDelaiDeclarationView view) {
