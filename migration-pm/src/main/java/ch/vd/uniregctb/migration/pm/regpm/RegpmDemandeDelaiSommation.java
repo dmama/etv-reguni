@@ -36,6 +36,8 @@ public class RegpmDemandeDelaiSommation extends RegpmEntity implements Comparabl
 	@Embeddable
 	public static class PK implements Serializable, Comparable<PK> {
 
+		private static final long serialVersionUID = -6152988955561528932L;
+
 		private Integer noSequence;
 		private Integer noSequenceDossierFiscal;
 		private Long idAssujettissement;
@@ -72,6 +74,15 @@ public class RegpmDemandeDelaiSommation extends RegpmEntity implements Comparabl
 			result = 31 * result + (noSequenceDossierFiscal != null ? noSequenceDossierFiscal.hashCode() : 0);
 			result = 31 * result + (idAssujettissement != null ? idAssujettissement.hashCode() : 0);
 			return result;
+		}
+
+		public PK() {
+		}
+
+		public PK(Integer noSequence, Integer noSequenceDossierFiscal, Long idAssujettissement) {
+			this.noSequence = noSequence;
+			this.noSequenceDossierFiscal = noSequenceDossierFiscal;
+			this.idAssujettissement = idAssujettissement;
 		}
 
 		@Column(name = "NO_SEQUENCE")

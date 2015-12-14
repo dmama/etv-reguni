@@ -32,6 +32,7 @@ import ch.vd.uniregctb.adresse.AdresseTiers;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePM;
+import ch.vd.uniregctb.declaration.DelaiDeclaration;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
@@ -57,6 +58,7 @@ import ch.vd.uniregctb.migration.pm.regpm.RegpmCodeCollectivite;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmCodeContribution;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmCommune;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmDecisionTaxation;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmDemandeDelaiSommation;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmDossierFiscal;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmEntity;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmEntreprise;
@@ -86,7 +88,9 @@ import ch.vd.uniregctb.migration.pm.regpm.RegpmSiegeEntreprise;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeAdresseEntreprise;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeAssujettissement;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeContribution;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeDemandeDelai;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeEtatDecisionTaxation;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeEtatDemandeDelai;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeEtatDossierFiscal;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeEtatEntreprise;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeEtatQuestionnaireSNC;
@@ -115,6 +119,7 @@ import ch.vd.uniregctb.tiers.RegimeFiscal;
 import ch.vd.uniregctb.tiers.Remarque;
 import ch.vd.uniregctb.tiers.TypeTiers;
 import ch.vd.uniregctb.type.DayMonth;
+import ch.vd.uniregctb.type.EtatDelaiDeclaration;
 import ch.vd.uniregctb.type.FormeJuridiqueEntreprise;
 import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.MotifFor;
@@ -269,6 +274,19 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		df.setPf(pf);
 		entreprise.getDossiersFiscaux().add(df);
 		return df;
+	}
+
+	static RegpmDemandeDelaiSommation addDemandeDelai(RegpmDossierFiscal dossierFiscal, RegpmTypeDemandeDelai type, RegpmTypeEtatDemandeDelai etat, RegDate dateDemande, RegDate dateEnvoiCourrier, RegDate dateDelaiAccorde) {
+		final RegpmDemandeDelaiSommation demande = new RegpmDemandeDelaiSommation();
+		demande.setId(new RegpmDemandeDelaiSommation.PK(computeNewSeqNo(dossierFiscal.getDemandesDelai(), d -> d.getId().getNoSequence()), dossierFiscal.getId().getSeqNo(), dossierFiscal.getId().getIdAssujettissement()));
+		assignMutationVisa(demande, REGPM_VISA, REGPM_MODIF);
+		demande.setType(type);
+		demande.setEtat(etat);
+		demande.setDateDemande(dateDemande);
+		demande.setDateEnvoi(dateEnvoiCourrier);
+		demande.setDelaiAccorde(dateDelaiAccorde);
+		dossierFiscal.getDemandesDelai().add(demande);
+		return demande;
 	}
 
 	static RegpmExerciceCommercial addExerciceCommercial(RegpmEntreprise entreprise, RegpmDossierFiscal dossierFiscal, RegDate dateDebut, RegDate dateFin) {
@@ -843,6 +861,134 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		Assert.assertEquals("Etat 'SOMMEE' migré au 24.03.2015.", textesDeclarations.get(3));
 		Assert.assertEquals("Etat 'ECHUE' migré au 13.05.2015.", textesDeclarations.get(4));
 		Assert.assertEquals("Etat 'RETOURNEE' migré au 02.07.2015.", textesDeclarations.get(5));
+	}
+
+	@Test
+	public void testMigrationDemandesDelai() throws Exception {
+
+		final int pf = 2014;
+		final long noEntreprise = 1234L;
+		final RegpmEntreprise e = buildEntreprise(noEntreprise);
+		final RegpmAssujettissement a = addAssujettissement(e, RegDate.get(2000, 1, 1), null, RegpmTypeAssujettissement.LIFD);
+		final RegpmDossierFiscal df = addDossierFiscal(e, a, pf, RegDate.get(pf, 7, 12), RegpmModeImposition.POST);
+		df.setDelaiRetour(RegDate.get(pf, 7, 22));
+		df.setDateEnvoiSommation(RegDate.get(pf, 10, 5));
+		addDemandeDelai(df, RegpmTypeDemandeDelai.AVANT_SOMMATION, RegpmTypeEtatDemandeDelai.REFUSEE, RegDate.get(pf, 8, 1), RegDate.get(pf, 8, 10), null);
+		addDemandeDelai(df, RegpmTypeDemandeDelai.AVANT_SOMMATION, RegpmTypeEtatDemandeDelai.DEMANDEE, RegDate.get(pf, 8, 11), null, null);
+		addDemandeDelai(df, RegpmTypeDemandeDelai.AVANT_SOMMATION, RegpmTypeEtatDemandeDelai.ACCORDEE, RegDate.get(pf, 8, 21), RegDate.get(pf, 9, 1), RegDate.get(pf, 9, 30));
+		addDemandeDelai(df, RegpmTypeDemandeDelai.APRES_SOMMATION, RegpmTypeEtatDemandeDelai.REFUSEE, RegDate.get(pf, 10, 21), RegDate.get(pf, 10, 22), null);
+		addDemandeDelai(df, RegpmTypeDemandeDelai.APRES_SOMMATION, RegpmTypeEtatDemandeDelai.DEMANDEE, RegDate.get(pf, 10, 25), null, null);
+		addDemandeDelai(df, RegpmTypeDemandeDelai.APRES_SOMMATION, RegpmTypeEtatDemandeDelai.ACCORDEE, RegDate.get(pf, 10, 31), RegDate.get(pf, 11, 3), RegDate.get(pf, 12, 25));
+		addExerciceCommercial(e, df, RegDate.get(pf - 1, 7, 1), RegDate.get(pf, 6, 30));
+
+		// on crée d'abord la PF en base
+		doInUniregTransaction(false, status -> {
+			addPeriodeFiscale(pf);
+			return null;
+		});
+
+		final MockGraphe graphe = new MockGraphe(Collections.singletonList(e),
+		                                         null,
+		                                         null);
+		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
+		final EntityLinkCollector linkCollector = new EntityLinkCollector();
+		final IdMapper idMapper = new IdMapper();
+		migrator.initMigrationResult(mr, idMapper);
+		migrate(e, migrator, mr, linkCollector, idMapper);
+
+		// vérification du contenu de la base
+		doInUniregTransaction(true, status -> {
+			final Entreprise entreprise = (Entreprise) getTiersDAO().get(noEntreprise);
+			Assert.assertNotNull(entreprise);
+
+			final List<Declaration> declarations = entreprise.getDeclarations().stream()
+					.peek(d -> Assert.assertFalse("annulée?", d.isAnnule()))
+					.peek(d -> Assert.assertEquals((Integer) 2014, d.getPeriode().getAnnee()))
+					.collect(Collectors.toList());
+			Assert.assertEquals(1, declarations.size());
+
+			final Declaration declaration = declarations.get(0);
+			Assert.assertNotNull(declaration);
+			Assert.assertEquals(DeclarationImpotOrdinairePM.class, declaration.getClass());
+
+			final List<DelaiDeclaration> delais = declaration.getDelais().stream()
+					.peek(d -> Assert.assertFalse("annulé?", d.isAnnule()))
+					.sorted(Comparator.comparing(DelaiDeclaration::getDateDemande))
+					.collect(Collectors.toList());
+			Assert.assertEquals(5, delais.size());      // les demande non-acceptées après sommation sont ignorées, mais pas les autres (ne pas oublier le délai initial !!)
+			{
+				final DelaiDeclaration delai = delais.get(0);
+				Assert.assertNotNull(delai);
+				Assert.assertFalse(delai.isAnnule());
+				Assert.assertEquals(RegDate.get(pf, 7, 12), delai.getDateDemande());
+				Assert.assertEquals(RegDate.get(pf, 7, 12), delai.getDateTraitement());
+				Assert.assertEquals(RegDate.get(pf, 7, 22), delai.getDelaiAccordeAu());
+				Assert.assertEquals(EtatDelaiDeclaration.ACCORDE, delai.getEtat());
+				Assert.assertFalse(delai.isSursis());
+				Assert.assertNull(delai.getCleArchivageCourrier());
+			}
+			{
+				final DelaiDeclaration delai = delais.get(1);
+				Assert.assertNotNull(delai);
+				Assert.assertFalse(delai.isAnnule());
+				Assert.assertEquals(RegDate.get(pf, 8, 1), delai.getDateDemande());
+				Assert.assertEquals(RegDate.get(pf, 8, 10), delai.getDateTraitement());
+				Assert.assertNull(delai.getDelaiAccordeAu());
+				Assert.assertEquals(EtatDelaiDeclaration.REFUSE, delai.getEtat());
+				Assert.assertFalse(delai.isSursis());
+				Assert.assertNull(delai.getCleArchivageCourrier());
+			}
+			{
+				final DelaiDeclaration delai = delais.get(2);
+				Assert.assertNotNull(delai);
+				Assert.assertFalse(delai.isAnnule());
+				Assert.assertEquals(RegDate.get(pf, 8, 11), delai.getDateDemande());
+				Assert.assertEquals(RegDate.get(pf, 8, 11), delai.getDateTraitement());
+				Assert.assertNull(delai.getDelaiAccordeAu());
+				Assert.assertEquals(EtatDelaiDeclaration.DEMANDE, delai.getEtat());
+				Assert.assertFalse(delai.isSursis());
+				Assert.assertNull(delai.getCleArchivageCourrier());
+			}
+			{
+				final DelaiDeclaration delai = delais.get(3);
+				Assert.assertNotNull(delai);
+				Assert.assertFalse(delai.isAnnule());
+				Assert.assertEquals(RegDate.get(pf, 8, 21), delai.getDateDemande());
+				Assert.assertEquals(RegDate.get(pf, 9, 1), delai.getDateTraitement());
+				Assert.assertEquals(RegDate.get(pf, 9, 30), delai.getDelaiAccordeAu());
+				Assert.assertEquals(EtatDelaiDeclaration.ACCORDE, delai.getEtat());
+				Assert.assertFalse(delai.isSursis());
+				Assert.assertNull(delai.getCleArchivageCourrier());
+			}
+			{
+				final DelaiDeclaration delai = delais.get(4);
+				Assert.assertNotNull(delai);
+				Assert.assertFalse(delai.isAnnule());
+				Assert.assertEquals(RegDate.get(pf, 10, 31), delai.getDateDemande());
+				Assert.assertEquals(RegDate.get(pf, 11, 3), delai.getDateTraitement());
+				Assert.assertEquals(RegDate.get(pf, 12, 25), delai.getDelaiAccordeAu());
+				Assert.assertEquals(EtatDelaiDeclaration.ACCORDE, delai.getEtat());
+				Assert.assertTrue(delai.isSursis());
+				Assert.assertNull(delai.getCleArchivageCourrier());
+			}
+
+		});
+
+		// vérification des messages dans le contexte "DECLARATIONS"
+		final List<MigrationResultCollector.Message> messages = mr.getMessages().get(LogCategory.DECLARATIONS);
+		Assert.assertNotNull(messages);
+		final List<String> textes = messages.stream().map(msg -> msg.text).collect(Collectors.toList());
+		Assert.assertEquals(10, textes.size());
+		Assert.assertEquals("Génération d'une déclaration sur la PF 2014 à partir des dates [01.07.2013 -> 30.06.2014] de l'exercice commercial 1 et du dossier fiscal correspondant.", textes.get(0));
+		Assert.assertEquals("Délai initial de retour fixé au 22.07.2014.", textes.get(1));
+		Assert.assertEquals("Génération d'un délai refusé (demande du 01.08.2014).", textes.get(2));
+		Assert.assertEquals("Génération d'un délai sans décision (demande du 11.08.2014).", textes.get(3));
+		Assert.assertEquals("Génération d'un délai accordé au 30.09.2014 (demande du 21.08.2014).", textes.get(4));
+		Assert.assertEquals("Demande de délai du 21.10.2014 ignorée car REFUSEE après sommation.", textes.get(5));
+		Assert.assertEquals("Demande de délai du 25.10.2014 ignorée car DEMANDEE après sommation.", textes.get(6));
+		Assert.assertEquals("Génération d'un sursis au 25.12.2014 (demande du 31.10.2014).", textes.get(7));
+		Assert.assertEquals("Etat 'EMISE' migré au 12.07.2014.", textes.get(8));
+		Assert.assertEquals("Etat 'SOMMEE' migré au 05.10.2014.", textes.get(9));
 	}
 
 	@Test

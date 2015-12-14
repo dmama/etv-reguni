@@ -56,6 +56,7 @@ import ch.vd.uniregctb.common.Duplicable;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.common.HibernateDateRangeEntity;
 import ch.vd.uniregctb.common.MovingWindow;
+import ch.vd.uniregctb.common.StringRenderer;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePM;
 import ch.vd.uniregctb.declaration.DelaiDeclaration;
@@ -159,6 +160,7 @@ import ch.vd.uniregctb.tiers.LocalizedDateRange;
 import ch.vd.uniregctb.tiers.MontantMonetaire;
 import ch.vd.uniregctb.tiers.RegimeFiscal;
 import ch.vd.uniregctb.tiers.Tiers;
+import ch.vd.uniregctb.type.EtatDelaiDeclaration;
 import ch.vd.uniregctb.type.FormeJuridiqueEntreprise;
 import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.MotifFor;
@@ -2845,7 +2847,9 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		if (dossier.getDelaiRetour() != null) {
 			final DelaiDeclaration delai = new DelaiDeclaration();
 			copyCreationMutation(dossier, delai);
-			delai.setConfirmationEcrite(false);
+			delai.setEtat(EtatDelaiDeclaration.ACCORDE);
+			delai.setSursis(false);
+			delai.setCleArchivageCourrier(null);
 			delai.setDateDemande(dossier.getDateEnvoi());           // TODO le délai initial est "demandé" à la date d'envoi, non ?
 			delai.setDateTraitement(dossier.getDateEnvoi());
 			delai.setDeclaration(di);
@@ -2857,44 +2861,67 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 			              String.format("Délai initial de retour fixé au %s.", StringRenderers.DATE_RENDERER.toString(dossier.getDelaiRetour())));
 		}
 
-		// fonction de conversion
-		final Function<RegpmDemandeDelaiSommation, DelaiDeclaration> mapper = regpm -> {
-			final DelaiDeclaration delai = new DelaiDeclaration();
-			copyCreationMutation(regpm, delai);
-			delai.setConfirmationEcrite(false);                             // les documents ne doivent pas être retrouvés dans Unireg, mais par le DPerm s'il le faut
-			delai.setDateDemande(regpm.getDateDemande());
-			delai.setDateTraitement(regpm.getDateReception());              // TODO on est sûr ce de mapping ?
-			delai.setDeclaration(di);
-			delai.setDelaiAccordeAu(regpm.getDelaiAccorde());
-			return delai;
+		final StringRenderer<DelaiDeclaration> delaiRenderer = delai -> {
+			switch (delai.getEtat()) {
+			case ACCORDE:
+				if (delai.isSursis()) {
+					return String.format("sursis au %s", StringRenderers.DATE_RENDERER.toString(delai.getDelaiAccordeAu()));
+				}
+				else {
+					return String.format("délai accordé au %s", StringRenderers.DATE_RENDERER.toString(delai.getDelaiAccordeAu()));
+				}
+			case REFUSE:
+				return "délai refusé";
+			case DEMANDE:
+				return "délai sans décision";
+			default:
+				throw new IllegalArgumentException("Etat non-supporté : " + delai.getEtat());
+			}
 		};
-
-		// TODO que fait-on avec les demandes de délai en cours d'analyse (etat = DEMANDEE) ?
-		// TODO que fait-on avec les demandes de délai refusées (etat = REFUSEE) ?
-		// TODO que fait-on avec les demandes de délai après sommation (type = APRES_SOMMATION) ?
 
 		// demandes ultérieures
 		dossier.getDemandesDelai().stream()
 				.filter(demande -> {
-					if (demande.getType() != RegpmTypeDemandeDelai.AVANT_SOMMATION) {
+					if (demande.getEtat() != RegpmTypeEtatDemandeDelai.ACCORDEE && demande.getType() == RegpmTypeDemandeDelai.APRES_SOMMATION) {
 						mr.addMessage(LogCategory.DECLARATIONS, LogLevel.WARN,
-						              String.format("Demande de délai 'après sommation' du %s ignorée.", StringRenderers.DATE_RENDERER.toString(demande.getDateDemande())));
+						              String.format("Demande de délai du %s ignorée car %s après sommation.",
+						                            StringRenderers.DATE_RENDERER.toString(demande.getDateDemande()),
+						                            demande.getEtat()));
 						return false;
 					}
 					return true;
 				})
-				.filter(demande -> {
-					if (demande.getEtat() != RegpmTypeEtatDemandeDelai.ACCORDEE) {
-						mr.addMessage(LogCategory.DECLARATIONS, LogLevel.WARN,
-						              String.format("Demande de délai non-accordée (%s) du %s ignorée.", demande.getEtat(), StringRenderers.DATE_RENDERER.toString(demande.getDateDemande())));
-						return false;
-					}
-					return true;
+				.map(regpm -> {
+					final DelaiDeclaration delai = new DelaiDeclaration();
+					copyCreationMutation(regpm, delai);
+					delai.setEtat(migrateEtatDelaiDeclaration(regpm));
+					delai.setSursis(regpm.getEtat() == RegpmTypeEtatDemandeDelai.ACCORDEE && regpm.getType() == RegpmTypeDemandeDelai.APRES_SOMMATION);
+					delai.setCleArchivageCourrier(null);
+					delai.setDateDemande(regpm.getDateDemande());
+					delai.setDateTraitement(regpm.getDateEnvoi() != null ? regpm.getDateEnvoi() : regpm.getDateDemande());              // TODO on est sûr ce de mapping ?
+					delai.setDeclaration(di);
+					delai.setDelaiAccordeAu(regpm.getEtat() == RegpmTypeEtatDemandeDelai.ACCORDEE ? regpm.getDelaiAccorde() : null);
+					return delai;
 				})
-				.map(mapper)
-				.peek(delai -> mr.addMessage(LogCategory.DECLARATIONS, LogLevel.INFO, String.format("Nouveau délai généré au %s.", StringRenderers.DATE_RENDERER.toString(delai.getDelaiAccordeAu()))))
+				.peek(delai -> mr.addMessage(LogCategory.DECLARATIONS, LogLevel.INFO,
+				                             String.format("Génération d'un %s (demande du %s).",
+				                                           delaiRenderer.toString(delai),
+				                                           StringRenderers.DATE_RENDERER.toString(delai.getDateDemande()))))
 				.forEach(delais::add);
 		return delais;
+	}
+
+	private static EtatDelaiDeclaration migrateEtatDelaiDeclaration(RegpmDemandeDelaiSommation demande) {
+		switch (demande.getEtat()) {
+		case ACCORDEE:
+			return EtatDelaiDeclaration.ACCORDE;
+		case DEMANDEE:
+			return EtatDelaiDeclaration.DEMANDE;
+		case REFUSEE:
+			return EtatDelaiDeclaration.REFUSE;
+		default:
+			throw new IllegalArgumentException("Etat de demande de délai non-supporté : " + demande.getEtat());
+		}
 	}
 
 	/**
