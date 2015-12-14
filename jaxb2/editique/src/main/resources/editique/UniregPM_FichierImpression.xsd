@@ -55,7 +55,7 @@
                     <xs:documentation>Sommation : CodDoc=U1P4, typDoc=CO</xs:documentation>
                 </xs:annotation>
             </xs:group>
-            <xs:group ref="accordDelaiApresSomamtion">
+            <xs:group ref="accordDelaiApresSommation">
                 <xs:annotation>
                     <xs:documentation>Accord Délai Après Sommation : CodDoc=U1P8, typDoc=CO</xs:documentation>
                 </xs:annotation>
@@ -213,9 +213,9 @@
             </xs:element>
         </xs:sequence>
     </xs:group>
-    <xs:group name="accordDelaiApresSomamtion">
+    <xs:group name="accordDelaiApresSommation">
         <xs:sequence>
-            <xs:element name="accordDelaiApresSomamtion">
+            <xs:element name="accordDelaiApresSommation">
                 <xs:complexType>
                     <xs:sequence>
                         <xs:element name="periodeFiscale" type="xs:gYear">
@@ -737,7 +737,7 @@ U1P8ADASROUTE
     </xs:simpleType>
     <xs:simpleType name="STypeDocIDFolders">
         <xs:restriction base="xs:string">
-            <xs:pattern value="[a-zA-Z0-9][a-zA-Z0-9_-é+\\{Blank}$]{0,39}"/>
+            <xs:pattern value="[a-zA-Z\d][a-zA-Z\d_\-\+\\ $]{0,39}"/>
         </xs:restriction>
     </xs:simpleType>
     <xs:simpleType name="STypeCodeFlyer">
