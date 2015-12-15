@@ -3920,6 +3920,46 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		});
 	}
 
+	@Test
+	public void testListeEntrepriseAvecNumeroIdeSansIdentifiantCantonal() throws Exception {
+
+		final long noEntreprise = 74984L;
+		final RegpmEntreprise e = EntrepriseMigratorTest.buildEntreprise(noEntreprise);
+		final RegDate dateDebut = RegDate.get(1900, 1, 1);
+		final RegDate dateDebutForSecondaire = RegDate.get(1917, 11, 6);
+
+		EntrepriseMigratorTest.addRaisonSociale(e, dateDebut, "Toto SA", null, null, true);
+		EntrepriseMigratorTest.addFormeJuridique(e, dateDebut, EntrepriseMigratorTest.createTypeFormeJuridique("S.A.", RegpmCategoriePersonneMorale.PM));
+		EntrepriseMigratorTest.addForPrincipalSuisse(e, dateDebut, RegpmTypeForPrincipal.SIEGE, Commune.ECHALLENS);
+		EntrepriseMigratorTest.addForSecondaire(e, dateDebutForSecondaire, null, Commune.LAUSANNE);
+		e.setNumeroIDE(EntrepriseMigratorTest.buildNumeroIDE("CHE", 105833454L));
+
+		final MockGraphe graphe = new MockGraphe(Collections.singletonList(e),
+		                                         null,
+		                                         null);
+
+		activityManager.setup(ALL_ACTIVE);
+
+		final LoggedMessages lms = grapheMigrator.migrate(graphe);
+		Assert.assertNotNull(lms);
+
+		// migration
+		doInUniregTransaction(true, status -> {
+			final Entreprise entreprise = uniregStore.getEntityFromDb(Entreprise.class, noEntreprise);
+			Assert.assertNotNull(entreprise);
+			Assert.assertNull(entreprise.getNumeroEntreprise());
+		});
+
+		// vérification des messages dans le contexte "IDE_SANS_NO_CANTONAL"
+		final Map<LogCategory, List<String>> messages = buildTextualMessages(lms);
+		Assert.assertTrue(messages.containsKey(LogCategory.IDE_SANS_NO_CANTONAL));
+		{
+			final List<String> msgs = messages.get(LogCategory.IDE_SANS_NO_CANTONAL);
+			Assert.assertEquals(1, msgs.size());
+			Assert.assertEquals("WARN;" + noEntreprise + ";Active;CHE105833454;;", msgs.get(0));
+		}
+	}
+
 	/**
 	 * Ceci est un test utile au debugging, on charge un graphe depuis un fichier sur disque (identique à ce que
 	 * l'on peut envoyer dans la vraie migration) et on tente la migration du graphe en question

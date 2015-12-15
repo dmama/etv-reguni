@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 import org.jetbrains.annotations.NotNull;
 
 import ch.vd.uniregctb.migration.pm.log.AdresseLoggedElement;
+import ch.vd.uniregctb.migration.pm.log.DifferencesDonneesCivilesLoggedElement;
 import ch.vd.uniregctb.migration.pm.log.EmptyValuedLoggedElement;
 import ch.vd.uniregctb.migration.pm.log.EntrepriseLoggedElement;
 import ch.vd.uniregctb.migration.pm.log.EtablissementLoggedElement;
@@ -66,6 +67,7 @@ public abstract class LogStructure {
 		final Function<LogContexte, LoggedElement> donneesRapportEntreTiers = new FromContextInformationSource(RapportEntreTiersLoggedElement.class, RapportEntreTiersLoggedElement.EMPTY);
 		final Function<LogContexte, LoggedElement> donneesForsOuvertsApresFinAssuj = new FromContextInformationSource(ForPrincipalOuvertApresFinAssujettissementLoggedElement.class, ForPrincipalOuvertApresFinAssujettissementLoggedElement.EMPTY);
 		final Function<LogContexte, LoggedElement> donneesForsIgnoresAucunAssujettissement = new FromContextInformationSource(ForFiscalIgnoreAbsenceAssujettissementLoggedElement.class, ForFiscalIgnoreAbsenceAssujettissementLoggedElement.EMPTY);
+		final Function<LogContexte, LoggedElement> donneesDifferencesDonneesCiviles = new FromContextInformationSource(DifferencesDonneesCivilesLoggedElement.class, DifferencesDonneesCivilesLoggedElement.EMPTY);
 
 		final Map<LogCategory, List<Function<LogContexte, LoggedElement>>> map = new EnumMap<>(LogCategory.class);
 
@@ -107,6 +109,12 @@ public abstract class LogStructure {
 
 		// Liste des fors ignorés/non-migrés/non-générés car aucun assujettissement n'était présent dans RegPM
 		map.put(LogCategory.FORS_IGNORES_AUCUN_ASSUJETTISSEMENT, Arrays.asList(donneesNiveau, donneesForsIgnoresAucunAssujettissement));
+
+		// Liste des entreprises avec un numéro IDE dans RegPM mais aucun numéro cantonal (= les échecs de l'appariement pour lesquels le travail avait été fait à l'OIPM)
+		map.put(LogCategory.IDE_SANS_NO_CANTONAL, Arrays.asList(donneesNiveau, donneesEntreprise));
+
+		// Liste des entreprises qui présentent des différences au niveau des données civiles entre RegPM et RCEnt
+		map.put(LogCategory.DIFFERENCES_DONNEES_CIVILES, Arrays.asList(donneesNiveau, donneesEntreprise, donneesDifferencesDonneesCiviles));
 
 		// Dans le log des erreurs, on ne met aucun contexte -> seul le texte sera affiché
 		map.put(LogCategory.EXCEPTIONS, Collections.singletonList(donneesNiveau));

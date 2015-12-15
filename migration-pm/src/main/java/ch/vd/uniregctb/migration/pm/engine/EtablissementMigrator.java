@@ -589,8 +589,9 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 		// données de base : enseigne, flag "principal" (aucun de ceux qui viennent de RegPM ne le sont, normalement)
 		unireg.setEnseigne(regpm.getEnseigne());
 		unireg.setRaisonSociale(extractRaisonSociale(regpm));
-		unireg.setNumeroEtablissement(null);        // TODO à voir avec RCEnt
+		unireg.setNumeroEtablissement(rcent != null ? rcent.getCantonalId() : null);
 
+		// TODO faut-il migrer des domiciles pour un établissement connu dans RCEnt?
 		// domiciles de l'établissement
 		migrateDomiciles(regpm, unireg, mr);
 

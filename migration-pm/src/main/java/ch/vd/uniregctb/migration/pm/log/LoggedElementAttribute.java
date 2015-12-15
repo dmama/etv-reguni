@@ -6,6 +6,7 @@ import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.uniregctb.common.StringRenderer;
 import ch.vd.uniregctb.migration.pm.engine.collector.EntityLinkCollector;
 import ch.vd.uniregctb.migration.pm.regpm.NumeroIDE;
@@ -31,7 +32,7 @@ public enum LoggedElementAttribute {
 
 	ENTREPRISE_ID(Number.class, Object::toString, LoggedElementHelper.<Number>exceptionThrowing()),
 	ENTREPRISE_FLAG_ACTIF(Boolean.class, b -> b ? "Active" : "Inactive", LoggedElementHelper.<Boolean>exceptionThrowing()),
-	ENTREPRISE_NO_IDE(NumeroIDE.class, no -> String.format("%s%d", no.getCategorie(), no.getNumero()), LoggedElementHelper.<NumeroIDE>exceptionThrowing()),
+	ENTREPRISE_NO_IDE(NumeroIDE.class, no -> String.format("%s%09d", no.getCategorie(), no.getNumero()), LoggedElementHelper.<NumeroIDE>exceptionThrowing()),
 	ENTREPRISE_ID_CANTONAL(Number.class, Object::toString, LoggedElementHelper.<Number>exceptionThrowing()),
 
 	//
@@ -95,6 +96,16 @@ public enum LoggedElementAttribute {
 	DATE_FIN_ASSUJETTISSEMENT(RegDate.class, RegDateHelper::dateToDashString, LoggedElementHelper.<RegDate>exceptionThrowing()),
 	MOTIF_RATTACHEMENT(MotifRattachement.class, Enum::name, LoggedElementHelper.<MotifRattachement>exceptionThrowing()),
 	TYPE_ENTITE(Class.class, Class::getSimpleName, LoggedElementHelper.<Class>exceptionThrowing()),
+
+	RAISON_SOCIALE_REGPM(String.class, s -> s, LoggedElementHelper.<String>exceptionThrowing()),
+	RAISON_SOCIALE_RCENT(String.class, s -> s, LoggedElementHelper.<String>exceptionThrowing()),
+	RAISON_SOCIALE_DIFF_FLAG(Boolean.class, b -> b ? "Différentes" : "Identiques", LoggedElementHelper.<Boolean>exceptionThrowing()),
+	FORME_JURIDIQUE_REGPM(String.class, s -> s, LoggedElementHelper.<String>exceptionThrowing()),
+	FORME_JURIDIQUE_RCENT(FormeLegale.class, Enum::name, LoggedElementHelper.<FormeLegale>exceptionThrowing()),
+	FORME_JURIDIQUE_DIFF_FLAG(Boolean.class, b -> b ? "Différentes" : "Identiques", LoggedElementHelper.<Boolean>exceptionThrowing()),
+	IDE_REGPM(NumeroIDE.class, no -> String.format("%s%d", no.getCategorie(), no.getNumero()), LoggedElementHelper.<NumeroIDE>exceptionThrowing()),
+	IDE_RCENT(String.class, s -> s, LoggedElementHelper.<String>exceptionThrowing()),
+	IDE_DIFF_FLAG(Boolean.class, b -> b ? "Différents" : "Identiques", LoggedElementHelper.<Boolean>exceptionThrowing()),
 
 	;
 

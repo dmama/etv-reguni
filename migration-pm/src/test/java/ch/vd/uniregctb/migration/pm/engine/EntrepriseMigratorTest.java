@@ -46,6 +46,7 @@ import ch.vd.uniregctb.migration.pm.engine.helpers.AdresseHelper;
 import ch.vd.uniregctb.migration.pm.engine.helpers.DoublonProvider;
 import ch.vd.uniregctb.migration.pm.log.LogCategory;
 import ch.vd.uniregctb.migration.pm.mapping.IdMapper;
+import ch.vd.uniregctb.migration.pm.regpm.NumeroIDE;
 import ch.vd.uniregctb.migration.pm.regpm.RaisonSociale;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmAdresseEntreprise;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmAllegementFiscal;
@@ -137,13 +138,20 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 	@Override
 	protected void onSetup() throws Exception {
 		super.onSetup();
-
-		final ActivityManager activityManager = entreprise -> true;         // tout le monde est actif dans ces tests
-
 		uniregStore = getBean(UniregStore.class, "uniregStore");
-		migrator = new EntrepriseMigrator(
+		migrator = buildMigrator(false);        // par défaut, on n'active pas RCEnt
+	}
+
+	/**
+	 * Méthode externalisée afin de permettre à un test ou l'autre de changer le comportement
+	 * vis-à-vis de RCEnt pour ses propres besoins
+	 * @param rcentEnabled <code>true</code> si RCEnt doit être intégré à la migration
+	 * @return une nouvelle instance de {@link EntrepriseMigrator}
+	 */
+	private EntrepriseMigrator buildMigrator(boolean rcentEnabled) {
+		return new EntrepriseMigrator(
 				uniregStore,
-				activityManager,
+				entreprise -> true,             // tout le monde est actif dans ces tests!!
 				getBean(ServiceInfrastructureService.class, "serviceInfrastructureService"),
 				getBean(BouclementService.class, "bouclementService"),
 				getBean(AssujettissementService.class, "assujettissementService"),
@@ -154,7 +162,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 				getBean(DatesParticulieres.class, "datesParticulieres"),
 				getBean(PeriodeImpositionService.class, "periodeImpositionService"),
 				getBean(ParametreAppService.class, "parametreAppService"),
-				false,
+				rcentEnabled,
 				getBean(DoublonProvider.class, "doublonProvider"));
 	}
 
@@ -199,6 +207,17 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		entreprise.setCriteresSegmentation(new HashSet<>());
 
 		return entreprise;
+	}
+
+	static NumeroIDE buildNumeroIDE(String categorie, long identifiant) {
+		Assert.assertEquals(3, categorie.length());
+		Assert.assertTrue(identifiant >= 0);
+		Assert.assertTrue(identifiant < 1000000000L);
+
+		final NumeroIDE numeroIDE = new NumeroIDE();
+		numeroIDE.setCategorie(categorie);
+		numeroIDE.setNumero(identifiant);
+		return numeroIDE;
 	}
 
 	static RaisonSociale addRaisonSociale(RegpmEntreprise entreprise, RegDate dateDebut, String ligne1, String ligne2, String ligne3, boolean last) {

@@ -2,7 +2,6 @@ package ch.vd.uniregctb.migration.pm.log;
 
 /**
  * Les différentes catégories (= formats de liste, donc a priori de listes différentes) des logs
- * TODO il y en a certainement d'autres encore
  */
 public enum LogCategory {
 
@@ -74,6 +73,16 @@ public enum LogCategory {
 	/**
 	 * Liste des fors fiscaux ignorés/non-repris/non-générés car aucun assujettissement ICC n'était présent dans RegPP
 	 */
-	FORS_IGNORES_AUCUN_ASSUJETTISSEMENT
+	FORS_IGNORES_AUCUN_ASSUJETTISSEMENT,
+
+	/**
+	 * Liste des entreprises qui ont un numéro IDE mais pas de numéro cantonal dans RegPM
+	 */
+	IDE_SANS_NO_CANTONAL,
+
+	/**
+	 * Liste des différences entre les raison sociale, forme juridique et numéro IDE entre les données de RegPM et les données issues de RCEnt
+	 */
+	DIFFERENCES_DONNEES_CIVILES
 
 }

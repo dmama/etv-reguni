@@ -35,6 +35,7 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ch.vd.evd0022.v1.LegalForm;
 import ch.vd.registre.base.date.CollatableDateRange;
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.DateRange;
@@ -86,6 +87,7 @@ import ch.vd.uniregctb.migration.pm.engine.helpers.AdresseHelper;
 import ch.vd.uniregctb.migration.pm.engine.helpers.DoublonProvider;
 import ch.vd.uniregctb.migration.pm.engine.helpers.StringRenderers;
 import ch.vd.uniregctb.migration.pm.extractor.IbanExtractor;
+import ch.vd.uniregctb.migration.pm.log.DifferencesDonneesCivilesLoggedElement;
 import ch.vd.uniregctb.migration.pm.log.ForFiscalIgnoreAbsenceAssujettissementLoggedElement;
 import ch.vd.uniregctb.migration.pm.log.ForPrincipalOuvertApresFinAssujettissementLoggedElement;
 import ch.vd.uniregctb.migration.pm.log.LogCategory;
@@ -138,6 +140,7 @@ import ch.vd.uniregctb.migration.pm.utils.DatesParticulieres;
 import ch.vd.uniregctb.migration.pm.utils.EntityKey;
 import ch.vd.uniregctb.migration.pm.utils.EntityWrapper;
 import ch.vd.uniregctb.migration.pm.utils.KeyedSupplier;
+import ch.vd.uniregctb.migration.pm.utils.OrganisationDataHelper;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.tiers.AllegementFiscal;
 import ch.vd.uniregctb.tiers.Bouclement;
@@ -1793,6 +1796,17 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 			final DonneesCiviles donneesCiviles = mr.getExtractedData(DonneesCiviles.class, moi.getKey());
 			if (donneesCiviles != null) {
 				rcent = donneesCiviles.getOrganisation();
+				unireg.setNumeroEntreprise(rcent.getCantonalId());
+			}
+		}
+
+		// les entreprises qui ont un numéro IDE dans RegPM mais pas de lien vers le civil doivent être listées
+		if (rcent == null && regpm.getNumeroIDE() != null) {
+			if (regpm.getNumeroCantonal() != null) {
+				mr.addMessage(LogCategory.IDE_SANS_NO_CANTONAL, LogLevel.WARN, "Numéro cantonal présent mais sans écho dans RCEnt.");
+			}
+			else {
+				mr.addMessage(LogCategory.IDE_SANS_NO_CANTONAL, LogLevel.WARN, StringUtils.EMPTY);
 			}
 		}
 
@@ -1821,7 +1835,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		migratePersonneContact(regpm.getContact1(), unireg, mr);
 		migrateNotes(regpm.getNotes(), unireg);
 		migrateFlagDoublon(regpm, unireg, mr);
-		migrateDonneesRegistreCommerce(regpm, unireg, mr);
+		migrateDonneesRegistreCommerce(regpm, rcent, unireg, mr);
 		migrateLIASF(regpm, unireg, mr);
 		logDroitPublicAPM(regpm, mr);
 
@@ -2015,34 +2029,71 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 	}
 
 	/**
+	 * @param one une instance
+	 * @param two une autre instance
+	 * @param equalator un prédicat de comparaison entre deux instances
+	 * @param <T> le type des instances comparées
+	 * @return <code>true</code> si les deux instances sont différentes (une instance <code>null</code> est toujours différente d'une instance non-<code>null</code>)
+	 */
+	private static <T> boolean areDifferent(@Nullable T one, @Nullable T two, BiPredicate<T, T> equalator) {
+		return one != two && (one == null || two == null || !equalator.test(one, two));
+	}
+
+	/**
 	 * Reconstitution des données du registre du commerce
 	 * @param regpm entreprise à migrer
+	 * @param rcent organisation connue de RCent
 	 * @param unireg entreprise destination de la migration dans Unireg
 	 * @param mr collecteur de messages de migration
 	 */
-	private static void migrateDonneesRegistreCommerce(RegpmEntreprise regpm, Entreprise unireg, MigrationResultProduction mr) {
+	private static void migrateDonneesRegistreCommerce(RegpmEntreprise regpm, @Nullable Organisation rcent, Entreprise unireg, MigrationResultContextManipulation mr) {
 
 		final EntityKey key = buildEntrepriseKey(regpm);
 		final RegDate dateFinActivite = mr.getExtractedData(DateFinActiviteData.class, key).date;
 
 		// historique des raisons sociales
-		final NavigableMap<RegDate, String> rsData = mr.getExtractedData(RaisonSocialeHistoData.class, key).histo;
+		final NavigableMap<RegDate, String> regpmRaisonsSociales = mr.getExtractedData(RaisonSocialeHistoData.class, key).histo;
 
 		// historique des capitaux
-		final NavigableMap<RegDate, BigDecimal> capitalData = mr.getExtractedData(CapitalHistoData.class, key).histo;
+		final NavigableMap<RegDate, BigDecimal> regpmCapitaux = mr.getExtractedData(CapitalHistoData.class, key).histo;
 
 		// historique des formes juridiques
-		final NavigableMap<RegDate, RegpmTypeFormeJuridique> formeJuridiqueData = mr.getExtractedData(FormeJuridiqueHistoData.class, key).histo;
+		final NavigableMap<RegDate, RegpmTypeFormeJuridique> regpmFormesJuridiques = mr.getExtractedData(FormeJuridiqueHistoData.class, key).histo;
 
 		// y a-t-il seulement un historique au niveau des formes juridiques et des raisons sociales ?
-		if (rsData.isEmpty() || formeJuridiqueData.isEmpty()) {
+		if (regpmRaisonsSociales.isEmpty() || regpmFormesJuridiques.isEmpty()) {
 			mr.addMessage(LogCategory.DONNEES_CIVILES_REGPM, LogLevel.ERROR,
 			              "Impossible de déterminer la date de début des données du registre du commerce (aucune donnée de raison sociale et/ou de forme juridique).");
 			return;
 		}
 
+		// [SIFISC-17198] comparaison des données RCEnt vs. RegPM
+		if (rcent != null) {
+			final String rcentFormeJuridique = Optional.ofNullable(OrganisationDataHelper.getLastValue(rcent.getLegalForm())).map(LegalForm::value).orElse(null);
+			final String rcentRaisonSociale = OrganisationDataHelper.getLastValue(rcent.getOrganisationName());
+			final String rcentNumeroIde = OrganisationDataHelper.getLastValue(OrganisationDataHelper.getNumerosIDE(rcent.getOrganisationIdentifiers()));
+
+			final String regpmFormeJuridique = Optional.ofNullable(toFormeJuridique(regpmFormesJuridiques.lastEntry().getValue().getCode())).map(FormeJuridiqueEntreprise::getCodeECH).orElse(null);
+			final String regpmRaisonSociale = regpmRaisonsSociales.lastEntry().getValue();
+			final String regpmNumeroIde = Optional.ofNullable(regpm.getNumeroIDE()).map(ide -> String.format("%s%09d", ide.getCategorie(), ide.getNumero())).orElse(null);
+
+			final boolean differenceFormeJuridique = areDifferent(rcentFormeJuridique, regpmFormeJuridique, Objects::equals);
+			final boolean differenceRaisonSociale = areDifferent(rcentRaisonSociale, regpmRaisonSociale, Objects::equals);
+			final boolean differenceNumeroIde = areDifferent(rcentNumeroIde, regpmNumeroIde, Objects::equals);
+
+			if (differenceFormeJuridique || differenceNumeroIde || differenceRaisonSociale) {
+				mr.pushContextValue(DifferencesDonneesCivilesLoggedElement.class, new DifferencesDonneesCivilesLoggedElement(regpm, rcent, differenceRaisonSociale, differenceFormeJuridique, differenceNumeroIde));
+				try {
+					mr.addMessage(LogCategory.DIFFERENCES_DONNEES_CIVILES, LogLevel.INFO, StringUtils.EMPTY);
+				}
+				finally {
+					mr.popContexteValue(DifferencesDonneesCivilesLoggedElement.class);
+				}
+			}
+		}
+
 		// l'historique commun entre les raisons sociales et les formes juridiques (seuls éléments obligatoires) commence là
-		final RegDate dateDebutHistoire = RegDateHelper.maximum(rsData.firstKey(), formeJuridiqueData.firstKey(), NullDateBehavior.EARLIEST);
+		final RegDate dateDebutHistoire = RegDateHelper.maximum(regpmRaisonsSociales.firstKey(), regpmFormesJuridiques.firstKey(), NullDateBehavior.EARLIEST);
 
 		// si on n'a aucune date de début... on peut éventuellement se rabattre sur la date de début des capitaux ou sur la date de début d'activité de l'entreprise
 		final RegDate dateDebutEffective;
@@ -2051,14 +2102,14 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 			if (dateDebutActivite != null) {
 				dateDebutEffective = dateDebutActivite;
 			}
-			else if (capitalData.isEmpty() || capitalData.firstKey() == null) {
+			else if (regpmCapitaux.isEmpty() || regpmCapitaux.firstKey() == null) {
 				mr.addMessage(LogCategory.DONNEES_CIVILES_REGPM, LogLevel.ERROR,
 				              "Impossible de déterminer la date de début des données du registre du commerce (aucune date de début connue pour la raison sociale, la forme juridique et d'éventuels capitaux).");
 				return;
 			}
 			else {
 				// on prend ça...
-				dateDebutEffective = capitalData.firstKey();
+				dateDebutEffective = regpmCapitaux.firstKey();
 				mr.addMessage(LogCategory.DONNEES_CIVILES_REGPM, LogLevel.INFO,
 				              String.format("Date de début effective des données 'civiles' reprise de la première donnée de capital : %s.",
 				                            StringRenderers.DATE_RENDERER.toString(dateDebutEffective)));
@@ -2069,7 +2120,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		}
 
 		// génération des données à sauvegarder
-		final Iterable<DonneesRegistreCommerce> donneesRC = () -> new DonneesRegistreCommerceGenerator(dateDebutEffective, dateFinActivite, rsData, formeJuridiqueData, mr);
+		final Iterable<DonneesRegistreCommerce> donneesRC = () -> new DonneesRegistreCommerceGenerator(dateDebutEffective, dateFinActivite, regpmRaisonsSociales, regpmFormesJuridiques, mr);
 		StreamSupport.stream(donneesRC.spliterator(), false)
 				.peek(rc -> mr.addMessage(LogCategory.DONNEES_CIVILES_REGPM, LogLevel.INFO,
 				                          String.format("Données 'civiles' migrées : sur la période %s, raison sociale (%s) et forme juridique (%s).",
@@ -2079,7 +2130,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 				.forEach(unireg::addDonneesRC);
 
 		// génération des données de capital (d'abord sans dates de fin...)
-		final List<CapitalEntreprise> capitaux = capitalData.entrySet().stream()
+		final List<CapitalEntreprise> capitaux = regpmCapitaux.entrySet().stream()
 				.filter(entry -> entry.getValue() != null)
 				.map(entry -> new CapitalEntreprise(entry.getKey(), null, new MontantMonetaire(entry.getValue().longValue(), MontantMonetaire.CHF)))
 				.collect(Collectors.toList());
