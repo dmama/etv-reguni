@@ -2748,7 +2748,7 @@ public abstract class EnumHelper {
 		case N_0106_SOCIETE_ANONYME:
 			return "S.A.";
 
-		case N_0107_SOCIETE_A_RESPONSABILITE_LIMITE:
+		case N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE:
 			return "S.A.R.L.";
 
 		case N_0104_SOCIETE_EN_COMMANDITE:
@@ -2826,7 +2826,7 @@ public abstract class EnumHelper {
 			return ch.vd.unireg.xml.party.taxpayer.v4.FullLegalForm.FOUNDATION;
 		case N_0106_SOCIETE_ANONYME:
 			return ch.vd.unireg.xml.party.taxpayer.v4.FullLegalForm.LIMITED_COMPANY;
-		case N_0107_SOCIETE_A_RESPONSABILITE_LIMITE:
+		case N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE:
 			return ch.vd.unireg.xml.party.taxpayer.v4.FullLegalForm.LIMITED_LIABILITY_COMPANY;
 		case N_0104_SOCIETE_EN_COMMANDITE:
 			return ch.vd.unireg.xml.party.taxpayer.v4.FullLegalForm.LIMITED_PARTNERSHIP;
@@ -2899,7 +2899,7 @@ public abstract class EnumHelper {
 		case N_0234_CORPORATION_DE_DROIT_PUBLIC_ENTREPRISE:
 		case N_0110_FONDATION:
 		case N_0106_SOCIETE_ANONYME:
-		case N_0107_SOCIETE_A_RESPONSABILITE_LIMITE:
+		case N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE:
 		case N_0104_SOCIETE_EN_COMMANDITE:
 		case N_0105_SOCIETE_EN_COMMANDITE_PAR_ACTIONS:
 		case N_0103_SOCIETE_NOM_COLLECTIF:

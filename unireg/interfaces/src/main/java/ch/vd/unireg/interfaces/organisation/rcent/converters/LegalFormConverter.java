@@ -27,7 +27,7 @@ public class LegalFormConverter extends BaseEnumConverter<LegalForm, FormeLegale
 		case N_0106_SOCIETE_ANONYME:
 			return FormeLegale.N_0106_SOCIETE_ANONYME;
 		case N_0107_SOCIETE_A_RESPONSABILITE_LIMITE:
-			return FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITE;
+			return FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE;
 		case N_0108_SOCIETE_COOPERATIVE:
 			return FormeLegale.N_0108_SOCIETE_COOPERATIVE;
 		case N_0109_ASSOCIATION:

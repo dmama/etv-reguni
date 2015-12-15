@@ -38,7 +38,7 @@ public class CategorieEntrepriseHelper {
 			/* Personne morale */
 			case N_0105_SOCIETE_EN_COMMANDITE_PAR_ACTIONS:
 			case N_0106_SOCIETE_ANONYME:
-			case N_0107_SOCIETE_A_RESPONSABILITE_LIMITE:
+			case N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE:
 			case N_0108_SOCIETE_COOPERATIVE:
 				return CategorieEntreprise.PM;
 			/* Association et Fondation */

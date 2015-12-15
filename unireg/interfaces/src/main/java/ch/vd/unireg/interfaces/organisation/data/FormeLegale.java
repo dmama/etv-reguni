@@ -17,7 +17,7 @@ public enum FormeLegale {
 	N_0104_SOCIETE_EN_COMMANDITE("0104", "Société en commandite"),
 	N_0105_SOCIETE_EN_COMMANDITE_PAR_ACTIONS("0105", "Société en commandite par actions"),
 	N_0106_SOCIETE_ANONYME("0106", "Société anonyme"),
-	N_0107_SOCIETE_A_RESPONSABILITE_LIMITE("0107", "Société à responsabilité limitée"),
+	N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE("0107", "Société à responsabilité limitée"),
 	N_0108_SOCIETE_COOPERATIVE("0108", "Société coopérative"),
 	N_0109_ASSOCIATION("0109", "Association"),
 	N_0110_FONDATION("0110", "Fondation"),

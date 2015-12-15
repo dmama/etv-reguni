@@ -111,7 +111,7 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 		serviceOrganisation.setUp(new MockServiceOrganisation() {
 			@Override
 			protected void init() {
-				final MockOrganisation org = addOrganisation(784512L, RegDate.get(1924, 4, 1), "Pittet Levage S.A.R.L", FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITE);
+				final MockOrganisation org = addOrganisation(784512L, RegDate.get(1924, 4, 1), "Pittet Levage S.A.R.L", FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE);
 				addNumeroIDE(org, "CHE123456788", RegDate.get(2009, 1, 1), null);
 
 				addOrganisation(MockOrganisationFactory.BCV);

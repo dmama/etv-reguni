@@ -95,7 +95,7 @@ public class CreateOrganisationStrategyTest extends AbstractEvenementOrganisatio
 		createAddOrg(101220106L, RegDate.get(2015, 9, 7), FormeLegale.N_0106_SOCIETE_ANONYME, Lausanne);
 		tryCreationEventAndCheckResult(101220106L, CreateEntreprisePM.class);
 
-		createAddOrg(101220107L, RegDate.get(2015, 9, 7), FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITE, Lausanne);
+		createAddOrg(101220107L, RegDate.get(2015, 9, 7), FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE, Lausanne);
 		tryCreationEventAndCheckResult(101220107L, CreateEntreprisePM.class);
 
 		createAddOrg(101220108L, RegDate.get(2015, 9, 7), FormeLegale.N_0108_SOCIETE_COOPERATIVE, Lausanne);

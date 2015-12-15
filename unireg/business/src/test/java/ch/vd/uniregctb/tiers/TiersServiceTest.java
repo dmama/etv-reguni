@@ -9562,7 +9562,7 @@ debut PF                                                                        
 		serviceOrganisation.setUp(new MockServiceOrganisation() {
 			@Override
 			protected void init() {
-				final MockOrganisation org = addOrganisation(noOrganisation, dateDebut, "Turlututu SARL", FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITE);
+				final MockOrganisation org = addOrganisation(noOrganisation, dateDebut, "Turlututu SARL", FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE);
 				MockSiteOrganisationFactory.addSite(noSite, org, dateDebut, null, "Turlututu SARL", true,
 				                                    TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Aubonne.getNoOFS(),
 				                                    StatusRC.INSCRIT, StatusInscriptionRC.ACTIF, StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.SITE,

@@ -3569,7 +3569,7 @@ public class AdresseServiceTest extends BusinessTest {
 		serviceOrganisation.setUp(new MockServiceOrganisation() {
 			@Override
 			protected void init() {
-				final MockOrganisation ent = addOrganisation(noOrganisation, date(1970, 7, 1), "Ma Petite Entreprise", FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITE);
+				final MockOrganisation ent = addOrganisation(noOrganisation, date(1970, 7, 1), "Ma Petite Entreprise", FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE);
 
 				// adresses courriers
 				addAdresse(ent, TypeAdresseCivil.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, date(1980, 1, 1), date(1987, 12, 11));

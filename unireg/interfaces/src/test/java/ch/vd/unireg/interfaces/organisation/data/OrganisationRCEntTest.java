@@ -41,7 +41,7 @@ public class OrganisationRCEntTest {
 				.addAutreIdentifiant(OrganisationConstants.CLE_IDE, RegDate.get(2015, 4, 29), null, "CHE543257199")
 				.addAutreIdentifiant("CH.RC", RegDate.get(2015, 4, 29), null, "CHE123456199")
 
-				.addFormeLegale(RegDate.get(2015, 4, 29), RegDate.get(2015, 5, 29), FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITE)
+				.addFormeLegale(RegDate.get(2015, 4, 29), RegDate.get(2015, 5, 29), FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE)
 				.addFormeLegale(RegDate.get(2015, 5, 30), null, FormeLegale.N_0106_SOCIETE_ANONYME)
 
 				.addSite(101072613L, RegDate.get(2015, 4, 29), null, 101072613L)
@@ -255,7 +255,7 @@ public class OrganisationRCEntTest {
 
 	@Test
 	public void testGetFormeLegale() throws Exception {
-		Assert.assertEquals(FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITE, organisation.getFormeLegale(RegDate.get(2015, 5, 1)));
+		Assert.assertEquals(FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE, organisation.getFormeLegale(RegDate.get(2015, 5, 1)));
 		Assert.assertEquals(FormeLegale.N_0106_SOCIETE_ANONYME, organisation.getFormeLegale(RegDate.get(2015, 6, 10)));
 	}
 
