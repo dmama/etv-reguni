@@ -58,7 +58,8 @@ import ch.vd.uniregctb.common.AuthenticationHelper;
 		"classpath:spring/migration.xml",
 		"classpath:spring/services.xml",
 		"classpath:spring/ut-database.xml",
-		"classpath:spring/ut-properties.xml"
+		"classpath:spring/ut-properties.xml",
+		"classpath:spring/ut-services.xml"
 })
 public abstract class AbstractSpringTest implements ApplicationContextAware {
 

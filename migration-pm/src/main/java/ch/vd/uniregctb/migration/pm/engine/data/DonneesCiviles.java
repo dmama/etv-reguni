@@ -1,7 +1,7 @@
 package ch.vd.uniregctb.migration.pm.engine.data;
 
-import ch.vd.uniregctb.adapter.rcent.model.Organisation;
-import ch.vd.uniregctb.adapter.rcent.model.OrganisationLocation;
+import ch.vd.unireg.interfaces.organisation.data.Organisation;
+import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 
 /**
  * Container des données civiles retrouvées dans RCEnt pour une organisation et/ou un établissement (= location)
@@ -9,11 +9,11 @@ import ch.vd.uniregctb.adapter.rcent.model.OrganisationLocation;
 public class DonneesCiviles {
 
 	private final Organisation organisation;
-	private final OrganisationLocation location;
+	private final SiteOrganisation site;
 
-	public DonneesCiviles(Organisation organisation, OrganisationLocation location) {
+	public DonneesCiviles(Organisation organisation, SiteOrganisation site) {
 		this.organisation = organisation;
-		this.location = location;
+		this.site = site;
 	}
 
 	public DonneesCiviles(Organisation organisation) {
@@ -24,7 +24,7 @@ public class DonneesCiviles {
 		return organisation;
 	}
 
-	public OrganisationLocation getLocation() {
-		return location;
+	public SiteOrganisation getSite() {
+		return site;
 	}
 }

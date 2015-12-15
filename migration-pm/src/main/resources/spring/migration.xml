@@ -61,7 +61,7 @@
 	<bean id="entrepriseMigrator" class="ch.vd.uniregctb.migration.pm.engine.EntrepriseMigrator" parent="entityMigrator">
         <constructor-arg name="bouclementService" ref="bouclementService"/>
 		<constructor-arg name="assujettissementService" ref="assujettissementService"/>
-        <constructor-arg name="rcentAdapter" ref="rcEntAdapter"/>
+        <constructor-arg name="organisationService" ref="serviceOrganisationService"/>
 		<constructor-arg name="periodeImpositionService" ref="periodeImpositionService"/>
 		<constructor-arg name="parametreAppService" ref="parametreAppService"/>
 		<constructor-arg name="doublonProvider" ref="doublonProvider"/>
@@ -69,7 +69,7 @@
 	</bean>
 
 	<bean id="etablissementMigrator" class="ch.vd.uniregctb.migration.pm.engine.EtablissementMigrator" parent="entityMigrator">
-        <constructor-arg name="rcentAdapter" ref="rcEntAdapter"/>
+        <constructor-arg name="organisationService" ref="serviceOrganisationService"/>
 		<constructor-arg name="rcentEnabled" value="${rcent.enabled}"/>
 	</bean>
 

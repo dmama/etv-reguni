@@ -12,7 +12,7 @@ import java.util.stream.Stream;
 
 import org.jetbrains.annotations.NotNull;
 
-import ch.vd.uniregctb.adapter.rcent.model.Organisation;
+import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmEntreprise;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmFormeJuridique;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeFormeJuridique;
@@ -51,13 +51,13 @@ public class DifferencesDonneesCivilesLoggedElement implements LoggedElement {
 
 		final Map<LoggedElementAttribute, Object> map = new EnumMap<>(LoggedElementAttribute.class);
 		LoggedElementHelper.addValue(map, LoggedElementAttribute.RAISON_SOCIALE_REGPM, raisonSocialeRegpm);
-		LoggedElementHelper.addValue(map, LoggedElementAttribute.RAISON_SOCIALE_RCENT, OrganisationDataHelper.getLastValue(rcent.getOrganisationName()));
+		LoggedElementHelper.addValue(map, LoggedElementAttribute.RAISON_SOCIALE_RCENT, OrganisationDataHelper.getLastValue(rcent.getNom()));
 		LoggedElementHelper.addValue(map, LoggedElementAttribute.RAISON_SOCIALE_DIFF_FLAG, raisonSocialeDifferente);
 		LoggedElementHelper.addValue(map, LoggedElementAttribute.FORME_JURIDIQUE_REGPM, formeJuridiqueRegpm);
-		LoggedElementHelper.addValue(map, LoggedElementAttribute.FORME_JURIDIQUE_RCENT, OrganisationDataHelper.getLastValue(rcent.getLegalForm()));
+		LoggedElementHelper.addValue(map, LoggedElementAttribute.FORME_JURIDIQUE_RCENT, OrganisationDataHelper.getLastValue(rcent.getFormeLegale()));
 		LoggedElementHelper.addValue(map, LoggedElementAttribute.FORME_JURIDIQUE_DIFF_FLAG, formeJuridiqueDifferente);
 		LoggedElementHelper.addValue(map, LoggedElementAttribute.IDE_REGPM, regpm.getNumeroIDE());
-		LoggedElementHelper.addValue(map, LoggedElementAttribute.IDE_RCENT, OrganisationDataHelper.getLastValue(OrganisationDataHelper.getNumerosIDE(rcent.getOrganisationIdentifiers())));
+		LoggedElementHelper.addValue(map, LoggedElementAttribute.IDE_RCENT, OrganisationDataHelper.getLastValue(rcent.getNumeroIDE()));
 		LoggedElementHelper.addValue(map, LoggedElementAttribute.IDE_DIFF_FLAG, ideDifferent);
 		return Collections.unmodifiableMap(map);
 	}

@@ -35,7 +35,6 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ch.vd.evd0022.v1.LegalForm;
 import ch.vd.registre.base.date.CollatableDateRange;
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.DateRange;
@@ -48,8 +47,8 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.common.NomPrenom;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.infra.data.Pays;
-import ch.vd.uniregctb.adapter.rcent.model.Organisation;
-import ch.vd.uniregctb.adapter.rcent.service.RCEntAdapter;
+import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
+import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.uniregctb.adresse.AdresseTiers;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.CollectionsUtils;
@@ -68,6 +67,7 @@ import ch.vd.uniregctb.declaration.EtatDeclarationRetournee;
 import ch.vd.uniregctb.declaration.EtatDeclarationSommee;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
+import ch.vd.uniregctb.interfaces.service.ServiceOrganisationService;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementException;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImposition;
@@ -182,7 +182,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 	private final AssujettissementService assujettissementService;
 	private final PeriodeImpositionService periodeImpositionService;
 	private final ParametreAppService parametreAppService;
-	private final RCEntAdapter rcentAdapter;
+	private final ServiceOrganisationService organisationService;
 	private final boolean rcentEnabled;
 	private final DoublonProvider doublonProvider;
 
@@ -191,7 +191,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 	                          ServiceInfrastructureService infraService,
 	                          BouclementService bouclementService,
 	                          AssujettissementService assujettissementService,
-	                          RCEntAdapter rcentAdapter,
+	                          ServiceOrganisationService organisationService,
 	                          AdresseHelper adresseHelper,
 	                          FusionCommunesProvider fusionCommunesProvider,
 	                          FractionsCommuneProvider fractionsCommuneProvider,
@@ -203,7 +203,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		super(uniregStore, activityManager, infraService, fusionCommunesProvider, fractionsCommuneProvider, datesParticulieres, adresseHelper);
 		this.bouclementService = bouclementService;
 		this.assujettissementService = assujettissementService;
-		this.rcentAdapter = rcentAdapter;
+		this.organisationService = organisationService;
 		this.periodeImpositionService = periodeImpositionService;
 		this.parametreAppService = parametreAppService;
 		this.rcentEnabled = rcentEnabled;
@@ -1148,12 +1148,12 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 			final Long idCantonal = e.getNumeroCantonal();
 			if (idCantonal == null) {
 				final LogLevel logLevel = activityManager.isActive(e) ? LogLevel.ERROR : LogLevel.INFO;
-				mr.addMessage(LogCategory.SUIVI, logLevel, "Pas de numéro cantonal assigné, pas de lien vers le civil.");
+				mr.addMessage(LogCategory.SUIVI, logLevel, "Pas de numéro cantonal assigné sur l'entreprise, pas de lien vers le civil.");
 				return null;
 			}
 
 			try {
-				final Organisation org = rcentAdapter.getOrganisation(idCantonal);
+				final Organisation org = organisationService.getOrganisationHistory(idCantonal);
 				if (org != null) {
 					return new DonneesCiviles(org);
 				}
@@ -1796,7 +1796,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 			final DonneesCiviles donneesCiviles = mr.getExtractedData(DonneesCiviles.class, moi.getKey());
 			if (donneesCiviles != null) {
 				rcent = donneesCiviles.getOrganisation();
-				unireg.setNumeroEntreprise(rcent.getCantonalId());
+				unireg.setNumeroEntreprise(rcent.getNumeroOrganisation());
 			}
 		}
 
@@ -2069,9 +2069,9 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 
 		// [SIFISC-17198] comparaison des données RCEnt vs. RegPM
 		if (rcent != null) {
-			final String rcentFormeJuridique = Optional.ofNullable(OrganisationDataHelper.getLastValue(rcent.getLegalForm())).map(LegalForm::value).orElse(null);
-			final String rcentRaisonSociale = OrganisationDataHelper.getLastValue(rcent.getOrganisationName());
-			final String rcentNumeroIde = OrganisationDataHelper.getLastValue(OrganisationDataHelper.getNumerosIDE(rcent.getOrganisationIdentifiers()));
+			final String rcentFormeJuridique = Optional.ofNullable(OrganisationDataHelper.getLastValue(rcent.getFormeLegale())).map(FormeLegale::getCode).orElse(null);
+			final String rcentRaisonSociale = OrganisationDataHelper.getLastValue(rcent.getNom());
+			final String rcentNumeroIde = OrganisationDataHelper.getLastValue(rcent.getNumeroIDE());
 
 			final String regpmFormeJuridique = Optional.ofNullable(toFormeJuridique(regpmFormesJuridiques.lastEntry().getValue().getCode())).map(FormeJuridiqueEntreprise::getCodeECH).orElse(null);
 			final String regpmRaisonSociale = regpmRaisonsSociales.lastEntry().getValue();

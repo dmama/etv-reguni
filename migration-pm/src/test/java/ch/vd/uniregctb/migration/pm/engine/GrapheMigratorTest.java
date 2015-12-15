@@ -33,7 +33,6 @@ import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.wsclient.rcpers.RcPersClient;
-import ch.vd.uniregctb.adapter.rcent.service.RCEntAdapter;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePM;
@@ -41,6 +40,7 @@ import ch.vd.uniregctb.declaration.EtatDeclaration;
 import ch.vd.uniregctb.declaration.EtatDeclarationEmise;
 import ch.vd.uniregctb.declaration.EtatDeclarationRetournee;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
+import ch.vd.uniregctb.interfaces.service.mock.ProxyServiceOrganisation;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionService;
 import ch.vd.uniregctb.metier.bouclement.BouclementService;
@@ -111,6 +111,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 	private ValidationService validationService;
 	private UniregStore uniregStore;
 	private ActivityManagerProxy activityManager;
+	private ProxyServiceOrganisation organisationService;
 
 	private static Map<LogCategory, List<String>> buildTextualMessages(LoggedMessages lms) {
 		final Map<LogCategory, List<LoggedMessage>> map = lms.asMap();
@@ -126,10 +127,10 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		super.onSetup();
 
 		uniregStore = getBean(UniregStore.class, "uniregStore");
+		organisationService = getBean(ProxyServiceOrganisation.class, "serviceOrganisationService");
 
 		final BouclementService bouclementService = getBean(BouclementService.class, "bouclementService");
 		final ServiceInfrastructureService infraService = getBean(ServiceInfrastructureService.class, "serviceInfrastructureService");
-		final RCEntAdapter rcentAdapter = getBean(RCEntAdapter.class, "rcEntAdapter");
 		final AdresseHelper adresseHelper = getBean(AdresseHelper.class, "adresseHelper");
 		final TiersDAO tiersDAO = getBean(TiersDAO.class, "tiersDAO");
 		final RcPersClient rcpersClient = getBean(RcPersClient.class, "rcpersClient");
@@ -147,9 +148,9 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		activityManager = new ActivityManagerProxy();
 
 		grapheMigrator = new GrapheMigrator();
-		grapheMigrator.setEntrepriseMigrator(new EntrepriseMigrator(uniregStore, activityManager, infraService, bouclementService, assujettissementService, rcentAdapter, adresseHelper,
+		grapheMigrator.setEntrepriseMigrator(new EntrepriseMigrator(uniregStore, activityManager, infraService, bouclementService, assujettissementService, organisationService, adresseHelper,
 		                                                            fusionCommunesProvider, fractionsCommuneProvider, datesParticulieres, periodeImpositionService, parametreAppService, rcentEnabled, doublonProvider));
-		grapheMigrator.setEtablissementMigrator(new EtablissementMigrator(uniregStore, activityManager, infraService, rcentAdapter, adresseHelper, fusionCommunesProvider, fractionsCommuneProvider, datesParticulieres, rcentEnabled));
+		grapheMigrator.setEtablissementMigrator(new EtablissementMigrator(uniregStore, activityManager, infraService, organisationService, adresseHelper, fusionCommunesProvider, fractionsCommuneProvider, datesParticulieres, rcentEnabled));
 		grapheMigrator.setIndividuMigrator(new IndividuMigrator(uniregStore, activityManager, infraService, tiersDAO, rcpersClient, nonHabitantIndex, adresseHelper, fusionCommunesProvider, fractionsCommuneProvider, datesParticulieres));
 		grapheMigrator.setUniregStore(uniregStore);
 		grapheMigrator.setUniregTransactionManager(getUniregTransactionManager());

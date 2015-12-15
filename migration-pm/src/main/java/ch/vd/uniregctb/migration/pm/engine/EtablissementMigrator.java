@@ -26,12 +26,12 @@ import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.adapter.rcent.model.Organisation;
-import ch.vd.uniregctb.adapter.rcent.model.OrganisationLocation;
-import ch.vd.uniregctb.adapter.rcent.service.RCEntAdapter;
+import ch.vd.unireg.interfaces.organisation.data.Organisation;
+import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 import ch.vd.uniregctb.adresse.AdresseTiers;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
+import ch.vd.uniregctb.interfaces.service.ServiceOrganisationService;
 import ch.vd.uniregctb.migration.pm.ConsolidationPhase;
 import ch.vd.uniregctb.migration.pm.MigrationResultContextManipulation;
 import ch.vd.uniregctb.migration.pm.MigrationResultInitialization;
@@ -71,14 +71,14 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(EtablissementMigrator.class);
 
-	private final RCEntAdapter rcentAdapter;
+	private final ServiceOrganisationService organisationService;
 	private final boolean rcentEnabled;
 
 	public EtablissementMigrator(UniregStore uniregStore, ActivityManager activityManager, ServiceInfrastructureService infraService,
-	                             RCEntAdapter rcentAdapter, AdresseHelper adresseHelper, FusionCommunesProvider fusionCommunesProvider, FractionsCommuneProvider fractionsCommuneProvider,
+	                             ServiceOrganisationService organisationService, AdresseHelper adresseHelper, FusionCommunesProvider fusionCommunesProvider, FractionsCommuneProvider fractionsCommuneProvider,
 	                             DatesParticulieres datesParticulieres, boolean rcentEnabled) {
 		super(uniregStore, activityManager, infraService, fusionCommunesProvider, fractionsCommuneProvider, datesParticulieres, adresseHelper);
-		this.rcentAdapter = rcentAdapter;
+		this.organisationService = organisationService;
 		this.rcentEnabled = rcentEnabled;
 	}
 
@@ -295,15 +295,15 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 	}
 
 	/**
-	 * Retrouve l'établissement (= location) dont l'ID cantonal est donné dans l'organisation fournie
+	 * Retrouve l'établissement (= site) dont l'ID cantonal est donné dans l'organisation fournie
 	 * @param org organisation complète
-	 * @param cantonalId identifiant cantonal de l'établissement (= location) recherché
+	 * @param cantonalId identifiant cantonal de l'établissement (= site) recherché
 	 * @return l'établissement recherché, s'il existe
 	 */
 	@Nullable
-	private static OrganisationLocation extractLocationInOrganisation(Organisation org, long cantonalId) {
-		return org.getLocationData().stream()
-				.filter(ld -> ld.getCantonalId() == cantonalId)
+	private static SiteOrganisation extractLocationInOrganisation(Organisation org, long cantonalId) {
+		return org.getDonneesSites().stream()
+				.filter(site -> site.getNumeroSite() == cantonalId)
 				.findAny()
 				.orElse(null);
 	}
@@ -342,7 +342,7 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 
 			final Long idCantonal = etablissement.getNumeroCantonal();
 			if (idCantonal == null) {
-				mr.addMessage(LogCategory.SUIVI, LogLevel.INFO, "Pas de numéro cantonal assigné, pas de lien vers le civil.");
+				mr.addMessage(LogCategory.SUIVI, LogLevel.INFO, "Pas de numéro cantonal assigné sur l'établissement, pas de lien vers le civil.");
 			}
 
 			// on recherche également par l'entreprise, si jamais...
@@ -355,7 +355,7 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 			}
 
 			// si j'ai un identifiant cantonal, je peux demander l'info à RCEnt
-			OrganisationLocation donneesEtablissement = null;
+			SiteOrganisation donneesEtablissement = null;
 			if (idCantonal != null) {
 
 				// si j'ai déjà les données de l'entreprise, je vais directement chercher les données là...
@@ -367,17 +367,16 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 					// (ici, on récupère sciemment une organisation partielle depuis le numéro d'établissement... et on rappelle ensuite pour
 					// obtenir l'entreprise complète)
 					try {
-						final Organisation partielle = rcentAdapter.getLocation(idCantonal);
-						if (partielle == null) {
+						final Long partielleCantonalId = organisationService.getOrganisationPourSite(idCantonal);
+						if (partielleCantonalId == null) {
 							mr.addMessage(LogCategory.SUIVI, LogLevel.ERROR, "Aucune donnée renvoyée par RCEnt pour cet établissement.");
 						}
 						else {
-							final long partielleCantonalId = partielle.getCantonalId();
 							mr.addMessage(LogCategory.SUIVI, LogLevel.INFO, String.format("Etablissement lié à l'organisation RCEnt %d.", partielleCantonalId));
 
 							// on a une organisation partielle -> il faut rappeler RCEnt pour avoir une vue complète
 							try {
-								final Organisation complete = rcentAdapter.getOrganisation(partielleCantonalId);
+								final Organisation complete = organisationService.getOrganisationHistory(partielleCantonalId);
 								if (complete == null) {
 									mr.addMessage(LogCategory.SUIVI, LogLevel.ERROR, String.format("Aucune donnée renvoyée par RCEnt pour l'organisation %d.", partielleCantonalId));
 								}
@@ -523,11 +522,11 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 		idMapper.addEtablissement(regpm, unireg);
 
 		// récupération des données dans RCEnt
-		OrganisationLocation rcent = null;
+		SiteOrganisation rcent = null;
 		if (rcentEnabled) {
 			final DonneesCiviles donneesCiviles = mr.getExtractedData(DonneesCiviles.class, moi.getKey());
 			if (donneesCiviles != null) {
-				rcent = donneesCiviles.getLocation();
+				rcent = donneesCiviles.getSite();
 			}
 		}
 
@@ -589,7 +588,7 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 		// données de base : enseigne, flag "principal" (aucun de ceux qui viennent de RegPM ne le sont, normalement)
 		unireg.setEnseigne(regpm.getEnseigne());
 		unireg.setRaisonSociale(extractRaisonSociale(regpm));
-		unireg.setNumeroEtablissement(rcent != null ? rcent.getCantonalId() : null);
+		unireg.setNumeroEtablissement(rcent != null ? rcent.getNumeroSite() : null);
 
 		// TODO faut-il migrer des domiciles pour un établissement connu dans RCEnt?
 		// domiciles de l'établissement

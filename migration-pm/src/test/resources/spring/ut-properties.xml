@@ -11,10 +11,4 @@
 		<property name="location" value="classpath:ut.properties"/>
 	</bean>
 
-	<bean id="rcentEnabled" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-		<property name="targetClass" value="java.lang.Boolean"/>
-		<property name="staticMethod" value="java.lang.Boolean.parseBoolean"/>
-		<property name="arguments" value="${rcent.enabled}"/>
-	</bean>
-
 </beans>

@@ -8,7 +8,7 @@ import java.util.Optional;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import ch.vd.registre.base.date.DateRangeHelper;
+import ch.vd.unireg.interfaces.organisation.data.DateRanged;
 import ch.vd.unireg.interfaces.organisation.data.OrganisationConstants;
 
 /**
@@ -22,12 +22,12 @@ public abstract class OrganisationDataHelper {
 	 * @return la dernière valeur du range (= la dernière valeur connue)
 	 */
 	@Nullable
-	public static <T> T getLastValue(List<DateRangeHelper.Ranged<T>> ranges) {
+	public static <T> T getLastValue(List<DateRanged<T>> ranges) {
 		if (ranges == null || ranges.isEmpty()) {
 			return null;
 		}
 
-		final DateRangeHelper.Ranged<T> range = ranges.get(ranges.size() - 1);
+		final DateRanged<T> range = ranges.get(ranges.size() - 1);
 		return range != null ? range.getPayload() : null;
 	}
 
@@ -37,7 +37,7 @@ public abstract class OrganisationDataHelper {
 	 * @return la liste des numéros IDE
 	 */
 	@NotNull
-	public static List<DateRangeHelper.Ranged<String>> getNumerosIDE(Map<String, List<DateRangeHelper.Ranged<String>>> identifiers) {
+	public static List<DateRanged<String>> getNumerosIDE(Map<String, List<DateRanged<String>>> identifiers) {
 		return Optional.ofNullable(identifiers.get(OrganisationConstants.CLE_IDE)).orElseGet(Collections::emptyList);
 	}
 }

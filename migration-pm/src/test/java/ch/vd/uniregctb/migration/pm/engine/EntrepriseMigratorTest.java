@@ -26,7 +26,6 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockTypeRegimeFiscal;
-import ch.vd.uniregctb.adapter.rcent.service.RCEntAdapter;
 import ch.vd.uniregctb.adresse.AdresseSuisse;
 import ch.vd.uniregctb.adresse.AdresseTiers;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
@@ -35,6 +34,7 @@ import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePM;
 import ch.vd.uniregctb.declaration.DelaiDeclaration;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
+import ch.vd.uniregctb.interfaces.service.mock.ProxyServiceOrganisation;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionService;
 import ch.vd.uniregctb.metier.bouclement.BouclementService;
@@ -134,11 +134,13 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 
 	private EntrepriseMigrator migrator;
 	private UniregStore uniregStore;
+	private ProxyServiceOrganisation organisationService;
 
 	@Override
 	protected void onSetup() throws Exception {
 		super.onSetup();
 		uniregStore = getBean(UniregStore.class, "uniregStore");
+		organisationService = getBean(ProxyServiceOrganisation.class, "serviceOrganisationService");
 		migrator = buildMigrator(false);        // par défaut, on n'active pas RCEnt
 	}
 
@@ -155,7 +157,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 				getBean(ServiceInfrastructureService.class, "serviceInfrastructureService"),
 				getBean(BouclementService.class, "bouclementService"),
 				getBean(AssujettissementService.class, "assujettissementService"),
-				getBean(RCEntAdapter.class, "rcEntAdapter"),
+				organisationService,
 				getBean(AdresseHelper.class, "adresseHelper"),
 				getBean(FusionCommunesProvider.class, "fusionCommunesProvider"),
 				getBean(FractionsCommuneProvider.class, "fractionsCommuneProvider"),

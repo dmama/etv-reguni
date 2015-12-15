@@ -51,11 +51,11 @@
 	</bean>
 
 	<bean id="serviceOrganisationRCEnt" class="ch.vd.unireg.interfaces.organisation.rcent.ServiceOrganisationRCEnt">
-		<constructor-arg ref="rcEntAdapter"/>
+		<constructor-arg ref="rcentAdapter"/>
 		<constructor-arg ref="serviceInfrastructureFidor"/>
 	</bean>
 
-	<bean id="rcEntAdapter" class="ch.vd.uniregctb.adapter.rcent.service.RCEntAdapter">
+	<bean id="rcentAdapter" class="ch.vd.uniregctb.adapter.rcent.service.RCEntAdapter">
 		<constructor-arg name="rcentClient" ref="rcentClient"/>
 		<constructor-arg name="historizer" ref="organisationHistorizer"/>
 	</bean>
