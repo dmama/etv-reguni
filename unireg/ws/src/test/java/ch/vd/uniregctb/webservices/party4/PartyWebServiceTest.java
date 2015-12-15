@@ -1861,7 +1861,7 @@ public class PartyWebServiceTest extends WebserviceTest {
 		serviceOrganisation.setUp(new MockServiceOrganisation() {
 			@Override
 			protected void init() {
-				addOrganisation(idOrganisation, date(1990, 4, 5), "Biscottes Duchmole", FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITE);
+				addOrganisation(idOrganisation, date(1990, 4, 5), "Biscottes Duchmole", FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE);
 			}
 		});
 
