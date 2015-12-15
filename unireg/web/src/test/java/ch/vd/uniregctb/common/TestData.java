@@ -1546,6 +1546,7 @@ public class TestData {
 		dd0.setEtat(EtatDelaiDeclaration.ACCORDE);
 		dd0.setDelaiAccordeAu(RegDate.get(2008, 4, 30));
 		dd0.setLogModifDate(new Timestamp(1199142000000L));
+		dd0.setDateTraitement(RegDate.get(2007, 4, 30));
 		dis0.addDelai(dd0);
 		dis0 = hibernateTemplate.merge(dis0);
 
@@ -1555,6 +1556,7 @@ public class TestData {
 		dd1.setEtat(EtatDelaiDeclaration.ACCORDE);
 		dd1.setDelaiAccordeAu(RegDate.get(2008, 7, 31));
 		dd1.setLogModifDate(new Timestamp(1199142000000L));
+		dd1.setDateTraitement(RegDate.get(2007, 4, 30));
 		dis1.addDelai(dd1);
 		dis1 = hibernateTemplate.merge(dis1);
 
@@ -1575,6 +1577,7 @@ public class TestData {
 		dd3.setEtat(EtatDelaiDeclaration.ACCORDE);
 		dd3.setDelaiAccordeAu(RegDate.get(2006, 3, 15));
 		dd3.setLogModifDate(new Timestamp(1199142000000L));
+		dd3.setDateTraitement(RegDate.get(2007, 4, 30));
 		dio0.addDelai(dd3);
 		dio0 = hibernateTemplate.merge(dio0);
 
@@ -1595,6 +1598,7 @@ public class TestData {
 		dd5.setEtat(EtatDelaiDeclaration.ACCORDE);
 		dd5.setDelaiAccordeAu(RegDate.get(2007, 3, 15));
 		dd5.setLogModifDate(new Timestamp(1199142000000L));
+		dd5.setDateTraitement(RegDate.get(2007, 4, 30));
 		dio1.addDelai(dd5);
 		dio1 = hibernateTemplate.merge(dio1);
 
@@ -1604,6 +1608,7 @@ public class TestData {
 		dd6.setEtat(EtatDelaiDeclaration.ACCORDE);
 		dd6.setDelaiAccordeAu(RegDate.get(2008, 3, 15));
 		dd6.setLogModifDate(new Timestamp(1199142000000L));
+		dd6.setDateTraitement(RegDate.get(2007, 4, 30));
 		dio2.addDelai(dd6);
 		dio2 = hibernateTemplate.merge(dio2);
 

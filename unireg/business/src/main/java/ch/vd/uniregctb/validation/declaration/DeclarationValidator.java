@@ -1,9 +1,13 @@
 package ch.vd.uniregctb.validation.declaration;
 
+import java.util.List;
+
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.declaration.Declaration;
+import ch.vd.uniregctb.declaration.DelaiDeclaration;
+import ch.vd.uniregctb.declaration.EtatDeclaration;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.validation.tiers.DateRangeEntityValidator;
 
@@ -25,6 +29,20 @@ public abstract class DeclarationValidator<T extends Declaration> extends DateRa
 			if (dateFin != null && periode != null && dateFin.year() != periode.getAnnee() && isDateFinForcementDansPeriode()) {
 				vr.addError(String.format("La date de fin [%s] doit correspondre avec l'année de la période [%d].",
 				                          RegDateHelper.dateToDisplayString(dateFin), periode.getAnnee()));
+			}
+
+			// il faut également valider les états et les délais
+			final List<EtatDeclaration> etats = declaration.getEtatsSorted();
+			if (etats != null) {
+				for (EtatDeclaration etat : declaration.getEtatsSorted()) {
+					vr.merge(getValidationService().validate(etat));
+				}
+			}
+			final List<DelaiDeclaration> delais = declaration.getDelaisSorted();
+			if (delais != null) {
+				for (DelaiDeclaration delai : declaration.getDelaisSorted()) {
+					vr.merge(getValidationService().validate(delai));
+				}
 			}
 		}
 		return vr;

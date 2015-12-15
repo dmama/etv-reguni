@@ -250,6 +250,7 @@ public class ListeRecapEditManagerImpl implements ListeRecapEditManager, Message
 		delaiView.setOldDelaiAccorde(lr.getDelaiAccordeAu());
 		delaiView.setAnnule(false);
 		delaiView.setDateDemande(RegDate.get());
+		delaiView.setDateTraitement(RegDate.get());
 
 		return delaiView;
 	}
