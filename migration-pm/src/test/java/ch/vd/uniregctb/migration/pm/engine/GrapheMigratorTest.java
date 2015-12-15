@@ -32,6 +32,9 @@ import ch.vd.registre.base.validation.ValidationMessage;
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
+import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
+import ch.vd.unireg.interfaces.organisation.mock.MockServiceOrganisation;
+import ch.vd.unireg.interfaces.organisation.mock.data.MockOrganisation;
 import ch.vd.unireg.wsclient.rcpers.RcPersClient;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.declaration.Declaration;
@@ -3985,6 +3988,114 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 			final List<String> msgs = messages.get(LogCategory.IDE_SANS_NO_CANTONAL);
 			Assert.assertEquals(1, msgs.size());
 			Assert.assertEquals("WARN;" + noEntreprise + ";Active;CHE105833454;;", msgs.get(0));
+		}
+	}
+
+	@Test
+	public void testEntrepriseAvecIdentifiantCantonalQuiNeCorrespondARien() throws Exception {
+
+		final long noEntreprise = 74984L;
+		final long noCantonalEntreprise = 42L;
+		final RegpmEntreprise e = EntrepriseMigratorTest.buildEntreprise(noEntreprise);
+		final RegDate dateDebut = RegDate.get(1900, 1, 1);
+		final RegDate dateDebutForSecondaire = RegDate.get(1917, 11, 6);
+
+		EntrepriseMigratorTest.addRaisonSociale(e, dateDebut, "Toto SA", null, null, true);
+		EntrepriseMigratorTest.addFormeJuridique(e, dateDebut, EntrepriseMigratorTest.createTypeFormeJuridique("S.A.", RegpmCategoriePersonneMorale.PM));
+		EntrepriseMigratorTest.addForPrincipalSuisse(e, dateDebut, RegpmTypeForPrincipal.SIEGE, Commune.ECHALLENS);
+		EntrepriseMigratorTest.addForSecondaire(e, dateDebutForSecondaire, null, Commune.LAUSANNE);
+		e.setNumeroCantonal(noCantonalEntreprise);
+
+		organisationService.setUp(new MockServiceOrganisation() {
+			@Override
+			protected void init() {
+				// rien du tout... et en particulier pas le 42...
+			}
+		});
+
+		final MockGraphe graphe = new MockGraphe(Collections.singletonList(e),
+		                                         null,
+		                                         null);
+
+		activityManager.setup(ALL_ACTIVE);
+
+		final LoggedMessages lms = grapheMigrator.migrate(graphe);
+		Assert.assertNotNull(lms);
+
+		// migration
+		doInUniregTransaction(true, status -> {
+			final Entreprise entreprise = uniregStore.getEntityFromDb(Entreprise.class, noEntreprise);
+			Assert.assertNotNull(entreprise);
+			Assert.assertNull(entreprise.getNumeroEntreprise());
+		});
+
+		// vérification des messages dans le contexte "SUIVI"
+		final Map<LogCategory, List<String>> messages = buildTextualMessages(lms);
+		{
+			final List<String> msgs = messages.get(LogCategory.SUIVI);
+			Assert.assertEquals(5, msgs.size());
+			Assert.assertEquals("WARN;" + noEntreprise + ";Active;;" + noCantonalEntreprise + ";;;;;;;;;;;;;L'entreprise n'existait pas dans Unireg avec ce numéro de contribuable.", msgs.get(0));
+			Assert.assertEquals("ERROR;" + noEntreprise + ";Active;;" + noCantonalEntreprise + ";;;;;;;;;;;;;Aucune donnée renvoyée par RCEnt pour cette entreprise.", msgs.get(1));
+			Assert.assertEquals("WARN;" + noEntreprise + ";Active;;" + noCantonalEntreprise + ";;;;;;;;;;;;;Entreprise sans exercice commercial ni date de bouclement futur.", msgs.get(2));
+			Assert.assertEquals("WARN;" + noEntreprise + ";Active;;" + noCantonalEntreprise + ";;;;;;;;;;;;;Pas de siège associé, pas d'établissement principal créé.", msgs.get(3));
+			Assert.assertEquals("INFO;" + noEntreprise + ";Active;;" + noCantonalEntreprise + ";;;;;;;;;;;;;Entreprise migrée : " + FormatNumeroHelper.numeroCTBToDisplay(noEntreprise) + ".", msgs.get(4));
+		}
+	}
+
+	@Test
+	public void testEntrepriseAvecIdentifiantCantonalMaisRaisonSocialeDifferente() throws Exception {
+
+		final long noEntreprise = 74984L;
+		final long noCantonalEntreprise = 42L;
+		final RegpmEntreprise e = EntrepriseMigratorTest.buildEntreprise(noEntreprise);
+		final RegDate dateDebut = RegDate.get(1986, 1, 1);
+
+		EntrepriseMigratorTest.addRaisonSociale(e, dateDebut, "Toto SA", null, null, true);
+		EntrepriseMigratorTest.addFormeJuridique(e, dateDebut, EntrepriseMigratorTest.createTypeFormeJuridique("S.A.", RegpmCategoriePersonneMorale.PM));
+		EntrepriseMigratorTest.addForPrincipalSuisse(e, dateDebut, RegpmTypeForPrincipal.SIEGE, Commune.ECHALLENS);
+		EntrepriseMigratorTest.addAssujettissement(e, dateDebut, null, RegpmTypeAssujettissement.LILIC);
+		e.setNumeroCantonal(noCantonalEntreprise);
+		e.setNumeroIDE(EntrepriseMigratorTest.buildNumeroIDE("CHE", 123456788L));
+
+		organisationService.setUp(new MockServiceOrganisation() {
+			@Override
+			protected void init() {
+				final MockOrganisation org = addOrganisation(noCantonalEntreprise, RegDate.get(1924, 4, 1), "Pittet Levage S.A.R.L", FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE);
+				addNumeroIDE(org, "CHE123456788", RegDate.get(2009, 1, 1), null);
+			}
+		});
+
+		final MockGraphe graphe = new MockGraphe(Collections.singletonList(e),
+		                                         null,
+		                                         null);
+
+		activityManager.setup(ALL_ACTIVE);
+
+		final LoggedMessages lms = grapheMigrator.migrate(graphe);
+		Assert.assertNotNull(lms);
+
+		// migration
+		doInUniregTransaction(true, status -> {
+			final Entreprise entreprise = uniregStore.getEntityFromDb(Entreprise.class, noEntreprise);
+			Assert.assertNotNull(entreprise);
+			Assert.assertEquals((Long) noCantonalEntreprise, entreprise.getNumeroEntreprise());
+		});
+
+		final Map<LogCategory, List<String>> messages = buildTextualMessages(lms);
+		{
+			// vérification des messages dans le contexte "SUIVI"
+			final List<String> msgs = messages.get(LogCategory.SUIVI);
+			Assert.assertEquals(4, msgs.size());
+			Assert.assertEquals("WARN;" + noEntreprise + ";Active;CHE123456788;" + noCantonalEntreprise + ";;;;;;;;;;;;;L'entreprise n'existait pas dans Unireg avec ce numéro de contribuable.", msgs.get(0));
+			Assert.assertEquals("WARN;" + noEntreprise + ";Active;CHE123456788;" + noCantonalEntreprise + ";;;;;;;;;;;;;Entreprise sans exercice commercial ni date de bouclement futur.", msgs.get(1));
+			Assert.assertEquals("WARN;" + noEntreprise + ";Active;CHE123456788;" + noCantonalEntreprise + ";;;;;;;;;;;;;Pas de siège associé, pas d'établissement principal créé.", msgs.get(2));
+			Assert.assertEquals("INFO;" + noEntreprise + ";Active;CHE123456788;" + noCantonalEntreprise + ";;;;;;;;;;;;;Entreprise migrée : " + FormatNumeroHelper.numeroCTBToDisplay(noEntreprise) + ".", msgs.get(3));
+		}
+		// ... et dans la liste des différences
+		{
+			final List<String> msgs = messages.get(LogCategory.DIFFERENCES_DONNEES_CIVILES);
+			Assert.assertEquals(1, msgs.size());
+			Assert.assertEquals("INFO;" + noEntreprise + ";Active;CHE123456788;" + noCantonalEntreprise + ";Toto SA;Pittet Levage S.A.R.L;Différentes;S.A.;N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE;Différentes;CHE123456788;CHE123456788;Identiques;", msgs.get(0));
 		}
 	}
 
