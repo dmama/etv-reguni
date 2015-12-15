@@ -2,27 +2,6 @@
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
 
-	<bean id="rcPersClientRaw" class="ch.vd.unireg.wsclient.rcpers.RcPersClientImpl">
-		<property name="baseUrl" value="${extprop.webservice.rcpers.url}" />
-		<property name="username" value="${extprop.webservice.rcpers.username}" />
-		<property name="password" value="${extprop.webservice.rcpers.password}" />
-		<property name="peoplePath" value="${extprop.webservice.rcpers.peoplePath}" />
-		<property name="peopleByEventIdPath" value="${extprop.webservice.rcpers.peopleByEventIdPath}" />
-		<property name="peopleBySocialNumberPath" value="${extprop.webservice.rcpers.peopleBySocialNumberPath}" />
-		<property name="eventPath" value="${extprop.webservice.rcpers.eventPath}" />
-		<property name="searchPath" value="${extprop.webservice.rcpers.searchPath}" />
-		<property name="upiGetInfoPersonPath" value="${extprop.webservice.rcpers.upiGetInfoPersonPath}" />
-	</bean>
-
-	<bean id="rcPersClientTracing" class="ch.vd.uniregctb.wsclient.rcpers.RcPersClientTracing">
-		<property name="target" ref="rcPersClientRaw"/>
-		<property name="statsService" ref="statsService"/>
-	</bean>
-
-	<alias alias="rcPersClient" name="rcPersClientTracing"/>
-
-	<!-- Client RCEnt -->
-
 	<bean id="rcEntClientRaw" class="ch.vd.unireg.wsclient.rcent.RcEntClientImpl">
 		<property name="baseUrl" value="${extprop.webservice.rcent.url}"/>
 		<property name="username" value="${extprop.webservice.rcent.username}"/>
@@ -39,8 +18,8 @@
 				<value>eVD-0024-1-1.xsd</value>
 			</list>
 		</property>
-
 	</bean>
 
 	<alias alias="rcEntClient" name="rcEntClientRaw"/>
+
 </beans>
