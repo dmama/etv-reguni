@@ -179,7 +179,8 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 	private final AssujettissementService assujettissementService;
 	private final PeriodeImpositionService periodeImpositionService;
 	private final ParametreAppService parametreAppService;
-	private final RCEntAdapter rcEntAdapter;
+	private final RCEntAdapter rcentAdapter;
+	private final boolean rcentEnabled;
 	private final DoublonProvider doublonProvider;
 
 	public EntrepriseMigrator(UniregStore uniregStore,
@@ -187,20 +188,22 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 	                          ServiceInfrastructureService infraService,
 	                          BouclementService bouclementService,
 	                          AssujettissementService assujettissementService,
-	                          RCEntAdapter rcEntAdapter,
+	                          RCEntAdapter rcentAdapter,
 	                          AdresseHelper adresseHelper,
 	                          FusionCommunesProvider fusionCommunesProvider,
 	                          FractionsCommuneProvider fractionsCommuneProvider,
 	                          DatesParticulieres datesParticulieres,
 	                          PeriodeImpositionService periodeImpositionService,
 	                          ParametreAppService parametreAppService,
+	                          boolean rcentEnabled,
 	                          DoublonProvider doublonProvider) {
 		super(uniregStore, activityManager, infraService, fusionCommunesProvider, fractionsCommuneProvider, datesParticulieres, adresseHelper);
 		this.bouclementService = bouclementService;
 		this.assujettissementService = assujettissementService;
-		this.rcEntAdapter = rcEntAdapter;
+		this.rcentAdapter = rcentAdapter;
 		this.periodeImpositionService = periodeImpositionService;
 		this.parametreAppService = parametreAppService;
+		this.rcentEnabled = rcentEnabled;
 		this.doublonProvider = doublonProvider;
 	}
 
@@ -1147,7 +1150,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 			}
 
 			try {
-				final Organisation org = rcEntAdapter.getOrganisation(idCantonal);
+				final Organisation org = rcentAdapter.getOrganisation(idCantonal);
 				if (org != null) {
 					return new DonneesCiviles(org);
 				}
@@ -1786,8 +1789,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 
 		// Récupération des données civiles si elles existent
 		Organisation rcent = null;
-		// TODO à réactiver quand on se branchera vraiment sur RCEnt
-		if (false) {
+		if (rcentEnabled) {
 			final DonneesCiviles donneesCiviles = mr.getExtractedData(DonneesCiviles.class, moi.getKey());
 			if (donneesCiviles != null) {
 				rcent = donneesCiviles.getOrganisation();

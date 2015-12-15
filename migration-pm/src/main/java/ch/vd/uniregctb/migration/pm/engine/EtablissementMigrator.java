@@ -71,13 +71,15 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(EtablissementMigrator.class);
 
-	private final RCEntAdapter rcEntAdapter;
+	private final RCEntAdapter rcentAdapter;
+	private final boolean rcentEnabled;
 
 	public EtablissementMigrator(UniregStore uniregStore, ActivityManager activityManager, ServiceInfrastructureService infraService,
-	                             RCEntAdapter rcEntAdapter, AdresseHelper adresseHelper, FusionCommunesProvider fusionCommunesProvider, FractionsCommuneProvider fractionsCommuneProvider,
-	                             DatesParticulieres datesParticulieres) {
+	                             RCEntAdapter rcentAdapter, AdresseHelper adresseHelper, FusionCommunesProvider fusionCommunesProvider, FractionsCommuneProvider fractionsCommuneProvider,
+	                             DatesParticulieres datesParticulieres, boolean rcentEnabled) {
 		super(uniregStore, activityManager, infraService, fusionCommunesProvider, fractionsCommuneProvider, datesParticulieres, adresseHelper);
-		this.rcEntAdapter = rcEntAdapter;
+		this.rcentAdapter = rcentAdapter;
+		this.rcentEnabled = rcentEnabled;
 	}
 
 	private static final class DatesEtablissementsStables {
@@ -365,7 +367,7 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 					// (ici, on récupère sciemment une organisation partielle depuis le numéro d'établissement... et on rappelle ensuite pour
 					// obtenir l'entreprise complète)
 					try {
-						final Organisation partielle = rcEntAdapter.getLocation(idCantonal);
+						final Organisation partielle = rcentAdapter.getLocation(idCantonal);
 						if (partielle == null) {
 							mr.addMessage(LogCategory.SUIVI, LogLevel.ERROR, "Aucune donnée renvoyée par RCEnt pour cet établissement.");
 						}
@@ -375,7 +377,7 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 
 							// on a une organisation partielle -> il faut rappeler RCEnt pour avoir une vue complète
 							try {
-								final Organisation complete = rcEntAdapter.getOrganisation(partielleCantonalId);
+								final Organisation complete = rcentAdapter.getOrganisation(partielleCantonalId);
 								if (complete == null) {
 									mr.addMessage(LogCategory.SUIVI, LogLevel.ERROR, String.format("Aucune donnée renvoyée par RCEnt pour l'organisation %d.", partielleCantonalId));
 								}
@@ -487,7 +489,6 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 	 * @param idMapper mapper des identifiants regpm -> unireg
 	 */
 	private void doMigrateEtablissement(RegpmEtablissement regpm, MigrationResultContextManipulation mr, EntityLinkCollector linkCollector, IdMapping idMapper) {
-		// TODO à un moment, il faudra quand-même se demander comment cela se passe avec RCEnt, non ?
 
 		// Attention, il y a des cas où on ne doit pas aveuglément créer un établissement
 		// (quand l'établissement apparaît comme mandataire de deux entreprises présentes dans deux graphes distincts, par exemple,
@@ -520,6 +521,15 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 		// on crée forcément un nouvel établissement
 		final Etablissement unireg = uniregStore.saveEntityToDb(createEtablissement(regpm));
 		idMapper.addEtablissement(regpm, unireg);
+
+		// récupération des données dans RCEnt
+		OrganisationLocation rcent = null;
+		if (rcentEnabled) {
+			final DonneesCiviles donneesCiviles = mr.getExtractedData(DonneesCiviles.class, moi.getKey());
+			if (donneesCiviles != null) {
+				rcent = donneesCiviles.getLocation();
+			}
+		}
 
 		// les liens vers les individus (= activités indépendantes) doivent bien être pris en compte pour les mandataires, par exemple.
 		// en revanche, cela ne signifie pas que l'on doivent aller remplir les graphes de départ avec les établissements d'individus

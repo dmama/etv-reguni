@@ -72,7 +72,7 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 		final FractionsCommuneProvider fractionsCommuneProvider = getBean(FractionsCommuneProvider.class, "fractionsCommuneProvider");
 		final DatesParticulieres datesParticulieres = getBean(DatesParticulieres.class, "datesParticulieres");
 
-		migrator = new EtablissementMigrator(uniregStore, activityManager, infraService, rcEntAdapter, adresseHelper, fusionCommunesProvider, fractionsCommuneProvider, datesParticulieres);
+		migrator = new EtablissementMigrator(uniregStore, activityManager, infraService, rcEntAdapter, adresseHelper, fusionCommunesProvider, fractionsCommuneProvider, datesParticulieres, false);
 
 	}
 

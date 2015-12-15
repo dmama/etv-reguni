@@ -154,6 +154,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 				getBean(DatesParticulieres.class, "datesParticulieres"),
 				getBean(PeriodeImpositionService.class, "periodeImpositionService"),
 				getBean(ParametreAppService.class, "parametreAppService"),
+				false,
 				getBean(DoublonProvider.class, "doublonProvider"));
 	}
 
