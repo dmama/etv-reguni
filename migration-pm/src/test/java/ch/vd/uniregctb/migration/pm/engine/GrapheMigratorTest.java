@@ -4274,6 +4274,164 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		}
 	}
 
+	@Test
+	public void testEntrepriseEtEtablissementConnusAuCivil() throws Exception {
+
+		final long noEntreprise = 74984L;
+		final long noCantonalEntreprise = 42L;
+		final long noCantonalEtablissementPrincipal = 12L;
+		final long noEtablissementSecondaire = 53753L;
+		final long noCantonalEtablissementSecondaire = 432L;
+
+		final RegpmEntreprise e = EntrepriseMigratorTest.buildEntreprise(noEntreprise);
+		final RegDate dateDebut = RegDate.get(1986, 1, 1);
+		final RegDate dateChargementRCEnt = RegDate.get(2015, 8, 1);
+
+		EntrepriseMigratorTest.addRaisonSociale(e, dateDebut, "Toto SA", null, null, false);
+		EntrepriseMigratorTest.addFormeJuridique(e, dateDebut, EntrepriseMigratorTest.createTypeFormeJuridique("S.A.", RegpmCategoriePersonneMorale.PM));
+		EntrepriseMigratorTest.addCapital(e, dateDebut, 10000);
+		EntrepriseMigratorTest.addForPrincipalSuisse(e, dateDebut, RegpmTypeForPrincipal.SIEGE, Commune.ECHALLENS);
+		EntrepriseMigratorTest.addAssujettissement(e, dateDebut, null, RegpmTypeAssujettissement.LILIC);
+		EntrepriseMigratorTest.addSiegeSuisse(e, dateDebut, Commune.ECHALLENS);
+		e.setNumeroCantonal(noCantonalEntreprise);
+		e.setNumeroIDE(EntrepriseMigratorTest.buildNumeroIDE("CHE", 123456788L));
+
+		final RegpmEtablissement etb = EtablissementMigratorTest.buildEtablissement(noEtablissementSecondaire, e);
+		EtablissementMigratorTest.addDomicileEtablissement(etb, dateDebut, Commune.MORGES, false);
+		EtablissementMigratorTest.addEtablissementStable(etb, dateDebut, null);
+		etb.setNumeroCantonal(noCantonalEtablissementSecondaire);
+
+		organisationService.setUp(new MockServiceOrganisation() {
+			@Override
+			protected void init() {
+				final MockOrganisation org = addOrganisation(noCantonalEntreprise, dateChargementRCEnt, "Toto SA", FormeLegale.N_0106_SOCIETE_ANONYME);
+				addNumeroIDE(org, "CHE123456788", RegDate.get(2009, 1, 1), null);
+
+				final MockSiteOrganisation sitePrincipal = addSite(org, noCantonalEtablissementPrincipal, dateChargementRCEnt, null, new DonneesRCBuilder()
+						.addCapital(new Capital(dateChargementRCEnt, null, TypeDeCapital.CAPITAL_SOCIAL, MontantMonetaire.CHF, BigDecimal.valueOf(400000L), "répartition ??"))
+						.build());
+				sitePrincipal.addSiege(dateChargementRCEnt, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Echallens.getNoOFS());
+				sitePrincipal.changeTypeDeSite(dateChargementRCEnt, TypeDeSite.ETABLISSEMENT_PRINCIPAL);
+
+				final MockSiteOrganisation siteSecondaire = addSite(org, noCantonalEtablissementSecondaire, dateChargementRCEnt, null, null);
+				siteSecondaire.addSiege(dateChargementRCEnt, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Morges.getNoOFS());
+				siteSecondaire.changeTypeDeSite(dateChargementRCEnt, TypeDeSite.ETABLISSEMENT_SECONDAIRE);
+			}
+		});
+
+		final MockGraphe graphe = new MockGraphe(Collections.singletonList(e),
+		                                         Collections.singletonList(etb),
+		                                         null);
+
+		activityManager.setup(ALL_ACTIVE);
+
+		final LoggedMessages lms = grapheMigrator.migrate(graphe);
+		Assert.assertNotNull(lms);
+
+		// récupération des numéros de contribuables des établissements créés
+		final MutableLong idEtablissementPrincipalRegPM = new MutableLong();
+		final MutableLong idEtablissementPrincipalRCEnt = new MutableLong();
+		final MutableLong idEtablissementSecondaire = new MutableLong();
+
+		// vérification des données en base
+		doInUniregTransaction(true, status -> {
+
+			// récupère les établissements dans le base de données, indexés par identifiant cantonal
+			final Map<Long, Etablissement> etablissementByIdCantonal = uniregStore.getEntitiesFromDb(Etablissement.class, null).stream()
+					.collect(Collectors.toMap(Etablissement::getNumeroEtablissement, Function.identity()));
+			Assert.assertEquals(3, etablissementByIdCantonal.size());
+
+			{
+				final Etablissement etablissement = etablissementByIdCantonal.get(noCantonalEtablissementPrincipal);
+				Assert.assertNotNull(etablissement);
+				Assert.assertFalse(etablissement.isAnnule());
+				Assert.assertEquals(0, etablissement.getDomiciles().size());
+
+				final ActiviteEconomique ae = (ActiviteEconomique) etablissement.getRapportsObjet().iterator().next();
+				Assert.assertNotNull(ae);
+				Assert.assertTrue(ae.isPrincipal());
+				Assert.assertEquals(dateChargementRCEnt, ae.getDateDebut());
+				Assert.assertNull(ae.getDateFin());
+
+				idEtablissementPrincipalRCEnt.setValue(etablissement.getNumero());
+			}
+			{
+				final Etablissement etablissement = etablissementByIdCantonal.get(noCantonalEtablissementSecondaire);
+				Assert.assertNotNull(etablissement);
+				Assert.assertFalse(etablissement.isAnnule());
+
+				final List<DomicileEtablissement> domiciles = etablissement.getSortedDomiciles(true);
+				Assert.assertNotNull(domiciles);
+				Assert.assertEquals(1, domiciles.size());
+				{
+					final DomicileEtablissement dom = domiciles.get(0);
+					Assert.assertNotNull(dom);
+					Assert.assertFalse(dom.isAnnule());
+					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, dom.getTypeAutoriteFiscale());
+					Assert.assertEquals((Integer) MockCommune.Morges.getNoOFS(), dom.getNumeroOfsAutoriteFiscale());
+					Assert.assertEquals(dateDebut, dom.getDateDebut());
+					Assert.assertEquals(dateChargementRCEnt.getOneDayBefore(), dom.getDateFin());
+				}
+
+				final ActiviteEconomique ae = (ActiviteEconomique) etablissement.getRapportsObjet().iterator().next();
+				Assert.assertNotNull(ae);
+				Assert.assertFalse(ae.isPrincipal());
+				Assert.assertEquals(dateDebut, ae.getDateDebut());
+				Assert.assertNull(ae.getDateFin());     // la date du rapport est donnée seulement par les dates d'établissement stable, pas par les données RCEnt // TODO ok avec ça ?
+
+				idEtablissementSecondaire.setValue(etablissement.getNumero());
+			}
+			{
+				final Etablissement etablissement = etablissementByIdCantonal.get(null);
+				Assert.assertNotNull(etablissement);
+				Assert.assertFalse(etablissement.isAnnule());
+
+				final List<DomicileEtablissement> domiciles = etablissement.getSortedDomiciles(true);
+				Assert.assertNotNull(domiciles);
+				Assert.assertEquals(1, domiciles.size());
+				{
+					final DomicileEtablissement dom = domiciles.get(0);
+					Assert.assertNotNull(dom);
+					Assert.assertFalse(dom.isAnnule());
+					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, dom.getTypeAutoriteFiscale());
+					Assert.assertEquals((Integer) MockCommune.Echallens.getNoOFS(), dom.getNumeroOfsAutoriteFiscale());
+					Assert.assertEquals(dateDebut, dom.getDateDebut());
+					Assert.assertEquals(dateChargementRCEnt.getOneDayBefore(), dom.getDateFin());
+				}
+
+				final ActiviteEconomique ae = (ActiviteEconomique) etablissement.getRapportsObjet().iterator().next();
+				Assert.assertNotNull(ae);
+				Assert.assertTrue(ae.isPrincipal());
+				Assert.assertEquals(dateDebut, ae.getDateDebut());
+				Assert.assertEquals(dateChargementRCEnt.getOneDayBefore(), ae.getDateFin());
+
+				idEtablissementPrincipalRegPM.setValue(etablissement.getNumero());
+			}
+		});
+
+		final Map<LogCategory, List<String>> messages = buildTextualMessages(lms);
+		{
+			// vérification des messages dans le contexte "SUIVI"
+			final List<String> msgs = messages.get(LogCategory.SUIVI);
+			Assert.assertEquals(8, msgs.size());
+			Assert.assertEquals("INFO;" + noEntreprise + ";Active;CHE123456788;" + noCantonalEntreprise + ";" + noEtablissementSecondaire + ";" + idEtablissementSecondaire.longValue() + ";;" + noCantonalEtablissementSecondaire + ";" + noEntreprise + ";;;;;;;;Etablissement migré : " + FormatNumeroHelper.numeroCTBToDisplay(idEtablissementSecondaire.longValue()) + ".", msgs.get(0));
+			Assert.assertEquals("WARN;" + noEntreprise + ";Active;CHE123456788;" + noCantonalEntreprise + ";;;;;;;;;;;;;L'entreprise n'existait pas dans Unireg avec ce numéro de contribuable.", msgs.get(1));
+			Assert.assertEquals("WARN;" + noEntreprise + ";Active;CHE123456788;" + noCantonalEntreprise + ";;;;;;;;;;;;;Entreprise sans exercice commercial ni date de bouclement futur.", msgs.get(2));
+			Assert.assertEquals("INFO;" + noEntreprise + ";Active;CHE123456788;" + noCantonalEntreprise + ";;;;;;;;;;;;;Etablissement principal " + FormatNumeroHelper.numeroCTBToDisplay(idEtablissementPrincipalRCEnt.longValue()) + " créé en liaison avec le site civil " + noCantonalEtablissementPrincipal + ".", msgs.get(3));
+			Assert.assertEquals("INFO;" + noEntreprise + ";Active;CHE123456788;" + noCantonalEntreprise + ";;;;;;;;;;;;;Données civiles d'établissement principal présentes dès le 01.08.2015, tous les sièges ultérieurs de RegPM seront ignorés.", msgs.get(4));
+			Assert.assertEquals("INFO;" + noEntreprise + ";Active;CHE123456788;" + noCantonalEntreprise + ";;;;;;;;;;;;;Création de l'établissement principal " + FormatNumeroHelper.numeroCTBToDisplay(idEtablissementPrincipalRegPM.longValue()) + ".", msgs.get(5));
+			Assert.assertEquals("INFO;" + noEntreprise + ";Active;CHE123456788;" + noCantonalEntreprise + ";;;;;;;;;;;;;Domicile de l'établissement principal " + FormatNumeroHelper.numeroCTBToDisplay(idEtablissementPrincipalRegPM.longValue()) + " : [01.01.1986 -> 31.07.2015] sur COMMUNE_OU_FRACTION_VD/5518.", msgs.get(6));
+			Assert.assertEquals("INFO;" + noEntreprise + ";Active;CHE123456788;" + noCantonalEntreprise + ";;;;;;;;;;;;;Entreprise migrée : " + FormatNumeroHelper.numeroCTBToDisplay(noEntreprise) + ".", msgs.get(7));
+		}
+		{
+			// vérification des messages dans le contexte "ETABLISSEMENTS"
+			final List<String> msgs = messages.get(LogCategory.ETABLISSEMENTS);
+			Assert.assertEquals(2, msgs.size());
+			Assert.assertEquals("INFO;" + noEtablissementSecondaire + ";" + idEtablissementSecondaire.longValue() + ";;" + noCantonalEtablissementSecondaire + ";" + noEntreprise + ";;Présence de données civiles dès le 01.08.2015, tous les domiciles stables ultérieurs de RegPM seront ignorés.", msgs.get(0));
+			Assert.assertEquals("INFO;" + noEtablissementSecondaire + ";" + idEtablissementSecondaire.longValue() + ";;" + noCantonalEtablissementSecondaire + ";" + noEntreprise + ";;Domicile : [01.01.1986 -> 31.07.2015] sur COMMUNE_OU_FRACTION_VD/5642.", msgs.get(1));
+		}
+	}
+
 	/**
 	 * Ceci est un test utile au debugging, on charge un graphe depuis un fichier sur disque (identique à ce que
 	 * l'on peut envoyer dans la vraie migration) et on tente la migration du graphe en question

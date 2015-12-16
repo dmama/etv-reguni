@@ -26,7 +26,9 @@ import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
+import ch.vd.unireg.interfaces.organisation.data.Siege;
 import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 import ch.vd.uniregctb.adresse.AdresseTiers;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
@@ -418,7 +420,6 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 			for (Map.Entry<RegpmCommune, List<DateRange>> communeData : data.communes.entrySet()) {
 
 				// TODO attention, dans le cas d'un individu, les fors secondaires peuvent devoir être créés sur un couple !!
-				// TODO l'établissement principal doit-il générer un for secondaire ?
 
 				final RegpmCommune commune = communeData.getKey();
 				if (commune.getCanton() != RegpmCanton.VD) {
@@ -590,9 +591,8 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 		unireg.setRaisonSociale(extractRaisonSociale(regpm));
 		unireg.setNumeroEtablissement(rcent != null ? rcent.getNumeroSite() : null);
 
-		// TODO faut-il migrer des domiciles pour un établissement connu dans RCEnt?
 		// domiciles de l'établissement
-		migrateDomiciles(regpm, unireg, mr);
+		migrateDomiciles(regpm, rcent, unireg, mr);
 
 		// log de suivi à la fin des opérations pour cet établissement
 		mr.addMessage(LogCategory.SUIVI, LogLevel.INFO, String.format("Etablissement migré : %s.", FormatNumeroHelper.numeroCTBToDisplay(unireg.getNumero())));
@@ -692,10 +692,29 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 	/**
 	 * Migration des domiciles de l'établissement
 	 * @param regpm établissement RegPM
+	 * @param rcent site correspondant connu dans RCEnt
 	 * @param unireg établissement Unireg
 	 * @param mr collecteur de messages de suivi
 	 */
-	private void migrateDomiciles(RegpmEtablissement regpm, Etablissement unireg, MigrationResultProduction mr) {
+	private void migrateDomiciles(RegpmEtablissement regpm, SiteOrganisation rcent, Etablissement unireg, MigrationResultProduction mr) {
+
+		// si le site est connu dans RCEnt, il faut reprendre les domiciles fiscaux seulement jusqu'à la date de la première donnée dans RCEnt
+		final RegDate dateFinValiditeDonneesFiscales;
+		if (rcent != null && rcent.getSieges() != null && !rcent.getSieges().isEmpty()) {
+			dateFinValiditeDonneesFiscales = rcent.getSieges().stream()
+					.map(Siege::getDateDebut)
+					.min(Comparator.naturalOrder())
+					.map(RegDate::getOneDayBefore)
+					.get();
+
+			mr.addMessage(LogCategory.ETABLISSEMENTS, LogLevel.INFO,
+			              String.format("Présence de données civiles dès le %s, tous les domiciles stables ultérieurs de RegPM seront ignorés.",
+			                            StringRenderers.DATE_RENDERER.toString(dateFinValiditeDonneesFiscales.getOneDayAfter())));
+		}
+		else {
+			dateFinValiditeDonneesFiscales = null;
+		}
+
 		// communes de l'établissement (dans la base du mainframe au 12.05.2015, aucun établissement n'a plus d'un domicile non-rectifié)
 		// -> en fait, il n'y a toujours qu'au plus une seule commune...
 
@@ -703,13 +722,14 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 		final List<DomicileEtablissement> mappes = domicilesStables.entrySet().stream()
 				.map(entry -> entry.getValue().stream().map(range -> Pair.of(entry.getKey(), range)))
 				.flatMap(Function.identity())
+				.filter(pair -> RegDateHelper.isAfterOrEqual(dateFinValiditeDonneesFiscales, pair.getRight().getDateDebut(), NullDateBehavior.LATEST))
 				.map(pair -> {
 					final RegpmCommune commune = pair.getLeft();
 					final DateRange range = pair.getRight();
 
 					final DomicileEtablissement domicile = new DomicileEtablissement();
 					domicile.setDateDebut(range.getDateDebut());
-					domicile.setDateFin(range.getDateFin());
+					domicile.setDateFin(RegDateHelper.minimum(range.getDateFin(), dateFinValiditeDonneesFiscales, NullDateBehavior.LATEST));
 
 					domicile.setTypeAutoriteFiscale(commune.getCanton() == RegpmCanton.VD ? TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD : TypeAutoriteFiscale.COMMUNE_HC);
 					domicile.setNumeroOfsAutoriteFiscale(NO_OFS_COMMUNE_EXTRACTOR.apply(commune));
@@ -722,7 +742,7 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 				.collect(Collectors.toList());
 
 		// log ou ajout des domiciles dans l'établissement...
-		if (mappes.isEmpty()) {
+		if (mappes.isEmpty() && dateFinValiditeDonneesFiscales == null) {
 			mr.addMessage(LogCategory.ETABLISSEMENTS, LogLevel.ERROR, "Etablissement sans domicile stable.");
 		}
 		else {
