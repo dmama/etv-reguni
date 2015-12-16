@@ -22,6 +22,7 @@ import ch.vd.uniregctb.tiers.TiersCriteria.TypeRecherche;
 import ch.vd.uniregctb.tiers.TiersCriteria.TypeRechercheForFiscal;
 import ch.vd.uniregctb.tiers.TiersCriteria.TypeRechercheLocalitePays;
 import ch.vd.uniregctb.type.ActionEvenementCivilEch;
+import ch.vd.uniregctb.type.CategorieEntreprise;
 import ch.vd.uniregctb.type.CategorieEtranger;
 import ch.vd.uniregctb.type.CategorieImpotSource;
 import ch.vd.uniregctb.type.EtatCivil;
@@ -29,6 +30,7 @@ import ch.vd.uniregctb.type.EtatDelaiDeclaration;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
 import ch.vd.uniregctb.type.EtatEvenementOrganisation;
 import ch.vd.uniregctb.type.FormeJuridique;
+import ch.vd.uniregctb.type.FormeJuridiqueEntreprise;
 import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.ModeCommunication;
 import ch.vd.uniregctb.type.ModeImposition;
@@ -675,5 +677,31 @@ public class TiersMapHelper extends CommonMapHelper {
 			mapEtatDelaiDeclaration = initMapEnum(ApplicationConfig.masterKeyEtatDelaiDeclaration, EtatDelaiDeclaration.class);
 		}
 		return mapEtatDelaiDeclaration;
+	}
+
+	/**
+	 * Initialise la map des formes juridiques
+	 *
+	 * @return une map
+	 */
+	public Map<String, String> getMapFormeJuridiqueEntreprise() {
+		final HashMap<String, String> map = new HashMap<>();
+		for (FormeJuridiqueEntreprise formeJuridiqueEntreprise : FormeJuridiqueEntreprise.values()) {
+			map.put(formeJuridiqueEntreprise.getCodeECH(), formeJuridiqueEntreprise.getLibellé());
+		}
+		return map;
+	}
+
+	/**
+	 * Initialise la map des catégories d'entreprises
+	 *
+	 * @return une map
+	 */
+	public Map<CategorieEntreprise, String> getMapCategoriesEntreprise() {
+		final HashMap<CategorieEntreprise, String> map = new HashMap<>();
+		for (CategorieEntreprise categorieEntreprise : CategorieEntreprise.values()) {
+			map.put(categorieEntreprise, categorieEntreprise.getLibelle());
+		}
+		return map;
 	}
 }

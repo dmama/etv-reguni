@@ -339,6 +339,22 @@ public class QueryConstructor {
 		}
 	}
 
+	private void addFormeJuridique(BooleanQuery fullQuery) throws IndexerException {
+
+		if (StringUtils.isNotBlank(criteria.getFormeJuridique())) {
+			final Query q = new TermQuery(new Term(TiersIndexableData.FORME_JURIDIQUE, criteria.getFormeJuridique()));
+			fullQuery.add(q, must);
+		}
+	}
+
+	private void addCategorieEntreprise(BooleanQuery fullQuery) throws IndexerException {
+
+		if (StringUtils.isNotBlank(criteria.getCategorieEntreprise())) {
+			final Query q = new TermQuery(new Term(TiersIndexableData.CATEGORIE_ENTREPRISE, criteria.getCategorieEntreprise()));
+			fullQuery.add(q, must);
+		}
+	}
+
 	public static void addLimitation(BooleanQuery fullQuery, TiersFilter filter) {
 		if (filter.getTypeVisualisation() == TypeVisualisation.LIMITEE) {
 			BooleanQuery query = new BooleanQuery();
@@ -458,6 +474,8 @@ public class QueryConstructor {
 			addDateNaissance(fullQuery);
 			addSexe(fullQuery);
 			addNatureJuridique(fullQuery);
+			addFormeJuridique(fullQuery);
+			addCategorieEntreprise(fullQuery);
 			addAnnule(fullQuery, criteria);
 			addActif(fullQuery, criteria);
 			addDebiteurInactif(fullQuery, criteria);

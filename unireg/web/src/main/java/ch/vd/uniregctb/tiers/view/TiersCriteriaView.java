@@ -25,6 +25,8 @@ public class TiersCriteriaView implements Serializable {
 	private Long numeroPremierePersonne;
 	private String forAll;
 	private String modeImpositionAsString;
+	private String formeJuridiqueAsString;
+	private String categorieEntrepriseAsString;
 
 	// Les critères utilisés pour la recherche
 	private String numeroFormatte;
@@ -166,6 +168,42 @@ public class TiersCriteriaView implements Serializable {
 
 	public void setFormeJuridique(String formeJuridique) {
 		criteria.setFormeJuridique(formeJuridique);
+	}
+
+	public String getFormeJuridiqueAsString() {
+		return formeJuridiqueAsString;
+	}
+
+	public void setFormeJuridiqueAsString(String formeJuridiqueAsString) {
+		if (!"TOUS".equals(formeJuridiqueAsString)) {
+			setFormeJuridique(formeJuridiqueAsString);
+		}
+		else {
+			setFormeJuridique(null);
+		}
+		this.formeJuridiqueAsString = formeJuridiqueAsString;
+	}
+
+	public String getCategorieEntreprise() {
+		return criteria.getCategorieEntreprise();
+	}
+
+	public void setCategorieEntreprise(String categorieEntreprise) {
+		criteria.setCategorieEntreprise(categorieEntreprise);
+	}
+
+	public String getCategorieEntrepriseAsString() {
+		return categorieEntrepriseAsString;
+	}
+
+	public void setCategorieEntrepriseAsString(String categorieEntrepriseAsString) {
+		if (!"TOUS".equals(categorieEntrepriseAsString)) {
+			setCategorieEntreprise(categorieEntrepriseAsString);
+		}
+		else {
+			setCategorieEntreprise(null);
+		}
+		this.categorieEntrepriseAsString = categorieEntrepriseAsString;
 	}
 
 	public String getLocaliteOuPays() {

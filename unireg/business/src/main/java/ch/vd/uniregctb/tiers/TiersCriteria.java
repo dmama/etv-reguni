@@ -196,6 +196,11 @@ public class TiersCriteria implements Serializable, TiersFilter {
 	private String formeJuridique;
 
 	/**
+	 * La catégorie d'entreprise découlant de la forme juridique
+	 */
+	private String categorieEntreprise;
+
+	/**
 	 * Numéro OFS du for
 	 */
 	private String noOfsFor;
@@ -270,6 +275,7 @@ public class TiersCriteria implements Serializable, TiersFilter {
 				&& StringUtils.isBlank(noOfsFor)
 				&& StringUtils.isBlank(noSymic)
 				&& StringUtils.isBlank(formeJuridique)
+				&& StringUtils.isBlank(categorieEntreprise)
 				&& modeImposition == null
 				&& categorieDebiteurIs == null
 				&& tiersActif == null
@@ -464,6 +470,14 @@ public class TiersCriteria implements Serializable, TiersFilter {
 	 */
 	public void setFormeJuridique(String formeJuridique) {
 		this.formeJuridique = formeJuridique;
+	}
+
+	public String getCategorieEntreprise() {
+		return categorieEntreprise;
+	}
+
+	public void setCategorieEntreprise(String categorieEntreprise) {
+		this.categorieEntreprise = categorieEntreprise;
 	}
 
 	public String getLocaliteOuPays() {

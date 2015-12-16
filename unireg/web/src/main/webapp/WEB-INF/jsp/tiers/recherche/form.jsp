@@ -154,6 +154,28 @@
 			</td>
 		</tr>
 		<tr class="<unireg:nextRowClass/>" >
+			<td width="25%"><fmt:message key="label.forme.juridique" />&nbsp;:</td>
+			<td width="25%">
+				<form:select path="formeJuridiqueAsString">
+					<form:option value="TOUS" ><fmt:message key="option.TOUS" /></form:option>
+					<form:options items="${formesJuridiques}"/>
+				</form:select>
+			</td>
+			<td width="25%">&nbsp;</td>
+			<td width="25%">&nbsp;</td>
+		</tr>
+		<tr class="<unireg:nextRowClass/>" >
+			<td width="25%"><fmt:message key="label.categorie.entreprise" />&nbsp;:</td>
+			<td width="25%">
+				<form:select path="categorieEntrepriseAsString">
+					<form:option value="TOUS" ><fmt:message key="option.TOUS" /></form:option>
+					<form:options items="${categoriesEntreprises}"/>
+				</form:select>
+			</td>
+			<td width="25%">&nbsp;</td>
+			<td width="25%">&nbsp;</td>
+		</tr>
+		<tr class="<unireg:nextRowClass/>" >
 			<td width="25%"><fmt:message key="label.numero.symic" />&nbsp;:</td>
 			<td width="25%">
 				<form:input  path="noSymic" id="noSymic" />

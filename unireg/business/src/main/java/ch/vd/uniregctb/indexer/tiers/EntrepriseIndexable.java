@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Set;
 
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
+import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.avatar.AvatarService;
@@ -13,10 +14,12 @@ import ch.vd.uniregctb.indexer.IndexerException;
 import ch.vd.uniregctb.indexer.IndexerFormatHelper;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.ServiceOrganisationService;
+import ch.vd.uniregctb.tiers.CategorieEntrepriseHelper;
 import ch.vd.uniregctb.tiers.DonneesRegistreCommerce;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.OrganisationNotFoundException;
 import ch.vd.uniregctb.tiers.TiersService;
+import ch.vd.uniregctb.type.FormeJuridiqueEntreprise;
 import ch.vd.uniregctb.type.NatureJuridique;
 
 public class EntrepriseIndexable extends ContribuableIndexable<Entreprise> {
@@ -66,6 +69,14 @@ public class EntrepriseIndexable extends ContribuableIndexable<Entreprise> {
 						data.addAutresNom(nomAdditionnel);
 				}
 			}
+			FormeLegale formeLegale = organisation.getFormeLegale(null);
+			if (formeLegale != null) {
+				data.setFormeJuridique(formeLegale.getCode());
+				data.setCategorieEntreprise(IndexerFormatHelper.enumToString(CategorieEntrepriseHelper.map(formeLegale)));
+			}
+			/*
+			 Cependant, les codes sont censés correspondre car il s'agit dans les deux cas des codes eCH à 2 ou 4 chiffres.
+			 */
 		}
 		else {
 			// ok, on prend tout ce qu'on a au fiscal
@@ -81,6 +92,14 @@ public class EntrepriseIndexable extends ContribuableIndexable<Entreprise> {
 			}
 			if (!donneesRC.isEmpty()) {
 				data.setNom1(donneesRC.get(donneesRC.size() - 1).getRaisonSociale());
+			}
+			// FIXME: voir remarque ci-dessus.
+			if (!donneesRC.isEmpty()) {
+				FormeJuridiqueEntreprise formeJuridique = donneesRC.get(donneesRC.size() - 1).getFormeJuridique();
+				if (formeJuridique != null) {
+					data.setFormeJuridique(formeJuridique.getCodeECH());
+					data.setCategorieEntreprise(IndexerFormatHelper.enumToString(CategorieEntrepriseHelper.map(formeJuridique)));
+				}
 			}
 		}
 	}

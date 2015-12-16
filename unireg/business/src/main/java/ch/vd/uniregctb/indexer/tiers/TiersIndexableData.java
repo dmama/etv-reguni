@@ -33,6 +33,8 @@ public class TiersIndexableData extends IndexableData {
 	public static final String NPA_COURRIER = "S_NPA_COURRIER";
 	public static final String NPA_TOUS = "S_NPA_TOUS";
 	public static final String NATURE_JURIDIQUE = "S_NATURE_JURIDIQUE"; // (PP ou PM)
+	public static final String FORME_JURIDIQUE = "S_FORME_JURIDIQUE";
+	public static final String CATEGORIE_ENTREPRISE = "S_CATEGORY_ENTREPRISE";
 	public static final String S_DATE_NAISSANCE = "S_DATE_NAISSANCE";
 	public static final String SEXE = "S_SEXE";
 	public static final String NAVS11 = "S_NAVS11";
@@ -82,6 +84,8 @@ public class TiersIndexableData extends IndexableData {
 	private String npaTous;
 	private String localiteEtPays;
 	private String natureJuridique;
+	private String formeJuridique;
+	private String categorieEntreprise;
 	private String navs11;
 	private String navs13;
 	private String ancienNumeroSourcier;
@@ -138,6 +142,8 @@ public class TiersIndexableData extends IndexableData {
 		addAnalyzedValue(d, TiersIndexableData.NPA_TOUS, npaTous);
 		addAnalyzedValue(d, TiersIndexableData.LOCALITE_PAYS, localiteEtPays);
 		addNotAnalyzedValue(d, TiersIndexableData.NATURE_JURIDIQUE, natureJuridique);
+		addNotAnalyzedValue(d, TiersIndexableData.FORME_JURIDIQUE, formeJuridique);
+		addNotAnalyzedValue(d, TiersIndexableData.CATEGORIE_ENTREPRISE, categorieEntreprise);
 		addAnalyzedValue(d, TiersIndexableData.NAVS11, navs11);
 		addAnalyzedValue(d, TiersIndexableData.NAVS13, navs13);
 		addNotAnalyzedValue(d, TiersIndexableData.ANCIEN_NUMERO_SOURCIER, ancienNumeroSourcier);
@@ -347,6 +353,22 @@ public class TiersIndexableData extends IndexableData {
 
 	public void setNatureJuridique(String natureJuridique) {
 		this.natureJuridique = natureJuridique;
+	}
+
+	public String getFormeJuridique() {
+		return formeJuridique;
+	}
+
+	public void setFormeJuridique(String formeJuridique) {
+		this.formeJuridique = formeJuridique;
+	}
+
+	public String getCategorieEntreprise() {
+		return categorieEntreprise;
+	}
+
+	public void setCategorieEntreprise(String categorieEntreprise) {
+		this.categorieEntreprise = categorieEntreprise;
 	}
 
 	public String getNavs11() {
