@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.migration.pm.engine;
 
 import java.io.File;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -32,9 +33,14 @@ import ch.vd.registre.base.validation.ValidationMessage;
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
+import ch.vd.unireg.interfaces.organisation.data.Capital;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
+import ch.vd.unireg.interfaces.organisation.data.TypeDeCapital;
+import ch.vd.unireg.interfaces.organisation.data.TypeDeSite;
+import ch.vd.unireg.interfaces.organisation.data.builder.DonneesRCBuilder;
 import ch.vd.unireg.interfaces.organisation.mock.MockServiceOrganisation;
 import ch.vd.unireg.interfaces.organisation.mock.data.MockOrganisation;
+import ch.vd.unireg.interfaces.organisation.mock.data.MockSiteOrganisation;
 import ch.vd.unireg.wsclient.rcpers.RcPersClient;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.declaration.Declaration;
@@ -89,6 +95,7 @@ import ch.vd.uniregctb.tiers.ForFiscalRevenuFortune;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
 import ch.vd.uniregctb.tiers.ForsParType;
 import ch.vd.uniregctb.tiers.Mandat;
+import ch.vd.uniregctb.tiers.MontantMonetaire;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
@@ -4096,6 +4103,127 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 			final List<String> msgs = messages.get(LogCategory.DIFFERENCES_DONNEES_CIVILES);
 			Assert.assertEquals(1, msgs.size());
 			Assert.assertEquals("INFO;" + noEntreprise + ";Active;CHE123456788;" + noCantonalEntreprise + ";Toto SA;Pittet Levage S.A.R.L;Différentes;S.A.;N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE;Différentes;CHE123456788;CHE123456788;Identiques;", msgs.get(0));
+		}
+	}
+
+	@Test
+	public void testEntrepriseAvecIdentifiantCantonalEtPasseFiscal() throws Exception {
+
+		final long noEntreprise = 74984L;
+		final long noCantonalEntreprise = 42L;
+		final long noCantonalEtablissementPrincipal = 12L;
+		final RegpmEntreprise e = EntrepriseMigratorTest.buildEntreprise(noEntreprise);
+		final RegDate dateDebut = RegDate.get(1986, 1, 1);
+		final RegDate dateChangementNom = dateDebut.addYears(5);
+		final RegDate dateChangementCapital = dateDebut.addYears(4);
+		final RegDate dateChargementRCEnt = RegDate.get(2015, 8, 1);
+
+		EntrepriseMigratorTest.addRaisonSociale(e, dateDebut, "Toto junior SARL", null, null, false);
+		EntrepriseMigratorTest.addRaisonSociale(e, dateChangementNom, "Toto SA", null, null, false);
+		EntrepriseMigratorTest.addRaisonSociale(e, dateChargementRCEnt, "Toto SA", "(Titi SA)", null, true);        // devrait être ignoré
+		EntrepriseMigratorTest.addFormeJuridique(e, dateDebut, EntrepriseMigratorTest.createTypeFormeJuridique("S.A.R.L.", RegpmCategoriePersonneMorale.PM));
+		EntrepriseMigratorTest.addFormeJuridique(e, dateChangementNom, EntrepriseMigratorTest.createTypeFormeJuridique("S.A.", RegpmCategoriePersonneMorale.PM));
+		EntrepriseMigratorTest.addCapital(e, dateDebut, 10000);
+		EntrepriseMigratorTest.addCapital(e, dateChangementCapital, 200000);
+		EntrepriseMigratorTest.addCapital(e, dateChargementRCEnt, 800000);      // devrait être ignoré
+		EntrepriseMigratorTest.addForPrincipalSuisse(e, dateDebut, RegpmTypeForPrincipal.SIEGE, Commune.ECHALLENS);
+		EntrepriseMigratorTest.addAssujettissement(e, dateDebut, null, RegpmTypeAssujettissement.LILIC);
+		e.setNumeroCantonal(noCantonalEntreprise);
+		e.setNumeroIDE(EntrepriseMigratorTest.buildNumeroIDE("CHE", 123456788L));
+
+		organisationService.setUp(new MockServiceOrganisation() {
+			@Override
+			protected void init() {
+				final MockOrganisation org = addOrganisation(noCantonalEntreprise, dateChargementRCEnt, "Toto SA", FormeLegale.N_0106_SOCIETE_ANONYME);
+				addNumeroIDE(org, "CHE123456788", RegDate.get(2009, 1, 1), null);
+
+				final MockSiteOrganisation site = addSite(org, noCantonalEtablissementPrincipal, dateChargementRCEnt, null, new DonneesRCBuilder()
+						.addCapital(new Capital(dateChargementRCEnt, null, TypeDeCapital.CAPITAL_SOCIAL, MontantMonetaire.CHF, BigDecimal.valueOf(400000L), "répartition ??"))
+						.build());
+				site.changeTypeDeSite(dateChargementRCEnt, TypeDeSite.ETABLISSEMENT_PRINCIPAL);
+			}
+		});
+
+		final MockGraphe graphe = new MockGraphe(Collections.singletonList(e),
+		                                         null,
+		                                         null);
+
+		activityManager.setup(ALL_ACTIVE);
+
+		final LoggedMessages lms = grapheMigrator.migrate(graphe);
+		Assert.assertNotNull(lms);
+
+		// migration
+		doInUniregTransaction(true, status -> {
+			final Entreprise entreprise = uniregStore.getEntityFromDb(Entreprise.class, noEntreprise);
+			Assert.assertNotNull(entreprise);
+			Assert.assertEquals((Long) noCantonalEntreprise, entreprise.getNumeroEntreprise());
+
+			final List<DonneesRegistreCommerce> rcs = entreprise.getDonneesRegistreCommerceNonAnnuleesTriees();
+			Assert.assertNotNull(rcs);
+			Assert.assertEquals(2, rcs.size());
+			{
+				final DonneesRegistreCommerce rc = rcs.get(0);
+				Assert.assertNotNull(rc);
+				Assert.assertFalse(rc.isAnnule());
+				Assert.assertEquals(dateDebut, rc.getDateDebut());
+				Assert.assertEquals(dateChangementNom.getOneDayBefore(), rc.getDateFin());
+				Assert.assertEquals("Toto junior SARL", rc.getRaisonSociale());
+				Assert.assertEquals(FormeJuridiqueEntreprise.SARL, rc.getFormeJuridique());
+			}
+			{
+				final DonneesRegistreCommerce rc = rcs.get(1);
+				Assert.assertNotNull(rc);
+				Assert.assertFalse(rc.isAnnule());
+				Assert.assertEquals(dateChangementNom, rc.getDateDebut());
+				Assert.assertEquals(dateChargementRCEnt.getOneDayBefore(), rc.getDateFin());
+				Assert.assertEquals("Toto SA", rc.getRaisonSociale());
+				Assert.assertEquals(FormeJuridiqueEntreprise.SA, rc.getFormeJuridique());
+			}
+
+			final List<CapitalEntreprise> capitaux = entreprise.getCapitauxNonAnnulesTries();
+			Assert.assertNotNull(capitaux);
+			Assert.assertEquals(2, capitaux.size());
+			{
+				final CapitalEntreprise capital = capitaux.get(0);
+				Assert.assertNotNull(capital);
+				Assert.assertFalse(capital.isAnnule());
+				Assert.assertEquals(dateDebut, capital.getDateDebut());
+				Assert.assertEquals(dateChangementCapital.getOneDayBefore(), capital.getDateFin());
+				Assert.assertEquals(MontantMonetaire.CHF, capital.getMontant().getMonnaie());
+				Assert.assertEquals((Long) 10000L, capital.getMontant().getMontant());
+			}
+			{
+				final CapitalEntreprise capital = capitaux.get(1);
+				Assert.assertNotNull(capital);
+				Assert.assertFalse(capital.isAnnule());
+				Assert.assertEquals(dateChangementCapital, capital.getDateDebut());
+				Assert.assertEquals(dateChargementRCEnt.getOneDayBefore(), capital.getDateFin());
+				Assert.assertEquals(MontantMonetaire.CHF, capital.getMontant().getMonnaie());
+				Assert.assertEquals((Long) 200000L, capital.getMontant().getMontant());
+			}
+		});
+
+		final Map<LogCategory, List<String>> messages = buildTextualMessages(lms);
+		{
+			// vérification des messages dans le contexte "SUIVI"
+			final List<String> msgs = messages.get(LogCategory.SUIVI);
+			Assert.assertEquals(4, msgs.size());
+			Assert.assertEquals("WARN;" + noEntreprise + ";Active;CHE123456788;" + noCantonalEntreprise + ";;;;;;;;;;;;;L'entreprise n'existait pas dans Unireg avec ce numéro de contribuable.", msgs.get(0));
+			Assert.assertEquals("WARN;" + noEntreprise + ";Active;CHE123456788;" + noCantonalEntreprise + ";;;;;;;;;;;;;Entreprise sans exercice commercial ni date de bouclement futur.", msgs.get(1));
+			Assert.assertEquals("WARN;" + noEntreprise + ";Active;CHE123456788;" + noCantonalEntreprise + ";;;;;;;;;;;;;Pas de siège associé, pas d'établissement principal créé.", msgs.get(2));
+			Assert.assertEquals("INFO;" + noEntreprise + ";Active;CHE123456788;" + noCantonalEntreprise + ";;;;;;;;;;;;;Entreprise migrée : " + FormatNumeroHelper.numeroCTBToDisplay(noEntreprise) + ".", msgs.get(3));
+		}
+		// ... et dans la liste des données civiles
+		{
+			final List<String> msgs = messages.get(LogCategory.DONNEES_CIVILES_REGPM);
+			Assert.assertEquals(6, msgs.size());
+			Assert.assertEquals("INFO;" + noEntreprise + ";Active;CHE123456788;" + noCantonalEntreprise + ";;;;;;;Données de forme juridique et/ou de raison sociale en provenance du registre civil dès le 01.08.2015 (les données ultérieures de RegPM seront ignorées).", msgs.get(0));
+			Assert.assertEquals("INFO;" + noEntreprise + ";Active;CHE123456788;" + noCantonalEntreprise + ";;;;;;;Données 'civiles' migrées : sur la période [01.01.1986 -> 31.12.1990], raison sociale (Toto junior SARL) et forme juridique (SARL).", msgs.get(1));
+			Assert.assertEquals("INFO;" + noEntreprise + ";Active;CHE123456788;" + noCantonalEntreprise + ";;;;;;;Données 'civiles' migrées : sur la période [01.01.1991 -> 31.07.2015], raison sociale (Toto SA) et forme juridique (SA).", msgs.get(2));
+			Assert.assertEquals("INFO;" + noEntreprise + ";Active;CHE123456788;" + noCantonalEntreprise + ";;;;;;;Données de capital en provenance du registre civil dès le 01.08.2015 (les données ultérieures de RegPM seront ignorées).", msgs.get(3));
+			Assert.assertEquals("INFO;" + noEntreprise + ";Active;CHE123456788;" + noCantonalEntreprise + ";;;;;;;Donnée de capital migrée : sur la période [01.01.1986 -> 31.12.1989], 10000 CHF.", msgs.get(4));
+			Assert.assertEquals("INFO;" + noEntreprise + ";Active;CHE123456788;" + noCantonalEntreprise + ";;;;;;;Donnée de capital migrée : sur la période [01.01.1990 -> 31.07.2015], 200000 CHF.", msgs.get(5));
 		}
 	}
 

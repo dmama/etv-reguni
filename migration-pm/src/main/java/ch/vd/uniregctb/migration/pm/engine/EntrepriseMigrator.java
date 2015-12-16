@@ -1999,16 +1999,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 			nextDate = computeNextDate();
 			final RegDate fin;
 			if (nextDate == null) {
-				if (dateFinActivite != null && dateFinActivite.isBefore(debut)) {
-					mr.addMessage(LogCategory.DONNEES_CIVILES_REGPM, LogLevel.ERROR,
-					              String.format("Date de début des données du registre du commerce (%s) postérieure à la date de fin d'activité calculée (%s), cette dernière est donc ignorée ici.",
-					                            StringRenderers.DATE_RENDERER.toString(debut),
-					                            StringRenderers.DATE_RENDERER.toString(dateFinActivite)));
-					fin = null;
-				}
-				else {
-					fin = dateFinActivite;
-				}
+				fin = dateFinActivite;
 			}
 			else {
 				fin = nextDate.getOneDayBefore();
@@ -2019,8 +2010,16 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 
 		@Nullable
 		private RegDate computeNextDate() {
-			final RegDate nextRaisonSocialeChange = histoRaisonsSociales.higherKey(nextDate);
-			final RegDate nextFormeJuridiqueChange = histoFormesJuridiques.higherKey(nextDate);
+			final RegDate nextRaisonSocialeChangeBrutto = histoRaisonsSociales.higherKey(nextDate);
+			final RegDate nextFormeJuridiqueChangeBrutto = histoFormesJuridiques.higherKey(nextDate);
+
+			final RegDate nextRaisonSocialeChange = dateFinActivite == null || RegDateHelper.isBeforeOrEqual(nextRaisonSocialeChangeBrutto, dateFinActivite, NullDateBehavior.LATEST)
+					? nextRaisonSocialeChangeBrutto
+					: null;
+			final RegDate nextFormeJuridiqueChange = dateFinActivite == null || RegDateHelper.isBeforeOrEqual(nextFormeJuridiqueChangeBrutto, dateFinActivite, NullDateBehavior.LATEST)
+					? nextFormeJuridiqueChangeBrutto
+					: null;
+
 			done = nextRaisonSocialeChange == null && nextFormeJuridiqueChange == null;
 			return Stream.of(nextRaisonSocialeChange, nextFormeJuridiqueChange)
 					.filter(Objects::nonNull)
@@ -2094,11 +2093,11 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		}
 
 		// l'historique commun entre les raisons sociales et les formes juridiques (seuls éléments obligatoires) commence là
-		final RegDate dateDebutHistoire = RegDateHelper.maximum(regpmRaisonsSociales.firstKey(), regpmFormesJuridiques.firstKey(), NullDateBehavior.EARLIEST);
+		final RegDate dateDebutHistoireFiscale = RegDateHelper.maximum(regpmRaisonsSociales.firstKey(), regpmFormesJuridiques.firstKey(), NullDateBehavior.EARLIEST);
 
 		// si on n'a aucune date de début... on peut éventuellement se rabattre sur la date de début des capitaux ou sur la date de début d'activité de l'entreprise
 		final RegDate dateDebutEffective;
-		if (dateDebutHistoire == null) {
+		if (dateDebutHistoireFiscale == null) {
 			final RegDate dateDebutActivite = getDateDebutActivite(regpm, mr);
 			if (dateDebutActivite != null) {
 				dateDebutEffective = dateDebutActivite;
@@ -2117,48 +2116,100 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 			}
 		}
 		else {
-			dateDebutEffective = dateDebutHistoire;
+			dateDebutEffective = dateDebutHistoireFiscale;
 		}
 
-		// génération des données à sauvegarder
-		final Iterable<DonneesRegistreCommerce> donneesRC = () -> new DonneesRegistreCommerceGenerator(dateDebutEffective, dateFinActivite, regpmRaisonsSociales, regpmFormesJuridiques, mr);
-		StreamSupport.stream(donneesRC.spliterator(), false)
-				.peek(rc -> mr.addMessage(LogCategory.DONNEES_CIVILES_REGPM, LogLevel.INFO,
-				                          String.format("Données 'civiles' migrées : sur la période %s, raison sociale (%s) et forme juridique (%s).",
-				                                        StringRenderers.DATE_RANGE_RENDERER.toString(rc),
-				                                        rc.getRaisonSociale(),
-				                                        rc.getFormeJuridique())))
-				.forEach(unireg::addDonneesRC);
-
-		// génération des données de capital (d'abord sans dates de fin...)
-		final List<CapitalEntreprise> capitaux = regpmCapitaux.entrySet().stream()
-				.filter(entry -> entry.getValue() != null)
-				.map(entry -> new CapitalEntreprise(entry.getKey(), null, new MontantMonetaire(entry.getValue().longValue(), MontantMonetaire.CHF)))
-				.collect(Collectors.toList());
-
-		// petit contrôle sur la date de fin d'activité par rapport aux dates des capitaux...
-		final RegDate dateFinActiviteCapitaux;
-		if (dateFinActivite != null && !capitaux.isEmpty() && capitaux.get(capitaux.size() - 1).getDateDebut().isAfter(dateFinActivite)) {
-			dateFinActiviteCapitaux = null;
-			mr.addMessage(LogCategory.DONNEES_CIVILES_REGPM, LogLevel.ERROR,
-			              String.format("Date de début d'une donnée de capital (%s) postérieure à la date de fin d'activité calculée (%s), cette dernière est donc ignorée ici.",
-			                            StringRenderers.DATE_RENDERER.toString(capitaux.get(capitaux.size() - 1).getDateDebut()),
-			                            StringRenderers.DATE_RENDERER.toString(dateFinActivite)));
+		final RegDate dateFinHistoireFiscale;
+		if (rcent == null) {
+			final RegDate dateDerniereRaisonSociale = regpmRaisonsSociales.isEmpty() ? null : regpmRaisonsSociales.lastKey();
+			final RegDate dateDerniereFormeJuridique = regpmFormesJuridiques.isEmpty() ? null : regpmFormesJuridiques.lastKey();
+			if (dateFinActivite != null && (RegDateHelper.isAfter(dateDerniereFormeJuridique, dateFinActivite, NullDateBehavior.EARLIEST) || RegDateHelper.isAfter(dateDerniereRaisonSociale, dateFinActivite, NullDateBehavior.EARLIEST))) {
+				dateFinHistoireFiscale = null;
+				final RegDate dateQuiDepasse = RegDateHelper.maximum(dateDerniereFormeJuridique, dateDerniereRaisonSociale, NullDateBehavior.EARLIEST);
+				mr.addMessage(LogCategory.DONNEES_CIVILES_REGPM, LogLevel.ERROR,
+				              String.format("Date de début d'une donnée de raison sociale et/ou de forme juridique (%s) postérieure à la date de fin d'activité calculée (%s), cette dernière est donc ignorée ici.",
+				                            StringRenderers.DATE_RENDERER.toString(dateQuiDepasse),
+				                            StringRenderers.DATE_RENDERER.toString(dateFinActivite)));
+			}
+			else {
+				dateFinHistoireFiscale = dateFinActivite;
+			}
 		}
 		else {
-			dateFinActiviteCapitaux = dateFinActivite;
+			// on s'arrête à la veille de la première date de raison sociale (= obligatoire) connue de RCEnt
+			final RegDate dateDebutHistoireCivile = OrganisationDataHelper.getFirstKnownDate(rcent.getNom());
+			dateFinHistoireFiscale = Optional.ofNullable(dateDebutHistoireCivile)
+					.map(RegDate::getOneDayBefore)
+					.orElse(dateFinActivite);
+
+			if (dateDebutHistoireCivile != null) {
+				mr.addMessage(LogCategory.DONNEES_CIVILES_REGPM, LogLevel.INFO,
+				              String.format("Données de forme juridique et/ou de raison sociale en provenance du registre civil dès le %s (les données ultérieures de RegPM seront ignorées).",
+				                            StringRenderers.DATE_RENDERER.toString(dateDebutHistoireCivile)));
+			}
 		}
 
-		// assignation des dates de fin en fonction des dates de début du suivant
-		assigneDatesFin(dateFinActiviteCapitaux, capitaux);
+		// si toutes les données fiscales connues sont en fait dans la période de validité civile -> on ne migre rien de fiscal
+		if (RegDateHelper.isBeforeOrEqual(dateDebutEffective, dateFinHistoireFiscale, NullDateBehavior.LATEST)) {
+			// génération des données à sauvegarder
+			final Iterable<DonneesRegistreCommerce> donneesRC = () -> new DonneesRegistreCommerceGenerator(dateDebutEffective, dateFinHistoireFiscale, regpmRaisonsSociales, regpmFormesJuridiques, mr);
+			StreamSupport.stream(donneesRC.spliterator(), false)
+					.peek(rc -> mr.addMessage(LogCategory.DONNEES_CIVILES_REGPM, LogLevel.INFO,
+					                          String.format("Données 'civiles' migrées : sur la période %s, raison sociale (%s) et forme juridique (%s).",
+					                                        StringRenderers.DATE_RANGE_RENDERER.toString(rc),
+					                                        rc.getRaisonSociale(),
+					                                        rc.getFormeJuridique())))
+					.forEach(unireg::addDonneesRC);
+		}
 
-		// persistence et log
-		capitaux.stream()
-				.peek(capital -> mr.addMessage(LogCategory.DONNEES_CIVILES_REGPM, LogLevel.INFO,
-				                               String.format("Donnée de capital migrée : sur la période %s, %s.",
-				                                             StringRenderers.DATE_RANGE_RENDERER.toString(capital),
-				                                             StringRenderers.MONTANT_MONETAIRE_RENDERER.toString(capital.getMontant()))))
-				.forEach(unireg::addCapital);
+		final RegDate dateFinActiviteCapitaux;
+		if (rcent == null) {
+			if (dateFinActivite != null && !regpmCapitaux.isEmpty() && regpmCapitaux.lastKey().isAfter(dateFinActivite)) {
+				dateFinActiviteCapitaux = null;
+				mr.addMessage(LogCategory.DONNEES_CIVILES_REGPM, LogLevel.ERROR,
+				              String.format("Date de début d'une donnée de capital (%s) postérieure à la date de fin d'activité calculée (%s), cette dernière est donc ignorée ici.",
+				                            StringRenderers.DATE_RENDERER.toString(regpmCapitaux.lastKey()),
+				                            StringRenderers.DATE_RENDERER.toString(dateFinActivite)));
+			}
+			else {
+				dateFinActiviteCapitaux = dateFinActivite;
+			}
+		}
+		else {
+			// on s'arrête à la veille de la première date de capital connue de RCEnt
+			final RegDate dateDebutHistoireCivileCapitaux = OrganisationDataHelper.getFirstKnownDate(rcent.getCapitaux());
+			dateFinActiviteCapitaux = Optional.ofNullable(dateDebutHistoireCivileCapitaux)
+					.map(RegDate::getOneDayBefore)
+					.orElse(dateFinActivite);
+
+			if (dateDebutHistoireCivileCapitaux != null) {
+				mr.addMessage(LogCategory.DONNEES_CIVILES_REGPM, LogLevel.INFO,
+				              String.format("Données de capital en provenance du registre civil dès le %s (les données ultérieures de RegPM seront ignorées).",
+				                            StringRenderers.DATE_RENDERER.toString(dateDebutHistoireCivileCapitaux)));
+			}
+		}
+
+		// si toutes les données de capital connues fiscalement sont en fait dans la période de validité des données connues dans RCEnt, on ne migre rien
+		if (!regpmCapitaux.isEmpty() && RegDateHelper.isBeforeOrEqual(regpmCapitaux.firstKey(), dateFinActiviteCapitaux, NullDateBehavior.LATEST)) {
+
+			// génération des données de capital (d'abord sans dates de fin...)
+			final List<CapitalEntreprise> capitaux = regpmCapitaux.entrySet().stream()
+					.filter(entry -> entry.getValue() != null)
+					.filter(entry -> RegDateHelper.isBeforeOrEqual(entry.getKey(), dateFinActiviteCapitaux, NullDateBehavior.LATEST))
+					.map(entry -> new CapitalEntreprise(entry.getKey(), null, new MontantMonetaire(entry.getValue().longValue(), MontantMonetaire.CHF)))
+					.collect(Collectors.toList());
+
+			// assignation des dates de fin en fonction des dates de début du suivant
+			assigneDatesFin(dateFinActiviteCapitaux, capitaux);
+
+			// persistence et log
+			capitaux.stream()
+					.peek(capital -> mr.addMessage(LogCategory.DONNEES_CIVILES_REGPM, LogLevel.INFO,
+					                               String.format("Donnée de capital migrée : sur la période %s, %s.",
+					                                             StringRenderers.DATE_RANGE_RENDERER.toString(capital),
+					                                             StringRenderers.MONTANT_MONETAIRE_RENDERER.toString(capital.getMontant()))))
+					.forEach(unireg::addCapital);
+		}
 	}
 
 	private static FormeJuridiqueEntreprise toFormeJuridique(String codeRegpm) {
