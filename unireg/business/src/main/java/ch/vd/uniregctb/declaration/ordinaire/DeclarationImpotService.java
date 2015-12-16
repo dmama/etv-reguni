@@ -243,13 +243,22 @@ public interface DeclarationImpotService {
 	EnvoiSommationsDIsPPResults envoyerSommationsPP(RegDate dateTraitement, boolean miseSousPliImpossible, int nombreMax, StatusManager status);
 
 	/**
+	 * Récupère la copie conforme de la sommation éditée pour la DI PP donnée
+	 *
+	 * @param di
+	 * @return
+	 * @throws EditiqueException
+	 */
+	EditiqueResultat getCopieConformeSommationDI(DeclarationImpotOrdinairePP di) throws EditiqueException;
+
+	/**
 	 * Récupère la copie conforme de la sommation éditée pour la DI donnée
 	 *
 	 * @param di
 	 * @return
 	 * @throws EditiqueException
 	 */
-	EditiqueResultat getCopieConformeSommationDI(DeclarationImpotOrdinaire di) throws EditiqueException;
+	EditiqueResultat getCopieConformeSommationDI(DeclarationImpotOrdinairePM di) throws EditiqueException;
 
 	/**
 	 * Récupère la copie conforme de la confirmation de delai

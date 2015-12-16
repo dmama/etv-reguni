@@ -41,6 +41,7 @@ import ch.vd.uniregctb.declaration.ordinaire.pm.EnvoiDIsPMResults;
 import ch.vd.uniregctb.declaration.ordinaire.pm.EnvoiDeclarationsPMProcessor;
 import ch.vd.uniregctb.declaration.ordinaire.pm.EnvoiSommationsDIsPMProcessor;
 import ch.vd.uniregctb.declaration.ordinaire.pm.EnvoiSommationsDIsPMResults;
+import ch.vd.uniregctb.declaration.ordinaire.pm.ImpressionSommationDeclarationImpotPersonnesMoralesHelper;
 import ch.vd.uniregctb.declaration.ordinaire.pm.TypeDeclarationImpotPM;
 import ch.vd.uniregctb.declaration.ordinaire.pp.ContribuableAvecCodeSegment;
 import ch.vd.uniregctb.declaration.ordinaire.pp.ContribuableAvecImmeuble;
@@ -112,7 +113,8 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 	private ServiceInfrastructureService infraService;
 	private AdresseService adresseService;
 	private ImpressionDeclarationImpotPersonnesPhysiquesHelper impressionDIPPHelper;
-	private ImpressionSommationDeclarationImpotPersonnesPhysiquesHelper impressionSommationDIHelper;
+	private ImpressionSommationDeclarationImpotPersonnesPhysiquesHelper impressionSommationDIPPHelper;
+	private ImpressionSommationDeclarationImpotPersonnesMoralesHelper impressionSommationDIPMHelper;
 	private ServiceCivilCacheWarmer serviceCivilCacheWarmer;
 	private TiersService tiersService;
 	private ParametreAppService parametres;
@@ -205,8 +207,12 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 		this.tiersService = tiersService;
 	}
 
-	public void setImpressionSommationDIHelper(ImpressionSommationDeclarationImpotPersonnesPhysiquesHelper impressionSommationDIHelper) {
-		this.impressionSommationDIHelper = impressionSommationDIHelper;
+	public void setImpressionSommationDIPPHelper(ImpressionSommationDeclarationImpotPersonnesPhysiquesHelper impressionSommationDIPPHelper) {
+		this.impressionSommationDIPPHelper = impressionSommationDIPPHelper;
+	}
+
+	public void setImpressionSommationDIPMHelper(ImpressionSommationDeclarationImpotPersonnesMoralesHelper impressionSommationDIPMHelper) {
+		this.impressionSommationDIPMHelper = impressionSommationDIPMHelper;
 	}
 
 	public void setTransactionManager(PlatformTransactionManager transactionManager) {
@@ -564,7 +570,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 	}
 
 	@Override
-	public EditiqueResultat getCopieConformeSommationDI(DeclarationImpotOrdinaire di) throws EditiqueException {
+	public EditiqueResultat getCopieConformeSommationDI(DeclarationImpotOrdinairePP di) throws EditiqueException {
 		String nomDocument = construitIdArchivageSommationDI(di);
 		EditiqueResultat pdf = editiqueService.getPDFDeDocumentDepuisArchive(di.getTiers().getNumero(), TypeDocumentEditique.SOMMATION_DI, nomDocument);
 		if (pdf == null) {
@@ -578,6 +584,12 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 		return pdf;
 	}
 
+	@Override
+	public EditiqueResultat getCopieConformeSommationDI(DeclarationImpotOrdinairePM di) throws EditiqueException {
+		final String cleArchivage = impressionSommationDIPMHelper.construitCleArchivageDocument(di);
+		return editiqueService.getPDFDeDocumentDepuisArchive(di.getTiers().getNumero(), impressionSommationDIPMHelper.getTypeDocumentEditique(), cleArchivage);
+	}
+
 	/**
 	 * Construit l'ID du document pour l'archivage
 	 *
@@ -585,7 +597,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 	 * @return
 	 */
 	private String construitIdArchivageSommationDI(DeclarationImpotOrdinaire declaration) {
-		return impressionSommationDIHelper.construitIdArchivageDocument(declaration);
+		return impressionSommationDIPPHelper.construitIdArchivageDocument(declaration);
 	}
 
 	/**
@@ -595,7 +607,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 	 * @return
 	 */
 	private String construitAncienIdArchivageSommationDI(DeclarationImpotOrdinaire declaration) {
-		return impressionSommationDIHelper.construitAncienIdArchivageDocument(declaration);
+		return impressionSommationDIPPHelper.construitAncienIdArchivageDocument(declaration);
 	}
 
 
@@ -606,7 +618,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 	 * @return
 	 */
 	private String construitAncienIdArchivageSommationDIPourOnLine(DeclarationImpotOrdinaire declaration) {
-		return impressionSommationDIHelper.construitAncienIdArchivageDocumentPourOnLine(declaration);
+		return impressionSommationDIPPHelper.construitAncienIdArchivageDocumentPourOnLine(declaration);
 	}
 
 	public void setDiDAO(DeclarationImpotOrdinaireDAO diDAO) {
