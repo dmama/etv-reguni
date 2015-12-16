@@ -47,8 +47,10 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.common.NomPrenom;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.infra.data.Pays;
+import ch.vd.unireg.interfaces.organisation.data.DateRanged;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
+import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 import ch.vd.uniregctb.adresse.AdresseTiers;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.CollectionsUtils;
@@ -1847,7 +1849,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		migrateDeclarationsImpot(regpm, unireg, mr, idMapper);
 		generateForsPrincipaux(regpm, unireg, mr);
 		migrateImmeubles(regpm, unireg, mr);
-		generateEtablissementPrincipal(regpm, unireg, linkCollector, idMapper, mr);
+		generateEtablissementPrincipal(regpm, rcent, linkCollector, idMapper, mr);
 		migrateEtatsEntreprise(regpm, unireg, mr);
 
 		migrateMandataires(regpm, mr, linkCollector, idMapper);
@@ -2412,75 +2414,162 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 	}
 
 	/**
-	 * Génération de l'établissement principal à partir du dernier siège de l'entreprise
+	 * Génération des établissements principaux liés à l'entreprise (autant que d'entrées différentes dans la map)
 	 * @param regpm l'entreprise de RegPM
-	 * @param unireg l'entreprise dans Unireg
+	 * @param validiteSitesPrincipaux map des identifiants et des périodes de 'principalité' des sites principaux civils
 	 * @param linkCollector le collecteur de liens à créer entre les entités
 	 * @param idMapper mapper des identifiants RegPM -> Unireg
 	 * @param mr collecteur de messages de migration
 	 */
-	private void generateEtablissementPrincipal(RegpmEntreprise regpm, Entreprise unireg, EntityLinkCollector linkCollector, IdMapping idMapper, MigrationResultProduction mr) {
+	private void generateEtablissementPrincipalSelonDonneesCiviles(RegpmEntreprise regpm, Map<Long, List<DateRanged<SiteOrganisation>>> validiteSitesPrincipaux, EntityLinkCollector linkCollector,
+	                                                               IdMapping idMapper, MigrationResultProduction mr) {
+		final KeyedSupplier<Entreprise> entrepriseSupplier = getEntrepriseSupplier(idMapper, regpm);
+		for (Map.Entry<Long, List<DateRanged<SiteOrganisation>>> entry : validiteSitesPrincipaux.entrySet()) {
 
-		// TODO peut-être pourra-t-on faire mieux avec les données de RCEnt, mais pour le moment, on suppose l'existence d'UN SEUL établissement principal avec, au besoin, plusieurs domiciles successifs
+			// TODO attention : si dans RCEnt, un même établissement est principal de deux entreprises dans le temps, ceci va crééer des doublons d'établissement dans Unireg!
+
+			final Etablissement etbPrincipal = uniregStore.saveEntityToDb(new Etablissement());
+			final Supplier<Etablissement> etbPrincipalSupplier = getEtablissementByUniregIdSupplier(etbPrincipal.getNumero());
+			etbPrincipal.setNumeroEtablissement(entry.getKey());        // lien vers le civil
+
+			mr.addMessage(LogCategory.SUIVI, LogLevel.INFO,
+			              String.format("Etablissement principal %s créé en liaison avec le site civil %d.",
+			                            FormatNumeroHelper.numeroCTBToDisplay(etbPrincipal.getNumero()), entry.getKey()));
+
+			// TODO ici, on ne crée pas de domiciles pour les établissements... comme ils sont connus du civils, les sièges seront à aller chercher par là-bas aussi...
+
+			// demande de création de liens d'activité économique
+			entry.getValue().stream()
+					.map(range -> new EntityLinkCollector.EtablissementEntiteJuridiqueLink<>(etbPrincipalSupplier, entrepriseSupplier, range.getDateDebut(), range.getDateFin(), true))
+					.forEach(linkCollector::addLink);
+		}
+	}
+
+	/**
+	 * Génération de l'établissement principal à partir du dernier siège de l'entreprise
+	 * @param regpm l'entreprise de RegPM
+	 * @param rcent l'entreprise connue dans RCEnt
+	 * @param linkCollector le collecteur de liens à créer entre les entités
+	 * @param idMapper mapper des identifiants RegPM -> Unireg
+	 * @param mr collecteur de messages de migration
+	 */
+	private void generateEtablissementPrincipal(RegpmEntreprise regpm, @Nullable Organisation rcent, EntityLinkCollector linkCollector, IdMapping idMapper, MigrationResultProduction mr) {
 
 		// la spécification ne parle pas de l'attribut commune ni des fors principaux pour la génération de l'établissement principal
 		// mais seulement de la récupération des sièges depuis la table SIEGE_ENTREPRISE
 
-		// voyons l'historique des sièges
+		// voyons l'historique des sièges (dans RegPM)
 		final EntityKey moi = buildEntrepriseKey(regpm);
 		final NavigableMap<RegDate, RegpmSiegeEntreprise> sieges = mr.getExtractedData(SiegesHistoData.class, moi).histo;
 
-		// pas de donnée de siège -> pas d'établissement principal créé
-		if (sieges.isEmpty()) {
-			mr.addMessage(LogCategory.SUIVI, LogLevel.WARN, "Pas de siège associé, pas d'établissement principal créé.");
-			return;
+		// si une connexion avec RCEnt existe, on va essayer de lier l'établissement principal généré avec son pendant civil
+
+		// date de fin des données fiscales (= veille de la date d'apparition civile des données, ou <code>null</code> s'il n'y a pas de données civiles)
+		final RegDate dateFinEtablissementFiscal;
+		if (rcent != null) {
+			// récupérons d'abord les données civiles des sites principaux (s'il y en a plusieurs...)
+			final List<DateRanged<SiteOrganisation>> sites = rcent.getSitePrincipaux();
+			if (sites != null && !sites.isEmpty()) {
+
+				// veille du début des données civiles
+				dateFinEtablissementFiscal = sites.stream()
+						.map(DateRange::getDateDebut)
+						.min(Comparator.naturalOrder())
+						.map(RegDate::getOneDayBefore)
+						.get();
+
+				// y a-t-il plusieurs établissements principaux distincts, d'abord ?
+				final Map<Long, List<DateRanged<SiteOrganisation>>> validitesSites = sites.stream()
+						.collect(Collectors.toMap(siteRange -> siteRange.getPayload().getNumeroSite(),
+						                          Collections::singletonList,
+						                          (l1, l2) -> Stream.concat(l1.stream(), l2.stream()).collect(Collectors.toList()),
+						                          LinkedHashMap::new));     // afin de conserver l'ordre (le site le plus vieux apparaîtra en premier dans l'itérateur)
+
+				// génération des données d'établissement depuis les données civiles
+				generateEtablissementPrincipalSelonDonneesCiviles(regpm, validitesSites, linkCollector, idMapper, mr);
+			}
+			else {
+				dateFinEtablissementFiscal = null;
+			}
+		}
+		else {
+			dateFinEtablissementFiscal = null;
 		}
 
-		// récupération de la raison sociale
-		final NavigableMap<RegDate, String> raisonsSociales = mr.getExtractedData(RaisonSocialeHistoData.class, moi).histo;
-		final String raisonSociale = Optional.ofNullable(raisonsSociales.lastEntry()).map(Map.Entry::getValue).orElse(null);
+		// pas de donnée de siège -> on a fini (s'il y a des données civiles, tant mieux, sinon... rien)
+		if (sieges.isEmpty()) {
+			if (dateFinEtablissementFiscal == null) {
+				mr.addMessage(LogCategory.SUIVI, LogLevel.WARN, "Pas de siège associé dans les données fiscales, pas d'établissement principal créé.");
+			}
+			return;
+		}
+		else if (dateFinEtablissementFiscal != null) {
+			mr.addMessage(LogCategory.SUIVI, LogLevel.INFO,
+			              String.format("Données civiles d'établissement principal présentes dès le %s, tous les sièges ultérieurs de RegPM seront ignorés.",
+			                            StringRenderers.DATE_RENDERER.toString(dateFinEtablissementFiscal.getOneDayAfter())));
+		}
 
-		final Etablissement etbPrincipal = uniregStore.saveEntityToDb(new Etablissement());
-		final Supplier<Etablissement> etbPrincipalSupplier = getEtablissementByUniregIdSupplier(etbPrincipal.getNumero());
-		etbPrincipal.setEnseigne(regpm.getEnseigne());
-		etbPrincipal.setRaisonSociale(raisonSociale);
+		// a-t-on des établissements principaux à générer depuis les données fiscales (on n'en fait qu'un au plus, en faisant bouger les domiciles,
+		// mais seulement tant qu'aucune donnée civile ne vient prendre le relai)
+		if (dateFinEtablissementFiscal == null || sieges.firstKey().isBeforeOrEqual(dateFinEtablissementFiscal)) {
 
-		// un peu de log pour indiquer la création de l'établissement principal
-		mr.addMessage(LogCategory.SUIVI, LogLevel.INFO, String.format("Création de l'établissement principal %s.",
-		                                                              FormatNumeroHelper.numeroCTBToDisplay(etbPrincipal.getNumero())));
+			// récupération de la raison sociale
+			final NavigableMap<RegDate, String> raisonsSociales = mr.getExtractedData(RaisonSocialeHistoData.class, moi).histo;
+			final String raisonSociale = Optional.ofNullable(raisonsSociales.lastEntry()).map(Map.Entry::getValue).orElse(null);
 
-		// lien entre l'établissement principal et son entreprise
-		final KeyedSupplier<Entreprise> entrepriseSupplier = getEntrepriseSupplier(idMapper, regpm);
-		final RegDate dateFinActivite = mr.getExtractedData(DateFinActiviteData.class, moi).date;
-		linkCollector.addLink(new EntityLinkCollector.EtablissementEntiteJuridiqueLink<>(etbPrincipalSupplier, entrepriseSupplier, sieges.firstKey(), dateFinActivite, true));
+			// date de fin d'activité de l'entreprise
+			final RegDate dateFinActivite = mr.getExtractedData(DateFinActiviteData.class, moi).date;
+			final RegDate dateFinDonneesFiscales = RegDateHelper.minimum(dateFinEtablissementFiscal, dateFinActivite, NullDateBehavior.LATEST);
 
-		// création des domiciles (pour l'instant sans date de fin, celle-ci sera ajouté ensuite)
-		final List<DomicileEtablissement> domicilesBruts = sieges.entrySet().stream()
-				.map(entry -> Pair.of(entry.getKey(), buildCommuneOuPays(entry.getKey(),
-				                                                         entry.getValue()::getCommune,
-				                                                         entry.getValue()::getNoOfsPays,
-				                                                         String.format("siège %d", entry.getValue().getId().getSeqNo()),
-				                                                         mr,
-				                                                         LogCategory.SUIVI)))
-				.map(pair -> new DomicileEtablissement(pair.getLeft(), null, pair.getRight().getTypeAutoriteFiscale(), pair.getRight().getNumeroOfsAutoriteFiscale(), null))
-				.collect(Collectors.toList());
+			final Etablissement etbPrincipal = uniregStore.saveEntityToDb(new Etablissement());
+			final Supplier<Etablissement> etbPrincipalSupplier = getEtablissementByUniregIdSupplier(etbPrincipal.getNumero());
+			etbPrincipal.setEnseigne(regpm.getEnseigne());
+			etbPrincipal.setRaisonSociale(raisonSociale);
 
-		// ajout des dates de fin
-		assigneDatesFin(dateFinActivite, domicilesBruts);
+			// un peu de log pour indiquer la création de l'établissement principal
+			mr.addMessage(LogCategory.SUIVI, LogLevel.INFO, String.format("Création de l'établissement principal %s.",
+			                                                              FormatNumeroHelper.numeroCTBToDisplay(etbPrincipal.getNumero())));
 
-		// finalisation
-		domicilesBruts.stream()
-				.peek(d -> checkFractionCommuneVaudoise(d, mr, LogCategory.SUIVI))
-				.map(d -> adapterAutourFusionsCommunes(d, mr, LogCategory.SUIVI, null))
-				.flatMap(List::stream)
-				.peek(d -> mr.addMessage(LogCategory.SUIVI, LogLevel.INFO, String.format("Domicile de l'établissement principal %s : %s sur %s/%d.",
-				                                                                         FormatNumeroHelper.numeroCTBToDisplay(etbPrincipal.getNumero()),
-				                                                                         StringRenderers.DATE_RANGE_RENDERER.toString(d),
-				                                                                         d.getTypeAutoriteFiscale(),
-				                                                                         d.getNumeroOfsAutoriteFiscale())))
-				.forEach(etbPrincipal::addDomicile);
+			// lien entre l'établissement principal et son entreprise
+			final KeyedSupplier<Entreprise> entrepriseSupplier = getEntrepriseSupplier(idMapper, regpm);
+			linkCollector.addLink(new EntityLinkCollector.EtablissementEntiteJuridiqueLink<>(etbPrincipalSupplier, entrepriseSupplier, sieges.firstKey(), dateFinDonneesFiscales, true));
 
-   		// TODO adresse ?
+			// création des domiciles (pour l'instant sans date de fin, celle-ci sera ajouté ensuite)
+			final List<DomicileEtablissement> domicilesBruts = sieges.entrySet().stream()
+					.filter(entry -> {
+						if (RegDateHelper.isAfter(entry.getKey(), dateFinEtablissementFiscal, NullDateBehavior.LATEST)) {
+							mr.addMessage(LogCategory.SUIVI, LogLevel.WARN,
+							              String.format("Siège %d ignoré car il ne débute qu'après la date d'apparition des données civiles.", entry.getValue().getId().getSeqNo()));
+							return false;
+						}
+						return true;
+					})
+					.map(entry -> Pair.of(entry.getKey(), buildCommuneOuPays(entry.getKey(),
+					                                                         entry.getValue()::getCommune,
+					                                                         entry.getValue()::getNoOfsPays,
+					                                                         String.format("siège %d", entry.getValue().getId().getSeqNo()),
+					                                                         mr,
+					                                                         LogCategory.SUIVI)))
+					.map(pair -> new DomicileEtablissement(pair.getLeft(), null, pair.getRight().getTypeAutoriteFiscale(), pair.getRight().getNumeroOfsAutoriteFiscale(), null))
+					.collect(Collectors.toList());
+
+			// ajout des dates de fin
+			assigneDatesFin(dateFinDonneesFiscales, domicilesBruts);
+
+			// finalisation
+			domicilesBruts.stream()
+					.peek(d -> checkFractionCommuneVaudoise(d, mr, LogCategory.SUIVI))
+					.map(d -> adapterAutourFusionsCommunes(d, mr, LogCategory.SUIVI, null))
+					.flatMap(List::stream)
+					.peek(d -> mr.addMessage(LogCategory.SUIVI, LogLevel.INFO, String.format("Domicile de l'établissement principal %s : %s sur %s/%d.",
+					                                                                         FormatNumeroHelper.numeroCTBToDisplay(etbPrincipal.getNumero()),
+					                                                                         StringRenderers.DATE_RANGE_RENDERER.toString(d),
+					                                                                         d.getTypeAutoriteFiscale(),
+					                                                                         d.getNumeroOfsAutoriteFiscale())))
+					.forEach(etbPrincipal::addDomicile);
+
+			// TODO adresse ?
+		}
 	}
 
 	/**
