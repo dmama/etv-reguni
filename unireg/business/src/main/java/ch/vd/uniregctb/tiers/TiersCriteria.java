@@ -10,6 +10,7 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.type.CategorieEntreprise;
 import ch.vd.uniregctb.type.CategorieImpotSource;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.Sexe;
@@ -198,7 +199,7 @@ public class TiersCriteria implements Serializable, TiersFilter {
 	/**
 	 * La catégorie d'entreprise découlant de la forme juridique
 	 */
-	private String categorieEntreprise;
+	private CategorieEntreprise categorieEntreprise;
 
 	/**
 	 * Numéro OFS du for
@@ -275,7 +276,7 @@ public class TiersCriteria implements Serializable, TiersFilter {
 				&& StringUtils.isBlank(noOfsFor)
 				&& StringUtils.isBlank(noSymic)
 				&& StringUtils.isBlank(formeJuridique)
-				&& StringUtils.isBlank(categorieEntreprise)
+				&& categorieEntreprise == null
 				&& modeImposition == null
 				&& categorieDebiteurIs == null
 				&& tiersActif == null
@@ -472,11 +473,11 @@ public class TiersCriteria implements Serializable, TiersFilter {
 		this.formeJuridique = formeJuridique;
 	}
 
-	public String getCategorieEntreprise() {
+	public CategorieEntreprise getCategorieEntreprise() {
 		return categorieEntreprise;
 	}
 
-	public void setCategorieEntreprise(String categorieEntreprise) {
+	public void setCategorieEntreprise(CategorieEntreprise categorieEntreprise) {
 		this.categorieEntreprise = categorieEntreprise;
 	}
 

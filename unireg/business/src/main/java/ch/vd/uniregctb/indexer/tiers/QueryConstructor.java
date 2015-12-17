@@ -349,8 +349,8 @@ public class QueryConstructor {
 
 	private void addCategorieEntreprise(BooleanQuery fullQuery) throws IndexerException {
 
-		if (StringUtils.isNotBlank(criteria.getCategorieEntreprise())) {
-			final Query q = new TermQuery(new Term(TiersIndexableData.CATEGORIE_ENTREPRISE, criteria.getCategorieEntreprise()));
+		if (criteria.getCategorieEntreprise() != null) {
+			final Query q = new TermQuery(new Term(TiersIndexableData.CATEGORIE_ENTREPRISE, criteria.getCategorieEntreprise().name()));
 			fullQuery.add(q, must);
 		}
 	}

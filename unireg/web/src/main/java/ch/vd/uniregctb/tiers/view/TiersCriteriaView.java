@@ -8,6 +8,7 @@ import org.apache.commons.lang3.StringUtils;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.tiers.TiersCriteria;
+import ch.vd.uniregctb.type.CategorieEntreprise;
 import ch.vd.uniregctb.type.CategorieImpotSource;
 import ch.vd.uniregctb.type.ModeImposition;
 
@@ -26,7 +27,6 @@ public class TiersCriteriaView implements Serializable {
 	private String forAll;
 	private String modeImpositionAsString;
 	private String formeJuridiqueAsString;
-	private String categorieEntrepriseAsString;
 
 	// Les critères utilisés pour la recherche
 	private String numeroFormatte;
@@ -97,11 +97,11 @@ public class TiersCriteriaView implements Serializable {
 	}
 
 	public void setModeImpositionAsString(String modeImpositionAsString) {
-		if (!"TOUS".equals(modeImpositionAsString)) {
-			setModeImposition(ModeImposition.valueOf(modeImpositionAsString));
+		if (modeImpositionAsString == null || "".equals(modeImpositionAsString)) {
+			setModeImposition(null);
 		}
 		else {
-			setModeImposition(null);
+			setModeImposition(ModeImposition.valueOf(modeImpositionAsString));
 		}
 		this.modeImpositionAsString = modeImpositionAsString;
 	}
@@ -175,35 +175,21 @@ public class TiersCriteriaView implements Serializable {
 	}
 
 	public void setFormeJuridiqueAsString(String formeJuridiqueAsString) {
-		if (!"TOUS".equals(formeJuridiqueAsString)) {
-			setFormeJuridique(formeJuridiqueAsString);
+		if (formeJuridiqueAsString == null || "".equals(formeJuridiqueAsString)) {
+			setFormeJuridique(null);
 		}
 		else {
-			setFormeJuridique(null);
+			setFormeJuridique(formeJuridiqueAsString);
 		}
 		this.formeJuridiqueAsString = formeJuridiqueAsString;
 	}
 
-	public String getCategorieEntreprise() {
+	public CategorieEntreprise getCategorieEntreprise() {
 		return criteria.getCategorieEntreprise();
 	}
 
-	public void setCategorieEntreprise(String categorieEntreprise) {
+	public void setCategorieEntreprise(CategorieEntreprise categorieEntreprise) {
 		criteria.setCategorieEntreprise(categorieEntreprise);
-	}
-
-	public String getCategorieEntrepriseAsString() {
-		return categorieEntrepriseAsString;
-	}
-
-	public void setCategorieEntrepriseAsString(String categorieEntrepriseAsString) {
-		if (!"TOUS".equals(categorieEntrepriseAsString)) {
-			setCategorieEntreprise(categorieEntrepriseAsString);
-		}
-		else {
-			setCategorieEntreprise(null);
-		}
-		this.categorieEntrepriseAsString = categorieEntrepriseAsString;
 	}
 
 	public String getLocaliteOuPays() {
