@@ -99,6 +99,7 @@ import ch.vd.uniregctb.transaction.TransactionTemplate;
 		final List<BlockingQueue<DelayedOrganisation>> input = new ArrayList<>(2);
 		input.add(immediateQueue);
 		input.add(bulkQueue);
+		input.add(priorityQueue);
 		mixer = new AgeTrackingBlockingQueueMixer<>(input, finalQueue, 5, 30);  // 5 minutes en 30 intervales -> intervales de 10 secondes
 	}
 
