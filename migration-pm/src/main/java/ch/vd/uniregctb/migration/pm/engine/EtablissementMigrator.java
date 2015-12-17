@@ -518,10 +518,6 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 			return;
 		}
 
-		// on crée forcément un nouvel établissement
-		final Etablissement unireg = uniregStore.saveEntityToDb(createEtablissement(regpm));
-		idMapper.addEtablissement(regpm, unireg);
-
 		// récupération des données dans RCEnt
 		SiteOrganisation rcent = null;
 		if (rcentEnabled) {
@@ -530,6 +526,41 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 				rcent = donneesCiviles.getSite();
 			}
 		}
+
+		// on ne crée pas forcément un nouvel établissement, à cause du cas où un même établissement est lié à plusieurs entreprises dans le temps
+		// du côté des données RCEnt...
+		final List<Etablissement> etablissementsExistants = Optional.ofNullable(rcent)
+				.map(site -> uniregStore.getEntitiesFromDb(Etablissement.class, Collections.singletonMap("numeroEtablissement", site.getNumeroSite())))
+				.orElse(null);
+
+		final Etablissement unireg;
+		if (etablissementsExistants == null || etablissementsExistants.isEmpty()) {
+			// on crée un nouvel établissement
+			unireg = uniregStore.saveEntityToDb(createEtablissement(regpm));
+		}
+		else if (etablissementsExistants.size() > 1) {
+			//noinspection ConstantConditions
+			throw new IllegalStateException(String.format("Plus d'un (%d) établissement dans Unireg associé au numéro cantonal %d : %s.",
+			                                              etablissementsExistants.size(),
+			                                              rcent.getNumeroSite(),
+			                                              etablissementsExistants.stream()
+					                                              .map(Etablissement::getNumeroEtablissement)
+					                                              .map(FormatNumeroHelper::numeroCTBToDisplay)
+					                                              .collect(Collectors.joining(", ", "{", "}"))));
+		}
+		else {
+			// reprise d'un établissement existant
+			unireg = etablissementsExistants.get(0);
+
+			//noinspection ConstantConditions
+			mr.addMessage(LogCategory.SUIVI, LogLevel.INFO,
+			              String.format("Etablissement %s ré-utilisé en liaison avec le site civil %d.",
+			                            FormatNumeroHelper.numeroCTBToDisplay(unireg.getNumero()),
+			                            rcent.getNumeroSite()));
+		}
+
+		// entrée dans le mapper d'identifiants
+		idMapper.addEtablissement(regpm, unireg);
 
 		// les liens vers les individus (= activités indépendantes) doivent bien être pris en compte pour les mandataires, par exemple.
 		// en revanche, cela ne signifie pas que l'on doivent aller remplir les graphes de départ avec les établissements d'individus

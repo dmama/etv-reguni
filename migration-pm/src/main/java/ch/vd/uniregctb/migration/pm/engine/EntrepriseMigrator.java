@@ -2426,17 +2426,40 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		final KeyedSupplier<Entreprise> entrepriseSupplier = getEntrepriseSupplier(idMapper, regpm);
 		for (Map.Entry<Long, List<DateRanged<SiteOrganisation>>> entry : validiteSitesPrincipaux.entrySet()) {
 
-			// TODO attention : si dans RCEnt, un même établissement est principal de deux entreprises dans le temps, ceci va crééer des doublons d'établissement dans Unireg!
+			// si l'établissement avec cet identifiant cantonal a déjà été créé en base, on le ré-utilise
+			// (ça marche parce que les différents threads de migration sont synchronisés sur les identifiants cantonaux aussi)
+			final Etablissement etbPrincipal;
+			final List<Etablissement> etbPrincipauxExistants = uniregStore.getEntitiesFromDb(Etablissement.class, Collections.singletonMap("numeroEtablissement", entry.getKey()));
+			if (etbPrincipauxExistants == null || etbPrincipauxExistants.isEmpty()) {
+				etbPrincipal = uniregStore.saveEntityToDb(new Etablissement());
+				etbPrincipal.setNumeroEtablissement(entry.getKey());        // lien vers le civil
 
-			final Etablissement etbPrincipal = uniregStore.saveEntityToDb(new Etablissement());
+				mr.addMessage(LogCategory.SUIVI, LogLevel.INFO,
+				              String.format("Etablissement principal %s créé en liaison avec le site civil %d.",
+				                            FormatNumeroHelper.numeroCTBToDisplay(etbPrincipal.getNumero()),
+				                            entry.getKey()));
+			}
+			else if (etbPrincipauxExistants.size() > 1) {
+				throw new IllegalStateException(String.format("Plus d'un (%d) établissement dans Unireg associé au numéro cantonal %d : %s.",
+				                                              etbPrincipauxExistants.size(),
+				                                              entry.getKey(),
+				                                              etbPrincipauxExistants.stream()
+						                                              .map(Etablissement::getNumeroEtablissement)
+						                                              .map(FormatNumeroHelper::numeroCTBToDisplay)
+						                                              .collect(Collectors.joining(", ", "{", "}"))));
+			}
+			else {
+				etbPrincipal = etbPrincipauxExistants.get(0);
+
+				mr.addMessage(LogCategory.SUIVI, LogLevel.INFO,
+				              String.format("Etablissement principal %s ré-utilisé en liaison avec le site civil %d.",
+				                            FormatNumeroHelper.numeroCTBToDisplay(etbPrincipal.getNumero()),
+				                            entry.getKey()));
+			}
+
 			final Supplier<Etablissement> etbPrincipalSupplier = getEtablissementByUniregIdSupplier(etbPrincipal.getNumero());
-			etbPrincipal.setNumeroEtablissement(entry.getKey());        // lien vers le civil
 
-			mr.addMessage(LogCategory.SUIVI, LogLevel.INFO,
-			              String.format("Etablissement principal %s créé en liaison avec le site civil %d.",
-			                            FormatNumeroHelper.numeroCTBToDisplay(etbPrincipal.getNumero()), entry.getKey()));
-
-			// TODO ici, on ne crée pas de domiciles pour les établissements... comme ils sont connus du civils, les sièges seront à aller chercher par là-bas aussi...
+			// ici, on ne crée pas de domiciles pour les établissements... comme ils sont connus du civils, les sièges seront à aller chercher par là-bas aussi...
 
 			// demande de création de liens d'activité économique
 			entry.getValue().stream()
