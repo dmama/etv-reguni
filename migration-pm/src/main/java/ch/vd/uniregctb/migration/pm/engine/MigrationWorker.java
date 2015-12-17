@@ -1,5 +1,7 @@
 package ch.vd.uniregctb.migration.pm.engine;
 
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -37,6 +39,8 @@ import ch.vd.uniregctb.migration.pm.log.LoggedMessage;
 import ch.vd.uniregctb.migration.pm.log.LoggedMessages;
 import ch.vd.uniregctb.migration.pm.log.MessageLoggedElement;
 import ch.vd.uniregctb.migration.pm.utils.EntityMigrationSynchronizer;
+import ch.vd.uniregctb.migration.pm.utils.GrapheHelper;
+import ch.vd.uniregctb.migration.pm.utils.SynchronizationTicket;
 
 public class MigrationWorker implements Worker, InitializingBean, DisposableBean {
 
@@ -54,6 +58,7 @@ public class MigrationWorker implements Worker, InitializingBean, DisposableBean
 	private MigrationMode mode;
 	private GrapheMigrator grapheMigrator;
 	private int nbThreads = 1;
+	private GrapheHelper grapheHelper;
 
 	/**
 	 * Appelé quand une tâche ne peut être ajoutée à la queue d'entrée d'un {@link ThreadPoolExecutor}, afin d'attendre patiemment
@@ -133,6 +138,10 @@ public class MigrationWorker implements Worker, InitializingBean, DisposableBean
 
 	public void setNbThreads(int nbThreads) {
 		this.nbThreads = nbThreads;
+	}
+
+	public void setGrapheHelper(GrapheHelper grapheHelper) {
+		this.grapheHelper = grapheHelper;
 	}
 
 	@Override
@@ -265,19 +274,20 @@ public class MigrationWorker implements Worker, InitializingBean, DisposableBean
 
 		final Set<Long> idsEntreprise = graphe.getEntreprises().keySet();
 		final Set<Long> idsIndividus = graphe.getIndividus().keySet();
+		final Set<Long> idsCantonaux = grapheHelper.extractNumerosCantonaux(graphe);
 		try {
 			while (true) {
-				final EntityMigrationSynchronizer.Ticket ticket = synchronizer.hold(idsEntreprise, idsIndividus, 1000);
+				final SynchronizationTicket ticket = synchronizer.hold(idsEntreprise, idsIndividus, idsCantonaux, Duration.of(1, ChronoUnit.SECONDS));
 				if (ticket != null) {
 					try {
 						return grapheMigrator.migrate(graphe);
 					}
 					finally {
-						synchronizer.release(ticket);
+						ticket.release();
 					}
 				}
 				else {
-					LOGGER.info(String.format("L'une des entreprises %s ou des individus %s est déjà en cours de migration en ce moment même... On attend...",
+					LOGGER.info(String.format("L'une des entreprises %s, des individus %s est déjà en cours de migration en ce moment même... On attend...",
 					                          Arrays.toString(idsEntreprise.toArray(new Long[idsEntreprise.size()])),
 					                          Arrays.toString(idsIndividus.toArray(new Long[idsIndividus.size()]))));
 				}
