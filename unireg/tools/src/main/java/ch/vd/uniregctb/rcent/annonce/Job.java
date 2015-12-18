@@ -52,11 +52,11 @@ public class Job {
 
 					// récupération des données chargées pour cette entreprise
 					final AdresseData adresse = adresses.get(entry.getKey());
-					if (adresse != null) {
+					if (adresse == null) {
 						System.err.println(String.format("Aucune adresse pour l'entreprise %d.", entry.getKey()));
 					}
 					final DonneesEntrepriseData donneesEntreprise = donnees.get(entry.getKey());
-					if (donneesEntreprise != null) {
+					if (donneesEntreprise == null) {
 						System.err.println(String.format("Aucune donnée d'entreprise pour l'entreprise %d.", entry.getKey()));
 					}
 
