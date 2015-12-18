@@ -174,10 +174,10 @@ public class DeterminationDIsPMAEmettreProcessor {
 
 		try {
 			// extraction des périodes d'imposition à considérer pour la génération des tâches d'envoi
-			final List<PeriodeImpositionPersonnesMorales> periodesATraiter = extrairePeriodesImpositionATraiter(entreprise, periodeFiscale.getAnnee(), dateTraitement, rapport);
+			final TraitementPeriodesImpositionData periodesATraiter = extrairePeriodesImpositionATraiter(entreprise, periodeFiscale.getAnnee(), dateTraitement, rapport);
 
 			// ... et finalement il faut traiter les périodes élues
-			for (PeriodeImpositionPersonnesMorales pi : periodesATraiter) {
+			for (PeriodeImpositionPersonnesMorales pi : periodesATraiter.aTraiter) {
 				traiterPeriodeImposition(entreprise, pi, dateTraitement, rapport);
 			}
 
@@ -190,25 +190,64 @@ public class DeterminationDIsPMAEmettreProcessor {
 		}
 	}
 
+	/**
+	 * Container des périodes d'imposition à traiter et des périodes d'imposition calculées mais
+	 * qui ne sont pas à traiter car la date de traitement est avant la date de fin de la période,
+	 * sur la bonne PF cependant
+	 */
+	static final class TraitementPeriodesImpositionData {
+
+		static final TraitementPeriodesImpositionData EMPTY = new TraitementPeriodesImpositionData(null, null);
+
+		/**
+		 * Périodes d'imposition à traiter (bonne PF, bonne date de fin)
+		 */
+		@NotNull
+		final List<PeriodeImpositionPersonnesMorales> aTraiter;
+
+		/**
+		 * Périodes d'imposition sur la bonne PF mais dont la date de fin est postérieure (ou égale) à la date de traitement (= à ignorer)
+		 */
+		@NotNull
+		final List<PeriodeImpositionPersonnesMorales> aIgnorer;
+
+		/**
+		 * Constructeur
+		 * @param aTraiter Périodes d'imposition à traiter (bonne PF, bonne date de fin)
+		 * @param aIgnorer Périodes d'imposition sur la bonne PF mais dont la date de fin est postérieure (ou égale) à la date de traitement (= à ignorer)
+		 */
+		public TraitementPeriodesImpositionData(List<PeriodeImpositionPersonnesMorales> aTraiter, List<PeriodeImpositionPersonnesMorales> aIgnorer) {
+			this.aTraiter = aTraiter == null ? Collections.<PeriodeImpositionPersonnesMorales>emptyList() : aTraiter;
+			this.aIgnorer = aIgnorer == null ? Collections.<PeriodeImpositionPersonnesMorales>emptyList() : aIgnorer;
+		}
+	}
+
 	@NotNull
-	protected List<PeriodeImpositionPersonnesMorales> extrairePeriodesImpositionATraiter(Entreprise entreprise, int pf, RegDate dateTraitement, DeterminationDIsPMResults rapport) throws AssujettissementException {
+	protected TraitementPeriodesImpositionData extrairePeriodesImpositionATraiter(Entreprise entreprise, int pf, RegDate dateTraitement, DeterminationDIsPMResults rapport) throws AssujettissementException {
 
 		// calculons toutes les périodes d'imposition de l'entreprise
 		final List<PeriodeImposition> pis = periodeImpositionService.determine(entreprise);
 		if (pis == null || pis.isEmpty()) {
 			rapport.addIgnorePasAssujetti(entreprise);
-			return Collections.emptyList();
+			return TraitementPeriodesImpositionData.EMPTY;
 		}
 
 		// on se ramène à la période cherchée
 		final DateRange anneeCivile = new DateRangeHelper.Range(RegDate.get(pf, 1, 1), RegDate.get(pf, 12, 31));
 		boolean anneeCivileVue = false;
 		final List<PeriodeImpositionPersonnesMorales> periodesATraiter = new ArrayList<>(pis.size());
+		final List<PeriodeImpositionPersonnesMorales> periodesBonnePfAIgnorer = new ArrayList<>(pis.size());
 		for (PeriodeImposition pi : pis) {
 			// pour être candidate au traitement, une période doit correspondre à période fiscale choisie et
 			// être terminée avant la date de traitement (nous ne générons pas de tâche pour les DI libres...)
-			if (pi.getPeriodeFiscale() == pf && dateTraitement.isAfter(pi.getDateFin())) {
-				periodesATraiter.add((PeriodeImpositionPersonnesMorales) pi);
+			if (pi.getPeriodeFiscale() == pf) {
+				if (dateTraitement.isAfter(pi.getDateFin())) {
+					periodesATraiter.add((PeriodeImpositionPersonnesMorales) pi);
+				}
+				else {
+					anneeCivileVue = true;
+					periodesBonnePfAIgnorer.add((PeriodeImpositionPersonnesMorales) pi);
+				}
 			}
 			else if (!anneeCivileVue) {
 				// pour distinguer entre le cas où l'assujettissement de l'entreprise n'intersecte pas du tout
@@ -227,10 +266,9 @@ public class DeterminationDIsPMAEmettreProcessor {
 			else {
 				rapport.addIgnorePasAssujetti(entreprise);
 			}
-			return Collections.emptyList();
 		}
 
-		return periodesATraiter;
+		return new TraitementPeriodesImpositionData(periodesATraiter, periodesBonnePfAIgnorer);
 	}
 
 	/**
@@ -238,12 +276,12 @@ public class DeterminationDIsPMAEmettreProcessor {
 	 *
 	 * @param entreprise     le contribuable concerné
 	 * @param periodeFiscale la période fiscale concernée
-	 * @param pis            les périodes d'imposition calculées pour le contribuable et la période fiscale concernée
+	 * @param data           les périodes d'imposition calculées pour le contribuable et la période fiscale concernée
 	 * @param rapport        données du rapport d'exécution du job
 	 */
 	private void verifierValiditeDeclarations(Entreprise entreprise,
 	                                          PeriodeFiscale periodeFiscale,
-	                                          List<PeriodeImpositionPersonnesMorales> pis,
+	                                          TraitementPeriodesImpositionData data,
 	                                          DeterminationDIsPMResults rapport) {
 
 		// TODO attention : pour les PM, la PF n'est pas nécessairement terminée quand on lance ce job...
@@ -256,7 +294,7 @@ public class DeterminationDIsPMAEmettreProcessor {
 			for (Declaration d : declarations) {
 				final DeclarationImpotOrdinaire di = (DeclarationImpotOrdinaire) d;
 				if (!di.isAnnule() && di.getPeriode().getAnnee().equals(periodeFiscale.getAnnee())) {
-					verifierValiditeDeclaration(entreprise, pis, di, rapport);
+					verifierValiditeDeclaration(entreprise, data, di, rapport);
 				}
 			}
 		}
@@ -266,16 +304,16 @@ public class DeterminationDIsPMAEmettreProcessor {
 	 * Vérifie la déclaration spécifiée, et dans le cas où elle ne correspond pas exactement à une période calculée, génère une tâche d'annulation.
 	 *
 	 * @param entreprise le contribuable concerné
-	 * @param periodes   les périodes d'imposition calculées pour le contribuable et la période fiscale concernée
+	 * @param data       les périodes d'imposition calculées pour le contribuable et la période fiscale concernée
 	 * @param di         la déclaration d'impôt ordinaire à vérifier
 	 * @param rapport    données du rapport d'exécution du job
 	 */
 	private void verifierValiditeDeclaration(Entreprise entreprise,
-	                                         List<PeriodeImpositionPersonnesMorales> periodes,
+	                                         TraitementPeriodesImpositionData data,
 	                                         DeclarationImpotOrdinaire di,
 	                                         DeterminationDIsPMResults rapport) {
 
-		final ExistenceResults<PeriodeImpositionPersonnesMorales> results = checkExistencePeriode(periodes, di);
+		final ExistenceResults<PeriodeImpositionPersonnesMorales> results = checkExistencePeriode(data, di);
 		if (results == null) {
 
 			TacheCriteria criterion = new TacheCriteria();
@@ -305,6 +343,9 @@ public class DeterminationDIsPMAEmettreProcessor {
 			case INTERSECTE:
 				// problème, mais il doit avoir été détecté lors de la création de la tâche
 				break;
+			case A_IGNORER:
+				// surtout ne rien faire !!
+				break;
 			default:
 				throw new IllegalArgumentException("Type de résultat inconnu = [" + results.status + ']');
 			}
@@ -316,12 +357,12 @@ public class DeterminationDIsPMAEmettreProcessor {
 	 *
 	 * @param entreprise     le contribuable concerné
 	 * @param periodeFiscale la période fiscale concernée
-	 * @param pis            les périodes d'imposition calculées pour le contribuable et la période fiscale concernée
+	 * @param data           les périodes d'imposition calculées pour le contribuable et la période fiscale concernée
 	 * @param rapport        données du rapport d'exécution du job
 	 */
 	private void verifierValiditeTachesEnvoi(Entreprise entreprise,
 	                                         PeriodeFiscale periodeFiscale,
-	                                         List<PeriodeImpositionPersonnesMorales> pis,
+	                                         TraitementPeriodesImpositionData data,
 	                                         DeterminationDIsPMResults rapport) {
 
 		final TacheCriteria criterion = new TacheCriteria();
@@ -335,7 +376,7 @@ public class DeterminationDIsPMAEmettreProcessor {
 			for (Tache t : taches) {
 				final TacheEnvoiDeclarationImpotPM te = (TacheEnvoiDeclarationImpotPM) t;
 				if (!te.isAnnule()) {
-					verifierValiditeTacheEnvoi(entreprise, pis, te, rapport);
+					verifierValiditeTacheEnvoi(entreprise, data, te, rapport);
 				}
 			}
 		}
@@ -345,16 +386,16 @@ public class DeterminationDIsPMAEmettreProcessor {
 	 * Vérifie la tâche d'envoi de déclaration spécifiée, et dans le cas où elle ne correspond pas exactement à une période calculée, elle est annulée.
 	 *
 	 * @param entreprise le contribuable concerné
-	 * @param pis        les périodes d'imposition calculées pour le contribuable et la période fiscale concernée
+	 * @param data       les périodes d'imposition calculées pour le contribuable et la période fiscale concernée
 	 * @param tache      la tache d'envoi de déclaration à vérifier
 	 * @param rapport    données du rapport d'exécution du job
 	 */
 	private void verifierValiditeTacheEnvoi(Entreprise entreprise,
-	                                        List<PeriodeImpositionPersonnesMorales> pis,
+	                                        TraitementPeriodesImpositionData data,
 	                                        TacheEnvoiDeclarationImpotPM tache,
 	                                        DeterminationDIsPMResults rapport) {
 
-		final ExistenceResults<PeriodeImpositionPersonnesMorales> results = checkExistencePeriode(pis, tache);
+		final ExistenceResults<PeriodeImpositionPersonnesMorales> results = checkExistencePeriode(data, tache);
 		if (results == null) {
 			// [UNIREG-1742] pas de période pour la tâche => on l'annule
 			tache.setAnnule(true);
@@ -369,6 +410,9 @@ public class DeterminationDIsPMAEmettreProcessor {
 				// [UNIREG-1984] la tâche ne corresponds pas à la période d'imposition calculée, on l'annule
 				tache.setAnnule(true);
 				rapport.addTacheEnvoiAnnulee(entreprise, tache);
+				break;
+			case A_IGNORER:
+				// surtout, ne rien faire !!
 				break;
 			default:
 				throw new IllegalArgumentException("Type de résultat inconnu = [" + results.status + ']');
@@ -436,6 +480,7 @@ public class DeterminationDIsPMAEmettreProcessor {
 					rapport.addErrorDeclarationCollision(entreprise, message);
 				}
 				break;
+			case A_IGNORER:
 			default:
 				throw new NotImplementedException();
 			}
@@ -471,6 +516,9 @@ public class DeterminationDIsPMAEmettreProcessor {
 			case DEJA_TRAITE:
 				//Rien a faire dans ce cas la tâche sera de nouveau générée
 				break;
+			case A_IGNORER:
+				// surtout, ne rien faire..,
+				break;
 			default:
 				throw new IllegalArgumentException("Le statut de tâche [" + checkTache.status + "] est inconnu.");
 			}
@@ -497,7 +545,7 @@ public class DeterminationDIsPMAEmettreProcessor {
 	protected static class ExistenceResults<T extends DateRange> {
 
 		protected enum TacheStatus {
-			EXISTE_DEJA, INTERSECTE, DEJA_TRAITE
+			EXISTE_DEJA, INTERSECTE, DEJA_TRAITE, A_IGNORER
 		}
 
 		public final TacheStatus status;
@@ -513,19 +561,26 @@ public class DeterminationDIsPMAEmettreProcessor {
 		}
 	}
 
-	protected ExistenceResults<PeriodeImpositionPersonnesMorales> checkExistencePeriode(final List<PeriodeImpositionPersonnesMorales> periodes, final DateRange range) {
+	protected ExistenceResults<PeriodeImpositionPersonnesMorales> checkExistencePeriode(TraitementPeriodesImpositionData data, DateRange range) {
 
 		ExistenceResults<PeriodeImpositionPersonnesMorales> status = null;
 
-		if (periodes != null && !periodes.isEmpty()) {
-			for (PeriodeImpositionPersonnesMorales p : periodes) {
+		for (PeriodeImpositionPersonnesMorales p : data.aTraiter) {
+			if (DateRangeHelper.equals(p, range)) {
+				status = new ExistenceResults<>(ExistenceResults.TacheStatus.EXISTE_DEJA, p);
+			}
+			else if (DateRangeHelper.intersect(p, range)) {
+				status = new ExistenceResults<>(ExistenceResults.TacheStatus.INTERSECTE, p);
+				break; // inutile de continuer
+			}
+		}
 
-				if (DateRangeHelper.equals(p, range)) {
-					status = new ExistenceResults<>(ExistenceResults.TacheStatus.EXISTE_DEJA, p);
-				}
-				else if (DateRangeHelper.intersect(p, range)) {
-					status = new ExistenceResults<>(ExistenceResults.TacheStatus.INTERSECTE, p);
-					break; // inutile de continuer
+		// potentiellement la déclaration colle avec une PF existante mais ignorée (pour cause de date de traitement antérieure à la date de fin de la période)
+		if (status == null) {
+			for (PeriodeImpositionPersonnesMorales p : data.aIgnorer) {
+				if (DateRangeHelper.intersect(p, range)) {
+					status = new ExistenceResults<>(ExistenceResults.TacheStatus.A_IGNORER, p);
+					break;
 				}
 			}
 		}

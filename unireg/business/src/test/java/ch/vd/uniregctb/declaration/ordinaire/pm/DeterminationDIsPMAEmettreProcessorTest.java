@@ -54,6 +54,7 @@ public class DeterminationDIsPMAEmettreProcessorTest extends BusinessTest {
 	private DeterminationDIsPMAEmettreProcessor service;
 	private PeriodeImpositionService periodeImpositionService;
 	private AdresseService adresseService;
+	private TacheDAO tacheDAO;
 
 	private ParametreAppService parametreAppService;
 	private Integer oldPremierePeriodeFiscaleDeclarationsPersonnesMorales;
@@ -63,7 +64,7 @@ public class DeterminationDIsPMAEmettreProcessorTest extends BusinessTest {
 
 		super.onSetUp();
 		final PeriodeFiscaleDAO periodeDAO = getBean(PeriodeFiscaleDAO.class, "periodeFiscaleDAO");
-		final TacheDAO tacheDAO = getBean(TacheDAO.class, "tacheDAO");
+		tacheDAO = getBean(TacheDAO.class, "tacheDAO");
 		parametreAppService = getBean(ParametreAppService.class, "parametreAppService");
 		final ValidationService validationService = getBean(ValidationService.class, "validationService");
 		periodeImpositionService = getBean(PeriodeImpositionService.class, "periodeImpositionService");
@@ -165,7 +166,7 @@ public class DeterminationDIsPMAEmettreProcessorTest extends BusinessTest {
 			for (int nbJours = -100; nbJours < 500; ++nbJours) {
 				final RegDate dateTraitement = date(2013, 1, 1).addDays(nbJours);
 				final DeterminationDIsPMResults rapport = new DeterminationDIsPMResults(annee, dateTraitement, 1, tiersService, adresseService);
-				final List<PeriodeImpositionPersonnesMorales> pis = service.extrairePeriodesImpositionATraiter(entreprise, annee, dateTraitement, rapport);
+				final List<PeriodeImpositionPersonnesMorales> pis = service.extrairePeriodesImpositionATraiter(entreprise, annee, dateTraitement, rapport).aTraiter;
 
 				// depuis le 01.04.2014, il y a au moins une période d'imposition terminée -> elle doit être présente en premier
 				if (dateTraitement.isAfterOrEqual(date(2013, 4, 1))) {
@@ -204,7 +205,7 @@ public class DeterminationDIsPMAEmettreProcessorTest extends BusinessTest {
 			for (int nbJours = -100; nbJours < 500; ++nbJours) {
 				final RegDate dateTraitement = date(2014, 1, 1).addDays(nbJours);
 				final DeterminationDIsPMResults rapport = new DeterminationDIsPMResults(annee, dateTraitement, 1, tiersService, adresseService);
-				final List<PeriodeImpositionPersonnesMorales> pis = service.extrairePeriodesImpositionATraiter(entreprise, annee, dateTraitement, rapport);
+				final List<PeriodeImpositionPersonnesMorales> pis = service.extrairePeriodesImpositionATraiter(entreprise, annee, dateTraitement, rapport).aTraiter;
 
 				// depuis le 01.02.2014, il y a au moins une période d'imposition terminée -> elle doit être présente en premier
 				if (dateTraitement.isAfterOrEqual(date(2014, 2, 1))) {
@@ -801,7 +802,7 @@ public class DeterminationDIsPMAEmettreProcessorTest extends BusinessTest {
 		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
 			@Override
 			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final List<Tache> taches = hibernateTemplate.find("select t from Tache t where t.contribuable.id=:idpm order by t.id", Collections.singletonMap("idpm", idpm), FlushMode.AUTO);
+				final List<Tache> taches = tacheDAO.find(idpm);
 				assertNotNull(taches);
 				assertEquals(1, taches.size());
 				{
@@ -818,5 +819,54 @@ public class DeterminationDIsPMAEmettreProcessorTest extends BusinessTest {
 				}
 			}
 		});
+	}
+
+	/**
+	 * [SIFISC-17363] Cas d'une DI sur l'année 2015 (émise avant la fin de l'année car le contribuable avait initialement une fin
+	 * d'exercice commercial avant la fin de l'année, qu'il a décalée à fin 2015)
+	 */
+	@Test
+	public void testDeclarationImpotExistanteMaisFinPosterieureADateLimiteBouclement() throws Exception {
+
+		// mise en place fiscale
+		final long idpm = doInNewTransactionAndSessionUnderSwitch(tacheSynchronizer, false, new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PeriodeFiscale pf = addPeriodeFiscale(2015);
+				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
+
+				// Un contribuable PM assujetti
+				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+				addDonneesRegistreCommerce(entreprise, date(2012, 4, 5), null, "Bricolage SARL", FormeJuridiqueEntreprise.SARL);
+				addBouclement(entreprise, date(2012, 12, 1), DayMonth.get(12, 31), 12);      // bouclements tous les ans depuis le 31.12.2012
+				addForPrincipal(entreprise, date(2012, 4, 5), MotifFor.DEBUT_EXPLOITATION, MockCommune.Bex);
+
+				// DI migrée (= sans modèle de document) sur 2015
+				addDeclarationImpot(entreprise, pf, date(2015, 1, 1), date(2015, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, null);
+				return entreprise.getNumero();
+			}
+		});
+
+		// vérification qu'aucune tâche n'est présente pour le moment sur ce contribuable (c'est le but du switch à "false"),,,
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final List<Tache> taches = tacheDAO.find(idpm);
+				assertNotNull(taches);
+				assertEquals(0, taches.size());
+			}
+		});
+
+		// lancement du job avec une date de traitement avant la fin de la période de la DI existante...
+		final DeterminationDIsPMResults results = service.run(2015, date(2015, 9, 30), 1, null);
+		assertNotNull(results);
+		assertEquals(1, results.ignores.size());
+		assertEquals(0, results.erreurs.size());
+		assertEquals(0, results.traites.size());            // en particulier pas de tâche d'annulation de la DI existante...
+
+		final DeterminationDIsPMResults.Ignore ignore = results.ignores.get(0);
+		assertNotNull(ignore);
+		assertEquals(idpm, ignore.noCtb);
+		assertEquals(DeterminationDIsPMResults.IgnoreType.AUCUN_BOUCLEMENT, ignore.raison);
 	}
 }
