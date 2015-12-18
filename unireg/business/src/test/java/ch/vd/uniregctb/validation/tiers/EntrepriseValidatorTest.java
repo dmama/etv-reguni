@@ -170,8 +170,8 @@ public class EntrepriseValidatorTest extends AbstractValidatorTest<Entreprise> {
 	public void testChevauchementAllegementsFiscaux() throws Exception {
 
 		final Entreprise entreprise = new Entreprise();
-		entreprise.addAllegementFiscal(new AllegementFiscal(date(2000, 1, 1), date(2005, 12, 31), BigDecimal.valueOf(25L), null, null, null));
-		entreprise.addAllegementFiscal(new AllegementFiscal(date(2000, 1, 1), null, BigDecimal.TEN, AllegementFiscal.TypeImpot.CAPITAL, null, null));
+		entreprise.addAllegementFiscal(new AllegementFiscal(date(2000, 1, 1), date(2005, 12, 31), BigDecimal.valueOf(25L), AllegementFiscal.TypeImpot.BENEFICE, AllegementFiscal.TypeCollectivite.CANTON, null));
+		entreprise.addAllegementFiscal(new AllegementFiscal(date(2000, 1, 1), null, BigDecimal.TEN, AllegementFiscal.TypeImpot.CAPITAL, AllegementFiscal.TypeCollectivite.CANTON, null));
 
 		// ici, tout va bien, les différents allègements ne se marchent pas dessus
 		{
@@ -181,7 +181,7 @@ public class EntrepriseValidatorTest extends AbstractValidatorTest<Entreprise> {
 		}
 
 		// ajoutons un nouvel allègement avec une cible déjà existante, sans chevauchement
-		entreprise.addAllegementFiscal(new AllegementFiscal(date(2006, 1, 1), date(2006, 12, 31), BigDecimal.valueOf(35L), null, null, null));
+		entreprise.addAllegementFiscal(new AllegementFiscal(date(2006, 1, 1), date(2006, 12, 31), BigDecimal.valueOf(35L), AllegementFiscal.TypeImpot.BENEFICE, AllegementFiscal.TypeCollectivite.CANTON, null));
 		{
 			final ValidationResults vr = validate(entreprise);
 			Assert.assertFalse(vr.toString(), vr.hasErrors());
@@ -189,14 +189,14 @@ public class EntrepriseValidatorTest extends AbstractValidatorTest<Entreprise> {
 		}
 
 		// ajoutons maintenant un chevauchement
-		entreprise.addAllegementFiscal(new AllegementFiscal(date(2004, 1, 1), date(2007, 12, 31), BigDecimal.valueOf(22L), null, null, null));
+		entreprise.addAllegementFiscal(new AllegementFiscal(date(2004, 1, 1), date(2007, 12, 31), BigDecimal.valueOf(22L), AllegementFiscal.TypeImpot.BENEFICE, AllegementFiscal.TypeCollectivite.CANTON, null));
 		{
 			final ValidationResults vr = validate(entreprise);
 			Assert.assertEquals(1, vr.errorsCount());
 			Assert.assertEquals(0, vr.warningsCount());
 
 			final String error = vr.getErrors().get(0);
-			Assert.assertEquals("La période [01.01.2004 ; 31.12.2006] est couverte par plusieurs allègements fiscaux de type 'allègement universel'.", error);
+			Assert.assertEquals("La période [01.01.2004 ; 31.12.2006] est couverte par plusieurs allègements fiscaux de type 'allègement BENEFICE CANTON'.", error);
 		}
 	}
 
@@ -204,7 +204,7 @@ public class EntrepriseValidatorTest extends AbstractValidatorTest<Entreprise> {
 	public void testAllegementsFiscauxInvalides() throws Exception {
 
 		final Entreprise entreprise = new Entreprise();
-		entreprise.addAllegementFiscal(new AllegementFiscal(date(2010, 1, 1), date(2005, 12, 31), BigDecimal.TEN, null, null, null));     // les dates sont à l'envers !
+		entreprise.addAllegementFiscal(new AllegementFiscal(date(2010, 1, 1), date(2005, 12, 31), BigDecimal.TEN, AllegementFiscal.TypeImpot.BENEFICE, AllegementFiscal.TypeCollectivite.COMMUNE, null));     // les dates sont à l'envers !
 
 		final ValidationResults vr = validate(entreprise);
 		Assert.assertTrue(vr.hasErrors());
@@ -212,7 +212,7 @@ public class EntrepriseValidatorTest extends AbstractValidatorTest<Entreprise> {
 		Assert.assertEquals(0, vr.warningsCount());
 
 		final List<String> errors = vr.getErrors();
-		Assert.assertEquals("L'allègement fiscal AllegementFiscal universel (01.01.2010 - 31.12.2005) possède une date de début qui est après la date de fin: début = 01.01.2010, fin = 31.12.2005", errors.get(0));
+		Assert.assertEquals("L'allègement fiscal AllegementFiscal BENEFICE COMMUNE (01.01.2010 - 31.12.2005) possède une date de début qui est après la date de fin: début = 01.01.2010, fin = 31.12.2005", errors.get(0));
 	}
 
 	@Test
