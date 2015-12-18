@@ -4433,6 +4433,77 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 	}
 
 	/**
+	 * [SIFISC-17342] les fors principaux ne doivent commencer qu'à la date de début du premier immeuble pour une entreprise DP avec immeuble
+	 */
+	@Test
+	public void testEntrepriseDroitPublicAvecImmeubleDecalageForPrincipal() throws Exception {
+
+		final long noEntreprise = 46237L;
+		final RegDate dateDebutForPrincipal = RegDate.get(1960, 12, 3);
+		final RegDate dateDebutImmeuble = dateDebutForPrincipal.addYears(18).addDays(53);
+
+		final RegpmEntreprise e = EntrepriseMigratorTest.buildEntreprise(noEntreprise);
+		EntrepriseMigratorTest.addRaisonSociale(e, dateDebutForPrincipal, "Le bien pour tous", null, null, true);
+		EntrepriseMigratorTest.addFormeJuridique(e, dateDebutForPrincipal, EntrepriseMigratorTest.createTypeFormeJuridique("DP", RegpmCategoriePersonneMorale.APM));
+		EntrepriseMigratorTest.addForPrincipalSuisse(e, dateDebutForPrincipal, RegpmTypeForPrincipal.SIEGE, Commune.ECHALLENS);
+		EntrepriseMigratorTest.addAssujettissement(e, dateDebutForPrincipal, null, RegpmTypeAssujettissement.LILIC);
+
+		final RegpmImmeuble immeuble = EntrepriseMigratorTest.createImmeuble(Commune.LAUSANNE);
+		EntrepriseMigratorTest.addRattachementProprietaire(e, dateDebutImmeuble, null, immeuble);
+
+		final MockGraphe graphe = new MockGraphe(Collections.singletonList(e),
+		                                         null,
+		                                         null);
+
+		activityManager.setup(ALL_ACTIVE);
+
+		final LoggedMessages lms = grapheMigrator.migrate(graphe);
+		Assert.assertNotNull(lms);
+
+		// vérification en base (en particulier la date de début du for principal)
+		doInUniregTransaction(true, status -> {
+			final Entreprise entreprise = uniregStore.getEntityFromDb(Entreprise.class, noEntreprise);
+			Assert.assertNotNull(entreprise);
+
+			final List<ForFiscalPrincipalPM> forsPrincipaux = entreprise.getForsFiscauxPrincipauxActifsSorted();
+			Assert.assertNotNull(forsPrincipaux);
+			Assert.assertEquals(1, forsPrincipaux.size());
+
+			final ForFiscalPrincipalPM forPrincipal = forsPrincipaux.get(0);
+			Assert.assertNotNull(forPrincipal);
+			Assert.assertFalse(forPrincipal.isAnnule());
+			Assert.assertEquals(dateDebutImmeuble, forPrincipal.getDateDebut());
+			Assert.assertEquals(MotifFor.INDETERMINE, forPrincipal.getMotifOuverture());
+			Assert.assertNull(forPrincipal.getDateFin());
+			Assert.assertNull(forPrincipal.getMotifFermeture());
+			Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, forPrincipal.getTypeAutoriteFiscale());
+			Assert.assertEquals(Commune.ECHALLENS.getNoOfs(), forPrincipal.getNumeroOfsAutoriteFiscale());
+		});
+
+		final Map<LogCategory, List<String>> messages = buildTextualMessages(lms);
+		{
+			// vérification des messages dans le contexte "SUIVI"
+			final List<String> msgs = messages.get(LogCategory.SUIVI);
+			Assert.assertEquals(5, msgs.size());
+			Assert.assertEquals("WARN;" + noEntreprise + ";Active;;;;;;;;;;;;;;;L'entreprise n'existait pas dans Unireg avec ce numéro de contribuable.", msgs.get(0));
+			Assert.assertEquals("ERROR;" + noEntreprise + ";Active;;;;;;;;;;;;;;;Pas de numéro cantonal assigné sur l'entreprise, pas de lien vers le civil.", msgs.get(1));
+			Assert.assertEquals("WARN;" + noEntreprise + ";Active;;;;;;;;;;;;;;;Entreprise sans exercice commercial ni date de bouclement futur.", msgs.get(2));
+			Assert.assertEquals("WARN;" + noEntreprise + ";Active;;;;;;;;;;;;;;;Pas de siège associé dans les données fiscales, pas d'établissement principal créé.", msgs.get(3));
+			Assert.assertEquals("INFO;" + noEntreprise + ";Active;;;;;;;;;;;;;;;Entreprise migrée : " + FormatNumeroHelper.numeroCTBToDisplay(noEntreprise) + ".", msgs.get(4));
+		}
+		{
+			// vérification des messages dans le contexte "FORS"
+			final List<String> msgs = messages.get(LogCategory.FORS);
+			Assert.assertEquals(5, msgs.size());
+			Assert.assertEquals("INFO;" + noEntreprise + ";Active;;;Entreprise DP avec rattachement(s) propriétaire(s), on conservera donc les fors malgré la forme juridique DP.", msgs.get(0));
+			Assert.assertEquals("WARN;" + noEntreprise + ";Active;;;La date de début de validité du for principal 1 est déplacée du 03.12.1960 au 25.01.1979 pour correspondre à la date de début du premier immeuble associé à l'entreprise DP.", msgs.get(1));
+			Assert.assertEquals("INFO;" + noEntreprise + ";Active;;;For principal COMMUNE_OU_FRACTION_VD/5518 [25.01.1979 -> ?] généré.", msgs.get(2));
+			Assert.assertEquals("INFO;" + noEntreprise + ";Active;;;For secondaire 'immeuble' [25.01.1979 -> ?] ajouté sur la commune 5586.", msgs.get(3));
+			Assert.assertEquals("WARN;" + noEntreprise + ";Active;;;Il n'y avait pas de fors secondaires sur la commune OFS 5586 (maintenant : [25.01.1979 -> ?]).", msgs.get(4));
+		}
+	}
+
+	/**
 	 * Ceci est un test utile au debugging, on charge un graphe depuis un fichier sur disque (identique à ce que
 	 * l'on peut envoyer dans la vraie migration) et on tente la migration du graphe en question
 	 */

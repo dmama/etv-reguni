@@ -3318,6 +3318,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		}
 
 		// [SIFISC-17097] on doit reprendre les fors des entreprises DP qui ont des immeubles
+		final RegDate dateDebutPremierImmeubleDP;
 		final boolean isDPavecImmeuble;
 		if (isDP) {
 			final Map<RegpmCommune, List<DateRange>> directs = couvertureDepuisRattachementsProprietaires(regpm.getRattachementsProprietaires());
@@ -3326,9 +3327,20 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 			if (isDPavecImmeuble) {
 				mr.addMessage(LogCategory.FORS, LogLevel.INFO, "Entreprise DP avec rattachement(s) propriétaire(s), on conservera donc les fors malgré la forme juridique DP.");
 			}
+
+			// [SIFISC-17340] calcul de la date de début du premier rapport propriétaire sur une commune
+			dateDebutPremierImmeubleDP = Stream.of(directs, viaGroupe)
+					.filter(Objects::nonNull)
+					.map(Map::values)
+					.flatMap(Collection::stream)
+					.flatMap(List::stream)
+					.map(DateRange::getDateDebut)
+					.min(Comparator.naturalOrder())
+					.orElse(null);
 		}
 		else {
 			isDPavecImmeuble = false;
+			dateDebutPremierImmeubleDP = null;
 		}
 
 		// entreprises administratives de droit public (communes...) -> pas de for migré, et c'est normal
@@ -3342,14 +3354,16 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		}
 
 		// maintenant, on peut migrer...
+		// [SIFISC-17340] attention, si on est en présence d'une société DP avec immeuble, on ne doit reprendre les fors principaux
+		// qu'à partir de la date du premier immeuble...
 		final List<Pair<ForFiscalPrincipalPM, Boolean>> donneesForsAGenerer;
 		if (!forsRegpm.isEmpty()) {
-			donneesForsAGenerer = generationDonneesMigrationForsPrincipaux(forsRegpm, unireg, dateFinActivite, hasSP, mr);
+			donneesForsAGenerer = generationDonneesMigrationForsPrincipaux(forsRegpm, hasSP, dateDebutPremierImmeubleDP, mr);
 		}
 		else {
 			// ok, pas de fors principaux dans RegPM... mais si nous n'avons pas affaire à une administration de droit
 			// public, on peut générer des fors à partir des sièges...
-			donneesForsAGenerer = generationDonneesForsPrincipauxDepuisSieges(regpm, mr);
+			donneesForsAGenerer = generationDonneesForsPrincipauxDepuisSieges(regpm, hasSP, dateDebutPremierImmeubleDP, mr);
 		}
 
 		// ici, on va collecter les fors qui sont issus d'une décision ACI (= administration effective)
@@ -3416,19 +3430,64 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 	/**
 	 * Génération des données de base pour les fors principaux depuis les sièges d'une entreprise
 	 * @param regpm entreprise de RegPM
+	 * @param societeDePersonnes <code>vrai</code> si l'entreprise a toujours été une société de personne, <code>false</code> si elle ne l'a jamais été (le cas hybride doit être traité en amont...)
+	 * @param dateDebutPremierImmeubleDP si non-<code>null</code>, nous sommes en présence d'une DP avec immeuble... il ne faut reprendre les fors principaux qu'à partir de cette date
 	 * @param mr collecteur de messages de suivi
 	 * @return une liste de données pour la création de fors (sans date de fin pour le moment) associés à un booléen qui indique si le for est une administration effective
 	 */
-	private List<Pair<ForFiscalPrincipalPM, Boolean>> generationDonneesForsPrincipauxDepuisSieges(RegpmEntreprise regpm, MigrationResultProduction mr) {
+	private List<Pair<ForFiscalPrincipalPM, Boolean>> generationDonneesForsPrincipauxDepuisSieges(RegpmEntreprise regpm, boolean societeDePersonnes, @Nullable RegDate dateDebutPremierImmeubleDP, MigrationResultProduction mr) {
 		final EntityKey entrepriseKey = buildEntrepriseKey(regpm);
 		final NavigableMap<RegDate, RegpmSiegeEntreprise> sieges = mr.getExtractedData(SiegesHistoData.class, entrepriseKey).histo;
-		return sieges.entrySet().stream()
+
+		// pas de sièges, pas de fors principaux...
+		if (sieges.isEmpty()) {
+			return Collections.emptyList();
+		}
+
+		// [SIFISC-17340] s'il y a des sièges avant la première date à prendre en compte, il doivent être ignorés
+		final RegDate datePremierSiegeAPrendre;
+		if (dateDebutPremierImmeubleDP != null) {
+			final RegDate dateForValideAuDebutPremierImmeubleDP = sieges.floorKey(dateDebutPremierImmeubleDP);
+			if (dateForValideAuDebutPremierImmeubleDP == null) {
+				// pas de siège avant la date du premier immeuble -> rien à faire, le processus de comblement des fors principaux fera le reste
+				datePremierSiegeAPrendre = sieges.firstKey();
+			}
+			else {
+				datePremierSiegeAPrendre = dateForValideAuDebutPremierImmeubleDP;
+
+				// il y aura donc potentiellement des fors princinpaux ignorés... on va les logger ici
+				sieges.headMap(datePremierSiegeAPrendre).values().stream()
+						.forEach(siege -> mr.addMessage(LogCategory.FORS, LogLevel.WARN,
+						                             String.format("Le siege %d est ignoré car antérieur à la date de début (%s) du premier immeuble associé à l'entreprise DP.",
+						                                           siege.getId().getSeqNo(),
+						                                           StringRenderers.DATE_RENDERER.toString(dateDebutPremierImmeubleDP))));
+			}
+		}
+		else {
+			datePremierSiegeAPrendre = sieges.firstKey();
+		}
+
+		return sieges.tailMap(datePremierSiegeAPrendre, true).entrySet().stream()
 				.map(entry -> {
 					final ForFiscalPrincipalPM ffp = new ForFiscalPrincipalPM();
 					final RegpmSiegeEntreprise siege = entry.getValue();
 					copyCreationMutation(siege, ffp);
-					ffp.setDateDebut(entry.getKey());
-					ffp.setGenreImpot(GenreImpot.BENEFICE_CAPITAL);
+
+					// potentiel rabotage de la date de début du siège
+					if (dateDebutPremierImmeubleDP != null && dateDebutPremierImmeubleDP.isAfter(siege.getDateValidite())) {
+						ffp.setDateDebut(dateDebutPremierImmeubleDP);
+
+						mr.addMessage(LogCategory.FORS, LogLevel.WARN,
+						              String.format("La date de début de validité du siège %d est déplacée du %s au %s pour correspondre à la date de début du premier immeuble associé à l'entreprise DP.",
+						                            siege.getId().getSeqNo(),
+						                            StringRenderers.DATE_RENDERER.toString(siege.getDateValidite()),
+						                            StringRenderers.DATE_RENDERER.toString(dateDebutPremierImmeubleDP)));
+					}
+					else {
+						ffp.setDateDebut(siege.getDateValidite());
+					}
+
+					ffp.setGenreImpot(societeDePersonnes ? GenreImpot.REVENU_FORTUNE : GenreImpot.BENEFICE_CAPITAL);
 					ffp.setMotifRattachement(MotifRattachement.DOMICILE);
 
 					final CommuneOuPays cop = buildCommuneOuPays(siege.getDateValidite(), siege::getCommune, siege::getNoOfsPays, String.format("siège %d", siege.getId().getSeqNo()), mr, LogCategory.FORS);
@@ -3459,19 +3518,43 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 	/**
 	 * Génération des données servant à la migration des fors principaux existants en fors principaux pour Unireg
 	 * @param forsRegpm les fors principaux retenus dans RegPM
-	 * @param unireg l'entreprise cible de la migration
-	 * @param dateFinActivite la date de fin d'activité calculée pour l'entreprise (= date de fin du dernier for)
 	 * @param societeDePersonnes <code>vrai</code> si l'entreprise a toujours été une société de personne, <code>false</code> si elle ne l'a jamais été (le cas hybride doit être traité en amont...)
+	 * @param dateDebutPremierImmeubleDP si non-<code>null</code>, nous sommes en présence d'une DP avec immeuble... il ne faut reprendre les fors principaux qu'à partir de cette date
 	 * @param mr collecteur de messages de suivi
 	 * @return une liste de données pour la création de fors (sans date de fin pour le moment) associés à un booléen qui indique si le for est une administration effective
 	 */
-	private List<Pair<ForFiscalPrincipalPM, Boolean>> generationDonneesMigrationForsPrincipaux(List<RegpmForPrincipal> forsRegpm, Entreprise unireg, @Nullable RegDate dateFinActivite, boolean societeDePersonnes, MigrationResultProduction mr) {
+	private List<Pair<ForFiscalPrincipalPM, Boolean>> generationDonneesMigrationForsPrincipaux(List<RegpmForPrincipal> forsRegpm,
+	                                                                                           boolean societeDePersonnes,
+	                                                                                           @Nullable RegDate dateDebutPremierImmeubleDP,
+	                                                                                           MigrationResultProduction mr) {
 
-		final Function<RegpmForPrincipal, Optional<Pair<ForFiscalPrincipalPM, Boolean>>> mapper =
+		// construisons d'abord une map des fors principaux pour ne reprendre que les fors à partir de la date de début
+		// du premier immeuble DP (si cette date est renseignée, bien-sûr, cf SIFISC-17340)
+		final NavigableMap<RegDate, RegpmForPrincipal> mapFors = forsRegpm.stream()
+				.collect(Collectors.toMap(RegpmForPrincipal::getDateValidite,
+				                          Function.identity(),
+				                          (f1, f2) -> { throw new IllegalArgumentException("Il ne devrait plus y avoir, à ce niveau, de fors principaux à la même date..."); },
+				                          TreeMap::new));
+
+		final Function<RegpmForPrincipal, Pair<ForFiscalPrincipalPM, Boolean>> mapper =
 				f -> {
 					final ForFiscalPrincipalPM ffp = new ForFiscalPrincipalPM();
 					copyCreationMutation(f, ffp);
-					ffp.setDateDebut(f.getDateValidite());
+
+					// potentiellement, rabotage du for
+					if (dateDebutPremierImmeubleDP != null && dateDebutPremierImmeubleDP.isAfter(f.getDateValidite())) {
+						ffp.setDateDebut(dateDebutPremierImmeubleDP);
+
+						mr.addMessage(LogCategory.FORS, LogLevel.WARN,
+						              String.format("La date de début de validité du for principal %d est déplacée du %s au %s pour correspondre à la date de début du premier immeuble associé à l'entreprise DP.",
+						                            f.getId().getSeqNo(),
+						                            StringRenderers.DATE_RENDERER.toString(f.getDateValidite()),
+						                            StringRenderers.DATE_RENDERER.toString(dateDebutPremierImmeubleDP)));
+					}
+					else {
+						ffp.setDateDebut(f.getDateValidite());
+					}
+
 					ffp.setGenreImpot(societeDePersonnes ? GenreImpot.REVENU_FORTUNE : GenreImpot.BENEFICE_CAPITAL);
 					ffp.setMotifRattachement(MotifRattachement.DOMICILE);
 
@@ -3480,13 +3563,34 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 					ffp.setNumeroOfsAutoriteFiscale(cop.getNumeroOfsAutoriteFiscale());
 
 					checkFractionCommuneVaudoise(ffp, mr, LogCategory.FORS);
-					return Optional.of(Pair.of(ffp, f.getType() == RegpmTypeForPrincipal.ADMINISTRATION_EFFECTIVE));
+					return Pair.of(ffp, f.getType() == RegpmTypeForPrincipal.ADMINISTRATION_EFFECTIVE);
 				};
 
-		return forsRegpm.stream()
+		// s'il y a des fors avant la première date à prendre en compte, ils doivent être ignorés
+		final RegDate datePremierForAPrendre;
+		if (dateDebutPremierImmeubleDP != null) {
+			final RegDate dateForValideAuDebutPremierImmeubleDP = mapFors.floorKey(dateDebutPremierImmeubleDP);
+			if (dateForValideAuDebutPremierImmeubleDP == null) {
+				// pas de for avant la date du premier immeuble -> rien à faire, le processus de comblement des fors principaux fera le reste
+				datePremierForAPrendre = mapFors.firstKey();
+			}
+			else {
+				datePremierForAPrendre = dateForValideAuDebutPremierImmeubleDP;
+
+				// il y aura donc potentiellement des fors princinpaux ignorés... on va les logger ici
+				mapFors.headMap(datePremierForAPrendre).values().stream()
+						.forEach(fp -> mr.addMessage(LogCategory.FORS, LogLevel.WARN,
+						                             String.format("Le for principal %d est ignoré car antérieur à la date de début (%s) du premier immeuble associé à l'entreprise DP.",
+						                                           fp.getId().getSeqNo(),
+						                                           StringRenderers.DATE_RENDERER.toString(dateDebutPremierImmeubleDP))));
+			}
+		}
+		else {
+			datePremierForAPrendre = mapFors.firstKey();
+		}
+
+		return mapFors.tailMap(datePremierForAPrendre, true).values().stream()
 				.map(mapper)
-				.filter(Optional::isPresent)
-				.map(Optional::get)
 				.collect(Collectors.toList());
 	}
 
