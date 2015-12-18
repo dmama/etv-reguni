@@ -91,7 +91,9 @@ public class EntrepriseServiceImpl implements EntrepriseService {
 			final List<DonneesRegistreCommerce> donneesRC = new ArrayList<>(entreprise.getDonneesRC());
 			Collections.sort(donneesRC, new DateRangeComparator<>());
 
-			entrepriseView.setRaisonSociale(CollectionsUtils.getLastElement(donneesRC).getRaisonSociale());
+			if (!donneesRC.isEmpty()) {
+				entrepriseView.setRaisonSociale(CollectionsUtils.getLastElement(donneesRC).getRaisonSociale());
+			}
 			entrepriseView.setSieges(extractSieges(tiersService.getEtablissementsPrincipauxEntreprise(entreprise)));
 			entrepriseView.setFormesJuridiques(extractFormesJuridiques(donneesRC));
 		}
