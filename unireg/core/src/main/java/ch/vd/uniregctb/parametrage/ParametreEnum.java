@@ -28,7 +28,7 @@ public enum ParametreEnum {
 
 	delaiRetourDeclarationImpotPMEmiseManuellement("30", Type.delaisEnJour, true),
 	delaiMinimalRetourDeclarationImpotPM("3", Type.delaisEnMois, true),
-	delaiEnvoiSommationDeclarationImpotPM("15", Type.delaisEnJour, true),
+	delaiEnvoiSommationDeclarationImpotPM("0", Type.delaisEnJour, true),
 	delaiEcheanceSommationDeclarationImpotPM("30", Type.delaisEnJour, true),
 
 	jourDuMoisEnvoiListesRecapitulatives("20", Type.jourDansMois, true),
@@ -99,9 +99,13 @@ public enum ParametreEnum {
 
 		try {
 			switch (type) {
-			case entierPositif:
 			case delaisEnJour:
 			case delaisEnMois:
+				if (Integer.parseInt(s) < 0) {
+					throw new ValeurInvalideException(msgErr + " - La valeur doit être un entier positif ou nul");
+				}
+				break;
+			case entierPositif:
 				if (Integer.parseInt(s) <= 0) {
 					throw new ValeurInvalideException(msgErr + " - La valeur doit être un entier positif");
 				}
