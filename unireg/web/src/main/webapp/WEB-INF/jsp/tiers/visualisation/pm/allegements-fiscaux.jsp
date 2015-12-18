@@ -11,7 +11,7 @@
 
 	<c:if test="${not empty command.allegementsFiscaux}">
 	
-		<display:table name="${command.allegementsFiscaux}" id="allegement" requestURI="visu.do" class="display">
+		<display:table name="${command.allegementsFiscaux}" id="allegement" requestURI="visu.do" class="display" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator">
 			<display:column sortable="true" titleKey="label.date.debut" sortProperty="dateDebut">
 				<unireg:regdate regdate="${allegement.dateDebut}"/>
 			</display:column>

@@ -554,7 +554,7 @@ public class TiersManager implements MessageSourceAware {
 		if (allegements != null) {
 			final List<AllegementFiscalView> views = new ArrayList<>(allegements.size());
 			for (AllegementFiscal af : allegements) {
-				final AllegementFiscalView afView = new AllegementFiscalView(af.getId(), af.getDateDebut(), af.getDateFin(), af.getTypeImpot(), af.getTypeCollectivite(), af.getNoOfsCommune(), af.getPourcentageAllegement());
+				final AllegementFiscalView afView = new AllegementFiscalView(af);
 				views.add(afView);
 			}
 			Collections.sort(views, reverseComparator);

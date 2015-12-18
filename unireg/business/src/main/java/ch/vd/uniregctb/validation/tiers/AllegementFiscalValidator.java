@@ -45,6 +45,14 @@ public class AllegementFiscalValidator extends DateRangeEntityValidator<Allegeme
 		final ValidationResults vr = super.validate(af);
 
 		if (!af.isAnnule()) {
+			// quelques données obligatoires
+			if (af.getTypeCollectivite() == null) {
+				vr.addError(String.format("%s %s n'a pas de type de collectivité assignée.", getEntityCategoryName(), getEntityDisplayString(af)));
+			}
+			if (af.getTypeImpot() == null) {
+				vr.addError(String.format("%s %s n'a pas de type d'imnpôt assigné.", getEntityCategoryName(), getEntityDisplayString(af)));
+			}
+
 			// seul le type de collectivité communal donne droit à la donnée d'une commune
 			if (af.getNoOfsCommune() != null && af.getTypeCollectivite() != AllegementFiscal.TypeCollectivite.COMMUNE) {
 				vr.addError(String.format("%s %s indique une commune alors que la collectivité associée n'est pas de type communal.", getEntityCategoryName(), getEntityDisplayString(af)));
