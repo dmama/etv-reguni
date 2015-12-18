@@ -1,17 +1,12 @@
 package ch.vd.uniregctb.migration.pm.utils;
 
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
-import ch.vd.unireg.interfaces.organisation.data.OrganisationConstants;
 
 /**
  * Quelques méthodes utilitaires autour des données des organisations fournies par RCEnt
@@ -45,13 +40,4 @@ public abstract class OrganisationDataHelper {
 		return ranges.get(0).getDateDebut();
 	}
 
-	/**
-	 * Renvoie la liste des numéros IDE historisés
-	 * @param identifiers les identifiants connus d'une <i>organisation</i> (ou d'une <i>location</i>)
-	 * @return la liste des numéros IDE
-	 */
-	@NotNull
-	public static List<DateRanged<String>> getNumerosIDE(Map<String, List<DateRanged<String>>> identifiers) {
-		return Optional.ofNullable(identifiers.get(OrganisationConstants.CLE_IDE)).orElseGet(Collections::emptyList);
-	}
 }
