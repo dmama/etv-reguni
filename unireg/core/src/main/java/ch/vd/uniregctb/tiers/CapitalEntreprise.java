@@ -25,9 +25,9 @@ public class CapitalEntreprise extends HibernateDateRangeEntity implements Linke
 	private MontantMonetaire montant;
 
 	/**
-	 * Nécessaire pour Hibernate, apparemment
+	 * Nécessaire pour Hibernate (et SuperGRA...)
 	 */
-	protected CapitalEntreprise() {
+	public CapitalEntreprise() {
 	}
 
 	public CapitalEntreprise(RegDate dateDebut, RegDate dateFin, MontantMonetaire montant) {
