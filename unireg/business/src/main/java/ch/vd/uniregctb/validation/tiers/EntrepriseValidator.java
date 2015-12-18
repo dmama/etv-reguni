@@ -151,15 +151,19 @@ public class EntrepriseValidator extends ContribuableImpositionPersonnesMoralesV
 			final Map<RegimeFiscal.Portee, List<RegimeFiscal>> parPortee = new EnumMap<>(RegimeFiscal.Portee.class);
 			for (RegimeFiscal regimeFiscal : regimesFiscaux) {
 				final RegimeFiscal.Portee portee = regimeFiscal.getPortee();
-				final List<RegimeFiscal> liste;
-				if (parPortee.containsKey(portee)) {
-					liste = parPortee.get(portee);
+
+				// [SIFISC-17375] dans les écrans super-gra, on peut être dans des cas où la portée n'a pas encore été assignée (-> NPE à l'insertion dans la map)
+				if (portee != null) {
+					final List<RegimeFiscal> liste;
+					if (parPortee.containsKey(portee)) {
+						liste = parPortee.get(portee);
+					}
+					else {
+						liste = new ArrayList<>(size);
+						parPortee.put(portee, liste);
+					}
+					liste.add(regimeFiscal);
 				}
-				else {
-					liste = new ArrayList<>(size);
-					parPortee.put(portee, liste);
-				}
-				liste.add(regimeFiscal);
 			}
 
 			// 2. pour chacune des portées, on valide qu'il n'y a pas de chevauchements
