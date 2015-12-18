@@ -684,10 +684,10 @@ public class TiersMapHelper extends CommonMapHelper {
 	 *
 	 * @return une map
 	 */
-	public Map<String, String> getMapFormeJuridiqueEntreprise() {
-		final HashMap<String, String> map = new HashMap<>();
+	public Map<FormeJuridiqueEntreprise, String> getMapFormeJuridiqueEntreprise() {
+		final HashMap<FormeJuridiqueEntreprise, String> map = new HashMap<>();
 		for (FormeJuridiqueEntreprise formeJuridiqueEntreprise : FormeJuridiqueEntreprise.values()) {
-			map.put(formeJuridiqueEntreprise.getCodeECH(), formeJuridiqueEntreprise.getLibellé());
+			map.put(formeJuridiqueEntreprise, formeJuridiqueEntreprise.getLibellé());
 		}
 		return map;
 	}

@@ -12,6 +12,7 @@ import org.jetbrains.annotations.Nullable;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.type.CategorieEntreprise;
 import ch.vd.uniregctb.type.CategorieImpotSource;
+import ch.vd.uniregctb.type.FormeJuridiqueEntreprise;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.Sexe;
 
@@ -194,7 +195,7 @@ public class TiersCriteria implements Serializable, TiersFilter {
 	/**
 	 * La forme juridique
 	 */
-	private String formeJuridique;
+	private FormeJuridiqueEntreprise formeJuridique;
 
 	/**
 	 * La catégorie d'entreprise découlant de la forme juridique
@@ -275,7 +276,7 @@ public class TiersCriteria implements Serializable, TiersFilter {
 				&& StringUtils.isBlank(natureJuridique)
 				&& StringUtils.isBlank(noOfsFor)
 				&& StringUtils.isBlank(noSymic)
-				&& StringUtils.isBlank(formeJuridique)
+				&& formeJuridique == null
 				&& categorieEntreprise == null
 				&& modeImposition == null
 				&& categorieDebiteurIs == null
@@ -461,7 +462,7 @@ public class TiersCriteria implements Serializable, TiersFilter {
 	/**
 	 * @return the formeJuridique
 	 */
-	public String getFormeJuridique() {
+	public FormeJuridiqueEntreprise getFormeJuridique() {
 		return formeJuridique;
 	}
 
@@ -469,7 +470,7 @@ public class TiersCriteria implements Serializable, TiersFilter {
 	 * @param formeJuridique
 	 *            the formeJuridique to set
 	 */
-	public void setFormeJuridique(String formeJuridique) {
+	public void setFormeJuridique(FormeJuridiqueEntreprise formeJuridique) {
 		this.formeJuridique = formeJuridique;
 	}
 

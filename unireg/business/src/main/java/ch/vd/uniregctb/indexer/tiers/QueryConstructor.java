@@ -341,8 +341,8 @@ public class QueryConstructor {
 
 	private void addFormeJuridique(BooleanQuery fullQuery) throws IndexerException {
 
-		if (StringUtils.isNotBlank(criteria.getFormeJuridique())) {
-			final Query q = new TermQuery(new Term(TiersIndexableData.FORME_JURIDIQUE, criteria.getFormeJuridique()));
+		if (criteria.getFormeJuridique() != null) {
+			final Query q = new TermQuery(new Term(TiersIndexableData.FORME_JURIDIQUE, criteria.getFormeJuridique().getCodeECH()));
 			fullQuery.add(q, must);
 		}
 	}

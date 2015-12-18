@@ -10,6 +10,7 @@ import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.tiers.TiersCriteria;
 import ch.vd.uniregctb.type.CategorieEntreprise;
 import ch.vd.uniregctb.type.CategorieImpotSource;
+import ch.vd.uniregctb.type.FormeJuridiqueEntreprise;
 import ch.vd.uniregctb.type.ModeImposition;
 
 /**
@@ -162,26 +163,12 @@ public class TiersCriteriaView implements Serializable {
 		criteria.setNumeroEtranger(numeroEtranger);
 	}
 
-	public String getFormeJuridique() {
+	public FormeJuridiqueEntreprise getFormeJuridique() {
 		return criteria.getFormeJuridique();
 	}
 
-	public void setFormeJuridique(String formeJuridique) {
+	public void setFormeJuridique(FormeJuridiqueEntreprise formeJuridique) {
 		criteria.setFormeJuridique(formeJuridique);
-	}
-
-	public String getFormeJuridiqueAsString() {
-		return formeJuridiqueAsString;
-	}
-
-	public void setFormeJuridiqueAsString(String formeJuridiqueAsString) {
-		if (formeJuridiqueAsString == null || "".equals(formeJuridiqueAsString)) {
-			setFormeJuridique(null);
-		}
-		else {
-			setFormeJuridique(formeJuridiqueAsString);
-		}
-		this.formeJuridiqueAsString = formeJuridiqueAsString;
 	}
 
 	public CategorieEntreprise getCategorieEntreprise() {

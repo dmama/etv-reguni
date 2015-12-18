@@ -19,6 +19,7 @@ import ch.vd.uniregctb.indexer.lucene.FSIndexProvider;
 import ch.vd.uniregctb.tiers.TiersCriteria;
 import ch.vd.uniregctb.type.CategorieEntreprise;
 import ch.vd.uniregctb.type.CategorieImpotSource;
+import ch.vd.uniregctb.type.FormeJuridiqueEntreprise;
 import ch.vd.uniregctb.type.ModeCommunication;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.NatureJuridique;
@@ -396,12 +397,12 @@ public class TiersIndexableDataTest extends WithoutSpringTest {
 
 		// création et indexation des données
 		final TiersIndexableData data = newIndexableData();
-		data.setFormeJuridique(FormeLegale.N_0106_SOCIETE_ANONYME.name());
+		data.setFormeJuridique(FormeLegale.N_0106_SOCIETE_ANONYME.getCode());
 		globalIndex.indexEntity(data);
 
 		// recherche des données (OK)
 		final TiersCriteria criteria = new TiersCriteria();
-		criteria.setFormeJuridique(FormeLegale.N_0106_SOCIETE_ANONYME.name());
+		criteria.setFormeJuridique(FormeJuridiqueEntreprise.SA);
 
 		final List<TiersIndexedData> resultats = globalTiersSearcher.search(criteria);
 		assertNotNull(resultats);
@@ -411,7 +412,7 @@ public class TiersIndexableDataTest extends WithoutSpringTest {
 		assertEquals((Long) ID, indexed.getNumero());
 
 		// recherche des données (KO)
-		criteria.setFormeJuridique(FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE.name());
+		criteria.setFormeJuridique(FormeJuridiqueEntreprise.SARL);
 		assertEmpty(globalTiersSearcher.search(criteria));
 	}
 
