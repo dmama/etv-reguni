@@ -44,6 +44,7 @@ public class EnvoiSommationsDIsPMProcessorTest extends BusinessTest {
 	private AdresseService adresseService;
 
 	private ParametreAppService parametreAppService;
+	private Integer delaiAdministratifPM = null;
 	private Integer premiereAnneeDI = null;
 
 	@Override
@@ -61,7 +62,9 @@ public class EnvoiSommationsDIsPMProcessorTest extends BusinessTest {
 		// dans la vraie application, la première année d'envoi des DI des personnes morales est en 2016
 		// mais pour le moment, on a besoin d'un peu plus de marge...
 		premiereAnneeDI = parametreAppService.getPremierePeriodeFiscaleDeclarationsPersonnesMorales();
+		delaiAdministratifPM = parametreAppService.getDelaiEnvoiSommationDeclarationImpotPM();
 		parametreAppService.setPremierePeriodeFiscaleDeclarationsPersonnesMorales(2014);
+		parametreAppService.setDelaiEnvoiSommationDeclarationImpotPM(15);
 	}
 
 	@Override
@@ -69,6 +72,10 @@ public class EnvoiSommationsDIsPMProcessorTest extends BusinessTest {
 		if (premiereAnneeDI != null) {
 			parametreAppService.setPremierePeriodeFiscaleDeclarationsPersonnesMorales(premiereAnneeDI);
 			premiereAnneeDI = null;
+		}
+		if (delaiAdministratifPM != null) {
+			parametreAppService.setDelaiEnvoiSommationDeclarationImpotPM(delaiAdministratifPM);
+			delaiAdministratifPM = null;
 		}
 		super.onTearDown();
 	}

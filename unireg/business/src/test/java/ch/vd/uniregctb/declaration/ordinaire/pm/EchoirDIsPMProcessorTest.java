@@ -41,6 +41,7 @@ public class EchoirDIsPMProcessorTest extends BusinessTest {
 	private AdresseService adresseService;
 
 	private ParametreAppService parametreAppService;
+	private Integer delaiAdministratifPM = null;
 	private Integer oldPremierePeriodeFiscaleDeclarationPM;
 
 	@Override
@@ -57,7 +58,9 @@ public class EchoirDIsPMProcessorTest extends BusinessTest {
 		// tant qu'on n'est pas en 2016, les tests devront utiliser cet artifice...
 		parametreAppService = getBean(ParametreAppService.class, "parametreAppService");
 		oldPremierePeriodeFiscaleDeclarationPM = parametreAppService.getPremierePeriodeFiscaleDeclarationsPersonnesMorales();
+		delaiAdministratifPM = parametreAppService.getDelaiEnvoiSommationDeclarationImpotPM();
 		parametreAppService.setPremierePeriodeFiscaleDeclarationsPersonnesMorales(2014);
+		parametreAppService.setDelaiEnvoiSommationDeclarationImpotPM(15);
 	}
 
 	@Override
@@ -65,6 +68,10 @@ public class EchoirDIsPMProcessorTest extends BusinessTest {
 		if (oldPremierePeriodeFiscaleDeclarationPM != null) {
 			parametreAppService.setPremierePeriodeFiscaleDeclarationsPersonnesMorales(oldPremierePeriodeFiscaleDeclarationPM);
 			oldPremierePeriodeFiscaleDeclarationPM = null;
+		}
+		if (delaiAdministratifPM != null) {
+			parametreAppService.setDelaiEnvoiSommationDeclarationImpotPM(delaiAdministratifPM);
+			delaiAdministratifPM = null;
 		}
 		super.onTearDown();
 	}
