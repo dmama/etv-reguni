@@ -63,6 +63,8 @@ public class TiersIndexableData extends IndexableData {
 	public static final String FOR_PRINCIPAL = "D_FOR_PRINCIPAL";
 	public static final String DATE_OUVERTURE_FOR = "D_DATE_OUVERTURE_FOR";
 	public static final String DATE_FERMETURE_FOR = "D_DATE_FERMETURE_FOR";
+	public static final String DATE_OUVERTURE_FOR_VD = "D_DATE_OUVERTURE_FOR_VD";
+	public static final String DATE_FERMETURE_FOR_VD = "D_DATE_FERMETURE_FOR_VD";
 	public static final String DOMICILE_VD = "D_DOMICILE_VD";
 	public static final String NO_OFS_DOMICILE_VD = "D_NO_OFS_DOMICILE_VD";
 	public static final String INDEXATION_DATE = "D_INDEXATION_DATE";
@@ -111,6 +113,8 @@ public class TiersIndexableData extends IndexableData {
 	private String forPrincipal;
 	private String dateOuvertureFor;
 	private String dateFermtureFor;
+	private String dateOuvertureForVd;
+	private String dateFermtureForVd;
 	private String domicileVd;
 	private String noOfsDomicileVd;
 	private String indexationDate;
@@ -172,6 +176,8 @@ public class TiersIndexableData extends IndexableData {
 		addStoredValue(d, TiersIndexableData.FOR_PRINCIPAL, forPrincipal);
 		addStoredValue(d, TiersIndexableData.DATE_OUVERTURE_FOR, dateOuvertureFor);
 		addStoredValue(d, TiersIndexableData.DATE_FERMETURE_FOR, dateFermtureFor);
+		addStoredValue(d, TiersIndexableData.DATE_OUVERTURE_FOR_VD, dateOuvertureForVd);
+		addStoredValue(d, TiersIndexableData.DATE_FERMETURE_FOR_VD, dateFermtureForVd);
 		addStoredValue(d, TiersIndexableData.DOMICILE_VD, domicileVd);
 		addStoredValue(d, TiersIndexableData.NO_OFS_DOMICILE_VD, noOfsDomicileVd);
 		addStoredValue(d, TiersIndexableData.INDEXATION_DATE, indexationDate);
@@ -553,6 +559,22 @@ public class TiersIndexableData extends IndexableData {
 
 	public String getDateFermtureFor() {
 		return dateFermtureFor;
+	}
+
+	public void setDateFermtureForVd(String dateFermtureForVd) {
+		this.dateFermtureForVd = dateFermtureForVd;
+	}
+
+	public String getDateOuvertureForVd() {
+		return dateOuvertureForVd;
+	}
+
+	public void setDateOuvertureForVd(String dateOuvertureForVd) {
+		this.dateOuvertureForVd = dateOuvertureForVd;
+	}
+
+	public String getDateFermtureForVd() {
+		return dateFermtureForVd;
 	}
 
 	public void setDateFermtureFor(String dateFermtureFor) {

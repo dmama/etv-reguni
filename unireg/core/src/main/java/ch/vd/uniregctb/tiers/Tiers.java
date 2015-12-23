@@ -778,6 +778,38 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 		return null;
 	}
 
+	@Transient
+	public ForFiscal getPremierForFiscalVd() {
+		Set<ForFiscal> fors = getForsFiscaux();
+		if (fors != null) {
+			List<ForFiscal> list = new ArrayList<>(fors);
+			Collections.sort(list, new ForFiscalFirstOpenedFirstComparator());
+			return getFirstVdNonAnnule(list);
+		}
+		return null;
+	}
+
+	@Nullable
+	private ForFiscal getFirstVdNonAnnule(List<ForFiscal> list) {
+		for (ForFiscal forFiscal : list) {
+			if (!forFiscal.isAnnule() && forFiscal.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
+				return forFiscal;
+			}
+		}
+		return null;
+	}
+
+	@Transient
+	public ForFiscal getDernierForFiscalVd() {
+		Set<ForFiscal> fors = getForsFiscaux();
+		if (fors != null) {
+			List<ForFiscal> list = new ArrayList<>(fors);
+			Collections.sort(list, new ForFiscalLastOpenFirstComparator());
+			return getFirstVdNonAnnule(list);
+		}
+		return null;
+	}
+
 	// ***********************************************
 	@Transient
 	public ForFiscalPrincipal getDernierForFiscalPrincipal() {

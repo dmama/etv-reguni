@@ -107,6 +107,14 @@ public class TiersIndexedDataView implements Annulable {
 		return data.getDateFermetureFor();
 	}
 
+	public Date getDateOuvertureForVd() {
+		return data.getDateOuvertureForVd();
+	}
+
+	public Date getDateFermetureForVd() {
+		return data.getDateFermetureForVd();
+	}
+
 	public boolean isDebiteurInactif() {
 		return data.isDebiteurInactif();
 	}

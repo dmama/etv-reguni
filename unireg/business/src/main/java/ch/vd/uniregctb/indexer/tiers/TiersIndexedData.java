@@ -34,6 +34,8 @@ public class TiersIndexedData implements Serializable {
 	private final String roleLigne2;
 	private final Date dateOuvertureFor;
 	private final Date dateFermetureFor;
+	private final Date dateOuvertureForVd;
+	private final Date dateFermetureForVd;
 	private final String rue;
 	private final String npa;
 	private final String localite;
@@ -65,6 +67,8 @@ public class TiersIndexedData implements Serializable {
 		roleLigne2 = DocumentExtractorHelper.getDocValue(TiersIndexableData.ROLE_LIGNE2, doc);
 		dateOuvertureFor = DateHelper.indexStringToDate(DocumentExtractorHelper.getDocValue(TiersIndexableData.DATE_OUVERTURE_FOR, doc));
 		dateFermetureFor = DateHelper.indexStringToDate(DocumentExtractorHelper.getDocValue(TiersIndexableData.DATE_FERMETURE_FOR, doc));
+		dateOuvertureForVd = DateHelper.indexStringToDate(DocumentExtractorHelper.getDocValue(TiersIndexableData.DATE_OUVERTURE_FOR, doc));
+		dateFermetureForVd = DateHelper.indexStringToDate(DocumentExtractorHelper.getDocValue(TiersIndexableData.DATE_FERMETURE_FOR, doc));
 		rue = DocumentExtractorHelper.getDocValue(TiersIndexableData.RUE, doc);
 		npa = DocumentExtractorHelper.getDocValue(TiersIndexableData.NPA_COURRIER, doc);
 		localite = DocumentExtractorHelper.getDocValue(TiersIndexableData.LOCALITE, doc);
@@ -149,6 +153,14 @@ public class TiersIndexedData implements Serializable {
 
 	public Date getDateFermetureFor() {
 		return dateFermetureFor;
+	}
+
+	public Date getDateOuvertureForVd() {
+		return dateOuvertureForVd;
+	}
+
+	public Date getDateFermetureForVd() {
+		return dateFermetureForVd;
 	}
 
 	public String getRue() {

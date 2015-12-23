@@ -370,7 +370,7 @@ public abstract class DataHelper {
 		i.setDebtorCategory(EnumHelper.coreToXMLv2(value.getCategorieImpotSource()));
 		i.setDebtorCommunicationMode(EnumHelper.coreToXMLv2(value.getModeCommunication()));
 		i.setLastTaxResidenceBeginDate(DataHelper.coreToXMLv1(value.getDateOuvertureFor()));
-		i.setLastTaxResidenceEndDate(DataHelper.coreToXMLv1(value.getDateFermetureFor()));
+		i.setLastTaxResidenceEndDate(DataHelper.coreToXMLv1(value.getDateFermetureForVd()));
 		if (StringUtils.isNotBlank(value.getNavs13_1())) {
 			i.setVn1(Long.valueOf(value.getNavs13_1()));
 		}
@@ -398,7 +398,7 @@ public abstract class DataHelper {
 		i.setDebtorCategory(EnumHelper.coreToXMLv3(value.getCategorieImpotSource()));
 		i.setDebtorCommunicationMode(EnumHelper.coreToXMLv3(value.getModeCommunication()));
 		i.setLastTaxResidenceBeginDate(DataHelper.coreToXMLv2(value.getDateOuvertureFor()));
-		i.setLastTaxResidenceEndDate(DataHelper.coreToXMLv2(value.getDateFermetureFor()));
+		i.setLastTaxResidenceEndDate(DataHelper.coreToXMLv2(value.getDateFermetureForVd()));
 		if (StringUtils.isNotBlank(value.getNavs13_1())) {
 			i.setVn1(Long.valueOf(value.getNavs13_1()));
 		}
@@ -435,7 +435,7 @@ public abstract class DataHelper {
 		i.setDebtorCategory(EnumHelper.coreToXMLv3(value.getCategorieImpotSource()));
 		i.setDebtorCommunicationMode(EnumHelper.coreToXMLv3(value.getModeCommunication()));
 		i.setLastTaxResidenceBeginDate(DataHelper.coreToXMLv2(value.getDateOuvertureFor()));
-		i.setLastTaxResidenceEndDate(DataHelper.coreToXMLv2(value.getDateFermetureFor()));
+		i.setLastTaxResidenceEndDate(DataHelper.coreToXMLv2(value.getDateFermetureForVd()));
 		if (StringUtils.isNotBlank(value.getNavs13_1())) {
 			i.setVn1(Long.valueOf(value.getNavs13_1()));
 		}

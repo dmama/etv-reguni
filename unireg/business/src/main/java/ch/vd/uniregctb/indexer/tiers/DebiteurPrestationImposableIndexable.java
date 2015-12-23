@@ -156,11 +156,25 @@ public class DebiteurPrestationImposableIndexable extends TiersIndexable<Debiteu
 			}
 		}
 
+		// Fors vaudois
+		RegDate dateOuvertureForVd = null;
+		RegDate dateFermetureForVd = null;
+		ForFiscal premierVd = tiers.getPremierForFiscalVd();
+		if (premierVd != null) {
+			dateOuvertureForVd = premierVd.getDateDebut();
+		}
+		ForFiscal dernierVd = tiers.getDernierForFiscalVd();
+		if (dernierVd != null) {
+			dateFermetureForVd = dernierVd.getDateFin();
+		}
+
 		data.setNoOfsForPrincipal(noOfsFfpActif);
 		data.setTypeOfsForPrincipal(typeAutFfpActif);
 		data.setNosOfsAutresFors(noOfsAutresFors.toString());
 		data.setForPrincipal(communeDernierFfp);
 		data.setDateOuvertureFor(IndexerFormatHelper.dateToString(dateOuvertureFor, IndexerFormatHelper.DateStringMode.STORAGE));
 		data.setDateFermtureFor(IndexerFormatHelper.dateToString(dateFermetureFor, IndexerFormatHelper.DateStringMode.STORAGE));
+		data.setDateOuvertureForVd(IndexerFormatHelper.dateToString(dateOuvertureForVd, IndexerFormatHelper.DateStringMode.STORAGE));
+		data.setDateFermtureForVd(IndexerFormatHelper.dateToString(dateFermetureForVd, IndexerFormatHelper.DateStringMode.STORAGE));
 	}
 }

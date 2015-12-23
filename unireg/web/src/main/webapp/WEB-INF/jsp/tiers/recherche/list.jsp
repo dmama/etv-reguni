@@ -72,11 +72,11 @@
 					<display:column sortable="true" titleKey="label.for.principal">
 						<c:out value="${tiers.forPrincipal}" />
 					</display:column>
-					<display:column sortable="true" titleKey="label.date.ouverture.for" sortProperty="dateOuvertureFor">
-						<fmt:formatDate value="${tiers.dateOuvertureFor}" pattern="dd.MM.yyyy"/>
+					<display:column sortable="true" titleKey="label.date.ouverture.for.vd" sortProperty="dateOuvertureForVd">
+						<fmt:formatDate value="${tiers.dateOuvertureForVd}" pattern="dd.MM.yyyy"/>
 					</display:column>
-					<display:column sortable="true" titleKey="label.date.fermeture.for" sortProperty="dateFermetureFor">
-						<fmt:formatDate value="${tiers.dateFermetureFor}" pattern="dd.MM.yyyy"/>
+					<display:column sortable="true" titleKey="label.date.fermeture.for.vd" sortProperty="dateFermetureForVd">
+						<fmt:formatDate value="${tiers.dateFermetureForVd}" pattern="dd.MM.yyyy"/>
 					</display:column>
 
 					<display:column sortable="false" titleKey="label.ouvrir.vers">
