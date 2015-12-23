@@ -57,6 +57,8 @@ public interface SiteOrganisation {
 	 */
 	Siege getSiege(RegDate date);
 
+	RegDate getDateInscriptionRC(RegDate date);
+
 	List<Adresse> getAdresses();
 
 	List<DateRanged<Long>> getRemplacePar();

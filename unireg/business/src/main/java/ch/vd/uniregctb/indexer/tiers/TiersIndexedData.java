@@ -41,6 +41,7 @@ public class TiersIndexedData implements Serializable {
 	private final String localite;
 	private final String pays;
 	private final String localiteOuPays;
+	private final String dateInscriptionRC;
 	private final String forPrincipal;
 	private final CategorieImpotSource categorieImpotSource;
 	private final ModeCommunication modeCommunication;
@@ -74,6 +75,7 @@ public class TiersIndexedData implements Serializable {
 		localite = DocumentExtractorHelper.getDocValue(TiersIndexableData.LOCALITE, doc);
 		pays = DocumentExtractorHelper.getDocValue(TiersIndexableData.PAYS, doc);
 		localiteOuPays = DocumentExtractorHelper.getDocValue(TiersIndexableData.LOCALITE_PAYS, doc);
+		dateInscriptionRC = DocumentExtractorHelper.getDocValue(TiersIndexableData.DATE_INSCRIPTION_RC, doc);
 		forPrincipal = DocumentExtractorHelper.getDocValue(TiersIndexableData.FOR_PRINCIPAL, doc);
 		annule = DocumentExtractorHelper.getBooleanValue(TiersIndexableData.ANNULE, doc, Boolean.FALSE);
 		debiteurInactif = DocumentExtractorHelper.getBooleanValue(TiersIndexableData.DEBITEUR_INACTIF, doc, Boolean.FALSE);
@@ -181,6 +183,10 @@ public class TiersIndexedData implements Serializable {
 
 	public String getLocaliteOuPays() {
 		return localiteOuPays;
+	}
+
+	public String getDateInscriptionRC() {
+		return dateInscriptionRC;
 	}
 
 	public String getForPrincipal() {

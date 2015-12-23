@@ -22,6 +22,8 @@ public interface DonneesRC {
 
 	StatusInscriptionRC getStatusInscription(RegDate date);
 
+	List<DateRanged<RegDate>> getDateInscription();
+
 	List<DateRanged<String>> getButs();
 
 	List<DateRanged<RegDate>> getDateStatuts();

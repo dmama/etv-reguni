@@ -61,6 +61,7 @@ public class RCEntSiteOrganisationHelper {
 				RCEntHelper.convertAndMap(rc.getStatus(), COMMERCIAL_REGISTER_STATUS_CONVERTER),
 				RCEntHelper.convert(rc.getName()),
 				RCEntHelper.convertAndMap(rc.getEntryStatus(), COMMERCIAL_REGISTER_ENTRY_STATUS_CONVERTER),
+				RCEntHelper.convert(rc.getEntryDate()),
 				RCEntHelper.convertAndFlatmap(rc.getCapital(), CAPITAL_CONVERTER, CAPITAL_PREDICATE),
 				RCEntHelper.convert(rc.getPurpose()),
 				RCEntHelper.convert(rc.getByLawsDate()),

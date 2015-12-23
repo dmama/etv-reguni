@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
@@ -77,6 +78,8 @@ public class EntrepriseIndexable extends ContribuableIndexable<Entreprise> {
 			/*
 			 Cependant, les codes sont censés correspondre car il s'agit dans les deux cas des codes eCH à 2 ou 4 chiffres.
 			 */
+			RegDate inscriptionRC = organisation.getSitePrincipal(null).getPayload().getDateInscriptionRC(null);
+			data.setDateInscriptionRc((IndexerFormatHelper.dateToString(inscriptionRC, IndexerFormatHelper.DateStringMode.STORAGE)));
 		}
 		else {
 			// ok, on prend tout ce qu'on a au fiscal

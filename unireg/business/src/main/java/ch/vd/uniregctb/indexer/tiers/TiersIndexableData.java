@@ -60,6 +60,7 @@ public class TiersIndexableData extends IndexableData {
 	public static final String RUE = "D_RUE";
 	public static final String LOCALITE = "D_LOCALITE";
 	public static final String PAYS = "D_PAYS";
+	public static final String DATE_INSCRIPTION_RC = "D_DATE_INSCRIPTION_RC";
 	public static final String FOR_PRINCIPAL = "D_FOR_PRINCIPAL";
 	public static final String DATE_OUVERTURE_FOR = "D_DATE_OUVERTURE_FOR";
 	public static final String DATE_FERMETURE_FOR = "D_DATE_FERMETURE_FOR";
@@ -110,6 +111,7 @@ public class TiersIndexableData extends IndexableData {
 	private String rue;
 	private String localite;
 	private String pays;
+	private String dateInscriptionRc;
 	private String forPrincipal;
 	private String dateOuvertureFor;
 	private String dateFermtureFor;
@@ -173,6 +175,7 @@ public class TiersIndexableData extends IndexableData {
 		addStoredValue(d, TiersIndexableData.RUE, rue);
 		addStoredValue(d, TiersIndexableData.LOCALITE, localite);
 		addStoredValue(d, TiersIndexableData.PAYS, pays);
+		addStoredValue(d, TiersIndexableData.DATE_INSCRIPTION_RC, dateInscriptionRc);
 		addStoredValue(d, TiersIndexableData.FOR_PRINCIPAL, forPrincipal);
 		addStoredValue(d, TiersIndexableData.DATE_OUVERTURE_FOR, dateOuvertureFor);
 		addStoredValue(d, TiersIndexableData.DATE_FERMETURE_FOR, dateFermtureFor);
@@ -295,6 +298,14 @@ public class TiersIndexableData extends IndexableData {
 
 	public void addSexe(Sexe sexe) {
 		this.sexe = add(this.sexe, IndexerFormatHelper.enumToString(sexe));
+	}
+
+	public String getDateInscriptionRc() {
+		return dateInscriptionRc;
+	}
+
+	public void setDateInscriptionRc(String dateInscriptionRc) {
+		this.dateInscriptionRc = dateInscriptionRc;
 	}
 
 	public String getNoOfsForPrincipal() {

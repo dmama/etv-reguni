@@ -166,6 +166,11 @@ public class MockSiteOrganisation implements SiteOrganisation {
 		return OrganisationHelper.dateRangeForDate(getSieges(), date);	}
 
 	@Override
+	public RegDate getDateInscriptionRC(RegDate date) {
+		return OrganisationHelper.valueForDate(this.getDonneesRC().getDateInscription(), date);
+	}
+
+	@Override
 	public List<Adresse> getAdresses() {
 		return adresses;
 	}

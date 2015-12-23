@@ -95,6 +95,10 @@ public class TiersIndexedDataView implements Annulable {
 		return data.getPays();
 	}
 
+	public String getDateInscriptionRC() {
+		return data.getDateInscriptionRC();
+	}
+
 	public String getForPrincipal() {
 		return data.getForPrincipal();
 	}

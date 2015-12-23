@@ -24,6 +24,7 @@ public class MockDonneesRC implements DonneesRC {
 	private NavigableMap<RegDate, StatusRC> status = new TreeMap<>();
 	private NavigableMap<RegDate, String> nom = new TreeMap<>();
 	private NavigableMap<RegDate, StatusInscriptionRC> statusInscription = new TreeMap<>();
+	private NavigableMap<RegDate, RegDate> dateInscription = new TreeMap<>();
 	private NavigableMap<RegDate, Capital> capital = new TreeMap<>();
 	private NavigableMap<RegDate, AdresseRCEnt> adresseLegale = new TreeMap<>();
 	private NavigableMap<RegDate, String> buts = new TreeMap<>();
@@ -132,6 +133,19 @@ public class MockDonneesRC implements DonneesRC {
 
 	public void addStatusInscription(RegDate dateDebut, @Nullable RegDate dateFin, StatusInscriptionRC nouveauStatusInscription) {
 		MockOrganisationHelper.addRangedData(statusInscription, dateDebut, dateFin, nouveauStatusInscription);
+	}
+
+	@Override
+	public List<DateRanged<RegDate>> getDateInscription() {
+		return MockOrganisationHelper.getHisto(dateInscription);
+	}
+
+	public void changeDateInscription(RegDate date, RegDate nouvelleDateInscription) {
+		MockOrganisationHelper.changeRangedData(dateInscription, date, nouvelleDateInscription);
+	}
+
+	public void addDateInscription(RegDate dateDebut, @Nullable RegDate dateFin, RegDate nouvelleDateInscription) {
+		MockOrganisationHelper.addRangedData(dateInscription, dateDebut, dateFin, nouvelleDateInscription);
 	}
 
 	@Override
