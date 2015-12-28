@@ -16,7 +16,9 @@ import ch.vd.uniregctb.mouvement.view.MouvementDetailView;
 import ch.vd.uniregctb.rapport.view.RapportView;
 import ch.vd.uniregctb.rt.view.RapportPrestationView;
 import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesMorales;
 import ch.vd.uniregctb.tiers.DecisionAciView;
+import ch.vd.uniregctb.tiers.Etablissement;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.NatureTiers;
 import ch.vd.uniregctb.tiers.Tiers;
@@ -115,6 +117,11 @@ public class TiersView {
 
 	//10 éléments à afficher par défaut
 	private int nombreElementsTable = 10;
+
+	public boolean isPmOuEtablissement() {
+		return tiers instanceof ContribuableImpositionPersonnesMorales || tiers instanceof Etablissement;
+	}
+
 
 	public ComplementView getComplement() {
 		return complement;

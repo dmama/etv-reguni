@@ -26,8 +26,6 @@ import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesMorales;
 import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
-import ch.vd.uniregctb.tiers.Entreprise;
-import ch.vd.uniregctb.tiers.Etablissement;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
@@ -215,13 +213,8 @@ public class AutorisationManagerImpl implements AutorisationManager {
 	@NotNull
 	@Override
 	public Autorisations getAutorisations(@Nullable Tiers tiers, String visa, int oid) {
-		if (tiers instanceof Etablissement) { // les établissements ne sont pas éditables pour l'instant
-			return new Autorisations();
-		}
-		else {
-			final Map<String, Boolean> map = getAutorisationsMap(tiers, visa, oid);
-			return new Autorisations(map);
-		}
+		final Map<String, Boolean> map = getAutorisationsMap(tiers, visa, oid);
+		return new Autorisations(map);
 	}
 
 	@Override
@@ -542,7 +535,7 @@ public class AutorisationManagerImpl implements AutorisationManager {
 
 		// UNIREG-2120 Possibilite de créer un debiteur à partir d'une collectivité administrative
 	    // UNIREG-3362 Création de débiteur à partir d'une PM
-		else if (tiers instanceof CollectiviteAdministrative || tiers instanceof Entreprise) {
+		else if (tiers instanceof CollectiviteAdministrative) {
 			map.put(MODIF_COMPLEMENT, Boolean.FALSE);
 			map.put(MODIF_MOUVEMENT, Boolean.FALSE);
 		}

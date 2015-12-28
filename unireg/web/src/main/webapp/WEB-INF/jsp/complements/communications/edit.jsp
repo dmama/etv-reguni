@@ -76,14 +76,16 @@
 							<form:errors path="numeroTelephonePortable" cssClass="error"/>
 						</td>
 					</tr>
-					<tr class="<unireg:nextRowClass/>" >
-						<td><fmt:message key="label.complement.numeroTelProfessionnel" />&nbsp;:</td>
-						<td>
-							<form:input path="numeroTelephoneProfessionnel" cssErrorClass="input-with-errors" size ="20" tabindex="7" maxlength="${lengthnumTel}" />
-							<span class="jTip formInfo" title="<c:url value="/htm/numeroTelephone.htm?width=375"/>" id="telProfessionnel">?</span>
-							<form:errors path="numeroTelephoneProfessionnel" cssClass="error"/>
-						</td>
-					</tr>
+					<c:if test="${!command.pmOuEtablissement}">
+						<tr class="<unireg:nextRowClass/>" >
+							<td><fmt:message key="label.complement.numeroTelProfessionnel" />&nbsp;:</td>
+							<td>
+								<form:input path="numeroTelephoneProfessionnel" cssErrorClass="input-with-errors" size ="20" tabindex="7" maxlength="${lengthnumTel}" />
+								<span class="jTip formInfo" title="<c:url value="/htm/numeroTelephone.htm?width=375"/>" id="telProfessionnel">?</span>
+								<form:errors path="numeroTelephoneProfessionnel" cssClass="error"/>
+							</td>
+						</tr>
+					</c:if>
 					<tr class="<unireg:nextRowClass/>" >
 						<td><fmt:message key="label.complement.numeroFax" />&nbsp;:</td>
 						<td>
