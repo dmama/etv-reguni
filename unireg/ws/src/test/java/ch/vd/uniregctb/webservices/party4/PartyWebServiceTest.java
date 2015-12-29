@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.webservices.party4;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -27,8 +28,13 @@ import ch.vd.unireg.interfaces.infra.mock.MockOfficeImpot;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
+import ch.vd.unireg.interfaces.organisation.data.StatusInscriptionRC;
+import ch.vd.unireg.interfaces.organisation.data.StatusRC;
+import ch.vd.unireg.interfaces.organisation.data.StatusRegistreIDE;
+import ch.vd.unireg.interfaces.organisation.data.TypeOrganisationRegistreIDE;
 import ch.vd.unireg.interfaces.organisation.mock.MockServiceOrganisation;
 import ch.vd.unireg.interfaces.organisation.mock.data.MockOrganisation;
+import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockSiteOrganisationFactory;
 import ch.vd.unireg.webservices.party4.AcknowledgeTaxDeclarationRequest;
 import ch.vd.unireg.webservices.party4.AcknowledgeTaxDeclarationResponse;
 import ch.vd.unireg.webservices.party4.AcknowledgeTaxDeclarationsRequest;
@@ -115,6 +121,7 @@ import ch.vd.uniregctb.type.PeriodiciteDecompte;
 import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypeAdresseTiers;
+import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeContribuable;
 import ch.vd.uniregctb.type.TypeDocument;
 import ch.vd.uniregctb.type.TypePermis;
@@ -2941,7 +2948,10 @@ public class PartyWebServiceTest extends WebserviceTest {
 		serviceOrganisation.setUp(new MockServiceOrganisation() {
 			@Override
 			protected void init() {
-				addOrganisation(noPM, date(2000, 1, 1), nom, FormeLegale.N_0106_SOCIETE_ANONYME);
+				MockOrganisation organisation = addOrganisation(noPM, date(2000, 1, 1), nom, FormeLegale.N_0106_SOCIETE_ANONYME);
+				MockSiteOrganisationFactory.addSite(noPM+9876, organisation, date(2000, 1, 1), null, nom, true, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
+				                                    MockCommune.Lausanne.getNoOFS(), StatusRC.INSCRIT, StatusInscriptionRC.ACTIF, StatusRegistreIDE.DEFINITIF,
+				                                    TypeOrganisationRegistreIDE.SITE, BigDecimal.valueOf(50000), "CHF");
 			}
 		});
 
