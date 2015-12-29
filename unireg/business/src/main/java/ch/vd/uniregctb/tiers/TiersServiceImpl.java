@@ -4783,8 +4783,7 @@ public class TiersServiceImpl implements TiersService {
     @Override
     public String getRaisonSociale(Etablissement etablissement) {
 	    if (etablissement.isConnuAuCivil()) {
-		    final Organisation organisation = serviceOrganisationService.getOrganisationHistory(serviceOrganisationService.getOrganisationPourSite(etablissement.getNumeroEtablissement()));
-		    SiteOrganisation siteOrganisation = organisation.getSiteForNo(etablissement.getNumeroEtablissement());
+		    SiteOrganisation siteOrganisation = getSiteOrganisationPourEtablissement(etablissement);
 		    final List<DateRanged<String>> nom = siteOrganisation.getNom();
 		    return nom.get(nom.size() - 1).getPayload();
 	    }
@@ -5569,7 +5568,7 @@ public class TiersServiceImpl implements TiersService {
 	}
 
 	@Override
-	public Organisation getOrganisationPourSite(@NotNull Etablissement etablissement) {
+	public Organisation getOrganisationPourEtablissement(@NotNull Etablissement etablissement) {
 
 		// inconnue au registre civil, pas difficile...
 		if (!etablissement.isConnuAuCivil()) {
@@ -5578,6 +5577,15 @@ public class TiersServiceImpl implements TiersService {
 
 		final long numeroSIteOrganisation = etablissement.getNumeroEtablissement();
 		return serviceOrganisationService.getOrganisationHistory(serviceOrganisationService.getOrganisationPourSite(numeroSIteOrganisation));
+	}
+
+	@Override
+	public SiteOrganisation getSiteOrganisationPourEtablissement(@NotNull Etablissement etablissement) {
+		Organisation organisation = getOrganisationPourEtablissement(etablissement);
+		if (organisation != null) {
+			return organisation.getSiteForNo(etablissement.getNumeroEtablissement());
+		}
+		return null;
 	}
 
 	@Nullable

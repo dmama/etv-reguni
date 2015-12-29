@@ -2,6 +2,10 @@ package ch.vd.uniregctb.entreprise;
 
 import java.util.List;
 
+import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.interfaces.organisation.data.DateRanged;
+import ch.vd.unireg.interfaces.organisation.data.StatusRC;
+import ch.vd.unireg.interfaces.organisation.data.StatusRegistreIDE;
 import ch.vd.uniregctb.tiers.view.EtatEntrepriseView;
 
 public class EntrepriseView {
@@ -20,8 +24,8 @@ public class EntrepriseView {
 		}
 	}
 
-	private String raisonSociale;
-	private List<String> autresRaisonsSociales;
+	private List<DateRanged<String>> raisonSociale;
+	private List<DateRanged<String>> nomsAdditionnels;
 
 	private List<SiegeView> sieges;
 	private List<FormeJuridiqueView> formesJuridiques;
@@ -29,22 +33,29 @@ public class EntrepriseView {
 	private List<EtatEntrepriseView> etats;
 	private List<String> numerosIDE;
 
+	private RegDate dateInscriptionRC;
+	private StatusRC statusRC;
+	private RegDate dateRadiationRC;
+
+	private RegDate dateInscriptionIde;
+	private StatusRegistreIDE statusIde;
+
 	private SourceCivile source;
 
-	public String getRaisonSociale() {
+	public List<DateRanged<String>> getRaisonSociale() {
 		return raisonSociale;
 	}
 
-	public void setRaisonSociale(String raisonSociale) {
+	public void setRaisonSociale(List<DateRanged<String>> raisonSociale) {
 		this.raisonSociale = raisonSociale;
 	}
 
-	public List<String> getAutresRaisonsSociales() {
-		return autresRaisonsSociales;
+	public List<DateRanged<String>> getNomsAdditionnels() {
+		return nomsAdditionnels;
 	}
 
-	public void setAutresRaisonsSociales(List<String> autresRaisonsSociales) {
-		this.autresRaisonsSociales = autresRaisonsSociales;
+	public void setNomsAdditionnels(List<DateRanged<String>> nomsAdditionnels) {
+		this.nomsAdditionnels = nomsAdditionnels;
 	}
 
 	public List<SiegeView> getSieges() {
@@ -85,6 +96,46 @@ public class EntrepriseView {
 
 	public void setNumerosIDE(List<String> numerosIDE) {
 		this.numerosIDE = numerosIDE;
+	}
+
+	public StatusRC getStatusRC() {
+		return statusRC;
+	}
+
+	public void setStatusRC(StatusRC statusRC) {
+		this.statusRC = statusRC;
+	}
+
+	public RegDate getDateInscriptionRC() {
+		return dateInscriptionRC;
+	}
+
+	public void setDateInscriptionRC(RegDate dateInscriptionRC) {
+		this.dateInscriptionRC = dateInscriptionRC;
+	}
+
+	public RegDate getDateRadiationRC() {
+		return dateRadiationRC;
+	}
+
+	public void setDateRadiationRC(RegDate dateRadiationRC) {
+		this.dateRadiationRC = dateRadiationRC;
+	}
+
+	public RegDate getDateInscriptionIde() {
+		return dateInscriptionIde;
+	}
+
+	public void setDateInscriptionIde(RegDate dateInscriptionIde) {
+		this.dateInscriptionIde = dateInscriptionIde;
+	}
+
+	public StatusRegistreIDE getStatusIde() {
+		return statusIde;
+	}
+
+	public void setStatusIde(StatusRegistreIDE statusIde) {
+		this.statusIde = statusIde;
 	}
 
 	public String getSourceKey() {

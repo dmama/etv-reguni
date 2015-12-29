@@ -16,6 +16,7 @@ import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdressesResolutionException;
 import ch.vd.uniregctb.common.AuthenticationHelper;
+import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.common.TiersNotFoundException;
 import ch.vd.uniregctb.declaration.Periodicite;
@@ -380,7 +381,7 @@ public class TiersEditManagerImpl extends TiersManager implements TiersEditManag
 		else if (ctbAssocie instanceof Entreprise) {
 			final Entreprise entreprise = (Entreprise) ctbAssocie;
 			final EntrepriseView entrepriseView = getEntrepriseService().get(entreprise);
-			debiteur.setNom1(entrepriseView.getRaisonSociale());
+			debiteur.setNom1(CollectionsUtils.getLastElement(entrepriseView.getRaisonSociale()).getPayload());
 		}
 	
 		debiteur.setModeCommunication(ModeCommunication.PAPIER);	

@@ -1685,7 +1685,7 @@ public class AdresseServiceImpl implements AdresseService {
 	}
 
 	private AdressesCivilesHisto getAdressesCivilesHisto(Etablissement etablissement) {
-		final Organisation organisation = tiersService.getOrganisationPourSite(etablissement);
+		final Organisation organisation = tiersService.getOrganisationPourEtablissement(etablissement);
 		if (organisation == null) {
 			throw new OrganisationNotFoundException(etablissement);
 		}

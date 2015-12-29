@@ -10,6 +10,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 import org.apache.commons.collections4.comparators.ReverseComparator;
@@ -29,6 +30,8 @@ import ch.vd.unireg.interfaces.common.Adresse;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.Logiciel;
 import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
+import ch.vd.unireg.interfaces.organisation.data.Siege;
+import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdresseGenerique;
 import ch.vd.uniregctb.adresse.AdresseGenerique.SourceType;
@@ -578,18 +581,25 @@ public class TiersManager implements MessageSourceAware {
 	 * Mise à jour en fonction des données de l'établissement
 	 */
 	protected void setEtablissement(TiersView tiersView, Etablissement etb) {
-		tiersView.setTiers(etb);
-
-		// les domiciles de l'établissement
-		final Set<DomicileEtablissement> domiciles = etb.getDomiciles();
-		if (domiciles != null && !domiciles.isEmpty()) {
-			final List<DomicileEtablissementView> views = new ArrayList<>(domiciles.size());
-			for (DomicileEtablissement dom : domiciles) {
-				views.add(new DomicileEtablissementView(dom));
+		tiersView.setTiers(Objects.requireNonNull(etb));
+		final List<DomicileEtablissementView> views = new ArrayList<>();
+		if (etb.isConnuAuCivil()) {
+			SiteOrganisation siteOrganisation = tiersService.getSiteOrganisationPourEtablissement(etb);
+			List<Siege> sieges = siteOrganisation.getSieges();
+			for (Siege siege : sieges) {
+				views.add(new DomicileEtablissementView(siege));
 			}
-			Collections.sort(views, new ReverseComparator<>(new DateRangeComparator<>()));
-			tiersView.setDomicilesEtablissement(views);
+		} else {
+			// les domiciles de l'établissement
+			final Set<DomicileEtablissement> domiciles = etb.getDomiciles();
+			if (domiciles != null && !domiciles.isEmpty()) {
+				for (DomicileEtablissement dom : domiciles) {
+					views.add(new DomicileEtablissementView(dom));
+				}
+			}
 		}
+		Collections.sort(views, new ReverseComparator<>(new DateRangeComparator<>()));
+		tiersView.setDomicilesEtablissement(views);
 	}
 
 	/**

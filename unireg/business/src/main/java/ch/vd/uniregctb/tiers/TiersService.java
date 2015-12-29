@@ -18,6 +18,7 @@ import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
+import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 import ch.vd.uniregctb.adresse.AdresseTiers;
 import ch.vd.uniregctb.declaration.Periodicite;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
@@ -1655,9 +1656,16 @@ public interface TiersService {
      */
     Organisation getOrganisation(@NotNull Entreprise entreprise);
 
-    Organisation getOrganisationPourSite(@NotNull Etablissement etablissement);
+    Organisation getOrganisationPourEtablissement(@NotNull Etablissement etablissement);
 
-    /**
+	/**
+	 * Renvoie le site d'organisation RCEnt correspondant à l'établissement.
+	 * @param etablissement L'établissement connu au civil
+	 * @return Le site correspondant
+	 */
+	SiteOrganisation getSiteOrganisationPourEtablissement(@NotNull Etablissement etablissement);
+
+	/**
      * @param entreprise une entreprise fiscale
      * @return le numéro IDE associé à l'entreprise, ou <code>null</code> si on n'en connait aucun
      */

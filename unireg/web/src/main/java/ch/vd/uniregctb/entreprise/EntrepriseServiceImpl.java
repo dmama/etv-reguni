@@ -11,6 +11,8 @@ import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
+import ch.vd.unireg.interfaces.organisation.data.DonneesRC;
+import ch.vd.unireg.interfaces.organisation.data.DonneesRegistreIDE;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.Siege;
@@ -56,9 +58,6 @@ public class EntrepriseServiceImpl implements EntrepriseService {
 		EntrepriseView entrepriseView = new EntrepriseView();
 
 		Long numeroEntreprise = entreprise.getNumeroEntreprise();
-		// Hateful stub
-		//numeroEntreprise = 100983251L;
-		//numeroEntreprise = 100980874L; // FIXME: Faire le ménage
 
 		if (numeroEntreprise != null) {
 			/*
@@ -67,10 +66,16 @@ public class EntrepriseServiceImpl implements EntrepriseService {
 			entrepriseView.setSource(EntrepriseView.SourceCivile.RCENT);
 
 			Organisation organisation = serviceOrganisationService.getOrganisationHistory(numeroEntreprise);
-			//Organisation organisation = HorribleMockOrganisationService.getOrg(); // FIXME: Faire le ménage
 
-			entrepriseView.setRaisonSociale(CollectionsUtils.getLastElement(organisation.getNom()).getPayload());
-			entrepriseView.setAutresRaisonsSociales(organisation.getNomsAdditionnels(RegDate.get()));
+			entrepriseView.setRaisonSociale(organisation.getNom());
+			Collections.sort(entrepriseView.getRaisonSociale(), new DateRangeComparator<>());
+
+			List<DateRanged<String>> nomsAdditionnels = new ArrayList<>();
+			for (List<DateRanged<String>> noms : organisation.getNomsAdditionnels().values()) {
+				nomsAdditionnels.addAll(noms);
+			}
+			Collections.sort(nomsAdditionnels, new DateRangeComparator<>());
+			entrepriseView.setNomsAdditionnels(nomsAdditionnels);
 
 			entrepriseView.setSieges(getSiegesFromOrganisation(organisation.getSiegesPrincipaux()));
 			entrepriseView.setFormesJuridiques(getFormesJuridiques(organisation.getFormeLegale()));
@@ -82,6 +87,15 @@ public class EntrepriseServiceImpl implements EntrepriseService {
 					entrepriseView.setNumerosIDE(Collections.singletonList(noIdeRange.getPayload()));
 				}
 			}
+
+			DonneesRC donneesRC = organisation.getSitePrincipal(null).getPayload().getDonneesRC();
+			entrepriseView.setDateInscriptionRC(CollectionsUtils.getLastElement(donneesRC.getDateInscription()).getPayload());
+			entrepriseView.setStatusRC(CollectionsUtils.getLastElement(donneesRC.getStatus()).getPayload());
+			entrepriseView.setDateRadiationRC(CollectionsUtils.getLastElement(donneesRC.getDateRadiation()).getPayload());
+
+			DonneesRegistreIDE donneesRegistreIDE = organisation.getSitePrincipal(null).getPayload().getDonneesRegistreIDE();
+			//entrepriseView.setDateInscritpionIde(CollectionsUtils.getLastElement(donneesRegistreIDE.getDateInscription()).getPayload()); // TODO: apporter la date d'inscription Ide en 16L1
+			entrepriseView.setStatusIde(CollectionsUtils.getLastElement(donneesRegistreIDE.getStatus()).getPayload());
 		}
 		else {
 			/*
@@ -92,7 +106,11 @@ public class EntrepriseServiceImpl implements EntrepriseService {
 			Collections.sort(donneesRC, new DateRangeComparator<>());
 
 			if (!donneesRC.isEmpty()) {
-				entrepriseView.setRaisonSociale(CollectionsUtils.getLastElement(donneesRC).getRaisonSociale());
+				List<DateRanged<String>> raisonSociale = new ArrayList<>();
+				for (DonneesRegistreCommerce rc : donneesRC) {
+					raisonSociale.add(new DateRanged<>(rc.getDateDebut(), rc.getDateFin(), rc.getRaisonSociale()));
+				}
+				entrepriseView.setRaisonSociale(raisonSociale);
 			}
 			entrepriseView.setSieges(extractSieges(tiersService.getEtablissementsPrincipauxEntreprise(entreprise)));
 			entrepriseView.setFormesJuridiques(extractFormesJuridiques(donneesRC));

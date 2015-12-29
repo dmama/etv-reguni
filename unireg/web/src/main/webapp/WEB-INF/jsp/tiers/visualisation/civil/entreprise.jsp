@@ -26,18 +26,41 @@
 				</c:forEach>
 			</td>
 		</tr>
-		<tr class="<unireg:nextRowClass/>" >
-			<td width="30%"><fmt:message key="label.raison.sociale"/>&nbsp;:</td>
-			<td><c:out value="${command.entreprise.raisonSociale}"/></td>
-		</tr>
-		<c:forEach items="${command.entreprise.autresRaisonsSociales}" var="autreRaisonSociale">
-			<tr class="<unireg:nextRowClass/>" >
-				<td width="30%"><fmt:message key="label.raison.sociale.autre"/>&nbsp;:</td>
-				<td><c:out value="${autreRaisonSociale}"/></td>
-			</tr>
-		</c:forEach>
 	</table>
+</fieldset>
 
+<fieldset>
+	<legend><span><fmt:message key="label.raisons.sociales"/></span></legend>
+
+	<input class="noprint" id="showRaisonSocialeHisto" type="checkbox" onclick="refreshRaisonSocialeTable(this);" />
+	<label class="noprint" for="showRaisonSocialeHisto"><fmt:message key="label.historique" /></label>
+
+	<display:table name="${command.entreprise.raisonSociale}" id="raisonSociale" requestURI="visu.do" class="display">
+		<display:column sortable="true" titleKey="label.date.debut" sortProperty="dateDebut">
+			<unireg:regdate regdate="${raisonSociale.dateDebut}"/>
+		</display:column>
+		<display:column sortable="true" titleKey="label.date.fin" sortProperty="dateFin">
+			<unireg:regdate regdate="${raisonSociale.dateFin}"/>
+		</display:column>
+		<display:column sortable="true" titleKey="label.raison.sociale" property="payload"/>
+	</display:table>
+</fieldset>
+
+<fieldset>
+	<legend><span><fmt:message key="label.noms.additionnels"/></span></legend>
+
+	<input class="noprint" id="showNomsAdditionnelsHisto" type="checkbox" onclick="refreshNomsAdditionnelsTable(this);" />
+	<label class="noprint" for="showNomsAdditionnelsHisto"><fmt:message key="label.historique" /></label>
+
+	<display:table name="${command.entreprise.nomsAdditionnels}" id="nomsAdditionnels" requestURI="visu.do" class="display">
+		<display:column sortable="true" titleKey="label.date.debut" sortProperty="dateDebut">
+			<unireg:regdate regdate="${nomsAdditionnels.dateDebut}"/>
+		</display:column>
+		<display:column sortable="true" titleKey="label.date.fin" sortProperty="dateFin">
+			<unireg:regdate regdate="${nomsAdditionnels.dateFin}"/>
+		</display:column>
+		<display:column sortable="true" titleKey="label.raison.sociale" property="payload"/>
+	</display:table>
 </fieldset>
 
 <fieldset>
@@ -53,7 +76,7 @@
 		<display:column sortable="true" titleKey="label.date.fin" sortProperty="dateFin">
 			<unireg:regdate regdate="${sieges.dateFin}"/>
 		</display:column>
-		<display:column titleKey="label.commune.pays">
+		<display:column sortable="true" titleKey="label.commune.pays">
 			<c:choose>
 				<c:when test="${sieges.type == 'COMMUNE_CH' }">
 					<unireg:commune ofs="${sieges.noOfsSiege}" displayProperty="nomOfficielAvecCanton" date="${sieges.dateFin}"/>
@@ -114,7 +137,71 @@
 
 </fieldset>
 
+<fieldset>
+	<legend><span><fmt:message key="label.rc"/></span></legend>
+
+	<unireg:nextRowClass reset="1"/>
+	<table>
+		<tr class="<unireg:nextRowClass/>" >
+			<td width="30%"><fmt:message key="label.date.inscription"/>&nbsp;:</td>
+			<td>
+				<unireg:regdate regdate="${command.entreprise.dateInscriptionRC}"/>
+			</td>
+		</tr>
+		<tr class="<unireg:nextRowClass/>" >
+			<td width="30%"><fmt:message key="label.status"/>&nbsp;:</td>
+			<td>
+				${command.entreprise.statusRC}
+			</td>
+		</tr>
+		<tr class="<unireg:nextRowClass/>" >
+			<td width="30%"><fmt:message key="label.date.radiation"/>&nbsp;:</td>
+			<td>
+				<unireg:regdate regdate="${command.entreprise.dateRadiationRC}"/>
+			</td>
+		</tr>
+	</table>
+</fieldset>
+
+<fieldset>
+	<legend><span><fmt:message key="label.ide"/></span></legend>
+
+	<unireg:nextRowClass reset="1"/>
+	<table>
+		<tr class="<unireg:nextRowClass/>" >
+			<td width="30%"><fmt:message key="label.date.inscription"/>&nbsp;:</td>
+			<td>
+				<unireg:regdate regdate="${command.entreprise.dateInscriptionIde}"/>
+			</td>
+		</tr>
+		<tr class="<unireg:nextRowClass/>" >
+			<td width="30%"><fmt:message key="label.status"/>&nbsp;:</td>
+			<td>
+				${command.entreprise.statusIde}
+			</td>
+		</tr>
+	</table>
+</fieldset>
+
 <script type="text/javascript">
+
+	/**
+	 * Affiche ou filtre les données historiques de la table des raisons sociales
+	 */
+	function refreshRaisonSocialeTable(checkbox) {
+		var showHisto = $(checkbox).attr('checked');
+		var table = $('#raisonSociale');
+		Histo.refreshHistoTable(showHisto, table, 1);
+	}
+
+	/**
+	 * Affiche ou filtre les données historiques de la table des noms additionnels
+	 */
+	function refreshNomsAdditionnelsTable(checkbox) {
+		var showHisto = $(checkbox).attr('checked');
+		var table = $('#nomsAdditionnels');
+		Histo.refreshHistoTable(showHisto, table, 1);
+	}
 
 	/**
 	 * Affiche ou filtre les données historiques de la table des sièges
@@ -144,6 +231,8 @@
 	}
 
 	// on rafraîchit toutes les tables une première fois à l'affichage de la page
+	refreshRaisonSocialeTable($('#raisonSociale'));
+	refreshNomsAdditionnelsTable($('#nomsAdditionnels'));
 	refreshSiegesTable($('#showSiegesHisto'));
 	refreshFormesJuridiquesTable($('#showFormesJuridiquesHisto'));
 	refreshCapitauxTable($('#showCapitauxHisto'));

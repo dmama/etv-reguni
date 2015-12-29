@@ -4,6 +4,7 @@ import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.unireg.interfaces.organisation.data.Siege;
 import ch.vd.uniregctb.common.Annulable;
 import ch.vd.uniregctb.tiers.DomicileEtablissement;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
@@ -24,6 +25,15 @@ public class DomicileEtablissementView implements DateRange, Annulable {
 		this.numeroOfsAutoriteFiscale = domicile.getNumeroOfsAutoriteFiscale();
 		this.dateDebut = domicile.getDateDebut();
 		this.dateFin = domicile.getDateFin();
+	}
+
+	public DomicileEtablissementView(Siege siege) {
+		this.id = null;
+		this.annule = false;
+		this.typeAutoriteFiscale = siege.getTypeAutoriteFiscale();
+		this.numeroOfsAutoriteFiscale = siege.getNoOfs();
+		this.dateDebut = siege.getDateDebut();
+		this.dateFin = siege.getDateFin();
 	}
 
 	@Override
