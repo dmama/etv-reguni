@@ -634,7 +634,7 @@ public class DeterminationDIsPMAEmettreProcessor {
 
 		final TacheCriteria criterion = new TacheCriteria();
 		criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpotPM);
-		criterion.setAnnee(range.getDateDebut().year());
+		criterion.setAnnee(range.getDateFin().year());
 		criterion.setContribuable(entreprise);
 		criterion.setEtatTache(TypeEtatTache.EN_INSTANCE); // [UNIREG-1984] on ignore les tâches déjà traitées
 

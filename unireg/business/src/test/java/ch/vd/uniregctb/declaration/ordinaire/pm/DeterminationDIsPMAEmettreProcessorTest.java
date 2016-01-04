@@ -869,4 +869,94 @@ public class DeterminationDIsPMAEmettreProcessorTest extends BusinessTest {
 		assertEquals(idpm, ignore.noCtb);
 		assertEquals(DeterminationDIsPMResults.IgnoreType.AUCUN_BOUCLEMENT, ignore.raison);
 	}
+
+	/**
+	 * [SIFISC-17413] Plusieurs exécution du job -> plusieurs tâches d'envoi identiques générées...
+	 */
+	@Test
+	public void testPlusieursDeterminations() throws Exception {
+
+		// mise en place fiscale
+		final long idpm = doInNewTransactionAndSessionUnderSwitch(tacheSynchronizer, false, new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PeriodeFiscale pf = addPeriodeFiscale(2015);
+				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
+
+				// Un contribuable PM assujetti
+				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+				addDonneesRegistreCommerce(entreprise, date(2012, 4, 5), null, "Bricolage SARL", FormeJuridiqueEntreprise.SARL);
+				addBouclement(entreprise, date(2012, 10, 1), DayMonth.get(10, 31), 12);      // bouclements tous les ans depuis le 31.10.2012
+				addForPrincipal(entreprise, date(2012, 4, 5), MotifFor.DEBUT_EXPLOITATION, MockCommune.Bex);
+				return entreprise.getNumero();
+			}
+		});
+
+		// vérification qu'aucune tâche n'est présente pour le moment sur ce contribuable (c'est le but du switch à "false"),,,
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final List<Tache> taches = tacheDAO.find(idpm);
+				assertNotNull(taches);
+				assertEquals(0, taches.size());
+			}
+		});
+
+		// lancement du job avec une date de traitement après la date de bouclement correspondante
+		final DeterminationDIsPMResults results1 = service.run(2015, date(2016, 1, 1), 1, null);
+		assertNotNull(results1);
+		assertEquals(0, results1.ignores.size());
+		assertEquals(0, results1.erreurs.size());
+		assertEquals(1, results1.traites.size());
+
+		final DeterminationDIsPMResults.Traite traite = results1.traites.get(0);
+		assertNotNull(traite);
+		assertEquals(date(2014, 11, 1), traite.dateDebut);
+		assertEquals(date(2015, 10, 31), traite.dateFin);
+		assertEquals(DeterminationDIsPMResults.TraiteType.TACHE_ENVOI_CREEE, traite.raison);
+		assertEquals(TypeContribuable.VAUDOIS_ORDINAIRE, traite.typeContribuable);
+		assertEquals(TypeDocument.DECLARATION_IMPOT_PM, traite.typeDocument);
+
+		// vérification en base -> une tâche d'envoi de DI
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final List<Tache> taches = tacheDAO.find(idpm);
+				assertNotNull(taches);
+				assertEquals(1, taches.size());
+
+				final Tache tache = taches.get(0);
+				assertNotNull(tache);
+				assertInstanceOf(TacheEnvoiDeclarationImpotPM.class, tache);
+				assertFalse(tache.isAnnule());
+			}
+		});
+
+		// nouveau lancement du job avec une date de traitement après la date de bouclement correspondante
+		final DeterminationDIsPMResults results2 = service.run(2015, date(2016, 1, 1), 1, null);
+		assertNotNull(results2);
+		assertEquals(1, results2.ignores.size());       // car tâche déjà présente
+		assertEquals(0, results2.erreurs.size());
+		assertEquals(0, results2.traites.size());
+
+		final DeterminationDIsPMResults.Ignore ignore = results2.ignores.get(0);
+		assertNotNull(ignore);
+		assertEquals(idpm, ignore.noCtb);
+		assertEquals(DeterminationDIsPMResults.IgnoreType.TACHE_ENVOI_DEJA_EXISTANTE, ignore.raison);
+
+		// vérification en base -> toujours une seule tâche d'envoi de DI
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final List<Tache> taches = tacheDAO.find(idpm);
+				assertNotNull(taches);
+				assertEquals(1, taches.size());
+
+				final Tache tache = taches.get(0);
+				assertNotNull(tache);
+				assertInstanceOf(TacheEnvoiDeclarationImpotPM.class, tache);
+				assertFalse(tache.isAnnule());
+			}
+		});
+	}
 }
