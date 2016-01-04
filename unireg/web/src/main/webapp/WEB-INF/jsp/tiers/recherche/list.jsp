@@ -60,16 +60,14 @@
 							<br><c:out value="${tiers.nom2}"/>
 						</c:if>
 					</display:column>
-					<c:if test="${tiers.dateNaissance}">
-						<display:column titleKey="label.date.naissance" sortable="true" sortName="dateNaissance" sortProperty="dateNaissance">
+					<display:column titleKey="label.date.naissance.ou.rc" sortable="true">
+						<c:if test="${tiers.dateNaissance != null}">
 							<unireg:date date="${tiers.dateNaissance}"/>
-						</display:column>
-					</c:if>
-					<c:if test="${tiers.dateInscriptionRC != null}">
-						<display:column titleKey="label.date.inscription.rc" sortable="true" sortName="dateInscriptionRC" sortProperty="dateInscriptionRC">
+						</c:if>
+						<c:if test="${tiers.dateInscriptionRC != null}">
 							<unireg:date date="${tiers.dateInscriptionRC}"/>
-						</display:column>
-					</c:if>
+						</c:if>
+					</display:column>
 					<display:column sortable="true" titleKey="label.npa">
 						<c:out value="${tiers.npa}" />
 					</display:column>
