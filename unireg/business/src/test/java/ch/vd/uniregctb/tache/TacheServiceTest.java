@@ -4171,7 +4171,7 @@ public class TacheServiceTest extends BusinessTest {
 		final long noIndividu = 12345678L;
 		final int anneeCourante = RegDate.get().year();
 		final RegDate dateArrivee = date(anneeCourante - 1, 5, 12);
-		final RegDate dateDepart = date(anneeCourante, 1, 4);
+		final RegDate dateDepart = date(anneeCourante, 1, 2);
 
 		// mise en place civile
 		serviceCivil.setUp(new DefaultMockServiceCivil(true) {
@@ -4805,7 +4805,7 @@ public class TacheServiceTest extends BusinessTest {
 			nouvelleDateDeces = aujourdhui.addDays(-7);
 		}
 		else {
-			nouvelleDateDeces = aujourdhui.addDays(4);
+			nouvelleDateDeces = aujourdhui.addDays(-1);
 		}
 
 		// maintenant on change la date de fermeture du for, tout en restant dans la même période fiscale
@@ -4918,7 +4918,7 @@ public class TacheServiceTest extends BusinessTest {
 			nouvelleDateDeces = aujourdhui.addDays(-7);
 		}
 		else {
-			nouvelleDateDeces = aujourdhui.addDays(4);
+			nouvelleDateDeces = aujourdhui.addDays(-1);
 		}
 
 		// maintenant on change la date de fermeture du for, tout en restant dans la même période fiscale
