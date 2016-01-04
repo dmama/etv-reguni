@@ -50,7 +50,7 @@ if [ -s "$TMP_FILE" ]; then
 
 			Bonjour !
 
-			Ceci est un message automatique automatique. En date du $DATE_REF, sur l'environnement Unireg $ENVIRONMENT, des demandes
+			Ceci est un message automatique. En date du $DATE_REF, sur l'environnement Unireg $ENVIRONMENT, des demandes
 			d'inscription e-facture ont été reçues, qui ont donné lieu à des envois de courriers.
 
 			Ci-jointe une extraction des contribuables concernés ($(cat "$TMP_FILE" | wc -l)) :
