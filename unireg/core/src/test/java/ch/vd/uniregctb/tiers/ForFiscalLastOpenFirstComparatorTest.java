@@ -1,9 +1,5 @@
 package ch.vd.uniregctb.tiers;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
@@ -30,7 +26,7 @@ public class ForFiscalLastOpenFirstComparatorTest {
 		ForFiscal for2 = for1.duplicate();
 		for2.setDateFin(RegDate.get(2012, 7, 5));
 
-		Assert.isTrue(is(for1, for2));
+		Assert.isTrue(orderIsConserved(for1, for2));
 	}
 
 	@Test
@@ -46,7 +42,7 @@ public class ForFiscalLastOpenFirstComparatorTest {
 		ForFiscal for2 = for1.duplicate();
 		for2.setDateDebut(RegDate.get(2012, 7, 5));
 
-		Assert.isTrue(is(for2, for1));
+		Assert.isTrue(orderIsReversed(for1, for2));
 	}
 
 	@Test
@@ -65,7 +61,8 @@ public class ForFiscalLastOpenFirstComparatorTest {
 		for2.setTypeAutoriteFiscale(for1.getTypeAutoriteFiscale());
 		for2.setNumeroOfsAutoriteFiscale(200);
 
-		Assert.isTrue(is(for2, for1));
+		Assert.isTrue(orderIsReversed(for1, for2));
+		Assert.isTrue(orderIsConserved(for2, for1));
 	}
 
 	@Test
@@ -81,12 +78,12 @@ public class ForFiscalLastOpenFirstComparatorTest {
 		ForFiscal for2 = for1.duplicate();
 		for2.setNumeroOfsAutoriteFiscale(200);
 
-		List<ForFiscal> forList = new ArrayList<>();
-		forList.add(for2);
-		forList.add(for1);
-		Collections.sort(forList, comparator);
+		Assert.isTrue(orderIsConserved(for1, for2));
 
-		Assert.isTrue(is(for1, for2));
+		for1.setNumeroOfsAutoriteFiscale(200);
+		for2.setNumeroOfsAutoriteFiscale(100);
+
+		Assert.isTrue(orderIsReversed(for1, for2));
 	}
 
 	@Test
@@ -103,20 +100,17 @@ public class ForFiscalLastOpenFirstComparatorTest {
 		for2.setDateDebut(RegDate.get(2012, 12, 12));
 
 		// A ce stade, la date de fin décide, la date de début étant identique
-		Assert.isTrue(is(for2, for1));
+		Assert.isTrue(orderIsReversed(for1, for2));
 
 		for2.setDateFin(RegDate.get(2012, 7, 5));
-		Assert.isTrue(is(for1, for2));
+		Assert.isTrue(orderIsConserved(for1, for2));
 	}
 
-	/**
-	 * Détermine si l'ordre résultant du tri est identique à l'ordre des paramètres.
-	 * @param for1
-	 * @param for2
-	 * @return true si for1.compareTo(for2) < 0
-	 */
-	protected boolean is(ForFiscal for1, ForFiscal for2) {
-		return 0 > comparator.compare(for1, for2);
+	protected boolean orderIsConserved(ForFiscal for1, ForFiscal for2) {
+		return comparator.compare(for1, for2) == -1;
 	}
 
+	protected boolean orderIsReversed(ForFiscal for1, ForFiscal for2) {
+		return comparator.compare(for1, for2) == 1;
+	}
 }
