@@ -6,9 +6,10 @@ if [ ! -r "$SRC_FILE" ]; then
 	echo "Le fichier '$SRC_FILE' n'est pas accessible en lecture !" >&2
 	exit 1
 fi
-shift 1		# maintenant, les paramètres sont des adresses mails
 
-./show-inscriptions-efacture.sh "$SRC_FILE" | grep "EN_ATTENTE" | awk -F";" '{ print $2; }' | sort | uniq -c | sort -n | awk '{ print $2 ";" $1; }' > "$TMP_FILE"
+$(dirname "$0")/show-inscriptions-efacture.sh "$SRC_FILE" | grep "EN_ATTENTE" | awk -F";" '{ print $2; }' | sort | uniq -c | sort -n | awk '{ print $2 ";" $1; }' > "$TMP_FILE"
+
+shift 1		# maintenant, les paramètres sont des adresses mails
 
 function body() {
 	echo "Nouvelles impressions de documents pour des inscrptions e-Facture : $(cat "$TMP_FILE" | wc -l) contribuables concernés."
