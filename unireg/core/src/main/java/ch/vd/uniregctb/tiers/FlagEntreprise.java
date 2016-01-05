@@ -14,7 +14,8 @@ import javax.persistence.Transient;
 import java.util.Collections;
 import java.util.List;
 
-import ch.vd.uniregctb.common.HibernateEntity;
+import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.common.HibernateDateRangeEntity;
 import ch.vd.uniregctb.type.TypeFlagEntreprise;
 
 /**
@@ -23,20 +24,17 @@ import ch.vd.uniregctb.type.TypeFlagEntreprise;
  */
 @Entity
 @Table(name = "FLAG_ENTREPRISE")
-public class FlagEntreprise extends HibernateEntity implements LinkedEntity {
+public class FlagEntreprise extends HibernateDateRangeEntity implements LinkedEntity {
 
 	private Long id;
 	private TypeFlagEntreprise type;
-	private Integer anneeDebutValidite;
-	private Integer anneeFinValidite;
 	private Entreprise entreprise;
 
 	public FlagEntreprise() {
 	}
 
-	public FlagEntreprise(TypeFlagEntreprise type, int anneeDebutValidite, Integer anneeFinValidite) {
-		this.anneeDebutValidite = anneeDebutValidite;
-		this.anneeFinValidite = anneeFinValidite;
+	public FlagEntreprise(TypeFlagEntreprise type, RegDate dateDebut, RegDate dateFin) {
+		super(dateDebut, dateFin);
 		this.type = type;
 	}
 
@@ -55,24 +53,6 @@ public class FlagEntreprise extends HibernateEntity implements LinkedEntity {
 
 	public void setId(Long id) {
 		this.id = id;
-	}
-
-	@Column(name = "ANNEE_DEBUT", nullable = false)
-	public Integer getAnneeDebutValidite() {
-		return anneeDebutValidite;
-	}
-
-	public void setAnneeDebutValidite(Integer anneeDebutValidite) {
-		this.anneeDebutValidite = anneeDebutValidite;
-	}
-
-	@Column(name = "ANNEE_FIN", nullable = true)
-	public Integer getAnneeFinValidite() {
-		return anneeFinValidite;
-	}
-
-	public void setAnneeFinValidite(Integer anneeFinValidite) {
-		this.anneeFinValidite = anneeFinValidite;
 	}
 
 	@Column(name = "FLAG", length = 20, nullable = false)

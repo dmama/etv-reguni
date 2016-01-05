@@ -1313,11 +1313,11 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 		return tiersDAO.addAndSave(e, etat);
 	}
 
-	protected FlagEntreprise addFlagEntreprise(Entreprise e, int anneeDebut, @Nullable Integer anneeFin, TypeFlagEntreprise type) {
+	protected FlagEntreprise addFlagEntreprise(Entreprise e, RegDate dateDebut, @Nullable RegDate dateFin, TypeFlagEntreprise type) {
 		final FlagEntreprise flag = new FlagEntreprise();
 		flag.setType(type);
-		flag.setAnneeDebutValidite(anneeDebut);
-		flag.setAnneeFinValidite(anneeFin);
+		flag.setDateDebut(dateDebut);
+		flag.setDateFin(dateFin);
 		return tiersDAO.addAndSave(e, flag);
 	}
 

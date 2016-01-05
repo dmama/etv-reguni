@@ -1595,8 +1595,8 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 
 		@Override
 		public void assertSame(FlagEntreprise entity1, FlagEntreprise entity2) {
-			Assert.isSame(entity1.getAnneeDebutValidite(), entity2.getAnneeDebutValidite());
-			Assert.isSame(entity1.getAnneeFinValidite(), entity2.getAnneeFinValidite());
+			Assert.isSame(entity1.getDateDebut(), entity2.getDateDebut());
+			Assert.isSame(entity1.getDateFin(), entity2.getDateFin());
 			Assert.isSame(entity1.getType(), entity2.getType());
 		}
 	};

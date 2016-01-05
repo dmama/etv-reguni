@@ -372,6 +372,6 @@
 
 	<bean id="etatEntrepriseValidator" class="ch.vd.uniregctb.validation.tiers.EtatEntrepriseValidator" parent="dateRangeEntityValidator"/>
 
-	<bean id="flagEntrepriseValidator" class="ch.vd.uniregctb.validation.tiers.FlagEntrepriseValidator" parent="entityValidator"/>
+	<bean id="flagEntrepriseValidator" class="ch.vd.uniregctb.validation.tiers.FlagEntrepriseValidator" parent="dateRangeEntityValidator"/>
 
 </beans>

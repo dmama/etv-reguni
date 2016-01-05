@@ -1604,27 +1604,27 @@ public interface TiersService {
      * Crée un nouveau flag sur l'entreprise avec les données fournies
      * @param e entreprise destinataire
      * @param type le type de flag
-     * @param anneeDebut l'année de début de validité du flag (incluse)
-     * @param anneeFin (optionnelle) l'année de fin de validité du flag (incluse)
+     * @param dateDebut la date de début de validité du flag (incluse)
+     * @param dateFin (optionnelle) la date de fin de validité du flag (incluse)
      * @return le flag nouvellement créé
      */
-    FlagEntreprise addFlagEntreprise(Entreprise e, TypeFlagEntreprise type, int anneeDebut, @Nullable Integer anneeFin);
+    FlagEntreprise addFlagEntreprise(Entreprise e, TypeFlagEntreprise type, RegDate dateDebut, @Nullable RegDate dateFin);
 
     /**
      * Crée un flag valide depuis l'année donnée avec les informations fournies
      * @param e entreprise destinataire
      * @param type le type de flag
-     * @param anneeDebut l'année de début de validité du flag (incluse)
+     * @param dateDebut la date de début de validité du flag (incluse)
      * @return le flag nouvellement créé
      */
-    FlagEntreprise openFlagEntreprise(Entreprise e, TypeFlagEntreprise type, int anneeDebut);
+    FlagEntreprise openFlagEntreprise(Entreprise e, TypeFlagEntreprise type, RegDate dateDebut);
 
     /**
      * Ferme le flag à l'année indiquée (incluse)
      * @param flag le flag à clôturer
-     * @param anneeFin année de clôture
+     * @param dateFin date de clôture
      */
-    void closeFlagEntreprise(FlagEntreprise flag, int anneeFin);
+    void closeFlagEntreprise(FlagEntreprise flag, RegDate dateFin);
 
     /**
      * Annule le flag entreprise passé en paramètre

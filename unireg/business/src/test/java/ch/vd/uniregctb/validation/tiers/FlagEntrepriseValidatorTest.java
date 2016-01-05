@@ -28,7 +28,7 @@ public class FlagEntrepriseValidatorTest extends AbstractValidatorTest<FlagEntre
 
 	@Test
 	public void testTypeManquant() throws Exception {
-		final FlagEntreprise flag = new FlagEntreprise(null, 2000, null);       // sans type
+		final FlagEntreprise flag = new FlagEntreprise(null, date(2000, 4, 12), null);       // sans type
 		{
 			final ValidationResults vr = validate(flag);
 			Assert.assertTrue(vr.hasErrors());
@@ -60,34 +60,10 @@ public class FlagEntrepriseValidatorTest extends AbstractValidatorTest<FlagEntre
 			Assert.assertEquals(1, vr.getErrors().size());
 
 			final String error = vr.getErrors().get(0);
-			Assert.assertEquals("L'année de début de validité est obligatoire sur un flag entreprise.", error);
+			Assert.assertEquals("Le flag entreprise FlagEntreprise (? - ?) possède une date de début nulle", error);
 		}
 
-		flag.setAnneeDebutValidite(1290);
-		{
-			final ValidationResults vr = validate(flag);
-			Assert.assertTrue(vr.hasErrors());
-			Assert.assertFalse(vr.hasWarnings());
-
-			Assert.assertEquals(1, vr.getErrors().size());
-
-			final String error = vr.getErrors().get(0);
-			Assert.assertEquals("L'année de début de validité d'un flag entreprise doit être comprise entre 1291 et 2399 (trouvé 1290).", error);
-		}
-
-		flag.setAnneeDebutValidite(2400);
-		{
-			final ValidationResults vr = validate(flag);
-			Assert.assertTrue(vr.hasErrors());
-			Assert.assertFalse(vr.hasWarnings());
-
-			Assert.assertEquals(1, vr.getErrors().size());
-
-			final String error = vr.getErrors().get(0);
-			Assert.assertEquals("L'année de début de validité d'un flag entreprise doit être comprise entre 1291 et 2399 (trouvé 2400).", error);
-		}
-
-		flag.setAnneeDebutValidite(2014);
+		flag.setDateDebut(date(2014, 5, 12));
 		{
 			final ValidationResults vr = validate(flag);
 			Assert.assertFalse(vr.hasErrors());
@@ -99,26 +75,14 @@ public class FlagEntrepriseValidatorTest extends AbstractValidatorTest<FlagEntre
 	public void testAnneeFin() throws Exception {
 		final FlagEntreprise flag = new FlagEntreprise();
 		flag.setType(TypeFlagEntreprise.UTILITE_PUBLIQUE);
-		flag.setAnneeDebutValidite(2000);
+		flag.setDateDebut(date(2000, 2, 4));
 		{
 			final ValidationResults vr = validate(flag);
 			Assert.assertFalse(vr.hasErrors());
 			Assert.assertFalse(vr.hasWarnings());
 		}
 
-		flag.setAnneeFinValidite(1290);
-		{
-			final ValidationResults vr = validate(flag);
-			Assert.assertTrue(vr.hasErrors());
-			Assert.assertFalse(vr.hasWarnings());
-
-			Assert.assertEquals(2, vr.getErrors().size());
-
-			Assert.assertEquals("L'année de fin de validité (1290) d'un flag entreprise doit être postérieure ou égale à son année de début de validité (2000).", vr.getErrors().get(0));
-			Assert.assertEquals("L'année de fin de validité d'un flag entreprise doit être comprise entre 1291 et 2399 (trouvé 1290).", vr.getErrors().get(1));
-		}
-
-		flag.setAnneeFinValidite(2400);
+		flag.setDateFin(date(1289, 5, 21));
 		{
 			final ValidationResults vr = validate(flag);
 			Assert.assertTrue(vr.hasErrors());
@@ -127,10 +91,10 @@ public class FlagEntrepriseValidatorTest extends AbstractValidatorTest<FlagEntre
 			Assert.assertEquals(1, vr.getErrors().size());
 
 			final String error = vr.getErrors().get(0);
-			Assert.assertEquals("L'année de fin de validité d'un flag entreprise doit être comprise entre 1291 et 2399 (trouvé 2400).", error);
+			Assert.assertEquals("Le flag entreprise FlagEntreprise (04.02.2000 - 21.05.1289) possède une date de début qui est après la date de fin: début = 04.02.2000, fin = 21.05.1289", error);
 		}
 
-		flag.setAnneeFinValidite(1999);
+		flag.setDateFin(date(1999, 4, 13));
 		{
 			final ValidationResults vr = validate(flag);
 			Assert.assertTrue(vr.hasErrors());
@@ -139,17 +103,17 @@ public class FlagEntrepriseValidatorTest extends AbstractValidatorTest<FlagEntre
 			Assert.assertEquals(1, vr.getErrors().size());
 
 			final String error = vr.getErrors().get(0);
-			Assert.assertEquals("L'année de fin de validité (1999) d'un flag entreprise doit être postérieure ou égale à son année de début de validité (2000).", error);
+			Assert.assertEquals("Le flag entreprise FlagEntreprise (04.02.2000 - 13.04.1999) possède une date de début qui est après la date de fin: début = 04.02.2000, fin = 13.04.1999", error);
 		}
 
-		flag.setAnneeFinValidite(2000);
+		flag.setDateFin(date(2000, 3, 6));
 		{
 			final ValidationResults vr = validate(flag);
 			Assert.assertFalse(vr.hasErrors());
 			Assert.assertFalse(vr.hasWarnings());
 		}
 
-		flag.setAnneeFinValidite(2006);
+		flag.setDateFin(date(2006, 12, 4));
 		{
 			final ValidationResults vr = validate(flag);
 			Assert.assertFalse(vr.hasErrors());

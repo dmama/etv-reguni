@@ -5501,24 +5501,25 @@ public class TiersServiceImpl implements TiersService {
 	}
 
 	@Override
-	public FlagEntreprise addFlagEntreprise(Entreprise e, TypeFlagEntreprise type, int anneeDebut, @Nullable Integer anneeFin) {
+	public FlagEntreprise addFlagEntreprise(Entreprise e, TypeFlagEntreprise type, RegDate dateDebut, @Nullable RegDate dateFin) {
 		// TODO [SIPM][FlagEntreprise] pour l'instant, on n'a aucune règle concernant les éventuelles incompatibilités entre flags...
-		return tiersDAO.addAndSave(e, new FlagEntreprise(type, anneeDebut, anneeFin));
+		return tiersDAO.addAndSave(e, new FlagEntreprise(type, dateDebut, dateFin));
 	}
 
 	@Override
-	public FlagEntreprise openFlagEntreprise(Entreprise e, TypeFlagEntreprise type, int anneeDebut) {
+	public FlagEntreprise openFlagEntreprise(Entreprise e, TypeFlagEntreprise type, RegDate dateDebut) {
 		// TODO [SIPM][FlagEntreprise] pour l'instant, on n'a aucune règle concernant les éventuelles incompatibilités entre flags...
-		return tiersDAO.addAndSave(e, new FlagEntreprise(type, anneeDebut, null));
+		return tiersDAO.addAndSave(e, new FlagEntreprise(type, dateDebut, null));
 	}
 
 	@Override
-	public void closeFlagEntreprise(FlagEntreprise flag, int anneeFin) {
-		if (flag.getAnneeDebutValidite().compareTo(anneeFin) > 0) {
-			throw new ValidationException(flag, String.format("L'année de fin de validité (%d) est avant l'année de début de validité (%d) du flag entreprise.",
-			                                                  anneeFin, flag.getAnneeDebutValidite()));
+	public void closeFlagEntreprise(FlagEntreprise flag, RegDate dateFin) {
+		if (flag.getDateDebut().compareTo(dateFin) > 0) {
+			throw new ValidationException(flag, String.format("La date de fin de validité (%s) est avant la date de début de validité (%s) du flag entreprise.",
+			                                                  RegDateHelper.dateToDisplayString(dateFin),
+			                                                  RegDateHelper.dateToDisplayString(flag.getDateDebut())));
 		}
-		flag.setAnneeFinValidite(anneeFin);
+		flag.setDateFin(dateFin);
 	}
 
 	@Override
