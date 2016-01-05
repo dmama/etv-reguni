@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- edited with XMLSpy v2012 rel. 2 sp1 (http://www.altova.com) by ACV (DIRECTION DES SYSTEMS D'INFORMATION) -->
+<!-- edited with XMLSpy v2012 rel. 2 sp1 (http://www.altova.com) by Gabrielle Servoz (DIRECTION DES SYSTEMS D'INFORMATION) -->
 <!--																																											-->
 <!-- Evolution sur version 1-1 : 																																	-->
 <!--      Modification de typeOfNotice : ajout des enum 50 à 54																						-->
@@ -28,6 +28,13 @@
 <!-- Correction apportée sur la version 1-1 le 12/05/2015																								-->
 <!--      noticeRequestStatusDate : type passe de date à dateTime																				-->
 <!--	   personType : l'attribut origin devient multi-valué (mise en conformité avec RCPers)												-->
+<!-- Correction apportée sur la version 1-2 le 01/10/2015																								-->
+<!--      SIREF-7442 : organisationLocationLiquidationReason est de type uidRegisterLiquidationReasonType  					-->
+<!-- Correction apportée sur la version 1-3 le 21/10/2015																								-->
+<!--      Ajout de la valeur 7 dans l'énumération : 																											-->
+<!--			//element(*,noticeRequestReportType)/noticeRequestStatus/noticeRequestStatusCode		 							-->
+<!--			de type noticeRequestStatusCodeType																					  					-->
+<!--      Ajout de l'élément requestRegister dans //element(*,noticeRequestType)/noticeRequestHeader								-->
 <xs:schema xmlns="http://evd.vd.ch/xmlns/eVD-0022/1" xmlns:eVD-0021="http://evd.vd.ch/xmlns/eVD-0021/1" xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://evd.vd.ch/xmlns/eVD-0022/1" elementFormDefault="qualified" attributeFormDefault="unqualified" version="1.0">
 	<xs:import namespace="http://evd.vd.ch/xmlns/eVD-0021/1" schemaLocation="http://evd.vd.ch/xmlns/eVD-0021/1/eVD-0021-1-1.xsd"/>
 	<xs:simpleType name="noticeIdType">
@@ -454,6 +461,7 @@
 			<xs:enumeration value="4"/>
 			<xs:enumeration value="5"/>
 			<xs:enumeration value="6"/>
+			<xs:enumeration value="7"/>
 		</xs:restriction>
 	</xs:simpleType>
 	<xs:complexType name="noticeRequestStatusType">
@@ -477,7 +485,14 @@
 			<xs:element name="organisationLocationCantonalId" type="cantonalIdType" minOccurs="0"/>
 			<xs:element name="IDESource" type="identifierType" minOccurs="0"/>
 			<xs:element name="userId" type="xs:string" minOccurs="0"/>
+			<xs:element name="requestRegister" type="requestRegisterType"/>
 			<xs:element name="userPhoneNumber" type="xs:string" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="requestRegisterType">
+		<xs:sequence>
+			<xs:element name="id" type="xs:string"/>
+			<xs:element name="registerName" type="xs:string"/>
 		</xs:sequence>
 	</xs:complexType>
 	<xs:complexType name="noticeRequestBodyType">
@@ -490,7 +505,7 @@
 			<xs:element name="organisationCantonalId" type="cantonalIdType" minOccurs="0"/>
 			<xs:element name="organisationLocationLegalForm" type="legalFormType" minOccurs="0"/>
 			<xs:element name="branchText" type="xs:string" minOccurs="0"/>
-			<xs:element name="organisationLocationLiquidationReason" type="liquidationReasonType" minOccurs="0"/>
+			<xs:element name="organisationLocationLiquidationReason" type="uidRegisterLiquidationReasonType" minOccurs="0"/>
 			<xs:element name="person" type="personSummaryType" minOccurs="0"/>
 			<xs:element name="comment" type="xs:string" minOccurs="0"/>
 		</xs:sequence>
