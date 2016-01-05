@@ -51,7 +51,7 @@ public class ServiceOrganisationRCEntItTest extends BusinessItTest {
 	private static final String BASE_PATH_ORGANISATION = "/organisation/CT.VD.PARTY";
 
 	// Organisation cible sur RCEnt
-	private static final long NO101210920 = 101210920L;
+	private static final long ID_CANTONAL_HORLOGERS_PRADO = 101319305L;
 	private static final String Les_HORLOGERS_DU_PRADO_SA_EN_LIQUIDATION = "Les Horlogers du Prado SA en liquidation";
 	private static final String BASE_PATH_ORGANISATIONS_OF_NOTICE = "/organisationsOfNotice";
 
@@ -79,7 +79,7 @@ public class ServiceOrganisationRCEntItTest extends BusinessItTest {
 
 	@Test
 	public void testGetOrganisation() throws Exception {
-		Organisation org = service.getOrganisationHistory(NO101210920);
+		Organisation org = service.getOrganisationHistory(ID_CANTONAL_HORLOGERS_PRADO);
 		assertNotNull(org);
 		assertContains(Les_HORLOGERS_DU_PRADO_SA_EN_LIQUIDATION, org.getNom().get(0).getPayload());
 	}
@@ -87,38 +87,38 @@ public class ServiceOrganisationRCEntItTest extends BusinessItTest {
 	@Test
 	public void testRCEntClientGetOrganisationWithoutValidation() throws Exception {
 		final RcEntClient client = createRCEntClient(false);
-		OrganisationData data = client.getOrganisation(NO101210920, null, true);
+		OrganisationData data = client.getOrganisation(ID_CANTONAL_HORLOGERS_PRADO, null, true);
 		Assert.assertNotNull(data);
-		Assert.assertEquals(NO101210920, data.getOrganisationSnapshot().get(0).getOrganisation().getCantonalId().longValue());
+		Assert.assertEquals(ID_CANTONAL_HORLOGERS_PRADO, data.getOrganisationSnapshot().get(0).getOrganisation().getCantonalId().longValue());
 		Assert.assertEquals(Les_HORLOGERS_DU_PRADO_SA_EN_LIQUIDATION, data.getOrganisationSnapshot().get(0).getOrganisation().getOrganisationName());
 	}
 
 	@Test
 	public void testRCEntClientGetOrganisationWithValidation() throws Exception {
 		final RcEntClient client = createRCEntClient(true);
-		OrganisationData data = client.getOrganisation(NO101210920, null, true);
+		OrganisationData data = client.getOrganisation(ID_CANTONAL_HORLOGERS_PRADO, null, true);
 		Assert.assertNotNull(data);
-		Assert.assertEquals(NO101210920, data.getOrganisationSnapshot().get(0).getOrganisation().getCantonalId().longValue());
+		Assert.assertEquals(ID_CANTONAL_HORLOGERS_PRADO, data.getOrganisationSnapshot().get(0).getOrganisation().getCantonalId().longValue());
 		Assert.assertEquals(Les_HORLOGERS_DU_PRADO_SA_EN_LIQUIDATION, data.getOrganisationSnapshot().get(0).getOrganisation().getOrganisationName());
 	}
 
 	@Test
 	public void testDirectGetOrganisationWithoutValidation() throws Exception {
-		String url = baseUrl + BASE_PATH_ORGANISATION + "/" + NO101210920;
+		String url = baseUrl + BASE_PATH_ORGANISATION + "/" + ID_CANTONAL_HORLOGERS_PRADO;
 		String xml = getUrlContent(url);
 		OrganisationData data = (OrganisationData) ((JAXBElement) createMarshaller(false).unmarshal(new StringReader(xml))).getValue();
 		Assert.assertNotNull(data);
-		Assert.assertEquals(NO101210920, data.getOrganisationSnapshot().get(0).getOrganisation().getCantonalId().longValue());
+		Assert.assertEquals(ID_CANTONAL_HORLOGERS_PRADO, data.getOrganisationSnapshot().get(0).getOrganisation().getCantonalId().longValue());
 		Assert.assertEquals(Les_HORLOGERS_DU_PRADO_SA_EN_LIQUIDATION, data.getOrganisationSnapshot().get(0).getOrganisation().getOrganisationName());
 	}
 
 	@Test
 	public void testDirectGetOrganisationWithValidation() throws Exception {
-		String url = baseUrl + BASE_PATH_ORGANISATION + "/" + NO101210920;
+		String url = baseUrl + BASE_PATH_ORGANISATION + "/" + ID_CANTONAL_HORLOGERS_PRADO;
 		String xml = getUrlContent(url);
 		OrganisationData data = (OrganisationData) ((JAXBElement) createMarshaller(true).unmarshal(new StringReader(xml))).getValue();
 		Assert.assertNotNull(data);
-		Assert.assertEquals(NO101210920, data.getOrganisationSnapshot().get(0).getOrganisation().getCantonalId().longValue());
+		Assert.assertEquals(ID_CANTONAL_HORLOGERS_PRADO, data.getOrganisationSnapshot().get(0).getOrganisation().getCantonalId().longValue());
 		Assert.assertEquals(Les_HORLOGERS_DU_PRADO_SA_EN_LIQUIDATION, data.getOrganisationSnapshot().get(0).getOrganisation().getOrganisationName());
 	}
 
