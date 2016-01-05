@@ -58,6 +58,7 @@ import ch.vd.uniregctb.migration.pm.regpm.RegpmCategoriePersonneMorale;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmCodeCollectivite;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmCodeContribution;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmCommune;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmCritereSegmentation;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmDecisionTaxation;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmDemandeDelaiSommation;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmDossierFiscal;
@@ -89,6 +90,7 @@ import ch.vd.uniregctb.migration.pm.regpm.RegpmSiegeEntreprise;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeAdresseEntreprise;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeAssujettissement;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeContribution;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeCritereSegmentation;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeDemandeDelai;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeEtatDecisionTaxation;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeEtatDemandeDelai;
@@ -111,6 +113,7 @@ import ch.vd.uniregctb.tiers.DonneesRegistreCommerce;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.Etablissement;
 import ch.vd.uniregctb.tiers.EtatEntreprise;
+import ch.vd.uniregctb.tiers.FlagEntreprise;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipalPM;
@@ -129,6 +132,7 @@ import ch.vd.uniregctb.type.TypeAdresseTiers;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeEtatDeclaration;
 import ch.vd.uniregctb.type.TypeEtatEntreprise;
+import ch.vd.uniregctb.type.TypeFlagEntreprise;
 
 public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 
@@ -589,6 +593,17 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		note.setCommentaire(texte);
 		entreprise.getNotes().add(note);
 		return note;
+	}
+
+	static RegpmCritereSegmentation addCritereSegmentation(RegpmEntreprise entreprise, int pfDebut, Integer pfFin, RegpmTypeCritereSegmentation type) {
+		final RegpmCritereSegmentation critere = new RegpmCritereSegmentation();
+		critere.setId(new RegpmCritereSegmentation.PK(computeNewSeqNo(entreprise.getCriteresSegmentation(), x -> x.getId().getSeqNo()), entreprise.getId()));
+		assignMutationVisa(critere, REGPM_VISA, REGPM_MODIF);
+		critere.setPfDebut(pfDebut);
+		critere.setPfFin(pfFin);
+		critere.setType(type);
+		entreprise.getCriteresSegmentation().add(critere);
+		return critere;
 	}
 
 	@Test
@@ -5308,5 +5323,70 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 			Assert.assertEquals(1, textes.size());
 			Assert.assertEquals("For principal COMMUNE_OU_FRACTION_VD/5518 [01.01.1900 -> ?] généré.", textes.get(0));
 		}
+	}
+
+	@Test
+	public void testMigrationFlagLIASF() throws Exception {
+
+		final long noEntreprise = 74984L;
+		final RegpmEntreprise e = buildEntreprise(noEntreprise);
+		final RegDate dateDebut = RegDate.get(1900, 1, 1);
+		final RegDate dateDebutForSecondaire = RegDate.get(1917, 11, 6);
+
+		addRaisonSociale(e, dateDebut, "Toto SA", null, null, true);
+		addFormeJuridique(e, dateDebut, createTypeFormeJuridique("S.A.", RegpmCategoriePersonneMorale.PM));
+		addForPrincipalSuisse(e, dateDebut, RegpmTypeForPrincipal.SIEGE, Commune.ECHALLENS);
+		addForSecondaire(e, dateDebutForSecondaire, null, Commune.LAUSANNE);
+
+		final RegpmAssujettissement assuj = addAssujettissement(e, dateDebut, null, RegpmTypeAssujettissement.LILIC);
+		final RegpmDossierFiscal df = addDossierFiscal(e, assuj, 2005, RegDate.get(2005, 10, 6), RegpmModeImposition.POST);
+		addExerciceCommercial(e, df, RegDate.get(2004, 10, 1), RegDate.get(2005, 9, 30));
+
+		addCritereSegmentation(e, 2006, 2010, RegpmTypeCritereSegmentation.LIASF);
+		addCritereSegmentation(e, 2012, null, RegpmTypeCritereSegmentation.LIASF);
+
+		// on crée d'abord la PF en base
+		doInUniregTransaction(false, status -> {
+			addPeriodeFiscale(2005);
+			return null;
+		});
+
+		final MockGraphe graphe = new MockGraphe(Collections.singletonList(e),
+		                                         null,
+		                                         null);
+		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
+		final EntityLinkCollector linkCollector = new EntityLinkCollector();
+		final IdMapper idMapper = new IdMapper();
+		migrator.initMigrationResult(mr, idMapper);
+		migrate(e, migrator, mr, linkCollector, idMapper);
+
+		// vérification des flags migrés sur l'entreprise
+		doInUniregTransaction(true, status -> {
+			final Entreprise entreprise = uniregStore.getEntityFromDb(Entreprise.class, noEntreprise);
+			Assert.assertNotNull(entreprise);
+
+			final List<FlagEntreprise> flags = entreprise.getFlags().stream()
+					.sorted(DateRangeComparator::compareRanges)
+					.collect(Collectors.toList());
+			Assert.assertNotNull(flags);
+			Assert.assertEquals(2, flags.size());
+
+			{
+				final FlagEntreprise flag = flags.get(0);
+				Assert.assertNotNull(flag);
+				Assert.assertFalse(flag.isAnnule());
+				Assert.assertEquals(RegDate.get(2005, 10, 1), flag.getDateDebut());
+				Assert.assertEquals(RegDate.get(2010, 9, 30), flag.getDateFin());
+				Assert.assertEquals(TypeFlagEntreprise.UTILITE_PUBLIQUE, flag.getType());
+			}
+			{
+				final FlagEntreprise flag = flags.get(1);
+				Assert.assertNotNull(flag);
+				Assert.assertFalse(flag.isAnnule());
+				Assert.assertEquals(RegDate.get(2011, 10, 1), flag.getDateDebut());
+				Assert.assertNull(flag.getDateFin());
+				Assert.assertEquals(TypeFlagEntreprise.UTILITE_PUBLIQUE, flag.getType());
+			}
+		});
 	}
 }

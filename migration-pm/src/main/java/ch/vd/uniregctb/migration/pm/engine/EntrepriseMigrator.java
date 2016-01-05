@@ -1839,7 +1839,6 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		migrateNotes(regpm.getNotes(), unireg);
 		migrateFlagDoublon(regpm, unireg, mr);
 		migrateDonneesRegistreCommerce(regpm, rcent, unireg, mr);
-		migrateLIASF(regpm, unireg, mr);
 		logDroitPublicAPM(regpm, mr);
 
 		migrateAdresses(regpm, unireg, mr);
@@ -1851,6 +1850,9 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		migrateImmeubles(regpm, unireg, mr);
 		generateEtablissementPrincipal(regpm, rcent, linkCollector, idMapper, mr);
 		migrateEtatsEntreprise(regpm, unireg, mr);
+
+		// doit être fait après les exercices commerciaux
+		migrateLIASF(regpm, unireg, mr);
 
 		migrateMandataires(regpm, mr, linkCollector, idMapper);
 		migrateFusionsApres(regpm, linkCollector, idMapper);
@@ -1865,15 +1867,32 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 	 * @param unireg l'entreprise cible dans Unireg
 	 * @param mr le collecteur de messages de suivi
 	 */
-	private static void migrateLIASF(RegpmEntreprise regpm, Entreprise unireg, MigrationResultProduction mr) {
+	private void migrateLIASF(RegpmEntreprise regpm, Entreprise unireg, MigrationResultProduction mr) {
+		final Set<Bouclement> bouclements = unireg.getBouclements();
 		regpm.getCriteresSegmentation().stream()
 				.filter(critere -> critere.getType() == RegpmTypeCritereSegmentation.LIASF)
 				.sorted(Comparator.comparing(RegpmCritereSegmentation::getPfDebut))
 				.map(critere -> {
 					final FlagEntreprise flag = new FlagEntreprise();
 					copyCreationMutation(critere, flag);
-					flag.setAnneeDebutValidite(critere.getPfDebut());
-					flag.setAnneeFinValidite(critere.getPfFin());
+
+					final RegDate debut = Optional.ofNullable(bouclementService.getDateDernierBouclement(bouclements, RegDate.get(critere.getPfDebut(), 1, 1), true))
+							.map(RegDate::getOneDayAfter)
+							.orElse(RegDate.get(critere.getPfDebut(), 1, 1));
+					final RegDate fin = Optional.<Integer>ofNullable(critere.getPfFin())
+							.map(annee -> bouclementService.getDateDernierBouclement(bouclements, RegDate.get(annee, 12, 31), true))
+							.map(date -> {
+								if (date.year() < critere.getPfFin()) {
+									return RegDate.get(critere.getPfFin(), 12, 31);
+								}
+								else {
+									return date;
+								}
+							})
+							.orElse(null);
+
+					flag.setDateDebut(debut);
+					flag.setDateFin(fin);
 					flag.setType(TypeFlagEntreprise.UTILITE_PUBLIQUE);
 					if (critere.isAnnule()) {       // on reprend même les annulés !
 						flag.setAnnulationDate(flag.getLogModifDate());
@@ -1882,22 +1901,21 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 					return flag;
 				})
 				.filter(flag -> {
-					if (flag.getAnneeFinValidite() != null && flag.getAnneeFinValidite() < flag.getAnneeDebutValidite() && !flag.isAnnule()) {
+					if (flag.getDateFin() != null && flag.getDateFin().isBefore(flag.getDateDebut()) && !flag.isAnnule()) {
 						mr.addMessage(LogCategory.SUIVI, LogLevel.ERROR,
-						              String.format("Le flag d'entreprise %s non-annulé est ignoré par la migration car son année de début (%d) est postérieure à son année de fin (%d).",
+						              String.format("Le flag d'entreprise %s non-annulé est ignoré par la migration car sa date de début (%s) est postérieure à sa date de fin (%s).",
 						                            flag.getType(),
-						                            flag.getAnneeDebutValidite(),
-						                            flag.getAnneeFinValidite()));
+						                            StringRenderers.DATE_RENDERER.toString(flag.getDateDebut()),
+						                            StringRenderers.DATE_RENDERER.toString(flag.getDateFin())));
 						return false;
 					}
 					return true;
 				})
 				.peek(flag -> mr.addMessage(LogCategory.SUIVI, LogLevel.INFO,
-				                            String.format("Génération d'un flag entreprise %s%s entre les années %d et %s.",
+				                            String.format("Génération d'un flag entreprise %s%s sur la période %s.",
 				                                          flag.getType(),
 				                                          flag.isAnnule() ? " (annulé)" : StringUtils.EMPTY,
-				                                          flag.getAnneeDebutValidite(),
-				                                          flag.getAnneeFinValidite() == null ? "?" : flag.getAnneeFinValidite())))
+				                                          StringRenderers.DATE_RANGE_RENDERER.toString(flag))))
 				.forEach(unireg::addFlag);
 	}
 
