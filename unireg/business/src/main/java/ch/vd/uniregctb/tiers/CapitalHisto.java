@@ -9,8 +9,9 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.interfaces.organisation.data.Capital;
 import ch.vd.uniregctb.common.Annulable;
 import ch.vd.uniregctb.common.Duplicable;
+import ch.vd.uniregctb.common.Rerangeable;
 
-public class CapitalHisto implements CollatableDateRange, Duplicable<CapitalHisto>, Annulable {
+public class CapitalHisto implements CollatableDateRange, Duplicable<CapitalHisto>, Annulable, Rerangeable<CapitalHisto> {
 
 	/**
 	 * Source de la valeur du capital
@@ -52,7 +53,8 @@ public class CapitalHisto implements CollatableDateRange, Duplicable<CapitalHist
 		this.source = source;
 	}
 
-	public CapitalHisto crop(DateRange range) {
+	@Override
+	public CapitalHisto rerange(DateRange range) {
 		return new CapitalHisto(id, annule, range.getDateDebut(), range.getDateFin(), montant, source);
 	}
 

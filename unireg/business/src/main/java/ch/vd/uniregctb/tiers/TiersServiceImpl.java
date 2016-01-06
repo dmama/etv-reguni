@@ -77,6 +77,7 @@ import ch.vd.uniregctb.common.EntityKey;
 import ch.vd.uniregctb.common.EtatCivilHelper;
 import ch.vd.uniregctb.common.FiscalDateHelper;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
+import ch.vd.uniregctb.common.GentilDateRangeExtendedAdapterCallback;
 import ch.vd.uniregctb.common.HibernateEntity;
 import ch.vd.uniregctb.common.MovingWindow;
 import ch.vd.uniregctb.common.NationaliteHelper;
@@ -5607,24 +5608,7 @@ public class TiersServiceImpl implements TiersService {
 		final List<CapitalHisto> donneesCiviles = extractCapitauxCivils(entreprise);
 		final List<CapitalHisto> donneesFiscales = extractCapitauxFiscaux(entreprise);
 
-		return DateRangeHelper.override(donneesCiviles, donneesFiscales, new DateRangeHelper.AdapterCallbackExtended<CapitalHisto>() {
-			@Override
-			public CapitalHisto duplicate(CapitalHisto range) {
-				return range.duplicate();
-			}
-
-			@Override
-			public CapitalHisto adapt(CapitalHisto range, RegDate debut, CapitalHisto sourceSurchargeDebut, RegDate fin, CapitalHisto sourceSurchargeFin) {
-				final DateRange cropRange = new DateRangeHelper.Range(sourceSurchargeDebut != null ? debut : range.getDateDebut(),
-				                                                      sourceSurchargeFin != null ? fin : range.getDateFin());
-				return range.crop(cropRange);
-			}
-
-			@Override
-			public CapitalHisto adapt(CapitalHisto range, RegDate debut, RegDate fin) {
-				throw new IllegalStateException("Ne devrait pas être appelé...");
-			}
-		});
+		return DateRangeHelper.override(donneesCiviles, donneesFiscales, new GentilDateRangeExtendedAdapterCallback<CapitalHisto>());
 	}
 
 	@NotNull
