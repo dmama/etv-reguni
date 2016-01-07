@@ -35,14 +35,17 @@
 	<input class="noprint" id="showRaisonSocialeHisto" type="checkbox" onclick="refreshRaisonSocialeTable(this);" />
 	<label class="noprint" for="showRaisonSocialeHisto"><fmt:message key="label.historique" /></label>
 
-	<display:table name="${command.entreprise.raisonSociale}" id="raisonSociale" requestURI="visu.do" class="display">
+	<display:table name="${command.entreprise.raisonsSociales}" id="raisonSociale" requestURI="visu.do" class="display">
 		<display:column sortable="true" titleKey="label.date.debut" sortProperty="dateDebut">
 			<unireg:regdate regdate="${raisonSociale.dateDebut}"/>
 		</display:column>
 		<display:column sortable="true" titleKey="label.date.fin" sortProperty="dateFin">
 			<unireg:regdate regdate="${raisonSociale.dateFin}"/>
 		</display:column>
-		<display:column sortable="true" titleKey="label.raison.sociale" property="payload"/>
+		<display:column sortable="true" titleKey="label.raison.sociale" property="raisonSociale"/>
+		<display:column titleKey="label.source">
+			<fmt:message key="option.capital.source.${raisonSociale.source}"/>
+		</display:column>
 	</display:table>
 </fieldset>
 
@@ -103,6 +106,9 @@
 			<unireg:regdate regdate="${formesJuridiques.dateFin}"/>
 		</display:column>
 		<display:column sortable="true" titleKey="label.forme.juridique" property="type"/>
+		<display:column titleKey="label.source">
+			<fmt:message key="option.capital.source.${formesJuridiques.source}"/>
+		</display:column>
 	</display:table>
 </fieldset>
 

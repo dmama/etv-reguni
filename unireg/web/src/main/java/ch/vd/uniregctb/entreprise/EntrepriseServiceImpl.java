@@ -17,11 +17,11 @@ import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.interfaces.service.ServiceOrganisationService;
 import ch.vd.uniregctb.tiers.CapitalHisto;
 import ch.vd.uniregctb.tiers.DomicileEtablissement;
-import ch.vd.uniregctb.tiers.DonneesRegistreCommerce;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.Etablissement;
 import ch.vd.uniregctb.tiers.EtatEntreprise;
 import ch.vd.uniregctb.tiers.FormeLegaleHisto;
+import ch.vd.uniregctb.tiers.RaisonSocialeHisto;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.tiers.view.EtatEntrepriseView;
 
@@ -65,9 +65,6 @@ public class EntrepriseServiceImpl implements EntrepriseService {
 
 			Organisation organisation = serviceOrganisationService.getOrganisationHistory(numeroEntreprise);
 
-			entrepriseView.setRaisonSociale(organisation.getNom());
-			Collections.sort(entrepriseView.getRaisonSociale(), new DateRangeComparator<>());
-
 			List<DateRanged<String>> nomsAdditionnels = new ArrayList<>();
 			for (List<DateRanged<String>> noms : organisation.getNomsAdditionnels().values()) {
 				nomsAdditionnels.addAll(noms);
@@ -99,18 +96,12 @@ public class EntrepriseServiceImpl implements EntrepriseService {
 				L'entreprise n'est pas connue du régistre civil cantonal et on doit faire avec les informations dont on dispose.
 			 */
 			entrepriseView.setSource(EntrepriseView.SourceCivile.UNIREG);
-			final List<DonneesRegistreCommerce> donneesRC = new ArrayList<>(entreprise.getDonneesRC());
-			Collections.sort(donneesRC, new DateRangeComparator<>());
-
-			if (!donneesRC.isEmpty()) {
-				List<DateRanged<String>> raisonSociale = new ArrayList<>();
-				for (DonneesRegistreCommerce rc : donneesRC) {
-					raisonSociale.add(new DateRanged<>(rc.getDateDebut(), rc.getDateFin(), rc.getRaisonSociale()));
-				}
-				entrepriseView.setRaisonSociale(raisonSociale);
-			}
 			entrepriseView.setSieges(extractSieges(tiersService.getEtablissementsPrincipauxEntreprise(entreprise)));
 		}
+
+		final List<RaisonSocialeHisto> raisonsSociales = tiersService.getRaisonsSociales(entreprise);
+		Collections.reverse(raisonsSociales);
+		entrepriseView.setRaisonsSociales(getRaisonSociale(raisonsSociales));
 
 		final List<FormeLegaleHisto> formesJuridiques = tiersService.getFormesLegales(entreprise);
 		Collections.reverse(formesJuridiques);
@@ -227,6 +218,19 @@ public class EntrepriseServiceImpl implements EntrepriseService {
 			list.add(new FormeJuridiqueView(formeLegale));
 		}
 		Collections.sort(list, new DateRangeComparator<FormeJuridiqueView>());
+		Collections.reverse(list);
+		return list;
+	}
+
+	private static List<RaisonSocialeView> getRaisonSociale(List<RaisonSocialeHisto> raisonsSociales) {
+		if (raisonsSociales == null) {
+			return null;
+		}
+		final List<RaisonSocialeView> list = new ArrayList<>(raisonsSociales.size());
+		for (RaisonSocialeHisto raisonSociale : raisonsSociales) {
+			list.add(new RaisonSocialeView(raisonSociale));
+		}
+		Collections.sort(list, new DateRangeComparator<RaisonSocialeView>());
 		Collections.reverse(list);
 		return list;
 	}

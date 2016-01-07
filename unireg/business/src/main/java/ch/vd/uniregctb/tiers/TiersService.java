@@ -159,6 +159,8 @@ public interface TiersService {
 
 	List<FormeLegaleHisto> getFormesLegales(@NotNull Entreprise entreprise);
 
+	List<RaisonSocialeHisto> getRaisonsSociales(@NotNull Entreprise entreprise);
+
 
 	enum UpdateHabitantFlagResultat {
 		PAS_DE_CHANGEMENT,

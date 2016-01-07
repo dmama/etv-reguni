@@ -24,7 +24,7 @@ public class EntrepriseView {
 		}
 	}
 
-	private List<DateRanged<String>> raisonSociale;
+	private List<RaisonSocialeView> raisonsSociales;
 	private List<DateRanged<String>> nomsAdditionnels;
 
 	private List<SiegeView> sieges;
@@ -42,12 +42,12 @@ public class EntrepriseView {
 
 	private SourceCivile source;
 
-	public List<DateRanged<String>> getRaisonSociale() {
-		return raisonSociale;
+	public List<RaisonSocialeView> getRaisonsSociales() {
+		return raisonsSociales;
 	}
 
-	public void setRaisonSociale(List<DateRanged<String>> raisonSociale) {
-		this.raisonSociale = raisonSociale;
+	public void setRaisonsSociales(List<RaisonSocialeView> raisonsSociales) {
+		this.raisonsSociales = raisonsSociales;
 	}
 
 	public List<DateRanged<String>> getNomsAdditionnels() {

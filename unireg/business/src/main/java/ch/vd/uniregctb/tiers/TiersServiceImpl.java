@@ -5724,6 +5724,43 @@ public class TiersServiceImpl implements TiersService {
 		return DateRangeHelper.collate(nonCollatedData);
 	}
 
+	@Override
+	public List<RaisonSocialeHisto> getRaisonsSociales(@NotNull Entreprise entreprise) {
+		final List<RaisonSocialeHisto> donneesCiviles = extractRaisonsSocialesCivils(entreprise);
+		final List<RaisonSocialeHisto> donneesFiscales = extractRaisonsSocialesFiscales(entreprise);
+
+		return DateRangeHelper.override(donneesCiviles, donneesFiscales, new GentilDateRangeExtendedAdapterCallback<RaisonSocialeHisto>());
+	}
+
+	private List<RaisonSocialeHisto> extractRaisonsSocialesCivils(Entreprise entreprise) {
+		Long numeroEntreprise = entreprise.getNumeroEntreprise();
+
+		if (numeroEntreprise != null) {
+			Organisation organisation = serviceOrganisationService.getOrganisationHistory(numeroEntreprise);
+			List<RaisonSocialeHisto> raisonsSociales = new ArrayList<>();
+			for (DateRanged<String> raisonSociale : organisation.getNom()) {
+				raisonsSociales.add(new RaisonSocialeHisto(null, false, raisonSociale.getDateDebut(), raisonSociale.getDateFin(), raisonSociale.getPayload(), Source.CIVILE));
+			}
+			Collections.sort(raisonsSociales, new DateRangeComparator<RaisonSocialeHisto>());
+			return raisonsSociales;
+		}
+		return Collections.emptyList();
+	}
+
+
+	private List<RaisonSocialeHisto> extractRaisonsSocialesFiscales(Entreprise entreprise) {
+		final List<DonneesRegistreCommerce> donneesRC = new ArrayList<>(entreprise.getDonneesRC());
+		Collections.sort(donneesRC, new DateRangeComparator<>());
+
+		final List<RaisonSocialeHisto> nonCollatedData = extractFromDonneesRegistreCommerce(donneesRC, new ExtractorDonneesRegistreCommerce<RaisonSocialeHisto>() {
+			                                                                                    @Override
+			                                                                                    public RaisonSocialeHisto extract(DonneesRegistreCommerce source) {
+				                                                                                    return new RaisonSocialeHisto(source.getId(), source.isAnnule(), source.getDateDebut(), source.getDateFin(), source.getRaisonSociale(), Source.FISCALE);
+			                                                                                    }
+		                                                                                    });
+		return DateRangeHelper.collate(nonCollatedData);
+	}
+
 	private interface ExtractorDonneesRegistreCommerce<T> {
 		T extract(DonneesRegistreCommerce source);
 	}
