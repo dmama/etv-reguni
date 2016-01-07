@@ -14,6 +14,7 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.common.MontantMonetaireView;
 import ch.vd.uniregctb.tiers.CapitalHisto;
 import ch.vd.uniregctb.tiers.MontantMonetaire;
+import ch.vd.uniregctb.tiers.Source;
 
 public class CapitalView implements CollatableDateRange {
 
@@ -21,17 +22,17 @@ public class CapitalView implements CollatableDateRange {
 	private final RegDate dateDebut;
 	private final RegDate dateFin;
 	private final MontantMonetaireView capitalLibere;
-	private final CapitalHisto.Source source;
+	private final Source source;
 
 	public CapitalView(CapitalHisto capital) {
 		this(capital.getId(), capital.getDateDebut(), capital.getDateFin(), capital.getMontant(), capital.getSource());
 	}
 
-	public CapitalView(Long id, RegDate dateDebut, RegDate dateFin, MontantMonetaire capitalLibere, CapitalHisto.Source source) {
+	public CapitalView(Long id, RegDate dateDebut, RegDate dateFin, MontantMonetaire capitalLibere, Source source) {
 		this(id, dateDebut, dateFin, buildMontantMonetaire(capitalLibere), source);
 	}
 
-	public CapitalView(Long id, RegDate dateDebut, RegDate dateFin, MontantMonetaireView capitalLibere, CapitalHisto.Source source) {
+	public CapitalView(Long id, RegDate dateDebut, RegDate dateFin, MontantMonetaireView capitalLibere, Source source) {
 		this.id = id;
 		this.dateDebut = dateDebut;
 		this.dateFin = dateFin;
@@ -73,7 +74,7 @@ public class CapitalView implements CollatableDateRange {
 		return capitalLibere;
 	}
 
-	public CapitalHisto.Source getSource() {
+	public Source getSource() {
 		return source;
 	}
 

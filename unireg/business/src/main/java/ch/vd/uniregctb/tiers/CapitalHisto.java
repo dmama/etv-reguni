@@ -11,23 +11,7 @@ import ch.vd.uniregctb.common.Annulable;
 import ch.vd.uniregctb.common.Duplicable;
 import ch.vd.uniregctb.common.Rerangeable;
 
-public class CapitalHisto implements CollatableDateRange, Duplicable<CapitalHisto>, Annulable, Rerangeable<CapitalHisto> {
-
-	/**
-	 * Source de la valeur du capital
-	 */
-	public enum Source {
-
-		/**
-		 * Registre civil = registre cantonal des entreprises
-		 */
-		CIVILE,
-
-		/**
-		 * Registre fiscal = unireg
-		 */
-		FISCALE
-	}
+public class CapitalHisto implements Sourced<Source>, CollatableDateRange, Duplicable<CapitalHisto>, Annulable, Rerangeable<CapitalHisto> {
 
 	private final Long id;
 	private final boolean annule;
@@ -103,6 +87,7 @@ public class CapitalHisto implements CollatableDateRange, Duplicable<CapitalHist
 		return new CapitalHisto(id, annule, dateDebut, dateFin, montant.duplicate(), source);
 	}
 
+	@Override
 	public Source getSource() {
 		return source;
 	}

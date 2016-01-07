@@ -9595,7 +9595,7 @@ debut PF                                                                        
 					Assert.assertEquals(dateDebutSurchargeCapital.getOneDayBefore(), capital.getDateFin());
 					Assert.assertEquals((Long) 10000000L, capital.getMontant().getMontant());
 					Assert.assertEquals("CHF", capital.getMontant().getMonnaie());
-					Assert.assertEquals(CapitalHisto.Source.CIVILE, capital.getSource());
+					Assert.assertEquals(Source.CIVILE, capital.getSource());
 				}
 				{
 					final CapitalHisto capital = capitaux.get(1);
@@ -9604,7 +9604,7 @@ debut PF                                                                        
 					Assert.assertEquals(dateFinSurchargeCapital, capital.getDateFin());
 					Assert.assertEquals((Long) 42L, capital.getMontant().getMontant());
 					Assert.assertEquals("CHF", capital.getMontant().getMonnaie());
-					Assert.assertEquals(CapitalHisto.Source.FISCALE, capital.getSource());
+					Assert.assertEquals(Source.FISCALE, capital.getSource());
 				}
 				{
 					final CapitalHisto capital = capitaux.get(2);
@@ -9613,7 +9613,7 @@ debut PF                                                                        
 					Assert.assertNull(capital.getDateFin());
 					Assert.assertEquals((Long) 10000000L, capital.getMontant().getMontant());
 					Assert.assertEquals("CHF", capital.getMontant().getMonnaie());
-					Assert.assertEquals(CapitalHisto.Source.CIVILE, capital.getSource());
+					Assert.assertEquals(Source.CIVILE, capital.getSource());
 				}
 			}
 		});
