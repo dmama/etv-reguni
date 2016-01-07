@@ -219,13 +219,7 @@ public class EntrepriseServiceImpl implements EntrepriseService {
 			                                                                                    @Override
 			                                                                                    public FormeJuridiqueView extract(DonneesRegistreCommerce source) {
 				                                                                                    final FormeLegale fl = FormeLegale.fromCode(source.getFormeJuridique().getCodeECH());
-				                                                                                    if (fl != null) {
-					                                                                                    return new FormeJuridiqueView(source.getDateDebut(), source.getDateFin(), fl);
-				                                                                                    }
-				                                                                                    else {
-					                                                                                    // TODO ne faudrait-il pas plutôt lever une exception ??
-					                                                                                    return null;
-				                                                                                    }
+				                                                                                    return new FormeJuridiqueView(source.getDateDebut(), source.getDateFin(), fl);
 			                                                                                    }
 		                                                                                    });
 		Collections.reverse(views);

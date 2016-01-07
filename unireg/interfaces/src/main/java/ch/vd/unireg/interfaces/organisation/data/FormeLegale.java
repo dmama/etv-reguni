@@ -82,6 +82,10 @@ public enum FormeLegale {
 
 	@Nullable
 	public static FormeLegale fromCode(String code) {
-		return byCode.get(code);
+		final FormeLegale formeLegale = byCode.get(code);
+		if (formeLegale == null) {
+			throw new IllegalArgumentException(String.format("Code de forme légale inconnu: %s", code));
+		}
+		return formeLegale;
 	}
 }
