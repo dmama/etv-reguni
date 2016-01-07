@@ -15,8 +15,9 @@ import ch.vd.uniregctb.common.MontantMonetaireView;
 import ch.vd.uniregctb.tiers.CapitalHisto;
 import ch.vd.uniregctb.tiers.MontantMonetaire;
 import ch.vd.uniregctb.tiers.Source;
+import ch.vd.uniregctb.tiers.Sourced;
 
-public class CapitalView implements CollatableDateRange {
+public class CapitalView implements Sourced<Source>, CollatableDateRange {
 
 	private final Long id;
 	private final RegDate dateDebut;

@@ -5685,4 +5685,60 @@ public class TiersServiceImpl implements TiersService {
 
 		return DateRangeHelper.collate(ces);
 	}
+
+	@Override
+	public List<FormeLegaleHisto> getFormesLegales(@NotNull Entreprise entreprise) {
+		final List<FormeLegaleHisto> donneesCiviles = extractFormeLegalesCivils(entreprise);
+		final List<FormeLegaleHisto> donneesFiscales = extractFormeLegalesFiscales(entreprise);
+
+		return DateRangeHelper.override(donneesCiviles, donneesFiscales, new GentilDateRangeExtendedAdapterCallback<FormeLegaleHisto>());
+	}
+
+	private List<FormeLegaleHisto> extractFormeLegalesCivils(Entreprise entreprise) {
+		Long numeroEntreprise = entreprise.getNumeroEntreprise();
+
+		if (numeroEntreprise != null) {
+			Organisation organisation = serviceOrganisationService.getOrganisationHistory(numeroEntreprise);
+			List<FormeLegaleHisto> formes = new ArrayList<>();
+			for (DateRanged<FormeLegale> formeLegale: organisation.getFormeLegale()) {
+				formes.add(new FormeLegaleHisto(null, false, formeLegale.getDateDebut(), formeLegale.getDateFin(), formeLegale.getPayload(), Source.CIVILE));
+			}
+			Collections.sort(formes, new DateRangeComparator<FormeLegaleHisto>());
+			return formes;
+		}
+		return Collections.emptyList();
+	}
+
+
+	private List<FormeLegaleHisto> extractFormeLegalesFiscales(Entreprise entreprise) {
+		final List<DonneesRegistreCommerce> donneesRC = new ArrayList<>(entreprise.getDonneesRC());
+		Collections.sort(donneesRC, new DateRangeComparator<>());
+
+		final List<FormeLegaleHisto> nonCollatedData = extractFromDonneesRegistreCommerce(donneesRC, new ExtractorDonneesRegistreCommerce<FormeLegaleHisto>() {
+			                                                                                    @Override
+			                                                                                    public FormeLegaleHisto extract(DonneesRegistreCommerce source) {
+				                                                                                    final FormeLegale fl = FormeLegale.fromCode(source.getFormeJuridique().getCodeECH());
+				                                                                                    return new FormeLegaleHisto(source.getId(), source.isAnnule(), source.getDateDebut(), source.getDateFin(), fl, Source.FISCALE);
+			                                                                                    }
+		                                                                                    });
+		return DateRangeHelper.collate(nonCollatedData);
+	}
+
+	private interface ExtractorDonneesRegistreCommerce<T> {
+		T extract(DonneesRegistreCommerce source);
+	}
+
+	private static <T extends DateRange> List<T> extractFromDonneesRegistreCommerce(List<DonneesRegistreCommerce> source,
+	                                                                                ExtractorDonneesRegistreCommerce<? extends T> extractor) {
+		final List<T> extractedData = new ArrayList<>(source.size());
+		for (DonneesRegistreCommerce data : source) {
+			final T extractedValue = extractor.extract(data);
+			if (extractedValue != null) {
+				extractedData.add(extractedValue);
+			}
+		}
+		return extractedData;
+	}
+
+
 }

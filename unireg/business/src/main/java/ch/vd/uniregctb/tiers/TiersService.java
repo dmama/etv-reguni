@@ -157,6 +157,8 @@ public interface TiersService {
 	 */
 	StatutMenageCommun getStatutMenageCommun(MenageCommun menageCommun);
 
+	List<FormeLegaleHisto> getFormesLegales(@NotNull Entreprise entreprise);
+
 
 	enum UpdateHabitantFlagResultat {
 		PAS_DE_CHANGEMENT,

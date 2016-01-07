@@ -5,15 +5,12 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import ch.vd.registre.base.date.CollatableDateRange;
-import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
 import ch.vd.unireg.interfaces.organisation.data.DonneesRC;
 import ch.vd.unireg.interfaces.organisation.data.DonneesRegistreIDE;
-import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.Siege;
 import ch.vd.uniregctb.common.CollectionsUtils;
@@ -24,6 +21,7 @@ import ch.vd.uniregctb.tiers.DonneesRegistreCommerce;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.Etablissement;
 import ch.vd.uniregctb.tiers.EtatEntreprise;
+import ch.vd.uniregctb.tiers.FormeLegaleHisto;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.tiers.view.EtatEntrepriseView;
 
@@ -78,7 +76,6 @@ public class EntrepriseServiceImpl implements EntrepriseService {
 			entrepriseView.setNomsAdditionnels(nomsAdditionnels);
 
 			entrepriseView.setSieges(getSiegesFromOrganisation(organisation.getSiegesPrincipaux()));
-			entrepriseView.setFormesJuridiques(getFormesJuridiques(organisation.getFormeLegale()));
 			//entrepriseView.setEtats(getEtatsPM(pm.getEtats()));
 			List<DateRanged<String>> noIdeList = organisation.getNumeroIDE();
 			if (noIdeList != null && noIdeList.size() > 0) {
@@ -113,8 +110,11 @@ public class EntrepriseServiceImpl implements EntrepriseService {
 				entrepriseView.setRaisonSociale(raisonSociale);
 			}
 			entrepriseView.setSieges(extractSieges(tiersService.getEtablissementsPrincipauxEntreprise(entreprise)));
-			entrepriseView.setFormesJuridiques(extractFormesJuridiques(donneesRC));
 		}
+
+		final List<FormeLegaleHisto> formesJuridiques = tiersService.getFormesLegales(entreprise);
+		Collections.reverse(formesJuridiques);
+		entrepriseView.setFormesJuridiques(getFormesJuridiques(formesJuridiques));
 
 		entrepriseView.setCapitaux(extractCapitaux(tiersService.getCapitaux(entreprise)));
 
@@ -191,41 +191,6 @@ public class EntrepriseServiceImpl implements EntrepriseService {
 		return null;
 	}
 
-	private interface ExtractorDonneesRegistreCommerce<T> {
-		T extract(DonneesRegistreCommerce source);
-	}
-
-	private static <T extends DateRange> List<T> extractFromDonneesRegistreCommerce(List<DonneesRegistreCommerce> source,
-	                                                                                ExtractorDonneesRegistreCommerce<? extends T> extractor) {
-		final List<T> extractedData = new ArrayList<>(source.size());
-		for (DonneesRegistreCommerce data : source) {
-			final T extractedValue = extractor.extract(data);
-			if (extractedValue != null) {
-				extractedData.add(extractedValue);
-			}
-		}
-		return extractedData;
-	}
-
-	private static <T extends CollatableDateRange> List<T> extractAndCollateFromDonneesRegistreCommerce(List<DonneesRegistreCommerce> source,
-	                                                                                                    ExtractorDonneesRegistreCommerce<? extends T> extractor) {
-		final List<T> nonCollatedData = extractFromDonneesRegistreCommerce(source, extractor);
-		return DateRangeHelper.collate(nonCollatedData);
-	}
-
-	private static List<FormeJuridiqueView> extractFormesJuridiques(List<DonneesRegistreCommerce> donneesRC) {
-		final List<FormeJuridiqueView> views = extractAndCollateFromDonneesRegistreCommerce(donneesRC,
-		                                                                                    new ExtractorDonneesRegistreCommerce<FormeJuridiqueView>() {
-			                                                                                    @Override
-			                                                                                    public FormeJuridiqueView extract(DonneesRegistreCommerce source) {
-				                                                                                    final FormeLegale fl = FormeLegale.fromCode(source.getFormeJuridique().getCodeECH());
-				                                                                                    return new FormeJuridiqueView(source.getDateDebut(), source.getDateFin(), fl);
-			                                                                                    }
-		                                                                                    });
-		Collections.reverse(views);
-		return views;
-	}
-
 	private List<SiegeView> getSiegesFromOrganisation(List<Siege> sieges) {
 		if (sieges == null) {
 			return null;
@@ -253,12 +218,12 @@ public class EntrepriseServiceImpl implements EntrepriseService {
 		return list;
 	}
 
-	private static List<FormeJuridiqueView> getFormesJuridiques(List<DateRanged<FormeLegale>> formesLegale) {
+	private static List<FormeJuridiqueView> getFormesJuridiques(List<FormeLegaleHisto> formesLegale) {
 		if (formesLegale == null) {
 			return null;
 		}
 		final List<FormeJuridiqueView> list = new ArrayList<>(formesLegale.size());
-		for (DateRanged<FormeLegale> formeLegale : formesLegale) {
+		for (FormeLegaleHisto formeLegale : formesLegale) {
 			list.add(new FormeJuridiqueView(formeLegale));
 		}
 		Collections.sort(list, new DateRangeComparator<FormeJuridiqueView>());
