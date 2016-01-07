@@ -125,13 +125,13 @@
 				<unireg:currency value="${capitaux.capitalLibere.montant}"/>&nbsp;<c:out value="${capitaux.capitalLibere.monnaie}"/>
 			</c:if>
 		</display:column>
-		<c:if test="${command.entreprise.source == 'RCENT'}" >
-			<display:column titleKey="label.source">
-				<fmt:message key="option.capital.source.${capitaux.source}"/>
-			</display:column>
-		</c:if>
+		<display:column titleKey="label.source">
+			<fmt:message key="option.capital.source.${capitaux.source}"/>
+		</display:column>
 		<display:column class="action">
-			<unireg:consulterLog entityNature="Capital" entityId="${capitaux.id}"/>
+			<c:if test="${capitaux.source == 'FISCALE'}" >
+				<unireg:consulterLog entityNature="Capital" entityId="${capitaux.id}"/>
+			</c:if>
 		</display:column>
 	</display:table>
 
