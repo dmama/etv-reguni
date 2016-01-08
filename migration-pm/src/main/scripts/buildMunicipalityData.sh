@@ -27,5 +27,13 @@ function fusions_2011 {
 	sed -e 's/2011-06-30/2011-12-31/' -e 's/2011-07-01/2012-01-01/'
 }
 
+function disparition_les_charbonnieres {
+	# la fraction des Charbonnières (8022) a été fiscalement ré-intégrée dans la fraction du Lieu (8020) au 31.12.2015 (on va ré-utiliser la mutation 9999 qui traite déjà de la disparition de ces fractions dans le civil)
+	grep -v ";9999;"
+	echo "8020;;;9999;2015-12-31"
+	echo "8020;9999;2016-01-01;;"
+	echo "8022;2668;2006-09-01;9999;2015-12-31"
+}
+
 echo "NO_OFS;MUTATION_CREATION;DATE_MUTATION_CREATION;MUTATION_DISPARITION;DATE_MUTATION_DISPARITION"
-decoupage_balises "$@" | extraction_id_dates | regroupement_mutation_date | regroupement_ligne | formattage_csv | fusions_2011
+decoupage_balises "$@" | extraction_id_dates | regroupement_mutation_date | regroupement_ligne | formattage_csv | fusions_2011 | disparition_les_charbonnieres
