@@ -36,16 +36,17 @@
 	<label class="noprint" for="showRaisonSocialeHisto"><fmt:message key="label.historique" /></label>
 
 	<display:table name="${command.entreprise.raisonsSociales}" id="raisonSociale" requestURI="visu.do" class="display">
-		<display:column sortable="true" titleKey="label.date.debut" sortProperty="dateDebut">
+		<display:column style="width:10%" sortable="true" titleKey="label.date.debut" sortProperty="dateDebut">
 			<unireg:regdate regdate="${raisonSociale.dateDebut}"/>
 		</display:column>
-		<display:column sortable="true" titleKey="label.date.fin" sortProperty="dateFin">
+		<display:column style="width:10%" sortable="true" titleKey="label.date.fin" sortProperty="dateFin">
 			<unireg:regdate regdate="${raisonSociale.dateFin}"/>
 		</display:column>
-		<display:column sortable="true" titleKey="label.raison.sociale" property="raisonSociale"/>
-		<display:column titleKey="label.source">
-			<fmt:message key="option.capital.source.${raisonSociale.source}"/>
+		<display:column style="width:60%" sortable="true" titleKey="label.raison.sociale" property="raisonSociale"/>
+		<display:column style="width:10%" titleKey="label.source">
+			<fmt:message key="option.entreprise.source.${raisonSociale.source}"/>
 		</display:column>
+		<display:column style="width:10%">&nbsp;</display:column>
 	</display:table>
 </fieldset>
 
@@ -56,13 +57,15 @@
 	<label class="noprint" for="showNomsAdditionnelsHisto"><fmt:message key="label.historique" /></label>
 
 	<display:table name="${command.entreprise.nomsAdditionnels}" id="nomsAdditionnels" requestURI="visu.do" class="display">
-		<display:column sortable="true" titleKey="label.date.debut" sortProperty="dateDebut">
+		<display:column style="width:10%" sortable="true" titleKey="label.date.debut" sortProperty="dateDebut">
 			<unireg:regdate regdate="${nomsAdditionnels.dateDebut}"/>
 		</display:column>
-		<display:column sortable="true" titleKey="label.date.fin" sortProperty="dateFin">
+		<display:column style="width:10%" sortable="true" titleKey="label.date.fin" sortProperty="dateFin">
 			<unireg:regdate regdate="${nomsAdditionnels.dateFin}"/>
 		</display:column>
-		<display:column sortable="true" titleKey="label.raison.sociale" property="payload"/>
+		<display:column style="width:60%" sortable="true" titleKey="label.raison.sociale" property="payload"/>
+		<display:column style="width:10%">&nbsp;</display:column>
+		<display:column style="width:10%">&nbsp;</display:column>
 	</display:table>
 </fieldset>
 
@@ -73,13 +76,13 @@
 	<label class="noprint" for="showSiegesHisto"><fmt:message key="label.historique" /></label>
 
 	<display:table name="${command.entreprise.sieges}" id="sieges" requestURI="visu.do" class="display">
-		<display:column sortable="true" titleKey="label.date.debut" sortProperty="dateDebut">
+		<display:column style="width:10%" sortable="true" titleKey="label.date.debut" sortProperty="dateDebut">
 			<unireg:regdate regdate="${sieges.dateDebut}"/>
 		</display:column>
-		<display:column sortable="true" titleKey="label.date.fin" sortProperty="dateFin">
+		<display:column style="width:10%" sortable="true" titleKey="label.date.fin" sortProperty="dateFin">
 			<unireg:regdate regdate="${sieges.dateFin}"/>
 		</display:column>
-		<display:column sortable="true" titleKey="label.commune.pays">
+		<display:column style="width:60%" sortable="true" titleKey="label.commune.pays">
 			<c:choose>
 				<c:when test="${sieges.type == 'COMMUNE_CH' }">
 					<unireg:commune ofs="${sieges.noOfsSiege}" displayProperty="nomOfficielAvecCanton" date="${sieges.dateFin}"/>
@@ -89,9 +92,10 @@
 				</c:when>
 			</c:choose>
 		</display:column>
-		<display:column titleKey="label.source">
-			<fmt:message key="option.capital.source.${sieges.source}"/>
+		<display:column style="width:10%" titleKey="label.source">
+			<fmt:message key="option.entreprise.source.${sieges.source}"/>
 		</display:column>
+		<display:column style="width:10%">&nbsp;</display:column>
 	</display:table>
 </fieldset>
 
@@ -102,16 +106,17 @@
 	<label class="noprint" for="showFormesJuridiquesHisto"><fmt:message key="label.historique" /></label>
 
 	<display:table name="${command.entreprise.formesJuridiques}" id="formesJuridiques" requestURI="visu.do" class="display">
-		<display:column sortable="true" titleKey="label.date.debut" sortProperty="dateDebut">
+		<display:column style="width:10%" sortable="true" titleKey="label.date.debut" sortProperty="dateDebut">
 			<unireg:regdate regdate="${formesJuridiques.dateDebut}"/>
 		</display:column>
-		<display:column sortable="true" titleKey="label.date.fin" sortProperty="dateFin">
+		<display:column style="width:10%" sortable="true" titleKey="label.date.fin" sortProperty="dateFin">
 			<unireg:regdate regdate="${formesJuridiques.dateFin}"/>
 		</display:column>
-		<display:column sortable="true" titleKey="label.forme.juridique" property="type"/>
-		<display:column titleKey="label.source">
-			<fmt:message key="option.capital.source.${formesJuridiques.source}"/>
+		<display:column style="width:60%" sortable="true" titleKey="label.forme.juridique" property="type"/>
+		<display:column style="width:10%" titleKey="label.source">
+			<fmt:message key="option.entreprise.source.${formesJuridiques.source}"/>
 		</display:column>
+		<display:column style="width:10%">&nbsp;</display:column>
 	</display:table>
 </fieldset>
 
@@ -123,21 +128,21 @@
 
 	<fmt:setLocale value="ch" scope="page"/>
 	<display:table name="${command.entreprise.capitaux}" id="capitaux" requestURI="visu.do" class="display">
-		<display:column sortable="true" titleKey="label.date.debut" sortProperty="dateDebut">
+		<display:column style="width:10%" sortable="true" titleKey="label.date.debut" sortProperty="dateDebut">
 			<unireg:regdate regdate="${capitaux.dateDebut}"/>
 		</display:column>
-		<display:column sortable="true" titleKey="label.date.fin" sortProperty="dateFin">
+		<display:column style="width:10%" sortable="true" titleKey="label.date.fin" sortProperty="dateFin">
 			<unireg:regdate regdate="${capitaux.dateFin}"/>
 		</display:column>
-		<display:column sortable="true" titleKey="label.capital.libere" style="text-align:right" sortProperty="capitalLibere.montant">
+		<display:column style="width:60%" sortable="true" titleKey="label.capital.libere" sortProperty="capitalLibere.montant">
 			<c:if test="${capitaux.capitalLibere != null}">
 				<unireg:currency value="${capitaux.capitalLibere.montant}"/>&nbsp;<c:out value="${capitaux.capitalLibere.monnaie}"/>
 			</c:if>
 		</display:column>
-		<display:column titleKey="label.source">
-			<fmt:message key="option.capital.source.${capitaux.source}"/>
+		<display:column style="width:10%" titleKey="label.source">
+			<fmt:message key="option.entreprise.source.${capitaux.source}"/>
 		</display:column>
-		<display:column class="action">
+		<display:column style="width:10%" class="action">
 			<c:if test="${capitaux.source == 'FISCALE'}" >
 				<unireg:consulterLog entityNature="Capital" entityId="${capitaux.id}"/>
 			</c:if>
