@@ -3,6 +3,7 @@ package ch.vd.unireg.interfaces.organisation.rcent;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
 import ch.vd.unireg.interfaces.organisation.ServiceOrganisationException;
 import ch.vd.unireg.interfaces.organisation.ServiceOrganisationRaw;
+import ch.vd.unireg.interfaces.organisation.WrongOrganisationReceivedException;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.uniregctb.adapter.rcent.service.RCEntAdapter;
 
@@ -42,19 +43,12 @@ public class ServiceOrganisationRCEnt implements ServiceOrganisationRaw {
 		if (organisation == null) {
 			throw new ServiceOrganisationException(String.format("L'organisation n°%s est introuvable", noOrganisation));
 		}
-		if (organisation.getNumeroOrganisation() != noOrganisation) {
-			throw new ServiceOrganisationException(String.format("Demandé l'organisation n°%s, reçu l'organisation n°%s!", noOrganisation, organisation.getNumeroOrganisation()));
-		}
+		sanityCheck(noOrganisation, organisation.getNumeroOrganisation());
 	}
 
-	private void sanityCheck(long noOrganisation, long receivedId) {
+	private void sanityCheck(long noOrganisation, long receivedId) throws ServiceOrganisationException {
 		if (receivedId != noOrganisation) {
-			throw new IllegalStateException(
-					String.format("Incohérence des données retournées détectée: organisation demandée = %d, organisation retournée = %d. " +
-							              "Verifiez que le numéro soumis est bien l'identifiant cantonal d'une organisation et non " +
-							              "celui d'un site.",
-					              noOrganisation,
-					              receivedId));
+			throw new WrongOrganisationReceivedException(noOrganisation, receivedId);
 		}
 	}
 }
