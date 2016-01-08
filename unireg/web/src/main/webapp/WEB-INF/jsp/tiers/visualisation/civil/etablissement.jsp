@@ -37,6 +37,14 @@
 				</c:when>
 			</c:choose>
 		</display:column>
+		<display:column titleKey="label.source">
+			<fmt:message key="option.entreprise.source.${domicilesEtablissement.source}"/>
+		</display:column>
+		<display:column>
+			<c:if test="${domicilesEtablissement.source == 'FISCALE'}" >
+				<unireg:consulterLog entityNature="DomicileEtablissement" entityId="${domicilesEtablissement.id}"/>
+			</c:if>
+		</display:column>
 	</display:table>
 </fieldset>
 

@@ -5838,4 +5838,36 @@ public class TiersServiceImpl implements TiersService {
 		return null;
 	}
 
+	@Override
+	public List<SiegeHisto> getSieges(@NotNull Etablissement etablissement) {
+		final List<SiegeHisto> donneesCiviles = extractSiegesCivilsEtablissement(etablissement);
+		final List<SiegeHisto> donneesFiscales = extractSiegesFiscauxEtablissement(etablissement);
+
+		return DateRangeHelper.override(donneesCiviles, donneesFiscales, new GentilDateRangeExtendedAdapterCallback<SiegeHisto>());
+	}
+
+	private List<SiegeHisto> extractSiegesCivilsEtablissement(Etablissement etablissement) {
+		SiteOrganisation siteOrganisation = getSiteOrganisationPourEtablissement(etablissement);
+		if (siteOrganisation == null) {
+			return Collections.emptyList();
+		}
+		final List<SiegeHisto> domiciles = new ArrayList<>();
+		List<Siege> sieges = siteOrganisation.getSieges();
+		for (Siege siege : sieges) {
+			domiciles.add(new SiegeHisto(siege));
+		}
+		Collections.sort(domiciles, new DateRangeComparator<SiegeHisto>());
+		return domiciles;
+	}
+
+	private List<SiegeHisto> extractSiegesFiscauxEtablissement(Etablissement etablissement) {
+		final Set<DomicileEtablissement> domicileEtablissement = etablissement.getDomiciles();
+		final List<SiegeHisto> domiciles = new ArrayList<>(domicileEtablissement.size());
+		for (DomicileEtablissement domicile: domicileEtablissement) {
+			domiciles.add(new SiegeHisto(domicile));
+		}
+		Collections.sort(domiciles, new DateRangeComparator<SiegeHisto>());
+		return domiciles;
+	}
+
 }

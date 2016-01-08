@@ -4,12 +4,13 @@ import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.unireg.interfaces.organisation.data.Siege;
 import ch.vd.uniregctb.common.Annulable;
-import ch.vd.uniregctb.tiers.DomicileEtablissement;
+import ch.vd.uniregctb.tiers.SiegeHisto;
+import ch.vd.uniregctb.tiers.Source;
+import ch.vd.uniregctb.tiers.Sourced;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
-public class DomicileEtablissementView implements DateRange, Annulable {
+public class DomicileEtablissementView implements Sourced<Source>, DateRange, Annulable {
 
 	private final Long id;
 	private final boolean annule;
@@ -17,23 +18,16 @@ public class DomicileEtablissementView implements DateRange, Annulable {
 	private final Integer numeroOfsAutoriteFiscale;
 	private final RegDate dateDebut;
 	private final RegDate dateFin;
+	private final Source source;
 
-	public DomicileEtablissementView(DomicileEtablissement domicile) {
-		this.id = domicile.getId();
-		this.annule = domicile.isAnnule();
-		this.typeAutoriteFiscale = domicile.getTypeAutoriteFiscale();
-		this.numeroOfsAutoriteFiscale = domicile.getNumeroOfsAutoriteFiscale();
-		this.dateDebut = domicile.getDateDebut();
-		this.dateFin = domicile.getDateFin();
-	}
-
-	public DomicileEtablissementView(Siege siege) {
+	public DomicileEtablissementView(SiegeHisto domicile) {
 		this.id = null;
 		this.annule = false;
-		this.typeAutoriteFiscale = siege.getTypeAutoriteFiscale();
-		this.numeroOfsAutoriteFiscale = siege.getNoOfs();
-		this.dateDebut = siege.getDateDebut();
-		this.dateFin = siege.getDateFin();
+		this.typeAutoriteFiscale = domicile.getTypeAutoriteFiscale();
+		this.numeroOfsAutoriteFiscale = domicile.getNoOfs();
+		this.dateDebut = domicile.getDateDebut();
+		this.dateFin = domicile.getDateFin();
+		this.source = domicile.getSource();
 	}
 
 	@Override
@@ -66,5 +60,10 @@ public class DomicileEtablissementView implements DateRange, Annulable {
 
 	public Long getId() {
 		return id;
+	}
+
+	@Override
+	public Source getSource() {
+		return source;
 	}
 }
