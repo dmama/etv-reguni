@@ -157,6 +157,8 @@ public class EntrepriseServiceImpl implements EntrepriseService {
 		for (CapitalHisto capital : capitaux) {
 			views.add(new CapitalView(capital));
 		}
+		Collections.sort(views, new DateRangeComparator<CapitalView>());
+		Collections.reverse(views);
 		return views;
 	}
 
