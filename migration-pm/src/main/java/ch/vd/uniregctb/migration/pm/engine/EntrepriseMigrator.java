@@ -47,6 +47,7 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.common.NomPrenom;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.infra.data.Pays;
+import ch.vd.unireg.interfaces.organisation.WrongOrganisationReceivedException;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
@@ -1136,6 +1137,25 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 	}
 
 	/**
+	 * @param idCantonal identifiant cantonal d'entreprise à récupérer
+	 * @param mr collecteur de messages de suivi
+	 * @return l'organisation qui correspond à l'identifiant cantonal fourni (si ce numéro est en fait un numéro d'établissement, on renvoie l'organisation complète)
+	 */
+	private Organisation getOrganisationHistory(long idCantonal, MigrationResultProduction mr) {
+		try {
+			return organisationService.getOrganisationHistory(idCantonal);
+		}
+		catch (WrongOrganisationReceivedException ex) {
+
+			// le numéro que nous avions était un numéro d'établissement, flûte !...
+			// il faut donc faire un nouvel appel avec le bon numéro pour obtenir la totalité des données de l'entreprise,,,
+
+			mr.addMessage(LogCategory.SUIVI, LogLevel.WARN, String.format("Le numéro cantonal fourni est un numéro d'établissement, le vrai numéro d'organisation est %d.", ex.getReceivedId()));
+			return organisationService.getOrganisationHistory(ex.getReceivedId());
+		}
+	}
+
+	/**
 	 * Appel de RCEnt pour les données de l'entreprise
 	 * @param e entreprise de RegPM
 	 * @param mr le collecteur de messages de suivi et manipulateur de contexte de log
@@ -1155,7 +1175,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 			}
 
 			try {
-				final Organisation org = organisationService.getOrganisationHistory(idCantonal);
+				final Organisation org = getOrganisationHistory(idCantonal, mr);
 				if (org != null) {
 					return new DonneesCiviles(org);
 				}
