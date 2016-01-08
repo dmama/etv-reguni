@@ -2,18 +2,6 @@
 <%@ include file="/WEB-INF/jsp/include/common.jsp" %>
 
 <fieldset>
-	<legend><span><fmt:message key="label.source.donnees"/></span></legend>
-
-	<unireg:nextRowClass reset="1"/>
-	<table>
-		<tr>
-			<td width="30%"><fmt:message key="label.source.donnees.provenance"/>&nbsp;:</td>
-			<td><fmt:message key="${command.entreprise.sourceKey}"/></td>
-		</tr>
-	</table>
-</fieldset>
-
-<fieldset>
 	<legend><span><fmt:message key="label.entreprise"/></span></legend>
 
 	<unireg:nextRowClass reset="1"/>

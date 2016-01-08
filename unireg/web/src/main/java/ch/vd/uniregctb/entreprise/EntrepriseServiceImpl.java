@@ -65,10 +65,6 @@ public class EntrepriseServiceImpl implements EntrepriseService {
 		Long numeroEntreprise = entreprise.getNumeroEntreprise();
 
 		if (numeroEntreprise != null) {
-			/*
-				L'entreprise a un identifiant cantonal et donc existe dans le registre civil cantonal.
-			 */
-			entrepriseView.setSource(EntrepriseView.SourceCivile.RCENT);
 
 			Organisation organisation = serviceOrganisationService.getOrganisationHistory(numeroEntreprise);
 
@@ -96,12 +92,6 @@ public class EntrepriseServiceImpl implements EntrepriseService {
 			final DonneesRegistreIDE donneesRegistreIDE = organisation.getSitePrincipal(null).getPayload().getDonneesRegistreIDE();
 			//entrepriseView.setDateInscritpionIde(CollectionsUtils.getLastElement(donneesRegistreIDE.getDateInscription()).getPayload()); // TODO: apporter la date d'inscription Ide en 16L1
 			entrepriseView.setStatusIde(getLastElementPayload(donneesRegistreIDE.getStatus()));
-		}
-		else {
-			/*
-				L'entreprise n'est pas connue du régistre civil cantonal et on doit faire avec les informations dont on dispose.
-			 */
-			entrepriseView.setSource(EntrepriseView.SourceCivile.UNIREG);
 		}
 
 		entrepriseView.setSieges(getSieges(tiersService.getSieges(entreprise)));

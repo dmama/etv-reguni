@@ -10,20 +10,6 @@ import ch.vd.uniregctb.tiers.view.EtatEntrepriseView;
 
 public class EntrepriseView {
 
-	enum SourceCivile {
-		RCENT("label.source.donnees.rcent"), UNIREG("label.source.donnees.fiscal");
-
-		private String key;
-
-		SourceCivile(String key) {
-			this.key = key;
-		}
-
-		public String getKey() {
-			return key;
-		}
-	}
-
 	private List<RaisonSocialeView> raisonsSociales;
 	private List<DateRanged<String>> nomsAdditionnels;
 
@@ -39,8 +25,6 @@ public class EntrepriseView {
 
 	private RegDate dateInscriptionIde;
 	private StatusRegistreIDE statusIde;
-
-	private SourceCivile source;
 
 	public List<RaisonSocialeView> getRaisonsSociales() {
 		return raisonsSociales;
@@ -138,15 +122,4 @@ public class EntrepriseView {
 		this.statusIde = statusIde;
 	}
 
-	public String getSourceKey() {
-		return source.getKey();
-	}
-
-	public SourceCivile getSource() {
-		return source;
-	}
-
-	public void setSource(SourceCivile source) {
-		this.source = source;
-	}
 }
