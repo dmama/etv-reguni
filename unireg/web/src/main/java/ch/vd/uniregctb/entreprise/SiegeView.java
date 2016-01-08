@@ -13,6 +13,7 @@ import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
 public class SiegeView implements Sourced<Source>, DateRange, Annulable {
 
+	private final Long id;
 	private final boolean annule;
 	private final RegDate dateDebut;
 	private final RegDate dateFin;
@@ -21,12 +22,17 @@ public class SiegeView implements Sourced<Source>, DateRange, Annulable {
 	private final Source source;
 
 	public SiegeView(SiegeHisto siege) {
+		this.id = siege.getId();
 		this.dateDebut = siege.getDateDebut();
 		this.dateFin = siege.getDateFin();
 		this.noOfsSiege = siege.getNoOfs();
 		this.type = siege.getTypeAutoriteFiscale() == TypeAutoriteFiscale.PAYS_HS ? TypeNoOfs.PAYS_HS : TypeNoOfs.COMMUNE_CH;
 		this.annule = siege.isAnnule();
 		this.source = siege.getSource();
+	}
+
+	public Long getId() {
+		return id;
 	}
 
 	@Override

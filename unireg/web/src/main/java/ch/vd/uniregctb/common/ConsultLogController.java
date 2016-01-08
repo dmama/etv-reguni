@@ -27,6 +27,7 @@ import ch.vd.uniregctb.tiers.AllegementFiscal;
 import ch.vd.uniregctb.tiers.CapitalEntreprise;
 import ch.vd.uniregctb.tiers.DecisionAci;
 import ch.vd.uniregctb.tiers.DomicileEtablissement;
+import ch.vd.uniregctb.tiers.DonneesRegistreCommerce;
 import ch.vd.uniregctb.tiers.DroitAcces;
 import ch.vd.uniregctb.tiers.EtatEntreprise;
 import ch.vd.uniregctb.tiers.ForFiscal;
@@ -54,6 +55,7 @@ public class ConsultLogController {
 		DecisionAci(DecisionAci.class),
 		DelaiDeclaration(DelaiDeclaration.class),
 		DI(DeclarationImpotOrdinaire.class),
+		DonneesRegistreCommerce(DonneesRegistreCommerce.class),
 		DomicileEtablissement(DomicileEtablissement.class),
 		DroitAcces(DroitAcces.class),
 		EtatEntreprise(EtatEntreprise.class),

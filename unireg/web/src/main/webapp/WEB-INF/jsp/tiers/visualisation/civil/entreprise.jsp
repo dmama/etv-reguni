@@ -46,7 +46,11 @@
 		<display:column style="width:10%" titleKey="label.source">
 			<fmt:message key="option.entreprise.source.${raisonSociale.source}"/>
 		</display:column>
-		<display:column style="width:10%">&nbsp;</display:column>
+		<display:column style="width:10%">
+			<c:if test="${raisonSociale.source == 'FISCALE'}" >
+				<unireg:consulterLog entityNature="DonneesRegistreCommerce" entityId="${raisonSociale.id}"/>
+			</c:if>
+		</display:column>
 	</display:table>
 </fieldset>
 
@@ -64,8 +68,9 @@
 			<unireg:regdate regdate="${nomsAdditionnels.dateFin}"/>
 		</display:column>
 		<display:column style="width:60%" sortable="true" titleKey="label.raison.sociale" property="payload"/>
-		<display:column style="width:10%">&nbsp;</display:column>
-		<display:column style="width:10%">&nbsp;</display:column>
+		<display:column style="width:10%" titleKey="label.source">
+			<fmt:message key="option.entreprise.source.CIVILE"/>
+		</display:column>
 	</display:table>
 </fieldset>
 
@@ -116,7 +121,11 @@
 		<display:column style="width:10%" titleKey="label.source">
 			<fmt:message key="option.entreprise.source.${formesJuridiques.source}"/>
 		</display:column>
-		<display:column style="width:10%">&nbsp;</display:column>
+		<display:column style="width:10%">
+			<c:if test="${formesJuridiques.source == 'FISCALE'}" >
+				<unireg:consulterLog entityNature="DonneesRegistreCommerce" entityId="${formesJuridiques.id}"/>
+			</c:if>
+		</display:column>
 	</display:table>
 </fieldset>
 
