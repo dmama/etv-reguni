@@ -5,6 +5,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import org.jetbrains.annotations.Nullable;
+
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
@@ -45,6 +47,15 @@ public class EntrepriseServiceImpl implements EntrepriseService {
 		this.tiersService = tiersService;
 	}
 
+	@Nullable
+	private static <T> T getLastElementPayload(List<DateRanged<T>> elements) {
+		if (elements == null || elements.isEmpty()) {
+			return null;
+		}
+		final DateRanged<T> lastElement = CollectionsUtils.getLastElement(elements);
+		return lastElement.getPayload();
+	}
+
 	/**
 	 * Alimente une vue EntrepriseView en fonction du numero d'entreprise
 	 *
@@ -82,14 +93,14 @@ public class EntrepriseServiceImpl implements EntrepriseService {
 				}
 			}
 
-			DonneesRC donneesRC = organisation.getSitePrincipal(null).getPayload().getDonneesRC();
-			entrepriseView.setDateInscriptionRC(CollectionsUtils.getLastElement(donneesRC.getDateInscription()).getPayload());
-			entrepriseView.setStatusRC(CollectionsUtils.getLastElement(donneesRC.getStatus()).getPayload());
-			entrepriseView.setDateRadiationRC(CollectionsUtils.getLastElement(donneesRC.getDateRadiation()).getPayload());
+			final DonneesRC donneesRC = organisation.getSitePrincipal(null).getPayload().getDonneesRC();
+			entrepriseView.setDateInscriptionRC(getLastElementPayload(donneesRC.getDateInscription()));
+			entrepriseView.setStatusRC(getLastElementPayload(donneesRC.getStatus()));
+			entrepriseView.setDateRadiationRC(getLastElementPayload(donneesRC.getDateRadiation()));
 
-			DonneesRegistreIDE donneesRegistreIDE = organisation.getSitePrincipal(null).getPayload().getDonneesRegistreIDE();
+			final DonneesRegistreIDE donneesRegistreIDE = organisation.getSitePrincipal(null).getPayload().getDonneesRegistreIDE();
 			//entrepriseView.setDateInscritpionIde(CollectionsUtils.getLastElement(donneesRegistreIDE.getDateInscription()).getPayload()); // TODO: apporter la date d'inscription Ide en 16L1
-			entrepriseView.setStatusIde(CollectionsUtils.getLastElement(donneesRegistreIDE.getStatus()).getPayload());
+			entrepriseView.setStatusIde(getLastElementPayload(donneesRegistreIDE.getStatus()));
 		}
 		else {
 			/*
