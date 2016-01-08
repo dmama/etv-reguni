@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
 
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.DateRangeComparator;
@@ -18,6 +20,7 @@ import ch.vd.uniregctb.tiers.CapitalHisto;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.EtatEntreprise;
 import ch.vd.uniregctb.tiers.FormeLegaleHisto;
+import ch.vd.uniregctb.tiers.IdentificationEntreprise;
 import ch.vd.uniregctb.tiers.RaisonSocialeHisto;
 import ch.vd.uniregctb.tiers.SiegeHisto;
 import ch.vd.uniregctb.tiers.TiersService;
@@ -92,6 +95,11 @@ public class EntrepriseServiceImpl implements EntrepriseService {
 			final DonneesRegistreIDE donneesRegistreIDE = organisation.getSitePrincipal(null).getPayload().getDonneesRegistreIDE();
 			//entrepriseView.setDateInscritpionIde(CollectionsUtils.getLastElement(donneesRegistreIDE.getDateInscription()).getPayload()); // TODO: apporter la date d'inscription Ide en 16L1
 			entrepriseView.setStatusIde(getLastElementPayload(donneesRegistreIDE.getStatus()));
+		} else {
+			final Set<IdentificationEntreprise> identificationsEntreprise = entreprise.getIdentificationsEntreprise();
+
+			final List<String> numerosIDE = getNumerosIDE(identificationsEntreprise);
+			entrepriseView.setNumerosIDE(numerosIDE);
 		}
 
 		entrepriseView.setSieges(getSieges(tiersService.getSieges(entreprise)));
@@ -121,6 +129,15 @@ public class EntrepriseServiceImpl implements EntrepriseService {
 		entrepriseView.setEtats(getEtats(etats));
 
 		return entrepriseView;
+	}
+
+	@NotNull
+	protected List<String> getNumerosIDE(Set<IdentificationEntreprise> identificationsEntreprise) {
+		final List<String> numerosIDE = new ArrayList<>();
+		for (IdentificationEntreprise ident : identificationsEntreprise) {
+			numerosIDE.add(ident.getNumeroIde());
+		}
+		return numerosIDE;
 	}
 
 	private static List<EtatEntrepriseView> getEtats(List<EtatEntreprise> data) {
