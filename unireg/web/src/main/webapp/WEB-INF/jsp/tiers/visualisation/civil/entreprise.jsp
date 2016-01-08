@@ -89,6 +89,9 @@
 				</c:when>
 			</c:choose>
 		</display:column>
+		<display:column titleKey="label.source">
+			<fmt:message key="option.capital.source.${sieges.source}"/>
+		</display:column>
 	</display:table>
 </fieldset>
 

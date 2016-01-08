@@ -5776,5 +5776,66 @@ public class TiersServiceImpl implements TiersService {
 		return extractedData;
 	}
 
+	@Override
+	public List<SiegeHisto> getSieges(@NotNull Entreprise entreprise) {
+		final List<SiegeHisto> donneesCiviles = extractSiegesCiviles(entreprise);
+		final List<SiegeHisto> donneesFiscales = extractSiegesFiscaux(entreprise);
+
+		return DateRangeHelper.override(donneesCiviles, donneesFiscales, new GentilDateRangeExtendedAdapterCallback<SiegeHisto>());
+	}
+
+	private List<SiegeHisto> extractSiegesCiviles(Entreprise entreprise) {
+		final Long numeroEntreprise = entreprise.getNumeroEntreprise();
+
+		if (numeroEntreprise != null) {
+			final Organisation organisation = serviceOrganisationService.getOrganisationHistory(numeroEntreprise);
+			final List<SiegeHisto> sieges = new ArrayList<>();
+			for (Siege siege: organisation.getSiegesPrincipaux()) {
+				sieges.add(new SiegeHisto(siege));
+			}
+			Collections.sort(sieges, new DateRangeComparator<SiegeHisto>());
+			return sieges;
+		}
+		return Collections.emptyList();
+	}
+
+	private List<SiegeHisto> extractSiegesFiscaux(Entreprise entreprise) {
+		final List<DateRanged<Etablissement>> principaux = getEtablissementsPrincipauxEntreprise(entreprise);
+		final List<DomicileEtablissement> domicileEtablissements = extractDomicileFromEtablissements(principaux);
+		final List<SiegeHisto> liste = new ArrayList<>(domicileEtablissements.size());
+		for (DomicileEtablissement domicile: domicileEtablissements) {
+			liste.add(new SiegeHisto(domicile));
+		}
+		Collections.sort(liste, new DateRangeComparator<SiegeHisto>());
+		return liste;
+	}
+
+	private List<DomicileEtablissement> extractDomicileFromEtablissements(List<DateRanged<Etablissement>> principaux) {
+		if (principaux != null) {
+			final List<DomicileEtablissement> domiciles = new ArrayList<>(principaux.size());
+			for (DateRanged<Etablissement> principal : principaux) {
+
+				List<DomicileEtablissement> extractedDomiciles = DateRangeHelper.extract(principal.getPayload().getSortedDomiciles(false),
+				                                                                         principal.getDateDebut(),
+				                                                                         principal.getDateFin(),
+				                                                                         new DateRangeHelper.AdapterCallback<DomicileEtablissement>() {
+					                                                                         @Override
+					                                                                         public DomicileEtablissement adapt(DomicileEtablissement domicile, RegDate debut, RegDate fin) {
+						                                                                         return new DomicileEtablissement(debut != null ? debut : domicile.getDateDebut(),
+						                                                                                                          fin != null ? fin : domicile.getDateFin(),
+						                                                                                                          domicile.getTypeAutoriteFiscale(),
+						                                                                                                          domicile.getNumeroOfsAutoriteFiscale(),
+						                                                                                                          domicile.getEtablissement()
+
+						                                                                         );
+					                                                                         }
+				                                                                         });
+
+				domiciles.addAll(extractedDomiciles);
+			}
+			return domiciles;
+		}
+		return null;
+	}
 
 }
