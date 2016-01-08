@@ -65,7 +65,7 @@ public class CapitalHisto implements Sourced<Source>, CollatableDateRange, Dupli
 
 	@Override
 	public boolean isValidAt(RegDate date) {
-		return RegDateHelper.isBetween(date, dateDebut, dateFin, NullDateBehavior.LATEST);
+		return !isAnnule() && RegDateHelper.isBetween(date, dateDebut, dateFin, NullDateBehavior.LATEST);
 	}
 
 	@Override

@@ -3,7 +3,10 @@ package ch.vd.uniregctb.tiers;
 import ch.vd.registre.base.date.CollatableDateRange;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
+import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.unireg.interfaces.organisation.data.DateRanged;
 import ch.vd.uniregctb.common.Annulable;
 import ch.vd.uniregctb.common.Duplicable;
 import ch.vd.uniregctb.common.Rerangeable;
@@ -20,7 +23,15 @@ public class RaisonSocialeHisto implements Sourced<Source>, CollatableDateRange,
 	private final String raisonSociale;
 	private final Source source;
 
-	public RaisonSocialeHisto(Long id, boolean annule, RegDate dateDebut, RegDate dateFin, String raisonSociale, Source source) {
+	public RaisonSocialeHisto(DateRanged<String> source) {
+		this(null, false, source.getDateDebut(), source.getDateFin(), source.getPayload(), Source.CIVILE);
+	}
+
+	public RaisonSocialeHisto(DonneesRegistreCommerce source) {
+		this(source.getId(), source.isAnnule(), source.getDateDebut(), source.getDateFin(), source.getRaisonSociale(), Source.FISCALE);
+	}
+
+	private RaisonSocialeHisto(Long id, boolean annule, RegDate dateDebut, RegDate dateFin, String raisonSociale, Source source) {
 		this.id = id;
 		this.annule = annule;
 		this.dateDebut = dateDebut;
@@ -65,7 +76,7 @@ public class RaisonSocialeHisto implements Sourced<Source>, CollatableDateRange,
 
 	@Override
 	public boolean isValidAt(RegDate date) {
-		return false;
+		return !isAnnule() && RegDateHelper.isBetween(date, dateDebut, dateFin, NullDateBehavior.LATEST);
 	}
 
 	@Override

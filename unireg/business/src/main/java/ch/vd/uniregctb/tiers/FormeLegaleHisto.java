@@ -3,7 +3,10 @@ package ch.vd.uniregctb.tiers;
 import ch.vd.registre.base.date.CollatableDateRange;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
+import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.unireg.interfaces.organisation.data.DateRanged;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.uniregctb.common.Annulable;
 import ch.vd.uniregctb.common.Duplicable;
@@ -21,7 +24,15 @@ public class FormeLegaleHisto implements Sourced<Source>, CollatableDateRange, D
 	private final FormeLegale formeLegale;
 	private final Source source;
 
-	public FormeLegaleHisto(Long id, boolean annule, RegDate dateDebut, RegDate dateFin, FormeLegale formeLegale, Source source) {
+	public FormeLegaleHisto(DateRanged<FormeLegale> source) {
+		this(null, false, source.getDateDebut(), source.getDateFin(), source.getPayload(), Source.CIVILE);
+	}
+
+	public FormeLegaleHisto(DonneesRegistreCommerce source) {
+		this(source.getId(), source.isAnnule(), source.getDateDebut(), source.getDateFin(), FormeLegale.fromCode(source.getFormeJuridique().getCodeECH()), Source.FISCALE);
+	}
+
+	private FormeLegaleHisto(Long id, boolean annule, RegDate dateDebut, RegDate dateFin, FormeLegale formeLegale, Source source) {
 		this.id = id;
 		this.annule = annule;
 		this.dateDebut = dateDebut;
@@ -66,7 +77,7 @@ public class FormeLegaleHisto implements Sourced<Source>, CollatableDateRange, D
 
 	@Override
 	public boolean isValidAt(RegDate date) {
-		return false;
+		return !isAnnule() && RegDateHelper.isBetween(date, dateDebut, dateFin, NullDateBehavior.LATEST);
 	}
 
 	@Override

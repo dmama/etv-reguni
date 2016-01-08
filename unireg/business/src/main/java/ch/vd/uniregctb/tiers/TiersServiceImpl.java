@@ -5688,20 +5688,20 @@ public class TiersServiceImpl implements TiersService {
 
 	@Override
 	public List<FormeLegaleHisto> getFormesLegales(@NotNull Entreprise entreprise) {
-		final List<FormeLegaleHisto> donneesCiviles = extractFormeLegalesCivils(entreprise);
-		final List<FormeLegaleHisto> donneesFiscales = extractFormeLegalesFiscales(entreprise);
+		final List<FormeLegaleHisto> donneesCiviles = extractFormesLegalesCiviles(entreprise);
+		final List<FormeLegaleHisto> donneesFiscales = extractFormesLegalesFiscales(entreprise);
 
 		return DateRangeHelper.override(donneesCiviles, donneesFiscales, new GentilDateRangeExtendedAdapterCallback<FormeLegaleHisto>());
 	}
 
-	private List<FormeLegaleHisto> extractFormeLegalesCivils(Entreprise entreprise) {
-		Long numeroEntreprise = entreprise.getNumeroEntreprise();
+	private List<FormeLegaleHisto> extractFormesLegalesCiviles(Entreprise entreprise) {
+		final Long numeroEntreprise = entreprise.getNumeroEntreprise();
 
 		if (numeroEntreprise != null) {
-			Organisation organisation = serviceOrganisationService.getOrganisationHistory(numeroEntreprise);
-			List<FormeLegaleHisto> formes = new ArrayList<>();
+			final Organisation organisation = serviceOrganisationService.getOrganisationHistory(numeroEntreprise);
+			final List<FormeLegaleHisto> formes = new ArrayList<>();
 			for (DateRanged<FormeLegale> formeLegale: organisation.getFormeLegale()) {
-				formes.add(new FormeLegaleHisto(null, false, formeLegale.getDateDebut(), formeLegale.getDateFin(), formeLegale.getPayload(), Source.CIVILE));
+				formes.add(new FormeLegaleHisto(formeLegale));
 			}
 			Collections.sort(formes, new DateRangeComparator<FormeLegaleHisto>());
 			return formes;
@@ -5710,15 +5710,14 @@ public class TiersServiceImpl implements TiersService {
 	}
 
 
-	private List<FormeLegaleHisto> extractFormeLegalesFiscales(Entreprise entreprise) {
+	private List<FormeLegaleHisto> extractFormesLegalesFiscales(Entreprise entreprise) {
 		final List<DonneesRegistreCommerce> donneesRC = new ArrayList<>(entreprise.getDonneesRC());
 		Collections.sort(donneesRC, new DateRangeComparator<>());
 
 		final List<FormeLegaleHisto> nonCollatedData = extractFromDonneesRegistreCommerce(donneesRC, new ExtractorDonneesRegistreCommerce<FormeLegaleHisto>() {
 			                                                                                    @Override
 			                                                                                    public FormeLegaleHisto extract(DonneesRegistreCommerce source) {
-				                                                                                    final FormeLegale fl = FormeLegale.fromCode(source.getFormeJuridique().getCodeECH());
-				                                                                                    return new FormeLegaleHisto(source.getId(), source.isAnnule(), source.getDateDebut(), source.getDateFin(), fl, Source.FISCALE);
+				                                                                                    return new FormeLegaleHisto(source);
 			                                                                                    }
 		                                                                                    });
 		return DateRangeHelper.collate(nonCollatedData);
@@ -5726,20 +5725,20 @@ public class TiersServiceImpl implements TiersService {
 
 	@Override
 	public List<RaisonSocialeHisto> getRaisonsSociales(@NotNull Entreprise entreprise) {
-		final List<RaisonSocialeHisto> donneesCiviles = extractRaisonsSocialesCivils(entreprise);
+		final List<RaisonSocialeHisto> donneesCiviles = extractRaisonsSocialesCiviles(entreprise);
 		final List<RaisonSocialeHisto> donneesFiscales = extractRaisonsSocialesFiscales(entreprise);
 
 		return DateRangeHelper.override(donneesCiviles, donneesFiscales, new GentilDateRangeExtendedAdapterCallback<RaisonSocialeHisto>());
 	}
 
-	private List<RaisonSocialeHisto> extractRaisonsSocialesCivils(Entreprise entreprise) {
+	private List<RaisonSocialeHisto> extractRaisonsSocialesCiviles(Entreprise entreprise) {
 		Long numeroEntreprise = entreprise.getNumeroEntreprise();
 
 		if (numeroEntreprise != null) {
-			Organisation organisation = serviceOrganisationService.getOrganisationHistory(numeroEntreprise);
-			List<RaisonSocialeHisto> raisonsSociales = new ArrayList<>();
+			final Organisation organisation = serviceOrganisationService.getOrganisationHistory(numeroEntreprise);
+			final List<RaisonSocialeHisto> raisonsSociales = new ArrayList<>();
 			for (DateRanged<String> raisonSociale : organisation.getNom()) {
-				raisonsSociales.add(new RaisonSocialeHisto(null, false, raisonSociale.getDateDebut(), raisonSociale.getDateFin(), raisonSociale.getPayload(), Source.CIVILE));
+				raisonsSociales.add(new RaisonSocialeHisto(raisonSociale));
 			}
 			Collections.sort(raisonsSociales, new DateRangeComparator<RaisonSocialeHisto>());
 			return raisonsSociales;
@@ -5755,7 +5754,7 @@ public class TiersServiceImpl implements TiersService {
 		final List<RaisonSocialeHisto> nonCollatedData = extractFromDonneesRegistreCommerce(donneesRC, new ExtractorDonneesRegistreCommerce<RaisonSocialeHisto>() {
 			                                                                                    @Override
 			                                                                                    public RaisonSocialeHisto extract(DonneesRegistreCommerce source) {
-				                                                                                    return new RaisonSocialeHisto(source.getId(), source.isAnnule(), source.getDateDebut(), source.getDateFin(), source.getRaisonSociale(), Source.FISCALE);
+				                                                                                    return new RaisonSocialeHisto(source);
 			                                                                                    }
 		                                                                                    });
 		return DateRangeHelper.collate(nonCollatedData);
