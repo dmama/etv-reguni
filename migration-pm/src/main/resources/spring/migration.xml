@@ -46,6 +46,12 @@
 		<property name="validationInterceptor" ref="validationInterceptor"/>
 	</bean>
 
+	<bean id="organisationServiceAccessor" class="ch.vd.uniregctb.migration.pm.engine.helpers.OrganisationServiceAccessor">
+		<constructor-arg name="rcentEnabled" value="${rcent.enabled}"/>
+		<constructor-arg name="service" ref="serviceOrganisationService"/>
+		<constructor-arg name="frequencePriseEnCompteIdCantonal" value="${rcent.frqPriseEnCompte}"/>
+	</bean>
+
 	<bean id="migrationWorker" class="ch.vd.uniregctb.migration.pm.engine.MigrationWorker">
 		<property name="mode" value="${migration.mode}"/>
 		<property name="nbThreads" value="${migrator.threads.nb}"/>
@@ -66,16 +72,14 @@
 	<bean id="entrepriseMigrator" class="ch.vd.uniregctb.migration.pm.engine.EntrepriseMigrator" parent="entityMigrator">
         <constructor-arg name="bouclementService" ref="bouclementService"/>
 		<constructor-arg name="assujettissementService" ref="assujettissementService"/>
-        <constructor-arg name="organisationService" ref="serviceOrganisationService"/>
+        <constructor-arg name="organisationService" ref="organisationServiceAccessor"/>
 		<constructor-arg name="periodeImpositionService" ref="periodeImpositionService"/>
 		<constructor-arg name="parametreAppService" ref="parametreAppService"/>
 		<constructor-arg name="doublonProvider" ref="doublonProvider"/>
-		<constructor-arg name="rcentEnabled" value="${rcent.enabled}"/>
 	</bean>
 
 	<bean id="etablissementMigrator" class="ch.vd.uniregctb.migration.pm.engine.EtablissementMigrator" parent="entityMigrator">
-        <constructor-arg name="organisationService" ref="serviceOrganisationService"/>
-		<constructor-arg name="rcentEnabled" value="${rcent.enabled}"/>
+        <constructor-arg name="organisationService" ref="organisationServiceAccessor"/>
 	</bean>
 
     <bean id="adresseHelper" class="ch.vd.uniregctb.migration.pm.engine.helpers.AdresseHelper">

@@ -33,7 +33,6 @@ import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 import ch.vd.uniregctb.adresse.AdresseTiers;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.interfaces.service.ServiceOrganisationService;
 import ch.vd.uniregctb.migration.pm.ConsolidationPhase;
 import ch.vd.uniregctb.migration.pm.MigrationResultContextManipulation;
 import ch.vd.uniregctb.migration.pm.MigrationResultInitialization;
@@ -44,6 +43,7 @@ import ch.vd.uniregctb.migration.pm.engine.collector.EntityLinkCollector;
 import ch.vd.uniregctb.migration.pm.engine.data.DonneesCiviles;
 import ch.vd.uniregctb.migration.pm.engine.data.DonneesMandats;
 import ch.vd.uniregctb.migration.pm.engine.helpers.AdresseHelper;
+import ch.vd.uniregctb.migration.pm.engine.helpers.OrganisationServiceAccessor;
 import ch.vd.uniregctb.migration.pm.engine.helpers.StringRenderers;
 import ch.vd.uniregctb.migration.pm.log.LogCategory;
 import ch.vd.uniregctb.migration.pm.log.LogLevel;
@@ -73,15 +73,13 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(EtablissementMigrator.class);
 
-	private final ServiceOrganisationService organisationService;
-	private final boolean rcentEnabled;
+	private final OrganisationServiceAccessor organisationService;
 
 	public EtablissementMigrator(UniregStore uniregStore, ActivityManager activityManager, ServiceInfrastructureService infraService,
-	                             ServiceOrganisationService organisationService, AdresseHelper adresseHelper, FusionCommunesProvider fusionCommunesProvider, FractionsCommuneProvider fractionsCommuneProvider,
-	                             DatesParticulieres datesParticulieres, boolean rcentEnabled) {
+	                             OrganisationServiceAccessor organisationService, AdresseHelper adresseHelper, FusionCommunesProvider fusionCommunesProvider, FractionsCommuneProvider fractionsCommuneProvider,
+	                             DatesParticulieres datesParticulieres) {
 		super(uniregStore, activityManager, infraService, fusionCommunesProvider, fractionsCommuneProvider, datesParticulieres, adresseHelper);
 		this.organisationService = organisationService;
-		this.rcentEnabled = rcentEnabled;
 	}
 
 	private static final class DatesEtablissementsStables {
@@ -378,7 +376,7 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 
 							// on a une organisation partielle -> il faut rappeler RCEnt pour avoir une vue complète
 							try {
-								final Organisation complete = organisationService.getOrganisationHistory(partielleCantonalId);
+								final Organisation complete = organisationService.getOrganisation(partielleCantonalId, mr);
 								if (complete == null) {
 									mr.addMessage(LogCategory.SUIVI, LogLevel.ERROR, String.format("Aucune donnée renvoyée par RCEnt pour l'organisation %d.", partielleCantonalId));
 								}
@@ -520,7 +518,7 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 
 		// récupération des données dans RCEnt
 		SiteOrganisation rcent = null;
-		if (rcentEnabled) {
+		if (organisationService.isRcentEnabled()) {
 			final DonneesCiviles donneesCiviles = mr.getExtractedData(DonneesCiviles.class, moi.getKey());
 			if (donneesCiviles != null) {
 				rcent = donneesCiviles.getSite();

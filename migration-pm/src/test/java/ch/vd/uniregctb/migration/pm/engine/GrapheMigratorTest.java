@@ -59,6 +59,7 @@ import ch.vd.uniregctb.migration.pm.communes.FractionsCommuneProvider;
 import ch.vd.uniregctb.migration.pm.communes.FusionCommunesProvider;
 import ch.vd.uniregctb.migration.pm.engine.helpers.AdresseHelper;
 import ch.vd.uniregctb.migration.pm.engine.helpers.DoublonProvider;
+import ch.vd.uniregctb.migration.pm.engine.helpers.OrganisationServiceAccessor;
 import ch.vd.uniregctb.migration.pm.indexeur.NonHabitantIndex;
 import ch.vd.uniregctb.migration.pm.log.LogCategory;
 import ch.vd.uniregctb.migration.pm.log.LogLevel;
@@ -139,6 +140,8 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		uniregStore = getBean(UniregStore.class, "uniregStore");
 		organisationService = getBean(ProxyServiceOrganisation.class, "serviceOrganisationService");
 
+		final OrganisationServiceAccessor organisationServiceAccessor = new OrganisationServiceAccessor(organisationService, true, 1);
+
 		final BouclementService bouclementService = getBean(BouclementService.class, "bouclementService");
 		final ServiceInfrastructureService infraService = getBean(ServiceInfrastructureService.class, "serviceInfrastructureService");
 		final AdresseHelper adresseHelper = getBean(AdresseHelper.class, "adresseHelper");
@@ -157,9 +160,9 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		activityManager = new ActivityManagerProxy();
 
 		grapheMigrator = new GrapheMigrator();
-		grapheMigrator.setEntrepriseMigrator(new EntrepriseMigrator(uniregStore, activityManager, infraService, bouclementService, assujettissementService, organisationService, adresseHelper,
-		                                                            fusionCommunesProvider, fractionsCommuneProvider, datesParticulieres, periodeImpositionService, parametreAppService, true, doublonProvider));
-		grapheMigrator.setEtablissementMigrator(new EtablissementMigrator(uniregStore, activityManager, infraService, organisationService, adresseHelper, fusionCommunesProvider, fractionsCommuneProvider, datesParticulieres, true));
+		grapheMigrator.setEntrepriseMigrator(new EntrepriseMigrator(uniregStore, activityManager, infraService, bouclementService, assujettissementService, organisationServiceAccessor, adresseHelper,
+		                                                            fusionCommunesProvider, fractionsCommuneProvider, datesParticulieres, periodeImpositionService, parametreAppService, doublonProvider));
+		grapheMigrator.setEtablissementMigrator(new EtablissementMigrator(uniregStore, activityManager, infraService, organisationServiceAccessor, adresseHelper, fusionCommunesProvider, fractionsCommuneProvider, datesParticulieres));
 		grapheMigrator.setIndividuMigrator(new IndividuMigrator(uniregStore, activityManager, infraService, tiersDAO, rcpersClient, nonHabitantIndex, adresseHelper, fusionCommunesProvider, fractionsCommuneProvider, datesParticulieres));
 		grapheMigrator.setUniregStore(uniregStore);
 		grapheMigrator.setUniregTransactionManager(getUniregTransactionManager());

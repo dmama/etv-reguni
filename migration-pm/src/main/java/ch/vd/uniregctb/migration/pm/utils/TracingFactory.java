@@ -5,6 +5,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.StringUtils;
@@ -94,7 +95,7 @@ public final class TracingFactory<T> implements FactoryBean<T>, InitializingBean
 			final String exceptionPart = t == null ? StringUtils.EMPTY : String.format(", %s thrown", t.getClass().getName());
 			LOGGER.info(String.format("(%d ms) %s.%s%s => %d item(s)%s",
 			                          TimeUnit.NANOSECONDS.toMillis(end - start),
-			                          targetInterface.getSimpleName(), method.getName(), Arrays.toString(args),
+			                          targetInterface.getSimpleName(), method.getName(), Optional.ofNullable(args).map(Arrays::toString).orElse("[]"),
 			                          nbItems, exceptionPart));
 		}
 	}

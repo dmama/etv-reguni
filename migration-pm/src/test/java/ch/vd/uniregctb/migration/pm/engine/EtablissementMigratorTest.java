@@ -26,6 +26,7 @@ import ch.vd.uniregctb.migration.pm.communes.FractionsCommuneProvider;
 import ch.vd.uniregctb.migration.pm.communes.FusionCommunesProvider;
 import ch.vd.uniregctb.migration.pm.engine.collector.EntityLinkCollector;
 import ch.vd.uniregctb.migration.pm.engine.helpers.AdresseHelper;
+import ch.vd.uniregctb.migration.pm.engine.helpers.OrganisationServiceAccessor;
 import ch.vd.uniregctb.migration.pm.log.EtablissementLoggedElement;
 import ch.vd.uniregctb.migration.pm.log.LogCategory;
 import ch.vd.uniregctb.migration.pm.log.LoggedElementAttribute;
@@ -67,13 +68,14 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 		uniregStore = getBean(UniregStore.class, "uniregStore");
 		organisationService = getBean(ProxyServiceOrganisation.class, "serviceOrganisationService");
 
+		final OrganisationServiceAccessor organisationServiceAccessor = new OrganisationServiceAccessor(organisationService, false, 1);
 		final ServiceInfrastructureService infraService = getBean(ServiceInfrastructureService.class, "serviceInfrastructureService");
 		final AdresseHelper adresseHelper = getBean(AdresseHelper.class, "adresseHelper");
 		final FusionCommunesProvider fusionCommunesProvider = getBean(FusionCommunesProvider.class, "fusionCommunesProvider");
 		final FractionsCommuneProvider fractionsCommuneProvider = getBean(FractionsCommuneProvider.class, "fractionsCommuneProvider");
 		final DatesParticulieres datesParticulieres = getBean(DatesParticulieres.class, "datesParticulieres");
 
-		migrator = new EtablissementMigrator(uniregStore, activityManager, infraService, organisationService, adresseHelper, fusionCommunesProvider, fractionsCommuneProvider, datesParticulieres, false);
+		migrator = new EtablissementMigrator(uniregStore, activityManager, infraService, organisationServiceAccessor, adresseHelper, fusionCommunesProvider, fractionsCommuneProvider, datesParticulieres);
 	}
 
 	static RegpmEtablissement buildEtablissement(long id, RegpmEntreprise entreprise) {

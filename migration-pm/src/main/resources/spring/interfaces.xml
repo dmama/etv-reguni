@@ -66,7 +66,12 @@
 		<constructor-arg ref="rcentClientRaw"/>
 	</bean>
 
-	<alias name="rcentClientTracing" alias="rcentClient"/>
+	<bean id="rcentClientCache" class="ch.vd.uniregctb.migration.pm.utils.CacheFactory">
+		<constructor-arg value="ch.vd.unireg.wsclient.rcent.RcEntClient"/>
+		<constructor-arg ref="rcentClientTracing"/>
+	</bean>
+
+	<alias name="rcentClientCache" alias="rcentClient"/>
 
 	<bean name="organisationHistorizer" class="ch.vd.uniregctb.adapter.rcent.historizer.OrganisationHistorizer"/>
 

@@ -47,7 +47,6 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.common.NomPrenom;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.infra.data.Pays;
-import ch.vd.unireg.interfaces.organisation.WrongOrganisationReceivedException;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
@@ -70,7 +69,6 @@ import ch.vd.uniregctb.declaration.EtatDeclarationRetournee;
 import ch.vd.uniregctb.declaration.EtatDeclarationSommee;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.interfaces.service.ServiceOrganisationService;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementException;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImposition;
@@ -88,6 +86,7 @@ import ch.vd.uniregctb.migration.pm.engine.data.DonneesCiviles;
 import ch.vd.uniregctb.migration.pm.engine.data.DonneesMandats;
 import ch.vd.uniregctb.migration.pm.engine.helpers.AdresseHelper;
 import ch.vd.uniregctb.migration.pm.engine.helpers.DoublonProvider;
+import ch.vd.uniregctb.migration.pm.engine.helpers.OrganisationServiceAccessor;
 import ch.vd.uniregctb.migration.pm.engine.helpers.StringRenderers;
 import ch.vd.uniregctb.migration.pm.extractor.IbanExtractor;
 import ch.vd.uniregctb.migration.pm.log.DifferencesDonneesCivilesLoggedElement;
@@ -185,8 +184,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 	private final AssujettissementService assujettissementService;
 	private final PeriodeImpositionService periodeImpositionService;
 	private final ParametreAppService parametreAppService;
-	private final ServiceOrganisationService organisationService;
-	private final boolean rcentEnabled;
+	private final OrganisationServiceAccessor organisationService;
 	private final DoublonProvider doublonProvider;
 
 	public EntrepriseMigrator(UniregStore uniregStore,
@@ -194,14 +192,13 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 	                          ServiceInfrastructureService infraService,
 	                          BouclementService bouclementService,
 	                          AssujettissementService assujettissementService,
-	                          ServiceOrganisationService organisationService,
+	                          OrganisationServiceAccessor organisationService,
 	                          AdresseHelper adresseHelper,
 	                          FusionCommunesProvider fusionCommunesProvider,
 	                          FractionsCommuneProvider fractionsCommuneProvider,
 	                          DatesParticulieres datesParticulieres,
 	                          PeriodeImpositionService periodeImpositionService,
 	                          ParametreAppService parametreAppService,
-	                          boolean rcentEnabled,
 	                          DoublonProvider doublonProvider) {
 		super(uniregStore, activityManager, infraService, fusionCommunesProvider, fractionsCommuneProvider, datesParticulieres, adresseHelper);
 		this.bouclementService = bouclementService;
@@ -209,7 +206,6 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		this.organisationService = organisationService;
 		this.periodeImpositionService = periodeImpositionService;
 		this.parametreAppService = parametreAppService;
-		this.rcentEnabled = rcentEnabled;
 		this.doublonProvider = doublonProvider;
 	}
 
@@ -1137,25 +1133,6 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 	}
 
 	/**
-	 * @param idCantonal identifiant cantonal d'entreprise à récupérer
-	 * @param mr collecteur de messages de suivi
-	 * @return l'organisation qui correspond à l'identifiant cantonal fourni (si ce numéro est en fait un numéro d'établissement, on renvoie l'organisation complète)
-	 */
-	private Organisation getOrganisationHistory(long idCantonal, MigrationResultProduction mr) {
-		try {
-			return organisationService.getOrganisationHistory(idCantonal);
-		}
-		catch (WrongOrganisationReceivedException ex) {
-
-			// le numéro que nous avions était un numéro d'établissement, flûte !...
-			// il faut donc faire un nouvel appel avec le bon numéro pour obtenir la totalité des données de l'entreprise,,,
-
-			mr.addMessage(LogCategory.SUIVI, LogLevel.WARN, String.format("Le numéro cantonal fourni est un numéro d'établissement, le vrai numéro d'organisation est %d.", ex.getReceivedId()));
-			return organisationService.getOrganisationHistory(ex.getReceivedId());
-		}
-	}
-
-	/**
 	 * Appel de RCEnt pour les données de l'entreprise
 	 * @param e entreprise de RegPM
 	 * @param mr le collecteur de messages de suivi et manipulateur de contexte de log
@@ -1175,7 +1152,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 			}
 
 			try {
-				final Organisation org = getOrganisationHistory(idCantonal, mr);
+				final Organisation org = organisationService.getOrganisation(idCantonal, mr);
 				if (org != null) {
 					return new DonneesCiviles(org);
 				}
@@ -1815,7 +1792,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 
 		// Récupération des données civiles si elles existent
 		Organisation rcent = null;
-		if (rcentEnabled) {
+		if (organisationService.isRcentEnabled()) {
 			final DonneesCiviles donneesCiviles = mr.getExtractedData(DonneesCiviles.class, moi.getKey());
 			if (donneesCiviles != null) {
 				rcent = donneesCiviles.getOrganisation();

@@ -44,6 +44,7 @@ import ch.vd.uniregctb.migration.pm.communes.FusionCommunesProvider;
 import ch.vd.uniregctb.migration.pm.engine.collector.EntityLinkCollector;
 import ch.vd.uniregctb.migration.pm.engine.helpers.AdresseHelper;
 import ch.vd.uniregctb.migration.pm.engine.helpers.DoublonProvider;
+import ch.vd.uniregctb.migration.pm.engine.helpers.OrganisationServiceAccessor;
 import ch.vd.uniregctb.migration.pm.log.LogCategory;
 import ch.vd.uniregctb.migration.pm.mapping.IdMapper;
 import ch.vd.uniregctb.migration.pm.regpm.NumeroIDE;
@@ -155,20 +156,20 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 	 * @return une nouvelle instance de {@link EntrepriseMigrator}
 	 */
 	private EntrepriseMigrator buildMigrator(boolean rcentEnabled) {
+		final OrganisationServiceAccessor organisationServiceAccessor = new OrganisationServiceAccessor(organisationService, rcentEnabled, 1);
 		return new EntrepriseMigrator(
 				uniregStore,
 				entreprise -> true,             // tout le monde est actif dans ces tests!!
 				getBean(ServiceInfrastructureService.class, "serviceInfrastructureService"),
 				getBean(BouclementService.class, "bouclementService"),
 				getBean(AssujettissementService.class, "assujettissementService"),
-				organisationService,
+				organisationServiceAccessor,
 				getBean(AdresseHelper.class, "adresseHelper"),
 				getBean(FusionCommunesProvider.class, "fusionCommunesProvider"),
 				getBean(FractionsCommuneProvider.class, "fractionsCommuneProvider"),
 				getBean(DatesParticulieres.class, "datesParticulieres"),
 				getBean(PeriodeImpositionService.class, "periodeImpositionService"),
 				getBean(ParametreAppService.class, "parametreAppService"),
-				rcentEnabled,
 				getBean(DoublonProvider.class, "doublonProvider"));
 	}
 
