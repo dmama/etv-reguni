@@ -1,6 +1,6 @@
 package ch.vd.uniregctb.xml.party.v4;
 
-import ch.vd.unireg.xml.party.taxresidence.v2.TaxationPeriod;
+import ch.vd.unireg.xml.party.taxresidence.v3.TaxationPeriod;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImposition;
 import ch.vd.uniregctb.xml.DataHelper;
 

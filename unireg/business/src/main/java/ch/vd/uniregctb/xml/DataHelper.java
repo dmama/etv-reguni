@@ -442,7 +442,7 @@ public abstract class DataHelper {
 		if (StringUtils.isNotBlank(value.getNavs13_2())) {
 			i.setVn2(Long.valueOf(value.getNavs13_2()));
 		}
-		i.setIndividualTaxLiability(EnumHelper.coreToXMLv2(value.getAssujettissementPP()));
+		i.setIndividualTaxLiability(EnumHelper.coreToXMLv3(value.getAssujettissementPP()));
 		if (i.getType() == ch.vd.unireg.xml.party.v4.PartyType.NATURAL_PERSON) {
 			i.setNaturalPersonSubtype(DataHelper.getNaturalPersonSubtypeV4(value));
 		}

@@ -510,6 +510,39 @@ public abstract class EnumHelper {
 		}
 	}
 
+	public static ch.vd.unireg.xml.party.taxresidence.v3.TaxType coreToXMLv3(ch.vd.uniregctb.type.GenreImpot genreImpot) {
+		if (genreImpot == null) {
+			return null;
+		}
+
+		switch (genreImpot) {
+		case BENEFICE_CAPITAL:
+			return ch.vd.unireg.xml.party.taxresidence.v3.TaxType.PROFITS_CAPITAL;
+		case CHIENS:
+			return ch.vd.unireg.xml.party.taxresidence.v3.TaxType.DOGS;
+		case DEBITEUR_PRESTATION_IMPOSABLE:
+			return ch.vd.unireg.xml.party.taxresidence.v3.TaxType.DEBTOR_TAXABLE_INCOME;
+		case DONATION:
+			return ch.vd.unireg.xml.party.taxresidence.v3.TaxType.GIFTS;
+		case DROIT_MUTATION:
+			return ch.vd.unireg.xml.party.taxresidence.v3.TaxType.REAL_ESTATE_TRANSFER;
+		case FONCIER:
+			return ch.vd.unireg.xml.party.taxresidence.v3.TaxType.REAL_ESTATE;
+		case GAIN_IMMOBILIER:
+			return ch.vd.unireg.xml.party.taxresidence.v3.TaxType.IMMOVABLE_PROPERTY_GAINS;
+		case PATENTE_TABAC:
+			return ch.vd.unireg.xml.party.taxresidence.v3.TaxType.TOBACCO_PATENT;
+		case PRESTATION_CAPITAL:
+			return ch.vd.unireg.xml.party.taxresidence.v3.TaxType.CAPITAL_INCOME;
+		case REVENU_FORTUNE:
+			return ch.vd.unireg.xml.party.taxresidence.v3.TaxType.INCOME_WEALTH;
+		case SUCCESSION:
+			return ch.vd.unireg.xml.party.taxresidence.v3.TaxType.INHERITANCE;
+		default:
+			throw new IllegalArgumentException("Genre d'impôt inconnu = [" + genreImpot + ']');
+		}
+	}
+
 	public static ch.vd.unireg.xml.party.taxresidence.v1.TaxLiabilityReason coreToXMLv1(ch.vd.uniregctb.type.MotifRattachement rattachement) {
 		if (rattachement == null) {
 			return null;
@@ -590,6 +623,47 @@ public abstract class EnumHelper {
 		}
 	}
 
+	public static ch.vd.unireg.xml.party.taxresidence.v3.TaxLiabilityReason coreToXMLv3(ch.vd.uniregctb.type.MotifRattachement rattachement) {
+		if (rattachement == null) {
+			return null;
+		}
+
+		switch (rattachement) {
+		case ACTIVITE_INDEPENDANTE:
+			return ch.vd.unireg.xml.party.taxresidence.v3.TaxLiabilityReason.INDEPENDANT_ACTIVITY;
+		case ACTIVITE_LUCRATIVE_CAS:
+			return ch.vd.unireg.xml.party.taxresidence.v3.TaxLiabilityReason.GAINFUL_ACTIVITY_SAS;
+		case ADMINISTRATEUR:
+			return ch.vd.unireg.xml.party.taxresidence.v3.TaxLiabilityReason.ADMINISTRATOR;
+		case CREANCIER_HYPOTHECAIRE:
+			return ch.vd.unireg.xml.party.taxresidence.v3.TaxLiabilityReason.MORTGAGE_CREDITORS;
+		case DIPLOMATE_ETRANGER:
+			return ch.vd.unireg.xml.party.taxresidence.v3.TaxLiabilityReason.FOREIGN_DIPLOMAT;
+		case DIPLOMATE_SUISSE:
+			return ch.vd.unireg.xml.party.taxresidence.v3.TaxLiabilityReason.SWISS_DIPLOMAT;
+		case DIRIGEANT_SOCIETE:
+			return ch.vd.unireg.xml.party.taxresidence.v3.TaxLiabilityReason.COMPANY_LEADER;
+		case DOMICILE:
+			return ch.vd.unireg.xml.party.taxresidence.v3.TaxLiabilityReason.RESIDENCE;
+		case ETABLISSEMENT_STABLE:
+			return ch.vd.unireg.xml.party.taxresidence.v3.TaxLiabilityReason.STABLE_ESTABLISHMENT;
+		case IMMEUBLE_PRIVE:
+			return ch.vd.unireg.xml.party.taxresidence.v3.TaxLiabilityReason.PRIVATE_IMMOVABLE_PROPERTY;
+		case LOI_TRAVAIL_AU_NOIR:
+			return ch.vd.unireg.xml.party.taxresidence.v3.TaxLiabilityReason.LAW_ON_UNDECLARED_WORK;
+		case PRESTATION_PREVOYANCE:
+			return ch.vd.unireg.xml.party.taxresidence.v3.TaxLiabilityReason.PENSION;
+		case SEJOUR_SAISONNIER:
+			return ch.vd.unireg.xml.party.taxresidence.v3.TaxLiabilityReason.SEASONAL_JOURNEY;
+		case EFFEUILLEUSES:
+			return ch.vd.unireg.xml.party.taxresidence.v3.TaxLiabilityReason.WINE_FARM_SEASONAL_WORKER;
+		case PARTICIPATIONS_HORS_SUISSE:
+			return ch.vd.unireg.xml.party.taxresidence.v3.TaxLiabilityReason.PROFIT_SHARING_FOREIGN_COUNTRY_TAXPAYER;
+		default:
+			throw new IllegalArgumentException("Motif de rattachement inconnu = [" + rattachement + ']');
+		}
+	}
+
 	public static ch.vd.unireg.xml.party.taxresidence.v1.TaxationAuthorityType coreToXMLv1(TypeAutoriteFiscale typeForFiscal) {
 		if (typeForFiscal == null) {
 			return null;
@@ -619,6 +693,23 @@ public abstract class EnumHelper {
 			return ch.vd.unireg.xml.party.taxresidence.v2.TaxationAuthorityType.OTHER_CANTON_MUNICIPALITY;
 		case PAYS_HS:
 			return ch.vd.unireg.xml.party.taxresidence.v2.TaxationAuthorityType.FOREIGN_COUNTRY;
+		default:
+			throw new IllegalArgumentException("Type d'autorité fiscale inconnu = [" + typeForFiscal + ']');
+		}
+	}
+
+	public static ch.vd.unireg.xml.party.taxresidence.v3.TaxationAuthorityType coreToXMLv3(TypeAutoriteFiscale typeForFiscal) {
+		if (typeForFiscal == null) {
+			return null;
+		}
+
+		switch (typeForFiscal) {
+		case COMMUNE_OU_FRACTION_VD:
+			return ch.vd.unireg.xml.party.taxresidence.v3.TaxationAuthorityType.VAUD_MUNICIPALITY;
+		case COMMUNE_HC:
+			return ch.vd.unireg.xml.party.taxresidence.v3.TaxationAuthorityType.OTHER_CANTON_MUNICIPALITY;
+		case PAYS_HS:
+			return ch.vd.unireg.xml.party.taxresidence.v3.TaxationAuthorityType.FOREIGN_COUNTRY;
 		default:
 			throw new IllegalArgumentException("Type d'autorité fiscale inconnu = [" + typeForFiscal + ']');
 		}
@@ -665,6 +756,29 @@ public abstract class EnumHelper {
 			return ch.vd.unireg.xml.party.taxresidence.v2.TaxationMethod.MIXED_137_1;
 		case MIXTE_137_2:
 			return ch.vd.unireg.xml.party.taxresidence.v2.TaxationMethod.MIXED_137_2;
+		default:
+			throw new IllegalArgumentException("Mode d'imposition inconnu = [" + mode + ']');
+		}
+	}
+
+	public static ch.vd.unireg.xml.party.taxresidence.v3.TaxationMethod coreToXMLv3(ch.vd.uniregctb.type.ModeImposition mode) {
+		if (mode == null) {
+			return null;
+		}
+
+		switch (mode) {
+		case ORDINAIRE:
+			return ch.vd.unireg.xml.party.taxresidence.v3.TaxationMethod.ORDINARY;
+		case SOURCE:
+			return ch.vd.unireg.xml.party.taxresidence.v3.TaxationMethod.WITHHOLDING;
+		case DEPENSE:
+			return ch.vd.unireg.xml.party.taxresidence.v3.TaxationMethod.EXPENDITURE_BASED;
+		case INDIGENT:
+			return ch.vd.unireg.xml.party.taxresidence.v3.TaxationMethod.INDIGENT;
+		case MIXTE_137_1:
+			return ch.vd.unireg.xml.party.taxresidence.v3.TaxationMethod.MIXED_137_1;
+		case MIXTE_137_2:
+			return ch.vd.unireg.xml.party.taxresidence.v3.TaxationMethod.MIXED_137_2;
 		default:
 			throw new IllegalArgumentException("Mode d'imposition inconnu = [" + mode + ']');
 		}
@@ -1538,6 +1652,9 @@ public abstract class EnumHelper {
 		case FIN_PRESTATION_IS:
 		case CESSATION_ACTIVITE_FUSION_FAILLITE:
 		case DEMENAGEMENT_SIEGE:
+		case CESSATION_ACTIVITE:
+		case FAILLITE:
+		case FUSION_ENTREPRISES:
 		case INDETERMINE:
 			return ch.vd.unireg.xml.party.taxresidence.v1.LiabilityChangeReason.UNDETERMINED;
 		case MAJORITE:
@@ -1601,6 +1718,9 @@ public abstract class EnumHelper {
 			return ch.vd.unireg.xml.party.taxresidence.v2.LiabilityChangeReason.END_ACTIVITY_MERGER_BANKRUPTCY;
 		case DEMENAGEMENT_SIEGE:
 			return ch.vd.unireg.xml.party.taxresidence.v2.LiabilityChangeReason.MOVE_HEADQUARTERS;
+		case FUSION_ENTREPRISES:
+		case FAILLITE:
+		case CESSATION_ACTIVITE:
 		case INDETERMINE:
 			return ch.vd.unireg.xml.party.taxresidence.v2.LiabilityChangeReason.UNDETERMINED;
 		case MAJORITE:
@@ -1619,6 +1739,75 @@ public abstract class EnumHelper {
 			return ch.vd.unireg.xml.party.taxresidence.v2.LiabilityChangeReason.SALE_REAL_ESTATE;
 		case VEUVAGE_DECES:
 			return ch.vd.unireg.xml.party.taxresidence.v2.LiabilityChangeReason.WIDOWHOOD_DEATH;
+		default:
+			throw new IllegalArgumentException("Motif de for inconnu = [" + ouverture + ']');
+		}
+	}
+
+	public static ch.vd.unireg.xml.party.taxresidence.v3.LiabilityChangeReason coreToXMLv3(ch.vd.uniregctb.type.MotifFor ouverture) {
+		if (ouverture == null) {
+			return null;
+		}
+
+		switch (ouverture) {
+		case ACHAT_IMMOBILIER:
+			return ch.vd.unireg.xml.party.taxresidence.v3.LiabilityChangeReason.PURCHASE_REAL_ESTATE;
+		case ANNULATION:
+			return ch.vd.unireg.xml.party.taxresidence.v3.LiabilityChangeReason.CANCELLATION;
+		case ARRIVEE_HC:
+			return ch.vd.unireg.xml.party.taxresidence.v3.LiabilityChangeReason.MOVE_IN_FROM_OTHER_CANTON;
+		case ARRIVEE_HS:
+			return ch.vd.unireg.xml.party.taxresidence.v3.LiabilityChangeReason.MOVE_IN_FROM_FOREIGN_COUNTRY;
+		case CHGT_MODE_IMPOSITION:
+			return ch.vd.unireg.xml.party.taxresidence.v3.LiabilityChangeReason.CHANGE_OF_TAXATION_METHOD;
+		case DEBUT_ACTIVITE_DIPLOMATIQUE:
+			return ch.vd.unireg.xml.party.taxresidence.v3.LiabilityChangeReason.START_DIPLOMATIC_ACTVITY;
+		case DEBUT_EXPLOITATION:
+			return ch.vd.unireg.xml.party.taxresidence.v3.LiabilityChangeReason.START_COMMERCIAL_EXPLOITATION;
+		case DEMENAGEMENT_VD:
+			return ch.vd.unireg.xml.party.taxresidence.v3.LiabilityChangeReason.MOVE_VD;
+		case DEPART_HC:
+			return ch.vd.unireg.xml.party.taxresidence.v3.LiabilityChangeReason.DEPARTURE_TO_OTHER_CANTON;
+		case DEPART_HS:
+			return ch.vd.unireg.xml.party.taxresidence.v3.LiabilityChangeReason.DEPARTURE_TO_FOREIGN_COUNTRY;
+		case FIN_ACTIVITE_DIPLOMATIQUE:
+			return ch.vd.unireg.xml.party.taxresidence.v3.LiabilityChangeReason.END_DIPLOMATIC_ACTVITY;
+		case FIN_EXPLOITATION:
+			return ch.vd.unireg.xml.party.taxresidence.v3.LiabilityChangeReason.END_COMMERCIAL_EXPLOITATION;
+		case FUSION_COMMUNES:
+			return ch.vd.unireg.xml.party.taxresidence.v3.LiabilityChangeReason.MERGE_OF_MUNICIPALITIES;
+		case DEBUT_PRESTATION_IS:
+			return ch.vd.unireg.xml.party.taxresidence.v3.LiabilityChangeReason.START_WITHHOLDING_ACTIVITY;
+		case FIN_PRESTATION_IS:
+			return ch.vd.unireg.xml.party.taxresidence.v3.LiabilityChangeReason.END_WITHHOLDING_ACTIVITY;
+		case CESSATION_ACTIVITE_FUSION_FAILLITE:
+			return ch.vd.unireg.xml.party.taxresidence.v3.LiabilityChangeReason.END_ACTIVITY_MERGER_BANKRUPTCY;
+		case DEMENAGEMENT_SIEGE:
+			return ch.vd.unireg.xml.party.taxresidence.v3.LiabilityChangeReason.MOVE_HEADQUARTERS;
+		case FUSION_ENTREPRISES:
+			return ch.vd.unireg.xml.party.taxresidence.v3.LiabilityChangeReason.CORPORATION_MERGER;
+		case FAILLITE:
+			return ch.vd.unireg.xml.party.taxresidence.v3.LiabilityChangeReason.BANKRUPTCY;
+		case CESSATION_ACTIVITE:
+			return ch.vd.unireg.xml.party.taxresidence.v3.LiabilityChangeReason.END_ACTIVITY;
+		case INDETERMINE:
+			return ch.vd.unireg.xml.party.taxresidence.v3.LiabilityChangeReason.UNDETERMINED;
+		case MAJORITE:
+			return ch.vd.unireg.xml.party.taxresidence.v3.LiabilityChangeReason.MAJORITY;
+		case MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION:
+			return ch.vd.unireg.xml.party.taxresidence.v3.LiabilityChangeReason.MARRIAGE_PARTNERSHIP_END_OF_SEPARATION;
+		case PERMIS_C_SUISSE:
+			return ch.vd.unireg.xml.party.taxresidence.v3.LiabilityChangeReason.C_PERMIT_SWISS;
+		case REACTIVATION:
+			return ch.vd.unireg.xml.party.taxresidence.v3.LiabilityChangeReason.REACTIVATION;
+		case SEJOUR_SAISONNIER:
+			return ch.vd.unireg.xml.party.taxresidence.v3.LiabilityChangeReason.SEASONAL_JOURNEY;
+		case SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT:
+			return ch.vd.unireg.xml.party.taxresidence.v3.LiabilityChangeReason.SEPARATION_DIVORCE_PARTNERSHIP_ABOLITION;
+		case VENTE_IMMOBILIER:
+			return ch.vd.unireg.xml.party.taxresidence.v3.LiabilityChangeReason.SALE_REAL_ESTATE;
+		case VEUVAGE_DECES:
+			return ch.vd.unireg.xml.party.taxresidence.v3.LiabilityChangeReason.WIDOWHOOD_DEATH;
 		default:
 			throw new IllegalArgumentException("Motif de for inconnu = [" + ouverture + ']');
 		}
@@ -2470,6 +2659,20 @@ public abstract class EnumHelper {
 		}
 	}
 
+	public static ch.vd.unireg.xml.party.taxresidence.v3.WithholdingTaxationPeriodType coreToXMLv3(PeriodeImpositionImpotSource.Type setc) {
+		if (setc == null) {
+			return null;
+		}
+		switch (setc) {
+		case MIXTE:
+			return ch.vd.unireg.xml.party.taxresidence.v3.WithholdingTaxationPeriodType.MIXED;
+		case SOURCE:
+			return ch.vd.unireg.xml.party.taxresidence.v3.WithholdingTaxationPeriodType.PURE;
+		default:
+			throw new IllegalArgumentException("unknown PeriodeImpositionImpotSource.Type = [" + setc + ']');
+		}
+	}
+
 	public static ch.vd.unireg.xml.party.othercomm.v1.LegalForm coreToXMLv1(FormeJuridique formeJuridique) {
 		if (formeJuridique == null) {
 			return null;
@@ -3044,6 +3247,37 @@ public abstract class EnumHelper {
 			return ch.vd.unireg.xml.party.taxresidence.v2.IndividualTaxLiabilityType.EXPENDITURE_BASED;
 		case VAUDOIS_ORDINAIRE:
 			return ch.vd.unireg.xml.party.taxresidence.v2.IndividualTaxLiabilityType.ORDINARY_RESIDENT;
+		default:
+			throw new IllegalArgumentException("Type d'assujettissement inconnu = [" + t + ']');
+		}
+	}
+
+	public static ch.vd.unireg.xml.party.taxresidence.v3.IndividualTaxLiabilityType coreToXMLv3(TypeAssujettissement t) {
+		if (t == null) {
+			return null;
+		}
+
+		switch (t) {
+		case DIPLOMATE_SUISSE:
+			return ch.vd.unireg.xml.party.taxresidence.v3.IndividualTaxLiabilityType.SWISS_DIPLOMAT;
+		case HORS_CANTON:
+			return ch.vd.unireg.xml.party.taxresidence.v3.IndividualTaxLiabilityType.OTHER_CANTON;
+		case HORS_SUISSE:
+			return ch.vd.unireg.xml.party.taxresidence.v3.IndividualTaxLiabilityType.FOREIGN_COUNTRY;
+		case INDIGENT:
+			return ch.vd.unireg.xml.party.taxresidence.v3.IndividualTaxLiabilityType.INDIGENT;
+		case MIXTE_137_1:
+			return ch.vd.unireg.xml.party.taxresidence.v3.IndividualTaxLiabilityType.MIXED_WITHHOLDING_137_1;
+		case MIXTE_137_2:
+			return ch.vd.unireg.xml.party.taxresidence.v3.IndividualTaxLiabilityType.MIXED_WITHHOLDING_137_2;
+		case NON_ASSUJETTI:
+			return ch.vd.unireg.xml.party.taxresidence.v3.IndividualTaxLiabilityType.NONE;
+		case SOURCE_PURE:
+			return ch.vd.unireg.xml.party.taxresidence.v3.IndividualTaxLiabilityType.PURE_WITHHOLDING;
+		case VAUDOIS_DEPENSE:
+			return ch.vd.unireg.xml.party.taxresidence.v3.IndividualTaxLiabilityType.EXPENDITURE_BASED;
+		case VAUDOIS_ORDINAIRE:
+			return ch.vd.unireg.xml.party.taxresidence.v3.IndividualTaxLiabilityType.ORDINARY_RESIDENT;
 		default:
 			throw new IllegalArgumentException("Type d'assujettissement inconnu = [" + t + ']');
 		}

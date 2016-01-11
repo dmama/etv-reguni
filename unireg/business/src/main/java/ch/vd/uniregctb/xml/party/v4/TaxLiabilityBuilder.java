@@ -3,17 +3,17 @@ package ch.vd.uniregctb.xml.party.v4;
 import java.util.HashMap;
 import java.util.Map;
 
-import ch.vd.unireg.xml.party.taxresidence.v2.ExpenditureBased;
-import ch.vd.unireg.xml.party.taxresidence.v2.ForeignCountry;
-import ch.vd.unireg.xml.party.taxresidence.v2.Indigent;
-import ch.vd.unireg.xml.party.taxresidence.v2.MixedWithholding137Par1;
-import ch.vd.unireg.xml.party.taxresidence.v2.MixedWithholding137Par2;
-import ch.vd.unireg.xml.party.taxresidence.v2.OrdinaryResident;
-import ch.vd.unireg.xml.party.taxresidence.v2.OtherCanton;
-import ch.vd.unireg.xml.party.taxresidence.v2.PureWithholding;
-import ch.vd.unireg.xml.party.taxresidence.v2.SwissDiplomat;
-import ch.vd.unireg.xml.party.taxresidence.v2.TaxLiability;
-import ch.vd.unireg.xml.party.taxresidence.v2.Withholding;
+import ch.vd.unireg.xml.party.taxresidence.v3.ExpenditureBased;
+import ch.vd.unireg.xml.party.taxresidence.v3.ForeignCountry;
+import ch.vd.unireg.xml.party.taxresidence.v3.Indigent;
+import ch.vd.unireg.xml.party.taxresidence.v3.MixedWithholding137Par1;
+import ch.vd.unireg.xml.party.taxresidence.v3.MixedWithholding137Par2;
+import ch.vd.unireg.xml.party.taxresidence.v3.OrdinaryResident;
+import ch.vd.unireg.xml.party.taxresidence.v3.OtherCanton;
+import ch.vd.unireg.xml.party.taxresidence.v3.PureWithholding;
+import ch.vd.unireg.xml.party.taxresidence.v3.SwissDiplomat;
+import ch.vd.unireg.xml.party.taxresidence.v3.TaxLiability;
+import ch.vd.unireg.xml.party.taxresidence.v3.Withholding;
 import ch.vd.uniregctb.xml.DataHelper;
 import ch.vd.uniregctb.xml.EnumHelper;
 
@@ -142,13 +142,13 @@ public abstract class TaxLiabilityBuilder {
 
 	private static void fillWithholding(Withholding left, ch.vd.uniregctb.metier.assujettissement.Sourcier right) {
 		fillTaxLiability(left, right);
-		left.setTaxationAuthority(EnumHelper.coreToXMLv2(right.getTypeAutoriteFiscalePrincipale()));
+		left.setTaxationAuthority(EnumHelper.coreToXMLv3(right.getTypeAutoriteFiscalePrincipale()));
 	}
 
 	private static void fillTaxLiability(TaxLiability left, ch.vd.uniregctb.metier.assujettissement.Assujettissement right) {
 		left.setDateFrom(DataHelper.coreToXMLv2(right.getDateDebut()));
 		left.setDateTo(DataHelper.coreToXMLv2(right.getDateFin()));
-		left.setStartReason(EnumHelper.coreToXMLv2(right.getMotifFractDebut()));
-		left.setEndReason(EnumHelper.coreToXMLv2(right.getMotifFractFin()));
+		left.setStartReason(EnumHelper.coreToXMLv3(right.getMotifFractDebut()));
+		left.setEndReason(EnumHelper.coreToXMLv3(right.getMotifFractFin()));
 	}
 }

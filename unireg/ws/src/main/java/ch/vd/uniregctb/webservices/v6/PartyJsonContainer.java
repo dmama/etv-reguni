@@ -17,7 +17,7 @@ import ch.vd.unireg.xml.party.person.v4.CommonHousehold;
 import ch.vd.unireg.xml.party.person.v4.NaturalPerson;
 import ch.vd.unireg.xml.party.taxdeclaration.v4.TaxDeclaration;
 import ch.vd.unireg.xml.party.taxpayer.v4.Taxpayer;
-import ch.vd.unireg.xml.party.taxresidence.v2.TaxLiability;
+import ch.vd.unireg.xml.party.taxresidence.v3.TaxLiability;
 import ch.vd.unireg.xml.party.v4.Party;
 
 public class PartyJsonContainer {

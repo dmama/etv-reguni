@@ -17,7 +17,7 @@ import ch.vd.unireg.xml.party.address.v2.AddressOtherParty;
 import ch.vd.unireg.xml.party.address.v2.AddressType;
 import ch.vd.unireg.xml.party.relation.v3.RelationBetweenParties;
 import ch.vd.unireg.xml.party.taxdeclaration.v4.TaxDeclaration;
-import ch.vd.unireg.xml.party.taxresidence.v2.TaxResidence;
+import ch.vd.unireg.xml.party.taxresidence.v3.TaxResidence;
 import ch.vd.unireg.xml.party.v4.Party;
 import ch.vd.unireg.xml.party.v4.PartyPart;
 import ch.vd.uniregctb.tiers.Parente;

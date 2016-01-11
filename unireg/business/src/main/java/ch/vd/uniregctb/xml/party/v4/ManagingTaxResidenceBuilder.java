@@ -1,6 +1,6 @@
 package ch.vd.uniregctb.xml.party.v4;
 
-import ch.vd.unireg.xml.party.taxresidence.v2.ManagingTaxResidence;
+import ch.vd.unireg.xml.party.taxresidence.v3.ManagingTaxResidence;
 import ch.vd.uniregctb.xml.DataHelper;
 
 public class ManagingTaxResidenceBuilder {

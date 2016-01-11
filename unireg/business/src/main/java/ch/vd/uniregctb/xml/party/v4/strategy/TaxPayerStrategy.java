@@ -12,7 +12,7 @@ import ch.vd.unireg.interfaces.efacture.data.DestinataireAvecHisto;
 import ch.vd.unireg.interfaces.efacture.data.EtatDestinataire;
 import ch.vd.unireg.xml.exception.v1.BusinessExceptionCode;
 import ch.vd.unireg.xml.party.taxpayer.v4.Taxpayer;
-import ch.vd.unireg.xml.party.taxresidence.v2.TaxationPeriod;
+import ch.vd.unireg.xml.party.taxresidence.v3.TaxationPeriod;
 import ch.vd.unireg.xml.party.v4.PartyPart;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementException;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImposition;
