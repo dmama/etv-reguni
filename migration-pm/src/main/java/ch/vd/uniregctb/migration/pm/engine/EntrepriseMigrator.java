@@ -3351,6 +3351,16 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 					.flatMap(List::stream)
 					.map(DateRange::getDateDebut)
 					.min(Comparator.naturalOrder())
+					.filter(date -> {
+						if (dateFinActivite != null && date.compareTo(dateFinActivite) > 0) {
+							mr.addMessage(LogCategory.FORS, LogLevel.WARN,
+							              String.format("Date de fin d'activité (%s) postérieure à la date de début du premier immeuble de l'entreprise DP (%s), la date de début des fors principaux de l'entreprise ne sera donc en aucun cas ramenée à la date d'ouverture du premier immeuble.",
+							                            StringRenderers.DATE_RENDERER.toString(dateFinActivite),
+							                            StringRenderers.DATE_RENDERER.toString(date)));
+							return false;
+						}
+						return true;
+					})
 					.orElse(null);
 		}
 		else {
