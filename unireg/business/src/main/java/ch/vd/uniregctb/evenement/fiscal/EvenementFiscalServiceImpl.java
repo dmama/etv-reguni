@@ -12,6 +12,7 @@ import ch.vd.uniregctb.declaration.DeclarationImpotSource;
 import ch.vd.uniregctb.tiers.AllegementFiscal;
 import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
 import ch.vd.uniregctb.tiers.Entreprise;
+import ch.vd.uniregctb.tiers.FlagEntreprise;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RegimeFiscal;
@@ -208,6 +209,25 @@ public class EvenementFiscalServiceImpl implements EvenementFiscalService {
 	@Override
 	public void publierEvenementFiscalAnnulationAllegementFiscal(AllegementFiscal af) {
 		publierEvenementFiscalAllegementFiscal(af.getDateDebut(), af, EvenementFiscalAllegementFiscal.TypeEvenementFiscalAllegement.ANNULATION);
+	}
+
+	private void publierEvenementFiscalFlagEntreprise(RegDate date, FlagEntreprise flag, EvenementFiscalFlagEntreprise.TypeEvenementFiscalFlagEntreprise type) {
+		saveAndPublish(new EvenementFiscalFlagEntreprise(date, flag, type));
+	}
+
+	@Override
+	public void publierEvenementFiscalOuvertureFlagEntreprise(FlagEntreprise flag) {
+		publierEvenementFiscalFlagEntreprise(flag.getDateDebut(), flag, EvenementFiscalFlagEntreprise.TypeEvenementFiscalFlagEntreprise.OUVERTURE);
+	}
+
+	@Override
+	public void publierEvenementFiscalFermetureFlagEntreprise(FlagEntreprise flag) {
+		publierEvenementFiscalFlagEntreprise(flag.getDateFin(), flag, EvenementFiscalFlagEntreprise.TypeEvenementFiscalFlagEntreprise.FERMETURE);
+	}
+
+	@Override
+	public void publierEvenementFiscalAnnulationFlagEntreprise(FlagEntreprise flag) {
+		publierEvenementFiscalFlagEntreprise(flag.getDateDebut(), flag, EvenementFiscalFlagEntreprise.TypeEvenementFiscalFlagEntreprise.ANNULATION);
 	}
 
 	@Override

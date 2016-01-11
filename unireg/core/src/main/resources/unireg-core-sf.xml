@@ -42,6 +42,8 @@
 		<value>ch.vd.uniregctb.evenement.fiscal.EvenementFiscal</value>
 		<value>ch.vd.uniregctb.evenement.fiscal.EvenementFiscalAllegementFiscal</value>
 		<value>ch.vd.uniregctb.evenement.fiscal.EvenementFiscalDeclaration</value>
+		<value>ch.vd.uniregctb.evenement.fiscal.EvenementFiscalEnvoiLettreBienvenue</value>
+		<value>ch.vd.uniregctb.evenement.fiscal.EvenementFiscalFlagEntreprise</value>
 		<value>ch.vd.uniregctb.evenement.fiscal.EvenementFiscalFor</value>
 		<value>ch.vd.uniregctb.evenement.fiscal.EvenementFiscalInformationComplementaire</value>
 		<value>ch.vd.uniregctb.evenement.fiscal.EvenementFiscalParente</value>

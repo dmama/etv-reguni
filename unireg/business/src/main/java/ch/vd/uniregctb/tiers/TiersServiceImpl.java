@@ -5526,7 +5526,7 @@ public class TiersServiceImpl implements TiersService {
 	@Override
 	public FlagEntreprise openFlagEntreprise(Entreprise e, TypeFlagEntreprise type, RegDate dateDebut) {
 		final FlagEntreprise flag = tiersDAO.addAndSave(e, new FlagEntreprise(type, dateDebut, null));
-		// TODO [SIPM] envoi d'un événement fiscal
+		evenementFiscalService.publierEvenementFiscalOuvertureFlagEntreprise(flag);
 		return flag;
 	}
 
@@ -5538,13 +5538,13 @@ public class TiersServiceImpl implements TiersService {
 			                                                  RegDateHelper.dateToDisplayString(flag.getDateDebut())));
 		}
 		flag.setDateFin(dateFin);
-		// TODO [SIPM] envoi d'un événement fiscal
+		evenementFiscalService.publierEvenementFiscalFermetureFlagEntreprise(flag);
 	}
 
 	@Override
 	public void annuleFlagEntreprise(FlagEntreprise flag) {
 		flag.setAnnule(true);
-		// TODO [SIPM] envoi d'un événement fiscal
+		evenementFiscalService.publierEvenementFiscalAnnulationFlagEntreprise(flag);
 	}
 
 	@Override

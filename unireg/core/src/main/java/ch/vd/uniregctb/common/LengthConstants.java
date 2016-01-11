@@ -62,6 +62,7 @@ public abstract class LengthConstants {
 	public static final int EVTFISCAL_TYPE_EVT_PARENTE = 25;
 	public static final int EVTFISCAL_TYPE_EVT_ALLEGEMENT = 15;
 	public static final int EVTFISCAL_TYPE_EVT_REGIME = 15;
+	public static final int EVTFISCAL_TYPE_EVT_FLAG = 15;
 	public static final int EVTFISCAL_TYPE_EVT_INFO_COMPLEMENTAIRE = 60;
 
 	public static final int EVTCIVILREG_ETAT = 10;
@@ -140,6 +141,8 @@ public abstract class LengthConstants {
 
 	public static final int ALLEGEMENT_FISCAL_TYPE_COLLECTIVITE = 15;
 	public static final int ALLEGEMENT_FISCAL_TYPE_IMPOT = 50;
+
+	public static final int FLAG_ENTREPRISE_TYPE = 31;
 
 	public static final int ETATENT_ETAT = 20;
 

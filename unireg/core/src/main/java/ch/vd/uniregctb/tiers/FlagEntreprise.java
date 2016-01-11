@@ -16,6 +16,7 @@ import java.util.List;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.HibernateDateRangeEntity;
+import ch.vd.uniregctb.common.LengthConstants;
 import ch.vd.uniregctb.type.TypeFlagEntreprise;
 
 /**
@@ -55,7 +56,7 @@ public class FlagEntreprise extends HibernateDateRangeEntity implements LinkedEn
 		this.id = id;
 	}
 
-	@Column(name = "FLAG", length = 20, nullable = false)
+	@Column(name = "FLAG", length = LengthConstants.FLAG_ENTREPRISE_TYPE, nullable = false)
 	@Enumerated(EnumType.STRING)
 	public TypeFlagEntreprise getType() {
 		return type;

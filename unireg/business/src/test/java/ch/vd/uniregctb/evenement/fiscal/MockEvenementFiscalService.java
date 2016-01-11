@@ -8,6 +8,7 @@ import ch.vd.uniregctb.declaration.DeclarationImpotSource;
 import ch.vd.uniregctb.tiers.AllegementFiscal;
 import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
 import ch.vd.uniregctb.tiers.Entreprise;
+import ch.vd.uniregctb.tiers.FlagEntreprise;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RegimeFiscal;
@@ -110,6 +111,18 @@ public class MockEvenementFiscalService implements EvenementFiscalService {
 
 	@Override
 	public void publierEvenementFiscalAnnulationAllegementFiscal(AllegementFiscal af) {
+	}
+
+	@Override
+	public void publierEvenementFiscalOuvertureFlagEntreprise(FlagEntreprise flag) {
+	}
+
+	@Override
+	public void publierEvenementFiscalFermetureFlagEntreprise(FlagEntreprise flag) {
+	}
+
+	@Override
+	public void publierEvenementFiscalAnnulationFlagEntreprise(FlagEntreprise flag) {
 	}
 
 	@Override

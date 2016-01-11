@@ -8,6 +8,7 @@ import ch.vd.uniregctb.declaration.DeclarationImpotSource;
 import ch.vd.uniregctb.tiers.AllegementFiscal;
 import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
 import ch.vd.uniregctb.tiers.Entreprise;
+import ch.vd.uniregctb.tiers.FlagEntreprise;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RegimeFiscal;
@@ -176,6 +177,24 @@ public interface EvenementFiscalService {
 	 * @param af l'allègement fiscal nouvellement annulé
 	 */
 	void publierEvenementFiscalAnnulationAllegementFiscal(AllegementFiscal af);
+
+	/**
+	 * Publie un événement fiscal de type 'ouverture de flag entreprise'
+	 * @param flag le flag entreprise nouvellement ouvert
+	 */
+	void publierEvenementFiscalOuvertureFlagEntreprise(FlagEntreprise flag);
+
+	/**
+	 * Publie un événement fiscal de type 'fermeture de flag entreprise'
+	 * @param flag le flag entreprise nouvellement fermé (= auquel on vient d'assigner une date de fin de validité)
+	 */
+	void publierEvenementFiscalFermetureFlagEntreprise(FlagEntreprise flag);
+
+	/**
+	 * Publie un événement fiscal de type 'annulation de flag entreprise'
+	 * @param flag le flag entreprise nouvellement annulé
+	 */
+	void publierEvenementFiscalAnnulationFlagEntreprise(FlagEntreprise flag);
 
 	/**
 	 * Publie un événement fiscal de type 'information complémentaire'

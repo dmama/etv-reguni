@@ -19,13 +19,16 @@ import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.EsbMessageFactory;
 import ch.vd.technical.esb.jms.EsbJmsTemplate;
 import ch.vd.unireg.xml.event.fiscal.v2.AnnulationAllegementFiscal;
+import ch.vd.unireg.xml.event.fiscal.v2.AnnulationFlagEntreprise;
 import ch.vd.unireg.xml.event.fiscal.v2.AnnulationFor;
 import ch.vd.unireg.xml.event.fiscal.v2.AnnulationRegimeFiscal;
 import ch.vd.unireg.xml.event.fiscal.v2.CategorieTiers;
 import ch.vd.unireg.xml.event.fiscal.v2.ChangementModeImposition;
 import ch.vd.unireg.xml.event.fiscal.v2.ChangementSituationFamille;
 import ch.vd.unireg.xml.event.fiscal.v2.DeclarationImpot;
+import ch.vd.unireg.xml.event.fiscal.v2.EnvoiLettreBienvenue;
 import ch.vd.unireg.xml.event.fiscal.v2.FermetureAllegementFiscal;
+import ch.vd.unireg.xml.event.fiscal.v2.FermetureFlagEntreprise;
 import ch.vd.unireg.xml.event.fiscal.v2.FermetureFor;
 import ch.vd.unireg.xml.event.fiscal.v2.FermetureRegimeFiscal;
 import ch.vd.unireg.xml.event.fiscal.v2.FinAutoriteParentale;
@@ -34,6 +37,7 @@ import ch.vd.unireg.xml.event.fiscal.v2.ListeRecapitulative;
 import ch.vd.unireg.xml.event.fiscal.v2.Naissance;
 import ch.vd.unireg.xml.event.fiscal.v2.ObjectFactory;
 import ch.vd.unireg.xml.event.fiscal.v2.OuvertureAllegementFiscal;
+import ch.vd.unireg.xml.event.fiscal.v2.OuvertureFlagEntreprise;
 import ch.vd.unireg.xml.event.fiscal.v2.OuvertureFor;
 import ch.vd.unireg.xml.event.fiscal.v2.OuvertureRegimeFiscal;
 import ch.vd.unireg.xml.event.fiscal.v2.TypeEvenementFiscalDeclaration;
@@ -93,6 +97,8 @@ public class EvenementFiscalV2SenderImpl implements EvenementFiscalSender, Initi
 		registerOutputDataFactory(map, EvenementFiscalParente.class, new ParenteFactory());
 		registerOutputDataFactory(map, EvenementFiscalRegimeFiscal.class, new RegimeFiscalFactory());
 		registerOutputDataFactory(map, EvenementFiscalSituationFamille.class, new SituationFamilleFactory());
+		registerOutputDataFactory(map, EvenementFiscalFlagEntreprise.class, new FlagEntrepriseFactory());
+		registerOutputDataFactory(map, EvenementFiscalEnvoiLettreBienvenue.class, new EnvoiLettreBienvenueFactory());
 		return map;
 	}
 
@@ -436,11 +442,51 @@ public class EvenementFiscalV2SenderImpl implements EvenementFiscalSender, Initi
 		}
 	}
 
-	private static class SituationFamilleFactory implements OutputDataFactory<EvenementFiscalSituationFamille, ch.vd.unireg.xml.event.fiscal.v2.ChangementSituationFamille> {
+	private static class SituationFamilleFactory implements OutputDataFactory<EvenementFiscalSituationFamille, ChangementSituationFamille> {
 		@NotNull
 		@Override
 		public ChangementSituationFamille build(@NotNull EvenementFiscalSituationFamille evenementFiscal) {
 			final ChangementSituationFamille instance = new ChangementSituationFamille();
+			final Tiers tiers = evenementFiscal.getTiers();
+			instance.setNumeroTiers(safeLongIdToInt(tiers.getNumero()));
+			instance.setCategorieTiers(extractCategorieTiers(tiers));
+			instance.setDate(DataHelper.coreToXMLv2(evenementFiscal.getDateValeur()));
+			return instance;
+		}
+	}
+
+	private static class FlagEntrepriseFactory implements OutputDataFactory<EvenementFiscalFlagEntreprise, ch.vd.unireg.xml.event.fiscal.v2.EvenementFiscalFlagEntreprise> {
+		@NotNull
+		@Override
+		public ch.vd.unireg.xml.event.fiscal.v2.EvenementFiscalFlagEntreprise build(@NotNull EvenementFiscalFlagEntreprise evenementFiscal) {
+			final ch.vd.unireg.xml.event.fiscal.v2.EvenementFiscalFlagEntreprise instance = instanciate(evenementFiscal.getType());
+			final Tiers tiers = evenementFiscal.getTiers();
+			instance.setNumeroTiers(safeLongIdToInt(tiers.getNumero()));
+			instance.setCategorieTiers(extractCategorieTiers(tiers));
+			instance.setDate(DataHelper.coreToXMLv2(evenementFiscal.getDateValeur()));
+			instance.setTypeFlag(EnumHelper.coreToXMLv4(evenementFiscal.getFlag().getType()));
+			return instance;
+		}
+	}
+
+	protected static ch.vd.unireg.xml.event.fiscal.v2.EvenementFiscalFlagEntreprise instanciate(EvenementFiscalFlagEntreprise.TypeEvenementFiscalFlagEntreprise type) {
+		switch (type) {
+		case ANNULATION:
+			return new AnnulationFlagEntreprise();
+		case FERMETURE:
+			return new FermetureFlagEntreprise();
+		case OUVERTURE:
+			return new OuvertureFlagEntreprise();
+		default:
+			throw new IllegalArgumentException("Type d'événement fiscal de flag entreprise non-supporté : " + type);
+		}
+	}
+
+	private static class EnvoiLettreBienvenueFactory implements OutputDataFactory<EvenementFiscalEnvoiLettreBienvenue, EnvoiLettreBienvenue> {
+		@NotNull
+		@Override
+		public EnvoiLettreBienvenue build(@NotNull EvenementFiscalEnvoiLettreBienvenue evenementFiscal) {
+			final EnvoiLettreBienvenue instance = new EnvoiLettreBienvenue();
 			final Tiers tiers = evenementFiscal.getTiers();
 			instance.setNumeroTiers(safeLongIdToInt(tiers.getNumero()));
 			instance.setCategorieTiers(extractCategorieTiers(tiers));

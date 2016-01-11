@@ -2856,6 +2856,14 @@ public abstract class EnumHelper {
 		switch (type) {
 		case UTILITE_PUBLIQUE:
 			return CorporationFlagType.PUBLIC_INTEREST;
+		case APM_SOC_IMM_SUBVENTIONNEE:
+			return CorporationFlagType.ASSOCIATION_FOUNDATION_REAL_ESTATE_COMPANY;
+		case SOC_IMM_ACTIONNAIRES_LOCATAIRES:
+			return CorporationFlagType.TENANT_SHAREHOLDERS_REAL_ESTATE_COMPANY;
+		case SOC_IMM_ORDINAIRE:
+			return CorporationFlagType.REAL_ESTATE_COMPANY;
+		case SOC_IMM_SUBVENTIONNEE:
+			return CorporationFlagType.SUBSIDIZED_REAL_ESTATE_COMPANY;
 		default:
 			throw new IllegalArgumentException("Type de flag inconnu : " + type);
 		}
