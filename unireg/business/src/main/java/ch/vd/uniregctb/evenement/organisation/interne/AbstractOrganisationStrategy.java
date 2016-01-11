@@ -5,8 +5,8 @@ import java.util.List;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.unireg.interfaces.organisation.data.Domicile;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
-import ch.vd.unireg.interfaces.organisation.data.Siege;
 import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 import ch.vd.unireg.interfaces.organisation.data.StatusInscriptionRC;
 import ch.vd.unireg.interfaces.organisation.data.StatusRC;
@@ -49,14 +49,14 @@ public abstract class AbstractOrganisationStrategy implements EvenementOrganisat
 	                                                   EvenementOrganisationOptions options) throws EvenementOrganisationException;
 
 	protected boolean hasSitePrincipalVD(Organisation organisation, RegDate date) {
-		Siege siegePrincipal = organisation.getSiegePrincipal(date);
+		Domicile siegePrincipal = organisation.getSiegePrincipal(date);
 		return siegePrincipal != null && siegePrincipal.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD;
 	}
 
 	protected boolean hasSiteVD(Organisation organisation, RegDate date) {
 		for (SiteOrganisation site : organisation.getDonneesSites()) {
-			final Siege siege = site.getSiege(date);
-			if (siege != null && siege.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
+			final Domicile domicile = site.getDomicile(date);
+			if (domicile != null && domicile.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
 				return true;
 			}
 		}

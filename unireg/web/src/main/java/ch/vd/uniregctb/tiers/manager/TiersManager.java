@@ -80,6 +80,7 @@ import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.DecisionAci;
 import ch.vd.uniregctb.tiers.DecisionAciView;
+import ch.vd.uniregctb.tiers.DomicileHisto;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.Etablissement;
@@ -96,7 +97,6 @@ import ch.vd.uniregctb.tiers.RapportPrestationImposable;
 import ch.vd.uniregctb.tiers.RegimeFiscal;
 import ch.vd.uniregctb.tiers.RepresentationConventionnelle;
 import ch.vd.uniregctb.tiers.RepresentationLegale;
-import ch.vd.uniregctb.tiers.SiegeHisto;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersService;
@@ -580,14 +580,14 @@ public class TiersManager implements MessageSourceAware {
 	 */
 	protected void setEtablissement(TiersView tiersView, Etablissement etb) {
 		tiersView.setTiers(Objects.requireNonNull(etb));
-		final List<DomicileEtablissementView> views = getDomicilesEtablissement(tiersService.getSieges(etb));
+		final List<DomicileEtablissementView> views = getDomicilesEtablissement(tiersService.getDomiciles(etb));
 		Collections.sort(views, new ReverseComparator<>(new DateRangeComparator<>()));
 		tiersView.setDomicilesEtablissement(views);
 	}
 
-	private List<DomicileEtablissementView> getDomicilesEtablissement(List<SiegeHisto> domiciles) {
+	private List<DomicileEtablissementView> getDomicilesEtablissement(List<DomicileHisto> domiciles) {
 		final List<DomicileEtablissementView> domicilesViews = new ArrayList<>(domiciles.size());
-		for (SiegeHisto domicile : domiciles) {
+		for (DomicileHisto domicile : domiciles) {
 			domicilesViews.add(new DomicileEtablissementView(domicile));
 		}
 		Collections.sort(domicilesViews, new ReverseComparator<>(new DateRangeComparator<DomicileEtablissementView>()));

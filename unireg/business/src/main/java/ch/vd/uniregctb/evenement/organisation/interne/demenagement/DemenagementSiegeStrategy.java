@@ -4,8 +4,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.interfaces.organisation.data.Domicile;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
-import ch.vd.unireg.interfaces.organisation.data.Siege;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationContext;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationException;
@@ -50,8 +50,8 @@ public class DemenagementSiegeStrategy extends AbstractOrganisationStrategy {
 		final RegDate dateAvant = event.getDateEvenement().getOneDayBefore();
 		final RegDate dateApres = event.getDateEvenement();
 
-		final Siege communeDeSiegeAvant = organisation.getSiegePrincipal(dateAvant);
-		final Siege communeDeSiegeApres = organisation.getSiegePrincipal(dateApres);
+		final Domicile communeDeSiegeAvant = organisation.getSiegePrincipal(dateAvant);
+		final Domicile communeDeSiegeApres = organisation.getSiegePrincipal(dateApres);
 
 
 		if (communeDeSiegeApres == null) {
@@ -96,22 +96,22 @@ public class DemenagementSiegeStrategy extends AbstractOrganisationStrategy {
 		}
 	}
 
-	private boolean isDemenagementVD(Siege siegeAvant, Siege siegeApres) {
+	private boolean isDemenagementVD(Domicile siegeAvant, Domicile siegeApres) {
 		return siegeAvant.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD &&
 				siegeApres.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD;
 	}
 
-	private boolean isDemenagementHC(Siege siegeAvant, Siege siegeApres) {
+	private boolean isDemenagementHC(Domicile siegeAvant, Domicile siegeApres) {
 		return siegeAvant.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_HC &&
 				siegeApres.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_HC;
 	}
 
-	private boolean isDepart(Siege siegeAvant, Siege siegeApres) {
+	private boolean isDepart(Domicile siegeAvant, Domicile siegeApres) {
 		return siegeAvant.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD &&
 				(siegeApres.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_HC || siegeApres.getTypeAutoriteFiscale() == TypeAutoriteFiscale.PAYS_HS);
 	}
 
-	private boolean isArrivee(Siege siegeAvant, Siege siegeApres) {
+	private boolean isArrivee(Domicile siegeAvant, Domicile siegeApres) {
 		return (siegeAvant.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_HC || siegeAvant.getTypeAutoriteFiscale() == TypeAutoriteFiscale.PAYS_HS) &&
 				siegeApres.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD;
 	}

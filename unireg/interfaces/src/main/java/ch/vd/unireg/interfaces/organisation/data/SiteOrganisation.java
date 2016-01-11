@@ -43,7 +43,7 @@ public interface SiteOrganisation {
 	/**
 	 * @return l'historique des sièges du site (= commune ou pays)
 	 */
-	List<Siege> getSieges();
+	List<Domicile> getDomiciles();
 
 	/**
 	 * @return les valeurs historisées du type de site (principal / secondaire)
@@ -55,7 +55,7 @@ public interface SiteOrganisation {
 	 * @param date La date désirée
 	 * @return Le siège, ou null si aucun siège valide à la date donnée
 	 */
-	Siege getSiege(RegDate date);
+	Domicile getDomicile(RegDate date);
 
 	RegDate getDateInscriptionRC(RegDate date);
 

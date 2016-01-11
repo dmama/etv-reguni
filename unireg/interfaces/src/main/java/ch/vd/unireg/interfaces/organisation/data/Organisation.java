@@ -46,13 +46,19 @@ public interface Organisation {
 
 	List<String> getNomsAdditionnels(RegDate date);
 
-	Siege getSiegePrincipal(RegDate date);
+	Domicile getSiegePrincipal(RegDate date);
 
 	FormeLegale getFormeLegale(RegDate date);
 
 	List<Capital> getCapitaux();
 
-	List<Siege> getSiegesPrincipaux();
+	/**
+	 * Liste des communes de domicile des établissements principaux de l'entreprise, c'est à dire
+	 * la liste des communes où l'entreprise à domicilié son siège social.
+	 *
+	 * @return La liste des sièges de l'entreprise
+	 */
+	List<Domicile> getSiegesPrincipaux();
 
 	List<Adresse> getAdresses();
 

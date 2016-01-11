@@ -7,10 +7,10 @@ import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
+import ch.vd.unireg.interfaces.organisation.data.Domicile;
 import ch.vd.unireg.interfaces.organisation.data.DonneesRC;
 import ch.vd.unireg.interfaces.organisation.data.DonneesRegistreIDE;
 import ch.vd.unireg.interfaces.organisation.data.FonctionOrganisation;
-import ch.vd.unireg.interfaces.organisation.data.Siege;
 import ch.vd.unireg.interfaces.organisation.data.SiteOrganisationRCEnt;
 import ch.vd.unireg.interfaces.organisation.data.TypeDeSite;
 
@@ -25,7 +25,7 @@ public class SiteOrganisationBuilder implements DataBuilder<SiteOrganisationRCEn
 	private Map<String, List<DateRanged<String>>> autresIdentifiants;
 	private Map<String, List<DateRanged<String>>> nomsAdditionnels;
 	private List<DateRanged<TypeDeSite>> typesDeSite;
-	private List<Siege> sieges;
+	private List<Domicile> domiciles;
 	private Map<String, List<DateRanged<FonctionOrganisation>>> fonction;
 	private List<DateRanged<Long>> remplacePar;
 	private Map<Long, List<DateRanged<Long>>> enRemplacementDe;
@@ -36,7 +36,7 @@ public class SiteOrganisationBuilder implements DataBuilder<SiteOrganisationRCEn
 
 	@NotNull
 	public SiteOrganisationRCEnt build() {
-		return new SiteOrganisationRCEnt(numeroSite, autresIdentifiants, nom, rc, ide, nomsAdditionnels, typesDeSite, sieges, fonction, remplacePar, enRemplacementDe);
+		return new SiteOrganisationRCEnt(numeroSite, autresIdentifiants, nom, rc, ide, nomsAdditionnels, typesDeSite, domiciles, fonction, remplacePar, enRemplacementDe);
 	}
 
 	public SiteOrganisationBuilder addAutreIdentifiant(@NotNull String cle, @NotNull RegDate dateDebut, RegDate dateDeFin, @NotNull String valeur) {
@@ -69,8 +69,8 @@ public class SiteOrganisationBuilder implements DataBuilder<SiteOrganisationRCEn
 		return this;
 	}
 
-	public SiteOrganisationBuilder addSiege(@NotNull Siege valeur) {
-		sieges = BuilderHelper.addValueToList(sieges, valeur);
+	public SiteOrganisationBuilder addSiege(@NotNull Domicile valeur) {
+		domiciles = BuilderHelper.addValueToList(domiciles, valeur);
 		return this;
 	}
 
@@ -114,8 +114,8 @@ public class SiteOrganisationBuilder implements DataBuilder<SiteOrganisationRCEn
 		return this;
 	}
 
-	public SiteOrganisationBuilder withSieges(List<Siege> sieges) {
-		this.sieges = sieges;
+	public SiteOrganisationBuilder withSieges(List<Domicile> domiciles) {
+		this.domiciles = domiciles;
 		return this;
 	}
 

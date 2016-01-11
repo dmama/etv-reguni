@@ -6,7 +6,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.common.Annulable;
 import ch.vd.uniregctb.interfaces.model.TypeNoOfs;
-import ch.vd.uniregctb.tiers.SiegeHisto;
+import ch.vd.uniregctb.tiers.DomicileHisto;
 import ch.vd.uniregctb.tiers.Source;
 import ch.vd.uniregctb.tiers.Sourced;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
@@ -21,7 +21,7 @@ public class SiegeView implements Sourced<Source>, DateRange, Annulable {
 	private final TypeNoOfs type;
 	private final Source source;
 
-	public SiegeView(SiegeHisto siege) {
+	public SiegeView(DomicileHisto siege) {
 		this.id = siege.getId();
 		this.dateDebut = siege.getDateDebut();
 		this.dateFin = siege.getDateFin();

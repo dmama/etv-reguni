@@ -30,13 +30,13 @@ public abstract class MockSiteOrganisationFactory {
 	                                           RegDate dateFin,
 	                                           String nom,
 	                                           @Nullable Boolean principal,
-	                                           @Nullable TypeAutoriteFiscale typeAutoriteFiscaleSiege,
-	                                           @Nullable Integer noOfsSiege,
+	                                           @Nullable TypeAutoriteFiscale typeAutoriteFiscaleDomicile,
+	                                           @Nullable Integer noOfsDomicile,
 	                                           @Nullable StatusRC statusRC,
 	                                           @Nullable StatusInscriptionRC statusInscriptionRC,
 	                                           @Nullable StatusRegistreIDE statusIde,
 	                                           @Nullable TypeOrganisationRegistreIDE typeIde) {
-		return addSite(cantonalId, organisation, dateDebut, dateFin, nom, principal, typeAutoriteFiscaleSiege, noOfsSiege, statusRC, statusInscriptionRC, statusIde, typeIde, null, null);
+		return addSite(cantonalId, organisation, dateDebut, dateFin, nom, principal, typeAutoriteFiscaleDomicile, noOfsDomicile, statusRC, statusInscriptionRC, statusIde, typeIde, null, null);
 	}
 
 	public static MockSiteOrganisation addSite(long cantonalId,
@@ -45,8 +45,8 @@ public abstract class MockSiteOrganisationFactory {
 	                                           RegDate dateFin,
 	                                           String nom,
 	                                           @Nullable Boolean principal,
-	                                           @Nullable TypeAutoriteFiscale typeAutoriteFiscaleSiege,
-	                                           @Nullable Integer noOfsSiege,
+	                                           @Nullable TypeAutoriteFiscale typeAutoriteFiscaleDomicile,
+	                                           @Nullable Integer noOfsDomicile,
 	                                           @Nullable StatusRC statusRC,
 	                                           @Nullable StatusInscriptionRC statusInscriptionRC,
 	                                           @Nullable StatusRegistreIDE statusIde,
@@ -95,10 +95,10 @@ public abstract class MockSiteOrganisationFactory {
 			}
 		}
 
-		if (typeAutoriteFiscaleSiege != null && noOfsSiege != null) {
-			mock.changeSiege(dateDebut, typeAutoriteFiscaleSiege, noOfsSiege);
+		if (typeAutoriteFiscaleDomicile != null && noOfsDomicile != null) {
+			mock.changeDomicile(dateDebut, typeAutoriteFiscaleDomicile, noOfsDomicile);
 			if (dateFin != null) {
-				mock.changeSiege(dateFin.getOneDayAfter(), null, null);
+				mock.changeDomicile(dateFin.getOneDayAfter(), null, null);
 			}
 		}
 		return mock;

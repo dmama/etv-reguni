@@ -73,7 +73,7 @@ public class DemenagementTest extends AbstractEvenementOrganisationProcessorTest
 				                                                                        TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE);
 
 				MockSiteOrganisation site = (MockSiteOrganisation) org.getSitePrincipaux().get(0).getPayload();
-				site.changeSiege(RegDate.get(2015, 6, 24), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Morges.getNoOFS());
+				site.changeDomicile(RegDate.get(2015, 6, 24), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Morges.getNoOFS());
 				addOrganisation(org);
 
 			}
@@ -195,7 +195,7 @@ public class DemenagementTest extends AbstractEvenementOrganisationProcessorTest
 				                                                                        TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE);
 
 				MockSiteOrganisation site = (MockSiteOrganisation) org.getSitePrincipaux().get(0).getPayload();
-				site.changeSiege(RegDate.get(2015, 6, 24), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Morges.getNoOFS());
+				site.changeDomicile(RegDate.get(2015, 6, 24), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Morges.getNoOFS());
 				addOrganisation(org);
 
 			}
@@ -327,7 +327,7 @@ public class DemenagementTest extends AbstractEvenementOrganisationProcessorTest
 				                                                                        TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE);
 
 				MockSiteOrganisation site = (MockSiteOrganisation) org.getSitePrincipaux().get(0).getPayload();
-				site.changeSiege(RegDate.get(2015, 6, 24), TypeAutoriteFiscale.COMMUNE_HC, MockCommune.Zurich.getNoOFS());
+				site.changeDomicile(RegDate.get(2015, 6, 24), TypeAutoriteFiscale.COMMUNE_HC, MockCommune.Zurich.getNoOFS());
 				addOrganisation(org);
 
 			}
@@ -458,7 +458,7 @@ public class DemenagementTest extends AbstractEvenementOrganisationProcessorTest
 				                                                                        TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE);
 
 				MockSiteOrganisation site = (MockSiteOrganisation) org.getSitePrincipaux().get(0).getPayload();
-				site.changeSiege(RegDate.get(2015, 6, 24), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Morges.getNoOFS());
+				site.changeDomicile(RegDate.get(2015, 6, 24), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Morges.getNoOFS());
 				addOrganisation(org);
 
 			}

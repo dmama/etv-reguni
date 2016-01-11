@@ -103,7 +103,7 @@ public abstract class OrganisationHelper {
 	 * @param date La date de référence
 	 * @return Le siège le jour précédant, ou null si aucun.
 	 */
-	public static Siege siegePrincipalPrecedant(Organisation organisation, @Nullable RegDate date) {
+	public static Domicile siegePrincipalPrecedant(Organisation organisation, @Nullable RegDate date) {
 		return DateRangeHelper.rangeAt(organisation.getSiegesPrincipaux(), defaultDate(date).getOneDayBefore());
 	}
 
@@ -214,11 +214,11 @@ public abstract class OrganisationHelper {
 	 *
 	 * @return La succession de plage contenant l'information de siege.
 	 */
-	public static List<Siege> getSiegesPrincipaux(Map<Long, SiteOrganisation> donneesSites) {
-		return extractDataFromSitesPrincipaux(donneesSites, new DateRangeLimitatorImpl<Siege>(), new SiteDataExtractor<List<Siege>>() {
+	public static List<Domicile> getSiegesPrincipaux(Map<Long, SiteOrganisation> donneesSites) {
+		return extractDataFromSitesPrincipaux(donneesSites, new DateRangeLimitatorImpl<Domicile>(), new SiteDataExtractor<List<Domicile>>() {
 			@Override
-			public List<Siege> extractData(SiteOrganisation site) {
-				return site.getSieges();
+			public List<Domicile> extractData(SiteOrganisation site) {
+				return site.getDomiciles();
 			}
 		});
 	}

@@ -17,12 +17,12 @@ import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.interfaces.service.ServiceOrganisationService;
 import ch.vd.uniregctb.tiers.CapitalHisto;
+import ch.vd.uniregctb.tiers.DomicileHisto;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.EtatEntreprise;
 import ch.vd.uniregctb.tiers.FormeLegaleHisto;
 import ch.vd.uniregctb.tiers.IdentificationEntreprise;
 import ch.vd.uniregctb.tiers.RaisonSocialeHisto;
-import ch.vd.uniregctb.tiers.SiegeHisto;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.tiers.view.EtatEntrepriseView;
 
@@ -195,12 +195,12 @@ public class EntrepriseServiceImpl implements EntrepriseService {
 		return list;
 	}
 
-	private static List<SiegeView> getSieges(List<SiegeHisto> sieges) {
+	private static List<SiegeView> getSieges(List<DomicileHisto> sieges) {
 		if (sieges == null) {
 			return null;
 		}
 		final List<SiegeView> list = new ArrayList<>(sieges.size());
-		for (SiegeHisto siege : sieges) {
+		for (DomicileHisto siege : sieges) {
 			list.add(new SiegeView(siege));
 		}
 		Collections.sort(list, new DateRangeComparator<SiegeView>());

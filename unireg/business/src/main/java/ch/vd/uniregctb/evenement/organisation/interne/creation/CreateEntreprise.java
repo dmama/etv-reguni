@@ -5,9 +5,9 @@ import org.springframework.util.Assert;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.unireg.interfaces.organisation.data.Domicile;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.OrganisationHelper;
-import ch.vd.unireg.interfaces.organisation.data.Siege;
 import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationContext;
@@ -31,7 +31,7 @@ public abstract class CreateEntreprise extends EvenementOrganisationInterneDeTra
 	final private RegDate dateDeDebut;
 	final private CategorieEntreprise category;
 	final private SiteOrganisation sitePrincipal;
-	final private Siege autoriteFiscalePrincipale;
+	final private Domicile autoriteFiscalePrincipale;
 
 	protected CreateEntreprise(EvenementOrganisation evenement, Organisation organisation, Entreprise entreprise,
 	                           EvenementOrganisationContext context,
@@ -47,7 +47,7 @@ public abstract class CreateEntreprise extends EvenementOrganisationInterneDeTra
 
 		sitePrincipal = organisation.getSitePrincipal(getDateEvt()).getPayload();
 
-		autoriteFiscalePrincipale = sitePrincipal.getSiege(getDateEvt());
+		autoriteFiscalePrincipale = sitePrincipal.getDomicile(getDateEvt());
 
 		if (autoriteFiscalePrincipale == null) { // Indique un établissement "probablement" à l'étranger. Nous ne savons pas traiter ce cas pour l'instant.
 			throw new EvenementOrganisationException(
@@ -78,7 +78,7 @@ public abstract class CreateEntreprise extends EvenementOrganisationInterneDeTra
 	}
 
 	@NotNull
-	public Siege getAutoriteFiscalePrincipale() {
+	public Domicile getAutoriteFiscalePrincipale() {
 		return autoriteFiscalePrincipale;
 	}
 

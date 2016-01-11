@@ -88,7 +88,7 @@ public class OrganisationRCEnt implements Organisation, Serializable {
 	 * @return La succession de plage contenant l'information de siege.
 	 */
 	@Override
-	public List<Siege> getSiegesPrincipaux() {
+	public List<Domicile> getSiegesPrincipaux() {
 		return OrganisationHelper.getSiegesPrincipaux(donneesSites);
 	}
 
@@ -100,7 +100,7 @@ public class OrganisationRCEnt implements Organisation, Serializable {
 	 * @return Le siège, ou null si aucun siège valide à la date donnée
 	 */
 	@Override
-	public Siege getSiegePrincipal(RegDate date) {
+	public Domicile getSiegePrincipal(RegDate date) {
 		return OrganisationHelper.dateRangeForDate(getSiegesPrincipaux(), date);
 	}
 

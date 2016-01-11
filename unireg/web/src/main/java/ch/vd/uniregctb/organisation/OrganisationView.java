@@ -3,8 +3,8 @@ package ch.vd.uniregctb.organisation;
 import java.io.Serializable;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.interfaces.organisation.data.Domicile;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
-import ch.vd.unireg.interfaces.organisation.data.Siege;
 import ch.vd.unireg.interfaces.organisation.data.StatusRegistreIDE;
 import ch.vd.uniregctb.tiers.CategorieEntrepriseHelper;
 import ch.vd.uniregctb.type.CategorieEntreprise;
@@ -31,7 +31,7 @@ public class OrganisationView implements Serializable {
 	public OrganisationView(final Organisation organisation, RegDate date) {
 		this.setNumeroOrganisation(organisation.getNumeroOrganisation());
 		nom = organisation.getNom(date);
-		final Siege siegePrincipal = organisation.getSiegePrincipal(date);
+		final Domicile siegePrincipal = organisation.getSiegePrincipal(date);
 		noOFSSiege = siegePrincipal.getNoOfs();
 		typeSiege = siegePrincipal.getTypeAutoriteFiscale();
 		formeJuridique = organisation.getFormeLegale(date).toString();

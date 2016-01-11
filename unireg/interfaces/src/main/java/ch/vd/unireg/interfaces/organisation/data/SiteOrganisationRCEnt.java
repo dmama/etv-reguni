@@ -32,7 +32,7 @@ public class SiteOrganisationRCEnt implements Serializable, SiteOrganisation {
 	private final Map<String, List<DateRanged<String>>> nomsAdditionnels;
 	private final List<DateRanged<TypeDeSite>> typeDeSite;
 
-	private final List<Siege> siege;
+	private final List<Domicile> domicile;
 	private final Map<String, List<DateRanged<FonctionOrganisation>>> fonction;
 
 	private final List<DateRanged<Long>> remplacePar;
@@ -44,7 +44,7 @@ public class SiteOrganisationRCEnt implements Serializable, SiteOrganisation {
 	                             DonneesRC rc,
 	                             DonneesRegistreIDE ide,
 	                             Map<String, List<DateRanged<String>>> nomsAdditionnels,
-	                             List<DateRanged<TypeDeSite>> typeDeSite, List<Siege> siege,
+	                             List<DateRanged<TypeDeSite>> typeDeSite, List<Domicile> domicile,
 	                             Map<String, List<DateRanged<FonctionOrganisation>>> fonction,
 	                             List<DateRanged<Long>> remplacePar,
 	                             Map<Long, List<DateRanged<Long>>> enRemplacementDe) {
@@ -55,7 +55,7 @@ public class SiteOrganisationRCEnt implements Serializable, SiteOrganisation {
 		this.ide = ide;
 		this.nomsAdditionnels = nomsAdditionnels;
 		this.typeDeSite = typeDeSite;
-		this.siege = siege;
+		this.domicile = domicile;
 		this.fonction = fonction;
 		this.remplacePar = remplacePar;
 		this.enRemplacementDe = enRemplacementDe;
@@ -101,8 +101,8 @@ public class SiteOrganisationRCEnt implements Serializable, SiteOrganisation {
 		return rc;
 	}
 
-	public List<Siege> getSieges() {
-		return siege;
+	public List<Domicile> getDomiciles() {
+		return domicile;
 	}
 
 	public List<DateRanged<TypeDeSite>> getTypeDeSite() {
@@ -110,8 +110,8 @@ public class SiteOrganisationRCEnt implements Serializable, SiteOrganisation {
 	}
 
 	@Override
-	public Siege getSiege(RegDate date) {
-		return OrganisationHelper.dateRangeForDate(getSieges(), date);
+	public Domicile getDomicile(RegDate date) {
+		return OrganisationHelper.dateRangeForDate(getDomiciles(), date);
 	}
 
 	@Override

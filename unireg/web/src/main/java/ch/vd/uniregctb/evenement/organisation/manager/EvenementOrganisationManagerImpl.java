@@ -16,8 +16,8 @@ import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.infra.data.Pays;
 import ch.vd.unireg.interfaces.organisation.ServiceOrganisationException;
+import ch.vd.unireg.interfaces.organisation.data.Domicile;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
-import ch.vd.unireg.interfaces.organisation.data.Siege;
 import ch.vd.uniregctb.adresse.AdresseEnvoi;
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdresseGenerique;
@@ -268,7 +268,7 @@ public class EvenementOrganisationManagerImpl implements EvenementOrganisationMa
 
 			final Organisation organisation = serviceOrganisationService.getOrganisationHistory(evt.getNoOrganisation());
 			view.setNom(organisation.getNom(dateEvenement));
-			final Siege siegePrincipal = organisation.getSiegePrincipal(dateEvenement);
+			final Domicile siegePrincipal = organisation.getSiegePrincipal(dateEvenement);
 			view.setNoOFSSiege(siegePrincipal.getNoOfs());
 			view.setTypeSiege(siegePrincipal.getTypeAutoriteFiscale());
 			view.setSource(evt.getIdentiteEmetteur());

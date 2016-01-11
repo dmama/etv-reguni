@@ -19,10 +19,10 @@ import ch.vd.unireg.interfaces.common.Adresse;
 import ch.vd.unireg.interfaces.infra.mock.MockAdresse;
 import ch.vd.unireg.interfaces.organisation.data.Capital;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
+import ch.vd.unireg.interfaces.organisation.data.Domicile;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.OrganisationHelper;
-import ch.vd.unireg.interfaces.organisation.data.Siege;
 import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 import ch.vd.unireg.interfaces.organisation.data.TypeDeSite;
 
@@ -162,7 +162,7 @@ public class MockOrganisation implements Organisation {
 	}
 
 	@Override
-	public Siege getSiegePrincipal(RegDate date) {
+	public Domicile getSiegePrincipal(RegDate date) {
 		return OrganisationHelper.dateRangeForDate(getSiegesPrincipaux(), date);
 	}
 
@@ -228,12 +228,12 @@ public class MockOrganisation implements Organisation {
 	}
 
 	@Override
-	public List<Siege> getSiegesPrincipaux() {
-		final List<Siege> sieges = new ArrayList<>();
+	public List<Domicile> getSiegesPrincipaux() {
+		final List<Domicile> sieges = new ArrayList<>();
 		for (MockSiteOrganisation site : sites.values()) {
 			for (DateRanged<TypeDeSite> typeSite : site.getTypeDeSite()) {
 				if (typeSite.getPayload() == TypeDeSite.ETABLISSEMENT_PRINCIPAL) {
-					sieges.addAll(site.getSieges());
+					sieges.addAll(site.getDomiciles());
 				}
 			}
 		}

@@ -10,9 +10,9 @@ import ch.vd.unireg.interfaces.common.Adresse;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.organisation.ServiceOrganisationException;
 import ch.vd.unireg.interfaces.organisation.ServiceOrganisationRaw;
+import ch.vd.unireg.interfaces.organisation.data.Domicile;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
-import ch.vd.unireg.interfaces.organisation.data.Siege;
 import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 import ch.vd.uniregctb.common.DonneesOrganisationException;
 import ch.vd.uniregctb.interfaces.model.AdressesCivilesHistoriques;
@@ -94,7 +94,7 @@ public class ServiceOrganisationImpl implements ServiceOrganisationService {
 	@Override
 	@NotNull
 	public String createOrganisationDescription(Organisation organisation, RegDate date) {
-		Siege siege = organisation.getSiegePrincipal(date);
+		Domicile siege = organisation.getSiegePrincipal(date);
 		String nomCommune = "";
 		if (siege != null) {
 			final Commune commune = serviceInfra.getCommuneByNumeroOfs(siege.getNoOfs(), date);

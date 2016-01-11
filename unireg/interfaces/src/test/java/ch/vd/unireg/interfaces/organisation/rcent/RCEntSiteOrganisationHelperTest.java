@@ -79,7 +79,7 @@ public class RCEntSiteOrganisationHelperTest {
 		Assert.assertEquals(4567, site.getNumeroSite());
 		Assert.assertEquals("Ma boîte", site.getNom().get(0).getPayload());
 		Assert.assertEquals(TypeDeSite.ETABLISSEMENT_PRINCIPAL, site.getTypeDeSite().get(0).getPayload());
-		Assert.assertEquals(MockCommune.Lausanne.getNoOFS(), site.getSieges().get(0).getNoOfs());
+		Assert.assertEquals(MockCommune.Lausanne.getNoOFS(), site.getDomiciles().get(0).getNoOfs());
 		Assert.assertEquals(StatusRC.INSCRIT, site.getDonneesRC().getStatus().get(0).getPayload());
 		Assert.assertEquals(StatusInscriptionRC.ACTIF, site.getDonneesRC().getStatusInscription().get(0).getPayload());
 		Assert.assertEquals(StatusRegistreIDE.DEFINITIF, site.getDonneesRegistreIDE().getStatus().get(0).getPayload());
@@ -128,7 +128,7 @@ public class RCEntSiteOrganisationHelperTest {
 		Assert.assertEquals(4567, site.getNumeroSite());
 		Assert.assertEquals("Ma boîte", site.getNom().get(0).getPayload());
 		Assert.assertEquals(TypeDeSite.ETABLISSEMENT_PRINCIPAL, site.getTypeDeSite().get(0).getPayload());
-		Assert.assertEquals(MockCommune.Lausanne.getNoOFS(), site.getSieges().get(0).getNoOfs());
+		Assert.assertEquals(MockCommune.Lausanne.getNoOFS(), site.getDomiciles().get(0).getNoOfs());
 		Assert.assertEquals(StatusRC.INSCRIT, site.getDonneesRC().getStatus().get(0).getPayload());
 		Assert.assertEquals(StatusInscriptionRC.ACTIF, site.getDonneesRC().getStatusInscription().get(0).getPayload());
 		Assert.assertEquals(StatusRegistreIDE.DEFINITIF, site.getDonneesRegistreIDE().getStatus().get(0).getPayload());

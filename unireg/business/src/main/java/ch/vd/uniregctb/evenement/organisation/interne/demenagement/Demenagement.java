@@ -3,8 +3,8 @@ package ch.vd.uniregctb.evenement.organisation.interne.demenagement;
 import org.springframework.util.Assert;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.interfaces.organisation.data.Domicile;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
-import ch.vd.unireg.interfaces.organisation.data.Siege;
 import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationContext;
@@ -31,8 +31,8 @@ public abstract class Demenagement extends EvenementOrganisationInterneDeTraitem
 	private final SiteOrganisation sitePrincipalAvant;
 	private final SiteOrganisation sitePrincipalApres;
 
-	private final Siege siegeAvant;
-	private final Siege siegeApres;
+	private final Domicile siegeAvant;
+	private final Domicile siegeApres;
 
 	private final Etablissement etablissementPrincipalAvant;
 	private final Etablissement etablissementPrincipalApres;
@@ -48,8 +48,8 @@ public abstract class Demenagement extends EvenementOrganisationInterneDeTraitem
 		sitePrincipalAvant = organisation.getSitePrincipal(dateAvant).getPayload();
 		sitePrincipalApres = organisation.getSitePrincipal(dateApres).getPayload();
 
-		siegeAvant = sitePrincipalAvant.getSiege(dateAvant);
-		siegeApres = sitePrincipalApres.getSiege(dateApres);
+		siegeAvant = sitePrincipalAvant.getDomicile(dateAvant);
+		siegeApres = sitePrincipalApres.getDomicile(dateApres);
 
 		etablissementPrincipalAvant = getEtablissementByNumeroSite(sitePrincipalAvant.getNumeroSite());
 		etablissementPrincipalApres = getEtablissementByNumeroSite(sitePrincipalApres.getNumeroSite());
@@ -135,11 +135,11 @@ public abstract class Demenagement extends EvenementOrganisationInterneDeTraitem
 		return dateApres;
 	}
 
-	public Siege getSiegeAvant() {
+	public Domicile getSiegeAvant() {
 		return siegeAvant;
 	}
 
-	public Siege getSiegeApres() {
+	public Domicile getSiegeApres() {
 		return siegeApres;
 	}
 

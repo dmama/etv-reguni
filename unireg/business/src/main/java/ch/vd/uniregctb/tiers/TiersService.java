@@ -162,14 +162,14 @@ public interface TiersService {
 	List<RaisonSocialeHisto> getRaisonsSociales(@NotNull Entreprise entreprise);
 
 	/**
-	 * @return la liste des sièges, c'est-à-dire la liste des lieus successifs de domicile des établissements principaux
+	 * @return la liste des sièges de l'entreprise, c'est-à-dire la liste des lieus de domicile des établissements PRINCIPAUX successifs.
 	 */
-	List<SiegeHisto> getSieges(@NotNull Entreprise entreprise);
+	List<DomicileHisto> getSieges(@NotNull Entreprise entreprise);
 
 	/**
 	 * @return la liste des lieus successifs de domicile d'un établissement
 	 */
-	List<SiegeHisto> getSieges(@NotNull Etablissement etablissement);
+	List<DomicileHisto> getDomiciles(@NotNull Etablissement etablissement);
 
 	enum UpdateHabitantFlagResultat {
 		PAS_DE_CHANGEMENT,

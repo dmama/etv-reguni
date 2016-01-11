@@ -30,10 +30,10 @@
 		<display:column sortable="true" titleKey="label.commune.pays">
 			<c:choose>
 				<c:when test="${domicilesEtablissement.type == 'COMMUNE_CH' }">
-					<unireg:commune ofs="${domicilesEtablissement.noOfsSiege}" displayProperty="nomOfficielAvecCanton" date="${domicilesEtablissement.dateFin}"/>
+					<unireg:commune ofs="${domicilesEtablissement.getNumeroOfsAutoriteFiscale}" displayProperty="nomOfficielAvecCanton" date="${domicilesEtablissement.dateFin}"/>
 				</c:when>
 				<c:when test="${domicilesEtablissement.type == 'PAYS_HS' }">
-					<unireg:pays ofs="${domicilesEtablissement.noOfsSiege}" displayProperty="nomCourt" date="${domicilesEtablissement.dateFin}"/>
+					<unireg:pays ofs="${domicilesEtablissement.getNumeroOfsAutoriteFiscale}" displayProperty="nomCourt" date="${domicilesEtablissement.dateFin}"/>
 				</c:when>
 			</c:choose>
 		</display:column>

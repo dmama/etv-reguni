@@ -56,7 +56,7 @@ public class OrganisationRCEntTest {
 
 								.addAutreIdentifiant(OrganisationConstants.CLE_IDE, RegDate.get(2015, 4, 29), null, "CHE100057199")
 
-								.addSiege(new Siege(RegDate.get(2015, 4, 29), null, MockCommune.Leysin))
+								.addSiege(new Domicile(RegDate.get(2015, 4, 29), null, MockCommune.Leysin))
 
 								.addTypeDeSite(RegDate.get(2015, 4, 29), RegDate.get(2015, 5, 29), TypeDeSite.ETABLISSEMENT_PRINCIPAL)
 								.addTypeDeSite(RegDate.get(2015, 5, 30), null, TypeDeSite.ETABLISSEMENT_SECONDAIRE)
@@ -130,7 +130,7 @@ public class OrganisationRCEntTest {
 
 								.addAutreIdentifiant(OrganisationConstants.CLE_IDE, RegDate.get(2015, 4, 29), null, "CHE100052312")
 
-								.addSiege(new Siege(RegDate.get(2015, 4, 29), null, MockCommune.Lausanne))
+								.addSiege(new Domicile(RegDate.get(2015, 4, 29), null, MockCommune.Lausanne))
 
 								.addTypeDeSite(RegDate.get(2015, 4, 29), null, TypeDeSite.ETABLISSEMENT_SECONDAIRE)
 
@@ -181,7 +181,7 @@ public class OrganisationRCEntTest {
 
 								.addAutreIdentifiant(OrganisationConstants.CLE_IDE, RegDate.get(2015, 5, 30), null, "CHE12345678")
 
-								.addSiege(new Siege(RegDate.get(2015, 5, 30), null, MockCommune.Zurich))
+								.addSiege(new Domicile(RegDate.get(2015, 5, 30), null, MockCommune.Zurich))
 
 								.addTypeDeSite(RegDate.get(2015, 5, 30), null, TypeDeSite.ETABLISSEMENT_PRINCIPAL)
 

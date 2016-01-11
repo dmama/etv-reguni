@@ -16,11 +16,11 @@ import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.unireg.interfaces.common.Adresse;
 import ch.vd.unireg.interfaces.infra.mock.MockAdresse;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
+import ch.vd.unireg.interfaces.organisation.data.Domicile;
 import ch.vd.unireg.interfaces.organisation.data.DonneesRC;
 import ch.vd.unireg.interfaces.organisation.data.DonneesRegistreIDE;
 import ch.vd.unireg.interfaces.organisation.data.FonctionOrganisation;
 import ch.vd.unireg.interfaces.organisation.data.OrganisationHelper;
-import ch.vd.unireg.interfaces.organisation.data.Siege;
 import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 import ch.vd.unireg.interfaces.organisation.data.TypeDeSite;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
@@ -47,7 +47,7 @@ public class MockSiteOrganisation implements SiteOrganisation {
 	private final long numeroSite;
 	private final NavigableMap<RegDate, String> nom = new TreeMap<>();
 	private final NavigableMap<RegDate, String> ide = new TreeMap<>();
-	private final NavigableMap<RegDate, Pair<TypeAutoriteFiscale, Integer>> siege = new TreeMap<>();
+	private final NavigableMap<RegDate, Pair<TypeAutoriteFiscale, Integer>> domicile = new TreeMap<>();
 	private final NavigableMap<RegDate, TypeDeSite> typeDeSite = new TreeMap<>();
 	private final DonneesRegistreIDE donneesRegistreIDE;
 	private final DonneesRC donneesRC;
@@ -85,16 +85,16 @@ public class MockSiteOrganisation implements SiteOrganisation {
 		MockOrganisationHelper.addRangedData(enRemplacementDe, dateDebut, dateFin, nouveauEnRemplacementDe);
 	}
 
-	public void changeSiege(RegDate date, TypeAutoriteFiscale typeAutoriteFiscale, Integer ofs) {
+	public void changeDomicile(RegDate date, TypeAutoriteFiscale typeAutoriteFiscale, Integer ofs) {
 		Pair payload = null;
 		if (typeAutoriteFiscale != null && ofs != null) {
 			payload = Pair.of(typeAutoriteFiscale, ofs);
 		}
-		MockOrganisationHelper.changeRangedData(siege, date, payload);
+		MockOrganisationHelper.changeRangedData(domicile, date, payload);
 	}
 
 	public void addSiege(RegDate dateDebut, RegDate dateFin, TypeAutoriteFiscale typeAutoriteFiscale, Integer ofs) {
-		MockOrganisationHelper.addRangedData(siege, dateDebut, dateFin, Pair.of(typeAutoriteFiscale, ofs));
+		MockOrganisationHelper.addRangedData(domicile, dateDebut, dateFin, Pair.of(typeAutoriteFiscale, ofs));
 	}
 
 	public void addAdresse(MockAdresse adresse) {
@@ -146,13 +146,13 @@ public class MockSiteOrganisation implements SiteOrganisation {
 	}
 
 	@Override
-	public List<Siege> getSieges() {
-		final List<DateRanged<Pair<TypeAutoriteFiscale, Integer>>> brutto = MockOrganisationHelper.getHisto(siege);
-		final List<Siege> sieges = new ArrayList<>(brutto.size());
+	public List<Domicile> getDomiciles() {
+		final List<DateRanged<Pair<TypeAutoriteFiscale, Integer>>> brutto = MockOrganisationHelper.getHisto(domicile);
+		final List<Domicile> domiciles = new ArrayList<>(brutto.size());
 		for (DateRanged<Pair<TypeAutoriteFiscale, Integer>> ranged : brutto) {
-			sieges.add(new Siege(ranged.getDateDebut(), ranged.getDateFin(), ranged.getPayload().getLeft(), ranged.getPayload().getRight()));
+			domiciles.add(new Domicile(ranged.getDateDebut(), ranged.getDateFin(), ranged.getPayload().getLeft(), ranged.getPayload().getRight()));
 		}
-		return sieges;
+		return domiciles;
 	}
 
 	@Override
@@ -162,8 +162,8 @@ public class MockSiteOrganisation implements SiteOrganisation {
 
 	// Implémentation identique à la classe SiteOrganisation
 	@Override
-	public Siege getSiege(RegDate date) {
-		return OrganisationHelper.dateRangeForDate(getSieges(), date);	}
+	public Domicile getDomicile(RegDate date) {
+		return OrganisationHelper.dateRangeForDate(getDomiciles(), date);	}
 
 	@Override
 	public RegDate getDateInscriptionRC(RegDate date) {

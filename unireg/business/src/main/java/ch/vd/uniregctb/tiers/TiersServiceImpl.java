@@ -58,9 +58,9 @@ import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
 import ch.vd.unireg.interfaces.organisation.data.Capital;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
+import ch.vd.unireg.interfaces.organisation.data.Domicile;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
-import ch.vd.unireg.interfaces.organisation.data.Siege;
 import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdresseGenerique;
@@ -339,7 +339,7 @@ public class TiersServiceImpl implements TiersService {
 		final long noOrganisation = evt.getNoOrganisation();
 		final Organisation organisation = serviceOrganisationService.getOrganisationHistory(noOrganisation);
 		final SiteOrganisation sitePrincipal = organisation.getSitePrincipal(dateDebut).getPayload();
-		final Siege autoriteFiscale = sitePrincipal.getSiege(dateDebut);
+		final Domicile autoriteFiscale = sitePrincipal.getDomicile(dateDebut);
 
 		final Entreprise entreprise = createEntreprise(noOrganisation);
 		final Etablissement etablissement = createEtablissement(sitePrincipal.getNumeroSite());
@@ -5796,36 +5796,36 @@ public class TiersServiceImpl implements TiersService {
 	}
 
 	@Override
-	public List<SiegeHisto> getSieges(@NotNull Entreprise entreprise) {
-		final List<SiegeHisto> donneesCiviles = extractSiegesCiviles(entreprise);
-		final List<SiegeHisto> donneesFiscales = extractSiegesFiscaux(entreprise);
+	public List<DomicileHisto> getSieges(@NotNull Entreprise entreprise) {
+		final List<DomicileHisto> donneesCiviles = extractSiegesCiviles(entreprise);
+		final List<DomicileHisto> donneesFiscales = extractSiegesFiscaux(entreprise);
 
-		return DateRangeHelper.override(donneesCiviles, donneesFiscales, new GentilDateRangeExtendedAdapterCallback<SiegeHisto>());
+		return DateRangeHelper.override(donneesCiviles, donneesFiscales, new GentilDateRangeExtendedAdapterCallback<DomicileHisto>());
 	}
 
-	private List<SiegeHisto> extractSiegesCiviles(Entreprise entreprise) {
+	private List<DomicileHisto> extractSiegesCiviles(Entreprise entreprise) {
 		final Long numeroEntreprise = entreprise.getNumeroEntreprise();
 
 		if (numeroEntreprise != null) {
 			final Organisation organisation = serviceOrganisationService.getOrganisationHistory(numeroEntreprise);
-			final List<SiegeHisto> sieges = new ArrayList<>();
-			for (Siege siege: organisation.getSiegesPrincipaux()) {
-				sieges.add(new SiegeHisto(siege));
+			final List<DomicileHisto> sieges = new ArrayList<>();
+			for (Domicile siege: organisation.getSiegesPrincipaux()) {
+				sieges.add(new DomicileHisto(siege));
 			}
-			Collections.sort(sieges, new DateRangeComparator<SiegeHisto>());
+			Collections.sort(sieges, new DateRangeComparator<DomicileHisto>());
 			return sieges;
 		}
 		return Collections.emptyList();
 	}
 
-	private List<SiegeHisto> extractSiegesFiscaux(Entreprise entreprise) {
+	private List<DomicileHisto> extractSiegesFiscaux(Entreprise entreprise) {
 		final List<DateRanged<Etablissement>> principaux = getEtablissementsPrincipauxEntreprise(entreprise);
 		final List<DomicileEtablissement> domicileEtablissements = extractDomicileFromEtablissements(principaux);
-		final List<SiegeHisto> liste = new ArrayList<>(domicileEtablissements.size());
+		final List<DomicileHisto> liste = new ArrayList<>(domicileEtablissements.size());
 		for (DomicileEtablissement domicile: domicileEtablissements) {
-			liste.add(new SiegeHisto(domicile));
+			liste.add(new DomicileHisto(domicile));
 		}
-		Collections.sort(liste, new DateRangeComparator<SiegeHisto>());
+		Collections.sort(liste, new DateRangeComparator<DomicileHisto>());
 		return liste;
 	}
 
@@ -5858,34 +5858,34 @@ public class TiersServiceImpl implements TiersService {
 	}
 
 	@Override
-	public List<SiegeHisto> getSieges(@NotNull Etablissement etablissement) {
-		final List<SiegeHisto> donneesCiviles = extractSiegesCivilsEtablissement(etablissement);
-		final List<SiegeHisto> donneesFiscales = extractSiegesFiscauxEtablissement(etablissement);
+	public List<DomicileHisto> getDomiciles(@NotNull Etablissement etablissement) {
+		final List<DomicileHisto> donneesCiviles = extractDomicilesCivilsEtablissement(etablissement);
+		final List<DomicileHisto> donneesFiscales = extractDomicilesFiscauxEtablissement(etablissement);
 
-		return DateRangeHelper.override(donneesCiviles, donneesFiscales, new GentilDateRangeExtendedAdapterCallback<SiegeHisto>());
+		return DateRangeHelper.override(donneesCiviles, donneesFiscales, new GentilDateRangeExtendedAdapterCallback<DomicileHisto>());
 	}
 
-	private List<SiegeHisto> extractSiegesCivilsEtablissement(Etablissement etablissement) {
+	private List<DomicileHisto> extractDomicilesCivilsEtablissement(Etablissement etablissement) {
 		SiteOrganisation siteOrganisation = getSiteOrganisationPourEtablissement(etablissement);
 		if (siteOrganisation == null) {
 			return Collections.emptyList();
 		}
-		final List<SiegeHisto> domiciles = new ArrayList<>();
-		List<Siege> sieges = siteOrganisation.getSieges();
-		for (Siege siege : sieges) {
-			domiciles.add(new SiegeHisto(siege));
+		final List<DomicileHisto> domiciles = new ArrayList<>();
+		List<Domicile> sieges = siteOrganisation.getDomiciles();
+		for (Domicile domicile : sieges) {
+			domiciles.add(new DomicileHisto(domicile));
 		}
-		Collections.sort(domiciles, new DateRangeComparator<SiegeHisto>());
+		Collections.sort(domiciles, new DateRangeComparator<DomicileHisto>());
 		return domiciles;
 	}
 
-	private List<SiegeHisto> extractSiegesFiscauxEtablissement(Etablissement etablissement) {
+	private List<DomicileHisto> extractDomicilesFiscauxEtablissement(Etablissement etablissement) {
 		final Set<DomicileEtablissement> domicileEtablissement = etablissement.getDomiciles();
-		final List<SiegeHisto> domiciles = new ArrayList<>(domicileEtablissement.size());
+		final List<DomicileHisto> domiciles = new ArrayList<>(domicileEtablissement.size());
 		for (DomicileEtablissement domicile: domicileEtablissement) {
-			domiciles.add(new SiegeHisto(domicile));
+			domiciles.add(new DomicileHisto(domicile));
 		}
-		Collections.sort(domiciles, new DateRangeComparator<SiegeHisto>());
+		Collections.sort(domiciles, new DateRangeComparator<DomicileHisto>());
 		return domiciles;
 	}
 

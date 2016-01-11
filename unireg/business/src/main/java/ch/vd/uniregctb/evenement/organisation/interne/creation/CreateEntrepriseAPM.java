@@ -5,9 +5,9 @@ import java.util.List;
 
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
+import ch.vd.unireg.interfaces.organisation.data.Domicile;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
-import ch.vd.unireg.interfaces.organisation.data.Siege;
 import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationContext;
@@ -72,7 +72,7 @@ public class CreateEntrepriseAPM extends CreateEntreprise {
 		}
 	}
 
-	private void handleEtablissementsSecondaires(Siege siegePrincipal, SiteOrganisation site, EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) throws EvenementOrganisationException {
+	private void handleEtablissementsSecondaires(Domicile siegePrincipal, SiteOrganisation site, EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) throws EvenementOrganisationException {
 		long numeroSite = site.getNumeroSite();
 		Etablissement etablissement = getEtablissementByNumeroSite(numeroSite);
 		if (etablissement != null) {
@@ -81,7 +81,7 @@ public class CreateEntrepriseAPM extends CreateEntreprise {
 					              numeroSite, getNoOrganisation(), getOrganisation().getNom(getDateDeDebut())));
 		}
 
-		final Siege autoriteFiscale = site.getSiege(getDateEvt());
+		final Domicile autoriteFiscale = site.getDomicile(getDateEvt());
 		if (autoriteFiscale == null) {
 			throw new EvenementOrganisationException(
 					String.format(

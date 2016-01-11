@@ -14,7 +14,7 @@ import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
-public class Siege implements Serializable, CollatableDateRange, DateRangeLimitable<Siege> {
+public class Domicile implements Serializable, CollatableDateRange, DateRangeLimitable<Domicile> {
 
 	private static final long serialVersionUID = -3128523884534860892L;
 
@@ -23,22 +23,22 @@ public class Siege implements Serializable, CollatableDateRange, DateRangeLimita
 	private final TypeAutoriteFiscale typeAutoriteFiscale;
 	private final int noOfs;
 
-	public Siege(RegDate dateDebut, @Nullable RegDate dateFin, TypeAutoriteFiscale typeAutoriteFiscale, int noOfs) {
+	public Domicile(RegDate dateDebut, @Nullable RegDate dateFin, TypeAutoriteFiscale typeAutoriteFiscale, int noOfs) {
 		this.dateDebut = dateDebut;
 		this.dateFin = dateFin;
 		this.typeAutoriteFiscale = typeAutoriteFiscale;
 		this.noOfs = noOfs;
 	}
 
-	public Siege(RegDate dateDebut, @Nullable RegDate dateFin, Commune commune) {
+	public Domicile(RegDate dateDebut, @Nullable RegDate dateFin, Commune commune) {
 		this(dateDebut, dateFin, commune.isVaudoise() ? TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD : TypeAutoriteFiscale.COMMUNE_HC, commune.getNoOFS());
 	}
 
-	public Siege limitTo(RegDate dateDebut, RegDate dateFin) {
-		return new Siege(dateDebut == null ? this.dateDebut : dateDebut,
-		                 dateFin == null ? this.dateFin : dateFin,
-		                 this.typeAutoriteFiscale,
-		                 this.noOfs);
+	public Domicile limitTo(RegDate dateDebut, RegDate dateFin) {
+		return new Domicile(dateDebut == null ? this.dateDebut : dateDebut,
+		                    dateFin == null ? this.dateFin : dateFin,
+		                    this.typeAutoriteFiscale,
+		                    this.noOfs);
 	}
 
 	@Override
@@ -59,15 +59,15 @@ public class Siege implements Serializable, CollatableDateRange, DateRangeLimita
 	@Override
 	public boolean isCollatable(DateRange next) {
 		return DateRangeHelper.isCollatable(this, next)
-				&& next instanceof Siege
-				&& ((Siege) next).typeAutoriteFiscale == this.typeAutoriteFiscale
-				&& ((Siege) next).noOfs == this.noOfs;
+				&& next instanceof Domicile
+				&& ((Domicile) next).typeAutoriteFiscale == this.typeAutoriteFiscale
+				&& ((Domicile) next).noOfs == this.noOfs;
 	}
 
 	@Override
-	public Siege collate(DateRange next) {
+	public Domicile collate(DateRange next) {
 		Assert.isTrue(isCollatable(next));
-		return new Siege(this.dateDebut, next.getDateFin(), this.typeAutoriteFiscale, this.noOfs);
+		return new Domicile(this.dateDebut, next.getDateFin(), this.typeAutoriteFiscale, this.noOfs);
 	}
 
 	public TypeAutoriteFiscale getTypeAutoriteFiscale() {

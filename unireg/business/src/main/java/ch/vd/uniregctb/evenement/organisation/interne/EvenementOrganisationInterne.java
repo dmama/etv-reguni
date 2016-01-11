@@ -12,9 +12,9 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
+import ch.vd.unireg.interfaces.organisation.data.Domicile;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.OrganisationHelper;
-import ch.vd.unireg.interfaces.organisation.data.Siege;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalInformationComplementaire;
@@ -248,7 +248,7 @@ public abstract class EvenementOrganisationInterne {
 	@NotNull
 	protected MotifFor determineMotifOuvertureFor() throws EvenementOrganisationException {
 		final MotifFor motifOuverture;
-		Siege siegePrecedant = OrganisationHelper.siegePrincipalPrecedant(getOrganisation(), getDateEvt());
+		Domicile siegePrecedant = OrganisationHelper.siegePrincipalPrecedant(getOrganisation(), getDateEvt());
 		if (siegePrecedant == null) {
 			motifOuverture = MotifFor.DEBUT_EXPLOITATION;
 		} else {
@@ -499,7 +499,7 @@ public abstract class EvenementOrganisationInterne {
 	 * @param suivis       Le collector pour le suivi
 	 * @param dateDebut Date de début
 	 */
-	protected void createAddEtablissement(Long numeroSite, Siege autoriteFiscale, boolean principal, RegDate dateDebut, EvenementOrganisationSuiviCollector suivis) {
+	protected void createAddEtablissement(Long numeroSite, Domicile autoriteFiscale, boolean principal, RegDate dateDebut, EvenementOrganisationSuiviCollector suivis) {
 		Assert.notNull(numeroSite);
 		Assert.notNull(autoriteFiscale);
 		Assert.notNull(dateDebut);
@@ -539,7 +539,7 @@ public abstract class EvenementOrganisationInterne {
 	 * @param suivis       Le collector pour le suivi
 	 * @return le nouveau for fiscal principal
 	 */
-	protected ForFiscalPrincipalPM openForFiscalPrincipal(final RegDate dateOuverture, Siege autoriteFiscale,
+	protected ForFiscalPrincipalPM openForFiscalPrincipal(final RegDate dateOuverture, Domicile autoriteFiscale,
 	                                                      MotifRattachement rattachement, MotifFor motifOuverture, EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) {
 		Assert.notNull(motifOuverture, "Le motif d'ouverture est obligatoire sur un for principal dans le canton");
 
@@ -568,7 +568,7 @@ public abstract class EvenementOrganisationInterne {
 	 * @param suivis       Le collector pour le suivi
 	 * @return le nouveau for fiscal principal
 	 */
-	protected ForFiscalSecondaire openForFiscalSecondaire(final RegDate dateOuverture, Siege autoriteFiscale,
+	protected ForFiscalSecondaire openForFiscalSecondaire(final RegDate dateOuverture, Domicile autoriteFiscale,
 	                                                      MotifRattachement rattachement, MotifFor motifOuverture, EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) {
 		final Commune commune = context.getServiceInfra().getCommuneByNumeroOfs(autoriteFiscale.getNoOfs(), dateOuverture);
 		if (!commune.isPrincipale()) {
@@ -640,19 +640,19 @@ public abstract class EvenementOrganisationInterne {
 	 * <b>Note:</b> La méthode utilise les dates avant/après de l'événement interne en cours de traitement.
 	 * </p>
 	 * @param etablissement L'établissement concerné par le changement de domicile
-	 * @param siegeApres    Le siège d'où extrapoler le domicile.
+	 * @param domicileApres    Le siège d'où extrapoler le domicile.
 	 * @param dateAvant     La date du dernier jour du domicile précédant
 	 * @param dateApres     La date du premier jour du nouveau domicile
 	 * @param suivis        Le collector pour le suivi
 	 */
-	protected void changeDomicileEtablissement(@NotNull Etablissement etablissement, @NotNull Siege siegeApres, @NotNull RegDate dateAvant, @NotNull RegDate dateApres, EvenementOrganisationSuiviCollector suivis) {
+	protected void changeDomicileEtablissement(@NotNull Etablissement etablissement, @NotNull Domicile domicileApres, @NotNull RegDate dateAvant, @NotNull RegDate dateApres, EvenementOrganisationSuiviCollector suivis) {
 		final DomicileEtablissement domicilePrecedant = DateRangeHelper.rangeAt(etablissement.getSortedDomiciles(false), dateApres);
 		context.getTiersService().closeDomicileEtablissement(domicilePrecedant, dateAvant);
-		context.getTiersService().addDomicileEtablissement(etablissement, siegeApres.getTypeAutoriteFiscale(),
-		                                                   siegeApres.getNoOfs(), dateApres, null);
+		context.getTiersService().addDomicileEtablissement(etablissement, domicileApres.getTypeAutoriteFiscale(),
+		                                                   domicileApres.getNoOfs(), dateApres, null);
 
 		Commune communePrecedante = context.getServiceInfra().getCommuneByNumeroOfs(domicilePrecedant.getNumeroOfsAutoriteFiscale(), dateAvant);
-		Commune nouvelleCommune = context.getServiceInfra().getCommuneByNumeroOfs(siegeApres.getNoOfs(), dateApres);
+		Commune nouvelleCommune = context.getServiceInfra().getCommuneByNumeroOfs(domicileApres.getNoOfs(), dateApres);
 
 		suivis.addSuivi(
 		           String.format("Changement du domicile de l'établissement no %s (civil: %s) de %s (civil: %s) vers %s (civil: %s).",

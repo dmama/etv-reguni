@@ -5,7 +5,7 @@ import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.common.Annulable;
-import ch.vd.uniregctb.tiers.SiegeHisto;
+import ch.vd.uniregctb.tiers.DomicileHisto;
 import ch.vd.uniregctb.tiers.Source;
 import ch.vd.uniregctb.tiers.Sourced;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
@@ -20,7 +20,7 @@ public class DomicileEtablissementView implements Sourced<Source>, DateRange, An
 	private final RegDate dateFin;
 	private final Source source;
 
-	public DomicileEtablissementView(SiegeHisto domicile) {
+	public DomicileEtablissementView(DomicileHisto domicile) {
 		this.id = null;
 		this.annule = false;
 		this.typeAutoriteFiscale = domicile.getTypeAutoriteFiscale();
