@@ -1325,7 +1325,7 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 			assertNullOrNotNull(checkTaxSystems, pm.getTaxSystemsVD(), "taxSystemsVD");
 			assertNullOrNotNull(checkTaxSystems, pm.getTaxSystemsCH(), "taxSystemsCH");
 			assertNullOrNotNull(checkLegalSeats, pm.getLegalSeats(), "legalSeats");
-			assertNullOrNotNull(checkBusinessYears, pm.getLegalSeats(), "businessYears");
+			assertNullOrNotNull(checkBusinessYears, pm.getBusinessYears(), "businessYears");
 		}
 
 		if (tiers instanceof NaturalPerson) {
