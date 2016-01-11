@@ -760,7 +760,22 @@
 			</xs:enumeration>
 			<xs:enumeration value="REAL_ESTATE_COMPANY">
 				<xs:annotation>
-					<xs:documentation>Société immobilière.</xs:documentation>
+					<xs:documentation>Société immobilière ordinaire.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="SUBSIDIZED_REAL_ESTATE_COMPANY">
+				<xs:annotation>
+					<xs:documentation>Société immobilière subventionnée.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="TENANT_SHAREHOLDERS_REAL_ESTATE_COMPANY">
+				<xs:annotation>
+					<xs:documentation>Société immobilière d'actionnaires-locataires.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="ASSOCIATION_FOUNDATION_REAL_ESTATE_COMPANY">
+				<xs:annotation>
+					<xs:documentation>APM Société immobilière subventionnée.</xs:documentation>
 				</xs:annotation>
 			</xs:enumeration>
 		</xs:restriction>
