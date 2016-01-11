@@ -40,7 +40,7 @@ public class ForFiscalPrincipalPMValidator extends ForFiscalPrincipalValidator<F
 		final Set<GenreImpot> allowed = EnumSet.of(GenreImpot.BENEFICE_CAPITAL);
 		final ContribuableImpositionPersonnesMorales cipm = forFiscal.getTiers();
 		if (cipm instanceof Entreprise) {
-			final List<DateRange> nonSP = tiersService.getPeriodesNonSocieteDePersonnes((Entreprise) cipm);
+			final List<DateRange> nonSP = tiersService.getPeriodesNonSocieteDePersonnesNiIndividuelle((Entreprise) cipm);
 			if (!DateRangeHelper.intersect(forFiscal, nonSP)) {
 				// ok, le for est complètement dans une zone dans laquelle on ne peut pas dire avec
 				// certitude que l'entreprise n'est pas une société de personnes : on autorise les deux genres d'impôt

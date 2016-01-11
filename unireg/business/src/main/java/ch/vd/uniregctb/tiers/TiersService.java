@@ -1651,9 +1651,9 @@ public interface TiersService {
      * nous pouvons fournir les périodes connues pendant lesquelles on est sûr qu'elle n'était pas dans ce cas, pour au moins ne relâcher certaines
      * contraintes qu'en dehors de ces périodes...
      * @param entreprise une entreprise
-     * @return la liste des périodes (triées, non chevauchantes) pendant lesquelles on est certain que la société n'est pas une société de personnes (= SNC, SC)
+     * @return la liste des périodes (triées, non chevauchantes) pendant lesquelles on est certain que la société n'est pas une société de personnes (= SNC, SC) ni individuelle
      */
-    List<DateRange> getPeriodesNonSocieteDePersonnes(Entreprise entreprise);
+    List<DateRange> getPeriodesNonSocieteDePersonnesNiIndividuelle(Entreprise entreprise);
 
     /**
      * Permet de récuperer touts les contribuables ayant un lien d'au plus 5 ans avec le contribuable dont l'id est passéen paramètre
