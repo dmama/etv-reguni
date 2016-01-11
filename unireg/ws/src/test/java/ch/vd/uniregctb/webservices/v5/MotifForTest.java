@@ -1,5 +1,8 @@
 package ch.vd.uniregctb.webservices.v5;
 
+import java.util.EnumSet;
+import java.util.Set;
+
 import org.junit.Test;
 
 import ch.vd.unireg.xml.party.taxresidence.v2.LiabilityChangeReason;
@@ -12,7 +15,11 @@ import static org.junit.Assert.assertNull;
 public class MotifForTest extends EnumTest {
 
 	private static ch.vd.uniregctb.type.MotifFor[] buildAllowedCoreMotifsFor() {
-		return ch.vd.uniregctb.type.MotifFor.values();
+		// tous les motifs actuels n'existent pas forcément dans le mapping de la version 5
+		final Set<MotifFor> set = EnumSet.complementOf(EnumSet.of(ch.vd.uniregctb.type.MotifFor.CESSATION_ACTIVITE,
+		                                                          ch.vd.uniregctb.type.MotifFor.FUSION_ENTREPRISES,
+		                                                          ch.vd.uniregctb.type.MotifFor.FAILLITE));
+		return set.toArray(new ch.vd.uniregctb.type.MotifFor[set.size()]);
 	}
 
 	@Test
@@ -55,5 +62,10 @@ public class MotifForTest extends EnumTest {
 		assertEquals(LiabilityChangeReason.END_WITHHOLDING_ACTIVITY, EnumHelper.coreToWeb(MotifFor.FIN_PRESTATION_IS));
 		assertEquals(LiabilityChangeReason.END_ACTIVITY_MERGER_BANKRUPTCY, EnumHelper.coreToWeb(MotifFor.CESSATION_ACTIVITE_FUSION_FAILLITE));
 		assertEquals(LiabilityChangeReason.MOVE_HEADQUARTERS, EnumHelper.coreToWeb(MotifFor.DEMENAGEMENT_SIEGE));
+
+		// Pour des raisons de compatibilité ascendante, les nouveaux motifs sont traduits en "UNDETERMINED"
+		assertEquals(LiabilityChangeReason.UNDETERMINED, EnumHelper.coreToWeb(MotifFor.CESSATION_ACTIVITE));
+		assertEquals(LiabilityChangeReason.UNDETERMINED, EnumHelper.coreToWeb(MotifFor.FUSION_ENTREPRISES));
+		assertEquals(LiabilityChangeReason.UNDETERMINED, EnumHelper.coreToWeb(MotifFor.FAILLITE));
 	}
 }

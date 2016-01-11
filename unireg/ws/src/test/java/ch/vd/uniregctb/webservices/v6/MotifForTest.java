@@ -2,7 +2,7 @@ package ch.vd.uniregctb.webservices.v6;
 
 import org.junit.Test;
 
-import ch.vd.unireg.xml.party.taxresidence.v2.LiabilityChangeReason;
+import ch.vd.unireg.xml.party.taxresidence.v3.LiabilityChangeReason;
 import ch.vd.uniregctb.type.MotifFor;
 
 import static org.junit.Assert.assertEquals;
@@ -55,5 +55,8 @@ public class MotifForTest extends EnumTest {
 		assertEquals(LiabilityChangeReason.END_WITHHOLDING_ACTIVITY, EnumHelper.coreToWeb(MotifFor.FIN_PRESTATION_IS));
 		assertEquals(LiabilityChangeReason.END_ACTIVITY_MERGER_BANKRUPTCY, EnumHelper.coreToWeb(MotifFor.CESSATION_ACTIVITE_FUSION_FAILLITE));
 		assertEquals(LiabilityChangeReason.MOVE_HEADQUARTERS, EnumHelper.coreToWeb(MotifFor.DEMENAGEMENT_SIEGE));
+		assertEquals(LiabilityChangeReason.END_ACTIVITY, EnumHelper.coreToWeb(MotifFor.CESSATION_ACTIVITE));
+		assertEquals(LiabilityChangeReason.CORPORATION_MERGER, EnumHelper.coreToWeb(MotifFor.FUSION_ENTREPRISES));
+		assertEquals(LiabilityChangeReason.BANKRUPTCY, EnumHelper.coreToWeb(MotifFor.FAILLITE));
 	}
 }
