@@ -99,6 +99,27 @@
 	</xs:complexType>
 
 	<!-- -->
+	<!-- Evénement fiscal d'envoi d'une lettre de bienvenue -->
+	<!-- -->
+
+	<xs:complexType name="envoiLettreBienvenue">
+		<xs:annotation>
+			<xs:appinfo>
+				<jxb:class>
+					<jxb:javadoc>Evénement fiscal envoyé parallèlement à une lettre de bienvenue.</jxb:javadoc>
+				</jxb:class>
+			</xs:appinfo>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="evenementFiscalType">
+				<xs:sequence>
+					<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax" />
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<!-- -->
 	<!-- Les événements fiscaux autour des régimes fiscaux -->
 	<!-- -->
 
@@ -260,6 +281,86 @@
 		</xs:annotation>
 		<xs:complexContent>
 			<xs:extension base="evenementFiscalAllegementFiscalType">
+				<xs:sequence>
+					<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax" />
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<!-- -->
+	<!-- Les événements fiscaux autour des flags entreprises -->
+	<!-- -->
+
+	<xs:complexType name="evenementFiscalFlagEntrepriseType" abstract="true">
+		<xs:annotation>
+			<xs:appinfo>
+				<jxb:class>
+					<jxb:javadoc>Base des événements fiscaux envoyés en cas de changement dans les flags des entreprises.</jxb:javadoc>
+				</jxb:class>
+			</xs:appinfo>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="evenementFiscalType">
+				<xs:sequence>
+					<xs:element name="typeFlag" type="corporation:corporationFlagTypeType">
+						<xs:annotation>
+							<xs:appinfo>
+								<jxb:property>
+									<jxb:javadoc>Le type de flag concerné.</jxb:javadoc>
+								</jxb:property>
+							</xs:appinfo>
+						</xs:annotation>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="ouvertureFlagEntrepriseType">
+		<xs:annotation>
+			<xs:appinfo>
+				<jxb:class>
+					<jxb:javadoc>Evénement fiscal envoyé en cas d'ouverture d'un nouveau flag sur une entreprise.</jxb:javadoc>
+				</jxb:class>
+			</xs:appinfo>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="evenementFiscalFlagEntrepriseType">
+				<xs:sequence>
+					<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax" />
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="fermetureFlagEntrepriseType">
+		<xs:annotation>
+			<xs:appinfo>
+				<jxb:class>
+					<jxb:javadoc>Evénement fiscal envoyé en cas à la fermeture (= introduction d'une date de fin de validité) d'un flag sur une entreprise.</jxb:javadoc>
+				</jxb:class>
+			</xs:appinfo>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="evenementFiscalFlagEntrepriseType">
+				<xs:sequence>
+					<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax" />
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="annulationFlagEntrepriseType">
+		<xs:annotation>
+			<xs:appinfo>
+				<jxb:class>
+					<jxb:javadoc>Evénement fiscal envoyé à l'annulation d'un flag sur une entreprise.</jxb:javadoc>
+				</jxb:class>
+			</xs:appinfo>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="evenementFiscalFlagEntrepriseType">
 				<xs:sequence>
 					<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax" />
 				</xs:sequence>
