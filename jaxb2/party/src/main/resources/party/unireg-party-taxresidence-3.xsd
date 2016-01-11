@@ -582,7 +582,8 @@
 			<xs:appinfo>
 				<jxb:class>
 					<jxb:javadoc>Cette classe contient les date de début et de fin d'une période d'imposition au rôle ordinaire d'un contribuable.
-						Note: une période d'imposition est toujours incluse dans une année fiscale (du 1er janvier au 31 décembre). Elle peut être plus courte ou égale, mais pas plus grande.
+						Note: une période d'imposition est toujours incluse dans une année fiscale (du 1er janvier au 31 décembre pour une personne physique/un ménage commun, ou
+						un exercice commercial pour une personne morale). Elle peut être plus courte ou égale, mais pas plus grande.
 					</jxb:javadoc>
 				</jxb:class>
 			</xs:appinfo>
