@@ -161,6 +161,7 @@ import ch.vd.uniregctb.type.TypeContribuable;
 import ch.vd.uniregctb.type.TypeDocument;
 import ch.vd.uniregctb.type.TypeDroitAcces;
 import ch.vd.uniregctb.type.TypeEtatDeclaration;
+import ch.vd.uniregctb.type.TypeFlagEntreprise;
 import ch.vd.uniregctb.type.TypePermis;
 import ch.vd.uniregctb.webservices.common.UserLogin;
 import ch.vd.uniregctb.xml.ServiceException;
@@ -3243,6 +3244,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 				addCapitalEntreprise(entreprise, date(2000, 3, 1), date(2009, 12, 31), new MontantMonetaire(1000L, "CHF"));
 				addCapitalEntreprise(entreprise, date(2010, 1, 1), date(2013, 5, 12), new MontantMonetaire(1100L, "CHF"));
 				addCapitalEntreprise(entreprise, date(2013, 5, 13), null, new MontantMonetaire(100000L, "CHF"));
+				addFlagEntreprise(entreprise, date(2010, 6, 2), RegDate.get(2013, 5, 26), TypeFlagEntreprise.UTILITE_PUBLIQUE);
 
 				addForPrincipal(entreprise, date(2000, 3, 1), MotifFor.DEBUT_EXPLOITATION, MockCommune.Geneve);
 				final ForFiscalSecondaire fs = addForSecondaire(entreprise, date(2005, 3, 1), MotifFor.DEBUT_EXPLOITATION, MockCommune.Cossonay.getNoOFS(), MotifRattachement.ETABLISSEMENT_STABLE);
@@ -3267,10 +3269,6 @@ public class BusinessWebServiceTest extends WebserviceTest {
 
 			Assert.assertEquals(date(2000, 3, 1), ch.vd.uniregctb.xml.DataHelper.xmlToCore(corp.getActivityStartDate()));
 			Assert.assertNull(corp.getActivityEndDate());
-
-			final RegDate today = RegDate.get();
-			Assert.assertEquals(DayMonth.get(6, 30).previousBefore(today), ch.vd.uniregctb.xml.DataHelper.xmlToCore(corp.getEndDateOfLastBusinessYear()));
-			Assert.assertEquals(DayMonth.get(6, 30).nextAfterOrEqual(today), ch.vd.uniregctb.xml.DataHelper.xmlToCore(corp.getEndDateOfNextBusinessYear()));
 
 			final List<TaxResidence> prnFors = corp.getMainTaxResidences();
 			Assert.assertNotNull(prnFors);
@@ -3350,6 +3348,35 @@ public class BusinessWebServiceTest extends WebserviceTest {
 				Assert.assertNull(lf.getDateTo());
 				Assert.assertNull(lf.getShortType());
 				Assert.assertEquals(FullLegalForm.LIMITED_LIABILITY_COMPANY, lf.getType());
+				Assert.assertEquals("Société à responsabilité limitée", lf.getLabel());
+			}
+
+			final RegDate today = RegDate.get();
+			final List<ch.vd.unireg.xml.party.corporation.v4.BusinessYear> bys = corp.getBusinessYears();
+			Assert.assertNotNull(bys);
+			final int nbExpectedExercices = today.year() - 2000 + (today.month() > 6 ? 1 : 0);
+			Assert.assertEquals(nbExpectedExercices, bys.size());
+			for (int i = 0 ; i < nbExpectedExercices ; ++ i) {
+				final ch.vd.unireg.xml.party.corporation.v4.BusinessYear by = bys.get(i);
+				Assert.assertNotNull(by);
+				if (i == 0) {
+					Assert.assertEquals(date(2000, 3, 1), ch.vd.uniregctb.xml.DataHelper.xmlToCore(by.getDateFrom()));
+				}
+				else {
+					Assert.assertEquals(date(2000 + i, 7, 1), ch.vd.uniregctb.xml.DataHelper.xmlToCore(by.getDateFrom()));
+				}
+				Assert.assertEquals(date(2001 + i, 6, 30), ch.vd.uniregctb.xml.DataHelper.xmlToCore(by.getDateTo()));
+			}
+
+			final List<ch.vd.unireg.xml.party.corporation.v4.CorporationFlag> flags = corp.getCorporationFlags();
+			Assert.assertNotNull(flags);
+			Assert.assertEquals(1, flags.size());
+			{
+				final ch.vd.unireg.xml.party.corporation.v4.CorporationFlag flag = flags.get(0);
+				Assert.assertNotNull(flag);
+				Assert.assertEquals(date(2010, 6, 2), ch.vd.uniregctb.xml.DataHelper.xmlToCore(flag.getDateFrom()));
+				Assert.assertEquals(date(2013, 5, 26), ch.vd.uniregctb.xml.DataHelper.xmlToCore(flag.getDateTo()));
+				Assert.assertEquals(ch.vd.unireg.xml.party.corporation.v4.CorporationFlagType.PUBLIC_INTEREST, flag.getType());
 			}
 		}
 	}

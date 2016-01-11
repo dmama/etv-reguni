@@ -260,6 +260,13 @@ public class Entreprise extends ContribuableImpositionPersonnesMorales {
 		return flags;
 	}
 
+	@Transient
+	public List<FlagEntreprise> getFlagsNonAnnulesTries() {
+		final List<FlagEntreprise> nonAnnules = AnnulableHelper.sansElementsAnnules(flags);
+		Collections.sort(nonAnnules, new DateRangeComparator<>());
+		return nonAnnules;
+	}
+
 	public void setFlags(Set<FlagEntreprise> flags) {
 		this.flags = flags;
 	}

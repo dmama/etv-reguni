@@ -884,6 +884,12 @@ public abstract class DataHelper {
 			case TAX_SYSTEMS:
 				results.add(TiersDAO.Parts.REGIMES_FISCAUX);
 				break;
+			case BUSINESS_YEARS:
+				results.add(TiersDAO.Parts.BOUCLEMENTS);
+				break;
+			case CORPORATION_FLAGS:
+			    results.add(TiersDAO.Parts.FLAGS);
+				break;
 			case BANK_ACCOUNTS:
 			case LEGAL_SEATS:
 			case EBILLING_STATUSES:

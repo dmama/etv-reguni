@@ -634,6 +634,54 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 			associate(session, capitaux, tiers, getter, setter);
 		}
 
+		if (parts != null && parts.contains(Parts.BOUCLEMENTS)) {
+			// on charge les bouclements en vrac
+			final List<Bouclement> bouclements = queryObjectsByIds("from Bouclement as b where b.entreprise.id in (:ids)", ids, session);
+
+			final TiersIdGetter<Bouclement> getter = new TiersIdGetter<Bouclement>() {
+				@Override
+				public Long getTiersId(Bouclement entity) {
+					return entity.getEntreprise().getId();
+				}
+			};
+
+			final EntitySetSetter<Bouclement> setter = new EntitySetSetter<Bouclement>() {
+				@Override
+				public void setEntitySet(Tiers tiers, Set<Bouclement> set) {
+					if (tiers instanceof Entreprise) {
+						((Entreprise) tiers).setBouclements(set);
+					}
+				}
+			};
+
+			// associations manuelles
+			associate(session, bouclements, tiers, getter, setter);
+		}
+
+		if (parts != null && parts.contains(Parts.FLAGS)) {
+			// on charge les flags en vrac
+			final List<FlagEntreprise> flags = queryObjectsByIds("from FlagEntreprise as fe where fe.entreprise.id in (:ids)", ids, session);
+
+			final TiersIdGetter<FlagEntreprise> getter = new TiersIdGetter<FlagEntreprise>() {
+				@Override
+				public Long getTiersId(FlagEntreprise entity) {
+					return entity.getEntreprise().getId();
+				}
+			};
+
+			final EntitySetSetter<FlagEntreprise> setter = new EntitySetSetter<FlagEntreprise>() {
+				@Override
+				public void setEntitySet(Tiers tiers, Set<FlagEntreprise> set) {
+					if (tiers instanceof Entreprise) {
+						((Entreprise) tiers).setFlags(set);
+					}
+				}
+			};
+
+			// associations manuelles
+			associate(session, flags, tiers, getter, setter);
+		}
+
 		return tiers;
 	}
 

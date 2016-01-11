@@ -14,7 +14,6 @@ import org.jetbrains.annotations.Nullable;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.DateRangeHelper;
-import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
@@ -35,6 +34,7 @@ import ch.vd.uniregctb.tiers.DonneesRegistreCommerce;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.Etablissement;
 import ch.vd.uniregctb.tiers.EtatEntreprise;
+import ch.vd.uniregctb.tiers.FlagEntreprise;
 import ch.vd.uniregctb.tiers.IdentificationEntreprise;
 import ch.vd.uniregctb.tiers.OrganisationNotFoundException;
 import ch.vd.uniregctb.tiers.RegimeFiscal;
@@ -44,6 +44,8 @@ import ch.vd.uniregctb.xml.Context;
 import ch.vd.uniregctb.xml.DataHelper;
 import ch.vd.uniregctb.xml.EnumHelper;
 import ch.vd.uniregctb.xml.ServiceException;
+import ch.vd.uniregctb.xml.party.v4.BusinessYearBuilder;
+import ch.vd.uniregctb.xml.party.v4.CorporationFlagBuilder;
 import ch.vd.uniregctb.xml.party.v4.TaxLighteningBuilder;
 
 public class CorporationStrategy extends TaxPayerStrategy<Corporation> {
@@ -62,23 +64,6 @@ public class CorporationStrategy extends TaxPayerStrategy<Corporation> {
 
 		final Entreprise entreprise = (Entreprise) from;
 		to.setName(context.tiersService.getRaisonSociale(entreprise));
-
-		final List<ExerciceCommercial> exercices = context.tiersService.getExercicesCommerciaux(entreprise);
-		final ExerciceCommercial current = DateRangeHelper.rangeAt(exercices, RegDate.get());
-		final ExerciceCommercial previous;
-		if (current == null) {
-			previous = exercices.isEmpty() ? null : exercices.get(exercices.size() - 1);
-		}
-		else {
-			previous = DateRangeHelper.rangeAt(exercices, current.getDateDebut().getOneDayBefore());
-		}
-
-		if (previous != null) {
-			to.setEndDateOfLastBusinessYear(DataHelper.coreToXMLv2(previous.getDateFin()));
-		}
-		if (current != null) {
-			to.setEndDateOfNextBusinessYear(DataHelper.coreToXMLv2(current.getDateFin()));
-		}
 
 		// L'exposition du numéro IDE
 		if (entreprise.isConnueAuCivil()) {
@@ -130,6 +115,14 @@ public class CorporationStrategy extends TaxPayerStrategy<Corporation> {
 
 		if (parts != null && parts.contains(PartyPart.TAX_LIGHTENINGS)) {
 			initAllegementsFiscaux(to, entreprise);
+		}
+
+		if (parts != null && parts.contains(PartyPart.BUSINESS_YEARS)) {
+			initExercicesCommerciaux(to, entreprise, context);
+		}
+
+		if (parts != null && parts.contains(PartyPart.CORPORATION_FLAGS)) {
+			initFlags(to, entreprise);
 		}
 	}
 
@@ -203,8 +196,12 @@ public class CorporationStrategy extends TaxPayerStrategy<Corporation> {
 					final LegalForm lf = new LegalForm();
 					lf.setDateFrom(DataHelper.coreToXMLv2(fl.getDateDebut()));
 					lf.setDateTo(DataHelper.coreToXMLv2(fl.getDateFin()));
-					lf.setShortType(EnumHelper.coreToXMLv4Short(fl.getPayload()));
-					lf.setType(EnumHelper.coreToXMLv4Full(fl.getPayload()));
+
+					final FormeLegale payload = fl.getPayload();
+					lf.setShortType(EnumHelper.coreToXMLv4Short(payload));
+					lf.setType(EnumHelper.coreToXMLv4Full(payload));
+					lf.setLabel(payload.getLibelle());
+
 					liste.add(lf);
 				}
 			}
@@ -224,6 +221,7 @@ public class CorporationStrategy extends TaxPayerStrategy<Corporation> {
 				lf.setDateTo(DataHelper.coreToXMLv2(data.getDateFin()));
 				lf.setShortType(null);
 				lf.setType(EnumHelper.coreToXMLv4(data.getPayload()));
+				lf.setLabel(data.getPayload().getLibelle());
 				liste.add(lf);
 			}
 		}
@@ -274,6 +272,20 @@ public class CorporationStrategy extends TaxPayerStrategy<Corporation> {
 		}
 	}
 
+	private void initExercicesCommerciaux(Corporation corporation, Entreprise entreprise, Context context) {
+		final List<ExerciceCommercial> exercices = context.tiersService.getExercicesCommerciaux(entreprise);
+		for (ExerciceCommercial ex : exercices) {
+			corporation.getBusinessYears().add(BusinessYearBuilder.newBusinessYear(ex));
+		}
+	}
+
+	private static void initFlags(Corporation corporation, Entreprise entreprise) {
+		final List<FlagEntreprise> flags = entreprise.getFlagsNonAnnulesTries();
+		for (FlagEntreprise flag : flags) {
+			corporation.getCorporationFlags().add(CorporationFlagBuilder.newFlag(flag));
+		}
+	}
+
 	@NotNull
 	private List<CorporationStatus> extractEtats(List<EtatEntreprise> etats) {
 		if (etats == null || etats.isEmpty()) {
@@ -302,8 +314,6 @@ public class CorporationStrategy extends TaxPayerStrategy<Corporation> {
 	protected void copyBase(Corporation to, Corporation from) {
 		super.copyBase(to, from);
 		to.setName(from.getName());
-		to.setEndDateOfLastBusinessYear(from.getEndDateOfLastBusinessYear());
-		to.setEndDateOfNextBusinessYear(from.getEndDateOfNextBusinessYear());
 		to.setUidNumbers(from.getUidNumbers());
 	}
 
@@ -334,6 +344,14 @@ public class CorporationStrategy extends TaxPayerStrategy<Corporation> {
 
 		if (parts != null && parts.contains(PartyPart.TAX_LIGHTENINGS)) {
 			copyColl(to.getTaxLightenings(), from.getTaxLightenings());
+		}
+
+		if (parts != null && parts.contains(PartyPart.BUSINESS_YEARS)) {
+			copyColl(to.getBusinessYears(), from.getBusinessYears());
+		}
+
+		if (parts != null && parts.contains(PartyPart.CORPORATION_FLAGS)) {
+			copyColl(to.getCorporationFlags(), from.getCorporationFlags());
 		}
 	}
 }

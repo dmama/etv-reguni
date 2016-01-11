@@ -8,9 +8,9 @@ public enum FormeJuridiqueEntreprise {
 	EI("Entreprise individuelle", "0101", TypeFormeJuridique.DROIT_PRIVE, false),
 	SNC("Société en nom collectif", "0103", TypeFormeJuridique.DROIT_PRIVE, false),
 	SC("Société en commandite", "0104", TypeFormeJuridique.DROIT_PRIVE, false),
-	SCA("Société en commandte par actions", "0105", TypeFormeJuridique.DROIT_PRIVE, false),
-	SA("Société anonyme (SA)", "0106", TypeFormeJuridique.DROIT_PRIVE, false),
-	SARL("Société à responsabilité limitée (SARL)", "0107", TypeFormeJuridique.DROIT_PRIVE, false),
+	SCA("Société en commandite par actions", "0105", TypeFormeJuridique.DROIT_PRIVE, false),
+	SA("Société anonyme", "0106", TypeFormeJuridique.DROIT_PRIVE, false),
+	SARL("Société à responsabilité limitée", "0107", TypeFormeJuridique.DROIT_PRIVE, false),
 	SCOOP("Société coopérative", "0108", TypeFormeJuridique.DROIT_PRIVE, false),
 	ASSOCIATION("Association", "0109", TypeFormeJuridique.DROIT_PRIVE, true),
 	FONDATION("Fondation", "0110", TypeFormeJuridique.DROIT_PRIVE, true),
@@ -67,7 +67,7 @@ public enum FormeJuridiqueEntreprise {
 	}
 
 	@NotNull
-	public String getLibellé() {
+	public String getLibelle() {
 		return libellé;
 	}
 

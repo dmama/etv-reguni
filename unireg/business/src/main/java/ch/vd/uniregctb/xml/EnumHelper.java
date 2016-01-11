@@ -10,6 +10,7 @@ import ch.vd.unireg.interfaces.civil.data.TypeEtatCivil;
 import ch.vd.unireg.interfaces.efacture.data.TypeEtatDestinataire;
 import ch.vd.unireg.interfaces.infra.data.TypeAffranchissement;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
+import ch.vd.unireg.xml.party.corporation.v4.CorporationFlagType;
 import ch.vd.unireg.xml.party.taxpayer.v4.ShortLegalForm;
 import ch.vd.uniregctb.avatar.TypeAvatar;
 import ch.vd.uniregctb.interfaces.model.CompteBancaire;
@@ -31,6 +32,7 @@ import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.StatutMenageCommun;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeEtatEntreprise;
+import ch.vd.uniregctb.type.TypeFlagEntreprise;
 import ch.vd.uniregctb.type.TypePermis;
 
 public abstract class EnumHelper {
@@ -2843,6 +2845,19 @@ public abstract class EnumHelper {
 			return ch.vd.unireg.xml.party.taxpayer.v4.FullLegalForm.SIMPLE_COMPANY;
 		default:
 			throw new IllegalArgumentException("Forme juridique inconnue : " + fj);
+		}
+	}
+
+	public static ch.vd.unireg.xml.party.corporation.v4.CorporationFlagType coreToXMLv4(TypeFlagEntreprise type) {
+		if (type == null) {
+			return null;
+		}
+
+		switch (type) {
+		case UTILITE_PUBLIQUE:
+			return CorporationFlagType.PUBLIC_INTEREST;
+		default:
+			throw new IllegalArgumentException("Type de flag inconnu : " + type);
 		}
 	}
 
