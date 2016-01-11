@@ -19,7 +19,7 @@
 		<property name="supportedMethodNames">
 			<set>
 				<value>getExercicesCommerciaux</value>
-				<value>getPeriodesNonSocieteDePersonnes</value>
+				<value>getPeriodesNonSocieteDePersonnesNiIndividuelle</value>
 				<value>getCategorieEntreprise</value>
 			</set>
 		</property>

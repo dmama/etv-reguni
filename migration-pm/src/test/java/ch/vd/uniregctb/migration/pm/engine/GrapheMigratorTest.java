@@ -33,6 +33,7 @@ import ch.vd.registre.base.validation.ValidationMessage;
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
+import ch.vd.unireg.interfaces.organisation.ServiceOrganisationRaw;
 import ch.vd.unireg.interfaces.organisation.data.Capital;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.interfaces.organisation.data.TypeDeCapital;
@@ -4277,6 +4278,64 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		}
 	}
 
+	/**
+	 * Cas des entreprises 17025, 63178 et 67113
+	 * Les formes juridiques migrées fiscalement sont toutes SNC, mais RCEnt nous dit EI... (problématique du genre d'impôt du for principal généré)
+	 */
+	@Test
+	public void testSncFiscaleEtEntrepriseIndividuelleCivile() throws Exception {
+
+		final long noEntreprise = 17025L;
+		final long noCantonalEntreprise = 101552826L;
+		final long noCantonalEtablissementPrincipal = 101552827L;
+		final RegDate dateChargementRCEnt = RegDate.get(2015, 12, 5);
+
+		final RegpmEntreprise e = EntrepriseMigratorTest.buildEntreprise(noEntreprise);
+		final RegDate dateDebut = RegDate.get(1986, 1, 1);
+
+		EntrepriseMigratorTest.addRaisonSociale(e, dateDebut, "Toto", null, null, false);
+		EntrepriseMigratorTest.addFormeJuridique(e, dateDebut, EntrepriseMigratorTest.createTypeFormeJuridique("S.N.C.", RegpmCategoriePersonneMorale.SP));
+		EntrepriseMigratorTest.addForPrincipalSuisse(e, dateDebut, RegpmTypeForPrincipal.SIEGE, Commune.ECHALLENS);
+		EntrepriseMigratorTest.addSiegeSuisse(e, dateDebut, Commune.ECHALLENS);
+		e.setNumeroCantonal(noCantonalEntreprise);
+		e.setNumeroIDE(EntrepriseMigratorTest.buildNumeroIDE("CHE", 123456788L));
+
+		// mise en place civile
+		organisationService.setUp(new MockServiceOrganisation() {
+			@Override
+			protected void init() {
+				final MockOrganisation org = addOrganisation(noCantonalEntreprise, dateChargementRCEnt, "Toto", FormeLegale.N_0101_ENTREPRISE_INDIVIDUELLE);
+				addNumeroIDE(org, "CHE123456788", dateChargementRCEnt, null);
+
+				final MockSiteOrganisation sitePrincipal = addSite(org, noCantonalEtablissementPrincipal, dateChargementRCEnt, null, null);
+				sitePrincipal.addSiege(dateChargementRCEnt, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Echallens.getNoOFS());
+				sitePrincipal.changeTypeDeSite(dateChargementRCEnt, TypeDeSite.ETABLISSEMENT_PRINCIPAL);
+			}
+		});
+
+		final MockGraphe graphe = new MockGraphe(Collections.singletonList(e),
+		                                         null,
+		                                         null);
+
+		activityManager.setup(ALL_ACTIVE);
+
+		final LoggedMessages lms = grapheMigrator.migrate(graphe);
+		Assert.assertNotNull(lms);
+
+		// vérification des données en base
+		doInUniregTransaction(true, status -> {
+			final Entreprise entreprise = uniregStore.getEntityFromDb(Entreprise.class, noEntreprise);
+			Assert.assertNotNull(entreprise);
+
+			final ForFiscalPrincipalPM ffp = entreprise.getDernierForFiscalPrincipal();
+			Assert.assertNotNull(ffp);
+			Assert.assertFalse(ffp.isAnnule());
+			Assert.assertEquals(dateDebut, ffp.getDateDebut());
+			Assert.assertNull(ffp.getDateFin());
+			Assert.assertEquals(GenreImpot.REVENU_FORTUNE, ffp.getGenreImpot());
+		});
+	}
+
 	@Test
 	public void testEntrepriseEtEtablissementConnusAuCivil() throws Exception {
 
@@ -4530,6 +4589,9 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		                                                                                                 RegDate.get(1900, 1, 1),
 		                                                                                                 RegDate.get(2008, 1, 1)));
 		this.activityManager.setup(activityManager);
+
+		// utilisation du véritable service rcent
+		organisationService.setUp(getBean(ServiceOrganisationRaw.class, "serviceOrganisationRCEnt"));
 
 		// lancement de la migration du graphe (de la même façon, en ce qui concerne la gestion des exception, que ce qui est fait dans le MigrationWorker)
 		LoggedMessages mr;
