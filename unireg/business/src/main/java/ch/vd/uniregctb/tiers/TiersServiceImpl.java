@@ -5501,16 +5501,33 @@ public class TiersServiceImpl implements TiersService {
 		evenementFiscalService.publierEvenementFiscalAnnulationRegimeFiscal(rf);
 	}
 
+	@Nullable
+	private static FlagEntreprise getDernierFlagEntreprise(Entreprise e) {
+		final List<FlagEntreprise> all = e.getFlagsNonAnnulesTries();
+		return all.isEmpty() ? null : all.get(all.size() - 1);
+	}
+
 	@Override
 	public FlagEntreprise addFlagEntreprise(Entreprise e, TypeFlagEntreprise type, RegDate dateDebut, @Nullable RegDate dateFin) {
-		// TODO [SIPM][FlagEntreprise] pour l'instant, on n'a aucune règle concernant les éventuelles incompatibilités entre flags...
-		return tiersDAO.addAndSave(e, new FlagEntreprise(type, dateDebut, dateFin));
+		final FlagEntreprise existing = getDernierFlagEntreprise(e);
+		if (existing != null && existing.getDateFin() == null) {
+			if (dateFin == null || dateFin.isAfter(existing.getDateDebut())) {
+				closeFlagEntreprise(existing, dateDebut.getOneDayBefore());
+			}
+		}
+
+		final FlagEntreprise flag = openFlagEntreprise(e, type, dateDebut);
+		if (dateFin != null) {
+			closeFlagEntreprise(flag, dateFin);
+		}
+		return flag;
 	}
 
 	@Override
 	public FlagEntreprise openFlagEntreprise(Entreprise e, TypeFlagEntreprise type, RegDate dateDebut) {
-		// TODO [SIPM][FlagEntreprise] pour l'instant, on n'a aucune règle concernant les éventuelles incompatibilités entre flags...
-		return tiersDAO.addAndSave(e, new FlagEntreprise(type, dateDebut, null));
+		final FlagEntreprise flag = tiersDAO.addAndSave(e, new FlagEntreprise(type, dateDebut, null));
+		// TODO [SIPM] envoi d'un événement fiscal
+		return flag;
 	}
 
 	@Override
@@ -5521,11 +5538,13 @@ public class TiersServiceImpl implements TiersService {
 			                                                  RegDateHelper.dateToDisplayString(flag.getDateDebut())));
 		}
 		flag.setDateFin(dateFin);
+		// TODO [SIPM] envoi d'un événement fiscal
 	}
 
 	@Override
 	public void annuleFlagEntreprise(FlagEntreprise flag) {
 		flag.setAnnule(true);
+		// TODO [SIPM] envoi d'un événement fiscal
 	}
 
 	@Override

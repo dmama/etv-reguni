@@ -80,7 +80,15 @@ public class EntrepriseValidator extends ContribuableImpositionPersonnesMoralesV
 			vr.merge(getValidationService().validate(flag));
 		}
 
-		// TODO [SIPM][FlagEntreprise] pour l'instant, on n'a aucune règle concernant les éventuelles incompatibilités entre flags...
+		// ... puis entre eux (les flags ne peuvent se chevaucher)
+		if (flags.size() > 1) {
+			final List<DateRange> overlaps = DateRangeHelper.overlaps(flags);
+			if (overlaps != null && !overlaps.isEmpty()) {
+				for (DateRange overlap : overlaps) {
+					vr.addError(String.format("La période %s est couverte par plusieurs spécificités fiscales", DateRangeHelper.toDisplayString(overlap)));
+				}
+			}
+		}
 
 		return vr;
 	}
