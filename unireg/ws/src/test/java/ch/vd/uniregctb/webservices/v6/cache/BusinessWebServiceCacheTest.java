@@ -1284,10 +1284,12 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 		boolean checkWithholdingTaxDeclarationPeriods = PartyPart.WITHHOLDING_TAXATION_PERIODS == p;
 		boolean checkEbillingStatuses = PartyPart.EBILLING_STATUSES == p;
 		boolean checkCorporationStatuses = PartyPart.CORPORATION_STATUSES == p;
+		boolean checkBusinessYears = PartyPart.BUSINESS_YEARS == p;
+		boolean checkCorporationFlags = PartyPart.CORPORATION_FLAGS == p;
 		Assert.isTrue(checkAddresses || checkTaxLiabilities || checkHouseholdMembers || checkBankAccounts || checkTaxDeclarations || checkTaxDeclarationsStatuses || checkTaxDeclarationsDeadlines
 				              || checkTaxResidences || checkVirtualTaxResidences || checkManagingTaxResidences || checkTaxationPeriods || checkRelationsBetweenParties || checkFamilyStatuses || checkCapitals
-				              || checkTaxLightenings || checkLegalForms || checkTaxSystems || checkLegalSeats || checkDebtorPeriodicities || checkImmovableProperties ||
-				              checkChildren || checkParents || checkWithholdingTaxDeclarationPeriods || checkEbillingStatuses || checkCorporationStatuses, "La partie [" + p + "] est inconnue");
+				              || checkTaxLightenings || checkLegalForms || checkTaxSystems || checkLegalSeats || checkDebtorPeriodicities || checkImmovableProperties || checkBusinessYears || checkCorporationFlags
+				              || checkChildren || checkParents || checkWithholdingTaxDeclarationPeriods || checkEbillingStatuses || checkCorporationStatuses, "La partie [" + p + "] est inconnue");
 
 		assertNullOrNotNull(checkAddresses, tiers.getMailAddresses(), "mailAddresses");
 		assertNullOrNotNull(checkAddresses, tiers.getResidenceAddresses(), "residenceAddresses");
@@ -1323,6 +1325,7 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 			assertNullOrNotNull(checkTaxSystems, pm.getTaxSystemsVD(), "taxSystemsVD");
 			assertNullOrNotNull(checkTaxSystems, pm.getTaxSystemsCH(), "taxSystemsCH");
 			assertNullOrNotNull(checkLegalSeats, pm.getLegalSeats(), "legalSeats");
+			assertNullOrNotNull(checkBusinessYears, pm.getLegalSeats(), "businessYears");
 		}
 
 		if (tiers instanceof NaturalPerson) {

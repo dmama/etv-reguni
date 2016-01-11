@@ -2,11 +2,11 @@ package ch.vd.uniregctb.webservices.v6;
 
 import org.junit.Test;
 
-import ch.vd.unireg.xml.party.taxresidence.v2.IndividualTaxLiabilityType;
-import ch.vd.unireg.xml.party.taxresidence.v2.TaxLiabilityReason;
-import ch.vd.unireg.xml.party.taxresidence.v2.TaxType;
-import ch.vd.unireg.xml.party.taxresidence.v2.TaxationAuthorityType;
-import ch.vd.unireg.xml.party.taxresidence.v2.TaxationMethod;
+import ch.vd.unireg.xml.party.taxresidence.v3.IndividualTaxLiabilityType;
+import ch.vd.unireg.xml.party.taxresidence.v3.TaxLiabilityReason;
+import ch.vd.unireg.xml.party.taxresidence.v3.TaxType;
+import ch.vd.unireg.xml.party.taxresidence.v3.TaxationAuthorityType;
+import ch.vd.unireg.xml.party.taxresidence.v3.TaxationMethod;
 import ch.vd.uniregctb.metier.assujettissement.TypeAssujettissement;
 import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.ModeImposition;
