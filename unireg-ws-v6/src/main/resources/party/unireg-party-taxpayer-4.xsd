@@ -3,13 +3,13 @@
 <xs:schema targetNamespace="http://www.vd.ch/fiscalite/unireg/party/taxpayer/4" elementFormDefault="qualified"
 		   xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:taxpayer="http://www.vd.ch/fiscalite/unireg/party/taxpayer/4"
 		   xmlns:common="http://www.vd.ch/fiscalite/unireg/common/2" xmlns:party="http://www.vd.ch/fiscalite/unireg/party/party/4"
-		   xmlns:taxresidence="http://www.vd.ch/fiscalite/unireg/party/taxresidence/2" xmlns:immo="http://www.vd.ch/fiscalite/unireg/party/immovableproperty/2"
+		   xmlns:taxresidence="http://www.vd.ch/fiscalite/unireg/party/taxresidence/3" xmlns:immo="http://www.vd.ch/fiscalite/unireg/party/immovableproperty/2"
 		   xmlns:ebilling="http://www.vd.ch/fiscalite/unireg/party/ebilling/1"
 		   xmlns:jxb="http://java.sun.com/xml/ns/jaxb" jxb:version="2.0">
 
 	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/common/2" schemaLocation="../unireg-common-2.xsd" />
 	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/party/party/4" schemaLocation="unireg-party-4.xsd" />
-	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/party/taxresidence/2" schemaLocation="unireg-party-taxresidence-2.xsd" />
+	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/party/taxresidence/3" schemaLocation="unireg-party-taxresidence-3.xsd" />
 	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/party/immovableproperty/2" schemaLocation="unireg-party-immovableproperty-2.xsd" />
 	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/party/ebilling/1" schemaLocation="unireg-party-ebilling-1.xsd" />
 

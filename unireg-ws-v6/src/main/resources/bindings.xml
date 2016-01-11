@@ -225,9 +225,9 @@
 		</jxb:bindings>
 	</jxb:bindings>
 
-	<jxb:bindings schemaLocation="party/unireg-party-taxresidence-2.xsd">
+	<jxb:bindings schemaLocation="party/unireg-party-taxresidence-3.xsd">
 		<jxb:schemaBindings>
-			<jxb:package name="ch.vd.unireg.xml.party.taxresidence.v2" />
+			<jxb:package name="ch.vd.unireg.xml.party.taxresidence.v3" />
 		</jxb:schemaBindings>
 		<jxb:bindings node="//xs:complexType[@name='taxResidenceType']">
 			<inheritance:implements>ch.vd.unireg.xml.common.v2.DateRange</inheritance:implements>
@@ -249,7 +249,7 @@
 			<inheritance:implements>ch.vd.unireg.xml.common.v2.DateRange</inheritance:implements>
 		</jxb:bindings>
 		<jxb:bindings>
-			<namespace:prefix name="taxresid-2" />
+			<namespace:prefix name="taxresid-3" />
 		</jxb:bindings>
 	</jxb:bindings>
 
