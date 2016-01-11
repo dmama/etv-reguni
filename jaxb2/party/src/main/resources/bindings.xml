@@ -592,6 +592,34 @@
 		</jxb:bindings>
 	</jxb:bindings>
 
+	<jxb:bindings schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/party/unireg-party-taxresidence-3.xsd">
+		<jxb:schemaBindings>
+			<jxb:package name="ch.vd.unireg.xml.party.taxresidence.v3" />
+		</jxb:schemaBindings>
+		<jxb:bindings node="//xs:complexType[@name='taxResidenceType']">
+			<inheritance:implements>ch.vd.unireg.xml.common.v2.DateRange</inheritance:implements>
+			<inheritance:implements>ch.vd.unireg.xml.common.v2.Cancelable</inheritance:implements>
+		</jxb:bindings>
+		<jxb:bindings node="//xs:complexType[@name='managingTaxResidenceType']">
+			<inheritance:implements>ch.vd.unireg.xml.common.v2.DateRange</inheritance:implements>
+		</jxb:bindings>
+		<jxb:bindings node="//xs:complexType[@name='simplifiedTaxLiabilityType']">
+			<inheritance:implements>ch.vd.unireg.xml.common.v2.DateRange</inheritance:implements>
+		</jxb:bindings>
+		<jxb:bindings node="//xs:complexType[@name='taxationPeriodType']">
+			<inheritance:implements>ch.vd.unireg.xml.common.v2.DateRange</inheritance:implements>
+		</jxb:bindings>
+		<jxb:bindings node="//xs:complexType[@name='taxLiabilityType']">
+			<inheritance:implements>ch.vd.unireg.xml.common.v2.DateRange</inheritance:implements>
+		</jxb:bindings>
+		<jxb:bindings node="//xs:complexType[@name='withholdingTaxationPeriodType']">
+			<inheritance:implements>ch.vd.unireg.xml.common.v2.DateRange</inheritance:implements>
+		</jxb:bindings>
+		<jxb:bindings>
+			<namespace:prefix name="taxresid-3" />
+		</jxb:bindings>
+	</jxb:bindings>
+
 	<jxb:bindings schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/party/unireg-party-withholding-1.xsd">
 		<jxb:schemaBindings>
 			<jxb:package name="ch.vd.unireg.xml.party.withholding.v1" />

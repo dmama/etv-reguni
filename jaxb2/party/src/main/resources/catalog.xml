@@ -41,6 +41,7 @@
 	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/party/unireg-party-taxpayer-4.xsd" uri="party/unireg-party-taxpayer-4.xsd"/>
 	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/party/unireg-party-taxresidence-1.xsd" uri="party/unireg-party-taxresidence-1.xsd"/>
 	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/party/unireg-party-taxresidence-2.xsd" uri="party/unireg-party-taxresidence-2.xsd"/>
+	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/party/unireg-party-taxresidence-3.xsd" uri="party/unireg-party-taxresidence-3.xsd"/>
 	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/party/unireg-party-withholding-1.xsd" uri="party/unireg-party-withholding-1.xsd"/>
 
 	<delegateSystem systemIdStartString="http://ressources.etat-de-vaud.ch/fiscalite/registre/" catalog="../../../../common/src/main/resources/catalog.xml" />
