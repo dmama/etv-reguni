@@ -38,18 +38,19 @@
 		<value>ch.vd.uniregctb.tiers.AllegementFiscal</value>
 		<value>ch.vd.uniregctb.tiers.AutreCommunaute</value>
 		<value>ch.vd.uniregctb.tiers.Bouclement</value>
-		<value>ch.vd.uniregctb.tiers.CapitalEntreprise</value>
+		<value>ch.vd.uniregctb.tiers.CapitalFiscalEntreprise</value>
 		<value>ch.vd.uniregctb.tiers.CollectiviteAdministrative</value>
 		<value>ch.vd.uniregctb.tiers.Contribuable</value>
 		<value>ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesMorales</value>
 		<value>ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques</value>
 		<value>ch.vd.uniregctb.tiers.DebiteurPrestationImposable</value>
 		<value>ch.vd.uniregctb.tiers.DomicileEtablissement</value>
-		<value>ch.vd.uniregctb.tiers.DonneesRegistreCommerce</value>
+		<value>ch.vd.uniregctb.tiers.DonneeCivileEntreprise</value>
 		<value>ch.vd.uniregctb.tiers.Entreprise</value>
 		<value>ch.vd.uniregctb.tiers.Etablissement</value>
 		<value>ch.vd.uniregctb.tiers.EtatEntreprise</value>
 		<value>ch.vd.uniregctb.tiers.FlagEntreprise</value>
+		<value>ch.vd.uniregctb.tiers.FormeJuridiqueFiscaleEntreprise</value>
 		<value>ch.vd.uniregctb.tiers.ForFiscal</value>
 		<value>ch.vd.uniregctb.tiers.ForFiscalAutreImpot</value>
 		<value>ch.vd.uniregctb.tiers.ForFiscalRevenuFortune</value>
@@ -65,6 +66,7 @@
 		<value>ch.vd.uniregctb.tiers.Mandat</value>
 		<value>ch.vd.uniregctb.tiers.MenageCommun</value>
 		<value>ch.vd.uniregctb.tiers.PersonnePhysique</value>
+		<value>ch.vd.uniregctb.tiers.RaisonSocialeFiscaleEntreprise</value>
 		<value>ch.vd.uniregctb.tiers.RapportEntreTiers</value>
 		<value>ch.vd.uniregctb.tiers.AppartenanceMenage</value>
 		<value>ch.vd.uniregctb.tiers.Parente</value>

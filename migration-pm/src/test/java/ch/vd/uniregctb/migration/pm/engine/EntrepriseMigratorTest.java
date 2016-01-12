@@ -8,8 +8,10 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.mutable.MutableLong;
@@ -108,9 +110,10 @@ import ch.vd.uniregctb.migration.pm.utils.DatesParticulieres;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.tiers.AllegementFiscal;
 import ch.vd.uniregctb.tiers.Bouclement;
+import ch.vd.uniregctb.tiers.CapitalFiscalEntreprise;
 import ch.vd.uniregctb.tiers.DecisionAci;
 import ch.vd.uniregctb.tiers.DomicileEtablissement;
-import ch.vd.uniregctb.tiers.DonneesRegistreCommerce;
+import ch.vd.uniregctb.tiers.DonneeCivileEntreprise;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.Etablissement;
 import ch.vd.uniregctb.tiers.EtatEntreprise;
@@ -118,7 +121,9 @@ import ch.vd.uniregctb.tiers.FlagEntreprise;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipalPM;
+import ch.vd.uniregctb.tiers.FormeJuridiqueFiscaleEntreprise;
 import ch.vd.uniregctb.tiers.Mandat;
+import ch.vd.uniregctb.tiers.RaisonSocialeFiscaleEntreprise;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.tiers.RegimeFiscal;
 import ch.vd.uniregctb.tiers.Remarque;
@@ -4211,17 +4216,27 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 			final Entreprise entreprise = uniregStore.getEntityFromDb(Entreprise.class, noEntreprise);
 			Assert.assertNotNull(entreprise);
 
-			final Set<DonneesRegistreCommerce> donneesRC = entreprise.getDonneesRC();
-			Assert.assertNotNull(donneesRC);
-			Assert.assertEquals(1, donneesRC.size());
+			final Map<Class, DonneeCivileEntreprise> map = entreprise.getDonneesCiviles().stream()
+					.collect(Collectors.toMap(Object::getClass, Function.identity()));
+			Assert.assertNotNull(map);
+			Assert.assertEquals(2, map.size());
+			Assert.assertTrue(map.containsKey(RaisonSocialeFiscaleEntreprise.class));
+			Assert.assertTrue(map.containsKey(FormeJuridiqueFiscaleEntreprise.class));
+			Assert.assertFalse(map.containsKey(CapitalFiscalEntreprise.class));
 
-			final DonneesRegistreCommerce drc = donneesRC.iterator().next();
-			Assert.assertNotNull(drc);
-			Assert.assertFalse(drc.isAnnule());
-			Assert.assertEquals(RegDate.get(2007, 6, 14), drc.getDateDebut());
-			Assert.assertNull(drc.getDateFin());
-			Assert.assertEquals(FormeJuridiqueEntreprise.SARL, drc.getFormeJuridique());
-			Assert.assertEquals("Ma société à moi tout seul vraiment", drc.getRaisonSociale());
+			final RaisonSocialeFiscaleEntreprise rs = (RaisonSocialeFiscaleEntreprise) map.get(RaisonSocialeFiscaleEntreprise.class);
+			Assert.assertNotNull(rs);
+			Assert.assertFalse(rs.isAnnule());
+			Assert.assertEquals(RegDate.get(2007, 6, 14), rs.getDateDebut());
+			Assert.assertNull(rs.getDateFin());
+			Assert.assertEquals("Ma société à moi tout seul vraiment", rs.getRaisonSociale());
+
+			final FormeJuridiqueFiscaleEntreprise fj = (FormeJuridiqueFiscaleEntreprise) map.get(FormeJuridiqueFiscaleEntreprise.class);
+			Assert.assertNotNull(fj);
+			Assert.assertFalse(fj.isAnnule());
+			Assert.assertEquals(RegDate.get(2007, 6, 14), fj.getDateDebut());
+			Assert.assertNull(fj.getDateFin());
+			Assert.assertEquals(FormeJuridiqueEntreprise.SARL, fj.getFormeJuridique());
 
 			// pas d'établissement principal généré
 			final List<Etablissement> etablissements = uniregStore.getEntitiesFromDb(Etablissement.class, null);
@@ -4234,10 +4249,11 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 			final List<MigrationResultCollector.Message> messages = mr.getMessages().get(LogCategory.DONNEES_CIVILES_REGPM);
 			Assert.assertNotNull(messages);
 			final List<String> textes = messages.stream().map(msg -> msg.text).collect(Collectors.toList());
-			Assert.assertEquals(3, textes.size());
+			Assert.assertEquals(4, textes.size());
 			Assert.assertEquals("Raison sociale " + raisonSociale.getId() + " (Ma société à moi tout seul vraiment) ignorée car sa date de début de validité est nulle (ou antérieure au 01.08.1291).", textes.get(0));
 			Assert.assertEquals("En l'absence de donnée valide pour la raison sociale, repêchage de 'Ma société à moi tout seul vraiment'.", textes.get(1));
-			Assert.assertEquals("Données 'civiles' migrées : sur la période [14.06.2007 -> ?], raison sociale (Ma société à moi tout seul vraiment) et forme juridique (SARL).", textes.get(2));
+			Assert.assertEquals("Donnée de raison sociale migrée : sur la période [14.06.2007 -> ?], 'Ma société à moi tout seul vraiment'.", textes.get(2));
+			Assert.assertEquals("Donnée de forme juridique migrée : sur la période [14.06.2007 -> ?], SARL.", textes.get(3));
 		}
 	}
 
@@ -4264,17 +4280,27 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 			final Entreprise entreprise = uniregStore.getEntityFromDb(Entreprise.class, noEntreprise);
 			Assert.assertNotNull(entreprise);
 
-			final Set<DonneesRegistreCommerce> donneesRC = entreprise.getDonneesRC();
-			Assert.assertNotNull(donneesRC);
-			Assert.assertEquals(1, donneesRC.size());
+			final Map<Class, DonneeCivileEntreprise> map = entreprise.getDonneesCiviles().stream()
+					.collect(Collectors.toMap(Object::getClass, Function.identity()));
+			Assert.assertNotNull(map);
+			Assert.assertEquals(2, map.size());
+			Assert.assertTrue(map.containsKey(RaisonSocialeFiscaleEntreprise.class));
+			Assert.assertTrue(map.containsKey(FormeJuridiqueFiscaleEntreprise.class));
+			Assert.assertFalse(map.containsKey(CapitalFiscalEntreprise.class));
 
-			final DonneesRegistreCommerce drc = donneesRC.iterator().next();
-			Assert.assertNotNull(drc);
-			Assert.assertFalse(drc.isAnnule());
-			Assert.assertEquals(RegDate.get(2004, 8, 27), drc.getDateDebut());
-			Assert.assertNull(drc.getDateFin());
-			Assert.assertEquals(FormeJuridiqueEntreprise.SA, drc.getFormeJuridique());
-			Assert.assertEquals("Ma société à moi tout seul si si vraiment", drc.getRaisonSociale());
+			final RaisonSocialeFiscaleEntreprise rs = (RaisonSocialeFiscaleEntreprise) map.get(RaisonSocialeFiscaleEntreprise.class);
+			Assert.assertNotNull(rs);
+			Assert.assertFalse(rs.isAnnule());
+			Assert.assertEquals(RegDate.get(2004, 8, 27), rs.getDateDebut());
+			Assert.assertNull(rs.getDateFin());
+			Assert.assertEquals("Ma société à moi tout seul si si vraiment", rs.getRaisonSociale());
+
+			final FormeJuridiqueFiscaleEntreprise fj = (FormeJuridiqueFiscaleEntreprise) map.get(FormeJuridiqueFiscaleEntreprise.class);
+			Assert.assertNotNull(fj);
+			Assert.assertFalse(fj.isAnnule());
+			Assert.assertEquals(RegDate.get(2004, 8, 27), fj.getDateDebut());
+			Assert.assertNull(fj.getDateFin());
+			Assert.assertEquals(FormeJuridiqueEntreprise.SA, fj.getFormeJuridique());
 
 			// pas d'établissement principal généré
 			final List<Etablissement> etablissements = uniregStore.getEntitiesFromDb(Etablissement.class, null);
@@ -4287,10 +4313,11 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 			final List<MigrationResultCollector.Message> messages = mr.getMessages().get(LogCategory.DONNEES_CIVILES_REGPM);
 			Assert.assertNotNull(messages);
 			final List<String> textes = messages.stream().map(msg -> msg.text).collect(Collectors.toList());
-			Assert.assertEquals(3, textes.size());
+			Assert.assertEquals(4, textes.size());
 			Assert.assertEquals("Forme juridique 1 (S.A.) ignorée car sa date de début de validité est nulle (ou antérieure au 01.08.1291).", textes.get(0));
 			Assert.assertEquals("En l'absence de donnée valide pour la forme juridique, repêchage de 'S.A.'.", textes.get(1));
-			Assert.assertEquals("Données 'civiles' migrées : sur la période [27.08.2004 -> ?], raison sociale (Ma société à moi tout seul si si vraiment) et forme juridique (SA).", textes.get(2));
+			Assert.assertEquals("Donnée de raison sociale migrée : sur la période [27.08.2004 -> ?], 'Ma société à moi tout seul si si vraiment'.", textes.get(2));
+			Assert.assertEquals("Donnée de forme juridique migrée : sur la période [27.08.2004 -> ?], SA.", textes.get(3));
 		}
 	}
 
@@ -4301,7 +4328,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 
 		final RegpmEntreprise e = buildEntreprise(noEntreprise);
 		addRaisonSociale(e, RegDate.get(2004, 8, 27), "Ma société à moi", "tout seul", "si si vraiment", true);
-		addFormeJuridique(e, null, createTypeFormeJuridique("S.A.", RegpmCategoriePersonneMorale.PM));
+		addFormeJuridique(e, RegDate.get(2004, 8, 27), createTypeFormeJuridique("S.A.", RegpmCategoriePersonneMorale.PM));
 		final RegpmAdresseEntreprise a = addAdresse(e, RegpmTypeAdresseEntreprise.COURRIER, RegDate.get(2004, 8, 27), null, LocalitePostale.RENENS, "Rue des champs", "42", null, null);
 		a.setChez("c/o moi");
 
@@ -4347,7 +4374,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 
 		final RegpmEntreprise e = buildEntreprise(noEntreprise);
 		addRaisonSociale(e, RegDate.get(2004, 8, 27), "Ma société à moi", "tout seul", "si si vraiment", true);
-		addFormeJuridique(e, null, createTypeFormeJuridique("S.A.", RegpmCategoriePersonneMorale.PM));
+		addFormeJuridique(e, RegDate.get(2004, 8, 27), createTypeFormeJuridique("S.A.", RegpmCategoriePersonneMorale.PM));
 		addAdresse(e, RegpmTypeAdresseEntreprise.SIEGE, RegDate.get(2004, 8, 27), null, LocalitePostale.RENENS, "Rue des champs", "42", null, null);
 
 		final MockGraphe graphe = new MockGraphe(Collections.singletonList(e),
@@ -4391,7 +4418,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 
 		final RegpmEntreprise e = buildEntreprise(noEntreprise);
 		addRaisonSociale(e, RegDate.get(2004, 8, 27), "Ma société à moi", "tout seul", "si si vraiment", true);
-		addFormeJuridique(e, null, createTypeFormeJuridique("S.A.", RegpmCategoriePersonneMorale.PM));
+		addFormeJuridique(e, RegDate.get(2004, 8, 27), createTypeFormeJuridique("S.A.", RegpmCategoriePersonneMorale.PM));
 		addAdresse(e, RegpmTypeAdresseEntreprise.COURRIER, RegDate.get(2010, 7, 22), null, LocalitePostale.RENENS, "Rue des étangs", "24", null, null);
 		addAdresse(e, RegpmTypeAdresseEntreprise.SIEGE, RegDate.get(2004, 8, 27), null, LocalitePostale.RENENS, "Rue des champs", "42", null, null);
 
