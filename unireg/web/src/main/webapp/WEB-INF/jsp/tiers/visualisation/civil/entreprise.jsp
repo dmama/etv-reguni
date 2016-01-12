@@ -14,6 +14,17 @@
 				</c:forEach>
 			</td>
 		</tr>
+		<tr>
+			<td width="30%"><fmt:message key="label.civil.registre"/>&nbsp;:</td>
+			<td>
+				<c:if test=" ${command.entreprise.connueAuCivil}">
+					<fmt:message key="label.connue.civil.rcent"/>
+				</c:if>
+				<c:if test="${! command.entreprise.connueAuCivil}">
+					<fmt:message key="label.inconnue.civil.rcent"/>
+				</c:if>
+			</td>
+		</tr>
 	</table>
 </fieldset>
 

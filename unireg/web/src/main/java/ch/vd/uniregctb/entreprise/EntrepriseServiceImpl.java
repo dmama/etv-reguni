@@ -69,6 +69,8 @@ public class EntrepriseServiceImpl implements EntrepriseService {
 
 		if (numeroEntreprise != null) {
 
+			entrepriseView.setConnueAuCivil(true);
+
 			Organisation organisation = serviceOrganisationService.getOrganisationHistory(numeroEntreprise);
 
 			List<DateRanged<String>> nomsAdditionnels = new ArrayList<>();
