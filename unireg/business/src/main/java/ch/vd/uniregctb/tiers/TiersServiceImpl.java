@@ -5719,7 +5719,11 @@ public class TiersServiceImpl implements TiersService {
 		if (numeroEntreprise != null) {
 			final Organisation organisation = serviceOrganisationService.getOrganisationHistory(numeroEntreprise);
 			final List<FormeLegaleHisto> formes = new ArrayList<>();
-			for (DateRanged<FormeLegale> formeLegale: organisation.getFormeLegale()) {
+			final List<DateRanged<FormeLegale>> formeLegalesCiviles = organisation.getFormeLegale();
+			if (formeLegalesCiviles == null) {
+				return Collections.emptyList();
+			}
+			for (DateRanged<FormeLegale> formeLegale: formeLegalesCiviles) {
 				formes.add(new FormeLegaleHisto(formeLegale));
 			}
 			Collections.sort(formes, new DateRangeComparator<FormeLegaleHisto>());
@@ -5756,7 +5760,11 @@ public class TiersServiceImpl implements TiersService {
 		if (numeroEntreprise != null) {
 			final Organisation organisation = serviceOrganisationService.getOrganisationHistory(numeroEntreprise);
 			final List<RaisonSocialeHisto> raisonsSociales = new ArrayList<>();
-			for (DateRanged<String> raisonSociale : organisation.getNom()) {
+			final List<DateRanged<String>> nomsCivils = organisation.getNom();
+			if (nomsCivils == null) {
+				return Collections.emptyList();
+			}
+			for (DateRanged<String> raisonSociale : nomsCivils) {
 				raisonsSociales.add(new RaisonSocialeHisto(raisonSociale));
 			}
 			Collections.sort(raisonsSociales, new DateRangeComparator<RaisonSocialeHisto>());
@@ -5871,8 +5879,11 @@ public class TiersServiceImpl implements TiersService {
 			return Collections.emptyList();
 		}
 		final List<DomicileHisto> domiciles = new ArrayList<>();
-		List<Domicile> sieges = siteOrganisation.getDomiciles();
-		for (Domicile domicile : sieges) {
+		List<Domicile> domicilesCivils = siteOrganisation.getDomiciles();
+		if (domicilesCivils == null) {
+			return Collections.emptyList();
+		}
+		for (Domicile domicile : domicilesCivils) {
 			domiciles.add(new DomicileHisto(domicile));
 		}
 		Collections.sort(domiciles, new DateRangeComparator<DomicileHisto>());
