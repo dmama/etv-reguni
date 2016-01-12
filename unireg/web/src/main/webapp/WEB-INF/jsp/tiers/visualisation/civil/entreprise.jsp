@@ -7,15 +7,15 @@
 	<unireg:nextRowClass reset="1"/>
 	<table>
 		<tr class="<unireg:nextRowClass/>" >
-			<td width="30%"><fmt:message key="label.numero.ide"/>&nbsp;:</td>
+			<td width="20%"><fmt:message key="label.numero.ide"/>&nbsp;:</td>
 			<td>
 				<c:forEach var="noIde" items="${command.entreprise.numerosIDE}">
 					<unireg:numIDE numeroIDE="${noIde}"/><br/>
 				</c:forEach>
 			</td>
 		</tr>
-		<tr>
-			<td width="30%"><fmt:message key="label.civil.registre"/>&nbsp;:</td>
+		<tr class="<unireg:nextRowClass/>">
+			<td width="20%"><fmt:message key="label.civil.registre"/>&nbsp;:</td>
 			<td>
 				<c:if test=" ${command.entreprise.connueAuCivil}">
 					<fmt:message key="label.connue.civil.rcent"/>
@@ -56,21 +56,33 @@
 <fieldset>
 	<legend><span><fmt:message key="label.noms.additionnels"/></span></legend>
 
-	<input class="noprint" id="showNomsAdditionnelsHisto" type="checkbox" onclick="refreshNomsAdditionnelsTable(this);" />
-	<label class="noprint" for="showNomsAdditionnelsHisto"><fmt:message key="label.historique" /></label>
+	<c:if test="${command.entreprise.nomsAdditionnels.size > 0}">
+		<input class="noprint" id="showNomsAdditionnelsHisto" type="checkbox" onclick="refreshNomsAdditionnelsTable(this);" />
+		<label class="noprint" for="showNomsAdditionnelsHisto"><fmt:message key="label.historique" /></label>
 
-	<display:table name="${command.entreprise.nomsAdditionnels}" id="nomsAdditionnels" requestURI="visu.do" class="display">
-		<display:column style="width:10%" sortable="true" titleKey="label.date.debut" sortProperty="dateDebut">
-			<unireg:regdate regdate="${nomsAdditionnels.dateDebut}"/>
-		</display:column>
-		<display:column style="width:10%" sortable="true" titleKey="label.date.fin" sortProperty="dateFin">
-			<unireg:regdate regdate="${nomsAdditionnels.dateFin}"/>
-		</display:column>
-		<display:column style="width:60%" sortable="true" titleKey="label.raison.sociale" property="payload"/>
-		<display:column style="width:10%" titleKey="label.source">
-			<fmt:message key="option.entreprise.source.CIVILE"/>
-		</display:column>
-	</display:table>
+		<display:table name="${command.entreprise.nomsAdditionnels}" id="nomsAdditionnels" requestURI="visu.do" class="display">
+			<display:column style="width:10%" sortable="true" titleKey="label.date.debut" sortProperty="dateDebut">
+				<unireg:regdate regdate="${nomsAdditionnels.dateDebut}"/>
+			</display:column>
+			<display:column style="width:10%" sortable="true" titleKey="label.date.fin" sortProperty="dateFin">
+				<unireg:regdate regdate="${nomsAdditionnels.dateFin}"/>
+			</display:column>
+			<display:column style="width:60%" sortable="true" titleKey="label.raison.sociale" property="payload"/>
+			<display:column style="width:10%" titleKey="label.source">
+				<fmt:message key="option.entreprise.source.CIVILE"/>
+			</display:column>
+			<display:column style="width:10%">&nbsp;</display:column>
+		</display:table>
+	</c:if>
+	<c:if test="${! (command.entreprise.nomsAdditionnels.size > 0)}">
+		<unireg:nextRowClass reset="1"/>
+		<table>
+			<tr class="<unireg:nextRowClass/>" >
+				<td width="20%">&nbsp;</td>
+				<td></td>
+			</tr>
+		</table>
+	</c:if>
 </fieldset>
 
 <fieldset>
@@ -165,19 +177,19 @@
 	<unireg:nextRowClass reset="1"/>
 	<table>
 		<tr class="<unireg:nextRowClass/>" >
-			<td width="30%"><fmt:message key="label.date.inscription"/>&nbsp;:</td>
+			<td width="20%"><fmt:message key="label.date.inscription"/>&nbsp;:</td>
 			<td>
 				<unireg:regdate regdate="${command.entreprise.dateInscriptionRC}"/>
 			</td>
 		</tr>
 		<tr class="<unireg:nextRowClass/>" >
-			<td width="30%"><fmt:message key="label.status"/>&nbsp;:</td>
+			<td width="20%"><fmt:message key="label.status"/>&nbsp;:</td>
 			<td>
 				${command.entreprise.statusRC}
 			</td>
 		</tr>
 		<tr class="<unireg:nextRowClass/>" >
-			<td width="30%"><fmt:message key="label.date.radiation"/>&nbsp;:</td>
+			<td width="20%"><fmt:message key="label.date.radiation"/>&nbsp;:</td>
 			<td>
 				<unireg:regdate regdate="${command.entreprise.dateRadiationRC}"/>
 			</td>
@@ -191,13 +203,13 @@
 	<unireg:nextRowClass reset="1"/>
 	<table>
 		<tr class="<unireg:nextRowClass/>" >
-			<td width="30%"><fmt:message key="label.date.inscription"/>&nbsp;:</td>
+			<td width="20%"><fmt:message key="label.date.inscription"/>&nbsp;:</td>
 			<td>
 				<unireg:regdate regdate="${command.entreprise.dateInscriptionIde}"/>
 			</td>
 		</tr>
 		<tr class="<unireg:nextRowClass/>" >
-			<td width="30%"><fmt:message key="label.status"/>&nbsp;:</td>
+			<td width="20%"><fmt:message key="label.status"/>&nbsp;:</td>
 			<td>
 				${command.entreprise.statusIde}
 			</td>
