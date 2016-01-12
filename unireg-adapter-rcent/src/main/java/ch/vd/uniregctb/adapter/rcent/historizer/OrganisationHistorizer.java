@@ -216,6 +216,8 @@ public class OrganisationHistorizer {
 		                                                    locationKindsOfLocationCollector,
 		                                                    locationSeatsCollector,
 		                                                    locationFunctionCollector,
+		                                                    locationInReplacementOfCollector,
+		                                                    locationReplacedByCollector,
 		                                                    locationRcPurposeCollector,
 		                                                    locationRcByLawsDateCollector,
 
@@ -223,6 +225,7 @@ public class OrganisationHistorizer {
 		                                                    locationRcStatusCollector,
 		                                                    locationRcEntryStatusCollector,
 		                                                    locationRcEntryDateCollector,
+		                                                    locationRcCancellationDateCollector,
 		                                                    locationRcLegalAddressCollector,
 		                                                    locationRcCapitalCollector,
 
