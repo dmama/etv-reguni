@@ -4,7 +4,7 @@ import java.util.List;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
-import ch.vd.unireg.interfaces.organisation.data.StatusRC;
+import ch.vd.unireg.interfaces.organisation.data.StatusInscriptionRC;
 import ch.vd.unireg.interfaces.organisation.data.StatusRegistreIDE;
 import ch.vd.uniregctb.tiers.view.EtatEntrepriseView;
 
@@ -20,7 +20,7 @@ public class EntrepriseView {
 	private List<String> numerosIDE;
 
 	private RegDate dateInscriptionRC;
-	private StatusRC statusRC;
+	private StatusInscriptionRC statusRC;
 	private RegDate dateRadiationRC;
 
 	private RegDate dateInscriptionIde;
@@ -82,11 +82,11 @@ public class EntrepriseView {
 		this.numerosIDE = numerosIDE;
 	}
 
-	public StatusRC getStatusRC() {
+	public StatusInscriptionRC getStatusRC() {
 		return statusRC;
 	}
 
-	public void setStatusRC(StatusRC statusRC) {
+	public void setStatusRC(StatusInscriptionRC statusRC) {
 		this.statusRC = statusRC;
 	}
 
