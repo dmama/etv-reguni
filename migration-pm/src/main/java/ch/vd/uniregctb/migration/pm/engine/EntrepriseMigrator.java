@@ -4139,12 +4139,11 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 			return TypeEtatEntreprise.ABSORBEE;
 		case DISSOUTE:
 			return TypeEtatEntreprise.DISSOUTE;
+		case EN_SUSPENS_FAILLITE:
 		case EN_FAILLITE:
 			return TypeEtatEntreprise.EN_FAILLITE;
 		case EN_LIQUIDATION:
 			return TypeEtatEntreprise.EN_LIQUIDATION;
-		case EN_SUSPENS_FAILLITE:
-			return TypeEtatEntreprise.EN_SUSPENS_FAILLITE;
 		case FONDEE:
 			return TypeEtatEntreprise.FONDEE;
 		case INSCRITE_AU_RC:
