@@ -24,10 +24,9 @@ import ch.vd.uniregctb.mouvement.MouvementDossier;
 import ch.vd.uniregctb.reqdes.UniteTraitement;
 import ch.vd.uniregctb.rf.Immeuble;
 import ch.vd.uniregctb.tiers.AllegementFiscal;
-import ch.vd.uniregctb.tiers.CapitalEntreprise;
 import ch.vd.uniregctb.tiers.DecisionAci;
 import ch.vd.uniregctb.tiers.DomicileEtablissement;
-import ch.vd.uniregctb.tiers.DonneesRegistreCommerce;
+import ch.vd.uniregctb.tiers.DonneeCivileEntreprise;
 import ch.vd.uniregctb.tiers.DroitAcces;
 import ch.vd.uniregctb.tiers.EtatEntreprise;
 import ch.vd.uniregctb.tiers.ForFiscal;
@@ -51,11 +50,10 @@ public class ConsultLogController {
 	private enum LoggableEntity {
 		AdresseTiers(AdresseTiers.class),
 		AllegementFiscal(AllegementFiscal.class),
-		Capital(CapitalEntreprise.class),
 		DecisionAci(DecisionAci.class),
 		DelaiDeclaration(DelaiDeclaration.class),
 		DI(DeclarationImpotOrdinaire.class),
-		DonneesRegistreCommerce(DonneesRegistreCommerce.class),
+		DonneeCivileEntreprise(DonneeCivileEntreprise.class),
 		DomicileEtablissement(DomicileEtablissement.class),
 		DroitAcces(DroitAcces.class),
 		EtatEntreprise(EtatEntreprise.class),

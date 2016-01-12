@@ -110,7 +110,8 @@ public class EnvoiDeclarationsPMProcessorTest extends BusinessTest {
 			public Long doInTransaction(TransactionStatus status) {
 				// l'entreprise
 				final Entreprise e = addEntrepriseInconnueAuCivil();
-				addDonneesRegistreCommerce(e, date(pf - 1, 5, 3), null, "Ma petite entreprise", FormeJuridiqueEntreprise.SARL);
+				addRaisonSociale(e, date(pf - 1, 5, 3), null, "Ma petite entreprise");
+				addFormeJuridique(e, date(pf - 1, 5, 3), null, FormeJuridiqueEntreprise.SARL);
 				addForPrincipal(e, date(pf - 1, 5, 3), MotifFor.DEBUT_EXPLOITATION, MockCommune.YverdonLesBains);
 				addAdresseSuisse(e, TypeAdresseTiers.COURRIER, date(pf - 1, 5, 3), null, MockRue.YverdonLesBains.RueDeLaFaiencerie, null);
 				addBouclement(e, date(pf - 1, 7, 1), DayMonth.get(6, 30), 12);
@@ -278,7 +279,8 @@ public class EnvoiDeclarationsPMProcessorTest extends BusinessTest {
 			public Long doInTransaction(TransactionStatus status) {
 				// l'entreprise
 				final Entreprise e = addEntrepriseInconnueAuCivil();
-				addDonneesRegistreCommerce(e, date(pf - 1, 5, 3), null, "Ma petite entreprise", FormeJuridiqueEntreprise.SARL);
+				addRaisonSociale(e, date(pf - 1, 5, 3), null, "Ma petite entreprise");
+				addFormeJuridique(e, date(pf - 1, 5, 3), null, FormeJuridiqueEntreprise.SARL);
 				addForPrincipal(e, date(pf - 1, 5, 3), MotifFor.DEBUT_EXPLOITATION, MockCommune.YverdonLesBains);
 				addAdresseSuisse(e, TypeAdresseTiers.COURRIER, date(pf - 1, 5, 3), null, MockRue.YverdonLesBains.RueDeLaFaiencerie, null);
 				addBouclement(e, date(pf - 1, 7, 1), DayMonth.get(6, 30), 12);
@@ -365,7 +367,8 @@ public class EnvoiDeclarationsPMProcessorTest extends BusinessTest {
 			public Long doInTransaction(TransactionStatus status) {
 				// l'entreprise
 				final Entreprise e = addEntrepriseInconnueAuCivil();
-				addDonneesRegistreCommerce(e, date(pf - 1, 5, 3), null, "Ma petite entreprise", FormeJuridiqueEntreprise.SARL);
+				addRaisonSociale(e, date(pf - 1, 5, 3), null, "Ma petite entreprise");
+				addFormeJuridique(e, date(pf - 1, 5, 3), null, FormeJuridiqueEntreprise.SARL);
 				addForPrincipal(e, date(pf - 1, 5, 3), MotifFor.DEBUT_EXPLOITATION, MockCommune.YverdonLesBains);
 				addAdresseSuisse(e, TypeAdresseTiers.COURRIER, date(pf - 1, 5, 3), null, MockRue.YverdonLesBains.RueDeLaFaiencerie, null);
 				addBouclement(e, date(pf - 1, 7, 1), DayMonth.get(6, 30), 12);
@@ -475,7 +478,8 @@ public class EnvoiDeclarationsPMProcessorTest extends BusinessTest {
 			public Long doInTransaction(TransactionStatus status) {
 				// l'entreprise
 				final Entreprise e = addEntrepriseInconnueAuCivil();
-				addDonneesRegistreCommerce(e, date(pf - 1, 5, 3), null, "Ma petite entreprise", FormeJuridiqueEntreprise.SARL);
+				addRaisonSociale(e, date(pf - 1, 5, 3), null, "Ma petite entreprise");
+				addFormeJuridique(e, date(pf - 1, 5, 3), null, FormeJuridiqueEntreprise.SARL);
 				addForPrincipal(e, date(pf - 1, 5, 3), MotifFor.DEBUT_EXPLOITATION, date(pf, 6, 15), MotifFor.CESSATION_ACTIVITE_FUSION_FAILLITE, MockCommune.YverdonLesBains);
 				addAdresseSuisse(e, TypeAdresseTiers.COURRIER, date(pf - 1, 5, 3), null, MockRue.YverdonLesBains.RueDeLaFaiencerie, null);
 				addBouclement(e, date(pf - 1, 7, 1), DayMonth.get(6, 30), 12);
@@ -585,7 +589,8 @@ public class EnvoiDeclarationsPMProcessorTest extends BusinessTest {
 			public Long doInTransaction(TransactionStatus status) {
 				// l'entreprise
 				final Entreprise e = addEntrepriseInconnueAuCivil();
-				addDonneesRegistreCommerce(e, date(pf - 1, 5, 3), null, "Ma petite entreprise", FormeJuridiqueEntreprise.SARL);
+				addRaisonSociale(e, date(pf - 1, 5, 3), null, "Ma petite entreprise");
+				addFormeJuridique(e, date(pf - 1, 5, 3), null, FormeJuridiqueEntreprise.SARL);
 				addForPrincipal(e, date(pf - 1, 5, 3), MotifFor.DEBUT_EXPLOITATION, date(pf, 6, 15), MotifFor.CESSATION_ACTIVITE_FUSION_FAILLITE, MockCommune.YverdonLesBains);
 				addAdresseSuisse(e, TypeAdresseTiers.COURRIER, date(pf - 1, 5, 3), null, MockRue.YverdonLesBains.RueDeLaFaiencerie, null);
 				addBouclement(e, date(pf - 1, 7, 1), DayMonth.get(6, 30), 12);

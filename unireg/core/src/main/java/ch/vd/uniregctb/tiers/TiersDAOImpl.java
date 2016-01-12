@@ -586,52 +586,28 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 			associate(session, regimes, tiers, getter, setter);
 		}
 
-		if (parts != null && parts.contains(Parts.DONNEES_RC)) {
+		if (parts != null && parts.contains(Parts.DONNEES_CIVILES)) {
 			// on charge les données civiles en vrac
-			final List<DonneesRegistreCommerce> donnees = queryObjectsByIds("from DonneesRegistreCommerce as rc where rc.entreprise.id in (:ids)", ids, session);
+			final List<DonneeCivileEntreprise> donnees = queryObjectsByIds("from DonneeCivileEntreprise as dce where dce.entreprise.id in (:ids)", ids, session);
 
-			final TiersIdGetter<DonneesRegistreCommerce> getter = new TiersIdGetter<DonneesRegistreCommerce>() {
+			final TiersIdGetter<DonneeCivileEntreprise> getter = new TiersIdGetter<DonneeCivileEntreprise>() {
 				@Override
-				public Long getTiersId(DonneesRegistreCommerce entity) {
+				public Long getTiersId(DonneeCivileEntreprise entity) {
 					return entity.getEntreprise().getId();
 				}
 			};
 
-			final EntitySetSetter<DonneesRegistreCommerce> setter = new EntitySetSetter<DonneesRegistreCommerce>() {
+			final EntitySetSetter<DonneeCivileEntreprise> setter = new EntitySetSetter<DonneeCivileEntreprise>() {
 				@Override
-				public void setEntitySet(Tiers tiers, Set<DonneesRegistreCommerce> set) {
+				public void setEntitySet(Tiers tiers, Set<DonneeCivileEntreprise> set) {
 					if (tiers instanceof Entreprise) {
-						((Entreprise) tiers).setDonneesRC(set);
+						((Entreprise) tiers).setDonneesCiviles(set);
 					}
 				}
 			};
 
 			// associations manuelles
 			associate(session, donnees, tiers, getter, setter);
-		}
-
-		if (parts != null && parts.contains(Parts.CAPITAUX)) {
-			// on charge les capitaux en vrac
-			final List<CapitalEntreprise> capitaux = queryObjectsByIds("from CapitalEntreprise as ce where ce.entreprise.id in (:ids)", ids, session);
-
-			final TiersIdGetter<CapitalEntreprise> getter = new TiersIdGetter<CapitalEntreprise>() {
-				@Override
-				public Long getTiersId(CapitalEntreprise entity) {
-					return entity.getEntreprise().getId();
-				}
-			};
-
-			final EntitySetSetter<CapitalEntreprise> setter = new EntitySetSetter<CapitalEntreprise>() {
-				@Override
-				public void setEntitySet(Tiers tiers, Set<CapitalEntreprise> set) {
-					if (tiers instanceof Entreprise) {
-						((Entreprise) tiers).setCapitaux(set);
-					}
-				}
-			};
-
-			// associations manuelles
-			associate(session, capitaux, tiers, getter, setter);
 		}
 
 		if (parts != null && parts.contains(Parts.BOUCLEMENTS)) {

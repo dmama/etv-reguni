@@ -4772,9 +4772,9 @@ public class TiersServiceImpl implements TiersService {
 		    return nom.get(nom.size() - 1).getPayload();
 	    }
 	    else {
-		    final List<DonneesRegistreCommerce> rcData = entreprise.getDonneesRegistreCommerceNonAnnuleesTriees();
-		    if (!rcData.isEmpty()) {
-			    final DonneesRegistreCommerce data = rcData.get(rcData.size() - 1);
+		    final List<RaisonSocialeFiscaleEntreprise> rss = entreprise.getRaisonsSocialesNonAnnuleesTriees();
+		    if (!rss.isEmpty()) {
+			    final RaisonSocialeFiscaleEntreprise data = rss.get(rss.size() - 1);
 			    return data.getRaisonSociale();
 		    }
 	    }
@@ -5566,8 +5566,8 @@ public class TiersServiceImpl implements TiersService {
 			final Set<FormeJuridiqueEntreprise> sp = EnumSet.of(FormeJuridiqueEntreprise.SC, FormeJuridiqueEntreprise.SNC);
 
 			// inconnue au civil, ce sont donc nos données fiscales qui font foi
-			final List<DonneesRegistreCommerce> all = entreprise.getDonneesRegistreCommerceNonAnnuleesTriees();
-			for (DonneesRegistreCommerce data : all) {
+			final List<FormeJuridiqueFiscaleEntreprise> all = entreprise.getFormesJuridiquesNonAnnuleesTriees();
+			for (FormeJuridiqueFiscaleEntreprise data : all) {
 				if (!sp.contains(data.getFormeJuridique())) {
 					brutto.add(data);
 				}
@@ -5648,9 +5648,9 @@ public class TiersServiceImpl implements TiersService {
 
 	@NotNull
 	private List<CapitalHisto> extractCapitauxFiscaux(@NotNull Entreprise entreprise) {
-		final List<CapitalEntreprise> capitaux = entreprise.getCapitauxNonAnnulesTries();
+		final List<CapitalFiscalEntreprise> capitaux = entreprise.getCapitauxNonAnnulesTries();
 		final List<CapitalHisto> liste = new ArrayList<>(capitaux.size());
-		for (CapitalEntreprise capital : capitaux) {
+		for (CapitalFiscalEntreprise capital : capitaux) {
 			liste.add(new CapitalHisto(capital));
 		}
 		return liste;
@@ -5666,8 +5666,8 @@ public class TiersServiceImpl implements TiersService {
 		}
 		else {
 			// recherches dans les données fiscales
-			final DonneesRegistreCommerce rc = DateRangeHelper.rangeAt(entreprise.getDonneesRegistreCommerceNonAnnuleesTriees(), dateEffective);
-			return CategorieEntrepriseHelper.map(rc != null ? rc.getFormeJuridique() : null);
+			final FormeJuridiqueFiscaleEntreprise fj = DateRangeHelper.rangeAt(entreprise.getFormesJuridiquesNonAnnuleesTriees(), dateEffective);
+			return CategorieEntrepriseHelper.map(fj != null ? fj.getFormeJuridique() : null);
 		}
 	}
 
@@ -5690,14 +5690,14 @@ public class TiersServiceImpl implements TiersService {
 		}
 		else {
 			// données extraites des informations fiscales
-			final List<DonneesRegistreCommerce> rcs = entreprise.getDonneesRegistreCommerceNonAnnuleesTriees();
-			if (rcs.isEmpty()) {
+			final List<FormeJuridiqueFiscaleEntreprise> fjs = entreprise.getFormesJuridiquesNonAnnuleesTriees();
+			if (fjs.isEmpty()) {
 				ces = Collections.emptyList();
 			}
 			else {
-				ces = new ArrayList<>(rcs.size());
-				for (DonneesRegistreCommerce rc : rcs) {
-					ces.add(new CategorieEntrepriseHisto(rc.getDateDebut(), rc.getDateFin(), CategorieEntrepriseHelper.map(rc.getFormeJuridique())));
+				ces = new ArrayList<>(fjs.size());
+				for (FormeJuridiqueFiscaleEntreprise fj : fjs) {
+					ces.add(new CategorieEntrepriseHisto(fj.getDateDebut(), fj.getDateFin(), CategorieEntrepriseHelper.map(fj.getFormeJuridique())));
 				}
 			}
 		}
@@ -5734,16 +5734,12 @@ public class TiersServiceImpl implements TiersService {
 
 
 	private List<FormeLegaleHisto> extractFormesLegalesFiscales(Entreprise entreprise) {
-		final List<DonneesRegistreCommerce> donneesRC = new ArrayList<>(entreprise.getDonneesRC());
-		Collections.sort(donneesRC, new DateRangeComparator<>());
-
-		final List<FormeLegaleHisto> nonCollatedData = extractFromDonneesRegistreCommerce(donneesRC, new ExtractorDonneesRegistreCommerce<FormeLegaleHisto>() {
-			                                                                                    @Override
-			                                                                                    public FormeLegaleHisto extract(DonneesRegistreCommerce source) {
-				                                                                                    return new FormeLegaleHisto(source);
-			                                                                                    }
-		                                                                                    });
-		return DateRangeHelper.collate(nonCollatedData);
+		final List<FormeJuridiqueFiscaleEntreprise> fjs = entreprise.getFormesJuridiquesNonAnnuleesTriees();
+		final List<FormeLegaleHisto> histo = new ArrayList<>(fjs.size());
+		for (FormeJuridiqueFiscaleEntreprise fj : fjs) {
+			histo.add(new FormeLegaleHisto(fj));
+		}
+		return histo;
 	}
 
 	@Override
@@ -5775,32 +5771,12 @@ public class TiersServiceImpl implements TiersService {
 
 
 	private List<RaisonSocialeHisto> extractRaisonsSocialesFiscales(Entreprise entreprise) {
-		final List<DonneesRegistreCommerce> donneesRC = new ArrayList<>(entreprise.getDonneesRC());
-		Collections.sort(donneesRC, new DateRangeComparator<>());
-
-		final List<RaisonSocialeHisto> nonCollatedData = extractFromDonneesRegistreCommerce(donneesRC, new ExtractorDonneesRegistreCommerce<RaisonSocialeHisto>() {
-			                                                                                    @Override
-			                                                                                    public RaisonSocialeHisto extract(DonneesRegistreCommerce source) {
-				                                                                                    return new RaisonSocialeHisto(source);
-			                                                                                    }
-		                                                                                    });
-		return DateRangeHelper.collate(nonCollatedData);
-	}
-
-	private interface ExtractorDonneesRegistreCommerce<T> {
-		T extract(DonneesRegistreCommerce source);
-	}
-
-	private static <T extends DateRange> List<T> extractFromDonneesRegistreCommerce(List<DonneesRegistreCommerce> source,
-	                                                                                ExtractorDonneesRegistreCommerce<? extends T> extractor) {
-		final List<T> extractedData = new ArrayList<>(source.size());
-		for (DonneesRegistreCommerce data : source) {
-			final T extractedValue = extractor.extract(data);
-			if (extractedValue != null) {
-				extractedData.add(extractedValue);
-			}
+		final List<RaisonSocialeFiscaleEntreprise> rss = entreprise.getRaisonsSocialesNonAnnuleesTriees();
+		final List<RaisonSocialeHisto> histo = new ArrayList<>(rss.size());
+		for (RaisonSocialeFiscaleEntreprise rs : rss) {
+			histo.add(new RaisonSocialeHisto(rs));
 		}
-		return extractedData;
+		return histo;
 	}
 
 	@Override

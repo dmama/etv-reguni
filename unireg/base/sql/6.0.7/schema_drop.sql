@@ -86,9 +86,7 @@ drop table DOMICILE_ETABLISSEMENT cascade constraints;
 
 drop table REGIME_FISCAL cascade constraints;
 
-drop table DONNEES_RC cascade constraints;
-
-drop table CAPITAL_ENTREPRISE cascade constraints;
+drop table DONNEE_CIVILE_ENTREPRISE cascade constraints;
 
 drop table FLAG_ENTREPRISE cascade constraints;
 

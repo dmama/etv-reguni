@@ -28,7 +28,7 @@ public class FormeLegaleHisto implements Sourced<Source>, CollatableDateRange, D
 		this(null, false, source.getDateDebut(), source.getDateFin(), source.getPayload(), Source.CIVILE);
 	}
 
-	public FormeLegaleHisto(DonneesRegistreCommerce source) {
+	public FormeLegaleHisto(FormeJuridiqueFiscaleEntreprise source) {
 		this(source.getId(), source.isAnnule(), source.getDateDebut(), source.getDateFin(), FormeLegale.fromCode(source.getFormeJuridique().getCodeECH()), Source.FISCALE);
 	}
 

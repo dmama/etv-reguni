@@ -102,27 +102,31 @@ public class DeterminationDIsPMAEmettreProcessorTest extends BusinessTest {
 
 		// Une entreprise avec un for ouvert à droite
 		final Entreprise levage = addEntrepriseInconnueAuCivil();
-		addDonneesRegistreCommerce(levage, date(1999, 4, 2), null, "Levage SA", FormeJuridiqueEntreprise.SA);
+		addRaisonSociale(levage, date(1999, 4, 2), null, "Levage SA");
+		addFormeJuridique(levage, date(1999, 4, 2), null, FormeJuridiqueEntreprise.SA);
 		addBouclement(levage, date(1999, 7, 1), DayMonth.get(6, 30), 12);
 		addForPrincipal(levage, date(1999, 4, 2), MotifFor.DEBUT_EXPLOITATION, MockCommune.Bex);
 
 		// Une entreprise avec un for principal actif sur VD il y a quelques temps
 		final Entreprise bricolage = addEntrepriseInconnueAuCivil();
-		addDonneesRegistreCommerce(bricolage, date(2000, 4, 5), null, "Bricolage SARL", FormeJuridiqueEntreprise.SARL);
+		addRaisonSociale(bricolage, date(2000, 4, 5), null, "Bricolage SARL");
+		addFormeJuridique(bricolage, date(2000, 4, 5), null, FormeJuridiqueEntreprise.SARL);
 		addBouclement(bricolage, date(2000, 4, 5), DayMonth.get(12, 31), 12);
 		addForPrincipal(bricolage, date(2000, 4, 5), MotifFor.DEBUT_EXPLOITATION, date(2012, 5, 2), MotifFor.DEPART_HC, MockCommune.Bex);
 		addForPrincipal(bricolage, date(2012, 5, 3), MotifFor.DEPART_HC, MockCommune.Sierre);
 
 		// Une entreprise avec un for secondaire actif sur VD
 		final Entreprise renardLico = addEntrepriseInconnueAuCivil();
-		addDonneesRegistreCommerce(renardLico, date(1997, 4, 5), null, "Renard Lico SARL", FormeJuridiqueEntreprise.SARL);
+		addRaisonSociale(renardLico, date(1997, 4, 5), null, "Renard Lico SARL");
+		addFormeJuridique(renardLico, date(1997, 4, 5), null, FormeJuridiqueEntreprise.SARL);
 		addBouclement(renardLico, date(1997, 4, 5), DayMonth.get(12, 31), 12);
 		addForPrincipal(renardLico, date(1997, 4, 5), null, MockCommune.Chur);
 		addForSecondaire(renardLico, date(1997, 4, 5), MotifFor.ACHAT_IMMOBILIER, MockCommune.Cossonay.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
 
 		// Une entreprise avec un for secondaire actif sur VD il y a quelques temps
 		final Entreprise tralalaTsointsoin = addEntrepriseInconnueAuCivil();
-		addDonneesRegistreCommerce(tralalaTsointsoin, date(2003, 4, 5), null, "Tralala Tsoin-Tsoin SARL", FormeJuridiqueEntreprise.SARL);
+		addRaisonSociale(tralalaTsointsoin, date(2003, 4, 5), null, "Tralala Tsoin-Tsoin SARL");
+		addFormeJuridique(tralalaTsointsoin, date(2003, 4, 5), null, FormeJuridiqueEntreprise.SARL);
 		addBouclement(tralalaTsointsoin, date(2003, 4, 5), DayMonth.get(12, 31), 12);
 		addForPrincipal(tralalaTsointsoin, date(2003, 4, 5), null, MockCommune.Chur);
 		addForSecondaire(tralalaTsointsoin, date(2003, 4, 5), MotifFor.ACHAT_IMMOBILIER, date(2008, 12, 2), MotifFor.VENTE_IMMOBILIER, MockCommune.Echallens.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
@@ -133,7 +137,8 @@ public class DeterminationDIsPMAEmettreProcessorTest extends BusinessTest {
 
 		// Une entreprise sans for vaudois non-annulé du tout
 		final Entreprise onCroyaitEtPuisNon = addEntrepriseInconnueAuCivil();
-		addDonneesRegistreCommerce(onCroyaitEtPuisNon, date(2000, 4, 5), null, "Bricolage SARL", FormeJuridiqueEntreprise.SARL);
+		addRaisonSociale(onCroyaitEtPuisNon, date(2000, 4, 5), null, "Bricolage SARL");
+		addFormeJuridique(onCroyaitEtPuisNon, date(2000, 4, 5), null, FormeJuridiqueEntreprise.SARL);
 		addBouclement(onCroyaitEtPuisNon, date(2000, 4, 5), DayMonth.get(12, 31), 12);
 		addForPrincipal(onCroyaitEtPuisNon, date(2000, 4, 5), MotifFor.DEBUT_EXPLOITATION, date(2012, 5, 2), MotifFor.DEPART_HC, MockCommune.Bex).setAnnule(true);
 
@@ -150,7 +155,8 @@ public class DeterminationDIsPMAEmettreProcessorTest extends BusinessTest {
 	public void testDeterminePeriodesImpositionsConcernees() throws Exception {
 
 		final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-		addDonneesRegistreCommerce(entreprise, date(2012, 4, 5), null, "Bricolage SARL", FormeJuridiqueEntreprise.SARL);
+		addRaisonSociale(entreprise, date(2012, 4, 5), null, "Bricolage SARL");
+		addFormeJuridique(entreprise, date(2012, 4, 5), null, FormeJuridiqueEntreprise.SARL);
 		addBouclement(entreprise, date(2012, 12, 1), DayMonth.get(12, 31), 12);     // bouclements tous les ans depuis le 31.12.2012
 		addBouclement(entreprise, date(2012, 12, 31), DayMonth.get(3, 31), 5);      // bouclements tous les cinq mois depuis le 31.3.2013
 		addForPrincipal(entreprise, date(2012, 4, 5), MotifFor.DEBUT_EXPLOITATION, date(2015, 5, 2), MotifFor.DEPART_HC, MockCommune.Bex);
@@ -262,7 +268,8 @@ public class DeterminationDIsPMAEmettreProcessorTest extends BusinessTest {
 		addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM, periode);
 
 		final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-		addDonneesRegistreCommerce(entreprise, date(2012, 4, 5), null, "Bricolage SARL", FormeJuridiqueEntreprise.SARL);
+		addRaisonSociale(entreprise, date(2012, 4, 5), null, "Bricolage SARL");
+		addFormeJuridique(entreprise, date(2012, 4, 5), null, FormeJuridiqueEntreprise.SARL);
 		addBouclement(entreprise, date(2012, 12, 1), DayMonth.get(12, 31), 12);      // bouclements tous les ans depuis le 31.12.2012
 		addForPrincipal(entreprise, date(2012, 4, 5), MotifFor.DEBUT_EXPLOITATION, date(2015, 5, 2), MotifFor.DEPART_HC, MockCommune.Bex);
 		addForPrincipal(entreprise, date(2015, 5, 3), MotifFor.DEPART_HC, MockCommune.Bern);
@@ -291,7 +298,8 @@ public class DeterminationDIsPMAEmettreProcessorTest extends BusinessTest {
 
 		// création d'une entreprise
 		final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-		addDonneesRegistreCommerce(entreprise, date(2012, 4, 5), null, "Bricolage SARL", FormeJuridiqueEntreprise.SARL);
+		addRaisonSociale(entreprise, date(2012, 4, 5), null, "Bricolage SARL");
+		addFormeJuridique(entreprise, date(2012, 4, 5), null, FormeJuridiqueEntreprise.SARL);
 		addBouclement(entreprise, date(2012, 12, 1), DayMonth.get(12, 31), 12);      // bouclements tous les ans depuis le 31.12.2012
 		addForPrincipal(entreprise, date(2012, 4, 5), MotifFor.DEBUT_EXPLOITATION, date(2015, 5, 2), MotifFor.DEPART_HC, MockCommune.Bex);
 		addForPrincipal(entreprise, date(2015, 5, 3), MotifFor.DEPART_HC, MockCommune.Bern);
@@ -329,7 +337,8 @@ public class DeterminationDIsPMAEmettreProcessorTest extends BusinessTest {
 
 		// création d'une entreprise
 		final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-		addDonneesRegistreCommerce(entreprise, date(2012, 4, 5), null, "Bricolage SARL", FormeJuridiqueEntreprise.SARL);
+		addRaisonSociale(entreprise, date(2012, 4, 5), null, "Bricolage SARL");
+		addFormeJuridique(entreprise, date(2012, 4, 5), null, FormeJuridiqueEntreprise.SARL);
 		addBouclement(entreprise, date(2012, 12, 1), DayMonth.get(12, 31), 12);      // bouclements tous les ans depuis le 31.12.2012
 		addForPrincipal(entreprise, date(2012, 4, 5), MotifFor.DEBUT_EXPLOITATION, date(2015, 5, 2), MotifFor.DEPART_HC, MockCommune.Bex);
 		addForPrincipal(entreprise, date(2015, 5, 3), MotifFor.DEPART_HC, MockCommune.Bern);
@@ -366,7 +375,8 @@ public class DeterminationDIsPMAEmettreProcessorTest extends BusinessTest {
 		// Aucune tâche
 		{
 			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-			addDonneesRegistreCommerce(entreprise, date(2012, 4, 5), null, "Bricolage SARL", FormeJuridiqueEntreprise.SARL);
+			addRaisonSociale(entreprise, date(2012, 4, 5), null, "Bricolage SARL");
+			addFormeJuridique(entreprise, date(2012, 4, 5), null, FormeJuridiqueEntreprise.SARL);
 			addBouclement(entreprise, date(2012, 12, 1), DayMonth.get(12, 31), 12);      // bouclements tous les ans depuis le 31.12.2012
 			addForPrincipal(entreprise, date(2012, 4, 5), MotifFor.DEBUT_EXPLOITATION, date(2015, 5, 2), MotifFor.DEPART_HC, MockCommune.Bex);
 			addForPrincipal(entreprise, date(2015, 5, 3), MotifFor.DEPART_HC, MockCommune.Bern);
@@ -378,7 +388,8 @@ public class DeterminationDIsPMAEmettreProcessorTest extends BusinessTest {
 		// Une tâche qui existe déjà avec un range qui ne correspond pas du tout
 		{
 			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-			addDonneesRegistreCommerce(entreprise, date(2012, 4, 5), null, "Bricolage SARL", FormeJuridiqueEntreprise.SARL);
+			addRaisonSociale(entreprise, date(2012, 4, 5), null, "Bricolage SARL");
+			addFormeJuridique(entreprise, date(2012, 4, 5), null, FormeJuridiqueEntreprise.SARL);
 			addBouclement(entreprise, date(2012, 12, 1), DayMonth.get(12, 31), 12);      // bouclements tous les ans depuis le 31.12.2012
 			addForPrincipal(entreprise, date(2012, 4, 5), MotifFor.DEBUT_EXPLOITATION, date(2015, 5, 2), MotifFor.DEPART_HC, MockCommune.Bex);
 			addForPrincipal(entreprise, date(2015, 5, 3), MotifFor.DEPART_HC, MockCommune.Bern);
@@ -393,7 +404,8 @@ public class DeterminationDIsPMAEmettreProcessorTest extends BusinessTest {
 		// Une tâche qui existe déjà avec un range qui correspond parfaitement
 		{
 			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-			addDonneesRegistreCommerce(entreprise, date(2012, 4, 5), null, "Bricolage SARL", FormeJuridiqueEntreprise.SARL);
+			addRaisonSociale(entreprise, date(2012, 4, 5), null, "Bricolage SARL");
+			addFormeJuridique(entreprise, date(2012, 4, 5), null, FormeJuridiqueEntreprise.SARL);
 			addBouclement(entreprise, date(2012, 12, 1), DayMonth.get(12, 31), 12);      // bouclements tous les ans depuis le 31.12.2012
 			addForPrincipal(entreprise, date(2012, 4, 5), MotifFor.DEBUT_EXPLOITATION, date(2015, 5, 2), MotifFor.DEPART_HC, MockCommune.Bex);
 			addForPrincipal(entreprise, date(2015, 5, 3), MotifFor.DEPART_HC, MockCommune.Bern);
@@ -413,7 +425,8 @@ public class DeterminationDIsPMAEmettreProcessorTest extends BusinessTest {
 		// Une tâche qui existe déjà avec un range qui recouvre partiellement le range spécifié
 		{
 			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-			addDonneesRegistreCommerce(entreprise, date(2012, 4, 5), null, "Bricolage SARL", FormeJuridiqueEntreprise.SARL);
+			addRaisonSociale(entreprise, date(2012, 4, 5), null, "Bricolage SARL");
+			addFormeJuridique(entreprise, date(2012, 4, 5), null, FormeJuridiqueEntreprise.SARL);
 			addBouclement(entreprise, date(2012, 12, 1), DayMonth.get(12, 31), 12);      // bouclements tous les ans depuis le 31.12.2012
 			addForPrincipal(entreprise, date(2012, 4, 5), MotifFor.DEBUT_EXPLOITATION, date(2015, 5, 2), MotifFor.DEPART_HC, MockCommune.Bex);
 			addForPrincipal(entreprise, date(2015, 5, 3), MotifFor.DEPART_HC, MockCommune.Bern);
@@ -433,7 +446,8 @@ public class DeterminationDIsPMAEmettreProcessorTest extends BusinessTest {
 		// Une tâche déjà traitée avec un range qui recouvre partiellement le range spécifié
 		{
 			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-			addDonneesRegistreCommerce(entreprise, date(2012, 4, 5), null, "Bricolage SARL", FormeJuridiqueEntreprise.SARL);
+			addRaisonSociale(entreprise, date(2012, 4, 5), null, "Bricolage SARL");
+			addFormeJuridique(entreprise, date(2012, 4, 5), null, FormeJuridiqueEntreprise.SARL);
 			addBouclement(entreprise, date(2012, 12, 1), DayMonth.get(12, 31), 12);      // bouclements tous les ans depuis le 31.12.2012
 			addForPrincipal(entreprise, date(2012, 4, 5), MotifFor.DEBUT_EXPLOITATION, date(2015, 5, 2), MotifFor.DEPART_HC, MockCommune.Bex);
 			addForPrincipal(entreprise, date(2015, 5, 3), MotifFor.DEPART_HC, MockCommune.Bern);
@@ -458,7 +472,8 @@ public class DeterminationDIsPMAEmettreProcessorTest extends BusinessTest {
 
 		// Un contribuable non-assujetti, mais avec une déclaration d'impôt (invalide) pré-existante
 		final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-		addDonneesRegistreCommerce(entreprise, date(2012, 4, 5), null, "Bricolage SARL", FormeJuridiqueEntreprise.SARL);
+		addRaisonSociale(entreprise, date(2012, 4, 5), null, "Bricolage SARL");
+		addFormeJuridique(entreprise, date(2012, 4, 5), null, FormeJuridiqueEntreprise.SARL);
 		addBouclement(entreprise, date(2012, 12, 1), DayMonth.get(12, 31), 12);      // bouclements tous les ans depuis le 31.12.2012
 		addForPrincipal(entreprise, date(2012, 4, 5), MotifFor.DEBUT_EXPLOITATION, MockCommune.Bern);
 
@@ -497,7 +512,8 @@ public class DeterminationDIsPMAEmettreProcessorTest extends BusinessTest {
 
 		// Un contribuable non-assujetti, mais avec une déclaration d'impôt (invalide) pré-existante
 		final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-		addDonneesRegistreCommerce(entreprise, date(2012, 4, 5), null, "Bricolage SARL", FormeJuridiqueEntreprise.SARL);
+		addRaisonSociale(entreprise, date(2012, 4, 5), null, "Bricolage SARL");
+		addFormeJuridique(entreprise, date(2012, 4, 5), null, FormeJuridiqueEntreprise.SARL);
 		addBouclement(entreprise, date(2012, 12, 1), DayMonth.get(12, 31), 12);      // bouclements tous les ans depuis le 31.12.2012
 		addForPrincipal(entreprise, date(2012, 4, 5), MotifFor.DEBUT_EXPLOITATION, MockCommune.Bern);
 
@@ -527,7 +543,8 @@ public class DeterminationDIsPMAEmettreProcessorTest extends BusinessTest {
 
 		// Un contribuable non-assujetti, mais avec une déclaration d'impôt (invalide) pré-existante
 		final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-		addDonneesRegistreCommerce(entreprise, date(2012, 4, 5), null, "Bricolage SARL", FormeJuridiqueEntreprise.SARL);
+		addRaisonSociale(entreprise, date(2012, 4, 5), null, "Bricolage SARL");
+		addFormeJuridique(entreprise, date(2012, 4, 5), null, FormeJuridiqueEntreprise.SARL);
 		addBouclement(entreprise, date(2012, 12, 1), DayMonth.get(12, 31), 12);      // bouclements tous les ans depuis le 31.12.2012
 		addForPrincipal(entreprise, date(2012, 4, 5), MotifFor.DEBUT_EXPLOITATION, MockCommune.Bern);
 
@@ -566,7 +583,8 @@ public class DeterminationDIsPMAEmettreProcessorTest extends BusinessTest {
 
 		// Un contribuable non-assujetti, mais avec une déclaration d'impôt (invalide) pré-existante
 		final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-		addDonneesRegistreCommerce(entreprise, date(2012, 4, 5), null, "Bricolage SARL", FormeJuridiqueEntreprise.SARL);
+		addRaisonSociale(entreprise, date(2012, 4, 5), null, "Bricolage SARL");
+		addFormeJuridique(entreprise, date(2012, 4, 5), null, FormeJuridiqueEntreprise.SARL);
 		addBouclement(entreprise, date(2012, 12, 1), DayMonth.get(12, 31), 12);      // bouclements tous les ans depuis le 31.12.2012
 		addForPrincipal(entreprise, date(2012, 4, 5), MotifFor.DEBUT_EXPLOITATION, MockCommune.Bern);
 
@@ -603,7 +621,8 @@ public class DeterminationDIsPMAEmettreProcessorTest extends BusinessTest {
 
 		// Un contribuable non-assujetti, mais avec une déclaration d'impôt (invalide) pré-existante
 		final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-		addDonneesRegistreCommerce(entreprise, date(2012, 4, 5), null, "Bricolage SARL", FormeJuridiqueEntreprise.SARL);
+		addRaisonSociale(entreprise, date(2012, 4, 5), null, "Bricolage SARL");
+		addFormeJuridique(entreprise, date(2012, 4, 5), null, FormeJuridiqueEntreprise.SARL);
 		addBouclement(entreprise, date(2012, 12, 1), DayMonth.get(12, 31), 12);      // bouclements tous les ans depuis le 31.12.2012
 		addForPrincipal(entreprise, date(2012, 4, 5), MotifFor.DEBUT_EXPLOITATION, MockCommune.Bex);
 
@@ -640,7 +659,8 @@ public class DeterminationDIsPMAEmettreProcessorTest extends BusinessTest {
 
 		// Un contribuable non-assujetti, mais avec une déclaration d'impôt (invalide) pré-existante
 		final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-		addDonneesRegistreCommerce(entreprise, date(2012, 4, 5), null, "Bricolage SARL", FormeJuridiqueEntreprise.SARL);
+		addRaisonSociale(entreprise, date(2012, 4, 5), null, "Bricolage SARL");
+		addFormeJuridique(entreprise, date(2012, 4, 5), null, FormeJuridiqueEntreprise.SARL);
 		addBouclement(entreprise, date(2012, 12, 1), DayMonth.get(12, 31), 12);      // bouclements tous les ans depuis le 31.12.2012
 		addForPrincipal(entreprise, date(2012, 4, 5), MotifFor.DEBUT_EXPLOITATION, MockCommune.Bex);
 
@@ -678,7 +698,8 @@ public class DeterminationDIsPMAEmettreProcessorTest extends BusinessTest {
 
 		// Un contribuable assujetti, mais avec une déclaration d'impôt (annulée) pré-existante
 		final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-		addDonneesRegistreCommerce(entreprise, date(2012, 4, 5), null, "Bricolage SARL", FormeJuridiqueEntreprise.SARL);
+		addRaisonSociale(entreprise, date(2012, 4, 5), null, "Bricolage SARL");
+		addFormeJuridique(entreprise, date(2012, 4, 5), null, FormeJuridiqueEntreprise.SARL);
 		addBouclement(entreprise, date(2012, 12, 1), DayMonth.get(12, 31), 12);      // bouclements tous les ans depuis le 31.12.2012
 		addForPrincipal(entreprise, date(2012, 4, 5), MotifFor.DEBUT_EXPLOITATION, MockCommune.Bex);
 
@@ -713,7 +734,8 @@ public class DeterminationDIsPMAEmettreProcessorTest extends BusinessTest {
 
 				// Un contribuable PM assujetti
 				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addDonneesRegistreCommerce(entreprise, date(2012, 4, 5), null, "Bricolage SARL", FormeJuridiqueEntreprise.SARL);
+				addRaisonSociale(entreprise, date(2012, 4, 5), null, "Bricolage SARL");
+				addFormeJuridique(entreprise, date(2012, 4, 5), null, FormeJuridiqueEntreprise.SARL);
 				addBouclement(entreprise, date(2012, 12, 1), DayMonth.get(12, 31), 12);      // bouclements tous les ans depuis le 31.12.2012
 				addForPrincipal(entreprise, date(2012, 4, 5), MotifFor.DEBUT_EXPLOITATION, MockCommune.Bex);
 
@@ -781,7 +803,8 @@ public class DeterminationDIsPMAEmettreProcessorTest extends BusinessTest {
 
 				// Un contribuable PM assujetti
 				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addDonneesRegistreCommerce(entreprise, date(2012, 4, 5), null, "Bricolage SARL", FormeJuridiqueEntreprise.SARL);
+				addRaisonSociale(entreprise, date(2012, 4, 5), null, "Bricolage SARL");
+				addFormeJuridique(entreprise, date(2012, 4, 5), null, FormeJuridiqueEntreprise.SARL);
 				addBouclement(entreprise, date(2012, 12, 1), DayMonth.get(12, 31), 12);      // bouclements tous les ans depuis le 31.12.2012
 				addForPrincipal(entreprise, date(2012, 4, 5), MotifFor.DEBUT_EXPLOITATION, MockCommune.Bex);
 
@@ -837,7 +860,8 @@ public class DeterminationDIsPMAEmettreProcessorTest extends BusinessTest {
 
 				// Un contribuable PM assujetti
 				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addDonneesRegistreCommerce(entreprise, date(2012, 4, 5), null, "Bricolage SARL", FormeJuridiqueEntreprise.SARL);
+				addRaisonSociale(entreprise, date(2012, 4, 5), null, "Bricolage SARL");
+				addFormeJuridique(entreprise, date(2012, 4, 5), null, FormeJuridiqueEntreprise.SARL);
 				addBouclement(entreprise, date(2012, 12, 1), DayMonth.get(12, 31), 12);      // bouclements tous les ans depuis le 31.12.2012
 				addForPrincipal(entreprise, date(2012, 4, 5), MotifFor.DEBUT_EXPLOITATION, MockCommune.Bex);
 
@@ -885,7 +909,8 @@ public class DeterminationDIsPMAEmettreProcessorTest extends BusinessTest {
 
 				// Un contribuable PM assujetti
 				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addDonneesRegistreCommerce(entreprise, date(2012, 4, 5), null, "Bricolage SARL", FormeJuridiqueEntreprise.SARL);
+				addRaisonSociale(entreprise, date(2012, 4, 5), null, "Bricolage SARL");
+				addFormeJuridique(entreprise, date(2012, 4, 5), null, FormeJuridiqueEntreprise.SARL);
 				addBouclement(entreprise, date(2012, 10, 1), DayMonth.get(10, 31), 12);      // bouclements tous les ans depuis le 31.10.2012
 				addForPrincipal(entreprise, date(2012, 4, 5), MotifFor.DEBUT_EXPLOITATION, MockCommune.Bex);
 				return entreprise.getNumero();

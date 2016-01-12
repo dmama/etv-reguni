@@ -27,7 +27,7 @@ public class RaisonSocialeHisto implements Sourced<Source>, CollatableDateRange,
 		this(null, false, source.getDateDebut(), source.getDateFin(), source.getPayload(), Source.CIVILE);
 	}
 
-	public RaisonSocialeHisto(DonneesRegistreCommerce source) {
+	public RaisonSocialeHisto(RaisonSocialeFiscaleEntreprise source) {
 		this(source.getId(), source.isAnnule(), source.getDateDebut(), source.getDateFin(), source.getRaisonSociale(), Source.FISCALE);
 	}
 

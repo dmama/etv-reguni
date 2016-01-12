@@ -177,7 +177,8 @@ public class RecalculTachesProcessorTest extends BusinessTest {
 			@Override
 			public Long doInTransaction(TransactionStatus status) {
 				final Entreprise e = addEntrepriseInconnueAuCivil();
-				addDonneesRegistreCommerce(e, dateDebutExploitation, null, "Megatrucs", FormeJuridiqueEntreprise.SARL);
+				addRaisonSociale(e, dateDebutExploitation, null, "Megatrucs");
+				addFormeJuridique(e, dateDebutExploitation, null, FormeJuridiqueEntreprise.SARL);
 				addBouclement(e, dateDebutExploitation, DayMonth.get(12, 31), 12);
 				addForPrincipal(e, dateDebutExploitation, MotifFor.DEBUT_EXPLOITATION, MockCommune.Bex);
 				return e.getNumero();
@@ -260,7 +261,8 @@ public class RecalculTachesProcessorTest extends BusinessTest {
 			@Override
 			public Long doInTransaction(TransactionStatus status) {
 				final Entreprise e = addEntrepriseInconnueAuCivil();
-				addDonneesRegistreCommerce(e, dateDebutExploitation, null, "Megatrucs", FormeJuridiqueEntreprise.SC);
+				addRaisonSociale(e, dateDebutExploitation, null, "Megatrucs");
+				addFormeJuridique(e, dateDebutExploitation, null, FormeJuridiqueEntreprise.SC);
 				addBouclement(e, dateDebutExploitation, DayMonth.get(12, 31), 12);
 				addForPrincipal(e, dateDebutExploitation, MotifFor.DEBUT_EXPLOITATION, null, null, MockCommune.Bex.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, GenreImpot.REVENU_FORTUNE);
 				return e.getNumero();
@@ -440,7 +442,8 @@ public class RecalculTachesProcessorTest extends BusinessTest {
 			@Override
 			public Long doInTransaction(TransactionStatus status) {
 				final Entreprise e = addEntrepriseInconnueAuCivil();
-				addDonneesRegistreCommerce(e, dateDebutExploitation, null, "Megatrucs", FormeJuridiqueEntreprise.SARL);
+				addRaisonSociale(e, dateDebutExploitation, null, "Megatrucs");
+				addFormeJuridique(e, dateDebutExploitation, null, FormeJuridiqueEntreprise.SARL);
 				addBouclement(e, dateDebutExploitation, DayMonth.get(12, 31), 12);
 				addForPrincipal(e, dateDebutExploitation, MotifFor.DEBUT_EXPLOITATION, MockCommune.Bex);
 				return e.getNumero();
@@ -547,7 +550,8 @@ public class RecalculTachesProcessorTest extends BusinessTest {
 			@Override
 			public Long doInTransaction(TransactionStatus status) {
 				final Entreprise e = addEntrepriseInconnueAuCivil();
-				addDonneesRegistreCommerce(e, dateDebutExploitation, null, "Megatrucs", FormeJuridiqueEntreprise.SC);
+				addRaisonSociale(e, dateDebutExploitation, null, "Megatrucs");
+				addFormeJuridique(e, dateDebutExploitation, null, FormeJuridiqueEntreprise.SC);
 				addBouclement(e, dateDebutExploitation, DayMonth.get(12, 31), 12);
 				addForPrincipal(e, dateDebutExploitation, MotifFor.DEBUT_EXPLOITATION, null, null, MockCommune.Bex.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, GenreImpot.REVENU_FORTUNE);
 				return e.getNumero();
@@ -751,7 +755,8 @@ public class RecalculTachesProcessorTest extends BusinessTest {
 			@Override
 			public Long doInTransaction(TransactionStatus status) {
 				final Entreprise e = addEntrepriseInconnueAuCivil();
-				addDonneesRegistreCommerce(e, dateDebutExploitation, null, "Megatrucs", FormeJuridiqueEntreprise.SARL);
+				addRaisonSociale(e, dateDebutExploitation, null, "Megatrucs");
+				addFormeJuridique(e, dateDebutExploitation, null, FormeJuridiqueEntreprise.SARL);
 				addBouclement(e, dateDebutExploitation, DayMonth.get(12, 31), 12);
 				addForPrincipal(e, dateDebutExploitation, MotifFor.DEBUT_EXPLOITATION, MockCommune.Bex);
 				return e.getNumero();
@@ -858,7 +863,8 @@ public class RecalculTachesProcessorTest extends BusinessTest {
 			@Override
 			public Long doInTransaction(TransactionStatus status) {
 				final Entreprise e = addEntrepriseInconnueAuCivil();
-				addDonneesRegistreCommerce(e, dateDebutExploitation, null, "Megatrucs", FormeJuridiqueEntreprise.SC);
+				addRaisonSociale(e, dateDebutExploitation, null, "Megatrucs");
+				addFormeJuridique(e, dateDebutExploitation, null, FormeJuridiqueEntreprise.SC);
 				addBouclement(e, dateDebutExploitation, DayMonth.get(12, 31), 12);
 				addForPrincipal(e, dateDebutExploitation, MotifFor.DEBUT_EXPLOITATION, null, null, MockCommune.Bex.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, GenreImpot.REVENU_FORTUNE);
 				return e.getNumero();
@@ -1031,7 +1037,8 @@ public class RecalculTachesProcessorTest extends BusinessTest {
 			@Override
 			public Long doInTransaction(TransactionStatus status) {
 				final Entreprise e = addEntrepriseInconnueAuCivil();
-				addDonneesRegistreCommerce(e, dateDebutExploitation, null, "Megatrucs", FormeJuridiqueEntreprise.SARL);
+				addRaisonSociale(e, dateDebutExploitation, null, "Megatrucs");
+				addFormeJuridique(e, dateDebutExploitation, null, FormeJuridiqueEntreprise.SARL);
 				addBouclement(e, dateDebutExploitation, DayMonth.get(12, 31), 12);
 				addForPrincipal(e, dateDebutExploitation, MotifFor.DEBUT_EXPLOITATION, MockCommune.Bex);
 				return e.getNumero();
@@ -1107,7 +1114,8 @@ public class RecalculTachesProcessorTest extends BusinessTest {
 			@Override
 			public Long doInTransaction(TransactionStatus status) {
 				final Entreprise e = addEntrepriseInconnueAuCivil();
-				addDonneesRegistreCommerce(e, dateDebutExploitation, null, "Megatrucs", FormeJuridiqueEntreprise.SC);
+				addRaisonSociale(e, dateDebutExploitation, null, "Megatrucs");
+				addFormeJuridique(e, dateDebutExploitation, null, FormeJuridiqueEntreprise.SC);
 				addBouclement(e, dateDebutExploitation, DayMonth.get(12, 31), 12);
 				addForPrincipal(e, dateDebutExploitation, MotifFor.DEBUT_EXPLOITATION, null, null, MockCommune.Bex.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, GenreImpot.REVENU_FORTUNE);
 				return e.getNumero();
@@ -1183,7 +1191,8 @@ public class RecalculTachesProcessorTest extends BusinessTest {
 			@Override
 			public Long doInTransaction(TransactionStatus status) {
 				final Entreprise e = addEntrepriseInconnueAuCivil();
-				addDonneesRegistreCommerce(e, dateDebutExploitation, null, "Megatrucs", FormeJuridiqueEntreprise.SARL);
+				addRaisonSociale(e, dateDebutExploitation, null, "Megatrucs");
+				addFormeJuridique(e, dateDebutExploitation, null, FormeJuridiqueEntreprise.SARL);
 				addBouclement(e, dateDebutExploitation, DayMonth.get(12, 31), 12);
 				addForPrincipal(e, dateDebutExploitation, MotifFor.DEBUT_EXPLOITATION, MockCommune.Bex);
 				return e.getNumero();

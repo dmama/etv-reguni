@@ -70,7 +70,7 @@ public class IDEMatcher {
 			// si on a trouvé des correspondances, il faut maintenant enlever les données civiles migrées
 			if (count > 0) {
 				ps.println("-- Effacement des données civiles");
-				ps.printf("DELETE FROM DONNEES_RC WHERE ENTREPRISE_ID IN (SELECT NUMERO FROM TIERS WHERE TIERS_TYPE='Entreprise' AND NO_ENTREPRISE IS NOT NULL AND LOG_MUSER='%s');%n", VISA);
+				ps.printf("DELETE FROM DONNEE_CIVILE_ENTREPRISE WHERE ENTREPRISE_ID IN (SELECT NUMERO FROM TIERS WHERE TIERS_TYPE='Entreprise' AND NO_ENTREPRISE IS NOT NULL AND LOG_MUSER='%s');%n", VISA);
 			}
 		}
 	}

@@ -1,5 +1,7 @@
 package ch.vd.uniregctb.supergra;
 
+import ch.vd.uniregctb.tiers.DonneeCivileEntreprise;
+
 /**
  * Les types d'entité pouvant être édités en mode SuperGra.
  */
@@ -24,8 +26,7 @@ public enum EntityType {
 	DecisionAci(ch.vd.uniregctb.tiers.DecisionAci.class,"décision ACI", "la décision ACI","de la décision ACI"),
 	DomicileEtablissement(ch.vd.uniregctb.tiers.DomicileEtablissement.class, "domicile", "le domicile", "du domicile"),
 	RegimeFiscal(ch.vd.uniregctb.tiers.RegimeFiscal.class, "régime fiscal", "le régime fiscal", "du régime fiscal"),
-	DonneesRegistreCommerce(ch.vd.uniregctb.tiers.DonneesRegistreCommerce.class, "donnée du registre du commerce", "la donnée du registre du commerce", "de la donnée du registre du commerce"),
-	CapitalEntreprise(ch.vd.uniregctb.tiers.CapitalEntreprise.class, "capital", "le capital", "du capital"),
+	DonneeCivileEntreprise(DonneeCivileEntreprise.class, "donnée civile d'entreprise", "la donnée civile d'entreprise", "de la donnée civile d'entreprise"),
 	AllegementFiscal(ch.vd.uniregctb.tiers.AllegementFiscal.class, "allègement fiscal", "l'allègement fiscal", "de l'allègement fiscal"),
 	Bouclement(ch.vd.uniregctb.tiers.Bouclement.class, "bouclement", "le bouclement", "du bouclement"),
 	EtatEntreprise(ch.vd.uniregctb.tiers.EtatEntreprise.class, "état", "l'état", "de l'état"),

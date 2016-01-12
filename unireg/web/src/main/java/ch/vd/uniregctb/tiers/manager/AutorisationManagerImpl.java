@@ -460,6 +460,10 @@ public class AutorisationManagerImpl implements AutorisationManager {
 			if (SecurityHelper.isAnyGranted(securityProvider, visa, oid,  Role.DI_EMIS_PM, Role.DI_DELAI_PM, Role.DI_DUPLIC_PM, Role.DI_QUIT_PM, Role.DI_SOM_PM)) {
 				map.put(MODIF_DI, Boolean.TRUE);
 			}
+
+			if (SecurityHelper.isGranted(securityProvider,Role.GEST_DECISION_ACI,visa,oid)) {
+				map.put(FISCAL_DECISION_ACI, Boolean.TRUE);
+			}
 		}
 
 		if (tiers instanceof PersonnePhysique) {

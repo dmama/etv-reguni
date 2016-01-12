@@ -36,7 +36,7 @@
 		</display:column>
 		<display:column style="width:10%">
 			<c:if test="${raisonSociale.source == 'FISCALE'}" >
-				<unireg:consulterLog entityNature="DonneesRegistreCommerce" entityId="${raisonSociale.id}"/>
+				<unireg:consulterLog entityNature="DonneeCivileEntreprise" entityId="${raisonSociale.id}"/>
 			</c:if>
 		</display:column>
 	</display:table>
@@ -111,7 +111,7 @@
 		</display:column>
 		<display:column style="width:10%">
 			<c:if test="${formesJuridiques.source == 'FISCALE'}" >
-				<unireg:consulterLog entityNature="DonneesRegistreCommerce" entityId="${formesJuridiques.id}"/>
+				<unireg:consulterLog entityNature="DonneeCivileEntreprise" entityId="${formesJuridiques.id}"/>
 			</c:if>
 		</display:column>
 	</display:table>
@@ -141,7 +141,7 @@
 		</display:column>
 		<display:column style="width:10%" class="action">
 			<c:if test="${capitaux.source == 'FISCALE'}" >
-				<unireg:consulterLog entityNature="Capital" entityId="${capitaux.id}"/>
+				<unireg:consulterLog entityNature="DonneeCivileEntreprise" entityId="${capitaux.id}"/>
 			</c:if>
 		</display:column>
 	</display:table>

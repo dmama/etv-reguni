@@ -5573,7 +5573,8 @@ public class TacheServiceTest extends BusinessTest {
 				@Override
 				public Long doInTransaction(TransactionStatus status) {
 					final Entreprise pm = addEntrepriseInconnueAuCivil();
-					addDonneesRegistreCommerce(pm, dateDebutActivite, null, "Ma petite entreprise", FormeJuridiqueEntreprise.SARL);
+					addRaisonSociale(pm, dateDebutActivite, null, "Ma petite entreprise");
+					addFormeJuridique(pm, dateDebutActivite, null, FormeJuridiqueEntreprise.SARL);
 					addCapitalEntreprise(pm, dateDebutActivite, null, new MontantMonetaire(10000L, MontantMonetaire.CHF));
 					addForPrincipal(pm, dateDebutActivite, MotifFor.DEBUT_EXPLOITATION, MockCommune.Bussigny);
 					addBouclement(pm, dateDebutActivite, DayMonth.get(12, 31), 12);
@@ -5680,7 +5681,8 @@ public class TacheServiceTest extends BusinessTest {
 				public Long doInTransaction(TransactionStatus status) {
 					// entreprise
 					final Entreprise pm = addEntrepriseInconnueAuCivil();
-					addDonneesRegistreCommerce(pm, dateDebutActivite, null, "Ma petite entreprise", FormeJuridiqueEntreprise.SARL);
+					addRaisonSociale(pm, dateDebutActivite, null, "Ma petite entreprise");
+					addFormeJuridique(pm, dateDebutActivite, null, FormeJuridiqueEntreprise.SARL);
 					addCapitalEntreprise(pm, dateDebutActivite, null, new MontantMonetaire(10000L, MontantMonetaire.CHF));
 					addForPrincipal(pm, dateDebutActivite, MotifFor.DEBUT_EXPLOITATION, MockCommune.Bussigny);
 					addBouclement(pm, dateDebutActivite, DayMonth.get(12, 31), 12);

@@ -9,10 +9,11 @@ import org.junit.Test;
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.unireg.interfaces.infra.mock.MockTypeRegimeFiscal;
 import ch.vd.uniregctb.tiers.AllegementFiscal;
-import ch.vd.uniregctb.tiers.CapitalEntreprise;
-import ch.vd.uniregctb.tiers.DonneesRegistreCommerce;
+import ch.vd.uniregctb.tiers.CapitalFiscalEntreprise;
 import ch.vd.uniregctb.tiers.Entreprise;
+import ch.vd.uniregctb.tiers.FormeJuridiqueFiscaleEntreprise;
 import ch.vd.uniregctb.tiers.MontantMonetaire;
+import ch.vd.uniregctb.tiers.RaisonSocialeFiscaleEntreprise;
 import ch.vd.uniregctb.tiers.RegimeFiscal;
 import ch.vd.uniregctb.type.FormeJuridiqueEntreprise;
 import ch.vd.uniregctb.validation.AbstractValidatorTest;
@@ -75,95 +76,87 @@ public class EntrepriseValidatorTest extends AbstractValidatorTest<Entreprise> {
 	}
 
 	@Test
-	public void testChevauchementDonneesRegistreCommerce() throws Exception {
+	public void testChevauchementDonneesCiviles() throws Exception {
 
 		final Entreprise entreprise = new Entreprise();
-		entreprise.addDonneesRC(new DonneesRegistreCommerce(date(2000, 1, 1), date(2005, 12, 31), "Ma petite entreprise", FormeJuridiqueEntreprise.SARL));
+		entreprise.addDonneeCivile(new RaisonSocialeFiscaleEntreprise(date(2000, 1, 1), date(2005, 12, 31), "Ma petite entreprise"));
+		entreprise.addDonneeCivile(new FormeJuridiqueFiscaleEntreprise(date(2000, 1, 1), date(2005, 12, 31), FormeJuridiqueEntreprise.SARL));
+		entreprise.addDonneeCivile(new CapitalFiscalEntreprise(date(2000, 1, 1), date(2005, 12, 31), new MontantMonetaire(10000L, MontantMonetaire.CHF)));
 
-		// aucun chevauchement (= 1 seule donnée, de toute façon...)
+		// aucun chevauchement (= 1 seule donnée de chaque type, de toute façon...)
 		{
 			final ValidationResults vr = validate(entreprise);
 			Assert.assertFalse(vr.toString(), vr.hasErrors());
 		}
 
 		// ajoutons une donnée qui ne chevauche pas -> pas de souci
-		entreprise.addDonneesRC(new DonneesRegistreCommerce(date(2007, 1, 1), date(2009, 12, 1), "Ma petite entreprise", FormeJuridiqueEntreprise.SARL));
+		entreprise.addDonneeCivile(new RaisonSocialeFiscaleEntreprise(date(2007, 1, 1), date(2009, 12, 1), "Ma petite entreprise"));
+		entreprise.addDonneeCivile(new FormeJuridiqueFiscaleEntreprise(date(2007, 1, 1), date(2009, 12, 1), FormeJuridiqueEntreprise.SARL));
+		entreprise.addDonneeCivile(new CapitalFiscalEntreprise(date(2007, 1, 1), date(2009, 12, 1), new MontantMonetaire(10000L, MontantMonetaire.CHF)));
 		{
 			final ValidationResults vr = validate(entreprise);
 			Assert.assertFalse(vr.toString(), vr.hasErrors());
 		}
 
 		// ajoutons une donnée qui chevauche -> rien ne va plus
-		entreprise.addDonneesRC(new DonneesRegistreCommerce(date(2005, 1, 1), date(2007, 12, 31), "Ma petite entreprise", FormeJuridiqueEntreprise.SARL));
+		entreprise.addDonneeCivile(new RaisonSocialeFiscaleEntreprise(date(2005, 1, 1), date(2007, 12, 31), "Ma petite entreprise"));
+		entreprise.addDonneeCivile(new FormeJuridiqueFiscaleEntreprise(date(2005, 1, 1), date(2007, 12, 31), FormeJuridiqueEntreprise.SARL));
+		entreprise.addDonneeCivile(new CapitalFiscalEntreprise(date(2005, 1, 1), date(2007, 12, 31), new MontantMonetaire(10000L, MontantMonetaire.CHF)));
 		{
 			final ValidationResults vr = validate(entreprise);
 			Assert.assertTrue(vr.hasErrors());
-			Assert.assertEquals(2, vr.errorsCount());
+			Assert.assertEquals(6, vr.errorsCount());
 
 			final List<String> errors = vr.getErrors();
-			Assert.assertEquals("La période [01.01.2005 ; 31.12.2005] est couverte par plusieurs ensembles de données RC", errors.get(0));
-			Assert.assertEquals("La période [01.01.2007 ; 31.12.2007] est couverte par plusieurs ensembles de données RC", errors.get(1));
+			Assert.assertEquals("La période [01.01.2005 ; 31.12.2005] est couverte par plusieurs valeurs de raison sociale", errors.get(0));
+			Assert.assertEquals("La période [01.01.2007 ; 31.12.2007] est couverte par plusieurs valeurs de raison sociale", errors.get(1));
+			Assert.assertEquals("La période [01.01.2005 ; 31.12.2005] est couverte par plusieurs valeurs de forme juridique", errors.get(2));
+			Assert.assertEquals("La période [01.01.2007 ; 31.12.2007] est couverte par plusieurs valeurs de forme juridique", errors.get(3));
+			Assert.assertEquals("La période [01.01.2005 ; 31.12.2005] est couverte par plusieurs valeurs de capital", errors.get(4));
+			Assert.assertEquals("La période [01.01.2007 ; 31.12.2007] est couverte par plusieurs valeurs de capital", errors.get(5));
 		}
 	}
 
 	@Test
-	public void testDonneesRegistreCommerceInvalides() throws Exception {
+	public void testDonneesCivilesRaisonSocialeInvalides() throws Exception {
 
 		final Entreprise entreprise = new Entreprise();
-		entreprise.addDonneesRC(new DonneesRegistreCommerce(date(2010, 1, 1), date(2005, 12, 31), "Ma grande entreprise", FormeJuridiqueEntreprise.SA));     // les dates sont à l'envers !
+		entreprise.addDonneeCivile(new RaisonSocialeFiscaleEntreprise(date(2010, 1, 1), date(2005, 12, 31), "Ma grande entreprise"));     // les dates sont à l'envers !
 
 		final ValidationResults vr = validate(entreprise);
 		Assert.assertTrue(vr.hasErrors());
 		Assert.assertEquals(1, vr.errorsCount());
 
 		final List<String> errors = vr.getErrors();
-		Assert.assertEquals("L'ensemble de données du registre du commerce DonneesRegistreCommerce (01.01.2010 - 31.12.2005) possède une date de début qui est après la date de fin: début = 01.01.2010, fin = 31.12.2005", errors.get(0));
+		Assert.assertEquals("La raison sociale RaisonSocialeFiscaleEntreprise (01.01.2010 - 31.12.2005) possède une date de début qui est après la date de fin: début = 01.01.2010, fin = 31.12.2005", errors.get(0));
 	}
 
 	@Test
-	public void testChevauchementCapitaux() throws Exception {
+	public void testDonneesCivilesFormeJuridiqueInvalides() throws Exception {
 
 		final Entreprise entreprise = new Entreprise();
-		entreprise.addCapital(new CapitalEntreprise(date(2000, 1, 1), date(2005, 12, 31), new MontantMonetaire(50000L, CHF)));
-
-		// aucun chevauchement (= 1 seule donnée, de toute façon...)
-		{
-			final ValidationResults vr = validate(entreprise);
-			Assert.assertFalse(vr.toString(), vr.hasErrors());
-		}
-
-		// ajoutons une donnée qui ne chevauche pas -> pas de souci
-		entreprise.addCapital(new CapitalEntreprise(date(2007, 1, 1), date(2009, 12, 1), new MontantMonetaire(60000L, CHF)));
-		{
-			final ValidationResults vr = validate(entreprise);
-			Assert.assertFalse(vr.toString(), vr.hasErrors());
-		}
-
-		// ajoutons une donnée qui chevauche -> rien ne va plus
-		entreprise.addCapital(new CapitalEntreprise(date(2005, 1, 1), date(2007, 12, 31), new MontantMonetaire(55000L, CHF)));
-		{
-			final ValidationResults vr = validate(entreprise);
-			Assert.assertTrue(vr.hasErrors());
-			Assert.assertEquals(2, vr.errorsCount());
-
-			final List<String> errors = vr.getErrors();
-			Assert.assertEquals("La période [01.01.2005 ; 31.12.2005] est couverte par plusieurs données de capital", errors.get(0));
-			Assert.assertEquals("La période [01.01.2007 ; 31.12.2007] est couverte par plusieurs données de capital", errors.get(1));
-		}
-	}
-
-	@Test
-	public void testCapitauxInvalides() throws Exception {
-
-		final Entreprise entreprise = new Entreprise();
-		entreprise.addCapital(new CapitalEntreprise(date(2010, 1, 1), date(2005, 12, 31), new MontantMonetaire(1000000L, CHF)));     // les dates sont à l'envers !
+		entreprise.addDonneeCivile(new FormeJuridiqueFiscaleEntreprise(date(2010, 1, 1), date(2005, 12, 31), FormeJuridiqueEntreprise.SA));     // les dates sont à l'envers !
 
 		final ValidationResults vr = validate(entreprise);
 		Assert.assertTrue(vr.hasErrors());
 		Assert.assertEquals(1, vr.errorsCount());
 
 		final List<String> errors = vr.getErrors();
-		Assert.assertEquals("La surcharge de capital CapitalEntreprise (01.01.2010 - 31.12.2005) possède une date de début qui est après la date de fin: début = 01.01.2010, fin = 31.12.2005", errors.get(0));
+		Assert.assertEquals("La forme juridique FormeJuridiqueFiscaleEntreprise (01.01.2010 - 31.12.2005) possède une date de début qui est après la date de fin: début = 01.01.2010, fin = 31.12.2005", errors.get(0));
+	}
+
+	@Test
+	public void testDonneesCivilesCapitalInvalides() throws Exception {
+
+		final Entreprise entreprise = new Entreprise();
+		entreprise.addDonneeCivile(new CapitalFiscalEntreprise(date(2010, 1, 1), date(2005, 12, 31), new MontantMonetaire(10000L, MontantMonetaire.CHF)));     // les dates sont à l'envers !
+
+		final ValidationResults vr = validate(entreprise);
+		Assert.assertTrue(vr.hasErrors());
+		Assert.assertEquals(1, vr.errorsCount());
+
+		final List<String> errors = vr.getErrors();
+		Assert.assertEquals("Le capital CapitalFiscalEntreprise (01.01.2010 - 31.12.2005) possède une date de début qui est après la date de fin: début = 01.01.2010, fin = 31.12.2005", errors.get(0));
 	}
 
 	@Test
@@ -219,7 +212,7 @@ public class EntrepriseValidatorTest extends AbstractValidatorTest<Entreprise> {
 	public void testCapitalSansMonnaie() throws Exception {
 
 		final Entreprise entreprise = new Entreprise();
-		entreprise.addCapital(new CapitalEntreprise(date(2010, 1, 1), null, new MontantMonetaire(1000000L, null)));     // pas de monnaie !
+		entreprise.addDonneeCivile(new CapitalFiscalEntreprise(date(2010, 1, 1), null, new MontantMonetaire(1000000L, null)));     // pas de monnaie !
 
 		final ValidationResults vr = validate(entreprise);
 		Assert.assertTrue(vr.hasErrors());
@@ -234,7 +227,7 @@ public class EntrepriseValidatorTest extends AbstractValidatorTest<Entreprise> {
 	public void testCapitalSansMontant() throws Exception {
 
 		final Entreprise entreprise = new Entreprise();
-		entreprise.addCapital(new CapitalEntreprise(date(2010, 1, 1), null, new MontantMonetaire(null, CHF)));     // pas de montant !
+		entreprise.addDonneeCivile(new CapitalFiscalEntreprise(date(2010, 1, 1), null, new MontantMonetaire(null, CHF)));     // pas de montant !
 
 		final ValidationResults vr = validate(entreprise);
 		Assert.assertTrue(vr.hasErrors());
@@ -249,7 +242,7 @@ public class EntrepriseValidatorTest extends AbstractValidatorTest<Entreprise> {
 	public void testCapitalSansMontantNiMonnaie() throws Exception {
 
 		final Entreprise entreprise = new Entreprise();
-		entreprise.addCapital(new CapitalEntreprise(date(2010, 1, 1), null, new MontantMonetaire(null, null)));
+		entreprise.addDonneeCivile(new CapitalFiscalEntreprise(date(2010, 1, 1), null, new MontantMonetaire(null, null)));
 
 		final ValidationResults vr = validate(entreprise);
 		Assert.assertTrue(vr.hasErrors());
@@ -264,7 +257,7 @@ public class EntrepriseValidatorTest extends AbstractValidatorTest<Entreprise> {
 	public void testSansCapital() throws Exception {
 
 		final Entreprise entreprise = new Entreprise();
-		entreprise.addCapital(new CapitalEntreprise(date(2010, 1, 1), null, null));
+		entreprise.addDonneeCivile(new CapitalFiscalEntreprise(date(2010, 1, 1), null, null));
 
 		final ValidationResults vr = validate(entreprise);
 		Assert.assertEquals(1, vr.errorsCount());
@@ -278,7 +271,7 @@ public class EntrepriseValidatorTest extends AbstractValidatorTest<Entreprise> {
 	public void testCapitalAvecMontantNegatif() throws Exception {
 
 		final Entreprise entreprise = new Entreprise();
-		entreprise.addCapital(new CapitalEntreprise(date(2010, 1, 1), null, new MontantMonetaire(-42L, CHF)));
+		entreprise.addDonneeCivile(new CapitalFiscalEntreprise(date(2010, 1, 1), null, new MontantMonetaire(-42L, CHF)));
 
 		final ValidationResults vr = validate(entreprise);
 		Assert.assertTrue(vr.hasErrors());

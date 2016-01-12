@@ -361,8 +361,10 @@
 
 	<bean id="regimeFiscalValidator" class="ch.vd.uniregctb.validation.tiers.RegimeFiscalValidator" parent="dateRangeEntityValidator"/>
 
-	<bean id="donneesRegistreCommerceValidator" class="ch.vd.uniregctb.validation.tiers.DonneesRegistreCommerceValidator" parent="dateRangeEntityValidator"/>
-	<bean id="capitalEntrepriseValidator" class="ch.vd.uniregctb.validation.tiers.CapitalEntrepriseValidator" parent="dateRangeEntityValidator"/>
+	<bean id="donneeCivileEntrepriseValidator" class="ch.vd.uniregctb.validation.tiers.DonneeCivileEntrepriseValidator" abstract="true" parent="dateRangeEntityValidator"/>
+	<bean id="capitalFiscalEntrepriseValidator" class="ch.vd.uniregctb.validation.tiers.CapitalFiscalEntrepriseValidator" parent="donneeCivileEntrepriseValidator"/>
+	<bean id="formeJuridiqueFiscaleEntrepriseValidator" class="ch.vd.uniregctb.validation.tiers.FormeJuridiqueFiscaleEntrepriseValidator" parent="donneeCivileEntrepriseValidator"/>
+	<bean id="raisonSocialeFiscaleEntrepriseValidator" class="ch.vd.uniregctb.validation.tiers.RaisonSocialeFiscaleEntrepriseValidator" parent="donneeCivileEntrepriseValidator"/>
 
 	<bean id="allegementFiscalValidator" class="ch.vd.uniregctb.validation.tiers.AllegementFiscalValidator" parent="dateRangeEntityValidator">
 		<property name="infraService" ref="serviceInfrastructureService"/>

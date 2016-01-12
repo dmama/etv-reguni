@@ -7,6 +7,7 @@ import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Transient;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -38,8 +39,7 @@ public class Entreprise extends ContribuableImpositionPersonnesMorales {
 	private Long numeroEntreprise;
 
 	private Set<RegimeFiscal> regimesFiscaux;
-	private Set<DonneesRegistreCommerce> donneesRC;
-	private Set<CapitalEntreprise> capitaux;
+	private Set<DonneeCivileEntreprise> donneesCiviles;
 	private Set<AllegementFiscal> allegementsFiscaux;
 	private Set<Bouclement> bouclements;
 	private Set<EtatEntreprise> etats;
@@ -96,61 +96,67 @@ public class Entreprise extends ContribuableImpositionPersonnesMorales {
 
 	@OneToMany(cascade = CascadeType.ALL)
 	@JoinColumn(name = "ENTREPRISE_ID")
-	public Set<DonneesRegistreCommerce> getDonneesRC() {
-		return donneesRC;
+	public Set<DonneeCivileEntreprise> getDonneesCiviles() {
+		return donneesCiviles;
 	}
 
-	public void setDonneesRC(Set<DonneesRegistreCommerce> donneesRC) {
-		this.donneesRC = donneesRC;
+	public void setDonneesCiviles(Set<DonneeCivileEntreprise> donneesCiviles) {
+		this.donneesCiviles = donneesCiviles;
 	}
 
-	public void addDonneesRC(DonneesRegistreCommerce donneesRC) {
-		if (donneesRC.getEntreprise() != null && donneesRC.getEntreprise() != this) {
+	public void addDonneeCivile(DonneeCivileEntreprise donnee) {
+		if (donnee.getEntreprise() != null && donnee.getEntreprise() != this) {
 			throw new IllegalArgumentException("Ces données ont déjà été associées à une autre enteprise");
 		}
 
-		if (this.donneesRC == null) {
-			this.donneesRC = new HashSet<>();
+		if (this.donneesCiviles == null) {
+			this.donneesCiviles = new HashSet<>();
 		}
-		this.donneesRC.add(donneesRC);
-		donneesRC.setEntreprise(this);
+		this.donneesCiviles.add(donnee);
+		donnee.setEntreprise(this);
+	}
+
+	@NotNull
+	private <T extends DonneeCivileEntreprise> List<T> extractDonneesCiviles(Class<T> clazz, boolean avecAnnulees, boolean triees) {
+		final Set<DonneeCivileEntreprise> donneesCiviles = getDonneesCiviles();
+		final List<T> list;
+		if (donneesCiviles != null && !donneesCiviles.isEmpty()) {
+			list = new ArrayList<>(donneesCiviles.size());
+			for (DonneeCivileEntreprise dce : donneesCiviles) {
+				if (clazz.isAssignableFrom(dce.getClass())) {
+					//noinspection unchecked
+					final T donnee = (T) dce;
+					if (avecAnnulees || !donnee.isAnnule()) {
+						list.add(donnee);
+					}
+				}
+			}
+			if (!list.isEmpty() && triees) {
+				Collections.sort(list, new DateRangeComparator<>());
+			}
+		}
+		else {
+			list = Collections.emptyList();
+		}
+		return list;
 	}
 
 	@Transient
 	@NotNull
-	public List<DonneesRegistreCommerce> getDonneesRegistreCommerceNonAnnuleesTriees() {
-		final List<DonneesRegistreCommerce> nonAnnulees = AnnulableHelper.sansElementsAnnules(donneesRC);
-		Collections.sort(nonAnnulees, new DateRangeComparator<DonneesRegistreCommerce>());
-		return nonAnnulees;
-	}
-
-	@OneToMany(cascade = CascadeType.ALL)
-	@JoinColumn(name = "ENTREPRISE_ID")
-	public Set<CapitalEntreprise> getCapitaux() {
-		return capitaux;
-	}
-
-	public void setCapitaux(Set<CapitalEntreprise> capitaux) {
-		this.capitaux = capitaux;
-	}
-
-	public void addCapital(CapitalEntreprise capital) {
-		if (capital.getEntreprise() != null && capital.getEntreprise() != this) {
-			throw new IllegalArgumentException("Ce capital est déjà associé à une autre entreprise");
-		}
-		if (this.capitaux == null) {
-			this.capitaux = new HashSet<>();
-		}
-		this.capitaux.add(capital);
-		capital.setEntreprise(this);
+	public List<RaisonSocialeFiscaleEntreprise> getRaisonsSocialesNonAnnuleesTriees() {
+		return extractDonneesCiviles(RaisonSocialeFiscaleEntreprise.class, false, true);
 	}
 
 	@Transient
 	@NotNull
-	public List<CapitalEntreprise> getCapitauxNonAnnulesTries() {
-		final List<CapitalEntreprise> nonAnnules = AnnulableHelper.sansElementsAnnules(capitaux);
-		Collections.sort(nonAnnules, new DateRangeComparator<>());
-		return nonAnnules;
+	public List<FormeJuridiqueFiscaleEntreprise> getFormesJuridiquesNonAnnuleesTriees() {
+		return extractDonneesCiviles(FormeJuridiqueFiscaleEntreprise.class, false, true);
+	}
+
+	@Transient
+	@NotNull
+	public List<CapitalFiscalEntreprise> getCapitauxNonAnnulesTries() {
+		return extractDonneesCiviles(CapitalFiscalEntreprise.class, false, true);
 	}
 
 	@OneToMany(cascade = CascadeType.ALL)

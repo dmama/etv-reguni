@@ -538,7 +538,7 @@
 			<value>222</value>
 		</row>
 	</table>
-	<table name="DONNEES_RC">
+	<table name="DONNEE_CIVILE_ENTREPRISE">
 		<column>ID</column>
 		<column>LOG_CDATE</column>
 		<column>LOG_CUSER</column>
@@ -547,8 +547,11 @@
 		<column>DATE_DEBUT</column>
 		<column>DATE_FIN</column>
 		<column>ENTREPRISE_ID</column>
-		<column>RAISON_SOCIALE</column>
-		<column>FORME_JURIDIQUE</column>
+		<column>RS_RAISON_SOCIALE</column>
+		<column>FJ_FORME_JURIDIQUE</column>
+		<column>CAP_MONTANT</column>
+		<column>CAP_MONNAIE</column>
+		<column>DONNEE_TYPE</column>
 		<row>
 			<value>2</value>
 			<value><![CDATA[2010-03-09 11:26:29.761]]></value>
@@ -559,10 +562,28 @@
 			<null/>
 			<value>37</value>
 			<value>Fiber Seal (Romandie) SA, en liquidation</value>
-			<value>SA</value>
+			<null/>
+			<null/>
+			<null/>
+			<value>RaisonSociale</value>
 		</row>
 		<row>
 			<value>3</value>
+			<value><![CDATA[2010-03-09 11:26:29.761]]></value>
+			<value><![CDATA[[UT] AdresseServiceTest]]></value>
+			<value><![CDATA[2010-03-09 11:26:29.761]]></value>
+			<value><![CDATA[[UT] AdresseServiceTest]]></value>
+			<value>20000101</value>
+			<null/>
+			<value>37</value>
+			<null/>
+			<value>SA</value>
+			<null/>
+			<null/>
+			<value>FormeJuridique</value>
+		</row>
+		<row>
+			<value>4</value>
 			<value><![CDATA[2010-03-09 11:26:29.761]]></value>
 			<value><![CDATA[[UT] AdresseServiceTest]]></value>
 			<value><![CDATA[2010-03-09 11:26:29.761]]></value>
@@ -571,10 +592,28 @@
 			<null/>
 			<value>222</value>
 			<value>Kalesa S.A., en liquidation</value>
-			<value>SA</value>
+			<null/>
+			<null/>
+			<null/>
+			<value>RaisonSociale</value>
 		</row>
 		<row>
-			<value>4</value>
+			<value>5</value>
+			<value><![CDATA[2010-03-09 11:26:29.761]]></value>
+			<value><![CDATA[[UT] AdresseServiceTest]]></value>
+			<value><![CDATA[2010-03-09 11:26:29.761]]></value>
+			<value><![CDATA[[UT] AdresseServiceTest]]></value>
+			<value>19790807</value>
+			<null/>
+			<value>222</value>
+			<null/>
+			<value>SA</value>
+			<null/>
+			<null/>
+			<value>FormeJuridique</value>
+		</row>
+		<row>
+			<value>6</value>
 			<value><![CDATA[2010-03-09 11:26:29.761]]></value>
 			<value><![CDATA[[UT] AdresseServiceTest]]></value>
 			<value><![CDATA[2010-03-09 11:26:29.761]]></value>
@@ -583,7 +622,25 @@
 			<null/>
 			<value>25000</value>
 			<value>Fonds prévoyance en faveur du personnel Sté électrique intercommunale de la Côte</value>
+			<null/>
+			<null/>
+			<null/>
+			<value>RaisonSociale</value>
+		</row>
+		<row>
+			<value>7</value>
+			<value><![CDATA[2010-03-09 11:26:29.761]]></value>
+			<value><![CDATA[[UT] AdresseServiceTest]]></value>
+			<value><![CDATA[2010-03-09 11:26:29.761]]></value>
+			<value><![CDATA[[UT] AdresseServiceTest]]></value>
+			<value>20000101</value>
+			<null/>
+			<value>25000</value>
+			<null/>
 			<value>SA</value>
+			<null/>
+			<null/>
+			<value>FormeJuridique</value>
 		</row>
 	</table>
 	<table name="FOR_FISCAL">

@@ -217,7 +217,8 @@ public class TacheSynchronizerInterceptorTest extends BusinessTest {
 			public Long doInTransaction(TransactionStatus status) {
 				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
 				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addDonneesRegistreCommerce(entreprise, dateDebut, null, "Truc machin SA", FormeJuridiqueEntreprise.SA);
+				addRaisonSociale(entreprise, dateDebut, null, "Truc machin SA");
+				addFormeJuridique(entreprise, dateDebut, null, FormeJuridiqueEntreprise.SA);
 				addBouclement(entreprise, dateDebut, DayMonth.get(12, 31), 12);
 				addForPrincipal(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, dateFin, MotifFor.FIN_EXPLOITATION, MockCommune.Aubonne);
 

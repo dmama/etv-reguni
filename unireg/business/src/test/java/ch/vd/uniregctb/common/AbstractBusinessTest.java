@@ -52,14 +52,14 @@ import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.parentes.ParentesSynchronizerInterceptor;
 import ch.vd.uniregctb.tache.TacheSynchronizerInterceptor;
 import ch.vd.uniregctb.tiers.AllegementFiscal;
-import ch.vd.uniregctb.tiers.CapitalEntreprise;
+import ch.vd.uniregctb.tiers.CapitalFiscalEntreprise;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesMorales;
 import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.DomicileEtablissement;
-import ch.vd.uniregctb.tiers.DonneesRegistreCommerce;
+import ch.vd.uniregctb.tiers.DonneeCivileEntreprise;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.Etablissement;
 import ch.vd.uniregctb.tiers.ForDebiteurPrestationImposable;
@@ -67,11 +67,13 @@ import ch.vd.uniregctb.tiers.ForFiscalAutreElementImposable;
 import ch.vd.uniregctb.tiers.ForFiscalAutreImpot;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipalPM;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
+import ch.vd.uniregctb.tiers.FormeJuridiqueFiscaleEntreprise;
 import ch.vd.uniregctb.tiers.IdentificationEntreprise;
 import ch.vd.uniregctb.tiers.IdentificationPersonne;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.MontantMonetaire;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
+import ch.vd.uniregctb.tiers.RaisonSocialeFiscaleEntreprise;
 import ch.vd.uniregctb.tiers.RapportPrestationImposable;
 import ch.vd.uniregctb.tiers.RegimeFiscal;
 import ch.vd.uniregctb.tiers.SituationFamille;
@@ -973,16 +975,21 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
 		return tiersDAO.addAndSave(ctb, ie);
 	}
 
-    protected DonneesRegistreCommerce addDonneesRegistreCommerce(Entreprise e, RegDate dateDebut, @Nullable RegDate dateFin, String raisonSociale, FormeJuridiqueEntreprise formeJuridique) {
-        final DonneesRegistreCommerce donneesRC = new DonneesRegistreCommerce(dateDebut, dateFin, raisonSociale, formeJuridique);
-        e.addDonneesRC(donneesRC);
-        return donneesRC;
+    private <T extends DonneeCivileEntreprise> T addDonneeCivileEntreprise(Entreprise e, T donneeCivile) {
+        e.addDonneeCivile(donneeCivile);
+        return donneeCivile;
     }
 
-    protected CapitalEntreprise addCapitalEntreprise(Entreprise e, RegDate dateDebut, RegDate dateFin, MontantMonetaire capital) {
-        final CapitalEntreprise capitalEntreprise = new CapitalEntreprise(dateDebut, dateFin, capital);
-        e.addCapital(capitalEntreprise);
-        return capitalEntreprise;
+    protected RaisonSocialeFiscaleEntreprise addRaisonSociale(Entreprise e, RegDate dateDebut, @Nullable RegDate dateFin, String raisonSociale) {
+        return addDonneeCivileEntreprise(e, new RaisonSocialeFiscaleEntreprise(dateDebut, dateFin, raisonSociale));
+    }
+
+    protected FormeJuridiqueFiscaleEntreprise addFormeJuridique(Entreprise e, RegDate dateDebut, @Nullable RegDate dateFin, FormeJuridiqueEntreprise formeJuridique) {
+        return addDonneeCivileEntreprise(e, new FormeJuridiqueFiscaleEntreprise(dateDebut, dateFin, formeJuridique));
+    }
+
+    protected CapitalFiscalEntreprise addCapitalEntreprise(Entreprise e, RegDate dateDebut, RegDate dateFin, MontantMonetaire capital) {
+        return addDonneeCivileEntreprise(e, new CapitalFiscalEntreprise(dateDebut, dateFin, capital));
     }
 
     protected DomicileEtablissement addDomicileEtablissement(Etablissement etb, RegDate dateDebut, @Nullable RegDate dateFin, MockCommune commune) {

@@ -1,12 +1,14 @@
 package ch.vd.uniregctb.tiers;
 
 import javax.persistence.Column;
+import javax.persistence.DiscriminatorColumn;
+import javax.persistence.DiscriminatorType;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
@@ -16,27 +18,21 @@ import java.util.List;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.HibernateDateRangeEntity;
-import ch.vd.uniregctb.common.LengthConstants;
-import ch.vd.uniregctb.type.FormeJuridiqueEntreprise;
 
 @Entity
-@Table(name = "DONNEES_RC")
-public class DonneesRegistreCommerce extends HibernateDateRangeEntity implements LinkedEntity {
+@Table(name = "DONNEE_CIVILE_ENTREPRISE")
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name = "DONNEE_TYPE", discriminatorType = DiscriminatorType.STRING)
+public abstract class DonneeCivileEntreprise extends HibernateDateRangeEntity implements LinkedEntity {
 
 	private Long id;
 	private Entreprise entreprise;
-	private String raisonSociale;
-	private FormeJuridiqueEntreprise formeJuridique;
 
-	// TODO : code noga, ... ?
-
-	public DonneesRegistreCommerce() {
+	public DonneeCivileEntreprise() {
 	}
 
-	public DonneesRegistreCommerce(RegDate dateDebut, RegDate dateFin, String raisonSociale, FormeJuridiqueEntreprise formeJuridique) {
+	public DonneeCivileEntreprise(RegDate dateDebut, RegDate dateFin) {
 		super(dateDebut, dateFin);
-		this.raisonSociale = raisonSociale;
-		this.formeJuridique = formeJuridique;
 	}
 
 	@Transient
@@ -64,25 +60,6 @@ public class DonneesRegistreCommerce extends HibernateDateRangeEntity implements
 
 	public void setEntreprise(Entreprise entreprise) {
 		this.entreprise = entreprise;
-	}
-
-	@Column(name = "RAISON_SOCIALE", length = LengthConstants.TIERS_NOM)
-	public String getRaisonSociale() {
-		return raisonSociale;
-	}
-
-	public void setRaisonSociale(String raisonSociale) {
-		this.raisonSociale = raisonSociale;
-	}
-
-	@Column(name = "FORME_JURIDIQUE", length = LengthConstants.PM_FORME)
-	@Enumerated(EnumType.STRING)
-	public FormeJuridiqueEntreprise getFormeJuridique() {
-		return formeJuridique;
-	}
-
-	public void setFormeJuridique(FormeJuridiqueEntreprise formeJuridique) {
-		this.formeJuridique = formeJuridique;
 	}
 
 	@Override

@@ -53,7 +53,8 @@ public class PeriodeImpositionServiceTest extends MetierTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testPeriodesImpositionPersonnesMorales() throws Exception {
 		final Entreprise ctb = addEntrepriseInconnueAuCivil();
-		addDonneesRegistreCommerce(ctb, date(1984, 1, 1), null, "Toto SA", FormeJuridiqueEntreprise.SA);
+		addRaisonSociale(ctb, date(1984, 1, 1), null, "Toto SA");
+		addFormeJuridique(ctb, date(1984, 1, 1), null, FormeJuridiqueEntreprise.SA);
 		addForPrincipal(ctb, date(1984, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
 		addBouclement(ctb, date(1984, 1, 1), DayMonth.get(12, 31), 12);
 		final List<PeriodeImposition> periodesImposition = service.determine(ctb);

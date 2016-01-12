@@ -20,7 +20,7 @@ public class CapitalHisto implements Sourced<Source>, CollatableDateRange, Dupli
 	private final MontantMonetaire montant;
 	private final Source source;
 
-	public CapitalHisto(CapitalEntreprise capital) {
+	public CapitalHisto(CapitalFiscalEntreprise capital) {
 		this(capital.getId(), capital.isAnnule(), capital.getDateDebut(), capital.getDateFin(), capital.getMontant().duplicate(), Source.FISCALE);
 	}
 

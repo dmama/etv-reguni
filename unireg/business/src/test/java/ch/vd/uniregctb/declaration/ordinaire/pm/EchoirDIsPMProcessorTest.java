@@ -114,7 +114,8 @@ public class EchoirDIsPMProcessorTest extends BusinessTest {
 			public Long execute(TransactionStatus status) throws Exception {
 
 				final Entreprise e = addEntrepriseInconnueAuCivil();
-				addDonneesRegistreCommerce(e, dateDebut, null, "Truc machin SA", FormeJuridiqueEntreprise.SA);
+				addRaisonSociale(e, dateDebut, null, "Truc machin SA");
+				addFormeJuridique(e, dateDebut, null, FormeJuridiqueEntreprise.SA);
 				addBouclement(e, dateDebut, DayMonth.get(12, 31), 12);
 				addForPrincipal(e, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Aubonne);
 
@@ -151,7 +152,8 @@ public class EchoirDIsPMProcessorTest extends BusinessTest {
 			public Long execute(TransactionStatus status) throws Exception {
 
 				final Entreprise e = addEntrepriseInconnueAuCivil();
-				addDonneesRegistreCommerce(e, dateDebut, null, "Truc machin SA", FormeJuridiqueEntreprise.SA);
+				addRaisonSociale(e, dateDebut, null, "Truc machin SA");
+				addFormeJuridique(e, dateDebut, null, FormeJuridiqueEntreprise.SA);
 				addBouclement(e, dateDebut, DayMonth.get(12, 31), 12);
 				addForPrincipal(e, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Aubonne);
 
@@ -192,7 +194,8 @@ public class EchoirDIsPMProcessorTest extends BusinessTest {
 			public Long execute(TransactionStatus status) throws Exception {
 
 				final Entreprise e = addEntrepriseInconnueAuCivil();
-				addDonneesRegistreCommerce(e, dateDebut, null, "Truc machin SA", FormeJuridiqueEntreprise.SA);
+				addRaisonSociale(e, dateDebut, null, "Truc machin SA");
+				addFormeJuridique(e, dateDebut, null, FormeJuridiqueEntreprise.SA);
 				addBouclement(e, dateDebut, DayMonth.get(12, 31), 12);
 				addForPrincipal(e, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Aubonne);
 
@@ -234,7 +237,8 @@ public class EchoirDIsPMProcessorTest extends BusinessTest {
 			@Override
 			public Long execute(TransactionStatus status) throws Exception {
 				final Entreprise e = addEntrepriseInconnueAuCivil();
-				addDonneesRegistreCommerce(e, dateDebut, null, "Truc machin SA", FormeJuridiqueEntreprise.SA);
+				addRaisonSociale(e, dateDebut, null, "Truc machin SA");
+				addFormeJuridique(e, dateDebut, null, FormeJuridiqueEntreprise.SA);
 				addBouclement(e, dateDebut, DayMonth.get(12, 31), 12);
 				addForPrincipal(e, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Aubonne);
 
@@ -266,7 +270,8 @@ public class EchoirDIsPMProcessorTest extends BusinessTest {
 			@Override
 			public Long execute(TransactionStatus status) throws Exception {
 				final Entreprise e = addEntrepriseInconnueAuCivil();
-				addDonneesRegistreCommerce(e, dateDebut, null, "Truc machin SA", FormeJuridiqueEntreprise.SA);
+				addRaisonSociale(e, dateDebut, null, "Truc machin SA");
+				addFormeJuridique(e, dateDebut, null, FormeJuridiqueEntreprise.SA);
 				addBouclement(e, dateDebut, DayMonth.get(12, 31), 12);
 				addForPrincipal(e, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Aubonne);
 
@@ -306,7 +311,8 @@ public class EchoirDIsPMProcessorTest extends BusinessTest {
 			@Override
 			public Long execute(TransactionStatus status) throws Exception {
 				final Entreprise e = addEntrepriseInconnueAuCivil();
-				addDonneesRegistreCommerce(e, dateDebut, null, "Truc machin SA", FormeJuridiqueEntreprise.SA);
+				addRaisonSociale(e, dateDebut, null, "Truc machin SA");
+				addFormeJuridique(e, dateDebut, null, FormeJuridiqueEntreprise.SA);
 				addBouclement(e, dateDebut, DayMonth.get(12, 31), 12);
 				addForPrincipal(e, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Aubonne);
 
@@ -341,7 +347,8 @@ public class EchoirDIsPMProcessorTest extends BusinessTest {
 			@Override
 			public Long execute(TransactionStatus status) throws Exception {
 				final Entreprise e = addEntrepriseInconnueAuCivil();
-				addDonneesRegistreCommerce(e, dateDebut, null, "Truc machin SA", FormeJuridiqueEntreprise.SA);
+				addRaisonSociale(e, dateDebut, null, "Truc machin SA");
+				addFormeJuridique(e, dateDebut, null, FormeJuridiqueEntreprise.SA);
 				addBouclement(e, dateDebut, DayMonth.get(12, 31), 12);
 				addForPrincipal(e, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Aubonne);
 
@@ -387,7 +394,8 @@ public class EchoirDIsPMProcessorTest extends BusinessTest {
 			@Override
 			public Long execute(TransactionStatus status) throws Exception {
 				final Entreprise e = addEntrepriseInconnueAuCivil();
-				addDonneesRegistreCommerce(e, dateDebut, null, "Truc machin SA", FormeJuridiqueEntreprise.SA);
+				addRaisonSociale(e, dateDebut, null, "Truc machin SA");
+				addFormeJuridique(e, dateDebut, null, FormeJuridiqueEntreprise.SA);
 				addBouclement(e, dateDebut, DayMonth.get(12, 31), 12);
 				addForPrincipal(e, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Aubonne);
 
@@ -436,7 +444,8 @@ public class EchoirDIsPMProcessorTest extends BusinessTest {
 			@Override
 			public Long execute(TransactionStatus status) throws Exception {
 				final Entreprise e = addEntrepriseInconnueAuCivil();
-				addDonneesRegistreCommerce(e, dateDebut, null, "Truc machin SA", FormeJuridiqueEntreprise.SA);
+				addRaisonSociale(e, dateDebut, null, "Truc machin SA");
+				addFormeJuridique(e, dateDebut, null, FormeJuridiqueEntreprise.SA);
 				addBouclement(e, dateDebut, DayMonth.get(12, 31), 12);
 				addForPrincipal(e, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Aubonne);
 
@@ -477,7 +486,8 @@ public class EchoirDIsPMProcessorTest extends BusinessTest {
 			@Override
 			public Long execute(TransactionStatus status) throws Exception {
 				final Entreprise e = addEntrepriseInconnueAuCivil();
-				addDonneesRegistreCommerce(e, dateDebut, null, "Truc machin SA", FormeJuridiqueEntreprise.SA);
+				addRaisonSociale(e, dateDebut, null, "Truc machin SA");
+				addFormeJuridique(e, dateDebut, null, FormeJuridiqueEntreprise.SA);
 				addBouclement(e, dateDebut, DayMonth.get(12, 31), 12);
 				addForPrincipal(e, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Aubonne);
 

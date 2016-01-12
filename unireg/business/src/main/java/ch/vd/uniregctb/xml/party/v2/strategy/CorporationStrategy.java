@@ -2,22 +2,17 @@ package ch.vd.uniregctb.xml.party.v2.strategy;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.DateRange;
-import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
-import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
-import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.xml.party.corporation.v2.Capital;
 import ch.vd.unireg.xml.party.corporation.v2.Corporation;
 import ch.vd.unireg.xml.party.corporation.v2.CorporationStatus;
@@ -29,14 +24,12 @@ import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.metier.bouclement.ExerciceCommercial;
 import ch.vd.uniregctb.tiers.CapitalHisto;
 import ch.vd.uniregctb.tiers.DomicileEtablissement;
-import ch.vd.uniregctb.tiers.DonneesRegistreCommerce;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.Etablissement;
 import ch.vd.uniregctb.tiers.EtatEntreprise;
-import ch.vd.uniregctb.tiers.OrganisationNotFoundException;
+import ch.vd.uniregctb.tiers.FormeLegaleHisto;
 import ch.vd.uniregctb.tiers.RegimeFiscal;
 import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.type.FormeJuridiqueEntreprise;
 import ch.vd.uniregctb.xml.Context;
 import ch.vd.uniregctb.xml.DataHelper;
 import ch.vd.uniregctb.xml.EnumHelper;
@@ -108,40 +101,6 @@ public class CorporationStrategy extends TaxPayerStrategy<Corporation> {
 		}
 	}
 
-	private interface DonneesRegistreCommerceExtractor<T> {
-		T extract(DonneesRegistreCommerce rc);
-	}
-
-	private static <T> List<DateRangeHelper.Ranged<T>> extractRanges(List<DonneesRegistreCommerce> rcData, DonneesRegistreCommerceExtractor<? extends T> extractor) {
-		// extraction des ranges par valeur distinctes (un nouveau range peut exister alors que la valeur n'a pas changé,
-		// car une autre partie de la structure a été modifiée)
-		final Map<T, List<DateRange>> values = new HashMap<>(rcData.size());
-		for (DonneesRegistreCommerce data : rcData) {
-			final T key = extractor.extract(data);
-			if (key != null) {
-				List<DateRange> ranges = values.get(key);
-				if (ranges == null) {
-					ranges = new ArrayList<>(rcData.size());
-					values.put(key, ranges);
-				}
-				ranges.add(data);
-			}
-		}
-
-		// recombinaison des intervales de valeurs fixes
-		final List<DateRangeHelper.Ranged<T>> result = new ArrayList<>(rcData.size());
-		for (Map.Entry<T, List<DateRange>> entry : values.entrySet()) {
-			final List<DateRange> validity = DateRangeHelper.merge(entry.getValue());
-			for (DateRange range : validity) {
-				result.add(new DateRangeHelper.Ranged<>(range.getDateDebut(), range.getDateFin(), entry.getKey()));
-			}
-		}
-
-		// re-tri par dates
-		Collections.sort(result, new DateRangeComparator<>());
-		return result;
-	}
-
 	@NotNull
 	private List<Capital> extractCapitaux(Entreprise entreprise, Context context) {
 		final List<CapitalHisto> data = context.tiersService.getCapitaux(entreprise);
@@ -164,44 +123,14 @@ public class CorporationStrategy extends TaxPayerStrategy<Corporation> {
 
 	@NotNull
 	private List<LegalForm> extractFormesJuridiques(Entreprise entreprise, Context context) {
-		final List<LegalForm> liste;
-		if (entreprise.isConnueAuCivil()) {
-			final Organisation org = context.serviceOrganisationService.getOrganisationHistory(entreprise.getNumeroEntreprise());
-			if (org == null) {
-				throw new OrganisationNotFoundException(entreprise);
-			}
-
-			final List<DateRanged<FormeLegale>> fls = org.getFormeLegale();
-			if (fls == null || fls.isEmpty()) {
-				liste = Collections.emptyList();
-			}
-			else {
-				liste = new ArrayList<>(fls.size());
-				for (DateRanged<FormeLegale> fl : fls) {
-					final LegalForm lf = new LegalForm();
-					lf.setDateFrom(DataHelper.coreToXMLv1(fl.getDateDebut()));
-					lf.setDateTo(DataHelper.coreToXMLv1(fl.getDateFin()));
-					lf.setCode(EnumHelper.coreToXMLv1v2v3(fl.getPayload()));
-					liste.add(lf);
-				}
-			}
-		}
-		else {
-			final List<DateRangeHelper.Ranged<FormeJuridiqueEntreprise>> rcFormesJuridiques = extractRanges(entreprise.getDonneesRegistreCommerceNonAnnuleesTriees(),
-			                                                                                                new DonneesRegistreCommerceExtractor<FormeJuridiqueEntreprise>() {
-				                                                                                                @Override
-				                                                                                                public FormeJuridiqueEntreprise extract(DonneesRegistreCommerce rc) {
-					                                                                                                return rc.getFormeJuridique();
-				                                                                                                }
-			                                                                                                });
-			liste = new ArrayList<>(rcFormesJuridiques.size());
-			for (DateRangeHelper.Ranged<FormeJuridiqueEntreprise> data : rcFormesJuridiques) {
-				final LegalForm lf = new LegalForm();
-				lf.setDateFrom(DataHelper.coreToXMLv1(data.getDateDebut()));
-				lf.setDateTo(DataHelper.coreToXMLv1(data.getDateFin()));
-				lf.setCode(EnumHelper.coreToXMLv1v2v3(data.getPayload()));
-				liste.add(lf);
-			}
+		final List<FormeLegaleHisto> histo = context.tiersService.getFormesLegales(entreprise);
+		final List<LegalForm> liste = new ArrayList<>(histo.size());
+		for (FormeLegaleHisto fl : histo) {
+			final LegalForm lf = new LegalForm();
+			lf.setDateFrom(DataHelper.coreToXMLv1(fl.getDateDebut()));
+			lf.setDateTo(DataHelper.coreToXMLv1(fl.getDateFin()));
+			lf.setCode(EnumHelper.coreToXMLv1v2v3(fl.getFormeLegale()));
+			liste.add(lf);
 		}
 		return liste;
 	}

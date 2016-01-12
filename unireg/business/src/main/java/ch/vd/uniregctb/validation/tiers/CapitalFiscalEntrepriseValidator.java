@@ -3,23 +3,23 @@ package ch.vd.uniregctb.validation.tiers;
 import org.apache.commons.lang3.StringUtils;
 
 import ch.vd.registre.base.validation.ValidationResults;
-import ch.vd.uniregctb.tiers.CapitalEntreprise;
+import ch.vd.uniregctb.tiers.CapitalFiscalEntreprise;
 import ch.vd.uniregctb.tiers.MontantMonetaire;
 
-public class CapitalEntrepriseValidator extends DateRangeEntityValidator<CapitalEntreprise> {
+public class CapitalFiscalEntrepriseValidator extends DonneeCivileEntrepriseValidator<CapitalFiscalEntreprise> {
 
 	@Override
 	protected String getEntityCategoryName() {
-		return "La surcharge de capital";
+		return "Le capital";
 	}
 
 	@Override
-	protected Class<CapitalEntreprise> getValidatedClass() {
-		return CapitalEntreprise.class;
+	protected Class<CapitalFiscalEntreprise> getValidatedClass() {
+		return CapitalFiscalEntreprise.class;
 	}
 
 	@Override
-	public ValidationResults validate(CapitalEntreprise capital) {
+	public ValidationResults validate(CapitalFiscalEntreprise capital) {
 		final ValidationResults vr = super.validate(capital);
 		if (!capital.isAnnule()) {
 			final MontantMonetaire montant = capital.getMontant();

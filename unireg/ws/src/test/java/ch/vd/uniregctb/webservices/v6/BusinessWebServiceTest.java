@@ -3239,8 +3239,9 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			public Long doInTransaction(TransactionStatus status) {
 				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
 
-				addDonneesRegistreCommerce(entreprise, date(2000, 3, 1), date(2013, 5, 12), "Ma petite entreprise", FormeJuridiqueEntreprise.SARL);
-				addDonneesRegistreCommerce(entreprise, date(2013, 5, 13), null, "Ma grande entreprise", FormeJuridiqueEntreprise.SARL);
+				addRaisonSociale(entreprise, date(2000, 3, 1), date(2013, 5, 12), "Ma petite entreprise");
+				addRaisonSociale(entreprise, date(2013, 5, 13), null, "Ma grande entreprise");
+				addFormeJuridique(entreprise, date(2000, 3, 1), null, FormeJuridiqueEntreprise.SARL);
 				addCapitalEntreprise(entreprise, date(2000, 3, 1), date(2009, 12, 31), new MontantMonetaire(1000L, "CHF"));
 				addCapitalEntreprise(entreprise, date(2010, 1, 1), date(2013, 5, 12), new MontantMonetaire(1100L, "CHF"));
 				addCapitalEntreprise(entreprise, date(2013, 5, 13), null, new MontantMonetaire(100000L, "CHF"));
