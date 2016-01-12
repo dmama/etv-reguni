@@ -650,11 +650,6 @@
 					<xs:documentation>En liquidation.</xs:documentation>
 				</xs:annotation>
 			</xs:enumeration>
-			<xs:enumeration value="SUSPENDED_BANKRUPTCY">
-				<xs:annotation>
-					<xs:documentation>En faillite, suspendue.</xs:documentation>
-				</xs:annotation>
-			</xs:enumeration>
 			<xs:enumeration value="FOUNDED">
 				<xs:annotation>
 					<xs:documentation>Fondée.</xs:documentation>
