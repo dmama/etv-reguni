@@ -20,7 +20,7 @@
 	<input class="noprint" id="showDomicilesHisto" type="checkbox" onclick="refreshDomicilesTable(this);" />
 	<label class="noprint" for="showDomicilesHisto"><fmt:message key="label.historique" /></label>
 
-	<display:table name="${command.entreprise.domicilesEtablissement}" id="domicilesEtablissement" requestURI="visu.do" class="display">
+	<display:table name="${command.domicilesEtablissement}" id="domicilesEtablissement" requestURI="visu.do" class="display">
 		<display:column sortable="true" titleKey="label.date.debut" sortProperty="dateDebut">
 			<unireg:regdate regdate="${domicilesEtablissement.dateDebut}"/>
 		</display:column>
@@ -29,11 +29,11 @@
 		</display:column>
 		<display:column sortable="true" titleKey="label.commune.pays">
 			<c:choose>
-				<c:when test="${domicilesEtablissement.type == 'COMMUNE_CH' }">
-					<unireg:commune ofs="${domicilesEtablissement.getNumeroOfsAutoriteFiscale}" displayProperty="nomOfficielAvecCanton" date="${domicilesEtablissement.dateFin}"/>
+				<c:when test="${domicilesEtablissement.typeAutoriteFiscale == 'COMMUNE_OU_FRACTION_VD' || domicilesEtablissement.typeAutoriteFiscale == 'COMMUNE_HC'}">
+					<unireg:commune ofs="${domicilesEtablissement.numeroOfsAutoriteFiscale}" displayProperty="nomOfficielAvecCanton" date="${domicilesEtablissement.dateFin}"/>
 				</c:when>
-				<c:when test="${domicilesEtablissement.type == 'PAYS_HS' }">
-					<unireg:pays ofs="${domicilesEtablissement.getNumeroOfsAutoriteFiscale}" displayProperty="nomCourt" date="${domicilesEtablissement.dateFin}"/>
+				<c:when test="${domicilesEtablissement.typeAutoriteFiscale == 'PAYS_HS' }">
+					<unireg:pays ofs="${domicilesEtablissement.numeroOfsAutoriteFiscale}" displayProperty="nomCourt" date="${domicilesEtablissement.dateFin}"/>
 				</c:when>
 			</c:choose>
 		</display:column>

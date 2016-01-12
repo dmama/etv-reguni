@@ -21,7 +21,7 @@ public class DomicileEtablissementView implements Sourced<Source>, DateRange, An
 	private final Source source;
 
 	public DomicileEtablissementView(DomicileHisto domicile) {
-		this.id = null;
+		this.id = domicile.getId();
 		this.annule = false;
 		this.typeAutoriteFiscale = domicile.getTypeAutoriteFiscale();
 		this.numeroOfsAutoriteFiscale = domicile.getNoOfs();
