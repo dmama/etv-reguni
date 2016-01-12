@@ -3375,8 +3375,6 @@ public abstract class EnumHelper {
 			return "04";
 		case EN_LIQUIDATION:
 			return "02";
-		case EN_SUSPENS_FAILLITE:
-			return "03";
 		case FONDEE:
 			return "07";
 		case INSCRITE_RC:
@@ -3402,8 +3400,6 @@ public abstract class EnumHelper {
 			return ch.vd.unireg.xml.party.corporation.v4.CorporationStatusType.BANKRUPT;
 		case EN_LIQUIDATION:
 			return ch.vd.unireg.xml.party.corporation.v4.CorporationStatusType.IN_LIQUIDATION;
-		case EN_SUSPENS_FAILLITE:
-			return ch.vd.unireg.xml.party.corporation.v4.CorporationStatusType.SUSPENDED_BANKRUPTCY;
 		case FONDEE:
 			return ch.vd.unireg.xml.party.corporation.v4.CorporationStatusType.FOUNDED;
 		case INSCRITE_RC:
