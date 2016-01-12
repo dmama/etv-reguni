@@ -514,30 +514,6 @@
 			<null/>
 		</row>
 	</table>
-	<table name="CAPITAL_ENTREPRISE">
-		<column>ID</column>
-		<column>LOG_CDATE</column>
-		<column>LOG_CUSER</column>
-		<column>LOG_MDATE</column>
-		<column>LOG_MUSER</column>
-		<column>DATE_DEBUT</column>
-		<column>DATE_FIN</column>
-		<column>MONTANT</column>
-		<column>MONNAIE</column>
-		<column>ENTREPRISE_ID</column>
-		<row>
-			<value>3</value>
-			<value><![CDATA[2010-03-09 11:26:29.761]]></value>
-			<value><![CDATA[[UT] AdresseServiceTest]]></value>
-			<value><![CDATA[2010-03-09 11:26:29.761]]></value>
-			<value><![CDATA[[UT] AdresseServiceTest]]></value>
-			<value>19790807</value>
-			<null/>
-			<value>150000</value>
-			<value>CHF</value>
-			<value>222</value>
-		</row>
-	</table>
 	<table name="DONNEE_CIVILE_ENTREPRISE">
 		<column>ID</column>
 		<column>LOG_CDATE</column>
@@ -552,6 +528,21 @@
 		<column>CAP_MONTANT</column>
 		<column>CAP_MONNAIE</column>
 		<column>DONNEE_TYPE</column>
+		<row>
+			<value>1</value>
+			<value><![CDATA[2010-03-09 11:26:29.761]]></value>
+			<value><![CDATA[[UT] AdresseServiceTest]]></value>
+			<value><![CDATA[2010-03-09 11:26:29.761]]></value>
+			<value><![CDATA[[UT] AdresseServiceTest]]></value>
+			<value>19790807</value>
+			<null/>
+			<value>222</value>
+			<null/>
+			<null/>
+			<value>150000</value>
+			<value>CHF</value>
+			<value>Capital</value>
+		</row>
 		<row>
 			<value>2</value>
 			<value><![CDATA[2010-03-09 11:26:29.761]]></value>
