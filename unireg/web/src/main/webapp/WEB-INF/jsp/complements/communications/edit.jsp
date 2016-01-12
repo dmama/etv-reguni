@@ -76,6 +76,7 @@
 							<form:errors path="numeroTelephonePortable" cssClass="error"/>
 						</td>
 					</tr>
+					<form:hidden path="pmOuEtablissement" id="pmOuEtablissement"/>
 					<c:if test="${!command.pmOuEtablissement}">
 						<tr class="<unireg:nextRowClass/>" >
 							<td><fmt:message key="label.complement.numeroTelProfessionnel" />&nbsp;:</td>

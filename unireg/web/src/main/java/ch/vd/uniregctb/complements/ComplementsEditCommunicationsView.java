@@ -67,6 +67,10 @@ public class ComplementsEditCommunicationsView {
 		return pmOuEtablissement;
 	}
 
+	public void setPmOuEtablissement(boolean pmOuEtablissement) {
+		this.pmOuEtablissement = pmOuEtablissement;
+	}
+
 	public String getNom1() {
 		return nom1;
 	}
