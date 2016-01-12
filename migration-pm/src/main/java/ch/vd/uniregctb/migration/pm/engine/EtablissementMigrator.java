@@ -27,8 +27,8 @@ import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.unireg.interfaces.organisation.data.Domicile;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
-import ch.vd.unireg.interfaces.organisation.data.Siege;
 import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 import ch.vd.uniregctb.adresse.AdresseTiers;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
@@ -729,9 +729,9 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 
 		// si le site est connu dans RCEnt, il faut reprendre les domiciles fiscaux seulement jusqu'à la date de la première donnée dans RCEnt
 		final RegDate dateFinValiditeDonneesFiscales;
-		if (rcent != null && rcent.getSieges() != null && !rcent.getSieges().isEmpty()) {
-			dateFinValiditeDonneesFiscales = rcent.getSieges().stream()
-					.map(Siege::getDateDebut)
+		if (rcent != null && rcent.getDomiciles()!= null && !rcent.getDomiciles().isEmpty()) {
+			dateFinValiditeDonneesFiscales = rcent.getDomiciles().stream()
+					.map(Domicile::getDateDebut)
 					.min(Comparator.naturalOrder())
 					.map(RegDate::getOneDayBefore)
 					.get();
