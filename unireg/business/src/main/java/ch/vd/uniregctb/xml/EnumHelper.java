@@ -2864,6 +2864,8 @@ public abstract class EnumHelper {
 			return CorporationFlagType.REAL_ESTATE_COMPANY;
 		case SOC_IMM_SUBVENTIONNEE:
 			return CorporationFlagType.SUBSIDIZED_REAL_ESTATE_COMPANY;
+		case SOC_SERVICE:
+			return CorporationFlagType.SERVICE_COMPANY;
 		default:
 			throw new IllegalArgumentException("Type de flag inconnu : " + type);
 		}
