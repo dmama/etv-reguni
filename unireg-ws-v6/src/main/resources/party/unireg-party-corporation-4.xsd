@@ -773,6 +773,11 @@
 					<xs:documentation>APM Société immobilière subventionnée.</xs:documentation>
 				</xs:annotation>
 			</xs:enumeration>
+			<xs:enumeration value="SERVICE_COMPANY">
+				<xs:annotation>
+					<xs:documentation>Société de service.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
 		</xs:restriction>
 	</xs:simpleType>
 
