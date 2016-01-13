@@ -63,7 +63,7 @@ public class ImprimerNouvelleDeclarationImpotView {
 		this.periodeFiscale = periode.getDateDebut().year();
 		this.dateDebutPeriodeImposition = periode.getDateDebut();
 		this.dateFinPeriodeImposition = periode.getDateFin();
-		this.typeAdresseRetour = null;
+		this.typeAdresseRetour = TypeAdresseRetour.CEDI;
 		this.typeContribuable = TypeContribuable.PM;
 		this.imprimable = periode.getTypeDocumentDeclaration() != null;
 		this.generableNonImprimable = periode.getTypeDocumentDeclaration() == null;
