@@ -56,33 +56,35 @@
 <fieldset>
 	<legend><span><fmt:message key="label.noms.additionnels"/></span></legend>
 
-	<c:if test="${command.entreprise.nomsAdditionnels.size > 0}">
-		<input class="noprint" id="showNomsAdditionnelsHisto" type="checkbox" onclick="refreshNomsAdditionnelsTable(this);" />
-		<label class="noprint" for="showNomsAdditionnelsHisto"><fmt:message key="label.historique" /></label>
+	<c:choose>
+		<c:when test="${not empty command.entreprise.nomsAdditionnels}">
+			<input class="noprint" id="showNomsAdditionnelsHisto" type="checkbox" onclick="refreshNomsAdditionnelsTable(this);" />
+			<label class="noprint" for="showNomsAdditionnelsHisto"><fmt:message key="label.historique" /></label>
 
-		<display:table name="${command.entreprise.nomsAdditionnels}" id="nomsAdditionnels" requestURI="visu.do" class="display">
-			<display:column style="width:10%" sortable="true" titleKey="label.date.debut" sortProperty="dateDebut">
-				<unireg:regdate regdate="${nomsAdditionnels.dateDebut}"/>
-			</display:column>
-			<display:column style="width:10%" sortable="true" titleKey="label.date.fin" sortProperty="dateFin">
-				<unireg:regdate regdate="${nomsAdditionnels.dateFin}"/>
-			</display:column>
-			<display:column style="width:60%" sortable="true" titleKey="label.raison.sociale" property="payload"/>
-			<display:column style="width:10%" titleKey="label.source">
-				<fmt:message key="option.entreprise.source.CIVILE"/>
-			</display:column>
-			<display:column style="width:10%">&nbsp;</display:column>
-		</display:table>
-	</c:if>
-	<c:if test="${! (command.entreprise.nomsAdditionnels.size > 0)}">
-		<unireg:nextRowClass reset="1"/>
-		<table>
-			<tr class="<unireg:nextRowClass/>" >
-				<td width="20%">&nbsp;</td>
-				<td></td>
-			</tr>
-		</table>
-	</c:if>
+			<display:table name="${command.entreprise.nomsAdditionnels}" id="nomsAdditionnels" requestURI="visu.do" class="display">
+				<display:column style="width:10%" sortable="true" titleKey="label.date.debut" sortProperty="dateDebut">
+					<unireg:regdate regdate="${nomsAdditionnels.dateDebut}"/>
+				</display:column>
+				<display:column style="width:10%" sortable="true" titleKey="label.date.fin" sortProperty="dateFin">
+					<unireg:regdate regdate="${nomsAdditionnels.dateFin}"/>
+				</display:column>
+				<display:column style="width:60%" sortable="true" titleKey="label.raison.sociale" property="payload"/>
+				<display:column style="width:10%" titleKey="label.source">
+					<fmt:message key="option.entreprise.source.CIVILE"/>
+				</display:column>
+				<display:column style="width:10%">&nbsp;</display:column>
+			</display:table>
+		</c:when>
+		<c:otherwise>
+			<unireg:nextRowClass reset="1"/>
+			<table>
+				<tr class="<unireg:nextRowClass/>" >
+					<td width="20%">&nbsp;</td>
+					<td></td>
+				</tr>
+			</table>
+		</c:otherwise>
+	</c:choose>
 </fieldset>
 
 <fieldset>
