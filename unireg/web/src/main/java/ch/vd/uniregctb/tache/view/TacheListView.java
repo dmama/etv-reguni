@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.tache.view;
 
+import java.util.Date;
 import java.util.List;
 
 import ch.vd.registre.base.date.RegDate;
@@ -22,6 +23,8 @@ public class TacheListView implements Annulable {
 
 	private String typeTache;
 
+	private Date dateEnregistrement;
+
 	private Long numero;
 
 	private final NomCourrierViewPart nomCourrier = new NomCourrierViewPart();
@@ -36,15 +39,10 @@ public class TacheListView implements Annulable {
 
 	// Seulement valable pour le type de tache 'envoi declaration'
 	private RegDate dateDebutImposition;
-
 	private RegDate dateFinImposition;
-
 	private TypeContribuable typeContribuable;
-
 	private TypeDocument typeDocument;
-
 	private Integer delaiRetourEnJours;
-
 	private Integer annee;
 
 	boolean annulee;
@@ -201,6 +199,11 @@ public class TacheListView implements Annulable {
 		this.idDI = idDI;
 	}
 
+	public Date getDateEnregistrement() {
+		return dateEnregistrement;
+	}
 
-
+	public void setDateEnregistrement(Date dateEnregistrement) {
+		this.dateEnregistrement = dateEnregistrement;
+	}
 }

@@ -127,6 +127,7 @@ public class TacheListManagerImpl implements TacheListManager {
 			tacheView.setId(tache.getId());
 			tacheView.setNumero(contribuable.getNumero());
 			tacheView.setNumeroForGestion(numeroOfsAutoriteFiscale);
+			tacheView.setDateEnregistrement(tache.getLogCreationDate());
 
 			final String nomCa = getNomCollectiviteAdministrativeAssociee(tache);
 			if (nomCa != null) {

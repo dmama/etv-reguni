@@ -28,6 +28,16 @@
 			<display:column sortable ="true" titleKey="label.type.tache" sortName="class">
 				<fmt:message key="option.type.tache.${tache.typeTache}"  />
 			</display:column>
+			<display:column titleKey="label.type.document">
+				<c:choose>
+					<c:when test="${tache.typeTache == 'TacheEnvoiDeclarationImpotPP' || tache.typeTache == 'TacheEnvoiDeclarationImpotPM'}">
+						<fmt:message key="option.type.document.${tache.typeDocument}"/>
+					</c:when>
+					<c:otherwise>
+						&nbsp;
+					</c:otherwise>
+				</c:choose>
+			</display:column>
 			<display:column sortable ="true" titleKey="label.numero.contribuable" sortProperty="numero" sortName="contribuable.numero">
 				<c:choose>
 					<c:when test="${tache.etatTache == 'TRAITE' || tache.annule}">
@@ -82,6 +92,9 @@
 						<fmt:param><unireg:date date="${tache.dateFinImposition}"/></fmt:param>
 					</fmt:message>
 				</c:if>
+			</display:column>
+			<display:column titleKey="label.date.enregistrement" sortable="true" sortName="logCreationDate">
+				<fmt:formatDate value="${tache.dateEnregistrement}" pattern="dd.MM.yyyy HH:mm:ss"/>
 			</display:column>
 			<display:column sortable ="true" titleKey="label.etat.tache" sortName="etat">
 				<fmt:message key="option.etat.tache.${tache.etatTache}"  />
