@@ -145,13 +145,26 @@ public class DelaiDeclaration extends HibernateEntity implements Comparable<Dela
 		@Override
 		public int compare(DelaiDeclaration o1, DelaiDeclaration o2) {
 
-			if (o1.getDelaiAccordeAu() == o2.getDelaiAccordeAu()) {
+			final RegDate date1;
+			final RegDate date2;
+			if (o1.getDelaiAccordeAu() == null || o2.getDelaiAccordeAu() == null) {
+				// si l'un des deux éléments est sans délai accordé (= délai en cours ou même refusé),
+				// on compare sur les dates de demande
+				date1 = o1.getDateDemande();
+				date2 = o2.getDateDemande();
+			}
+			else {
+				date1 = o1.getDelaiAccordeAu();
+				date2 = o2.getDelaiAccordeAu();
+			}
+
+			if (date1 == date2) {
 				// s'il y a des délais identiques annulés aux mêmes dates, on mets l'état annulé avant
 				return o1.isAnnule() == o2.isAnnule() ? 0 : (o1.isAnnule() ? -1 : 1);
 			}
 
 			// de la plus petite à la plus grande
-			return o1.getDelaiAccordeAu().compareTo(o2.getDelaiAccordeAu());
+			return date1.compareTo(date2);
 		}
 	}
 }
