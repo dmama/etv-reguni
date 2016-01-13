@@ -27,6 +27,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.mutable.Mutable;
+import org.apache.commons.lang3.mutable.MutableObject;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -2388,16 +2390,30 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 	}
 
 	/**
-	 * Génération des établissements principaux liés à l'entreprise (autant que d'entrées différentes dans la map)
+	 * Génération des établissements principaux liés à l'entreprise (autant que d'entrées différentes dans la map), le premier d'entre eux devant être repris
+	 * pour porter les éventuelles données fiscales antérieures au début des données civiles
 	 * @param regpm l'entreprise de RegPM
 	 * @param validiteSitesPrincipaux map des identifiants et des périodes de 'principalité' des sites principaux civils
 	 * @param linkCollector le collecteur de liens à créer entre les entités
 	 * @param idMapper mapper des identifiants RegPM -> Unireg
 	 * @param mr collecteur de messages de migration
+	 * @return le tout premier établissement (historiquement) principal connu dans le registre civil (= celui auquel on rattachera l'historique issu de RegPM)
 	 */
-	private void generateEtablissementPrincipalSelonDonneesCiviles(RegpmEntreprise regpm, Map<Long, List<DateRanged<SiteOrganisation>>> validiteSitesPrincipaux, EntityLinkCollector linkCollector,
+	private Etablissement generateEtablissementPrincipalSelonDonneesCiviles(RegpmEntreprise regpm, Map<Long, List<DateRanged<SiteOrganisation>>> validiteSitesPrincipaux, EntityLinkCollector linkCollector,
 	                                                               IdMapping idMapper, MigrationResultProduction mr) {
 		final KeyedSupplier<Entreprise> entrepriseSupplier = getEntrepriseSupplier(idMapper, regpm);
+
+		// identifiant cantonal du tout premier établissement principal connu
+		// (c'est à celui-là que l'on fera porter les données antérieures issues des données de RegPM)
+		// avec la date de début associée
+		final Long idCantonalPremierEtablissement = validiteSitesPrincipaux.entrySet().stream()
+				.map(entry -> entry.getValue().stream().map(range -> Pair.of(entry.getKey(), range.getDateDebut())))
+				.flatMap(Function.identity())
+				.min(Comparator.comparing(Pair::getRight))
+				.map(Pair::getLeft)
+				.get();
+		final Mutable<Etablissement> premierEtablissement = new MutableObject<>();
+
 		for (Map.Entry<Long, List<DateRanged<SiteOrganisation>>> entry : validiteSitesPrincipaux.entrySet()) {
 
 			// si l'établissement avec cet identifiant cantonal a déjà été créé en base, on le ré-utilise
@@ -2431,15 +2447,39 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 				                            entry.getKey()));
 			}
 
-			final Supplier<Etablissement> etbPrincipalSupplier = getEtablissementByUniregIdSupplier(etbPrincipal.getNumero());
+			// on récupère le premier établissement
+			if (entry.getKey().equals(idCantonalPremierEtablissement)) {
+				premierEtablissement.setValue(etbPrincipal);
+			}
+			else {
+				// on ne génère les liens que sur les éventuels établissements additionnels
+				// (le premier établissement historique a potentiellement des données fiscales, et donc les liens seront gérés ailleurs)
 
-			// ici, on ne crée pas de domiciles pour les établissements... comme ils sont connus du civils, les sièges seront à aller chercher par là-bas aussi...
+				// ici, on ne crée pas de domiciles pour les établissements... comme ils sont connus du civils, les sièges seront à aller chercher par là-bas aussi...
 
-			// demande de création de liens d'activité économique
-			entry.getValue().stream()
-					.map(range -> new EntityLinkCollector.EtablissementEntiteJuridiqueLink<>(etbPrincipalSupplier, entrepriseSupplier, range.getDateDebut(), range.getDateFin(), true))
-					.forEach(linkCollector::addLink);
+				// demande de création de liens d'activité économique
+				addLinksAciviteEconomiquePrincipale(entrepriseSupplier, etbPrincipal, entry.getValue(), linkCollector);
+			}
 		}
+
+		return premierEtablissement.getValue();
+	}
+
+	/**
+	 * Ajoute les liens d'activité économique principale (= entre une entreprise et un établissement principal) selon les ranges donnés
+	 * @param entrepriseSupplier supplier de l'entreprise
+	 * @param etablissement établissement principal
+	 * @param ranges ranges de dates dans lesquels établir les liens
+	 * @param linkCollector collecteur de liens
+	 */
+	private void addLinksAciviteEconomiquePrincipale(KeyedSupplier<Entreprise> entrepriseSupplier,
+	                                                 Etablissement etablissement,
+	                                                 List<? extends DateRange> ranges,
+	                                                 EntityLinkCollector linkCollector) {
+		final Supplier<Etablissement> etbPrincipalSupplier = getEtablissementByUniregIdSupplier(etablissement.getNumero());
+		ranges.stream()
+				.map(range -> new EntityLinkCollector.EtablissementEntiteJuridiqueLink<>(etbPrincipalSupplier, entrepriseSupplier, range.getDateDebut(), range.getDateFin(), true))
+				.forEach(linkCollector::addLink);
 	}
 
 	/**
@@ -2458,11 +2498,13 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		// voyons l'historique des sièges (dans RegPM)
 		final EntityKey moi = buildEntrepriseKey(regpm);
 		final NavigableMap<RegDate, RegpmSiegeEntreprise> sieges = mr.getExtractedData(SiegesHistoData.class, moi).histo;
+		final KeyedSupplier<Entreprise> entrepriseSupplier = getEntrepriseSupplier(idMapper, regpm);
 
 		// si une connexion avec RCEnt existe, on va essayer de lier l'établissement principal généré avec son pendant civil
 
 		// date de fin des données fiscales (= veille de la date d'apparition civile des données, ou <code>null</code> s'il n'y a pas de données civiles)
 		final RegDate dateFinEtablissementFiscal;
+		final Pair<Etablissement, List<? extends DateRange>> premierEtablissementLieAvecCivil;
 		if (rcent != null) {
 			// récupérons d'abord les données civiles des sites principaux (s'il y en a plusieurs...)
 			final List<DateRanged<SiteOrganisation>> sites = rcent.getSitePrincipaux();
@@ -2483,20 +2525,27 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 						                          LinkedHashMap::new));     // afin de conserver l'ordre (le site le plus vieux apparaîtra en premier dans l'itérateur)
 
 				// génération des données d'établissement depuis les données civiles
-				generateEtablissementPrincipalSelonDonneesCiviles(regpm, validitesSites, linkCollector, idMapper, mr);
+				final Etablissement premierEtb = generateEtablissementPrincipalSelonDonneesCiviles(regpm, validitesSites, linkCollector, idMapper, mr);
+				premierEtablissementLieAvecCivil = Pair.of(premierEtb, validitesSites.get(premierEtb.getNumeroEtablissement()));
 			}
 			else {
 				dateFinEtablissementFiscal = null;
+				premierEtablissementLieAvecCivil = null;
 			}
 		}
 		else {
 			dateFinEtablissementFiscal = null;
+			premierEtablissementLieAvecCivil = null;
 		}
 
 		// pas de donnée de siège -> on a fini (s'il y a des données civiles, tant mieux, sinon... rien)
 		if (sieges.isEmpty()) {
 			if (dateFinEtablissementFiscal == null) {
-				mr.addMessage(LogCategory.SUIVI, LogLevel.WARN, "Pas de siège associé dans les données fiscales, pas d'établissement principal créé.");
+				mr.addMessage(LogCategory.SUIVI, LogLevel.WARN, "Pas de siège associé dans les données fiscales, pas d'établissement principal créé à partir des données fiscales.");
+			}
+			if (premierEtablissementLieAvecCivil != null) {
+				// ne pas oublier de générer les liens pour le premier établissement principal généré depuis les données civiles
+				addLinksAciviteEconomiquePrincipale(entrepriseSupplier, premierEtablissementLieAvecCivil.getLeft(), premierEtablissementLieAvecCivil.getRight(), linkCollector);
 			}
 			return;
 		}
@@ -2518,18 +2567,38 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 			final RegDate dateFinActivite = mr.getExtractedData(DateFinActiviteData.class, moi).date;
 			final RegDate dateFinDonneesFiscales = RegDateHelper.minimum(dateFinEtablissementFiscal, dateFinActivite, NullDateBehavior.LATEST);
 
-			final Etablissement etbPrincipal = uniregStore.saveEntityToDb(new Etablissement());
-			final Supplier<Etablissement> etbPrincipalSupplier = getEtablissementByUniregIdSupplier(etbPrincipal.getNumero());
-			etbPrincipal.setEnseigne(regpm.getEnseigne());
-			etbPrincipal.setRaisonSociale(raisonSociale);
+			final Etablissement etbPrincipal;
+			if (premierEtablissementLieAvecCivil != null) {
+				etbPrincipal = premierEtablissementLieAvecCivil.getLeft();
 
-			// un peu de log pour indiquer la création de l'établissement principal
-			mr.addMessage(LogCategory.SUIVI, LogLevel.INFO, String.format("Création de l'établissement principal %s.",
-			                                                              FormatNumeroHelper.numeroCTBToDisplay(etbPrincipal.getNumero())));
+				// un peu de log pour indiquer la ré-utilisation de l'établissement créé pour les données civiles
+				mr.addMessage(LogCategory.SUIVI, LogLevel.INFO, String.format("Ré-utilisation de l'établissement principal %s identifié par son numéro cantonal.",
+				                                                              FormatNumeroHelper.numeroCTBToDisplay(etbPrincipal.getNumero())));
+			}
+			else {
+				etbPrincipal = uniregStore.saveEntityToDb(new Etablissement());
+				etbPrincipal.setEnseigne(regpm.getEnseigne());
+				etbPrincipal.setRaisonSociale(raisonSociale);
+
+				// un peu de log pour indiquer la création de l'établissement principal
+				mr.addMessage(LogCategory.SUIVI, LogLevel.INFO, String.format("Création de l'établissement principal %s.",
+				                                                              FormatNumeroHelper.numeroCTBToDisplay(etbPrincipal.getNumero())));
+			}
 
 			// lien entre l'établissement principal et son entreprise
-			final KeyedSupplier<Entreprise> entrepriseSupplier = getEntrepriseSupplier(idMapper, regpm);
-			linkCollector.addLink(new EntityLinkCollector.EtablissementEntiteJuridiqueLink<>(etbPrincipalSupplier, entrepriseSupplier, sieges.firstKey(), dateFinDonneesFiscales, true));
+			final DateRange rangeLien = new DateRangeHelper.Range(sieges.firstKey(), dateFinDonneesFiscales);
+
+			// attention, s'il y avait des données civiles, il faut fusionner les deux...
+			if (premierEtablissementLieAvecCivil != null) {
+				final List<DateRange> ranges = DateRangeHelper.merge(Stream.concat(Stream.of(rangeLien), premierEtablissementLieAvecCivil.getRight().stream())
+						                                                     .sorted(Comparator.comparing(DateRange::getDateDebut))
+						                                                     .collect(Collectors.toList()));
+
+				addLinksAciviteEconomiquePrincipale(entrepriseSupplier, etbPrincipal, ranges, linkCollector);
+			}
+			else {
+				addLinksAciviteEconomiquePrincipale(entrepriseSupplier, etbPrincipal, Collections.singletonList(rangeLien), linkCollector);
+			}
 
 			// création des domiciles (pour l'instant sans date de fin, celle-ci sera ajouté ensuite)
 			final List<DomicileEtablissement> domicilesBruts = sieges.entrySet().stream()
@@ -2566,6 +2635,10 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 					.forEach(etbPrincipal::addDomicile);
 
 			// TODO adresse ?
+		}
+		else if (premierEtablissementLieAvecCivil != null) {
+			// ne pas oublier de générer les liens vers l'établissement identifié civilement
+			addLinksAciviteEconomiquePrincipale(entrepriseSupplier, premierEtablissementLieAvecCivil.getLeft(), premierEtablissementLieAvecCivil.getRight(), linkCollector);
 		}
 	}
 

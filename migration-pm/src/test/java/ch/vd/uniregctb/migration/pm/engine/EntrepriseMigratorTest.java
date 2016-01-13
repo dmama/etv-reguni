@@ -1818,7 +1818,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		Assert.assertEquals("Le for principal 2 est ignoré car il a une date de début nulle (ou antérieure au 01.08.1291).", textesFors.get(1));
 
 		// .. et dans le contexte "SUIVI"
-		assertExistMessageWithContent(mr, LogCategory.SUIVI, "\\bPas de siège associé dans les données fiscales, pas d'établissement principal créé\\.");
+		assertExistMessageWithContent(mr, LogCategory.SUIVI, "\\bPas de siège associé dans les données fiscales, pas d'établissement principal créé à partir des données fiscales\\.");
 	}
 
 	@Test
@@ -1854,7 +1854,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		Assert.assertEquals("Régime fiscal VD _01_ORDINAIRE ignoré en raison de sa date de début nulle (ou antérieure au 01.08.1291).", textes.get(2));
 		Assert.assertEquals("Entreprise sans exercice commercial ni for principal.", textes.get(3));
 		Assert.assertEquals("Entreprise sans exercice commercial ni date de bouclement futur.", textes.get(4));
-		Assert.assertEquals("Pas de siège associé dans les données fiscales, pas d'établissement principal créé.", textes.get(5));
+		Assert.assertEquals("Pas de siège associé dans les données fiscales, pas d'établissement principal créé à partir des données fiscales.", textes.get(5));
 		Assert.assertEquals("Entreprise migrée : 12.34.", textes.get(6));
 	}
 
@@ -1893,7 +1893,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		Assert.assertEquals("Régime fiscal VD _01_ORDINAIRE ignoré en raison de sa date de début (23.07.2010) postérieure à la date de fin d'activité de l'entreprise (30.06.2010).", textes.get(3));
 		Assert.assertEquals("Entreprise sans exercice commercial ni for principal.", textes.get(4));
 		Assert.assertEquals("Entreprise sans exercice commercial ni date de bouclement futur.", textes.get(5));
-		Assert.assertEquals("Pas de siège associé dans les données fiscales, pas d'établissement principal créé.", textes.get(6));
+		Assert.assertEquals("Pas de siège associé dans les données fiscales, pas d'établissement principal créé à partir des données fiscales.", textes.get(6));
 		Assert.assertEquals("Entreprise migrée : 12.34.", textes.get(7));
 	}
 
@@ -2007,7 +2007,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		Assert.assertEquals("Allègement fiscal généré [12.03.1957 -> ?], collectivité COMMUNE, type CAPITAL : 13.5%.", textes.get(6));
 		Assert.assertEquals("Entreprise sans exercice commercial ni for principal.", textes.get(7));
 		Assert.assertEquals("Entreprise sans exercice commercial ni date de bouclement futur.", textes.get(8));
-		Assert.assertEquals("Pas de siège associé dans les données fiscales, pas d'établissement principal créé.", textes.get(9));
+		Assert.assertEquals("Pas de siège associé dans les données fiscales, pas d'établissement principal créé à partir des données fiscales.", textes.get(9));
 		Assert.assertEquals("Entreprise migrée : 47.84.", textes.get(10));
 	}
 
@@ -2089,7 +2089,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		Assert.assertEquals("Allègement fiscal généré [12.03.1958 -> ?], collectivité CONFEDERATION, type CAPITAL : 13.4%.", textes.get(5));
 		Assert.assertEquals("Entreprise sans exercice commercial ni for principal.", textes.get(6));
 		Assert.assertEquals("Entreprise sans exercice commercial ni date de bouclement futur.", textes.get(7));
-		Assert.assertEquals("Pas de siège associé dans les données fiscales, pas d'établissement principal créé.", textes.get(8));
+		Assert.assertEquals("Pas de siège associé dans les données fiscales, pas d'établissement principal créé à partir des données fiscales.", textes.get(8));
 		Assert.assertEquals("Entreprise migrée : 47.84.", textes.get(9));
 	}
 
@@ -2145,7 +2145,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		Assert.assertEquals("Allègement fiscal 2 ignoré en raison de sa date de début dans le futur (01.04.2020).", textes.get(3));
 		Assert.assertEquals("Entreprise sans exercice commercial ni for principal.", textes.get(4));
 		Assert.assertEquals("Entreprise sans exercice commercial ni date de bouclement futur.", textes.get(5));
-		Assert.assertEquals("Pas de siège associé dans les données fiscales, pas d'établissement principal créé.", textes.get(6));
+		Assert.assertEquals("Pas de siège associé dans les données fiscales, pas d'établissement principal créé à partir des données fiscales.", textes.get(6));
 		Assert.assertEquals("Entreprise migrée : 426.13.", textes.get(7));
 	}
 
@@ -2242,7 +2242,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		Assert.assertEquals("Allègement fiscal généré [01.01.2012 -> ?], collectivité COMMUNE (5831), type CAPITAL : 100%.", textes.get(8));
 		Assert.assertEquals("Entreprise sans exercice commercial ni for principal.", textes.get(9));
 		Assert.assertEquals("Entreprise sans exercice commercial ni date de bouclement futur.", textes.get(10));
-		Assert.assertEquals("Pas de siège associé dans les données fiscales, pas d'établissement principal créé.", textes.get(11));
+		Assert.assertEquals("Pas de siège associé dans les données fiscales, pas d'établissement principal créé à partir des données fiscales.", textes.get(11));
 		Assert.assertEquals("Entreprise migrée : 95.39.", textes.get(12));
 	}
 
@@ -2399,7 +2399,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		Assert.assertEquals("Ajout d'une date de bouclement estimée au 31.03.2000 pour combler l'absence d'exercice commercial dans RegPM sur la période [01.04.1998 -> 31.03.2007].", textes.get(9));
 		Assert.assertEquals("Ajout d'une date de bouclement estimée au 31.03.1999 pour combler l'absence d'exercice commercial dans RegPM sur la période [01.04.1998 -> 31.03.2007].", textes.get(10));
 		Assert.assertEquals("Cycle de bouclements créé, applicable dès le 01.03.1997 : tous les 12 mois, à partir du premier 31.03.", textes.get(11));
-		Assert.assertEquals("Pas de siège associé dans les données fiscales, pas d'établissement principal créé.", textes.get(12));
+		Assert.assertEquals("Pas de siège associé dans les données fiscales, pas d'établissement principal créé à partir des données fiscales.", textes.get(12));
 		Assert.assertEquals("Entreprise migrée : 246.71.", textes.get(13));
 	}
 
@@ -2580,7 +2580,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		Assert.assertEquals("Ajout d'une date de bouclement estimée au 31.03.2000 pour combler l'absence d'exercice commercial dans RegPM sur la période [01.04.1998 -> 31.03.2008].", textes.get(9));
 		Assert.assertEquals("Ajout d'une date de bouclement estimée au 31.03.1999 pour combler l'absence d'exercice commercial dans RegPM sur la période [01.04.1998 -> 31.03.2008].", textes.get(10));
 		Assert.assertEquals("Cycle de bouclements créé, applicable dès le 01.03.1997 : tous les 12 mois, à partir du premier 31.03.", textes.get(11));
-		Assert.assertEquals("Pas de siège associé dans les données fiscales, pas d'établissement principal créé.", textes.get(12));
+		Assert.assertEquals("Pas de siège associé dans les données fiscales, pas d'établissement principal créé à partir des données fiscales.", textes.get(12));
 		Assert.assertEquals("Entreprise migrée : 246.71.", textes.get(13));
 	}
 
@@ -2656,7 +2656,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		Assert.assertEquals("Ajout d'une date de bouclement estimée au 31.12.1991 pour combler l'absence d'exercice commercial dans RegPM sur la période [01.01.1990 -> 31.12.2000].", textes.get(11));
 		Assert.assertEquals("Ajout d'une date de bouclement estimée au 31.12.1990 pour combler l'absence d'exercice commercial dans RegPM sur la période [01.01.1990 -> 31.12.2000].", textes.get(12));
 		Assert.assertEquals("Cycle de bouclements créé, applicable dès le 01.12.1990 : tous les 12 mois, à partir du premier 31.12.", textes.get(13));
-		Assert.assertEquals("Pas de siège associé dans les données fiscales, pas d'établissement principal créé.", textes.get(14));
+		Assert.assertEquals("Pas de siège associé dans les données fiscales, pas d'établissement principal créé à partir des données fiscales.", textes.get(14));
 		Assert.assertEquals("Entreprise migrée : 324.14.", textes.get(15));
 	}
 
@@ -2963,7 +2963,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 			Assert.assertEquals(4, textes.size());
 			Assert.assertEquals("L'entreprise n'existait pas dans Unireg avec ce numéro de contribuable.", textes.get(0));
 			Assert.assertEquals("Entreprise sans exercice commercial ni date de bouclement futur.", textes.get(1));
-			Assert.assertEquals("Pas de siège associé dans les données fiscales, pas d'établissement principal créé.", textes.get(2));
+			Assert.assertEquals("Pas de siège associé dans les données fiscales, pas d'établissement principal créé à partir des données fiscales.", textes.get(2));
 			Assert.assertEquals("Entreprise migrée : " + FormatNumeroHelper.numeroCTBToDisplay(noEntreprise) + ".", textes.get(3));
 		}
 	}
@@ -3198,7 +3198,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		Assert.assertEquals("For principal COMMUNE_OU_FRACTION_VD/5586 [07.05.2005 -> ?] généré.", textesFors.get(0));
 
 		// .. et dans le contexte "SUIVI"
-		assertExistMessageWithContent(mr, LogCategory.SUIVI, "\\bPas de siège associé dans les données fiscales, pas d'établissement principal créé\\.");
+		assertExistMessageWithContent(mr, LogCategory.SUIVI, "\\bPas de siège associé dans les données fiscales, pas d'établissement principal créé à partir des données fiscales\\.");
 	}
 
 	@Test
@@ -3517,7 +3517,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 			Assert.assertEquals("Entreprise sans exercice commercial ni for principal.", textes.get(1));
 			Assert.assertEquals("Entreprise sans exercice commercial ni date de bouclement futur.", textes.get(2));
 			Assert.assertEquals("Le siège 1 est ignoré car il a une date de début de validité nulle (ou antérieure au 01.08.1291).", textes.get(3));
-			Assert.assertEquals("Pas de siège associé dans les données fiscales, pas d'établissement principal créé.", textes.get(4));
+			Assert.assertEquals("Pas de siège associé dans les données fiscales, pas d'établissement principal créé à partir des données fiscales.", textes.get(4));
 			Assert.assertEquals("Entreprise migrée : " + FormatNumeroHelper.numeroCTBToDisplay(noEntreprise) + ".", textes.get(5));
 		}
 	}
@@ -3772,7 +3772,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 			Assert.assertEquals("Entreprise identifiée comme un doublon.", textes.get(1));
 			Assert.assertEquals("Entreprise sans exercice commercial ni for principal.", textes.get(2));
 			Assert.assertEquals("Entreprise sans exercice commercial ni date de bouclement futur.", textes.get(3));
-			Assert.assertEquals("Pas de siège associé dans les données fiscales, pas d'établissement principal créé.", textes.get(4));
+			Assert.assertEquals("Pas de siège associé dans les données fiscales, pas d'établissement principal créé à partir des données fiscales.", textes.get(4));
 			Assert.assertEquals("Entreprise migrée : 26.23.", textes.get(5));
 		}
 	}
@@ -3809,7 +3809,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 			Assert.assertEquals("L'entreprise n'existait pas dans Unireg avec ce numéro de contribuable.", textes.get(0));
 			Assert.assertEquals("Entreprise sans exercice commercial ni for principal.", textes.get(1));
 			Assert.assertEquals("Entreprise sans exercice commercial ni date de bouclement futur.", textes.get(2));
-			Assert.assertEquals("Pas de siège associé dans les données fiscales, pas d'établissement principal créé.", textes.get(3));
+			Assert.assertEquals("Pas de siège associé dans les données fiscales, pas d'établissement principal créé à partir des données fiscales.", textes.get(3));
 			Assert.assertEquals("Entreprise migrée : 26.23.", textes.get(4));
 		}
 	}
@@ -3867,7 +3867,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 			Assert.assertEquals("Plusieurs dates de fin d'activité en concurrence : date de réquisition de radiation (21.04.2006), date de bilan de fusion (12.03.2007), date de prononcé de faillite (02.06.2005), date de dissolution (04.03.2007).", textes.get(1));
 			Assert.assertEquals("Date de fin d'activité proposée (date de réquisition de radiation) : 21.04.2006.", textes.get(2));
 			Assert.assertEquals("Entreprise sans exercice commercial ni date de bouclement futur.", textes.get(3));
-			Assert.assertEquals("Pas de siège associé dans les données fiscales, pas d'établissement principal créé.", textes.get(4));
+			Assert.assertEquals("Pas de siège associé dans les données fiscales, pas d'établissement principal créé à partir des données fiscales.", textes.get(4));
 			Assert.assertEquals("Etat 'EN_FAILLITE' migré, dès le 23.05.2005.", textes.get(5));
 			Assert.assertEquals("Entreprise migrée : 26.23.", textes.get(6));
 		}
@@ -3926,7 +3926,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 			Assert.assertEquals("Plusieurs dates de fin d'activité en concurrence : date de bilan de fusion (12.03.2007), date de prononcé de faillite (02.06.2005), date de dissolution (04.03.2007).", textes.get(1));
 			Assert.assertEquals("Date de fin d'activité proposée (date de bilan de fusion) : 12.03.2007.", textes.get(2));
 			Assert.assertEquals("Entreprise sans exercice commercial ni date de bouclement futur.", textes.get(3));
-			Assert.assertEquals("Pas de siège associé dans les données fiscales, pas d'établissement principal créé.", textes.get(4));
+			Assert.assertEquals("Pas de siège associé dans les données fiscales, pas d'établissement principal créé à partir des données fiscales.", textes.get(4));
 			Assert.assertEquals("Etat 'EN_FAILLITE' migré, dès le 23.05.2005.", textes.get(5));
 			Assert.assertEquals("Entreprise migrée : 26.23.", textes.get(6));
 		}
@@ -3983,7 +3983,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 			Assert.assertEquals("Plusieurs dates de fin d'activité en concurrence : date de prononcé de faillite (02.06.2005), date de dissolution (04.03.2007).", textes.get(1));
 			Assert.assertEquals("Date de fin d'activité proposée (date de prononcé de faillite) : 02.06.2005.", textes.get(2));
 			Assert.assertEquals("Entreprise sans exercice commercial ni date de bouclement futur.", textes.get(3));
-			Assert.assertEquals("Pas de siège associé dans les données fiscales, pas d'établissement principal créé.", textes.get(4));
+			Assert.assertEquals("Pas de siège associé dans les données fiscales, pas d'établissement principal créé à partir des données fiscales.", textes.get(4));
 			Assert.assertEquals("Etat 'EN_FAILLITE' migré, dès le 23.05.2005.", textes.get(5));
 			Assert.assertEquals("Entreprise migrée : 26.23.", textes.get(6));
 		}
@@ -4039,7 +4039,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 			Assert.assertEquals("L'entreprise n'existait pas dans Unireg avec ce numéro de contribuable.", textes.get(0));
 			Assert.assertEquals("Date de fin d'activité proposée (date de dissolution) : 04.03.2007.", textes.get(1));
 			Assert.assertEquals("Entreprise sans exercice commercial ni date de bouclement futur.", textes.get(2));
-			Assert.assertEquals("Pas de siège associé dans les données fiscales, pas d'établissement principal créé.", textes.get(3));
+			Assert.assertEquals("Pas de siège associé dans les données fiscales, pas d'établissement principal créé à partir des données fiscales.", textes.get(3));
 			Assert.assertEquals("Entreprise migrée : 26.23.", textes.get(4));
 		}
 	}
@@ -4669,7 +4669,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 			Assert.assertEquals("L'entreprise n'existait pas dans Unireg avec ce numéro de contribuable.", textes.get(0));
 			Assert.assertEquals("Entreprise sans exercice commercial ni for principal.", textes.get(1));
 			Assert.assertEquals("Entreprise sans exercice commercial ni date de bouclement futur.", textes.get(2));
-			Assert.assertEquals("Pas de siège associé dans les données fiscales, pas d'établissement principal créé.", textes.get(3));
+			Assert.assertEquals("Pas de siège associé dans les données fiscales, pas d'établissement principal créé à partir des données fiscales.", textes.get(3));
 			Assert.assertEquals("Etat 'FONDEE' migré, dès le 27.08.2004.", textes.get(4));
 			Assert.assertEquals("Etat 'INSCRITE_RC' migré, dès le 01.03.2005.", textes.get(5));
 			Assert.assertEquals("Etat 'RADIEE_RC' migré, dès le 01.03.2007.", textes.get(6));
@@ -4735,7 +4735,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 			Assert.assertEquals("L'entreprise n'existait pas dans Unireg avec ce numéro de contribuable.", textes.get(0));
 			Assert.assertEquals("Entreprise sans exercice commercial ni for principal.", textes.get(1));
 			Assert.assertEquals("Entreprise sans exercice commercial ni date de bouclement futur.", textes.get(2));
-			Assert.assertEquals("Pas de siège associé dans les données fiscales, pas d'établissement principal créé.", textes.get(3));
+			Assert.assertEquals("Pas de siège associé dans les données fiscales, pas d'établissement principal créé à partir des données fiscales.", textes.get(3));
 			Assert.assertEquals("Fusion des deux états d'entreprise 'INSCRITE_RC' successifs obtenus les 01.03.2005 et 01.03.2007.", textes.get(4));
 			Assert.assertEquals("Etat 'FONDEE' migré, dès le 27.08.2004.", textes.get(5));
 			Assert.assertEquals("Etat 'INSCRITE_RC' migré, dès le 01.03.2005.", textes.get(6));
