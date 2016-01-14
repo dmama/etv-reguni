@@ -2004,7 +2004,9 @@ public class MetierServiceImpl implements MetierService {
 				final ForFiscalSecondaire ffs = tiersService.openForFiscalSecondaire(contribuable,
 				                                                                     date, forFiscalSecondaire.getMotifRattachement(),
 				                                                                     forFiscalSecondaire.getNumeroOfsAutoriteFiscale(),
-				                                                                     forFiscalSecondaire.getTypeAutoriteFiscale(), motifOuverture);
+				                                                                     forFiscalSecondaire.getTypeAutoriteFiscale(),
+				                                                                     motifOuverture,
+				                                                                     forFiscalSecondaire.getGenreImpot());
 				if (ffs != null && dateFermeture != null && motifFermeture != null) {
 					tiersService.closeForFiscalSecondaire(contribuable, ffs, dateFermeture, motifFermeture);
 				}

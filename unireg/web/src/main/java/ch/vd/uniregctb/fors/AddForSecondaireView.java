@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.fors;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
@@ -18,13 +19,15 @@ public class AddForSecondaireView implements AddForRevenuFortuneView {
 	private MotifFor motifFin;
 
 	private MotifRattachement motifRattachement;
+	private GenreImpot genreImpot;
 	private Integer noAutoriteFiscale;
 
 	public AddForSecondaireView() {
 	}
 
-	public AddForSecondaireView(long tiersId) {
+	public AddForSecondaireView(long tiersId, GenreImpot genreImpot) {
 		this.tiersId = tiersId;
+		this.genreImpot = genreImpot;
 		this.motifRattachement = MotifRattachement.IMMEUBLE_PRIVE;
 	}
 
@@ -109,5 +112,14 @@ public class AddForSecondaireView implements AddForRevenuFortuneView {
 
 	public void setNoAutoriteFiscale(Integer noAutoriteFiscale) {
 		this.noAutoriteFiscale = noAutoriteFiscale;
+	}
+
+	@Override
+	public GenreImpot getGenreImpot() {
+		return genreImpot;
+	}
+
+	public void setGenreImpot(GenreImpot genreImpot) {
+		this.genreImpot = genreImpot;
 	}
 }

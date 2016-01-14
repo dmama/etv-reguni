@@ -1,8 +1,13 @@
 package ch.vd.uniregctb.tiers.view;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.Predicate;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
@@ -358,6 +363,46 @@ public class TiersView {
 
 	public void setForsFiscaux(List<ForFiscalView> forsFiscaux) {
 		this.forsFiscaux = forsFiscaux;
+	}
+
+	@NotNull
+	public List<ForFiscalView> getForsFiscauxPrincipaux() {
+		return extract(forsFiscaux, new Predicate<ForFiscalView>() {
+			@Override
+			public boolean evaluate(ForFiscalView ff) {
+				return ff.isPrincipal();
+			}
+		});
+	}
+
+	@NotNull
+	public List<ForFiscalView> getForsFiscauxSecondaires() {
+		return extract(forsFiscaux, new Predicate<ForFiscalView>() {
+			@Override
+			public boolean evaluate(ForFiscalView ff) {
+				return ff.isSecondaire();
+			}
+		});
+	}
+
+	@NotNull
+	public List<ForFiscalView> getAutresForsFiscaux() {
+		return extract(forsFiscaux, new Predicate<ForFiscalView>() {
+			@Override
+			public boolean evaluate(ForFiscalView ff) {
+				return !ff.isPrincipal() && !ff.isSecondaire();
+			}
+		});
+	}
+
+	@NotNull
+	private static <T> List<T> extract(List<T> source, Predicate<? super T> predicate) {
+		if (source == null || source.isEmpty()) {
+			return Collections.emptyList();
+		}
+
+		final List<T> output = new ArrayList<>(source.size());
+		return CollectionUtils.select(source, predicate, output);
 	}
 
 	public List<SituationFamilleView> getSituationsFamille() {

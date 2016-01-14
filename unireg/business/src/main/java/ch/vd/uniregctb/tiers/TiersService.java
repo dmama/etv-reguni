@@ -545,10 +545,11 @@ public interface TiersService {
      * @param numeroOfsAutoriteFiscale le numéro OFS de l'autorité fiscale sur laquelle est ouverte le nouveau fort.
      * @param typeAutoriteFiscale      le type d'autorité fiscale.
      * @param motifOuverture           le motif d'ouverture du for fiscal principal
+     * @param genreImpot               le genre d'impôt du for fiscal principal
      * @return le nouveau for fiscal principal
      */
     ForFiscalPrincipalPM openForFiscalPrincipal(ContribuableImpositionPersonnesMorales contribuable, RegDate dateOuverture, MotifRattachement motifRattachement, int numeroOfsAutoriteFiscale,
-                                              TypeAutoriteFiscale typeAutoriteFiscale, MotifFor motifOuverture);
+                                              TypeAutoriteFiscale typeAutoriteFiscale, MotifFor motifOuverture, GenreImpot genreImpot);
 
     /**
      * Ouvre un nouveau for fiscal secondaire sur un contribuable.
@@ -561,10 +562,11 @@ public interface TiersService {
      * @param numeroOfsAutoriteFiscale le numéro OFS de l'autorité fiscale sur laquelle est ouverte le nouveau fort.
      * @param typeAutoriteFiscale      le type d'autorité fiscale
      * @param motifOuverture           le motif d'ouverture
+     * @param genreImpot               le genre d'impôt
      * @return le nouveau for fiscal secondaire
      */
     ForFiscalSecondaire openForFiscalSecondaire(Contribuable contribuable, final RegDate dateOuverture, MotifRattachement motifRattachement, int numeroOfsAutoriteFiscale,
-                                                TypeAutoriteFiscale typeAutoriteFiscale, MotifFor motifOuverture);
+                                                TypeAutoriteFiscale typeAutoriteFiscale, MotifFor motifOuverture, GenreImpot genreImpot);
 
     /**
      * Ouvre un nouveau for fiscal autre élément imposable sur un contribuable.
@@ -756,10 +758,11 @@ public interface TiersService {
      * @param motifRattachement   le motif de rattachement du for à créer
      * @param autoriteFiscale     le numéro de l'autorité fiscale du for à créer
      * @param typeAutoriteFiscale le type de l'autorité fiscale du for à créer
+     * @param genreImpot          le genre d'impôt du for à créer
      * @return le nouveau for fiscal principal.
      */
     ForFiscalPrincipalPM addForPrincipal(ContribuableImpositionPersonnesMorales contribuable, RegDate dateDebut, MotifFor motifOuverture, @Nullable RegDate dateFin, @Nullable MotifFor motifFermeture,
-                                         MotifRattachement motifRattachement, int autoriteFiscale, TypeAutoriteFiscale typeAutoriteFiscale);
+                                         MotifRattachement motifRattachement, int autoriteFiscale, TypeAutoriteFiscale typeAutoriteFiscale, GenreImpot genreImpot);
 
 	@Nullable
 	ForFiscalSecondaire updateForSecondaire(ForFiscalSecondaire ffs, RegDate dateOuverture, MotifFor motifOuverture, RegDate dateFermeture, MotifFor motifFermeture, int noOfsAutoriteFiscale);
@@ -805,10 +808,12 @@ public interface TiersService {
      * @param typeAutoriteFiscale      le type d'autorité fiscale
      * @param motifOuverture           le motif d'ouverture
      * @param motifFermeture           le motif de fermeture du for à créer (peut être nul)
+     * @param genreImpot               le genre d'impôt du for à créer
      * @return le nouveau for fiscal secondaire.
      */
     ForFiscalSecondaire addForSecondaire(Contribuable contribuable, RegDate dateOuverture, RegDate dateFermeture, MotifRattachement motifRattachement,
-                                         int numeroOfsAutoriteFiscale, TypeAutoriteFiscale typeAutoriteFiscale, MotifFor motifOuverture, MotifFor motifFermeture);
+                                         int numeroOfsAutoriteFiscale, TypeAutoriteFiscale typeAutoriteFiscale, MotifFor motifOuverture, MotifFor motifFermeture,
+                                         GenreImpot genreImpot);
 
     /**
      * Ajoute un for fiscal autre élément imposable sur un contribuable.
@@ -1141,11 +1146,12 @@ public interface TiersService {
      * @param motifOuverture           le motif d'ouverture
      * @param dateFermeture            la date de fermeture du for
      * @param motifFermeture           le motif de fermeture
+     * @param genreImpot               le genre d'impôt
      * @return le nouveau for fiscal principal
      */
     ForFiscalPrincipalPM openAndCloseForFiscalPrincipal(ContribuableImpositionPersonnesMorales contribuable, final RegDate dateOuverture,
                                                         MotifRattachement motifRattachement, int numeroOfsAutoriteFiscale, TypeAutoriteFiscale typeAutoriteFiscale,
-                                                        MotifFor motifOuverture, RegDate dateFermeture, MotifFor motifFermeture);
+                                                        MotifFor motifOuverture, RegDate dateFermeture, MotifFor motifFermeture, GenreImpot genreImpot);
 
     /**
      * Ouvre et ferme un for debiteur préstation imposable sur un débiteur

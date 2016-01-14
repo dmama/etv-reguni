@@ -76,8 +76,9 @@ public class ForFiscalView implements Comparable<ForFiscalView>, DateRange, Annu
 
 	private boolean dateFermetureEditable = true;
 
-	public ForFiscalView() {
-	}
+	private final boolean principal;
+
+	private final boolean secondaire;
 
 	public ForFiscalView(ForFiscal forFiscal, boolean isForGestion, boolean dernierForPrincipalOuDebiteur) {
 		this.id = forFiscal.getId();
@@ -123,6 +124,9 @@ public class ForFiscalView implements Comparable<ForFiscalView>, DateRange, Annu
 
 		this.dernierForPrincipalOuDebiteur = dernierForPrincipalOuDebiteur;
 		this.natureForFiscal = forFiscal.getClass().getSimpleName();
+
+		this.principal = forFiscal.isPrincipal();
+		this.secondaire = forFiscal instanceof ForFiscalSecondaire;
 	}
 
 	/**
@@ -506,5 +510,13 @@ public class ForFiscalView implements Comparable<ForFiscalView>, DateRange, Annu
 	@Override
 	public RegDate getDateFin() {
 		return dateFermeture;
+	}
+
+	public boolean isPrincipal() {
+		return principal;
+	}
+
+	public boolean isSecondaire() {
+		return secondaire;
 	}
 }

@@ -461,8 +461,19 @@ public class AutorisationManagerImpl implements AutorisationManager {
 				map.put(MODIF_DI, Boolean.TRUE);
 			}
 
-			if (SecurityHelper.isGranted(securityProvider,Role.GEST_DECISION_ACI,visa,oid)) {
+			if (SecurityHelper.isGranted(securityProvider, Role.GEST_DECISION_ACI, visa, oid)) {
 				map.put(FISCAL_DECISION_ACI, Boolean.TRUE);
+				map.put(MODIF_FISCAL, Boolean.TRUE);
+			}
+
+			final boolean ctbModifiableSelonRoleEtDecision = isCtbModifiableSelonRoleEtDecisions((ContribuableImpositionPersonnesMorales) tiers, visa, oid);
+			if (ctbModifiableSelonRoleEtDecision && SecurityHelper.isGranted(securityProvider, Role.FOR_PRINC_PM, visa, oid)) {
+				map.put(FISCAL_FOR_PRINC, Boolean.TRUE);
+				map.put(MODIF_FISCAL, Boolean.TRUE);
+			}
+			if (ctbModifiableSelonRoleEtDecision && SecurityHelper.isGranted(securityProvider, Role.FOR_SECOND_PM, visa, oid)) {
+				map.put(FISCAL_FOR_SEC, Boolean.TRUE);
+				map.put(MODIF_FISCAL, Boolean.TRUE);
 			}
 		}
 
@@ -772,10 +783,8 @@ public class AutorisationManagerImpl implements AutorisationManager {
 	/**
 	 * Code commun pour les méthodes setDroitNonHabitant et setDroitHabitant
 	 */
-	private boolean codeFactorise3(Tiers tiers, String visa, int oid, Map<String, Boolean> allowedOnglet,
-	                               boolean isEditable) {
-		final Contribuable ctbAVerifier = (Contribuable) tiers;
-		final boolean modifiableSelonRoleEtDecisions = isCtbModifiableSelonRoleEtDecisions(ctbAVerifier, visa, oid);
+	private boolean codeFactorise3(ContribuableImpositionPersonnesPhysiques tiers, String visa, int oid, Map<String, Boolean> allowedOnglet, boolean isEditable) {
+		final boolean modifiableSelonRoleEtDecisions = isCtbModifiableSelonRoleEtDecisions(tiers, visa, oid);
 		if (modifiableSelonRoleEtDecisions && !tiers.getForsFiscauxPrincipauxActifsSorted().isEmpty() && SecurityHelper.isGranted(securityProvider, Role.FOR_SECOND_PP, visa, oid)) {
 			allowedOnglet.put(MODIF_FISCAL, Boolean.TRUE);
 			allowedOnglet.put(FISCAL_FOR_SEC, Boolean.TRUE);
@@ -789,7 +798,7 @@ public class AutorisationManagerImpl implements AutorisationManager {
 		return isEditable;
 	}
 
-	private static enum TypeImposition {
+	private enum TypeImposition {
 		AUCUN_FOR_ACTIF,
 		ORDINAIRE_DEPENSE,
 		SOURCIER;

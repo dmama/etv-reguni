@@ -98,6 +98,7 @@ import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.transaction.TransactionTemplate;
 import ch.vd.uniregctb.type.CategorieEtranger;
 import ch.vd.uniregctb.type.EtatCivil;
+import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
@@ -836,7 +837,7 @@ public class EvenementReqDesProcessorImpl implements EvenementReqDesProcessor, I
 							final Pair<Integer, MotifRattachement> key = Pair.of(ofsCommune, MotifRattachement.IMMEUBLE_PRIVE);
 							if (!ofsCommunesExistantes.contains(key)) {
 								// et finalement on crée les fors secondaires sur les communes où il n'y en a pas encore
-								tiersService.openForFiscalSecondaire(assujetti, dateActe, MotifRattachement.IMMEUBLE_PRIVE, ofsCommune, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifFor.ACHAT_IMMOBILIER);
+								tiersService.openForFiscalSecondaire(assujetti, dateActe, MotifRattachement.IMMEUBLE_PRIVE, ofsCommune, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifFor.ACHAT_IMMOBILIER, GenreImpot.REVENU_FORTUNE);
 								ofsCommunesExistantes.add(key);
 							}
 						}

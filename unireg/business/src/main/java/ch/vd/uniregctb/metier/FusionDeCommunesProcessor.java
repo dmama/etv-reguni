@@ -357,7 +357,7 @@ public class FusionDeCommunesProcessor {
 			}
 			else {
 				tiersService.closeForFiscalPrincipal(principal, dateFusion.getOneDayBefore(), MotifFor.FUSION_COMMUNES);
-				tiersService.openForFiscalPrincipal(principal.getTiers(), dateFusion, principal.getMotifRattachement(), nouveauNoOfs, principal.getTypeAutoriteFiscale(), MotifFor.FUSION_COMMUNES);
+				tiersService.openForFiscalPrincipal(principal.getTiers(), dateFusion, principal.getMotifRattachement(), nouveauNoOfs, principal.getTypeAutoriteFiscale(), MotifFor.FUSION_COMMUNES, principal.getGenreImpot());
 			}
 		}
 	}
@@ -375,7 +375,7 @@ public class FusionDeCommunesProcessor {
 				final MotifFor motifFermetureExistant = secondaire.getMotifFermeture();
 				tiersService.closeForFiscalSecondaire(contribuable, secondaire, dateFusion.getOneDayBefore(), MotifFor.FUSION_COMMUNES);
 				tiersService.addForSecondaire(contribuable, dateFusion, dateFinExistante, secondaire.getMotifRattachement(),
-				                              nouveauNoOfs, secondaire.getTypeAutoriteFiscale(), MotifFor.FUSION_COMMUNES, motifFermetureExistant);
+				                              nouveauNoOfs, secondaire.getTypeAutoriteFiscale(), MotifFor.FUSION_COMMUNES, motifFermetureExistant, secondaire.getGenreImpot());
 			}
 		}
 	}

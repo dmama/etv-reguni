@@ -185,12 +185,14 @@ public class MotifsForHelper {
 		final List<MotifFor> motifs = new ArrayList<>();
 		switch (type.rattachement) {
 		case DOMICILE:
+			motifs.add(MotifFor.CESSATION_ACTIVITE);
+			motifs.add(MotifFor.FAILLITE);
 			break;
 		case IMMEUBLE_PRIVE:
 			motifs.add(MotifFor.VENTE_IMMOBILIER);
 			break;
 		case ETABLISSEMENT_STABLE:
-			motifs.add(MotifFor.CESSATION_ACTIVITE);
+			motifs.add(MotifFor.FIN_EXPLOITATION);
 			break;
 		default:
 			break;

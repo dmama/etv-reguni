@@ -38,6 +38,7 @@ import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
 import ch.vd.uniregctb.tiers.RegimeFiscal;
 import ch.vd.uniregctb.type.CategorieEntreprise;
 import ch.vd.uniregctb.type.EtatEvenementOrganisation;
+import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
 
@@ -549,7 +550,7 @@ public abstract class EvenementOrganisationInterne {
 			                              entreprise.getNumero(), entreprise.getNumeroEntreprise(),
 			                              RegDateHelper.dateToDisplayString(dateOuverture), motifOuverture, rattachement));
 			raiseStatusTo(HandleStatus.TRAITE);
-			return context.getTiersService().openForFiscalPrincipal(entreprise, dateOuverture, rattachement, autoriteFiscale.getNoOfs(), autoriteFiscale.getTypeAutoriteFiscale(), motifOuverture);
+			return context.getTiersService().openForFiscalPrincipal(entreprise, dateOuverture, rattachement, autoriteFiscale.getNoOfs(), autoriteFiscale.getTypeAutoriteFiscale(), motifOuverture, GenreImpot.BENEFICE_CAPITAL);
 		} else {
 			warnings.addWarning(
 					String.format("Ouverture de for fiscal principal sur une commune faîtière de fractions, %s: Veuillez saisir le for fiscal principal manuellement.",
@@ -577,7 +578,7 @@ public abstract class EvenementOrganisationInterne {
 			                              entreprise.getNumero(), entreprise.getNumeroEntreprise(),
 			                              RegDateHelper.dateToDisplayString(dateOuverture), motifOuverture, rattachement));
 			raiseStatusTo(HandleStatus.TRAITE);
-			return context.getTiersService().openForFiscalSecondaire(entreprise, dateOuverture, rattachement, autoriteFiscale.getNoOfs(), autoriteFiscale.getTypeAutoriteFiscale(), motifOuverture);
+			return context.getTiersService().openForFiscalSecondaire(entreprise, dateOuverture, rattachement, autoriteFiscale.getNoOfs(), autoriteFiscale.getTypeAutoriteFiscale(), motifOuverture, GenreImpot.BENEFICE_CAPITAL);
 		} else {
 			warnings.addWarning(
 					String.format("Ouverture de for fiscal secondaire sur une commune faîtière de fractions, %s: Veuillez saisir le for fiscal secondaire manuellement.",

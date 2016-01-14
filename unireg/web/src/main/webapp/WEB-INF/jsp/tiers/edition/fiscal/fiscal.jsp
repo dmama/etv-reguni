@@ -17,7 +17,9 @@
 						  autorisations.forsSecondaires ||
 						  autorisations.forsAutresImpots ||
 						  autorisations.forsAutresElementsImposables}">
-				<jsp:include page="for.jsp"/>
+				<jsp:include page="../../common/fiscal/for.jsp">
+					<jsp:param name="page" value="edit"/>
+				</jsp:include>
 			</c:if>
 
 			<c:if test="${autorisations.situationsFamille}">

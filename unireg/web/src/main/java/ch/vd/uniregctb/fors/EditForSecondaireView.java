@@ -2,6 +2,7 @@ package ch.vd.uniregctb.fors;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
+import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
@@ -19,6 +20,7 @@ public class EditForSecondaireView implements EditForRevenuFortuneView {
 	private MotifFor motifFin;
 
 	private MotifRattachement motifRattachement;
+	private GenreImpot genreImpot;
 	private Integer noAutoriteFiscale;
 
 	public EditForSecondaireView() {
@@ -33,12 +35,14 @@ public class EditForSecondaireView implements EditForRevenuFortuneView {
 		this.motifFin = ffs.getMotifFermeture();
 		this.motifRattachement = ffs.getMotifRattachement();
 		this.noAutoriteFiscale = ffs.getNumeroOfsAutoriteFiscale();
+		this.genreImpot = ffs.getGenreImpot();
 	}
 
 	public void initReadOnlyData(ForFiscalSecondaire ffs) {
 		this.id = ffs.getId();
 		this.tiersId = ffs.getTiers().getNumero();
 		this.motifRattachement = ffs.getMotifRattachement();
+		this.genreImpot = ffs.getGenreImpot();
 	}
 
 	@Override
@@ -113,5 +117,10 @@ public class EditForSecondaireView implements EditForRevenuFortuneView {
 
 	public void setNoAutoriteFiscale(Integer noAutoriteFiscale) {
 		this.noAutoriteFiscale = noAutoriteFiscale;
+	}
+
+	@Override
+	public GenreImpot getGenreImpot() {
+		return genreImpot;
 	}
 }

@@ -367,8 +367,6 @@
 
 	<c:if test="${command.natureTiers != 'DebiteurPrestationImposable'}">
 		<script type="text/javascript" language="Javascript1.3">
-				Histo.toggleAffichageRows('forFiscal',${printview}, 6);
-                Histo.toggleAffichageRows('decisionAci',${printview},2);
 				Histo.toggleRowsIsHisto('situationFamille','isSFHisto', 5);
 				Histo.toggleRowsIsHisto('dossierApparente','isRapportHisto', 2);
 				Histo.toggleRowsIsHisto('adresse','isAdrHisto',2);

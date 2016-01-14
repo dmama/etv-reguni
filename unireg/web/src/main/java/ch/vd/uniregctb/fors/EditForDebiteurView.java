@@ -2,6 +2,7 @@ package ch.vd.uniregctb.fors;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.tiers.ForDebiteurPrestationImposable;
+import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
@@ -134,5 +135,10 @@ public class EditForDebiteurView implements EditForAvecMotifsView {
 	@Override
 	public Integer getNoAutoriteFiscale() {
 		return noAutoriteFiscale;
+	}
+
+	@Override
+	public GenreImpot getGenreImpot() {
+		return GenreImpot.DEBITEUR_PRESTATION_IMPOSABLE;
 	}
 }

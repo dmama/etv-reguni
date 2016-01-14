@@ -35,7 +35,7 @@
 						<unireg:nextRowClass reset="0"/>
 						<tr class="<unireg:nextRowClass/>" >
 							<td width="20%"><fmt:message key="label.genre.impot"/>&nbsp;:</td>
-							<td><fmt:message key="option.genre.impot.REVENU_FORTUNE"/></td>
+							<td><fmt:message key="option.genre.impot.${command.genreImpot}"/></td>
 							<td width="20%"><fmt:message key="label.rattachement"/>&nbsp;:</td>
 							<td><fmt:message key="option.rattachement.${command.motifRattachement}" /></td>
 						</tr>

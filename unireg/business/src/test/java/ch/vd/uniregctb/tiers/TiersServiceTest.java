@@ -1424,7 +1424,9 @@ public class TiersServiceTest extends BusinessTest {
 				date(2004, 10, 5), date(2006, 3, 15),
 				MotifRattachement.IMMEUBLE_PRIVE, MockCommune.Lausanne.getNoOFS(),
 				TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
-				MotifFor.ACHAT_IMMOBILIER, MotifFor.VENTE_IMMOBILIER);
+				MotifFor.ACHAT_IMMOBILIER,
+				MotifFor.VENTE_IMMOBILIER,
+				GenreImpot.REVENU_FORTUNE);
 		tiersService.closeForFiscalSecondaire(
 				(Contribuable) eric,
 				ffs,

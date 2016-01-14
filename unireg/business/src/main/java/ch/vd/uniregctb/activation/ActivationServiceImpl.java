@@ -12,6 +12,7 @@ import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.tiers.AnnuleEtRemplace;
 import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesMorales;
 import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.ForDebiteurPrestationImposable;
@@ -20,6 +21,7 @@ import ch.vd.uniregctb.tiers.ForFiscalAutreElementImposable;
 import ch.vd.uniregctb.tiers.ForFiscalAutreImpot;
 import ch.vd.uniregctb.tiers.ForFiscalAvecMotifs;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
+import ch.vd.uniregctb.tiers.ForFiscalPrincipalPM;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
 import ch.vd.uniregctb.tiers.Tiers;
@@ -207,12 +209,14 @@ public class ActivationServiceImpl implements ActivationService {
 								final ForFiscalPrincipalPP forFiscalPrincipal = (ForFiscalPrincipalPP) forFiscal;
 								tiersService.openForFiscalPrincipal((ContribuableImpositionPersonnesPhysiques) contribuable, dateReactivation, forFiscalPrincipal.getMotifRattachement(), forFiscalPrincipal.getNumeroOfsAutoriteFiscale(), forFiscalPrincipal.getTypeAutoriteFiscale(), forFiscalPrincipal.getModeImposition(), MotifFor.REACTIVATION);
 							}
+							if (forFiscal instanceof ForFiscalPrincipalPM) {
+								final ForFiscalPrincipalPM forFiscalPrincipal = (ForFiscalPrincipalPM) forFiscal;
+								tiersService.openForFiscalPrincipal((ContribuableImpositionPersonnesMorales) contribuable, dateReactivation, forFiscalPrincipal.getMotifRattachement(), forFiscalPrincipal.getNumeroOfsAutoriteFiscale(), forFiscalPrincipal.getTypeAutoriteFiscale(), MotifFor.REACTIVATION, forFiscalPrincipal.getGenreImpot());
+							}
 							if (forFiscal instanceof ForFiscalSecondaire) {
 								final ForFiscalSecondaire forFiscalSecondaire = (ForFiscalSecondaire) forFiscal;
-								tiersService.openForFiscalSecondaire(contribuable, dateReactivation, forFiscalSecondaire.getMotifRattachement(), forFiscalSecondaire.getNumeroOfsAutoriteFiscale(), forFiscalSecondaire.getTypeAutoriteFiscale(), MotifFor.REACTIVATION);
+								tiersService.openForFiscalSecondaire(contribuable, dateReactivation, forFiscalSecondaire.getMotifRattachement(), forFiscalSecondaire.getNumeroOfsAutoriteFiscale(), forFiscalSecondaire.getTypeAutoriteFiscale(), MotifFor.REACTIVATION, forFiscalSecondaire.getGenreImpot());
 							}
-
-							// TODO [SIPM] réouverture des fors (en particulier principaux) PM
 						}
 						else if (forFiscal instanceof ForFiscalAutreImpot) {
 							tiersService.openForFiscalAutreImpot(contribuable, forFiscal.getGenreImpot(), dateReactivation, forFiscal.getNumeroOfsAutoriteFiscale());

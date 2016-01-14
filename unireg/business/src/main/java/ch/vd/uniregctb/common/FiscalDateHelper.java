@@ -141,9 +141,8 @@ public abstract class FiscalDateHelper {
 	 *
 	 * @return la date calculée
 	 */
-	public static RegDate getDateMinimalPourEffetDecisionAci(){
-		final int annee = getAnneeCourante()-2;
+	public static RegDate getDateMinimalePourEffetDecisionAci() {
+		final int annee = getAnneeCourante() - 2;
 		return RegDate.get(annee, 12, 31);
-
 	}
 }
