@@ -712,6 +712,11 @@
 					<xs:documentation>L'assujettissement complet du contribuable.</xs:documentation>
 				</xs:annotation>
 			</xs:enumeration>
+			<xs:enumeration value="SIMPLIFIED_TAX_LIABILITIES">
+				<xs:annotation>
+					<xs:documentation>Une vue simplifiée de l'assujettissement du contribuable.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
 			<xs:enumeration value="TAXATION_PERIODS">
 				<xs:annotation>
 					<xs:documentation>Les périodes d'imposition ordinaires du contribuable.</xs:documentation>

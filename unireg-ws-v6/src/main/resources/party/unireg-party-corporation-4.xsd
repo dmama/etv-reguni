@@ -259,7 +259,7 @@
 			</xs:enumeration>
 		</xs:restriction>
 	</xs:simpleType>
-
+	
 	<xs:simpleType name="currencyNameType">
 		<xs:annotation>
 			<xs:documentation>Une monnaie (code ISO sur trois lettres).</xs:documentation>
@@ -339,7 +339,7 @@
 			<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax" />
 		</xs:sequence>
 	</xs:complexType>
-
+	
 	<xs:simpleType name="taxSystemScopeType">
 		<xs:annotation>
 			<xs:appinfo>
@@ -617,6 +617,15 @@
 					</xs:appinfo>
 				</xs:annotation>
 			</xs:element>
+			<xs:element name="label" type="xs:token">
+				<xs:annotation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>Un libellé en français du type d'état.</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
 			<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax" />
 		</xs:sequence>
 	</xs:complexType>
@@ -765,7 +774,7 @@
 			</xs:enumeration>
 			<xs:enumeration value="TENANT_SHAREHOLDERS_REAL_ESTATE_COMPANY">
 				<xs:annotation>
-					<xs:documentation>Société immobilière d'actionnaires locataires.</xs:documentation>
+					<xs:documentation>Société immobilière d'actionnaires-locataires.</xs:documentation>
 				</xs:annotation>
 			</xs:enumeration>
 			<xs:enumeration value="ASSOCIATION_FOUNDATION_REAL_ESTATE_COMPANY">
