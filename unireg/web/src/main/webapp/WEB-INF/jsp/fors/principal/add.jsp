@@ -170,17 +170,18 @@
 						</td>
 					</tr>
 
-
-					<tr id="mode_imposition"  class="<unireg:nextRowClass/>" >
-						<td><fmt:message key="label.mode.imposition"/>&nbsp;:</td>
-						<td>
-							<%--@elvariable id="modesImposition" type="java.util.Map<ModeImposition, String>"--%>
-							<form:select path="modeImposition" items="${modesImposition}" />
-							<form:errors path="modeImposition" cssClass="error" />
-						</td>
-						<td>&nbsp;</td>
-						<td>&nbsp;</td>
-					</tr>
+					<%--@elvariable id="modesImposition" type="java.util.Map<ModeImposition, String>"--%>
+					<c:if test="${not empty modesImposition}">
+						<tr id="mode_imposition" class="<unireg:nextRowClass/>" >
+							<td><fmt:message key="label.mode.imposition"/>&nbsp;:</td>
+							<td>
+								<form:select path="modeImposition" items="${modesImposition}" />
+								<form:errors path="modeImposition" cssClass="error" />
+							</td>
+							<td>&nbsp;</td>
+							<td>&nbsp;</td>
+						</tr>
+					</c:if>
 				</table>
 
 				<script type="text/javascript">

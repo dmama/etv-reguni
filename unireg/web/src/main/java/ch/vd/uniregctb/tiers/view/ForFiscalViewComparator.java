@@ -11,6 +11,7 @@ import ch.vd.uniregctb.common.GentilComparator;
  * <ul>
  * <li>Annulé / pas annulé (annulé toujours après)</li>
  * <li>Fors principaux d'abord, puis secondaires, puis les autres</li>
+ * <li>Date de fermeture décroissante du for</li>
  * <li>Date d'ouverture décroissante du for</li>
  * <li>Date d'événement décroissante du for</li>
  * <li>Genre d'impôt</li>
@@ -43,6 +44,9 @@ public class ForFiscalViewComparator implements Comparator<ForFiscalView> {
 		int compare = Boolean.valueOf(o1.isAnnule()).compareTo(o2.isAnnule());
 		if (compare == 0) {
 			compare = comparatorNatureFor.compare(o1.getNatureForFiscal(), o2.getNatureForFiscal());
+		}
+		if (compare == 0) {
+			compare = - compareNullable(o1.getDateFermeture(), o2.getDateFermeture(), false);
 		}
 		if (compare == 0) {
 			compare = - compareNullable(o1.getDateOuverture(), o2.getDateOuverture(), false);

@@ -57,6 +57,7 @@ import ch.vd.uniregctb.tiers.manager.AutorisationManager;
 import ch.vd.uniregctb.tiers.manager.Autorisations;
 import ch.vd.uniregctb.tiers.validator.MotifsForHelper;
 import ch.vd.uniregctb.type.GenreImpot;
+import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.utils.RegDateEditor;
@@ -263,6 +264,14 @@ public class ForsController {
 		return Collections.emptyMap();
 	}
 
+	@NotNull
+	private Map<ModeImposition, String> getMapModesImposition(Contribuable ctb) {
+		if (ctb instanceof ContribuableImpositionPersonnesPhysiques) {
+			return tiersMapHelper.getMapModeImposition();
+		}
+		return Collections.emptyMap();
+	}
+
 	@RequestMapping(value = "/principal/add.do", method = RequestMethod.GET)
 	@Transactional(readOnly = true, rollbackFor = Throwable.class)
 	public String addPrincipal(@RequestParam(value = "tiersId", required = true) long tiersId, Model model) {
@@ -280,7 +289,7 @@ public class ForsController {
 		controllerUtils.checkAccesDossierEnEcriture(tiersId);
 
 		model.addAttribute("rattachements", getMapMotifsRattachementForsPrincipaux(ctb));
-		model.addAttribute("modesImposition", tiersMapHelper.getMapModeImposition());
+		model.addAttribute("modesImposition", getMapModesImposition(ctb));
 		model.addAttribute("typesForFiscal", tiersMapHelper.getMapTypeAutoriteFiscale());
 		model.addAttribute("genresImpot", getMapGenresImpotForsPrincipaux(ctb));
 		model.addAttribute("command", new AddForPrincipalView(tiersId, getDefaultGenreImpotForsPrincipauxEtSecondaires(ctb)));
@@ -307,7 +316,7 @@ public class ForsController {
 
 		if (result.hasErrors()) {
 			model.addAttribute("rattachements", getMapMotifsRattachementForsPrincipaux(ctb));
-			model.addAttribute("modesImposition", tiersMapHelper.getMapModeImposition());
+			model.addAttribute("modesImposition", getMapModesImposition(ctb));
 			model.addAttribute("typesForFiscal", tiersMapHelper.getMapTypeAutoriteFiscale());
 			model.addAttribute("genresImpot", getMapGenresImpotForsPrincipaux(ctb));
 			return "fors/principal/add";
