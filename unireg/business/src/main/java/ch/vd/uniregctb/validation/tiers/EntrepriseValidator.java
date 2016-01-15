@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.validation.tiers;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
@@ -9,11 +10,13 @@ import java.util.Set;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.adresse.AdresseCivile;
 import ch.vd.uniregctb.adresse.AdresseTiers;
 import ch.vd.uniregctb.common.AnnulableHelper;
+import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.tiers.AllegementFiscal;
 import ch.vd.uniregctb.tiers.Bouclement;
 import ch.vd.uniregctb.tiers.CapitalFiscalEntreprise;
@@ -105,7 +108,9 @@ public class EntrepriseValidator extends ContribuableImpositionPersonnesMoralesV
 
 		// ... puis entre elles (il ne doit y avoir, à tout moment, au plus qu'une seule instance active de chaque type)
 		checkOverlaps(entreprise.getRaisonsSocialesNonAnnuleesTriees(), "raison sociale", vr);
+		checkContinuous(entreprise.getRaisonsSocialesNonAnnuleesTriees(), "raison sociale", vr);
 		checkOverlaps(entreprise.getFormesJuridiquesNonAnnuleesTriees(), "forme juridique", vr);
+		checkContinuous(entreprise.getFormesJuridiquesNonAnnuleesTriees(), "forme juridique", vr);
 		checkOverlaps(entreprise.getCapitauxNonAnnulesTries(), "capital", vr);
 
 		return vr;
@@ -119,6 +124,27 @@ public class EntrepriseValidator extends ContribuableImpositionPersonnesMoralesV
 					vr.addError(String.format("La période %s est couverte par plusieurs valeurs de %s",
 					                          DateRangeHelper.toDisplayString(overlap),
 					                          libelle));
+				}
+			}
+		}
+	}
+
+	private static <T extends DonneeCivileEntreprise> void checkContinuous(List<T> nonAnnulesTries, String libelle, ValidationResults vr) {
+		final String holeValue = "<Espace vide>";
+
+		if (nonAnnulesTries.size() > 1) {
+			final List<DateRange> completeRange = Arrays.<DateRange>asList(
+					new DateRangeHelper.Ranged<>(nonAnnulesTries.get(0).getDateDebut(), CollectionsUtils.getLastElement(nonAnnulesTries).getDateFin(), holeValue));
+
+			final List<DateRange> resultingRange = DateRangeHelper.subtract(completeRange, nonAnnulesTries, new DateRangeHelper.AdapterCallback<DateRange>() {
+				@Override
+				public DateRange adapt(DateRange range, RegDate debut, RegDate fin) {
+					return new DateRangeHelper.Ranged<>(debut, fin, holeValue);
+				}
+			});
+			if (resultingRange.size() > 0) {
+				for (DateRange holeRange : resultingRange) {
+					vr.addError(String.format("Rupture de continuité: période vide du %s au %s dans la valeur de %s", holeRange.getDateDebut(), holeRange.getDateFin(), libelle));
 				}
 			}
 		}

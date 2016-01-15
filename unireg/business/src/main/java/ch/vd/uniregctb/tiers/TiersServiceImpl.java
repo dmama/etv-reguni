@@ -5446,6 +5446,147 @@ public class TiersServiceImpl implements TiersService {
 	}
 
 	@Nullable
+	private static RaisonSocialeFiscaleEntreprise getDerniereRaisonSocialeFiscale(Entreprise e) {
+		final List<RaisonSocialeFiscaleEntreprise> toutes = e.getRaisonsSocialesNonAnnuleesTriees();
+		return CollectionsUtils.getLastElement(toutes);
+	}
+
+	@Override
+	public RaisonSocialeFiscaleEntreprise addRaisonSocialeFiscale(Entreprise e, String raisonSociale, RegDate dateDebut, RegDate dateFin) {
+
+		RaisonSocialeFiscaleEntreprise existing = getDerniereRaisonSocialeFiscale(e);
+
+		if (existing != null) {
+			if (existing.getDateFin() == null) {
+				if (dateFin == null || dateFin.isAfter(existing.getDateDebut())) {
+					closeRaisonSocialeFiscale(existing, dateDebut.getOneDayBefore());
+				}
+			}
+		}
+
+		return (RaisonSocialeFiscaleEntreprise) tiersDAO.addAndSave(e, new RaisonSocialeFiscaleEntreprise(dateDebut, dateFin, raisonSociale));
+	}
+
+	@Override
+	public void closeRaisonSocialeFiscale(RaisonSocialeFiscaleEntreprise raisonSociale, RegDate dateFin) {
+		Assert.notNull(raisonSociale);
+		raisonSociale.setDateFin(dateFin);
+	}
+
+	@Override
+	public void annuleRaisonSocialeFiscale(RaisonSocialeFiscaleEntreprise raisonSociale) {
+		final RaisonSocialeFiscaleEntreprise dernier = getDerniereRaisonSocialeFiscale(raisonSociale.getEntreprise());
+		if (dernier != raisonSociale) {
+			throw new ValidationException(raisonSociale, "Seul la dernières raison sociale peut être annulée.");
+		}
+		raisonSociale.setAnnule(true);
+
+		// On ré-ouvre la précédente
+		final RaisonSocialeFiscaleEntreprise precedente = getDerniereRaisonSocialeFiscale(raisonSociale.getEntreprise());
+		if (precedente != null) {
+			final RaisonSocialeFiscaleEntreprise reouverte = new RaisonSocialeFiscaleEntreprise(precedente.getDateDebut(), null, precedente.getRaisonSociale());
+			precedente.setAnnule(true);
+			tiersDAO.addAndSave(raisonSociale.getEntreprise(), reouverte);
+		} else {
+			throw new ValidationException(raisonSociale, "Impossible d'annuler l'unique raison sociale.");
+		}
+	}
+
+	@Nullable
+	private static FormeJuridiqueFiscaleEntreprise getDerniereFormeJuridiqueFiscale(Entreprise e) {
+		final List<FormeJuridiqueFiscaleEntreprise> toutes = e.getFormesJuridiquesNonAnnuleesTriees();
+		return CollectionsUtils.getLastElement(toutes);
+	}
+
+	@Override
+	public FormeJuridiqueFiscaleEntreprise addFormeJuridiqueFiscale(Entreprise e, FormeJuridiqueEntreprise formeJuridique, RegDate dateDebut, RegDate dateFin) {
+
+		FormeJuridiqueFiscaleEntreprise existing = getDerniereFormeJuridiqueFiscale(e);
+
+		if (existing != null) {
+			if (existing.getDateFin() == null) {
+				if (dateFin == null || dateFin.isAfter(existing.getDateDebut())) {
+					closeFormeJuridiqueFiscale(existing, dateDebut.getOneDayBefore());
+				}
+			}
+		}
+
+		return (FormeJuridiqueFiscaleEntreprise) tiersDAO.addAndSave(e, new FormeJuridiqueFiscaleEntreprise(dateDebut, dateFin, formeJuridique));
+	}
+
+	@Override
+	public void closeFormeJuridiqueFiscale(FormeJuridiqueFiscaleEntreprise formeJuridique, RegDate dateFin) {
+		Assert.notNull(formeJuridique);
+		formeJuridique.setDateFin(dateFin);
+	}
+
+	@Override
+	public void annuleFormeJuridiqueFiscale(FormeJuridiqueFiscaleEntreprise formeJuridique) {
+		final FormeJuridiqueFiscaleEntreprise dernier = getDerniereFormeJuridiqueFiscale(formeJuridique.getEntreprise());
+		if (dernier != formeJuridique) {
+			throw new ValidationException(formeJuridique, "Seul la dernières forme juridique peut être annulée.");
+		}
+		formeJuridique.setAnnule(true);
+
+		// On ré-ouvre la précédente
+		final FormeJuridiqueFiscaleEntreprise precedente = getDerniereFormeJuridiqueFiscale(formeJuridique.getEntreprise());
+		if (precedente != null) {
+			final FormeJuridiqueFiscaleEntreprise reouverte = new FormeJuridiqueFiscaleEntreprise(precedente.getDateDebut(), null, precedente.getFormeJuridique());
+			precedente.setAnnule(true);
+			tiersDAO.addAndSave(formeJuridique.getEntreprise(), reouverte);
+		} else {
+			throw new ValidationException(formeJuridique, "Impossible d'annuler l'unique forme juridique.");
+		}
+	}
+
+	@Nullable
+	private static CapitalFiscalEntreprise getDernierCapitalFiscal(Entreprise e) {
+		final List<CapitalFiscalEntreprise> tous = e.getCapitauxNonAnnulesTries();
+		return CollectionsUtils.getLastElement(tous);
+	}
+
+	@Override
+	public CapitalFiscalEntreprise addCapitalFiscal(Entreprise e, MontantMonetaire montant, RegDate dateDebut, RegDate dateFin) {
+
+		CapitalFiscalEntreprise existing = getDernierCapitalFiscal(e);
+
+		if (existing != null) {
+			if (existing.getDateFin() == null) {
+				if (dateFin == null || dateFin.isAfter(existing.getDateDebut())) {
+					closeCapitalFiscal(existing, dateDebut.getOneDayBefore());
+				}
+			}
+		}
+
+		return (CapitalFiscalEntreprise) tiersDAO.addAndSave(e, new CapitalFiscalEntreprise(dateDebut, dateFin, montant));
+	}
+
+	@Override
+	public void closeCapitalFiscal(CapitalFiscalEntreprise capital, RegDate dateFin) {
+		Assert.notNull(capital);
+		capital.setDateFin(dateFin);
+	}
+
+	@Override
+	public void annuleCapitalFiscal(CapitalFiscalEntreprise capital) {
+		final CapitalFiscalEntreprise dernier = getDernierCapitalFiscal(capital.getEntreprise());
+		if (dernier != capital) {
+			throw new ValidationException(capital, "Seul le dernier capital peut être annulé.");
+		}
+		capital.setAnnule(true);
+
+		// On ré-ouvre le précédent
+		final CapitalFiscalEntreprise precedent = getDernierCapitalFiscal(capital.getEntreprise());
+		if (precedent != null) {
+			final CapitalFiscalEntreprise reouvert = new CapitalFiscalEntreprise(precedent.getDateDebut(), null, precedent.getMontant());
+			precedent.setAnnule(true);
+			tiersDAO.addAndSave(capital.getEntreprise(), reouvert);
+		} else {
+			throw new ValidationException(capital, "Impossible d'annuler l'unique forme juridique.");
+		}
+	}
+
+	@Nullable
 	private static RegimeFiscal getDernierRegimeFiscal(Entreprise e, RegimeFiscal.Portee portee) {
 		final List<RegimeFiscal> tous = e.getRegimesFiscauxNonAnnulesTries();
 		for (RegimeFiscal rf : CollectionsUtils.revertedOrder(tous)) {

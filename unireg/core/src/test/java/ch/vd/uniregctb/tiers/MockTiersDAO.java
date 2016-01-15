@@ -314,6 +314,11 @@ public class MockTiersDAO implements TiersDAO {
 	}
 
 	@Override
+	public DonneeCivileEntreprise addAndSave(Entreprise entreprise, DonneeCivileEntreprise donneeCivile) {
+		throw new NotImplementedException();
+	}
+
+	@Override
 	public RegimeFiscal addAndSave(Entreprise entreprise, RegimeFiscal regime) {
 		throw new NotImplementedException();
 	}

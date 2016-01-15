@@ -67,6 +67,8 @@ public class EntrepriseServiceImpl implements EntrepriseService {
 
 		Long numeroEntreprise = entreprise.getNumeroEntreprise();
 
+		entrepriseView.setId(entreprise.getNumero());
+
 		if (numeroEntreprise != null) {
 
 			entrepriseView.setConnueAuCivil(true);
@@ -190,10 +192,11 @@ public class EntrepriseServiceImpl implements EntrepriseService {
 		}
 		final List<RaisonSocialeView> list = new ArrayList<>(raisonsSociales.size());
 		for (RaisonSocialeHisto raisonSociale : raisonsSociales) {
-			list.add(new RaisonSocialeView(raisonSociale));
+			list.add(new RaisonSocialeView(raisonSociale, false));
 		}
 		Collections.sort(list, new DateRangeComparator<RaisonSocialeView>());
 		Collections.reverse(list);
+		list.get(0).setDernierElement(true);
 		return list;
 	}
 

@@ -1536,6 +1536,44 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 		return addAndSave(entreprise, allegement, ALLEGEMENT_FISCAL_ACCESSOR);
 	}
 
+	private static final EntityAccessor<Entreprise, DonneeCivileEntreprise> DONNEE_CIVILE_FISCAL_ACCESSOR = new EntityAccessor<Entreprise, DonneeCivileEntreprise>() {
+		@Override
+		public Collection<DonneeCivileEntreprise> getEntities(Entreprise tiers) {
+			return tiers.getDonneesCiviles();
+		}
+
+		@Override
+		public void addEntity(Entreprise tiers, DonneeCivileEntreprise entity) {
+			tiers.addDonneeCivile(entity);
+		}
+
+		@Override
+		public void assertSame(DonneeCivileEntreprise entity1, DonneeCivileEntreprise entity2) {
+			Assert.isSame(entity1.getDateDebut(), entity2.getDateDebut());
+			Assert.isSame(entity1.getDateFin(), entity2.getDateFin());
+			if (RaisonSocialeFiscaleEntreprise.class.isAssignableFrom(entity1.getClass())) {
+				RaisonSocialeFiscaleEntreprise raison1 = (RaisonSocialeFiscaleEntreprise) entity1;
+				RaisonSocialeFiscaleEntreprise raison2 = (RaisonSocialeFiscaleEntreprise) entity2;
+				Assert.isSame(raison1.getRaisonSociale(), raison2.getRaisonSociale());
+			}
+			else if (FormeJuridiqueFiscaleEntreprise.class.isAssignableFrom(entity1.getClass())) {
+				FormeJuridiqueFiscaleEntreprise jur1 = (FormeJuridiqueFiscaleEntreprise) entity1;
+				FormeJuridiqueFiscaleEntreprise jur2 = (FormeJuridiqueFiscaleEntreprise) entity2;
+				Assert.isSame(jur1.getFormeJuridique(), jur2.getFormeJuridique());
+			}
+			else if (CapitalFiscalEntreprise.class.isAssignableFrom(entity1.getClass())) {
+				CapitalFiscalEntreprise cap1 = (CapitalFiscalEntreprise) entity1;
+				CapitalFiscalEntreprise cap2 = (CapitalFiscalEntreprise) entity2;
+				Assert.isSame(cap1.getMontant(), cap2.getMontant());
+			}
+		}
+	};
+
+	@Override
+	public DonneeCivileEntreprise addAndSave(Entreprise entreprise, DonneeCivileEntreprise donneeCivile) {
+		return addAndSave(entreprise, donneeCivile, DONNEE_CIVILE_FISCAL_ACCESSOR);
+	}
+
 	private static final EntityAccessor<Entreprise, Bouclement> BOUCLEMENT_ACCESSOR = new EntityAccessor<Entreprise, Bouclement>() {
 		@Override
 		public Collection<Bouclement> getEntities(Entreprise tiers) {

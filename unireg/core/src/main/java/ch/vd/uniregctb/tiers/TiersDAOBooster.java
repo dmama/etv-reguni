@@ -348,6 +348,11 @@ public class TiersDAOBooster implements TiersDAO, InitializingBean {
 	}
 
 	@Override
+	public DonneeCivileEntreprise addAndSave(Entreprise entreprise, DonneeCivileEntreprise donneeCivile) {
+		return target.addAndSave(entreprise, donneeCivile);
+	}
+
+	@Override
 	public Bouclement addAndSave(Entreprise entreprise, Bouclement bouclement) {
 		return target.addAndSave(entreprise, bouclement);
 	}

@@ -30,6 +30,7 @@ import ch.vd.uniregctb.tiers.rattrapage.ancienshabitants.RecuperationDonneesAnci
 import ch.vd.uniregctb.tiers.rattrapage.flaghabitant.CorrectionFlagHabitantResults;
 import ch.vd.uniregctb.tiers.rattrapage.origine.RecuperationOriginesNonHabitantsResults;
 import ch.vd.uniregctb.type.CategorieEntreprise;
+import ch.vd.uniregctb.type.FormeJuridiqueEntreprise;
 import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
@@ -1585,7 +1586,25 @@ public interface TiersService {
      */
     void annuleAllegementFiscal(AllegementFiscal af);
 
-    /**
+	RaisonSocialeFiscaleEntreprise addRaisonSocialeFiscale(Entreprise e, String raisonSociale, RegDate dateDebut, RegDate dateFin);
+
+	void closeRaisonSocialeFiscale(RaisonSocialeFiscaleEntreprise raisonSociale, RegDate dateFin);
+
+	void annuleRaisonSocialeFiscale(RaisonSocialeFiscaleEntreprise raisonSociale);
+
+	FormeJuridiqueFiscaleEntreprise addFormeJuridiqueFiscale(Entreprise e, FormeJuridiqueEntreprise formeJuridique, RegDate dateDebut, RegDate dateFin);
+
+	void closeFormeJuridiqueFiscale(FormeJuridiqueFiscaleEntreprise formeJuridique, RegDate dateFin);
+
+	void annuleFormeJuridiqueFiscale(FormeJuridiqueFiscaleEntreprise formeJuridique);
+
+	CapitalFiscalEntreprise addCapitalFiscal(Entreprise e, MontantMonetaire montant, RegDate dateDebut, RegDate dateFin);
+
+	void closeCapitalFiscal(CapitalFiscalEntreprise capital, RegDate dateFin);
+
+	void annuleCapitalFiscal(CapitalFiscalEntreprise capital);
+
+	/**
      * Crée un régime fiscal sur l'entreprise passée en paramètre avec les informations fournies
      * @param e l'entreprise destinataire
      * @param portee la portée du régime fiscal

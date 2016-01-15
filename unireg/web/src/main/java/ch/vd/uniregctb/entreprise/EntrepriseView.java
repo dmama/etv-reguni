@@ -10,6 +10,7 @@ import ch.vd.uniregctb.tiers.view.EtatEntrepriseView;
 
 public class EntrepriseView {
 
+	private Long id;
 	private boolean connueAuCivil = false;
 
 	private List<RaisonSocialeView> raisonsSociales;
@@ -27,6 +28,14 @@ public class EntrepriseView {
 
 	private RegDate dateInscriptionIde;
 	private StatusRegistreIDE statusIde;
+
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
 
 	public boolean isConnueAuCivil() {
 		return connueAuCivil;
