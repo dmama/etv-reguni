@@ -48,6 +48,28 @@
 							</xs:appinfo>
 						</xs:annotation>
 					</xs:element>
+					<xs:element maxOccurs="unbounded" minOccurs="0" name="simplifiedTaxLiabilityVD" type="taxresidence:simplifiedTaxLiabilityType">
+						<xs:annotation>
+							<xs:appinfo>
+								<jxb:property>
+									<jxb:javadoc>La liste des périodes d'assujettissement au niveau cantonal (LIC) du contribuable. Cette liste peut être vide si le tiers n'est pas assujetti.
+										Attention ! Cette collection n'est renseignée qui si la part SIMPLIFIED_TAX_LIABILITIES est demandée.
+									</jxb:javadoc>
+								</jxb:property>
+							</xs:appinfo>
+						</xs:annotation>
+					</xs:element>
+					<xs:element maxOccurs="unbounded" minOccurs="0" name="simplifiedTaxLiabilityCH" type="taxresidence:simplifiedTaxLiabilityType">
+						<xs:annotation>
+							<xs:appinfo>
+								<jxb:property>
+									<jxb:javadoc>La liste des périodes d'assujettissement au niveau fédéral (LIFD) du contribuable. Cette liste peut être vide si le tiers n'est pas assujetti.
+										Attention ! Cette collection n'est renseignée qui si la part SIMPLIFIED_TAX_LIABILITIES est demandée.
+									</jxb:javadoc>
+								</jxb:property>
+							</xs:appinfo>
+						</xs:annotation>
+					</xs:element>
 					<xs:element maxOccurs="unbounded" minOccurs="0" name="taxationPeriods" type="taxresidence:taxationPeriodType">
 						<xs:annotation>
 							<xs:appinfo>
