@@ -46,6 +46,10 @@ public class Job {
 		     OutputStreamWriter osw = new OutputStreamWriter(os, CHARSET);
 		     BufferedWriter bw = new BufferedWriter(osw)) {
 
+			// la ligne décrivant les colonnes
+			bw.write("RAISON_SOCIALE;CHEZ;RUE;NPA;LIEU;CANTON_SIEGE;PAYS_SIEGE;FORME_JURIDIQUE;CODE_FORME_JURIDIQUE;LANGUE;SIEGE");
+			bw.newLine();
+
 			// on boucle sur les sociétés qui doivent être exportées
 			for (Map.Entry<Long, DiscriminantData> entry : discriminants.entrySet()) {
 				if (entry.getValue().isExported()) {
@@ -63,8 +67,9 @@ public class Job {
 					// export des données
 					if (adresse != null && donneesEntreprise != null) {
 						final Pair<String, String> typeEntite = getTypeEntite(donneesEntreprise.getFormeJuridique());
-						bw.write(String.format("%s;%s;%s;%s;%s;%s;%s;%s;Français;%s",
+						bw.write(String.format("%s;%s;%s;%s;%s;%s;%s;%s;%s;Français;%s",
 						                       StringUtils.trimToEmpty(donneesEntreprise.getRaisonSociale()),
+						                       StringUtils.trimToEmpty(adresse.getChez()),
 						                       StringUtils.trimToEmpty(adresse.getRue()),
 						                       StringUtils.trimToEmpty(adresse.getNpa()),
 						                       StringUtils.trimToEmpty(adresse.getLieu()),
