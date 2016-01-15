@@ -12,6 +12,7 @@ import ch.vd.unireg.interfaces.efacture.data.DestinataireAvecHisto;
 import ch.vd.unireg.interfaces.efacture.data.EtatDestinataire;
 import ch.vd.unireg.xml.exception.v1.BusinessExceptionCode;
 import ch.vd.unireg.xml.party.taxpayer.v4.Taxpayer;
+import ch.vd.unireg.xml.party.taxresidence.v3.SimplifiedTaxLiability;
 import ch.vd.unireg.xml.party.taxresidence.v3.TaxationPeriod;
 import ch.vd.unireg.xml.party.v4.PartyPart;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementException;
@@ -27,6 +28,7 @@ import ch.vd.uniregctb.xml.ServiceException;
 import ch.vd.uniregctb.xml.party.v4.EBillingStatusBuilder;
 import ch.vd.uniregctb.xml.party.v4.FamilyStatusBuilder;
 import ch.vd.uniregctb.xml.party.v4.ImmovablePropertyBuilder;
+import ch.vd.uniregctb.xml.party.v4.SimplifiedTaxLiabilityBuilder;
 import ch.vd.uniregctb.xml.party.v4.TaxLiabilityBuilder;
 import ch.vd.uniregctb.xml.party.v4.TaxationPeriodBuilder;
 
@@ -43,7 +45,7 @@ public abstract class TaxPayerStrategy<T extends Taxpayer> extends PartyStrategy
 			initFamilyStatuses(to, ctb, context);
 		}
 
-		if (parts != null && (parts.contains(PartyPart.TAX_LIABILITIES))) {
+		if (parts != null && (parts.contains(PartyPart.TAX_LIABILITIES) || parts.contains(PartyPart.SIMPLIFIED_TAX_LIABILITIES))) {
 			initTaxLiabilities(to, ctb, parts, context);
 		}
 
@@ -70,6 +72,11 @@ public abstract class TaxPayerStrategy<T extends Taxpayer> extends PartyStrategy
 
 		if (parts != null && parts.contains(PartyPart.TAX_LIABILITIES)) {
 			copyColl(to.getTaxLiabilities(), from.getTaxLiabilities());
+		}
+
+		if (parts != null && parts.contains(PartyPart.SIMPLIFIED_TAX_LIABILITIES)) {
+			copyColl(to.getSimplifiedTaxLiabilityVD(), from.getSimplifiedTaxLiabilityVD());
+			copyColl(to.getSimplifiedTaxLiabilityCH(), from.getSimplifiedTaxLiabilityCH());
 		}
 
 		if (parts != null && parts.contains(PartyPart.TAXATION_PERIODS)) {
@@ -109,8 +116,24 @@ public abstract class TaxPayerStrategy<T extends Taxpayer> extends PartyStrategy
 		}
 
 		if (list != null) {
+
+			final boolean wantAssujettissements = parts.contains(PartyPart.TAX_LIABILITIES);
+			final boolean wantAssujettissementsSimplifies = parts.contains(PartyPart.SIMPLIFIED_TAX_LIABILITIES);
+
 			for (ch.vd.uniregctb.metier.assujettissement.Assujettissement a : list) {
-				left.getTaxLiabilities().add(TaxLiabilityBuilder.newTaxLiability(a));
+				if (wantAssujettissements) {
+					left.getTaxLiabilities().add(TaxLiabilityBuilder.newTaxLiability(a));
+				}
+				if (wantAssujettissementsSimplifies) {
+					final SimplifiedTaxLiability vd = SimplifiedTaxLiabilityBuilder.toVD(a);
+					if (vd != null) {
+						left.getSimplifiedTaxLiabilityVD().add(vd);
+					}
+					final SimplifiedTaxLiability ch = SimplifiedTaxLiabilityBuilder.toCH(a);
+					if (ch != null) {
+						left.getSimplifiedTaxLiabilityCH().add(ch);
+					}
+				}
 			}
 		}
 	}

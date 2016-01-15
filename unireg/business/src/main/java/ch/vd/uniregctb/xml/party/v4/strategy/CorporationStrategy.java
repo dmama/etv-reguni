@@ -222,6 +222,7 @@ public class CorporationStrategy extends TaxPayerStrategy<Corporation> {
 			final CorporationStatus status = new CorporationStatus();
 			status.setDateFrom(DataHelper.coreToXMLv2(etat.getDateObtention()));
 			status.setStatusType(EnumHelper.coreToXMLv4(etat.getType()));
+			status.setLabel(etat.getType().getLibelle());
 			statuses.add(status);
 		}
 		return statuses;
