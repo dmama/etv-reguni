@@ -145,7 +145,7 @@ public class EnvoiDeclarationsPMProcessor {
 				if (nbMaxEnvois != null && dejaFaits + batch.size() > nbMaxEnvois) {
 					// limite le nombre de contribuable pour ne pas dépasser le nombre max
 					int reducedSize = nbMaxEnvois - dejaFaits;
-					batch = batch.subList(0, reducedSize);
+					batch = batch.subList(0, Math.max(reducedSize, 0));
 				}
 
 				if (!batch.isEmpty()) {

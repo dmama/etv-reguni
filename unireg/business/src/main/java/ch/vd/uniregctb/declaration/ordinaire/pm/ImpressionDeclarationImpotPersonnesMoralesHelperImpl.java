@@ -2,8 +2,11 @@ package ch.vd.uniregctb.declaration.ordinaire.pm;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -47,6 +50,7 @@ import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.Etablissement;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipalPM;
 import ch.vd.uniregctb.tiers.LocalisationDatee;
+import ch.vd.uniregctb.tiers.RegimeFiscal;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeDocument;
 
@@ -58,6 +62,11 @@ public class ImpressionDeclarationImpotPersonnesMoralesHelperImpl extends Editiq
 	private static final String TRAITE_PAR = "Registre PM";
 
 	private IbanValidator ibanValidator;
+
+	/**
+	 * Ce sont les codes des régimes fiscaux vaudois spécifiques aux holdings (11 et 13) et sociétés de base (41C et 42C)
+	 */
+	private static final Set<String> CODES_REGIMES_FISCAUX_SOCIETE_BASE_HOLDING = new HashSet<>(Arrays.asList("11", "13", "41C", "42C"));
 
 	public void setIbanValidator(IbanValidator ibanValidator) {
 		this.ibanValidator = ibanValidator;
@@ -261,7 +270,15 @@ public class ImpressionDeclarationImpotPersonnesMoralesHelperImpl extends Editiq
 		di.setAdresseRetour(buildAdresseCEDI());      // TODO autre choix que retour au CEDI ?
 		di.setCodeBarreDI(buildCodeBarre(declaration));
 		di.setCodeControleNIP(declaration.getCodeControle());
-		di.setCodeRoutage(buildCodeRoutage(ffp.getTypeAutoriteFiscale()));
+
+		final RegimeFiscal regimeFiscal = getRegimeFiscalVD(pm, declaration.getDateFin());
+		if (regimeFiscal == null) {
+			throw new IllegalArgumentException("Entreprise sans régime fiscal valide à la date de fin de la période d'imposition.");
+		}
+		final String codeFlyer = buildCodeFlyer(ffp.getTypeAutoriteFiscale(), regimeFiscal, declaration.getTypeDeclaration());
+		di.setCodeFlyer(codeFlyer);
+		di.setCodeRoutage(buildCodeRoutage(codeFlyer));
+
 		di.setDateLimiteRetour(RegDateHelper.toIndexString(declaration.getDelaiRetourImprime()));
 		di.setDebutExerciceCommercial(RegDateHelper.toIndexString(declaration.getDateDebut()));
 		di.setFinExerciceCommercial(RegDateHelper.toIndexString(declaration.getDateFin()));
@@ -283,9 +300,43 @@ public class ImpressionDeclarationImpotPersonnesMoralesHelperImpl extends Editiq
 		                     ServiceInfrastructureService.noOIPM);
 	}
 
-	private static String buildCodeRoutage(TypeAutoriteFiscale typeAutoriteFiscalePrincipale) {
-		return String.format("%02d-%d",
-		                     ServiceInfrastructureService.noOIPM,
-		                     typeAutoriteFiscalePrincipale == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD ? 1 : 3);
+	@NotNull
+	private static String buildCodeFlyer(@NotNull TypeAutoriteFiscale typeAutoriteFiscalePrincipale, @NotNull RegimeFiscal regimeFiscal, TypeDocument typeDocument) {
+
+		// APM -> "2"
+		if (typeDocument == TypeDocument.DECLARATION_IMPOT_APM) {
+			return "2";
+		}
+
+		// autre chose que "PM" -> boum !
+		if (typeDocument != TypeDocument.DECLARATION_IMPOT_PM) {
+			throw new IllegalArgumentException("Type de document absent ou non-supporté dans l'envoi des déclarations d'impôt PM : " + typeDocument);
+		}
+
+		// PM société de base ou holding -> "4"
+		if (CODES_REGIMES_FISCAUX_SOCIETE_BASE_HOLDING.contains(regimeFiscal.getCode())) {
+			return "4";
+		}
+
+		// PM vaudoise -> "1"
+		if (typeAutoriteFiscalePrincipale == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
+			return "1";
+		}
+
+		// PM HC ou HS -> "3"
+		return "3";
+	}
+
+	private RegimeFiscal getRegimeFiscalVD(Entreprise entreprise, RegDate dateReference) {
+		for (RegimeFiscal rf : entreprise.getRegimesFiscauxNonAnnulesTries()) {
+			if (rf.getPortee() == RegimeFiscal.Portee.VD && rf.isValidAt(dateReference)) {
+				return rf;
+			}
+		}
+		return null;
+	}
+
+	private static String buildCodeRoutage(String codeFlyer) {
+		return String.format("%02d-%s", ServiceInfrastructureService.noOIPM, codeFlyer);
 	}
 }
