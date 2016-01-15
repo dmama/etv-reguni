@@ -537,15 +537,10 @@ U1P8ADASDOCUM
                     <xs:documentation>xxx.yyy.zz</xs:documentation>
                 </xs:annotation>
             </xs:element>
-            <xs:element maxOccurs="3" minOccurs="0" name="numIDE">
+            <xs:element maxOccurs="3" minOccurs="0" name="numIDE" type="STypeNumIDE">
                 <xs:annotation>
                     <xs:documentation>CHE-999.999.99C</xs:documentation>
                 </xs:annotation>
-                <xs:simpleType>
-                    <xs:restriction base="STypeNumIDE">
-                        <xs:pattern value="[A-Z]{3}-[0-9]{3}-[0-9]{3}-[0-9]{3}"/>
-                    </xs:restriction>
-                </xs:simpleType>
             </xs:element>
         </xs:sequence>
     </xs:complexType>
@@ -712,7 +707,7 @@ U1P8ADASROUTE
     </xs:simpleType>
     <xs:simpleType name="STypeNumIDE">
         <xs:restriction base="xs:string">
-            <xs:pattern value="[A-Z]{3}-[0-9]{3}.[0-9]{3}.[0-9]{3}"/>
+            <xs:pattern value="[A-Z]{3}-[0-9]{3}\.[0-9]{3}\.[0-9]{3}"/>
         </xs:restriction>
     </xs:simpleType>
     <xs:simpleType name="STypeDate">
