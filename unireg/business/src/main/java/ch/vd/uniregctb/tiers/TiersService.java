@@ -1586,22 +1586,73 @@ public interface TiersService {
      */
     void annuleAllegementFiscal(AllegementFiscal af);
 
+	/**
+	 * Crée une nouvelle raison sociale pour l'entreprise passée en paramètre.
+ 	 * @param e l'entreprise concernée
+	 * @param raisonSociale la nouvelle raison sociale
+	 * @param dateDebut la date de début de validité de la nouvelle raison sociale
+	 * @param dateFin la date de fin, ou null si la durée de validité est indéterminée
+	 * @return la raison sociale nouvellement créée
+	 */
 	RaisonSocialeFiscaleEntreprise addRaisonSocialeFiscale(Entreprise e, String raisonSociale, RegDate dateDebut, RegDate dateFin);
 
+	/**
+	 * Ferme la raison sociale à la date indiquée
+	 * @param raisonSociale la raison sociale à fermer
+	 * @param dateFin le dernier jour de validité
+	 */
 	void closeRaisonSocialeFiscale(RaisonSocialeFiscaleEntreprise raisonSociale, RegDate dateFin);
 
+	/**
+	 * Annule la raison sociale passée en paramètre
+	 * @param raisonSociale la raison sociale à annuler
+	 */
 	void annuleRaisonSocialeFiscale(RaisonSocialeFiscaleEntreprise raisonSociale);
 
+	/**
+	 * Crée une nouvelle forme juridique pour l'entreprise passée en paramètre.
+	 * @param e l'entreprise concernée
+	 * @param raisonSociale la nouvelle forme juridique
+	 * @param dateDebut la date de début de validité de la nouvelle forme juridique
+	 * @param dateFin la date de fin, ou null si la durée de validité est indéterminée
+	 * @return la forme juridique nouvellement créée
+	 */
 	FormeJuridiqueFiscaleEntreprise addFormeJuridiqueFiscale(Entreprise e, FormeJuridiqueEntreprise formeJuridique, RegDate dateDebut, RegDate dateFin);
 
+	/**
+	 * Ferme la forme juridique à la date indiquée
+	 * @param raisonSociale la raison forme juridique
+	 * @param dateFin le dernier jour de validité
+	 */
 	void closeFormeJuridiqueFiscale(FormeJuridiqueFiscaleEntreprise formeJuridique, RegDate dateFin);
 
+	/**
+	 * Annule la forme juridique passée en paramètre
+	 * @param raisonSociale la forme juridique à annuler
+	 */
 	void annuleFormeJuridiqueFiscale(FormeJuridiqueFiscaleEntreprise formeJuridique);
 
+	/**
+	 * Crée un nouveau capital pour l'entreprise passée en paramètre.
+	 * @param e l'entreprise concernée
+	 * @param raisonSociale le nouveau capital
+	 * @param dateDebut la date de début de validité du nouveau capital
+	 * @param dateFin la date de fin, ou null si la durée de validité est indéterminée
+	 * @return le capital nouvellement créé
+	 */
 	CapitalFiscalEntreprise addCapitalFiscal(Entreprise e, MontantMonetaire montant, RegDate dateDebut, RegDate dateFin);
 
+	/**
+	 * Ferme le capital à la date indiquée
+	 * @param capital le capital
+	 * @param dateFin le dernier jour de validité
+	 */
 	void closeCapitalFiscal(CapitalFiscalEntreprise capital, RegDate dateFin);
 
+	/**
+	 * Annule le capital passé en paramètre
+	 * @param capital le capital à annuler
+	 */
 	void annuleCapitalFiscal(CapitalFiscalEntreprise capital);
 
 	/**

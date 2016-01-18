@@ -5477,7 +5477,7 @@ public class TiersServiceImpl implements TiersService {
 	public void annuleRaisonSocialeFiscale(RaisonSocialeFiscaleEntreprise raisonSociale) {
 		final RaisonSocialeFiscaleEntreprise dernier = getDerniereRaisonSocialeFiscale(raisonSociale.getEntreprise());
 		if (dernier != raisonSociale) {
-			throw new ValidationException(raisonSociale, "Seul la dernières raison sociale peut être annulée.");
+			throw new ValidationException(raisonSociale, "Seule la dernière raison sociale peut être annulée.");
 		}
 		raisonSociale.setAnnule(true);
 
@@ -5524,7 +5524,7 @@ public class TiersServiceImpl implements TiersService {
 	public void annuleFormeJuridiqueFiscale(FormeJuridiqueFiscaleEntreprise formeJuridique) {
 		final FormeJuridiqueFiscaleEntreprise dernier = getDerniereFormeJuridiqueFiscale(formeJuridique.getEntreprise());
 		if (dernier != formeJuridique) {
-			throw new ValidationException(formeJuridique, "Seul la dernières forme juridique peut être annulée.");
+			throw new ValidationException(formeJuridique, "Seule la dernière forme juridique peut être annulée.");
 		}
 		formeJuridique.setAnnule(true);
 
