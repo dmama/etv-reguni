@@ -15,46 +15,44 @@
 	<tiles:put name="body">
 
 		<unireg:setAuth var="autorisations" tiersId="${tiersId}"/>
-		<%--		<c:if test="${autorisations.donneesCiviles}">--%>
+		<c:if test="${autorisations.donneesCiviles}">
 
-		<unireg:bandeauTiers numero="${tiersId}" showLinks="false" showComplements="false" showEvenementsCivils="false" showValidation="false"/>
+			<unireg:bandeauTiers numero="${tiersId}" showLinks="false" showComplements="false" showEvenementsCivils="false" showValidation="false"/>
 
-		<div id="edit-entreprise" class="entreprise">
-		<span><%-- span vide pour que IE8 calcul correctement la hauteur du fieldset (voir fieldsets-workaround.jsp) --%></span>
-		<jsp:include page="../../visualisation/civil/entreprise.jsp">
-			<jsp:param name="page" value="edit"/>
-			<jsp:param name="data" value="${data}"/>
-			<jsp:param name="nombreElementsTable" value="${nombreElementsTable}"/>
-		</jsp:include>
+			<div id="edit-entreprise" class="entreprise">
+			<span><%-- span vide pour que IE8 calcul correctement la hauteur du fieldset (voir fieldsets-workaround.jsp) --%></span>
+			<jsp:include page="../../visualisation/civil/entreprise.jsp">
+				<jsp:param name="page" value="edit"/>
+				<jsp:param name="data" value="${data}"/>
+				<jsp:param name="nombreElementsTable" value="${nombreElementsTable}"/>
+			</jsp:include>
 
-		<c:set var="confirmationMessageSauvegarde">
-			<fmt:message key="label.demande.confirmation.sauvegarde"/>
-		</c:set>
-		<script type="text/javascript">
-			var editCivilEntreprise = {
-				onSave : function(myform) {
-					if (confirm('${confirmationMessageSauvegarde}')) {
-						myform.submit();
+			<c:set var="confirmationMessageSauvegarde">
+				<fmt:message key="label.demande.confirmation.sauvegarde"/>
+			</c:set>
+			<script type="text/javascript">
+				var editCivilEntreprise = {
+					onSave : function(myform) {
+						if (confirm('${confirmationMessageSauvegarde}')) {
+							myform.submit();
+						}
 					}
 				}
-			}
-		</script>
+			</script>
 
-		<c:set var="libelleBoutonRetour">
-			<fmt:message key="label.bouton.retour"/>
-		</c:set>
-		<c:set var="confirmationMessageRetour">
-			<fmt:message key="message.confirm.quit"/>
-		</c:set>
-		<unireg:buttonTo method="get" action="/tiers/visu.do" params="{id:${tiersId}}" name="${libelleBoutonRetour}" confirm="${confirmationMessageRetour}"/>
-		<input type="button" name="save" value="<fmt:message key='label.bouton.sauver'/>" onclick="editCivilEntreprise.onSave($('#editForm'))"/>
+			<c:set var="libelleBoutonRetour">
+				<fmt:message key="label.bouton.retour"/>
+			</c:set>
+			<c:set var="confirmationMessageRetour">
+				<fmt:message key="message.confirm.quit"/>
+			</c:set>
+			<unireg:buttonTo method="get" action="/tiers/visu.do" params="{id:${tiersId}}" name="${libelleBoutonRetour}" confirm="${confirmationMessageRetour}"/>
+			<input type="button" name="save" value="<fmt:message key='label.bouton.sauver'/>" onclick="editCivilEntreprise.onSave($('#editForm'))"/>
 
-		<%--
 		</c:if>
 		<c:if test="${!autorisations.donneesCiviles}">
 			<span class="error"><fmt:message key="error.tiers.interdit" /></span>
 		</c:if>
---%>
 		</div>
 	</tiles:put>
 </tiles:insert>

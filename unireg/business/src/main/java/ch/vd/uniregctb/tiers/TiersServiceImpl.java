@@ -5468,6 +5468,12 @@ public class TiersServiceImpl implements TiersService {
 	}
 
 	@Override
+	public void updateRaisonSocialeFiscale(RaisonSocialeFiscaleEntreprise rs, String raisonSociale) {
+		annuleRaisonSocialeFiscale(rs);
+		addRaisonSocialeFiscale(rs.getEntreprise(), raisonSociale, rs.getDateDebut(), rs.getDateFin());
+	}
+
+	@Override
 	public void closeRaisonSocialeFiscale(RaisonSocialeFiscaleEntreprise raisonSociale, RegDate dateFin) {
 		Assert.notNull(raisonSociale);
 		raisonSociale.setDateFin(dateFin);

@@ -1597,6 +1597,14 @@ public interface TiersService {
 	RaisonSocialeFiscaleEntreprise addRaisonSocialeFiscale(Entreprise e, String raisonSociale, RegDate dateDebut, RegDate dateFin);
 
 	/**
+	 * Met à jour la raison sociale de l'entreprise. Seule le libellé peut être changer, car on ne
+	 * peut fermer une raison sociale qu'en ouvrant la suivante.
+	 * @param rs la raison sociale mise à jour
+	 * @param raisonSociale le libellé de la nouvelle raison sociale
+	 */
+	void updateRaisonSocialeFiscale(RaisonSocialeFiscaleEntreprise rs, String raisonSociale);
+
+	/**
 	 * Ferme la raison sociale à la date indiquée
 	 * @param raisonSociale la raison sociale à fermer
 	 * @param dateFin le dernier jour de validité

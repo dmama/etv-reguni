@@ -95,6 +95,7 @@ public class CivilEntrepriseEditController {
 		private CivilEditValidator() {
 			addSubValidator(EntrepriseView.class, new DummyValidator<>(EntrepriseView.class));
 			addSubValidator(AddRaisonSocialeView.class, new AddRaisonSocialeViewValidator());
+			addSubValidator(EditRaisonSocialeView.class, new EditRaisonSocialeViewValidator());
 			/*addSubValidator(AddFormeJuridiqueViewValidator.class, new AddFormeJuridiqueViewValidator());*/
 		}
 	}
@@ -137,7 +138,10 @@ public class CivilEntrepriseEditController {
 
 		final Tiers tiers = tiersDAO.get(id);
 		if (tiers != null && tiers instanceof Entreprise) {
-//			checkDroitEditionDonneesCiviles(tiers);
+			final Autorisations auth = getAutorisations((Entreprise) tiers);
+			if (!auth.isDonneesCiviles()) {
+				throw new AccessDeniedException("Vous ne possédez pas les droits IfoSec d'édition d'entreprises.");
+			}
 			final EntrepriseView view = entrepriseService.get((Entreprise) tiers);
 			return showEditEntreprise(model, id, view);
 		}
@@ -200,6 +204,57 @@ public class CivilEntrepriseEditController {
 		return "redirect:/civil/entreprise/edit.do?id=" + tiersId;// + buildHighlightForParam(newFor); plus tard
 	}
 
+	@RequestMapping(value = "/raisonsociale/edit.do", method = RequestMethod.GET)
+	@Transactional(readOnly = true, rollbackFor = Throwable.class)
+	public String editRaisonSociale(@RequestParam(value = "raisonSocialeId", required = true) long raisonSocialeId, Model model) {
+
+		final RaisonSocialeFiscaleEntreprise raisonSociale = hibernateTemplate.get(RaisonSocialeFiscaleEntreprise.class, raisonSocialeId);
+		if (raisonSociale == null) {
+			throw new ObjectNotFoundException("La raison sociale avec l'id = " + raisonSocialeId + " n'existe pas.");
+		}
+
+		final Autorisations auth = getAutorisations(raisonSociale.getEntreprise());
+		if (!auth.isDonneesCiviles()) {
+			throw new AccessDeniedException("Vous ne possédez pas les droits IfoSec d'édition de raisons sociales.");
+		}
+
+		//controllerUtils.checkAccesDossierEnEcriture(raisonSociale.getEntreprise().getNumero());
+
+		model.addAttribute("command", new EditRaisonSocialeView(raisonSociale));
+		return "donnees-civiles/editRaisonSociale";
+	}
+
+	@Transactional(rollbackFor = Throwable.class)
+	@RequestMapping(value = "/raisonsociale/edit.do", method = RequestMethod.POST)
+	public String editRaisonSociale(@Valid @ModelAttribute("command") final EditRaisonSocialeView view, BindingResult result, Model model) throws Exception {
+
+		final RaisonSocialeFiscaleEntreprise raisonSociale = hibernateTemplate.get(RaisonSocialeFiscaleEntreprise.class, view.getId());
+		if (raisonSociale == null) {
+			throw new ObjectNotFoundException("La raison sociale avec l'id = " + view.getId() + " n'existe pas.");
+		}
+
+		final Entreprise entreprise = raisonSociale.getEntreprise();
+
+		if (raisonSociale.getRaisonSociale() != null && ! raisonSociale.getRaisonSociale().equals(view.getRaisonSociale())) {
+
+			final Autorisations auth = getAutorisations(entreprise);
+			if (!auth.isDonneesCiviles()) {
+				throw new AccessDeniedException("Vous ne possédez pas les droits IfoSec d'édition de raisons sociales.");
+			}
+
+			final long ctbId = entreprise.getNumero();
+			controllerUtils.checkAccesDossierEnEcriture(ctbId);
+
+			if (result.hasErrors()) {
+				return "donnees-civiles/editRaisonSociale";
+			}
+
+			tiersService.updateRaisonSocialeFiscale(raisonSociale, view.getRaisonSociale());
+		}
+
+		return "redirect:/civil/entreprise/edit.do?id=" + entreprise.getNumero();// + buildHighlightForParam(newFor);
+	}
+
 	@Transactional(rollbackFor = Throwable.class)
 	@RequestMapping(value = "/cancel.do", method = RequestMethod.POST)
 	public String cancelRaisonSociale(long raisonSocialeId) throws Exception {
@@ -249,61 +304,5 @@ public class CivilEntrepriseEditController {
 
 		return "redirect:/civil/entreprise/edit.do?id=" + tiersId;// + buildHighlightForParam(newFor); plus tard
 	}
-*/
-
-	/*
-	@RequestMapping(value = "/principal/edit.do", method = RequestMethod.GET)
-	@Transactional(readOnly = true, rollbackFor = Throwable.class)
-	public String editPrincipal(@RequestParam(value = "forId", required = true) long forId, Model model) {
-
-		final ForFiscalPrincipal ffp = hibernateTemplate.get(ForFiscalPrincipal.class, forId);
-		if (ffp == null) {
-			throw new ObjectNotFoundException("Le for principal avec l'id = " + forId + " n'existe pas.");
-		}
-
-		final Autorisations auth = getAutorisations(ffp.getTiers());
-		if (!auth.isForsPrincipaux()) {
-			throw new AccessDeniedException("Vous ne possédez pas les droits IfoSec d'édition de fors principaux.");
-		}
-
-		controllerUtils.checkAccesDossierEnEcriture(ffp.getTiers().getNumero());
-
-		model.addAttribute("command", new EditForPrincipalView(ffp));
-		return "fors/principal/edit";
-	}
-
-	@Transactional(rollbackFor = Throwable.class)
-	@RequestMapping(value = "/principal/edit.do", method = RequestMethod.POST)
-	public String editPrincipal(@Valid @ModelAttribute("command") final EditForPrincipalView view, BindingResult result, Model model) throws Exception {
-
-		final ForFiscalPrincipal ffp = hibernateTemplate.get(ForFiscalPrincipal.class, view.getId());
-		if (ffp == null) {
-			throw new ObjectNotFoundException("Le for principal avec l'id = " + view.getId() + " n'existe pas.");
-		}
-
-		final Autorisations auth = getAutorisations((Contribuable) ffp.getTiers());
-		if (!auth.isForsPrincipaux()) {
-			throw new AccessDeniedException("Vous ne possédez pas les droits IfoSec d'édition de fors principaux.");
-		}
-
-		final long ctbId = ffp.getTiers().getNumero();
-		controllerUtils.checkAccesDossierEnEcriture(ctbId);
-
-		if (result.hasErrors()) {
-			return "fors/principal/edit";
-		}
-
-		final ForFiscalPrincipal newFor = tiersService.updateForPrincipal(ffp, view.getDateFin(), view.getMotifFin(), view.getNoAutoriteFiscale());
-
-		return "redirect:/fiscal/edit.do?id=" + ctbId + buildHighlightForParam(newFor);
-	}
-
-	private static String buildHighlightForParam(@Nullable ForFiscal newFor) {
-		if (newFor == null) {
-			return StringUtils.EMPTY;
-		}
-		return "&highlightFor=" + newFor.getId();
-	}
-
 */
 }

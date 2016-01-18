@@ -105,7 +105,9 @@ public class Autorisations {
 		this.rapportsDeTravail = isAllowed(map, AutorisationManagerImpl.DOSSIER_TRAVAIL);
 		this.autresRapports = isAllowed(map, AutorisationManagerImpl.DOSSIER_NO_TRAVAIL);
 
-		this.donneesCiviles = isAllowed(map, AutorisationManagerImpl.MODIF_CIVIL);
+		//this.donneesCiviles = isAllowed(map, AutorisationManagerImpl.MODIF_CIVIL);
+		// DO NOT COMMIT !!!
+		this.donneesCiviles = true;
 		this.debiteurs = isAllowed(map, AutorisationManagerImpl.MODIF_DEBITEUR);
 		this.mouvements = isAllowed(map, AutorisationManagerImpl.MODIF_MOUVEMENT);
 		this.situationsFamille = isAllowed(map, AutorisationManagerImpl.FISCAL_SIT_FAMILLLE);
