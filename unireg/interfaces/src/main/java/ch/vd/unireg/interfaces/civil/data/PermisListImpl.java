@@ -32,7 +32,7 @@ public class PermisListImpl implements PermisList, Serializable {
 
 	public PermisListImpl(List<Permis> list) {
 		this.list = new ArrayList<>(list);
-		sort(this.list);
+		//sort(this.list);
 	}
 
 	public PermisListImpl() {

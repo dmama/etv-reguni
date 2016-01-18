@@ -156,7 +156,8 @@ public class WebCivilServiceImpl implements WebCivilService, MessageSourceAware 
 			for (Permis p : permis) {
 				list.add(new PermisView(p));
 			}
-			Collections.sort(list, new PermisViewComparator());
+			//SIFISC-17560 Affichage dans l'orde RcPers
+			Collections.reverse(list);
 			indCible.setPermisView(list);
 		}
 		else {
@@ -215,7 +216,8 @@ public class WebCivilServiceImpl implements WebCivilService, MessageSourceAware 
 				final NationaliteView view = new NationaliteView(nat);
 				views.add(view);
 			}
-			Collections.sort(views, NationaliteView.COMPARATOR);
+			//SIFISC-17560 Affichage dans l'orde RcPers
+			Collections.reverse(views);
 			indCible.setNationalites(views);
 		}
 		else {
