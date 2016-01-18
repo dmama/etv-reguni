@@ -68,6 +68,7 @@ public class PermisListTest extends WithoutSpringTest {
 		assertSame(permis1, p3);
 	}
 
+	//Selon SIFISC-16109 l'orde des permis est garantie du plus ancien au plus récent.
 	@Test
 	public void testGetPermisActifListDesordonnees() {
 
@@ -81,7 +82,8 @@ public class PermisListTest extends WithoutSpringTest {
 		permis1.setDateDebutValidite(RegDate.get(1930, 3, 1));
 		permis2.setDateDebutValidite(RegDate.get(1985, 4, 21));
 		permis3.setDateDebutValidite(RegDate.get(1973, 1, 8));
-		final PermisList list = new PermisListImpl(Arrays.<Permis>asList(permis1, permis2, permis3));
+		//Selon l'ordre RcPers
+		final PermisList list = new PermisListImpl(Arrays.<Permis>asList(permis1, permis3, permis2));
 
 		final Permis p1 = list.getPermisActif(null);
 		assertNotNull(p1);
