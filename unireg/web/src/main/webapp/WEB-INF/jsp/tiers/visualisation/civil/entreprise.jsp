@@ -75,9 +75,9 @@
 			</c:if>
 			<c:if test="${page == 'edit' }">
 				<c:if test="${!raisonSociale.annule}">
-					<unireg:linkTo name="" action="XXXXXXXXX/edit.do" method="GET" params="{raisonSocialeId:${raisonSociale.id}}" link_class="edit" title="Edition de la raison sociale" />
+					<unireg:linkTo name="" action="/civil/entreprise/edit.do" method="GET" params="{raisonSocialeId:${raisonSociale.id}}" link_class="edit" title="Edition de la raison sociale" />
 					<c:if test="${raisonSociale.dernierElement}">
-						<unireg:linkTo name="" action="/fors/principal/cancel.do" method="POST" params="{raisonSocialeId:${raisonSociale.id}}" link_class="delete"
+						<unireg:linkTo name="" action="/civil/entreprise/cancel.do" method="POST" params="{raisonSocialeId:${raisonSociale.id}}" link_class="delete"
 						               title="Annulation de raison sociale" confirm="Voulez-vous vraiment annuler cette raison sociale ?"/>
 					</c:if>
 				</c:if>

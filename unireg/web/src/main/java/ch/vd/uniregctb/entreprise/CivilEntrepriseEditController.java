@@ -15,31 +15,28 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.AuthenticationHelper;
+import ch.vd.uniregctb.common.ControllerUtils;
 import ch.vd.uniregctb.common.DelegatingValidator;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.common.TiersNotFoundException;
+import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.security.AccessDeniedException;
 import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.security.SecurityHelper;
 import ch.vd.uniregctb.security.SecurityProviderInterface;
 import ch.vd.uniregctb.tiers.Entreprise;
+import ch.vd.uniregctb.tiers.RaisonSocialeFiscaleEntreprise;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersMapHelper;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.tiers.manager.AutorisationManager;
 import ch.vd.uniregctb.tiers.manager.Autorisations;
-import ch.vd.uniregctb.tiers.validator.AutreCommunauteCivilViewValidator;
-import ch.vd.uniregctb.tiers.validator.ContribuableInfosEntrepriseViewValidator;
-import ch.vd.uniregctb.tiers.validator.NonHabitantCivilViewValidator;
-import ch.vd.uniregctb.tiers.view.AutreCommunauteCivilView;
-import ch.vd.uniregctb.tiers.view.ContribuableInfosEntrepriseView;
-import ch.vd.uniregctb.tiers.view.NonHabitantCivilView;
 import ch.vd.uniregctb.utils.RegDateEditor;
 
 @Controller
-@RequestMapping(value = "/civil")
+@RequestMapping(value = "/civil/entreprise")
 public class CivilEntrepriseEditController {
 
 	private static final String ID = "id";
@@ -51,8 +48,10 @@ public class CivilEntrepriseEditController {
 	private TiersDAO tiersDAO;
 	private TiersMapHelper tiersMapHelper;
 	private TiersService tiersService;
+	private ControllerUtils controllerUtils;
 	private ServiceInfrastructureService infraService;
 	private SecurityProviderInterface securityProvider;
+	private HibernateTemplate hibernateTemplate;
 	private AutorisationManager autorisationManager;
 	private EntrepriseService entrepriseService;
 
@@ -62,6 +61,10 @@ public class CivilEntrepriseEditController {
 
 	public void setTiersMapHelper(TiersMapHelper tiersMapHelper) {
 		this.tiersMapHelper = tiersMapHelper;
+	}
+
+	public void setControllerUtils(ControllerUtils controllerUtils) {
+		this.controllerUtils = controllerUtils;
 	}
 
 	public void setInfraService(ServiceInfrastructureService infraService) {
@@ -76,6 +79,10 @@ public class CivilEntrepriseEditController {
 		this.entrepriseService = entrepriseService;
 	}
 
+	public void setHibernateTemplate(HibernateTemplate hibernateTemplate) {
+		this.hibernateTemplate = hibernateTemplate;
+	}
+
 	public void setSecurityProvider(SecurityProviderInterface securityProvider) {
 		this.securityProvider = securityProvider;
 	}
@@ -86,9 +93,6 @@ public class CivilEntrepriseEditController {
 
 	private static class CivilEditValidator extends DelegatingValidator {
 		private CivilEditValidator() {
-			addSubValidator(AutreCommunauteCivilView.class, new AutreCommunauteCivilViewValidator());
-			addSubValidator(NonHabitantCivilView.class, new NonHabitantCivilViewValidator());
-			addSubValidator(ContribuableInfosEntrepriseView.class, new ContribuableInfosEntrepriseViewValidator());
 			addSubValidator(EntrepriseView.class, new DummyValidator<>(EntrepriseView.class));
 			addSubValidator(AddRaisonSocialeView.class, new AddRaisonSocialeViewValidator());
 			/*addSubValidator(AddFormeJuridiqueViewValidator.class, new AddFormeJuridiqueViewValidator());*/
@@ -122,8 +126,8 @@ public class CivilEntrepriseEditController {
 	}
 
 
-	@Transactional(rollbackFor = Throwable.class)
-	@RequestMapping(value = "/entreprise/edit.do", method = RequestMethod.GET)
+	@RequestMapping(value = "/edit.do", method = RequestMethod.GET)
+	@Transactional(readOnly = true, rollbackFor = Throwable.class)
 	public String editEntreprise(Model model, @RequestParam(value = ID) long id) {
 /*
 		if (!SecurityHelper.isGranted(securityProvider, Role.MODIF_AC)) {
@@ -148,7 +152,7 @@ public class CivilEntrepriseEditController {
 		return "/tiers/edition/civil/edit-entreprise";
 	}
 
-	@RequestMapping(value = "/entreprise/raisonsociale/add.do", method = RequestMethod.GET)
+	@RequestMapping(value = "/raisonsociale/add.do", method = RequestMethod.GET)
 	@Transactional(readOnly = true, rollbackFor = Throwable.class)
 	public String addRaisonSociale(@RequestParam(value = "tiersId", required = true) long tiersId, Model model) {
 
@@ -164,12 +168,12 @@ public class CivilEntrepriseEditController {
 
 		//controllerUtils.checkAccesDossierEnEcriture(tiersId); // TODO: A utiliser pour les données civiles ??
 
-		model.addAttribute("command", new AddRaisonSocialeView(tiersId, entreprise.getNumero(), RegDate.get(), null, null));
+		model.addAttribute("command", new AddRaisonSocialeView(entreprise.getNumero(), RegDate.get(), null, null));
 		return "donnees-civiles/addRaisonSociale";
 	}
 
 	@Transactional(rollbackFor = Throwable.class)
-	@RequestMapping(value = "/entreprise/raisonsociale/add.do", method = RequestMethod.POST)
+	@RequestMapping(value = "/raisonsociale/add.do", method = RequestMethod.POST)
 	public String addRaisonSociale(@Valid @ModelAttribute("command") final AddRaisonSocialeView view, BindingResult result, Model model) throws Exception {
 
 		final long tiersId = view.getTiersId();
@@ -194,6 +198,27 @@ public class CivilEntrepriseEditController {
 		tiersService.addRaisonSocialeFiscale(entreprise, view.getRaisonSociale(), view.getDateDebut(), view.getDateFin());
 
 		return "redirect:/civil/entreprise/edit.do?id=" + tiersId;// + buildHighlightForParam(newFor); plus tard
+	}
+
+	@Transactional(rollbackFor = Throwable.class)
+	@RequestMapping(value = "/cancel.do", method = RequestMethod.POST)
+	public String cancelRaisonSociale(long raisonSocialeId) throws Exception {
+
+		final RaisonSocialeFiscaleEntreprise raisonSociale = hibernateTemplate.get(RaisonSocialeFiscaleEntreprise.class, raisonSocialeId);
+		if (raisonSociale == null) {
+			throw new ObjectNotFoundException("La raison sociale n°" + raisonSocialeId + " n'existe pas.");
+		}
+		final Entreprise entreprise = raisonSociale.getEntreprise();
+		//controllerUtils.checkAccesDossierEnEcriture(entreprise.getId()); // TODO: A utiliser pour les données civiles ??
+
+		final Autorisations auth = getAutorisations(entreprise);
+		if (!auth.isDonneesCiviles()) {
+			throw new AccessDeniedException("Vous ne possédez pas les droits IfoSec de suppression de raisons sociales.");
+		}
+
+		tiersService.annuleRaisonSocialeFiscale(raisonSociale);
+
+		return "redirect:/civil/entreprise/edit.do?id=" + entreprise.getId();// + "&highlightFor=" + raisonSociale.getId();
 	}
 
 /*
@@ -280,25 +305,5 @@ public class CivilEntrepriseEditController {
 		return "&highlightFor=" + newFor.getId();
 	}
 
-	@Transactional(rollbackFor = Throwable.class)
-	@RequestMapping(value = "/principal/cancel.do", method = RequestMethod.POST)
-	public String cancelPrincipal(long forId) throws Exception {
-
-		final ForFiscalPrincipal forFiscal = hibernateTemplate.get(ForFiscalPrincipal.class, forId);
-		if (forFiscal == null) {
-			throw new ObjectNotFoundException("Le for fiscal n°" + forId + " n'existe pas.");
-		}
-		final Tiers tiers = forFiscal.getTiers();
-		controllerUtils.checkAccesDossierEnEcriture(tiers.getId());
-
-		final Autorisations auth = getAutorisations((Contribuable) tiers);
-		if (!auth.isForsPrincipaux()) {
-			throw new AccessDeniedException("Vous ne possédez pas les droits IfoSec d'édition de fors principaux.");
-		}
-
-		tiersService.annuleForFiscal(forFiscal);
-
-		return "redirect:/fiscal/edit.do?id=" + tiers.getId() + "&highlightFor=" + forFiscal.getId();
-	}
 */
 }

@@ -9,17 +9,6 @@
   			<fmt:param><unireg:numCTB numero="${command.tiersId}"/></fmt:param>
   		</fmt:message>
   	</tiles:put>
-	<tiles:put name="head">
-		<style type="text/css">
-			h1 {
-				margin-left: 10px;
-				padding-left: 40px;
-				padding-top: 4px;
-				height: 32px;
-				background: url(../../css/x/fors/principal_32.png) no-repeat;
-			}
-		</style>
-	</tiles:put>
 	<tiles:put name="body">
 
 		<form:form id="addRaisonSocialeForm" commandName="command" action="add.do">

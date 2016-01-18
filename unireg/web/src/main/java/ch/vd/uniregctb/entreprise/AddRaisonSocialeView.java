@@ -7,7 +7,6 @@ import ch.vd.registre.base.date.RegDateHelper;
 
 public class AddRaisonSocialeView implements DateRange {
 
-	private Long id;
 	private Long tiersId;
 	private RegDate dateDebut;
 	private RegDate dateFin;
@@ -15,20 +14,11 @@ public class AddRaisonSocialeView implements DateRange {
 
 	public AddRaisonSocialeView() {}
 
-	public AddRaisonSocialeView(Long id, Long tiersId, RegDate dateDebut, RegDate dateFin, String raisonSociale) {
-		this.id = id;
+	public AddRaisonSocialeView(Long tiersId, RegDate dateDebut, RegDate dateFin, String raisonSociale) {
 		this.tiersId = tiersId;
 		this.dateDebut = dateDebut;
 		this.dateFin = dateFin;
 		this.raisonSociale = raisonSociale;
-	}
-
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
 	}
 
 	public Long getTiersId() {
