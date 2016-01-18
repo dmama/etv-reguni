@@ -90,8 +90,8 @@ public class EntrepriseValidatorTest extends AbstractValidatorTest<Entreprise> {
 		}
 
 		// ajoutons une donnée qui ne chevauche pas -> pas de souci
-		entreprise.addDonneeCivile(new RaisonSocialeFiscaleEntreprise(date(2007, 1, 1), date(2009, 12, 1), "Ma petite entreprise"));
-		entreprise.addDonneeCivile(new FormeJuridiqueFiscaleEntreprise(date(2007, 1, 1), date(2009, 12, 1), FormeJuridiqueEntreprise.SARL));
+		entreprise.addDonneeCivile(new RaisonSocialeFiscaleEntreprise(date(2006, 1, 1), date(2009, 12, 1), "Ma petite entreprise"));
+		entreprise.addDonneeCivile(new FormeJuridiqueFiscaleEntreprise(date(2006, 1, 1), date(2009, 12, 1), FormeJuridiqueEntreprise.SARL));
 		entreprise.addDonneeCivile(new CapitalFiscalEntreprise(date(2007, 1, 1), date(2009, 12, 1), new MontantMonetaire(10000L, MontantMonetaire.CHF)));
 		{
 			final ValidationResults vr = validate(entreprise);
@@ -105,15 +105,13 @@ public class EntrepriseValidatorTest extends AbstractValidatorTest<Entreprise> {
 		{
 			final ValidationResults vr = validate(entreprise);
 			Assert.assertTrue(vr.hasErrors());
-			Assert.assertEquals(6, vr.errorsCount());
+			Assert.assertEquals(4, vr.errorsCount());
 
 			final List<String> errors = vr.getErrors();
-			Assert.assertEquals("La période [01.01.2005 ; 31.12.2005] est couverte par plusieurs valeurs de raison sociale", errors.get(0));
-			Assert.assertEquals("La période [01.01.2007 ; 31.12.2007] est couverte par plusieurs valeurs de raison sociale", errors.get(1));
-			Assert.assertEquals("La période [01.01.2005 ; 31.12.2005] est couverte par plusieurs valeurs de forme juridique", errors.get(2));
-			Assert.assertEquals("La période [01.01.2007 ; 31.12.2007] est couverte par plusieurs valeurs de forme juridique", errors.get(3));
-			Assert.assertEquals("La période [01.01.2005 ; 31.12.2005] est couverte par plusieurs valeurs de capital", errors.get(4));
-			Assert.assertEquals("La période [01.01.2007 ; 31.12.2007] est couverte par plusieurs valeurs de capital", errors.get(5));
+			Assert.assertEquals("La période [01.01.2005 ; 31.12.2007] est couverte par plusieurs valeurs de raison sociale", errors.get(0));
+			Assert.assertEquals("La période [01.01.2005 ; 31.12.2007] est couverte par plusieurs valeurs de forme juridique", errors.get(1));
+			Assert.assertEquals("La période [01.01.2005 ; 31.12.2005] est couverte par plusieurs valeurs de capital", errors.get(2));
+			Assert.assertEquals("La période [01.01.2007 ; 31.12.2007] est couverte par plusieurs valeurs de capital", errors.get(3));
 		}
 	}
 
@@ -143,7 +141,7 @@ public class EntrepriseValidatorTest extends AbstractValidatorTest<Entreprise> {
 		Assert.assertEquals(1, vr.errorsCount());
 
 		final List<String> errors = vr.getErrors();
-		Assert.assertEquals("Rupture de continuité: période vide du 2011.01.01 au 2011.05.31 dans la valeur de raison sociale", errors.get(0));
+		Assert.assertEquals("Rupture de continuité: période vide [01.01.2011 ; 31.05.2011] dans la valeur de raison sociale", errors.get(0));
 	}
 
 	@Test
@@ -172,7 +170,7 @@ public class EntrepriseValidatorTest extends AbstractValidatorTest<Entreprise> {
 		Assert.assertEquals(1, vr.errorsCount());
 
 		final List<String> errors = vr.getErrors();
-		Assert.assertEquals("Rupture de continuité: période vide du 2011.01.01 au 2011.05.31 dans la valeur de forme juridique", errors.get(0));
+		Assert.assertEquals("Rupture de continuité: période vide [01.01.2011 ; 31.05.2011] dans la valeur de forme juridique", errors.get(0));
 	}
 
 	@Test

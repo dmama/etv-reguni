@@ -130,21 +130,20 @@ public class EntrepriseValidator extends ContribuableImpositionPersonnesMoralesV
 	}
 
 	private static <T extends DonneeCivileEntreprise> void checkContinuous(List<T> nonAnnulesTries, String libelle, ValidationResults vr) {
-		final String holeValue = "<Espace vide>";
 
 		if (nonAnnulesTries.size() > 1) {
 			final List<DateRange> completeRange = Arrays.<DateRange>asList(
-					new DateRangeHelper.Ranged<>(nonAnnulesTries.get(0).getDateDebut(), CollectionsUtils.getLastElement(nonAnnulesTries).getDateFin(), holeValue));
+					new DateRangeHelper.Range(nonAnnulesTries.get(0).getDateDebut(), CollectionsUtils.getLastElement(nonAnnulesTries).getDateFin()));
 
 			final List<DateRange> resultingRange = DateRangeHelper.subtract(completeRange, nonAnnulesTries, new DateRangeHelper.AdapterCallback<DateRange>() {
 				@Override
 				public DateRange adapt(DateRange range, RegDate debut, RegDate fin) {
-					return new DateRangeHelper.Ranged<>(debut, fin, holeValue);
+					return new DateRangeHelper.Range(debut, fin);
 				}
 			});
 			if (resultingRange.size() > 0) {
 				for (DateRange holeRange : resultingRange) {
-					vr.addError(String.format("Rupture de continuité: période vide du %s au %s dans la valeur de %s", holeRange.getDateDebut(), holeRange.getDateFin(), libelle));
+					vr.addError(String.format("Rupture de continuité: période vide %s dans la valeur de %s", DateRangeHelper.toDisplayString(holeRange), libelle));
 				}
 			}
 		}
