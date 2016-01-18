@@ -76,9 +76,11 @@
 		<div id="tiersTabs">
 			<ul id="menuTiersTabs">
 				<authz:authorize ifAnyGranted="ROLE_VISU_ALL, ROLE_VISU_FORS">
-					<li id="fiscalTab">
-						<a href="#tabContent_fiscalTab"><fmt:message key="label.fiscal" /></a>
-					</li>
+					<c:if test="${command.natureTiers != 'Etablissement'}">
+						<li id="fiscalTab">
+							<a href="#tabContent_fiscalTab"><fmt:message key="label.fiscal" /></a>
+						</li>
+					</c:if>
 				</authz:authorize>
 				<authz:authorize ifAnyGranted="ROLE_VISU_ALL">
 					<c:if test="${command.natureTiers != 'DebiteurPrestationImposable'}">
@@ -168,9 +170,11 @@
 			</ul>
 
 			<authz:authorize ifAnyGranted="ROLE_VISU_ALL, ROLE_VISU_FORS">
-				<div id="tabContent_fiscalTab" class="situation_fiscale">
-					<jsp:include page="fiscal/fiscal.jsp"/>
-				</div>
+				<c:if test="${command.natureTiers != 'Etablissement'}">
+					<div id="tabContent_fiscalTab" class="situation_fiscale">
+						<jsp:include page="fiscal/fiscal.jsp"/>
+					</div>
+				</c:if>
 			</authz:authorize>
 			<authz:authorize ifAnyGranted="ROLE_VISU_ALL">
 				<c:if test="${command.natureTiers != 'DebiteurPrestationImposable'}">
