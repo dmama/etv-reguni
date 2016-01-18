@@ -256,7 +256,7 @@ public class DeclarationImpotControllerTest extends WebTestSpring3 {
 		request.addParameter("id", diId.toString());
 		request.addParameter("typeDocument", TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE.name());
 		request.addParameter("dateRetour", RegDateHelper.dateToDisplayString(dateQuittance));
-		request.setRequestURI("/di/etat/ajouter.do");
+		request.setRequestURI("/di/etat/ajouter-quittance.do");
 
 		// exécution de la requête
 		final ModelAndView mav = handle(request, response);
@@ -307,7 +307,7 @@ public class DeclarationImpotControllerTest extends WebTestSpring3 {
 		request.addParameter("id", diId.toString());
 		request.addParameter("typeDocument", TypeDocument.DECLARATION_IMPOT_COMPLETE_LOCAL.name());
 		request.addParameter("dateRetour", RegDateHelper.dateToDisplayString(dateQuittance));
-		request.setRequestURI("/di/etat/ajouter.do");
+		request.setRequestURI("/di/etat/ajouter-quittance.do");
 
 		// exécution de la requête
 		final ModelAndView mav = handle(request, response);
