@@ -42,11 +42,13 @@ public class EditerDeclarationImpotView {
 	@Nullable
 	private Long tacheId;
 
-	// Données dépendant des droits de l'utilisateur
+	// Données dépendant des droits de l'utilisateur (et de l'état de la DI, évidemment, aussi)
 	private boolean isAllowedQuittancement;
 	private boolean isAllowedDelai;
 	private boolean isAllowedSommation;
 	private boolean isAllowedDuplicata;
+	private boolean isAllowedSuspension;
+	private boolean isAllowedAnnulationSuspension;
 
 	private boolean isDiPP;
 	private boolean isDiPM;
@@ -55,14 +57,14 @@ public class EditerDeclarationImpotView {
 	}
 
 	public EditerDeclarationImpotView(DeclarationImpotOrdinaire di, @Nullable Long tacheId, MessageSource messageSource, boolean allowedQuittancement, boolean allowedDelai, boolean allowedSommation,
-	                                  boolean allowedDuplicata) {
-		initReadOnlyValues(di, messageSource, allowedQuittancement, allowedDelai, allowedSommation, allowedDuplicata);
+	                                  boolean allowedDuplicata, boolean allowedSuspension, boolean allowedAnnulationSuspension) {
+		initReadOnlyValues(di, messageSource, allowedQuittancement, allowedDelai, allowedSommation, allowedDuplicata, allowedSuspension, allowedAnnulationSuspension);
 		this.typeDocument = di.getTypeDeclaration();
 		this.dateRetour = di.getDateRetour();
 		this.tacheId = tacheId;
 	}
 
-	public void initReadOnlyValues(DeclarationImpotOrdinaire di, MessageSource messageSource, boolean allowedQuittancement, boolean allowedDelai, boolean allowedSommation, boolean allowedDuplicata) {
+	public void initReadOnlyValues(DeclarationImpotOrdinaire di, MessageSource messageSource, boolean allowedQuittancement, boolean allowedDelai, boolean allowedSommation, boolean allowedDuplicata, boolean allowedSuspension, boolean allowedAnnulationSuspension) {
 		this.tiersId = di.getTiers().getId();
 		this.id = di.getId();
 		this.periodeFiscale = di.getDateDebut().year();
@@ -77,6 +79,8 @@ public class EditerDeclarationImpotView {
 		this.isAllowedDelai = allowedDelai;
 		this.isAllowedSommation = allowedSommation;
 		this.isAllowedDuplicata = allowedDuplicata;
+		this.isAllowedSuspension = allowedSuspension;
+		this.isAllowedAnnulationSuspension = allowedAnnulationSuspension;
 		this.isSommable = isSommable(di);
 		this.wasSommee = initWasSommee(di);
 		this.isDiPP = di instanceof DeclarationImpotOrdinairePP;
@@ -103,6 +107,16 @@ public class EditerDeclarationImpotView {
 			}
 		}
 		return isSommable;
+	}
+
+	public static boolean isSuspendable(DeclarationImpotOrdinaire di) {
+		// seules les DI PM ont cette capacité
+		if (di instanceof DeclarationImpotOrdinairePM) {
+			final TypeEtatDeclaration dernierEtat = getDernierEtat(di);
+			return dernierEtat != TypeEtatDeclaration.RETOURNEE && dernierEtat != TypeEtatDeclaration.SUSPENDUE;
+		}
+
+		return false;
 	}
 
 	public static TypeEtatDeclaration getDernierEtat(DeclarationImpotOrdinaire di) {
@@ -223,6 +237,14 @@ public class EditerDeclarationImpotView {
 
 	public boolean isAllowedDuplicata() {
 		return isAllowedDuplicata;
+	}
+
+	public boolean isAllowedSuspension() {
+		return isAllowedSuspension;
+	}
+
+	public boolean isAllowedAnnulationSuspension() {
+		return isAllowedAnnulationSuspension;
 	}
 
 	public boolean isSommable() {

@@ -2612,7 +2612,7 @@ var Decl = {
 				html += '<tr class="' + (i % 2 == 0 ? 'even' : 'odd') + (e.annule ? ' strike' : '') + '">';
 				html += '<td>' + RegDate.format(e.dateObtention);
 				if (!e.annule && e.etat == 'SOMMEE') {
-					html += '&nbsp;' + StringUtils.escapeHTML(e.dateEnvoiCourrierMessage);
+					html += '&nbsp;(' + StringUtils.escapeHTML(e.dateEnvoiCourrierMessage) + ')';
 				}
 				html += '</td><td>' + StringUtils.escapeHTML(e.etatMessage);
 				if (!e.annule && e.etat == 'SOMMEE') {

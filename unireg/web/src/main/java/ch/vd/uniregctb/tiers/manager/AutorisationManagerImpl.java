@@ -457,7 +457,7 @@ public class AutorisationManagerImpl implements AutorisationManager {
 		}
 
 		if (tiers instanceof ContribuableImpositionPersonnesMorales) {
-			if (SecurityHelper.isAnyGranted(securityProvider, visa, oid,  Role.DI_EMIS_PM, Role.DI_DELAI_PM, Role.DI_DUPLIC_PM, Role.DI_QUIT_PM, Role.DI_SOM_PM)) {
+			if (SecurityHelper.isAnyGranted(securityProvider, visa, oid,  Role.DI_EMIS_PM, Role.DI_DELAI_PM, Role.DI_DUPLIC_PM, Role.DI_QUIT_PM, Role.DI_SOM_PM, Role.DI_SUSPENDRE_PM, Role.DI_DESUSPENDRE_PM)) {
 				map.put(MODIF_DI, Boolean.TRUE);
 			}
 

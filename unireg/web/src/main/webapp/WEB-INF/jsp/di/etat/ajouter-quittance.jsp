@@ -13,7 +13,7 @@
 	</tiles:put>
 	<tiles:put name="body">
 
-		<form:form method="post" name="theForm" id="formAddEtat" action="ajouter.do">
+		<form:form method="post" name="theForm" id="formAddEtat" action="ajouter-quittance.do">
 
 			<form:errors cssClass="error"/>
 

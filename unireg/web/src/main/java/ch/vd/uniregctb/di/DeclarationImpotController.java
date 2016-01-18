@@ -50,6 +50,7 @@ import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP;
 import ch.vd.uniregctb.declaration.DelaiDeclaration;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
 import ch.vd.uniregctb.declaration.EtatDeclarationRetournee;
+import ch.vd.uniregctb.declaration.EtatDeclarationSuspendue;
 import ch.vd.uniregctb.declaration.ModeleDocumentDAO;
 import ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotService;
 import ch.vd.uniregctb.di.manager.DeclarationImpotEditManager;
@@ -724,11 +725,33 @@ public class DeclarationImpotController {
 		return diAnnulee;
 	}
 
+	@Transactional(rollbackFor = Throwable.class)
+	@RequestMapping(value = "/di/etat/ajouter-suspension.do", method = RequestMethod.POST)
+	public String suspendre(@RequestParam("id") long id) throws AccessDeniedException {
+
+		if (!SecurityHelper.isAnyGranted(securityProvider, Role.DI_SUSPENDRE_PM)) {
+			throw new AccessDeniedException("Lous ne possédez pas le droit IfoSec de suspension des déclarations d'impôt.");
+		}
+
+		final DeclarationImpotOrdinaire di = diDAO.get(id);
+		if (di == null || !(di instanceof DeclarationImpotOrdinairePM)) {
+			throw new ObjectNotFoundException(messageSource.getMessage("error.di.inexistante", null, WebContextUtils.getDefaultLocale()));
+		}
+
+		if (!EditerDeclarationImpotView.isSuspendable(di)) {
+			throw new ValidationException(di, "La déclaration d'impôt n'est pas dans un état 'suspendable'.");
+		}
+
+		di.addEtat(new EtatDeclarationSuspendue(RegDate.get()));
+
+		return "redirect:/di/editer.do?id=" + di.getId();
+	}
+
 	/**
 	 * Affiche un écran qui permet de quittancer une déclaration.
 	 */
 	@Transactional(rollbackFor = Throwable.class, readOnly = true)
-	@RequestMapping(value = "/di/etat/ajouter.do", method = RequestMethod.GET)
+	@RequestMapping(value = "/di/etat/ajouter-quittance.do", method = RequestMethod.GET)
 	public String ajouterEtat(@RequestParam("id") long id, Model model) throws AccessDeniedException {
 
 		if (!SecurityHelper.isAnyGranted(securityProvider, Role.DI_QUIT_PP, Role.DI_QUIT_PM)) {
@@ -758,14 +781,14 @@ public class DeclarationImpotController {
 		model.addAttribute("command", view);
 		model.addAttribute("typesDeclarationImpotOrdinaire", tiersMapHelper.getTypesDeclarationsImpotOrdinaires());
 
-		return "di/etat/ajouter";
+		return "di/etat/ajouter-quittance";
 	}
 
 	/**
 	 * Quittance une déclaration d'impôt manuellement
 	 */
 	@Transactional(rollbackFor = Throwable.class)
-	@RequestMapping(value = "/di/etat/ajouter.do", method = RequestMethod.POST)
+	@RequestMapping(value = "/di/etat/ajouter-quittance.do", method = RequestMethod.POST)
 	public String ajouterEtat(@Valid @ModelAttribute("command") final AjouterEtatDeclarationView view, BindingResult result, Model model) throws AccessDeniedException {
 
 		if (!SecurityHelper.isAnyGranted(securityProvider, Role.DI_QUIT_PP, Role.DI_QUIT_PM)) {
@@ -781,7 +804,7 @@ public class DeclarationImpotController {
 		if (result.hasErrors()) {
 			view.initReadOnlyValues(di, view.isTypeDocumentEditable(), messageSource);
 			model.addAttribute("typesDeclarationImpotOrdinaire", tiersMapHelper.getTypesDeclarationsImpotOrdinaires());
-			return "di/etat/ajouter";
+			return "di/etat/ajouter-quittance";
 		}
 
 		final Contribuable ctb = di.getTiers();
@@ -804,8 +827,8 @@ public class DeclarationImpotController {
 	 * Annuler le quittancement spécifié.
 	 */
 	@Transactional(rollbackFor = Throwable.class)
-	@RequestMapping(value = "/di/etat/annuler.do", method = RequestMethod.POST)
-	public String annulerEtat(@RequestParam("id") final long id) throws Exception {
+	@RequestMapping(value = "/di/etat/annuler-quittance.do", method = RequestMethod.POST)
+	public String annulerQuittancement(@RequestParam("id") final long id) throws Exception {
 
 		if (!SecurityHelper.isAnyGranted(securityProvider, Role.DI_QUIT_PP, Role.DI_QUIT_PM)) {
 			throw new AccessDeniedException("vous ne possédez pas le droit IfoSec de quittancement des déclarations d'impôt.");
@@ -831,6 +854,32 @@ public class DeclarationImpotController {
 
 		Flash.message("Le quittancement du " + RegDateHelper.dateToDisplayString(retour.getDateObtention()) + " a été annulé.");
 		return "redirect:/di/editer.do?id=" + di.getId();
+	}
+
+	/**
+	 * Annulation d'une suspension
+	 */
+	@Transactional(rollbackFor = Throwable.class)
+	@RequestMapping(value = "/di/etat/annuler-suspension.do", method = RequestMethod.POST)
+	public String annulerSuspension(@RequestParam("id") long id) throws AccessDeniedException {
+
+		if (!SecurityHelper.isAnyGranted(securityProvider, Role.DI_DESUSPENDRE_PM)) {
+			throw new AccessDeniedException("Vous ne possédez pas le droit IfoSec d'annulation de suspension des déclarations d'impôt.");
+		}
+
+		// Vérifie les paramètres
+		final EtatDeclaration etat = hibernateTemplate.get(EtatDeclaration.class, id);
+		if (etat == null) {
+			throw new ObjectNotFoundException(messageSource.getMessage("error.etat.inexistant", null, WebContextUtils.getDefaultLocale()));
+		}
+		if (!(etat instanceof EtatDeclarationSuspendue)) {
+			throw new IllegalArgumentException("Seules les suspensions peuvent être annulées.");
+		}
+
+		etat.setAnnule(true);
+
+		Flash.message("La suspension du " + RegDateHelper.dateToDisplayString(etat.getDateObtention()) + " a été annulée.");
+		return "redirect:/di/editer.do?id=" + etat.getDeclaration().getId();
 	}
 
 	/**
@@ -861,14 +910,18 @@ public class DeclarationImpotController {
 			                                      SecurityHelper.isGranted(securityProvider, Role.DI_QUIT_PP),
 			                                      SecurityHelper.isGranted(securityProvider, Role.DI_DELAI_PP) && isJusteEmise(di),
 			                                      SecurityHelper.isGranted(securityProvider, Role.DI_SOM_PP),
-			                                      SecurityHelper.isGranted(securityProvider, Role.DI_DUPLIC_PP));
+			                                      SecurityHelper.isGranted(securityProvider, Role.DI_DUPLIC_PP),
+			                                      false,
+			                                      false);
 		}
 		else if (di instanceof DeclarationImpotOrdinairePM) {
 			view = new EditerDeclarationImpotView(di, tacheId, messageSource,
 			                                      SecurityHelper.isGranted(securityProvider, Role.DI_QUIT_PM),
 			                                      SecurityHelper.isGranted(securityProvider, Role.DI_DELAI_PM) && (isJusteEmise(di) || isSommee(di)),
 			                                      SecurityHelper.isGranted(securityProvider, Role.DI_SOM_PM),
-			                                      SecurityHelper.isGranted(securityProvider, Role.DI_DUPLIC_PM) && di.getTypeDeclaration() != null);
+			                                      SecurityHelper.isGranted(securityProvider, Role.DI_DUPLIC_PM) && di.getTypeDeclaration() != null,
+			                                      SecurityHelper.isGranted(securityProvider, Role.DI_SUSPENDRE_PM) && EditerDeclarationImpotView.isSuspendable(di),
+			                                      SecurityHelper.isGranted(securityProvider, Role.DI_DESUSPENDRE_PM) && isSuspendue(di));
 		}
 		else {
 			throw new IllegalArgumentException("La déclaration n°" + id + " n'est pas une déclaration d'impôt ordinaire PP ou PM.");
@@ -886,6 +939,11 @@ public class DeclarationImpotController {
 	private static boolean isSommee(DeclarationImpotOrdinaire di) {
 		final EtatDeclaration etat = di.getDernierEtat();
 		return etat != null && etat.getEtat() == TypeEtatDeclaration.SOMMEE;
+	}
+
+	private static boolean isSuspendue(DeclarationImpotOrdinaire di) {
+		final EtatDeclaration etat = di.getDernierEtat();
+		return etat != null && etat.getEtat() == TypeEtatDeclaration.SUSPENDUE;
 	}
 
 	/**
