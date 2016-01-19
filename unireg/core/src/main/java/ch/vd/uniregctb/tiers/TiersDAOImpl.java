@@ -1554,7 +1554,7 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 			if (RaisonSocialeFiscaleEntreprise.class.isAssignableFrom(entity1.getClass())) {
 				RaisonSocialeFiscaleEntreprise raison1 = (RaisonSocialeFiscaleEntreprise) entity1;
 				RaisonSocialeFiscaleEntreprise raison2 = (RaisonSocialeFiscaleEntreprise) entity2;
-				Assert.isSame(raison1.getRaisonSociale(), raison2.getRaisonSociale());
+				Assert.isEqual(raison1.getRaisonSociale(), raison2.getRaisonSociale());
 			}
 			else if (FormeJuridiqueFiscaleEntreprise.class.isAssignableFrom(entity1.getClass())) {
 				FormeJuridiqueFiscaleEntreprise jur1 = (FormeJuridiqueFiscaleEntreprise) entity1;
@@ -1564,7 +1564,8 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 			else if (CapitalFiscalEntreprise.class.isAssignableFrom(entity1.getClass())) {
 				CapitalFiscalEntreprise cap1 = (CapitalFiscalEntreprise) entity1;
 				CapitalFiscalEntreprise cap2 = (CapitalFiscalEntreprise) entity2;
-				Assert.isSame(cap1.getMontant(), cap2.getMontant());
+				Assert.isEqual(cap1.getMontant().getMontant(), cap2.getMontant().getMontant());
+				Assert.isEqual(cap1.getMontant().getMonnaie(), cap2.getMontant().getMonnaie());
 			}
 		}
 	};

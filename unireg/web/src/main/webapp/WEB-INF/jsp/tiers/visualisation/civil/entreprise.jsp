@@ -46,7 +46,7 @@
 		<label class="noprint" for="showRaisonSocialeHisto"><fmt:message key="label.historique" /></label>
 	</c:if>
 
-	<c:if test="${page == 'edit' }"> <%--${autorisations.raisonSociale}--%>
+	<c:if test="${page == 'edit' }"> <%--&& autorisations.donneesCiviles--%>
 		<table border="0">
 			<tr>
 				<td>
@@ -68,21 +68,20 @@
 			<fmt:message key="option.entreprise.source.${raisonSociale.source}"/>
 		</display:column>
 		<display:column style="width:10%">
-			<c:if test="${page == 'visu' }">
-				<c:if test="${raisonSociale.source == 'FISCALE'}" >
+			<c:if test="${raisonSociale.source == 'FISCALE'}" >
+				<c:if test="${page == 'visu' }">
 					<unireg:consulterLog entityNature="DonneeCivileEntreprise" entityId="${raisonSociale.id}"/>
 				</c:if>
-			</c:if>
-			<c:if test="${page == 'edit' }">
-				<c:if test="${!raisonSociale.annule}">
-					<unireg:linkTo name="" action="/civil/entreprise/raisonsociale/edit.do" method="GET" params="{raisonSocialeId:${raisonSociale.id}}" link_class="edit" title="Edition de la raison sociale" />
-					<c:if test="${raisonSociale.dernierElement}">
-						<unireg:linkTo name="" action="/civil/entreprise/cancel.do" method="POST" params="{raisonSocialeId:${raisonSociale.id}}" link_class="delete"
-						               title="Annulation de raison sociale" confirm="Voulez-vous vraiment annuler cette raison sociale ?"/>
+				<c:if test="${page == 'edit' }">
+					<c:if test="${!raisonSociale.annule}">
+						<unireg:linkTo name="" action="/civil/entreprise/raisonsociale/edit.do" method="GET" params="{raisonSocialeId:${raisonSociale.id}}" link_class="edit" title="Edition de la raison sociale" />
+						<c:if test="${raisonSociale.dernierElement}">
+							<unireg:linkTo name="" action="/civil/entreprise/cancel.do" method="POST" params="{raisonSocialeId:${raisonSociale.id}}" link_class="delete"
+							               title="Annulation de raison sociale" confirm="Voulez-vous vraiment annuler cette raison sociale ?"/>
+						</c:if>
 					</c:if>
 				</c:if>
 			</c:if>
-
 		</display:column>
 	</display:table>
 </fieldset>
@@ -92,10 +91,12 @@
 
 	<c:choose>
 		<c:when test="${not empty entreprise.nomsAdditionnels}">
-			<input class="noprint" id="showNomsAdditionnelsHisto" type="checkbox" onclick="refreshNomsAdditionnelsTable(this);" />
-			<label class="noprint" for="showNomsAdditionnelsHisto"><fmt:message key="label.historique" /></label>
+			<c:if test="${page == 'visu' }">
+				<input class="noprint" id="showNomsAdditionnelsHisto" type="checkbox" onclick="refreshNomsAdditionnelsTable(this);" />
+				<label class="noprint" for="showNomsAdditionnelsHisto"><fmt:message key="label.historique" /></label>
+			</c:if>
 
-			<display:table name="${entreprise.nomsAdditionnels}" id="nomsAdditionnels" requestURI="edit.do" class="display">
+			<display:table name="${entreprise.nomsAdditionnels}" id="nomsAdditionnels" requestURI="edit.do" class="display" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator">
 				<display:column style="width:10%" sortable="true" titleKey="label.date.debut" sortProperty="dateDebut">
 					<unireg:regdate regdate="${nomsAdditionnels.dateDebut}"/>
 				</display:column>
@@ -124,10 +125,12 @@
 <fieldset>
 	<legend><span><fmt:message key="label.sieges"/></span></legend>
 
-	<input class="noprint" id="showSiegesHisto" type="checkbox" onclick="refreshSiegesTable(this);" />
-	<label class="noprint" for="showSiegesHisto"><fmt:message key="label.historique" /></label>
+	<c:if test="${page == 'visu' }">
+		<input class="noprint" id="showSiegesHisto" type="checkbox" onclick="refreshSiegesTable(this);" />
+		<label class="noprint" for="showSiegesHisto"><fmt:message key="label.historique" /></label>
+	</c:if>
 
-	<display:table name="${entreprise.sieges}" id="sieges" requestURI="edit.do" class="display">
+	<display:table name="${entreprise.sieges}" id="sieges" requestURI="edit.do" class="display" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator">
 		<display:column style="width:10%" sortable="true" titleKey="label.date.debut" sortProperty="dateDebut">
 			<unireg:regdate regdate="${sieges.dateDebut}"/>
 		</display:column>
@@ -154,23 +157,46 @@
 <fieldset>
 	<legend><span><fmt:message key="label.formes.juridiques"/></span></legend>
 
-	<input class="noprint" id="showFormesJuridiquesHisto" type="checkbox" onclick="refreshFormesJuridiquesTable(this);" />
-	<label class="noprint" for="showFormesJuridiquesHisto"><fmt:message key="label.historique" /></label>
+	<c:if test="${page == 'visu' }">
+		<input class="noprint" id="showFormesJuridiquesHisto" type="checkbox" onclick="refreshFormesJuridiquesTable(this);" />
+		<label class="noprint" for="showFormesJuridiquesHisto"><fmt:message key="label.historique" /></label>
+	</c:if>
 
-	<display:table name="${entreprise.formesJuridiques}" id="formesJuridiques" requestURI="edit.do" class="display">
+	<c:if test="${page == 'edit' }"><%-- && autorisations.donneesCiviles--%>
+		<table border="0">
+			<tr>
+				<td>
+					<unireg:linkTo name="Ajouter" title="Ajouter une forme juridique" action="/civil/entreprise/formejuridique/add.do" params="{tiersId:${entreprise.id}}" link_class="add"/>
+				</td>
+			</tr>
+		</table>
+	</c:if>
+
+	<display:table name="${entreprise.formesJuridiques}" id="formeJuridique" requestURI="edit.do" class="display" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator">
 		<display:column style="width:10%" sortable="true" titleKey="label.date.debut" sortProperty="dateDebut">
-			<unireg:regdate regdate="${formesJuridiques.dateDebut}"/>
+			<unireg:regdate regdate="${formeJuridique.dateDebut}"/>
 		</display:column>
 		<display:column style="width:10%" sortable="true" titleKey="label.date.fin" sortProperty="dateFin">
-			<unireg:regdate regdate="${formesJuridiques.dateFin}"/>
+			<unireg:regdate regdate="${formeJuridique.dateFin}"/>
 		</display:column>
 		<display:column style="width:60%" sortable="true" titleKey="label.forme.juridique" property="type"/>
 		<display:column style="width:10%" titleKey="label.source">
-			<fmt:message key="option.entreprise.source.${formesJuridiques.source}"/>
+			<fmt:message key="option.entreprise.source.${formeJuridique.source}"/>
 		</display:column>
 		<display:column style="width:10%">
-			<c:if test="${formesJuridiques.source == 'FISCALE'}" >
-				<unireg:consulterLog entityNature="DonneeCivileEntreprise" entityId="${formesJuridiques.id}"/>
+			<c:if test="${formeJuridique.source == 'FISCALE'}" >
+				<c:if test="${page == 'visu' }">
+					<unireg:consulterLog entityNature="DonneeCivileEntreprise" entityId="${formeJuridique.id}"/>
+				</c:if>
+				<c:if test="${page == 'edit' }">
+					<c:if test="${!formeJuridique.annule}">
+						<unireg:linkTo name="" action="/civil/entreprise/formejuridique/edit.do" method="GET" params="{formeJuridiqueId:${formeJuridique.id}}" link_class="edit" title="Edition de la forme juridique" />
+						<c:if test="${formeJuridique.dernierElement}">
+							<unireg:linkTo name="" action="/civil/entreprise/formejuridique/cancel.do" method="POST" params="{formeJuridiqueId:${formeJuridique.id}}" link_class="delete"
+							               title="Annulation de forme juridique" confirm="Voulez-vous vraiment annuler cette forme juridique ?"/>
+						</c:if>
+					</c:if>
+				</c:if>
 			</c:if>
 		</display:column>
 	</display:table>
@@ -179,28 +205,51 @@
 <fieldset>
 	<legend><span><fmt:message key="label.capitaux"/></span></legend>
 
-	<input class="noprint" id="showCapitauxHisto" type="checkbox" onclick="refreshCapitauxTable(this);" />
-	<label class="noprint" for="showCapitauxHisto"><fmt:message key="label.historique" /></label>
+	<c:if test="${page == 'visu' }">
+		<input class="noprint" id="showCapitauxHisto" type="checkbox" onclick="refreshCapitauxTable(this);" />
+		<label class="noprint" for="showCapitauxHisto"><fmt:message key="label.historique" /></label>
+	</c:if>
+
+	<c:if test="${page == 'edit' }"> <%--&& autorisations.donneesCiviles--%>
+		<table border="0">
+			<tr>
+				<td>
+					<unireg:linkTo name="Ajouter" title="Ajouter un capital" action="/civil/entreprise/capital/add.do" params="{tiersId:${entreprise.id}}" link_class="add"/>
+				</td>
+			</tr>
+		</table>
+	</c:if>
 
 	<fmt:setLocale value="ch" scope="page"/>
-	<display:table name="${entreprise.capitaux}" id="capitaux" requestURI="edit.do" class="display">
+	<display:table name="${entreprise.capitaux}" id="capital" requestURI="edit.do" class="display" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator">
 		<display:column style="width:10%" sortable="true" titleKey="label.date.debut" sortProperty="dateDebut">
-			<unireg:regdate regdate="${capitaux.dateDebut}"/>
+			<unireg:regdate regdate="${capital.dateDebut}"/>
 		</display:column>
 		<display:column style="width:10%" sortable="true" titleKey="label.date.fin" sortProperty="dateFin">
-			<unireg:regdate regdate="${capitaux.dateFin}"/>
+			<unireg:regdate regdate="${capital.dateFin}"/>
 		</display:column>
 		<display:column style="width:60%" sortable="true" titleKey="label.capital.libere" sortProperty="capitalLibere.montant">
-			<c:if test="${capitaux.capitalLibere != null}">
-				<unireg:currency value="${capitaux.capitalLibere.montant}"/>&nbsp;<c:out value="${capitaux.capitalLibere.monnaie}"/>
+			<c:if test="${capital.capitalLibere != null}">
+				<unireg:currency value="${capital.capitalLibere.montant}"/>&nbsp;<c:out value="${capital.capitalLibere.monnaie}"/>
 			</c:if>
 		</display:column>
 		<display:column style="width:10%" titleKey="label.source">
-			<fmt:message key="option.entreprise.source.${capitaux.source}"/>
+			<fmt:message key="option.entreprise.source.${capital.source}"/>
 		</display:column>
-		<display:column style="width:10%" class="action">
-			<c:if test="${capitaux.source == 'FISCALE'}" >
-				<unireg:consulterLog entityNature="DonneeCivileEntreprise" entityId="${capitaux.id}"/>
+		<display:column style="width:10%">
+			<c:if test="${capital.source == 'FISCALE'}" >
+				<c:if test="${page == 'visu' }">
+					<unireg:consulterLog entityNature="DonneeCivileEntreprise" entityId="${capital.id}"/>
+				</c:if>
+				<c:if test="${page == 'edit' }">
+					<c:if test="${!capital.annule}">
+						<unireg:linkTo name="" action="/civil/entreprise/capital/edit.do" method="GET" params="{capitalId:${capital.id}}" link_class="edit" title="Edition du capital" />
+						<c:if test="${capital.dernierElement}">
+							<unireg:linkTo name="" action="/civil/entreprise/capital/cancel.do" method="POST" params="{capitalId:${capital.id}}" link_class="delete"
+							               title="Annulation d'un capital" confirm="Voulez-vous vraiment annuler ce capital ?"/>
+						</c:if>
+					</c:if>
+				</c:if>
 			</c:if>
 		</display:column>
 	</display:table>
@@ -288,7 +337,7 @@
 		 */
 		function refreshFormesJuridiquesTable(checkbox) {
 			var showHisto = $(checkbox).attr('checked');
-			var table = $('#formesJuridiques');
+			var table = $('#formeJuridique');
 			Histo.refreshHistoTable(showHisto, table, 1);
 		}
 

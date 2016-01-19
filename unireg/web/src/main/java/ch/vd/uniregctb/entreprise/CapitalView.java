@@ -23,6 +23,8 @@ public class CapitalView implements Sourced<Source>, Annulable, CollatableDateRa
 	private final MontantMonetaireView capitalLibere;
 	private final Source source;
 	private final boolean annule;
+	private boolean dernierElement;
+
 
 	public CapitalView(CapitalHisto capital) {
 		this(capital.getId(), capital.isAnnule(), capital.getDateDebut(), capital.getDateFin(), capital.getMontant(), capital.getSource());
@@ -39,6 +41,7 @@ public class CapitalView implements Sourced<Source>, Annulable, CollatableDateRa
 		this.capitalLibere = capitalLibere;
 		this.source = source;
 		this.annule = annule;
+		this.dernierElement = false;
 	}
 
 	@Nullable
@@ -101,5 +104,13 @@ public class CapitalView implements Sourced<Source>, Annulable, CollatableDateRa
 	@Override
 	public boolean isAnnule() {
 		return annule;
+	}
+
+	public boolean isDernierElement() {
+		return dernierElement;
+	}
+
+	public void setDernierElement(boolean dernierElement) {
+		this.dernierElement = dernierElement;
 	}
 }

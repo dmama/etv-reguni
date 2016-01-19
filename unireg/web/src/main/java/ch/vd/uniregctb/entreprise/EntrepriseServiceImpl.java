@@ -170,6 +170,7 @@ public class EntrepriseServiceImpl implements EntrepriseService {
 		}
 		Collections.sort(views, new DateRangeComparator<CapitalView>());
 		Collections.reverse(views);
+		views.get(0).setDernierElement(true);
 		return views;
 	}
 
@@ -183,6 +184,7 @@ public class EntrepriseServiceImpl implements EntrepriseService {
 		}
 		Collections.sort(list, new DateRangeComparator<FormeJuridiqueView>());
 		Collections.reverse(list);
+		list.get(0).setDernierElement(true);
 		return list;
 	}
 
@@ -210,6 +212,7 @@ public class EntrepriseServiceImpl implements EntrepriseService {
 		}
 		Collections.sort(list, new DateRangeComparator<SiegeView>());
 		Collections.reverse(list);
+		list.get(0).setDernierElement(true);
 		return list;
 	}
 }

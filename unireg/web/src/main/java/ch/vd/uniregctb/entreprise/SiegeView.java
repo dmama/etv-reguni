@@ -20,6 +20,7 @@ public class SiegeView implements Sourced<Source>, DateRange, Annulable {
 	private final int noOfsSiege;
 	private final TypeNoOfs type;
 	private final Source source;
+	private boolean dernierElement;
 
 	public SiegeView(DomicileHisto siege) {
 		this.id = siege.getId();
@@ -29,6 +30,7 @@ public class SiegeView implements Sourced<Source>, DateRange, Annulable {
 		this.type = siege.getTypeAutoriteFiscale() == TypeAutoriteFiscale.PAYS_HS ? TypeNoOfs.PAYS_HS : TypeNoOfs.COMMUNE_CH;
 		this.annule = siege.isAnnule();
 		this.source = siege.getSource();
+		this.dernierElement = false;
 	}
 
 	public Long getId() {
@@ -66,5 +68,13 @@ public class SiegeView implements Sourced<Source>, DateRange, Annulable {
 	@Override
 	public Source getSource() {
 		return source;
+	}
+
+	public boolean isDernierElement() {
+		return dernierElement;
+	}
+
+	public void setDernierElement(boolean dernierElement) {
+		this.dernierElement = dernierElement;
 	}
 }

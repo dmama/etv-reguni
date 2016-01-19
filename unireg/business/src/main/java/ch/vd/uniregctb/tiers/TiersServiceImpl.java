@@ -5521,6 +5521,12 @@ public class TiersServiceImpl implements TiersService {
 	}
 
 	@Override
+	public void updateFormeJuridiqueFiscale(FormeJuridiqueFiscaleEntreprise fj, FormeJuridiqueEntreprise formeJuridique) {
+		annuleFormeJuridiqueFiscale(fj);
+		addFormeJuridiqueFiscale(fj.getEntreprise(), formeJuridique, fj.getDateDebut(), fj.getDateFin());
+	}
+
+	@Override
 	public void closeFormeJuridiqueFiscale(FormeJuridiqueFiscaleEntreprise formeJuridique, RegDate dateFin) {
 		Assert.notNull(formeJuridique);
 		formeJuridique.setDateFin(dateFin);
@@ -5552,7 +5558,9 @@ public class TiersServiceImpl implements TiersService {
 	}
 
 	@Override
-	public CapitalFiscalEntreprise addCapitalFiscal(Entreprise e, MontantMonetaire montant, RegDate dateDebut, RegDate dateFin) {
+	public CapitalFiscalEntreprise addCapitalFiscal(Entreprise e, Long montant, String monnaie, RegDate dateDebut, RegDate dateFin) {
+		Assert.notNull(montant);
+		Assert.notNull(monnaie);
 
 		CapitalFiscalEntreprise existing = getDernierCapitalFiscal(e);
 
@@ -5564,7 +5572,13 @@ public class TiersServiceImpl implements TiersService {
 			}
 		}
 
-		return (CapitalFiscalEntreprise) tiersDAO.addAndSave(e, new CapitalFiscalEntreprise(dateDebut, dateFin, montant));
+		return (CapitalFiscalEntreprise) tiersDAO.addAndSave(e, new CapitalFiscalEntreprise(dateDebut, dateFin, new MontantMonetaire(montant, monnaie)));
+	}
+
+	@Override
+	public void updateCapitalFiscal(CapitalFiscalEntreprise cf, Long montant, RegDate dateFin) {
+		annuleCapitalFiscal(cf);
+		addCapitalFiscal(cf.getEntreprise(), montant, cf.getMontant().getMonnaie(), cf.getDateDebut(), cf.getDateFin());
 	}
 
 	@Override

@@ -1597,7 +1597,7 @@ public interface TiersService {
 	RaisonSocialeFiscaleEntreprise addRaisonSocialeFiscale(Entreprise e, String raisonSociale, RegDate dateDebut, RegDate dateFin);
 
 	/**
-	 * Met à jour la raison sociale de l'entreprise. Seule le libellé peut être changer, car on ne
+	 * Met à jour la raison sociale de l'entreprise. Seule le libellé peut être changé, car on ne
 	 * peut fermer une raison sociale qu'en ouvrant la suivante.
 	 * @param rs la raison sociale mise à jour
 	 * @param raisonSociale le libellé de la nouvelle raison sociale
@@ -1628,6 +1628,14 @@ public interface TiersService {
 	FormeJuridiqueFiscaleEntreprise addFormeJuridiqueFiscale(Entreprise e, FormeJuridiqueEntreprise formeJuridique, RegDate dateDebut, RegDate dateFin);
 
 	/**
+	 * Met à jour la forme juridique de l'entreprise. Seule la forme peut être changée, car on ne
+	 * peut fermer une forme juridique qu'en ouvrant la suivante.
+	 * @param fj la forme juridique mise à jour
+	 * @param formeJurique le libellé de la nouvelle forme juridique
+	 */
+	void updateFormeJuridiqueFiscale(FormeJuridiqueFiscaleEntreprise fj, FormeJuridiqueEntreprise formeJuridique);
+
+	/**
 	 * Ferme la forme juridique à la date indiquée
 	 * @param raisonSociale la raison forme juridique
 	 * @param dateFin le dernier jour de validité
@@ -1648,7 +1656,16 @@ public interface TiersService {
 	 * @param dateFin la date de fin, ou null si la durée de validité est indéterminée
 	 * @return le capital nouvellement créé
 	 */
-	CapitalFiscalEntreprise addCapitalFiscal(Entreprise e, MontantMonetaire montant, RegDate dateDebut, RegDate dateFin);
+	CapitalFiscalEntreprise addCapitalFiscal(Entreprise e, Long montant, String monnaie, RegDate dateDebut, RegDate dateFin);
+
+	/**
+	 * Met à jour le capital de l'entreprise. On peut changer le montant et la date de fin, mais pas
+	 * la monnaie, pour éviter les risques de confusion.
+	 * @param cf le capital à mettre à jour
+	 * @param montant un nouveau montant
+	 * @param dateFin une nouvelle date de fin
+	 */
+	void updateCapitalFiscal(CapitalFiscalEntreprise cf, Long montant, RegDate dateFin);
 
 	/**
 	 * Ferme le capital à la date indiquée
