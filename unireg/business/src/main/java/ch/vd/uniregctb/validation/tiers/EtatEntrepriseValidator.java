@@ -24,6 +24,9 @@ public class EtatEntrepriseValidator extends EntityValidatorImpl<EtatEntreprise>
 			if (entity.getType() == null) {
 				vr.addError("Le type d'état d'entreprise est obligatoire.");
 			}
+			if (entity.getGeneration() == null) {
+				vr.addError("Le type de génération est obligatoire.");
+			}
 		}
 		return vr;
 	}

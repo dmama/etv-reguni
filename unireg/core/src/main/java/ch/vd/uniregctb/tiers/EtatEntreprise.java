@@ -22,6 +22,7 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.common.HibernateEntity;
 import ch.vd.uniregctb.common.LengthConstants;
 import ch.vd.uniregctb.type.TypeEtatEntreprise;
+import ch.vd.uniregctb.type.TypeGenerationEtatEntreprise;
 
 @Entity
 @Table(name = "ETAT_ENTREPRISE")
@@ -30,6 +31,7 @@ public class EtatEntreprise extends HibernateEntity implements LinkedEntity, Com
 	private Long id;
 	private RegDate dateObtention;
 	private TypeEtatEntreprise type;
+	private TypeGenerationEtatEntreprise generation;
 	private Entreprise entreprise;
 
 	@Transient
@@ -67,6 +69,16 @@ public class EtatEntreprise extends HibernateEntity implements LinkedEntity, Com
 
 	public void setType(TypeEtatEntreprise type) {
 		this.type = type;
+	}
+
+	@Column(name = "TYPE_GENERATION", length = LengthConstants.ETATENT_TYPE_GENERATION, nullable = false)
+	@Enumerated(value = EnumType.STRING)
+	public TypeGenerationEtatEntreprise getGeneration() {
+		return generation;
+	}
+
+	public void setGeneration(TypeGenerationEtatEntreprise generation) {
+		this.generation = generation;
 	}
 
 	@ManyToOne

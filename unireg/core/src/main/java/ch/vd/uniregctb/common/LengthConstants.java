@@ -145,6 +145,7 @@ public abstract class LengthConstants {
 	public static final int FLAG_ENTREPRISE_TYPE = 31;
 
 	public static final int ETATENT_ETAT = 20;
+	public static final int ETATENT_TYPE_GENERATION = 11;
 
 	public static final int PARAMETRE_PF_TYPE = 5;
 
