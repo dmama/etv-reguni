@@ -155,6 +155,7 @@
 		<property name="registrar" ref="migrator"/>
 		<property name="uniregTransactionManager" ref="uniregTransactionManager"/>
 		<property name="uniregSessionFactory" ref="uniregSessionFactory"/>
+		<property name="periodeFiscaleService" ref="periodeFiscaleService"/>
 	</bean>
 
 </beans>

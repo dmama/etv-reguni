@@ -72,4 +72,10 @@
 
 	<bean id="uniregCacheManager" class="ch.vd.uniregctb.migration.pm.utils.MockCacheManager"/>
 
+	<bean id="periodeFiscaleService" class="ch.vd.uniregctb.parametrage.PeriodeFiscaleServiceImpl">
+		<property name="transactionManager" ref="uniregTransactionManager"/>
+		<property name="dao" ref="periodeFiscaleDAO"/>
+		<property name="parametreAppService" ref="parametreAppService"/>
+	</bean>
+
 </beans>

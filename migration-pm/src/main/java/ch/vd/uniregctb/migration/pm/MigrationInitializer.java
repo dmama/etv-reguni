@@ -3,8 +3,8 @@ package ch.vd.uniregctb.migration.pm;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.concurrent.CompletionService;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorCompletionService;
@@ -13,6 +13,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.hibernate.Query;
@@ -32,6 +33,7 @@ import ch.vd.uniregctb.common.StandardBatchIterator;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.migration.pm.engine.probe.ProgressMeasurementProbe;
 import ch.vd.uniregctb.migration.pm.indexeur.NonHabitantIndex;
+import ch.vd.uniregctb.parametrage.PeriodeFiscaleService;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.transaction.TransactionTemplate;
 
@@ -45,6 +47,7 @@ public class MigrationInitializer implements InitializingBean {
 
 	private SessionFactory uniregSessionFactory;
 	private PlatformTransactionManager uniregTransactionManager;
+	private PeriodeFiscaleService periodeFiscaleService;
 	private NonHabitantIndex nonHabitantIndex;
 	private boolean nonHabitantIndexToBeCleared = false;
 	private int nbThreadsIndexation = 1;
@@ -60,6 +63,10 @@ public class MigrationInitializer implements InitializingBean {
 
 	public void setUniregTransactionManager(PlatformTransactionManager uniregTransactionManager) {
 		this.uniregTransactionManager = uniregTransactionManager;
+	}
+
+	public void setPeriodeFiscaleService(PeriodeFiscaleService periodeFiscaleService) {
+		this.periodeFiscaleService = periodeFiscaleService;
 	}
 
 	public void setNonHabitantIndex(NonHabitantIndex nonHabitantIndex) {
@@ -172,14 +179,25 @@ public class MigrationInitializer implements InitializingBean {
 				final Query query = currentSession.createQuery("select pf from PeriodeFiscale pf");
 				//noinspection unchecked
 				final List<PeriodeFiscale> pfExistantes = Optional.ofNullable((List<PeriodeFiscale>) query.list()).orElse(Collections.emptyList());
-				final Set<Integer> anneesCouvertes = pfExistantes.stream().map(PeriodeFiscale::getAnnee).collect(Collectors.toSet());
+				final Map<Integer, PeriodeFiscale> pfParAnnee = pfExistantes.stream()
+						.collect(Collectors.toMap(PeriodeFiscale::getAnnee, Function.identity()));
 				for (int annee = PREMIERE_PF ; annee <= RegDate.get().year() ; ++ annee) {
-					if (!anneesCouvertes.contains(annee)) {
+					if (!pfParAnnee.containsKey(annee)) {
 						LOGGER.info("Création de la PF manquante " + annee + ".");
 						final PeriodeFiscale pf = new PeriodeFiscale();
 						pf.setAnnee(annee);
-						pf.setDefaultPeriodeFiscaleParametres();
-						currentSession.save(pf);
+
+						if (pfParAnnee.containsKey(annee - 1)) {
+							final PeriodeFiscale precedente = pfParAnnee.get(annee - 1);
+							periodeFiscaleService.copyParametres(precedente, pf);
+							periodeFiscaleService.copyModelesDocuments(precedente, pf);
+						}
+						else {
+							pf.setDefaultPeriodeFiscaleParametres();
+						}
+
+						final PeriodeFiscale saved = (PeriodeFiscale) currentSession.merge(pf);
+						pfParAnnee.put(annee, saved);
 					}
 				}
 			});
