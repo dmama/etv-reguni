@@ -58,6 +58,73 @@ public class PeriodeFiscaleServiceImpl implements PeriodeFiscaleService, Initial
 		}
 	}
 
+	@Override
+	public void copyParametres(PeriodeFiscale source, PeriodeFiscale destination) {
+		// rien à faire
+		if (source == destination) {
+			return;
+		}
+
+		// nettoyage de la destination
+		if (destination.getParametrePeriodeFiscale() != null) {
+			destination.getParametrePeriodeFiscale().clear();
+		}
+
+		// si rien dans la source, alors c'est tout bon
+		if (source.getParametrePeriodeFiscale() == null || source.getParametrePeriodeFiscale().isEmpty()) {
+			return;
+		}
+
+		// recopie adaptative
+		final Map<Class<? extends ParametrePeriodeFiscale>, ParametrePeriodeFiscalInitializer<?>> initializers = new HashMap<>();
+		addInitializerMapping(initializers, ParametrePeriodeFiscalePP.class, new ParametrePeriodeFiscalePPInitializer());
+		addInitializerMapping(initializers, ParametrePeriodeFiscalePM.class, new ParametrePeriodeFiscalePMInitializer());
+
+		for (ParametrePeriodeFiscale ppf : source.getParametrePeriodeFiscale()) {
+			final ParametrePeriodeFiscale newParam = initializeNewParameter(initializers, ppf, destination);
+			if (newParam != null) {
+				destination.addParametrePeriodeFiscale(newParam);
+			}
+		}
+	}
+
+	@Override
+	public void copyModelesDocuments(PeriodeFiscale source, PeriodeFiscale destination) {
+		// rien à faire
+		if (source == destination) {
+			return;
+		}
+
+		// nettoyage de la destination
+		if (destination.getModelesDocument() != null) {
+			destination.getModelesDocument().clear();
+		}
+
+		// si rien dans la source, alors c'est tout bon
+		if (source.getModelesDocument() == null || source.getModelesDocument().isEmpty()) {
+			return;
+		}
+
+		// copie des modèles et des feuilles associées
+		for (ModeleDocument md : source.getModelesDocument()) {
+			final ModeleDocument newMd = new ModeleDocument();
+			newMd.setPeriodeFiscale(destination);
+			newMd.setTypeDocument(md.getTypeDocument());
+
+			// Copie des modeles de feuille de document
+			final Set<ModeleFeuilleDocument> setModeleFeuilleDocument = new HashSet<>(md.getModelesFeuilleDocument().size());
+			for(ModeleFeuilleDocument mfd : md.getModelesFeuilleDocument()) {
+				final ModeleFeuilleDocument newMfd = new ModeleFeuilleDocument();
+				newMfd.setModeleDocument(newMd);
+				newMfd.setIntituleFeuille(mfd.getIntituleFeuille());
+				newMfd.setNumeroFormulaire(mfd.getNumeroFormulaire());
+				setModeleFeuilleDocument.add(newMfd);
+			}
+			newMd.setModelesFeuilleDocument(setModeleFeuilleDocument);
+			destination.addModeleDocument(newMd);
+		}
+	}
+
 	private interface ParametrePeriodeFiscalInitializer<T extends ParametrePeriodeFiscale> {
 		T createFrom(T previous, PeriodeFiscale nvellePeriodeFiscale);
 	}
@@ -145,16 +212,7 @@ public class PeriodeFiscaleServiceImpl implements PeriodeFiscaleService, Initial
 
 		// Copie des paramètres
 		if (periodeFiscalePrecedente.getParametrePeriodeFiscale() != null) {
-			final Map<Class<? extends ParametrePeriodeFiscale>, ParametrePeriodeFiscalInitializer<?>> initializers = new HashMap<>();
-			addInitializerMapping(initializers, ParametrePeriodeFiscalePP.class, new ParametrePeriodeFiscalePPInitializer());
-			addInitializerMapping(initializers, ParametrePeriodeFiscalePM.class, new ParametrePeriodeFiscalePMInitializer());
-
-			for (ParametrePeriodeFiscale ppf : periodeFiscalePrecedente.getParametrePeriodeFiscale()) {
-				final ParametrePeriodeFiscale newParam = initializeNewParameter(initializers, ppf, nllePeriodeFiscale);
-				if (newParam != null) {
-					nllePeriodeFiscale.addParametrePeriodeFiscale(newParam);
-				}
-			}
+			copyParametres(periodeFiscalePrecedente, nllePeriodeFiscale);
 		}
 		else {
 			LOGGER.warn("la période fiscale " + periodeFiscalePrecedente.getAnnee() + " n'a pas de paramètres.");
@@ -162,25 +220,7 @@ public class PeriodeFiscaleServiceImpl implements PeriodeFiscaleService, Initial
 
 		// Copie des modèles de document
 		if (periodeFiscalePrecedente.getModelesDocument() != null) {
-			Set<ModeleDocument> setModeleDocument = new HashSet<>(periodeFiscalePrecedente.getModelesDocument().size());
-			for (ModeleDocument md : periodeFiscalePrecedente.getModelesDocument()) {
-				ModeleDocument newMd = new ModeleDocument();
-				newMd.setPeriodeFiscale(nllePeriodeFiscale);
-				newMd.setTypeDocument(md.getTypeDocument());
-
-				// Copie des modeles de feuille de document
-				Set<ModeleFeuilleDocument> setModeleFeuilleDocument = new HashSet<>(md.getModelesFeuilleDocument().size());
-				for(ModeleFeuilleDocument mfd : md.getModelesFeuilleDocument()) {
-					ModeleFeuilleDocument newMfd = new ModeleFeuilleDocument();
-					newMfd.setModeleDocument(newMd);
-					newMfd.setIntituleFeuille(mfd.getIntituleFeuille());
-					newMfd.setNumeroFormulaire(mfd.getNumeroFormulaire());
-					setModeleFeuilleDocument.add(newMfd);
-				}
-				newMd.setModelesFeuilleDocument(setModeleFeuilleDocument);
-				setModeleDocument.add(newMd);
-			}
-			nllePeriodeFiscale.setModelesDocument(setModeleDocument);
+			copyModelesDocuments(periodeFiscalePrecedente, nllePeriodeFiscale);
 		}
 		else {
 			LOGGER.warn("la période fiscale " + periodeFiscalePrecedente.getAnnee() + " n'a pas de modèles de document.");
