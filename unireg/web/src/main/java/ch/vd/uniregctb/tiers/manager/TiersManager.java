@@ -51,7 +51,6 @@ import ch.vd.uniregctb.declaration.DelaiDeclaration;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
 import ch.vd.uniregctb.declaration.Periodicite;
 import ch.vd.uniregctb.entreprise.EntrepriseService;
-import ch.vd.uniregctb.entreprise.EntrepriseView;
 import ch.vd.uniregctb.general.manager.TiersGeneralManager;
 import ch.vd.uniregctb.general.view.TiersGeneralView;
 import ch.vd.uniregctb.iban.IbanValidator;
@@ -183,13 +182,6 @@ public class TiersManager implements MessageSourceAware {
 			individuView.setDateDernierChgtEtatCivil(habitant.getDateDeces());
 		}
 		return individuView;
-	}
-
-	/**
-	 * Recupere l'entreprise correspondant au tiers
-	 */
-	protected EntrepriseView getEntrepriseView(Entreprise entreprise) {
-		return getEntrepriseService().get(entreprise);
 	}
 
 	/**
@@ -572,7 +564,7 @@ public class TiersManager implements MessageSourceAware {
 			tiersView.setDateBouclementFutur(courant.getDateFin());
 		}
 
-		tiersView.setEntreprise(getEntrepriseView(entreprise)); // OrganisationView
+		tiersView.setEntreprise(getEntrepriseService().getEntreprise(entreprise)); // OrganisationView
 	}
 
 	/**
@@ -580,9 +572,7 @@ public class TiersManager implements MessageSourceAware {
 	 */
 	protected void setEtablissement(TiersView tiersView, Etablissement etb) {
 		tiersView.setTiers(Objects.requireNonNull(etb));
-		final List<DomicileEtablissementView> views = getDomicilesEtablissement(tiersService.getDomiciles(etb));
-		Collections.sort(views, new ReverseComparator<>(new DateRangeComparator<>()));
-		tiersView.setDomicilesEtablissement(views);
+		tiersView.setEtablissement(entrepriseService.getEtablissement(etb));
 	}
 
 	private List<DomicileEtablissementView> getDomicilesEtablissement(List<DomicileHisto> domiciles) {

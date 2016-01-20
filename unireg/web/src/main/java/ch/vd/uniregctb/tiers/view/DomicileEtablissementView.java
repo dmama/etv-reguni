@@ -19,6 +19,7 @@ public class DomicileEtablissementView implements Sourced<Source>, DateRange, An
 	private final RegDate dateDebut;
 	private final RegDate dateFin;
 	private final Source source;
+	private boolean dernierElement;
 
 	public DomicileEtablissementView(DomicileHisto domicile) {
 		this.id = domicile.getId();
@@ -28,6 +29,7 @@ public class DomicileEtablissementView implements Sourced<Source>, DateRange, An
 		this.dateDebut = domicile.getDateDebut();
 		this.dateFin = domicile.getDateFin();
 		this.source = domicile.getSource();
+		this.dernierElement = false;
 	}
 
 	@Override
@@ -65,5 +67,13 @@ public class DomicileEtablissementView implements Sourced<Source>, DateRange, An
 	@Override
 	public Source getSource() {
 		return source;
+	}
+
+	public boolean isDernierElement() {
+		return dernierElement;
+	}
+
+	public void setDernierElement(boolean dernierElement) {
+		this.dernierElement = dernierElement;
 	}
 }

@@ -128,7 +128,7 @@ public class CivilEntrepriseEditController {
 			if (!auth.isDonneesCiviles()) {
 				throw new AccessDeniedException("Vous ne possédez pas les droits IfoSec d'édition d'entreprises.");
 			}
-			final EntrepriseView view = entrepriseService.get((Entreprise) tiers);
+			final EntrepriseView view = entrepriseService.getEntreprise((Entreprise) tiers);
 			return showEditEntreprise(model, id, view);
 		}
 		else {

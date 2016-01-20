@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.entreprise;
 
 import ch.vd.uniregctb.tiers.Entreprise;
+import ch.vd.uniregctb.tiers.Etablissement;
 
 /**
  *  Re-organisation des informations de l'entreprise pour l'affichage Web
@@ -15,5 +16,12 @@ public interface EntrepriseService {
 	 *
 	 * @return un objet EntrepriseView
 	 */
-	EntrepriseView get(Entreprise entreprise) ;
+	EntrepriseView getEntreprise(Entreprise entreprise) ;
+
+	/**
+	 * Alimente une vue EtablissementView en fonction du numero d'etablissement
+	 *
+	 * @return un objet EtablissementView
+	 */
+	EtablissementView getEtablissement(Etablissement etablissement);
 }

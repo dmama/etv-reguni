@@ -13,6 +13,7 @@ import org.jetbrains.annotations.Nullable;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.di.view.DeclarationView;
 import ch.vd.uniregctb.entreprise.EntrepriseView;
+import ch.vd.uniregctb.entreprise.EtablissementView;
 import ch.vd.uniregctb.general.view.TiersGeneralView;
 import ch.vd.uniregctb.individu.IndividuView;
 import ch.vd.uniregctb.lr.view.ListeRecapDetailView;
@@ -100,6 +101,7 @@ public class TiersView {
 
 	@Deprecated
 	private EntrepriseView entreprise;
+	private EtablissementView etablissement;
 
 	private List<RegimeFiscalView> regimesFiscauxVD;
 	private List<RegimeFiscalView> regimesFiscauxCH;
@@ -299,6 +301,14 @@ public class TiersView {
 	@Deprecated
 	public void setEntreprise(EntrepriseView entreprise) {
 		this.entreprise = entreprise;
+	}
+
+	public EtablissementView getEtablissement() {
+		return etablissement;
+	}
+
+	public void setEtablissement(EtablissementView etablissement) {
+		this.etablissement = etablissement;
 	}
 
 	public List<RegimeFiscalView> getRegimesFiscauxVD() {

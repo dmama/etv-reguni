@@ -14,16 +14,19 @@ import ch.vd.unireg.interfaces.organisation.data.DateRanged;
 import ch.vd.unireg.interfaces.organisation.data.DonneesRC;
 import ch.vd.unireg.interfaces.organisation.data.DonneesRegistreIDE;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
+import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.interfaces.service.ServiceOrganisationService;
 import ch.vd.uniregctb.tiers.CapitalHisto;
 import ch.vd.uniregctb.tiers.DomicileHisto;
 import ch.vd.uniregctb.tiers.Entreprise;
+import ch.vd.uniregctb.tiers.Etablissement;
 import ch.vd.uniregctb.tiers.EtatEntreprise;
 import ch.vd.uniregctb.tiers.FormeLegaleHisto;
 import ch.vd.uniregctb.tiers.IdentificationEntreprise;
 import ch.vd.uniregctb.tiers.RaisonSocialeHisto;
 import ch.vd.uniregctb.tiers.TiersService;
+import ch.vd.uniregctb.tiers.view.DomicileEtablissementView;
 import ch.vd.uniregctb.tiers.view.EtatEntrepriseView;
 
 /**
@@ -55,13 +58,8 @@ public class EntrepriseServiceImpl implements EntrepriseService {
 		return lastElement.getPayload();
 	}
 
-	/**
-	 * Alimente une vue EntrepriseView en fonction du numero d'entreprise
-	 *
-	 * @return un objet EntrepriseView
-	 */
 	@Override
-	public EntrepriseView get(Entreprise entreprise) {
+	public EntrepriseView getEntreprise(Entreprise entreprise) {
 
 		EntrepriseView entrepriseView = new EntrepriseView();
 
@@ -133,6 +131,39 @@ public class EntrepriseServiceImpl implements EntrepriseService {
 		entrepriseView.setEtats(getEtats(etats));
 
 		return entrepriseView;
+	}
+
+	@Override
+	public EtablissementView getEtablissement(Etablissement etablissement) {
+
+		EtablissementView etablissementView = new EtablissementView();
+		etablissementView.setId(etablissement.getNumero());
+
+		if (etablissement.isConnuAuCivil()) {
+			SiteOrganisation site = tiersService.getSiteOrganisationPourEtablissement(etablissement);
+
+			etablissementView.setRaisonSociale(site.getNom(null));
+
+			List<DateRanged<String>> noIdeList = site.getNumeroIDE();
+			if (noIdeList != null && noIdeList.size() > 0) {
+				DateRanged<String> noIdeRange = noIdeList.get(0);
+				if (noIdeRange != null) {
+					etablissementView.setNumerosIDE(Collections.singletonList(noIdeRange.getPayload()));
+				}
+			}
+
+		} else {
+			final Set<IdentificationEntreprise> identificationsEntreprise = etablissement.getIdentificationsEntreprise();
+			final List<String> numerosIDE = getNumerosIDE(identificationsEntreprise);
+			etablissementView.setNumerosIDE(numerosIDE);
+
+			etablissementView.setRaisonSociale(etablissement.getRaisonSociale());
+		}
+		etablissementView.setEnseigne(etablissement.getEnseigne());
+
+		etablissementView.setDomiciles(getDomiciles(tiersService.getDomiciles(etablissement)));
+
+		return etablissementView;
 	}
 
 	@NotNull
@@ -211,6 +242,20 @@ public class EntrepriseServiceImpl implements EntrepriseService {
 			list.add(new SiegeView(siege));
 		}
 		Collections.sort(list, new DateRangeComparator<SiegeView>());
+		Collections.reverse(list);
+		list.get(0).setDernierElement(true);
+		return list;
+	}
+
+	private static List<DomicileEtablissementView> getDomiciles(List<DomicileHisto> domiciles) {
+		if (domiciles == null) {
+			return null;
+		}
+		final List<DomicileEtablissementView> list = new ArrayList<>(domiciles.size());
+		for (DomicileHisto siege : domiciles) {
+			list.add(new DomicileEtablissementView(siege));
+		}
+		Collections.sort(list, new DateRangeComparator<DomicileEtablissementView>());
 		Collections.reverse(list);
 		list.get(0).setDernierElement(true);
 		return list;

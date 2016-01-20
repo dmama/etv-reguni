@@ -1,48 +1,104 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="/WEB-INF/jsp/include/common.jsp" %>
+
+<%--@elvariable id="command" type="ch.vd.uniregctb.entreprise.TiersView"--%>
+<%--@elvariable id="etablissement" type="ch.vd.uniregctb.entreprise.EtablissementView"--%>
+
+<c:choose>
+	<c:when test="${command != null}">
+		<c:set var="etablissement" value="${command.etablissement}" /><%-- TiersVisuController --%>
+	</c:when>
+	<c:when test="${data != null}">
+		<c:set var="etablissement" value="${data}" /><%-- CivilEditController --%>
+	</c:when>
+</c:choose>
+<c:set var="page" value="${param.page}"/>
+<c:set var="nombreElementsTable" value="${param.nombreElementsTable}"/>
+
 <fieldset>
-	<legend><span><fmt:message key="label.etablissement" /></span></legend>
+	<legend><span><fmt:message key="label.etablissement"/></span></legend>
+
 	<unireg:nextRowClass reset="1"/>
 	<table>
 		<tr class="<unireg:nextRowClass/>" >
-			<td><fmt:message key="label.raison.sociale" />&nbsp;:</td>
-			<td><c:out value="${command.tiers.raisonSociale}"/></td>
+			<td width="20%"><fmt:message key="label.numero.ide"/>&nbsp;:</td>
+			<td>
+				<c:forEach var="noIde" items="${etablissement.numerosIDE}">
+					<unireg:numIDE numeroIDE="${noIde}"/><br/>
+				</c:forEach>
+			</td>
+		</tr>
+		<tr class="<unireg:nextRowClass/>">
+			<td width="20%"><fmt:message key="label.civil.registre"/>&nbsp;:</td>
+			<td>
+				<c:if test=" ${etablissement.connueAuCivil}">
+					<fmt:message key="label.connue.civil.rcent"/>
+				</c:if>
+				<c:if test="${! etablissement.connueAuCivil}">
+					<fmt:message key="label.inconnue.civil.rcent"/>
+				</c:if>
+			</td>
+		</tr>
+	</table>
+</fieldset>
+<fieldset>
+	<legend><span><fmt:message key="label.raisons.sociales" /></span></legend>
+	<unireg:nextRowClass reset="1"/>
+	<table>
+		<tr class="<unireg:nextRowClass/>" >
+			<td width="20%"><fmt:message key="label.raison.sociale" />&nbsp;:</td>
+			<td><c:out value="${command.etablissement.raisonSociale}"/></td>
 		</tr>
 		<tr class="<unireg:nextRowClass/>" >
-			<td><fmt:message key="label.nom.enseigne" />&nbsp;:</td>
-			<td><c:out value="${command.tiers.enseigne}"/></td>
+			<td width="20%"><fmt:message key="label.nom.enseigne" />&nbsp;:</td>
+			<td><c:out value="${command.etablissement.enseigne}"/></td>
 		</tr>
 	</table>
 </fieldset>
 <fieldset>
 	<legend><span><fmt:message key="label.etablissement.domiciles"/></span></legend>
 
-	<input class="noprint" id="showDomicilesHisto" type="checkbox" onclick="refreshDomicilesTable(this);" />
-	<label class="noprint" for="showDomicilesHisto"><fmt:message key="label.historique" /></label>
+	<c:if test="${page == 'visu' }">
+		<input class="noprint" id="showDomicilesHisto" type="checkbox" onclick="refreshDomicilesTable(this);" />
+		<label class="noprint" for="showDomicilesHisto"><fmt:message key="label.historique" /></label>
+	</c:if>
 
-	<display:table name="${command.domicilesEtablissement}" id="domicilesEtablissement" requestURI="visu.do" class="display">
-		<display:column sortable="true" titleKey="label.date.debut" sortProperty="dateDebut">
-			<unireg:regdate regdate="${domicilesEtablissement.dateDebut}"/>
+	<display:table name="${command.etablissement.domiciles}" id="domicile" requestURI="edit.do" class="display" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator">
+		<display:column style="width:10%" sortable="true" titleKey="label.date.debut" sortProperty="dateDebut">
+			<unireg:regdate regdate="${domicile.dateDebut}"/>
 		</display:column>
-		<display:column sortable="true" titleKey="label.date.fin" sortProperty="dateFin">
-			<unireg:regdate regdate="${domicilesEtablissement.dateFin}"/>
+		<display:column style="width:10%" sortable="true" titleKey="label.date.fin" sortProperty="dateFin">
+			<unireg:regdate regdate="${domicile.dateFin}"/>
 		</display:column>
-		<display:column sortable="true" titleKey="label.commune.pays">
+		<display:column style="width:60%" sortable="true" titleKey="label.commune.pays">
 			<c:choose>
-				<c:when test="${domicilesEtablissement.typeAutoriteFiscale == 'COMMUNE_OU_FRACTION_VD' || domicilesEtablissement.typeAutoriteFiscale == 'COMMUNE_HC'}">
-					<unireg:commune ofs="${domicilesEtablissement.numeroOfsAutoriteFiscale}" displayProperty="nomOfficielAvecCanton" date="${domicilesEtablissement.dateFin}"/>
+				<c:when test="${domicile.typeAutoriteFiscale == 'COMMUNE_OU_FRACTION_VD' || domicile.typeAutoriteFiscale == 'COMMUNE_HC'}">
+					<unireg:commune ofs="${domicile.numeroOfsAutoriteFiscale}" displayProperty="nomOfficielAvecCanton" date="${domicile.dateFin}"/>
 				</c:when>
-				<c:when test="${domicilesEtablissement.typeAutoriteFiscale == 'PAYS_HS' }">
-					<unireg:pays ofs="${domicilesEtablissement.numeroOfsAutoriteFiscale}" displayProperty="nomCourt" date="${domicilesEtablissement.dateFin}"/>
+				<c:when test="${domicile.typeAutoriteFiscale == 'PAYS_HS' }">
+					<unireg:pays ofs="${domicile.numeroOfsAutoriteFiscale}" displayProperty="nomCourt" date="${domicile.dateFin}"/>
 				</c:when>
 			</c:choose>
 		</display:column>
-		<display:column titleKey="label.source">
-			<fmt:message key="option.entreprise.source.${domicilesEtablissement.source}"/>
+		<display:column style="width:10%" titleKey="label.source">
+			<fmt:message key="option.entreprise.source.${domicile.source}"/>
 		</display:column>
-		<display:column>
-			<c:if test="${domicilesEtablissement.source == 'FISCALE'}" >
-				<unireg:consulterLog entityNature="DomicileEtablissement" entityId="${domicilesEtablissement.id}"/>
+		<display:column style="width:10%">
+			<c:if test="${domicile.source == 'FISCALE'}" >
+				<c:if test="${page == 'visu' }">
+					<unireg:consulterLog entityNature="DomicileEtablissement" entityId="${domicile.id}"/>
+				</c:if>
+<%--
+				<c:if test="${page == 'edit' }">
+					<c:if test="${!domicile.annule}">
+						<unireg:linkTo name="" action="/civil/etablissement/domicile/edit.do" method="GET" params="{domicileId:${domicile.id}}" link_class="edit" title="Edition du domicile" />
+						<c:if test="${domicile.dernierElement}">
+							<unireg:linkTo name="" action="/civil/etablissement/cancel.do" method="POST" params="{domicileId:${domicile.id}}" link_class="delete"
+							               title="Annulation du domicile" confirm="Voulez-vous vraiment annuler ce domicile ?"/>
+						</c:if>
+					</c:if>
+				</c:if>
+--%>
 			</c:if>
 		</display:column>
 	</display:table>
@@ -55,7 +111,7 @@
 	 */
 	function refreshDomicilesTable(checkbox) {
 		var showHisto = $(checkbox).attr('checked');
-		var table = $('#domicilesEtablissement');
+		var table = $('#domicile');
 		Histo.refreshHistoTable(showHisto, table, 1);
 	}
 

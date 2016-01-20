@@ -23,5 +23,10 @@
 			<jsp:param name="nombreElementsTable" value="0"/>
 		</jsp:include>
 	</c:when>
-	<c:when test="${command.natureTiers == 'Etablissement'}"><jsp:include page="etablissement.jsp"/></c:when>
+	<c:when test="${command.natureTiers == 'Etablissement'}">
+		<jsp:include page="etablissement.jsp">
+			<jsp:param name="page" value="visu"/>
+			<jsp:param name="nombreElementsTable" value="0"/>
+		</jsp:include>
+	</c:when>
 </c:choose>
