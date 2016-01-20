@@ -22,7 +22,7 @@
 		<table border="0">
 			<tr>
 				<td>
-					<unireg:raccourciModifier link="../entreprise/ide/edit.do?id=${etablissement.id}" tooltip="Modifier le numéro IDE" display="label.bouton.modifier"/>
+					<unireg:raccourciModifier link="../etablissement/ide/edit.do?id=${etablissement.id}" tooltip="Modifier le numéro IDE" display="label.bouton.modifier"/>
 				</td>
 			</tr>
 		</table>
