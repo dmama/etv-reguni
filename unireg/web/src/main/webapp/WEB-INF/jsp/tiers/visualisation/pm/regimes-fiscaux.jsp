@@ -11,10 +11,7 @@
 
 	<c:if test="${not empty command.regimesFiscauxVD}">
 	
-		<input class="noprint" id="showRegimesVDHisto" type="checkbox" onclick="refreshRegimesVDTable(this);" />
-		<label class="noprint" for="showRegimesVDHisto"><fmt:message key="label.historique" /></label>
-	
-		<display:table name="${command.regimesFiscauxVD}" id="regimesVD" requestURI="visu.do" class="display">
+		<display:table name="${command.regimesFiscauxVD}" id="regimesVD" requestURI="visu.do" class="display" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator">
 			<display:column sortable="true" titleKey="label.date.debut" sortProperty="dateDebut">
 				<unireg:regdate regdate="${regimesVD.dateDebut}"/>
 			</display:column>
@@ -42,10 +39,7 @@
 
 	<c:if test="${not empty command.regimesFiscauxCH}">
 	
-		<input class="noprint" id="showRegimesCHHisto" type="checkbox" onclick="refreshRegimesCHTable(this);" />
-		<label class="noprint" for="showRegimesCHHisto"><fmt:message key="label.historique" /></label>
-	
-		<display:table name="${command.regimesFiscauxCH}" id="regimesCH" requestURI="visu.do" class="display">
+		<display:table name="${command.regimesFiscauxCH}" id="regimesCH" requestURI="visu.do" class="display" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator">
 			<display:column sortable="true" titleKey="label.date.debut" sortProperty="dateDebut">
 				<unireg:regdate regdate="${regimesCH.dateDebut}"/>
 			</display:column>
@@ -63,29 +57,3 @@
 	</c:if>
 
 </fieldset>
-
-<script type="text/javascript">
-
-	/**
-	 * Affiche ou filtre les données historiques de la table des sièges
-	 */
-	function refreshRegimesVDTable(checkbox) {
-		var showHisto = $(checkbox).attr('checked');
-		var table = $('#regimesVD');
-		Histo.refreshHistoTable(showHisto, table, 1);
-	}
-
-	/**
-	 * Affiche ou filtre les données historiques de la table des sièges
-	 */
-	function refreshRegimesCHTable(checkbox) {
-		var showHisto = $(checkbox).attr('checked');
-		var table = $('#regimesCH');
-		Histo.refreshHistoTable(showHisto, table, 1);
-	}
-
-	// on rafraîchit toutes les tables une première fois à l'affichage de la page
-	refreshRegimesVDTable($('#showRegimesVDHisto'));
-	refreshRegimesCHTable($('#showRegimesCHHisto'));
-
-</script>

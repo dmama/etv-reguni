@@ -5,16 +5,19 @@ import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
+import ch.vd.uniregctb.common.Annulable;
 
-public class RegimeFiscalView implements DateRange {
+public class RegimeFiscalView implements DateRange, Annulable {
 
 	private final Long id;
-	private RegDate dateDebut;
-	private RegDate dateFin;
-	private TypeRegimeFiscal type;
+	private final RegDate dateDebut;
+	private final RegDate dateFin;
+	private final TypeRegimeFiscal type;
+	private final boolean annule;
 
-	public RegimeFiscalView(Long id, RegDate dateDebut, RegDate dateFin, TypeRegimeFiscal type) {
+	public RegimeFiscalView(Long id, boolean annule, RegDate dateDebut, RegDate dateFin, TypeRegimeFiscal type) {
 		this.id = id;
+		this.annule = annule;
 		this.dateDebut = dateDebut;
 		this.dateFin = dateFin;
 		this.type = type;
@@ -29,29 +32,22 @@ public class RegimeFiscalView implements DateRange {
 		return dateDebut;
 	}
 
-	public void setDateDebut(RegDate dateDebut) {
-		this.dateDebut = dateDebut;
-	}
-
 	@Override
 	public RegDate getDateFin() {
 		return dateFin;
-	}
-
-	public void setDateFin(RegDate dateFin) {
-		this.dateFin = dateFin;
 	}
 
 	public TypeRegimeFiscal getType() {
 		return type;
 	}
 
-	public void setType(TypeRegimeFiscal type) {
-		this.type = type;
-	}
-
 	@Override
 	public boolean isValidAt(RegDate date) {
 		return RegDateHelper.isBetween(date, dateDebut, dateFin, NullDateBehavior.LATEST);
+	}
+
+	@Override
+	public boolean isAnnule() {
+		return annule;
 	}
 }

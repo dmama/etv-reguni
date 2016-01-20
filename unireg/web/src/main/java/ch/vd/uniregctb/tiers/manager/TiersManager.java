@@ -524,7 +524,7 @@ public class TiersManager implements MessageSourceAware {
 			final List<RegimeFiscalView> vd = new ArrayList<>(regimes.size());
 			final List<RegimeFiscalView> ch = new ArrayList<>(regimes.size());
 			for (RegimeFiscal regime : regimes) {
-				final RegimeFiscalView rfView = new RegimeFiscalView(regime.getId(), regime.getDateDebut(), regime.getDateFin(), mapRegimesParCode.get(regime.getCode()));
+				final RegimeFiscalView rfView = new RegimeFiscalView(regime.getId(), regime.isAnnule(), regime.getDateDebut(), regime.getDateFin(), mapRegimesParCode.get(regime.getCode()));
 				if (regime.getPortee() == RegimeFiscal.Portee.VD) {
 					vd.add(rfView);
 				}
