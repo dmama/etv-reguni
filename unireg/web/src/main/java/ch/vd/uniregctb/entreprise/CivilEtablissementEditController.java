@@ -131,7 +131,7 @@ public class CivilEtablissementEditController {
 			throw new TiersNotFoundException(tiersId);
 		}
 
-		return "donnees-civiles/editRaisonEnseigne";
+		return "donnees-civiles/edit-raison-enseigne";
 	}
 
 	@Transactional(rollbackFor = Throwable.class)
@@ -146,7 +146,7 @@ public class CivilEtablissementEditController {
 			}
 
 			if (result.hasErrors()) {
-				return "donnees-civiles/editRaisonEnseigne";
+				return "donnees-civiles/edit-raison-enseigne";
 			}
 			Etablissement etablissement = (Etablissement) tiers;
 			etablissement.setRaisonSociale(view.getRaisonSociale());

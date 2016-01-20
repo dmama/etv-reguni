@@ -163,7 +163,7 @@ public class CivilEntrepriseEditController {
 		}
 
 		model.addAttribute("command", new AddRaisonSocialeView(entreprise.getNumero(), RegDate.get(), null, null));
-		return "donnees-civiles/addRaisonSociale";
+		return "donnees-civiles/add-raison-sociale";
 	}
 
 	@Transactional(rollbackFor = Throwable.class)
@@ -184,7 +184,7 @@ public class CivilEntrepriseEditController {
 
 		if (result.hasErrors()) {
 			model.addAttribute("command", view);
-			return "donnees-civiles/addRaisonSociale";
+			return "donnees-civiles/add-raison-sociale";
 		}
 
 		tiersService.addRaisonSocialeFiscale(entreprise, view.getRaisonSociale(), view.getDateDebut(), view.getDateFin());
@@ -207,7 +207,7 @@ public class CivilEntrepriseEditController {
 		}
 
 		model.addAttribute("command", new EditRaisonSocialeView(raisonSociale));
-		return "donnees-civiles/editRaisonSociale";
+		return "donnees-civiles/edit-raison-sociale";
 	}
 
 	@Transactional(rollbackFor = Throwable.class)
@@ -232,7 +232,7 @@ public class CivilEntrepriseEditController {
 			controllerUtils.checkAccesDossierEnEcriture(ctbId);
 
 			if (result.hasErrors()) {
-				return "donnees-civiles/editRaisonSociale";
+				return "donnees-civiles/edit-raison-sociale";
 			}
 
 			tiersService.updateRaisonSocialeFiscale(raisonSociale, view.getRaisonSociale());
@@ -279,7 +279,7 @@ public class CivilEntrepriseEditController {
 
 		model.addAttribute("command", new AddFormeJuridiqueView(entreprise.getNumero(), RegDate.get(), null, null));
 		model.addAttribute(FORMES_JURIDIQUES_NAME, tiersMapHelper.getMapFormeJuridiqueEntreprise());
-		return "donnees-civiles/addFormeJuridique";
+		return "donnees-civiles/add-forme-juridique";
 	}
 
 	@Transactional(rollbackFor = Throwable.class)
@@ -301,7 +301,7 @@ public class CivilEntrepriseEditController {
 		if (result.hasErrors()) {
 			model.addAttribute("command", view);
 			model.addAttribute(FORMES_JURIDIQUES_NAME, tiersMapHelper.getMapFormeJuridiqueEntreprise());
-			return "donnees-civiles/addFormeJuridique";
+			return "donnees-civiles/add-forme-juridique";
 		}
 
 		tiersService.addFormeJuridiqueFiscale(entreprise, view.getFormeJuridique(), view.getDateDebut(), view.getDateFin());
@@ -325,7 +325,7 @@ public class CivilEntrepriseEditController {
 
 		model.addAttribute("command", new EditFormeJuridiqueView(formeJuridique));
 		model.addAttribute(FORMES_JURIDIQUES_NAME, tiersMapHelper.getMapFormeJuridiqueEntreprise());
-		return "donnees-civiles/editFormeJuridique";
+		return "donnees-civiles/edit-forme-juridique";
 	}
 
 	@Transactional(rollbackFor = Throwable.class)
@@ -350,7 +350,7 @@ public class CivilEntrepriseEditController {
 			controllerUtils.checkAccesDossierEnEcriture(ctbId);
 
 			if (result.hasErrors()) {
-				return "donnees-civiles/editFormeJuridique";
+				return "donnees-civiles/edit-forme-juridique";
 			}
 
 			tiersService.updateFormeJuridiqueFiscale(formeJuridique, view.getFormeJuridique());
@@ -396,7 +396,7 @@ public class CivilEntrepriseEditController {
 		}
 
 		model.addAttribute("command", new AddCapitalView(entreprise.getNumero(), RegDate.get(), null, null, null));
-		return "donnees-civiles/addCapital";
+		return "donnees-civiles/add-capital";
 	}
 
 	@Transactional(rollbackFor = Throwable.class)
@@ -417,7 +417,7 @@ public class CivilEntrepriseEditController {
 
 		if (result.hasErrors()) {
 			model.addAttribute("command", view);
-			return "donnees-civiles/addCapital";
+			return "donnees-civiles/add-capital";
 		}
 
 		tiersService.addCapitalFiscal(entreprise, view.getMontant(), view.getMonnaie(), view.getDateDebut(), view.getDateFin());
@@ -440,7 +440,7 @@ public class CivilEntrepriseEditController {
 		}
 
 		model.addAttribute("command", new EditCapitalView(capital));
-		return "donnees-civiles/editCapital";
+		return "donnees-civiles/edit-capital";
 	}
 
 	@Transactional(rollbackFor = Throwable.class)
@@ -465,7 +465,7 @@ public class CivilEntrepriseEditController {
 			controllerUtils.checkAccesDossierEnEcriture(ctbId);
 
 			if (result.hasErrors()) {
-				return "donnees-civiles/editCapital";
+				return "donnees-civiles/edit-capital";
 			}
 
 			tiersService.updateCapitalFiscal(capital, view.getMontant(), view.getDateFin());
