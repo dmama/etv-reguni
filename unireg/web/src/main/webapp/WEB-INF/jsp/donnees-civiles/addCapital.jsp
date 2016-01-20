@@ -1,7 +1,10 @@
+<%@ page import="ch.vd.uniregctb.common.LengthConstants" %>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="/WEB-INF/jsp/include/common.jsp" %>
 
 <%--@elvariable id="command" type="ch.vd.uniregctb.entreprise.AddCapitalView"--%>
+
+<c:set var="lengthmonnaie" value="<%=LengthConstants.MONNAIE_ISO%>" scope="request" />
 
 <tiles:insert template="/WEB-INF/jsp/templates/template.jsp">
   	<tiles:put name="title">
@@ -28,7 +31,7 @@
 						</td>
 						<td width="20%"><fmt:message key="label.capital.monnaie"/>&nbsp;:</td>
 						<td>
-							<input id="monnaie" name="monnaie" value="${command.monnaie}" size="3" maxlength="3"/>
+							<input id="monnaie" name="monnaie" value="${command.monnaie}" size="3" maxlength="${lengthmonnaie}"/>
 							<form:errors path="monnaie" cssClass="error" />
 						</td>
 					</tr>
