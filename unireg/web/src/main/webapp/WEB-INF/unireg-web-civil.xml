@@ -23,4 +23,12 @@
 		<property name="autorisationManager" ref="autorisationManager"/>
 	</bean>
 
+	<bean id="civilEtablissementEditController" class="ch.vd.uniregctb.entreprise.CivilEtablissementEditController">
+		<property name="tiersDAO" ref="tiersDAO"/>
+		<property name="tiersService" ref="tiersService"/>
+		<property name="entrepriseService" ref="entrepriseService"/>
+		<property name="securityProvider" ref="securityProviderInterface"/>
+		<property name="autorisationManager" ref="autorisationManager"/>
+	</bean>
+
 </beans>

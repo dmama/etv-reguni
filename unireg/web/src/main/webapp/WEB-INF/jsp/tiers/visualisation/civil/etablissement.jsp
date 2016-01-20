@@ -14,10 +14,19 @@
 </c:choose>
 <c:set var="page" value="${param.page}"/>
 <c:set var="nombreElementsTable" value="${param.nombreElementsTable}"/>
+<unireg:setAuth var="autorisations" tiersId="${etablissement.id}"/>
 
 <fieldset>
 	<legend><span><fmt:message key="label.etablissement"/></span></legend>
-
+	<c:if test="${page == 'edit' && autorisations.donneesCiviles && autorisations.identificationEntreprise}">
+		<table border="0">
+			<tr>
+				<td>
+					<unireg:raccourciModifier link="../entreprise/ide/edit.do?id=${etablissement.id}" tooltip="Modifier le numéro IDE" display="label.bouton.modifier"/>
+				</td>
+			</tr>
+		</table>
+	</c:if>
 	<unireg:nextRowClass reset="1"/>
 	<table>
 		<tr class="<unireg:nextRowClass/>" >
@@ -42,16 +51,25 @@
 	</table>
 </fieldset>
 <fieldset>
-	<legend><span><fmt:message key="label.raisons.sociales" /></span></legend>
+	<legend><span><fmt:message key="label.raison.enseigne" /></span></legend>
+	<c:if test="${page == 'edit' && autorisations.donneesCiviles}">
+		<table border="0">
+			<tr>
+				<td>
+					<unireg:raccourciModifier link="../etablissement/raisonenseigne/edit.do?tiersId=${etablissement.id}" tooltip="Editer les noms de l'établissement" display="label.bouton.modifier"/>
+				</td>
+			</tr>
+		</table>
+	</c:if>
 	<unireg:nextRowClass reset="1"/>
 	<table>
 		<tr class="<unireg:nextRowClass/>" >
 			<td width="20%"><fmt:message key="label.raison.sociale" />&nbsp;:</td>
-			<td><c:out value="${command.etablissement.raisonSociale}"/></td>
+			<td><c:out value="${etablissement.raisonSociale}"/></td>
 		</tr>
 		<tr class="<unireg:nextRowClass/>" >
 			<td width="20%"><fmt:message key="label.nom.enseigne" />&nbsp;:</td>
-			<td><c:out value="${command.etablissement.enseigne}"/></td>
+			<td><c:out value="${etablissement.enseigne}"/></td>
 		</tr>
 	</table>
 </fieldset>
@@ -62,8 +80,19 @@
 		<input class="noprint" id="showDomicilesHisto" type="checkbox" onclick="refreshDomicilesTable(this);" />
 		<label class="noprint" for="showDomicilesHisto"><fmt:message key="label.historique" /></label>
 	</c:if>
+<%--
+	<c:if test="${page == 'edit' && autorisations.donneesCiviles}">
+		<table border="0">
+			<tr>
+				<td>
+					<unireg:linkTo name="Ajouter" title="Ajouter un domicile" action="/civil/etablissement/domicile/add.do" params="{tiersId:${etablissement.id}}" link_class="add"/>
+				</td>
+			</tr>
+		</table>
+	</c:if>
+--%>
 
-	<display:table name="${command.etablissement.domiciles}" id="domicile" requestURI="edit.do" class="display" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator">
+	<display:table name="${etablissement.domiciles}" id="domicile" requestURI="edit.do" class="display" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator">
 		<display:column style="width:10%" sortable="true" titleKey="label.date.debut" sortProperty="dateDebut">
 			<unireg:regdate regdate="${domicile.dateDebut}"/>
 		</display:column>

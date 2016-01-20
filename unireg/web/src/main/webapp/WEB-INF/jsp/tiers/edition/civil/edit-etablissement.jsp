@@ -17,8 +17,6 @@
 		<unireg:setAuth var="autorisations" tiersId="${tiersId}"/>
 		<c:if test="${autorisations.donneesCiviles}">
 
-			<unireg:bandeauTiers numero="${tiersId}" showLinks="false" showComplements="false" showEvenementsCivils="false" showValidation="false"/>
-
 			<div id="edit-entreprise" class="entreprise">
 			<span><%-- span vide pour que IE8 calcul correctement la hauteur du fieldset (voir fieldsets-workaround.jsp) --%></span>
 			<jsp:include page="../../visualisation/civil/etablissement.jsp">
@@ -31,7 +29,7 @@
 				<fmt:message key="label.demande.confirmation.sauvegarde"/>
 			</c:set>
 			<script type="text/javascript">
-				var editCivilEntreprise = {
+				var editCivilEtablissement = {
 					onSave : function(myform) {
 						if (confirm('${confirmationMessageSauvegarde}')) {
 							myform.submit();
@@ -47,7 +45,7 @@
 				<fmt:message key="message.confirm.quit"/>
 			</c:set>
 			<unireg:buttonTo method="get" action="/tiers/visu.do" params="{id:${tiersId}}" name="${libelleBoutonRetour}" confirm="${confirmationMessageRetour}"/>
-			<input type="button" name="save" value="<fmt:message key='label.bouton.sauver'/>" onclick="editCivilEntreprise.onSave($('#editForm'))"/>
+			<input type="button" name="save" value="<fmt:message key='label.bouton.sauver'/>" onclick="editCivilEtablissement.onSave($('#editForm'))"/>
 
 		</c:if>
 		<c:if test="${!autorisations.donneesCiviles}">
