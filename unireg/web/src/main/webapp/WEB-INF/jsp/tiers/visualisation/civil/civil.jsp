@@ -5,7 +5,7 @@
 	<table border="0">
 		<tr>
 			<td>
-				<unireg:raccourciModifier link="../civil/${fn:toLowerCase(command.natureTiers)}/edit.do?id=${command.tiers.numero}" tooltip="Modifier la partie fiscale" display="label.bouton.modifier"/>
+				<unireg:raccourciModifier link="../civil/${fn:toLowerCase(command.natureTiers)}/edit.do?id=${command.tiers.numero}" tooltip="Modifier la partie civile" display="label.bouton.modifier"/>
 			</td>
 		</tr>
 	</table>

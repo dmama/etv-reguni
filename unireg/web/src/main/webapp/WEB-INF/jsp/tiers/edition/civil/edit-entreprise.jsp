@@ -27,28 +27,10 @@
 				<jsp:param name="nombreElementsTable" value="${nombreElementsTable}"/>
 			</jsp:include>
 
-			<c:set var="confirmationMessageSauvegarde">
-				<fmt:message key="label.demande.confirmation.sauvegarde"/>
-			</c:set>
-			<script type="text/javascript">
-				var editCivilEntreprise = {
-					onSave : function(myform) {
-						if (confirm('${confirmationMessageSauvegarde}')) {
-							myform.submit();
-						}
-					}
-				}
-			</script>
-
 			<c:set var="libelleBoutonRetour">
 				<fmt:message key="label.bouton.retour"/>
 			</c:set>
-			<c:set var="confirmationMessageRetour">
-				<fmt:message key="message.confirm.quit"/>
-			</c:set>
-			<unireg:buttonTo method="get" action="/tiers/visu.do" params="{id:${tiersId}}" name="${libelleBoutonRetour}" confirm="${confirmationMessageRetour}"/>
-			<input type="button" name="save" value="<fmt:message key='label.bouton.sauver'/>" onclick="editCivilEntreprise.onSave($('#editForm'))"/>
-
+			<unireg:buttonTo method="get" action="/tiers/visu.do" params="{id:${tiersId}}" name="${libelleBoutonRetour}"/>
 		</c:if>
 		<c:if test="${!autorisations.donneesCiviles}">
 			<span class="error"><fmt:message key="error.tiers.interdit" /></span>
