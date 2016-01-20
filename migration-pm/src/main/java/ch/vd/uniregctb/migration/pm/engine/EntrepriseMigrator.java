@@ -1626,6 +1626,9 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 
 					// on va forcer le re-calcul des motifs
 					calculeMotifsOuvertureFermeture(entreprise.getForsFiscauxPrincipauxActifsSorted());
+
+					// et on va recalculer la date de début du premier exercice commercial
+					assigneDateDebutPremierExerciceCommercial(entreprise);
 				}
 			}
 		});
@@ -2867,6 +2870,8 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		copyCreationMutation(dossier, di);
 		di.setDateDebut(dateDebut);
 		di.setDateFin(dateFin);
+		di.setDateDebutExerciceCommercial(dateDebut);
+		di.setDateDebutExerciceCommercial(dateFin);
 		di.setDelais(migrateDelaisDeclaration(dossier, di, mr));
 		di.setEtats(migrateEtatsDeclaration(dossier, di, mr));
 		di.setNumero(dossier.getNoParAnnee());
@@ -3463,6 +3468,9 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 				                                        StringRenderers.DATE_RANGE_RENDERER.toString(ff))))
 				.forEach(unireg::addForFiscal);
 
+		// récupération et assignation de la date de début du premier exercice commercial
+		assigneDateDebutPremierExerciceCommercial(unireg);
+
 		// ... et finalement on crée également les éventuelles décisions ACI
 		listeIssueDeDecisionAci.stream()
 				.map(ff -> {
@@ -3482,6 +3490,22 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 				                                              decision.getNumeroOfsAutoriteFiscale(),
 				                                              StringRenderers.DATE_RANGE_RENDERER.toString(decision))))
 				.forEach(unireg::addDecisionAci);
+	}
+
+	/**
+	 * Recherche la date de début du premier for principal non-annulé avec un genre d'impôt IBC et, si présente,
+	 * assigne cette valeur au champ "dateDebutPremierExerciceCommercial" de l'entreprise
+	 * @param entreprise l'entreprise
+	 */
+	private static void assigneDateDebutPremierExerciceCommercial(Entreprise entreprise) {
+		// on trouve la date de début du premier for principal avec genre d'impôt IBC pour la mettre 'date de début du premier exercice commercial'
+		final List<ForFiscalPrincipalPM> collated = neverNull(entreprise.getForsFiscauxPrincipauxActifsSorted());
+		collated.stream()
+				.filter(ff -> !ff.isAnnule())
+				.filter(ff -> ff.getGenreImpot() == GenreImpot.BENEFICE_CAPITAL)
+				.map(ForFiscalPrincipalPM::getDateDebut)
+				.min(Comparator.naturalOrder())
+				.ifPresent(entreprise::setDateDebutPremierExerciceCommercial);
 	}
 
 	/**
