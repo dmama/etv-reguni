@@ -175,6 +175,7 @@ import ch.vd.uniregctb.type.TypeAdresseTiers;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeEtatEntreprise;
 import ch.vd.uniregctb.type.TypeFlagEntreprise;
+import ch.vd.uniregctb.type.TypeGenerationEtatEntreprise;
 import ch.vd.uniregctb.type.TypeMandat;
 
 public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> {
@@ -4188,6 +4189,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 					copyCreationMutation(e, etat);
 					etat.setDateObtention(e.getDateValidite());
 					etat.setType(mapTypeEtatEntreprise(e.getTypeEtat()));
+					etat.setGeneration(TypeGenerationEtatEntreprise.AUTOMATIQUE);
 					return etat;
 				})
 				.collect(Collectors.toList());
