@@ -161,7 +161,7 @@ public class EvenementOrganisationController extends AbstractEvenementCivilContr
 	                                         @ModelAttribute("evenementOrganisationCriteria") @Valid EvenementOrganisationCriteriaView criteriaInSession,
 	                                         BindingResult bindingResult,
 	                                         ModelMap model) throws AdresseException 	{
-		if (bindingResult.hasErrors() || criteriaInSession.getNumeroOrganisation() == null) {
+		if (bindingResult.hasErrors() || (criteriaInSession.isModeLotEvenement() && criteriaInSession.getNumeroOrganisation() == null)) {
 			// L'utilisateur a soumis un formulaire incorrect
 			populateModel(model, criteriaInSession, INITIAL_PAGINATION, null, 0);
 		} else {
