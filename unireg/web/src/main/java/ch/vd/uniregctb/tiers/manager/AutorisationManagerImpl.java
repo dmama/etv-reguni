@@ -26,6 +26,8 @@ import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesMorales;
 import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
+import ch.vd.uniregctb.tiers.Entreprise;
+import ch.vd.uniregctb.tiers.Etablissement;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
@@ -549,6 +551,12 @@ public class AutorisationManagerImpl implements AutorisationManager {
 			}
 			if (SecurityHelper.isGranted(securityProvider, Role.MODIF_FISCAL_DPI, visa, oid)) {
 				map.put(MODIF_FISCAL, Boolean.TRUE);
+			}
+		}
+		else if (tiers instanceof Entreprise || tiers instanceof Etablissement) {
+			if (SecurityHelper.isGranted(securityProvider, Role.MODIF_PM, visa, oid)) {
+				map.put(MODIF_CIVIL, Boolean.TRUE);
+				map.put(MODIF_IDE, Boolean.TRUE);
 			}
 		}
 
