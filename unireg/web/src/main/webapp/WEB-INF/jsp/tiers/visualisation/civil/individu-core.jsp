@@ -239,7 +239,7 @@
         <table border="0">
             <tr>
                 <td>
-                    <unireg:raccourciModifier link="../civil/personnephysique/ide/edit.do?id=${command.etablissement.numero}" tooltip="Modifier le numéro entreprise"
+                    <unireg:raccourciModifier link="../civil/personnephysique/ide/edit.do?id=${command.tiers.numero}" tooltip="Modifier le numéro entreprise"
                                               display="label.bouton.modifier"/>
                 </td>
             </tr>
