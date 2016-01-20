@@ -21,6 +21,14 @@
 					<td width="25%"><fmt:message key="label.code.controle"/>&nbsp;:</td>
 					<td width="25%">${command.codeControle}</td>
 				</tr>
+				<c:if test="${command.diPM}">
+					<tr class="<unireg:nextRowClass/>" >
+						<td width="25%"><fmt:message key="label.date.debut.exercice.commercial" />&nbsp;:</td>
+						<td width="25%"><unireg:regdate regdate="${command.dateDebutExerciceCommercial}"/></td>
+						<td width="25%"><fmt:message key="label.date.fin.exercice.commercial" />&nbsp;:</td>
+						<td width="25%"><unireg:regdate regdate="${command.dateFinExerciceCommercial}"/></td>
+					</tr>
+				</c:if>
 				<tr class="<unireg:nextRowClass/>" >
 					<td width="25%"><fmt:message key="label.date.debut.periode.imposition" />&nbsp;:</td>
 					<td width="25%"><unireg:regdate regdate="${command.dateDebutPeriodeImposition}"/></td>

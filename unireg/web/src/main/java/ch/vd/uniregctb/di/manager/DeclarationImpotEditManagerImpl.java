@@ -66,6 +66,7 @@ import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionHelper;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionPersonnesMorales;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionPersonnesPhysiques;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionService;
+import ch.vd.uniregctb.metier.bouclement.ExerciceCommercial;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesMorales;
@@ -434,7 +435,8 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 		return di;
 	}
 
-	private <T extends DeclarationImpotOrdinaire> T creerNouvelleDI(Contribuable ctb, T di, RegDate dateDebut, RegDate dateFin, @Nullable TypeDocument typeDocument, @Nullable TypeAdresseRetour typeAdresseRetour,
+	private <T extends DeclarationImpotOrdinaire> T creerNouvelleDI(Contribuable ctb, T di, RegDate dateDebut, RegDate dateFin,
+	                                                                @Nullable TypeDocument typeDocument, @Nullable TypeAdresseRetour typeAdresseRetour,
 	                                                                RegDate delaiAccorde, @Nullable RegDate dateRetour, TypeTache typeTacheEnvoi) throws AssujettissementException {
 
 		// [SIFISC-1227] le numéro de séquence ne doit pas être assigné, ainsi il sera re-calculé dans la méthode {@link TiersService#addAndSave(Tiers, Declaration)}
@@ -543,12 +545,15 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 		return di;
 	}
 
-	protected DeclarationImpotOrdinairePM creerNouvelleDI(ContribuableImpositionPersonnesMorales ctb, RegDate dateDebut, RegDate dateFin, @Nullable TypeDocument typeDocument, @Nullable TypeAdresseRetour typeAdresseRetour,
+	protected DeclarationImpotOrdinairePM creerNouvelleDI(ContribuableImpositionPersonnesMorales ctb, RegDate dateDebut, RegDate dateFin,
+	                                                      RegDate dateDebutExercice, RegDate dateFinExercice,
+	                                                      @Nullable TypeDocument typeDocument, @Nullable TypeAdresseRetour typeAdresseRetour,
 	                                                      RegDate delaiAccorde, @Nullable RegDate dateRetour) throws AssujettissementException {
 
 		final DeclarationImpotOrdinairePM di = new DeclarationImpotOrdinairePM();
+		di.setDateDebutExerciceCommercial(dateDebutExercice);
+		di.setDateFinExerciceCommercial(dateFinExercice);
 		return creerNouvelleDI(ctb, di, dateDebut, dateFin, typeDocument, typeAdresseRetour, delaiAccorde, dateRetour, TypeTache.TacheEnvoiDeclarationImpotPM);
-
 	}
 
 	protected DeclarationImpotOrdinairePP creerNouvelleDI(ContribuableImpositionPersonnesPhysiques ctb, RegDate dateDebut, RegDate dateFin, @Nullable TypeDocument typeDocument, @Nullable TypeAdresseRetour typeAdresseRetour,
@@ -836,7 +841,11 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 				throw new DeclarationException("Le tiers n'est pas soumis au régime des personnes morales");
 			}
 
-			return creerNouvelleDI((ContribuableImpositionPersonnesMorales) tiers, dateDebut, dateFin, typeDocument, adresseRetour, delaiAccorde, dateRetour);
+			final List<ExerciceCommercial> exercices = tiersService.getExercicesCommerciaux((Entreprise) tiers);
+			final ExerciceCommercial exercice = DateRangeHelper.rangeAt(exercices, dateFin);
+			final RegDate dateDebutExercice = exercice != null ? exercice.getDateDebut() : null;
+			final RegDate dateFinExercice = exercice != null ? exercice.getDateFin() : null;
+			return creerNouvelleDI((ContribuableImpositionPersonnesMorales) tiers, dateDebut, dateFin, dateDebutExercice, dateFinExercice, typeDocument, adresseRetour, delaiAccorde, dateRetour);
 		}
 	}
 

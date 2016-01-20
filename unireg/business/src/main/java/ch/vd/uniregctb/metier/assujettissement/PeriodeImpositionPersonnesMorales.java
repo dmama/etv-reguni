@@ -42,7 +42,7 @@ public class PeriodeImpositionPersonnesMorales extends PeriodeImposition {
 			final PeriodeImpositionPersonnesMorales nextPeriode = (PeriodeImpositionPersonnesMorales) next;
 			return typeDocument == nextPeriode.typeDocument
 					&& typeContribuable == nextPeriode.typeContribuable
-					&& DateRangeHelper.rangeAt(exercicesCommerciaux, getDateFin()).isValidAt(next.getDateDebut());      // pas de changement d'exercice commercial
+					&& getExerciceCommercial().isValidAt(next.getDateDebut());      // pas de changement d'exercice commercial
 		}
 		return false;
 	}
@@ -69,11 +69,16 @@ public class PeriodeImpositionPersonnesMorales extends PeriodeImposition {
 	@NotNull
 	@Override
 	protected RegDate getDernierJourPourPeriodeFiscale() {
+		return getExerciceCommercial().getDateFin();
+	}
+
+	@NotNull
+	public ExerciceCommercial getExerciceCommercial() {
 		final ExerciceCommercial ex = DateRangeHelper.rangeAt(exercicesCommerciaux, getDateFin());
 		if (ex == null) {
 			throw new IllegalArgumentException("Pas d'exercice commercial sous-jacent!");
 		}
-		return ex.getDateFin();
+		return ex;
 	}
 
 	@NotNull

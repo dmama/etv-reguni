@@ -43,6 +43,8 @@ public class DeclarationView implements Annulable {
 	private final List<EtatDeclarationView> etats;
 	private final boolean diPP;
 	private final boolean diPM;
+	private final RegDate dateDebutExercice;
+	private final RegDate dateFinExercice;
 
 	public DeclarationView(Declaration decl, MessageSource messageSource) {
 		this.id = decl.getId();
@@ -78,6 +80,16 @@ public class DeclarationView implements Annulable {
 			this.codeControle = null;
 			this.typeDocument = null;
 			this.typeDocumentMessage = null;
+		}
+
+		if (decl instanceof DeclarationImpotOrdinairePM) {
+			final DeclarationImpotOrdinairePM di = (DeclarationImpotOrdinairePM) decl;
+			this.dateDebutExercice = di.getDateDebutExerciceCommercial();
+			this.dateFinExercice = di.getDateFinExerciceCommercial();
+		}
+		else {
+			this.dateDebutExercice = null;
+			this.dateFinExercice = null;
 		}
 
 		this.delais = initDelais(decl.getDelais(), decl.getPremierDelai(), messageSource);
@@ -129,6 +141,14 @@ public class DeclarationView implements Annulable {
 
 	public RegDate getDateFin() {
 		return dateFin;
+	}
+
+	public RegDate getDateDebutExercice() {
+		return dateDebutExercice;
+	}
+
+	public RegDate getDateFinExercice() {
+		return dateFinExercice;
 	}
 
 	public TypeDocument getTypeDocument() {

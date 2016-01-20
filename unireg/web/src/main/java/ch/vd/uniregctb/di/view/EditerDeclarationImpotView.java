@@ -29,6 +29,8 @@ public class EditerDeclarationImpotView {
 	private int periodeFiscale;
 	private RegDate dateDebutPeriodeImposition;
 	private RegDate dateFinPeriodeImposition;
+	private RegDate dateDebutExerciceCommercial;
+	private RegDate dateFinExerciceCommercial;
 	private String codeControle;
 	private String sourceQuittancement;
 	private TypeEtatDeclaration dernierEtat;
@@ -85,6 +87,11 @@ public class EditerDeclarationImpotView {
 		this.wasSommee = initWasSommee(di);
 		this.isDiPP = di instanceof DeclarationImpotOrdinairePP;
 		this.isDiPM = di instanceof DeclarationImpotOrdinairePM;
+
+		if (di instanceof DeclarationImpotOrdinairePM) {
+			this.dateDebutExerciceCommercial = ((DeclarationImpotOrdinairePM) di).getDateDebutExerciceCommercial();
+			this.dateFinExerciceCommercial = ((DeclarationImpotOrdinairePM) di).getDateFinExerciceCommercial();
+		}
 	}
 
 	private static boolean initWasSommee(DeclarationImpotOrdinaire di) {
@@ -184,6 +191,14 @@ public class EditerDeclarationImpotView {
 
 	public RegDate getDateFinPeriodeImposition() {
 		return dateFinPeriodeImposition;
+	}
+
+	public RegDate getDateDebutExerciceCommercial() {
+		return dateDebutExerciceCommercial;
+	}
+
+	public RegDate getDateFinExerciceCommercial() {
+		return dateFinExerciceCommercial;
 	}
 
 	public String getCodeControle() {

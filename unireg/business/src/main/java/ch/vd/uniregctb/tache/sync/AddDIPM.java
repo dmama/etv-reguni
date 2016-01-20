@@ -3,6 +3,7 @@ package ch.vd.uniregctb.tache.sync;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionPersonnesMorales;
+import ch.vd.uniregctb.metier.bouclement.ExerciceCommercial;
 import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesMorales;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.TacheEnvoiDeclarationImpot;
@@ -22,11 +23,14 @@ public class AddDIPM extends AddDI<PeriodeImpositionPersonnesMorales> {
 	public void execute(Context context) {
 		final RegDate today = getToday();
 		final RegDate dateEcheance = TacheEnvoiDeclarationImpot.getDefaultEcheance(today);
+		final ExerciceCommercial exerciceCommercial = periodeImposition.getExerciceCommercial();
 		final TacheEnvoiDeclarationImpot tache = new TacheEnvoiDeclarationImpotPM(TypeEtatTache.EN_INSTANCE,
 		                                                                          dateEcheance,
 		                                                                          (ContribuableImpositionPersonnesMorales) context.contribuable,
 		                                                                          periodeImposition.getDateDebut(),
 		                                                                          periodeImposition.getDateFin(),
+		                                                                          exerciceCommercial.getDateDebut(),
+		                                                                          exerciceCommercial.getDateFin(),
 		                                                                          periodeImposition.getTypeContribuable(),
 		                                                                          periodeImposition.getTypeDocumentDeclaration(),
 		                                                                          context.tiersService.getCategorieEntreprise((Entreprise) context.contribuable, periodeImposition.getDateFin()),

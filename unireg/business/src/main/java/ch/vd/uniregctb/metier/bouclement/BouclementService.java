@@ -10,7 +10,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.tiers.Bouclement;
 
 /**
- * Service de fourniture d'information autour des bouclements / exercices comptables...
+ * Service de fourniture d'information autour des bouclements / exercices commerciaux...
  */
 public interface BouclementService {
 

@@ -281,6 +281,8 @@ public class EnvoiDeclarationsPMProcessor {
 		final DeclarationImpotOrdinairePM di = new DeclarationImpotOrdinairePM();
 		di.setDateDebut(tache.getDateDebut());
 		di.setDateFin(tache.getDateFin());
+		di.setDateDebutExerciceCommercial(tache.getDateDebutExercice());
+		di.setDateFinExerciceCommercial(tache.getDateFinExercice());
 		di.setTypeContribuable(tache.getTypeContribuable());
 		di.setTiers(pm);
 		di.setNumero(getNewSequenceNumber(pm, informationsFiscales));

@@ -40,6 +40,11 @@
 					<display:column sortable="true" titleKey="label.periode.fiscale">
 						${di.periodeFiscale}
 					</display:column>
+					<c:if test="${di.diPM}">
+						<display:column sortable ="true" titleKey="label.exercice.commercial" sortProperty="dateDebut">
+							<unireg:regdate regdate="${di.dateDebutExercice}"/>&nbsp;-&nbsp;<unireg:regdate regdate="${di.dateFinExercice}"/>
+						</display:column>
+					</c:if>
 					<display:column sortable ="true" titleKey="label.periode.imposition" sortProperty="dateDebut">
 						<unireg:regdate regdate="${di.dateDebut}"/>&nbsp;-&nbsp;<unireg:regdate regdate="${di.dateFin}"/>
 					</display:column>

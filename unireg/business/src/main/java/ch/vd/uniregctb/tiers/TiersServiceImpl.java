@@ -70,6 +70,7 @@ import ch.vd.uniregctb.adresse.AdresseTiers;
 import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.cache.ServiceCivilCacheWarmer;
+import ch.vd.uniregctb.common.AnnulableHelper;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.common.DonneesCivilesException;
@@ -4399,9 +4400,9 @@ public class TiersServiceImpl implements TiersService {
 	@Override
 	public List<ExerciceCommercial> getExercicesCommerciaux(Entreprise entreprise) {
 		final List<ForFiscalPrincipalPM> forsPrincipaux = entreprise.getForsFiscauxPrincipauxActifsSorted();
-		final Set<Bouclement> bouclements = entreprise.getBouclements();
+		final List<Bouclement> bouclements = AnnulableHelper.sansElementsAnnules(entreprise.getBouclements());
 		final boolean noFors = forsPrincipaux.isEmpty();
-		final boolean noBouclements = bouclements == null || bouclements.isEmpty();
+		final boolean noBouclements = bouclements.isEmpty();
 
 		if (noFors && noBouclements) {
 			// rien de rien...
@@ -4409,17 +4410,14 @@ public class TiersServiceImpl implements TiersService {
 		}
 
 		final RegDate dateDebutPremierExercice;
-		final RegDate dateFinDernierExercice;
-		if (noFors) {
+		if (entreprise.getDateDebutPremierExerciceCommercial() != null) {
+			dateDebutPremierExercice = entreprise.getDateDebutPremierExerciceCommercial();
+		}
+		else if (noFors) {
 			// on va supposer une date de début au lendemain du premier bouclement connu
 			dateDebutPremierExercice = bouclementService.getDateProchainBouclement(bouclements, RegDateHelper.getEarlyDate(), false).getOneDayAfter();
-
-			// la seule limite de fin sera celle de l'exercice courant
-			dateFinDernierExercice = bouclementService.getDateProchainBouclement(bouclements, RegDate.get(), true);
 		}
 		else {
-			// ici, nous avons des fors principaux
-
 			// création à l'ouverture du premier for principal ? -> c'est la date de début du premier exercice
 			final ForFiscalPrincipalPM premierForPrincipal = forsPrincipaux.get(0);
 			final MotifFor premierMotif = premierForPrincipal.getMotifOuverture();
@@ -4440,8 +4438,15 @@ public class TiersServiceImpl implements TiersService {
 					dateDebutPremierExercice = dateBouclementConnueAvantDebutFor.getOneDayAfter();
 				}
 			}
+		}
 
-			// date de fin, maintenant ?
+		final RegDate dateFinDernierExercice;
+		if (noFors) {
+			// la seule limite de fin sera celle de l'exercice courant
+			dateFinDernierExercice = bouclementService.getDateProchainBouclement(bouclements, RegDate.get(), true);
+		}
+		else {
+			// ici, nous avons des fors principaux
 
 			final ForFiscalPrincipalPM dernierForPrincipal = forsPrincipaux.get(forsPrincipaux.size() - 1);
 			if (dernierForPrincipal.getDateFin() != null) {

@@ -280,8 +280,8 @@ public class ImpressionDeclarationImpotPersonnesMoralesHelperImpl extends Editiq
 		di.setCodeRoutage(buildCodeRoutage(codeFlyer));
 
 		di.setDateLimiteRetour(RegDateHelper.toIndexString(declaration.getDelaiRetourImprime()));
-		di.setDebutExerciceCommercial(RegDateHelper.toIndexString(declaration.getDateDebut()));
-		di.setFinExerciceCommercial(RegDateHelper.toIndexString(declaration.getDateFin()));
+		di.setDebutExerciceCommercial(RegDateHelper.toIndexString(declaration.getDateDebutExerciceCommercial()));
+		di.setFinExerciceCommercial(RegDateHelper.toIndexString(declaration.getDateFinExerciceCommercial()));
 		if (StringUtils.isNotBlank(pm.getNumeroCompteBancaire()) && ibanValidator.isValidIban(pm.getNumeroCompteBancaire())) {
 			di.setIBAN(pm.getNumeroCompteBancaire());
 			di.setTitulaireCompte(pm.getTitulaireCompteBancaire());

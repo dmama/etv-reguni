@@ -1,15 +1,16 @@
 package ch.vd.uniregctb.tache.sync;
 
+import org.jetbrains.annotations.NotNull;
+
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
-import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImposition;
 import ch.vd.uniregctb.type.TypeContribuable;
 
-public class UpdateDI extends SynchronizeAction {
+public abstract class UpdateDI<P extends PeriodeImposition, D extends DeclarationImpotOrdinaire> extends SynchronizeAction {
 
-	public final PeriodeImposition periodeImposition;
+	public final P periodeImposition;
 	public final Long diId;
 
 	// quelques données pour le toString
@@ -17,7 +18,7 @@ public class UpdateDI extends SynchronizeAction {
 	private final RegDate dateDebut;
 	private final RegDate dateFin;
 
-	public UpdateDI(PeriodeImposition periodeImposition, DeclarationImpotOrdinaire declaration) {
+	public UpdateDI(P periodeImposition, D declaration) {
 		this.periodeImposition = periodeImposition;
 		this.diId = declaration.getId();
 		this.typeContribuable = declaration.getTypeContribuable();
@@ -27,18 +28,22 @@ public class UpdateDI extends SynchronizeAction {
 
 	@Override
 	public void execute(Context context) {
-
-		final DeclarationImpotOrdinairePP declaration = (DeclarationImpotOrdinairePP) context.diDAO.get(diId);
+		//noinspection unchecked
+		final D declaration = (D) context.diDAO.get(diId);
 		if (declaration != null) {
-			// [UNIREG-1303] Autant que faire se peut, on évite de créer des tâches d'envoi/annulation de DI et on met-à-jour les DIs existantes. L'idée est d'éviter d'incrémenter le numéro de
-			// séquence des DIs parce que cela pose des problèmes lors du quittancement, et de toutes façons la période exacte n'est pas imprimée sur les DIs.
-			declaration.setDateDebut(periodeImposition.getDateDebut());
-			declaration.setDateFin(periodeImposition.getDateFin());
-			declaration.setTypeContribuable(periodeImposition.getTypeContribuable());
-
-			// [UNIREG-2735] Une DI qui s'est adapté à une période d'imposition existante n'est plus une DI libre
-			declaration.setLibre(false);
+			miseAJourDeclaration(declaration);
 		}
+	}
+
+	protected void miseAJourDeclaration(@NotNull D declaration) {
+		// [UNIREG-1303] Autant que faire se peut, on évite de créer des tâches d'envoi/annulation de DI et on met-à-jour les DIs existantes. L'idée est d'éviter d'incrémenter le numéro de
+		// séquence des DIs parce que cela pose des problèmes lors du quittancement, et de toutes façons la période exacte n'est pas imprimée sur les DIs.
+		declaration.setDateDebut(periodeImposition.getDateDebut());
+		declaration.setDateFin(periodeImposition.getDateFin());
+		declaration.setTypeContribuable(periodeImposition.getTypeContribuable());
+
+		// [UNIREG-2735] Une DI qui s'est adapté à une période d'imposition existante n'est plus une DI libre
+		declaration.setLibre(false);
 	}
 
 	@Override

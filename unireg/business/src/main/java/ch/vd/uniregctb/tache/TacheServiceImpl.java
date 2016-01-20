@@ -69,6 +69,8 @@ import ch.vd.uniregctb.tache.sync.DeleteDIPP;
 import ch.vd.uniregctb.tache.sync.DeleteQSNC;
 import ch.vd.uniregctb.tache.sync.SynchronizeAction;
 import ch.vd.uniregctb.tache.sync.UpdateDI;
+import ch.vd.uniregctb.tache.sync.UpdateDIPM;
+import ch.vd.uniregctb.tache.sync.UpdateDIPP;
 import ch.vd.uniregctb.tache.sync.UpdateQSNC;
 import ch.vd.uniregctb.tache.sync.UpdateTacheEnvoiDI;
 import ch.vd.uniregctb.tache.sync.UpdateTacheEnvoiDIPM;
@@ -953,6 +955,11 @@ public class TacheServiceImpl implements TacheService {
 			}
 
 			@Override
+			public UpdateDI<?, ?> newUpdateDI(PeriodeImposition pi, DeclarationImpotOrdinaire di) {
+				return new UpdateDIPP((PeriodeImpositionPersonnesPhysiques) pi, (DeclarationImpotOrdinairePP) di);
+			}
+
+			@Override
 			public UpdateTacheEnvoiDI newUpdateTacheEnvoi(TacheEnvoiDeclarationImpot tache, AddDI<?> addAction) {
 				return null;
 			}
@@ -997,6 +1004,11 @@ public class TacheServiceImpl implements TacheService {
 			}
 
 			@Override
+			public UpdateDI<?, ?> newUpdateDI(PeriodeImposition pi, DeclarationImpotOrdinaire di) {
+				return new UpdateDIPM((PeriodeImpositionPersonnesMorales) pi, (DeclarationImpotOrdinairePM) di);
+			}
+
+			@Override
 			public UpdateTacheEnvoiDI newUpdateTacheEnvoi(TacheEnvoiDeclarationImpot tache, AddDI<?> addAction) {
 				return new UpdateTacheEnvoiDIPM((TacheEnvoiDeclarationImpotPM) tache, (AddDIPM) addAction);
 			}
@@ -1006,7 +1018,7 @@ public class TacheServiceImpl implements TacheService {
 				if (di.getTypeDeclaration() != pi.getTypeDocumentDeclaration()) {
 					return Mutation.MAJEURE;
 				}
-				else if (di.getTypeContribuable() != pi.getTypeContribuable()) {
+				else if (di.getTypeContribuable() != pi.getTypeContribuable() || !DateRangeHelper.equals(((DeclarationImpotOrdinairePM) di).getExerciceCommercial(), ((PeriodeImpositionPersonnesMorales) pi).getExerciceCommercial())) {
 					return Mutation.COMPATIBLE;
 				}
 				else {
@@ -1067,6 +1079,15 @@ public class TacheServiceImpl implements TacheService {
 		 * @throws ClassCastException si la déclaration d'impôt n'est pas du type attendu par la catégorie
 		 */
 		public abstract DeleteDI<?> newDeleteDI(DeclarationImpotOrdinaire di);
+
+		/**
+		 * Création d'une nouvelle action de mise à jour d'une déclaration d'impôt à partir
+		 * des données contenue dans la période d'imposition
+		 * @param pi la période d'imposition
+		 * @param di la déclaration d'impôt
+		 * @return
+		 */
+		public abstract UpdateDI<?, ?> newUpdateDI(PeriodeImposition pi, DeclarationImpotOrdinaire di);
 
 		/**
 		 * Création d'une nouvelle action de mise à jour de tâche d'émission de déclaration d'impôt
@@ -1188,7 +1209,7 @@ public class TacheServiceImpl implements TacheService {
 					}
 				}
 				if (toUpdate != null) {
-					updateActions.add(new UpdateDI(periode, toUpdate));
+					updateActions.add(domaine.newUpdateDI(periode, toUpdate));
 				}
 				else if (toAdd != null) {
 					// [UNIREG-2735] Le mécanisme ne doit pas créer de tâche d'émission de DI pour l'année en cours

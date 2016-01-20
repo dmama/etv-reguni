@@ -51,6 +51,7 @@ public class AutorisationManagerImpl implements AutorisationManager {
 	static final String MODIF_DOSSIER = "DOS";
 	static final String MODIF_DEBITEUR = "DBT";
 	static final String MODIF_DI = "DI";
+	static final String MODIF_BOUCLEMENTS = "BOUCLEMENTS";
 	static final String MODIF_IDE = "IDE";
 	static final String MODIF_MOUVEMENT = "MVT";
 	static final String FISCAL_FOR_PRINC = "FOR_PRINC";
@@ -474,6 +475,9 @@ public class AutorisationManagerImpl implements AutorisationManager {
 			if (ctbModifiableSelonRoleEtDecision && SecurityHelper.isGranted(securityProvider, Role.FOR_SECOND_PM, visa, oid)) {
 				map.put(FISCAL_FOR_SEC, Boolean.TRUE);
 				map.put(MODIF_FISCAL, Boolean.TRUE);
+			}
+			if (ctbModifiableSelonRoleEtDecision && SecurityHelper.isGranted(securityProvider, Role.BOUCLEMENTS_PM, visa, oid)) {
+				map.put(MODIF_BOUCLEMENTS, Boolean.TRUE);
 			}
 		}
 

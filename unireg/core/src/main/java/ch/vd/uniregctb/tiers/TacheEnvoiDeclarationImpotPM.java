@@ -9,6 +9,8 @@ import javax.persistence.Transient;
 import java.util.EnumSet;
 import java.util.Set;
 
+import org.hibernate.annotations.Type;
+
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.LengthConstants;
 import ch.vd.uniregctb.type.CategorieEntreprise;
@@ -32,13 +34,26 @@ public class TacheEnvoiDeclarationImpotPM extends TacheEnvoiDeclarationImpot {
 	 */
 	private CategorieEntreprise categorieEntreprise;
 
+	/**
+	 * Début de l'exercice commercial associé à la tâche d'envoi
+	 */
+	private RegDate dateDebutExercice;
+
+	/**
+	 * Fin de l'exercice commercial associé à la tâche d'envoi
+	 */
+	private RegDate dateFinExercice;
+
 	// requis par Hibernate
 	protected TacheEnvoiDeclarationImpotPM() {
 	}
 
 	public TacheEnvoiDeclarationImpotPM(TypeEtatTache etat, RegDate dateEcheance, ContribuableImpositionPersonnesMorales contribuable, RegDate dateDebut, RegDate dateFin,
-	                                    TypeContribuable typeContribuable, TypeDocument typeDocument, CategorieEntreprise categorieEntreprise, CollectiviteAdministrative collectivite) {
+	                                    RegDate dateDebutExercice, RegDate dateFinExercice, TypeContribuable typeContribuable, TypeDocument typeDocument,
+	                                    CategorieEntreprise categorieEntreprise, CollectiviteAdministrative collectivite) {
 		super(etat, dateEcheance, contribuable, dateDebut, dateFin, typeContribuable, typeDocument, collectivite);
+		this.dateDebutExercice = dateDebutExercice;
+		this.dateFinExercice = dateFinExercice;
 		this.categorieEntreprise = categorieEntreprise;
 
 		if (!TYPES_DOCUMENTS_AUTORISES.contains(typeDocument)) {
@@ -69,5 +84,25 @@ public class TacheEnvoiDeclarationImpotPM extends TacheEnvoiDeclarationImpot {
 
 	public void setCategorieEntreprise(CategorieEntreprise categorieEntreprise) {
 		this.categorieEntreprise = categorieEntreprise;
+	}
+
+	@Column(name = "DECL_DATE_DEBUT_EXERCICE")
+	@Type(type = "ch.vd.uniregctb.hibernate.RegDateUserType")
+	public RegDate getDateDebutExercice() {
+		return dateDebutExercice;
+	}
+
+	public void setDateDebutExercice(RegDate dateDebutExercice) {
+		this.dateDebutExercice = dateDebutExercice;
+	}
+
+	@Column(name = "DECL_DATE_FIN_EXERCICE")
+	@Type(type = "ch.vd.uniregctb.hibernate.RegDateUserType")
+	public RegDate getDateFinExercice() {
+		return dateFinExercice;
+	}
+
+	public void setDateFinExercice(RegDate dateFinExercice) {
+		this.dateFinExercice = dateFinExercice;
 	}
 }

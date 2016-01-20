@@ -47,6 +47,7 @@ import ch.vd.uniregctb.metier.assujettissement.AssujettissementException;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImposition;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionPersonnesMorales;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionService;
+import ch.vd.uniregctb.metier.bouclement.ExerciceCommercial;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.Entreprise;
@@ -528,8 +529,10 @@ public class DeterminationDIsPMAEmettreProcessor {
 		Assert.notNull(oid);
 
 		// Création et sauvegarde de la tâche en base
+		final ExerciceCommercial exercice = pi.getExerciceCommercial();
 		final TacheEnvoiDeclarationImpotPM tache = new TacheEnvoiDeclarationImpotPM(TypeEtatTache.EN_INSTANCE, Tache.getDefaultEcheance(dateTraitement),
 		                                                                            entreprise, pi.getDateDebut(), pi.getDateFin(),
+		                                                                            exercice.getDateDebut(), exercice.getDateFin(),
 		                                                                            pi.getTypeContribuable(), pi.getTypeDocumentDeclaration(),
 		                                                                            tiersService.getCategorieEntreprise(entreprise, pi.getDateFin()), oid);
 		if (rapport != null) {

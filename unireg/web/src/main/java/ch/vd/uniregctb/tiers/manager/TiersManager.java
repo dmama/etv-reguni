@@ -554,15 +554,9 @@ public class TiersManager implements MessageSourceAware {
 			tiersView.setAllegementsFiscaux(views);
 		}
 
-		// les exercices commerciaux et la date de bouclement futur
+		// les exercices commerciaux
 		final List<ExerciceCommercial> exercices = tiersService.getExercicesCommerciaux(entreprise);
-		Collections.sort(exercices, reverseComparator);
 		tiersView.setExercicesCommerciaux(exercices);
-
-		final ExerciceCommercial courant = DateRangeHelper.rangeAt(exercices, RegDate.get());
-		if (courant != null) {
-			tiersView.setDateBouclementFutur(courant.getDateFin());
-		}
 
 		tiersView.setEntreprise(getEntrepriseService().getEntreprise(entreprise)); // OrganisationView
 	}

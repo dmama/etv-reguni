@@ -2,6 +2,8 @@
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
 
+	<!-- Partie réellement "DI" -->
+
 	<bean id="declarationImpotControllerValidator" class="ch.vd.uniregctb.di.DeclarationImpotControllerValidator">
 		<property name="manager" ref="diEditManager"/>
 		<property name="tiersDAO" ref="tiersDAO"/>
@@ -42,6 +44,17 @@
 		<property name="validationService" ref="validationService" />
 		<property name="bamMessageSender" ref="bamMessageSender" />
 		<property name="periodeImpositionService" ref="periodeImpositionService" />
+	</bean>
+
+	<!-- Excercices commerciaux -->
+
+	<bean id="exerciceCommercialController" class="ch.vd.uniregctb.tiers.ExerciceCommercialController">
+		<property name="tiersDAO" ref="tiersDAO"/>
+		<property name="tiersService" ref="tiersService"/>
+		<property name="controllerUtils" ref="controllerUtils"/>
+		<property name="securityProvider" ref="securityProviderInterface"/>
+		<property name="parametreAppService" ref="parametreAppService"/>
+		<property name="bouclementService" ref="bouclementService"/>
 	</bean>
 
 </beans>

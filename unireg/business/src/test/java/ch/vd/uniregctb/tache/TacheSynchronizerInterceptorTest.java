@@ -223,7 +223,7 @@ public class TacheSynchronizerInterceptorTest extends BusinessTest {
 				addForPrincipal(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, dateFin, MotifFor.FIN_EXPLOITATION, MockCommune.Aubonne);
 
 				// une SA est de catégorie PM, pas SP...
-				addTacheEnvoiDIPM(TypeEtatTache.EN_INSTANCE, null, dateDebut, dateFin, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_PM, entreprise, CategorieEntreprise.SP, oipm);
+				addTacheEnvoiDIPM(TypeEtatTache.EN_INSTANCE, null, dateDebut, dateFin, dateDebut, dateFin, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_PM, entreprise, CategorieEntreprise.SP, oipm);
 				return entreprise.getNumero();
 			}
 		});
@@ -245,6 +245,8 @@ public class TacheSynchronizerInterceptorTest extends BusinessTest {
 				final TacheEnvoiDeclarationImpotPM tacheEnvoi = (TacheEnvoiDeclarationImpotPM) tache;
 				assertEquals(dateDebut, tacheEnvoi.getDateDebut());
 				assertEquals(dateFin, tacheEnvoi.getDateFin());
+				assertEquals(dateDebut, tacheEnvoi.getDateDebutExercice());
+				assertEquals(dateFin, tacheEnvoi.getDateFinExercice());
 				assertEquals(TypeDocument.DECLARATION_IMPOT_PM, tacheEnvoi.getTypeDocument());
 				assertEquals(TypeContribuable.VAUDOIS_ORDINAIRE, tacheEnvoi.getTypeContribuable());
 				assertEquals(CategorieEntreprise.PM, tacheEnvoi.getCategorieEntreprise());          // valeur corrigée !

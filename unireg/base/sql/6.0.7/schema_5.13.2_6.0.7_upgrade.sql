@@ -29,9 +29,16 @@ CREATE INDEX IDX_TIERS_NO_ETABLISSEMENT ON TIERS(NUMERO_ETABLISSEMENT ASC);
 ALTER TABLE TIERS ADD (ETB_ENSEIGNE NVARCHAR2(250));
 ALTER TABLE TIERS ADD (ETB_RAISON_SOCIALE NVARCHAR2(250));
 
+-- Nouvelle colonne dans la table des tiers pour stocker la date de début du premier exercice commercial d'une entreprise
+ALTER TABLE TIERS ADD DATE_DEBUT_PREMIER_EXERCICE NUMBER(10,0);
+
 -- Ménage sur la table des déclarations, des tiers (colonnes obsolètes)
 ALTER TABLE DECLARATION DROP COLUMN NOM_DOCUMENT;
 ALTER TABLE TIERS DROP COLUMN REMARQUE;
+
+-- Nouvelles colonnes sur les tables DECLARATION et TACHE pour stocker les dates de l'exercice commercial lié à une DI PM
+ALTER TABLE DECLARATION ADD (DATE_DEBUT_EXERCICE NUMBER(10, 0), DATE_FIN_EXERCICE NUMBER(10, 0));
+ALTER TABLE TACHE ADD (DECL_DATE_DEBUT_EXERCICE NUMBER(10, 0), DECL_DATE_FIN_EXERCICE NUMBER(10, 0));
 
 -- Nouvelle table pour les domiciles d'établissement
 CREATE TABLE DOMICILE_ETABLISSEMENT (

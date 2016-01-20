@@ -15,15 +15,16 @@ import java.util.List;
 import java.util.Set;
 
 import org.hibernate.annotations.Index;
+import org.hibernate.annotations.Type;
 import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.DateRangeComparator;
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.AnnulableHelper;
 import ch.vd.uniregctb.common.ComparisonHelper;
 
 /**
- * Entreprise ou l'etablissement connue du registre des personnes morales de
- * l'ACI
+ * Entreprise connue du registre des personnes morales de l'ACI
  */
 @Entity
 @DiscriminatorValue("Entreprise")
@@ -44,6 +45,7 @@ public class Entreprise extends ContribuableImpositionPersonnesMorales {
 	private Set<Bouclement> bouclements;
 	private Set<EtatEntreprise> etats;
 	private Set<FlagEntreprise> flags;
+	private RegDate dateDebutPremierExerciceCommercial;
 
 	@Column(name = "NUMERO_ENTREPRISE")
 	@Index(name = "IDX_TIERS_NO_ENTREPRISE")
@@ -287,6 +289,16 @@ public class Entreprise extends ContribuableImpositionPersonnesMorales {
 		}
 		this.flags.add(flag);
 		flag.setEntreprise(this);
+	}
+
+	@Column(name = "DATE_DEBUT_PREMIER_EXERCICE")
+	@Type(type = "ch.vd.uniregctb.hibernate.RegDateUserType")
+	public RegDate getDateDebutPremierExerciceCommercial() {
+		return dateDebutPremierExerciceCommercial;
+	}
+
+	public void setDateDebutPremierExerciceCommercial(RegDate dateDebutPremierExerciceCommercial) {
+		this.dateDebutPremierExerciceCommercial = dateDebutPremierExerciceCommercial;
 	}
 
 	public Entreprise() {

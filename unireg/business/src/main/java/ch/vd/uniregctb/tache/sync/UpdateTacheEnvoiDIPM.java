@@ -19,6 +19,9 @@ public class UpdateTacheEnvoiDIPM extends UpdateTacheEnvoiDI<TacheEnvoiDeclarati
 		if (addAction.periodeImposition.getCategorieEntreprise() != null && addAction.periodeImposition.getCategorieEntreprise() != tacheEnvoi.getCategorieEntreprise()) {
 			tacheEnvoi.setCategorieEntreprise(addAction.periodeImposition.getCategorieEntreprise());
 		}
+
+		tacheEnvoi.setDateDebutExercice(addAction.periodeImposition.getExerciceCommercial().getDateDebut());
+		tacheEnvoi.setDateFinExercice(addAction.periodeImposition.getExerciceCommercial().getDateFin());
 	}
 
 	@Override

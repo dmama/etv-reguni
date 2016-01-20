@@ -804,20 +804,27 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 		return di;
 	}
 
-
 	protected DeclarationImpotOrdinairePM addDeclarationImpot(ContribuableImpositionPersonnesMorales pm, PeriodeFiscale periode, RegDate debut, RegDate fin,
+	                                                          RegDate debutExercice, RegDate finExercice,
 	                                                          CollectiviteAdministrative retourCollectiviteAdministrative,
 	                                                          TypeContribuable typeContribuable, ModeleDocument modele) {
 		final DeclarationImpotOrdinairePM d = new DeclarationImpotOrdinairePM();
 		d.setPeriode(periode);
 		d.setDateDebut(debut);
 		d.setDateFin(fin);
+		d.setDateDebutExerciceCommercial(debutExercice);
+		d.setDateFinExerciceCommercial(finExercice);
 		d.setTypeContribuable(typeContribuable);
 		d.setModeleDocument(modele);
 		d.setRetourCollectiviteAdministrativeId(retourCollectiviteAdministrative == null ? null : retourCollectiviteAdministrative.getId());
 		return assignerNumeroSequenceEtSaveDeclarationImpot(pm, d);
 	}
 
+	protected DeclarationImpotOrdinairePM addDeclarationImpot(ContribuableImpositionPersonnesMorales pm, PeriodeFiscale periode, RegDate debut, RegDate fin,
+	                                                          CollectiviteAdministrative retourCollectiviteAdministrative,
+	                                                          TypeContribuable typeContribuable, ModeleDocument modele) {
+		return addDeclarationImpot(pm, periode, debut, fin, debut, fin, retourCollectiviteAdministrative, typeContribuable, modele);
+	}
 
 	/**
 	 * Ajoute une tâche d'envoi de déclaration d'impôt PP avec les paramètres spécifiés.
@@ -832,9 +839,10 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 	/**
 	 * Ajoute une tâche d'envoi de déclaration d'impôt PP avec les paramètres spécifiés.
 	 */
-	protected TacheEnvoiDeclarationImpotPM addTacheEnvoiDIPM(TypeEtatTache etat, RegDate dateEcheance, RegDate dateDebut, RegDate dateFin, TypeContribuable typeContribuable, TypeDocument typeDocument,
+	protected TacheEnvoiDeclarationImpotPM addTacheEnvoiDIPM(TypeEtatTache etat, RegDate dateEcheance, RegDate dateDebut, RegDate dateFin,
+	                                                         RegDate dateDebutExercice, RegDate dateFinExercice, TypeContribuable typeContribuable, TypeDocument typeDocument,
 	                                                         ContribuableImpositionPersonnesMorales contribuable, CategorieEntreprise categoreEntreprise, @Nullable CollectiviteAdministrative colAdm) {
-		TacheEnvoiDeclarationImpotPM tache = new TacheEnvoiDeclarationImpotPM(etat, dateEcheance, contribuable, dateDebut, dateFin, typeContribuable, typeDocument, categoreEntreprise, colAdm);
+		TacheEnvoiDeclarationImpotPM tache = new TacheEnvoiDeclarationImpotPM(etat, dateEcheance, contribuable, dateDebut, dateFin, dateDebutExercice, dateFinExercice, typeContribuable, typeDocument, categoreEntreprise, colAdm);
 		tache = merge(tache);
 		return tache;
 	}

@@ -24,7 +24,9 @@ import ch.vd.uniregctb.tiers.DonneeCivileEntreprise;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.EtatEntreprise;
 import ch.vd.uniregctb.tiers.FlagEntreprise;
+import ch.vd.uniregctb.tiers.ForFiscalPrincipalPM;
 import ch.vd.uniregctb.tiers.RegimeFiscal;
+import ch.vd.uniregctb.type.GenreImpot;
 
 public class EntrepriseValidator extends ContribuableImpositionPersonnesMoralesValidator<Entreprise> {
 
@@ -38,6 +40,25 @@ public class EntrepriseValidator extends ContribuableImpositionPersonnesMoralesV
 			vr.merge(validateBouclements(entreprise));
 			vr.merge(validateEtats(entreprise));
 			vr.merge(validateFlags(entreprise));
+
+			// validation de la date de début du premier exercice commercial
+			if (entreprise.getDateDebutPremierExerciceCommercial() != null) {
+				// elle doit toujours être antérieure au égale à la date de début du premier for
+				// principal avec un genre d'impôt 'bénéfice/capital'
+				final List<ForFiscalPrincipalPM> forsPrincipaux = entreprise.getForsFiscauxPrincipauxActifsSorted();
+				for (ForFiscalPrincipalPM ff : forsPrincipaux) {
+					if (ff.getGenreImpot() == GenreImpot.BENEFICE_CAPITAL) {
+						// nous venons de trouver le premier for principal IBC
+						// (comme nous sommes dans le validateur, il n'est pas exclu que la date de début de ce for soit nulle,,,)
+						if (ff.getDateDebut() == null || entreprise.getDateDebutPremierExerciceCommercial().isAfter(ff.getDateDebut())) {
+							vr.addError(String.format("La date de début du premier exercice commercial (%s) doit être antérieure ou égale à la date de début du premier for principal IBC (%s) de l'entreprise.",
+							                          RegDateHelper.dateToDisplayString(entreprise.getDateDebutPremierExerciceCommercial()),
+							                          RegDateHelper.dateToDisplayString(ff.getDateDebut())));
+						}
+						break;
+					}
+				}
+			}
 		}
 		return vr;
 	}

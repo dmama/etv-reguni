@@ -134,9 +134,6 @@
 							<li id="allegementsFiscauxTab">
 								<a href="#tabContent_allegementsFiscauxTab"><fmt:message key="label.allegements.fiscaux" /></a>
 							</li>
-							<li id="bouclementsTab">
-								<a href="#tabContent_bouclementsTab"><fmt:message key="label.bouclements" /></a>
-							</li>
 							<li id="etatsPMTab">
 								<a href="#tabContent_etatsPMTab"><fmt:message key="label.etats.pm" /></a>
 							</li>
@@ -208,7 +205,14 @@
 				<authz:authorize ifAnyGranted="ROLE_VISU_ALL">
 					<c:if test="${command.natureTiers == 'Habitant' || command.natureTiers == 'NonHabitant' || command.natureTiers == 'MenageCommun' || command.natureTiers == 'Entreprise'}">
 						<div id="tabContent_diTab" class="visuTiers">
-							<jsp:include page="di/dis.jsp"/>
+							<c:choose>
+								<c:when test="${command.natureTiers == 'Entreprise'}">
+									<jsp:include page="di/dis-pm.jsp"/>
+								</c:when>
+								<c:otherwise>
+									<jsp:include page="di/dis.jsp"/>
+								</c:otherwise>
+							</c:choose>
 						</div>
 					</c:if>
 					<c:if test="${command.natureTiers == 'Habitant' || command.natureTiers == 'NonHabitant' || command.natureTiers == 'MenageCommun'}">
@@ -223,9 +227,6 @@
 						<div id="tabContent_allegementsFiscauxTab" class="visuTiers">
 							<jsp:include page="pm/allegements-fiscaux.jsp"/>
 						</div>
-						<li id="tabContent_bouclementsTab" class="visuTiers">
-							<jsp:include page="pm/bouclements.jsp"/>
-						</li>
 						<div id="tabContent_etatsPMTab" class="visuTiers">
 							<jsp:include page="pm/etats.jsp"/>
 						</div>

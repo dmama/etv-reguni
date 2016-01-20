@@ -10,6 +10,7 @@ import org.apache.commons.collections4.Predicate;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.di.view.DeclarationView;
 import ch.vd.uniregctb.entreprise.EntrepriseView;
@@ -28,6 +29,7 @@ import ch.vd.uniregctb.tiers.Etablissement;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.NatureTiers;
 import ch.vd.uniregctb.tiers.Tiers;
+import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
 /**
@@ -99,7 +101,6 @@ public class TiersView {
 
 	private List<MouvementDetailView> mouvements;
 
-	@Deprecated
 	private EntrepriseView entreprise;
 	private EtablissementView etablissement;
 
@@ -108,7 +109,6 @@ public class TiersView {
 
 	private List<AllegementFiscalView> allegementsFiscaux;
 	private List<ExerciceCommercial> exercicesCommerciaux;
-	private RegDate dateBouclementFutur;
 
 	private List<DomicileEtablissementView> domicilesEtablissement;
 
@@ -298,7 +298,6 @@ public class TiersView {
 		return entreprise;
 	}
 
-	@Deprecated
 	public void setEntreprise(EntrepriseView entreprise) {
 		this.entreprise = entreprise;
 	}
@@ -343,12 +342,17 @@ public class TiersView {
 		this.exercicesCommerciaux = exercicesCommerciaux;
 	}
 
-	public RegDate getDateBouclementFutur() {
-		return dateBouclementFutur;
+	public ExerciceCommercial getExerciceCommercialCourant() {
+		return DateRangeHelper.rangeAt(exercicesCommerciaux, RegDate.get());
 	}
 
-	public void setDateBouclementFutur(RegDate dateBouclementFutur) {
-		this.dateBouclementFutur = dateBouclementFutur;
+	public RegDate getDateDebutPremierExerciceCommercial() {
+		if (exercicesCommerciaux != null && !exercicesCommerciaux.isEmpty()) {
+			return exercicesCommerciaux.get(0).getDateDebut();
+		}
+		else {
+			return null;
+		}
 	}
 
 	public List<DomicileEtablissementView> getDomicilesEtablissement() {
@@ -413,6 +417,16 @@ public class TiersView {
 
 		final List<T> output = new ArrayList<>(source.size());
 		return CollectionUtils.select(source, predicate, output);
+	}
+
+	public boolean isWithForIBC() {
+		final List<ForFiscalView> forsIBC = extract(forsFiscaux, new Predicate<ForFiscalView>() {
+			@Override
+			public boolean evaluate(ForFiscalView object) {
+				return !object.isAnnule() && object.getGenreImpot() == GenreImpot.BENEFICE_CAPITAL;
+			}
+		});
+		return !forsIBC.isEmpty();
 	}
 
 	public List<SituationFamilleView> getSituationsFamille() {
