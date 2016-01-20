@@ -10,10 +10,19 @@
 </c:choose>
 <c:set var="page" value="${param.page}"/>
 <c:set var="nombreElementsTable" value="${param.nombreElementsTable}"/>
+<unireg:setAuth var="autorisations" tiersId="${entreprise.id}"/>
 
 <fieldset>
 	<legend><span><fmt:message key="label.entreprise"/></span></legend>
-
+	<c:if test="${page == 'edit' && autorisations.donneesCiviles && autorisations.identificationEntreprise}">
+		<table border="0">
+			<tr>
+				<td>
+					<unireg:raccourciModifier link="../entreprise/ide/edit.do?id=${entreprise.id}" tooltip="Modifier le numéro IDE" display="label.bouton.modifier"/>
+				</td>
+			</tr>
+		</table>
+	</c:if>
 	<unireg:nextRowClass reset="1"/>
 	<table>
 		<tr class="<unireg:nextRowClass/>" >
@@ -46,7 +55,7 @@
 		<label class="noprint" for="showRaisonSocialeHisto"><fmt:message key="label.historique" /></label>
 	</c:if>
 
-	<c:if test="${page == 'edit' }"> <%--&& autorisations.donneesCiviles--%>
+	<c:if test="${page == 'edit' && autorisations.donneesCiviles}">
 		<table border="0">
 			<tr>
 				<td>
@@ -162,7 +171,7 @@
 		<label class="noprint" for="showFormesJuridiquesHisto"><fmt:message key="label.historique" /></label>
 	</c:if>
 
-	<c:if test="${page == 'edit' }"><%-- && autorisations.donneesCiviles--%>
+	<c:if test="${page == 'edit' && autorisations.donneesCiviles}">
 		<table border="0">
 			<tr>
 				<td>
@@ -210,7 +219,7 @@
 		<label class="noprint" for="showCapitauxHisto"><fmt:message key="label.historique" /></label>
 	</c:if>
 
-	<c:if test="${page == 'edit' }"> <%--&& autorisations.donneesCiviles--%>
+	<c:if test="${page == 'edit' && autorisations.donneesCiviles}">
 		<table border="0">
 			<tr>
 				<td>

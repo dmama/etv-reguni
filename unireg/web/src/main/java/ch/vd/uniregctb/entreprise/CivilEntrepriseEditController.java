@@ -2,6 +2,7 @@ package ch.vd.uniregctb.entreprise;
 
 import javax.validation.Valid;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
@@ -33,6 +34,8 @@ import ch.vd.uniregctb.tiers.TiersMapHelper;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.tiers.manager.AutorisationManager;
 import ch.vd.uniregctb.tiers.manager.Autorisations;
+import ch.vd.uniregctb.tiers.validator.ContribuableInfosEntrepriseViewValidator;
+import ch.vd.uniregctb.tiers.view.ContribuableInfosEntrepriseView;
 import ch.vd.uniregctb.utils.RegDateEditor;
 
 @Controller
@@ -100,6 +103,7 @@ public class CivilEntrepriseEditController {
 			addSubValidator(EditFormeJuridiqueView.class, new EditFormeJuridiqueViewValidator());
 			addSubValidator(AddCapitalView.class, new AddCapitalViewValidator());
 			addSubValidator(EditCapitalView.class, new EditCapitalViewValidator());
+			addSubValidator(ContribuableInfosEntrepriseView.class, new ContribuableInfosEntrepriseViewValidator());
 		}
 	}
 
@@ -490,4 +494,59 @@ public class CivilEntrepriseEditController {
 		return "redirect:/civil/entreprise/edit.do?id=" + entreprise.getId();// + "&highlightFor=" + formeJuridique.getId();
 	}
 
+	@Transactional(rollbackFor = Throwable.class)
+	@RequestMapping(value = "/ide/edit.do", method = RequestMethod.GET)
+	public String editIdeEntreprise(Model model, @RequestParam(value = ID) long id) {
+/*
+		if (!SecurityHelper.isGranted(securityProvider, Role.MODIF_AC)) {
+			throw new AccessDeniedException("Vous ne possédez pas les droits d'accès suffisants à la modification des tiers de ce type.");
+		}
+*/
+
+		final Tiers tiers = tiersDAO.get(id);
+		if (tiers != null && tiers instanceof Entreprise) {
+			final Autorisations auth = getAutorisations(tiers);
+			if (!auth.isDonneesCiviles() || !auth.isIdentificationEntreprise()) {
+				throw new AccessDeniedException("Vous ne possédez pas les droits IfoSec d'édition d'entreprises.");
+			}
+			final ContribuableInfosEntrepriseView view = new ContribuableInfosEntrepriseView((Entreprise) tiers);
+			model.addAttribute(DATA, view);
+			model.addAttribute(TIERS_ID, id);
+			return "/tiers/edition/civil/edit-ide";
+		}
+		else {
+			throw new TiersNotFoundException(id);
+		}
+	}
+
+	@Transactional(rollbackFor = Throwable.class)
+	@RequestMapping(value = "/ide/edit.do", method = RequestMethod.POST)
+	public String doEditIdeHabitant(@RequestParam(value = ID) long id, Model model, @Valid @ModelAttribute(DATA) ContribuableInfosEntrepriseView view, BindingResult bindingResult) {
+/*
+		if (!SecurityHelper.isGranted(securityProvider, Role.MODIF_AC)) {
+			throw new AccessDeniedException("Vous ne possédez pas les droits d'accès suffisants à la modification des tiers de ce type.");
+		}
+*/
+
+		if (bindingResult.hasErrors()) {
+			model.addAttribute(DATA, view);
+			model.addAttribute(TIERS_ID, id);
+			return "/tiers/edition/civil/edit-ide";
+		}
+
+		final Tiers tiers = tiersDAO.get(id);
+		if (tiers != null && tiers instanceof Entreprise) {
+			final Autorisations auth = getAutorisations(tiers);
+			if (!auth.isDonneesCiviles() || !auth.isIdentificationEntreprise()) {      // FIXME: Et aussi IDE? -> identificationEntreprise
+				throw new AccessDeniedException("Vous ne possédez pas les droits IfoSec d'édition d'entreprises.");
+			}
+
+			tiersService.setIdentifiantEntreprise((Entreprise) tiers, StringUtils.trimToNull(view.getIde()));
+		}
+		else {
+			throw new TiersNotFoundException(id);
+		}
+
+		return "redirect:/civil/entreprise/edit.do?id=" + id;
+	}
 }
