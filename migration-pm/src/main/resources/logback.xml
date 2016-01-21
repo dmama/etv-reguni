@@ -140,6 +140,17 @@
 		<appender-ref ref="DP_APM"/>
 	</logger>
 
+	<appender name="MAPPINGS_REGIMES_FISCAUX" class="ch.qos.logback.core.FileAppender">
+		<file>log/mappings-regimes-fiscaux.csv</file>
+		<append>true</append>
+		<encoder>
+			<pattern>%msg%n</pattern>
+		</encoder>
+	</appender>
+	<logger name="ch.vd.uniregctb.migration.pm.log.LogCategory.MAPPINGS_REGIMES_FISCAUX" additivity="false">
+		<appender-ref ref="MAPPINGS_REGIMES_FISCAUX"/>
+	</logger>
+
 	<appender name="FORS_OUVERTS_APRES_FIN_ASSUJETTISSEMENT" class="ch.qos.logback.core.FileAppender">
 		<file>log/fors-ouverts-apres-fin-assuj.csv</file>
 		<append>true</append>

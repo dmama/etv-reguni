@@ -10,6 +10,7 @@ import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.uniregctb.common.StringRenderer;
 import ch.vd.uniregctb.migration.pm.engine.collector.EntityLinkCollector;
 import ch.vd.uniregctb.migration.pm.regpm.NumeroIDE;
+import ch.vd.uniregctb.tiers.RegimeFiscal;
 import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
@@ -106,6 +107,11 @@ public enum LoggedElementAttribute {
 	IDE_REGPM(NumeroIDE.class, no -> String.format("%s%d", no.getCategorie(), no.getNumero()), LoggedElementHelper.<NumeroIDE>exceptionThrowing()),
 	IDE_RCENT(String.class, s -> s, LoggedElementHelper.<String>exceptionThrowing()),
 	IDE_DIFF_FLAG(Boolean.class, b -> b ? "Différents" : "Identiques", LoggedElementHelper.<Boolean>exceptionThrowing()),
+
+	DATE_DEBUT_RF(RegDate.class, RegDateHelper::dateToDashString, LoggedElementHelper.<RegDate>exceptionThrowing()),
+	PORTEE_RF(RegimeFiscal.Portee.class, Enum::name, LoggedElementHelper.<RegimeFiscal.Portee>exceptionThrowing()),
+	ANCIEN_CODE_RF(String.class, s -> s, LoggedElementHelper.<String>exceptionThrowing()),
+	NOUVEAU_CODE_RF(String.class, s -> s, LoggedElementHelper.<String>exceptionThrowing()),
 
 	;
 

@@ -26,6 +26,7 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.mutable.Mutable;
 import org.apache.commons.lang3.mutable.MutableObject;
@@ -94,6 +95,7 @@ import ch.vd.uniregctb.migration.pm.log.ForFiscalIgnoreAbsenceAssujettissementLo
 import ch.vd.uniregctb.migration.pm.log.ForPrincipalOuvertApresFinAssujettissementLoggedElement;
 import ch.vd.uniregctb.migration.pm.log.LogCategory;
 import ch.vd.uniregctb.migration.pm.log.LogLevel;
+import ch.vd.uniregctb.migration.pm.log.RegimeFiscalMappingLoggedElement;
 import ch.vd.uniregctb.migration.pm.mapping.IdMapping;
 import ch.vd.uniregctb.migration.pm.regpm.ContactEntreprise;
 import ch.vd.uniregctb.migration.pm.regpm.InscriptionRC;
@@ -3791,8 +3793,24 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		case _42C_SOCIETE_DE_DOMICILE:
 			typeEffectif = type;
 			break;
+		case _40_SOCIETE_DE_BASE:
+			typeEffectif = RegpmTypeRegimeFiscal._41C_SOCIETE_DE_BASE_MIXTE;
+			break;
 		default:
 			typeEffectif = RegpmTypeRegimeFiscal._01_ORDINAIRE;
+			break;
+		}
+		return extractCode(typeEffectif);
+	}
+
+	private static String mapTypeRegimeFiscalCH(RegpmTypeRegimeFiscal type) {
+		final RegpmTypeRegimeFiscal typeEffectif;
+		switch (type) {
+		case _40_SOCIETE_DE_BASE:
+			typeEffectif = RegpmTypeRegimeFiscal._41C_SOCIETE_DE_BASE_MIXTE;
+			break;
+		default:
+			typeEffectif = type;
 			break;
 		}
 		return extractCode(typeEffectif);
@@ -3802,7 +3820,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		return type.name().substring(1, type.name().indexOf('_', 1));
 	}
 
-	private static RegimeFiscal mapRegimeFiscal(RegimeFiscal.Portee portee, RegpmRegimeFiscal rf) {
+	private static RegimeFiscal mapRegimeFiscal(RegimeFiscal.Portee portee, RegpmRegimeFiscal rf, MigrationResultContextManipulation mr) {
 		final RegimeFiscal unireg = new RegimeFiscal();
 		unireg.setDateDebut(rf.getDateDebut());
 		unireg.setDateFin(null);
@@ -3811,15 +3829,28 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 			unireg.setCode(mapTypeRegimeFiscalVD(rf.getType()));
 		}
 		else {
-			unireg.setCode(extractCode(rf.getType()));
+			unireg.setCode(mapTypeRegimeFiscalCH(rf.getType()));
 		}
+
+		// dump de la liste des mappings
+		final String ancienCode = extractCode(rf.getType());
+		mr.pushContextValue(RegimeFiscalMappingLoggedElement.class, new RegimeFiscalMappingLoggedElement(unireg, ancienCode));
+		try {
+			// niveau WARN si le code change, INFO sinon
+			final LogLevel level = ObjectUtils.equals(ancienCode, unireg.getCode()) ? LogLevel.INFO : LogLevel.WARN;
+			mr.addMessage(LogCategory.MAPPINGS_REGIMES_FISCAUX, level, StringUtils.EMPTY);
+		}
+		finally {
+			mr.popContexteValue(RegimeFiscalMappingLoggedElement.class);
+		}
+
 		return unireg;
 	}
 
 	private <T extends RegpmRegimeFiscal> List<RegimeFiscal> mapRegimesFiscaux(RegimeFiscal.Portee portee,
 	                                                                           SortedSet<T> regimesRegpm,
 	                                                                           @Nullable RegDate dateFinRegimes,
-	                                                                           MigrationResultProduction mr) {
+	                                                                           MigrationResultContextManipulation mr) {
 		// collecte des régimes fiscaux CH sans date de fin d'abord...
 		final List<RegimeFiscal> liste = regimesRegpm.stream()
 				.filter(r -> r.getDateAnnulation() == null)         // on ne migre pas les régimes fiscaux annulés
@@ -3862,7 +3893,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 				                                                rf.getType()),
 				                            LogCategory.SUIVI,
 				                            mr))
-				.map(r -> mapRegimeFiscal(portee, r))
+				.map(r -> mapRegimeFiscal(portee, r, mr))
 				.collect(Collectors.toList());
 
 		// ... puis attribution des dates de fin
@@ -3870,7 +3901,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		return liste;
 	}
 
-	private void migrateRegimesFiscaux(RegpmEntreprise regpm, Entreprise unireg, MigrationResultProduction mr) {
+	private void migrateRegimesFiscaux(RegpmEntreprise regpm, Entreprise unireg, MigrationResultContextManipulation mr) {
 
 		final RegDate dateFinActivite = mr.getExtractedData(DateFinActiviteData.class, buildEntrepriseKey(regpm)).date;
 

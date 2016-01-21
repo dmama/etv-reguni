@@ -22,6 +22,7 @@ import ch.vd.uniregctb.migration.pm.log.LogCategory;
 import ch.vd.uniregctb.migration.pm.log.LoggedElement;
 import ch.vd.uniregctb.migration.pm.log.LoggedElementAttribute;
 import ch.vd.uniregctb.migration.pm.log.RapportEntreTiersLoggedElement;
+import ch.vd.uniregctb.migration.pm.log.RegimeFiscalMappingLoggedElement;
 
 public abstract class LogStructure {
 
@@ -68,6 +69,7 @@ public abstract class LogStructure {
 		final Function<LogContexte, LoggedElement> donneesForsOuvertsApresFinAssuj = new FromContextInformationSource(ForPrincipalOuvertApresFinAssujettissementLoggedElement.class, ForPrincipalOuvertApresFinAssujettissementLoggedElement.EMPTY);
 		final Function<LogContexte, LoggedElement> donneesForsIgnoresAucunAssujettissement = new FromContextInformationSource(ForFiscalIgnoreAbsenceAssujettissementLoggedElement.class, ForFiscalIgnoreAbsenceAssujettissementLoggedElement.EMPTY);
 		final Function<LogContexte, LoggedElement> donneesDifferencesDonneesCiviles = new FromContextInformationSource(DifferencesDonneesCivilesLoggedElement.class, DifferencesDonneesCivilesLoggedElement.EMPTY);
+		final Function<LogContexte, LoggedElement> donneesMappingRegimeFiscal = new FromContextInformationSource(RegimeFiscalMappingLoggedElement.class, RegimeFiscalMappingLoggedElement.EMPTY);
 
 		final Map<LogCategory, List<Function<LogContexte, LoggedElement>>> map = new EnumMap<>(LogCategory.class);
 
@@ -103,6 +105,9 @@ public abstract class LogStructure {
 
 		// Dans la liste des entreprises de forme juridique DP_APM, on met l'entreprise seulement
 		map.put(LogCategory.DP_APM, Arrays.asList(donneesNiveau, donneesEntreprise));
+
+		// Dans la liste des mappings des régismes fiscaux, on met l'entreprise et le régime fiscal
+		map.put(LogCategory.MAPPINGS_REGIMES_FISCAUX, Arrays.asList(donneesNiveau, donneesEntreprise, donneesMappingRegimeFiscal));
 
 		// Liste des fors ouverts après la fermeture de tous les assujettissements
 		map.put(LogCategory.FORS_OUVERTS_APRES_FIN_ASSUJETTISSEMENT, Arrays.asList(donneesNiveau, donneesForsOuvertsApresFinAssuj));

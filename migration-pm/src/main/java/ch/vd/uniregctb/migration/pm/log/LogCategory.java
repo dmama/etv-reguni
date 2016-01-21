@@ -66,6 +66,11 @@ public enum LogCategory {
 	DP_APM,
 
 	/**
+	 * Liste des mappings utilisés sur les régimes fiscaux
+	 */
+	MAPPINGS_REGIMES_FISCAUX,
+
+	/**
 	 * Liste des fors principaux ignorés car ouverts postérieurement à toute date de fin d'assujettissement ICC
 	 */
 	FORS_OUVERTS_APRES_FIN_ASSUJETTISSEMENT,

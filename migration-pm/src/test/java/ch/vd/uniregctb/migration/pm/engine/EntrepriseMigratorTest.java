@@ -48,6 +48,9 @@ import ch.vd.uniregctb.migration.pm.engine.helpers.AdresseHelper;
 import ch.vd.uniregctb.migration.pm.engine.helpers.DoublonProvider;
 import ch.vd.uniregctb.migration.pm.engine.helpers.OrganisationServiceAccessor;
 import ch.vd.uniregctb.migration.pm.log.LogCategory;
+import ch.vd.uniregctb.migration.pm.log.LoggedElement;
+import ch.vd.uniregctb.migration.pm.log.LoggedMessage;
+import ch.vd.uniregctb.migration.pm.log.RegimeFiscalMappingLoggedElement;
 import ch.vd.uniregctb.migration.pm.mapping.IdMapper;
 import ch.vd.uniregctb.migration.pm.regpm.NumeroIDE;
 import ch.vd.uniregctb.migration.pm.regpm.RaisonSociale;
@@ -1351,9 +1354,11 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		final long noEntreprise = 1234L;
 		final RegpmEntreprise e = buildEntreprise(noEntreprise);
 		addRegimeFiscalCH(e, RegDate.get(2000, 1, 3), null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
+		addRegimeFiscalCH(e, RegDate.get(2001, 1, 3), null, RegpmTypeRegimeFiscal._40_SOCIETE_DE_BASE);
 		addRegimeFiscalCH(e, RegDate.get(2005, 1, 1), RegDate.get(2006, 4, 12), RegpmTypeRegimeFiscal._109_PM_AVEC_EXONERATION_ART_90G);        // ignoré car annulé
 		addRegimeFiscalCH(e, RegDate.get(2006, 1, 1), null, RegpmTypeRegimeFiscal._109_PM_AVEC_EXONERATION_ART_90G);
 		addRegimeFiscalVD(e, RegDate.get(2000, 1, 1), null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
+		addRegimeFiscalVD(e, RegDate.get(2001, 1, 1), null, RegpmTypeRegimeFiscal._40_SOCIETE_DE_BASE);
 		addRegimeFiscalVD(e, RegDate.get(2105, 4, 2), null, RegpmTypeRegimeFiscal._31_SOCIETE_ORDINAIRE);       // ignoré car date dans le futur
 
 		final MockGraphe graphe = new MockGraphe(Collections.singletonList(e),
@@ -1383,18 +1388,18 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 
 			final Set<RegimeFiscal> regimesFiscauxBruts = entreprise.getRegimesFiscaux();
 			Assert.assertNotNull(regimesFiscauxBruts);
-			Assert.assertEquals(3, regimesFiscauxBruts.size());     // 1 VD (la date dans le futur n'est pas migrée) + 2 CH (l'annulé n'est pas migré)
+			Assert.assertEquals(5, regimesFiscauxBruts.size());     // 2 VD (la date dans le futur n'est pas migrée) + 3 CH (l'annulé n'est pas migré)
 
 			final List<RegimeFiscal> regimesFiscauxTries = entreprise.getRegimesFiscauxNonAnnulesTries();
 			Assert.assertNotNull(regimesFiscauxTries);
-			Assert.assertEquals(3, regimesFiscauxTries.size());
+			Assert.assertEquals(5, regimesFiscauxTries.size());
 
 			{
 				final RegimeFiscal rf = regimesFiscauxTries.get(0);
 				Assert.assertNotNull(rf);
 				Assert.assertEquals(RegimeFiscal.Portee.VD, rf.getPortee());
 				Assert.assertEquals(RegDate.get(2000, 1, 1), rf.getDateDebut());
-				Assert.assertNull(rf.getDateFin());
+				Assert.assertEquals(RegDate.get(2000, 12, 31), rf.getDateFin());
 				Assert.assertNull(rf.getAnnulationDate());
 				Assert.assertEquals(MockTypeRegimeFiscal.ORDINAIRE_PM.getCode(), rf.getCode());
 			}
@@ -1403,12 +1408,30 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 				Assert.assertNotNull(rf);
 				Assert.assertEquals(RegimeFiscal.Portee.CH, rf.getPortee());
 				Assert.assertEquals(RegDate.get(2000, 1, 3), rf.getDateDebut());
-				Assert.assertEquals(RegDate.get(2005, 12, 31), rf.getDateFin());
+				Assert.assertEquals(RegDate.get(2001, 1, 2), rf.getDateFin());
 				Assert.assertNull(rf.getAnnulationDate());
 				Assert.assertEquals(MockTypeRegimeFiscal.ORDINAIRE_PM.getCode(), rf.getCode());
 			}
 			{
 				final RegimeFiscal rf = regimesFiscauxTries.get(2);
+				Assert.assertNotNull(rf);
+				Assert.assertEquals(RegimeFiscal.Portee.VD, rf.getPortee());
+				Assert.assertEquals(RegDate.get(2001, 1, 1), rf.getDateDebut());
+				Assert.assertNull(rf.getDateFin());
+				Assert.assertNull(rf.getAnnulationDate());
+				Assert.assertEquals(MockTypeRegimeFiscal.BASE_MIXTE_CANTON.getCode(), rf.getCode());        // 40 -> 41C
+			}
+			{
+				final RegimeFiscal rf = regimesFiscauxTries.get(3);
+				Assert.assertNotNull(rf);
+				Assert.assertEquals(RegimeFiscal.Portee.CH, rf.getPortee());
+				Assert.assertEquals(RegDate.get(2001, 1, 3), rf.getDateDebut());
+				Assert.assertEquals(RegDate.get(2005, 12, 31), rf.getDateFin());
+				Assert.assertNull(rf.getAnnulationDate());
+				Assert.assertEquals(MockTypeRegimeFiscal.BASE_MIXTE_CANTON.getCode(), rf.getCode());        // 40 -> 41C
+			}
+			{
+				final RegimeFiscal rf = regimesFiscauxTries.get(4);
 				Assert.assertNotNull(rf);
 				Assert.assertEquals(RegimeFiscal.Portee.CH, rf.getPortee());
 				Assert.assertEquals(RegDate.get(2006, 1, 1), rf.getDateDebut());
@@ -1418,6 +1441,22 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 			}
 			return null;
 		});
+
+		// vérification des messages dans le contexte "MAPPINGS_REGIMES_FISCAUX"
+		final List<MigrationResultCollector.Message> messages = mr.getMessages().get(LogCategory.MAPPINGS_REGIMES_FISCAUX);
+		Assert.assertNotNull(messages);
+		final List<String> textes = messages.stream()
+				.map(msg -> msg.context.get(RegimeFiscalMappingLoggedElement.class))
+				.map(LoggedElement::resolve)
+				.map(LoggedMessage::getMessage)
+				.collect(Collectors.toList());
+
+		Assert.assertEquals(5, textes.size());
+		Assert.assertEquals("2000-01-03;CH;01;01", textes.get(0));
+		Assert.assertEquals("2001-01-03;CH;40;41C", textes.get(1));
+		Assert.assertEquals("2006-01-01;CH;109;109", textes.get(2));
+		Assert.assertEquals("2000-01-01;VD;01;01", textes.get(3));
+		Assert.assertEquals("2001-01-01;VD;40;41C", textes.get(4));
 	}
 
 	@Test
