@@ -107,6 +107,6 @@ public class EtatEntreprise extends HibernateEntity implements LinkedEntity, Com
 
 	@Override
 	public String toString() {
-		return String.format("Etat %s obtenu le %s", type, RegDateHelper.dateToDisplayString(dateObtention));
+		return String.format("Etat %s obtenu le %s, %s", type, RegDateHelper.dateToDisplayString(dateObtention), generation);
 	}
 }
