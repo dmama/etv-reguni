@@ -2874,7 +2874,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		di.setDateDebut(dateDebut);
 		di.setDateFin(dateFin);
 		di.setDateDebutExerciceCommercial(dateDebut);
-		di.setDateDebutExerciceCommercial(dateFin);
+		di.setDateFinExerciceCommercial(dateFin);
 		di.setDelais(migrateDelaisDeclaration(dossier, di, mr));
 		di.setEtats(migrateEtatsDeclaration(dossier, di, mr));
 		di.setNumero(dossier.getNoParAnnee());
