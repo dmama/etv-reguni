@@ -54,6 +54,7 @@ public class AutorisationManagerImpl implements AutorisationManager {
 	static final String MODIF_DEBITEUR = "DBT";
 	static final String MODIF_DI = "DI";
 	static final String MODIF_BOUCLEMENTS = "BOUCLEMENTS";
+	static final String MODIF_ETATS_PM = "ETATS_PM";
 	static final String MODIF_IDE = "IDE";
 	static final String MODIF_MOUVEMENT = "MVT";
 	static final String FISCAL_FOR_PRINC = "FOR_PRINC";
