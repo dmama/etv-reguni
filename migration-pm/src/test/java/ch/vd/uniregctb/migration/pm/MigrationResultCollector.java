@@ -14,6 +14,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.uniregctb.migration.pm.engine.data.ExtractedDataCache;
+import ch.vd.uniregctb.migration.pm.engine.log.LogContexte;
 import ch.vd.uniregctb.migration.pm.log.LogCategory;
 import ch.vd.uniregctb.migration.pm.log.LogLevel;
 import ch.vd.uniregctb.migration.pm.log.LoggedElement;
@@ -43,7 +44,7 @@ public class MigrationResultCollector implements MigrationResultContextManipulat
 	private final Map<LogCategory, List<Message>> messages = new EnumMap<>(LogCategory.class);
 	private final List<Runnable> postTransactionCallbacks = new LinkedList<>();
 	private final Map<Class<?>, List<?>> preTransactionCommitData = new HashMap<>();
-	private final Map<Class<? extends LoggedElement>, LoggedElement> context = new HashMap<>();
+	private final LogContexte context = new LogContexte();
 	private final Graphe currentGraphe;
 	private final ExtractedDataCache extractedDataCache;
 
@@ -59,7 +60,7 @@ public class MigrationResultCollector implements MigrationResultContextManipulat
 			forCat = new LinkedList<>();
 			messages.put(cat, forCat);
 		}
-		forCat.add(new Message(niveau, msg, getCurrentContextSnapshot()));
+		forCat.add(new Message(niveau, msg, context.getCurrentContextSnapshot()));
 	}
 
 	@Override
@@ -99,19 +100,14 @@ public class MigrationResultCollector implements MigrationResultContextManipulat
 		return preTransactionCommitData;
 	}
 
-	@NotNull
-	private Map<Class<? extends LoggedElement>, LoggedElement> getCurrentContextSnapshot() {
-		return new HashMap<>(context);
-	}
-
 	@Override
 	public <E extends LoggedElement> void pushContextValue(Class<E> clazz, @NotNull E value) {
-		context.put(clazz, value);
+		context.pushContextValue(clazz, value);
 	}
 
 	@Override
 	public <E extends LoggedElement> void popContexteValue(Class<E> clazz) {
-		context.remove(clazz);
+		context.popContextValue(clazz);
 	}
 
 	@Override

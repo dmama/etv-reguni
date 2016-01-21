@@ -5,6 +5,8 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Stack;
 
+import org.jetbrains.annotations.NotNull;
+
 import ch.vd.uniregctb.migration.pm.log.LoggedElement;
 
 /**
@@ -18,12 +20,12 @@ public final class LogContexte {
 	/**
 	 * Les valeurs connues
 	 */
-	private final Map<Class<?>, LoggedElement> map = new HashMap<>();
+	private final Map<Class<? extends LoggedElement>, LoggedElement> map = new HashMap<>();
 
 	/**
 	 * Les piles d'éléments pour chaque classe (support du push/pop)
 	 */
-	private final Map<Class<?>, Stack<LoggedElement>> stacks = new HashMap<>();
+	private final Map<Class<? extends LoggedElement>, Stack<LoggedElement>> stacks = new HashMap<>();
 
 	/**
 	 * Assigne une nouvelle valeur
@@ -51,6 +53,14 @@ public final class LogContexte {
 		else {
 			map.put(clazz, previous);
 		}
+	}
+
+	/**
+	 * @return une photo de la valeur courante du contexte
+	 */
+	@NotNull
+	public Map<Class<? extends LoggedElement>, LoggedElement> getCurrentContextSnapshot() {
+		return new HashMap<>(map);
 	}
 
 	/**
