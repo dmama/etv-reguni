@@ -1,0 +1,329 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+
+	<bean id="globalTiersIndexer" class="ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexerImpl">
+		<property name="globalIndex" ref="globalTiersIndex" />
+		<property name="tiersSearcher" ref="globalTiersSearcher" />
+		<property name="tiersDAO" ref="tiersDAO" />
+		<property name="serviceCivilService" ref="serviceCivilService" />
+		<property name="serviceCivilCacheWarmer" ref="serviceCivilCacheWarmer" />
+		<property name="serviceInfra" ref="serviceInfrastructureService" />
+		<property name="adresseService" ref="adresseService" />
+		<property name="tiersService" ref="tiersService" />
+		<property name="avatarService" ref="avatarService" />
+		<property name="serviceOrganisationService" ref="serviceOrganisationService"/>
+		<property name="transactionManager" ref="transactionManager" />
+		<property name="sessionFactory"  ref="sessionFactory"/>
+		<property name="statsService" ref="statsService" />
+		<property name="dialect" ref="hibernateDialect" />
+		<property name="serviceName" value="GlobalTiersIndex"/>
+	</bean>
+
+	<bean id="globalTiersSearcher" class="ch.vd.uniregctb.indexer.tiers.GlobalTiersSearcherImpl">
+		<property name="globalIndex" ref="globalTiersIndex" />
+		<property name="parametreAppService" ref="parametreAppService" />
+	</bean>
+
+	<bean id="globalTiersIndexRaw" class="ch.vd.uniregctb.indexer.GlobalIndex">
+		<constructor-arg ref="fileGlobalTiersIndexDirectory" />
+	</bean>
+
+	<bean id="globalTiersIndexTracing" class="ch.vd.uniregctb.indexer.GlobalIndexTracing">
+		<property name="target" ref="globalTiersIndexRaw" />
+		<property name="statsService" ref="statsService" />
+		<property name="serviceName" value="GlobalTiersIndex"/>
+	</bean>
+
+	<alias alias="globalTiersIndex" name="globalTiersIndexTracing"/>
+
+	<bean id="globalMessageIdentificationIndexer" class="ch.vd.uniregctb.indexer.messageidentification.GlobalMessageIdentificationIndexerImpl">
+		<property name="globalIndex" ref="globalMessageIdentificationIndex"/>
+		<property name="identCtbDAO" ref="identCtbDAO"/>
+		<property name="sessionFactory" ref="sessionFactory"/>
+		<property name="transactionManager" ref="transactionManager"/>
+	</bean>
+
+	<bean id="globalMessageIdentificationSearcher" class="ch.vd.uniregctb.indexer.messageidentification.GlobalMessageIdentificationSearcherImpl">
+		<property name="globalIndex" ref="globalMessageIdentificationIndex"/>
+	</bean>
+
+	<bean id="globalMessageIdentificationIndexRaw" class="ch.vd.uniregctb.indexer.GlobalIndex">
+		<constructor-arg ref="fileGlobalMessageIdentificationIndexDirectory" />
+	</bean>
+
+	<bean id="globalMessageIdentificationIndexTracing" class="ch.vd.uniregctb.indexer.GlobalIndexTracing">
+		<property name="target" ref="globalMessageIdentificationIndexRaw"/>
+		<property name="statsService" ref="statsService"/>
+		<property name="serviceName" value="GlobalMessageIdentificationIndex"/>
+	</bean>
+
+	<alias alias="globalMessageIdentificationIndex" name="globalMessageIdentificationIndexTracing"/>
+	
+	<bean id="scheduler" class="ch.vd.uniregctb.scheduler.OverrideSchedulerFactoryBean">
+		<property name="schedulerName" value="schedulerQuartz" />
+	</bean>
+	
+	<bean id="batchScheduler" class="ch.vd.uniregctb.scheduler.BatchSchedulerImpl">
+		<property name="scheduler" ref="scheduler" />
+		<property name="timeoutOnStopAll" value="5" />		<!-- minutes d'attente max dans l'appel à stopAllRunningJobs() -->
+		<property name="statsService" ref="statsService" />
+	</bean>
+
+	<bean id="tacheService" class="ch.vd.uniregctb.tache.TacheServiceImpl">
+		<property name="tacheDAO" ref="tacheDAO" />
+		<property name="diDAO" ref="diDAO" />
+		<property name="questionnaireSNCDAO" ref="questionnaireSNCDAO"/>
+		<property name="periodeFiscaleDAO" ref="periodeFiscaleDAO" />
+		<property name="diService" ref="diService" />
+		<property name="parametres" ref="parametreAppService" />
+		<property name="serviceInfra" ref="serviceInfrastructureService" />
+		<property name="hibernateTemplate" ref="hibernateTemplate" />
+		<property name="transactionManager" ref="transactionManager" />
+		<property name="tiersService" ref="tiersService" />
+		<property name="assujettissementService" ref="assujettissementService" />
+		<property name="periodeImpositionService" ref="periodeImpositionService" />
+		<property name="adresseService" ref="adresseService" />
+	</bean>
+	
+	<bean id="roleService" class="ch.vd.uniregctb.role.RoleServiceImpl">
+		<property name="hibernateTemplate" ref="hibernateTemplate" />
+		<property name="infraService" ref="serviceInfrastructureService" />
+		<property name="tiersService" ref="tiersService" />
+		<property name="tiersDAO" ref="tiersDAO"/>
+		<property name="transactionManager" ref="transactionManager"/>
+		<property name="adresseService" ref="adresseService"/>
+		<property name="serviceCivilService" ref="serviceCivilService" />
+		<property name="validationService" ref="validationService" />
+		<property name="assujettissementService" ref="assujettissementService" />
+	</bean>
+	
+	<bean id="listesTiersService" class="ch.vd.uniregctb.listes.ListesTiersServiceImpl">
+		<property name="hibernateTemplate" ref="hibernateTemplate"/>
+		<property name="tiersService" ref="tiersService"/>
+		<property name="adresseService" ref="adresseService"/>
+		<property name="transactionManager" ref="transactionManager"/>
+		<property name="tiersDAO" ref="tiersDAO"/>
+		<property name="infraService" ref="serviceInfrastructureService"/>
+		<property name="serviceCivilCacheWarmer" ref="serviceCivilCacheWarmer" />
+	</bean>
+
+	<bean id="acomptesService" class="ch.vd.uniregctb.acomptes.AcomptesServiceImpl">
+		<property name="hibernateTemplate" ref="hibernateTemplate"/>
+		<property name="tiersService" ref="tiersService"/>
+		<property name="transactionManager" ref="transactionManager"/>
+		<property name="tiersDAO" ref="tiersDAO"/>
+		<property name="serviceCivilCacheWarmer" ref="serviceCivilCacheWarmer" />
+		<property name="assujettissementService" ref="assujettissementService" />
+		<property name="adresseService" ref="adresseService"/>
+	</bean>
+
+	<bean id="extractionDonneesRptService" class="ch.vd.uniregctb.listes.afc.ExtractionDonneesRptServiceImpl">
+		<property name="hibernateTemplate" ref="hibernateTemplate"/>
+		<property name="tiersService" ref="tiersService"/>
+		<property name="transactionManager" ref="transactionManager"/>
+		<property name="tiersDAO" ref="tiersDAO"/>
+		<property name="serviceCivilCacheWarmer" ref="serviceCivilCacheWarmer" />
+		<property name="infraService" ref="serviceInfrastructureService"/>
+		<property name="assujettissementService" ref="assujettissementService"/>
+		<property name="periodeImpositionService" ref="periodeImpositionService"/>
+		<property name="adresseService" ref="adresseService"/>
+	</bean>
+
+	<!-- Section Evenement Externe -->
+	<bean id="evenementExterneService" class="ch.vd.uniregctb.evenement.externe.EvenementExterneServiceImpl">
+		<property name="evenementExterneDAO" ref="evenementExterneDAO"/>
+		<property name="tiersDAO" ref="tiersDAO"/>
+		<property name="dataEventService" ref="dataEventService"/>
+	</bean>
+
+	<!-- Section Evenement CEDI -->
+	<bean id="evenementCediService" class="ch.vd.uniregctb.evenement.cedi.EvenementCediServiceImpl">
+		<property name="tiersDAO" ref="tiersDAO"/>
+		<property name="periodeFiscaleDAO" ref="periodeFiscaleDAO"/>
+		<property name="modeleDocumentDAO" ref="modeleDocumentDAO"/>
+		<property name="validationService" ref="validationService"/>
+		<property name="bamMessageSender" ref="bamMessageSender"/>
+		<property name="ibanValidator" ref="ibanValidator"/>
+	</bean>
+
+	<bean id="evenementIAMService" class="ch.vd.uniregctb.evenement.iam.EvenementIAMServiceImpl">
+		<property name="tiersDAO" ref="tiersDAO"/>
+		<property name="validationService" ref="validationService"/>
+	</bean>
+
+	<!-- Section Evenement Declaration-->
+	<bean id="evenementDeclarationService" class="ch.vd.uniregctb.evenement.di.EvenementDeclarationServiceImpl">
+		<property name="tiersDAO" ref="tiersDAO"/>
+		<property name="diService" ref="diService"/>
+		<property name="validationService" ref="validationService"/>
+		<property name="bamMessageSender" ref="bamMessageSender"/>
+	</bean>
+
+
+	<bean id="rapportService" class="ch.vd.uniregctb.rapport.RapportServiceImpl">
+		<property name="docService" ref="docService" />
+		<property name="infraService" ref="serviceInfrastructureService" />
+	</bean>
+	
+	<!--  Paramètres -->
+	<bean id="joursFeriesProvider" class="ch.vd.uniregctb.parametrage.JoursFeriesProviderImpl">
+		<property name="parametreAppService" ref="parametreAppService" />
+	</bean>
+	
+	<bean id="delaisService" class="ch.vd.uniregctb.parametrage.DelaisServiceImpl">
+		<property name="joursFeriesProvider" ref="joursFeriesProvider" />
+		<property name="parametreAppService" ref="parametreAppService" />
+	</bean>
+	
+	<bean id="periodeFiscaleService" class="ch.vd.uniregctb.parametrage.PeriodeFiscaleServiceImpl">
+		<property name="dao" ref="periodeFiscaleDAO" />
+		<property name="parametreAppService" ref="parametreAppService" />
+		<property name="transactionManager" ref="transactionManager" />
+	</bean>
+
+	<bean id="identCtbService" class="ch.vd.uniregctb.identification.contribuable.IdentificationContribuableServiceImpl">
+		<property name="searcher" ref="globalTiersSearcher" />
+		<property name="tiersDAO" ref="tiersDAO" />
+		<property name="identCtbDAO" ref="identCtbDAO" />
+		<property name="tiersService" ref="tiersService" />
+		<property name="adresseService" ref="adresseService" />
+		<property name="infraService" ref="serviceInfrastructureService" />
+		<property name="messageHandler" ref="identCtbMessageV1Handler" />
+		<property name="transactionManager" ref="transactionManager" />
+		<property name="serviceSecuriteService" ref="serviceSecuriteService" />
+		<property name="hibernateTemplate" ref="hibernateTemplate"/>
+		<property name="flowSearchThreadPoolSize" value="10"/>
+		<property name="serviceUpi" ref="serviceUpiRaw"/>
+		<property name="caracteresSpeciauxIdentificationEntreprise" ref="caracteresSpeciauxIdentificationPM"/>
+		<property name="motsReservesIdentificationEntreprise" ref="motsReservesIdentificationPM"/>
+	</bean>
+
+	<bean id="messageIdentificationIndexInterceptor" class="ch.vd.uniregctb.indexer.messageidentification.MessageIdentificationIndexerHibernateInterceptor">
+		<property name="parent" ref="modificationInterceptor" />
+		<property name="indexer" ref="globalMessageIdentificationIndexer" />
+		<property name="transactionManager" ref="transactionManager" />
+	</bean>
+
+	<!-- Helpers de toutes sortes et de tous lieux (Dieu y retrouvera les siens) -->
+
+	<!-- Helper éditique par rapport aux vieux documents xmlbeans -->
+	<bean id="editiqueAbstractLegacyHelper" class="ch.vd.uniregctb.editique.EditiqueAbstractLegacyHelper" abstract="true">
+		<property name="adresseService" ref="adresseService" />
+		<property name="tiersService" ref="tiersService" />
+		<property name="legacyEditiqueHelper" ref="legacyEditiqueHelper" />
+	</bean>
+
+	<bean id="legacyEditiqueHelper" class="ch.vd.uniregctb.editique.impl.LegacyEditiqueHelperImpl">
+		<property name="adresseService" ref="adresseService" />
+		<property name="tiersService" ref="tiersService" />
+		<property name="infraService" ref="serviceInfrastructureService" />
+	</bean>
+
+	<!-- Helper éditique par rapport aux nouveaux documents jaxb2 -->
+	<bean id="editiqueAbstractHelper" class="ch.vd.uniregctb.editique.EditiqueAbstractHelper" abstract="true">
+		<property name="adresseService" ref="adresseService" />
+		<property name="tiersService" ref="tiersService" />
+		<property name="infraService" ref="serviceInfrastructureService"/>
+	</bean>
+
+	<bean id="impressionNouveauxDossiersHelper" parent="editiqueAbstractLegacyHelper" class="ch.vd.uniregctb.tache.ImpressionNouveauxDossiersHelperImpl">
+		<property name="serviceInfrastructureService" ref="serviceInfrastructureService" />
+		<property name="situationFamilleService" ref="situationFamilleService" />
+	</bean>
+
+	<bean id="impressionDIPPHelper" parent="editiqueAbstractLegacyHelper" class="ch.vd.uniregctb.declaration.ordinaire.pp.ImpressionDeclarationImpotPersonnesPhysiquesHelperImpl">
+		<property name="infraService" ref="serviceInfrastructureService" />
+		<property name="situationFamilleService" ref="situationFamilleService" />
+	</bean>
+
+	<bean id="impressionDIPMHelper" parent="editiqueAbstractHelper" class="ch.vd.uniregctb.declaration.ordinaire.pm.ImpressionDeclarationImpotPersonnesMoralesHelperImpl">
+		<property name="ibanValidator" ref="ibanValidator"/>
+	</bean>
+
+	<bean id="impressionSommationDIPPHelper" parent="editiqueAbstractLegacyHelper" class="ch.vd.uniregctb.declaration.ordinaire.pp.ImpressionSommationDeclarationImpotPersonnesPhysiquesHelperImpl">
+		<property name="serviceInfrastructureService" ref="serviceInfrastructureService" />
+		<property name="delaisService" ref="delaisService" />		 
+	</bean>
+	
+	<bean id="impressionSommationDIPMHelper" parent="editiqueAbstractHelper" class="ch.vd.uniregctb.declaration.ordinaire.pm.ImpressionSommationDeclarationImpotPersonnesMoralesHelperImpl">
+		<property name="delaisService" ref="delaisService" />
+	</bean>
+
+    <bean id="impressionConfirmationDelaiPPHelper" parent="editiqueAbstractLegacyHelper" class="ch.vd.uniregctb.declaration.ordinaire.pp.ImpressionConfirmationDelaiPPHelperImpl"/>
+
+	<bean id="impressionLettreDecisionDelaiPMHelper" parent="editiqueAbstractHelper" class="ch.vd.uniregctb.declaration.ordinaire.pm.ImpressionLettreDecisionDelaiPMHelperImpl"/>
+
+	<bean id="printPCLService" class="ch.vd.uniregctb.editique.print.PrintPCLServiceImpl">
+	</bean>
+
+	<bean id="impressionLRHelper" parent="editiqueAbstractLegacyHelper" class="ch.vd.uniregctb.declaration.source.ImpressionListeRecapHelperImpl">
+		<property name="bvrPlusClient" ref="bvrPlusClient" />
+	</bean>
+
+	<bean id="impressionSommationLRHelper" parent="editiqueAbstractLegacyHelper" class="ch.vd.uniregctb.declaration.source.ImpressionSommationLRHelperImpl">
+		<property name="bvrPlusClient" ref="bvrPlusClient" />
+	</bean>
+
+	<bean id="impressionEfactureHelper" parent="editiqueAbstractLegacyHelper" class="ch.vd.uniregctb.efacture.ImpressionDocumentEfactureHelperImpl"/>
+
+	<bean id="efactureEventHandler" class="ch.vd.uniregctb.efacture.EFactureEventHandlerImpl">
+		<property name="eFactureService" ref="efactureService"/>
+		<property name="tiersService" ref="tiersService"/>
+		<property name="adresseService" ref="adresseService"/>
+	</bean>
+
+	<bean id="activationService" class="ch.vd.uniregctb.activation.ActivationServiceImpl">
+		<property name="tiersService" ref="tiersService" />
+	</bean>
+	
+	<bean id="registreFoncierService" class="ch.vd.uniregctb.registrefoncier.RegistreFoncierServiceImpl"> 
+		<property name="adresseService" ref="adresseService" />
+		<property name="transactionManager" ref="transactionManager"/>
+		<property name="tiersDAO" ref="tiersDAO" />
+		<property name="immeubleDAO" ref="immeubleDAO" />
+		<property name="serviceCivilService" ref="serviceCivilService" />
+		<property name="tiersService" ref="tiersService"/>
+	</bean>
+
+	<bean id="statistiquesEvenementsService" class="ch.vd.uniregctb.stats.evenements.StatistiquesEvenementsServiceImpl">
+		<property name="hibernateTemplate" ref="hibernateTemplate" />
+	</bean>
+
+	<bean id="mouvementService" class="ch.vd.uniregctb.mouvement.MouvementServiceImpl">
+		<property name="hibernateTemplate" ref="hibernateTemplate" />
+		<property name="transactionManager" ref="transactionManager"/>
+		<property name="tiersDAO" ref="tiersDAO" />
+		<property name="tiersService" ref="tiersService"/>
+		<property name="mouvementDossierDAO" ref="mouvementDossierDAO"/>
+		<property name="editiqueService" ref="editiqueCompositionService"/>
+		<property name="assujettissementService" ref="assujettissementService"/>
+		<property name="adresseService" ref="adresseService"/>
+	</bean>
+
+	<bean id="impressionBordereauMouvementDossierHelper" parent="editiqueAbstractLegacyHelper" class="ch.vd.uniregctb.mouvement.ImpressionBordereauMouvementDossierHelperImpl">
+		<property name="infraService" ref="serviceInfrastructureService"/>
+	</bean>
+
+	<bean id="evenementExterneProcessor" class="ch.vd.uniregctb.evenement.externe.EvenementExterneProcessorImpl">
+		<property name="hibernateTemplate" ref="hibernateTemplate"/>
+		<property name="evenementExterneService" ref="evenementExterneService"/>
+		<property name="transactionManager" ref="transactionManager"/>
+		<property name="tiersService" ref="tiersService"/>
+		<property name="adresseService" ref="adresseService" />
+	</bean>
+
+	<bean id="efactureService" class="ch.vd.uniregctb.efacture.EFactureServiceImpl" depends-on="uniregModeHelper">
+		<property name="tiersService" ref="tiersService" />
+		<property name="editiqueCompositionService" ref="editiqueCompositionService" />
+		<property name="eFactureMessageSender" ref="eFactureMessageSender" />
+		<property name="eFactureClient" ref="eFactureClient" />
+	</bean>
+
+	<bean id="taxLiabilityControlService" class="ch.vd.uniregctb.evenement.party.control.TaxLiabilityControlServiceImpl">
+		<property name="tiersService" ref="tiersService"/>
+		<property name="assujettissementService" ref="assujettissementService"/>
+	</bean>
+
+</beans>

@@ -1,0 +1,17 @@
+<html>
+<head>
+<title>Status du LastBuild de CruiseControl</title>
+</head>
+<body>
+<pre>
+    * {Project} - Project Name.
+    * {State.Name} - Name of current project state.
+    * {State.Description} - Description of current project state.
+    * {State.Date} - Date/time the current state happened
+    * {State.Duration} - How long since this state was in effect. (Only useful in {History} line.)
+    * {History} - Historical states. Must be first on line. This line will be processed and output once for each state the project has previously been in. The {History} tag will be deleted from the line.
+<hr>
+A default template is provided of the form "{Project}: {State.Date} - {State.Name}: {State.Description}"
+</pre>
+</body>
+</html>

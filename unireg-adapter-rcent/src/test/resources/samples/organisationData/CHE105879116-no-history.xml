@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<eVD-0023:organisationData xmlns:eVD-0023="http://evd.vd.ch/xmlns/eVD-0023/1" xmlns:eVD-0022="http://evd.vd.ch/xmlns/eVD-0022/1" xmlns:eVD-0021="http://evd.vd.ch/xmlns/eVD-0021/1">
+	<organisationSnapshot xmlns="http://evd.vd.ch/xmlns/eVD-0022/1">
+		<beginValidityDate>2015-04-29</beginValidityDate>
+		<eVD-0022:organisation>
+			<cantonalId>101202213</cantonalId>
+			<organisationName>Seroc S.A.</organisationName>
+			<legalForm>0106</legalForm>
+			<eVD-0022:organisationLocation>
+				<cantonalId>101072728</cantonalId>
+				<eVD-0022:identifier>
+					<identifierCategory>CH.HR</identifierCategory>
+					<identifierValue>CH55001688715</identifierValue>
+				</eVD-0022:identifier>
+				<eVD-0022:identifier>
+					<identifierCategory>CH.IDE</identifierCategory>
+					<identifierValue>CHE105879116</identifierValue>
+				</eVD-0022:identifier>
+				<eVD-0022:identifier>
+					<identifierCategory>CH.IDE.TVA</identifierCategory>
+					<identifierValue>CHE105879116</identifierValue>
+				</eVD-0022:identifier>
+				<eVD-0022:identifier>
+					<identifierCategory>CH.MWST</identifierCategory>
+					<identifierValue>196378</identifierValue>
+				</eVD-0022:identifier>
+				<eVD-0022:identifier>
+					<identifierCategory>CH.RC</identifierCategory>
+					<identifierValue>CH55001688715</identifierValue>
+				</eVD-0022:identifier>
+				<eVD-0022:identifier>
+					<identifierCategory>CH.TVA</identifierCategory>
+					<identifierValue>196378</identifierValue>
+				</eVD-0022:identifier>
+				<eVD-0022:identifier>
+					<identifierCategory>CHE</identifierCategory>
+					<identifierValue>105879116</identifierValue>
+				</eVD-0022:identifier>
+				<eVD-0022:identifier>
+					<identifierCategory>CT.VD.PARTY</identifierCategory>
+					<identifierValue>101072728</identifierValue>
+				</eVD-0022:identifier>
+				<name>Seroc S.A.</name>
+				<kindOfLocation>1</kindOfLocation>
+				<eVD-0022:seat>
+					<municipalityId>5413</municipalityId>
+					<municipalityName>Roche (VD)</municipalityName>
+					<cantonAbbreviation>VD</cantonAbbreviation>
+					<historyMunicipalityId>14603</historyMunicipalityId>
+				</eVD-0022:seat>
+				<commercialRegisterData>
+					<status>2</status>
+					<entryStatus>1</entryStatus>
+					<entryDate>1981-03-27</entryDate>
+				</commercialRegisterData>
+				<nogaCode>421100</nogaCode>
+				<uidRegisterData>
+					<status>3</status>
+					<typeOfOrganisation>1</typeOfOrganisation>
+					<effectiveAddress xmlns:eVD-0021="http://evd.vd.ch/xmlns/eVD-0021/1">
+						<eVD-0021:street>Zone Industrielle La Coche</eVD-0021:street>
+						<eVD-0021:houseNumber>11</eVD-0021:houseNumber>
+						<eVD-0021:town>Roche VD</eVD-0021:town>
+						<eVD-0021:swissZipCode>1852</eVD-0021:swissZipCode>
+						<eVD-0021:country>
+							<eVD-0021:countryIdISO2>CH</eVD-0021:countryIdISO2>
+							<eVD-0021:countryName>CH</eVD-0021:countryName>
+						</eVD-0021:country>
+						<eVD-0021:federalBuildingId>856464</eVD-0021:federalBuildingId>
+					</effectiveAddress>
+					<postOfficeBoxAddress xmlns:eVD-0021="http://evd.vd.ch/xmlns/eVD-0021/1">
+						<eVD-0021:street>Zone Industrielle La Coche</eVD-0021:street>
+						<eVD-0021:houseNumber>11</eVD-0021:houseNumber>
+						<eVD-0021:town>Roche VD</eVD-0021:town>
+						<eVD-0021:swissZipCode>1852</eVD-0021:swissZipCode>
+						<eVD-0021:country>
+							<eVD-0021:countryIdISO2>CH</eVD-0021:countryIdISO2>
+							<eVD-0021:countryName>CH</eVD-0021:countryName>
+						</eVD-0021:country>
+					</postOfficeBoxAddress>
+					<publicStatus>1</publicStatus>
+				</uidRegisterData>
+				<vatRegisterData>
+					<status>2</status>
+					<entryStatus>1</entryStatus>
+					<entryDate>1981-01-01</entryDate>
+				</vatRegisterData>
+			</eVD-0022:organisationLocation>
+		</eVD-0022:organisation>
+	</organisationSnapshot>
+</eVD-0023:organisationData>

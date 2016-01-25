@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xmlns:util="http://www.springframework.org/schema/util"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+	                       http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+
+	<!-- Demandes d'identification de contribuable, handler général -->
+
+	<bean id="identCtbMessageDispatcher" class="ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuableMessageDispatcher">
+		<property name="v1Handler" ref="identCtbMessageV1Handler"/>
+		<property name="laterVersionsHandler" ref="identificationContribuableRequestHandler"/>
+	</bean>
+
+	<bean id="identCtbMessageV1Handler" class="ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuableV1EsbHandler">
+		<property name="esbValidator" ref="esbMessageValidator"/>
+		<property name="hibernateTemplate" ref="hibernateTemplate" />
+		<property name="demandeHandler" ref="identCtbService" />
+		<property name="esbTemplate" ref="esbJmsTemplate" />
+	</bean>
+
+	<bean id="identificationContribuableRequestHandler" class="ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuableEsbHandler">
+		<property name="esbTemplate" ref="esbJmsTemplate"/>
+		<property name="handlers">
+			<util:map>
+				<entry key="ch.vd.unireg.xml.event.identification.request.v2.IdentificationContribuableRequest" value-ref="identificationContribuableRequestHandlerV2"/>
+				<entry key="ch.vd.unireg.xml.event.identification.request.v3.IdentificationContribuableRequest" value-ref="identificationContribuableRequestHandlerV3"/>
+				<entry key="ch.vd.unireg.xml.event.identification.request.v4.IdentificationContribuableRequest" value-ref="identificationContribuableRequestHandlerV4"/>
+			</util:map>
+		</property>
+		<property name="esbMessageValidatorServiceTracing" ref="esbMessageValidatorServiceTracing"/>
+	</bean>
+
+	<bean id="identificationContribuableRequestHandlerV2" class="ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuableRequestHandlerV2">
+		<property name="identCtbService" ref="identCtbService" />
+		<property name="tiersService" ref="tiersService" />
+	</bean>
+
+	<bean id="identificationContribuableRequestHandlerV3" class="ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuableRequestHandlerV3">
+		<property name="identCtbService" ref="identCtbService" />
+		<property name="tiersService" ref="tiersService" />
+	</bean>
+
+	<bean id="identificationContribuableRequestHandlerV4" class="ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuableRequestHandlerV4">
+		<property name="identCtbService" ref="identCtbService" />
+		<property name="tiersService" ref="tiersService" />
+	</bean>
+
+	<!-- Demandes d'identification de contribuable, cannal "normal" -->
+
+	<bean id="identCtbMessageListener" class="ch.vd.uniregctb.jms.GentilEsbMessageEndpointListener" parent="esbMessageListener">
+		<property name="handler" ref="identCtbMessageDispatcher"/>
+	</bean>
+
+	<bean id="jmsIdentCtbEndpointManager" class="ch.vd.uniregctb.jms.JmxAwareEsbMessageEndpointManager">
+		<property name="resourceAdapter" ref="jmsResourceAdapter" />
+		<property name="activationSpec">
+			<bean class="org.apache.activemq.ra.ActiveMQActivationSpec">
+				<property name="destination" value="${extprop.jms.queue.ident.ctb.input}" />
+				<property name="destinationType" value="javax.jms.Queue" />
+				<property name="maxSessions" value="${extprop.jms.queue.ident.ctb.consumers}" />
+				<property name="maxMessagesPerSessions" value="10" />
+			</bean>
+		</property>
+		<property name="messageListener" ref="identCtbMessageListener" />
+		<property name="transactionManager" ref="transactionManager" />
+		<property name="autoStartup" value="${extprop.jms.queue.ident.ctb.enabled}" />
+		<property name="description" value="Reception en masse des demandes d'indentification de contribuable"/>
+	</bean>
+
+	<!-- Demandes d'identification de contribuable, cannal prioritaire (= online) -->
+	<!-- Le listener est également dupliqué afin de séparer les statistiques d'événements reçus au niveau JMX -->
+
+	<bean id="identCtbMessageListenerOnline" class="ch.vd.uniregctb.jms.GentilEsbMessageEndpointListener" parent="esbMessageListener">
+		<property name="handler" ref="identCtbMessageDispatcher"/>
+	</bean>
+
+	<bean id="jmsIdentCtbEndpointManagerOnline" class="ch.vd.uniregctb.jms.JmxAwareEsbMessageEndpointManager">
+		<property name="resourceAdapter" ref="jmsResourceAdapter" />
+		<property name="activationSpec">
+			<bean class="org.apache.activemq.ra.ActiveMQActivationSpec">
+				<property name="destination" value="${extprop.jms.queue.ident.ctb.online.input}" />
+				<property name="destinationType" value="javax.jms.Queue" />
+				<property name="maxSessions" value="${extprop.jms.queue.ident.ctb.online.consumers}" />
+				<property name="maxMessagesPerSessions" value="10" />
+			</bean>
+		</property>
+		<property name="messageListener" ref="identCtbMessageListenerOnline" />
+		<property name="transactionManager" ref="transactionManager" />
+		<property name="autoStartup" value="${extprop.jms.queue.ident.ctb.online.enabled}" />
+		<property name="description" value="Reception avec une priorité de traitement élevée des demandes d'indentification de contribuable"/>
+	</bean>
+
+</beans>

@@ -1,0 +1,39 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dataset>
+	<table name="TIERS">
+		<column>TIERS_TYPE</column>
+		<column>NUMERO</column>
+		<column>LOG_CDATE</column>
+		<column>LOG_CUSER</column>
+		<column>LOG_MDATE</column>
+		<column>LOG_MUSER</column>
+		<column>DISTRICT_FISCAL_ID</column>
+		<column>REGION_FISCALE_ID</column>
+		<column>DEBITEUR_INACTIF</column>
+		<column>NUMERO_CA</column>
+		<row>
+			<value>CollectiviteAdministrative</value>
+			<value>2000015</value>
+			<value><![CDATA[2008-01-01 00:00:00.0]]></value>
+			<value>Test</value>
+			<value><![CDATA[2008-01-01 00:00:00.0]]></value>
+			<value>Test</value>
+			<value>12</value>
+			<null />
+			<value>0</value>
+			<value>16</value>
+		</row>
+		<row>
+			<value>CollectiviteAdministrative</value>
+			<value>2000017</value>
+			<value><![CDATA[2008-01-01 00:00:00.0]]></value>
+			<value>Test</value>
+			<value><![CDATA[2008-01-01 00:00:00.0]]></value>
+			<value>Test</value>
+			<value>14</value>
+			<value>3</value>
+			<value>0</value>
+			<value>18</value>
+		</row>
+	</table>
+</dataset>

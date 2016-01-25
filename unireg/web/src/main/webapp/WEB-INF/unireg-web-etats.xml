@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+
+	<bean id="etatEntrepriseEditController" class="ch.vd.uniregctb.entreprise.EtatEntrepriseEditController">
+		<property name="tiersDAO" ref="tiersDAO"/>
+		<property name="tiersMapHelper" ref="tiersMapHelper"/>
+		<property name="tiersService" ref="tiersService"/>
+		<property name="entrepriseService" ref="entrepriseService"/>
+		<property name="hibernateTemplate" ref="hibernateTemplate"/>
+		<property name="autorisationManager" ref="autorisationManager"/>
+	</bean>
+
+</beans>

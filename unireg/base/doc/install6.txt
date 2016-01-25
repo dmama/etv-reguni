@@ -1,0 +1,75 @@
+#
+# Fichier regroupant les instructions d'installation et configuration pour la version 6 d'Unireg,
+# vouées à figurer dans INSTALL.doc dès la livraison.
+#
+#
+
+1. RCEnt
+
+Dans le cadre du projet PM, Unireg utilise RCEnt, le référenciel des entreprises et personne morale,
+pour obtenir les informations civiles concernant ces entités.
+
+1.1.
+
+
+
+
+1.xx Reception des événements
+
+UNIREG WEB : unireg.properties
+------------------------------
+extprop.jms.queue.evtOrganisation=unireg.evenementOrganisation
+extprop.jms.queue.evtOrganisation.enabled=true
+extprop.jms.queue.evtOrganisation.consumers=10
+
+# réception des événements: délai de prise en compte (en secondes) des messages reçus par la queue JMS des événements civils
+# (problématique de tri avec arrivée sur plusieurs threads)
+extprop.evtOrganisation.acknowledgementDelay=3
+------------------------------
+
+
+1.xx Cache mémoire du service organisation
+
+UNIREG WEB et WS : ehcache.xml
+-----------------------------------
+    <cache name="serviceOrganisation"
+           maxElementsInMemory="1000"
+           eternal="false"
+           timeToIdleSeconds="500"
+           timeToLiveSeconds="500"
+           overflowToDisk="false"
+            />
+-----------------------------------
+
+
+1.xx Interfacage à Nexus
+
+La configuration du l'accès en remoting Java vers Nexus est inchangée, l'ajout de RCEnt ne nécessitant pas
+de configuration supplémentaire.
+
+
+1.xx Connexion à RCEnt
+# Activation de la validation à la reception des données en provenance de RCEnt.
+# Note: L'impact sur les performances n'étant pas connu. Nous recommandons désactiver la validation en production.
+extprop.webservice.rcent.validate=false
+
+NEXUS : credentials.properties
+------------------------------
+# Service RCEnt
+extprop.webservice.rcent.username=gvd0unireg
+extprop.webservice.rcent.password=Welc0me_
+------------------------------
+
+
+1.xx Cache persistante Nexus
+
+NEXUS: unireg.properties
+------------------------
+# Répertoire de stockage sur le disque du cache des données organisations
+extprop.organisation.cache.homedir=${ch.vd.appDir}/unireg-nexus/cache/organisation/
+
+# Pourcentage de mémoire vive (par rapport à -Xmx) utilisée par le cache persistent du service organisation
+extprop.organisation.cache.cachePercent=5
+# Timeout pour l'obtention d'un lock exprimée en millisecondes
+extprop.organisation.cache.lockTimeout=60000
+------------------------
