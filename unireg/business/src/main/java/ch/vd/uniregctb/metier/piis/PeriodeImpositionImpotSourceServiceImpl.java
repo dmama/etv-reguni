@@ -443,7 +443,7 @@ public class PeriodeImpositionImpotSourceServiceImpl implements PeriodeImpositio
 			// il y a des fors, nous voici donc dans le vif du sujet...
 			final List<ProtoPeriodeImpositionImpotSource> protos = new ArrayList<>(forsPf.size());
 			final FractionnementsPeriodesImpositionIS fracs = new FractionnementsPeriodesImpositionIS(forsPf, pf, infraService);
-			final MovingWindow<ForFiscalPrincipalPP> iterator = new MovingWindow<>(fors);
+			final MovingWindow<ForFiscalPrincipalPP> iterator = new MovingWindow<>(forsPf);
 			while (iterator.hasNext()) {
 				final MovingWindow.Snapshot<ForFiscalPrincipalPP> snapshot = iterator.next();
 				final ForFiscalPrincipalContext<ForFiscalPrincipalPP> forPrincipal = new ForFiscalPrincipalContext<>(snapshot);
