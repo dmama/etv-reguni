@@ -554,7 +554,16 @@ public class AutorisationManagerImpl implements AutorisationManager {
 				map.put(MODIF_FISCAL, Boolean.TRUE);
 			}
 		}
-		else if (tiers instanceof Entreprise || tiers instanceof Etablissement) {
+		else if (tiers instanceof Entreprise) {
+			if (SecurityHelper.isGranted(securityProvider, Role.MODIF_PM, visa, oid)) {
+				map.put(MODIF_CIVIL, Boolean.TRUE);
+				map.put(MODIF_IDE, Boolean.TRUE);
+			}
+			if (SecurityHelper.isGranted(securityProvider, Role.ETAT_PM, visa, oid)) {
+				map.put(MODIF_ETATS_PM, Boolean.TRUE);
+			}
+		}
+		else if (tiers instanceof Etablissement) {
 			if (SecurityHelper.isGranted(securityProvider, Role.MODIF_PM, visa, oid)) {
 				map.put(MODIF_CIVIL, Boolean.TRUE);
 				map.put(MODIF_IDE, Boolean.TRUE);

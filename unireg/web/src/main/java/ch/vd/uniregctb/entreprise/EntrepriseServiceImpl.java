@@ -187,6 +187,7 @@ public class EntrepriseServiceImpl implements EntrepriseService {
 			                                                       etat.isAnnule());
 			views.add(view);
 		}
+		views.get(0).setDernierElement(true);
 		return views;
 	}
 

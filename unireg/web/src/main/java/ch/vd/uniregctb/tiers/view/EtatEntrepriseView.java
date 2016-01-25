@@ -10,6 +10,7 @@ public class EtatEntrepriseView implements Annulable {
 	private final RegDate dateObtention;
 	private final TypeEtatEntreprise type;
 	private final boolean annule;
+	private boolean dernierElement;
 
 	public EtatEntrepriseView(Long id, RegDate dateObtention, TypeEtatEntreprise type, boolean annule) {
 		this.id = id;
@@ -33,5 +34,13 @@ public class EtatEntrepriseView implements Annulable {
 	@Override
 	public boolean isAnnule() {
 		return annule;
+	}
+
+	public boolean isDernierElement() {
+		return dernierElement;
+	}
+
+	public void setDernierElement(boolean dernierElement) {
+		this.dernierElement = dernierElement;
 	}
 }

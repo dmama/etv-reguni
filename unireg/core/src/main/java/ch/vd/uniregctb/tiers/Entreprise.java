@@ -21,6 +21,7 @@ import org.jetbrains.annotations.NotNull;
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.AnnulableHelper;
+import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.common.ComparisonHelper;
 
 /**
@@ -256,6 +257,15 @@ public class Entreprise extends ContribuableImpositionPersonnesMorales {
 		final List<EtatEntreprise> nonAnnules = AnnulableHelper.sansElementsAnnules(etats);
 		Collections.sort(nonAnnules);
 		return nonAnnules;
+	}
+
+	@Transient
+	public EtatEntreprise getEtatActuel() {
+		final List<EtatEntreprise> nonAnnules = getEtatsNonAnnulesTries();
+		if (nonAnnules.size() > 0) {
+			return CollectionsUtils.getLastElement(nonAnnules);
+		}
+		return null;
 	}
 
 	public void setEtats(Set<EtatEntreprise> etats) {

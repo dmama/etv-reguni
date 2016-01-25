@@ -22,6 +22,7 @@ import ch.vd.uniregctb.reqdes.EtatTraitement;
 import ch.vd.uniregctb.tiers.TiersCriteria.TypeRecherche;
 import ch.vd.uniregctb.tiers.TiersCriteria.TypeRechercheForFiscal;
 import ch.vd.uniregctb.tiers.TiersCriteria.TypeRechercheLocalitePays;
+import ch.vd.uniregctb.tiers.etats.transition.TransitionEtatEntreprise;
 import ch.vd.uniregctb.type.ActionEvenementCivilEch;
 import ch.vd.uniregctb.type.CategorieEntreprise;
 import ch.vd.uniregctb.type.CategorieEtranger;
@@ -48,6 +49,7 @@ import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeDocument;
 import ch.vd.uniregctb.type.TypeDroitAcces;
 import ch.vd.uniregctb.type.TypeEtatDeclaration;
+import ch.vd.uniregctb.type.TypeEtatEntreprise;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
 import ch.vd.uniregctb.type.TypeEvenementCivilEch;
 import ch.vd.uniregctb.type.TypeEvenementOrganisation;
@@ -702,6 +704,14 @@ public class TiersMapHelper extends CommonMapHelper {
 		final TreeMap<CategorieEntreprise, String> map = new TreeMap<>();
 		for (CategorieEntreprise categorieEntreprise : CategorieEntreprise.values()) {
 			map.put(categorieEntreprise, categorieEntreprise.getLibelle());
+		}
+		return map;
+	}
+
+	public Map<TypeEtatEntreprise, String> getMapForTypeEtatEntreprise(Map<TypeEtatEntreprise, TransitionEtatEntreprise> transitions) {
+		final TreeMap<TypeEtatEntreprise, String> map = new TreeMap<>();
+		for (TransitionEtatEntreprise transition : transitions.values()) {
+			map.put(transition.getType(), transition.getType().getLibelle());
 		}
 		return map;
 	}

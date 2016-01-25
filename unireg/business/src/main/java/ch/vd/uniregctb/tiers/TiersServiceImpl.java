@@ -114,6 +114,8 @@ import ch.vd.uniregctb.situationfamille.VueSituationFamille;
 import ch.vd.uniregctb.tache.TacheService;
 import ch.vd.uniregctb.tiers.Contribuable.FirstForsList;
 import ch.vd.uniregctb.tiers.dao.RemarqueDAO;
+import ch.vd.uniregctb.tiers.etats.TransitionEtatEntrepriseService;
+import ch.vd.uniregctb.tiers.etats.transition.TransitionEtatEntreprise;
 import ch.vd.uniregctb.tiers.rattrapage.ancienshabitants.RecuperationDonneesAnciensHabitantsProcessor;
 import ch.vd.uniregctb.tiers.rattrapage.ancienshabitants.RecuperationDonneesAnciensHabitantsResults;
 import ch.vd.uniregctb.tiers.rattrapage.flaghabitant.CorrectionFlagHabitantProcessor;
@@ -135,8 +137,10 @@ import ch.vd.uniregctb.type.PeriodiciteDecompte;
 import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.StatutMenageCommun;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
+import ch.vd.uniregctb.type.TypeEtatEntreprise;
 import ch.vd.uniregctb.type.TypeEvenementErreur;
 import ch.vd.uniregctb.type.TypeFlagEntreprise;
+import ch.vd.uniregctb.type.TypeGenerationEtatEntreprise;
 import ch.vd.uniregctb.type.TypePermis;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 import ch.vd.uniregctb.validation.ValidationInterceptor;
@@ -171,6 +175,7 @@ public class TiersServiceImpl implements TiersService {
 	private RapportEntreTiersDAO rapportEntreTiersDAO;
 	private FlagBlocageRemboursementAutomatiqueCalculationRegister flagBlocageRembAutoCalculateurDecale;
 	private BouclementService bouclementService;
+	private TransitionEtatEntrepriseService transitionEtatEntrepriseService;
 
     /**
      * Recherche les Tiers correspondants aux critères dans le data model de Unireg
@@ -254,6 +259,10 @@ public class TiersServiceImpl implements TiersService {
 
 	public void setBouclementService(BouclementService bouclementService) {
 		this.bouclementService = bouclementService;
+	}
+
+	public void setTransitionEtatEntrepriseService(TransitionEtatEntrepriseService transitionEtatEntrepriseService) {
+		this.transitionEtatEntrepriseService = transitionEtatEntrepriseService;
 	}
 
 	/**
@@ -6052,4 +6061,24 @@ public class TiersServiceImpl implements TiersService {
 		return domiciles;
 	}
 
+	@Override
+	public Map<TypeEtatEntreprise, TransitionEtatEntreprise> getTransitionEtatEntrepriseDisponibles(Entreprise entreprise, RegDate date, TypeGenerationEtatEntreprise generation) {
+		return transitionEtatEntrepriseService.getTransitionsDisponibles(entreprise, date, generation);
+	}
+
+	@Override
+	public EtatEntreprise changeEtatEntreprise(TypeEtatEntreprise type, Entreprise entreprise, RegDate date, TypeGenerationEtatEntreprise generation) {
+		final TransitionEtatEntreprise transition = transitionEtatEntrepriseService.getTransitionVersEtat(type, entreprise, date, generation);
+		return transition != null ? transition.apply() : null;
+	}
+
+	@Override
+	public void annuleEtatEntreprise(EtatEntreprise etat) {
+		final Entreprise entreprise = etat.getEntreprise();
+		final EtatEntreprise actuel = entreprise.getEtatActuel();
+		if (actuel != etat) {
+				throw new ValidationException(etat, "Seul le dernier état peut être annulé.");
+		}
+		etat.setAnnule(true);
+	}
 }

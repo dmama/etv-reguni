@@ -50,6 +50,11 @@
 		<property name="transactionManager" ref="transactionManager"/>
 	</bean>
 
+	<bean id="transitionEtatEntrepriseService" class="ch.vd.uniregctb.tiers.etats.TransitionEtatEntrepriseServiceImpl">
+		<property name="tiersDAO" ref="tiersDAO" />
+		<property name="serviceOrganisation" ref="serviceOrganisationService" />
+	</bean>
+
 	<bean id="tiersService" class="ch.vd.uniregctb.tiers.TiersServiceImpl">
 		<property name="tiersDAO" ref="tiersDAO" />
 		<property name="evenementCivilRegPPDAO" ref="evenementCivilRegPPDAO" />
@@ -72,6 +77,7 @@
 		<property name="rapportEntreTiersDAO" ref="rapportEntreTiersDAO" />
 		<property name="flagBlocageRembAutoCalculateurDecale" ref="flagBlocageRemboursementAutoCalculateurDecale"/>
 		<property name="bouclementService" ref="bouclementService"/>
+		<property name="transitionEtatEntrepriseService" ref="transitionEtatEntrepriseService" />
 	</bean>
 
 	<bean id="flagBlocageRemboursementAutoCalculateurDecale" class="ch.vd.uniregctb.tiers.FlagBlocageRemboursementAutomatiqueInterceptor">

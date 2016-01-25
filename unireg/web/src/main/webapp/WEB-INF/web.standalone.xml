@@ -19,6 +19,7 @@
 			/WEB-INF/unireg-web-adresse.xml,
 			/WEB-INF/unireg-web-cache.xml,
 			/WEB-INF/unireg-web-civil.xml,
+			/WEB-INF/unireg-web-etats.xml,
 			/WEB-INF/unireg-web-common.xml,
 			/WEB-INF/unireg-web-complement.xml,
 			/WEB-INF/unireg-web-config.xml,

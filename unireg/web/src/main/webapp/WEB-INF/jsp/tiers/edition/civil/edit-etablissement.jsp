@@ -17,7 +17,7 @@
 		<unireg:setAuth var="autorisations" tiersId="${tiersId}"/>
 		<c:if test="${autorisations.donneesCiviles}">
 
-			<div id="edit-entreprise" class="entreprise">
+			<div id="edit-etablissement" class="etablissement">
 			<span><%-- span vide pour que IE8 calcul correctement la hauteur du fieldset (voir fieldsets-workaround.jsp) --%></span>
 			<jsp:include page="../../visualisation/civil/etablissement.jsp">
 				<jsp:param name="page" value="edit"/>

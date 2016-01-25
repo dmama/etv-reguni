@@ -50,6 +50,7 @@ import static org.junit.Assert.assertNotNull;
 		"classpath:WEB-INF/unireg-web-adresse.xml",
 		"classpath:WEB-INF/unireg-web-complement.xml",
 		"classpath:WEB-INF/unireg-web-civil.xml",
+		"classpath:WEB-INF/unireg-web-etats.xml",
 		"classpath:WEB-INF/unireg-web-parametrage.xml",
 		"classpath:WEB-INF/unireg-web-acces.xml",
 		"classpath:WEB-INF/unireg-web-activation.xml",
