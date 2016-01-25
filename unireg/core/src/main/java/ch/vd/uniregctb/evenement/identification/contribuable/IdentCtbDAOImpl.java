@@ -166,7 +166,7 @@ public class IdentCtbDAOImpl extends BaseDAOImpl<IdentificationContribuable, Lon
 		return globalMap;
 	}
 
-	private interface Unmarshaller<T> {
+	private static interface Unmarshaller<T> {
 		T buildValue(Object o);
 	}
 

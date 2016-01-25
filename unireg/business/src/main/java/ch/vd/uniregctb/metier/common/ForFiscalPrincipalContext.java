@@ -11,13 +11,13 @@ import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 /**
  * Un for fiscal principal et son contexte, c'est-à-dire les fors fiscaux principaux qui précèdent et qui suivent immédiatement (et par extension en une suite continue).
  */
-public final class ForFiscalPrincipalContext<FFP extends ForFiscalPrincipal> {
+public final class ForFiscalPrincipalContext {
 
-	private final FFP current;
-	private final List<FFP> nexts;
-	private final List<FFP> previouses;
+	private final ForFiscalPrincipal current;
+	private final List<ForFiscalPrincipal> nexts;
+	private final List<ForFiscalPrincipal> previouses;
 
-	private ForFiscalPrincipalContext(FFP current, List<FFP> nexts, List<FFP> previouses) {
+	private ForFiscalPrincipalContext(ForFiscalPrincipal current, List<ForFiscalPrincipal> nexts, List<ForFiscalPrincipal> previouses) {
 		this.current = current;
 		this.nexts = nexts;
 		this.previouses = previouses;
@@ -27,14 +27,14 @@ public final class ForFiscalPrincipalContext<FFP extends ForFiscalPrincipal> {
 	 * Construit le contenu d'un context à partir d'une fenêtre glissante sur les fors fiscaux (qui ne se touchent pas forcément)
 	 * @param snapshot la vue actuelle de la fenêtre glissante
 	 */
-	public ForFiscalPrincipalContext(MovingWindow.Snapshot<FFP> snapshot) {
+	public ForFiscalPrincipalContext(MovingWindow.Snapshot<ForFiscalPrincipal> snapshot) {
 		current = snapshot.getCurrent();
 
 		// remplissage avec les fors précédents qui se touchent
-		final List<FFP> allPrevious = snapshot.getAllPrevious();
+		final List<ForFiscalPrincipal> allPrevious = snapshot.getAllPrevious();
 		previouses = new ArrayList<>(allPrevious.size());
 		ForFiscalPrincipal ref = current;
-		for (FFP candidate : allPrevious) {
+		for (ForFiscalPrincipal candidate : allPrevious) {
 			if (DateRangeHelper.isCollatable(candidate, ref)) {
 				previouses.add(candidate);
 				ref = candidate;
@@ -45,10 +45,10 @@ public final class ForFiscalPrincipalContext<FFP extends ForFiscalPrincipal> {
 		}
 
 		// remplissage avec les fors suivants qui se touchent
-		final List<FFP> allNext = snapshot.getAllNext();
+		final List<ForFiscalPrincipal> allNext = snapshot.getAllNext();
 		nexts = new ArrayList<>(allNext.size());
 		ref = current;
-		for (FFP candidate : allNext) {
+		for (ForFiscalPrincipal candidate : allNext) {
 			if (DateRangeHelper.isCollatable(ref, candidate)) {
 				nexts.add(candidate);
 				ref = candidate;
@@ -59,15 +59,15 @@ public final class ForFiscalPrincipalContext<FFP extends ForFiscalPrincipal> {
 		}
 	}
 
-	public FFP getCurrent() {
+	public ForFiscalPrincipal getCurrent() {
 		return current;
 	}
 
-	public FFP getNext() {
+	public ForFiscalPrincipal getNext() {
 		return nexts.isEmpty() ? null : nexts.get(0);
 	}
 
-	public FFP getPrevious() {
+	public  ForFiscalPrincipal getPrevious() {
 		return previouses.isEmpty() ? null : previouses.get(0);
 	}
 
@@ -82,44 +82,38 @@ public final class ForFiscalPrincipalContext<FFP extends ForFiscalPrincipal> {
 	/**
 	 * @return Tous les fors principaux après le for courant qui se touchent en une suite continue
 	 */
-	public List<FFP> getAllNext() {
+	public List<ForFiscalPrincipal> getAllNext() {
 		return nexts;
 	}
 
 	/**
 	 * @return Tous les fors principaux avant le for courant qui se touchent en une suite continue (du plus proche au plus lointain)
 	 */
-	public List<FFP> getAllPrevious() {
+	public List<ForFiscalPrincipal> getAllPrevious() {
 		return previouses;
 	}
 
-	/**
-	 * @return une nouvelle instance de contexte (l'instance source n'est pas modifiée) correspondant à un glissement d'un for à droite (= vers le futur)
-	 */
-	public ForFiscalPrincipalContext<FFP> slideToNext() {
+	public ForFiscalPrincipalContext slideToNext() {
 		if (current == null) {
 			throw new IllegalStateException("Je refuse de glisser vers l'abîme !");
 		}
-		final List<FFP> newNext = nexts.size() > 1 ? new ArrayList<>(nexts.subList(1, nexts.size())) : Collections.<FFP>emptyList();
-		final List<FFP> newPrevious = new ArrayList<>(previouses.size() + 1);
+		final List<ForFiscalPrincipal> newNext = nexts.size() > 1 ? new ArrayList<>(nexts.subList(1, nexts.size())) : Collections.<ForFiscalPrincipal>emptyList();
+		final List<ForFiscalPrincipal> newPrevious = new ArrayList<>(previouses.size() + 1);
 		newPrevious.add(current);
 		newPrevious.addAll(previouses);
-		final FFP newCurrent = nexts.isEmpty() ? null : nexts.get(0);
-		return new ForFiscalPrincipalContext<>(newCurrent, newNext, newPrevious);
+		final ForFiscalPrincipal newCurrent = nexts.isEmpty() ? null : nexts.get(0);
+		return new ForFiscalPrincipalContext(newCurrent, newNext, newPrevious);
 	}
 
-	/**
-	 * @return une nouvelle instance de contexte (l'instance source n'est pas modifiée) correspondant à un glissement d'un for à gauche (= vers le passé)
-	 */
-	public ForFiscalPrincipalContext<FFP> slideToPrevious() {
+	public ForFiscalPrincipalContext slideToPrevious() {
 		if (current == null) {
 			throw new IllegalStateException("Je refuse de glisser vers l'abîme !");
 		}
-		final List<FFP> newNext = new ArrayList<>(nexts.size() + 1);
+		final List<ForFiscalPrincipal> newNext = new ArrayList<>(nexts.size() + 1);
 		newNext.add(current);
 		newNext.addAll(nexts);
-		final List<FFP> newPrevious = previouses.size() > 1 ? new ArrayList<>(previouses.subList(1, previouses.size())) : Collections.<FFP>emptyList();
-		final FFP newCurrent = previouses.isEmpty() ? null : previouses.get(0);
-		return new ForFiscalPrincipalContext<>(newCurrent, newNext, newPrevious);
+		final List<ForFiscalPrincipal> newPrevious = previouses.size() > 1 ? new ArrayList<>(previouses.subList(1, previouses.size())) : Collections.<ForFiscalPrincipal>emptyList();
+		final ForFiscalPrincipal newCurrent = previouses.isEmpty() ? null : previouses.get(0);
+		return new ForFiscalPrincipalContext(newCurrent, newNext, newPrevious);
 	}
 }

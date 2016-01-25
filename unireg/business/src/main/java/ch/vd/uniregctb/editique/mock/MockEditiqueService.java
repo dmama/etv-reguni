@@ -2,7 +2,6 @@ package ch.vd.uniregctb.editique.mock;
 
 import org.apache.xmlbeans.XmlObject;
 
-import ch.vd.editique.unireg.FichierImpression;
 import ch.vd.technical.esb.ErrorType;
 import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.EditiqueResultat;
@@ -24,16 +23,7 @@ public class MockEditiqueService implements EditiqueService {
 	}
 
 	@Override
-	public EditiqueResultat creerDocumentImmediatementSynchroneOuInbox(String nomDocument, TypeDocumentEditique typeDocument, FormatDocumentEditique typeFormat, FichierImpression document, boolean archive, String description) throws EditiqueException {
-		return null;
-	}
-
-	@Override
 	public void creerDocumentParBatch(String nomDocument, TypeDocumentEditique typeDocument, XmlObject document, boolean archive) throws EditiqueException {
-	}
-
-	@Override
-	public void creerDocumentParBatch(String nomDocument, TypeDocumentEditique typeDocument, FichierImpression document, boolean archive) throws EditiqueException {
 	}
 
 	@Override

@@ -4,8 +4,6 @@
 	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/di/evenementDeclarationImpot-input-1.xsd" uri="event/di/evenementDeclarationImpot-input-1.xsd"/>
 	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/di/evenementDeclarationImpot-output-1.xsd" uri="event/di/evenementDeclarationImpot-output-1.xsd"/>
 
-	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/fiscal/evt-fiscal-2.xsd" uri="event/fiscal/evt-fiscal-2.xsd"/>
-
 	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/rt/rapport-travail-common-1.xsd" uri="event/rt/rapport-travail-common-1.xsd"/>
 	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/rt/rapport-travail-request-1.xsd" uri="event/rt/rapport-travail-request-1.xsd"/>
 	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/rt/rapport-travail-response-1.xsd" uri="event/rt/rapport-travail-response-1.xsd"/>
@@ -26,27 +24,25 @@
 	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/party-request-1.xsd" uri="event/party/party-request-1.xsd"/>
 	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/party-request-2.xsd" uri="event/party/party-request-2.xsd"/>
 	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/party-request-3.xsd" uri="event/party/party-request-3.xsd"/>
-	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/party-request-4.xsd" uri="event/party/party-request-4.xsd"/>
 	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/party-response-1.xsd" uri="event/party/party-response-1.xsd"/>
 	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/party-response-2.xsd" uri="event/party/party-response-2.xsd"/>
 	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/party-response-3.xsd" uri="event/party/party-response-3.xsd"/>
-	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/party-response-4.xsd" uri="event/party/party-response-4.xsd"/>
 	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/creation-nonhabitant-request-1.xsd" uri="event/party/create-nonresident-request-1.xsd"/>
 	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/creation-nonhabitant-request-2.xsd" uri="event/party/create-nonresident-request-2.xsd"/>
 	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/creation-nonhabitant-reponse-1.xsd" uri="event/party/create-nonresident-response-1.xsd"/>
 	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/creation-nonhabitant-reponse-2.xsd" uri="event/party/create-nonresident-response-2.xsd"/>
 	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/taxliab-common-1.xsd" uri="event/party/taxliab-common-1.xsd"/>
 	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/taxliab-request-2.xsd" uri="event/party/taxliab-request-2.xsd"/>
+	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/aperiodic-taxliab-request-1.xsd" uri="event/party/aperiodic-taxliab-request-1.xsd"/>
 	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/aperiodic-taxliab-request-2.xsd" uri="event/party/aperiodic-taxliab-request-2.xsd"/>
 	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/aperiodic-taxliab-request-3.xsd" uri="event/party/aperiodic-taxliab-request-3.xsd"/>
+	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/aperiodic-taxliab-response-1.xsd" uri="event/party/aperiodic-taxliab-response-1.xsd"/>
 	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/taxliab-response-2.xsd" uri="event/party/taxliab-response-2.xsd"/>
 	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/taxliab-response-3.xsd" uri="event/party/taxliab-response-3.xsd"/>
+	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/periodic-taxliab-request-1.xsd" uri="event/party/periodic-taxliab-request-1.xsd"/>
 	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/periodic-taxliab-request-2.xsd" uri="event/party/periodic-taxliab-request-2.xsd"/>
 	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/periodic-taxliab-request-3.xsd" uri="event/party/periodic-taxliab-request-3.xsd"/>
-	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/fiscact-request-1.xsd" uri="event/party/fiscact-request-1.xsd"/>
-	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/fiscact-response-1.xsd" uri="event/party/fiscact-response-1.xsd"/>
-	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/periodic-fiscact-request-1.xsd" uri="event/party/periodic-fiscact-request-1.xsd"/>
-
+	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/periodic-taxliab-response-1.xsd" uri="event/party/periodic-taxliab-response-1.xsd"/>
 	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/data/dataEvent-1.xsd" uri="event/data/dataEvent-1.xsd"/>
 
 	<system systemId="http://www.vd.ch/fiscalite/taxation/is/evtquittanceListe-v1.xsd" uri="event/lr/evtQuittanceListe-v1.xsd"/>

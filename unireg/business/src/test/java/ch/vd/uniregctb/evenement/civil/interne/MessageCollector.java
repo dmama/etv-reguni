@@ -2,14 +2,14 @@ package ch.vd.uniregctb.evenement.civil.interne;
 
 import org.jetbrains.annotations.Nullable;
 
+import ch.vd.uniregctb.evenement.civil.EvenementCivilErreur;
+import ch.vd.uniregctb.evenement.civil.EvenementCivilErreurFactory;
 import ch.vd.uniregctb.evenement.civil.EvenementCivilMessageCollector;
-import ch.vd.uniregctb.evenement.common.EvenementErreur;
-import ch.vd.uniregctb.evenement.common.EvenementRegistreErreurFactory;
 import ch.vd.uniregctb.type.TypeEvenementErreur;
 
 public class MessageCollector extends EvenementCivilMessageCollector<MessageCollector.Msg> {
 
-	public static final class Msg implements EvenementErreur {
+	public static final class Msg implements EvenementCivilErreur {
 
 		private final String msg;
 		private final TypeEvenementErreur type;
@@ -35,7 +35,7 @@ public class MessageCollector extends EvenementCivilMessageCollector<MessageColl
 		}
 	}
 
-	private static final class MsgFactory extends EvenementRegistreErreurFactory<Msg> {
+	private static final class MsgFactory extends EvenementCivilErreurFactory<Msg> {
 		@Override
 		protected Msg createErreur(String message, @Nullable Exception e, TypeEvenementErreur type) {
 			return new Msg(buildActualMessage(message, e), type);

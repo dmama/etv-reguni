@@ -22,15 +22,12 @@ import ch.vd.uniregctb.security.SecurityProviderInterface;
 import ch.vd.uniregctb.tiers.AutreCommunaute;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.Contribuable;
-import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesMorales;
-import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.Etablissement;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.NatureTiers;
@@ -53,8 +50,6 @@ public class AutorisationManagerImpl implements AutorisationManager {
 	static final String MODIF_DOSSIER = "DOS";
 	static final String MODIF_DEBITEUR = "DBT";
 	static final String MODIF_DI = "DI";
-	static final String MODIF_BOUCLEMENTS = "BOUCLEMENTS";
-	static final String MODIF_ETATS_PM = "ETATS_PM";
 	static final String MODIF_IDE = "IDE";
 	static final String MODIF_MOUVEMENT = "MVT";
 	static final String FISCAL_FOR_PRINC = "FOR_PRINC";
@@ -177,10 +172,10 @@ public class AutorisationManagerImpl implements AutorisationManager {
 		TypeCtb typeCtb = TypeCtb.NON_ASSUJETTI; //0 non assujetti, 1 HC/HS, 2 VD ordinaire, 3 VD sourcier pur, 4 VD sourcier mixte
 
 		final ForFiscalPrincipal ffp = tiers.getForFiscalPrincipalAt(null);
-		if (ffp instanceof ForFiscalPrincipalPP) {
+		if (ffp != null) {
 			final TypeAutoriteFiscale typeFor = ffp.getTypeAutoriteFiscale();
 			if (typeFor == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
-				final ModeImposition modeImp = ((ForFiscalPrincipalPP) ffp).getModeImposition();
+				final ModeImposition modeImp = ffp.getModeImposition();
 				switch (modeImp) {
 				case SOURCE:
 					typeCtb = TypeCtb.SOURCIER;
@@ -217,8 +212,13 @@ public class AutorisationManagerImpl implements AutorisationManager {
 	@NotNull
 	@Override
 	public Autorisations getAutorisations(@Nullable Tiers tiers, String visa, int oid) {
-		final Map<String, Boolean> map = getAutorisationsMap(tiers, visa, oid);
-		return new Autorisations(map);
+		if (tiers instanceof Etablissement) { // les établissements ne sont pas éditables pour l'instant
+			return new Autorisations();
+		}
+		else {
+			final Map<String, Boolean> map = getAutorisationsMap(tiers, visa, oid);
+			return new Autorisations(map);
+		}
 	}
 
 	@Override
@@ -422,75 +422,51 @@ public class AutorisationManagerImpl implements AutorisationManager {
 		}
 
 		if (tiers instanceof Contribuable) {
+			final Contribuable ctbAVerifier = (Contribuable) tiers;
+			final boolean modifiableSelonRoleEtDecisions = isCtbModifiableSelonRoleEtDecisions(ctbAVerifier, visa, oid);
 			if (SecurityHelper.isGranted(securityProvider, Role.CREATE_DPI, visa, oid)) {
 				map.put(MODIF_DEBITEUR, Boolean.TRUE);
 			}
-		}
-
-		if (tiers instanceof ContribuableImpositionPersonnesPhysiques) {
-			final ContribuableImpositionPersonnesPhysiques contribuable = (ContribuableImpositionPersonnesPhysiques) tiers;
-			final boolean modifiableSelonRoleEtDecisions = isCtbModifiableSelonRoleEtDecisions(contribuable, visa, oid);
-			if (SecurityHelper.isGranted(securityProvider, Role.SIT_FAM, visa, oid)) {
-				final boolean isSitFamActive = isSituationFamilleActive(contribuable);
-				boolean civilOK = true;
-				if (tiers instanceof PersonnePhysique) {
-					final PersonnePhysique pp = (PersonnePhysique) tiers;
-					if (pp.isHabitantVD()) {
-						final Individu ind = serviceCivil.getIndividu(pp.getNumeroIndividu(), null);
-						if (ind.getEtatsCivils() != null) {
-							for (EtatCivil etatCivil : ind.getEtatsCivils().asList()) {
-								if (etatCivil.getDateDebut() == null) {
-									civilOK = false;
+			if ((tiers instanceof PersonnePhysique || tiers instanceof MenageCommun)) {
+				if (SecurityHelper.isGranted(securityProvider, Role.SIT_FAM, visa, oid)) {
+					final Contribuable contribuable = (Contribuable) tiers;
+					final boolean isSitFamActive = isSituationFamilleActive(contribuable);
+					boolean civilOK = true;
+					if (tiers instanceof PersonnePhysique) {
+						final PersonnePhysique pp = (PersonnePhysique) tiers;
+						if (pp.isHabitantVD()) {
+							final Individu ind = serviceCivil.getIndividu(pp.getNumeroIndividu(), null);
+							if (ind.getEtatsCivils() != null) {
+								for (EtatCivil etatCivil : ind.getEtatsCivils().asList()) {
+									if (etatCivil.getDateDebut() == null) {
+										civilOK = false;
+									}
 								}
 							}
 						}
 					}
+					if (civilOK && modifiableSelonRoleEtDecisions && (isSitFamActive || !contribuable.getSituationsFamille().isEmpty())) {
+						map.put(MODIF_FISCAL, Boolean.TRUE);
+						map.put(FISCAL_SIT_FAMILLLE, Boolean.TRUE);
+					}
 				}
-				if (civilOK && modifiableSelonRoleEtDecisions && (isSitFamActive || !contribuable.getSituationsFamille().isEmpty())) {
-					map.put(MODIF_FISCAL, Boolean.TRUE);
-					map.put(FISCAL_SIT_FAMILLLE, Boolean.TRUE);
+				if (SecurityHelper.isAnyGranted(securityProvider, visa, oid,  Role.DI_EMIS_PP, Role.DI_DELAI_PM, Role.DI_DUPLIC_PP, Role.DI_QUIT_PP, Role.DI_SOM_PP)) {
+					map.put(MODIF_DI, Boolean.TRUE);
 				}
-			}
-			if (SecurityHelper.isAnyGranted(securityProvider, visa, oid,  Role.DI_EMIS_PP, Role.DI_DELAI_PP, Role.DI_DUPLIC_PP, Role.DI_QUIT_PP, Role.DI_SOM_PP)) {
-				map.put(MODIF_DI, Boolean.TRUE);
-			}
 
-			if (SecurityHelper.isGranted(securityProvider,Role.GEST_DECISION_ACI,visa,oid)) {
-				map.put(FISCAL_DECISION_ACI, Boolean.TRUE);
-			}
-		}
-
-		if (tiers instanceof ContribuableImpositionPersonnesMorales) {
-			if (SecurityHelper.isAnyGranted(securityProvider, visa, oid,  Role.DI_EMIS_PM, Role.DI_DELAI_PM, Role.DI_DUPLIC_PM, Role.DI_QUIT_PM, Role.DI_SOM_PM, Role.DI_SUSPENDRE_PM, Role.DI_DESUSPENDRE_PM)) {
-				map.put(MODIF_DI, Boolean.TRUE);
-			}
-
-			if (SecurityHelper.isGranted(securityProvider, Role.GEST_DECISION_ACI, visa, oid)) {
-				map.put(FISCAL_DECISION_ACI, Boolean.TRUE);
-				map.put(MODIF_FISCAL, Boolean.TRUE);
-			}
-
-			final boolean ctbModifiableSelonRoleEtDecision = isCtbModifiableSelonRoleEtDecisions((ContribuableImpositionPersonnesMorales) tiers, visa, oid);
-			if (ctbModifiableSelonRoleEtDecision && SecurityHelper.isGranted(securityProvider, Role.FOR_PRINC_PM, visa, oid)) {
-				map.put(FISCAL_FOR_PRINC, Boolean.TRUE);
-				map.put(MODIF_FISCAL, Boolean.TRUE);
-			}
-			if (ctbModifiableSelonRoleEtDecision && SecurityHelper.isGranted(securityProvider, Role.FOR_SECOND_PM, visa, oid)) {
-				map.put(FISCAL_FOR_SEC, Boolean.TRUE);
-				map.put(MODIF_FISCAL, Boolean.TRUE);
-			}
-			if (ctbModifiableSelonRoleEtDecision && SecurityHelper.isGranted(securityProvider, Role.BOUCLEMENTS_PM, visa, oid)) {
-				map.put(MODIF_BOUCLEMENTS, Boolean.TRUE);
+				if (SecurityHelper.isGranted(securityProvider,Role.GEST_DECISION_ACI,visa,oid)) {
+					map.put(FISCAL_DECISION_ACI, Boolean.TRUE);
+				}
 			}
 		}
 
 		if (tiers instanceof PersonnePhysique) {
 			PersonnePhysique pp = (PersonnePhysique) tiers;
 			if (pp.isHabitantVD()) {
-				setDroitHabitant(pp, visa, oid, map);
+				setDroitHabitant(tiers, visa, oid, map);
 			}
 			else {
-				setDroitNonHabitant(pp, visa, oid, map);
+				setDroitNonHabitant(tiers, visa, oid, map);
 			}
 		}
 		else if (tiers instanceof MenageCommun) {
@@ -504,10 +480,10 @@ public class AutorisationManagerImpl implements AutorisationManager {
 				}
 			}
 			if (isHabitant) {
-				setDroitHabitant(menageCommun, visa, oid, map);
+				setDroitHabitant(tiers, visa, oid, map);
 			}
 			else {
-				setDroitNonHabitant(menageCommun, visa, oid, map);
+				setDroitNonHabitant(tiers, visa, oid, map);
 			}
 		}
 		else if (tiers instanceof AutreCommunaute) {
@@ -554,25 +530,10 @@ public class AutorisationManagerImpl implements AutorisationManager {
 				map.put(MODIF_FISCAL, Boolean.TRUE);
 			}
 		}
-		else if (tiers instanceof Entreprise) {
-			if (SecurityHelper.isGranted(securityProvider, Role.MODIF_PM, visa, oid)) {
-				map.put(MODIF_CIVIL, Boolean.TRUE);
-				map.put(MODIF_IDE, Boolean.TRUE);
-			}
-			if (SecurityHelper.isGranted(securityProvider, Role.ETAT_PM, visa, oid)) {
-				map.put(MODIF_ETATS_PM, Boolean.TRUE);
-			}
-		}
-		else if (tiers instanceof Etablissement) {
-			if (SecurityHelper.isGranted(securityProvider, Role.MODIF_PM, visa, oid)) {
-				map.put(MODIF_CIVIL, Boolean.TRUE);
-				map.put(MODIF_IDE, Boolean.TRUE);
-			}
-		}
 
 		// UNIREG-2120 Possibilite de créer un debiteur à partir d'une collectivité administrative
 	    // UNIREG-3362 Création de débiteur à partir d'une PM
-		else if (tiers instanceof CollectiviteAdministrative) {
+		else if (tiers instanceof CollectiviteAdministrative || tiers instanceof Entreprise) {
 			map.put(MODIF_COMPLEMENT, Boolean.FALSE);
 			map.put(MODIF_MOUVEMENT, Boolean.FALSE);
 		}
@@ -625,7 +586,7 @@ public class AutorisationManagerImpl implements AutorisationManager {
 	/**
 	 * enrichi la map de droit d'édition des onglets pour un habitant ou un ménage commun considéré habitant
 	 */
-	private boolean setDroitHabitant(ContribuableImpositionPersonnesPhysiques tiers, String visa, int oid, Map<String, Boolean> allowedOnglet) {
+	private boolean setDroitHabitant(Tiers tiers, String visa, int oid, Map<String, Boolean> allowedOnglet) {
 
 		Assert.isTrue(tiers instanceof PersonnePhysique || tiers instanceof MenageCommun, "Le tiers " + tiers.getNumero() + " n'est ni une personne physique ni un ménage commun");
 		final Contribuable ctbAVerifier = (Contribuable) tiers;
@@ -668,9 +629,10 @@ public class AutorisationManagerImpl implements AutorisationManager {
 	/**
 	 * enrichi la map de droit d'édition des onglets pour un non habitant ou un ménage commun considéré non habitant
 	 */
-	private boolean setDroitNonHabitant(ContribuableImpositionPersonnesPhysiques tiers, String visa, int oid, Map<String, Boolean> allowedOnglet) {
+	private boolean setDroitNonHabitant(Tiers tiers, String visa, int oid, Map<String, Boolean> allowedOnglet) {
 
-		final boolean modifiableSelonRoleEtDecisions = isCtbModifiableSelonRoleEtDecisions(tiers, visa, oid);
+		final Contribuable ctbAVerifier = (Contribuable) tiers;
+		final boolean modifiableSelonRoleEtDecisions = isCtbModifiableSelonRoleEtDecisions(ctbAVerifier, visa, oid);
 
 		//les non habitants n'ont jamais l'onglet rapport prestation
 		//les ménage commun n'ont jamais les onglets civil et rapport prestation
@@ -805,8 +767,10 @@ public class AutorisationManagerImpl implements AutorisationManager {
 	/**
 	 * Code commun pour les méthodes setDroitNonHabitant et setDroitHabitant
 	 */
-	private boolean codeFactorise3(ContribuableImpositionPersonnesPhysiques tiers, String visa, int oid, Map<String, Boolean> allowedOnglet, boolean isEditable) {
-		final boolean modifiableSelonRoleEtDecisions = isCtbModifiableSelonRoleEtDecisions(tiers, visa, oid);
+	private boolean codeFactorise3(Tiers tiers, String visa, int oid, Map<String, Boolean> allowedOnglet,
+	                               boolean isEditable) {
+		final Contribuable ctbAVerifier = (Contribuable) tiers;
+		final boolean modifiableSelonRoleEtDecisions = isCtbModifiableSelonRoleEtDecisions(ctbAVerifier, visa, oid);
 		if (modifiableSelonRoleEtDecisions && !tiers.getForsFiscauxPrincipauxActifsSorted().isEmpty() && SecurityHelper.isGranted(securityProvider, Role.FOR_SECOND_PP, visa, oid)) {
 			allowedOnglet.put(MODIF_FISCAL, Boolean.TRUE);
 			allowedOnglet.put(FISCAL_FOR_SEC, Boolean.TRUE);
@@ -820,7 +784,7 @@ public class AutorisationManagerImpl implements AutorisationManager {
 		return isEditable;
 	}
 
-	private enum TypeImposition {
+	private static enum TypeImposition {
 		AUCUN_FOR_ACTIF,
 		ORDINAIRE_DEPENSE,
 		SOURCIER;
@@ -834,11 +798,11 @@ public class AutorisationManagerImpl implements AutorisationManager {
 		}
 	}
 
-	private static TypeImposition calculeTypeImposition(ContribuableImpositionPersonnesPhysiques ctb) {
+	private static TypeImposition calculeTypeImposition(Tiers tiers) {
 		final TypeImposition type;
-		final ForFiscalPrincipal forFiscalPrincipal = ctb.getForFiscalPrincipalAt(null);
+		final ForFiscalPrincipal forFiscalPrincipal = tiers.getForFiscalPrincipalAt(null);
 		if (forFiscalPrincipal != null) {
-			final ModeImposition modeImposition = ctb.getForFiscalPrincipalAt(null).getModeImposition();
+			final ModeImposition modeImposition = tiers.getForFiscalPrincipalAt(null).getModeImposition();
 			switch (modeImposition) {
 			case SOURCE:
 			case MIXTE_137_1:
@@ -859,10 +823,10 @@ public class AutorisationManagerImpl implements AutorisationManager {
 	/**
 	 * Le type d'autorité fiscale est null en cas d'absence de for fiscal principal actif
 	 */
-	private static Pair<TypeImposition, TypeAutoriteFiscale> calculeTypeImpositionEtAutoriteFiscale(ContribuableImpositionPersonnesPhysiques tiers) {
+	private static Pair<TypeImposition, TypeAutoriteFiscale> calculeTypeImpositionEtAutoriteFiscale(Tiers tiers) {
 		final TypeImposition typeImposition = calculeTypeImposition(tiers);
-		final ForFiscalPrincipal forFiscalPrincipal = tiers.getForFiscalPrincipalAt(null);
 		final TypeAutoriteFiscale typeAutoriteFiscale;
+		final ForFiscalPrincipal forFiscalPrincipal = tiers.getForFiscalPrincipalAt(null);
 		if (forFiscalPrincipal != null) {
 			typeAutoriteFiscale = forFiscalPrincipal.getTypeAutoriteFiscale();
 		}

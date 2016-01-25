@@ -24,13 +24,12 @@ import ch.vd.registre.base.validation.ValidationHelper;
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.unireg.common.NomPrenom;
+import ch.vd.unireg.interfaces.civil.data.Adresse;
+import ch.vd.unireg.interfaces.civil.data.CasePostale;
 import ch.vd.unireg.interfaces.civil.data.Individu;
-import ch.vd.unireg.interfaces.common.Adresse;
-import ch.vd.unireg.interfaces.common.CasePostale;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.infra.data.Pays;
-import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.uniregctb.adresse.AdresseGenerique.SourceType;
 import ch.vd.uniregctb.common.DonneesCivilesException;
 import ch.vd.uniregctb.common.FiscalDateHelper;
@@ -41,17 +40,15 @@ import ch.vd.uniregctb.interfaces.model.AdresseEntreprise;
 import ch.vd.uniregctb.interfaces.model.AdressesCivilesHistoriques;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.interfaces.service.ServiceOrganisationService;
+import ch.vd.uniregctb.interfaces.service.ServicePersonneMoraleService;
 import ch.vd.uniregctb.tiers.AutreCommunaute;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.Entreprise;
-import ch.vd.uniregctb.tiers.Etablissement;
 import ch.vd.uniregctb.tiers.IndividuNotFoundException;
 import ch.vd.uniregctb.tiers.MenageCommun;
-import ch.vd.uniregctb.tiers.OrganisationNotFoundException;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.tiers.RepresentationLegale;
@@ -85,7 +82,7 @@ public class AdresseServiceImpl implements AdresseService {
 	private TiersService tiersService;
 	private TiersDAO tiersDAO;
 	private ServiceInfrastructureService serviceInfra;
-	private ServiceOrganisationService serviceOrganisationService;
+	private ServicePersonneMoraleService servicePM;
 	private ServiceCivilService serviceCivilService;
 	private PlatformTransactionManager transactionManager;
 	private HibernateTemplate hibernateTemplate;
@@ -103,8 +100,8 @@ public class AdresseServiceImpl implements AdresseService {
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
-	public void setServiceOrganisationService(ServiceOrganisationService serviceOrganisation) {
-		this.serviceOrganisationService = serviceOrganisation;
+	public void setServicePM(ServicePersonneMoraleService servicePM) {
+		this.servicePM = servicePM;
 	}
 
 	public void setServiceCivilService(ServiceCivilService serviceCivilService) {
@@ -123,11 +120,11 @@ public class AdresseServiceImpl implements AdresseService {
 	}
 
 	protected AdresseServiceImpl(TiersService tiersService, TiersDAO tiersDAO, ServiceInfrastructureService serviceInfra,
-	                             ServiceOrganisationService serviceOrganisationService, ServiceCivilService serviceCivilService) {
+	                             ServicePersonneMoraleService servicePM, ServiceCivilService serviceCivilService) {
 		this.tiersService = tiersService;
 		this.tiersDAO = tiersDAO;
 		this.serviceInfra = serviceInfra;
-		this.serviceOrganisationService = serviceOrganisationService;
+		this.servicePM = servicePM;
 		this.serviceCivilService = serviceCivilService;
 	}
 
@@ -466,16 +463,10 @@ public class AdresseServiceImpl implements AdresseService {
 			if (fillFormulePolitesse) {
 				adresse.addFormulePolitesse(FormulePolitesse.PERSONNE_MORALE); // [UNIREG-2302]
 			}
-			adresse.addRaisonSociale(getRaisonSociale(entreprise));
-		}
-		else if (tiers instanceof Etablissement) {
-			final Etablissement etb = (Etablissement) tiers;
-			if (fillFormulePolitesse) {
-				adresse.addFormulePolitesse(FormulePolitesse.PERSONNE_MORALE); // [UNIREG-2302]
+			final List<String> raisonComplete = getRaisonSocialeLongue(entreprise);
+			for (String ligne : raisonComplete) {
+				adresse.addRaisonSociale(ligne);
 			}
-
-			// [SIFISC-16876] On n'utilise que la raison sociale pour l'adresse, l'enseigne ne sert que pour la recherche
-			adresse.addRaisonSociale(getRaisonSociale(etb));
 		}
 		else {
 			throw new NotImplementedException("Type de tiers [" + tiers.getNatureTiers() + "] inconnu");
@@ -518,7 +509,7 @@ public class AdresseServiceImpl implements AdresseService {
 			final AdressesCiviles adressesCourantes = new AdressesCiviles(serviceCivilService.getAdresses(individu.getNoTechnique(), date, strict));
 			final Adresse adresseCourrier = adressesCourantes.courrier;
 
-			adresse = new AdresseEnvoiDetaillee(null, AdresseGenerique.SourceType.CIVILE_PERS, date, date, adresseCourrier == null);
+			adresse = new AdresseEnvoiDetaillee(null, AdresseGenerique.SourceType.CIVILE, date, date, adresseCourrier == null);
 			adresse.addFormulePolitesse(getFormulePolitesse(individu, date));
 			adresse.addNomPrenom(tiersService.getDecompositionNomPrenom(individu));
 
@@ -815,17 +806,17 @@ public class AdresseServiceImpl implements AdresseService {
 	 * @return la raison sociale de l'enteprise sur une seule ligne
 	 */
 	private String getRaisonSociale(Entreprise entreprise) {
-		return tiersService.getRaisonSociale(entreprise);
+		return tiersService.getRaisonSocialeAbregee(entreprise);
 	}
 
 	/**
-	 * Retourne la raison sociale pour l'adressage de l'etablissement spécifié.
+	 * Retourne la raison sociale pour l'adressage de l'entreprise spécifiée.
 	 *
-	 * @param etablissement un etablissement
-	 * @return la raison sociale de l'etablissement sur une seule ligne
+	 * @param entreprise une entreprise
+	 * @return la raison sociale de l'entreprise sur une, deux ou trois lignes.
 	 */
-	private String getRaisonSociale(Etablissement etablissement) {
-		return tiersService.getRaisonSociale(etablissement);
+	private List<String> getRaisonSocialeLongue(Entreprise entreprise) {
+		return tiersService.getRaisonSociale(entreprise);
 	}
 
 	public static RueEtNumero buildRueEtNumero(AdresseGenerique adresse) {
@@ -973,11 +964,6 @@ public class AdresseServiceImpl implements AdresseService {
 		return sandwich.emballe();
 	}
 
-	private static AdresseGenerique.Source getSourceCivilePourTiers(Tiers tiers) {
-		final SourceType sourceType = (tiers instanceof Entreprise || tiers instanceof Etablissement) ? SourceType.CIVILE_ORG : SourceType.CIVILE_PERS;
-		return new AdresseGenerique.Source(sourceType, tiers);
-	}
-
 	private AdressesFiscalesSandwich getAdressesFiscalesSandwich(Tiers tiers, boolean inclureRepresentation, int callDepth, boolean strict) throws AdresseException {
 
 		if (tiers == null) {
@@ -986,17 +972,33 @@ public class AdresseServiceImpl implements AdresseService {
 
 		final AdressesFiscalesSandwich adresses = new AdressesFiscalesSandwich();
 
-		// Récolte des adresses en provenance des registres civils
-		final AdressesCivilesHisto adressesCiviles = getAdressesCivilesHisto(tiers, strict);
+		// Récolte des adresses en provenance du registre civil/registre PM
+		if (tiers instanceof Entreprise) {
+			final Entreprise entreprise = (Entreprise) tiers;
+			final AdressesPMHisto adressesPM = getAdressesPMHisto(entreprise);
 
-		final List<AdresseGenerique> courriers = initAdressesCivilesHisto(tiers, adressesCiviles.courriers, adressesCiviles.principales, strict);
-		final List<AdresseGenerique> principales = initAdressesCivilesHisto(tiers, adressesCiviles.principales, adressesCiviles.courriers, strict);
+			// [SIFISC-5622] Parfois, une PM n'a pas d'adresse...
+			if (adressesPM != null) {
+				final List<AdresseGenerique> courriers = initAdressesPMHisto(entreprise, adressesPM.courriers, adressesPM.sieges);
+				final List<AdresseGenerique> sieges = initAdressesPMHisto(entreprise, adressesPM.sieges, adressesPM.courriers);
 
-		final AdresseGenerique.Source sourceCivile = getSourceCivilePourTiers(tiers);
-		adresses.courrier.addCouche(AdresseCouche.CIVILE, courriers, sourceCivile, null);
-		adresses.domicile.addCouche(AdresseCouche.CIVILE, principales, sourceCivile, null);
-		adresses.representation.addCouche(AdresseCouche.CIVILE, courriers, sourceCivile, null);
-		adresses.poursuite.addCouche(AdresseCouche.CIVILE, principales, sourceCivile, null);
+				adresses.courrier.addCouche(AdresseCouche.CIVILE, courriers, null, null);
+				adresses.domicile.addCouche(AdresseCouche.CIVILE, sieges, null, null);
+				adresses.representation.addCouche(AdresseCouche.CIVILE, courriers, null, null);
+				adresses.poursuite.addCouche(AdresseCouche.CIVILE, sieges, null, null);
+			}
+		}
+		else {
+			final AdressesCivilesHisto adressesCiviles = getAdressesCivilesHisto(tiers, strict);
+
+			final List<AdresseGenerique> courriers = initAdressesCivilesHisto(tiers, adressesCiviles.courriers, adressesCiviles.principales, strict);
+			final List<AdresseGenerique> principales = initAdressesCivilesHisto(tiers, adressesCiviles.principales, adressesCiviles.courriers, strict);
+
+			adresses.courrier.addCouche(AdresseCouche.CIVILE, courriers, null, null);
+			adresses.domicile.addCouche(AdresseCouche.CIVILE, principales, null, null);
+			adresses.representation.addCouche(AdresseCouche.CIVILE, courriers, null, null);
+			adresses.poursuite.addCouche(AdresseCouche.CIVILE, principales, null, null);
+		}
 
 		/*
 		 * Surcharge avec les adresses fiscales
@@ -1513,22 +1515,7 @@ public class AdresseServiceImpl implements AdresseService {
 			adressesCiviles = getAdressesCiviles((CollectiviteAdministrative) tiers);
 		}
 		else if (tiers instanceof Entreprise) {
-			final Entreprise entreprise = (Entreprise) tiers;
-			if (entreprise.isConnueAuCivil()) {
-				adressesCiviles = getAdressesCiviles(entreprise, date);
-			}
-			else {
-				adressesCiviles = null;
-			}
-		}
-		else if (tiers instanceof Etablissement) {
-			final Etablissement etb = (Etablissement) tiers;
-			if (etb.isConnuAuCivil()) {
-				adressesCiviles = getAdressesCiviles(etb, date);
-			}
-			else {
-				adressesCiviles = null;
-			}
+			throw new IllegalArgumentException("Les entreprises ne possèdent pas d'adresses civiles !");
 		}
 		else {
 			throw new NotImplementedException("Type de tiers [" + tiers.getNatureTiers() + "] inconnu");
@@ -1558,6 +1545,7 @@ public class AdresseServiceImpl implements AdresseService {
 		catch (DonneesCivilesException e) {
 			throw new AdresseDataException(e);
 		}
+
 	}
 
 	/**
@@ -1601,22 +1589,7 @@ public class AdresseServiceImpl implements AdresseService {
 			adressesCiviles = getAdressesCivilesHisto((CollectiviteAdministrative) tiers);
 		}
 		else if (tiers instanceof Entreprise) {
-			final Entreprise entreprise = (Entreprise) tiers;
-			if (entreprise.isConnueAuCivil()) {
-				adressesCiviles = getAdressesCivilesHisto((Entreprise) tiers);
-			}
-			else {
-				adressesCiviles = new AdressesCivilesHisto();
-			}
-		}
-		else if (tiers instanceof Etablissement) {
-			final Etablissement etb = (Etablissement) tiers;
-			if (etb.isConnuAuCivil()) {
-				adressesCiviles = getAdressesCivilesHisto(etb);
-			}
-			else {
-				adressesCiviles = new AdressesCivilesHisto();
-			}
+			throw new IllegalArgumentException("Les entreprises ne possèdent pas d'adresses civiles !");
 		}
 		else {
 			throw new NotImplementedException("Type de tiers [" + tiers.getNatureTiers() + "] inconnu");
@@ -1671,62 +1644,25 @@ public class AdresseServiceImpl implements AdresseService {
 		return adresses;
 	}
 
-	private AdressesCivilesHisto getAdressesCivilesHisto(Entreprise entreprise) {
-		final Organisation organisation = tiersService.getOrganisation(entreprise);
-		if (organisation == null) {
-			throw new OrganisationNotFoundException(entreprise);
-		}
-
-		final AdressesCivilesHistoriques adressesCiviles = serviceOrganisationService.getAdressesOrganisationHisto(entreprise.getNumeroEntreprise());
-		final AdressesCivilesHisto adresses = new AdressesCivilesHisto();
-		adresses.principales.addAll(adressesCiviles.principales);
-		adresses.courriers.addAll(adressesCiviles.courriers);
-		return adresses;
+	private AdressesPMHisto getAdressesPMHisto(Entreprise entreprise) {
+		final Long numeroEntreprise = entreprise.getNumero();
+		Assert.notNull(numeroEntreprise);
+		return servicePM.getAdressesHisto(numeroEntreprise);
 	}
 
-	private AdressesCivilesHisto getAdressesCivilesHisto(Etablissement etablissement) {
-		final Organisation organisation = tiersService.getOrganisationPourEtablissement(etablissement);
-		if (organisation == null) {
-			throw new OrganisationNotFoundException(etablissement);
-		}
-
-		final AdressesCivilesHistoriques adressesCiviles = serviceOrganisationService.getAdressesSiteOrganisationHisto(etablissement.getNumeroEtablissement());
-		final AdressesCivilesHisto adresses = new AdressesCivilesHisto();
-		adresses.principales.addAll(adressesCiviles.principales);
-		adresses.courriers.addAll(adressesCiviles.courriers);
-		return adresses;
-	}
-
-	private AdressesCiviles getAdressesCiviles(Entreprise entreprise, RegDate date) throws AdresseDataException {
-		try {
-			return getAdressesCivilesHisto(entreprise).at(date);
-		}
-		catch (DonneesCivilesException e) {
-			throw new AdresseDataException(e);
-		}
-	}
-
-	private AdressesCiviles getAdressesCiviles(Etablissement etablissement, RegDate date) throws AdresseDataException {
-		try {
-			return getAdressesCivilesHisto(etablissement).at(date);
-		}
-		catch (DonneesCivilesException e) {
-			throw new AdresseDataException(e);
-		}
-	}
-
-		/**
-		 * Applique les règles business pour transformer l'adresse surchargée spécifiée en une adresse générique.
-		 *
-		 * @param tiers             le tiers associé à l'adresse
-		 * @param adresseSurchargee l'adresse de tiers à résoudre
-		 * @param callDepth         profondeur d'appel (technique)
-		 * @param strict            si <i>vrai</i>, la cohérence des données est vérifiée de manière stricte et en cas d'incohérence, une exception est levée. Si <i>faux</i>, la méthode essaie de corriger
-		 *                          les données (dans la mesure du possible) pour ne pas lever d'exception.
-		 * @return une adresse générique
-		 * @throws AdresseException en cas de dépendence circulaire
-		 */
-	private AdresseGenerique resolveAdresseSurchargee(final Tiers tiers, final AdresseTiers adresseSurchargee, int callDepth, boolean strict) throws AdresseException {
+	/**
+	 * Applique les règles business pour transformer l'adresse surchargée spécifiée en une adresse générique.
+	 *
+	 * @param tiers             le tiers associé à l'adresse
+	 * @param adresseSurchargee l'adresse de tiers à résoudre
+	 * @param callDepth         profondeur d'appel (technique)
+	 * @param strict            si <i>vrai</i>, la cohérence des données est vérifiée de manière stricte et en cas d'incohérence, une exception est levée. Si <i>faux</i>, la méthode essaie de corriger
+	 *                          les données (dans la mesure du possible) pour ne pas lever d'exception.
+	 * @return une adresse générique
+	 * @throws AdresseException en cas de dépendence circulaire
+	 */
+	private AdresseGenerique resolveAdresseSurchargee(final Tiers tiers, final AdresseTiers adresseSurchargee, int callDepth, boolean strict)
+			throws AdresseException {
 
 		AdresseGenerique surcharge;
 

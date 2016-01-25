@@ -24,11 +24,7 @@ public class RelationBetweenPartiesTypeTest extends EnumTest {
 //		assertEnumLengthEquals(RelationBetweenPartiesType.class, ch.vd.uniregctb.type.TypeRapportEntreTiers.class);
 
 		// vérification que toutes les valeurs sont mappées sur quelque chose
-		final Set<TypeRapportEntreTiers> notMapped = EnumSet.of(TypeRapportEntreTiers.PARENTE,
-		                                                        TypeRapportEntreTiers.ASSUJETTISSEMENT_PAR_SUBSTITUTION,
-		                                                        TypeRapportEntreTiers.ACTIVITE_ECONOMIQUE,
-		                                                        TypeRapportEntreTiers.MANDAT,
-		                                                        TypeRapportEntreTiers.FUSION_ENTREPRISES);
+		final Set<TypeRapportEntreTiers> notMapped = EnumSet.of(TypeRapportEntreTiers.PARENTE, TypeRapportEntreTiers.ASSUJETTISSEMENT_PAR_SUBSTITUTION);
 		for (TypeRapportEntreTiers tret : TypeRapportEntreTiers.values()) {
 			if (notMapped.contains(tret)) {
 				try {

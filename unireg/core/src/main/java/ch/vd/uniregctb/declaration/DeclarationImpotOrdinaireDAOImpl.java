@@ -3,7 +3,6 @@ package ch.vd.uniregctb.declaration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -23,7 +22,7 @@ import ch.vd.registre.base.utils.Pair;
 import ch.vd.uniregctb.common.BaseDAOImpl;
 import ch.vd.uniregctb.type.TypeEtatDeclaration;
 
-public class DeclarationImpotOrdinaireDAOImpl extends BaseDAOImpl<DeclarationImpotOrdinaire, Long> implements DeclarationImpotOrdinaireDAO {
+public class DeclarationImpotOrdinaireDAOImpl extends BaseDAOImpl< DeclarationImpotOrdinaire, Long> implements DeclarationImpotOrdinaireDAO {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(DeclarationImpotOrdinaireDAOImpl.class);
 
@@ -32,6 +31,7 @@ public class DeclarationImpotOrdinaireDAOImpl extends BaseDAOImpl<DeclarationImp
 	public DeclarationImpotOrdinaireDAOImpl() {
 		super(DeclarationImpotOrdinaire.class);
 	}
+
 
 	/**
 	 * Recherche des declarations d'impot ordinaire selon des criteres
@@ -47,6 +47,12 @@ public class DeclarationImpotOrdinaireDAOImpl extends BaseDAOImpl<DeclarationImp
 	@Override
 	@SuppressWarnings({"unchecked"})
 	public List<DeclarationImpotOrdinaire> find(DeclarationImpotCriteria criterion, boolean doNotAutoFlush) {
+
+		if (LOGGER.isTraceEnabled()) {
+			LOGGER.trace("Start of DeclarationImpotOrdinaireDAO : find");
+		}
+
+
 		final StringBuilder b = new StringBuilder("SELECT di FROM DeclarationImpotOrdinaire di WHERE 1=1");
 		final Map<String, Object> params = new HashMap<>();
 
@@ -105,7 +111,12 @@ public class DeclarationImpotOrdinaireDAOImpl extends BaseDAOImpl<DeclarationImp
 	@Override
 	@SuppressWarnings("unchecked")
 	public List<DeclarationImpotOrdinaire> findByNumero(Long numero) {
-		final Map<String, Long> params = Collections.singletonMap("tiersId", numero);
+		if (LOGGER.isTraceEnabled()) {
+			LOGGER.trace("Start of DeclarationImpotOrdinaireDAO : findByNumero");
+		}
+
+		final Map<String, Long> params = new HashMap<>(1);
+		params.put("tiersId", numero);
 		final String query = "select di from DeclarationImpotOrdinaire di where di.tiers.numero = :tiersId";
 		return find(query, params, null);
 	}
@@ -119,7 +130,12 @@ public class DeclarationImpotOrdinaireDAOImpl extends BaseDAOImpl<DeclarationImp
 	@Override
 	@SuppressWarnings("unchecked")
 	public EtatDeclaration findDerniereDiEnvoyee(Long numeroCtb) {
-		final Map<String, Long> params = Collections.singletonMap("tiersId", numeroCtb);
+		if (LOGGER.isTraceEnabled()) {
+			LOGGER.trace("Start of DeclarationImpotOrdinaireDAO : findDerniereDiEnvoyee");
+		}
+
+		final Map<String, Long> params = new HashMap<>(1);
+		params.put("tiersId", numeroCtb);
 		final String query = " select etatDeclarationEmise from EtatDeclarationEmise etatDeclarationEmise where etatDeclarationEmise.declaration.annulationDate is null and etatDeclarationEmise.declaration.tiers.numero = :tiersId order by etatDeclarationEmise.dateObtention desc";
 		final List<EtatDeclaration> list = find(query, params, null);
 		if (list.isEmpty()) {
@@ -141,20 +157,11 @@ public class DeclarationImpotOrdinaireDAOImpl extends BaseDAOImpl<DeclarationImp
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public Set<DeclarationImpotOrdinairePP> getDeclarationsImpotPPForSommation(Collection<Long> idsDI) {
-		return getDeclarationsImpotForSommation(DeclarationImpotOrdinairePP.class, idsDI);
-	}
+	public Set<DeclarationImpotOrdinaire> getDIsForSommation(final Collection<Long> idsDI) {
 
-	@Override
-	@SuppressWarnings("unchecked")
-	public Set<DeclarationImpotOrdinairePM> getDeclarationsImpotPMForSommation(Collection<Long> idsDI) {
-		return getDeclarationsImpotForSommation(DeclarationImpotOrdinairePM.class, idsDI);
-	}
-
-	private <T extends DeclarationImpotOrdinaire> Set<T> getDeclarationsImpotForSommation(Class<T> clazz, Collection<Long> ids) {
 		final Session session = getCurrentSession();
-		final Criteria crit = session.createCriteria(clazz);
-		crit.add(Restrictions.in("id", ids));
+		final Criteria crit = session.createCriteria(DeclarationImpotOrdinaire.class);
+		crit.add(Restrictions.in("id", idsDI));
 		crit.setFetchMode("etats", FetchMode.JOIN);
 		crit.setFetchMode("delais", FetchMode.JOIN);
 		crit.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
@@ -162,8 +169,7 @@ public class DeclarationImpotOrdinaireDAOImpl extends BaseDAOImpl<DeclarationImp
 		final FlushMode mode = session.getFlushMode();
 		try {
 			session.setFlushMode(FlushMode.MANUAL);
-			//noinspection unchecked
-			return new HashSet<>(crit.list());
+			return new HashSet<DeclarationImpotOrdinaire>(crit.list());
 		}
 		finally {
 			session.setFlushMode(mode);

@@ -3,7 +3,6 @@ package ch.vd.uniregctb.tache;
 import java.util.Collection;
 import java.util.List;
 
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -100,14 +99,13 @@ public interface TacheService {
 	 * [UNIREG-2305] Cette méthode détermine toutes les actions nécessaires pour synchroniser les déclarations d'impôt du contribuable avec ses fors fiscaux.
 	 *
 	 * @param contribuable un contribuable
-	 * @return une liste d'actions à entreprendre (peut être vide, mais pas nulle)
+	 * @return une liste d'actions à entreprendre
 	 * @throws ch.vd.uniregctb.metier.assujettissement.AssujettissementException en cas d'incohérence des données sur les fors fiscaux qui empêche de calculer l'assujettissement.
 	 */
-	@NotNull
 	List<SynchronizeAction> determineSynchronizeActionsForDIs(Contribuable contribuable) throws AssujettissementException;
 
 	/**
-	 * Synchronize les tâches d'envoi de déclarations (DI + Questionnaires SNC) pour tous les contribuables spécifiés (UNIREG-2305) (SIFISC-3141).
+	 * Synchronize les tâches d'envoi de DIs pour tous les contribuables spécifiés (UNIREG-2305) (SIFISC-3141).
 	 * <br>
 	 * <b>Note:</b> cette méthode gère elle-même les transactions et doit donc être utilisée en context non-transactionel.
 	 * <br>
@@ -116,7 +114,7 @@ public interface TacheService {
 	 * @param ctbIds les ids des contribuables dont les tâches doivent être synchronisées.
 	 * @return une indication des opérations effectuées
 	 */
-	TacheSyncResults synchronizeTachesDeclarations(Collection<Long> ctbIds);
+	TacheSyncResults synchronizeTachesDIs(Collection<Long> ctbIds);
 
     /**
      * Annule les tâches obsolètes suite à la modification d'un contribuable
@@ -134,4 +132,6 @@ public interface TacheService {
 	 * Cette méthode met-à-jour les statistiques des tâches et des mouvements de dossier en instance
 	 */
 	void updateStats();
+
+
 }

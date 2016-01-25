@@ -22,6 +22,20 @@
 	</tiles:put>
 	<tiles:put name="body">
 
+		<div style="float: right; margin: 0.5em;">
+			<unireg:setAuth var="autorisations" tiersId="${command.tiersId}"/>
+			<c:if test="${autorisations.forsSecondaires}">
+				<unireg:linkTo name="Créer un for secondaire" action="/fors/secondaire/add.do" params="{tiersId:${command.tiersId}}" link_class="createSecondaireLink"/>
+			</c:if>
+			<c:if test="${autorisations.forsAutresElementsImposables}">
+				<unireg:linkTo name="Créer un for autre élément imposable" action="/fors/autreelementimposable/add.do" params="{tiersId:${command.tiersId}}" link_class="createAutreElementLink"/>
+			</c:if>
+			<c:if test="${autorisations.forsAutresImpots}">
+				<unireg:linkTo name="Créer un for autre impôt" action="/fors/autreimpot/add.do" params="{tiersId:${command.tiersId}}" link_class="createAutreLink"/>
+			</c:if>
+		</div>
+		<div style="clear: right;"></div>
+
 		<form:form id="addForForm" commandName="command" action="add.do">
 			<fieldset>
 				<legend><span><fmt:message key="label.for.fiscal" /></span></legend>
@@ -90,9 +104,8 @@
 
 					function updateMotifsFors() {
 						var rattachement = $('#rattachement').val();
-						var genreImpot = $('#genreImpot').val();
-						Fors.updateMotifsOuverture($('#motifDebut'), '${command.tiersId}', genreImpot, rattachement, '${command.motifDebut}');
-						Fors.updateMotifsFermeture($('#motifFin'), '${command.tiersId}', genreImpot, rattachement, '${command.motifFin}')
+						Fors.updateMotifsOuverture($('#motifDebut'), '${command.tiersId}', 'REVENU_FORTUNE', rattachement, '${command.motifDebut}');
+						Fors.updateMotifsFermeture($('#motifFin'), '${command.tiersId}', 'REVENU_FORTUNE', rattachement, '${command.motifFin}')
 					}
 				</script>
 
@@ -101,11 +114,7 @@
 					<unireg:nextRowClass reset="0"/>
 					<tr class="<unireg:nextRowClass/>" >
 						<td width="20%"><fmt:message key="label.genre.impot"/>&nbsp;:</td>
-						<td>
-							<%--@elvariable id="genresImpot" type="java.util.Map<GenreImpot, String>"--%>
-							<form:select path="genreImpot" items="${genresImpot}" id="genreImpot"
-							             onchange="updateMotifsFors();"/>
-						</td>
+						<td><fmt:message key="option.genre.impot.REVENU_FORTUNE"/></td>
 						<td width="20%"><fmt:message key="label.rattachement"/>&nbsp;:</td>
 						<td>
 							<%--@elvariable id="rattachements" type="java.util.Map<MotifRattachement, String>"--%>
@@ -170,18 +179,17 @@
 						</td>
 					</tr>
 
-					<%--@elvariable id="modesImposition" type="java.util.Map<ModeImposition, String>"--%>
-					<c:if test="${not empty modesImposition}">
-						<tr id="mode_imposition" class="<unireg:nextRowClass/>" >
-							<td><fmt:message key="label.mode.imposition"/>&nbsp;:</td>
-							<td>
-								<form:select path="modeImposition" items="${modesImposition}" />
-								<form:errors path="modeImposition" cssClass="error" />
-							</td>
-							<td>&nbsp;</td>
-							<td>&nbsp;</td>
-						</tr>
-					</c:if>
+
+					<tr id="mode_imposition"  class="<unireg:nextRowClass/>" >
+						<td><fmt:message key="label.mode.imposition"/>&nbsp;:</td>
+						<td>
+							<%--@elvariable id="modesImposition" type="java.util.Map<ModeImposition, String>"--%>
+							<form:select path="modeImposition" items="${modesImposition}" />
+							<form:errors path="modeImposition" cssClass="error" />
+						</td>
+						<td>&nbsp;</td>
+						<td>&nbsp;</td>
+					</tr>
 				</table>
 
 				<script type="text/javascript">

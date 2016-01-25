@@ -24,6 +24,12 @@
 
 		<div style="float: right; margin: 0.5em;">
 			<unireg:setAuth var="autorisations" tiersId="${command.tiersId}"/>
+			<c:if test="${autorisations.forsPrincipaux}">
+				<unireg:linkTo name="Créer un for principal" action="/fors/principal/add.do" params="{tiersId:${command.tiersId}}" link_class="createPrincipalLink"/>
+			</c:if>
+			<c:if test="${autorisations.forsSecondaires}">
+				<unireg:linkTo name="Créer un for secondaire" action="/fors/secondaire/add.do" params="{tiersId:${command.tiersId}}" link_class="createSecondaireLink"/>
+			</c:if>
 			<c:if test="${autorisations.forsAutresImpots}">
 				<unireg:linkTo name="Créer un for autre impôt" action="/fors/autreimpot/add.do" params="{tiersId:${command.tiersId}}" link_class="createAutreLink"/>
 			</c:if>

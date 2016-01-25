@@ -3,7 +3,6 @@ package ch.vd.uniregctb.fors;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
@@ -25,14 +24,12 @@ public class AddForPrincipalView implements AddForRevenuFortuneView {
 	private TypeAutoriteFiscale typeAutoriteFiscale;
 	private Integer noAutoriteFiscale;
 	private ModeImposition modeImposition;
-	private GenreImpot genreImpot;
 
 	public AddForPrincipalView() {
 	}
 
-	public AddForPrincipalView(long tiersId, GenreImpot genreImpot) {
+	public AddForPrincipalView(long tiersId) {
 		this.tiersId = tiersId;
-		this.genreImpot = genreImpot;
 		this.motifRattachement = MotifRattachement.DOMICILE;
 		this.typeAutoriteFiscale = TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD;
 		this.modeImposition = ModeImposition.ORDINAIRE;
@@ -130,13 +127,5 @@ public class AddForPrincipalView implements AddForRevenuFortuneView {
 
 	public void setModeImposition(ModeImposition modeImposition) {
 		this.modeImposition = modeImposition;
-	}
-
-	public GenreImpot getGenreImpot() {
-		return genreImpot;
-	}
-
-	public void setGenreImpot(GenreImpot genreImpot) {
-		this.genreImpot = genreImpot;
 	}
 }

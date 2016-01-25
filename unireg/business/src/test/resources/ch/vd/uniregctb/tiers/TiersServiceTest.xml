@@ -399,7 +399,7 @@
     <column>LOG_MDATE</column>
     <column>ID</column>
     <column>ANNEE</column>
-    <column>CODE_CTRL_SOMM_DI_PP</column>
+    <column>CODE_CTRL_SOMM_DI</column>
     <row>
       <value>2008-01-01</value>
       <value>1</value>
@@ -415,7 +415,6 @@
     <column>DATE_FIN_ENVOI_MASSE</column>
     <column>TYPE_CTB</column>
     <column>PERIODE_ID</column>
-    <column>PPF_TYPE</column>
     <row>
       <value>2008-01-01</value>
       <value>1</value>
@@ -424,7 +423,6 @@
       <value>20090430</value>
       <value>VAUDOIS_ORDINAIRE</value>
       <value>1</value>
-      <value>PP</value>
     </row>
     <row>
       <value>2008-01-01</value>
@@ -434,7 +432,6 @@
       <value>20090630</value>
       <value>VAUDOIS_DEPENSE</value>
       <value>1</value>
-      <value>PP</value>
     </row>
     <row>
       <value>2008-01-01</value>
@@ -444,7 +441,6 @@
       <value>20090630</value>
       <value>HORS_CANTON</value>
       <value>1</value>
-      <value>PP</value>
     </row>
     <row>
       <value>2008-01-01</value>
@@ -454,7 +450,6 @@
       <value>20090630</value>
       <value>HORS_SUISSE</value>
       <value>1</value>
-      <value>PP</value>
     </row>
   </table>
   <table name="DECLARATION">
@@ -500,8 +495,7 @@
     <column>DATE_DEMANDE</column>
     <column>DATE_TRAITEMENT</column>
     <column>DELAI_ACCORDE_AU</column>
-    <column>ETAT</column>
-    <column>SURSIS</column>
+    <column>CONFIRMATION_ECRITE</column>
     <column>ANNULATION_DATE</column>
     <row>
       <value>2008-01-01</value>
@@ -510,7 +504,6 @@
       <value>20080215</value>
       <value>20080215</value>
       <value>20080228</value>
-      <value>ACCORDE</value>
       <value>0</value>
       <null/>
     </row>
@@ -521,7 +514,6 @@
       <value>20080228</value>
       <value>20080228</value>
       <value>20080315</value>
-      <value>ACCORDE</value>
       <value>0</value>
       <value>2008-03-25</value>
     </row>

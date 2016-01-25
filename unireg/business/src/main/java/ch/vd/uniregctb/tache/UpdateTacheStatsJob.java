@@ -5,7 +5,6 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ch.vd.uniregctb.scheduler.JobCategory;
 import ch.vd.uniregctb.scheduler.JobDefinition;
 
 /**
@@ -16,11 +15,12 @@ public class UpdateTacheStatsJob extends JobDefinition {
 	private static final Logger LOGGER = LoggerFactory.getLogger(UpdateTacheStatsJob.class);
 
 	public static final String NAME = "UpdateTacheStatsJob";
+	private static final String CATEGORIE = "Tache";
 
 	private TacheService tacheService;
 
 	public UpdateTacheStatsJob(int sortOrder, String description) {
-		super(NAME, JobCategory.TACHE, sortOrder, description);
+		super(NAME, CATEGORIE, sortOrder, description);
 	}
 
 	@Override

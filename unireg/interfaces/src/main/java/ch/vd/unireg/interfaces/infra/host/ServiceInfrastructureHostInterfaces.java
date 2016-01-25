@@ -42,7 +42,10 @@ import ch.vd.unireg.interfaces.infra.data.PaysImpl;
 import ch.vd.unireg.interfaces.infra.data.Region;
 import ch.vd.unireg.interfaces.infra.data.Rue;
 import ch.vd.unireg.interfaces.infra.data.RueImpl;
+import ch.vd.unireg.interfaces.infra.data.TypeEtatPM;
+import ch.vd.unireg.interfaces.infra.data.TypeEtatPMImpl;
 import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
+import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscalImpl;
 import ch.vd.uniregctb.common.JvmVersionHelper;
 
 /**
@@ -456,6 +459,62 @@ public class ServiceInfrastructureHostInterfaces implements ServiceInfrastructur
 	}
 
 	@Override
+	public List<TypeRegimeFiscal> getTypesRegimesFiscaux() throws ServiceInfrastructureException {
+		try {
+			ch.vd.infrastructure.fiscal.model.TypeRegimeFiscal[] types = serviceInfrastructureFiscal.getTypeRegimesFiscaux();
+			List<TypeRegimeFiscal> list = new ArrayList<>(types.length);
+			for (ch.vd.infrastructure.fiscal.model.TypeRegimeFiscal type : types) {
+				list.add(TypeRegimeFiscalImpl.get(type));
+			}
+			return list;
+		}
+		catch (RemoteException | InfrastructureException e) {
+			throw new ServiceInfrastructureException("Acces aux types de régimes fiscaux", e);
+		}
+	}
+
+	@Override
+	public TypeRegimeFiscal getTypeRegimeFiscal(String code) throws ServiceInfrastructureException {
+		final List<TypeRegimeFiscal> list = getTypesRegimesFiscaux();
+		if (list != null) {
+			for (TypeRegimeFiscal type : list) {
+				if (type.getCode().equals(code)) {
+					return type;
+				}
+			}
+		}
+		return null;
+	}
+
+	@Override
+	public List<TypeEtatPM> getTypesEtatsPM() throws ServiceInfrastructureException {
+		try {
+			ch.vd.infrastructure.fiscal.model.TypeEtatPM[] types = serviceInfrastructureFiscal.getTypesEtatsPM();
+			List<TypeEtatPM> list = new ArrayList<>(types.length);
+			for (ch.vd.infrastructure.fiscal.model.TypeEtatPM type : types) {
+				list.add(TypeEtatPMImpl.get(type));
+			}
+			return list;
+		}
+		catch (RemoteException | InfrastructureException e) {
+			throw new ServiceInfrastructureException("Acces aux types des états PM", e);
+		}
+	}
+
+	@Override
+	public TypeEtatPM getTypeEtatPM(String code) throws ServiceInfrastructureException {
+		final List<TypeEtatPM> list = getTypesEtatsPM();
+		if (list != null) {
+			for (TypeEtatPM type : list) {
+				if (type.getCode().equals(code)) {
+					return type;
+				}
+			}
+		}
+		return null;
+	}
+
+	@Override
 	public String getUrlVers(ApplicationFiscale application, Long tiersId, Integer oid) {
 		throw new NotImplementedException("La méthode 'getUrlVers' ne doit pas être appelée sur le service host-interfaces.");
 	}
@@ -478,11 +537,6 @@ public class ServiceInfrastructureHostInterfaces implements ServiceInfrastructur
 	@Override
 	public Region getRegion(int code) {
 		throw new NotImplementedException("La méthode 'getRegion' ne doit pas être appelée sur le service host-interfaces.");
-	}
-
-	@Override
-	public List<TypeRegimeFiscal> getTousLesRegimesFiscaux() {
-		throw new NotImplementedException("La méthode 'getTousLesRegimesFiscaux' ne doit pas être appelée sur le service host-interface.");
 	}
 
 	@Override

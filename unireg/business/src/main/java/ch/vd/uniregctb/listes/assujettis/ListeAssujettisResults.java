@@ -33,7 +33,7 @@ public class ListeAssujettisResults extends ListesResults<ListeAssujettisResults
 	private int nbCtbAssujettis = 0;
 	private final AssujettissementService assujettissementService;
 
-	public abstract static class InfoCtb<T extends InfoCtb> implements Comparable<T> {
+	public static abstract class InfoCtb<T extends InfoCtb> implements Comparable<T> {
 		public final long noCtb;
 
 		public InfoCtb(long noCtb) {

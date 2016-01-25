@@ -136,7 +136,7 @@ public class Ec_4000_04_Mariage_CoupleArriveHorsSuisseEnDeuxFois_Scenario extend
 			assertNotNull(rafa, "L'habitant n°" + FormatNumeroHelper.numeroCTBToDisplay(rafa.getNumero()) + " n'a pas été trouvé");
 			final ForFiscalPrincipal ffp = rafa.getForFiscalPrincipalAt(null);
 			assertNull(ffp, "L'habitant n°" + FormatNumeroHelper.numeroCTBToDisplay(rafa.getNumero()) + " devrait pas avoir de for fiscal principal ouvert");
-			for (ForFiscalPrincipal ff : rafa.getForsParType(false).principauxPP) {
+			for (ForFiscalPrincipal ff : rafa.getForsParType(false).principaux) {
 				if (dateArriveeRafa.equals(ff.getDateDebut())) {
 					assertEquals(dateMariage.getOneDayBefore(), ff.getDateFin(), "Le for créé à l'arrivée devrait être fermé à la veille du mariage");
 					assertFalse(ff.isAnnule(), "Le for créé lors de l'arrivée ne devrait pas être annulé");

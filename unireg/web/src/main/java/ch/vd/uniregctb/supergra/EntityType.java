@@ -1,7 +1,5 @@
 package ch.vd.uniregctb.supergra;
 
-import ch.vd.uniregctb.tiers.DonneeCivileEntreprise;
-
 /**
  * Les types d'entité pouvant être édités en mode SuperGra.
  */
@@ -23,14 +21,7 @@ public enum EntityType {
 	Immeuble(ch.vd.uniregctb.rf.Immeuble.class, "immeuble", "l'immeuble", "de l'immeuble"),
 	Remarque(ch.vd.uniregctb.tiers.Remarque.class, "remarque", "la remarque", "de la remarque"),
 	MouvementDossier(ch.vd.uniregctb.mouvement.MouvementDossier.class, "mouvement de dossier", "le mouvement de dossier", "du mouvement de dossier"),
-	DecisionAci(ch.vd.uniregctb.tiers.DecisionAci.class,"décision ACI", "la décision ACI","de la décision ACI"),
-	DomicileEtablissement(ch.vd.uniregctb.tiers.DomicileEtablissement.class, "domicile", "le domicile", "du domicile"),
-	RegimeFiscal(ch.vd.uniregctb.tiers.RegimeFiscal.class, "régime fiscal", "le régime fiscal", "du régime fiscal"),
-	DonneeCivileEntreprise(DonneeCivileEntreprise.class, "donnée civile d'entreprise", "la donnée civile d'entreprise", "de la donnée civile d'entreprise"),
-	AllegementFiscal(ch.vd.uniregctb.tiers.AllegementFiscal.class, "allègement fiscal", "l'allègement fiscal", "de l'allègement fiscal"),
-	Bouclement(ch.vd.uniregctb.tiers.Bouclement.class, "bouclement", "le bouclement", "du bouclement"),
-	EtatEntreprise(ch.vd.uniregctb.tiers.EtatEntreprise.class, "état", "l'état", "de l'état"),
-	FlagEntreprise(ch.vd.uniregctb.tiers.FlagEntreprise.class, "flag entreprise", "le flag entreprise", "du flag entreprise");
+	DecisionAci(ch.vd.uniregctb.tiers.DecisionAci.class,"décision ACI", "la décision ACI","de la décision ACI");
 
 	private final Class<?> hibernateClass;
 	private final String displayName;   // "chat"

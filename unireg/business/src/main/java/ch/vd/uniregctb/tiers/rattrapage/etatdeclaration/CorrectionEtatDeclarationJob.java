@@ -32,7 +32,6 @@ import ch.vd.uniregctb.document.CorrectionEtatDeclarationRapport;
 import ch.vd.uniregctb.hibernate.HibernateCallback;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.rapport.RapportService;
-import ch.vd.uniregctb.scheduler.JobCategory;
 import ch.vd.uniregctb.scheduler.JobDefinition;
 import ch.vd.uniregctb.tache.TacheSynchronizerInterceptor;
 import ch.vd.uniregctb.tiers.TiersService;
@@ -47,6 +46,7 @@ public class CorrectionEtatDeclarationJob extends JobDefinition {
 	private static final Logger LOGGER = LoggerFactory.getLogger(CorrectionEtatDeclarationJob.class);
 
 	public static final String NAME = "CorrectionEtatDeclarationJob";
+	private static final String CATEGORIE = "Database";
 	public static final int BATCH_SIZE = 20;
 
 	private PlatformTransactionManager transactionManager;
@@ -58,7 +58,7 @@ public class CorrectionEtatDeclarationJob extends JobDefinition {
 	private AdresseService adresseService;
 
 	public CorrectionEtatDeclarationJob(int order, String description) {
-		super(NAME, JobCategory.DB, order, description);
+		super(NAME, CATEGORIE, order, description);
 	}
 
 	public void setTransactionManager(PlatformTransactionManager transactionManager) {

@@ -16,7 +16,7 @@ public class AdresseSuisseValidator extends AdresseSupplementaireValidator<Adres
 		if (!adr.isAnnule()) {
 			final Integer numeroOrdrePoste = adr.getNumeroOrdrePoste();
 			if (numeroOrdrePoste == null) {
-				vr.addError(String.format("Le numéro d'ordre poste doit être renseigné sur une adresse suisse [%s]", getEntityDisplayString(adr)));
+				vr.addError(String.format("Le numéro d'ordre poste doit être renseigné sur une adresse suisse [%s]", adr));
 			}
 		}
 		return vr;

@@ -6,6 +6,5 @@ package ch.vd.uniregctb.type;
 public enum TypeEvenementErreur {
 
 	ERROR,
-	WARNING,
-	SUIVI
+	WARNING
 }

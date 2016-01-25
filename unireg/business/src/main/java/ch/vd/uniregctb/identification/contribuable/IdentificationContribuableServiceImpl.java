@@ -280,7 +280,7 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 		SANS_MOTS_RESERVES
 	}
 
-	private interface IdFetcher<T> {
+	private static interface IdFetcher<T> {
 		Long getId(T element);
 	}
 
@@ -425,7 +425,8 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 
 	private String getRaisonSocialeEntreprise(Tiers tiers) {
 		if (tiers instanceof Entreprise) {
-			return tiersService.getRaisonSociale((Entreprise) tiers);
+			final List<String> multiLineRaisonSociale = tiersService.getRaisonSociale((Entreprise) tiers);
+			return CollectionsUtils.concat(multiLineRaisonSociale, " ");
 		}
 		else if (tiers instanceof AutreCommunaute) {
 			return ((AutreCommunaute) tiers).getNom();
@@ -1533,7 +1534,7 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 		identificationContribuableCache = cache;
 	}
 
-	private interface CustomValueFiller<T> {
+	private static interface CustomValueFiller<T> {
 		Map<Etat, List<T>> getValuesParEtat(IdentCtbDAO dao);
 		void fillCache(IdentificationContribuableCache cache, Map<Etat, List<T>> values);
 	}

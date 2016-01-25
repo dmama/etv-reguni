@@ -8,7 +8,6 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.uniregctb.audit.Audit;
-import ch.vd.uniregctb.scheduler.JobCategory;
 import ch.vd.uniregctb.scheduler.JobDefinition;
 import ch.vd.uniregctb.transaction.TransactionTemplate;
 
@@ -21,9 +20,10 @@ public class RamasseDocumentJob extends JobDefinition {
 	private PlatformTransactionManager transactionManager;
 
 	public static final String NAME = "RamasseDocumentJob";
+	private static final String CATEGORIE = "Database";
 
 	public RamasseDocumentJob(int sortOrder, String description) {
-		super(NAME, JobCategory.DB, sortOrder, description);
+		super(NAME, CATEGORIE, sortOrder, description);
 	}
 
 	public void setDocService(DocumentService service) {

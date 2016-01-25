@@ -3,7 +3,7 @@ package ch.vd.uniregctb.metier.assujettissement;
 import java.util.Arrays;
 import java.util.List;
 
-import ch.vd.uniregctb.declaration.ForsList;
+import ch.vd.uniregctb.declaration.ordinaire.ForsList;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
 

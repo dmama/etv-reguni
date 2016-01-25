@@ -4,7 +4,6 @@ import java.util.Map;
 
 import ch.vd.uniregctb.document.RecuperationDonneesAnciensHabitantsRapport;
 import ch.vd.uniregctb.rapport.RapportService;
-import ch.vd.uniregctb.scheduler.JobCategory;
 import ch.vd.uniregctb.scheduler.JobDefinition;
 import ch.vd.uniregctb.scheduler.JobParam;
 import ch.vd.uniregctb.scheduler.JobParamBoolean;
@@ -14,6 +13,7 @@ import ch.vd.uniregctb.tiers.TiersService;
 public class RecuperationDonneesAnciensHabitantsJob extends JobDefinition {
 
 	private static final String NAME = "RecuperationDonneesAnciensHabitantsJob";
+	private static final String CATEGORIE = "Database";
 
 	private static final String NB_THREADS = "NB_THREADS";
 	private static final String FORCE = "FORCE";
@@ -33,7 +33,7 @@ public class RecuperationDonneesAnciensHabitantsJob extends JobDefinition {
 	}
 
 	public RecuperationDonneesAnciensHabitantsJob(int sortOrder, String description) {
-		super(NAME, JobCategory.DB, sortOrder, description);
+		super(NAME, CATEGORIE, sortOrder, description);
 
 		{
 			final JobParam param = new JobParam();

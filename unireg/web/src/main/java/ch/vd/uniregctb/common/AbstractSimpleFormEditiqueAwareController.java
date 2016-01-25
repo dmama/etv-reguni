@@ -29,7 +29,7 @@ public abstract class AbstractSimpleFormEditiqueAwareController extends Abstract
 	/**
 	 * Permet de spécifier des comportements
 	 */
-	protected interface TraitementRetourEditique<T extends EditiqueResultat> {
+	protected static interface TraitementRetourEditique<T extends EditiqueResultat> {
 
 		/**
 		 * Méthode appelée pour implémentation du comportement spécifique

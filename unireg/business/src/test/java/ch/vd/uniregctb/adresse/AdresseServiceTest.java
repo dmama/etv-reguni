@@ -9,23 +9,21 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.tx.TxCallbackWithoutResult;
+import ch.vd.unireg.interfaces.civil.data.CasePostale;
 import ch.vd.unireg.interfaces.civil.data.TypeEtatCivil;
 import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
-import ch.vd.unireg.interfaces.common.CasePostale;
 import ch.vd.unireg.interfaces.infra.mock.MockAdresse;
 import ch.vd.unireg.interfaces.infra.mock.MockCollectiviteAdministrative;
 import ch.vd.unireg.interfaces.infra.mock.MockLocalite;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
-import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
-import ch.vd.unireg.interfaces.organisation.mock.MockServiceOrganisation;
-import ch.vd.unireg.interfaces.organisation.mock.data.MockOrganisation;
-import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockOrganisationFactory;
 import ch.vd.uniregctb.adresse.AdresseGenerique.SourceType;
 import ch.vd.uniregctb.common.BusinessTest;
+import ch.vd.uniregctb.interfaces.model.mock.MockPersonneMorale;
+import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServicePM;
+import ch.vd.uniregctb.interfaces.service.mock.MockServicePM;
 import ch.vd.uniregctb.tiers.AutreCommunaute;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.Curatelle;
@@ -47,6 +45,7 @@ import ch.vd.uniregctb.type.PeriodiciteDecompte;
 import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TexteCasePostale;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
+import ch.vd.uniregctb.type.TypeAdressePM;
 import ch.vd.uniregctb.type.TypeAdresseTiers;
 
 import static ch.vd.uniregctb.adresse.AdresseTestCase.assertAdresse;
@@ -77,7 +76,7 @@ public class AdresseServiceTest extends BusinessTest {
 		globalTiersIndexer.setOnTheFlyIndexation(false);
 
 		// Instanciation du service à la main pour pouvoir taper dans les méthodes protégées.
-		adresseService = new AdresseServiceImpl(tiersService, tiersDAO, serviceInfra, serviceOrganisation, serviceCivil);
+		adresseService = new AdresseServiceImpl(tiersService, tiersDAO, serviceInfra, servicePM, serviceCivil);
 	}
 
 	@Override
@@ -265,35 +264,35 @@ public class AdresseServiceTest extends BusinessTest {
 		assertEquals(date(1980, 1, 1), courrier1.getDateDebut());
 		assertEquals(date(1987, 12, 11), courrier1.getDateFin());
 		assertEquals("Lausanne", courrier1.getLocalite());
-		assertEquals(SourceType.CIVILE_PERS, courrier1.getSource().getType());
+		assertEquals(SourceType.CIVILE, courrier1.getSource().getType());
 		assertFalse(courrier1.isDefault());
 
 		final AdresseGenerique courrier2 = adresses.courrier.get(1);
 		assertEquals(date(1987, 12, 12), courrier2.getDateDebut());
 		assertEquals(date(2001, 6, 3), courrier2.getDateFin());
 		assertEquals("Cossonay-Ville", courrier2.getLocalite());
-		assertEquals(SourceType.CIVILE_PERS, courrier2.getSource().getType());
+		assertEquals(SourceType.CIVILE, courrier2.getSource().getType());
 		assertFalse(courrier2.isDefault());
 
 		final AdresseGenerique courrier3 = adresses.courrier.get(2);
 		assertEquals(date(2001, 6, 4), courrier3.getDateDebut());
 		assertNull(courrier3.getDateFin());
 		assertEquals("Clées, Les", courrier3.getLocalite());
-		assertEquals(SourceType.CIVILE_PERS, courrier3.getSource().getType());
+		assertEquals(SourceType.CIVILE, courrier3.getSource().getType());
 		assertFalse(courrier3.isDefault());
 
 		final AdresseGenerique poursuite1 = adresses.poursuite.get(0);
 		assertEquals(date(1980, 1, 1), poursuite1.getDateDebut());
 		assertEquals(date(1987, 12, 11), poursuite1.getDateFin());
 		assertEquals("Lausanne", poursuite1.getLocalite());
-		assertEquals(SourceType.CIVILE_PERS, poursuite1.getSource().getType());
+		assertEquals(SourceType.CIVILE, poursuite1.getSource().getType());
 		assertFalse(poursuite1.isDefault());
 
 		final AdresseGenerique poursuite2 = adresses.poursuite.get(1);
 		assertEquals(date(1987, 12, 12), poursuite2.getDateDebut());
 		assertNull(poursuite2.getDateFin());
 		assertEquals("Cossonay-Ville", poursuite2.getLocalite());
-		assertEquals(SourceType.CIVILE_PERS, poursuite2.getSource().getType());
+		assertEquals(SourceType.CIVILE, poursuite2.getSource().getType());
 		assertFalse(poursuite2.isDefault());
 	}
 
@@ -510,9 +509,9 @@ public class AdresseServiceTest extends BusinessTest {
 		{
 			final AdressesFiscales adresses = adresseService.getAdressesFiscales(habitant, null, false);
 			assertNotNull(adresses);
-			assertAdresse(date(2009, 7, 1), null, null, SourceType.CIVILE_PERS, false, adresses.courrier);
-			assertAdresse(date(2009, 7, 1), null, null, SourceType.CIVILE_PERS, false, adresses.representation);
-			assertAdresse(date(2009, 7, 1), null, null, SourceType.CIVILE_PERS, false, adresses.poursuite);
+			assertAdresse(date(2009, 7, 1), null, null, SourceType.CIVILE, false, adresses.courrier);
+			assertAdresse(date(2009, 7, 1), null, null, SourceType.CIVILE, false, adresses.representation);
+			assertAdresse(date(2009, 7, 1), null, null, SourceType.CIVILE, false, adresses.poursuite);
 		}
 	}
 
@@ -714,7 +713,7 @@ public class AdresseServiceTest extends BusinessTest {
 		assertEquals(date(2000, 1, 1), courrier1.getDateDebut());
 		assertEquals(date(2000, 3, 19), courrier1.getDateFin());
 		assertEquals("Lausanne", courrier1.getLocalite());
-		assertEquals(SourceType.CIVILE_PERS, courrier1.getSource().getType());
+		assertEquals(SourceType.CIVILE, courrier1.getSource().getType());
 		assertFalse(courrier1.isDefault());
 
 		final AdresseGenerique courrier2 = adresses.courrier.get(1);
@@ -728,7 +727,7 @@ public class AdresseServiceTest extends BusinessTest {
 		assertEquals(date(2002, 1, 1), courrier3.getDateDebut());
 		assertEquals(date(2002, 1, 9), courrier3.getDateFin());
 		assertEquals("Cossonay-Ville", courrier3.getLocalite());
-		assertEquals(SourceType.CIVILE_PERS, courrier3.getSource().getType());
+		assertEquals(SourceType.CIVILE, courrier3.getSource().getType());
 		assertFalse(courrier3.isDefault());
 
 		final AdresseGenerique courrier4 = adresses.courrier.get(3);
@@ -742,7 +741,7 @@ public class AdresseServiceTest extends BusinessTest {
 		assertEquals(date(2002, 4, 1), courrier5.getDateDebut());
 		assertEquals(date(2002, 5, 31), courrier5.getDateFin());
 		assertEquals("Lausanne", courrier5.getLocalite());
-		assertEquals(SourceType.CIVILE_PERS, courrier5.getSource().getType());
+		assertEquals(SourceType.CIVILE, courrier5.getSource().getType());
 		assertFalse(courrier5.isDefault());
 
 		final AdresseGenerique courrier6 = adresses.courrier.get(5);
@@ -756,42 +755,42 @@ public class AdresseServiceTest extends BusinessTest {
 		assertEquals(date(2002, 8, 1), courrier7.getDateDebut());
 		assertNull(courrier7.getDateFin());
 		assertEquals("Lausanne", courrier7.getLocalite());
-		assertEquals(SourceType.CIVILE_PERS, courrier7.getSource().getType());
+		assertEquals(SourceType.CIVILE, courrier7.getSource().getType());
 		assertFalse(courrier7.isDefault());
 
 		final AdresseGenerique representation1 = adresses.representation.get(0);
 		assertEquals(date(2000, 1, 1), representation1.getDateDebut());
 		assertEquals(date(2000, 9, 19), representation1.getDateFin());
 		assertEquals("Lausanne", representation1.getLocalite());
-		assertEquals(SourceType.CIVILE_PERS, representation1.getSource().getType());
+		assertEquals(SourceType.CIVILE, representation1.getSource().getType());
 		assertFalse(representation1.isDefault());
 
 		final AdresseGenerique representation2 = adresses.representation.get(1);
 		assertEquals(date(2000, 9, 20), representation2.getDateDebut());
 		assertEquals(date(2002, 2, 27), representation2.getDateFin());
 		assertEquals("Cossonay-Ville", representation2.getLocalite());
-		assertEquals(SourceType.CIVILE_PERS, representation2.getSource().getType());
+		assertEquals(SourceType.CIVILE, representation2.getSource().getType());
 		assertFalse(representation2.isDefault());
 
 		final AdresseGenerique representation3 = adresses.representation.get(2);
 		assertEquals(date(2002, 2, 28), representation3.getDateDebut());
 		assertEquals(date(2002, 3, 14), representation3.getDateFin());
 		assertEquals("Clées, Les", representation3.getLocalite());
-		assertEquals(SourceType.CIVILE_PERS, representation3.getSource().getType());
+		assertEquals(SourceType.CIVILE, representation3.getSource().getType());
 		assertFalse(representation3.isDefault());
 
 		final AdresseGenerique representation4 = adresses.representation.get(3);
 		assertEquals(date(2002, 3, 15), representation4.getDateDebut());
 		assertNull(representation4.getDateFin());
 		assertEquals("Lausanne", representation4.getLocalite());
-		assertEquals(SourceType.CIVILE_PERS, representation4.getSource().getType());
+		assertEquals(SourceType.CIVILE, representation4.getSource().getType());
 		assertFalse(representation4.isDefault());
 
 		final AdresseGenerique poursuite1 = adresses.poursuite.get(0);
 		assertEquals(date(2000, 1, 1), poursuite1.getDateDebut());
 		assertNull(poursuite1.getDateFin());
 		assertEquals("Lausanne", poursuite1.getLocalite());
-		assertEquals(SourceType.CIVILE_PERS, poursuite1.getSource().getType());
+		assertEquals(SourceType.CIVILE, poursuite1.getSource().getType());
 		assertFalse(poursuite1.isDefault());
 	}
 
@@ -843,7 +842,7 @@ public class AdresseServiceTest extends BusinessTest {
 		final AdresseGenerique courrier1 = adresses.courrier;
 		assertEquals(date(2010, 9, 16), courrier1.getDateDebut());
 		assertEquals("Orbe", courrier1.getLocalite());
-		assertEquals(SourceType.CIVILE_PERS, courrier1.getSource().getType());
+		assertEquals(SourceType.CIVILE, courrier1.getSource().getType());
 
 
 	}
@@ -916,7 +915,7 @@ public class AdresseServiceTest extends BusinessTest {
 		assertEquals(date(2000, 1, 1), courrier1.getDateDebut());
 		assertEquals(date(2000, 3, 19), courrier1.getDateFin());
 		assertEquals("Lausanne", courrier1.getLocalite());
-		assertEquals(SourceType.CIVILE_PERS, courrier1.getSource().getType());
+		assertEquals(SourceType.CIVILE, courrier1.getSource().getType());
 		assertFalse(courrier1.isDefault());
 
 		final AdresseGenerique courrier2 = adresses.courrier.get(1);
@@ -930,21 +929,21 @@ public class AdresseServiceTest extends BusinessTest {
 		assertEquals(date(2002, 1, 1), courrier3.getDateDebut());
 		assertNull(courrier3.getDateFin());
 		assertEquals("Lausanne", courrier3.getLocalite());
-		assertEquals(SourceType.CIVILE_PERS, courrier3.getSource().getType());
+		assertEquals(SourceType.CIVILE, courrier3.getSource().getType());
 		assertFalse(courrier3.isDefault());
 
 		final AdresseGenerique representation1 = adresses.representation.get(0);
 		assertEquals(date(2000, 1, 1), representation1.getDateDebut());
 		assertNull(representation1.getDateFin());
 		assertEquals("Lausanne", representation1.getLocalite());
-		assertEquals(SourceType.CIVILE_PERS, representation1.getSource().getType());
+		assertEquals(SourceType.CIVILE, representation1.getSource().getType());
 		assertFalse(representation1.isDefault());
 
 		final AdresseGenerique poursuite1 = adresses.poursuite.get(0);
 		assertEquals(date(2000, 1, 1), poursuite1.getDateDebut());
 		assertNull(poursuite1.getDateFin());
 		assertEquals("Bex", poursuite1.getLocalite());
-		assertEquals(SourceType.CIVILE_PERS, poursuite1.getSource().getType());
+		assertEquals(SourceType.CIVILE, poursuite1.getSource().getType());
 		assertFalse(poursuite1.isDefault());
 	}
 
@@ -1028,7 +1027,7 @@ public class AdresseServiceTest extends BusinessTest {
 		assertEquals(date(2000, 1, 1), courrier1.getDateDebut());
 		assertEquals(date(2000, 3, 19), courrier1.getDateFin());
 		assertEquals("Lausanne", courrier1.getLocalite());
-		assertEquals(SourceType.CIVILE_PERS, courrier1.getSource().getType());
+		assertEquals(SourceType.CIVILE, courrier1.getSource().getType());
 		assertFalse(courrier1.isDefault());
 
 		final AdresseGenerique courrier2 = adresses.courrier.get(1);
@@ -1042,21 +1041,21 @@ public class AdresseServiceTest extends BusinessTest {
 		assertEquals(date(2002, 1, 1), courrier3.getDateDebut());
 		assertNull(courrier3.getDateFin());
 		assertEquals("Lausanne", courrier3.getLocalite());
-		assertEquals(SourceType.CIVILE_PERS, courrier3.getSource().getType());
+		assertEquals(SourceType.CIVILE, courrier3.getSource().getType());
 		assertFalse(courrier3.isDefault());
 
 		final AdresseGenerique representation1 = adresses.representation.get(0);
 		assertEquals(date(2000, 1, 1), representation1.getDateDebut());
 		assertNull(representation1.getDateFin());
 		assertEquals("Lausanne", representation1.getLocalite());
-		assertEquals(SourceType.CIVILE_PERS, representation1.getSource().getType());
+		assertEquals(SourceType.CIVILE, representation1.getSource().getType());
 		assertFalse(representation1.isDefault());
 
 		final AdresseGenerique poursuite1 = adresses.poursuite.get(0);
 		assertEquals(date(2000, 1, 1), poursuite1.getDateDebut());
 		assertNull(poursuite1.getDateFin());
 		assertEquals("Lausanne", poursuite1.getLocalite());
-		assertEquals(SourceType.CIVILE_PERS, poursuite1.getSource().getType());
+		assertEquals(SourceType.CIVILE, poursuite1.getSource().getType());
 		assertFalse(poursuite1.isDefault());
 	}
 
@@ -1137,7 +1136,7 @@ public class AdresseServiceTest extends BusinessTest {
 		final AdressesFiscalesHisto adresses = adresseService.getAdressesFiscalHisto(habitant, false);
 		assertNotNull(adresses);
 		assertEquals(2, adresses.courrier.size());
-		assertAdresse(date(2000, 1, 1), null, "Lausanne", SourceType.CIVILE_PERS, false, adresses.courrier.get(0));
+		assertAdresse(date(2000, 1, 1), null, "Lausanne", SourceType.CIVILE, false, adresses.courrier.get(0));
 
 		final AdresseGenerique courrier1 = adresses.courrier.get(1);
 		assertTrue(courrier1.isAnnule());
@@ -1225,7 +1224,7 @@ public class AdresseServiceTest extends BusinessTest {
 		assertEquals(date(2000, 1, 1), courrier1.getDateDebut());
 		assertEquals(date(2000, 3, 19), courrier1.getDateFin());
 		assertEquals("Lausanne", courrier1.getLocalite());
-		assertEquals(SourceType.CIVILE_PERS, courrier1.getSource().getType());
+		assertEquals(SourceType.CIVILE, courrier1.getSource().getType());
 		assertFalse(courrier1.isDefault());
 
 		final AdresseGenerique courrier2 = adresses.courrier.get(1);
@@ -1239,7 +1238,7 @@ public class AdresseServiceTest extends BusinessTest {
 		assertEquals(date(2002, 1, 1), courrier3.getDateDebut());
 		assertEquals(date(2002, 1, 9), courrier3.getDateFin());
 		assertEquals("Lausanne", courrier3.getLocalite());
-		assertEquals(SourceType.CIVILE_PERS, courrier3.getSource().getType());
+		assertEquals(SourceType.CIVILE, courrier3.getSource().getType());
 		assertFalse(courrier3.isDefault());
 
 		final AdresseGenerique courrier4 = adresses.courrier.get(3);
@@ -1253,21 +1252,21 @@ public class AdresseServiceTest extends BusinessTest {
 		assertEquals(date(2002, 4, 1), courrier5.getDateDebut());
 		assertNull(courrier5.getDateFin());
 		assertEquals("Lausanne", courrier5.getLocalite());
-		assertEquals(SourceType.CIVILE_PERS, courrier5.getSource().getType());
+		assertEquals(SourceType.CIVILE, courrier5.getSource().getType());
 		assertFalse(courrier5.isDefault());
 
 		final AdresseGenerique representation1 = adresses.representation.get(0);
 		assertEquals(date(2000, 1, 1), representation1.getDateDebut());
 		assertNull(representation1.getDateFin());
 		assertEquals("Lausanne", representation1.getLocalite());
-		assertEquals(SourceType.CIVILE_PERS, representation1.getSource().getType());
+		assertEquals(SourceType.CIVILE, representation1.getSource().getType());
 		assertFalse(representation1.isDefault());
 
 		final AdresseGenerique poursuite1 = adresses.poursuite.get(0);
 		assertEquals(date(2000, 1, 1), poursuite1.getDateDebut());
 		assertNull(poursuite1.getDateFin());
 		assertEquals("Lausanne", poursuite1.getLocalite());
-		assertEquals(SourceType.CIVILE_PERS, poursuite1.getSource().getType());
+		assertEquals(SourceType.CIVILE, poursuite1.getSource().getType());
 		assertFalse(poursuite1.isDefault());
 	}
 
@@ -1342,7 +1341,7 @@ public class AdresseServiceTest extends BusinessTest {
 		assertEquals(date(2000, 1, 1), courrier1.getDateDebut());
 		assertEquals(date(2000, 3, 19), courrier1.getDateFin());
 		assertEquals("Lausanne", courrier1.getLocalite());
-		assertEquals(SourceType.CIVILE_PERS, courrier1.getSource().getType());
+		assertEquals(SourceType.CIVILE, courrier1.getSource().getType());
 		assertFalse(courrier1.isDefault());
 
 		final AdresseGenerique courrier2 = adresses.courrier.get(1);
@@ -1356,14 +1355,14 @@ public class AdresseServiceTest extends BusinessTest {
 		assertEquals(date(2000, 1, 1), representation1.getDateDebut());
 		assertNull(representation1.getDateFin());
 		assertEquals("Lausanne", representation1.getLocalite());
-		assertEquals(SourceType.CIVILE_PERS, representation1.getSource().getType());
+		assertEquals(SourceType.CIVILE, representation1.getSource().getType());
 		assertFalse(representation1.isDefault());
 
 		final AdresseGenerique poursuite1 = adresses.poursuite.get(0);
 		assertEquals(date(2000, 1, 1), poursuite1.getDateDebut());
 		assertNull(poursuite1.getDateFin());
 		assertEquals("Lausanne", poursuite1.getLocalite());
-		assertEquals(SourceType.CIVILE_PERS, poursuite1.getSource().getType());
+		assertEquals(SourceType.CIVILE, poursuite1.getSource().getType());
 		assertFalse(poursuite1.isDefault());
 	}
 
@@ -1440,7 +1439,7 @@ public class AdresseServiceTest extends BusinessTest {
 		assertEquals(date(2000, 1, 1), courrier1.getDateDebut());
 		assertEquals(date(2000, 3, 19), courrier1.getDateFin());
 		assertEquals("Lausanne", courrier1.getLocalite());
-		assertEquals(SourceType.CIVILE_PERS, courrier1.getSource().getType());
+		assertEquals(SourceType.CIVILE, courrier1.getSource().getType());
 		assertFalse(courrier1.isDefault());
 
 		final AdresseGenerique courrier2 = adresses.courrier.get(1);
@@ -1454,21 +1453,21 @@ public class AdresseServiceTest extends BusinessTest {
 		assertEquals(date(2000, 1, 1), representation1.getDateDebut());
 		assertEquals(date(2000, 7, 12), representation1.getDateFin());
 		assertEquals("Lausanne", representation1.getLocalite());
-		assertEquals(SourceType.CIVILE_PERS, representation1.getSource().getType());
+		assertEquals(SourceType.CIVILE, representation1.getSource().getType());
 		assertFalse(representation1.isDefault());
 
 		final AdresseGenerique representation2 = adresses.representation.get(1);
 		assertEquals(date(2000, 7, 13), representation2.getDateDebut());
 		assertNull(representation2.getDateFin());
 		assertEquals("Cossonay-Ville", representation2.getLocalite());
-		assertEquals(SourceType.CIVILE_PERS, representation2.getSource().getType());
+		assertEquals(SourceType.CIVILE, representation2.getSource().getType());
 		assertFalse(representation2.isDefault());
 
 		final AdresseGenerique poursuite1 = adresses.poursuite.get(0);
 		assertEquals(date(2000, 1, 1), poursuite1.getDateDebut());
 		assertNull(poursuite1.getDateFin());
 		assertEquals("Lausanne", poursuite1.getLocalite());
-		assertEquals(SourceType.CIVILE_PERS, poursuite1.getSource().getType());
+		assertEquals(SourceType.CIVILE, poursuite1.getSource().getType());
 		assertFalse(poursuite1.isDefault());
 	}
 
@@ -1528,14 +1527,14 @@ public class AdresseServiceTest extends BusinessTest {
 			assertEquals(date(2000, 1, 1), courrier0.getDateDebut());
 			assertEquals(date(2000, 3, 19), courrier0.getDateFin());
 			assertEquals("Lausanne", courrier0.getLocalite());
-			assertEquals(SourceType.CIVILE_PERS, courrier0.getSource().getType());
+			assertEquals(SourceType.CIVILE, courrier0.getSource().getType());
 			assertFalse(courrier0.isDefault());
 
 			final AdresseGenerique courrier1 = adresses.courrier.get(1);
 			assertEquals(date(2000, 3, 20), courrier1.getDateDebut());
 			assertNull(courrier1.getDateFin());
 			assertEquals("Bex", courrier1.getLocalite());
-			assertEquals(SourceType.CIVILE_PERS, courrier1.getSource().getType());
+			assertEquals(SourceType.CIVILE, courrier1.getSource().getType());
 			assertFalse(courrier1.isDefault());
 		}
 
@@ -1607,7 +1606,7 @@ public class AdresseServiceTest extends BusinessTest {
 			assertEquals(date(2000, 3, 20), courrier0.getDateDebut());
 			assertNull(courrier0.getDateFin());
 			assertEquals("Bex", courrier0.getLocalite());
-			assertEquals(SourceType.CIVILE_PERS, courrier0.getSource().getType());
+			assertEquals(SourceType.CIVILE, courrier0.getSource().getType());
 			assertFalse(courrier0.isDefault());
 		}
 
@@ -1704,7 +1703,7 @@ public class AdresseServiceTest extends BusinessTest {
 			assertEquals(date(2000, 1, 1), courrier1.getDateDebut());
 			assertNull(courrier1.getDateFin());
 			assertEquals("Lausanne", courrier1.getLocalite());
-			assertEquals(SourceType.CIVILE_PERS, courrier1.getSource().getType());
+			assertEquals(SourceType.CIVILE, courrier1.getSource().getType());
 			assertFalse(courrier1.isDefault());
 			assertFalse(courrier1.isAnnule());
 
@@ -1720,7 +1719,7 @@ public class AdresseServiceTest extends BusinessTest {
 			assertEquals(date(2000, 1, 1), representation1.getDateDebut());
 			assertNull(representation1.getDateFin());
 			assertEquals("Lausanne", representation1.getLocalite());
-			assertEquals(SourceType.CIVILE_PERS, representation1.getSource().getType());
+			assertEquals(SourceType.CIVILE, representation1.getSource().getType());
 			assertFalse(representation1.isDefault());
 			assertFalse(representation1.isAnnule());
 
@@ -1728,7 +1727,7 @@ public class AdresseServiceTest extends BusinessTest {
 			assertEquals(date(2000, 1, 1), poursuite1.getDateDebut());
 			assertNull(poursuite1.getDateFin());
 			assertEquals("Lausanne", poursuite1.getLocalite());
-			assertEquals(SourceType.CIVILE_PERS, poursuite1.getSource().getType());
+			assertEquals(SourceType.CIVILE, poursuite1.getSource().getType());
 			assertFalse(poursuite1.isDefault());
 			assertFalse(poursuite1.isAnnule());
 		}
@@ -1744,21 +1743,21 @@ public class AdresseServiceTest extends BusinessTest {
 			assertEquals(date(2000, 1, 1), courrier.getDateDebut());
 			assertNull(courrier.getDateFin());
 			assertEquals("Lausanne", courrier.getLocalite());
-			assertEquals(SourceType.CIVILE_PERS, courrier.getSource().getType());
+			assertEquals(SourceType.CIVILE, courrier.getSource().getType());
 			assertFalse(courrier.isDefault());
 
 			final AdresseGenerique representation = adresses.representation;
 			assertEquals(date(2000, 1, 1), representation.getDateDebut());
 			assertNull(representation.getDateFin());
 			assertEquals("Lausanne", representation.getLocalite());
-			assertEquals(SourceType.CIVILE_PERS, representation.getSource().getType());
+			assertEquals(SourceType.CIVILE, representation.getSource().getType());
 			assertFalse(representation.isDefault());
 
 			final AdresseGenerique poursuite = adresses.poursuite;
 			assertEquals(date(2000, 1, 1), poursuite.getDateDebut());
 			assertNull(poursuite.getDateFin());
 			assertEquals("Lausanne", poursuite.getLocalite());
-			assertEquals(SourceType.CIVILE_PERS, poursuite.getSource().getType());
+			assertEquals(SourceType.CIVILE, poursuite.getSource().getType());
 			assertFalse(poursuite.isDefault());
 
 			assertAdressesByTypeEquals(adresses, habitant, null);
@@ -1772,21 +1771,21 @@ public class AdresseServiceTest extends BusinessTest {
 			assertEquals(date(2000, 1, 1), courrier.getDateDebut());
 			assertNull(courrier.getDateFin());
 			assertEquals("Lausanne", courrier.getLocalite());
-			assertEquals(SourceType.CIVILE_PERS, courrier.getSource().getType());
+			assertEquals(SourceType.CIVILE, courrier.getSource().getType());
 			assertFalse(courrier.isDefault());
 
 			final AdresseGenerique representation = adresses.representation;
 			assertEquals(date(2000, 1, 1), representation.getDateDebut());
 			assertNull(representation.getDateFin());
 			assertEquals("Lausanne", representation.getLocalite());
-			assertEquals(SourceType.CIVILE_PERS, representation.getSource().getType());
+			assertEquals(SourceType.CIVILE, representation.getSource().getType());
 			assertFalse(representation.isDefault());
 
 			final AdresseGenerique poursuite = adresses.poursuite;
 			assertEquals(date(2000, 1, 1), poursuite.getDateDebut());
 			assertNull(poursuite.getDateFin());
 			assertEquals("Lausanne", poursuite.getLocalite());
-			assertEquals(SourceType.CIVILE_PERS, poursuite.getSource().getType());
+			assertEquals(SourceType.CIVILE, poursuite.getSource().getType());
 			assertFalse(poursuite.isDefault());
 
 			assertAdressesByTypeEquals(adresses, habitant, date(2000, 4, 1));
@@ -1841,15 +1840,15 @@ public class AdresseServiceTest extends BusinessTest {
 		assertEquals(1, adresses.representation.size());
 
 		final AdresseGenerique courrier0 = adresses.courrier.get(0);
-		assertAdresse(date(2000, 1, 1), date(2007, 12, 31), "Lausanne", SourceType.CIVILE_PERS, false, courrier0);
+		assertAdresse(date(2000, 1, 1), date(2007, 12, 31), "Lausanne", SourceType.CIVILE, false, courrier0);
 		final AdresseGenerique courrier1 = adresses.courrier.get(1);
 		assertAdresse(date(2008, 1, 1), null, "Renens VD", SourceType.PRINCIPAL, true, courrier1);
 
 		final AdresseGenerique representation0 = adresses.representation.get(0);
-		assertAdresse(date(2000, 1, 1), null, "Lausanne", SourceType.CIVILE_PERS, false, representation0);
+		assertAdresse(date(2000, 1, 1), null, "Lausanne", SourceType.CIVILE, false, representation0);
 
 		final AdresseGenerique poursuite0 = adresses.poursuite.get(0);
-		assertAdresse(date(2000, 1, 1), null, "Lausanne", SourceType.CIVILE_PERS, false, poursuite0);
+		assertAdresse(date(2000, 1, 1), null, "Lausanne", SourceType.CIVILE, false, poursuite0);
 
 		assertAdressesEquals(adresses.domicile, adresses.poursuite);
 	}
@@ -2046,15 +2045,15 @@ public class AdresseServiceTest extends BusinessTest {
 			assertNotNull(adresses);
 
 			assertEquals(3, adresses.courrier.size());
-			assertAdresse(date(2000, 1, 1), date(2003, 12, 31), "Lausanne", SourceType.CIVILE_PERS, false, adresses.courrier.get(0));
+			assertAdresse(date(2000, 1, 1), date(2003, 12, 31), "Lausanne", SourceType.CIVILE, false, adresses.courrier.get(0));
 			assertAdresse(date(2004, 1, 1), date(2007, 12, 31), "Cossonay-Ville", SourceType.TUTELLE, false, adresses.courrier.get(1));
-			assertAdresse(date(2008, 1, 1), null, "Lausanne", SourceType.CIVILE_PERS, false, adresses.courrier.get(2));
+			assertAdresse(date(2008, 1, 1), null, "Lausanne", SourceType.CIVILE, false, adresses.courrier.get(2));
 
 			assertEquals(1, adresses.representation.size());
-			assertAdresse(date(2000, 1, 1), null, "Lausanne", SourceType.CIVILE_PERS, false, adresses.representation.get(0));
+			assertAdresse(date(2000, 1, 1), null, "Lausanne", SourceType.CIVILE, false, adresses.representation.get(0));
 
 			assertEquals(1, adresses.poursuite.size());
-			assertAdresse(date(2000, 1, 1), null, "Bex", SourceType.CIVILE_PERS, false, adresses.poursuite.get(0));
+			assertAdresse(date(2000, 1, 1), null, "Bex", SourceType.CIVILE, false, adresses.poursuite.get(0));
 
 			assertAdressesEquals(adresses.poursuite, adresses.domicile);
 		}
@@ -2146,7 +2145,7 @@ public class AdresseServiceTest extends BusinessTest {
 			assertNotNull(adresses);
 
 			assertEquals(2, adresses.courrier.size());
-			assertAdresse(date(2000, 1, 1), date(2001, 12, 31), "Lausanne", SourceType.CIVILE_PERS, false, adresses.courrier.get(0));
+			assertAdresse(date(2000, 1, 1), date(2001, 12, 31), "Lausanne", SourceType.CIVILE, false, adresses.courrier.get(0));
 			assertAdresse(date(2002, 1, 1), null, "Renens VD", SourceType.FISCALE, false, adresses.courrier.get(1));
 			assertEquals(ids.adresse, adresses.courrier.get(1).getId());
 		}
@@ -2273,15 +2272,15 @@ public class AdresseServiceTest extends BusinessTest {
 			assertNotNull(adresses);
 
 			assertEquals(3, adresses.courrier.size());
-			assertAdresse(date(2000, 1, 1), date(2003, 12, 31), "Lausanne", SourceType.CIVILE_PERS, true, adresses.courrier.get(0));
+			assertAdresse(date(2000, 1, 1), date(2003, 12, 31), "Lausanne", SourceType.CIVILE, true, adresses.courrier.get(0));
 			assertAdresse(date(2004, 1, 1), date(2007, 12, 31), "Cossonay-Ville", SourceType.TUTELLE, false, adresses.courrier.get(1));
-			assertAdresse(date(2008, 1, 1), null, "Lausanne", SourceType.CIVILE_PERS, true, adresses.courrier.get(2));
+			assertAdresse(date(2008, 1, 1), null, "Lausanne", SourceType.CIVILE, true, adresses.courrier.get(2));
 
 			assertEquals(1, adresses.representation.size());
-			assertAdresse(date(2000, 1, 1), null, "Lausanne", SourceType.CIVILE_PERS, true, adresses.representation.get(0));
+			assertAdresse(date(2000, 1, 1), null, "Lausanne", SourceType.CIVILE, true, adresses.representation.get(0));
 
 			assertEquals(1, adresses.poursuite.size());
-			assertAdresse(date(2000, 1, 1), null, "Lausanne", SourceType.CIVILE_PERS, false, adresses.poursuite.get(0));
+			assertAdresse(date(2000, 1, 1), null, "Lausanne", SourceType.CIVILE, false, adresses.poursuite.get(0));
 
 			assertAdressesEquals(adresses.poursuite, adresses.domicile);
 		}
@@ -2295,13 +2294,13 @@ public class AdresseServiceTest extends BusinessTest {
 			assertNotNull(adresses);
 
 			assertEquals(1, adresses.courrier.size());
-			assertAdresse(date(2000, 1, 1), null, "Bex", SourceType.CIVILE_PERS, true, adresses.courrier.get(0));
+			assertAdresse(date(2000, 1, 1), null, "Bex", SourceType.CIVILE, true, adresses.courrier.get(0));
 
 			assertEquals(1, adresses.representation.size());
-			assertAdresse(date(2000, 1, 1), null, "Bex", SourceType.CIVILE_PERS, true, adresses.representation.get(0));
+			assertAdresse(date(2000, 1, 1), null, "Bex", SourceType.CIVILE, true, adresses.representation.get(0));
 
 			assertEquals(1, adresses.poursuite.size());
-			assertAdresse(date(2000, 1, 1), null, "Bex", SourceType.CIVILE_PERS, false, adresses.poursuite.get(0));
+			assertAdresse(date(2000, 1, 1), null, "Bex", SourceType.CIVILE, false, adresses.poursuite.get(0));
 
 			assertAdressesEquals(adresses.poursuite, adresses.domicile);
 		}
@@ -2315,15 +2314,15 @@ public class AdresseServiceTest extends BusinessTest {
 			assertNotNull(adresses);
 
 			assertEquals(3, adresses.courrier.size());
-			assertAdresse(date(2000, 1, 1), date(2003, 12, 31), "Lausanne", SourceType.CIVILE_PERS, true, adresses.courrier.get(0));
+			assertAdresse(date(2000, 1, 1), date(2003, 12, 31), "Lausanne", SourceType.CIVILE, true, adresses.courrier.get(0));
 			assertAdresse(date(2004, 1, 1), date(2007, 12, 31), "Bex", SourceType.CONJOINT, false, adresses.courrier.get(1));
-			assertAdresse(date(2008, 1, 1), null, "Lausanne", SourceType.CIVILE_PERS, true, adresses.courrier.get(2));
+			assertAdresse(date(2008, 1, 1), null, "Lausanne", SourceType.CIVILE, true, adresses.courrier.get(2));
 
 			assertEquals(1, adresses.representation.size());
-			assertAdresse(date(2000, 1, 1), null, "Lausanne", SourceType.CIVILE_PERS, true, adresses.representation.get(0));
+			assertAdresse(date(2000, 1, 1), null, "Lausanne", SourceType.CIVILE, true, adresses.representation.get(0));
 
 			assertEquals(1, adresses.poursuite.size());
-			assertAdresse(date(2000, 1, 1), null, "Lausanne", SourceType.CIVILE_PERS, false, adresses.poursuite.get(0));
+			assertAdresse(date(2000, 1, 1), null, "Lausanne", SourceType.CIVILE, false, adresses.poursuite.get(0));
 
 			assertAdressesEquals(adresses.poursuite, adresses.domicile);
 		}
@@ -2426,15 +2425,15 @@ public class AdresseServiceTest extends BusinessTest {
 			assertNotNull(adresses);
 
 			assertEquals(3, adresses.courrier.size());
-			assertAdresse(date(2000, 1, 1), date(2003, 12, 31), "Lausanne", SourceType.CIVILE_PERS, true, adresses.courrier.get(0));
+			assertAdresse(date(2000, 1, 1), date(2003, 12, 31), "Lausanne", SourceType.CIVILE, true, adresses.courrier.get(0));
 			assertAdresse(date(2004, 1, 1), date(2007, 12, 31), "Bex", SourceType.CONJOINT, false, adresses.courrier.get(1));
-			assertAdresse(date(2008, 1, 1), null, "Lausanne", SourceType.CIVILE_PERS, true, adresses.courrier.get(2));
+			assertAdresse(date(2008, 1, 1), null, "Lausanne", SourceType.CIVILE, true, adresses.courrier.get(2));
 
 			assertEquals(1, adresses.representation.size());
-			assertAdresse(date(2000, 1, 1), null, "Lausanne", SourceType.CIVILE_PERS, true, adresses.representation.get(0));
+			assertAdresse(date(2000, 1, 1), null, "Lausanne", SourceType.CIVILE, true, adresses.representation.get(0));
 
 			assertEquals(1, adresses.poursuite.size());
-			assertAdresse(date(2000, 1, 1), null, "Lausanne", SourceType.CIVILE_PERS, false, adresses.poursuite.get(0));
+			assertAdresse(date(2000, 1, 1), null, "Lausanne", SourceType.CIVILE, false, adresses.poursuite.get(0));
 
 			assertAdressesEquals(adresses.poursuite, adresses.domicile);
 
@@ -2555,13 +2554,13 @@ public class AdresseServiceTest extends BusinessTest {
 			final AdressesFiscalesHisto adresses = adresseService.getAdressesFiscalHisto(principal, true);
 			assertNotNull(adresses);
 			assertEquals(1, adresses.courrier.size());
-			assertAdresse(date(1965, 5, 1), null, "Aubonne", SourceType.CIVILE_PERS, true, adresses.courrier.get(0));
+			assertAdresse(date(1965, 5, 1), null, "Aubonne", SourceType.CIVILE, true, adresses.courrier.get(0));
 
 			assertEquals(1, adresses.representation.size());
-			assertAdresse(date(1965, 5, 1), null, "Aubonne", SourceType.CIVILE_PERS, true, adresses.representation.get(0));
+			assertAdresse(date(1965, 5, 1), null, "Aubonne", SourceType.CIVILE, true, adresses.representation.get(0));
 
 			assertEquals(1, adresses.poursuite.size());
-			assertAdresse(date(1965, 5, 1), null, "Aubonne", SourceType.CIVILE_PERS, false, adresses.poursuite.get(0));
+			assertAdresse(date(1965, 5, 1), null, "Aubonne", SourceType.CIVILE, false, adresses.poursuite.get(0));
 
 			assertAdressesEquals(adresses.poursuite, adresses.domicile);
 		}
@@ -2574,14 +2573,14 @@ public class AdresseServiceTest extends BusinessTest {
 			final AdressesFiscalesHisto adresses = adresseService.getAdressesFiscalHisto(conjoint, true);
 			assertNotNull(adresses);
 			assertEquals(2, adresses.courrier.size());
-			assertAdresse(date(1965, 5, 1), date(2011, 1, 10), "Aubonne", SourceType.CIVILE_PERS, true, adresses.courrier.get(0));
+			assertAdresse(date(1965, 5, 1), date(2011, 1, 10), "Aubonne", SourceType.CIVILE, true, adresses.courrier.get(0));
 			assertAdresse(date(2011, 1, 11), null, "Aubonne", SourceType.CURATELLE, false, adresses.courrier.get(1));
 
 			assertEquals(1, adresses.representation.size());
-			assertAdresse(date(1965, 5, 1), null, "Aubonne", SourceType.CIVILE_PERS, true, adresses.representation.get(0));
+			assertAdresse(date(1965, 5, 1), null, "Aubonne", SourceType.CIVILE, true, adresses.representation.get(0));
 
 			assertEquals(1, adresses.poursuite.size());
-			assertAdresse(date(1965, 5, 1), null, "Aubonne", SourceType.CIVILE_PERS, false, adresses.poursuite.get(0));
+			assertAdresse(date(1965, 5, 1), null, "Aubonne", SourceType.CIVILE, false, adresses.poursuite.get(0));
 
 			assertAdressesEquals(adresses.poursuite, adresses.domicile);
 		}
@@ -2595,14 +2594,14 @@ public class AdresseServiceTest extends BusinessTest {
 			assertNotNull(adresses);
 
 			assertEquals(2, adresses.courrier.size());
-			assertAdresse(date(1965, 5, 1), date(2011, 1, 10), "Aubonne", SourceType.CIVILE_PERS, true, adresses.courrier.get(0));
+			assertAdresse(date(1965, 5, 1), date(2011, 1, 10), "Aubonne", SourceType.CIVILE, true, adresses.courrier.get(0));
 			assertAdresse(date(2011, 1, 11), null, "Aubonne", SourceType.CURATELLE, false, adresses.courrier.get(1));
 
 			assertEquals(1, adresses.representation.size());
-			assertAdresse(date(1965, 5, 1), null, "Aubonne", SourceType.CIVILE_PERS, true, adresses.representation.get(0));
+			assertAdresse(date(1965, 5, 1), null, "Aubonne", SourceType.CIVILE, true, adresses.representation.get(0));
 
 			assertEquals(1, adresses.poursuite.size());
-			assertAdresse(date(1965, 5, 1), null, "Aubonne", SourceType.CIVILE_PERS, false, adresses.poursuite.get(0));
+			assertAdresse(date(1965, 5, 1), null, "Aubonne", SourceType.CIVILE, false, adresses.poursuite.get(0));
 
 			assertAdressesEquals(adresses.poursuite, adresses.domicile);
 		}
@@ -2727,13 +2726,13 @@ public class AdresseServiceTest extends BusinessTest {
 			final AdressesFiscalesHisto adresses = adresseService.getAdressesFiscalHisto(principal, false);
 			assertNotNull(adresses);
 			assertEquals(1, adresses.courrier.size());
-			assertAdresse(date(2000, 1, 1), null, "Lausanne", SourceType.CIVILE_PERS, true, adresses.courrier.get(0));
+			assertAdresse(date(2000, 1, 1), null, "Lausanne", SourceType.CIVILE, true, adresses.courrier.get(0));
 
 			assertEquals(1, adresses.representation.size());
-			assertAdresse(date(2000, 1, 1), null, "Lausanne", SourceType.CIVILE_PERS, true, adresses.representation.get(0));
+			assertAdresse(date(2000, 1, 1), null, "Lausanne", SourceType.CIVILE, true, adresses.representation.get(0));
 
 			assertEquals(1, adresses.poursuite.size());
-			assertAdresse(date(2000, 1, 1), null, "Lausanne", SourceType.CIVILE_PERS, false, adresses.poursuite.get(0));
+			assertAdresse(date(2000, 1, 1), null, "Lausanne", SourceType.CIVILE, false, adresses.poursuite.get(0));
 
 			assertAdressesEquals(adresses.poursuite, adresses.domicile);
 		}
@@ -2747,15 +2746,15 @@ public class AdresseServiceTest extends BusinessTest {
 			assertNotNull(adresses);
 
 			assertEquals(3, adresses.courrier.size());
-			assertAdresse(date(2000, 1, 1), date(2003, 12, 31), "Bex", SourceType.CIVILE_PERS, true, adresses.courrier.get(0));
+			assertAdresse(date(2000, 1, 1), date(2003, 12, 31), "Bex", SourceType.CIVILE, true, adresses.courrier.get(0));
 			assertAdresse(date(2004, 1, 1), date(2007, 12, 31), "Cossonay-Ville", SourceType.TUTELLE, false, adresses.courrier.get(1));
-			assertAdresse(date(2008, 1, 1), null, "Bex", SourceType.CIVILE_PERS, true, adresses.courrier.get(2));
+			assertAdresse(date(2008, 1, 1), null, "Bex", SourceType.CIVILE, true, adresses.courrier.get(2));
 
 			assertEquals(1, adresses.representation.size());
-			assertAdresse(date(2000, 1, 1), null, "Bex", SourceType.CIVILE_PERS, true, adresses.representation.get(0));
+			assertAdresse(date(2000, 1, 1), null, "Bex", SourceType.CIVILE, true, adresses.representation.get(0));
 
 			assertEquals(1, adresses.poursuite.size());
-			assertAdresse(date(2000, 1, 1), null, "Bex", SourceType.CIVILE_PERS, false, adresses.poursuite.get(0));
+			assertAdresse(date(2000, 1, 1), null, "Bex", SourceType.CIVILE, false, adresses.poursuite.get(0));
 
 			assertAdressesEquals(adresses.poursuite, adresses.domicile);
 		}
@@ -2769,13 +2768,13 @@ public class AdresseServiceTest extends BusinessTest {
 			assertNotNull(adresses);
 
 			assertEquals(1, adresses.courrier.size());
-			assertAdresse(date(2000, 1, 1), null, "Lausanne", SourceType.CIVILE_PERS, true, adresses.courrier.get(0));
+			assertAdresse(date(2000, 1, 1), null, "Lausanne", SourceType.CIVILE, true, adresses.courrier.get(0));
 
 			assertEquals(1, adresses.representation.size());
-			assertAdresse(date(2000, 1, 1), null, "Lausanne", SourceType.CIVILE_PERS, true, adresses.representation.get(0));
+			assertAdresse(date(2000, 1, 1), null, "Lausanne", SourceType.CIVILE, true, adresses.representation.get(0));
 
 			assertEquals(1, adresses.poursuite.size());
-			assertAdresse(date(2000, 1, 1), null, "Lausanne", SourceType.CIVILE_PERS, false, adresses.poursuite.get(0));
+			assertAdresse(date(2000, 1, 1), null, "Lausanne", SourceType.CIVILE, false, adresses.poursuite.get(0));
 
 			assertAdressesEquals(adresses.poursuite, adresses.domicile);
 		}
@@ -2929,15 +2928,15 @@ public class AdresseServiceTest extends BusinessTest {
 			assertNotNull(adresses);
 
 			assertEquals(3, adresses.courrier.size());
-			assertAdresse(date(2000, 1, 1), date(2003, 12, 31), "Lausanne", SourceType.CIVILE_PERS, true, adresses.courrier.get(0));
+			assertAdresse(date(2000, 1, 1), date(2003, 12, 31), "Lausanne", SourceType.CIVILE, true, adresses.courrier.get(0));
 			assertAdresse(date(2004, 1, 1), date(2007, 12, 31), "Cossonay-Ville", SourceType.TUTELLE, false, adresses.courrier.get(1));
-			assertAdresse(date(2008, 1, 1), null, "Lausanne", SourceType.CIVILE_PERS, true, adresses.courrier.get(2));
+			assertAdresse(date(2008, 1, 1), null, "Lausanne", SourceType.CIVILE, true, adresses.courrier.get(2));
 
 			assertEquals(1, adresses.representation.size());
-			assertAdresse(date(2000, 1, 1), null, "Lausanne", SourceType.CIVILE_PERS, true, adresses.representation.get(0));
+			assertAdresse(date(2000, 1, 1), null, "Lausanne", SourceType.CIVILE, true, adresses.representation.get(0));
 
 			assertEquals(1, adresses.poursuite.size());
-			assertAdresse(date(2000, 1, 1), null, "Lausanne", SourceType.CIVILE_PERS, false, adresses.poursuite.get(0));
+			assertAdresse(date(2000, 1, 1), null, "Lausanne", SourceType.CIVILE, false, adresses.poursuite.get(0));
 
 			assertAdressesEquals(adresses.poursuite, adresses.domicile);
 		}
@@ -2951,15 +2950,15 @@ public class AdresseServiceTest extends BusinessTest {
 			assertNotNull(adresses);
 
 			assertEquals(3, adresses.courrier.size());
-			assertAdresse(date(2000, 1, 1), date(2005, 6, 30), "Bex", SourceType.CIVILE_PERS, true, adresses.courrier.get(0));
+			assertAdresse(date(2000, 1, 1), date(2005, 6, 30), "Bex", SourceType.CIVILE, true, adresses.courrier.get(0));
 			assertAdresse(date(2005, 7, 1), date(2009, 12, 31), "Clées, Les", SourceType.TUTELLE, false, adresses.courrier.get(1));
-			assertAdresse(date(2010, 1, 1), null, "Bex", SourceType.CIVILE_PERS, true, adresses.courrier.get(2));
+			assertAdresse(date(2010, 1, 1), null, "Bex", SourceType.CIVILE, true, adresses.courrier.get(2));
 
 			assertEquals(1, adresses.representation.size());
-			assertAdresse(date(2000, 1, 1), null, "Bex", SourceType.CIVILE_PERS, true, adresses.representation.get(0));
+			assertAdresse(date(2000, 1, 1), null, "Bex", SourceType.CIVILE, true, adresses.representation.get(0));
 
 			assertEquals(1, adresses.poursuite.size());
-			assertAdresse(date(2000, 1, 1), null, "Bex", SourceType.CIVILE_PERS, false, adresses.poursuite.get(0));
+			assertAdresse(date(2000, 1, 1), null, "Bex", SourceType.CIVILE, false, adresses.poursuite.get(0));
 
 			assertAdressesEquals(adresses.poursuite, adresses.domicile);
 		}
@@ -2973,16 +2972,16 @@ public class AdresseServiceTest extends BusinessTest {
 			assertNotNull(adresses);
 
 			assertEquals(4, adresses.courrier.size());
-			assertAdresse(date(2000, 1, 1), date(2003, 12, 31), "Lausanne", SourceType.CIVILE_PERS, true, adresses.courrier.get(0));
+			assertAdresse(date(2000, 1, 1), date(2003, 12, 31), "Lausanne", SourceType.CIVILE, true, adresses.courrier.get(0));
 			assertAdresse(date(2004, 1, 1), date(2005, 6, 30), "Bex", SourceType.CONJOINT, false, adresses.courrier.get(1));
 			assertAdresse(date(2005, 7, 1), date(2007, 12, 31), "Cossonay-Ville", SourceType.TUTELLE, false, adresses.courrier.get(2));
-			assertAdresse(date(2008, 1, 1), null, "Lausanne", SourceType.CIVILE_PERS, true, adresses.courrier.get(3));
+			assertAdresse(date(2008, 1, 1), null, "Lausanne", SourceType.CIVILE, true, adresses.courrier.get(3));
 
 			assertEquals(1, adresses.representation.size());
-			assertAdresse(date(2000, 1, 1), null, "Lausanne", SourceType.CIVILE_PERS, true, adresses.representation.get(0));
+			assertAdresse(date(2000, 1, 1), null, "Lausanne", SourceType.CIVILE, true, adresses.representation.get(0));
 
 			assertEquals(1, adresses.poursuite.size());
-			assertAdresse(date(2000, 1, 1), null, "Lausanne", SourceType.CIVILE_PERS, false, adresses.poursuite.get(0));
+			assertAdresse(date(2000, 1, 1), null, "Lausanne", SourceType.CIVILE, false, adresses.poursuite.get(0));
 
 			assertAdressesEquals(adresses.poursuite, adresses.domicile);
 		}
@@ -3158,7 +3157,7 @@ public class AdresseServiceTest extends BusinessTest {
 
 			final List<AdresseGenerique> representation = adresses.representation;
 			assertEquals(2, representation.size());
-			assertAdresse(date(1985, 4, 1), null, "Cossonay-Ville", SourceType.CIVILE_PERS, false, representation.get(0));
+			assertAdresse(date(1985, 4, 1), null, "Cossonay-Ville", SourceType.CIVILE, false, representation.get(0));
 			final AdresseGenerique adresseAutreTiers = representation.get(1);
 			assertTrue(adresseAutreTiers.isAnnule());
 			assertAdresse(date(2000, 1, 1), null, "Cossonay-Ville", SourceType.FISCALE, false, adresseAutreTiers);
@@ -3234,14 +3233,14 @@ public class AdresseServiceTest extends BusinessTest {
 			assertNotNull(adresses);
 
 			assertEquals(2, adresses.courrier.size());
-			assertAdresse(date(2000, 1, 1), date(2000, 3, 19), "Lausanne", SourceType.CIVILE_PERS, false, adresses.courrier.get(0));
+			assertAdresse(date(2000, 1, 1), date(2000, 3, 19), "Lausanne", SourceType.CIVILE, false, adresses.courrier.get(0));
 			assertAdresse(date(2000, 3, 20), null, "Cossonay-Ville", SourceType.FISCALE, false, adresses.courrier.get(1));
 
 			assertEquals(1, adresses.representation.size());
-			assertAdresse(date(2000, 1, 1), null, "Lausanne", SourceType.CIVILE_PERS, false, adresses.representation.get(0));
+			assertAdresse(date(2000, 1, 1), null, "Lausanne", SourceType.CIVILE, false, adresses.representation.get(0));
 
 			assertEquals(1, adresses.poursuite.size());
-			assertAdresse(date(2000, 1, 1), null, "Cossonay-Ville", SourceType.CIVILE_PERS, false, adresses.poursuite.get(0));
+			assertAdresse(date(2000, 1, 1), null, "Cossonay-Ville", SourceType.CIVILE, false, adresses.poursuite.get(0));
 
 			assertAdressesEquals(adresses.poursuite, adresses.domicile);
 		}
@@ -3382,10 +3381,10 @@ public class AdresseServiceTest extends BusinessTest {
 			{
 				final AdressesFiscales adresses1982 = adresseService.getAdressesFiscales(habitant, date(1982, 1, 1), false);
 				assertNotNull(adresses1982);
-				assertAdresse(date(1980, 1, 1), date(1987, 12, 11), "Lausanne", SourceType.CIVILE_PERS, false, adresses1982.courrier);
-				assertAdresse(date(1980, 1, 1), date(1987, 12, 11), "Lausanne", SourceType.CIVILE_PERS, false, adresses1982.representation);
-				assertAdresse(date(1980, 1, 1), date(1987, 12, 11), "Lausanne", SourceType.CIVILE_PERS, true, adresses1982.poursuite);
-				assertAdresse(date(1980, 1, 1), date(1987, 12, 11), "Lausanne", SourceType.CIVILE_PERS, true, adresses1982.domicile);
+				assertAdresse(date(1980, 1, 1), date(1987, 12, 11), "Lausanne", SourceType.CIVILE, false, adresses1982.courrier);
+				assertAdresse(date(1980, 1, 1), date(1987, 12, 11), "Lausanne", SourceType.CIVILE, false, adresses1982.representation);
+				assertAdresse(date(1980, 1, 1), date(1987, 12, 11), "Lausanne", SourceType.CIVILE, true, adresses1982.poursuite);
+				assertAdresse(date(1980, 1, 1), date(1987, 12, 11), "Lausanne", SourceType.CIVILE, true, adresses1982.domicile);
 
 				assertAdressesByTypeEquals(adresses1982, habitant, date(1982, 1, 1));
 			}
@@ -3393,10 +3392,10 @@ public class AdresseServiceTest extends BusinessTest {
 			{
 				final AdressesFiscales adresses1995 = adresseService.getAdressesFiscales(habitant, date(1995, 1, 1), false);
 				assertNotNull(adresses1995);
-				assertAdresse(date(1987, 12, 12), date(2001, 6, 3), "Cossonay-Ville", SourceType.CIVILE_PERS, false, adresses1995.courrier);
-				assertAdresse(date(1987, 12, 12), date(2001, 6, 3), "Cossonay-Ville", SourceType.CIVILE_PERS, false, adresses1995.representation);
-				assertAdresse(date(1987, 12, 12), date(2001, 6, 3), "Cossonay-Ville", SourceType.CIVILE_PERS, true, adresses1995.poursuite);
-				assertAdresse(date(1987, 12, 12), date(2001, 6, 3), "Cossonay-Ville", SourceType.CIVILE_PERS, true, adresses1995.domicile);
+				assertAdresse(date(1987, 12, 12), date(2001, 6, 3), "Cossonay-Ville", SourceType.CIVILE, false, adresses1995.courrier);
+				assertAdresse(date(1987, 12, 12), date(2001, 6, 3), "Cossonay-Ville", SourceType.CIVILE, false, adresses1995.representation);
+				assertAdresse(date(1987, 12, 12), date(2001, 6, 3), "Cossonay-Ville", SourceType.CIVILE, true, adresses1995.poursuite);
+				assertAdresse(date(1987, 12, 12), date(2001, 6, 3), "Cossonay-Ville", SourceType.CIVILE, true, adresses1995.domicile);
 
 				assertAdressesByTypeEquals(adresses1995, habitant, date(1995, 1, 1));
 			}
@@ -3404,10 +3403,10 @@ public class AdresseServiceTest extends BusinessTest {
 			{
 				final AdressesFiscales adresses2004 = adresseService.getAdressesFiscales(habitant, date(2004, 1, 1), false);
 				assertNotNull(adresses2004);
-				assertAdresse(date(2001, 6, 4), null, "Clées, Les", SourceType.CIVILE_PERS, false, adresses2004.courrier);
-				assertAdresse(date(2001, 6, 4), null, "Clées, Les", SourceType.CIVILE_PERS, false, adresses2004.representation);
-				assertAdresse(date(2001, 6, 4), null, "Clées, Les", SourceType.CIVILE_PERS, true, adresses2004.poursuite);
-				assertAdresse(date(2001, 6, 4), null, "Clées, Les", SourceType.CIVILE_PERS, true, adresses2004.domicile);
+				assertAdresse(date(2001, 6, 4), null, "Clées, Les", SourceType.CIVILE, false, adresses2004.courrier);
+				assertAdresse(date(2001, 6, 4), null, "Clées, Les", SourceType.CIVILE, false, adresses2004.representation);
+				assertAdresse(date(2001, 6, 4), null, "Clées, Les", SourceType.CIVILE, true, adresses2004.poursuite);
+				assertAdresse(date(2001, 6, 4), null, "Clées, Les", SourceType.CIVILE, true, adresses2004.domicile);
 
 				assertAdressesByTypeEquals(adresses2004, habitant, date(2004, 1, 1));
 			}
@@ -3419,16 +3418,16 @@ public class AdresseServiceTest extends BusinessTest {
 			assertNotNull(adresses);
 
 			assertEquals(3, adresses.courrier.size());
-			assertAdresse(date(1980, 1, 1), date(1987, 12, 11), "Lausanne", SourceType.CIVILE_PERS, false, adresses.courrier.get(0));
-			assertAdresse(date(1987, 12, 12), date(2001, 6, 3), "Cossonay-Ville", SourceType.CIVILE_PERS, false, adresses.courrier.get(1));
-			assertAdresse(date(2001, 6, 4), null, "Clées, Les", SourceType.CIVILE_PERS, false, adresses.courrier.get(2));
+			assertAdresse(date(1980, 1, 1), date(1987, 12, 11), "Lausanne", SourceType.CIVILE, false, adresses.courrier.get(0));
+			assertAdresse(date(1987, 12, 12), date(2001, 6, 3), "Cossonay-Ville", SourceType.CIVILE, false, adresses.courrier.get(1));
+			assertAdresse(date(2001, 6, 4), null, "Clées, Les", SourceType.CIVILE, false, adresses.courrier.get(2));
 
 			assertAdressesEquals(adresses.courrier, adresses.representation);
 
 			assertEquals(3, adresses.poursuite.size());
-			assertAdresse(date(1980, 1, 1), date(1987, 12, 11), "Lausanne", SourceType.CIVILE_PERS, true, adresses.poursuite.get(0));
-			assertAdresse(date(1987, 12, 12), date(2001, 6, 3), "Cossonay-Ville", SourceType.CIVILE_PERS, true, adresses.poursuite.get(1));
-			assertAdresse(date(2001, 6, 4), null, "Clées, Les", SourceType.CIVILE_PERS, true, adresses.poursuite.get(2));
+			assertAdresse(date(1980, 1, 1), date(1987, 12, 11), "Lausanne", SourceType.CIVILE, true, adresses.poursuite.get(0));
+			assertAdresse(date(1987, 12, 12), date(2001, 6, 3), "Cossonay-Ville", SourceType.CIVILE, true, adresses.poursuite.get(1));
+			assertAdresse(date(2001, 6, 4), null, "Clées, Les", SourceType.CIVILE, true, adresses.poursuite.get(2));
 
 			assertAdressesEquals(adresses.poursuite, adresses.domicile);
 		}
@@ -3506,10 +3505,10 @@ public class AdresseServiceTest extends BusinessTest {
 			{
 				final AdressesFiscales adresses1982 = adresseService.getAdressesFiscales(habitant, date(1982, 1, 1), false);
 				assertNotNull(adresses1982);
-				assertAdresse(date(1980, 1, 1), date(1987, 12, 11), "Lausanne", SourceType.CIVILE_PERS, true, adresses1982.courrier);
-				assertAdresse(date(1980, 1, 1), date(1987, 12, 11), "Lausanne", SourceType.CIVILE_PERS, true, adresses1982.representation);
-				assertAdresse(date(1980, 1, 1), date(1987, 12, 11), "Lausanne", SourceType.CIVILE_PERS, false, adresses1982.poursuite);
-				assertAdresse(date(1980, 1, 1), date(1987, 12, 11), "Lausanne", SourceType.CIVILE_PERS, false, adresses1982.domicile);
+				assertAdresse(date(1980, 1, 1), date(1987, 12, 11), "Lausanne", SourceType.CIVILE, true, adresses1982.courrier);
+				assertAdresse(date(1980, 1, 1), date(1987, 12, 11), "Lausanne", SourceType.CIVILE, true, adresses1982.representation);
+				assertAdresse(date(1980, 1, 1), date(1987, 12, 11), "Lausanne", SourceType.CIVILE, false, adresses1982.poursuite);
+				assertAdresse(date(1980, 1, 1), date(1987, 12, 11), "Lausanne", SourceType.CIVILE, false, adresses1982.domicile);
 
 				assertAdressesByTypeEquals(adresses1982, habitant, date(1982, 1, 1));
 			}
@@ -3517,10 +3516,10 @@ public class AdresseServiceTest extends BusinessTest {
 			{
 				final AdressesFiscales adresses1995 = adresseService.getAdressesFiscales(habitant, date(1995, 1, 1), false);
 				assertNotNull(adresses1995);
-				assertAdresse(date(1987, 12, 12), date(2001, 6, 3), "Cossonay-Ville", SourceType.CIVILE_PERS, true, adresses1995.courrier);
-				assertAdresse(date(1987, 12, 12), date(2001, 6, 3), "Cossonay-Ville", SourceType.CIVILE_PERS, true, adresses1995.representation);
-				assertAdresse(date(1987, 12, 12), date(2001, 6, 3), "Cossonay-Ville", SourceType.CIVILE_PERS, false, adresses1995.poursuite);
-				assertAdresse(date(1987, 12, 12), date(2001, 6, 3), "Cossonay-Ville", SourceType.CIVILE_PERS, false, adresses1995.domicile);
+				assertAdresse(date(1987, 12, 12), date(2001, 6, 3), "Cossonay-Ville", SourceType.CIVILE, true, adresses1995.courrier);
+				assertAdresse(date(1987, 12, 12), date(2001, 6, 3), "Cossonay-Ville", SourceType.CIVILE, true, adresses1995.representation);
+				assertAdresse(date(1987, 12, 12), date(2001, 6, 3), "Cossonay-Ville", SourceType.CIVILE, false, adresses1995.poursuite);
+				assertAdresse(date(1987, 12, 12), date(2001, 6, 3), "Cossonay-Ville", SourceType.CIVILE, false, adresses1995.domicile);
 
 				assertAdressesByTypeEquals(adresses1995, habitant, date(1995, 1, 1));
 			}
@@ -3528,10 +3527,10 @@ public class AdresseServiceTest extends BusinessTest {
 			{
 				final AdressesFiscales adresses2004 = adresseService.getAdressesFiscales(habitant, date(2004, 1, 1), false);
 				assertNotNull(adresses2004);
-				assertAdresse(date(2001, 6, 4), null, "Clées, Les", SourceType.CIVILE_PERS, true, adresses2004.courrier);
-				assertAdresse(date(2001, 6, 4), null, "Clées, Les", SourceType.CIVILE_PERS, true, adresses2004.representation);
-				assertAdresse(date(2001, 6, 4), null, "Clées, Les", SourceType.CIVILE_PERS, false, adresses2004.poursuite);
-				assertAdresse(date(2001, 6, 4), null, "Clées, Les", SourceType.CIVILE_PERS, false, adresses2004.domicile);
+				assertAdresse(date(2001, 6, 4), null, "Clées, Les", SourceType.CIVILE, true, adresses2004.courrier);
+				assertAdresse(date(2001, 6, 4), null, "Clées, Les", SourceType.CIVILE, true, adresses2004.representation);
+				assertAdresse(date(2001, 6, 4), null, "Clées, Les", SourceType.CIVILE, false, adresses2004.poursuite);
+				assertAdresse(date(2001, 6, 4), null, "Clées, Les", SourceType.CIVILE, false, adresses2004.domicile);
 
 				assertAdressesByTypeEquals(adresses2004, habitant, date(2004, 1, 1));
 			}
@@ -3543,78 +3542,73 @@ public class AdresseServiceTest extends BusinessTest {
 			assertNotNull(adresses);
 
 			assertEquals(3, adresses.courrier.size());
-			assertAdresse(date(1980, 1, 1), date(1987, 12, 11), "Lausanne", SourceType.CIVILE_PERS, true, adresses.courrier.get(0));
-			assertAdresse(date(1987, 12, 12), date(2001, 6, 3), "Cossonay-Ville", SourceType.CIVILE_PERS, true, adresses.courrier.get(1));
-			assertAdresse(date(2001, 6, 4), null, "Clées, Les", SourceType.CIVILE_PERS, true, adresses.courrier.get(2));
+			assertAdresse(date(1980, 1, 1), date(1987, 12, 11), "Lausanne", SourceType.CIVILE, true, adresses.courrier.get(0));
+			assertAdresse(date(1987, 12, 12), date(2001, 6, 3), "Cossonay-Ville", SourceType.CIVILE, true, adresses.courrier.get(1));
+			assertAdresse(date(2001, 6, 4), null, "Clées, Les", SourceType.CIVILE, true, adresses.courrier.get(2));
 
 			assertAdressesEquals(adresses.courrier, adresses.representation);
 
 			assertEquals(3, adresses.poursuite.size());
-			assertAdresse(date(1980, 1, 1), date(1987, 12, 11), "Lausanne", SourceType.CIVILE_PERS, false, adresses.poursuite.get(0));
-			assertAdresse(date(1987, 12, 12), date(2001, 6, 3), "Cossonay-Ville", SourceType.CIVILE_PERS, false, adresses.poursuite.get(1));
-			assertAdresse(date(2001, 6, 4), null, "Clées, Les", SourceType.CIVILE_PERS, false, adresses.poursuite.get(2));
+			assertAdresse(date(1980, 1, 1), date(1987, 12, 11), "Lausanne", SourceType.CIVILE, false, adresses.poursuite.get(0));
+			assertAdresse(date(1987, 12, 12), date(2001, 6, 3), "Cossonay-Ville", SourceType.CIVILE, false, adresses.poursuite.get(1));
+			assertAdresse(date(2001, 6, 4), null, "Clées, Les", SourceType.CIVILE, false, adresses.poursuite.get(2));
 
 			assertAdressesEquals(adresses.poursuite, adresses.domicile);
 		}
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetAdressesFiscalesHistoEntrepriseSansAdresseFiscale() throws Exception {
 
-		final long noOrganisation = 1;
+		final long noEntreprise = 1;
 
 		/*
 		 * Crée les données du mock service PM
 		 */
-		serviceOrganisation.setUp(new MockServiceOrganisation() {
+		servicePM.setUp(new MockServicePM() {
 			@Override
 			protected void init() {
-				final MockOrganisation ent = addOrganisation(noOrganisation, date(1970, 7, 1), "Ma Petite Entreprise", FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE);
+				MockPersonneMorale ent = addPM(noEntreprise, "Ma Petite Entreprise", "S.A.R.L.", date(1970, 7, 1), null);
 
 				// adresses courriers
-				addAdresse(ent, TypeAdresseCivil.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, date(1980, 1, 1), date(1987, 12, 11));
-				addAdresse(ent, TypeAdresseCivil.COURRIER, MockRue.CossonayVille.CheminDeRiondmorcel, date(1987, 12, 12), date(2001, 6, 3));
-				addAdresse(ent, TypeAdresseCivil.COURRIER, MockRue.LesClees.PlaceDeLaVille, date(2001, 6, 4), null);
+				addAdresse(ent, TypeAdressePM.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, MockLocalite.Lausanne, date(1980, 1, 1), date(1987, 12, 11));
+				addAdresse(ent, TypeAdressePM.COURRIER, MockRue.CossonayVille.CheminDeRiondmorcel, null, MockLocalite.CossonayVille, date(1987, 12, 12), date(2001, 6, 3));
+				addAdresse(ent, TypeAdressePM.COURRIER, MockRue.LesClees.PlaceDeLaVille, null, MockLocalite.LesClees, date(2001, 6, 4), null);
 
 				// adresses principales/poursuite
-				addAdresse(ent, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, date(1980, 1, 1), date(1987, 12, 11));
-				addAdresse(ent, TypeAdresseCivil.PRINCIPALE, MockRue.CossonayVille.CheminDeRiondmorcel, date(1987, 12, 12), null);
+				addAdresse(ent, TypeAdressePM.SIEGE, MockRue.Lausanne.AvenueDeBeaulieu, null, MockLocalite.Lausanne, date(1980, 1, 1), date(1987, 12, 11));
+				addAdresse(ent, TypeAdressePM.SIEGE, MockRue.CossonayVille.CheminDeRiondmorcel, null, MockLocalite.CossonayVille, date(1987, 12, 12), null);
 			}
 		});
 
-		final long idpm = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				// Crée une entreprise sans adresse fiscale surchargée
-				final Entreprise entreprise = addEntrepriseConnueAuCivil(noOrganisation);
-				return entreprise.getId();
-			}
-		});
+		{
+			// Crée une entreprise sans adresse fiscale surchargée
+			Entreprise entreprise = new Entreprise();
+			entreprise.setNumero(noEntreprise);
+			tiersDAO.save(entreprise);
+		}
 
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				final Entreprise entreprise = (Entreprise) tiersDAO.get(idpm);
-				assertNotNull(entreprise);
+		{
+			final Entreprise entreprise = (Entreprise) tiersDAO.get(noEntreprise);
 
-				// Vérification des adresses
-				final AdressesFiscalesHisto adresses = adresseService.getAdressesFiscalHisto(entreprise, false);
-				assertNotNull(adresses);
+			// Vérification des adresses
+			final AdressesFiscalesHisto adresses = adresseService.getAdressesFiscalHisto(entreprise, false);
+			assertNotNull(adresses);
 
-				assertEquals(3, adresses.courrier.size());
-				assertAdresse(date(1980, 1, 1), date(1987, 12, 11), "Lausanne", SourceType.CIVILE_ORG, false, adresses.courrier.get(0));
-				assertAdresse(date(1987, 12, 12), date(2001, 6, 3), "Cossonay-Ville", SourceType.CIVILE_ORG, false, adresses.courrier.get(1));
-				assertAdresse(date(2001, 6, 4), null, "Clées, Les", SourceType.CIVILE_ORG, false, adresses.courrier.get(2));
+			assertEquals(3, adresses.courrier.size());
+			assertAdresse(date(1980, 1, 1), date(1987, 12, 11), "Lausanne", SourceType.PM, false, adresses.courrier.get(0));
+			assertAdresse(date(1987, 12, 12), date(2001, 6, 3), "Cossonay-Ville", SourceType.PM, false, adresses.courrier.get(1));
+			assertAdresse(date(2001, 6, 4), null, "Clées, Les", SourceType.PM, false, adresses.courrier.get(2));
 
-				assertAdressesEquals(adresses.courrier, adresses.representation);
+			assertAdressesEquals(adresses.courrier, adresses.representation);
 
-				assertEquals(2, adresses.poursuite.size());
-				assertAdresse(date(1980, 1, 1), date(1987, 12, 11), "Lausanne", SourceType.CIVILE_ORG, false, adresses.poursuite.get(0));
-				assertAdresse(date(1987, 12, 12), null, "Cossonay-Ville", SourceType.CIVILE_ORG, false, adresses.poursuite.get(1));
+			assertEquals(2, adresses.poursuite.size());
+			assertAdresse(date(1980, 1, 1), date(1987, 12, 11), "Lausanne", SourceType.PM, false, adresses.poursuite.get(0));
+			assertAdresse(date(1987, 12, 12), null, "Cossonay-Ville", SourceType.PM, false, adresses.poursuite.get(1));
 
-				assertAdressesEquals(adresses.poursuite, adresses.domicile);
-			}
-		});
+			assertAdressesEquals(adresses.poursuite, adresses.domicile);
+		}
 	}
 
 	@Test
@@ -3898,7 +3892,7 @@ public class AdresseServiceTest extends BusinessTest {
 		AdressesFiscalesHisto adressesHisto = adresseService.getAdressesFiscalHisto(habitant, false);
 		assertNotNull(adressesHisto);
 		assertEquals(2, adressesHisto.courrier.size());
-		assertAdresse(date(1980, 1, 1), date(2000, 12, 31), "Lausanne", SourceType.CIVILE_PERS, false, adressesHisto.courrier.get(0));
+		assertAdresse(date(1980, 1, 1), date(2000, 12, 31), "Lausanne", SourceType.CIVILE, false, adressesHisto.courrier.get(0));
 		assertAdresse(date(2001, 1, 1), null, "Bex", SourceType.FISCALE, false, adressesHisto.courrier.get(1));
 	}
 
@@ -3952,9 +3946,9 @@ public class AdresseServiceTest extends BusinessTest {
 		AdressesFiscalesHisto adressesHisto = adresseService.getAdressesFiscalHisto(habitant, false);
 		assertNotNull(adressesHisto);
 		assertEquals(4, adressesHisto.courrier.size());
-		assertAdresse(date(1980, 1, 1), date(1988, 3, 1), "Lausanne", SourceType.CIVILE_PERS, false, adressesHisto.courrier.get(0));
+		assertAdresse(date(1980, 1, 1), date(1988, 3, 1), "Lausanne", SourceType.CIVILE, false, adressesHisto.courrier.get(0));
 		assertAdresse(date(1988, 3, 2), date(1995, 1, 1), "Orbe", SourceType.FISCALE, false, adressesHisto.courrier.get(1));
-		assertAdresse(date(1995, 1, 2), date(2000, 12, 31), "Lausanne", SourceType.CIVILE_PERS, false, adressesHisto.courrier.get(2));
+		assertAdresse(date(1995, 1, 2), date(2000, 12, 31), "Lausanne", SourceType.CIVILE, false, adressesHisto.courrier.get(2));
 		assertAdresse(date(2001, 1, 1), null, "Bex", SourceType.FISCALE, false, adressesHisto.courrier.get(3));
 	}
 
@@ -4183,7 +4177,7 @@ public class AdresseServiceTest extends BusinessTest {
 		AdressesFiscalesHisto adressesHisto = adresseService.getAdressesFiscalHisto(tiers, false);
 		assertNotNull(adressesHisto);
 		assertEquals(2, adressesHisto.courrier.size());
-		assertAdresse(date(1980, 1, 1), null, "Lausanne", SourceType.CIVILE_PERS, false, adressesHisto.courrier.get(0));
+		assertAdresse(date(1980, 1, 1), null, "Lausanne", SourceType.CIVILE, false, adressesHisto.courrier.get(0));
 		assertTrue(adressesHisto.courrier.get(1).isAnnule());
 	}
 
@@ -4250,9 +4244,9 @@ public class AdresseServiceTest extends BusinessTest {
 		AdressesFiscalesHisto adressesHisto = adresseService.getAdressesFiscalHisto(tiers, false);
 		assertNotNull(adressesHisto);
 		assertEquals(4, adressesHisto.courrier.size());
-		assertAdresse(date(1980, 1, 1), date(1988, 3, 1), "Lausanne", SourceType.CIVILE_PERS, false, adressesHisto.courrier.get(0));
+		assertAdresse(date(1980, 1, 1), date(1988, 3, 1), "Lausanne", SourceType.CIVILE, false, adressesHisto.courrier.get(0));
 		assertAdresse(date(1988, 3, 2), date(1995, 1, 1), "Orbe", SourceType.FISCALE, false, adressesHisto.courrier.get(1));
-		assertAdresse(date(1995, 1, 2), null, "Lausanne", SourceType.CIVILE_PERS, false, adressesHisto.courrier.get(2));
+		assertAdresse(date(1995, 1, 2), null, "Lausanne", SourceType.CIVILE, false, adressesHisto.courrier.get(2));
 		assertTrue(adressesHisto.courrier.get(3).isAnnule());
 	}
 
@@ -4396,12 +4390,12 @@ public class AdresseServiceTest extends BusinessTest {
 		assertNotNull(adressesHisto);
 
 		assertEquals(2, adressesHisto.courrier.size());
-		assertAdresse(date(2000, 1, 1), date(2006, 12, 31), "Lausanne", SourceType.CIVILE_PERS, true, adressesHisto.courrier.get(0));
+		assertAdresse(date(2000, 1, 1), date(2006, 12, 31), "Lausanne", SourceType.CIVILE, true, adressesHisto.courrier.get(0));
 		assertAdresse(date(2007, 1, 1), null, "Le Sentier", SourceType.REPRESENTATION, false, adressesHisto.courrier.get(1));
 
-		assertAdresse(date(2000, 1, 1), null, "Lausanne", SourceType.CIVILE_PERS, false, adressesHisto.domicile.get(0));
-		assertAdresse(date(2000, 1, 1), null, "Lausanne", SourceType.CIVILE_PERS, false, adressesHisto.poursuite.get(0));
-		assertAdresse(date(2000, 1, 1), null, "Lausanne", SourceType.CIVILE_PERS, true, adressesHisto.representation.get(0));
+		assertAdresse(date(2000, 1, 1), null, "Lausanne", SourceType.CIVILE, false, adressesHisto.domicile.get(0));
+		assertAdresse(date(2000, 1, 1), null, "Lausanne", SourceType.CIVILE, false, adressesHisto.poursuite.get(0));
+		assertAdresse(date(2000, 1, 1), null, "Lausanne", SourceType.CIVILE, true, adressesHisto.representation.get(0));
 
 		final AdressesFiscales adresses = adresseService.getAdressesFiscales(menage, null, false);
 		assertNotNull(adresses);
@@ -4501,10 +4495,10 @@ public class AdresseServiceTest extends BusinessTest {
 		assertNotNull(adressesHisto);
 
 		assertEquals(1, adressesHisto.courrier.size());
-		assertAdresse(date(2000, 1, 1), null, "Lausanne", SourceType.CIVILE_PERS, true, adressesHisto.courrier.get(0));
-		assertAdresse(date(2000, 1, 1), null, "Lausanne", SourceType.CIVILE_PERS, false, adressesHisto.domicile.get(0));
-		assertAdresse(date(2000, 1, 1), null, "Lausanne", SourceType.CIVILE_PERS, false, adressesHisto.poursuite.get(0));
-		assertAdresse(date(2000, 1, 1), null, "Lausanne", SourceType.CIVILE_PERS, true, adressesHisto.representation.get(0));
+		assertAdresse(date(2000, 1, 1), null, "Lausanne", SourceType.CIVILE, true, adressesHisto.courrier.get(0));
+		assertAdresse(date(2000, 1, 1), null, "Lausanne", SourceType.CIVILE, false, adressesHisto.domicile.get(0));
+		assertAdresse(date(2000, 1, 1), null, "Lausanne", SourceType.CIVILE, false, adressesHisto.poursuite.get(0));
+		assertAdresse(date(2000, 1, 1), null, "Lausanne", SourceType.CIVILE, true, adressesHisto.representation.get(0));
 
 		final AdressesFiscales adresses = adresseService.getAdressesFiscales(menage, null, false);
 		assertNotNull(adresses);
@@ -4593,10 +4587,10 @@ public class AdresseServiceTest extends BusinessTest {
 		assertNotNull(adressesHisto);
 
 		assertEquals(1, adressesHisto.courrier.size());
-		assertAdresse(date(2000, 1, 1), null, "Lausanne", SourceType.CIVILE_PERS, true, adressesHisto.courrier.get(0));
-		assertAdresse(date(2000, 1, 1), null, "Lausanne", SourceType.CIVILE_PERS, false, adressesHisto.domicile.get(0));
-		assertAdresse(date(2000, 1, 1), null, "Lausanne", SourceType.CIVILE_PERS, false, adressesHisto.poursuite.get(0));
-		assertAdresse(date(2000, 1, 1), null, "Lausanne", SourceType.CIVILE_PERS, true, adressesHisto.representation.get(0));
+		assertAdresse(date(2000, 1, 1), null, "Lausanne", SourceType.CIVILE, true, adressesHisto.courrier.get(0));
+		assertAdresse(date(2000, 1, 1), null, "Lausanne", SourceType.CIVILE, false, adressesHisto.domicile.get(0));
+		assertAdresse(date(2000, 1, 1), null, "Lausanne", SourceType.CIVILE, false, adressesHisto.poursuite.get(0));
+		assertAdresse(date(2000, 1, 1), null, "Lausanne", SourceType.CIVILE, true, adressesHisto.representation.get(0));
 
 		final AdressesFiscales adresses = adresseService.getAdressesFiscales(menage, null, false);
 		assertNotNull(adresses);
@@ -4693,12 +4687,12 @@ public class AdresseServiceTest extends BusinessTest {
 		assertNotNull(adressesHisto);
 
 		assertEquals(2, adressesHisto.courrier.size());
-		assertAdresse(date(2000, 1, 1), date(2006, 12, 31), "Lausanne", SourceType.CIVILE_PERS, true, adressesHisto.courrier.get(0));
+		assertAdresse(date(2000, 1, 1), date(2006, 12, 31), "Lausanne", SourceType.CIVILE, true, adressesHisto.courrier.get(0));
 		assertAdresse(date(2007, 1, 1), null, "Le Sentier", SourceType.REPRESENTATION, false, adressesHisto.courrier.get(1)); // représentant du ménage
 
-		assertAdresse(date(2000, 1, 1), null, "Lausanne", SourceType.CIVILE_PERS, false, adressesHisto.domicile.get(0));
-		assertAdresse(date(2000, 1, 1), null, "Lausanne", SourceType.CIVILE_PERS, false, adressesHisto.poursuite.get(0));
-		assertAdresse(date(2000, 1, 1), null, "Lausanne", SourceType.CIVILE_PERS, true, adressesHisto.representation.get(0));
+		assertAdresse(date(2000, 1, 1), null, "Lausanne", SourceType.CIVILE, false, adressesHisto.domicile.get(0));
+		assertAdresse(date(2000, 1, 1), null, "Lausanne", SourceType.CIVILE, false, adressesHisto.poursuite.get(0));
+		assertAdresse(date(2000, 1, 1), null, "Lausanne", SourceType.CIVILE, true, adressesHisto.representation.get(0));
 
 		final AdressesFiscales adresses = adresseService.getAdressesFiscales(menage, null, false);
 		assertNotNull(adresses);
@@ -4805,11 +4799,11 @@ public class AdresseServiceTest extends BusinessTest {
 		assertNotNull(adressesHisto);
 
 		assertEquals(2, adressesHisto.courrier.size());
-		assertAdresse(date(2000, 1, 1), date(2006, 12, 31), "Lausanne", SourceType.CIVILE_PERS, true, adressesHisto.courrier.get(0));
+		assertAdresse(date(2000, 1, 1), date(2006, 12, 31), "Lausanne", SourceType.CIVILE, true, adressesHisto.courrier.get(0));
 		assertAdresse(date(2007, 1, 1), null, "Lausanne", SourceType.CONJOINT, false, adressesHisto.courrier.get(1)); // adresse du courrier du conjoint
-		assertAdresse(date(2000, 1, 1), null, "Lausanne", SourceType.CIVILE_PERS, false, adressesHisto.domicile.get(0));
-		assertAdresse(date(2000, 1, 1), null, "Lausanne", SourceType.CIVILE_PERS, false, adressesHisto.poursuite.get(0));
-		assertAdresse(date(2000, 1, 1), null, "Lausanne", SourceType.CIVILE_PERS, true, adressesHisto.representation.get(0));
+		assertAdresse(date(2000, 1, 1), null, "Lausanne", SourceType.CIVILE, false, adressesHisto.domicile.get(0));
+		assertAdresse(date(2000, 1, 1), null, "Lausanne", SourceType.CIVILE, false, adressesHisto.poursuite.get(0));
+		assertAdresse(date(2000, 1, 1), null, "Lausanne", SourceType.CIVILE, true, adressesHisto.representation.get(0));
 
 		final AdressesFiscales adresses = adresseService.getAdressesFiscales(menage, null, false);
 		assertNotNull(adresses);
@@ -4841,7 +4835,7 @@ public class AdresseServiceTest extends BusinessTest {
 		assertEquals("Avenue de Beaulieu", adresseEnvoi0.getLigne4());
 		assertEquals("1003 Lausanne", adresseEnvoi0.getLigne5());
 		assertNull(adresseEnvoi0.getLigne6());
-		assertEquals(SourceType.CIVILE_PERS, adresseEnvoi0.getSource());
+		assertEquals(SourceType.CIVILE, adresseEnvoi0.getSource());
 
 		final AdresseEnvoiDetaillee adresseEnvoi1 = adressesEnvoiHisto.courrier.get(1);
 		assertNotNull(adresseEnvoi1);
@@ -4912,12 +4906,12 @@ public class AdresseServiceTest extends BusinessTest {
 		assertNotNull(adressesHisto);
 
 		assertEquals(2, adressesHisto.courrier.size());
-		assertAdresse(date(2000, 1, 1), date(2006, 12, 31), "Lausanne", SourceType.CIVILE_PERS, true, adressesHisto.courrier.get(0));
+		assertAdresse(date(2000, 1, 1), date(2006, 12, 31), "Lausanne", SourceType.CIVILE, true, adressesHisto.courrier.get(0));
 		assertAdresse(date(2007, 1, 1), null, "Le Sentier", SourceType.CONSEIL_LEGAL, false, adressesHisto.courrier.get(1));
 
-		assertAdresse(date(2000, 1, 1), null, "Lausanne", SourceType.CIVILE_PERS, false, adressesHisto.domicile.get(0));
-		assertAdresse(date(2000, 1, 1), null, "Lausanne", SourceType.CIVILE_PERS, false, adressesHisto.poursuite.get(0));
-		assertAdresse(date(2000, 1, 1), null, "Lausanne", SourceType.CIVILE_PERS, true, adressesHisto.representation.get(0));
+		assertAdresse(date(2000, 1, 1), null, "Lausanne", SourceType.CIVILE, false, adressesHisto.domicile.get(0));
+		assertAdresse(date(2000, 1, 1), null, "Lausanne", SourceType.CIVILE, false, adressesHisto.poursuite.get(0));
+		assertAdresse(date(2000, 1, 1), null, "Lausanne", SourceType.CIVILE, true, adressesHisto.representation.get(0));
 
 		final AdressesFiscales adresses = adresseService.getAdressesFiscales(menage, null, false);
 		assertNotNull(adresses);
@@ -4949,7 +4943,7 @@ public class AdresseServiceTest extends BusinessTest {
 		assertEquals("Avenue de Beaulieu", adresseEnvoi0.getLigne4());
 		assertEquals("1003 Lausanne", adresseEnvoi0.getLigne5());
 		assertNull(adresseEnvoi0.getLigne6());
-		assertEquals(SourceType.CIVILE_PERS, adresseEnvoi0.getSource());
+		assertEquals(SourceType.CIVILE, adresseEnvoi0.getSource());
 
 		final AdresseEnvoiDetaillee adresseEnvoi1 = adressesEnvoiHisto.courrier.get(1);
 		assertNotNull(adresseEnvoi1);
@@ -5019,12 +5013,12 @@ public class AdresseServiceTest extends BusinessTest {
 		assertNotNull(adressesHisto);
 
 		assertEquals(2, adressesHisto.courrier.size());
-		assertAdresse(date(2000, 1, 1), date(2006, 12, 31), "Lausanne", SourceType.CIVILE_PERS, true, adressesHisto.courrier.get(0));
+		assertAdresse(date(2000, 1, 1), date(2006, 12, 31), "Lausanne", SourceType.CIVILE, true, adressesHisto.courrier.get(0));
 		assertAdresse(date(2007, 1, 1), null, "Lausanne", SourceType.CONJOINT, false, adressesHisto.courrier.get(1));
 
-		assertAdresse(date(2000, 1, 1), null, "Lausanne", SourceType.CIVILE_PERS, false, adressesHisto.domicile.get(0));
-		assertAdresse(date(2000, 1, 1), null, "Lausanne", SourceType.CIVILE_PERS, false, adressesHisto.poursuite.get(0));
-		assertAdresse(date(2000, 1, 1), null, "Lausanne", SourceType.CIVILE_PERS, true, adressesHisto.representation.get(0));
+		assertAdresse(date(2000, 1, 1), null, "Lausanne", SourceType.CIVILE, false, adressesHisto.domicile.get(0));
+		assertAdresse(date(2000, 1, 1), null, "Lausanne", SourceType.CIVILE, false, adressesHisto.poursuite.get(0));
+		assertAdresse(date(2000, 1, 1), null, "Lausanne", SourceType.CIVILE, true, adressesHisto.representation.get(0));
 
 		final AdressesFiscales adresses = adresseService.getAdressesFiscales(menage, null, false);
 		assertNotNull(adresses);
@@ -5056,7 +5050,7 @@ public class AdresseServiceTest extends BusinessTest {
 		assertEquals("Avenue de Beaulieu", adresseEnvoi0.getLigne4());
 		assertEquals("1003 Lausanne", adresseEnvoi0.getLigne5());
 		assertNull(adresseEnvoi0.getLigne6());
-		assertEquals(SourceType.CIVILE_PERS, adresseEnvoi0.getSource());
+		assertEquals(SourceType.CIVILE, adresseEnvoi0.getSource());
 
 		final AdresseEnvoiDetaillee adresseEnvoi1 = adressesEnvoiHisto.courrier.get(1);
 		assertNotNull(adresseEnvoi1);
@@ -5135,18 +5129,18 @@ public class AdresseServiceTest extends BusinessTest {
 		assertNotNull(adressesHisto);
 
 		assertEquals(4, adressesHisto.courrier.size());
-		assertAdresse(date(2000, 1, 1), date(2002, 12, 31), "Lausanne", SourceType.CIVILE_PERS, true, adressesHisto.courrier.get(0));
+		assertAdresse(date(2000, 1, 1), date(2002, 12, 31), "Lausanne", SourceType.CIVILE, true, adressesHisto.courrier.get(0));
 		assertAdresse(date(2003, 1, 1), date(2003, 12, 31), "Bussigny", SourceType.CONJOINT, false, adressesHisto.courrier.get(1));
 		assertAdresse(date(2004, 1, 1), date(2004, 12, 31), "Le Sentier", SourceType.CURATELLE, false, adressesHisto.courrier.get(2));
-		assertAdresse(date(2005, 1, 1), null, "Lausanne", SourceType.CIVILE_PERS, true, adressesHisto.courrier.get(3));
+		assertAdresse(date(2005, 1, 1), null, "Lausanne", SourceType.CIVILE, true, adressesHisto.courrier.get(3));
 
-		assertAdresse(date(2000, 1, 1), null, "Lausanne", SourceType.CIVILE_PERS, false, adressesHisto.domicile.get(0));
-		assertAdresse(date(2000, 1, 1), null, "Lausanne", SourceType.CIVILE_PERS, false, adressesHisto.poursuite.get(0));
-		assertAdresse(date(2000, 1, 1), null, "Lausanne", SourceType.CIVILE_PERS, true, adressesHisto.representation.get(0));
+		assertAdresse(date(2000, 1, 1), null, "Lausanne", SourceType.CIVILE, false, adressesHisto.domicile.get(0));
+		assertAdresse(date(2000, 1, 1), null, "Lausanne", SourceType.CIVILE, false, adressesHisto.poursuite.get(0));
+		assertAdresse(date(2000, 1, 1), null, "Lausanne", SourceType.CIVILE, true, adressesHisto.representation.get(0));
 
 		final AdressesFiscales adresses = adresseService.getAdressesFiscales(menage, null, false);
 		assertNotNull(adresses);
-		assertAdresse(date(2005, 1, 1), null, "Lausanne", SourceType.CIVILE_PERS, true, adresses.courrier);
+		assertAdresse(date(2005, 1, 1), null, "Lausanne", SourceType.CIVILE, true, adresses.courrier);
 		assertAdressesEquals(adressesHisto.domicile.get(0), adresses.domicile);
 		assertAdressesEquals(adressesHisto.poursuite.get(0), adresses.poursuite);
 		assertAdressesEquals(adressesHisto.representation.get(0), adresses.representation);
@@ -5215,7 +5209,7 @@ public class AdresseServiceTest extends BusinessTest {
 		assertEquals("Avenue de Beaulieu", adresseEnvoi0.getLigne4());
 		assertEquals("1003 Lausanne", adresseEnvoi0.getLigne5());
 		assertNull(adresseEnvoi0.getLigne6());
-		assertEquals(SourceType.CIVILE_PERS, adresseEnvoi0.getSource());
+		assertEquals(SourceType.CIVILE, adresseEnvoi0.getSource());
 
 		final AdresseEnvoiDetaillee adresseEnvoi1 = adressesEnvoiHisto.courrier.get(1);
 		assertNotNull(adresseEnvoi1);
@@ -5251,7 +5245,7 @@ public class AdresseServiceTest extends BusinessTest {
 		assertEquals("Avenue de Beaulieu", adresseEnvoi3.getLigne4());
 		assertEquals("1003 Lausanne", adresseEnvoi3.getLigne5());
 		assertNull(adresseEnvoi3.getLigne6());
-		assertEquals(SourceType.CIVILE_PERS, adresseEnvoi3.getSource());
+		assertEquals(SourceType.CIVILE, adresseEnvoi3.getSource());
 	}
 
 	/**
@@ -5318,18 +5312,18 @@ public class AdresseServiceTest extends BusinessTest {
 		assertNotNull(adressesHisto);
 
 		assertEquals(4, adressesHisto.courrier.size());
-		assertAdresse(date(2000, 1, 1), date(2002, 12, 31), "Lausanne", SourceType.CIVILE_PERS, true, adressesHisto.courrier.get(0));
+		assertAdresse(date(2000, 1, 1), date(2002, 12, 31), "Lausanne", SourceType.CIVILE, true, adressesHisto.courrier.get(0));
 		assertAdresse(date(2003, 1, 1), date(2003, 12, 31), "Bussigny", SourceType.CONJOINT, false, adressesHisto.courrier.get(1));
 		assertAdresse(date(2004, 1, 1), date(2004, 12, 31), "Le Sentier", SourceType.TUTELLE, false, adressesHisto.courrier.get(2));
-		assertAdresse(date(2005, 1, 1), null, "Lausanne", SourceType.CIVILE_PERS, true, adressesHisto.courrier.get(3));
+		assertAdresse(date(2005, 1, 1), null, "Lausanne", SourceType.CIVILE, true, adressesHisto.courrier.get(3));
 
-		assertAdresse(date(2000, 1, 1), null, "Lausanne", SourceType.CIVILE_PERS, false, adressesHisto.domicile.get(0));
-		assertAdresse(date(2000, 1, 1), null, "Lausanne", SourceType.CIVILE_PERS, false, adressesHisto.poursuite.get(0));
-		assertAdresse(date(2000, 1, 1), null, "Lausanne", SourceType.CIVILE_PERS, true, adressesHisto.representation.get(0));
+		assertAdresse(date(2000, 1, 1), null, "Lausanne", SourceType.CIVILE, false, adressesHisto.domicile.get(0));
+		assertAdresse(date(2000, 1, 1), null, "Lausanne", SourceType.CIVILE, false, adressesHisto.poursuite.get(0));
+		assertAdresse(date(2000, 1, 1), null, "Lausanne", SourceType.CIVILE, true, adressesHisto.representation.get(0));
 
 		final AdressesFiscales adresses = adresseService.getAdressesFiscales(menage, null, false);
 		assertNotNull(adresses);
-		assertAdresse(date(2005, 1, 1), null, "Lausanne", SourceType.CIVILE_PERS, true, adresses.courrier);
+		assertAdresse(date(2005, 1, 1), null, "Lausanne", SourceType.CIVILE, true, adresses.courrier);
 		assertAdressesEquals(adressesHisto.domicile.get(0), adresses.domicile);
 		assertAdressesEquals(adressesHisto.poursuite.get(0), adresses.poursuite);
 		assertAdressesEquals(adressesHisto.representation.get(0), adresses.representation);
@@ -5398,7 +5392,7 @@ public class AdresseServiceTest extends BusinessTest {
 		assertEquals("Avenue de Beaulieu", adresseEnvoi0.getLigne4());
 		assertEquals("1003 Lausanne", adresseEnvoi0.getLigne5());
 		assertNull(adresseEnvoi0.getLigne6());
-		assertEquals(SourceType.CIVILE_PERS, adresseEnvoi0.getSource());
+		assertEquals(SourceType.CIVILE, adresseEnvoi0.getSource());
 
 		final AdresseEnvoiDetaillee adresseEnvoi1 = adressesEnvoiHisto.courrier.get(1);
 		assertNotNull(adresseEnvoi1);
@@ -5434,7 +5428,7 @@ public class AdresseServiceTest extends BusinessTest {
 		assertEquals("Avenue de Beaulieu", adresseEnvoi3.getLigne4());
 		assertEquals("1003 Lausanne", adresseEnvoi3.getLigne5());
 		assertNull(adresseEnvoi3.getLigne6());
-		assertEquals(SourceType.CIVILE_PERS, adresseEnvoi3.getSource());
+		assertEquals(SourceType.CIVILE, adresseEnvoi3.getSource());
 	}
 
 	/**
@@ -5497,14 +5491,14 @@ public class AdresseServiceTest extends BusinessTest {
 		assertNotNull(adressesHisto);
 
 		assertEquals(4, adressesHisto.courrier.size());
-		assertAdresse(date(1953, 11, 2), date(1999, 12, 31), "Lausanne", SourceType.CIVILE_PERS, true, adressesHisto.courrier.get(0));
+		assertAdresse(date(1953, 11, 2), date(1999, 12, 31), "Lausanne", SourceType.CIVILE, true, adressesHisto.courrier.get(0));
 		assertAdresse(date(2000, 1, 1), date(2004, 12, 31), "Bussigny", SourceType.CONJOINT, false, adressesHisto.courrier.get(1));
 		assertAdresse(date(2005, 1, 1), date(2008, 12, 31), "Neuchâtel", SourceType.CONJOINT, false, adressesHisto.courrier.get(2));
 		assertAdresse(date(2009, 1, 1), null, "Le Sentier", SourceType.TUTELLE, false, adressesHisto.courrier.get(3));
 
-		assertAdresse(date(1953, 11, 2), null, "Lausanne", SourceType.CIVILE_PERS, false, adressesHisto.domicile.get(0));
-		assertAdresse(date(1953, 11, 2), null, "Lausanne", SourceType.CIVILE_PERS, false, adressesHisto.poursuite.get(0));
-		assertAdresse(date(1953, 11, 2), null, "Lausanne", SourceType.CIVILE_PERS, true, adressesHisto.representation.get(0));
+		assertAdresse(date(1953, 11, 2), null, "Lausanne", SourceType.CIVILE, false, adressesHisto.domicile.get(0));
+		assertAdresse(date(1953, 11, 2), null, "Lausanne", SourceType.CIVILE, false, adressesHisto.poursuite.get(0));
+		assertAdresse(date(1953, 11, 2), null, "Lausanne", SourceType.CIVILE, true, adressesHisto.representation.get(0));
 
 		// conjoint en Suisse => adresse courrier du conjoint utilisée
 		final AdresseEnvoiDetaillee adresseEnvoi2002 = adresseService.getAdresseEnvoi(menage, date(2002, 1, 1), TypeAdresseFiscale.COURRIER, false);
@@ -5550,7 +5544,7 @@ public class AdresseServiceTest extends BusinessTest {
 		assertEquals("Avenue de Beaulieu", adresseEnvoi0.getLigne4());
 		assertEquals("1003 Lausanne", adresseEnvoi0.getLigne5());
 		assertNull(adresseEnvoi0.getLigne6());
-		assertEquals(SourceType.CIVILE_PERS, adresseEnvoi0.getSource());
+		assertEquals(SourceType.CIVILE, adresseEnvoi0.getSource());
 
 		final AdresseEnvoiDetaillee adresseEnvoi1 = adressesEnvoiHisto.courrier.get(1);
 		assertNotNull(adresseEnvoi1);
@@ -5649,13 +5643,13 @@ public class AdresseServiceTest extends BusinessTest {
 		assertNotNull(adressesHisto);
 
 		assertEquals(3, adressesHisto.courrier.size());
-		assertAdresse(date(1953, 11, 2), date(1999, 12, 31), "Lausanne", SourceType.CIVILE_PERS, true, adressesHisto.courrier.get(0)); // adresse de Monsieur
+		assertAdresse(date(1953, 11, 2), date(1999, 12, 31), "Lausanne", SourceType.CIVILE, true, adressesHisto.courrier.get(0)); // adresse de Monsieur
 		assertAdresse(date(2000, 1, 1), dateDeces.getOneDayBefore(), "Bussigny", SourceType.CONJOINT, false, adressesHisto.courrier.get(1)); // adresse de Madame
 		assertAdresse(dateDeces, null, "Le Sentier", SourceType.TUTELLE, false, adressesHisto.courrier.get(2)); // adresse du tuteur de Monsieur
 
-		assertAdresse(date(1953, 11, 2), null, "Lausanne", SourceType.CIVILE_PERS, false, adressesHisto.domicile.get(0));
-		assertAdresse(date(1953, 11, 2), null, "Lausanne", SourceType.CIVILE_PERS, false, adressesHisto.poursuite.get(0));
-		assertAdresse(date(1953, 11, 2), null, "Lausanne", SourceType.CIVILE_PERS, true, adressesHisto.representation.get(0));
+		assertAdresse(date(1953, 11, 2), null, "Lausanne", SourceType.CIVILE, false, adressesHisto.domicile.get(0));
+		assertAdresse(date(1953, 11, 2), null, "Lausanne", SourceType.CIVILE, false, adressesHisto.poursuite.get(0));
+		assertAdresse(date(1953, 11, 2), null, "Lausanne", SourceType.CIVILE, true, adressesHisto.representation.get(0));
 
 		// monsieur sans tutelle => adresse de monsieur
 		final AdresseEnvoiDetaillee adresseEnvoi1990 = adresseService.getAdresseEnvoi(menage, date(1990, 1, 1), TypeAdresseFiscale.COURRIER, false);
@@ -5789,13 +5783,13 @@ public class AdresseServiceTest extends BusinessTest {
 		assertNotNull(adressesHisto);
 
 		assertEquals(3, adressesHisto.courrier.size());
-		assertAdresse(date(1953, 11, 2), dateTutelle.getOneDayBefore(), "Lausanne", SourceType.CIVILE_PERS, true, adressesHisto.courrier.get(0)); // adresse de Monsieur
+		assertAdresse(date(1953, 11, 2), dateTutelle.getOneDayBefore(), "Lausanne", SourceType.CIVILE, true, adressesHisto.courrier.get(0)); // adresse de Monsieur
 		assertAdresse(dateTutelle, dateDeces.getOneDayBefore(), "Bussigny", SourceType.CONJOINT, false, adressesHisto.courrier.get(1)); // adresse de Madame
 		assertAdresse(dateDeces, null, "Le Sentier", SourceType.TUTELLE, false, adressesHisto.courrier.get(2)); // adresse du tuteur de Monsieur
 
-		assertAdresse(date(1953, 11, 2), null, "Lausanne", SourceType.CIVILE_PERS, false, adressesHisto.domicile.get(0));
-		assertAdresse(date(1953, 11, 2), null, "Lausanne", SourceType.CIVILE_PERS, false, adressesHisto.poursuite.get(0));
-		assertAdresse(date(1953, 11, 2), null, "Lausanne", SourceType.CIVILE_PERS, true, adressesHisto.representation.get(0));
+		assertAdresse(date(1953, 11, 2), null, "Lausanne", SourceType.CIVILE, false, adressesHisto.domicile.get(0));
+		assertAdresse(date(1953, 11, 2), null, "Lausanne", SourceType.CIVILE, false, adressesHisto.poursuite.get(0));
+		assertAdresse(date(1953, 11, 2), null, "Lausanne", SourceType.CIVILE, true, adressesHisto.representation.get(0));
 
 		// monsieur sans tutelle => adresse de monsieur
 		final AdresseEnvoiDetaillee adresseEnvoi1990 = adresseService.getAdresseEnvoi(menage, date(1990, 1, 1), TypeAdresseFiscale.COURRIER, false);
@@ -5931,13 +5925,13 @@ public class AdresseServiceTest extends BusinessTest {
 		assertNotNull(adressesHisto);
 
 		assertEquals(3, adressesHisto.courrier.size());
-		assertAdresse(date(1953, 11, 2), dateDebutTutelle.getOneDayBefore(), "Lausanne", SourceType.CIVILE_PERS, true, adressesHisto.courrier.get(0)); // adresse de Monsieur
+		assertAdresse(date(1953, 11, 2), dateDebutTutelle.getOneDayBefore(), "Lausanne", SourceType.CIVILE, true, adressesHisto.courrier.get(0)); // adresse de Monsieur
 		assertAdresse(dateDebutTutelle, dateFinTutelle, "Bussigny", SourceType.CONJOINT, false, adressesHisto.courrier.get(1)); // adresse de Madame
-		assertAdresse(dateFinTutelle.getOneDayAfter(), null, "Lausanne", SourceType.CIVILE_PERS, true, adressesHisto.courrier.get(2)); // adresse de Monsieur
+		assertAdresse(dateFinTutelle.getOneDayAfter(), null, "Lausanne", SourceType.CIVILE, true, adressesHisto.courrier.get(2)); // adresse de Monsieur
 
-		assertAdresse(date(1953, 11, 2), null, "Lausanne", SourceType.CIVILE_PERS, false, adressesHisto.domicile.get(0));
-		assertAdresse(date(1953, 11, 2), null, "Lausanne", SourceType.CIVILE_PERS, false, adressesHisto.poursuite.get(0));
-		assertAdresse(date(1953, 11, 2), null, "Lausanne", SourceType.CIVILE_PERS, true, adressesHisto.representation.get(0));
+		assertAdresse(date(1953, 11, 2), null, "Lausanne", SourceType.CIVILE, false, adressesHisto.domicile.get(0));
+		assertAdresse(date(1953, 11, 2), null, "Lausanne", SourceType.CIVILE, false, adressesHisto.poursuite.get(0));
+		assertAdresse(date(1953, 11, 2), null, "Lausanne", SourceType.CIVILE, true, adressesHisto.representation.get(0));
 
 		// monsieur sans tutelle => adresse de monsieur
 		final AdresseEnvoiDetaillee adresseEnvoi1970 = adresseService.getAdresseEnvoi(menage, date(1970, 1, 1), TypeAdresseFiscale.COURRIER, false);
@@ -6039,8 +6033,8 @@ public class AdresseServiceTest extends BusinessTest {
 
 		// les adresses fiscales
 		final AdressesFiscales adresses = adresseService.getAdressesFiscales(ctb, null, false);
-		assertAdresse(date(2000, 1, 1), null, "Granges-près-Marnand", SourceType.CIVILE_PERS, false, adresses.domicile);
-		assertAdresse(date(2000, 1, 1), null, "Granges-près-Marnand", SourceType.CIVILE_PERS, true, adresses.courrier);
+		assertAdresse(date(2000, 1, 1), null, "Granges-près-Marnand", SourceType.CIVILE, false, adresses.domicile);
+		assertAdresse(date(2000, 1, 1), null, "Granges-près-Marnand", SourceType.CIVILE, true, adresses.courrier);
 		assertAdressesEquals(adresses.domicile, adresses.poursuite);
 		assertAdressesEquals(adresses.courrier, adresses.representation);
 		assertNull(adresses.poursuiteAutreTiers);
@@ -6112,15 +6106,15 @@ public class AdresseServiceTest extends BusinessTest {
 
 		// les adresses fiscales
 		final AdressesFiscales adressesPrincipal = adresseService.getAdressesFiscales(principal, null, false);
-		assertAdresse(date(2000, 1, 1), null, "Lausanne", SourceType.CIVILE_PERS, false, adressesPrincipal.domicile);
-		assertAdresse(date(2000, 1, 1), null, "Lausanne", SourceType.CIVILE_PERS, true, adressesPrincipal.courrier);
+		assertAdresse(date(2000, 1, 1), null, "Lausanne", SourceType.CIVILE, false, adressesPrincipal.domicile);
+		assertAdresse(date(2000, 1, 1), null, "Lausanne", SourceType.CIVILE, true, adressesPrincipal.courrier);
 		assertAdressesEquals(adressesPrincipal.domicile, adressesPrincipal.poursuite);
 		assertAdressesEquals(adressesPrincipal.courrier, adressesPrincipal.representation);
 		assertNull(adressesPrincipal.poursuiteAutreTiers);
 
 		final AdressesFiscales adressesConjoint = adresseService.getAdressesFiscales(conjoint, null, false);
-		assertAdresse(date(2000, 1, 1), null, "Granges-près-Marnand", SourceType.CIVILE_PERS, false, adressesConjoint.domicile);
-		assertAdresse(date(2000, 1, 1), null, "Granges-près-Marnand", SourceType.CIVILE_PERS, true, adressesConjoint.courrier);
+		assertAdresse(date(2000, 1, 1), null, "Granges-près-Marnand", SourceType.CIVILE, false, adressesConjoint.domicile);
+		assertAdresse(date(2000, 1, 1), null, "Granges-près-Marnand", SourceType.CIVILE, true, adressesConjoint.courrier);
 		assertAdressesEquals(adressesConjoint.domicile, adressesConjoint.poursuite);
 		assertAdressesEquals(adressesConjoint.courrier, adressesConjoint.representation);
 		assertNull(adressesConjoint.poursuiteAutreTiers);
@@ -6221,10 +6215,10 @@ public class AdresseServiceTest extends BusinessTest {
 
 		// les adresses fiscales
 		final AdressesFiscales adresses = adresseService.getAdressesFiscales(ctb, null, false);
-		assertAdresse(date(2000, 1, 1), null, "Bussigny", SourceType.CIVILE_PERS, false, adresses.domicile);
+		assertAdresse(date(2000, 1, 1), null, "Bussigny", SourceType.CIVILE, false, adresses.domicile);
 		assertAdresse(date(2000, 1, 1), null, "Lausanne", SourceType.CURATELLE, false, adresses.courrier);
 		assertAdressesEquals(adresses.domicile, adresses.poursuite);
-		assertAdresse(date(2000, 1, 1), null, "Bussigny", SourceType.CIVILE_PERS, true, adresses.representation);
+		assertAdresse(date(2000, 1, 1), null, "Bussigny", SourceType.CIVILE, true, adresses.representation);
 		assertAdresse(date(2000, 1, 1), null, "Lausanne", SourceType.CURATELLE, false, adresses.poursuiteAutreTiers);
 
 		// les adresses d'envoi
@@ -6325,10 +6319,10 @@ public class AdresseServiceTest extends BusinessTest {
 
 		// les adresses fiscales
 		final AdressesFiscales adresses = adresseService.getAdressesFiscales(ctb, null, false);
-		assertAdresse(date(2000, 1, 1), null, "Echallens", SourceType.CIVILE_PERS, false, adresses.domicile);
+		assertAdresse(date(2000, 1, 1), null, "Echallens", SourceType.CIVILE, false, adresses.domicile);
 		assertAdresse(date(2000, 1, 1), null, "Lausanne", SourceType.TUTELLE, false, adresses.courrier); // adresse du tuteur
 		assertAdressesEquals(adresses.domicile, adresses.poursuite); // adresse de domicile de la pupille
-		assertAdresse(date(2000, 1, 1), null, "Echallens", SourceType.CIVILE_PERS, true, adresses.representation);
+		assertAdresse(date(2000, 1, 1), null, "Echallens", SourceType.CIVILE, true, adresses.representation);
 		assertAdresse(date(2000, 1, 1), null, "Lausanne", SourceType.TUTELLE, false, adresses.poursuiteAutreTiers); // adresse du tuteur
 
 		// les adresses d'envoi
@@ -6427,10 +6421,10 @@ public class AdresseServiceTest extends BusinessTest {
 
 		// les adresses fiscales
 		final AdressesFiscales adresses = adresseService.getAdressesFiscales(ctb, null, false);
-		assertAdresse(date(2000, 1, 1), null, "Echallens", SourceType.CIVILE_PERS, false, adresses.domicile);
+		assertAdresse(date(2000, 1, 1), null, "Echallens", SourceType.CIVILE, false, adresses.domicile);
 		assertAdresse(date(2000, 1, 1), null, "Lausanne", SourceType.TUTELLE, false, adresses.courrier); // adresse du tuteur
 		assertAdresse(date(2000, 1, 1), null, "Yverdon-les-Bains", SourceType.TUTELLE, false, adresses.poursuite); // adresse de l'autorité tutelaire
-		assertAdresse(date(2000, 1, 1), null, "Echallens", SourceType.CIVILE_PERS, true, adresses.representation);
+		assertAdresse(date(2000, 1, 1), null, "Echallens", SourceType.CIVILE, true, adresses.representation);
 		assertAdresse(date(2000, 1, 1), null, "Lausanne", SourceType.TUTELLE, false, adresses.poursuiteAutreTiers); // adresse du tuteur
 
 		// les adresses d'envoi
@@ -6528,28 +6522,23 @@ public class AdresseServiceTest extends BusinessTest {
 	public void testGetAdressesPoursuiteContribuableHSAvecRepresentantConventionel() throws Exception {
 
 		final long noTiers = 10536395;
+		final long noEntreprise = MockPersonneMorale.KPMG.getNumeroEntreprise();
 
-		serviceOrganisation.setUp(new MockServiceOrganisation() {
-			@Override
-			protected void init() {
-				addOrganisation(MockOrganisationFactory.KPMG);
-			}
-		});
+		servicePM.setUp(new DefaultMockServicePM());
 
 		// un contribuable hors-Suisse avec un représentant conventionnel en Suisse (avec extension de l'exécution forcée)
 		final PersonnePhysique ctb = addNonHabitant(noTiers, "Claude-Alain", "Proz", date(1953, 11, 2), Sexe.MASCULIN);
 		addAdresseEtrangere(ctb, TypeAdresseTiers.DOMICILE, date(2000, 1, 1), null, null, "Izmir", MockPays.Turquie);
-
-		final Entreprise representant = addEntrepriseConnueAuCivil(MockOrganisationFactory.KPMG.getNumeroOrganisation());
+		final Entreprise representant = addEntreprise(noEntreprise);
 		addRepresentationConventionnelle(ctb, representant, date(2000, 1, 1), true);
 
 		// les adresses fiscales
 		final AdressesFiscales adresses = adresseService.getAdressesFiscales(ctb, null, false);
 		assertAdresse(date(2000, 1, 1), null, "Izmir", SourceType.FISCALE, false, adresses.domicile);
-		assertAdresse(date(2000, 1, 1), null, "Zurich", SourceType.REPRESENTATION, false, adresses.courrier); // adresse du représentant
-		assertAdresse(date(2000, 1, 1), null, "Zurich", SourceType.REPRESENTATION, false, adresses.poursuite); // adresse du représentant
+		assertAdresse(date(2000, 1, 1), null, "Lausanne", SourceType.REPRESENTATION, false, adresses.courrier); // adresse du représentant
+		assertAdresse(date(2000, 1, 1), null, "Lausanne", SourceType.REPRESENTATION, false, adresses.poursuite); // adresse du représentant
 		assertAdresse(date(2000, 1, 1), null, "Izmir", SourceType.FISCALE, true, adresses.representation);
-		assertAdresse(date(2000, 1, 1), null, "Zurich", SourceType.REPRESENTATION, false, adresses.poursuiteAutreTiers); // adresse du représentant
+		assertAdresse(date(2000, 1, 1), null, "Lausanne", SourceType.REPRESENTATION, false, adresses.poursuiteAutreTiers); // adresse du représentant
 
 		// les adresses d'envoi
 		final AdresseEnvoi domicile = adresseService.getAdresseEnvoi(ctb, null, TypeAdresseFiscale.DOMICILE, false);
@@ -6563,8 +6552,8 @@ public class AdresseServiceTest extends BusinessTest {
 		assertEquals("Monsieur", courrier.getLigne1());
 		assertEquals("Claude-Alain Proz", courrier.getLigne2());
 		assertEquals("p.a. KPMG SA", courrier.getLigne3());
-		assertEquals("Badenerstrasse 172", courrier.getLigne4());
-		assertEquals("8004 Zurich", courrier.getLigne5());
+		assertEquals("Avenue de Rumine 37", courrier.getLigne4());
+		assertEquals("1005 Lausanne", courrier.getLigne5());
 		assertNull(courrier.getLigne6());
 
 		final AdresseEnvoiDetaillee representation = adresseService.getAdresseEnvoi(ctb, null, TypeAdresseFiscale.REPRESENTATION, false);
@@ -6572,8 +6561,8 @@ public class AdresseServiceTest extends BusinessTest {
 
 		final AdresseEnvoi poursuite = adresseService.getAdresseEnvoi(ctb, null, TypeAdresseFiscale.POURSUITE, false);
 		assertEquals("KPMG SA", poursuite.getLigne1());
-		assertEquals("Badenerstrasse 172", poursuite.getLigne2());
-		assertEquals("8004 Zurich", poursuite.getLigne3());
+		assertEquals("Avenue de Rumine 37", poursuite.getLigne2());
+		assertEquals("1005 Lausanne", poursuite.getLigne3());
 		assertNull(poursuite.getLigne4());
 
 		final AdresseEnvoiDetaillee poursuiteAutreTiers = adresseService.getAdresseEnvoi(ctb, null, TypeAdresseFiscale.POURSUITE_AUTRE_TIERS, false);
@@ -6606,8 +6595,8 @@ public class AdresseServiceTest extends BusinessTest {
 		assertEquals("Monsieur", adresseCourrier.getLigne1());
 		assertEquals("Claude-Alain Proz", adresseCourrier.getLigne2());
 		assertEquals("p.a. KPMG SA", adresseCourrier.getLigne3());
-		assertEquals("Badenerstrasse 172", adresseCourrier.getLigne4());
-		assertEquals("8004 Zurich", adresseCourrier.getLigne5());
+		assertEquals("Avenue de Rumine 37", adresseCourrier.getLigne4());
+		assertEquals("1005 Lausanne", adresseCourrier.getLigne5());
 		assertNull(adresseCourrier.getLigne6());
 
 		assertEquals(adresseDomicile, adressesEnvoi.representation.get(0));
@@ -6617,8 +6606,8 @@ public class AdresseServiceTest extends BusinessTest {
 		assertEquals(date(2000, 1, 1), adressePoursuite.getDateDebut());
 		assertNull(adressePoursuite.getDateFin());
 		assertEquals("KPMG SA", adressePoursuite.getLigne1());
-		assertEquals("Badenerstrasse 172", adressePoursuite.getLigne2());
-		assertEquals("8004 Zurich", adressePoursuite.getLigne3());
+		assertEquals("Avenue de Rumine 37", adressePoursuite.getLigne2());
+		assertEquals("1005 Lausanne", adressePoursuite.getLigne3());
 		assertNull(adressePoursuite.getLigne4());
 
 		final AdresseEnvoiDetaillee adressePoursuiteAutreTiers = adressesEnvoi.poursuiteAutreTiers.get(0);
@@ -6626,8 +6615,8 @@ public class AdresseServiceTest extends BusinessTest {
 		assertEquals(date(2000, 1, 1), adressePoursuiteAutreTiers.getDateDebut());
 		assertNull(adressePoursuiteAutreTiers.getDateFin());
 		assertEquals("KPMG SA", adressePoursuiteAutreTiers.getLigne1());
-		assertEquals("Badenerstrasse 172", adressePoursuiteAutreTiers.getLigne2());
-		assertEquals("8004 Zurich", adressePoursuiteAutreTiers.getLigne3());
+		assertEquals("Avenue de Rumine 37", adressePoursuiteAutreTiers.getLigne2());
+		assertEquals("1005 Lausanne", adressePoursuiteAutreTiers.getLigne3());
 		assertNull(adressePoursuiteAutreTiers.getLigne4());
 		assertEquals(SourceType.REPRESENTATION, adressePoursuiteAutreTiers.getSource());
 	}
@@ -6641,13 +6630,9 @@ public class AdresseServiceTest extends BusinessTest {
 
 		final long noTiers = 10033975;
 		final long noIndividu = 330581;
+		final long noEntreprise = MockPersonneMorale.CuriaTreuhand.getNumeroEntreprise();
 
-		serviceOrganisation.setUp(new MockServiceOrganisation() {
-			@Override
-			protected void init() {
-				addOrganisation(MockOrganisationFactory.CURIA_TREUHAND);
-			}
-		});
+		servicePM.setUp(new DefaultMockServicePM());
 
 		// un contribuable vaudois avec un représentant conventionnel en Suisse (sans extension de l'exécution forcée qui n'est pas autorisée dans ce cas-là)
 		serviceCivil.setUp(new MockServiceCivil() {
@@ -6659,15 +6644,15 @@ public class AdresseServiceTest extends BusinessTest {
 		});
 
 		final PersonnePhysique ctb = addHabitant(noTiers, noIndividu);
-		final Entreprise representant = addEntrepriseConnueAuCivil(MockOrganisationFactory.CURIA_TREUHAND.getNumeroOrganisation());
+		final Entreprise representant = addEntreprise(noEntreprise);
 		addRepresentationConventionnelle(ctb, representant, date(2000, 1, 1), false);
 
 		// les adresses fiscales
 		final AdressesFiscales adresses = adresseService.getAdressesFiscales(ctb, null, false);
-		assertAdresse(date(2000, 1, 1), null, "Lonay", SourceType.CIVILE_PERS, false, adresses.domicile);
+		assertAdresse(date(2000, 1, 1), null, "Lonay", SourceType.CIVILE, false, adresses.domicile);
 		assertAdresse(date(2000, 1, 1), null, "Chur", SourceType.REPRESENTATION, false, adresses.courrier); // adresse du représentant
-		assertAdresse(date(2000, 1, 1), null, "Lonay", SourceType.CIVILE_PERS, false, adresses.poursuite); // adresse du contribuable parce que pas d'exécution forcée
-		assertAdresse(date(2000, 1, 1), null, "Lonay", SourceType.CIVILE_PERS, true, adresses.representation);
+		assertAdresse(date(2000, 1, 1), null, "Lonay", SourceType.CIVILE, false, adresses.poursuite); // adresse du contribuable parce que pas d'exécution forcée
+		assertAdresse(date(2000, 1, 1), null, "Lonay", SourceType.CIVILE, true, adresses.representation);
 		assertNull(adresses.poursuiteAutreTiers);
 
 		// les adresses d'envoi
@@ -6735,6 +6720,8 @@ public class AdresseServiceTest extends BusinessTest {
 		final long noTiers = 44018109;
 		final long noIndividu = 381865;
 
+		servicePM.setUp(new DefaultMockServicePM());
+
 		// un contribuable vaudois avec une adresse de poursuite entrée dans Unireg
 		serviceCivil.setUp(new MockServiceCivil() {
 			@Override
@@ -6749,10 +6736,10 @@ public class AdresseServiceTest extends BusinessTest {
 
 		// les adresses fiscales
 		final AdressesFiscales adresses = adresseService.getAdressesFiscales(ctb, null, false);
-		assertAdresse(date(2000, 1, 1), null, "Granges-près-Marnand", SourceType.CIVILE_PERS, false, adresses.domicile);
-		assertAdresse(date(2000, 1, 1), null, "Granges-près-Marnand", SourceType.CIVILE_PERS, true, adresses.courrier);
+		assertAdresse(date(2000, 1, 1), null, "Granges-près-Marnand", SourceType.CIVILE, false, adresses.domicile);
+		assertAdresse(date(2000, 1, 1), null, "Granges-près-Marnand", SourceType.CIVILE, true, adresses.courrier);
 		assertAdresse(date(2000, 1, 1), null, "Lausanne", SourceType.FISCALE, false, adresses.poursuite);
-		assertAdresse(date(2000, 1, 1), null, "Granges-près-Marnand", SourceType.CIVILE_PERS, true, adresses.representation);
+		assertAdresse(date(2000, 1, 1), null, "Granges-près-Marnand", SourceType.CIVILE, true, adresses.representation);
 		assertAdresse(date(2000, 1, 1), null, "Lausanne", SourceType.FISCALE, false, adresses.poursuiteAutreTiers);
 
 		// les adresses d'envoi
@@ -6849,10 +6836,10 @@ public class AdresseServiceTest extends BusinessTest {
 
 		// les adresses fiscales
 		final AdressesFiscales adresses = adresseService.getAdressesFiscales(ctb, null, false);
-		assertAdresse(date(2000, 1, 1), null, "Echallens", SourceType.CIVILE_PERS, false, adresses.domicile);
+		assertAdresse(date(2000, 1, 1), null, "Echallens", SourceType.CIVILE, false, adresses.domicile);
 		assertAdresse(date(2000, 1, 1), null, "Lausanne", SourceType.TUTELLE, false, adresses.courrier); // adresse du tuteur
 		assertAdresse(date(2000, 1, 1), null, "Bussigny", SourceType.FISCALE, false, adresses.poursuite); // adresse spécifique de poursuite
-		assertAdresse(date(2000, 1, 1), null, "Echallens", SourceType.CIVILE_PERS, true, adresses.representation);
+		assertAdresse(date(2000, 1, 1), null, "Echallens", SourceType.CIVILE, true, adresses.representation);
 		assertAdresse(date(2000, 1, 1), null, "Bussigny", SourceType.FISCALE, false, adresses.poursuiteAutreTiers); // adresse spécifique de poursuite
 
 		// les adresses d'envoi
@@ -7082,9 +7069,9 @@ public class AdresseServiceTest extends BusinessTest {
 			final AdressesFiscales adresses = adresseService.getAdressesFiscales(tiia, null, true);
 			assertNotNull(adresses);
 			assertAdresse(date(2009, 7, 8), null, "Lausanne", SourceType.FISCALE, false, adresses.courrier); // [UNIREG-3025] les adresses surchargées priment sur toutes les autres adresses dorénavant
-			assertAdresse(date(2009, 2, 1), null, "Lausanne", SourceType.CIVILE_PERS, false, adresses.representation);
-			assertAdresse(date(2009, 2, 1), null, "Lausanne", SourceType.CIVILE_PERS, false, adresses.domicile);
-			assertAdresse(date(2009, 2, 1), null, "Lausanne", SourceType.CIVILE_PERS, false, adresses.poursuite);
+			assertAdresse(date(2009, 2, 1), null, "Lausanne", SourceType.CIVILE, false, adresses.representation);
+			assertAdresse(date(2009, 2, 1), null, "Lausanne", SourceType.CIVILE, false, adresses.domicile);
+			assertAdresse(date(2009, 2, 1), null, "Lausanne", SourceType.CIVILE, false, adresses.poursuite);
 			assertAdresse(date(2009, 2, 1), null, "Lausanne", SourceType.CURATELLE, false, adresses.poursuiteAutreTiers);
 		}
 
@@ -7099,19 +7086,19 @@ public class AdresseServiceTest extends BusinessTest {
 			assertAdresse(date(2009, 7, 8), null, "Lausanne", SourceType.FISCALE, false, adressesHisto.courrier.get(3));
 
 			assertEquals(3, adressesHisto.representation.size());
-			assertAdresse(null, date(2006, 9, 24), "Moudon", SourceType.CIVILE_PERS, false, adressesHisto.representation.get(0));
-			assertAdresse(date(2006, 9, 25), date(2009, 1, 31), "Pully", SourceType.CIVILE_PERS, false, adressesHisto.representation.get(1));
-			assertAdresse(date(2009, 2, 1), null, "Lausanne", SourceType.CIVILE_PERS, false, adressesHisto.representation.get(2));
+			assertAdresse(null, date(2006, 9, 24), "Moudon", SourceType.CIVILE, false, adressesHisto.representation.get(0));
+			assertAdresse(date(2006, 9, 25), date(2009, 1, 31), "Pully", SourceType.CIVILE, false, adressesHisto.representation.get(1));
+			assertAdresse(date(2009, 2, 1), null, "Lausanne", SourceType.CIVILE, false, adressesHisto.representation.get(2));
 
 			assertEquals(3, adressesHisto.domicile.size());
-			assertAdresse(null, date(2006, 9, 24), "Moudon", SourceType.CIVILE_PERS, false, adressesHisto.domicile.get(0));
-			assertAdresse(date(2006, 9, 25), date(2009, 1, 31), "Pully", SourceType.CIVILE_PERS, false, adressesHisto.domicile.get(1));
-			assertAdresse(date(2009, 2, 1), null, "Lausanne", SourceType.CIVILE_PERS, false, adressesHisto.domicile.get(2));
+			assertAdresse(null, date(2006, 9, 24), "Moudon", SourceType.CIVILE, false, adressesHisto.domicile.get(0));
+			assertAdresse(date(2006, 9, 25), date(2009, 1, 31), "Pully", SourceType.CIVILE, false, adressesHisto.domicile.get(1));
+			assertAdresse(date(2009, 2, 1), null, "Lausanne", SourceType.CIVILE, false, adressesHisto.domicile.get(2));
 
 			assertEquals(3, adressesHisto.poursuite.size());
-			assertAdresse(null, date(2006, 9, 24), "Moudon", SourceType.CIVILE_PERS, false, adressesHisto.poursuite.get(0));
-			assertAdresse(date(2006, 9, 25), date(2009, 1, 31), "Pully", SourceType.CIVILE_PERS, false, adressesHisto.poursuite.get(1));
-			assertAdresse(date(2009, 2, 1), null, "Lausanne", SourceType.CIVILE_PERS, false, adressesHisto.poursuite.get(2));
+			assertAdresse(null, date(2006, 9, 24), "Moudon", SourceType.CIVILE, false, adressesHisto.poursuite.get(0));
+			assertAdresse(date(2006, 9, 25), date(2009, 1, 31), "Pully", SourceType.CIVILE, false, adressesHisto.poursuite.get(1));
+			assertAdresse(date(2009, 2, 1), null, "Lausanne", SourceType.CIVILE, false, adressesHisto.poursuite.get(2));
 
 			assertEquals(3, adressesHisto.poursuiteAutreTiers.size());
 			assertAdresse(null, date(2006, 9, 24), "Moudon", SourceType.CURATELLE, false, adressesHisto.poursuiteAutreTiers.get(0));
@@ -7744,7 +7731,7 @@ public class AdresseServiceTest extends BusinessTest {
 		assertEquals("Rue des Uttins", adresseCourrier0.getLigne4());
 		assertEquals("1436 Chamblon", adresseCourrier0.getLigne5());
 		assertNull(adresseCourrier0.getLigne6());
-		assertEquals(SourceType.CIVILE_PERS, adresseCourrier0.getSource());
+		assertEquals(SourceType.CIVILE, adresseCourrier0.getSource());
 
 		final AdresseEnvoiDetaillee adresseCourrier1 = adressesEnvoi.courrier.get(1);
 		assertNotNull(adresseCourrier1);
@@ -7827,13 +7814,13 @@ public class AdresseServiceTest extends BusinessTest {
 		assertNotNull(sandwich);
 
 		assertEquals(2, adresses.courrier.size());
-		assertAdresse(null, date(2006, 6, 30), "Lausanne", SourceType.CIVILE_PERS, false, adresses.courrier.get(0));
-		assertAdresse(date(2006, 7, 1), null, "Cossonay-Ville", SourceType.CIVILE_PERS, false, adresses.courrier.get(1));
+		assertAdresse(null, date(2006, 6, 30), "Lausanne", SourceType.CIVILE, false, adresses.courrier.get(0));
+		assertAdresse(date(2006, 7, 1), null, "Cossonay-Ville", SourceType.CIVILE, false, adresses.courrier.get(1));
 
 		assertEquals(3, adresses.domicile.size());
-		assertAdresse(null, date(2001, 6, 30), "Lausanne", SourceType.CIVILE_PERS, true, adresses.domicile.get(0));
-		assertAdresse(date(2001, 7, 1), date(2006, 6, 30), "Lausanne", SourceType.CIVILE_PERS, false, adresses.domicile.get(1));
-		assertAdresse(date(2006, 7, 1), null, "Cossonay-Ville", SourceType.CIVILE_PERS, false, adresses.domicile.get(2));
+		assertAdresse(null, date(2001, 6, 30), "Lausanne", SourceType.CIVILE, true, adresses.domicile.get(0));
+		assertAdresse(date(2001, 7, 1), date(2006, 6, 30), "Lausanne", SourceType.CIVILE, false, adresses.domicile.get(1));
+		assertAdresse(date(2006, 7, 1), null, "Cossonay-Ville", SourceType.CIVILE, false, adresses.domicile.get(2));
 
 		assertAdressesEquals(adresses.courrier, adresses.representation);
 		assertAdressesEquals(adresses.domicile, adresses.poursuite);
@@ -7849,8 +7836,8 @@ public class AdresseServiceTest extends BusinessTest {
 
 			final List<AdresseGenerique> a = c0.getAdresses();
 			assertEquals(2, a.size());
-			assertAdresse(null, date(2006, 6, 30), "Lausanne", SourceType.CIVILE_PERS, false, a.get(0));
-			assertAdresse(date(2006, 7, 1), null, "Cossonay-Ville", SourceType.CIVILE_PERS, false, a.get(1));
+			assertAdresse(null, date(2006, 6, 30), "Lausanne", SourceType.CIVILE, false, a.get(0));
+			assertAdresse(date(2006, 7, 1), null, "Cossonay-Ville", SourceType.CIVILE, false, a.get(1));
 		}
 
 		{
@@ -7863,9 +7850,9 @@ public class AdresseServiceTest extends BusinessTest {
 
 			final List<AdresseGenerique> a = c0.getAdresses();
 			assertEquals(3, a.size());
-			assertAdresse(null, date(2001, 6, 30), "Lausanne", SourceType.CIVILE_PERS, true, a.get(0)); // <-- défaut en provenance de l'adresse courrier
-			assertAdresse(date(2001, 7, 1), date(2006, 6, 30), "Lausanne", SourceType.CIVILE_PERS, false, a.get(1));
-			assertAdresse(date(2006, 7, 1), null, "Cossonay-Ville", SourceType.CIVILE_PERS, false, a.get(2));
+			assertAdresse(null, date(2001, 6, 30), "Lausanne", SourceType.CIVILE, true, a.get(0)); // <-- défaut en provenance de l'adresse courrier
+			assertAdresse(date(2001, 7, 1), date(2006, 6, 30), "Lausanne", SourceType.CIVILE, false, a.get(1));
+			assertAdresse(date(2006, 7, 1), null, "Cossonay-Ville", SourceType.CIVILE, false, a.get(2));
 		}
 	}
 
@@ -7962,8 +7949,8 @@ public class AdresseServiceTest extends BusinessTest {
 		final AdressesFiscalesHisto adresses = adresseService.getAdressesFiscalHisto(pp, false);
 		assertNotNull(adresses);
 		assertEquals(3, adresses.domicile.size());
-		assertAdresse(date(1976, 5, 12), date(1999, 12, 31), "Echallens", SourceType.CIVILE_PERS, false, adresses.domicile.get(0));
-		assertAdresse(date(2002, 1, 1), null, "Echallens", SourceType.CIVILE_PERS, false, adresses.domicile.get(1));
+		assertAdresse(date(1976, 5, 12), date(1999, 12, 31), "Echallens", SourceType.CIVILE, false, adresses.domicile.get(0));
+		assertAdresse(date(2002, 1, 1), null, "Echallens", SourceType.CIVILE, false, adresses.domicile.get(1));
 		assertAdresse(date(2001, 1, 1), null, "*** adresse résolution exception ***", SourceType.FISCALE, false, adresses.domicile.get(2));
 	}
 

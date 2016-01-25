@@ -35,7 +35,7 @@ import ch.vd.uniregctb.metier.assujettissement.SourcierPur;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.ForFiscal;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
+import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.ForFiscalRevenuFortune;
 import ch.vd.uniregctb.tiers.ForGestion;
 import ch.vd.uniregctb.tiers.TiersDAO;
@@ -240,7 +240,7 @@ public class DeterminerMouvementsDossiersEnMasseProcessor {
 								final ForFiscalRevenuFortune forRevenuFortune = (ForFiscalRevenuFortune) forCandidat;
 
 								// [UNIREG-2757] on ne prend pas en compte les fors principaux source
-								if (forRevenuFortune instanceof ForFiscalPrincipalPP && ((ForFiscalPrincipalPP) forRevenuFortune).getModeImposition() == ModeImposition.SOURCE) {
+								if (forRevenuFortune instanceof ForFiscalPrincipal && ((ForFiscalPrincipal) forRevenuFortune).getModeImposition() == ModeImposition.SOURCE) {
 									continue;
 								}
 

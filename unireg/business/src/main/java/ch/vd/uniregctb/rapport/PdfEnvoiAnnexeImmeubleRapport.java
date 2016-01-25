@@ -12,7 +12,7 @@ import ch.vd.registre.base.utils.Assert;
 import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.common.CsvHelper;
 import ch.vd.uniregctb.common.TemporaryFile;
-import ch.vd.uniregctb.declaration.ordinaire.pp.EnvoiAnnexeImmeubleResults;
+import ch.vd.uniregctb.declaration.ordinaire.EnvoiAnnexeImmeubleResults;
 
 /**
  * Rapport PDF contenant les résultats de l'exécution d'un job de traitement des annexes immeubles.

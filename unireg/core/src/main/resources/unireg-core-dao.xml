@@ -32,13 +32,9 @@
 
 	<bean id="evenementCivilEchDAO" class="ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchDAOImpl" parent="hibernateDao">
 	</bean>
-	<bean id="evenementOrganisationDAO" class="ch.vd.uniregctb.evenement.organisation.EvenementOrganisationDAOImpl" parent="hibernateDao">
-	</bean>
 	<bean id="lrDAO" class="ch.vd.uniregctb.declaration.ListeRecapitulativeDAOImpl" parent="hibernateDao">
 	</bean>
 	<bean id="diDAO" class="ch.vd.uniregctb.declaration.DeclarationImpotOrdinaireDAOImpl" parent="hibernateDao">
-	</bean>
-	<bean id="questionnaireSNCDAO" class="ch.vd.uniregctb.declaration.QuestionnaireSNCDAOImpl" parent="hibernateDao">
 	</bean>
 	<bean id="mouvementDossierDAO" class="ch.vd.uniregctb.mouvement.MouvementDossierDAOImpl" parent="hibernateDao">
 	</bean>
@@ -50,7 +46,7 @@
 	</bean>
 	<bean id="migrationErrorDAO" class="ch.vd.uniregctb.migreg.MigrationErrorDAOImpl" parent="hibernateDao">
 	</bean>
-	<bean id="evenementFiscalDAO" class="ch.vd.uniregctb.evenement.fiscal.EvenementFiscalDAOImpl" parent="hibernateDao">
+	<bean id="evenementFiscalDAO" class="ch.vd.uniregctb.evenement.EvenementFiscalDAOImpl" parent="hibernateDao">
 	</bean>
 	<bean id="evenementExterneDAO" class="ch.vd.uniregctb.evenement.externe.EvenementExterneDAOImpl" parent="hibernateDao">
 	</bean>
@@ -84,10 +80,7 @@
 		<property name="transactionManager" ref="transactionManager" />
 		<property name="dialect" ref="hibernateDialect" />
 	</bean>
-
 	<bean id="decisionAciDAO" class="ch.vd.uniregctb.tiers.dao.DecisionAciDAOImpl" parent="hibernateDao"/>
-
-	<bean id="domicileEtablissementDAO" class="ch.vd.uniregctb.tiers.dao.DomicileEtablissementDAOImpl" parent="hibernateDao"/>
 
 	<!-- Gestionnaire de transaction base sur les annotations @Transactional -->
 	<tx:annotation-driven transaction-manager="transactionManager" />

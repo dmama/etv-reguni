@@ -23,7 +23,6 @@ import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.uniregctb.common.ComparisonHelper;
 import ch.vd.uniregctb.mouvement.MouvementDossier;
 import ch.vd.uniregctb.rf.Immeuble;
 import ch.vd.uniregctb.type.MotifFor;
@@ -31,6 +30,11 @@ import ch.vd.uniregctb.type.MotifFor;
 @Entity
 public abstract class Contribuable extends Tiers {
 
+	public static final int CTB_GEN_FIRST_ID = 10000000;
+
+	public static final int CTB_GEN_LAST_ID = 99999999;
+
+	private Set<SituationFamille> situationsFamille;
 	private Set<MouvementDossier> mouvementsDossier;
 	private Set<Immeuble> immeubles;
 	private Set<IdentificationEntreprise> identificationsEntreprise;
@@ -43,6 +47,17 @@ public abstract class Contribuable extends Tiers {
 
 	public Contribuable(long numero) {
 		super(numero);
+	}
+
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@JoinColumn(name = "CTB_ID", nullable = false)
+	@ForeignKey(name = "FK_SF_CTB_ID")
+	public Set<SituationFamille> getSituationsFamille() {
+		return situationsFamille;
+	}
+
+	public void setSituationsFamille(Set<SituationFamille> theSituationsFamille) {
+		situationsFamille = theSituationsFamille;
 	}
 
 	@OneToMany(mappedBy = "contribuable", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
@@ -80,6 +95,72 @@ public abstract class Contribuable extends Tiers {
 	}
 
 	// ***********************************************
+	@Transient
+	public SituationFamille getSituationFamilleActive() {
+		return getSituationFamilleAt(null);
+	}
+
+	@Transient
+	public SituationFamille getSituationFamilleAt(@Nullable RegDate date) {
+
+		if (situationsFamille == null) {
+			return null;
+		}
+
+		for (SituationFamille situation : situationsFamille) {
+			if (situation.isValidAt(date)) {
+				return situation;
+			}
+		}
+
+		return null;
+	}
+
+	/**
+	 * @return les situations de famille non-annulées triées par - La date d'ouverture
+	 */
+	@Transient
+	public List<SituationFamille> getSituationsFamilleSorted() {
+		List<SituationFamille> situations = null;
+		if (situationsFamille != null) {
+			situations = new ArrayList<>();
+			for (SituationFamille situation : situationsFamille) {
+				if (!situation.isAnnule())
+					situations.add(situation);
+			}
+			Collections.sort(situations, new DateRangeComparator<SituationFamille>());
+		}
+		return situations;
+	}
+
+	// ***********************************************
+	@Transient
+	public void closeSituationFamilleActive(RegDate dateFin) {
+		final SituationFamille situation = getSituationFamilleActive();
+		if (situation != null) {
+			if (situation.getDateDebut() != null && situation.getDateDebut().isAfter(dateFin)) {
+				situation.setAnnule(true);
+			}
+			else {
+				situation.setDateFin(dateFin);
+			}
+		}
+	}
+
+	/**
+	 * Ajoute une situation de famille
+	 *
+	 * @param nouvelleSituationFamille
+	 *            la situation de famille à ajouter
+	 */
+	public void addSituationFamille(SituationFamille nouvelleSituationFamille) {
+		if (this.situationsFamille == null) {
+			this.situationsFamille = new HashSet<>();
+		}
+		nouvelleSituationFamille.setContribuable(this);
+		this.situationsFamille.add(nouvelleSituationFamille);
+	}
+
 	/**
 	 * Ajoute un mouvement de dossier
 	 *
@@ -188,9 +269,20 @@ public abstract class Contribuable extends Tiers {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-
-		final Contribuable other = (Contribuable) obj;
-		return ComparisonHelper.areEqual(identificationsEntreprise, other.identificationsEntreprise);
+		Contribuable other = (Contribuable) obj;
+		if (situationsFamille == null) {
+			if (other.situationsFamille != null)
+				return false;
+		}
+		else if (!situationsFamille.equals(other.situationsFamille))
+			return false;
+		if (identificationsEntreprise == null) {
+			if (other.identificationsEntreprise != null)
+				return false;
+		}
+		else if (!identificationsEntreprise.equals(other.identificationsEntreprise))
+			return false;
+		return true;
 	}
 
 	@Override

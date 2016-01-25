@@ -28,7 +28,7 @@ public interface SecurityProviderInterface {
 	 *
 	 * @return <b>vrai</b> si le rôle spécifié est alloué; <b>faux</b> autrement.
 	 */
-	boolean isGranted(Role role, String visaOperateur, int codeCollectivite);
+	public boolean isGranted(Role role, String visaOperateur, int codeCollectivite);
 
 	/**
 	 * Retourne les droits d'accès à un dossier particulier pour un opérateur particulier. Cette méthode charge le tiers spécifié à partir
@@ -46,7 +46,7 @@ public interface SecurityProviderInterface {
 	 * @throws ObjectNotFoundException
 	 *             si le tiers spécifié n'existe pas
 	 */
-	Niveau getDroitAcces(String visaOperateur, long tiersId) throws ObjectNotFoundException;
+	public Niveau getDroitAcces(String visaOperateur, long tiersId) throws ObjectNotFoundException;
 
 	/**
 	 * Retourne les droits d'accès à une liste de dossiers particuliers pour un opérateur particulier. Cette méthode charge les tiers spécifiés à partir
@@ -64,5 +64,5 @@ public interface SecurityProviderInterface {
 	 *         <b>LECTURE</b> si l'opérateur possède un droit d'accès en lecture seulement; et <b>ECRITURE</b> si l'opérateur possède un
 	 *         droit d'accès complet au dossier.
 	 */
-	List<Niveau> getDroitsAcces(String visa, List<Long> ids);
+	public List<Niveau> getDroitsAcces(String visa, List<Long> ids);
 }

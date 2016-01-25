@@ -19,10 +19,7 @@ public class MotifForTest extends EnumTest {
 		final Set<ch.vd.uniregctb.type.MotifFor> set = EnumSet.complementOf(EnumSet.of(ch.vd.uniregctb.type.MotifFor.CESSATION_ACTIVITE_FUSION_FAILLITE,
 							                                                           ch.vd.uniregctb.type.MotifFor.DEBUT_PRESTATION_IS,
 							                                                           ch.vd.uniregctb.type.MotifFor.FIN_PRESTATION_IS,
-							                                                           ch.vd.uniregctb.type.MotifFor.DEMENAGEMENT_SIEGE,
-							                                                           ch.vd.uniregctb.type.MotifFor.CESSATION_ACTIVITE,
-							                                                           ch.vd.uniregctb.type.MotifFor.FUSION_ENTREPRISES,
-							                                                           ch.vd.uniregctb.type.MotifFor.FAILLITE));
+							                                                           ch.vd.uniregctb.type.MotifFor.DEMENAGEMENT_SIEGE));
 		return set.toArray(new ch.vd.uniregctb.type.MotifFor[set.size()]);
 	}
 
@@ -64,8 +61,5 @@ public class MotifForTest extends EnumTest {
 		assertEquals(LiabilityChangeReason.UNDETERMINED, EnumHelper.coreToWeb(ch.vd.uniregctb.type.MotifFor.FIN_PRESTATION_IS));
 		assertEquals(LiabilityChangeReason.UNDETERMINED, EnumHelper.coreToWeb(ch.vd.uniregctb.type.MotifFor.CESSATION_ACTIVITE_FUSION_FAILLITE));
 		assertEquals(LiabilityChangeReason.UNDETERMINED, EnumHelper.coreToWeb(ch.vd.uniregctb.type.MotifFor.DEMENAGEMENT_SIEGE));
-		assertEquals(LiabilityChangeReason.UNDETERMINED, EnumHelper.coreToWeb(ch.vd.uniregctb.type.MotifFor.CESSATION_ACTIVITE));
-		assertEquals(LiabilityChangeReason.UNDETERMINED, EnumHelper.coreToWeb(ch.vd.uniregctb.type.MotifFor.FUSION_ENTREPRISES));
-		assertEquals(LiabilityChangeReason.UNDETERMINED, EnumHelper.coreToWeb(ch.vd.uniregctb.type.MotifFor.FAILLITE));
 	}
 }

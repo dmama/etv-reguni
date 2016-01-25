@@ -10,7 +10,6 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.document.Document;
 import ch.vd.uniregctb.rapport.RapportService;
-import ch.vd.uniregctb.scheduler.JobCategory;
 import ch.vd.uniregctb.scheduler.JobDefinition;
 import ch.vd.uniregctb.transaction.TransactionTemplate;
 
@@ -21,9 +20,10 @@ public class ListeTachesEnInstanceParOIDJob extends JobDefinition {
 	private PlatformTransactionManager transactionManager;
 
 	public static final String NAME = "ListeTachesEnInstanceParOIDJob";
+	private static final String CATEGORIE = "Stats";
 
 	public ListeTachesEnInstanceParOIDJob(int sortOrder, String description) {
-		super(NAME, JobCategory.STATS, sortOrder, description);
+		super(NAME, CATEGORIE, sortOrder, description);
 	}
 
 	public void setService(TacheService service) {

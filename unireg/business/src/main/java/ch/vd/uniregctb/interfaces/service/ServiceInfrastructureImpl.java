@@ -19,8 +19,8 @@ import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.unireg.interfaces.common.Adresse;
-import ch.vd.unireg.interfaces.common.AdresseAvecCommune;
+import ch.vd.unireg.interfaces.civil.data.Adresse;
+import ch.vd.unireg.interfaces.civil.data.AdresseAvecCommune;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
 import ch.vd.unireg.interfaces.infra.data.ApplicationFiscale;
@@ -34,6 +34,7 @@ import ch.vd.unireg.interfaces.infra.data.LogicielMetier;
 import ch.vd.unireg.interfaces.infra.data.OfficeImpot;
 import ch.vd.unireg.interfaces.infra.data.Pays;
 import ch.vd.unireg.interfaces.infra.data.Rue;
+import ch.vd.unireg.interfaces.infra.data.TypeEtatPM;
 import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
 import ch.vd.uniregctb.adresse.AdresseGenerique;
 import ch.vd.uniregctb.common.AuthenticationHelper;
@@ -58,7 +59,6 @@ public class ServiceInfrastructureImpl implements ServiceInfrastructureService {
 	private CollectiviteAdministrative aci;
 	private CollectiviteAdministrative aciSuccessions;
 	private CollectiviteAdministrative aciImpotSource;
-	private CollectiviteAdministrative aciOfficeImpotPersonnesMorales;
 	private CollectiviteAdministrative cedi;
 	private CollectiviteAdministrative cat;
 	private Map<Integer, List<Localite>> allLocaliteCommune;
@@ -79,7 +79,6 @@ public class ServiceInfrastructureImpl implements ServiceInfrastructureService {
 		this.aci = null;
 		this.aciSuccessions = null;
 		this.aciImpotSource = null;
-		this.aciOfficeImpotPersonnesMorales = null;
 		this.cedi = null;
 		this.cat = null;
 		this.allLocaliteCommune = null;
@@ -272,14 +271,6 @@ public class ServiceInfrastructureImpl implements ServiceInfrastructureService {
 			aciSuccessions = rawService.getCollectivite(ServiceInfrastructureService.noACISuccessions);
 		}
 		return aciSuccessions;
-	}
-
-	@Override
-	public CollectiviteAdministrative getACIOIPM() throws ServiceInfrastructureException {
-		if (aciOfficeImpotPersonnesMorales == null) {
-			aciOfficeImpotPersonnesMorales = rawService.getCollectivite(ServiceInfrastructureService.noOIPM);
-		}
-		return aciOfficeImpotPersonnesMorales;
 	}
 
 	@Override
@@ -741,13 +732,28 @@ public class ServiceInfrastructureImpl implements ServiceInfrastructureService {
 	}
 
 	@Override
-	public List<TypeRegimeFiscal> getRegimesFiscaux() throws ServiceInfrastructureException {
-		return rawService.getTousLesRegimesFiscaux();
+	public Localite getLocaliteByNPA(int npa) throws ServiceInfrastructureException {
+		return rawService.getLocaliteByNPA(npa);
 	}
 
 	@Override
-	public Localite getLocaliteByNPA(int npa) throws ServiceInfrastructureException {
-		return rawService.getLocaliteByNPA(npa);
+	public List<TypeRegimeFiscal> getTypesRegimesFiscaux() throws ServiceInfrastructureException {
+		return rawService.getTypesRegimesFiscaux();
+	}
+
+	@Override
+	public TypeRegimeFiscal getTypeRegimeFiscal(String code) throws ServiceInfrastructureException {
+		return rawService.getTypeRegimeFiscal(code);
+	}
+
+	@Override
+	public List<TypeEtatPM> getTypesEtatsPM() throws ServiceInfrastructureException {
+		return rawService.getTypesEtatsPM();
+	}
+
+	@Override
+	public TypeEtatPM getTypeEtatPM(String code) throws ServiceInfrastructureException {
+		return rawService.getTypeEtatPM(code);
 	}
 
 	@Override

@@ -51,7 +51,6 @@ import ch.vd.uniregctb.tiers.ForDebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersService;
-import ch.vd.uniregctb.type.EtatDelaiDeclaration;
 import ch.vd.uniregctb.type.PeriodeDecompte;
 import ch.vd.uniregctb.type.PeriodiciteDecompte;
 import ch.vd.uniregctb.type.TypeDocument;
@@ -250,7 +249,6 @@ public class ListeRecapEditManagerImpl implements ListeRecapEditManager, Message
 		delaiView.setOldDelaiAccorde(lr.getDelaiAccordeAu());
 		delaiView.setAnnule(false);
 		delaiView.setDateDemande(RegDate.get());
-		delaiView.setDateTraitement(RegDate.get());
 
 		return delaiView;
 	}
@@ -470,7 +468,6 @@ public class ListeRecapEditManagerImpl implements ListeRecapEditManager, Message
 			//delai.setDelaiAccordeAu(lr.getDateFin().addMonths(1));
 
 			DelaiDeclaration delai = new DelaiDeclaration();
-			delai.setEtat(EtatDelaiDeclaration.ACCORDE);
 			delai.setDelaiAccordeAu(lrEditView.getRegDelaiAccorde());
 			delai.setDateDemande(RegDate.get());
 			delai.setDateTraitement(RegDate.get());
@@ -479,7 +476,7 @@ public class ListeRecapEditManagerImpl implements ListeRecapEditManager, Message
 			lr = lrDAO.save(lr);
 			dpi.addDeclaration(lr);
 			//tiersDAO.save(dpi);
-			evenementFiscalService.publierEvenementFiscalEmissionListeRecapitulative(lr, RegDate.get());
+			evenementFiscalService.publierEvenementFiscalOuverturePeriodeDecompteLR(dpi, lr, RegDate.get());
 		}
 		else {
 			lr = lrDAO.get(lrEditView.getId());
@@ -487,7 +484,7 @@ public class ListeRecapEditManagerImpl implements ListeRecapEditManager, Message
 				etat = new EtatDeclarationRetournee();
 				etat.setDateObtention(RegDateHelper.get(lrEditView.getDateRetour()));
 				lr.addEtat(etat);
-				evenementFiscalService.publierEvenementFiscalQuittancementListeRecapitulative(lr, RegDateHelper.get(lrEditView.getDateRetour()));
+				evenementFiscalService.publierEvenementFiscalRetourLR(dpi, lr, RegDateHelper.get(lrEditView.getDateRetour()));
 			}
 		}
 
@@ -500,11 +497,11 @@ public class ListeRecapEditManagerImpl implements ListeRecapEditManager, Message
 	@Override
 	@Transactional(rollbackFor = Throwable.class)
 	public void saveDelai(DelaiDeclarationView view) {
-		final DeclarationImpotSource lr = lrDAO.get(view.getIdDeclaration());
-		final DelaiDeclaration delai = new DelaiDeclaration();
-		delai.setEtat(EtatDelaiDeclaration.ACCORDE);
+		DeclarationImpotSource lr = lrDAO.get(view.getIdDeclaration());
+		DelaiDeclaration delai = new DelaiDeclaration();
 		delai.setDateTraitement(RegDate.get());
 		delai.setAnnule(view.isAnnule());
+		delai.setConfirmationEcrite(view.getConfirmationEcrite());
 		delai.setDateDemande(view.getDateDemande());
 		delai.setDelaiAccordeAu(view.getDelaiAccordeAu());
 		lr.addDelai(delai);
@@ -527,7 +524,7 @@ public class ListeRecapEditManagerImpl implements ListeRecapEditManager, Message
 	private void setDelais(ListeRecapDetailView lrEditView, DeclarationImpotSource lr) {
 		List<DelaiDeclarationView> delaisView = new ArrayList<>();
 		for (DelaiDeclaration delai : lr.getDelais()) {
-			DelaiDeclarationView delaiView = new DelaiDeclarationView(delai, getMessageSource());
+			DelaiDeclarationView delaiView = new DelaiDeclarationView(delai);
 			delaiView.setFirst(lr.getPremierDelai() == delai.getDelaiAccordeAu());
 			delaisView.add(delaiView);
 		}
@@ -612,7 +609,7 @@ public class ListeRecapEditManagerImpl implements ListeRecapEditManager, Message
 		final EtatDeclaration etat = lr.getDernierEtat();
 		if (etat == null || etat.getEtat() != TypeEtatDeclaration.RETOURNEE) {
 			lr.setAnnule(true);
-			evenementFiscalService.publierEvenementFiscalAnnulationListeRecapitulative(lr); ;
+			evenementFiscalService.publierEvenementFiscalAnnulationLR((DebiteurPrestationImposable) lr.getTiers(), lr, RegDate.get()) ;
 		}
 		else {
 			throw new ActionException("La liste récapitulative est quittancée. Son annulation est donc impossible.");

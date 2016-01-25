@@ -8,7 +8,7 @@ public interface EvenementCivilEchProcessor {
 	/**
 	 * Interface à implémenter par celui qui veut être notifié de l'avancement des travaux
 	 */
-	interface Listener {
+	public static interface Listener {
 
 		/**
 		 * Appelé à chaque fois qu'un lot d'événements civils est terminé
@@ -25,7 +25,7 @@ public interface EvenementCivilEchProcessor {
 	/**
 	 * Interface de marquage du handle servant à identifier un listener
 	 */
-	interface ListenerHandle {}
+	public static interface ListenerHandle {}
 
 	/**
 	 * @param listener nouveau listener qui veut être notifié
@@ -40,7 +40,7 @@ public interface EvenementCivilEchProcessor {
 
 	/**
 	 * Redémarre le thread de processing des événements civils
-	 * @param aggressiveKill si <code>true</code>, force l'interruption du thread, sinon un stop en douceur est demandé
+	 * @param agressiveKill si <code>true</code>, force l'interruption du thread, sinon un stop en douceur est demandé
 	 */
-	void restartProcessingThread(boolean aggressiveKill);
+	void restartProcessingThread(boolean agressiveKill);
 }

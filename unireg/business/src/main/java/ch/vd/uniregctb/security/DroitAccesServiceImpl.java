@@ -95,7 +95,7 @@ public class DroitAccesServiceImpl implements DroitAccesService {
 		});
 	}
 
-	private interface CopieDroitCallback {
+	private static interface CopieDroitCallback {
 		/**
 		 * Appelé pour déterminer si une simple adaptation du droit de destination
 		 * est suffisante (ou conflictuelle) pour intégrer un nouveau droit d'accès

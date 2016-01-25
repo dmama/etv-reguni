@@ -8,7 +8,7 @@ import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPPErreur;
 import ch.vd.uniregctb.norentes.annotation.Check;
 import ch.vd.uniregctb.norentes.annotation.Etape;
 import ch.vd.uniregctb.norentes.common.EvenementCivilScenario;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
+import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
 import ch.vd.uniregctb.type.ModeImposition;
@@ -56,13 +56,14 @@ public class Ec_4001_01_AnnulationMariage_Celibataire_Scenario extends Evenement
 		PersonnePhysique julie = addHabitant(noIndJulie);
 		noHabJulie = julie.getNumero();
 
-		addForFiscalPrincipal(julie, commune, RegDate.get(1995, 4, 19), null, MotifFor.ARRIVEE_HC, null);
+		ForFiscalPrincipal f = addForFiscalPrincipal(julie, commune, RegDate.get(1995, 4, 19), null, MotifFor.ARRIVEE_HC, null);
+		f.setModeImposition(ModeImposition.ORDINAIRE);
 	}
 
 	@Check(id=1, descr="Vérifie que l'habitant Julie a un For ouvert")
 	public void check1() {
 		PersonnePhysique julie = (PersonnePhysique) tiersDAO.get(noHabJulie);
-		ForFiscalPrincipalPP ffp = julie.getDernierForFiscalPrincipal();
+		ForFiscalPrincipal ffp = julie.getDernierForFiscalPrincipal();
 		assertNotNull(ffp, "For principal de l'habitant " + julie.getNumero() + " null");
 		assertNull(ffp.getDateFin(), "Le for principal l'habitant " + julie.getNumero() + " est fermé");
 		assertEquals(ModeImposition.ORDINAIRE, ffp.getModeImposition(), "Le mode d'imposition n'est pas ORDINAIRE");

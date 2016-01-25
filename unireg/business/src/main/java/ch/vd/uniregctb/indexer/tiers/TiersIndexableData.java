@@ -33,8 +33,6 @@ public class TiersIndexableData extends IndexableData {
 	public static final String NPA_COURRIER = "S_NPA_COURRIER";
 	public static final String NPA_TOUS = "S_NPA_TOUS";
 	public static final String NATURE_JURIDIQUE = "S_NATURE_JURIDIQUE"; // (PP ou PM)
-	public static final String FORME_JURIDIQUE = "S_FORME_JURIDIQUE";
-	public static final String CATEGORIE_ENTREPRISE = "S_CATEGORY_ENTREPRISE";
 	public static final String S_DATE_NAISSANCE = "S_DATE_NAISSANCE";
 	public static final String SEXE = "S_SEXE";
 	public static final String NAVS11 = "S_NAVS11";
@@ -60,12 +58,9 @@ public class TiersIndexableData extends IndexableData {
 	public static final String RUE = "D_RUE";
 	public static final String LOCALITE = "D_LOCALITE";
 	public static final String PAYS = "D_PAYS";
-	public static final String DATE_INSCRIPTION_RC = "D_DATE_INSCRIPTION_RC";
 	public static final String FOR_PRINCIPAL = "D_FOR_PRINCIPAL";
 	public static final String DATE_OUVERTURE_FOR = "D_DATE_OUVERTURE_FOR";
 	public static final String DATE_FERMETURE_FOR = "D_DATE_FERMETURE_FOR";
-	public static final String DATE_OUVERTURE_FOR_VD = "D_DATE_OUVERTURE_FOR_VD";
-	public static final String DATE_FERMETURE_FOR_VD = "D_DATE_FERMETURE_FOR_VD";
 	public static final String DOMICILE_VD = "D_DOMICILE_VD";
 	public static final String NO_OFS_DOMICILE_VD = "D_NO_OFS_DOMICILE_VD";
 	public static final String INDEXATION_DATE = "D_INDEXATION_DATE";
@@ -87,8 +82,6 @@ public class TiersIndexableData extends IndexableData {
 	private String npaTous;
 	private String localiteEtPays;
 	private String natureJuridique;
-	private String formeJuridique;
-	private String categorieEntreprise;
 	private String navs11;
 	private String navs13;
 	private String ancienNumeroSourcier;
@@ -111,12 +104,9 @@ public class TiersIndexableData extends IndexableData {
 	private String rue;
 	private String localite;
 	private String pays;
-	private String dateInscriptionRc;
 	private String forPrincipal;
 	private String dateOuvertureFor;
 	private String dateFermtureFor;
-	private String dateOuvertureForVd;
-	private String dateFermtureForVd;
 	private String domicileVd;
 	private String noOfsDomicileVd;
 	private String indexationDate;
@@ -148,8 +138,6 @@ public class TiersIndexableData extends IndexableData {
 		addAnalyzedValue(d, TiersIndexableData.NPA_TOUS, npaTous);
 		addAnalyzedValue(d, TiersIndexableData.LOCALITE_PAYS, localiteEtPays);
 		addNotAnalyzedValue(d, TiersIndexableData.NATURE_JURIDIQUE, natureJuridique);
-		addNotAnalyzedValue(d, TiersIndexableData.FORME_JURIDIQUE, formeJuridique);
-		addNotAnalyzedValue(d, TiersIndexableData.CATEGORIE_ENTREPRISE, categorieEntreprise);
 		addAnalyzedValue(d, TiersIndexableData.NAVS11, navs11);
 		addAnalyzedValue(d, TiersIndexableData.NAVS13, navs13);
 		addNotAnalyzedValue(d, TiersIndexableData.ANCIEN_NUMERO_SOURCIER, ancienNumeroSourcier);
@@ -175,12 +163,9 @@ public class TiersIndexableData extends IndexableData {
 		addStoredValue(d, TiersIndexableData.RUE, rue);
 		addStoredValue(d, TiersIndexableData.LOCALITE, localite);
 		addStoredValue(d, TiersIndexableData.PAYS, pays);
-		addStoredValue(d, TiersIndexableData.DATE_INSCRIPTION_RC, dateInscriptionRc);
 		addStoredValue(d, TiersIndexableData.FOR_PRINCIPAL, forPrincipal);
 		addStoredValue(d, TiersIndexableData.DATE_OUVERTURE_FOR, dateOuvertureFor);
 		addStoredValue(d, TiersIndexableData.DATE_FERMETURE_FOR, dateFermtureFor);
-		addStoredValue(d, TiersIndexableData.DATE_OUVERTURE_FOR_VD, dateOuvertureForVd);
-		addStoredValue(d, TiersIndexableData.DATE_FERMETURE_FOR_VD, dateFermtureForVd);
 		addStoredValue(d, TiersIndexableData.DOMICILE_VD, domicileVd);
 		addStoredValue(d, TiersIndexableData.NO_OFS_DOMICILE_VD, noOfsDomicileVd);
 		addStoredValue(d, TiersIndexableData.INDEXATION_DATE, indexationDate);
@@ -300,14 +285,6 @@ public class TiersIndexableData extends IndexableData {
 		this.sexe = add(this.sexe, IndexerFormatHelper.enumToString(sexe));
 	}
 
-	public String getDateInscriptionRc() {
-		return dateInscriptionRc;
-	}
-
-	public void setDateInscriptionRc(String dateInscriptionRc) {
-		this.dateInscriptionRc = dateInscriptionRc;
-	}
-
 	public String getNoOfsForPrincipal() {
 		return noOfsForPrincipal;
 	}
@@ -370,22 +347,6 @@ public class TiersIndexableData extends IndexableData {
 
 	public void setNatureJuridique(String natureJuridique) {
 		this.natureJuridique = natureJuridique;
-	}
-
-	public String getFormeJuridique() {
-		return formeJuridique;
-	}
-
-	public void setFormeJuridique(String formeJuridique) {
-		this.formeJuridique = formeJuridique;
-	}
-
-	public String getCategorieEntreprise() {
-		return categorieEntreprise;
-	}
-
-	public void setCategorieEntreprise(String categorieEntreprise) {
-		this.categorieEntreprise = categorieEntreprise;
 	}
 
 	public String getNavs11() {
@@ -570,22 +531,6 @@ public class TiersIndexableData extends IndexableData {
 
 	public String getDateFermtureFor() {
 		return dateFermtureFor;
-	}
-
-	public void setDateFermtureForVd(String dateFermtureForVd) {
-		this.dateFermtureForVd = dateFermtureForVd;
-	}
-
-	public String getDateOuvertureForVd() {
-		return dateOuvertureForVd;
-	}
-
-	public void setDateOuvertureForVd(String dateOuvertureForVd) {
-		this.dateOuvertureForVd = dateOuvertureForVd;
-	}
-
-	public String getDateFermtureForVd() {
-		return dateFermtureForVd;
 	}
 
 	public void setDateFermtureFor(String dateFermtureFor) {

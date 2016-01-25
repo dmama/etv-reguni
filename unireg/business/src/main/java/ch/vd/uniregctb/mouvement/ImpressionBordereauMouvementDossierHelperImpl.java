@@ -20,10 +20,8 @@ import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
-import ch.vd.uniregctb.editique.ConstantesEditique;
-import ch.vd.uniregctb.editique.EditiqueAbstractLegacyHelper;
+import ch.vd.uniregctb.editique.EditiqueAbstractHelper;
 import ch.vd.uniregctb.editique.EditiqueException;
-import ch.vd.uniregctb.editique.EditiquePrefixeHelper;
 import ch.vd.uniregctb.editique.TypeDocumentEditique;
 import ch.vd.uniregctb.editique.ZoneAffranchissementEditique;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
@@ -37,7 +35,7 @@ import ch.vd.uniregctb.tiers.PersonnePhysique;
 /**
  * Impression éditique d'un bordereau de mouvements de dossier
  */
-public class ImpressionBordereauMouvementDossierHelperImpl extends EditiqueAbstractLegacyHelper implements ImpressionBordereauMouvementDossierHelper {
+public class ImpressionBordereauMouvementDossierHelperImpl extends EditiqueAbstractHelper implements ImpressionBordereauMouvementDossierHelper {
 
 	private static final String TYPE_DOC_BORDEREAU_ENVOI = "BE";
 	private static final String CODE_DOC_BORDEREAU_ENVOI = "BRD_ENV";
@@ -147,7 +145,7 @@ public class ImpressionBordereauMouvementDossierHelperImpl extends EditiqueAbstr
 
 		// période fiscale
 		final TypPeriode pf = bordereauEnvoi.addNewPeriode();
-		pf.setPrefixe(EditiquePrefixeHelper.buildPrefixePeriode(typeDocumentEditique));
+		pf.setPrefixe(buildPrefixePeriode(typeDocumentEditique));
 		pf.setOrigDuplicat(ORIGINAL);
 		pf.setHorsSuisse("");
 		pf.setHorsCanton("");
@@ -157,7 +155,7 @@ public class ImpressionBordereauMouvementDossierHelperImpl extends EditiqueAbstr
 		final TypPeriode.Entete entete = pf.addNewEntete();
 		final TypPeriode.Entete.Tit titre = entete.addNewTit();
 		titre.setLibTit(TITRE);
-		titre.setPrefixe(EditiquePrefixeHelper.buildPrefixeTitreEntete(typeDocumentEditique));
+		titre.setPrefixe(buildPrefixeTitreEntete(typeDocumentEditique));
 		entete.setTitArray(new TypPeriode.Entete.Tit[] {titre});
 		pf.setEntete(entete);
 		bordereauEnvoi.setPeriode(pf);
@@ -175,13 +173,13 @@ public class ImpressionBordereauMouvementDossierHelperImpl extends EditiqueAbstr
 	 */
 	private InfoDocumentDocument1.InfoDocument remplitInfoDocument() {
 		final InfoDocumentDocument1.InfoDocument infoDocument = InfoDocumentDocument1.Factory.newInstance().addNewInfoDocument();
-		final String prefixe = EditiquePrefixeHelper.buildPrefixeInfoDocument(getTypeDocumentEditique());
+		final String prefixe = buildPrefixeInfoDocument(getTypeDocumentEditique());
 		infoDocument.setPrefixe(prefixe);
 		infoDocument.setTypDoc(TYPE_DOC_BORDEREAU_ENVOI);
 		infoDocument.setCodDoc(CODE_DOC_BORDEREAU_ENVOI);
 		infoDocument.setVersion(VERSION);
 		infoDocument.setLogo(LOGO_CANTON);
-		infoDocument.setPopulations(ConstantesEditique.POPULATION_PP);
+		infoDocument.setPopulations(POPULATION_PP);
 		// les bordereaux d'envoi de mouvements de dossier en masse ne sont jamais imprimés en batch, toujours en local :
 		// la valeur que l'on met dans l'affranchissement n'a aucune importance.
 		// Ils sont toujours envoyés aux OID, qui sont effectivement en Suisse
@@ -196,11 +194,11 @@ public class ImpressionBordereauMouvementDossierHelperImpl extends EditiqueAbstr
 	 */
 	private InfoEnteteDocumentDocument1.InfoEnteteDocument remplitEnteteDocument(ImpressionBordereauMouvementDossierHelperParams params) throws ServiceInfrastructureException, AdresseException {
 		final InfoEnteteDocumentDocument1.InfoEnteteDocument infoEnteteDocument = InfoEnteteDocumentDocument1.Factory.newInstance().addNewInfoEnteteDocument();
-		infoEnteteDocument.setPrefixe(EditiquePrefixeHelper.buildPrefixeEnteteDocument(getTypeDocumentEditique()));
+		infoEnteteDocument.setPrefixe(buildPrefixeEnteteDocument(getTypeDocumentEditique()));
 
 		final BordereauMouvementDossier bordereau = params.getBordereau();
 		final CollectiviteAdministrative expediteurBordereau = bordereau.getExpediteur();
-		final InfoEnteteDocumentDocument1.InfoEnteteDocument.Expediteur expediteur = legacyEditiqueHelper.remplitExpediteur(expediteurBordereau, infoEnteteDocument);
+		final InfoEnteteDocumentDocument1.InfoEnteteDocument.Expediteur expediteur = editiqueHelper.remplitExpediteur(expediteurBordereau, infoEnteteDocument);
 		expediteur.setTraitePar(params.getNomOperateur());
 		expediteur.setDateExpedition(RegDateHelper.toIndexString(RegDate.get()));
 		if (!StringUtils.isBlank(params.getNumeroTelephoneOperateur())) {
@@ -214,11 +212,11 @@ public class ImpressionBordereauMouvementDossierHelperImpl extends EditiqueAbstr
 		final CollectiviteAdministrative destinataireBordereau = bordereau.getDestinataire();
 		final InfoEnteteDocumentDocument1.InfoEnteteDocument.Destinataire destinataire;
 		if (destinataireBordereau != null) {
-			destinataire = legacyEditiqueHelper.remplitDestinataire(destinataireBordereau, infoEnteteDocument);
+			destinataire = editiqueHelper.remplitDestinataire(destinataireBordereau, infoEnteteDocument);
 		}
 		else {
 			// bordereau vers les archives
-			destinataire = legacyEditiqueHelper.remplitDestinataireArchives(infoEnteteDocument);
+			destinataire = editiqueHelper.remplitDestinataireArchives(infoEnteteDocument);
 		}
 		infoEnteteDocument.setDestinataire(destinataire);
 

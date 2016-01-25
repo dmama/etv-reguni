@@ -24,7 +24,6 @@ import ch.vd.unireg.xml.party.withholding.v1.CommunicationMode;
 import ch.vd.unireg.xml.party.withholding.v1.DebtorCategory;
 import ch.vd.unireg.xml.party.withholding.v1.WithholdingTaxDeclarationPeriod;
 import ch.vd.unireg.xml.party.withholding.v1.WithholdingTaxDeclarationPeriodicity;
-import ch.vd.uniregctb.avatar.TypeAvatar;
 import ch.vd.uniregctb.metier.assujettissement.TypeAssujettissement;
 import ch.vd.uniregctb.tiers.TiersCriteria;
 import ch.vd.uniregctb.type.CategorieEtranger;
@@ -118,10 +117,6 @@ public abstract class EnumHelper {
 
 	public static Set<CategorieImpotSource> getCategoriesImpotSourceAutorisees() {
 		return ch.vd.uniregctb.xml.EnumHelper.CIS_SUPPORTEES_V3;
-	}
-
-	public static Set<TypeAvatar> getTypesAvatarsIgnores() {
-		return ch.vd.uniregctb.xml.EnumHelper.TA_IGNORES_V3;
 	}
 
 	public static CommunicationMode coreToWeb(ModeCommunication mode) {

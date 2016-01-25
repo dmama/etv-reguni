@@ -12,7 +12,6 @@
 		</c:otherwise>
 	</c:choose>
 </c:set>
-
 <table>
 	<tr class="<unireg:nextRowClass/>" >
 		<td><fmt:message key="label.numero.tiers" />&nbsp;:</td>
@@ -43,7 +42,7 @@
 			</c:if>
 		</td>
 		<td>
-			<form:select path="typeRechercheDuNom" items="${typesRechercheNomEnum}" />
+			<form:select path="typeRechercheDuNom" items="${typesRechercheNom}" />
 		</td>
 		<td colspan="2">
 			<form:input  path="nomRaison" id="nomRaison" cssErrorClass="input-with-errors" size ="65" />
@@ -104,7 +103,7 @@
 			<td width="25%"><fmt:message key="label.type.tiers" />&nbsp;:</td>
 			<td width="25%">
 				<form:select id="selectTypeTiers" path="typeTiers" onchange="typeTiers_onChange(this);">
-					<form:option value="" />
+					<form:option value=""><fmt:message key="option.TOUS" /></form:option>
 					<form:option value="DEBITEUR_PRESTATION_IMPOSABLE" ><fmt:message key="option.type.tiers.DEBITEUR_PRESTATION_IMPOSABLE" /></form:option>
 					<form:option value="CONTRIBUABLE_PP" ><fmt:message key="option.type.tiers.CONTRIBUABLE_PP" /></form:option>
 					<form:option value="ENTREPRISE" ><fmt:message key="option.type.tiers.ENTREPRISE" /></form:option>
@@ -116,8 +115,8 @@
 			</td>
 			<td width="25%">
 				<form:select id="categorieDebiteurValue" path="categorieDebiteurIs">
-					<form:option value="" />
-					<form:options items="${categoriesImpotSourceEnum}"/>
+					<form:option value=""><fmt:message key="option.TOUTES"/></form:option>
+					<form:options items="${categoriesImpotSource}"/>
 				</form:select>
 				&nbsp;
 			</td>
@@ -148,27 +147,19 @@
 			</td>
 			<td width="25%"><fmt:message key="label.mode.imposition" />&nbsp;:</td>
 			<td width="25%">
-				<form:select path="modeImposition">
-					<form:option value="" />
-					<form:options items="${modesImpositionEnum}"/>
+				<form:select path="modeImpositionAsString">
+					<form:option value="TOUS" ><fmt:message key="option.TOUS" /></form:option>
+					<form:options items="${modesImposition}"/>
 				</form:select>
 			</td>
 		</tr>
 		<tr class="<unireg:nextRowClass/>" >
-			<td width="25%"><fmt:message key="label.forme.juridique" />&nbsp;:</td>
+			<td width="25%"><fmt:message key="label.numero.symic" />&nbsp;:</td>
 			<td width="25%">
-				<form:select path="formeJuridique">
-					<form:option value="" />
-					<form:options items="${formesJuridiquesEnum}"/>
-				</form:select>
+				<form:input  path="noSymic" id="noSymic" />
 			</td>
-			<td width="25%"><fmt:message key="label.categorie.entreprise" />&nbsp;:</td>
-			<td width="25%">
-				<form:select path="categorieEntreprise">
-					<form:option value="" />
-					<form:options items="${categoriesEntreprisesEnum}"/>
-				</form:select>
-			</td>
+			<td width="25%">&nbsp;</td>
+			<td width="25%">&nbsp;</td>
 		</tr>
 		<tr class="<unireg:nextRowClass/>" >
 			<authz:authorize ifAnyGranted="ROLE_VISU_ALL">
@@ -184,7 +175,6 @@
 		</tr>
 	</c:if>
 </table>
-
 <!-- Debut Boutons -->
 <table border="0">
 	<tr class="<unireg:nextRowClass/>" >

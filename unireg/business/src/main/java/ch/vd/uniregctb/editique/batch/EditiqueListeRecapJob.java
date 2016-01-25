@@ -10,7 +10,6 @@ import ch.vd.uniregctb.declaration.source.EnvoiLRsResults;
 import ch.vd.uniregctb.declaration.source.ListeRecapService;
 import ch.vd.uniregctb.document.EnvoiLRsRapport;
 import ch.vd.uniregctb.rapport.RapportService;
-import ch.vd.uniregctb.scheduler.JobCategory;
 import ch.vd.uniregctb.scheduler.JobDefinition;
 import ch.vd.uniregctb.scheduler.JobParam;
 import ch.vd.uniregctb.scheduler.JobParamRegDate;
@@ -18,6 +17,7 @@ import ch.vd.uniregctb.scheduler.JobParamRegDate;
 public class EditiqueListeRecapJob extends JobDefinition {
 
 	public static final String NAME = "EditiqueListeRecapJob";
+	private static final String CATEGORIE = "LR";
 
 	public static final String S_PARAM_DATE_FIN_PERIODE = "DATE_FIN_PERIODE";
 
@@ -25,7 +25,7 @@ public class EditiqueListeRecapJob extends JobDefinition {
 	private RapportService rapportService;
 
 	public EditiqueListeRecapJob(int sortOrder) {
-		super(NAME, JobCategory.LR, sortOrder, "Créer, envoyer à l'éditique et imprimer les listes récapitulatives");
+		super(NAME, CATEGORIE, sortOrder, "Créer, envoyer à l'éditique et imprimer les listes récapitulatives");
 
 		final JobParam param = new JobParam();
 		param.setDescription("Date fin de période");

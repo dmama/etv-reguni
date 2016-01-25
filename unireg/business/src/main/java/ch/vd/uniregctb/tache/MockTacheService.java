@@ -1,14 +1,10 @@
 package ch.vd.uniregctb.tache;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
-
-import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.shared.batchtemplate.StatusManager;
-import ch.vd.uniregctb.metier.assujettissement.AssujettissementException;
 import ch.vd.uniregctb.tache.sync.SynchronizeAction;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
@@ -59,14 +55,13 @@ public class MockTacheService implements TacheService {
 		return null;
 	}
 
-	@NotNull
 	@Override
-	public List<SynchronizeAction> determineSynchronizeActionsForDIs(Contribuable contribuable) throws AssujettissementException {
-		return Collections.emptyList();
+	public List<SynchronizeAction> determineSynchronizeActionsForDIs(Contribuable contribuable) {
+		return null;
 	}
 
 	@Override
-	public TacheSyncResults synchronizeTachesDeclarations(Collection<Long> ctbIds) {
+	public TacheSyncResults synchronizeTachesDIs(Collection<Long> ctbIds) {
 		return new TacheSyncResults(false);
 	}
 

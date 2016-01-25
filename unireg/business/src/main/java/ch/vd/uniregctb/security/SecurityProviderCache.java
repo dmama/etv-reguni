@@ -360,11 +360,6 @@ public class SecurityProviderCache implements UniregCacheInterface, KeyDumpableC
 	}
 
 	@Override
-	public void onOrganisationChange(long id) {
-		// rien à faire ici
-	}
-
-	@Override
 	public void onIndividuChange(long id) {
 		// rien à faire ici
 	}

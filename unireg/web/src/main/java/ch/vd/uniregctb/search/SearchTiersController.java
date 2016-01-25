@@ -65,7 +65,7 @@ public class SearchTiersController {
 		}
 		else {
 			try {
-				final TopList<TiersIndexedData> list = searcher.searchTop(query, filter, 200);
+				final TopList<TiersIndexedData> list = searcher.searchTop(query, filter, 50);
 				postFilter(filter, list);
 
 				if (list != null && !list.isEmpty()) {

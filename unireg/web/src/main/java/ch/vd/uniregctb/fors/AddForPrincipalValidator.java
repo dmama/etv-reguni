@@ -12,7 +12,6 @@ import ch.vd.uniregctb.common.TiersNotFoundException;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.Contribuable;
-import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.manager.AutorisationManager;
 
@@ -43,17 +42,15 @@ public class AddForPrincipalValidator extends AddForRevenuFortuneValidator {
 			throw new TiersNotFoundException(view.getTiersId());
 		}
 
-		// validation du mode d'imposition (seulement pour les contribuables PP, puisque cet attribut n'a aucun sens pour les autres...)
-		if (ctb instanceof ContribuableImpositionPersonnesPhysiques) {
-			if (view.getModeImposition() == null) {
-				errors.rejectValue("modeImposition", "error.mode.imposition.incorrect");
-			}
-			else {
-				final StringBuilder messageErreurModeImposition = new StringBuilder();
-				if (!autorisationManager.isModeImpositionAllowed(ctb, view.getModeImposition(), view.getTypeAutoriteFiscale(), view.getMotifRattachement(), view.getDateDebut(),
-				                                                 AuthenticationHelper.getCurrentPrincipal(), AuthenticationHelper.getCurrentOID(), messageErreurModeImposition)) {
-					errors.rejectValue("modeImposition", messageErreurModeImposition.toString());
-				}
+		// validation du mode d'imposition
+		if (view.getModeImposition() == null) {
+			errors.rejectValue("modeImposition", "error.mode.imposition.incorrect");
+		}
+		else {
+			StringBuilder messageErreurModeImposition = new StringBuilder();
+			if (!autorisationManager.isModeImpositionAllowed(ctb, view.getModeImposition(), view.getTypeAutoriteFiscale(), view.getMotifRattachement(), view.getDateDebut(),
+			                                                 AuthenticationHelper.getCurrentPrincipal(), AuthenticationHelper.getCurrentOID(), messageErreurModeImposition)) {
+				errors.rejectValue("modeImposition", messageErreurModeImposition.toString());
 			}
 		}
 

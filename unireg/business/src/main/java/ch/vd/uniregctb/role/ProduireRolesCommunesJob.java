@@ -9,7 +9,6 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.document.RolesCommunesRapport;
-import ch.vd.uniregctb.scheduler.JobCategory;
 import ch.vd.uniregctb.scheduler.JobParam;
 import ch.vd.uniregctb.scheduler.JobParamCommune;
 import ch.vd.uniregctb.transaction.TransactionTemplate;
@@ -20,11 +19,12 @@ import ch.vd.uniregctb.transaction.TransactionTemplate;
 public class ProduireRolesCommunesJob extends AbstractProduireRolesJob {
 
 	public static final String NAME = "ProduireRolesCommuneJob";
+	private static final String CATEGORIE = "Stats";
 
 	public static final String NO_OFS_COMMUNE = "NO_OFS_COMMUNE";
 
 	public ProduireRolesCommunesJob(int sortOrder, String description) {
-		super(NAME, JobCategory.STATS, sortOrder, description);
+		super(NAME, CATEGORIE, sortOrder, description);
 
 		final RegDate today = RegDate.get();
 		addParameterDefinition(createParamPeriodeFiscale(), today.year() - 1);

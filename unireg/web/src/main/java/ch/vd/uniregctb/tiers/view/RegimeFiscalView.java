@@ -4,32 +4,21 @@ import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
-import ch.vd.uniregctb.common.Annulable;
 
-public class RegimeFiscalView implements DateRange, Annulable {
-
-	private final Long id;
-	private final RegDate dateDebut;
-	private final RegDate dateFin;
-	private final TypeRegimeFiscal type;
-	private final boolean annule;
-
-	public RegimeFiscalView(Long id, boolean annule, RegDate dateDebut, RegDate dateFin, TypeRegimeFiscal type) {
-		this.id = id;
-		this.annule = annule;
-		this.dateDebut = dateDebut;
-		this.dateFin = dateFin;
-		this.type = type;
-	}
-
-	public Long getId() {
-		return id;
-	}
+public class RegimeFiscalView implements DateRange {
+	
+	public RegDate dateDebut;
+	public RegDate dateFin;
+	public String code;
+	public String libelle;
 
 	@Override
 	public RegDate getDateDebut() {
 		return dateDebut;
+	}
+
+	public void setDateDebut(RegDate dateDebut) {
+		this.dateDebut = dateDebut;
 	}
 
 	@Override
@@ -37,17 +26,28 @@ public class RegimeFiscalView implements DateRange, Annulable {
 		return dateFin;
 	}
 
-	public TypeRegimeFiscal getType() {
-		return type;
+	public void setDateFin(RegDate dateFin) {
+		this.dateFin = dateFin;
+	}
+
+	public String getCode() {
+		return code;
+	}
+
+	public void setCode(String code) {
+		this.code = code;
+	}
+
+	public String getLibelle() {
+		return libelle;
+	}
+
+	public void setLibelle(String libelle) {
+		this.libelle = libelle;
 	}
 
 	@Override
 	public boolean isValidAt(RegDate date) {
 		return RegDateHelper.isBetween(date, dateDebut, dateFin, NullDateBehavior.LATEST);
-	}
-
-	@Override
-	public boolean isAnnule() {
-		return annule;
 	}
 }

@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Set;
 
 import org.jetbrains.annotations.Nullable;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
@@ -153,7 +152,7 @@ public class PartyWebServiceTest extends AbstractPartyWebServiceTest {
 		params.setPartyNumber(12500001); // DebiteurPrestationImposable
 		assertEquals(PartyType.DEBTOR, service.getPartyType(params));
 
-		params.setPartyNumber(451178); // Entreprise
+		params.setPartyNumber(12700101); // Entreprise
 		assertEquals(PartyType.CORPORATION, service.getPartyType(params));
 
 		params.setPartyNumber(12600101); // NonHabitant
@@ -1373,9 +1372,7 @@ public class PartyWebServiceTest extends AbstractPartyWebServiceTest {
 
 	/**
 	 * [UNIREG-1969] Vérification que le champ "chez" apparaît bien dans l'adresse d'envoi
-	 * TODO [SIPM] A voir si le service existera encore quand SIPM arrivera en production
 	 */
-	@Ignore
 	@Test
 	public void getTiersPMAdresseEnvoi() throws Exception {
 
@@ -1400,9 +1397,7 @@ public class PartyWebServiceTest extends AbstractPartyWebServiceTest {
 
 	/**
 	 * [UNIREG-1974] Vérification du libellé de la rue dans l'adresse d'envoi
-	 * TODO [SIPM] A voir si le service existera encore quand SIPM arrivera en production
 	 */
-	@Ignore
 	@Test
 	public void getTiersPMAdresseEnvoiNomRue() throws Exception {
 
@@ -1753,10 +1748,6 @@ public class PartyWebServiceTest extends AbstractPartyWebServiceTest {
 		assertEquals(MaritalStatus.MARRIED, status2.getMaritalStatus());
 	}
 
-	/**
-	 * TODO [SIPM] les événements ne sont plus supportés pour le moment (?)
-	 */
-	@Ignore
 	@Test
 	public void testFindEvenementsPersonneMorale() throws Exception {
 		final SearchCorporationEventsRequest request = new SearchCorporationEventsRequest(login, null, "012", null, null);

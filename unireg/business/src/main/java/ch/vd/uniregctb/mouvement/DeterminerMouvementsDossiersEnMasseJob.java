@@ -12,7 +12,6 @@ import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.document.DeterminerMouvementsDossiersEnMasseRapport;
 import ch.vd.uniregctb.rapport.RapportService;
-import ch.vd.uniregctb.scheduler.JobCategory;
 import ch.vd.uniregctb.scheduler.JobDefinition;
 import ch.vd.uniregctb.scheduler.JobParam;
 import ch.vd.uniregctb.scheduler.JobParamBoolean;
@@ -23,6 +22,8 @@ public class DeterminerMouvementsDossiersEnMasseJob extends JobDefinition {
 
 	public static final String NAME = "DeterminerMouvementsDossiersEnMasseJob";
 
+	private static final String CATEGORIE = "Tiers";
+
 	private static final String ARCHIVES_SEULEMENT = "ARCHIVES_SEULEMENT";
 
 	private MouvementService mouvementService;
@@ -32,7 +33,7 @@ public class DeterminerMouvementsDossiersEnMasseJob extends JobDefinition {
 	private PlatformTransactionManager transactionManager;
 
 	public DeterminerMouvementsDossiersEnMasseJob(int sortOrder, String description) {
-		super(NAME, JobCategory.TIERS, sortOrder, description);
+		super(NAME, CATEGORIE, sortOrder, description);
 
 		{
 			final JobParam param = new JobParam();

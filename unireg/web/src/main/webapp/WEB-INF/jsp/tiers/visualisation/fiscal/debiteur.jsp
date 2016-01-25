@@ -48,7 +48,7 @@
 					<fmt:message key="option.periodicite.statut.${periodicite.active}" />
 				</display:column>
 				<display:column class="action" style="width: 15%;">
-					<unireg:consulterLog entityNature="Periodicite" entityId="${periodicite.id}"/>
+					<unireg:consulterLog entityNature="periodicite" entityId="${periodicite.id}"/>
 				</display:column>
 
 				<display:setProperty name="paging.banner.all_items_found" value=""/>

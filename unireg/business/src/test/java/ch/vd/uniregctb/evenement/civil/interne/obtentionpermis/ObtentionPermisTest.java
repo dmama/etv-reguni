@@ -27,7 +27,6 @@ import ch.vd.uniregctb.metier.assujettissement.SourcierPur;
 import ch.vd.uniregctb.metier.assujettissement.VaudoisOrdinaire;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
@@ -216,7 +215,7 @@ public class ObtentionPermisTest extends AbstractEvenementCivilInterneTest {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
 				assertNotNull(pp);
 
-				final ForFiscalPrincipalPP ffp = pp.getDernierForFiscalPrincipal();
+				final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
 				assertNotNull(ffp);
 				assertEquals(ModeImposition.ORDINAIRE, ffp.getModeImposition());
 				assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
@@ -309,7 +308,7 @@ public class ObtentionPermisTest extends AbstractEvenementCivilInterneTest {
 					final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
 					assertNotNull(pp);
 
-					final ForFiscalPrincipalPP ffp = pp.getDernierForFiscalPrincipal();
+					final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
 					assertNotNull(ffp);
 					assertEquals(ModeImposition.ORDINAIRE, ffp.getModeImposition());
 					assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
@@ -397,7 +396,7 @@ public class ObtentionPermisTest extends AbstractEvenementCivilInterneTest {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
 				assertNotNull(pp);
 
-				final ForFiscalPrincipalPP ffp = pp.getDernierForFiscalPrincipal();
+				final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
 				assertNotNull(ffp);
 				assertEquals(ModeImposition.ORDINAIRE, ffp.getModeImposition());
 				assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
@@ -460,7 +459,7 @@ public class ObtentionPermisTest extends AbstractEvenementCivilInterneTest {
 		/*
 		 * Vérification du for principal du tiers MenageCommun
 		 */
-		ForFiscalPrincipalPP forCommun = menageCommun.getForFiscalPrincipalAt(null);
+		ForFiscalPrincipal forCommun = menageCommun.getForFiscalPrincipalAt(null);
 		assertNotNull("Aucun for fiscal principal trouvé sur le tiers MenageCommun", forCommun);
 		assertEquals("La date d'ouverture du nouveau for ne correspond pas au lendemain de la date de l'obtention du permis", DATE_OBTENTION_PERMIS.getOneDayAfter(), forCommun.getDateDebut());
 		assertEquals(ModeImposition.ORDINAIRE, forCommun.getModeImposition());
@@ -533,7 +532,7 @@ public class ObtentionPermisTest extends AbstractEvenementCivilInterneTest {
 		/*
 		 * Vérification du for principal du tiers MenageCommun
 		 */
-		final ForFiscalPrincipalPP forCommun = menageCommun.getForFiscalPrincipalAt(null);
+		final ForFiscalPrincipal forCommun = menageCommun.getForFiscalPrincipalAt(null);
 		assertNotNull("Aucun for fiscal principal trouvé sur le tiers MenageCommun",  forCommun);
 		assertEquals("La date d'ouverture du nouveau for ne correspond pas au lendemain de la date de l'obtention du permis", DATE_OBTENTION_PERMIS.getOneDayAfter(), forCommun.getDateDebut());
 		assertEquals(ModeImposition.ORDINAIRE, forCommun.getModeImposition());
@@ -694,7 +693,8 @@ public class ObtentionPermisTest extends AbstractEvenementCivilInterneTest {
 			public Long doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addNonHabitant("Julie", "Goux", dateNaissance, Sexe.FEMININ);
 				pp.setNumeroIndividu(NO_INDIVIDU_SOURCIER_CELIBATAIRE);
-				addForPrincipal(pp, dateArrivee, MotifFor.ARRIVEE_HS, MockCommune.Lausanne, ModeImposition.SOURCE);
+				final ForFiscalPrincipal ffp = addForPrincipal(pp, dateArrivee, MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
+				ffp.setModeImposition(ModeImposition.SOURCE);
 				assertNull(pp.getCategorieEtranger());
 				assertNull(pp.getReindexOn());
 				return pp.getNumero();
@@ -877,7 +877,7 @@ public class ObtentionPermisTest extends AbstractEvenementCivilInterneTest {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
 				assertNotNull(pp);
 
-				final ForFiscalPrincipalPP ffp = pp.getDernierForFiscalPrincipal();
+				final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
 				assertNotNull(ffp);
 				assertEquals(datePermisC.getOneDayAfter(), ffp.getDateDebut());
 				assertNull(ffp.getDateFin());
@@ -1031,7 +1031,7 @@ public class ObtentionPermisTest extends AbstractEvenementCivilInterneTest {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
 				assertNotNull(pp);
 
-				final ForFiscalPrincipalPP ffp = pp.getDernierForFiscalPrincipal();
+				final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
 				assertNotNull(ffp);
 				assertEquals(datePermisC.getOneDayAfter(), ffp.getDateDebut());
 				assertNull(ffp.getDateFin());

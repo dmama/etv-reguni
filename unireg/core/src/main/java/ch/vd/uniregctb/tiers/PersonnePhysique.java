@@ -23,7 +23,6 @@ import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.uniregctb.common.ComparisonHelper;
 import ch.vd.uniregctb.common.LengthConstants;
 import ch.vd.uniregctb.type.CategorieEtranger;
 import ch.vd.uniregctb.type.Sexe;
@@ -34,7 +33,7 @@ import ch.vd.uniregctb.type.Sexe;
  */
 @Entity
 @DiscriminatorValue("PersonnePhysique")
-public class PersonnePhysique extends ContribuableImpositionPersonnesPhysiques {
+public class PersonnePhysique extends Contribuable {
 
 	public PersonnePhysique(){
 		super();
@@ -173,8 +172,11 @@ public class PersonnePhysique extends ContribuableImpositionPersonnesPhysiques {
 	@Transient
 	@Override
 	public String getRoleLigne1() {
-		if (habitant || !getForsFiscauxNonAnnules(false).isEmpty()) {
-			return super.getRoleLigne1();
+		if (habitant)
+			return "Contribuable PP";
+		//si non habitant
+		if (!getForsFiscauxNonAnnules(false).isEmpty()) {
+			return "Contribuable PP";
 		}
 		return "Autre tiers";
 	}
@@ -545,22 +547,97 @@ public class PersonnePhysique extends ContribuableImpositionPersonnesPhysiques {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-
-		final PersonnePhysique other = (PersonnePhysique) obj;
-		return ComparisonHelper.areEqual(ancienNumeroSourcier, other.ancienNumeroSourcier)
-				&& ComparisonHelper.areEqual(categorieEtranger, other.categorieEtranger)
-				&& ComparisonHelper.areEqual(dateDebutValiditeAutorisation, other.dateDebutValiditeAutorisation)
-				&& ComparisonHelper.areEqual(dateDeces, other.dateDeces)
-				&& ComparisonHelper.areEqual(dateNaissance, other.dateNaissance)
-				&& ComparisonHelper.areEqual(habitant, other.habitant)
-				&& ComparisonHelper.areEqual(identificationsPersonnes, other.identificationsPersonnes)
-				&& ComparisonHelper.areEqual(majoriteTraitee, other.majoriteTraitee)
-				&& ComparisonHelper.areEqual(nom, other.nom)
-				&& ComparisonHelper.areEqual(numeroAssureSocial, other.numeroAssureSocial)
-				&& ComparisonHelper.areEqual(numeroIndividu, other.numeroIndividu)
-				&& ComparisonHelper.areEqual(numeroOfsNationalite, other.numeroOfsNationalite)
-				&& ComparisonHelper.areEqual(prenomUsuel, other.prenomUsuel)
-				&& ComparisonHelper.areEqual(tousPrenoms, other.tousPrenoms)
-				&& ComparisonHelper.areEqual(sexe, other.sexe);
+		PersonnePhysique other = (PersonnePhysique) obj;
+		if (ancienNumeroSourcier == null) {
+			if (other.ancienNumeroSourcier != null)
+				return false;
+		}
+		else if (!ancienNumeroSourcier.equals(other.ancienNumeroSourcier))
+			return false;
+		if (categorieEtranger == null) {
+			if (other.categorieEtranger != null)
+				return false;
+		}
+		else if (categorieEtranger != other.categorieEtranger)
+			return false;
+		if (dateDebutValiditeAutorisation == null) {
+			if (other.dateDebutValiditeAutorisation != null)
+				return false;
+		}
+		else if (!dateDebutValiditeAutorisation.equals(other.dateDebutValiditeAutorisation))
+			return false;
+		if (dateDeces == null) {
+			if (other.dateDeces != null)
+				return false;
+		}
+		else if (!dateDeces.equals(other.dateDeces))
+			return false;
+		if (dateNaissance == null) {
+			if (other.dateNaissance != null)
+				return false;
+		}
+		else if (!dateNaissance.equals(other.dateNaissance))
+			return false;
+		if (habitant == null) {
+			if (other.habitant != null)
+				return false;
+		}
+		else if (!habitant.equals(other.habitant))
+			return false;
+		if (identificationsPersonnes == null) {
+			if (other.identificationsPersonnes != null)
+				return false;
+		}
+		else if (!identificationsPersonnes.equals(other.identificationsPersonnes))
+			return false;
+		if (majoriteTraitee == null) {
+			if (other.majoriteTraitee != null)
+				return false;
+		}
+		else if (!majoriteTraitee.equals(other.majoriteTraitee))
+			return false;
+		if (nom == null) {
+			if (other.nom != null)
+				return false;
+		}
+		else if (!nom.equals(other.nom))
+			return false;
+		if (numeroAssureSocial == null) {
+			if (other.numeroAssureSocial != null)
+				return false;
+		}
+		else if (!numeroAssureSocial.equals(other.numeroAssureSocial))
+			return false;
+		if (numeroIndividu == null) {
+			if (other.numeroIndividu != null)
+				return false;
+		}
+		else if (!numeroIndividu.equals(other.numeroIndividu))
+			return false;
+		if (numeroOfsNationalite == null) {
+			if (other.numeroOfsNationalite != null)
+				return false;
+		}
+		else if (!numeroOfsNationalite.equals(other.numeroOfsNationalite))
+			return false;
+		if (prenomUsuel == null) {
+			if (other.prenomUsuel != null)
+				return false;
+		}
+		else if (!prenomUsuel.equals(other.prenomUsuel))
+			return false;
+		if (tousPrenoms == null) {
+			if (other.tousPrenoms != null)
+				return false;
+		}
+		else if (!tousPrenoms.equals(other.tousPrenoms))
+			return false;
+		if (sexe == null) {
+			if (other.sexe != null)
+				return false;
+		}
+		else if (sexe != other.sexe)
+			return false;
+		return true;
 	}
 }

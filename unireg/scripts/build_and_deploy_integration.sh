@@ -1,7 +1,7 @@
 # Paramètre : IN ou INPO en fonction de l'endroit où on veut effectivement déployer l'application
 ENVIRONMENT="$1"
-if [ "$ENVIRONMENT" != "IN" -a "$ENVIRONMENT" != "INPO" ]; then
-	echo "!!! Le script doit pouvoir distinguer un déploiement en intégration d'un déploiement en intégration de post-production au travers d'un paramètre IN ou INPO !!!" >&2
+if [ "$ENVIRONMENT" != "IN" -a "$ENVIRONMENT" != "INPO" -a "$ENVIRONMENT" != "ANO" ]; then
+	echo "!!! Le script doit pouvoir distinguer un déploiement en intégration d'un déploiement en intégration de post-production  ou en anonymisation au travers d'un paramètre IN,INPO ou ANO !!!" >&2
 	exit 1
 fi
 
@@ -38,10 +38,13 @@ echo "Version: $version"
 
 if [ "$ENVIRONMENT" == "INPO" ]; then
 	env=integration-po
-	user=dsi_unireg@ssv0309v
-else
+	user=dsi_unireg@slv2655v
+elif [ "$ENVIRONMENT" == "IN" ]; then
 	env=integration
 	user=dsi_unireg@slv2655v
+else
+    env=anonymisation
+	user=dsi_unireg@slv2926t
 fi
 
 upDir=/ccv/data/dsi_unireg/uploads

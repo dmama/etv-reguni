@@ -27,7 +27,7 @@ import ch.vd.uniregctb.xml.DataHelper;
 
 public class IdentificationContribuableRequestHandlerV2 implements IdentificationContribuableRequestHandler<IdentificationContribuableRequest, IdentificationContribuableResponse> {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(IdentificationContribuableRequestHandlerV2.class);
+	private final static Logger LOGGER = LoggerFactory.getLogger(IdentificationContribuableRequestHandlerV2.class);
 
 	private static final int MAX_NAME_LENGTH = 100;
 

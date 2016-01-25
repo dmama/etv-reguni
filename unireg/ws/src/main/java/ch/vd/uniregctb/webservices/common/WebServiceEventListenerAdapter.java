@@ -61,11 +61,6 @@ public class WebServiceEventListenerAdapter implements DataEventListener, Initia
 	}
 
 	@Override
-	public void onOrganisationChange(long id) {
-		// TODO: FIXME: Implement like onIndividuChange()
-	}
-
-	@Override
 	public void onPersonneMoraleChange(long id) {
 		onTiersChange(id); // le numéro de contribuable est le même que celui de la PM
 	}

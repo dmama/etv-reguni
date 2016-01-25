@@ -15,7 +15,6 @@ import ch.vd.uniregctb.norentes.annotation.Etape;
 import ch.vd.uniregctb.norentes.common.EvenementCivilScenario;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.ModeImposition;
@@ -85,15 +84,16 @@ public class Ec_10000_02_Veuvage_NonSuisseMarieSeul_Scenario extends EvenementCi
 		// Pierre
 		PersonnePhysique mikkel = addHabitant(noIndMikkel);
 		noHabMikkel = mikkel.getNumero();
-		addForFiscalPrincipal(mikkel, MockCommune.VillarsSousYens, RegDate.get(1974, 3, 3), avantDateMariage, MotifFor.DEMENAGEMENT_VD, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION,
-		                      ModeImposition.SOURCE);
+		ForFiscalPrincipal f = addForFiscalPrincipal(mikkel, MockCommune.VillarsSousYens, RegDate.get(1974, 3, 3), avantDateMariage, MotifFor.DEMENAGEMENT_VD, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
+		f.setModeImposition(ModeImposition.SOURCE);
 
 		// ménage
 		MenageCommun menage = new MenageCommun();
 		menage = (MenageCommun)tiersDAO.save(menage);
 		noMenage = menage.getNumero();
 		tiersService.addTiersToCouple(menage, mikkel, dateMariage, null);
-		addForFiscalPrincipal(menage, communeMariage, dateMariage, null, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, null);
+		f = addForFiscalPrincipal(menage, communeMariage, dateMariage, null, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, null);
+		f.setModeImposition(ModeImposition.ORDINAIRE);
 
 		menage.setBlocageRemboursementAutomatique(false);
 
@@ -148,7 +148,7 @@ public class Ec_10000_02_Veuvage_NonSuisseMarieSeul_Scenario extends EvenementCi
 
 		{
 			PersonnePhysique mikkel = (PersonnePhysique) tiersDAO.get(noHabMikkel);
-			ForFiscalPrincipalPP ffp = mikkel.getDernierForFiscalPrincipal();
+			ForFiscalPrincipal ffp = mikkel.getDernierForFiscalPrincipal();
 			assertNotNull(ffp, "For principal de l'Habitant " + mikkel.getNumero() + " null");
 			assertNull(ffp.getDateFin(), "Le for principal de l'habitant est fermé");
 			ModeImposition expected = ModeImposition.MIXTE_137_1;

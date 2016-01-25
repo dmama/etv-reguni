@@ -1,35 +1,23 @@
 package ch.vd.uniregctb.tiers.view;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.collections4.Predicate;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import ch.vd.registre.base.date.DateRangeHelper;
-import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.di.view.DeclarationView;
 import ch.vd.uniregctb.entreprise.EntrepriseView;
-import ch.vd.uniregctb.entreprise.EtablissementView;
 import ch.vd.uniregctb.general.view.TiersGeneralView;
 import ch.vd.uniregctb.individu.IndividuView;
 import ch.vd.uniregctb.lr.view.ListeRecapDetailView;
-import ch.vd.uniregctb.metier.bouclement.ExerciceCommercial;
 import ch.vd.uniregctb.mouvement.view.MouvementDetailView;
 import ch.vd.uniregctb.rapport.view.RapportView;
 import ch.vd.uniregctb.rt.view.RapportPrestationView;
 import ch.vd.uniregctb.tiers.Contribuable;
-import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesMorales;
 import ch.vd.uniregctb.tiers.DecisionAciView;
-import ch.vd.uniregctb.tiers.Etablissement;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.NatureTiers;
 import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
 /**
@@ -102,15 +90,6 @@ public class TiersView {
 	private List<MouvementDetailView> mouvements;
 
 	private EntrepriseView entreprise;
-	private EtablissementView etablissement;
-
-	private List<RegimeFiscalView> regimesFiscauxVD;
-	private List<RegimeFiscalView> regimesFiscauxCH;
-
-	private List<AllegementFiscalView> allegementsFiscaux;
-	private List<ExerciceCommercial> exercicesCommerciaux;
-
-	private List<DomicileEtablissementView> domicilesEtablissement;
 
 	private boolean isAllowed;
 
@@ -124,11 +103,6 @@ public class TiersView {
 
 	//10 éléments à afficher par défaut
 	private int nombreElementsTable = 10;
-
-	public boolean isPmOuEtablissement() {
-		return tiers instanceof ContribuableImpositionPersonnesMorales || tiers instanceof Etablissement;
-	}
-
 
 	public ComplementView getComplement() {
 		return complement;
@@ -302,67 +276,6 @@ public class TiersView {
 		this.entreprise = entreprise;
 	}
 
-	public EtablissementView getEtablissement() {
-		return etablissement;
-	}
-
-	public void setEtablissement(EtablissementView etablissement) {
-		this.etablissement = etablissement;
-	}
-
-	public List<RegimeFiscalView> getRegimesFiscauxVD() {
-		return regimesFiscauxVD;
-	}
-
-	public void setRegimesFiscauxVD(List<RegimeFiscalView> regimesFiscauxVD) {
-		this.regimesFiscauxVD = regimesFiscauxVD;
-	}
-
-	public List<RegimeFiscalView> getRegimesFiscauxCH() {
-		return regimesFiscauxCH;
-	}
-
-	public void setRegimesFiscauxCH(List<RegimeFiscalView> regimesFiscauxCH) {
-		this.regimesFiscauxCH = regimesFiscauxCH;
-	}
-
-	public List<AllegementFiscalView> getAllegementsFiscaux() {
-		return allegementsFiscaux;
-	}
-
-	public void setAllegementsFiscaux(List<AllegementFiscalView> allegementsFiscaux) {
-		this.allegementsFiscaux = allegementsFiscaux;
-	}
-
-	public List<ExerciceCommercial> getExercicesCommerciaux() {
-		return exercicesCommerciaux;
-	}
-
-	public void setExercicesCommerciaux(List<ExerciceCommercial> exercicesCommerciaux) {
-		this.exercicesCommerciaux = exercicesCommerciaux;
-	}
-
-	public ExerciceCommercial getExerciceCommercialCourant() {
-		return DateRangeHelper.rangeAt(exercicesCommerciaux, RegDate.get());
-	}
-
-	public RegDate getDateDebutPremierExerciceCommercial() {
-		if (exercicesCommerciaux != null && !exercicesCommerciaux.isEmpty()) {
-			return exercicesCommerciaux.get(0).getDateDebut();
-		}
-		else {
-			return null;
-		}
-	}
-
-	public List<DomicileEtablissementView> getDomicilesEtablissement() {
-		return domicilesEtablissement;
-	}
-
-	public void setDomicilesEtablissement(List<DomicileEtablissementView> domicilesEtablissement) {
-		this.domicilesEtablissement = domicilesEtablissement;
-	}
-
 	public ForFiscalView getForsPrincipalActif() {
 		return forsPrincipalActif;
 	}
@@ -377,56 +290,6 @@ public class TiersView {
 
 	public void setForsFiscaux(List<ForFiscalView> forsFiscaux) {
 		this.forsFiscaux = forsFiscaux;
-	}
-
-	@NotNull
-	public List<ForFiscalView> getForsFiscauxPrincipaux() {
-		return extract(forsFiscaux, new Predicate<ForFiscalView>() {
-			@Override
-			public boolean evaluate(ForFiscalView ff) {
-				return ff.isPrincipal();
-			}
-		});
-	}
-
-	@NotNull
-	public List<ForFiscalView> getForsFiscauxSecondaires() {
-		return extract(forsFiscaux, new Predicate<ForFiscalView>() {
-			@Override
-			public boolean evaluate(ForFiscalView ff) {
-				return ff.isSecondaire();
-			}
-		});
-	}
-
-	@NotNull
-	public List<ForFiscalView> getAutresForsFiscaux() {
-		return extract(forsFiscaux, new Predicate<ForFiscalView>() {
-			@Override
-			public boolean evaluate(ForFiscalView ff) {
-				return !ff.isPrincipal() && !ff.isSecondaire();
-			}
-		});
-	}
-
-	@NotNull
-	private static <T> List<T> extract(List<T> source, Predicate<? super T> predicate) {
-		if (source == null || source.isEmpty()) {
-			return Collections.emptyList();
-		}
-
-		final List<T> output = new ArrayList<>(source.size());
-		return CollectionUtils.select(source, predicate, output);
-	}
-
-	public boolean isWithForIBC() {
-		final List<ForFiscalView> forsIBC = extract(forsFiscaux, new Predicate<ForFiscalView>() {
-			@Override
-			public boolean evaluate(ForFiscalView object) {
-				return !object.isAnnule() && object.getGenreImpot() == GenreImpot.BENEFICE_CAPITAL;
-			}
-		});
-		return !forsIBC.isEmpty();
 	}
 
 	public List<SituationFamilleView> getSituationsFamille() {

@@ -15,7 +15,7 @@ public interface GlobalTiersIndexer {
 	/**
 	 * Efface l'index.
 	 */
-	void overwriteIndex();
+	public void overwriteIndex();
 
 	/**
 	 * Demande l'indexation ou la ré-indexation d'un tiers.
@@ -63,11 +63,12 @@ public interface GlobalTiersIndexer {
 	 * @param statusManager             un status manager pour suivre l'évolution de l'indexation (peut être nul)
 	 * @param nbThreads                 le nombre de threads simultanés utilisés pour indexer la base
 	 * @param mode                      le mode d'indexation voulu.
+	 * @param prefetchPMs               détermine si les PMs doivent être préchargés en vrac
 	 * @return le nombre de tiers indexés
 	 * @throws ch.vd.uniregctb.indexer.IndexerException
 	 *          si l'indexation n'a pas pu être faite.
 	 */
-	int indexAllDatabase(@Nullable StatusManager statusManager, int nbThreads, Mode mode) throws IndexerException;
+	int indexAllDatabase(@Nullable StatusManager statusManager, int nbThreads, Mode mode, boolean prefetchPMs) throws IndexerException;
 
 	/**
 	 * Flag qui indique si l'indexation doit se faire a la volée ou si elle sera faite a posteriori.

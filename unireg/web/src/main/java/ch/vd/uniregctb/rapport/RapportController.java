@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.EnumSet;
+import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -167,7 +167,7 @@ public class RapportController {
 		final ParamPagination pagination = new ParamPagination(page, pageSize, sortField, "ASC".equalsIgnoreCase(sortOrder));
 
 		final Map<TypeRapportEntreTiers, String> allTypes = tiersMapHelper.getMapTypeRapportEntreTiers();
-		final Map<TypeRapportEntreTiers, String> choosableTypes = new LinkedHashMap<>(allTypes);
+		final Map<TypeRapportEntreTiers, String> choosableTypes = new HashMap<>(allTypes);
 		choosableTypes.keySet().retainAll(allowedTypes);
 
 		final List<RapportsPage.RapportView> views = getRapportViews(tiersId, showHisto, types, pagination);

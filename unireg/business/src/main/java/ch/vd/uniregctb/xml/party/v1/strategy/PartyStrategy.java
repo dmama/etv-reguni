@@ -5,7 +5,6 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -169,7 +168,7 @@ public abstract class PartyStrategy<T extends Party> {
 
 	private static void initBankAccounts(Party left, Context context, ch.vd.uniregctb.tiers.Tiers tiers) {
 		final String numero = tiers.getNumeroCompteBancaire();
-		if (StringUtils.isNotBlank(numero) && context.ibanValidator.isValidIban(numero)) {
+		if (numero != null && !"".equals(numero) && context.ibanValidator.isValidIban(numero)) {
 			left.getBankAccounts().add(BankAccountBuilder.newBankAccount(tiers, context));
 		}
 	}
@@ -225,11 +224,7 @@ public abstract class PartyStrategy<T extends Party> {
 	}
 
 	private static final Set<TypeRapportEntreTiers> EXPOSED_RELATIONS_BETWEEN_PARTIES = EnumSet.complementOf(EnumSet.of(TypeRapportEntreTiers.CONTACT_IMPOT_SOURCE,
-	                                                                                                                    TypeRapportEntreTiers.PARENTE,
-	                                                                                                                    TypeRapportEntreTiers.ASSUJETTISSEMENT_PAR_SUBSTITUTION,
-	                                                                                                                    TypeRapportEntreTiers.ACTIVITE_ECONOMIQUE,
-	                                                                                                                    TypeRapportEntreTiers.MANDAT,
-	                                                                                                                    TypeRapportEntreTiers.FUSION_ENTREPRISES));
+			TypeRapportEntreTiers.PARENTE, TypeRapportEntreTiers.ASSUJETTISSEMENT_PAR_SUBSTITUTION));
 
 	private static void initRelationsBetweenParties(Party tiers, final Tiers right, Set<PartyPart> parts, Context context) {
 		if (parts.contains(PartyPart.RELATIONS_BETWEEN_PARTIES)) {
@@ -417,11 +412,8 @@ public abstract class PartyStrategy<T extends Party> {
 			if (declaration instanceof ch.vd.uniregctb.declaration.DeclarationImpotSource) {
 				tiers.getTaxDeclarations().add(TaxDeclarationBuilder.newWithholdingTaxDeclaration((ch.vd.uniregctb.declaration.DeclarationImpotSource) declaration, parts));
 			}
-			else if (declaration instanceof ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP) {
-				tiers.getTaxDeclarations().add(TaxDeclarationBuilder.newOrdinaryTaxDeclaration((ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP) declaration, parts));
-			}
-			else if (declaration instanceof ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePM) {
-				// cette version ne supporte pas les DI PM
+			else if (declaration instanceof ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire) {
+				tiers.getTaxDeclarations().add(TaxDeclarationBuilder.newOrdinaryTaxDeclaration((ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire) declaration, parts));
 			}
 		}
 	}

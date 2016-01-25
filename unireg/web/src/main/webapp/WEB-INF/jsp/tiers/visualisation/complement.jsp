@@ -33,13 +33,11 @@
 		<tr class="<unireg:nextRowClass/>" >
 			<td><fmt:message key="label.complement.numeroTelPortable" />&nbsp;:</td>
 			<td><c:out value="${command.complement.numeroTelephonePortable}"/></td>
+		</tr>			
+		<tr class="<unireg:nextRowClass/>" >
+			<td><fmt:message key="label.complement.numeroTelProfessionnel" />&nbsp;:</td>
+			<td><c:out value="${command.complement.numeroTelephoneProfessionnel}"/></td>
 		</tr>
-		<c:if test="${!command.pmOuEtablissement}">
-			<tr class="<unireg:nextRowClass/>" >
-				<td><fmt:message key="label.complement.numeroTelProfessionnel" />&nbsp;:</td>
-				<td><c:out value="${command.complement.numeroTelephoneProfessionnel}"/></td>
-			</tr>
-		</c:if>
 		<tr class="<unireg:nextRowClass/>" >
 			<td><fmt:message key="label.complement.numeroFax" />&nbsp;:</td>
 			<td><c:out value="${command.complement.numeroTelecopie}"/></td>
@@ -78,6 +76,13 @@
 					</c:if>
 				</td>
 			</tr>
+			<%-- SIFISC-15128 : le champ du nom de l'institution financière n'a de sens que sur les entreprises aujourd'hui --%>
+			<c:if test="${command.natureTiers == 'Entreprise'}">
+				<tr class="<unireg:nextRowClass/>" >
+					<td><fmt:message key="label.complement.nomInstitutionFinanciere" />&nbsp;:</td>
+					<td><c:out value="${command.complement.compteBancaire.nomInstitutionCompteBancaire}"/></td>
+				</tr>
+			</c:if>
 			<tr class="<unireg:nextRowClass/>" >
 				<td><fmt:message key="label.complement.titulaireCompte" />&nbsp;:</td>
 				<td><c:out value="${command.complement.compteBancaire.titulaireCompteBancaire}"/></td>
@@ -94,6 +99,44 @@
 			</tr>
 
 		</table>
+	</c:if>
+	<c:if test="${not empty command.complement.autresComptesBancaires}">
+		<display:table name="command.complement.autresComptesBancaires" id="compte" pagesize="10" class="display" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator">
+			<display:setProperty name="paging.banner.all_items_found" value=""/>
+			<display:setProperty name="paging.banner.one_item_found" value=""/>
+			<display:column titleKey="label.date.debut">
+					<unireg:regdate regdate="${compte.dateDebut}"/>
+			</display:column>
+			<display:column titleKey="label.date.fin">
+					<unireg:regdate regdate="${compte.dateFin}"/>
+			</display:column>
+			<display:column titleKey="label.complement.numeroTitulaire">
+					<unireg:numCTB numero="${compte.numeroTiersTitulaire}" link="true"/>
+			</display:column>
+			<display:column titleKey="label.complement.titulaireCompte">
+					<c:out value="${compte.titulaireCompteBancaire}"/>
+			</display:column>
+			<display:column titleKey="label.complement.numeroCCP">
+					<c:out value="${compte.numeroCCP}"/>
+			</display:column>
+			<display:column titleKey="label.complement.numeroCompteBancaire">
+					<c:out value="${compte.numeroCompteBancaire}"/>
+			</display:column>
+			<display:column titleKey="label.complement.numeroIBAN">
+					<c:out value="${compte.iban}"/>
+					<c:if test="${compte.ibanValidationMessage != null}">
+						<span class="global-error">
+							<fmt:message key="error.iban"/>&nbsp;<c:out value="(${compte.ibanValidationMessage})"/>
+						</span>
+					</c:if>
+			</display:column>
+			<display:column titleKey="label.complement.nomInstitutionFinanciere">
+					<c:out value="${compte.nomInstitutionCompteBancaire}"/>
+			</display:column>
+			<display:column titleKey="label.complement.bicSwift">
+					<c:out value="${compte.adresseBicSwift}"/>
+			</display:column>
+		</display:table>
 	</c:if>
 </fieldset>
 <!-- Fin Complements -->

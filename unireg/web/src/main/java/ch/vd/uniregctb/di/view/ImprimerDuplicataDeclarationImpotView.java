@@ -11,7 +11,7 @@ import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.ModeleDocument;
 import ch.vd.uniregctb.declaration.ModeleDocumentDAO;
 import ch.vd.uniregctb.declaration.ModeleFeuilleDocument;
-import ch.vd.uniregctb.declaration.ordinaire.pp.ModeleFeuilleDocumentEditique;
+import ch.vd.uniregctb.declaration.ordinaire.ModeleFeuilleDocumentEditique;
 import ch.vd.uniregctb.param.ModeleFeuilleDocumentComparator;
 import ch.vd.uniregctb.type.TypeDocument;
 
@@ -149,12 +149,10 @@ public class ImprimerDuplicataDeclarationImpotView {
 
 	public List<ModeleFeuilleDocumentEditique> getSelectedAnnexes() {
 		List<ModeleFeuilleDocumentEditique> annexes = null;
-		if (modelesDocumentView != null) {
-			for (ModeleDocumentView modeleView : modelesDocumentView) {
-				if (modeleView.getTypeDocument() == selectedTypeDocument) {
-					annexes = modeleView.getModelesFeuilles();
-					break;
-				}
+		for (ModeleDocumentView modeleView : modelesDocumentView) {
+			if (modeleView.getTypeDocument() == selectedTypeDocument) {
+				annexes = modeleView.getModelesFeuilles();
+				break;
 			}
 		}
 		return annexes;

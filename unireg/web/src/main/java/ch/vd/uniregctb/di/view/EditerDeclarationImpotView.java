@@ -11,8 +11,6 @@ import org.springframework.context.MessageSource;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
-import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePM;
-import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP;
 import ch.vd.uniregctb.declaration.DelaiDeclaration;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
 import ch.vd.uniregctb.declaration.EtatDeclarationRetournee;
@@ -29,8 +27,6 @@ public class EditerDeclarationImpotView {
 	private int periodeFiscale;
 	private RegDate dateDebutPeriodeImposition;
 	private RegDate dateFinPeriodeImposition;
-	private RegDate dateDebutExerciceCommercial;
-	private RegDate dateFinExerciceCommercial;
 	private String codeControle;
 	private String sourceQuittancement;
 	private TypeEtatDeclaration dernierEtat;
@@ -44,29 +40,24 @@ public class EditerDeclarationImpotView {
 	@Nullable
 	private Long tacheId;
 
-	// Données dépendant des droits de l'utilisateur (et de l'état de la DI, évidemment, aussi)
+	// Données dépendant des droits de l'utilisateur
 	private boolean isAllowedQuittancement;
 	private boolean isAllowedDelai;
 	private boolean isAllowedSommation;
 	private boolean isAllowedDuplicata;
-	private boolean isAllowedSuspension;
-	private boolean isAllowedAnnulationSuspension;
-
-	private boolean isDiPP;
-	private boolean isDiPM;
 
 	public EditerDeclarationImpotView() {
 	}
 
 	public EditerDeclarationImpotView(DeclarationImpotOrdinaire di, @Nullable Long tacheId, MessageSource messageSource, boolean allowedQuittancement, boolean allowedDelai, boolean allowedSommation,
-	                                  boolean allowedDuplicata, boolean allowedSuspension, boolean allowedAnnulationSuspension) {
-		initReadOnlyValues(di, messageSource, allowedQuittancement, allowedDelai, allowedSommation, allowedDuplicata, allowedSuspension, allowedAnnulationSuspension);
+	                                  boolean allowedDuplicata) {
+		initReadOnlyValues(di, messageSource, allowedQuittancement, allowedDelai, allowedSommation, allowedDuplicata);
 		this.typeDocument = di.getTypeDeclaration();
 		this.dateRetour = di.getDateRetour();
 		this.tacheId = tacheId;
 	}
 
-	public void initReadOnlyValues(DeclarationImpotOrdinaire di, MessageSource messageSource, boolean allowedQuittancement, boolean allowedDelai, boolean allowedSommation, boolean allowedDuplicata, boolean allowedSuspension, boolean allowedAnnulationSuspension) {
+	public void initReadOnlyValues(DeclarationImpotOrdinaire di, MessageSource messageSource, boolean allowedQuittancement, boolean allowedDelai, boolean allowedSommation, boolean allowedDuplicata) {
 		this.tiersId = di.getTiers().getId();
 		this.id = di.getId();
 		this.periodeFiscale = di.getDateDebut().year();
@@ -75,23 +66,22 @@ public class EditerDeclarationImpotView {
 		this.codeControle = di.getCodeControle();
 		this.sourceQuittancement = initSourceQuittancement(di);
 		this.dernierEtat = getDernierEtat(di);
-		this.delais = initDelais(di, messageSource);
+		this.delais = initDelais(di);
 		this.etats = initEtats(di.getEtats(), messageSource);
 		this.isAllowedQuittancement = allowedQuittancement;
-		this.isAllowedDelai = allowedDelai;
+		this.isAllowedDelai = initIsAllowedDelai(this.dernierEtat, allowedDelai);
 		this.isAllowedSommation = allowedSommation;
 		this.isAllowedDuplicata = allowedDuplicata;
-		this.isAllowedSuspension = allowedSuspension;
-		this.isAllowedAnnulationSuspension = allowedAnnulationSuspension;
 		this.isSommable = isSommable(di);
 		this.wasSommee = initWasSommee(di);
-		this.isDiPP = di instanceof DeclarationImpotOrdinairePP;
-		this.isDiPM = di instanceof DeclarationImpotOrdinairePM;
+	}
 
-		if (di instanceof DeclarationImpotOrdinairePM) {
-			this.dateDebutExerciceCommercial = ((DeclarationImpotOrdinairePM) di).getDateDebutExerciceCommercial();
-			this.dateFinExerciceCommercial = ((DeclarationImpotOrdinairePM) di).getDateFinExerciceCommercial();
+	private static boolean initIsAllowedDelai(TypeEtatDeclaration dernierEtat, boolean allowedDelai) {
+		boolean d = allowedDelai;
+		if (dernierEtat != TypeEtatDeclaration.EMISE) {
+			d = false;
 		}
+		return d;
 	}
 
 	private static boolean initWasSommee(DeclarationImpotOrdinaire di) {
@@ -116,16 +106,6 @@ public class EditerDeclarationImpotView {
 		return isSommable;
 	}
 
-	public static boolean isSuspendable(DeclarationImpotOrdinaire di) {
-		// seules les DI PM ont cette capacité
-		if (di instanceof DeclarationImpotOrdinairePM) {
-			final TypeEtatDeclaration dernierEtat = getDernierEtat(di);
-			return dernierEtat != TypeEtatDeclaration.RETOURNEE && dernierEtat != TypeEtatDeclaration.SUSPENDUE;
-		}
-
-		return false;
-	}
-
 	public static TypeEtatDeclaration getDernierEtat(DeclarationImpotOrdinaire di) {
 		final EtatDeclaration etatDI = di.getDernierEtat();
 		return etatDI == null ? null : etatDI.getEtat();
@@ -136,7 +116,7 @@ public class EditerDeclarationImpotView {
 		return etatRourne == null ? null : etatRourne.getSource();
 	}
 
-	private static List<DelaiDeclarationView> initDelais(DeclarationImpotOrdinaire di, MessageSource messageSource) {
+	private static List<DelaiDeclarationView> initDelais(DeclarationImpotOrdinaire di) {
 		final Set<DelaiDeclaration> delais = di.getDelais();
 		if (delais == null || delais.isEmpty()) {
 			return Collections.emptyList();
@@ -144,20 +124,16 @@ public class EditerDeclarationImpotView {
 		final RegDate first = di.getPremierDelai();
 		final List<DelaiDeclarationView> list = new ArrayList<>(delais.size());
 		for (DelaiDeclaration delai : delais) {
-			final DelaiDeclarationView d = new DelaiDeclarationView(delai, messageSource);
+			final DelaiDeclarationView d = new DelaiDeclarationView(delai);
 			d.setFirst(d.getDelaiAccordeAu() == first);
 			list.add(d);
 		}
 
-		// Trie par ordre décroissant des dates de traitement (pour tenir compte des délais non-accordés)
+		// Trie par ordre décroissant des dates de délai
 		Collections.sort(list, new Comparator<DelaiDeclarationView>() {
 			@Override
 			public int compare(DelaiDeclarationView o1, DelaiDeclarationView o2) {
-				int comparison = o2.getDateTraitement().compareTo(o1.getDateTraitement());
-				if (comparison == 0) {
-					comparison = Long.compare(o2.getId(), o1.getId());
-				}
-				return comparison;
+				return o2.getDelaiAccordeAu().compareTo(o1.getDelaiAccordeAu());
 			}
 		});
 
@@ -191,14 +167,6 @@ public class EditerDeclarationImpotView {
 
 	public RegDate getDateFinPeriodeImposition() {
 		return dateFinPeriodeImposition;
-	}
-
-	public RegDate getDateDebutExerciceCommercial() {
-		return dateDebutExerciceCommercial;
-	}
-
-	public RegDate getDateFinExerciceCommercial() {
-		return dateFinExerciceCommercial;
 	}
 
 	public String getCodeControle() {
@@ -254,31 +222,11 @@ public class EditerDeclarationImpotView {
 		return isAllowedDuplicata;
 	}
 
-	public boolean isAllowedSuspension() {
-		return isAllowedSuspension;
-	}
-
-	public boolean isAllowedAnnulationSuspension() {
-		return isAllowedAnnulationSuspension;
-	}
-
 	public boolean isSommable() {
 		return isSommable;
 	}
 
 	public boolean isWasSommee() {
 		return wasSommee;
-	}
-
-	public boolean isDiPP() {
-		return isDiPP;
-	}
-
-	public boolean isDiPM() {
-		return isDiPM;
-	}
-
-	public boolean isAllowedDuplicataDirect() {
-		return isDiPM && isAllowedDuplicata;
 	}
 }

@@ -5,8 +5,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.collections4.Predicate;
-
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.DateRangeHelper;
@@ -15,13 +13,17 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.adresse.AdresseTiers;
 import ch.vd.uniregctb.declaration.Declaration;
-import ch.vd.uniregctb.tiers.ActiviteEconomique;
+import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
+import ch.vd.uniregctb.metier.assujettissement.PeriodeImposition;
+import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionService;
+import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.tiers.Remarque;
 import ch.vd.uniregctb.tiers.RepresentationConventionnelle;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.type.TypeAdresseTiers;
+import ch.vd.uniregctb.type.TypeDocument;
 import ch.vd.uniregctb.validation.EntityValidatorImpl;
 import ch.vd.uniregctb.validation.ValidationService;
 
@@ -30,6 +32,13 @@ import ch.vd.uniregctb.validation.ValidationService;
  * @param <T>
  */
 public abstract class TiersValidator<T extends Tiers> extends EntityValidatorImpl<T> {
+
+	private PeriodeImpositionService periodeImpositionService;
+
+	@SuppressWarnings({"UnusedDeclaration"})
+	public void setPeriodeImpositionService(PeriodeImpositionService periodeImpositionService) {
+		this.periodeImpositionService = periodeImpositionService;
+	}
 
 	@Override
 	public ValidationResults validate(T tiers) {
@@ -74,44 +83,31 @@ public abstract class TiersValidator<T extends Tiers> extends EntityValidatorImp
 			}
 		}
 
+		// [SIFISC-719] on s'assure que les rapports de représentation conventionnels ne se chevauchent pas
 		if (sujets != null) {
-			// [SIFISC-719] on s'assure que les rapports de représentation conventionnels ne se chevauchent pas
-			checkNonOverlap(sujets, results, "représentation conventionnelle", new Predicate<RapportEntreTiers>() {
-				@Override
-				public boolean evaluate(RapportEntreTiers object) {
-					return object instanceof RepresentationConventionnelle;
+			List<RapportEntreTiers> representations = null;
+			for (RapportEntreTiers rapport : sujets) {
+				if (rapport.isAnnule()) {
+					continue;
 				}
-			});
-
-			// de même on s'assure que les établissements principaux ne sont pas plusieurs à un moment donné
-			checkNonOverlap(sujets, results, "activité économique principale", new Predicate<RapportEntreTiers>() {
-				@Override
-				public boolean evaluate(RapportEntreTiers object) {
-					return object instanceof ActiviteEconomique && ((ActiviteEconomique) object).isPrincipal();
-				}
-			});
-		}
-
-		return results;
-	}
-
-	private static void checkNonOverlap(Set<RapportEntreTiers> rapports, ValidationResults results, String descripion, Predicate<RapportEntreTiers> filtre) {
-		if (rapports != null && rapports.size() > 1) {
-			final List<RapportEntreTiers> concernes = new ArrayList<>(rapports.size());
-			for (RapportEntreTiers ret : rapports) {
-				if (!ret.isAnnule() && filtre.evaluate(ret)) {
-					concernes.add(ret);
+				if (rapport instanceof RepresentationConventionnelle) {
+					if (representations == null) {
+						representations = new ArrayList<>();
+					}
+					representations.add(rapport);
 				}
 			}
 
-			final List<DateRange> intersections = DateRangeHelper.overlaps(concernes);
+			final List<DateRange> intersections = DateRangeHelper.overlaps(representations);
 			if (intersections != null) {
 				// génération des messages d'erreur
 				for (DateRange range : intersections) {
-					results.addError(String.format("La période %s est couverte par plusieurs rapports de type '%s'.", DateRangeHelper.toDisplayString(range), descripion));
+					results.addError(String.format("La période %s est couverte par plusieurs représentations conventionnelles", DateRangeHelper.toDisplayString(range)));
 				}
 			}
 		}
+
+		return results;
 	}
 
 	protected ValidationResults validateDeclarations(T tiers) {
@@ -137,9 +133,53 @@ public abstract class TiersValidator<T extends Tiers> extends EntityValidatorImp
 				}
 				last = d;
 			}
+
+			if (tiers instanceof Contribuable) {
+				// [SIFISC-3127] on valide les déclarations d'impôts ordinaires par rapport aux périodes d'imposition théoriques
+				final Contribuable ctb = (Contribuable) tiers;
+				try {
+					final List<PeriodeImposition> periodes = periodeImpositionService.determine(ctb, null);
+					for (Declaration d : decls) {
+						if (d.isAnnule()) {
+							continue;
+						}
+						if (d instanceof DeclarationImpotOrdinaire) {
+							validateDI((DeclarationImpotOrdinaire) d, periodes, results);
+						}
+					}
+				}
+				catch (Exception e) {
+					results.addWarning("Impossible de calculer les périodes d'imposition", e);
+				}
+			}
 		}
 
 		return results;
+	}
+
+	private static void validateDI(DeclarationImpotOrdinaire di, List<PeriodeImposition> periodes, ValidationResults results) {
+		boolean intersect = false;
+		final TypeDocument typeDocument = di.getModeleDocument().getTypeDocument();
+		if (periodes != null) {
+			for (PeriodeImposition p : periodes) {
+				if (DateRangeHelper.equals(di, p)) {
+					intersect = true;
+					break;
+				}
+				else if (DateRangeHelper.intersect(di, p)) {
+					intersect = true;
+					final String message = String.format("La %s qui va du %s au %s ne correspond pas à la période d'imposition théorique qui va du %s au %s",
+							typeDocument.getDescription(), RegDateHelper.dateToDisplayString(di.getDateDebut()), RegDateHelper.dateToDisplayString(di.getDateFin()),
+							RegDateHelper.dateToDisplayString(p.getDateDebut()), RegDateHelper.dateToDisplayString(p.getDateFin()));
+					results.addWarning(message);
+				}
+			}
+		}
+		if (!intersect) {
+			final String message = String.format("La %s qui va du %s au %s ne correspond à aucune période d'imposition théorique",
+					typeDocument.getDescription(), RegDateHelper.dateToDisplayString(di.getDateDebut()), RegDateHelper.dateToDisplayString(di.getDateFin()));
+			results.addWarning(message);
+		}
 	}
 
 	protected ValidationResults validateAdresses(T tiers) {

@@ -4,8 +4,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.declaration.Declaration;
-import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePM;
-import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP;
+import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DeclarationImpotSource;
 import ch.vd.uniregctb.declaration.DelaiDeclaration;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
@@ -53,11 +52,8 @@ public class CopieConformeManagerImpl implements CopieConformeManager {
 		Assert.isEqual(TypeEtatDeclaration.SOMMEE, etat.getEtat());
 
 		final Declaration declaration = etat.getDeclaration();
-		if (declaration instanceof DeclarationImpotOrdinairePP) {
-			return diService.getCopieConformeSommationDI((DeclarationImpotOrdinairePP) declaration);
-		}
-		else if (declaration instanceof DeclarationImpotOrdinairePM) {
-			return diService.getCopieConformeSommationDI((DeclarationImpotOrdinairePM) declaration);
+		if (declaration instanceof DeclarationImpotOrdinaire) {
+			return diService.getCopieConformeSommationDI((DeclarationImpotOrdinaire) declaration);
 		}
 		else if (declaration instanceof DeclarationImpotSource) {
 			return lrService.getCopieConformeSommationLR((DeclarationImpotSource) declaration);

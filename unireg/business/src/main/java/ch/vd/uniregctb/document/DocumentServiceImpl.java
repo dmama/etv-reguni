@@ -41,11 +41,11 @@ public class DocumentServiceImpl implements DocumentService {
 	/**
 	 * Contient les types concrets de documents, indexés par leur noms en lettres minuscules
 	 */
-	private static final Map<String, Class<? extends Document>> docType = new HashMap<>();
+	private final static Map<String, Class<? extends Document>> docType = new HashMap<>();
 	static {
 		docType.put(DatabaseDump.class.getSimpleName().toLowerCase(), DatabaseDump.class);
-		docType.put(DeterminationDIsPPRapport.class.getSimpleName().toLowerCase(), DeterminationDIsPPRapport.class);
-		docType.put(EnvoiDIsPPRapport.class.getSimpleName().toLowerCase(), EnvoiDIsPPRapport.class);
+		docType.put(DeterminationDIsRapport.class.getSimpleName().toLowerCase(), DeterminationDIsRapport.class);
+		docType.put(EnvoiDIsRapport.class.getSimpleName().toLowerCase(), EnvoiDIsRapport.class);
 		docType.put(MajoriteRapport.class.getSimpleName().toLowerCase(), MajoriteRapport.class);
 		docType.put(FusionDeCommunesRapport.class.getSimpleName().toLowerCase(), FusionDeCommunesRapport.class);
 		docType.put(RolesCommunesRapport.class.getSimpleName().toLowerCase(), RolesCommunesRapport.class);
@@ -279,12 +279,13 @@ public class DocumentServiceImpl implements DocumentService {
 	 * Le format est : yyyyMMdd_$(nom_utilisateur_sans_les_caracteres_speciaux)
 	 */
 	private String buildFileName(String nom, String fileExtension, Date d) {
-		final StringBuilder b = new StringBuilder();
+		StringBuilder b = new StringBuilder();
 		b.append(new SimpleDateFormat("yyyyMMdd_kkmmss").format(d));
 		b.append('_');
 		b.append(nom.replaceAll("[^-+0-9a-zA-Z._]", "_"));
 		b.append('.').append(fileExtension);
-		return b.toString();
+		String filename = b.toString();
+		return filename;
 	}
 
 	/**

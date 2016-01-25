@@ -16,7 +16,6 @@ import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdressesResolutionException;
 import ch.vd.uniregctb.common.AuthenticationHelper;
-import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.common.TiersNotFoundException;
 import ch.vd.uniregctb.declaration.Periodicite;
@@ -25,7 +24,6 @@ import ch.vd.uniregctb.iban.IbanHelper;
 import ch.vd.uniregctb.interfaces.InterfaceDataException;
 import ch.vd.uniregctb.tiers.AutreCommunaute;
 import ch.vd.uniregctb.tiers.Contribuable;
-import ch.vd.uniregctb.tiers.CoordonneesFinancieres;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.Entreprise;
@@ -380,8 +378,8 @@ public class TiersEditManagerImpl extends TiersManager implements TiersEditManag
 		}
 		else if (ctbAssocie instanceof Entreprise) {
 			final Entreprise entreprise = (Entreprise) ctbAssocie;
-			final EntrepriseView entrepriseView = getEntrepriseService().getEntreprise(entreprise);
-			debiteur.setNom1(CollectionsUtils.getLastElement(entrepriseView.getRaisonsSociales()).getRaisonSociale());
+			final EntrepriseView entrepriseView = getHostPersonneMoraleService().get(entreprise.getNumero());
+			debiteur.setNom1(entrepriseView.getRaisonSociale());
 		}
 	
 		debiteur.setModeCommunication(ModeCommunication.PAPIER);	
@@ -473,16 +471,9 @@ public class TiersEditManagerImpl extends TiersManager implements TiersEditManag
 		// compte bancaire
 		final CompteBancaireView compteBancaire = complement.getCompteBancaire();
 		if (compteBancaire != null) {
+			tiers.setNumeroCompteBancaire(IbanHelper.normalize(compteBancaire.getIban()));
 			tiers.setTitulaireCompteBancaire(StringUtils.trimToNull(compteBancaire.getTitulaireCompteBancaire()));
-
-			final String iban = IbanHelper.normalize(compteBancaire.getIban());
-			final String bicSwift = StringUtils.trimToNull(FormatNumeroHelper.removeSpaceAndDash(compteBancaire.getAdresseBicSwift()));
-			if (iban != null || bicSwift != null) {
-				tiers.setCoordonneesFinancieres(new CoordonneesFinancieres(iban, bicSwift));
-			}
-			else {
-				tiers.setCoordonneesFinancieres(null);
-			}
+			tiers.setAdresseBicSwift(StringUtils.trimToNull(FormatNumeroHelper.removeSpaceAndDash(compteBancaire.getAdresseBicSwift())));
 		}
 	}
 

@@ -28,19 +28,12 @@
 			<display:column sortable ="true" titleKey="label.type.tache" sortName="class">
 				<fmt:message key="option.type.tache.${tache.typeTache}"  />
 			</display:column>
-			<display:column titleKey="label.type.document">
-				<c:choose>
-					<c:when test="${tache.typeTache == 'TacheEnvoiDeclarationImpotPP' || tache.typeTache == 'TacheEnvoiDeclarationImpotPM'}">
-						<fmt:message key="option.type.document.${tache.typeDocument}"/>
-					</c:when>
-					<c:otherwise>
-						&nbsp;
-					</c:otherwise>
-				</c:choose>
-			</display:column>
 			<display:column sortable ="true" titleKey="label.numero.contribuable" sortProperty="numero" sortName="contribuable.numero">
 				<c:choose>
-					<c:when test="${tache.etatTache == 'EN_INSTANCE' && !tache.annule}">
+					<c:when test="${tache.etatTache == 'TRAITE' || tache.annule}">
+						<unireg:numCTB numero="${tache.numero}" />
+					</c:when>
+					<c:when test="${tache.etatTache == 'EN_INSTANCE'}">
 						<c:choose>
 							<c:when test="${tache.typeTache == 'TacheControleDossier'}">
 								<a href="../tiers/visu.do?id=${tache.numero}&idTacheTraite=${tache.id}"><unireg:numCTB numero="${tache.numero}" /></a>
@@ -48,20 +41,14 @@
 							<c:when test="${tache.typeTache == 'TacheTransmissionDossier'}">
 								<a href="../mouvement/edit.do?numero=${tache.numero}&depuisTache=true&idTacheTraite=${tache.id}"><unireg:numCTB numero="${tache.numero}" /></a>
 							</c:when>
-							<c:when test="${tache.typeTache == 'TacheEnvoiDeclarationImpotPP'}">
-								<a href="../di/imprimer-pp.do?depuisTache=true&tiersId=${tache.numero}&debut=<unireg:regdate regdate="${tache.dateDebutImposition}" format="yyyyMMdd"/>&fin=<unireg:regdate regdate="${tache.dateFinImposition}" format="yyyyMMdd"/>&typeDocument=${tache.typeDocument}&delaiRetour=${tache.delaiRetourEnJours}" ><unireg:numCTB numero="${tache.numero}" /></a>
-							</c:when>
-							<c:when test="${tache.typeTache == 'TacheEnvoiDeclarationImpotPM'}">
-								<a href="../di/imprimer-pm.do?depuisTache=true&tiersId=${tache.numero}&debut=<unireg:regdate regdate="${tache.dateDebutImposition}" format="yyyyMMdd"/>&fin=<unireg:regdate regdate="${tache.dateFinImposition}" format="yyyyMMdd"/>&typeDocument=${tache.typeDocument}" ><unireg:numCTB numero="${tache.numero}" /></a>
+							<c:when test="${tache.typeTache == 'TacheEnvoiDeclarationImpot'}">
+								<a href="../di/imprimer.do?depuisTache=true&tiersId=${tache.numero}&debut=<unireg:regdate regdate="${tache.dateDebutImposition}" format="yyyyMMdd"/>&fin=<unireg:regdate regdate="${tache.dateFinImposition}" format="yyyyMMdd"/>&typeDocument=${tache.typeDocument}&delaiRetour=${tache.delaiRetourEnJours}" ><unireg:numCTB numero="${tache.numero}" /></a>
 							</c:when>
 							<c:when test="${tache.typeTache == 'TacheAnnulationDeclarationImpot'}">
 								<a href="../di/editer.do?id=${tache.idDI}&tacheId=${tache.id}"><unireg:numCTB numero="${tache.numero}" /></a>
 							</c:when>
 						</c:choose>
 					</c:when>
-					<c:otherwise>
-						<unireg:numCTB numero="${tache.numero}" />
-					</c:otherwise>
 				</c:choose>
 			</display:column>
 			<display:column titleKey="label.nom.raison" >
@@ -92,9 +79,6 @@
 						<fmt:param><unireg:date date="${tache.dateFinImposition}"/></fmt:param>
 					</fmt:message>
 				</c:if>
-			</display:column>
-			<display:column titleKey="label.date.enregistrement" sortable="true" sortName="logCreationDate">
-				<fmt:formatDate value="${tache.dateEnregistrement}" pattern="dd.MM.yyyy HH:mm:ss"/>
 			</display:column>
 			<display:column sortable ="true" titleKey="label.etat.tache" sortName="etat">
 				<fmt:message key="option.etat.tache.${tache.etatTache}"  />

@@ -1,6 +1,5 @@
 package ch.vd.uniregctb.validation;
 
-import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
@@ -30,13 +29,5 @@ public abstract class EntityValidatorImpl<T> implements EntityValidator<T>, Init
 	@Override
 	public void destroy() throws Exception {
 		validationService.unregisterValidator(getValidatedClass(), this);
-	}
-
-	/**
-	 * @param entity une entité dont on veut générer une description courte et suffisante
-	 * @return une destription textuelle courte de l'entité
-	 */
-	protected String getEntityDisplayString(@NotNull T entity) {
-		return entity.toString();
 	}
 }

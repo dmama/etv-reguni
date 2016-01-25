@@ -6,6 +6,6 @@ import ch.vd.securite.model.ProfilOperateur;
 
 public interface PrintPCLService {
 
-	 void printLocalStream(ProfilOperateur profilOperateur, InputStream inputStream) throws PrintPCLException ;
+	 public void printLocalStream(ProfilOperateur profilOperateur, InputStream inputStream) throws PrintPCLException ;
 
 }

@@ -17,10 +17,8 @@ public class Autorisations {
 	private final boolean forsAutresElementsImposables;
 	private final boolean forsAutresImpots;
 	private final boolean declarationImpots;
-	private final boolean bouclements;
 	private final boolean identificationEntreprise;
 	private final boolean decisionsAci;
-	private final boolean etatsPM;
 
 	/**
 	 * Si <b>vrai</b>, l'édition des adresses est autorisée selon les détails des booléens qui suivent. Si <b>faux</b>, l'édition des adresses est interdite.
@@ -58,10 +56,8 @@ public class Autorisations {
 		this.forsAutresElementsImposables = false;
 		this.forsAutresImpots = false;
 		this.declarationImpots = false;
-		this.bouclements = false;
 		this.identificationEntreprise = false;
 		this.decisionsAci = false;
-		this.etatsPM = false;
 
 		this.adresses = false;
 		this.adressesDomicile = false;
@@ -91,10 +87,8 @@ public class Autorisations {
 		this.forsAutresElementsImposables = isAllowed(map, AutorisationManagerImpl.FISCAL_FOR_AUTRE);
 		this.forsAutresImpots = isAllowed(map, AutorisationManagerImpl.FISCAL_FOR_AUTRE);
 		this.declarationImpots = isAllowed(map, AutorisationManagerImpl.MODIF_DI);
-		this.bouclements = isAllowed(map, AutorisationManagerImpl.MODIF_BOUCLEMENTS);
 		this.identificationEntreprise = isAllowed(map, AutorisationManagerImpl.MODIF_IDE);
 		this.decisionsAci = isAllowed(map,AutorisationManagerImpl.FISCAL_DECISION_ACI);
-		this.etatsPM = isAllowed(map,AutorisationManagerImpl.MODIF_ETATS_PM);
 
 		this.adresses = isAllowed(map, AutorisationManagerImpl.MODIF_ADRESSE);
 		this.adressesDomicile = isAllowed(map, AutorisationManagerImpl.ADR_D);
@@ -130,8 +124,7 @@ public class Autorisations {
 				|| (adresses && (adressesDomicile || adressesCourrier || adressesRepresentation || adressesPoursuite))
 				|| (complements && (complementsCommunications || complementsCoordonneesFinancieres))
 				|| (rapports && (rapportsDePrestations || rapportsDeTravail || autresRapports))
-				|| declarationImpots || bouclements || donneesCiviles || debiteurs || mouvements || situationsFamille
-				|| etatsPM;
+				|| declarationImpots || donneesCiviles || debiteurs || mouvements || situationsFamille;
 	}
 
 	public boolean isDonneesFiscales() {
@@ -156,10 +149,6 @@ public class Autorisations {
 
 	public boolean isDeclarationImpots() {
 		return declarationImpots;
-	}
-
-	public boolean isBouclements() {
-		return bouclements;
 	}
 
 	public boolean isAdresses() {
@@ -234,18 +223,12 @@ public class Autorisations {
 		return decisionsAci;
 	}
 
-	public boolean isEtatsPM() {
-		return etatsPM;
-	}
-
 	@Override
 	public String toString() {
 		return "Autorisations{" +
 				"donneesFiscales=" + donneesFiscales +
 				", identificationEntreprise=" + identificationEntreprise +
 				", forsPrincipaux=" + forsPrincipaux +
-				", bouclements=" + bouclements +
-				", etatsPM=" + etatsPM +
 				", decisionsAci=" + decisionsAci +
 				", forsSecondaires=" + forsSecondaires +
 				", forsAutresElementsImposables=" + forsAutresElementsImposables +

@@ -9,7 +9,6 @@ import java.util.List;
 
 import ch.ech.ech0044.v2.DatePartiallyKnown;
 import ch.ech.ech0044.v2.PersonIdentification;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
@@ -960,9 +959,7 @@ public class PartyWebServiceTAOISTest extends AbstractPartyWebServiceTest {
 
 	/**
 	 * [UNIREG-2302]
-	 * TODO [SIPM] Revoir tout ça (ou pas, si le v3 tombe avant l'arrivée de SIPM...)
 	 */
-	@Ignore
 	@Test
 	public void testGetAdresseEnvoiPersonneMorale() throws Exception {
 

@@ -48,15 +48,15 @@ public class TiersListController implements MessageSourceAware {
 	private ParamApplicationManager paramApplicationManager;
 	private MessageSource messageSource;
 
-	public static final String NUMERO_PARAMETER_NAME = "numero";
-	public static final String NOM_RAISON_PARAMETER_NAME = "nomRaison";
-	public static final String LOCALITE_OU_PAYS_PARAMETER_NAME = "localiteOuPays";
-	public static final String NO_OFS_FOR_PARAMETER_NAME = "noOfsFor";
-	public static final String DATE_NAISSANCE_PARAMETER_NAME = "dateNaissance";
-	public static final String NUMERO_ASSURE_SOCIAL_PARAMETER_NAME = "numeroAssureSocial";
-	public static final String TYPE_RECHERCHE_PARAMETER_NAME = "typeRecherche";
-	public static final String URL_RETOUR_PARAMETER_NAME = "urlRetour";
-	public static final String FOR_PRINCIPAL_ACTIF_PARAMETER_NAME = "forPrincipalActif";
+	public final static String NUMERO_PARAMETER_NAME = "numero";
+	public final static String NOM_RAISON_PARAMETER_NAME = "nomRaison";
+	public final static String LOCALITE_OU_PAYS_PARAMETER_NAME = "localiteOuPays";
+	public final static String NO_OFS_FOR_PARAMETER_NAME = "noOfsFor";
+	public final static String DATE_NAISSANCE_PARAMETER_NAME = "dateNaissance";
+	public final static String NUMERO_ASSURE_SOCIAL_PARAMETER_NAME = "numeroAssureSocial";
+	public final static String TYPE_RECHERCHE_PARAMETER_NAME = "typeRecherche";
+	public final static String URL_RETOUR_PARAMETER_NAME = "urlRetour";
+	public final static String FOR_PRINCIPAL_ACTIF_PARAMETER_NAME = "forPrincipalActif";
 
 	/**
 	 * Le nom de l'attribut utilise pour l'objet stockant les paramétres de l'application
@@ -71,7 +71,7 @@ public class TiersListController implements MessageSourceAware {
 	/**
 	 * Le nom de l'URL de retour stockée en session
 	 */
-	public static final String URL_RETOUR_SESSION_NAME = "urlRetour";
+	public final static String URL_RETOUR_SESSION_NAME = "urlRetour";
 
 	/**
 	 * Le nom de l'attribut du modèle pour les résultats de recherche

@@ -42,8 +42,8 @@ public class DivorceTest extends AbstractEvenementCivilInterneTest {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(DivorceTest.class);
 
-	static final private RegDate DATE_DIVORCE = RegDate.get(2008, 10, 10);
-	static final private RegDate DATE_SEPARATION = RegDate.get(2008, 1, 28);
+	final static private RegDate DATE_DIVORCE = RegDate.get(2008, 10, 10);
+	final static private RegDate DATE_SEPARATION = RegDate.get(2008, 1, 28);
 
 	// test personne celibataire
 	private static final long INDIVIDU_CELIBATAIRE = 34567;

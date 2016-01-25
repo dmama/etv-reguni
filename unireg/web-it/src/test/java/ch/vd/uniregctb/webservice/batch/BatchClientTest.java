@@ -49,7 +49,7 @@ public class BatchClientTest extends WebitTest {
 
 		final List<String> list = client.getBatchNames();
 		assertNotNull(list);
-		assertEquals(72, list.size());
+		assertEquals(68, list.size());
 		int i = 0;
 		assertEquals("IT-BatchClientJob", list.get(i++));
 		assertEquals("IT-InContainerTestingJob", list.get(i++));
@@ -73,7 +73,6 @@ public class BatchClientTest extends WebitTest {
 		assertEquals("EvenementExterneHandlerJob", list.get(i++));
 //		assertEquals("EvenementCivilEchCorrectionDumpJob", list.get(i++));      // pas la peine de le mettre, il n'est visible qu'en dev...
 		assertEquals("EvenementReqDesHandlerJob", list.get(i++));
-		assertEquals("EvenementOrganisationHandlerJob", list.get(i++));
 		assertEquals("EditiqueListeRecapJob", list.get(i++));
 		assertEquals("EditiqueSommationLRJob", list.get(i++));
 		assertEquals("ReinitialiserBaremeDoubleGainJob", list.get(i++));
@@ -87,10 +86,6 @@ public class BatchClientTest extends WebitTest {
 		assertEquals("ListeNoteJob", list.get(i++));
 		assertEquals("EnvoiAnnexeImmeubleJob", list.get(i++));
 		assertEquals("ImportCodesSegmentJob", list.get(i++));
-		assertEquals("DetermineDIsPMEnMasseJob", list.get(i++));
-		assertEquals("EnvoiDIsPMEnMasseJob", list.get(i++));
-		assertEquals("EnvoiSommationsDIsPMJob", list.get(i++));
-		assertEquals("EchoirDIsPMJob", list.get(i++));
 		assertEquals("OuvertureForsContribuableMajeurJob", list.get(i++));
 		assertEquals("FusionDeCommunesJob", list.get(i++));
 		assertEquals("ComparerForFiscalEtCommuneJob", list.get(i++));
@@ -118,6 +113,7 @@ public class BatchClientTest extends WebitTest {
 		assertEquals("CorrectionForsHCJob", list.get(i++));
 		assertEquals("CorrectionFlagHabitantJob", list.get(i++));
 		assertEquals("CorrectionEtatDeclarationJob", list.get(i++));
+		assertEquals("MigrationCoquillesPM", list.get(i++));
 		assertEquals("InsertEmployeurFictifEmpAciJob", list.get(i++));
 		assertEquals("AuditLogPurgeJob", list.get(i++));
 		assertEquals("CalculParentesJob", list.get(i++));

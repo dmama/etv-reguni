@@ -20,7 +20,7 @@ import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.iban.IbanValidator;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.interfaces.service.ServiceOrganisationService;
+import ch.vd.uniregctb.interfaces.service.ServicePersonneMoraleService;
 import ch.vd.uniregctb.jms.BamMessageSender;
 import ch.vd.uniregctb.jms.EsbBusinessCode;
 import ch.vd.uniregctb.jms.EsbBusinessException;
@@ -79,10 +79,6 @@ public class PartyRequestHandlerV3 implements RequestHandler<PartyRequest> {
 		context.serviceCivilService = service;
 	}
 
-	public void setServiceOrganisation(ServiceOrganisationService service) {
-		context.serviceOrganisationService = service;
-	}
-
 	public void setHibernateTemplate(HibernateTemplate template) {
 		context.hibernateTemplate = template;
 	}
@@ -101,6 +97,10 @@ public class PartyRequestHandlerV3 implements RequestHandler<PartyRequest> {
 
 	public void setBamMessageSender(BamMessageSender service) {
 		context.bamSender = service;
+	}
+
+	public void setServicePM(ServicePersonneMoraleService service) {
+		context.servicePM = service;
 	}
 
 	public void setAssujettissementService(AssujettissementService service) {

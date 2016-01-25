@@ -45,7 +45,6 @@ import ch.vd.unireg.common.NomPrenom;
 import ch.vd.unireg.interfaces.civil.ServiceCivilException;
 import ch.vd.unireg.interfaces.civil.mock.CollectionLimitator;
 import ch.vd.unireg.interfaces.civil.rcpers.EchHelper;
-import ch.vd.unireg.interfaces.common.Adresse;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
 import ch.vd.unireg.interfaces.infra.data.AdresseCourrierMinimale;
 import ch.vd.unireg.interfaces.infra.data.RangeChangingAdresseWrapper;

@@ -2,22 +2,22 @@ package ch.vd.unireg.interfaces.infra.data;
 
 public interface Logiciel {
 
-	String getContactMetierMail();
+	public String getContactMetierMail();
 
-	String getContactTechniqueMail();
+	public String getContactTechniqueMail();
 
-	String getFournisseur();
+	public String getFournisseur();
 
-	long getId();
+	public long getId();
 
-	String getLibelle();
+	public String getLibelle();
 
-	LogicielMetier getMetier();
+	public LogicielMetier getMetier();
 
-	String getVersion();
+	public String getVersion();
 
-	String getLibelleComplet();
+	public String getLibelleComplet();
 
 
-	boolean isCertifie();
+	public boolean isCertifie();
 }

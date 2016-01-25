@@ -16,7 +16,7 @@ import ch.vd.registre.base.utils.Assert;
 import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.common.CsvHelper;
 import ch.vd.uniregctb.common.TemporaryFile;
-import ch.vd.uniregctb.declaration.ordinaire.pp.StatistiquesDIs;
+import ch.vd.uniregctb.declaration.ordinaire.StatistiquesDIs;
 
 /**
  * Rapport PDF contenant les statistiques des déclarations d'impôt ordinaires

@@ -8,9 +8,7 @@ import java.util.Arrays;
  */
 public enum ParametreEnum {
 
-	premierePeriodeFiscalePersonnesPhysiques("2003", Type.annee, false),
-	premierePeriodeFiscalePersonnesMorales("2009", Type.annee, false),
-	premierePeriodeFiscaleDeclarationPersonnesMorales("2016", Type.annee, false),
+	premierePeriodeFiscale("2003", Type.annee, false),
 
 	noel("25.12", Type.jourDansAnnee, false),
 	nouvelAn("01.01", Type.jourDansAnnee, false),
@@ -21,15 +19,10 @@ public enum ParametreEnum {
 	nbMaxParPage("10", Type.entierPositif, true),
 
 	delaiAttenteDeclarationImpotPersonneDecedee("30", Type.delaisEnJour, true),
-	delaiRetourDeclarationImpotPPEmiseManuellement("60", Type.delaisEnJour, true),
+	delaiRetourDeclarationImpotEmiseManuellement("60", Type.delaisEnJour, true),
 	delaiCadevImpressionDeclarationImpot("3", Type.delaisEnJour, true),
-	delaiEnvoiSommationDeclarationImpotPP("15", Type.delaisEnJour, true),
-	delaiEcheanceSommationDeclarationImpotPP("30", Type.delaisEnJour, true),
-
-	delaiRetourDeclarationImpotPMEmiseManuellement("30", Type.delaisEnJour, true),
-	delaiMinimalRetourDeclarationImpotPM("3", Type.delaisEnMois, true),
-	delaiEnvoiSommationDeclarationImpotPM("0", Type.delaisEnJour, true),
-	delaiEcheanceSommationDeclarationImpotPM("30", Type.delaisEnJour, true),
+	delaiEnvoiSommationDeclarationImpot("15", Type.delaisEnJour, true),
+	delaiEcheanceSommationDeclarationImpot("30", Type.delaisEnJour, true),
 
 	jourDuMoisEnvoiListesRecapitulatives("20", Type.jourDansMois, true),
  	delaiCadevImpressionListesRecapitulatives("3", Type.delaisEnJour, true),
@@ -99,13 +92,9 @@ public enum ParametreEnum {
 
 		try {
 			switch (type) {
+			case entierPositif:
 			case delaisEnJour:
 			case delaisEnMois:
-				if (Integer.parseInt(s) < 0) {
-					throw new ValeurInvalideException(msgErr + " - La valeur doit être un entier positif ou nul");
-				}
-				break;
-			case entierPositif:
 				if (Integer.parseInt(s) <= 0) {
 					throw new ValeurInvalideException(msgErr + " - La valeur doit être un entier positif");
 				}

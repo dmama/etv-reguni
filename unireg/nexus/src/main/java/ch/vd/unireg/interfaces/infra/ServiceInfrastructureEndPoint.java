@@ -19,6 +19,7 @@ import ch.vd.unireg.interfaces.infra.data.OfficeImpot;
 import ch.vd.unireg.interfaces.infra.data.Pays;
 import ch.vd.unireg.interfaces.infra.data.Region;
 import ch.vd.unireg.interfaces.infra.data.Rue;
+import ch.vd.unireg.interfaces.infra.data.TypeEtatPM;
 import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
 import ch.vd.uniregctb.load.DetailedLoadMeter;
 import ch.vd.uniregctb.load.DetailedLoadMonitorable;
@@ -289,6 +290,50 @@ public class ServiceInfrastructureEndPoint implements ServiceInfrastructureRaw, 
 	}
 
 	@Override
+	public List<TypeRegimeFiscal> getTypesRegimesFiscaux() throws ServiceInfrastructureException {
+		loadMeter.start(new MethodCallDescriptor("getTypesRegimesFiscaux"));
+		try {
+			return target.getTypesRegimesFiscaux();
+		}
+		finally {
+			loadMeter.end();
+		}
+	}
+
+	@Override
+	public TypeRegimeFiscal getTypeRegimeFiscal(String code) throws ServiceInfrastructureException {
+		loadMeter.start(new MethodCallDescriptor("getTypeRegimeFiscal", "code", code));
+		try {
+			return target.getTypeRegimeFiscal(code);
+		}
+		finally {
+			loadMeter.end();
+		}
+	}
+
+	@Override
+	public List<TypeEtatPM> getTypesEtatsPM() throws ServiceInfrastructureException {
+		loadMeter.start(new MethodCallDescriptor("getTypesEtatsPM"));
+		try {
+			return target.getTypesEtatsPM();
+		}
+		finally {
+			loadMeter.end();
+		}
+	}
+
+	@Override
+	public TypeEtatPM getTypeEtatPM(String code) throws ServiceInfrastructureException {
+		loadMeter.start(new MethodCallDescriptor("getTypeEtatPM", "code", code));
+		try {
+			return target.getTypeEtatPM(code);
+		}
+		finally {
+			loadMeter.end();
+		}
+	}
+
+	@Override
 	public String getUrlVers(ApplicationFiscale application, Long tiersId, Integer oid) {
 		loadMeter.start(new MethodCallDescriptor("getUrlVers", "application", application, "tiersId", tiersId, "oid", oid));
 		try {
@@ -337,17 +382,6 @@ public class ServiceInfrastructureEndPoint implements ServiceInfrastructureRaw, 
 		loadMeter.start(new MethodCallDescriptor("getRegion", "code", code));
 		try {
 			return target.getRegion(code);
-		}
-		finally {
-			loadMeter.end();
-		}
-	}
-
-	@Override
-	public List<TypeRegimeFiscal> getTousLesRegimesFiscaux() {
-		loadMeter.start(new MethodCallDescriptor("getTousLesRegimesFiscaux"));
-		try {
-			return target.getTousLesRegimesFiscaux();
 		}
 		finally {
 			loadMeter.end();

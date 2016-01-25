@@ -11,7 +11,6 @@ import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.document.AcomptesRapport;
 import ch.vd.uniregctb.rapport.RapportService;
-import ch.vd.uniregctb.scheduler.JobCategory;
 import ch.vd.uniregctb.scheduler.JobDefinition;
 import ch.vd.uniregctb.scheduler.JobParam;
 import ch.vd.uniregctb.scheduler.JobParamInteger;
@@ -20,6 +19,7 @@ import ch.vd.uniregctb.transaction.TransactionTemplate;
 public class AcomptesJob  extends JobDefinition {
 
 	public static final String NAME = "AcomptesJob";
+	private static final String CATEGORIE = "Stats";
 
 	public static final String I_NB_THREADS = "nbThreads";
 	public static final String PERIODE_FISCALE = "PERIODE";
@@ -31,7 +31,7 @@ public class AcomptesJob  extends JobDefinition {
 	private PlatformTransactionManager transactionManager;
 
 	public AcomptesJob(int order, String description) {
-		super(NAME, JobCategory.STATS, order, description);
+		super(NAME, CATEGORIE, order, description);
 
 		final RegDate today = RegDate.get();
 		final JobParam param0 = new JobParam();

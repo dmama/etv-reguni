@@ -8,6 +8,6 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
 public @interface SecurityCheck {
-	Role[] rolesToCheck ();
-	String accessDeniedMessage();
+	public Role[] rolesToCheck ();
+	public String accessDeniedMessage();
 }

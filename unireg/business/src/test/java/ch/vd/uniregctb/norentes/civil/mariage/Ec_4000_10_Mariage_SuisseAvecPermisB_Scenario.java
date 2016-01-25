@@ -16,7 +16,6 @@ import ch.vd.uniregctb.norentes.common.EvenementCivilScenario;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
@@ -96,7 +95,8 @@ public class Ec_4000_10_Mariage_SuisseAvecPermisB_Scenario extends EvenementCivi
 
 		// rafa est sourcier
 		noCtbRafa = rafa.getNumero();
-		addForFiscalPrincipal(rafa, MockCommune.Lausanne, dateMajoriteRafa, null, MotifFor.MAJORITE, null, ModeImposition.SOURCE);
+		final ForFiscalPrincipal ffpRafa = addForFiscalPrincipal(rafa, MockCommune.Lausanne, dateMajoriteRafa, null, MotifFor.MAJORITE, null);
+		ffpRafa.setModeImposition(ModeImposition.SOURCE);
 
 		// maria n'a pas de for
 		noCtbMaria = maria.getNumero();
@@ -140,7 +140,7 @@ public class Ec_4000_10_Mariage_SuisseAvecPermisB_Scenario extends EvenementCivi
 		final PersonnePhysique rafa = (PersonnePhysique) tiersDAO.get(noCtbRafa);
 		final EnsembleTiersCouple ensembleCouple = tiersService.getEnsembleTiersCouple(rafa, dateMariage);
 		final MenageCommun menage = ensembleCouple.getMenage();
-		final ForFiscalPrincipalPP forMenage = menage.getDernierForFiscalPrincipal();
+		final ForFiscalPrincipal forMenage = menage.getDernierForFiscalPrincipal();
 		assertNotNull(forMenage, "Le ménage n'a pas de for fiscal principal");
 		assertEquals(dateMariage, forMenage.getDateDebut(), "Le for du ménage de commence pas à la bonne date");
 		assertNull(forMenage.getDateFin(), "Le for du ménage ne devrait pas être fermé");

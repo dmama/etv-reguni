@@ -4,7 +4,6 @@ import java.util.Map;
 
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer.Mode;
-import ch.vd.uniregctb.scheduler.JobCategory;
 import ch.vd.uniregctb.scheduler.JobDefinition;
 import ch.vd.uniregctb.scheduler.JobParam;
 import ch.vd.uniregctb.scheduler.JobParamEnum;
@@ -16,6 +15,7 @@ import ch.vd.uniregctb.scheduler.JobParamInteger;
 public class DatabaseIndexerJob extends JobDefinition {
 
 	public static final String NAME = "DatabaseIndexerJob";
+	private static final String CATEGORIE = "Indexeur";
 
 	public static final String I_NB_THREADS = "nbThreads";
 	public static final String MODE = "mode";
@@ -23,7 +23,7 @@ public class DatabaseIndexerJob extends JobDefinition {
 	private GlobalTiersIndexer globalTiersIndexer;
 
 	public DatabaseIndexerJob(int sortOrder, String description) {
-		super(NAME, JobCategory.INDEXEUR, sortOrder, description);
+		super(NAME, CATEGORIE, sortOrder, description);
 
 		final JobParam param0 = new JobParam();
 		param0.setDescription("Nombre de threads");
@@ -46,7 +46,7 @@ public class DatabaseIndexerJob extends JobDefinition {
 		final int nbThreads = getStrictlyPositiveIntegerValue(params, I_NB_THREADS);
 		final Mode mode = getEnumValue(params, MODE, Mode.class);
 
-		globalTiersIndexer.indexAllDatabase(getStatusManager(), nbThreads, mode);
+		globalTiersIndexer.indexAllDatabase(getStatusManager(), nbThreads, mode, true);
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})

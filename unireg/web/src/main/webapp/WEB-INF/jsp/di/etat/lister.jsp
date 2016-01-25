@@ -4,17 +4,11 @@
 <fieldset>
 	<legend><span><fmt:message key="label.etats"/></span></legend>
 
-	<c:if test="${!command.depuisTache && (command.allowedQuittancement || command.allowedSuspension)}">
+	<c:if test="${!command.depuisTache && command.allowedQuittancement}">
 		<table id="quittancerBouton" border="0">
 			<tr>
 				<td>
-					<c:if test="${command.allowedQuittancement}">
-						<unireg:linkTo name="Quittancer" title="Quittancer la déclaration" action="/di/etat/ajouter-quittance.do" params="{id:${command.id}}" link_class="add margin_right_10"/>
-					</c:if>
-					<c:if test="${command.allowedSuspension}">
-						<unireg:linkTo name="Suspendre" title="Suspendre la déclaration" action="/di/etat/ajouter-suspension.do" params="{id:${command.id}}" link_class="add"
-						               method="post" confirm="Voulez-vous vraiment suspendre la déclaration ?"/>
-					</c:if>
+					<unireg:linkTo name="Quittancer" title="Quittancer la déclaration" action="/di/etat/ajouter.do" params="{id:${command.id}}" link_class="add"/>
 				</td>
 			</tr>
 		</table>
@@ -27,8 +21,8 @@
 				<c:if test="${!etat.annule && etat.etat == 'SOMMEE'}">
 					&nbsp;
 					(<fmt:message key="label.date.envoi.courrier">
-						<fmt:param><unireg:date date="${etat.dateEnvoiCourrier}"/></fmt:param>
-					</fmt:message>)
+					<fmt:param><unireg:date date="${etat.dateEnvoiCourrier}"/></fmt:param>
+				</fmt:message>)
 				</c:if>
 			</display:column>
 			<display:column titleKey="label.etat">
@@ -45,19 +39,15 @@
 				</c:if>
 			</display:column>
 			<display:column style="action">
-				<c:choose>
-					<c:when test="${command.depuisTache}">
-						<unireg:consulterLog entityNature="EtatDeclaration" entityId="${etat.id}"/>
-					</c:when>
-					<c:when test="${!etat.annule && etat.etat == 'RETOURNEE' && command.allowedQuittancement}">
+				<c:if test="${command.depuisTache || !command.allowedQuittancement}">
+					<unireg:consulterLog entityNature="EtatDeclaration" entityId="${etat.id}"/>
+				</c:if>
+				<c:if test="${!command.depuisTache && command.allowedQuittancement}">
+					<c:if test="${!etat.annule && etat.etat == 'RETOURNEE'}">
 						<unireg:linkTo name="" title="Annuler le quittancement" confirm="Voulez-vous vraiment annuler ce quittancement ?"
-						               action="/di/etat/annuler-quittance.do" method="post" params="{id:${etat.id}}" link_class="delete"/>
-					</c:when>
-					<c:when test="${!etat.annule && etat.etat == 'SUSPENDUE' && command.allowedAnnulationSuspension}">
-						<unireg:linkTo name="" title="Annuler la suspension" confirm="Voulez-vous vraiment annuler cette suspension ?"
-						               action="/di/etat/annuler-suspension.do" method="post" params="{id:${etat.id}}" link_class="delete"/>
-					</c:when>
-				</c:choose>
+						               action="/di/etat/annuler.do" method="post" params="{id:${etat.id}}" link_class="delete"/>
+					</c:if>
+				</c:if>
 			</display:column>
 			<display:setProperty name="paging.banner.all_items_found" value=""/>
 			<display:setProperty name="paging.banner.one_item_found" value=""/>

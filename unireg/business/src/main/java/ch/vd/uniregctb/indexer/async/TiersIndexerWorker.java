@@ -29,7 +29,10 @@ import ch.vd.uniregctb.common.Switchable;
 import ch.vd.uniregctb.indexer.IndexerBatchException;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexerImpl;
+import ch.vd.uniregctb.interfaces.model.PartPM;
+import ch.vd.uniregctb.interfaces.service.ServicePersonneMoraleService;
 import ch.vd.uniregctb.tiers.Tiers;
+import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersDAOImpl;
 import ch.vd.uniregctb.transaction.TransactionTemplate;
 import ch.vd.uniregctb.worker.BatchWorker;
@@ -50,6 +53,10 @@ public class TiersIndexerWorker implements BatchWorker<Long> {
 
 	@Nullable private final ServiceCivilCacheWarmer serviceCivilCacheWarmer;
 
+	private final boolean prefetchPMs;
+	private final TiersDAO tiersDAO;
+	private final ServicePersonneMoraleService servicePM;
+
 	private final String name;
 
 	/**
@@ -62,9 +69,13 @@ public class TiersIndexerWorker implements BatchWorker<Long> {
 	 * @param dialect                   le dialect hibernate utilisé
 	 * @param name                      le nom du thread
 	 * @param serviceCivilCacheWarmer   le warmer du cache du service civil
+	 * @param servicePM                 le service des personnes morales
+	 * @param prefetchPMs               <b>vrai</b> si le cache des PMs doit être préchauffé par lot; <b>faux</b> autrement.
+	 * @param tiersDAO                  le tiers DAO
 	 */
 	public TiersIndexerWorker(GlobalTiersIndexer.Mode mode, GlobalTiersIndexerImpl globalTiersIndexer, SessionFactory sessionFactory, PlatformTransactionManager transactionManager, Dialect dialect,
-	                          String name, @Nullable ServiceCivilCacheWarmer serviceCivilCacheWarmer) {
+	                          String name, @Nullable ServiceCivilCacheWarmer serviceCivilCacheWarmer, ServicePersonneMoraleService servicePM,
+	                          boolean prefetchPMs, TiersDAO tiersDAO) {
 		this.indexer = globalTiersIndexer;
 		this.transactionManager = transactionManager;
 		this.sessionFactory = sessionFactory;
@@ -72,6 +83,9 @@ public class TiersIndexerWorker implements BatchWorker<Long> {
 		this.dialect = dialect;
 		this.name = name;
 		this.serviceCivilCacheWarmer = serviceCivilCacheWarmer;
+		this.prefetchPMs = prefetchPMs;
+		this.tiersDAO = tiersDAO;
+		this.servicePM = servicePM;
 		Assert.notNull(this.indexer);
 		Assert.notNull(this.transactionManager);
 		Assert.notNull(this.sessionFactory);
@@ -126,6 +140,10 @@ public class TiersIndexerWorker implements BatchWorker<Long> {
 							// Si le service est chauffable, on précharge les individus en vrac pour améliorer les performances.
 							warmIndividuCache(session, batch);
 
+							if (prefetchPMs) {
+								warmPMCache(batch);
+							}
+
 							final Query query = session.createQuery("from Tiers t where t.id in (:ids)");
 							query.setParameterList("ids", batch);
 							//noinspection unchecked
@@ -150,10 +168,29 @@ public class TiersIndexerWorker implements BatchWorker<Long> {
 		});
 	}
 
+	private void warmPMCache(List<Long> batch) {
+
+		long start = System.nanoTime();
+
+		final List<Long> idsPM = tiersDAO.getNumerosPMs(batch);
+
+		if (idsPM != null && idsPM.size() > 1) { // on peut tomber sur une plage de tiers ne contenant pas de PM (et inutile de préchauffer une seule PM)
+			try {
+				servicePM.getPersonnesMorales(idsPM, PartPM.ADRESSES, PartPM.FORS_FISCAUX, PartPM.ASSUJETTISSEMENTS); // chauffe le cache
+
+				long nanosecondes = System.nanoTime() - start;
+				LOGGER.info("=> Récupéré " + idsPM.size() + " PMs en " + (nanosecondes / 1000000L) + "ms.");
+			}
+			catch (Exception e) {
+				LOGGER.error("Impossible de précharger le lot de PMs [" + idsPM + "]. On continue un par un pour ce lot.", e);
+			}
+		}
+	}
+
 	private void warmIndividuCache(Session session, List<Long> batch) {
 		if (serviceCivilCacheWarmer != null && serviceCivilCacheWarmer.isServiceWarmable()) {
 			final Set<Long> numerosIndividus = TiersDAOImpl.getNumerosIndividu(batch, true, session);
-			final AttributeIndividu[] parties = AttributeIndividu.values(); // toutes les parties (pour charger le cache persistent)
+			final AttributeIndividu parties[] = AttributeIndividu.values(); // toutes les parties (pour charger le cache persistent)
 			serviceCivilCacheWarmer.warmIndividus(numerosIndividus, null, parties);
 		}
 	}

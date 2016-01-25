@@ -34,9 +34,9 @@ public abstract class JobDefinition implements InitializingBean, Comparable<JobD
 
 	public static final String DATE_TRAITEMENT = "DATE_TRAITEMENT"; // pour le testing uniquement
 
-	public static final String KEY_JOB = "job";
-	public static final String KEY_USER = "user";
-	public static final String KEY_PARAMS = "params";
+	public final static String KEY_JOB = "job";
+	public final static String KEY_USER = "user";
+	public final static String KEY_PARAMS = "params";
 
 	// Params dynamic
 	private String runningMessage;
@@ -48,13 +48,13 @@ public abstract class JobDefinition implements InitializingBean, Comparable<JobD
 	private JobStatusManager statusManager = null;
 
 	// Params static
-	private final String name;
-	private final JobCategory categorie;
+	final private String name;
+	final private String categorie;
 	private JobSynchronousMode synchronousMode;
-	private final int sortOrder;
-	private final String description;
-	private final Map<String, JobParam> paramDefinition = new LinkedHashMap<>();        // java.util.LinkedHashMap pour conserver l'ordre d'insertion des paramètres
-	private final Map<String, Object> defaultParamWebValues = new HashMap<>();
+	final private int sortOrder;
+	final private String description;
+	final private Map<String, JobParam> paramDefinition = new LinkedHashMap<>();        // java.util.LinkedHashMap pour conserver l'ordre d'insertion des paramètres
+	final private Map<String, Object> defaultParamWebValues = new HashMap<>();
 
 	private boolean logDisabled = false;
 
@@ -89,7 +89,7 @@ public abstract class JobDefinition implements InitializingBean, Comparable<JobD
 		JOB_INTERRUPTED
 	}
 
-	public JobDefinition(String name, JobCategory categorie, int sortOrder, String description) {
+	public JobDefinition(String name, String categorie, int sortOrder, String description) {
 		this.name = name;
 		this.categorie = categorie;
 		this.sortOrder = sortOrder;
@@ -232,7 +232,7 @@ public abstract class JobDefinition implements InitializingBean, Comparable<JobD
 		return name;
 	}
 
-	public JobCategory getCategorie() {
+	public String getCategorie() {
 		return categorie;
 	}
 

@@ -4,38 +4,36 @@
 package ch.vd.uniregctb.type;
 
 /**
- * Typologie des états de déclaration
+ * <!-- begin-user-doc -->
+ * Longueur de colonne : 12
+ * <!-- end-user-doc -->
+ * @author jec
+ *
+ * @uml.annotations
+ *     derived_abstraction="platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_U3Th0OqjEdyjCbp-wrQYpA"
+ * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_U3Th0OqjEdyjCbp-wrQYpA"
  */
 public enum TypeEtatDeclaration {
 
 	/**
-	 * Déclaration émise, en attente de retour depuis le tiers. C'est le premier état de toute déclaration.
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 *
+	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_cvatkOqjEdyjCbp-wrQYpA"
 	 */
-	EMISE("émise"),
-
-	/**
-	 * Une sommation a été émise pour la déclaration.
+	EMISE("émise"), /**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 *
+	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_fLIiEOqjEdyjCbp-wrQYpA"
 	 */
-	SOMMEE("sommée"),
-
-	/**
-	 * Un rappel a été émis pour la déclaration.
+	SOMMEE("sommée"), /**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 *
+	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_yGKagO_6EdyJH9xfKrZiwA"
 	 */
-	RAPPELEE("rappelée"),
-
-	/**
-	 * Une notification d'échéance (= qui ouvre la porte à la taxation d'office) a été émise pour la déclaration
-	 */
-	ECHUE("échue"),
-
-	/**
-	 * Déclaration suspendue, aucun rappel, aucune sommation ni échéance ne doit pouvoir être généré
-	 * tant qu'un tel état non-annulé existe
-	 */
-	SUSPENDUE("suspendue"),
-
-	/**
-	 * Déclaration retournée (= depuis le tiers)
+	ECHUE("échue"), /**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 *
+	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_3nWyMO_6EdyJH9xfKrZiwA"
 	 */
 	RETOURNEE("retournée");
 
@@ -47,5 +45,21 @@ public enum TypeEtatDeclaration {
 
 	public String description() {
 		return description;
+	}
+
+	/**
+	 * Retourne le type d'etat du document correspondant à un code donné.
+	 *
+	 * @param code
+	 *            le type d'etat du document
+	 * @return le type d'etat du document correspondant à un code donné, null si le code n'a pas été trouvé.
+	 */
+	public static TypeEtatDeclaration valueOf(int code) {
+		if (0 <= code && code < TypeEtatDeclaration.values().length) {
+			return TypeEtatDeclaration.values()[code];
+		}
+		else {
+			return null;
+		}
 	}
 }

@@ -64,7 +64,7 @@ public class ListeRecapVisuManagerImpl implements ListeRecapVisuManager,MessageS
 		lrView.setDateFinPeriode(lr.getDateFin());
 		List<DelaiDeclarationView> delaisView = new ArrayList<>();
 		for (DelaiDeclaration delai : lr.getDelais()) {
-			DelaiDeclarationView delaiView = new DelaiDeclarationView(delai, getMessageSource());
+			DelaiDeclarationView delaiView = new DelaiDeclarationView(delai);
 			delaiView.setFirst(lr.getPremierDelai() == delai.getDelaiAccordeAu());
 			delaisView.add(delaiView);
 		}

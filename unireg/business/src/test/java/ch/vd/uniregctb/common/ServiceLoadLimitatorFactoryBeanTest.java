@@ -34,11 +34,11 @@ public class ServiceLoadLimitatorFactoryBeanTest extends WithoutSpringTest {
 		}
 	}
 
-	private interface TestService {
+	private static interface TestService {
 		String doJob(int seed);
 	}
 
-	private interface TestServiceWithCheckedException {
+	private static interface TestServiceWithCheckedException {
 		String doJobWithException(int seed) throws CheckedTestException;
 	}
 

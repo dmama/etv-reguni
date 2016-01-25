@@ -26,6 +26,7 @@ import ch.vd.unireg.interfaces.infra.data.OfficeImpot;
 import ch.vd.unireg.interfaces.infra.data.Pays;
 import ch.vd.unireg.interfaces.infra.data.Region;
 import ch.vd.unireg.interfaces.infra.data.Rue;
+import ch.vd.unireg.interfaces.infra.data.TypeEtatPM;
 import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
 
 public class ServiceInfraGetPaysSimpleCache implements ServiceInfrastructureRaw {
@@ -460,6 +461,26 @@ public class ServiceInfraGetPaysSimpleCache implements ServiceInfrastructureRaw 
 	}
 
 	@Override
+	public List<TypeRegimeFiscal> getTypesRegimesFiscaux() throws ServiceInfrastructureException {
+		return target.getTypesRegimesFiscaux();
+	}
+
+	@Override
+	public TypeRegimeFiscal getTypeRegimeFiscal(String code) throws ServiceInfrastructureException {
+		return target.getTypeRegimeFiscal(code);
+	}
+
+	@Override
+	public List<TypeEtatPM> getTypesEtatsPM() throws ServiceInfrastructureException {
+		return target.getTypesEtatsPM();
+	}
+
+	@Override
+	public TypeEtatPM getTypeEtatPM(String code) throws ServiceInfrastructureException {
+		return target.getTypeEtatPM(code);
+	}
+
+	@Override
 	public String getUrlVers(ApplicationFiscale application, Long tiersId, Integer oid) {
 		return target.getUrlVers(application, tiersId, oid);
 	}
@@ -482,11 +503,6 @@ public class ServiceInfraGetPaysSimpleCache implements ServiceInfrastructureRaw 
 	@Override
 	public Region getRegion(int code) {
 		return target.getRegion(code);
-	}
-
-	@Override
-	public List<TypeRegimeFiscal> getTousLesRegimesFiscaux() {
-		return target.getTousLesRegimesFiscaux();
 	}
 
 	@Override

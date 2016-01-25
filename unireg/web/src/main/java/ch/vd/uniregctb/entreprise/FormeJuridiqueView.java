@@ -4,38 +4,21 @@ import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
-import ch.vd.uniregctb.common.Annulable;
-import ch.vd.uniregctb.tiers.FormeLegaleHisto;
-import ch.vd.uniregctb.tiers.Source;
-import ch.vd.uniregctb.tiers.Sourced;
+import ch.vd.uniregctb.interfaces.model.FormeJuridique;
 
-public class FormeJuridiqueView implements Sourced<Source>, Annulable, DateRange {
+public class FormeJuridiqueView implements DateRange {
 
-	private final Long id;
-	private final RegDate dateDebut;
-	private final RegDate dateFin;
-	private final FormeLegale type;
-	private final Source source;
-	private final boolean annule;
-	private boolean dernierElement;
+	private RegDate dateDebut;
+	private RegDate dateFin;
+	private String code;
 
-	public FormeJuridiqueView(FormeLegaleHisto forme) {
-		this(forme.getId(), forme.isAnnule(), forme.getDateDebut(), forme.getDateFin(), forme.getFormeLegale(), forme.getSource());
+	public FormeJuridiqueView() {
 	}
 
-	private FormeJuridiqueView(Long id, boolean annule, RegDate dateDebut, RegDate dateFin, FormeLegale type, Source source) {
-		this.id = id;
-		this.dateDebut = dateDebut;
-		this.dateFin = dateFin;
-		this.type = type;
-		this.annule = annule;
-		this.source = source;
-		this.dernierElement = false;
-	}
-
-	public Long getId() {
-		return id;
+	public FormeJuridiqueView(FormeJuridique forme) {
+		this.dateDebut = forme.getDateDebut();
+		this.dateFin = forme.getDateFin();
+		this.code = forme.getCode();
 	}
 
 	@Override
@@ -43,35 +26,29 @@ public class FormeJuridiqueView implements Sourced<Source>, Annulable, DateRange
 		return dateDebut;
 	}
 
+	public void setDateDebut(RegDate dateDebut) {
+		this.dateDebut = dateDebut;
+	}
+
 	@Override
 	public RegDate getDateFin() {
 		return dateFin;
 	}
 
-	public FormeLegale getType() {
-		return type;
+	public void setDateFin(RegDate dateFin) {
+		this.dateFin = dateFin;
+	}
+
+	public String getCode() {
+		return code;
+	}
+
+	public void setCode(String code) {
+		this.code = code;
 	}
 
 	@Override
 	public boolean isValidAt(RegDate date) {
-		return !isAnnule() && RegDateHelper.isBetween(date, dateDebut, dateFin, NullDateBehavior.LATEST);
-	}
-
-	@Override
-	public boolean isAnnule() {
-		return annule;
-	}
-
-	@Override
-	public Source getSource() {
-		return source;
-	}
-
-	public boolean isDernierElement() {
-		return dernierElement;
-	}
-
-	public void setDernierElement(boolean dernierElement) {
-		this.dernierElement = dernierElement;
+		return RegDateHelper.isBetween(date, dateDebut, dateFin, NullDateBehavior.LATEST);
 	}
 }

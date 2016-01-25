@@ -14,25 +14,69 @@ import ch.vd.uniregctb.acomptes.AcomptesResults;
 import ch.vd.uniregctb.adresse.ResolutionAdresseResults;
 import ch.vd.uniregctb.common.LoggingStatusManager;
 import ch.vd.uniregctb.declaration.DeclarationException;
-import ch.vd.uniregctb.declaration.ordinaire.common.DemandeDelaiCollectiveResults;
-import ch.vd.uniregctb.declaration.ordinaire.pm.DeterminationDIsPMResults;
-import ch.vd.uniregctb.declaration.ordinaire.pm.EchoirDIsPMResults;
-import ch.vd.uniregctb.declaration.ordinaire.pm.EnvoiDIsPMResults;
-import ch.vd.uniregctb.declaration.ordinaire.pm.EnvoiSommationsDIsPMResults;
-import ch.vd.uniregctb.declaration.ordinaire.pp.DeterminationDIsPPResults;
-import ch.vd.uniregctb.declaration.ordinaire.pp.EchoirDIsPPResults;
-import ch.vd.uniregctb.declaration.ordinaire.pp.EnvoiAnnexeImmeubleResults;
-import ch.vd.uniregctb.declaration.ordinaire.pp.EnvoiDIsPPResults;
-import ch.vd.uniregctb.declaration.ordinaire.pp.EnvoiSommationsDIsPPResults;
-import ch.vd.uniregctb.declaration.ordinaire.pp.ImportCodesSegmentResults;
-import ch.vd.uniregctb.declaration.ordinaire.pp.ListeDIsPPNonEmises;
-import ch.vd.uniregctb.declaration.ordinaire.pp.ListeNoteResults;
-import ch.vd.uniregctb.declaration.ordinaire.pp.StatistiquesCtbs;
-import ch.vd.uniregctb.declaration.ordinaire.pp.StatistiquesDIs;
+import ch.vd.uniregctb.declaration.ListeNoteResults;
+import ch.vd.uniregctb.declaration.ordinaire.DemandeDelaiCollectiveResults;
+import ch.vd.uniregctb.declaration.ordinaire.DeterminationDIsResults;
+import ch.vd.uniregctb.declaration.ordinaire.EchoirDIsResults;
+import ch.vd.uniregctb.declaration.ordinaire.EnvoiAnnexeImmeubleResults;
+import ch.vd.uniregctb.declaration.ordinaire.EnvoiDIsResults;
+import ch.vd.uniregctb.declaration.ordinaire.EnvoiSommationsDIsResults;
+import ch.vd.uniregctb.declaration.ordinaire.ImportCodesSegmentResults;
+import ch.vd.uniregctb.declaration.ordinaire.ListeDIsNonEmises;
+import ch.vd.uniregctb.declaration.ordinaire.StatistiquesCtbs;
+import ch.vd.uniregctb.declaration.ordinaire.StatistiquesDIs;
 import ch.vd.uniregctb.declaration.source.DeterminerLRsEchuesResults;
 import ch.vd.uniregctb.declaration.source.EnvoiLRsResults;
 import ch.vd.uniregctb.declaration.source.EnvoiSommationLRsResults;
-import ch.vd.uniregctb.document.*;
+import ch.vd.uniregctb.document.AcomptesRapport;
+import ch.vd.uniregctb.document.AssujettiParSubstitutionRapport;
+import ch.vd.uniregctb.document.CalculParentesRapport;
+import ch.vd.uniregctb.document.ComparerForFiscalEtCommuneRapport;
+import ch.vd.uniregctb.document.ComparerSituationFamilleRapport;
+import ch.vd.uniregctb.document.CorrectionEtatDeclarationRapport;
+import ch.vd.uniregctb.document.CorrectionFlagHabitantRapport;
+import ch.vd.uniregctb.document.DemandeDelaiCollectiveRapport;
+import ch.vd.uniregctb.document.DeterminationDIsRapport;
+import ch.vd.uniregctb.document.DeterminerLRsEchuesRapport;
+import ch.vd.uniregctb.document.DeterminerMouvementsDossiersEnMasseRapport;
+import ch.vd.uniregctb.document.DocumentService;
+import ch.vd.uniregctb.document.DumpPeriodesImpositionImpotSourceRapport;
+import ch.vd.uniregctb.document.EchoirDIsRapport;
+import ch.vd.uniregctb.document.EnvoiAnnexeImmeubleRapport;
+import ch.vd.uniregctb.document.EnvoiDIsRapport;
+import ch.vd.uniregctb.document.EnvoiLRsRapport;
+import ch.vd.uniregctb.document.EnvoiSommationLRsRapport;
+import ch.vd.uniregctb.document.EnvoiSommationsDIsRapport;
+import ch.vd.uniregctb.document.ExclureContribuablesEnvoiRapport;
+import ch.vd.uniregctb.document.ExtractionDonneesRptRapport;
+import ch.vd.uniregctb.document.FusionDeCommunesRapport;
+import ch.vd.uniregctb.document.IdentifierContribuableRapport;
+import ch.vd.uniregctb.document.ImportCodesSegmentRapport;
+import ch.vd.uniregctb.document.ImportImmeublesRapport;
+import ch.vd.uniregctb.document.ListeAssujettisRapport;
+import ch.vd.uniregctb.document.ListeContribuablesResidentsSansForVaudoisRapport;
+import ch.vd.uniregctb.document.ListeDIsNonEmisesRapport;
+import ch.vd.uniregctb.document.ListeDroitsAccesRapport;
+import ch.vd.uniregctb.document.ListeNoteRapport;
+import ch.vd.uniregctb.document.ListeTachesEnIsntanceParOIDRapport;
+import ch.vd.uniregctb.document.ListesNominativesRapport;
+import ch.vd.uniregctb.document.MajoriteRapport;
+import ch.vd.uniregctb.document.MigrationCoquillesPMRapport;
+import ch.vd.uniregctb.document.PassageNouveauxRentiersSourciersEnMixteRapport;
+import ch.vd.uniregctb.document.RapprocherCtbRapport;
+import ch.vd.uniregctb.document.RecalculTachesRapport;
+import ch.vd.uniregctb.document.RecuperationDonneesAnciensHabitantsRapport;
+import ch.vd.uniregctb.document.RecuperationOriginesNonHabitantsRapport;
+import ch.vd.uniregctb.document.ReinitialiserBaremeDoubleGainRapport;
+import ch.vd.uniregctb.document.ResolutionAdresseRapport;
+import ch.vd.uniregctb.document.RolesCommunesRapport;
+import ch.vd.uniregctb.document.RolesOIDsRapport;
+import ch.vd.uniregctb.document.StatistiquesCtbsRapport;
+import ch.vd.uniregctb.document.StatistiquesDIsRapport;
+import ch.vd.uniregctb.document.StatistiquesEvenementsRapport;
+import ch.vd.uniregctb.document.SuppressionOIDRapport;
+import ch.vd.uniregctb.document.TraiterEvenementExterneRapport;
+import ch.vd.uniregctb.document.ValidationJobRapport;
 import ch.vd.uniregctb.droits.ListeDroitsAccesResults;
 import ch.vd.uniregctb.evenement.externe.TraiterEvenementExterneResult;
 import ch.vd.uniregctb.identification.contribuable.IdentifierContribuableResults;
@@ -67,6 +111,7 @@ import ch.vd.uniregctb.tiers.rattrapage.ancienshabitants.RecuperationDonneesAnci
 import ch.vd.uniregctb.tiers.rattrapage.etatdeclaration.CorrectionEtatDeclarationResults;
 import ch.vd.uniregctb.tiers.rattrapage.flaghabitant.CorrectionFlagHabitantResults;
 import ch.vd.uniregctb.tiers.rattrapage.origine.RecuperationOriginesNonHabitantsResults;
+import ch.vd.uniregctb.tiers.rattrapage.pm.MigrationCoquillesPM;
 import ch.vd.uniregctb.validation.ValidationJobResults;
 
 /**
@@ -92,46 +137,20 @@ public class RapportServiceImpl implements RapportService {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public DeterminationDIsPPRapport generateRapport(final DeterminationDIsPPResults results, StatusManager s) throws DeclarationException {
+	public DeterminationDIsRapport generateRapport(final DeterminationDIsResults results, StatusManager s) throws DeclarationException {
 
 		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
 
 		final String nom = "RapportDetermDIs" + results.annee;
-		final String description = String.format("Rapport du job de détermination des DIs PP à émettre pour l'année %d. Date de traitement = %s",
-		                                         results.annee,
-		                                         RegDateHelper.dateToDisplayString(results.dateTraitement));
+		final String description = String.format("Rapport du job de détermination des DIs à émettre pour l'année %d. Date de traitement = %s", results.annee, RegDateHelper.dateToDisplayString(
+				results.dateTraitement));
 		final Date dateGeneration = DateHelper.getCurrentDate();
 
 		try {
-			return docService.newDoc(DeterminationDIsPPRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<DeterminationDIsPPRapport>() {
+			return docService.newDoc(DeterminationDIsRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<DeterminationDIsRapport>() {
 				@Override
-				public void writeDoc(DeterminationDIsPPRapport doc, OutputStream os) throws Exception {
-					final PdfDeterminationDIsPPRapport document = new PdfDeterminationDIsPPRapport();
-					document.write(results, nom, description, dateGeneration, os, status);
-				}
-			});
-		}
-		catch (Exception e) {
-			throw new DeclarationException(e);
-		}
-	}
-
-	@Override
-	public DeterminationDIsPMRapport generateRapport(final DeterminationDIsPMResults results, StatusManager s) throws DeclarationException {
-
-		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
-
-		final String nom = "RapportDetermDIsPM" + results.annee;
-		final String description = String.format("Rapport du job de détermination des DIs PM à émettre pour l'année %d. Date de traitement = %s",
-		                                         results.annee,
-		                                         RegDateHelper.dateToDisplayString(results.dateTraitement));
-		final Date dateGeneration = DateHelper.getCurrentDate();
-
-		try {
-			return docService.newDoc(DeterminationDIsPMRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<DeterminationDIsPMRapport>() {
-				@Override
-				public void writeDoc(DeterminationDIsPMRapport doc, OutputStream os) throws Exception {
-					final PdfDeterminationDIsPMRapport document = new PdfDeterminationDIsPMRapport();
+				public void writeDoc(DeterminationDIsRapport doc, OutputStream os) throws Exception {
+					PdfDeterminationDIsRapport document = new PdfDeterminationDIsRapport();
 					document.write(results, nom, description, dateGeneration, os, status);
 				}
 			});
@@ -145,43 +164,20 @@ public class RapportServiceImpl implements RapportService {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public EnvoiDIsPPRapport generateRapport(final EnvoiDIsPPResults results, StatusManager s) throws DeclarationException {
+	public EnvoiDIsRapport generateRapport(final EnvoiDIsResults results, StatusManager s) throws DeclarationException {
 
 		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
 
-		final String nom = "RapportEnvoiDIsPP" + results.annee;
-		final String description = String.format("Rapport d'exécution du job d'envoi des DIs PP en masse pour l'année %d. Date de traitement = %s. Type de contribuable = %s",
+		final String nom = "RapportEnvoiDIs" + results.annee;
+		final String description = String.format("Rapport d'exécution du job d'envoi des DIs en masse pour l'année %d. Date de traitement = %s. Type de contribuable = %s",
 				                                 results.annee, RegDateHelper.dateToDisplayString(results.dateTraitement), results.categorie.name());
 		final Date dateGeneration = DateHelper.getCurrentDate();
 
 		try {
-			return docService.newDoc(EnvoiDIsPPRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<EnvoiDIsPPRapport>() {
+			return docService.newDoc(EnvoiDIsRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<EnvoiDIsRapport>() {
 				@Override
-				public void writeDoc(EnvoiDIsPPRapport doc, OutputStream os) throws Exception {
-					final PdfEnvoiDIsPPRapport document = new PdfEnvoiDIsPPRapport();
-					document.write(results, nom, description, dateGeneration, os, status);
-				}
-			});
-		}
-		catch (Exception e) {
-			throw new DeclarationException(e);
-		}
-	}
-
-	@Override
-	public EnvoiDIsPMRapport generateRapport(final EnvoiDIsPMResults results, StatusManager s) throws DeclarationException {
-		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
-
-		final String nom = "RapportEnvoiDIsPM" + results.getPeriodeFiscale();
-		final String description = String.format("Rapport d'exécution du job d'envoi des DIs PM en masse pour la période fiscale %d. Date de traitement = %s. Type de document = %s",
-		                                         results.getPeriodeFiscale(), RegDateHelper.dateToDisplayString(results.getDateTraitement()), results.getType().name());
-		final Date dateGeneration = DateHelper.getCurrentDate();
-
-		try {
-			return docService.newDoc(EnvoiDIsPMRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<EnvoiDIsPMRapport>() {
-				@Override
-				public void writeDoc(EnvoiDIsPMRapport doc, OutputStream os) throws Exception {
-					final PdfEnvoiDIsPMRapport document = new PdfEnvoiDIsPMRapport();
+				public void writeDoc(EnvoiDIsRapport doc, OutputStream os) throws Exception {
+					PdfEnvoiDIsRapport document = new PdfEnvoiDIsRapport();
 					document.write(results, nom, description, dateGeneration, os, status);
 				}
 			});
@@ -215,7 +211,7 @@ public class RapportServiceImpl implements RapportService {
 	}
 
 	@Override
-	public ListeDIsNonEmisesRapport generateRapport(final ListeDIsPPNonEmises results, final StatusManager status) {
+	public ListeDIsNonEmisesRapport generateRapport(final ListeDIsNonEmises results, final StatusManager status) {
 		final String nom = "RapportListeDIsNonEmises" + results.dateTraitement.index();
 		final String description = String.format("Rapport de la liste des DIs non émises.. Date de traitement = %s", RegDateHelper.dateToDisplayString(results.dateTraitement));
 		final Date dateGeneration = DateHelper.getCurrentDate();
@@ -387,35 +383,15 @@ public class RapportServiceImpl implements RapportService {
 	}
 
 	@Override
-	public EnvoiSommationsDIsPPRapport generateRapport(final EnvoiSommationsDIsPPResults results, final StatusManager statusManager) {
-		final String nom = "RapportSommationDIPP" + results.getDateTraitement().index();
-		final String description = String.format("Rapport de l'envoi de sommation des DIs PP. Date de traitement = %s", RegDateHelper.dateToDisplayString(results.getDateTraitement()));
+	public EnvoiSommationsDIsRapport generateRapport(final EnvoiSommationsDIsResults results, final StatusManager statusManager) {
+		final String nom = "RapportSommationDI" + results.getDateTraitement().index();
+		final String description = String.format("Rapport de l'envoi de sommation des DIs. Date de traitement = %s", RegDateHelper.dateToDisplayString(results.getDateTraitement()));
 		final Date dateGeneration = DateHelper.getCurrentDate();
 		try {
-			return docService.newDoc(EnvoiSommationsDIsPPRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<EnvoiSommationsDIsPPRapport>() {
+			return docService.newDoc(EnvoiSommationsDIsRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<EnvoiSommationsDIsRapport>() {
 				@Override
-				public void writeDoc(EnvoiSommationsDIsPPRapport doc, OutputStream os) throws Exception {
-					PdfEnvoiSommationsDIsPPRapport document = new PdfEnvoiSommationsDIsPPRapport();
-					document.write(results, nom, description, dateGeneration, os, statusManager);
-
-				}
-			});
-		}
-		catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-	}
-
-	@Override
-	public EnvoiSommationsDIsPMRapport generateRapport(final EnvoiSommationsDIsPMResults results, final StatusManager statusManager) {
-		final String nom = "RapportSommationDIPM" + results.getDateTraitement().index();
-		final String description = String.format("Rapport de l'envoi de sommation des DIs PM. Date de traitement = %s", RegDateHelper.dateToDisplayString(results.getDateTraitement()));
-		final Date dateGeneration = DateHelper.getCurrentDate();
-		try {
-			return docService.newDoc(EnvoiSommationsDIsPMRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<EnvoiSommationsDIsPMRapport>() {
-				@Override
-				public void writeDoc(EnvoiSommationsDIsPMRapport doc, OutputStream os) throws Exception {
-					final PdfEnvoiSommationsDIsPMRapport document = new PdfEnvoiSommationsDIsPMRapport();
+				public void writeDoc(EnvoiSommationsDIsRapport doc, OutputStream os) throws Exception {
+					PdfEnvoiSommationsDIsRapport document = new PdfEnvoiSommationsDIsRapport();
 					document.write(results, nom, description, dateGeneration, os, statusManager);
 
 				}
@@ -557,44 +533,20 @@ public class RapportServiceImpl implements RapportService {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public EchoirDIsPPRapport generateRapport(final EchoirDIsPPResults results, StatusManager s) {
+	public EchoirDIsRapport generateRapport(final EchoirDIsResults results, StatusManager s) {
 
 		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
 
-		final String nom = "RapportEchoirDIsPP" + results.dateTraitement.index();
-		final String description = String.format("Rapport d'exécution du job de passage des DIs PP sommées à l'état échu. Date de traitement = %s.",
+		final String nom = "RapportEchoirDIs" + results.dateTraitement.index();
+		final String description = String.format("Rapport d'exécution du job de passage des DIs sommées à l'état échu. Date de traitement = %s.",
 		                                         RegDateHelper.dateToDisplayString(results.dateTraitement));
 		final Date dateGeneration = DateHelper.getCurrentDate();
 
 		try {
-			return docService.newDoc(EchoirDIsPPRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<EchoirDIsPPRapport>() {
+			return docService.newDoc(EchoirDIsRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<EchoirDIsRapport>() {
 				@Override
-				public void writeDoc(EchoirDIsPPRapport doc, OutputStream os) throws Exception {
-					final PdfEchoirDIsPPRapport document = new PdfEchoirDIsPPRapport();
-					document.write(results, nom, description, dateGeneration, os, status);
-				}
-			});
-		}
-		catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-	}
-
-	@Override
-	public EchoirDIsPMRapport generateRapport(final EchoirDIsPMResults results, StatusManager s) {
-
-		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
-
-		final String nom = "RapportEchoirDIsPM" + results.dateTraitement.index();
-		final String description = String.format("Rapport d'exécution du job de passage des DIs PM sommées à l'état échu. Date de traitement = %s.",
-		                                         RegDateHelper.dateToDisplayString(results.dateTraitement));
-		final Date dateGeneration = DateHelper.getCurrentDate();
-
-		try {
-			return docService.newDoc(EchoirDIsPMRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<EchoirDIsPMRapport>() {
-				@Override
-				public void writeDoc(EchoirDIsPMRapport doc, OutputStream os) throws Exception {
-					final PdfEchoirDIsPMRapport document = new PdfEchoirDIsPMRapport();
+				public void writeDoc(EchoirDIsRapport doc, OutputStream os) throws Exception {
+					PdfEchoirDIsRapport document = new PdfEchoirDIsRapport();
 					document.write(results, nom, description, dateGeneration, os, status);
 				}
 			});
@@ -945,6 +897,28 @@ public class RapportServiceImpl implements RapportService {
 				@Override
 				public void writeDoc(ListeNoteRapport doc, OutputStream os) throws Exception {
 					final PdfListeNoteRapport document = new PdfListeNoteRapport();
+					document.write(results, nom, description, dateGeneration, os, status);
+				}
+			});
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	@Override
+	public MigrationCoquillesPMRapport generateRapport(final MigrationCoquillesPM.MigrationResults results, StatusManager s) {
+		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
+
+		final String nom = "MigrationCoquillesPM";
+		final String description = String.format("Rapport de la migration des coquilles des personnes morales. Date de traitement = %s", RegDateHelper.dateToDisplayString(results.getDateTraitement()));
+		final Date dateGeneration = DateHelper.getCurrentDate();
+
+		try {
+			return docService.newDoc(MigrationCoquillesPMRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<MigrationCoquillesPMRapport>() {
+				@Override
+				public void writeDoc(MigrationCoquillesPMRapport doc, OutputStream os) throws Exception {
+					final PdfMigrationCoquillesPMRapport document = new PdfMigrationCoquillesPMRapport();
 					document.write(results, nom, description, dateGeneration, os, status);
 				}
 			});

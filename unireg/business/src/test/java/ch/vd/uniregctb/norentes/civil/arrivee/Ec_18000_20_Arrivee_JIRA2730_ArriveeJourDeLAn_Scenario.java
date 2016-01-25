@@ -14,7 +14,6 @@ import ch.vd.uniregctb.norentes.annotation.Check;
 import ch.vd.uniregctb.norentes.annotation.Etape;
 import ch.vd.uniregctb.norentes.common.EvenementCivilScenario;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
 import ch.vd.uniregctb.tiers.ForsParType;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
@@ -103,7 +102,7 @@ public class Ec_18000_20_Arrivee_JIRA2730_ArriveeJourDeLAn_Scenario extends Even
 
 			final ForsParType forsParType = pp.getForsParType(false);
 
-			final List<ForFiscalPrincipalPP> ffps = forsParType.principauxPP;
+			final List<ForFiscalPrincipal> ffps = forsParType.principaux;
 			assertNotNull(ffps, "Pas de fors principaux du tout ?");
 			assertEquals(1, ffps.size(), "Pas le bon nombre de fors principaux");
 
@@ -130,7 +129,7 @@ public class Ec_18000_20_Arrivee_JIRA2730_ArriveeJourDeLAn_Scenario extends Even
 
 			final ForsParType forsParType = pp.getForsParType(false);
 
-			final List<ForFiscalPrincipalPP> ffps = forsParType.principauxPP;
+			final List<ForFiscalPrincipal> ffps = forsParType.principaux;
 			assertNotNull(ffps, "Pas de fors principaux du tout ?");
 			assertEquals(1, ffps.size(), "Pas le bon nombre de fors principaux");
 

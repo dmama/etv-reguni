@@ -43,7 +43,6 @@ public abstract class WebitTest {
 	protected String party3Url;
 	protected String party4Url;
 	protected String v5Url;
-	protected String v6Url;
 
 	protected WebClient webClient;
 
@@ -92,7 +91,6 @@ public abstract class WebitTest {
 		party3Url = baseWsUrl + propsWebIT.getProperty("webservice.party3.serverurl");
 		party4Url = baseWsUrl + propsWebIT.getProperty("webservice.party4.serverurl");
 		v5Url = baseWsUrl + propsWebIT.getProperty("webservice.v5.serverurl");
-		v6Url = baseWsUrl + propsWebIT.getProperty("webservice.v6.serverurl");
 
 		LOGGER.debug("baseUrl: " + baseUrl);
 		LOGGER.debug("baseWsUrl: " + baseWsUrl);
@@ -134,10 +132,10 @@ public abstract class WebitTest {
 		final URL dbUnitUrl = getClass().getResource(filename);
 
 		// Charge la page d'import
-		HtmlPage page = webClient.getPage(importPageUrl);
+		HtmlPage page = (HtmlPage) webClient.getPage(importPageUrl);
 
 		// Rempli le champ d'import avec le chemin vers le fichier DB unit
-		HtmlFileInput file = page.getHtmlElementById("scriptData");
+		HtmlFileInput file = (HtmlFileInput) page.getHtmlElementById("scriptData");
 		file.setValueAttribute(dbUnitUrl.getPath());
 
 		// Exécute le formulaire

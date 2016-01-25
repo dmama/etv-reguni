@@ -13,8 +13,8 @@ import ch.vd.registre.base.utils.Assert;
 
 public abstract class CollectionsUtils {
 
-	public interface SplitCallback<T, O> {
-		List<O> process(List<T> list);
+	public static interface SplitCallback<T, O> {
+		public List<O> process(List<T> list);
 	}
 
 	/**

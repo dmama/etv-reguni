@@ -28,7 +28,7 @@ public abstract class MariageApresArriveeScenarios extends EvenementCivilScenari
 		assertNotNull(pp, "L'habitant n°" + FormatNumeroHelper.numeroCTBToDisplay(pp.getNumero()) + " n'a pas été trouvé");
 		ForFiscalPrincipal ffp = pp.getForFiscalPrincipalAt(null);
 		assertNull(ffp, "L'habitant n°" + FormatNumeroHelper.numeroCTBToDisplay(pp.getNumero()) + " devrait pas avoir de for fiscal principal ouvert");
-		for (ForFiscalPrincipal ff : pp.getForsParType(false).principauxPP) {
+		for (ForFiscalPrincipal ff : pp.getForsParType(false).principaux) {
 			if (dateArrivee.equals(ff.getDateDebut())) {
 				assertEquals(true, ff.isAnnule(), "Le for créé lors de l'arrivée devrait être annulé");
 			}

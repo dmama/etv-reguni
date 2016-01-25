@@ -34,14 +34,11 @@ public class TiersIndexedData implements Serializable {
 	private final String roleLigne2;
 	private final Date dateOuvertureFor;
 	private final Date dateFermetureFor;
-	private final Date dateOuvertureForVd;
-	private final Date dateFermetureForVd;
 	private final String rue;
 	private final String npa;
 	private final String localite;
 	private final String pays;
 	private final String localiteOuPays;
-	private final String dateInscriptionRC;
 	private final String forPrincipal;
 	private final CategorieImpotSource categorieImpotSource;
 	private final ModeCommunication modeCommunication;
@@ -68,14 +65,11 @@ public class TiersIndexedData implements Serializable {
 		roleLigne2 = DocumentExtractorHelper.getDocValue(TiersIndexableData.ROLE_LIGNE2, doc);
 		dateOuvertureFor = DateHelper.indexStringToDate(DocumentExtractorHelper.getDocValue(TiersIndexableData.DATE_OUVERTURE_FOR, doc));
 		dateFermetureFor = DateHelper.indexStringToDate(DocumentExtractorHelper.getDocValue(TiersIndexableData.DATE_FERMETURE_FOR, doc));
-		dateOuvertureForVd = DateHelper.indexStringToDate(DocumentExtractorHelper.getDocValue(TiersIndexableData.DATE_OUVERTURE_FOR, doc));
-		dateFermetureForVd = DateHelper.indexStringToDate(DocumentExtractorHelper.getDocValue(TiersIndexableData.DATE_FERMETURE_FOR, doc));
 		rue = DocumentExtractorHelper.getDocValue(TiersIndexableData.RUE, doc);
 		npa = DocumentExtractorHelper.getDocValue(TiersIndexableData.NPA_COURRIER, doc);
 		localite = DocumentExtractorHelper.getDocValue(TiersIndexableData.LOCALITE, doc);
 		pays = DocumentExtractorHelper.getDocValue(TiersIndexableData.PAYS, doc);
 		localiteOuPays = DocumentExtractorHelper.getDocValue(TiersIndexableData.LOCALITE_PAYS, doc);
-		dateInscriptionRC = DocumentExtractorHelper.getDocValue(TiersIndexableData.DATE_INSCRIPTION_RC, doc);
 		forPrincipal = DocumentExtractorHelper.getDocValue(TiersIndexableData.FOR_PRINCIPAL, doc);
 		annule = DocumentExtractorHelper.getBooleanValue(TiersIndexableData.ANNULE, doc, Boolean.FALSE);
 		debiteurInactif = DocumentExtractorHelper.getBooleanValue(TiersIndexableData.DEBITEUR_INACTIF, doc, Boolean.FALSE);
@@ -157,14 +151,6 @@ public class TiersIndexedData implements Serializable {
 		return dateFermetureFor;
 	}
 
-	public Date getDateOuvertureForVd() {
-		return dateOuvertureForVd;
-	}
-
-	public Date getDateFermetureForVd() {
-		return dateFermetureForVd;
-	}
-
 	public String getRue() {
 		return rue;
 	}
@@ -183,10 +169,6 @@ public class TiersIndexedData implements Serializable {
 
 	public String getLocaliteOuPays() {
 		return localiteOuPays;
-	}
-
-	public String getDateInscriptionRC() {
-		return dateInscriptionRC;
 	}
 
 	public String getForPrincipal() {

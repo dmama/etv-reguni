@@ -18,7 +18,7 @@ import org.slf4j.LoggerFactory;
 import ch.vd.registre.base.utils.ExceptionUtils;
 import ch.vd.uniregctb.common.HibernateEntity;
 import ch.vd.uniregctb.common.LengthConstants;
-import ch.vd.uniregctb.evenement.common.EvenementErreur;
+import ch.vd.uniregctb.evenement.civil.EvenementCivilErreur;
 import ch.vd.uniregctb.type.TypeEvenementErreur;
 
 /**
@@ -26,7 +26,7 @@ import ch.vd.uniregctb.type.TypeEvenementErreur;
  */
 @Entity
 @Table(name = "EVENEMENT_CIVIL_ERREUR")
-public class EvenementCivilRegPPErreur extends HibernateEntity implements EvenementErreur {
+public class EvenementCivilRegPPErreur extends HibernateEntity implements EvenementCivilErreur {
 
 	private static final long serialVersionUID = -1077312693852919409L;
 

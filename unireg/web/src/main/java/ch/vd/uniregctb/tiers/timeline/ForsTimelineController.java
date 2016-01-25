@@ -30,8 +30,6 @@ import ch.vd.uniregctb.metier.piis.PeriodeImpositionImpotSourceServiceException;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.security.AccessDeniedException;
 import ch.vd.uniregctb.tiers.Contribuable;
-import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesMorales;
-import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalRevenuFortune;
 import ch.vd.uniregctb.tiers.ForGestion;
@@ -51,10 +49,10 @@ public class ForsTimelineController {
 
 //	private final Logger LOGGER = LoggerFactory.getLogger(ForsTimelineController.class);
 
-	public static final String ID_PARAMETER = "id";
-	public static final String FOR_PRINT = "print";
-	public static final String TITLE = "title";
-	public static final String DESCRIPTION = "description";
+	public final static String ID_PARAMETER = "id";
+	public final static String FOR_PRINT = "print";
+	public final static String TITLE = "title";
+	public final static String DESCRIPTION = "description";
 
 	private TiersDAO dao;
 	private TiersService tiersService;
@@ -62,8 +60,7 @@ public class ForsTimelineController {
 	private PeriodeImpositionService periodeImpositionService;
 	private PeriodeImpositionImpotSourceService periodeImpositionImpotSourceService;
 	private ControllerUtils controllerUtils;
-	private RegDate bigBangPersonnesPhysiques;
-	private RegDate bigBangPersonnesMorales;
+	private RegDate bigBang;
 
 	@RequestMapping(value = "/fors/timeline-debug.do", method = RequestMethod.GET)
 	@Transactional(readOnly = true, rollbackFor = Throwable.class)
@@ -86,7 +83,7 @@ public class ForsTimelineController {
 		}
 
 		return commonTimeline(mav, id, invertedTime, showForsGestion, showAssujettissementsSource, showAssujettissementsRole, showAssujettissements, showPeriodesImposition, showPeriodesImpositionIS,
-		                      forPrint, title, description, true);
+		                      forPrint, title, description, true, DateConstants.DEFAULT_VALIDITY_RANGE.getDateDebut());
 	}
 
 	@RequestMapping(value = "/fors/timeline.do", method = RequestMethod.GET)
@@ -102,17 +99,7 @@ public class ForsTimelineController {
 	                    @RequestParam(value = TITLE, required = false) String title,
 	                    @RequestParam(value = DESCRIPTION, required = false) String description) throws AccessDeniedException {
 
-		return commonTimeline(mav, id, invertedTime, showForsGestion, false, false, showAssujettissements, showPeriodesImposition, showPeriodesImpositionIS, forPrint, title, description, false);
-	}
-
-	private RegDate determineBigBang(boolean debugMode, Tiers tiers) {
-		if (debugMode) {
-			return DateConstants.DEFAULT_VALIDITY_RANGE.getDateDebut();
-		}
-		if (tiers instanceof ContribuableImpositionPersonnesMorales) {
-			return bigBangPersonnesMorales;
-		}
-		return bigBangPersonnesPhysiques;
+		return commonTimeline(mav, id, invertedTime, showForsGestion, false, false, showAssujettissements, showPeriodesImposition, showPeriodesImpositionIS, forPrint, title, description, false, bigBang);
 	}
 
 	private String commonTimeline(Model mav, Long id, boolean invertedTime, boolean showForsGestion,
@@ -120,14 +107,13 @@ public class ForsTimelineController {
 	                              boolean showAssujettissements, boolean showPeriodesImposition,
 	                              boolean showPeriodesImpositionIS,
 	                              Boolean forPrint, String title, String description,
-	                              boolean debugMode) throws AccessDeniedException {
+	                              boolean debugMode, RegDate bigBang) throws AccessDeniedException {
 
 		controllerUtils.checkAccesDossierEnLecture(id);
 
-		final Tiers tiers = id == null ? null : dao.get(id);
-		final RegDate bigBang = determineBigBang(debugMode, tiers);
 		final ForsTimelineView bean = new ForsTimelineView(invertedTime, showForsGestion, showAssujettissementsSource, showAssujettissementsRole, showAssujettissements, showPeriodesImposition,
 		                                                   showPeriodesImpositionIS, bigBang);
+		bean.setTiersId(id);
 
 		if (forPrint != null) {
 			bean.setForPrint(forPrint);
@@ -141,9 +127,7 @@ public class ForsTimelineController {
 			bean.setDescription(description);
 		}
 
-		if (tiers != null) {
-			fillTimeline(bean, tiers, bigBang);
-		}
+		fillTimeline(bean, bigBang);
 		mav.addAttribute("command", bean);
 		mav.addAttribute("debugAssujettissement", debugMode);
 
@@ -153,9 +137,17 @@ public class ForsTimelineController {
 	/**
 	 * Remplit les structures de données nécessaire à l'affichage de l'historique des fors d'un tiers
 	 */
-	private void fillTimeline(ForsTimelineView bean, Tiers tiers, RegDate bigBang) {
+	private void fillTimeline(ForsTimelineView bean, RegDate bigBang) {
 
-		bean.setTiersId(tiers.getNumero());
+		final Long id = bean.getTiersId();
+		if (id == null) {
+			return;
+		}
+
+		final Tiers tiers = dao.get(id);
+		if (tiers == null) {
+			return;
+		}
 
 		// [SIFISC-11149] on veut pouvoir masquer des trucs selon le type de tiers
 		final NatureTiers natureTiers = tiers.getNatureTiers();
@@ -172,46 +164,53 @@ public class ForsTimelineController {
 		final List<Assujettissement> assujettissementsRole = new ArrayList<>();
 		final List<Assujettissement> assujettissements = new ArrayList<>();
 
-		if (tiers instanceof ContribuableImpositionPersonnesPhysiques) {
-			final ContribuableImpositionPersonnesPhysiques contribuable = (ContribuableImpositionPersonnesPhysiques) tiers;
+		if (tiers instanceof Contribuable) {
 			if (bean.isShowAssujettissementsSource()) {
-				try {
-					final List<SourcierPur> list = assujettissementService.determineSource(contribuable);
-					if (list != null) {
-						assujettissementsSource.addAll(list);
+				final Contribuable contribuable = (Contribuable) tiers;
+				final RegDate debutActivite = contribuable.getDateDebutActivite();
+				if (debutActivite != null) {
+					try {
+						final List<SourcierPur> list = assujettissementService.determineSource(contribuable);
+						if (list != null) {
+							assujettissementsSource.addAll(list);
+						}
 					}
-				}
-				catch (AssujettissementException e) {
-					bean.addException(e);
+					catch (AssujettissementException e) {
+						bean.addException(e);
+					}
 				}
 			}
 			if (bean.isShowAssujettissementsRole()) {
-				try {
-					final List<Assujettissement> list = assujettissementService.determineRole(contribuable);
-					if (list != null) {
-						assujettissementsRole.addAll(list);
+				final Contribuable contribuable = (Contribuable) tiers;
+				final RegDate debutActivite = contribuable.getDateDebutActivite();
+				if (debutActivite != null) {
+					try {
+						final List<Assujettissement> list = assujettissementService.determineRole(contribuable);
+						if (list != null) {
+							assujettissementsRole.addAll(list);
+						}
+					}
+					catch (AssujettissementException e) {
+						bean.addException(e);
 					}
 				}
-				catch (AssujettissementException e) {
-					bean.addException(e);
-				}
 			}
-		}
-		if (tiers instanceof Contribuable) {
 			if (bean.isShowAssujettissements()) {
 				final Contribuable contribuable = (Contribuable) tiers;
-				try {
-					final List<Assujettissement> list = assujettissementService.determine(contribuable);
-					if (list != null) {
-						assujettissements.addAll(list);
+				final RegDate debutActivite = contribuable.getDateDebutActivite();
+				if (debutActivite != null) {
+					try {
+						final List<Assujettissement> list = assujettissementService.determine(contribuable);
+						if (list != null) {
+							assujettissements.addAll(list);
+						}
 					}
-				}
-				catch (AssujettissementException e) {
-					bean.addException(e);
+					catch (AssujettissementException e) {
+						bean.addException(e);
+					}
 				}
 			}
 		}
-
 		// Extraction des périodes d'imposition
 		final List<PeriodeImposition> periodesImposition = new ArrayList<>();
 		final List<PeriodeImpositionImpotSource> periodesImpositionIS = new ArrayList<>();
@@ -221,7 +220,7 @@ public class ForsTimelineController {
 			final RegDate debutActivite = contribuable.getDateDebutActivite();
 			if (debutActivite != null) {
 				try {
-					final List<PeriodeImposition> list = periodeImpositionService.determine(contribuable);
+					final List<PeriodeImposition> list = periodeImpositionService.determine(contribuable, null);
 					if (list != null) {
 						periodesImposition.addAll(list);
 					}
@@ -333,7 +332,7 @@ public class ForsTimelineController {
 			if (comparison == 0) {
 				result.add(new DateRangeHelper.Range(bigBang, range.getDateFin()));
 			}
-			else if (comparison > 0) {
+			else if (comparison == 1) {
 				result.add(range);
 			}
 		}
@@ -424,7 +423,6 @@ public class ForsTimelineController {
 	}
 
 	public void setParametreAppService(ParametreAppService params) {
-		this.bigBangPersonnesPhysiques = RegDate.get(params.getPremierePeriodeFiscalePersonnesPhysiques(), 1, 1);
-		this.bigBangPersonnesMorales = RegDate.get(params.getPremierePeriodeFiscalePersonnesMorales(), 1, 1);
+		this.bigBang = RegDate.get(params.getPremierePeriodeFiscale(), 1, 1);
 	}
 }

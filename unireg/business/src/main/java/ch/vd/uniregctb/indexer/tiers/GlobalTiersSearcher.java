@@ -20,7 +20,7 @@ import ch.vd.uniregctb.tiers.TiersFilter;
  */
 public interface GlobalTiersSearcher {
 
-	String SERVICE_NAME = "GlobalTiersSearcher";
+	public static final String SERVICE_NAME = "GlobalTiersSearcher";
 
 	/**
 	 * Methode principale de recherche des tiers
@@ -29,7 +29,7 @@ public interface GlobalTiersSearcher {
 	 * @return la liste des tiers repondant aux criteres de recherche
 	 * @throws IndexerException
 	 */
-	List<TiersIndexedData> search(TiersCriteria criteria) throws IndexerException;
+	public List<TiersIndexedData> search(TiersCriteria criteria) throws IndexerException;
 
 	/**
 	 * Recherche et retourne les tiers qui correspondent le mieux aux critères spécifiés
@@ -39,7 +39,7 @@ public interface GlobalTiersSearcher {
 	 * @return une liste de données de tiers
 	 * @throws IndexerException en cas d'erreur levée dans l'indexeur
 	 */
-	TopList<TiersIndexedData> searchTop(TiersCriteria criteria, int max) throws IndexerException;
+	public TopList<TiersIndexedData> searchTop(TiersCriteria criteria, int max) throws IndexerException;
 
 	/**
 	 * Recherche et retourne les tiers qui correspondent le mieux aux mot-clés spécifiés.
@@ -50,7 +50,7 @@ public interface GlobalTiersSearcher {
 	 * @throws IndexerException en cas d'erreur levée dans l'indexeur
 	 * @return une liste de données de tiers
 	 */
-	TopList<TiersIndexedData> searchTop(String keywords, @Nullable TiersFilter filter, int max) throws IndexerException;
+	public TopList<TiersIndexedData> searchTop(String keywords, @Nullable TiersFilter filter, int max) throws IndexerException;
 
 	/**
 	 * Recherche "en flux" selon les critères donnés : les résultats sont postés dans la queue un par un.
@@ -59,7 +59,7 @@ public interface GlobalTiersSearcher {
 	 * @param fusible permet de stopper le postage des résultats restant (quand il grille)
 	 * @throws IndexerException en cas d'erreur levée dans l'indexeur
 	 */
-	void flowSearch(TiersCriteria criteria, BlockingQueue<TiersIndexedData> queue, Fuse fusible) throws IndexerException;
+	public void flowSearch(TiersCriteria criteria, BlockingQueue<TiersIndexedData> queue, Fuse fusible) throws IndexerException;
 
 	/**
 	 * Vérifie si un tiers est indexé ou non.
@@ -68,7 +68,7 @@ public interface GlobalTiersSearcher {
 	 *            le numéro du tiers à tester.
 	 * @return <b>vrai</b> si le tiers spécifié est indexé.
 	 */
-	boolean exists(Long numero) throws IndexerException;
+	public boolean exists(Long numero) throws IndexerException;
 
 	/**
 	 * Retourne les informations indexées pour le tiers spécifié.
@@ -77,12 +77,12 @@ public interface GlobalTiersSearcher {
 	 *            le numéro du tiers
 	 * @return les informations indexées, ou <b>null</b> si le tiers n'existe pas ou n'est pas indexé
 	 */
-	TiersIndexedData get(Long numero) throws IndexerException;
+	public TiersIndexedData get(Long numero) throws IndexerException;
 
 	/**
 	 * @return la liste de tous les IDs des tiers indexés
 	 */
-	Set<Long> getAllIds();
+	public Set<Long> getAllIds();
 
 	/**
 	 * Vérifie la cohérence des données de l'indexeur. L'indexeur n'est pas modifié.
@@ -96,12 +96,12 @@ public interface GlobalTiersSearcher {
 	 *
 	 * @return le résultat de la validation
 	 */
-	void checkCoherenceIndex(Set<Long> existingIds, StatusManager statusManager, CheckCallback callback);
+	public void checkCoherenceIndex(Set<Long> existingIds, StatusManager statusManager, CheckCallback callback);
 
 	/**
 	 * Interface de callback de la méthode {@link GlobalTiersSearcher#checkCoherenceIndex(Set, StatusManager, CheckCallback)}.
 	 */
-	interface CheckCallback {
+	public static interface CheckCallback {
 		/**
 		 * Une erreur a été trouvée sur le tiers spécifié.
 		 *

@@ -25,8 +25,6 @@ public class SearchTiersResults {
 		private String forPrincipal;
 		private RegDate dateOuverture;
 		private RegDate dateFermeture;
-		private RegDate dateOuvertureVD;
-		private RegDate dateFermetureVD;
 		private boolean annule;
 		private boolean debiteurInactif;
 		private String tiersType;
@@ -43,9 +41,7 @@ public class SearchTiersResults {
 			this.localitePays = data.getLocaliteOuPays();
 			this.forPrincipal = data.getForPrincipal();
 			this.dateOuverture = RegDateHelper.get(data.getDateOuvertureFor());
-			this.dateFermetureVD = RegDateHelper.get(data.getDateFermetureFor());
-			this.dateOuvertureVD = RegDateHelper.get(data.getDateOuvertureForVd());
-			this.dateFermeture = RegDateHelper.get(data.getDateFermetureForVd());
+			this.dateFermeture = RegDateHelper.get(data.getDateFermetureFor());
 			this.annule = data.isAnnule();
 			this.debiteurInactif = data.isDebiteurInactif();
 			this.tiersType = data.getTiersType();
@@ -94,14 +90,6 @@ public class SearchTiersResults {
 
 		public RegDate getDateFermeture() {
 			return dateFermeture;
-		}
-
-		public RegDate getDateOuvertureVD() {
-			return dateOuvertureVD;
-		}
-
-		public RegDate getDateFermetureVD() {
-			return dateFermetureVD;
 		}
 
 		public boolean isAnnule() {

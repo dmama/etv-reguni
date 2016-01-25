@@ -19,7 +19,7 @@ public class SimpleGlobalIndexTest extends WithoutSpringTest {
 
 	private static final String path = "tmp/globalIndex";
 	private GlobalIndex globalIndex;
-	private static final int maxHits = 100;
+	private final static int maxHits = 100;
 
 	private MockIndexable data = new MockIndexable(12L, "U", "a good man du", "dardare", "essuies");
 

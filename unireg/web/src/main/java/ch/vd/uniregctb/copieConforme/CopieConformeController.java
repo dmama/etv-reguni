@@ -47,7 +47,7 @@ public class CopieConformeController {
 		this.copieConformeManager = copieConformeManager;
 	}
 
-	private interface CopieConformeGetter {
+	private static interface CopieConformeGetter {
 		/**
 		 * @return un flux duquel on peut extraire le contenu du document, où <code>null</code> si aucun document n'a pu être trouvé
 		 * @throws EditiqueException en cas d'erreur lors de la récupération du contenu du document

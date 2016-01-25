@@ -69,7 +69,7 @@
 						<goals>
 							<goal>jar</goal>
 						</goals>
-						<phase>package</phase>
+						<phase>install</phase>
 					</execution>
 				</executions>
 			</plugin>

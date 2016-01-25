@@ -10,8 +10,6 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.validation.ValidationException;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaireDAO;
-import ch.vd.uniregctb.declaration.DelaiDeclaration;
-import ch.vd.uniregctb.declaration.DelaiDeclarationDAO;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
 import ch.vd.uniregctb.declaration.EtatDeclarationEmise;
 import ch.vd.uniregctb.declaration.EtatDeclarationSommee;
@@ -22,12 +20,9 @@ import ch.vd.uniregctb.di.view.DeclarationListView;
 import ch.vd.uniregctb.di.view.EditerDeclarationImpotView;
 import ch.vd.uniregctb.di.view.ImprimerDuplicataDeclarationImpotView;
 import ch.vd.uniregctb.di.view.ImprimerNouvelleDeclarationImpotView;
-import ch.vd.uniregctb.di.view.ModifierDemandeDelaiDeclarationView;
-import ch.vd.uniregctb.di.view.NouvelleDemandeDelaiDeclarationView;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
-import ch.vd.uniregctb.type.EtatDelaiDeclaration;
 import ch.vd.uniregctb.type.TypeDocument;
 import ch.vd.uniregctb.type.TypeEtatDeclaration;
 import ch.vd.uniregctb.utils.ValidatorUtils;
@@ -36,7 +31,6 @@ public class DeclarationImpotControllerValidator implements Validator {
 
 	private TiersDAO tiersDAO;
 	private DeclarationImpotOrdinaireDAO diDAO;
-	private DelaiDeclarationDAO delaiDeclarationDAO;
 	private DeclarationImpotEditManager manager;
 
 	public void setTiersDAO(TiersDAO tiersDAO) {
@@ -47,10 +41,6 @@ public class DeclarationImpotControllerValidator implements Validator {
 		this.diDAO = diDAO;
 	}
 
-	public void setDelaiDeclarationDAO(DelaiDeclarationDAO delaiDeclarationDAO) {
-		this.delaiDeclarationDAO = delaiDeclarationDAO;
-	}
-
 	public void setManager(DeclarationImpotEditManager manager) {
 		this.manager = manager;
 	}
@@ -59,8 +49,7 @@ public class DeclarationImpotControllerValidator implements Validator {
 	public boolean supports(Class<?> clazz) {
 		return ImprimerNouvelleDeclarationImpotView.class.equals(clazz) || EditerDeclarationImpotView.class.equals(clazz)
 				|| DeclarationListView.class.equals(clazz) || ImprimerDuplicataDeclarationImpotView.class.equals(clazz)
-				|| AjouterDelaiDeclarationView.class.equals(clazz) || AjouterEtatDeclarationView.class.equals(clazz)
-				|| NouvelleDemandeDelaiDeclarationView.class.equals(clazz) || ModifierDemandeDelaiDeclarationView.class.equals(clazz);
+				|| AjouterDelaiDeclarationView.class.equals(clazz) || AjouterEtatDeclarationView.class.equals(clazz);
 	}
 
 	@Override
@@ -77,12 +66,6 @@ public class DeclarationImpotControllerValidator implements Validator {
 		}
 		else if (target instanceof AjouterDelaiDeclarationView) {
 			valideAjoutDelaiDeclaration((AjouterDelaiDeclarationView) target, errors);
-		}
-		else if (target instanceof NouvelleDemandeDelaiDeclarationView) {
-			valideNouvelleDemandeDelaiDeclaration((NouvelleDemandeDelaiDeclarationView) target, errors);
-		}
-		else if (target instanceof ModifierDemandeDelaiDeclarationView) {
-			valideModifierDemandeDelaiDeclaration((ModifierDemandeDelaiDeclarationView) target, errors);
 		}
 	}
 
@@ -172,15 +155,13 @@ public class DeclarationImpotControllerValidator implements Validator {
 			}
 		}
 
-		if (view.isTypeDocumentEditable()) {
-			final TypeDocument typeDocument = view.getTypeDocument();
-			if (typeDocument == null) {
-				errors.rejectValue("typeDocument", "error.type.document.vide");
-			}
-			else if (di.getTypeDeclaration() != typeDocument) { // [SIFISC-7486] on ne vérifie le type de document que s'il est différent
-				if (typeDocument != TypeDocument.DECLARATION_IMPOT_COMPLETE_LOCAL && typeDocument != TypeDocument.DECLARATION_IMPOT_VAUDTAX) {
-					errors.rejectValue("typeDocument", "error.type.document.invalide");
-				}
+		final TypeDocument typeDocument = view.getTypeDocument();
+		if (typeDocument == null) {
+			errors.rejectValue("typeDocument", "error.type.document.vide");
+		}
+		else if (di.getTypeDeclaration() != typeDocument) { // [SIFISC-7486] on ne vérifie le type de document que s'il est différent
+			if (typeDocument != TypeDocument.DECLARATION_IMPOT_COMPLETE_LOCAL && typeDocument != TypeDocument.DECLARATION_IMPOT_VAUDTAX) {
+				errors.rejectValue("typeDocument", "error.type.document.invalide");
 			}
 		}
 	}
@@ -223,94 +204,6 @@ public class DeclarationImpotControllerValidator implements Validator {
 			final RegDate ancienDelaiAccorde = di.getDelaiAccordeAu();
 			if (view.getDelaiAccordeAu().isBefore(RegDate.get()) || (ancienDelaiAccorde != null && view.getDelaiAccordeAu().isBeforeOrEqual(ancienDelaiAccorde))) {
 				errors.rejectValue("delaiAccordeAu", "error.delai.accorde.invalide");
-			}
-		}
-
-		if (view.getDateDemande() == null) {
-			ValidationUtils.rejectIfEmpty(errors, "dateDemande", "error.date.demande.vide");
-		}
-		else if (view.getDateDemande().isAfter(RegDate.get())) {
-			if (!ValidatorUtils.alreadyHasErrorOnField(errors, "dateDemande")) {
-				errors.rejectValue("dateDemande", "error.date.demande.future");
-			}
-		}
-	}
-
-	private void valideNouvelleDemandeDelaiDeclaration(NouvelleDemandeDelaiDeclarationView view, Errors errors) {
-
-		if (view.getIdDeclaration() == null) {
-			errors.reject("error.di.inexistante");
-			return;
-		}
-
-		final DeclarationImpotOrdinaire di = diDAO.get(view.getIdDeclaration());
-		if (di == null) {
-			errors.reject("error.di.inexistante");
-			return;
-		}
-
-		if (view.getDecision() == EtatDelaiDeclaration.ACCORDE) {
-			if (view.getDelaiAccordeAu() == null) {
-				ValidationUtils.rejectIfEmpty(errors, "delaiAccordeAu", "error.delai.accorde.vide");
-			}
-			else {
-				final RegDate ancienDelaiAccorde = di.getDelaiAccordeAu();
-				if (view.getDelaiAccordeAu().isBefore(RegDate.get()) || (ancienDelaiAccorde != null && view.getDelaiAccordeAu().isBeforeOrEqual(ancienDelaiAccorde))) {
-					errors.rejectValue("delaiAccordeAu", "error.delai.accorde.invalide");
-				}
-			}
-		}
-		else if (view.getDecision() == null) {
-			errors.rejectValue("decision", "error.decision.obligatoire");
-		}
-
-		if (view.getDecision() != EtatDelaiDeclaration.DEMANDE) {
-			if (view.getTypeImpression() == null) {
-				errors.rejectValue("decision", "error.type.impression.obligatoire");
-			}
-		}
-
-		if (view.getDateDemande() == null) {
-			ValidationUtils.rejectIfEmpty(errors, "dateDemande", "error.date.demande.vide");
-		}
-		else if (view.getDateDemande().isAfter(RegDate.get())) {
-			if (!ValidatorUtils.alreadyHasErrorOnField(errors, "dateDemande")) {
-				errors.rejectValue("dateDemande", "error.date.demande.future");
-			}
-		}
-	}
-
-	private void valideModifierDemandeDelaiDeclaration(ModifierDemandeDelaiDeclarationView view, Errors errors) {
-
-		if (view.getIdDelai() == null) {
-			errors.reject("error.delai.inexistant");
-			return;
-		}
-
-		final DelaiDeclaration delai = delaiDeclarationDAO.get(view.getIdDelai());
-		if (delai == null) {
-			errors.reject("error.delai.inexistant");
-			return;
-		}
-
-		if (view.getDecision() == EtatDelaiDeclaration.ACCORDE) {
-			if (view.getDelaiAccordeAu() == null) {
-				ValidationUtils.rejectIfEmpty(errors, "delaiAccordeAu", "error.delai.accorde.vide");
-			}
-			else {
-				final RegDate ancienDelaiAccorde = delai.getDeclaration().getDelaiAccordeAu();
-				if (view.getDelaiAccordeAu().isBefore(RegDate.get()) || (ancienDelaiAccorde != null && view.getDelaiAccordeAu().isBeforeOrEqual(ancienDelaiAccorde))) {
-					errors.rejectValue("delaiAccordeAu", "error.delai.accorde.invalide");
-				}
-			}
-		}
-		else if (view.getDecision() == null) {
-			errors.rejectValue("decision", "error.decision.obligatoire");
-		}
-
-		if (view.getDecision() != EtatDelaiDeclaration.DEMANDE) {
-			if (view.getTypeImpression() == null) {
-				errors.rejectValue("decision", "error.type.impression.obligatoire");
 			}
 		}
 

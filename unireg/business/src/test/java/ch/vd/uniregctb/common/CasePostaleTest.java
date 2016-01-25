@@ -2,7 +2,7 @@ package ch.vd.uniregctb.common;
 
 import org.junit.Test;
 
-import ch.vd.unireg.interfaces.common.CasePostale;
+import ch.vd.unireg.interfaces.civil.data.CasePostale;
 import ch.vd.uniregctb.type.TexteCasePostale;
 
 import static org.junit.Assert.assertEquals;

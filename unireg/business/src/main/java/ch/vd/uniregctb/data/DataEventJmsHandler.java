@@ -66,7 +66,7 @@ public class DataEventJmsHandler implements EsbMessageHandler, InitializingBean 
 		return map;
 	}
 
-	private interface Handler<T extends DataEvent> {
+	private static interface Handler<T extends DataEvent> {
 		void onEvent(T event);
 	}
 
@@ -167,15 +167,6 @@ public class DataEventJmsHandler implements EsbMessageHandler, InitializingBean 
 					break;
 				case ASSUJETTISSEMENT_PAR_SUBSTITUTION:
 					type = TypeRapportEntreTiers.ASSUJETTISSEMENT_PAR_SUBSTITUTION;
-					break;
-				case ACTIVITE_ECONOMIQUE:
-					type = TypeRapportEntreTiers.ACTIVITE_ECONOMIQUE;
-					break;
-				case MANDAT:
-					type = TypeRapportEntreTiers.MANDAT;
-					break;
-				case FUSION_ENTREPRISES:
-					type = TypeRapportEntreTiers.FUSION_ENTREPRISES;
 					break;
 				default:
 					throw new IllegalArgumentException("Type de relation inconnu : " + event.getRelationType());

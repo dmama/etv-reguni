@@ -96,7 +96,7 @@ public class TacheSynchronizerInterceptor implements ModificationSubInterceptor,
 			parent.setEnabledForThread(false); // on désactive l'intercepteur pour éviter de s'intercepter soi-même
 			activationSwitch.setEnabled(false);
 			try {
-				tacheService.synchronizeTachesDeclarations(set);
+				tacheService.synchronizeTachesDIs(set);
                 tacheService.annuleTachesObsoletes(set);
 			}
 			catch (RuntimeException e) {

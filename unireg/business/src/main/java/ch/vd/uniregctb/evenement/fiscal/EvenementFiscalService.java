@@ -2,206 +2,210 @@ package ch.vd.uniregctb.evenement.fiscal;
 
 import java.util.Collection;
 
+import org.jetbrains.annotations.Nullable;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DeclarationImpotSource;
-import ch.vd.uniregctb.tiers.AllegementFiscal;
-import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
-import ch.vd.uniregctb.tiers.Entreprise;
-import ch.vd.uniregctb.tiers.FlagEntreprise;
+import ch.vd.uniregctb.evenement.EvenementFiscal;
+import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.tiers.RegimeFiscal;
 import ch.vd.uniregctb.tiers.Tiers;
+import ch.vd.uniregctb.type.ModeImposition;
+import ch.vd.uniregctb.type.MotifFor;
 
 /**
  * Interface du service des événement fiscaux
+ *
+ * @author xcicfh (last modified by $Author: $ @ $Date: $)
+ * @version $Revision: $
  */
 public interface EvenementFiscalService {
 
+
 	/**
-	 * @param tiers un tiers
-	 * @return la liste des événements fiscaux pour le tiers fourni
+	 * Retourne la liste des événements fiscaux pour un tiers.
+	 * @param tiers Tiers.
+	 * @return  Retourne la liste des événements fiscaux pour un tiers.
 	 */
-	Collection<EvenementFiscal> getEvenementsFiscaux(Tiers tiers);
+	Collection<EvenementFiscal> getEvenementsFiscaux(Tiers tiers) ;
+
+	/**
+	 * Publie un événement fiscal
+	 * @param evenementFiscal
+	 * @throws Exception
+	 */
+	void publierEvenementFiscal(EvenementFiscal evenementFiscal);
 
 	/**
 	 * Publie un événement fiscal de type 'Ouverture de for'
-	 * @param forFiscal le for fiscal ouvert pour lequel on publie l'événement
+	 * @param tiers
+	 * @param dateEvenement
+	 * @param motifFor motif d'ouverture du for
+	 * @param id du for
+	 * @throws Exception
 	 */
-	void publierEvenementFiscalOuvertureFor(ForFiscal forFiscal);
+	public void publierEvenementFiscalOuvertureFor(Tiers tiers, RegDate dateEvenement, @Nullable MotifFor motifFor, Long id) ;
 
 	/**
 	 * Publie un événement fiscal de type 'Fermeture de for'
-	 * @param forFiscal le for fermé ouvert pour lequel on publie l'événement
+	 * @param tiers
+	 * @param dateEvenement
+	 * @param motifFor motif de fermeture du for
+	 * @param id du for
+	 * @throws Exception
 	 */
-	void publierEvenementFiscalFermetureFor(ForFiscal forFiscal);
+	public void publierEvenementFiscalFermetureFor(Tiers tiers, RegDate dateEvenement, @Nullable MotifFor motifFor, Long id) ;
 
 	/**
 	 * Publie un événement fiscal de type 'Annulation de for'
+	 *
 	 * @param forFiscal      le for fiscal qui vient d'être annulé
+	 * @param dateAnnulation la date d'annulation effective
 	 */
-	void publierEvenementFiscalAnnulationFor(ForFiscal forFiscal);
+	@Transactional(propagation = Propagation.REQUIRED, rollbackFor = Throwable.class)
+	public void publierEvenementFiscalAnnulationFor(ForFiscal forFiscal, RegDate dateAnnulation);
 
 	/**
 	 * Publie un événement fiscal de type 'Changement de mode d'imposition'
-	 * @param forFiscal le nouveau for fiscal avec le nouveau mode d'imposition
+	 * @param contribuable
+	 * @param dateEvenement
+	 * @param modeImposition nouveau mode d'imposition
+	 * @param id du nouveaui for
 	 */
-	void publierEvenementFiscalChangementModeImposition(ForFiscal forFiscal);
+	@Transactional(propagation = Propagation.REQUIRED, rollbackFor = Throwable.class)
+	public void publierEvenementFiscalChangementModeImposition(Contribuable contribuable, RegDate dateEvenement, ModeImposition modeImposition, Long id) ;
 
 	/**
 	 * [UNIREG-3244] Publie un événement de fin d'autorité parentale sur un contribuable parent suite à la majorité d'un enfant.
 	 *
 	 * @param contribuableEnfant le contribuable qui acquiert la majorité
-	 * @param contribuableParent le contribuable dont l'autorité parentale prend fin
-	 * @param dateMajorite       la date d'acquisition de la majorité
+	 * @param contribuableParent le contribuable dont l'autorité parentale prends fin
+	 * @param dateEvenement      la date d'acquisition de la majorité
 	 */
-	void publierEvenementFiscalFinAutoriteParentale(PersonnePhysique contribuableEnfant, ContribuableImpositionPersonnesPhysiques contribuableParent, RegDate dateMajorite);
+	@Transactional(propagation = Propagation.REQUIRED, rollbackFor = Throwable.class)
+	public void publierEvenementFiscalFinAutoriteParentale(PersonnePhysique contribuableEnfant, Contribuable contribuableParent, RegDate dateEvenement);
 
 	/**
 	 * [UNIREG-3244] Publie un événement de naissance d'un contribuable enfant
 	 *
 	 * @param contribuableEnfant le contribuable nouveau né
 	 * @param contribuableParent le contribuable qui possède l'autorité parentale du nouveau né
-	 * @param dateNaissance      la date de naissance
+	 * @param dateEvenement      la date de naissance
 	 */
-	void publierEvenementFiscalNaissance(PersonnePhysique contribuableEnfant, ContribuableImpositionPersonnesPhysiques contribuableParent, RegDate dateNaissance);
+	@Transactional(propagation = Propagation.REQUIRED, rollbackFor = Throwable.class)
+	public void publierEvenementFiscalNaissance(PersonnePhysique contribuableEnfant, Contribuable contribuableParent, RegDate dateEvenement);
 
 	/**
 	 * Publie un événement fiscal de type 'Changement de situation de famille'
-	 * @param date la date de valeur du changement
-	 * @param ctb le contribuable ciblé par le changement
+	 * @param contribuable
+	 * @param dateEvenement
+	 * @param id de la situation de famille
 	 */
-	void publierEvenementFiscalChangementSituationFamille(RegDate date, ContribuableImpositionPersonnesPhysiques ctb);
+	@Transactional(propagation = Propagation.REQUIRED, rollbackFor = Throwable.class)
+	public void publierEvenementFiscalChangementSituation(Contribuable contribuable, RegDate dateEvenement, Long id) ;
 
 	/**
-	 * Publie un événement fiscal de type 'émission de LR'
-	 * @param lr la LR juste émise
-	 * @param dateEmission la date d'émission (en général la date du jour)
+	 * Publie un événement fiscal de type 'Ouverture de période décompte LR'
+	 * @param debiteur
+	 * @param LR
+	 * @param dateEvenement
 	 */
-	void publierEvenementFiscalEmissionListeRecapitulative(DeclarationImpotSource lr, RegDate dateEmission);
+	@Transactional(propagation = Propagation.REQUIRED, rollbackFor = Throwable.class)
+	public void publierEvenementFiscalOuverturePeriodeDecompteLR(DebiteurPrestationImposable debiteur, DeclarationImpotSource lr, RegDate dateEvenement) ;
 
 	/**
-	 * Publie un événement fiscal de type 'quittancement de LR'
-	 * @param lr la LR quittancée
-	 * @param dateQuittancement la date de quittancement (qui peut ne pas être la date du jour car le quittancement nous vient d'une source externe qui indique sa propre date)
+	 * Publie un événement fiscal de type 'Retour LR'
+	 * @param debiteur
+	 * @param LR
+	 * @param dateEvenement
 	 */
-	void publierEvenementFiscalQuittancementListeRecapitulative(DeclarationImpotSource lr, RegDate dateQuittancement);
+	@Transactional(propagation = Propagation.REQUIRED, rollbackFor = Throwable.class)
+	public void publierEvenementFiscalRetourLR(DebiteurPrestationImposable debiteur, DeclarationImpotSource lr, RegDate dateEvenement) ;
 
 	/**
-	 * Publie un événement fiscal de type 'sommation de LR'
-	 * @param lr la LR sommée
-	 * @param dateSommation la date de sommation (en général la date du jour)
+	 * Publie un événement fiscal de type 'Sommation LR'
+	 * @param debiteur
+	 * @param LR
+	 * @param dateEvenement
 	 */
-	void publierEvenementFiscalSommationListeRecapitulative(DeclarationImpotSource lr, RegDate dateSommation);
+	@Transactional(propagation = Propagation.REQUIRED, rollbackFor = Throwable.class)
+	void publierEvenementFiscalSommationLR(DebiteurPrestationImposable debiteur, DeclarationImpotSource lr, RegDate dateEvenement);
 
 	/**
-	 * Publie un événement fiscal de type 'échéance de LR'
-	 * @param lr la LR échue
-	 * @param dateEcheance la date d'échéance (en général la date du jour)
+	 * Publie un événement fiscal de type 'LR manquante'
+	 * @param debiteur
+	 * @param LR
+	 * @param dateEvenement
 	 */
-	void publierEvenementFiscalEcheanceListeRecapitulative(DeclarationImpotSource lr, RegDate dateEcheance);
+	@Transactional(propagation = Propagation.REQUIRED, rollbackFor = Throwable.class)
+	void publierEvenementFiscalLRManquante(DebiteurPrestationImposable debiteur, DeclarationImpotSource lr, RegDate dateEvenement);
 
 	/**
-	 * Publie un événement fiscal de type 'annulation de LR'
-	 * @param lr la LR annulée
+	 * Publie un événement fiscal de type 'Annulation LR'
+	 * @param debiteur
+	 * @param LR
+	 * @param dateEvenement
 	 */
-	void publierEvenementFiscalAnnulationListeRecapitulative(DeclarationImpotSource lr);
+	@Transactional(propagation = Propagation.REQUIRED, rollbackFor = Throwable.class)
+	void publierEvenementFiscalAnnulationLR(DebiteurPrestationImposable debiteur, DeclarationImpotSource lr, RegDate dateEvenement);
 
 	/**
-	 * Publie un événement fiscal de type 'émission de DI'
-	 * @param di la déclaration émise
-	 * @param dateEmission la date d'émission (en général la date du jour)
+	 * Publie un événement fiscal de type 'Envoi DI'
+	 * @param contribuable
+	 * @param DI
+	 * @param dateEvenement
 	 */
-	void publierEvenementFiscalEmissionDeclarationImpot(DeclarationImpotOrdinaire di, RegDate dateEmission);
+	@Transactional(propagation = Propagation.REQUIRED, rollbackFor = Throwable.class)
+	public void publierEvenementFiscalEnvoiDI(Contribuable contribuable, DeclarationImpotOrdinaire di, RegDate dateEvenement) ;
 
 	/**
-	 * Publie un événement fiscal de type 'quittancement de DI'
-	 * @param di la déclaration quittancée
-	 * @param dateQuittance la date de quittance (qui peut ne pas être la date du jour car le quittancement nous vient d'une source externe qui indique sa propre date)
+	 * Publie un événement fiscal de type 'Retour DI'
+	 * @param contribuable
+	 * @param DI
+	 * @param dateEvenement
 	 */
-	void publierEvenementFiscalQuittancementDeclarationImpot(DeclarationImpotOrdinaire di, RegDate dateQuittance);
+	@Transactional(propagation = Propagation.REQUIRED, rollbackFor = Throwable.class)
+	void publierEvenementFiscalRetourDI(Contribuable contribuable, DeclarationImpotOrdinaire di, RegDate dateEvenement);
 
 	/**
-	 * Publie un événement fiscal de type 'sommation de DI'
-	 * @param di la déclaration sommée
-	 * @param dateSommation la date de sommation (en général la date du jour)
+	 * Publie un événement fiscal de type 'Sommation DI'
+	 * @param contribuable
+	 * @param DI
+	 * @param dateEvenement
 	 */
-	void publierEvenementFiscalSommationDeclarationImpot(DeclarationImpotOrdinaire di, RegDate dateSommation);
+	@Transactional(propagation = Propagation.REQUIRED, rollbackFor = Throwable.class)
+	void publierEvenementFiscalSommationDI(Contribuable contribuable, DeclarationImpotOrdinaire di, RegDate dateEvenement);
 
 	/**
-	 * Publie un événement fiscal de type 'échéance de DI'
-	 * @param di la déclaration échue
-	 * @param dateEcheance la date d'échéance (en général la date du jour)
+	 * Publie un événement fiscal de type 'Echéance DI'
+	 * @param contribuable
+	 * @param DI
+	 * @param dateEvenement
 	 */
-	void publierEvenementFiscalEcheanceDeclarationImpot(DeclarationImpotOrdinaire di, RegDate dateEcheance);
+	@Transactional(propagation = Propagation.REQUIRED, rollbackFor = Throwable.class)
+	void publierEvenementFiscalEcheanceDI(Contribuable contribuable, DeclarationImpotOrdinaire di, RegDate dateEvenement);
 
 	/**
-	 * Publie un événement fiscal de type 'annulation de DI'
-	 * @param di la déclaration annulée
+	 * Publie un événement fiscal de type 'Taxation d'office'
+	 * @param contribuable
+	 * @param DI
+	 * @param dateEvenement
 	 */
-	void publierEvenementFiscalAnnulationDeclarationImpot(DeclarationImpotOrdinaire di);
+	@Transactional(propagation = Propagation.REQUIRED, rollbackFor = Throwable.class)
+	void publierEvenementFiscalTaxationOffice(Contribuable contribuable, DeclarationImpotOrdinaire di, RegDate dateEvenement);
 
 	/**
-	 * Publie un événement fiscal de type 'ouverture de régime fiscal'
-	 * @param rf le régime fiscal nouvellement ouvert
+	 * Publie un événement fiscal de type 'Annulation DI'
+	 * @param contribuable
+	 * @param DI
+	 * @param dateEvenement
 	 */
-	void publierEvenementFiscalOuvertureRegimeFiscal(RegimeFiscal rf);
-
-	/**
-	 * Publie un événement fiscal de type 'fermeture de régime fiscal'
-	 * @param rf le régime fiscal nouvellement fermé (= auquel on vient d'assigner une date de fin de validité)
-	 */
-	void publierEvenementFiscalFermetureRegimeFiscal(RegimeFiscal rf);
-
-	/**
-	 * Publie un événement fiscal de type 'annulation de régime fiscal'
-	 * @param rf le régime fiscal nouvellement annulé
-	 */
-	void publierEvenementFiscalAnnulationRegimeFiscal(RegimeFiscal rf);
-
-	/**
-	 * Publie un événement fiscal de type 'ouverture d'allègement fiscal'
-	 * @param af l'allègement fiscal nouvellement ouvert
-	 */
-	void publierEvenementFiscalOuvertureAllegementFiscal(AllegementFiscal af);
-
-	/**
-	 * Publie un événement fiscal de type 'fermeture d'allègement fiscal'
-	 * @param af l'allègement fiscal nouvellement fermé (= auquel on vient d'assigner une date de fin de validité)
-	 */
-	void publierEvenementFiscalFermetureAllegementFiscal(AllegementFiscal af);
-
-	/**
-	 * Publie un événement fiscal de type 'annulation d'allègement fiscal'
-	 * @param af l'allègement fiscal nouvellement annulé
-	 */
-	void publierEvenementFiscalAnnulationAllegementFiscal(AllegementFiscal af);
-
-	/**
-	 * Publie un événement fiscal de type 'ouverture de flag entreprise'
-	 * @param flag le flag entreprise nouvellement ouvert
-	 */
-	void publierEvenementFiscalOuvertureFlagEntreprise(FlagEntreprise flag);
-
-	/**
-	 * Publie un événement fiscal de type 'fermeture de flag entreprise'
-	 * @param flag le flag entreprise nouvellement fermé (= auquel on vient d'assigner une date de fin de validité)
-	 */
-	void publierEvenementFiscalFermetureFlagEntreprise(FlagEntreprise flag);
-
-	/**
-	 * Publie un événement fiscal de type 'annulation de flag entreprise'
-	 * @param flag le flag entreprise nouvellement annulé
-	 */
-	void publierEvenementFiscalAnnulationFlagEntreprise(FlagEntreprise flag);
-
-	/**
-	 * Publie un événement fiscal de type 'information complémentaire'
-	 * @param entreprise entreprise concernée par l'événement
-	 * @param type type d'information complémentaire
-	 * @param dateEvenement date de valeur de l'événement
-	 */
-	void publierEvenementFiscalInformationComplementaire(Entreprise entreprise, EvenementFiscalInformationComplementaire.TypeInformationComplementaire type, RegDate dateEvenement);
+	@Transactional(propagation = Propagation.REQUIRED, rollbackFor = Throwable.class)
+	void publierEvenementFiscalAnnulationDI(Contribuable contribuable, DeclarationImpotOrdinaire di, RegDate dateEvenement);
 
 }

@@ -16,7 +16,6 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.interceptor.DefaultTransactionAttribute;
 import org.springframework.util.Assert;
 
-import ch.vd.uniregctb.scheduler.JobCategory;
 import ch.vd.uniregctb.scheduler.JobDefinition;
 
 public class InContainerTestingJob extends JobDefinition {
@@ -24,6 +23,7 @@ public class InContainerTestingJob extends JobDefinition {
 	private static final Logger LOGGER = LoggerFactory.getLogger(InContainerTestingJob.class);
 
 	public static final String NAME = "IT-InContainerTestingJob";
+	private static final String CATEGORIE = "Test";
 
 	private List<InContainerTest> tests;
 
@@ -40,11 +40,11 @@ public class InContainerTestingJob extends JobDefinition {
 	}
 
 	public InContainerTestingJob(String name, int sortOrder, String descr) {
-		super(name, JobCategory.TEST, sortOrder, descr);
+		super(name, CATEGORIE, sortOrder, descr);
 	}
 
 	@Override
-	public synchronized void doExecute(Map<String, Object> params) throws Exception {
+	synchronized public void doExecute(Map<String, Object> params) throws Exception {
 		transactionListener = new TransactionListener();
 		boolean error = false;
 		String methodsInError = "";

@@ -21,7 +21,7 @@ public class EnvoiLRsResults extends JobResults<Long, EnvoiLRsResults> {
 
 		private final String description;
 
-		ErreurType(String description) {
+		private ErreurType(String description) {
 			this.description = description;
 		}
 

@@ -5,7 +5,6 @@ import java.util.Map;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import ch.vd.uniregctb.rapport.RapportService;
-import ch.vd.uniregctb.scheduler.JobCategory;
 import ch.vd.uniregctb.scheduler.JobDefinition;
 import ch.vd.uniregctb.scheduler.JobParam;
 import ch.vd.uniregctb.scheduler.JobParamInteger;
@@ -37,7 +36,7 @@ public abstract class AbstractProduireRolesJob extends JobDefinition {
 		return param;
 	}
 
-	protected AbstractProduireRolesJob(String name, JobCategory categorie, int sortOrder, String description) {
+	protected AbstractProduireRolesJob(String name, String categorie, int sortOrder, String description) {
 		super(name, categorie, sortOrder, description);
 	}
 

@@ -17,6 +17,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.test.annotation.ExpectedException;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
@@ -195,19 +196,20 @@ public class TiersDAOTest extends CoreDAOTest {
 
 		PersonnePhysique hab = new PersonnePhysique(true);
 		hab.setNumeroIndividu(12L);
-		insertAndTestNumeroTiers(hab, ContribuableImpositionPersonnesPhysiques.CTB_GEN_FIRST_ID, ContribuableImpositionPersonnesPhysiques.CTB_GEN_LAST_ID);
+		insertAndTestNumeroTiers(hab, Contribuable.CTB_GEN_FIRST_ID, Contribuable.CTB_GEN_LAST_ID);
 		PersonnePhysique nh = new PersonnePhysique(false);
 		nh.setNom("bla");
-		insertAndTestNumeroTiers(nh, ContribuableImpositionPersonnesPhysiques.CTB_GEN_FIRST_ID, ContribuableImpositionPersonnesPhysiques.CTB_GEN_LAST_ID);
-		insertAndTestNumeroTiers(new MenageCommun(), ContribuableImpositionPersonnesPhysiques.CTB_GEN_FIRST_ID, ContribuableImpositionPersonnesPhysiques.CTB_GEN_LAST_ID);
+		insertAndTestNumeroTiers(nh, Contribuable.CTB_GEN_FIRST_ID, Contribuable.CTB_GEN_LAST_ID);
+		insertAndTestNumeroTiers(new MenageCommun(), Contribuable.CTB_GEN_FIRST_ID, Contribuable.CTB_GEN_LAST_ID);
 	}
 
 	/**
 	 * Teste que les numéros générés pour les Tiers est dans le bon range
 	 */
+	@ExpectedException(IllegalArgumentException.class)
 	@Test
 	@Transactional(rollbackFor = Throwable.class)
-	public void testNumeroEntreprise() throws Exception {
+	public void testNumeroEntrepriseNOK() throws Exception {
 		insertAndTestNumeroTiers(new Entreprise(), Entreprise.FIRST_ID, Entreprise.LAST_ID);
 	}
 
@@ -216,10 +218,23 @@ public class TiersDAOTest extends CoreDAOTest {
 	 */
 	@Test
 	@Transactional(rollbackFor = Throwable.class)
+	public void testNumeroEntrepriseOK() throws Exception {
+
+		Entreprise ent = new Entreprise();
+		ent.setNumero(1004L);
+		insertAndTestNumeroTiers(ent, Entreprise.FIRST_ID, Entreprise.LAST_ID);
+	}
+
+	/**
+	 * Teste que les numéros générés pour les Tiers est dans le bon range
+	 */
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testNumeroAutreCommunaute() throws Exception {
-		final AutreCommunaute ac = new AutreCommunaute();
+
+		AutreCommunaute ac = new AutreCommunaute();
 		ac.setNom("Une entreprise super");
-		insertAndTestNumeroTiers(ac, AutreCommunaute.CAAC_GEN_FIRST_ID, AutreCommunaute.CAAC_GEN_LAST_ID);
+		insertAndTestNumeroTiers(ac, Entreprise.PM_GEN_FIRST_ID, Entreprise.PM_GEN_LAST_ID);
 	}
 
 	/**
@@ -228,16 +243,8 @@ public class TiersDAOTest extends CoreDAOTest {
 	@Test
 	@Transactional(rollbackFor = Throwable.class)
 	public void testNumeroCollectiviteAdministrative() throws Exception {
-		insertAndTestNumeroTiers(new CollectiviteAdministrative(), AutreCommunaute.CAAC_GEN_FIRST_ID, AutreCommunaute.CAAC_GEN_LAST_ID);
-	}
 
-	/**
-	 * Teste que les numéros générés pour les Tiers est dans le bon range
-	 */
-	@Test
-	@Transactional(rollbackFor = Throwable.class)
-	public void testNumeroEtablissement() throws Exception {
-		insertAndTestNumeroTiers(new Etablissement(), Etablissement.ETB_GEN_FIRST_ID, Etablissement.ETB_GEN_LAST_ID);
+		insertAndTestNumeroTiers(new CollectiviteAdministrative(), Entreprise.PM_GEN_FIRST_ID, Entreprise.PM_GEN_LAST_ID);
 	}
 
 	/**
@@ -324,144 +331,6 @@ public class TiersDAOTest extends CoreDAOTest {
 
 	@Test
 	@Transactional(rollbackFor = Throwable.class)
-	public void testGetEntrepriseByNumeroOrganisation() throws Exception {
-
-		final Long noOrganisation = 12345654123L;
-
-		/*
-		Cas nominal
-		 */
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				Entreprise entreprise = new Entreprise();
-				entreprise.setNumeroEntreprise(noOrganisation);
-
-				dao.save(entreprise);
-				return null;
-			}
-		});
-
-		// On a bien récupéré le tiers
-		Entreprise tiers = dao.getEntrepriseByNumeroOrganisation(noOrganisation);
-		assertNotNull(tiers);
-		final Long numeroEntreprise = tiers.getNumero();
-		assertTrue(tiers.getNumeroEntreprise().equals(noOrganisation));
-
-		/*
-		Ajout d'une entrée en doublon
-		 */
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				Entreprise entreprise = new Entreprise();
-				entreprise.setNumeroEntreprise(noOrganisation);
-
-				dao.save(entreprise);
-				return null;
-			}
-		});
-
-		try {
-			Entreprise tiersNonUnique = dao.getEntrepriseByNumeroOrganisation(noOrganisation);
-		} catch (Exception e) {
-			// On a bien l'exception correspondant à la situation de doublon
-			assertTrue(e instanceof PlusieursEntreprisesAvecMemeNumeroOrganisationException);
-			assertTrue(e.getMessage().startsWith(String.format("Plusieurs entreprises non-annulées partagent le même numéro d'organisation %d ", noOrganisation)));
-		}
-
-		/*
-		 Annulation d'une des deux entrée
-		  */
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				Entreprise entreprise = (Entreprise) dao.get(numeroEntreprise);
-				entreprise.setAnnulationDate(new Date());
-
-				dao.save(entreprise);
-				return null;
-			}
-		});
-
-		// Une des deux entrées étant annulé, on doit recevoir l'entrée valide sans encombre
-		Entreprise tiersNonAnnule = dao.getEntrepriseByNumeroOrganisation(noOrganisation);
-		assertNotNull(tiersNonAnnule);
-		assertTrue(tiersNonAnnule.getNumero() != numeroEntreprise.longValue());
-		assertTrue(tiersNonAnnule.getNumeroEntreprise().equals(noOrganisation));
-	}
-
-	@Test
-	@Transactional(rollbackFor = Throwable.class)
-	public void testGetEtablissementByNumeroSite() throws Exception {
-
-		final Long noSite = 12345654123L;
-
-		/*
-		Cas nominal
-		 */
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				Etablissement etablissement = new Etablissement();
-				etablissement.setNumeroEtablissement(noSite);
-
-				dao.save(etablissement);
-				return null;
-			}
-		});
-
-		// On a bien récupéré le tiers
-		Etablissement tiers = dao.getEtablissementByNumeroSite(noSite);
-		assertNotNull(tiers);
-		final Long numeroEtablissement = tiers.getNumero();
-		assertTrue(tiers.getNumeroEtablissement().equals(noSite));
-
-		/*
-		Ajout d'une entrée en doublon
-		 */
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				Etablissement etablissement = new Etablissement();
-				etablissement.setNumeroEtablissement(noSite);
-
-				dao.save(etablissement);
-				return null;
-			}
-		});
-
-		try {
-			Etablissement tiersNonUnique = dao.getEtablissementByNumeroSite(noSite);
-		} catch (Exception e) {
-			// On a bien l'exception correspondant à la situation de doublon
-			assertTrue(e instanceof PlusieursEtablissementsAvecMemeNumeroSitesException);
-			assertTrue(e.getMessage().startsWith(String.format("Plusieurs établissements non-annulés partagent le même numéro de site %d ", noSite)));
-		}
-
-		/*
-		 Annulation d'une des deux entrée
-		  */
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				Etablissement etablissement = (Etablissement) dao.get(numeroEtablissement);
-				etablissement.setAnnulationDate(new Date());
-
-				dao.save(etablissement);
-				return null;
-			}
-		});
-
-		// Une des deux entrées étant annulé, on doit recevoir l'entrée valide sans encombre
-		Etablissement tiersNonAnnule = dao.getEtablissementByNumeroSite(noSite);
-		assertNotNull(tiersNonAnnule);
-		assertTrue(!tiersNonAnnule.getNumero().equals(numeroEtablissement));
-		assertTrue(tiersNonAnnule.getNumeroEtablissement().equals(noSite));
-	}
-
-	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testGetNonHabitant() throws Exception {
 
 		loadDatabase();
@@ -532,7 +401,7 @@ public class TiersDAOTest extends CoreDAOTest {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique pp = addHabitant(noIndividu);
-				addForPrincipal(pp, date(2001, 12, 4), MotifFor.MAJORITE, date(2009, 5, 12), MotifFor.ANNULATION, 2434, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ModeImposition.ORDINAIRE, MotifRattachement.DOMICILE);
+				addForPrincipal(pp, date(2001, 12, 4), MotifFor.MAJORITE, date(2009, 5, 12), MotifFor.ANNULATION, 2434, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE);
 				return null;
 			}
 		});
@@ -552,8 +421,8 @@ public class TiersDAOTest extends CoreDAOTest {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique pp = addHabitant(noIndividu);
-				addForPrincipal(pp, date(2001, 12, 4), MotifFor.MAJORITE, date(2009, 5, 12), MotifFor.ANNULATION, 2434, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ModeImposition.ORDINAIRE, MotifRattachement.DOMICILE);
-				addForPrincipal(pp, date(2010, 1, 1), MotifFor.REACTIVATION, date(2010, 6, 30), MotifFor.DEPART_HS, 2434, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ModeImposition.ORDINAIRE, MotifRattachement.DOMICILE);
+				addForPrincipal(pp, date(2001, 12, 4), MotifFor.MAJORITE, date(2009, 5, 12), MotifFor.ANNULATION, 2434, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE);
+				addForPrincipal(pp, date(2010, 1, 1), MotifFor.REACTIVATION, date(2010, 6, 30), MotifFor.DEPART_HS, 2434, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE);
 				return null;
 			}
 		});
@@ -769,7 +638,7 @@ public class TiersDAOTest extends CoreDAOTest {
 			}
 
 			{
-				ForFiscalPrincipalPP forFiscal = new ForFiscalPrincipalPP();
+				ForFiscalPrincipal forFiscal = new ForFiscalPrincipal();
 				forFiscal.setDateDebut(RegDate.get(2005, 8, 12));
 				forFiscal.setDateFin(RegDate.get(2007, 2, 28));
 				forFiscal.setMotifRattachement(MotifRattachement.DOMICILE);
@@ -780,7 +649,7 @@ public class TiersDAOTest extends CoreDAOTest {
 			}
 
 			{
-				ForFiscalPrincipalPP forFiscal = new ForFiscalPrincipalPP();
+				ForFiscalPrincipal forFiscal = new ForFiscalPrincipal();
 				forFiscal.setDateDebut(RegDate.get(2007, 3, 1));
 				forFiscal.setMotifRattachement(MotifRattachement.DOMICILE);
 				forFiscal.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_HC);
@@ -876,7 +745,7 @@ public class TiersDAOTest extends CoreDAOTest {
 
 						// For fermé
 						HashSet<ForFiscal> fors = new HashSet<>();
-						ForFiscalPrincipalPP forFiscal = new ForFiscalPrincipalPP();
+						ForFiscalPrincipal forFiscal = new ForFiscalPrincipal();
 						forFiscal.setDateDebut(RegDate.get(2002, 1, 1));
 						forFiscal.setDateFin(RegDate.get(2006, 11, 30));
 						forFiscal.setMotifRattachement(MotifRattachement.DOMICILE);
@@ -902,7 +771,7 @@ public class TiersDAOTest extends CoreDAOTest {
 
 						// For fermé
 						HashSet<ForFiscal> fors = new HashSet<>();
-						ForFiscalPrincipalPP forFiscal = new ForFiscalPrincipalPP();
+						ForFiscalPrincipal forFiscal = new ForFiscalPrincipal();
 						forFiscal.setDateDebut(RegDate.get(2004, 1, 1));
 						forFiscal.setDateFin(RegDate.get(2006, 11, 30));
 						forFiscal.setMotifRattachement(MotifRattachement.DOMICILE);
@@ -949,7 +818,7 @@ public class TiersDAOTest extends CoreDAOTest {
 
 					// For ouvert sur le ménage (on ne peut l'ajouter qu'après avoir définit les rapport-entre-tiers, autrement le
 					// ménage-commun ne valide pas)
-					ForFiscalPrincipalPP forFiscal = new ForFiscalPrincipalPP();
+					ForFiscalPrincipal forFiscal = new ForFiscalPrincipal();
 					forFiscal.setDateDebut(RegDate.get(2006, 12, 1));
 					forFiscal.setMotifRattachement(MotifRattachement.DOMICILE);
 					forFiscal.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_HC);
@@ -1026,7 +895,7 @@ public class TiersDAOTest extends CoreDAOTest {
 
 					// For fermé
 					HashSet<ForFiscal> fors = new HashSet<>();
-					ForFiscalPrincipalPP forFiscal = new ForFiscalPrincipalPP();
+					ForFiscalPrincipal forFiscal = new ForFiscalPrincipal();
 					forFiscal.setDateDebut(RegDate.get(2002, 1, 1));
 					forFiscal.setDateFin(null);
 					forFiscal.setMotifRattachement(MotifRattachement.DOMICILE);
@@ -1049,7 +918,7 @@ public class TiersDAOTest extends CoreDAOTest {
 
 					// For fermé
 					HashSet<ForFiscal> fors = new HashSet<>();
-					ForFiscalPrincipalPP forFiscal = new ForFiscalPrincipalPP();
+					ForFiscalPrincipal forFiscal = new ForFiscalPrincipal();
 					forFiscal.setDateDebut(RegDate.get(2004, 1, 1));
 					forFiscal.setDateFin(null);
 					forFiscal.setMotifRattachement(MotifRattachement.DOMICILE);
@@ -1456,7 +1325,7 @@ public class TiersDAOTest extends CoreDAOTest {
 				PersonnePhysique paul = new PersonnePhysique(false);
 				paul.setNom("Paul");
 				{
-					ForFiscalPrincipalPP f = new ForFiscalPrincipalPP();
+					ForFiscalPrincipal f = new ForFiscalPrincipal();
 					f.setDateDebut(date(1974, 3, 31));
 					f.setMotifOuverture(MotifFor.MAJORITE);
 					f.setDateFin(veilleMariage);
@@ -1473,7 +1342,7 @@ public class TiersDAOTest extends CoreDAOTest {
 				PersonnePhysique janine = new PersonnePhysique(false);
 				janine.setNom("Janine");
 				{
-					ForFiscalPrincipalPP f = new ForFiscalPrincipalPP();
+					ForFiscalPrincipal f = new ForFiscalPrincipal();
 					f.setDateDebut(date(1974, 3, 31));
 					f.setMotifOuverture(MotifFor.MAJORITE);
 					f.setDateFin(veilleMariage);
@@ -1507,7 +1376,7 @@ public class TiersDAOTest extends CoreDAOTest {
 					menage.addRapportObjet(rapport);
 					janine.addRapportSujet(rapport);
 
-					ForFiscalPrincipalPP f = new ForFiscalPrincipalPP();
+					ForFiscalPrincipal f = new ForFiscalPrincipal();
 					f.setDateDebut(dateMariage);
 					f.setMotifOuverture(MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
 					f.setGenreImpot(GenreImpot.REVENU_FORTUNE);
@@ -1923,8 +1792,8 @@ public class TiersDAOTest extends CoreDAOTest {
 				Etablissement etablissement1 = addEtablissement(null);
 				etablissement1.setAnnule(true);
 
-				Entreprise entreprise0 = addEntrepriseInconnueAuCivil();
-				Entreprise entreprise1 = addEntrepriseInconnueAuCivil();
+				Entreprise entreprise0 = addEntreprise(423L);
+				Entreprise entreprise1 = addEntreprise(424L);
 				entreprise1.setAnnule(true);
 
 				DebiteurPrestationImposable debiteur0 = addDebiteur();

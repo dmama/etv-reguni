@@ -19,7 +19,7 @@ public class AdressesEditController extends AbstractTiersController {
 	 */
 	protected final Logger LOGGER = LoggerFactory.getLogger(AdressesEditController.class);
 
-	public static final String TARGET_ANNULER_ADRESSE = "annulerAdresse";
+	public final static String TARGET_ANNULER_ADRESSE = "annulerAdresse";
 
 	private TiersEditManager tiersEditManager;
 

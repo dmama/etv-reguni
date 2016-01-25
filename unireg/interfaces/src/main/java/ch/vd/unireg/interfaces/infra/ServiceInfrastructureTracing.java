@@ -21,6 +21,7 @@ import ch.vd.unireg.interfaces.infra.data.OfficeImpot;
 import ch.vd.unireg.interfaces.infra.data.Pays;
 import ch.vd.unireg.interfaces.infra.data.Region;
 import ch.vd.unireg.interfaces.infra.data.Rue;
+import ch.vd.unireg.interfaces.infra.data.TypeEtatPM;
 import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
 import ch.vd.uniregctb.stats.ServiceTracing;
 import ch.vd.uniregctb.stats.StatsService;
@@ -639,6 +640,102 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 	}
 
 	@Override
+	public List<TypeRegimeFiscal> getTypesRegimesFiscaux() throws ServiceInfrastructureException {
+		Throwable t = null;
+		int items = 0;
+		final long time = tracing.start();
+		try {
+			final List<TypeRegimeFiscal> list = target.getTypesRegimesFiscaux();
+			items = list == null ? 0 : list.size();
+			return list;
+		}
+		catch (ServiceInfrastructureException e) {
+			t = e;
+			throw e;
+		}
+		catch (RuntimeException | Error e) {
+			t = e;
+			throw e;
+		}
+		finally {
+			tracing.end(time, t, "getTypesRegimesFiscaux", items, null);
+		}
+	}
+
+	@Override
+	public TypeRegimeFiscal getTypeRegimeFiscal(final String code) throws ServiceInfrastructureException {
+		Throwable t = null;
+		final long time = tracing.start();
+		try {
+			return target.getTypeRegimeFiscal(code);
+		}
+		catch (ServiceInfrastructureException e) {
+			t = e;
+			throw e;
+		}
+		catch (RuntimeException | Error e) {
+			t = e;
+			throw e;
+		}
+		finally {
+			tracing.end(time, t, "getTypeRegimeFiscal", new Object() {
+				@Override
+				public String toString() {
+					return String.format("code=%s", code);
+				}
+			});
+		}
+	}
+
+	@Override
+	public List<TypeEtatPM> getTypesEtatsPM() throws ServiceInfrastructureException {
+		Throwable t = null;
+		int items = 0;
+		final long time = tracing.start();
+		try {
+			final List<TypeEtatPM> list = target.getTypesEtatsPM();
+			items = list == null ? 0 : list.size();
+			return list;
+		}
+		catch (ServiceInfrastructureException e) {
+			t = e;
+			throw e;
+		}
+		catch (RuntimeException | Error e) {
+			t = e;
+			throw e;
+		}
+		finally {
+			tracing.end(time, t, "getTypesEtatsPM", items, null);
+		}
+	}
+
+	@Override
+	public TypeEtatPM getTypeEtatPM(final String code) throws ServiceInfrastructureException {
+		Throwable t = null;
+		final long time = tracing.start();
+		try {
+			return target.getTypeEtatPM(code);
+		}
+		catch (ServiceInfrastructureException e) {
+			t = e;
+			throw e;
+		}
+		catch (RuntimeException | Error e) {
+			t = e;
+			throw e;
+		}
+		finally {
+			tracing.end(time, t, "getTypeEtatPM", new Object() {
+				@Override
+				public String toString() {
+					return String.format("code=%s", code);
+				}
+			});
+		}
+	}
+
+	@Override
 	public String getUrlVers(final ApplicationFiscale application, final Long tiersId, final Integer oid) {
 		Throwable t = null;
 		final long time = tracing.start();
@@ -758,26 +855,6 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 					return String.format("id=%d", code);
 				}
 			});
-		}
-	}
-
-	@Override
-	public List<TypeRegimeFiscal> getTousLesRegimesFiscaux() {
-		Throwable t = null;
-		final long time = tracing.start();
-		try {
-			return target.getTousLesRegimesFiscaux();
-		}
-		catch (ServiceInfrastructureException e) {
-			t = e;
-			throw e;
-		}
-		catch (RuntimeException | Error e) {
-			t = e;
-			throw e;
-		}
-		finally {
-			tracing.end(time, t, "getTousLesRegimesFiscaux", null);
 		}
 	}
 

@@ -32,16 +32,16 @@ public class ListeRecapEditController extends AbstractListeRecapController {
 	/**
 	 * Le nom du parametre utilise dans la request.
 	 */
-	public static final String LR_ID_PARAMETER_NAME = "id";
-	public static final String DELAI_ID_PARAMETER_NAME = "idDelai";
-	public static final String DEBITEUR_ID_PARAMETER_NAME = "numero";
+	public final static String LR_ID_PARAMETER_NAME = "id";
+	public final static String DELAI_ID_PARAMETER_NAME = "idDelai";
+	public final static String DEBITEUR_ID_PARAMETER_NAME = "numero";
 
-	public static final String BUTTON_SAUVER = "__confirmed_save";
-	public static final String BUTTON_IMPRIMER_LR = "imprimerLR";
-	public static final String BUTTON_SOMMER_LR = "sommerLR";
-	public static final String BUTTON_DUPLICATA_LR = "duplicataLR";
-	public static final String BUTTON_ANNULER_LR = "annulerLR";
-	public static final String TARGET_ANNULER_DELAI = "annulerDelai";
+	public final static String BUTTON_SAUVER = "__confirmed_save";
+	public final static String BUTTON_IMPRIMER_LR = "imprimerLR";
+	public final static String BUTTON_SOMMER_LR = "sommerLR";
+	public final static String BUTTON_DUPLICATA_LR = "duplicataLR";
+	public final static String BUTTON_ANNULER_LR = "annulerLR";
+	public final static String TARGET_ANNULER_DELAI = "annulerDelai";
 
 	private ListeRecapEditManager lrEditManager;
 	private TicketService ticketService;

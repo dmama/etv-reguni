@@ -12,7 +12,6 @@ import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.document.ListeContribuablesResidentsSansForVaudoisRapport;
 import ch.vd.uniregctb.listes.ListesTiersService;
 import ch.vd.uniregctb.rapport.RapportService;
-import ch.vd.uniregctb.scheduler.JobCategory;
 import ch.vd.uniregctb.scheduler.JobDefinition;
 import ch.vd.uniregctb.scheduler.JobParam;
 import ch.vd.uniregctb.scheduler.JobParamInteger;
@@ -25,6 +24,7 @@ import ch.vd.uniregctb.transaction.TransactionTemplate;
 public class ListeContribuablesResidentsSansForVaudoisJob extends JobDefinition {
 
 	public static final String NAME = "ListeCtbsResidentsSansForVdJob";
+	private static final String CATEGORIE = "Stats";
 
 	public static final String I_NB_THREADS = "nbThreads";
 
@@ -35,7 +35,7 @@ public class ListeContribuablesResidentsSansForVaudoisJob extends JobDefinition 
 	private ListesTiersService service;
 
 	public ListeContribuablesResidentsSansForVaudoisJob(int order, String description) {
-		super(NAME, JobCategory.STATS, order, description);
+		super(NAME, CATEGORIE, order, description);
 
 		final JobParam param = new JobParam();
 		param.setDescription("Nombre de threads");

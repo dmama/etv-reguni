@@ -1,22 +1,15 @@
 package ch.vd.uniregctb.di.view;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionPersonnesMorales;
-import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionPersonnesPhysiques;
+import ch.vd.uniregctb.metier.assujettissement.PeriodeImposition;
 import ch.vd.uniregctb.type.TypeAdresseRetour;
 import ch.vd.uniregctb.type.TypeDocument;
 
 public class ImprimerNouvelleDeclarationImpotView {
 
-	public enum TypeContribuable {
-		PP,
-		PM
-	}
-
 	// Données pré-remplie de la déclaration
 	private Long tiersId;
 	private Integer periodeFiscale;
-	private TypeContribuable typeContribuable;
 
 	// Données renseignées si on arrive sur l'écran de création de DI depuis la liste des tâches
 	private boolean depuisTache;
@@ -38,7 +31,6 @@ public class ImprimerNouvelleDeclarationImpotView {
 	// Données dépendant des droits de l'utilisateur
 	private boolean isAllowedQuittancement;
 	private boolean imprimable = true;
-	private boolean generableNonImprimable = false;
 
 	public ImprimerNouvelleDeclarationImpotView() {
 	}
@@ -49,24 +41,12 @@ public class ImprimerNouvelleDeclarationImpotView {
 		this.depuisTache = depuisTache;
 	}
 
-	public void setPeriode(PeriodeImpositionPersonnesPhysiques periode) {
+	public void setPeriode(PeriodeImposition periode) {
 		this.imprimable = true;
 		this.periodeFiscale = periode.getDateDebut().year();
 		this.dateDebutPeriodeImposition = periode.getDateDebut();
 		this.dateFinPeriodeImposition = periode.getDateFin();
 		this.typeAdresseRetour = periode.getAdresseRetour();
-		this.typeContribuable = TypeContribuable.PP;
-	}
-
-	public void setPeriode(PeriodeImpositionPersonnesMorales periode) {
-		this.imprimable = true;
-		this.periodeFiscale = periode.getDateDebut().year();
-		this.dateDebutPeriodeImposition = periode.getDateDebut();
-		this.dateFinPeriodeImposition = periode.getDateFin();
-		this.typeAdresseRetour = TypeAdresseRetour.CEDI;
-		this.typeContribuable = TypeContribuable.PM;
-		this.imprimable = periode.getTypeDocumentDeclaration() != null;
-		this.generableNonImprimable = periode.getTypeDocumentDeclaration() == null;
 	}
 
 	public Long getTiersId() {
@@ -83,14 +63,6 @@ public class ImprimerNouvelleDeclarationImpotView {
 
 	public void setPeriodeFiscale(Integer periodeFiscale) {
 		this.periodeFiscale = periodeFiscale;
-	}
-
-	public TypeContribuable getTypeContribuable() {
-		return typeContribuable;
-	}
-
-	public void setTypeContribuable(TypeContribuable typeContribuable) {
-		this.typeContribuable = typeContribuable;
 	}
 
 	public boolean isDepuisTache() {
@@ -167,14 +139,6 @@ public class ImprimerNouvelleDeclarationImpotView {
 
 	public void setImprimable(boolean imprimable) {
 		this.imprimable = imprimable;
-	}
-
-	public boolean isGenerableNonImprimable() {
-		return generableNonImprimable;
-	}
-
-	public void setGenerableNonImprimable(boolean generableNonImprimable) {
-		this.generableNonImprimable = generableNonImprimable;
 	}
 
 	public boolean isOuverte() {

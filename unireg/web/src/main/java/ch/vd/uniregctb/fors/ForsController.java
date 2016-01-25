@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.context.MessageSource;
 import org.springframework.context.support.MessageSourceAccessor;
@@ -26,7 +25,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.ActionException;
 import ch.vd.uniregctb.common.ApplicationConfig;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.ControllerUtils;
@@ -38,15 +36,12 @@ import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.security.SecurityHelper;
 import ch.vd.uniregctb.security.SecurityProviderInterface;
 import ch.vd.uniregctb.tiers.Contribuable;
-import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesMorales;
-import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.ForDebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalAutreElementImposable;
 import ch.vd.uniregctb.tiers.ForFiscalAutreImpot;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
 import ch.vd.uniregctb.tiers.NatureTiers;
 import ch.vd.uniregctb.tiers.Tiers;
@@ -57,7 +52,6 @@ import ch.vd.uniregctb.tiers.manager.AutorisationManager;
 import ch.vd.uniregctb.tiers.manager.Autorisations;
 import ch.vd.uniregctb.tiers.validator.MotifsForHelper;
 import ch.vd.uniregctb.type.GenreImpot;
-import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.utils.RegDateEditor;
@@ -78,15 +72,10 @@ public class ForsController {
 	private HibernateTemplate hibernateTemplate;
 	private AutorisationManager autorisationManager;
 
-	private Map<MotifRattachement, String> motifsRattachementForPrincipalPP;
-	private Map<MotifRattachement, String> motifsRattachementForPrincipalPM;
-	private Map<MotifRattachement, String> motifsRattachementForSecondairePP;
-	private Map<MotifRattachement, String> motifsRattachementForSecondairePM;
+	private Map<MotifRattachement, String> motifsRattachementForPrincipal;
+	private Map<MotifRattachement, String> motifsRattachementForSecondaire;
 	private Map<MotifRattachement, String> motifsRattachementForAutreElementImposable;
-	private Map<GenreImpot, String> genresImpotForPrincipalOuSecondairePP;
-	private Map<GenreImpot, String> genresImpotForPrincipalPM;
-	private Map<GenreImpot, String> genresImpotForSecondairePM;
-	private Map<GenreImpot, String> genresImpotForAutreImpot;
+	private Map<GenreImpot, String> genresImpotsForAutreImpot;
 
 	public void setTiersDAO(TiersDAO tiersDAO) {
 		this.tiersDAO = tiersDAO;
@@ -209,69 +198,6 @@ public class ForsController {
 		return autorisationManager.getAutorisations(ctb, AuthenticationHelper.getCurrentPrincipal(), AuthenticationHelper.getCurrentOID());
 	}
 
-	@Nullable
-	private static GenreImpot getDefaultGenreImpotForsPrincipauxEtSecondaires(Contribuable ctb) {
-		if (ctb instanceof ContribuableImpositionPersonnesPhysiques) {
-			return GenreImpot.REVENU_FORTUNE;
-		}
-		if (ctb instanceof ContribuableImpositionPersonnesMorales) {
-			return GenreImpot.BENEFICE_CAPITAL;
-		}
-		return null;
-	}
-
-	@NotNull
-	private Map<GenreImpot, String> getMapGenresImpotForsPrincipaux(Contribuable ctb) {
-		if (ctb instanceof ContribuableImpositionPersonnesPhysiques) {
-			return getGenresImpotPourForPrincipalOuSecondairePP();
-		}
-		if (ctb instanceof ContribuableImpositionPersonnesMorales) {
-			return getGenresImpotPourForPrincipalPM();
-		}
-		return Collections.emptyMap();
-	}
-
-	@NotNull
-	private Map<GenreImpot, String> getMapGenresImpotForsSecondaires(Contribuable ctb) {
-		if (ctb instanceof ContribuableImpositionPersonnesPhysiques) {
-			return getGenresImpotPourForPrincipalOuSecondairePP();
-		}
-		if (ctb instanceof ContribuableImpositionPersonnesMorales) {
-			return getGenresImpotPourForSecondairePM();
-		}
-		return Collections.emptyMap();
-	}
-
-	@NotNull
-	private Map<MotifRattachement, String> getMapMotifsRattachementForsPrincipaux(Contribuable ctb) {
-		if (ctb instanceof ContribuableImpositionPersonnesPhysiques) {
-			return getMotifsRattachementForPrincipalPP();
-		}
-		else if (ctb instanceof ContribuableImpositionPersonnesMorales) {
-			return getMotifsRattachementForPrincipalPM();
-		}
-		return Collections.emptyMap();
-	}
-
-	@NotNull
-	private Map<MotifRattachement, String> getMapMotifsRattachementForsSecondaires(Contribuable ctb) {
-		if (ctb instanceof ContribuableImpositionPersonnesPhysiques) {
-			return getMotifsRattachementForSecondairePP();
-		}
-		else if (ctb instanceof ContribuableImpositionPersonnesMorales) {
-			return getMotifsRattachementForSecondairePM();
-		}
-		return Collections.emptyMap();
-	}
-
-	@NotNull
-	private Map<ModeImposition, String> getMapModesImposition(Contribuable ctb) {
-		if (ctb instanceof ContribuableImpositionPersonnesPhysiques) {
-			return tiersMapHelper.getMapModeImposition();
-		}
-		return Collections.emptyMap();
-	}
-
 	@RequestMapping(value = "/principal/add.do", method = RequestMethod.GET)
 	@Transactional(readOnly = true, rollbackFor = Throwable.class)
 	public String addPrincipal(@RequestParam(value = "tiersId", required = true) long tiersId, Model model) {
@@ -288,11 +214,10 @@ public class ForsController {
 
 		controllerUtils.checkAccesDossierEnEcriture(tiersId);
 
-		model.addAttribute("rattachements", getMapMotifsRattachementForsPrincipaux(ctb));
-		model.addAttribute("modesImposition", getMapModesImposition(ctb));
+		model.addAttribute("rattachements", getMotifsRattachementPourForPrincipal());
+		model.addAttribute("modesImposition", tiersMapHelper.getMapModeImposition());
 		model.addAttribute("typesForFiscal", tiersMapHelper.getMapTypeAutoriteFiscale());
-		model.addAttribute("genresImpot", getMapGenresImpotForsPrincipaux(ctb));
-		model.addAttribute("command", new AddForPrincipalView(tiersId, getDefaultGenreImpotForsPrincipauxEtSecondaires(ctb)));
+		model.addAttribute("command", new AddForPrincipalView(tiersId));
 		return "fors/principal/add";
 	}
 
@@ -315,25 +240,15 @@ public class ForsController {
 		controllerUtils.checkAccesDossierEnEcriture(ctbId);
 
 		if (result.hasErrors()) {
-			model.addAttribute("rattachements", getMapMotifsRattachementForsPrincipaux(ctb));
-			model.addAttribute("modesImposition", getMapModesImposition(ctb));
+			model.addAttribute("rattachements", getMotifsRattachementPourForPrincipal());
+			model.addAttribute("modesImposition", tiersMapHelper.getMapModeImposition());
 			model.addAttribute("typesForFiscal", tiersMapHelper.getMapTypeAutoriteFiscale());
-			model.addAttribute("genresImpot", getMapGenresImpotForsPrincipaux(ctb));
 			return "fors/principal/add";
 		}
 
-		final ForFiscalPrincipal newFor;
-		if (ctb instanceof ContribuableImpositionPersonnesPhysiques) {
-			newFor = tiersService.addForPrincipal((ContribuableImpositionPersonnesPhysiques) ctb, view.getDateDebut(), view.getMotifDebut(), view.getDateFin(), view.getMotifFin(),
-			                                      view.getMotifRattachement(), view.getNoAutoriteFiscale(), view.getTypeAutoriteFiscale(), view.getModeImposition());
-		}
-		else if (ctb instanceof ContribuableImpositionPersonnesMorales) {
-			newFor = tiersService.addForPrincipal((ContribuableImpositionPersonnesMorales) ctb, view.getDateDebut(), view.getMotifDebut(), view.getDateFin(), view.getMotifFin(),
-			                                      view.getMotifRattachement(), view.getNoAutoriteFiscale(), view.getTypeAutoriteFiscale(), view.getGenreImpot());
-		}
-		else {
-			throw new ActionException("Le contribuable n'est ni un contribuable PP ni un contribuable PM.");
-		}
+
+		final ForFiscalPrincipal newFor = tiersService.addForPrincipal(ctb, view.getDateDebut(), view.getMotifDebut(), view.getDateFin(), view.getMotifFin(), view.getMotifRattachement(),
+		                                                               view.getNoAutoriteFiscale(), view.getTypeAutoriteFiscale(), view.getModeImposition());
 
 		return "redirect:/fiscal/edit.do?id=" + ctbId + buildHighlightForParam(newFor);
 	}
@@ -347,7 +262,7 @@ public class ForsController {
 			throw new ObjectNotFoundException("Le for principal avec l'id = " + forId + " n'existe pas.");
 		}
 
-		final Autorisations auth = getAutorisations(ffp.getTiers());
+		final Autorisations auth = getAutorisations((Contribuable) ffp.getTiers());
 		if (!auth.isForsPrincipaux()) {
 			throw new AccessDeniedException("Vous ne possédez pas les droits IfoSec d'édition de fors principaux.");
 		}
@@ -416,12 +331,12 @@ public class ForsController {
 	@Transactional(readOnly = true, rollbackFor = Throwable.class)
 	public String editModeImposition(@RequestParam(value = "forId", required = true) long forId, Model model) {
 
-		final ForFiscalPrincipalPP ffp = hibernateTemplate.get(ForFiscalPrincipalPP.class, forId);
+		final ForFiscalPrincipal ffp = hibernateTemplate.get(ForFiscalPrincipal.class, forId);
 		if (ffp == null) {
-			throw new ObjectNotFoundException("Le for principal PP avec l'id = " + forId + " n'existe pas.");
+			throw new ObjectNotFoundException("Le for principal avec l'id = " + forId + " n'existe pas.");
 		}
 
-		final Autorisations auth = getAutorisations(ffp.getTiers());
+		final Autorisations auth = getAutorisations((Contribuable) ffp.getTiers());
 		if (!auth.isForsPrincipaux()) {
 			throw new AccessDeniedException("Vous ne possédez pas les droits IfoSec d'édition de fors principaux.");
 		}
@@ -455,7 +370,7 @@ public class ForsController {
 			return "fors/principal/editModeImposition";
 		}
 
-		final ForFiscalPrincipal newFor = tiersService.changeModeImposition((ContribuableImpositionPersonnesPhysiques) ffp.getTiers(), view.getDateChangement(), view.getModeImposition(), view.getMotifChangement());
+		final ForFiscalPrincipal newFor = tiersService.changeModeImposition((Contribuable) ffp.getTiers(), view.getDateChangement(), view.getModeImposition(), view.getMotifChangement());
 
 		return "redirect:/fiscal/edit.do?id=" + ctbId + buildHighlightForParam(newFor);
 	}
@@ -476,9 +391,8 @@ public class ForsController {
 
 		controllerUtils.checkAccesDossierEnEcriture(tiersId);
 
-		model.addAttribute("rattachements", getMapMotifsRattachementForsSecondaires(ctb));
-		model.addAttribute("genresImpot", getMapGenresImpotForsSecondaires(ctb));
-		model.addAttribute("command", new AddForSecondaireView(tiersId, getDefaultGenreImpotForsPrincipauxEtSecondaires(ctb)));
+		model.addAttribute("rattachements", getMotifsRattachementPourForSecondaire());
+		model.addAttribute("command", new AddForSecondaireView(tiersId));
 		return "fors/secondaire/add";
 	}
 
@@ -501,13 +415,12 @@ public class ForsController {
 		controllerUtils.checkAccesDossierEnEcriture(ctbId);
 
 		if (result.hasErrors()) {
-			model.addAttribute("rattachements", getMapMotifsRattachementForsSecondaires(ctb));
-			model.addAttribute("genresImpot", getMapGenresImpotForsSecondaires(ctb));
+			model.addAttribute("rattachements", getMotifsRattachementPourForSecondaire());
 			return "fors/secondaire/add";
 		}
 
 		final ForFiscalSecondaire newFor = tiersService.addForSecondaire(ctb, view.getDateDebut(), view.getDateFin(), view.getMotifRattachement(), view.getNoAutoriteFiscale(),
-		                                                                 view.getTypeAutoriteFiscale(), view.getMotifDebut(), view.getMotifFin(), view.getGenreImpot());
+		                                                                 view.getTypeAutoriteFiscale(), view.getMotifDebut(), view.getMotifFin());
 
 		return "redirect:/fiscal/edit.do?id=" + ctbId + buildHighlightForParam(newFor);
 	}
@@ -914,60 +827,26 @@ public class ForsController {
 	}
 
 	private Map<GenreImpot, String> getGenresImpotPourForAutreImpot() {
-		if (genresImpotForAutreImpot == null) {
-			genresImpotForAutreImpot = tiersMapHelper.getMapGenreImpot(GenreImpot.GAIN_IMMOBILIER, GenreImpot.DROIT_MUTATION, GenreImpot.PRESTATION_CAPITAL, GenreImpot.SUCCESSION, GenreImpot.FONCIER,
-			                                                           GenreImpot.DEBITEUR_PRESTATION_IMPOSABLE, GenreImpot.DONATION, GenreImpot.CHIENS, GenreImpot.PATENTE_TABAC);
+		if (genresImpotsForAutreImpot == null) {
+			genresImpotsForAutreImpot = tiersMapHelper.getMapGenreImpot(GenreImpot.GAIN_IMMOBILIER, GenreImpot.DROIT_MUTATION, GenreImpot.PRESTATION_CAPITAL, GenreImpot.SUCCESSION, GenreImpot.FONCIER,
+			                                                            GenreImpot.DEBITEUR_PRESTATION_IMPOSABLE, GenreImpot.DONATION, GenreImpot.CHIENS, GenreImpot.PATENTE_TABAC);
 		}
-		return genresImpotForAutreImpot;
+		return genresImpotsForAutreImpot;
 	}
 
-	private Map<GenreImpot, String> getGenresImpotPourForPrincipalOuSecondairePP() {
-		if (genresImpotForPrincipalOuSecondairePP == null) {
-			genresImpotForPrincipalOuSecondairePP = tiersMapHelper.getMapGenreImpot(GenreImpot.REVENU_FORTUNE);
+	private Map<MotifRattachement, String> getMotifsRattachementPourForPrincipal() {
+		if (motifsRattachementForPrincipal == null) {
+			motifsRattachementForPrincipal = tiersMapHelper.getMapRattachement(MotifRattachement.DOMICILE, MotifRattachement.DIPLOMATE_SUISSE, MotifRattachement.DIPLOMATE_ETRANGER);
 		}
-		return genresImpotForPrincipalOuSecondairePP;
+		return motifsRattachementForPrincipal;
 	}
 
-	private Map<GenreImpot, String> getGenresImpotPourForPrincipalPM() {
-		if (genresImpotForPrincipalPM == null) {
-			genresImpotForPrincipalPM = tiersMapHelper.getMapGenreImpot(GenreImpot.REVENU_FORTUNE, GenreImpot.BENEFICE_CAPITAL);
+	private Map<MotifRattachement, String> getMotifsRattachementPourForSecondaire() {
+		if (motifsRattachementForSecondaire == null) {
+			motifsRattachementForSecondaire =
+					tiersMapHelper.getMapRattachement(MotifRattachement.ACTIVITE_INDEPENDANTE, MotifRattachement.IMMEUBLE_PRIVE);
 		}
-		return genresImpotForPrincipalPM;
-	}
-
-	private Map<GenreImpot, String> getGenresImpotPourForSecondairePM() {
-		if (genresImpotForSecondairePM == null) {
-			genresImpotForSecondairePM = tiersMapHelper.getMapGenreImpot(GenreImpot.BENEFICE_CAPITAL);
-		}
-		return genresImpotForSecondairePM;
-	}
-
-	private Map<MotifRattachement, String> getMotifsRattachementForPrincipalPP() {
-		if (motifsRattachementForPrincipalPP == null) {
-			motifsRattachementForPrincipalPP = tiersMapHelper.getMapRattachement(MotifRattachement.DOMICILE, MotifRattachement.DIPLOMATE_SUISSE, MotifRattachement.DIPLOMATE_ETRANGER);
-		}
-		return motifsRattachementForPrincipalPP;
-	}
-
-	private Map<MotifRattachement, String> getMotifsRattachementForSecondairePP() {
-		if (motifsRattachementForSecondairePP == null) {
-			motifsRattachementForSecondairePP = tiersMapHelper.getMapRattachement(MotifRattachement.ACTIVITE_INDEPENDANTE, MotifRattachement.IMMEUBLE_PRIVE);
-		}
-		return motifsRattachementForSecondairePP;
-	}
-
-	private Map<MotifRattachement, String> getMotifsRattachementForPrincipalPM() {
-		if (motifsRattachementForPrincipalPM == null) {
-			motifsRattachementForPrincipalPM = tiersMapHelper.getMapRattachement(MotifRattachement.DOMICILE);
-		}
-		return motifsRattachementForPrincipalPM;
-	}
-
-	private Map<MotifRattachement, String> getMotifsRattachementForSecondairePM() {
-		if (motifsRattachementForSecondairePM == null) {
-			motifsRattachementForSecondairePM = tiersMapHelper.getMapRattachement(MotifRattachement.ETABLISSEMENT_STABLE, MotifRattachement.IMMEUBLE_PRIVE);
-		}
-		return motifsRattachementForSecondairePM;
+		return motifsRattachementForSecondaire;
 	}
 
 	private Map<MotifRattachement, String> getMotifsRattachementPourForAutreElementImposable() {

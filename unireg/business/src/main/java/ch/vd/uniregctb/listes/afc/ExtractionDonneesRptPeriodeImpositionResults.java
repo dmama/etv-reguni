@@ -1,7 +1,7 @@
 package ch.vd.uniregctb.listes.afc;
 
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -10,7 +10,6 @@ import org.apache.commons.lang3.StringUtils;
 
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
@@ -23,8 +22,7 @@ import ch.vd.uniregctb.metier.assujettissement.HorsSuisse;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImposition;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionService;
 import ch.vd.uniregctb.tiers.Contribuable;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipalPM;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
+import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.ForFiscalRevenuFortune;
 import ch.vd.uniregctb.tiers.ForGestion;
 import ch.vd.uniregctb.tiers.TiersService;
@@ -65,7 +63,7 @@ public abstract class ExtractionDonneesRptPeriodeImpositionResults extends Extra
 			final PeriodeImposition periode = periodeImpositionService.determinePeriodeImposition(decomposition, a);
 			if (periode != null) {
 				periodesBrutes.add(periode);
-				mappingNonRegroupe.put(periode, Collections.singletonList(a));
+				mappingNonRegroupe.put(periode, Arrays.asList(a));
 			}
 		}
 
@@ -130,13 +128,9 @@ public abstract class ExtractionDonneesRptPeriodeImpositionResults extends Extra
 			final Integer ofsCommuneForGestion = getNumeroOfsCommuneVaudoise(forGestion.getNoOfsCommune(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, forGestion.getDateDebut());
 			final ForFiscalRevenuFortune forRevenuFortune = forGestion.getSousjacent();
 			motifRattachement = forRevenuFortune.getMotifRattachement();
-			if (forRevenuFortune instanceof ForFiscalPrincipalPP) {
+			if (forRevenuFortune instanceof ForFiscalPrincipal) {
 				autoriteFiscaleForPrincipal = TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD;
-				modeImposition = ((ForFiscalPrincipalPP) forRevenuFortune).getModeImposition();
-			}
-			else if (forRevenuFortune instanceof ForFiscalPrincipalPM) {
-				// TODO [SIPM] Il y a quelque chose à prévoir ?
-				throw new NotImplementedException("Les extractions RPT ne sont (pour l'instant ?) pas capable d'intégrer les PM...");
+				modeImposition = ((ForFiscalPrincipal) forRevenuFortune).getModeImposition();
 			}
 			else {
 				// les rattachements économiques sont au mode d'imposition ordinaire, enfin je crois...

@@ -32,7 +32,6 @@ import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.interfaces.service.ServiceSecuriteService;
 import ch.vd.uniregctb.metier.assujettissement.Assujettissement;
 import ch.vd.uniregctb.rapport.RapportService;
-import ch.vd.uniregctb.scheduler.JobCategory;
 import ch.vd.uniregctb.scheduler.JobDefinition;
 import ch.vd.uniregctb.scheduler.JobParam;
 import ch.vd.uniregctb.scheduler.JobParamRegDate;
@@ -62,7 +61,7 @@ public class ListeDroitsAccesJob extends JobDefinition {
 	private RapportService rapportService;
 
 	public ListeDroitsAccesJob(int sortOrder, String description) {
-		super(NAME, JobCategory.STATS, sortOrder, description);
+		super(NAME, CATEGORIE, sortOrder, description);
 
 		final JobParam param = new JobParam();
 		param.setDescription("Date valeur");

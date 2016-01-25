@@ -81,7 +81,8 @@ public class QueryConstructor {
 					query.add(new TermQuery(new Term(LuceneHelper.F_DOCSUBTYPE, AutreCommunauteIndexable.SUB_TYPE)), should);
 					break;
 				case ETABLISSEMENT:
-					query.add(new TermQuery(new Term(LuceneHelper.F_DOCSUBTYPE, EtablissementIndexable.SUB_TYPE)), should);
+					// TODO Indexer pour etablissement
+					// query.add(new TermQuery(new Term(LuceneHelper.F_DOCSUBTYPE, EtablissementIndexable.SUB_TYPE)), should);
 					break;
 				case COLLECTIVITE_ADMINISTRATIVE:
 					query.add(new TermQuery(new Term(LuceneHelper.F_DOCSUBTYPE, CollectiviteAdministrativeIndexable.SUB_TYPE)), should);
@@ -93,7 +94,8 @@ public class QueryConstructor {
 					query.add(new TermQuery(new Term(LuceneHelper.F_DOCSUBTYPE, MenageCommunIndexable.SUB_TYPE)), should);
 					query.add(new TermQuery(new Term(LuceneHelper.F_DOCSUBTYPE, AutreCommunauteIndexable.SUB_TYPE)), should);
 					query.add(new TermQuery(new Term(LuceneHelper.F_DOCSUBTYPE, CollectiviteAdministrativeIndexable.SUB_TYPE)), should);
-					query.add(new TermQuery(new Term(LuceneHelper.F_DOCSUBTYPE, EtablissementIndexable.SUB_TYPE)), should);
+					// TODO Indexer pour etablissement
+					// query.add(new TermQuery(new Term(LuceneHelper.F_DOCSUBTYPE, EtablissementIndexable.SUB_TYPE)), should);
 					break;
 				case PERSONNE_PHYSIQUE:
 					query.add(new TermQuery(new Term(LuceneHelper.F_DOCSUBTYPE, HabitantIndexable.SUB_TYPE)), should);
@@ -339,22 +341,6 @@ public class QueryConstructor {
 		}
 	}
 
-	private void addFormeJuridique(BooleanQuery fullQuery) throws IndexerException {
-
-		if (criteria.getFormeJuridique() != null) {
-			final Query q = new TermQuery(new Term(TiersIndexableData.FORME_JURIDIQUE, criteria.getFormeJuridique().getCodeECH()));
-			fullQuery.add(q, must);
-		}
-	}
-
-	private void addCategorieEntreprise(BooleanQuery fullQuery) throws IndexerException {
-
-		if (criteria.getCategorieEntreprise() != null) {
-			final Query q = new TermQuery(new Term(TiersIndexableData.CATEGORIE_ENTREPRISE, criteria.getCategorieEntreprise().name()));
-			fullQuery.add(q, must);
-		}
-	}
-
 	public static void addLimitation(BooleanQuery fullQuery, TiersFilter filter) {
 		if (filter.getTypeVisualisation() == TypeVisualisation.LIMITEE) {
 			BooleanQuery query = new BooleanQuery();
@@ -474,8 +460,6 @@ public class QueryConstructor {
 			addDateNaissance(fullQuery);
 			addSexe(fullQuery);
 			addNatureJuridique(fullQuery);
-			addFormeJuridique(fullQuery);
-			addCategorieEntreprise(fullQuery);
 			addAnnule(fullQuery, criteria);
 			addActif(fullQuery, criteria);
 			addDebiteurInactif(fullQuery, criteria);

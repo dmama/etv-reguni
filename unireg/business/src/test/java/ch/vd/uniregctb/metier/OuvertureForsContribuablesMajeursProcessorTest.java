@@ -22,7 +22,7 @@ import ch.vd.uniregctb.cache.ServiceCivilCacheWarmer;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.metier.OuvertureForsResults.Erreur;
 import ch.vd.uniregctb.metier.OuvertureForsResults.Traite;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
+import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.ForsParType;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.TiersService;
@@ -99,8 +99,7 @@ public class OuvertureForsContribuablesMajeursProcessorTest extends BusinessTest
 
 		final ForsParType fors = h.getForsParType(true);
 		assertNotNull(fors);
-		assertEmpty(fors.principauxPP);
-		assertEmpty(fors.principauxPM);
+		assertEmpty(fors.principaux);
 		assertEmpty(fors.secondaires);
 		assertEmpty(fors.autreElementImpot);
 		assertEmpty(fors.dpis);
@@ -150,13 +149,12 @@ public class OuvertureForsContribuablesMajeursProcessorTest extends BusinessTest
 		assertEmpty(fors.autreElementImpot);
 		assertEmpty(fors.dpis);
 		assertEmpty(fors.secondaires);
-		assertEmpty(fors.principauxPM);
 
-		final List<ForFiscalPrincipalPP> principaux = fors.principauxPP;
+		final List<ForFiscalPrincipal> principaux = fors.principaux;
 		assertNotNull(principaux);
 		assertEquals(1, principaux.size());
 
-		final ForFiscalPrincipalPP fp = principaux.get(0);
+		final ForFiscalPrincipal fp = principaux.get(0);
 		assertNotNull(fp);
 		assertEquals(dateNaissance.addYears(18), fp.getDateDebut());
 		assertNull(fp.getDateFin());
@@ -212,7 +210,7 @@ public class OuvertureForsContribuablesMajeursProcessorTest extends BusinessTest
 		final List<Traite> traites = rapport.habitantTraites;
 		assertEquals(1, traites.size());
 		final Traite traite = traites.get(0);
-		assertEquals((Integer) 7, traite.officeImpotID);
+		assertEquals(7, traite.officeImpotID.longValue());
 
 	}
 
@@ -260,13 +258,12 @@ public class OuvertureForsContribuablesMajeursProcessorTest extends BusinessTest
 		assertEmpty(fors.autreElementImpot);
 		assertEmpty(fors.dpis);
 		assertEmpty(fors.secondaires);
-		assertEmpty(fors.principauxPM);
 
-		final List<ForFiscalPrincipalPP> principaux = fors.principauxPP;
+		final List<ForFiscalPrincipal> principaux = fors.principaux;
 		assertNotNull(principaux);
 		assertEquals(1, principaux.size());
 
-		final ForFiscalPrincipalPP fp = principaux.get(0);
+		final ForFiscalPrincipal fp = principaux.get(0);
 		assertNotNull(fp);
 		assertEquals(dateNaissance.addYears(18), fp.getDateDebut());
 		assertNull(fp.getDateFin());
@@ -546,13 +543,12 @@ public class OuvertureForsContribuablesMajeursProcessorTest extends BusinessTest
 		assertEmpty(fors.autreElementImpot);
 		assertEmpty(fors.dpis);
 		assertEmpty(fors.secondaires);
-		assertEmpty(fors.principauxPM);
 
-		final List<ForFiscalPrincipalPP> principaux = fors.principauxPP;
+		final List<ForFiscalPrincipal> principaux = fors.principaux;
 		assertNotNull(principaux);
 		assertEquals(1, principaux.size());
 
-		final ForFiscalPrincipalPP fp = principaux.get(0);
+		final ForFiscalPrincipal fp = principaux.get(0);
 		assertForPrincipal(dateNaissance.addYears(18), MotifFor.MAJORITE, MockCommune.Gressy, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, fp);
 	}
 
@@ -599,13 +595,12 @@ public class OuvertureForsContribuablesMajeursProcessorTest extends BusinessTest
 		assertEmpty(fors.autreElementImpot);
 		assertEmpty(fors.dpis);
 		assertEmpty(fors.secondaires);
-		assertEmpty(fors.principauxPM);
 
-		final List<ForFiscalPrincipalPP> principaux = fors.principauxPP;
+		final List<ForFiscalPrincipal> principaux = fors.principaux;
 		assertNotNull(principaux);
 		assertEquals(1, principaux.size());
 
-		final ForFiscalPrincipalPP fp = principaux.get(0);
+		final ForFiscalPrincipal fp = principaux.get(0);
 		assertForPrincipal(dateNaissance.addYears(18), MotifFor.MAJORITE, MockCommune.YverdonLesBains, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, fp);
 	}
 
@@ -658,7 +653,7 @@ public class OuvertureForsContribuablesMajeursProcessorTest extends BusinessTest
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
-				final ForFiscalPrincipalPP ffp = pp.getDernierForFiscalPrincipal();
+				final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
 				assertNotNull(ffp);
 				assertEquals(dateMajorite, ffp.getDateDebut());
 				assertEquals(MotifFor.MAJORITE, ffp.getMotifOuverture());
@@ -719,7 +714,7 @@ public class OuvertureForsContribuablesMajeursProcessorTest extends BusinessTest
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
-				final ForFiscalPrincipalPP ffp = pp.getDernierForFiscalPrincipal();
+				final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
 				assertNotNull(ffp);
 				assertEquals(dateMajorite, ffp.getDateDebut());
 				assertEquals(MotifFor.MAJORITE, ffp.getMotifOuverture());

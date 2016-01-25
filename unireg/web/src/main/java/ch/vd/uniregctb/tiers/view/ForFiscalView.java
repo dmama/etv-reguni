@@ -10,7 +10,7 @@ import ch.vd.uniregctb.common.Annulable;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalAutreImpot;
 import ch.vd.uniregctb.tiers.ForFiscalAvecMotifs;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
+import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.ForFiscalRevenuFortune;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
 import ch.vd.uniregctb.tiers.NatureTiers;
@@ -76,9 +76,8 @@ public class ForFiscalView implements Comparable<ForFiscalView>, DateRange, Annu
 
 	private boolean dateFermetureEditable = true;
 
-	private final boolean principal;
-
-	private final boolean secondaire;
+	public ForFiscalView() {
+	}
 
 	public ForFiscalView(ForFiscal forFiscal, boolean isForGestion, boolean dernierForPrincipalOuDebiteur) {
 		this.id = forFiscal.getId();
@@ -117,16 +116,13 @@ public class ForFiscalView implements Comparable<ForFiscalView>, DateRange, Annu
 			this.forGestion = isForGestion;
 		}
 
-		if (forFiscal instanceof ForFiscalPrincipalPP) {
-			final ForFiscalPrincipalPP forFiscalPrincipal = (ForFiscalPrincipalPP) forFiscal;
+		if (forFiscal instanceof ForFiscalPrincipal) {
+			final ForFiscalPrincipal forFiscalPrincipal = (ForFiscalPrincipal) forFiscal;
 			this.modeImposition = forFiscalPrincipal.getModeImposition();
 		}
 
 		this.dernierForPrincipalOuDebiteur = dernierForPrincipalOuDebiteur;
 		this.natureForFiscal = forFiscal.getClass().getSimpleName();
-
-		this.principal = forFiscal.isPrincipal();
-		this.secondaire = forFiscal instanceof ForFiscalSecondaire;
 	}
 
 	/**
@@ -165,7 +161,7 @@ public class ForFiscalView implements Comparable<ForFiscalView>, DateRange, Annu
 	}
 
 	/**
-	 * @param typeAutoriteFiscale the typeAutoriteFiscale to set
+	 * @param typeForFiscal the typeForFiscal to set
 	 */
 	public void setTypeAutoriteFiscale(TypeAutoriteFiscale typeAutoriteFiscale) {
 		this.typeAutoriteFiscale = typeAutoriteFiscale;
@@ -510,13 +506,5 @@ public class ForFiscalView implements Comparable<ForFiscalView>, DateRange, Annu
 	@Override
 	public RegDate getDateFin() {
 		return dateFermeture;
-	}
-
-	public boolean isPrincipal() {
-		return principal;
-	}
-
-	public boolean isSecondaire() {
-		return secondaire;
 	}
 }

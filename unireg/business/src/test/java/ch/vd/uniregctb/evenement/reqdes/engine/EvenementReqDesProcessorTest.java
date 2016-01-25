@@ -42,11 +42,9 @@ import ch.vd.uniregctb.reqdes.TypeRole;
 import ch.vd.uniregctb.reqdes.UniteTraitement;
 import ch.vd.uniregctb.tiers.AppartenanceMenage;
 import ch.vd.uniregctb.tiers.Contribuable;
-import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
 import ch.vd.uniregctb.tiers.ForsParType;
 import ch.vd.uniregctb.tiers.MenageCommun;
@@ -101,7 +99,7 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 		super.onTearDown();
 	}
 
-	private List<ContribuableImpositionPersonnesPhysiques> getAllPersonnesPhysiquesEtMenages() {
+	private List<Tiers> getAllPersonnesPhysiquesEtMenages() {
 		return allTiersOfType(PersonnePhysique.class, MenageCommun.class);
 	}
 
@@ -522,10 +520,10 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 				Assert.assertNotNull(partiePrenante);
 				Assert.assertNotNull(partiePrenante.getNumeroContribuableCree());
 
-				final List<PersonnePhysique> allTiers = allTiersOfType(PersonnePhysique.class);
+				final List<Tiers> allTiers = allTiersOfType(PersonnePhysique.class);
 				Assert.assertNotNull(allTiers);
 				Assert.assertEquals(1, allTiers.size());
-				final PersonnePhysique found = allTiers.get(0);
+				final PersonnePhysique found = (PersonnePhysique) allTiers.get(0);
 				Assert.assertNotNull(found);
 				Assert.assertEquals(partiePrenante.getNumeroContribuableCree(), found.getNumero());
 				Assert.assertEquals("moinot-reqdes", found.getLogCreationUser());
@@ -640,10 +638,10 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 				Assert.assertNotNull(partiePrenante);
 				Assert.assertNull(partiePrenante.getNumeroContribuableCree());
 
-				final List<PersonnePhysique> allTiers = allTiersOfType(PersonnePhysique.class);
+				final List<Tiers> allTiers = allTiersOfType(PersonnePhysique.class);
 				Assert.assertNotNull(allTiers);
 				Assert.assertEquals(1, allTiers.size());
-				final PersonnePhysique found = allTiers.get(0);
+				final PersonnePhysique found = (PersonnePhysique) allTiers.get(0);
 				Assert.assertNotNull(found);
 				Assert.assertEquals(getDefaultOperateurName(), found.getLogCreationUser());
 				Assert.assertEquals("moinot-reqdes", found.getLogModifUser());
@@ -772,10 +770,10 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 				Assert.assertNotNull(partiePrenante);
 				Assert.assertNull(partiePrenante.getNumeroContribuableCree());
 
-				final List<PersonnePhysique> allTiers = allTiersOfType(PersonnePhysique.class);
+				final List<Tiers> allTiers = allTiersOfType(PersonnePhysique.class);
 				Assert.assertNotNull(allTiers);
 				Assert.assertEquals(1, allTiers.size());
-				final PersonnePhysique found = allTiers.get(0);
+				final PersonnePhysique found = (PersonnePhysique) allTiers.get(0);
 
 				Assert.assertNotNull(found);
 				Assert.assertEquals(getDefaultOperateurName(), found.getLogCreationUser());
@@ -909,10 +907,10 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 				Assert.assertEquals(ErreurTraitement.TypeErreur.WARNING, erreur.getType());
 				Assert.assertEquals("Adresse non modifiée sur un contribuable assujetti, uniquement reprise dans les remarques du tiers.", erreur.getMessage());
 
-				final List<PersonnePhysique> allTiers = allTiersOfType(PersonnePhysique.class);
+				final List<Tiers> allTiers = allTiersOfType(PersonnePhysique.class);
 				Assert.assertNotNull(allTiers);
 				Assert.assertEquals(1, allTiers.size());
-				final PersonnePhysique found = allTiers.get(0);
+				final PersonnePhysique found = (PersonnePhysique) allTiers.get(0);
 				Assert.assertNotNull(found);
 				Assert.assertEquals(getDefaultOperateurName(), found.getLogCreationUser());
 				Assert.assertEquals("moinot-reqdes", found.getLogModifUser());
@@ -1053,11 +1051,11 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 				Assert.assertNotNull(arthur);
 				Assert.assertNotNull(marie);
 
-				final List<ContribuableImpositionPersonnesPhysiques> allTiers = getAllPersonnesPhysiquesEtMenages();
+				final List<Tiers> allTiers = getAllPersonnesPhysiquesEtMenages();
 				Assert.assertNotNull(allTiers);
 				Assert.assertEquals(3, allTiers.size());        // 2 PP + 1 MC
 
-				final List<ContribuableImpositionPersonnesPhysiques> allSortedTiers = new ArrayList<>(allTiers);
+				final List<Tiers> allSortedTiers = new ArrayList<>(allTiers);
 				Collections.sort(allSortedTiers, new Comparator<Tiers>() {
 					@Override
 					public int compare(Tiers o1, Tiers o2) {
@@ -1344,7 +1342,7 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 				Assert.assertNotNull(erreur);
 				Assert.assertEquals("Parties prenantes en couple avec divergence des sources de données, dont l'une est civile.", erreur.getMessage());
 
-				final List<ContribuableImpositionPersonnesPhysiques> allTiers = getAllPersonnesPhysiquesEtMenages();
+				final List<Tiers> allTiers = getAllPersonnesPhysiquesEtMenages();
 				Assert.assertNotNull(allTiers);
 				Assert.assertEquals(0, allTiers.size());
 			}
@@ -1411,11 +1409,11 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 				final Long marie = ut.getPartiesPrenantes().iterator().next().getNumeroContribuableCree();
 				Assert.assertNotNull(marie);
 
-				final List<ContribuableImpositionPersonnesPhysiques> allTiers = getAllPersonnesPhysiquesEtMenages();
+				final List<Tiers> allTiers = getAllPersonnesPhysiquesEtMenages();
 				Assert.assertNotNull(allTiers);
 				Assert.assertEquals(3, allTiers.size());        // 2 PP + 1 MC
 
-				final List<ContribuableImpositionPersonnesPhysiques> allSortedTiers = new ArrayList<>(allTiers);
+				final List<Tiers> allSortedTiers = new ArrayList<>(allTiers);
 				Collections.sort(allSortedTiers, new Comparator<Tiers>() {
 					@Override
 					public int compare(Tiers o1, Tiers o2) {
@@ -1657,11 +1655,11 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 				Assert.assertNotNull(partiePrenante);
 				Assert.assertNotNull(partiePrenante.getNumeroContribuableCree());
 
-				final List<ContribuableImpositionPersonnesPhysiques> allTiers = getAllPersonnesPhysiquesEtMenages();
+				final List<Tiers> allTiers = getAllPersonnesPhysiquesEtMenages();
 				Assert.assertNotNull(allTiers);
 				Assert.assertEquals(2, allTiers.size());        // 1 PP + 1 MC
 
-				final List<ContribuableImpositionPersonnesPhysiques> allSortedTiers = new ArrayList<>(allTiers);
+				final List<Tiers> allSortedTiers = new ArrayList<>(allTiers);
 				Collections.sort(allSortedTiers, new Comparator<Tiers>() {
 					@Override
 					public int compare(Tiers o1, Tiers o2) {
@@ -2676,7 +2674,7 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 				}
 
 				// il faut de plus vérifier que l'on a bien 3 tiers seulement en base (= ceux vus plus haut) sans création d'un autre avec les données de l'acte
-				final List<ContribuableImpositionPersonnesPhysiques> allTiers = getAllPersonnesPhysiquesEtMenages();
+				final List<Tiers> allTiers = getAllPersonnesPhysiquesEtMenages();
 				Assert.assertEquals(3, allTiers.size());
 			}
 		});
@@ -2954,7 +2952,7 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 				checkNoSituationFamille(pp);
 
 				// pas de nouveau tiers
-				final List<ContribuableImpositionPersonnesPhysiques> allTiers = getAllPersonnesPhysiquesEtMenages();
+				final List<Tiers> allTiers = getAllPersonnesPhysiquesEtMenages();
 				Assert.assertNotNull(allTiers);
 				Assert.assertEquals(1, allTiers.size());
 			}
@@ -3030,11 +3028,11 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 				// - madame Valentine Cordoba
 				// - monsieur Marcel Cordoba (données minimales)
 				// - couple Cordoba fermé à la veille de la date de séparation
-				final List<ContribuableImpositionPersonnesPhysiques> allTiers = getAllPersonnesPhysiquesEtMenages();
+				final List<Tiers> allTiers = getAllPersonnesPhysiquesEtMenages();
 				Assert.assertNotNull(allTiers);
 				Assert.assertEquals(3, allTiers.size());        // 2 PP + 1 MC
 
-				final List<ContribuableImpositionPersonnesPhysiques> allSortedTiers = new ArrayList<>(allTiers);
+				final List<Tiers> allSortedTiers = new ArrayList<>(allTiers);
 				Collections.sort(allSortedTiers, new Comparator<Tiers>() {
 					@Override
 					public int compare(Tiers o1, Tiers o2) {
@@ -3286,11 +3284,11 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 				// - madame Valentine Cordoba (modifiée)
 				// - monsieur Marcel Cordoba (créé avec les données minimales)
 				// - couple Cordoba fermé à la veille de la date de séparation (laissé en l'état)
-				final List<ContribuableImpositionPersonnesPhysiques> allTiers = getAllPersonnesPhysiquesEtMenages();
+				final List<Tiers> allTiers = getAllPersonnesPhysiquesEtMenages();
 				Assert.assertNotNull(allTiers);
 				Assert.assertEquals(3, allTiers.size());        // 2 PP + 1 MC
 
-				final List<ContribuableImpositionPersonnesPhysiques> allSortedTiers = new ArrayList<>(allTiers);
+				final List<Tiers> allSortedTiers = new ArrayList<>(allTiers);
 				Collections.sort(allSortedTiers, new Comparator<Tiers>() {
 					@Override
 					public int compare(Tiers o1, Tiers o2) {
@@ -3557,11 +3555,11 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 				// - madame Valentine Cordoba (modifiée)
 				// - monsieur Marcel Cordoba (modifié)
 				// - couple Cordoba fermé à la veille de la date de séparation (laissé en l'état)
-				final List<ContribuableImpositionPersonnesPhysiques> allTiers = getAllPersonnesPhysiquesEtMenages();
+				final List<Tiers> allTiers = getAllPersonnesPhysiquesEtMenages();
 				Assert.assertNotNull(allTiers);
 				Assert.assertEquals(3, allTiers.size());        // 2 PP + 1 MC
 
-				final List<ContribuableImpositionPersonnesPhysiques> allSortedTiers = new ArrayList<>(allTiers);
+				final List<Tiers> allSortedTiers = new ArrayList<>(allTiers);
 				Collections.sort(allSortedTiers, new Comparator<Tiers>() {
 					@Override
 					public int compare(Tiers o1, Tiers o2) {
@@ -3843,11 +3841,11 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 				// - madame Valentine Cordoba
 				// - monsieur Marcel Cordoba
 				// - couple Cordoba fermé à la veille de la date de séparation
-				final List<ContribuableImpositionPersonnesPhysiques> allTiers = getAllPersonnesPhysiquesEtMenages();
+				final List<Tiers> allTiers = getAllPersonnesPhysiquesEtMenages();
 				Assert.assertNotNull(allTiers);
 				Assert.assertEquals(3, allTiers.size());        // 2 PP + 1 MC
 
-				final List<ContribuableImpositionPersonnesPhysiques> allSortedTiers = new ArrayList<>(allTiers);
+				final List<Tiers> allSortedTiers = new ArrayList<>(allTiers);
 				Collections.sort(allSortedTiers, new Comparator<Tiers>() {
 					@Override
 					public int compare(Tiers o1, Tiers o2) {
@@ -4030,11 +4028,11 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 				// - madame Valentine Cordoba
 				// - monsieur Marcel Cordoba
 				// - couple Cordoba fermé à la veille de la date de séparation
-				final List<ContribuableImpositionPersonnesPhysiques> allTiers = getAllPersonnesPhysiquesEtMenages();
+				final List<Tiers> allTiers = getAllPersonnesPhysiquesEtMenages();
 				Assert.assertNotNull(allTiers);
 				Assert.assertEquals(3, allTiers.size());        // 2 PP + 1 MC
 
-				final List<ContribuableImpositionPersonnesPhysiques> allSortedTiers = new ArrayList<>(allTiers);
+				final List<Tiers> allSortedTiers = new ArrayList<>(allTiers);
 				Collections.sort(allSortedTiers, new Comparator<Tiers>() {
 					@Override
 					public int compare(Tiers o1, Tiers o2) {
@@ -4234,11 +4232,11 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 				// - madame Valentine Cordoba
 				// - monsieur Marcel Cordoba
 				// - couple Cordoba fermé à la veille de la date de séparation
-				final List<ContribuableImpositionPersonnesPhysiques> allTiers = getAllPersonnesPhysiquesEtMenages();
+				final List<Tiers> allTiers = getAllPersonnesPhysiquesEtMenages();
 				Assert.assertNotNull(allTiers);
 				Assert.assertEquals(3, allTiers.size());        // 2 PP + 1 MC
 
-				final List<ContribuableImpositionPersonnesPhysiques> allSortedTiers = new ArrayList<>(allTiers);
+				final List<Tiers> allSortedTiers = new ArrayList<>(allTiers);
 				Collections.sort(allSortedTiers, new Comparator<Tiers>() {
 					@Override
 					public int compare(Tiers o1, Tiers o2) {
@@ -4422,11 +4420,11 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 				// - madame Valentine Cordoba
 				// - monsieur Marcel Cordoba
 				// - couple Cordoba fermé à la veille de la date de séparation
-				final List<ContribuableImpositionPersonnesPhysiques> allTiers = getAllPersonnesPhysiquesEtMenages();
+				final List<Tiers> allTiers = getAllPersonnesPhysiquesEtMenages();
 				Assert.assertNotNull(allTiers);
 				Assert.assertEquals(3, allTiers.size());        // 2 PP + 1 MC
 
-				final List<ContribuableImpositionPersonnesPhysiques> allSortedTiers = new ArrayList<>(allTiers);
+				final List<Tiers> allSortedTiers = new ArrayList<>(allTiers);
 				Collections.sort(allSortedTiers, new Comparator<Tiers>() {
 					@Override
 					public int compare(Tiers o1, Tiers o2) {
@@ -4522,7 +4520,7 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 		});
 	}
 
-	private static void checkNoSituationFamille(ContribuableImpositionPersonnesPhysiques ctb) {
+	private static void checkNoSituationFamille(Contribuable ctb) {
 		final Set<SituationFamille> situations = ctb.getSituationsFamille();
 		Assert.assertNotNull(situations);
 		Assert.assertEquals(0, situations.size());
@@ -4595,7 +4593,7 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 				Assert.assertEquals(EtatTraitement.TRAITE, ut.getEtat());
 				Assert.assertEquals(0, ut.getErreurs().size());
 
-				final List<ContribuableImpositionPersonnesPhysiques> allTiers = getAllPersonnesPhysiquesEtMenages();
+				final List<Tiers> allTiers = getAllPersonnesPhysiquesEtMenages();
 				Assert.assertNotNull(allTiers);
 				Assert.assertEquals(1, allTiers.size());
 
@@ -4633,14 +4631,14 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 				{
 					final ForFiscal ff = sortedFors.get(1);
 					Assert.assertNotNull(ff);
-					Assert.assertEquals(ForFiscalPrincipalPP.class, ff.getClass());
+					Assert.assertEquals(ForFiscalPrincipal.class, ff.getClass());
 					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_HC, ff.getTypeAutoriteFiscale());
 					Assert.assertEquals(dateActe, ff.getDateDebut());
 					Assert.assertNull(ff.getDateFin());
 					Assert.assertEquals((Integer) MockCommune.Zurich.getNoOFS(), ff.getNumeroOfsAutoriteFiscale());
 					Assert.assertEquals(GenreImpot.REVENU_FORTUNE, ff.getGenreImpot());
 
-					final ForFiscalPrincipalPP ffp = (ForFiscalPrincipalPP) ff;
+					final ForFiscalPrincipal ffp = (ForFiscalPrincipal) ff;
 					Assert.assertNull(ffp.getMotifOuverture());     // [SIFISC-15290] Le premier for HC/HS créé par ReqDes ne doit pas avoir de motif d'ouverture
 					Assert.assertNull(ffp.getMotifFermeture());
 					Assert.assertEquals(MotifRattachement.DOMICILE, ffp.getMotifRattachement());
@@ -4711,7 +4709,7 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 				Assert.assertEquals(EtatTraitement.TRAITE, ut.getEtat());
 				Assert.assertEquals(0, ut.getErreurs().size());
 
-				final List<ContribuableImpositionPersonnesPhysiques> allTiers = getAllPersonnesPhysiquesEtMenages();
+				final List<Tiers> allTiers = getAllPersonnesPhysiquesEtMenages();
 				Assert.assertNotNull(allTiers);
 				Assert.assertEquals(1, allTiers.size());
 
@@ -4754,14 +4752,14 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 				{
 					final ForFiscal ff = sortedFors.get(1);
 					Assert.assertNotNull(ff);
-					Assert.assertEquals(ForFiscalPrincipalPP.class, ff.getClass());
+					Assert.assertEquals(ForFiscalPrincipal.class, ff.getClass());
 					Assert.assertEquals(TypeAutoriteFiscale.PAYS_HS, ff.getTypeAutoriteFiscale());
 					Assert.assertEquals(date(2000, 5, 13), ff.getDateDebut());
 					Assert.assertEquals(dateActe.getOneDayBefore(), ff.getDateFin());
 					Assert.assertEquals((Integer) MockPays.Allemagne.getNoOFS(), ff.getNumeroOfsAutoriteFiscale());
 					Assert.assertEquals(GenreImpot.REVENU_FORTUNE, ff.getGenreImpot());
 
-					final ForFiscalPrincipalPP ffp = (ForFiscalPrincipalPP) ff;
+					final ForFiscalPrincipal ffp = (ForFiscalPrincipal) ff;
 					Assert.assertEquals(MotifFor.INDETERMINE, ffp.getMotifOuverture());
 					Assert.assertEquals(MotifFor.ARRIVEE_HS, ffp.getMotifFermeture());
 					Assert.assertEquals(MotifRattachement.DOMICILE, ffp.getMotifRattachement());
@@ -4770,14 +4768,14 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 				{
 					final ForFiscal ff = sortedFors.get(2);
 					Assert.assertNotNull(ff);
-					Assert.assertEquals(ForFiscalPrincipalPP.class, ff.getClass());
+					Assert.assertEquals(ForFiscalPrincipal.class, ff.getClass());
 					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_HC, ff.getTypeAutoriteFiscale());
 					Assert.assertEquals(dateActe, ff.getDateDebut());
 					Assert.assertNull(ff.getDateFin());
 					Assert.assertEquals((Integer) MockCommune.Zurich.getNoOFS(), ff.getNumeroOfsAutoriteFiscale());
 					Assert.assertEquals(GenreImpot.REVENU_FORTUNE, ff.getGenreImpot());
 
-					final ForFiscalPrincipalPP ffp = (ForFiscalPrincipalPP) ff;
+					final ForFiscalPrincipal ffp = (ForFiscalPrincipal) ff;
 					Assert.assertEquals(MotifFor.ARRIVEE_HS, ffp.getMotifOuverture());
 					Assert.assertNull(ffp.getMotifFermeture());
 					Assert.assertEquals(MotifRattachement.DOMICILE, ffp.getMotifRattachement());
@@ -4848,7 +4846,7 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 				Assert.assertEquals(EtatTraitement.TRAITE, ut.getEtat());
 				Assert.assertEquals(0, ut.getErreurs().size());
 
-				final List<ContribuableImpositionPersonnesPhysiques> allTiers = getAllPersonnesPhysiquesEtMenages();
+				final List<Tiers> allTiers = getAllPersonnesPhysiquesEtMenages();
 				Assert.assertNotNull(allTiers);
 				Assert.assertEquals(1, allTiers.size());
 
@@ -4891,14 +4889,14 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 				{
 					final ForFiscal ff = sortedFors.get(1);
 					Assert.assertNotNull(ff);
-					Assert.assertEquals(ForFiscalPrincipalPP.class, ff.getClass());
+					Assert.assertEquals(ForFiscalPrincipal.class, ff.getClass());
 					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_HC, ff.getTypeAutoriteFiscale());
 					Assert.assertEquals(date(2000, 5, 13), ff.getDateDebut());
 					Assert.assertEquals(dateActe.getOneDayBefore(), ff.getDateFin());
 					Assert.assertEquals((Integer) MockCommune.Geneve.getNoOFS(), ff.getNumeroOfsAutoriteFiscale());
 					Assert.assertEquals(GenreImpot.REVENU_FORTUNE, ff.getGenreImpot());
 
-					final ForFiscalPrincipalPP ffp = (ForFiscalPrincipalPP) ff;
+					final ForFiscalPrincipal ffp = (ForFiscalPrincipal) ff;
 					Assert.assertEquals(MotifFor.INDETERMINE, ffp.getMotifOuverture());
 					Assert.assertEquals(MotifFor.DEMENAGEMENT_VD, ffp.getMotifFermeture());
 					Assert.assertEquals(MotifRattachement.DOMICILE, ffp.getMotifRattachement());
@@ -4907,14 +4905,14 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 				{
 					final ForFiscal ff = sortedFors.get(2);
 					Assert.assertNotNull(ff);
-					Assert.assertEquals(ForFiscalPrincipalPP.class, ff.getClass());
+					Assert.assertEquals(ForFiscalPrincipal.class, ff.getClass());
 					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_HC, ff.getTypeAutoriteFiscale());
 					Assert.assertEquals(dateActe, ff.getDateDebut());
 					Assert.assertNull(ff.getDateFin());
 					Assert.assertEquals((Integer) MockCommune.Zurich.getNoOFS(), ff.getNumeroOfsAutoriteFiscale());
 					Assert.assertEquals(GenreImpot.REVENU_FORTUNE, ff.getGenreImpot());
 
-					final ForFiscalPrincipalPP ffp = (ForFiscalPrincipalPP) ff;
+					final ForFiscalPrincipal ffp = (ForFiscalPrincipal) ff;
 					Assert.assertEquals(MotifFor.DEMENAGEMENT_VD, ffp.getMotifOuverture());
 					Assert.assertNull(ffp.getMotifFermeture());
 					Assert.assertEquals(MotifRattachement.DOMICILE, ffp.getMotifRattachement());
@@ -4983,7 +4981,7 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 				Assert.assertEquals(EtatTraitement.TRAITE, ut.getEtat());
 				Assert.assertEquals(0, ut.getErreurs().size());
 
-				final List<ContribuableImpositionPersonnesPhysiques> allTiers = getAllPersonnesPhysiquesEtMenages();
+				final List<Tiers> allTiers = getAllPersonnesPhysiquesEtMenages();
 				Assert.assertNotNull(allTiers);
 				Assert.assertEquals(1, allTiers.size());
 
@@ -5026,14 +5024,14 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 				{
 					final ForFiscal ff = sortedFors.get(1);
 					Assert.assertNotNull(ff);
-					Assert.assertEquals(ForFiscalPrincipalPP.class, ff.getClass());
+					Assert.assertEquals(ForFiscalPrincipal.class, ff.getClass());
 					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_HC, ff.getTypeAutoriteFiscale());
 					Assert.assertEquals(date(2000, 5, 13), ff.getDateDebut());
 					Assert.assertEquals(dateActe.getOneDayBefore(), ff.getDateFin());
 					Assert.assertEquals((Integer) MockCommune.Geneve.getNoOFS(), ff.getNumeroOfsAutoriteFiscale());
 					Assert.assertEquals(GenreImpot.REVENU_FORTUNE, ff.getGenreImpot());
 
-					final ForFiscalPrincipalPP ffp = (ForFiscalPrincipalPP) ff;
+					final ForFiscalPrincipal ffp = (ForFiscalPrincipal) ff;
 					Assert.assertEquals(MotifFor.INDETERMINE, ffp.getMotifOuverture());
 					Assert.assertEquals(MotifFor.DEPART_HS, ffp.getMotifFermeture());
 					Assert.assertEquals(MotifRattachement.DOMICILE, ffp.getMotifRattachement());
@@ -5042,14 +5040,14 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 				{
 					final ForFiscal ff = sortedFors.get(2);
 					Assert.assertNotNull(ff);
-					Assert.assertEquals(ForFiscalPrincipalPP.class, ff.getClass());
+					Assert.assertEquals(ForFiscalPrincipal.class, ff.getClass());
 					Assert.assertEquals(TypeAutoriteFiscale.PAYS_HS, ff.getTypeAutoriteFiscale());
 					Assert.assertEquals(dateActe, ff.getDateDebut());
 					Assert.assertNull(ff.getDateFin());
 					Assert.assertEquals((Integer) MockPays.Allemagne.getNoOFS(), ff.getNumeroOfsAutoriteFiscale());
 					Assert.assertEquals(GenreImpot.REVENU_FORTUNE, ff.getGenreImpot());
 
-					final ForFiscalPrincipalPP ffp = (ForFiscalPrincipalPP) ff;
+					final ForFiscalPrincipal ffp = (ForFiscalPrincipal) ff;
 					Assert.assertEquals(MotifFor.DEPART_HS, ffp.getMotifOuverture());
 					Assert.assertNull(ffp.getMotifFermeture());
 					Assert.assertEquals(MotifRattachement.DOMICILE, ffp.getMotifRattachement());
@@ -5118,7 +5116,7 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 				Assert.assertEquals(EtatTraitement.TRAITE, ut.getEtat());
 				Assert.assertEquals(0, ut.getErreurs().size());
 
-				final List<ContribuableImpositionPersonnesPhysiques> allTiers = getAllPersonnesPhysiquesEtMenages();
+				final List<Tiers> allTiers = getAllPersonnesPhysiquesEtMenages();
 				Assert.assertNotNull(allTiers);
 				Assert.assertEquals(1, allTiers.size());
 
@@ -5137,14 +5135,14 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 				{
 					final ForFiscal ff = sortedFors.get(0);
 					Assert.assertNotNull(ff);
-					Assert.assertEquals(ForFiscalPrincipalPP.class, ff.getClass());
+					Assert.assertEquals(ForFiscalPrincipal.class, ff.getClass());
 					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_HC, ff.getTypeAutoriteFiscale());
 					Assert.assertEquals(date(2000, 5, 13), ff.getDateDebut());
 					Assert.assertEquals(dateActe.getOneDayBefore(), ff.getDateFin());
 					Assert.assertEquals((Integer) MockCommune.Geneve.getNoOFS(), ff.getNumeroOfsAutoriteFiscale());
 					Assert.assertEquals(GenreImpot.REVENU_FORTUNE, ff.getGenreImpot());
 
-					final ForFiscalPrincipalPP ffp = (ForFiscalPrincipalPP) ff;
+					final ForFiscalPrincipal ffp = (ForFiscalPrincipal) ff;
 					Assert.assertEquals(MotifFor.INDETERMINE, ffp.getMotifOuverture());
 					Assert.assertEquals(MotifFor.DEPART_HS, ffp.getMotifFermeture());
 					Assert.assertEquals(MotifRattachement.DOMICILE, ffp.getMotifRattachement());
@@ -5153,14 +5151,14 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 				{
 					final ForFiscal ff = sortedFors.get(1);
 					Assert.assertNotNull(ff);
-					Assert.assertEquals(ForFiscalPrincipalPP.class, ff.getClass());
+					Assert.assertEquals(ForFiscalPrincipal.class, ff.getClass());
 					Assert.assertEquals(TypeAutoriteFiscale.PAYS_HS, ff.getTypeAutoriteFiscale());
 					Assert.assertEquals(dateActe, ff.getDateDebut());
 					Assert.assertNull(ff.getDateFin());
 					Assert.assertEquals((Integer) MockPays.Allemagne.getNoOFS(), ff.getNumeroOfsAutoriteFiscale());
 					Assert.assertEquals(GenreImpot.REVENU_FORTUNE, ff.getGenreImpot());
 
-					final ForFiscalPrincipalPP ffp = (ForFiscalPrincipalPP) ff;
+					final ForFiscalPrincipal ffp = (ForFiscalPrincipal) ff;
 					Assert.assertEquals(MotifFor.DEPART_HS, ffp.getMotifOuverture());
 					Assert.assertNull(ffp.getMotifFermeture());
 					Assert.assertEquals(MotifRattachement.DOMICILE, ffp.getMotifRattachement());
@@ -5239,7 +5237,7 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 				Assert.assertEquals(ErreurTraitement.TypeErreur.WARNING, erreur.getType());
 				Assert.assertEquals("Adresse non modifiée sur un contribuable assujetti, uniquement reprise dans les remarques du tiers.", erreur.getMessage());
 
-				final List<ContribuableImpositionPersonnesPhysiques> allTiers = getAllPersonnesPhysiquesEtMenages();
+				final List<Tiers> allTiers = getAllPersonnesPhysiquesEtMenages();
 				Assert.assertNotNull(allTiers);
 				Assert.assertEquals(2, allTiers.size());
 
@@ -5279,14 +5277,14 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 				{
 					final ForFiscal ff = sortedFors.get(1);
 					Assert.assertNotNull(ff);
-					Assert.assertEquals(ForFiscalPrincipalPP.class, ff.getClass());
+					Assert.assertEquals(ForFiscalPrincipal.class, ff.getClass());
 					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_HC, ff.getTypeAutoriteFiscale());
 					Assert.assertEquals(dateAchatPrecedent, ff.getDateDebut());
 					Assert.assertEquals(dateActe.getOneDayBefore(), ff.getDateFin());
 					Assert.assertEquals((Integer) MockCommune.Geneve.getNoOFS(), ff.getNumeroOfsAutoriteFiscale());
 					Assert.assertEquals(GenreImpot.REVENU_FORTUNE, ff.getGenreImpot());
 
-					final ForFiscalPrincipalPP ffp = (ForFiscalPrincipalPP) ff;
+					final ForFiscalPrincipal ffp = (ForFiscalPrincipal) ff;
 					Assert.assertEquals(MotifFor.INDETERMINE, ffp.getMotifOuverture());
 					Assert.assertEquals(MotifFor.DEPART_HS, ffp.getMotifFermeture());
 					Assert.assertEquals(MotifRattachement.DOMICILE, ffp.getMotifRattachement());
@@ -5295,14 +5293,14 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 				{
 					final ForFiscal ff = sortedFors.get(2);
 					Assert.assertNotNull(ff);
-					Assert.assertEquals(ForFiscalPrincipalPP.class, ff.getClass());
+					Assert.assertEquals(ForFiscalPrincipal.class, ff.getClass());
 					Assert.assertEquals(TypeAutoriteFiscale.PAYS_HS, ff.getTypeAutoriteFiscale());
 					Assert.assertEquals(dateActe, ff.getDateDebut());
 					Assert.assertNull(ff.getDateFin());
 					Assert.assertEquals((Integer) MockPays.Allemagne.getNoOFS(), ff.getNumeroOfsAutoriteFiscale());
 					Assert.assertEquals(GenreImpot.REVENU_FORTUNE, ff.getGenreImpot());
 
-					final ForFiscalPrincipalPP ffp = (ForFiscalPrincipalPP) ff;
+					final ForFiscalPrincipal ffp = (ForFiscalPrincipal) ff;
 					Assert.assertEquals(MotifFor.DEPART_HS, ffp.getMotifOuverture());
 					Assert.assertNull(ffp.getMotifFermeture());
 					Assert.assertEquals(MotifRattachement.DOMICILE, ffp.getMotifRattachement());
@@ -5381,7 +5379,7 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 				Assert.assertEquals(ErreurTraitement.TypeErreur.WARNING, erreur.getType());
 				Assert.assertEquals("Adresse non modifiée sur un contribuable assujetti, uniquement reprise dans les remarques du tiers.", erreur.getMessage());
 
-				final List<ContribuableImpositionPersonnesPhysiques> allTiers = getAllPersonnesPhysiquesEtMenages();
+				final List<Tiers> allTiers = getAllPersonnesPhysiquesEtMenages();
 				Assert.assertNotNull(allTiers);
 				Assert.assertEquals(2, allTiers.size());
 
@@ -5436,14 +5434,14 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 				{
 					final ForFiscal ff = sortedFors.get(2);
 					Assert.assertNotNull(ff);
-					Assert.assertEquals(ForFiscalPrincipalPP.class, ff.getClass());
+					Assert.assertEquals(ForFiscalPrincipal.class, ff.getClass());
 					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_HC, ff.getTypeAutoriteFiscale());
 					Assert.assertEquals(date(2000, 5, 13), ff.getDateDebut());
 					Assert.assertEquals(dateActe.getOneDayBefore(), ff.getDateFin());
 					Assert.assertEquals((Integer) MockCommune.Geneve.getNoOFS(), ff.getNumeroOfsAutoriteFiscale());
 					Assert.assertEquals(GenreImpot.REVENU_FORTUNE, ff.getGenreImpot());
 
-					final ForFiscalPrincipalPP ffp = (ForFiscalPrincipalPP) ff;
+					final ForFiscalPrincipal ffp = (ForFiscalPrincipal) ff;
 					Assert.assertEquals(MotifFor.INDETERMINE, ffp.getMotifOuverture());
 					Assert.assertEquals(MotifFor.DEPART_HS, ffp.getMotifFermeture());
 					Assert.assertEquals(MotifRattachement.DOMICILE, ffp.getMotifRattachement());
@@ -5452,14 +5450,14 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 				{
 					final ForFiscal ff = sortedFors.get(3);
 					Assert.assertNotNull(ff);
-					Assert.assertEquals(ForFiscalPrincipalPP.class, ff.getClass());
+					Assert.assertEquals(ForFiscalPrincipal.class, ff.getClass());
 					Assert.assertEquals(TypeAutoriteFiscale.PAYS_HS, ff.getTypeAutoriteFiscale());
 					Assert.assertEquals(dateActe, ff.getDateDebut());
 					Assert.assertNull(ff.getDateFin());
 					Assert.assertEquals((Integer) MockPays.Allemagne.getNoOFS(), ff.getNumeroOfsAutoriteFiscale());
 					Assert.assertEquals(GenreImpot.REVENU_FORTUNE, ff.getGenreImpot());
 
-					final ForFiscalPrincipalPP ffp = (ForFiscalPrincipalPP) ff;
+					final ForFiscalPrincipal ffp = (ForFiscalPrincipal) ff;
 					Assert.assertEquals(MotifFor.DEPART_HS, ffp.getMotifOuverture());
 					Assert.assertNull(ffp.getMotifFermeture());
 					Assert.assertEquals(MotifRattachement.DOMICILE, ffp.getMotifRattachement());
@@ -5541,11 +5539,11 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 				Assert.assertEquals(EtatTraitement.TRAITE, ut.getEtat());
 				Assert.assertEquals(0, ut.getErreurs().size());
 
-				final List<ContribuableImpositionPersonnesPhysiques> allTiers = getAllPersonnesPhysiquesEtMenages();
+				final List<Tiers> allTiers = getAllPersonnesPhysiquesEtMenages();
 				Assert.assertNotNull(allTiers);
 				Assert.assertEquals(3, allTiers.size());        // 2 PP + 1 MC
 
-				final List<ContribuableImpositionPersonnesPhysiques> allSortedTiers = new ArrayList<>(allTiers);
+				final List<Tiers> allSortedTiers = new ArrayList<>(allTiers);
 				Collections.sort(allSortedTiers, new Comparator<Tiers>() {
 					@Override
 					public int compare(Tiers o1, Tiers o2) {
@@ -5633,14 +5631,14 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 					{
 						final ForFiscal ff = sortedFors.get(2);
 						Assert.assertNotNull(ff);
-						Assert.assertEquals(ForFiscalPrincipalPP.class, ff.getClass());
+						Assert.assertEquals(ForFiscalPrincipal.class, ff.getClass());
 						Assert.assertEquals(TypeAutoriteFiscale.PAYS_HS, ff.getTypeAutoriteFiscale());
 						Assert.assertEquals(dateActe, ff.getDateDebut());
 						Assert.assertNull(ff.getDateFin());
 						Assert.assertEquals((Integer) MockPays.Allemagne.getNoOFS(), ff.getNumeroOfsAutoriteFiscale());
 						Assert.assertEquals(GenreImpot.REVENU_FORTUNE, ff.getGenreImpot());
 
-						final ForFiscalPrincipalPP ffp = (ForFiscalPrincipalPP) ff;
+						final ForFiscalPrincipal ffp = (ForFiscalPrincipal) ff;
 						Assert.assertNull(ffp.getMotifOuverture());     // [SIFISC-15290] Le premier for HC/HS créé par ReqDes ne doit pas avoir de motif d'ouverture
 						Assert.assertNull(ffp.getMotifFermeture());
 						Assert.assertEquals(MotifRattachement.DOMICILE, ffp.getMotifRattachement());
@@ -5722,11 +5720,11 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 				Assert.assertEquals(EtatTraitement.TRAITE, ut.getEtat());
 				Assert.assertEquals(0, ut.getErreurs().size());
 
-				final List<ContribuableImpositionPersonnesPhysiques> allTiers = getAllPersonnesPhysiquesEtMenages();
+				final List<Tiers> allTiers = getAllPersonnesPhysiquesEtMenages();
 				Assert.assertNotNull(allTiers);
 				Assert.assertEquals(3, allTiers.size());        // 2 PP + 1 MC
 
-				final List<ContribuableImpositionPersonnesPhysiques> allSortedTiers = new ArrayList<>(allTiers);
+				final List<Tiers> allSortedTiers = new ArrayList<>(allTiers);
 				Collections.sort(allSortedTiers, new Comparator<Tiers>() {
 					@Override
 					public int compare(Tiers o1, Tiers o2) {
@@ -5799,14 +5797,14 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 					{
 						final ForFiscal ff = sortedFors.get(1);
 						Assert.assertNotNull(ff);
-						Assert.assertEquals(ForFiscalPrincipalPP.class, ff.getClass());
+						Assert.assertEquals(ForFiscalPrincipal.class, ff.getClass());
 						Assert.assertEquals(TypeAutoriteFiscale.PAYS_HS, ff.getTypeAutoriteFiscale());
 						Assert.assertEquals(dateActe, ff.getDateDebut());
 						Assert.assertNull(ff.getDateFin());
 						Assert.assertEquals((Integer) MockPays.Allemagne.getNoOFS(), ff.getNumeroOfsAutoriteFiscale());
 						Assert.assertEquals(GenreImpot.REVENU_FORTUNE, ff.getGenreImpot());
 
-						final ForFiscalPrincipalPP ffp = (ForFiscalPrincipalPP) ff;
+						final ForFiscalPrincipal ffp = (ForFiscalPrincipal) ff;
 						Assert.assertNull(ffp.getMotifOuverture());     // [SIFISC-15290] Le premier for HC/HS créé par ReqDes ne doit pas avoir de motif d'ouverture
 						Assert.assertNull(ffp.getMotifFermeture());
 						Assert.assertEquals(MotifRattachement.DOMICILE, ffp.getMotifRattachement());
@@ -6287,7 +6285,7 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 					Assert.assertEquals("Pauline", pp.getPrenomUsuel());
 					Assert.assertNull(pp.getDateDeces());
 
-					final ForFiscalPrincipalPP ffp = pp.getDernierForFiscalPrincipal();
+					final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
 					Assert.assertNotNull(ffp);
 					Assert.assertEquals(dateDeces.getOneDayAfter(), ffp.getDateDebut());
 					Assert.assertEquals(MotifFor.VEUVAGE_DECES, ffp.getMotifOuverture());
@@ -6302,7 +6300,7 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 					final MenageCommun mc = (MenageCommun) tiersDAO.get(ids.mcId);
 					Assert.assertNotNull(mc);
 
-					final ForFiscalPrincipalPP ffp = mc.getDernierForFiscalPrincipal();
+					final ForFiscalPrincipal ffp = mc.getDernierForFiscalPrincipal();
 					Assert.assertNotNull(ffp);
 					Assert.assertEquals(dateMariage, ffp.getDateDebut());
 					Assert.assertEquals(dateDeces, ffp.getDateFin());
@@ -6443,7 +6441,7 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 				Assert.assertEquals(EtatTraitement.TRAITE, ut.getEtat());
 				Assert.assertEquals(0, ut.getErreurs().size());
 
-				final List<ContribuableImpositionPersonnesPhysiques> allTiers = getAllPersonnesPhysiquesEtMenages();
+				final List<Tiers> allTiers = getAllPersonnesPhysiquesEtMenages();
 				Assert.assertNotNull(allTiers);
 				Assert.assertEquals(1, allTiers.size());
 
@@ -7228,11 +7226,10 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 				Assert.assertEquals("Dumoulin", newPP.getNom());
 
 				final ForsParType fpt = newPP.getForsParType(true);
-				Assert.assertEquals(1, fpt.principauxPP.size());
-				Assert.assertEquals(0, fpt.principauxPM.size());
+				Assert.assertEquals(1, fpt.principaux.size());
 				Assert.assertEquals(1, fpt.secondaires.size());
 
-				final ForFiscalPrincipal ffp = fpt.principauxPP.get(0);
+				final ForFiscalPrincipal ffp = fpt.principaux.get(0);
 				Assert.assertNotNull(ffp);
 				Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_HC, ffp.getTypeAutoriteFiscale());
 				Assert.assertEquals((Integer) MockCommune.Geneve.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale());
@@ -7336,11 +7333,10 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 				Assert.assertEquals("Dumoulin", newPP.getNom());
 
 				final ForsParType fpt = newPP.getForsParType(true);
-				Assert.assertEquals(1, fpt.principauxPP.size());
-				Assert.assertEquals(0, fpt.principauxPM.size());
+				Assert.assertEquals(1, fpt.principaux.size());
 				Assert.assertEquals(1, fpt.secondaires.size());
 
-				final ForFiscalPrincipal ffp = fpt.principauxPP.get(0);
+				final ForFiscalPrincipal ffp = fpt.principaux.get(0);
 				Assert.assertNotNull(ffp);
 				Assert.assertEquals(TypeAutoriteFiscale.PAYS_HS, ffp.getTypeAutoriteFiscale());
 				Assert.assertEquals((Integer) MockPays.Allemagne.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale());

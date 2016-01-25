@@ -34,9 +34,7 @@ import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.tiers.Contribuable;
-import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
 import ch.vd.uniregctb.tiers.IndividuNotFoundException;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
@@ -263,7 +261,7 @@ public class SituationFamilleServiceImpl implements SituationFamilleService {
 			}
 		}
 		else {
-			final List<ForFiscalPrincipalPP> fors = pp.getForsFiscauxPrincipauxActifsSorted();
+			final List<ForFiscalPrincipal> fors = pp.getForsFiscauxPrincipauxActifsSorted();
 			if (fors != null && !fors.isEmpty()) {
 				// récupération des zones continues de fors principaux
 				final List<CollatableDateRange> ranges = new ArrayList<>(fors.size());
@@ -432,12 +430,12 @@ public class SituationFamilleServiceImpl implements SituationFamilleService {
 	}
 
 	@Override
-	public SituationFamille addSituationFamille(SituationFamille situationFamille, ContribuableImpositionPersonnesPhysiques contribuable) {
+	public SituationFamille addSituationFamille(SituationFamille situationFamille, Contribuable contribuable) {
 		final RegDate dateDebut = situationFamille.getDateDebut();
 		contribuable.closeSituationFamilleActive(dateDebut.getOneDayBefore());
 
 		situationFamille = tiersDAO.addAndSave(contribuable, situationFamille);
-		evenementFiscalService.publierEvenementFiscalChangementSituationFamille(dateDebut, contribuable);
+		evenementFiscalService.publierEvenementFiscalChangementSituation(contribuable, dateDebut, situationFamille.getId());
 		return situationFamille;
 	}
 
@@ -447,7 +445,7 @@ public class SituationFamilleServiceImpl implements SituationFamilleService {
 		SituationFamille situationFamille = situationFamilleDAO.get(idSituationFamille);
 		Assert.notNull(situationFamille);
 
-		final ContribuableImpositionPersonnesPhysiques contribuable = situationFamille.getContribuable();
+		final Contribuable contribuable = situationFamille.getContribuable();
 		Assert.notNull(contribuable);
 
 		// Annulation de la situation de famille
@@ -489,7 +487,7 @@ public class SituationFamilleServiceImpl implements SituationFamilleService {
 
 		// Situation de famille ayant comme source Unireg
 		final SituationFamille situationFamille = internalAnnulerSituationFamille(idSituationFamille, true);
-		evenementFiscalService.publierEvenementFiscalChangementSituationFamille(RegDate.get(), situationFamille.getContribuable());
+		evenementFiscalService.publierEvenementFiscalChangementSituation(situationFamille.getContribuable(), RegDate.get(), idSituationFamille);
 	}
 
 	/**
@@ -503,17 +501,17 @@ public class SituationFamilleServiceImpl implements SituationFamilleService {
 
 		// Situation de famille ayant comme source Unireg
 		final SituationFamille situationFamille = internalAnnulerSituationFamille(idSituationFamille, false);
-		evenementFiscalService.publierEvenementFiscalChangementSituationFamille(RegDate.get(), situationFamille.getContribuable());
+		evenementFiscalService.publierEvenementFiscalChangementSituation(situationFamille.getContribuable(), RegDate.get(), situationFamille.getId());
 	}
 
 	@Override
-	public void closeSituationFamille(ContribuableImpositionPersonnesPhysiques contribuable, RegDate date) {
+	public void closeSituationFamille(Contribuable contribuable, RegDate date) {
 		Assert.notNull(contribuable);
 		// Situation de famille ayant comme source Unireg
 		final SituationFamille situationFamille = contribuable.getSituationFamilleActive();
 		if (situationFamille != null) {
 			contribuable.closeSituationFamilleActive(date);
-			evenementFiscalService.publierEvenementFiscalChangementSituationFamille(RegDate.get(), contribuable);
+			evenementFiscalService.publierEvenementFiscalChangementSituation(contribuable, RegDate.get(), situationFamille.getId());
 		}
 	}
 

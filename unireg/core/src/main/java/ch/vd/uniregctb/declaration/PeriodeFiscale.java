@@ -15,8 +15,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.hibernate.annotations.ForeignKey;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.HibernateEntity;
@@ -65,7 +63,7 @@ public class PeriodeFiscale extends HibernateEntity {
 		return parametrePeriodeFiscale;
 	}
 
-	public void setParametrePeriodeFiscale(Set<ParametrePeriodeFiscale> theParametrePeriodeFiscale) {
+	public void setParametrePeriodeFiscale(	Set<ParametrePeriodeFiscale> theParametrePeriodeFiscale) {
 		parametrePeriodeFiscale = theParametrePeriodeFiscale;
 	}
 
@@ -99,34 +97,19 @@ public class PeriodeFiscale extends HibernateEntity {
 	}
 
 	/**
-	 * @return le {@link ParametrePeriodeFiscalePP} en fonction du {@link TypeContribuable} pour la période
+	 * @return le {@link ParametrePeriodeFiscale} en fonction du {@link TypeContribuable} pour la période
 	 */
-	@Nullable
-	public ParametrePeriodeFiscalePP getParametrePeriodeFiscalePP(TypeContribuable typeContribuable) {
+	public ParametrePeriodeFiscale getParametrePeriodeFiscale(TypeContribuable typeContribuable) {
 		assert typeContribuable != null : "typeContribuable ne peut être null";
 		for (ParametrePeriodeFiscale ppf : parametrePeriodeFiscale) {
-			if (ppf instanceof ParametrePeriodeFiscalePP && typeContribuable == ppf.getTypeContribuable()) {
-				return (ParametrePeriodeFiscalePP) ppf;
+			if (typeContribuable == ppf.getTypeContribuable()) {
+				return ppf;
 			}
 		}
 		return null;
 	}
 
-	/**
-	 * @return le {@link ParametrePeriodeFiscalePM} en fonction du {@link TypeContribuable} pour la période
-	 */
-	@Nullable
-	public ParametrePeriodeFiscalePM getParametrePeriodeFiscalePM(TypeContribuable typeContribuable) {
-		assert typeContribuable != null : "typeContribuable ne peut être null";
-		for (ParametrePeriodeFiscale ppf : parametrePeriodeFiscale) {
-			if (ppf instanceof ParametrePeriodeFiscalePM && typeContribuable == ppf.getTypeContribuable()) {
-				return (ParametrePeriodeFiscalePM) ppf;
-			}
-		}
-		return null;
-	}
-
-	@Column(name = "CODE_CTRL_SOMM_DI_PP", nullable = false)
+	@Column(name = "CODE_CTRL_SOMM_DI", nullable = false)
 	public boolean isShowCodeControleSommationDeclaration() {
 		return showCodeControleSommationDeclaration;
 	}
@@ -136,60 +119,55 @@ public class PeriodeFiscale extends HibernateEntity {
 	}
 
 	/**
-	 * @return le {@link ParametrePeriodeFiscale} pour les contribuables PP vaudois ordinaires
+	 * @return le {@link ParametrePeriodeFiscale} pour les contribuables vaudois
 	 */
 	@Transient
-	public ParametrePeriodeFiscalePP getParametrePeriodeFiscalePPVaudoisOrdinaire() {
-		return getParametrePeriodeFiscalePP(TypeContribuable.VAUDOIS_ORDINAIRE);
+	public ParametrePeriodeFiscale getParametrePeriodeFiscaleVaud () {
+		return getParametrePeriodeFiscale(TypeContribuable.VAUDOIS_ORDINAIRE);
 	}
 
 	/**
-	 * @return le {@link ParametrePeriodeFiscale} pour les contribuables PP vaudois à la dépense
+	 * @return le {@link ParametrePeriodeFiscale} pour les contribuables vaudois
 	 */
 	@Transient
-	public ParametrePeriodeFiscalePP getParametrePeriodeFiscalePPDepense() {
-		return getParametrePeriodeFiscalePP(TypeContribuable.VAUDOIS_DEPENSE);
+	public ParametrePeriodeFiscale getParametrePeriodeFiscaleDepense () {
+		return getParametrePeriodeFiscale(TypeContribuable.VAUDOIS_DEPENSE);
 	}
 
 	/**
 	 * @return le {@link ParametrePeriodeFiscale} pour les diplomates Suisses basés à l'étranger
 	 */
 	@Transient
-	public ParametrePeriodeFiscalePP getParametrePeriodeFiscalePPDiplomateSuisse() {
-		return getParametrePeriodeFiscalePP(TypeContribuable.DIPLOMATE_SUISSE);
+	public ParametrePeriodeFiscale getParametrePeriodeFiscaleDiplomateSuisse() {
+		return getParametrePeriodeFiscale(TypeContribuable.DIPLOMATE_SUISSE);
 	}
 
 	/**
-	 * @return le {@link ParametrePeriodeFiscale} pour les contribuables PP hors canton de Vaud
+	 * @return le {@link ParametrePeriodeFiscale} pour les contribuables hors canton de Vaud
 	 */
 	@Transient
-	public ParametrePeriodeFiscalePP getParametrePeriodeFiscalePPHorsCanton() {
-		return getParametrePeriodeFiscalePP(TypeContribuable.HORS_CANTON);
+	public ParametrePeriodeFiscale getParametrePeriodeFiscaleHorsCanton () {
+		return getParametrePeriodeFiscale(TypeContribuable.HORS_CANTON);
 	}
 
 	/**
-	 * @return le {@link ParametrePeriodeFiscale} pour les contribuables PP hors Suisse
+	 * @return le {@link ParametrePeriodeFiscale} pour les contribuables hors Suisse
 	 */
 	@Transient
-	public ParametrePeriodeFiscalePP getParametrePeriodeFiscalePPHorsSuisse() {
-		return getParametrePeriodeFiscalePP(TypeContribuable.HORS_SUISSE);
+	public ParametrePeriodeFiscale getParametrePeriodeFiscaleHorsSuisse () {
+		return getParametrePeriodeFiscale(TypeContribuable.HORS_SUISSE);
 	}
-
 	/**
 	 * @return
 	 * 		La date la plus avancée pour la fin d'envoi de masse des DI parmis les parametres de la periode.<br>
 	 * 		La date du jour s'il n'y a pas de {@link ParametrePeriodeFiscale} associés à la periode. (ce qui ne devrait pas arriver)
 	 */
 	@Transient
-	@NotNull
-	public RegDate getLatestDateFinEnvoiMasseDIPP() {
+	public RegDate getLatestDateFinEnvoiMasseDI() {
 		RegDate date = null;
 		for (ParametrePeriodeFiscale ppf : getParametrePeriodeFiscale()) {
-			if (ppf instanceof ParametrePeriodeFiscalePP) {
-				final ParametrePeriodeFiscalePP ppfpp = (ParametrePeriodeFiscalePP) ppf;
-				if (date == null || date.isBefore(ppfpp.getDateFinEnvoiMasseDI())) {
-					date = ppfpp.getDateFinEnvoiMasseDI();
-				}
+			if (date == null || date.isBefore(ppf.getDateFinEnvoiMasseDI())) {
+				date = ppf.getDateFinEnvoiMasseDI();
 			}
 		}
 		return date != null ? date : RegDate.get();
@@ -198,53 +176,76 @@ public class PeriodeFiscale extends HibernateEntity {
 	/**
 	 *  Initialise les parametres de la periode fiscale avec des valeurs par défaut
 	 */
-	public void setDefaultPeriodeFiscaleParametres() {
-		addAllPeriodeFiscaleParametresPP(RegDate.get(this.getAnnee() + 1, 1, 31), // valeur par défaut des envoi de masse DI au 31 janvier
-		                                 RegDate.get(this.getAnnee() + 1, 3, 31), // valeur par défaut du terme reglementaire pour les sommations au 31 mars
-		                                 RegDate.get(this.getAnnee() + 1, 4, 30)     // valeur par défaut du terme effectif pour les sommations au 30 avril
+	public void setDefaultPeriodeFiscaleParametres () {
+		setAllPeriodeFiscaleParametres(
+			RegDate.get(this.getAnnee() + 1, 1, 31), // valeur par défaut des envoi de masse DI au 31 janvier
+			RegDate.get(this.getAnnee() + 1, 3, 31), // valeur par défaut du terme reglementaire pour les sommations au 31 mars
+			RegDate.get(this.getAnnee() + 1, 4, 30)	 // valeur par défaut du terme effectif pour les sommations au 30 avril
 		);
-		addAllPeriodeFiscaleParametresPM(6, false, 75, false);
 	}
 
 	/**
-	 * Ajoute les {@link ParametrePeriodeFiscalePP} (1 pour chaque type de contribuable PP) avec les dates initialisées aux valeurs les arguments de la méthode
+	 * Crée le {@link Set} de 4 {@link ParametrePeriodeFiscale} (1 pour chaque type de contribuable) avec les dates initialisées aux valeurs les arguments de la méthode
 	 *
-	 * @param dateEnvoiMasseDI la date d'envoi de masse des DI pour les 5 {@link ParametrePeriodeFiscale}
-	 * @param dateTermeGeneralSommationReglementaire du terme general réglementaire des sommations pour les 5 {@link ParametrePeriodeFiscale}
-	 * @param dateTermeGeneralSommationEffectif la date du terme general effectif des sommations pour les 5 {@link ParametrePeriodeFiscale}
+	 * @param dateEnvoiMasseDI la date d'envoi de masse des DI pour les 4 {@link ParametrePeriodeFiscale}
+	 * @param dateTermeGeneralSommationReglementaire du terme general réglementaire des sommations pour les 4 {@link ParametrePeriodeFiscale}
+	 * @param dateTermeGeneralSommationEffectif la date du terme general effectif des sommations pour les 4 {@link ParametrePeriodeFiscale}
 	 */
-	public void addAllPeriodeFiscaleParametresPP(RegDate dateEnvoiMasseDI, RegDate dateTermeGeneralSommationReglementaire, RegDate dateTermeGeneralSommationEffectif) {
-		addParametrePeriodeFiscale(new ParametrePeriodeFiscalePP(TypeContribuable.VAUDOIS_ORDINAIRE, dateEnvoiMasseDI, dateTermeGeneralSommationReglementaire, dateTermeGeneralSommationEffectif, this));
-		addParametrePeriodeFiscale(new ParametrePeriodeFiscalePP(TypeContribuable.VAUDOIS_DEPENSE, dateEnvoiMasseDI, dateTermeGeneralSommationReglementaire, dateTermeGeneralSommationEffectif, this));
-		addParametrePeriodeFiscale(new ParametrePeriodeFiscalePP(TypeContribuable.DIPLOMATE_SUISSE, dateEnvoiMasseDI, dateTermeGeneralSommationReglementaire, dateTermeGeneralSommationEffectif, this));
-		addParametrePeriodeFiscale(new ParametrePeriodeFiscalePP(TypeContribuable.HORS_CANTON, dateEnvoiMasseDI, dateTermeGeneralSommationReglementaire, dateTermeGeneralSommationEffectif, this));
-		addParametrePeriodeFiscale(new ParametrePeriodeFiscalePP(TypeContribuable.HORS_SUISSE, dateEnvoiMasseDI, dateTermeGeneralSommationReglementaire, dateTermeGeneralSommationEffectif, this));
+	public void setAllPeriodeFiscaleParametres(RegDate dateEnvoiMasseDI, RegDate dateTermeGeneralSommationReglementaire, RegDate dateTermeGeneralSommationEffectif) {
+
+		Set<ParametrePeriodeFiscale> setParametrePeriodeFiscale = new HashSet<>(4);
+
+		ParametrePeriodeFiscale ppf = new ParametrePeriodeFiscale();
+		ppf.setTypeContribuable(TypeContribuable.VAUDOIS_ORDINAIRE);
+		ppf.setPeriodefiscale(this);
+		ppf.setTermeGeneralSommationEffectif(dateTermeGeneralSommationEffectif);
+		ppf.setTermeGeneralSommationReglementaire(dateTermeGeneralSommationReglementaire);
+		ppf.setDateFinEnvoiMasseDI(dateEnvoiMasseDI);
+		setParametrePeriodeFiscale.add(ppf);
+
+		ppf = new ParametrePeriodeFiscale();
+		ppf.setTypeContribuable(TypeContribuable.VAUDOIS_DEPENSE);
+		ppf.setPeriodefiscale(this);
+		ppf.setTermeGeneralSommationEffectif(dateTermeGeneralSommationEffectif);
+		ppf.setTermeGeneralSommationReglementaire(dateTermeGeneralSommationReglementaire);
+		ppf.setDateFinEnvoiMasseDI(dateEnvoiMasseDI);
+		setParametrePeriodeFiscale.add(ppf);
+
+		ppf = new ParametrePeriodeFiscale();
+		ppf.setTypeContribuable(TypeContribuable.DIPLOMATE_SUISSE);
+		ppf.setPeriodefiscale(this);
+		ppf.setTermeGeneralSommationEffectif(dateTermeGeneralSommationEffectif);
+		ppf.setTermeGeneralSommationReglementaire(dateTermeGeneralSommationReglementaire);
+		ppf.setDateFinEnvoiMasseDI(dateEnvoiMasseDI);
+		setParametrePeriodeFiscale.add(ppf);
+
+		ppf = new ParametrePeriodeFiscale();
+		ppf.setTypeContribuable(TypeContribuable.HORS_CANTON);
+		ppf.setPeriodefiscale(this);
+		ppf.setTermeGeneralSommationEffectif(dateTermeGeneralSommationEffectif);
+		ppf.setTermeGeneralSommationReglementaire(dateTermeGeneralSommationReglementaire);
+		ppf.setDateFinEnvoiMasseDI(dateEnvoiMasseDI);
+		setParametrePeriodeFiscale.add(ppf);
+
+		ppf = new ParametrePeriodeFiscale();
+		ppf.setTypeContribuable(TypeContribuable.HORS_SUISSE);
+		ppf.setPeriodefiscale(this);
+		ppf.setTermeGeneralSommationEffectif(dateTermeGeneralSommationEffectif);
+		ppf.setTermeGeneralSommationReglementaire(dateTermeGeneralSommationReglementaire);
+		ppf.setDateFinEnvoiMasseDI(dateEnvoiMasseDI);
+		setParametrePeriodeFiscale.add(ppf);
+
+		setParametrePeriodeFiscale(setParametrePeriodeFiscale);
 	}
 
-	/**
-	 * Ajoute les {@link ParametrePeriodeFiscalePM} avec les dates initialisées aux valeurs les arguments de la méthode
-	 * @param delaiImprimeMois le délai imprimé sur la DI envoyée
-	 * @param delaiImprimeRepousseFinDeMois <code>true</code> si le délai effectivement imprimé doit être repoussé à la fin du mois
-	 * @param toleranceJours le délai effectif utilisé pour les DI de PM
-	 * @param delaiTolereRepousseFinDeMois <code>true</code> si le délai effectivement pris en compte (avec tolérance) doit être repoussé à la fin du mois
-	 */
-	public void addAllPeriodeFiscaleParametresPM(int delaiImprimeMois, boolean delaiImprimeRepousseFinDeMois,
-	                                             int toleranceJours, boolean delaiTolereRepousseFinDeMois) {
-		addParametrePeriodeFiscale(new ParametrePeriodeFiscalePM(TypeContribuable.VAUDOIS_ORDINAIRE, delaiImprimeMois, delaiImprimeRepousseFinDeMois, toleranceJours, delaiTolereRepousseFinDeMois, this));
-		addParametrePeriodeFiscale(new ParametrePeriodeFiscalePM(TypeContribuable.HORS_CANTON, delaiImprimeMois, delaiImprimeRepousseFinDeMois, toleranceJours, delaiTolereRepousseFinDeMois, this));
-		addParametrePeriodeFiscale(new ParametrePeriodeFiscalePM(TypeContribuable.HORS_SUISSE, delaiImprimeMois, delaiImprimeRepousseFinDeMois, toleranceJours, delaiTolereRepousseFinDeMois, this));
-	}
-
+	@Transient
 	public boolean possedeTypeDocument(TypeDocument typeDocument) {
-		return get(typeDocument) != null;
-	}
-
-	public ModeleDocument get(TypeDocument typeDocument) {
-		for (ModeleDocument modele : getModelesDocument()) {
+		for (ModeleDocument modele : getModelesDocument())  {
 			if (typeDocument == modele.getTypeDocument()) {
-				return modele;
+				return true;
 			}
 		}
-		return null;
+		return false;
 	}
+
 }

@@ -15,7 +15,7 @@ import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
 import ch.vd.uniregctb.norentes.annotation.Check;
 import ch.vd.uniregctb.norentes.annotation.Etape;
 import ch.vd.uniregctb.norentes.common.EvenementCivilScenario;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
+import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
 import ch.vd.uniregctb.type.ModeImposition;
@@ -112,7 +112,7 @@ public class Ec_18000_10_Arrivee_HC_PermisC_Scenario extends EvenementCivilScena
 			}
 		}
 
-		ForFiscalPrincipalPP ffp = habAntoine.getDernierForFiscalPrincipal();
+		ForFiscalPrincipal ffp = habAntoine.getDernierForFiscalPrincipal();
 		assertNotNull(ffp, "For principal de l'Habitant " + habAntoine.getNumero() + " null");
 		assertEquals(dateArriveeBex, ffp.getDateDebut(), "Date de début du  for sur Bex fausse");
 		assertEquals(ModeImposition.SOURCE, ffp.getModeImposition(), "mode d'imposition faux");
@@ -165,7 +165,7 @@ public class Ec_18000_10_Arrivee_HC_PermisC_Scenario extends EvenementCivilScena
 			}
 		}
 
-		ForFiscalPrincipalPP ffp = habAntoine.getDernierForFiscalPrincipal();
+		ForFiscalPrincipal ffp = habAntoine.getDernierForFiscalPrincipal();
 		assertNotNull(ffp, "For principal de l'Habitant " + habAntoine.getNumero() + " null");
 		assertEquals(dateArriveeBex.getOneDayAfter(), ffp.getDateDebut(), "Date de début du  for sur Bex fausse");
 		assertEquals(ModeImposition.ORDINAIRE, ffp.getModeImposition(), "mode d'imposition faux");

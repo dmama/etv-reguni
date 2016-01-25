@@ -9,7 +9,7 @@
     <column>LOG_MDATE</column>
     <column>LOG_MUSER</column>
     <column>ANNEE</column>
-    <column>CODE_CTRL_SOMM_DI_PP</column>
+    <column>CODE_CTRL_SOMM_DI</column>
     <row>
       <value>3</value>
       <null/>
@@ -145,11 +145,6 @@
     <column>TERME_GEN_SOMM_REGL</column>
     <column>TYPE_CTB</column>
     <column>PERIODE_ID</column>
-    <column>PPF_TYPE</column>
-    <column>PM_DELAI_IMPRIME_MOIS</column>
-    <column>PM_DELAI_IMPRIME_FIN_MOIS</column>
-    <column>PM_TOLERANCE_JOURS</column>
-    <column>PM_TOLERANCE_FIN_MOIS</column>
     <row>
       <value>4</value>
       <null/>
@@ -163,11 +158,6 @@
       <value>20010331</value>
       <value>VAUDOIS_ORDINAIRE</value>
       <value>3</value>
-      <value>PP</value>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
     </row>
     <row>
       <value>5</value>
@@ -182,11 +172,6 @@
       <value>20010331</value>
       <value>VAUDOIS_DEPENSE</value>
       <value>3</value>
-      <value>PP</value>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
     </row>
     <row>
       <value>6</value>
@@ -201,11 +186,6 @@
       <value>20010331</value>
       <value>HORS_SUISSE</value>
       <value>3</value>
-      <value>PP</value>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
     </row>
     <row>
       <value>7</value>
@@ -220,11 +200,6 @@
       <value>20010331</value>
       <value>HORS_CANTON</value>
       <value>3</value>
-      <value>PP</value>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
     </row>
     <row>
       <value>9</value>
@@ -239,11 +214,6 @@
       <value>20020331</value>
       <value>VAUDOIS_DEPENSE</value>
       <value>8</value>
-      <value>PP</value>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
     </row>
     <row>
       <value>10</value>
@@ -258,11 +228,6 @@
       <value>20020331</value>
       <value>HORS_CANTON</value>
       <value>8</value>
-      <value>PP</value>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
     </row>
     <row>
       <value>11</value>
@@ -277,11 +242,6 @@
       <value>20020331</value>
       <value>HORS_SUISSE</value>
       <value>8</value>
-      <value>PP</value>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
     </row>
     <row>
       <value>12</value>
@@ -296,11 +256,6 @@
       <value>20020331</value>
       <value>VAUDOIS_ORDINAIRE</value>
       <value>8</value>
-      <value>PP</value>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
     </row>
     <row>
       <value>14</value>
@@ -315,11 +270,6 @@
       <value>20030331</value>
       <value>VAUDOIS_DEPENSE</value>
       <value>13</value>
-      <value>PP</value>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
     </row>
     <row>
       <value>15</value>
@@ -334,11 +284,6 @@
       <value>20030331</value>
       <value>VAUDOIS_ORDINAIRE</value>
       <value>13</value>
-      <value>PP</value>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
     </row>
     <row>
       <value>16</value>
@@ -353,11 +298,6 @@
       <value>20030331</value>
       <value>HORS_CANTON</value>
       <value>13</value>
-      <value>PP</value>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
     </row>
     <row>
       <value>17</value>
@@ -372,11 +312,6 @@
       <value>20030331</value>
       <value>HORS_SUISSE</value>
       <value>13</value>
-      <value>PP</value>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
     </row>
     <row>
       <value>19</value>
@@ -391,11 +326,6 @@
       <value>20040331</value>
       <value>VAUDOIS_ORDINAIRE</value>
       <value>18</value>
-      <value>PP</value>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
     </row>
     <row>
       <value>20</value>
@@ -410,11 +340,6 @@
       <value>20040331</value>
       <value>HORS_SUISSE</value>
       <value>18</value>
-      <value>PP</value>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
     </row>
     <row>
       <value>21</value>
@@ -429,11 +354,6 @@
       <value>20040331</value>
       <value>VAUDOIS_DEPENSE</value>
       <value>18</value>
-      <value>PP</value>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
     </row>
     <row>
       <value>22</value>
@@ -448,11 +368,6 @@
       <value>20040331</value>
       <value>HORS_CANTON</value>
       <value>18</value>
-      <value>PP</value>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
     </row>
     <row>
       <value>24</value>
@@ -467,11 +382,6 @@
       <value>20050331</value>
       <value>VAUDOIS_ORDINAIRE</value>
       <value>23</value>
-      <value>PP</value>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
     </row>
     <row>
       <value>25</value>
@@ -486,11 +396,6 @@
       <value>20050331</value>
       <value>HORS_CANTON</value>
       <value>23</value>
-      <value>PP</value>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
     </row>
     <row>
       <value>26</value>
@@ -505,11 +410,6 @@
       <value>20050331</value>
       <value>HORS_SUISSE</value>
       <value>23</value>
-      <value>PP</value>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
     </row>
     <row>
       <value>27</value>
@@ -524,11 +424,6 @@
       <value>20050331</value>
       <value>VAUDOIS_DEPENSE</value>
       <value>23</value>
-      <value>PP</value>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
     </row>
     <row>
       <value>29</value>
@@ -543,11 +438,6 @@
       <value>20060331</value>
       <value>VAUDOIS_DEPENSE</value>
       <value>28</value>
-      <value>PP</value>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
     </row>
     <row>
       <value>30</value>
@@ -562,11 +452,6 @@
       <value>20060331</value>
       <value>HORS_SUISSE</value>
       <value>28</value>
-      <value>PP</value>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
     </row>
     <row>
       <value>31</value>
@@ -581,11 +466,6 @@
       <value>20060331</value>
       <value>HORS_CANTON</value>
       <value>28</value>
-      <value>PP</value>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
     </row>
     <row>
       <value>32</value>
@@ -600,11 +480,6 @@
       <value>20060331</value>
       <value>VAUDOIS_ORDINAIRE</value>
       <value>28</value>
-      <value>PP</value>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
     </row>
     <row>
       <value>34</value>
@@ -619,11 +494,6 @@
       <value>20070331</value>
       <value>VAUDOIS_ORDINAIRE</value>
       <value>33</value>
-      <value>PP</value>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
     </row>
     <row>
       <value>35</value>
@@ -638,11 +508,6 @@
       <value>20070331</value>
       <value>VAUDOIS_DEPENSE</value>
       <value>33</value>
-      <value>PP</value>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
     </row>
     <row>
       <value>36</value>
@@ -657,11 +522,6 @@
       <value>20070331</value>
       <value>HORS_SUISSE</value>
       <value>33</value>
-      <value>PP</value>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
     </row>
     <row>
       <value>37</value>
@@ -676,11 +536,6 @@
       <value>20070331</value>
       <value>HORS_CANTON</value>
       <value>33</value>
-      <value>PP</value>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
     </row>
     <row>
       <value>39</value>
@@ -695,11 +550,6 @@
       <value>20080331</value>
       <value>VAUDOIS_ORDINAIRE</value>
       <value>38</value>
-      <value>PP</value>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
     </row>
     <row>
       <value>40</value>
@@ -714,11 +564,6 @@
       <value>20080331</value>
       <value>VAUDOIS_DEPENSE</value>
       <value>38</value>
-      <value>PP</value>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
     </row>
     <row>
       <value>41</value>
@@ -733,11 +578,6 @@
       <value>20080331</value>
       <value>HORS_CANTON</value>
       <value>38</value>
-      <value>PP</value>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
     </row>
     <row>
       <value>42</value>
@@ -752,11 +592,6 @@
       <value>20080331</value>
       <value>HORS_SUISSE</value>
       <value>38</value>
-      <value>PP</value>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
     </row>
     <row>
       <value>44</value>
@@ -771,11 +606,6 @@
       <value>20090331</value>
       <value>VAUDOIS_DEPENSE</value>
       <value>43</value>
-      <value>PP</value>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
     </row>
     <row>
       <value>45</value>
@@ -790,11 +620,6 @@
       <value>20090331</value>
       <value>HORS_SUISSE</value>
       <value>43</value>
-      <value>PP</value>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
     </row>
     <row>
       <value>46</value>
@@ -809,11 +634,6 @@
       <value>20090331</value>
       <value>HORS_CANTON</value>
       <value>43</value>
-      <value>PP</value>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
     </row>
     <row>
       <value>47</value>
@@ -828,11 +648,6 @@
       <value>20090331</value>
       <value>VAUDOIS_ORDINAIRE</value>
       <value>43</value>
-      <value>PP</value>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
     </row>
     <row>
       <value>49</value>
@@ -847,11 +662,6 @@
       <value>20100930</value>
       <value>HORS_CANTON</value>
       <value>48</value>
-      <value>PP</value>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
     </row>
     <row>
       <value>50</value>
@@ -866,11 +676,6 @@
       <value>20100315</value>
       <value>VAUDOIS_ORDINAIRE</value>
       <value>48</value>
-      <value>PP</value>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
     </row>
     <row>
       <value>51</value>
@@ -885,11 +690,6 @@
       <value>20100331</value>
       <value>VAUDOIS_DEPENSE</value>
       <value>48</value>
-      <value>PP</value>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
     </row>
     <row>
       <value>52</value>
@@ -904,11 +704,6 @@
       <value>20100930</value>
       <value>HORS_SUISSE</value>
       <value>48</value>
-      <value>PP</value>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
     </row>
     <row>
       <value>54</value>
@@ -923,11 +718,6 @@
       <value>20110315</value>
       <value>VAUDOIS_ORDINAIRE</value>
       <value>53</value>
-      <value>PP</value>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
     </row>
     <row>
       <value>55</value>
@@ -942,11 +732,6 @@
       <value>20110930</value>
       <value>HORS_CANTON</value>
       <value>53</value>
-      <value>PP</value>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
     </row>
     <row>
       <value>56</value>
@@ -961,11 +746,6 @@
       <value>20110331</value>
       <value>VAUDOIS_DEPENSE</value>
       <value>53</value>
-      <value>PP</value>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
     </row>
     <row>
       <value>57</value>
@@ -980,11 +760,6 @@
       <value>20110930</value>
       <value>HORS_SUISSE</value>
       <value>53</value>
-      <value>PP</value>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
     </row>
   </table>
   <table name="PARAMETRE">
@@ -1177,7 +952,7 @@
       <value>01.01</value>
     </row>
     <row>
-      <value>premierePeriodeFiscalePersonnesPhysiques</value>
+      <value>premierePeriodeFiscale</value>
       <null/>
       <null/>
       <value><![CDATA[2009-07-08 17:37:23.271]]></value>
@@ -1185,16 +960,6 @@
       <value><![CDATA[2009-07-08 17:37:23.271]]></value>
       <value>[system]</value>
       <value>2003</value>
-    </row>
-    <row>
-      <value>premierePeriodeFiscalePersonnesMorales</value>
-      <null/>
-      <null/>
-      <value><![CDATA[2015-08-08 17:37:23.271]]></value>
-      <value>[system]</value>
-      <value><![CDATA[2015-08-08 17:37:23.271]]></value>
-      <value>[system]</value>
-      <value>2009</value>
     </row>
   </table>
   <table name="MODELE_DOCUMENT">
@@ -4213,6 +3978,7 @@
     <column>LOG_MUSER</column>
     <column>DATE_DEBUT</column>
     <column>DATE_FIN</column>
+    <column>NOM_DOCUMENT</column>
     <column>DATE_IMPR_CHEMISE_TO</column>
     <column>NUMERO</column>
     <column>NO_OFS_FOR_GESTION</column>
@@ -4238,6 +4004,7 @@
       <value><![CDATA[BATCH   ]]></value>
       <value>20050101</value>
       <value>20051231</value>
+      <null/>
       <null/>
       <value>1</value>
       <value>5675</value>
@@ -4265,6 +4032,7 @@
       <value>20070101</value>
       <value>20071231</value>
       <null/>
+      <null/>
       <value>1</value>
       <value>5675</value>
       <value>COMPLEXE_2</value>
@@ -4291,6 +4059,7 @@
       <value>20040101</value>
       <value>20041231</value>
       <null/>
+      <null/>
       <value>1</value>
       <value>5675</value>
       <null/>
@@ -4316,6 +4085,7 @@
       <value><![CDATA[BATCH   ]]></value>
       <value>20060101</value>
       <value>20061231</value>
+      <null/>
       <null/>
       <value>1</value>
       <value>5675</value>
@@ -4343,6 +4113,7 @@
       <value>20080101</value>
       <value>20081231</value>
       <null/>
+      <null/>
       <value>1</value>
       <value>5675</value>
       <value>COMPLEXE_2</value>
@@ -4369,6 +4140,7 @@
       <value>20030101</value>
       <value>20031231</value>
       <null/>
+      <null/>
       <value>1</value>
       <value>5675</value>
       <null/>
@@ -4394,6 +4166,7 @@
       <value>Rattrapage-TO</value>
       <value>20050101</value>
       <value>20051231</value>
+      <null/>
       <value><![CDATA[2009-07-13 00:00:00.0]]></value>
       <value>1</value>
       <value>5435</value>
@@ -4420,6 +4193,7 @@
       <value>Rattrapage-TO</value>
       <value>20070101</value>
       <value>20071231</value>
+      <null/>
       <value><![CDATA[2009-07-13 00:00:00.0]]></value>
       <value>1</value>
       <value>5401</value>
@@ -4447,6 +4221,7 @@
       <value>20030101</value>
       <value>20031231</value>
       <null/>
+      <null/>
       <value>1</value>
       <value>5435</value>
       <null/>
@@ -4472,6 +4247,7 @@
       <value><![CDATA[BATCH   ]]></value>
       <value>20040101</value>
       <value>20041231</value>
+      <null/>
       <null/>
       <value>1</value>
       <value>5401</value>
@@ -4499,6 +4275,7 @@
       <value>20080101</value>
       <value>20081231</value>
       <null/>
+      <null/>
       <value>1</value>
       <value>5401</value>
       <value>SEMI_MANUEL</value>
@@ -4524,6 +4301,7 @@
       <value>Rattrapage-TO</value>
       <value>20060101</value>
       <value>20061231</value>
+      <null/>
       <value><![CDATA[2009-07-13 00:00:00.0]]></value>
       <value>1</value>
       <value>5401</value>
@@ -4551,6 +4329,7 @@
       <value>20070101</value>
       <value>20071231</value>
       <null/>
+      <null/>
       <value>1</value>
       <value>5904</value>
       <value>SEMI_MANUEL</value>
@@ -4576,6 +4355,7 @@
       <value><![CDATA[BATCH   ]]></value>
       <value>20040101</value>
       <value>20041231</value>
+      <null/>
       <null/>
       <value>1</value>
       <value>5904</value>
@@ -4603,6 +4383,7 @@
       <value>20080101</value>
       <value>20081231</value>
       <null/>
+      <null/>
       <value>1</value>
       <value>5904</value>
       <value>SEMI_MANUEL</value>
@@ -4628,6 +4409,7 @@
       <value><![CDATA[BATCH   ]]></value>
       <value>20060101</value>
       <value>20061231</value>
+      <null/>
       <null/>
       <value>1</value>
       <value>5904</value>
@@ -4655,6 +4437,7 @@
       <value>20030101</value>
       <value>20031231</value>
       <null/>
+      <null/>
       <value>1</value>
       <value>5904</value>
       <null/>
@@ -4681,6 +4464,7 @@
       <value>20050101</value>
       <value>20051231</value>
       <null/>
+      <null/>
       <value>1</value>
       <value>5904</value>
       <null/>
@@ -4706,7 +4490,6 @@
     <column>LOG_MUSER</column>
     <column>DATE_OBTENTION</column>
     <column>TYPE</column>
-    <column>DATE_ENVOI_COURRIER</column>
     <column>DECLARATION_ID</column>
     <row>
       <value>8839530</value>
@@ -4718,7 +4501,6 @@
       <value><![CDATA[CEDI    ]]></value>
       <value>20060509</value>
       <value>RETOURNEE</value>
-      <null/>
       <value>8839528</value>
     </row>
     <row>
@@ -4731,7 +4513,6 @@
       <value><![CDATA[BATCH   ]]></value>
       <value>20060125</value>
       <value>EMISE</value>
-      <null/>
       <value>8839528</value>
     </row>
     <row>
@@ -4744,7 +4525,6 @@
       <value><![CDATA[CEDI    ]]></value>
       <value>20080829</value>
       <value>RETOURNEE</value>
-      <null/>
       <value>8839532</value>
     </row>
     <row>
@@ -4757,7 +4537,6 @@
       <value><![CDATA[BATCH   ]]></value>
       <value>20080125</value>
       <value>EMISE</value>
-      <null/>
       <value>8839532</value>
     </row>
     <row>
@@ -4770,7 +4549,6 @@
       <value><![CDATA[BATCH   ]]></value>
       <value>20050113</value>
       <value>EMISE</value>
-      <null/>
       <value>8839537</value>
     </row>
     <row>
@@ -4783,7 +4561,6 @@
       <value><![CDATA[CEDI    ]]></value>
       <value>20050705</value>
       <value>RETOURNEE</value>
-      <null/>
       <value>8839537</value>
     </row>
     <row>
@@ -4796,7 +4573,6 @@
       <value><![CDATA[BATCH   ]]></value>
       <value>20070120</value>
       <value>EMISE</value>
-      <null/>
       <value>8839541</value>
     </row>
     <row>
@@ -4809,7 +4585,6 @@
       <value><![CDATA[CEDI    ]]></value>
       <value>20070606</value>
       <value>RETOURNEE</value>
-      <null/>
       <value>8839541</value>
     </row>
     <row>
@@ -4822,7 +4597,6 @@
       <value><![CDATA[BATCH   ]]></value>
       <value>20090128</value>
       <value>EMISE</value>
-      <null/>
       <value>8839546</value>
     </row>
     <row>
@@ -4835,7 +4609,6 @@
       <value><![CDATA[BATCH   ]]></value>
       <value>20040117</value>
       <value>EMISE</value>
-      <null/>
       <value>8839550</value>
     </row>
     <row>
@@ -4848,7 +4621,6 @@
       <value><![CDATA[ZAINYP  ]]></value>
       <value>20040614</value>
       <value>RETOURNEE</value>
-      <null/>
       <value>8839550</value>
     </row>
     <row>
@@ -4861,7 +4633,6 @@
       <value><![CDATA[BATCH   ]]></value>
       <value>20060113</value>
       <value>EMISE</value>
-      <null/>
       <value>3342518</value>
     </row>
     <row>
@@ -4874,7 +4645,6 @@
       <value><![CDATA[BATCH   ]]></value>
       <value>20060814</value>
       <value>SOMMEE</value>
-      <value>20060814</value>
       <value>3342518</value>
     </row>
     <row>
@@ -4887,7 +4657,6 @@
       <value><![CDATA[BATCH   ]]></value>
       <value>20060915</value>
       <value>ECHUE</value>
-      <null/>
       <value>3342518</value>
     </row>
     <row>
@@ -4900,7 +4669,6 @@
       <value><![CDATA[BATCH   ]]></value>
       <value>20080125</value>
       <value>EMISE</value>
-      <null/>
       <value>3342584</value>
     </row>
     <row>
@@ -4913,7 +4681,6 @@
       <value><![CDATA[BATCH   ]]></value>
       <value>20080805</value>
       <value>SOMMEE</value>
-      <value>20080805</value>
       <value>3342584</value>
     </row>
     <row>
@@ -4926,7 +4693,6 @@
       <value><![CDATA[BATCH   ]]></value>
       <value>20080908</value>
       <value>ECHUE</value>
-      <null/>
       <value>3342584</value>
     </row>
     <row>
@@ -4939,7 +4705,6 @@
       <value><![CDATA[BATCH   ]]></value>
       <value>20040121</value>
       <value>EMISE</value>
-      <null/>
       <value>3342615</value>
     </row>
     <row>
@@ -4952,7 +4717,6 @@
       <value><![CDATA[ZAIRMC  ]]></value>
       <value>20040525</value>
       <value>RETOURNEE</value>
-      <null/>
       <value>3342615</value>
     </row>
     <row>
@@ -4965,7 +4729,6 @@
       <value><![CDATA[BATCH   ]]></value>
       <value>20050114</value>
       <value>EMISE</value>
-      <null/>
       <value>3342643</value>
     </row>
     <row>
@@ -4978,7 +4741,6 @@
       <value><![CDATA[CEDI    ]]></value>
       <value>20050225</value>
       <value>RETOURNEE</value>
-      <null/>
       <value>3342643</value>
     </row>
     <row>
@@ -4991,7 +4753,6 @@
       <value><![CDATA[BATCH   ]]></value>
       <value>20090116</value>
       <value>EMISE</value>
-      <null/>
       <value>3342669</value>
     </row>
     <row>
@@ -5004,7 +4765,6 @@
       <value><![CDATA[BATCH   ]]></value>
       <value>20070115</value>
       <value>EMISE</value>
-      <null/>
       <value>3342552</value>
     </row>
     <row>
@@ -5017,7 +4777,6 @@
       <value><![CDATA[BATCH   ]]></value>
       <value>20070806</value>
       <value>ECHUE</value>
-      <null/>
       <value>3342552</value>
     </row>
     <row>
@@ -5030,7 +4789,6 @@
       <value><![CDATA[BATCH   ]]></value>
       <value>20070703</value>
       <value>SOMMEE</value>
-      <value>20070703</value>
       <value>3342552</value>
     </row>
     <row>
@@ -5043,7 +4801,6 @@
       <value><![CDATA[CEDI    ]]></value>
       <value>20080710</value>
       <value>RETOURNEE</value>
-      <null/>
       <value>3342786</value>
     </row>
     <row>
@@ -5056,7 +4813,6 @@
       <value><![CDATA[BATCH   ]]></value>
       <value>20080125</value>
       <value>EMISE</value>
-      <null/>
       <value>3342786</value>
     </row>
     <row>
@@ -5069,7 +4825,6 @@
       <value><![CDATA[CEDI    ]]></value>
       <value>20050627</value>
       <value>RETOURNEE</value>
-      <null/>
       <value>3342815</value>
     </row>
     <row>
@@ -5082,7 +4837,6 @@
       <value><![CDATA[BATCH   ]]></value>
       <value>20050114</value>
       <value>EMISE</value>
-      <null/>
       <value>3342815</value>
     </row>
     <row>
@@ -5095,7 +4849,6 @@
       <value><![CDATA[CEDI    ]]></value>
       <value>20090630</value>
       <value>SOMMEE</value>
-      <value>20090630</value>
       <value>3342849</value>
     </row>
     <row>
@@ -5108,7 +4861,6 @@
       <value><![CDATA[BATCH   ]]></value>
       <value>20090128</value>
       <value>EMISE</value>
-      <null/>
       <value>3342849</value>
     </row>
     <row>
@@ -5121,7 +4873,6 @@
       <value><![CDATA[BATCH   ]]></value>
       <value>20070120</value>
       <value>EMISE</value>
-      <null/>
       <value>3342875</value>
     </row>
     <row>
@@ -5134,7 +4885,6 @@
       <value><![CDATA[CEDI    ]]></value>
       <value>20070612</value>
       <value>RETOURNEE</value>
-      <null/>
       <value>3342875</value>
     </row>
     <row>
@@ -5147,7 +4897,6 @@
       <value><![CDATA[BATCH   ]]></value>
       <value>20040121</value>
       <value>EMISE</value>
-      <null/>
       <value>3342914</value>
     </row>
     <row>
@@ -5160,7 +4909,6 @@
       <value><![CDATA[ZAIMZC  ]]></value>
       <value>20040519</value>
       <value>RETOURNEE</value>
-      <null/>
       <value>3342914</value>
     </row>
     <row>
@@ -5173,7 +4921,6 @@
       <value><![CDATA[BATCH   ]]></value>
       <value>20060125</value>
       <value>EMISE</value>
-      <null/>
       <value>3342935</value>
     </row>
     <row>
@@ -5186,7 +4933,6 @@
       <value><![CDATA[CEDI    ]]></value>
       <value>20060712</value>
       <value>RETOURNEE</value>
-      <null/>
       <value>3342935</value>
     </row>
   </table>
@@ -5198,8 +4944,7 @@
     <column>LOG_CUSER</column>
     <column>LOG_MDATE</column>
     <column>LOG_MUSER</column>
-    <column>ETAT</column>
-    <column>SURSIS</column>
+    <column>CONFIRMATION_ECRITE</column>
     <column>DATE_DEMANDE</column>
     <column>DATE_TRAITEMENT</column>
     <column>DELAI_ACCORDE_AU</column>
@@ -5212,8 +4957,7 @@
       <value><![CDATA[[HostContribuableMigrator thread]]]></value>
       <value><![CDATA[2009-07-08 19:46:31.235]]></value>
       <value><![CDATA[[HostContribuableMigrator thread]]]></value>
-      <value>ACCORDE</value>
-      <value>0</value>
+      <null/>
       <value>20060125</value>
       <value>20060125</value>
       <value>20060315</value>
@@ -5227,8 +4971,7 @@
       <value><![CDATA[[HostContribuableMigrator thread]]]></value>
       <value><![CDATA[2009-07-08 19:46:31.239]]></value>
       <value><![CDATA[[HostContribuableMigrator thread]]]></value>
-      <value>ACCORDE</value>
-      <value>0</value>
+      <null/>
       <value>20080125</value>
       <value>20080125</value>
       <value>20080930</value>
@@ -5242,8 +4985,7 @@
       <value><![CDATA[CEDI    ]]></value>
       <value><![CDATA[2008-08-29 00:00:00.0]]></value>
       <value><![CDATA[CEDI    ]]></value>
-      <value>ACCORDE</value>
-      <value>0</value>
+      <null/>
       <value>20080513</value>
       <value>20080513</value>
       <value>20080930</value>
@@ -5257,8 +4999,7 @@
       <value><![CDATA[[HostContribuableMigrator thread]]]></value>
       <value><![CDATA[2009-07-08 19:46:31.244]]></value>
       <value><![CDATA[[HostContribuableMigrator thread]]]></value>
-      <value>ACCORDE</value>
-      <value>0</value>
+      <null/>
       <value>20050113</value>
       <value>20050113</value>
       <value>20050315</value>
@@ -5272,8 +5013,7 @@
       <value><![CDATA[CEDI    ]]></value>
       <value><![CDATA[2007-06-06 00:00:00.0]]></value>
       <value><![CDATA[CEDI    ]]></value>
-      <value>ACCORDE</value>
-      <value>0</value>
+      <null/>
       <value>20070220</value>
       <value>20070220</value>
       <value>20070915</value>
@@ -5287,8 +5027,7 @@
       <value><![CDATA[[HostContribuableMigrator thread]]]></value>
       <value><![CDATA[2009-07-08 19:46:31.253]]></value>
       <value><![CDATA[[HostContribuableMigrator thread]]]></value>
-      <value>ACCORDE</value>
-      <value>0</value>
+      <null/>
       <value>20070120</value>
       <value>20070120</value>
       <value>20070915</value>
@@ -5302,8 +5041,7 @@
       <value><![CDATA[DELAI_B ]]></value>
       <value><![CDATA[2009-06-27 00:00:00.0]]></value>
       <value><![CDATA[DELAI_B ]]></value>
-      <value>ACCORDE</value>
-      <value>0</value>
+      <null/>
       <value>20090627</value>
       <value>20090626</value>
       <value>20090930</value>
@@ -5317,8 +5055,7 @@
       <value><![CDATA[[HostContribuableMigrator thread]]]></value>
       <value><![CDATA[2009-07-08 19:46:31.257]]></value>
       <value><![CDATA[[HostContribuableMigrator thread]]]></value>
-      <value>ACCORDE</value>
-      <value>0</value>
+      <null/>
       <value>20090128</value>
       <value>20090128</value>
       <value>20090930</value>
@@ -5332,8 +5069,7 @@
       <value><![CDATA[[HostContribuableMigrator thread]]]></value>
       <value><![CDATA[2009-07-08 19:46:31.261]]></value>
       <value><![CDATA[[HostContribuableMigrator thread]]]></value>
-      <value>ACCORDE</value>
-      <value>0</value>
+      <null/>
       <value>20040117</value>
       <value>20040117</value>
       <value>20040315</value>
@@ -5347,8 +5083,7 @@
       <value><![CDATA[[HostContribuableMigrator thread]]]></value>
       <value><![CDATA[2009-07-08 18:14:39.38]]></value>
       <value><![CDATA[[HostContribuableMigrator thread]]]></value>
-      <value>ACCORDE</value>
-      <value>0</value>
+      <null/>
       <value>20060113</value>
       <value>20060113</value>
       <value>20060315</value>
@@ -5362,8 +5097,7 @@
       <value><![CDATA[[HostContribuableMigrator thread]]]></value>
       <value><![CDATA[2009-07-08 18:14:39.4]]></value>
       <value><![CDATA[[HostContribuableMigrator thread]]]></value>
-      <value>ACCORDE</value>
-      <value>0</value>
+      <null/>
       <value>20080125</value>
       <value>20080125</value>
       <value>20080315</value>
@@ -5377,8 +5111,7 @@
       <value><![CDATA[[HostContribuableMigrator thread]]]></value>
       <value><![CDATA[2009-07-08 18:14:39.406]]></value>
       <value><![CDATA[[HostContribuableMigrator thread]]]></value>
-      <value>ACCORDE</value>
-      <value>0</value>
+      <null/>
       <value>20040121</value>
       <value>20040121</value>
       <value>20040315</value>
@@ -5392,8 +5125,7 @@
       <value><![CDATA[[HostContribuableMigrator thread]]]></value>
       <value><![CDATA[2009-07-08 18:14:39.41]]></value>
       <value><![CDATA[[HostContribuableMigrator thread]]]></value>
-      <value>ACCORDE</value>
-      <value>0</value>
+      <null/>
       <value>20050114</value>
       <value>20050114</value>
       <value>20050315</value>
@@ -5407,8 +5139,7 @@
       <value><![CDATA[[HostContribuableMigrator thread]]]></value>
       <value><![CDATA[2009-07-08 18:14:39.413]]></value>
       <value><![CDATA[[HostContribuableMigrator thread]]]></value>
-      <value>ACCORDE</value>
-      <value>0</value>
+      <null/>
       <value>20090116</value>
       <value>20090116</value>
       <value>20090315</value>
@@ -5422,8 +5153,7 @@
       <value><![CDATA[[HostContribuableMigrator thread]]]></value>
       <value><![CDATA[2009-07-08 18:14:39.385]]></value>
       <value><![CDATA[[HostContribuableMigrator thread]]]></value>
-      <value>ACCORDE</value>
-      <value>0</value>
+      <null/>
       <value>20070115</value>
       <value>20070115</value>
       <value>20070315</value>
@@ -5437,8 +5167,7 @@
       <value><![CDATA[[HostContribuableMigrator thread]]]></value>
       <value><![CDATA[2009-07-08 18:14:39.432]]></value>
       <value><![CDATA[[HostContribuableMigrator thread]]]></value>
-      <value>ACCORDE</value>
-      <value>0</value>
+      <null/>
       <value>20080125</value>
       <value>20080125</value>
       <value>20080315</value>
@@ -5452,8 +5181,7 @@
       <value><![CDATA[[HostContribuableMigrator thread]]]></value>
       <value><![CDATA[2009-07-08 18:14:39.437]]></value>
       <value><![CDATA[[HostContribuableMigrator thread]]]></value>
-      <value>ACCORDE</value>
-      <value>0</value>
+      <null/>
       <value>20050114</value>
       <value>20050114</value>
       <value>20050315</value>
@@ -5467,8 +5195,7 @@
       <value><![CDATA[[HostContribuableMigrator thread]]]></value>
       <value><![CDATA[2009-07-08 18:14:39.441]]></value>
       <value><![CDATA[[HostContribuableMigrator thread]]]></value>
-      <value>ACCORDE</value>
-      <value>0</value>
+      <null/>
       <value>20090128</value>
       <value>20090128</value>
       <value>20090315</value>
@@ -5482,8 +5209,7 @@
       <value><![CDATA[[HostContribuableMigrator thread]]]></value>
       <value><![CDATA[2009-07-08 18:14:39.447]]></value>
       <value><![CDATA[[HostContribuableMigrator thread]]]></value>
-      <value>ACCORDE</value>
-      <value>0</value>
+      <null/>
       <value>20070120</value>
       <value>20070120</value>
       <value>20070315</value>
@@ -5497,8 +5223,7 @@
       <value><![CDATA[[HostContribuableMigrator thread]]]></value>
       <value><![CDATA[2009-07-08 18:14:39.452]]></value>
       <value><![CDATA[[HostContribuableMigrator thread]]]></value>
-      <value>ACCORDE</value>
-      <value>0</value>
+      <null/>
       <value>20040121</value>
       <value>20040121</value>
       <value>20040315</value>
@@ -5512,8 +5237,7 @@
       <value><![CDATA[[HostContribuableMigrator thread]]]></value>
       <value><![CDATA[2009-07-08 18:14:39.456]]></value>
       <value><![CDATA[[HostContribuableMigrator thread]]]></value>
-      <value>ACCORDE</value>
-      <value>0</value>
+      <null/>
       <value>20060125</value>
       <value>20060125</value>
       <value>20060315</value>

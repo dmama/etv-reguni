@@ -212,17 +212,6 @@ public class TiersDAOBooster implements TiersDAO, InitializingBean {
 	}
 
 	@Override
-	public Entreprise getEntrepriseByNumeroOrganisation(long numeroOrganisation) {
-		return target.getEntrepriseByNumeroOrganisation(numeroOrganisation);
-	}
-
-	@Override
-	public Etablissement getEtablissementByNumeroSite(long numeroSite) {
-		return target.getEtablissementByNumeroSite(numeroSite);
-	}
-
-
-	@Override
 	public Long getNumeroPPByNumeroIndividu(long numeroIndividu, boolean doNotAutoFlush) {
 		return target.getNumeroPPByNumeroIndividu(numeroIndividu, doNotAutoFlush);
 	}
@@ -318,7 +307,7 @@ public class TiersDAOBooster implements TiersDAO, InitializingBean {
 	}
 
 	@Override
-	public SituationFamille addAndSave(ContribuableImpositionPersonnesPhysiques contribuable, SituationFamille situation) {
+	public SituationFamille addAndSave(Contribuable contribuable, SituationFamille situation) {
 		return target.addAndSave(contribuable, situation);
 	}
 
@@ -335,41 +324,6 @@ public class TiersDAOBooster implements TiersDAO, InitializingBean {
 	@Override
 	public IdentificationEntreprise addAndSave(Contribuable ctb, IdentificationEntreprise ident) {
 		return target.addAndSave(ctb, ident);
-	}
-
-	@Override
-	public DomicileEtablissement addAndSave(Etablissement etb, DomicileEtablissement domicile) {
-		return target.addAndSave(etb, domicile);
-	}
-
-	@Override
-	public AllegementFiscal addAndSave(Entreprise entreprise, AllegementFiscal allegement) {
-		return target.addAndSave(entreprise, allegement);
-	}
-
-	@Override
-	public DonneeCivileEntreprise addAndSave(Entreprise entreprise, DonneeCivileEntreprise donneeCivile) {
-		return target.addAndSave(entreprise, donneeCivile);
-	}
-
-	@Override
-	public Bouclement addAndSave(Entreprise entreprise, Bouclement bouclement) {
-		return target.addAndSave(entreprise, bouclement);
-	}
-
-	@Override
-	public RegimeFiscal addAndSave(Entreprise entreprise, RegimeFiscal regime) {
-		return target.addAndSave(entreprise, regime);
-	}
-
-	@Override
-	public EtatEntreprise addAndSave(Entreprise entreprise, EtatEntreprise etat) {
-		return target.addAndSave(entreprise, etat);
-	}
-
-	@Override
-	public FlagEntreprise addAndSave(Entreprise entreprise, FlagEntreprise flag) {
-		return target.addAndSave(entreprise, flag);
 	}
 
 	@Override

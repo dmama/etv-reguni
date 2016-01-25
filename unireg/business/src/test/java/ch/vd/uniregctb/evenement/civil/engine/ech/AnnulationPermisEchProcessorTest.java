@@ -15,7 +15,7 @@ import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEch;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchErreur;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
+import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.ActionEvenementCivilEch;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
@@ -90,7 +90,7 @@ public class AnnulationPermisEchProcessorTest extends AbstractEvenementCivilEchP
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
 				Assert.assertNotNull(pp);
 				
-				final ForFiscalPrincipalPP ffp = pp.getDernierForFiscalPrincipal();
+				final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
 				Assert.assertNotNull(ffp);
 				Assert.assertEquals(ModeImposition.SOURCE, ffp.getModeImposition());
 				Assert.assertNull(ffp.getDateFin());
@@ -123,7 +123,8 @@ public class AnnulationPermisEchProcessorTest extends AbstractEvenementCivilEchP
 			@Override
 			public Long doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addHabitant(noIndividu);
-				addForPrincipal(pp, dateDebutPermis, MotifFor.ARRIVEE_HS, MockCommune.Lausanne, ModeImposition.SOURCE);
+				final ForFiscalPrincipal ffp = addForPrincipal(pp, dateDebutPermis, MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
+				ffp.setModeImposition(ModeImposition.SOURCE);
 				return pp.getNumero();
 			}
 		});
@@ -158,7 +159,7 @@ public class AnnulationPermisEchProcessorTest extends AbstractEvenementCivilEchP
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
 				Assert.assertNotNull(pp);
 				
-				final ForFiscalPrincipalPP ffp = pp.getDernierForFiscalPrincipal();
+				final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
 				Assert.assertNotNull(ffp);
 				Assert.assertEquals(ModeImposition.SOURCE, ffp.getModeImposition());
 				Assert.assertNull(ffp.getDateFin());
@@ -261,7 +262,8 @@ public class AnnulationPermisEchProcessorTest extends AbstractEvenementCivilEchP
 			@Override
 			public Long doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addHabitant(noIndividu);
-				addForPrincipal(pp, dateDebutPermis, MotifFor.ARRIVEE_HS, MockCommune.Lausanne, ModeImposition.SOURCE);
+				final ForFiscalPrincipal ffp = addForPrincipal(pp, dateDebutPermis, MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
+				ffp.setModeImposition(ModeImposition.SOURCE);
 				addDecisionAci(pp,dateDebutPermis.addYears(-5),null,MockCommune.Vevey.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,null);
 				return pp.getNumero();
 			}

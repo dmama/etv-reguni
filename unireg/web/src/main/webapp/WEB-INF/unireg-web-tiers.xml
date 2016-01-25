@@ -113,8 +113,7 @@
 		<property name="adresseTiersDAO" ref="adresseTiersDAO" />
 		<property name="webCivilService" ref="webCivilService" />
 		<property name="serviceCivilService" ref="serviceCivilService" />
-		<property name="serviceOrganisationService" ref="serviceOrganisationService" />
-		<property name="entrepriseService" ref="entrepriseService"/>
+		<property name="hostPersonneMoraleService" ref="hostPersonneMoraleService" />
 		<property name="adresseService" ref="adresseService" />
 		<property name="adresseManager" ref="adresseManager" />
 		<property name="tiersService" ref="tiersService" />
@@ -122,6 +121,7 @@
 		<property name="tiersGeneralManager" ref="tiersGeneralManager" />
 		<property name="situationFamilleService" ref="situationFamilleService" />
 		<property name="rapportEntreTiersDAO" ref="rapportEntreTiersDAO" />
+		<property name="servicePM" ref="servicePersonneMoraleService" />
 		<property name="ibanValidator" ref="ibanValidator" />
 		<property name="autorisationManager" ref="autorisationManager" />
 		<property name="securityProvider" ref="securityProviderInterface" />
@@ -143,7 +143,26 @@
 	</bean>
 
 	<bean id="consultLogController" class="ch.vd.uniregctb.common.ConsultLogController">
-		<property name="hibernateTemplate" ref="hibernateTemplate"/>
+		<property name="forFiscalDAO" ref="forFiscalDAO" />
+		<property name="situationFamilleDAO" ref="situationFamilleDAO" />
+		<property name="adresseTiersDAO" ref="adresseTiersDAO" />
+		<property name="rapportEntreTiersDAO" ref="rapportEntreTiersDAO" />
+		<property name="diDAO" ref="diDAO" />
+		<property name="lrDAO" ref="lrDAO" />
+		<property name="tiersDAO" ref="tiersDAO" />
+		<property name="tacheDAO" ref="tacheDAO" />
+		<property name="droitAccesDAO" ref="droitAccesDAO" />
+		<property name="mouvementDossierDAO" ref="mouvementDossierDAO" />
+		<property name="evenementCivilRegPPDAO" ref="evenementCivilRegPPDAO" />
+		<property name="evenementCivilEchDAO" ref="evenementCivilEchDAO" />
+		<property name="identCtbDAO" ref="identCtbDAO" />
+		<property name="periodiciteDAO" ref="periodiciteDAO" />
+		<property name="etatDeclarationDAO" ref="etatDeclarationDAO" />
+		<property name="delaiDeclarationDAO" ref="delaiDeclarationDAO" />
+		<property name="immeubleDAO" ref="immeubleDAO" />
+		<property name="uniteTraitementDAO" ref="reqdesUniteTraitementDAO"/>
+		<property name="remarqueDAO" ref="remarqueDAO"/>
+		<property name="decisionAciDAO" ref="decisionAciDAO"/>
 	</bean>
 
 	<bean id="mouvementVisuController" class="ch.vd.uniregctb.tiers.MouvementVisuController">

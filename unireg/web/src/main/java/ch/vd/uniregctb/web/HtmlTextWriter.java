@@ -205,39 +205,39 @@ public class HtmlTextWriter extends TextWriter {
             new HtmlStyle(HtmlTextWriterStyle.WhiteSpace, "white-space"),
             new HtmlStyle(HtmlTextWriterStyle.ZIndex, "z-index"), };
 
-    public static final String DefaultTabString = "\t";
+    public final static String DefaultTabString = "\t";
 
-    public static final char DoubleQuoteChar = '"';
+    public final static char DoubleQuoteChar = '"';
 
-    public static final String EndTagLeftChars = "</";
+    public final static String EndTagLeftChars = "</";
 
-    public static final char EqualsChar = '=';
+    public final static char EqualsChar = '=';
 
-    public static final String EqualsDoubleQuoteString = "=\"";
+    public final static String EqualsDoubleQuoteString = "=\"";
 
-    public static final String SelfClosingChars = " /";
+    public final static String SelfClosingChars = " /";
 
-    public static final String SelfClosingTagEnd = " />";
+    public final static String SelfClosingTagEnd = " />";
 
-    public static final char SemicolonChar = ';';
+    public final static char SemicolonChar = ';';
 
-    public static final char SingleQuoteChar = '\'';
+    public final static char SingleQuoteChar = '\'';
 
-    public static final char SlashChar = '/';
+    public final static char SlashChar = '/';
 
-    public static final char SpaceChar = ' ';
+    public final static char SpaceChar = ' ';
 
-    public static final char StyleEqualsChar = ':';
+    public final static char StyleEqualsChar = ':';
 
-    public static final char TagLeftChar = '<';
+    public final static char TagLeftChar = '<';
 
-    public static final char TagRightChar = '>';
+    public final static char TagRightChar = '>';
 
-    static final InsensitiveCaseHashtable<HtmlTag> _tagTable;
+    final static InsensitiveCaseHashtable<HtmlTag> _tagTable;
 
-    static final InsensitiveCaseHashtable<HtmlAttribute> _attributeTable;
+    final static InsensitiveCaseHashtable<HtmlAttribute> _attributeTable;
 
-    static final InsensitiveCaseHashtable<HtmlStyle> _styleTable;
+    final static InsensitiveCaseHashtable<HtmlStyle> _styleTable;
 
     static {
 
@@ -1051,7 +1051,7 @@ public class HtmlTextWriter extends TextWriter {
      *
      * @param <V>
      */
-    static final class InsensitiveCaseHashtable<V> extends Hashtable<String, V> {
+    final static class InsensitiveCaseHashtable<V> extends Hashtable<String, V> {
 
         /**
          *

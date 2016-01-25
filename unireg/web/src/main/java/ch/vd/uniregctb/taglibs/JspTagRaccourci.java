@@ -323,24 +323,11 @@ public class JspTagRaccourci extends BodyTagSupport implements MessageSourceAwar
 		}
 	}
 
-	/**
-	 * Ré-ouverture de for débiteur
-	 */
 	public static class ReOpenForDebiteur extends JspTagRaccourci {
 
 		@Override
 		protected String getCssClass() {
 			return "reOpenFor";
-		}
-	}
-
-	/**
-	 * Détails (= loupe)
-	 */
-	public static class Detail extends JspTagRaccourci {
-		@Override
-		protected String getCssClass() {
-			return "detail";
 		}
 	}
 }

@@ -7,7 +7,7 @@ import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.unireg.interfaces.common.CasePostale;
+import ch.vd.unireg.interfaces.civil.data.CasePostale;
 
 /**
  * Données minimale d'une adresse tiers <b>annulée</b> ([UNIREG-3154][SIFISC-5319]).

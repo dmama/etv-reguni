@@ -31,11 +31,6 @@ public class MockDataEventService implements DataEventService {
 	}
 
 	@Override
-	public void onOrganisationChange(long id) {
-
-	}
-
-	@Override
 	public void onPersonneMoraleChange(long id) {
 		changedPMs.add(id);
 	}

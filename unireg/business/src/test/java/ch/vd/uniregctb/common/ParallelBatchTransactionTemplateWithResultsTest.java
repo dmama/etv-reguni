@@ -203,7 +203,6 @@ public class ParallelBatchTransactionTemplateWithResultsTest extends BusinessTes
 			@Override
 			public boolean doInTransaction(List<Long> batch, TestJobResults rapport) throws Exception {
 				processed.addAll(batch);
-				Thread.sleep(100);      // on force le thread a rendre la main afin que le thread de contrôle voie rapidement que les threads renvoient false
 				return false; // interrompt le traitement
 			}
 

@@ -1,7 +1,6 @@
 package ch.vd.uniregctb.evenement.identification.contribuable;
 
 import javax.xml.bind.JAXBElement;
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -14,15 +13,6 @@ import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.tx.TxCallbackWithoutResult;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
-import ch.vd.unireg.interfaces.infra.mock.MockCommune;
-import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
-import ch.vd.unireg.interfaces.organisation.data.StatusInscriptionRC;
-import ch.vd.unireg.interfaces.organisation.data.StatusRC;
-import ch.vd.unireg.interfaces.organisation.data.StatusRegistreIDE;
-import ch.vd.unireg.interfaces.organisation.data.TypeOrganisationRegistreIDE;
-import ch.vd.unireg.interfaces.organisation.mock.MockServiceOrganisation;
-import ch.vd.unireg.interfaces.organisation.mock.data.MockOrganisation;
-import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockSiteOrganisationFactory;
 import ch.vd.unireg.xml.common.v2.PartialDate;
 import ch.vd.unireg.xml.event.identification.request.v4.CorporationIdentificationData;
 import ch.vd.unireg.xml.event.identification.request.v4.IdentificationContribuableRequest;
@@ -35,12 +25,13 @@ import ch.vd.unireg.xml.event.identification.response.v4.IdentifiedNaturalPerson
 import ch.vd.unireg.xml.event.identification.response.v4.IdentifiedTaxpayer;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.identification.contribuable.IdentificationContribuableService;
+import ch.vd.uniregctb.interfaces.model.mock.MockPersonneMorale;
+import ch.vd.uniregctb.interfaces.service.mock.MockServicePM;
 import ch.vd.uniregctb.jms.EsbBusinessCode;
 import ch.vd.uniregctb.jms.EsbBusinessException;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.Sexe;
-import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -378,14 +369,11 @@ public class IdentificationContribuableRequestHandlerV4Test extends BusinessTest
 		assertTrue(raisonSociale.length() > 100);
 
 		// mise en place civile
-		serviceOrganisation.setUp(new MockServiceOrganisation() {
+		servicePM.setUp(new MockServicePM() {
 			@Override
 			protected void init() {
-				final MockOrganisation organisation = addOrganisation(noCivilPM, date(1989, 7, 4), raisonSociale, FormeLegale.N_0106_SOCIETE_ANONYME);
-				organisation.addNumeroIDE(date(1989, 7, 4), null, ide);
-				MockSiteOrganisationFactory.addSite(noCivilPM+9876, organisation, date(1989, 7, 4), null, raisonSociale, true, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
-				                                    MockCommune.Lausanne.getNoOFS(), StatusRC.INSCRIT, StatusInscriptionRC.ACTIF, StatusRegistreIDE.DEFINITIF,
-				                                    TypeOrganisationRegistreIDE.SITE, BigDecimal.valueOf(50000), "CHF");
+				final MockPersonneMorale pm = addPM(noCivilPM, raisonSociale, "S.A.", date(1989, 7, 4), null);
+				pm.setNumeroIDE(ide);
 			}
 		});
 
@@ -393,7 +381,7 @@ public class IdentificationContribuableRequestHandlerV4Test extends BusinessTest
 		final long idPM = doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise pm = addEntrepriseConnueAuCivil(noCivilPM);
+				final Entreprise pm = addEntreprise(noCivilPM);
 				return pm.getNumero();
 			}
 		});

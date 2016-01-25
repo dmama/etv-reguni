@@ -56,7 +56,8 @@
 												<unireg:commune ofs="${command.noAutoriteFiscale}" displayProperty="nomOfficiel" date="${command.dateDebut}"/>
 											</c:when>
 											<c:when test="${command.typeAutoriteFiscale == 'COMMUNE_HC' }">
-												<unireg:commune ofs="${command.noAutoriteFiscale}" displayProperty="nomOfficielAvecCanton" date="${command.dateDebut}"/>
+												<unireg:commune ofs="${command.noAutoriteFiscale}" displayProperty="nomOfficiel" date="${command.dateDebut}"/>
+												(<unireg:commune ofs="${command.noAutoriteFiscale}" displayProperty="sigleCanton" date="${command.dateDebut}"/>)
 											</c:when>
 											<c:when test="${command.typeAutoriteFiscale == 'PAYS_HS' }">
 												<unireg:pays ofs="${command.noAutoriteFiscale}" displayProperty="nomCourt" date="${command.dateDebut}"/>

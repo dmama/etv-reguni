@@ -7,8 +7,6 @@ import javax.persistence.DiscriminatorValue;
 import javax.persistence.Embeddable;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -23,6 +21,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -30,7 +29,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.tuple.Pair;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
 import org.hibernate.usertype.UserType;
@@ -40,7 +38,6 @@ import org.slf4j.LoggerFactory;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.uniregctb.common.ReflexionUtils;
-import ch.vd.uniregctb.hibernate.DayMonthUserType;
 import ch.vd.uniregctb.hibernate.EnumUserType;
 import ch.vd.uniregctb.hibernate.RegDateUserType;
 import ch.vd.uniregctb.hibernate.TypeAdresseCivilLegacyUserType;
@@ -131,16 +128,15 @@ public class MetaEntity {
 		String discriminatorColumn = null;
 		final List<Property> properties = new ArrayList<>();
 
-		final List<Pair<Annotation, Class>> annotations = ReflexionUtils.getAllAnnotations(clazz);
-		for (Pair<Annotation, Class> pair : annotations) {
-			final Annotation a = pair.getLeft();
+		final List<Annotation> annotations = ReflexionUtils.getAllAnnotations(clazz);
+		for (Annotation a : annotations) {
 			if (a instanceof Entity) {
 				entityFound = true;
 			}
 			else if (a instanceof Embeddable) {
 				isEmbeddable = true;
 			}
-			else if (a instanceof DiscriminatorValue && clazz == pair.getRight()) {
+			else if (a instanceof DiscriminatorValue) {
 				final DiscriminatorValue d = (DiscriminatorValue) a;
 				if (discriminatorValue != null) {
 					throw new IllegalArgumentException("Duplicated discriminator = [" + discriminatorValue + ", " + d.value() + "]) on class [" + clazz.getSimpleName() + ']');
@@ -305,21 +301,6 @@ public class MetaEntity {
 				// une propriété emdeddée : on l'expose à plat.
 				return determineEmbeddedProps(descriptor);
 			}
-			else if (a instanceof Enumerated) {
-				final Enumerated enumerated = (Enumerated) a;
-				if (readMethod.getReturnType().isEnum()) {
-					if (enumerated.value() == EnumType.STRING) {
-						//noinspection unchecked
-						userType = new EnumUserType(readMethod.getReturnType());
-					}
-					else {
-						throw new NotImplementedException("Seule la stratégie STRING est supportée dans l'annotation @Enumerated de la propriété " + descriptor.getName() + " de la classe " + clazz.getName());
-					}
-				}
-				else {
-					throw new NotImplementedException("L'annotation @Enumerated n'est actuellement supportée que pour les types énumérés (champ " + descriptor.getName() + " de la classe " + clazz.getName() + ")");
-				}
-			}
 		}
 
 		if (sequenceName != null) {
@@ -350,9 +331,6 @@ public class MetaEntity {
 			if (userType instanceof RegDateUserType) {
 				propertyType = new RegDatePropertyType((RegDateUserType) userType);
 			}
-			else if (userType instanceof DayMonthUserType) {
-				propertyType = new DayMonthPropertyType((DayMonthUserType) userType);
-			}
 			else if (userType instanceof EnumUserType) {
 				propertyType = new EnumUserTypePropertyType(returnType, (EnumUserType) userType);
 			}
@@ -375,7 +353,7 @@ public class MetaEntity {
 			Assert.notNull(propertyType, "Type java non-enregistré [" + returnType.getName() + "] (propriété = [" + descriptor.getName() + "] de la classe [" + clazz.getSimpleName() + "])");
 		}
 
-		return Collections.singletonList(new Property(descriptor.getName(), propertyType, columnName, null, primaryKey, parentForeignKey, estCollection));
+		return Arrays.asList(new Property(descriptor.getName(), propertyType, columnName, null, primaryKey, parentForeignKey, estCollection));
 	}
 
 	/**

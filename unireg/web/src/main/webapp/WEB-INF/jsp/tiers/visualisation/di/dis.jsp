@@ -41,12 +41,7 @@
 				</display:column>
 				<display:column style="action">
 					<c:if test="${!di.annule}">
-						<c:if test="${di.diPP}">
-							<a href="#" class="detail" title="Détails de la déclaration" onclick="Decl.open_details_di(<c:out value="${di.id}"/>, true); return false;">&nbsp;</a>
-						</c:if>
-						<c:if test="${di.diPM}">
-							<a href="#" class="detail" title="Détails de la déclaration" onclick="Decl.open_details_di(<c:out value="${di.id}"/>, false); return false;">&nbsp;</a>
-						</c:if>
+						<a href="#" class="detail" title="Détails de la déclaration" onclick="Decl.open_details_di(<c:out value="${di.id}"/>); return false;">&nbsp;</a>
 					</c:if>
 					<unireg:consulterLog entityNature="DI" entityId="${di.id}"/>
 				</display:column>

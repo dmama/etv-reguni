@@ -59,7 +59,6 @@
 				<entry key="ch.vd.uniregctb-web:type=JmsListeners,name=EvenementsEfacture" value-ref="evenementEfactureEndpointManager"/>
 				<entry key="ch.vd.uniregctb-web:type=JmsListeners,name=EvenementsEfactureResponse" value-ref="evenementEfactureResponseEndpointManager"/>
 				<entry key="ch.vd.uniregctb-web:type=JmsListeners,name=ReqDes" value-ref="reqdesEventEndpointManager"/>
-				<entry key="ch.vd.uniregctb-web:type=JmsListeners,name=EvenementsOrganisation" value-ref="evtOrganisationEndpointManager"/>
 			</map>
 		</property>
 	</bean>
@@ -159,7 +158,6 @@
 				<entry key="EvenementsEfacture" value-ref="evenementEfactureListener"/>
 				<entry key="EvenementsEfactureResponse" value-ref="eFactureResponseListener"/>
 				<entry key="ReqDes" value-ref="reqdesEventListener"/>
-				<entry key="EvenementsOrganisation" value-ref="evtOrganisationListener"/>
 			</map>
 		</property>
 	</bean>

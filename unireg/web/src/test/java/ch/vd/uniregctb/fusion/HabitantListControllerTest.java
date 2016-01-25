@@ -12,7 +12,7 @@ public class HabitantListControllerTest extends AbstractFusionControllerTest {
 	/**
 	 * Le nom du controller a tester.
 	 */
-	private static final String CONTROLLER_NAME = "habitantListController";
+	private final static String CONTROLLER_NAME = "habitantListController";
 	private HabitantListController controller;
 
 	@Override

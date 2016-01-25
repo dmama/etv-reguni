@@ -21,7 +21,6 @@ import ch.vd.unireg.interfaces.infra.mock.MockOfficeImpot;
 import ch.vd.uniregctb.common.RequiresNewTransactionDefinition;
 import ch.vd.uniregctb.database.DatabaseService;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
-import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP;
 import ch.vd.uniregctb.declaration.DelaiDeclaration;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
 import ch.vd.uniregctb.declaration.EtatDeclarationEmise;
@@ -38,8 +37,7 @@ import ch.vd.uniregctb.norentes.annotation.BeforeCheck;
 import ch.vd.uniregctb.norentes.annotation.BeforeEtape;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.Contribuable;
-import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
+import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
@@ -51,7 +49,6 @@ import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.transaction.TransactionTemplate;
 import ch.vd.uniregctb.type.EtatCivil;
-import ch.vd.uniregctb.type.EtatDelaiDeclaration;
 import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
@@ -118,8 +115,8 @@ public abstract class EvenementScenario extends NorentesScenario {
 	 */
 	protected void indexData() throws Exception {
 		LOGGER.debug("Indexation de la base de données...");
-		globalIndexer.indexAllDatabase(null, 1, Mode.FULL);
-		LOGGER.debug("Indexation de la base de données terminée. Nombre de docs: " + globalSearcher.getApproxDocCount());
+		globalIndexer.indexAllDatabase(null, 1, Mode.FULL, false);
+		LOGGER.debug("Indexation de la base de données terminée. Nombre de docs: "+globalSearcher.getApproxDocCount());
 	}
 
 	protected void truncateDatabase() {
@@ -142,7 +139,7 @@ public abstract class EvenementScenario extends NorentesScenario {
 				for (int pf = firstPf ; pf <= lastPf ; ++ pf) {
 					final PeriodeFiscale periode = new PeriodeFiscale();
 					periode.setAnnee(pf);
-					periode.addAllPeriodeFiscaleParametresPP(RegDate.get(pf + 1, 1, 31), RegDate.get(pf + 1, 3, 31), RegDate.get(pf + 1, 6, 30));
+					periode.setAllPeriodeFiscaleParametres(RegDate.get(pf + 1, 1, 31), RegDate.get(pf + 1, 3, 31), RegDate.get(pf + 1, 6, 30));
 					periodeFiscaleDAO.save(periode);
 				}
 			}
@@ -168,30 +165,19 @@ public abstract class EvenementScenario extends NorentesScenario {
 		});
 	}
 
-	protected ForFiscalPrincipalPP addForFiscalPrincipal(ContribuableImpositionPersonnesPhysiques tiers, Commune commune, RegDate debut, RegDate fin, MotifFor motifDebut, MotifFor motifFin) {
-		return addForFiscalPrincipal(tiers, commune, debut, fin, motifDebut, motifFin, ModeImposition.ORDINAIRE);
-	}
-
-	protected ForFiscalPrincipalPP addForFiscalPrincipal(ContribuableImpositionPersonnesPhysiques tiers, Commune commune, RegDate debut, RegDate fin, MotifFor motifDebut, MotifFor motifFin, ModeImposition modeImposition) {
+	protected ForFiscalPrincipal addForFiscalPrincipal(Tiers tiers, Commune commune, RegDate debut, RegDate fin, MotifFor motifDebut, MotifFor motifFin) {
 		final TypeAutoriteFiscale typeAutoriteFiscale = commune.isVaudoise() ? TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD : TypeAutoriteFiscale.COMMUNE_HC;
-		return addForFiscalPrincipal(tiers, commune.getNoOFS(), typeAutoriteFiscale, debut, fin, motifDebut, motifFin, modeImposition);
+		return addForFiscalPrincipal(tiers, commune.getNoOFS(), typeAutoriteFiscale, debut, fin, motifDebut, motifFin);
 	}
 
-	protected ForFiscalPrincipalPP addForFiscalPrincipal(ContribuableImpositionPersonnesPhysiques tiers, Pays pays, RegDate debut, RegDate fin, MotifFor motifDebut, MotifFor motifFin) {
+	protected ForFiscalPrincipal addForFiscalPrincipal(Tiers tiers, Pays pays, RegDate debut, RegDate fin, MotifFor motifDebut, MotifFor motifFin) {
 		Assert.notNull(pays);
 		Assert.isFalse(pays.isSuisse());
-		return addForFiscalPrincipal(tiers, pays.getNoOFS(), TypeAutoriteFiscale.PAYS_HS, debut, fin, motifDebut, motifFin, ModeImposition.ORDINAIRE);
+		return addForFiscalPrincipal(tiers, pays.getNoOFS(), TypeAutoriteFiscale.PAYS_HS, debut, fin, motifDebut, motifFin);
 	}
 
-	protected ForFiscalPrincipalPP addForFiscalPrincipal(ContribuableImpositionPersonnesPhysiques tiers, Pays pays, RegDate debut, RegDate fin, MotifFor motifDebut, MotifFor motifFin,
-	                                                     ModeImposition modeImposition) {
-		Assert.notNull(pays);
-		Assert.isFalse(pays.isSuisse());
-		return addForFiscalPrincipal(tiers, pays.getNoOFS(), TypeAutoriteFiscale.PAYS_HS, debut, fin, motifDebut, motifFin, modeImposition);
-	}
-
-	private ForFiscalPrincipalPP addForFiscalPrincipal(ContribuableImpositionPersonnesPhysiques tiers, int noOFS, TypeAutoriteFiscale typeAutoriteFiscale, RegDate debut, RegDate fin, MotifFor motifDebut, MotifFor motifFin, ModeImposition modeImposition) {
-		final ForFiscalPrincipalPP ffp = new ForFiscalPrincipalPP();
+	private ForFiscalPrincipal addForFiscalPrincipal(Tiers tiers, int noOFS, TypeAutoriteFiscale typeAutoriteFiscale, RegDate debut, RegDate fin, MotifFor motifDebut, MotifFor motifFin) {
+		ForFiscalPrincipal ffp = new ForFiscalPrincipal();
 		ffp.setDateDebut(debut);
 		ffp.setDateFin(fin);
 		ffp.setMotifOuverture(motifDebut);
@@ -200,7 +186,7 @@ public abstract class EvenementScenario extends NorentesScenario {
 		ffp.setNumeroOfsAutoriteFiscale(noOFS);
 		ffp.setMotifRattachement(MotifRattachement.DOMICILE);
 		ffp.setGenreImpot(GenreImpot.REVENU_FORTUNE);
-		ffp.setModeImposition(modeImposition);
+		ffp.setModeImposition(ModeImposition.ORDINAIRE);
 
 		return tiersDAO.addAndSave(tiers, ffp);
 	}
@@ -221,7 +207,7 @@ public abstract class EvenementScenario extends NorentesScenario {
 	protected DeclarationImpotOrdinaire addDeclarationImpot(Tiers tiers, RegDate debut, RegDate fin, RegDate dateEmission, int delaiEnJours) {
 		assertEquals(debut.year(), fin.year(), "Début et fin devraient être sur la même période fiscale");
 
-		final DeclarationImpotOrdinairePP di = new DeclarationImpotOrdinairePP();
+		final DeclarationImpotOrdinaire di = new DeclarationImpotOrdinaire();
 		di.setDateDebut(debut);
 		di.setDateFin(fin);
 		di.setTypeContribuable(TypeContribuable.VAUDOIS_ORDINAIRE);
@@ -234,7 +220,6 @@ public abstract class EvenementScenario extends NorentesScenario {
 		di.setEtats(etats);
 
 		final DelaiDeclaration delai = new DelaiDeclaration();
-		delai.setEtat(EtatDelaiDeclaration.ACCORDE);
 		delai.setDateDemande(dateEmission);
 		delai.setDeclaration(di);
 		delai.setDelaiAccordeAu(dateEmission.addDays(delaiEnJours));

@@ -23,6 +23,7 @@ public abstract class AdresseAdapter implements AdresseGenerique {
 		final Integer noOrdrePostal = getNumeroOrdrePostal();
 		if (noOrdrePostal != null) {
 			final Localite localite = getLocalite(noOrdrePostal, getDateFin());
+
 			return localite.getNom();
 		}
 		else {

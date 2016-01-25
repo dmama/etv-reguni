@@ -21,7 +21,7 @@ public class ListeRecapEditDebiteurController extends AbstractListeRecapControll
 	/**
 	 * Le nom du parametre utilise dans la request.
 	 */
-	public static final String NUMERO_DEBITEUR_PARAMETER_NAME = "numero";
+	public final static String NUMERO_DEBITEUR_PARAMETER_NAME = "numero";
 
 	/**
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)

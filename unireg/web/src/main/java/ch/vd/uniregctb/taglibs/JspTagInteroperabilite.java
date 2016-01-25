@@ -70,7 +70,7 @@ public class JspTagInteroperabilite extends BodyTagSupport implements MessageSou
 		}
 	}
 
-	private interface UrlBuilder {
+	private static interface UrlBuilder {
 		String url(String contextPath, long noTiers);
 	}
 

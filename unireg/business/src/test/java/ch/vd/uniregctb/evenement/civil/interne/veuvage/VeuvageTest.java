@@ -16,7 +16,7 @@ import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.interne.AbstractEvenementCivilInterneTest;
 import ch.vd.uniregctb.evenement.civil.interne.MessageCollector;
 import ch.vd.uniregctb.tiers.Contribuable;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
+import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.type.ModeImposition;
@@ -126,7 +126,7 @@ public class VeuvageTest extends AbstractEvenementCivilInterneTest {
 		/*
 		 * Ses for principaux actifs doivent avoir été ouverts
 		 */
-		ForFiscalPrincipalPP ffp = pierre.getForFiscalPrincipalAt(null);
+		ForFiscalPrincipal ffp = pierre.getForFiscalPrincipalAt(null);
 		assertNotNull("Le for principal du veuf n'a pas été ouvert", ffp);
 		assertEquals("Le mode d'imposition du veuf devrait être ORDINAIRE", ModeImposition.ORDINAIRE, ffp.getModeImposition());
 		assertEquals("Date d'ouverture de for incorrecte", DATE_VEUVAGE.getOneDayAfter(), ffp.getDateDebut());
@@ -178,7 +178,7 @@ public class VeuvageTest extends AbstractEvenementCivilInterneTest {
 		/*
 		 * Ses for principaux actifs doivent avoir été ouverts
 		 */
-		ForFiscalPrincipalPP ffp = pierre.getForFiscalPrincipalAt(null);
+		ForFiscalPrincipal ffp = pierre.getForFiscalPrincipalAt(null);
 		assertNotNull("Le for principal du veuf n'a pas été ouvert", ffp);
 		assertEquals("Le mode d'imposition du veuf devrait être DEPENSE", ModeImposition.DEPENSE, ffp.getModeImposition());
 		assertEquals("Date d'ouverture de for incorrecte", DATE_VEUVAGE.getOneDayAfter(), ffp.getDateDebut());

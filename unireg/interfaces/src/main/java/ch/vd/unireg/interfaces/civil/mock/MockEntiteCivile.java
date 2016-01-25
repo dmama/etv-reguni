@@ -5,10 +5,10 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
+import ch.vd.unireg.interfaces.civil.data.Adresse;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
 import ch.vd.unireg.interfaces.civil.data.EntiteCivile;
 import ch.vd.unireg.interfaces.civil.data.Individu;
-import ch.vd.unireg.interfaces.common.Adresse;
 import ch.vd.unireg.interfaces.infra.mock.MockCloneable;
 
 public abstract class MockEntiteCivile implements EntiteCivile {

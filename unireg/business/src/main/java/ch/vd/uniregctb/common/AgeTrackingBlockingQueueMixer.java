@@ -175,11 +175,11 @@ public class AgeTrackingBlockingQueueMixer<T extends Dated> extends BlockingQueu
 			sumOfSlidingAges = new long[nbSlots];
 		}
 
-		private interface Action<T> {
+		private static interface Action<T> {
 			T run();
 		}
 
-		private interface LockAction<T> extends Action<T> {
+		private static interface LockAction<T> extends Action<T> {
 			boolean withWriteLock();
 		}
 

@@ -17,7 +17,7 @@ public class ListeRecapEditDebiteurControllerTest extends AbstractLrControllerTe
 	/**
 	 * Le nom du controller a tester.
 	 */
-	private static final String CONTROLLER_NAME = "lrEditDebiteurController";
+	private final static String CONTROLLER_NAME = "lrEditDebiteurController";
 
 	private ListeRecapEditDebiteurController controller;
 

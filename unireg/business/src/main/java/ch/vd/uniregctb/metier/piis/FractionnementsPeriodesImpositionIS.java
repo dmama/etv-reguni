@@ -17,7 +17,6 @@ import ch.vd.uniregctb.metier.common.FractionContrariante;
 import ch.vd.uniregctb.metier.common.FractionDecalee;
 import ch.vd.uniregctb.metier.common.Fractionnements;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
 
@@ -25,19 +24,19 @@ public class FractionnementsPeriodesImpositionIS implements Iterable<Fraction> {
 
 	private final int pf;
 	private final ServiceInfrastructureService infraService;
-	private final Fractionnements<ForFiscalPrincipalPP> fractionnements;
+	private final Fractionnements fractionnements;
 
-	public FractionnementsPeriodesImpositionIS(List<ForFiscalPrincipalPP> principaux, int pf, ServiceInfrastructureService infraService) {
+	public FractionnementsPeriodesImpositionIS(List<ForFiscalPrincipal> principaux, int pf, ServiceInfrastructureService infraService) {
 		this.pf = pf;
 		this.infraService = infraService;
-		this.fractionnements = new Fractionnements<ForFiscalPrincipalPP>(principaux) {
+		this.fractionnements = new Fractionnements(principaux) {
 			@Override
-			protected Fraction isFractionOuverture(ForFiscalPrincipalContext<ForFiscalPrincipalPP> forPrincipal) {
+			protected Fraction isFractionOuverture(ForFiscalPrincipalContext forPrincipal) {
 				return FractionnementsPeriodesImpositionIS.this.isFractionOuverture(forPrincipal);
 			}
 
 			@Override
-			protected Fraction isFractionFermeture(ForFiscalPrincipalContext<ForFiscalPrincipalPP> forPrincipal) {
+			protected Fraction isFractionFermeture(ForFiscalPrincipalContext forPrincipal) {
 				return FractionnementsPeriodesImpositionIS.this.isFractionFermeture(forPrincipal);
 			}
 		};
@@ -89,9 +88,9 @@ public class FractionnementsPeriodesImpositionIS implements Iterable<Fraction> {
 		}
 	}
 
-	private Fraction isFractionOuverture(ForFiscalPrincipalContext<ForFiscalPrincipalPP> forPrincipal) {
-		final ForFiscalPrincipalPP current = forPrincipal.getCurrent();
-		final ForFiscalPrincipalPP previous = forPrincipal.getPrevious();
+	private Fraction isFractionOuverture(ForFiscalPrincipalContext forPrincipal) {
+		final ForFiscalPrincipal current = forPrincipal.getCurrent();
+		final ForFiscalPrincipal previous = forPrincipal.getPrevious();
 
 		Fraction fraction = null;
 
@@ -132,10 +131,10 @@ public class FractionnementsPeriodesImpositionIS implements Iterable<Fraction> {
 		return fraction;
 	}
 
-	private Fraction isFractionFermeture(ForFiscalPrincipalContext<ForFiscalPrincipalPP> forPrincipal) {
+	private Fraction isFractionFermeture(ForFiscalPrincipalContext forPrincipal) {
 
-		final ForFiscalPrincipalPP current = forPrincipal.getCurrent();
-		final ForFiscalPrincipalPP next = forPrincipal.getNext();
+		final ForFiscalPrincipal current = forPrincipal.getCurrent();
+		final ForFiscalPrincipal next = forPrincipal.getNext();
 
 		Fraction fraction = null;
 

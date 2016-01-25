@@ -13,7 +13,6 @@ import ch.vd.uniregctb.norentes.annotation.Etape;
 import ch.vd.uniregctb.norentes.common.EvenementCivilScenario;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.ModeImposition;
@@ -83,14 +82,16 @@ public class Ec_10000_01_Veuvage_SuisseMarieSeul_Scenario extends EvenementCivil
 		// Pierre
 		PersonnePhysique pierre = addHabitant(noIndPierre);
 		noHabPierre = pierre.getNumero();
-		addForFiscalPrincipal(pierre, MockCommune.VillarsSousYens, RegDate.get(1974, 3, 3), avantDateMariage, MotifFor.DEMENAGEMENT_VD, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
+		ForFiscalPrincipal f = addForFiscalPrincipal(pierre, MockCommune.VillarsSousYens, RegDate.get(1974, 3, 3), avantDateMariage, MotifFor.DEMENAGEMENT_VD, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
+		f.setModeImposition(ModeImposition.ORDINAIRE);
 
 		// ménage
 		MenageCommun menage = new MenageCommun();
 		menage = (MenageCommun)tiersDAO.save(menage);
 		noMenage = menage.getNumero();
 		tiersService.addTiersToCouple(menage, pierre, dateMariage, null);
-		addForFiscalPrincipal(menage, communeMariage, dateMariage, null, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, null);
+		f = addForFiscalPrincipal(menage, communeMariage, dateMariage, null, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, null);
+		f.setModeImposition(ModeImposition.ORDINAIRE);
 
 		menage.setBlocageRemboursementAutomatique(false);
 	}
@@ -132,7 +133,7 @@ public class Ec_10000_01_Veuvage_SuisseMarieSeul_Scenario extends EvenementCivil
 
 		{
 			PersonnePhysique pierre = (PersonnePhysique) tiersDAO.get(noHabPierre);
-			ForFiscalPrincipalPP ffp = pierre.getDernierForFiscalPrincipal();
+			ForFiscalPrincipal ffp = pierre.getDernierForFiscalPrincipal();
 			assertNotNull(ffp, "For principal de l'Habitant " + pierre.getNumero() + " null");
 			assertNull(ffp.getDateFin(), "Le for principal de l'habitant est fermé");
 			ModeImposition expected = ModeImposition.ORDINAIRE;

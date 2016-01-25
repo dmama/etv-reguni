@@ -7,7 +7,6 @@ import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersService;
@@ -33,21 +32,20 @@ public class ControlRuleForTiersDate extends ControlRuleForTiers<ModeImposition>
 	}
 
 	private AssujettissementStatut hasForPrincipalVaudois(@NotNull Tiers tiers, Set<ModeImposition> aRejeter) throws ControlRuleException {
-		//On se situe dans le cadre d'un contrôle assujetissement sur PP
-		final ForFiscalPrincipalPP forFiscalPrincipalPP = (ForFiscalPrincipalPP) tiers.getForFiscalPrincipalAt(date);
-		final boolean modeImpositionNonConforme = isModeImpositionNonConforme(aRejeter, forFiscalPrincipalPP);
-		final boolean isAssujetti = forFiscalPrincipalPP != null && forFiscalPrincipalPP.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD && !modeImpositionNonConforme;
+		final ForFiscalPrincipal forFiscalPrincipal = tiers.getForFiscalPrincipalAt(date);
+		final boolean modeImpositionNonConforme = isModeImpositionNonConforme(aRejeter, forFiscalPrincipal);
+		final boolean isAssujetti = forFiscalPrincipal != null && forFiscalPrincipal.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD && !modeImpositionNonConforme;
 
 		return  new AssujettissementStatut(isAssujetti,modeImpositionNonConforme);
 	}
 
-	private boolean isModeImpositionNonConforme(Set<ModeImposition> aRejeter, ForFiscalPrincipalPP forFiscalPrincipalPP) {
+	private boolean isModeImpositionNonConforme(Set<ModeImposition> aRejeter, ForFiscalPrincipal forFiscalPrincipal) {
 
-		if (aRejeter == null || aRejeter.isEmpty() || forFiscalPrincipalPP==null) {
+		if (aRejeter == null || aRejeter.isEmpty() || forFiscalPrincipal==null) {
 			return false;
 		}
 
-		return aRejeter.contains(forFiscalPrincipalPP.getModeImposition());
+		return aRejeter.contains(forFiscalPrincipal.getModeImposition());
 	}
 
 	@Override
@@ -59,8 +57,8 @@ public class ControlRuleForTiersDate extends ControlRuleForTiers<ModeImposition>
 	public Set<ModeImposition> getSourceAssujettissement(@NotNull Tiers tiers) {
 		final Set<ModeImposition> modeImpositions = EnumSet.noneOf(ModeImposition.class);
 		final ForFiscalPrincipal forFiscalPrincipal = tiers.getForFiscalPrincipalAt(date);
-		if (forFiscalPrincipal instanceof ForFiscalPrincipalPP) {
-			modeImpositions.add(((ForFiscalPrincipalPP) forFiscalPrincipal).getModeImposition());
+		if (forFiscalPrincipal != null) {
+			modeImpositions.add(forFiscalPrincipal.getModeImposition());
 		}
 		return modeImpositions;
 	}

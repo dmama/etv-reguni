@@ -13,7 +13,7 @@ public interface AcomptesService {
 	 * @param statusManager
 	 * @return les données pour la liste globale
 	 */
-	AcomptesResults produireAcomptes(RegDate dateTraitement, int nbThreads, Integer annee, StatusManager statusManager);
+	public AcomptesResults produireAcomptes(RegDate dateTraitement, int nbThreads, Integer annee, StatusManager statusManager);
 
 
 }

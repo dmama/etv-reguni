@@ -380,23 +380,23 @@ public class EachWebPageTest extends WebitTest {
 	// Page d'édition d'un délai d'une DI
 	@Test
 	public void testDiDelai() throws Exception {
-		assertPage("/di/delai/ajouter-pp.do?id=2", "Ajout d'un délai sur la déclaration 2005 (01.01.2005 - 31.12.2005) du contribuable 860.062.02");
+		assertPage("/di/delai/ajouter.do?id=2", "Ajout d'un délai sur la déclaration 2005 (01.01.2005 - 31.12.2005) du contribuable 860.062.02");
 	}
 
 	@Test
 	public void testDiDelaiInexistante() throws Exception {
-		assertPage("/di/delai/ajouter-pp.do?id=12345678", "Page d'erreur", "La DI spécifiée n'existe pas");
+		assertPage("/di/delai/ajouter.do?id=12345678", "Page d'erreur", "La DI spécifiée n'existe pas");
 	}
 
 	// Page d'impression d'une DI
 	@Test
 	public void testDiImpression() throws Exception {
-		assertPage("/di/duplicata-pp.do?id=2", "");
+		assertPage("/di/duplicata.do?id=2", "");
 	}
 
 	@Test
 	public void testDiImpressionInexistante() throws Exception {
-		assertPage("/di/duplicata-pp.do?id=12345678", "Page d'erreur", "La DI spécifiée n'existe pas");
+		assertPage("/di/duplicata.do?id=12345678", "Page d'erreur", "La DI spécifiée n'existe pas");
 	}
 
 	/*-----------------------------------------

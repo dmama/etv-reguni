@@ -14,15 +14,14 @@ import org.apache.commons.lang3.StringUtils;
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
-import ch.vd.uniregctb.editique.EditiqueAbstractLegacyHelper;
+import ch.vd.uniregctb.editique.EditiqueAbstractHelper;
 import ch.vd.uniregctb.editique.EditiqueException;
-import ch.vd.uniregctb.editique.EditiquePrefixeHelper;
 import ch.vd.uniregctb.editique.TypeDocumentEditique;
 import ch.vd.uniregctb.editique.ZoneAffranchissementEditique;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.type.TypeDocument;
 
-public class ImpressionDocumentEfactureHelperImpl extends EditiqueAbstractLegacyHelper implements ImpressionDocumentEfactureHelper {
+public class ImpressionDocumentEfactureHelperImpl extends EditiqueAbstractHelper implements ImpressionDocumentEfactureHelper {
 	private static final String VERSION_XSD = "1.0";
 
 	@Override
@@ -65,7 +64,7 @@ public class ImpressionDocumentEfactureHelperImpl extends EditiqueAbstractLegacy
 	}
 
 	private InfoArchivageDocument.InfoArchivage remplitInfoArchivage(ImpressionDocumentEfactureParams params) {
-		return legacyEditiqueHelper.buildInfoArchivage(getTypeDocumentEditique(params.getTypeDocument()), params.getTiers().getNumero(), construitIdArchivageDocument(params),
+		return editiqueHelper.buildInfoArchivage(getTypeDocumentEditique(params.getTypeDocument()), params.getTiers().getNumero(), construitIdArchivageDocument(params),
 				RegDateHelper.get(params.getDateTraitement()));
 	}
 
@@ -117,16 +116,16 @@ public class ImpressionDocumentEfactureHelperImpl extends EditiqueAbstractLegacy
 		InfoEnteteDocumentDocument1.InfoEnteteDocument infoEnteteDocument = InfoEnteteDocumentDocument1.Factory.newInstance().addNewInfoEnteteDocument();
 
 		try {
-			infoEnteteDocument.setPrefixe(EditiquePrefixeHelper.buildPrefixeEnteteDocument(getTypeDocumentEditique(params.getTypeDocument())));
+			infoEnteteDocument.setPrefixe(buildPrefixeEnteteDocument(getTypeDocumentEditique(params.getTypeDocument())));
 
-			final TypAdresse porteAdresse = legacyEditiqueHelper.remplitPorteAdresse(params.getTiers(), infoEnteteDocument);
+			final TypAdresse porteAdresse = editiqueHelper.remplitPorteAdresse(params.getTiers(), infoEnteteDocument);
 			infoEnteteDocument.setPorteAdresse(porteAdresse);
 
-			final InfoEnteteDocumentDocument1.InfoEnteteDocument.Expediteur expediteur = legacyEditiqueHelper.remplitExpediteurCAT(infoEnteteDocument);
+			final InfoEnteteDocumentDocument1.InfoEnteteDocument.Expediteur expediteur = editiqueHelper.remplitExpediteurCAT(infoEnteteDocument);
 			expediteur.setDateExpedition(DateHelper.dateToIndexString(params.getDateTraitement()));
 
 			infoEnteteDocument.setExpediteur(expediteur);
-			InfoEnteteDocumentDocument1.InfoEnteteDocument.Destinataire destinataire = legacyEditiqueHelper.remplitDestinataire(params.getTiers(), infoEnteteDocument);
+			InfoEnteteDocumentDocument1.InfoEnteteDocument.Destinataire destinataire = editiqueHelper.remplitDestinataire(params.getTiers(), infoEnteteDocument);
 			infoEnteteDocument.setDestinataire(destinataire);
 		}
 		catch (Exception e) {
@@ -140,13 +139,13 @@ public class ImpressionDocumentEfactureHelperImpl extends EditiqueAbstractLegacy
 	 */
 	private InfoDocumentDocument1.InfoDocument remplitInfoDocument(ImpressionDocumentEfactureParams params) throws EditiqueException {
 		final InfoDocumentDocument1.InfoDocument infoDocument = InfoDocumentDocument1.Factory.newInstance().addNewInfoDocument();
-		final String prefixe = EditiquePrefixeHelper.buildPrefixeInfoDocument(getTypeDocumentEditique(params.getTypeDocument()));
+		final String prefixe = buildPrefixeInfoDocument(getTypeDocumentEditique(params.getTypeDocument()));
 		infoDocument.setPrefixe(prefixe);
 		infoDocument.setTypDoc("");
 		infoDocument.setCodDoc("");
 		infoDocument.setVersion(VERSION_XSD);
 
-		final ZoneAffranchissementEditique zoneAffranchissement = legacyEditiqueHelper.remplitAffranchissement(infoDocument, params.getTiers());
+		final ZoneAffranchissementEditique zoneAffranchissement = editiqueHelper.remplitAffranchissement(infoDocument, params.getTiers());
 		if (zoneAffranchissement == null || zoneAffranchissement == ZoneAffranchissementEditique.INCONNU) {
 			infoDocument.setIdEnvoi(Integer.toString(ServiceInfrastructureService.noACI));     // retour à l'ACI pour tous les documents qu'on ne sait pas où envoyer...
 		}

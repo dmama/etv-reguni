@@ -95,10 +95,6 @@ public class TiersIndexedDataView implements Annulable {
 		return data.getPays();
 	}
 
-	public String getDateInscriptionRC() {
-		return data.getDateInscriptionRC();
-	}
-
 	public String getForPrincipal() {
 		return data.getForPrincipal();
 	}
@@ -109,14 +105,6 @@ public class TiersIndexedDataView implements Annulable {
 
 	public Date getDateFermetureFor() {
 		return data.getDateFermetureFor();
-	}
-
-	public Date getDateOuvertureForVd() {
-		return data.getDateOuvertureForVd();
-	}
-
-	public Date getDateFermetureForVd() {
-		return data.getDateFermetureForVd();
 	}
 
 	public boolean isDebiteurInactif() {

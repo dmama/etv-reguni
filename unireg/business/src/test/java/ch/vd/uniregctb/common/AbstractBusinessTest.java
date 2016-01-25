@@ -2,7 +2,6 @@ package ch.vd.uniregctb.common;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.math.BigDecimal;
 import java.sql.SQLException;
 
 import org.hibernate.HibernateException;
@@ -15,15 +14,14 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.interfaces.civil.data.Adresse;
+import ch.vd.unireg.interfaces.civil.data.CasePostale;
 import ch.vd.unireg.interfaces.civil.data.EtatCivil;
 import ch.vd.unireg.interfaces.civil.data.Localisation;
 import ch.vd.unireg.interfaces.civil.data.LocalisationType;
 import ch.vd.unireg.interfaces.civil.data.TypeEtatCivil;
-import ch.vd.unireg.interfaces.common.Adresse;
-import ch.vd.unireg.interfaces.common.CasePostale;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.infra.data.Pays;
-import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
 import ch.vd.unireg.interfaces.infra.mock.MockCollectiviteAdministrative;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockOfficeImpot;
@@ -34,7 +32,6 @@ import ch.vd.uniregctb.adresse.AdresseCivile;
 import ch.vd.uniregctb.adresse.AdresseEtrangere;
 import ch.vd.uniregctb.adresse.AdresseSuisse;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
-import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP;
 import ch.vd.uniregctb.declaration.DeclarationImpotSource;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
 import ch.vd.uniregctb.declaration.EtatDeclarationEmise;
@@ -51,31 +48,18 @@ import ch.vd.uniregctb.indexer.tiers.GlobalTiersSearcher;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.parentes.ParentesSynchronizerInterceptor;
 import ch.vd.uniregctb.tache.TacheSynchronizerInterceptor;
-import ch.vd.uniregctb.tiers.AllegementFiscal;
-import ch.vd.uniregctb.tiers.CapitalFiscalEntreprise;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.Contribuable;
-import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesMorales;
-import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
-import ch.vd.uniregctb.tiers.DomicileEtablissement;
-import ch.vd.uniregctb.tiers.DonneeCivileEntreprise;
-import ch.vd.uniregctb.tiers.Entreprise;
-import ch.vd.uniregctb.tiers.Etablissement;
 import ch.vd.uniregctb.tiers.ForDebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.ForFiscalAutreElementImposable;
 import ch.vd.uniregctb.tiers.ForFiscalAutreImpot;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipalPM;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
-import ch.vd.uniregctb.tiers.FormeJuridiqueFiscaleEntreprise;
+import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.IdentificationEntreprise;
 import ch.vd.uniregctb.tiers.IdentificationPersonne;
 import ch.vd.uniregctb.tiers.MenageCommun;
-import ch.vd.uniregctb.tiers.MontantMonetaire;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.tiers.RaisonSocialeFiscaleEntreprise;
 import ch.vd.uniregctb.tiers.RapportPrestationImposable;
-import ch.vd.uniregctb.tiers.RegimeFiscal;
 import ch.vd.uniregctb.tiers.SituationFamille;
 import ch.vd.uniregctb.tiers.SituationFamilleMenageCommun;
 import ch.vd.uniregctb.tiers.SituationFamillePersonnePhysique;
@@ -83,7 +67,6 @@ import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.CategorieIdentifiant;
 import ch.vd.uniregctb.type.CategorieImpotSource;
-import ch.vd.uniregctb.type.FormeJuridiqueEntreprise;
 import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.ModeCommunication;
 import ch.vd.uniregctb.type.ModeImposition;
@@ -111,7 +94,6 @@ import static org.junit.Assert.assertNull;
         BusinessTestingConstants.UNIREG_BUSINESS_ESSENTIALS,
         BusinessTestingConstants.UNIREG_BUSINESS_SERVICES,
         BusinessTestingConstants.UNIREG_BUSINESS_EVT_CIVIL,
-        BusinessTestingConstants.UNIREG_BUSINESS_EVT_ORGANISATION,
         BusinessTestingConstants.UNIREG_BUSINESS_EVT_FISCAL,
         BusinessTestingConstants.UNIREG_BUSINESS_UT_EDITIQUE,
         BusinessTestingConstants.UNIREG_BUSINESS_UT_INTERFACES,
@@ -287,7 +269,7 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
 	}
 
 	protected void indexTiersData() throws Exception {
-        globalTiersIndexer.indexAllDatabase(null, 1, GlobalTiersIndexer.Mode.FULL);
+        globalTiersIndexer.indexAllDatabase(null, 1, GlobalTiersIndexer.Mode.FULL, false);
     }
 
 	protected void indexMessagesIdentificationData() throws Exception {
@@ -369,23 +351,23 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
      */
     protected <T> T doInNewTransactionAndSessionWithoutValidation(final TransactionCallback<T> action) throws Exception {
 	    return doWithoutValidation(new ExecuteCallback<T>() {
-            @Override
-            public T execute() throws Exception {
-                return doInNewTransactionAndSession(action);
-            }
-        });
+		    @Override
+		    public T execute() throws Exception {
+			    return doInNewTransactionAndSession(action);
+		    }
+	    });
     }
 
 	protected <T> T doInNewTransactionAndSessionUnderSwitch(Switchable switchable, boolean switchValue, final TransactionCallback<T> action) throws Exception {
 		return doUnderSwitch(switchable, switchValue, new ExecuteCallback<T>() {
-            @Override
-            public T execute() throws Exception {
-                return doInNewTransactionAndSession(action);
-            }
-        });
+			@Override
+			public T execute() throws Exception {
+				return doInNewTransactionAndSession(action);
+			}
+		});
 	}
 
-    protected static void assertForPrincipal(RegDate debut, MotifFor motifOuverture, Commune commune, MotifRattachement motif, ModeImposition modeImposition, ForFiscalPrincipalPP forPrincipal) {
+    protected static void assertForPrincipal(RegDate debut, MotifFor motifOuverture, Commune commune, MotifRattachement motif, ModeImposition modeImposition, ForFiscalPrincipal forPrincipal) {
         assertNotNull(forPrincipal);
         assertEquals(debut, forPrincipal.getDateDebut());
         assertEquals(motifOuverture, forPrincipal.getMotifOuverture());
@@ -399,7 +381,7 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
     }
 
     protected static void assertForPrincipal(RegDate debut, MotifFor motifOuverture, RegDate fin, MotifFor motifFermeture, Commune commune, MotifRattachement motif, ModeImposition modeImposition,
-                                             ForFiscalPrincipalPP forPrincipal) {
+                                             ForFiscalPrincipal forPrincipal) {
         assertNotNull(forPrincipal);
         assertEquals(debut, forPrincipal.getDateDebut());
         assertEquals(motifOuverture, forPrincipal.getMotifOuverture());
@@ -475,56 +457,56 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
     /**
      * Ajoute un for principal ouvert sur une commune Suisse (rattachement = DOMICILE) sur le contribuable spécifié.
      */
-    protected ForFiscalPrincipalPP addForPrincipal(ContribuableImpositionPersonnesPhysiques contribuable, RegDate ouverture, @Nullable MotifFor motifOuverture, MockCommune commune) {
+    protected ForFiscalPrincipal addForPrincipal(Contribuable contribuable, RegDate ouverture, @Nullable MotifFor motifOuverture, MockCommune commune) {
         TypeAutoriteFiscale type = commune.isVaudoise() ? TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD : TypeAutoriteFiscale.COMMUNE_HC;
-        return addForPrincipal(contribuable, ouverture, motifOuverture, null, null, commune.getNoOFS(), type, ModeImposition.ORDINAIRE, MotifRattachement.DOMICILE);
+        return addForPrincipal(contribuable, ouverture, motifOuverture, null, null, commune.getNoOFS(), type, MotifRattachement.DOMICILE);
     }
 
     /**
      * Ajoute un for principal ouvert sur une commune Suisse (rattachement = DOMICILE) sur le contribuable spécifié.
      */
-    protected ForFiscalPrincipalPP addForPrincipal(ContribuableImpositionPersonnesPhysiques contribuable, RegDate ouverture, @Nullable MotifFor motifOuverture, MockCommune commune, ModeImposition modeImposition) {
+    protected ForFiscalPrincipal addForPrincipal(Contribuable contribuable, RegDate ouverture, @Nullable MotifFor motifOuverture, MockCommune commune, ModeImposition modeImposition) {
         return addForPrincipal(contribuable, ouverture, motifOuverture, null, null, commune, MotifRattachement.DOMICILE, modeImposition);
     }
 
     /**
      * Ajoute un for principal ouvert sur une commune Suisse (rattachement = DOMICILE) sur le contribuable spécifié.
      */
-    protected ForFiscalPrincipalPP addForPrincipal(ContribuableImpositionPersonnesPhysiques contribuable, RegDate ouverture, MotifFor motifOuverture, MockCommune commune, MotifRattachement motifRattachement) {
+    protected ForFiscalPrincipal addForPrincipal(Contribuable contribuable, RegDate ouverture, MotifFor motifOuverture, MockCommune commune, MotifRattachement motifRattachement) {
         return addForPrincipal(contribuable, ouverture, motifOuverture, null, null, commune, motifRattachement);
     }
 
     /**
      * Ajoute un for principal fermé sur une commune Suisse (rattachement = DOMICILE) sur le contribuable spécifié.
      */
-    protected ForFiscalPrincipalPP addForPrincipal(ContribuableImpositionPersonnesPhysiques contribuable, RegDate ouverture, @Nullable MotifFor motifOuverture, RegDate fermeture, @Nullable MotifFor motifFermeture,
-                                                   MockCommune commune) {
+    protected ForFiscalPrincipal addForPrincipal(Contribuable contribuable, RegDate ouverture, @Nullable MotifFor motifOuverture, RegDate fermeture, @Nullable MotifFor motifFermeture,
+                                                 MockCommune commune) {
         return addForPrincipal(contribuable, ouverture, motifOuverture, fermeture, motifFermeture, commune, MotifRattachement.DOMICILE);
     }
 
     /**
      * Ajoute un for principal fermé sur une commune Suisse (rattachement = DOMICILE) sur le contribuable spécifié.
      */
-    protected ForFiscalPrincipalPP addForPrincipal(ContribuableImpositionPersonnesPhysiques contribuable, RegDate ouverture, @Nullable MotifFor motifOuverture, RegDate fermeture, @Nullable MotifFor motifFermeture,
-                                                   MockCommune commune, ModeImposition modeImposition) {
+    protected ForFiscalPrincipal addForPrincipal(Contribuable contribuable, RegDate ouverture, @Nullable MotifFor motifOuverture, RegDate fermeture, @Nullable MotifFor motifFermeture,
+                                                 MockCommune commune, ModeImposition modeImposition) {
         return addForPrincipal(contribuable, ouverture, motifOuverture, fermeture, motifFermeture, commune, MotifRattachement.DOMICILE, modeImposition);
     }
 
     /**
      * Ajoute un for principal fermé sur une commune Suisse sur le contribuable spécifié.
      */
-    protected ForFiscalPrincipalPP addForPrincipal(ContribuableImpositionPersonnesPhysiques contribuable, RegDate ouverture, MotifFor motifOuverture, @Nullable RegDate fermeture, @Nullable MotifFor motifFermeture, MockCommune commune,
-                                                   MotifRattachement motifRattachement) {
+    protected ForFiscalPrincipal addForPrincipal(Contribuable contribuable, RegDate ouverture, MotifFor motifOuverture, @Nullable RegDate fermeture, @Nullable MotifFor motifFermeture, MockCommune commune,
+                                                 MotifRattachement motifRattachement) {
         final TypeAutoriteFiscale type = (commune.isVaudoise() ? TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD : TypeAutoriteFiscale.COMMUNE_HC);
-        return addForPrincipal(contribuable, ouverture, motifOuverture, fermeture, motifFermeture, commune.getNoOFS(), type, ModeImposition.ORDINAIRE, motifRattachement);
+        return addForPrincipal(contribuable, ouverture, motifOuverture, fermeture, motifFermeture, commune.getNoOFS(), type, motifRattachement);
     }
 
     /**
      * Ajoute un for principal fermé sur une commune Suisse sur le contribuable spécifié avec le mode d'imposition spécifié
      */
-    protected ForFiscalPrincipalPP addForPrincipal(ContribuableImpositionPersonnesPhysiques contribuable, RegDate ouverture, MotifFor motifOuverture, @Nullable RegDate fermeture, @Nullable MotifFor motifFermeture,
+    protected ForFiscalPrincipal addForPrincipal(Contribuable contribuable, RegDate ouverture, MotifFor motifOuverture, @Nullable RegDate fermeture, @Nullable MotifFor motifFermeture,
                                                  MockCommune commune, MotifRattachement motifRattachement, ModeImposition modeImposition) {
-        final ForFiscalPrincipalPP ffp = addForPrincipal(contribuable, ouverture, motifOuverture, fermeture, motifFermeture, commune, motifRattachement);
+        final ForFiscalPrincipal ffp = addForPrincipal(contribuable, ouverture, motifOuverture, fermeture, motifFermeture, commune, motifRattachement);
         ffp.setModeImposition(modeImposition);
         return ffp;
     }
@@ -532,130 +514,33 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
     /**
      * Ajoute un for principal ouvert à l'étranger sur le contribuable spécifié.
      */
-    protected ForFiscalPrincipalPP addForPrincipal(ContribuableImpositionPersonnesPhysiques contribuable, RegDate ouverture, @Nullable MotifFor motifOuverture, MockPays pays) {
+    protected ForFiscalPrincipal addForPrincipal(Contribuable contribuable, RegDate ouverture, @Nullable MotifFor motifOuverture, MockPays pays) {
         return addForPrincipal(contribuable, ouverture, motifOuverture, pays, MotifRattachement.DOMICILE);
     }
 
     /**
      * Ajoute un for principal ouvert à l'étranger sur le contribuable spécifié.
      */
-    protected ForFiscalPrincipalPP addForPrincipal(ContribuableImpositionPersonnesPhysiques contribuable, RegDate ouverture, @Nullable MotifFor motifOuverture, MockPays pays, ModeImposition modeImposition) {
-        return addForPrincipal(contribuable, ouverture, motifOuverture, pays, modeImposition, MotifRattachement.DOMICILE);
-    }
-
-    /**
-     * Ajoute un for principal ouvert à l'étranger sur le contribuable spécifié.
-     */
-    protected ForFiscalPrincipalPP addForPrincipal(ContribuableImpositionPersonnesPhysiques contribuable, RegDate ouverture, MotifFor motifOuverture, MockPays pays, MotifRattachement motifRattachement) {
+    protected ForFiscalPrincipal addForPrincipal(Contribuable contribuable, RegDate ouverture, MotifFor motifOuverture, MockPays pays, MotifRattachement motifRattachement) {
         assertFalse("Il faut spécifier la commune pour les fors en Suisse", "CH".equals(pays.getSigleOFS()));
-        return addForPrincipal(contribuable, ouverture, motifOuverture, null, null, pays.getNoOFS(), TypeAutoriteFiscale.PAYS_HS, ModeImposition.ORDINAIRE, motifRattachement);
-    }
-
-    /**
-     * Ajoute un for principal ouvert à l'étranger sur le contribuable spécifié.
-     */
-    protected ForFiscalPrincipalPP addForPrincipal(ContribuableImpositionPersonnesPhysiques contribuable, RegDate ouverture, MotifFor motifOuverture, MockPays pays, ModeImposition modeImposition, MotifRattachement motifRattachement) {
-        assertFalse("Il faut spécifier la commune pour les fors en Suisse", "CH".equals(pays.getSigleOFS()));
-        return addForPrincipal(contribuable, ouverture, motifOuverture, null, null, pays.getNoOFS(), TypeAutoriteFiscale.PAYS_HS, modeImposition, motifRattachement);
+        return addForPrincipal(contribuable, ouverture, motifOuverture, null, null, pays.getNoOFS(), TypeAutoriteFiscale.PAYS_HS, motifRattachement);
     }
 
     /**
      * Ajoute un for principal fermé à l'étranger sur le contribuable spécifié.
      */
-    protected ForFiscalPrincipalPP addForPrincipal(ContribuableImpositionPersonnesPhysiques contribuable, RegDate ouverture, @Nullable MotifFor motifOuverture, RegDate fermeture, @Nullable MotifFor motifFermeture, MockPays pays) {
+    protected ForFiscalPrincipal addForPrincipal(Contribuable contribuable, RegDate ouverture, @Nullable MotifFor motifOuverture, RegDate fermeture, @Nullable MotifFor motifFermeture, MockPays pays) {
         assertFalse("Il faut spécifier la commune pour les fors en Suisse", "CH".equals(pays.getSigleOFS()));
-        return addForPrincipal(contribuable, ouverture, motifOuverture, fermeture, motifFermeture, pays.getNoOFS(), TypeAutoriteFiscale.PAYS_HS, ModeImposition.ORDINAIRE, MotifRattachement.DOMICILE);
+        return addForPrincipal(contribuable, ouverture, motifOuverture, fermeture, motifFermeture, pays.getNoOFS(), TypeAutoriteFiscale.PAYS_HS, MotifRattachement.DOMICILE);
     }
 
 	/**
      * Ajoute un for principal fermé à l'étranger sur le contribuable spécifié avec le mode d'imposition spécifié
      */
-    protected ForFiscalPrincipalPP addForPrincipal(ContribuableImpositionPersonnesPhysiques contribuable, RegDate ouverture, MotifFor motifOuverture, RegDate fermeture, MotifFor motifFermeture, MockPays pays,
-                                                   ModeImposition modeImposition) {
-        final ForFiscalPrincipalPP ffp = addForPrincipal(contribuable, ouverture, motifOuverture, fermeture, motifFermeture, pays);
+    protected ForFiscalPrincipal addForPrincipal(Contribuable contribuable, RegDate ouverture, MotifFor motifOuverture, RegDate fermeture, MotifFor motifFermeture, MockPays pays,
+                                                 ModeImposition modeImposition) {
+        final ForFiscalPrincipal ffp = addForPrincipal(contribuable, ouverture, motifOuverture, fermeture, motifFermeture, pays);
         ffp.setModeImposition(modeImposition);
-        return ffp;
-    }
-
-	/**
-     * Ajoute un for principal fermé à l'étranger sur le contribuable spécifié avec le mode d'imposition spécifié
-     */
-    protected ForFiscalPrincipalPP addForPrincipal(ContribuableImpositionPersonnesPhysiques contribuable, RegDate ouverture, MotifFor motifOuverture, RegDate fermeture, MotifFor motifFermeture, MockPays pays,
-                                                   MotifRattachement motifRattachement) {
-        final ForFiscalPrincipalPP ffp = addForPrincipal(contribuable, ouverture, motifOuverture, fermeture, motifFermeture, pays);
-        ffp.setMotifRattachement(motifRattachement);
-        return ffp;
-    }
-
-    /**
-     * Ajoute un for principal ouvert sur une commune Suisse (rattachement = DOMICILE) sur le contribuable spécifié.
-     */
-    protected ForFiscalPrincipalPM addForPrincipal(ContribuableImpositionPersonnesMorales contribuable, RegDate ouverture, @Nullable MotifFor motifOuverture, MockCommune commune, GenreImpot genreImpot) {
-        TypeAutoriteFiscale type = commune.isVaudoise() ? TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD : TypeAutoriteFiscale.COMMUNE_HC;
-        return addForPrincipal(contribuable, ouverture, motifOuverture, null, null, commune.getNoOFS(), type, MotifRattachement.DOMICILE, genreImpot);
-    }
-
-    /**
-     * Ajoute un for principal ouvert sur une commune Suisse (rattachement = DOMICILE) sur le contribuable spécifié.
-     */
-    protected ForFiscalPrincipalPM addForPrincipal(ContribuableImpositionPersonnesMorales contribuable, RegDate ouverture, @Nullable MotifFor motifOuverture, MockCommune commune) {
-        return addForPrincipal(contribuable, ouverture, motifOuverture, commune, GenreImpot.BENEFICE_CAPITAL);
-    }
-
-    /**
-     * Ajoute un for principal ouvert sur une commune Suisse (rattachement = DOMICILE) sur le contribuable spécifié.
-     */
-    protected ForFiscalPrincipalPM addForPrincipal(ContribuableImpositionPersonnesMorales contribuable, RegDate ouverture, MotifFor motifOuverture, MockCommune commune, MotifRattachement motifRattachement) {
-        return addForPrincipal(contribuable, ouverture, motifOuverture, null, null, commune, motifRattachement);
-    }
-
-    /**
-     * Ajoute un for principal fermé sur une commune Suisse (rattachement = DOMICILE) sur le contribuable spécifié.
-     */
-    protected ForFiscalPrincipalPM addForPrincipal(ContribuableImpositionPersonnesMorales contribuable, RegDate ouverture, @Nullable MotifFor motifOuverture,
-                                                   @Nullable RegDate fermeture, @Nullable MotifFor motifFermeture, MockCommune commune) {
-        return addForPrincipal(contribuable, ouverture, motifOuverture, fermeture, motifFermeture, commune, MotifRattachement.DOMICILE);
-    }
-
-    /**
-     * Ajoute un for principal fermé sur une commune Suisse sur le contribuable spécifié.
-     */
-    protected ForFiscalPrincipalPM addForPrincipal(ContribuableImpositionPersonnesMorales contribuable, RegDate ouverture, MotifFor motifOuverture,
-                                                   @Nullable RegDate fermeture, @Nullable MotifFor motifFermeture, MockCommune commune, MotifRattachement motifRattachement) {
-        final TypeAutoriteFiscale type = (commune.isVaudoise() ? TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD : TypeAutoriteFiscale.COMMUNE_HC);
-        return addForPrincipal(contribuable, ouverture, motifOuverture, fermeture, motifFermeture, commune.getNoOFS(), type, motifRattachement, GenreImpot.BENEFICE_CAPITAL);
-    }
-
-    /**
-     * Ajoute un for principal ouvert à l'étranger sur le contribuable spécifié.
-     */
-    protected ForFiscalPrincipalPM addForPrincipal(ContribuableImpositionPersonnesMorales contribuable, RegDate ouverture, @Nullable MotifFor motifOuverture, MockPays pays) {
-        return addForPrincipal(contribuable, ouverture, motifOuverture, pays, MotifRattachement.DOMICILE);
-    }
-
-    /**
-     * Ajoute un for principal ouvert à l'étranger sur le contribuable spécifié.
-     */
-    protected ForFiscalPrincipalPM addForPrincipal(ContribuableImpositionPersonnesMorales contribuable, RegDate ouverture, MotifFor motifOuverture, MockPays pays, MotifRattachement motifRattachement) {
-        assertFalse("Il faut spécifier la commune pour les fors en Suisse", "CH".equals(pays.getSigleOFS()));
-        return addForPrincipal(contribuable, ouverture, motifOuverture, null, null, pays.getNoOFS(), TypeAutoriteFiscale.PAYS_HS, motifRattachement, GenreImpot.BENEFICE_CAPITAL);
-    }
-
-    /**
-     * Ajoute un for principal fermé à l'étranger sur le contribuable spécifié.
-     */
-    protected ForFiscalPrincipalPM addForPrincipal(ContribuableImpositionPersonnesMorales contribuable, RegDate ouverture, @Nullable MotifFor motifOuverture, RegDate fermeture, @Nullable MotifFor motifFermeture, MockPays pays) {
-        assertFalse("Il faut spécifier la commune pour les fors en Suisse", "CH".equals(pays.getSigleOFS()));
-        return addForPrincipal(contribuable, ouverture, motifOuverture, fermeture, motifFermeture, pays.getNoOFS(), TypeAutoriteFiscale.PAYS_HS, MotifRattachement.DOMICILE, GenreImpot.BENEFICE_CAPITAL);
-    }
-
-	/**
-     * Ajoute un for principal fermé à l'étranger sur le contribuable spécifié avec le mode de rattachement spécifié
-     */
-    protected ForFiscalPrincipalPM addForPrincipal(ContribuableImpositionPersonnesMorales contribuable, RegDate ouverture, MotifFor motifOuverture, RegDate fermeture, MotifFor motifFermeture, MockPays pays,
-                                                   MotifRattachement motifRattachement) {
-        final ForFiscalPrincipalPM ffp = addForPrincipal(contribuable, ouverture, motifOuverture, fermeture, motifFermeture, pays);
-        ffp.setMotifRattachement(motifRattachement);
         return ffp;
     }
 
@@ -892,10 +777,10 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
     }
 
     /**
-     * Ajoute une déclaration d'impôt ordinaire PP sur le contribuable spécifié.
+     * Ajoute une déclaration d'impôt ordinaire sur le contribuable spécifié.
      */
-    protected DeclarationImpotOrdinairePP addDeclarationImpot(ContribuableImpositionPersonnesPhysiques tiers, PeriodeFiscale periode, RegDate debut, RegDate fin,
-                                                              @Nullable TypeContribuable typeC, ModeleDocument modele) {
+    protected DeclarationImpotOrdinaire addDeclarationImpot(Contribuable tiers, PeriodeFiscale periode, RegDate debut, RegDate fin,
+                                                            @Nullable TypeContribuable typeC, ModeleDocument modele) {
 
         final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(ServiceInfrastructureService.noCEDI);
         assertNotNull("La collectivité administrative du CEDI n'a pas été définie", cedi);
@@ -904,12 +789,10 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
     }
 
     @Override
-    protected <T extends DeclarationImpotOrdinaire> T assignerNumeroSequenceEtSaveDeclarationImpot(Contribuable ctb, T di) {
+    protected DeclarationImpotOrdinaire assignerNumeroSequenceEtSaveDeclarationImpot(Contribuable ctb, DeclarationImpotOrdinaire di) {
         if (useTiersServiceToCreateDeclarationImpot()) {
-            //noinspection unchecked
-            return (T) tiersDAO.addAndSave(ctb, di);
-        }
-        else {
+            return (DeclarationImpotOrdinaire) tiersDAO.addAndSave(ctb, di);
+        } else {
             return super.assignerNumeroSequenceEtSaveDeclarationImpot(ctb, di);
         }
     }
@@ -974,56 +857,4 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
 		ie.setNumeroIde(numeroIDE);
 		return tiersDAO.addAndSave(ctb, ie);
 	}
-
-    private <T extends DonneeCivileEntreprise> T addDonneeCivileEntreprise(Entreprise e, T donneeCivile) {
-        e.addDonneeCivile(donneeCivile);
-        return donneeCivile;
-    }
-
-    protected RaisonSocialeFiscaleEntreprise addRaisonSociale(Entreprise e, RegDate dateDebut, @Nullable RegDate dateFin, String raisonSociale) {
-        return addDonneeCivileEntreprise(e, new RaisonSocialeFiscaleEntreprise(dateDebut, dateFin, raisonSociale));
-    }
-
-    protected FormeJuridiqueFiscaleEntreprise addFormeJuridique(Entreprise e, RegDate dateDebut, @Nullable RegDate dateFin, FormeJuridiqueEntreprise formeJuridique) {
-        return addDonneeCivileEntreprise(e, new FormeJuridiqueFiscaleEntreprise(dateDebut, dateFin, formeJuridique));
-    }
-
-    protected CapitalFiscalEntreprise addCapitalEntreprise(Entreprise e, RegDate dateDebut, RegDate dateFin, MontantMonetaire capital) {
-        return addDonneeCivileEntreprise(e, new CapitalFiscalEntreprise(dateDebut, dateFin, capital));
-    }
-
-    protected DomicileEtablissement addDomicileEtablissement(Etablissement etb, RegDate dateDebut, @Nullable RegDate dateFin, MockCommune commune) {
-        final DomicileEtablissement domicile = new DomicileEtablissement(dateDebut, dateFin, commune.isVaudoise() ? TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD : TypeAutoriteFiscale.COMMUNE_HC, commune.getNoOFS(), etb);
-        return tiersDAO.addAndSave(etb, domicile);
-    }
-
-    protected DomicileEtablissement addDomicileEtablissement(Etablissement etb, RegDate dateDebut, @Nullable RegDate dateFin, MockPays pays) {
-        final DomicileEtablissement domicile = new DomicileEtablissement(dateDebut, dateFin, TypeAutoriteFiscale.PAYS_HS, pays.getNoOFS(), etb);
-        return tiersDAO.addAndSave(etb, domicile);
-    }
-
-    protected RegimeFiscal addRegimeFiscalVD(Entreprise entreprise, RegDate dateDebut, @Nullable RegDate dateFin, TypeRegimeFiscal type) {
-        final RegimeFiscal rf = new RegimeFiscal(dateDebut, dateFin, RegimeFiscal.Portee.VD, type.getCode());
-        return tiersDAO.addAndSave(entreprise, rf);
-    }
-
-    protected RegimeFiscal addRegimeFiscalCH(Entreprise entreprise, RegDate dateDebut, @Nullable RegDate dateFin, TypeRegimeFiscal type) {
-        final RegimeFiscal rf = new RegimeFiscal(dateDebut, dateFin, RegimeFiscal.Portee.CH, type.getCode());
-        return tiersDAO.addAndSave(entreprise, rf);
-    }
-
-    protected AllegementFiscal addAllegementFiscalFederal(Entreprise entreprise, RegDate dateDebut, @Nullable RegDate dateFin, AllegementFiscal.TypeImpot typeImpot, BigDecimal pourcentageAllegement) {
-        final AllegementFiscal af = new AllegementFiscal(dateDebut, dateFin, pourcentageAllegement, typeImpot, AllegementFiscal.TypeCollectivite.CONFEDERATION, null);
-        return tiersDAO.addAndSave(entreprise, af);
-    }
-
-    protected AllegementFiscal addAllegementFiscalCantonal(Entreprise entreprise, RegDate dateDebut, @Nullable RegDate dateFin, AllegementFiscal.TypeImpot typeImpot, BigDecimal pourcentageAllegement) {
-        final AllegementFiscal af = new AllegementFiscal(dateDebut, dateFin, pourcentageAllegement, typeImpot, AllegementFiscal.TypeCollectivite.CANTON, null);
-        return tiersDAO.addAndSave(entreprise, af);
-    }
-
-    protected AllegementFiscal addAllegementFiscalCommunal(Entreprise entreprise, RegDate dateDebut, @Nullable RegDate dateFin, AllegementFiscal.TypeImpot typeImpot, BigDecimal pourcentageAllegement, @Nullable MockCommune commune) {
-        final AllegementFiscal af = new AllegementFiscal(dateDebut, dateFin, pourcentageAllegement, typeImpot, AllegementFiscal.TypeCollectivite.COMMUNE, commune != null ? commune.getNoOFS() : null);
-        return tiersDAO.addAndSave(entreprise, af);
-    }
 }

@@ -1,9 +1,8 @@
 package ch.vd.unireg.interfaces.infra.data;
 
-import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.RegDate;
 
-public interface Commune extends EntiteOFS, DateRange {
+public interface Commune extends EntiteOFS {
 
 	/**
 	 * @return la date de début de validité de la commune.

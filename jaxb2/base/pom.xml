@@ -7,7 +7,7 @@
 	<groupId>ch.vd.uniregctb</groupId>
 	<artifactId>unireg-jaxb2</artifactId>
 	<!-- BEGIN_LVERSION -->
-	<version>4.5-SNAPSHOT</version>
+	<version>3.6.1</version>
 	<!-- END_LVERSION -->
 	<packaging>pom</packaging>
 
@@ -22,8 +22,6 @@
 		<module>../rcpers</module>
 		<module>../fidor</module>
 		<module>../cyber</module>
-		<module>../rcent</module>
-		<module>../editique</module>
 	</modules>
 
 	<dependencies>
@@ -79,7 +77,7 @@
 
 	<properties>
 		<!-- Application settings -->
-		<copyright.year>2015</copyright.year>
+		<copyright.year>2013</copyright.year>
 		<amp.genericCore>true</amp.genericCore>
 		<amp.fullSource>false</amp.fullSource>
 		<namespace-prefix.version>1.1</namespace-prefix.version>

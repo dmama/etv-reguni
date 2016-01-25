@@ -12,17 +12,13 @@ import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.tiers.AnnuleEtRemplace;
 import ch.vd.uniregctb.tiers.Contribuable;
-import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesMorales;
-import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.ForDebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalAutreElementImposable;
 import ch.vd.uniregctb.tiers.ForFiscalAutreImpot;
-import ch.vd.uniregctb.tiers.ForFiscalAvecMotifs;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipalPM;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
+import ch.vd.uniregctb.tiers.ForFiscalRevenuFortune;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersService;
@@ -190,7 +186,6 @@ public class ActivationServiceImpl implements ActivationService {
 			for (ForFiscal forFiscal : forsFiscaux) {
 				if (derniereDateDesactivation.equals(forFiscal.getDateFin())) {
 					if (tiers instanceof DebiteurPrestationImposable) {
-						// TODO ne faut-il pas revoir cette logique depuis que les fors débiteurs ont également des motifs d'ouverture et de fermeture ?
 						final DebiteurPrestationImposable debiteur = (DebiteurPrestationImposable) tiers;
 						tiersService.openForDebiteurPrestationImposable(debiteur, dateReactivation, MotifFor.REACTIVATION, forFiscal.getNumeroOfsAutoriteFiscale(), forFiscal.getTypeAutoriteFiscale());
 
@@ -199,23 +194,19 @@ public class ActivationServiceImpl implements ActivationService {
 					}
 					if (tiers instanceof Contribuable) {
 						final Contribuable contribuable = (Contribuable) tiers;
-						if (forFiscal instanceof ForFiscalAvecMotifs && ((ForFiscalAvecMotifs) forFiscal).getMotifFermeture() == MotifFor.ANNULATION) {
+						if (forFiscal instanceof ForFiscalRevenuFortune && ((ForFiscalRevenuFortune) forFiscal).getMotifFermeture() == MotifFor.ANNULATION) {
 							if (forFiscal instanceof ForFiscalAutreElementImposable) {
 								final ForFiscalAutreElementImposable forFiscalAutreElementImposable = (ForFiscalAutreElementImposable) forFiscal;
 								tiersService.openForFiscalAutreElementImposable(contribuable, forFiscalAutreElementImposable.getGenreImpot(), dateReactivation, forFiscalAutreElementImposable.getMotifRattachement(), forFiscalAutreElementImposable.getNumeroOfsAutoriteFiscale(),
 								                                                MotifFor.REACTIVATION);
 							}
-							if (forFiscal instanceof ForFiscalPrincipalPP) {
-								final ForFiscalPrincipalPP forFiscalPrincipal = (ForFiscalPrincipalPP) forFiscal;
-								tiersService.openForFiscalPrincipal((ContribuableImpositionPersonnesPhysiques) contribuable, dateReactivation, forFiscalPrincipal.getMotifRattachement(), forFiscalPrincipal.getNumeroOfsAutoriteFiscale(), forFiscalPrincipal.getTypeAutoriteFiscale(), forFiscalPrincipal.getModeImposition(), MotifFor.REACTIVATION);
-							}
-							if (forFiscal instanceof ForFiscalPrincipalPM) {
-								final ForFiscalPrincipalPM forFiscalPrincipal = (ForFiscalPrincipalPM) forFiscal;
-								tiersService.openForFiscalPrincipal((ContribuableImpositionPersonnesMorales) contribuable, dateReactivation, forFiscalPrincipal.getMotifRattachement(), forFiscalPrincipal.getNumeroOfsAutoriteFiscale(), forFiscalPrincipal.getTypeAutoriteFiscale(), MotifFor.REACTIVATION, forFiscalPrincipal.getGenreImpot());
+							if (forFiscal instanceof ForFiscalPrincipal) {
+								final ForFiscalPrincipal forFiscalPrincipal = (ForFiscalPrincipal) forFiscal;
+								tiersService.openForFiscalPrincipal(contribuable, dateReactivation, forFiscalPrincipal.getMotifRattachement(), forFiscalPrincipal.getNumeroOfsAutoriteFiscale(), forFiscalPrincipal.getTypeAutoriteFiscale(), forFiscalPrincipal.getModeImposition(), MotifFor.REACTIVATION);
 							}
 							if (forFiscal instanceof ForFiscalSecondaire) {
 								final ForFiscalSecondaire forFiscalSecondaire = (ForFiscalSecondaire) forFiscal;
-								tiersService.openForFiscalSecondaire(contribuable, dateReactivation, forFiscalSecondaire.getMotifRattachement(), forFiscalSecondaire.getNumeroOfsAutoriteFiscale(), forFiscalSecondaire.getTypeAutoriteFiscale(), MotifFor.REACTIVATION, forFiscalSecondaire.getGenreImpot());
+								tiersService.openForFiscalSecondaire(contribuable, dateReactivation, forFiscalSecondaire.getMotifRattachement(), forFiscalSecondaire.getNumeroOfsAutoriteFiscale(), forFiscalSecondaire.getTypeAutoriteFiscale(), MotifFor.REACTIVATION);
 							}
 						}
 						else if (forFiscal instanceof ForFiscalAutreImpot) {

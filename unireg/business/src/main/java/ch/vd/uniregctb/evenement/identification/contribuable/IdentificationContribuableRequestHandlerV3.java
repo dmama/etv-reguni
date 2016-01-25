@@ -30,7 +30,7 @@ import ch.vd.uniregctb.xml.DataHelper;
 
 public class IdentificationContribuableRequestHandlerV3 implements IdentificationContribuableRequestHandler<IdentificationContribuableRequest, IdentificationContribuableResponse> {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(IdentificationContribuableRequestHandlerV3.class);
+	private final static Logger LOGGER = LoggerFactory.getLogger(IdentificationContribuableRequestHandlerV3.class);
 
 	private static final int MAX_NAME_LENGTH = 100;
 
@@ -47,7 +47,7 @@ public class IdentificationContribuableRequestHandlerV3 implements Identificatio
 		this.tiersService = tiersService;
 	}
 
-	private enum IdentificationResultKind {
+	private static enum IdentificationResultKind {
 		FOUND_ONE,
 		FOUND_NONE,
 		FOUND_SEVERAL,

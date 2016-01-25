@@ -41,7 +41,7 @@ public class ForDebiteurPrestationImposableValidator extends ForFiscalAvecMotifs
 	 * @return <code>true</code>
 	 */
 	@Override
-	protected boolean isDateFinFutureAllowed() {
+	protected boolean isDateFermetureFutureAllowed() {
 		return true;
 	}
 
@@ -88,7 +88,7 @@ public class ForDebiteurPrestationImposableValidator extends ForFiscalAvecMotifs
 				if (ff.getDateDebut() != null) {
 					final Set<RegDate> finsAutorisees = new HashSet<>(getDatesFermetureAutorisees((DebiteurPrestationImposable) ff.getTiers(), ff, ff.getDateFin(), true));
 					if (!finsAutorisees.contains(ff.getDateFin())) {
-						vr.addError(String.format("La date de fermeture du for débiteur %s est incohérente avec sa date de début ainsi que les LR et périodicités du débiteur.", getEntityDisplayString(ff)));
+						vr.addError(String.format("La date de fermeture du for débiteur %s est incohérente avec sa date de début ainsi que les LR et périodicités du débiteur.", ff));
 					}
 				}
 			}

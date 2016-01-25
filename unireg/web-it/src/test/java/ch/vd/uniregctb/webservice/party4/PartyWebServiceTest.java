@@ -9,23 +9,22 @@ import java.util.List;
 import java.util.Set;
 
 import org.jetbrains.annotations.Nullable;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.webservices.party3.BatchParty;
-import ch.vd.unireg.webservices.party3.BatchPartyEntry;
-import ch.vd.unireg.webservices.party3.GetBatchPartyRequest;
-import ch.vd.unireg.webservices.party3.GetPartyRequest;
-import ch.vd.unireg.webservices.party3.GetPartyTypeRequest;
-import ch.vd.unireg.webservices.party3.PartyPart;
-import ch.vd.unireg.webservices.party3.PartyWebService;
-import ch.vd.unireg.webservices.party3.SearchCorporationEventsRequest;
-import ch.vd.unireg.webservices.party3.SearchCorporationEventsResponse;
-import ch.vd.unireg.webservices.party3.SearchMode;
-import ch.vd.unireg.webservices.party3.SearchPartyRequest;
-import ch.vd.unireg.webservices.party3.SearchPartyResponse;
-import ch.vd.unireg.webservices.party3.SetAutomaticReimbursementBlockingRequest;
+import ch.vd.unireg.webservices.party4.BatchParty;
+import ch.vd.unireg.webservices.party4.BatchPartyEntry;
+import ch.vd.unireg.webservices.party4.GetBatchPartyRequest;
+import ch.vd.unireg.webservices.party4.GetPartyRequest;
+import ch.vd.unireg.webservices.party4.GetPartyTypeRequest;
+import ch.vd.unireg.webservices.party4.PartyPart;
+import ch.vd.unireg.webservices.party4.PartyWebService;
+import ch.vd.unireg.webservices.party4.SearchCorporationEventsRequest;
+import ch.vd.unireg.webservices.party4.SearchCorporationEventsResponse;
+import ch.vd.unireg.webservices.party4.SearchMode;
+import ch.vd.unireg.webservices.party4.SearchPartyRequest;
+import ch.vd.unireg.webservices.party4.SearchPartyResponse;
+import ch.vd.unireg.webservices.party4.SetAutomaticReimbursementBlockingRequest;
 import ch.vd.unireg.xml.common.v1.Date;
 import ch.vd.unireg.xml.common.v1.UserLogin;
 import ch.vd.unireg.xml.exception.v1.AccessDeniedExceptionInfo;
@@ -35,33 +34,33 @@ import ch.vd.unireg.xml.party.address.v1.AddressInformation;
 import ch.vd.unireg.xml.party.address.v1.FormattedAddress;
 import ch.vd.unireg.xml.party.address.v1.PersonMailAddressInfo;
 import ch.vd.unireg.xml.party.address.v1.TariffZone;
-import ch.vd.unireg.xml.party.corporation.v1.Corporation;
-import ch.vd.unireg.xml.party.corporation.v1.CorporationEvent;
-import ch.vd.unireg.xml.party.debtor.v1.CommunicationMode;
-import ch.vd.unireg.xml.party.debtor.v1.Debtor;
-import ch.vd.unireg.xml.party.debtor.v1.DebtorCategory;
-import ch.vd.unireg.xml.party.debtor.v1.DebtorPeriodicity;
-import ch.vd.unireg.xml.party.debtor.v1.WithholdingTaxDeclarationPeriodicity;
+import ch.vd.unireg.xml.party.corporation.v2.Corporation;
+import ch.vd.unireg.xml.party.corporation.v2.CorporationEvent;
+import ch.vd.unireg.xml.party.debtor.v2.CommunicationMode;
+import ch.vd.unireg.xml.party.debtor.v2.Debtor;
+import ch.vd.unireg.xml.party.debtor.v2.DebtorCategory;
+import ch.vd.unireg.xml.party.debtor.v2.DebtorPeriodicity;
+import ch.vd.unireg.xml.party.debtor.v2.WithholdingTaxDeclarationPeriodicity;
 import ch.vd.unireg.xml.party.immovableproperty.v1.ImmovableProperty;
 import ch.vd.unireg.xml.party.immovableproperty.v1.ImmovablePropertyType;
 import ch.vd.unireg.xml.party.immovableproperty.v1.MutationType;
 import ch.vd.unireg.xml.party.immovableproperty.v1.OwnershipType;
 import ch.vd.unireg.xml.party.immovableproperty.v1.PropertyShare;
-import ch.vd.unireg.xml.party.person.v1.CommonHousehold;
-import ch.vd.unireg.xml.party.person.v1.NaturalPerson;
-import ch.vd.unireg.xml.party.person.v1.NaturalPersonCategory;
-import ch.vd.unireg.xml.party.person.v1.NaturalPersonCategoryPeriod;
+import ch.vd.unireg.xml.party.person.v2.CommonHousehold;
+import ch.vd.unireg.xml.party.person.v2.NaturalPerson;
+import ch.vd.unireg.xml.party.person.v2.NaturalPersonCategory;
+import ch.vd.unireg.xml.party.person.v2.NaturalPersonCategoryPeriod;
 import ch.vd.unireg.xml.party.relation.v1.RelationBetweenParties;
 import ch.vd.unireg.xml.party.relation.v1.RelationBetweenPartiesType;
-import ch.vd.unireg.xml.party.taxdeclaration.v1.DocumentType;
-import ch.vd.unireg.xml.party.taxdeclaration.v1.OrdinaryTaxDeclaration;
-import ch.vd.unireg.xml.party.taxdeclaration.v1.TaxDeclaration;
-import ch.vd.unireg.xml.party.taxdeclaration.v1.TaxDeclarationStatus;
-import ch.vd.unireg.xml.party.taxdeclaration.v1.WithholdingTaxDeclaration;
-import ch.vd.unireg.xml.party.taxpayer.v1.FamilyStatus;
-import ch.vd.unireg.xml.party.taxpayer.v1.MaritalStatus;
-import ch.vd.unireg.xml.party.taxpayer.v1.Taxpayer;
-import ch.vd.unireg.xml.party.taxpayer.v1.WithholdingTaxTariff;
+import ch.vd.unireg.xml.party.taxdeclaration.v2.DocumentType;
+import ch.vd.unireg.xml.party.taxdeclaration.v2.OrdinaryTaxDeclaration;
+import ch.vd.unireg.xml.party.taxdeclaration.v2.TaxDeclaration;
+import ch.vd.unireg.xml.party.taxdeclaration.v2.TaxDeclarationStatus;
+import ch.vd.unireg.xml.party.taxdeclaration.v2.WithholdingTaxDeclaration;
+import ch.vd.unireg.xml.party.taxpayer.v2.FamilyStatus;
+import ch.vd.unireg.xml.party.taxpayer.v2.MaritalStatus;
+import ch.vd.unireg.xml.party.taxpayer.v2.Taxpayer;
+import ch.vd.unireg.xml.party.taxpayer.v2.WithholdingTaxTariff;
 import ch.vd.unireg.xml.party.taxresidence.v1.OtherCanton;
 import ch.vd.unireg.xml.party.taxresidence.v1.PureWithholding;
 import ch.vd.unireg.xml.party.taxresidence.v1.SimplifiedTaxLiability;
@@ -73,12 +72,11 @@ import ch.vd.unireg.xml.party.taxresidence.v1.TaxType;
 import ch.vd.unireg.xml.party.taxresidence.v1.TaxationAuthorityType;
 import ch.vd.unireg.xml.party.taxresidence.v1.TaxationMethod;
 import ch.vd.unireg.xml.party.taxresidence.v1.TaxationPeriod;
-import ch.vd.unireg.xml.party.v1.AccountNumberFormat;
-import ch.vd.unireg.xml.party.v1.BankAccount;
-import ch.vd.unireg.xml.party.v1.Party;
-import ch.vd.unireg.xml.party.v1.PartyInfo;
-import ch.vd.unireg.xml.party.v1.PartyType;
-import ch.vd.uniregctb.webservice.party3.AbstractPartyWebServiceTest;
+import ch.vd.unireg.xml.party.v2.AccountNumberFormat;
+import ch.vd.unireg.xml.party.v2.BankAccount;
+import ch.vd.unireg.xml.party.v2.Party;
+import ch.vd.unireg.xml.party.v2.PartyInfo;
+import ch.vd.unireg.xml.party.v2.PartyType;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -154,7 +152,7 @@ public class PartyWebServiceTest extends AbstractPartyWebServiceTest {
 		params.setPartyNumber(12500001); // DebiteurPrestationImposable
 		assertEquals(PartyType.DEBTOR, service.getPartyType(params));
 
-		params.setPartyNumber(451178); // Entreprise
+		params.setPartyNumber(12700101); // Entreprise
 		assertEquals(PartyType.CORPORATION, service.getPartyType(params));
 
 		params.setPartyNumber(12600101); // NonHabitant
@@ -1374,9 +1372,7 @@ public class PartyWebServiceTest extends AbstractPartyWebServiceTest {
 
 	/**
 	 * [UNIREG-1969] Vérification que le champ "chez" apparaît bien dans l'adresse d'envoi
-	 * TODO [SIPM] A voir si le service existera encore quand SIPM arrivera en production
 	 */
-	@Ignore
 	@Test
 	public void getTiersPMAdresseEnvoi() throws Exception {
 
@@ -1401,9 +1397,7 @@ public class PartyWebServiceTest extends AbstractPartyWebServiceTest {
 
 	/**
 	 * [UNIREG-1974] Vérification du libellé de la rue dans l'adresse d'envoi
-	 * TODO [SIPM] A voir si le service existera encore quand SIPM arrivera en production
 	 */
-	@Ignore
 	@Test
 	public void getTiersPMAdresseEnvoiNomRue() throws Exception {
 
@@ -1754,10 +1748,6 @@ public class PartyWebServiceTest extends AbstractPartyWebServiceTest {
 		assertEquals(MaritalStatus.MARRIED, status2.getMaritalStatus());
 	}
 
-	/**
-	 * TODO [SIPM] les événements ne sont plus supportés pour le moment (?)
-	 */
-	@Ignore
 	@Test
 	public void testFindEvenementsPersonneMorale() throws Exception {
 		final SearchCorporationEventsRequest request = new SearchCorporationEventsRequest(login, null, "012", null, null);

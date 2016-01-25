@@ -21,7 +21,7 @@ import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 
-public class MenageCommunValidator extends ContribuableImpositionPersonnesPhysiquesValidator<MenageCommun> {
+public class MenageCommunValidator extends ContribuableValidator<MenageCommun> {
 
 	@Override
 	protected ValidationResults validateRapports(MenageCommun mc) {

@@ -12,7 +12,6 @@ import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
@@ -39,7 +38,7 @@ public class ForFiscalValidatorTest extends AbstractValidatorTest<ForFiscal> {
 			Assert.assertEquals(1, vr.errorsCount());
 			Assert.assertEquals(0, vr.warningsCount());
 
-			final String expectedMsg = String.format("Le for fiscal %s ne peut pas être sur une commune faîtière de fractions de commune (ici %s / OFS %d), une fraction est attendue dans ce cas", ff, commune.getNomOfficiel(), commune.getNoOFS());
+			final String expectedMsg = String.format("Le for fiscal %s ne peut pas être ouvert sur une commune faîtière de fractions de commune (ici %s / OFS %d), une fraction est attendue dans ce cas", ff, commune.getNomOfficiel(), commune.getNoOFS());
 			Assert.assertEquals(expectedMsg, vr.getErrors().get(0));
 		}
 	}
@@ -49,7 +48,7 @@ public class ForFiscalValidatorTest extends AbstractValidatorTest<ForFiscal> {
 	public void testDateFinValiditeCommune() throws Exception {
 		final Commune commune = MockCommune.Malapalud;
 		{
-			final ForFiscalPrincipal ffp = new ForFiscalPrincipalPP(RegDate.get(2008, 7, 1), MotifFor.ARRIVEE_HS, null, null, commune.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
+			final ForFiscalPrincipal ffp = new ForFiscalPrincipal(RegDate.get(2008, 7, 1), MotifFor.ARRIVEE_HS, null, null, commune.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
 			final ValidationResults vr = validate(ffp);
 			Assert.assertNotNull(vr);
 			Assert.assertEquals(0, vr.warningsCount());
@@ -57,12 +56,12 @@ public class ForFiscalValidatorTest extends AbstractValidatorTest<ForFiscal> {
 
 			final String debutValiditeCommune = commune.getDateDebutValidite() == null ? "?" : RegDateHelper.dateToDisplayString(commune.getDateDebutValidite());
 			final String finValiditeCommune = commune.getDateFinValidite() == null ? "?" : RegDateHelper.dateToDisplayString(commune.getDateFinValidite());
-			final String expectedMsg = String.format("Le for fiscal %s a une période de validité qui dépasse la période de validité de sa commune %s (%d) (%s - %s)",
+			final String expectedMsg = String.format("La période de validité du for fiscal %s dépasse la période de validité de la commune %s (%d) à laquelle il est assigné (%s - %s)",
 										ffp, commune.getNomOfficiel(), commune.getNoOFS(), debutValiditeCommune, finValiditeCommune);
 			Assert.assertEquals(expectedMsg, vr.getErrors().get(0));
 		}
 		{
-			final ForFiscalPrincipal ffp = new ForFiscalPrincipalPP(RegDate.get(2008, 7, 1), MotifFor.ARRIVEE_HS, RegDate.get(2008, 12, 31), MotifFor.FUSION_COMMUNES, commune.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
+			final ForFiscalPrincipal ffp = new ForFiscalPrincipal(RegDate.get(2008, 7, 1), MotifFor.ARRIVEE_HS, RegDate.get(2008, 12, 31), MotifFor.FUSION_COMMUNES, commune.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
 			final ValidationResults vr = validate(ffp);
 			Assert.assertNotNull(vr);
 			Assert.assertEquals(0, vr.warningsCount());
@@ -77,14 +76,14 @@ public class ForFiscalValidatorTest extends AbstractValidatorTest<ForFiscal> {
 		Assert.assertTrue(commune.getDateFinValidite().isAfterOrEqual(RegDate.get()));
 		{
 			// le for est encore ouvert à droite : en théorie, puisque la commune a une date de fin, cela devrait donner une erreur, mais en fait non, car cette date est dans le futur
-			final ForFiscalPrincipal ffp = new ForFiscalPrincipalPP(RegDate.get(2008, 7, 1), MotifFor.ARRIVEE_HS, null, null, commune.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
+			final ForFiscalPrincipal ffp = new ForFiscalPrincipal(RegDate.get(2008, 7, 1), MotifFor.ARRIVEE_HS, null, null, commune.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
 			final ValidationResults vr = validate(ffp);
 			Assert.assertNotNull(vr);
 			Assert.assertEquals(0, vr.warningsCount());
 			Assert.assertEquals(0, vr.errorsCount());
 		}
 		{
-			final ForFiscalPrincipal ffp = new ForFiscalPrincipalPP(RegDate.get(2008, 7, 1), MotifFor.ARRIVEE_HS, RegDate.get(2010, 12, 31), MotifFor.DEPART_HS, commune.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
+			final ForFiscalPrincipal ffp = new ForFiscalPrincipal(RegDate.get(2008, 7, 1), MotifFor.ARRIVEE_HS, RegDate.get(2010, 12, 31), MotifFor.DEPART_HS, commune.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
 			final ValidationResults vr = validate(ffp);
 			Assert.assertNotNull(vr);
 			Assert.assertEquals(0, vr.warningsCount());
@@ -97,7 +96,7 @@ public class ForFiscalValidatorTest extends AbstractValidatorTest<ForFiscal> {
 	public void testDateDebutValiditeCommune() throws Exception {
 		final Commune commune = MockCommune.ValDeTravers;
 		{
-			final ForFiscalPrincipal ffp = new ForFiscalPrincipalPP(RegDate.get(2008, 7, 1), MotifFor.ARRIVEE_HS, null, null, commune.getNoOFS(), TypeAutoriteFiscale.COMMUNE_HC, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
+			final ForFiscalPrincipal ffp = new ForFiscalPrincipal(RegDate.get(2008, 7, 1), MotifFor.ARRIVEE_HS, null, null, commune.getNoOFS(), TypeAutoriteFiscale.COMMUNE_HC, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
 			final ValidationResults vr = validate(ffp);
 			Assert.assertNotNull(vr);
 			Assert.assertEquals(0, vr.warningsCount());
@@ -105,12 +104,12 @@ public class ForFiscalValidatorTest extends AbstractValidatorTest<ForFiscal> {
 
 			final String debutValiditeCommune = commune.getDateDebutValidite() == null ? "?" : RegDateHelper.dateToDisplayString(commune.getDateDebutValidite());
 			final String finValiditeCommune = commune.getDateFinValidite() == null ? "?" : RegDateHelper.dateToDisplayString(commune.getDateFinValidite());
-			final String expectedMsg = String.format("Le for fiscal %s a une période de validité qui dépasse la période de validité de sa commune %s (%d) (%s - %s)",
+			final String expectedMsg = String.format("La période de validité du for fiscal %s dépasse la période de validité de la commune %s (%d) à laquelle il est assigné (%s - %s)",
 										ffp, commune.getNomOfficiel(), commune.getNoOFS(), debutValiditeCommune, finValiditeCommune);
 			Assert.assertEquals(expectedMsg, vr.getErrors().get(0));
 		}
 		{
-			final ForFiscalPrincipal ffp = new ForFiscalPrincipalPP(RegDate.get(2009, 1, 1), MotifFor.ARRIVEE_HS, null, null, commune.getNoOFS(), TypeAutoriteFiscale.COMMUNE_HC, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
+			final ForFiscalPrincipal ffp = new ForFiscalPrincipal(RegDate.get(2009, 1, 1), MotifFor.ARRIVEE_HS, null, null, commune.getNoOFS(), TypeAutoriteFiscale.COMMUNE_HC, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
 			final ValidationResults vr = validate(ffp);
 			Assert.assertNotNull(vr);
 			Assert.assertEquals(0, vr.warningsCount());
@@ -123,24 +122,24 @@ public class ForFiscalValidatorTest extends AbstractValidatorTest<ForFiscal> {
 	public void testCommuneVaudoiseOuHorsCanton() throws Exception {
 		{
 			final Commune commune = MockCommune.Lausanne;
-			final ForFiscalPrincipal ffp = new ForFiscalPrincipalPP(RegDate.get(2008, 7, 1), MotifFor.ARRIVEE_HS, null, null, commune.getNoOFS(), TypeAutoriteFiscale.COMMUNE_HC, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
+			final ForFiscalPrincipal ffp = new ForFiscalPrincipal(RegDate.get(2008, 7, 1), MotifFor.ARRIVEE_HS, null, null, commune.getNoOFS(), TypeAutoriteFiscale.COMMUNE_HC, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
 			final ValidationResults vr = validate(ffp);
 			Assert.assertNotNull(vr);
 			Assert.assertEquals(1, vr.errorsCount());
 			Assert.assertEquals(0, vr.warningsCount());
 
-			final String expectedMsg = String.format("Le for fiscal %s montre une incohérence entre le type d'autorité fiscale %s et la commune vaudoise %s (%d)", ffp, ffp.getTypeAutoriteFiscale(), commune.getNomOfficiel(), commune.getNoOFS());
+			final String expectedMsg = String.format("Incohérence entre le type d'autorité fiscale %s et la commune vaudoise %s (%d) sur le for %s", ffp.getTypeAutoriteFiscale(), commune.getNomOfficiel(), commune.getNoOFS(), ffp);
 			Assert.assertEquals(expectedMsg, vr.getErrors().get(0));
 		}
 		{
 			final Commune commune = MockCommune.Neuchatel;
-			final ForFiscalPrincipal ffp = new ForFiscalPrincipalPP(RegDate.get(2008, 7, 1), MotifFor.ARRIVEE_HS, null, null, commune.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
+			final ForFiscalPrincipal ffp = new ForFiscalPrincipal(RegDate.get(2008, 7, 1), MotifFor.ARRIVEE_HS, null, null, commune.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
 			final ValidationResults vr = validate(ffp);
 			Assert.assertNotNull(vr);
 			Assert.assertEquals(1, vr.errorsCount());
 			Assert.assertEquals(0, vr.warningsCount());
 
-			final String expectedMsg = String.format("Le for fiscal %s montre une incohérence entre le type d'autorité fiscale %s et la commune non-vaudoise %s (%d)", ffp, ffp.getTypeAutoriteFiscale(), commune.getNomOfficiel(), commune.getNoOFS());
+			final String expectedMsg = String.format("Incohérence entre le type d'autorité fiscale %s et la commune non-vaudoise %s (%d) sur le for %s", ffp.getTypeAutoriteFiscale(), commune.getNomOfficiel(), commune.getNoOFS(), ffp);
 			Assert.assertEquals(expectedMsg, vr.getErrors().get(0));
 		}
 	}
@@ -150,37 +149,37 @@ public class ForFiscalValidatorTest extends AbstractValidatorTest<ForFiscal> {
 	public void testPaysHS() throws Exception {
 		{
 			final Commune commune = MockCommune.Lausanne;
-			final ForFiscalPrincipal ffp = new ForFiscalPrincipalPP(RegDate.get(2008, 7, 1), MotifFor.ACHAT_IMMOBILIER, null, null, commune.getNoOFS(), TypeAutoriteFiscale.PAYS_HS, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
+			final ForFiscalPrincipal ffp = new ForFiscalPrincipal(RegDate.get(2008, 7, 1), MotifFor.ACHAT_IMMOBILIER, null, null, commune.getNoOFS(), TypeAutoriteFiscale.PAYS_HS, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
 			final ValidationResults vr = validate(ffp);
 			Assert.assertNotNull(vr);
 			Assert.assertEquals(1, vr.errorsCount());
 			Assert.assertEquals(0, vr.warningsCount());
 
-			final String expectedMsg = String.format("Le for fiscal %s est sur un pays (%d) inconnu dans l'infrastructure à sa date d'entrée en vigueur", ffp, ffp.getNumeroOfsAutoriteFiscale());
+			final String expectedMsg = String.format("Le pays du for fiscal %s (%d) est inconnu dans l'infrastructure à la date de début du for", ffp, ffp.getNumeroOfsAutoriteFiscale());
 			Assert.assertEquals(expectedMsg, vr.getErrors().get(0));
 		}
 		{
-			final ForFiscalPrincipal ffp = new ForFiscalPrincipalPP(RegDate.get(2008, 7, 1), MotifFor.ACHAT_IMMOBILIER, null, null, MockPays.Suisse.getNoOFS(), TypeAutoriteFiscale.PAYS_HS, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
+			final ForFiscalPrincipal ffp = new ForFiscalPrincipal(RegDate.get(2008, 7, 1), MotifFor.ACHAT_IMMOBILIER, null, null, MockPays.Suisse.getNoOFS(), TypeAutoriteFiscale.PAYS_HS, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
 			final ValidationResults vr = validate(ffp);
 			Assert.assertNotNull(vr);
 			Assert.assertEquals(1, vr.errorsCount());
 			Assert.assertEquals(0, vr.warningsCount());
 
-			final String expectedMsg = String.format("Le for fiscal %s devrait être sur un canton (VD ou autre) suisse", ffp);
+			final String expectedMsg = String.format("Le for %s devrait être vaudois ou hors-canton", ffp);
 			Assert.assertEquals(expectedMsg, vr.getErrors().get(0));
 		}
 		{
-			final ForFiscalPrincipal ffp = new ForFiscalPrincipalPP(RegDate.get(2008, 7, 1), MotifFor.ACHAT_IMMOBILIER, null, null, MockPays.Gibraltar.getNoOFS(), TypeAutoriteFiscale.PAYS_HS, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
+			final ForFiscalPrincipal ffp = new ForFiscalPrincipal(RegDate.get(2008, 7, 1), MotifFor.ACHAT_IMMOBILIER, null, null, MockPays.Gibraltar.getNoOFS(), TypeAutoriteFiscale.PAYS_HS, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
 			final ValidationResults vr = validate(ffp);
 			Assert.assertNotNull(vr);
 			Assert.assertEquals(1, vr.errorsCount());
 			Assert.assertEquals(0, vr.warningsCount());
 
-			final String expectedMsg = String.format("Le for fiscal %s est sur un pays (%s, %d) qui n'est pas un état souverain, mais un territoire", ffp, MockPays.Gibraltar.getNomCourt(), MockPays.Gibraltar.getNoOFS());
+			final String expectedMsg = String.format("Le pays du for fiscal %s (%s, %d) n'est pas un état souverain, mais un territoire", ffp, MockPays.Gibraltar.getNomCourt(), MockPays.Gibraltar.getNoOFS());
 			Assert.assertEquals(expectedMsg, vr.getErrors().get(0));
 		}
 		{
-			final ForFiscalPrincipal ffp = new ForFiscalPrincipalPP(RegDate.get(2008, 7, 1), MotifFor.ACHAT_IMMOBILIER, null, null, MockPays.France.getNoOFS(), TypeAutoriteFiscale.PAYS_HS, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
+			final ForFiscalPrincipal ffp = new ForFiscalPrincipal(RegDate.get(2008, 7, 1), MotifFor.ACHAT_IMMOBILIER, null, null, MockPays.France.getNoOFS(), TypeAutoriteFiscale.PAYS_HS, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
 			final ValidationResults vr = validate(ffp);
 			Assert.assertNotNull(vr);
 			Assert.assertEquals(0, vr.errorsCount());
@@ -194,20 +193,20 @@ public class ForFiscalValidatorTest extends AbstractValidatorTest<ForFiscal> {
 		final RegDate aujourdhui = RegDate.get();
 		final RegDate demain = aujourdhui.addDays(1);
 		{
-			final ForFiscalPrincipal ffp = new ForFiscalPrincipalPP(aujourdhui, MotifFor.ARRIVEE_HS, null, null, MockCommune.Cossonay.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
+			final ForFiscalPrincipal ffp = new ForFiscalPrincipal(aujourdhui, MotifFor.ARRIVEE_HS, null, null, MockCommune.Cossonay.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
 			final ValidationResults vr = validate(ffp);
 			Assert.assertNotNull(vr);
 			Assert.assertEquals(0, vr.errorsCount());
 			Assert.assertEquals(0, vr.warningsCount());
 		}
 		{
-			final ForFiscalPrincipal ffp = new ForFiscalPrincipalPP(demain, MotifFor.ARRIVEE_HS, null, null, MockCommune.Cossonay.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
+			final ForFiscalPrincipal ffp = new ForFiscalPrincipal(demain, MotifFor.ARRIVEE_HS, null, null, MockCommune.Cossonay.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
 			final ValidationResults vr = validate(ffp);
 			Assert.assertNotNull(vr);
 			Assert.assertEquals(1, vr.errorsCount());
 			Assert.assertEquals(0, vr.warningsCount());
 
-			final String expectedMsg = String.format("Le for fiscal %s possède une date de début dans le futur", ffp);
+			final String expectedMsg = String.format("La date de début du for %s est dans le futur", ffp);
 			Assert.assertEquals(expectedMsg, vr.getErrors().get(0));
 		}
 	}
@@ -219,20 +218,20 @@ public class ForFiscalValidatorTest extends AbstractValidatorTest<ForFiscal> {
 		final RegDate aujourdhui = RegDate.get();
 		final RegDate demain = aujourdhui.addDays(1);
 		{
-			final ForFiscalPrincipal ffp = new ForFiscalPrincipalPP(debut, MotifFor.ARRIVEE_HS, aujourdhui, MotifFor.DEPART_HS, MockCommune.Cossonay.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
+			final ForFiscalPrincipal ffp = new ForFiscalPrincipal(debut, MotifFor.ARRIVEE_HS, aujourdhui, MotifFor.DEPART_HS, MockCommune.Cossonay.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
 			final ValidationResults vr = validate(ffp);
 			Assert.assertNotNull(vr);
 			Assert.assertEquals(0, vr.errorsCount());
 			Assert.assertEquals(0, vr.warningsCount());
 		}
 		{
-			final ForFiscalPrincipal ffp = new ForFiscalPrincipalPP(debut, MotifFor.ARRIVEE_HS, demain, MotifFor.DEPART_HS, MockCommune.Cossonay.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
+			final ForFiscalPrincipal ffp = new ForFiscalPrincipal(debut, MotifFor.ARRIVEE_HS, demain, MotifFor.DEPART_HS, MockCommune.Cossonay.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
 			final ValidationResults vr = validate(ffp);
 			Assert.assertNotNull(vr);
 			Assert.assertEquals(1, vr.errorsCount());
 			Assert.assertEquals(0, vr.warningsCount());
 
-			final String expectedMsg = String.format("Le for fiscal %s possède une date de fin dans le futur", ffp);
+			final String expectedMsg = String.format("La date de fin du for %s est dans le futur", ffp);
 			Assert.assertEquals(expectedMsg, vr.getErrors().get(0));
 		}
 	}

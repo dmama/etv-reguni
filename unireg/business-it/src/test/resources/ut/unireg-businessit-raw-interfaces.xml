@@ -25,35 +25,6 @@
 
 	<alias alias="serviceCivilRaw" name="serviceCivilServiceCache"/>
 
-	<!-- Service Organisation -->
-
-	<bean id="serviceOrganisationRCEnt" class="ch.vd.unireg.interfaces.organisation.rcent.ServiceOrganisationRCEnt">
-		<constructor-arg ref="rcEntAdapter"/>
-		<constructor-arg ref="serviceInfrastructureRaw"/>
-	</bean>
-
-	<bean id="serviceOrganisationTracing" class="ch.vd.unireg.interfaces.organisation.ServiceOrganisationTracing">
-		<property name="target" ref="serviceOrganisationRCEnt" />
-		<property name="statsService" ref="statsService" />
-	</bean>
-
-	<bean id="serviceOrganisationCache" class="ch.vd.unireg.interfaces.organisation.cache.ServiceOrganisationCache">
-		<property name="target" ref="serviceOrganisationTracing" />
-		<property name="cacheManager" ref="ehCacheManager" />
-		<property name="cacheName" value="serviceOrganisation" />
-		<property name="uniregCacheManager" ref="uniregCacheManager" />
-		<property name="statsService" ref="statsService" />
-		<property name="dataEventService" ref="dataEventService" />
-	</bean>
-
-	<alias alias="serviceOrganisationRaw" name="serviceOrganisationCache"/>
-
-	<bean id="serviceOrganisation" class="ch.vd.uniregctb.interfaces.service.ServiceOrganisationImpl">
-		<property name="target" ref="serviceOrganisationRaw"/>
-	</bean>
-	<alias name="serviceOrganisation" alias="serviceOrganisationService"/>
-
-
 	<!-- Service UPI -->
 
 	<bean id="serviceUpiRcPers" class="ch.vd.unireg.interfaces.upi.rcpers.ServiceUpiRCPers">

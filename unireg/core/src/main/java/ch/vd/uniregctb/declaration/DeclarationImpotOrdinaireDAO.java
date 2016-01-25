@@ -14,9 +14,9 @@ public interface DeclarationImpotOrdinaireDAO extends GenericDAO<DeclarationImpo
 	 * @param criterion
 	 * @return
 	 */
-	List<DeclarationImpotOrdinaire> find(DeclarationImpotCriteria criterion);
+	public List<DeclarationImpotOrdinaire> find(DeclarationImpotCriteria criterion);
 
-	List<DeclarationImpotOrdinaire> find(DeclarationImpotCriteria criterion, boolean doNotAutoFlush);
+	public List<DeclarationImpotOrdinaire> find(DeclarationImpotCriteria criterion, boolean doNotAutoFlush);
 
 	/**
 	 * Recherche toutes les DI en fonction du numero de contribuable
@@ -24,7 +24,7 @@ public interface DeclarationImpotOrdinaireDAO extends GenericDAO<DeclarationImpo
 	 * @param numero
 	 * @return
 	 */
-	List<DeclarationImpotOrdinaire> findByNumero(Long numero);
+	public List<DeclarationImpotOrdinaire> findByNumero(Long numero);
 
 	/**
 	 * Retourne le dernier EtatPeriodeDeclaration retournee
@@ -32,15 +32,10 @@ public interface DeclarationImpotOrdinaireDAO extends GenericDAO<DeclarationImpo
 	 * @param numeroCtb
 	 * @return
 	 */
-	EtatDeclaration findDerniereDiEnvoyee(Long numeroCtb) ;
+	public EtatDeclaration findDerniereDiEnvoyee(Long numeroCtb) ;
 
 	/**
-	 * @return un ensemble de DIs PP avec les délais et les états préinitialisés.
+	 * @return un ensemble de DIs avec les délais et les états préinitialisés.
 	 */
-	Set<DeclarationImpotOrdinairePP> getDeclarationsImpotPPForSommation(Collection<Long> idsDI);
-
-	/**
-	 * @return un ensemble de DIs PM avec les délais et les états préinitialisés.
-	 */
-	Set<DeclarationImpotOrdinairePM> getDeclarationsImpotPMForSommation(Collection<Long> idsDI);
+	public Set<DeclarationImpotOrdinaire> getDIsForSommation(Collection<Long> idsDI);
 }

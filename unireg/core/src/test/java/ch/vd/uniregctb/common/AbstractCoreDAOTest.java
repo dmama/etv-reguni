@@ -14,6 +14,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.Predicate;
 import org.dbunit.DatabaseUnitException;
 import org.dbunit.database.DatabaseConfig;
 import org.dbunit.database.DatabaseConnection;
@@ -35,6 +37,7 @@ import org.hibernate.SessionFactory;
 import org.hibernate.dialect.Dialect;
 import org.hibernate.mapping.ForeignKey;
 import org.hibernate.mapping.Table;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.junit.Assert;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -51,17 +54,13 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.shared.hibernate.config.DescriptiveSessionFactoryBean;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
-import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePM;
-import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP;
 import ch.vd.uniregctb.declaration.DeclarationImpotSource;
 import ch.vd.uniregctb.declaration.DelaiDeclaration;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
 import ch.vd.uniregctb.declaration.EtatDeclarationEchue;
 import ch.vd.uniregctb.declaration.EtatDeclarationEmise;
-import ch.vd.uniregctb.declaration.EtatDeclarationRappelee;
 import ch.vd.uniregctb.declaration.EtatDeclarationRetournee;
 import ch.vd.uniregctb.declaration.EtatDeclarationSommee;
-import ch.vd.uniregctb.declaration.EtatDeclarationSuspendue;
 import ch.vd.uniregctb.declaration.ModeleDocument;
 import ch.vd.uniregctb.declaration.ModeleFeuilleDocument;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
@@ -72,16 +71,12 @@ import ch.vd.uniregctb.rf.PartPropriete;
 import ch.vd.uniregctb.rf.Proprietaire;
 import ch.vd.uniregctb.rf.TypeImmeuble;
 import ch.vd.uniregctb.rf.TypeMutation;
-import ch.vd.uniregctb.tiers.ActiviteEconomique;
 import ch.vd.uniregctb.tiers.AppartenanceMenage;
 import ch.vd.uniregctb.tiers.AutreCommunaute;
-import ch.vd.uniregctb.tiers.Bouclement;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.ConseilLegal;
 import ch.vd.uniregctb.tiers.ContactImpotSource;
 import ch.vd.uniregctb.tiers.Contribuable;
-import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesMorales;
-import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
 import ch.vd.uniregctb.tiers.Curatelle;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.DecisionAci;
@@ -89,12 +84,9 @@ import ch.vd.uniregctb.tiers.DroitAcces;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.Etablissement;
-import ch.vd.uniregctb.tiers.EtatEntreprise;
-import ch.vd.uniregctb.tiers.FlagEntreprise;
 import ch.vd.uniregctb.tiers.ForDebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.ForFiscalAutreImpot;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipalPM;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
+import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.Parente;
@@ -104,16 +96,11 @@ import ch.vd.uniregctb.tiers.SituationFamilleMenageCommun;
 import ch.vd.uniregctb.tiers.TacheAnnulationDeclarationImpot;
 import ch.vd.uniregctb.tiers.TacheControleDossier;
 import ch.vd.uniregctb.tiers.TacheEnvoiDeclarationImpot;
-import ch.vd.uniregctb.tiers.TacheEnvoiDeclarationImpotPM;
-import ch.vd.uniregctb.tiers.TacheEnvoiDeclarationImpotPP;
 import ch.vd.uniregctb.tiers.TacheNouveauDossier;
 import ch.vd.uniregctb.tiers.TacheTransmissionDossier;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.Tutelle;
-import ch.vd.uniregctb.type.CategorieEntreprise;
-import ch.vd.uniregctb.type.DayMonth;
-import ch.vd.uniregctb.type.EtatDelaiDeclaration;
 import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
@@ -128,10 +115,7 @@ import ch.vd.uniregctb.type.TypeContribuable;
 import ch.vd.uniregctb.type.TypeDocument;
 import ch.vd.uniregctb.type.TypeDroitAcces;
 import ch.vd.uniregctb.type.TypeEtatDeclaration;
-import ch.vd.uniregctb.type.TypeEtatEntreprise;
 import ch.vd.uniregctb.type.TypeEtatTache;
-import ch.vd.uniregctb.type.TypeFlagEntreprise;
-import ch.vd.uniregctb.type.TypeGenerationEtatEntreprise;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -174,7 +158,7 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 	protected TiersDAO tiersDAO;
 	protected SessionFactory sessionFactory;
 
-	public enum ProducerType {
+	public static enum ProducerType {
 		Flat,
 		Cvs,
 		Xml,
@@ -474,7 +458,7 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 	}
 
 	protected static void assertForPrincipal(RegDate debut, MotifFor motifOuverture, TypeAutoriteFiscale type, int noOfs,
-	                                         MotifRattachement motif, ModeImposition modeImposition, ForFiscalPrincipalPP forPrincipal) {
+			MotifRattachement motif, ModeImposition modeImposition, ForFiscalPrincipal forPrincipal) {
 		assertNotNull(forPrincipal);
 		assertEquals(debut, forPrincipal.getDateDebut());
 		assertEquals(motifOuverture, forPrincipal.getMotifOuverture());
@@ -487,7 +471,7 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 	}
 
 	protected static void assertForPrincipal(RegDate debut, MotifFor motifOuverture, @Nullable RegDate fin, @Nullable MotifFor motifFermeture,
-	                                         TypeAutoriteFiscale type, int noOfs, MotifRattachement motif, ModeImposition modeImposition, ForFiscalPrincipalPP forPrincipal) {
+			TypeAutoriteFiscale type, int noOfs, MotifRattachement motif, ModeImposition modeImposition, ForFiscalPrincipal forPrincipal) {
 		assertNotNull(forPrincipal);
 		assertEquals(debut, forPrincipal.getDateDebut());
 		assertEquals(motifOuverture, forPrincipal.getMotifOuverture());
@@ -500,7 +484,7 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 	}
 
 	protected static void assertForSecondaire(RegDate debut, MotifFor motifOuverture, TypeAutoriteFiscale type, int noOfs,
-	                                          MotifRattachement motif, ForFiscalSecondaire forSecondaire) {
+			MotifRattachement motif, ForFiscalSecondaire forSecondaire) {
 		assertNotNull(forSecondaire);
 		assertEquals(debut, forSecondaire.getDateDebut());
 		assertEquals(motifOuverture, forSecondaire.getMotifOuverture());
@@ -512,7 +496,7 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 	}
 
 	protected static void assertForSecondaire(RegDate debut, MotifFor motifOuverture, RegDate fin, MotifFor motifFermeture,
-	                                          TypeAutoriteFiscale type, int noOfs, MotifRattachement motif, ForFiscalSecondaire forSecondaire) {
+			TypeAutoriteFiscale type, int noOfs, MotifRattachement motif, ForFiscalSecondaire forSecondaire) {
 		assertNotNull(forSecondaire);
 		assertEquals(debut, forSecondaire.getDateDebut());
 		assertEquals(motifOuverture, forSecondaire.getMotifOuverture());
@@ -546,11 +530,11 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 	 * @param dateRetourImprimee le délai de retour imprimé sur la déclaration
 	 * @param declarations       la collection de déclarations à asserter.
 	 */
-	protected static void assertDIPP(RegDate debut, RegDate fin, @Nullable TypeEtatDeclaration etat, TypeContribuable typeContribuable,
-	                                 TypeDocument typeDocument, Long idCollRetour, @Nullable RegDate dateRetourImprimee, List<Declaration> declarations) {
+	protected static void assertDI(RegDate debut, RegDate fin, @Nullable TypeEtatDeclaration etat, TypeContribuable typeContribuable,
+	                               TypeDocument typeDocument, Long idCollRetour, @Nullable RegDate dateRetourImprimee, List<Declaration> declarations) {
 		assertNotNull(declarations);
 		assertEquals(declarations.size(), 1);
-		assertDIPP(debut, fin, etat, typeContribuable, typeDocument, idCollRetour, dateRetourImprimee, declarations.get(0));
+		assertDI(debut, fin, etat, typeContribuable, typeDocument, idCollRetour, dateRetourImprimee, declarations.get(0));
 	}
 
 	/**
@@ -565,10 +549,10 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 	 * @param delaiRetourImprime le délai de retour imprimé sur la déclaration
 	 * @param declaration        la déclaration à asserter.
 	 */
-	protected static void assertDIPP(RegDate debut, RegDate fin, @Nullable TypeEtatDeclaration etat, TypeContribuable typeContribuable,
-	                                 TypeDocument typeDocument, Long idCollRetour, @Nullable RegDate delaiRetourImprime, Declaration declaration) {
+	protected static void assertDI(RegDate debut, RegDate fin, @Nullable TypeEtatDeclaration etat, TypeContribuable typeContribuable,
+	                               TypeDocument typeDocument, Long idCollRetour, @Nullable RegDate delaiRetourImprime, Declaration declaration) {
 		assertNotNull(declaration);
-		DeclarationImpotOrdinairePP di = (DeclarationImpotOrdinairePP) declaration;
+		DeclarationImpotOrdinaire di = (DeclarationImpotOrdinaire) declaration;
 		assertEquals(debut, di.getDateDebut());
 		assertEquals(fin, di.getDateFin());
 		final EtatDeclaration e = di.getDernierEtat();
@@ -583,7 +567,7 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 	 * Asserte que la tâche passée en paramètre possède bien les valeurs spécifiées.
 	 */
 	protected static void assertTache(TypeEtatTache etat, RegDate dateEcheance, RegDate dateDebut, RegDate dateFin,
-	                                  TypeContribuable typeCtb, TypeDocument typeDoc, TypeAdresseRetour adresseRetour, @Nullable CollectiviteAdministrative collectivite, TacheEnvoiDeclarationImpotPP tache) {
+	                                  TypeContribuable typeCtb, TypeDocument typeDoc, TypeAdresseRetour adresseRetour, @Nullable CollectiviteAdministrative collectivite, TacheEnvoiDeclarationImpot tache) {
 		assertNotNull(tache);
 		assertEquals(etat, tache.getEtat());
 		assertEquals(dateEcheance, tache.getDateEcheance());
@@ -592,7 +576,7 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 		assertEquals(typeCtb, tache.getTypeContribuable());
 		assertEquals(typeDoc, tache.getTypeDocument());
 		assertEquals(adresseRetour, tache.getAdresseRetour());
-		if (collectivite != null) {
+		if(collectivite!=null){
 			assertEquals(collectivite, tache.getCollectiviteAdministrativeAssignee());
 		}
 
@@ -602,44 +586,21 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 	 * Asserte que la tâche passée en paramètre possède bien les valeurs spécifiées.
 	 */
 	protected static void assertTache(TypeEtatTache etat, RegDate dateEcheance, RegDate dateDebut, RegDate dateFin,
-	                                  TypeContribuable typeCtb, TypeDocument typeDoc, @Nullable CollectiviteAdministrative collectivite, TacheEnvoiDeclarationImpotPM tache) {
-		assertNotNull(tache);
-		assertEquals(etat, tache.getEtat());
-		assertEquals(dateEcheance, tache.getDateEcheance());
-		assertEquals(dateDebut, tache.getDateDebut());
-		assertEquals(dateFin, tache.getDateFin());
-		assertEquals(typeCtb, tache.getTypeContribuable());
-		assertEquals(typeDoc, tache.getTypeDocument());
-		if (collectivite != null) {
-			assertEquals(collectivite, tache.getCollectiviteAdministrativeAssignee());
-		}
-	}
-
-	/**
-	 * Asserte que la tâche passée en paramètre possède bien les valeurs spécifiées.
-	 */
-	protected static void assertTache(TypeEtatTache etat, RegDate dateEcheance, RegDate dateDebut, RegDate dateFin,
-	                                  TypeContribuable typeCtb, TypeDocument typeDoc, TypeAdresseRetour adresseRetour, TacheEnvoiDeclarationImpotPP tache) {
+	                                  TypeContribuable typeCtb, TypeDocument typeDoc, TypeAdresseRetour adresseRetour, TacheEnvoiDeclarationImpot tache) {
 		assertTache(etat, dateEcheance, dateDebut, dateFin, typeCtb, typeDoc, adresseRetour, null, tache);
+
 	}
 
 	/**
 	 * Asserte que la tâche passée en paramètre possède bien les valeurs spécifiées.
 	 */
 	protected static void assertTache(TypeEtatTache etat, RegDate dateEcheance, RegDate dateDebut, RegDate dateFin,
-	                                  TypeContribuable typeCtb, TypeDocument typeDoc, TacheEnvoiDeclarationImpotPM tache) {
-		assertTache(etat, dateEcheance, dateDebut, dateFin, typeCtb, typeDoc, null, tache);
-	}
-
-	/**
-	 * Asserte que la tâche passée en paramètre possède bien les valeurs spécifiées.
-	 */
-	protected static void assertTache(TypeEtatTache etat, RegDate dateEcheance, RegDate dateDebut, RegDate dateFin, TacheAnnulationDeclarationImpot tache) {
+			TacheAnnulationDeclarationImpot tache) {
 		assertNotNull(tache);
 		assertEquals(etat, tache.getEtat());
 		assertEquals(dateEcheance, tache.getDateEcheance());
-		assertEquals(dateDebut, tache.getDeclaration().getDateDebut());
-		assertEquals(dateFin, tache.getDeclaration().getDateFin());
+		assertEquals(dateDebut, tache.getDeclarationImpotOrdinaire().getDateDebut());
+		assertEquals(dateFin, tache.getDeclarationImpotOrdinaire().getDateFin());
 	}
 
 	/**
@@ -648,7 +609,7 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 	protected static void assertTacheAnnulationDI(TypeEtatTache etat, long diId, boolean annule, TacheAnnulationDeclarationImpot tache) {
 		assertNotNull(tache);
 		assertEquals(etat, tache.getEtat());
-		assertEquals(Long.valueOf(diId), tache.getDeclaration().getId());
+		assertEquals(Long.valueOf(diId), tache.getDeclarationImpotOrdinaire().getId());
 		assertEquals(annule, tache.isAnnule());
 	}
 
@@ -683,12 +644,11 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 	 * Asserte que la collection passée en paramètre possède bien une seule tâche et que celle-ci possède bien les valeurs spécifiées.
 	 */
 	protected static void assertOneTache(TypeEtatTache etat, RegDate dateEcheance, RegDate dateDebut, RegDate dateFin,
-	                                     TypeContribuable typeCtb, TypeDocument typeDoc, TypeAdresseRetour adresseRetour, List<? extends TacheEnvoiDeclarationImpot> taches) {
+	                                     TypeContribuable typeCtb, TypeDocument typeDoc, TypeAdresseRetour adresseRetour, List<TacheEnvoiDeclarationImpot> taches) {
 		assertNotNull(taches);
 		assertEquals(1, taches.size());
 		final TacheEnvoiDeclarationImpot tache = taches.get(0);
-		assertEquals(TacheEnvoiDeclarationImpotPP.class, tache.getClass());
-		assertTache(etat, dateEcheance, dateDebut, dateFin, typeCtb, typeDoc, adresseRetour, (TacheEnvoiDeclarationImpotPP) tache);
+		assertTache(etat, dateEcheance, dateDebut, dateFin, typeCtb, typeDoc, adresseRetour, tache);
 	}
 
 	protected static void assertSituation(RegDate debut, RegDate fin, int nombreEnfants, TarifImpotSource tarif,
@@ -701,23 +661,13 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 	}
 
 	/**
-	 * Ajoute une période fiscale dans la base de données (avec les délais usuels si le paramètre "addParametres" est à <code>true</code>)
-	 */
-	protected PeriodeFiscale addPeriodeFiscale(int annee, boolean addParametres) {
-		final PeriodeFiscale periode = new PeriodeFiscale();
-		periode.setAnnee(annee);
-		if (addParametres) {
-			periode.addAllPeriodeFiscaleParametresPP(date(annee + 1, 1, 31), date(annee + 1, 3, 31), date(annee + 1, 6, 30));
-			periode.addAllPeriodeFiscaleParametresPM(6, false, 75, false);
-		}
-		return merge(periode);
-	}
-
-	/**
 	 * Ajoute une période fiscale dans la base de données (avec les délais usuels)
 	 */
 	protected PeriodeFiscale addPeriodeFiscale(int annee) {
-		return addPeriodeFiscale(annee, true);
+		final PeriodeFiscale periode = new PeriodeFiscale();
+		periode.setAnnee(annee);
+		periode.setAllPeriodeFiscaleParametres(date(annee + 1, 1, 31), date(annee + 1, 3, 31), date(annee + 1, 6, 30));
+		return merge(periode);
 	}
 
 	/**
@@ -768,23 +718,23 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 	/**
 	 * Ajoute une déclaration d'impôt ordinaire sur le contribuable spécifié.
 	 */
-	protected DeclarationImpotOrdinairePP addDeclarationImpot(ContribuableImpositionPersonnesPhysiques tiers, PeriodeFiscale periode, RegDate debut, RegDate fin,
-	                                                          CollectiviteAdministrative retourCollectiviteAdministrative, TypeContribuable typeC, ModeleDocument modele) {
+	protected DeclarationImpotOrdinaire addDeclarationImpot(Contribuable tiers, PeriodeFiscale periode, RegDate debut, RegDate fin,
+	                                                        CollectiviteAdministrative retourCollectiviteAdministrative, TypeContribuable typeC, ModeleDocument modele) {
 
-		final DeclarationImpotOrdinairePP d = new DeclarationImpotOrdinairePP();
+		final DeclarationImpotOrdinaire d = new DeclarationImpotOrdinaire();
 		d.setPeriode(periode);
 		d.setDateDebut(debut);
 		d.setDateFin(fin);
 		d.setTypeContribuable(typeC);
 		d.setModeleDocument(modele);
 		d.setRetourCollectiviteAdministrativeId(retourCollectiviteAdministrative == null ? null : retourCollectiviteAdministrative.getId());
-		if (periode.getAnnee() >= DeclarationImpotOrdinairePP.PREMIERE_ANNEE_RETOUR_ELECTRONIQUE) {
+		if (periode.getAnnee() >= DeclarationImpotOrdinaire.PREMIERE_ANNEE_RETOUR_ELECTRONIQUE) {
 			d.setCodeSegment(0);
 		}
 		return assignerNumeroSequenceEtSaveDeclarationImpot(tiers, d);
 	}
 
-	protected <T extends DeclarationImpotOrdinaire> T assignerNumeroSequenceEtSaveDeclarationImpot(Contribuable ctb, T di) {
+	protected DeclarationImpotOrdinaire assignerNumeroSequenceEtSaveDeclarationImpot(Contribuable ctb, DeclarationImpotOrdinaire di) {
 
 		int numero = 0;
 		final int annee = di.getPeriode().getAnnee();
@@ -805,45 +755,12 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 		return di;
 	}
 
-	protected DeclarationImpotOrdinairePM addDeclarationImpot(ContribuableImpositionPersonnesMorales pm, PeriodeFiscale periode, RegDate debut, RegDate fin,
-	                                                          RegDate debutExercice, RegDate finExercice,
-	                                                          CollectiviteAdministrative retourCollectiviteAdministrative,
-	                                                          TypeContribuable typeContribuable, ModeleDocument modele) {
-		final DeclarationImpotOrdinairePM d = new DeclarationImpotOrdinairePM();
-		d.setPeriode(periode);
-		d.setDateDebut(debut);
-		d.setDateFin(fin);
-		d.setDateDebutExerciceCommercial(debutExercice);
-		d.setDateFinExerciceCommercial(finExercice);
-		d.setTypeContribuable(typeContribuable);
-		d.setModeleDocument(modele);
-		d.setRetourCollectiviteAdministrativeId(retourCollectiviteAdministrative == null ? null : retourCollectiviteAdministrative.getId());
-		return assignerNumeroSequenceEtSaveDeclarationImpot(pm, d);
-	}
-
-	protected DeclarationImpotOrdinairePM addDeclarationImpot(ContribuableImpositionPersonnesMorales pm, PeriodeFiscale periode, RegDate debut, RegDate fin,
-	                                                          CollectiviteAdministrative retourCollectiviteAdministrative,
-	                                                          TypeContribuable typeContribuable, ModeleDocument modele) {
-		return addDeclarationImpot(pm, periode, debut, fin, debut, fin, retourCollectiviteAdministrative, typeContribuable, modele);
-	}
-
 	/**
-	 * Ajoute une tâche d'envoi de déclaration d'impôt PP avec les paramètres spécifiés.
+	 * Ajoute une tâche d'envoi de déclaration d'impôt avec les paramètres spécifiés.
 	 */
-	protected TacheEnvoiDeclarationImpotPP addTacheEnvoiDIPP(TypeEtatTache etat, RegDate dateEcheance, RegDate dateDebut, RegDate dateFin, TypeContribuable typeContribuable, TypeDocument typeDocument,
-	                                                         ContribuableImpositionPersonnesPhysiques contribuable, @Nullable Qualification qualification, @Nullable Integer codeSegment, @Nullable CollectiviteAdministrative colAdm) {
-		TacheEnvoiDeclarationImpotPP tache = new TacheEnvoiDeclarationImpotPP(etat, dateEcheance, contribuable, dateDebut, dateFin, typeContribuable, typeDocument, qualification, codeSegment, TypeAdresseRetour.CEDI, colAdm);
-		tache = merge(tache);
-		return tache;
-	}
-
-	/**
-	 * Ajoute une tâche d'envoi de déclaration d'impôt PP avec les paramètres spécifiés.
-	 */
-	protected TacheEnvoiDeclarationImpotPM addTacheEnvoiDIPM(TypeEtatTache etat, RegDate dateEcheance, RegDate dateDebut, RegDate dateFin,
-	                                                         RegDate dateDebutExercice, RegDate dateFinExercice, TypeContribuable typeContribuable, TypeDocument typeDocument,
-	                                                         ContribuableImpositionPersonnesMorales contribuable, CategorieEntreprise categoreEntreprise, @Nullable CollectiviteAdministrative colAdm) {
-		TacheEnvoiDeclarationImpotPM tache = new TacheEnvoiDeclarationImpotPM(etat, dateEcheance, contribuable, dateDebut, dateFin, dateDebutExercice, dateFinExercice, typeContribuable, typeDocument, categoreEntreprise, colAdm);
+	protected TacheEnvoiDeclarationImpot addTacheEnvoiDI(TypeEtatTache etat, RegDate dateEcheance, RegDate dateDebut, RegDate dateFin, TypeContribuable typeContribuable, TypeDocument typeDocument,
+	                                                     Contribuable contribuable, @Nullable Qualification qualification, @Nullable Integer codeSegment, @Nullable CollectiviteAdministrative colAdm) {
+		TacheEnvoiDeclarationImpot tache = new TacheEnvoiDeclarationImpot(etat, dateEcheance, contribuable, dateDebut, dateFin, typeContribuable, typeDocument, qualification, codeSegment, TypeAdresseRetour.CEDI, colAdm);
 		tache = merge(tache);
 		return tache;
 	}
@@ -1027,22 +944,6 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 		return rapport;
 	}
 
-	protected ActiviteEconomique addActiviteEconomique(PersonnePhysique pp, Etablissement etb, RegDate dateDebut, @Nullable RegDate dateFin, boolean principal) {
-		ActiviteEconomique rapport = new ActiviteEconomique(dateDebut, dateFin, pp, etb, principal);
-		rapport = merge(rapport);
-		pp.addRapportSujet(rapport);
-		etb.addRapportObjet(rapport);
-		return rapport;
-	}
-
-	protected ActiviteEconomique addActiviteEconomique(Entreprise entreprise, Etablissement etb, RegDate dateDebut, @Nullable RegDate dateFin, boolean principal) {
-		ActiviteEconomique rapport = new ActiviteEconomique(dateDebut, dateFin, entreprise, etb, principal);
-		rapport = merge(rapport);
-		entreprise.addRapportSujet(rapport);
-		etb.addRapportObjet(rapport);
-		return rapport;
-	}
-
 	protected AutreCommunaute addAutreCommunaute(String nom) {
 		final AutreCommunaute communaute = new AutreCommunaute();
 		communaute.setNom(nom);
@@ -1083,30 +984,11 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 		return dpi;
 	}
 
-	protected Entreprise addEntrepriseConnueAuCivil(long idCantonal) {
-		final Entreprise ent = new Entreprise();
-		ent.setNumeroEntreprise(idCantonal);
-		return merge(ent);
-	}
-
-	protected Entreprise addEntrepriseInconnueAuCivil() {
-		final Entreprise ent = new Entreprise();
-		return merge(ent);
-	}
-
-	protected Entreprise addEntrepriseInconnueAuCivil(long noContribuable) {
-		final Entreprise ent = new Entreprise(noContribuable);
-		return merge(ent);
-	}
-
-	protected Etablissement addEtablissement() {
-		final Etablissement etb = new Etablissement();
-		return merge(etb);
-	}
-
-	protected ActiviteEconomique addLienActiviteEconomique(Contribuable ctb, Etablissement etablissement, RegDate dateDebut, @Nullable RegDate dateFin, boolean principal) {
-		final ActiviteEconomique ret = new ActiviteEconomique(dateDebut, dateFin, ctb, etablissement, principal);
-		return merge(ret);
+	protected Entreprise addEntreprise(@NotNull Long numeroEntreprise) {
+		Entreprise ent = new Entreprise();
+		ent.setNumero(numeroEntreprise);
+		ent = merge(ent);
+		return ent;
 	}
 
 	protected CollectiviteAdministrative addCollAdm(int numero) {
@@ -1115,56 +997,44 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 		return merge(ca);
 	}
 
-	protected EtatDeclarationEmise addEtatDeclarationEmise(Declaration declaration, RegDate dateObtention) {
-		final EtatDeclarationEmise etat = new EtatDeclarationEmise(dateObtention);
+	protected void addEtatDeclarationEmise(Declaration declaration, RegDate dateObtention) {
+		EtatDeclarationEmise etat = new EtatDeclarationEmise(dateObtention);
 		declaration.addEtat(etat);
-		return etat;
+		merge(declaration);
 	}
 
-	protected EtatDeclarationEchue addEtatDeclarationEchue(Declaration declaration, RegDate dateObtention) {
-		final EtatDeclarationEchue etat = new EtatDeclarationEchue(dateObtention);
+	protected void addEtatDeclarationEchue(Declaration declaration, RegDate dateObtention) {
+		EtatDeclarationEchue etat = new EtatDeclarationEchue(dateObtention);
 		declaration.addEtat(etat);
-		return etat;
+		merge(declaration);
 	}
 
-	protected EtatDeclarationRetournee addEtatDeclarationRetournee(Declaration declaration, RegDate dateObtention) {
-		return addEtatDeclarationRetournee(declaration, dateObtention, "TEST");
+	protected void addEtatDeclarationRetournee(Declaration declaration, RegDate dateObtention) {
+		EtatDeclarationRetournee etat = new EtatDeclarationRetournee(dateObtention, "TEST");
+		declaration.addEtat(etat);
+		merge(declaration);
 	}
 
-	protected EtatDeclarationRetournee addEtatDeclarationRetournee(Declaration declaration, RegDate dateObtention, @Nullable String source) {
-		final EtatDeclarationRetournee etat = new EtatDeclarationRetournee(dateObtention, source);
+	protected void addEtatDeclarationRetournee(Declaration declaration, RegDate dateObtention, @Nullable String source) {
+		EtatDeclarationRetournee etat = new EtatDeclarationRetournee(dateObtention, "TEST");
+		etat.setSource(source);
 		declaration.addEtat(etat);
-		return etat;
+		merge(declaration);
 	}
 
-	protected EtatDeclarationSommee addEtatDeclarationSommee(Declaration declaration, RegDate dateObtention, RegDate dateEnvoi) {
-		Assert.assertTrue(declaration.isSommable());
-		final EtatDeclarationSommee etat = new EtatDeclarationSommee(dateObtention, dateEnvoi);
+	protected void addEtatDeclarationSommee(Declaration declaration, RegDate dateObtention, RegDate dateEnvoi) {
+		EtatDeclarationSommee etat = new EtatDeclarationSommee(dateObtention, dateEnvoi);
 		declaration.addEtat(etat);
-		return etat;
-	}
-
-	protected EtatDeclarationRappelee addEtatDeclarationRappelee(Declaration declaration, RegDate dateObtention, RegDate dateEnvoi) {
-		Assert.assertTrue(declaration.isRappelable());
-		final EtatDeclarationRappelee etat = new EtatDeclarationRappelee(dateObtention, dateEnvoi);
-		declaration.addEtat(etat);
-		return etat;
-	}
-
-	protected EtatDeclarationSuspendue addEtatDeclarationSuspendue(Declaration declaration, RegDate dateObtention) {
-		final EtatDeclarationSuspendue etat = new EtatDeclarationSuspendue(dateObtention);
-		declaration.addEtat(etat);
-		return etat;
+		merge(declaration);
 	}
 	
-	protected DelaiDeclaration addDelaiDeclaration(Declaration declaration, RegDate dateTraitement, RegDate delaiAccordeAu, EtatDelaiDeclaration etat) {
-		final DelaiDeclaration delai = new DelaiDeclaration();
-		delai.setEtat(etat);
+	protected void addDelaiDeclaration(Declaration declaration, RegDate dateTraitement, RegDate delaiAccordeAu) {
+		DelaiDeclaration delai = new DelaiDeclaration();
 		delai.setDateTraitement(dateTraitement);
 		delai.setDateDemande(dateTraitement);
 		delai.setDelaiAccordeAu(delaiAccordeAu);
 		declaration.addDelai(delai);
-		return delai;
+		merge(declaration);
 	}
 
 	/**
@@ -1188,9 +1058,9 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 	/**
 	 * Ajoute un for principal sur le contribuable spécifié.
 	 */
-	protected ForFiscalPrincipalPP addForPrincipal(ContribuableImpositionPersonnesPhysiques contribuable, RegDate ouverture, MotifFor motifOuverture, @Nullable RegDate fermeture,
-	                                               @Nullable MotifFor motifFermeture, Integer noOFS, TypeAutoriteFiscale type, ModeImposition modeImposition, MotifRattachement motif) {
-		ForFiscalPrincipalPP f = new ForFiscalPrincipalPP();
+	protected ForFiscalPrincipal addForPrincipal(Contribuable contribuable, RegDate ouverture, MotifFor motifOuverture, @Nullable RegDate fermeture,
+			@Nullable MotifFor motifFermeture, Integer noOFS, TypeAutoriteFiscale type, MotifRattachement motif) {
+		ForFiscalPrincipal f = new ForFiscalPrincipal();
 		f.setDateDebut(ouverture);
 		f.setMotifOuverture(motifOuverture);
 		f.setDateFin(fermeture);
@@ -1199,7 +1069,7 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 		f.setTypeAutoriteFiscale(type);
 		f.setNumeroOfsAutoriteFiscale(noOFS);
 		f.setMotifRattachement(motif);
-		f.setModeImposition(modeImposition);
+		f.setModeImposition(ModeImposition.ORDINAIRE);
 		f = tiersDAO.addAndSave(contribuable, f);
 		return f;
 	}
@@ -1208,9 +1078,9 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 		/**
 	 * Ajoute un for principal Source sur le contribuable spécifié.
 	 */
-	protected ForFiscalPrincipalPP addForPrincipalSource(ContribuableImpositionPersonnesPhysiques contribuable, RegDate ouverture, MotifFor motifOuverture, RegDate fermeture,
+	protected ForFiscalPrincipal addForPrincipalSource(Contribuable contribuable, RegDate ouverture, MotifFor motifOuverture, RegDate fermeture,
 			MotifFor motifFermeture, Integer noOFS) {
-		ForFiscalPrincipalPP f = new ForFiscalPrincipalPP();
+		ForFiscalPrincipal f = new ForFiscalPrincipal();
 		f.setDateDebut(ouverture);
 		f.setMotifOuverture(motifOuverture);
 		f.setDateFin(fermeture);
@@ -1307,45 +1177,6 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 		return decision;
 	}
 
-	protected Bouclement addBouclement(Entreprise e, RegDate dateDebut, DayMonth ancrage, int periodeEnMois) {
-		final Bouclement bouclement = new Bouclement();
-		bouclement.setAncrage(ancrage);
-		bouclement.setDateDebut(dateDebut);
-		bouclement.setPeriodeMois(periodeEnMois);
-		return tiersDAO.addAndSave(e, bouclement);
-	}
-
-	protected EtatEntreprise addEtatEntreprise(Entreprise e, RegDate dateObtention, TypeEtatEntreprise type, TypeGenerationEtatEntreprise generation) {
-		final EtatEntreprise etat = new EtatEntreprise();
-		etat.setDateObtention(dateObtention);
-		etat.setType(type);
-		etat.setGeneration(generation);
-		return tiersDAO.addAndSave(e, etat);
-	}
-
-	protected FlagEntreprise addFlagEntreprise(Entreprise e, RegDate dateDebut, @Nullable RegDate dateFin, TypeFlagEntreprise type) {
-		final FlagEntreprise flag = new FlagEntreprise();
-		flag.setType(type);
-		flag.setDateDebut(dateDebut);
-		flag.setDateFin(dateFin);
-		return tiersDAO.addAndSave(e, flag);
-	}
-
-	protected ForFiscalPrincipalPM addForPrincipal(ContribuableImpositionPersonnesMorales ctb, RegDate ouverture, MotifFor motifOuverture, @Nullable RegDate fermeture,
-	                                               @Nullable MotifFor motifFermeture, Integer noOFS, TypeAutoriteFiscale type, MotifRattachement motif, GenreImpot genreImpot) {
-
-		final ForFiscalPrincipalPM ffp = new ForFiscalPrincipalPM();
-		ffp.setDateDebut(ouverture);
-		ffp.setMotifOuverture(motifOuverture);
-		ffp.setDateFin(fermeture);
-		ffp.setMotifFermeture(motifFermeture);
-		ffp.setGenreImpot(genreImpot);
-		ffp.setTypeAutoriteFiscale(type);
-		ffp.setNumeroOfsAutoriteFiscale(noOFS);
-		ffp.setMotifRattachement(motif);
-		return tiersDAO.addAndSave(ctb, ffp);
-	}
-
 	/**
 	 * Raccourci pour créer une RegDate.
 	 */
@@ -1372,19 +1203,22 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 	 * @return la liste de tous les tiers de la base qui sont des instances des classes données
 	 */
 	@SafeVarargs
-	protected final <T extends Tiers> List<T> allTiersOfType(final Class<? extends T>... classes) {
+	protected final List<Tiers> allTiersOfType(final Class<? extends Tiers>... classes) {
 		if (classes == null) {
 			return Collections.emptyList();
 		}
 		final List<Tiers> all = tiersDAO.getAll();
-		final List<T> filtered = new ArrayList<>(all.size());
-		for (Tiers t : all) {
-			for (Class<? extends T> clazz : classes) {
-				if (clazz.isAssignableFrom(t.getClass())) {
-					filtered.add((T) t);
+		CollectionUtils.filter(all, new Predicate<Tiers>() {
+			@Override
+			public boolean evaluate(Tiers object) {
+				for (Class<? extends Tiers> clazz : classes) {
+					if (clazz.isAssignableFrom(object.getClass())) {
+						return true;
+					}
 				}
+				return false;
 			}
-		}
-		return filtered;
+		});
+		return all;
 	}
 }

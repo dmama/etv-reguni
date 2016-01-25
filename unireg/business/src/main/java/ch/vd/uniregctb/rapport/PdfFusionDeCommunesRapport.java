@@ -1,7 +1,6 @@
 package ch.vd.uniregctb.rapport;
 
 import java.io.OutputStream;
-import java.util.Collection;
 import java.util.Date;
 import java.util.Set;
 
@@ -14,7 +13,6 @@ import ch.vd.registre.base.utils.Assert;
 import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.Commune;
-import ch.vd.uniregctb.common.CsvHelper;
 import ch.vd.uniregctb.common.TemporaryFile;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.metier.FusionDeCommunesResults;
@@ -66,24 +64,18 @@ public class PdfFusionDeCommunesRapport extends PdfRapport {
 						+ "les valeurs ci-dessous sont donc incomplètes.");
 			}
 
-			document.addTableSimple(new float[]{70, 30}, new PdfRapport.TableSimpleCallback() {
+			document.addTableSimple(2, new PdfRapport.TableSimpleCallback() {
 				@Override
 				public void fillTable(PdfTableSimple table) throws DocumentException {
-					table.addLigne("Nombre total de tiers examinés:", String.valueOf(results.nbTiersExamines));
+					table.addLigne("Nombre total de tiers:", String.valueOf(results.getNbTiersTotal()));
+					table.addLigne("Nombre de tiers traités:", String.valueOf(results.tiersTraites.size()));
+					table.addLigne("Nombre de tiers ignorés:", String.valueOf(results.tiersIgnores.size()));
+					table.addLigne("Nombre de tiers en erreur:", String.valueOf(results.tiersEnErrors.size()));
 
-					table.addLigne("Nombre de tiers en erreur:", String.valueOf(results.tiersEnErreur.size()));
-
-					table.addLigne("Nombre de tiers traités pour un for:", String.valueOf(results.tiersTraitesPourFors.size()));
-					table.addLigne("Nombre de tiers ignorés pour les fors:", String.valueOf(results.tiersIgnoresPourFors.size()));
-
-					table.addLigne("Nombre de tiers traités pour une décision ACI:", String.valueOf(results.tiersTraitesPourDecisions.size()));
-					table.addLigne("Nombre de tiers ignorés pour les décisions ACI:", String.valueOf(results.tiersIgnoresPourDecisions.size()));
-
-					table.addLigne("Nombre de tiers traités pour un domicile d'établissement:", String.valueOf(results.tiersTraitesPourDomicilesEtablissement.size()));
-					table.addLigne("Nombre de tiers ignorés pour les domiciles d'établissement:", String.valueOf(results.tiersIgnoresPourDomicilesEtablissement.size()));
-
-					table.addLigne("Nombre de tiers traités pour un allègement fiscal:", String.valueOf(results.tiersTraitesPourAllegementsFiscaux.size()));
-					table.addLigne("Nombre de tiers ignorés pour les allègements fiscaux:", String.valueOf(results.tiersIgnoresPourAllegementsFiscaux.size()));
+					table.addLigne("Nombre total de tiers avec décisions:", String.valueOf(results.getNbTiersAvecDecisionTotal()));
+					table.addLigne("Nombre de tiers avec décision traités:", String.valueOf(results.tiersAvecDecisionTraites.size()));
+					table.addLigne("Nombre de tiers avec décision ignorés:", String.valueOf(results.tiersAvecDecisonIgnores.size()));
+					table.addLigne("Nombre de tiers avec décision en erreur:", String.valueOf(results.tiersAvecDecisionEnErrors.size()));
 
 					table.addLigne("Durée d'exécution du job:", formatDureeExecution(results));
 					table.addLigne("Date de génération du rapport:", formatTimestamp(dateGeneration));
@@ -91,92 +83,62 @@ public class PdfFusionDeCommunesRapport extends PdfRapport {
 			});
 		}
 
-		// Tiers en erreur
+		// Habitants traités
 		{
-			final String filename = "tiers_en_erreur.csv";
-			final String titre = "Liste des tiers en erreur";
-			final String listVide = "(aucun)";
-			try (TemporaryFile contenu = asCsvFileErreurs(results.tiersEnErreur, filename, status)) {
+			String filename = "tiers_traites.csv";
+			String titre = "Liste des tiers traités";
+			String listVide = "(aucun tiers traité)";
+			try (TemporaryFile contenu = ctbIdsAsCsvFile(results.tiersTraites, filename, status)) {
 				document.addListeDetaillee(writer, titre, listVide, filename, contenu);
 			}
 		}
 
-		// Tiers traités pour leurs fors
+		// Habitants  ignorés
 		{
-			final String filename = "tiers_traites_fors.csv";
-			final String titre = "Liste des tiers traités pour leurs fors";
-			final String listVide = "(aucun)";
-			try (TemporaryFile contenu = ctbIdsAsCsvFile(results.tiersTraitesPourFors, filename, status)) {
+			String filename = "tiers_ignores.csv";
+			String titre = "Liste des tiers ignorés";
+			String listVide = "(aucun tiers ignoré)";
+			try (TemporaryFile contenu = asCsvFile(results.tiersIgnores, filename, status)) {
 				document.addListeDetaillee(writer, titre, listVide, filename, contenu);
 			}
 		}
 
-		// Tiers ignorés dans leurs fors (déjà au bon endroit...)
+		// Habitants en erreurs
 		{
-			final String filename = "tiers_ignores_fors.csv";
-			final String titre = "Liste des tiers ignorés dans leurs fors";
-			final String listVide = "(aucun)";
-			try (TemporaryFile contenu = asCsvFileIgnores(results.tiersIgnoresPourFors, filename, status)) {
+			String filename = "tiers_en_erreur.csv";
+			String titre = "Liste des tiers en erreur";
+			String listVide = "(aucun tiers en erreur)";
+			try (TemporaryFile contenu = asCsvFile(results.tiersEnErrors, filename, status)) {
 				document.addListeDetaillee(writer, titre, listVide, filename, contenu);
 			}
 		}
 
-		// Tiers traités pour leurs décisions ACI
+		// Habitants avec décision traités
 		{
-			final String filename = "tiers_traites_decisions.csv";
-			final String titre = "Liste des tiers traités pour leurs décisions ACI";
-			final String listVide = "(aucun)";
-			try (TemporaryFile contenu = ctbIdsAsCsvFile(results.tiersTraitesPourDecisions, filename, status)) {
+			String filename = "tiers_decision_traites.csv";
+			String titre = "Liste des tiers avec décision ACI traités";
+			String listVide = "(aucun tiers avec décision ACI traité)";
+			try (TemporaryFile contenu = ctbIdsAsCsvFile(results.tiersAvecDecisionTraites, filename, status)) {
 				document.addListeDetaillee(writer, titre, listVide, filename, contenu);
 			}
 		}
 
-		// Tiers ignorés dans leurs décisions ACI (déjà au bon endroit...)
+		// Habitants avec décision ignorés
 		{
-			final String filename = "tiers_ignores_decisions.csv";
-			final String titre = "Liste des tiers ignorés dans leurs décisions ACI";
-			final String listVide = "(aucun)";
-			try (TemporaryFile contenu = asCsvFileIgnores(results.tiersIgnoresPourDecisions, filename, status)) {
+			String filename = "tiers_decision_ignores.csv";
+			String titre = "Liste des tiers avec décision ACI ignorés";
+			String listVide = "(aucun tiers avec décision ACI ignoré)";
+			try (TemporaryFile contenu = asCsvFile(results.tiersAvecDecisonIgnores, filename, status)) {
 				document.addListeDetaillee(writer, titre, listVide, filename, contenu);
 			}
 		}
 
-		// Etablissements traités pour leurs domiciles
+		// Habitants avec décision en erreurs
 		{
-			final String filename = "etablissements_traites_domiciles.csv";
-			final String titre = "Liste des établissements traités pour leurs domiciles";
-			final String listVide = "(aucun)";
-			try (TemporaryFile contenu = ctbIdsAsCsvFile(results.tiersTraitesPourDomicilesEtablissement, filename, status)) {
-				document.addListeDetaillee(writer, titre, listVide, filename, contenu);
-			}
-		}
-
-		// Etablissements ignorés dans leurs domiciles (déjà au bon endroit...)
-		{
-			final String filename = "etablissements_ignores_domiciles.csv";
-			final String titre = "Liste des établissements ignorés dans leurs domiciles";
-			final String listVide = "(aucun)";
-			try (TemporaryFile contenu = asCsvFileIgnores(results.tiersIgnoresPourDomicilesEtablissement, filename, status)) {
-				document.addListeDetaillee(writer, titre, listVide, filename, contenu);
-			}
-		}
-
-		// Entreprises traitées pour leurs allègements fiscaux
-		{
-			final String filename = "entreprises_traitees_allegements.csv";
-			final String titre = "Liste des entreprises traitées pour leurs allègements fiscaux";
-			final String listVide = "(aucun)";
-			try (TemporaryFile contenu = ctbIdsAsCsvFile(results.tiersTraitesPourAllegementsFiscaux, filename, status)) {
-				document.addListeDetaillee(writer, titre, listVide, filename, contenu);
-			}
-		}
-
-		// Entreprises ignorées dans leurs allègements fiscaux (déjà au bon endroit...)
-		{
-			final String filename = "entreprises_ignorees_allegements.csv";
-			final String titre = "Liste des entreprises ignorées dans leurs allègements fiscaux";
-			final String listVide = "(aucun)";
-			try (TemporaryFile contenu = asCsvFileIgnores(results.tiersIgnoresPourAllegementsFiscaux, filename, status)) {
+			String filename = "tiers_decision_en_erreur.csv";
+			String titre = "Liste des tiers avec décision ACI en erreur";
+			String listVide = "(aucun tiers avec décision ACI en erreur)";
+			try (TemporaryFile contenu = asCsvFile(results.tiersAvecDecisionEnErrors, filename, status)) {
 				document.addListeDetaillee(writer, titre, listVide, filename, contenu);
 			}
 		}
@@ -184,39 +146,6 @@ public class PdfFusionDeCommunesRapport extends PdfRapport {
 		document.close();
 
 		status.setMessage("Génération du rapport terminée.");
-	}
-
-	private TemporaryFile asCsvFileErreurs(Collection<FusionDeCommunesResults.Erreur> erreurs, String filename, StatusManager statusManager) {
-		return CsvHelper.asCsvTemporaryFile(erreurs, filename, statusManager, new CsvHelper.FileFiller<FusionDeCommunesResults.Erreur>() {
-			@Override
-			public void fillHeader(CsvHelper.LineFiller b) {
-				b.append("NO_TIERS").append(COMMA).append("DESCRIPTION").append(COMMA).append("DETAILS");
-			}
-
-			@Override
-			public boolean fillLine(CsvHelper.LineFiller b, FusionDeCommunesResults.Erreur elt) {
-				b.append(elt.noTiers).append(COMMA);
-				b.append(escapeChars(elt.getDescriptionRaison())).append(COMMA);
-				b.append(escapeChars(elt.details));
-				return true;
-			}
-		});
-	}
-
-	private TemporaryFile asCsvFileIgnores(Collection<FusionDeCommunesResults.Ignore> ignores, String filename, StatusManager statusManager) {
-		return CsvHelper.asCsvTemporaryFile(ignores, filename, statusManager, new CsvHelper.FileFiller<FusionDeCommunesResults.Ignore>() {
-			@Override
-			public void fillHeader(CsvHelper.LineFiller b) {
-				b.append("NO_TIERS").append(COMMA).append("RAISON");
-			}
-
-			@Override
-			public boolean fillLine(CsvHelper.LineFiller b, FusionDeCommunesResults.Ignore elt) {
-				b.append(elt.noTiers).append(COMMA);
-				b.append(escapeChars(elt.getDescriptionRaison()));
-				return true;
-			}
-		});
 	}
 
 	private String displayCommune(int noOfs, RegDate dateReference, ServiceInfrastructureService infraService) {

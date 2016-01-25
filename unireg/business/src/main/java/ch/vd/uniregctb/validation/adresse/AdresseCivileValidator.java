@@ -15,7 +15,7 @@ public class AdresseCivileValidator extends AdresseTiersValidator<AdresseCivile>
 		final ValidationResults vr = super.validate(adr);
 		if (!adr.isAnnule()) {
 			if (adr.getType() == null) {
-				vr.addError(String.format("Le type d'adresse doit être renseigné sur une adresse civile [%s]", getEntityDisplayString(adr)));
+				vr.addError(String.format("Le type d'adresse doit être renseigné sur une adresse civile [%s]", adr));
 			}
 		}
 		return vr;

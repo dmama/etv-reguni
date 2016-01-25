@@ -39,8 +39,8 @@ import ch.vd.uniregctb.tiers.Tiers;
 @SuppressWarnings({"JavaDoc"})
 public class DbUnit2Java extends BusinessTest {
 
-	private static final String DB_UNIT_FILE = "/home/msi/projets/registre/unireg/trunk/04-Implementation/unireg/web/src/main/resources/DBUnit4Import/tiers-basic.xml";
-	private static final List<Class> hibernateBaseClasses = new ArrayList<>();
+	private final static String DB_UNIT_FILE = "/home/msi/projets/registre/unireg/trunk/04-Implementation/unireg/web/src/main/resources/DBUnit4Import/tiers-basic.xml";
+	private final static List<Class> hibernateBaseClasses = new ArrayList<>();
 	private final Map<Class, List<Class>> baseClassToConcreteOnes = new HashMap<>();
 	private final Map<Class, ClassInfo> concreteClassInfo = new HashMap<>();
 	private final Map<HibernateEntity, String> entityInstanceNames = new HashMap<>();

@@ -16,8 +16,6 @@ import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.adresse.AdressesResolutionException;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.ParamPagination;
-import ch.vd.uniregctb.declaration.Declaration;
-import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.editique.EditiqueCompositionService;
 import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.EditiqueResultat;
@@ -36,9 +34,7 @@ import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.ForGestion;
 import ch.vd.uniregctb.tiers.IndividuNotFoundException;
-import ch.vd.uniregctb.tiers.OrganisationNotFoundException;
 import ch.vd.uniregctb.tiers.Tache;
-import ch.vd.uniregctb.tiers.TacheAnnulationDeclaration;
 import ch.vd.uniregctb.tiers.TacheAnnulationDeclarationImpot;
 import ch.vd.uniregctb.tiers.TacheCriteria;
 import ch.vd.uniregctb.tiers.TacheDAO;
@@ -127,7 +123,6 @@ public class TacheListManagerImpl implements TacheListManager {
 			tacheView.setId(tache.getId());
 			tacheView.setNumero(contribuable.getNumero());
 			tacheView.setNumeroForGestion(numeroOfsAutoriteFiscale);
-			tacheView.setDateEnregistrement(tache.getLogCreationDate());
 
 			final String nomCa = getNomCollectiviteAdministrativeAssociee(tache);
 			if (nomCa != null) {
@@ -141,15 +136,11 @@ public class TacheListManagerImpl implements TacheListManager {
 			catch (IndividuNotFoundException e) {
 				// [UNIREG-1545] on cas d'incoherence des données, on évite de crasher (dans la mesure du possible)
 				LOGGER.warn("Impossible d'afficher toutes les données de la tâche n°" + tache.getId(), e);
-				tacheView.setNomCourrier(Collections.singletonList("<erreur: individu introuvable>"));
-			}
-			catch (OrganisationNotFoundException e) {
-				LOGGER.warn("Impossible d'afficher toutes les données de la tâche n°" + tache.getId(), e);
-				tacheView.setNomCourrier(Collections.singletonList("<erreur: organisation introuvable>"));
+				tacheView.setNomCourrier(Arrays.asList("<erreur: individu introuvable>"));
 			}
 			catch (Exception e) {
 				LOGGER.warn("Impossible d'afficher toutes les données de la tâche n°" + tache.getId(), e);
-				tacheView.setNomCourrier(Collections.singletonList("<erreur: " + e.getMessage() + '>'));
+				tacheView.setNomCourrier(Arrays.asList("<erreur: " + e.getMessage() + '>'));
 			}
 
 			tacheView.setTypeTache(tache.getClass().getSimpleName());
@@ -163,23 +154,17 @@ public class TacheListManagerImpl implements TacheListManager {
 				tacheView.setDateFinImposition(tedi.getDateFin());
 				tacheView.setTypeContribuable(tedi.getTypeContribuable());
 				tacheView.setTypeDocument(tedi.getTypeDocument());
-				tacheView.setDelaiRetourEnJours(DELAI_RETOUR_DI);       // TODO pour les PM aussi ???
+				tacheView.setDelaiRetourEnJours(DELAI_RETOUR_DI);
 			}
-			else if (tache instanceof TacheAnnulationDeclaration) {
-				final TacheAnnulationDeclaration<?> tad = (TacheAnnulationDeclaration<?>) tache;
-				final Declaration declaration = tad.getDeclaration();
-				final int annee = declaration.getPeriode().getAnnee();
+			else if (tache instanceof TacheAnnulationDeclarationImpot) {
+				final TacheAnnulationDeclarationImpot tadi = (TacheAnnulationDeclarationImpot) tache;
+				final int annee = tadi.getDeclarationImpotOrdinaire().getDateDebut().year();
 				tacheView.setAnnee(annee);
-				tacheView.setDateDebutImposition(declaration.getDateDebut());
-				tacheView.setDateFinImposition(declaration.getDateFin());
-				tacheView.setTypeDocument(declaration.getModeleDocument() != null ? declaration.getModeleDocument().getTypeDocument() : null);
-				tacheView.setIdDI(declaration.getId());
-
-				if (tache instanceof TacheAnnulationDeclarationImpot) {
-					final TacheAnnulationDeclarationImpot tadi = (TacheAnnulationDeclarationImpot) tache;
-					final DeclarationImpotOrdinaire di = tadi.getDeclaration();
-					tacheView.setTypeContribuable(di.getTypeContribuable());
-				}
+				tacheView.setDateDebutImposition(tadi.getDeclarationImpotOrdinaire().getDateDebut());
+				tacheView.setDateFinImposition(tadi.getDeclarationImpotOrdinaire().getDateFin());
+				tacheView.setTypeContribuable(tadi.getDeclarationImpotOrdinaire().getTypeContribuable());
+				tacheView.setTypeDocument(tadi.getDeclarationImpotOrdinaire().getModeleDocument().getTypeDocument());
+				tacheView.setIdDI(tadi.getDeclarationImpotOrdinaire().getId());
 			}
 
 			tacheView.setAnnule(tache.isAnnule());

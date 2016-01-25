@@ -74,8 +74,8 @@ public class ExtractionDonneesRptFortuneResults extends ExtractionDonneesRptPeri
 
 	@Override
 	protected InfoPeriodeImposition buildInfoPeriodeImpositionFromPeriodeImposition(Contribuable ctb, InfoIdentificationCtb identification, ModeImposition modeImposition, MotifRattachement motifRattachement,
-	                                                                                PeriodeImposition periode, MotifFor motifDebut, MotifFor motifFin,
-	                                                                                Integer ofsCommuneForGestion, TypeAutoriteFiscale autoriteFiscaleForPrincipal) {
+	                                                           PeriodeImposition periode, MotifFor motifDebut, MotifFor motifFin,
+	                                                           Integer ofsCommuneForGestion, TypeAutoriteFiscale autoriteFiscaleForPrincipal) {
 		final boolean limite = (autoriteFiscaleForPrincipal == TypeAutoriteFiscale.PAYS_HS || autoriteFiscaleForPrincipal == TypeAutoriteFiscale.COMMUNE_HC);
 		return new InfoPeriodeImpositionFortune(ctb.getNumero(), identification, modeImposition, periode.getDateDebut(), periode.getDateFin(),
 		                                        motifRattachement, motifDebut, motifFin, ofsCommuneForGestion, autoriteFiscaleForPrincipal, limite);

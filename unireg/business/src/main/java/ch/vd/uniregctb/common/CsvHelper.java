@@ -27,7 +27,7 @@ public abstract class CsvHelper {
 	public static final String CHARSET = "ISO-8859-15";
 	public static final String MIME_TYPE = MimeTypeHelper.MIME_CSV + ";charset=" + CHARSET;
 
-	public interface LineFiller {
+	public static interface LineFiller {
 		LineFiller append(int i);
 		LineFiller append(long l);
 		LineFiller append(char c);
@@ -40,7 +40,7 @@ public abstract class CsvHelper {
 	 * Interface implémentée par le code spécifique au remplissage d'un fichier CSV
 	 * @param <T>
 	 */
-	public interface FileFiller<T> {
+	public static interface FileFiller<T> {
 		/**
 		 * Remplissage de la ligne d'entête (sans le CR final)
 		 * @param b destination du remplissage

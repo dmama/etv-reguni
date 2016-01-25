@@ -29,7 +29,6 @@ import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
-import ch.vd.uniregctb.type.EtatDelaiDeclaration;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
@@ -83,7 +82,7 @@ public class DeclarationImpotControllerTest extends WebTestSpring3 {
 		request.addParameter("typeDocument", TypeDocument.DECLARATION_IMPOT_COMPLETE_LOCAL.toString());
 		request.addParameter("delaiRetour", "60");
 		request.addParameter("imprimable", "false");
-		request.setRequestURI("/di/imprimer-pp.do");
+		request.setRequestURI("/di/imprimer.do");
 
 		// Appel au contrôleur
 		final ModelAndView mav = handle(request, response);
@@ -125,7 +124,6 @@ public class DeclarationImpotControllerTest extends WebTestSpring3 {
 		request.addParameter("typeDocument", TypeDocument.DECLARATION_IMPOT_COMPLETE_LOCAL.toString());
 		request.addParameter("typeAdresseRetour", TypeAdresseRetour.CEDI.toString());
 		request.addParameter("delaiAccorde", RegDateHelper.dateToDisplayString(RegDate.get().addMonths(1)));
-		request.addParameter("typeContribuable", "PP");
 		request.setRequestURI("/di/imprimer.do");
 
 		// exécution de la requête
@@ -167,7 +165,7 @@ public class DeclarationImpotControllerTest extends WebTestSpring3 {
 		request.setMethod("POST");
 		request.addParameter("idDI", diId.toString());
 		request.addParameter("selectedTypeDocument", TypeDocument.DECLARATION_IMPOT_VAUDTAX.toString());
-		request.setRequestURI("/di/duplicata-pp.do");
+		request.setRequestURI("/di/duplicata.do");
 
 		// exécution de la requête
 		final ModelAndView results = handle(request, response);
@@ -198,7 +196,7 @@ public class DeclarationImpotControllerTest extends WebTestSpring3 {
 				final PeriodeFiscale periodeFiscale = addPeriodeFiscale(anneeCourante);
 				final ModeleDocument modeleDocument = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, periodeFiscale);
 				final Declaration declaration = addDeclarationImpot(pp, periodeFiscale, date(anneeCourante, 1, 1), date(anneeCourante, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modeleDocument);
-				addDelaiDeclaration(declaration, RegDate.get(), RegDate.get().addMonths(3), EtatDelaiDeclaration.ACCORDE);
+				addDelaiDeclaration(declaration, RegDate.get(), RegDate.get().addMonths(3));
 				return declaration.getId();
 			}
 		});
@@ -207,7 +205,7 @@ public class DeclarationImpotControllerTest extends WebTestSpring3 {
 		request.addParameter("idDeclaration", diId.toString());
 		request.addParameter("dateDemande", RegDateHelper.dateToDisplayString(RegDate.get()));
 		request.addParameter("delaiAccordeAu", RegDateHelper.dateToDisplayString(RegDate.get().addMonths(1)));
-		request.setRequestURI("/di/delai/ajouter-pp.do");
+		request.setRequestURI("/di/delai/ajouter.do");
 
 		// exécution de la requête
 		final ModelAndView mav = handle(request, response);
@@ -256,7 +254,7 @@ public class DeclarationImpotControllerTest extends WebTestSpring3 {
 		request.addParameter("id", diId.toString());
 		request.addParameter("typeDocument", TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE.name());
 		request.addParameter("dateRetour", RegDateHelper.dateToDisplayString(dateQuittance));
-		request.setRequestURI("/di/etat/ajouter-quittance.do");
+		request.setRequestURI("/di/etat/ajouter.do");
 
 		// exécution de la requête
 		final ModelAndView mav = handle(request, response);
@@ -307,7 +305,7 @@ public class DeclarationImpotControllerTest extends WebTestSpring3 {
 		request.addParameter("id", diId.toString());
 		request.addParameter("typeDocument", TypeDocument.DECLARATION_IMPOT_COMPLETE_LOCAL.name());
 		request.addParameter("dateRetour", RegDateHelper.dateToDisplayString(dateQuittance));
-		request.setRequestURI("/di/etat/ajouter-quittance.do");
+		request.setRequestURI("/di/etat/ajouter.do");
 
 		// exécution de la requête
 		final ModelAndView mav = handle(request, response);

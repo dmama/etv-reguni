@@ -51,7 +51,7 @@ public class AdresseServiceDebiteurTest extends BusinessTest {
 		globalTiersIndexer.setOnTheFlyIndexation(false);
 
 		// Instanciation du service à la main pour pouvoir taper dans les méthodes protégées.
-		adresseService = new AdresseServiceImpl(tiersService, tiersDAO, serviceInfra, serviceOrganisation, serviceCivil);
+		adresseService = new AdresseServiceImpl(tiersService, tiersDAO, serviceInfra, servicePM, serviceCivil);
 	}
 
 	@Override

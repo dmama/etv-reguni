@@ -21,11 +21,11 @@ public class TiersAdresseManagerTest extends WebTest {
 
 	private AdresseManager adresseManager;
 
-	private static final String TYPE_LOCALITE_SUISSE = "suisse";
+	private final static String TYPE_LOCALITE_SUISSE = "suisse";
 
-	private static final String TYPE_LOCALITE_PAYS = "pays";
+	private final static String TYPE_LOCALITE_PAYS = "pays";
 
-	private static final String DB_UNIT_FILE = "TiersVisuManagerTest.xml";
+	private final static String DB_UNIT_FILE = "TiersVisuManagerTest.xml";
 
 	/**
 	 * @see ch.vd.uniregctb.common.AbstractCoreDAOTest#onSetUp()

@@ -80,33 +80,18 @@ public enum MotifFor {
 	/**
 	 * Déménagement du siège social d'un débiteur IS
 	 */
-	DEMENAGEMENT_SIEGE("Déménagement de siège"),
-
-	/**
-	 * Cessation d'activité d'une entreprise
-	 */
-	CESSATION_ACTIVITE("Cessation d'activité"),
-
-	/**
-	 * Fusion d'entreprises
-	 */
-	FUSION_ENTREPRISES("Fusion d'entreprises"),
-
-	/**
-	 * Faillite d'une entreprise
-	 */
-	FAILLITE("Faillite");
+	DEMENAGEMENT_SIEGE("Déménagement de siège");
 
 	private final String descriptionOuverture;
 
 	private final String descriptionFermeture;
 
-	MotifFor(String descriptionOuverture, String descriptionFermeture) {
+	private MotifFor(String descriptionOuverture, String descriptionFermeture) {
 		this.descriptionOuverture = descriptionOuverture;
 		this.descriptionFermeture = descriptionFermeture;
 	}
 
-	MotifFor(String description) {
+	private MotifFor(String description) {
 		this(description, description);
 	}
 

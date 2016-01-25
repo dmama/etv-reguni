@@ -4,8 +4,7 @@ import java.util.EnumSet;
 
 import org.jetbrains.annotations.NotNull;
 
-import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
+import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
@@ -25,15 +24,8 @@ public abstract class EFactureHelper {
 	 * @return <code>true</code> si on peut entrer en matière pour la e-facture après analyse des fors/assujettissements, <code>false</code> sinon (-> demande de contact)
 	 */
 	public static boolean valideEtatFiscalContribuablePourInscription(@NotNull Tiers tiers) {
-		// TODO [SIPM] Pour le moment, ne pas être dans le camps des personnes physiques est rédhibitoire
-		if (!(tiers instanceof ContribuableImpositionPersonnesPhysiques)) {
-			return false;
-		}
-
-		final ContribuableImpositionPersonnesPhysiques ctb = (ContribuableImpositionPersonnesPhysiques) tiers;
-
 		// Verification du for principal
-		final ForFiscalPrincipalPP ffp = ctb.getDernierForFiscalPrincipal();
+		final ForFiscalPrincipal ffp = tiers.getDernierForFiscalPrincipal();
 		if (ffp == null) {
 			return false;
 		}

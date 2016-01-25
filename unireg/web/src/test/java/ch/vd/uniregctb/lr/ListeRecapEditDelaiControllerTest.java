@@ -23,7 +23,7 @@ public class ListeRecapEditDelaiControllerTest extends AbstractLrControllerTest 
 	/**
 	 * Le nom du controller a tester.
 	 */
-	private static final String CONTROLLER_NAME = "lrEditDelaiController";
+	private final static String CONTROLLER_NAME = "lrEditDelaiController";
 
 	private ListeRecapEditDelaiController controller;
 

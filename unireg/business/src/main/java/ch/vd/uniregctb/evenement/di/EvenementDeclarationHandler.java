@@ -19,7 +19,7 @@ public interface EvenementDeclarationHandler {
 	 * @param incomingHeaders headers custom de l'événement de quittancement qui vient de nous parvenir
 	 * @throws EvenementDeclarationException en cas d'erreur métieur dans le traitement de l'événement.
 	 */
-	void onEvent(EvenementDeclaration event, Map<String, String> incomingHeaders) throws EvenementDeclarationException;
+	public void onEvent(EvenementDeclaration event, Map<String, String> incomingHeaders) throws EvenementDeclarationException;
 
-	ClassPathResource getRequestXSD();
+	public ClassPathResource getRequestXSD();
 }

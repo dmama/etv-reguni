@@ -8,9 +8,7 @@ import org.apache.commons.lang3.StringUtils;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.tiers.TiersCriteria;
-import ch.vd.uniregctb.type.CategorieEntreprise;
 import ch.vd.uniregctb.type.CategorieImpotSource;
-import ch.vd.uniregctb.type.FormeJuridiqueEntreprise;
 import ch.vd.uniregctb.type.ModeImposition;
 
 /**
@@ -27,7 +25,6 @@ public class TiersCriteriaView implements Serializable {
 	private Long numeroPremierePersonne;
 	private String forAll;
 	private String modeImpositionAsString;
-	private String formeJuridiqueAsString;
 
 	// Les critères utilisés pour la recherche
 	private String numeroFormatte;
@@ -98,11 +95,11 @@ public class TiersCriteriaView implements Serializable {
 	}
 
 	public void setModeImpositionAsString(String modeImpositionAsString) {
-		if (modeImpositionAsString == null || "".equals(modeImpositionAsString)) {
-			setModeImposition(null);
+		if (!"TOUS".equals(modeImpositionAsString)) {
+			setModeImposition(ModeImposition.valueOf(modeImpositionAsString));
 		}
 		else {
-			setModeImposition(ModeImposition.valueOf(modeImpositionAsString));
+			setModeImposition(null);
 		}
 		this.modeImpositionAsString = modeImpositionAsString;
 	}
@@ -163,20 +160,12 @@ public class TiersCriteriaView implements Serializable {
 		criteria.setNumeroEtranger(numeroEtranger);
 	}
 
-	public FormeJuridiqueEntreprise getFormeJuridique() {
+	public String getFormeJuridique() {
 		return criteria.getFormeJuridique();
 	}
 
-	public void setFormeJuridique(FormeJuridiqueEntreprise formeJuridique) {
+	public void setFormeJuridique(String formeJuridique) {
 		criteria.setFormeJuridique(formeJuridique);
-	}
-
-	public CategorieEntreprise getCategorieEntreprise() {
-		return criteria.getCategorieEntreprise();
-	}
-
-	public void setCategorieEntreprise(CategorieEntreprise categorieEntreprise) {
-		criteria.setCategorieEntreprise(categorieEntreprise);
 	}
 
 	public String getLocaliteOuPays() {

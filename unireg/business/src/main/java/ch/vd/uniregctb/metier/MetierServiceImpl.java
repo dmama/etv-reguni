@@ -20,10 +20,10 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.shared.batchtemplate.StatusManager;
+import ch.vd.unireg.interfaces.civil.data.Adresse;
 import ch.vd.unireg.interfaces.civil.data.EtatCivil;
 import ch.vd.unireg.interfaces.civil.data.Localisation;
 import ch.vd.unireg.interfaces.civil.data.LocalisationType;
-import ch.vd.unireg.interfaces.common.Adresse;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.uniregctb.adresse.AdresseException;
@@ -52,13 +52,10 @@ import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.situationfamille.SituationFamilleService;
 import ch.vd.uniregctb.tiers.AppartenanceMenage;
 import ch.vd.uniregctb.tiers.Contribuable;
-import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
-import ch.vd.uniregctb.tiers.CoordonneesFinancieres;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalAutreElementImposable;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
 import ch.vd.uniregctb.tiers.ForsParType;
 import ch.vd.uniregctb.tiers.MenageCommun;
@@ -818,17 +815,23 @@ public class MetierServiceImpl implements MetierService {
 		else if (conjoint != null && conjoint.getAdresseCourrierElectronique() != null) {
 			menageCommun.setAdresseCourrierElectronique(conjoint.getAdresseCourrierElectronique());
 		}
-		if (principal.getCoordonneesFinancieres() != null) {
-			menageCommun.setCoordonneesFinancieres(new CoordonneesFinancieres(principal.getCoordonneesFinancieres()));
+		if (principal.getNumeroCompteBancaire() != null) {
+			menageCommun.setNumeroCompteBancaire(principal.getNumeroCompteBancaire());
 		}
-		else if (conjoint != null && conjoint.getCoordonneesFinancieres() != null) {
-			menageCommun.setCoordonneesFinancieres(new CoordonneesFinancieres(conjoint.getCoordonneesFinancieres()));
+		else if (conjoint != null && conjoint.getNumeroCompteBancaire() != null) {
+			menageCommun.setNumeroCompteBancaire(conjoint.getNumeroCompteBancaire());
 		}
 		if (principal.getTitulaireCompteBancaire() != null) {
 			menageCommun.setTitulaireCompteBancaire(principal.getTitulaireCompteBancaire());
 		}
 		else if (conjoint != null && conjoint.getTitulaireCompteBancaire() != null) {
 			menageCommun.setTitulaireCompteBancaire(conjoint.getTitulaireCompteBancaire());
+		}
+		if (principal.getAdresseBicSwift() != null) {
+			menageCommun.setAdresseBicSwift(principal.getAdresseBicSwift());
+		}
+		else if (conjoint != null && conjoint.getAdresseBicSwift() != null) {
+			menageCommun.setAdresseBicSwift(conjoint.getAdresseBicSwift());
 		}
 	}
 
@@ -864,7 +867,7 @@ public class MetierServiceImpl implements MetierService {
 		return doMariageReconciliation(menage, date, remarque, etatCivilFamille, null);
 	}
 
-	private boolean isValidSituationFamille(RegDate date, ContribuableImpositionPersonnesPhysiques contribuable) {
+	private boolean isValidSituationFamille(RegDate date, Contribuable contribuable) {
 		/*
 		 * Vérifie que la situation de famille à la date donnée n'a pas été surchargée
 		 */
@@ -1052,7 +1055,7 @@ public class MetierServiceImpl implements MetierService {
 		final PersonnePhysique principal = tiersService.getPersonnesPhysiques(menageChoisi).iterator().next();
 		final PersonnePhysique conjoint = tiersService.getPersonnesPhysiques(autreMenage).iterator().next();
 
-		final ForFiscalPrincipalPP forFPMenage = menageChoisi.getForFiscalPrincipalAt(null);
+		final ForFiscalPrincipal forFPMenage = menageChoisi.getForFiscalPrincipalAt(null);
 		final ModeImposition impositionMenage = (forFPMenage == null ? null : forFPMenage.getModeImposition());
 
 		final RapportEntreTiers premierRapport = menageChoisi.getPremierRapportObjet(TypeRapportEntreTiers.APPARTENANCE_MENAGE, principal);
@@ -1292,7 +1295,7 @@ public class MetierServiceImpl implements MetierService {
 		}
 	}
 
-	private void reopenSituationFamille(RegDate date, ContribuableImpositionPersonnesPhysiques contribuable) {
+	private void reopenSituationFamille(RegDate date, Contribuable contribuable) {
 
 		final SituationFamille situationFamille = contribuable.getSituationFamilleAt(date);
 		if (situationFamille != null) {
@@ -1535,7 +1538,7 @@ public class MetierServiceImpl implements MetierService {
 		final boolean separesFiscalement = isSeparesFiscalement(date, principal, conjoint);
 		if (!separesFiscalement) {
 			// Recupération du for principal du menage
-			final ForFiscalPrincipalPP forMenage = menage.getForFiscalPrincipalAt(null);
+			final ForFiscalPrincipal forMenage = menage.getForFiscalPrincipalAt(null);
 			final boolean hadForSecondaire = hasForSecondaireOuvert(menage, date);
 
 			// Fermeture des fors du MenageCommun
@@ -1916,7 +1919,7 @@ public class MetierServiceImpl implements MetierService {
 	 *                           si <code>true</code>, un for couple vaudois pourra donner naissance à un for individuel HS, si <code>false</code> une erreur est levée dans ce cas
 	 * @return le for créé.
 	 */
-	private ForFiscalPrincipal createForFiscalPrincipalApresFermetureMenage(RegDate date, PersonnePhysique pp, ForFiscalPrincipalPP forMenage, MotifFor motifOuverture,
+	private ForFiscalPrincipal createForFiscalPrincipalApresFermetureMenage(RegDate date, PersonnePhysique pp, ForFiscalPrincipal forMenage, MotifFor motifOuverture,
 	                                                                        TerminaisonCoupleModeImpositionResolver modeImpositionResolver, boolean hadForSecondaire, Long numeroEvenement,
 	                                                                        boolean autoriseSortieDuCantonVersEtranger) throws MetierServiceException {
 
@@ -2004,9 +2007,7 @@ public class MetierServiceImpl implements MetierService {
 				final ForFiscalSecondaire ffs = tiersService.openForFiscalSecondaire(contribuable,
 				                                                                     date, forFiscalSecondaire.getMotifRattachement(),
 				                                                                     forFiscalSecondaire.getNumeroOfsAutoriteFiscale(),
-				                                                                     forFiscalSecondaire.getTypeAutoriteFiscale(),
-				                                                                     motifOuverture,
-				                                                                     forFiscalSecondaire.getGenreImpot());
+				                                                                     forFiscalSecondaire.getTypeAutoriteFiscale(), motifOuverture);
 				if (ffs != null && dateFermeture != null && motifFermeture != null) {
 					tiersService.closeForFiscalSecondaire(contribuable, ffs, dateFermeture, motifFermeture);
 				}
@@ -2462,7 +2463,7 @@ public class MetierServiceImpl implements MetierService {
 
 		if (menageComplet != null) {
 			final MenageCommun menage = menageComplet.getMenage();
-			final ForFiscalPrincipalPP forMenage = menage.getForFiscalPrincipalAt(null);
+			final ForFiscalPrincipal forMenage = menage.getForFiscalPrincipalAt(null);
 			final boolean hadForSecondaire = hasForSecondaireOuvert(menage, date.getOneDayAfter());
 			//
 			// Sauvegarde des fors secondaires et autres éléments imposables du ménage

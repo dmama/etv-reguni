@@ -20,8 +20,4 @@
 
 	<bean id="reqdesEventProcessor" class="ch.vd.uniregctb.evenement.reqdes.engine.MockEvenementReqDesProcessor"/>
 
-	<bean id="evtOrganisationNotificationQueue" class="ch.vd.uniregctb.evenement.organisation.engine.MockEvenementOrganisationNotificationQueue"/>
-
-	<bean id="evtOrganisationProcessor" class="ch.vd.uniregctb.evenement.organisation.engine.MockEvenementOrganisationEvenementProcessor"/>
-
 </beans>

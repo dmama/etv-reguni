@@ -12,7 +12,7 @@
 		<groupId>ch.vd.uniregctb</groupId>
 		<artifactId>uniregctb</artifactId>
 		<!-- BEGIN_LVERSION -->
-		<version>6.0.7-SNAPSHOT</version>
+		<version>5.15.2-SNAPSHOT</version>
 		<!-- END_LVERSION -->
 		<relativePath>../base/pom.xml</relativePath>
 	</parent>
@@ -56,13 +56,8 @@
 		</dependency>
 		<dependency>
 			<groupId>${pom.parent.groupId}</groupId>
-			<artifactId>unireg-ws-v6</artifactId>
-			<version>${ws.v6.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>${pom.parent.groupId}</groupId>
 			<artifactId>unireg-jaxb2-party</artifactId>
-			<version>4.5-SNAPSHOT</version>
+			<version>3.5</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.cxf</groupId>

@@ -6,17 +6,13 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.lang3.tuple.Pair;
-
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePM;
-import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP;
+import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DeclarationImpotSource;
 import ch.vd.uniregctb.declaration.DelaiDeclaration;
+import ch.vd.uniregctb.declaration.InformationsDocumentAdapter;
 import ch.vd.uniregctb.declaration.ModeleFeuilleDocument;
-import ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotService;
-import ch.vd.uniregctb.declaration.ordinaire.pp.InformationsDocumentAdapter;
-import ch.vd.uniregctb.declaration.ordinaire.pp.ModeleFeuilleDocumentEditique;
+import ch.vd.uniregctb.declaration.ordinaire.ModeleFeuilleDocumentEditique;
 import ch.vd.uniregctb.mouvement.BordereauMouvementDossier;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.Tiers;
@@ -25,72 +21,39 @@ import ch.vd.uniregctb.type.TypeDocument;
 public interface EditiqueCompositionService {
 
 	/**
-	 * Imprime la déclaration PP spécifiée pour une visualisation on-line, et retourne le document imprimé. Il n'y a pas d'envoi vers inbox si c'est trop lent.
+	 * Imprime la déclaration spécifiée pour une visualisation on-line, et retourne le document imprimé. Il n'y a pas d'envoi vers inbox si c'est trop lent.
 	 * <p/>
 	 * <b>Note:</b> cette méthode n'envoie pas d'événement fiscal et ne devrait pas être appelée directement. Il faut utiliser la méthode {@link
-	 * DeclarationImpotService#envoiDIOnline(DeclarationImpotOrdinairePP, RegDate)}.
+	 * ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotService#envoiDIOnline(DeclarationImpotOrdinaire, RegDate)}.
 	 *
 	 * @param declaration   la déclaration d'impôt ordinaire à imprimer
 	 * @return le document imprimé
 	 */
-	EditiqueResultat imprimeDIOnline(DeclarationImpotOrdinairePP declaration) throws EditiqueException, JMSException;
+	EditiqueResultat imprimeDIOnline(DeclarationImpotOrdinaire declaration) throws EditiqueException, JMSException;
 
 	/**
-	 * Imprime la déclaration PM spécifiée pour une visualisation on-line, et retourne le document imprimé. Il n'y a pas d'envoi vers inbox si c'est trop lent.
+	 * Imprime la déclaration spécifiée pour une visualisation on-line et retourne le document imprimé (ou le fait envoyer dans l'inbox si c'est trop lent)
 	 * <p/>
 	 * <b>Note:</b> cette méthode n'envoie pas d'événement fiscal et ne devrait pas être appelée directement. Il faut utiliser la méthode {@link
-	 * DeclarationImpotService#envoiDIOnline(DeclarationImpotOrdinairePM, RegDate)}.
-	 *
-	 * @param declaration   la déclaration d'impôt ordinaire à imprimer
-	 * @return le document imprimé
-	 */
-	EditiqueResultat imprimeDIOnline(DeclarationImpotOrdinairePM declaration) throws EditiqueException, JMSException;
-
-	/**
-	 * Imprime la déclaration PP spécifiée pour une visualisation on-line et retourne le document imprimé (ou le fait envoyer dans l'inbox si c'est trop lent)
-	 * <p/>
-	 * <b>Note:</b> cette méthode n'envoie pas d'événement fiscal et ne devrait pas être appelée directement. Il faut utiliser la méthode
-	 * {@link DeclarationImpotService#envoiDuplicataDIOnline(DeclarationImpotOrdinairePP, TypeDocument, List)}.
+	 * ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotService#envoiDuplicataDIOnline(ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire, ch.vd.uniregctb.type.TypeDocument, java.util.List}.
 	 *
 	 * @param declaration   la déclaration d'impôt ordinaire à imprimer
 	 * @param typeDocument  le type de document
 	 * @param annexes       la liste des annexes
 	 * @return le document imprimé
 	 */
-	EditiqueResultat imprimeDuplicataDIOnline(DeclarationImpotOrdinairePP declaration, TypeDocument typeDocument, List<ModeleFeuilleDocumentEditique> annexes) throws EditiqueException, JMSException;
+	EditiqueResultat imprimeDuplicataDIOnline(DeclarationImpotOrdinaire declaration, TypeDocument typeDocument, List<ModeleFeuilleDocumentEditique> annexes) throws EditiqueException, JMSException;
 
 	/**
-	 * Imprime la déclaration PM spécifiée pour une visualisation on-line et retourne le document imprimé (ou le fait envoyer dans l'inbox si c'est trop lent)
-	 * <p/>
-	 * <b>Note:</b> cette méthode n'envoie pas d'événement fiscal et ne devrait pas être appelée directement. Il faut utiliser la méthode
-	 * {@link DeclarationImpotService#envoiDuplicataDIOnline(DeclarationImpotOrdinairePM)}.
-	 *
-	 * @param declaration   la déclaration d'impôt ordinaire à imprimer
-	 * @return le document imprimé
-	 */
-	EditiqueResultat imprimeDuplicataDIOnline(DeclarationImpotOrdinairePM declaration) throws EditiqueException, JMSException;
-
-	/**
-	 * Imprime la déclaration PP spécifiée pour un envoi en masse. Cette méthode retourne immédiatement et du moment que la transaction est committée, il est de la responsabilité d'éditique d'imprimer la
+	 * Imprime la déclaration spécifiée pour un envoi en masse. Cette méthode retourne immédiatement et du moment que la transaction est committée, il est de la responsabilité d'éditique d'imprimer la
 	 * déclaration.
 	 * <p/>
 	 * <b>Note:</b> cette méthode n'envoie pas d'événement fiscal et ne devrait pas être appelée directement. Il faut utiliser la méthode {@link
-	 * DeclarationImpotService#envoiDIForBatch(DeclarationImpotOrdinairePP, RegDate)}.
+	 * ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotService#envoiDIForBatch(DeclarationImpotOrdinaire, RegDate)}.
 	 *
 	 * @param declaration   la déclaration d'impôt ordinaire à imprimer
 	 */
-	void imprimeDIForBatch(DeclarationImpotOrdinairePP declaration) throws EditiqueException;
-
-	/**
-	 * Imprime la déclaration PM spécifiée pour un envoi en masse. Cette méthode retourne immédiatement et du moment que la transaction est committée, il est de la responsabilité d'éditique d'imprimer la
-	 * déclaration.
-	 * <p/>
-	 * <b>Note:</b> cette méthode n'envoie pas d'événement fiscal et ne devrait pas être appelée directement. Il faut utiliser la méthode {@link
-	 * DeclarationImpotService#envoiDIForBatch(DeclarationImpotOrdinairePP, RegDate)}.
-	 *
-	 * @param declaration   la déclaration d'impôt ordinaire à imprimer
-	 */
-	void imprimeDIForBatch(DeclarationImpotOrdinairePM declaration) throws EditiqueException;
+	void imprimeDIForBatch(DeclarationImpotOrdinaire declaration) throws EditiqueException;
 
 	/**
 	 * Imprime la lr spécifiée pour un envoi en masse. Cette méthode retourne immédiatement et du moment que la transaction est committée, il est de la responsabilité d'éditique d'imprimer la
@@ -113,24 +76,14 @@ public interface EditiqueCompositionService {
 	EditiqueResultat imprimeNouveauxDossiers(List<Contribuable> contribuables) throws EditiqueException, JMSException;
 
 	/**
-	 * Imprime la sommation pour la déclaration PP spécifiée pour un envoi en masse. Cette méthode retourne immédiatement et du moment que la transaction est committée, il est de la responsabilité
+	 * Imprime la sommation pour la déclaration spécifiée pour un envoi en masse. Cette méthode retourne immédiatement et du moment que la transaction est committée, il est de la responsabilité
 	 * d'éditique d'imprimer la déclaration.
 	 * <p/>
 	 *
 	 * @param declaration   la déclaration d'impôt ordinaire dont la sommation est à imprimer
 	 * @param dateEvenement la date d'impression
 	 */
-	void imprimeSommationDIForBatch(DeclarationImpotOrdinairePP declaration, boolean miseSousPliImpossible, RegDate dateEvenement) throws EditiqueException;
-
-	/**
-	 * Imprime la sommation pour la déclaration PM spécifiée pour un envoi en masse. Cette méthode retourne immédiatement et du moment que la transaction est committée, il est de la responsabilité
-	 * d'éditique d'imprimer la déclaration.
-	 * <p/>
-	 *
-	 * @param declaration   la déclaration d'impôt ordinaire dont la sommation est à imprimer
-	 * @param dateEvenement la date d'impression
-	 */
-	void imprimeSommationDIForBatch(DeclarationImpotOrdinairePM declaration, RegDate dateEvenement) throws EditiqueException;
+	void imprimeSommationDIForBatch(DeclarationImpotOrdinaire declaration, boolean miseSousPliImpossible, RegDate dateEvenement) throws EditiqueException;
 
 	/**
 	 * Imprime la sommation pour la LR spécifiée pour un envoi en masse. Cette méthode retourne immédiatement et du moment que la transaction est committée, il est de la responsabilité d'éditique
@@ -143,24 +96,14 @@ public interface EditiqueCompositionService {
 	void imprimeSommationLRForBatch(DeclarationImpotSource lr, RegDate dateEvenement) throws EditiqueException;
 
 	/**
-	 * Imprime la sommation pour la déclaration d'impôt PP spécifiée on-line.
+	 * Imprime la sommation pour la déclaration spécifiée on-line.
 	 *
 	 * @param declaration
 	 * @param dateEvenement
 	 * @return l'id du document
 	 * @throws EditiqueException
 	 */
-	EditiqueResultat imprimeSommationDIOnline(DeclarationImpotOrdinairePP declaration, RegDate dateEvenement) throws EditiqueException, JMSException;
-
-	/**
-	 * Imprime la sommation pour la déclaration d'impôt PM spécifiée on-line.
-	 *
-	 * @param declaration
-	 * @param dateEvenement
-	 * @return l'id du document
-	 * @throws EditiqueException
-	 */
-	EditiqueResultat imprimeSommationDIOnline(DeclarationImpotOrdinairePM declaration, RegDate dateEvenement) throws EditiqueException, JMSException;
+	EditiqueResultat imprimeSommationDIOnline(DeclarationImpotOrdinaire declaration, RegDate dateEvenement) throws EditiqueException, JMSException;
 
 	/**
 	 * Imprime la sommation pour la lr spécifiée on-line.
@@ -173,34 +116,14 @@ public interface EditiqueCompositionService {
 	EditiqueResultat imprimeSommationLROnline(DeclarationImpotSource lr, RegDate dateEvenement) throws EditiqueException, JMSException;
 
 	/**
-	 * Imprime la confirmation de délai pour la {@link DeclarationImpotOrdinairePP} et le {@link ch.vd.uniregctb.declaration.DelaiDeclaration} spécifié
+	 * Imprime la confirmation de délai pour la {@link DeclarationImpotOrdinaire} et le {@link ch.vd.uniregctb.declaration.DelaiDeclaration} spécifié
 	 *
 	 * @param di
 	 * @param delai
 	 * @return
 	 * @throws EditiqueException
 	 */
-	Pair<EditiqueResultat, String> imprimeConfirmationDelaiOnline(DeclarationImpotOrdinairePP di, DelaiDeclaration delai) throws EditiqueException, JMSException;
-
-	/**
-	 * Imprime la lettre de décision d'accord/refus de délai pour la {@link DeclarationImpotOrdinairePM}
-	 *
-	 * @param di la déclaration d'impôt PM
-	 * @param delai le délai accordé/refusé
-	 * @return un accesseur vers le document éditique généré, et l'identifiant d'archivage du document généré
-	 * @throws EditiqueException en cas de souci
-	 */
-	Pair<EditiqueResultat, String> imprimeLettreDecisionDelaiOnline(DeclarationImpotOrdinairePM di, DelaiDeclaration delai) throws EditiqueException, JMSException;
-
-	/**
-	 * Demande l'impression et l'envoi de la lettre de décision d'accord de délai pour la {@link DeclarationImpotOrdinairePM}
-	 *
-	 * @param di la déclaration d'impôt PM
-	 * @param delai le délai accordé/refusé
-	 * @return l'identifiant d'archivage du document généré
-	 * @throws EditiqueException en cas de souci
-	 */
-	String imprimeLettreDecisionDelaiForBatch(DeclarationImpotOrdinairePM di, DelaiDeclaration delai) throws EditiqueException, JMSException;
+	EditiqueResultat imprimeConfirmationDelaiOnline(DeclarationImpotOrdinaire di, DelaiDeclaration delai) throws EditiqueException, JMSException;
 
 	/**
 	 * Imprime la liste récapitulative spécifiée on-line

@@ -1,8 +1,5 @@
 package ch.vd.uniregctb.evenement.civil.interne.naissance;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 import net.sf.ehcache.CacheManager;
@@ -21,16 +18,17 @@ import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.uniregctb.cache.UniregCacheManager;
+import ch.vd.uniregctb.evenement.EvenementFiscal;
+import ch.vd.uniregctb.evenement.EvenementFiscalDAO;
+import ch.vd.uniregctb.evenement.EvenementFiscalNaissance;
+import ch.vd.uniregctb.evenement.EvenementFiscalSituationFamille;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.interne.AbstractEvenementCivilInterneTest;
 import ch.vd.uniregctb.evenement.civil.interne.HandleStatus;
 import ch.vd.uniregctb.evenement.civil.interne.MessageCollector;
-import ch.vd.uniregctb.evenement.fiscal.EvenementFiscal;
-import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalDAO;
-import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalParente;
-import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalSituationFamille;
 import ch.vd.uniregctb.tiers.Parente;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
+import ch.vd.uniregctb.tiers.Tiers;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -77,7 +75,7 @@ public class NaissanceTest extends AbstractEvenementCivilInterneTest {
 		LOGGER.debug("Test de traitement d'un événement de naissance.");
 
 		{
-			List<PersonnePhysique> tierss = allTiersOfType(PersonnePhysique.class);
+			List<Tiers> tierss = allTiersOfType(PersonnePhysique.class);
 			assertEquals("le tiers correspondant au nouveau n'a pas été créé", 0, tierss.size());
 		}
 
@@ -90,7 +88,7 @@ public class NaissanceTest extends AbstractEvenementCivilInterneTest {
 
 		assertFalse("Une erreur est survenue lors du traitement de la naissance", collector.hasErreurs());
 
-		List<PersonnePhysique> tierss = allTiersOfType(PersonnePhysique.class);
+		List<Tiers> tierss = allTiersOfType(PersonnePhysique.class);
 		assertEquals("le tiers correspondant au nouveau n'a pas été créé", 1, tierss.size());
 		/*
 		 * une événement doit être créé et un événement doit être publié
@@ -106,7 +104,7 @@ public class NaissanceTest extends AbstractEvenementCivilInterneTest {
 		LOGGER.debug("Test de traitement d'un événement de naissance en fin d'année.");
 
 		{
-			final List<PersonnePhysique> tierss = allTiersOfType(PersonnePhysique.class);
+			final List<Tiers> tierss = allTiersOfType(PersonnePhysique.class);
 			assertEquals("le tiers correspondant au nouveau n'a pas été créé", 0, tierss.size());
 		}
 
@@ -119,7 +117,7 @@ public class NaissanceTest extends AbstractEvenementCivilInterneTest {
 
 		assertFalse("Une erreur est survenue lors du traitement de la naissance", collector.hasErreurs());
 
-		final List<PersonnePhysique> tierss = allTiersOfType(PersonnePhysique.class);
+		final List<Tiers> tierss = allTiersOfType(PersonnePhysique.class);
 		assertEquals("le tiers correspondant au nouveau n'a pas été créé", 1, tierss.size());
 		/*
 		 * une événement doit être créé et un événement doit être publié
@@ -129,7 +127,7 @@ public class NaissanceTest extends AbstractEvenementCivilInterneTest {
 
 		// l'événement fiscal ne doit pas avoir eu sa date décalé à l'année suivante!
 		final EvenementFiscal evtFiscal = getEvenementFiscalService().getEvenementsFiscaux(tierss.get(0)).iterator().next();
-		assertEquals(bebe.getDateNaissance(), evtFiscal.getDateValeur());
+		assertEquals(bebe.getDateNaissance(), evtFiscal.getDateEvenement());
 	}
 
 	@Test
@@ -245,23 +243,14 @@ public class NaissanceTest extends AbstractEvenementCivilInterneTest {
 				assertNotNull(events);
 				assertEquals(2, events.size());
 
-				final List<EvenementFiscal> tries = new ArrayList<>(events);
-				Collections.sort(tries, new Comparator<EvenementFiscal>() {
-					@Override
-					public int compare(EvenementFiscal o1, EvenementFiscal o2) {
-						return Long.compare(o1.getId(), o2.getId());
-					}
-				});
-
-				final EvenementFiscalSituationFamille event0 = (EvenementFiscalSituationFamille) tries.get(0);
+				final EvenementFiscalSituationFamille event0 = (EvenementFiscalSituationFamille) events.get(0);
 				assertNotNull(event0);
 
-				final EvenementFiscalParente event1 = (EvenementFiscalParente) tries.get(1);
+				final EvenementFiscalNaissance event1 = (EvenementFiscalNaissance) events.get(1);
 				assertNotNull(event1);
 				assertEquals(ids.mere, event1.getTiers().getNumero());
 				assertEquals(ids.enfant, event1.getEnfant().getNumero());
-				assertEquals(dateNaissanceEnfant, event1.getDateValeur());
-				assertEquals(EvenementFiscalParente.TypeEvenementFiscalParente.NAISSANCE, event1.getType());
+				assertEquals(dateNaissanceEnfant, event1.getDateEvenement());
 
 				return null;
 			}
@@ -346,23 +335,14 @@ public class NaissanceTest extends AbstractEvenementCivilInterneTest {
 				assertNotNull(events);
 				assertEquals(2, events.size());
 
-				final List<EvenementFiscal> tries = new ArrayList<>(events);
-				Collections.sort(tries, new Comparator<EvenementFiscal>() {
-					@Override
-					public int compare(EvenementFiscal o1, EvenementFiscal o2) {
-						return Long.compare(o1.getId(), o2.getId());
-					}
-				});
-
-				final EvenementFiscalSituationFamille event0 = (EvenementFiscalSituationFamille) tries.get(0);
+				final EvenementFiscalSituationFamille event0 = (EvenementFiscalSituationFamille) events.get(0);
 				assertNotNull(event0);
 
-				final EvenementFiscalParente event1 = (EvenementFiscalParente) tries.get(1);
+				final EvenementFiscalNaissance event1 = (EvenementFiscalNaissance) events.get(1);
 				assertNotNull(event1);
 				assertEquals(ids.mere, event1.getTiers().getNumero());
 				assertEquals(ids.fils, event1.getEnfant().getNumero());
-				assertEquals(date(2010, 2, 8), event1.getDateValeur());
-				assertEquals(EvenementFiscalParente.TypeEvenementFiscalParente.NAISSANCE, event1.getType());
+				assertEquals(date(2010, 2, 8), event1.getDateEvenement());
 				return null;
 			}
 		});

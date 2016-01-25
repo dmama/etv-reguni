@@ -33,7 +33,6 @@ import ch.vd.uniregctb.indexer.tiers.EntrepriseIndexable;
 import ch.vd.uniregctb.indexer.tiers.HabitantIndexable;
 import ch.vd.uniregctb.indexer.tiers.MenageCommunIndexable;
 import ch.vd.uniregctb.indexer.tiers.NonHabitantIndexable;
-import ch.vd.uniregctb.metier.assujettissement.PeriodeImposition;
 import ch.vd.uniregctb.tiers.AppartenanceMenage;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
@@ -407,49 +406,12 @@ public abstract class DataHelper {
 		}
 		i.setIndividualTaxLiability(EnumHelper.coreToXMLv2(value.getAssujettissementPP()));
 		if (i.getType() == ch.vd.unireg.xml.party.v3.PartyType.NATURAL_PERSON) {
-			i.setNaturalPersonSubtype(DataHelper.getNaturalPersonSubtypeV3(value));
+			i.setNaturalPersonSubtype(DataHelper.getNaturalPersonSubtype(value));
 		}
 
 		final List<String> numerosIDE = value.getNumerosIDE();
 		if (!numerosIDE.isEmpty()) {
 			i.setUidNumbers(new ch.vd.unireg.xml.party.v3.UidNumberList(numerosIDE));
-		}
-		return i;
-	}
-
-	public static ch.vd.unireg.xml.party.v4.PartyInfo coreToXMLv4(ch.vd.uniregctb.indexer.tiers.TiersIndexedData value) {
-		if (value == null) {
-			return null;
-		}
-
-		final ch.vd.unireg.xml.party.v4.PartyInfo i = new ch.vd.unireg.xml.party.v4.PartyInfo();
-		i.setNumber(value.getNumero().intValue());
-		i.setName1(value.getNom1());
-		i.setName2(value.getNom2());
-		i.setStreet(value.getRue());
-		i.setZipCode(value.getNpa());
-		i.setTown(value.getLocalite());
-		i.setCountry(value.getPays());
-		i.setDateOfBirth(DataHelper.coreToPartialDateXmlv2(value.getRegDateNaissance()));
-		i.setType(DataHelper.getPartyTypeV4(value));
-		i.setDebtorCategory(EnumHelper.coreToXMLv3(value.getCategorieImpotSource()));
-		i.setDebtorCommunicationMode(EnumHelper.coreToXMLv3(value.getModeCommunication()));
-		i.setLastTaxResidenceBeginDate(DataHelper.coreToXMLv2(value.getDateOuvertureFor()));
-		i.setLastTaxResidenceEndDate(DataHelper.coreToXMLv2(value.getDateFermetureFor()));
-		if (StringUtils.isNotBlank(value.getNavs13_1())) {
-			i.setVn1(Long.valueOf(value.getNavs13_1()));
-		}
-		if (StringUtils.isNotBlank(value.getNavs13_2())) {
-			i.setVn2(Long.valueOf(value.getNavs13_2()));
-		}
-		i.setIndividualTaxLiability(EnumHelper.coreToXMLv3(value.getAssujettissementPP()));
-		if (i.getType() == ch.vd.unireg.xml.party.v4.PartyType.NATURAL_PERSON) {
-			i.setNaturalPersonSubtype(DataHelper.getNaturalPersonSubtypeV4(value));
-		}
-
-		final List<String> numerosIDE = value.getNumerosIDE();
-		if (!numerosIDE.isEmpty()) {
-			i.setUidNumbers(new ch.vd.unireg.xml.party.v4.UidNumberList(numerosIDE));
 		}
 		return i;
 	}
@@ -460,7 +422,7 @@ public abstract class DataHelper {
 	 * @param periodeImposition la période d'imposition considérée
 	 * @return l'id de déclaration associée; ou <b>null</b> si aucune déclaration n'est émise.
 	 */
-	public static Long getAssociatedDi(PeriodeImposition periodeImposition) {
+	public static Long getAssociatedDi(ch.vd.uniregctb.metier.assujettissement.PeriodeImposition periodeImposition) {
 
 		final Contribuable contribuable = periodeImposition.getContribuable();
 		final List<ch.vd.uniregctb.declaration.Declaration> dis = contribuable.getDeclarationsForPeriode(periodeImposition.getDateDebut().year(), false);
@@ -522,30 +484,10 @@ public abstract class DataHelper {
 		}
 	};
 
-	private static final Map<String, ch.vd.unireg.xml.party.v4.PartyType> indexedData2TypeV4 = new HashMap<String, ch.vd.unireg.xml.party.v4.PartyType>() {
-		{
-			put(HabitantIndexable.SUB_TYPE, ch.vd.unireg.xml.party.v4.PartyType.NATURAL_PERSON);
-			put(NonHabitantIndexable.SUB_TYPE, ch.vd.unireg.xml.party.v4.PartyType.NATURAL_PERSON);
-			put(EntrepriseIndexable.SUB_TYPE, ch.vd.unireg.xml.party.v4.PartyType.CORPORATION);
-			put(MenageCommunIndexable.SUB_TYPE, ch.vd.unireg.xml.party.v4.PartyType.HOUSEHOLD);
-			put(AutreCommunauteIndexable.SUB_TYPE, ch.vd.unireg.xml.party.v4.PartyType.OTHER_COMMUNITY);
-			put(EntrepriseIndexable.SUB_TYPE, ch.vd.unireg.xml.party.v4.PartyType.CORPORATION);
-			put(DebiteurPrestationImposableIndexable.SUB_TYPE, ch.vd.unireg.xml.party.v4.PartyType.DEBTOR);
-			put(CollectiviteAdministrativeIndexable.SUB_TYPE, ch.vd.unireg.xml.party.v4.PartyType.ADMINISTRATIVE_AUTHORITY);
-		}
-	};
-
 	private static final Map<String, ch.vd.unireg.xml.party.v3.NaturalPersonSubtype> indexedData2NaturalPersonSubtypeV3 = new HashMap<String, ch.vd.unireg.xml.party.v3.NaturalPersonSubtype>() {
 		{
 			put(HabitantIndexable.SUB_TYPE, ch.vd.unireg.xml.party.v3.NaturalPersonSubtype.RESIDENT);
 			put(NonHabitantIndexable.SUB_TYPE, ch.vd.unireg.xml.party.v3.NaturalPersonSubtype.NON_RESIDENT);
-		}
-	};
-
-	private static final Map<String, ch.vd.unireg.xml.party.v4.NaturalPersonSubtype> indexedData2NaturalPersonSubtypeV4 = new HashMap<String, ch.vd.unireg.xml.party.v4.NaturalPersonSubtype>() {
-		{
-			put(HabitantIndexable.SUB_TYPE, ch.vd.unireg.xml.party.v4.NaturalPersonSubtype.RESIDENT);
-			put(NonHabitantIndexable.SUB_TYPE, ch.vd.unireg.xml.party.v4.NaturalPersonSubtype.NON_RESIDENT);
 		}
 	};
 
@@ -594,18 +536,7 @@ public abstract class DataHelper {
 		return indexedData2TypeV3.get(typeAsString);
 	}
 
-	public static ch.vd.unireg.xml.party.v4.PartyType getPartyTypeV4(ch.vd.uniregctb.indexer.tiers.TiersIndexedData tiers) {
-
-		final String typeAsString = tiers.getTiersType();
-
-		if (StringUtils.isEmpty(typeAsString)) {
-			return null;
-		}
-
-		return indexedData2TypeV4.get(typeAsString);
-	}
-
-	public static ch.vd.unireg.xml.party.v3.NaturalPersonSubtype getNaturalPersonSubtypeV3(ch.vd.uniregctb.indexer.tiers.TiersIndexedData tiers) {
+	public static ch.vd.unireg.xml.party.v3.NaturalPersonSubtype getNaturalPersonSubtype(ch.vd.uniregctb.indexer.tiers.TiersIndexedData tiers) {
 		final String typeAsString = tiers.getTiersType();
 
 		if (StringUtils.isEmpty(typeAsString)) {
@@ -613,16 +544,6 @@ public abstract class DataHelper {
 		}
 
 		return indexedData2NaturalPersonSubtypeV3.get(typeAsString);
-	}
-
-	public static ch.vd.unireg.xml.party.v4.NaturalPersonSubtype getNaturalPersonSubtypeV4(ch.vd.uniregctb.indexer.tiers.TiersIndexedData tiers) {
-		final String typeAsString = tiers.getTiersType();
-
-		if (StringUtils.isEmpty(typeAsString)) {
-			return null;
-		}
-
-		return indexedData2NaturalPersonSubtypeV4.get(typeAsString);
 	}
 
 	public static Set<TiersDAO.Parts> xmlToCoreV1(Set<ch.vd.unireg.xml.party.v1.PartyPart> parts) {
@@ -666,17 +587,11 @@ public abstract class DataHelper {
 			case IMMOVABLE_PROPERTIES:
 				results.add(TiersDAO.Parts.IMMEUBLES);
 				break;
-			case CORPORATION_STATUSES:
-				results.add(TiersDAO.Parts.ETATS_FISCAUX);
-				break;
-			case CAPITALS:
-			case LEGAL_FORMS:
-				results.add(TiersDAO.Parts.DONNEES_CIVILES);
-				break;
-			case TAX_SYSTEMS:
-				results.add(TiersDAO.Parts.REGIMES_FISCAUX);
-				break;
 			case BANK_ACCOUNTS:
+			case CAPITALS:
+			case CORPORATION_STATUSES:
+			case LEGAL_FORMS:
+			case TAX_SYSTEMS:
 			case LEGAL_SEATS:
 				// rien à faire
 				break;
@@ -729,17 +644,11 @@ public abstract class DataHelper {
 			case IMMOVABLE_PROPERTIES:
 				results.add(TiersDAO.Parts.IMMEUBLES);
 				break;
-			case CORPORATION_STATUSES:
-				results.add(TiersDAO.Parts.ETATS_FISCAUX);
-				break;
-			case CAPITALS:
-			case LEGAL_FORMS:
-				results.add(TiersDAO.Parts.DONNEES_CIVILES);
-				break;
-			case TAX_SYSTEMS:
-				results.add(TiersDAO.Parts.REGIMES_FISCAUX);
-				break;
 			case BANK_ACCOUNTS:
+			case CAPITALS:
+			case CORPORATION_STATUSES:
+			case LEGAL_FORMS:
+			case TAX_SYSTEMS:
 			case LEGAL_SEATS:
 				// rien à faire
 				break;
@@ -796,94 +705,11 @@ public abstract class DataHelper {
 			case IMMOVABLE_PROPERTIES:
 				results.add(TiersDAO.Parts.IMMEUBLES);
 				break;
-			case CORPORATION_STATUSES:
-				results.add(TiersDAO.Parts.ETATS_FISCAUX);
-				break;
-			case CAPITALS:
-			case LEGAL_FORMS:
-				results.add(TiersDAO.Parts.DONNEES_CIVILES);
-				break;
-			case TAX_SYSTEMS:
-				results.add(TiersDAO.Parts.REGIMES_FISCAUX);
-				break;
 			case BANK_ACCOUNTS:
-			case LEGAL_SEATS:
-			case EBILLING_STATUSES:
-				// rien à faire
-				break;
-			default:
-				throw new IllegalArgumentException("Type de parts inconnue = [" + p + ']');
-			}
-		}
-
-		return results;
-	}
-
-	public static Set<TiersDAO.Parts> xmlToCoreV4(Set<ch.vd.unireg.xml.party.v4.PartyPart> parts) {
-
-		if (parts == null) {
-			return null;
-		}
-
-		final Set<TiersDAO.Parts> results = EnumSet.noneOf(TiersDAO.Parts.class);
-		for (ch.vd.unireg.xml.party.v4.PartyPart p : parts) {
-			switch (p) {
-			case ADDRESSES:
-				results.add(TiersDAO.Parts.ADRESSES);
-				results.add(TiersDAO.Parts.RAPPORTS_ENTRE_TIERS);
-				break;
-			case TAX_DECLARATIONS:
-			case TAX_DECLARATIONS_STATUSES:
-			case TAX_DECLARATIONS_DEADLINES:
-				results.add(TiersDAO.Parts.DECLARATIONS);
-				break;
-			case TAX_RESIDENCES:
-			case VIRTUAL_TAX_RESIDENCES:
-			case MANAGING_TAX_RESIDENCES:
-			case TAX_LIABILITIES:
-			case SIMPLIFIED_TAX_LIABILITIES:
-			case TAXATION_PERIODS:
-				results.add(TiersDAO.Parts.FORS_FISCAUX);
-				break;
-			case WITHHOLDING_TAXATION_PERIODS:
-				results.add(TiersDAO.Parts.FORS_FISCAUX);
-				results.add(TiersDAO.Parts.RAPPORTS_ENTRE_TIERS);
-				break;
-			case CHILDREN:
-			case PARENTS:
-			case RELATIONS_BETWEEN_PARTIES:
-			case HOUSEHOLD_MEMBERS:
-				results.add(TiersDAO.Parts.RAPPORTS_ENTRE_TIERS);
-				break;
-			case FAMILY_STATUSES:
-				results.add(TiersDAO.Parts.SITUATIONS_FAMILLE);
-				break;
-			case DEBTOR_PERIODICITIES:
-				results.add(TiersDAO.Parts.PERIODICITES);
-				break;
-			case IMMOVABLE_PROPERTIES:
-				results.add(TiersDAO.Parts.IMMEUBLES);
-				break;
-			case TAX_LIGHTENINGS:
-				results.add(TiersDAO.Parts.ALLEGEMENTS_FISCAUX);
-				break;
-			case CORPORATION_STATUSES:
-				results.add(TiersDAO.Parts.ETATS_FISCAUX);
-				break;
 			case CAPITALS:
+			case CORPORATION_STATUSES:
 			case LEGAL_FORMS:
-				results.add(TiersDAO.Parts.DONNEES_CIVILES);
-				break;
 			case TAX_SYSTEMS:
-				results.add(TiersDAO.Parts.REGIMES_FISCAUX);
-				break;
-			case BUSINESS_YEARS:
-				results.add(TiersDAO.Parts.BOUCLEMENTS);
-				break;
-			case CORPORATION_FLAGS:
-			    results.add(TiersDAO.Parts.FLAGS);
-				break;
-			case BANK_ACCOUNTS:
 			case LEGAL_SEATS:
 			case EBILLING_STATUSES:
 				// rien à faire
@@ -918,7 +744,7 @@ public abstract class DataHelper {
 			final Map<String, Long> params = new HashMap<>(1);
 			params.put("menageId", a.getObjetId());
 
-			final List<ForFiscalPrincipal> forsMenage = hibernateTemplate.find("from ForFiscalPrincipalPP f where f.annulationDate is null and f.tiers.id = :menageId order by f.dateDebut asc", params, null);
+			final List<ForFiscalPrincipal> forsMenage = hibernateTemplate.find("from ForFiscalPrincipal f where f.annulationDate is null and f.tiers.id = :menageId order by f.dateDebut asc", params, null);
 			final List<ForFiscalPrincipal> extraction = DateRangeHelper.extract(forsMenage, a.getDateDebut(), a.getDateFin(),
 					new DateRangeHelper.AdapterCallback<ForFiscalPrincipal>() {
 						@Override

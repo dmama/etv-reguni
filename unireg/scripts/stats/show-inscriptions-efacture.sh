@@ -5,7 +5,7 @@ TMP_FILE="$TMP_DIR/file"
 TMP_DEMANDES="$TMP_DIR/demandes"
 touch "$TMP_DEMANDES"
 
-xzgrep "EFactureEventHandlerImpl" "$@" | grep "\binscription e-Facture" -A 2 | grep -v "en cours" | sed -e '/Reçu/ N;s/\n/ /' | grep -v "^--" | while read LINE; do
+grep "EFactureEventHandlerImpl" "$@" | grep "\binscription e-Facture" -A 2 | grep -v "en cours" | sed -e '/Reçu/ N;s/\n/ /' | grep -v "^--" | while read LINE; do
 
 	if [[ "$LINE" =~ ch\.vd\. ]]; then
 		# Exception....

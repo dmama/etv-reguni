@@ -2,7 +2,6 @@ package ch.vd.uniregctb.webservices.party4.impl;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -62,7 +61,6 @@ import ch.vd.unireg.xml.party.v2.Party;
 import ch.vd.unireg.xml.party.v2.PartyInfo;
 import ch.vd.unireg.xml.party.v2.PartyType;
 import ch.vd.uniregctb.adresse.AdresseService;
-import ch.vd.uniregctb.avatar.TypeAvatar;
 import ch.vd.uniregctb.common.BatchTransactionTemplateWithResults;
 import ch.vd.uniregctb.common.XmlUtils;
 import ch.vd.uniregctb.declaration.Declaration;
@@ -79,7 +77,7 @@ import ch.vd.uniregctb.indexer.tiers.GlobalTiersSearcher;
 import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.interfaces.service.ServiceOrganisationService;
+import ch.vd.uniregctb.interfaces.service.ServicePersonneMoraleService;
 import ch.vd.uniregctb.jms.BamMessageHelper;
 import ch.vd.uniregctb.jms.BamMessageSender;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
@@ -89,14 +87,12 @@ import ch.vd.uniregctb.situationfamille.SituationFamilleService;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.Entreprise;
-import ch.vd.uniregctb.tiers.Etablissement;
 import ch.vd.uniregctb.tiers.NumerosOfficesImpot;
 import ch.vd.uniregctb.tiers.TiersCriteria;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersDAO.Parts;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.CategorieImpotSource;
-import ch.vd.uniregctb.type.EtatDelaiDeclaration;
 import ch.vd.uniregctb.type.TypeEtatDeclaration;
 import ch.vd.uniregctb.webservices.party4.data.AcknowledgeTaxDeclarationBuilder;
 import ch.vd.uniregctb.webservices.party4.data.BatchPartyBuilder;
@@ -117,8 +113,6 @@ public class PartyWebServiceImpl implements PartyWebService {
 	// la limite Oracle est à 1'000, mais comme on peut recevoir des ménages communs, il faut garder une bonne marge pour charger les personnes physiques associées.
 
 	private static final Set<CategorieImpotSource> CIS_SUPPORTEES = EnumHelper.getCategoriesImpotSourceAutorisees();
-
-	private static final Set<TypeAvatar> TA_IGNORES = EnumHelper.getTypesAvatarsIgnores();
 
 	private final Context context = new Context();
 
@@ -171,11 +165,6 @@ public class PartyWebServiceImpl implements PartyWebService {
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
-	public void setServiceOrganisation(ServiceOrganisationService service) {
-		context.serviceOrganisationService = service;
-	}
-
-	@SuppressWarnings({"UnusedDeclaration"})
 	public void setHibernateTemplate(HibernateTemplate template) {
 		context.hibernateTemplate = template;
 	}
@@ -198,6 +187,11 @@ public class PartyWebServiceImpl implements PartyWebService {
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setBamMessageSender(BamMessageSender service) {
 		context.bamSender = service;
+	}
+
+	@SuppressWarnings({"UnusedDeclaration"})
+	public void setServicePM(ServicePersonneMoraleService service) {
+		context.servicePM = service;
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
@@ -229,9 +223,7 @@ public class PartyWebServiceImpl implements PartyWebService {
 				}
 				final List<TiersIndexedData> values = tiersSearcher.search(criterion);
 				for (TiersIndexedData value : values) {
-					if (value != null
-							&& (value.getCategorieImpotSource() == null || CIS_SUPPORTEES.contains(value.getCategorieImpotSource()))
-							&& (value.getTypeAvatar() == null || !TA_IGNORES.contains(value.getTypeAvatar()))) {
+					if (value != null && (value.getCategorieImpotSource() == null || CIS_SUPPORTEES.contains(value.getCategorieImpotSource()))) {
 						final PartyInfo info = ch.vd.uniregctb.xml.DataHelper.coreToXMLv2(value);
 						set.add(info);
 					}
@@ -551,7 +543,7 @@ public class PartyWebServiceImpl implements PartyWebService {
 
 			final PartyType type = DataHelper.getPartyType(tiers);
 			if (type == null) {
-				return null;
+				Assert.fail("TypeTiers de tiers inconnu = [" + tiers.getClass().getSimpleName());
 			}
 
 			return type;
@@ -588,8 +580,7 @@ public class PartyWebServiceImpl implements PartyWebService {
 
 		try {
 			final ch.vd.uniregctb.tiers.Tiers tiers = context.tiersService.getTiers(params.getPartyNumber());
-			// [SIPM] Les établissements étaient complètement ignorés avant la v6 (= en fait, il n'y en avait pas, mais maintenant, ils arrivent...)
-			if (tiers == null || tiers instanceof Etablissement) {
+			if (tiers == null) {
 				throw ExceptionHelper.newBusinessException("Le tiers n°" + params.getPartyNumber() + " n'existe pas.", BusinessExceptionCode.UNKNOWN_PARTY);
 			}
 
@@ -606,11 +597,10 @@ public class PartyWebServiceImpl implements PartyWebService {
 	 */
 	@Override
 	public SearchCorporationEventsResponse searchCorporationEvents(SearchCorporationEventsRequest params) throws WebServiceException {
-		// TODO [SIPM] Remettre quelque chose ?
 		final Long corpNr = params.getCorporationNumber() != null ? Long.valueOf(params.getCorporationNumber()) : null;
-		final List<ch.vd.uniregctb.interfaces.model.EvenementPM> list = Collections.emptyList();
-//				context.servicePM.findEvenements(corpNr, params.getEventCode(), ch.vd.uniregctb.xml.DataHelper.xmlToCore(params.getStartDate()),
-//				                                 ch.vd.uniregctb.xml.DataHelper.xmlToCore(params.getEndDate()));
+		final List<ch.vd.uniregctb.interfaces.model.EvenementPM> list =
+				context.servicePM.findEvenements(corpNr, params.getEventCode(), ch.vd.uniregctb.xml.DataHelper.xmlToCore(params.getStartDate()),
+				                                 ch.vd.uniregctb.xml.DataHelper.xmlToCore(params.getEndDate()));
 		return DataHelper.events2web(list);
 	}
 
@@ -754,7 +744,7 @@ public class PartyWebServiceImpl implements PartyWebService {
 		}
 
 		final RegDate newDeadline = ch.vd.uniregctb.xml.DataHelper.xmlToCore(request.getNewDeadline());
-		final RegDate oldDeadline = declaration.getDernierDelaiAccorde().getDelaiAccordeAu();
+		final RegDate oldDeadline = declaration.getDernierDelais().getDelaiAccordeAu();
 		final RegDate today = RegDate.get();
 
 		if (newDeadline.isBefore(today)) {
@@ -774,9 +764,8 @@ public class PartyWebServiceImpl implements PartyWebService {
 
 		// Le délai est correcte, on l'ajoute
 		final DelaiDeclaration delai = new DelaiDeclaration();
-		delai.setEtat(EtatDelaiDeclaration.ACCORDE);
 		delai.setDateTraitement(RegDate.get());
-		delai.setCleArchivageCourrier(null);
+		delai.setConfirmationEcrite(false);
 		delai.setDateDemande(applicationDate);
 		delai.setDelaiAccordeAu(newDeadline);
 		declaration.addDelai(delai);
@@ -798,15 +787,12 @@ public class PartyWebServiceImpl implements PartyWebService {
 			final Date searchEndDate = XmlUtils.xmlcal2date(params.getSearchEndDate());
 			if (DateHelper.isAfter(searchBeginDate, searchEndDate)) {
 				throw ExceptionHelper.newBusinessException("La date de début de recherche " + searchBeginDate.toString() + " est après la date de fin " + searchEndDate,
-				                                           BusinessExceptionCode.INVALID_REQUEST);
+						BusinessExceptionCode.INVALID_REQUEST);
 			}
 			final List<Long> listCtb = context.tiersDAO.getListeCtbModifies(searchBeginDate, searchEndDate);
 			final PartyNumberList list = new PartyNumberList();
 			for (Long l : listCtb) {
-				// [SIPM] il faut écarter les établissements (les identifiants ne sont pas utilisables avec GetParty/GetParties) et ils étaient de fait écartés auparavant car il n'y en avait pas...
-				if (l != null && (l < Etablissement.ETB_GEN_FIRST_ID || l > Etablissement.ETB_GEN_LAST_ID)) {
-					list.getItem().add(l.intValue());
-				}
+				list.getItem().add(l.intValue());
 			}
 			return list;
 		}

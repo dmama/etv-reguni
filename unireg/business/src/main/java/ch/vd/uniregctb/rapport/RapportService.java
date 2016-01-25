@@ -5,25 +5,68 @@ import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.acomptes.AcomptesResults;
 import ch.vd.uniregctb.adresse.ResolutionAdresseResults;
 import ch.vd.uniregctb.declaration.DeclarationException;
-import ch.vd.uniregctb.declaration.ordinaire.common.DemandeDelaiCollectiveResults;
-import ch.vd.uniregctb.declaration.ordinaire.pm.DeterminationDIsPMResults;
-import ch.vd.uniregctb.declaration.ordinaire.pm.EchoirDIsPMResults;
-import ch.vd.uniregctb.declaration.ordinaire.pm.EnvoiDIsPMResults;
-import ch.vd.uniregctb.declaration.ordinaire.pm.EnvoiSommationsDIsPMResults;
-import ch.vd.uniregctb.declaration.ordinaire.pp.DeterminationDIsPPResults;
-import ch.vd.uniregctb.declaration.ordinaire.pp.EchoirDIsPPResults;
-import ch.vd.uniregctb.declaration.ordinaire.pp.EnvoiAnnexeImmeubleResults;
-import ch.vd.uniregctb.declaration.ordinaire.pp.EnvoiDIsPPResults;
-import ch.vd.uniregctb.declaration.ordinaire.pp.EnvoiSommationsDIsPPResults;
-import ch.vd.uniregctb.declaration.ordinaire.pp.ImportCodesSegmentResults;
-import ch.vd.uniregctb.declaration.ordinaire.pp.ListeDIsPPNonEmises;
-import ch.vd.uniregctb.declaration.ordinaire.pp.ListeNoteResults;
-import ch.vd.uniregctb.declaration.ordinaire.pp.StatistiquesCtbs;
-import ch.vd.uniregctb.declaration.ordinaire.pp.StatistiquesDIs;
+import ch.vd.uniregctb.declaration.ListeNoteResults;
+import ch.vd.uniregctb.declaration.ordinaire.DemandeDelaiCollectiveResults;
+import ch.vd.uniregctb.declaration.ordinaire.DeterminationDIsResults;
+import ch.vd.uniregctb.declaration.ordinaire.EchoirDIsResults;
+import ch.vd.uniregctb.declaration.ordinaire.EnvoiAnnexeImmeubleResults;
+import ch.vd.uniregctb.declaration.ordinaire.EnvoiDIsResults;
+import ch.vd.uniregctb.declaration.ordinaire.EnvoiSommationsDIsResults;
+import ch.vd.uniregctb.declaration.ordinaire.ImportCodesSegmentResults;
+import ch.vd.uniregctb.declaration.ordinaire.ListeDIsNonEmises;
+import ch.vd.uniregctb.declaration.ordinaire.StatistiquesCtbs;
+import ch.vd.uniregctb.declaration.ordinaire.StatistiquesDIs;
 import ch.vd.uniregctb.declaration.source.DeterminerLRsEchuesResults;
 import ch.vd.uniregctb.declaration.source.EnvoiLRsResults;
 import ch.vd.uniregctb.declaration.source.EnvoiSommationLRsResults;
-import ch.vd.uniregctb.document.*;
+import ch.vd.uniregctb.document.AcomptesRapport;
+import ch.vd.uniregctb.document.AssujettiParSubstitutionRapport;
+import ch.vd.uniregctb.document.CalculParentesRapport;
+import ch.vd.uniregctb.document.ComparerForFiscalEtCommuneRapport;
+import ch.vd.uniregctb.document.ComparerSituationFamilleRapport;
+import ch.vd.uniregctb.document.CorrectionEtatDeclarationRapport;
+import ch.vd.uniregctb.document.CorrectionFlagHabitantRapport;
+import ch.vd.uniregctb.document.DemandeDelaiCollectiveRapport;
+import ch.vd.uniregctb.document.DeterminationDIsRapport;
+import ch.vd.uniregctb.document.DeterminerLRsEchuesRapport;
+import ch.vd.uniregctb.document.DeterminerMouvementsDossiersEnMasseRapport;
+import ch.vd.uniregctb.document.DumpPeriodesImpositionImpotSourceRapport;
+import ch.vd.uniregctb.document.EchoirDIsRapport;
+import ch.vd.uniregctb.document.EnvoiAnnexeImmeubleRapport;
+import ch.vd.uniregctb.document.EnvoiDIsRapport;
+import ch.vd.uniregctb.document.EnvoiLRsRapport;
+import ch.vd.uniregctb.document.EnvoiSommationLRsRapport;
+import ch.vd.uniregctb.document.EnvoiSommationsDIsRapport;
+import ch.vd.uniregctb.document.ExclureContribuablesEnvoiRapport;
+import ch.vd.uniregctb.document.ExtractionDonneesRptRapport;
+import ch.vd.uniregctb.document.FusionDeCommunesRapport;
+import ch.vd.uniregctb.document.IdentifierContribuableRapport;
+import ch.vd.uniregctb.document.ImportCodesSegmentRapport;
+import ch.vd.uniregctb.document.ImportImmeublesRapport;
+import ch.vd.uniregctb.document.ListeAssujettisRapport;
+import ch.vd.uniregctb.document.ListeContribuablesResidentsSansForVaudoisRapport;
+import ch.vd.uniregctb.document.ListeDIsNonEmisesRapport;
+import ch.vd.uniregctb.document.ListeDroitsAccesRapport;
+import ch.vd.uniregctb.document.ListeNoteRapport;
+import ch.vd.uniregctb.document.ListeTachesEnIsntanceParOIDRapport;
+import ch.vd.uniregctb.document.ListesNominativesRapport;
+import ch.vd.uniregctb.document.MajoriteRapport;
+import ch.vd.uniregctb.document.MigrationCoquillesPMRapport;
+import ch.vd.uniregctb.document.PassageNouveauxRentiersSourciersEnMixteRapport;
+import ch.vd.uniregctb.document.RapprocherCtbRapport;
+import ch.vd.uniregctb.document.RecalculTachesRapport;
+import ch.vd.uniregctb.document.RecuperationDonneesAnciensHabitantsRapport;
+import ch.vd.uniregctb.document.RecuperationOriginesNonHabitantsRapport;
+import ch.vd.uniregctb.document.ReinitialiserBaremeDoubleGainRapport;
+import ch.vd.uniregctb.document.ResolutionAdresseRapport;
+import ch.vd.uniregctb.document.RolesCommunesRapport;
+import ch.vd.uniregctb.document.RolesOIDsRapport;
+import ch.vd.uniregctb.document.StatistiquesCtbsRapport;
+import ch.vd.uniregctb.document.StatistiquesDIsRapport;
+import ch.vd.uniregctb.document.StatistiquesEvenementsRapport;
+import ch.vd.uniregctb.document.SuppressionOIDRapport;
+import ch.vd.uniregctb.document.TraiterEvenementExterneRapport;
+import ch.vd.uniregctb.document.ValidationJobRapport;
 import ch.vd.uniregctb.droits.ListeDroitsAccesResults;
 import ch.vd.uniregctb.evenement.externe.TraiterEvenementExterneResult;
 import ch.vd.uniregctb.identification.contribuable.IdentifierContribuableResults;
@@ -57,6 +100,7 @@ import ch.vd.uniregctb.tiers.rattrapage.ancienshabitants.RecuperationDonneesAnci
 import ch.vd.uniregctb.tiers.rattrapage.etatdeclaration.CorrectionEtatDeclarationResults;
 import ch.vd.uniregctb.tiers.rattrapage.flaghabitant.CorrectionFlagHabitantResults;
 import ch.vd.uniregctb.tiers.rattrapage.origine.RecuperationOriginesNonHabitantsResults;
+import ch.vd.uniregctb.tiers.rattrapage.pm.MigrationCoquillesPM;
 import ch.vd.uniregctb.validation.ValidationJobResults;
 
 /**
@@ -65,36 +109,22 @@ import ch.vd.uniregctb.validation.ValidationJobResults;
 public interface RapportService {
 
 	/**
-	 * Génère le rapport (PDF) d'exécution du job de déterminatin des DIs PP à émettre.
-	 * @param results le résultat d'exécution du job de détermination des DIs PP à émettre.
+	 * Génère le rapport (PDF) d'exécution du job de déterminatin des DIs à émettre.
+	 *
+	 * @param results
+	 *            le résultat d'exécution du job de déterminatin des DIs à émettre.
 	 * @return un document de rapport
 	 */
-	DeterminationDIsPPRapport generateRapport(DeterminationDIsPPResults results, StatusManager status) throws DeclarationException;
+	DeterminationDIsRapport generateRapport(DeterminationDIsResults results, StatusManager status) throws DeclarationException;
 
 	/**
-	 * Génère le rapport (PDF) d'exécution du job de déterminatin des DIs PM à émettre.
-	 * @param results le résultat d'exécution du job de détermination des DIs PM à émettre.
-	 * @return un document de rapport
-	 */
-	DeterminationDIsPMRapport generateRapport(DeterminationDIsPMResults results, StatusManager status) throws DeclarationException;
-
-	/**
-	 * Génère un document le rapport (PDF) d'exécution du job d'envoi des DIs PP en masse.
+	 * Génère un document le rapport (PDF) d'exécution du job d'envoi des DIs en masse.
 	 *
 	 * @param results
 	 *            le résultat de l'exécution du job d'envoi des DIs en masse
 	 * @return un document de rapport
 	 */
-	EnvoiDIsPPRapport generateRapport(EnvoiDIsPPResults results, StatusManager s) throws DeclarationException;
-
-	/**
-	 * Génère le rapport PDF d'exécution du job d'envoi des DI PM en masse
-	 * @param results résultat de l'exécution du job
-	 * @param s le status manager
-	 * @return un document de rapport
-	 * @throws DeclarationException en cas de souci
-	 */
-	EnvoiDIsPMRapport generateRapport(EnvoiDIsPMResults results, StatusManager s) throws DeclarationException;
+	EnvoiDIsRapport generateRapport(EnvoiDIsResults results, StatusManager s) throws DeclarationException;
 
 		/**
 	 * Génère un document le rapport (PDF) d'exécution du job d'envoi des DIs en masse.
@@ -178,23 +208,17 @@ public interface RapportService {
 	 *
 	 * @return le rapport
 	 */
-	ListeDIsNonEmisesRapport generateRapport(final ListeDIsPPNonEmises results, StatusManager status);
+	ListeDIsNonEmisesRapport generateRapport(final ListeDIsNonEmises results, StatusManager status);
 
 	/**
-	 * Genère le rapport (PDF) pour l'envoi des sommations de DI PP
+	 * Genère le rapport (PDF) pour l'envoi des sommations de DI
 	 *
-	 * @param results le résultat de l'exécution du job de sommation des DIs.
+	 * @param results
+	 *            le résultat de l'exécution du job de sommation des DIs.
+	 *
 	 * @return le rapport
 	 */
-	EnvoiSommationsDIsPPRapport generateRapport(EnvoiSommationsDIsPPResults results, StatusManager statusManager);
-
-	/**
-	 * Genère le rapport (PDF) pour l'envoi des sommations de DI PP
-	 *
-	 * @param results le résultat de l'exécution du job de sommation des DIs.
-	 * @return le rapport
-	 */
-	EnvoiSommationsDIsPMRapport generateRapport(EnvoiSommationsDIsPMResults results, StatusManager statusManager);
+	EnvoiSommationsDIsRapport generateRapport(EnvoiSommationsDIsResults results, StatusManager statusManager);
 
 	/**
 	 * Genère le rapport (PDF) du job de vérification de la validation des tiers.
@@ -252,22 +276,13 @@ public interface RapportService {
 	ExtractionDonneesRptRapport generateRapport(ExtractionDonneesRptResults results, StatusManager statusManager);
 
 	/**
-	 * Genère le rapport (PDF) pour les déclarations PP ayant été passées à l'état échues.
+	 * Genère le rapport (PDF) pour les déclarations ayant été passées à l'état échues.
 	 *
 	 * @param results
 	 *            le résultat de l'exécution du job
 	 * @return le rapport
 	 */
-	EchoirDIsPPRapport generateRapport(EchoirDIsPPResults results, StatusManager status);
-
-	/**
-	 * Genère le rapport (PDF) pour les déclarations PM ayant été passées à l'état échues.
-	 *
-	 * @param results
-	 *            le résultat de l'exécution du job
-	 * @return le rapport
-	 */
-	EchoirDIsPMRapport generateRapport(EchoirDIsPMResults results, StatusManager status);
+	EchoirDIsRapport generateRapport(EchoirDIsResults results, StatusManager status);
 
 	/**
 	 * Genère le rapport (PDF) pour la réinitialisation des barèmes double-gain
@@ -371,6 +386,15 @@ public interface RapportService {
 	 * @return   le rapport généré
 	 */
 	ListeNoteRapport generateRapport(ListeNoteResults results, StatusManager statusManager);
+
+	/**
+	 * [UNIREG-2612] Génère le rapport d'exécution de la migration des coquilles des personnes morales.
+	 *
+	 * @param results les résultats brutes de la migration
+	 * @param status  un status manager
+	 * @return le rapport généré
+	 */
+	MigrationCoquillesPMRapport generateRapport(MigrationCoquillesPM.MigrationResults results, StatusManager status);
 
 	/**
 	 * Génère le rapport d'exécution de la comparaison de la commune du for et de la commune de la résidence

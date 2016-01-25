@@ -10,7 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.unireg.interfaces.common.Adresse;
+import ch.vd.unireg.interfaces.civil.data.Adresse;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.Localite;
 import ch.vd.unireg.interfaces.infra.data.Pays;
@@ -54,9 +54,9 @@ public class AdresseManagerImpl extends TiersManager implements AdresseManager {
 
 	protected final Logger LOGGER = LoggerFactory.getLogger(AdresseManagerImpl.class);
 
-	private static final String TYPE_LOCALITE_SUISSE = "suisse";
+	private final static String TYPE_LOCALITE_SUISSE = "suisse";
 
-	private static final String TYPE_LOCALITE_PAYS = "pays";
+	private final static String TYPE_LOCALITE_PAYS = "pays";
 
 	/**
 	 * Alimente la vue AdresseView pour une adresse existante
@@ -503,8 +503,7 @@ public class AdresseManagerImpl extends TiersManager implements AdresseManager {
 					}
 				}
 				catch (AdresseException e) {
-					AdresseDisponibleView view = new AdresseDisponibleView();
-					view.setRue(String.format("<erreur: %s", e.getMessage()));
+					// que faire ici ?
 				}
 			}
 		}
@@ -559,7 +558,7 @@ public class AdresseManagerImpl extends TiersManager implements AdresseManager {
 	private AdresseDisponibleView createAdresseDisponibleViewFromAdresseCivil(Adresse addIndividu) {
 		AdresseDisponibleView addDispoView = new AdresseDisponibleView();
 
-		addDispoView.setSource(AdresseGenerique.SourceType.CIVILE_PERS);
+		addDispoView.setSource(AdresseGenerique.SourceType.CIVILE);
 		addDispoView.setLocalite(addIndividu.getLocalite());
 		addDispoView.setNumeroCasePostale(addIndividu.getNumeroOrdrePostal());      // TODO noOrdreP dans un champ CasePostale ???
 

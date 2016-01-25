@@ -11,7 +11,7 @@
 		<groupId>ch.vd.uniregctb</groupId>
 		<artifactId>uniregctb</artifactId>
 		<!-- BEGIN_LVERSION -->
-		<version>6.0.7-SNAPSHOT</version>
+		<version>5.15.2-SNAPSHOT</version>
 		<!-- END_LVERSION -->
 		<relativePath>../base/pom.xml</relativePath>
 	</parent>
@@ -256,16 +256,6 @@
 							</properties>
 						</deployable>
 					</deployables>
-				</configuration>
-			</plugin>
-
-			<!-- exclusion du "war" des entités déployées vers nexus -->
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-deploy-plugin</artifactId>
-				<version>2.7</version>
-				<configuration>
-					<skip>true</skip>
 				</configuration>
 			</plugin>
 

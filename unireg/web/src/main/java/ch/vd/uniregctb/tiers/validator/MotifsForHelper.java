@@ -31,40 +31,13 @@ public class MotifsForHelper {
 	}
 
 	public static List<MotifFor> getMotifsOuverture(TypeFor type) {
-		if (GenreImpot.REVENU_FORTUNE == type.genreImpot && isPersonnePhysique(type.natureTiers)) {
+		if (GenreImpot.REVENU_FORTUNE == type.genreImpot) {
 			return getMotifsOuvertureRevenuFortune(type);
 		}
 		else if (GenreImpot.DEBITEUR_PRESTATION_IMPOSABLE == type.genreImpot) {
 			return getMotifsOuvertureDebiteursPrestationsImposables();
 		}
-		else if (isPersonneMorale(type.natureTiers)) {
-			return getMotifsOuvertureEntreprise(type);
-		}
 		return Collections.emptyList();
-	}
-
-	private static List<MotifFor> getMotifsOuvertureEntreprise(TypeFor type) {
-
-		final List<MotifFor> motifs = new ArrayList<>();
-		switch (type.rattachement) {
-		case DOMICILE:
-			motifs.add(MotifFor.DEBUT_EXPLOITATION);
-			break;
-		case IMMEUBLE_PRIVE:
-			motifs.add(MotifFor.ACHAT_IMMOBILIER);
-			break;
-		case ETABLISSEMENT_STABLE:
-			motifs.add(MotifFor.DEBUT_EXPLOITATION);
-			break;
-		default:
-			break;
-		}
-
-		// fusion entreprises & fusion communes pour les rattrapages
-		motifs.add(MotifFor.FUSION_COMMUNES);
-		motifs.add(MotifFor.FUSION_ENTREPRISES);
-
-		return motifs;
 	}
 
 	private static List<MotifFor> getMotifsOuvertureDebiteursPrestationsImposables() {
@@ -153,56 +126,14 @@ public class MotifsForHelper {
 		return motifs;
 	}
 
-	public static boolean isPersonnePhysique(NatureTiers nature) {
-		switch (nature) {
-		case Habitant:
-		case NonHabitant:
-		case MenageCommun:
-			return true;
-		default:
-			return false;
-		}
-	}
-
-	public static boolean isPersonneMorale(NatureTiers nature) {
-		return nature == NatureTiers.Entreprise;
-	}
-
 	public static List<MotifFor> getMotifsFermeture(TypeFor type) {
-		if (GenreImpot.REVENU_FORTUNE == type.genreImpot && isPersonnePhysique(type.natureTiers)) {
+		if (GenreImpot.REVENU_FORTUNE == type.genreImpot) {
 			return getMotifsFermetureRevenuFortune(type);
 		}
 		else if (GenreImpot.DEBITEUR_PRESTATION_IMPOSABLE == type.genreImpot) {
 			return getMotifsFermetureDebiteursPrestationsImposables();
 		}
-		else if (isPersonneMorale(type.natureTiers)) {
-			return getMotifsFermetureEntreprise(type);
-		}
 		return Collections.emptyList();
-	}
-
-	private static List<MotifFor> getMotifsFermetureEntreprise(TypeFor type) {
-		final List<MotifFor> motifs = new ArrayList<>();
-		switch (type.rattachement) {
-		case DOMICILE:
-			motifs.add(MotifFor.CESSATION_ACTIVITE);
-			motifs.add(MotifFor.FAILLITE);
-			break;
-		case IMMEUBLE_PRIVE:
-			motifs.add(MotifFor.VENTE_IMMOBILIER);
-			break;
-		case ETABLISSEMENT_STABLE:
-			motifs.add(MotifFor.FIN_EXPLOITATION);
-			break;
-		default:
-			break;
-		}
-
-		// fusion entreprises & fusion communes pour les rattrapages
-		motifs.add(MotifFor.FUSION_COMMUNES);
-		motifs.add(MotifFor.FUSION_ENTREPRISES);
-
-		return motifs;
 	}
 
 	private static List<MotifFor> getMotifsFermetureDebiteursPrestationsImposables() {
@@ -237,7 +168,7 @@ public class MotifsForHelper {
 			motifs.add(MotifFor.FIN_ACTIVITE_DIPLOMATIQUE);
 		case DIPLOMATE_ETRANGER:
 		case DOMICILE:
-			// for principal
+			// for principal                                                                  MN
 			if (NatureTiers.Habitant == type.natureTiers || NatureTiers.NonHabitant == type.natureTiers) {
 				motifs.add(MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
 			}

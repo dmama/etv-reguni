@@ -3,9 +3,9 @@ package ch.vd.uniregctb.evenement.civil.interne.obtentionpermis;
 import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.interfaces.civil.data.Adresse;
 import ch.vd.unireg.interfaces.civil.data.EtatCivil;
 import ch.vd.unireg.interfaces.civil.data.Individu;
-import ch.vd.unireg.interfaces.common.Adresse;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.uniregctb.adresse.AdresseException;
@@ -24,10 +24,9 @@ import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterneAvecAdresses
 import ch.vd.uniregctb.evenement.civil.interne.HandleStatus;
 import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
 import ch.vd.uniregctb.metier.common.DecalageDateHelper;
-import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
+import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.ModeImposition;
@@ -108,7 +107,7 @@ public abstract class ObtentionPermisCOuNationaliteSuisse extends EvenementCivil
 	 * Méthode utilitaire pour continuer/remplacer un for fiscal principal existant
 	 * en changeant juste le mode d'imposition, la date et le motif d'ouverture
 	 */
-	private void openForFiscalPrincipalChangementModeImposition(ContribuableImpositionPersonnesPhysiques contribuable,
+	private void openForFiscalPrincipalChangementModeImposition(Contribuable contribuable,
 	                                                            ForFiscalPrincipal reference,
 	                                                            RegDate dateOuverture,
 	                                                            MotifFor motifOuverture,
@@ -129,7 +128,7 @@ public abstract class ObtentionPermisCOuNationaliteSuisse extends EvenementCivil
 	 * @param numeroOfsAutoriteFiscale le numéro OFS de l'autorité fiscale sur laquelle est ouverte le nouveau fort.
 	 * @return le nouveau for fiscal principal
 	 */
-	private ForFiscalPrincipalPP openForFiscalPrincipalChangementModeImpositionImplicite(ContribuableImpositionPersonnesPhysiques contribuable, final RegDate dateOuverture, int numeroOfsAutoriteFiscale) {
+	private ForFiscalPrincipal openForFiscalPrincipalChangementModeImpositionImplicite(Contribuable contribuable, final RegDate dateOuverture, int numeroOfsAutoriteFiscale) {
 		// [UNIREG-1979][SIFISC-1199] On schedule un réindexation pour le début du mois suivant (les changements d'assujettissement source->ordinaire sont décalés en fin de mois)
 		final RegDate debutMoisProchain = DecalageDateHelper.getDateDebutAssujettissementOrdinaireApresPermisCNationaliteSuisse(dateOuverture);
 		contribuable.scheduleReindexationOn(debutMoisProchain);
@@ -152,7 +151,7 @@ public abstract class ObtentionPermisCOuNationaliteSuisse extends EvenementCivil
 		// [SIFISC-9211] : le for ordinaire ne doit être ouvert qu'au lendemain de l'obtention du permis/de la nationalité
 		// [SIFISC-10518] : le SIFISC-9211 ne s'applique qu'à avant 2014
 		final RegDate datePriseEnCompte = DecalageDateHelper.getDateOuvertureForOrdinaireApresPermisCNationaliteSuisse(getDate());
-		final ForFiscalPrincipalPP forPrincipalHabitant = habitant.getForFiscalPrincipalAt(null);
+		final ForFiscalPrincipal forPrincipalHabitant = habitant.getForFiscalPrincipalAt(null);
 		final EnsembleTiersCouple ensembleTiersCouple = getService().getEnsembleTiersCouple(habitant, datePriseEnCompte);
 		MenageCommun menage = null;
 		if (ensembleTiersCouple != null) {
@@ -188,7 +187,7 @@ public abstract class ObtentionPermisCOuNationaliteSuisse extends EvenementCivil
 			// [UNIREG-725] si déjà ordinaire, indigent ou à la dépense : rien à faire!
 		}
 		else if (menage != null && menage.getForFiscalPrincipalAt(null) != null) { //couple assujetti
-			final ForFiscalPrincipalPP forPrincipalMenage = menage.getForFiscalPrincipalAt(null);
+			final ForFiscalPrincipal forPrincipalMenage = menage.getForFiscalPrincipalAt(null);
 			final ModeImposition modeImposition = forPrincipalMenage.getModeImposition();
 			if(modeImposition == ModeImposition.SOURCE || modeImposition == ModeImposition.MIXTE_137_2 || modeImposition == ModeImposition.MIXTE_137_1) {
 				//obtention permis ou nationalité le jour de l'arrivée

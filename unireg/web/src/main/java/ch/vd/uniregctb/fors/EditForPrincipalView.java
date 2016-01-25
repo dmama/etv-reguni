@@ -2,8 +2,6 @@ package ch.vd.uniregctb.fors;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
-import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
@@ -26,7 +24,6 @@ public class EditForPrincipalView implements EditForRevenuFortuneView {
 	private TypeAutoriteFiscale typeAutoriteFiscale;
 	private Integer noAutoriteFiscale;
 	private ModeImposition modeImposition;
-	private GenreImpot genreImpot;
 
 	public EditForPrincipalView() {
 	}
@@ -42,11 +39,7 @@ public class EditForPrincipalView implements EditForRevenuFortuneView {
 		this.motifRattachement = ffp.getMotifRattachement();
 		this.typeAutoriteFiscale = ffp.getTypeAutoriteFiscale();
 		this.noAutoriteFiscale = ffp.getNumeroOfsAutoriteFiscale();
-		this.genreImpot = ffp.getGenreImpot();
-
-		if (ffp instanceof ForFiscalPrincipalPP) {
-			this.modeImposition = ((ForFiscalPrincipalPP) ffp).getModeImposition();
-		}
+		this.modeImposition = ffp.getModeImposition();
 	}
 
 	public void initReadOnlyData(ForFiscalPrincipal ffp) {
@@ -60,11 +53,7 @@ public class EditForPrincipalView implements EditForRevenuFortuneView {
 		this.motifDebut = ffp.getMotifOuverture();
 		this.motifRattachement = ffp.getMotifRattachement();
 		this.typeAutoriteFiscale = ffp.getTypeAutoriteFiscale();
-		this.genreImpot = ffp.getGenreImpot();
-
-		if (ffp instanceof ForFiscalPrincipalPP) {
-			this.modeImposition = ((ForFiscalPrincipalPP) ffp).getModeImposition();
-		}
+		this.modeImposition = ffp.getModeImposition();
 	}
 
 	@Override
@@ -139,14 +128,5 @@ public class EditForPrincipalView implements EditForRevenuFortuneView {
 
 	public ModeImposition getModeImposition() {
 		return modeImposition;
-	}
-
-	@Override
-	public GenreImpot getGenreImpot() {
-		return genreImpot;
-	}
-
-	public void setGenreImpot(GenreImpot genreImpot) {
-		this.genreImpot = genreImpot;
 	}
 }

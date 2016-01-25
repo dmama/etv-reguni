@@ -80,10 +80,8 @@ import ch.vd.uniregctb.reqdes.UniteTraitement;
 import ch.vd.uniregctb.reqdes.UniteTraitementDAO;
 import ch.vd.uniregctb.tiers.AppartenanceMenage;
 import ch.vd.uniregctb.tiers.Contribuable;
-import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
 import ch.vd.uniregctb.tiers.ForsParTypeAt;
 import ch.vd.uniregctb.tiers.MenageCommun;
@@ -98,7 +96,6 @@ import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.transaction.TransactionTemplate;
 import ch.vd.uniregctb.type.CategorieEtranger;
 import ch.vd.uniregctb.type.EtatCivil;
-import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
@@ -733,7 +730,7 @@ public class EvenementReqDesProcessorImpl implements EvenementReqDesProcessor, I
 			if (data != null) {
 
 				// sur qui faut-il mettre un éventuel for ?
-				final ContribuableImpositionPersonnesPhysiques assujetti;
+				final Contribuable assujetti;
 				final EnsembleTiersCouple couple = tiersService.getEnsembleTiersCouple(data.personnePhysique, dateActe);
 				if (couple != null) {
 					assujetti = couple.getMenage();
@@ -778,7 +775,7 @@ public class EvenementReqDesProcessorImpl implements EvenementReqDesProcessor, I
 					// 1.2.2. si oui, on ferme/annule le for précédent pour créer le nouveau
 					//
 
-					final ForFiscalPrincipalPP ffpExistant = (ForFiscalPrincipalPP) forsAt.principal;
+					final ForFiscalPrincipal ffpExistant = forsAt.principal;
 					final ModeImposition modeImposition;
 					if (hasRoleAcquereurPropriete || !forsAt.secondaires.isEmpty()) {
 						modeImposition = ModeImposition.ORDINAIRE;
@@ -837,7 +834,7 @@ public class EvenementReqDesProcessorImpl implements EvenementReqDesProcessor, I
 							final Pair<Integer, MotifRattachement> key = Pair.of(ofsCommune, MotifRattachement.IMMEUBLE_PRIVE);
 							if (!ofsCommunesExistantes.contains(key)) {
 								// et finalement on crée les fors secondaires sur les communes où il n'y en a pas encore
-								tiersService.openForFiscalSecondaire(assujetti, dateActe, MotifRattachement.IMMEUBLE_PRIVE, ofsCommune, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifFor.ACHAT_IMMOBILIER, GenreImpot.REVENU_FORTUNE);
+								tiersService.openForFiscalSecondaire(assujetti, dateActe, MotifRattachement.IMMEUBLE_PRIVE, ofsCommune, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifFor.ACHAT_IMMOBILIER);
 								ofsCommunesExistantes.add(key);
 							}
 						}

@@ -10,10 +10,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
+import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
-import ch.vd.unireg.interfaces.organisation.mock.MockServiceOrganisation;
-import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockOrganisationFactory;
 import ch.vd.unireg.webservices.party4.BatchParty;
 import ch.vd.unireg.webservices.party4.BatchPartyEntry;
 import ch.vd.unireg.webservices.party4.GetBatchPartyRequest;
@@ -22,6 +21,7 @@ import ch.vd.unireg.webservices.party4.PartyPart;
 import ch.vd.unireg.webservices.party4.PartyWebService;
 import ch.vd.unireg.webservices.party4.SetAutomaticReimbursementBlockingRequest;
 import ch.vd.unireg.webservices.party4.WebServiceException;
+import ch.vd.unireg.xml.common.v1.Date;
 import ch.vd.unireg.xml.common.v1.UserLogin;
 import ch.vd.unireg.xml.party.address.v1.Address;
 import ch.vd.unireg.xml.party.address.v1.FormattedAddress;
@@ -29,12 +29,17 @@ import ch.vd.unireg.xml.party.address.v1.OrganisationMailAddressInfo;
 import ch.vd.unireg.xml.party.corporation.v2.Corporation;
 import ch.vd.unireg.xml.party.taxresidence.v1.TaxResidence;
 import ch.vd.unireg.xml.party.taxresidence.v1.TaxationAuthorityType;
+import ch.vd.unireg.xml.party.v2.BankAccount;
+import ch.vd.unireg.xml.party.v2.Party;
 import ch.vd.uniregctb.common.WebserviceTest;
+import ch.vd.uniregctb.interfaces.model.CompteBancaire;
+import ch.vd.uniregctb.interfaces.model.TypeMandataire;
+import ch.vd.uniregctb.interfaces.model.mock.MockPersonneMorale;
+import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServicePM;
+import ch.vd.uniregctb.interfaces.service.mock.MockServicePM;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.TiersDAO;
-import ch.vd.uniregctb.type.FormeJuridiqueEntreprise;
-import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.Sexe;
 
 import static org.junit.Assert.assertEquals;
@@ -63,85 +68,86 @@ public class PartyWebServicePMTest extends WebserviceTest {
 
 		login = new UserLogin("iamtestuser", 22);
 		serviceCivil.setUp(new DefaultMockServiceCivil());
+		servicePM.setUp(new DefaultMockServicePM());
 	}
 
 	@Test
 	@Transactional(rollbackFor = Throwable.class)
 	public void testSetBlocageRemboursementAutomatiquePMInconnueDansUnireg() throws Exception {
 
-		final long noPM = 999999;
+		final long noBCV = MockPersonneMorale.BCV.getNumeroEntreprise();
 
 		final GetPartyRequest params = new GetPartyRequest();
 		params.setLogin(login);
-		params.setPartyNumber((int) noPM);
+		params.setPartyNumber((int) noBCV);
 
 		// on s'assure que l'entreprise n'existe pas dans la base
-		assertNull(tiersDAO.get(noPM));
+		assertNull(tiersDAO.get(noBCV));
 
 		// on s'assure que le code de blocage de remboursement est à true (valeur par défaut)
 		// msi 23.09.2011: depuis la migration des coquilles vides, le service retourne null pour une PM inconnue
 		{
-			final Corporation corp = (Corporation) service.getParty(params);
-			assertNull(corp);
+			final Corporation bcv = (Corporation) service.getParty(params);
+			assertNull(bcv);
 		}
 
 		// on change le code de remboursement
 		final SetAutomaticReimbursementBlockingRequest paramsBloc = new SetAutomaticReimbursementBlockingRequest();
 		paramsBloc.setBlocked(false);
 		paramsBloc.setLogin(login);
-		paramsBloc.setPartyNumber((int) noPM);
+		paramsBloc.setPartyNumber((int) noBCV);
 		try {
 			service.setAutomaticReimbursementBlocking(paramsBloc);
 			fail();
 		}
 		catch (WebServiceException e) {
 			// changer le code de remboursement d'un PM inexistante n'est plus permis depuis que les coquilles vides des PMs ont été créées
-			assertEquals("Le tiers n°999999 n'existe pas.", e.getMessage());
+			assertEquals("Le tiers n°20222 n'existe pas.", e.getMessage());
 		}
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testSetBlocageRemboursementAutomatiquePMConnueDansUnireg() throws Exception {
 
-		serviceOrganisation.setUp(new MockServiceOrganisation() {
+		final long noNestle = MockPersonneMorale.NestleSuisse.getNumeroEntreprise();
+
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			@Override
-			protected void init() {
-				addOrganisation(MockOrganisationFactory.NESTLE);
+			public Object doInTransaction(TransactionStatus status) {
+				final Entreprise entreprise = addEntreprise(noNestle);
+				entreprise.setBlocageRemboursementAutomatique(true);
+				return null;
 			}
 		});
 
-		final long idpm = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise entreprise = addEntrepriseConnueAuCivil(MockOrganisationFactory.NESTLE.getNumeroOrganisation());
-				entreprise.setBlocageRemboursementAutomatique(true);
-				return entreprise.getNumero();
-			}
-		});
+		// on s'assure que l'entreprise existe dans la base
+		final Entreprise ent = (Entreprise) tiersDAO.get(noNestle);
+		assertNotNull(ent);
 
 		final GetPartyRequest params = new GetPartyRequest();
 		params.setLogin(login);
-		params.setPartyNumber((int) idpm);
+		params.setPartyNumber((int) noNestle);
 
 		// on s'assure que le code de blocage de remboursement est à true (valeur d'initialisation plus haut)
 		{
-			final Corporation pm = (Corporation) service.getParty(params);
-			assertNotNull(pm);
-			assertTrue(pm.isAutomaticReimbursementBlocked());
+			final Corporation nestle = (Corporation) service.getParty(params);
+			assertNotNull(nestle);
+			assertTrue(nestle.isAutomaticReimbursementBlocked());
 		}
 
 		// on change le code de remboursement
 		final SetAutomaticReimbursementBlockingRequest paramsBloc = new SetAutomaticReimbursementBlockingRequest();
 		paramsBloc.setBlocked(false);
 		paramsBloc.setLogin(login);
-		paramsBloc.setPartyNumber((int) idpm);
+		paramsBloc.setPartyNumber((int) noNestle);
 		service.setAutomaticReimbursementBlocking(paramsBloc);
 
 		// on s'assure que le code de blocage de remboursement est à maintenant à false
 		{
-			final Corporation pm = (Corporation) service.getParty(params);
-			assertNotNull(pm);
-			assertFalse(pm.isAutomaticReimbursementBlocked());
+			final Corporation nestle = (Corporation) service.getParty(params);
+			assertNotNull(nestle);
+			assertFalse(nestle.isAutomaticReimbursementBlocked());
 		}
 	}
 
@@ -151,24 +157,19 @@ public class PartyWebServicePMTest extends WebserviceTest {
 	@Test
 	public void testGetAdresseEnvoiPersonneMorale() throws Exception {
 
-		serviceOrganisation.setUp(new MockServiceOrganisation() {
-			@Override
-			protected void init() {
-				addOrganisation(MockOrganisationFactory.BCV);
-			}
-		});
+		final long noBCV = MockPersonneMorale.BCV.getNumeroEntreprise();
 
-		final long idpm = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise pm = addEntrepriseConnueAuCivil(MockOrganisationFactory.BCV.getNumeroOrganisation());
-				return pm.getNumero();
+			public Object doInTransaction(TransactionStatus status) {
+				addEntreprise(noBCV);
+				return null;
 			}
 		});
 
 		final GetPartyRequest params = new GetPartyRequest();
 		params.setLogin(login);
-		params.setPartyNumber((int) idpm);
+		params.setPartyNumber((int) noBCV);
 		params.getParts().add(PartyPart.ADDRESSES);
 
 		// on s'assure que la formule d'appel d'une PM est bien renseignée
@@ -188,11 +189,107 @@ public class PartyWebServicePMTest extends WebserviceTest {
 
 			final FormattedAddress formatted = last.getFormattedAddress();
 			assertEquals("Banque Cantonale Vaudoise", formatted.getLine1());
-			assertEquals("Place Saint-François 14", formatted.getLine2());
-			assertEquals("1000 Lausanne", formatted.getLine3());
-			assertNull(formatted.getLine4());
+			assertEquals("pa Comptabilité financière", formatted.getLine2());
+			assertEquals("Saint-François, place 14", formatted.getLine3());
+			assertEquals("1003 Lausanne Secteur de dist.", formatted.getLine4());
 			assertNull(formatted.getLine5());
 			assertNull(formatted.getLine6());
+		}
+	}
+
+	/**
+	 * [UNIREG-1974] Vérifie que l'adresse de la fiduciaire Jal Holding utilise bien les trois lignes de la raison sociale et non pas la raison sociale abbrégée.
+	 */
+	@Test
+	public void testGetAdresseEnvoiPersonneMorale2() throws Exception {
+
+		final long noJal = MockPersonneMorale.JalHolding.getNumeroEntreprise();
+
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				addEntreprise(noJal);
+				return null;
+			}
+		});
+
+		final GetPartyRequest params = new GetPartyRequest();
+		params.setLogin(login);
+		params.setPartyNumber((int) noJal);
+		params.getParts().add(PartyPart.ADDRESSES);
+
+		// on s'assure que la formule d'appel d'une PM est bien renseignée
+		{
+			final Corporation jal = (Corporation) service.getParty(params);
+			assertNotNull(jal);
+
+			final List<Address> mailAddresses = jal.getMailAddresses();
+			assertNotNull(mailAddresses);
+
+			final Address last = mailAddresses.get(mailAddresses.size() - 1);
+			assertNotNull(last);
+
+			final OrganisationMailAddressInfo organisation = last.getOrganisation();
+			assertNotNull(organisation);
+			assertEquals("Madame, Monsieur", organisation.getFormalGreeting());
+
+			final FormattedAddress formatted = last.getFormattedAddress();
+			assertEquals("Jal holding S.A.", formatted.getLine1());
+			assertEquals("en liquidation", formatted.getLine2());
+			assertEquals("pa Fidu. Commerce & Industrie", formatted.getLine3());
+			assertEquals("Avenue de la Gare 10", formatted.getLine4());
+			assertEquals("1003 Lausanne", formatted.getLine5());
+			assertNull(formatted.getLine6());
+		}
+	}
+
+	/**
+	 * [UNIREG-1974] Vérifie que l'adresse de la PM Evian-Russie tient bien sur 6 lignes et que le complément d'adresse est ignoré
+	 */
+	@Test
+	public void testGetAdresseEnvoiPersonneMoraleOptionnaliteComplement() throws Exception {
+
+		final long noEvian = MockPersonneMorale.EvianRussie.getNumeroEntreprise();
+
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				addEntreprise(noEvian);
+				return null;
+			}
+		});
+
+		final GetPartyRequest params = new GetPartyRequest();
+		params.setLogin(login);
+		params.setPartyNumber((int)noEvian);
+		params.getParts().add(PartyPart.ADDRESSES);
+
+		// on s'assure que la formule d'appel d'une PM est bien renseignée
+		{
+			final Corporation evian = (Corporation) service.getParty(params);
+			assertNotNull(evian);
+
+			final List<Address> mailAddresses = evian.getMailAddresses();
+			assertNotNull(mailAddresses);
+
+			final Address last = mailAddresses.get(mailAddresses.size() - 1);
+			assertNotNull(last);
+
+			final OrganisationMailAddressInfo organisation = last.getOrganisation();
+			assertNotNull(organisation);
+			assertEquals("Madame, Monsieur", organisation.getFormalGreeting());
+
+			final FormattedAddress formatted = last.getFormattedAddress();
+			assertEquals("Distributor (Evian Water)", formatted.getLine1());
+			assertEquals("LLC PepsiCo Holdings", formatted.getLine2());
+			assertEquals("Free Economic Zone Sherrizone", formatted.getLine3());
+
+			// [UNIREG-1974] le complément est ignoré pour que l'adresse tienne sur 6 lignes
+			// assertEquals("p.a. Aleksey Fyodorovich Karamazov", formatted.getLineXXX());
+
+			assertEquals("Solnechnogorsk Dist.", formatted.getLine4());
+			assertEquals("141580 Moscow region", formatted.getLine5());
+			assertEquals("Russie", formatted.getLine6());
 		}
 	}
 
@@ -202,25 +299,19 @@ public class PartyWebServicePMTest extends WebserviceTest {
 	@Test
 	public void testGetForFiscauxPMVaudoise() throws Exception {
 
-		serviceOrganisation.setUp(new MockServiceOrganisation() {
-			@Override
-			protected void init() {
-				addOrganisation(MockOrganisationFactory.BCV);
-			}
-		});
+		final long noPM = MockPersonneMorale.BCV.getNumeroEntreprise();
 
-		final long idPM = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise pm = addEntrepriseConnueAuCivil(MockOrganisationFactory.BCV.getNumeroOrganisation());
-				addForPrincipal(pm, date(1883, 6, 1), MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne);
-				return pm.getNumero();
+			public Object doInTransaction(TransactionStatus status) {
+				addEntreprise(noPM);
+				return null;
 			}
 		});
 
 		final GetPartyRequest params = new GetPartyRequest();
 		params.setLogin(login);
-		params.setPartyNumber((int) idPM);
+		params.setPartyNumber((int) noPM);
 		params.getParts().add(PartyPart.TAX_RESIDENCES);
 
 		// on s'assure que le type d'autorité fiscale sur le for fiscal est bien hors-canton
@@ -244,25 +335,19 @@ public class PartyWebServicePMTest extends WebserviceTest {
 	@Test
 	public void testGetForFiscauxPMHorsCanton() throws Exception {
 
-		serviceOrganisation.setUp(new MockServiceOrganisation() {
-			@Override
-			protected void init() {
-				addOrganisation(MockOrganisationFactory.BANQUE_COOP);
-			}
-		});
+		final long noPM = MockPersonneMorale.BanqueCoopBale.getNumeroEntreprise();
 
-		final long idpm = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+		doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise pm = addEntrepriseConnueAuCivil(MockOrganisationFactory.BANQUE_COOP.getNumeroOrganisation());
-				addForPrincipal(pm, date(1960, 1, 1), null, MockCommune.Bale);
-				return pm.getNumero();
+				addEntreprise(noPM);
+				return null;
 			}
 		});
 
 		final GetPartyRequest params = new GetPartyRequest();
 		params.setLogin(login);
-		params.setPartyNumber((int) idpm);
+		params.setPartyNumber((int) noPM);
 		params.getParts().add(PartyPart.TAX_RESIDENCES);
 
 		// on s'assure que le type d'autorité fiscale sur le for fiscal est bien hors-canton
@@ -286,23 +371,22 @@ public class PartyWebServicePMTest extends WebserviceTest {
 	@Test
 	public void testGetForFiscauxPMHorsSuisse() throws Exception {
 
-		final long idpm = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+		final long noPM = MockPersonneMorale.KhatAnstalt.getNumeroEntreprise();
+
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise pm = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(pm, date(1965, 5, 4), null, "Oversees Ltd.");
-				addFormeJuridique(pm, date(1965, 5, 4), null, FormeJuridiqueEntreprise.FILIALE_HS_NIRC);
-				addForPrincipal(pm, date(1965, 5, 4), null, MockPays.Liechtenstein);
-				return pm.getNumero();
+			public Object doInTransaction(TransactionStatus status) {
+				addEntreprise(noPM);
+				return null;
 			}
 		});
 
 		final GetPartyRequest params = new GetPartyRequest();
 		params.setLogin(login);
-		params.setPartyNumber((int) idpm);
+		params.setPartyNumber((int) noPM);
 		params.getParts().add(PartyPart.TAX_RESIDENCES);
 
-		// on s'assure que le type d'autorité fiscale sur le for fiscal est bien hors-Suisse
+		// on s'assure que le type d'autorité fiscale sur le for fiscal est bien hors-canton
 		{
 			final Corporation pm = (Corporation) service.getParty(params);
 			assertNotNull(pm);
@@ -320,34 +404,21 @@ public class PartyWebServicePMTest extends WebserviceTest {
 	@Test
 	public void testGetBatchPartyRequestAvecMelangePersonnesPhysiquesEtMorales() throws Exception {
 
-		serviceOrganisation.setUp(new MockServiceOrganisation() {
-			@Override
-			protected void init() {
-				addOrganisation(MockOrganisationFactory.BCV);
-			}
-		});
+		final long noPM = MockPersonneMorale.BCV.getNumeroEntreprise();
 
-		final class Ids {
-			long idPP;
-			long idPM;
-		}
-
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final Entreprise pm = addEntrepriseConnueAuCivil(MockOrganisationFactory.BCV.getNumeroOrganisation());
+			public Long doInTransaction(TransactionStatus status) {
+				addEntreprise(noPM);
 				final PersonnePhysique pp = addNonHabitant("Cédric", "Digory", date(1980, 5, 30), Sexe.MASCULIN);
-				final Ids ids = new Ids();
-				ids.idPP = pp.getNumero();
-				ids.idPM = pm.getNumero();
-				return ids;
+				return pp.getNumero();
 			}
 		});
 
 		final GetBatchPartyRequest params = new GetBatchPartyRequest();
 		params.setLogin(login);
-		params.getPartyNumbers().add((int) ids.idPM);
-		params.getPartyNumbers().add((int) ids.idPP);
+		params.getPartyNumbers().add((int) noPM);
+		params.getPartyNumbers().add((int) ppId);
 		params.getParts().add(PartyPart.TAX_RESIDENCES);
 
 		// appel du service
@@ -364,8 +435,72 @@ public class PartyWebServicePMTest extends WebserviceTest {
 			tiersRendus.add((long) entry.getNumber());
 		}
 		assertEquals(2, tiersRendus.size());
-		assertTrue(tiersRendus.contains(ids.idPM));
-		assertTrue(tiersRendus.contains(ids.idPP));
+		assertTrue(tiersRendus.contains(noPM));
+		assertTrue(tiersRendus.contains(ppId));
+	}
+
+	/**
+	 * [SIFISC-3373] Vérifie que les comptes bancaires des mandataires des PMs possèdent bien des dates de début/fin renseignées.
+	 */
+	@Test
+	public void testGetComptesBancairesPM() throws Exception {
+
+		final long noPM = 56346;
+		final long noMandataire = 2223334;
+
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				addIndividu(noMandataire, date(1934,3,2), "Antoine", "de Bellevache", true);
+			}
+		});
+
+		servicePM.setUp(new MockServicePM() {
+			@Override
+			protected void init() {
+				final MockPersonneMorale pm = new MockPersonneMorale(noPM, "Groland Corp", "S.A.", "Ehud Mollo", null, date(1996, 12, 18), null);
+				addCompteBancaire(pm, CompteBancaire.Format.SPECIFIQUE_CH, "1-12345-56", "La Poste");
+				addMandatCCP(pm, date(2000, 1, 1), date(2003, 12, 31), "3-24343-22", noMandataire, TypeMandataire.INDIVIDU);
+				addPM(pm);
+			}
+		});
+
+		doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				return addEntreprise(noPM).getNumero();
+			}
+		});
+
+		final GetPartyRequest params = new GetPartyRequest();
+		params.setLogin(login);
+		params.setPartyNumber((int) noPM);
+		params.getParts().add(PartyPart.BANK_ACCOUNTS);
+
+		// appel du service
+		final Party party = service.getParty(params);
+		assertNotNull(party);
+		assertInstanceOf(Corporation.class, party);
+		final Corporation corp = (Corporation) party;
+
+		// vérification des comptes bancaires renvoyés
+		final List<BankAccount> accounts = corp.getBankAccounts();
+		assertNotNull(accounts);
+		assertEquals(2, accounts.size());
+
+		final BankAccount account0 = accounts.get(0);
+		assertNotNull(account0);
+		assertEquals("1-12345-56", account0.getAccountNumber());
+		assertNull(account0.getDateFrom()); // il n'y a pas de dates de validité sur le compte bancaire stocké sur la PM elle-même
+		assertNull(account0.getDateTo());
+		assertEquals(noPM, account0.getOwnerPartyNumber());
+
+		final BankAccount account1 = accounts.get(1);
+		assertNotNull(account1);
+		assertEquals("3-24343-22", account1.getAccountNumber());
+		assertEquals(new Date(2000, 1, 1), account1.getDateFrom()); // il doit y avoir des dates de validité pour les comptes bancaires de type "mandataire"
+		assertEquals(new Date(2003, 12, 31), account1.getDateTo());
+		assertEquals(noMandataire, account1.getOwnerPartyNumber());
 	}
 }
 

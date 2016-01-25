@@ -40,8 +40,8 @@ public class EFactureMessageSenderImpl implements EFactureMessageSender, Initial
 
 	private JAXBContext jaxbContext;
 
-	private static final ThreadSafeSimpleDateFormat SDF = new ThreadSafeSimpleDateFormat("MMddHHmmssSSS");
-	private static final Logger LOGGER = LoggerFactory.getLogger(EFactureMessageSenderImpl.class);
+	private final static ThreadSafeSimpleDateFormat SDF = new ThreadSafeSimpleDateFormat("MMddHHmmssSSS");
+	private final static Logger LOGGER = LoggerFactory.getLogger(EFactureMessageSenderImpl.class);
 
 	public void setEsbTemplate(EsbJmsTemplate esbTemplate) {
 		this.esbTemplate = esbTemplate;
@@ -94,7 +94,7 @@ public class EFactureMessageSenderImpl implements EFactureMessageSender, Initial
 		return sendMiseAJourDestinataire(noCtb, PayerUpdateAction.LIBERER, null, description, null, retourAttendu);
 	}
 
-	private interface MessageBodyBuilder<T> {
+	private static interface MessageBodyBuilder<T> {
 		T buildBody();
 	}
 

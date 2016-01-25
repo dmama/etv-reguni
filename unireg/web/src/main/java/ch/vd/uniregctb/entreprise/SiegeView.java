@@ -4,37 +4,24 @@ import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.uniregctb.common.Annulable;
+import ch.vd.uniregctb.interfaces.model.Siege;
 import ch.vd.uniregctb.interfaces.model.TypeNoOfs;
-import ch.vd.uniregctb.tiers.DomicileHisto;
-import ch.vd.uniregctb.tiers.Source;
-import ch.vd.uniregctb.tiers.Sourced;
-import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
-public class SiegeView implements Sourced<Source>, DateRange, Annulable {
+public class SiegeView implements DateRange {
 
-	private final Long id;
-	private final boolean annule;
-	private final RegDate dateDebut;
-	private final RegDate dateFin;
-	private final int noOfsSiege;
-	private final TypeNoOfs type;
-	private final Source source;
-	private boolean dernierElement;
+	private RegDate dateDebut;
+	private RegDate dateFin;
+	private int noOfsSiege;
+	private TypeNoOfs type;
 
-	public SiegeView(DomicileHisto siege) {
-		this.id = siege.getId();
-		this.dateDebut = siege.getDateDebut();
-		this.dateFin = siege.getDateFin();
-		this.noOfsSiege = siege.getNoOfs();
-		this.type = siege.getTypeAutoriteFiscale() == TypeAutoriteFiscale.PAYS_HS ? TypeNoOfs.PAYS_HS : TypeNoOfs.COMMUNE_CH;
-		this.annule = siege.isAnnule();
-		this.source = siege.getSource();
-		this.dernierElement = false;
+	public SiegeView() {
 	}
 
-	public Long getId() {
-		return id;
+	public SiegeView(Siege siege) {
+		this.dateDebut = siege.getDateDebut();
+		this.dateFin = siege.getDateFin();
+		this.noOfsSiege = siege.getNoOfsSiege();
+		this.type = siege.getType();
 	}
 
 	@Override
@@ -42,39 +29,37 @@ public class SiegeView implements Sourced<Source>, DateRange, Annulable {
 		return dateDebut;
 	}
 
+	public void setDateDebut(RegDate dateDebut) {
+		this.dateDebut = dateDebut;
+	}
+
 	@Override
 	public RegDate getDateFin() {
 		return dateFin;
+	}
+
+	public void setDateFin(RegDate dateFin) {
+		this.dateFin = dateFin;
 	}
 
 	public int getNoOfsSiege() {
 		return noOfsSiege;
 	}
 
+	public void setNoOfsSiege(int noOfsSiege) {
+		this.noOfsSiege = noOfsSiege;
+	}
+
 	public TypeNoOfs getType() {
 		return type;
 	}
 
+	public void setType(TypeNoOfs type) {
+		this.type = type;
+	}
+
 	@Override
 	public boolean isValidAt(RegDate date) {
-		return !annule && RegDateHelper.isBetween(date, dateDebut, dateFin, NullDateBehavior.LATEST);
-	}
-
-	@Override
-	public boolean isAnnule() {
-		return annule;
-	}
-
-	@Override
-	public Source getSource() {
-		return source;
-	}
-
-	public boolean isDernierElement() {
-		return dernierElement;
-	}
-
-	public void setDernierElement(boolean dernierElement) {
-		this.dernierElement = dernierElement;
+		return RegDateHelper.isBetween(date, dateDebut, dateFin, NullDateBehavior.LATEST);
 	}
 }

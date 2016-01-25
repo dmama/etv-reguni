@@ -25,7 +25,7 @@ public class EditiqueSommationLRJobTest extends JobTest {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(EditiqueSommationLRJobTest.class);
 
-	private static final String DB_UNIT_DATA_FILE = "classpath:ch/vd/uniregctb/editique/SommationLRTest.xml";
+	private final static String DB_UNIT_DATA_FILE = "classpath:ch/vd/uniregctb/editique/SommationLRTest.xml";
 
 	private BatchScheduler batchScheduler;
 	private TiersDAO tiersDAO;

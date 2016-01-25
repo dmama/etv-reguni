@@ -60,13 +60,8 @@
 							<br><c:out value="${tiers.nom2}"/>
 						</c:if>
 					</display:column>
-					<display:column titleKey="label.date.naissance.ou.rc" sortable="true">
-						<c:if test="${tiers.dateNaissance != null}">
-							<unireg:date date="${tiers.dateNaissance}"/>
-						</c:if>
-						<c:if test="${tiers.dateInscriptionRC != null}">
-							<unireg:date date="${tiers.dateInscriptionRC}"/>
-						</c:if>
+					<display:column titleKey="label.date.naissance" sortable="true" sortName="dateNaissance" sortProperty="dateNaissance">
+						<unireg:date date="${tiers.dateNaissance}"/>
 					</display:column>
 					<display:column sortable="true" titleKey="label.npa">
 						<c:out value="${tiers.npa}" />
@@ -77,11 +72,11 @@
 					<display:column sortable="true" titleKey="label.for.principal">
 						<c:out value="${tiers.forPrincipal}" />
 					</display:column>
-					<display:column sortable="true" titleKey="label.date.ouverture.for.vd" sortProperty="dateOuvertureForVd">
-						<fmt:formatDate value="${tiers.dateOuvertureForVd}" pattern="dd.MM.yyyy"/>
+					<display:column sortable="true" titleKey="label.date.ouverture.for" sortProperty="dateOuvertureFor">
+						<fmt:formatDate value="${tiers.dateOuvertureFor}" pattern="dd.MM.yyyy"/>
 					</display:column>
-					<display:column sortable="true" titleKey="label.date.fermeture.for.vd" sortProperty="dateFermetureForVd">
-						<fmt:formatDate value="${tiers.dateFermetureForVd}" pattern="dd.MM.yyyy"/>
+					<display:column sortable="true" titleKey="label.date.fermeture.for" sortProperty="dateFermetureFor">
+						<fmt:formatDate value="${tiers.dateFermetureFor}" pattern="dd.MM.yyyy"/>
 					</display:column>
 
 					<display:column sortable="false" titleKey="label.ouvrir.vers">

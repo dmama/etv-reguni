@@ -9,7 +9,6 @@ import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.uniregctb.norentes.annotation.Check;
 import ch.vd.uniregctb.norentes.annotation.Etape;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.ModeImposition;
@@ -87,7 +86,8 @@ public class Ec_16001_03_AnnulationPermis_MarieADeux_Scenario extends Annulation
 		// momo
 		PersonnePhysique momo = addHabitant(noIndMomo);
 		noHabMomo = momo.getNumero();
-		addForFiscalPrincipal(momo, MockCommune.VillarsSousYens, dateArriveeVillars, dateAvantMariage, MotifFor.ARRIVEE_HS, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, ModeImposition.SOURCE);
+		ForFiscalPrincipal f = addForFiscalPrincipal(momo, MockCommune.VillarsSousYens, dateArriveeVillars, dateAvantMariage, MotifFor.ARRIVEE_HS, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
+		f.setModeImposition(ModeImposition.SOURCE);
 		// bea
 		PersonnePhysique bea = addHabitant(noIndBea);
 		noHabBea = bea.getNumero();
@@ -98,8 +98,10 @@ public class Ec_16001_03_AnnulationPermis_MarieADeux_Scenario extends Annulation
 		noMenage = menage.getNumero();
 		tiersService.addTiersToCouple(menage, momo, dateMariage, null);
 		tiersService.addTiersToCouple(menage, bea, dateMariage, null);
-		addForFiscalPrincipal(menage, communeMariage, dateMariage, dateObtentionPermis.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MotifFor.PERMIS_C_SUISSE);
-		addForFiscalPrincipal(menage, communeMariage, dateObtentionPermis, null, MotifFor.PERMIS_C_SUISSE, null);
+		f = addForFiscalPrincipal(menage, communeMariage, dateMariage, dateObtentionPermis.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MotifFor.PERMIS_C_SUISSE);
+		f.setModeImposition(ModeImposition.ORDINAIRE);
+		f = addForFiscalPrincipal(menage, communeMariage, dateObtentionPermis, null, MotifFor.PERMIS_C_SUISSE, null);
+		f.setModeImposition(ModeImposition.ORDINAIRE);
 	}
 
 	@Check(id=1, descr="")
@@ -148,7 +150,7 @@ public class Ec_16001_03_AnnulationPermis_MarieADeux_Scenario extends Annulation
 	public void check2() {
 		{
 			MenageCommun mc = (MenageCommun)tiersDAO.get(noMenage);
-			ForFiscalPrincipalPP ffp = mc.getDernierForFiscalPrincipal();
+			ForFiscalPrincipal ffp = mc.getDernierForFiscalPrincipal();
 			assertEquals(dateMariage, ffp.getDateDebut(), "Le for sur Lausanne n'est pas ouvert à la bonne date");
 			assertNull(ffp.getDateFin(), "Le for sur " + communeMariage.getNomOfficiel() + " est fermé");
 			assertNull(ffp.getMotifFermeture(), "Le motif de fermeture est faux");
@@ -159,7 +161,7 @@ public class Ec_16001_03_AnnulationPermis_MarieADeux_Scenario extends Annulation
 		}
 		{
 			PersonnePhysique momo = (PersonnePhysique) tiersDAO.get(noHabMomo);
-			ForFiscalPrincipalPP ffp = momo.getDernierForFiscalPrincipal();
+			ForFiscalPrincipal ffp = momo.getDernierForFiscalPrincipal();
 			assertNotNull(ffp, "For principal de l'Habitant " + momo.getNumero() + " null");
 			assertNotNull(ffp.getDateFin(), "Le for de l'habitant " + momo.getNumero() + " est ouvert");
 			assertEquals(ffp.getMotifOuverture(), MotifFor.ARRIVEE_HS,
@@ -167,7 +169,7 @@ public class Ec_16001_03_AnnulationPermis_MarieADeux_Scenario extends Annulation
 		}
 		{
 			PersonnePhysique bea = (PersonnePhysique) tiersDAO.get(noHabBea);
-			ForFiscalPrincipalPP ffp = bea.getDernierForFiscalPrincipal();
+			ForFiscalPrincipal ffp = bea.getDernierForFiscalPrincipal();
 			assertNotNull(ffp, "For principal de l'Habitant " + bea.getNumero() + " null");
 			assertNotNull(ffp.getDateFin(), "Le for de l'habitant " + bea.getNumero() + " est ouvert");
 			// bea doit passer au mode ordinaire

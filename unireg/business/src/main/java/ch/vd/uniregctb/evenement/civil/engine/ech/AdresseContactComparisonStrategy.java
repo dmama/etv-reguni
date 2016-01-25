@@ -10,8 +10,8 @@ import org.apache.commons.lang3.mutable.Mutable;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import ch.vd.unireg.interfaces.civil.data.Adresse;
 import ch.vd.unireg.interfaces.civil.data.IndividuApresEvenement;
-import ch.vd.unireg.interfaces.common.Adresse;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
 
 public class AdresseContactComparisonStrategy implements IndividuComparisonStrategy {

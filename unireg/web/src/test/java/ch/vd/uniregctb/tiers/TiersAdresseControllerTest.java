@@ -37,13 +37,13 @@ public class TiersAdresseControllerTest extends WebTest {
 	/**
 	 * Le nom du controller a tester.
 	 */
-	private static final String CONTROLLER_NAME = "tiersAdresseController";
+	private final static String CONTROLLER_NAME = "tiersAdresseController";
 
-	private static final String DB_UNIT_FILE = "TiersAdresseControllerTest.xml";
+	private final static String DB_UNIT_FILE = "TiersAdresseControllerTest.xml";
 
-	private static final String NUMERO_CTB_PARAMETER_NAME = "numero";
+	private final static String NUMERO_CTB_PARAMETER_NAME = "numero";
 
-	private static final String ID_ADRESSE_PARAMETER_NAME = "idAdresse";
+	private final static String ID_ADRESSE_PARAMETER_NAME = "idAdresse";
 
 	private TiersAdresseController controller;
 	private AdresseTiersDAO adresseTiersDAO;

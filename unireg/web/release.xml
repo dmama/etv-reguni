@@ -35,8 +35,8 @@
 			<useDefaultExcludes>true</useDefaultExcludes>
 		</fileSet>
 		<fileSet>
-			<directory>config/sipm</directory>
-			<outputDirectory>unireg-web-${pom.version}/config/sipm</outputDirectory>
+			<directory>config/anonymisation</directory>
+			<outputDirectory>unireg-web-${pom.version}/config/anonymisation</outputDirectory>
 			<useDefaultExcludes>true</useDefaultExcludes>
 		</fileSet>
 		<fileSet>
@@ -71,7 +71,7 @@
 			<includes>
 				<include>unireg-log4j.xml</include>
 			</includes>
-			<outputDirectory>unireg-web-${pom.version}/config/sipm</outputDirectory>
+			<outputDirectory>unireg-web-${pom.version}/config/anonymisation</outputDirectory>
 		</fileSet>
 		<fileSet>
 			<directory>config/</directory>

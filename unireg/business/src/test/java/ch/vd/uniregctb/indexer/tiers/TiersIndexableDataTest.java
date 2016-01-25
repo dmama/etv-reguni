@@ -10,16 +10,13 @@ import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.simpleindexer.DocGetter;
-import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.uniregctb.common.WithoutSpringTest;
 import ch.vd.uniregctb.indexer.GlobalIndex;
 import ch.vd.uniregctb.indexer.IndexerFormatHelper;
 import ch.vd.uniregctb.indexer.SearchCallback;
 import ch.vd.uniregctb.indexer.lucene.FSIndexProvider;
 import ch.vd.uniregctb.tiers.TiersCriteria;
-import ch.vd.uniregctb.type.CategorieEntreprise;
 import ch.vd.uniregctb.type.CategorieImpotSource;
-import ch.vd.uniregctb.type.FormeJuridiqueEntreprise;
 import ch.vd.uniregctb.type.ModeCommunication;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.NatureJuridique;
@@ -389,54 +386,6 @@ public class TiersIndexableDataTest extends WithoutSpringTest {
 
 		// recherche des données (KO)
 		criteria.setNatureJuridique(NatureJuridique.PM.name());
-		assertEmpty(globalTiersSearcher.search(criteria));
-	}
-
-	@Test
-	public void testIndexationFormeJuridique() throws Exception {
-
-		// création et indexation des données
-		final TiersIndexableData data = newIndexableData();
-		data.setFormeJuridique(FormeLegale.N_0106_SOCIETE_ANONYME.getCode());
-		globalIndex.indexEntity(data);
-
-		// recherche des données (OK)
-		final TiersCriteria criteria = new TiersCriteria();
-		criteria.setFormeJuridique(FormeJuridiqueEntreprise.SA);
-
-		final List<TiersIndexedData> resultats = globalTiersSearcher.search(criteria);
-		assertNotNull(resultats);
-		assertEquals(1, resultats.size());
-
-		final TiersIndexedData indexed = resultats.get(0);
-		assertEquals((Long) ID, indexed.getNumero());
-
-		// recherche des données (KO)
-		criteria.setFormeJuridique(FormeJuridiqueEntreprise.SARL);
-		assertEmpty(globalTiersSearcher.search(criteria));
-	}
-
-	@Test
-	public void testIndexationCategorieEntreprise() throws Exception {
-
-		// création et indexation des données
-		final TiersIndexableData data = newIndexableData();
-		data.setCategorieEntreprise(CategorieEntreprise.APM.name());
-		globalIndex.indexEntity(data);
-
-		// recherche des données (OK)
-		final TiersCriteria criteria = new TiersCriteria();
-		criteria.setCategorieEntreprise(CategorieEntreprise.APM);
-
-		final List<TiersIndexedData> resultats = globalTiersSearcher.search(criteria);
-		assertNotNull(resultats);
-		assertEquals(1, resultats.size());
-
-		final TiersIndexedData indexed = resultats.get(0);
-		assertEquals((Long) ID, indexed.getNumero());
-
-		// recherche des données (KO)
-		criteria.setCategorieEntreprise(CategorieEntreprise.DPPM);
 		assertEmpty(globalTiersSearcher.search(criteria));
 	}
 

@@ -60,9 +60,7 @@
 				<span class="jTip formInfo" title="<c:url value="/htm/numeroTelephone.htm?width=375"/>" id="telPortable">?</span>
 				<form:errors path="tiers.numeroTelephonePortable" cssClass="error"/>
 			</td>
-		</tr>
-		<form:hidden path="complement.pmOuEtablissement" id="pmOuEtablissement"/>
-		<c:if test="${!command.pmOuEtablissement}">
+		</tr>			
 		<tr class="<unireg:nextRowClass/>" >
 			<td width="30%"><fmt:message key="label.complement.numeroTelProfessionnel" />&nbsp;:</td>
 			<td width="70%">
@@ -71,7 +69,6 @@
 				<form:errors path="tiers.numeroTelephoneProfessionnel" cssClass="error"/>
 			</td>
 		</tr>
-	</c:if>
 		<tr class="<unireg:nextRowClass/>" >
 			<td width="30%"><fmt:message key="label.complement.numeroFax" />&nbsp;:</td>
 			<td width="70%">
@@ -97,7 +94,7 @@
 	<legend><span><fmt:message key="label.complement.coordFinancieres" /></span></legend>
 	<unireg:nextRowClass reset="1"/>
 	<table>
-
+	
 		<c:set var="lengthnumcompte" value="<%=LengthConstants.TIERS_NUMCOMPTE%>" scope="request" />
 		<tr class="<unireg:nextRowClass/>" >
 			<td width="30%"><fmt:message key="label.complement.numeroCompteBancaire" />&nbsp;:</td>
@@ -123,7 +120,7 @@
 				<span class="jTip formInfo" title="<c:url value="/htm/bic.htm?width=375"/>" id="bic">?</span>
 				<form:errors path="tiers.adresseBicSwift" cssClass="error"/>
 			</td>
-		</tr>
+		</tr>	
 	</table>
 
 	<script>

@@ -3,7 +3,7 @@ package ch.vd.uniregctb.hibernate;
 import ch.vd.uniregctb.type.TypeEvenementErreur;
 
 /**
- * Classe de transtypage pour Hibernate : TypeEvenementErreurUserType <--> varchar
+ * Classe de transtypage pour Hibernate : MotifOuverture <--> varchar
  */
 public class TypeEvenementErreurUserType extends EnumUserType<TypeEvenementErreur> {
 

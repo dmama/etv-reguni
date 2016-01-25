@@ -18,7 +18,7 @@ public class ListeRecapEditControllerTest extends AbstractLrControllerTest {
 	/**
 	 * Le nom du controller a tester.
 	 */
-	private static final String CONTROLLER_NAME = "lrEditController";
+	private final static String CONTROLLER_NAME = "lrEditController";
 	private ListeRecapEditController controller;
 
 	@Override

@@ -1,10 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="/WEB-INF/jsp/include/common.jsp"%>
 
-<%--@elvariable id="command" type="ch.vd.uniregctb.entreprise.TiersVisuView"--%>
-
-<unireg:setAuth var="autorisations" tiersId="${command.entreprise.id}"/>
-
 <span><%-- span vide pour que IE8 calcul correctement la hauteur du fieldset (voir fieldsets-workaround.jsp) --%></span>
 <fieldset>
 	<legend><span><fmt:message key="label.etats.pm"/></span></legend>
@@ -14,28 +10,38 @@
 	</c:if>
 
 	<c:if test="${not empty command.entreprise.etats}">
-		<c:if test="${autorisations.etatsPM}">
-			<table border="0">
-				<tr>
-					<td>
-						<unireg:raccourciModifier link="../entreprise/etats/edit.do?id=${command.entreprise.id}" tooltip="Modifier l'état" display="label.bouton.modifier"/>
-					</td>
-				</tr>
-			</table>
-		</c:if>
 
-		<display:table name="${command.entreprise.etats}" id="etatPM" requestURI="visu.do" class="display" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator">
-			<display:column titleKey="label.date.obtention">
-				<unireg:regdate regdate="${etatPM.dateObtention}"/>
+		<input class="noprint" id="showEtatsPMHisto" type="checkbox" onclick="refreshEtatsPM(this);" />
+		<label class="noprint" for="showEtatsPMHisto"><fmt:message key="label.historique" /></label>
+
+		<display:table name="${command.entreprise.etats}" id="etatsPM" requestURI="visu.do" class="display">
+			<display:column sortable="true" titleKey="label.date.debut" sortProperty="dateDebut">
+				<unireg:regdate regdate="${etatsPM.dateDebut}"/>
 			</display:column>
-			<display:column titleKey="label.type">
-				<fmt:message key="option.etat.entreprise.${etatPM.type}"/>
+			<display:column sortable="true" titleKey="label.date.fin" sortProperty="dateFin">
+				<unireg:regdate regdate="${etatsPM.dateFin}"/>
 			</display:column>
-			<display:column class="action">
-				<unireg:consulterLog entityNature="EtatEntreprise" entityId="${etatPM.id}"/>
+			<display:column sortable="true" titleKey="label.type">
+				<c:out value="${etatsPM.libelle}"/>&nbsp;(<c:out value="${etatsPM.code}"/>)
 			</display:column>
 		</display:table>
 
 	</c:if>
 
 </fieldset>
+
+<script type="text/javascript">
+
+	/**
+	 * Affiche ou filtre les données historiques de la table des sièges
+	 */
+	function refreshEtatsPM(checkbox) {
+		var showHisto = $(checkbox).attr('checked');
+		var table = $('#etatsPM');
+		Histo.refreshHistoTable(showHisto, table, 1);
+	}
+
+	// on rafraîchit toutes les tables une première fois à l'affichage de la page
+	refreshEtatsPM($('#showEtatsPMHisto'));
+
+</script>
