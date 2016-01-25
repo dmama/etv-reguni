@@ -6149,7 +6149,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 	}
 
 	/**
-	 * Cas du SIFISC-17735 : la PIIS de la PF avant la fusion de commune HC présente la commune du for après
+	 * Cas du SIFISC-17535 : la PIIS de la PF avant la fusion de commune HC présente la commune du for après
 	 * la fusion (= de la PF suivante !!)
 	 */
 	@Test
