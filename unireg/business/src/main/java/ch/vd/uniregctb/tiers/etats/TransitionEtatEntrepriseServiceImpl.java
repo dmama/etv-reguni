@@ -51,13 +51,13 @@ public class TransitionEtatEntrepriseServiceImpl implements TransitionEtatEntrep
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		transitionFactoryMap.put(TypeEtatEntreprise.EN_LIQUIDATION, new ToEnLiquidationTransitionEtatEntrepriseFactory(tiersDAO));
-		transitionFactoryMap.put(TypeEtatEntreprise.EN_FAILLITE, new ToEnFailliteTransitionEtatEntrepriseFactory(tiersDAO));
-		transitionFactoryMap.put(TypeEtatEntreprise.ABSORBEE, new ToAbsorbeeTransitionEtatEntrepriseFactory(tiersDAO));
+		transitionFactoryMap.put(TypeEtatEntreprise.EN_LIQUIDATION, new ToEnLiquidationTransitionEtatEntrepriseFactory(tiersDAO, serviceOrganisation));
+		transitionFactoryMap.put(TypeEtatEntreprise.EN_FAILLITE, new ToEnFailliteTransitionEtatEntrepriseFactory(tiersDAO, serviceOrganisation));
+		transitionFactoryMap.put(TypeEtatEntreprise.ABSORBEE, new ToAbsorbeeTransitionEtatEntrepriseFactory(tiersDAO, serviceOrganisation));
 		transitionFactoryMap.put(TypeEtatEntreprise.RADIEE_RC, new ToRadieeRCTransitionEtatEntrepriseFactory(tiersDAO, serviceOrganisation));
-		transitionFactoryMap.put(TypeEtatEntreprise.INSCRITE_RC, new ToInscriteRCTransitionEtatEntrepriseFactory(tiersDAO));
-		transitionFactoryMap.put(TypeEtatEntreprise.FONDEE, new ToFondeeTransitionEtatEntrepriseFactory(tiersDAO));
-		transitionFactoryMap.put(TypeEtatEntreprise.DISSOUTE, new ToDissouteTransitionEtatEntrepriseFactory(tiersDAO));
+		transitionFactoryMap.put(TypeEtatEntreprise.INSCRITE_RC, new ToInscriteRCTransitionEtatEntrepriseFactory(tiersDAO, serviceOrganisation));
+		transitionFactoryMap.put(TypeEtatEntreprise.FONDEE, new ToFondeeTransitionEtatEntrepriseFactory(tiersDAO, serviceOrganisation));
+		transitionFactoryMap.put(TypeEtatEntreprise.DISSOUTE, new ToDissouteTransitionEtatEntrepriseFactory(tiersDAO, serviceOrganisation));
 	}
 
 	@Override

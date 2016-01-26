@@ -114,10 +114,17 @@ public class TransitionEtatEntrepriseServiceTest extends WithoutSpringTest {
 		actuel.setGeneration(TypeGenerationEtatEntreprise.MANUELLE);
 
 		final Entreprise entreprise = new Entreprise(1234);
+		entreprise.setNumeroEntreprise(1L);
 		actuel.setEntreprise(entreprise);
 		entreprise.addEtat(actuel);
 
-		TransitionEtatEntrepriseServiceImpl service = createService(dao, null);
+		Organisation organisation = MockOrganisationFactory
+				.createOrganisation(1L, 1L, "Synergy SA", RegDate.get(2010, 6, 24), null, FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE,
+				                    TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusRC.INSCRIT, StatusInscriptionRC.ACTIF, StatusRegistreIDE.DEFINITIF,
+				                    TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE);
+
+
+		TransitionEtatEntrepriseServiceImpl service = createService(dao, organisation);
 
 		Map<TypeEtatEntreprise, TransitionEtatEntreprise> disponibles = service.getTransitionsDisponibles(entreprise, date(2015, 12, 31), TypeGenerationEtatEntreprise.MANUELLE);
 
@@ -125,6 +132,33 @@ public class TransitionEtatEntrepriseServiceTest extends WithoutSpringTest {
 		Assert.assertTrue(disponibles.size() == 2);
 		assertTransition(disponibles, TypeEtatEntreprise.RADIEE_RC, ToRadieeRCTransitionEtatEntreprise.class);
 		assertTransition(disponibles, TypeEtatEntreprise.INSCRITE_RC, ToInscriteRCTransitionEtatEntreprise.class);
+	}
+
+	@Test
+	public void testGetTransitionsDisponiblesEnFailliteNonRC() throws Exception {
+		final EtatEntreprise actuel = new EtatEntreprise();
+		actuel.setType(TypeEtatEntreprise.EN_FAILLITE);
+		actuel.setDateObtention(date(2015, 6, 24));
+		actuel.setGeneration(TypeGenerationEtatEntreprise.MANUELLE);
+
+		final Entreprise entreprise = new Entreprise(1234);
+		actuel.setEntreprise(entreprise);
+		entreprise.addEtat(actuel);
+
+		Organisation organisation = MockOrganisationFactory
+				.createOrganisation(1L, 1L, "Synergy SA", RegDate.get(2010, 6, 24), null, FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE,
+				                    TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), null, null, StatusRegistreIDE.DEFINITIF,
+				                    TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE);
+
+
+		TransitionEtatEntrepriseServiceImpl service = createService(dao, organisation);
+
+		Map<TypeEtatEntreprise, TransitionEtatEntreprise> disponibles = service.getTransitionsDisponibles(entreprise, date(2015, 12, 31), TypeGenerationEtatEntreprise.MANUELLE);
+
+		Assert.assertNotNull(disponibles);
+		Assert.assertTrue(disponibles.size() == 2);
+		assertTransition(disponibles, TypeEtatEntreprise.FONDEE, ToFondeeTransitionEtatEntreprise.class);
+		assertTransition(disponibles, TypeEtatEntreprise.DISSOUTE, ToDissouteTransitionEtatEntreprise.class);
 	}
 
 	@Test
@@ -148,6 +182,7 @@ public class TransitionEtatEntrepriseServiceTest extends WithoutSpringTest {
 		assertTransition(disponibles, TypeEtatEntreprise.EN_FAILLITE, ToEnFailliteTransitionEtatEntreprise.class);
 		assertTransition(disponibles, TypeEtatEntreprise.INSCRITE_RC, ToInscriteRCTransitionEtatEntreprise.class);
 	}
+
 	@Test
 	public void testGetTransitionsDisponiblesAbsorbée() throws Exception {
 		final EtatEntreprise actuel = new EtatEntreprise();
@@ -221,7 +256,6 @@ public class TransitionEtatEntrepriseServiceTest extends WithoutSpringTest {
 		assertTransition(disponibles, TypeEtatEntreprise.INSCRITE_RC, ToInscriteRCTransitionEtatEntreprise.class);
 	}
 
-
 	@Test
 	public void testGetTransitionsDisponiblesFondee() throws Exception {
 		final EtatEntreprise actuel = new EtatEntreprise();
@@ -238,11 +272,13 @@ public class TransitionEtatEntrepriseServiceTest extends WithoutSpringTest {
 		Map<TypeEtatEntreprise, TransitionEtatEntreprise> disponibles = service.getTransitionsDisponibles(entreprise, date(2015, 12, 31), TypeGenerationEtatEntreprise.MANUELLE);
 
 		Assert.assertNotNull(disponibles);
-		Assert.assertTrue(disponibles.size() == 3);
+		Assert.assertTrue(disponibles.size() == 4);
 		assertTransition(disponibles, TypeEtatEntreprise.ABSORBEE, ToAbsorbeeTransitionEtatEntreprise.class);
 		assertTransition(disponibles, TypeEtatEntreprise.DISSOUTE, ToDissouteTransitionEtatEntreprise.class);
 		assertTransition(disponibles, TypeEtatEntreprise.INSCRITE_RC, ToInscriteRCTransitionEtatEntreprise.class);
+		assertTransition(disponibles, TypeEtatEntreprise.EN_FAILLITE, ToEnFailliteTransitionEtatEntreprise.class);
 	}
+
 	@Test
 	public void testGetTransitionsDisponiblesDissoute() throws Exception {
 		final EtatEntreprise actuel = new EtatEntreprise();

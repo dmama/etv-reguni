@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.tiers.etats.transition;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.interfaces.service.ServiceOrganisationService;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.EtatEntreprise;
 import ch.vd.uniregctb.tiers.TiersDAO;
@@ -13,8 +14,8 @@ import ch.vd.uniregctb.type.TypeGenerationEtatEntreprise;
  */
 public class ToEnFailliteTransitionEtatEntrepriseFactory extends BaseTransitionEtatEntrepriseFactory {
 
-	public ToEnFailliteTransitionEtatEntrepriseFactory(TiersDAO tiersDAO) {
-		super(tiersDAO);
+	public ToEnFailliteTransitionEtatEntrepriseFactory(TiersDAO tiersDAO, ServiceOrganisationService serviceOrganisation) {
+		super(tiersDAO, serviceOrganisation);
 	}
 
 	@Override
@@ -25,6 +26,7 @@ public class ToEnFailliteTransitionEtatEntrepriseFactory extends BaseTransitionE
 		}
 		switch (actuel.getType()) {
 		case INSCRITE_RC:
+		case FONDEE:
 		case EN_LIQUIDATION:
 			return new ToEnFailliteTransitionEtatEntreprise(getTiersDAO(), entreprise, date, generation);
 		default:

@@ -1,8 +1,6 @@
 package ch.vd.uniregctb.tiers.etats.transition;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.organisation.data.Organisation;
-import ch.vd.unireg.interfaces.organisation.data.StatusInscriptionRC;
 import ch.vd.uniregctb.interfaces.service.ServiceOrganisationService;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.EtatEntreprise;
@@ -16,11 +14,8 @@ import ch.vd.uniregctb.type.TypeGenerationEtatEntreprise;
  */
 public class ToRadieeRCTransitionEtatEntrepriseFactory extends BaseTransitionEtatEntrepriseFactory {
 
-	private ServiceOrganisationService serviceOrganisation;
-
 	public ToRadieeRCTransitionEtatEntrepriseFactory(TiersDAO tiersDAO, ServiceOrganisationService serviceOrganisation) {
-		super(tiersDAO);
-		this.serviceOrganisation = serviceOrganisation;
+		super(tiersDAO, serviceOrganisation);
 	}
 
 	@Override
@@ -30,30 +25,17 @@ public class ToRadieeRCTransitionEtatEntrepriseFactory extends BaseTransitionEta
 			return null;
 		}
 		switch (actuel.getType()) {
-		case EN_FAILLITE:
 		case EN_LIQUIDATION:
 			return new ToRadieeRCTransitionEtatEntreprise(getTiersDAO(), entreprise, date, generation);
+		case EN_FAILLITE:
 		case ABSORBEE:
-			TransitionEtatEntreprise transition = null;
 			if (isInscriteRC(entreprise, date)) {
-				transition = new ToRadieeRCTransitionEtatEntreprise(getTiersDAO(), entreprise, date, generation);
+				return new ToRadieeRCTransitionEtatEntreprise(getTiersDAO(), entreprise, date, generation);
 			}
-			return transition;
+			return null;
 		default:
 			return null;
 		}
 	}
 
-	/**
-	 * Contrôle que l'entreprise est inscrite au RC selon RCEnt.
-	 */
-	private boolean isInscriteRC(Entreprise entreprise, RegDate date) {
-		if (entreprise.isConnueAuCivil()) {
-			Organisation organisation = serviceOrganisation.getOrganisationHistory(entreprise.getNumeroEntreprise());
-			if (organisation.getSitePrincipal(date).getPayload().getDonneesRC().getStatusInscription(date) == StatusInscriptionRC.ACTIF) {
-				return true;
-			}
-		}
-		return false;
-	}
 }
