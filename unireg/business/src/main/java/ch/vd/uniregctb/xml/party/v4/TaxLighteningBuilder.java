@@ -2,6 +2,7 @@ package ch.vd.uniregctb.xml.party.v4;
 
 import ch.vd.unireg.xml.party.corporation.v4.TaxLightening;
 import ch.vd.uniregctb.tiers.AllegementFiscal;
+import ch.vd.uniregctb.tiers.AllegementFiscalCommune;
 import ch.vd.uniregctb.xml.DataHelper;
 import ch.vd.uniregctb.xml.EnumHelper;
 
@@ -13,7 +14,8 @@ public class TaxLighteningBuilder {
 		tl.setDateTo(DataHelper.coreToXMLv2(allegementFiscal.getDateFin()));
 		tl.setLighteningPercentage(allegementFiscal.getPourcentageAllegement());
 		tl.setTaxType(EnumHelper.coreToXMLv4(allegementFiscal.getTypeImpot()));
-		tl.setTargetCollectivity(EnumHelper.coreToXMLv4(allegementFiscal.getTypeCollectivite(), allegementFiscal.getNoOfsCommune()));
+		tl.setTargetCollectivity(EnumHelper.coreToXMLv4(allegementFiscal.getTypeCollectivite(),
+		                                                allegementFiscal instanceof AllegementFiscalCommune ? ((AllegementFiscalCommune) allegementFiscal).getNoOfsCommune() : null));
 		return tl;
 	}
 

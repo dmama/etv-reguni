@@ -62,6 +62,11 @@ public class ApplicationConfig {
 	public static final String masterKeyTypeMessage = "option.type.message.";
 	public static final String masterKeyModelFeuille = "option.modele.feuille.";
 	public static final String masterKeyEtatDelaiDeclaration = "option.etat.delai.";
+	public static final String masterKeyTypeCollectiviteAllegement = "option.allegement.fiscal.type.collectivite.";
+	public static final String masterKeyTypeImpotAllegement = "option.allegement.fiscal.type.impot.";
+	public static final String masterKeyTypeICCAllegement = "option.allegement.icc.type.";
+	public static final String masterKeyTypeIFDAllegement = "option.allegement.ifd.type.";
+
 
 	public static final String masterKeyEtatTraitementReqDes = "option.etat.traitement.reqdes.";
 }

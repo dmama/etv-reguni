@@ -343,7 +343,7 @@ public class TiersDAOBooster implements TiersDAO, InitializingBean {
 	}
 
 	@Override
-	public AllegementFiscal addAndSave(Entreprise entreprise, AllegementFiscal allegement) {
+	public <T extends AllegementFiscal> T addAndSave(Entreprise entreprise, T allegement) {
 		return target.addAndSave(entreprise, allegement);
 	}
 

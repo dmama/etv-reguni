@@ -5389,12 +5389,11 @@ public class TiersServiceImpl implements TiersService {
 	}
 
 	@Nullable
-	private static AllegementFiscal getDernierAllegementFiscal(Entreprise e, AllegementFiscal.TypeCollectivite typeCollectivite, AllegementFiscal.TypeImpot typeImpot, @Nullable Integer noOfsCommune) {
+	private static AllegementFiscal getDernierAllegementFiscal(Entreprise e, AllegementFiscalHelper.OverlappingKey key) {
 		final List<AllegementFiscal> tous = e.getAllegementsFiscauxNonAnnulesTries();
 		for (AllegementFiscal af : CollectionsUtils.revertedOrder(tous)) {
-			if (af.getTypeCollectivite() == typeCollectivite
-					&& af.getTypeImpot() == typeImpot
-					&& ((noOfsCommune == null && af.getNoOfsCommune() == null) || (noOfsCommune != null && af.getNoOfsCommune() != null && noOfsCommune.equals(af.getNoOfsCommune())))) {
+			final AllegementFiscalHelper.OverlappingKey otherKey = AllegementFiscalHelper.OverlappingKey.valueOf(af);
+			if (key.equals(otherKey)) {
 				return af;
 			}
 		}
@@ -5402,17 +5401,15 @@ public class TiersServiceImpl implements TiersService {
 	}
 
 	@Override
-	public AllegementFiscal addAllegementFiscal(Entreprise e, BigDecimal pourcentageAllegement, AllegementFiscal.TypeCollectivite typeCollectivite, AllegementFiscal.TypeImpot typeImpot,
-	                                            Integer noOfsCommune, RegDate dateDebut, RegDate dateFin) {
-
-		final AllegementFiscal existing = getDernierAllegementFiscal(e, typeCollectivite, typeImpot, noOfsCommune);
+	public AllegementFiscalCanton addAllegementFiscalCantonal(Entreprise e, @Nullable BigDecimal pourcentageAllegement, AllegementFiscal.TypeImpot typeImpot, RegDate dateDebut, RegDate dateFin, AllegementFiscalCantonCommune.Type type) {
+		final AllegementFiscal existing = getDernierAllegementFiscal(e, AllegementFiscalHelper.OverlappingKey.cantonal(typeImpot));
 		if (existing != null && existing.getDateFin() == null) {
 			if (dateFin == null || dateFin.isAfter(existing.getDateDebut())) {
 				closeAllegementFiscal(existing, dateDebut.getOneDayBefore());
 			}
 		}
 
-		final AllegementFiscal af = openAllegementFiscal(e, pourcentageAllegement, typeCollectivite, typeImpot, noOfsCommune, dateDebut);
+		final AllegementFiscalCanton af = openAllegementFiscalCantonal(e, pourcentageAllegement, typeImpot, dateDebut, type);
 		if (dateFin != null) {
 			closeAllegementFiscal(af, dateFin);
 		}
@@ -5420,8 +5417,56 @@ public class TiersServiceImpl implements TiersService {
 	}
 
 	@Override
-	public AllegementFiscal openAllegementFiscal(Entreprise e, BigDecimal pourcentageAllegement, AllegementFiscal.TypeCollectivite typeCollectivite, AllegementFiscal.TypeImpot typeImpot, Integer noOfsCommune, RegDate dateDebut) {
-		final AllegementFiscal af = tiersDAO.addAndSave(e, new AllegementFiscal(dateDebut, null, pourcentageAllegement, typeImpot, typeCollectivite, noOfsCommune));
+	public AllegementFiscalCommune addAllegementFiscalCommunal(Entreprise e, @Nullable BigDecimal pourcentageAllegement, AllegementFiscal.TypeImpot typeImpot, RegDate dateDebut, RegDate dateFin, AllegementFiscalCantonCommune.Type type,
+	                                                           @Nullable Integer noOfsCommune) {
+		final AllegementFiscal existing = getDernierAllegementFiscal(e, AllegementFiscalHelper.OverlappingKey.communal(typeImpot, noOfsCommune));
+		if (existing != null && existing.getDateFin() == null) {
+			if (dateFin == null || dateFin.isAfter(existing.getDateDebut())) {
+				closeAllegementFiscal(existing, dateDebut.getOneDayBefore());
+			}
+		}
+
+		final AllegementFiscalCommune af = openAllegementFiscalCommunal(e, pourcentageAllegement, typeImpot, noOfsCommune, dateDebut, type);
+		if (dateFin != null) {
+			closeAllegementFiscal(af, dateFin);
+		}
+		return af;
+	}
+
+	@Override
+	public AllegementFiscalConfederation addAllegementFiscalFederal(Entreprise e, @Nullable BigDecimal pourcentageAllegement, AllegementFiscal.TypeImpot typeImpot, RegDate dateDebut, RegDate dateFin, AllegementFiscalConfederation.Type type) {
+		final AllegementFiscal existing = getDernierAllegementFiscal(e, AllegementFiscalHelper.OverlappingKey.federal(typeImpot));
+		if (existing != null && existing.getDateFin() == null) {
+			if (dateFin == null || dateFin.isAfter(existing.getDateDebut())) {
+				closeAllegementFiscal(existing, dateDebut.getOneDayBefore());
+			}
+		}
+
+		final AllegementFiscalConfederation af = openAllegementFiscalFederal(e, pourcentageAllegement, typeImpot, dateDebut, type);
+		if (dateFin != null) {
+			closeAllegementFiscal(af, dateFin);
+		}
+		return af;
+	}
+
+	@Override
+	public AllegementFiscalCanton openAllegementFiscalCantonal(Entreprise e, @Nullable BigDecimal pourcentageAllegement, AllegementFiscal.TypeImpot typeImpot, RegDate dateDebut, AllegementFiscalCantonCommune.Type type) {
+		return openAllegementFiscal(e, new AllegementFiscalCanton(dateDebut, null, pourcentageAllegement, typeImpot, type));
+	}
+
+	@Override
+	public AllegementFiscalCommune openAllegementFiscalCommunal(Entreprise e, @Nullable BigDecimal pourcentageAllegement, AllegementFiscal.TypeImpot typeImpot, Integer noOfsCommune, RegDate dateDebut, AllegementFiscalCantonCommune.Type type) {
+		return openAllegementFiscal(e, new AllegementFiscalCommune(dateDebut, null, pourcentageAllegement, typeImpot, type, noOfsCommune));
+	}
+
+	@Override
+	public AllegementFiscalConfederation openAllegementFiscalFederal(Entreprise e, @Nullable BigDecimal pourcentageAllegement, AllegementFiscal.TypeImpot typeImpot, RegDate dateDebut, AllegementFiscalConfederation.Type type) {
+		return openAllegementFiscal(e, new AllegementFiscalConfederation(dateDebut, null, pourcentageAllegement, typeImpot, type));
+	}
+
+	private <T extends AllegementFiscal> T openAllegementFiscal(Entreprise e, T allegement) {
+		//noinspection unchecked
+		final T af = (T) tiersDAO.addAndSave(e, allegement);
 		evenementFiscalService.publierEvenementFiscalOuvertureAllegementFiscal(af);
 		return af;
 	}
@@ -5440,23 +5485,11 @@ public class TiersServiceImpl implements TiersService {
 
 	@Override
 	public void annuleAllegementFiscal(AllegementFiscal af) {
-		final AllegementFiscal dernier = getDernierAllegementFiscal(af.getEntreprise(), af.getTypeCollectivite(), af.getTypeImpot(), af.getNoOfsCommune());
-		if (dernier != af) {
-			throw new ValidationException(af, "Seul le dernier allègement fiscal peut être annulé.");
+		if (!af.isAnnule()) {
+			// annulation + envoi d'un événement fiscal
+			af.setAnnule(true);
+			evenementFiscalService.publierEvenementFiscalAnnulationAllegementFiscal(af);
 		}
-		af.setAnnule(true);
-
-		// éventuellement, on ré-ouvre le précédent
-		final AllegementFiscal precedent = getDernierAllegementFiscal(af.getEntreprise(), af.getTypeCollectivite(), af.getTypeImpot(), af.getNoOfsCommune());
-		if (precedent != null && precedent.getDateFin() == af.getDateDebut().getOneDayBefore()) {
-			final AllegementFiscal reouvert = precedent.duplicate();
-			precedent.setAnnule(true);
-			reouvert.setDateFin(null);
-			tiersDAO.addAndSave(af.getEntreprise(), reouvert);
-		}
-
-		// et on envoie un événement fiscal
-		evenementFiscalService.publierEvenementFiscalAnnulationAllegementFiscal(af);
 	}
 
 	@Nullable

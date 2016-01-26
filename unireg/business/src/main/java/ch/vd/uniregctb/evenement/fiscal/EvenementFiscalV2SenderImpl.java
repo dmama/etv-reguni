@@ -48,6 +48,7 @@ import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DeclarationImpotSource;
 import ch.vd.uniregctb.jms.EsbMessageValidator;
 import ch.vd.uniregctb.tiers.AllegementFiscal;
+import ch.vd.uniregctb.tiers.AllegementFiscalCommune;
 import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesMorales;
 import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
@@ -208,7 +209,8 @@ public class EvenementFiscalV2SenderImpl implements EvenementFiscalSender, Initi
 			instance.setDate(DataHelper.coreToXMLv2(evenementFiscal.getDateValeur()));
 			final AllegementFiscal allegementFiscal = evenementFiscal.getAllegementFiscal();
 			instance.setGenreImpot(EnumHelper.coreToXMLv4(allegementFiscal.getTypeImpot()));
-			instance.setTypeCollectivite(EnumHelper.coreToXMLv4(allegementFiscal.getTypeCollectivite(), allegementFiscal.getNoOfsCommune()));
+			instance.setTypeCollectivite(EnumHelper.coreToXMLv4(allegementFiscal.getTypeCollectivite(),
+			                                                    allegementFiscal instanceof AllegementFiscalCommune ? ((AllegementFiscalCommune) allegementFiscal).getNoOfsCommune() : null));
 			return instance;
 		}
 	}

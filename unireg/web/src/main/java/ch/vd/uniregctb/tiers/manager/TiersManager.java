@@ -551,8 +551,7 @@ public class TiersManager implements MessageSourceAware {
 				views.add(afView);
 			}
 
-			final Comparator<AllegementFiscalView> comparator = new AnnulableHelper.AnnulableDateRangeComparator<>(true);
-			Collections.sort(views, comparator);
+			Collections.sort(views, AllegementFiscalView.DEFAULT_COMPARATOR);
 			tiersView.setAllegementsFiscaux(views);
 		}
 

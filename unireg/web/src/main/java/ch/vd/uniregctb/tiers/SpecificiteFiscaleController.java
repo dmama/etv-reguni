@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.tiers;
 
 import javax.validation.Valid;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -38,7 +39,10 @@ import ch.vd.uniregctb.security.AccessDeniedException;
 import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.security.SecurityHelper;
 import ch.vd.uniregctb.security.SecurityProviderInterface;
+import ch.vd.uniregctb.tiers.view.AddAllegementFiscalView;
 import ch.vd.uniregctb.tiers.view.AddRegimeFiscalView;
+import ch.vd.uniregctb.tiers.view.AllegementFiscalView;
+import ch.vd.uniregctb.tiers.view.EditAllegementFiscalView;
 import ch.vd.uniregctb.tiers.view.EditRegimeFiscalView;
 import ch.vd.uniregctb.tiers.view.RegimeFiscalListEditView;
 import ch.vd.uniregctb.type.CategorieEntreprise;
@@ -53,6 +57,7 @@ public class SpecificiteFiscaleController {
 	private ControllerUtils controllerUtils;
 	private HibernateTemplate hibernateTemplate;
 	private Validator validator;
+	private TiersMapHelper tiersMapHelper;
 
 	public void setTiersService(TiersService tiersService) {
 		this.tiersService = tiersService;
@@ -72,6 +77,10 @@ public class SpecificiteFiscaleController {
 
 	public void setHibernateTemplate(HibernateTemplate hibernateTemplate) {
 		this.hibernateTemplate = hibernateTemplate;
+	}
+
+	public void setTiersMapHelper(TiersMapHelper tiersMapHelper) {
+		this.tiersMapHelper = tiersMapHelper;
 	}
 
 	public void setValidators(Validator... validator) {
@@ -355,6 +364,145 @@ public class SpecificiteFiscaleController {
 	// Les allègements fiscaux
 	//
 
+	private void checkDroitModificationAllegements() throws AccessDeniedException {
+		if (!SecurityHelper.isGranted(securityProvider, Role.ALLEGEMENTS_FISCAUX)) {
+			throw new AccessDeniedException("Vous ne possédez aucun droit IfoSec pour la modification des allègements fiscaux des personnes morales.");
+		}
+	}
+
+	@Transactional(rollbackFor = Throwable.class, readOnly = true)
+	@RequestMapping(value = "/allegement/edit-list.do", method = RequestMethod.GET)
+	public String showListEditAllegements(@RequestParam("pmId") long pmId, Model model) throws AccessDeniedException, ObjectNotFoundException {
+
+		checkDroitModificationAllegements();
+		final Entreprise entreprise = checkDroitEcritureTiers(pmId);
+
+		model.addAttribute("pmId", pmId);
+		model.addAttribute("allegements", getAllegementFiscalListEditViews(entreprise));
+
+		return "tiers/edition/pm/specificites/list-allegements";
+	}
+
+	private List<AllegementFiscalView> getAllegementFiscalListEditViews(Entreprise entreprise) {
+		final Set<AllegementFiscal> afs = entreprise.getAllegementsFiscaux();
+		if (afs == null || afs.isEmpty()) {
+			return Collections.emptyList();
+		}
+
+		final List<AllegementFiscalView> views = new ArrayList<>(afs.size());
+		for (AllegementFiscal af : afs) {
+			views.add(new AllegementFiscalView(af));
+		}
+		Collections.sort(views, AllegementFiscalView.DEFAULT_COMPARATOR);
+		return views;
+	}
+
+	@Transactional(rollbackFor = Throwable.class)
+	@RequestMapping(value = "/allegement/cancel.do", method = RequestMethod.POST)
+	public String cancelAllegement(@RequestParam("afId") long afId) throws AccessDeniedException, ObjectNotFoundException {
+		checkDroitModificationAllegements();
+
+		final AllegementFiscal af = hibernateTemplate.get(AllegementFiscal.class, afId);
+		if (af == null) {
+			throw new ObjectNotFoundException("Allègement fiscal inconnu!");
+		}
+		checkDroitEcritureTiers(af.getEntreprise());
+
+		tiersService.annuleAllegementFiscal(af);
+		return "redirect:/allegement/edit-list.do?pmId=" + af.getEntreprise().getNumero();
+	}
+
+	@Transactional(rollbackFor = Throwable.class, readOnly = true)
+	@RequestMapping(value = "/allegement/add.do", method = RequestMethod.GET)
+	public String showAddAllegement(@RequestParam("pmId") long pmId, Model model) throws AccessDeniedException, ObjectNotFoundException {
+		checkDroitModificationAllegements();
+		checkDroitEcritureTiers(pmId);
+		return showAddAllegement(new AddAllegementFiscalView(pmId), model);
+	}
+
+	private String showAddAllegement(AddAllegementFiscalView view, Model model) {
+		model.addAttribute("command", view);
+		model.addAttribute("typesCollectivite", tiersMapHelper.getTypesCollectiviteAllegement());
+		model.addAttribute("typesImpot", tiersMapHelper.getTypesImpotAllegement());
+		model.addAttribute("typesICC", tiersMapHelper.getTypesICCAllegement());
+		model.addAttribute("typesIFD", tiersMapHelper.getTypesIFDAllegement());
+		return "tiers/edition/pm/specificites/add-allegement";
+	}
+
+	@Transactional(rollbackFor = Throwable.class)
+	@RequestMapping(value = "/allegement/add.do", method = RequestMethod.POST)
+	public String addAllegement(@Valid @ModelAttribute("command") AddAllegementFiscalView view, BindingResult bindingResult, Model model) throws AccessDeniedException, ObjectNotFoundException {
+		checkDroitModificationAllegements();
+
+		// renvoi en cas d'erreur
+		if (bindingResult.hasErrors()) {
+			return showAddAllegement(view, model);
+		}
+
+		final Entreprise entreprise = checkDroitEcritureTiers(view.getPmId());
+		final BigDecimal pourcentage = view.getFlagPourcentageMontant() == AddAllegementFiscalView.PourcentageMontant.POURCENTAGE ? view.getPourcentageAllegement() : null;
+		switch (view.getTypeCollectivite()) {
+		case CANTON:
+			tiersService.addAllegementFiscalCantonal(entreprise, pourcentage, view.getTypeImpot(), view.getDateDebut(), view.getDateFin(), view.getTypeICC());
+			break;
+		case COMMUNE:
+			tiersService.addAllegementFiscalCommunal(entreprise, pourcentage, view.getTypeImpot(), view.getDateDebut(), view.getDateFin(), view.getTypeICC(), view.getNoOfsCommune());
+			break;
+		case CONFEDERATION:
+			tiersService.addAllegementFiscalFederal(entreprise, pourcentage, view.getTypeImpot(), view.getDateDebut(), view.getDateFin(), view.getTypeIFD());
+			break;
+		default:
+			throw new IllegalArgumentException("Type de collectivité non supporté : " + view.getTypeCollectivite());
+		}
+
+		return "redirect:/allegement/edit-list.do?pmId=" + entreprise.getNumero();
+	}
+
+	private String showEditAllegement(EditAllegementFiscalView view, Model model) {
+		model.addAttribute("command", view);
+		return "tiers/edition/pm/specificites/edit-allegement";
+	}
+
+	@Transactional(rollbackFor = Throwable.class, readOnly = true)
+	@RequestMapping(value = "/allegement/edit.do", method = RequestMethod.GET)
+	public String showEditAllegement(@RequestParam("afId") long afId, Model model) throws AccessDeniedException, ObjectNotFoundException {
+		checkDroitModificationAllegements();
+		final AllegementFiscal af = hibernateTemplate.get(AllegementFiscal.class, afId);
+		if (af == null) {
+			throw new ObjectNotFoundException("Allègement fiscal inconnu!");
+		}
+		checkDroitEcritureTiers(af.getEntreprise());
+		return showEditAllegement(new EditAllegementFiscalView(af), model);
+	}
+
+	@Transactional(rollbackFor = Throwable.class)
+	@RequestMapping(value = "/allegement/edit.do", method = RequestMethod.POST)
+	public String editAllegement(@Valid @ModelAttribute("command") EditAllegementFiscalView view, BindingResult bindingResult, Model model) throws AccessDeniedException, ObjectNotFoundException {
+		checkDroitModificationAllegements();
+
+		// renvoi en cas d'erreur
+		if (bindingResult.hasErrors()) {
+			return showEditAllegement(view, model);
+		}
+
+		final AllegementFiscal af = hibernateTemplate.get(AllegementFiscal.class, view.getAfId());
+		if (af == null) {
+			throw new ObjectNotFoundException("Allègement fiscal inconnu!");
+		}
+		checkDroitEcritureTiers(af.getEntreprise());
+
+		// pour le moment, on ne gère que la fermeture de l'allègement
+		if (af.getDateFin() != null) {
+			throw new ActionException("L'allègement est déjà fermé.");
+		}
+		if (view.getDateFin() == null) {
+			Flash.warning("Aucune modification effectuée.", 4000);
+		}
+		else {
+			af.setDateFin(view.getDateFin());
+		}
+		return "redirect:/allegement/edit-list.do?pmId=" + af.getEntreprise().getNumero();
+	}
 
 	//
 	// Les flags

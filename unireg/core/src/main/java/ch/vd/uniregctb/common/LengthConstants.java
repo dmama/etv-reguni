@@ -141,6 +141,8 @@ public abstract class LengthConstants {
 
 	public static final int ALLEGEMENT_FISCAL_TYPE_COLLECTIVITE = 15;
 	public static final int ALLEGEMENT_FISCAL_TYPE_IMPOT = 50;
+	public static final int ALLEGEMENT_FISCAL_TYPE_ICC = 25;
+	public static final int ALLEGEMENT_FISCAL_TYPE_IFD = 25;
 
 	public static final int FLAG_ENTREPRISE_TYPE = 31;
 

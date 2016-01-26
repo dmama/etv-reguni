@@ -197,11 +197,13 @@ public class Entreprise extends ContribuableImpositionPersonnesMorales {
 					if (comparison == 0) {
 						comparison = o1.getTypeCollectivite().compareTo(o2.getTypeCollectivite());
 						if (comparison == 0 && o1.getTypeCollectivite() == AllegementFiscal.TypeCollectivite.COMMUNE) {
-							if (o1.getNoOfsCommune() == null && o2.getNoOfsCommune() != null) {
+							final Integer ofsCommune1 = ((AllegementFiscalCommune) o1).getNoOfsCommune();
+							final Integer ofsCommune2 = ((AllegementFiscalCommune) o2).getNoOfsCommune();
+							if (ofsCommune1 == null && ofsCommune2 != null) {
 								comparison = -1;
 							}
-							else if (o1.getNoOfsCommune() != null) {
-								comparison = (o2.getNoOfsCommune() == null ? 1 : Integer.compare(o1.getNoOfsCommune(), o2.getNoOfsCommune()));
+							else if (ofsCommune1 != null) {
+								comparison = (ofsCommune2 == null ? 1 : Integer.compare(ofsCommune1, ofsCommune2));
 							}
 						}
 					}

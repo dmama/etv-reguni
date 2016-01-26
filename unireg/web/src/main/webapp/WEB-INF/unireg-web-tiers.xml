@@ -255,10 +255,13 @@
 		<property name="serviceInfrastructureService" ref="serviceInfrastructureService"/>
 		<property name="tiersService" ref="tiersService"/>
 		<property name="hibernateTemplate" ref="hibernateTemplate"/>
+		<property name="tiersMapHelper" ref="tiersMapHelper"/>
 		<property name="validators">
 			<util:list>
 				<ref bean="addRegimeFiscalViewValidator"/>
 				<ref bean="editRegimeFiscalViewValidator"/>
+				<ref bean="addAllegementFiscalViewValidator"/>
+				<ref bean="editAllegementFiscalViewValidator"/>
 			</util:list>
 		</property>
 	</bean>
@@ -268,5 +271,7 @@
 	</bean>
 	<bean id="addRegimeFiscalViewValidator" class="ch.vd.uniregctb.tiers.validator.AddRegimeFiscalViewValidator" parent="abstractRegimeFiscalViewValidator"/>
 	<bean id="editRegimeFiscalViewValidator" class="ch.vd.uniregctb.tiers.validator.EditRegimeFiscalViewValidator" parent="abstractRegimeFiscalViewValidator"/>
+	<bean id="addAllegementFiscalViewValidator" class="ch.vd.uniregctb.tiers.validator.AddAllegementFiscalViewValidator"/>
+	<bean id="editAllegementFiscalViewValidator" class="ch.vd.uniregctb.tiers.validator.EditAllegementFiscalViewValidator"/>
 
 </beans>

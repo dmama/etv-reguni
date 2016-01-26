@@ -1,12 +1,15 @@
 package ch.vd.uniregctb.tiers;
 
 import javax.persistence.Column;
+import javax.persistence.DiscriminatorColumn;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
@@ -15,6 +18,8 @@ import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.List;
 
+import org.jetbrains.annotations.Nullable;
+
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.Duplicable;
 import ch.vd.uniregctb.common.HibernateDateRangeEntity;
@@ -22,7 +27,9 @@ import ch.vd.uniregctb.common.LengthConstants;
 
 @Entity
 @Table(name = "ALLEGEMENT_FISCAL")
-public class AllegementFiscal extends HibernateDateRangeEntity implements LinkedEntity, Duplicable<AllegementFiscal> {
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name = "TYPE_COLLECTIVITE", length = LengthConstants.ALLEGEMENT_FISCAL_TYPE_COLLECTIVITE)
+public abstract class AllegementFiscal extends HibernateDateRangeEntity implements LinkedEntity, Duplicable<AllegementFiscal> {
 
 	public enum TypeImpot {
 		BENEFICE,
@@ -39,27 +46,28 @@ public class AllegementFiscal extends HibernateDateRangeEntity implements Linked
 	private Entreprise entreprise;
 	private BigDecimal pourcentageAllegement;
 	private TypeImpot typeImpot;
-	private TypeCollectivite typeCollectivite;
-	private Integer noOfsCommune;
 
 	public AllegementFiscal() {
 	}
 
-	public AllegementFiscal(RegDate dateDebut, RegDate dateFin, BigDecimal pourcentageAllegement,
-	                        TypeImpot typeImpot, TypeCollectivite typeCollectivite, Integer noOfsCommune) {
+	public AllegementFiscal(RegDate dateDebut, @Nullable RegDate dateFin, @Nullable BigDecimal pourcentageAllegement, TypeImpot typeImpot) {
 		super(dateDebut, dateFin);
 		this.pourcentageAllegement = pourcentageAllegement;
 		this.typeImpot = typeImpot;
-		this.typeCollectivite = typeCollectivite;
-		this.noOfsCommune = noOfsCommune;
 	}
 
 	public AllegementFiscal(AllegementFiscal src) {
 		super(src);
 		this.pourcentageAllegement = src.pourcentageAllegement;
 		this.typeImpot = src.typeImpot;
-		this.typeCollectivite = src.typeCollectivite;
-		this.noOfsCommune = src.noOfsCommune;
+	}
+
+	@Transient
+	public abstract TypeCollectivite getTypeCollectivite();
+
+	@Transient
+	public boolean isAllegementMontant() {
+		return pourcentageAllegement == null;
 	}
 
 	@Transient
@@ -76,31 +84,11 @@ public class AllegementFiscal extends HibernateDateRangeEntity implements Linked
 
 	@Transient
 	@Override
-	public AllegementFiscal duplicate() {
-		return new AllegementFiscal(this);
-	}
-
-	@Transient
-	@Override
 	protected String getBusinessName() {
-		final String localData;
-		if (typeImpot == null && typeCollectivite == null) {
-			localData = " universel";
+		if (typeImpot == null) {
+			return super.getBusinessName();
 		}
-		else {
-			final StringBuilder b = new StringBuilder();
-			if (typeImpot != null) {
-				b.append(" ").append(typeImpot);
-			}
-			if (typeCollectivite != null) {
-				b.append(" ").append(typeCollectivite);
-			}
-			if (noOfsCommune != null) {
-				b.append(" (commune ").append(noOfsCommune).append(")");
-			}
-			localData = b.toString();
-		}
-		return String.format("%s%s", super.getBusinessName(), localData);
+		return String.format("%s %s", super.getBusinessName(), typeImpot);
 	}
 
 	@Id
@@ -124,7 +112,7 @@ public class AllegementFiscal extends HibernateDateRangeEntity implements Linked
 		this.entreprise = entreprise;
 	}
 
-	@Column(name = "POURCENTAGE_ALLEGEMENT", nullable = false, precision = 5, scale = 2)
+	@Column(name = "POURCENTAGE_ALLEGEMENT", precision = 5, scale = 2)
 	public BigDecimal getPourcentageAllegement() {
 		return pourcentageAllegement;
 	}
@@ -143,22 +131,4 @@ public class AllegementFiscal extends HibernateDateRangeEntity implements Linked
 		this.typeImpot = typeImpot;
 	}
 
-	@Column(name = "TYPE_COLLECTIVITE", length = LengthConstants.ALLEGEMENT_FISCAL_TYPE_COLLECTIVITE)
-	@Enumerated(EnumType.STRING)
-	public TypeCollectivite getTypeCollectivite() {
-		return typeCollectivite;
-	}
-
-	public void setTypeCollectivite(TypeCollectivite typeCollectivite) {
-		this.typeCollectivite = typeCollectivite;
-	}
-
-	@Column(name = "NO_OFS_COMMUNE")
-	public Integer getNoOfsCommune() {
-		return noOfsCommune;
-	}
-
-	public void setNoOfsCommune(Integer noOfsCommune) {
-		this.noOfsCommune = noOfsCommune;
-	}
 }

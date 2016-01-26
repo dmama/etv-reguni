@@ -1591,33 +1591,104 @@ public interface TiersService {
 	void closeDomicileEtablissement(DomicileEtablissement domicile, RegDate dateFin);
 
 	/**
-	 * Crée un allègement fiscal sur l'entreprise passée en paramètre, avec les informations fournies
+	 * Crée un allègement fiscal cantonal sur l'entreprise passée en paramètre, avec les informations fournies
 	 * @param e l'entreprise destinataire
 	 * @param pourcentageAllegement le pourcentage d'allègement souhaité (0 -> 100)
-	 * @param typeCollectivite le type de collectivité (= portée de l'impôt) pour lequel l'allègement est demandé (<code>null</code> pour "TOUS")
 	 * @param typeImpot le type d'impôt concerné par l'allègement (<code>null</code> pour "TOUS")
-	 * @param noOfsCommune le numéro ofs de la commune (vaudoise), valide uniquement si le type de collectivité est {@link AllegementFiscal.TypeCollectivite#COMMUNE} (<code>null</code> pour "TOUTES")
 	 * @param dateDebut la date de début de la validité de l'allègement fiscal
 	 * @param dateFin la date de fin de la validité de l'allègement fiscal
+     * @param type le type d'allègement ICC
 	 * @return l'allègement nouvellement créé
 	 */
-    AllegementFiscal addAllegementFiscal(Entreprise e,
-                                         BigDecimal pourcentageAllegement, AllegementFiscal.TypeCollectivite typeCollectivite, AllegementFiscal.TypeImpot typeImpot,
-                                         Integer noOfsCommune, RegDate dateDebut, RegDate dateFin);
+    AllegementFiscalCanton addAllegementFiscalCantonal(Entreprise e,
+                                                       @Nullable BigDecimal pourcentageAllegement,
+                                                       AllegementFiscal.TypeImpot typeImpot,
+                                                       RegDate dateDebut,
+                                                       RegDate dateFin,
+                                                       AllegementFiscalCantonCommune.Type type);
+
+	/**
+	 * Crée un allègement fiscal communal sur l'entreprise passée en paramètre, avec les informations fournies
+	 * @param e l'entreprise destinataire
+	 * @param pourcentageAllegement le pourcentage d'allègement souhaité (0 -> 100)
+	 * @param typeImpot le type d'impôt concerné par l'allègement (<code>null</code> pour "TOUS")
+	 * @param noOfsCommune le numéro ofs de la commune (vaudoise) (<code>null</code> pour "TOUTES")
+	 * @param dateDebut la date de début de la validité de l'allègement fiscal
+	 * @param dateFin la date de fin de la validité de l'allègement fiscal
+     * @param type le type d'allègement ICC
+	 * @return l'allègement nouvellement créé
+	 */
+    AllegementFiscalCommune addAllegementFiscalCommunal(Entreprise e,
+                                                        @Nullable BigDecimal pourcentageAllegement,
+                                                        AllegementFiscal.TypeImpot typeImpot,
+                                                        RegDate dateDebut,
+                                                        RegDate dateFin,
+                                                        AllegementFiscalCantonCommune.Type type,
+                                                        Integer noOfsCommune);
+
+	/**
+	 * Crée un allègement fiscal fédéral sur l'entreprise passée en paramètre, avec les informations fournies
+	 * @param e l'entreprise destinataire
+	 * @param pourcentageAllegement le pourcentage d'allègement souhaité (0 -> 100)
+	 * @param typeImpot le type d'impôt concerné par l'allègement (<code>null</code> pour "TOUS")
+	 * @param dateDebut la date de début de la validité de l'allègement fiscal
+	 * @param dateFin la date de fin de la validité de l'allègement fiscal
+     * @param type le type d'allègement IFD
+	 * @return l'allègement nouvellement créé
+	 */
+    AllegementFiscalConfederation addAllegementFiscalFederal(Entreprise e,
+                                                             @Nullable BigDecimal pourcentageAllegement,
+                                                             AllegementFiscal.TypeImpot typeImpot,
+                                                             RegDate dateDebut,
+                                                             RegDate dateFin,
+                                                             AllegementFiscalConfederation.Type type);
+
+    /**
+     * Crée un allègement fiscal cantonal sur l'entreprise passée en paramètre, avec les informations fournies
+     * @param e l'entreprise destinataire
+     * @param pourcentageAllegement le pourcentage d'allègement souhaité (0 -> 100)
+     * @param typeImpot le type d'impôt concerné par l'allègement (<code>null</code> pour "TOUS")
+     * @param dateDebut la date de début de la validité de l'allègement fiscal
+     * @param type le type d'allègement ICC
+     * @return l'allègement nouvellement créé
+     */
+    AllegementFiscalCanton openAllegementFiscalCantonal(Entreprise e,
+                                                        @Nullable BigDecimal pourcentageAllegement,
+                                                        AllegementFiscal.TypeImpot typeImpot,
+                                                        RegDate dateDebut,
+                                                        AllegementFiscalCantonCommune.Type type);
 
     /**
      * Crée un allègement fiscal sur l'entreprise passée en paramètre, avec les informations fournies
      * @param e l'entreprise destinataire
      * @param pourcentageAllegement le pourcentage d'allègement souhaité (0 -> 100)
-     * @param typeCollectivite le type de collectivité (= portée de l'impôt) pour lequel l'allègement est demandé (<code>null</code> pour "TOUS")
      * @param typeImpot le type d'impôt concerné par l'allègement (<code>null</code> pour "TOUS")
-     * @param noOfsCommune le numéro ofs de la commune (vaudoise), valide uniquement si le type de collectivité est {@link AllegementFiscal.TypeCollectivite#COMMUNE} (<code>null</code> pour "TOUTES")
+     * @param noOfsCommune le numéro ofs de la commune (vaudoise) (<code>null</code> pour "TOUTES")
      * @param dateDebut la date de début de la validité de l'allègement fiscal
+     * @param type le type d'allègement ICC
      * @return l'allègement nouvellement créé
      */
-    AllegementFiscal openAllegementFiscal(Entreprise e,
-                                          BigDecimal pourcentageAllegement, AllegementFiscal.TypeCollectivite typeCollectivite, AllegementFiscal.TypeImpot typeImpot,
-                                          Integer noOfsCommune, RegDate dateDebut);
+    AllegementFiscalCommune openAllegementFiscalCommunal(Entreprise e,
+                                                         @Nullable BigDecimal pourcentageAllegement,
+                                                         AllegementFiscal.TypeImpot typeImpot,
+                                                         Integer noOfsCommune,
+                                                         RegDate dateDebut,
+                                                         AllegementFiscalCantonCommune.Type type);
+
+    /**
+     * Crée un allègement fiscal sur l'entreprise passée en paramètre, avec les informations fournies
+     * @param e l'entreprise destinataire
+     * @param pourcentageAllegement le pourcentage d'allègement souhaité (0 -> 100)
+     * @param typeImpot le type d'impôt concerné par l'allègement (<code>null</code> pour "TOUS")
+     * @param dateDebut la date de début de la validité de l'allègement fiscal
+     * @param type le type d'allègement IFD
+     * @return l'allègement nouvellement créé
+     */
+    AllegementFiscalConfederation openAllegementFiscalFederal(Entreprise e,
+                                                              @Nullable BigDecimal pourcentageAllegement,
+                                                              AllegementFiscal.TypeImpot typeImpot,
+                                                              RegDate dateDebut,
+                                                              AllegementFiscalConfederation.Type type);
 
 	/**
 	 * Ferme l'allègement fiscal à la date indiquée

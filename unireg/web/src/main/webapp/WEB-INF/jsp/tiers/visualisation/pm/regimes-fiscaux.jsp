@@ -18,7 +18,7 @@
 
 	<c:if test="${not empty command.regimesFiscauxVD}">
 
-		<input class="noprint" name="rfvd_histo" type="checkbox" onClick="History.toggleRowsIsHisto('regimesVD','rfvd_histo');" id="rfvd_histo" />
+		<input class="noprint" name="rfvd_histo" type="checkbox" onClick="Histo.toggleRowsIsHistoAccordingToColumn('regimesVD','rfvd_histo');" id="rfvd_histo" />
 		<label class="noprint" for="rfvd_histo"><fmt:message key="label.historique" /></label>
 
 		<display:table name="${command.regimesFiscauxVD}" id="regimesVD" requestURI="visu.do" class="display" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator">
@@ -55,7 +55,7 @@
 
 	<c:if test="${not empty command.regimesFiscauxCH}">
 
-		<input class="noprint" name="rfch_histo" type="checkbox" onClick="History.toggleRowsIsHisto('regimesCH','rfch_histo');" id="rfch_histo" />
+		<input class="noprint" name="rfch_histo" type="checkbox" onClick="Histo.toggleRowsIsHistoAccordingToColumn('regimesCH','rfch_histo');" id="rfch_histo" />
 		<label class="noprint" for="rfch_histo"><fmt:message key="label.historique" /></label>
 
 		<display:table name="${command.regimesFiscauxCH}" id="regimesCH" requestURI="visu.do" class="display" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator">
@@ -79,62 +79,9 @@
 
 <script type="text/javascript">
 
-	var History = {
-
-		toggleRowsIsHisto: function(idTable, idCheckbox) {
-
-			var table = $('#' + idTable).get(0);
-			if (table != null) {
-				var showHisto = $('#' + idCheckbox).get(0).checked;
-				var nbLines = table.rows.length;
-				for (var index = 0 ; index < nbLines ; ++ index) {
-					var line = table.rows[index];
-					var visible;
-					if (!showHisto) {
-						if (this.hasClass(line, 'strike')) {
-							visible = false;
-						}
-						else {
-							visible = true;
-							var column = $(line).find('td.notShownIfNotEmpty');
-							if (column.length > 0) {
-								for (var colIndex = 0 ; colIndex < column.length ; ++ colIndex) {
-									visible = StringUtils.isBlank(column[colIndex].innerHTML);
-									if (!visible) {
-										break;
-									}
-								}
-							}
-						}
-					}
-					else {
-						visible = true;
-					}
-
-					line.style.display = (visible ? '' : 'none');
-				}
-
-				this.computeEvenOdd(table);
-			}
-		},
-
-		hasClass: function(element, clazz) {
-			return (' ' + element.className + ' ').indexOf(' ' + clazz + ' ') > -1;
-		},
-
-		computeEvenOdd: function(table) {
-			var rows = $(table).find('tr:visible');
-			rows.removeClass('odd');
-			rows.removeClass('even');
-			$(table).find('tr:visible:even').addClass('even');
-			$(table).find('tr:visible:odd').addClass('odd');
-		}
-
-	};
-
 	$(function() {
-		History.toggleRowsIsHisto('regimesVD','rfvd_histo');
-		History.toggleRowsIsHisto('regimesCH','rfch_histo');
+		Histo.toggleRowsIsHistoAccordingToColumn('regimesVD','rfvd_histo');
+		Histo.toggleRowsIsHistoAccordingToColumn('regimesCH','rfch_histo');
 	});
 
 </script>

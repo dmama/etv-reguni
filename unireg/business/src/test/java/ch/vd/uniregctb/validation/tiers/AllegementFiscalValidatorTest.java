@@ -2,59 +2,62 @@ package ch.vd.uniregctb.validation.tiers;
 
 import java.math.BigDecimal;
 
+import org.jetbrains.annotations.Nullable;
 import org.junit.Assert;
 import org.junit.Test;
 
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.validation.ValidationResults;
-import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.uniregctb.tiers.AllegementFiscal;
 import ch.vd.uniregctb.validation.AbstractValidatorTest;
 
-public class AllegementFiscalValidatorTest extends AbstractValidatorTest<AllegementFiscal> {
+public abstract class AllegementFiscalValidatorTest<T extends AllegementFiscal> extends AbstractValidatorTest<T> {
 
-	@Override
-	protected String getValidatorBeanName() {
-		return "allegementFiscalValidator";
-	}
+	/**
+	 * Utilisé pour les tests génériques
+	 * @param dateDebut la date de début
+	 * @param dateFin la date de fin
+	 * @param typeImpot le type d'impôt
+	 * @param pourcentage le pourcentage d'allègement (si null, 'flag montant')
+	 * @return une instance d'allègement fiscal (les autres éventuels attributs ne doivent pas causer d'erreur de validation)
+	 */
+	protected abstract T build(RegDate dateDebut, @Nullable RegDate dateFin, AllegementFiscal.TypeImpot typeImpot, @Nullable BigDecimal pourcentage);
 
 	@Test
 	public void testPourcentage() throws Exception {
-		// valeur absente
+		// valeur absente -> ok (c'est le flag 'montant')
 		{
-			final AllegementFiscal af = new AllegementFiscal(date(2000, 1, 1), date(2005, 12, 31), null, AllegementFiscal.TypeImpot.BENEFICE, AllegementFiscal.TypeCollectivite.CANTON, null);
+			final T af = build(date(2000, 1, 1), date(2005, 12, 31), AllegementFiscal.TypeImpot.BENEFICE, null);
 			final ValidationResults vr = validate(af);
-			Assert.assertEquals(1, vr.errorsCount());
+			Assert.assertEquals(0, vr.errorsCount());
 			Assert.assertEquals(0, vr.warningsCount());
-
-			final String error = vr.getErrors().get(0);
-			Assert.assertEquals("L'allègement fiscal AllegementFiscal BENEFICE CANTON (01.01.2000 - 31.12.2005) n'a pas de pourcentage d'allègement fixé.", error);
 		}
 
 		// valeur hors des clous -> -0.01
 		{
-			final AllegementFiscal af = new AllegementFiscal(date(2000, 1, 1), date(2005, 12, 31), BigDecimal.valueOf(-1, 2), AllegementFiscal.TypeImpot.BENEFICE, AllegementFiscal.TypeCollectivite.CANTON, null);
+			final T af = build(date(2000, 1, 1), date(2005, 12, 31), AllegementFiscal.TypeImpot.BENEFICE, BigDecimal.valueOf(-1, 2));
 			final ValidationResults vr = validate(af);
 			Assert.assertEquals(1, vr.errorsCount());
 			Assert.assertEquals(0, vr.warningsCount());
 
 			final String error = vr.getErrors().get(0);
-			Assert.assertEquals("L'allègement fiscal AllegementFiscal BENEFICE CANTON (01.01.2000 - 31.12.2005) a un pourcentage d'allègement hors des limites admises (0-100) : -0.01%.", error);
+			Assert.assertEquals(String.format("L'allègement fiscal %s BENEFICE (01.01.2000 - 31.12.2005) a un pourcentage d'allègement hors des limites admises (0-100) : -0.01%%.", af.getClass().getSimpleName()), error);
 		}
 
 		// valeur hors des clous -> 100.01
 		{
-			final AllegementFiscal af = new AllegementFiscal(date(2000, 1, 1), date(2005, 12, 31), BigDecimal.valueOf(10001, 2), AllegementFiscal.TypeImpot.BENEFICE, AllegementFiscal.TypeCollectivite.CANTON, null);
+			final T af = build(date(2000, 1, 1), date(2005, 12, 31), AllegementFiscal.TypeImpot.BENEFICE, BigDecimal.valueOf(10001, 2));
 			final ValidationResults vr = validate(af);
 			Assert.assertEquals(1, vr.errorsCount());
 			Assert.assertEquals(0, vr.warningsCount());
 
 			final String error = vr.getErrors().get(0);
-			Assert.assertEquals("L'allègement fiscal AllegementFiscal BENEFICE CANTON (01.01.2000 - 31.12.2005) a un pourcentage d'allègement hors des limites admises (0-100) : 100.01%.", error);
+			Assert.assertEquals(String.format("L'allègement fiscal %s BENEFICE (01.01.2000 - 31.12.2005) a un pourcentage d'allègement hors des limites admises (0-100) : 100.01%%.", af.getClass().getSimpleName()), error);
 		}
 
 		// valeur autorisée limite : 0
 		{
-			final AllegementFiscal af = new AllegementFiscal(date(2000, 1, 1), date(2005, 12, 31), BigDecimal.ZERO, AllegementFiscal.TypeImpot.BENEFICE, AllegementFiscal.TypeCollectivite.CANTON, null);
+			final T af = build(date(2000, 1, 1), date(2005, 12, 31), AllegementFiscal.TypeImpot.BENEFICE, BigDecimal.ZERO);
 			final ValidationResults vr = validate(af);
 			Assert.assertEquals(0, vr.errorsCount());
 			Assert.assertEquals(0, vr.warningsCount());
@@ -62,7 +65,7 @@ public class AllegementFiscalValidatorTest extends AbstractValidatorTest<Allegem
 
 		// valeur autorisée limite : 100
 		{
-			final AllegementFiscal af = new AllegementFiscal(date(2000, 1, 1), date(2005, 12, 31), BigDecimal.valueOf(100L), AllegementFiscal.TypeImpot.BENEFICE, AllegementFiscal.TypeCollectivite.CANTON, null);
+			final T af = build(date(2000, 1, 1), date(2005, 12, 31), AllegementFiscal.TypeImpot.BENEFICE, BigDecimal.valueOf(100L));
 			final ValidationResults vr = validate(af);
 			Assert.assertEquals(0, vr.errorsCount());
 			Assert.assertEquals(0, vr.warningsCount());
@@ -70,7 +73,7 @@ public class AllegementFiscalValidatorTest extends AbstractValidatorTest<Allegem
 
 		// valeur autorisée au milieu de la plage de validité
 		{
-			final AllegementFiscal af = new AllegementFiscal(date(2000, 1, 1), date(2005, 12, 31), BigDecimal.valueOf(33333, 3), AllegementFiscal.TypeImpot.BENEFICE, AllegementFiscal.TypeCollectivite.CANTON, null);
+			final T af = build(date(2000, 1, 1), date(2005, 12, 31), AllegementFiscal.TypeImpot.BENEFICE, BigDecimal.valueOf(33333, 3));
 			final ValidationResults vr = validate(af);
 			Assert.assertEquals(0, vr.errorsCount());
 			Assert.assertEquals(0, vr.warningsCount());
@@ -78,83 +81,21 @@ public class AllegementFiscalValidatorTest extends AbstractValidatorTest<Allegem
 	}
 
 	@Test
-	public void testCommune() throws Exception {
-
-		// valeur vide quel que soit le type de collectivité -> ok
-		for (AllegementFiscal.TypeCollectivite typeCollectivite : AllegementFiscal.TypeCollectivite.values()) {
-			final AllegementFiscal af = new AllegementFiscal(date(2000, 1, 1), date(2005, 12, 31), BigDecimal.TEN, AllegementFiscal.TypeImpot.BENEFICE, typeCollectivite, null);
-			final ValidationResults vr = validate(af);
-			Assert.assertEquals(typeCollectivite.name(), 0, vr.errorsCount());
-			Assert.assertEquals(typeCollectivite.name(), 0, vr.warningsCount());
-		}
-
-		// valeur non vide vaudoise -> accepté seulement pour le type de collectivité COMMUNE
-		for (AllegementFiscal.TypeCollectivite typeCollectivite : AllegementFiscal.TypeCollectivite.values()) {
-			final AllegementFiscal af = new AllegementFiscal(date(2000, 1, 1), date(2005, 12, 31), BigDecimal.TEN, AllegementFiscal.TypeImpot.BENEFICE, typeCollectivite, MockCommune.Lausanne.getNoOFS());
-			final ValidationResults vr = validate(af);
-			if (typeCollectivite == AllegementFiscal.TypeCollectivite.COMMUNE) {
-				Assert.assertEquals(typeCollectivite.name(), 0, vr.errorsCount());
-				Assert.assertEquals(typeCollectivite.name(), 0, vr.warningsCount());
-			}
-			else {
-				Assert.assertEquals(typeCollectivite.name(), 1, vr.errorsCount());
-				Assert.assertEquals(typeCollectivite.name(), 0, vr.warningsCount());
-
-				final String error = vr.getErrors().get(0);
-				Assert.assertEquals("L'allègement fiscal AllegementFiscal BENEFICE " + typeCollectivite + " (commune 5586) (01.01.2000 - 31.12.2005) indique une commune alors que la collectivité associée n'est pas de type communal.", error);
-			}
-		}
-
-		// valeur non-vide non-vaudoise -> toujours refusée
-		{
-			final AllegementFiscal af = new AllegementFiscal(date(2000, 1, 1), date(2005, 12, 31), BigDecimal.TEN, AllegementFiscal.TypeImpot.BENEFICE, AllegementFiscal.TypeCollectivite.COMMUNE, MockCommune.Bern.getNoOFS());
-			final ValidationResults vr = validate(af);
-			Assert.assertEquals(1, vr.errorsCount());
-			Assert.assertEquals(0, vr.warningsCount());
-
-			final String error = vr.getErrors().get(0);
-			Assert.assertEquals("L'allègement fiscal AllegementFiscal BENEFICE COMMUNE (commune 351) (01.01.2000 - 31.12.2005) est sur une commune sise hors-canton (Bern (BE) - 351).", error);
-		}
-	}
-
-	@Test
-	public void testTypeCollectivite() throws Exception {
-		// null -> refusé !
-		{
-			final AllegementFiscal af = new AllegementFiscal(date(2000, 1, 1), date(2005, 12, 31), BigDecimal.TEN, AllegementFiscal.TypeImpot.BENEFICE, null, null);
-			final ValidationResults vr = validate(af);
-			Assert.assertEquals(1, vr.errorsCount());
-			Assert.assertEquals(0, vr.warningsCount());
-
-			final String error = vr.getErrors().get(0);
-			Assert.assertEquals("L'allègement fiscal AllegementFiscal BENEFICE (01.01.2000 - 31.12.2005) n'a pas de type de collectivité assigné.", error);
-		}
-
-		// sinon, ok
-		for (AllegementFiscal.TypeCollectivite typeCollectivite : AllegementFiscal.TypeCollectivite.values()) {
-			final AllegementFiscal af = new AllegementFiscal(date(2000, 1, 1), date(2005, 12, 31), BigDecimal.TEN, AllegementFiscal.TypeImpot.BENEFICE, typeCollectivite, null);
-			final ValidationResults vr = validate(af);
-			Assert.assertEquals(typeCollectivite.name(), 0, vr.errorsCount());
-			Assert.assertEquals(typeCollectivite.name(), 0, vr.warningsCount());
-		}
-	}
-
-	@Test
 	public void testTypeImpot() throws Exception {
 		// null -> refusé !
 		{
-			final AllegementFiscal af = new AllegementFiscal(date(2000, 1, 1), date(2005, 12, 31), BigDecimal.TEN, null, AllegementFiscal.TypeCollectivite.CONFEDERATION, null);
+			final T af = build(date(2000, 1, 1), date(2005, 12, 31), null, BigDecimal.TEN);
 			final ValidationResults vr = validate(af);
 			Assert.assertEquals(1, vr.errorsCount());
 			Assert.assertEquals(0, vr.warningsCount());
 
 			final String error = vr.getErrors().get(0);
-			Assert.assertEquals("L'allègement fiscal AllegementFiscal CONFEDERATION (01.01.2000 - 31.12.2005) n'a pas de type d'impôt assigné.", error);
+			Assert.assertEquals(String.format("L'allègement fiscal %s (01.01.2000 - 31.12.2005) n'a pas de type d'impôt assigné.", af.getClass().getSimpleName()), error);
 		}
 
 		// sinon, ok
 		for (AllegementFiscal.TypeImpot typeImpot : AllegementFiscal.TypeImpot.values()) {
-			final AllegementFiscal af = new AllegementFiscal(date(2000, 1, 1), date(2005, 12, 31), BigDecimal.TEN, typeImpot, AllegementFiscal.TypeCollectivite.CONFEDERATION, null);
+			final T af = build(date(2000, 1, 1), date(2005, 12, 31), typeImpot, BigDecimal.TEN);
 			final ValidationResults vr = validate(af);
 			Assert.assertEquals(typeImpot.name(), 0, vr.errorsCount());
 			Assert.assertEquals(typeImpot.name(), 0, vr.warningsCount());

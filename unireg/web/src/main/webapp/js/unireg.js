@@ -1232,6 +1232,69 @@ var Histo = {
 		}
 	},
 
+	// ---------------------------------------------------------
+	// toggleRowsIsHistoAccordingToColumn
+	//
+	// Displays the lines of a table according to some criteria:
+	// - if the checkbox given by its ID is checked, show everything
+	// - otherwise
+	//      - if the 'strike' class is set on the tr, the line is hidden
+	//      - if the tr contains a td with 'notShownIfNotEmpty' class
+	//              - if the td is empty -> the line is shown
+	//              - if the td contains some html code -> the line is hidden
+	//      - otherwise, the line is shown
+	// Enventually, visible lines undergo a new computation of their 'odd' or 'even' classes.
+	//
+	// Arguments:
+	//    idTable           html id of the table
+	//    idCheckbox        html id of the checkbox
+	//
+	toggleRowsIsHistoAccordingToColumn: function(idTable, idCheckbox) {
+
+		var table = $('#' + idTable).get(0);
+		if (table != null) {
+			var showHisto = $('#' + idCheckbox).get(0).checked;
+			var nbLines = table.rows.length;
+			for (var index = 0 ; index < nbLines ; ++ index) {
+				var line = table.rows[index];
+				var visible;
+				if (!showHisto) {
+					if (this.hasClassName(line, 'strike')) {
+						visible = false;
+					}
+					else {
+						visible = true;
+						var column = $(line).find('td.notShownIfNotEmpty');
+						if (column.length > 0) {
+							for (var colIndex = 0 ; colIndex < column.length ; ++ colIndex) {
+								visible = StringUtils.isBlank(column[colIndex].innerHTML);
+								if (!visible) {
+									break;
+								}
+							}
+						}
+					}
+				}
+				else {
+					visible = true;
+				}
+
+				line.style.display = (visible ? '' : 'none');
+			}
+
+			this.computeEvenOdd(table);
+		}
+	},
+
+	computeEvenOdd: function(table) {
+		var rows = $(table).find('tr:visible');
+		rows.removeClass('odd');
+		rows.removeClass('even');
+		$(table).find('tr:visible:even').addClass('even');
+		$(table).find('tr:visible:odd').addClass('odd');
+	},
+
+
 	// ----------------------------------------------------------------------------
 	// HasClassName
 	//

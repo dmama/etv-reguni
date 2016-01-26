@@ -309,7 +309,7 @@ public class MockTiersDAO implements TiersDAO {
 	}
 
 	@Override
-	public AllegementFiscal addAndSave(Entreprise entreprise, AllegementFiscal allegement) {
+	public <T extends AllegementFiscal> T addAndSave(Entreprise entreprise, T allegement) {
 		throw new NotImplementedException();
 	}
 

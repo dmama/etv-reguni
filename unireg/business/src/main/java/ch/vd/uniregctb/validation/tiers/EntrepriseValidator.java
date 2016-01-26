@@ -21,6 +21,7 @@ import ch.vd.uniregctb.adresse.AdresseTiers;
 import ch.vd.uniregctb.common.AnnulableHelper;
 import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.tiers.AllegementFiscal;
+import ch.vd.uniregctb.tiers.AllegementFiscalHelper;
 import ch.vd.uniregctb.tiers.Bouclement;
 import ch.vd.uniregctb.tiers.CapitalFiscalEntreprise;
 import ch.vd.uniregctb.tiers.DonneeCivileEntreprise;
@@ -246,65 +247,6 @@ public class EntrepriseValidator extends ContribuableImpositionPersonnesMoralesV
 		return vr;
 	}
 
-	/**
-	 * Classe interne utilisée pour déterminer si des allègements fiscaux similaires ne se chevauchent pas...
-	 */
-	private static final class AllegementFiscalKey {
-
-		private final AllegementFiscal.TypeImpot typeImpot;
-		private final AllegementFiscal.TypeCollectivite typeCollectivite;
-		private final Integer noOfsCommune;
-
-		public AllegementFiscalKey(AllegementFiscal.TypeImpot typeImpot, AllegementFiscal.TypeCollectivite typeCollectivite, Integer noOfsCommune) {
-			this.typeImpot = typeImpot;
-			this.typeCollectivite = typeCollectivite;
-			this.noOfsCommune = (typeCollectivite == AllegementFiscal.TypeCollectivite.COMMUNE ? noOfsCommune : null);
-		}
-
-		public AllegementFiscalKey(AllegementFiscal allegementFiscal) {
-			this(allegementFiscal.getTypeImpot(), allegementFiscal.getTypeCollectivite(), allegementFiscal.getNoOfsCommune());
-		}
-
-		@Override
-		public boolean equals(Object o) {
-			if (this == o) return true;
-			if (o == null || getClass() != o.getClass()) return false;
-
-			final AllegementFiscalKey that = (AllegementFiscalKey) o;
-
-			if (typeImpot != that.typeImpot) return false;
-			if (typeCollectivite != that.typeCollectivite) return false;
-			return !(noOfsCommune != null ? !noOfsCommune.equals(that.noOfsCommune) : that.noOfsCommune != null);
-		}
-
-		@Override
-		public int hashCode() {
-			int result = typeImpot != null ? typeImpot.hashCode() : 0;
-			result = 31 * result + (typeCollectivite != null ? typeCollectivite.hashCode() : 0);
-			result = 31 * result + (noOfsCommune != null ? noOfsCommune.hashCode() : 0);
-			return result;
-		}
-
-		@Override
-		public String toString() {
-			if (typeImpot == null && typeCollectivite == null) {
-				return "allègement universel";
-			}
-
-			final StringBuilder b = new StringBuilder("allègement");
-			if (typeImpot != null) {
-				b.append(" ").append(typeImpot);
-			}
-			if (typeCollectivite != null) {
-				b.append(" ").append(typeCollectivite);
-				if (noOfsCommune != null) {
-					b.append(" (").append(noOfsCommune).append(")");
-				}
-			}
-			return b.toString();
-		}
-	}
-
 	protected ValidationResults validateAllegementsFiscaux(Entreprise entreprise) {
 		final ValidationResults vr = new ValidationResults();
 
@@ -318,9 +260,9 @@ public class EntrepriseValidator extends ContribuableImpositionPersonnesMoralesV
 		// puis on valide que deux allègements fiscaux sur le même sujet ne se chevauchent pas...
 		if (!allegementsFiscaux.isEmpty()) {
 			// "même sujet" est défini par la clé AllegementFiscalKey
-			final Map<AllegementFiscalKey, List<DateRange>> map = new HashMap<>(allegementsFiscaux.size());
+			final Map<AllegementFiscalHelper.OverlappingKey, List<DateRange>> map = new HashMap<>(allegementsFiscaux.size());
 			for (AllegementFiscal af : allegementsFiscaux) {
-				final AllegementFiscalKey key = new AllegementFiscalKey(af);
+				final AllegementFiscalHelper.OverlappingKey key = AllegementFiscalHelper.OverlappingKey.valueOf(af);
 				List<DateRange> liste = map.get(key);
 				if (liste == null) {
 					liste = new ArrayList<>();
@@ -330,7 +272,7 @@ public class EntrepriseValidator extends ContribuableImpositionPersonnesMoralesV
 			}
 
 			// vérification des chevauchements
-			for (Map.Entry<AllegementFiscalKey, List<DateRange>> entry : map.entrySet()) {
+			for (Map.Entry<AllegementFiscalHelper.OverlappingKey, List<DateRange>> entry : map.entrySet()) {
 				final List<DateRange> liste = entry.getValue();
 				if (liste.size() > 1) {
 					final List<DateRange> overlaps = DateRangeHelper.overlaps(liste);

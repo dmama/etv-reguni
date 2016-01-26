@@ -38,6 +38,7 @@ import ch.vd.uniregctb.hibernate.HibernateCallback;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.AllegementFiscal;
+import ch.vd.uniregctb.tiers.AllegementFiscalCommune;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.DecisionAci;
@@ -319,8 +320,8 @@ public class FusionDeCommunesProcessor {
 		final List<AllegementFiscalWrapper> wrappers = new ArrayList<>(elements.size());
 		for (AllegementFiscal af : elements) {
 			// on ne met dans la collection que les cas où le numéro OFS de commune est renseigné
-			if (af.getNoOfsCommune() != null) {
-				wrappers.add(new AllegementFiscalWrapper(af));
+			if (af instanceof AllegementFiscalCommune && ((AllegementFiscalCommune) af).getNoOfsCommune() != null) {
+				wrappers.add(new AllegementFiscalWrapper((AllegementFiscalCommune) af));
 			}
 		}
 		return traiteLocalisationsDatees(wrappers, anciensNoOfs, nouveauNoOfs, dateFusion);
@@ -454,14 +455,14 @@ public class FusionDeCommunesProcessor {
 	}
 
 	/**
-	 * Wrapper autour d'un allègement fiscal en implémentant explicitement l'interface {@link LocalizedDateRange}, ce que
+	 * Wrapper autour d'un allègement fiscal communal en implémentant explicitement l'interface {@link LocalizedDateRange}, ce que
 	 * l'allègement fiscal lui-même ne peut pas faire (il n'a pas de champ "type d'autorité fiscale")
 	 */
 	private static final class AllegementFiscalWrapper implements LocalizedDateRange, Annulable {
 
-		private final AllegementFiscal target;
+		private final AllegementFiscalCommune target;
 
-		public AllegementFiscalWrapper(AllegementFiscal target) {
+		public AllegementFiscalWrapper(AllegementFiscalCommune target) {
 			this.target = target;
 		}
 
@@ -499,7 +500,7 @@ public class FusionDeCommunesProcessor {
 	private class AllegementFiscalStrategy extends Strategy<AllegementFiscalWrapper> {
 		@Override
 		void traite(AllegementFiscalWrapper wrapper, int nouveauNoOfs, RegDate dateFusion) {
-			final AllegementFiscal allegement = wrapper.target;
+			final AllegementFiscalCommune allegement = wrapper.target;
 			if (allegement.getDateDebut().isAfterOrEqual(dateFusion)) {
 				// l'allègement débute après la fusion -> on met simplement à jour le numéro Ofs
 				allegement.setNoOfsCommune(nouveauNoOfs);
@@ -507,7 +508,7 @@ public class FusionDeCommunesProcessor {
 			else {
 				final Entreprise e = allegement.getEntreprise();
 				tiersService.closeAllegementFiscal(allegement, dateFusion.getOneDayBefore());
-				tiersService.openAllegementFiscal(e, allegement.getPourcentageAllegement(), allegement.getTypeCollectivite(), allegement.getTypeImpot(), nouveauNoOfs, dateFusion);
+				tiersService.openAllegementFiscalCommunal(e, allegement.getPourcentageAllegement(), allegement.getTypeImpot(), nouveauNoOfs, dateFusion, allegement.getType());
 			}
 		}
 	}

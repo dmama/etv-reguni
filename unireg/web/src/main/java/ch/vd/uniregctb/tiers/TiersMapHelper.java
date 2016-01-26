@@ -102,6 +102,10 @@ public class TiersMapHelper extends CommonMapHelper {
 	private Map<TypeOperation, String> mapTypeOperation;
 	private Map<EtatTraitement, String> mapEtatTraitementReqDes;
 	private Map<EtatDelaiDeclaration, String> mapEtatDelaiDeclaration;
+	private Map<AllegementFiscal.TypeCollectivite, String> mapTypeCollectiviteAllegement;
+	private Map<AllegementFiscal.TypeImpot, String> mapTypeImpotAllegement;
+	private Map<AllegementFiscalConfederation.Type, String> mapTypesIFDAllegement;
+	private Map<AllegementFiscalCantonCommune.Type, String> mapTypesICCAllegement;
 
 	private ServiceInfrastructureService infraService;
 
@@ -714,5 +718,45 @@ public class TiersMapHelper extends CommonMapHelper {
 			map.put(transition.getType(), transition.getType().getLibelle());
 		}
 		return map;
+	}
+
+	/**
+	 * @return la map des types de collectivité disponibles dans un allègement fiscal
+	 */
+	public Map<AllegementFiscal.TypeCollectivite, String> getTypesCollectiviteAllegement() {
+		if (mapTypeCollectiviteAllegement == null) {
+			mapTypeCollectiviteAllegement = initMapEnum(ApplicationConfig.masterKeyTypeCollectiviteAllegement, AllegementFiscal.TypeCollectivite.class);
+		}
+		return mapTypeCollectiviteAllegement;
+	}
+
+	/**
+	 * @return la map des types d'impôt disponibles dans un allègement fiscal
+	 */
+	public Map<AllegementFiscal.TypeImpot, String> getTypesImpotAllegement() {
+		if (mapTypeImpotAllegement == null) {
+			mapTypeImpotAllegement = initMapEnum(ApplicationConfig.masterKeyTypeImpotAllegement, AllegementFiscal.TypeImpot.class);
+		}
+		return mapTypeImpotAllegement;
+	}
+
+	/**
+	 * @return la map des types disponibles dans un allègement fiscal fédéral (IFD)
+	 */
+	public Map<AllegementFiscalConfederation.Type, String> getTypesIFDAllegement() {
+		if (mapTypesIFDAllegement == null) {
+			mapTypesIFDAllegement = initMapEnum(ApplicationConfig.masterKeyTypeIFDAllegement, AllegementFiscalConfederation.Type.class);
+		}
+		return mapTypesIFDAllegement;
+	}
+
+	/**
+	 * @return la map des types disponibles dans un allègement fiscal communal ou cantonal (ICC)
+	 */
+	public Map<AllegementFiscalCantonCommune.Type, String> getTypesICCAllegement() {
+		if (mapTypesICCAllegement == null) {
+			mapTypesICCAllegement = initMapEnum(ApplicationConfig.masterKeyTypeICCAllegement, AllegementFiscalCantonCommune.Type.class);
+		}
+		return mapTypesICCAllegement;
 	}
 }

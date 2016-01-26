@@ -199,6 +199,10 @@
 		<value>ch.vd.uniregctb.tiers.FormeJuridiqueFiscaleEntreprise</value>
 		<value>ch.vd.uniregctb.tiers.CapitalFiscalEntreprise</value>
 		<value>ch.vd.uniregctb.tiers.AllegementFiscal</value>
+		<value>ch.vd.uniregctb.tiers.AllegementFiscalConfederation</value>
+		<value>ch.vd.uniregctb.tiers.AllegementFiscalCantonCommune</value>
+		<value>ch.vd.uniregctb.tiers.AllegementFiscalCanton</value>
+		<value>ch.vd.uniregctb.tiers.AllegementFiscalCommune</value>
 	</util:list>
 
 	<!-- La session factory -->

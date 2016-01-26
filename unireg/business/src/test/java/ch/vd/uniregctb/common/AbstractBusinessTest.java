@@ -52,6 +52,10 @@ import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.parentes.ParentesSynchronizerInterceptor;
 import ch.vd.uniregctb.tache.TacheSynchronizerInterceptor;
 import ch.vd.uniregctb.tiers.AllegementFiscal;
+import ch.vd.uniregctb.tiers.AllegementFiscalCanton;
+import ch.vd.uniregctb.tiers.AllegementFiscalCantonCommune;
+import ch.vd.uniregctb.tiers.AllegementFiscalCommune;
+import ch.vd.uniregctb.tiers.AllegementFiscalConfederation;
 import ch.vd.uniregctb.tiers.CapitalFiscalEntreprise;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.Contribuable;
@@ -1012,18 +1016,34 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
         return tiersDAO.addAndSave(entreprise, rf);
     }
 
-    protected AllegementFiscal addAllegementFiscalFederal(Entreprise entreprise, RegDate dateDebut, @Nullable RegDate dateFin, AllegementFiscal.TypeImpot typeImpot, BigDecimal pourcentageAllegement) {
-        final AllegementFiscal af = new AllegementFiscal(dateDebut, dateFin, pourcentageAllegement, typeImpot, AllegementFiscal.TypeCollectivite.CONFEDERATION, null);
+    protected AllegementFiscalConfederation addAllegementFiscalFederal(Entreprise entreprise,
+                                                                       RegDate dateDebut,
+                                                                       @Nullable RegDate dateFin,
+                                                                       AllegementFiscal.TypeImpot typeImpot,
+                                                                       @Nullable BigDecimal pourcentageAllegement,
+                                                                       AllegementFiscalConfederation.Type type) {
+        final AllegementFiscalConfederation af = new AllegementFiscalConfederation(dateDebut, dateFin, pourcentageAllegement, typeImpot, type);
         return tiersDAO.addAndSave(entreprise, af);
     }
 
-    protected AllegementFiscal addAllegementFiscalCantonal(Entreprise entreprise, RegDate dateDebut, @Nullable RegDate dateFin, AllegementFiscal.TypeImpot typeImpot, BigDecimal pourcentageAllegement) {
-        final AllegementFiscal af = new AllegementFiscal(dateDebut, dateFin, pourcentageAllegement, typeImpot, AllegementFiscal.TypeCollectivite.CANTON, null);
+    protected AllegementFiscalCanton addAllegementFiscalCantonal(Entreprise entreprise,
+                                                                 RegDate dateDebut,
+                                                                 @Nullable RegDate dateFin,
+                                                                 AllegementFiscal.TypeImpot typeImpot,
+                                                                 @Nullable BigDecimal pourcentageAllegement,
+                                                                 AllegementFiscalCantonCommune.Type type) {
+        final AllegementFiscalCanton af = new AllegementFiscalCanton(dateDebut, dateFin, pourcentageAllegement, typeImpot, type);
         return tiersDAO.addAndSave(entreprise, af);
     }
 
-    protected AllegementFiscal addAllegementFiscalCommunal(Entreprise entreprise, RegDate dateDebut, @Nullable RegDate dateFin, AllegementFiscal.TypeImpot typeImpot, BigDecimal pourcentageAllegement, @Nullable MockCommune commune) {
-        final AllegementFiscal af = new AllegementFiscal(dateDebut, dateFin, pourcentageAllegement, typeImpot, AllegementFiscal.TypeCollectivite.COMMUNE, commune != null ? commune.getNoOFS() : null);
+    protected AllegementFiscalCommune addAllegementFiscalCommunal(Entreprise entreprise,
+                                                                  RegDate dateDebut,
+                                                                  @Nullable RegDate dateFin,
+                                                                  AllegementFiscal.TypeImpot typeImpot,
+                                                                  @Nullable BigDecimal pourcentageAllegement,
+                                                                  @Nullable MockCommune commune,
+                                                                  AllegementFiscalCantonCommune.Type type) {
+        final AllegementFiscalCommune af = new AllegementFiscalCommune(dateDebut, dateFin, pourcentageAllegement, typeImpot, type, commune != null ? commune.getNoOFS() : null);
         return tiersDAO.addAndSave(entreprise, af);
     }
 }

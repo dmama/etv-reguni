@@ -1510,30 +1510,30 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 		return addAndSave(etb, domicile, DOMICILE_ETABLISSEMENT_ACCESSOR);
 	}
 
-	private static final EntityAccessor<Entreprise, AllegementFiscal> ALLEGEMENT_FISCAL_ACCESSOR = new EntityAccessor<Entreprise, AllegementFiscal>() {
+	private static final class AllegementFiscalAccessor<T extends AllegementFiscal> implements EntityAccessor<Entreprise, T> {
 		@Override
-		public Collection<AllegementFiscal> getEntities(Entreprise tiers) {
-			return tiers.getAllegementsFiscaux();
+		public Collection<T> getEntities(Entreprise tiers) {
+			//noinspection unchecked
+			return (Collection<T>) tiers.getAllegementsFiscaux();
 		}
 
 		@Override
-		public void addEntity(Entreprise tiers, AllegementFiscal entity) {
+		public void addEntity(Entreprise tiers, T entity) {
 			tiers.addAllegementFiscal(entity);
 		}
 
 		@Override
-		public void assertSame(AllegementFiscal entity1, AllegementFiscal entity2) {
+		public void assertSame(T entity1, T entity2) {
 			Assert.isSame(entity1.getDateDebut(), entity2.getDateDebut());
 			Assert.isSame(entity1.getDateFin(), entity2.getDateFin());
-			Assert.isSame(entity1.getNoOfsCommune(), entity2.getNoOfsCommune());
 			Assert.isSame(entity1.getTypeCollectivite(), entity2.getTypeCollectivite());
 			Assert.isSame(entity1.getTypeImpot(), entity2.getTypeImpot());
 		}
-	};
+	}
 
 	@Override
-	public AllegementFiscal addAndSave(Entreprise entreprise, AllegementFiscal allegement) {
-		return addAndSave(entreprise, allegement, ALLEGEMENT_FISCAL_ACCESSOR);
+	public <T extends AllegementFiscal> T addAndSave(Entreprise entreprise, T allegement) {
+		return addAndSave(entreprise, allegement, new AllegementFiscalAccessor<T>());
 	}
 
 	private static final EntityAccessor<Entreprise, DonneeCivileEntreprise> DONNEE_CIVILE_FISCAL_ACCESSOR = new EntityAccessor<Entreprise, DonneeCivileEntreprise>() {

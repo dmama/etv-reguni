@@ -373,7 +373,7 @@ public interface TiersDAO extends GenericDAO<Tiers, Long> {
 	 * @param allegement l'allègement fiscal à ajouter
 	 * @return une nouvelle instance de l'allègement fiscal avec son ID renseigné
 	 */
-	AllegementFiscal addAndSave(Entreprise entreprise, AllegementFiscal allegement);
+	<T extends AllegementFiscal> T addAndSave(Entreprise entreprise, T allegement);
 
 	DonneeCivileEntreprise addAndSave(Entreprise entreprise, DonneeCivileEntreprise donneeCivile);
 

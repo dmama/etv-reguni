@@ -10,15 +10,18 @@
 		<table border="0">
 			<tr><td>
 				<c:if test="${empty param['message'] && empty param['retour']}">
-					<unireg:raccourciModifier link="../allegement/edit.do?pmId=${command.tiers.numero}" tooltip="Modifier les allègements fiscaux" display="label.bouton.modifier"/>
+					<unireg:raccourciModifier link="../allegement/edit-list.do?pmId=${command.tiers.numero}" tooltip="Modifier les allègements fiscaux" display="label.bouton.modifier"/>
 				</c:if>
 			</td></tr>
 		</table>
 	</c:if>
 
 	<c:if test="${not empty command.allegementsFiscaux}">
-	
-		<display:table name="${command.allegementsFiscaux}" id="allegement" requestURI="visu.do" class="display" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator">
+
+		<input class="noprint" name="allg_histo" type="checkbox" onClick="Histo.toggleRowsIsHistoFromClass('allegement','allg_histo', 'histo-only');" id="allg_histo" />
+		<label class="noprint" for="allg_histo"><fmt:message key="label.historique" /></label>
+
+		<display:table name="${command.allegementsFiscaux}" id="allegement" requestURI="visu.do" class="display" decorator="ch.vd.uniregctb.decorator.TableAllegementDecorator">
 			<display:column sortable="true" titleKey="label.date.debut" sortProperty="dateDebut">
 				<unireg:regdate regdate="${allegement.dateDebut}"/>
 			</display:column>
@@ -34,10 +37,28 @@
 					&nbsp;(<unireg:commune ofs="${allegement.noOfsCommune}" displayProperty="nomOfficiel" titleProperty="noOFS"/>)
 				</c:if>
 			</display:column>
+			<display:column titleKey="label.type">
+				<c:choose>
+					<c:when test="${allegement.typeCollectivite == 'COMMUNE' || allegement.typeCollectivite == 'CANTON'}">
+						<fmt:message key="option.allegement.icc.type.${allegement.typeICC}"/>
+					</c:when>
+					<c:when test="${allegement.typeCollectivite == 'CONFEDERATION'}">
+						<fmt:message key="option.allegement.ifd.type.${allegement.typeIFD}"/>
+					</c:when>
+					<c:otherwise>
+						&nbsp;
+					</c:otherwise>
+				</c:choose>
+			</display:column>
 			<display:column sortable="true" titleKey="label.allegements.fiscaux.pourcentage" sortProperty="pourcentage">
-				<c:if test="${allegement.pourcentage != null}">
-					<fmt:formatNumber maxIntegerDigits="3" minIntegerDigits="1" maxFractionDigits="2" minFractionDigits="0" value="${allegement.pourcentage}"/>&nbsp;%
-				</c:if>
+				<c:choose>
+					<c:when test="${allegement.pourcentage != null}">
+						<fmt:formatNumber maxIntegerDigits="3" minIntegerDigits="1" maxFractionDigits="2" minFractionDigits="0" value="${allegement.pourcentage}"/>&nbsp;%
+					</c:when>
+					<c:otherwise>
+						<span><fmt:message key="label.allegement.montant"/></span>
+					</c:otherwise>
+				</c:choose>
 			</display:column>
 			<display:column class="action">
 				<unireg:consulterLog entityNature="AllegementFiscal" entityId="${allegement.id}"/>
@@ -47,3 +68,11 @@
 	</c:if>
 
 </fieldset>
+
+<script type="text/javascript">
+
+	$(function() {
+		Histo.toggleRowsIsHistoFromClass('allegement','allg_histo', 'histo-only');
+	});
+
+</script>

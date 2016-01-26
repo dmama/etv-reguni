@@ -20,6 +20,9 @@ import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.tiers.AllegementFiscal;
+import ch.vd.uniregctb.tiers.AllegementFiscalCantonCommune;
+import ch.vd.uniregctb.tiers.AllegementFiscalCommune;
+import ch.vd.uniregctb.tiers.AllegementFiscalConfederation;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.DecisionAci;
 import ch.vd.uniregctb.tiers.DomicileEtablissement;
@@ -1046,8 +1049,8 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 			@Override
 			public Long doInTransaction(TransactionStatus status) {
 				final Entreprise entreprise = (Entreprise) getCurrentSession().merge(new Entreprise(12L));
-				entreprise.addAllegementFiscal(new AllegementFiscal(date(1995, 1, 1), null, BigDecimal.TEN, AllegementFiscal.TypeImpot.CAPITAL, AllegementFiscal.TypeCollectivite.CONFEDERATION, null));
-				entreprise.addAllegementFiscal(new AllegementFiscal(date(1997, 1, 1), null, BigDecimal.ONE, AllegementFiscal.TypeImpot.BENEFICE, AllegementFiscal.TypeCollectivite.COMMUNE, MockCommune.Croy.getNoOFS()));
+				addAllegementFiscalFederal(entreprise, date(1995, 1, 1), null, AllegementFiscal.TypeImpot.CAPITAL, BigDecimal.TEN, AllegementFiscalConfederation.Type.DECISION_DFE);
+				addAllegementFiscalCommunal(entreprise, date(1997, 1, 1), null, AllegementFiscal.TypeImpot.BENEFICE, BigDecimal.ONE, MockCommune.Croy, AllegementFiscalCantonCommune.Type.ARTICLE_91_LI);
 				return entreprise.getNumero();
 			}
 		});
@@ -1086,7 +1089,6 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 					assertEquals(0, BigDecimal.TEN.compareTo(af.getPourcentageAllegement()));
 					assertEquals(AllegementFiscal.TypeImpot.CAPITAL, af.getTypeImpot());
 					assertEquals(AllegementFiscal.TypeCollectivite.CONFEDERATION, af.getTypeCollectivite());
-					assertNull(af.getNoOfsCommune());
 					assertFalse(af.isAnnule());
 				}
 				{
@@ -1097,7 +1099,7 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 					assertEquals(0, BigDecimal.ONE.compareTo(af.getPourcentageAllegement()));
 					assertEquals(AllegementFiscal.TypeImpot.BENEFICE, af.getTypeImpot());
 					assertEquals(AllegementFiscal.TypeCollectivite.COMMUNE, af.getTypeCollectivite());
-					assertEquals((Integer) MockCommune.Croy.getNoOFS(), af.getNoOfsCommune());
+					assertEquals((Integer) MockCommune.Croy.getNoOFS(), ((AllegementFiscalCommune) af).getNoOfsCommune());
 					assertFalse(af.isAnnule());
 				}
 				{
@@ -1108,7 +1110,7 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 					assertEquals(0, BigDecimal.ONE.compareTo(af.getPourcentageAllegement()));
 					assertEquals(AllegementFiscal.TypeImpot.BENEFICE, af.getTypeImpot());
 					assertEquals(AllegementFiscal.TypeCollectivite.COMMUNE, af.getTypeCollectivite());
-					assertEquals((Integer) MockCommune.RomainmotierEnvy.getNoOFS(), af.getNoOfsCommune());
+					assertEquals((Integer) MockCommune.RomainmotierEnvy.getNoOFS(), ((AllegementFiscalCommune) af).getNoOfsCommune());
 					assertFalse(af.isAnnule());
 				}
 			}

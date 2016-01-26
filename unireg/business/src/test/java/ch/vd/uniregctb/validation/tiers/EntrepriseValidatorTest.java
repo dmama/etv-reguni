@@ -9,6 +9,9 @@ import org.junit.Test;
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.unireg.interfaces.infra.mock.MockTypeRegimeFiscal;
 import ch.vd.uniregctb.tiers.AllegementFiscal;
+import ch.vd.uniregctb.tiers.AllegementFiscalCanton;
+import ch.vd.uniregctb.tiers.AllegementFiscalCantonCommune;
+import ch.vd.uniregctb.tiers.AllegementFiscalCommune;
 import ch.vd.uniregctb.tiers.CapitalFiscalEntreprise;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.FormeJuridiqueFiscaleEntreprise;
@@ -191,8 +194,8 @@ public class EntrepriseValidatorTest extends AbstractValidatorTest<Entreprise> {
 	public void testChevauchementAllegementsFiscaux() throws Exception {
 
 		final Entreprise entreprise = new Entreprise();
-		entreprise.addAllegementFiscal(new AllegementFiscal(date(2000, 1, 1), date(2005, 12, 31), BigDecimal.valueOf(25L), AllegementFiscal.TypeImpot.BENEFICE, AllegementFiscal.TypeCollectivite.CANTON, null));
-		entreprise.addAllegementFiscal(new AllegementFiscal(date(2000, 1, 1), null, BigDecimal.TEN, AllegementFiscal.TypeImpot.CAPITAL, AllegementFiscal.TypeCollectivite.CANTON, null));
+		entreprise.addAllegementFiscal(new AllegementFiscalCanton(date(2000, 1, 1), date(2005, 12, 31), BigDecimal.valueOf(25L), AllegementFiscal.TypeImpot.BENEFICE, AllegementFiscalCantonCommune.Type.ARTICLE_91_LI));
+		entreprise.addAllegementFiscal(new AllegementFiscalCanton(date(2000, 1, 1), null, BigDecimal.TEN, AllegementFiscal.TypeImpot.CAPITAL, AllegementFiscalCantonCommune.Type.ARTICLE_91_LI));
 
 		// ici, tout va bien, les différents allègements ne se marchent pas dessus
 		{
@@ -202,7 +205,7 @@ public class EntrepriseValidatorTest extends AbstractValidatorTest<Entreprise> {
 		}
 
 		// ajoutons un nouvel allègement avec une cible déjà existante, sans chevauchement
-		entreprise.addAllegementFiscal(new AllegementFiscal(date(2006, 1, 1), date(2006, 12, 31), BigDecimal.valueOf(35L), AllegementFiscal.TypeImpot.BENEFICE, AllegementFiscal.TypeCollectivite.CANTON, null));
+		entreprise.addAllegementFiscal(new AllegementFiscalCanton(date(2006, 1, 1), date(2006, 12, 31), BigDecimal.valueOf(35L), AllegementFiscal.TypeImpot.BENEFICE, AllegementFiscalCantonCommune.Type.ARTICLE_91_LI));
 		{
 			final ValidationResults vr = validate(entreprise);
 			Assert.assertFalse(vr.toString(), vr.hasErrors());
@@ -210,7 +213,7 @@ public class EntrepriseValidatorTest extends AbstractValidatorTest<Entreprise> {
 		}
 
 		// ajoutons maintenant un chevauchement
-		entreprise.addAllegementFiscal(new AllegementFiscal(date(2004, 1, 1), date(2007, 12, 31), BigDecimal.valueOf(22L), AllegementFiscal.TypeImpot.BENEFICE, AllegementFiscal.TypeCollectivite.CANTON, null));
+		entreprise.addAllegementFiscal(new AllegementFiscalCanton(date(2004, 1, 1), date(2007, 12, 31), BigDecimal.valueOf(22L), AllegementFiscal.TypeImpot.BENEFICE, AllegementFiscalCantonCommune.Type.ARTICLE_91_LI));
 		{
 			final ValidationResults vr = validate(entreprise);
 			Assert.assertEquals(1, vr.errorsCount());
@@ -225,7 +228,7 @@ public class EntrepriseValidatorTest extends AbstractValidatorTest<Entreprise> {
 	public void testAllegementsFiscauxInvalides() throws Exception {
 
 		final Entreprise entreprise = new Entreprise();
-		entreprise.addAllegementFiscal(new AllegementFiscal(date(2010, 1, 1), date(2005, 12, 31), BigDecimal.TEN, AllegementFiscal.TypeImpot.BENEFICE, AllegementFiscal.TypeCollectivite.COMMUNE, null));     // les dates sont à l'envers !
+		entreprise.addAllegementFiscal(new AllegementFiscalCommune(date(2010, 1, 1), date(2005, 12, 31), BigDecimal.TEN, AllegementFiscal.TypeImpot.BENEFICE, AllegementFiscalCantonCommune.Type.ARTICLE_91_LI, null));     // les dates sont à l'envers !
 
 		final ValidationResults vr = validate(entreprise);
 		Assert.assertTrue(vr.hasErrors());
@@ -233,7 +236,7 @@ public class EntrepriseValidatorTest extends AbstractValidatorTest<Entreprise> {
 		Assert.assertEquals(0, vr.warningsCount());
 
 		final List<String> errors = vr.getErrors();
-		Assert.assertEquals("L'allègement fiscal AllegementFiscal BENEFICE COMMUNE (01.01.2010 - 31.12.2005) possède une date de début qui est après la date de fin: début = 01.01.2010, fin = 31.12.2005", errors.get(0));
+		Assert.assertEquals("L'allègement fiscal AllegementFiscalCommune BENEFICE (01.01.2010 - 31.12.2005) possède une date de début qui est après la date de fin: début = 01.01.2010, fin = 31.12.2005", errors.get(0));
 	}
 
 	@Test
