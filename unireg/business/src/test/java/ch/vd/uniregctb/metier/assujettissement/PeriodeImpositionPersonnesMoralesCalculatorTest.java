@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
+import ch.vd.unireg.interfaces.infra.mock.MockTypeRegimeFiscal;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.type.DayMonth;
@@ -69,6 +70,8 @@ public class PeriodeImpositionPersonnesMoralesCalculatorTest extends MetierTest 
 		final Entreprise e = addEntrepriseInconnueAuCivil();
 		addRaisonSociale(e, date(2000, 1, 1), null, "Toto SA");
 		addFormeJuridique(e, date(2000, 1, 1), null, FormeJuridiqueEntreprise.SA);
+		addRegimeFiscalVD(e, date(2000, 1, 1), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+		addRegimeFiscalCH(e, date(2000, 1, 1), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 		addForPrincipal(e, date(2000, 1, 1), MotifFor.INDETERMINE, date(2015, 7, 31), MotifFor.INDETERMINE, MockCommune.Aigle);
 		addBouclement(e, date(2000, 1, 1), DayMonth.get(12, 31), 12);       // bouclements tous les 31.12 depuis le 31.12.2000
 
@@ -92,6 +95,8 @@ public class PeriodeImpositionPersonnesMoralesCalculatorTest extends MetierTest 
 	public void testAssujettissementAvant2009ExercicesNonCalesSurAnneesCiviles() throws Exception {
 		final Entreprise e = addEntrepriseInconnueAuCivil();
 		addRaisonSociale(e, date(2000, 1, 1), null, "Toto SA");
+		addRegimeFiscalVD(e, date(2000, 1, 1), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+		addRegimeFiscalCH(e, date(2000, 1, 1), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 		addFormeJuridique(e, date(2000, 1, 1), null, FormeJuridiqueEntreprise.SA);
 		addForPrincipal(e, date(2000, 1, 1), MotifFor.INDETERMINE, date(2015, 7, 31), MotifFor.INDETERMINE, MockCommune.Aigle);
 		addBouclement(e, date(2000, 1, 1), DayMonth.get(6, 30), 12);       // bouclements tous les 30.06 depuis le 30.06.2000
@@ -115,6 +120,8 @@ public class PeriodeImpositionPersonnesMoralesCalculatorTest extends MetierTest 
 		final Entreprise e = addEntrepriseInconnueAuCivil();
 		addRaisonSociale(e, date(2000, 1, 1), null, "Toto SA");
 		addFormeJuridique(e, date(2000, 1, 1), null, FormeJuridiqueEntreprise.SA);
+		addRegimeFiscalVD(e, date(2000, 1, 1), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+		addRegimeFiscalCH(e, date(2000, 1, 1), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 		addForPrincipal(e, date(2000, 1, 1), MotifFor.INDETERMINE, MockCommune.Aigle);
 		addBouclement(e, date(2000, 1, 1), DayMonth.get(6, 30), 12);       // bouclements tous les 30.06 depuis le 30.06.2000
 
@@ -134,6 +141,8 @@ public class PeriodeImpositionPersonnesMoralesCalculatorTest extends MetierTest 
 		final Entreprise e = addEntrepriseInconnueAuCivil();
 		addRaisonSociale(e, date(2013, 1, 1), null, "Toto SA");
 		addFormeJuridique(e, date(2013, 1, 1), null, FormeJuridiqueEntreprise.SA);
+		addRegimeFiscalVD(e, date(2013, 1, 1), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+		addRegimeFiscalCH(e, date(2013, 1, 1), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 		addForPrincipal(e, date(2013, 1, 1), MotifFor.INDETERMINE, date(2015, 7, 31), MotifFor.INDETERMINE, MockCommune.Aigle);
 		addBouclement(e, date(2013, 1, 1), DayMonth.get(12, 31), 12);       // bouclements tous les 31.12 depuis le 31.12.2013
 
@@ -151,6 +160,8 @@ public class PeriodeImpositionPersonnesMoralesCalculatorTest extends MetierTest 
 		final Entreprise e = addEntrepriseInconnueAuCivil();
 		addRaisonSociale(e, date(2000, 1, 1), null, "Toto SA");
 		addFormeJuridique(e, date(2000, 1, 1), null, FormeJuridiqueEntreprise.SA);
+		addRegimeFiscalVD(e, date(2013, 4, 21), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+		addRegimeFiscalCH(e, date(2013, 4, 21), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 		addForPrincipal(e, date(2013, 4, 21), MotifFor.INDETERMINE, date(2015, 7, 31), MotifFor.INDETERMINE, MockCommune.Aigle);
 		addBouclement(e, date(2013, 1, 1), DayMonth.get(12, 31), 12);       // bouclements tous les 31.12 depuis le 31.12.2013
 
@@ -168,6 +179,8 @@ public class PeriodeImpositionPersonnesMoralesCalculatorTest extends MetierTest 
 		final Entreprise e = addEntrepriseInconnueAuCivil();
 		addRaisonSociale(e, date(2000, 1, 1), null, "Toto SA");
 		addFormeJuridique(e, date(2000, 1, 1), null, FormeJuridiqueEntreprise.SA);
+		addRegimeFiscalVD(e, date(2013, 1, 15), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+		addRegimeFiscalCH(e, date(2013, 1, 15), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 		addForPrincipal(e, date(2013, 1, 15), MotifFor.INDETERMINE, date(2015, 7, 31), MotifFor.INDETERMINE, MockCommune.Aigle);
 		addBouclement(e, date(2013, 1, 1), DayMonth.get(6, 30), 12);    // bouclements tous les 30.06 depuis le 31.03.2013
 
@@ -186,6 +199,8 @@ public class PeriodeImpositionPersonnesMoralesCalculatorTest extends MetierTest 
 		final Entreprise e = addEntrepriseInconnueAuCivil();
 		addRaisonSociale(e, date(2000, 1, 1), null, "Toto SA");
 		addFormeJuridique(e, date(2000, 1, 1), null, FormeJuridiqueEntreprise.SA);
+		addRegimeFiscalVD(e, date(2013, 1, 15), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+		addRegimeFiscalCH(e, date(2013, 1, 15), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 		addForPrincipal(e, date(2013, 1, 15), MotifFor.INDETERMINE, date(2015, 7, 31), MotifFor.INDETERMINE, MockCommune.Aigle);
 		addBouclement(e, date(2013, 1, 1), DayMonth.get(12, 31), 12);    // bouclements tous les 31.12 depuis le 31.12.2013
 		addBouclement(e, date(2014, 3, 31), DayMonth.get(3, 31), 12);    // bouclements tous les 31.03 depuis le 31.03.2014
@@ -206,6 +221,8 @@ public class PeriodeImpositionPersonnesMoralesCalculatorTest extends MetierTest 
 		final Entreprise e = addEntrepriseInconnueAuCivil();
 		addRaisonSociale(e, date(2000, 1, 1), null, "Toto SA");
 		addFormeJuridique(e, date(2000, 1, 1), null, FormeJuridiqueEntreprise.SA);
+		addRegimeFiscalVD(e, date(2013, 1, 15), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+		addRegimeFiscalCH(e, date(2013, 1, 15), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 		addForPrincipal(e, date(2013, 1, 15), MotifFor.INDETERMINE, date(2015, 7, 31), MotifFor.INDETERMINE, MockCommune.Aigle);
 		addBouclement(e, date(2013, 3, 31), DayMonth.get(3, 31), 12);   // bouclements tous les 31.03 depuis le 31.03.2013
 		addBouclement(e, date(2014, 4, 1), DayMonth.get(6, 30), 12);    // bouclements tous les 30.06 depuis le 30.06.2014
@@ -227,6 +244,8 @@ public class PeriodeImpositionPersonnesMoralesCalculatorTest extends MetierTest 
 		final Entreprise e = addEntrepriseInconnueAuCivil();
 		addRaisonSociale(e, date(2000, 1, 1), null, "Toto SA");
 		addFormeJuridique(e, date(2000, 1, 1), null, FormeJuridiqueEntreprise.SA);
+		addRegimeFiscalVD(e, date(2014, 4, 21), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+		addRegimeFiscalCH(e, date(2014, 4, 21), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 		addForPrincipal(e, date(2014, 4, 21), MotifFor.ARRIVEE_HS, date(2015, 7, 31), MotifFor.INDETERMINE, MockCommune.Echallens);
 		addBouclement(e, date(2013, 12, 31), DayMonth.get(12, 31), 12);       // bouclements tous les 31.12 depuis le 31.12.2013 (= un exercice commercial est partiellement hors zone de fors)
 
@@ -243,6 +262,8 @@ public class PeriodeImpositionPersonnesMoralesCalculatorTest extends MetierTest 
 		final Entreprise e = addEntrepriseInconnueAuCivil();
 		addRaisonSociale(e, date(2000, 1, 1), null, "Toto SA");
 		addFormeJuridique(e, date(2000, 1, 1), null, FormeJuridiqueEntreprise.SA);
+		addRegimeFiscalVD(e, date(2014, 4, 21), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+		addRegimeFiscalCH(e, date(2014, 4, 21), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 		addForPrincipal(e, date(2014, 4, 21), MotifFor.ARRIVEE_HS, date(2015, 7, 31), MotifFor.INDETERMINE, MockCommune.Echallens);
 		addBouclement(e, date(2014, 3, 31), DayMonth.get(3, 31), 12);       // bouclements tous les 31.03 depuis le 31.03.2014 (= un exercice commercial est partiellement hors zone de fors)
 
@@ -263,6 +284,8 @@ public class PeriodeImpositionPersonnesMoralesCalculatorTest extends MetierTest 
 		final Entreprise e = addEntrepriseInconnueAuCivil();
 		addRaisonSociale(e, dateCreation, null, "Toto SA");
 		addFormeJuridique(e, dateCreation, null, FormeJuridiqueEntreprise.SA);
+		addRegimeFiscalVD(e, dateCreation, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+		addRegimeFiscalCH(e, dateCreation, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 		addForPrincipal(e, dateCreation, MotifFor.INDETERMINE, dateDepart, MotifFor.DEPART_HS, MockCommune.Echallens);
 		addForPrincipal(e, dateDepart.getOneDayAfter(), MotifFor.DEPART_HS, MockPays.Albanie);
 		addBouclement(e, date(2013, 3, 31), DayMonth.get(3, 31), 12);       // bouclements tous les 31.03 depuis le 31.03.2013 (= un exercice commercial est partiellement hors zone de fors)
@@ -280,6 +303,8 @@ public class PeriodeImpositionPersonnesMoralesCalculatorTest extends MetierTest 
 		final Entreprise e = addEntrepriseInconnueAuCivil();
 		addRaisonSociale(e, date(2000, 1, 1), null, "Toto SA");
 		addFormeJuridique(e, date(2000, 1, 1), null, FormeJuridiqueEntreprise.SA);
+		addRegimeFiscalVD(e, date(2014, 4, 21), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+		addRegimeFiscalCH(e, date(2014, 4, 21), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 		addForPrincipal(e, date(2014, 4, 21), MotifFor.ARRIVEE_HC, date(2015, 7, 31), MotifFor.INDETERMINE, MockCommune.Echallens);
 		addBouclement(e, date(2014, 3, 31), DayMonth.get(3, 31), 12);       // bouclements tous les 31.03 depuis le 31.03.2014 (= un exercice commercial est partiellement hors zone de fors)
 
@@ -296,6 +321,8 @@ public class PeriodeImpositionPersonnesMoralesCalculatorTest extends MetierTest 
 		final Entreprise e = addEntrepriseInconnueAuCivil();
 		addRaisonSociale(e, date(2000, 1, 1), null, "Toto SA");
 		addFormeJuridique(e, date(2000, 1, 1), null, FormeJuridiqueEntreprise.SA);
+		addRegimeFiscalVD(e, date(2014, 4, 1), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+		addRegimeFiscalCH(e, date(2014, 4, 1), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 		addForPrincipal(e, date(2014, 4, 1), MotifFor.ARRIVEE_HC, date(2015, 7, 31), MotifFor.INDETERMINE, MockCommune.Echallens);
 		addBouclement(e, date(2014, 3, 31), DayMonth.get(3, 31), 12);       // bouclements tous les 31.03 depuis le 31.03.2014
 
@@ -316,6 +343,8 @@ public class PeriodeImpositionPersonnesMoralesCalculatorTest extends MetierTest 
 		final Entreprise e = addEntrepriseInconnueAuCivil();
 		addRaisonSociale(e, date(2000, 1, 1), null, "Toto SA");
 		addFormeJuridique(e, date(2000, 1, 1), null, FormeJuridiqueEntreprise.SA);
+		addRegimeFiscalVD(e, dateAchat, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+		addRegimeFiscalCH(e, dateAchat, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 		addForPrincipal(e, dateAchat, null, MockCommune.Bale);
 		addForSecondaire(e, dateAchat, MotifFor.ACHAT_IMMOBILIER, dateVente, MotifFor.VENTE_IMMOBILIER, MockCommune.Cossonay.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
 		addBouclement(e, date(2013, 3, 31), DayMonth.get(3, 31), 12);       // bouclements tous les 31.03 depuis le 31.03.2013
@@ -338,6 +367,8 @@ public class PeriodeImpositionPersonnesMoralesCalculatorTest extends MetierTest 
 		final Entreprise e = addEntrepriseInconnueAuCivil();
 		addRaisonSociale(e, date(2000, 1, 1), null, "Toto SA");
 		addFormeJuridique(e, date(2000, 1, 1), null, FormeJuridiqueEntreprise.SA);
+		addRegimeFiscalVD(e, dateAchat, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+		addRegimeFiscalCH(e, dateAchat, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 		addForPrincipal(e, dateAchat, null, MockCommune.Bale);
 		addForSecondaire(e, dateAchat, MotifFor.ACHAT_IMMOBILIER, dateVente, MotifFor.VENTE_IMMOBILIER, MockCommune.Cossonay.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
 		addBouclement(e, date(2012, 12, 31), DayMonth.get(12, 31), 12);       // bouclements tous les 31.12 depuis le 31.12.2012
@@ -360,6 +391,8 @@ public class PeriodeImpositionPersonnesMoralesCalculatorTest extends MetierTest 
 		final Entreprise e = addEntrepriseInconnueAuCivil();
 		addRaisonSociale(e, date(2000, 1, 1), null, "Toto SA");
 		addFormeJuridique(e, date(2000, 1, 1), null, FormeJuridiqueEntreprise.SA);
+		addRegimeFiscalVD(e, dateDebutExploitation, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+		addRegimeFiscalCH(e, dateDebutExploitation, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 		addForPrincipal(e, dateDebutExploitation, null, MockCommune.Bale);
 		addForSecondaire(e, dateDebutExploitation, MotifFor.DEBUT_EXPLOITATION, dateFinExploitation, MotifFor.FIN_EXPLOITATION, MockCommune.Cossonay.getNoOFS(), MotifRattachement.ACTIVITE_INDEPENDANTE);
 		addBouclement(e, date(2013, 3, 31), DayMonth.get(3, 31), 12);       // bouclements tous les 31.03 depuis le 31.03.2013
@@ -381,6 +414,8 @@ public class PeriodeImpositionPersonnesMoralesCalculatorTest extends MetierTest 
 		final Entreprise e = addEntrepriseInconnueAuCivil();
 		addRaisonSociale(e, date(2000, 1, 1), null, "Toto SA");
 		addFormeJuridique(e, date(2000, 1, 1), null, FormeJuridiqueEntreprise.SA);
+		addRegimeFiscalVD(e, dateDebutExploitation, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+		addRegimeFiscalCH(e, dateDebutExploitation, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 		addForPrincipal(e, dateDebutExploitation, null, MockCommune.Bale);
 		addForSecondaire(e, dateDebutExploitation, MotifFor.DEBUT_EXPLOITATION, dateFinExploitation, MotifFor.FIN_EXPLOITATION, MockCommune.Cossonay.getNoOFS(), MotifRattachement.ACTIVITE_INDEPENDANTE);
 		addBouclement(e, date(2012, 12, 31), DayMonth.get(12, 31), 12);       // bouclements tous les 31.12 depuis le 31.12.2012
@@ -403,6 +438,8 @@ public class PeriodeImpositionPersonnesMoralesCalculatorTest extends MetierTest 
 		final Entreprise e = addEntrepriseInconnueAuCivil();
 		addRaisonSociale(e, date(2000, 1, 1), null, "Toto SA");
 		addFormeJuridique(e, date(2000, 1, 1), null, FormeJuridiqueEntreprise.SA);
+		addRegimeFiscalVD(e, dateAchat, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+		addRegimeFiscalCH(e, dateAchat, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 		addForPrincipal(e, dateAchat, null, MockPays.Allemagne);
 		addForSecondaire(e, dateAchat, MotifFor.ACHAT_IMMOBILIER, dateVente, MotifFor.VENTE_IMMOBILIER, MockCommune.Cossonay.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
 		addBouclement(e, date(2013, 3, 31), DayMonth.get(3, 31), 12);       // bouclements tous les 31.03 depuis le 31.03.2013
@@ -424,6 +461,8 @@ public class PeriodeImpositionPersonnesMoralesCalculatorTest extends MetierTest 
 		final Entreprise e = addEntrepriseInconnueAuCivil();
 		addRaisonSociale(e, date(2000, 1, 1), null, "Toto SA");
 		addFormeJuridique(e, date(2000, 1, 1), null, FormeJuridiqueEntreprise.SA);
+		addRegimeFiscalVD(e, dateAchat, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+		addRegimeFiscalCH(e, dateAchat, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 		addForPrincipal(e, dateAchat, null, MockPays.Allemagne);
 		addForSecondaire(e, dateAchat, MotifFor.ACHAT_IMMOBILIER, dateVente, MotifFor.VENTE_IMMOBILIER, MockCommune.Cossonay.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
 		addBouclement(e, date(2012, 12, 31), DayMonth.get(12, 31), 12);       // bouclements tous les 31.12 depuis le 31.12.2012
@@ -446,6 +485,8 @@ public class PeriodeImpositionPersonnesMoralesCalculatorTest extends MetierTest 
 		final Entreprise e = addEntrepriseInconnueAuCivil();
 		addRaisonSociale(e, date(2000, 1, 1), null, "Toto SA");
 		addFormeJuridique(e, date(2000, 1, 1), null, FormeJuridiqueEntreprise.SA);
+		addRegimeFiscalVD(e, dateDebutExploitation, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+		addRegimeFiscalCH(e, dateDebutExploitation, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 		addForPrincipal(e, dateDebutExploitation, null, MockPays.France);
 		addForSecondaire(e, dateDebutExploitation, MotifFor.DEBUT_EXPLOITATION, dateFinExploitation, MotifFor.FIN_EXPLOITATION, MockCommune.Cossonay.getNoOFS(), MotifRattachement.ACTIVITE_INDEPENDANTE);
 		addBouclement(e, date(2013, 3, 31), DayMonth.get(3, 31), 12);       // bouclements tous les 31.03 depuis le 31.03.2013
@@ -467,6 +508,8 @@ public class PeriodeImpositionPersonnesMoralesCalculatorTest extends MetierTest 
 		final Entreprise e = addEntrepriseInconnueAuCivil();
 		addRaisonSociale(e, date(2000, 1, 1), null, "Toto SA");
 		addFormeJuridique(e, date(2000, 1, 1), null, FormeJuridiqueEntreprise.SA);
+		addRegimeFiscalVD(e, dateDebutExploitation, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+		addRegimeFiscalCH(e, dateDebutExploitation, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 		addForPrincipal(e, dateDebutExploitation, null, MockPays.RoyaumeUni);
 		addForSecondaire(e, dateDebutExploitation, MotifFor.DEBUT_EXPLOITATION, dateFinExploitation, MotifFor.FIN_EXPLOITATION, MockCommune.Cossonay.getNoOFS(), MotifRattachement.ACTIVITE_INDEPENDANTE);
 		addBouclement(e, date(2012, 12, 31), DayMonth.get(12, 31), 12);       // bouclements tous les 31.12 depuis le 31.12.2012
@@ -490,6 +533,8 @@ public class PeriodeImpositionPersonnesMoralesCalculatorTest extends MetierTest 
 		final Entreprise e = addEntrepriseInconnueAuCivil();
 		addRaisonSociale(e, date(2000, 1, 1), null, "Toto SA");
 		addFormeJuridique(e, date(2000, 1, 1), null, FormeJuridiqueEntreprise.SA);
+		addRegimeFiscalVD(e, dateAchat, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+		addRegimeFiscalCH(e, dateAchat, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 		addForPrincipal(e, dateAchat, null, dateArriveeSiege.getOneDayBefore(), MotifFor.ARRIVEE_HC, MockCommune.Bale);
 		addForPrincipal(e, dateArriveeSiege, MotifFor.ARRIVEE_HC, dateFinActivite, MotifFor.INDETERMINE, MockCommune.Morges);
 		addForSecondaire(e, dateAchat, MotifFor.ACHAT_IMMOBILIER, dateFinActivite, MotifFor.VENTE_IMMOBILIER, MockCommune.Cossonay.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
@@ -514,6 +559,8 @@ public class PeriodeImpositionPersonnesMoralesCalculatorTest extends MetierTest 
 		final Entreprise e = addEntrepriseInconnueAuCivil();
 		addRaisonSociale(e, date(2000, 1, 1), null, "Toto SA");
 		addFormeJuridique(e, date(2000, 1, 1), null, FormeJuridiqueEntreprise.SA);
+		addRegimeFiscalVD(e, dateDebutExploitation, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+		addRegimeFiscalCH(e, dateDebutExploitation, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 		addForPrincipal(e, dateDebutExploitation, null, dateArriveeSiege.getOneDayBefore(), MotifFor.ARRIVEE_HC, MockCommune.Bale);
 		addForPrincipal(e, dateArriveeSiege, MotifFor.ARRIVEE_HC, dateFinActivite, MotifFor.INDETERMINE, MockCommune.Morges);
 		addForSecondaire(e, dateDebutExploitation, MotifFor.DEBUT_EXPLOITATION, dateFinActivite, MotifFor.FIN_EXPLOITATION, MockCommune.Cossonay.getNoOFS(), MotifRattachement.ACTIVITE_INDEPENDANTE);
@@ -538,6 +585,8 @@ public class PeriodeImpositionPersonnesMoralesCalculatorTest extends MetierTest 
 		final Entreprise e = addEntrepriseInconnueAuCivil();
 		addRaisonSociale(e, date(2000, 1, 1), null, "Toto SA");
 		addFormeJuridique(e, date(2000, 1, 1), null, FormeJuridiqueEntreprise.SA);
+		addRegimeFiscalVD(e, dateAchat, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+		addRegimeFiscalCH(e, dateAchat, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 		addForPrincipal(e, dateAchat, null, dateArriveeSiege.getOneDayBefore(), MotifFor.ARRIVEE_HS, MockPays.Allemagne);
 		addForPrincipal(e, dateArriveeSiege, MotifFor.ARRIVEE_HS, dateFinActivite, MotifFor.INDETERMINE, MockCommune.Morges);
 		addForSecondaire(e, dateAchat, MotifFor.ACHAT_IMMOBILIER, dateFinActivite, MotifFor.VENTE_IMMOBILIER, MockCommune.Cossonay.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
@@ -563,6 +612,8 @@ public class PeriodeImpositionPersonnesMoralesCalculatorTest extends MetierTest 
 		final Entreprise e = addEntrepriseInconnueAuCivil();
 		addRaisonSociale(e, date(2000, 1, 1), null, "Toto SA");
 		addFormeJuridique(e, date(2000, 1, 1), null, FormeJuridiqueEntreprise.SA);
+		addRegimeFiscalVD(e, dateDebutExploitation, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+		addRegimeFiscalCH(e, dateDebutExploitation, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 		addForPrincipal(e, dateDebutExploitation, null, dateArriveeSiege.getOneDayBefore(), MotifFor.ARRIVEE_HS, MockPays.Allemagne);
 		addForPrincipal(e, dateArriveeSiege, MotifFor.ARRIVEE_HS, dateFinActivite, MotifFor.INDETERMINE, MockCommune.Morges);
 		addForSecondaire(e, dateDebutExploitation, MotifFor.DEBUT_EXPLOITATION, dateFinActivite, MotifFor.FIN_EXPLOITATION, MockCommune.Cossonay.getNoOFS(), MotifRattachement.ACTIVITE_INDEPENDANTE);
@@ -589,6 +640,8 @@ public class PeriodeImpositionPersonnesMoralesCalculatorTest extends MetierTest 
 		final Entreprise e = addEntrepriseInconnueAuCivil();
 		addRaisonSociale(e, date(2000, 1, 1), null, "Toto SA");
 		addFormeJuridique(e, date(2000, 1, 1), null, FormeJuridiqueEntreprise.SA);
+		addRegimeFiscalVD(e, dateCreationEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+		addRegimeFiscalCH(e, dateCreationEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 		addForPrincipal(e, dateCreationEntreprise, MotifFor.INDETERMINE, dateDepartSiege, MotifFor.DEPART_HC, MockCommune.Echallens);
 		addForPrincipal(e, dateDepartSiege.getOneDayAfter(), MotifFor.DEPART_HC, MockCommune.Geneve);
 		addForSecondaire(e, dateAchat, MotifFor.ACHAT_IMMOBILIER, dateVente, MotifFor.VENTE_IMMOBILIER, MockCommune.Cossonay.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
@@ -616,6 +669,8 @@ public class PeriodeImpositionPersonnesMoralesCalculatorTest extends MetierTest 
 		final Entreprise e = addEntrepriseInconnueAuCivil();
 		addRaisonSociale(e, date(2000, 1, 1), null, "Toto SA");
 		addFormeJuridique(e, date(2000, 1, 1), null, FormeJuridiqueEntreprise.SA);
+		addRegimeFiscalVD(e, dateCreationEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+		addRegimeFiscalCH(e, dateCreationEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 		addForPrincipal(e, dateCreationEntreprise, MotifFor.INDETERMINE, dateDepartSiege, MotifFor.DEPART_HC, MockCommune.Echallens);
 		addForPrincipal(e, dateDepartSiege.getOneDayAfter(), MotifFor.DEPART_HC, MockCommune.Geneve);
 		addForSecondaire(e, dateDebutActivite, MotifFor.DEBUT_EXPLOITATION, dateFinActivite, MotifFor.FIN_EXPLOITATION, MockCommune.Cossonay.getNoOFS(), MotifRattachement.ACTIVITE_INDEPENDANTE);
@@ -643,6 +698,8 @@ public class PeriodeImpositionPersonnesMoralesCalculatorTest extends MetierTest 
 		final Entreprise e = addEntrepriseInconnueAuCivil();
 		addRaisonSociale(e, date(2000, 1, 1), null, "Toto SA");
 		addFormeJuridique(e, date(2000, 1, 1), null, FormeJuridiqueEntreprise.SA);
+		addRegimeFiscalVD(e, dateCreationEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+		addRegimeFiscalCH(e, dateCreationEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 		addForPrincipal(e, dateCreationEntreprise, MotifFor.INDETERMINE, dateDepartSiege, MotifFor.DEPART_HS, MockCommune.Echallens);
 		addForPrincipal(e, dateDepartSiege.getOneDayAfter(), MotifFor.DEPART_HS, MockPays.Allemagne);
 		addForSecondaire(e, dateAchat, MotifFor.ACHAT_IMMOBILIER, dateVente, MotifFor.VENTE_IMMOBILIER, MockCommune.Cossonay.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
@@ -671,6 +728,8 @@ public class PeriodeImpositionPersonnesMoralesCalculatorTest extends MetierTest 
 		final Entreprise e = addEntrepriseInconnueAuCivil();
 		addRaisonSociale(e, date(2000, 1, 1), null, "Toto SA");
 		addFormeJuridique(e, date(2000, 1, 1), null, FormeJuridiqueEntreprise.SA);
+		addRegimeFiscalVD(e, dateCreationEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+		addRegimeFiscalCH(e, dateCreationEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 		addForPrincipal(e, dateCreationEntreprise, MotifFor.INDETERMINE, dateDepartSiege, MotifFor.DEPART_HS, MockCommune.Echallens);
 		addForPrincipal(e, dateDepartSiege.getOneDayAfter(), MotifFor.DEPART_HS, MockPays.Allemagne);
 		addForSecondaire(e, dateDebutActivite, MotifFor.DEBUT_EXPLOITATION, dateFinActivite, MotifFor.FIN_EXPLOITATION, MockCommune.Cossonay.getNoOFS(), MotifRattachement.ACTIVITE_INDEPENDANTE);
@@ -704,6 +763,8 @@ public class PeriodeImpositionPersonnesMoralesCalculatorTest extends MetierTest 
 		final Entreprise e = addEntrepriseInconnueAuCivil();
 		addRaisonSociale(e, date(2000, 1, 1), null, "Toto SA");
 		addFormeJuridique(e, date(2000, 1, 1), null, FormeJuridiqueEntreprise.SA);
+		addRegimeFiscalVD(e, dateCreationEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+		addRegimeFiscalCH(e, dateCreationEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 		addForPrincipal(e, dateCreationEntreprise, MotifFor.INDETERMINE, dateDepartSiege, MotifFor.DEPART_HC, MockCommune.CheseauxSurLausanne);
 		addForPrincipal(e, dateDepartSiege.getOneDayAfter(), MotifFor.DEPART_HC, dateRetourSiege.getOneDayBefore(), MotifFor.ARRIVEE_HC, MockCommune.Geneve);
 		addForPrincipal(e, dateRetourSiege, MotifFor.ARRIVEE_HC, dateDissolutionEntreprise, MotifFor.INDETERMINE, MockCommune.Lausanne);
@@ -736,6 +797,8 @@ public class PeriodeImpositionPersonnesMoralesCalculatorTest extends MetierTest 
 		final Entreprise e = addEntrepriseInconnueAuCivil();
 		addRaisonSociale(e, date(2000, 1, 1), null, "Toto SA");
 		addFormeJuridique(e, date(2000, 1, 1), null, FormeJuridiqueEntreprise.SA);
+		addRegimeFiscalVD(e, dateCreationEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+		addRegimeFiscalCH(e, dateCreationEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 		addForPrincipal(e, dateCreationEntreprise, MotifFor.INDETERMINE, dateDepartSiege, MotifFor.DEPART_HC, MockCommune.CheseauxSurLausanne);
 		addForPrincipal(e, dateDepartSiege.getOneDayAfter(), MotifFor.DEPART_HC, dateRetourSiege.getOneDayBefore(), MotifFor.ARRIVEE_HC, MockCommune.Geneve);
 		addForPrincipal(e, dateRetourSiege, MotifFor.ARRIVEE_HC, dateDissolutionEntreprise, MotifFor.INDETERMINE, MockCommune.Lausanne);
@@ -769,6 +832,8 @@ public class PeriodeImpositionPersonnesMoralesCalculatorTest extends MetierTest 
 		final Entreprise e = addEntrepriseInconnueAuCivil();
 		addRaisonSociale(e, date(2000, 1, 1), null, "Toto SA");
 		addFormeJuridique(e, date(2000, 1, 1), null, FormeJuridiqueEntreprise.SA);
+		addRegimeFiscalVD(e, dateCreationEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+		addRegimeFiscalCH(e, dateCreationEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 		addForPrincipal(e, dateCreationEntreprise, MotifFor.INDETERMINE, dateDepartSiege, MotifFor.DEPART_HC, MockCommune.CheseauxSurLausanne);
 		addForPrincipal(e, dateDepartSiege.getOneDayAfter(), MotifFor.DEPART_HC, dateRetourSiege.getOneDayBefore(), MotifFor.ARRIVEE_HC, MockCommune.Geneve);
 		addForPrincipal(e, dateRetourSiege, MotifFor.ARRIVEE_HC, dateDissolutionEntreprise, MotifFor.INDETERMINE, MockCommune.Lausanne);
@@ -802,6 +867,8 @@ public class PeriodeImpositionPersonnesMoralesCalculatorTest extends MetierTest 
 		final Entreprise e = addEntrepriseInconnueAuCivil();
 		addRaisonSociale(e, date(2000, 1, 1), null, "Toto SA");
 		addFormeJuridique(e, date(2000, 1, 1), null, FormeJuridiqueEntreprise.SA);
+		addRegimeFiscalVD(e, dateCreationEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+		addRegimeFiscalCH(e, dateCreationEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 		addForPrincipal(e, dateCreationEntreprise, MotifFor.INDETERMINE, dateDepartSiege, MotifFor.DEPART_HC, MockCommune.CheseauxSurLausanne);
 		addForPrincipal(e, dateDepartSiege.getOneDayAfter(), MotifFor.DEPART_HC, dateRetourSiege.getOneDayBefore(), MotifFor.ARRIVEE_HC, MockCommune.Geneve);
 		addForPrincipal(e, dateRetourSiege, MotifFor.ARRIVEE_HC, dateDissolutionEntreprise, MotifFor.INDETERMINE, MockCommune.Lausanne);
@@ -836,6 +903,8 @@ public class PeriodeImpositionPersonnesMoralesCalculatorTest extends MetierTest 
 		final Entreprise e = addEntrepriseInconnueAuCivil();
 		addRaisonSociale(e, date(2000, 1, 1), null, "Toto SA");
 		addFormeJuridique(e, date(2000, 1, 1), null, FormeJuridiqueEntreprise.SA);
+		addRegimeFiscalVD(e, dateCreationEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+		addRegimeFiscalCH(e, dateCreationEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 		addForPrincipal(e, dateCreationEntreprise, MotifFor.INDETERMINE, dateDepartSiege, MotifFor.DEPART_HS, MockCommune.CheseauxSurLausanne);
 		addForPrincipal(e, dateDepartSiege.getOneDayAfter(), MotifFor.DEPART_HS, dateRetourSiege.getOneDayBefore(), MotifFor.ARRIVEE_HS, MockPays.Allemagne);
 		addForPrincipal(e, dateRetourSiege, MotifFor.ARRIVEE_HS, dateDissolutionEntreprise, MotifFor.INDETERMINE, MockCommune.Lausanne);
@@ -868,6 +937,8 @@ public class PeriodeImpositionPersonnesMoralesCalculatorTest extends MetierTest 
 		final Entreprise e = addEntrepriseInconnueAuCivil();
 		addRaisonSociale(e, date(2000, 1, 1), null, "Toto SA");
 		addFormeJuridique(e, date(2000, 1, 1), null, FormeJuridiqueEntreprise.SA);
+		addRegimeFiscalVD(e, dateCreationEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+		addRegimeFiscalCH(e, dateCreationEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 		addForPrincipal(e, dateCreationEntreprise, MotifFor.INDETERMINE, dateDepartSiege, MotifFor.DEPART_HS, MockCommune.CheseauxSurLausanne);
 		addForPrincipal(e, dateDepartSiege.getOneDayAfter(), MotifFor.DEPART_HS, dateRetourSiege.getOneDayBefore(), MotifFor.ARRIVEE_HS, MockPays.Allemagne);
 		addForPrincipal(e, dateRetourSiege, MotifFor.ARRIVEE_HS, dateDissolutionEntreprise, MotifFor.INDETERMINE, MockCommune.Lausanne);
@@ -901,6 +972,8 @@ public class PeriodeImpositionPersonnesMoralesCalculatorTest extends MetierTest 
 		final Entreprise e = addEntrepriseInconnueAuCivil();
 		addRaisonSociale(e, date(2000, 1, 1), null, "Toto SA");
 		addFormeJuridique(e, date(2000, 1, 1), null, FormeJuridiqueEntreprise.SA);
+		addRegimeFiscalVD(e, dateCreationEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+		addRegimeFiscalCH(e, dateCreationEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 		addForPrincipal(e, dateCreationEntreprise, MotifFor.INDETERMINE, dateDepartSiege, MotifFor.DEPART_HS, MockCommune.CheseauxSurLausanne);
 		addForPrincipal(e, dateDepartSiege.getOneDayAfter(), MotifFor.DEPART_HS, dateRetourSiege.getOneDayBefore(), MotifFor.ARRIVEE_HS, MockPays.Allemagne);
 		addForPrincipal(e, dateRetourSiege, MotifFor.ARRIVEE_HS, dateDissolutionEntreprise, MotifFor.INDETERMINE, MockCommune.Lausanne);
@@ -935,6 +1008,8 @@ public class PeriodeImpositionPersonnesMoralesCalculatorTest extends MetierTest 
 		final Entreprise e = addEntrepriseInconnueAuCivil();
 		addRaisonSociale(e, date(2000, 1, 1), null, "Toto SA");
 		addFormeJuridique(e, date(2000, 1, 1), null, FormeJuridiqueEntreprise.SA);
+		addRegimeFiscalVD(e, dateCreationEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+		addRegimeFiscalCH(e, dateCreationEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 		addForPrincipal(e, dateCreationEntreprise, MotifFor.INDETERMINE, dateDepartSiege, MotifFor.DEPART_HS, MockCommune.CheseauxSurLausanne);
 		addForPrincipal(e, dateDepartSiege.getOneDayAfter(), MotifFor.DEPART_HS, dateRetourSiege.getOneDayBefore(), MotifFor.ARRIVEE_HS, MockPays.Allemagne);
 		addForPrincipal(e, dateRetourSiege, MotifFor.ARRIVEE_HS, dateDissolutionEntreprise, MotifFor.INDETERMINE, MockCommune.Lausanne);

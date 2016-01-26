@@ -11,6 +11,7 @@ import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockOfficeImpot;
+import ch.vd.unireg.interfaces.infra.mock.MockTypeRegimeFiscal;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
@@ -93,6 +94,8 @@ public class EnvoiSommationsDIsPMProcessorTest extends BusinessTest {
 				addRaisonSociale(e, dateDebut, null, "Truc machin SA");
 				addFormeJuridique(e, dateDebut, null, FormeJuridiqueEntreprise.SA);
 				addBouclement(e, dateDebut, DayMonth.get(12, 31), 12);
+				addRegimeFiscalVD(e, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addRegimeFiscalCH(e, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 				addForPrincipal(e, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Aubonne);
 
 				final RegDate dateEmission = RegDate.get(2015, 1, 5);
@@ -136,6 +139,8 @@ public class EnvoiSommationsDIsPMProcessorTest extends BusinessTest {
 				addRaisonSociale(e, dateDebut, null, "Truc machin SA");
 				addFormeJuridique(e, dateDebut, null, FormeJuridiqueEntreprise.SA);
 				addBouclement(e, dateDebut, DayMonth.get(12, 31), 12);
+				addRegimeFiscalVD(e, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addRegimeFiscalCH(e, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 				addForPrincipal(e, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Aubonne);
 
 				final RegDate dateEmission = RegDate.get(2015, 1, 15);
@@ -180,6 +185,8 @@ public class EnvoiSommationsDIsPMProcessorTest extends BusinessTest {
 				addRaisonSociale(e, dateDebut, null, "Truc machin SA");
 				addFormeJuridique(e, dateDebut, null, FormeJuridiqueEntreprise.SA);
 				addBouclement(e, dateDebut, DayMonth.get(12, 31), 12);
+				addRegimeFiscalVD(e, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addRegimeFiscalCH(e, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 				addForPrincipal(e, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Aubonne);
 
 				final PeriodeFiscale periode = addPeriodeFiscale(anneePf);
@@ -225,6 +232,8 @@ public class EnvoiSommationsDIsPMProcessorTest extends BusinessTest {
 				addRaisonSociale(e, dateDebut, null, "Truc machin SA");
 				addFormeJuridique(e, dateDebut, null, FormeJuridiqueEntreprise.SA);
 				addBouclement(e, dateDebut, DayMonth.get(12, 31), 12);
+				addRegimeFiscalVD(e, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addRegimeFiscalCH(e, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 				addForPrincipal(e, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Aubonne);
 
 				final PeriodeFiscale periode = addPeriodeFiscale(anneePf);
@@ -265,6 +274,8 @@ public class EnvoiSommationsDIsPMProcessorTest extends BusinessTest {
 				addRaisonSociale(e, dateDebut, null, "Truc machin SA");
 				addFormeJuridique(e, dateDebut, null, FormeJuridiqueEntreprise.SA);
 				addBouclement(e, dateDebut, DayMonth.get(12, 31), 12);
+				addRegimeFiscalVD(e, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addRegimeFiscalCH(e, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 				addForPrincipal(e, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Aubonne);
 
 				final PeriodeFiscale periode = addPeriodeFiscale(anneePf);
@@ -311,6 +322,8 @@ public class EnvoiSommationsDIsPMProcessorTest extends BusinessTest {
 				addRaisonSociale(e, dateDebut, null, "Truc machin SA");
 				addFormeJuridique(e, dateDebut, null, FormeJuridiqueEntreprise.SA);
 				addBouclement(e, dateDebut, DayMonth.get(12, 31), 12);
+				addRegimeFiscalVD(e, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addRegimeFiscalCH(e, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 				final ForFiscalPrincipal ffp = addForPrincipal(e, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Aubonne);
 				ffp.setAnnule(true);
 
@@ -353,6 +366,8 @@ public class EnvoiSommationsDIsPMProcessorTest extends BusinessTest {
 				addRaisonSociale(e, dateDebut, null, "Truc machin SA");
 				addFormeJuridique(e, dateDebut, null, FormeJuridiqueEntreprise.SA);
 				addBouclement(e, dateDebut, DayMonth.get(12, 31), 12);
+				addRegimeFiscalVD(e, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addRegimeFiscalCH(e, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 				addForPrincipal(e, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Aubonne);
 
 				final PeriodeFiscale periode = addPeriodeFiscale(anneePf);
@@ -418,6 +433,8 @@ public class EnvoiSommationsDIsPMProcessorTest extends BusinessTest {
 				addRaisonSociale(e, dateDebut, null, "Truc machin SA");
 				addFormeJuridique(e, dateDebut, null, FormeJuridiqueEntreprise.SA);
 				addBouclement(e, dateDebut, DayMonth.get(12, 31), 12);
+				addRegimeFiscalVD(e, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addRegimeFiscalCH(e, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 				addForPrincipal(e, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Aubonne);
 
 				final PeriodeFiscale periode = addPeriodeFiscale(anneePf);
@@ -459,6 +476,8 @@ public class EnvoiSommationsDIsPMProcessorTest extends BusinessTest {
 				addRaisonSociale(e, dateDebut, null, "Truc machin SA");
 				addFormeJuridique(e, dateDebut, null, FormeJuridiqueEntreprise.SA);
 				addBouclement(e, dateDebut, DayMonth.get(12, 31), 12);
+				addRegimeFiscalVD(e, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addRegimeFiscalCH(e, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 				addForPrincipal(e, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Aubonne);
 
 				final PeriodeFiscale periode = addPeriodeFiscale(anneePf);
@@ -500,6 +519,8 @@ public class EnvoiSommationsDIsPMProcessorTest extends BusinessTest {
 				addRaisonSociale(e, dateDebut, null, "Truc machin SA");
 				addFormeJuridique(e, dateDebut, null, FormeJuridiqueEntreprise.SA);
 				addBouclement(e, dateDebut, DayMonth.get(12, 31), 12);
+				addRegimeFiscalVD(e, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addRegimeFiscalCH(e, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 				addForPrincipal(e, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Aubonne);
 
 				final PeriodeFiscale periode = addPeriodeFiscale(anneePf);

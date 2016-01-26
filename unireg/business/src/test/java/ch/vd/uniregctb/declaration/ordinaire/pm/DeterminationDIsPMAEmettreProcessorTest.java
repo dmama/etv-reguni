@@ -17,6 +17,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockOfficeImpot;
+import ch.vd.unireg.interfaces.infra.mock.MockTypeRegimeFiscal;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePM;
@@ -105,6 +106,8 @@ public class DeterminationDIsPMAEmettreProcessorTest extends BusinessTest {
 		addRaisonSociale(levage, date(1999, 4, 2), null, "Levage SA");
 		addFormeJuridique(levage, date(1999, 4, 2), null, FormeJuridiqueEntreprise.SA);
 		addBouclement(levage, date(1999, 7, 1), DayMonth.get(6, 30), 12);
+		addRegimeFiscalVD(levage, RegDate.get(1999, 4, 2), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+		addRegimeFiscalCH(levage, RegDate.get(1999, 4, 2), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 		addForPrincipal(levage, date(1999, 4, 2), MotifFor.DEBUT_EXPLOITATION, MockCommune.Bex);
 
 		// Une entreprise avec un for principal actif sur VD il y a quelques temps
@@ -112,6 +115,8 @@ public class DeterminationDIsPMAEmettreProcessorTest extends BusinessTest {
 		addRaisonSociale(bricolage, date(2000, 4, 5), null, "Bricolage SARL");
 		addFormeJuridique(bricolage, date(2000, 4, 5), null, FormeJuridiqueEntreprise.SARL);
 		addBouclement(bricolage, date(2000, 4, 5), DayMonth.get(12, 31), 12);
+		addRegimeFiscalVD(bricolage, RegDate.get(2000, 4, 5), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+		addRegimeFiscalCH(bricolage, RegDate.get(2000, 4, 5), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 		addForPrincipal(bricolage, date(2000, 4, 5), MotifFor.DEBUT_EXPLOITATION, date(2012, 5, 2), MotifFor.DEPART_HC, MockCommune.Bex);
 		addForPrincipal(bricolage, date(2012, 5, 3), MotifFor.DEPART_HC, MockCommune.Sierre);
 
@@ -120,6 +125,8 @@ public class DeterminationDIsPMAEmettreProcessorTest extends BusinessTest {
 		addRaisonSociale(renardLico, date(1997, 4, 5), null, "Renard Lico SARL");
 		addFormeJuridique(renardLico, date(1997, 4, 5), null, FormeJuridiqueEntreprise.SARL);
 		addBouclement(renardLico, date(1997, 4, 5), DayMonth.get(12, 31), 12);
+		addRegimeFiscalVD(renardLico, RegDate.get(1997, 4, 5), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+		addRegimeFiscalCH(renardLico, RegDate.get(1997, 4, 5), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 		addForPrincipal(renardLico, date(1997, 4, 5), null, MockCommune.Chur);
 		addForSecondaire(renardLico, date(1997, 4, 5), MotifFor.ACHAT_IMMOBILIER, MockCommune.Cossonay.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
 
@@ -128,6 +135,8 @@ public class DeterminationDIsPMAEmettreProcessorTest extends BusinessTest {
 		addRaisonSociale(tralalaTsointsoin, date(2003, 4, 5), null, "Tralala Tsoin-Tsoin SARL");
 		addFormeJuridique(tralalaTsointsoin, date(2003, 4, 5), null, FormeJuridiqueEntreprise.SARL);
 		addBouclement(tralalaTsointsoin, date(2003, 4, 5), DayMonth.get(12, 31), 12);
+		addRegimeFiscalVD(tralalaTsointsoin, RegDate.get(2003, 4, 5), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+		addRegimeFiscalCH(tralalaTsointsoin, RegDate.get(2003, 4, 5), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 		addForPrincipal(tralalaTsointsoin, date(2003, 4, 5), null, MockCommune.Chur);
 		addForSecondaire(tralalaTsointsoin, date(2003, 4, 5), MotifFor.ACHAT_IMMOBILIER, date(2008, 12, 2), MotifFor.VENTE_IMMOBILIER, MockCommune.Echallens.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
 
@@ -140,6 +149,8 @@ public class DeterminationDIsPMAEmettreProcessorTest extends BusinessTest {
 		addRaisonSociale(onCroyaitEtPuisNon, date(2000, 4, 5), null, "Bricolage SARL");
 		addFormeJuridique(onCroyaitEtPuisNon, date(2000, 4, 5), null, FormeJuridiqueEntreprise.SARL);
 		addBouclement(onCroyaitEtPuisNon, date(2000, 4, 5), DayMonth.get(12, 31), 12);
+		addRegimeFiscalVD(onCroyaitEtPuisNon, RegDate.get(2000, 4, 5), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+		addRegimeFiscalCH(onCroyaitEtPuisNon, RegDate.get(2000, 4, 5), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 		addForPrincipal(onCroyaitEtPuisNon, date(2000, 4, 5), MotifFor.DEBUT_EXPLOITATION, date(2012, 5, 2), MotifFor.DEPART_HC, MockCommune.Bex).setAnnule(true);
 
 		//
@@ -159,6 +170,8 @@ public class DeterminationDIsPMAEmettreProcessorTest extends BusinessTest {
 		addFormeJuridique(entreprise, date(2012, 4, 5), null, FormeJuridiqueEntreprise.SARL);
 		addBouclement(entreprise, date(2012, 12, 1), DayMonth.get(12, 31), 12);     // bouclements tous les ans depuis le 31.12.2012
 		addBouclement(entreprise, date(2012, 12, 31), DayMonth.get(3, 31), 5);      // bouclements tous les cinq mois depuis le 31.3.2013
+		addRegimeFiscalVD(entreprise, RegDate.get(2012, 4, 5), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+		addRegimeFiscalCH(entreprise, RegDate.get(2012, 4, 5), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 		addForPrincipal(entreprise, date(2012, 4, 5), MotifFor.DEBUT_EXPLOITATION, date(2015, 5, 2), MotifFor.DEPART_HC, MockCommune.Bex);
 		addForPrincipal(entreprise, date(2015, 5, 3), MotifFor.DEPART_HC, MockCommune.Bern);
 
@@ -271,6 +284,8 @@ public class DeterminationDIsPMAEmettreProcessorTest extends BusinessTest {
 		addRaisonSociale(entreprise, date(2012, 4, 5), null, "Bricolage SARL");
 		addFormeJuridique(entreprise, date(2012, 4, 5), null, FormeJuridiqueEntreprise.SARL);
 		addBouclement(entreprise, date(2012, 12, 1), DayMonth.get(12, 31), 12);      // bouclements tous les ans depuis le 31.12.2012
+		addRegimeFiscalVD(entreprise, RegDate.get(2012, 4, 5), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+		addRegimeFiscalCH(entreprise, RegDate.get(2012, 4, 5), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 		addForPrincipal(entreprise, date(2012, 4, 5), MotifFor.DEBUT_EXPLOITATION, date(2015, 5, 2), MotifFor.DEPART_HC, MockCommune.Bex);
 		addForPrincipal(entreprise, date(2015, 5, 3), MotifFor.DEPART_HC, MockCommune.Bern);
 
@@ -301,6 +316,8 @@ public class DeterminationDIsPMAEmettreProcessorTest extends BusinessTest {
 		addRaisonSociale(entreprise, date(2012, 4, 5), null, "Bricolage SARL");
 		addFormeJuridique(entreprise, date(2012, 4, 5), null, FormeJuridiqueEntreprise.SARL);
 		addBouclement(entreprise, date(2012, 12, 1), DayMonth.get(12, 31), 12);      // bouclements tous les ans depuis le 31.12.2012
+		addRegimeFiscalVD(entreprise, RegDate.get(2012, 4, 5), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+		addRegimeFiscalCH(entreprise, RegDate.get(2012, 4, 5), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 		addForPrincipal(entreprise, date(2012, 4, 5), MotifFor.DEBUT_EXPLOITATION, date(2015, 5, 2), MotifFor.DEPART_HC, MockCommune.Bex);
 		addForPrincipal(entreprise, date(2015, 5, 3), MotifFor.DEPART_HC, MockCommune.Bern);
 
@@ -341,6 +358,8 @@ public class DeterminationDIsPMAEmettreProcessorTest extends BusinessTest {
 		addRaisonSociale(entreprise, date(2012, 4, 5), null, "Bricolage SARL");
 		addFormeJuridique(entreprise, date(2012, 4, 5), null, FormeJuridiqueEntreprise.SARL);
 		addBouclement(entreprise, date(2012, 12, 1), DayMonth.get(12, 31), 12);      // bouclements tous les ans depuis le 31.12.2012
+		addRegimeFiscalVD(entreprise, RegDate.get(2012, 4, 5), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+		addRegimeFiscalCH(entreprise, RegDate.get(2012, 4, 5), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 		addForPrincipal(entreprise, date(2012, 4, 5), MotifFor.DEBUT_EXPLOITATION, date(2015, 5, 2), MotifFor.DEPART_HC, MockCommune.Bex);
 		addForPrincipal(entreprise, date(2015, 5, 3), MotifFor.DEPART_HC, MockCommune.Bern);
 
@@ -380,6 +399,8 @@ public class DeterminationDIsPMAEmettreProcessorTest extends BusinessTest {
 			addRaisonSociale(entreprise, date(2012, 4, 5), null, "Bricolage SARL");
 			addFormeJuridique(entreprise, date(2012, 4, 5), null, FormeJuridiqueEntreprise.SARL);
 			addBouclement(entreprise, date(2012, 12, 1), DayMonth.get(12, 31), 12);      // bouclements tous les ans depuis le 31.12.2012
+			addRegimeFiscalVD(entreprise, RegDate.get(2012, 4, 5), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(entreprise, RegDate.get(2012, 4, 5), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 			addForPrincipal(entreprise, date(2012, 4, 5), MotifFor.DEBUT_EXPLOITATION, date(2015, 5, 2), MotifFor.DEPART_HC, MockCommune.Bex);
 			addForPrincipal(entreprise, date(2015, 5, 3), MotifFor.DEPART_HC, MockCommune.Bern);
 
@@ -393,6 +414,8 @@ public class DeterminationDIsPMAEmettreProcessorTest extends BusinessTest {
 			addRaisonSociale(entreprise, date(2012, 4, 5), null, "Bricolage SARL");
 			addFormeJuridique(entreprise, date(2012, 4, 5), null, FormeJuridiqueEntreprise.SARL);
 			addBouclement(entreprise, date(2012, 12, 1), DayMonth.get(12, 31), 12);      // bouclements tous les ans depuis le 31.12.2012
+			addRegimeFiscalVD(entreprise, RegDate.get(2012, 4, 5), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(entreprise, RegDate.get(2012, 4, 5), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 			addForPrincipal(entreprise, date(2012, 4, 5), MotifFor.DEBUT_EXPLOITATION, date(2015, 5, 2), MotifFor.DEPART_HC, MockCommune.Bex);
 			addForPrincipal(entreprise, date(2015, 5, 3), MotifFor.DEPART_HC, MockCommune.Bern);
 
@@ -410,6 +433,8 @@ public class DeterminationDIsPMAEmettreProcessorTest extends BusinessTest {
 			addRaisonSociale(entreprise, date(2012, 4, 5), null, "Bricolage SARL");
 			addFormeJuridique(entreprise, date(2012, 4, 5), null, FormeJuridiqueEntreprise.SARL);
 			addBouclement(entreprise, date(2012, 12, 1), DayMonth.get(12, 31), 12);      // bouclements tous les ans depuis le 31.12.2012
+			addRegimeFiscalVD(entreprise, RegDate.get(2012, 4, 5), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(entreprise, RegDate.get(2012, 4, 5), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 			addForPrincipal(entreprise, date(2012, 4, 5), MotifFor.DEBUT_EXPLOITATION, date(2015, 5, 2), MotifFor.DEPART_HC, MockCommune.Bex);
 			addForPrincipal(entreprise, date(2015, 5, 3), MotifFor.DEPART_HC, MockCommune.Bern);
 
@@ -432,6 +457,8 @@ public class DeterminationDIsPMAEmettreProcessorTest extends BusinessTest {
 			addRaisonSociale(entreprise, date(2012, 4, 5), null, "Bricolage SARL");
 			addFormeJuridique(entreprise, date(2012, 4, 5), null, FormeJuridiqueEntreprise.SARL);
 			addBouclement(entreprise, date(2012, 12, 1), DayMonth.get(12, 31), 12);      // bouclements tous les ans depuis le 31.12.2012
+			addRegimeFiscalVD(entreprise, RegDate.get(2012, 4, 5), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(entreprise, RegDate.get(2012, 4, 5), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 			addForPrincipal(entreprise, date(2012, 4, 5), MotifFor.DEBUT_EXPLOITATION, date(2015, 5, 2), MotifFor.DEPART_HC, MockCommune.Bex);
 			addForPrincipal(entreprise, date(2015, 5, 3), MotifFor.DEPART_HC, MockCommune.Bern);
 
@@ -454,6 +481,8 @@ public class DeterminationDIsPMAEmettreProcessorTest extends BusinessTest {
 			addRaisonSociale(entreprise, date(2012, 4, 5), null, "Bricolage SARL");
 			addFormeJuridique(entreprise, date(2012, 4, 5), null, FormeJuridiqueEntreprise.SARL);
 			addBouclement(entreprise, date(2012, 12, 1), DayMonth.get(12, 31), 12);      // bouclements tous les ans depuis le 31.12.2012
+			addRegimeFiscalVD(entreprise, RegDate.get(2012, 4, 5), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(entreprise, RegDate.get(2012, 4, 5), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 			addForPrincipal(entreprise, date(2012, 4, 5), MotifFor.DEBUT_EXPLOITATION, date(2015, 5, 2), MotifFor.DEPART_HC, MockCommune.Bex);
 			addForPrincipal(entreprise, date(2015, 5, 3), MotifFor.DEPART_HC, MockCommune.Bern);
 
@@ -481,6 +510,8 @@ public class DeterminationDIsPMAEmettreProcessorTest extends BusinessTest {
 		addRaisonSociale(entreprise, date(2012, 4, 5), null, "Bricolage SARL");
 		addFormeJuridique(entreprise, date(2012, 4, 5), null, FormeJuridiqueEntreprise.SARL);
 		addBouclement(entreprise, date(2012, 12, 1), DayMonth.get(12, 31), 12);      // bouclements tous les ans depuis le 31.12.2012
+		addRegimeFiscalVD(entreprise, RegDate.get(2012, 4, 5), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+		addRegimeFiscalCH(entreprise, RegDate.get(2012, 4, 5), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 		addForPrincipal(entreprise, date(2012, 4, 5), MotifFor.DEBUT_EXPLOITATION, MockCommune.Bern);
 
 		addDeclarationImpot(entreprise, periode2014, date(2014, 1, 1), date(2014, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, modele2014);
@@ -521,6 +552,8 @@ public class DeterminationDIsPMAEmettreProcessorTest extends BusinessTest {
 		addRaisonSociale(entreprise, date(2012, 4, 5), null, "Bricolage SARL");
 		addFormeJuridique(entreprise, date(2012, 4, 5), null, FormeJuridiqueEntreprise.SARL);
 		addBouclement(entreprise, date(2012, 12, 1), DayMonth.get(12, 31), 12);      // bouclements tous les ans depuis le 31.12.2012
+		addRegimeFiscalVD(entreprise, RegDate.get(2012, 4, 5), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+		addRegimeFiscalCH(entreprise, RegDate.get(2012, 4, 5), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 		addForPrincipal(entreprise, date(2012, 4, 5), MotifFor.DEBUT_EXPLOITATION, MockCommune.Bern);
 
 		final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, periode2014, date(2014, 1, 1), date(2014, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, modele2014);
@@ -552,6 +585,8 @@ public class DeterminationDIsPMAEmettreProcessorTest extends BusinessTest {
 		addRaisonSociale(entreprise, date(2012, 4, 5), null, "Bricolage SARL");
 		addFormeJuridique(entreprise, date(2012, 4, 5), null, FormeJuridiqueEntreprise.SARL);
 		addBouclement(entreprise, date(2012, 12, 1), DayMonth.get(12, 31), 12);      // bouclements tous les ans depuis le 31.12.2012
+		addRegimeFiscalVD(entreprise, RegDate.get(2012, 4, 5), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+		addRegimeFiscalCH(entreprise, RegDate.get(2012, 4, 5), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 		addForPrincipal(entreprise, date(2012, 4, 5), MotifFor.DEBUT_EXPLOITATION, MockCommune.Bern);
 
 		final RegDate dateTraitement = RegDate.get();
@@ -593,6 +628,8 @@ public class DeterminationDIsPMAEmettreProcessorTest extends BusinessTest {
 		addRaisonSociale(entreprise, date(2012, 4, 5), null, "Bricolage SARL");
 		addFormeJuridique(entreprise, date(2012, 4, 5), null, FormeJuridiqueEntreprise.SARL);
 		addBouclement(entreprise, date(2012, 12, 1), DayMonth.get(12, 31), 12);      // bouclements tous les ans depuis le 31.12.2012
+		addRegimeFiscalVD(entreprise, RegDate.get(2012, 4, 5), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+		addRegimeFiscalCH(entreprise, RegDate.get(2012, 4, 5), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 		addForPrincipal(entreprise, date(2012, 4, 5), MotifFor.DEBUT_EXPLOITATION, MockCommune.Bern);
 
 		final RegDate dateTraitement = RegDate.get();
@@ -632,6 +669,8 @@ public class DeterminationDIsPMAEmettreProcessorTest extends BusinessTest {
 		addRaisonSociale(entreprise, date(2012, 4, 5), null, "Bricolage SARL");
 		addFormeJuridique(entreprise, date(2012, 4, 5), null, FormeJuridiqueEntreprise.SARL);
 		addBouclement(entreprise, date(2012, 12, 1), DayMonth.get(12, 31), 12);      // bouclements tous les ans depuis le 31.12.2012
+		addRegimeFiscalVD(entreprise, RegDate.get(2012, 4, 5), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+		addRegimeFiscalCH(entreprise, RegDate.get(2012, 4, 5), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 		addForPrincipal(entreprise, date(2012, 4, 5), MotifFor.DEBUT_EXPLOITATION, MockCommune.Bex);
 
 		// la tâche a été générée à un moment où on croyait avoir un bouclement fin septembre 2014, mais en fait non...
@@ -671,6 +710,8 @@ public class DeterminationDIsPMAEmettreProcessorTest extends BusinessTest {
 		addRaisonSociale(entreprise, date(2012, 4, 5), null, "Bricolage SARL");
 		addFormeJuridique(entreprise, date(2012, 4, 5), null, FormeJuridiqueEntreprise.SARL);
 		addBouclement(entreprise, date(2012, 12, 1), DayMonth.get(12, 31), 12);      // bouclements tous les ans depuis le 31.12.2012
+		addRegimeFiscalVD(entreprise, RegDate.get(2012, 4, 5), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+		addRegimeFiscalCH(entreprise, RegDate.get(2012, 4, 5), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 		addForPrincipal(entreprise, date(2012, 4, 5), MotifFor.DEBUT_EXPLOITATION, MockCommune.Bex);
 
 		// tâche déjà traitée mais pas de DI correspondante...
@@ -711,6 +752,8 @@ public class DeterminationDIsPMAEmettreProcessorTest extends BusinessTest {
 		addRaisonSociale(entreprise, date(2012, 4, 5), null, "Bricolage SARL");
 		addFormeJuridique(entreprise, date(2012, 4, 5), null, FormeJuridiqueEntreprise.SARL);
 		addBouclement(entreprise, date(2012, 12, 1), DayMonth.get(12, 31), 12);      // bouclements tous les ans depuis le 31.12.2012
+		addRegimeFiscalVD(entreprise, RegDate.get(2012, 4, 5), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+		addRegimeFiscalCH(entreprise, RegDate.get(2012, 4, 5), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 		addForPrincipal(entreprise, date(2012, 4, 5), MotifFor.DEBUT_EXPLOITATION, MockCommune.Bex);
 
 		// DI annulée
@@ -747,6 +790,8 @@ public class DeterminationDIsPMAEmettreProcessorTest extends BusinessTest {
 				addRaisonSociale(entreprise, date(2012, 4, 5), null, "Bricolage SARL");
 				addFormeJuridique(entreprise, date(2012, 4, 5), null, FormeJuridiqueEntreprise.SARL);
 				addBouclement(entreprise, date(2012, 12, 1), DayMonth.get(12, 31), 12);      // bouclements tous les ans depuis le 31.12.2012
+				addRegimeFiscalVD(entreprise, RegDate.get(2012, 4, 5), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addRegimeFiscalCH(entreprise, RegDate.get(2012, 4, 5), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 				addForPrincipal(entreprise, date(2012, 4, 5), MotifFor.DEBUT_EXPLOITATION, MockCommune.Bex);
 
 				// tâche pour laquelle le type de document n'est pas le bon...
@@ -818,6 +863,8 @@ public class DeterminationDIsPMAEmettreProcessorTest extends BusinessTest {
 				addRaisonSociale(entreprise, date(2012, 4, 5), null, "Bricolage SARL");
 				addFormeJuridique(entreprise, date(2012, 4, 5), null, FormeJuridiqueEntreprise.SARL);
 				addBouclement(entreprise, date(2012, 12, 1), DayMonth.get(12, 31), 12);      // bouclements tous les ans depuis le 31.12.2012
+				addRegimeFiscalVD(entreprise, RegDate.get(2012, 4, 5), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addRegimeFiscalCH(entreprise, RegDate.get(2012, 4, 5), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 				addForPrincipal(entreprise, date(2012, 4, 5), MotifFor.DEBUT_EXPLOITATION, MockCommune.Bex);
 
 				// tâche pour laquelle les dates et le type de document sont bons, mais pas la catégorie d'entreprise
@@ -877,6 +924,8 @@ public class DeterminationDIsPMAEmettreProcessorTest extends BusinessTest {
 				addRaisonSociale(entreprise, date(2012, 4, 5), null, "Bricolage SARL");
 				addFormeJuridique(entreprise, date(2012, 4, 5), null, FormeJuridiqueEntreprise.SARL);
 				addBouclement(entreprise, date(2012, 12, 1), DayMonth.get(12, 31), 12);      // bouclements tous les ans depuis le 31.12.2012
+				addRegimeFiscalVD(entreprise, RegDate.get(2012, 4, 5), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addRegimeFiscalCH(entreprise, RegDate.get(2012, 4, 5), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 				addForPrincipal(entreprise, date(2012, 4, 5), MotifFor.DEBUT_EXPLOITATION, MockCommune.Bex);
 
 				// DI migrée (= sans modèle de document) sur 2015
@@ -926,6 +975,8 @@ public class DeterminationDIsPMAEmettreProcessorTest extends BusinessTest {
 				addRaisonSociale(entreprise, date(2012, 4, 5), null, "Bricolage SARL");
 				addFormeJuridique(entreprise, date(2012, 4, 5), null, FormeJuridiqueEntreprise.SARL);
 				addBouclement(entreprise, date(2012, 10, 1), DayMonth.get(10, 31), 12);      // bouclements tous les ans depuis le 31.10.2012
+				addRegimeFiscalVD(entreprise, RegDate.get(2012, 4, 5), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addRegimeFiscalCH(entreprise, RegDate.get(2012, 4, 5), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 				addForPrincipal(entreprise, date(2012, 4, 5), MotifFor.DEBUT_EXPLOITATION, MockCommune.Bex);
 				return entreprise.getNumero();
 			}

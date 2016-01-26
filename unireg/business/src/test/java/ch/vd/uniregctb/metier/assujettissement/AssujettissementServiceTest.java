@@ -7,6 +7,7 @@ import org.junit.Test;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
+import ch.vd.unireg.interfaces.infra.mock.MockTypeRegimeFiscal;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.DayMonth;
@@ -45,6 +46,8 @@ public class AssujettissementServiceTest extends MetierTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testAssujettissementPersonnesMorales() throws Exception {
 		final Entreprise ctb = addEntrepriseInconnueAuCivil();
+		addRegimeFiscalVD(ctb, date(2009, 1, 1), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+		addRegimeFiscalCH(ctb, date(2009, 1, 1), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 		addForPrincipal(ctb, date(1984, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
 		addBouclement(ctb, date(1984, 1, 1), DayMonth.get(12, 31), 12);
 		final List<Assujettissement> assujettissement = service.determine(ctb);

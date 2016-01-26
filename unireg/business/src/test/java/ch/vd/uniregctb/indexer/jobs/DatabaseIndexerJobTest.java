@@ -15,6 +15,7 @@ import ch.vd.unireg.interfaces.infra.mock.DefaultMockServiceInfrastructureServic
 import ch.vd.unireg.interfaces.infra.mock.MockCollectiviteAdministrative;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
+import ch.vd.unireg.interfaces.infra.mock.MockTypeRegimeFiscal;
 import ch.vd.unireg.interfaces.organisation.mock.MockServiceOrganisation;
 import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockOrganisationFactory;
 import ch.vd.uniregctb.common.BusinessTest;
@@ -113,21 +114,33 @@ public class DatabaseIndexerJobTest extends BusinessTest {
 				@Override
 				public Ids doInTransaction(TransactionStatus status) {
 					final Entreprise nestle = addEntrepriseConnueAuCivil(MockOrganisationFactory.NESTLE.getNumeroOrganisation());
+					addRegimeFiscalVD(nestle, MockOrganisationFactory.NESTLE.getNumeroIDE().get(0).getDateDebut(), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+					addRegimeFiscalCH(nestle, MockOrganisationFactory.NESTLE.getNumeroIDE().get(0).getDateDebut(), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 					addForPrincipal(nestle, MockOrganisationFactory.NESTLE.getNumeroIDE().get(0).getDateDebut(), MotifFor.DEBUT_EXPLOITATION, MockCommune.Vevey);
 
 					final Entreprise bcv = addEntrepriseConnueAuCivil(MockOrganisationFactory.BCV.getNumeroOrganisation());
+					addRegimeFiscalVD(bcv, MockOrganisationFactory.BCV.getNumeroIDE().get(0).getDateDebut(), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+					addRegimeFiscalCH(bcv, MockOrganisationFactory.BCV.getNumeroIDE().get(0).getDateDebut(), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 					addForPrincipal(bcv, MockOrganisationFactory.BCV.getNumeroIDE().get(0).getDateDebut(), MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne);
 
 					final Entreprise kpmg = addEntrepriseConnueAuCivil(MockOrganisationFactory.KPMG.getNumeroOrganisation());
+					addRegimeFiscalVD(kpmg, MockOrganisationFactory.KPMG.getNumeroIDE().get(0).getDateDebut(), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+					addRegimeFiscalCH(kpmg, MockOrganisationFactory.KPMG.getNumeroIDE().get(0).getDateDebut(), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 					addForPrincipal(kpmg, MockOrganisationFactory.KPMG.getNumeroIDE().get(0).getDateDebut(), MotifFor.DEBUT_EXPLOITATION, MockCommune.Zurich);
 
 					final Entreprise curiaTreuhand = addEntrepriseConnueAuCivil(MockOrganisationFactory.CURIA_TREUHAND.getNumeroOrganisation());
+					addRegimeFiscalVD(curiaTreuhand, MockOrganisationFactory.CURIA_TREUHAND.getNumeroIDE().get(0).getDateDebut(), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+					addRegimeFiscalCH(curiaTreuhand, MockOrganisationFactory.CURIA_TREUHAND.getNumeroIDE().get(0).getDateDebut(), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 					addForPrincipal(curiaTreuhand, MockOrganisationFactory.CURIA_TREUHAND.getNumeroIDE().get(0).getDateDebut(), MotifFor.DEBUT_EXPLOITATION, MockCommune.Chur);
 
 					final Entreprise jalHolding = addEntrepriseConnueAuCivil(MockOrganisationFactory.JAL_HOLDING.getNumeroOrganisation());
+					addRegimeFiscalVD(jalHolding, MockOrganisationFactory.JAL_HOLDING.getNumeroIDE().get(0).getDateDebut(), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+					addRegimeFiscalCH(jalHolding, MockOrganisationFactory.JAL_HOLDING.getNumeroIDE().get(0).getDateDebut(), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 					addForPrincipal(jalHolding, MockOrganisationFactory.JAL_HOLDING.getNumeroIDE().get(0).getDateDebut(), MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne);
 
 					final Entreprise banqueCoop = addEntrepriseConnueAuCivil(MockOrganisationFactory.BANQUE_COOP.getNumeroOrganisation());
+					addRegimeFiscalVD(banqueCoop, MockOrganisationFactory.BANQUE_COOP.getNumeroIDE().get(0).getDateDebut(), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+					addRegimeFiscalCH(banqueCoop, MockOrganisationFactory.BANQUE_COOP.getNumeroIDE().get(0).getDateDebut(), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 					addForPrincipal(banqueCoop, MockOrganisationFactory.BANQUE_COOP.getNumeroIDE().get(0).getDateDebut(), MotifFor.DEBUT_EXPLOITATION, MockCommune.Bale);
 
 					final Ids ids = new Ids();

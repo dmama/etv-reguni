@@ -13,6 +13,7 @@ import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
+import ch.vd.unireg.interfaces.infra.mock.MockTypeRegimeFiscal;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.interfaces.organisation.data.StatusInscriptionRC;
 import ch.vd.unireg.interfaces.organisation.data.StatusRC;
@@ -29,7 +30,6 @@ import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalFor;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipalPM;
 import ch.vd.uniregctb.type.EtatEvenementOrganisation;
 import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.MotifFor;
@@ -86,11 +86,13 @@ public class ReinscriptionProcessorTest extends AbstractEvenementOrganisationPro
 
 		// Création de l'entreprise
 
-		final Entreprise entreprise = doInNewTransactionAndSession(new TransactionCallback<Entreprise>() {
+		doInNewTransactionAndSession(new TransactionCallback<Entreprise>() {
 			@Override
 			public Entreprise doInTransaction(TransactionStatus transactionStatus) {
 				final Entreprise entreprise = addEntrepriseConnueAuCivil(noOrganisation);
-				ForFiscalPrincipalPM forPrincipal = addForPrincipal(entreprise, RegDate.get(2010, 6, 25), MotifFor.DEBUT_EXPLOITATION, RegDate.get(2012, 1, 26), MotifFor.FIN_EXPLOITATION, MockCommune.Lausanne, MotifRattachement.DOMICILE);
+				addRegimeFiscalVD(entreprise, RegDate.get(2010, 6, 25), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addRegimeFiscalCH(entreprise, RegDate.get(2010, 6, 25), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addForPrincipal(entreprise, RegDate.get(2010, 6, 25), MotifFor.DEBUT_EXPLOITATION, RegDate.get(2012, 1, 26), MotifFor.FIN_EXPLOITATION, MockCommune.Lausanne, MotifRattachement.DOMICILE);
 				return entreprise;
 			}
 		});
@@ -276,11 +278,13 @@ public class ReinscriptionProcessorTest extends AbstractEvenementOrganisationPro
 
 		// Création de l'entreprise
 
-		final Entreprise entreprise = doInNewTransactionAndSession(new TransactionCallback<Entreprise>() {
+		doInNewTransactionAndSession(new TransactionCallback<Entreprise>() {
 			@Override
 			public Entreprise doInTransaction(TransactionStatus transactionStatus) {
 				final Entreprise entreprise = addEntrepriseConnueAuCivil(noOrganisation);
-				ForFiscalPrincipalPM forPrincipal = addForPrincipal(entreprise, RegDate.get(2010, 6, 25), MotifFor.DEBUT_EXPLOITATION, null, null, MockCommune.Lausanne, MotifRattachement.DOMICILE);
+				addRegimeFiscalVD(entreprise, RegDate.get(2010, 6, 25), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addRegimeFiscalCH(entreprise, RegDate.get(2010, 6, 25), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addForPrincipal(entreprise, RegDate.get(2010, 6, 25), MotifFor.DEBUT_EXPLOITATION, null, null, MockCommune.Lausanne, MotifRattachement.DOMICILE);
 				return entreprise;
 			}
 		});

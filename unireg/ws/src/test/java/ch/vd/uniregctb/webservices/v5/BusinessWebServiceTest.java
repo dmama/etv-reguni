@@ -37,6 +37,7 @@ import ch.vd.unireg.interfaces.infra.mock.MockLocalite;
 import ch.vd.unireg.interfaces.infra.mock.MockOfficeImpot;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
+import ch.vd.unireg.interfaces.infra.mock.MockTypeRegimeFiscal;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.interfaces.organisation.mock.MockServiceOrganisation;
 import ch.vd.unireg.interfaces.organisation.mock.data.MockOrganisation;
@@ -1259,6 +1260,8 @@ public class BusinessWebServiceTest extends WebserviceTest {
 				dpi.setModeCommunication(ModeCommunication.ELECTRONIQUE);
 
 				final Entreprise pm = addEntrepriseConnueAuCivil(noOrganisation);
+				addRegimeFiscalVD(pm, pmActivityStartDate, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addRegimeFiscalCH(pm, pmActivityStartDate, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 				addForPrincipal(pm, pmActivityStartDate, MotifFor.DEBUT_EXPLOITATION, MockCommune.Morges);
 
 				final CollectiviteAdministrative ca = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noCAT);

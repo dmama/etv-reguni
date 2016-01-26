@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
+import ch.vd.unireg.interfaces.infra.mock.MockTypeRegimeFiscal;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
@@ -55,6 +56,8 @@ public class PeriodeImpositionServiceTest extends MetierTest {
 		final Entreprise ctb = addEntrepriseInconnueAuCivil();
 		addRaisonSociale(ctb, date(1984, 1, 1), null, "Toto SA");
 		addFormeJuridique(ctb, date(1984, 1, 1), null, FormeJuridiqueEntreprise.SA);
+		addRegimeFiscalVD(ctb, date(2009, 1, 1), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+		addRegimeFiscalCH(ctb, date(2009, 1, 1), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 		addForPrincipal(ctb, date(1984, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
 		addBouclement(ctb, date(1984, 1, 1), DayMonth.get(12, 31), 12);
 		final List<PeriodeImposition> periodesImposition = service.determine(ctb);

@@ -17,6 +17,7 @@ import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.EsbMessageFactory;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockOfficeImpot;
+import ch.vd.unireg.interfaces.infra.mock.MockTypeRegimeFiscal;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.common.BusinessTestingConstants;
@@ -220,6 +221,8 @@ public class TacheSynchronizerInterceptorTest extends BusinessTest {
 				addRaisonSociale(entreprise, dateDebut, null, "Truc machin SA");
 				addFormeJuridique(entreprise, dateDebut, null, FormeJuridiqueEntreprise.SA);
 				addBouclement(entreprise, dateDebut, DayMonth.get(12, 31), 12);
+				addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addRegimeFiscalCH(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 				addForPrincipal(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, dateFin, MotifFor.FIN_EXPLOITATION, MockCommune.Aubonne);
 
 				// une SA est de catégorie PM, pas SP...

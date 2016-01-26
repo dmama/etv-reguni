@@ -8,7 +8,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
+
 import ch.vd.registre.base.date.DateRange;
+import ch.vd.registre.base.date.DateRangeAdapterCallback;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
@@ -24,6 +27,7 @@ import ch.vd.uniregctb.tiers.DonneeCivileEntreprise;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.EtatEntreprise;
 import ch.vd.uniregctb.tiers.FlagEntreprise;
+import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipalPM;
 import ch.vd.uniregctb.tiers.RegimeFiscal;
 import ch.vd.uniregctb.type.GenreImpot;
@@ -40,6 +44,7 @@ public class EntrepriseValidator extends ContribuableImpositionPersonnesMoralesV
 			vr.merge(validateBouclements(entreprise));
 			vr.merge(validateEtats(entreprise));
 			vr.merge(validateFlags(entreprise));
+			vr.merge(validateForsEtRegimesFiscaux(entreprise));
 
 			// validation de la date de début du premier exercice commercial
 			if (entreprise.getDateDebutPremierExerciceCommercial() != null) {
@@ -348,6 +353,58 @@ public class EntrepriseValidator extends ContribuableImpositionPersonnesMoralesV
 		if (entreprise.getBouclements() != null) {
 			for (Bouclement bouclement : entreprise.getBouclements()) {
 				vr.merge(getValidationService().validate(bouclement));
+			}
+		}
+		return vr;
+	}
+
+	protected ValidationResults validateForsEtRegimesFiscaux(Entreprise entreprise) {
+		// les périodes de fors IBC doivent être couverts par des régimes fiscaux
+
+		// d'abord allons chercher les périodes de fors IBC
+		final List<ForFiscal> fors = entreprise.getForsFiscauxNonAnnules(true);
+		final List<DateRange> ibcBrutto = new ArrayList<>(fors.size());
+		for (ForFiscal ff : fors) {
+			if (ff.getGenreImpot() == GenreImpot.BENEFICE_CAPITAL) {
+				ibcBrutto.add(ff);
+			}
+		}
+		final List<DateRange> ibcNetto = DateRangeHelper.merge(ibcBrutto);
+
+		// maintenant, il faut chercher les périodes couvertes par des régimes fiscaux, quels qu'ils soient
+		final List<RegimeFiscal> regimes = entreprise.getRegimesFiscauxNonAnnulesTries();
+		final ValidationResults vr = new ValidationResults();
+		vr.merge(validateForsEtRegimesFiscaux(ibcNetto, regimes, RegimeFiscal.Portee.VD));
+		vr.merge(validateForsEtRegimesFiscaux(ibcNetto, regimes, RegimeFiscal.Portee.CH));
+		return vr;
+	}
+
+	private ValidationResults validateForsEtRegimesFiscaux(List<DateRange> rangesFors, List<RegimeFiscal> allRegimes, RegimeFiscal.Portee portee) {
+		final ValidationResults vr = new ValidationResults();
+		if (rangesFors != null) {
+			final List<RegimeFiscal> pourPortee = new ArrayList<>(allRegimes.size());
+			for (RegimeFiscal regime : allRegimes) {
+				if (regime.getPortee() == portee) {
+					pourPortee.add(regime);
+				}
+			}
+			final List<DateRange> netto = DateRangeHelper.merge(pourPortee);
+			final List<DateRange> nonCouverts = DateRangeHelper.subtract(rangesFors, netto, new DateRangeAdapterCallback());
+			if (nonCouverts != null && !nonCouverts.isEmpty()) {
+
+				// en fait, on ne s'intéresse qu'aux périodes récentes... (historiquement, les régimes fiscaux n'ont pas
+				// forcément été attribués pour les périodes très vieilles...)
+				final int premiereAnnee = parametreAppService.getPremierePeriodeFiscalePersonnesMorales();
+				final DateRange relevant = new DateRangeHelper.Range(RegDate.get(premiereAnnee, 1, 1), null);
+
+				for (DateRange range : nonCouverts) {
+					if (DateRangeHelper.intersect(range, relevant)) {
+						vr.addError(String.format("La période %s possède des fors IBC non-annulés mais est exempte de régime fiscal %s%s.",
+						                          DateRangeHelper.toDisplayString(range),
+						                          portee,
+						                          DateRangeHelper.within(range, relevant) ? StringUtils.EMPTY : " (seule la période depuis " + premiereAnnee + " est réellement problématique)"));
+					}
+				}
 			}
 		}
 		return vr;

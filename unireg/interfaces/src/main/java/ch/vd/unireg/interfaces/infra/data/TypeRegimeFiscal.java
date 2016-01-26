@@ -26,6 +26,16 @@ public interface TypeRegimeFiscal {
 	String getLibelle();
 
 	/**
+	 * @return <code>true</code> si le régime est applicable au niveau cantonal
+	 */
+	boolean isCantonal();
+
+	/**
+	 * @return <code>true</code> si le régime est applicable au niveau fédéral
+	 */
+	boolean isFederal();
+
+	/**
 	 * @return <code>true</code> si le régime est applicable aux PM
 	 */
 	boolean isPourPM();

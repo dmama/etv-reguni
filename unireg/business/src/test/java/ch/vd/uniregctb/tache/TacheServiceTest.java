@@ -32,6 +32,7 @@ import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockOfficeImpot;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
+import ch.vd.unireg.interfaces.infra.mock.MockTypeRegimeFiscal;
 import ch.vd.unireg.interfaces.organisation.mock.MockServiceOrganisation;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.common.BusinessTestingConstants;
@@ -5576,6 +5577,8 @@ public class TacheServiceTest extends BusinessTest {
 					addRaisonSociale(pm, dateDebutActivite, null, "Ma petite entreprise");
 					addFormeJuridique(pm, dateDebutActivite, null, FormeJuridiqueEntreprise.SARL);
 					addCapitalEntreprise(pm, dateDebutActivite, null, new MontantMonetaire(10000L, MontantMonetaire.CHF));
+					addRegimeFiscalVD(pm, dateDebutActivite, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+					addRegimeFiscalCH(pm, dateDebutActivite, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 					addForPrincipal(pm, dateDebutActivite, MotifFor.DEBUT_EXPLOITATION, MockCommune.Bussigny);
 					addBouclement(pm, dateDebutActivite, DayMonth.get(12, 31), 12);
 					return pm.getNumero();
@@ -5684,6 +5687,8 @@ public class TacheServiceTest extends BusinessTest {
 					addRaisonSociale(pm, dateDebutActivite, null, "Ma petite entreprise");
 					addFormeJuridique(pm, dateDebutActivite, null, FormeJuridiqueEntreprise.SARL);
 					addCapitalEntreprise(pm, dateDebutActivite, null, new MontantMonetaire(10000L, MontantMonetaire.CHF));
+					addRegimeFiscalVD(pm, dateDebutActivite, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+					addRegimeFiscalCH(pm, dateDebutActivite, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 					addForPrincipal(pm, dateDebutActivite, MotifFor.DEBUT_EXPLOITATION, MockCommune.Bussigny);
 					addBouclement(pm, dateDebutActivite, DayMonth.get(12, 31), 12);
 

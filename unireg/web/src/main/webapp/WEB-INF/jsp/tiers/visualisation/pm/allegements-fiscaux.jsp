@@ -5,8 +5,15 @@
 <fieldset>
 	<legend><span><fmt:message key="label.allegements.fiscaux"/></span></legend>
 
-	<c:if test="${empty command.allegementsFiscaux}">
-		<fmt:message key="no.data" />
+	<unireg:setAuth var="auth" tiersId="${command.tiers.numero}"/>
+	<c:if test="${!command.tiers.annule && auth.allegementsFiscaux}">
+		<table border="0">
+			<tr><td>
+				<c:if test="${empty param['message'] && empty param['retour']}">
+					<unireg:raccourciModifier link="../allegement/edit.do?pmId=${command.tiers.numero}" tooltip="Modifier les allègements fiscaux" display="label.bouton.modifier"/>
+				</c:if>
+			</td></tr>
+		</table>
 	</c:if>
 
 	<c:if test="${not empty command.allegementsFiscaux}">

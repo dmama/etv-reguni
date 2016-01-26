@@ -3,15 +3,69 @@ package ch.vd.uniregctb.common;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.commons.collections4.comparators.ReverseComparator;
 import org.jetbrains.annotations.NotNull;
+
+import ch.vd.registre.base.date.DateRange;
+import ch.vd.registre.base.date.DateRangeComparator;
 
 /**
  * Classe utilitaire autour des éléments {@link Annulable}
  */
 public abstract class AnnulableHelper {
+
+	/**
+	 * Comparateur qui en encapsule un autre en prenant en charge le fait que les éléments annulés viennent après les éléments non-annulés
+	 * @param <T> type des éléments à comparer
+	 */
+	public static class AnnulesApresWrappingComparator<T extends Annulable> implements Comparator<T> {
+
+		private Comparator<? super T> wrapped;
+
+		public AnnulesApresWrappingComparator(Comparator<? super T> wrapped) {
+			this.wrapped = wrapped;
+		}
+
+		@Override
+		public int compare(T o1, T o2) {
+			if (o1.isAnnule() == o2.isAnnule()) {
+				return wrapped.compare(o1, o2);
+			}
+			if (o1.isAnnule()) {
+				return 1;
+			}
+			return -1;
+		}
+	}
+
+	/**
+	 * Comparateur capable de trier des {@link DateRange} {@link Annulable} en mettant systématiquement les éléments annulés à la fin,
+	 * et en ordonnant les {@link DateRange} soit chronologiquement, soit à l'inverse
+	 * @param <T> type des éléments comparés
+	 */
+	public static class AnnulableDateRangeComparator<T extends Annulable & DateRange> extends AnnulesApresWrappingComparator<T> {
+
+		/**
+		 * @param timeReversed <code>false</code> si les {@link DateRange} doivent être triés chronologiquement, <code>true</code> s'il faut les trier à l'inverse.
+		 */
+		public AnnulableDateRangeComparator(boolean timeReversed) {
+			super(buildWrappedComparator(timeReversed));
+		}
+
+		private static <T extends DateRange> Comparator<T> buildWrappedComparator(boolean timeReversed) {
+			final Comparator<T> pure = new DateRangeComparator<>();
+			if (timeReversed) {
+				return new ReverseComparator<>(pure);
+			}
+			else {
+				return pure;
+			}
+		}
+	}
 
 	/**
 	 * @param col une collection d'éléments annulables

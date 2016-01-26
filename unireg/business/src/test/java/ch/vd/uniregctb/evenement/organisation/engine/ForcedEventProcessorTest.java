@@ -13,6 +13,7 @@ import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
+import ch.vd.unireg.interfaces.infra.mock.MockTypeRegimeFiscal;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.interfaces.organisation.data.StatusInscriptionRC;
 import ch.vd.unireg.interfaces.organisation.data.StatusRC;
@@ -89,6 +90,8 @@ public class ForcedEventProcessorTest extends AbstractEvenementOrganisationProce
 			@Override
 			public Entreprise doInTransaction(TransactionStatus transactionStatus) {
 				final Entreprise entreprise = addEntrepriseConnueAuCivil(noOrganisation);
+				addRegimeFiscalVD(entreprise, RegDate.get(2010, 6, 25), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addRegimeFiscalCH(entreprise, RegDate.get(2010, 6, 25), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 				addForPrincipal(entreprise, RegDate.get(2010, 6, 25), MotifFor.DEBUT_EXPLOITATION, RegDate.get(2012, 1, 1), MotifFor.FIN_EXPLOITATION, MockCommune.Lausanne, MotifRattachement.DOMICILE);
 				return entreprise;
 			}
@@ -188,6 +191,8 @@ public class ForcedEventProcessorTest extends AbstractEvenementOrganisationProce
 			@Override
 			public Entreprise doInTransaction(TransactionStatus transactionStatus) {
 				final Entreprise entreprise = addEntrepriseConnueAuCivil(noOrganisation);
+				addRegimeFiscalVD(entreprise, RegDate.get(2010, 6, 25), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addRegimeFiscalCH(entreprise, RegDate.get(2010, 6, 25), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 				addForPrincipal(entreprise, RegDate.get(2010, 6, 25), MotifFor.DEBUT_EXPLOITATION, RegDate.get(2012, 1, 1), MotifFor.FIN_EXPLOITATION, MockCommune.Lausanne, MotifRattachement.DOMICILE);
 				return entreprise;
 			}
@@ -268,6 +273,8 @@ public class ForcedEventProcessorTest extends AbstractEvenementOrganisationProce
 			@Override
 			public Entreprise doInTransaction(TransactionStatus transactionStatus) {
 				final Entreprise entreprise = addEntrepriseConnueAuCivil(noOrganisation);
+				addRegimeFiscalVD(entreprise, RegDate.get(2010, 6, 25), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addRegimeFiscalCH(entreprise, RegDate.get(2010, 6, 25), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 				addForPrincipal(entreprise, RegDate.get(2010, 6, 25), MotifFor.DEBUT_EXPLOITATION, RegDate.get(2012, 1, 1), MotifFor.FIN_EXPLOITATION, MockCommune.Lausanne, MotifRattachement.DOMICILE);
 				return entreprise;
 			}

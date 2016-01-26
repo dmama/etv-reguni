@@ -39,6 +39,7 @@ import ch.vd.uniregctb.adresse.AdresseTiers;
 import ch.vd.uniregctb.adresse.AdresseTiersDAO;
 import ch.vd.uniregctb.adresse.AdressesFiscalesHisto;
 import ch.vd.uniregctb.adresse.AdressesResolutionException;
+import ch.vd.uniregctb.common.AnnulableHelper;
 import ch.vd.uniregctb.common.DonneesCivilesException;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.common.NpaEtLocalite;
@@ -508,9 +509,6 @@ public class TiersManager implements MessageSourceAware {
 	protected void setEntreprise(TiersView tiersView, Entreprise entreprise) {
 		tiersView.setTiers(entreprise);
 
-		// comparateur qui mets les ranges les plus récents devant
-		final Comparator<DateRange> reverseComparator = new ReverseComparator<>(new DateRangeComparator<>());
-
 		// map des régimes fiscaux existants indexés par code
 		final List<TypeRegimeFiscal> typesRegime = serviceInfrastructureService.getRegimesFiscaux();
 		final Map<String, TypeRegimeFiscal> mapRegimesParCode = new HashMap<>(typesRegime.size());
@@ -535,8 +533,10 @@ public class TiersManager implements MessageSourceAware {
 					throw new IllegalArgumentException("Portée inconnue sur un régime fiscal : " + regime.getPortee());
 				}
 			}
-			Collections.sort(vd, reverseComparator);
-			Collections.sort(ch, reverseComparator);
+
+			final Comparator<RegimeFiscalView> comparator = new AnnulableHelper.AnnulableDateRangeComparator<>(true);
+			Collections.sort(vd, comparator);
+			Collections.sort(ch, comparator);
 
 			tiersView.setRegimesFiscauxVD(vd);
 			tiersView.setRegimesFiscauxCH(ch);
@@ -550,7 +550,9 @@ public class TiersManager implements MessageSourceAware {
 				final AllegementFiscalView afView = new AllegementFiscalView(af);
 				views.add(afView);
 			}
-			Collections.sort(views, reverseComparator);
+
+			final Comparator<AllegementFiscalView> comparator = new AnnulableHelper.AnnulableDateRangeComparator<>(true);
+			Collections.sort(views, comparator);
 			tiersView.setAllegementsFiscaux(views);
 		}
 

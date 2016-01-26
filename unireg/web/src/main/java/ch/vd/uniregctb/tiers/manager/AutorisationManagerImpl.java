@@ -55,6 +55,9 @@ public class AutorisationManagerImpl implements AutorisationManager {
 	static final String MODIF_DI = "DI";
 	static final String MODIF_BOUCLEMENTS = "BOUCLEMENTS";
 	static final String MODIF_ETATS_PM = "ETATS_PM";
+	static final String MODIF_REGIMES_FISCAUX = "REGIMES_FISCAUX";
+	static final String MODIF_ALLEGEMENTS_FISCAUX = "ALLEGEMENTS_FISCAUX";
+	static final String MODIF_FLAGS_PM = "FLAGS_PM";
 	static final String MODIF_IDE = "IDE";
 	static final String MODIF_MOUVEMENT = "MVT";
 	static final String FISCAL_FOR_PRINC = "FOR_PRINC";
@@ -373,6 +376,11 @@ public class AutorisationManagerImpl implements AutorisationManager {
 			map.put(DOSSIER_NO_TRAVAIL, Boolean.FALSE);
 			map.put(MODIF_DI, Boolean.FALSE);
 			map.put(FISCAL_DECISION_ACI, Boolean.FALSE);
+			map.put(MODIF_BOUCLEMENTS, Boolean.FALSE);
+			map.put(MODIF_ETATS_PM, Boolean.FALSE);
+			map.put(MODIF_REGIMES_FISCAUX, Boolean.FALSE);
+			map.put(MODIF_ALLEGEMENTS_FISCAUX, Boolean.FALSE);
+			map.put(MODIF_FLAGS_PM, Boolean.FALSE);
 
 			return map;
 		}
@@ -481,6 +489,16 @@ public class AutorisationManagerImpl implements AutorisationManager {
 			}
 			if (ctbModifiableSelonRoleEtDecision && SecurityHelper.isGranted(securityProvider, Role.BOUCLEMENTS_PM, visa, oid)) {
 				map.put(MODIF_BOUCLEMENTS, Boolean.TRUE);
+			}
+
+			if (SecurityHelper.isGranted(securityProvider, Role.REGIMES_FISCAUX, visa, oid)) {
+				map.put(MODIF_REGIMES_FISCAUX, Boolean.TRUE);
+			}
+			if (SecurityHelper.isGranted(securityProvider, Role.ALLEGEMENTS_FISCAUX, visa, oid)) {
+				map.put(MODIF_ALLEGEMENTS_FISCAUX, Boolean.TRUE);
+			}
+			if (SecurityHelper.isGranted(securityProvider, Role.FLAGS_PM, visa, oid)) {
+				map.put(MODIF_FLAGS_PM, Boolean.TRUE);
 			}
 		}
 

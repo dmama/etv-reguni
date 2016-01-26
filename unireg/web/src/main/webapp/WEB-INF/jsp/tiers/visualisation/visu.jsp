@@ -128,11 +128,8 @@
 							</li>
 						</c:if>
 						<c:if test="${command.natureTiers == 'Entreprise'}">
-							<li id="regimesFiscauxTab">
-								<a href="#tabContent_regimesFiscauxTab"><fmt:message key="label.regimes.fiscaux" /></a>
-							</li>
-							<li id="allegementsFiscauxTab">
-								<a href="#tabContent_allegementsFiscauxTab"><fmt:message key="label.allegements.fiscaux" /></a>
+							<li id="specificitesFiscalesTab">
+								<a href="#tabContent_specificitesFiscalesTab"><fmt:message key="label.specificites.fiscales"/></a>
 							</li>
 							<li id="etatsPMTab">
 								<a href="#tabContent_etatsPMTab"><fmt:message key="label.etats.pm" /></a>
@@ -221,11 +218,8 @@
 						</div>
 					</c:if>
 					<c:if test="${command.natureTiers == 'Entreprise'}">
-						<div id="tabContent_regimesFiscauxTab" class="visuTiers">
-							<jsp:include page="pm/regimes-fiscaux.jsp"/>
-						</div>
-						<div id="tabContent_allegementsFiscauxTab" class="visuTiers">
-							<jsp:include page="pm/allegements-fiscaux.jsp"/>
+						<div id="tabContent_specificitesFiscalesTab">
+							<jsp:include page="pm/specificites.jsp"/>
 						</div>
 						<div id="tabContent_etatsPMTab" class="visuTiers">
 							<jsp:include page="pm/etats.jsp"/>

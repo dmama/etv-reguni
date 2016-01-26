@@ -50,6 +50,7 @@ import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockLocalite;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
+import ch.vd.unireg.interfaces.infra.mock.MockTypeRegimeFiscal;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.interfaces.organisation.data.StatusInscriptionRC;
 import ch.vd.unireg.interfaces.organisation.data.StatusRC;
@@ -9406,6 +9407,8 @@ debut PF                                                                        
 			@Override
 			public Long doInTransaction(TransactionStatus status) {
 				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+				addRegimeFiscalVD(entreprise, date(2000, 1, 3), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addRegimeFiscalCH(entreprise, date(2000, 1, 3), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 				addForPrincipal(entreprise, date(2000, 1, 3), null, MockCommune.Bale);
 				return entreprise.getNumero();
 			}
@@ -9470,6 +9473,8 @@ debut PF                                                                        
 			@Override
 			public Long doInTransaction(TransactionStatus status) {
 				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+				addRegimeFiscalVD(entreprise, date(2000, 5, 3), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addRegimeFiscalCH(entreprise, date(2000, 5, 3), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 				addForPrincipal(entreprise, date(2000, 5, 3), null, MockCommune.Bale);
 				addBouclement(entreprise, date(2001, 6, 1), DayMonth.get(6, 30), 12);       // tous les ans depuis le 30.06.2001
 				return entreprise.getNumero();

@@ -38,6 +38,7 @@ import ch.vd.unireg.interfaces.infra.mock.MockLocalite;
 import ch.vd.unireg.interfaces.infra.mock.MockOfficeImpot;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
+import ch.vd.unireg.interfaces.infra.mock.MockTypeRegimeFiscal;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.interfaces.organisation.mock.MockServiceOrganisation;
 import ch.vd.unireg.interfaces.organisation.mock.data.MockOrganisation;
@@ -1267,6 +1268,8 @@ public class BusinessWebServiceTest extends WebserviceTest {
 				dpi.setModeCommunication(ModeCommunication.ELECTRONIQUE);
 
 				final Entreprise pm = addEntrepriseConnueAuCivil(noEntreprise);
+				addRegimeFiscalVD(pm, pmActivityStartDate, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addRegimeFiscalCH(pm, pmActivityStartDate, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 				addForPrincipal(pm, pmActivityStartDate, MotifFor.DEBUT_EXPLOITATION, MockCommune.Morges);
 
 				final CollectiviteAdministrative ca = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noCAT);
@@ -3247,6 +3250,8 @@ public class BusinessWebServiceTest extends WebserviceTest {
 				addCapitalEntreprise(entreprise, date(2013, 5, 13), null, new MontantMonetaire(100000L, "CHF"));
 				addFlagEntreprise(entreprise, date(2010, 6, 2), RegDate.get(2013, 5, 26), TypeFlagEntreprise.UTILITE_PUBLIQUE);
 
+				addRegimeFiscalVD(entreprise, date(2000, 3, 1), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addRegimeFiscalCH(entreprise, date(2000, 3, 1), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 				addForPrincipal(entreprise, date(2000, 3, 1), MotifFor.DEBUT_EXPLOITATION, MockCommune.Geneve);
 				final ForFiscalSecondaire fs = addForSecondaire(entreprise, date(2005, 3, 1), MotifFor.DEBUT_EXPLOITATION, MockCommune.Cossonay.getNoOFS(), MotifRattachement.ETABLISSEMENT_STABLE);
 				fs.setGenreImpot(GenreImpot.BENEFICE_CAPITAL);

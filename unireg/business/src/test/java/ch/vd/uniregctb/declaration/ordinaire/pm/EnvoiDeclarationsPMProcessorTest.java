@@ -12,6 +12,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockOfficeImpot;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
+import ch.vd.unireg.interfaces.infra.mock.MockTypeRegimeFiscal;
 import ch.vd.unireg.interfaces.organisation.mock.MockServiceOrganisation;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.BusinessTest;
@@ -112,6 +113,8 @@ public class EnvoiDeclarationsPMProcessorTest extends BusinessTest {
 				final Entreprise e = addEntrepriseInconnueAuCivil();
 				addRaisonSociale(e, date(pf - 1, 5, 3), null, "Ma petite entreprise");
 				addFormeJuridique(e, date(pf - 1, 5, 3), null, FormeJuridiqueEntreprise.SARL);
+				addRegimeFiscalVD(e, RegDate.get(pf - 1, 5, 3), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addRegimeFiscalCH(e, RegDate.get(pf - 1, 5, 3), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 				addForPrincipal(e, date(pf - 1, 5, 3), MotifFor.DEBUT_EXPLOITATION, MockCommune.YverdonLesBains);
 				addAdresseSuisse(e, TypeAdresseTiers.COURRIER, date(pf - 1, 5, 3), null, MockRue.YverdonLesBains.RueDeLaFaiencerie, null);
 				addBouclement(e, date(pf - 1, 7, 1), DayMonth.get(6, 30), 12);
@@ -283,6 +286,8 @@ public class EnvoiDeclarationsPMProcessorTest extends BusinessTest {
 				final Entreprise e = addEntrepriseInconnueAuCivil();
 				addRaisonSociale(e, date(pf - 1, 5, 3), null, "Ma petite entreprise");
 				addFormeJuridique(e, date(pf - 1, 5, 3), null, FormeJuridiqueEntreprise.SARL);
+				addRegimeFiscalVD(e, RegDate.get(pf - 1, 5, 3), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addRegimeFiscalCH(e, RegDate.get(pf - 1, 5, 3), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 				addForPrincipal(e, date(pf - 1, 5, 3), MotifFor.DEBUT_EXPLOITATION, MockCommune.YverdonLesBains);
 				addAdresseSuisse(e, TypeAdresseTiers.COURRIER, date(pf - 1, 5, 3), null, MockRue.YverdonLesBains.RueDeLaFaiencerie, null);
 				addBouclement(e, date(pf - 1, 7, 1), DayMonth.get(6, 30), 12);
@@ -373,6 +378,8 @@ public class EnvoiDeclarationsPMProcessorTest extends BusinessTest {
 				final Entreprise e = addEntrepriseInconnueAuCivil();
 				addRaisonSociale(e, date(pf - 1, 5, 3), null, "Ma petite entreprise");
 				addFormeJuridique(e, date(pf - 1, 5, 3), null, FormeJuridiqueEntreprise.SARL);
+				addRegimeFiscalVD(e, RegDate.get(pf - 1, 5, 3), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addRegimeFiscalCH(e, RegDate.get(pf - 1, 5, 3), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 				addForPrincipal(e, date(pf - 1, 5, 3), MotifFor.DEBUT_EXPLOITATION, MockCommune.YverdonLesBains);
 				addAdresseSuisse(e, TypeAdresseTiers.COURRIER, date(pf - 1, 5, 3), null, MockRue.YverdonLesBains.RueDeLaFaiencerie, null);
 				addBouclement(e, date(pf - 1, 7, 1), DayMonth.get(6, 30), 12);
@@ -486,6 +493,8 @@ public class EnvoiDeclarationsPMProcessorTest extends BusinessTest {
 				final Entreprise e = addEntrepriseInconnueAuCivil();
 				addRaisonSociale(e, date(pf - 1, 5, 3), null, "Ma petite entreprise");
 				addFormeJuridique(e, date(pf - 1, 5, 3), null, FormeJuridiqueEntreprise.SARL);
+				addRegimeFiscalVD(e, RegDate.get(pf - 1, 5, 3), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addRegimeFiscalCH(e, RegDate.get(pf - 1, 5, 3), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 				addForPrincipal(e, date(pf - 1, 5, 3), MotifFor.DEBUT_EXPLOITATION, date(pf, 6, 15), MotifFor.CESSATION_ACTIVITE_FUSION_FAILLITE, MockCommune.YverdonLesBains);
 				addAdresseSuisse(e, TypeAdresseTiers.COURRIER, date(pf - 1, 5, 3), null, MockRue.YverdonLesBains.RueDeLaFaiencerie, null);
 				addBouclement(e, date(pf - 1, 7, 1), DayMonth.get(6, 30), 12);
@@ -599,6 +608,8 @@ public class EnvoiDeclarationsPMProcessorTest extends BusinessTest {
 				final Entreprise e = addEntrepriseInconnueAuCivil();
 				addRaisonSociale(e, date(pf - 1, 5, 3), null, "Ma petite entreprise");
 				addFormeJuridique(e, date(pf - 1, 5, 3), null, FormeJuridiqueEntreprise.SARL);
+				addRegimeFiscalVD(e, RegDate.get(pf - 1, 5, 3), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addRegimeFiscalCH(e, RegDate.get(pf - 1, 5, 3), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 				addForPrincipal(e, date(pf - 1, 5, 3), MotifFor.DEBUT_EXPLOITATION, date(pf, 6, 15), MotifFor.CESSATION_ACTIVITE_FUSION_FAILLITE, MockCommune.YverdonLesBains);
 				addAdresseSuisse(e, TypeAdresseTiers.COURRIER, date(pf - 1, 5, 3), null, MockRue.YverdonLesBains.RueDeLaFaiencerie, null);
 				addBouclement(e, date(pf - 1, 7, 1), DayMonth.get(6, 30), 12);

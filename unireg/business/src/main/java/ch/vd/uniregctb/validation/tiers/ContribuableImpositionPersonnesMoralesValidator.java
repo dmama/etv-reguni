@@ -9,7 +9,7 @@ import ch.vd.uniregctb.tiers.ForsParType;
 
 public abstract class ContribuableImpositionPersonnesMoralesValidator<T extends ContribuableImpositionPersonnesMorales> extends ContribuableValidator<T> {
 
-	private ParametreAppService parametreAppService;
+	protected ParametreAppService parametreAppService;
 
 	public void setParametreAppService(ParametreAppService parametreAppService) {
 		this.parametreAppService = parametreAppService;

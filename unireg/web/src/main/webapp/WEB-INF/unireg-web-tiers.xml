@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+						   http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
 
 	<bean id="abstractTiersController" parent="abstractSimpleFormController" abstract="true" class="ch.vd.uniregctb.tiers.AbstractTiersController">
 		<property name="tiersService" ref="tiersService" />
@@ -245,5 +248,25 @@
 		<property name="avatarService" ref="avatarService"/>
 		<property name="tiersService" ref="tiersService"/>
 	</bean>
+
+	<bean id="specificitesFiscalesController" class="ch.vd.uniregctb.tiers.SpecificiteFiscaleController">
+		<property name="controllerUtils" ref="controllerUtils"/>
+		<property name="securityProvider" ref="securityProviderInterface"/>
+		<property name="serviceInfrastructureService" ref="serviceInfrastructureService"/>
+		<property name="tiersService" ref="tiersService"/>
+		<property name="hibernateTemplate" ref="hibernateTemplate"/>
+		<property name="validators">
+			<util:list>
+				<ref bean="addRegimeFiscalViewValidator"/>
+				<ref bean="editRegimeFiscalViewValidator"/>
+			</util:list>
+		</property>
+	</bean>
+
+	<bean id="abstractRegimeFiscalViewValidator" abstract="true" class="ch.vd.uniregctb.tiers.validator.AbstractRegimeFiscalViewValidator">
+		<property name="infraService" ref="serviceInfrastructureService"/>
+	</bean>
+	<bean id="addRegimeFiscalViewValidator" class="ch.vd.uniregctb.tiers.validator.AddRegimeFiscalViewValidator" parent="abstractRegimeFiscalViewValidator"/>
+	<bean id="editRegimeFiscalViewValidator" class="ch.vd.uniregctb.tiers.validator.EditRegimeFiscalViewValidator" parent="abstractRegimeFiscalViewValidator"/>
 
 </beans>
