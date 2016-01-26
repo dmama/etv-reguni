@@ -23,6 +23,8 @@ import ch.vd.uniregctb.common.TiersNotFoundException;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.security.AccessDeniedException;
+import ch.vd.uniregctb.security.Role;
+import ch.vd.uniregctb.security.SecurityHelper;
 import ch.vd.uniregctb.security.SecurityProviderInterface;
 import ch.vd.uniregctb.tiers.CapitalFiscalEntreprise;
 import ch.vd.uniregctb.tiers.Entreprise;
@@ -120,11 +122,11 @@ public class CivilEntrepriseEditController {
 	@RequestMapping(value = "/edit.do", method = RequestMethod.GET)
 	@Transactional(readOnly = true, rollbackFor = Throwable.class)
 	public String editEntreprise(Model model, @RequestParam(value = ID) long id) {
-/*
-		if (!SecurityHelper.isGranted(securityProvider, Role.MODIF_AC)) {
+
+		if (!SecurityHelper.isGranted(securityProvider, Role.MODIF_PM)) {
 			throw new AccessDeniedException("Vous ne possédez pas les droits d'accès suffisants à la modification des tiers de ce type.");
 		}
-*/
+
 
 		final Tiers tiers = tiersDAO.get(id);
 		if (tiers != null && tiers instanceof Entreprise) {
@@ -497,11 +499,11 @@ public class CivilEntrepriseEditController {
 	@Transactional(rollbackFor = Throwable.class)
 	@RequestMapping(value = "/ide/edit.do", method = RequestMethod.GET)
 	public String editIdeEntreprise(Model model, @RequestParam(value = ID) long id) {
-/*
-		if (!SecurityHelper.isGranted(securityProvider, Role.MODIF_AC)) {
+
+		if (!SecurityHelper.isGranted(securityProvider, Role.MODIF_PM)) {
 			throw new AccessDeniedException("Vous ne possédez pas les droits d'accès suffisants à la modification des tiers de ce type.");
 		}
-*/
+
 
 		final Tiers tiers = tiersDAO.get(id);
 		if (tiers != null && tiers instanceof Entreprise) {
@@ -521,12 +523,12 @@ public class CivilEntrepriseEditController {
 
 	@Transactional(rollbackFor = Throwable.class)
 	@RequestMapping(value = "/ide/edit.do", method = RequestMethod.POST)
-	public String doEditIdeHabitant(@RequestParam(value = ID) long id, Model model, @Valid @ModelAttribute(DATA) ContribuableInfosEntrepriseView view, BindingResult bindingResult) {
-/*
-		if (!SecurityHelper.isGranted(securityProvider, Role.MODIF_AC)) {
+	public String editIdeEntreprise(@RequestParam(value = ID) long id, Model model, @Valid @ModelAttribute(DATA) ContribuableInfosEntrepriseView view, BindingResult bindingResult) {
+
+		if (!SecurityHelper.isGranted(securityProvider, Role.MODIF_PM)) {
 			throw new AccessDeniedException("Vous ne possédez pas les droits d'accès suffisants à la modification des tiers de ce type.");
 		}
-*/
+
 
 		if (bindingResult.hasErrors()) {
 			model.addAttribute(DATA, view);
