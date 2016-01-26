@@ -4,7 +4,9 @@ import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.tiers.Entreprise;
+import ch.vd.uniregctb.tiers.EtatEntreprise;
 import ch.vd.uniregctb.tiers.TiersDAO;
+import ch.vd.uniregctb.type.TypeEtatEntreprise;
 import ch.vd.uniregctb.type.TypeGenerationEtatEntreprise;
 
 /**
@@ -27,19 +29,31 @@ public abstract class BaseTransitionEtatEntreprise implements TransitionEtatEntr
 		this.generation = generation;
 	}
 
-	public TiersDAO getTiersDAO() {
+	@Override
+	public abstract TypeEtatEntreprise getTypeDestination();
+
+	@Override
+	public EtatEntreprise apply() {
+		final EtatEntreprise etat = new EtatEntreprise();
+		etat.setType(getTypeDestination());
+		etat.setDateObtention(getDate());
+		etat.setGeneration(getGeneration());
+		return getTiersDAO().addAndSave(getEntreprise(), etat);
+	}
+
+	protected TiersDAO getTiersDAO() {
 		return tiersDAO;
 	}
 
-	public Entreprise getEntreprise() {
+	protected Entreprise getEntreprise() {
 		return entreprise;
 	}
 
-	public RegDate getDate() {
+	protected RegDate getDate() {
 		return date;
 	}
 
-	public TypeGenerationEtatEntreprise getGeneration() {
+	protected TypeGenerationEtatEntreprise getGeneration() {
 		return generation;
 	}
 }

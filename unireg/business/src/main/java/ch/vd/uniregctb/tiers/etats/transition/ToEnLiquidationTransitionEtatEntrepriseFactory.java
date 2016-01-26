@@ -20,12 +20,14 @@ public class ToEnLiquidationTransitionEtatEntrepriseFactory extends BaseTransiti
 	@Override
 	public TransitionEtatEntreprise create(Entreprise entreprise, RegDate date, TypeGenerationEtatEntreprise generation) {
 		final EtatEntreprise actuel = getEtatActuel(entreprise);
-		if (checkDateValid(actuel, date)) {
-			switch (actuel.getType()) {
-			case INSCRITE_RC:
-				return new ToEnLiquidationTransitionEtatEntreprise(getTiersDAO(), entreprise, date, generation);
-			}
+		if (!checkDateValid(actuel, date)) {
+			return null;
 		}
-		return null;
+		switch (actuel.getType()) {
+		case INSCRITE_RC:
+			return new ToEnLiquidationTransitionEtatEntreprise(getTiersDAO(), entreprise, date, generation);
+		default:
+			return null;
+		}
 	}
 }

@@ -26,18 +26,22 @@ public class ToRadieeRCTransitionEtatEntrepriseFactory extends BaseTransitionEta
 	@Override
 	public TransitionEtatEntreprise create(Entreprise entreprise, RegDate date, TypeGenerationEtatEntreprise generation) {
 		final EtatEntreprise actuel = getEtatActuel(entreprise);
-		if (checkDateValid(actuel, date)) {
-			switch (actuel.getType()) {
-			case EN_FAILLITE:
-			case EN_LIQUIDATION:
-				return new ToRadieeRCTransitionEtatEntreprise(getTiersDAO(), entreprise, date, generation);
-			case ABSORBEE:
-				if (isInscriteRC(entreprise, date)) {
-					return new ToRadieeRCTransitionEtatEntreprise(getTiersDAO(), entreprise, date, generation);
-				}
-			}
+		if (!checkDateValid(actuel, date)) {
+			return null;
 		}
-		return null;
+		switch (actuel.getType()) {
+		case EN_FAILLITE:
+		case EN_LIQUIDATION:
+			return new ToRadieeRCTransitionEtatEntreprise(getTiersDAO(), entreprise, date, generation);
+		case ABSORBEE:
+			TransitionEtatEntreprise transition = null;
+			if (isInscriteRC(entreprise, date)) {
+				transition = new ToRadieeRCTransitionEtatEntreprise(getTiersDAO(), entreprise, date, generation);
+			}
+			return transition;
+		default:
+			return null;
+		}
 	}
 
 	/**

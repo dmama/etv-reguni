@@ -31,6 +31,9 @@
 			<display:column titleKey="label.type">
 				<fmt:message key="option.etat.entreprise.${etatPM.type}"/>
 			</display:column>
+			<display:column titleKey="label.etats.type.generation">
+				<fmt:message key="option.etat.entreprise.generation.${etatPM.generation}"/>
+			</display:column>
 			<display:column class="action">
 				<unireg:consulterLog entityNature="EtatEntreprise" entityId="${etatPM.id}"/>
 			</display:column>

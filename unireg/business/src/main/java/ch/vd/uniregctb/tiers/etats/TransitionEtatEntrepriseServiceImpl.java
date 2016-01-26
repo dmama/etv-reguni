@@ -1,9 +1,12 @@
 package ch.vd.uniregctb.tiers.etats;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 
 import ch.vd.registre.base.date.RegDate;
@@ -36,6 +39,8 @@ import ch.vd.uniregctb.type.TypeGenerationEtatEntreprise;
  */
 public class TransitionEtatEntrepriseServiceImpl implements TransitionEtatEntrepriseService, InitializingBean {
 
+	protected static final Logger LOGGER = LoggerFactory.getLogger(TransitionEtatEntrepriseServiceImpl.class);
+
 	private TiersDAO tiersDAO;
 	private ServiceOrganisationService serviceOrganisation;
 
@@ -57,6 +62,10 @@ public class TransitionEtatEntrepriseServiceImpl implements TransitionEtatEntrep
 
 	@Override
 	public Map<TypeEtatEntreprise, TransitionEtatEntreprise> getTransitionsDisponibles(Entreprise entreprise, RegDate date, TypeGenerationEtatEntreprise generation) {
+		if (entreprise.getEtatActuel() == null) {
+			LOGGER.info("{} n'a pas d'état! Pas de transitions d'état disponibles.", entreprise.toString());
+			return Collections.emptyMap();
+		}
 		Map<TypeEtatEntreprise, TransitionEtatEntreprise> disponibles = new HashMap<>();
 		for (Map.Entry<TypeEtatEntreprise, TransitionEtatEntrepriseFactory> entry : transitionFactoryMap.entrySet()) {
 			final TransitionEtatEntreprise transition = entry.getValue().create(entreprise, date, generation);
@@ -70,8 +79,7 @@ public class TransitionEtatEntrepriseServiceImpl implements TransitionEtatEntrep
 	@Override
 	public TransitionEtatEntreprise getTransitionVersEtat(TypeEtatEntreprise type, Entreprise entreprise, RegDate date, TypeGenerationEtatEntreprise generation) {
 		final TransitionEtatEntrepriseFactory factory = transitionFactoryMap.get(type);
-		final TransitionEtatEntreprise transition = factory.create(entreprise, date, generation);
-		return transition != null ? transition : null;
+		return factory.create(entreprise, date, generation);
 	}
 
 	public void setTiersDAO(TiersDAO tiersDAO) {

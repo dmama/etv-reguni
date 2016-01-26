@@ -264,7 +264,7 @@ public class Entreprise extends ContribuableImpositionPersonnesMorales {
 	@Transient
 	public EtatEntreprise getEtatActuel() {
 		final List<EtatEntreprise> nonAnnules = getEtatsNonAnnulesTries();
-		if (nonAnnules.size() > 0) {
+		if (!nonAnnules.isEmpty()) {
 			return CollectionsUtils.getLastElement(nonAnnules);
 		}
 		return null;

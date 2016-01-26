@@ -20,12 +20,14 @@ public class ToDissouteTransitionEtatEntrepriseFactory extends BaseTransitionEta
 	@Override
 	public TransitionEtatEntreprise create(Entreprise entreprise, RegDate date, TypeGenerationEtatEntreprise generation) {
 		final EtatEntreprise actuel = getEtatActuel(entreprise);
-		if (checkDateValid(actuel, date)) {
-			switch (actuel.getType()) {
-			case FONDEE:
-				return new ToDissouteTransitionEtatEntreprise(getTiersDAO(), entreprise, date, generation);
-			}
+		if (!checkDateValid(actuel, date)) {
+			return null;
 		}
-		return null;
+		switch (actuel.getType()) {
+		case FONDEE:
+			return new ToDissouteTransitionEtatEntreprise(getTiersDAO(), entreprise, date, generation);
+		default:
+			return null;
+	}
 	}
 }

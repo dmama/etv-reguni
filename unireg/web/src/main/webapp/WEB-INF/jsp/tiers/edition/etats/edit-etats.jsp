@@ -6,7 +6,7 @@
 <unireg:setAuth var="autorisations" tiersId="${command.id}"/>
 <tiles:insert template="/WEB-INF/jsp/templates/template.jsp">
 	<tiles:put name="title">
-		<fmt:message key="title.edition.civil" />
+		<fmt:message key="title.edition.etats" />
 	</tiles:put>
 	<tiles:put name="fichierAide">
 		<li>
@@ -15,7 +15,7 @@
 	</tiles:put>
 	<tiles:put name="body">
 
-		<unireg:bandeauTiers numero="${command.id}" showLinks="false" showComplements="false" showEvenementsCivils="false" showValidation="false"/>
+		<unireg:bandeauTiers numero="${command.id}" showLinks="false" showComplements="false" showEvenementsCivils="false" showValidation="false" showAvatar="false"/>
 
 		<span><%-- span vide pour que IE8 calcul correctement la hauteur du fieldset (voir fieldsets-workaround.jsp) --%></span>
 		<fieldset>
@@ -42,6 +42,9 @@
 					</display:column>
 					<display:column titleKey="label.type">
 						<fmt:message key="option.etat.entreprise.${etatPM.type}"/>
+					</display:column>
+					<display:column titleKey="label.etats.type.generation">
+						<fmt:message key="option.etat.entreprise.generation.${etatPM.generation}"/>
 					</display:column>
 					<display:column class="action">
 						<c:if test="${(!etatPM.annule) && autorisations.etatsPM}">

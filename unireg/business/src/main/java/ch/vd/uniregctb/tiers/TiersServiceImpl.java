@@ -6095,8 +6095,10 @@ public class TiersServiceImpl implements TiersService {
 	}
 
 	@Override
-	public Map<TypeEtatEntreprise, TransitionEtatEntreprise> getTransitionEtatEntrepriseDisponibles(Entreprise entreprise, RegDate date, TypeGenerationEtatEntreprise generation) {
-		return transitionEtatEntrepriseService.getTransitionsDisponibles(entreprise, date, generation);
+	public List<TypeEtatEntreprise> getTransitionsEtatEntrepriseDisponibles(Entreprise entreprise, RegDate date, TypeGenerationEtatEntreprise generation) {
+		List<TypeEtatEntreprise> transitions = new ArrayList<>(transitionEtatEntrepriseService.getTransitionsDisponibles(entreprise, date, generation).keySet());
+		Collections.sort(transitions);
+		return transitions;
 	}
 
 	@Override

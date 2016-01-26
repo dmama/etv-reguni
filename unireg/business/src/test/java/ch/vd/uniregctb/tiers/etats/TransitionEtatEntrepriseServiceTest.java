@@ -102,7 +102,7 @@ public class TransitionEtatEntrepriseServiceTest extends WithoutSpringTest {
 	private void assertTransition(Map<TypeEtatEntreprise, TransitionEtatEntreprise> disponibles, TypeEtatEntreprise toType, Class clazz) {
 		TransitionEtatEntreprise transition = disponibles.get(toType);
 		Assert.assertNotNull(transition);
-		Assert.assertEquals(toType, transition.getType());
+		Assert.assertEquals(toType, transition.getTypeDestination());
 		Assert.assertTrue(transition.getClass().equals(clazz));
 	}
 

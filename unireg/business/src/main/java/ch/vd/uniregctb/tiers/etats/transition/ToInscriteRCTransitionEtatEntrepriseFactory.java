@@ -20,15 +20,17 @@ public class ToInscriteRCTransitionEtatEntrepriseFactory extends BaseTransitionE
 	@Override
 	public TransitionEtatEntreprise create(Entreprise entreprise, RegDate date, TypeGenerationEtatEntreprise generation) {
 		final EtatEntreprise actuel = getEtatActuel(entreprise);
-		if (checkDateValid(actuel, date)) {
-			switch (actuel.getType()) {
-			case FONDEE:
-			case EN_FAILLITE:
-			case EN_LIQUIDATION:
-			case RADIEE_RC:
-				return new ToInscriteRCTransitionEtatEntreprise(getTiersDAO(), entreprise, date, generation);
-			}
+		if (!checkDateValid(actuel, date)) {
+			return null;
 		}
-		return null;
+		switch (actuel.getType()) {
+		case FONDEE:
+		case EN_FAILLITE:
+		case EN_LIQUIDATION:
+		case RADIEE_RC:
+			return new ToInscriteRCTransitionEtatEntreprise(getTiersDAO(), entreprise, date, generation);
+		default:
+			return null;
+		}
 	}
 }

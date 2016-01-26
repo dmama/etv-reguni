@@ -22,7 +22,6 @@ import ch.vd.uniregctb.reqdes.EtatTraitement;
 import ch.vd.uniregctb.tiers.TiersCriteria.TypeRecherche;
 import ch.vd.uniregctb.tiers.TiersCriteria.TypeRechercheForFiscal;
 import ch.vd.uniregctb.tiers.TiersCriteria.TypeRechercheLocalitePays;
-import ch.vd.uniregctb.tiers.etats.transition.TransitionEtatEntreprise;
 import ch.vd.uniregctb.type.ActionEvenementCivilEch;
 import ch.vd.uniregctb.type.CategorieEntreprise;
 import ch.vd.uniregctb.type.CategorieEtranger;
@@ -714,12 +713,13 @@ public class TiersMapHelper extends CommonMapHelper {
 		return map;
 	}
 
-	public Map<TypeEtatEntreprise, String> getMapForTypeEtatEntreprise(Map<TypeEtatEntreprise, TransitionEtatEntreprise> transitions) {
-		final TreeMap<TypeEtatEntreprise, String> map = new TreeMap<>();
-		for (TransitionEtatEntreprise transition : transitions.values()) {
-			map.put(transition.getType(), transition.getType().getLibelle());
-		}
-		return map;
+	/**
+	 * Renvoie une map d'états entreprise en fonction de la list de type d'états fournie.
+	 * @param transitions Une liste de type d'état d'entreprise
+	 * @return la map correspondante
+	 */
+	public Map<TypeEtatEntreprise, String> getMapForTypeEtatEntreprise(List<TypeEtatEntreprise> transitions) {
+		return initMapEnum(ApplicationConfig.masterKeyEtatEntreprise, transitions.toArray(new TypeEtatEntreprise[transitions.size()]));
 	}
 
 	/**

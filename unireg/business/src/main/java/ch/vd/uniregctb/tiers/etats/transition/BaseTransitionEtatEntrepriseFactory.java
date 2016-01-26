@@ -3,7 +3,6 @@ package ch.vd.uniregctb.tiers.etats.transition;
 import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.EtatEntreprise;
 import ch.vd.uniregctb.tiers.TiersDAO;
@@ -18,7 +17,7 @@ public abstract class BaseTransitionEtatEntrepriseFactory implements TransitionE
 		this.tiersDAO = tiersDAO;
 	}
 
-	public TiersDAO getTiersDAO() {
+	protected TiersDAO getTiersDAO() {
 		return tiersDAO;
 	}
 
@@ -28,7 +27,7 @@ public abstract class BaseTransitionEtatEntrepriseFactory implements TransitionE
 	 * @return l'état en vigueur
 	 */
 	protected static EtatEntreprise getEtatActuel(@NotNull Entreprise entreprise) {
-		return CollectionsUtils.getLastElement(entreprise.getEtatsNonAnnulesTries());
+		return entreprise.getEtatActuel();
 	}
 
 	/**

@@ -1,7 +1,7 @@
 package ch.vd.uniregctb.entreprise;
 
 import javax.validation.Valid;
-import java.util.Map;
+import java.util.List;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,13 +21,15 @@ import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.common.TiersNotFoundException;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.security.AccessDeniedException;
+import ch.vd.uniregctb.security.Role;
+import ch.vd.uniregctb.security.SecurityHelper;
+import ch.vd.uniregctb.security.SecurityProviderInterface;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.EtatEntreprise;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersMapHelper;
 import ch.vd.uniregctb.tiers.TiersService;
-import ch.vd.uniregctb.tiers.etats.transition.TransitionEtatEntreprise;
 import ch.vd.uniregctb.tiers.manager.AutorisationManager;
 import ch.vd.uniregctb.tiers.manager.Autorisations;
 import ch.vd.uniregctb.type.TypeEtatEntreprise;
@@ -38,15 +40,13 @@ import ch.vd.uniregctb.utils.RegDateEditor;
 @RequestMapping(value = "/entreprise/etats")
 public class EtatEntrepriseEditController {
 
-	private static final String ID = "id";
-
 	private static final String TRANSITIONS_DISPONIBLES = "transitionDisponibles";
-	private static final String TIERS_ID = "tiersId";
 
 	private TiersDAO tiersDAO;
 	private TiersMapHelper tiersMapHelper;
 	private TiersService tiersService;
 	private HibernateTemplate hibernateTemplate;
+	private SecurityProviderInterface securityProvider;
 	private AutorisationManager autorisationManager;
 	private EntrepriseService entrepriseService;
 
@@ -68,6 +68,10 @@ public class EtatEntrepriseEditController {
 
 	public void setHibernateTemplate(HibernateTemplate hibernateTemplate) {
 		this.hibernateTemplate = hibernateTemplate;
+	}
+
+	public void setSecurityProvider(SecurityProviderInterface securityProvider) {
+		this.securityProvider = securityProvider;
 	}
 
 	public void setAutorisationManager(AutorisationManager autorisationManager) {
@@ -93,12 +97,12 @@ public class EtatEntrepriseEditController {
 
 	@RequestMapping(value = "/edit.do", method = RequestMethod.GET)
 	@Transactional(readOnly = true, rollbackFor = Throwable.class)
-	public String editEntreprise(Model model, @RequestParam(value = ID) long id) {
-/*
-		if (!SecurityHelper.isGranted(securityProvider, Role.MODIF_AC)) {
+	public String editEntreprise(Model model, @RequestParam(value = "id") long id) {
+
+		if (!SecurityHelper.isGranted(securityProvider, Role.MODIF_PM)) {
 			throw new AccessDeniedException("Vous ne possédez pas les droits d'accès suffisants à la modification des tiers de ce type.");
 		}
-*/
+
 
 		final Tiers tiers = tiersDAO.get(id);
 		if (tiers != null && tiers instanceof Entreprise) {
@@ -116,7 +120,7 @@ public class EtatEntrepriseEditController {
 
 	private String showEditEtats(Model model, long id, EntrepriseView view) {
 		model.addAttribute("command", view);
-		model.addAttribute(TIERS_ID, id);
+		model.addAttribute("tiersId", id);
 		return "/tiers/edition/etats/edit-etats";
 	}
 
@@ -140,12 +144,10 @@ public class EtatEntrepriseEditController {
 
 		final AddEtatEntrepriseView view = new AddEtatEntrepriseView(entreprise);
 		view.setDateObtention(date != null ? date : RegDate.get()); // Pré-remplissage à la date du jour si date vide.
-		if (type != null) {
-			view.setType(type);
-		}
+		view.setType(type);
 		model.addAttribute("command", view);
-		final Map<TypeEtatEntreprise, TransitionEtatEntreprise> transitionDisponibles =
-				tiersService.getTransitionEtatEntrepriseDisponibles(entreprise, view.getDateObtention(), TypeGenerationEtatEntreprise.MANUELLE);
+		final List<TypeEtatEntreprise> transitionDisponibles =
+				tiersService.getTransitionsEtatEntrepriseDisponibles(entreprise, view.getDateObtention(), TypeGenerationEtatEntreprise.MANUELLE);
 
 		model.addAttribute(TRANSITIONS_DISPONIBLES, tiersMapHelper.getMapForTypeEtatEntreprise(transitionDisponibles));
 		return "etats/add-etat-entreprise";
@@ -173,8 +175,8 @@ public class EtatEntrepriseEditController {
 			final EtatEntreprise etatActuel = entreprise.getEtatActuel();
 			view.setPreviousDate(etatActuel.getDateObtention());
 			view.setPreviousType(etatActuel.getType());
-			final Map<TypeEtatEntreprise, TransitionEtatEntreprise> transitionDisponibles =
-					tiersService.getTransitionEtatEntrepriseDisponibles(entreprise, date, TypeGenerationEtatEntreprise.MANUELLE);
+			final List<TypeEtatEntreprise> transitionDisponibles =
+					tiersService.getTransitionsEtatEntrepriseDisponibles(entreprise, date, TypeGenerationEtatEntreprise.MANUELLE);
 
 			model.addAttribute("command", view);
 			model.addAttribute(TRANSITIONS_DISPONIBLES, tiersMapHelper.getMapForTypeEtatEntreprise(transitionDisponibles));

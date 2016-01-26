@@ -25,8 +25,8 @@ public interface TransitionEtatEntreprise {
 	EtatEntreprise apply();
 
 	/**
-	 * @return le type de l'état appliqué par la transition.
+	 * @return le type de l'état que l'entreprise aura à l'arrivée, c'est à dire après l'application de cette transition.
 	 */
-	TypeEtatEntreprise getType();
+	TypeEtatEntreprise getTypeDestination();
 
 }

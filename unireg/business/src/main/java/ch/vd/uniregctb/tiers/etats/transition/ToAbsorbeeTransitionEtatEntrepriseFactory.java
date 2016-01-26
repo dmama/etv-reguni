@@ -20,13 +20,15 @@ public class ToAbsorbeeTransitionEtatEntrepriseFactory extends BaseTransitionEta
 	@Override
 	public TransitionEtatEntreprise create(Entreprise entreprise, RegDate date, TypeGenerationEtatEntreprise generation) {
 		final EtatEntreprise actuel = getEtatActuel(entreprise);
-		if (checkDateValid(actuel, date)) {
-			switch (actuel.getType()) {
-			case INSCRITE_RC:
-			case FONDEE:
-				return new ToAbsorbeeTransitionEtatEntreprise(getTiersDAO(), entreprise, date, generation);
-			}
+		if (!checkDateValid(actuel, date)) {
+			return null;
 		}
-		return null;
+		switch (actuel.getType()) {
+		case INSCRITE_RC:
+		case FONDEE:
+			return new ToAbsorbeeTransitionEtatEntreprise(getTiersDAO(), entreprise, date, generation);
+		default:
+			return null;
+		}
 	}
 }

@@ -11,55 +11,11 @@
   	</tiles:put>
 	<tiles:put name="body">
 
+		<unireg:bandeauTiers numero="${command.tiersId}" showLinks="false" showComplements="false" showEvenementsCivils="false" showValidation="false" showAvatar="false"/>
+
 		<form:form id="AddEtatEntrepriseForm" commandName="command" action="add.do">
 			<fieldset>
-				<legend><span><fmt:message key="label.etat" /></span></legend>
-
-				<form:hidden path="tiersId"/>
-
-				<!-- Debut Etat PM -->
-				<table border="0">
-					<unireg:nextRowClass reset="0"/>
-					<tr class="<unireg:nextRowClass/>" >
-						<td width="20%"><fmt:message key="label.type"/>&nbsp;:</td>
-						<td>
-							<c:choose>
-								<c:when test="${empty transitionDisponibles}">
-									<span style="padding: 2px; display: block">
-										Aucun changement d'état n'est possible
-										<c:choose>
-											<c:when test="${command.previousDate.isAfter(command.dateObtention)}">
-												à la date sélectionnée. Veuillez Selectionner une date à partir du <unireg:date date="${command.previousDate}"/>.
-											</c:when>
-											<c:when test="${command.previousDate.isBefore(command.dateObtention)}">
-												à la suite de l'état courant. Ce dernier doit d'abord être annulé.
-											</c:when>
-										</c:choose>
-									</span>
-								</c:when>
-								<c:when test="${! empty transitionDisponibles}">
-									<form:select path="type" name="type">
-										<form:option value="" />
-										<form:options items="${transitionDisponibles}"/>
-									</form:select>
-								</c:when>
-							</c:choose>
-							<form:errors path="type" cssClass="error" />
-					</tr>
-					<tr class="<unireg:nextRowClass/>" >
-						<td><fmt:message key="label.date.obtention" />&nbsp;:</td>
-						<td>
-							<jsp:include page="/WEB-INF/jsp/include/inputCalendar.jsp">
-								<jsp:param name="path" value="dateObtention" />
-								<jsp:param name="id" value="dateObtention" />
-								<jsp:param name="onChange" value="reSubmit()"/>
-							</jsp:include>
-						</td>
-					</tr>
-				</table>
-			</fieldset>
-			<fieldset>
-				<legend><span><fmt:message key="label.etat.precedant" /></span></legend>
+				<legend><span><fmt:message key="label.etat.actuel" /></span></legend>
 
 				<!-- Debut Etat PM -->
 				<table border="0">
@@ -80,11 +36,64 @@
 					</tr>
 				</table>
 			</fieldset>
+			<fieldset>
+				<legend><span><fmt:message key="label.etat.nouveau" /></span></legend>
+
+				<form:hidden path="tiersId"/>
+
+				<!-- Debut Etat PM -->
+				<table border="0">
+					<unireg:nextRowClass reset="0"/>
+					<tr class="<unireg:nextRowClass/>" >
+						<td width="20%"><fmt:message key="label.type"/>&nbsp;:</td>
+						<td>
+							<c:choose>
+								<c:when test="${empty transitionDisponibles}">
+									<span style="padding: 2px; display: block">
+										<c:choose>
+											<c:when test="${command.previousDate.isAfter(command.dateObtention)}">
+												<fmt:message key="label.etats.aucun.dispo.date">
+													<fmt:param><unireg:date date="${command.previousDate}"/></fmt:param>
+												</fmt:message>
+											</c:when>
+											<c:when test="${command.previousDate.isBeforeOrEqual(command.dateObtention)}">
+												<fmt:message key="label.etats.aucun.dispo.courant"/>
+											</c:when>
+										</c:choose>
+									</span>
+								</c:when>
+								<c:when test="${! empty transitionDisponibles}">
+									<form:select path="type" name="type">
+										<form:option value="" />
+										<form:options items="${transitionDisponibles}"/>
+									</form:select>
+								</c:when>
+							</c:choose>
+							<form:errors path="type" cssClass="error" />
+					</tr>
+					<tr class="<unireg:nextRowClass/>" >
+						<td><fmt:message key="label.date.obtention" />&nbsp;:</td>
+						<td>
+							<c:if test="${! (command.previousDate.isBeforeOrEqual(command.dateObtention) && empty transitionDisponibles)}">
+								<jsp:include page="/WEB-INF/jsp/include/inputCalendar.jsp">
+									<jsp:param name="path" value="dateObtention" />
+									<jsp:param name="id" value="dateObtention" />
+									<jsp:param name="onChange" value="reSubmit()"/>
+								</jsp:include>
+							</c:if>
+						</td>
+					</tr>
+				</table>
+			</fieldset>
 
 			<table border="0">
 				<tr>
 					<td width="25%">&nbsp;</td>
-					<td width="25%"><input type="submit" value="<fmt:message key="label.bouton.ajouter" />"></td>
+
+					<c:if test="${empty transitionDisponibles || command.previousDate.isAfter(command.dateObtention)}">
+						<c:set var="disabled" value="disabled='true'"/>
+					</c:if>
+					<td width="25%"><input type="submit" value="<fmt:message key="label.bouton.ajouter" />" ${disabled}></td>
 					<td width="25%"><unireg:buttonTo name="Retour" action="/entreprise/etats/edit.do" params="{id:${command.tiersId}}" method="GET"/> </td>
 					<td width="25%">&nbsp;</td>
 				</tr>
@@ -93,6 +102,10 @@
 		<script>
 			function reSubmit() {
 				var dateObtention = $('#dateObtention').get(0).value;
+				if (!DateUtils.validate(dateObtention)) {
+					$('#dateObtention').addClass('error');
+					return false;
+				}
 				var type = "";
 				if ($('#type').get(0)) {
 					type = $('#type').get(0).value;

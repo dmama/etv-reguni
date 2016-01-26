@@ -184,6 +184,7 @@ public class EntrepriseServiceImpl implements EntrepriseService {
 			final EtatEntrepriseView view = new EtatEntrepriseView(etat.getId(),
 			                                                       etat.getDateObtention(),
 			                                                       etat.getType(),
+			                                                       etat.getGeneration(),
 			                                                       etat.isAnnule());
 			views.add(view);
 		}

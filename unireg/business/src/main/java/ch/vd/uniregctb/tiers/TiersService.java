@@ -26,7 +26,6 @@ import ch.vd.uniregctb.indexer.IndexerException;
 import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
 import ch.vd.uniregctb.metier.assujettissement.Assujettissement;
 import ch.vd.uniregctb.metier.bouclement.ExerciceCommercial;
-import ch.vd.uniregctb.tiers.etats.transition.TransitionEtatEntreprise;
 import ch.vd.uniregctb.tiers.rattrapage.ancienshabitants.RecuperationDonneesAnciensHabitantsResults;
 import ch.vd.uniregctb.tiers.rattrapage.flaghabitant.CorrectionFlagHabitantResults;
 import ch.vd.uniregctb.tiers.rattrapage.origine.RecuperationOriginesNonHabitantsResults;
@@ -176,14 +175,15 @@ public interface TiersService {
 	List<DomicileHisto> getDomiciles(@NotNull Etablissement etablissement);
 
 	/**
-	 * Renvoie la liste des changements d'état d'entreprise disponible pour une date donnée et les conditions actuelles.
+	 * Renvoie la liste des types de changements d'état d'entreprise disponibles pour une date donnée en fonction des conditions règnant à la date,
+	 * et si l'historique existant le permet.
 	 *
 	 * @param entreprise l'entreprise visée par le changement d'état
 	 * @param date la date à laquelle doit avoir lieu la transition
 	 * @param generation le type de génération prévu
 	 * @return la liste des types d'etats disponibles, vide si aucun.
 	 */
-	Map<TypeEtatEntreprise, TransitionEtatEntreprise> getTransitionEtatEntrepriseDisponibles(Entreprise entreprise, RegDate date, TypeGenerationEtatEntreprise generation);
+	List<TypeEtatEntreprise> getTransitionsEtatEntrepriseDisponibles(Entreprise entreprise, RegDate date, TypeGenerationEtatEntreprise generation);
 
 	/**
 	 * Effectue une transition d'état sur une entreprise.
@@ -192,9 +192,9 @@ public interface TiersService {
 	 * <ul>
 	 *     <li>
 	 *         La transition ne peut être effectuée que sur le dernier état de l'entreprise. Cela veut dire que la date souhaité doit
-	 *         se trouver au moins le jour d'après la date de cet état.
+	 *         se trouver au plus tôt le jour de la date de ce dernier état.
 	 *     </li>
-	 *     <li>La transition n'aura lieu que si toutes les conditions, vérifiées sur le moment, sont réunies.</li>
+	 *     <li>La transition n'aura lieu que si toutes les conditions sont réunies et vérifiées pour la date, et si l'historique existant le permet.</li>
 	 * </ul>
 	 *
 	 * @param type l'état souhaité
@@ -206,7 +206,7 @@ public interface TiersService {
 	EtatEntreprise changeEtatEntreprise(TypeEtatEntreprise type, Entreprise entreprise, RegDate date, TypeGenerationEtatEntreprise generation);
 
 	/**
-	 * Annule l'état d'entreprise, ce qui revient à ramener l'entreprise dans l'état précédant.
+	 * Annule l'état d'entreprise, ce qui revient à ramener l'entreprise dans l'état précédent.
 	 *
 	 * <p>
 	 *     <strong>Attention</strong>: il s'agit d'une annulation pure et simple et non d'une transition.
