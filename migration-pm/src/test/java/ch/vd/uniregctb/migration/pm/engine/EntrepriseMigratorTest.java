@@ -2019,7 +2019,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 				Assert.assertEquals(AllegementFiscal.TypeCollectivite.CONFEDERATION, a.getTypeCollectivite());
 				Assert.assertEquals(AllegementFiscal.TypeImpot.BENEFICE, a.getTypeImpot());
 
-				Assert.assertEquals(AllegementFiscalConfederation.Type.AUTRE_TYPE, ((AllegementFiscalConfederation) a).getType());
+				Assert.assertEquals(AllegementFiscalConfederation.Type.DECISION_DFE, ((AllegementFiscalConfederation) a).getType());
 			}
 			{
 				final AllegementFiscal a = allegementsTries.get(3);
@@ -2032,7 +2032,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 				Assert.assertEquals(AllegementFiscal.TypeCollectivite.CONFEDERATION, a.getTypeCollectivite());
 				Assert.assertEquals(AllegementFiscal.TypeImpot.CAPITAL, a.getTypeImpot());
 
-				Assert.assertEquals(AllegementFiscalConfederation.Type.AUTRE_TYPE, ((AllegementFiscalConfederation) a).getType());
+				Assert.assertEquals(AllegementFiscalConfederation.Type.DECISION_DFE, ((AllegementFiscalConfederation) a).getType());
 			}
 			{
 				final AllegementFiscal a = allegementsTries.get(4);
@@ -2151,7 +2151,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 				Assert.assertEquals(AllegementFiscal.TypeCollectivite.CONFEDERATION, a.getTypeCollectivite());
 				Assert.assertEquals(AllegementFiscal.TypeImpot.CAPITAL, a.getTypeImpot());
 
-				Assert.assertEquals(AllegementFiscalConfederation.Type.AUTRE_TYPE, ((AllegementFiscalConfederation) a).getType());
+				Assert.assertEquals(AllegementFiscalConfederation.Type.DECISION_DFE, ((AllegementFiscalConfederation) a).getType());
 			}
 		});
 
