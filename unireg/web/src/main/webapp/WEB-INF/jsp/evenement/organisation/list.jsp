@@ -73,13 +73,13 @@
 			<display:column titleKey="label.siege">
 				<c:choose>
 					<c:when test="${tableEvtsOrganisation.typeSiege == 'COMMUNE_OU_FRACTION_VD'}">
-						<unireg:commune ofs="${tableEvtsOrganisation.noOFSSiege}" date="${tableEvtsOrganisation.dateEvenement}" displayProperty="nomOfficiel" titleProperty="${noOFS}"/>
+						<unireg:commune ofs="${tableEvtsOrganisation.noOFSSiege}" date="${tableEvtsOrganisation.dateEvenement}" displayProperty="nomOfficiel" titleProperty="noOFS"/>
 					</c:when>
 					<c:when test="${tableEvtsOrganisation.typeSiege == 'COMMUNE_HC'}">
-						<unireg:commune ofs="${tableEvtsOrganisation.noOFSSiege}" date="${tableEvtsOrganisation.dateEvenement}" displayProperty="nomOfficielAvecCanton" titleProperty="${noOFS}"/>
+						<unireg:commune ofs="${tableEvtsOrganisation.noOFSSiege}" date="${tableEvtsOrganisation.dateEvenement}" displayProperty="nomOfficielAvecCanton" titleProperty="noOFS"/>
 					</c:when>
 					<c:when test="${tableEvtsOrganisation.typeSiege == 'PAYS_HS'}">
-						<unireg:pays ofs="${tableEvtsOrganisation.noOFSSiege}" date="${tableEvtsOrganisation.dateEvenement}" displayProperty="nomOfficiel" titleProperty="${noOFS}"/>
+						<unireg:pays ofs="${tableEvtsOrganisation.noOFSSiege}" date="${tableEvtsOrganisation.dateEvenement}" displayProperty="nomOfficiel" titleProperty="noOFS"/>
 					</c:when>
 				</c:choose>
 			</display:column>

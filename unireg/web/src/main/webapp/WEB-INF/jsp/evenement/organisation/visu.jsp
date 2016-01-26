@@ -185,13 +185,13 @@
             <c:if test="${command.organisation != null}">
                 <c:choose>
                     <c:when test="${command.organisation.typeSiege == 'COMMUNE_OU_FRACTION_VD'}">
-                        <td><unireg:commune ofs="${command.organisation.noOFSSiege}" date="${command.evtDate}" displayProperty="nomOfficiel" titleProperty="${noOFS}"/></td>
+                        <td><unireg:commune ofs="${command.organisation.noOFSSiege}" date="${command.evtDate}" displayProperty="nomOfficiel" titleProperty="noOFS"/></td>
                     </c:when>
                     <c:when test="${command.organisation.typeSiege == 'COMMUNE_HC'}">
-                        <td><unireg:commune ofs="${command.organisation.noOFSSiege}" date="${command.evtDate}" displayProperty="nomOfficielAvecCanton" titleProperty="${noOFS}"/></td>
+                        <td><unireg:commune ofs="${command.organisation.noOFSSiege}" date="${command.evtDate}" displayProperty="nomOfficielAvecCanton" titleProperty="noOFS"/></td>
                     </c:when>
                     <c:when test="${command.organisation.typeSiege == 'PAYS_HS'}">
-                        <td><unireg:pays ofs="${command.organisation.noOFSSiege}" date="${command.evtDate}" displayProperty="nomOfficiel" titleProperty="${noOFS}"/></td>
+                        <td><unireg:pays ofs="${command.organisation.noOFSSiege}" date="${command.evtDate}" displayProperty="nomOfficiel" titleProperty="noOFS"/></td>
                     </c:when>
                 </c:choose>
             </c:if>
