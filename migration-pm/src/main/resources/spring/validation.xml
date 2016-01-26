@@ -86,9 +86,13 @@
 	<bean id="formeJuridiqueFiscaleEntrepriseValidator" class="ch.vd.uniregctb.validation.tiers.FormeJuridiqueFiscaleEntrepriseValidator" parent="donneeCivileEntrepriseValidator"/>
 	<bean id="capitalFiscalEntrepriseValidator" class="ch.vd.uniregctb.validation.tiers.CapitalFiscalEntrepriseValidator" parent="donneeCivileEntrepriseValidator"/>
 
-	<bean id="allegementFiscalValidator" class="ch.vd.uniregctb.validation.tiers.AllegementFiscalValidator" parent="dateRangeEntityValidator">
+	<bean id="allegementFiscalValidator" class="ch.vd.uniregctb.validation.tiers.AllegementFiscalValidator" abstract="true" parent="dateRangeEntityValidator"/>
+	<bean id="allegementFiscalConfederationValidator" class="ch.vd.uniregctb.validation.tiers.AllegementFiscalConfederationValidator" parent="allegementFiscalValidator"/>
+	<bean id="allegementFiscalCantonCommuneValidator" class="ch.vd.uniregctb.validation.tiers.AllegementFiscalCantonCommuneValidator" parent="allegementFiscalValidator" abstract="true"/>
+	<bean id="allegementFiscalCommuneValidator" class="ch.vd.uniregctb.validation.tiers.AllegementFiscalCommuneValidator" parent="allegementFiscalCantonCommuneValidator">
 		<property name="infraService" ref="serviceInfrastructureService"/>
 	</bean>
+	<bean id="allegementFiscalCantonValidator" class="ch.vd.uniregctb.validation.tiers.AllegementFiscalCantonValidator" parent="allegementFiscalCantonCommuneValidator"/>
 
 	<bean id="bouclementValidator" class="ch.vd.uniregctb.validation.bouclement.BouclementValidator" parent="entityValidator"/>
 

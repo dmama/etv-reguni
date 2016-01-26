@@ -36,6 +36,10 @@
 		<value>ch.vd.uniregctb.migreg.MigrationError</value>
 		<value>ch.vd.uniregctb.tiers.ActiviteEconomique</value>
 		<value>ch.vd.uniregctb.tiers.AllegementFiscal</value>
+		<value>ch.vd.uniregctb.tiers.AllegementFiscalCantonCommune</value>
+		<value>ch.vd.uniregctb.tiers.AllegementFiscalCanton</value>
+		<value>ch.vd.uniregctb.tiers.AllegementFiscalCommune</value>
+		<value>ch.vd.uniregctb.tiers.AllegementFiscalConfederation</value>
 		<value>ch.vd.uniregctb.tiers.AutreCommunaute</value>
 		<value>ch.vd.uniregctb.tiers.Bouclement</value>
 		<value>ch.vd.uniregctb.tiers.CapitalFiscalEntreprise</value>

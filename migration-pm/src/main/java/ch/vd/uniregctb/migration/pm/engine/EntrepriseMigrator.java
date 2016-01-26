@@ -147,6 +147,10 @@ import ch.vd.uniregctb.migration.pm.utils.KeyedSupplier;
 import ch.vd.uniregctb.migration.pm.utils.OrganisationDataHelper;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.tiers.AllegementFiscal;
+import ch.vd.uniregctb.tiers.AllegementFiscalCanton;
+import ch.vd.uniregctb.tiers.AllegementFiscalCantonCommune;
+import ch.vd.uniregctb.tiers.AllegementFiscalCommune;
+import ch.vd.uniregctb.tiers.AllegementFiscalConfederation;
 import ch.vd.uniregctb.tiers.Bouclement;
 import ch.vd.uniregctb.tiers.CapitalFiscalEntreprise;
 import ch.vd.uniregctb.tiers.Contribuable;
@@ -3957,19 +3961,55 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		}
 	}
 
-	private static AllegementFiscal buildAllegementFiscal(RegpmAllegementFiscal regpm, AllegementFiscal.TypeImpot typeImpot, AllegementFiscal.TypeCollectivite typeCollectivite, @Nullable Integer noOfsCommune) {
-		final AllegementFiscal unireg = new AllegementFiscal();
+	private static AllegementFiscal instanciateAllegementFiscalCommunal(AllegementFiscalCantonCommune.Type type, @Nullable Integer noOfsCommune) {
+		final AllegementFiscalCommune af = new AllegementFiscalCommune();
+		af.setType(type);
+		af.setNoOfsCommune(noOfsCommune);
+		return af;
+	}
+
+	private static AllegementFiscal instanciateAllegementFiscalCantonal(AllegementFiscalCantonCommune.Type type) {
+		final AllegementFiscalCanton af = new AllegementFiscalCanton();
+		af.setType(type);
+		return af;
+	}
+
+	private static AllegementFiscal instanciateAllegementFiscalFederal(AllegementFiscalConfederation.Type type) {
+		final AllegementFiscalConfederation af = new AllegementFiscalConfederation();
+		af.setType(type);
+		return af;
+	}
+
+	private static AllegementFiscal buildAllegementFiscal(RegpmAllegementFiscal regpm,
+	                                                      AllegementFiscal.TypeImpot typeImpot,
+	                                                      AllegementFiscal.TypeCollectivite typeCollectivite,
+	                                                      AllegementFiscalCantonCommune.Type typeIcc,
+	                                                      AllegementFiscalConfederation.Type typeIfd,
+	                                                      @Nullable Integer noOfsCommune) {
+		final AllegementFiscal unireg;
+		switch (typeCollectivite) {
+		case CANTON:
+			unireg = instanciateAllegementFiscalCantonal(typeIcc);
+			break;
+		case COMMUNE:
+			unireg = instanciateAllegementFiscalCommunal(typeIcc, noOfsCommune);
+			break;
+		case CONFEDERATION:
+			unireg = instanciateAllegementFiscalFederal(typeIfd);
+			break;
+		default:
+			throw new IllegalArgumentException("Type de collectivité non-supporté : " + typeCollectivite);
+		}
+
 		copyCreationMutation(regpm, unireg);
 		unireg.setDateDebut(regpm.getDateDebut());
 		unireg.setDateFin(regpm.getDateFin());
 		unireg.setPourcentageAllegement(regpm.getPourcentage());
-		unireg.setTypeCollectivite(typeCollectivite);
 		unireg.setTypeImpot(typeImpot);
-		unireg.setNoOfsCommune(noOfsCommune);
 		return unireg;
 	}
 
-	private static Stream<AllegementFiscal> mapAllegementFiscal(RegpmAllegementFiscal a, MigrationResultProduction mr) {
+	private static Stream<AllegementFiscal> mapAllegementFiscal(RegpmAllegementFiscal a, AllegementFiscalCantonCommune.Type typeIcc, AllegementFiscalConfederation.Type typeIfd, MigrationResultProduction mr) {
 
 		final Stream.Builder<AllegementFiscal> builder = Stream.builder();
 
@@ -3987,17 +4027,13 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 				final AllegementFiscal.TypeImpot typeImpot = toTypeImpot(codeContribution);
 				final AllegementFiscal.TypeCollectivite typeCollectivite = toTypeCollectivite(codeCollectivite);
 				final Integer noOfsCommune = typeCollectivite == AllegementFiscal.TypeCollectivite.COMMUNE && a.getCommune() != null ? NO_OFS_COMMUNE_EXTRACTOR.apply(a.getCommune()) : null;
-				builder.accept(buildAllegementFiscal(a, typeImpot, typeCollectivite, noOfsCommune));
+				builder.accept(buildAllegementFiscal(a, typeImpot, typeCollectivite, typeIcc, typeIfd, noOfsCommune));
 			}
 		}
 		else if (a.getObjectImpot() != null) {
 			final AllegementFiscal.TypeCollectivite typeCollectivite = toTypeCollectivite(a.getObjectImpot());
-			builder.accept(buildAllegementFiscal(a, AllegementFiscal.TypeImpot.BENEFICE, typeCollectivite, null));
-			builder.accept(buildAllegementFiscal(a, AllegementFiscal.TypeImpot.CAPITAL, typeCollectivite, null));
-		}
-		else if (a.getId().getSeqNo() == 998 || a.getId().getSeqNo() == 999) {
-			mr.addMessage(LogCategory.SUIVI, LogLevel.INFO,
-			              String.format("Allègement fiscal %d avec un numéro de séquence 998/999 -> ignoré.", a.getId().getSeqNo()));
+			builder.accept(buildAllegementFiscal(a, AllegementFiscal.TypeImpot.BENEFICE, typeCollectivite, typeIcc, typeIfd, null));
+			builder.accept(buildAllegementFiscal(a, AllegementFiscal.TypeImpot.CAPITAL, typeCollectivite, typeIcc, typeIfd, null));
 		}
 		else {
 			mr.addMessage(LogCategory.SUIVI, LogLevel.INFO,
@@ -4008,8 +4044,8 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 	}
 
 	private static String buildCollectiviteString(AllegementFiscal a) {
-		if (a.getTypeCollectivite() == AllegementFiscal.TypeCollectivite.COMMUNE && a.getNoOfsCommune() != null) {
-			return String.format("%s (%d)", a.getTypeCollectivite(), a.getNoOfsCommune());
+		if (a instanceof AllegementFiscalCommune && ((AllegementFiscalCommune) a).getNoOfsCommune() != null) {
+			return String.format("%s (%d)", a.getTypeCollectivite(), ((AllegementFiscalCommune) a).getNoOfsCommune());
 		}
 		return a.getTypeCollectivite().name();
 	}
@@ -4051,13 +4087,10 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 	 */
 	private static final class LocalizedAllegementFiscal implements LocalizedDateRange {
 
-		private final AllegementFiscal allegement;
+		private final AllegementFiscalCommune allegement;
 
-		public LocalizedAllegementFiscal(AllegementFiscal allegement) {
+		public LocalizedAllegementFiscal(AllegementFiscalCommune allegement) {
 			this.allegement = allegement;
-			if (allegement.getTypeCollectivite() != AllegementFiscal.TypeCollectivite.COMMUNE || allegement.getNoOfsCommune() == null) {
-				throw new IllegalArgumentException("L'utilisation de cette classe est réservée aux allègements fiscaux communaux spécifiques...");
-			}
 		}
 
 		@Override
@@ -4088,18 +4121,19 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 
 	@NotNull
 	private Stream<AllegementFiscal> adapterAllegementFiscalPourFusionsCommunes(final AllegementFiscal allegement, MigrationResultProduction mr, LogCategory logCategory) {
-		if (allegement.getTypeCollectivite() == AllegementFiscal.TypeCollectivite.COMMUNE & allegement.getNoOfsCommune() != null) {
+		if (allegement instanceof AllegementFiscalCommune && ((AllegementFiscalCommune) allegement).getNoOfsCommune() != null) {
 			// calcul de la nouvelle répartition sur des communes en prenant en compte les fusions en passant par une structure
 			// temporaire de "localisation datée"
-			final LocalizedDateRange localizedRange = new LocalizedAllegementFiscal(allegement);
-			final LocalisationDateeFacade<AllegementFiscal> facade = new LocalisationDateeFacade<>(localizedRange, allegement);
+			final AllegementFiscalCommune allegementCommunal = (AllegementFiscalCommune) allegement;
+			final LocalizedDateRange localizedRange = new LocalizedAllegementFiscal(allegementCommunal);
+			final LocalisationDateeFacade<AllegementFiscalCommune> facade = new LocalisationDateeFacade<>(localizedRange, allegementCommunal);
 			return adapterAutourFusionsCommunes(facade, mr, logCategory, null).stream()
-					.map(f -> new AllegementFiscal(f.getDateDebut(),
-					                               f.getDateFin(),
-					                               allegement.getPourcentageAllegement(),
-					                               allegement.getTypeImpot(),
-					                               allegement.getTypeCollectivite(),
-					                               f.getNumeroOfsAutoriteFiscale()));
+					.map(f -> new AllegementFiscalCommune(f.getDateDebut(),
+					                                      f.getDateFin(),
+					                                      allegementCommunal.getPourcentageAllegement(),
+					                                      allegementCommunal.getTypeImpot(),
+					                                      allegementCommunal.getType(),
+					                                      f.getNumeroOfsAutoriteFiscale()));
 		}
 		else {
 			// pas de changement nécessaire pour les fusions de communes (on n'est même pas sur une commune précise !)
@@ -4107,10 +4141,88 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		}
 	}
 
+	private static AllegementFiscalConfederation.Type valueOfIFD(Integer value) {
+		final AllegementFiscalConfederation.Type type;
+		if (value == null) {
+			type = AllegementFiscalConfederation.Type.DECISION_DFE;
+		}
+		else {
+			switch (value) {
+			case 0:
+			case 51:
+				type = AllegementFiscalConfederation.Type.DECISION_DFE;
+				break;
+			case 52:
+				type = AllegementFiscalConfederation.Type.AUTRE_TYPE;
+				break;
+			default:
+				throw new IllegalArgumentException("Valeur invalide pour le type d'allègement 999 : " + value);
+			}
+		}
+		return type;
+	}
+
+	private static AllegementFiscalCantonCommune.Type valueOfICC(Integer value) {
+		final AllegementFiscalCantonCommune.Type type;
+		if (value == null) {
+			type = AllegementFiscalCantonCommune.Type.ARTICLE_91_LI;
+		}
+		else {
+			switch (value) {
+			case 0:
+			case 1:
+				type = AllegementFiscalCantonCommune.Type.ARTICLE_91_LI;
+				break;
+			case 2:
+				type = AllegementFiscalCantonCommune.Type.ARTICLE_90IG_LI;
+				break;
+			case 3:
+				type = AllegementFiscalCantonCommune.Type.ARTICLE_90H_LI;
+				break;
+			case 4:
+				type = AllegementFiscalCantonCommune.Type.ARTICLE_90C_LI;
+				break;
+			case 6:
+				type = AllegementFiscalCantonCommune.Type.ARTICLE_90E_LI;
+				break;
+			case 8:
+				type = AllegementFiscalCantonCommune.Type.SOCIETE_DE_BASE;
+				break;
+			case 9:
+				type = AllegementFiscalCantonCommune.Type.IMMEUBLE_SOC_IMMOB_SUBV;
+				break;
+			case 11:
+				type = AllegementFiscalCantonCommune.Type.EXONERATION_SPECIALE;
+				break;
+			case 12:
+				type = AllegementFiscalCantonCommune.Type.ARTICLE_90F_LI;
+				break;
+			case 17:
+				type = AllegementFiscalCantonCommune.Type.SOCIETE_MEXICAINE;
+				break;
+			default:
+				throw new IllegalArgumentException("Valeur invalide pour le type d'allègement 998 : " + value);
+			}
+		}
+		return type;
+	}
+
 	private void migrateAllegementsFiscaux(RegpmEntreprise regpm, Entreprise unireg, MigrationResultProduction mr) {
+
+		// d'abord, il faut extraire les types d'allègements (998/999)
+		// Le booléen en clé signifie isIFD (= faux -> ICC)
+		final Map<Boolean, Integer> mapTypes = regpm.getAllegementsFiscaux().stream()
+				.filter(af -> af.getId().getSeqNo() >= 998)
+				.filter(af -> af.getId().getSeqNo() < 1000)
+				.collect(Collectors.toMap(af -> af.getId().getSeqNo() == 999, af -> af.getPourcentage().intValue()));
+		final AllegementFiscalCantonCommune.Type typeIcc = valueOfICC(mapTypes.get(Boolean.FALSE));
+		final AllegementFiscalConfederation.Type typeIfd = valueOfIFD(mapTypes.get(Boolean.TRUE));
+
+		// ensuite, on traite les vrais allègements fiscaux accordés
 		regpm.getAllegementsFiscaux().stream()
 				.filter(a -> a.getDateAnnulation() == null)                 // on ne prend pas en compte les allègements annulés
 				.sorted(Comparator.comparing(a -> a.getId().getSeqNo()))    // tri pour les tests en particulier, pour toujours traiter les allègements dans le même ordre
+				.filter(a -> a.getId().getSeqNo() < 998)                    // on ne prend pas en compte les numéros de séquence 998 et 999 comme des allègements eux-mêmes
 				.filter(a -> {
 					if (isFutureDate(a.getDateDebut())) {
 						mr.addMessage(LogCategory.SUIVI, LogLevel.ERROR,
@@ -4157,7 +4269,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 				                           () -> String.format("Allègement fiscal %d avec une date de début de validité", a.getId().getSeqNo()),
 				                           LogCategory.SUIVI,
 				                           mr))
-				.map(a -> mapAllegementFiscal(a, mr))
+				.map(a -> mapAllegementFiscal(a, typeIcc, typeIfd, mr))
 				.flatMap(Function.identity())
 				.map(a -> adapterAllegementFiscalPourFusionsCommunes(a, mr, LogCategory.SUIVI))
 				.flatMap(Function.identity())

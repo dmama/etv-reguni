@@ -112,6 +112,10 @@ import ch.vd.uniregctb.migration.pm.store.UniregStore;
 import ch.vd.uniregctb.migration.pm.utils.DatesParticulieres;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.tiers.AllegementFiscal;
+import ch.vd.uniregctb.tiers.AllegementFiscalCanton;
+import ch.vd.uniregctb.tiers.AllegementFiscalCantonCommune;
+import ch.vd.uniregctb.tiers.AllegementFiscalCommune;
+import ch.vd.uniregctb.tiers.AllegementFiscalConfederation;
 import ch.vd.uniregctb.tiers.Bouclement;
 import ch.vd.uniregctb.tiers.CapitalFiscalEntreprise;
 import ch.vd.uniregctb.tiers.DecisionAci;
@@ -1981,68 +1985,82 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 			{
 				final AllegementFiscal a = allegementsTries.get(0);
 				Assert.assertNotNull(a);
+				Assert.assertEquals(AllegementFiscalCanton.class, a.getClass());
 				Assert.assertNull(a.getAnnulationDate());
 				Assert.assertEquals(RegDate.get(1950, 1, 1), a.getDateDebut());
 				Assert.assertEquals(RegDate.get(1955, 3, 31), a.getDateFin());
-				Assert.assertNull(a.getNoOfsCommune());
 				Assert.assertEquals("Expected: 12, actual: " + a.getPourcentageAllegement(), 0, BigDecimal.valueOf(12L).compareTo(a.getPourcentageAllegement()));
 				Assert.assertEquals(AllegementFiscal.TypeCollectivite.CANTON, a.getTypeCollectivite());
 				Assert.assertEquals(AllegementFiscal.TypeImpot.BENEFICE, a.getTypeImpot());
+
+				Assert.assertEquals(AllegementFiscalCantonCommune.Type.ARTICLE_91_LI, ((AllegementFiscalCanton) a).getType());
 			}
 			{
 				final AllegementFiscal a = allegementsTries.get(1);
 				Assert.assertNotNull(a);
+				Assert.assertEquals(AllegementFiscalCanton.class, a.getClass());
 				Assert.assertNull(a.getAnnulationDate());
 				Assert.assertEquals(RegDate.get(1950, 1, 1), a.getDateDebut());
 				Assert.assertEquals(RegDate.get(1955, 3, 31), a.getDateFin());
-				Assert.assertNull(a.getNoOfsCommune());
 				Assert.assertEquals("Expected: 12, actual: " + a.getPourcentageAllegement(), 0, BigDecimal.valueOf(12L).compareTo(a.getPourcentageAllegement()));
 				Assert.assertEquals(AllegementFiscal.TypeCollectivite.CANTON, a.getTypeCollectivite());
 				Assert.assertEquals(AllegementFiscal.TypeImpot.CAPITAL, a.getTypeImpot());
+
+				Assert.assertEquals(AllegementFiscalCantonCommune.Type.ARTICLE_91_LI, ((AllegementFiscalCanton) a).getType());
 			}
 			{
 				final AllegementFiscal a = allegementsTries.get(2);
 				Assert.assertNotNull(a);
+				Assert.assertEquals(AllegementFiscalConfederation.class, a.getClass());
 				Assert.assertNull(a.getAnnulationDate());
 				Assert.assertEquals(RegDate.get(1956, 5, 1), a.getDateDebut());
 				Assert.assertEquals(RegDate.get(1956, 12, 27), a.getDateFin());
-				Assert.assertNull(a.getNoOfsCommune());
 				Assert.assertEquals("Expected: 13, actual: " + a.getPourcentageAllegement(), 0, BigDecimal.valueOf(13L).compareTo(a.getPourcentageAllegement()));
 				Assert.assertEquals(AllegementFiscal.TypeCollectivite.CONFEDERATION, a.getTypeCollectivite());
 				Assert.assertEquals(AllegementFiscal.TypeImpot.BENEFICE, a.getTypeImpot());
+
+				Assert.assertEquals(AllegementFiscalConfederation.Type.AUTRE_TYPE, ((AllegementFiscalConfederation) a).getType());
 			}
 			{
 				final AllegementFiscal a = allegementsTries.get(3);
 				Assert.assertNotNull(a);
+				Assert.assertEquals(AllegementFiscalConfederation.class, a.getClass());
 				Assert.assertNull(a.getAnnulationDate());
 				Assert.assertEquals(RegDate.get(1956, 5, 1), a.getDateDebut());
 				Assert.assertEquals(RegDate.get(1956, 12, 27), a.getDateFin());
-				Assert.assertNull(a.getNoOfsCommune());
 				Assert.assertEquals("Expected: 13, actual: " + a.getPourcentageAllegement(), 0, BigDecimal.valueOf(13L).compareTo(a.getPourcentageAllegement()));
 				Assert.assertEquals(AllegementFiscal.TypeCollectivite.CONFEDERATION, a.getTypeCollectivite());
 				Assert.assertEquals(AllegementFiscal.TypeImpot.CAPITAL, a.getTypeImpot());
+
+				Assert.assertEquals(AllegementFiscalConfederation.Type.AUTRE_TYPE, ((AllegementFiscalConfederation) a).getType());
 			}
 			{
 				final AllegementFiscal a = allegementsTries.get(4);
 				Assert.assertNotNull(a);
+				Assert.assertEquals(AllegementFiscalCommune.class, a.getClass());
 				Assert.assertNull(a.getAnnulationDate());
 				Assert.assertEquals(RegDate.get(1957, 3, 12), a.getDateDebut());
 				Assert.assertNull(a.getDateFin());
-				Assert.assertNull(a.getNoOfsCommune());
 				Assert.assertEquals("Expected: 13.5, actual: " + a.getPourcentageAllegement(), 0, BigDecimal.valueOf(135L, 1).compareTo(a.getPourcentageAllegement()));
 				Assert.assertEquals(AllegementFiscal.TypeCollectivite.COMMUNE, a.getTypeCollectivite());
 				Assert.assertEquals(AllegementFiscal.TypeImpot.BENEFICE, a.getTypeImpot());
+
+				Assert.assertNull(((AllegementFiscalCommune) a).getNoOfsCommune());
+				Assert.assertEquals(AllegementFiscalCantonCommune.Type.ARTICLE_91_LI, ((AllegementFiscalCommune) a).getType());
 			}
 			{
 				final AllegementFiscal a = allegementsTries.get(5);
 				Assert.assertNotNull(a);
+				Assert.assertEquals(AllegementFiscalCommune.class, a.getClass());
 				Assert.assertNull(a.getAnnulationDate());
 				Assert.assertEquals(RegDate.get(1957, 3, 12), a.getDateDebut());
 				Assert.assertNull(a.getDateFin());
-				Assert.assertNull(a.getNoOfsCommune());
 				Assert.assertEquals("Expected: 13.5, actual: " + a.getPourcentageAllegement(), 0, BigDecimal.valueOf(135L, 1).compareTo(a.getPourcentageAllegement()));
 				Assert.assertEquals(AllegementFiscal.TypeCollectivite.COMMUNE, a.getTypeCollectivite());
 				Assert.assertEquals(AllegementFiscal.TypeImpot.CAPITAL, a.getTypeImpot());
+
+				Assert.assertNull(((AllegementFiscalCommune) a).getNoOfsCommune());
+				Assert.assertEquals(AllegementFiscalCantonCommune.Type.ARTICLE_91_LI, ((AllegementFiscalCommune) a).getType());
 			}
 		});
 
@@ -2097,35 +2115,43 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 			{
 				final AllegementFiscal a = allegementsTries.get(0);
 				Assert.assertNotNull(a);
+				Assert.assertEquals(AllegementFiscalCommune.class, a.getClass());
 				Assert.assertNull(a.getAnnulationDate());
 				Assert.assertEquals(RegDate.get(1950, 1, 1), a.getDateDebut());
 				Assert.assertEquals(RegDate.get(1955, 3, 31), a.getDateFin());
-				Assert.assertNull(a.getNoOfsCommune());
 				Assert.assertEquals("Expected: 12, actual: " + a.getPourcentageAllegement(), 0, BigDecimal.valueOf(12L).compareTo(a.getPourcentageAllegement()));
 				Assert.assertEquals(AllegementFiscal.TypeCollectivite.COMMUNE, a.getTypeCollectivite());
 				Assert.assertEquals(AllegementFiscal.TypeImpot.CAPITAL, a.getTypeImpot());
+
+				Assert.assertNull(((AllegementFiscalCommune) a).getNoOfsCommune());
+				Assert.assertEquals(AllegementFiscalCantonCommune.Type.ARTICLE_91_LI, ((AllegementFiscalCommune) a).getType());
 			}
 			{
 				final AllegementFiscal a = allegementsTries.get(1);
 				Assert.assertNotNull(a);
+				Assert.assertEquals(AllegementFiscalCommune.class, a.getClass());
 				Assert.assertNull(a.getAnnulationDate());
 				Assert.assertEquals(RegDate.get(1956, 5, 1), a.getDateDebut());
 				Assert.assertEquals(RegDate.get(1956, 12, 27), a.getDateFin());
-				Assert.assertEquals(Commune.MORGES.getNoOfs(), a.getNoOfsCommune());
 				Assert.assertEquals("Expected: 13, actual: " + a.getPourcentageAllegement(), 0, BigDecimal.valueOf(13L).compareTo(a.getPourcentageAllegement()));
 				Assert.assertEquals(AllegementFiscal.TypeCollectivite.COMMUNE, a.getTypeCollectivite());
 				Assert.assertEquals(AllegementFiscal.TypeImpot.BENEFICE, a.getTypeImpot());
+
+				Assert.assertEquals(Commune.MORGES.getNoOfs(), ((AllegementFiscalCommune) a).getNoOfsCommune());
+				Assert.assertEquals(AllegementFiscalCantonCommune.Type.ARTICLE_91_LI, ((AllegementFiscalCommune) a).getType());
 			}
 			{
 				final AllegementFiscal a = allegementsTries.get(2);
 				Assert.assertNotNull(a);
+				Assert.assertEquals(AllegementFiscalConfederation.class, a.getClass());
 				Assert.assertNull(a.getAnnulationDate());
 				Assert.assertEquals(RegDate.get(1958, 3, 12), a.getDateDebut());
 				Assert.assertNull(a.getDateFin());
-				Assert.assertNull(a.getNoOfsCommune());
 				Assert.assertEquals("Expected: 13.4, actual: " + a.getPourcentageAllegement(), 0, BigDecimal.valueOf(134L, 1).compareTo(a.getPourcentageAllegement()));
 				Assert.assertEquals(AllegementFiscal.TypeCollectivite.CONFEDERATION, a.getTypeCollectivite());
 				Assert.assertEquals(AllegementFiscal.TypeImpot.CAPITAL, a.getTypeImpot());
+
+				Assert.assertEquals(AllegementFiscalConfederation.Type.AUTRE_TYPE, ((AllegementFiscalConfederation) a).getType());
 			}
 		});
 
@@ -2177,13 +2203,16 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 			{
 				final AllegementFiscal a = allegementsTries.get(0);
 				Assert.assertNotNull(a);
+				Assert.assertEquals(AllegementFiscalCommune.class, a.getClass());
 				Assert.assertNull(a.getAnnulationDate());
 				Assert.assertEquals(RegDate.get(1950, 1, 1), a.getDateDebut());
 				Assert.assertNull(a.getDateFin());
-				Assert.assertNull(a.getNoOfsCommune());
 				Assert.assertEquals("Expected: 12, actual: " + a.getPourcentageAllegement(), 0, BigDecimal.valueOf(12L).compareTo(a.getPourcentageAllegement()));
 				Assert.assertEquals(AllegementFiscal.TypeCollectivite.COMMUNE, a.getTypeCollectivite());
 				Assert.assertEquals(AllegementFiscal.TypeImpot.CAPITAL, a.getTypeImpot());
+
+				Assert.assertNull(((AllegementFiscalCommune) a).getNoOfsCommune());
+				Assert.assertEquals(AllegementFiscalCantonCommune.Type.ARTICLE_91_LI, ((AllegementFiscalCommune) a).getType());
 			}
 		});
 
@@ -2236,46 +2265,58 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 			{
 				final AllegementFiscal a = allegementsTries.get(0);
 				Assert.assertNotNull(a);
+				Assert.assertEquals(AllegementFiscalCommune.class, a.getClass());
 				Assert.assertNull(a.getAnnulationDate());
 				Assert.assertEquals(RegDate.get(2001, 1, 1), a.getDateDebut());
 				Assert.assertEquals(RegDate.get(2011, 12, 31), a.getDateFin());
-				Assert.assertEquals(Commune.GRANGES_PRES_MARNAND.getNoOfs(), a.getNoOfsCommune());
 				Assert.assertEquals("Expected: 100, actual: " + a.getPourcentageAllegement(), 0, BigDecimal.valueOf(100L).compareTo(a.getPourcentageAllegement()));
 				Assert.assertEquals(AllegementFiscal.TypeCollectivite.COMMUNE, a.getTypeCollectivite());
 				Assert.assertEquals(AllegementFiscal.TypeImpot.BENEFICE, a.getTypeImpot());
+
+				Assert.assertEquals(Commune.GRANGES_PRES_MARNAND.getNoOfs(), ((AllegementFiscalCommune) a).getNoOfsCommune());
+				Assert.assertEquals(AllegementFiscalCantonCommune.Type.ARTICLE_91_LI, ((AllegementFiscalCommune) a).getType());
 			}
 			{
 				final AllegementFiscal a = allegementsTries.get(1);
 				Assert.assertNotNull(a);
+				Assert.assertEquals(AllegementFiscalCommune.class, a.getClass());
 				Assert.assertNull(a.getAnnulationDate());
 				Assert.assertEquals(RegDate.get(2001, 1, 1), a.getDateDebut());
 				Assert.assertEquals(RegDate.get(2011, 12, 31), a.getDateFin());
-				Assert.assertEquals(Commune.GRANGES_PRES_MARNAND.getNoOfs(), a.getNoOfsCommune());
 				Assert.assertEquals("Expected: 100, actual: " + a.getPourcentageAllegement(), 0, BigDecimal.valueOf(100L).compareTo(a.getPourcentageAllegement()));
 				Assert.assertEquals(AllegementFiscal.TypeCollectivite.COMMUNE, a.getTypeCollectivite());
 				Assert.assertEquals(AllegementFiscal.TypeImpot.CAPITAL, a.getTypeImpot());
+
+				Assert.assertEquals(Commune.GRANGES_PRES_MARNAND.getNoOfs(), ((AllegementFiscalCommune) a).getNoOfsCommune());
+				Assert.assertEquals(AllegementFiscalCantonCommune.Type.ARTICLE_91_LI, ((AllegementFiscalCommune) a).getType());
 			}
 			{
 				final AllegementFiscal a = allegementsTries.get(2);
 				Assert.assertNotNull(a);
+				Assert.assertEquals(AllegementFiscalCommune.class, a.getClass());
 				Assert.assertNull(a.getAnnulationDate());
 				Assert.assertEquals(RegDate.get(2012, 1, 1), a.getDateDebut());
 				Assert.assertNull(a.getDateFin());
-				Assert.assertEquals(Commune.VALBROYE.getNoOfs(), a.getNoOfsCommune());
 				Assert.assertEquals("Expected: 100, actual: " + a.getPourcentageAllegement(), 0, BigDecimal.valueOf(100L).compareTo(a.getPourcentageAllegement()));
 				Assert.assertEquals(AllegementFiscal.TypeCollectivite.COMMUNE, a.getTypeCollectivite());
 				Assert.assertEquals(AllegementFiscal.TypeImpot.BENEFICE, a.getTypeImpot());
+
+				Assert.assertEquals(Commune.VALBROYE.getNoOfs(), ((AllegementFiscalCommune) a).getNoOfsCommune());
+				Assert.assertEquals(AllegementFiscalCantonCommune.Type.ARTICLE_91_LI, ((AllegementFiscalCommune) a).getType());
 			}
 			{
 				final AllegementFiscal a = allegementsTries.get(3);
 				Assert.assertNotNull(a);
+				Assert.assertEquals(AllegementFiscalCommune.class, a.getClass());
 				Assert.assertNull(a.getAnnulationDate());
 				Assert.assertEquals(RegDate.get(2012, 1, 1), a.getDateDebut());
 				Assert.assertNull(a.getDateFin());
-				Assert.assertEquals(Commune.VALBROYE.getNoOfs(), a.getNoOfsCommune());
 				Assert.assertEquals("Expected: 100, actual: " + a.getPourcentageAllegement(), 0, BigDecimal.valueOf(100L).compareTo(a.getPourcentageAllegement()));
 				Assert.assertEquals(AllegementFiscal.TypeCollectivite.COMMUNE, a.getTypeCollectivite());
 				Assert.assertEquals(AllegementFiscal.TypeImpot.CAPITAL, a.getTypeImpot());
+
+				Assert.assertEquals(Commune.VALBROYE.getNoOfs(), ((AllegementFiscalCommune) a).getNoOfsCommune());
+				Assert.assertEquals(AllegementFiscalCantonCommune.Type.ARTICLE_91_LI, ((AllegementFiscalCommune) a).getType());
 			}
 		});
 
@@ -2285,12 +2326,12 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		final List<String> textes = messages.stream().map(msg -> msg.text).collect(Collectors.toList());
 		Assert.assertEquals(13, textes.size());
 		Assert.assertEquals("L'entreprise n'existait pas dans Unireg avec ce numéro de contribuable.", textes.get(0));
-		Assert.assertEquals("Entité AllegementFiscal [01.01.2001 -> ?] sur COMMUNE_OU_FRACTION_VD/5818 au moins partiellement remplacée par AllegementFiscal [01.01.2001 -> 31.12.2011] sur COMMUNE_OU_FRACTION_VD/5818 pour suivre les fusions de communes.", textes.get(1));
-		Assert.assertEquals("Entité AllegementFiscal [01.01.2001 -> ?] sur COMMUNE_OU_FRACTION_VD/5818 au moins partiellement remplacée par AllegementFiscal [01.01.2012 -> ?] sur COMMUNE_OU_FRACTION_VD/5831 pour suivre les fusions de communes.", textes.get(2));
+		Assert.assertEquals("Entité AllegementFiscalCommune [01.01.2001 -> ?] sur COMMUNE_OU_FRACTION_VD/5818 au moins partiellement remplacée par AllegementFiscalCommune [01.01.2001 -> 31.12.2011] sur COMMUNE_OU_FRACTION_VD/5818 pour suivre les fusions de communes.", textes.get(1));
+		Assert.assertEquals("Entité AllegementFiscalCommune [01.01.2001 -> ?] sur COMMUNE_OU_FRACTION_VD/5818 au moins partiellement remplacée par AllegementFiscalCommune [01.01.2012 -> ?] sur COMMUNE_OU_FRACTION_VD/5831 pour suivre les fusions de communes.", textes.get(2));
 		Assert.assertEquals("Allègement fiscal généré [01.01.2001 -> 31.12.2011], collectivité COMMUNE (5818), type BENEFICE : 100%.", textes.get(3));
 		Assert.assertEquals("Allègement fiscal généré [01.01.2012 -> ?], collectivité COMMUNE (5831), type BENEFICE : 100%.", textes.get(4));
-		Assert.assertEquals("Entité AllegementFiscal [01.01.2001 -> ?] sur COMMUNE_OU_FRACTION_VD/5818 au moins partiellement remplacée par AllegementFiscal [01.01.2001 -> 31.12.2011] sur COMMUNE_OU_FRACTION_VD/5818 pour suivre les fusions de communes.", textes.get(5));
-		Assert.assertEquals("Entité AllegementFiscal [01.01.2001 -> ?] sur COMMUNE_OU_FRACTION_VD/5818 au moins partiellement remplacée par AllegementFiscal [01.01.2012 -> ?] sur COMMUNE_OU_FRACTION_VD/5831 pour suivre les fusions de communes.", textes.get(6));
+		Assert.assertEquals("Entité AllegementFiscalCommune [01.01.2001 -> ?] sur COMMUNE_OU_FRACTION_VD/5818 au moins partiellement remplacée par AllegementFiscalCommune [01.01.2001 -> 31.12.2011] sur COMMUNE_OU_FRACTION_VD/5818 pour suivre les fusions de communes.", textes.get(5));
+		Assert.assertEquals("Entité AllegementFiscalCommune [01.01.2001 -> ?] sur COMMUNE_OU_FRACTION_VD/5818 au moins partiellement remplacée par AllegementFiscalCommune [01.01.2012 -> ?] sur COMMUNE_OU_FRACTION_VD/5831 pour suivre les fusions de communes.", textes.get(6));
 		Assert.assertEquals("Allègement fiscal généré [01.01.2001 -> 31.12.2011], collectivité COMMUNE (5818), type CAPITAL : 100%.", textes.get(7));
 		Assert.assertEquals("Allègement fiscal généré [01.01.2012 -> ?], collectivité COMMUNE (5831), type CAPITAL : 100%.", textes.get(8));
 		Assert.assertEquals("Entreprise sans exercice commercial ni for principal.", textes.get(9));
