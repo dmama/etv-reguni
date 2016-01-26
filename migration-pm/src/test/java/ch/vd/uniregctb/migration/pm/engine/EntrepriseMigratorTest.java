@@ -1465,6 +1465,8 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		final RegpmEntreprise e = buildEntreprise(noEntreprise);
 		final RegDate debut = RegDate.get(2005, 5, 7);
 		addForPrincipalSuisse(e, debut, RegpmTypeForPrincipal.SIEGE, Commune.Fraction.LE_BRASSUS);
+		addRegimeFiscalVD(e, debut, null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
+		addRegimeFiscalCH(e, debut, null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
 
 		final MockGraphe graphe = new MockGraphe(Collections.singletonList(e),
 		                                         null,
@@ -1516,6 +1518,8 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		final RegpmEntreprise e = buildEntreprise(noEntreprise);
 		addForPrincipalSuisse(e, debut, RegpmTypeForPrincipal.SIEGE, Commune.LAUSANNE);
 		addForPrincipalSuisse(e, debut, RegpmTypeForPrincipal.SIEGE, Commune.ECHALLENS);        // <- c'est lui, le deuxième, qui devrait être pris en compte
+		addRegimeFiscalVD(e, debut, null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
+		addRegimeFiscalCH(e, debut, null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
 
 		final MockGraphe graphe = new MockGraphe(Collections.singletonList(e),
 		                                         null,
@@ -1558,6 +1562,8 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		addForPrincipalSuisse(e, debut, RegpmTypeForPrincipal.SIEGE, Commune.LAUSANNE);
 		addForPrincipalSuisse(e, debut, RegpmTypeForPrincipal.ADMINISTRATION_EFFECTIVE, Commune.ECHALLENS);        // <- c'est lui, l'administration effective, qui devrait être pris en compte
 		addForPrincipalSuisse(e, debut, RegpmTypeForPrincipal.SIEGE, Commune.BALE);
+		addRegimeFiscalVD(e, debut, null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
+		addRegimeFiscalCH(e, debut, null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
 
 		final MockGraphe graphe = new MockGraphe(Collections.singletonList(e),
 		                                         null,
@@ -1616,6 +1622,8 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		addForPrincipalSuisse(e, debut, RegpmTypeForPrincipal.ADMINISTRATION_EFFECTIVE, Commune.LAUSANNE);         // <- on prendra le premier
 		addForPrincipalSuisse(e, debut, RegpmTypeForPrincipal.SIEGE, Commune.LAUSANNE);
 		addForPrincipalSuisse(e, debut, RegpmTypeForPrincipal.SIEGE, Commune.LAUSANNE);
+		addRegimeFiscalVD(e, debut, null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
+		addRegimeFiscalCH(e, debut, null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
 
 		final MockGraphe graphe = new MockGraphe(Collections.singletonList(e),
 		                                         null,
@@ -1678,6 +1686,8 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		addForPrincipalSuisse(e, debut, RegpmTypeForPrincipal.SIEGE, Commune.LAUSANNE);         // <- on prendra le premier
 		addForPrincipalSuisse(e, debut, RegpmTypeForPrincipal.ADMINISTRATION_EFFECTIVE, Commune.LAUSANNE);
 		addForPrincipalSuisse(e, debut, RegpmTypeForPrincipal.ADMINISTRATION_EFFECTIVE, Commune.LAUSANNE);
+		addRegimeFiscalVD(e, debut, null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
+		addRegimeFiscalCH(e, debut, null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
 
 		final MockGraphe graphe = new MockGraphe(Collections.singletonList(e),
 		                                         null,
@@ -1722,6 +1732,8 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		final long noEntreprise = 1234L;
 		final RegDate debut = RegDate.get(2005, 5, 7);
 		final RegpmEntreprise e = buildEntreprise(noEntreprise);
+		addRegimeFiscalVD(e, debut, null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
+		addRegimeFiscalCH(e, debut, null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
 		addForPrincipalSuisse(e, debut, RegpmTypeForPrincipal.SIEGE, Commune.LAUSANNE);
 		addForPrincipalSuisse(e, debut, RegpmTypeForPrincipal.ADMINISTRATION_EFFECTIVE, Commune.ECHALLENS);
 		addForPrincipalSuisse(e, debut, RegpmTypeForPrincipal.ADMINISTRATION_EFFECTIVE, Commune.MORGES);        // <- c'est lui, la dernière administration effective, qui devrait être pris en compte
@@ -1786,6 +1798,8 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		addForPrincipalSuisse(e, null, RegpmTypeForPrincipal.SIEGE, Commune.LAUSANNE);      // <- celui-là devrait être éliminé car le suivant a une date de validité nulle
 		addForPrincipalSuisse(e, null, RegpmTypeForPrincipal.SIEGE, Commune.ECHALLENS);     // <- celui-là devrait être éliminé car il a lui-même une date de validité nulle...
 		addForPrincipalSuisse(e, debut, RegpmTypeForPrincipal.SIEGE, Commune.MORGES);
+		addRegimeFiscalVD(e, debut, null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
+		addRegimeFiscalCH(e, debut, null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
 
 		final MockGraphe graphe = new MockGraphe(Collections.singletonList(e),
 		                                         null,
@@ -1914,7 +1928,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		migrator.initMigrationResult(mr, idMapper);
 		migrate(e, migrator, mr, linkCollector, idMapper);
 
-		// vérification du contenu de la base (aucun régime fiscal migré car est commence trop tard)
+		// vérification du contenu de la base (aucun régime fiscal migré car a commencé trop tard)
 		doInUniregTransaction(true, status -> {
 			final Entreprise entreprise = (Entreprise) getTiersDAO().get(noEntreprise);
 			Assert.assertNotNull(entreprise);
@@ -2294,6 +2308,8 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		final RegpmAssujettissement lifd = addAssujettissement(e, RegDate.get(2000, 1, 1), null, RegpmTypeAssujettissement.LIFD);
 		addForPrincipalSuisse(e, RegDate.get(2000, 1, 1), RegpmTypeForPrincipal.SIEGE, Commune.LAUSANNE);
 		addSiegeSuisse(e, RegDate.get(2000, 1, 1), Commune.LAUSANNE);
+		addRegimeFiscalVD(e, RegDate.get(2000, 1, 1), null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
+		addRegimeFiscalCH(e, RegDate.get(2000, 1, 1), null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
 
 		// 15 exercices commerciaux entre 2000 et 2014, avec des bouclements au 03.31
 		for (int pf = 2000 ; pf < 2015 ; ++ pf) {
@@ -2383,6 +2399,9 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 			addExerciceCommercial(e, df, RegDate.get(pf - 1, 4, 1), RegDate.get(pf, 3, 31));
 		}
 
+		addRegimeFiscalVD(e, RegDate.get(2009, 1, 1), null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
+		addRegimeFiscalCH(e, RegDate.get(2009, 1, 1), null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
+
 		// ajout des périodes fiscales dans Unireg
 		doInUniregTransaction(false, status -> {
 			for (int pf = 1998; pf < 2014; ++pf) {
@@ -2452,6 +2471,8 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 
 		final long noEntreprise = 24671L;
 		final RegpmEntreprise e = buildEntreprise(noEntreprise);
+		addRegimeFiscalVD(e, RegDate.get(1997, 1, 1), null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
+		addRegimeFiscalCH(e, RegDate.get(1997, 1, 1), null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
 		final RegpmAssujettissement assujettissement1998 = addAssujettissement(e, RegDate.get(1997, 4, 1), RegDate.get(1998, 3, 31), RegpmTypeAssujettissement.LILIC);
 		addForPrincipalSuisse(e, RegDate.get(1997, 1, 1), RegpmTypeForPrincipal.SIEGE, Commune.BALE);
 		addSiegeSuisse(e, RegDate.get(1997, 1, 1), Commune.BALE);
@@ -2564,6 +2585,9 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		addAssujettissement(e, RegDate.get(2007, 5, 21), null, RegpmTypeAssujettissement.LILIC);
 		e.setDateBouclementFutur(RegDate.get(2008, 3, 31));
 
+		addRegimeFiscalVD(e, RegDate.get(2009, 1, 1), null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
+		addRegimeFiscalCH(e, RegDate.get(2009, 1, 1), null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
+
 		// ajout des périodes fiscales dans Unireg
 		doInUniregTransaction(false, status -> {
 			for (int pf = 1998; pf < 2014; ++pf) {
@@ -2640,6 +2664,9 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		final RegpmDossierFiscal df = addDossierFiscal(e, a, 2001, RegDate.get(2001, 12, 12), RegpmModeImposition.POST);
 		addExerciceCommercial(e, df, RegDate.get(2001, 1, 1), RegDate.get(2001, 12, 31));
 
+		addRegimeFiscalVD(e, RegDate.get(2009, 1, 1), null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
+		addRegimeFiscalCH(e, RegDate.get(2009, 1, 1), null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
+
 		// ajout des périodes fiscales dans Unireg
 		doInUniregTransaction(false, status -> {
 			addPeriodeFiscale(2001);
@@ -2706,6 +2733,8 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		final RegpmEntreprise e = buildEntreprise(noEntreprise);
 		addForPrincipalSuisse(e, RegDate.get(2010, 1, 1), RegpmTypeForPrincipal.SIEGE, Commune.MORGES);
 		addForPrincipalSuisse(e, RegDate.get().addMonths(3), RegpmTypeForPrincipal.SIEGE, Commune.LAUSANNE);
+		addRegimeFiscalVD(e, RegDate.get(2010, 1, 1), null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
+		addRegimeFiscalCH(e, RegDate.get(2010, 1, 1), null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
 
 		final RegpmAssujettissement a = addAssujettissement(e, RegDate.get(2010, 1, 1), null, RegpmTypeAssujettissement.LILIC);
 		final RegpmDossierFiscal df = addDossierFiscal(e, a, 2010, RegDate.get(2010, 12, 20), RegpmModeImposition.POST);
@@ -2777,6 +2806,8 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		final long noEntreprise = 53465L;
 		final RegpmEntreprise e = buildEntreprise(noEntreprise);
 		addForPrincipalSuisse(e, RegDate.get(1977, 4, 7), RegpmTypeForPrincipal.SIEGE, Commune.ZURICH);
+    	addRegimeFiscalVD(e, RegDate.get(2009, 1, 1), null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
+		addRegimeFiscalCH(e, RegDate.get(2009, 1, 1), null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
 
 		final MockGraphe graphe = new MockGraphe(Collections.singletonList(e),
 		                                         null,
@@ -2850,6 +2881,8 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		final long noEntreprise = 53465L;
 		final RegpmEntreprise e = buildEntreprise(noEntreprise);
 		addForPrincipalSuisse(e, RegDate.get(1977, 4, 7), RegpmTypeForPrincipal.ADMINISTRATION_EFFECTIVE, Commune.ZURICH);
+		addRegimeFiscalVD(e, RegDate.get(2009, 1, 1), null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
+		addRegimeFiscalCH(e, RegDate.get(2009, 1, 1), null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
 
 		final MockGraphe graphe = new MockGraphe(Collections.singletonList(e),
 		                                         null,
@@ -2936,6 +2969,8 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		final long noEntreprise = 53465L;
 		final RegpmEntreprise e = buildEntreprise(noEntreprise);
 		addForPrincipalEtranger(e, RegDate.get(1977, 4, 7), RegpmTypeForPrincipal.ADMINISTRATION_EFFECTIVE, MockPays.Gibraltar.getNoOFS());
+		addRegimeFiscalVD(e, RegDate.get(2009, 1, 1), null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
+		addRegimeFiscalCH(e, RegDate.get(2009, 1, 1), null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
 
 		final MockGraphe graphe = new MockGraphe(Collections.singletonList(e),
 		                                         null,
@@ -3012,6 +3047,8 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 
 		final long noEntreprise = 53465L;
 		final RegpmEntreprise e = buildEntreprise(noEntreprise);
+		addRegimeFiscalVD(e, RegDate.get(2009, 1, 1), null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
+		addRegimeFiscalCH(e, RegDate.get(2009, 1, 1), null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
 		addSiegeEtranger(e, RegDate.get(1977, 4, 7), MockPays.Gibraltar.getNoOFS());
 		addRaisonSociale(e, RegDate.get(1977, 4, 7), "Mon entreprise à moi", null, null, true);
 		addFormeJuridique(e, RegDate.get(1977, 4, 7), createTypeFormeJuridique("S.A.", RegpmCategoriePersonneMorale.PM));
@@ -3097,6 +3134,8 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		final RegpmEntreprise e = buildEntreprise(noEntreprise);
 		addForPrincipalEtranger(e, RegDate.get(1977, 4, 7), RegpmTypeForPrincipal.ADMINISTRATION_EFFECTIVE, 8997);      // et oui, dans le mainframe, c'est 'Ex-Gibraltar', qui n'a pas été repris dans FiDoR
 		addSiegeEtranger(e, RegDate.get(1977, 4, 7), 8997);      // et oui, dans le mainframe, c'est 'Ex-Gibraltar', qui n'a pas été repris dans FiDoR
+		addRegimeFiscalVD(e, RegDate.get(2009, 1, 1), null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
+		addRegimeFiscalCH(e, RegDate.get(2009, 1, 1), null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
 
 		final MockGraphe graphe = new MockGraphe(Collections.singletonList(e),
 		                                         null,
@@ -3198,6 +3237,8 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		final RegpmEntreprise e = buildEntreprise(noEntreprise);
 		addForPrincipalSuisse(e, debut, RegpmTypeForPrincipal.SIEGE, Commune.LAUSANNE);
 //		addSiegeSuisse(e, debut, Commune.LAUSANNE);       // pas de siège explicite
+		addRegimeFiscalVD(e, debut, null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
+		addRegimeFiscalCH(e, debut, null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
 
 		final MockGraphe graphe = new MockGraphe(Collections.singletonList(e),
 		                                         null,
@@ -3251,6 +3292,8 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		addSiegeSuisse(e, dateDebut, Commune.MORGES);
 		addSiegeSuisse(e, RegDate.get(2004, 2, 23), Commune.LAUSANNE);
 		addSiegeSuisse(e, RegDate.get(2001, 5, 2), Commune.ECHALLENS);
+		addRegimeFiscalVD(e, dateDebut, null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
+		addRegimeFiscalCH(e, dateDebut, null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
 
 		final MockGraphe graphe = new MockGraphe(Collections.singletonList(e),
 		                                         null,
@@ -3394,6 +3437,8 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		addSiegeSuisse(e, RegDate.get(2003, 1, 1), Commune.MORGES);
 		addSiegeSuisse(e, RegDate.get(2104, 2, 23), Commune.LAUSANNE);      // de par la date, celui-ci devrait être conservé, mais il est dans le futur
 		addSiegeSuisse(e, RegDate.get(2001, 5, 2), Commune.ECHALLENS);
+		addRegimeFiscalVD(e, RegDate.get(2003, 1, 1), null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
+		addRegimeFiscalCH(e, RegDate.get(2003, 1, 1), null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
 
 		final MockGraphe graphe = new MockGraphe(Collections.singletonList(e),
 		                                         null,
@@ -3569,6 +3614,8 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		addSiegeSuisse(e, RegDate.get(2000, 1, 1), Commune.MORGES);
 		addSiegeSuisse(e, RegDate.get(2000, 1, 1), Commune.LAUSANNE);
 		addSiegeSuisse(e, RegDate.get(2000, 1, 1), Commune.ECHALLENS);  // de par le numéro de séquence, c'est lui qui doit être pris
+		addRegimeFiscalVD(e, RegDate.get(2000, 1, 1), null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
+		addRegimeFiscalCH(e, RegDate.get(2000, 1, 1), null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
 
 		final MockGraphe graphe = new MockGraphe(Collections.singletonList(e),
 		                                         null,
@@ -3664,6 +3711,8 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 
 		final long noEntreprise = 68002;
 		final RegpmEntreprise e = buildEntreprise(noEntreprise);
+		addRegimeFiscalVD(e, RegDate.get(2009, 1, 1), null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
+		addRegimeFiscalCH(e, RegDate.get(2009, 1, 1), null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
 		addForPrincipalSuisse(e, RegDate.get(1936, 4, 2), RegpmTypeForPrincipal.SIEGE, Commune.WIL);        // commune valide dans RefINF/FiDoR dès le 01.01.2013
 		addForPrincipalSuisse(e, RegDate.get(2001, 7, 1), RegpmTypeForPrincipal.SIEGE, Commune.ZURICH);
 		addSiegeSuisse(e, RegDate.get(2001, 7, 1), Commune.ZURICH);
@@ -3757,6 +3806,8 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		final long noEntreprise = 4545;
 		final RegpmEntreprise e = buildEntreprise(noEntreprise);
 		addForPrincipalSuisse(e, RegDate.get(2000, 1, 1), RegpmTypeForPrincipal.SIEGE, Commune.LE_CHENIT);
+		addRegimeFiscalVD(e, RegDate.get(2009, 1, 1), null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
+		addRegimeFiscalCH(e, RegDate.get(2009, 1, 1), null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
 
 		final MockGraphe graphe = new MockGraphe(Collections.singletonList(e),
 		                                         null,
@@ -4091,6 +4142,8 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 
 		final RegpmEntreprise e = buildEntreprise(noEntreprise);
 		addForPrincipalSuisse(e, dateCreationFor, RegpmTypeForPrincipal.SIEGE, Commune.LAUSANNE);
+		addRegimeFiscalVD(e, dateCreationFor, null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
+		addRegimeFiscalCH(e, dateCreationFor, null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
 
 		final MockGraphe graphe = new MockGraphe(Collections.singletonList(e),
 		                                         null,
@@ -4132,6 +4185,8 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		addSiegeSuisse(e, dateCreationFor, Commune.LAUSANNE);
 		addSiegeSuisse(e, dateCreationDeuxiemeFor, Commune.MORGES);
 		e.setDateDissolution(dateDissolution);
+		addRegimeFiscalVD(e, dateCreationFor, null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
+		addRegimeFiscalCH(e, dateCreationFor, null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
 
 		final MockGraphe graphe = new MockGraphe(Collections.singletonList(e),
 		                                         null,
@@ -4592,6 +4647,8 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		addFormeJuridique(e, dateDebut, createTypeFormeJuridique("S.A.", RegpmCategoriePersonneMorale.PM));
 		addSiegeSuisse(e, dateDebut, Commune.BALE);
 		addAdresse(e, RegpmTypeAdresseEntreprise.COURRIER, RegDate.get(2010, 7, 22), null, LocalitePostale.RENENS, "Rue des étangs", "24", null, null);
+		addRegimeFiscalVD(e, dateDebut, null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
+		addRegimeFiscalCH(e, dateDebut, null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
 
 		final MockGraphe graphe = new MockGraphe(Collections.singletonList(e),
 		                                         null,
@@ -4843,6 +4900,8 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		addFormeJuridique(e, dateDebut, createTypeFormeJuridique("S.A.", RegpmCategoriePersonneMorale.PM));
 		addFormeJuridique(e, dateChangementFormeJuridique, createTypeFormeJuridique("DP", RegpmCategoriePersonneMorale.APM));
 		addForPrincipalSuisse(e, dateDebut, RegpmTypeForPrincipal.SIEGE, Commune.ECHALLENS);
+		addRegimeFiscalVD(e, dateDebut, null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
+		addRegimeFiscalCH(e, dateDebut, null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
 
 		final MockGraphe graphe = new MockGraphe(Collections.singletonList(e),
 		                                         null,
@@ -4886,6 +4945,8 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		addFormeJuridique(e, dateDebut, createTypeFormeJuridique("DP", RegpmCategoriePersonneMorale.APM));
 		addFormeJuridique(e, dateChangementFormeJuridique, createTypeFormeJuridique("S.A.", RegpmCategoriePersonneMorale.PM));
 		addForPrincipalSuisse(e, dateDebut, RegpmTypeForPrincipal.SIEGE, Commune.ECHALLENS);
+		addRegimeFiscalVD(e, dateDebut, null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
+		addRegimeFiscalCH(e, dateDebut, null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
 
 		final MockGraphe graphe = new MockGraphe(Collections.singletonList(e),
 		                                         null,
@@ -4938,6 +4999,8 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		addSiegeSuisse(e, dateDebut, Commune.ECHALLENS);
 		addSiegeSuisse(e, dateDepartHC.getOneDayAfter(), Commune.BERN);
 		addAssujettissement(e, dateDebut, dateDepartHC, RegpmTypeAssujettissement.LILIC);
+		addRegimeFiscalVD(e, dateDebut, null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
+		addRegimeFiscalCH(e, dateDebut, null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
 
 		final MockGraphe graphe = new MockGraphe(Collections.singletonList(e),
 		                                         null,
@@ -5089,6 +5152,8 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		addRaisonSociale(e, dateDebut, "Toto SA", null, null, true);
 		addFormeJuridique(e, dateDebut, createTypeFormeJuridique("S.A.", RegpmCategoriePersonneMorale.PM));
 		addForPrincipalEtranger(e, dateDebut, RegpmTypeForPrincipal.SIEGE, MockPays.Russie.getNoOFS());
+		addRegimeFiscalVD(e, RegDate.get(2009, 1, 1), null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
+		addRegimeFiscalCH(e, RegDate.get(2009, 1, 1), null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
 
 		final MockGraphe graphe = new MockGraphe(Collections.singletonList(e),
 		                                         null,
@@ -5135,6 +5200,8 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		addFormeJuridique(e, dateDebut, createTypeFormeJuridique("S.A.", RegpmCategoriePersonneMorale.PM));
 		addForPrincipalEtranger(e, dateDebut, RegpmTypeForPrincipal.SIEGE, MockPays.Russie.getNoOFS());
 		addForSecondaire(e, dateDebutForSecondaire, null, Commune.LAUSANNE);
+		addRegimeFiscalVD(e, RegDate.get(2009, 1, 1), null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
+		addRegimeFiscalCH(e, RegDate.get(2009, 1, 1), null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
 
 		final MockGraphe graphe = new MockGraphe(Collections.singletonList(e),
 		                                         null,
@@ -5184,6 +5251,8 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		addForPrincipalEtranger(e, dateDebut, RegpmTypeForPrincipal.SIEGE, MockPays.Russie.getNoOFS());
 		addForPrincipalEtranger(e, dateDebutDeuxiemeForPrincipal, RegpmTypeForPrincipal.SIEGE, MockPays.RoyaumeUni.getNoOFS());
 		addForSecondaire(e, dateDebutForSecondaire, null, Commune.LAUSANNE);
+		addRegimeFiscalVD(e, dateDebut, null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
+		addRegimeFiscalCH(e, dateDebut, null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
 
 		final MockGraphe graphe = new MockGraphe(Collections.singletonList(e),
 		                                         null,
@@ -5249,6 +5318,8 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		addForPrincipalEtranger(e, dateDebut, RegpmTypeForPrincipal.SIEGE, MockPays.Russie.getNoOFS());
 		addForPrincipalEtranger(e, dateDebutDeuxiemeForPrincipal, RegpmTypeForPrincipal.SIEGE, MockPays.RoyaumeUni.getNoOFS());
 		addForSecondaire(e, dateDebutForSecondaire, null, Commune.LAUSANNE);
+		addRegimeFiscalVD(e, dateDebut, null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
+		addRegimeFiscalCH(e, dateDebut, null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
 
 		final MockGraphe graphe = new MockGraphe(Collections.singletonList(e),
 		                                         null,
@@ -5312,6 +5383,8 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		addFormeJuridique(e, dateDebut, createTypeFormeJuridique("S.A.", RegpmCategoriePersonneMorale.PM));
 		addForPrincipalSuisse(e, dateDebut, RegpmTypeForPrincipal.SIEGE, Commune.BERN);
 		addForSecondaire(e, dateDebutForSecondaire, null, Commune.LAUSANNE);
+		addRegimeFiscalVD(e, dateDebut, null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
+		addRegimeFiscalCH(e, dateDebut, null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
 
 		final MockGraphe graphe = new MockGraphe(Collections.singletonList(e),
 		                                         null,
@@ -5358,6 +5431,8 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		addFormeJuridique(e, dateDebut, createTypeFormeJuridique("S.A.", RegpmCategoriePersonneMorale.PM));
 		addForPrincipalSuisse(e, dateDebut, RegpmTypeForPrincipal.SIEGE, Commune.ECHALLENS);
 		addForSecondaire(e, dateDebutForSecondaire, null, Commune.LAUSANNE);
+		addRegimeFiscalVD(e, RegDate.get(2009, 1, 1), null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
+		addRegimeFiscalCH(e, RegDate.get(2009, 1, 1), null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
 
 		final MockGraphe graphe = new MockGraphe(Collections.singletonList(e),
 		                                         null,
@@ -5404,6 +5479,8 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		addFormeJuridique(e, dateDebut, createTypeFormeJuridique("S.A.", RegpmCategoriePersonneMorale.PM));
 		addForPrincipalSuisse(e, dateDebut, RegpmTypeForPrincipal.SIEGE, Commune.ECHALLENS);
 		addForSecondaire(e, dateDebutForSecondaire, null, Commune.LAUSANNE);
+		addRegimeFiscalVD(e, dateDebut, null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
+		addRegimeFiscalCH(e, dateDebut, null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
 
 		final RegpmAssujettissement assuj = addAssujettissement(e, dateDebut, null, RegpmTypeAssujettissement.LILIC);
 		final RegpmDossierFiscal df = addDossierFiscal(e, assuj, 2005, RegDate.get(2005, 10, 6), RegpmModeImposition.POST);

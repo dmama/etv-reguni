@@ -81,6 +81,7 @@ import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeEtatDossierFiscal;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeForPrincipal;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeGroupeProprietaire;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeMandat;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeRegimeFiscal;
 import ch.vd.uniregctb.migration.pm.store.UniregStore;
 import ch.vd.uniregctb.migration.pm.utils.DatesParticulieres;
 import ch.vd.uniregctb.migration.pm.utils.ValidationInterceptor;
@@ -294,6 +295,8 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		EntrepriseMigratorTest.addFormeJuridique(entrepriseMandataire, RegDate.get(1990, 1, 1), EntrepriseMigratorTest.createTypeFormeJuridique("S.A.", RegpmCategoriePersonneMorale.PM));
 		EntrepriseMigratorTest.addForPrincipalEtranger(entrepriseMandataire, RegDate.get(1990, 1, 1), RegpmTypeForPrincipal.SIEGE, MockPays.RoyaumeUni.getNoOFS());
 		EntrepriseMigratorTest.addSiegeEtranger(entrepriseMandataire, RegDate.get(1990, 2, 2), MockPays.RoyaumeUni.getNoOFS());
+		EntrepriseMigratorTest.addRegimeFiscalVD(entrepriseMandataire, RegDate.get(2009, 1, 1), null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
+		EntrepriseMigratorTest.addRegimeFiscalCH(entrepriseMandataire, RegDate.get(2009, 1, 1), null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
 
 		final RegpmEtablissement mandataire = EtablissementMigratorTest.buildEtablissement(idEtablissementMandataire, entrepriseMandataire);
 		EtablissementMigratorTest.addDomicileEtablissement(mandataire, RegDate.get(1995, 1, 1), Commune.ECHALLENS, false);
@@ -515,7 +518,8 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		                               LogCategory.FORS,
 		                               LogCategory.ETABLISSEMENTS,
 		                               LogCategory.RAPPORTS_ENTRE_TIERS,
-		                               LogCategory.DONNEES_CIVILES_REGPM),
+		                               LogCategory.DONNEES_CIVILES_REGPM,
+		                               LogCategory.MAPPINGS_REGIMES_FISCAUX),
 		                    messages.keySet());
 		{
 			final List<String> msgs = messages.get(LogCategory.SUIVI);
@@ -569,6 +573,12 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 			Assert.assertEquals("INFO;MANDANT_MANDATAIRE;2010-01-01;;" + idEntrepriseMandante + ";;;" + idEntrepriseMandante + ";;" + idEtablissementMandataire + ";;" + noContribuableEtablissementSecondaireMandataire.longValue() + ";", msgs.get(1));
 			Assert.assertEquals("INFO;ETABLISSEMENT_ENTITE_JURIDIQUE;1990-02-02;;;;;" + noContribuableEtablissementPrincipalMandataire.longValue() + ";" + idEntrepriseMandataire + ";;;" + idEntrepriseMandataire + ";", msgs.get(2));
 		}
+		{
+			final List<String> msgs = messages.get(LogCategory.MAPPINGS_REGIMES_FISCAUX);
+			Assert.assertEquals(2, msgs.size());
+			Assert.assertEquals("INFO;" + idEntrepriseMandataire + ";Active;;;2009-01-01;CH;01;01;", msgs.get(0));
+			Assert.assertEquals("INFO;" + idEntrepriseMandataire + ";Active;;;2009-01-01;VD;01;01;", msgs.get(1));
+		}
 	}
 
 	@Test
@@ -580,6 +590,8 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		EntrepriseMigratorTest.addForPrincipalSuisse(entreprise, RegDate.get(1990, 1, 1), RegpmTypeForPrincipal.SIEGE, Commune.BALE);       // un for principal de base
 		EntrepriseMigratorTest.addSiegeSuisse(entreprise, RegDate.get(1990, 1, 1), Commune.BALE);       // un siège
 		EntrepriseMigratorTest.addAssujettissement(entreprise, RegDate.get(1999, 5, 12), RegDate.get(2010, 11, 25), RegpmTypeAssujettissement.LILIC);
+		EntrepriseMigratorTest.addRegimeFiscalVD(entreprise, RegDate.get(1995, 5, 12), null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
+		EntrepriseMigratorTest.addRegimeFiscalCH(entreprise, RegDate.get(1995, 5, 12), null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
 
 		// les établissements
 		final long idEtablissement1 = 235612L;
@@ -768,7 +780,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		});
 
 		final Map<LogCategory, List<String>> messages = buildTextualMessages(lms);
-		Assert.assertEquals(EnumSet.of(LogCategory.SUIVI, LogCategory.ADRESSES, LogCategory.FORS, LogCategory.ASSUJETTISSEMENTS, LogCategory.ETABLISSEMENTS, LogCategory.RAPPORTS_ENTRE_TIERS, LogCategory.DONNEES_CIVILES_REGPM), messages.keySet());
+		Assert.assertEquals(EnumSet.of(LogCategory.SUIVI, LogCategory.ADRESSES, LogCategory.FORS, LogCategory.ASSUJETTISSEMENTS, LogCategory.ETABLISSEMENTS, LogCategory.RAPPORTS_ENTRE_TIERS, LogCategory.DONNEES_CIVILES_REGPM, LogCategory.MAPPINGS_REGIMES_FISCAUX), messages.keySet());
 		{
 			final List<String> msgs = messages.get(LogCategory.SUIVI);
 			Assert.assertEquals(10, msgs.size());
@@ -830,6 +842,12 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 			Assert.assertEquals(1, msgs.size());
 			Assert.assertEquals("ERROR;" + idEntreprise + ";Active;;;;;;;;;Impossible de déterminer la date de début des données du registre du commerce (aucune donnée de raison sociale et/ou de forme juridique).", msgs.get(0));
 		}
+		{
+			final List<String> msgs = messages.get(LogCategory.MAPPINGS_REGIMES_FISCAUX);
+			Assert.assertEquals(2, msgs.size());
+			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;1995-05-12;CH;01;01;", msgs.get(0));
+			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;1995-05-12;VD;01;01;", msgs.get(1));
+		}
 	}
 
 	@Test
@@ -839,6 +857,8 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		final RegpmEntreprise entreprise = EntrepriseMigratorTest.buildEntreprise(idEntreprise);
 		EntrepriseMigratorTest.addForPrincipalSuisse(entreprise, RegDate.get(1990, 1, 1), RegpmTypeForPrincipal.SIEGE, Commune.BALE);       // un for principal de base
 		EntrepriseMigratorTest.addSiegeSuisse(entreprise, RegDate.get(1990, 1, 1), Commune.BALE);       // un siège
+		EntrepriseMigratorTest.addRegimeFiscalVD(entreprise, RegDate.get(1990, 1, 1), null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
+		EntrepriseMigratorTest.addRegimeFiscalCH(entreprise, RegDate.get(1990, 1, 1), null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
 
 		// les établissements
 		final long idEtablissement1 = 235612L;
@@ -1002,7 +1022,15 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		});
 
 		final Map<LogCategory, List<String>> messages = buildTextualMessages(lms);
-		Assert.assertEquals(EnumSet.of(LogCategory.SUIVI, LogCategory.ADRESSES, LogCategory.FORS, LogCategory.ASSUJETTISSEMENTS, LogCategory.ETABLISSEMENTS, LogCategory.RAPPORTS_ENTRE_TIERS, LogCategory.DONNEES_CIVILES_REGPM), messages.keySet());
+		Assert.assertEquals(EnumSet.of(LogCategory.SUIVI,
+		                               LogCategory.ADRESSES,
+		                               LogCategory.FORS,
+		                               LogCategory.ASSUJETTISSEMENTS,
+		                               LogCategory.ETABLISSEMENTS,
+		                               LogCategory.RAPPORTS_ENTRE_TIERS,
+		                               LogCategory.DONNEES_CIVILES_REGPM,
+		                               LogCategory.MAPPINGS_REGIMES_FISCAUX),
+		                    messages.keySet());
 		{
 			final List<String> msgs = messages.get(LogCategory.SUIVI);
 			Assert.assertEquals(10, msgs.size());
@@ -1065,6 +1093,12 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 			Assert.assertEquals(1, msgs.size());
 			Assert.assertEquals("ERROR;" + idEntreprise + ";Active;;;;;;;;;Impossible de déterminer la date de début des données du registre du commerce (aucune donnée de raison sociale et/ou de forme juridique).", msgs.get(0));
 		}
+		{
+			final List<String> msgs = messages.get(LogCategory.MAPPINGS_REGIMES_FISCAUX);
+			Assert.assertEquals(2, msgs.size());
+			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;1990-01-01;CH;01;01;", msgs.get(0));
+			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;1990-01-01;VD;01;01;", msgs.get(1));
+		}
 	}
 
 	@Test
@@ -1073,6 +1107,8 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		final RegpmEntreprise e = EntrepriseMigratorTest.buildEntreprise(noEntreprise);
 		final RegDate debut = RegDate.get(2005, 5, 7);
 		EntrepriseMigratorTest.addForPrincipalSuisse(e, debut, RegpmTypeForPrincipal.SIEGE, Commune.BERN);
+		EntrepriseMigratorTest.addRegimeFiscalVD(e, debut, null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
+		EntrepriseMigratorTest.addRegimeFiscalCH(e, debut, null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
 
 		final RegpmImmeuble immeuble = createImmeuble(Commune.Fraction.LE_SENTIER);
 		EntrepriseMigratorTest.addRattachementProprietaire(e, debut, null, immeuble);
@@ -1132,6 +1168,8 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		final RegDate debut = RegDate.get(2005, 5, 7);
 		EntrepriseMigratorTest.addForPrincipalSuisse(e, debut, RegpmTypeForPrincipal.SIEGE, Commune.BERN);
 		EntrepriseMigratorTest.addAssujettissement(e, debut, null, RegpmTypeAssujettissement.LILIC);
+		EntrepriseMigratorTest.addRegimeFiscalVD(e, debut, null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
+		EntrepriseMigratorTest.addRegimeFiscalCH(e, debut, null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
 
 		final RegpmEtablissement etb = EtablissementMigratorTest.buildEtablissement(idEtablissement, e);
 		EtablissementMigratorTest.addEtablissementStable(etb, debut, null);
@@ -1192,6 +1230,8 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 
 		// pas de for principal...
 		final RegpmEntreprise regpm = EntrepriseMigratorTest.buildEntreprise(noEntreprise);
+		EntrepriseMigratorTest.addRegimeFiscalVD(regpm, dateDebutForPrincipal, null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
+		EntrepriseMigratorTest.addRegimeFiscalCH(regpm, dateDebutForPrincipal, null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
 
 		// mais un assujettissement quand-même (sinon le test ne représente plus le cas...)
 		EntrepriseMigratorTest.addAssujettissement(regpm, dateAchatImmeuble1, null, RegpmTypeAssujettissement.LILIC);
@@ -1278,7 +1318,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		});
 
 		final Map<LogCategory, List<String>> messages = buildTextualMessages(lms);
-		Assert.assertEquals(EnumSet.of(LogCategory.SUIVI, LogCategory.FORS, LogCategory.DONNEES_CIVILES_REGPM), messages.keySet());
+		Assert.assertEquals(EnumSet.of(LogCategory.SUIVI, LogCategory.FORS, LogCategory.DONNEES_CIVILES_REGPM, LogCategory.MAPPINGS_REGIMES_FISCAUX), messages.keySet());
 		{
 			final List<String> msgs = messages.get(LogCategory.SUIVI);
 			Assert.assertEquals(6, msgs.size());
@@ -1303,6 +1343,12 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 			Assert.assertEquals(1, msgs.size());
 			Assert.assertEquals("ERROR;" + noEntreprise + ";Active;;;;;;;;;Impossible de déterminer la date de début des données du registre du commerce (aucune donnée de raison sociale et/ou de forme juridique).", msgs.get(0));
 		}
+		{
+			final List<String> msgs = messages.get(LogCategory.MAPPINGS_REGIMES_FISCAUX);
+			Assert.assertEquals(2, msgs.size());
+			Assert.assertEquals("INFO;" + noEntreprise + ";Active;;;1987-05-01;CH;01;01;", msgs.get(0));
+			Assert.assertEquals("INFO;" + noEntreprise + ";Active;;;1987-05-01;VD;01;01;", msgs.get(1));
+		}
 	}
 
 	@Test
@@ -1317,6 +1363,8 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		EntrepriseMigratorTest.addForPrincipalSuisse(regpm, dateDebutForPrincipal, RegpmTypeForPrincipal.SIEGE, Commune.ECHALLENS);
 		EntrepriseMigratorTest.addSiegeSuisse(regpm, dateDebutForPrincipal, Commune.ECHALLENS);
 		EntrepriseMigratorTest.addAssujettissement(regpm, dateDebutForPrincipal, null, RegpmTypeAssujettissement.LILIC);
+		EntrepriseMigratorTest.addRegimeFiscalVD(regpm, dateDebutForPrincipal, null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
+		EntrepriseMigratorTest.addRegimeFiscalCH(regpm, dateDebutForPrincipal, null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
 
 		final RegpmImmeuble immeuble1 = EntrepriseMigratorTest.createImmeuble(Commune.MORGES);
 		EntrepriseMigratorTest.addRattachementProprietaire(regpm, dateAchatImmeuble1, null, immeuble1);
@@ -1412,7 +1460,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		});
 
 		final Map<LogCategory, List<String>> messages = buildTextualMessages(lms);
-		Assert.assertEquals(EnumSet.of(LogCategory.SUIVI, LogCategory.FORS, LogCategory.ASSUJETTISSEMENTS, LogCategory.RAPPORTS_ENTRE_TIERS, LogCategory.DONNEES_CIVILES_REGPM), messages.keySet());
+		Assert.assertEquals(EnumSet.of(LogCategory.SUIVI, LogCategory.FORS, LogCategory.ASSUJETTISSEMENTS, LogCategory.RAPPORTS_ENTRE_TIERS, LogCategory.DONNEES_CIVILES_REGPM, LogCategory.MAPPINGS_REGIMES_FISCAUX), messages.keySet());
 		{
 			final List<String> msgs = messages.get(LogCategory.SUIVI);
 			Assert.assertEquals(6, msgs.size());
@@ -1448,6 +1496,12 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 			Assert.assertEquals(1, msgs.size());
 			Assert.assertEquals("ERROR;" + noEntreprise + ";Active;;;;;;;;;Impossible de déterminer la date de début des données du registre du commerce (aucune donnée de raison sociale et/ou de forme juridique).", msgs.get(0));
 		}
+		{
+			final List<String> msgs = messages.get(LogCategory.MAPPINGS_REGIMES_FISCAUX);
+			Assert.assertEquals(2, msgs.size());
+			Assert.assertEquals("INFO;" + noEntreprise + ";Active;;;1987-05-01;CH;01;01;", msgs.get(0));
+			Assert.assertEquals("INFO;" + noEntreprise + ";Active;;;1987-05-01;VD;01;01;", msgs.get(1));
+		}
 	}
 
 	/**
@@ -1466,6 +1520,8 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		EntrepriseMigratorTest.addForPrincipalSuisse(regpm, dateDebutForPrincipal, RegpmTypeForPrincipal.SIEGE, Commune.ECHALLENS);
 		EntrepriseMigratorTest.addSiegeSuisse(regpm, dateDebutForPrincipal, Commune.ECHALLENS);
 		EntrepriseMigratorTest.addAssujettissement(regpm, dateDebutForPrincipal, null, RegpmTypeAssujettissement.LILIC);
+		EntrepriseMigratorTest.addRegimeFiscalVD(regpm, dateDebutForPrincipal, null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
+		EntrepriseMigratorTest.addRegimeFiscalCH(regpm, dateDebutForPrincipal, null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
 
 		final RegpmImmeuble immeuble1 = EntrepriseMigratorTest.createImmeuble(Commune.MORGES);
 		EntrepriseMigratorTest.addRattachementProprietaire(regpm, dateAchatImmeuble, dateVenteImmeuble, immeuble1);
@@ -1544,7 +1600,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		});
 
 		final Map<LogCategory, List<String>> messages = buildTextualMessages(lms);
-		Assert.assertEquals(EnumSet.of(LogCategory.SUIVI, LogCategory.FORS, LogCategory.ASSUJETTISSEMENTS, LogCategory.RAPPORTS_ENTRE_TIERS, LogCategory.DONNEES_CIVILES_REGPM), messages.keySet());
+		Assert.assertEquals(EnumSet.of(LogCategory.SUIVI, LogCategory.FORS, LogCategory.ASSUJETTISSEMENTS, LogCategory.RAPPORTS_ENTRE_TIERS, LogCategory.DONNEES_CIVILES_REGPM, LogCategory.MAPPINGS_REGIMES_FISCAUX), messages.keySet());
 		{
 			final List<String> msgs = messages.get(LogCategory.SUIVI);
 			Assert.assertEquals(6, msgs.size());
@@ -1578,6 +1634,12 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 			Assert.assertEquals(1, msgs.size());
 			Assert.assertEquals("ERROR;" + noEntreprise + ";Active;;;;;;;;;Impossible de déterminer la date de début des données du registre du commerce (aucune donnée de raison sociale et/ou de forme juridique).", msgs.get(0));
 		}
+		{
+			final List<String> msgs = messages.get(LogCategory.MAPPINGS_REGIMES_FISCAUX);
+			Assert.assertEquals(2, msgs.size());
+			Assert.assertEquals("INFO;" + noEntreprise + ";Active;;;1987-05-01;CH;01;01;", msgs.get(0));
+			Assert.assertEquals("INFO;" + noEntreprise + ";Active;;;1987-05-01;VD;01;01;", msgs.get(1));
+		}
 	}
 
 	@Test
@@ -1591,6 +1653,8 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		EntrepriseMigratorTest.addForPrincipalSuisse(regpm, dateDebutForPrincipal, RegpmTypeForPrincipal.SIEGE, Commune.ECHALLENS);
 		EntrepriseMigratorTest.addSiegeSuisse(regpm, dateDebutForPrincipal, Commune.ECHALLENS);
 		EntrepriseMigratorTest.addAssujettissement(regpm, dateDebutForPrincipal, null, RegpmTypeAssujettissement.LILIC);
+		EntrepriseMigratorTest.addRegimeFiscalVD(regpm, dateDebutForPrincipal, null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
+		EntrepriseMigratorTest.addRegimeFiscalCH(regpm, dateDebutForPrincipal, null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
 
 		activityManager.setup(ALL_ACTIVE);
 
@@ -1651,7 +1715,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		});
 
 		final Map<LogCategory, List<String>> messages = buildTextualMessages(lms);
-		Assert.assertEquals(EnumSet.of(LogCategory.SUIVI, LogCategory.FORS, LogCategory.RAPPORTS_ENTRE_TIERS, LogCategory.DONNEES_CIVILES_REGPM), messages.keySet());
+		Assert.assertEquals(EnumSet.of(LogCategory.SUIVI, LogCategory.FORS, LogCategory.RAPPORTS_ENTRE_TIERS, LogCategory.DONNEES_CIVILES_REGPM, LogCategory.MAPPINGS_REGIMES_FISCAUX), messages.keySet());
 		{
 			final List<String> msgs = messages.get(LogCategory.SUIVI);
 			Assert.assertEquals(6, msgs.size());
@@ -1676,6 +1740,12 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 			final List<String> msgs = messages.get(LogCategory.DONNEES_CIVILES_REGPM);
 			Assert.assertEquals(1, msgs.size());
 			Assert.assertEquals("ERROR;" + noEntreprise + ";Active;;;;;;;;;Impossible de déterminer la date de début des données du registre du commerce (aucune donnée de raison sociale et/ou de forme juridique).", msgs.get(0));
+		}
+		{
+			final List<String> msgs = messages.get(LogCategory.MAPPINGS_REGIMES_FISCAUX);
+			Assert.assertEquals(2, msgs.size());
+			Assert.assertEquals("INFO;" + noEntreprise + ";Active;;;1987-05-01;CH;01;01;", msgs.get(0));
+			Assert.assertEquals("INFO;" + noEntreprise + ";Active;;;1987-05-01;VD;01;01;", msgs.get(1));
 		}
 	}
 
@@ -1740,6 +1810,8 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		EntrepriseMigratorTest.addForPrincipalSuisse(entreprise, RegDate.get(1990, 1, 1), RegpmTypeForPrincipal.SIEGE, Commune.BALE);       // un for principal de base
 		EntrepriseMigratorTest.addSiegeSuisse(entreprise, RegDate.get(1990, 1, 1), Commune.BALE);       // un siège
 		EntrepriseMigratorTest.addAssujettissement(entreprise, RegDate.get(1999, 5, 12), null, RegpmTypeAssujettissement.LILIC);
+		EntrepriseMigratorTest.addRegimeFiscalVD(entreprise, RegDate.get(1990, 1, 1), null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
+		EntrepriseMigratorTest.addRegimeFiscalCH(entreprise, RegDate.get(1990, 1, 1), null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
 
 		// un établissement
 		final long idEtablissement = 235612L;
@@ -1869,7 +1941,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		});
 
 		final Map<LogCategory, List<String>> messages = buildTextualMessages(lms);
-		Assert.assertEquals(EnumSet.of(LogCategory.SUIVI, LogCategory.ADRESSES, LogCategory.FORS, LogCategory.ETABLISSEMENTS, LogCategory.ASSUJETTISSEMENTS, LogCategory.RAPPORTS_ENTRE_TIERS, LogCategory.DONNEES_CIVILES_REGPM), messages.keySet());
+		Assert.assertEquals(EnumSet.of(LogCategory.SUIVI, LogCategory.ADRESSES, LogCategory.FORS, LogCategory.ETABLISSEMENTS, LogCategory.ASSUJETTISSEMENTS, LogCategory.RAPPORTS_ENTRE_TIERS, LogCategory.DONNEES_CIVILES_REGPM, LogCategory.MAPPINGS_REGIMES_FISCAUX), messages.keySet());
 		{
 			final List<String> msgs = messages.get(LogCategory.SUIVI);
 			Assert.assertEquals(8, msgs.size());
@@ -1927,6 +1999,12 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 			Assert.assertEquals(1, msgs.size());
 			Assert.assertEquals("ERROR;" + idEntreprise + ";Active;;;;;;;;;Impossible de déterminer la date de début des données du registre du commerce (aucune donnée de raison sociale et/ou de forme juridique).", msgs.get(0));
 		}
+		{
+			final List<String> msgs = messages.get(LogCategory.MAPPINGS_REGIMES_FISCAUX);
+			Assert.assertEquals(2, msgs.size());
+			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;1990-01-01;CH;01;01;", msgs.get(0));
+			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;1990-01-01;VD;01;01;", msgs.get(1));
+		}
 	}
 
 	@Test
@@ -1937,6 +2015,8 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		EntrepriseMigratorTest.addForPrincipalSuisse(entreprise, RegDate.get(1990, 1, 1), RegpmTypeForPrincipal.SIEGE, Commune.BALE);       // un for principal de base
 		EntrepriseMigratorTest.addSiegeSuisse(entreprise, RegDate.get(1990, 1, 1), Commune.BALE);       // un siège
 		EntrepriseMigratorTest.addAssujettissement(entreprise, RegDate.get(2004, 7, 1), null, RegpmTypeAssujettissement.LILIC);
+		EntrepriseMigratorTest.addRegimeFiscalVD(entreprise, RegDate.get(1990, 1, 1), null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
+		EntrepriseMigratorTest.addRegimeFiscalCH(entreprise, RegDate.get(1990, 1, 1), null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
 
 		// un établissement
 		final long idEtablissement = 235612L;
@@ -2026,7 +2106,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		});
 
 		final Map<LogCategory, List<String>> messages = buildTextualMessages(lms);
-		Assert.assertEquals(EnumSet.of(LogCategory.SUIVI, LogCategory.FORS, LogCategory.ETABLISSEMENTS, LogCategory.ASSUJETTISSEMENTS, LogCategory.RAPPORTS_ENTRE_TIERS, LogCategory.DONNEES_CIVILES_REGPM), messages.keySet());
+		Assert.assertEquals(EnumSet.of(LogCategory.SUIVI, LogCategory.FORS, LogCategory.ETABLISSEMENTS, LogCategory.ASSUJETTISSEMENTS, LogCategory.RAPPORTS_ENTRE_TIERS, LogCategory.DONNEES_CIVILES_REGPM, LogCategory.MAPPINGS_REGIMES_FISCAUX), messages.keySet());
 		{
 			final List<String> msgs = messages.get(LogCategory.SUIVI);
 			Assert.assertEquals(6, msgs.size());
@@ -2071,6 +2151,12 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 			Assert.assertEquals(1, msgs.size());
 			Assert.assertEquals("ERROR;" + idEntreprise + ";Active;;;;;;;;;Impossible de déterminer la date de début des données du registre du commerce (aucune donnée de raison sociale et/ou de forme juridique).", msgs.get(0));
 		}
+		{
+			final List<String> msgs = messages.get(LogCategory.MAPPINGS_REGIMES_FISCAUX);
+			Assert.assertEquals(2, msgs.size());
+			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;1990-01-01;CH;01;01;", msgs.get(0));
+			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;1990-01-01;VD;01;01;", msgs.get(1));
+		}
 	}
 
 	@Test
@@ -2080,6 +2166,8 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		final RegpmEntreprise entreprise = EntrepriseMigratorTest.buildEntreprise(idEntreprise);
 		EntrepriseMigratorTest.addForPrincipalSuisse(entreprise, RegDate.get(1990, 1, 1), RegpmTypeForPrincipal.SIEGE, Commune.ECHALLENS);
 		EntrepriseMigratorTest.addAssujettissement(entreprise, RegDate.get(1990, 1, 1), null, RegpmTypeAssujettissement.LILIC);
+		EntrepriseMigratorTest.addRegimeFiscalVD(entreprise, RegDate.get(1990, 1, 1), null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
+		EntrepriseMigratorTest.addRegimeFiscalCH(entreprise, RegDate.get(1990, 1, 1), null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
 
 		activityManager.setup(ALL_ACTIVE);
 
@@ -2104,6 +2192,8 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		EntrepriseMigratorTest.addForPrincipalEtranger(entreprise, RegDate.get(2000, 1, 1), RegpmTypeForPrincipal.SIEGE, MockPays.France.getNoOFS());
 		EntrepriseMigratorTest.addRattachementProprietaire(entreprise, RegDate.get(1995, 5, 12), null, createImmeuble(Commune.LAUSANNE));
 		EntrepriseMigratorTest.addAssujettissement(entreprise, RegDate.get(1990, 1, 1), null, RegpmTypeAssujettissement.LILIC);
+		EntrepriseMigratorTest.addRegimeFiscalVD(entreprise, RegDate.get(1990, 1, 1), null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
+		EntrepriseMigratorTest.addRegimeFiscalCH(entreprise, RegDate.get(1990, 1, 1), null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
 
 		activityManager.setup(ALL_ACTIVE);
 
@@ -2131,6 +2221,8 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		EntrepriseMigratorTest.addForPrincipalSuisse(entreprise, RegDate.get(1990, 1, 1), RegpmTypeForPrincipal.SIEGE, Commune.ECHALLENS);
 		EntrepriseMigratorTest.addAssujettissement(entreprise, RegDate.get(1980, 1, 1), RegDate.get(1985, 12, 31), RegpmTypeAssujettissement.LILIC);        // que fait-il donc là ?
 		EntrepriseMigratorTest.addAssujettissement(entreprise, RegDate.get(1990, 1, 1), null, RegpmTypeAssujettissement.LILIC);
+		EntrepriseMigratorTest.addRegimeFiscalVD(entreprise, RegDate.get(1990, 1, 1), null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
+		EntrepriseMigratorTest.addRegimeFiscalCH(entreprise, RegDate.get(1990, 1, 1), null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
 
 		activityManager.setup(ALL_ACTIVE);
 
@@ -2156,6 +2248,8 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		final RegpmEntreprise entreprise = EntrepriseMigratorTest.buildEntreprise(idEntreprise);
 		EntrepriseMigratorTest.addForPrincipalSuisse(entreprise, RegDate.get(1990, 1, 1), RegpmTypeForPrincipal.SIEGE, Commune.ECHALLENS);
 		EntrepriseMigratorTest.addAssujettissement(entreprise, RegDate.get(1990, 1, 1), RegDate.get(2014, 12, 31), RegpmTypeAssujettissement.LILIC);    // et après 2014 ???
+		EntrepriseMigratorTest.addRegimeFiscalVD(entreprise, RegDate.get(1990, 1, 1), null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
+		EntrepriseMigratorTest.addRegimeFiscalCH(entreprise, RegDate.get(1990, 1, 1), null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
 
 		activityManager.setup(ALL_ACTIVE);
 
@@ -2181,6 +2275,8 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		final RegpmEntreprise entreprise = EntrepriseMigratorTest.buildEntreprise(idEntreprise);
 		EntrepriseMigratorTest.addForPrincipalSuisse(entreprise, RegDate.get(1991, 3, 14), RegpmTypeForPrincipal.SIEGE, Commune.LAUSANNE);
 		EntrepriseMigratorTest.addAssujettissement(entreprise, RegDate.get(1991, 3, 14), RegDate.get(2000, 5, 12), RegpmTypeAssujettissement.LILIC);
+		EntrepriseMigratorTest.addRegimeFiscalVD(entreprise, RegDate.get(1991, 3, 14), null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
+		EntrepriseMigratorTest.addRegimeFiscalCH(entreprise, RegDate.get(1991, 3, 14), null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
 
 		// cette entreprise est inactive (à cause de cet identifiant "magique"), mais a un for principal vaudois ouvert après 2015... -> ERREUR
 		activityManager.setup(ALL_BUT_ONE_ACTIVE);
@@ -2207,6 +2303,8 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		final RegpmEntreprise entreprise = EntrepriseMigratorTest.buildEntreprise(idEntreprise);
 		EntrepriseMigratorTest.addForPrincipalSuisse(entreprise, RegDate.get(2015, 5, 12), RegpmTypeForPrincipal.SIEGE, Commune.LAUSANNE);
 		EntrepriseMigratorTest.addAssujettissement(entreprise, RegDate.get(2000, 1, 1), null, RegpmTypeAssujettissement.LILIC);
+		EntrepriseMigratorTest.addRegimeFiscalVD(entreprise, RegDate.get(2015, 5, 12), null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
+		EntrepriseMigratorTest.addRegimeFiscalCH(entreprise, RegDate.get(2015, 5, 12), null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
 
 		// cette entreprise est inactive (à cause de cet identifiant "magique"), mais a un for principal vaudois ouvert après 2015... -> ERREUR
 		activityManager.setup(ALL_BUT_ONE_ACTIVE);
@@ -2301,6 +2399,8 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		EntrepriseMigratorTest.addForPrincipalSuisse(entreprise, RegDate.get(1991, 3, 14), RegpmTypeForPrincipal.SIEGE, Commune.ZURICH);
 		EntrepriseMigratorTest.addRattachementProprietaire(entreprise, RegDate.get(1988, 1, 4), null, createImmeuble(Commune.ECHALLENS));
 		EntrepriseMigratorTest.addAssujettissement(entreprise, RegDate.get(1991, 3, 14), null, RegpmTypeAssujettissement.LILIC);
+		EntrepriseMigratorTest.addRegimeFiscalVD(entreprise, RegDate.get(1991, 3, 14), null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
+		EntrepriseMigratorTest.addRegimeFiscalCH(entreprise, RegDate.get(1991, 3, 14), null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
 
 		activityManager.setup(ALL_ACTIVE);
 
@@ -2363,6 +2463,8 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		final long idEntreprise = 15781L;
 		final RegpmEntreprise entreprise = EntrepriseMigratorTest.buildEntreprise(idEntreprise);
 		EntrepriseMigratorTest.addForPrincipalSuisse(entreprise, RegDate.get(1998, 4, 12), RegpmTypeForPrincipal.SIEGE, Commune.MONTAGNY);
+		EntrepriseMigratorTest.addRegimeFiscalVD(entreprise, RegDate.get(1998, 4, 12), null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
+		EntrepriseMigratorTest.addRegimeFiscalCH(entreprise, RegDate.get(1998, 4, 12), null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
 
 		activityManager.setup(ALL_ACTIVE);
 
@@ -2437,6 +2539,8 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		EntrepriseMigratorTest.addSiegeSuisse(entreprise, RegDate.get(2000, 1, 1), Commune.BERN);
 		EntrepriseMigratorTest.addRattachementProprietaire(entreprise, RegDate.get(1986, 5, 12), null, createImmeuble(Commune.ECHALLENS));
 		EntrepriseMigratorTest.addAssujettissement(entreprise, RegDate.get(2000, 1, 1), null, RegpmTypeAssujettissement.LILIC);
+		EntrepriseMigratorTest.addRegimeFiscalVD(entreprise, RegDate.get(2000, 1, 1), null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
+		EntrepriseMigratorTest.addRegimeFiscalCH(entreprise, RegDate.get(2000, 1, 1), null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
 
 		activityManager.setup(ALL_ACTIVE);
 
@@ -2528,7 +2632,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		Assert.assertNotNull(noEtablissementPrincipal.getValue());
 
 		final Map<LogCategory, List<String>> messages = buildTextualMessages(lms);
-		Assert.assertEquals(EnumSet.of(LogCategory.SUIVI, LogCategory.INDIVIDUS_PM, LogCategory.FORS, LogCategory.ASSUJETTISSEMENTS, LogCategory.RAPPORTS_ENTRE_TIERS, LogCategory.DONNEES_CIVILES_REGPM), messages.keySet());
+		Assert.assertEquals(EnumSet.of(LogCategory.SUIVI, LogCategory.INDIVIDUS_PM, LogCategory.FORS, LogCategory.ASSUJETTISSEMENTS, LogCategory.RAPPORTS_ENTRE_TIERS, LogCategory.DONNEES_CIVILES_REGPM, LogCategory.MAPPINGS_REGIMES_FISCAUX), messages.keySet());
 		{
 			final List<String> msgs = messages.get(LogCategory.SUIVI);
 			Assert.assertEquals(6, msgs.size());
@@ -2571,6 +2675,12 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 			Assert.assertEquals(1, msgs.size());
 			Assert.assertEquals("ERROR;" + idEntreprise + ";Active;;;;;;;;;Impossible de déterminer la date de début des données du registre du commerce (aucune donnée de raison sociale et/ou de forme juridique).", msgs.get(0));
 		}
+		{
+			final List<String> msgs = messages.get(LogCategory.MAPPINGS_REGIMES_FISCAUX);
+			Assert.assertEquals(2, msgs.size());
+			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;2000-01-01;CH;01;01;", msgs.get(0));
+			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;2000-01-01;VD;01;01;", msgs.get(1));
+		}
 	}
 
 	/**
@@ -2589,6 +2699,8 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		entreprise.setDateBouclementFutur(dateBouclementFutur);
 		EntrepriseMigratorTest.addForPrincipalSuisse(entreprise, RegDate.get(1995, 5, 17), RegpmTypeForPrincipal.SIEGE, Commune.LAUSANNE);
 		EntrepriseMigratorTest.addAssujettissement(entreprise, RegDate.get(1995, 5, 17), null, RegpmTypeAssujettissement.LILIC);
+		EntrepriseMigratorTest.addRegimeFiscalVD(entreprise, RegDate.get(1995, 5, 17), null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
+		EntrepriseMigratorTest.addRegimeFiscalCH(entreprise, RegDate.get(1995, 5, 17), null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
 
 		// attention, important : il y a un trou entre les deux immeubles (afin qu'on ait plusieurs zones non-couvertes distinctes après la fin du for principal)
 		EntrepriseMigratorTest.addRattachementProprietaire(entreprise, RegDate.get(2003, 5, 7), RegDate.get(2010, 12, 30), createImmeuble(Commune.ECHALLENS));
@@ -2661,7 +2773,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		});
 
 		final Map<LogCategory, List<String>> messages = buildTextualMessages(lms);
-		Assert.assertEquals(EnumSet.of(LogCategory.SUIVI, LogCategory.FORS, LogCategory.DONNEES_CIVILES_REGPM), messages.keySet());
+		Assert.assertEquals(EnumSet.of(LogCategory.SUIVI, LogCategory.FORS, LogCategory.DONNEES_CIVILES_REGPM, LogCategory.MAPPINGS_REGIMES_FISCAUX), messages.keySet());
 		{
 			final List<String> msgs = messages.get(LogCategory.SUIVI);
 			Assert.assertEquals(26, msgs.size());
@@ -2707,6 +2819,12 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 			final List<String> msgs = messages.get(LogCategory.DONNEES_CIVILES_REGPM);
 			Assert.assertEquals(1, msgs.size());
 			Assert.assertEquals("ERROR;" + idEntreprise + ";Active;;;;;;;;;Impossible de déterminer la date de début des données du registre du commerce (aucune donnée de raison sociale et/ou de forme juridique).", msgs.get(0));
+		}
+		{
+			final List<String> msgs = messages.get(LogCategory.MAPPINGS_REGIMES_FISCAUX);
+			Assert.assertEquals(2, msgs.size());
+			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;1995-05-17;CH;01;01;", msgs.get(0));
+			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;1995-05-17;VD;01;01;", msgs.get(1));
 		}
 	}
 
@@ -2940,6 +3058,8 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		EntrepriseMigratorTest.addRaisonSociale(entreprise, dateDebut, "Markus", "und", "Söhne", true);
 		EntrepriseMigratorTest.addFormeJuridique(entreprise, dateDebut, EntrepriseMigratorTest.createTypeFormeJuridique("S.A.R.L.", RegpmCategoriePersonneMorale.PM));
 		EntrepriseMigratorTest.addAssujettissement(entreprise, dateDebut, null, RegpmTypeAssujettissement.LILIC);
+		EntrepriseMigratorTest.addRegimeFiscalVD(entreprise, dateDebut, null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
+		EntrepriseMigratorTest.addRegimeFiscalCH(entreprise, dateDebut, null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
 
 		final RegpmEtablissement etablissement = EtablissementMigratorTest.buildEtablissement(idEtablissement, entreprise);
 		EtablissementMigratorTest.addDomicileEtablissement(etablissement, dateDebut, Commune.LAUSANNE, false);
@@ -3099,7 +3219,8 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		                               LogCategory.ADRESSES,
 		                               LogCategory.FORS,
 		                               LogCategory.ETABLISSEMENTS,
-		                               LogCategory.RAPPORTS_ENTRE_TIERS),
+		                               LogCategory.RAPPORTS_ENTRE_TIERS,
+		                               LogCategory.MAPPINGS_REGIMES_FISCAUX),
 		                    messages.keySet());
 		{
 			final List<String> msgs = messages.get(LogCategory.SUIVI);
@@ -3148,6 +3269,12 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 			Assert.assertEquals("INFO;ETABLISSEMENT_ENTITE_JURIDIQUE;2007-01-01;2010-12-31;;" + idEtablissement + ";;" + noContribuableEtablissementSecondaire.longValue() + ";" + idEntreprise + ";;;" + idEntreprise + ";", msgs.get(2));
 			Assert.assertEquals("INFO;ETABLISSEMENT_ENTITE_JURIDIQUE;1998-09-28;;;;;" + noContribuableEtablissementPrincipal.longValue() + ";" + idEntreprise + ";;;" + idEntreprise + ";", msgs.get(3));
 		}
+		{
+			final List<String> msgs = messages.get(LogCategory.MAPPINGS_REGIMES_FISCAUX);
+			Assert.assertEquals(2, msgs.size());
+			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;1998-09-28;CH;01;01;", msgs.get(0));
+			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;1998-09-28;VD;01;01;", msgs.get(1));
+		}
 	}
 
 	@Test
@@ -3162,15 +3289,21 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		EntrepriseMigratorTest.addForPrincipalSuisse(avant1, RegDate.get(2000, 5, 7), RegpmTypeForPrincipal.SIEGE, Commune.MORGES);
 		avant1.setDateInscriptionRC(RegDate.get(2000, 5, 7));
 		EntrepriseMigratorTest.addAssujettissement(avant1, RegDate.get(2000, 5, 7), dateBilanFusion, RegpmTypeAssujettissement.LILIC);
+		EntrepriseMigratorTest.addRegimeFiscalVD(avant1, RegDate.get(2000, 5, 7), null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
+		EntrepriseMigratorTest.addRegimeFiscalCH(avant1, RegDate.get(2000, 5, 7), null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
 
 		final RegpmEntreprise avant2 = EntrepriseMigratorTest.buildEntreprise(idEntrepriseAvantFusion2);
 		EntrepriseMigratorTest.addForPrincipalSuisse(avant2, RegDate.get(2003, 9, 24), RegpmTypeForPrincipal.SIEGE, Commune.LAUSANNE);
 		avant2.setDateConstitution(RegDate.get(2003, 9, 24));
 		EntrepriseMigratorTest.addAssujettissement(avant2, RegDate.get(2003, 9, 24), dateBilanFusion, RegpmTypeAssujettissement.LILIC);
+		EntrepriseMigratorTest.addRegimeFiscalVD(avant2, RegDate.get(2003, 9, 24), null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
+		EntrepriseMigratorTest.addRegimeFiscalCH(avant2, RegDate.get(2003, 9, 24), null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
 
 		final RegpmEntreprise apres = EntrepriseMigratorTest.buildEntreprise(idEntrepriseApresFusion);
 		EntrepriseMigratorTest.addForPrincipalSuisse(apres, dateBilanFusion, RegpmTypeForPrincipal.SIEGE, Commune.ECHALLENS);   // dans RegPM, la commune résultante de la fusion a son for qui s'ouvre à la date du bilan de fusion
 		EntrepriseMigratorTest.addAssujettissement(apres, dateBilanFusion, null, RegpmTypeAssujettissement.LILIC);
+		EntrepriseMigratorTest.addRegimeFiscalVD(apres, dateBilanFusion, null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
+		EntrepriseMigratorTest.addRegimeFiscalCH(apres, dateBilanFusion, null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
 
 		EntrepriseMigratorTest.addFusion(avant1, apres, dateBilanFusion);
 		EntrepriseMigratorTest.addFusion(avant2, apres, dateBilanFusion);
@@ -3289,6 +3422,8 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		EntrepriseMigratorTest.addRaisonSociale(entreprise, RegDate.get(2013, 1, 1), "Toto SA", null, null, true);
 		EntrepriseMigratorTest.addCapital(entreprise, RegDate.get(2013, 1, 1), 10000L);
 		EntrepriseMigratorTest.addForPrincipalSuisse(entreprise, RegDate.get(2013, 1, 1), RegpmTypeForPrincipal.SIEGE, Commune.LAUSANNE);
+		EntrepriseMigratorTest.addRegimeFiscalVD(entreprise, RegDate.get(2013, 1, 1), null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
+		EntrepriseMigratorTest.addRegimeFiscalCH(entreprise, RegDate.get(2013, 1, 1), null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
 		final RegpmAssujettissement assujettissement = EntrepriseMigratorTest.addAssujettissement(entreprise, RegDate.get(2013, 1, 1), null, RegpmTypeAssujettissement.LILIC);
 		final RegpmDossierFiscal df2013 = EntrepriseMigratorTest.addDossierFiscal(entreprise, assujettissement, 2013, RegDate.get(2014, 1, 3), RegpmModeImposition.POST);
 		df2013.setDateRetour(RegDate.get(2014, 5, 12));
@@ -3376,7 +3511,8 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		Assert.assertEquals(EnumSet.of(LogCategory.SUIVI,
 		                               LogCategory.FORS,
 		                               LogCategory.DECLARATIONS,
-		                               LogCategory.DONNEES_CIVILES_REGPM),
+		                               LogCategory.DONNEES_CIVILES_REGPM,
+		                               LogCategory.MAPPINGS_REGIMES_FISCAUX),
 		                    messages.keySet());
 
 		{
@@ -3412,6 +3548,12 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;;;;;;;Donnée de forme juridique migrée : sur la période [01.01.2013 -> ?], SA.", msgs.get(1));
 			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;;;;;;;Donnée de capital migrée : sur la période [01.01.2013 -> ?], 10000 CHF.", msgs.get(2));
 		}
+		{
+			final List<String> msgs = messages.get(LogCategory.MAPPINGS_REGIMES_FISCAUX);
+			Assert.assertEquals(2, msgs.size());
+			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;2013-01-01;CH;01;01;", msgs.get(0));
+			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;2013-01-01;VD;01;01;", msgs.get(1));
+		}
 	}
 
 	@Test
@@ -3423,6 +3565,8 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		EntrepriseMigratorTest.addRaisonSociale(entreprise, RegDate.get(2013, 1, 1), "Toto SA", null, null, true);
 		EntrepriseMigratorTest.addCapital(entreprise, RegDate.get(2013, 1, 1), 10000L);
 		EntrepriseMigratorTest.addForPrincipalSuisse(entreprise, RegDate.get(2013, 1, 1), RegpmTypeForPrincipal.SIEGE, Commune.LAUSANNE);
+		EntrepriseMigratorTest.addRegimeFiscalVD(entreprise, RegDate.get(2013, 1, 1), null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
+		EntrepriseMigratorTest.addRegimeFiscalCH(entreprise, RegDate.get(2013, 1, 1), null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
 		entreprise.setDateRequisitionRadiation(RegDate.get(2013, 12, 31));
 		final RegpmAssujettissement assujettissement = EntrepriseMigratorTest.addAssujettissement(entreprise, RegDate.get(2013, 1, 1), RegDate.get(2013, 12, 31), RegpmTypeAssujettissement.LILIC);
 		final RegpmDossierFiscal df2013 = EntrepriseMigratorTest.addDossierFiscal(entreprise, assujettissement, 2013, RegDate.get(2014, 1, 3), RegpmModeImposition.POST);
@@ -3512,7 +3656,8 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		Assert.assertEquals(EnumSet.of(LogCategory.SUIVI,
 		                               LogCategory.FORS,
 		                               LogCategory.DECLARATIONS,
-		                               LogCategory.DONNEES_CIVILES_REGPM),
+		                               LogCategory.DONNEES_CIVILES_REGPM,
+		                               LogCategory.MAPPINGS_REGIMES_FISCAUX),
 		                    messages.keySet());
 
 		{
@@ -3548,6 +3693,12 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;;;;;;;Donnée de raison sociale migrée : sur la période [01.01.2013 -> 31.12.2013], 'Toto SA'.", msgs.get(0));
 			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;;;;;;;Donnée de forme juridique migrée : sur la période [01.01.2013 -> 31.12.2013], SA.", msgs.get(1));
 			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;;;;;;;Donnée de capital migrée : sur la période [01.01.2013 -> 31.12.2013], 10000 CHF.", msgs.get(2));
+		}
+		{
+			final List<String> msgs = messages.get(LogCategory.MAPPINGS_REGIMES_FISCAUX);
+			Assert.assertEquals(2, msgs.size());
+			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;2013-01-01;CH;01;01;", msgs.get(0));
+			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;2013-01-01;VD;01;01;", msgs.get(1));
 		}
 	}
 
@@ -3967,6 +4118,8 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		entreprise.setDateBouclementFutur(dateBouclementFutur);
 		EntrepriseMigratorTest.addForPrincipalSuisse(entreprise, RegDate.get(1995, 5, 17), RegpmTypeForPrincipal.SIEGE, Commune.LAUSANNE);
 		EntrepriseMigratorTest.addAssujettissement(entreprise, RegDate.get(1995, 5, 17), null, RegpmTypeAssujettissement.LILIC);
+		EntrepriseMigratorTest.addRegimeFiscalVD(entreprise, RegDate.get(1995, 5, 17), null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
+		EntrepriseMigratorTest.addRegimeFiscalCH(entreprise, RegDate.get(1995, 5, 17), null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
 
 		activityManager.setup(ALL_ACTIVE);
 
@@ -4043,6 +4196,8 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		EntrepriseMigratorTest.addForPrincipalSuisse(e, dateDebut, RegpmTypeForPrincipal.SIEGE, Commune.ECHALLENS);
 		EntrepriseMigratorTest.addForSecondaire(e, dateDebutForSecondaire, null, Commune.LAUSANNE);
 		e.setNumeroCantonal(noCantonalEntreprise);
+		EntrepriseMigratorTest.addRegimeFiscalVD(e, RegDate.get(2005, 6, 12), null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
+		EntrepriseMigratorTest.addRegimeFiscalCH(e, RegDate.get(2005, 6, 12), null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
 
 		organisationService.setUp(new MockServiceOrganisation() {
 			@Override
@@ -4094,6 +4249,8 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		EntrepriseMigratorTest.addAssujettissement(e, dateDebut, null, RegpmTypeAssujettissement.LILIC);
 		e.setNumeroCantonal(noCantonalEntreprise);
 		e.setNumeroIDE(EntrepriseMigratorTest.buildNumeroIDE("CHE", 123456788L));
+		EntrepriseMigratorTest.addRegimeFiscalVD(e, dateDebut, null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
+		EntrepriseMigratorTest.addRegimeFiscalCH(e, dateDebut, null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
 
 		organisationService.setUp(new MockServiceOrganisation() {
 			@Override
@@ -4162,6 +4319,8 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		EntrepriseMigratorTest.addSiegeSuisse(e, dateDebut, Commune.ECHALLENS);
 		e.setNumeroCantonal(noCantonalEntreprise);
 		e.setNumeroIDE(EntrepriseMigratorTest.buildNumeroIDE("CHE", 123456788L));
+		EntrepriseMigratorTest.addRegimeFiscalVD(e, dateDebut, null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
+		EntrepriseMigratorTest.addRegimeFiscalCH(e, dateDebut, null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
 
 		organisationService.setUp(new MockServiceOrganisation() {
 			@Override
@@ -4314,7 +4473,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 			Assert.assertEquals("INFO;" + noEntreprise + ";Active;CHE123456788;" + noCantonalEntreprise + ";;;;;;;Donnée de raison sociale migrée : sur la période [01.01.1991 -> 31.07.2015], 'Toto SA'.", msgs.get(2));
 			Assert.assertEquals("INFO;" + noEntreprise + ";Active;CHE123456788;" + noCantonalEntreprise + ";;;;;;;Donnée de forme juridique migrée : sur la période [01.01.1986 -> 31.12.1990], SARL.", msgs.get(3));
 			Assert.assertEquals("INFO;" + noEntreprise + ";Active;CHE123456788;" + noCantonalEntreprise + ";;;;;;;Donnée de forme juridique migrée : sur la période [01.01.1991 -> 31.07.2015], SA.", msgs.get(4));
-			Assert.assertEquals("INFO;" + noEntreprise + ";Active;CHE123456788;" + noCantonalEntreprise + ";;;;;;;Données de capital en provenance du registre civil dès le 01.08.2015 (les données ultérieures de RegPM seront ignorées).", msgs.get(5));
+			Assert.assertEquals("INFO;" + noEntreprise + ";Active;CHE123456788;" + noCantonalEntreprise + ";;;;;;;Les données de capital en provenance du registre civil font foi dès le 01.08.2015 (les données ultérieures de RegPM seront ignorées).", msgs.get(5));
 			Assert.assertEquals("INFO;" + noEntreprise + ";Active;CHE123456788;" + noCantonalEntreprise + ";;;;;;;Donnée de capital migrée : sur la période [01.01.1986 -> 31.12.1989], 10000 CHF.", msgs.get(6));
 			Assert.assertEquals("INFO;" + noEntreprise + ";Active;CHE123456788;" + noCantonalEntreprise + ";;;;;;;Donnée de capital migrée : sur la période [01.01.1990 -> 31.07.2015], 200000 CHF.", msgs.get(7));
 		}
@@ -4399,6 +4558,8 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		EntrepriseMigratorTest.addSiegeSuisse(e, dateDebut, Commune.ECHALLENS);
 		e.setNumeroCantonal(noCantonalEntreprise);
 		e.setNumeroIDE(EntrepriseMigratorTest.buildNumeroIDE("CHE", 123456788L));
+		EntrepriseMigratorTest.addRegimeFiscalVD(e, dateDebut, null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
+		EntrepriseMigratorTest.addRegimeFiscalCH(e, dateDebut, null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
 
 		final RegpmEtablissement etb = EtablissementMigratorTest.buildEtablissement(noEtablissementSecondaire, e);
 		EtablissementMigratorTest.addDomicileEtablissement(etb, dateDebut, Commune.MORGES, false);
@@ -4536,6 +4697,8 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		EntrepriseMigratorTest.addFormeJuridique(e, dateDebutForPrincipal, EntrepriseMigratorTest.createTypeFormeJuridique("DP", RegpmCategoriePersonneMorale.APM));
 		EntrepriseMigratorTest.addForPrincipalSuisse(e, dateDebutForPrincipal, RegpmTypeForPrincipal.SIEGE, Commune.ECHALLENS);
 		EntrepriseMigratorTest.addAssujettissement(e, dateDebutForPrincipal, null, RegpmTypeAssujettissement.LILIC);
+		EntrepriseMigratorTest.addRegimeFiscalVD(e, dateDebutForPrincipal, null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
+		EntrepriseMigratorTest.addRegimeFiscalCH(e, dateDebutForPrincipal, null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
 
 		final RegpmImmeuble immeuble = EntrepriseMigratorTest.createImmeuble(Commune.LAUSANNE);
 		EntrepriseMigratorTest.addRattachementProprietaire(e, dateDebutImmeuble, null, immeuble);

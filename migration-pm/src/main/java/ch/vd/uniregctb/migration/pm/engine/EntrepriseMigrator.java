@@ -2146,6 +2146,10 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 					.forEach(unireg::addDonneeCivile);
 		}
 
+		// on arrête également les capitaux "fiscaux" à la première date de données connues par RCEnt (= même si aucun capital n'est connu
+		// à cette date dans RCEnt)... Comme le nom est une donnée obligatoire, on peut prendre la date de début de la première valeur de nom
+		// comme première date de données dans RCEnt
+
 		final RegDate dateFinActiviteCapitaux;
 		if (rcent == null) {
 			if (dateFinActivite != null && !regpmCapitaux.isEmpty() && regpmCapitaux.lastKey().isAfter(dateFinActivite)) {
@@ -2160,16 +2164,11 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 			}
 		}
 		else {
-			// on s'arrête à la veille de la première date de capital connue de RCEnt
-			final RegDate dateDebutHistoireCivileCapitaux = OrganisationDataHelper.getFirstKnownDate(rcent.getCapitaux());
-			dateFinActiviteCapitaux = Optional.ofNullable(dateDebutHistoireCivileCapitaux)
-					.map(RegDate::getOneDayBefore)
-					.orElse(dateFinActivite);
-
-			if (dateDebutHistoireCivileCapitaux != null) {
+			dateFinActiviteCapitaux = dateFinHistoireFiscale;
+			if (dateFinActiviteCapitaux != null) {
 				mr.addMessage(LogCategory.DONNEES_CIVILES_REGPM, LogLevel.INFO,
-				              String.format("Données de capital en provenance du registre civil dès le %s (les données ultérieures de RegPM seront ignorées).",
-				                            StringRenderers.DATE_RENDERER.toString(dateDebutHistoireCivileCapitaux)));
+				              String.format("Les données de capital en provenance du registre civil font foi dès le %s (les données ultérieures de RegPM seront ignorées).",
+				                            StringRenderers.DATE_RENDERER.toString(dateFinActiviteCapitaux.getOneDayAfter())));
 			}
 		}
 
@@ -3897,7 +3896,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 				.collect(Collectors.toList());
 
 		// ... puis attribution des dates de fin
-		assigneDatesFin(dateFinRegimes, liste);
+		assigneDatesFin(null, liste);
 		return liste;
 	}
 
