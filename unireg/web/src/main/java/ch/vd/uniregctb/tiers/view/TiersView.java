@@ -106,9 +106,9 @@ public class TiersView {
 
 	private List<RegimeFiscalView> regimesFiscauxVD;
 	private List<RegimeFiscalView> regimesFiscauxCH;
-
 	private List<AllegementFiscalView> allegementsFiscaux;
 	private List<ExerciceCommercial> exercicesCommerciaux;
+	private List<FlagEntrepriseView> flags;
 
 	private List<DomicileEtablissementView> domicilesEtablissement;
 
@@ -353,6 +353,14 @@ public class TiersView {
 		else {
 			return null;
 		}
+	}
+
+	public List<FlagEntrepriseView> getFlags() {
+		return flags;
+	}
+
+	public void setFlags(List<FlagEntrepriseView> flags) {
+		this.flags = flags;
 	}
 
 	public List<DomicileEtablissementView> getDomicilesEtablissement() {

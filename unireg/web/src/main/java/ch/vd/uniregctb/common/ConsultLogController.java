@@ -29,6 +29,7 @@ import ch.vd.uniregctb.tiers.DomicileEtablissement;
 import ch.vd.uniregctb.tiers.DonneeCivileEntreprise;
 import ch.vd.uniregctb.tiers.DroitAcces;
 import ch.vd.uniregctb.tiers.EtatEntreprise;
+import ch.vd.uniregctb.tiers.FlagEntreprise;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.tiers.RegimeFiscal;
@@ -61,6 +62,7 @@ public class ConsultLogController {
 		Evenement(EvenementCivilRegPP.class),
 		EvenementEch(EvenementCivilEch.class),
 		EvenementOrganisation(EvenementOrganisation.class),
+		FlagEntreprise(FlagEntreprise.class),
 		ForFiscal(ForFiscal.class),
 		Identification(IdentificationContribuable.class),
 		Immeuble(Immeuble.class),

@@ -53,6 +53,7 @@ import ch.vd.uniregctb.type.TypeEtatEntreprise;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
 import ch.vd.uniregctb.type.TypeEvenementCivilEch;
 import ch.vd.uniregctb.type.TypeEvenementOrganisation;
+import ch.vd.uniregctb.type.TypeFlagEntreprise;
 import ch.vd.uniregctb.type.TypeOperation;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 
@@ -106,6 +107,7 @@ public class TiersMapHelper extends CommonMapHelper {
 	private Map<AllegementFiscal.TypeImpot, String> mapTypeImpotAllegement;
 	private Map<AllegementFiscalConfederation.Type, String> mapTypesIFDAllegement;
 	private Map<AllegementFiscalCantonCommune.Type, String> mapTypesICCAllegement;
+	private Map<TypeFlagEntreprise, String> mapTypesFlagEntreprise;
 
 	private ServiceInfrastructureService infraService;
 
@@ -758,5 +760,15 @@ public class TiersMapHelper extends CommonMapHelper {
 			mapTypesICCAllegement = initMapEnum(ApplicationConfig.masterKeyTypeICCAllegement, AllegementFiscalCantonCommune.Type.class);
 		}
 		return mapTypesICCAllegement;
+	}
+
+	/**
+	 * @return la map des types disponibles pour les flags d'entreprise
+	 */
+	public Map<TypeFlagEntreprise, String> getTypesFlagEntreprise() {
+		if (mapTypesFlagEntreprise == null) {
+			mapTypesFlagEntreprise = initMapEnum(ApplicationConfig.masterKeyTypeFlagEntreprise, TypeFlagEntreprise.class);
+		}
+		return mapTypesFlagEntreprise;
 	}
 }

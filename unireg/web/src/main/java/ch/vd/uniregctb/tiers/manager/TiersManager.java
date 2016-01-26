@@ -84,6 +84,7 @@ import ch.vd.uniregctb.tiers.DomicileHisto;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.Etablissement;
+import ch.vd.uniregctb.tiers.FlagEntreprise;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
@@ -109,6 +110,7 @@ import ch.vd.uniregctb.tiers.view.AllegementFiscalView;
 import ch.vd.uniregctb.tiers.view.ComplementView;
 import ch.vd.uniregctb.tiers.view.DebiteurView;
 import ch.vd.uniregctb.tiers.view.DomicileEtablissementView;
+import ch.vd.uniregctb.tiers.view.FlagEntrepriseView;
 import ch.vd.uniregctb.tiers.view.ForDebiteurViewComparator;
 import ch.vd.uniregctb.tiers.view.ForFiscalView;
 import ch.vd.uniregctb.tiers.view.ForFiscalViewComparator;
@@ -558,6 +560,19 @@ public class TiersManager implements MessageSourceAware {
 		// les exercices commerciaux
 		final List<ExerciceCommercial> exercices = tiersService.getExercicesCommerciaux(entreprise);
 		tiersView.setExercicesCommerciaux(exercices);
+
+		// les flags d'entreprise
+		final Set<FlagEntreprise> flags = entreprise.getFlags();
+		if (flags != null) {
+			final List<FlagEntrepriseView> views = new ArrayList<>(flags.size());
+			for (FlagEntreprise flag : flags) {
+				final FlagEntrepriseView view = new FlagEntrepriseView(flag);
+				views.add(view);
+			}
+
+			Collections.sort(views, new AnnulableHelper.AnnulableDateRangeComparator<>(true));
+			tiersView.setFlags(views);
+		}
 
 		tiersView.setEntreprise(getEntrepriseService().getEntreprise(entreprise)); // OrganisationView
 	}

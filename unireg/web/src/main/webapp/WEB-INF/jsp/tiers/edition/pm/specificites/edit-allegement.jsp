@@ -38,13 +38,13 @@
 						</td>
 					</tr>
 					<tr class="<unireg:nextRowClass/>">
-						<td><fmt:message key="label.type.impot"/></td>
+						<td><fmt:message key="label.type.impot"/>&nbsp;</td>
 						<td>
 							<fmt:message key="option.allegement.fiscal.type.impot.${command.typeImpot}"/>
 							<form:hidden path="typeImpot"/>
 							<form:errors path="typeImpot" cssClass="error"/>
 						</td>
-						<td><fmt:message key="label.type.collectivite"/></td>
+						<td><fmt:message key="label.type.collectivite"/>&nbsp;</td>
 						<td>
 							<fmt:message key="option.allegement.fiscal.type.collectivite.${command.typeCollectivite}"/>
 							<form:hidden path="typeCollectivite"/>
@@ -57,7 +57,7 @@
 						</td>
 					</tr>
 					<tr class="<unireg:nextRowClass/>">
-						<td><fmt:message key="label.type.allegement.fiscal"/></td>
+						<td><fmt:message key="label.type.allegement.fiscal"/>&nbsp;</td>
 						<td>
 							<c:choose>
 								<c:when test="${command.typeICC != null}">
@@ -72,7 +72,7 @@
 								</c:when>
 							</c:choose>
 						</td>
-						<td><fmt:message key="label.montant.pourcentage.allegement"/></td>
+						<td><fmt:message key="label.montant.pourcentage.allegement"/>&nbsp;</td>
 						<td>
 							<form:hidden path="flagPourcentageMontant"/>
 							<form:errors path="flagPourcentageMontant" cssClass="error"/>

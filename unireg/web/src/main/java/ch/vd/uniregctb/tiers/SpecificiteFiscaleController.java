@@ -40,10 +40,13 @@ import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.security.SecurityHelper;
 import ch.vd.uniregctb.security.SecurityProviderInterface;
 import ch.vd.uniregctb.tiers.view.AddAllegementFiscalView;
+import ch.vd.uniregctb.tiers.view.AddFlagEntrepriseView;
 import ch.vd.uniregctb.tiers.view.AddRegimeFiscalView;
 import ch.vd.uniregctb.tiers.view.AllegementFiscalView;
 import ch.vd.uniregctb.tiers.view.EditAllegementFiscalView;
+import ch.vd.uniregctb.tiers.view.EditFlagEntrepriseView;
 import ch.vd.uniregctb.tiers.view.EditRegimeFiscalView;
+import ch.vd.uniregctb.tiers.view.FlagEntrepriseView;
 import ch.vd.uniregctb.tiers.view.RegimeFiscalListEditView;
 import ch.vd.uniregctb.type.CategorieEntreprise;
 import ch.vd.uniregctb.utils.RegDateEditor;
@@ -354,7 +357,7 @@ public class SpecificiteFiscaleController {
 			Flash.warning("Aucune modification effectuée.", 4000);
 		}
 		else {
-			rf.setDateFin(view.getDateFin());
+			tiersService.closeRegimeFiscal(rf, view.getDateFin());
 		}
 
 		return "redirect:/regimefiscal/edit-list.do?pmId=" + rf.getEntreprise().getNumero() + "&portee=" + rf.getPortee();
@@ -383,7 +386,7 @@ public class SpecificiteFiscaleController {
 		return "tiers/edition/pm/specificites/list-allegements";
 	}
 
-	private List<AllegementFiscalView> getAllegementFiscalListEditViews(Entreprise entreprise) {
+	private static List<AllegementFiscalView> getAllegementFiscalListEditViews(Entreprise entreprise) {
 		final Set<AllegementFiscal> afs = entreprise.getAllegementsFiscaux();
 		if (afs == null || afs.isEmpty()) {
 			return Collections.emptyList();
@@ -499,7 +502,7 @@ public class SpecificiteFiscaleController {
 			Flash.warning("Aucune modification effectuée.", 4000);
 		}
 		else {
-			af.setDateFin(view.getDateFin());
+			tiersService.closeAllegementFiscal(af, view.getDateFin());
 		}
 		return "redirect:/allegement/edit-list.do?pmId=" + af.getEntreprise().getNumero();
 	}
@@ -508,5 +511,126 @@ public class SpecificiteFiscaleController {
 	// Les flags
 	//
 
+	private void checkDroitModificationFlags() throws AccessDeniedException {
+		if (!SecurityHelper.isGranted(securityProvider, Role.FLAGS_PM)) {
+			throw new AccessDeniedException("Vous ne possédez aucun droit IfoSec pour la modification des spécificités fiscales des personnes morales.");
+		}
+	}
 
+	@Transactional(rollbackFor = Throwable.class, readOnly = true)
+	@RequestMapping(value = "/flag-entreprise/edit-list.do", method = RequestMethod.GET)
+	public String showListEditFlags(@RequestParam("pmId") long pmId, Model model) throws AccessDeniedException, ObjectNotFoundException {
+
+		checkDroitModificationFlags();
+		final Entreprise entreprise = checkDroitEcritureTiers(pmId);
+
+		model.addAttribute("pmId", pmId);
+		model.addAttribute("flags", getFlagListEditViews(entreprise));
+
+		return "tiers/edition/pm/specificites/list-flags";
+	}
+
+	private static List<FlagEntrepriseView> getFlagListEditViews(Entreprise entreprise) {
+		final Set<FlagEntreprise> flags = entreprise.getFlags();
+		if (flags == null || flags.isEmpty()) {
+			return Collections.emptyList();
+		}
+
+		final List<FlagEntrepriseView> views = new ArrayList<>(flags.size());
+		for (FlagEntreprise flag : flags) {
+			views.add(new FlagEntrepriseView(flag));
+		}
+		Collections.sort(views, new AnnulableHelper.AnnulableDateRangeComparator<>(true));
+		return views;
+	}
+
+	@Transactional(rollbackFor = Throwable.class)
+	@RequestMapping(value = "/flag-entreprise/cancel.do", method = RequestMethod.POST)
+	public String cancelFlag(@RequestParam("flagId") long flagId) throws AccessDeniedException, ObjectNotFoundException {
+
+		checkDroitModificationFlags();
+		final FlagEntreprise flag = hibernateTemplate.get(FlagEntreprise.class, flagId);
+		if (flag == null) {
+			throw new ObjectNotFoundException("Spécificité inconnue!");
+		}
+		checkDroitEcritureTiers(flag.getEntreprise());
+
+		tiersService.annuleFlagEntreprise(flag);
+		return "redirect:/flag-entreprise/edit-list.do?pmId=" + flag.getEntreprise().getNumero();
+	}
+
+	@Transactional(rollbackFor = Throwable.class, readOnly = true)
+	@RequestMapping(value = "/flag-entreprise/add.do", method = RequestMethod.GET)
+	public String showAddFlag(@RequestParam("pmId") long pmId, Model model) throws AccessDeniedException, ObjectNotFoundException {
+		checkDroitModificationFlags();
+		checkDroitEcritureTiers(pmId);
+		return showAddFlag(new AddFlagEntrepriseView(pmId), model);
+	}
+
+	private String showAddFlag(AddFlagEntrepriseView view, Model model) {
+		model.addAttribute("command", view);
+		model.addAttribute("flagTypes", tiersMapHelper.getTypesFlagEntreprise());
+		return "tiers/edition/pm/specificites/add-flag";
+	}
+
+	@Transactional(rollbackFor = Throwable.class)
+	@RequestMapping(value = "/flag-entreprise/add.do", method = RequestMethod.POST)
+	public String addFlag(@Valid @ModelAttribute("command") AddFlagEntrepriseView view, BindingResult bindingResult, Model model) throws AccessDeniedException, ObjectNotFoundException {
+		checkDroitModificationFlags();
+
+		// vérification des erreurs avant d'aller plus loin
+		if (bindingResult.hasErrors()) {
+			return showAddFlag(view, model);
+		}
+
+		final Entreprise entreprise = checkDroitEcritureTiers(view.getPmId());
+		tiersService.addFlagEntreprise(entreprise, view.getValue(), view.getDateDebut(), view.getDateFin());
+		return "redirect:/flag-entreprise/edit-list.do?pmId=" + view.getPmId();
+	}
+
+	@Transactional(rollbackFor = Throwable.class, readOnly = true)
+	@RequestMapping(value = "/flag-entreprise/edit.do", method = RequestMethod.GET)
+	public String showEditFlag(@RequestParam("flagId") long flagId, Model model) throws AccessDeniedException, ObjectNotFoundException {
+		checkDroitModificationFlags();
+		final FlagEntreprise flag = hibernateTemplate.get(FlagEntreprise.class, flagId);
+		if (flag == null) {
+			throw new ObjectNotFoundException("Spécificité inconnue!");
+		}
+		checkDroitEcritureTiers(flag.getEntreprise());
+		return showEditFlag(new EditFlagEntrepriseView(flag), model);
+	}
+
+	private String showEditFlag(EditFlagEntrepriseView view, Model model) {
+		model.addAttribute("command", view);
+		return "tiers/edition/pm/specificites/edit-flag";
+	}
+
+	@Transactional(rollbackFor = Throwable.class)
+	@RequestMapping(value = "/flag-entreprise/edit.do", method = RequestMethod.POST)
+	public String editFlag(@Valid @ModelAttribute("command") EditFlagEntrepriseView view, BindingResult bindingResult, Model model) throws AccessDeniedException, ObjectNotFoundException {
+		checkDroitModificationFlags();
+
+		// traitement des cas d'erreur
+		if (bindingResult.hasErrors()) {
+			return showEditFlag(view, model);
+		}
+
+		final FlagEntreprise flag = hibernateTemplate.get(FlagEntreprise.class, view.getFlagId());
+		if (flag == null) {
+			throw new ObjectNotFoundException("Spécificité inconnue!");
+		}
+		checkDroitEcritureTiers(flag.getEntreprise());
+
+		// pour le moment, on ne gère que la fermeture du flag
+		if (flag.getDateFin() != null) {
+			throw new ActionException("La spécificité est déjà fermée.");
+		}
+		if (view.getDateFin() == null) {
+			Flash.warning("Aucune modification effectuée.", 4000);
+		}
+		else {
+			tiersService.closeFlagEntreprise(flag, view.getDateFin());
+		}
+		return "redirect:/flag-entreprise/edit-list.do?pmId=" + flag.getEntreprise().getNumero();
+	}
 }

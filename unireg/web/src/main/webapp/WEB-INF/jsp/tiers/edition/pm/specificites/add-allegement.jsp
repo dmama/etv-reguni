@@ -40,7 +40,7 @@
 						</td>
 					</tr>
 					<tr class="<unireg:nextRowClass/>">
-						<td><fmt:message key="label.type.impot"/></td>
+						<td><fmt:message key="label.type.impot"/>&nbsp;</td>
 						<td>
 							<form:select path="typeImpot">
 							    <form:option value=""/>
@@ -49,7 +49,7 @@
 							<span style="color: red;">*</span>
 							<form:errors path="typeImpot" cssClass="error"/>
 						</td>
-						<td><fmt:message key="label.type.collectivite"/></td>
+						<td><fmt:message key="label.type.collectivite"/>&nbsp;</td>
 						<td>
 							<div style="float: left; margin-right: 2em;">
 								<form:select path="typeCollectivite" id="typeCollectivite" onchange="AddAllegement.onTypeCollectiviteChange();">
@@ -67,7 +67,7 @@
 						</td>
 					</tr>
 					<tr class="<unireg:nextRowClass/>">
-						<td style="vertical-align: text-top;"><fmt:message key="label.type.allegement.fiscal"/></td>
+						<td style="vertical-align: text-top;"><fmt:message key="label.type.allegement.fiscal"/>&nbsp;</td>
 						<td style="vertical-align: text-top;">
 							<div style="display: none;" id="choixTypeICC">
 								<form:select path="typeICC">
@@ -86,7 +86,7 @@
 								<form:errors path="typeIFD" cssClass="error"/>
 							</div>
 						</td>
-						<td style="vertical-align: text-top;"><fmt:message key="label.montant.pourcentage.allegement"/></td>
+						<td style="vertical-align: text-top;"><fmt:message key="label.montant.pourcentage.allegement"/>&nbsp;</td>
 						<td>
 							<form:errors path="flagPourcentageMontant" cssClass="error"/>
 							<div style="float: left; margin-right: 2em;">
