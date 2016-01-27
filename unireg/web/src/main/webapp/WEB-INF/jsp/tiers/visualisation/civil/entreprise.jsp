@@ -8,6 +8,8 @@
 		<c:set var="entreprise" value="${data}" /><%-- CivilEditController --%>
 	</c:when>
 </c:choose>
+<%--@elvariable id="entreprise" type="ch.vd.uniregctb.entreprise.EntrepriseView"--%>
+
 <c:set var="page" value="${param.page}"/>
 <c:set var="nombreElementsTable" value="${param.nombreElementsTable}"/>
 <unireg:setAuth var="autorisations" tiersId="${entreprise.id}"/>
@@ -36,7 +38,7 @@
 		<tr class="<unireg:nextRowClass/>">
 			<td width="20%"><fmt:message key="label.civil.registre"/>&nbsp;:</td>
 			<td>
-				<c:if test=" ${entreprise.connueAuCivil}">
+				<c:if test="${entreprise.connueAuCivil}">
 					<fmt:message key="label.connue.civil.rcent"/>
 				</c:if>
 				<c:if test="${! entreprise.connueAuCivil}">

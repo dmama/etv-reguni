@@ -69,8 +69,6 @@ public class EntrepriseServiceImpl implements EntrepriseService {
 
 		if (numeroEntreprise != null) {
 
-			entrepriseView.setConnueAuCivil(true);
-
 			Organisation organisation = serviceOrganisationService.getOrganisationHistory(numeroEntreprise);
 
 			List<DateRanged<String>> nomsAdditionnels = new ArrayList<>();
@@ -104,6 +102,7 @@ public class EntrepriseServiceImpl implements EntrepriseService {
 			entrepriseView.setNumerosIDE(numerosIDE);
 		}
 
+		entrepriseView.setConnueAuCivil(entreprise.isConnueAuCivil());
 		entrepriseView.setSieges(getSieges(tiersService.getSieges(entreprise)));
 
 		final List<RaisonSocialeHisto> raisonsSociales = tiersService.getRaisonsSociales(entreprise);
