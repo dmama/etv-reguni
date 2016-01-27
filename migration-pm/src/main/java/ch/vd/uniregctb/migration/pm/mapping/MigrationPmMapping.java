@@ -13,7 +13,7 @@ import javax.persistence.UniqueConstraint;
 
 @Entity
 @Table(name = "MIGRATION_PM_MAPPING", uniqueConstraints = @UniqueConstraint(name = "IDX_MIGRATION_PM_ENTITE", columnNames = {"TYPE_ENTITE", "ID_REGPM"}))
-@SequenceGenerator(name = "S_MIGR_PM")
+@SequenceGenerator(name = "S_MIGR_PM", sequenceName = "S_MIGR_PM")
 public class MigrationPmMapping {
 
 	public enum TypeEntite {
