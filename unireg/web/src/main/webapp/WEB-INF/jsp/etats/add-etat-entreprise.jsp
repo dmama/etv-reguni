@@ -11,7 +11,7 @@
   	</tiles:put>
 	<tiles:put name="body">
 
-		<unireg:bandeauTiers numero="${command.tiersId}" showLinks="false" showComplements="false" showEvenementsCivils="false" showValidation="false" showAvatar="false"/>
+		<unireg:bandeauTiers numero="${command.tiersId}" showLinks="false" showComplements="false" showEvenementsCivils="false" showValidation="false" showAvatar="false" titre="Caractéristiques de l'entreprise"/>
 
 		<form:form id="AddEtatEntrepriseForm" commandName="command" action="add.do">
 			<fieldset>

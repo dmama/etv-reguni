@@ -13,6 +13,7 @@
   		</fmt:message>
   	</tiles:put>
 	<tiles:put name="body">
+		<unireg:bandeauTiers numero="${command.tiersId}" showLinks="false" showComplements="false" showEvenementsCivils="false" showValidation="false" showAvatar="false" titre="Caractéristiques de l'entreprise"/>
 
 		<form:form id="addCapitalForm" commandName="command" action="add.do">
 			<fieldset>

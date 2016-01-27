@@ -10,7 +10,7 @@
   		</fmt:message>
   	</tiles:put>
 	<tiles:put name="body">
-		<unireg:bandeauTiers numero="${command.tiersId}" showAvatar="true" showLinks="false"/>
+		<unireg:bandeauTiers numero="${command.tiersId}" showLinks="false" showComplements="false" showEvenementsCivils="false" showValidation="false" showAvatar="false" titre="Caractéristiques de l'établissement"/>
 
 		<form:form id="editRaisonEnseigneForm" commandName="command" action="edit.do">
 			<fieldset>
