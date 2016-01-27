@@ -33,6 +33,7 @@ public class ToInscriteRCTransitionEtatEntrepriseFactory extends BaseTransitionE
 			if (isInscriteRC(entreprise, date)) {
 				return new ToInscriteRCTransitionEtatEntreprise(getTiersDAO(), entreprise, date, generation);
 			}
+			return null;
 		default:
 			return null;
 		}
