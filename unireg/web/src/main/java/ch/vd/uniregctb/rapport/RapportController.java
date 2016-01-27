@@ -102,7 +102,7 @@ public class RapportController {
 			types = EnumSet.of(TypeRapportEntreTiers.APPARTENANCE_MENAGE);
 		}
 		else {
-			final EnumSet<TypeRapportEntreTiers> excluded = EnumSet.of(TypeRapportEntreTiers.PARENTE);
+			final EnumSet<TypeRapportEntreTiers> excluded = EnumSet.of(TypeRapportEntreTiers.PARENTE, TypeRapportEntreTiers.MANDAT);
 			if (tiers instanceof Contribuable) {
 				excluded.add(TypeRapportEntreTiers.CONTACT_IMPOT_SOURCE);
 			}
