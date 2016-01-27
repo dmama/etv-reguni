@@ -23,8 +23,6 @@ import ch.vd.uniregctb.common.TiersNotFoundException;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.security.AccessDeniedException;
-import ch.vd.uniregctb.security.Role;
-import ch.vd.uniregctb.security.SecurityHelper;
 import ch.vd.uniregctb.security.SecurityProviderInterface;
 import ch.vd.uniregctb.tiers.CapitalFiscalEntreprise;
 import ch.vd.uniregctb.tiers.Entreprise;
@@ -122,11 +120,6 @@ public class CivilEntrepriseEditController {
 	@RequestMapping(value = "/edit.do", method = RequestMethod.GET)
 	@Transactional(readOnly = true, rollbackFor = Throwable.class)
 	public String editEntreprise(Model model, @RequestParam(value = ID) long id) {
-
-		if (!SecurityHelper.isGranted(securityProvider, Role.MODIF_PM)) {
-			throw new AccessDeniedException("Vous ne possédez pas les droits d'accès suffisants à la modification des tiers de ce type.");
-		}
-
 
 		final Tiers tiers = tiersDAO.get(id);
 		if (tiers != null && tiers instanceof Entreprise) {
@@ -341,12 +334,12 @@ public class CivilEntrepriseEditController {
 
 		final Entreprise entreprise = formeJuridique.getEntreprise();
 
-		if (formeJuridique.getFormeJuridique() != null && ! formeJuridique.getFormeJuridique().equals(view.getFormeJuridique())) {
+		final Autorisations auth = getAutorisations(entreprise);
+		if (!auth.isDonneesCiviles()) {
+			throw new AccessDeniedException("Vous ne possédez pas les droits IfoSec d'édition de formes juridiques.");
+		}
 
-			final Autorisations auth = getAutorisations(entreprise);
-			if (!auth.isDonneesCiviles()) {
-				throw new AccessDeniedException("Vous ne possédez pas les droits IfoSec d'édition de formes juridiques.");
-			}
+		if (formeJuridique.getFormeJuridique() != null && ! formeJuridique.getFormeJuridique().equals(view.getFormeJuridique())) {
 
 			final long ctbId = entreprise.getNumero();
 			controllerUtils.checkAccesDossierEnEcriture(ctbId);
@@ -456,12 +449,13 @@ public class CivilEntrepriseEditController {
 
 		final Entreprise entreprise = capital.getEntreprise();
 
-		if (capital.getMontant() != null && ! (capital.getMontant().getMontant().equals(view.getMontant()) && capital.getMontant().getMonnaie().equals(view.getMonnaie()))) {
+		final Autorisations auth = getAutorisations(entreprise);
 
-			final Autorisations auth = getAutorisations(entreprise);
-			if (!auth.isDonneesCiviles()) {
-				throw new AccessDeniedException("Vous ne possédez pas les droits IfoSec d'édition de capitaux.");
-			}
+		if (!auth.isDonneesCiviles()) {
+			throw new AccessDeniedException("Vous ne possédez pas les droits IfoSec d'édition de capitaux.");
+		}
+
+		if (capital.getMontant() != null && ! (capital.getMontant().getMontant().equals(view.getMontant()) && capital.getMontant().getMonnaie().equals(view.getMonnaie()))) {
 
 			final long ctbId = entreprise.getNumero();
 			controllerUtils.checkAccesDossierEnEcriture(ctbId);
@@ -500,11 +494,6 @@ public class CivilEntrepriseEditController {
 	@RequestMapping(value = "/ide/edit.do", method = RequestMethod.GET)
 	public String editIdeEntreprise(Model model, @RequestParam(value = ID) long id) {
 
-		if (!SecurityHelper.isGranted(securityProvider, Role.MODIF_PM)) {
-			throw new AccessDeniedException("Vous ne possédez pas les droits d'accès suffisants à la modification des tiers de ce type.");
-		}
-
-
 		final Tiers tiers = tiersDAO.get(id);
 		if (tiers != null && tiers instanceof Entreprise) {
 			final Autorisations auth = getAutorisations(tiers);
@@ -525,21 +514,10 @@ public class CivilEntrepriseEditController {
 	@RequestMapping(value = "/ide/edit.do", method = RequestMethod.POST)
 	public String editIdeEntreprise(@RequestParam(value = ID) long id, Model model, @Valid @ModelAttribute(DATA) ContribuableInfosEntrepriseView view, BindingResult bindingResult) {
 
-		if (!SecurityHelper.isGranted(securityProvider, Role.MODIF_PM)) {
-			throw new AccessDeniedException("Vous ne possédez pas les droits d'accès suffisants à la modification des tiers de ce type.");
-		}
-
-
-		if (bindingResult.hasErrors()) {
-			model.addAttribute(DATA, view);
-			model.addAttribute(TIERS_ID, id);
-			return "/tiers/edition/civil/edit-ide";
-		}
-
 		final Tiers tiers = tiersDAO.get(id);
 		if (tiers != null && tiers instanceof Entreprise) {
 			final Autorisations auth = getAutorisations(tiers);
-			if (!auth.isDonneesCiviles() || !auth.isIdentificationEntreprise()) {      // FIXME: Et aussi IDE? -> identificationEntreprise
+			if (!auth.isDonneesCiviles() || !auth.isIdentificationEntreprise()) {
 				throw new AccessDeniedException("Vous ne possédez pas les droits IfoSec d'édition d'entreprises.");
 			}
 
@@ -547,6 +525,12 @@ public class CivilEntrepriseEditController {
 		}
 		else {
 			throw new TiersNotFoundException(id);
+		}
+
+		if (bindingResult.hasErrors()) {
+			model.addAttribute(DATA, view);
+			model.addAttribute(TIERS_ID, id);
+			return "/tiers/edition/civil/edit-ide";
 		}
 
 		return "redirect:/civil/entreprise/edit.do?id=" + id;
