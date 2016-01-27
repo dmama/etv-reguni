@@ -2,6 +2,7 @@ package ch.vd.unireg.app;
 
 import ch.vd.uniregctb.checker.ServiceCivilChecker;
 import ch.vd.uniregctb.checker.ServiceInfraChecker;
+import ch.vd.uniregctb.checker.ServiceOrganisationChecker;
 import ch.vd.uniregctb.checker.Status;
 import ch.vd.uniregctb.common.TimeHelper;
 
@@ -12,10 +13,13 @@ public class ApplicationChecker {
 	private String version;
 	private ServiceCivilChecker serviceCivilChecker;
 	private ServiceInfraChecker serviceInfraChecker;
+	private ServiceOrganisationChecker serviceOrganisationChecker;
 
 	public String getStatus() {
 		final Status status;
-		if (serviceCivilChecker.getStatus() == Status.OK && serviceInfraChecker.getStatus() == Status.OK) {
+		if (serviceCivilChecker.getStatus() == Status.OK
+				&& serviceOrganisationChecker.getStatus() == Status.OK
+				&& serviceInfraChecker.getStatus() == Status.OK) {
 			status = Status.OK;
 		}
 		else {
@@ -26,6 +30,7 @@ public class ApplicationChecker {
 
 	public String getStatusJSON() {
 		return "{'serviceCivil' : '" + serviceCivilChecker.getStatus().name() + "', " +
+				"'serviceOrganisation' : '" + serviceOrganisationChecker.getStatus().name() + "', " +
 				"'serviceInfra' : '" + serviceInfraChecker.getStatus().name() + "'}";
 	}
 
@@ -54,6 +59,10 @@ public class ApplicationChecker {
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setServiceInfraChecker(ServiceInfraChecker serviceInfraChecker) {
 		this.serviceInfraChecker = serviceInfraChecker;
+	}
+
+	public void setServiceOrganisationChecker(ServiceOrganisationChecker serviceOrganisationChecker) {
+		this.serviceOrganisationChecker = serviceOrganisationChecker;
 	}
 }
 

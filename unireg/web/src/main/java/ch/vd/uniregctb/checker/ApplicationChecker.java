@@ -12,10 +12,12 @@ public class ApplicationChecker {
 	private ServiceSecuriteChecker serviceSecuriteChecker;
 	private ServiceBVRChecker serviceBVRChecker;
 	private ServiceEFactureChecker serviceEFactureChecker;
+	private ServiceOrganisationChecker serviceOrganisationChecker;
 
 	public String getStatus() {
 		final Status status;
 		if (serviceCivilChecker.getStatus() == Status.OK
+				&& serviceOrganisationChecker.getStatus() == Status.OK
 				&& serviceInfraChecker.getStatus() == Status.OK
 				&& serviceSecuriteChecker.getStatus() == Status.OK
 				&& serviceBVRChecker.getStatus() == Status.OK
@@ -30,6 +32,7 @@ public class ApplicationChecker {
 
 	public String getStatusJSON() {
 		return "{'serviceCivil' : '" + serviceCivilChecker.getStatus().name() + "', " +
+				"'serviceOrganisation' : '" + serviceOrganisationChecker.getStatus().name() + "', " +
 				"'serviceInfra' : '" + serviceInfraChecker.getStatus().name() + "', " +
 				"'serviceSecurite' : '" + serviceSecuriteChecker.getStatus().name() + "', " +
 				"'serviceEFacture' : '" + serviceEFactureChecker.getStatus().name() + "', " +
@@ -56,6 +59,10 @@ public class ApplicationChecker {
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setServiceCivilChecker(ServiceCivilChecker serviceCivilChecker) {
 		this.serviceCivilChecker = serviceCivilChecker;
+	}
+
+	public void setServiceOrganisationChecker(ServiceOrganisationChecker serviceOrganisationChecker) {
+		this.serviceOrganisationChecker = serviceOrganisationChecker;
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})

@@ -19,7 +19,7 @@ public class ServiceOrganisationRCEnt implements ServiceOrganisationRaw {
 
 	@Override
 	public Organisation getOrganisationHistory(long noOrganisation) throws ServiceOrganisationException {
-		ch.vd.uniregctb.adapter.rcent.model.Organisation received = adapter.getOrganisationHistory(noOrganisation);
+		final ch.vd.uniregctb.adapter.rcent.model.Organisation received = adapter.getOrganisationHistory(noOrganisation);
 		if (received == null) {
 			return null;
 		}
@@ -29,7 +29,7 @@ public class ServiceOrganisationRCEnt implements ServiceOrganisationRaw {
 
 	@Override
 	public Long getOrganisationPourSite(Long noSite) throws ServiceOrganisationException {
-		ch.vd.uniregctb.adapter.rcent.model.Organisation received = adapter.getLocation(noSite);
+		final ch.vd.uniregctb.adapter.rcent.model.Organisation received = adapter.getLocation(noSite);
 		if (received == null) {
 			return null;
 		}
@@ -38,7 +38,7 @@ public class ServiceOrganisationRCEnt implements ServiceOrganisationRaw {
 
 	@Override
 	public void ping() throws ServiceOrganisationException {
-		long noOrganisation = 12345678L;
+		final long noOrganisation = 101727770L;
 		final Organisation organisation = getOrganisationHistory(noOrganisation);
 		if (organisation == null) {
 			throw new ServiceOrganisationException(String.format("L'organisation n°%s est introuvable", noOrganisation));

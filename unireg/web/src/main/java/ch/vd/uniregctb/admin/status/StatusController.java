@@ -34,6 +34,7 @@ public class StatusController {
 	private StatsService statsService;
 
 	private ServiceChecker serviceCivilChecker;
+	private ServiceChecker serviceOrganisationChecker;
 	private ServiceChecker serviceInfraChecker;
 	private ServiceChecker serviceSecuriteChecker;
 	private ServiceChecker serviceBVRChecker;
@@ -61,6 +62,10 @@ public class StatusController {
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setServiceCivilChecker(ServiceChecker serviceCivilChecker) {
 		this.serviceCivilChecker = serviceCivilChecker;
+	}
+
+	public void setServiceOrganisationChecker(ServiceChecker serviceOrganisationChecker) {
+		this.serviceOrganisationChecker = serviceOrganisationChecker;
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
@@ -97,6 +102,12 @@ public class StatusController {
 	@RequestMapping(value = "/admin/status/civil.do", method = RequestMethod.GET)
 	public ServiceStatusView civilStatus() {
 		return new ServiceStatusView("serviceCivil", serviceCivilChecker);
+	}
+
+	@ResponseBody
+	@RequestMapping(value = "/admin/status/organisation.do", method = RequestMethod.GET)
+	public ServiceStatusView organisationStatus() {
+		return new ServiceStatusView("serviceOrganisation", serviceOrganisationChecker);
 	}
 
 	@ResponseBody

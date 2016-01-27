@@ -40,6 +40,10 @@
 						<td id="serviceCivilStatus"><img src="<c:url value="/images/loading.gif"/>" /></td>
 					</tr>
 					<tr class="<unireg:nextRowClass/>">
+						<td><fmt:message key="label.info.service.organisation"/> :</td>
+						<td id="serviceOrganisationStatus"><img src="<c:url value="/images/loading.gif"/>" /></td>
+					</tr>
+					<tr class="<unireg:nextRowClass/>">
 						<td><fmt:message key="label.info.service.infra"/> :</td>
 						<td id="serviceInfraStatus"><img src="<c:url value="/images/loading.gif"/>" /></td>
 					</tr>
@@ -75,6 +79,9 @@
 				// Chargement asynchrone des statuts des services
 				$.get('<c:url value="/admin/status/civil.do"/>?' + new Date().getTime(), function(status) {
 					updateServiceStatus('#serviceCivilStatus', status);
+				});
+				$.get('<c:url value="/admin/status/organisation.do"/>?' + new Date().getTime(), function(status) {
+					updateServiceStatus('#serviceOrganisationStatus', status);
 				});
 				$.get('<c:url value="/admin/status/infra.do"/>?' + new Date().getTime(), function(status) {
 					updateServiceStatus('#serviceInfraStatus', status);

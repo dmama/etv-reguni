@@ -9,10 +9,15 @@
 		<property name="serviceSecuriteChecker" ref="serviceSecuriteChecker" />
 		<property name="tiersSearcherChecker" ref="tiersSearcherChecker" />
 		<property name="serviceEFactureChecker" ref="serviceEFactureChecker"/>
+		<property name="serviceOrganisationChecker" ref="serviceOrganisationChecker"/>
 	</bean>
 
 	<bean id="serviceCivilChecker" class="ch.vd.uniregctb.checker.ServiceCivilChecker">
 		<property name="serviceCivilRaw" ref="serviceCivilServiceTracing" />
+	</bean>
+
+	<bean id="serviceOrganisationChecker" class="ch.vd.uniregctb.checker.ServiceOrganisationChecker">
+		<property name="serviceOrganisationRaw" ref="serviceOrganisationRaw"/>
 	</bean>
 
 	<bean id="serviceInfraChecker" class="ch.vd.uniregctb.checker.ServiceInfraChecker">

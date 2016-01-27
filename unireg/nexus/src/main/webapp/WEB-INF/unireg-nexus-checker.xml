@@ -12,6 +12,10 @@
 		<property name="serviceCivilRaw" ref="serviceCivilServiceTracing" />
 	</bean>
 
+	<bean id="serviceOrganisationChecker" class="ch.vd.uniregctb.checker.ServiceOrganisationChecker">
+		<property name="serviceOrganisationRaw" ref="serviceOrganisationRaw"/>
+	</bean>
+
 	<bean id="serviceInfraChecker" class="ch.vd.uniregctb.checker.ServiceInfraChecker">
 		<property name="serviceInfraRaw" ref="serviceInfrastructureTracing" />
 	</bean>
