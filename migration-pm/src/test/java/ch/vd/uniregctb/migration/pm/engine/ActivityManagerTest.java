@@ -28,7 +28,7 @@ public class ActivityManagerTest {
 		if (idsActifsPerception != null && idsActifsPerception.length > 0) {
 			final StringBuilder b = new StringBuilder();
 			for (long id : idsActifsPerception) {
-				b.append(id).append(System.lineSeparator());
+				b.append(id).append(";N").append(System.lineSeparator());       // "N" pour "pas seulement ADB"
 			}
 			is = new ByteArrayInputStream(b.toString().getBytes());     // ces streams-là n'ont pas besoin d'un appel à "close"...
 		}
@@ -181,5 +181,35 @@ public class ActivityManagerTest {
 				                    mgr.isActive(e));
 			}
 		}
+	}
+
+	@Test
+	public void testChargementFichierPerception() throws Exception {
+		final String contenuFichier = "NDC;ADBSEUL\n" +
+				"1;N\n" +
+				"2;N\n" +
+				"28;O\n" +
+				"30;N\n" +
+				"43;O\n" +
+				"54;O\n" +
+				"60;O\n" +
+				"61;N\n";
+
+		final ActivityManagerImpl mgr;
+		try (ByteArrayInputStream bais = new ByteArrayInputStream(contenuFichier.getBytes())) {
+			 mgr = new ActivityManagerImpl(bais, RegDate.get(2008, 1, 1));
+		}
+		Assert.assertTrue(mgr.isActive(EntrepriseMigratorTest.buildEntreprise(1L)));
+		Assert.assertTrue(mgr.isActive(EntrepriseMigratorTest.buildEntreprise(2L)));
+		Assert.assertFalse(mgr.isActive(EntrepriseMigratorTest.buildEntreprise(9L)));
+		Assert.assertFalse(mgr.isActive(EntrepriseMigratorTest.buildEntreprise(23L)));
+		Assert.assertFalse(mgr.isActive(EntrepriseMigratorTest.buildEntreprise(28L)));
+		Assert.assertTrue(mgr.isActive(EntrepriseMigratorTest.buildEntreprise(30L)));
+		Assert.assertFalse(mgr.isActive(EntrepriseMigratorTest.buildEntreprise(35L)));
+		Assert.assertFalse(mgr.isActive(EntrepriseMigratorTest.buildEntreprise(43L)));
+		Assert.assertFalse(mgr.isActive(EntrepriseMigratorTest.buildEntreprise(54L)));
+		Assert.assertFalse(mgr.isActive(EntrepriseMigratorTest.buildEntreprise(60L)));
+		Assert.assertTrue(mgr.isActive(EntrepriseMigratorTest.buildEntreprise(61L)));
+		Assert.assertFalse(mgr.isActive(EntrepriseMigratorTest.buildEntreprise(100L)));
 	}
 }

@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.migration.pm.engine;
 
+import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -8,10 +9,14 @@ import java.io.Reader;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.EnumSet;
-import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -50,7 +55,7 @@ public class ActivityManagerImpl implements ActivityManager {
 	                                                                                    RegpmTypeEtatDecisionTaxation.ERREUR_DE_CALCUL,
 	                                                                                    RegpmTypeEtatDecisionTaxation.ERREUR_DE_TRANSCRIPTION);
 
-	private final Set<Long> numerosContribuablesActifsPerception;
+	private final Map<Long, Boolean> donneesPerception;
 	private final RegDate seuilActivite;
 
 	/**
@@ -62,14 +67,14 @@ public class ActivityManagerImpl implements ActivityManager {
 
 		// récupération des données fournies par la perception
 		try (Reader reader = StringUtils.isNotBlank(filename) ? new FileReader(filename) : null) {
-			this.numerosContribuablesActifsPerception = readPerceptionActiveIds(reader);
+			this.donneesPerception = readDonneesPerception(reader);
 		}
 
 		// stockage du seuil d'activité fourni
 		this.seuilActivite = datesParticulieres.getSeuilActivite();
 
 		// un peu de log...
-		LOGGER.info("Nombre d'entreprises actives au niveau de la perception : " + this.numerosContribuablesActifsPerception.size());
+		LOGGER.info("Nombre d'entreprises actives au niveau de la perception : " + this.donneesPerception.size());
 		LOGGER.info("Seuil d'activité : " + RegDateHelper.dateToDisplayString(this.seuilActivite));
 	}
 
@@ -83,14 +88,14 @@ public class ActivityManagerImpl implements ActivityManager {
 
 		// récupération des données fournies par la perception
 		try (Reader reader = is != null ? new InputStreamReader(is) : null) {
-			this.numerosContribuablesActifsPerception = readPerceptionActiveIds(reader);
+			this.donneesPerception = readDonneesPerception(reader);
 		}
 
 		// stockage du seuil d'activité fourni
 		this.seuilActivite = seuilActivite;
 
 		// un peu de log...
-		LOGGER.info("Nombre d'entreprises actives au niveau de la perception : " + this.numerosContribuablesActifsPerception.size());
+		LOGGER.info("Nombre d'entreprises actives au niveau de la perception : " + this.donneesPerception.values().stream().filter(adbSeul -> !adbSeul).count());
 		LOGGER.info("Seuil d'activité : " + RegDateHelper.dateToDisplayString(this.seuilActivite));
 	}
 
@@ -98,19 +103,26 @@ public class ActivityManagerImpl implements ActivityManager {
 	 * Lecture depuis un fichier d'entrée de la liste des identifiants des entreprises dont la perception nous indique
 	 * qu'elles sont actives
 	 * @param reader reader sur le flux contenant les numéros de contribuable des entreprises concernées
-	 * @return un ensemble des identifiants lus dans le flux donné
+	 * @return une map des identifiants lus dans le flux donné, associés à un booléen 'ADB seul' (= seulement acte de défaut de bien)
 	 * @throws IOException en cas de problème avec le flux d'entrée
 	 */
 	@NotNull
-	private static Set<Long> readPerceptionActiveIds(@Nullable Reader reader) throws IOException {
+	private static Map<Long, Boolean> readDonneesPerception(@Nullable Reader reader) throws IOException {
 		// pour les tests de base, aucun fichier n'est fourni -> aucune entreprise active annoncée par la perception
 		if (reader != null) {
-			// on constitue un ensemble (les éventuels doublons sont enlevés et la recherche facilitée)
-			return new HashSet<>(DataLoadHelper.loadIdentifiantsPM(reader));
+			// on constitue la map (les éventuels doublons sont enlevés et la recherche facilitée)
+			final Pattern pattern = Pattern.compile("([0-9]{1,10});([ON])");
+			try (BufferedReader br = new BufferedReader(reader)) {
+				final List<Pair<Long, Boolean>> data = DataLoadHelper.loadData(br, pattern, matcher -> Pair.of(Long.parseLong(matcher.group(1)), "O".equals(matcher.group(2))));
+				return data.stream()
+						.collect(Collectors.toMap(Pair::getLeft,
+						                          Pair::getRight,
+						                          (b1, b2) -> b1 && b2));
+			}
 		}
 		else {
 			LOGGER.warn("Aucune donnée de numéros de contribuables actifs en provenance de la perception...");
-			return Collections.emptySet();
+			return Collections.emptyMap();
 		}
 	}
 
@@ -200,12 +212,13 @@ public class ActivityManagerImpl implements ActivityManager {
 
 	/**
 	 * @param entreprise entreprise dont l'état de perception est à vérifier
-	 * @return <code>true</code> si l'entreprise était listée dans le fichier fourni en entrée par la perception
+	 * @return <code>true</code> si l'entreprise était listée comme active dans le fichier fourni en entrée par la perception
 	 */
 	private boolean isActivePerception(RegpmEntreprise entreprise) {
 		// Ici, on suppose encore une fois que le numéro utilisé dans Unireg (SIPF, en fait) est le même
 		// que celui qui était connu dans le mainframe...
-		return numerosContribuablesActifsPerception.contains(entreprise.getId());
+		final Boolean adbSeul = donneesPerception.get(entreprise.getId());
+		return adbSeul != null && !adbSeul;
 	}
 }
 
