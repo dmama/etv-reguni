@@ -19,7 +19,6 @@ import java.util.List;
 
 import org.hibernate.annotations.Index;
 import org.hibernate.annotations.Type;
-import org.springframework.util.Assert;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeComparator;
@@ -57,8 +56,13 @@ public abstract class EtatDeclaration extends HibernateEntity implements DateRan
 
 			final RegDate dateObtention1 = o1.getDateObtention();
 			final RegDate dateObtention2 = o2.getDateObtention();
-			Assert.notNull(dateObtention1);
-			Assert.notNull(dateObtention2);
+
+			// [SIFISC-17758] dans l'écran SuperGRA, quand on ajoute à la main un état, la date d'obtention n'est pas encore assignée...
+			if (dateObtention1 == null || dateObtention2 == null) {
+				if (dateObtention1 != dateObtention2) {
+					return dateObtention1 == null ? -1 : 1;
+				}
+			}
 
 			if (dateObtention1 != dateObtention2) {
 				// cas normal
@@ -68,8 +72,13 @@ public abstract class EtatDeclaration extends HibernateEntity implements DateRan
 			// cas exceptionnel : deux états obtenu le même jour.
 			final TypeEtatDeclaration etat1 = o1.getEtat();
 			final TypeEtatDeclaration etat2 = o2.getEtat();
-			Assert.notNull(etat1);
-			Assert.notNull(etat2);
+
+			// [SIFISC-17758] dans l'écran SuperGRA, les états ne sont pas toujours renseignés quand on lance la validation
+			if (etat1 == null || etat2 == null) {
+				if (etat1 != etat2) {
+					return etat1 == null ? -1 : 1;
+				}
+			}
 
 			// l'ordre est simplement l'ordre logique de l'enum
 			if (etat1 != etat2) {
