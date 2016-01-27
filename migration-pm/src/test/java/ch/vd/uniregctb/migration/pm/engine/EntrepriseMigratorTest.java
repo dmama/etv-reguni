@@ -5589,4 +5589,96 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 			}
 		});
 	}
+
+	/**
+	 * [SIFISC-17691] les entreprises qui commencent leur activité dans le deuxième semestre de l'année ne doivent
+	 * avoir leur premier bouclement qu'à la fin de l'année suivante
+	 */
+	@Test
+	public void testEstimationBouclementPremiereAnneeEntrepriseSiDebutDeuxiemeSemestre() throws Exception {
+
+		final long noEntreprise = 74984L;
+		final RegpmEntreprise e = buildEntreprise(noEntreprise);
+		final RegDate dateDebut = RegDate.get(2015, 11, 1);             // deuxième semestre
+
+		addRaisonSociale(e, dateDebut, "Toto SA", null, null, true);
+		addFormeJuridique(e, dateDebut, createTypeFormeJuridique("S.A.", RegpmCategoriePersonneMorale.PM));
+		addForPrincipalSuisse(e, dateDebut, RegpmTypeForPrincipal.SIEGE, Commune.ECHALLENS);
+		addRegimeFiscalVD(e, dateDebut, null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
+		addRegimeFiscalCH(e, dateDebut, null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
+        addAssujettissement(e, dateDebut, null, RegpmTypeAssujettissement.LILIC);
+		e.setDateBouclementFutur(RegDate.get(dateDebut.year() + 1, 12, 31));
+
+		final MockGraphe graphe = new MockGraphe(Collections.singletonList(e),
+		                                         null,
+		                                         null);
+		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
+		final EntityLinkCollector linkCollector = new EntityLinkCollector();
+		final IdMapper idMapper = new IdMapper();
+		migrator.initMigrationResult(mr, idMapper);
+		migrate(e, migrator, mr, linkCollector, idMapper);
+
+		// vérification des flags migrés sur l'entreprise
+		doInUniregTransaction(true, status -> {
+			final Entreprise entreprise = uniregStore.getEntityFromDb(Entreprise.class, noEntreprise);
+			Assert.assertNotNull(entreprise);
+
+			final Set<Bouclement> bouclements = entreprise.getBouclements();
+			Assert.assertNotNull(bouclements);
+			Assert.assertEquals(1, bouclements.size());
+
+			final Bouclement bouclement = bouclements.iterator().next();
+			Assert.assertNotNull(bouclement);
+			Assert.assertFalse(bouclement.isAnnule());
+			Assert.assertEquals(RegDate.get(dateDebut.year() + 1, 12, 1), bouclement.getDateDebut());       // dès 2016, donc...
+			Assert.assertEquals(DayMonth.get(12, 31), bouclement.getAncrage());
+			Assert.assertEquals(12, bouclement.getPeriodeMois());
+		});
+	}
+
+	/**
+	 * [SIFISC-17691] les entreprises qui commencent leur activité dans le deuxième semestre de l'année ne doivent
+	 * avoir leur premier bouclement qu'à la fin de l'année suivante
+	 */
+	@Test
+	public void testEstimationBouclementPremiereAnneeEntrepriseSiDebutPremierSemestre() throws Exception {
+
+		final long noEntreprise = 74984L;
+		final RegpmEntreprise e = buildEntreprise(noEntreprise);
+		final RegDate dateDebut = RegDate.get(2015, 5, 1);              // premier semestre
+
+		addRaisonSociale(e, dateDebut, "Toto SA", null, null, true);
+		addFormeJuridique(e, dateDebut, createTypeFormeJuridique("S.A.", RegpmCategoriePersonneMorale.PM));
+		addForPrincipalSuisse(e, dateDebut, RegpmTypeForPrincipal.SIEGE, Commune.ECHALLENS);
+		addRegimeFiscalVD(e, dateDebut, null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
+		addRegimeFiscalCH(e, dateDebut, null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
+        addAssujettissement(e, dateDebut, null, RegpmTypeAssujettissement.LILIC);
+		e.setDateBouclementFutur(RegDate.get(dateDebut.year() + 1, 12, 31));
+
+		final MockGraphe graphe = new MockGraphe(Collections.singletonList(e),
+		                                         null,
+		                                         null);
+		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
+		final EntityLinkCollector linkCollector = new EntityLinkCollector();
+		final IdMapper idMapper = new IdMapper();
+		migrator.initMigrationResult(mr, idMapper);
+		migrate(e, migrator, mr, linkCollector, idMapper);
+
+		// vérification des flags migrés sur l'entreprise
+		doInUniregTransaction(true, status -> {
+			final Entreprise entreprise = uniregStore.getEntityFromDb(Entreprise.class, noEntreprise);
+			Assert.assertNotNull(entreprise);
+
+			final Set<Bouclement> bouclements = entreprise.getBouclements();
+			Assert.assertNotNull(bouclements);
+			Assert.assertEquals(1, bouclements.size());
+
+			final Bouclement bouclement = bouclements.iterator().next();
+			Assert.assertNotNull(bouclement);
+			Assert.assertFalse(bouclement.isAnnule());
+			Assert.assertEquals(RegDate.get(dateDebut.year(), 12, 1), bouclement.getDateDebut());       // dès 2015, donc...
+			Assert.assertEquals(DayMonth.get(12, 31), bouclement.getAncrage());
+			Assert.assertEquals(12, bouclement.getPeriodeMois());
+		});
+	}
 }

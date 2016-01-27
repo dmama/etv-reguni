@@ -172,6 +172,7 @@ import ch.vd.uniregctb.tiers.MontantMonetaire;
 import ch.vd.uniregctb.tiers.RaisonSocialeFiscaleEntreprise;
 import ch.vd.uniregctb.tiers.RegimeFiscal;
 import ch.vd.uniregctb.tiers.Tiers;
+import ch.vd.uniregctb.type.DayMonth;
 import ch.vd.uniregctb.type.EtatDelaiDeclaration;
 import ch.vd.uniregctb.type.FormeJuridiqueEntreprise;
 import ch.vd.uniregctb.type.GenreImpot;
@@ -2942,9 +2943,21 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 				// pour chacune d'entre elles, on va supposer des exercices commerciaux annuels (à la date d'ancrage du premier exercice après le trou) pour combler
 				for (DateRange range : notMapped) {
 
+					// [SIFISC-17691] si le trou est dès le début de la lorgnette (= en début d'activité) et que sa date de début
+					// est dans le second semestre de l'année, alors le premier bouclement doit être placé à la fin de l'année suivante !
+					boolean nePasAjouterBouclementDansAnneeDebutTrou = false;
+					if (range.getDateDebut() == dateDebutLorgnette
+							&& DayMonth.get(range.getDateFin()) == DayMonth.get(12, 31)
+							&& dateDebutLorgnette.month() > 6) {
+
+						nePasAjouterBouclementDansAnneeDebutTrou = true;
+					}
+
 					// on sait que la fin du range est forcément une date de bouclement (puisqu'un exercice commercial débute au lendemain)
 					// et ensuite on case autant d'années que nécessaire pour boucher le trou
-					for (RegDate bouclement = range.getDateFin(); bouclement.isAfterOrEqual(range.getDateDebut()); bouclement = bouclement.addYears(-1)) {
+					for (RegDate bouclement = range.getDateFin();
+					     bouclement.isAfterOrEqual(range.getDateDebut()) && (!nePasAjouterBouclementDansAnneeDebutTrou || bouclement.year() > range.getDateDebut().year());
+					     bouclement = bouclement.addYears(-1)) {
 
 						// la date de bouclement futur est de toute façon ajoutée par la suite, et ne mérite pas le log d'ajout d'une date "estimée"...
 						if (bouclement != dateBouclementFutur) {
