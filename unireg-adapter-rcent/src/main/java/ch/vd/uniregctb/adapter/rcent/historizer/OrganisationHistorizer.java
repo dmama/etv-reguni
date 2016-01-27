@@ -2,6 +2,7 @@ package ch.vd.uniregctb.adapter.rcent.historizer;
 
 import java.math.BigInteger;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -10,7 +11,6 @@ import ch.vd.evd0021.v1.Address;
 import ch.vd.evd0022.v1.Capital;
 import ch.vd.evd0022.v1.CommercialRegisterEntryStatus;
 import ch.vd.evd0022.v1.CommercialRegisterStatus;
-import ch.vd.evd0022.v1.Function;
 import ch.vd.evd0022.v1.Identifier;
 import ch.vd.evd0022.v1.KindOfLocation;
 import ch.vd.evd0022.v1.LegalForm;
@@ -33,13 +33,11 @@ import ch.vd.uniregctb.adapter.rcent.historizer.equalator.AdresseEqualator;
 import ch.vd.uniregctb.adapter.rcent.historizer.equalator.CapitalEqualator;
 import ch.vd.uniregctb.adapter.rcent.historizer.equalator.Equalator;
 import ch.vd.uniregctb.adapter.rcent.historizer.equalator.IdentifierEqualator;
-import ch.vd.uniregctb.adapter.rcent.historizer.equalator.OrganisationFunctionEqualator;
 import ch.vd.uniregctb.adapter.rcent.historizer.extractor.AdressesCasePostaleIdeExtractor;
 import ch.vd.uniregctb.adapter.rcent.historizer.extractor.AdressesEffectivesIdeExtractor;
 import ch.vd.uniregctb.adapter.rcent.historizer.extractor.AdressesLegalesExtractor;
 import ch.vd.uniregctb.adapter.rcent.historizer.extractor.CapitalExtractor;
 import ch.vd.uniregctb.adapter.rcent.historizer.extractor.KindOfLocationExtractor;
-import ch.vd.uniregctb.adapter.rcent.historizer.extractor.LocationFunctionsExtractor;
 import ch.vd.uniregctb.adapter.rcent.historizer.extractor.LocationIdentifiersExtractor;
 import ch.vd.uniregctb.adapter.rcent.historizer.extractor.LocationInReplacementOfExtractor;
 import ch.vd.uniregctb.adapter.rcent.historizer.extractor.LocationNamesExtractor;
@@ -61,7 +59,6 @@ import ch.vd.uniregctb.adapter.rcent.historizer.extractor.SeatExtractor;
 import ch.vd.uniregctb.adapter.rcent.historizer.extractor.UidRegisterLiquidationReasonExtractor;
 import ch.vd.uniregctb.adapter.rcent.historizer.extractor.UidStatusExtractor;
 import ch.vd.uniregctb.adapter.rcent.historizer.extractor.UidTypeOfOrganisationExtractor;
-import ch.vd.uniregctb.adapter.rcent.model.OrganisationFunction;
 
 public class OrganisationHistorizer {
 
@@ -134,13 +131,6 @@ public class OrganisationHistorizer {
 		);
 		final IndexedDataCollector<Organisation, Integer, BigInteger> locationSeatsCollector = new SingleValueIndexedDataCollector<>(new SeatExtractor(),
 		                                                                                                                             Equalator.DEFAULT
-		);
-		/*
-			Ici il y a une feinte: on ne compare que sur les valeurs qui sont significatives. Voir en aval la conversion correspondante vers un type qui ne contient que ces valeurs.
-		 */
-		final IndexedDataCollector<Organisation, Function, BigInteger> locationFunctionCollector = new MultiValueIndexedDataCollector<>(new LocationFunctionsExtractor(),
-		                                                                                                                                new OrganisationFunctionEqualator(),
-		                                                                                                                                k -> new OrganisationFunction(k.getValue())
 		);
 		final IndexedDataCollector<Organisation, BigInteger, BigInteger> locationReplacedByCollector = new SingleValueIndexedDataCollector<>(new LocationReplacedByExtractor(),
 		                                                                                                                                  Equalator.DEFAULT
@@ -215,7 +205,6 @@ public class OrganisationHistorizer {
 		                                                    locationOtherNamesCollector,
 		                                                    locationKindsOfLocationCollector,
 		                                                    locationSeatsCollector,
-		                                                    locationFunctionCollector,
 		                                                    locationInReplacementOfCollector,
 		                                                    locationReplacedByCollector,
 		                                                    locationRcPurposeCollector,
@@ -248,7 +237,7 @@ public class OrganisationHistorizer {
 				locationOtherNamesCollector.getCollectedData(),
 				locationKindsOfLocationCollector.getCollectedData(),
 				locationSeatsCollector.getCollectedData(),
-				locationFunctionCollector.getCollectedData(),
+				Collections.emptyMap(),
 				locationReplacedByCollector.getCollectedData(),
 				locationInReplacementOfCollector.getCollectedData(),
 

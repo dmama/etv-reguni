@@ -356,17 +356,8 @@ public class RCEntAdapterTest {
 		List<DateRangeHelper.Ranged<RegDate>> locationRcEntryDate = organisation.getLocationData().get(0).getRc().getEntryDate();
 		assertEquals(RegDate.get(2007, 4, 16), locationRcEntryDate.get(0).getPayload());
 
+		// JDE 27.01.2016 : déconnecté l'interprétation des fonctions qui pêtait dès qu'une même personne avait plusieurs fonctions à un moment donné
 		Map<String, List<DateRangeHelper.Ranged<OrganisationFunction>>> locationFunctions = organisation.getLocationData().get(0).getFunction();
-		assertEquals(2, locationFunctions.size()); // S'il y en a plus, c'est que l'Historizer ne sait pas identifier proprement les fonctions qu'on doit considérer identiques.
-
-		assertEquals("Harrison Ford", locationFunctions.get("Harrison Ford").get(0).getPayload().getName());
-		assertEquals(RegDate.get(2015, 7, 7), locationFunctions.get("Harrison Ford").get(0).getDateDebut());
-		assertEquals("Président du Conseil d'Administration", locationFunctions.get("Harrison Ford").get(0).getPayload().getFunctionText());
-		assertEquals(Authorisation.SIG_INDIVIDUELLE, locationFunctions.get("Harrison Ford").get(0).getPayload().getAuthorisation());
-		assertNull(locationFunctions.get("Harrison Ford").get(0).getDateFin());
-
-		assertEquals("Harring", locationFunctions.get("Harring").get(0).getPayload().getName());
-		assertEquals(RegDate.get(2015, 8, 5), locationFunctions.get("Harring").get(0).getDateDebut());
-		assertNull(locationFunctions.get("Harring").get(0).getDateFin());
+		assertNull(locationFunctions); // S'il y en a plus, c'est que l'Historizer ne sait pas identifier proprement les fonctions qu'on doit considérer identiques.
 	}
 }

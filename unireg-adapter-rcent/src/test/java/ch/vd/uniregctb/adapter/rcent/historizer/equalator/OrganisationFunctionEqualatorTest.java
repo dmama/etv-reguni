@@ -14,7 +14,7 @@ import static org.junit.Assert.assertTrue;
 /**
  * @author Raphaël Marmier, 2015-08-21
  */
-public class OrganisationOrganisationFunctionEqualatorTest {
+public class OrganisationFunctionEqualatorTest {
 
 	@Test
 	public void testEqual() throws Exception {
