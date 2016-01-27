@@ -14,7 +14,9 @@ import java.util.TreeSet;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.mutable.Mutable;
 import org.apache.commons.lang3.mutable.MutableLong;
+import org.apache.commons.lang3.mutable.MutableObject;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.junit.Assert;
@@ -3876,6 +3878,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		final long noEntreprise = 2623L;
 		final RegpmEntreprise e = buildEntreprise(noEntreprise);
 		addRaisonSociale(e, null, "*Chez-moi SA", null, null, true);
+		addSiegeSuisse(e, RegDate.get(2000, 1, 1), Commune.ECHALLENS);
 
 		final MockGraphe graphe = new MockGraphe(Collections.singletonList(e),
 		                                         null,
@@ -3886,11 +3889,22 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		migrator.initMigrationResult(mr, idMapper);
 		migrate(e, migrator, mr, linkCollector, idMapper);
 
+		final Mutable<Long> idEtablissementPrincipal = new MutableObject<>();
+
 		// en base : le flag débiteur inactif doit avoir été mis
 		doInUniregTransaction(true, status -> {
 			final Entreprise entreprise = uniregStore.getEntityFromDb(Entreprise.class, noEntreprise);
 			Assert.assertNotNull(entreprise);
 			Assert.assertTrue(entreprise.isAnnule());               // une étoile au début de la raison sociale -> annulation du tiers
+
+			final List<Etablissement> allEtbs = uniregStore.getEntitiesFromDb(Etablissement.class, null);
+			Assert.assertNotNull(allEtbs);
+			Assert.assertEquals(1, allEtbs.size());
+
+			final Etablissement etbPrincipal = allEtbs.get(0);
+			Assert.assertNotNull(etbPrincipal);
+			Assert.assertTrue(etbPrincipal.isAnnule());           // une étoile au début de la raison sociale -> annulation de l'établissement principal aussi
+			idEtablissementPrincipal.setValue(etbPrincipal.getNumero());
 		});
 
 		// et dans les messages de suivi ?
@@ -3898,13 +3912,14 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 			final List<MigrationResultCollector.Message> messages = mr.getMessages().get(LogCategory.SUIVI);
 			Assert.assertNotNull(messages);
 			final List<String> textes = messages.stream().map(msg -> msg.text).collect(Collectors.toList());
-			Assert.assertEquals(6, textes.size());
+			Assert.assertEquals(7, textes.size());
 			Assert.assertEquals("L'entreprise n'existait pas dans Unireg avec ce numéro de contribuable.", textes.get(0));
 			Assert.assertEquals("Entreprise identifiée comme un doublon.", textes.get(1));
 			Assert.assertEquals("Entreprise sans exercice commercial ni for principal.", textes.get(2));
 			Assert.assertEquals("Entreprise sans exercice commercial ni date de bouclement futur.", textes.get(3));
-			Assert.assertEquals("Pas de siège associé dans les données fiscales, pas d'établissement principal créé à partir des données fiscales.", textes.get(4));
-			Assert.assertEquals("Entreprise migrée : 26.23.", textes.get(5));
+			Assert.assertEquals("Création de l'établissement principal " + FormatNumeroHelper.numeroCTBToDisplay(idEtablissementPrincipal.getValue()) + " (annulé).", textes.get(4));
+			Assert.assertEquals("Domicile de l'établissement principal " + FormatNumeroHelper.numeroCTBToDisplay(idEtablissementPrincipal.getValue()) + " : [01.01.2000 -> ?] sur COMMUNE_OU_FRACTION_VD/5518.", textes.get(5));
+			Assert.assertEquals("Entreprise migrée : 26.23.", textes.get(6));
 		}
 	}
 
