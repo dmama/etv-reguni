@@ -239,6 +239,13 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		}
 	}
 
+	private static final class CouvertureRegimesFiscauxData {
+		private final KeyedSupplier<Entreprise> entrepriseSupplier;
+		public CouvertureRegimesFiscauxData(KeyedSupplier<Entreprise> entrepriseSupplier) {
+			this.entrepriseSupplier = entrepriseSupplier;
+		}
+	}
+
 	private static final class EffacementForsAnnulesData {
 		private final KeyedSupplier<Entreprise> entrepriseSupplier;
 		public EffacementForsAnnulesData(KeyedSupplier<Entreprise> entrepriseSupplier) {
@@ -444,6 +451,13 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		                                        k -> k.entrepriseSupplier,
 		                                        (d1, d2) -> { throw new IllegalArgumentException("une seule donnée par entreprise, donc pas de raison d'appeler le merger..."); },
 		                                        d -> annulationDonneesFiscalesPourInactifs(d, mr, idMapper));
+
+		// callback pour le contrôle de la couverture des régimes fiscaux
+		mr.registerPreTransactionCommitCallback(CouvertureRegimesFiscauxData.class,
+		                                        ConsolidationPhase.COUVERTURE_REGIMES_FISCAUX,
+		                                        k -> k.entrepriseSupplier,
+		                                        (d1, d2) -> { throw new IllegalArgumentException("une seule donnée par entreprise, donc pas de raison d'appeler le merger..."); },
+		                                        d -> controleCouvertureRegimesFiscaux(d, mr, idMapper));
 
 		// callback pour le contrôle des données d'assujettissement
 		mr.registerPreTransactionCommitCallback(ComparaisonAssujettissementsData.class,
@@ -1506,6 +1520,111 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 	}
 
 	/**
+	 * @param data donnée d'identification de l'entreprise dont la couverture des régimes fiscaux est à contrôler
+	 * @param mr collecteur de message de suivi et manipulateur de contexte de log
+	 * @param idMapper mapper d'identifiants RegPM -> Unireg
+	 */
+	private void controleCouvertureRegimesFiscaux(CouvertureRegimesFiscauxData data, MigrationResultContextManipulation mr, IdMapping idMapper) {
+		final EntityKey keyEntreprise = data.entrepriseSupplier.getKey();
+		doInLogContext(keyEntreprise, mr, idMapper, () -> {
+			final Entreprise entreprise = data.entrepriseSupplier.get();
+			final List<DateRange> forsBeneficeCapital = DateRangeHelper.merge(entreprise.getForsFiscauxNonAnnules(true).stream()
+					                                                                  .filter(ff -> ff.getGenreImpot() == GenreImpot.BENEFICE_CAPITAL)
+					                                                                  .collect(Collectors.toList()));
+
+			// pas la peine d'aller plus loin si pas de fors non-annulé 'bénéfice capital'
+			if (forsBeneficeCapital != null && !forsBeneficeCapital.isEmpty()) {
+				final Map<RegimeFiscal.Portee, List<RegimeFiscal>> regimesParPortee = entreprise.getRegimesFiscauxNonAnnulesTries().stream()
+						.collect(Collectors.toMap(RegimeFiscal::getPortee,
+						                          Collections::singletonList,
+						                          (l1, l2) -> Stream.concat(l1.stream(), l2.stream()).collect(Collectors.toList())));
+
+				// zone à couvrir effectivement
+				final DateRange aCouvrir = new DateRangeHelper.Range(RegDate.get(parametreAppService.getPremierePeriodeFiscalePersonnesMorales(), 1, 1), null);
+
+				// zones de fors 'bénéfice/capital' non-couverte par des régimes fiscaux ?
+				for (RegimeFiscal.Portee portee : RegimeFiscal.Portee.values()) {
+					final List<RegimeFiscal> regimes = regimesParPortee.get(portee);
+					final List<DateRange> nonCouverts = DateRangeHelper.intersections(aCouvrir, DateRangeHelper.subtract(forsBeneficeCapital, regimes, new DateRangeAdapterCallback()));
+					if (nonCouverts != null && !nonCouverts.isEmpty()) {
+						// nous avons des trous...
+						for (DateRange trou : nonCouverts) {
+							// s'il y a déjà un régime avant le trou, on va juste le prolonger
+							final RegimeFiscal avantTrou = DateRangeHelper.rangeAt(regimes, trou.getDateDebut().getOneDayBefore());
+							if (avantTrou != null) {
+								mr.addMessage(LogCategory.SUIVI, LogLevel.WARN,
+								              String.format("Régime fiscal %s %s de type '%s' prolongé jusqu'au %s pour couvrir les fors de l'entreprise.",
+								                            avantTrou.getPortee(),
+								                            StringRenderers.DATE_RANGE_RENDERER.toString(avantTrou),
+								                            avantTrou.getCode(),
+								                            StringRenderers.DATE_RENDERER.toString(trou.getDateFin())));
+
+								avantTrou.setDateFin(trou.getDateFin());
+							}
+							else {
+								// pas de trou avant... peut-être après ?
+								final RegimeFiscal apresTrou = trou.getDateFin() != null
+										? DateRangeHelper.rangeAt(regimes, trou.getDateFin().getOneDayAfter())
+										: null;
+								if (apresTrou != null) {
+									mr.addMessage(LogCategory.SUIVI, LogLevel.WARN,
+									              String.format("Régime fiscal %s %s de type '%s' pris en compte dès le %s pour couvrir les fors de l'entreprise.",
+									                            apresTrou.getPortee(),
+									                            StringRenderers.DATE_RANGE_RENDERER.toString(apresTrou),
+									                            apresTrou.getCode(),
+									                            StringRenderers.DATE_RENDERER.toString(trou.getDateDebut())));
+
+									apresTrou.setDateDebut(trou.getDateDebut());
+								}
+								else {
+									// pas de trou ni avant, ni après... par défaut en fonction de la forme juridique de l'entreprise au début du trou
+									final RegpmTypeRegimeFiscal type;
+									final NavigableMap<RegDate, RegpmTypeFormeJuridique> histoFormesJuridiques = mr.getExtractedData(FormeJuridiqueHistoData.class, keyEntreprise).histo;
+									final Map.Entry<RegDate, RegpmTypeFormeJuridique> fjAvantDebutTrou = histoFormesJuridiques.floorEntry(trou.getDateDebut());
+									if (fjAvantDebutTrou != null) {
+										type = getDefautTypeRegimeFiscalPourFormeJuridique(fjAvantDebutTrou.getValue());
+									}
+									else {
+										final Map.Entry<RegDate, RegpmTypeFormeJuridique> fjApresDebutTrou = histoFormesJuridiques.higherEntry(trou.getDateDebut());
+										if (fjApresDebutTrou != null) {
+											type = getDefautTypeRegimeFiscalPourFormeJuridique(fjApresDebutTrou.getValue());
+										}
+										else {
+											// aucune forme juridique connue -> on prend 01
+											type = RegpmTypeRegimeFiscal._01_ORDINAIRE;
+										}
+									}
+
+									final RegimeFiscal rf = new RegimeFiscal(trou.getDateDebut(), null, portee, extractCode(type));
+									entreprise.addRegimeFiscal(rf);
+
+									mr.addMessage(LogCategory.SUIVI, LogLevel.WARN,
+									              String.format("Ajout d'un régime fiscal %s de type '%s' sur la période %s pour couvrir les fors de l'entreprise.",
+									                            portee,
+									                            rf.getCode(),
+									                            StringRenderers.DATE_RANGE_RENDERER.toString(rf)));
+								}
+							}
+						}
+					}
+				}
+			}
+		});
+	}
+
+	private static RegpmTypeRegimeFiscal getDefautTypeRegimeFiscalPourFormeJuridique(RegpmTypeFormeJuridique fj) {
+		switch (fj.getCategorie()) {
+		case PM:
+		case SP:
+			return RegpmTypeRegimeFiscal._01_ORDINAIRE;
+		case APM:
+			return RegpmTypeRegimeFiscal._70_ORDINAIRE_ASSOCIATION_FONDATION;
+		default:
+			throw new IllegalArgumentException("Catégorie de forme judirique invalide : " + fj.getCategorie());
+		}
+	}
+
+	/**
 	 * @param data donnée d'identification de l'entreprise dont la couverture des fors est à contrôler
 	 * @param mr collecteur de message de suivi et manipulateur de contexte de log
 	 * @param idMapper mapper d'identifiants RegPM -> Unireg
@@ -1835,6 +1954,9 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 
 		// enregistrement de cette entreprise pour l'annulation éventuelle des données fiscales (fors, dis...) pour les inactifs
 		mr.addPreTransactionCommitData(new AnnulationDonneesFiscalesPourInactifsData(moi));
+
+		// enregistrement de cette entreprise pour le contrôle de la couverture des régimes fiscaux
+		mr.addPreTransactionCommitData(new CouvertureRegimesFiscauxData(moi));
 
 		// enregistrement de cette entreprise pour la comparaison des assujettissements avant/après
 		mr.addPreTransactionCommitData(new ComparaisonAssujettissementsData(regpm, activityManager.isActive(regpm), moi));

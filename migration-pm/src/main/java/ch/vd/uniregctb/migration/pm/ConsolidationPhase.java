@@ -50,5 +50,10 @@ public enum ConsolidationPhase {
 	/**
 	 * Le contrôle des assujettissements avant/après la migration
 	 */
-	COMPARAISON_ASSUJETTISSEMENTS
+	COMPARAISON_ASSUJETTISSEMENTS,
+
+	/**
+	 * Le contrôle et la mise à jour des régimes fiscaux VD/CH en présence de for principal non-annulé de genre BENEFICE_CAPITAL
+	 */
+	COUVERTURE_REGIMES_FISCAUX
 }

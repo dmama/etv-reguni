@@ -103,6 +103,7 @@ import ch.vd.uniregctb.tiers.MontantMonetaire;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RaisonSocialeFiscaleEntreprise;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
+import ch.vd.uniregctb.tiers.RegimeFiscal;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.type.FormeJuridiqueEntreprise;
 import ch.vd.uniregctb.type.GenreImpot;
@@ -4697,8 +4698,8 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		EntrepriseMigratorTest.addFormeJuridique(e, dateDebutForPrincipal, EntrepriseMigratorTest.createTypeFormeJuridique("DP", RegpmCategoriePersonneMorale.APM));
 		EntrepriseMigratorTest.addForPrincipalSuisse(e, dateDebutForPrincipal, RegpmTypeForPrincipal.SIEGE, Commune.ECHALLENS);
 		EntrepriseMigratorTest.addAssujettissement(e, dateDebutForPrincipal, null, RegpmTypeAssujettissement.LILIC);
-		EntrepriseMigratorTest.addRegimeFiscalVD(e, dateDebutForPrincipal, null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
-		EntrepriseMigratorTest.addRegimeFiscalCH(e, dateDebutForPrincipal, null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
+		EntrepriseMigratorTest.addRegimeFiscalVD(e, dateDebutForPrincipal, null, RegpmTypeRegimeFiscal._70_ORDINAIRE_ASSOCIATION_FONDATION);
+		EntrepriseMigratorTest.addRegimeFiscalCH(e, dateDebutForPrincipal, null, RegpmTypeRegimeFiscal._70_ORDINAIRE_ASSOCIATION_FONDATION);
 
 		final RegpmImmeuble immeuble = EntrepriseMigratorTest.createImmeuble(Commune.LAUSANNE);
 		EntrepriseMigratorTest.addRattachementProprietaire(e, dateDebutImmeuble, null, immeuble);
@@ -4752,6 +4753,74 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 			Assert.assertEquals("INFO;" + noEntreprise + ";Active;;;For principal COMMUNE_OU_FRACTION_VD/5518 [25.01.1979 -> ?] généré.", msgs.get(2));
 			Assert.assertEquals("INFO;" + noEntreprise + ";Active;;;For secondaire 'immeuble' [25.01.1979 -> ?] ajouté sur la commune 5586.", msgs.get(3));
 			Assert.assertEquals("WARN;" + noEntreprise + ";Active;;;Il n'y avait pas de fors secondaires sur la commune OFS 5586 (maintenant : [25.01.1979 -> ?]).", msgs.get(4));
+		}
+	}
+
+	@Test
+	public void testCouvertureRegimesFiscaux() throws Exception {
+
+		final long noEntreprise = 46237L;
+		final RegDate dateDebutForPrincipal = RegDate.get(2010, 5, 3);
+
+		final RegpmEntreprise e = EntrepriseMigratorTest.buildEntreprise(noEntreprise);
+		EntrepriseMigratorTest.addRaisonSociale(e, dateDebutForPrincipal, "Pognon SA", null, null, true);
+		EntrepriseMigratorTest.addFormeJuridique(e, dateDebutForPrincipal, EntrepriseMigratorTest.createTypeFormeJuridique("S.A.", RegpmCategoriePersonneMorale.PM));
+		EntrepriseMigratorTest.addForPrincipalSuisse(e, dateDebutForPrincipal, RegpmTypeForPrincipal.SIEGE, Commune.ECHALLENS);
+		EntrepriseMigratorTest.addAssujettissement(e, dateDebutForPrincipal, null, RegpmTypeAssujettissement.LILIC);
+		EntrepriseMigratorTest.addRegimeFiscalVD(e, dateDebutForPrincipal.addMonths(2), null, RegpmTypeRegimeFiscal._01_ORDINAIRE);   // VD -> commence plus tard que le for
+//		EntrepriseMigratorTest.addRegimeFiscalCH(e, dateDebutForPrincipal, null, RegpmTypeRegimeFiscal._01_ORDINAIRE);                // CH -> rien du tout
+
+		final MockGraphe graphe = new MockGraphe(Collections.singletonList(e),
+		                                         null,
+		                                         null);
+
+		activityManager.setup(ALL_ACTIVE);
+
+		final LoggedMessages lms = grapheMigrator.migrate(graphe);
+		Assert.assertNotNull(lms);
+
+		// vérification en base (en particulier la date de début du for principal)
+		doInUniregTransaction(true, status -> {
+			final Entreprise entreprise = uniregStore.getEntityFromDb(Entreprise.class, noEntreprise);
+			Assert.assertNotNull(entreprise);
+
+			final Set<RegimeFiscal> regimesFiscaux = entreprise.getRegimesFiscaux();
+			Assert.assertNotNull(regimesFiscaux);
+			Assert.assertEquals(2, regimesFiscaux.size());
+
+			final Map<RegimeFiscal.Portee, RegimeFiscal> mapRegimes = regimesFiscaux.stream()
+					.collect(Collectors.toMap(RegimeFiscal::getPortee, Function.identity()));
+
+			{
+				final RegimeFiscal regime = mapRegimes.get(RegimeFiscal.Portee.VD);
+				Assert.assertNotNull(regime);
+				Assert.assertFalse(regime.isAnnule());
+				Assert.assertEquals(dateDebutForPrincipal, regime.getDateDebut());
+				Assert.assertNull(regime.getDateFin());
+				Assert.assertEquals("01", regime.getCode());
+			}
+			{
+				final RegimeFiscal regime = mapRegimes.get(RegimeFiscal.Portee.CH);
+				Assert.assertNotNull(regime);
+				Assert.assertFalse(regime.isAnnule());
+				Assert.assertEquals(dateDebutForPrincipal, regime.getDateDebut());
+				Assert.assertNull(regime.getDateFin());
+				Assert.assertEquals("01", regime.getCode());
+			}
+		});
+
+		final Map<LogCategory, List<String>> messages = buildTextualMessages(lms);
+		{
+			// vérification des messages dans le contexte "SUIVI"
+			final List<String> msgs = messages.get(LogCategory.SUIVI);
+			Assert.assertEquals(7, msgs.size());
+			Assert.assertEquals("WARN;" + noEntreprise + ";Active;;;;;;;;;;;;;;;L'entreprise n'existait pas dans Unireg avec ce numéro de contribuable.", msgs.get(0));
+			Assert.assertEquals("ERROR;" + noEntreprise + ";Active;;;;;;;;;;;;;;;Pas de numéro cantonal assigné sur l'entreprise, pas de lien vers le civil.", msgs.get(1));
+			Assert.assertEquals("WARN;" + noEntreprise + ";Active;;;;;;;;;;;;;;;Entreprise sans exercice commercial ni date de bouclement futur.", msgs.get(2));
+			Assert.assertEquals("WARN;" + noEntreprise + ";Active;;;;;;;;;;;;;;;Pas de siège associé dans les données fiscales, pas d'établissement principal créé à partir des données fiscales.", msgs.get(3));
+			Assert.assertEquals("INFO;" + noEntreprise + ";Active;;;;;;;;;;;;;;;Entreprise migrée : " + FormatNumeroHelper.numeroCTBToDisplay(noEntreprise) + ".", msgs.get(4));
+			Assert.assertEquals("WARN;" + noEntreprise + ";Active;;;;;;;;;;;;;;;Régime fiscal VD [03.07.2010 -> ?] de type '01' pris en compte dès le 03.05.2010 pour couvrir les fors de l'entreprise.", msgs.get(5));
+			Assert.assertEquals("WARN;" + noEntreprise + ";Active;;;;;;;;;;;;;;;Ajout d'un régime fiscal CH de type '01' sur la période [03.05.2010 -> ?] pour couvrir les fors de l'entreprise.", msgs.get(6));
 		}
 	}
 
