@@ -19,7 +19,6 @@ import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.DelegatingValidator;
 import ch.vd.uniregctb.common.TiersNotFoundException;
 import ch.vd.uniregctb.security.AccessDeniedException;
-import ch.vd.uniregctb.security.SecurityProviderInterface;
 import ch.vd.uniregctb.tiers.Etablissement;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
@@ -36,13 +35,11 @@ public class CivilEtablissementEditController {
 
 	private static final String ID = "id";
 
-	private static final String FORMES_JURIDIQUES_NAME = "formesJuridiquesEnum";
 	private static final String TIERS_ID = "tiersId";
 	private static final String DATA = "data";
 
 	private TiersDAO tiersDAO;
 	private TiersService tiersService;
-	private SecurityProviderInterface securityProvider;
 	private AutorisationManager autorisationManager;
 	private EntrepriseService entrepriseService;
 
@@ -56,10 +53,6 @@ public class CivilEtablissementEditController {
 
 	public void setEntrepriseService(EntrepriseService entrepriseService) {
 		this.entrepriseService = entrepriseService;
-	}
-
-	public void setSecurityProvider(SecurityProviderInterface securityProvider) {
-		this.securityProvider = securityProvider;
 	}
 
 	public void setAutorisationManager(AutorisationManager autorisationManager) {
@@ -88,11 +81,6 @@ public class CivilEtablissementEditController {
 	@RequestMapping(value = "/edit.do", method = RequestMethod.GET)
 	@Transactional(readOnly = true, rollbackFor = Throwable.class)
 	public String editEtablissement(Model model, @RequestParam(value = ID) long id) {
-/*
-		if (!SecurityHelper.isGranted(securityProvider, Role.MODIF_AC)) {
-			throw new AccessDeniedException("Vous ne possédez pas les droits d'accès suffisants à la modification des tiers de ce type.");
-		}
-*/
 
 		final Tiers tiers = tiersDAO.get(id);
 		if (tiers != null && tiers instanceof Etablissement) {
@@ -162,11 +150,6 @@ public class CivilEtablissementEditController {
 	@Transactional(readOnly = true, rollbackFor = Throwable.class)
 	@RequestMapping(value = "/ide/edit.do", method = RequestMethod.GET)
 	public String editIdeEtablissement(Model model, @RequestParam(value = ID) long id) {
-/*
-		if (!SecurityHelper.isGranted(securityProvider, Role.MODIF_AC)) {
-			throw new AccessDeniedException("Vous ne possédez pas les droits d'accès suffisants à la modification des tiers de ce type.");
-		}
-*/
 
 		final Tiers tiers = tiersDAO.get(id);
 		if (tiers != null && tiers instanceof Etablissement) {
@@ -187,17 +170,6 @@ public class CivilEtablissementEditController {
 	@Transactional(rollbackFor = Throwable.class)
 	@RequestMapping(value = "/ide/edit.do", method = RequestMethod.POST)
 	public String editIdeEtablissement(@RequestParam(value = ID) long id, Model model, @Valid @ModelAttribute(DATA) ContribuableInfosEntrepriseView view, BindingResult bindingResult) {
-/*
-		if (!SecurityHelper.isGranted(securityProvider, Role.MODIF_AC)) {
-			throw new AccessDeniedException("Vous ne possédez pas les droits d'accès suffisants à la modification des tiers de ce type.");
-		}
-*/
-
-		if (bindingResult.hasErrors()) {
-			model.addAttribute(DATA, view);
-			model.addAttribute(TIERS_ID, id);
-			return "/tiers/edition/civil/edit-ide";
-		}
 
 		final Tiers tiers = tiersDAO.get(id);
 		if (tiers != null && tiers instanceof Etablissement) {
@@ -210,6 +182,12 @@ public class CivilEtablissementEditController {
 		}
 		else {
 			throw new TiersNotFoundException(id);
+		}
+
+		if (bindingResult.hasErrors()) {
+			model.addAttribute(DATA, view);
+			model.addAttribute(TIERS_ID, id);
+			return "/tiers/edition/civil/edit-ide";
 		}
 
 		return "redirect:/civil/etablissement/edit.do?id=" + id;

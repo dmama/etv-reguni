@@ -21,9 +21,7 @@ import ch.vd.uniregctb.common.DelegatingValidator;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.common.TiersNotFoundException;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.security.AccessDeniedException;
-import ch.vd.uniregctb.security.SecurityProviderInterface;
 import ch.vd.uniregctb.tiers.CapitalFiscalEntreprise;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.FormeJuridiqueFiscaleEntreprise;
@@ -52,8 +50,6 @@ public class CivilEntrepriseEditController {
 	private TiersMapHelper tiersMapHelper;
 	private TiersService tiersService;
 	private ControllerUtils controllerUtils;
-	private ServiceInfrastructureService infraService;
-	private SecurityProviderInterface securityProvider;
 	private HibernateTemplate hibernateTemplate;
 	private AutorisationManager autorisationManager;
 	private EntrepriseService entrepriseService;
@@ -70,10 +66,6 @@ public class CivilEntrepriseEditController {
 		this.controllerUtils = controllerUtils;
 	}
 
-	public void setInfraService(ServiceInfrastructureService infraService) {
-		this.infraService = infraService;
-	}
-
 	public void setTiersService(TiersService tiersService) {
 		this.tiersService = tiersService;
 	}
@@ -84,10 +76,6 @@ public class CivilEntrepriseEditController {
 
 	public void setHibernateTemplate(HibernateTemplate hibernateTemplate) {
 		this.hibernateTemplate = hibernateTemplate;
-	}
-
-	public void setSecurityProvider(SecurityProviderInterface securityProvider) {
-		this.securityProvider = securityProvider;
 	}
 
 	public void setAutorisationManager(AutorisationManager autorisationManager) {

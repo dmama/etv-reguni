@@ -15,11 +15,9 @@
 		<property name="tiersDAO" ref="tiersDAO"/>
 		<property name="tiersMapHelper" ref="tiersMapHelper"/>
 		<property name="controllerUtils" ref="controllerUtils"/>
-		<property name="infraService" ref="serviceInfrastructureService"/>
 		<property name="tiersService" ref="tiersService"/>
 		<property name="entrepriseService" ref="entrepriseService"/>
 		<property name="hibernateTemplate" ref="hibernateTemplate"/>
-		<property name="securityProvider" ref="securityProviderInterface"/>
 		<property name="autorisationManager" ref="autorisationManager"/>
 	</bean>
 
@@ -27,7 +25,6 @@
 		<property name="tiersDAO" ref="tiersDAO"/>
 		<property name="tiersService" ref="tiersService"/>
 		<property name="entrepriseService" ref="entrepriseService"/>
-		<property name="securityProvider" ref="securityProviderInterface"/>
 		<property name="autorisationManager" ref="autorisationManager"/>
 	</bean>
 
