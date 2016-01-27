@@ -106,8 +106,11 @@
 				<form:select id="selectTypeTiers" path="typeTiers" onchange="typeTiers_onChange(this);">
 					<form:option value="" />
 					<form:option value="DEBITEUR_PRESTATION_IMPOSABLE" ><fmt:message key="option.type.tiers.DEBITEUR_PRESTATION_IMPOSABLE" /></form:option>
-					<form:option value="CONTRIBUABLE_PP" ><fmt:message key="option.type.tiers.CONTRIBUABLE_PP" /></form:option>
+					<form:option value="CONTRIBUABLE_PP" ><fmt:message key="option.type.tiers.CONTRIBUABLE_PP" /></form:option><%-- Représente Personne physique & ménages commun --%>
 					<form:option value="ENTREPRISE" ><fmt:message key="option.type.tiers.ENTREPRISE" /></form:option>
+					<form:option value="ETABLISSEMENT" ><fmt:message key="option.type.tiers.ETABLISSEMENT" /></form:option>
+					<form:option value="COLLECTIVITE_ADMINISTRATIVE" ><fmt:message key="option.type.tiers.COLLECTIVITE_ADMINISTRATIVE" /></form:option>
+					<form:option value="AUTRE_COMMUNAUTE" ><fmt:message key="option.type.tiers.AUTRE_COMMUNAUTE" /></form:option>
 				</form:select>
 			</td>
 			<td width="25%">
