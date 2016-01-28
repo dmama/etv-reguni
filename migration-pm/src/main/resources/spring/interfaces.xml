@@ -49,6 +49,7 @@
 		<property name="password" value="${rcent.password}"/>
 		<property name="organisationPath" value="/organisation/CT.VD.PARTY"/>
 		<property name="organisationsOfNoticePath" value="/organisationsOfNotice"/>
+		<property name="pingPath" value="/infrastructure/ping"/>
 		<property name="validationEnabled" value="${rcent.validate}"/>
 		<property name="schemasLocations">
 			<list>

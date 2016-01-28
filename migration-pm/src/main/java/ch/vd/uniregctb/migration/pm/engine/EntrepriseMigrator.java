@@ -1979,6 +1979,11 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		migrateDeclarationsImpot(regpm, unireg, mr, idMapper);
 		generateForsPrincipaux(regpm, unireg, mr);
 		migrateImmeubles(regpm, unireg, mr);
+
+		// premier contrôle des régimes fiscaux par rapport aux fors, avant de toute façon celui qui sera lancé à la fin de la transaction
+		// (ici car la génération de l'établissement principal peut induire un flush de la session et donc lancer les validateurs)
+		controleCouvertureRegimesFiscaux(new CouvertureRegimesFiscauxData(moi), mr, idMapper);
+
 		generateEtablissementPrincipal(regpm, rcent, linkCollector, idMapper, mr);
 		migrateEtatsEntreprise(regpm, unireg, mr);
 

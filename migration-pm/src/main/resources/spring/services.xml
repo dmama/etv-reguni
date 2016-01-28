@@ -52,6 +52,7 @@
 
 	<bean id="serviceOrganisationRCEnt" class="ch.vd.unireg.interfaces.organisation.rcent.ServiceOrganisationRCEnt">
 		<constructor-arg ref="rcentAdapter"/>
+		<constructor-arg ref="rcentClient"/>
 		<constructor-arg ref="serviceInfrastructureFidor"/>
 	</bean>
 
