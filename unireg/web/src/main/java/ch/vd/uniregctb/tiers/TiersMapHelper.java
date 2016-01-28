@@ -8,7 +8,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,6 +64,7 @@ public class TiersMapHelper extends CommonMapHelper {
 
 	private Map<FormeJuridique, String> mapFormeJuridique;
 	private Map<FormeJuridiqueEntreprise, String> mapFormeJuridiqueEntreprise;
+	private Map<CategorieEntreprise, String> mapCategorieEntreprise;
 	private Map<NatureJuridique, String> mapNatureJuridique;
 	private Map<TypeRecherche, String> mapTypeRechercheNom;
 	private Map<TypeRechercheLocalitePays, String> mapTypeRechercheLocalitePays;
@@ -706,11 +706,10 @@ public class TiersMapHelper extends CommonMapHelper {
 	 * @return une map
 	 */
 	public Map<CategorieEntreprise, String> getMapCategoriesEntreprise() {
-		final TreeMap<CategorieEntreprise, String> map = new TreeMap<>();
-		for (CategorieEntreprise categorieEntreprise : CategorieEntreprise.values()) {
-			map.put(categorieEntreprise, categorieEntreprise.getLibelle());
+		if (mapCategorieEntreprise == null) {
+			mapCategorieEntreprise = initMapEnum(ApplicationConfig.masterKeyCategorieEntreprise, CategorieEntreprise.class, CategorieEntreprise.PP);
 		}
-		return map;
+		return mapCategorieEntreprise;
 	}
 
 	/**

@@ -6,13 +6,13 @@ package ch.vd.uniregctb.type;
 public enum CategorieEntreprise {
 
 	PP("Société individuelle"),
-	SP("Société de personnes"),
-	PM("Personne morale"),            // TODO <-- ne faudrait-il pas changer ce nom qui porte à confusion ?
-	APM("Association/fondation"),
-	FP("Fonds de placement"),
-	DPPM("Personne morale de droit public"),      // DP/PM
-	DPAPM("Entité de droit public"),               // DP/APM
-	AUTRE("-");
+	SP("SP - SC et SNC"),
+	PM("PM - Société de capitaux"),            // TODO <-- ne faudrait-il pas changer ce nom qui porte à confusion ?
+	APM("APM - Association / Fondation"),
+	FP("FDS PLAC - Fond de placement"),
+	DPPM("DP/PM - Entreprise de droit public"),      // DP/PM
+	DPAPM("DP/APM - Administration de droit public"),               // DP/APM
+	AUTRE("Autre");
 
 	private final String libelle;
 
