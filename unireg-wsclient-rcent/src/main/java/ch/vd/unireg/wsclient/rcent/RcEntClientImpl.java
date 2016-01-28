@@ -19,6 +19,7 @@ public class RcEntClientImpl implements RcEntClient, InitializingBean {
 
 	private String organisationPath = "organisation/CT.VD.PARTY";
 	private String organisationsOfNoticePath = "organisationsOfNotice";
+	private String pingPath = "infrastructure/ping";
 
 	public void setBaseUrl(String url) {
 		this.wcPool.setBaseUrl(url);
@@ -38,6 +39,10 @@ public class RcEntClientImpl implements RcEntClient, InitializingBean {
 
 	public void setOrganisationsOfNoticePath(String organisationsOfNoticePath) {
 		this.organisationsOfNoticePath = organisationsOfNoticePath;
+	}
+
+	public void setPingPath(String pingPath) {
+		this.pingPath = pingPath;
 	}
 
 	public void setValidationEnabled(boolean enableValidation) {
@@ -79,6 +84,7 @@ public class RcEntClientImpl implements RcEntClient, InitializingBean {
 			wcPool.returnClient(wc);
 		}
 	}
+
 	@Override
 	public OrganisationsOfNotice getOrganisationsOfNotice(long noticeId, OrganisationState when) throws RcEntClientException {
 		final WebClient wc = wcPool.borrowClient(RECEIVE_TIMEOUT);
@@ -89,6 +95,26 @@ public class RcEntClientImpl implements RcEntClient, InitializingBean {
 
 			try {
 				return wc.get(OrganisationsOfNotice.class);
+			}
+			catch (ServerWebApplicationException e) {
+				throw new RcEntClientException(e);
+			}
+		}
+		finally {
+			wcPool.returnClient(wc);
+		}
+	}
+
+	@Override
+	public void ping() throws RcEntClientException {
+		final WebClient wc = wcPool.borrowClient(RECEIVE_TIMEOUT);
+		try {
+			wc.path(pingPath);
+			try {
+				final String pong = wc.get(String.class);
+				if (!"pong".equals(pong)) {
+					throw new RcEntClientException("Wrong answer...", null);
+				}
 			}
 			catch (ServerWebApplicationException e) {
 				throw new RcEntClientException(e);

@@ -48,4 +48,10 @@ public interface RcEntClient {
 	 * @throws RcEntClientException en cas de problème
 	 */
 	OrganisationsOfNotice getOrganisationsOfNotice(long noticeId, OrganisationState when) throws RcEntClientException;
+
+	/**
+	 * Envoi un message de ping dans le tuyau, afin de s'assurer que RCEnt est bien là...
+	 * @throws RcEntClientException en cas de souci (= RCEnt n'est pas en état de nous répondre...)
+	 */
+	void ping() throws RcEntClientException;
 }
