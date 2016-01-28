@@ -36,6 +36,16 @@ public interface UniregStore {
 	 * Méthode qui permet d'aller chercher des entités dans la base de données Unireg sans forcément connaître leur identifiant
 	 * @param clazz classe des entités visées
 	 * @param criteria critères (attribut / valeur)
+	 * @param manualFlushOnly <code>true</code> si la session doit être passée en mode "MANUAL" pendant l'appel (si <code>false</code>, le mode n'est pas modifié)
+	 * @param <E> type des entitées visées
+	 * @return la liste des entités trouvées
+	 */
+	<E extends HibernateEntity> List<E> getEntitiesFromDb(Class<E> clazz, Map<String, ?> criteria, boolean manualFlushOnly);
+
+	/**
+	 * Méthode qui permet d'aller chercher des entités dans la base de données Unireg sans forcément connaître leur identifiant
+	 * @param clazz classe des entités visées
+	 * @param criteria critères (attribut / valeur)
 	 * @param <E> type des entitées visées
 	 * @return la liste des entités trouvées
 	 */

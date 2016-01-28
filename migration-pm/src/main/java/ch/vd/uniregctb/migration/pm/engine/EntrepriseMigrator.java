@@ -3014,7 +3014,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		final Map<String, Object> params = Collections.singletonMap("annee", year);
 
 		// récupération des données
-		final List<PeriodeFiscale> pfs = neverNull(uniregStore.getEntitiesFromDb(PeriodeFiscale.class, params));
+		final List<PeriodeFiscale> pfs = neverNull(uniregStore.getEntitiesFromDb(PeriodeFiscale.class, params, true));
 		if (pfs.isEmpty()) {
 			throw new IllegalStateException("Aucune période fiscale trouvée dans Unireg pour l'année " + year);
 		}

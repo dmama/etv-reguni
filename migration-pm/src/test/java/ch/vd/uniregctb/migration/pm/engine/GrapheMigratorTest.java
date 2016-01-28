@@ -4783,7 +4783,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		final LoggedMessages lms = grapheMigrator.migrate(graphe);
 		Assert.assertNotNull(lms);
 
-		// vérification en base (en particulier la date de début du for principal)
+		// vérification en base
 		doInUniregTransaction(true, status -> {
 			final Entreprise entreprise = uniregStore.getEntityFromDb(Entreprise.class, noEntreprise);
 			Assert.assertNotNull(entreprise);
@@ -4857,7 +4857,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		final LoggedMessages lms = grapheMigrator.migrate(graphe);
 		Assert.assertNotNull(lms);
 
-		// vérification en base (en particulier la date de début du for principal)
+		// vérification en base
 		doInUniregTransaction(true, status -> {
 			final Entreprise entreprise = uniregStore.getEntityFromDb(Entreprise.class, noEntreprise);
 			Assert.assertNotNull(entreprise);
@@ -4899,6 +4899,91 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 			Assert.assertEquals("INFO;" + noEntreprise + ";Active;;;;;;;;;;;;;;;Entreprise migrée : " + FormatNumeroHelper.numeroCTBToDisplay(noEntreprise) + ".", msgs.get(4));
 			Assert.assertEquals("WARN;" + noEntreprise + ";Active;;;;;;;;;;;;;;;Ajout d'un régime fiscal VD de type '01' sur la période [01.05.2011 -> ?] pour couvrir les fors de l'entreprise.", msgs.get(5));
 			Assert.assertEquals("WARN;" + noEntreprise + ";Active;;;;;;;;;;;;;;;Ajout d'un régime fiscal CH de type '01' sur la période [01.05.2011 -> ?] pour couvrir les fors de l'entreprise.", msgs.get(6));
+		}
+	}
+
+	/**
+	 * Exemple de l'entreprise 57524
+	 */
+	@Test
+	public void testCouvertureRegimesFiscauxAucunRegimeSourceEtDateDebutForPrincipalAdapteeEtRattrapageDeclarationSansExerciceCommercial() throws Exception {
+		final long noEntreprise = 46237L;
+		final RegDate dateDebutForPrincipal = RegDate.get(2010, 5, 3);
+
+		final RegpmEntreprise e = EntrepriseMigratorTest.buildEntreprise(noEntreprise);
+		EntrepriseMigratorTest.addRaisonSociale(e, dateDebutForPrincipal, "Pognon SA", null, null, true);
+		EntrepriseMigratorTest.addFormeJuridique(e, dateDebutForPrincipal, EntrepriseMigratorTest.createTypeFormeJuridique("S.A.", RegpmCategoriePersonneMorale.PM));
+		EntrepriseMigratorTest.addForPrincipalSuisse(e, dateDebutForPrincipal, RegpmTypeForPrincipal.SIEGE, Commune.ECHALLENS);
+		EntrepriseMigratorTest.addRattachementProprietaire(e, dateDebutForPrincipal.getOneDayBefore(), null, createImmeuble(Commune.LAUSANNE));
+		final RegpmAssujettissement assujettissement = EntrepriseMigratorTest.addAssujettissement(e, dateDebutForPrincipal, null, RegpmTypeAssujettissement.LILIC);
+
+		EntrepriseMigratorTest.addDossierFiscal(e, assujettissement, 2015, RegDate.get(2016, 1, 1), RegpmModeImposition.POST);
+		e.setDateBouclementFutur(RegDate.get(2016, 12, 31));
+
+		// ajout de quelques périodes fiscales utiles
+		doInUniregTransaction(false, status -> {
+			addPeriodeFiscale(2015);
+		});
+
+		final MockGraphe graphe = new MockGraphe(Collections.singletonList(e),
+		                                         null,
+		                                         null);
+
+		activityManager.setup(ALL_ACTIVE);
+
+		final LoggedMessages lms = grapheMigrator.migrate(graphe);
+		Assert.assertNotNull(lms);
+
+		// vérification en base
+		doInUniregTransaction(true, status -> {
+			final Entreprise entreprise = uniregStore.getEntityFromDb(Entreprise.class, noEntreprise);
+			Assert.assertNotNull(entreprise);
+
+			final Set<RegimeFiscal> regimesFiscaux = entreprise.getRegimesFiscaux();
+			Assert.assertNotNull(regimesFiscaux);
+			Assert.assertEquals(2, regimesFiscaux.size());
+
+			final Map<RegimeFiscal.Portee, RegimeFiscal> mapRegimes = regimesFiscaux.stream()
+					.collect(Collectors.toMap(RegimeFiscal::getPortee, Function.identity()));
+
+			{
+				final RegimeFiscal regime = mapRegimes.get(RegimeFiscal.Portee.VD);
+				Assert.assertNotNull(regime);
+				Assert.assertFalse(regime.isAnnule());
+				Assert.assertEquals(dateDebutForPrincipal.getOneDayBefore(), regime.getDateDebut());
+				Assert.assertNull(regime.getDateFin());
+				Assert.assertEquals("01", regime.getCode());
+			}
+			{
+				final RegimeFiscal regime = mapRegimes.get(RegimeFiscal.Portee.CH);
+				Assert.assertNotNull(regime);
+				Assert.assertFalse(regime.isAnnule());
+				Assert.assertEquals(dateDebutForPrincipal.getOneDayBefore(), regime.getDateDebut());
+				Assert.assertNull(regime.getDateFin());
+				Assert.assertEquals("01", regime.getCode());
+			}
+		});
+
+		final Map<LogCategory, List<String>> messages = buildTextualMessages(lms);
+		{
+			// vérification des messages dans le contexte "SUIVI"
+			final List<String> msgs = messages.get(LogCategory.SUIVI);
+			Assert.assertEquals(15, msgs.size());
+			Assert.assertEquals("WARN;" + noEntreprise + ";Active;;;;;;;;;;;;;;;L'entreprise n'existait pas dans Unireg avec ce numéro de contribuable.", msgs.get(0));
+			Assert.assertEquals("ERROR;" + noEntreprise + ";Active;;;;;;;;;;;;;;;Pas de numéro cantonal assigné sur l'entreprise, pas de lien vers le civil.", msgs.get(1));
+			Assert.assertEquals("WARN;" + noEntreprise + ";Active;;;;;;;;;;;;;;;Ajout d'une date de bouclement estimée au 31.12.2015 pour combler l'absence d'exercice commercial dans RegPM sur la période [03.05.2010 -> 31.12.2016].", msgs.get(2));
+			Assert.assertEquals("WARN;" + noEntreprise + ";Active;;;;;;;;;;;;;;;Ajout d'une date de bouclement estimée au 31.12.2014 pour combler l'absence d'exercice commercial dans RegPM sur la période [03.05.2010 -> 31.12.2016].", msgs.get(3));
+			Assert.assertEquals("WARN;" + noEntreprise + ";Active;;;;;;;;;;;;;;;Ajout d'une date de bouclement estimée au 31.12.2013 pour combler l'absence d'exercice commercial dans RegPM sur la période [03.05.2010 -> 31.12.2016].", msgs.get(4));
+			Assert.assertEquals("WARN;" + noEntreprise + ";Active;;;;;;;;;;;;;;;Ajout d'une date de bouclement estimée au 31.12.2012 pour combler l'absence d'exercice commercial dans RegPM sur la période [03.05.2010 -> 31.12.2016].", msgs.get(5));
+			Assert.assertEquals("WARN;" + noEntreprise + ";Active;;;;;;;;;;;;;;;Ajout d'une date de bouclement estimée au 31.12.2011 pour combler l'absence d'exercice commercial dans RegPM sur la période [03.05.2010 -> 31.12.2016].", msgs.get(6));
+			Assert.assertEquals("WARN;" + noEntreprise + ";Active;;;;;;;;;;;;;;;Ajout d'une date de bouclement estimée au 31.12.2010 pour combler l'absence d'exercice commercial dans RegPM sur la période [03.05.2010 -> 31.12.2016].", msgs.get(7));
+			Assert.assertEquals("INFO;" + noEntreprise + ";Active;;;;;;;;;;;;;;;Cycle de bouclements créé, applicable dès le 01.12.2010 : tous les 12 mois, à partir du premier 31.12.", msgs.get(8));
+			Assert.assertEquals("WARN;" + noEntreprise + ";Active;;;;;;;;;;;;;;;Ajout d'un régime fiscal VD de type '01' sur la période [03.05.2010 -> ?] pour couvrir les fors de l'entreprise.", msgs.get(9));
+			Assert.assertEquals("WARN;" + noEntreprise + ";Active;;;;;;;;;;;;;;;Ajout d'un régime fiscal CH de type '01' sur la période [03.05.2010 -> ?] pour couvrir les fors de l'entreprise.", msgs.get(10));
+			Assert.assertEquals("WARN;" + noEntreprise + ";Active;;;;;;;;;;;;;;;Pas de siège associé dans les données fiscales, pas d'établissement principal créé à partir des données fiscales.", msgs.get(11));
+			Assert.assertEquals("INFO;" + noEntreprise + ";Active;;;;;;;;;;;;;;;Entreprise migrée : " + FormatNumeroHelper.numeroCTBToDisplay(noEntreprise) + ".", msgs.get(12));
+			Assert.assertEquals("WARN;" + noEntreprise + ";Active;;;;;;;;;;;;;;;Régime fiscal VD [03.05.2010 -> ?] de type '01' pris en compte dès le 02.05.2010 pour couvrir les fors de l'entreprise.", msgs.get(13));
+			Assert.assertEquals("WARN;" + noEntreprise + ";Active;;;;;;;;;;;;;;;Régime fiscal CH [03.05.2010 -> ?] de type '01' pris en compte dès le 02.05.2010 pour couvrir les fors de l'entreprise.", msgs.get(14));
 		}
 	}
 

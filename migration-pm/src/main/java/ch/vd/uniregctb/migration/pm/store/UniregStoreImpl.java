@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.hibernate.Criteria;
+import org.hibernate.FlushMode;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -36,6 +37,27 @@ public class UniregStoreImpl implements UniregStore {
 	public final <E extends HibernateEntity> E getEntityFromDb(Class<E> clazz, long id) {
 		//noinspection unchecked
 		return (E) uniregSessionFactory.getCurrentSession().get(clazz, id);
+	}
+
+	/**
+	 * Méthode qui permet d'aller chercher des entités dans la base de données Unireg sans forcément connaître leur identifiant
+	 * @param clazz classe des entités visées
+	 * @param criteria critères (attribut / valeur)
+	 * @param manualFlushOnly <code>true</code> si la session doit être passée en mode "MANUAL" pendant l'appel (si <code>false</code>, le mode n'est pas modifié)
+	 * @param <E> type des entitées visées
+	 * @return la liste des entités trouvées
+	 */
+	@Override
+	public <E extends HibernateEntity> List<E> getEntitiesFromDb(Class<E> clazz, Map<String, ?> criteria, boolean manualFlushOnly) {
+		final Session session = uniregSessionFactory.getCurrentSession();
+		final FlushMode flushMode = session.getFlushMode();
+		session.setFlushMode(manualFlushOnly ? FlushMode.MANUAL : flushMode);
+		try {
+			return getEntitiesFromDb(clazz, criteria);
+		}
+		finally {
+			session.setFlushMode(flushMode);
+		}
 	}
 
 	/**
