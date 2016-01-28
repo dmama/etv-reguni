@@ -16,6 +16,7 @@ public class ApplicationConfig {
 	public static final String uniregResource = "UniregOptionResources";
 
 	public static final String masterKeyFormeJuridique = "option.forme.juridique.";
+	public static final String masterKeyFormeJuridiqueEntreprise = "option.forme.juridique.entreprise.";
 	public static final String masterKeyNatureJuridique = "option.nature.juridique.";
 	public static final String masterKeyRole = "option.role.";
 	public static final String masterKeyTypeRechercheNom = "option.type.recherche.nom.";

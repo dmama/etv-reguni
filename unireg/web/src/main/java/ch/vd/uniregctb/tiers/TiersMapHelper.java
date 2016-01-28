@@ -64,6 +64,7 @@ public class TiersMapHelper extends CommonMapHelper {
 	private static final Logger LOGGER = LoggerFactory.getLogger(TiersMapHelper.class);
 
 	private Map<FormeJuridique, String> mapFormeJuridique;
+	private Map<FormeJuridiqueEntreprise, String> mapFormeJuridiqueEntreprise;
 	private Map<NatureJuridique, String> mapNatureJuridique;
 	private Map<TypeRecherche, String> mapTypeRechercheNom;
 	private Map<TypeRechercheLocalitePays, String> mapTypeRechercheLocalitePays;
@@ -693,11 +694,10 @@ public class TiersMapHelper extends CommonMapHelper {
 	 * @return une map
 	 */
 	public Map<FormeJuridiqueEntreprise, String> getMapFormeJuridiqueEntreprise() {
-		final TreeMap<FormeJuridiqueEntreprise, String> map = new TreeMap<>();
-		for (FormeJuridiqueEntreprise formeJuridiqueEntreprise : FormeJuridiqueEntreprise.values()) {
-			map.put(formeJuridiqueEntreprise, formeJuridiqueEntreprise.getLibelle());
+		if (mapFormeJuridiqueEntreprise == null) {
+			mapFormeJuridiqueEntreprise = initMapEnum(ApplicationConfig.masterKeyFormeJuridiqueEntreprise, FormeJuridiqueEntreprise.class);
 		}
-		return map;
+		return mapFormeJuridiqueEntreprise;
 	}
 
 	/**

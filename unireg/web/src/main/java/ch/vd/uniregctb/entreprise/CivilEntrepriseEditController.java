@@ -42,7 +42,7 @@ public class CivilEntrepriseEditController {
 
 	private static final String ID = "id";
 
-	private static final String FORMES_JURIDIQUES_NAME = "formesJuridiquesEnum";
+	private static final String FORMES_JURIDIQUES_ENTREPRISE_NAME = "formesJuridiquesEntrepriseEnum";
 	private static final String TIERS_ID = "tiersId";
 	private static final String DATA = "data";
 
@@ -261,7 +261,7 @@ public class CivilEntrepriseEditController {
 		}
 
 		model.addAttribute("command", new AddFormeJuridiqueView(entreprise.getNumero(), RegDate.get(), null, null));
-		model.addAttribute(FORMES_JURIDIQUES_NAME, tiersMapHelper.getMapFormeJuridiqueEntreprise());
+		model.addAttribute(FORMES_JURIDIQUES_ENTREPRISE_NAME, tiersMapHelper.getMapFormeJuridiqueEntreprise());
 		return "donnees-civiles/add-forme-juridique";
 	}
 
@@ -283,7 +283,7 @@ public class CivilEntrepriseEditController {
 
 		if (result.hasErrors()) {
 			model.addAttribute("command", view);
-			model.addAttribute(FORMES_JURIDIQUES_NAME, tiersMapHelper.getMapFormeJuridiqueEntreprise());
+			model.addAttribute(FORMES_JURIDIQUES_ENTREPRISE_NAME, tiersMapHelper.getMapFormeJuridiqueEntreprise());
 			return "donnees-civiles/add-forme-juridique";
 		}
 
@@ -307,7 +307,7 @@ public class CivilEntrepriseEditController {
 		}
 
 		model.addAttribute("command", new EditFormeJuridiqueView(formeJuridique));
-		model.addAttribute(FORMES_JURIDIQUES_NAME, tiersMapHelper.getMapFormeJuridiqueEntreprise());
+		model.addAttribute(FORMES_JURIDIQUES_ENTREPRISE_NAME, tiersMapHelper.getMapFormeJuridiqueEntreprise());
 		return "donnees-civiles/edit-forme-juridique";
 	}
 
