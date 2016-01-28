@@ -2835,6 +2835,8 @@ var Search = {
 				var e = results.entries[i];
 				/** @namespace e.role2 */
 				/** @namespace e.role1 */
+				/** @namespace e.dateOuvertureVD */
+				/** @namespace e.dateFermetureVD */
 
 				table += '<tr class="' + (i % 2 == 1 ? 'even' : 'odd') + (e.annule ? ' strike' : '') + '">';
 				table += '<td><a href="' + App.curl('/tiers/visu.do?id=' + e.numero) + '">' + Tiers.formatNumero(e.numero) + '</a></td>';
@@ -2850,8 +2852,8 @@ var Search = {
 				table += '<td>' + StringUtils.escapeHTML(e.npa) + '</td>';
 				table += '<td>' + StringUtils.escapeHTML(e.localitePays) + '</td>';
 				table += '<td>' + StringUtils.escapeHTML(e.forPrincipal) + '</td>';
-				table += '<td>' + RegDate.format(e.dateOuverture) + '</td>';
-				table += '<td>' + RegDate.format(e.dateFermeture) + '</td>';
+				table += '<td>' + RegDate.format(e.dateOuvertureVD) + '</td>';
+				table += '<td>' + RegDate.format(e.dateFermetureVD) + '</td>';
 				table += '<td>';
 				if (!e.annule) {
 					if (!Search.urlRetour) {

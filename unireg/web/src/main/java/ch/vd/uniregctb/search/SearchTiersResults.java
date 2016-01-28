@@ -43,9 +43,9 @@ public class SearchTiersResults {
 			this.localitePays = data.getLocaliteOuPays();
 			this.forPrincipal = data.getForPrincipal();
 			this.dateOuverture = RegDateHelper.get(data.getDateOuvertureFor());
-			this.dateFermetureVD = RegDateHelper.get(data.getDateFermetureFor());
+			this.dateFermeture = RegDateHelper.get(data.getDateFermetureFor());
 			this.dateOuvertureVD = RegDateHelper.get(data.getDateOuvertureForVd());
-			this.dateFermeture = RegDateHelper.get(data.getDateFermetureForVd());
+			this.dateFermetureVD = RegDateHelper.get(data.getDateFermetureForVd());
 			this.annule = data.isAnnule();
 			this.debiteurInactif = data.isDebiteurInactif();
 			this.tiersType = data.getTiersType();

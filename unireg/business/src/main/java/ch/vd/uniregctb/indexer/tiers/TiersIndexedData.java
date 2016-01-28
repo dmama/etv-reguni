@@ -68,8 +68,8 @@ public class TiersIndexedData implements Serializable {
 		roleLigne2 = DocumentExtractorHelper.getDocValue(TiersIndexableData.ROLE_LIGNE2, doc);
 		dateOuvertureFor = DateHelper.indexStringToDate(DocumentExtractorHelper.getDocValue(TiersIndexableData.DATE_OUVERTURE_FOR, doc));
 		dateFermetureFor = DateHelper.indexStringToDate(DocumentExtractorHelper.getDocValue(TiersIndexableData.DATE_FERMETURE_FOR, doc));
-		dateOuvertureForVd = DateHelper.indexStringToDate(DocumentExtractorHelper.getDocValue(TiersIndexableData.DATE_OUVERTURE_FOR, doc));
-		dateFermetureForVd = DateHelper.indexStringToDate(DocumentExtractorHelper.getDocValue(TiersIndexableData.DATE_FERMETURE_FOR, doc));
+		dateOuvertureForVd = DateHelper.indexStringToDate(DocumentExtractorHelper.getDocValue(TiersIndexableData.DATE_OUVERTURE_FOR_VD, doc));
+		dateFermetureForVd = DateHelper.indexStringToDate(DocumentExtractorHelper.getDocValue(TiersIndexableData.DATE_FERMETURE_FOR_VD, doc));
 		rue = DocumentExtractorHelper.getDocValue(TiersIndexableData.RUE, doc);
 		npa = DocumentExtractorHelper.getDocValue(TiersIndexableData.NPA_COURRIER, doc);
 		localite = DocumentExtractorHelper.getDocValue(TiersIndexableData.LOCALITE, doc);
