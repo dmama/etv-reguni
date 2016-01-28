@@ -8,6 +8,7 @@
 		<property name="password" value="${extprop.webservice.rcent.password}"/>
 		<property name="organisationPath" value="/organisation/CT.VD.PARTY"/>
 		<property name="organisationsOfNoticePath" value="/organisationsOfNotice"/>
+		<property name="pingPath" value="/infrastructure/ping"/>
 		<property name="validationEnabled" value="${extprop.webservice.rcent.validate}"/>
 		<property name="schemasLocations">
 			<list>

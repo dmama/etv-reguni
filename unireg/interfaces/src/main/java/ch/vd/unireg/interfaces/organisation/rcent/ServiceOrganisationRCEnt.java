@@ -5,15 +5,19 @@ import ch.vd.unireg.interfaces.organisation.ServiceOrganisationException;
 import ch.vd.unireg.interfaces.organisation.ServiceOrganisationRaw;
 import ch.vd.unireg.interfaces.organisation.WrongOrganisationReceivedException;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
+import ch.vd.unireg.wsclient.rcent.RcEntClient;
+import ch.vd.unireg.wsclient.rcent.RcEntClientException;
 import ch.vd.uniregctb.adapter.rcent.service.RCEntAdapter;
 
 public class ServiceOrganisationRCEnt implements ServiceOrganisationRaw {
 
+	private final RcEntClient client;
 	private final RCEntAdapter adapter;
 	private final ServiceInfrastructureRaw infraService;
 
-	public ServiceOrganisationRCEnt(RCEntAdapter adapter, ServiceInfrastructureRaw infraService) {
+	public ServiceOrganisationRCEnt(RCEntAdapter adapter, RcEntClient client, ServiceInfrastructureRaw infraService) {
 		this.adapter = adapter;
+		this.client = client;
 		this.infraService = infraService;
 	}
 
@@ -38,12 +42,12 @@ public class ServiceOrganisationRCEnt implements ServiceOrganisationRaw {
 
 	@Override
 	public void ping() throws ServiceOrganisationException {
-		final long noOrganisation = 101727770L;
-		final Organisation organisation = getOrganisationHistory(noOrganisation);
-		if (organisation == null) {
-			throw new ServiceOrganisationException(String.format("L'organisation n°%s est introuvable", noOrganisation));
+		try {
+			client.ping();
 		}
-		sanityCheck(noOrganisation, organisation.getNumeroOrganisation());
+		catch (RcEntClientException e) {
+			throw new ServiceOrganisationException(e);
+		}
 	}
 
 	private void sanityCheck(long noOrganisation, long receivedId) throws ServiceOrganisationException {
