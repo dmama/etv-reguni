@@ -1529,9 +1529,9 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		final EntityKey keyEntreprise = data.entrepriseSupplier.getKey();
 		doInLogContext(keyEntreprise, mr, idMapper, () -> {
 			final Entreprise entreprise = data.entrepriseSupplier.get();
-			final List<DateRange> forsBeneficeCapital = DateRangeHelper.merge(entreprise.getForsFiscauxNonAnnules(true).stream()
-					                                                                  .filter(ff -> ff.getGenreImpot() == GenreImpot.BENEFICE_CAPITAL)
-					                                                                  .collect(Collectors.toList()));
+			final List<DateRange> forsBeneficeCapital = DateRangeHelper.collateRange(DateRangeHelper.merge(entreprise.getForsFiscauxNonAnnules(true).stream()
+					                                                                                               .filter(ff -> ff.getGenreImpot() == GenreImpot.BENEFICE_CAPITAL)
+					                                                                                               .collect(Collectors.toList())));
 
 			// pas la peine d'aller plus loin si pas de fors non-annulé 'bénéfice capital'
 			if (forsBeneficeCapital != null && !forsBeneficeCapital.isEmpty()) {
@@ -1563,7 +1563,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 								avantTrou.setDateFin(trou.getDateFin());
 							}
 							else {
-								// pas de trou avant... peut-être après ?
+								// pas de régime avant le trou... peut-être après ?
 								final RegimeFiscal apresTrou = trou.getDateFin() != null
 										? DateRangeHelper.rangeAt(regimes, trou.getDateFin().getOneDayAfter())
 										: null;
@@ -1578,7 +1578,8 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 									apresTrou.setDateDebut(trou.getDateDebut());
 								}
 								else {
-									// pas de trou ni avant, ni après... par défaut en fonction de la forme juridique de l'entreprise au début du trou
+									// pas de régime ni avant, ni après le trou (= pas de régime du tout !!)
+									// -> par défaut en fonction de la forme juridique de l'entreprise au début du trou
 									final RegpmTypeRegimeFiscal type;
 									final NavigableMap<RegDate, RegpmTypeFormeJuridique> histoFormesJuridiques = mr.getExtractedData(FormeJuridiqueHistoData.class, keyEntreprise).histo;
 									final Map.Entry<RegDate, RegpmTypeFormeJuridique> fjAvantDebutTrou = histoFormesJuridiques.floorEntry(trou.getDateDebut());
@@ -1604,6 +1605,10 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 									                            portee,
 									                            rf.getCode(),
 									                            StringRenderers.DATE_RANGE_RENDERER.toString(rf)));
+
+									// pas la peine de traiter les autres trous : ils sont traités par ordre chronologique, il n'y a aucun régime
+									// fiscal présent et nous avons mis une date de fin 'null' à celui que nous venons de créer...
+									break;
 								}
 							}
 						}

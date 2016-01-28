@@ -4829,6 +4829,80 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 	}
 
 	/**
+	 * Exemple des entreprises 18950 et 19012
+	 */
+	@Test
+	public void testCouvertureRegimesFiscauxSurSncAvecImmeublesDisjoints() throws Exception {
+
+		final long noEntreprise = 46237L;
+		final RegDate dateDebutForPrincipal = RegDate.get(2010, 5, 3);
+		final RegDate dateAchatImmeuble1 = RegDate.get(2011, 5, 1);
+		final RegDate dateVenteImmeuble1 = RegDate.get(2011, 12, 30);
+		final RegDate dateAchatImmeuble2 = RegDate.get(2012, 1, 1);     // noter le trou d'un jour sans immeuble
+
+		final RegpmEntreprise e = EntrepriseMigratorTest.buildEntreprise(noEntreprise);
+		EntrepriseMigratorTest.addRaisonSociale(e, dateDebutForPrincipal, "Pittet et fils", null, null, true);
+		EntrepriseMigratorTest.addFormeJuridique(e, dateDebutForPrincipal, EntrepriseMigratorTest.createTypeFormeJuridique("S.N.C.", RegpmCategoriePersonneMorale.SP));
+		EntrepriseMigratorTest.addForPrincipalSuisse(e, dateDebutForPrincipal, RegpmTypeForPrincipal.SIEGE, Commune.ECHALLENS);
+		EntrepriseMigratorTest.addAssujettissement(e, dateDebutForPrincipal, null, RegpmTypeAssujettissement.LILIC);
+		EntrepriseMigratorTest.addRattachementProprietaire(e, dateAchatImmeuble1, dateVenteImmeuble1, createImmeuble(Commune.ECHALLENS));
+		EntrepriseMigratorTest.addRattachementProprietaire(e, dateAchatImmeuble2, null, createImmeuble(Commune.LAUSANNE));
+
+		final MockGraphe graphe = new MockGraphe(Collections.singletonList(e),
+		                                         null,
+		                                         null);
+
+		activityManager.setup(ALL_ACTIVE);
+
+		final LoggedMessages lms = grapheMigrator.migrate(graphe);
+		Assert.assertNotNull(lms);
+
+		// vérification en base (en particulier la date de début du for principal)
+		doInUniregTransaction(true, status -> {
+			final Entreprise entreprise = uniregStore.getEntityFromDb(Entreprise.class, noEntreprise);
+			Assert.assertNotNull(entreprise);
+
+			final Set<RegimeFiscal> regimesFiscaux = entreprise.getRegimesFiscaux();
+			Assert.assertNotNull(regimesFiscaux);
+			Assert.assertEquals(2, regimesFiscaux.size());
+
+			final Map<RegimeFiscal.Portee, RegimeFiscal> mapRegimes = regimesFiscaux.stream()
+					.collect(Collectors.toMap(RegimeFiscal::getPortee, Function.identity()));
+
+			{
+				final RegimeFiscal regime = mapRegimes.get(RegimeFiscal.Portee.VD);
+				Assert.assertNotNull(regime);
+				Assert.assertFalse(regime.isAnnule());
+				Assert.assertEquals(dateAchatImmeuble1, regime.getDateDebut());
+				Assert.assertNull(regime.getDateFin());
+				Assert.assertEquals("01", regime.getCode());
+			}
+			{
+				final RegimeFiscal regime = mapRegimes.get(RegimeFiscal.Portee.CH);
+				Assert.assertNotNull(regime);
+				Assert.assertFalse(regime.isAnnule());
+				Assert.assertEquals(dateAchatImmeuble1, regime.getDateDebut());
+				Assert.assertNull(regime.getDateFin());
+				Assert.assertEquals("01", regime.getCode());
+			}
+		});
+
+		final Map<LogCategory, List<String>> messages = buildTextualMessages(lms);
+		{
+			// vérification des messages dans le contexte "SUIVI"
+			final List<String> msgs = messages.get(LogCategory.SUIVI);
+			Assert.assertEquals(7, msgs.size());
+			Assert.assertEquals("WARN;" + noEntreprise + ";Active;;;;;;;;;;;;;;;L'entreprise n'existait pas dans Unireg avec ce numéro de contribuable.", msgs.get(0));
+			Assert.assertEquals("ERROR;" + noEntreprise + ";Active;;;;;;;;;;;;;;;Pas de numéro cantonal assigné sur l'entreprise, pas de lien vers le civil.", msgs.get(1));
+			Assert.assertEquals("WARN;" + noEntreprise + ";Active;;;;;;;;;;;;;;;Entreprise sans exercice commercial ni date de bouclement futur.", msgs.get(2));
+			Assert.assertEquals("WARN;" + noEntreprise + ";Active;;;;;;;;;;;;;;;Pas de siège associé dans les données fiscales, pas d'établissement principal créé à partir des données fiscales.", msgs.get(3));
+			Assert.assertEquals("INFO;" + noEntreprise + ";Active;;;;;;;;;;;;;;;Entreprise migrée : " + FormatNumeroHelper.numeroCTBToDisplay(noEntreprise) + ".", msgs.get(4));
+			Assert.assertEquals("WARN;" + noEntreprise + ";Active;;;;;;;;;;;;;;;Ajout d'un régime fiscal VD de type '01' sur la période [01.05.2011 -> ?] pour couvrir les fors de l'entreprise.", msgs.get(5));
+			Assert.assertEquals("WARN;" + noEntreprise + ";Active;;;;;;;;;;;;;;;Ajout d'un régime fiscal CH de type '01' sur la période [01.05.2011 -> ?] pour couvrir les fors de l'entreprise.", msgs.get(6));
+		}
+	}
+
+	/**
 	 * Ceci est un test utile au debugging, on charge un graphe depuis un fichier sur disque (identique à ce que
 	 * l'on peut envoyer dans la vraie migration) et on tente la migration du graphe en question
 	 */
