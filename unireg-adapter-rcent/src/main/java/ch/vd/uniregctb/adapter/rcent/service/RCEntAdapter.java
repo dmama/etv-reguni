@@ -2,10 +2,8 @@ package ch.vd.uniregctb.adapter.rcent.service;
 
 
 import ch.vd.evd0022.v1.OrganisationData;
-import ch.vd.evd0022.v1.OrganisationsOfNotice;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.wsclient.rcent.RcEntClient;
-import ch.vd.unireg.wsclient.rcent.RcEntClientException;
 import ch.vd.uniregctb.adapter.rcent.historizer.OrganisationHistorizer;
 import ch.vd.uniregctb.adapter.rcent.model.Organisation;
 
@@ -94,38 +92,5 @@ public class RCEntAdapter {
 	public Organisation getLocationHistory(Long id) {
 		OrganisationData data = rcentClient.getOrganisation(id, null, true);
 		return historizer.mapOrganisation(data.getOrganisationSnapshot());
-	}
-
-	/**
-	 * Recherche de l'état d'organisations juste avant l'annonce qui les concerne.
-	 *
-	 * @param noticeId
-	 * @return
-	 * @throws RcEntClientException
-	 */
-	public OrganisationsOfNotice getOrganisationsBeforeNotice(long noticeId) throws RcEntClientException {
-		return rcentClient.getOrganisationsOfNotice(noticeId, RcEntClient.OrganisationState.BEFORE);
-	}
-
-	/**
-	 * Recherche de l'état d'organisations juste après l'annonce qui les concerne.
-	 *
-	 * @param noticeId
-	 * @return
-	 * @throws RcEntClientException
-	 */
-	public OrganisationsOfNotice getOrganisationsAfterNotice(long noticeId) throws RcEntClientException {
-		return rcentClient.getOrganisationsOfNotice(noticeId, RcEntClient.OrganisationState.AFTER);
-	}
-
-	/**
-	 * Recherche de l'état actuel d'organisations concernées par l'annonce.
-	 *
-	 * @param noticeId
-	 * @return
-	 * @throws RcEntClientException
-	 */
-	public OrganisationsOfNotice getOrganisationsFromNoticeAsOfNow(long noticeId) throws RcEntClientException {
-		return rcentClient.getOrganisationsOfNotice(noticeId, RcEntClient.OrganisationState.CURRENT);
 	}
 }
