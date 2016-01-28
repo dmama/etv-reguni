@@ -2822,12 +2822,12 @@ var Search = {
 				'<th/>' +
 				'<th nowrap>Rôle</th>' +
 				'<th>Nom / Raison sociale</th>' +
-				'<th>Date naissance</th>' +
+				'<th>Date de naissance / d\'inscr. RC</th>' +
 				'<th>NPA</th>' +
 				'<th>Localité / Pays</th>' +
 				'<th>For principal</th>' +
-				'<th>Date ouv. for</th>' +
-				'<th>Date ferm. for</th>' +
+				'<th>Date ouv. 1er for VD</th>' +
+				'<th>Date ferm. dernier for VD</th>' +
 				'<th>Vers</th>';
 			table += '</tr></thead>';
 			table += '<tbody>';
