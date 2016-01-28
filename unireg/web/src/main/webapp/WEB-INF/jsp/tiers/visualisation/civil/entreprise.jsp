@@ -281,7 +281,9 @@
 		<tr class="<unireg:nextRowClass/>" >
 			<td width="20%"><fmt:message key="label.status"/>&nbsp;:</td>
 			<td>
-				${entreprise.statusRC}
+				<c:if test="${! empty entreprise.statusRC}">
+					<fmt:message key="option.statut.rc.${entreprise.statusRC}"/>
+				</c:if>
 			</td>
 		</tr>
 		<tr class="<unireg:nextRowClass/>" >
@@ -307,7 +309,9 @@
 		<tr class="<unireg:nextRowClass/>" >
 			<td width="20%"><fmt:message key="label.status"/>&nbsp;:</td>
 			<td>
-				${entreprise.statusIde}
+				<c:if test="${! empty entreprise.statusIde}">
+					<fmt:message key="option.statut.ide.${entreprise.statusIde}"/><span class="jTip formInfo" title="<c:url value="/htm/statutIDE.htm"/>" id="statutIDE">?</span>
+				</c:if>
 			</td>
 		</tr>
 	</table>
@@ -315,6 +319,10 @@
 
 <c:if test="${page == 'visu' }">
 	<script type="text/javascript">
+
+		$(function() {
+			Tooltips.activate_ajax_tooltips();
+		});
 
 		/**
 		 * Affiche ou filtre les données historiques de la table des raisons sociales
