@@ -106,11 +106,9 @@ public class EntrepriseServiceImpl implements EntrepriseService {
 		entrepriseView.setSieges(getSieges(tiersService.getSieges(entreprise)));
 
 		final List<RaisonSocialeHisto> raisonsSociales = tiersService.getRaisonsSociales(entreprise);
-		Collections.reverse(raisonsSociales);
 		entrepriseView.setRaisonsSociales(getRaisonSociale(raisonsSociales));
 
 		final List<FormeLegaleHisto> formesJuridiques = tiersService.getFormesLegales(entreprise);
-		Collections.reverse(formesJuridiques);
 		entrepriseView.setFormesJuridiques(getFormesJuridiques(formesJuridiques));
 
 		entrepriseView.setCapitaux(extractCapitaux(tiersService.getCapitaux(entreprise)));
