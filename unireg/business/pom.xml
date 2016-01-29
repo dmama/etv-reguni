@@ -76,12 +76,12 @@
 		<dependency>
 			<groupId>ch.vd.uniregctb</groupId>
 			<artifactId>unireg-jaxb2-events</artifactId>
-			<version>4.5-SNAPSHOT</version>
+			<version>4.5</version>
 		</dependency>
 		<dependency>
 			<groupId>ch.vd.uniregctb</groupId>
 			<artifactId>unireg-jaxb2-editique</artifactId>
-			<version>4.5-SNAPSHOT</version>
+			<version>4.5</version>
 		</dependency>
 		<dependency>
 			<groupId>ch.vd.uniregctb</groupId>
