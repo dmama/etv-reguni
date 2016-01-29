@@ -6,6 +6,7 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.tiers.AllegementFiscal;
 import ch.vd.uniregctb.tiers.view.AddAllegementFiscalView;
 
 public class AddAllegementFiscalViewValidator implements Validator {
@@ -58,6 +59,11 @@ public class AddAllegementFiscalViewValidator implements Validator {
 		}
 		if (view.getTypeImpot() == null) {
 			errors.rejectValue("typeImpot", "error.type.impot.vide");
+		}
+
+		// pour le type de collectivité commune, si on n'a pas choisi "toutes les communes", il faut une commune
+		if (view.getTypeCollectivite() == AllegementFiscal.TypeCollectivite.COMMUNE && !view.isToutesCommunes() && view.getNoOfsCommune() == null) {
+			errors.rejectValue("noOfsCommune", "error.commune.non.vd");
 		}
 
 		// montant / pourcentage d'allègement ?

@@ -22,8 +22,8 @@
 				<unireg:nextRowClass reset="0"/>
 				<table border="0">
 					<tr class="<unireg:nextRowClass/>">
-						<td width="25%"><fmt:message key="label.date.debut"/>&nbsp;:</td>
-						<td width="25%">
+						<td width="20%"><fmt:message key="label.date.debut"/>&nbsp;:</td>
+						<td width="20%">
 							<jsp:include page="/WEB-INF/jsp/include/inputCalendar.jsp">
 								<jsp:param name="path" value="dateDebut"/>
 								<jsp:param name="id" value="dateDebut"/>
@@ -31,8 +31,8 @@
 							</jsp:include>
 							<span style="color: red;">*</span>
 						</td>
-						<td width="25%"><fmt:message key="label.date.fin"/>&nbsp;:</td>
-						<td width="25%">
+						<td width="20%"><fmt:message key="label.date.fin"/>&nbsp;:</td>
+						<td width="40%">
 							<jsp:include page="/WEB-INF/jsp/include/inputCalendar.jsp">
 								<jsp:param name="path" value="dateFin"/>
 								<jsp:param name="id" value="dateFin"/>
@@ -59,10 +59,17 @@
 								<span style="color: red;">*</span>
 								<form:errors path="typeCollectivite" cssClass="error"/>
 							</div>
+							<div style="display: none; float: left; margin-right: 2em;" id="collectiviteCommune">
+								<form:checkbox path="toutesCommunes" id="toutesCommunes"
+								               style="margin-top: 0.25em;"
+								               onchange="AddAllegement.onToutesCommunesChange();" onclick="AddAllegement.onToutesCommunesChange();"/>
+								<span style="vertical-align: 15%;"><fmt:message key="label.toutes"/></span>
+							</div>
 							<div style="display: none;" id="choixCommune">
-								<input id="commune" size="25"/>
-								<form:errors path="noOfsCommune" cssClass="error" />
+								<div style="float: left;"><input id="commune" size="25" value="${command.nomCommune}"/></div>
+								<div style="float: left; width: 30%; margin-left: 2em;"><form:errors path="noOfsCommune" cssClass="error" /></div>
 								<form:hidden path="noOfsCommune" />
+								<form:hidden path="nomCommune" />
 							</div>
 						</td>
 					</tr>
@@ -75,7 +82,9 @@
 									<form:options items="${typesICC}"/>
 								</form:select>
 								<span style="color: red;">*</span>
-								<form:errors path="typeICC" cssClass="error"/>
+								<div style="float: left;">
+									<form:errors path="typeICC" cssClass="error"/>
+								</div>
 							</div>
 							<div style="display: none;" id="choixTypeIFD">
 								<form:select path="typeIFD">
@@ -83,7 +92,9 @@
 									<form:options items="${typesIFD}"/>
 								</form:select>
 								<span style="color: red;">*</span>
-								<form:errors path="typeIFD" cssClass="error"/>
+								<div style="float: left;">
+									<form:errors path="typeIFD" cssClass="error"/>
+								</div>
 							</div>
 						</td>
 						<td style="vertical-align: text-top;"><fmt:message key="label.montant.pourcentage.allegement"/>&nbsp;</td>
@@ -113,9 +124,11 @@
 						var typeSelect = $('#typeCollectivite').get(0);
 						var selectedCollectivite = typeSelect.options[typeSelect.selectedIndex].value;
 						if (selectedCollectivite == 'COMMUNE') {
-							$('#choixCommune').show();
+							$('#collectiviteCommune').show();
+							this.onToutesCommunesChange();
 						}
 						else {
+							$('#collectiviteCommune').hide();
 							$('#choixCommune').hide();
 						}
 						var choixTypeICC = $('#choixTypeICC');
@@ -134,6 +147,16 @@
 						}
 					},
 
+					onToutesCommunesChange: function() {
+						var toutesCommunesCheckbox = $('#toutesCommunes').get(0);
+						if (toutesCommunesCheckbox.checked) {
+							$('#choixCommune').hide();
+						}
+						else {
+							$('#choixCommune').show();
+						}
+					},
+
 					onFlagChange: function(value) {
 						if (value == 'POURCENTAGE') {
 							$('#valeurPourcentage').show();
@@ -149,6 +172,7 @@
 					// initialisation de l'autocomplétion sur le champ de la commune
 					Autocomplete.infra('communeVD', '#commune', true, function(item) {
 						$('#noOfsCommune').val(item ? item.id1 : null);
+						$('#nomCommune').val(item ? item.label : null);
 					});
 
 					// initialisation des différents champs

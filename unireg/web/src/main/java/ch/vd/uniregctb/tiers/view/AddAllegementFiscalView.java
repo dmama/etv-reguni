@@ -15,7 +15,9 @@ public class AddAllegementFiscalView {
 	private AllegementFiscal.TypeCollectivite typeCollectivite;
 	private AllegementFiscal.TypeImpot typeImpot;
 	private BigDecimal pourcentageAllegement;
+	private boolean toutesCommunes;
 	private Integer noOfsCommune;
+	private String nomCommune;
 	private AllegementFiscalConfederation.Type typeIFD;
 	private AllegementFiscalCantonCommune.Type typeICC;
 	private PourcentageMontant flagPourcentageMontant;
@@ -31,6 +33,7 @@ public class AddAllegementFiscalView {
 	public AddAllegementFiscalView(long pmId) {
 		this.pmId = pmId;
 		this.flagPourcentageMontant = PourcentageMontant.POURCENTAGE;
+		this.toutesCommunes = true;
 	}
 
 	public long getPmId() {
@@ -81,12 +84,28 @@ public class AddAllegementFiscalView {
 		this.pourcentageAllegement = pourcentageAllegement;
 	}
 
+	public boolean isToutesCommunes() {
+		return toutesCommunes;
+	}
+
+	public void setToutesCommunes(boolean toutesCommunes) {
+		this.toutesCommunes = toutesCommunes;
+	}
+
 	public Integer getNoOfsCommune() {
 		return noOfsCommune;
 	}
 
 	public void setNoOfsCommune(Integer noOfsCommune) {
 		this.noOfsCommune = noOfsCommune;
+	}
+
+	public String getNomCommune() {
+		return nomCommune;
+	}
+
+	public void setNomCommune(String nomCommune) {
+		this.nomCommune = nomCommune;
 	}
 
 	public AllegementFiscalConfederation.Type getTypeIFD() {
