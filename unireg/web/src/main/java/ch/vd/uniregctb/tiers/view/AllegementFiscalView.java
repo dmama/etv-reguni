@@ -18,7 +18,8 @@ import ch.vd.uniregctb.tiers.AllegementFiscalConfederation;
 
 public class AllegementFiscalView implements DateRange, Annulable {
 
-	private final Long id;
+	private final long pmId;
+	private final long id;
 	private final RegDate dateDebut;
 	private final RegDate dateFin;
 	private final AllegementFiscal.TypeImpot typeImpot;
@@ -69,6 +70,7 @@ public class AllegementFiscalView implements DateRange, Annulable {
 	});
 
 	public AllegementFiscalView(AllegementFiscal af) {
+		this.pmId = af.getEntreprise().getNumero();
 		this.id = af.getId();
 		this.dateDebut = af.getDateDebut();
 		this.dateFin = af.getDateFin();
@@ -96,6 +98,10 @@ public class AllegementFiscalView implements DateRange, Annulable {
 		else {
 			this.typeIFD = null;
 		}
+	}
+
+	public long getPmId() {
+		return pmId;
 	}
 
 	public Long getId() {

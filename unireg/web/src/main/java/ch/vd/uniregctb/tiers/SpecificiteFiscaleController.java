@@ -93,7 +93,9 @@ public class SpecificiteFiscaleController {
 	@InitBinder
 	protected void initBinder(WebDataBinder binder) {
 		binder.registerCustomEditor(RegDate.class, new RegDateEditor(true, false, false));
-		binder.setValidator(validator);
+		if (binder.getObjectName().equals("command")) {
+			binder.setValidator(validator);
+		}
 	}
 
 	@NotNull
@@ -461,8 +463,9 @@ public class SpecificiteFiscaleController {
 		return "redirect:/allegement/edit-list.do?pmId=" + entreprise.getNumero();
 	}
 
-	private String showEditAllegement(EditAllegementFiscalView view, Model model) {
-		model.addAttribute("command", view);
+	private String showEditAllegement(EditAllegementFiscalView editView, AllegementFiscalView view, Model model) {
+		model.addAttribute("command", editView);
+		model.addAttribute("allegement", view);
 		return "tiers/edition/pm/specificites/edit-allegement";
 	}
 
@@ -475,7 +478,7 @@ public class SpecificiteFiscaleController {
 			throw new ObjectNotFoundException("Allègement fiscal inconnu!");
 		}
 		checkDroitEcritureTiers(af.getEntreprise());
-		return showEditAllegement(new EditAllegementFiscalView(af), model);
+		return showEditAllegement(new EditAllegementFiscalView(af), new AllegementFiscalView(af), model);
 	}
 
 	@Transactional(rollbackFor = Throwable.class)
@@ -483,16 +486,17 @@ public class SpecificiteFiscaleController {
 	public String editAllegement(@Valid @ModelAttribute("command") EditAllegementFiscalView view, BindingResult bindingResult, Model model) throws AccessDeniedException, ObjectNotFoundException {
 		checkDroitModificationAllegements();
 
-		// renvoi en cas d'erreur
-		if (bindingResult.hasErrors()) {
-			return showEditAllegement(view, model);
-		}
-
 		final AllegementFiscal af = hibernateTemplate.get(AllegementFiscal.class, view.getAfId());
 		if (af == null) {
 			throw new ObjectNotFoundException("Allègement fiscal inconnu!");
 		}
 		checkDroitEcritureTiers(af.getEntreprise());
+
+		// renvoi en cas d'erreur
+		if (bindingResult.hasErrors()) {
+			view.resetNonEditableValues(af);
+			return showEditAllegement(view, new AllegementFiscalView(af), model);
+		}
 
 		// pour le moment, on ne gère que la fermeture de l'allègement
 		if (af.getDateFin() != null) {
@@ -597,11 +601,12 @@ public class SpecificiteFiscaleController {
 			throw new ObjectNotFoundException("Spécificité inconnue!");
 		}
 		checkDroitEcritureTiers(flag.getEntreprise());
-		return showEditFlag(new EditFlagEntrepriseView(flag), model);
+		return showEditFlag(new EditFlagEntrepriseView(flag), new FlagEntrepriseView(flag), model);
 	}
 
-	private String showEditFlag(EditFlagEntrepriseView view, Model model) {
-		model.addAttribute("command", view);
+	private String showEditFlag(EditFlagEntrepriseView editView, FlagEntrepriseView view, Model model) {
+		model.addAttribute("command", editView);
+		model.addAttribute("flag", view);
 		return "tiers/edition/pm/specificites/edit-flag";
 	}
 
@@ -610,16 +615,17 @@ public class SpecificiteFiscaleController {
 	public String editFlag(@Valid @ModelAttribute("command") EditFlagEntrepriseView view, BindingResult bindingResult, Model model) throws AccessDeniedException, ObjectNotFoundException {
 		checkDroitModificationFlags();
 
-		// traitement des cas d'erreur
-		if (bindingResult.hasErrors()) {
-			return showEditFlag(view, model);
-		}
-
 		final FlagEntreprise flag = hibernateTemplate.get(FlagEntreprise.class, view.getFlagId());
 		if (flag == null) {
 			throw new ObjectNotFoundException("Spécificité inconnue!");
 		}
 		checkDroitEcritureTiers(flag.getEntreprise());
+
+		// traitement des cas d'erreur
+		if (bindingResult.hasErrors()) {
+			view.resetNonEditableValues(flag);
+			return showEditFlag(view, new FlagEntrepriseView(flag), model);
+		}
 
 		// pour le moment, on ne gère que la fermeture du flag
 		if (flag.getDateFin() != null) {

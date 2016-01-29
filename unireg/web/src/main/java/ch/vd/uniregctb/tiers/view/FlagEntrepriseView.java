@@ -10,6 +10,7 @@ import ch.vd.uniregctb.type.TypeFlagEntreprise;
 
 public class FlagEntrepriseView implements DateRange, Annulable {
 
+	private final long pmId;
 	private final long id;
 	private final RegDate dateDebut;
 	private final RegDate dateFin;
@@ -17,6 +18,7 @@ public class FlagEntrepriseView implements DateRange, Annulable {
 	private final boolean annule;
 
 	public FlagEntrepriseView(FlagEntreprise flag) {
+		this.pmId = flag.getEntreprise().getNumero();
 		this.id = flag.getId();
 		this.dateDebut = flag.getDateDebut();
 		this.dateFin = flag.getDateFin();
@@ -42,6 +44,10 @@ public class FlagEntrepriseView implements DateRange, Annulable {
 	@Override
 	public boolean isValidAt(RegDate date) {
 		return !isAnnule() && RegDateHelper.isBetween(date, dateDebut, dateFin, NullDateBehavior.LATEST);
+	}
+
+	public long getPmId() {
+		return pmId;
 	}
 
 	public long getId() {

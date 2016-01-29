@@ -5,27 +5,26 @@
 	<tiles:put name="title">
 		<fmt:message key="title.edition.specificite">
 			<fmt:param>
-				<unireg:numCTB numero="${command.pmId}"/>
+				<unireg:numCTB numero="${flag.pmId}"/>
 			</fmt:param>
 		</fmt:message>
 	</tiles:put>
 	<tiles:put name="body">
 		<unireg:nextRowClass reset="1"/>
-		<unireg:bandeauTiers numero="${command.pmId}" showAvatar="false" showValidation="false" showEvenementsCivils="false" showLinks="false" titre="Caractéristiques du contribuable"/>
+		<unireg:bandeauTiers numero="${flag.pmId}" showAvatar="false" showValidation="false" showEvenementsCivils="false" showLinks="false" titre="Caractéristiques du contribuable"/>
 
 		<form:form id="editFlagForm" commandName="command" action="edit.do">
 
 			<fieldset>
 				<legend><span><fmt:message key="label.specificite"/></span></legend>
 
-				<form:hidden path="pmId"/>
 				<form:hidden path="flagId"/>
 				<unireg:nextRowClass reset="0"/>
 				<table border="0">
 					<tr class="<unireg:nextRowClass/>">
 						<td width="25%"><fmt:message key="label.date.debut"/>&nbsp;:</td>
 						<td width="25%">
-							<unireg:regdate regdate="${command.dateDebut}"/>
+							<unireg:regdate regdate="${flag.dateDebut}"/>
 							<form:hidden path="dateDebut"/>
 							<form:errors path="dateDebut" cssClass="error"/>
 						</td>
@@ -40,9 +39,7 @@
 					<tr class="<unireg:nextRowClass/>">
 						<td><fmt:message key="label.type"/>&nbsp;</td>
 						<td colspan="3">
-							<fmt:message key="option.flag.entreprise.${command.value}"/>
-							<form:hidden path="value"/>
-							<form:errors path="value" cssClass="error"/>
+							<fmt:message key="option.flag.entreprise.${flag.type}"/>
 						</td>
 					</tr>
 				</table>
@@ -54,7 +51,7 @@
 				<tr>
 					<td width="25%">&nbsp;</td>
 					<td width="25%"><input type="submit" value="<fmt:message key="label.bouton.sauver" />"></td>
-					<td width="25%"><unireg:buttonTo name="Retour" action="/flag-entreprise/edit-list.do" params="{pmId:${command.pmId}}" method="GET"/></td>
+					<td width="25%"><unireg:buttonTo name="Retour" action="/flag-entreprise/edit-list.do" params="{pmId:${flag.pmId}}" method="GET"/></td>
 					<td width="25%">&nbsp;</td>
 				</tr>
 			</table>

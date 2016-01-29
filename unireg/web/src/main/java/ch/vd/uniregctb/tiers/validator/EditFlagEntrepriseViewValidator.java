@@ -30,10 +30,5 @@ public class EditFlagEntrepriseViewValidator implements Validator {
 		if (view.getDateDebut() != null && today.isBefore(view.getDateDebut())) {
 			errors.rejectValue("dateDebut", "error.date.debut.future");
 		}
-
-		// le type de collectivité et le type d'impôt sont obligatoires
-		if (view.getValue() == null) {
-			errors.rejectValue("value", "error.type.flag.vide");
-		}
 	}
 }
