@@ -726,7 +726,7 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 					criteria.setSexe(criteres.getSexe());
 				}
 				if (criteres.getDateNaissance() != null) {
-					criteria.setDateNaissance(criteres.getDateNaissance());
+					criteria.setDateNaissanceInscriptionRC(criteres.getDateNaissance());
 				}
 				if (criteres.getAdresse() != null) {
 					final CriteresAdresse adresse = criteres.getAdresse();

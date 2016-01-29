@@ -175,7 +175,7 @@ public class TiersIndexableDataTest extends WithoutSpringTest {
 
 		// recherche des données (OK)
 		final TiersCriteria criteria = new TiersCriteria();
-		criteria.setDateNaissance(RegDate.get(1975, 4, 12));
+		criteria.setDateNaissanceInscriptionRC(RegDate.get(1975, 4, 12));
 
 		final List<TiersIndexedData> resultats = globalTiersSearcher.search(criteria);
 		assertNotNull(resultats);
@@ -183,10 +183,10 @@ public class TiersIndexableDataTest extends WithoutSpringTest {
 
 		final TiersIndexedData indexed = resultats.get(0);
 		assertEquals((Long) ID, indexed.getNumero());
-		assertEquals("19750412", indexed.getDateNaissance());
+		assertEquals("19750412", indexed.getDateNaissanceInscriptionRC());
 
 		// recherche des données (KO)
-		criteria.setDateNaissance(RegDate.get(1988, 1, 1));
+		criteria.setDateNaissanceInscriptionRC(RegDate.get(1988, 1, 1));
 		assertEmpty(globalTiersSearcher.search(criteria));
 	}
 
@@ -209,7 +209,7 @@ public class TiersIndexableDataTest extends WithoutSpringTest {
 
 			final TiersIndexedData indexed = resultats.get(0);
 			assertEquals((Long) ID, indexed.getNumero());
-			assertEquals("19750412", indexed.getDateNaissance());
+			assertEquals("19750412", indexed.getDateNaissanceInscriptionRC());
 		}
 
 		{
@@ -220,7 +220,7 @@ public class TiersIndexableDataTest extends WithoutSpringTest {
 
 			final TiersIndexedData indexed = resultats.get(0);
 			assertEquals((Long) ID, indexed.getNumero());
-			assertEquals("19750412", indexed.getDateNaissance());
+			assertEquals("19750412", indexed.getDateNaissanceInscriptionRC());
 		}
 
 		// recherche des données (KO)
@@ -437,6 +437,30 @@ public class TiersIndexableDataTest extends WithoutSpringTest {
 
 		// recherche des données (KO)
 		criteria.setCategorieEntreprise(CategorieEntreprise.DPPM);
+		assertEmpty(globalTiersSearcher.search(criteria));
+	}
+
+	@Test
+	public void testIndexationDateInscriptionRC() throws Exception {
+
+		// création et indexation des données
+		final TiersIndexableData data = newIndexableData();
+		data.setDateInscriptionRc(date(2015, 6, 24));
+		globalIndex.indexEntity(data);
+
+		// recherche des données (OK)
+		final TiersCriteria criteria = new TiersCriteria();
+		criteria.setDateNaissanceInscriptionRC(date(2015, 6, 24));
+
+		final List<TiersIndexedData> resultats = globalTiersSearcher.search(criteria);
+		assertNotNull(resultats);
+		assertEquals(1, resultats.size());
+
+		final TiersIndexedData indexed = resultats.get(0);
+		assertEquals((Long) ID, indexed.getNumero());
+
+		// recherche des données (KO)
+		criteria.setDateNaissanceInscriptionRC(date(2010, 1, 1));
 		assertEmpty(globalTiersSearcher.search(criteria));
 	}
 

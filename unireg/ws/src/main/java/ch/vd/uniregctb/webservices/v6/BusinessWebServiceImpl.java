@@ -606,7 +606,7 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 			criteria.setNomRaison(StringUtils.trimToNull(name));
 			criteria.setTypeRechercheDuNom(EnumHelper.toCore(nameSearchMode));
 			criteria.setLocaliteOuPays(StringUtils.trimToNull(townOrCountry));
-			criteria.setDateNaissance(dateOfBirth);
+			criteria.setDateNaissanceInscriptionRC(dateOfBirth);
 			criteria.setNumeroAVS(StringUtils.trimToNull(socialInsuranceNumber));
 			if (taxResidenceFSOId != null) {
 				criteria.setNoOfsFor(Integer.toString(taxResidenceFSOId));

@@ -157,7 +157,7 @@ public class TiersIndexerHibernateInterceptorTest extends BusinessTest {
 		// On peut trouver le tiers sur son ancienne date
 		{
 			TiersCriteria criteria = new TiersCriteria();
-			criteria.setDateNaissance(dateNaissance1);
+			criteria.setDateNaissanceInscriptionRC(dateNaissance1);
 			List<?> list = searcher.search(criteria);
 			assertEquals(1, list.size());
 		}
@@ -172,7 +172,7 @@ public class TiersIndexerHibernateInterceptorTest extends BusinessTest {
 				// On peut trouver le tiers sur son ancienne date
 				{
 					TiersCriteria criteria = new TiersCriteria();
-					criteria.setDateNaissance(dateNaissance1);
+					criteria.setDateNaissanceInscriptionRC(dateNaissance1);
 					List<TiersIndexedData> list = searcher.search(criteria);
 					assertEquals(1, list.size());
 					assertEquals(id, list.get(0).getNumero());
@@ -181,7 +181,7 @@ public class TiersIndexerHibernateInterceptorTest extends BusinessTest {
 				// Mais pas sur sa nouvelle
 				{
 					TiersCriteria criteria = new TiersCriteria();
-					criteria.setDateNaissance(dateNaissance2);
+					criteria.setDateNaissanceInscriptionRC(dateNaissance2);
 					List<?> list = searcher.search(criteria);
 					assertEquals(0, list.size());
 				}
@@ -200,7 +200,7 @@ public class TiersIndexerHibernateInterceptorTest extends BusinessTest {
 		// On peut trouver le tiers sur sa nouvelle date
 		{
 			TiersCriteria criteria = new TiersCriteria();
-			criteria.setDateNaissance(dateNaissance2);
+			criteria.setDateNaissanceInscriptionRC(dateNaissance2);
 			List<TiersIndexedData> list = searcher.search(criteria);
 			int n = list.size();
 			assertEquals(1, n);

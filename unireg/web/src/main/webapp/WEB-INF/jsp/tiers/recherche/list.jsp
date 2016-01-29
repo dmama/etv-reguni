@@ -61,11 +61,8 @@
 						</c:if>
 					</display:column>
 					<display:column titleKey="label.date.naissance.ou.rc" sortable="true">
-						<c:if test="${tiers.dateNaissance != null}">
-							<unireg:date date="${tiers.dateNaissance}"/>
-						</c:if>
-						<c:if test="${tiers.dateInscriptionRC != null}">
-							<unireg:date date="${tiers.dateInscriptionRC}"/>
+						<c:if test="${tiers.dateNaissanceInscriptionRC != null}">
+							<unireg:date date="${tiers.dateNaissanceInscriptionRC}"/>
 						</c:if>
 					</display:column>
 					<display:column sortable="true" titleKey="label.npa">

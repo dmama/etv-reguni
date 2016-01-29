@@ -41,7 +41,7 @@ public class DataHelper {
 			coreCriteria.setLocaliteOuPays(criteria.getTownOrCountry());
 			coreCriteria.setNomRaison(criteria.getContactName());
 			coreCriteria.setNumeroAVS(criteria.getSocialInsuranceNumber());
-			coreCriteria.setDateNaissance(ch.vd.uniregctb.xml.DataHelper.xmlToCore(criteria.getDateOfBirth()));
+			coreCriteria.setDateNaissanceInscriptionRC(ch.vd.uniregctb.xml.DataHelper.xmlToCore(criteria.getDateOfBirth()));
 			if (criteria.getTaxResidenceFSOId() != null) {
 				coreCriteria.setNoOfsFor(criteria.getTaxResidenceFSOId().toString());
 			}

@@ -122,7 +122,7 @@ public class Ec_41010_01_CorrectionDateNaissance_Scenario extends EvenementCivil
 
 			String dateNaissance =
 				String.format("%4d%02d%02d", dateNaissanceCorrigee.year(), dateNaissanceCorrigee.month(), dateNaissanceCorrigee.day());
-			Assert.isTrue(tiers.getDateNaissance().equals(dateNaissance), "La nouvelle date de naissance n'a pas été indexé");
+			Assert.isTrue(tiers.getDateNaissanceInscriptionRC().equals(dateNaissance), "La nouvelle date de naissance n'a pas été indexé");
 		}
 		{
 			PersonnePhysique momo = (PersonnePhysique) tiersDAO.get(noHabMomo);

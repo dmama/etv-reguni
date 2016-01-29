@@ -347,6 +347,6 @@ public class MenageCommunIndexableTest extends BusinessTest {
 		final TiersIndexedData data = resultats.get(0);
 		assertEquals(nom1, data.getNom1());
 		assertEquals(nom2, data.getNom2());
-		assertEquals(dateNaissance, data.getDateNaissance());
+		assertEquals(dateNaissance, data.getDateNaissanceInscriptionRC());
 	}
 }

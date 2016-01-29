@@ -345,7 +345,7 @@ public abstract class DataHelper {
 		i.setZipCode(value.getNpa());
 		i.setTown(value.getLocalite());
 		i.setCountry(value.getPays());
-		i.setDateOfBirth(DataHelper.coreToXMLv1(value.getRegDateNaissance()));
+		i.setDateOfBirth(DataHelper.coreToXMLv1(value.getRegDateNaissanceInscriptionRC()));
 		i.setType(DataHelper.getPartyTypeV1(value));
 		i.setDebtorCategory(EnumHelper.coreToXMLv1(value.getCategorieImpotSource()));
 		i.setDebtorCommunicationMode(EnumHelper.coreToXMLv1(value.getModeCommunication()));
@@ -365,7 +365,7 @@ public abstract class DataHelper {
 		i.setZipCode(value.getNpa());
 		i.setTown(value.getLocalite());
 		i.setCountry(value.getPays());
-		i.setDateOfBirth(DataHelper.coreToXMLv1(value.getRegDateNaissance()));
+		i.setDateOfBirth(DataHelper.coreToXMLv1(value.getRegDateNaissanceInscriptionRC()));
 		i.setType(DataHelper.getPartyTypeV2(value));
 		i.setDebtorCategory(EnumHelper.coreToXMLv2(value.getCategorieImpotSource()));
 		i.setDebtorCommunicationMode(EnumHelper.coreToXMLv2(value.getModeCommunication()));
@@ -393,7 +393,7 @@ public abstract class DataHelper {
 		i.setZipCode(value.getNpa());
 		i.setTown(value.getLocalite());
 		i.setCountry(value.getPays());
-		i.setDateOfBirth(DataHelper.coreToPartialDateXmlv2(value.getRegDateNaissance()));
+		i.setDateOfBirth(DataHelper.coreToPartialDateXmlv2(value.getRegDateNaissanceInscriptionRC()));
 		i.setType(DataHelper.getPartyTypeV3(value));
 		i.setDebtorCategory(EnumHelper.coreToXMLv3(value.getCategorieImpotSource()));
 		i.setDebtorCommunicationMode(EnumHelper.coreToXMLv3(value.getModeCommunication()));
@@ -430,7 +430,7 @@ public abstract class DataHelper {
 		i.setZipCode(value.getNpa());
 		i.setTown(value.getLocalite());
 		i.setCountry(value.getPays());
-		i.setDateOfBirth(DataHelper.coreToPartialDateXmlv2(value.getRegDateNaissance()));
+		i.setDateOfBirth(DataHelper.coreToPartialDateXmlv2(value.getRegDateNaissanceInscriptionRC()));
 		i.setType(DataHelper.getPartyTypeV4(value));
 		i.setDebtorCategory(EnumHelper.coreToXMLv3(value.getCategorieImpotSource()));
 		i.setDebtorCommunicationMode(EnumHelper.coreToXMLv3(value.getModeCommunication()));

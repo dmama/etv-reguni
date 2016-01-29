@@ -23,8 +23,8 @@ public class TiersIndexedData implements Serializable {
 
 	private final String tiersType;
 	private final String numero;
-	private final String dateNaissance;
-	private final RegDate regDateNaissance;
+	private final String dateNaissanceInscriptionRC;
+	private final RegDate regDateNaissanceInscriptionRC;
 	private final String dateDeces;
 	private final String nom1;
 	private final String nom2;
@@ -41,7 +41,6 @@ public class TiersIndexedData implements Serializable {
 	private final String localite;
 	private final String pays;
 	private final String localiteOuPays;
-	private final String dateInscriptionRC;
 	private final String forPrincipal;
 	private final CategorieImpotSource categorieImpotSource;
 	private final ModeCommunication modeCommunication;
@@ -57,8 +56,8 @@ public class TiersIndexedData implements Serializable {
 	public TiersIndexedData(Document doc) {
 		tiersType = DocumentExtractorHelper.getDocValue(LuceneHelper.F_DOCSUBTYPE, doc);
 		numero = DocumentExtractorHelper.getDocValue(LuceneHelper.F_ENTITYID, doc);
-		dateNaissance = DocumentExtractorHelper.getDocValue(TiersIndexableData.D_DATE_NAISSANCE, doc);
-		regDateNaissance = indexStringToDateNaissance(dateNaissance, tiersType);
+		dateNaissanceInscriptionRC = DocumentExtractorHelper.getDocValue(TiersIndexableData.D_DATE_NAISSANCE, doc);
+		regDateNaissanceInscriptionRC = indexStringToDateNaissanceInscriptionRC(dateNaissanceInscriptionRC, tiersType);
 		dateDeces = DocumentExtractorHelper.getDocValue(TiersIndexableData.DATE_DECES, doc);
 		nom1 = DocumentExtractorHelper.getDocValue(TiersIndexableData.NOM1, doc);
 		nom2 = DocumentExtractorHelper.getDocValue(TiersIndexableData.NOM2, doc);
@@ -75,7 +74,6 @@ public class TiersIndexedData implements Serializable {
 		localite = DocumentExtractorHelper.getDocValue(TiersIndexableData.LOCALITE, doc);
 		pays = DocumentExtractorHelper.getDocValue(TiersIndexableData.PAYS, doc);
 		localiteOuPays = DocumentExtractorHelper.getDocValue(TiersIndexableData.LOCALITE_PAYS, doc);
-		dateInscriptionRC = DocumentExtractorHelper.getDocValue(TiersIndexableData.DATE_INSCRIPTION_RC, doc);
 		forPrincipal = DocumentExtractorHelper.getDocValue(TiersIndexableData.FOR_PRINCIPAL, doc);
 		annule = DocumentExtractorHelper.getBooleanValue(TiersIndexableData.ANNULE, doc, Boolean.FALSE);
 		debiteurInactif = DocumentExtractorHelper.getBooleanValue(TiersIndexableData.DEBITEUR_INACTIF, doc, Boolean.FALSE);
@@ -89,7 +87,7 @@ public class TiersIndexedData implements Serializable {
 		typeAvatar = DocumentExtractorHelper.getEnumValue(TiersIndexableData.AVATAR, doc, TypeAvatar.class);
 	}
 
-	private static RegDate indexStringToDateNaissance(String dateNaissance, String tiersType) {
+	private static RegDate indexStringToDateNaissanceInscriptionRC(String dateNaissance, String tiersType) {
 		if (tiersType.equals(MenageCommunIndexable.SUB_TYPE)) {
 			// [UNIREG-2633] on n'affiche pas de dates de naissance sur les ménages communs
 			return null;
@@ -110,15 +108,15 @@ public class TiersIndexedData implements Serializable {
 		return Long.parseLong(numero);
 	}
 
-	public String getDateNaissance() {
-		return dateNaissance;
+	public String getDateNaissanceInscriptionRC() {
+		return dateNaissanceInscriptionRC;
 	}
 
 	/**
 	 * @return la date de naissance de la personne physique (RegDate); ou <b>null</b> pour tous les autres types de tiers.
 	 */
-	public RegDate getRegDateNaissance() {
-		return regDateNaissance;
+	public RegDate getRegDateNaissanceInscriptionRC() {
+		return regDateNaissanceInscriptionRC;
 	}
 
 	public String getDateDeces() {
@@ -183,10 +181,6 @@ public class TiersIndexedData implements Serializable {
 
 	public String getLocaliteOuPays() {
 		return localiteOuPays;
-	}
-
-	public String getDateInscriptionRC() {
-		return dateInscriptionRC;
 	}
 
 	public String getForPrincipal() {

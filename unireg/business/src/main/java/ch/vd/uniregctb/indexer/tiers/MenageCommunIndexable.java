@@ -175,7 +175,7 @@ public class MenageCommunIndexable extends ContribuableImpositionPersonnesPhysiq
 
 			data.addNomRaison(ppData.getNomRaison());
 			data.addAutresNom(ppData.getAutresNom());
-			data.addDatesNaissance(ppData.getDatesNaissance()); // [UNIREG-2633] on pouvoir rechercher par dates de naissance sur les ménages communs
+			data.addDatesNaissance(ppData.getDatesNaissanceInscriptionRC()); // [UNIREG-2633] on pouvoir rechercher par dates de naissance sur les ménages communs
 			data.addNavs11(ppData.getNavs11());
 			data.addNavs13(ppData.getNavs13());
 			data.setNom1(ppData.getNom1());
@@ -187,7 +187,7 @@ public class MenageCommunIndexable extends ContribuableImpositionPersonnesPhysiq
 
 			data.addNomRaison(ppData.getNomRaison());
 			data.addAutresNom(ppData.getAutresNom());
-			data.addDatesNaissance(ppData.getDatesNaissance()); // [UNIREG-2633] on pouvoir rechercher par dates de naissance sur les ménages communs
+			data.addDatesNaissance(ppData.getDatesNaissanceInscriptionRC()); // [UNIREG-2633] on pouvoir rechercher par dates de naissance sur les ménages communs
 			data.addNavs11(ppData.getNavs11());
 			data.addNavs13(ppData.getNavs13());
 			data.setNom2(ppData.getNom1());

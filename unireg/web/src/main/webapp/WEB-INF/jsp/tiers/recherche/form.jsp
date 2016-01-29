@@ -87,11 +87,11 @@
 	</c:if>
 	<c:if test="${typeRecherche != 'couple'}">
 	<tr class="<unireg:nextRowClass/>" >
-		<td width="25%"><fmt:message key="label.date.naissance" />&nbsp;:</td>
+		<td width="25%"><fmt:message key="label.date.naissance.ou.rc" />&nbsp;:</td>
 		<td width="25%">
 			<jsp:include page="/WEB-INF/jsp/include/inputCalendar.jsp">
-				<jsp:param name="path" value="dateNaissance" />
-				<jsp:param name="id" value="dateNaissance" />
+				<jsp:param name="path" value="dateNaissanceInscriptionRC" />
+				<jsp:param name="id" value="dateNaissanceInscriptionRC" />
 			</jsp:include>
 		</td>
 		<td width="25%"><fmt:message key="label.numero.avs" />&nbsp;:</td>

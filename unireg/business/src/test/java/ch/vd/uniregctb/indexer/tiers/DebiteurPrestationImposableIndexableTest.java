@@ -296,7 +296,7 @@ public class DebiteurPrestationImposableIndexableTest extends BusinessTest {
 			assertEquals("Vive les champignons !", dataDpi.getNom2());
 			assertEquals("1003", dataDpi.getNpa());
 			assertEquals("Lausanne", dataDpi.getForPrincipal());
-			assertEquals("", dataDpi.getDateNaissance());
+			assertEquals("", dataDpi.getDateNaissanceInscriptionRC());
 			assertEquals("", dataDpi.getDateDeces());
 
 			final TiersIndexedData dataAC = (resultats.get(0).getNumero() == idAC ? resultats.get(0) : resultats.get(1));
@@ -305,7 +305,7 @@ public class DebiteurPrestationImposableIndexableTest extends BusinessTest {
 			assertEquals("Vive les champignons !", dataAC.getNom2());
 			assertEquals("", dataAC.getNpa());
 			assertEquals("", dataAC.getForPrincipal());
-			assertEquals("", dataAC.getDateNaissance());
+			assertEquals("", dataAC.getDateNaissanceInscriptionRC());
 			assertEquals("", dataAC.getDateDeces());
 		}
 	}

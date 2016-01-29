@@ -58,9 +58,9 @@ public class TiersCriteriaValidator implements Validator {
 				//errors.reject("error.tiers.noOfsFor.invalide");
 			}
 
-			if (bean.getDateNaissance() != null) {
+			if (bean.getDateNaissanceInscriptionRC() != null) {
 				RegDate dateDuJour = RegDate.get();
-				if (bean.getDateNaissance().isAfter(dateDuJour)) {
+				if (bean.getDateNaissanceInscriptionRC().isAfter(dateDuJour)) {
 					errors.rejectValue("dateNaissance", "error.date.naissance.posterieure.date.jour");
 				}
 			}

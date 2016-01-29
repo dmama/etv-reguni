@@ -38,7 +38,7 @@ public class SearchTiersResults {
 			this.role2 = data.getRoleLigne2();
 			this.nom1 = data.getNom1();
 			this.nom2 = data.getNom2();
-			this.dateNaissance = RegDateHelper.dateToDisplayString(data.getRegDateNaissance());
+			this.dateNaissance = RegDateHelper.dateToDisplayString(data.getRegDateNaissanceInscriptionRC());
 			this.npa = data.getNpa();
 			this.localitePays = data.getLocaliteOuPays();
 			this.forPrincipal = data.getForPrincipal();

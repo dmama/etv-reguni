@@ -255,9 +255,9 @@ public class QueryConstructor {
 		addCriterionExact(fullQuery, TiersIndexableData.NAVS13, criteria.getNavs13(), IndexerFormatHelper.AVS_RENDERER);
 	}
 
-	private void addDateNaissance(BooleanQuery fullQuery) throws IndexerException {
+	private void addDateNaissanceInscriptionRC(BooleanQuery fullQuery) throws IndexerException {
 		// Date de naissance
-		addCriterionCommence(fullQuery, TiersIndexableData.S_DATE_NAISSANCE, 0, criteria.getDateNaissance(), IndexerFormatHelper.STORAGE_REGDATE_RENDERER);
+		addCriterionCommence(fullQuery, TiersIndexableData.S_DATE_NAISSANCE_INSCRIPTION_RC, 0, criteria.getDateNaissanceInscriptionRC(), IndexerFormatHelper.STORAGE_REGDATE_RENDERER);
 	}
 
 	private void addSexe(BooleanQuery fullQuery) throws IndexerException {
@@ -471,7 +471,7 @@ public class QueryConstructor {
 			addLocalitePays(fullQuery);
 			addNpa(fullQuery);
 			addNumeroAVS(fullQuery);
-			addDateNaissance(fullQuery);
+			addDateNaissanceInscriptionRC(fullQuery);
 			addSexe(fullQuery);
 			addNatureJuridique(fullQuery);
 			addFormeJuridique(fullQuery);

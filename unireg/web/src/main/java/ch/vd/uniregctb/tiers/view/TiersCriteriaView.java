@@ -139,12 +139,12 @@ public class TiersCriteriaView implements Serializable {
 		criteria.setNatureJuridique(natureJuridique);
 	}
 
-	public RegDate getDateNaissance() {
-		return criteria.getDateNaissance() != null ? criteria.getDateNaissance().value : null;
+	public RegDate getDateNaissanceInscriptionRC() {
+		return criteria.getDateNaissanceInscriptionRC() != null ? criteria.getDateNaissanceInscriptionRC().value : null;
 	}
 
-	public void setDateNaissance(RegDate dateNaissance) {
-		criteria.setDateNaissance(dateNaissance);
+	public void setDateNaissanceInscriptionRC(RegDate dateNaissance) {
+		criteria.setDateNaissanceInscriptionRC(dateNaissance);
 	}
 
 	public String getNumeroAVS() {

@@ -128,7 +128,7 @@ public class CorrectionDateNaissanceTest extends AbstractEvenementCivilInterneTe
 
 			// on verifie que le changement a bien été effectué
 			String dateNaissance = String.format("%4d%02d%02d", DATE_NAISSANCE_CORRIGEE.year(), DATE_NAISSANCE_CORRIGEE.month(), DATE_NAISSANCE_CORRIGEE.day());
-			Assert.isTrue(l.get(0).getDateNaissance().equals(dateNaissance), "la nouvelle date de naissance n'a pas été indexé");
+			Assert.isTrue(l.get(0).getDateNaissanceInscriptionRC().equals(dateNaissance), "la nouvelle date de naissance n'a pas été indexé");
 		}
 
 	}

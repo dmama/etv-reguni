@@ -50,12 +50,12 @@ public class TiersIndexedDataView implements Annulable {
 		return data.getNom2();
 	}
 
-	public String getDateNaissance() {
+	public String getDateNaissanceInscriptionRC() {
 		if (data.getTiersType().equals(MenageCommunIndexable.SUB_TYPE)) {
 			// [UNIREG-2633] on n'affiche pas de dates de naissance sur les ménages communs
 			return null;
 		}
-		return data.getDateNaissance();
+		return data.getDateNaissanceInscriptionRC();
 	}
 
 	public String getDateDeces() {
@@ -93,10 +93,6 @@ public class TiersIndexedDataView implements Annulable {
 
 	public String getPays() {
 		return data.getPays();
-	}
-
-	public String getDateInscriptionRC() {
-		return data.getDateInscriptionRC();
 	}
 
 	public String getForPrincipal() {

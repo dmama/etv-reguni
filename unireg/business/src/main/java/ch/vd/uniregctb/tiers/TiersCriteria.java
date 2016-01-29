@@ -165,7 +165,7 @@ public class TiersCriteria implements Serializable, TiersFilter {
 	/**
 	 * La date de naissance
 	 */
-	private ValueOrNull<RegDate> dateNaissance;
+	private ValueOrNull<RegDate> dateNaissanceInscriptionRC;
 
 	/**
 	 * Le sexe
@@ -264,7 +264,7 @@ public class TiersCriteria implements Serializable, TiersFilter {
 	public boolean isEmpty() {
 		return numero == null
 				&& StringUtils.isBlank(nomRaison)
-				&& dateNaissance == null
+				&& dateNaissanceInscriptionRC == null
 				&& sexe == null
 				&& StringUtils.isBlank(numeroEtranger)
 				&& StringUtils.isBlank(numeroAVS)
@@ -357,25 +357,25 @@ public class TiersCriteria implements Serializable, TiersFilter {
 	/**
 	 * @return the dateNaissance
 	 */
-	public ValueOrNull<RegDate> getDateNaissance() {
-		return dateNaissance;
+	public ValueOrNull<RegDate> getDateNaissanceInscriptionRC() {
+		return dateNaissanceInscriptionRC;
 	}
 
 	/**
-	 * @param dateNaissance
+	 * @param dateNaissanceInscriptionRC
 	 *            the dateNaissance to set
 	 */
-	public void setDateNaissance(RegDate dateNaissance) {
-		if (dateNaissance == null) {
-			this.dateNaissance = null;
+	public void setDateNaissanceInscriptionRC(RegDate dateNaissanceInscriptionRC) {
+		if (dateNaissanceInscriptionRC == null) {
+			this.dateNaissanceInscriptionRC = null;
 		}
 		else {
-			this.dateNaissance = new ValueOrNull<>(dateNaissance, false);
+			this.dateNaissanceInscriptionRC = new ValueOrNull<>(dateNaissanceInscriptionRC, false);
 		}
 	}
 
 	public void setDateNaissanceOrNull(RegDate dateNaissance) {
-		this.dateNaissance = new ValueOrNull<>(dateNaissance, true);
+		this.dateNaissanceInscriptionRC = new ValueOrNull<>(dateNaissance, true);
 	}
 
 	public ValueOrNull<Sexe> getSexe() {

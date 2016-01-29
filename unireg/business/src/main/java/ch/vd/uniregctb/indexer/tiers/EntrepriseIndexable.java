@@ -80,7 +80,7 @@ public class EntrepriseIndexable extends ContribuableIndexable<Entreprise> {
 		// la date d'inscription RC (en provenance du civil seulement)
 		if (organisation != null) {
 			final RegDate inscriptionRC = organisation.getSitePrincipal(null).getPayload().getDateInscriptionRC(null);
-			data.setDateInscriptionRc((IndexerFormatHelper.dateToString(inscriptionRC, IndexerFormatHelper.DateStringMode.STORAGE)));
+			data.setDateInscriptionRc(inscriptionRC);
 		}
 	}
 

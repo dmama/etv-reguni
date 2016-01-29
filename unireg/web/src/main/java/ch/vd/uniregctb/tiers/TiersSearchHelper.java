@@ -87,7 +87,7 @@ public class TiersSearchHelper {
 			final Commune commune = infraService.getCommuneByNumeroOfs(Integer.valueOf(cleanNoOfsFor), null);
 			created.setForAll(commune.getNomOfficiel());
 		}
-		created.setDateNaissance(dateNaissance);
+		created.setDateNaissanceInscriptionRC(dateNaissance);
 		created.setNumeroAVS(numeroAssureSocialParam);
 		created.setTypeVisualisation(typeVisualisation);
 		created.setForPrincipalActif(seulementForPrincipalActif);

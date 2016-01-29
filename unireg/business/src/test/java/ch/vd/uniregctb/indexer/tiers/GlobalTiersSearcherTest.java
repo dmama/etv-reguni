@@ -674,18 +674,18 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 		// Recherche sur la date de naissance (complète)
 		{
 			final TiersCriteria criteria = new TiersCriteria();
-			criteria.setDateNaissance(dateNaissanceAndre);
+			criteria.setDateNaissanceInscriptionRC(dateNaissanceAndre);
 
 			final List<TiersIndexedData> list = globalTiersSearcher.search(criteria);
 			assertEquals(1, list.size());
 			final TiersIndexedData data = list.get(0);
-			assertEquals(dateNaissanceAndre, RegDateHelper.indexStringToDate(data.getDateNaissance()));
+			assertEquals(dateNaissanceAndre, RegDateHelper.indexStringToDate(data.getDateNaissanceInscriptionRC()));
 			assertEquals("André Duval", data.getNom1());
 		}
 		// Recherche sur la date de naissance (partielle)
 		{
 			final TiersCriteria criteria = new TiersCriteria();
-			criteria.setDateNaissance(RegDate.get(1966, 4));
+			criteria.setDateNaissanceInscriptionRC(RegDate.get(1966, 4));
 
 			final List<TiersIndexedData> list = globalTiersSearcher.search(criteria);
 			assertEquals(2, list.size());
@@ -694,17 +694,17 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 			Collections.sort(listeTriee, new Comparator<TiersIndexedData>() {
 				@Override
 				public int compare(TiersIndexedData o1, TiersIndexedData o2) {
-					return o1.getDateNaissance().compareTo(o2.getDateNaissance());
+					return o1.getDateNaissanceInscriptionRC().compareTo(o2.getDateNaissanceInscriptionRC());
 				}
 			});
 			{
 				final TiersIndexedData data = listeTriee.get(0);
-				assertEquals(dateNaissanceFred, RegDateHelper.indexStringToDate(data.getDateNaissance()));
+				assertEquals(dateNaissanceFred, RegDateHelper.indexStringToDate(data.getDateNaissanceInscriptionRC()));
 				assertEquals("Fred Gnagna", data.getNom1());
 			}
 			{
 				final TiersIndexedData data = listeTriee.get(1);
-				assertEquals(dateNaissanceMartine, RegDateHelper.indexStringToDate(data.getDateNaissance()));
+				assertEquals(dateNaissanceMartine, RegDateHelper.indexStringToDate(data.getDateNaissanceInscriptionRC()));
 				assertEquals("Martine Duval", data.getNom1());
 			}
 		}
@@ -1231,7 +1231,7 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 			System.out.println("Numero: " + v.getNumero());
 			System.out.println("Nom1: " + v.getNom1());
 			System.out.println("Nom2: " + v.getNom2());
-			System.out.println("Date naissance: " + v.getDateNaissance());
+			System.out.println("Date naissance: " + v.getDateNaissanceInscriptionRC());
 		}
 	}
 
@@ -1598,7 +1598,7 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 		{
 			final TiersCriteria criteria = new TiersCriteria();
 			criteria.setNomRaison("Tartempion");
-			criteria.setDateNaissance(RegDate.get(1965, 4, 12));
+			criteria.setDateNaissanceInscriptionRC(RegDate.get(1965, 4, 12));
 			final List<TiersIndexedData> res = globalTiersSearcher.search(criteria);
 			assertEquals(1, res.size());
 			assertEquals((Long) ids.pp1, res.get(0).getNumero());
@@ -1606,7 +1606,7 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 		{
 			final TiersCriteria criteria = new TiersCriteria();
 			criteria.setNomRaison("Tartempion");
-			criteria.setDateNaissance(RegDate.get(1965, 2, 12));
+			criteria.setDateNaissanceInscriptionRC(RegDate.get(1965, 2, 12));
 			final List<TiersIndexedData> res = globalTiersSearcher.search(criteria);
 			assertEquals(2, res.size());
 			Collections.sort(res, comparator);
@@ -1616,7 +1616,7 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 		{
 			final TiersCriteria criteria = new TiersCriteria();
 			criteria.setNomRaison("Tartempion");
-			criteria.setDateNaissance(RegDate.get(1965, 2, 21));
+			criteria.setDateNaissanceInscriptionRC(RegDate.get(1965, 2, 21));
 			final List<TiersIndexedData> res = globalTiersSearcher.search(criteria);
 			assertEquals(3, res.size());
 			Collections.sort(res, comparator);
@@ -1627,7 +1627,7 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 		{
 			final TiersCriteria criteria = new TiersCriteria();
 			criteria.setNomRaison("Tartempion");
-			criteria.setDateNaissance(RegDate.get(1965, 4));
+			criteria.setDateNaissanceInscriptionRC(RegDate.get(1965, 4));
 			final List<TiersIndexedData> res = globalTiersSearcher.search(criteria);
 			assertEquals(1, res.size());
 			assertEquals((Long) ids.pp1, res.get(0).getNumero());
@@ -1635,7 +1635,7 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 		{
 			final TiersCriteria criteria = new TiersCriteria();
 			criteria.setNomRaison("Tartempion");
-			criteria.setDateNaissance(RegDate.get(1965, 3));
+			criteria.setDateNaissanceInscriptionRC(RegDate.get(1965, 3));
 			final List<TiersIndexedData> res = globalTiersSearcher.search(criteria);
 			assertEquals(2, res.size());
 			Collections.sort(res, comparator);
@@ -1645,7 +1645,7 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 		{
 			final TiersCriteria criteria = new TiersCriteria();
 			criteria.setNomRaison("Tartempion");
-			criteria.setDateNaissance(RegDate.get(1965, 2));
+			criteria.setDateNaissanceInscriptionRC(RegDate.get(1965, 2));
 			final List<TiersIndexedData> res = globalTiersSearcher.search(criteria);
 			assertEquals(3, res.size());
 			Collections.sort(res, comparator);
@@ -1656,7 +1656,7 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 		{
 			final TiersCriteria criteria = new TiersCriteria();
 			criteria.setNomRaison("Tartempion");
-			criteria.setDateNaissance(RegDate.get(1965));
+			criteria.setDateNaissanceInscriptionRC(RegDate.get(1965));
 			final List<TiersIndexedData> res = globalTiersSearcher.search(criteria);
 			assertEquals(4, res.size());
 			Collections.sort(res, comparator);
@@ -1668,7 +1668,7 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 		{
 			final TiersCriteria criteria = new TiersCriteria();
 			criteria.setNomRaison("Tartempion");
-			criteria.setDateNaissance(RegDate.get(1966));
+			criteria.setDateNaissanceInscriptionRC(RegDate.get(1966));
 			final List<TiersIndexedData> res = globalTiersSearcher.search(criteria);
 			assertEquals(0, res.size());
 		}

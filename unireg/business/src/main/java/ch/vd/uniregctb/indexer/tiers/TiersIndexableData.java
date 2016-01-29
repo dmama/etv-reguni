@@ -35,7 +35,7 @@ public class TiersIndexableData extends IndexableData {
 	public static final String NATURE_JURIDIQUE = "S_NATURE_JURIDIQUE"; // (PP ou PM)
 	public static final String FORME_JURIDIQUE = "S_FORME_JURIDIQUE";
 	public static final String CATEGORIE_ENTREPRISE = "S_CATEGORY_ENTREPRISE";
-	public static final String S_DATE_NAISSANCE = "S_DATE_NAISSANCE";
+	public static final String S_DATE_NAISSANCE_INSCRIPTION_RC = "S_DATE_NAISSANCE_INSCRIPTION_RC";
 	public static final String SEXE = "S_SEXE";
 	public static final String NAVS11 = "S_NAVS11";
 	public static final String NAVS13 = "S_NAVS13";
@@ -60,7 +60,6 @@ public class TiersIndexableData extends IndexableData {
 	public static final String RUE = "D_RUE";
 	public static final String LOCALITE = "D_LOCALITE";
 	public static final String PAYS = "D_PAYS";
-	public static final String DATE_INSCRIPTION_RC = "D_DATE_INSCRIPTION_RC";
 	public static final String FOR_PRINCIPAL = "D_FOR_PRINCIPAL";
 	public static final String DATE_OUVERTURE_FOR = "D_DATE_OUVERTURE_FOR";
 	public static final String DATE_FERMETURE_FOR = "D_DATE_FERMETURE_FOR";
@@ -78,7 +77,7 @@ public class TiersIndexableData extends IndexableData {
 	private String numeros;
 	private String nomRaison;
 	private String autresNom;
-	private List<RegDate> datesNaissance;       // valeurs utilisées pour la recherche (calculées à partir de la date connue)
+	private List<RegDate> datesNaissanceInscriptionRC;       // valeurs utilisées pour la recherche (calculées à partir de la date connue)
 	private String sexe;
 	private String noOfsForPrincipal;
 	private String typeOfsForPrincipal;
@@ -111,7 +110,6 @@ public class TiersIndexableData extends IndexableData {
 	private String rue;
 	private String localite;
 	private String pays;
-	private String dateInscriptionRc;
 	private String forPrincipal;
 	private String dateOuvertureFor;
 	private String dateFermtureFor;
@@ -139,7 +137,7 @@ public class TiersIndexableData extends IndexableData {
 		addNotAnalyzedValue(d, TiersIndexableData.NUMEROS, numeros);
 		addAnalyzedValue(d, TiersIndexableData.NOM_RAISON, nomRaison);
 		addAnalyzedValue(d, TiersIndexableData.AUTRES_NOM, autresNom);
-		addAnalyzedValue(d, TiersIndexableData.S_DATE_NAISSANCE, IndexerFormatHelper.dateCollectionToString(datesNaissance, IndexerFormatHelper.DateStringMode.INDEXATION));
+		addAnalyzedValue(d, TiersIndexableData.S_DATE_NAISSANCE_INSCRIPTION_RC, IndexerFormatHelper.dateCollectionToString(datesNaissanceInscriptionRC, IndexerFormatHelper.DateStringMode.INDEXATION));
 		addAnalyzedValue(d, TiersIndexableData.SEXE, sexe);
 		addNotAnalyzedValue(d, TiersIndexableData.NO_OFS_FOR_PRINCIPAL, noOfsForPrincipal);
 		addNotAnalyzedValue(d, TiersIndexableData.TYPE_OFS_FOR_PRINCIPAL, typeOfsForPrincipal);
@@ -162,7 +160,7 @@ public class TiersIndexableData extends IndexableData {
 		addAnalyzedValue(d, TiersIndexableData.IDE, ide);
 
 		// on aggrège tous les valeurs utiles dans un seul champ pour une recherche de type google
-		addToutValues(d, numeros, nomRaison, autresNom, toSearchString(datesNaissance), forPrincipal, rue, npaCourrier, localiteEtPays, natureJuridique, navs11, navs13, ancienNumeroSourcier, categorieDebiteurIs, noSymic, ide);
+		addToutValues(d, numeros, nomRaison, autresNom, toSearchString(datesNaissanceInscriptionRC), forPrincipal, rue, npaCourrier, localiteEtPays, natureJuridique, navs11, navs13, ancienNumeroSourcier, categorieDebiteurIs, noSymic, ide);
 
 		// champs de stockage (pas recherchables)
 		addStoredValue(d, TiersIndexableData.NOM1, nom1);
@@ -175,7 +173,6 @@ public class TiersIndexableData extends IndexableData {
 		addStoredValue(d, TiersIndexableData.RUE, rue);
 		addStoredValue(d, TiersIndexableData.LOCALITE, localite);
 		addStoredValue(d, TiersIndexableData.PAYS, pays);
-		addStoredValue(d, TiersIndexableData.DATE_INSCRIPTION_RC, dateInscriptionRc);
 		addStoredValue(d, TiersIndexableData.FOR_PRINCIPAL, forPrincipal);
 		addStoredValue(d, TiersIndexableData.DATE_OUVERTURE_FOR, dateOuvertureFor);
 		addStoredValue(d, TiersIndexableData.DATE_FERMETURE_FOR, dateFermtureFor);
@@ -185,7 +182,7 @@ public class TiersIndexableData extends IndexableData {
 		addStoredValue(d, TiersIndexableData.NO_OFS_DOMICILE_VD, noOfsDomicileVd);
 		addStoredValue(d, TiersIndexableData.INDEXATION_DATE, indexationDate);
 		addStoredValue(d, TiersIndexableData.MODE_COMMUNICATION, modeCommunication);
-		addStoredValue(d, TiersIndexableData.D_DATE_NAISSANCE, IndexerFormatHelper.dateCollectionToString(datesNaissance, IndexerFormatHelper.DateStringMode.STORAGE));
+		addStoredValue(d, TiersIndexableData.D_DATE_NAISSANCE, IndexerFormatHelper.dateCollectionToString(datesNaissanceInscriptionRC, IndexerFormatHelper.DateStringMode.STORAGE));
 		addStoredValue(d, TiersIndexableData.ASSUJETTISSEMENT_PP, assujettissementPP);
 		addStoredValue(d, TiersIndexableData.AVATAR, typeAvatar);
 
@@ -268,27 +265,27 @@ public class TiersIndexableData extends IndexableData {
 		this.autresNom = add(this.autresNom, autresNom);
 	}
 
-	public List<RegDate> getDatesNaissance() {
-		return datesNaissance;
+	public List<RegDate> getDatesNaissanceInscriptionRC() {
+		return datesNaissanceInscriptionRC;
 	}
 
-	public void setDatesNaissance(List<RegDate> datesNaissance) {
-		this.datesNaissance = datesNaissance;
+	public void setDatesNaissanceInscriptionRC(List<RegDate> datesNaissanceInscriptionRC) {
+		this.datesNaissanceInscriptionRC = datesNaissanceInscriptionRC;
 	}
 
 	public void addDateNaissance(RegDate date) {
-		if (this.datesNaissance == null) {
-			this.datesNaissance = new ArrayList<>();
+		if (this.datesNaissanceInscriptionRC == null) {
+			this.datesNaissanceInscriptionRC = new ArrayList<>();
 		}
-		this.datesNaissance.add(date);
+		this.datesNaissanceInscriptionRC.add(date);
 	}
 
 	public void addDatesNaissance(List<RegDate> list) {
 		if (list != null && !list.isEmpty()) {
-			if (this.datesNaissance == null) {
-				this.datesNaissance = new ArrayList<>();
+			if (this.datesNaissanceInscriptionRC == null) {
+				this.datesNaissanceInscriptionRC = new ArrayList<>();
 			}
-			this.datesNaissance.addAll(list);
+			this.datesNaissanceInscriptionRC.addAll(list);
 		}
 	}
 
@@ -300,12 +297,15 @@ public class TiersIndexableData extends IndexableData {
 		this.sexe = add(this.sexe, IndexerFormatHelper.enumToString(sexe));
 	}
 
-	public String getDateInscriptionRc() {
-		return dateInscriptionRc;
+	public RegDate getDateInscriptionRc() {
+		if (datesNaissanceInscriptionRC != null && ! datesNaissanceInscriptionRC.isEmpty()) {
+			datesNaissanceInscriptionRC.get(0);
+		}
+		return null;
 	}
 
-	public void setDateInscriptionRc(String dateInscriptionRc) {
-		this.dateInscriptionRc = dateInscriptionRc;
+	public void setDateInscriptionRc(RegDate dateInscriptionRc) {
+		addDateNaissance(dateInscriptionRc);
 	}
 
 	public String getNoOfsForPrincipal() {

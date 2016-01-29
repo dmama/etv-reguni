@@ -131,7 +131,7 @@ public class SearchTiersController {
 					criteria.setLocaliteOuPays(localite);
 				}
 				if (!isLessThan3Chars(dateNaissance)) {
-					criteria.setDateNaissance(RegDateHelper.displayStringToRegDate(dateNaissance, true));
+					criteria.setDateNaissanceInscriptionRC(RegDateHelper.displayStringToRegDate(dateNaissance, true));
 				}
 				if (!isLessThan3Chars(noAvs)) {
 					criteria.setNumeroAVS(noAvs);
