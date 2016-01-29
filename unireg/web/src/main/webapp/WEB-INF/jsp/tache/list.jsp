@@ -81,16 +81,23 @@
 			
 			<!-- Spécifique à l'envoi des DIs -->
 			<display:column titleKey="label.date.periodeImposition" >
-				<c:if test="${tache.impositionSurAnneeComplete}">
-					<fmt:message key="label.date.periodeImpositionComplete">
-						<fmt:param>${tache.impositionAnneeComplete}</fmt:param>
-					</fmt:message>
-				</c:if>
-				<c:if test="${!tache.impositionSurAnneeComplete && tache.dateDebutImposition != null}">
-					<fmt:message key="label.date.periodeImpositionPartielle">
+				<c:if test="${tache.dateDebutImposition != null}">
+					<fmt:message key="label.date.periodeImpositionDetaillee">
 						<fmt:param><unireg:date date="${tache.dateDebutImposition}"/></fmt:param>
 						<fmt:param><unireg:date date="${tache.dateFinImposition}"/></fmt:param>
 					</fmt:message>
+					<c:if test="${tache.longueurPeriodeImposition != null}">
+						<c:choose>
+							<c:when test="${tache.longueurPeriodeImposition > 1}">
+								<fmt:message key="label.x.jours.parentheses">
+									<fmt:param>${tache.longueurPeriodeImposition}</fmt:param>
+								</fmt:message>
+							</c:when>
+							<c:when test="${tache.longueurPeriodeImposition == 1}">
+								<fmt:message key="label.un.jour.parentheses"/>
+							</c:when>
+						</c:choose>
+					</c:if>
 				</c:if>
 			</display:column>
 			<display:column titleKey="label.date.enregistrement" sortable="true" sortName="logCreationDate">

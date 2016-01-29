@@ -4,6 +4,7 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 
 import static org.junit.Assert.assertEquals;
@@ -78,5 +79,66 @@ public class FiscalDateHelperTest extends WithoutSpringTest {
 		assertEquals(date(2000, 5, 2), FiscalDateHelper.getDateComplete(date(2000, 5, 2)));
 		assertEquals(date(2000, 5, 1), FiscalDateHelper.getDateComplete(date(2000, 5)));
 		assertEquals(date(2000, 1, 1), FiscalDateHelper.getDateComplete(date(2000)));
+	}
+
+	@Test
+	public void testGetLongueurEnJours() {
+
+		// toujours 1 jour pour un intervalle d'un jour
+		for (RegDate date = date(2000, 1, 1); date.compareTo(date(2005, 12, 31)) <= 0 ; date = date.getOneDayAfter()) {
+			final DateRangeHelper.Range range = new DateRangeHelper.Range(date, date);
+			assertEquals(range.toString(), 1, FiscalDateHelper.getLongueurEnJours(range));
+		}
+
+		// toujours 30 jours pour un intervalle d'un mois
+		for (RegDate date = date(2000, 1, 1); date.compareTo(date(2005, 12, 31)) <= 0 ; date = date.addMonths(1)) {
+			final DateRangeHelper.Range range = new DateRangeHelper.Range(date, date.getLastDayOfTheMonth());
+			assertEquals(range.toString(), 30, FiscalDateHelper.getLongueurEnJours(range));
+		}
+
+		// toujours 60 jours pour un intervalle de deux mois
+		for (RegDate date = date(2000, 1, 1); date.compareTo(date(2005, 12, 31)) <= 0 ; date = date.addMonths(1)) {
+			final DateRangeHelper.Range range = new DateRangeHelper.Range(date, date.addMonths(1).getLastDayOfTheMonth());
+			assertEquals(range.toString(), 60, FiscalDateHelper.getLongueurEnJours(range));
+		}
+
+		// toujours 90 jours pour un intervalle de trois mois
+		for (RegDate date = date(2000, 1, 1); date.compareTo(date(2005, 12, 31)) <= 0 ; date = date.addMonths(1)) {
+			final DateRangeHelper.Range range = new DateRangeHelper.Range(date, date.addMonths(2).getLastDayOfTheMonth());
+			assertEquals(range.toString(), 90, FiscalDateHelper.getLongueurEnJours(range));
+		}
+
+		// toujours 180 jours pour un intervalle de six mois
+		for (RegDate date = date(2000, 1, 1); date.compareTo(date(2005, 12, 31)) <= 0 ; date = date.addMonths(1)) {
+			final DateRangeHelper.Range range = new DateRangeHelper.Range(date, date.addMonths(5).getLastDayOfTheMonth());
+			assertEquals(range.toString(), 180, FiscalDateHelper.getLongueurEnJours(range));
+		}
+
+		// quelques cas à la con
+		assertEquals("1.1 -> 30.1", 30, FiscalDateHelper.getLongueurEnJours(new DateRangeHelper.Range(date(2001, 1, 1), date(2001, 1, 30))));
+		assertEquals("1.1 -> 31.1", 30, FiscalDateHelper.getLongueurEnJours(new DateRangeHelper.Range(date(2001, 1, 1), date(2001, 1, 31))));
+		assertEquals("1.1 -> 1.2", 31, FiscalDateHelper.getLongueurEnJours(new DateRangeHelper.Range(date(2001, 1, 1), date(2001, 2, 1))));
+		assertEquals("1.1 -> 2.2", 32, FiscalDateHelper.getLongueurEnJours(new DateRangeHelper.Range(date(2001, 1, 1), date(2001, 2, 2))));
+		assertEquals("1.1 -> 28.2", 60, FiscalDateHelper.getLongueurEnJours(new DateRangeHelper.Range(date(2001, 1, 1), date(2001, 2, 28))));
+		assertEquals("1.1 -> 1.3", 61, FiscalDateHelper.getLongueurEnJours(new DateRangeHelper.Range(date(2001, 1, 1), date(2001, 3, 1))));
+		assertEquals("1.1 -> 2.3", 62, FiscalDateHelper.getLongueurEnJours(new DateRangeHelper.Range(date(2001, 1, 1), date(2001, 3, 2))));
+
+		// année non-bissextile
+		assertEquals("1.2 -> 28.2", 30, FiscalDateHelper.getLongueurEnJours(new DateRangeHelper.Range(date(2001, 2, 1), date(2001, 2, 28))));
+		assertEquals("1.2 -> 27.2", 27, FiscalDateHelper.getLongueurEnJours(new DateRangeHelper.Range(date(2001, 2, 1), date(2001, 2, 27))));
+		assertEquals("1.2 -> 1.3", 31, FiscalDateHelper.getLongueurEnJours(new DateRangeHelper.Range(date(2001, 2, 1), date(2001, 3, 1))));
+		assertEquals("1.2 -> 2.3", 32, FiscalDateHelper.getLongueurEnJours(new DateRangeHelper.Range(date(2001, 2, 1), date(2001, 3, 2))));
+
+		// année bissextile
+		assertEquals("1.2 -> 29.2", 30, FiscalDateHelper.getLongueurEnJours(new DateRangeHelper.Range(date(2000, 2, 1), date(2000, 2, 29))));
+		assertEquals("1.2 -> 28.2", 28, FiscalDateHelper.getLongueurEnJours(new DateRangeHelper.Range(date(2000, 2, 1), date(2000, 2, 28))));
+		assertEquals("1.2 -> 27.2", 27, FiscalDateHelper.getLongueurEnJours(new DateRangeHelper.Range(date(2000, 2, 1), date(2000, 2, 27))));
+		assertEquals("1.2 -> 1.3", 31, FiscalDateHelper.getLongueurEnJours(new DateRangeHelper.Range(date(2000, 2, 1), date(2000, 3, 1))));
+		assertEquals("1.2 -> 2.3", 32, FiscalDateHelper.getLongueurEnJours(new DateRangeHelper.Range(date(2000, 2, 1), date(2000, 3, 2))));
+
+		// cas pris au hasard
+		assertEquals("5.12.2000 -> 18.08.2003",
+		             (31 - 5 + 1) + 2 * 360 + 7 * 30 + 18,
+		             FiscalDateHelper.getLongueurEnJours(new DateRangeHelper.Range(date(2000, 12, 5), date(2003, 8, 18))));
 	}
 }

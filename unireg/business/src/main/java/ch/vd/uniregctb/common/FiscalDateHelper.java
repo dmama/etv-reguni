@@ -1,5 +1,10 @@
 package ch.vd.uniregctb.common;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import ch.vd.registre.base.date.DateRange;
+import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.interfaces.civil.data.Individu;
@@ -144,5 +149,68 @@ public abstract class FiscalDateHelper {
 	public static RegDate getDateMinimalePourEffetDecisionAci() {
 		final int annee = getAnneeCourante() - 2;
 		return RegDate.get(annee, 12, 31);
+	}
+
+	/**
+	 * @param range le range (fermé à gauche et à droite) concerné
+	 * @return le nombre de jours fiscaux dans le range (360 jours / an, 30 jours par mois...)
+	 * @throws NullPointerException si le range est <code>null</code> ou ouvert à gauche ou à droite
+	 * @throws IllegalArgumentException si le range est invalide (= à l'envers...)
+	 */
+	public static int getLongueurEnJours(@NotNull DateRange range) {
+		final RegDate dateDebut = range.getDateDebut();
+		final RegDate dateFin = range.getDateFin();
+		return getLongueurEnJours(dateDebut, dateFin);
+	}
+
+	/**
+	 * @param dateDebut la date du premier jour à considérer
+	 * @param dateFin la date (incluse) du dernier jour à considérer
+	 * @return le nombre de jours fiscaux dans le range (360 jours / an, 30 jours par mois...)
+	 * @throws NullPointerException si l'une des deux dates est <code>null</code>
+	 * @throws IllegalArgumentException si le range est invalide (= dates à l'envers...)
+	 */
+	public static int getLongueurEnJours(@NotNull RegDate dateDebut, @NotNull RegDate dateFin) {
+		DateRangeHelper.assertValidRange(dateDebut, dateFin);
+
+		final boolean finFinDeMois = dateFin == dateFin.getLastDayOfTheMonth();
+		final boolean debutDebutDeMois = dateDebut.day() == 1;
+
+		// cas simple -> de mois en mois
+		if (finFinDeMois && debutDebutDeMois) {
+			return 360 * (dateFin.year() - dateDebut.year()) + 30 * (dateFin.month() - dateDebut.month() + 1);
+		}
+
+		// cas moins simples...
+
+		// durée à l'intérieur d'un mois
+		if (dateFin.year() == dateDebut.year() && dateFin.month() == dateDebut.month()) {
+			return dateFin.day() - dateDebut.day() + 1;             // n'oublions pas que les deux jours sont compris dans la période
+		}
+
+		// pas dans le même mois ... on se ramène au cas simple
+		final int debutVersFinMois = debutDebutDeMois ? 30 : dateDebut.getLastDayOfTheMonth().day() - dateDebut.day() + 1;
+		final int finDepuisDebutMois = finFinDeMois ? 30 : dateFin.day();
+		final RegDate nouveauDebut = dateDebut.getLastDayOfTheMonth().getOneDayAfter();
+		final RegDate nouvelleFin = RegDate.get(dateFin.year(), dateFin.month(), 1).getOneDayBefore();
+		if (nouveauDebut.isBeforeOrEqual(nouvelleFin)) {
+			// appel récursif en mode "de mois en mois"
+			return debutVersFinMois + finDepuisDebutMois + getLongueurEnJours(nouveauDebut, nouvelleFin);
+		}
+		else {
+			return debutVersFinMois + finDepuisDebutMois;
+		}
+	}
+
+	/**
+	 * @param range le range (potentiellement ouvert ou mal fagotté/à l'envers) concerné
+	 * @return le nombre de jours fiscaux dans le range (360 jours / an, 30 jours par mois...), ou <code>null</code> si le calcul n'est pas possible (infini, dates à l'envers)
+	 */
+	@Nullable
+	public static Integer getLongueurEnJoursOuNullSiPasPossible(@NotNull DateRange range) {
+		if (range.getDateDebut() == null || range.getDateFin() == null || range.getDateDebut().isAfter(range.getDateFin())) {
+			return null;
+		}
+		return getLongueurEnJours(range);
 	}
 }

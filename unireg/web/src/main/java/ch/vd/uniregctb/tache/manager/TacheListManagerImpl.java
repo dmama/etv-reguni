@@ -15,6 +15,7 @@ import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.adresse.AdressesResolutionException;
 import ch.vd.uniregctb.common.AuthenticationHelper;
+import ch.vd.uniregctb.common.FiscalDateHelper;
 import ch.vd.uniregctb.common.ParamPagination;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
@@ -161,6 +162,7 @@ public class TacheListManagerImpl implements TacheListManager {
 				tacheView.setAnnee(annee);
 				tacheView.setDateDebutImposition(tedi.getDateDebut());
 				tacheView.setDateFinImposition(tedi.getDateFin());
+				tacheView.setLongueurPeriodeImposition(FiscalDateHelper.getLongueurEnJoursOuNullSiPasPossible(tedi));
 				tacheView.setTypeContribuable(tedi.getTypeContribuable());
 				tacheView.setTypeDocument(tedi.getTypeDocument());
 				tacheView.setDelaiRetourEnJours(DELAI_RETOUR_DI);       // TODO pour les PM aussi ???
@@ -172,6 +174,7 @@ public class TacheListManagerImpl implements TacheListManager {
 				tacheView.setAnnee(annee);
 				tacheView.setDateDebutImposition(declaration.getDateDebut());
 				tacheView.setDateFinImposition(declaration.getDateFin());
+				tacheView.setLongueurPeriodeImposition(FiscalDateHelper.getLongueurEnJoursOuNullSiPasPossible(declaration));
 				tacheView.setTypeDocument(declaration.getModeleDocument() != null ? declaration.getModeleDocument().getTypeDocument() : null);
 				tacheView.setIdDI(declaration.getId());
 

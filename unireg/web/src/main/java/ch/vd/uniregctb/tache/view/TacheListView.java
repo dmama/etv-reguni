@@ -4,7 +4,6 @@ import java.util.Date;
 import java.util.List;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.common.Annulable;
 import ch.vd.uniregctb.common.NomCourrierViewPart;
 import ch.vd.uniregctb.type.TypeContribuable;
@@ -40,6 +39,7 @@ public class TacheListView implements Annulable {
 	// Seulement valable pour le type de tache 'envoi declaration'
 	private RegDate dateDebutImposition;
 	private RegDate dateFinImposition;
+	private Integer longueurPeriodeImposition;
 	private TypeContribuable typeContribuable;
 	private TypeDocument typeDocument;
 	private Integer delaiRetourEnJours;
@@ -140,23 +140,12 @@ public class TacheListView implements Annulable {
 		this.annulee = annulee;
 	}
 
-	/**
-	 * @return vrai si la période d'imposition corresponds exactement à une année civile (1er janvier au 31 décembre de la même année).
-	 */
-	public boolean isImpositionSurAnneeComplete() {
-		if (dateDebutImposition == null || dateFinImposition == null || dateDebutImposition.year() != dateFinImposition.year()) {
-			return false;
-		}
-		return dateDebutImposition.month() == RegDate.JANVIER && dateDebutImposition.day() == 1
-				&& dateFinImposition.month() == RegDate.DECEMBRE && dateFinImposition.day() == 31;
+	public Integer getLongueurPeriodeImposition() {
+		return longueurPeriodeImposition;
 	}
 
-	/**
-	 * @return l'année de la période d'imposition. A n'utiliser que si 'isImpositionSurAnneeComplete' retourne vrai.
-	 */
-	public int getImpositionAnneeComplete() {
-		Assert.isTrue(isImpositionSurAnneeComplete());
-		return dateDebutImposition.year();
+	public void setLongueurPeriodeImposition(Integer longueurPeriodeImposition) {
+		this.longueurPeriodeImposition = longueurPeriodeImposition;
 	}
 
 	public TypeContribuable getTypeContribuable() {
