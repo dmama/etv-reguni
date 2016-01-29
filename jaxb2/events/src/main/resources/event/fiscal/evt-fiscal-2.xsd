@@ -102,7 +102,7 @@
 	<!-- Evénement fiscal d'envoi d'une lettre de bienvenue -->
 	<!-- -->
 
-	<xs:complexType name="envoiLettreBienvenue">
+	<xs:complexType name="envoiLettreBienvenueType">
 		<xs:annotation>
 			<xs:appinfo>
 				<jxb:class>
