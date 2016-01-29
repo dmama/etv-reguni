@@ -137,7 +137,7 @@
 				<artifactId>maven-assembly-plugin</artifactId>
 				<configuration>
 					<!-- BEGIN_LVERSION -->
-					<finalName>PartyJMSService_3.4</finalName>
+					<finalName>PartyJMSService_4.5</finalName>
 					<!-- END_LVERSION -->
 					<descriptors>
 						<descriptor>release_partyservice.xml</descriptor>
