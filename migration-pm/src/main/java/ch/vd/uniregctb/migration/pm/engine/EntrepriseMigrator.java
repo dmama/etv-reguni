@@ -4369,6 +4369,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		// d'abord, il faut extraire les types d'allègements (998/999)
 		// Le booléen en clé signifie isIFD (= faux -> ICC)
 		final Map<Boolean, Integer> mapTypes = regpm.getAllegementsFiscaux().stream()
+				.filter(af -> af.getDateAnnulation() == null)               // on ne prend pas en compte les typologies d'allègements annulées
 				.filter(af -> af.getId().getSeqNo() >= 998)
 				.filter(af -> af.getId().getSeqNo() < 1000)
 				.collect(Collectors.toMap(af -> af.getId().getSeqNo() == 999, af -> af.getPourcentage().intValue()));
