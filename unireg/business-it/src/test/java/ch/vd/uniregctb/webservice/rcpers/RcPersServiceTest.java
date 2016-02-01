@@ -79,18 +79,23 @@ public class RcPersServiceTest {
 		assertNotNull(person);
 		assertEquals(dateNaissance, EchHelper.partialDateFromEch44(person.getIdentity().getDateOfBirth()));
 
-		// les parents
+		// les parents (deux fois les mêmes, une fois avec un numéro d'identification, une fois sans - car l'individu est parti puis revenu, et RCPers n'a pas réussi à établir avec
+		// certitude que les parents étaient restés les mêmes)
 		final List<Parent> parents = person.getParentHistory();
 		assertNotNull(parents);
-		assertEquals(2, parents.size());
+		assertEquals(4, parents.size());
 
 		final List<Parent> parentSorted = new ArrayList<>(parents);
 		Collections.sort(parentSorted, new Comparator<Parent>() {
 			@Override
 			public int compare(Parent o1, Parent o2) {
-				int comparison = NullDateBehavior.EARLIEST.compare(XmlUtils.xmlcal2regdate(o1.getParentFrom()), XmlUtils.xmlcal2regdate(o2.getParentFrom()));
+				// papa (1 = M) avant maman (2 = F)
+				int comparison = o1.getIdentification().getIdentification().getSex().compareTo(o2.getIdentification().getIdentification().getSex());
 				if (comparison == 0) {
-					comparison = o1.getIdentification().getIdentification().getLocalPersonId().getPersonId().compareTo(o2.getIdentification().getIdentification().getLocalPersonId().getPersonId());
+					// 2 fois papa, ou deux fois maman... -> comparaison sur la date
+					final RegDate refDate1 = o1.getParentFrom() == null ? XmlUtils.xmlcal2regdate(o1.getReportingDate()) : XmlUtils.xmlcal2regdate(o1.getParentFrom());
+					final RegDate refDate2 = o2.getParentFrom() == null ? XmlUtils.xmlcal2regdate(o2.getReportingDate()) : XmlUtils.xmlcal2regdate(o2.getParentFrom());
+					comparison = NullDateBehavior.EARLIEST.compare(refDate1, refDate2);
 				}
 				return comparison;
 			}
@@ -99,13 +104,27 @@ public class RcPersServiceTest {
 			final Parent parent = parentSorted.get(0);
 			assertEquals("347148", parent.getIdentification().getIdentification().getLocalPersonId().getPersonId());
 			assertNull(parent.getParentFrom());
-			assertNull(parent.getParentTill());
+			assertEquals(RegDate.get(2015, 12, 31), XmlUtils.xmlcal2regdate(parent.getParentTill()));
 		}
 		{
 			final Parent parent = parentSorted.get(1);
-			assertEquals("347149", parent.getIdentification().getIdentification().getLocalPersonId().getPersonId());
+			assertNull(parent.getIdentification().getIdentification().getLocalPersonId());
 			assertNull(parent.getParentFrom());
 			assertNull(parent.getParentTill());
+			assertEquals(RegDate.get(2016, 1, 1), XmlUtils.xmlcal2regdate(parent.getReportingDate()));
+		}
+		{
+			final Parent parent = parentSorted.get(2);
+			assertEquals("347149", parent.getIdentification().getIdentification().getLocalPersonId().getPersonId());
+			assertNull(parent.getParentFrom());
+			assertEquals(RegDate.get(2015, 12, 31), XmlUtils.xmlcal2regdate(parent.getParentTill()));
+		}
+		{
+			final Parent parent = parentSorted.get(3);
+			assertNull(parent.getIdentification().getIdentification().getLocalPersonId());
+			assertNull(parent.getParentFrom());
+			assertNull(parent.getParentTill());
+			assertEquals(RegDate.get(2016, 1, 1), XmlUtils.xmlcal2regdate(parent.getReportingDate()));
 		}
 
 		// le conjoint (non-habitant)
