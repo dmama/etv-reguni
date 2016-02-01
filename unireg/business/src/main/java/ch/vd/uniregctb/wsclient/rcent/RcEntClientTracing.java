@@ -81,7 +81,7 @@ public class RcEntClientTracing implements RcEntClient, InitializingBean, Dispos
 		try {
 			final OrganisationsOfNotice data = target.getOrganisationsOfNotice(noticeId, when);
 			if (data != null) {
-				items = 1;
+				items = data.getNumberOfResults();
 			}
 			return data;
 		}
@@ -94,7 +94,7 @@ public class RcEntClientTracing implements RcEntClient, InitializingBean, Dispos
 			throw e;
 		}
 		finally {
-			tracing.end(time, t, "getOrganisationOfNotice", items, new Object() {
+			tracing.end(time, t, "getOrganisationsOfNotice", items, new Object() {
 				@Override
 				public String toString() {
 					return String.format("noticeId=%d, when=%s", noticeId, when);
