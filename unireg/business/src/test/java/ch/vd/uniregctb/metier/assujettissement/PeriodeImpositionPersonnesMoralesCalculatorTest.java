@@ -1027,4 +1027,32 @@ public class PeriodeImpositionPersonnesMoralesCalculatorTest extends MetierTest 
 		assertPeriodeImpositionPersonnesMorales(date(2014, 7, 1), dateFinForSecondaire, false, TypeContribuable.HORS_SUISSE, false, false, true, periodes.get(3));
 		assertPeriodeImpositionPersonnesMorales(dateRetourSiege, dateDissolutionEntreprise, false, TypeContribuable.VAUDOIS_ORDINAIRE, false, false, false, periodes.get(4));
 	}
+
+	/**
+	 * Cas qui arrive régulièrement dans les résidus de migration PM : la forme juridique a été arrêtée à une date donnée, mais les fors ont été prolongés,
+	 * et donc la fin de la période d'imposition peut se situer après la clôture de la dernière forme juridique
+	 */
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testCalculPeriodeImpositionTermineeApresFinFormeJuridique() throws Exception {
+
+		final RegDate dateCreation = date(2013, 1, 1);
+		final RegDate dateFinFormeJuridique = date(2015, 10, 5);
+		final RegDate dateFinFor = date(2016, 1, 31);
+
+		final Entreprise e = addEntrepriseInconnueAuCivil();
+		addRaisonSociale(e, dateCreation, null, "Toto SA");
+		addFormeJuridique(e, dateCreation, dateFinFormeJuridique, FormeJuridiqueEntreprise.SA);
+		addRegimeFiscalVD(e, dateCreation, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+		addRegimeFiscalCH(e, dateCreation, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+		addForPrincipal(e, dateCreation, MotifFor.INDETERMINE, dateFinFor, MotifFor.FIN_EXPLOITATION, MockCommune.Aubonne);
+		addBouclement(e, date(2014, 1, 1), DayMonth.get(1, 31), 12);           // bouclements tous les 31.01 depuis le 31.01.2014
+
+		final List<PeriodeImposition> periodes = determine(e);
+		Assert.assertNotNull(periodes);
+		Assert.assertEquals(3, periodes.size());
+		assertPeriodeImpositionPersonnesMorales(dateCreation, date(2014, 1, 31), false, TypeContribuable.VAUDOIS_ORDINAIRE, false, false, false, periodes.get(0));
+		assertPeriodeImpositionPersonnesMorales(date(2014, 2, 1), date(2015, 1, 31), false, TypeContribuable.VAUDOIS_ORDINAIRE, false, false, false, periodes.get(1));
+		assertPeriodeImpositionPersonnesMorales(date(2015, 2, 1), dateFinFor, false, TypeContribuable.VAUDOIS_ORDINAIRE, false, false, false, periodes.get(2));
+	}
 }

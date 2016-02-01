@@ -10,13 +10,15 @@ import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
+import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.metier.bouclement.ExerciceCommercial;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
+import ch.vd.uniregctb.tiers.CategorieEntrepriseHisto;
 import ch.vd.uniregctb.tiers.Entreprise;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipalPM;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.CategorieEntreprise;
 import ch.vd.uniregctb.type.MotifFor;
@@ -51,9 +53,6 @@ public class PeriodeImpositionPersonnesMoralesCalculator implements PeriodeImpos
 			return Collections.emptyList();
 		}
 
-		// il y a des assujettissements, donc il y a des fors principaux, pas la peine de re-vérfier, ou bien ?
-		final List<ForFiscalPrincipalPM> forsPrincipaux = entreprise.getForsFiscauxPrincipauxActifsSorted();
-
 		// liste à retourner
 		final List<PeriodeImposition> resultat = new LinkedList<>();
 
@@ -84,7 +83,7 @@ public class PeriodeImpositionPersonnesMoralesCalculator implements PeriodeImpos
 					// détermination du type de contribuable et du type de document
 					final TypeContribuable typeContribuable = computeTypeContribuable(assujettissement);
 					final TypeDocument typeDocument = computeTypeDocument(entreprise, intersection.getDateFin());
-					final CategorieEntreprise categorieEntreprise = tiersService.getCategorieEntreprise(entreprise, intersection.getDateFin());
+					final CategorieEntreprise categorieEntreprise = getLastKnownCategorieEntrepriseAtOrBefore(entreprise, intersection.getDateFin());
 
 					// création de la structure pour la période d'imposition
 					resultat.add(new PeriodeImpositionPersonnesMorales(intersection.getDateDebut(),
@@ -103,6 +102,26 @@ public class PeriodeImpositionPersonnesMoralesCalculator implements PeriodeImpos
 		}
 
 		return DateRangeHelper.collate(resultat);
+	}
+
+	/**
+	 * @param entreprise entreprise
+	 * @param dateReference date de référence
+	 * @return la dernière catégorie d'entreprise connue avant ou à la date de référence donnée
+	 */
+	@Nullable
+	private CategorieEntreprise getLastKnownCategorieEntrepriseAtOrBefore(Entreprise entreprise, @NotNull RegDate dateReference) {
+		final List<CategorieEntrepriseHisto> histo = tiersService.getCategoriesEntrepriseHisto(entreprise);
+		if (histo == null || histo.isEmpty()) {
+			return null;
+		}
+
+		for (CategorieEntrepriseHisto candidate : CollectionsUtils.revertedOrder(histo)) {
+			if (RegDateHelper.isAfterOrEqual(dateReference, candidate.getDateDebut(), NullDateBehavior.EARLIEST)) {
+				return candidate.getCategorie();
+			}
+		}
+		return null;
 	}
 
 	private static TypeContribuable computeTypeContribuable(Assujettissement assujettissement) {
@@ -128,7 +147,7 @@ public class PeriodeImpositionPersonnesMoralesCalculator implements PeriodeImpos
 			return null;
 		}
 
-		final CategorieEntreprise categorie = tiersService.getCategorieEntreprise(pm, dateFinPeriode);
+		final CategorieEntreprise categorie = getLastKnownCategorieEntrepriseAtOrBefore(pm, dateFinPeriode);
 		if (categorie == null) {
 			throw new AssujettissementException(String.format("Impossible de déterminer la catégorie de l'entreprise %s au %s.",
 			                                                  FormatNumeroHelper.numeroCTBToDisplay(pm.getNumero()),
