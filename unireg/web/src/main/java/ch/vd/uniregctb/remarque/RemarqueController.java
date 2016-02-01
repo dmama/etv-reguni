@@ -3,7 +3,6 @@ package ch.vd.uniregctb.remarque;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -143,8 +142,7 @@ public class RemarqueController {
 
 		controllerUtils.checkAccesDossierEnEcriture(remarque.getTiers().getId());
 
-		remarque.setAnnulationDate(new Date());
-		remarqueDAO.save(remarque);
+		remarque.setAnnule(true);
 
 		return "redirect:/tiers/visu.do?id=" + remarque.getTiers().getId();
 	}
