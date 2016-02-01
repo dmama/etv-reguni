@@ -186,6 +186,7 @@
 	<bean id="tiersPickerFilterFactory" class="ch.vd.uniregctb.tiers.picker.TiersPickerFilterFactory"/>
 
 	<bean id="remarqueController" class="ch.vd.uniregctb.remarque.RemarqueController">
+		<property name="tiersService" ref="tiersService" />
 		<property name="tiersDAO" ref="tiersDAO" />
 		<property name="remarqueDAO" ref="remarqueDAO" />
 		<property name="controllerUtils" ref="controllerUtils"/>
