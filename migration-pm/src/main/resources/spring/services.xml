@@ -21,6 +21,7 @@
 				<value>getExercicesCommerciaux</value>
 				<value>getPeriodesNonSocieteDePersonnesNiIndividuelle</value>
 				<value>getCategorieEntreprise</value>
+				<value>getCategoriesEntrepriseHisto</value>
 			</set>
 		</property>
 	</bean>
