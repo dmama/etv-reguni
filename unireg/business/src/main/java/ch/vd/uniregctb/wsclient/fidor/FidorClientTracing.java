@@ -14,6 +14,7 @@ import ch.vd.evd0012.v1.Logiciel;
 import ch.vd.evd0012.v1.RegionFiscale;
 import ch.vd.fidor.xml.post.v1.PostalLocality;
 import ch.vd.fidor.xml.post.v1.Street;
+import ch.vd.fidor.xml.regimefiscal.v1.RegimeFiscal;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.stats.ServiceTracing;
 import ch.vd.uniregctb.stats.StatsService;
@@ -572,6 +573,53 @@ public class FidorClientTracing implements FidorClient, InitializingBean, Dispos
 					return String.format("estrid=%d, dateReference=%s", estrid, ServiceTracing.toString(dateReference));
 				}
 			});
+		}
+	}
+
+	@Override
+	public RegimeFiscal getRegimeFiscalParCode(final String code) {
+		Throwable t = null;
+		int items = 0;
+		final long time = tracing.start();
+		try {
+			final RegimeFiscal rf = target.getRegimeFiscalParCode(code);
+			if (rf != null) {
+				items = 1;
+			}
+			return rf;
+		}
+		catch (RuntimeException | Error e) {
+			t = e;
+			throw e;
+		}
+		finally {
+			tracing.end(time, t, "getRegimeFiscalParCode", items, new Object() {
+				@Override
+				public String toString() {
+					return String.format("code='%s'", code);
+				}
+			});
+		}
+	}
+
+	@Override
+	public List<RegimeFiscal> getRegimesFiscaux() {
+		Throwable t = null;
+		int items = 0;
+		final long time = tracing.start();
+		try {
+			final List<RegimeFiscal> regimes = target.getRegimesFiscaux();
+			if (regimes != null) {
+				items = regimes.size();
+			}
+			return regimes;
+		}
+		catch (RuntimeException | Error e) {
+			t = e;
+			throw e;
+		}
+		finally {
+			tracing.end(time, t, "getRegimesFiscaux", items, null);
 		}
 	}
 

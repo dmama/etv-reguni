@@ -1,7 +1,6 @@
 package ch.vd.unireg.interfaces.infra.fidor;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashMap;
@@ -21,6 +20,7 @@ import ch.vd.evd0007.v1.ExtendedCanton;
 import ch.vd.evd0012.v1.CommuneFiscale;
 import ch.vd.fidor.xml.post.v1.PostalLocality;
 import ch.vd.fidor.xml.post.v1.Street;
+import ch.vd.fidor.xml.regimefiscal.v1.RegimeFiscal;
 import ch.vd.infrastructure.model.EnumTypeCollectivite;
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.RegDate;
@@ -48,7 +48,7 @@ import ch.vd.unireg.interfaces.infra.data.RegionImpl;
 import ch.vd.unireg.interfaces.infra.data.Rue;
 import ch.vd.unireg.interfaces.infra.data.RueImpl;
 import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
-import ch.vd.unireg.interfaces.infra.mock.MockTypeRegimeFiscal;
+import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscalImpl;
 import ch.vd.uniregctb.cache.CacheStats;
 import ch.vd.uniregctb.cache.SimpleCacheStats;
 import ch.vd.uniregctb.cache.UniregCacheInterface;
@@ -575,8 +575,16 @@ public class ServiceInfrastructureFidor implements ServiceInfrastructureRaw, Uni
 	@Override
 	public List<TypeRegimeFiscal> getTousLesRegimesFiscaux() {
 		try {
-			// TODO [SIPM][Régimes fiscaux] Appler fidor...
-			return Arrays.<TypeRegimeFiscal>asList(MockTypeRegimeFiscal.ALL);
+			final List<RegimeFiscal> liste = fidorClient.getRegimesFiscaux();
+			if (liste == null || liste.isEmpty()) {
+				return Collections.emptyList();
+			}
+
+			final List<TypeRegimeFiscal> regimes = new ArrayList<>(liste.size());
+			for (RegimeFiscal regime : liste) {
+				regimes.add(TypeRegimeFiscalImpl.get(regime));
+			}
+			return Collections.unmodifiableList(regimes);
 		}
 		catch (FidorClientException e) {
 			throw new ServiceInfrastructureException(e);

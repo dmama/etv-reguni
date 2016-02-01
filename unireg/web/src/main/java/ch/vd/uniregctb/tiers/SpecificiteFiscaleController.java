@@ -4,6 +4,7 @@ import javax.validation.Valid;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -301,17 +302,31 @@ public class SpecificiteFiscaleController {
 	}
 
 	/**
-	 * @return Map de clé = code de régime, et
+	 * @return Map de clé = code de régime, et valeur = libellé associé (l'itérateur sur la map donne les entrées dans l'ordre alphabétique des libellés
 	 */
 	private Map<String, String> buildMapTypesRegimeFiscal(RegimeFiscal.Portee portee) {
 		final List<TypeRegimeFiscal> rfs = serviceInfrastructureService.getRegimesFiscaux();
-		final Map<String, String> map = new LinkedHashMap<>(rfs.size());
+		final Map<String, String> map = new HashMap<>(rfs.size());
 		for (TypeRegimeFiscal rf : rfs) {
 			if (portee == null || (portee == RegimeFiscal.Portee.CH && rf.isFederal()) || (portee == RegimeFiscal.Portee.VD && rf.isCantonal())) {
 				map.put(rf.getCode(), rf.getLibelle());
 			}
 		}
-		return map;
+
+		// on va trier par ordre alphabétique des libellés
+		final List<Map.Entry<String, String>> flatMap = new ArrayList<>(map.entrySet());
+		Collections.sort(flatMap, new Comparator<Map.Entry<String, String>>() {
+			@Override
+			public int compare(Map.Entry<String, String> o1, Map.Entry<String, String> o2) {
+				return o1.getValue().compareTo(o2.getValue());      // ordre alphabétique des valeurs
+			}
+		});
+		final Map<String, String> sortedMap = new LinkedHashMap<>(map.size());
+		for (Map.Entry<String, String> entry : flatMap) {
+			sortedMap.put(entry.getKey(), entry.getValue());
+		}
+
+		return sortedMap;
 	}
 
 	private String showEditRegimeFiscal(EditRegimeFiscalView view, Model model) {

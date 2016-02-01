@@ -29,7 +29,7 @@
 						<unireg:regdate regdate="${rf.dateFin}"/>
 					</display:column>
 					<display:column sortable="true" titleKey="label.type">
-						${rf.type}
+						${rf.type.libelle}
 					</display:column>
 					<display:column class="action" style="width: 10%;">
 						<c:if test="${!rf.annule}">

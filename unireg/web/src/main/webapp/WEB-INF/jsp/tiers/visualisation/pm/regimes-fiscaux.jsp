@@ -29,7 +29,7 @@
 				<unireg:regdate regdate="${regimesVD.dateFin}"/>
 			</display:column>
 			<display:column sortable="true" titleKey="label.type">
-				${regimesVD.type}
+				${regimesVD.type.libelle}
 			</display:column>
 			<display:column class="action" style="width: 10%;">
 				<unireg:consulterLog entityNature="RegimeFiscal" entityId="${regimesVD.id}" />
@@ -66,7 +66,7 @@
 				<unireg:regdate regdate="${regimesCH.dateFin}"/>
 			</display:column>
 			<display:column sortable="true" titleKey="label.type">
-				${regimesCH.type}
+				${regimesCH.type.libelle}
 			</display:column>
 			<display:column class="action" style="width: 10%;">
 				<unireg:consulterLog entityNature="RegimeFiscal" entityId="${regimesCH.id}"/>
