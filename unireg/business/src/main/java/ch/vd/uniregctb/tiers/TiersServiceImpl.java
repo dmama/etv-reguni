@@ -5923,7 +5923,10 @@ public class TiersServiceImpl implements TiersService {
 		final RegDate dateEffective = date == null ? RegDate.get() : date;
 		List<CategorieEntrepriseHisto> categorieEntrepriseHistos = getCategoriesEntrepriseHisto(entreprise);
 		if (categorieEntrepriseHistos != null && ! categorieEntrepriseHistos.isEmpty()) {
-			return DateRangeHelper.rangeAt(categorieEntrepriseHistos, dateEffective).getCategorie();
+			final CategorieEntrepriseHisto categorieEntrepriseHisto = DateRangeHelper.rangeAt(categorieEntrepriseHistos, dateEffective);
+			if (categorieEntrepriseHisto != null) {
+				return categorieEntrepriseHisto.getCategorie();
+			}
 		}
 		return null;
 	}
@@ -5942,8 +5945,6 @@ public class TiersServiceImpl implements TiersService {
 					ces.add(new CategorieEntrepriseHisto(fj.getDateDebut(), fj.getDateFin(), CategorieEntrepriseHelper.map(fj.getFormeLegale())));
 				}
 			}
-
-		DateRangeHelper.collate(ces);
 		return DateRangeHelper.collate(ces);
 	}
 
