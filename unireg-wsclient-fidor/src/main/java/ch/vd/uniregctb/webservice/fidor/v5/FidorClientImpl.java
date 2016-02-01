@@ -26,7 +26,9 @@ import ch.vd.evd0012.v1.Logiciel;
 import ch.vd.evd0012.v1.RegionFiscale;
 import ch.vd.fidor.xml.post.v1.PostalLocality;
 import ch.vd.fidor.xml.post.v1.Street;
+import ch.vd.fidor.xml.regimefiscal.v1.RegimeFiscal;
 import ch.vd.fidor.xml.ws.v5.postallocalities.PostalLocalities;
+import ch.vd.fidor.xml.ws.v5.regimesfiscaux.RegimesFiscaux;
 import ch.vd.fidor.xml.ws.v5.streets.Streets;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
@@ -52,6 +54,8 @@ public class FidorClientImpl implements FidorClient {
 	private String postalLocalityPath = "postalLocality";
 	private String streetsByPostalLocalityPath = "streets/byPostalLocality";
 	private String streetsByEstridPath = "streets/byEstrid";
+	private String regimeFiscalPath = "regimeFiscal";
+	private String regimesFiscauxPath = "regimesFiscaux";
 
 	public void setServiceUrl(String serviceUrl) {
 		this.serviceUrl = serviceUrl;
@@ -119,6 +123,14 @@ public class FidorClientImpl implements FidorClient {
 
 	public void setStreetsByEstridPath(String streetsByEstridPath) {
 		this.streetsByEstridPath = streetsByEstridPath;
+	}
+
+	public void setRegimeFiscalPath(String regimeFiscalPath) {
+		this.regimeFiscalPath = regimeFiscalPath;
+	}
+
+	public void setRegimesFiscauxPath(String regimesFiscauxPath) {
+		this.regimesFiscauxPath = regimesFiscauxPath;
 	}
 
 	@Override
@@ -638,6 +650,51 @@ public class FidorClientImpl implements FidorClient {
 				return null;
 			}
 			return result.getStreet();
+		}
+		catch (ServerWebApplicationException e) {
+			throw new FidorClientException(e);
+		}
+	}
+
+	@Override
+	public RegimeFiscal getRegimeFiscalParCode(String code) {
+		final WebClient wc = createWebClient(60000);    // 10 minutes !
+		wc.path(regimeFiscalPath);
+		wc.path(code);
+		try {
+			final Response response = wc.get();
+			if (response.getStatus() >= 400) {
+				throw new ServerWebApplicationException(response);
+			}
+
+			final JAXBContext jaxbContext = JAXBContext.newInstance(ch.vd.fidor.xml.ws.v5.regimefiscal.ObjectFactory.class);
+			final Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+
+			//noinspection unchecked
+			final JAXBElement<RegimeFiscal> data = (JAXBElement<RegimeFiscal>) unmarshaller.unmarshal((InputStream) response.getEntity());
+			return data.getValue();
+		}
+		catch (ServerWebApplicationException e) {
+			if (e.getStatus() == HttpURLConnection.HTTP_NOT_FOUND) {
+				return null;
+			}
+			throw new FidorClientException(e);
+		}
+		catch (JAXBException e) {
+			throw new FidorClientException(e);
+		}
+	}
+
+	@Override
+	public List<RegimeFiscal> getRegimesFiscaux() {
+		final WebClient wc = createWebClient(60000);    // 10 minutes !
+		wc.path(regimesFiscauxPath);
+		try {
+			final RegimesFiscaux result = wc.get(RegimesFiscaux.class);
+			if (result == null || result.getNbOfResults() == 0) {
+				return null;
+			}
+			return result.getRegimeFiscal();
 		}
 		catch (ServerWebApplicationException e) {
 			throw new FidorClientException(e);

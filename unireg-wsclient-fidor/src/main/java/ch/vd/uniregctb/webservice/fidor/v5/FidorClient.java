@@ -11,6 +11,7 @@ import ch.vd.evd0012.v1.Logiciel;
 import ch.vd.evd0012.v1.RegionFiscale;
 import ch.vd.fidor.xml.post.v1.PostalLocality;
 import ch.vd.fidor.xml.post.v1.Street;
+import ch.vd.fidor.xml.regimefiscal.v1.RegimeFiscal;
 import ch.vd.registre.base.date.RegDate;
 
 @SuppressWarnings({"UnusedDeclaration"})
@@ -167,4 +168,15 @@ public interface FidorClient {
 	 * @return la liste des rues identifiées par les critères donnés
 	 */
 	List<Street> getRuesParEstrid(int estrid, RegDate dateReference);
+
+	/**
+	 * @param code le code d'un régime fiscal
+	 * @return le régime fiscal correspondant (ou <code>null</code> si aucun régime fiscal ne correspond à ce code)
+	 */
+	RegimeFiscal getRegimeFiscalParCode(String code);
+
+	/**
+	 * @return la liste de tous les régimes fiscaux connus de FiDoR
+	 */
+	List<RegimeFiscal> getRegimesFiscaux();
 }
