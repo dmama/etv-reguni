@@ -26,7 +26,7 @@
 						<td>
 							<form:select path="formeJuridique" name="formeJuridique">
 								<form:option value="" />
-								<form:options items="${formesJuridiquesEnum}"/>
+								<form:options items="${formesJuridiquesEntrepriseEnum}"/>
 							</form:select>
 							<form:errors path="formeJuridique" cssClass="error" />
 						</td>
