@@ -15,6 +15,7 @@ import ch.vd.unireg.interfaces.organisation.data.DonneesRC;
 import ch.vd.unireg.interfaces.organisation.data.DonneesRegistreIDE;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
+import ch.vd.uniregctb.common.AnnulableHelper;
 import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.interfaces.service.ServiceOrganisationService;
 import ch.vd.uniregctb.tiers.CapitalHisto;
@@ -174,7 +175,9 @@ public class EntrepriseServiceImpl implements EntrepriseService {
 			                                                       etat.isAnnule());
 			views.add(view);
 		}
-		views.get(0).setDernierElement(true);
+		if (AnnulableHelper.sansElementsAnnules(views).size() > 1) {
+			views.get(0).setDernierElement(true);
+		}
 		return views;
 	}
 
@@ -189,7 +192,9 @@ public class EntrepriseServiceImpl implements EntrepriseService {
 		}
 		Collections.sort(views, new DateRangeComparator<CapitalView>());
 		Collections.reverse(views);
-		views.get(0).setDernierElement(true);
+		if (AnnulableHelper.sansElementsAnnules(views).size() > 1) {
+			views.get(0).setDernierElement(true);
+		}
 		return views;
 	}
 
@@ -203,7 +208,9 @@ public class EntrepriseServiceImpl implements EntrepriseService {
 		}
 		Collections.sort(list, new DateRangeComparator<FormeJuridiqueView>());
 		Collections.reverse(list);
-		list.get(0).setDernierElement(true);
+		if (AnnulableHelper.sansElementsAnnules(list).size() > 1) {
+			list.get(0).setDernierElement(true);
+		}
 		return list;
 	}
 
@@ -217,7 +224,9 @@ public class EntrepriseServiceImpl implements EntrepriseService {
 		}
 		Collections.sort(list, new DateRangeComparator<RaisonSocialeView>());
 		Collections.reverse(list);
-		list.get(0).setDernierElement(true);
+		if (AnnulableHelper.sansElementsAnnules(list).size() > 1) {
+			list.get(0).setDernierElement(true);
+		}
 		return list;
 	}
 
@@ -231,7 +240,9 @@ public class EntrepriseServiceImpl implements EntrepriseService {
 		}
 		Collections.sort(list, new DateRangeComparator<SiegeView>());
 		Collections.reverse(list);
-		list.get(0).setDernierElement(true);
+		if (AnnulableHelper.sansElementsAnnules(list).size() > 1) {
+			list.get(0).setDernierElement(true);
+		}
 		return list;
 	}
 
@@ -245,7 +256,9 @@ public class EntrepriseServiceImpl implements EntrepriseService {
 		}
 		Collections.sort(list, new DateRangeComparator<DomicileEtablissementView>());
 		Collections.reverse(list);
-		list.get(0).setDernierElement(true);
+		if (AnnulableHelper.sansElementsAnnules(list).size() > 1) {
+			list.get(0).setDernierElement(true);
+		}
 		return list;
 	}
 }
