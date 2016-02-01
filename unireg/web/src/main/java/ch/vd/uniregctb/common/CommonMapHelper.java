@@ -3,13 +3,14 @@ package ch.vd.uniregctb.common;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.EnumSet;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.context.support.ApplicationObjectSupport;
 
 import ch.vd.uniregctb.type.RestrictedAccess;
@@ -42,23 +43,24 @@ public class CommonMapHelper extends ApplicationObjectSupport {
 	 * @return une map non-modifiable
 	 */
 	protected final <T extends Enum<T>> Map<T, String> getSpecificMapEnum(String keyPrefix, Set<T> values) {
-		final Map<String, T> mapTmp = new HashMap<>();
-		final Map<T, String> map = new LinkedHashMap<>();
-
+		final List<Pair<T, String>> tmp = new ArrayList<>(values.size());
 		for (T c : values) {
 			if (!(c instanceof RestrictedAccess) || ((RestrictedAccess) c).isAllowed()) {
 				final String nom = this.getMessageSourceAccessor().getMessage(keyPrefix + c);
-				mapTmp.put(nom, c);
+				tmp.add(Pair.of(c, nom));
 			}
 		}
+    	Collections.sort(tmp, new Comparator<Pair<T, String>>() {
+			@Override
+			public int compare(Pair<T, String> o1, Pair<T, String> o2) {
+				return o1.getRight().compareTo(o2.getRight());
+			}
+		});
 
-		final List<String> nomList = new ArrayList<>(mapTmp.keySet());
-		Collections.sort(nomList);
-		for (String aNomList : nomList) {
-			final T c = mapTmp.get(aNomList);
-			map.put(c, aNomList);
+		final Map<T, String> map = new LinkedHashMap<>();
+		for (Pair<T, String> pair : tmp) {
+			map.put(pair.getLeft(), pair.getRight());
 		}
-
 		return Collections.unmodifiableMap(map);
 	}
 
@@ -70,21 +72,22 @@ public class CommonMapHelper extends ApplicationObjectSupport {
 	 * @return une map
 	 */
 	protected <T extends Enum<T>> Map<T, String> initMapEnum(String keyPrefix, T... constants) {
-		final Map<String, T> mapTmp = new HashMap<>();
-		final Map<T, String> map = new LinkedHashMap<>();
-
+		final List<Pair<T, String>> tmp = new ArrayList<>(constants.length);
 		for (T c : constants) {
 			final String nom = this.getMessageSourceAccessor().getMessage(keyPrefix + c);
-			mapTmp.put(nom, c);
+			tmp.add(Pair.of(c, nom));
 		}
+		Collections.sort(tmp, new Comparator<Pair<T, String>>() {
+			@Override
+			public int compare(Pair<T, String> o1, Pair<T, String> o2) {
+				return o1.getRight().compareTo(o2.getRight());
+			}
+		});
 
-		final List<String> nomList = new ArrayList<>(mapTmp.keySet());
-		Collections.sort(nomList);
-		for (String aNomList : nomList) {
-			final T c = mapTmp.get(aNomList);
-			map.put(c, aNomList);
+		final Map<T, String> map = new LinkedHashMap<>();
+		for (Pair<T, String> pair : tmp) {
+			map.put(pair.getLeft(), pair.getRight());
 		}
-
 		return Collections.unmodifiableMap(map);
 	}
 
