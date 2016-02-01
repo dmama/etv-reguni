@@ -12,7 +12,7 @@
 		<groupId>ch.vd.uniregctb</groupId>
 		<artifactId>uniregctb</artifactId>
 		<!-- BEGIN_LVERSION -->
-		<version>5.15.2-SNAPSHOT</version>
+		<version>5.15.1-SNAPSHOT</version>
 		<!-- END_LVERSION -->
 		<relativePath>../base/pom.xml</relativePath>
 	</parent>
@@ -99,6 +99,12 @@
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-web</artifactId>
 			<version>${spring.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>oracle.jdbc</groupId>
+			<artifactId>ojdbc7</artifactId>
+			<version>${oracle.version}</version>
+			<!-- nécessaire à la classe UniregXAMCF -->
 		</dependency>
 	</dependencies>
 
