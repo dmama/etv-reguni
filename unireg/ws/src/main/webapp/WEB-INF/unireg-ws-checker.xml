@@ -17,7 +17,7 @@
 	</bean>
 
 	<bean id="serviceOrganisationChecker" class="ch.vd.uniregctb.checker.ServiceOrganisationChecker">
-		<property name="serviceOrganisationRaw" ref="serviceOrganisationRaw"/>
+		<property name="serviceOrganisationRaw" ref="serviceOrganisationTracing"/>
 	</bean>
 
 	<bean id="serviceInfraChecker" class="ch.vd.uniregctb.checker.ServiceInfraChecker">
