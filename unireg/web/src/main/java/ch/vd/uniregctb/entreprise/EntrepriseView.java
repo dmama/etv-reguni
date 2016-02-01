@@ -20,7 +20,7 @@ public class EntrepriseView {
 	private List<FormeJuridiqueView> formesJuridiques;
 	private List<CapitalView> capitaux;
 	private List<EtatEntrepriseView> etats;
-	private List<String> numerosIDE;
+	private String numerosIDE;
 
 	private RegDate dateInscriptionRC;
 	private StatusInscriptionRC statusRC;
@@ -93,11 +93,11 @@ public class EntrepriseView {
 		this.etats = etats;
 	}
 
-	public List<String> getNumerosIDE() {
+	public String getNumerosIDE() {
 		return numerosIDE;
 	}
 
-	public void setNumerosIDE(List<String> numerosIDE) {
+	public void setNumerosIDE(String numerosIDE) {
 		this.numerosIDE = numerosIDE;
 	}
 

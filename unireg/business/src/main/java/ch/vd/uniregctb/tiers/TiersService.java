@@ -1897,13 +1897,26 @@ public interface TiersService {
 	SiteOrganisation getSiteOrganisationPourEtablissement(@NotNull Etablissement etablissement);
 
 	/**
+	 * Renvoie le dernier numéro IDE associé à une entreprise dans le régistre civil ou fiscal.
+	 * Le régistre civil est prépondérant.
+	 *
      * @param entreprise une entreprise fiscale
-     * @return le numéro IDE associé à l'entreprise, ou <code>null</code> si on n'en connait aucun
+     * @return le dernier numéro IDE associé à l'entreprise, ou <code>null</code> si on n'en connait aucun
      */
     @Nullable
     String getNumeroIDE(@NotNull Entreprise entreprise);
 
-    /**
+	/**
+	 * Renvoie le dernier numéro IDE associé à un établissement dans le régistre civil ou fiscal.
+	 * Le régistre civil est prépondérant.
+	 *
+	 * @param etablissement une établissement fiscale
+	 * @return le dernier numéro IDE associé à l'établissement, ou <code>null</code> si on n'en connait aucun
+	 */
+	@Nullable
+	String getNumeroIDE(@NotNull Etablissement etablissement);
+
+	/**
      * @param entreprise une entreprise fiscale
      * @return la liste des données de capital de l'entreprise (en tenant compte des données civiles et d'éventuelles surcharges fiscales)
      */

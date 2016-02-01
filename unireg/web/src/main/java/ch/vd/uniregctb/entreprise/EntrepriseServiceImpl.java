@@ -78,15 +78,6 @@ public class EntrepriseServiceImpl implements EntrepriseService {
 			Collections.sort(nomsAdditionnels, new DateRangeComparator<>());
 			entrepriseView.setNomsAdditionnels(nomsAdditionnels);
 
-			//entrepriseView.setEtats(getEtatsPM(pm.getEtats()));
-			List<DateRanged<String>> noIdeList = organisation.getNumeroIDE();
-			if (noIdeList != null && noIdeList.size() > 0) {
-				DateRanged<String> noIdeRange = noIdeList.get(0);
-				if (noIdeRange != null) {
-					entrepriseView.setNumerosIDE(Collections.singletonList(noIdeRange.getPayload()));
-				}
-			}
-
 			final DonneesRC donneesRC = organisation.getSitePrincipal(null).getPayload().getDonneesRC();
 			entrepriseView.setDateInscriptionRC(getLastElementPayload(donneesRC.getDateInscription()));
 			entrepriseView.setStatusRC(donneesRC.getStatusInscription(null));
@@ -95,12 +86,9 @@ public class EntrepriseServiceImpl implements EntrepriseService {
 			final DonneesRegistreIDE donneesRegistreIDE = organisation.getSitePrincipal(null).getPayload().getDonneesRegistreIDE();
 			//entrepriseView.setDateInscritpionIde(CollectionsUtils.getLastElement(donneesRegistreIDE.getDateInscription()).getPayload()); // TODO: apporter la date d'inscription Ide en 16L1
 			entrepriseView.setStatusIde(getLastElementPayload(donneesRegistreIDE.getStatus()));
-		} else {
-			final Set<IdentificationEntreprise> identificationsEntreprise = entreprise.getIdentificationsEntreprise();
-
-			final List<String> numerosIDE = getNumerosIDE(identificationsEntreprise);
-			entrepriseView.setNumerosIDE(numerosIDE);
 		}
+
+		entrepriseView.setNumerosIDE(tiersService.getNumeroIDE(entreprise));
 
 		entrepriseView.setConnueAuCivil(entreprise.isConnueAuCivil());
 		entrepriseView.setSieges(getSieges(tiersService.getSieges(entreprise)));
@@ -156,6 +144,7 @@ public class EntrepriseServiceImpl implements EntrepriseService {
 
 			etablissementView.setRaisonSociale(etablissement.getRaisonSociale());
 		}
+
 		etablissementView.setEnseigne(etablissement.getEnseigne());
 
 		etablissementView.setDomiciles(getDomiciles(tiersService.getDomiciles(etablissement)));

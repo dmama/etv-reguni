@@ -16,7 +16,7 @@
 
 <fieldset>
 	<legend><span><fmt:message key="label.entreprise"/></span></legend>
-	<c:if test="${page == 'edit' && autorisations.donneesCiviles && autorisations.identificationEntreprise}">
+	<c:if test="${page == 'edit' && (entreprise.connueAuCivil && empty entreprise.numerosIDE) && autorisations.donneesCiviles && autorisations.identificationEntreprise}">
 		<table border="0">
 			<tr>
 				<td>
@@ -30,9 +30,7 @@
 		<tr class="<unireg:nextRowClass/>" >
 			<td width="20%"><fmt:message key="label.numero.ide"/>&nbsp;:</td>
 			<td>
-				<c:forEach var="noIde" items="${entreprise.numerosIDE}">
-					<unireg:numIDE numeroIDE="${noIde}"/><br/>
-				</c:forEach>
+				<unireg:numIDE numeroIDE="${entreprise.numerosIDE}"/><br/>
 			</td>
 		</tr>
 		<tr class="<unireg:nextRowClass/>">

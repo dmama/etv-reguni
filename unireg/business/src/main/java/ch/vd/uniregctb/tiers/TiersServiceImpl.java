@@ -5831,13 +5831,57 @@ public class TiersServiceImpl implements TiersService {
 	@Override
 	public String getNumeroIDE(@NotNull Entreprise entreprise) {
 		final Organisation org = getOrganisation(entreprise);
-		if (org == null) {
-			// TODO devrait-on chercher dans notre base ?
-			return null;
+		if (org != null) {
+			final List<DateRanged<String>> liste = org.getNumeroIDE();
+			if (liste != null && ! liste.isEmpty()) {
+				Collections.sort(liste, new DateRangeComparator<DateRanged<String>>());
+				DateRanged<String> last = CollectionsUtils.getLastElement(liste);
+				if (last != null) {
+					return last.getPayload();
+				}
+			}
 		}
+		Set<IdentificationEntreprise> identificationEntreprises = entreprise.getIdentificationsEntreprise();
+		if (identificationEntreprises != null && ! identificationEntreprises.isEmpty()) {
+			List<IdentificationEntreprise> ident = AnnulableHelper.sansElementsAnnules(identificationEntreprises);
 
-		final List<DateRanged<String>> liste = org.getNumeroIDE();
-		return liste == null || liste.isEmpty() ? null : liste.get(liste.size() - 1).getPayload();
+			Collections.sort(ident, new Comparator<IdentificationEntreprise>() {
+				@Override
+				public int compare(IdentificationEntreprise o1, IdentificationEntreprise o2) {
+					return o1.getLogCreationDate().compareTo(o2.getLogCreationDate());
+				}
+			});
+			return CollectionsUtils.getLastElement(ident).getNumeroIde();
+		}
+		return null;
+	}
+
+	@Nullable
+	@Override
+	public String getNumeroIDE(@NotNull Etablissement etablissement) {
+		final SiteOrganisation site = getSiteOrganisationPourEtablissement(etablissement);
+		if (site != null) {
+			final List<DateRanged<String>> liste = site.getNumeroIDE();
+			if (liste != null && ! liste.isEmpty()) {
+				Collections.sort(liste, new DateRangeComparator<DateRanged<String>>());
+				DateRanged<String> last = CollectionsUtils.getLastElement(liste);
+				if (last != null) {
+					return last.getPayload();
+				}
+			}
+		}
+		Set<IdentificationEntreprise> identificationEntreprises = etablissement.getIdentificationsEntreprise();
+		if (identificationEntreprises != null && ! identificationEntreprises.isEmpty()) {
+			List<IdentificationEntreprise> ident = new ArrayList<>(identificationEntreprises);
+			Collections.sort(ident, new Comparator<IdentificationEntreprise>() {
+				@Override
+				public int compare(IdentificationEntreprise o1, IdentificationEntreprise o2) {
+					return o1.getLogCreationDate().compareTo(o2.getLogCreationDate());
+				}
+			});
+			return CollectionsUtils.getLastElement(ident).getNumeroIde();
+		}
+		return null;
 	}
 
 	@Override
