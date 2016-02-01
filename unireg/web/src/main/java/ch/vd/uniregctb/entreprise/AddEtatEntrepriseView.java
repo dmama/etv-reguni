@@ -21,8 +21,10 @@ public class AddEtatEntrepriseView {
 	public AddEtatEntrepriseView(Entreprise entreprise) {
 		tiersId = entreprise.getNumero();
 		final EtatEntreprise etatActuel = entreprise.getEtatActuel();
-		previousType = etatActuel.getType();
-		previousDate = etatActuel.getDateObtention();
+		if (etatActuel != null) {
+			previousType = etatActuel.getType();
+			previousDate = etatActuel.getDateObtention();
+		}
 	}
 
 	public Long getTiersId() {
