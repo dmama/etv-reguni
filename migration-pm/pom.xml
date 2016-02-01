@@ -8,7 +8,7 @@
 	<groupId>ch.vd.uniregctb</groupId>
 	<artifactId>migration-pm</artifactId>
 	<!-- BEGIN_LVERSION -->
-	<version>1.5-SNAPSHOT</version>
+	<version>1.6-SNAPSHOT</version>
 	<!-- END_LVERSION -->
 
 	<name>migration-pm</name>
@@ -89,7 +89,7 @@
 		<dependency>
 			<groupId>ch.vd.uniregctb</groupId>
 			<artifactId>uniregctb-business</artifactId>
-			<version>6.0.7-SNAPSHOT</version>
+			<version>6.0.8-SNAPSHOT</version>
 			<exclusions>
 				<exclusion>
 					<groupId>log4j</groupId>
@@ -104,7 +104,7 @@
 		<dependency>
 			<groupId>ch.vd.uniregctb</groupId>
 			<artifactId>uniregctb-interfaces</artifactId>
-			<version>6.0.7-SNAPSHOT</version>
+			<version>6.0.8-SNAPSHOT</version>
 			<scope>test</scope>
 			<type>test-jar</type>
 			<exclusions>
