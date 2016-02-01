@@ -240,7 +240,7 @@ public class TiersListControllerTest extends WebMockMvcTest {
 		loadDatabase(false);
 
 		final Map<String, String> params = new HashMap<>();
-		params.put("dateNaissance", "23.01.1970");
+		params.put("dateNaissanceInscriptionRC", "23.01.1970");
 		final List<TiersIndexedDataView> list = doSearch(params);
 		assertEquals(1, list.size()); // il y a 2 ctbs qui ont cette date de naissance, mais un des deux est un i107 qui n'est pas retourné par défaut.
 	}
