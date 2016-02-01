@@ -5877,49 +5877,29 @@ public class TiersServiceImpl implements TiersService {
 	@Override
 	public CategorieEntreprise getCategorieEntreprise(@NotNull Entreprise entreprise, RegDate date) {
 		final RegDate dateEffective = date == null ? RegDate.get() : date;
-		final Organisation org = getOrganisation(entreprise);
-		if (org != null) {
-			// données extraites des informations civiles
-			return CategorieEntrepriseHelper.map(org.getFormeLegale(dateEffective));
+		List<CategorieEntrepriseHisto> categorieEntrepriseHistos = getCategoriesEntrepriseHisto(entreprise);
+		if (categorieEntrepriseHistos != null && ! categorieEntrepriseHistos.isEmpty()) {
+			return DateRangeHelper.rangeAt(categorieEntrepriseHistos, dateEffective).getCategorie();
 		}
-		else {
-			// recherches dans les données fiscales
-			final FormeJuridiqueFiscaleEntreprise fj = DateRangeHelper.rangeAt(entreprise.getFormesJuridiquesNonAnnuleesTriees(), dateEffective);
-			return CategorieEntrepriseHelper.map(fj != null ? fj.getFormeJuridique() : null);
-		}
+		return null;
 	}
 
 	@Override
 	public List<CategorieEntrepriseHisto> getCategoriesEntrepriseHisto(@NotNull Entreprise entreprise) {
-		final Organisation org = getOrganisation(entreprise);
 		final List<CategorieEntrepriseHisto> ces;
-		if (org != null) {
-			// données extraites des informations civiles
-			final List<DateRanged<FormeLegale>> fls = org.getFormeLegale();
-			if (fls != null && !fls.isEmpty()) {
-				ces = new ArrayList<>(fls.size());
-				for (DateRanged<FormeLegale> fl : fls) {
-					ces.add(new CategorieEntrepriseHisto(fl.getDateDebut(), fl.getDateFin(), CategorieEntrepriseHelper.map(fl.getPayload())));
-				}
-			}
-			else {
-				ces = Collections.emptyList();
-			}
-		}
-		else {
-			// données extraites des informations fiscales
-			final List<FormeJuridiqueFiscaleEntreprise> fjs = entreprise.getFormesJuridiquesNonAnnuleesTriees();
-			if (fjs.isEmpty()) {
-				ces = Collections.emptyList();
-			}
-			else {
-				ces = new ArrayList<>(fjs.size());
-				for (FormeJuridiqueFiscaleEntreprise fj : fjs) {
-					ces.add(new CategorieEntrepriseHisto(fj.getDateDebut(), fj.getDateFin(), CategorieEntrepriseHelper.map(fj.getFormeJuridique())));
-				}
-			}
-		}
 
+			final List<FormeLegaleHisto> formesLegales = getFormesLegales(entreprise);
+			if (formesLegales.isEmpty()) {
+				ces = Collections.emptyList();
+			}
+			else {
+				ces = new ArrayList<>(formesLegales.size());
+				for (FormeLegaleHisto fj : formesLegales) {
+					ces.add(new CategorieEntrepriseHisto(fj.getDateDebut(), fj.getDateFin(), CategorieEntrepriseHelper.map(fj.getFormeLegale())));
+				}
+			}
+
+		DateRangeHelper.collate(ces);
 		return DateRangeHelper.collate(ces);
 	}
 
