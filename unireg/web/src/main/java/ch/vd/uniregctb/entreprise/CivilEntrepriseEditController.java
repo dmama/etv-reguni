@@ -508,8 +508,6 @@ public class CivilEntrepriseEditController {
 			if (!auth.isDonneesCiviles() || !auth.isIdentificationEntreprise()) {
 				throw new AccessDeniedException("Vous ne possédez pas les droits IfoSec d'édition d'entreprises.");
 			}
-
-			tiersService.setIdentifiantEntreprise((Entreprise) tiers, StringUtils.trimToNull(view.getIde()));
 		}
 		else {
 			throw new TiersNotFoundException(id);
@@ -520,6 +518,8 @@ public class CivilEntrepriseEditController {
 			model.addAttribute(TIERS_ID, id);
 			return "/tiers/edition/civil/edit-ide";
 		}
+
+		tiersService.setIdentifiantEntreprise((Entreprise) tiers, StringUtils.trimToNull(view.getIde()));
 
 		return "redirect:/civil/entreprise/edit.do?id=" + id;
 	}
