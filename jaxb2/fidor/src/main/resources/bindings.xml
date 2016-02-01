@@ -71,4 +71,31 @@
 		</jxb:bindings>
 	</jxb:bindings>
 
+	<jxb:bindings schemaLocation="fidor-regimefiscal-1.xsd">
+		<jxb:schemaBindings>
+			<jxb:package name="ch.vd.fidor.xml.regimefiscal.v1" />
+		</jxb:schemaBindings>
+		<jxb:bindings>
+			<namespace:prefix name="fidor-regimefiscal-1" />
+		</jxb:bindings>
+	</jxb:bindings>
+
+	<jxb:bindings schemaLocation="fidor-regimefiscal-5.xsd">
+		<jxb:schemaBindings>
+			<jxb:package name="ch.vd.fidor.xml.ws.v5.regimefiscal" />
+		</jxb:schemaBindings>
+		<jxb:bindings>
+			<namespace:prefix name="fidor-regimefiscal-5" />
+		</jxb:bindings>
+	</jxb:bindings>
+
+	<jxb:bindings schemaLocation="fidor-regimesfiscaux-5.xsd">
+		<jxb:schemaBindings>
+			<jxb:package name="ch.vd.fidor.xml.ws.v5.regimesfiscaux" />
+		</jxb:schemaBindings>
+		<jxb:bindings>
+			<namespace:prefix name="fidor-regimesfiscaux-5" />
+		</jxb:bindings>
+	</jxb:bindings>
+
 </jxb:bindings>

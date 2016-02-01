@@ -10,6 +10,9 @@
 	<system systemId="http://www.vd.ch/fiscalite/fidor/ws/postallocality/5/fidor-postallocality-5.xsd" uri="fidor-postallocality-5.xsd"/>
 	<system systemId="http://www.vd.ch/fiscalite/fidor/ws/streets/5/fidor-streets-5.xsd" uri="fidor-streets-5.xsd"/>
 
+	<system systemId="http://www.vd.ch/fiscalite/fidor/ws/regimesfiscaux/5/fidor-regimesfiscaux-5.xsd" uri="fidor-regimesfiscaux-5.xsd" />
+	<system systemId="http://www.vd.ch/fiscalite/fidor/ws/regimefiscal/5/fidor-regimefiscal-5.xsd" uri="fidor-regimefiscal-5.xsd" />
+
 	<delegateSystem systemIdStartString="http://www.ech.ch/xmlns/" catalog="../../../../ech/src/main/resources/catalog.xml" />
 
 </catalog>
