@@ -6,6 +6,7 @@
 		<property name="version" value="${pom.version}" />
 		<property name="serviceCivilChecker" ref="serviceCivilChecker" />
 		<property name="serviceInfraChecker" ref="serviceInfraChecker" />
+		<property name="serviceOrganisationChecker" ref="serviceOrganisationChecker"/>
 	</bean>
 
 	<bean id="serviceCivilChecker" class="ch.vd.uniregctb.checker.ServiceCivilChecker">
