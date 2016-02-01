@@ -21,6 +21,11 @@
 		</property>
 	</bean>
 
-	<alias alias="rcEntClient" name="rcEntClientRaw"/>
+	<bean id="rcEntClientTracing" class="ch.vd.uniregctb.wsclient.rcent.RcEntClientTracing">
+		<property name="statsService" ref="statsService"/>
+		<property name="target" ref="rcEntClientRaw"/>
+	</bean>
+
+	<alias alias="rcEntClient" name="rcEntClientTracing"/>
 
 </beans>
