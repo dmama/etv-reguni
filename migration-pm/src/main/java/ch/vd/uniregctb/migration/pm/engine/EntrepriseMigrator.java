@@ -2953,6 +2953,39 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 				// pour chacune d'entre elles, on va supposer des exercices commerciaux annuels (à la date d'ancrage du premier exercice après le trou) pour combler
 				for (DateRange range : notMapped) {
 
+					// [SIFISC-17378] si la dernière DI est retournée, la date de bouclement future a été placée en connaissance de cause
+					// (donc il ne doit pas y avoir de bouclement entre le lendemain de la date de fin de la PI de la DI et la date de bouclement futur)
+					if (range.getDateFin() == dateBouclementFutur && !exercicesCommerciaux.isEmpty()) {
+						final RegpmExerciceCommercial dernierExerciceConnu = exercicesCommerciaux.get(exercicesCommerciaux.size() - 1);
+						if (dernierExerciceConnu.getDateFin().getOneDayAfter() == range.getDateDebut()) {
+							// le dernier exercice commercial connu est avant le trou, vérifions maintenant
+							// que cet exercice n'est pas annulé et bien retourné
+							if (dernierExerciceConnu.getDossierFiscal() != null
+									&& dernierExerciceConnu.getDossierFiscal().getEtat() != RegpmTypeEtatDossierFiscal.ANNULE
+									&& dernierExerciceConnu.getDossierFiscal().getDateRetour() != null) {
+
+								// vérifions ensuite que le dernier dossier fiscal connu correspond à celui que nous venons
+								// de trouver (en gros, vérifions qu'il n'y a pas eu de nouvelle émission de DI ensuite...)
+								final List<RegpmDossierFiscal> dossiersFiscaux = mr.getExtractedData(DossiersFiscauxData.class, buildEntrepriseKey(regpm)).liste;
+								final RegpmDossierFiscal dernierDossierFiscal = dossiersFiscaux.stream()
+										.filter(df -> df.getEtat() != RegpmTypeEtatDossierFiscal.ANNULE)
+										.max(Comparator.comparing(RegpmDossierFiscal::getPf).thenComparing(RegpmDossierFiscal::getNoParAnnee))
+										.orElse(null);
+
+								// ce sont bien les mêmes, donc on arrête là (= on considère que la date de bouclement
+								// futur est bien le prochain bouclement, car elle a été mise à jour lors du retour de la
+								// dernière déclaration)
+								if (dernierDossierFiscal == dernierExerciceConnu.getDossierFiscal()) {
+
+									// comme sécurité finale, si le trou fait 24 mois ou plus, on ajoute quand-même des bouclements intermédiaires
+									if (range.getDateDebut().addYears(2).getOneDayBefore().isAfter(range.getDateFin())) {
+										continue;
+									}
+								}
+							}
+						}
+					}
+
 					// [SIFISC-17691] si le trou est dès le début de la lorgnette (= en début d'activité) et que sa date de début
 					// est dans le second semestre de l'année, alors le premier bouclement doit être placé à la fin de l'année suivante !
 					boolean nePasAjouterBouclementDansAnneeDebutTrou = false;

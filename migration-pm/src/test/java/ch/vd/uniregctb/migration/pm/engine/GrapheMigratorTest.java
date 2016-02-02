@@ -87,6 +87,7 @@ import ch.vd.uniregctb.migration.pm.utils.DatesParticulieres;
 import ch.vd.uniregctb.migration.pm.utils.ValidationInterceptor;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.tiers.ActiviteEconomique;
+import ch.vd.uniregctb.tiers.Bouclement;
 import ch.vd.uniregctb.tiers.CapitalFiscalEntreprise;
 import ch.vd.uniregctb.tiers.DomicileEtablissement;
 import ch.vd.uniregctb.tiers.DonneeCivileEntreprise;
@@ -105,6 +106,7 @@ import ch.vd.uniregctb.tiers.RaisonSocialeFiscaleEntreprise;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.tiers.RegimeFiscal;
 import ch.vd.uniregctb.tiers.TiersDAO;
+import ch.vd.uniregctb.type.DayMonth;
 import ch.vd.uniregctb.type.FormeJuridiqueEntreprise;
 import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.MotifFor;
@@ -4984,6 +4986,98 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 			Assert.assertEquals("INFO;" + noEntreprise + ";Active;;;;;;;;;;;;;;;Entreprise migrée : " + FormatNumeroHelper.numeroCTBToDisplay(noEntreprise) + ".", msgs.get(12));
 			Assert.assertEquals("WARN;" + noEntreprise + ";Active;;;;;;;;;;;;;;;Régime fiscal VD [03.05.2010 -> ?] de type '01' pris en compte dès le 02.05.2010 pour couvrir les fors de l'entreprise.", msgs.get(13));
 			Assert.assertEquals("WARN;" + noEntreprise + ";Active;;;;;;;;;;;;;;;Régime fiscal CH [03.05.2010 -> ?] de type '01' pris en compte dès le 02.05.2010 pour couvrir les fors de l'entreprise.", msgs.get(14));
+		}
+	}
+
+	/**
+	 * Cas de l'entreprise 38683, qui bouclait au 31.07 de chaque année, mais a annoncé fin 2015 (dans la DI 2015) que le prochain
+	 * bouclement serait au 31.08.2016 (et pas 31.07 !!)
+	 */
+	@Test
+	public void testAnnonceAlongementExerciceCommercialDansDerniereDeclaration() throws Exception {
+
+		final long noEntreprise = 38683L;
+		final RegDate dateDebutForPrincipal = RegDate.get(2013, 8, 1);
+
+		final RegpmEntreprise e = EntrepriseMigratorTest.buildEntreprise(noEntreprise);
+		EntrepriseMigratorTest.addRaisonSociale(e, dateDebutForPrincipal, "Pognon SA", null, null, true);
+		EntrepriseMigratorTest.addFormeJuridique(e, dateDebutForPrincipal, EntrepriseMigratorTest.createTypeFormeJuridique("S.A.", RegpmCategoriePersonneMorale.PM));
+		EntrepriseMigratorTest.addForPrincipalSuisse(e, dateDebutForPrincipal, RegpmTypeForPrincipal.SIEGE, Commune.ECHALLENS);
+		EntrepriseMigratorTest.addRegimeFiscalVD(e, dateDebutForPrincipal, null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
+		EntrepriseMigratorTest.addRegimeFiscalCH(e, dateDebutForPrincipal, null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
+
+		final RegpmAssujettissement assujettissement = EntrepriseMigratorTest.addAssujettissement(e, dateDebutForPrincipal, null, RegpmTypeAssujettissement.LILIC);
+
+		final RegpmDossierFiscal df2013 = EntrepriseMigratorTest.addDossierFiscal(e, assujettissement, 2013, RegDate.get(2013, 8, 1), RegpmModeImposition.POST);
+		df2013.setDateRetour(RegDate.get(2013, 10, 2));
+		EntrepriseMigratorTest.addExerciceCommercial(e, df2013, RegDate.get(2012, 8, 1), RegDate.get(2013, 7, 31));
+
+		final RegpmDossierFiscal df2014 = EntrepriseMigratorTest.addDossierFiscal(e, assujettissement, 2014, RegDate.get(2014, 8, 1), RegpmModeImposition.POST);
+		df2014.setDateRetour(RegDate.get(2014, 10, 2));
+		EntrepriseMigratorTest.addExerciceCommercial(e, df2014, RegDate.get(2013, 8, 1), RegDate.get(2014, 7, 31));
+
+		final RegpmDossierFiscal df2015 = EntrepriseMigratorTest.addDossierFiscal(e, assujettissement, 2015, RegDate.get(2015, 8, 1), RegpmModeImposition.POST);
+		df2015.setDateRetour(RegDate.get(2015, 10, 2));
+		e.setDateBouclementFutur(RegDate.get(2016, 8, 31));
+		EntrepriseMigratorTest.addExerciceCommercial(e, df2015, RegDate.get(2014, 8, 1), RegDate.get(2015, 7, 31));
+
+		// ajout de quelques périodes fiscales utiles
+		doInUniregTransaction(false, status -> {
+			addPeriodeFiscale(2013);
+			addPeriodeFiscale(2014);
+			addPeriodeFiscale(2015);
+		});
+
+		final MockGraphe graphe = new MockGraphe(Collections.singletonList(e),
+		                                         null,
+		                                         null);
+
+		activityManager.setup(ALL_ACTIVE);
+
+		final LoggedMessages lms = grapheMigrator.migrate(graphe);
+		Assert.assertNotNull(lms);
+
+		// vérification en base
+		doInUniregTransaction(true, status -> {
+			final Entreprise entreprise = uniregStore.getEntityFromDb(Entreprise.class, noEntreprise);
+			Assert.assertNotNull(entreprise);
+
+			final Set<Bouclement> bouclements = entreprise.getBouclements();
+			Assert.assertNotNull(bouclements);
+			Assert.assertEquals(2, bouclements.size());
+
+			final List<Bouclement> bouclementsTries = new ArrayList<>(bouclements);
+			Collections.sort(bouclementsTries, Comparator.comparing(Bouclement::getDateDebut));
+
+			{
+				final Bouclement b = bouclementsTries.get(0);
+				Assert.assertNotNull(b);
+				Assert.assertFalse(b.isAnnule());
+				Assert.assertEquals(RegDate.get(2013, 7, 1), b.getDateDebut());
+				Assert.assertEquals(DayMonth.get(7, 31), b.getAncrage());
+				Assert.assertEquals(12, b.getPeriodeMois());
+			}
+			{
+				final Bouclement b = bouclementsTries.get(1);
+				Assert.assertNotNull(b);
+				Assert.assertFalse(b.isAnnule());
+				Assert.assertEquals(RegDate.get(2016, 7, 1), b.getDateDebut());
+				Assert.assertEquals(DayMonth.get(8, 31), b.getAncrage());
+				Assert.assertEquals(12, b.getPeriodeMois());
+			}
+		});
+
+		final Map<LogCategory, List<String>> messages = buildTextualMessages(lms);
+		{
+			// vérification des messages dans le contexte "SUIVI"
+			final List<String> msgs = messages.get(LogCategory.SUIVI);
+			Assert.assertEquals(6, msgs.size());
+			Assert.assertEquals("WARN;" + noEntreprise + ";Active;;;;;;;;;;;;;;;L'entreprise n'existait pas dans Unireg avec ce numéro de contribuable.", msgs.get(0));
+			Assert.assertEquals("ERROR;" + noEntreprise + ";Active;;;;;;;;;;;;;;;Pas de numéro cantonal assigné sur l'entreprise, pas de lien vers le civil.", msgs.get(1));
+			Assert.assertEquals("INFO;" + noEntreprise + ";Active;;;;;;;;;;;;;;;Cycle de bouclements créé, applicable dès le 01.07.2013 : tous les 12 mois, à partir du premier 31.07.", msgs.get(2));
+			Assert.assertEquals("INFO;" + noEntreprise + ";Active;;;;;;;;;;;;;;;Cycle de bouclements créé, applicable dès le 01.07.2016 : tous les 12 mois, à partir du premier 31.08.", msgs.get(3));
+			Assert.assertEquals("WARN;" + noEntreprise + ";Active;;;;;;;;;;;;;;;Pas de siège associé dans les données fiscales, pas d'établissement principal créé à partir des données fiscales.", msgs.get(4));
+			Assert.assertEquals("INFO;" + noEntreprise + ";Active;;;;;;;;;;;;;;;Entreprise migrée : " + FormatNumeroHelper.numeroCTBToDisplay(noEntreprise) + ".", msgs.get(5));
 		}
 	}
 
