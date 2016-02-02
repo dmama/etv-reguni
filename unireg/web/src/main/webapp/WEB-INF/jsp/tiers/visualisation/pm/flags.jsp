@@ -18,14 +18,14 @@
 
 	<c:if test="${not empty command.flags}">
 
-		<input class="noprint" name="flag_histo" type="checkbox" onClick="Histo.toggleRowsIsHistoAccordingToColumn('flag','flag_histo');" id="flag_histo" />
+		<input class="noprint" name="flag_histo" type="checkbox" onClick="Histo.toggleRowsIsHistoFromClass('flag','flag_histo', 'histo-only');" id="flag_histo" />
 		<label class="noprint" for="flag_histo"><fmt:message key="label.historique" /></label>
 
-		<display:table name="${command.flags}" id="flag" requestURI="visu.do" class="display" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator">
+		<display:table name="${command.flags}" id="flag" requestURI="visu.do" class="display" decorator="ch.vd.uniregctb.decorator.TableAnnuableDateRangeDecorator">
 			<display:column titleKey="label.date.debut" style="width: 20%;" sortable="true" sortProperty="dateDebut">
 				<unireg:regdate regdate="${flag.dateDebut}"/>
 			</display:column>
-			<display:column titleKey="label.date.fin" style="width: 20%;" sortable="true" sortProperty="dateFin" class="notShownIfNotEmpty">
+			<display:column titleKey="label.date.fin" style="width: 20%;" sortable="true" sortProperty="dateFin">
 				<unireg:regdate regdate="${flag.dateFin}"/>
 			</display:column>
 			<display:column titleKey="label.type">
@@ -43,7 +43,7 @@
 		    $(function() {
 
 			    // premièr calcul des lignes à cacher par défaut
-			    Histo.toggleRowsIsHistoAccordingToColumn('flag','flag_histo');
+			    Histo.toggleRowsIsHistoFromClass('flag','flag_histo', 'histo-only');
 
 		    });
 
