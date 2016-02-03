@@ -2979,6 +2979,12 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 
 									// comme sécurité finale, si le trou fait 24 mois ou plus, on ajoute quand-même des bouclements intermédiaires
 									if (range.getDateDebut().addYears(2).getOneDayBefore().isAfter(range.getDateFin())) {
+
+										// un petit log, ça ne fait pas de mal
+										mr.addMessage(LogCategory.SUIVI, LogLevel.WARN,
+										              String.format("Période %s sans exercice commercial dans RegPM reprise comme un seul exercice commercial.",
+										                            StringRenderers.DATE_RANGE_RENDERER.toString(range)));
+
 										continue;
 									}
 								}
