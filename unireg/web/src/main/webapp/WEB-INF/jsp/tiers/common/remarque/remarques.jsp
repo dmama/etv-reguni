@@ -25,15 +25,19 @@
 <script>
 	// chargement Ajax des remarques
 	$(function() {
-		Remarques.loadRemarques(1);
-
-        $('#addRemarque').show();
-        var newRemarque = $('#newRemarque');
-        newRemarque.hide();
-        newRemarque.find('textarea').val('');
+		Remarques.refreshRemarques();
 	});
 
     var Remarques = {
+
+        refreshRemarques: function() {
+            $('#addRemarque').show();
+            var newRemarque = $('#newRemarque');
+            newRemarque.hide();
+            newRemarque.find('textarea').val('');
+
+            Remarques.loadRemarques(1);
+        },
 
 	    loadRemarques: function(page) {
             $('#remarquesSpinner').show();
@@ -104,13 +108,9 @@
                     html += '<a class="delete"';
                     html += ' onclick="if (!confirm(\'Voulez-vous vraiment annuler cette remarque ?\')) return false;';
                     html += 'Form.dynamicSubmit(\'POST\',\'<c:url value="/remarque/cancel.do"/>\',{\'remarqueId\':\'' + remarque.id + '\'}); return false;"';
-                    html += ' title="Annulation de remarque" href="<c:url value="/remarque/cancel.do"/>">&nbsp;</a>';
-                } else {
-                    html += '&nbsp;';
+                    html += ' title="Annulation de remarque" href="<c:url value="/remarque/cancel.do"/>"></a>&nbsp;';
                 }
-                html += '</td>';
-
-                html += '<td style="width:2em;"><a href="#" class="consult" title="Consultation des logs" onclick="return Dialog.open_consulter_log(\'Remarque\', ' + remarque.id + ');">&nbsp;</a></td>';
+                html += '<a href="#" class="consult" title="Consultation des logs" onclick="return Dialog.open_consulter_log(\'Remarque\', ' + remarque.id + ');"></a></td>';
                 html += '</tr>\n';
             }
             html +='</table>\n';
@@ -145,7 +145,7 @@
         var text = $('#newRemarque').find('textarea').val();
         $.post('<c:url value="/remarque/add.do"/>', {'tiersId': ${tiersId}, 'text': text}, function() {
             // on success, refresh all
-            Remarques.loadRemarques(1);
+            Remarques.refreshRemarques();
         });
         return false;
     });
