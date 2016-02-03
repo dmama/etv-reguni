@@ -78,6 +78,7 @@ import ch.vd.uniregctb.migration.pm.regpm.RegpmIndividu;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmModeImposition;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeAssujettissement;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeEtatDossierFiscal;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeEtatEntreprise;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeForPrincipal;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeGroupeProprietaire;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeMandat;
@@ -3322,7 +3323,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 				Assert.assertEquals(RegDate.get(2000, 5, 7), ffp.getDateDebut());
 				Assert.assertEquals(dateBilanFusion, ffp.getDateFin());
 				Assert.assertEquals(MotifFor.DEBUT_EXPLOITATION, ffp.getMotifOuverture());
-				Assert.assertEquals(MotifFor.CESSATION_ACTIVITE_FUSION_FAILLITE, ffp.getMotifFermeture());
+				Assert.assertEquals(MotifFor.FUSION_ENTREPRISES, ffp.getMotifFermeture());
 				Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
 				Assert.assertEquals(Commune.MORGES.getNoOfs(), ffp.getNumeroOfsAutoriteFiscale());
 			}
@@ -3338,7 +3339,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 				Assert.assertEquals(RegDate.get(2003, 9, 24), ffp.getDateDebut());
 				Assert.assertEquals(dateBilanFusion, ffp.getDateFin());
 				Assert.assertEquals(MotifFor.DEBUT_EXPLOITATION, ffp.getMotifOuverture());
-				Assert.assertEquals(MotifFor.CESSATION_ACTIVITE_FUSION_FAILLITE, ffp.getMotifFermeture());
+				Assert.assertEquals(MotifFor.FUSION_ENTREPRISES, ffp.getMotifFermeture());
 				Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
 				Assert.assertEquals(Commune.LAUSANNE.getNoOfs(), ffp.getNumeroOfsAutoriteFiscale());
 			}
@@ -3353,7 +3354,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 				Assert.assertFalse(ffp.isAnnule());
 				Assert.assertEquals(dateBilanFusion, ffp.getDateDebut());           // date reprise du for du mainframe, même si je pense que l'on devrait trouver le lendemain...
 				Assert.assertNull(ffp.getDateFin());
-				Assert.assertEquals(MotifFor.CESSATION_ACTIVITE_FUSION_FAILLITE, ffp.getMotifOuverture());
+				Assert.assertEquals(MotifFor.FUSION_ENTREPRISES, ffp.getMotifOuverture());
 				Assert.assertNull(ffp.getMotifFermeture());
 				Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
 				Assert.assertEquals(Commune.ECHALLENS.getNoOfs(), ffp.getNumeroOfsAutoriteFiscale());
@@ -3797,7 +3798,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 				Assert.assertEquals(Commune.LAUSANNE.getNoOfs(), ffp.getNumeroOfsAutoriteFiscale());
 				Assert.assertFalse(ffp.isAnnule());
 				Assert.assertEquals(MotifFor.INDETERMINE, ffp.getMotifOuverture());
-				Assert.assertEquals(MotifFor.CESSATION_ACTIVITE_FUSION_FAILLITE, ffp.getMotifFermeture());
+				Assert.assertEquals(MotifFor.CESSATION_ACTIVITE, ffp.getMotifFermeture());
 			}
 
 			// récupération du numéro fiscal de l'établissement principal généré
@@ -4084,7 +4085,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 	}
 
 	/**
-	 * [SIFISC-17153] La date de réquisition de radiation avait été oubliée comme déclencheur du motif CESSATION_ACTIVITE_FUSION_FAILLITE
+	 * [SIFISC-17153] La date de réquisition de radiation avait été oubliée comme déclencheur du motif CESSATION_ACTIVITE
 	 */
 	@Test
 	public void testMotifFermetureForPrincipalSurRequisitionDeRadiation() throws Exception {
@@ -4119,8 +4120,80 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 			final ForFiscalPrincipalPM ffp = e.getDernierForFiscalPrincipal();
 			Assert.assertNotNull(ffp);
 			Assert.assertEquals(dateRequisitionRadiation, ffp.getDateFin());
-			Assert.assertEquals(MotifFor.CESSATION_ACTIVITE_FUSION_FAILLITE, ffp.getMotifFermeture());
+			Assert.assertEquals(MotifFor.CESSATION_ACTIVITE, ffp.getMotifFermeture());
 		});
+	}
+
+	@Test
+	public void testMotifForFaillite() throws Exception {
+
+		final long noEntreprise = 2623L;
+		final RegDate dateCreationFor = RegDate.get(2005, 2, 1);
+		final RegDate datePrononceFaillite = RegDate.get(2010, 6, 2);
+
+		final RegpmEntreprise e = EntrepriseMigratorTest.buildEntreprise(noEntreprise);
+		EntrepriseMigratorTest.addRaisonSociale(e, dateCreationFor, "Titi", null, null, true);
+		EntrepriseMigratorTest.addFormeJuridique(e, dateCreationFor, EntrepriseMigratorTest.createTypeFormeJuridique("S.A.", RegpmCategoriePersonneMorale.PM));
+		EntrepriseMigratorTest.addForPrincipalSuisse(e, dateCreationFor, RegpmTypeForPrincipal.SIEGE, Commune.LAUSANNE);
+		EntrepriseMigratorTest.addAssujettissement(e, dateCreationFor, datePrononceFaillite, RegpmTypeAssujettissement.LILIC);
+		EntrepriseMigratorTest.addPrononceFaillite(e, datePrononceFaillite, RegpmTypeEtatEntreprise.EN_FAILLITE, datePrononceFaillite);
+
+		activityManager.setup(ALL_ACTIVE);
+
+		final MockGraphe graphe = new MockGraphe(Collections.singletonList(e),
+		                                         null,
+		                                         null);
+
+		final LoggedMessages lms = grapheMigrator.migrate(graphe);
+		Assert.assertNotNull(lms);
+
+		// en base : le for principal doit avoir été limité à la date de radiation RC
+		doInUniregTransaction(true, status -> {
+			final Entreprise entreprise = uniregStore.getEntityFromDb(Entreprise.class, noEntreprise);
+			Assert.assertNotNull(entreprise);
+
+			final ForFiscalPrincipalPM ffp = entreprise.getDernierForFiscalPrincipal();
+			Assert.assertNotNull(ffp);
+			Assert.assertEquals(dateCreationFor, ffp.getDateDebut());
+			Assert.assertEquals(datePrononceFaillite, ffp.getDateFin());
+			Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
+			Assert.assertEquals(Commune.LAUSANNE.getNoOfs(), ffp.getNumeroOfsAutoriteFiscale());
+			Assert.assertFalse(ffp.isAnnule());
+			Assert.assertEquals(MotifFor.INDETERMINE, ffp.getMotifOuverture());
+			Assert.assertEquals(MotifFor.FAILLITE, ffp.getMotifFermeture());
+		});
+
+		// et dans les messages de suivi ?
+		final Map<LogCategory, List<String>> messages = buildTextualMessages(lms);
+		Assert.assertEquals(EnumSet.of(LogCategory.SUIVI,
+		                               LogCategory.FORS,
+		                               LogCategory.DONNEES_CIVILES_REGPM),
+		                    messages.keySet());
+
+		{
+			final List<String> msgs = messages.get(LogCategory.SUIVI);
+			Assert.assertEquals(9, msgs.size());
+			Assert.assertEquals("WARN;" + noEntreprise + ";Active;;;;;;;;;;;;;;;L'entreprise n'existait pas dans Unireg avec ce numéro de contribuable.", msgs.get(0));
+			Assert.assertEquals("ERROR;" + noEntreprise + ";Active;;;;;;;;;;;;;;;Pas de numéro cantonal assigné sur l'entreprise, pas de lien vers le civil.", msgs.get(1));
+			Assert.assertEquals("INFO;" + noEntreprise + ";Active;;;;;;;;;;;;;;;Date de fin d'activité proposée (date de prononcé de faillite) : 02.06.2010.", msgs.get(2));
+			Assert.assertEquals("WARN;" + noEntreprise + ";Active;;;;;;;;;;;;;;;Entreprise sans exercice commercial ni date de bouclement futur.", msgs.get(3));
+			Assert.assertEquals("WARN;" + noEntreprise + ";Active;;;;;;;;;;;;;;;Ajout d'un régime fiscal VD de type '01' sur la période [01.01.2009 -> ?] pour couvrir les fors de l'entreprise.", msgs.get(4));
+			Assert.assertEquals("WARN;" + noEntreprise + ";Active;;;;;;;;;;;;;;;Ajout d'un régime fiscal CH de type '01' sur la période [01.01.2009 -> ?] pour couvrir les fors de l'entreprise.", msgs.get(5));
+			Assert.assertEquals("WARN;" + noEntreprise + ";Active;;;;;;;;;;;;;;;Pas de siège associé dans les données fiscales, pas d'établissement principal créé à partir des données fiscales.", msgs.get(6));
+			Assert.assertEquals("INFO;" + noEntreprise + ";Active;;;;;;;;;;;;;;;Etat 'EN_FAILLITE' migré, dès le 02.06.2010.", msgs.get(7));
+			Assert.assertEquals("INFO;" + noEntreprise + ";Active;;;;;;;;;;;;;;;Entreprise migrée : 26.23.", msgs.get(8));
+		}
+		{
+			final List<String> msgs = messages.get(LogCategory.FORS);
+			Assert.assertEquals(1, msgs.size());
+			Assert.assertEquals("INFO;" + noEntreprise + ";Active;;;For principal COMMUNE_OU_FRACTION_VD/5586 [01.02.2005 -> 02.06.2010] généré.", msgs.get(0));
+		}
+		{
+			final List<String> msgs = messages.get(LogCategory.DONNEES_CIVILES_REGPM);
+			Assert.assertEquals(2, msgs.size());
+			Assert.assertEquals("INFO;" + noEntreprise + ";Active;;;;;;;;;Donnée de raison sociale migrée : sur la période [01.02.2005 -> 02.06.2010], 'Titi'.", msgs.get(0));
+			Assert.assertEquals("INFO;" + noEntreprise + ";Active;;;;;;;;;Donnée de forme juridique migrée : sur la période [01.02.2005 -> 02.06.2010], SA.", msgs.get(1));
+		}
 	}
 
 	@Test

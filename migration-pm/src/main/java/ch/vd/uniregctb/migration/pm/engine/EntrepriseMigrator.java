@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -99,7 +100,6 @@ import ch.vd.uniregctb.migration.pm.log.RegimeFiscalMappingLoggedElement;
 import ch.vd.uniregctb.migration.pm.mapping.IdMapping;
 import ch.vd.uniregctb.migration.pm.regpm.ContactEntreprise;
 import ch.vd.uniregctb.migration.pm.regpm.InscriptionRC;
-import ch.vd.uniregctb.migration.pm.regpm.RadiationRC;
 import ch.vd.uniregctb.migration.pm.regpm.RaisonSociale;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmAdresseEntreprise;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmAllegementFiscal;
@@ -1078,32 +1078,42 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		final List<ForFiscalPrincipalPM> ffps = unireg.getForsFiscauxPrincipauxActifsSorted();
 		if (ffps != null && !ffps.isEmpty()) {
 
-			// les dates assimilables à une inscription au RC / une constitution d'entreprise
-			final Set<RegDate> datesInscription = Stream.concat(Stream.of(data.regpm.getDateInscriptionRC(), data.regpm.getDateConstitution()),
-			                                                    data.regpm.getInscriptionsRC().stream()
-					                                                    .filter(inscription -> !inscription.isRectifiee())
-					                                                    .map(InscriptionRC::getDateInscription))
-					.filter(Objects::nonNull)
-					.collect(Collectors.toSet());
+			final Map<RegDate, MotifFor> ouvertures = new HashMap<>();
+			{
+				// les dates assimilables à une inscription au RC / une constitution d'entreprise -> DEBUT_EXPLOITATION
+				Stream.concat(Stream.of(data.regpm.getDateInscriptionRC(), data.regpm.getDateConstitution()),
+				              data.regpm.getInscriptionsRC().stream()
+						              .filter(inscription -> !inscription.isRectifiee())
+						              .map(InscriptionRC::getDateInscription))
+						.filter(Objects::nonNull)
+						.forEach(date -> ouvertures.put(date, MotifFor.DEBUT_EXPLOITATION));
 
-			// les dates assimilables à une radiation du RC / dissolution de l'entreprise / fusion (fermante)
-			final Set<RegDate> dateRadiationFusionFermante = Stream.concat(Stream.of(data.regpm.getDateRadiationRC(), data.regpm.getDateRequisitionRadiation(), data.regpm.getDateDissolution()),
-			                                                               Stream.concat(data.regpm.getRadiationsRC().stream()
-					                                                                             .filter(radiation -> !radiation.isRectifiee())
-					                                                                             .map(RadiationRC::getDateRadiation),
-			                                                                             data.regpm.getFusionsApres().stream()
-					                                                                             .filter(fusion -> !fusion.isRectifiee())
-					                                                                             .map(EntrepriseMigrator::extractDateFermetureForAvantFusion)))
-					.filter(Objects::nonNull)
-					.collect(Collectors.toSet());
+				// les dates assimilables à une fusion qui s'ouvre -> FUSION_ENTREPRISE
+				data.regpm.getFusionsAvant().stream()
+						.filter(fusion -> !fusion.isRectifiee())
+						.map(fusion -> Stream.of(extractDateFermetureForAvantFusion(fusion),
+						                         extractDateOuvertureForApresFusion(fusion)))        // TODO régler la problématique de la date de bilan par rapport à la date d'ouverture du for sur l'entreprise après fusion
+						.flatMap(Function.identity())
+						.filter(Objects::nonNull)       // utile ?
+						.forEach(date -> ouvertures.put(date, MotifFor.FUSION_ENTREPRISES));
+			}
 
-			// les dates assimilables à une fusion qui s'ouvre
-			final Set<RegDate> datesFusionOuvrante = data.regpm.getFusionsAvant().stream()
-					.filter(fusion -> !fusion.isRectifiee())
-					.map(fusion -> Stream.of(extractDateFermetureForAvantFusion(fusion), extractDateOuvertureForApresFusion(fusion)))        // TODO régler la problématique de la date de bilan par rapport à la date d'ouverture du for sur l'entreprise après fusion
-					.flatMap(Function.identity())
-					.filter(Objects::nonNull)       // utile ?
-					.collect(Collectors.toSet());
+			final Map<RegDate, MotifFor> fermetures = new HashMap<>();
+			{
+				// dates assimilables à une fusion qui débute -> FUSION_ENTREPRISE
+				data.regpm.getFusionsApres().stream()
+						.filter(fusion -> !fusion.isRectifiee())
+						.map(EntrepriseMigrator::extractDateFermetureForAvantFusion)
+						.forEach(date -> fermetures.put(date, MotifFor.FUSION_ENTREPRISES));
+
+				// dates de prononcé de faillite
+				data.regpm.getEtatsEntreprise().stream()
+						.filter(etat -> !etat.isRectifie())
+						.map(RegpmEtatEntreprise::getPrononcesFaillite)
+						.flatMap(Set::stream)
+						.map(RegpmPrononceFaillite::getDatePrononceFaillite)
+						.forEach(date -> fermetures.put(date, MotifFor.FAILLITE));
+			}
 
 			boolean premierFor = true;
 			for (ForFiscalPrincipalPM ffp : ffps) {
@@ -1112,15 +1122,14 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 
 					// contexte : en général, c'est le premier for de l'entreprise...
 
+					final MotifFor motif = ouvertures.get(ffp.getDateDebut());
+					if (motif != null) {
+						// motif déterminé
+						ffp.setMotifOuverture(motif);
+					}
 					// si c'est le cas, et que ce for est HC/HS, alors on peut laisser le motif "vide"
-					if (premierFor && ffp.getTypeAutoriteFiscale() != TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
+					else if (premierFor && ffp.getTypeAutoriteFiscale() != TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
 						ffp.setMotifOuverture(null);
-					}
-					else if (datesInscription.contains(ffp.getDateDebut())) {
-						ffp.setMotifOuverture(MotifFor.DEBUT_EXPLOITATION);
-					}
-					else if (datesFusionOuvrante.contains(ffp.getDateDebut())) {
-						ffp.setMotifOuverture(MotifFor.CESSATION_ACTIVITE_FUSION_FAILLITE);
 					}
 					else {
 						// tant pis, on laisse INDETERMINE
@@ -1132,12 +1141,18 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 
 					// contexte : en général, c'est le dernier for de l'entreprise
 
-					// radiation ou fusion fermante ?
-					if (dateRadiationFusionFermante.contains(ffp.getDateFin())) {
-						ffp.setMotifFermeture(MotifFor.CESSATION_ACTIVITE_FUSION_FAILLITE);
+					final MotifFor motif = fermetures.get(ffp.getDateFin());
+					if (motif != null) {
+						// motif déterminé
+						ffp.setMotifFermeture(motif);
+					}
+					else if (DateRangeHelper.rangeAt(ffps, ffp.getDateFin().getOneDayAfter()) == null) {
+						// cessation d'activité
+						ffp.setMotifFermeture(MotifFor.CESSATION_ACTIVITE);
 					}
 					else {
-						// tant pis, on laisse INDETERMINE
+						// on ne sait pas trop, mais il y a encore quelque chose après...
+						// --> on laisse INDETERMINE
 					}
 				}
 
