@@ -2270,7 +2270,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		Assert.assertNotNull(msg);
 		Assert.assertEquals(1, msg.size());
 		final String texte = msg.get(0);
-		Assert.assertEquals("WARN;" + idEntreprise + ";Active;;;Période(s) d'assujettissement modifiée(s) : avant ([02.01.1990 -> 31.12.2014]) et après ([01.01.1990 -> 31.12.2014]).", texte);
+		Assert.assertEquals("WARN;" + idEntreprise + ";Active;;;Période d'assujettissement décalée d'un jour : avant ([02.01.1990 -> 31.12.2014]) et après ([01.01.1990 -> 31.12.2014]).", texte);
 	}
 
 	@Test

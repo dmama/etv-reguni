@@ -1531,10 +1531,20 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 					// les cas qui s'intersectent
 					if (!lilicIntersectant.isEmpty() || !calculesIntersectant.isEmpty()) {
 						if (!sameDateRanges(lilicIntersectant, calculesIntersectant)) {
-							mr.addMessage(LogCategory.ASSUJETTISSEMENTS, LogLevel.WARN,
-							              String.format("Période(s) d'assujettissement modifiée(s) : avant (%s) et après (%s).",
-							                            toDisplayString(lilicIntersectant),
-							                            toDisplayString(calculesIntersectant)));
+
+							// on veut faire la différence entre des assujettissements différents sur un jour ou plus
+							if (onlyDifferringByOneDay(lilicIntersectant, calculesIntersectant)) {
+								mr.addMessage(LogCategory.ASSUJETTISSEMENTS, LogLevel.WARN,
+								              String.format("Période d'assujettissement décalée d'un jour : avant (%s) et après (%s).",
+								                            toDisplayString(lilicIntersectant),
+								                            toDisplayString(calculesIntersectant)));
+							}
+							else {
+								mr.addMessage(LogCategory.ASSUJETTISSEMENTS, LogLevel.WARN,
+								              String.format("Période(s) d'assujettissement modifiée(s) : avant (%s) et après (%s).",
+								                            toDisplayString(lilicIntersectant),
+								                            toDisplayString(calculesIntersectant)));
+							}
 						}
 					}
 				}
@@ -1552,6 +1562,36 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 				LOGGER.error("Exception lancée lors du calcul de l'assujettissement de l'entreprise " + entreprise.getNumero(), e);
 			}
 		});
+	}
+
+	/**
+	 * @param ranges1 des périodes
+	 * @param ranges2 d'autres périodes
+	 * @return <code>true</code> s'il n'y a qu'une seule période de chaque côté et que celles-ci ne diffèrent que d'un jour au début ou à la fin
+	 */
+	private static boolean onlyDifferringByOneDay(List<DateRange> ranges1, List<DateRange> ranges2) {
+		if (ranges1.size() != 1 || ranges2.size() != 1) {
+			return false;
+		}
+
+		// il n'y en a qu'un de chaque côté, donc pour que la différence ne soit que d'un jour,
+		// il faut et il suffit qu'une des bornes soit identique des deux côtés et que l'autre
+		// décalée d'un jour, dans un sens ou dans l'autre
+
+		final DateRange range1 = ranges1.get(0);
+		final DateRange range2 = ranges2.get(0);
+		final RegDate debut1 = range1.getDateDebut();
+		final RegDate debut2 = range2.getDateDebut();
+		final RegDate fin1 = range1.getDateFin();
+		final RegDate fin2 = range2.getDateFin();
+
+		if (debut1 == debut2) {
+			return fin1 != null && fin2 != null && (fin1.getOneDayAfter() == fin2 || fin1.getOneDayBefore() == fin2);
+		}
+		if (fin1 == fin2) {
+			return debut1 != null && debut2 != null && (debut1.getOneDayAfter() == debut2 || debut1.getOneDayBefore() == debut2);
+		}
+		return false;
 	}
 
 	/**
