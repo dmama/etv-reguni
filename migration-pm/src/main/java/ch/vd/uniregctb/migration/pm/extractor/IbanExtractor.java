@@ -21,13 +21,13 @@ public abstract class IbanExtractor {
 	private static final Pattern CLEARING = Pattern.compile("(\\d{1,5})");
 	private static final int CLEARING_POSTE = 9000;
 
-	public static class IbanExtratorException extends Exception {
+	public static class IbanExtractorException extends Exception {
 
-		public IbanExtratorException(String message, Throwable cause) {
+		public IbanExtractorException(String message, Throwable cause) {
 			super(message, cause);
 		}
 
-		public IbanExtratorException(String message) {
+		public IbanExtractorException(String message) {
 			super(message);
 		}
 	}
@@ -39,7 +39,7 @@ public abstract class IbanExtractor {
 	 * @throws IllegalArgumentException en cas d'incohérence, ou de problème en général
 	 */
 	@Nullable
-	public static String extractIban(@Nullable CoordonneesFinancieresContainer coordonneesFinancieres, MigrationResultProduction mr) throws IbanExtratorException {
+	public static String extractIban(@Nullable CoordonneesFinancieresContainer coordonneesFinancieres, MigrationResultProduction mr) throws IbanExtractorException {
 		if (coordonneesFinancieres == null) {
 			return null;
 		}
@@ -75,7 +75,7 @@ public abstract class IbanExtractor {
 		return iban;
 	}
 
-	private static String buildIban(int clearing, String noCompte) throws IbanExtratorException {
+	private static String buildIban(int clearing, String noCompte) throws IbanExtractorException {
 		final String sansControle = String.format("%05d%12sCH00", clearing, noCompte).replace(' ', '0');     // ccccnnnnnnnnnnnnCH00
 
 		// on convertit le code IBAN en valeur numérique
@@ -97,25 +97,23 @@ public abstract class IbanExtractor {
 
 	}
 
-	private static String extractIbanFromCompteBancaire(String noCompteBancaire, RegpmInstitutionFinanciere institutionFinanciere, MigrationResultProduction mr) throws IbanExtratorException {
+	private static String extractIbanFromCompteBancaire(String noCompteBancaire, RegpmInstitutionFinanciere institutionFinanciere, MigrationResultProduction mr) throws IbanExtractorException {
 		if (institutionFinanciere == null || StringUtils.isBlank(institutionFinanciere.getNoClearing())) {
-			throw new IbanExtratorException("Clearing inconnu pour le numéro de compte '" + noCompteBancaire + "'");
+			throw new IbanExtractorException("Clearing inconnu pour le numéro de compte '" + noCompteBancaire + "'");
 		}
 
 		final Matcher clearingMatcher = CLEARING.matcher(institutionFinanciere.getNoClearing());
 		if (!clearingMatcher.matches()) {
-			throw new IbanExtratorException("Numéro de clearing bancaire invalide : '" + institutionFinanciere.getNoClearing() + "'");
+			throw new IbanExtractorException("Numéro de clearing bancaire invalide : '" + institutionFinanciere.getNoClearing() + "'");
 		}
 		final int clearing = Integer.parseInt(institutionFinanciere.getNoClearing());
 		final String noCompteCanonique = noCompteBancaire.replaceAll("[^a-zA-Z0-9]+", StringUtils.EMPTY);
 
-		// [SIFISC-16925] certains numéros de compte font plus de 12 caractères, on les tronque
+		// [SIFISC-16925] certains numéros de compte font plus de 12 caractères, on les met en erreur directement
 		final String noCompteEffectif;
 		if (noCompteCanonique.length() > 12) {
-			noCompteEffectif = noCompteCanonique.substring(0, 12);
-			mr.addMessage(LogCategory.COORDONNEES_FINANCIERES, LogLevel.WARN,
-			              String.format("Le numéro de compte bancaire '%s' comporte trop (%d) de caractères significatifs, il sera tronqué aux 12 premiers.",
-			                            noCompteBancaire, noCompteCanonique.length()));
+			throw new IbanExtractorException(String.format("Le numéro de compte bancaire '%s' comporte trop (%d) de caractères significatifs",
+			                                               noCompteBancaire, noCompteCanonique.length()));
 		}
 		else {
 			noCompteEffectif = noCompteCanonique;
@@ -124,10 +122,10 @@ public abstract class IbanExtractor {
 		return buildIban(clearing, noCompteEffectif);
 	}
 
-	private static String extractIbanFromCCP(String ccp) throws IbanExtratorException {
+	private static String extractIbanFromCCP(String ccp) throws IbanExtractorException {
 		final Matcher matcher = CCP.matcher(ccp);
 		if (!matcher.matches()) {
-			throw new IbanExtratorException("CCP invalide : '" + ccp + "'");
+			throw new IbanExtractorException("CCP invalide : '" + ccp + "'");
 		}
 
 		final String formeCanoniqueCCP = String.format("%05d%06d%d", Integer.parseInt(matcher.group(1)), Integer.parseInt(matcher.group(2)), Integer.parseInt(matcher.group(3)));

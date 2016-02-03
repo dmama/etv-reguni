@@ -2848,7 +2848,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 
 						// TODO ne manque-t-il pas le titulaire du compte pour les coordonnées financières ?
 					}
-					catch (IbanExtractor.IbanExtratorException e) {
+					catch (IbanExtractor.IbanExtractorException e) {
 						mr.addMessage(LogCategory.SUIVI, LogLevel.ERROR, "Impossible d'extraire un IBAN du mandat " + mandat.getId() + " (" + e.getMessage() + ")");
 						iban = null;
 					}

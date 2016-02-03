@@ -1,6 +1,5 @@
 package ch.vd.uniregctb.migration.pm.extractor;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
@@ -129,18 +128,17 @@ public class IbanExtractorTest {
 			Assert.assertEquals(Collections.singletonList("IBAN extrait du numéro de compte '230-504223.18T' et du clearing '230' : CH350023023050422318T."), textes);
 		}
 		{
-			final MigrationResultCollector mr = new MigrationResultCollector(new MockGraphe(null, null, null));
+			try {
+				final MigrationResultCollector mr = new MigrationResultCollector(new MockGraphe(null, null, null));
 
-			// Exemple du cas SIFISC-16925
-			Assert.assertEquals("CH4108440776115290083", IbanExtractor.extractIban(buildCoordonneesFinancieres(null, null, buildInstitutionFinanciere(8440), null, "776115.290083-6"), mr));
+				// Exemple du cas SIFISC-16925
+				IbanExtractor.extractIban(buildCoordonneesFinancieres(null, null, buildInstitutionFinanciere(8440), null, "776115.290083-6"), mr);
 
-			final Map<LogCategory, List<MigrationResultCollector.Message>> messages = mr.getMessages();
-			Assert.assertEquals(EnumSet.of(LogCategory.COORDONNEES_FINANCIERES), messages.keySet());
-
-			final List<String> textes = messages.get(LogCategory.COORDONNEES_FINANCIERES).stream().map(m -> m.text).collect(Collectors.toList());
-			Assert.assertEquals(Arrays.asList("Le numéro de compte bancaire '776115.290083-6' comporte trop (13) de caractères significatifs, il sera tronqué aux 12 premiers.",
-			                                  "IBAN extrait du numéro de compte '776115.290083-6' et du clearing '8440' : CH4108440776115290083."),
-			                    textes);
+				Assert.fail("Le numéro de compte était trop long, il aurait dû être refusé !");
+			}
+			catch (IbanExtractor.IbanExtractorException e) {
+				Assert.assertEquals("Le numéro de compte bancaire '776115.290083-6' comporte trop (13) de caractères significatifs", e.getMessage());
+			}
 		}
 	}
 }

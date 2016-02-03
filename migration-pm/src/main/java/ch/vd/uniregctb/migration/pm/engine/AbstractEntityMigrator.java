@@ -299,9 +299,9 @@ public abstract class AbstractEntityMigrator<T extends RegpmEntity> implements E
 	 * @return la clé de l'entité (entreprise, établissement ou individu) de RegPM
 	 */
 	@Nullable
-	protected EntityKey getPolymorphicKey(@Nullable Supplier<RegpmEntreprise> entrepriseSupplier,
-	                                      @Nullable Supplier<RegpmEtablissement> etablissementSupplier,
-	                                      @Nullable Supplier<RegpmIndividu> individuSupplier) {
+	protected static EntityKey getPolymorphicKey(@Nullable Supplier<RegpmEntreprise> entrepriseSupplier,
+	                                             @Nullable Supplier<RegpmEtablissement> etablissementSupplier,
+	                                             @Nullable Supplier<RegpmIndividu> individuSupplier) {
 
 		final RegpmEntreprise entreprise = entrepriseSupplier != null ? entrepriseSupplier.get() : null;
 		if (entreprise != null) {
@@ -358,7 +358,7 @@ public abstract class AbstractEntityMigrator<T extends RegpmEntity> implements E
 
 				// TODO faut-il également introduire le POFICHBEXXX (= BIC de postfinance) ?
 			}
-			catch (IbanExtractor.IbanExtratorException e) {
+			catch (IbanExtractor.IbanExtractorException e) {
 				mr.addMessage(LogCategory.COORDONNEES_FINANCIERES, LogLevel.ERROR, e.getMessage());
 			}
 		}
