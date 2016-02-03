@@ -5116,13 +5116,15 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 			final List<MigrationResultCollector.Message> messages = mr.getMessages().get(LogCategory.SUIVI);
 			Assert.assertNotNull(messages);
 			final List<String> textes = messages.stream().map(msg -> msg.text).collect(Collectors.toList());
-			Assert.assertEquals(6, textes.size());
+			Assert.assertEquals(8, textes.size());
 			Assert.assertEquals("L'entreprise n'existait pas dans Unireg avec ce numéro de contribuable.", textes.get(0));
-			Assert.assertEquals("Entreprise sans exercice commercial ni date de bouclement futur.", textes.get(1));
-			Assert.assertEquals("Création de l'établissement principal " + FormatNumeroHelper.numeroCTBToDisplay(noEtablissementPrincipal.getValue()) + ".", textes.get(2));
-			Assert.assertEquals("Domicile de l'établissement principal " + FormatNumeroHelper.numeroCTBToDisplay(noEtablissementPrincipal.getValue()) + " : [27.08.2004 -> 27.08.2007] sur COMMUNE_OU_FRACTION_VD/5518.", textes.get(3));
-			Assert.assertEquals("Domicile de l'établissement principal " + FormatNumeroHelper.numeroCTBToDisplay(noEtablissementPrincipal.getValue()) + " : [28.08.2007 -> ?] sur COMMUNE_HC/351.", textes.get(4));
-			Assert.assertEquals("Entreprise migrée : 749.84.", textes.get(5));
+			Assert.assertEquals("Date de fin d'activité proposée (date de fin d'assujettissement ICC) : 27.08.2007.", textes.get(1));
+			Assert.assertEquals("La date de fin d'activité proposée (27.08.2007) est antérieure à la date de début du for principal 2 (28.08.2007), cette date de fin d'activité sera donc ignorée.", textes.get(2));
+			Assert.assertEquals("Entreprise sans exercice commercial ni date de bouclement futur.", textes.get(3));
+			Assert.assertEquals("Création de l'établissement principal " + FormatNumeroHelper.numeroCTBToDisplay(noEtablissementPrincipal.getValue()) + ".", textes.get(4));
+			Assert.assertEquals("Domicile de l'établissement principal " + FormatNumeroHelper.numeroCTBToDisplay(noEtablissementPrincipal.getValue()) + " : [27.08.2004 -> 27.08.2007] sur COMMUNE_OU_FRACTION_VD/5518.", textes.get(5));
+			Assert.assertEquals("Domicile de l'établissement principal " + FormatNumeroHelper.numeroCTBToDisplay(noEtablissementPrincipal.getValue()) + " : [28.08.2007 -> ?] sur COMMUNE_HC/351.", textes.get(6));
+			Assert.assertEquals("Entreprise migrée : 749.84.", textes.get(7));
 		}
 	}
 

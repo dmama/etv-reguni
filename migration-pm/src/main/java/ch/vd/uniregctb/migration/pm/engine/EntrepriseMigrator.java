@@ -608,6 +608,25 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 				mr.addMessage(LogCategory.SUIVI, LogLevel.WARN, msg);
 			}
 
+			// [SIFISC-17845] si aucune date candidate jusque là, et que l'assujettissement ICC prend fin, on prend cette date
+			else if (finsActivite.isEmpty()) {
+				final List<DateRange> assujettissementIcc = mr.getExtractedData(AssujettissementData.class, entrepriseKey).ranges;
+				if (!assujettissementIcc.isEmpty()) {
+					final RegDate dateFin = assujettissementIcc.get(assujettissementIcc.size() - 1).getDateFin();
+					if (dateFin != null) {
+						if (isFutureDate(dateFin)) {
+							mr.addMessage(LogCategory.SUIVI, LogLevel.ERROR,
+							              String.format("La date de fin d'assujettissement ICC est dans le futur (%s), elle est donc ignorée.",
+							                            StringRenderers.DATE_RENDERER.toString(dateFin)));
+						}
+						else {
+							// on insère cette date dans le flot afin qu'elle soit prise en compte (il n'y a qu'elle...)
+							finsActivite.add(Pair.of(dateFin, "fin d'assujettissement ICC"));
+						}
+					}
+				}
+			}
+
 			// on ne prend de toute façon que la première candidate sérieuse
 			final Pair<RegDate, String> finActivite = finsActivite.isEmpty() ? null : finsActivite.get(0);
 
