@@ -52,7 +52,7 @@
                         html += Remarques.buildRemarquesTable(remarquesPage.remarques) + '\n';
                     }
                     else {
-                        html += Remarques.escape("<fmt:message key="label.remarques.vide"/>");
+                        html += Remarques.escapeHTML("<fmt:message key="label.remarques.vide"/>");
                     }
                     html += '</fieldset>\n';
                     $('#remarquesDiv').html(html);
