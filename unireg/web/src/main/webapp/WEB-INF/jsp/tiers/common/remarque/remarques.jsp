@@ -84,7 +84,7 @@
 
 	    buildRemarquesTable: function(remarques) {
 
-            var html = '<table id="remarque" class="display">\n';
+            var html = '<table id="remarque" class="remarques">\n';
 
             html += '<tbody>\n';
 
@@ -110,7 +110,7 @@
                     html += 'Form.dynamicSubmit(\'POST\',\'<c:url value="/remarque/cancel.do"/>\',{\'remarqueId\':\'' + remarque.id + '\'}); return false;"';
                     html += ' title="Annulation de remarque" href="<c:url value="/remarque/cancel.do"/>"></a>&nbsp;';
                 }
-                html += '<a href="#" class="consult" title="Consultation des logs" onclick="return Dialog.open_consulter_log(\'Remarque\', ' + remarque.id + ');"></a></td>';
+                html += '<a href="#" class="consult" title="Consultation des logs" onclick="return Dialog.open_consulter_log(\'Remarque\', ' + remarque.id + ');">&nbsp;</a></td>';
                 html += '</tr>\n';
             }
             html +='</table>\n';
