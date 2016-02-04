@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -507,7 +508,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 
 	static RegpmAllegementFiscal addAllegementFiscal(RegpmEntreprise entreprise, RegDate dateDebut, @Nullable RegDate dateFin, @NotNull BigDecimal pourcentage, @NotNull RegpmObjectImpot objectImpot) {
 		final RegpmAllegementFiscal a = new RegpmAllegementFiscal();
-		a.setId(new RegpmAllegementFiscal.PK(computeNewSeqNo(entreprise.getAllegementsFiscaux(), x -> x.getId().getSeqNo()), entreprise.getId()));
+		a.setId(new RegpmAllegementFiscal.PK(computeNewSeqNoForAllegement(entreprise.getAllegementsFiscaux()), entreprise.getId()));
 		assignMutationVisa(a, REGPM_VISA, REGPM_MODIF);
 		a.setCommune(null);
 		a.setDateAnnulation(null);
@@ -523,7 +524,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 	static RegpmAllegementFiscal addAllegementFiscal(RegpmEntreprise entreprise, RegDate dateDebut, @Nullable RegDate dateFin, @NotNull BigDecimal pourcentage,
 	                                                 @NotNull RegpmCodeContribution codeContribution, @NotNull RegpmCodeCollectivite codeCollectivite, @Nullable RegpmCommune commune) {
 		final RegpmAllegementFiscal a = new RegpmAllegementFiscal();
-		a.setId(new RegpmAllegementFiscal.PK(computeNewSeqNo(entreprise.getAllegementsFiscaux(), x -> x.getId().getSeqNo()), entreprise.getId()));
+		a.setId(new RegpmAllegementFiscal.PK(computeNewSeqNoForAllegement(entreprise.getAllegementsFiscaux()), entreprise.getId()));
 		assignMutationVisa(a, REGPM_VISA, REGPM_MODIF);
 		a.setCommune(commune);
 		a.setDateAnnulation(null);
@@ -538,6 +539,36 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		typeContribution.setId(ID_GENERATOR.next());
 		a.setTypeContribution(typeContribution);
 
+		entreprise.getAllegementsFiscaux().add(a);
+		return a;
+	}
+
+	private static int computeNewSeqNoForAllegement(Collection<RegpmAllegementFiscal> allegements) {
+		final List<RegpmAllegementFiscal> sansTypeurs = allegements.stream()
+				.filter(af -> af.getId().getSeqNo() < 998)
+				.collect(Collectors.toList());
+		return computeNewSeqNo(sansTypeurs, x -> x.getId().getSeqNo());
+	}
+
+	static RegpmAllegementFiscal addTypeurAllegementFiscal(RegpmEntreprise entreprise, int noType, boolean icc) {
+		final int noSeq = icc ? 998 : 999;
+		entreprise.getAllegementsFiscaux().stream()
+				.filter(af -> af.getId().getSeqNo() == noSeq)
+				.findAny()
+				.ifPresent(af -> {
+					throw new IllegalArgumentException("Un tel typeur a déjà été enregistré pour l'entreprise.");
+				});
+
+		final RegpmAllegementFiscal a = new RegpmAllegementFiscal();
+		a.setId(new RegpmAllegementFiscal.PK(noSeq, entreprise.getId()));
+		assignMutationVisa(a, REGPM_VISA, REGPM_MODIF);
+		a.setCommune(null);
+		a.setDateAnnulation(null);
+		a.setDateDebut(null);
+		a.setDateFin(null);
+		a.setObjectImpot(null);
+		a.setPourcentage(BigDecimal.valueOf(noType));
+		a.setTypeContribution(null);
 		entreprise.getAllegementsFiscaux().add(a);
 		return a;
 	}
@@ -1995,7 +2026,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 				Assert.assertEquals(AllegementFiscal.TypeCollectivite.CANTON, a.getTypeCollectivite());
 				Assert.assertEquals(AllegementFiscal.TypeImpot.BENEFICE, a.getTypeImpot());
 
-				Assert.assertEquals(AllegementFiscalCantonCommune.Type.ARTICLE_91_LI, ((AllegementFiscalCanton) a).getType());
+				Assert.assertNull(((AllegementFiscalCanton) a).getType());
 			}
 			{
 				final AllegementFiscal a = allegementsTries.get(1);
@@ -2008,7 +2039,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 				Assert.assertEquals(AllegementFiscal.TypeCollectivite.CANTON, a.getTypeCollectivite());
 				Assert.assertEquals(AllegementFiscal.TypeImpot.CAPITAL, a.getTypeImpot());
 
-				Assert.assertEquals(AllegementFiscalCantonCommune.Type.ARTICLE_91_LI, ((AllegementFiscalCanton) a).getType());
+				Assert.assertNull(((AllegementFiscalCanton) a).getType());
 			}
 			{
 				final AllegementFiscal a = allegementsTries.get(2);
@@ -2021,7 +2052,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 				Assert.assertEquals(AllegementFiscal.TypeCollectivite.CONFEDERATION, a.getTypeCollectivite());
 				Assert.assertEquals(AllegementFiscal.TypeImpot.BENEFICE, a.getTypeImpot());
 
-				Assert.assertEquals(AllegementFiscalConfederation.Type.DECISION_DFE, ((AllegementFiscalConfederation) a).getType());
+				Assert.assertNull(((AllegementFiscalConfederation) a).getType());
 			}
 			{
 				final AllegementFiscal a = allegementsTries.get(3);
@@ -2034,7 +2065,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 				Assert.assertEquals(AllegementFiscal.TypeCollectivite.CONFEDERATION, a.getTypeCollectivite());
 				Assert.assertEquals(AllegementFiscal.TypeImpot.CAPITAL, a.getTypeImpot());
 
-				Assert.assertEquals(AllegementFiscalConfederation.Type.DECISION_DFE, ((AllegementFiscalConfederation) a).getType());
+				Assert.assertNull(((AllegementFiscalConfederation) a).getType());
 			}
 			{
 				final AllegementFiscal a = allegementsTries.get(4);
@@ -2048,7 +2079,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 				Assert.assertEquals(AllegementFiscal.TypeImpot.BENEFICE, a.getTypeImpot());
 
 				Assert.assertNull(((AllegementFiscalCommune) a).getNoOfsCommune());
-				Assert.assertEquals(AllegementFiscalCantonCommune.Type.ARTICLE_91_LI, ((AllegementFiscalCommune) a).getType());
+				Assert.assertNull(((AllegementFiscalCommune) a).getType());
 			}
 			{
 				final AllegementFiscal a = allegementsTries.get(5);
@@ -2062,7 +2093,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 				Assert.assertEquals(AllegementFiscal.TypeImpot.CAPITAL, a.getTypeImpot());
 
 				Assert.assertNull(((AllegementFiscalCommune) a).getNoOfsCommune());
-				Assert.assertEquals(AllegementFiscalCantonCommune.Type.ARTICLE_91_LI, ((AllegementFiscalCommune) a).getType());
+				Assert.assertNull(((AllegementFiscalCommune) a).getType());
 			}
 		});
 
@@ -2126,7 +2157,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 				Assert.assertEquals(AllegementFiscal.TypeImpot.CAPITAL, a.getTypeImpot());
 
 				Assert.assertNull(((AllegementFiscalCommune) a).getNoOfsCommune());
-				Assert.assertEquals(AllegementFiscalCantonCommune.Type.ARTICLE_91_LI, ((AllegementFiscalCommune) a).getType());
+				Assert.assertNull(((AllegementFiscalCommune) a).getType());
 			}
 			{
 				final AllegementFiscal a = allegementsTries.get(1);
@@ -2140,7 +2171,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 				Assert.assertEquals(AllegementFiscal.TypeImpot.BENEFICE, a.getTypeImpot());
 
 				Assert.assertEquals(Commune.MORGES.getNoOfs(), ((AllegementFiscalCommune) a).getNoOfsCommune());
-				Assert.assertEquals(AllegementFiscalCantonCommune.Type.ARTICLE_91_LI, ((AllegementFiscalCommune) a).getType());
+				Assert.assertNull(((AllegementFiscalCommune) a).getType());
 			}
 			{
 				final AllegementFiscal a = allegementsTries.get(2);
@@ -2153,7 +2184,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 				Assert.assertEquals(AllegementFiscal.TypeCollectivite.CONFEDERATION, a.getTypeCollectivite());
 				Assert.assertEquals(AllegementFiscal.TypeImpot.CAPITAL, a.getTypeImpot());
 
-				Assert.assertEquals(AllegementFiscalConfederation.Type.DECISION_DFE, ((AllegementFiscalConfederation) a).getType());
+				Assert.assertNull(((AllegementFiscalConfederation) a).getType());
 			}
 		});
 
@@ -2214,7 +2245,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 				Assert.assertEquals(AllegementFiscal.TypeImpot.CAPITAL, a.getTypeImpot());
 
 				Assert.assertNull(((AllegementFiscalCommune) a).getNoOfsCommune());
-				Assert.assertEquals(AllegementFiscalCantonCommune.Type.ARTICLE_91_LI, ((AllegementFiscalCommune) a).getType());
+				Assert.assertNull(((AllegementFiscalCommune) a).getType());
 			}
 		});
 
@@ -2231,6 +2262,80 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		Assert.assertEquals("Entreprise sans exercice commercial ni date de bouclement futur.", textes.get(5));
 		Assert.assertEquals("Pas de siège associé dans les données fiscales, pas d'établissement principal créé à partir des données fiscales.", textes.get(6));
 		Assert.assertEquals("Entreprise migrée : 426.13.", textes.get(7));
+	}
+
+	@Test
+	public void testAllegementsFiscauxTypes() throws Exception {
+
+		final long noEntreprise = 43835L;
+		final RegpmEntreprise e = buildEntreprise(noEntreprise);
+		addTypeurAllegementFiscal(e, 51, false);        // IFD
+		addTypeurAllegementFiscal(e, 6, true);          // ICC
+		addAllegementFiscal(e, RegDate.get(1950, 1, 1), RegDate.get(2020, 3, 31), BigDecimal.valueOf(12L), RegpmCodeContribution.CAPITAL, RegpmCodeCollectivite.COMMUNE, null);
+		addAllegementFiscal(e, RegDate.get(1974, 4, 1), null, BigDecimal.valueOf(50L), RegpmCodeContribution.CAPITAL, RegpmCodeCollectivite.CONFEDERATION, null);
+
+		final MockGraphe graphe = new MockGraphe(Collections.singletonList(e),
+		                                         null,
+		                                         null);
+		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
+		final EntityLinkCollector linkCollector = new EntityLinkCollector();
+		final IdMapper idMapper = new IdMapper();
+		migrator.initMigrationResult(mr, idMapper);
+		migrate(e, migrator, mr, linkCollector, idMapper);
+
+		// vérification du contenu de la base
+		doInUniregTransaction(true, status -> {
+			final Entreprise entreprise = (Entreprise) getTiersDAO().get(noEntreprise);
+			Assert.assertNotNull(entreprise);
+
+			final Set<AllegementFiscal> allegements = entreprise.getAllegementsFiscaux();
+			final List<AllegementFiscal> allegementsTries = allegements.stream()
+					.sorted(Comparator.comparing(AllegementFiscal::getDateDebut).thenComparing(AllegementFiscal::getTypeImpot))
+					.collect(Collectors.toList());
+			Assert.assertNotNull(allegementsTries);
+			Assert.assertEquals(2, allegementsTries.size());
+			{
+				final AllegementFiscal a = allegementsTries.get(0);
+				Assert.assertNotNull(a);
+				Assert.assertEquals(AllegementFiscalCommune.class, a.getClass());
+				Assert.assertNull(a.getAnnulationDate());
+				Assert.assertEquals(RegDate.get(1950, 1, 1), a.getDateDebut());
+				Assert.assertNull(a.getDateFin());
+				Assert.assertEquals("Expected: 12, actual: " + a.getPourcentageAllegement(), 0, BigDecimal.valueOf(12L).compareTo(a.getPourcentageAllegement()));
+				Assert.assertEquals(AllegementFiscal.TypeCollectivite.COMMUNE, a.getTypeCollectivite());
+				Assert.assertEquals(AllegementFiscal.TypeImpot.CAPITAL, a.getTypeImpot());
+
+				Assert.assertNull(((AllegementFiscalCommune) a).getNoOfsCommune());
+				Assert.assertEquals(AllegementFiscalCantonCommune.Type.ARTICLE_90E_LI, ((AllegementFiscalCommune) a).getType());
+			}
+			{
+				final AllegementFiscal a = allegementsTries.get(1);
+				Assert.assertNotNull(a);
+				Assert.assertEquals(AllegementFiscalConfederation.class, a.getClass());
+				Assert.assertNull(a.getAnnulationDate());
+				Assert.assertEquals(RegDate.get(1974, 4, 1), a.getDateDebut());
+				Assert.assertNull(a.getDateFin());
+				Assert.assertEquals("Expected: 50, actual: " + a.getPourcentageAllegement(), 0, BigDecimal.valueOf(50L).compareTo(a.getPourcentageAllegement()));
+				Assert.assertEquals(AllegementFiscal.TypeCollectivite.CONFEDERATION, a.getTypeCollectivite());
+				Assert.assertEquals(AllegementFiscal.TypeImpot.CAPITAL, a.getTypeImpot());
+
+				Assert.assertEquals(AllegementFiscalConfederation.Type.DECISION_DFE, ((AllegementFiscalConfederation) a).getType());
+			}
+		});
+
+		// vérification des messages dans le contexte "SUIVI"
+		final List<MigrationResultCollector.Message> messages = mr.getMessages().get(LogCategory.SUIVI);
+		Assert.assertNotNull(messages);
+		final List<String> textes = messages.stream().map(msg -> msg.text).collect(Collectors.toList());
+		Assert.assertEquals(8, textes.size());
+		Assert.assertEquals("L'entreprise n'existait pas dans Unireg avec ce numéro de contribuable.", textes.get(0));
+		Assert.assertEquals("Date de fin (31.03.2020) de l'allègement fiscal 1 ignorée (date future).", textes.get(1));
+		Assert.assertEquals("Allègement fiscal généré [01.01.1950 -> ?], collectivité COMMUNE, type CAPITAL : 12%.", textes.get(2));
+		Assert.assertEquals("Allègement fiscal généré [01.04.1974 -> ?], collectivité CONFEDERATION, type CAPITAL : 50%.", textes.get(3));
+		Assert.assertEquals("Entreprise sans exercice commercial ni for principal.", textes.get(4));
+		Assert.assertEquals("Entreprise sans exercice commercial ni date de bouclement futur.", textes.get(5));
+		Assert.assertEquals("Pas de siège associé dans les données fiscales, pas d'établissement principal créé à partir des données fiscales.", textes.get(6));
+		Assert.assertEquals("Entreprise migrée : 438.35.", textes.get(7));
 	}
 
 	/**
@@ -2276,7 +2381,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 				Assert.assertEquals(AllegementFiscal.TypeImpot.BENEFICE, a.getTypeImpot());
 
 				Assert.assertEquals(Commune.GRANGES_PRES_MARNAND.getNoOfs(), ((AllegementFiscalCommune) a).getNoOfsCommune());
-				Assert.assertEquals(AllegementFiscalCantonCommune.Type.ARTICLE_91_LI, ((AllegementFiscalCommune) a).getType());
+				Assert.assertNull(((AllegementFiscalCommune) a).getType());
 			}
 			{
 				final AllegementFiscal a = allegementsTries.get(1);
@@ -2290,7 +2395,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 				Assert.assertEquals(AllegementFiscal.TypeImpot.CAPITAL, a.getTypeImpot());
 
 				Assert.assertEquals(Commune.GRANGES_PRES_MARNAND.getNoOfs(), ((AllegementFiscalCommune) a).getNoOfsCommune());
-				Assert.assertEquals(AllegementFiscalCantonCommune.Type.ARTICLE_91_LI, ((AllegementFiscalCommune) a).getType());
+				Assert.assertNull(((AllegementFiscalCommune) a).getType());
 			}
 			{
 				final AllegementFiscal a = allegementsTries.get(2);
@@ -2304,7 +2409,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 				Assert.assertEquals(AllegementFiscal.TypeImpot.BENEFICE, a.getTypeImpot());
 
 				Assert.assertEquals(Commune.VALBROYE.getNoOfs(), ((AllegementFiscalCommune) a).getNoOfsCommune());
-				Assert.assertEquals(AllegementFiscalCantonCommune.Type.ARTICLE_91_LI, ((AllegementFiscalCommune) a).getType());
+				Assert.assertNull(((AllegementFiscalCommune) a).getType());
 			}
 			{
 				final AllegementFiscal a = allegementsTries.get(3);
@@ -2318,7 +2423,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 				Assert.assertEquals(AllegementFiscal.TypeImpot.CAPITAL, a.getTypeImpot());
 
 				Assert.assertEquals(Commune.VALBROYE.getNoOfs(), ((AllegementFiscalCommune) a).getNoOfsCommune());
-				Assert.assertEquals(AllegementFiscalCantonCommune.Type.ARTICLE_91_LI, ((AllegementFiscalCommune) a).getType());
+				Assert.assertNull(((AllegementFiscalCommune) a).getType());
 			}
 		});
 

@@ -4414,11 +4414,13 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 	private static AllegementFiscalConfederation.Type valueOfIFD(Integer value) {
 		final AllegementFiscalConfederation.Type type;
 		if (value == null) {
-			type = AllegementFiscalConfederation.Type.DECISION_DFE;
+			type = null;
 		}
 		else {
 			switch (value) {
 			case 0:
+				type = null;
+				break;
 			case 51:
 				type = AllegementFiscalConfederation.Type.DECISION_DFE;
 				break;
@@ -4435,11 +4437,13 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 	private static AllegementFiscalCantonCommune.Type valueOfICC(Integer value) {
 		final AllegementFiscalCantonCommune.Type type;
 		if (value == null) {
-			type = AllegementFiscalCantonCommune.Type.ARTICLE_91_LI;
+			type = null;
 		}
 		else {
 			switch (value) {
 			case 0:
+				type = null;
+				break;
 			case 1:
 				type = AllegementFiscalCantonCommune.Type.ARTICLE_91_LI;
 				break;
