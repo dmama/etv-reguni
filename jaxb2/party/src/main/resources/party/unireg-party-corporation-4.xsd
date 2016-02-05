@@ -772,6 +772,11 @@
 					<xs:documentation>Société immobilière subventionnée.</xs:documentation>
 				</xs:annotation>
 			</xs:enumeration>
+			<xs:enumeration value="SOCIAL_REAL_ESTATE_COMPANY">
+				<xs:annotation>
+					<xs:documentation>Société immobilière à caractère social.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
 			<xs:enumeration value="TENANT_SHAREHOLDERS_REAL_ESTATE_COMPANY">
 				<xs:annotation>
 					<xs:documentation>Société immobilière d'actionnaires-locataires.</xs:documentation>
