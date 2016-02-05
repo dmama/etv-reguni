@@ -2860,6 +2860,8 @@ public abstract class EnumHelper {
 			return CorporationFlagType.ASSOCIATION_FOUNDATION_REAL_ESTATE_COMPANY;
 		case SOC_IMM_ACTIONNAIRES_LOCATAIRES:
 			return CorporationFlagType.TENANT_SHAREHOLDERS_REAL_ESTATE_COMPANY;
+		case SOC_IMM_CARACTERE_SOCIAL:
+			return CorporationFlagType.SOCIAL_REAL_ESTATE_COMPANY;
 		case SOC_IMM_ORDINAIRE:
 			return CorporationFlagType.REAL_ESTATE_COMPANY;
 		case SOC_IMM_SUBVENTIONNEE:

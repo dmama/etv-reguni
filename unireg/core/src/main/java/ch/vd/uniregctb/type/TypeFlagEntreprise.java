@@ -5,6 +5,7 @@ package ch.vd.uniregctb.type;
  * <ul>
  *     <li>utilité publique (LIASF)</li>
  *     <li>société immobilière ordinaire</li>
+ *     <li>société immobilière à caractère social</li>
  *     <li>société immobilière subventionnée</li>
  *     <li>société immobilière d'actionnaires-locataires (SIAL)</li>
  *     <li>APM société immobilière subventionnée</li>
@@ -16,6 +17,7 @@ public enum TypeFlagEntreprise {
 	UTILITE_PUBLIQUE,
 	SOC_IMM_ORDINAIRE,
 	SOC_IMM_SUBVENTIONNEE,
+	SOC_IMM_CARACTERE_SOCIAL,
 	SOC_IMM_ACTIONNAIRES_LOCATAIRES,
 	APM_SOC_IMM_SUBVENTIONNEE,
 	SOC_SERVICE
