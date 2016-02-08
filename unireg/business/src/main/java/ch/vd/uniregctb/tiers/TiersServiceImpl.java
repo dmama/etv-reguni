@@ -5701,10 +5701,19 @@ public class TiersServiceImpl implements TiersService {
 			}
 		}
 
-		final RegimeFiscal rf = openRegimeFiscal(e, portee, type, dateDebut);
-		if (dateFin != null) {
-			closeRegimeFiscal(rf, dateFin);
+		if (dateFin == null) {
+			return openRegimeFiscal(e, portee, type, dateDebut);
 		}
+		else {
+			return openAndCloseRegimeFiscal(e, portee, type, dateDebut, dateFin);
+		}
+	}
+
+	@Override
+	public RegimeFiscal openAndCloseRegimeFiscal(Entreprise e, RegimeFiscal.Portee portee, TypeRegimeFiscal type, RegDate dateDebut, RegDate dateFin) {
+		final RegimeFiscal rf = tiersDAO.addAndSave(e, new RegimeFiscal(dateDebut, dateFin, portee, type.getCode()));
+		evenementFiscalService.publierEvenementFiscalOuvertureRegimeFiscal(rf);
+		closeRegimeFiscal(rf, rf.getDateFin());
 		return rf;
 	}
 
@@ -5762,17 +5771,26 @@ public class TiersServiceImpl implements TiersService {
 			}
 		}
 
-		final FlagEntreprise flag = openFlagEntreprise(e, type, dateDebut);
-		if (dateFin != null) {
-			closeFlagEntreprise(flag, dateFin);
+		if (dateFin == null) {
+			return openFlagEntreprise(e, type, dateDebut);
 		}
-		return flag;
+		else {
+			return openAndCloseFlagEntreprise(e, type, dateDebut, dateFin);
+		}
 	}
 
 	@Override
 	public FlagEntreprise openFlagEntreprise(Entreprise e, TypeFlagEntreprise type, RegDate dateDebut) {
 		final FlagEntreprise flag = tiersDAO.addAndSave(e, new FlagEntreprise(type, dateDebut, null));
 		evenementFiscalService.publierEvenementFiscalOuvertureFlagEntreprise(flag);
+		return flag;
+	}
+
+	@Override
+	public FlagEntreprise openAndCloseFlagEntreprise(Entreprise e, TypeFlagEntreprise type, RegDate dateDebut, RegDate dateFin) {
+		final FlagEntreprise flag = tiersDAO.addAndSave(e, new FlagEntreprise(type, dateDebut, dateFin));
+		evenementFiscalService.publierEvenementFiscalOuvertureFlagEntreprise(flag);
+		closeFlagEntreprise(flag, flag.getDateFin());
 		return flag;
 	}
 

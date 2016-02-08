@@ -1872,6 +1872,17 @@ public interface TiersService {
     RegimeFiscal openRegimeFiscal(Entreprise e, RegimeFiscal.Portee portee, TypeRegimeFiscal type, RegDate dateDebut);
 
     /**
+     * Crée un régime fiscal valide dans la période donnée avec les informations fournies
+     * @param e l'entreprise destinataire
+     * @param portee la portée du régime fiscal
+     * @param type le type de régime fiscal
+     * @param dateDebut la date de début de validité du régime fiscal
+     * @param dateFin la date de fin de validité du régime fiscal
+     * @return le régime fiscal nouvellement créé
+     */
+    RegimeFiscal openAndCloseRegimeFiscal(Entreprise e, RegimeFiscal.Portee portee, TypeRegimeFiscal type, RegDate dateDebut, RegDate dateFin);
+
+    /**
      * Ferme le régime fiscal à la date indiquée
      * @param rf le régime fiscal à fermer
      * @param dateFin la date de fin à utiliser
@@ -1895,13 +1906,23 @@ public interface TiersService {
     FlagEntreprise addFlagEntreprise(Entreprise e, TypeFlagEntreprise type, RegDate dateDebut, @Nullable RegDate dateFin);
 
     /**
-     * Crée un flag valide depuis l'année donnée avec les informations fournies
+     * Crée un flag valide depuis la date donnée avec les informations fournies
      * @param e entreprise destinataire
      * @param type le type de flag
      * @param dateDebut la date de début de validité du flag (incluse)
      * @return le flag nouvellement créé
      */
     FlagEntreprise openFlagEntreprise(Entreprise e, TypeFlagEntreprise type, RegDate dateDebut);
+
+    /**
+     * Crée un flag valide sur la période donnée avec les informations fournies
+     * @param e entreprise destinataire
+     * @param type le type de flag
+     * @param dateDebut la date de début de validité du flag (incluse)
+     * @param dateFin la date de fin de validité du flag (incluse)
+     * @return le flag nouvellement créé
+     */
+    FlagEntreprise openAndCloseFlagEntreprise(Entreprise e, TypeFlagEntreprise type, RegDate dateDebut, RegDate dateFin);
 
     /**
      * Ferme le flag à l'année indiquée (incluse)
