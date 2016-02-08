@@ -194,6 +194,9 @@ ALTER TABLE RAPPORT_ENTRE_TIERS ADD BIC_SWIFT_MANDAT NVARCHAR2(15);
 -- le rapport d'activité économique aussi (pour savoir qui est l'établissement principal)
 ALTER TABLE RAPPORT_ENTRE_TIERS ADD ETB_PRINCIPAL NUMBER(1,0);
 
+-- le rapport d'administration d'entreprise aussi (rôle de 'président')
+ALTER TABLE RAPPORT_ENTRE_TIERS ADD ADMIN_PRESIDENT NUMBER(1,0);
+
 -- La séquence S_PM devient S_CAAC (elle gère en fait les Collectivités Administratives et les Autres Communautés...)
 RENAME S_PM TO S_CAAC;
 

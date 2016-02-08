@@ -1428,6 +1428,8 @@ public abstract class EnumHelper {
 		case ACTIVITE_ECONOMIQUE:
 		case MANDAT:
 		case FUSION_ENTREPRISES:
+		case ADMINISTRATION_ENTREPRISE:
+		case SOCIETE_DIRECTION:
 			throw new IllegalArgumentException("Erreur de mapping?");
 		default:
 			throw new IllegalArgumentException("Type de rapport-entre-tiers inconnu = [" + type + ']');
@@ -1465,6 +1467,8 @@ public abstract class EnumHelper {
 			return ch.vd.unireg.xml.party.relation.v3.RelationBetweenPartiesType.MERGE;
 		case ASSUJETTISSEMENT_PAR_SUBSTITUTION:
 		case MANDAT:
+		case ADMINISTRATION_ENTREPRISE:
+		case SOCIETE_DIRECTION:
 			throw new IllegalArgumentException("Erreur de mapping?");
 		default:
 			throw new IllegalArgumentException("Type de rapport-entre-tiers inconnu = [" + type + ']');

@@ -26,7 +26,9 @@ public class RelationBetweenPartiesTypeTest extends EnumTest {
 		// vérification que toutes les valeurs sont mappées sur quelque chose
 		final Set<TypeRapportEntreTiers> notMapped = EnumSet.of(TypeRapportEntreTiers.PARENTE,
 		                                                        TypeRapportEntreTiers.ASSUJETTISSEMENT_PAR_SUBSTITUTION,
-		                                                        TypeRapportEntreTiers.MANDAT);
+		                                                        TypeRapportEntreTiers.MANDAT,
+		                                                        TypeRapportEntreTiers.ADMINISTRATION_ENTREPRISE,
+		                                                        TypeRapportEntreTiers.SOCIETE_DIRECTION);
 		for (TypeRapportEntreTiers tret : TypeRapportEntreTiers.values()) {
 			if (notMapped.contains(tret)) {
 				try {

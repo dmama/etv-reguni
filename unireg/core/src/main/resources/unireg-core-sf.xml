@@ -203,6 +203,8 @@
 		<value>ch.vd.uniregctb.tiers.AllegementFiscalCantonCommune</value>
 		<value>ch.vd.uniregctb.tiers.AllegementFiscalCanton</value>
 		<value>ch.vd.uniregctb.tiers.AllegementFiscalCommune</value>
+		<value>ch.vd.uniregctb.tiers.AdministrationEntreprise</value>
+		<value>ch.vd.uniregctb.tiers.SocieteDirection</value>
 	</util:list>
 
 	<!-- La session factory -->

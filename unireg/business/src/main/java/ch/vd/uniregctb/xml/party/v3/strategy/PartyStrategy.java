@@ -229,7 +229,9 @@ public abstract class PartyStrategy<T extends Party> {
 	                                                                                                                    TypeRapportEntreTiers.ASSUJETTISSEMENT_PAR_SUBSTITUTION,
 	                                                                                                                    TypeRapportEntreTiers.ACTIVITE_ECONOMIQUE,
 	                                                                                                                    TypeRapportEntreTiers.MANDAT,
-	                                                                                                                    TypeRapportEntreTiers.FUSION_ENTREPRISES));
+	                                                                                                                    TypeRapportEntreTiers.FUSION_ENTREPRISES,
+	                                                                                                                    TypeRapportEntreTiers.ADMINISTRATION_ENTREPRISE,
+	                                                                                                                    TypeRapportEntreTiers.SOCIETE_DIRECTION));
 
 	private static void initRelationsBetweenParties(Party tiers, final Tiers right, Set<PartyPart> parts, Context context) {
 		if (parts.contains(PartyPart.RELATIONS_BETWEEN_PARTIES)) {

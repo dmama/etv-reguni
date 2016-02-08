@@ -18,7 +18,9 @@ public enum TypeRapportEntreTiersWeb {
 	ASSUJETTISSEMENT_PAR_SUBSTITUTION,
 	ACTIVITE_ECONOMIQUE,
 	MANDAT,
-	FUSION_ENTREPRISES;
+	FUSION_ENTREPRISES,
+	ADMINISTRATION_ENTREPRISE,
+	SOCIETE_DIRECTION;
 
 	public static TypeRapportEntreTiersWeb fromCore(TypeRapportEntreTiers t) {
 		return TypeRapportEntreTiersWeb.valueOf(t.name());

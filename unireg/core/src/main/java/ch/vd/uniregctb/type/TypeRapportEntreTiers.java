@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.type;
 
 import ch.vd.uniregctb.tiers.ActiviteEconomique;
+import ch.vd.uniregctb.tiers.AdministrationEntreprise;
 import ch.vd.uniregctb.tiers.AnnuleEtRemplace;
 import ch.vd.uniregctb.tiers.AppartenanceMenage;
 import ch.vd.uniregctb.tiers.AssujettissementParSubstitution;
@@ -13,6 +14,7 @@ import ch.vd.uniregctb.tiers.Parente;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.tiers.RapportPrestationImposable;
 import ch.vd.uniregctb.tiers.RepresentationConventionnelle;
+import ch.vd.uniregctb.tiers.SocieteDirection;
 import ch.vd.uniregctb.tiers.Tutelle;
 
 /**
@@ -182,6 +184,36 @@ public enum TypeRapportEntreTiers {
 		@Override
 		public Class<? extends RapportEntreTiers> getRapportClass() {
 			return FusionEntreprises.class;
+		}
+	},
+
+	/**
+	 * @since 6.0
+	 */
+	ADMINISTRATION_ENTREPRISE {
+		@Override
+		public RapportEntreTiers newInstance() {
+			return new AdministrationEntreprise();
+		}
+
+		@Override
+		public Class<? extends RapportEntreTiers> getRapportClass() {
+			return AdministrationEntreprise.class;
+		}
+	},
+
+	/**
+	 * @since 6.0
+	 */
+	SOCIETE_DIRECTION {
+		@Override
+		public RapportEntreTiers newInstance() {
+			return new SocieteDirection();
+		}
+
+		@Override
+		public Class<? extends RapportEntreTiers> getRapportClass() {
+			return SocieteDirection.class;
 		}
 	};
 

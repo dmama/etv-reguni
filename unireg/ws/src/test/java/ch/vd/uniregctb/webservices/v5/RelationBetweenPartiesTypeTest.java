@@ -28,7 +28,9 @@ public class RelationBetweenPartiesTypeTest extends EnumTest {
 		                                                        TypeRapportEntreTiers.ASSUJETTISSEMENT_PAR_SUBSTITUTION,
 		                                                        TypeRapportEntreTiers.ACTIVITE_ECONOMIQUE,
 		                                                        TypeRapportEntreTiers.MANDAT,
-		                                                        TypeRapportEntreTiers.FUSION_ENTREPRISES);
+		                                                        TypeRapportEntreTiers.FUSION_ENTREPRISES,
+		                                                        TypeRapportEntreTiers.ADMINISTRATION_ENTREPRISE,
+		                                                        TypeRapportEntreTiers.SOCIETE_DIRECTION);
 		for (TypeRapportEntreTiers tret : TypeRapportEntreTiers.values()) {
 			if (notMapped.contains(tret)) {
 				try {
