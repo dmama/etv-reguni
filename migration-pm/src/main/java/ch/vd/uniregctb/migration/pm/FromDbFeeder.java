@@ -269,7 +269,11 @@ public class FromDbFeeder implements Feeder, DisposableBean {
 		individu.getCaracteristiques().size();
 		individu.getAdresses().size();
 		individu.getMandants().size();
-		individu.getAdministrations().size();
+
+		// récupération de quelques données de l'entreprise administrée
+		for (RegpmAdministrateur adm : individu.getAdministrations()) {
+			adm.fetchEntrepriseData();
+		}
 	}
 
 	private static void forceLoad(RegpmEntreprise pm, GrapheRecorder graphe) {
@@ -314,7 +318,6 @@ public class FromDbFeeder implements Feeder, DisposableBean {
 		{
 			final Set<RegpmSocieteDirection> directions = pm.getDirections();
 			for (RegpmSocieteDirection direction : directions) {
-				forceLoad(direction.getFonds(), graphe);        // normalement, c'est la pm
 				forceLoad(direction.getDirection(), graphe);
 			}
 		}

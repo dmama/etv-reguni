@@ -19,13 +19,16 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.migration.pm.utils.EntityKey;
 import ch.vd.uniregctb.migration.pm.utils.KeyedSupplier;
 import ch.vd.uniregctb.tiers.ActiviteEconomique;
+import ch.vd.uniregctb.tiers.AdministrationEntreprise;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.CoordonneesFinancieres;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.Etablissement;
 import ch.vd.uniregctb.tiers.FusionEntreprises;
 import ch.vd.uniregctb.tiers.Mandat;
+import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
+import ch.vd.uniregctb.tiers.SocieteDirection;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.type.TypeMandat;
 
@@ -138,7 +141,6 @@ public class EntityLinkCollector {
 		return Collections.unmodifiableSet(neutralizedKeys);
 	}
 
-	// TODO il y en a sans doute d'autre...
 	public enum LinkType {
 
 		/**
@@ -154,7 +156,17 @@ public class EntityLinkCollector {
 		/**
 		 * Lien entre des entreprises avant fusion vers l'entreprise après
 		 */
-		FUSION_ENTREPRISES
+		FUSION_ENTREPRISES,
+
+		/**
+		 * Lien entre une entreprise et ses administrateurs
+		 */
+		ENTREPRISE_ADMINISTRATEUR,
+
+		/**
+		 * Lien entre le propriétaire d'un fonds de placement et le fonds de placement
+		 */
+		PROPRIETAIRE_FONDS_PLACEMENT
 	}
 
 	public abstract static class EntityLink<S extends Tiers, D extends Tiers, R extends RapportEntreTiers> implements DateRange {
@@ -326,4 +338,48 @@ public class EntityLinkCollector {
 			return new FusionEntreprises(getDateDebut(), getDateFin(), resolveEntrepriseFusionnante(), resolveEntrepriseFusionnee());
 		}
 	}
+
+	public static final class EntrepriseAdministrateurLink extends EntityLink<Entreprise, PersonnePhysique, RapportEntreTiers> {
+
+		private final boolean president;
+
+		public EntrepriseAdministrateurLink(KeyedSupplier<Entreprise> entreprise, KeyedSupplier<PersonnePhysique> administrateur, RegDate dateDebut, RegDate dateFin, boolean president) {
+			super(LinkType.ENTREPRISE_ADMINISTRATEUR, entreprise, administrateur, dateDebut, dateFin);
+			this.president = president;
+		}
+
+		public Entreprise resolveEntreprise() {
+			return resolveSource();
+		}
+
+		public PersonnePhysique resolveAdministrateur() {
+			return resolveDestination();
+		}
+
+		@Override
+		public RapportEntreTiers toRapportEntreTiers() {
+			return new AdministrationEntreprise(getDateDebut(), getDateFin(), resolveEntreprise(), resolveAdministrateur(), president);
+		}
+	}
+
+	public static final class ProprietaireFondsPlacementLink extends EntityLink<Entreprise, Entreprise, RapportEntreTiers> {
+
+		public ProprietaireFondsPlacementLink(KeyedSupplier<Entreprise> proprietaire, KeyedSupplier<Entreprise> fondsPlacement, RegDate dateDebut, RegDate dateFin) {
+			super(LinkType.PROPRIETAIRE_FONDS_PLACEMENT, proprietaire, fondsPlacement, dateDebut, dateFin);
+		}
+
+		public Entreprise resolveProprietaireFonds() {
+			return resolveSource();
+		}
+
+		public Entreprise resolveFondsPlacement() {
+			return resolveDestination();
+		}
+
+		@Override
+		public RapportEntreTiers toRapportEntreTiers() {
+			return new SocieteDirection(getDateDebut(), getDateFin(), resolveProprietaireFonds(), resolveFondsPlacement());
+		}
+	}
+
 }

@@ -20,44 +20,28 @@ import ch.vd.evd0001.v5.Person;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.common.NomPrenom;
 import ch.vd.unireg.interfaces.civil.rcpers.EchHelper;
-import ch.vd.unireg.wsclient.rcpers.RcPersClient;
 import ch.vd.uniregctb.adapter.rcent.historizer.equalator.Equalator;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.migration.pm.MigrationResultContextManipulation;
 import ch.vd.uniregctb.migration.pm.MigrationResultInitialization;
 import ch.vd.uniregctb.migration.pm.MigrationResultProduction;
-import ch.vd.uniregctb.migration.pm.communes.FractionsCommuneProvider;
-import ch.vd.uniregctb.migration.pm.communes.FusionCommunesProvider;
 import ch.vd.uniregctb.migration.pm.engine.collector.EntityLinkCollector;
+import ch.vd.uniregctb.migration.pm.engine.data.DonneesAdministrateurs;
 import ch.vd.uniregctb.migration.pm.engine.data.DonneesMandats;
-import ch.vd.uniregctb.migration.pm.engine.helpers.AdresseHelper;
 import ch.vd.uniregctb.migration.pm.engine.helpers.StringRenderers;
 import ch.vd.uniregctb.migration.pm.indexeur.NonHabitantIndex;
 import ch.vd.uniregctb.migration.pm.log.LogCategory;
 import ch.vd.uniregctb.migration.pm.log.LogLevel;
 import ch.vd.uniregctb.migration.pm.mapping.IdMapping;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmIndividu;
-import ch.vd.uniregctb.migration.pm.store.UniregStore;
-import ch.vd.uniregctb.migration.pm.utils.DatesParticulieres;
 import ch.vd.uniregctb.migration.pm.utils.EntityKey;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.type.Sexe;
 
 public class IndividuMigrator extends AbstractEntityMigrator<RegpmIndividu> {
 
-	private final TiersDAO tiersDAO;
-	private final RcPersClient rcpersClient;
-	private final NonHabitantIndex nonHabitantIndex;
-
-	public IndividuMigrator(UniregStore uniregStore, ActivityManager activityManager, ServiceInfrastructureService infraService,
-	                        TiersDAO tiersDAO, RcPersClient rcpersClient, NonHabitantIndex nonHabitantIndex, AdresseHelper adresseHelper,
-	                        FusionCommunesProvider fusionCommunesProvider, FractionsCommuneProvider fractionsCommuneProvider, DatesParticulieres datesParticulieres) {
-		super(uniregStore, activityManager, infraService, fusionCommunesProvider, fractionsCommuneProvider, datesParticulieres, adresseHelper);
-		this.tiersDAO = tiersDAO;
-		this.rcpersClient = rcpersClient;
-		this.nonHabitantIndex = nonHabitantIndex;
+	public IndividuMigrator(MigrationContexte migrationContexte) {
+		super(migrationContexte);
 	}
 
 	private static String extractPrenomUsuel(String tousPrenoms) {
@@ -73,11 +57,23 @@ public class IndividuMigrator extends AbstractEntityMigrator<RegpmIndividu> {
 		                         null,
 		                         null,
 		                         i -> extractDonneesMandats(i, mr, idMapper));
+
+		// données des administrations
+		mr.registerDataExtractor(DonneesAdministrateurs.class,
+		                         null,
+		                         null,
+		                         i -> extractDonneesAdministrateurs(i, mr, idMapper));
 	}
 
 	@NotNull
 	private DonneesMandats extractDonneesMandats(RegpmIndividu i, MigrationResultContextManipulation mr, IdMapping idMapper) {
 		return extractDonneesMandats(buildIndividuKey(i), i.getMandants(), null, mr, LogCategory.INDIVIDUS_PM, idMapper);
+	}
+
+	@NotNull
+	private DonneesAdministrateurs extractDonneesAdministrateurs(RegpmIndividu i, MigrationResultContextManipulation mr, IdMapping idMapper) {
+		final EntityKey moi = buildIndividuKey(i);
+		return doInLogContext(moi, mr, idMapper, () -> DonneesAdministrateurs.fromAdministrateur(i, migrationContexte, mr));
 	}
 
 	/**
@@ -169,10 +165,11 @@ public class IndividuMigrator extends AbstractEntityMigrator<RegpmIndividu> {
 			return;
 		}
 
-		// si la personne physique n'est pas directement mandataire, on ne la migre pas
-		final DonneesMandats donneesMandats = mr.getExtractedData(DonneesMandats.class, buildIndividuKey(regpm));
-		if (!donneesMandats.isMandataire()) {
-			mr.addMessage(LogCategory.INDIVIDUS_PM, LogLevel.WARN, "Individu PM ignoré car n'a pas le rôle de mandataire.");
+		// si la personne physique n'est pas directement mandataire ni administrateur actif d'une société immobilière, on ne la migre pas
+		final boolean hasMandats = hasMandats(regpm, mr);
+		final boolean isAdministrateur = isAdministrateur(regpm, mr);
+		if (!hasMandats && !isAdministrateur) {
+			mr.addMessage(LogCategory.INDIVIDUS_PM, LogLevel.WARN, "Individu PM ignoré car n'a pas de rôle de mandataire ni d'administrateur.");
 			return;
 		}
 
@@ -191,7 +188,7 @@ public class IndividuMigrator extends AbstractEntityMigrator<RegpmIndividu> {
 		// passage du civil au fiscal
 		final PersonnePhysique ppExistant;
 		if (trouveRCPersId != null) {
-			ppExistant = tiersDAO.getPPByNumeroIndividu(trouveRCPersId.getLeft());
+			ppExistant = migrationContexte.getTiersDAO().getPPByNumeroIndividu(trouveRCPersId.getLeft());
 		}
 		else {
 			ppExistant = rechercheNonHabitantExistant(regpm, mr);
@@ -207,13 +204,33 @@ public class IndividuMigrator extends AbstractEntityMigrator<RegpmIndividu> {
 		}
 		else {
 
-			// si on est ici, c'est que l'individu a au moins un mandant récent, mais on ne le retrouve pas...
+			// si on est ici, c'est que l'individu a au moins un mandant récent (ou est administrateur), mais on ne le retrouve pas...
 			// comme on ne doit pas le créer, il ne faut pas oublier de neutraliser la création des liens avec cet individu,,,
 			mr.addMessage(LogCategory.INDIVIDUS_PM, LogLevel.ERROR, "Individu non migré car aucune correspondance univoque n'a pu être trouvée avec une personne physique existante dans Unireg.");
 
-			// on ne doit finalement générer aucun des liens de mandats
+			// on ne doit finalement générer aucun des liens avec l'individu
 			linkCollector.addNeutralizedEntity(buildIndividuKey(regpm));
 		}
+	}
+
+	/**
+	 * @param regpm un individu de RegPM
+	 * @param mr le collecteur des messages de suivi
+	 * @return <code>true</code> si l'individu est bénéficiaire d'au moins un mandat récent
+	 */
+	private boolean hasMandats(RegpmIndividu regpm, MigrationResultProduction mr) {
+		final DonneesMandats donneesMandats = mr.getExtractedData(DonneesMandats.class, buildIndividuKey(regpm));
+		return donneesMandats.isMandataire();
+	}
+
+	/**
+	 * @param regpm un individu de RegPM
+	 * @param mr le collecteur des messages de suivi
+	 * @return <code>true</code> si l'individu est administrateur actif d'au moins une société immobilière
+	 */
+	private boolean isAdministrateur(RegpmIndividu regpm, MigrationResultProduction mr) {
+		final DonneesAdministrateurs donneesAdministrateurs = mr.getExtractedData(DonneesAdministrateurs.class, buildIndividuKey(regpm));
+		return !donneesAdministrateurs.getAdministrations().isEmpty();
 	}
 
 	@Nullable
@@ -226,7 +243,7 @@ public class IndividuMigrator extends AbstractEntityMigrator<RegpmIndividu> {
 			ppExistant = null;
 		}
 		else {
-			final List<Long> idsPP = nonHabitantIndex.search(params, Integer.MAX_VALUE);
+			final List<Long> idsPP = migrationContexte.getNonHabitantIndex().search(params, Integer.MAX_VALUE);
 			if (idsPP == null || idsPP.isEmpty()) {
 				mr.addMessage(LogCategory.INDIVIDUS_PM, LogLevel.INFO, String.format("Aucun non-habitant trouvé dans Unireg avec ces nom (%s), prénom (%s), sexe (%s) et date de naissance (%s).",
 				                                                                     regpm.getNom(), regpm.getPrenom(), regpm.getSexe(), StringRenderers.DATE_RENDERER.toString(regpm.getDateNaissance())));
@@ -239,7 +256,7 @@ public class IndividuMigrator extends AbstractEntityMigrator<RegpmIndividu> {
 				ppExistant = null;
 			}
 			else {
-				ppExistant = (PersonnePhysique) tiersDAO.get(idsPP.get(0));
+				ppExistant = (PersonnePhysique) migrationContexte.getTiersDAO().get(idsPP.get(0));
 			}
 		}
 		return ppExistant;
@@ -247,7 +264,7 @@ public class IndividuMigrator extends AbstractEntityMigrator<RegpmIndividu> {
 
 	@Nullable
 	private Person getFromRCPersWithId(MigrationResultProduction mr, long id) {
-		final ListOfPersons list = rcpersClient.getPersons(Collections.singletonList(id), RegDate.get(), false);
+		final ListOfPersons list = migrationContexte.getRcpersClient().getPersons(Collections.singletonList(id), RegDate.get(), false);
 		if (list == null || list.getNumberOfResults().equals(BigInteger.ZERO)) {
 			// pas trouvé dans la liste des résidents RCPers...
 			return null;
@@ -293,8 +310,8 @@ public class IndividuMigrator extends AbstractEntityMigrator<RegpmIndividu> {
 			dateNaissanceMin = dateNaissance;
 			dateNaissanceMax = dateNaissance;
 		}
-		final ListOfFoundPersons found = rcpersClient.findPersons(EchHelper.sexeToEch44(sexe), prenom, nom, null, null, null, null, Boolean.TRUE,
-		                                                          null, null, null, null, null, null, null, null, dateNaissanceMin, dateNaissanceMax);
+		final ListOfFoundPersons found = migrationContexte.getRcpersClient().findPersons(EchHelper.sexeToEch44(sexe), prenom, nom, null, null, null, null, Boolean.TRUE,
+		                                                                                 null, null, null, null, null, null, null, null, dateNaissanceMin, dateNaissanceMax);
 
 		// aucun résultat
 		if (found == null || found.getNumberOfResults().equals(BigInteger.ZERO)) {

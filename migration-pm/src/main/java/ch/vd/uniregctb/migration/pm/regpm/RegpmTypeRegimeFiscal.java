@@ -33,5 +33,12 @@ public enum RegpmTypeRegimeFiscal {
 	_749_CONFEDERATION_ETAT_ETRANGER_ART_90AI,
 	_759_CANTON_ETABLISSEMENT_ART_90B,
 	_769_COMMUNE_ETABLISSEMENT_ART_90C,
-	_779_PLACEMENT_COLLECTIF_EXONERE_ART_90J
+	_779_PLACEMENT_COLLECTIF_EXONERE_ART_90J;
+
+	/**
+	 * @return le code (i.e. les caractères compris entre les deux premiers "_" du nom de la modalité)
+	 */
+	public String getCode() {
+		return name().substring(1, name().indexOf('_', 1));
+	}
 }

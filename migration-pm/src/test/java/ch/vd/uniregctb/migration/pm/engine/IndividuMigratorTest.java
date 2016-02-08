@@ -14,23 +14,35 @@ import org.junit.Test;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.wsclient.rcpers.RcPersClient;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
+import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
+import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionService;
+import ch.vd.uniregctb.metier.bouclement.BouclementService;
 import ch.vd.uniregctb.migration.pm.MigrationResultCollector;
 import ch.vd.uniregctb.migration.pm.communes.FractionsCommuneProvider;
 import ch.vd.uniregctb.migration.pm.communes.FusionCommunesProvider;
 import ch.vd.uniregctb.migration.pm.engine.collector.EntityLinkCollector;
 import ch.vd.uniregctb.migration.pm.engine.helpers.AdresseHelper;
+import ch.vd.uniregctb.migration.pm.engine.helpers.DateHelper;
+import ch.vd.uniregctb.migration.pm.engine.helpers.DoublonProvider;
+import ch.vd.uniregctb.migration.pm.engine.helpers.RegimeFiscalHelper;
 import ch.vd.uniregctb.migration.pm.indexeur.NonHabitantIndex;
 import ch.vd.uniregctb.migration.pm.log.LogCategory;
 import ch.vd.uniregctb.migration.pm.mapping.IdMapper;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmAdministrateur;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmAdresseIndividu;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmEntreprise;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmFinMandatAdministrateur;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmFonction;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmIndividu;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmLocalitePostale;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmRegimeFiscalVD;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeAdresseIndividu;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeMandat;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeRegimeFiscal;
 import ch.vd.uniregctb.migration.pm.store.UniregStore;
 import ch.vd.uniregctb.migration.pm.utils.DatesParticulieres;
 import ch.vd.uniregctb.migration.pm.utils.EntityKey;
+import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TypeTiers;
@@ -47,19 +59,26 @@ public class IndividuMigratorTest extends AbstractEntityMigratorTest {
 		nonHabitantIndex = getBean(NonHabitantIndex.class, "nonHabitantIndex");
 		nonHabitantIndex.overwriteIndex();
 
-		final ActivityManager activityManager = entreprise -> true;     // tout le monde est actif dans ces tests!
+		final MigrationContexte contexte = new MigrationContexte(getBean(UniregStore.class, "uniregStore"),
+		                                                         entreprise -> true,                // tout le monde est actif dans ces tests!!
+		                                                         getBean(ServiceInfrastructureService.class, "serviceInfrastructureService"),
+		                                                         getBean(FusionCommunesProvider.class, "fusionCommunesProvider"),
+		                                                         getBean(FractionsCommuneProvider.class, "fractionsCommuneProvider"),
+		                                                         getBean(DateHelper.class, "dateHelper"),
+		                                                         getBean(DatesParticulieres.class, "datesParticulieres"),
+		                                                         getBean(AdresseHelper.class, "adresseHelper"),
+		                                                         getBean(BouclementService.class, "bouclementService"),
+		                                                         getBean(AssujettissementService.class, "assujettissementService"),
+		                                                         getBean(PeriodeImpositionService.class, "periodeImpositionService"),
+		                                                         getBean(ParametreAppService.class, "parametreAppService"),
+		                                                         null,
+		                                                         getBean(DoublonProvider.class, "doublonProvider"),
+		                                                         getBean(RegimeFiscalHelper.class, "regimeFiscalHelper"),
+		                                                         getBean(TiersDAO.class, "tiersDAO"),
+		                                                         getBean(RcPersClient.class, "rcpersClient"),
+		                                                         getBean(NonHabitantIndex.class, "nonHabitantIndex"));
 
-		migrator = new IndividuMigrator(
-				getBean(UniregStore.class, "uniregStore"),
-				activityManager,
-				getBean(ServiceInfrastructureService.class, "serviceInfrastructureService"),
-				getBean(TiersDAO.class, "tiersDAO"),
-				getBean(RcPersClient.class, "rcpersClient"),
-				nonHabitantIndex,
-				getBean(AdresseHelper.class, "adresseHelper"),
-				getBean(FusionCommunesProvider.class, "fusionCommunesProvider"),
-				getBean(FractionsCommuneProvider.class, "fractionsCommuneProvider"),
-				getBean(DatesParticulieres.class, "datesParticulieres"));
+		migrator = new IndividuMigrator(contexte);
 	}
 
 	static RegpmIndividu buildBaseIndividu(long id, String nom, String prenom, RegDate dateNaissance, Sexe sexe) {
@@ -95,8 +114,41 @@ public class IndividuMigratorTest extends AbstractEntityMigratorTest {
 		return adresse;
 	}
 
+	static RegpmAdministrateur addAdministration(RegpmIndividu individu, RegpmFonction fonction, RegDate dateDebut, @Nullable RegDate dateFin, boolean rectifiee, long noEntreprise) {
+		final RegpmAdministrateur admin = new RegpmAdministrateur();
+		assignMutationVisa(individu, REGPM_VISA, REGPM_MODIF);
+		admin.setId(new RegpmAdministrateur.PK(computeNewSeqNo(individu.getAdministrations(), x -> x.getId().getSeqNo()), individu.getId()));
+		admin.setAdministrateur(individu);
+		admin.setFonction(fonction);
+		admin.setDateEntreeFonction(dateDebut);
+		admin.setRectifiee(rectifiee);
+		admin.setFins(new HashSet<>());
+		admin.initEntrepriseData(new TreeSet<>(), noEntreprise);
+		if (dateFin != null) {
+			final RegpmFinMandatAdministrateur finMandat = new RegpmFinMandatAdministrateur();
+			assignMutationVisa(finMandat, REGPM_VISA, REGPM_MODIF);
+			finMandat.setId(new RegpmFinMandatAdministrateur.PK(computeNewSeqNo(admin.getFins(), x -> x.getId().getSeqNo()), individu.getId(), admin.getId().getSeqNo()));
+			finMandat.setRectifiee(false);
+			finMandat.setDateFinMandat(dateFin);
+			admin.getFins().add(finMandat);
+		}
+		individu.getAdministrations().add(admin);
+		return admin;
+	}
+
+	static RegpmRegimeFiscalVD addRegimeFiscalVD(RegpmAdministrateur admin, RegDate dateDebut, @Nullable RegDate dateAnnulation, RegpmTypeRegimeFiscal type) {
+		final RegpmRegimeFiscalVD regime = new RegpmRegimeFiscalVD();
+		assignMutationVisa(regime, REGPM_VISA, REGPM_MODIF);
+		regime.setId(new RegpmRegimeFiscalVD.PK(computeNewSeqNo(admin.getRegimesFiscauxVD(), x -> x.getId().getSeqNo()), admin.getEntrepriseId()));
+		regime.setDateDebut(dateDebut);
+		regime.setDateAnnulation(dateAnnulation);
+		regime.setType(type);
+		admin.getRegimesFiscauxVD().add(regime);
+		return regime;
+	}
+
 	@Test
-	public void testIndividuSansRoleMandataire() throws Exception {
+	public void testIndividuSansRoleMandataireNiAdministrateur() throws Exception {
 
 		// on construit un individu simple (qui n'existe pas dans Unireg, ni dans RCPers, avec un numéro comme ça...), et on le migre
 		final long noIndividuRegpm = 7484841141411857L;
@@ -127,7 +179,44 @@ public class IndividuMigratorTest extends AbstractEntityMigratorTest {
 				.findAny()
 				.ifPresent(cat -> Assert.fail(String.format("Il ne devrait pas y avoir de message dans la catégorie %s", cat)));
 
-		assertExistMessageWithContent(mr, LogCategory.INDIVIDUS_PM, "\\bIndividu PM ignoré car n'a pas le rôle de mandataire\\.$");
+		assertExistMessageWithContent(mr, LogCategory.INDIVIDUS_PM, "\\bIndividu PM ignoré car n'a pas de rôle de mandataire ni d'administrateur\\.$");
+	}
+
+	@Test
+	public void testIndividuAvecRoleAdministrateur() throws Exception {
+
+		// on construit un individu simple (qui n'existe pas dans Unireg, ni dans RCPers, avec un numéro comme ça...), et on le migre
+		final long noIndividuRegpm = 7484841141411857L;
+		final RegpmIndividu individu = buildBaseIndividu(noIndividuRegpm, "Dantès", "Edmond Alexandre", RegDate.get(1978, 5, 12), Sexe.MASCULIN);
+		final RegpmAdministrateur administration = addAdministration(individu, RegpmFonction.ADMINISTRATEUR, RegDate.get(2000, 1, 1), null, false, 42L);
+		addRegimeFiscalVD(administration, RegDate.get(1965, 12, 4), null, RegpmTypeRegimeFiscal._35_SOCIETE_ORDINAIRE_SIAL);
+
+		final MockGraphe graphe = new MockGraphe(null,
+		                                         null,
+		                                         Collections.singletonList(individu));
+		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
+		final EntityLinkCollector linkCollector = new EntityLinkCollector();
+		final IdMapper idMapper = new IdMapper();
+		migrator.initMigrationResult(mr, idMapper);
+		migrate(individu, migrator, mr, linkCollector, idMapper);
+
+		// vérification de ce que l'on a créé en base (= rien!!)
+		doInUniregTransaction(true, status -> {
+			final List<Long> ids = getTiersDAO().getAllIdsFor(true, TypeTiers.PERSONNE_PHYSIQUE);
+			Assert.assertNotNull(ids);
+			Assert.assertEquals(0, ids.size());
+		});
+
+		Assert.assertNotNull(linkCollector.getCollectedLinks());
+		Assert.assertEquals(0, linkCollector.getCollectedLinks().size());
+
+		final Set<LogCategory> expectedCategories = EnumSet.of(LogCategory.INDIVIDUS_PM);
+		mr.getMessages().keySet().stream()
+				.filter(cat -> !expectedCategories.contains(cat))
+				.findAny()
+				.ifPresent(cat -> Assert.fail(String.format("Il ne devrait pas y avoir de message dans la catégorie %s", cat)));
+
+		assertExistMessageWithContent(mr, LogCategory.INDIVIDUS_PM, "\\bIndividu non migré car aucune correspondance univoque n'a pu être trouvée avec une personne physique existante dans Unireg\\.$");
 	}
 
 	@Test

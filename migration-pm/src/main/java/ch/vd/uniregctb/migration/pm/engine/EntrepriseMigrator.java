@@ -14,6 +14,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 import java.util.NavigableMap;
 import java.util.Objects;
@@ -38,7 +39,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ch.vd.registre.base.date.CollatableDateRange;
-import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeAdapterCallback;
 import ch.vd.registre.base.date.DateRangeComparator;
@@ -72,23 +72,17 @@ import ch.vd.uniregctb.declaration.EtatDeclarationSommee;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementException;
-import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImposition;
-import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionService;
-import ch.vd.uniregctb.metier.bouclement.BouclementService;
 import ch.vd.uniregctb.migration.pm.ConsolidationPhase;
 import ch.vd.uniregctb.migration.pm.MigrationConstants;
 import ch.vd.uniregctb.migration.pm.MigrationResultContextManipulation;
 import ch.vd.uniregctb.migration.pm.MigrationResultInitialization;
 import ch.vd.uniregctb.migration.pm.MigrationResultProduction;
-import ch.vd.uniregctb.migration.pm.communes.FractionsCommuneProvider;
-import ch.vd.uniregctb.migration.pm.communes.FusionCommunesProvider;
 import ch.vd.uniregctb.migration.pm.engine.collector.EntityLinkCollector;
+import ch.vd.uniregctb.migration.pm.engine.data.DonneesAdministrateurs;
 import ch.vd.uniregctb.migration.pm.engine.data.DonneesCiviles;
 import ch.vd.uniregctb.migration.pm.engine.data.DonneesMandats;
-import ch.vd.uniregctb.migration.pm.engine.helpers.AdresseHelper;
-import ch.vd.uniregctb.migration.pm.engine.helpers.DoublonProvider;
-import ch.vd.uniregctb.migration.pm.engine.helpers.OrganisationServiceAccessor;
+import ch.vd.uniregctb.migration.pm.engine.data.RegimesFiscauxHistoData;
 import ch.vd.uniregctb.migration.pm.engine.helpers.StringRenderers;
 import ch.vd.uniregctb.migration.pm.extractor.IbanExtractor;
 import ch.vd.uniregctb.migration.pm.log.DifferencesDonneesCivilesLoggedElement;
@@ -101,6 +95,7 @@ import ch.vd.uniregctb.migration.pm.mapping.IdMapping;
 import ch.vd.uniregctb.migration.pm.regpm.ContactEntreprise;
 import ch.vd.uniregctb.migration.pm.regpm.InscriptionRC;
 import ch.vd.uniregctb.migration.pm.regpm.RaisonSociale;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmAdministrateur;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmAdresseEntreprise;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmAllegementFiscal;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmAssujettissement;
@@ -116,6 +111,7 @@ import ch.vd.uniregctb.migration.pm.regpm.RegpmEntreprise;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmEnvironnementTaxation;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmEtatEntreprise;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmExerciceCommercial;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmFonction;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmForPrincipal;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmForSecondaire;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmFormeJuridique;
@@ -125,7 +121,10 @@ import ch.vd.uniregctb.migration.pm.regpm.RegpmModeImposition;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmObjectImpot;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmPrononceFaillite;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmRegimeFiscal;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmRegimeFiscalCH;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmRegimeFiscalVD;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmSiegeEntreprise;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmSocieteDirection;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeAdresseEntreprise;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeAssujettissement;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeContribution;
@@ -139,13 +138,10 @@ import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeForPrincipal;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeFormeJuridique;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeMandat;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeRegimeFiscal;
-import ch.vd.uniregctb.migration.pm.store.UniregStore;
-import ch.vd.uniregctb.migration.pm.utils.DatesParticulieres;
 import ch.vd.uniregctb.migration.pm.utils.EntityKey;
 import ch.vd.uniregctb.migration.pm.utils.EntityWrapper;
 import ch.vd.uniregctb.migration.pm.utils.KeyedSupplier;
 import ch.vd.uniregctb.migration.pm.utils.OrganisationDataHelper;
-import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.tiers.AllegementFiscal;
 import ch.vd.uniregctb.tiers.AllegementFiscalCanton;
 import ch.vd.uniregctb.tiers.AllegementFiscalCantonCommune;
@@ -169,6 +165,7 @@ import ch.vd.uniregctb.tiers.ForsParType;
 import ch.vd.uniregctb.tiers.LocalisationDatee;
 import ch.vd.uniregctb.tiers.LocalizedDateRange;
 import ch.vd.uniregctb.tiers.MontantMonetaire;
+import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RaisonSocialeFiscaleEntreprise;
 import ch.vd.uniregctb.tiers.RegimeFiscal;
 import ch.vd.uniregctb.tiers.Tiers;
@@ -189,33 +186,8 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(EntrepriseMigrator.class);
 
-	private final BouclementService bouclementService;
-	private final AssujettissementService assujettissementService;
-	private final PeriodeImpositionService periodeImpositionService;
-	private final ParametreAppService parametreAppService;
-	private final OrganisationServiceAccessor organisationService;
-	private final DoublonProvider doublonProvider;
-
-	public EntrepriseMigrator(UniregStore uniregStore,
-	                          ActivityManager activityManager,
-	                          ServiceInfrastructureService infraService,
-	                          BouclementService bouclementService,
-	                          AssujettissementService assujettissementService,
-	                          OrganisationServiceAccessor organisationService,
-	                          AdresseHelper adresseHelper,
-	                          FusionCommunesProvider fusionCommunesProvider,
-	                          FractionsCommuneProvider fractionsCommuneProvider,
-	                          DatesParticulieres datesParticulieres,
-	                          PeriodeImpositionService periodeImpositionService,
-	                          ParametreAppService parametreAppService,
-	                          DoublonProvider doublonProvider) {
-		super(uniregStore, activityManager, infraService, fusionCommunesProvider, fractionsCommuneProvider, datesParticulieres, adresseHelper);
-		this.bouclementService = bouclementService;
-		this.assujettissementService = assujettissementService;
-		this.organisationService = organisationService;
-		this.periodeImpositionService = periodeImpositionService;
-		this.parametreAppService = parametreAppService;
-		this.doublonProvider = doublonProvider;
+	public EntrepriseMigrator(MigrationContexte migrationContexte) {
+		super(migrationContexte);
 	}
 
 	private static Entreprise createEntreprise(RegpmEntreprise regpm) {
@@ -536,6 +508,24 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		                         this::extractDonneesAssujettissement,
 		                         null,
 		                         null);
+
+		// régimes fiscaux
+		mr.registerDataExtractor(RegimesFiscauxHistoData.class,
+		                         e -> extractDonneesRegimesFiscaux(e, mr, idMapper),
+		                         null,
+		                         null);
+
+		// données des administrateurs
+		mr.registerDataExtractor(DonneesAdministrateurs.class,
+		                         e -> extractDonneesAdministrateurs(e, mr, idMapper),
+		                         null,
+		                         null);
+	}
+
+	@NotNull
+	private DonneesAdministrateurs extractDonneesAdministrateurs(RegpmEntreprise e, MigrationResultContextManipulation mr, IdMapping idMapper) {
+		final EntityKey moi = buildEntrepriseKey(e);
+		return doInLogContext(moi, mr, idMapper, () -> DonneesAdministrateurs.fromEntrepriseAdministree(e, migrationContexte, mr));
 	}
 
 	@NotNull
@@ -588,7 +578,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 			                                                           Pair.of(e.getDateDissolution(), "dissolution"))
 					.filter(pair -> pair.getLeft() != null)
 					.filter(pair -> {
-						if (isFutureDate(pair.getLeft())) {
+						if (migrationContexte.getDateHelper().isFutureDate(pair.getLeft())) {
 							mr.addMessage(LogCategory.SUIVI, LogLevel.ERROR,
 							              String.format("La date de %s est ignorée elle est située dans le futur (%s).",
 							                            pair.getRight(),
@@ -614,7 +604,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 				if (!assujettissementIcc.isEmpty()) {
 					final RegDate dateFin = assujettissementIcc.get(assujettissementIcc.size() - 1).getDateFin();
 					if (dateFin != null) {
-						if (isFutureDate(dateFin)) {
+						if (migrationContexte.getDateHelper().isFutureDate(dateFin)) {
 							mr.addMessage(LogCategory.SUIVI, LogLevel.ERROR,
 							              String.format("La date de fin d'assujettissement ICC est dans le futur (%s), elle est donc ignorée.",
 							                            StringRenderers.DATE_RENDERER.toString(dateFin)));
@@ -640,10 +630,10 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 				                            StringRenderers.DATE_RENDERER.toString(finActivite.getLeft())));
 
 				// log en cas de valeur un peu louche
-				checkDateLouche(finActivite.getLeft(),
-				                () -> String.format("La date de fin d'activité (date de %s)", finActivite.getRight()),
-				                LogCategory.SUIVI,
-				                mr);
+				migrationContexte.getDateHelper().checkDateLouche(finActivite.getLeft(),
+				                                                  () -> String.format("La date de fin d'activité (date de %s)", finActivite.getRight()),
+				                                                  LogCategory.SUIVI,
+				                                                  mr);
 
 				// si la date est fixée, on ne la prend en compte que si elle
 				// est postérieure à la date de début du dernier for fiscal principal existant
@@ -728,7 +718,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 						return true;
 					})
 					.filter(rs -> {
-						if (isFutureDate(rs.getDateValidite())) {
+						if (migrationContexte.getDateHelper().isFutureDate(rs.getDateValidite())) {
 							mr.addMessage(LogCategory.DONNEES_CIVILES_REGPM, LogLevel.ERROR,
 							              String.format("Raison sociale %d (%s) ignorée car sa date de début de validité est dans le futur (%s).",
 							                            rs.getId(),
@@ -742,12 +732,12 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 						final String texteRaisonSociale = extractRaisonSociale(rs);
 
 						// date louche quand-même ?
-						checkDateLouche(rs.getDateValidite(),
-						                () -> String.format("Raison sociale %d (%s) avec une date de validité",
-						                                    rs.getId(),
-						                                    texteRaisonSociale),
-						                LogCategory.DONNEES_CIVILES_REGPM,
-						                mr);
+						migrationContexte.getDateHelper().checkDateLouche(rs.getDateValidite(),
+						                                                  () -> String.format("Raison sociale %d (%s) avec une date de validité",
+						                                                                      rs.getId(),
+						                                                                      texteRaisonSociale),
+						                                                  LogCategory.DONNEES_CIVILES_REGPM,
+						                                                  mr);
 					})
 					.map(rs -> Pair.of(rs.getDateValidite(), extractRaisonSociale(rs)))
 					.collect(Collectors.toMap(Pair::getLeft,
@@ -822,7 +812,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 						return true;
 					})
 					.filter(c -> {
-						if (isFutureDate(c.getDateEvolutionCapital())) {
+						if (migrationContexte.getDateHelper().isFutureDate(c.getDateEvolutionCapital())) {
 							mr.addMessage(LogCategory.DONNEES_CIVILES_REGPM, LogLevel.ERROR,
 							              String.format("Capital %d (%s) ignoré car sa date de début de validité est dans le futur (%s).",
 							                            c.getId().getSeqNo(),
@@ -832,12 +822,12 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 						}
 						return true;
 					})
-					.peek(c -> checkDateLouche(c.getDateEvolutionCapital(),
-					                           () -> String.format("Capital %d (%s) avec une date de début de validité",
-					                                               c.getId().getSeqNo(),
-					                                               c.getCapitalLibere()),
-					                           LogCategory.DONNEES_CIVILES_REGPM,
-					                           mr))
+					.peek(c -> migrationContexte.getDateHelper().checkDateLouche(c.getDateEvolutionCapital(),
+					                                                             () -> String.format("Capital %d (%s) avec une date de début de validité",
+					                                                                                 c.getId().getSeqNo(),
+					                                                                                 c.getCapitalLibere()),
+					                                                             LogCategory.DONNEES_CIVILES_REGPM,
+					                                                             mr))
 					.map(c -> Pair.of(c.getDateEvolutionCapital(), c.getCapitalLibere()))
 					.collect(Collectors.toMap(Pair::getLeft,
 					                          pair -> Collections.singletonList(pair.getRight()),
@@ -892,7 +882,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 						return true;
 					})
 					.filter(fj -> {
-						if (isFutureDate(fj.getDateValidite())) {
+						if (migrationContexte.getDateHelper().isFutureDate(fj.getDateValidite())) {
 							mr.addMessage(LogCategory.DONNEES_CIVILES_REGPM, LogLevel.ERROR,
 							              String.format("Forme juridique %d (%s) ignorée car sa date de début de validité est dans le futur (%s).",
 							                            fj.getPk().getSeqNo(),
@@ -902,12 +892,12 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 						}
 						return true;
 					})
-					.peek(fj -> checkDateLouche(fj.getDateValidite(),
-					                            () -> String.format("Forme juridique %d (%s) avec date de début de validité",
-					                                                fj.getPk().getSeqNo(),
-					                                                fj.getType().getCode()),
-					                            LogCategory.DONNEES_CIVILES_REGPM,
-					                            mr))
+					.peek(fj -> migrationContexte.getDateHelper().checkDateLouche(fj.getDateValidite(),
+					                                                              () -> String.format("Forme juridique %d (%s) avec date de début de validité",
+					                                                                                  fj.getPk().getSeqNo(),
+					                                                                                  fj.getType().getCode()),
+					                                                              LogCategory.DONNEES_CIVILES_REGPM,
+					                                                              mr))
 					.collect(Collectors.toMap(RegpmFormeJuridique::getDateValidite,
 					                          fj -> Collections.<RegpmTypeFormeJuridique>singletonList(fj.getType()),
 					                          (set1, set2) -> Stream.concat(set1.stream(), set2.stream()).collect(Collectors.toList())));
@@ -979,7 +969,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 						return true;
 					})
 					.filter(s -> {
-						if (isFutureDate(s.getDateValidite())) {
+						if (migrationContexte.getDateHelper().isFutureDate(s.getDateValidite())) {
 							mr.addMessage(LogCategory.SUIVI, LogLevel.ERROR,
 							              String.format("Le siège %d est ignoré car il a une date de début de validité dans le futur (%s).",
 							                            s.getId().getSeqNo(),
@@ -999,10 +989,10 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 						}
 						return true;
 					})
-					.peek(s -> checkDateLouche(s.getDateValidite(),
-					                           () -> String.format("Le siège %d a une date de validité", s.getId().getSeqNo()),
-					                           LogCategory.SUIVI,
-					                           mr))
+					.peek(s -> migrationContexte.getDateHelper().checkDateLouche(s.getDateValidite(),
+					                                                             () -> String.format("Le siège %d a une date de validité", s.getId().getSeqNo()),
+					                                                             LogCategory.SUIVI,
+					                                                             mr))
 					.collect(Collectors.toMap(RegpmSiegeEntreprise::getDateValidite,
 					                          Collections::singletonList,
 					                          (l1, l2) -> Stream.concat(l1.stream(), l2.stream()).collect(Collectors.toList()),
@@ -1040,7 +1030,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 			final Set<ForFiscal> sansAnnules = forsFiscaux.stream()
 					.filter(ff -> {
 						if (ff.isAnnule()) {
-							uniregStore.removeEntityFromDb(ff);
+							migrationContexte.getUniregStore().removeEntityFromDb(ff);
 							return false;
 						}
 						return true;
@@ -1203,13 +1193,13 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 
 			final Long idCantonal = e.getNumeroCantonal();
 			if (idCantonal == null) {
-				final LogLevel logLevel = activityManager.isActive(e) ? LogLevel.ERROR : LogLevel.INFO;
+				final LogLevel logLevel = migrationContexte.getActivityManager().isActive(e) ? LogLevel.ERROR : LogLevel.INFO;
 				mr.addMessage(LogCategory.SUIVI, logLevel, "Pas de numéro cantonal assigné sur l'entreprise, pas de lien vers le civil.");
 				return null;
 			}
 
 			try {
-				final Organisation org = organisationService.getOrganisation(idCantonal, mr);
+				final Organisation org = migrationContexte.getOrganisationService().getOrganisation(idCantonal, mr);
 				if (org != null) {
 					return new DonneesCiviles(org);
 				}
@@ -1379,7 +1369,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 						return true;
 					})
 					.filter(ff -> {
-						if (isFutureDate(ff.getDateValidite())) {
+						if (migrationContexte.getDateHelper().isFutureDate(ff.getDateValidite())) {
 							mr.addMessage(LogCategory.FORS, LogLevel.ERROR,
 							              String.format("Le for principal %d est ignoré car il a une date de début dans le futur (%s).",
 							                            ff.getId().getSeqNo(),
@@ -1433,10 +1423,10 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 			}
 
 			// log des dates louches
-			liste.forEach(ff -> checkDateLouche(ff.getDateValidite(),
-			                                    () -> String.format("Le for principal %d a une date de début", ff.getId().getSeqNo()),
-			                                    LogCategory.FORS,
-			                                    mr));
+			liste.forEach(ff -> migrationContexte.getDateHelper().checkDateLouche(ff.getDateValidite(),
+			                                                                      () -> String.format("Le for principal %d a une date de début", ff.getId().getSeqNo()),
+			                                                                      LogCategory.FORS,
+			                                                                      mr));
 
 			return new ForsPrincipauxData(liste);
 		});
@@ -1466,7 +1456,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 				final List<DateRange> lilic = mr.getExtractedData(AssujettissementData.class, keyEntreprise).ranges;
 
 				// assujettissements calculés par Unireg
-				final List<DateRange> calcules = neverNull(DateRangeHelper.merge(assujettissementService.determine(entreprise)));
+				final List<DateRange> calcules = neverNull(DateRangeHelper.merge(migrationContexte.getAssujettissementService().determine(entreprise)));
 
 				// [SIFISC-16333] une entreprise qui n'était pas assujettie du tout et qui l'est maintenant, ou une entreprise qui était assujettie, et qui ne l'est plus du tout,
 				// doit être logguées de manière particulière (ERROR)
@@ -1551,7 +1541,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 
 				// si la PM est déclarée "inactive" mais qu'Unireg lui calcule un assujettissement après la date seuil du 01.01.2015,
 				// c'est un problème, non ?
-				final RegDate seuilActivite = datesParticulieres.getSeuilActivite();
+				final RegDate seuilActivite = migrationContexte.getDatesParticulieres().getSeuilActivite();
 				if (!data.active && DateRangeHelper.intersect(new DateRangeHelper.Range(seuilActivite, null), calcules)) {
 					mr.addMessage(LogCategory.ASSUJETTISSEMENTS, LogLevel.ERROR,
 					              String.format("Assujettissement calculé après le %s sur une entreprise considérée comme inactive.", StringRenderers.DATE_RENDERER.toString(seuilActivite)));
@@ -1615,7 +1605,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 						                          (l1, l2) -> Stream.concat(l1.stream(), l2.stream()).collect(Collectors.toList())));
 
 				// zone à couvrir effectivement
-				final DateRange aCouvrir = new DateRangeHelper.Range(RegDate.get(parametreAppService.getPremierePeriodeFiscalePersonnesMorales(), 1, 1), null);
+				final DateRange aCouvrir = new DateRangeHelper.Range(RegDate.get(migrationContexte.getParametreAppService().getPremierePeriodeFiscalePersonnesMorales(), 1, 1), null);
 
 				// zones de fors 'bénéfice/capital' non-couverte par des régimes fiscaux ?
 				for (RegimeFiscal.Portee portee : RegimeFiscal.Portee.values()) {
@@ -1671,7 +1661,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 										}
 									}
 
-									final RegimeFiscal rf = new RegimeFiscal(trou.getDateDebut(), null, portee, extractCode(type));
+									final RegimeFiscal rf = new RegimeFiscal(trou.getDateDebut(), null, portee, type.getCode());
 									entreprise.addRegimeFiscal(rf);
 
 									mr.addMessage(LogCategory.SUIVI, LogLevel.WARN,
@@ -1991,10 +1981,10 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		}
 
 		// Les entreprises conservent leur numéro comme numéro de contribuable
-		Entreprise unireg = uniregStore.getEntityFromDb(Entreprise.class, regpm.getId());
+		Entreprise unireg = migrationContexte.getUniregStore().getEntityFromDb(Entreprise.class, regpm.getId());
 		if (unireg == null) {
 			mr.addMessage(LogCategory.SUIVI, LogLevel.WARN, "L'entreprise n'existait pas dans Unireg avec ce numéro de contribuable.");
-			unireg = uniregStore.saveEntityToDb(createEntreprise(regpm));
+			unireg = migrationContexte.getUniregStore().saveEntityToDb(createEntreprise(regpm));
 		}
 		idMapper.addEntreprise(regpm, unireg);
 
@@ -2002,7 +1992,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 
 		// Récupération des données civiles si elles existent
 		Organisation rcent = null;
-		if (organisationService.isRcentEnabled()) {
+		if (migrationContexte.getOrganisationService().isRcentEnabled()) {
 			final DonneesCiviles donneesCiviles = mr.getExtractedData(DonneesCiviles.class, moi.getKey());
 			if (donneesCiviles != null) {
 				rcent = donneesCiviles.getOrganisation();
@@ -2039,7 +2029,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		mr.addPreTransactionCommitData(new CouvertureRegimesFiscauxData(moi));
 
 		// enregistrement de cette entreprise pour la comparaison des assujettissements avant/après
-		mr.addPreTransactionCommitData(new ComparaisonAssujettissementsData(regpm, activityManager.isActive(regpm), moi));
+		mr.addPreTransactionCommitData(new ComparaisonAssujettissementsData(regpm, migrationContexte.getActivityManager().isActive(regpm), moi));
 
 		// TODO migrer les documents (questionnaires SNC...)
 
@@ -2071,6 +2061,8 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 
 		migrateMandataires(regpm, mr, linkCollector, idMapper);
 		migrateFusionsApres(regpm, linkCollector, idMapper);
+		migrateSocietesDeDirection(regpm, mr, linkCollector, idMapper);
+		migrateAdministrateursSocieteImmobiliere(regpm, mr, linkCollector, idMapper);
 
 		// log de suivi à la fin des opérations pour cette entreprise
 		mr.addMessage(LogCategory.SUIVI, LogLevel.INFO, String.format("Entreprise migrée : %s.", FormatNumeroHelper.numeroCTBToDisplay(unireg.getNumero())));
@@ -2091,11 +2083,11 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 					final FlagEntreprise flag = new FlagEntreprise();
 					copyCreationMutation(critere, flag);
 
-					final RegDate debut = Optional.ofNullable(bouclementService.getDateDernierBouclement(bouclements, RegDate.get(critere.getPfDebut(), 1, 1), true))
+					final RegDate debut = Optional.ofNullable(migrationContexte.getBouclementService().getDateDernierBouclement(bouclements, RegDate.get(critere.getPfDebut(), 1, 1), true))
 							.map(RegDate::getOneDayAfter)
 							.orElse(RegDate.get(critere.getPfDebut(), 1, 1));
 					final RegDate fin = Optional.<Integer>ofNullable(critere.getPfFin())
-							.map(annee -> bouclementService.getDateDernierBouclement(bouclements, RegDate.get(annee, 12, 31), true))
+							.map(annee -> migrationContexte.getBouclementService().getDateDernierBouclement(bouclements, RegDate.get(annee, 12, 31), true))
 							.map(date -> {
 								if (date.year() < critere.getPfFin()) {
 									return RegDate.get(critere.getPfFin(), 12, 31);
@@ -2170,7 +2162,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 					return true;
 				})
 				.filter(a -> {
-					if (isFutureDate(a.getDateDebut())) {
+					if (migrationContexte.getDateHelper().isFutureDate(a.getDateDebut())) {
 						mr.addMessage(LogCategory.ADRESSES, LogLevel.ERROR,
 						              String.format("Adresse %s ignorée car sa date de début de validité est dans le futur (%s).",
 						                            a.getTypeAdresse(),
@@ -2179,14 +2171,14 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 					}
 					return true;
 				})
-				.peek(a -> checkDateLouche(a.getDateDebut(),
-				                           () -> String.format("La date de début de validité de l'adresse %s", a.getTypeAdresse()),
-				                           LogCategory.ADRESSES,
-				                           mr))
+				.peek(a -> migrationContexte.getDateHelper().checkDateLouche(a.getDateDebut(),
+				                                                             () -> String.format("La date de début de validité de l'adresse %s", a.getTypeAdresse()),
+				                                                             LogCategory.ADRESSES,
+				                                                             mr))
 				.findFirst()
 				.ifPresent(a -> {
 					final String complement = a.getChez() == null ? regpm.getEnseigne() : a.getChez();
-					final AdresseTiers adresse = adresseHelper.buildAdresse(a, mr, complement, false);
+					final AdresseTiers adresse = migrationContexte.getAdresseHelper().buildAdresse(a, mr, complement, false);
 					if (adresse != null) {
 						adresse.setUsage(TypeAdresseTiers.COURRIER);
 						unireg.addAdresseTiers(adresse);
@@ -2449,7 +2441,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 	 * @param mr collecteur de messages de migration
 	 */
 	private void migrateFlagDoublon(RegpmEntreprise regpm, Entreprise unireg, MigrationResultProduction mr) {
-		if (doublonProvider.isDoublon(regpm)) {
+		if (migrationContexte.getDoublonProvider().isDoublon(regpm)) {
 			unireg.setAnnule(true);
 			mr.addMessage(LogCategory.SUIVI, LogLevel.WARN, "Entreprise identifiée comme un doublon.");
 		}
@@ -2585,7 +2577,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 			// Ici, on va faire comme si le pays vu était Gibraltar (8213)
 			final int noOfsPays;
 			final int noOfsPaysCorrigeGibraltar = cop.noOfsPays == 8997 ? 8213 : cop.noOfsPays;
-			final Pays pays = infraService.getPays(noOfsPaysCorrigeGibraltar, dateReference);
+			final Pays pays = migrationContexte.getInfraService().getPays(noOfsPaysCorrigeGibraltar, dateReference);
 			if (pays != null && !pays.isEtatSouverain()) {
 				mr.addMessage(logCategory, LogLevel.WARN,
 				              String.format("Le pays %d%s n'est pas un état souverain, remplacé par l'état %d.",
@@ -2635,13 +2627,13 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 			// si l'établissement avec cet identifiant cantonal a déjà été créé en base, on le ré-utilise
 			// (ça marche parce que les différents threads de migration sont synchronisés sur les identifiants cantonaux aussi)
 			final Etablissement etbPrincipal;
-			final List<Etablissement> etbPrincipauxExistants = uniregStore.getEntitiesFromDb(Etablissement.class, Collections.singletonMap("numeroEtablissement", entry.getKey()));
+			final List<Etablissement> etbPrincipauxExistants = migrationContexte.getUniregStore().getEntitiesFromDb(Etablissement.class, Collections.singletonMap("numeroEtablissement", entry.getKey()));
 			if (etbPrincipauxExistants == null || etbPrincipauxExistants.isEmpty()) {
-				etbPrincipal = uniregStore.saveEntityToDb(new Etablissement());
+				etbPrincipal = migrationContexte.getUniregStore().saveEntityToDb(new Etablissement());
 				etbPrincipal.setNumeroEtablissement(entry.getKey());        // lien vers le civil
 
 				// [SIFISC-17744] on annule aussi l'établissement principal
-				if (doublonProvider.isDoublon(regpm)) {
+				if (migrationContexte.getDoublonProvider().isDoublon(regpm)) {
 					etbPrincipal.setAnnule(true);
 				}
 
@@ -2798,12 +2790,12 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 				                                                              FormatNumeroHelper.numeroCTBToDisplay(etbPrincipal.getNumero())));
 			}
 			else {
-				etbPrincipal = uniregStore.saveEntityToDb(new Etablissement());
+				etbPrincipal = migrationContexte.getUniregStore().saveEntityToDb(new Etablissement());
 				etbPrincipal.setEnseigne(regpm.getEnseigne());
 				etbPrincipal.setRaisonSociale(raisonSociale);
 
 				// [SIFISC-17744] on annule aussi l'établissement principal
-				if (doublonProvider.isDoublon(regpm)) {
+				if (migrationContexte.getDoublonProvider().isDoublon(regpm)) {
 					etbPrincipal.setAnnule(true);
 				}
 
@@ -2888,6 +2880,107 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 					final KeyedSupplier<Entreprise> apresFusion = getEntrepriseSupplier(idMapper, apres.getEntrepriseApres());
 					linkCollector.addLink(new EntityLinkCollector.FusionEntreprisesLink(moi, apresFusion, extractDateOuvertureForApresFusion(apres), null));
 				});
+	}
+
+	/**
+	 * Migration des sociétés de direction des fonds de placement
+	 * @param regpm la société (dans le rôle du fonds de placement)
+	 * @param mr collecteur de messages, de données à logguer...
+	 * @param linkCollector collecteur de liens à créer
+	 * @param idMapper mapper des identifiants RegPM -> Unireg
+	 */
+	private void migrateSocietesDeDirection(RegpmEntreprise regpm, MigrationResultProduction mr, EntityLinkCollector linkCollector, IdMapping idMapper) {
+		// un supplier qui va renvoyer l'entreprise en cours de migration
+		final KeyedSupplier<Entreprise> moi = getEntrepriseSupplier(idMapper, regpm);
+
+		// on ne génère quelque chose que pour les entreprises qui sont des fonds de placement
+		final NavigableMap<RegDate, RegpmTypeFormeJuridique> formesJuridiques = mr.getExtractedData(FormeJuridiqueHistoData.class, moi.getKey()).histo;
+		final boolean isFondsPlacement = formesJuridiques.values().stream()
+				.map(RegpmTypeFormeJuridique::getCode)
+				.map(EntrepriseMigrator::toFormeJuridique)
+				.anyMatch(fj -> fj == FormeJuridiqueEntreprise.SCPC);
+
+		final SortedSet<RegpmSocieteDirection> directions = regpm.getDirections();
+		if (isFondsPlacement) {
+
+			final RegDate finActiviteFonds = mr.getExtractedData(DateFinActiviteData.class, moi.getKey()).date;
+
+			// filtrage et génération des ranges qui vont bien (sans date de fin pour le moment...)
+			final List<DateRangeHelper.Ranged<RegpmEntreprise>> ranges = directions.stream ()
+					.filter(direction -> {
+						if (direction.getDateValidite() == null) {
+							mr.addMessage(LogCategory.SUIVI, LogLevel.ERROR,
+							              String.format("Direction de société %d ignorée en raison de sa date de début nulle (ou antérieure au 01.08.1291).", direction.getId().getSeqNo()));
+							return false;
+						}
+						return true;
+					})
+					.filter(direction -> {
+						if (migrationContexte.getDateHelper().isFutureDate(direction.getDateValidite())) {
+							mr.addMessage(LogCategory.SUIVI, LogLevel.ERROR,
+							              String.format("Direction de société %d ignorée en raison de sa date de début dans le futur (%s).",
+							                            direction.getId().getSeqNo(),
+							                            StringRenderers.DATE_RENDERER.toString(direction.getDateValidite())));
+							return false;
+						}
+						return true;
+					})
+					.peek(direction -> migrationContexte.getDateHelper().checkDateLouche(direction.getDateValidite(),
+					                                                                     () -> String.format("La date début d'activité de la direction de société %d", direction.getId().getSeqNo()),
+					                                                                     LogCategory.SUIVI,
+					                                                                     mr))
+					.sorted(Comparator.comparing(RegpmSocieteDirection::getDateValidite))
+					.map(direction -> new DateRangeHelper.Ranged<>(direction.getDateValidite(), null, direction.getDirection()))
+					.collect(Collectors.toList());
+
+			// attribution des dates de fin
+			assigneDatesFinSurRanged(finActiviteFonds, ranges);
+
+			// génération des liens
+			ranges.stream()
+					.map(range -> range.withPayload(getEntrepriseSupplier(idMapper, range.getPayload())))
+					.map(range -> new EntityLinkCollector.ProprietaireFondsPlacementLink(range.getPayload(), moi, range.getDateDebut(), range.getDateFin()))
+					.forEach(linkCollector::addLink);
+		}
+		else if (!directions.isEmpty()) {
+			// un petit log pour noter l'abandon de ces liens
+			mr.addMessage(LogCategory.SUIVI, LogLevel.WARN, "Lien(s) de société de direction sur une entreprise qui n'est pas un fonds de placement, ignoré(s) dans la migration.");
+		}
+	}
+
+	/**
+	 * Migration des liens vers les administrateurs actifs des sociétés immobilières
+	 * @param regpm la société (dans le rôle de la société immobilière)
+	 * @param mr collecteur de messages, de données à logguer...
+	 * @param linkCollector collecteur de liens à créer
+	 * @param idMapper mapper des identifiants RegPM -> Unireg
+	 */
+	private void migrateAdministrateursSocieteImmobiliere(RegpmEntreprise regpm, MigrationResultProduction mr, EntityLinkCollector linkCollector, IdMapping idMapper) {
+
+		final KeyedSupplier<Entreprise> moi = getEntrepriseSupplier(idMapper, regpm);
+		final DonneesAdministrateurs donneesAdministrateurs = mr.getExtractedData(DonneesAdministrateurs.class, moi.getKey());
+		final Map<Long, List<RegpmAdministrateur>> parAdministrateur = donneesAdministrateurs.getAdministrationsParAdministrateur();
+		if (!parAdministrateur.isEmpty()) {
+			// prenons les administrateurs un par un
+			for (Map.Entry<Long, List<RegpmAdministrateur>> entry : parAdministrateur.entrySet()) {
+
+				final List<RegpmAdministrateur> roles = entry.getValue();
+				final boolean hasPresident = roles.stream().anyMatch(adm -> adm.getFonction() == RegpmFonction.PRESIDENT);
+				// nous n'avons que des actifs (= sans date de fin)
+				// au pire, on pourrait même en avoir plusieurs, prenons donc la première date...
+				final RegDate minDate = roles.stream()
+						.filter(adm -> adm.getFonction() == RegpmFonction.ADMINISTRATEUR)
+						.map(RegpmAdministrateur::getDateEntreeFonction)
+						.min(Comparator.naturalOrder())
+						.get();
+
+				// construction du supplier pour la personne physique administratrice
+				final KeyedSupplier<PersonnePhysique> admin = getIndividuSupplier(idMapper, entry.getValue().get(0).getAdministrateur());
+
+				// demande d'ajout de lien
+				linkCollector.addLink(new EntityLinkCollector.EntrepriseAdministrateurLink(moi, admin, minDate, null, hasPresident));
+			}
+		}
 	}
 
 	/**
@@ -3111,7 +3204,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		}
 
 		// calcul des périodicités...
-		final List<Bouclement> bouclements = bouclementService.extractBouclementsDepuisDates(datesBouclements, 12);
+		final List<Bouclement> bouclements = migrationContexte.getBouclementService().extractBouclementsDepuisDates(datesBouclements, 12);
 		bouclements.stream()
 				.peek(b -> mr.addMessage(LogCategory.SUIVI, LogLevel.INFO,
 				                         String.format("Cycle de bouclements créé, applicable dès le %s : tous les %d mois, à partir du premier %s.",
@@ -3127,7 +3220,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		final Map<String, Object> params = Collections.singletonMap("annee", year);
 
 		// récupération des données
-		final List<PeriodeFiscale> pfs = neverNull(uniregStore.getEntitiesFromDb(PeriodeFiscale.class, params, true));
+		final List<PeriodeFiscale> pfs = neverNull(migrationContexte.getUniregStore().getEntitiesFromDb(PeriodeFiscale.class, params, true));
 		if (pfs.isEmpty()) {
 			throw new IllegalStateException("Aucune période fiscale trouvée dans Unireg pour l'année " + year);
 		}
@@ -3155,7 +3248,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 
 		if (dossier.getEtat() == RegpmTypeEtatDossierFiscal.ANNULE) {
 			di.setAnnulationUser(Optional.ofNullable(dossier.getLastMutationOperator()).orElse(AuthenticationHelper.getCurrentPrincipal()));
-			di.setAnnulationDate(Optional.ofNullable((Date) dossier.getLastMutationTimestamp()).orElseGet(DateHelper::getCurrentDate));
+			di.setAnnulationDate(Optional.ofNullable((Date) dossier.getLastMutationTimestamp()).orElseGet(ch.vd.registre.base.date.DateHelper::getCurrentDate));
 		}
 		return di;
 	}
@@ -3276,8 +3369,8 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 			// de toute façon, il faut calculer les périodes d'imposition de la PM...
 			final Entreprise entreprise = data.entrepriseSupplier.get();
 			try {
-				final List<PeriodeImposition> pis = neverNull(periodeImpositionService.determine(entreprise));
-				final int premierePeriodeFiscalePersonnesMorales = parametreAppService.getPremierePeriodeFiscalePersonnesMorales();
+				final List<PeriodeImposition> pis = neverNull(migrationContexte.getPeriodeImpositionService().determine(entreprise));
+				final int premierePeriodeFiscalePersonnesMorales = migrationContexte.getParametreAppService().getPremierePeriodeFiscalePersonnesMorales();
 
 				// par période fiscale, cherchons les périodes d'imposition non-encore couvertes
 				// 1. on commence par retrouver les déclarations par période fiscale
@@ -3548,7 +3641,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 
 				// toujours ok ? mais peut-être y a-t-il un souci avec une commune qui a conservé le même numéro OFS en changeant d'entité
 				if (collatable && forFiscal.getTypeAutoriteFiscale() != TypeAutoriteFiscale.PAYS_HS) {
-					final Commune commune = infraService.getCommuneByNumeroOfs(forFiscal.getNumeroOfsAutoriteFiscale(), forFiscal.getDateFin());
+					final Commune commune = migrationContexte.getInfraService().getCommuneByNumeroOfs(forFiscal.getNumeroOfsAutoriteFiscale(), forFiscal.getDateFin());
 					collatable = commune == null || RegDateHelper.isAfter(commune.getDateFin(), forFiscal.getDateFin(), NullDateBehavior.LATEST);
 					if (!collatable) {
 						mr.addMessage(LogCategory.FORS, LogLevel.INFO,
@@ -4036,77 +4129,46 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 	 */
 	private static <T extends HibernateDateRangeEntity> void assigneDatesFin(@Nullable RegDate derniereDateFin, List<T> listeTriee) {
 		RegDate dateFinCourante = derniereDateFin;
-		for (T ffp : CollectionsUtils.revertedOrder(listeTriee)) {
-			ffp.setDateFin(dateFinCourante);
-			dateFinCourante = ffp.getDateDebut().getOneDayBefore();
+		for (T entity : CollectionsUtils.revertedOrder(listeTriee)) {
+			entity.setDateFin(dateFinCourante);
+			dateFinCourante = entity.getDateDebut().getOneDayBefore();
 		}
 	}
 
-	private static String mapTypeRegimeFiscalVD(RegpmTypeRegimeFiscal type) {
-		final RegpmTypeRegimeFiscal typeEffectif;
-		switch (type) {
-		case _01_ORDINAIRE:
-		case _11_PARTICIPATIONS_HOLDING:
-		case _12_PARTICIPATIONS_PART_IMPOSABLE:
-		case _50_PLACEMENT_COLLECTIF_IMMEUBLE:
-		case _60_TRANSPORTS_CONCESSIONNES:
-		case _70_ORDINAIRE_ASSOCIATION_FONDATION:
-		case _109_PM_AVEC_EXONERATION_ART_90G:
-		case _190_PM_AVEC_EXONERATION_ART_90CEFH:
-		case _709_PURE_UTILITE_PUBLIQUE:
-		case _715_FONDATION_ECCLESIASTIQUE_ART_90D:
-		case _719_BUTS_CULTUELS_ART_90H:
-		case _729_INSTITUTIONS_DE_PREVOYANCE_ART_90I:
-		case _739_CAISSES_ASSURANCES_SOCIALES_ART_90F:
-		case _749_CONFEDERATION_ETAT_ETRANGER_ART_90AI:
-		case _759_CANTON_ETABLISSEMENT_ART_90B:
-		case _769_COMMUNE_ETABLISSEMENT_ART_90C:
-		case _779_PLACEMENT_COLLECTIF_EXONERE_ART_90J:
-		case _41C_SOCIETE_DE_BASE_MIXTE:
-		case _42C_SOCIETE_DE_DOMICILE:
-			typeEffectif = type;
-			break;
-		case _40_SOCIETE_DE_BASE:
-			typeEffectif = RegpmTypeRegimeFiscal._41C_SOCIETE_DE_BASE_MIXTE;
-			break;
-		default:
-			typeEffectif = RegpmTypeRegimeFiscal._01_ORDINAIRE;
-			break;
+	/**
+	 * Attribution des dates de fin en suivant les principes que
+	 * <ul>
+	 *     <li>la liste des éléments est triée dans l'ordre chronologique des dates de début</li>
+	 *     <li>les éléments ne se chevauchent pas</li>
+	 * </ul>
+	 * @param derniereDateFin date de fin à appliquer au dernier éléments de la liste
+	 * @param listeTriee liste dont les éléments doivent se voir assigner une date de fin
+	 * @param <T> type des éléments de la liste
+	 */
+	private static <T> void assigneDatesFinSurRanged(@Nullable RegDate derniereDateFin, List<DateRangeHelper.Ranged<T>> listeTriee) {
+		RegDate dateFinCourante = derniereDateFin;
+		final ListIterator<DateRangeHelper.Ranged<T>> iterator = listeTriee.listIterator(listeTriee.size());
+		while (iterator.hasPrevious()) {
+			final DateRangeHelper.Ranged<T> element = iterator.previous();
+			iterator.set(element.withDateFin(dateFinCourante));
+			dateFinCourante = element.getDateDebut().getOneDayBefore();
 		}
-		return extractCode(typeEffectif);
 	}
 
-	private static String mapTypeRegimeFiscalCH(RegpmTypeRegimeFiscal type) {
-		final RegpmTypeRegimeFiscal typeEffectif;
-		switch (type) {
-		case _40_SOCIETE_DE_BASE:
-			typeEffectif = RegpmTypeRegimeFiscal._41C_SOCIETE_DE_BASE_MIXTE;
-			break;
-		default:
-			typeEffectif = type;
-			break;
-		}
-		return extractCode(typeEffectif);
-	}
-
-	private static String extractCode(RegpmTypeRegimeFiscal type) {
-		return type.name().substring(1, type.name().indexOf('_', 1));
-	}
-
-	private static RegimeFiscal mapRegimeFiscal(RegimeFiscal.Portee portee, RegpmRegimeFiscal rf, MigrationResultContextManipulation mr) {
+	private RegimeFiscal mapRegimeFiscal(RegimeFiscal.Portee portee, RegpmRegimeFiscal rf, MigrationResultContextManipulation mr) {
 		final RegimeFiscal unireg = new RegimeFiscal();
 		unireg.setDateDebut(rf.getDateDebut());
 		unireg.setDateFin(null);
 		unireg.setPortee(portee);
 		if (portee == RegimeFiscal.Portee.VD) {
-			unireg.setCode(mapTypeRegimeFiscalVD(rf.getType()));
+			unireg.setCode(migrationContexte.getRegimeFiscalHelper().mapTypeRegimeFiscalVD(rf.getType()));
 		}
 		else {
-			unireg.setCode(mapTypeRegimeFiscalCH(rf.getType()));
+			unireg.setCode(migrationContexte.getRegimeFiscalHelper().mapTypeRegimeFiscalCH(rf.getType()));
 		}
 
 		// dump de la liste des mappings
-		final String ancienCode = extractCode(rf.getType());
+		final String ancienCode = rf.getType().getCode();
 		mr.pushContextValue(RegimeFiscalMappingLoggedElement.class, new RegimeFiscalMappingLoggedElement(unireg, ancienCode));
 		try {
 			// niveau WARN si le code change, INFO sinon
@@ -4120,52 +4182,29 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		return unireg;
 	}
 
+	/**
+	 * Extraction des régimes fiscaux non-annulés valides de l'entrepride de regpm
+	 * @param e l'entreprise
+	 * @param mr collecteur de messages de suivi et manipulateur de contexte de log
+	 * @param idMapper mapping des identifiants RegPM -> Unireg
+	 * @return les données officielles pour les régimes fiscaux à migrer
+	 */
+	@NotNull
+	private RegimesFiscauxHistoData extractDonneesRegimesFiscaux(RegpmEntreprise e, MigrationResultContextManipulation mr, IdMapping idMapper) {
+		final EntityKey entrepriseKey = buildEntrepriseKey(e);
+		return doInLogContext(entrepriseKey, mr, idMapper, () -> {
+			final RegDate dateFinActivite = mr.getExtractedData(DateFinActiviteData.class, entrepriseKey).date;
+			final NavigableMap<RegDate, RegpmRegimeFiscalCH> ch = migrationContexte.getRegimeFiscalHelper().buildMapRegimesFiscaux(e.getRegimesFiscauxCH(), dateFinActivite, RegimeFiscal.Portee.CH, mr);
+			final NavigableMap<RegDate, RegpmRegimeFiscalVD> vd = migrationContexte.getRegimeFiscalHelper().buildMapRegimesFiscaux(e.getRegimesFiscauxVD(), dateFinActivite, RegimeFiscal.Portee.VD, mr);
+			return new RegimesFiscauxHistoData(ch, vd);
+		});
+	}
+
 	private <T extends RegpmRegimeFiscal> List<RegimeFiscal> mapRegimesFiscaux(RegimeFiscal.Portee portee,
-	                                                                           SortedSet<T> regimesRegpm,
-	                                                                           @Nullable RegDate dateFinRegimes,
+	                                                                           NavigableMap<RegDate, T> regimes,
 	                                                                           MigrationResultContextManipulation mr) {
-		// collecte des régimes fiscaux CH sans date de fin d'abord...
-		final List<RegimeFiscal> liste = regimesRegpm.stream()
-				.filter(r -> r.getDateAnnulation() == null)         // on ne migre pas les régimes fiscaux annulés
-				.filter(rf -> {
-					if (rf.getDateDebut() == null) {
-						mr.addMessage(LogCategory.SUIVI, LogLevel.ERROR,
-						              String.format("Régime fiscal %s %s ignoré en raison de sa date de début nulle (ou antérieure au 01.08.1291).",
-						                            portee,
-						                            rf.getType()));
-						return false;
-					}
-					return true;
-				})
-				.filter(rf -> {
-					if (isFutureDate(rf.getDateDebut())) {
-						mr.addMessage(LogCategory.SUIVI, LogLevel.ERROR,
-						              String.format("Régime fiscal %s %s ignoré en raison de sa date de début dans le futur (%s).",
-						                            portee,
-						                            rf.getType(),
-						                            StringRenderers.DATE_RENDERER.toString(rf.getDateDebut())));
-						return false;
-					}
-					return true;
-				})
-				.filter(rf -> {
-					if (dateFinRegimes != null && dateFinRegimes.isBefore(rf.getDateDebut())) {
-						mr.addMessage(LogCategory.SUIVI, LogLevel.ERROR,
-						              String.format("Régime fiscal %s %s ignoré en raison de sa date de début (%s) postérieure à la date de fin d'activité de l'entreprise (%s).",
-						                            portee,
-						                            rf.getType(),
-						                            StringRenderers.DATE_RENDERER.toString(rf.getDateDebut()),
-						                            StringRenderers.DATE_RENDERER.toString(dateFinRegimes)));
-						return false;
-					}
-					return true;
-				})
-				.peek(rf -> checkDateLouche(rf.getDateDebut(),
-				                            () -> String.format("Régime fiscal %s %s avec une date de début de validité",
-				                                                portee,
-				                                                rf.getType()),
-				                            LogCategory.SUIVI,
-				                            mr))
+		// collecte des régimes fiscaux sans date de fin d'abord...
+		final List<RegimeFiscal> liste = regimes.values().stream()
 				.map(r -> mapRegimeFiscal(portee, r, mr))
 				.collect(Collectors.toList());
 
@@ -4176,19 +4215,14 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 
 	private void migrateRegimesFiscaux(RegpmEntreprise regpm, Entreprise unireg, MigrationResultContextManipulation mr) {
 
-		final RegDate dateFinActivite = mr.getExtractedData(DateFinActiviteData.class, buildEntrepriseKey(regpm)).date;
+		final EntityKey key = buildEntrepriseKey(regpm);
+		final RegimesFiscauxHistoData histoData = mr.getExtractedData(RegimesFiscauxHistoData.class, key);
 
 		// collecte des régimes fiscaux CH...
-		final List<RegimeFiscal> listeCH = mapRegimesFiscaux(RegimeFiscal.Portee.CH,
-		                                                     regpm.getRegimesFiscauxCH(),
-		                                                     dateFinActivite,
-		                                                     mr);
+		final List<RegimeFiscal> listeCH = mapRegimesFiscaux(RegimeFiscal.Portee.CH, histoData.getCH(), mr);
 
 		// ... puis des règimes fiscaux VD
-		final List<RegimeFiscal> listeVD = mapRegimesFiscaux(RegimeFiscal.Portee.VD,
-		                                                     regpm.getRegimesFiscauxVD(),
-		                                                     dateFinActivite,
-		                                                     mr);
+		final List<RegimeFiscal> listeVD = mapRegimesFiscaux(RegimeFiscal.Portee.VD, histoData.getVD(), mr);
 
 		// et finalement on ajoute tout ça dans l'entreprise
 		Stream.concat(listeCH.stream(), listeVD.stream()).forEach(unireg::addRegimeFiscal);
@@ -4499,7 +4533,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 				.sorted(Comparator.comparing(a -> a.getId().getSeqNo()))    // tri pour les tests en particulier, pour toujours traiter les allègements dans le même ordre
 				.filter(a -> a.getId().getSeqNo() < 998)                    // on ne prend pas en compte les numéros de séquence 998 et 999 comme des allègements eux-mêmes
 				.filter(a -> {
-					if (isFutureDate(a.getDateDebut())) {
+					if (migrationContexte.getDateHelper().isFutureDate(a.getDateDebut())) {
 						mr.addMessage(LogCategory.SUIVI, LogLevel.ERROR,
 						              String.format("Allègement fiscal %d ignoré en raison de sa date de début dans le futur (%s).",
 						                            a.getId().getSeqNo(),
@@ -4509,7 +4543,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 					return true;
 				})
 				.map(a -> {
-					if (isFutureDate(a.getDateFin())) {
+					if (migrationContexte.getDateHelper().isFutureDate(a.getDateFin())) {
 						mr.addMessage(LogCategory.SUIVI, LogLevel.WARN,
 						              String.format("Date de fin (%s) de l'allègement fiscal %d ignorée (date future).",
 						                            StringRenderers.DATE_RENDERER.toString(a.getDateFin()),
@@ -4540,10 +4574,10 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 					}
 					return true;
 				})
-				.peek(a -> checkDateLouche(a.getDateDebut(),
-				                           () -> String.format("Allègement fiscal %d avec une date de début de validité", a.getId().getSeqNo()),
-				                           LogCategory.SUIVI,
-				                           mr))
+				.peek(a -> migrationContexte.getDateHelper().checkDateLouche(a.getDateDebut(),
+				                                                             () -> String.format("Allègement fiscal %d avec une date de début de validité", a.getId().getSeqNo()),
+				                                                             LogCategory.SUIVI,
+				                                                             mr))
 				.map(a -> mapAllegementFiscal(a, typeIcc, typeIfd, mr))
 				.flatMap(Function.identity())
 				.map(a -> adapterAllegementFiscalPourFusionsCommunes(a, mr, LogCategory.SUIVI))
@@ -4579,7 +4613,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 					return true;
 				})
 				.filter(e -> {
-					if (isFutureDate(e.getDateValidite())) {
+					if (migrationContexte.getDateHelper().isFutureDate(e.getDateValidite())) {
 						mr.addMessage(LogCategory.SUIVI, LogLevel.ERROR,
 						              String.format("Etat d'entreprise %d (%s) ignoré en raison de sa date de début dans le futur (%s).",
 						                            e.getId().getSeqNo(),
@@ -4597,10 +4631,10 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		// [SIFISC-17111] même si plusieurs états commencent à la même date, on les garde tous
 		final List<EtatEntreprise> liste = map.values().stream()
 				.flatMap(List::stream)
-				.peek(e -> checkDateLouche(e.getDateValidite(),
-				                           () -> String.format("Etat d'entreprise %d (%s) avec une date de début de validité", e.getId().getSeqNo(), e.getTypeEtat()),
-				                           LogCategory.SUIVI,
-				                           mr))
+				.peek(e -> migrationContexte.getDateHelper().checkDateLouche(e.getDateValidite(),
+				                                                             () -> String.format("Etat d'entreprise %d (%s) avec une date de début de validité", e.getId().getSeqNo(), e.getTypeEtat()),
+				                                                             LogCategory.SUIVI,
+				                                                             mr))
 				.map(e -> {
 					final EtatEntreprise etat = new EtatEntreprise();
 					copyCreationMutation(e, etat);

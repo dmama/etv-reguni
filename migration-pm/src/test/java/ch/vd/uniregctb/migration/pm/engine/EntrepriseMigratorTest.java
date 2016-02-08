@@ -23,7 +23,6 @@ import org.jetbrains.annotations.Nullable;
 import org.junit.Assert;
 import org.junit.Test;
 
-import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
@@ -48,8 +47,10 @@ import ch.vd.uniregctb.migration.pm.communes.FractionsCommuneProvider;
 import ch.vd.uniregctb.migration.pm.communes.FusionCommunesProvider;
 import ch.vd.uniregctb.migration.pm.engine.collector.EntityLinkCollector;
 import ch.vd.uniregctb.migration.pm.engine.helpers.AdresseHelper;
+import ch.vd.uniregctb.migration.pm.engine.helpers.DateHelper;
 import ch.vd.uniregctb.migration.pm.engine.helpers.DoublonProvider;
 import ch.vd.uniregctb.migration.pm.engine.helpers.OrganisationServiceAccessor;
+import ch.vd.uniregctb.migration.pm.engine.helpers.RegimeFiscalHelper;
 import ch.vd.uniregctb.migration.pm.log.LogCategory;
 import ch.vd.uniregctb.migration.pm.log.LoggedElement;
 import ch.vd.uniregctb.migration.pm.log.LoggedMessage;
@@ -57,6 +58,7 @@ import ch.vd.uniregctb.migration.pm.log.RegimeFiscalMappingLoggedElement;
 import ch.vd.uniregctb.migration.pm.mapping.IdMapper;
 import ch.vd.uniregctb.migration.pm.regpm.NumeroIDE;
 import ch.vd.uniregctb.migration.pm.regpm.RaisonSociale;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmAdministrateur;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmAdresseEntreprise;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmAllegementFiscal;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmAppartenanceGroupeProprietaire;
@@ -77,6 +79,8 @@ import ch.vd.uniregctb.migration.pm.regpm.RegpmEnvironnementTaxation;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmEtablissement;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmEtatEntreprise;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmExerciceCommercial;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmFinMandatAdministrateur;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmFonction;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmForPrincipal;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmForSecondaire;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmFormeJuridique;
@@ -96,6 +100,7 @@ import ch.vd.uniregctb.migration.pm.regpm.RegpmRegimeFiscalCH;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmRegimeFiscalVD;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmRue;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmSiegeEntreprise;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmSocieteDirection;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeAdresseEntreprise;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeAssujettissement;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeContribution;
@@ -172,20 +177,26 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 	 */
 	private EntrepriseMigrator buildMigrator(boolean rcentEnabled) {
 		final OrganisationServiceAccessor organisationServiceAccessor = new OrganisationServiceAccessor(organisationService, rcentEnabled, 1);
-		return new EntrepriseMigrator(
-				uniregStore,
-				entreprise -> true,             // tout le monde est actif dans ces tests!!
-				getBean(ServiceInfrastructureService.class, "serviceInfrastructureService"),
-				getBean(BouclementService.class, "bouclementService"),
-				getBean(AssujettissementService.class, "assujettissementService"),
-				organisationServiceAccessor,
-				getBean(AdresseHelper.class, "adresseHelper"),
-				getBean(FusionCommunesProvider.class, "fusionCommunesProvider"),
-				getBean(FractionsCommuneProvider.class, "fractionsCommuneProvider"),
-				getBean(DatesParticulieres.class, "datesParticulieres"),
-				getBean(PeriodeImpositionService.class, "periodeImpositionService"),
-				getBean(ParametreAppService.class, "parametreAppService"),
-				getBean(DoublonProvider.class, "doublonProvider"));
+		final MigrationContexte contexte = new MigrationContexte(uniregStore,
+		                                                         entreprise -> true,                // tout le monde est actif dans ces tests!!
+		                                                         getBean(ServiceInfrastructureService.class, "serviceInfrastructureService"),
+		                                                         getBean(FusionCommunesProvider.class, "fusionCommunesProvider"),
+		                                                         getBean(FractionsCommuneProvider.class, "fractionsCommuneProvider"),
+		                                                         getBean(DateHelper.class, "dateHelper"),
+		                                                         getBean(DatesParticulieres.class, "datesParticulieres"),
+		                                                         getBean(AdresseHelper.class, "adresseHelper"),
+		                                                         getBean(BouclementService.class, "bouclementService"),
+		                                                         getBean(AssujettissementService.class, "assujettissementService"),
+		                                                         getBean(PeriodeImpositionService.class, "periodeImpositionService"),
+		                                                         getBean(ParametreAppService.class, "parametreAppService"),
+		                                                         organisationServiceAccessor,
+		                                                         getBean(DoublonProvider.class, "doublonProvider"),
+		                                                         getBean(RegimeFiscalHelper.class, "regimeFiscalHelper"),
+		                                                         null,
+		                                                         null,
+		                                                         null);
+
+		return new EntrepriseMigrator(contexte);
 	}
 
 	/**
@@ -357,7 +368,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 	static RegpmDecisionTaxation addDecisionTaxation(RegpmEnvironnementTaxation et, boolean derniereTaxation, RegpmTypeEtatDecisionTaxation etat, RegpmTypeNatureDecisionTaxation nature, RegDate date) {
 		final RegpmDecisionTaxation dt = new RegpmDecisionTaxation();
 		dt.setId(new RegpmDecisionTaxation.PK(NO_SEQUENCE_GENERATOR.next(), et.getId().getIdEntreprise(), et.getId().getAnneeFiscale(), et.getId().getSeqNo()));
-		assignMutationVisa(dt, REGPM_VISA, new Timestamp(DateHelper.getDate(date.year(), date.month(), date.day()).getTime()));
+		assignMutationVisa(dt, REGPM_VISA, new Timestamp(ch.vd.registre.base.date.DateHelper.getDate(date.year(), date.month(), date.day()).getTime()));
 		dt.setDerniereTaxation(derniereTaxation);
 		dt.setEtatCourant(etat);
 		dt.setNatureDecision(nature);
@@ -652,6 +663,39 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		critere.setType(type);
 		entreprise.getCriteresSegmentation().add(critere);
 		return critere;
+	}
+
+	static RegpmSocieteDirection addSocieteDirection(RegpmEntreprise direction, RegpmEntreprise fondsPlacement, RegDate dateDebut) {
+		final RegpmSocieteDirection sd = new RegpmSocieteDirection();
+		sd.setId(new RegpmSocieteDirection.PK(computeNewSeqNo(fondsPlacement.getDirections(), x -> x.getId().getSeqNo()), fondsPlacement.getId()));
+		assignMutationVisa(sd, REGPM_VISA, REGPM_MODIF);
+		sd.setDateValidite(dateDebut);
+		sd.setDirection(direction);
+		fondsPlacement.getDirections().add(sd);
+		return sd;
+	}
+
+	static RegpmAdministrateur addAdministrateur(RegpmEntreprise entreprise, RegpmIndividu administrateur, RegpmFonction fonction, RegDate dateDebut, @Nullable RegDate dateFin, boolean rectifie) {
+		final RegpmAdministrateur admin = new RegpmAdministrateur();
+		admin.setId(new RegpmAdministrateur.PK(computeNewSeqNo(administrateur.getAdministrations(), x -> x.getId().getSeqNo()), administrateur.getId()));
+		assignMutationVisa(admin, REGPM_VISA, REGPM_MODIF);
+		admin.setEntreprise(entreprise);
+		admin.setDateEntreeFonction(dateDebut);
+		admin.setFonction(fonction);
+		admin.setRectifiee(rectifie);
+		admin.setAdministrateur(administrateur);
+		admin.setFins(new HashSet<>());
+		if (dateFin != null) {
+			final RegpmFinMandatAdministrateur finMandat = new RegpmFinMandatAdministrateur();
+			assignMutationVisa(finMandat, REGPM_VISA, REGPM_MODIF);
+			finMandat.setId(new RegpmFinMandatAdministrateur.PK(computeNewSeqNo(admin.getFins(), x -> x.getId().getSeqNo()), administrateur.getId(), admin.getId().getSeqNo()));
+			finMandat.setRectifiee(false);
+			finMandat.setDateFinMandat(dateFin);
+			admin.getFins().add(finMandat);
+		}
+		entreprise.getAdministrateurs().add(admin);
+		administrateur.getAdministrations().add(admin);
+		return admin;
 	}
 
 	@Test

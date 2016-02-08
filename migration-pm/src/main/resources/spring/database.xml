@@ -35,6 +35,7 @@
 		<value>ch.vd.uniregctb.declaration.Periodicite</value>
 		<value>ch.vd.uniregctb.migreg.MigrationError</value>
 		<value>ch.vd.uniregctb.tiers.ActiviteEconomique</value>
+		<value>ch.vd.uniregctb.tiers.AdministrationEntreprise</value>
 		<value>ch.vd.uniregctb.tiers.AllegementFiscal</value>
 		<value>ch.vd.uniregctb.tiers.AllegementFiscalCantonCommune</value>
 		<value>ch.vd.uniregctb.tiers.AllegementFiscalCanton</value>
@@ -86,6 +87,7 @@
 		<value>ch.vd.uniregctb.tiers.SituationFamille</value>
 		<value>ch.vd.uniregctb.tiers.SituationFamilleMenageCommun</value>
 		<value>ch.vd.uniregctb.tiers.SituationFamillePersonnePhysique</value>
+		<value>ch.vd.uniregctb.tiers.SocieteDirection</value>
 		<value>ch.vd.uniregctb.tiers.Tiers</value>
 		<value>ch.vd.uniregctb.tiers.Tache</value>
 		<value>ch.vd.uniregctb.tiers.TacheAnnulationDeclarationImpot</value>

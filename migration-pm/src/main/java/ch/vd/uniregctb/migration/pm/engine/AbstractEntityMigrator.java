@@ -31,16 +31,12 @@ import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.uniregctb.common.Duplicable;
 import ch.vd.uniregctb.common.HibernateEntity;
 import ch.vd.uniregctb.common.StringRenderer;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.migration.pm.Graphe;
 import ch.vd.uniregctb.migration.pm.MigrationResultContextManipulation;
 import ch.vd.uniregctb.migration.pm.MigrationResultInitialization;
 import ch.vd.uniregctb.migration.pm.MigrationResultProduction;
-import ch.vd.uniregctb.migration.pm.communes.FractionsCommuneProvider;
-import ch.vd.uniregctb.migration.pm.communes.FusionCommunesProvider;
 import ch.vd.uniregctb.migration.pm.engine.collector.EntityLinkCollector;
 import ch.vd.uniregctb.migration.pm.engine.data.DonneesMandats;
-import ch.vd.uniregctb.migration.pm.engine.helpers.AdresseHelper;
 import ch.vd.uniregctb.migration.pm.engine.helpers.StringRenderers;
 import ch.vd.uniregctb.migration.pm.extractor.IbanExtractor;
 import ch.vd.uniregctb.migration.pm.log.EntrepriseLoggedElement;
@@ -61,8 +57,6 @@ import ch.vd.uniregctb.migration.pm.regpm.RegpmIndividu;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmMandat;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmRattachementProprietaire;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeMandat;
-import ch.vd.uniregctb.migration.pm.store.UniregStore;
-import ch.vd.uniregctb.migration.pm.utils.DatesParticulieres;
 import ch.vd.uniregctb.migration.pm.utils.EntityKey;
 import ch.vd.uniregctb.migration.pm.utils.KeyedSupplier;
 import ch.vd.uniregctb.tiers.Contribuable;
@@ -79,24 +73,10 @@ import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
 public abstract class AbstractEntityMigrator<T extends RegpmEntity> implements EntityMigrator<T> {
 
-	protected final UniregStore uniregStore;
-	protected final ActivityManager activityManager;
-	protected final ServiceInfrastructureService infraService;
-	protected final FusionCommunesProvider fusionCommunesProvider;
-	protected final FractionsCommuneProvider fractionsCommuneProvider;
-	protected final DatesParticulieres datesParticulieres;
-	protected final AdresseHelper adresseHelper;
+	protected final MigrationContexte migrationContexte;
 
-	public AbstractEntityMigrator(UniregStore uniregStore, ActivityManager activityManager, ServiceInfrastructureService infraService,
-	                              FusionCommunesProvider fusionCommunesProvider, FractionsCommuneProvider fractionsCommuneProvider,
-	                              DatesParticulieres datesParticulieres, AdresseHelper adresseHelper) {
-		this.uniregStore = uniregStore;
-		this.activityManager = activityManager;
-		this.infraService = infraService;
-		this.fusionCommunesProvider = fusionCommunesProvider;
-		this.fractionsCommuneProvider = fractionsCommuneProvider;
-		this.datesParticulieres = datesParticulieres;
-		this.adresseHelper = adresseHelper;
+	public AbstractEntityMigrator(MigrationContexte migrationContexte) {
+		this.migrationContexte = migrationContexte;
 	}
 
 	protected static final BinaryOperator<List<DateRange>> DATE_RANGE_LIST_MERGER =
@@ -215,27 +195,27 @@ public abstract class AbstractEntityMigrator<T extends RegpmEntity> implements E
 
 	@NotNull
 	protected final Supplier<Entreprise> getEntrepriseByUniregIdSupplier(long id) {
-		return () -> uniregStore.getEntityFromDb(Entreprise.class, id);
+		return () -> migrationContexte.getUniregStore().getEntityFromDb(Entreprise.class, id);
 	}
 
 	@NotNull
 	protected final Supplier<Entreprise> getEntrepriseByRegpmIdSupplier(IdMapping idMapper, long id) {
-		return () -> uniregStore.getEntityFromDb(Entreprise.class, idMapper.getIdUniregEntreprise(id));
+		return () -> migrationContexte.getUniregStore().getEntityFromDb(Entreprise.class, idMapper.getIdUniregEntreprise(id));
 	}
 
 	@NotNull
 	protected final Supplier<Etablissement> getEtablissementByUniregIdSupplier(long id) {
-		return () -> uniregStore.getEntityFromDb(Etablissement.class, id);
+		return () -> migrationContexte.getUniregStore().getEntityFromDb(Etablissement.class, id);
 	}
 
 	@NotNull
 	protected final Supplier<Etablissement> getEtablissementByRegpmIdSupplier(IdMapping idMapper, long id) {
-		return () -> uniregStore.getEntityFromDb(Etablissement.class, idMapper.getIdUniregEtablissement(id));
+		return () -> migrationContexte.getUniregStore().getEntityFromDb(Etablissement.class, idMapper.getIdUniregEtablissement(id));
 	}
 
 	@NotNull
 	protected final Supplier<PersonnePhysique> getIndividuByRegpmIdSupplier(IdMapping idMapper, long id) {
-		return () -> uniregStore.getEntityFromDb(PersonnePhysique.class, idMapper.getIdUniregIndividu(id));
+		return () -> migrationContexte.getUniregStore().getEntityFromDb(PersonnePhysique.class, idMapper.getIdUniregIndividu(id));
 	}
 
 	@NotNull
@@ -463,7 +443,7 @@ public abstract class AbstractEntityMigrator<T extends RegpmEntity> implements E
 		switch (key.getType()) {
 		case ENTREPRISE: {
 			final RegpmEntreprise entreprise = graphe.getEntreprises().get(key.getId());
-			mr.pushContextValue(EntrepriseLoggedElement.class, new EntrepriseLoggedElement(entreprise, activityManager));
+			mr.pushContextValue(EntrepriseLoggedElement.class, new EntrepriseLoggedElement(entreprise, migrationContexte.getActivityManager()));
 			break;
 		}
 		case ETABLISSEMENT: {
@@ -495,44 +475,6 @@ public abstract class AbstractEntityMigrator<T extends RegpmEntity> implements E
 		default:
 			throw new IllegalArgumentException("Type de clé : " + key.getType() + " non supporté!");
 		}
-	}
-
-	/**
-	 * @param date date testée
-	 * @param description description à placer dans le log (avant " est antérieure au...")
-	 * @param logCategory catégorie du log à utiliser
-	 * @param mr collecteur de messages de log
-	 */
-	protected void checkDateLouche(@Nullable RegDate date,
-	                               Supplier<String> description,
-	                               LogCategory logCategory,
-	                               MigrationResultProduction mr) {
-
-		// on loggue la date si elle est considérée comme anormale...
-		final RegDate seuilDateNormale = datesParticulieres.getSeuilDateNormale();
-		if (date != null && NullDateBehavior.LATEST.compare(date, seuilDateNormale) < 0) {
-			mr.addMessage(logCategory, LogLevel.WARN,
-			              String.format("%s est antérieure au %s (%s).",
-			                            description.get(),
-			                            StringRenderers.DATE_RENDERER.toString(seuilDateNormale),
-			                            StringRenderers.DATE_RENDERER.toString(date)));
-		}
-	}
-
-	/**
-	 * @param date date testée
-	 * @return <code>true</code> si la date est non nulle et postérieure à la date du jour
-	 */
-	protected static boolean isFutureDate(@Nullable RegDate date) {
-		return NullDateBehavior.EARLIEST.compare(RegDate.get(), date) < 0;
-	}
-
-	/**
-	 * @param date date testée
-	 * @return <code>true</code> si la date est non nulle et postérieure ou égale à la date du jour
-	 */
-	protected static boolean isFutureDateOrToday(@Nullable RegDate date) {
-		return NullDateBehavior.EARLIEST.compare(RegDate.get(), date) <= 0;
 	}
 
 	/**
@@ -637,7 +579,7 @@ public abstract class AbstractEntityMigrator<T extends RegpmEntity> implements E
 		}
 
 		// ok, c'est une commune... est-elle connue dans l'infrastructure ?
-		final List<Commune> communes = infraService.getCommuneHistoByNumeroOfs(source.getNumeroOfsAutoriteFiscale());
+		final List<Commune> communes = migrationContexte.getInfraService().getCommuneHistoByNumeroOfs(source.getNumeroOfsAutoriteFiscale());
 		if (communes == null || communes.isEmpty()) {
 			mr.addMessage(logCategory, LogLevel.ERROR,
 			              String.format("Commune %d inconnue dans l'infrastructure fiscale (cas de %s).",
@@ -652,8 +594,8 @@ public abstract class AbstractEntityMigrator<T extends RegpmEntity> implements E
 		// on ignore les communes dont la date de début est dans le futur, et on
 		// ignore la date de fin des communes si celle-ci est dans le futur (y compris aujourd'hui)
 		final DateRange intersectante = communes.stream()
-				.filter(commune -> !isFutureDate(commune.getDateDebutValidite()))
-				.map(c -> new DateRangeHelper.Range(c.getDateDebutValidite(), isFutureDateOrToday(c.getDateFinValidite()) ? null : c.getDateFinValidite()))
+				.filter(commune -> !migrationContexte.getDateHelper().isFutureDate(commune.getDateDebutValidite()))
+				.map(c -> new DateRangeHelper.Range(c.getDateDebutValidite(), migrationContexte.getDateHelper().isFutureDateOrToday(c.getDateFinValidite()) ? null : c.getDateFinValidite()))
 				.filter(range -> DateRangeHelper.intersect(range, source))
 				.sorted(DateRangeComparator::compareRanges)
 				.findFirst()
@@ -742,7 +684,7 @@ public abstract class AbstractEntityMigrator<T extends RegpmEntity> implements E
 		// juste avant la couverture ?
 		// ou bien avant la couverture (cas des périodes de validité (couverture vs localisation datée) complètement disjointes) ?
 		if (debutCouverture != null && RegDateHelper.isBefore(rangeNonValide.getDateFin(), debutCouverture, NullDateBehavior.LATEST)) {
-			final List<Integer> avant = fusionCommunesProvider.getCommunesAvant(source.getNumeroOfsAutoriteFiscale(), debutCouverture);
+			final List<Integer> avant = migrationContexte.getFusionCommunesProvider().getCommunesAvant(source.getNumeroOfsAutoriteFiscale(), debutCouverture);
 			if (avant.isEmpty()) {
 				mr.addMessage(logCategory, LogLevel.ERROR,
 				              String.format("Entité %s : aucune commune connue à l'origine de la commune %d avant le %s.",
@@ -770,7 +712,7 @@ public abstract class AbstractEntityMigrator<T extends RegpmEntity> implements E
 		// juste après la couverture ?
 		// ou bien après la couverture (cas des périodes de validité (couverture vs localisation datée) complètement disjointes) ?
 		else if (finCouverture != null && RegDateHelper.isAfter(rangeNonValide.getDateDebut(), finCouverture, NullDateBehavior.EARLIEST)) {
-			final List<Integer> apres = fusionCommunesProvider.getCommunesApres(source.getNumeroOfsAutoriteFiscale(), finCouverture);
+			final List<Integer> apres = migrationContexte.getFusionCommunesProvider().getCommunesApres(source.getNumeroOfsAutoriteFiscale(), finCouverture);
 			if (apres.isEmpty()) {
 				mr.addMessage(logCategory, LogLevel.ERROR,
 				              String.format("Entité %s : aucune commune connue à la suite de la commune %d après le %s.",
@@ -861,7 +803,7 @@ public abstract class AbstractEntityMigrator<T extends RegpmEntity> implements E
 		}
 
 		// on va chercher la commune en question
-		final List<Commune> communes = infraService.getCommuneHistoByNumeroOfs(source.getNumeroOfsAutoriteFiscale());
+		final List<Commune> communes = migrationContexte.getInfraService().getCommuneHistoByNumeroOfs(source.getNumeroOfsAutoriteFiscale());
 		if (communes == null || communes.isEmpty()) {
 			// on ne trouve pas de commune, ça râlera plus tard (mais ce n'est pas le moment, dans cette méthode sur les fractions,
 			// de lever l'erreur
@@ -873,8 +815,8 @@ public abstract class AbstractEntityMigrator<T extends RegpmEntity> implements E
 
 		// on trouve la première commune qui insersecte la localisation
 		final Commune intersectante = communes.stream()
-				.filter(commune -> !isFutureDate(commune.getDateDebutValidite()))
-				.map(c -> Pair.of(c, new DateRangeHelper.Range(c.getDateDebutValidite(), isFutureDateOrToday(c.getDateFinValidite()) ? null : c.getDateFinValidite())))
+				.filter(commune -> !migrationContexte.getDateHelper().isFutureDate(commune.getDateDebutValidite()))
+				.map(c -> Pair.of(c, new DateRangeHelper.Range(c.getDateDebutValidite(), migrationContexte.getDateHelper().isFutureDateOrToday(c.getDateFinValidite()) ? null : c.getDateFinValidite())))
 				.filter(pair -> DateRangeHelper.intersect(pair.getRight(), source))
 				.sorted(Comparator.comparing(Pair::getRight, DateRangeComparator::compareRanges))
 				.findFirst()
@@ -901,7 +843,7 @@ public abstract class AbstractEntityMigrator<T extends RegpmEntity> implements E
 		}
 
 		// quelles sont les fractions en questions ?
-		final List<Commune> fractions = fractionsCommuneProvider.getFractions(candidate);
+		final List<Commune> fractions = migrationContexte.getFractionsCommuneProvider().getFractions(candidate);
 
 		// cette commune est donc principale... on change avec la première de ses fractions...
 		mr.addMessage(logCategory, LogLevel.ERROR,
@@ -947,14 +889,14 @@ public abstract class AbstractEntityMigrator<T extends RegpmEntity> implements E
 		}
 
 		// on ne reprend de toute façon que les mandats assez récents
-		if (RegDateHelper.isBefore(mandat.getDateResiliation(), datesParticulieres.getSeuilRepriseMandats(), NullDateBehavior.LATEST)) {
+		if (RegDateHelper.isBefore(mandat.getDateResiliation(), migrationContexte.getDatesParticulieres().getSeuilRepriseMandats(), NullDateBehavior.LATEST)) {
 			mr.addMessage(logCategory, LogLevel.WARN,
 			              String.format("Le mandat %d de l'entreprise mandante %d vers l'entité mandataire %d de type %s est ignoré car sa date de résiliation est antérieure au %s (%s).",
 			                            mandat.getId().getNoSequence(),
 			                            mandat.getId().getIdEntreprise(),
 			                            mandataire.getId(),
 			                            mandataire.getType(),
-			                            StringRenderers.DATE_RENDERER.toString(datesParticulieres.getSeuilRepriseMandats()),
+			                            StringRenderers.DATE_RENDERER.toString(migrationContexte.getDatesParticulieres().getSeuilRepriseMandats()),
 			                            StringRenderers.DATE_RENDERER.toString(mandat.getDateResiliation())));
 			return false;
 		}
@@ -971,7 +913,7 @@ public abstract class AbstractEntityMigrator<T extends RegpmEntity> implements E
 		}
 
 		// date d'attribution future -> ignoré
-		if (isFutureDate(mandat.getDateAttribution())) {
+		if (migrationContexte.getDateHelper().isFutureDate(mandat.getDateAttribution())) {
 			mr.addMessage(logCategory, LogLevel.ERROR,
 			              String.format("Le mandat %d de l'entreprise mandante %d vers l'entité mandataire %d de type %s est ignoré car sa date d'attribution est dans le futur (%s).",
 			                            mandat.getId().getNoSequence(),
@@ -983,22 +925,22 @@ public abstract class AbstractEntityMigrator<T extends RegpmEntity> implements E
 		}
 
 		// un petit log pour les dates louches
-		checkDateLouche(mandat.getDateAttribution(),
-		                () -> String.format("La date d'attribution du mandat %d de l'entreprise mandante %d vers l'entité mandataire %d de type %s",
-		                                    mandat.getId().getNoSequence(),
-		                                    mandat.getId().getIdEntreprise(),
-		                                    mandataire.getId(),
-		                                    mandataire.getType()),
-		                logCategory,
-		                mr);
-		checkDateLouche(mandat.getDateResiliation(),
-		                () -> String.format("La date de résiliation du mandat %d de l'entreprise mandante %d vers l'entité mandataire %d de type %s",
-		                                    mandat.getId().getNoSequence(),
-		                                    mandat.getId().getIdEntreprise(),
-		                                    mandataire.getId(),
-		                                    mandataire.getType()),
-		                logCategory,
-		                mr);
+		migrationContexte.getDateHelper().checkDateLouche(mandat.getDateAttribution(),
+		                                                  () -> String.format("La date d'attribution du mandat %d de l'entreprise mandante %d vers l'entité mandataire %d de type %s",
+		                                                                      mandat.getId().getNoSequence(),
+		                                                                      mandat.getId().getIdEntreprise(),
+		                                                                      mandataire.getId(),
+		                                                                      mandataire.getType()),
+		                                                  logCategory,
+		                                                  mr);
+		migrationContexte.getDateHelper().checkDateLouche(mandat.getDateResiliation(),
+		                                                  () -> String.format("La date de résiliation du mandat %d de l'entreprise mandante %d vers l'entité mandataire %d de type %s",
+		                                                                      mandat.getId().getNoSequence(),
+		                                                                      mandat.getId().getIdEntreprise(),
+		                                                                      mandataire.getId(),
+		                                                                      mandataire.getType()),
+		                                                  logCategory,
+		                                                  mr);
 
 		return true;
 	}
@@ -1010,7 +952,7 @@ public abstract class AbstractEntityMigrator<T extends RegpmEntity> implements E
 	 * @return le mandat source si sa date de résiliation est absente ou passée, une autre instance sans date de résiliation si elle est future
 	 */
 	private RegpmMandat ignoreDateResiliationMandatSiFuture(RegpmMandat mandat, MigrationResultProduction mr, LogCategory logCategory) {
-		if (mandat.getDateResiliation() == null || !isFutureDate(mandat.getDateResiliation())) {
+		if (mandat.getDateResiliation() == null || !migrationContexte.getDateHelper().isFutureDate(mandat.getDateResiliation())) {
 			return mandat;
 		}
 
@@ -1119,7 +1061,7 @@ public abstract class AbstractEntityMigrator<T extends RegpmEntity> implements E
 						return remarque;
 					})
 					.filter(remarque -> StringUtils.isNotBlank(remarque.getTexte()))
-					.forEach(uniregStore::saveEntityToDb);
+					.forEach(migrationContexte.getUniregStore()::saveEntityToDb);
 		}
 	}
 

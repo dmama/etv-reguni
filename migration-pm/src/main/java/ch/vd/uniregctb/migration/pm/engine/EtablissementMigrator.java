@@ -32,18 +32,13 @@ import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 import ch.vd.uniregctb.adresse.AdresseTiers;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.migration.pm.ConsolidationPhase;
 import ch.vd.uniregctb.migration.pm.MigrationResultContextManipulation;
 import ch.vd.uniregctb.migration.pm.MigrationResultInitialization;
 import ch.vd.uniregctb.migration.pm.MigrationResultProduction;
-import ch.vd.uniregctb.migration.pm.communes.FractionsCommuneProvider;
-import ch.vd.uniregctb.migration.pm.communes.FusionCommunesProvider;
 import ch.vd.uniregctb.migration.pm.engine.collector.EntityLinkCollector;
 import ch.vd.uniregctb.migration.pm.engine.data.DonneesCiviles;
 import ch.vd.uniregctb.migration.pm.engine.data.DonneesMandats;
-import ch.vd.uniregctb.migration.pm.engine.helpers.AdresseHelper;
-import ch.vd.uniregctb.migration.pm.engine.helpers.OrganisationServiceAccessor;
 import ch.vd.uniregctb.migration.pm.engine.helpers.StringRenderers;
 import ch.vd.uniregctb.migration.pm.log.LogCategory;
 import ch.vd.uniregctb.migration.pm.log.LogLevel;
@@ -54,8 +49,6 @@ import ch.vd.uniregctb.migration.pm.regpm.RegpmDomicileEtablissement;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmEntreprise;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmEtablissement;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmMandat;
-import ch.vd.uniregctb.migration.pm.store.UniregStore;
-import ch.vd.uniregctb.migration.pm.utils.DatesParticulieres;
 import ch.vd.uniregctb.migration.pm.utils.EntityKey;
 import ch.vd.uniregctb.migration.pm.utils.KeyedSupplier;
 import ch.vd.uniregctb.tiers.Contribuable;
@@ -73,13 +66,8 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(EtablissementMigrator.class);
 
-	private final OrganisationServiceAccessor organisationService;
-
-	public EtablissementMigrator(UniregStore uniregStore, ActivityManager activityManager, ServiceInfrastructureService infraService,
-	                             OrganisationServiceAccessor organisationService, AdresseHelper adresseHelper, FusionCommunesProvider fusionCommunesProvider, FractionsCommuneProvider fractionsCommuneProvider,
-	                             DatesParticulieres datesParticulieres) {
-		super(uniregStore, activityManager, infraService, fusionCommunesProvider, fractionsCommuneProvider, datesParticulieres, adresseHelper);
-		this.organisationService = organisationService;
+	public EtablissementMigrator(MigrationContexte migrationContexte) {
+		super(migrationContexte);
 	}
 
 	private static final class DatesEtablissementsStables {
@@ -267,7 +255,7 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 						return true;
 					})
 					.filter(etb -> {
-						if (isFutureDate(etb.getDateDebut())) {
+						if (migrationContexte.getDateHelper().isFutureDate(etb.getDateDebut())) {
 							mr.addMessage(LogCategory.ETABLISSEMENTS, LogLevel.ERROR,
 							              String.format("Période d'établissement stable %d ignorée car sa date de début de validité est dans le futur (%s).",
 							                            etb.getId().getSeqNo(),
@@ -277,7 +265,7 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 						return true;
 					})
 					.map(etb -> {
-						if (isFutureDate(etb.getDateFin())) {
+						if (migrationContexte.getDateHelper().isFutureDate(etb.getDateFin())) {
 							mr.addMessage(LogCategory.ETABLISSEMENTS, LogLevel.WARN,
 							              String.format("Période d'établissement stable %d avec date de fin dans le futur %s : la migration ignore cette date.",
 							                            etb.getId().getSeqNo(),
@@ -367,7 +355,7 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 					// (ici, on récupère sciemment une organisation partielle depuis le numéro d'établissement... et on rappelle ensuite pour
 					// obtenir l'entreprise complète)
 					try {
-						final Long partielleCantonalId = organisationService.getOrganisationPourSite(idCantonal);
+						final Long partielleCantonalId = migrationContexte.getOrganisationService().getOrganisationPourSite(idCantonal);
 						if (partielleCantonalId == null) {
 							mr.addMessage(LogCategory.SUIVI, LogLevel.ERROR, "Aucune donnée renvoyée par RCEnt pour cet établissement.");
 						}
@@ -376,7 +364,7 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 
 							// on a une organisation partielle -> il faut rappeler RCEnt pour avoir une vue complète
 							try {
-								final Organisation complete = organisationService.getOrganisation(partielleCantonalId, mr);
+								final Organisation complete = migrationContexte.getOrganisationService().getOrganisation(partielleCantonalId, mr);
 								if (complete == null) {
 									mr.addMessage(LogCategory.SUIVI, LogLevel.ERROR, String.format("Aucune donnée renvoyée par RCEnt pour l'organisation %d.", partielleCantonalId));
 								}
@@ -518,7 +506,7 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 
 		// récupération des données dans RCEnt
 		SiteOrganisation rcent = null;
-		if (organisationService.isRcentEnabled()) {
+		if (migrationContexte.getOrganisationService().isRcentEnabled()) {
 			final DonneesCiviles donneesCiviles = mr.getExtractedData(DonneesCiviles.class, moi.getKey());
 			if (donneesCiviles != null) {
 				rcent = donneesCiviles.getSite();
@@ -528,13 +516,13 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 		// on ne crée pas forcément un nouvel établissement, à cause du cas où un même établissement est lié à plusieurs entreprises dans le temps
 		// du côté des données RCEnt...
 		final List<Etablissement> etablissementsExistants = Optional.ofNullable(rcent)
-				.map(site -> uniregStore.getEntitiesFromDb(Etablissement.class, Collections.singletonMap("numeroEtablissement", site.getNumeroSite())))
+				.map(site -> migrationContexte.getUniregStore().getEntitiesFromDb(Etablissement.class, Collections.singletonMap("numeroEtablissement", site.getNumeroSite())))
 				.orElse(null);
 
 		final Etablissement unireg;
 		if (etablissementsExistants == null || etablissementsExistants.isEmpty()) {
 			// on crée un nouvel établissement
-			unireg = uniregStore.saveEntityToDb(createEtablissement(regpm));
+			unireg = migrationContexte.getUniregStore().saveEntityToDb(createEtablissement(regpm));
 		}
 		else if (etablissementsExistants.size() > 1) {
 			//noinspection ConstantConditions
@@ -678,7 +666,7 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 		}
 
 		// TODO usage de l'adresse = COURRIER ou plutôt DOMICILE ?
-		final AdresseTiers adresse = adresseHelper.buildAdresse(regpm.getAdresse(rangeAdresse), mr, regpm.getChez(), false);
+		final AdresseTiers adresse = migrationContexte.getAdresseHelper().buildAdresse(regpm.getAdresse(rangeAdresse), mr, regpm.getChez(), false);
 		if (adresse != null) {
 			adresse.setUsage(TypeAdresseTiers.COURRIER);
 			unireg.addAdresseTiers(adresse);

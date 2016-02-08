@@ -21,12 +21,18 @@ import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.uniregctb.adresse.AdresseTiers;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.mock.ProxyServiceOrganisation;
+import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
+import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionService;
+import ch.vd.uniregctb.metier.bouclement.BouclementService;
 import ch.vd.uniregctb.migration.pm.MigrationResultCollector;
 import ch.vd.uniregctb.migration.pm.communes.FractionsCommuneProvider;
 import ch.vd.uniregctb.migration.pm.communes.FusionCommunesProvider;
 import ch.vd.uniregctb.migration.pm.engine.collector.EntityLinkCollector;
 import ch.vd.uniregctb.migration.pm.engine.helpers.AdresseHelper;
+import ch.vd.uniregctb.migration.pm.engine.helpers.DateHelper;
+import ch.vd.uniregctb.migration.pm.engine.helpers.DoublonProvider;
 import ch.vd.uniregctb.migration.pm.engine.helpers.OrganisationServiceAccessor;
+import ch.vd.uniregctb.migration.pm.engine.helpers.RegimeFiscalHelper;
 import ch.vd.uniregctb.migration.pm.log.EtablissementLoggedElement;
 import ch.vd.uniregctb.migration.pm.log.LogCategory;
 import ch.vd.uniregctb.migration.pm.log.LoggedElementAttribute;
@@ -47,6 +53,7 @@ import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeMandat;
 import ch.vd.uniregctb.migration.pm.store.UniregStore;
 import ch.vd.uniregctb.migration.pm.utils.DatesParticulieres;
 import ch.vd.uniregctb.migration.pm.utils.EntityKey;
+import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.tiers.DomicileEtablissement;
 import ch.vd.uniregctb.tiers.Etablissement;
 import ch.vd.uniregctb.tiers.Remarque;
@@ -63,19 +70,30 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 	protected void onSetup() throws Exception {
 		super.onSetup();
 
-		final ActivityManager activityManager = entreprise -> true;         // tout le monde est actif dans ces tests
-
 		uniregStore = getBean(UniregStore.class, "uniregStore");
 		organisationService = getBean(ProxyServiceOrganisation.class, "serviceOrganisationService");
 
 		final OrganisationServiceAccessor organisationServiceAccessor = new OrganisationServiceAccessor(organisationService, false, 1);
-		final ServiceInfrastructureService infraService = getBean(ServiceInfrastructureService.class, "serviceInfrastructureService");
-		final AdresseHelper adresseHelper = getBean(AdresseHelper.class, "adresseHelper");
-		final FusionCommunesProvider fusionCommunesProvider = getBean(FusionCommunesProvider.class, "fusionCommunesProvider");
-		final FractionsCommuneProvider fractionsCommuneProvider = getBean(FractionsCommuneProvider.class, "fractionsCommuneProvider");
-		final DatesParticulieres datesParticulieres = getBean(DatesParticulieres.class, "datesParticulieres");
+		final MigrationContexte contexte = new MigrationContexte(uniregStore,
+		                                                         entreprise -> true,                // tout le monde est actif dans ces tests!!
+		                                                         getBean(ServiceInfrastructureService.class, "serviceInfrastructureService"),
+		                                                         getBean(FusionCommunesProvider.class, "fusionCommunesProvider"),
+		                                                         getBean(FractionsCommuneProvider.class, "fractionsCommuneProvider"),
+		                                                         getBean(DateHelper.class, "dateHelper"),
+		                                                         getBean(DatesParticulieres.class, "datesParticulieres"),
+		                                                         getBean(AdresseHelper.class, "adresseHelper"),
+		                                                         getBean(BouclementService.class, "bouclementService"),
+		                                                         getBean(AssujettissementService.class, "assujettissementService"),
+		                                                         getBean(PeriodeImpositionService.class, "periodeImpositionService"),
+		                                                         getBean(ParametreAppService.class, "parametreAppService"),
+		                                                         organisationServiceAccessor,
+		                                                         getBean(DoublonProvider.class, "doublonProvider"),
+		                                                         getBean(RegimeFiscalHelper.class, "regimeFiscalHelper"),
+		                                                         null,
+		                                                         null,
+		                                                         null);
 
-		migrator = new EtablissementMigrator(uniregStore, activityManager, infraService, organisationServiceAccessor, adresseHelper, fusionCommunesProvider, fractionsCommuneProvider, datesParticulieres);
+		migrator = new EtablissementMigrator(contexte);
 	}
 
 	static RegpmEtablissement buildEtablissement(long id, RegpmEntreprise entreprise) {

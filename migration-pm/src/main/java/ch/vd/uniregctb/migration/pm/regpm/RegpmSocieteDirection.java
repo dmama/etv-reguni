@@ -126,13 +126,13 @@ public class RegpmSocieteDirection extends RegpmEntity implements Comparable<Reg
 		this.direction = direction;
 	}
 
-	@ManyToOne
-	@JoinColumn(name = "FK_D_ENTPRNO", insertable = false, updatable = false)
-	public RegpmEntreprise getFonds() {
-		return fonds;
-	}
-
-	public void setFonds(RegpmEntreprise fonds) {
-		this.fonds = fonds;
-	}
+//	@ManyToOne
+//	@JoinColumn(name = "FK_D_ENTPRNO", insertable = false, updatable = false)
+//	public RegpmEntreprise getFonds() {
+//		return fonds;
+//	}
+//
+//	public void setFonds(RegpmEntreprise fonds) {
+//		this.fonds = fonds;
+//	}
 }

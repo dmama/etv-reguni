@@ -114,8 +114,8 @@ public class RegpmEntreprise extends RegpmEntity implements WithLongId {
 	private Set<RegpmAppartenanceGroupeProprietaire> appartenancesGroupeProprietaire;
 	private SortedSet<RegpmBlocNotesEntreprise> notes;
 	private Set<RegpmCritereSegmentation> criteresSegmentation;
-	private SortedSet<RegpmSocieteDirection> directions;
-	private Set<RegpmAdministrateur> administrateurs;
+	private SortedSet<RegpmSocieteDirection> directions;        // liens vers les propriétaires du fonds
+	private Set<RegpmAdministrateur> administrateurs;           // liens vers les administrateurs de l'entreprise
 
 	@Id
 	@Column(name = "NO_ENTREPRISE")

@@ -10,8 +10,11 @@ import javax.persistence.JoinColumns;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import java.io.Serializable;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import org.hibernate.annotations.Parameter;
 import org.hibernate.annotations.Type;
@@ -103,6 +106,21 @@ public class RegpmAdministrateur extends RegpmEntity {
 	private RegpmFonction fonction;
 	private Set<RegpmFinMandatAdministrateur> fins;
 
+	/**
+	 * Valeur <strong>transiente</strong> (au sens de la sérialisation java) pour ne pas être exposée dans le graphe final
+	 */
+	private transient RegpmEntreprise entreprise;
+
+	/**
+	 * Les régimes fiscaux VD de l'entreprise (c'est cette information qui restera dans le graphe une fois sérialisé/dé-sérialisé
+	 */
+	private SortedSet<RegpmRegimeFiscalVD> regimesFiscauxVD;
+
+	/**
+	 * L'identifiant de l'entreprise administrée (cette information restera dans le graphe une fois sérialisé/dé-sérialisé
+	 */
+	private Long entrepriseId;
+
 	@EmbeddedId
 	public PK getId() {
 		return id;
@@ -142,15 +160,19 @@ public class RegpmAdministrateur extends RegpmEntity {
 		this.administrateur = administrateur;
 	}
 
-//	@ManyToOne
-//	@JoinColumn(name = "FK_ENTPRNO")
-//	public RegpmEntreprise getEntreprise() {
-//		return entreprise;
-//	}
-//
-//	public void setEntreprise(RegpmEntreprise entreprise) {
-//		this.entreprise = entreprise;
-//	}
+	/**
+	 * <strong>Attention</strong> l'entreprise est un membre "transient" (au sens de la sérialisation java).
+	 * Il n'est donc pas censé être utilisé au moment de l'utilisation des données du graphe !!
+	 */
+	@ManyToOne
+	@JoinColumn(name = "FK_ENTPRNO")
+	public RegpmEntreprise getEntreprise() {
+		return entreprise;
+	}
+
+	public void setEntreprise(RegpmEntreprise entreprise) {
+		this.entreprise = entreprise;
+	}
 
 	@Column(name = "FK_FCTCO")
 	@Type(type = "Fonction")
@@ -173,5 +195,35 @@ public class RegpmAdministrateur extends RegpmEntity {
 
 	public void setFins(Set<RegpmFinMandatAdministrateur> fins) {
 		this.fins = fins;
+	}
+
+	@Transient
+	public SortedSet<RegpmRegimeFiscalVD> getRegimesFiscauxVD() {
+		return entreprise != null ? entreprise.getRegimesFiscauxVD() : regimesFiscauxVD;
+	}
+
+	@Transient
+	public Long getEntrepriseId() {
+		return entreprise != null ? entreprise.getId() : entrepriseId;
+	}
+
+	public void initEntrepriseData(@NotNull RegpmEntreprise e) {
+		initEntrepriseData(e.getRegimesFiscauxVD(), e.getId());
+	}
+
+	public void initEntrepriseData(@NotNull SortedSet<RegpmRegimeFiscalVD> regimes, long entrepriseId) {
+		this.regimesFiscauxVD = new TreeSet<>(regimes);     // on force le chargement de la collection!
+		this.entrepriseId = entrepriseId;
+	}
+
+	/**
+	 * Utilisable lors de la constitution du graphe afin de récupérer dans les données de l'entreprise
+	 * (qui ne survivra pas à un passage par l'état sérialisé) ce qui nous servira par la suite
+	 * (= dans des champs qui survivront, eux, au passage par l'état sérialisé)
+	 */
+	public void fetchEntrepriseData() {
+		if (entreprise != null) {
+			initEntrepriseData(entreprise);
+		}
 	}
 }

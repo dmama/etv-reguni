@@ -1,5 +1,7 @@
 package ch.vd.uniregctb.migration.pm;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.util.HashSet;
 
 import org.hibernate.SessionFactory;
@@ -31,8 +33,18 @@ public class FromDbFeederTest extends AbstractSpringTest {
 	@Ignore
 	@Test
 	public void testLoadGraphe() throws Exception {
-		final long noEntreprise = 12;
+		final long noEntreprise = 2033;
 		final Graphe graphe = feeder.loadGraphe(noEntreprise);
 		Assert.assertNotNull(graphe);
+
+		final byte[] data;
+		try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
+			SerializationIntermediary.serialize(graphe, baos);
+			data = baos.toByteArray();
+		}
+		try (ByteArrayInputStream bais = new ByteArrayInputStream(data)) {
+			final Graphe apresSerialisation = SerializationIntermediary.deserialize(bais);
+			Assert.assertNotNull(apresSerialisation);
+		}
 	}
 }

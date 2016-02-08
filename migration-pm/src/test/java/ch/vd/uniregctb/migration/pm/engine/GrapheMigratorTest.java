@@ -59,8 +59,10 @@ import ch.vd.uniregctb.migration.pm.SerializationIntermediary;
 import ch.vd.uniregctb.migration.pm.communes.FractionsCommuneProvider;
 import ch.vd.uniregctb.migration.pm.communes.FusionCommunesProvider;
 import ch.vd.uniregctb.migration.pm.engine.helpers.AdresseHelper;
+import ch.vd.uniregctb.migration.pm.engine.helpers.DateHelper;
 import ch.vd.uniregctb.migration.pm.engine.helpers.DoublonProvider;
 import ch.vd.uniregctb.migration.pm.engine.helpers.OrganisationServiceAccessor;
+import ch.vd.uniregctb.migration.pm.engine.helpers.RegimeFiscalHelper;
 import ch.vd.uniregctb.migration.pm.indexeur.NonHabitantIndex;
 import ch.vd.uniregctb.migration.pm.log.LogCategory;
 import ch.vd.uniregctb.migration.pm.log.LogLevel;
@@ -72,6 +74,7 @@ import ch.vd.uniregctb.migration.pm.regpm.RegpmCategoriePersonneMorale;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmDossierFiscal;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmEntreprise;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmEtablissement;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmFonction;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmGroupeProprietaire;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmImmeuble;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmIndividu;
@@ -88,6 +91,7 @@ import ch.vd.uniregctb.migration.pm.utils.DatesParticulieres;
 import ch.vd.uniregctb.migration.pm.utils.ValidationInterceptor;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.tiers.ActiviteEconomique;
+import ch.vd.uniregctb.tiers.AdministrationEntreprise;
 import ch.vd.uniregctb.tiers.Bouclement;
 import ch.vd.uniregctb.tiers.CapitalFiscalEntreprise;
 import ch.vd.uniregctb.tiers.DomicileEtablissement;
@@ -106,6 +110,7 @@ import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RaisonSocialeFiscaleEntreprise;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.tiers.RegimeFiscal;
+import ch.vd.uniregctb.tiers.SocieteDirection;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.type.DayMonth;
 import ch.vd.uniregctb.type.FormeJuridiqueEntreprise;
@@ -131,6 +136,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 	private UniregStore uniregStore;
 	private ActivityManagerProxy activityManager;
 	private ProxyServiceOrganisation organisationService;
+	private MigrationContexte migrationContexte;
 
 	private static Map<LogCategory, List<String>> buildTextualMessages(LoggedMessages lms) {
 		final Map<LogCategory, List<LoggedMessage>> map = lms.asMap();
@@ -149,29 +155,35 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		organisationService = getBean(ProxyServiceOrganisation.class, "serviceOrganisationService");
 
 		final OrganisationServiceAccessor organisationServiceAccessor = new OrganisationServiceAccessor(organisationService, true, 1);
-
-		final BouclementService bouclementService = getBean(BouclementService.class, "bouclementService");
-		final ServiceInfrastructureService infraService = getBean(ServiceInfrastructureService.class, "serviceInfrastructureService");
-		final AdresseHelper adresseHelper = getBean(AdresseHelper.class, "adresseHelper");
-		final TiersDAO tiersDAO = getBean(TiersDAO.class, "tiersDAO");
-		final RcPersClient rcpersClient = getBean(RcPersClient.class, "rcpersClient");
-		final NonHabitantIndex nonHabitantIndex = getBean(NonHabitantIndex.class, "nonHabitantIndex");
 		final ValidationInterceptor validationInterceptor = getBean(ValidationInterceptor.class, "validationInterceptor");
-		final AssujettissementService assujettissementService = getBean(AssujettissementService.class, "assujettissementService");
-		final FusionCommunesProvider fusionCommunesProvider = getBean(FusionCommunesProvider.class, "fusionCommunesProvider");
-		final FractionsCommuneProvider fractionsCommuneProvider = getBean(FractionsCommuneProvider.class, "fractionsCommuneProvider");
-		final DatesParticulieres datesParticulieres = getBean(DatesParticulieres.class, "datesParticulieres");
-		final PeriodeImpositionService periodeImpositionService = getBean(PeriodeImpositionService.class, "periodeImpositionService");
-		final ParametreAppService parametreAppService = getBean(ParametreAppService.class, "parametreAppService");
-		final DoublonProvider doublonProvider = getBean(DoublonProvider.class, "doublonProvider");
+
+		final NonHabitantIndex nonHabitantIndex = getBean(NonHabitantIndex.class, "nonHabitantIndex");
+		nonHabitantIndex.overwriteIndex();
 
 		activityManager = new ActivityManagerProxy();
+		migrationContexte = new MigrationContexte(uniregStore,
+		                                          activityManager,
+		                                          getBean(ServiceInfrastructureService.class, "serviceInfrastructureService"),
+		                                          getBean(FusionCommunesProvider.class, "fusionCommunesProvider"),
+		                                          getBean(FractionsCommuneProvider.class, "fractionsCommuneProvider"),
+		                                          getBean(DateHelper.class, "dateHelper"),
+		                                          getBean(DatesParticulieres.class, "datesParticulieres"),
+		                                          getBean(AdresseHelper.class, "adresseHelper"),
+		                                          getBean(BouclementService.class, "bouclementService"),
+		                                          getBean(AssujettissementService.class, "assujettissementService"),
+		                                          getBean(PeriodeImpositionService.class, "periodeImpositionService"),
+		                                          getBean(ParametreAppService.class, "parametreAppService"),
+		                                          organisationServiceAccessor,
+		                                          getBean(DoublonProvider.class, "doublonProvider"),
+		                                          getBean(RegimeFiscalHelper.class, "regimeFiscalHelper"),
+		                                          getBean(TiersDAO.class, "tiersDAO"),
+		                                          getBean(RcPersClient.class, "rcpersClient"),
+		                                          nonHabitantIndex);
 
 		grapheMigrator = new GrapheMigrator();
-		grapheMigrator.setEntrepriseMigrator(new EntrepriseMigrator(uniregStore, activityManager, infraService, bouclementService, assujettissementService, organisationServiceAccessor, adresseHelper,
-		                                                            fusionCommunesProvider, fractionsCommuneProvider, datesParticulieres, periodeImpositionService, parametreAppService, doublonProvider));
-		grapheMigrator.setEtablissementMigrator(new EtablissementMigrator(uniregStore, activityManager, infraService, organisationServiceAccessor, adresseHelper, fusionCommunesProvider, fractionsCommuneProvider, datesParticulieres));
-		grapheMigrator.setIndividuMigrator(new IndividuMigrator(uniregStore, activityManager, infraService, tiersDAO, rcpersClient, nonHabitantIndex, adresseHelper, fusionCommunesProvider, fractionsCommuneProvider, datesParticulieres));
+		grapheMigrator.setEntrepriseMigrator(new EntrepriseMigrator(migrationContexte));
+		grapheMigrator.setEtablissementMigrator(new EtablissementMigrator(migrationContexte));
+		grapheMigrator.setIndividuMigrator(new IndividuMigrator(migrationContexte));
 		grapheMigrator.setUniregStore(uniregStore);
 		grapheMigrator.setUniregTransactionManager(getUniregTransactionManager());
 		grapheMigrator.setValidationInterceptor(validationInterceptor);
@@ -5126,6 +5138,360 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 			Assert.assertEquals("INFO;" + noEntreprise + ";Active;;;;;;;;;;;;;;;Cycle de bouclements créé, applicable dès le 01.07.2016 : tous les 12 mois, à partir du premier 31.08.", msgs.get(4));
 			Assert.assertEquals("WARN;" + noEntreprise + ";Active;;;;;;;;;;;;;;;Pas de siège associé dans les données fiscales, pas d'établissement principal créé à partir des données fiscales.", msgs.get(5));
 			Assert.assertEquals("INFO;" + noEntreprise + ";Active;;;;;;;;;;;;;;;Entreprise migrée : " + FormatNumeroHelper.numeroCTBToDisplay(noEntreprise) + ".", msgs.get(6));
+		}
+	}
+
+	@Test
+	public void testSocieteDirection() throws Exception {
+
+		final long noEntreprise1 = 32321L;
+		final long noEntreprise2 = 12131L;
+		final long noFondsPlacement = 2312L;
+		final RegDate dateDebutProprio = RegDate.get(1995, 1, 29);
+		final RegDate dateDebutFonds1 = RegDate.get(2000, 5, 21);
+		final RegDate dateDebutFonds2 = RegDate.get(2005, 4, 12);
+
+		final RegpmEntreprise fonds = EntrepriseMigratorTest.buildEntreprise(noFondsPlacement);
+		EntrepriseMigratorTest.addRaisonSociale(fonds, dateDebutFonds1, "Fonds Winwin", null, null, true);
+		EntrepriseMigratorTest.addFormeJuridique(fonds, dateDebutFonds1, EntrepriseMigratorTest.createTypeFormeJuridique("FDS. PLAC.", RegpmCategoriePersonneMorale.APM));
+
+		final RegpmEntreprise proprio1 = EntrepriseMigratorTest.buildEntreprise(noEntreprise1);
+		EntrepriseMigratorTest.addRaisonSociale(proprio1, dateDebutProprio, "Gestionnaire de fortune 1", null, null, true);
+		EntrepriseMigratorTest.addFormeJuridique(proprio1, dateDebutProprio, EntrepriseMigratorTest.createTypeFormeJuridique("S.A.", RegpmCategoriePersonneMorale.PM));
+
+		final RegpmEntreprise proprio2 = EntrepriseMigratorTest.buildEntreprise(noEntreprise2);
+		EntrepriseMigratorTest.addRaisonSociale(proprio2, dateDebutProprio, "Gestionnaire de fortune 2", null, null, true);
+		EntrepriseMigratorTest.addFormeJuridique(proprio2, dateDebutProprio, EntrepriseMigratorTest.createTypeFormeJuridique("S.A.", RegpmCategoriePersonneMorale.PM));
+
+		EntrepriseMigratorTest.addSocieteDirection(proprio1, fonds, dateDebutFonds1);
+		EntrepriseMigratorTest.addSocieteDirection(proprio2, fonds, dateDebutFonds2);
+
+		final MockGraphe graphe = new MockGraphe(Arrays.asList(proprio1, proprio2, fonds),
+		                                         null,
+		                                         null);
+
+		activityManager.setup(ALL_ACTIVE);
+
+		final LoggedMessages lms = grapheMigrator.migrate(graphe);
+		Assert.assertNotNull(lms);
+
+		final Map<LogCategory, List<String>> messages = buildTextualMessages(lms);
+		Assert.assertNotNull(messages);
+
+		// on va juste regarder les liens générés
+		{
+			final List<String> msgs = messages.get(LogCategory.RAPPORTS_ENTRE_TIERS);
+			Assert.assertNotNull(msgs);
+			Assert.assertEquals(2, msgs.size());
+			Assert.assertEquals("INFO;PROPRIETAIRE_FONDS_PLACEMENT;2000-05-21;2005-04-11;" + noEntreprise1 + ";;;" + noEntreprise1 + ";" + noFondsPlacement + ";;;" + noFondsPlacement + ";", msgs.get(0));
+			Assert.assertEquals("INFO;PROPRIETAIRE_FONDS_PLACEMENT;2005-04-12;;" + noEntreprise2 + ";;;" + noEntreprise2 + ";" + noFondsPlacement + ";;;" + noFondsPlacement + ";", msgs.get(1));
+		}
+
+		// et en base ?
+		doInUniregTransaction(true, status -> {
+			final Entreprise fondsPlacement = uniregStore.getEntityFromDb(Entreprise.class, noFondsPlacement);
+			Assert.assertNotNull(fondsPlacement);
+
+			final Set<RapportEntreTiers> rets = fondsPlacement.getRapportsObjet();
+			Assert.assertNotNull(rets);
+			Assert.assertEquals(2, rets.size());
+
+			final List<SocieteDirection> directions = rets.stream()
+					.filter(ret -> ret instanceof SocieteDirection)
+					.map(ret -> (SocieteDirection) ret)
+					.sorted(DateRangeComparator::compareRanges)
+					.collect(Collectors.toList());
+			Assert.assertEquals(2, directions.size());
+			{
+				final SocieteDirection sd = directions.get(0);
+				Assert.assertFalse(sd.isAnnule());
+				Assert.assertEquals(RegDate.get(2000, 5, 21), sd.getDateDebut());
+				Assert.assertEquals(RegDate.get(2005, 4, 11), sd.getDateFin());
+				Assert.assertEquals((Long) noEntreprise1, sd.getSujetId());
+			}
+			{
+				final SocieteDirection sd = directions.get(1);
+				Assert.assertFalse(sd.isAnnule());
+				Assert.assertEquals(RegDate.get(2005, 4, 12), sd.getDateDebut());
+				Assert.assertNull(sd.getDateFin());
+				Assert.assertEquals((Long) noEntreprise2, sd.getSujetId());
+			}
+		});
+	}
+
+	@Test
+	public void testAdministrateurSocieteImmobiliere() throws Exception {
+
+		final long noEntreprise = 12131L;
+		final long noIndividu = 2312L;
+		final RegDate dateDebutEntreprise = RegDate.get(2004, 2, 3);
+		final RegDate dateDebutAdministration = RegDate.get(2005, 6, 12);
+		final RegDate dateNaissanceAdministrateur = RegDate.get(1954, 3, 25);
+
+		final RegpmEntreprise entreprise = EntrepriseMigratorTest.buildEntreprise(noEntreprise);
+		EntrepriseMigratorTest.addRaisonSociale(entreprise, dateDebutEntreprise, "Immob-génial", null, null, true);
+		EntrepriseMigratorTest.addFormeJuridique(entreprise, dateDebutEntreprise, EntrepriseMigratorTest.createTypeFormeJuridique("S.A.", RegpmCategoriePersonneMorale.PM));
+		EntrepriseMigratorTest.addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
+		EntrepriseMigratorTest.addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, RegpmTypeRegimeFiscal._35_SOCIETE_ORDINAIRE_SIAL);
+
+		final RegpmIndividu administrateur = IndividuMigratorTest.buildBaseIndividu(noIndividu, "Natuzzi", "Kanapé", dateNaissanceAdministrateur, Sexe.MASCULIN);
+
+		// administrateur actif, président terminé
+		EntrepriseMigratorTest.addAdministrateur(entreprise, administrateur, RegpmFonction.ADMINISTRATEUR, dateDebutAdministration, null, false);
+		EntrepriseMigratorTest.addAdministrateur(entreprise, administrateur, RegpmFonction.PRESIDENT, dateDebutAdministration, RegDate.get(2010, 12, 31), false);
+
+		final MockGraphe graphe = new MockGraphe(Collections.singletonList(entreprise),
+		                                         null,
+		                                         Collections.singletonList(administrateur));
+
+		activityManager.setup(ALL_ACTIVE);
+
+		// mise en place fiscale de l'administrateur
+		final long ppId = doInUniregTransaction(false, status -> {
+			final PersonnePhysique pp = new PersonnePhysique(Boolean.FALSE);
+			pp.setNom("Natuzzi");
+			pp.setPrenomUsuel("Kanapé");
+			pp.setDateNaissance(dateNaissanceAdministrateur);
+			pp.setSexe(Sexe.MASCULIN);
+			return (Long) getUniregSessionFactory().getCurrentSession().save(pp);
+		});
+
+		doInUniregTransaction(true, status -> {
+			final PersonnePhysique pp = (PersonnePhysique) migrationContexte.getTiersDAO().get(ppId);
+			migrationContexte.getNonHabitantIndex().index(pp);
+		});
+
+		final LoggedMessages lms = grapheMigrator.migrate(graphe);
+		Assert.assertNotNull(lms);
+
+		doInUniregTransaction(true, status -> {
+			final Entreprise e = uniregStore.getEntityFromDb(Entreprise.class, noEntreprise);
+			Assert.assertNotNull(e);
+
+			final Set<RapportEntreTiers> rets = e.getRapportsSujet();
+			Assert.assertNotNull(rets);
+			Assert.assertEquals(1, rets.size());
+
+			final RapportEntreTiers ret = rets.iterator().next();
+			Assert.assertNotNull(ret);
+			Assert.assertEquals(AdministrationEntreprise.class, ret.getClass());
+			Assert.assertFalse(ret.isAnnule());
+			Assert.assertEquals(dateDebutAdministration, ret.getDateDebut());
+			Assert.assertNull(ret.getDateFin());
+			Assert.assertFalse(((AdministrationEntreprise) ret).isPresident());
+		});
+
+		final Map<LogCategory, List<String>> messages = buildTextualMessages(lms);
+		Assert.assertNotNull(messages);
+
+		// on va juste regarder les liens générés
+		{
+			final List<String> msgs = messages.get(LogCategory.RAPPORTS_ENTRE_TIERS);
+			Assert.assertNotNull(msgs);
+			Assert.assertEquals(1, msgs.size());
+			Assert.assertEquals("INFO;ENTREPRISE_ADMINISTRATEUR;2005-06-12;;" + noEntreprise + ";;;" + noEntreprise + ";;;" + noIndividu + ";" + ppId + ";", msgs.get(0));
+		}
+	}
+
+	@Test
+	public void testAdministrateurPresidentSocieteImmobiliere() throws Exception {
+
+		final long noEntreprise = 12131L;
+		final long noIndividu = 2312L;
+		final RegDate dateDebutEntreprise = RegDate.get(2004, 2, 3);
+		final RegDate dateDebutAdministration = RegDate.get(2005, 6, 12);
+		final RegDate dateNaissanceAdministrateur = RegDate.get(1954, 3, 25);
+
+		final RegpmEntreprise entreprise = EntrepriseMigratorTest.buildEntreprise(noEntreprise);
+		EntrepriseMigratorTest.addRaisonSociale(entreprise, dateDebutEntreprise, "Immob-génial", null, null, true);
+		EntrepriseMigratorTest.addFormeJuridique(entreprise, dateDebutEntreprise, EntrepriseMigratorTest.createTypeFormeJuridique("S.A.", RegpmCategoriePersonneMorale.PM));
+		EntrepriseMigratorTest.addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
+		EntrepriseMigratorTest.addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, RegpmTypeRegimeFiscal._35_SOCIETE_ORDINAIRE_SIAL);
+
+		final RegpmIndividu administrateur = IndividuMigratorTest.buildBaseIndividu(noIndividu, "Natuzzi", "Kanapé", dateNaissanceAdministrateur, Sexe.MASCULIN);
+
+		// administrateur actif, président actif
+		EntrepriseMigratorTest.addAdministrateur(entreprise, administrateur, RegpmFonction.ADMINISTRATEUR, dateDebutAdministration, null, false);
+		EntrepriseMigratorTest.addAdministrateur(entreprise, administrateur, RegpmFonction.PRESIDENT, dateDebutAdministration, null, false);
+
+		final MockGraphe graphe = new MockGraphe(Collections.singletonList(entreprise),
+		                                         null,
+		                                         Collections.singletonList(administrateur));
+
+		activityManager.setup(ALL_ACTIVE);
+
+		// mise en place fiscale de l'administrateur
+		final long ppId = doInUniregTransaction(false, status -> {
+			final PersonnePhysique pp = new PersonnePhysique(Boolean.FALSE);
+			pp.setNom("Natuzzi");
+			pp.setPrenomUsuel("Kanapé");
+			pp.setDateNaissance(dateNaissanceAdministrateur);
+			pp.setSexe(Sexe.MASCULIN);
+			return (Long) getUniregSessionFactory().getCurrentSession().save(pp);
+		});
+
+		doInUniregTransaction(true, status -> {
+			final PersonnePhysique pp = (PersonnePhysique) migrationContexte.getTiersDAO().get(ppId);
+			migrationContexte.getNonHabitantIndex().index(pp);
+		});
+
+		final LoggedMessages lms = grapheMigrator.migrate(graphe);
+		Assert.assertNotNull(lms);
+
+		doInUniregTransaction(true, status -> {
+			final Entreprise e = uniregStore.getEntityFromDb(Entreprise.class, noEntreprise);
+			Assert.assertNotNull(e);
+
+			final Set<RapportEntreTiers> rets = e.getRapportsSujet();
+			Assert.assertNotNull(rets);
+			Assert.assertEquals(1, rets.size());
+
+			final RapportEntreTiers ret = rets.iterator().next();
+			Assert.assertNotNull(ret);
+			Assert.assertEquals(AdministrationEntreprise.class, ret.getClass());
+			Assert.assertFalse(ret.isAnnule());
+			Assert.assertEquals(dateDebutAdministration, ret.getDateDebut());
+			Assert.assertNull(ret.getDateFin());
+			Assert.assertTrue(((AdministrationEntreprise) ret).isPresident());
+		});
+
+		final Map<LogCategory, List<String>> messages = buildTextualMessages(lms);
+		Assert.assertNotNull(messages);
+
+		// on va juste regarder les liens générés
+		{
+			final List<String> msgs = messages.get(LogCategory.RAPPORTS_ENTRE_TIERS);
+			Assert.assertNotNull(msgs);
+			Assert.assertEquals(1, msgs.size());
+			Assert.assertEquals("INFO;ENTREPRISE_ADMINISTRATEUR;2005-06-12;;" + noEntreprise + ";;;" + noEntreprise + ";;;" + noIndividu + ";" + ppId + ";", msgs.get(0));
+		}
+	}
+
+	@Test
+	public void testPresidentNonAdministrateurSocieteImmobiliere() throws Exception {
+
+		final long noEntreprise = 12131L;
+		final long noIndividu = 2312L;
+		final RegDate dateDebutEntreprise = RegDate.get(2004, 2, 3);
+		final RegDate dateDebutAdministration = RegDate.get(2005, 6, 12);
+		final RegDate dateNaissanceAdministrateur = RegDate.get(1954, 3, 25);
+
+		final RegpmEntreprise entreprise = EntrepriseMigratorTest.buildEntreprise(noEntreprise);
+		EntrepriseMigratorTest.addRaisonSociale(entreprise, dateDebutEntreprise, "Immob-génial", null, null, true);
+		EntrepriseMigratorTest.addFormeJuridique(entreprise, dateDebutEntreprise, EntrepriseMigratorTest.createTypeFormeJuridique("S.A.", RegpmCategoriePersonneMorale.PM));
+		EntrepriseMigratorTest.addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
+		EntrepriseMigratorTest.addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, RegpmTypeRegimeFiscal._35_SOCIETE_ORDINAIRE_SIAL);
+
+		final RegpmIndividu administrateur = IndividuMigratorTest.buildBaseIndividu(noIndividu, "Natuzzi", "Kanapé", dateNaissanceAdministrateur, Sexe.MASCULIN);
+
+		// administrateur actif, président actif
+		EntrepriseMigratorTest.addAdministrateur(entreprise, administrateur, RegpmFonction.ADMINISTRATEUR, dateDebutAdministration, RegDate.get(2010, 5, 2), false);
+		EntrepriseMigratorTest.addAdministrateur(entreprise, administrateur, RegpmFonction.PRESIDENT, dateDebutAdministration, null, false);
+
+		final MockGraphe graphe = new MockGraphe(Collections.singletonList(entreprise),
+		                                         null,
+		                                         Collections.singletonList(administrateur));
+
+		activityManager.setup(ALL_ACTIVE);
+
+		// mise en place fiscale de l'administrateur
+		final long ppId = doInUniregTransaction(false, status -> {
+			final PersonnePhysique pp = new PersonnePhysique(Boolean.FALSE);
+			pp.setNom("Natuzzi");
+			pp.setPrenomUsuel("Kanapé");
+			pp.setDateNaissance(dateNaissanceAdministrateur);
+			pp.setSexe(Sexe.MASCULIN);
+			return (Long) getUniregSessionFactory().getCurrentSession().save(pp);
+		});
+
+		doInUniregTransaction(true, status -> {
+			final PersonnePhysique pp = (PersonnePhysique) migrationContexte.getTiersDAO().get(ppId);
+			migrationContexte.getNonHabitantIndex().index(pp);
+		});
+
+		final LoggedMessages lms = grapheMigrator.migrate(graphe);
+		Assert.assertNotNull(lms);
+
+		doInUniregTransaction(true, status -> {
+			final Entreprise e = uniregStore.getEntityFromDb(Entreprise.class, noEntreprise);
+			Assert.assertNotNull(e);
+
+			final Set<RapportEntreTiers> rets = e.getRapportsSujet();
+			Assert.assertNotNull(rets);
+			Assert.assertEquals(0, rets.size());
+		});
+
+		final Map<LogCategory, List<String>> messages = buildTextualMessages(lms);
+		Assert.assertNotNull(messages);
+
+		// on va juste regarder les liens générés : aucun
+		{
+			final List<String> msgs = messages.get(LogCategory.RAPPORTS_ENTRE_TIERS);
+			Assert.assertNull(msgs);
+		}
+	}
+
+	@Test
+	public void testAdministrateurPresidentSocieteNonImmobiliere() throws Exception {
+
+		final long noEntreprise = 12131L;
+		final long noIndividu = 2312L;
+		final RegDate dateDebutEntreprise = RegDate.get(2004, 2, 3);
+		final RegDate dateDebutAdministration = RegDate.get(2005, 6, 12);
+		final RegDate dateNaissanceAdministrateur = RegDate.get(1954, 3, 25);
+
+		final RegpmEntreprise entreprise = EntrepriseMigratorTest.buildEntreprise(noEntreprise);
+		EntrepriseMigratorTest.addRaisonSociale(entreprise, dateDebutEntreprise, "Immob-génial", null, null, true);
+		EntrepriseMigratorTest.addFormeJuridique(entreprise, dateDebutEntreprise, EntrepriseMigratorTest.createTypeFormeJuridique("S.A.", RegpmCategoriePersonneMorale.PM));
+		EntrepriseMigratorTest.addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
+		EntrepriseMigratorTest.addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
+
+		final RegpmIndividu administrateur = IndividuMigratorTest.buildBaseIndividu(noIndividu, "Natuzzi", "Kanapé", dateNaissanceAdministrateur, Sexe.MASCULIN);
+
+		// administrateur actif, président actif
+		EntrepriseMigratorTest.addAdministrateur(entreprise, administrateur, RegpmFonction.ADMINISTRATEUR, dateDebutAdministration, null, false);
+		EntrepriseMigratorTest.addAdministrateur(entreprise, administrateur, RegpmFonction.PRESIDENT, dateDebutAdministration, null, false);
+
+		final MockGraphe graphe = new MockGraphe(Collections.singletonList(entreprise),
+		                                         null,
+		                                         Collections.singletonList(administrateur));
+
+		activityManager.setup(ALL_ACTIVE);
+
+		// mise en place fiscale de l'administrateur
+		final long ppId = doInUniregTransaction(false, status -> {
+			final PersonnePhysique pp = new PersonnePhysique(Boolean.FALSE);
+			pp.setNom("Natuzzi");
+			pp.setPrenomUsuel("Kanapé");
+			pp.setDateNaissance(dateNaissanceAdministrateur);
+			pp.setSexe(Sexe.MASCULIN);
+			return (Long) getUniregSessionFactory().getCurrentSession().save(pp);
+		});
+
+		doInUniregTransaction(true, status -> {
+			final PersonnePhysique pp = (PersonnePhysique) migrationContexte.getTiersDAO().get(ppId);
+			migrationContexte.getNonHabitantIndex().index(pp);
+		});
+
+		final LoggedMessages lms = grapheMigrator.migrate(graphe);
+		Assert.assertNotNull(lms);
+
+		doInUniregTransaction(true, status -> {
+			final Entreprise e = uniregStore.getEntityFromDb(Entreprise.class, noEntreprise);
+			Assert.assertNotNull(e);
+
+			final Set<RapportEntreTiers> rets = e.getRapportsSujet();
+			Assert.assertNotNull(rets);
+			Assert.assertEquals(0, rets.size());
+		});
+
+		final Map<LogCategory, List<String>> messages = buildTextualMessages(lms);
+		Assert.assertNotNull(messages);
+
+		// on va juste regarder les liens générés : aucun
+		{
+			final List<String> msgs = messages.get(LogCategory.RAPPORTS_ENTRE_TIERS);
+			Assert.assertNull(msgs);
 		}
 	}
 

@@ -7,8 +7,10 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.OutputStream;
 import java.io.PrintStream;
 import java.nio.file.Files;
 import java.nio.file.LinkOption;
@@ -132,17 +134,42 @@ public class SerializationIntermediary implements Worker, Feeder {
 	}
 
 	/**
+	 * @param is un flux d'entrée
+	 * @return le graphe contenu dans ce flux sous forme sérialisée
+	 * @throws IOException en cas de souci lors de l'accès au flux
+	 * @throws ClassNotFoundException si les données sérialisées ne sont pas récupérables...
+	 */
+	public static Graphe deserialize(InputStream is) throws IOException, ClassNotFoundException {
+		try (BufferedInputStream bis = new BufferedInputStream(is);
+		     ObjectInputStream ois = new ObjectInputStream(bis)) {
+
+			return (Graphe) ois.readObject();
+		}
+	}
+
+	/**
 	 * @param file un fichier sur le disque
 	 * @return le graphe contenu dans ce fichier sous forme sérialisée
 	 * @throws IOException en cas de souci lors de l'accès au fichier
 	 * @throws ClassNotFoundException si les données sérialisées ne sont pas récupérables...
 	 */
 	public static Graphe deserialize(File file) throws IOException, ClassNotFoundException {
-		try (FileInputStream fis = new FileInputStream(file);
-		     BufferedInputStream bis = new BufferedInputStream(fis);
-		     ObjectInputStream ois = new ObjectInputStream(bis)) {
+		try (FileInputStream fis = new FileInputStream(file)) {
+			return deserialize(fis);
+		}
+	}
 
-			return (Graphe) ois.readObject();
+	/**
+	 * @param graphe un graphe à sérialiser
+	 * @param os un flux de sortie
+	 * @throws IOException en cas de souci lors de l'accès au flux
+	 */
+	public static void serialize(Graphe graphe, OutputStream os) throws IOException {
+		try (BufferedOutputStream bos = new BufferedOutputStream(os);
+		     ObjectOutputStream oos = new ObjectOutputStream(bos)) {
+
+			oos.writeObject(graphe);
+			oos.flush();
 		}
 	}
 
@@ -152,12 +179,8 @@ public class SerializationIntermediary implements Worker, Feeder {
 	 * @throws IOException en cas de souci lors de l'accès au fichier
 	 */
 	public static void serialize(Graphe graphe, File file) throws IOException {
-		try (FileOutputStream fos = new FileOutputStream(file);
-		     BufferedOutputStream bos = new BufferedOutputStream(fos);
-		     ObjectOutputStream oos = new ObjectOutputStream(bos)) {
-
-			oos.writeObject(graphe);
-			oos.flush();
+		try (FileOutputStream fos = new FileOutputStream(file)) {
+		     serialize(graphe, fos);
 		}
 	}
 
