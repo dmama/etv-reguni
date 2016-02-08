@@ -5409,11 +5409,12 @@ public class TiersServiceImpl implements TiersService {
 			}
 		}
 
-		final AllegementFiscalCanton af = openAllegementFiscalCantonal(e, pourcentageAllegement, typeImpot, dateDebut, type);
-		if (dateFin != null) {
-			closeAllegementFiscal(af, dateFin);
+		if (dateFin == null) {
+			return openAllegementFiscalCantonal(e, pourcentageAllegement, typeImpot, dateDebut, type);
 		}
-		return af;
+		else {
+			return openAndCloseAllegementFiscalCantonal(e, pourcentageAllegement, typeImpot, dateDebut, dateFin, type);
+		}
 	}
 
 	@Override
@@ -5426,11 +5427,12 @@ public class TiersServiceImpl implements TiersService {
 			}
 		}
 
-		final AllegementFiscalCommune af = openAllegementFiscalCommunal(e, pourcentageAllegement, typeImpot, noOfsCommune, dateDebut, type);
-		if (dateFin != null) {
-			closeAllegementFiscal(af, dateFin);
+		if (dateFin == null) {
+			return openAllegementFiscalCommunal(e, pourcentageAllegement, typeImpot, noOfsCommune, dateDebut, type);
 		}
-		return af;
+		else {
+			return openAndCloseAllegementFiscalCommunal(e, pourcentageAllegement, typeImpot, noOfsCommune, dateDebut, dateFin, type);
+		}
 	}
 
 	@Override
@@ -5442,11 +5444,12 @@ public class TiersServiceImpl implements TiersService {
 			}
 		}
 
-		final AllegementFiscalConfederation af = openAllegementFiscalFederal(e, pourcentageAllegement, typeImpot, dateDebut, type);
-		if (dateFin != null) {
-			closeAllegementFiscal(af, dateFin);
+		if (dateFin == null) {
+			return openAllegementFiscalFederal(e, pourcentageAllegement, typeImpot, dateDebut, type);
 		}
-		return af;
+		else {
+			return openAndCloseAllegementFiscalFederal(e, pourcentageAllegement, typeImpot, dateDebut, dateFin, type);
+		}
 	}
 
 	@Override
@@ -5455,8 +5458,19 @@ public class TiersServiceImpl implements TiersService {
 	}
 
 	@Override
+	public AllegementFiscalCanton openAndCloseAllegementFiscalCantonal(Entreprise e, @Nullable BigDecimal pourcentageAllegement, AllegementFiscal.TypeImpot typeImpot, RegDate dateDebut, RegDate dateFin, AllegementFiscalCantonCommune.Type type) {
+		return openAndCloseAllegementFiscal(e, new AllegementFiscalCanton(dateDebut, dateFin, pourcentageAllegement, typeImpot, type));
+	}
+
+	@Override
 	public AllegementFiscalCommune openAllegementFiscalCommunal(Entreprise e, @Nullable BigDecimal pourcentageAllegement, AllegementFiscal.TypeImpot typeImpot, Integer noOfsCommune, RegDate dateDebut, AllegementFiscalCantonCommune.Type type) {
 		return openAllegementFiscal(e, new AllegementFiscalCommune(dateDebut, null, pourcentageAllegement, typeImpot, type, noOfsCommune));
+	}
+
+	@Override
+	public AllegementFiscalCommune openAndCloseAllegementFiscalCommunal(Entreprise e, @Nullable BigDecimal pourcentageAllegement, AllegementFiscal.TypeImpot typeImpot, Integer noOfsCommune, RegDate dateDebut, RegDate dateFin,
+	                                                                    AllegementFiscalCantonCommune.Type type) {
+		return openAndCloseAllegementFiscal(e, new AllegementFiscalCommune(dateDebut, dateFin, pourcentageAllegement, typeImpot, type, noOfsCommune));
 	}
 
 	@Override
@@ -5464,11 +5478,25 @@ public class TiersServiceImpl implements TiersService {
 		return openAllegementFiscal(e, new AllegementFiscalConfederation(dateDebut, null, pourcentageAllegement, typeImpot, type));
 	}
 
+	@Override
+	public AllegementFiscalConfederation openAndCloseAllegementFiscalFederal(Entreprise e, @Nullable BigDecimal pourcentageAllegement, AllegementFiscal.TypeImpot typeImpot, RegDate dateDebut, RegDate dateFin,
+	                                                                         AllegementFiscalConfederation.Type type) {
+		return openAndCloseAllegementFiscal(e, new AllegementFiscalConfederation(dateDebut, dateFin, pourcentageAllegement, typeImpot, type));
+	}
+
 	private <T extends AllegementFiscal> T openAllegementFiscal(Entreprise e, T allegement) {
-		//noinspection unchecked
-		final T af = (T) tiersDAO.addAndSave(e, allegement);
+		final T af = tiersDAO.addAndSave(e, allegement);
 		evenementFiscalService.publierEvenementFiscalOuvertureAllegementFiscal(af);
 		return af;
+	}
+
+	private <T extends AllegementFiscal> T openAndCloseAllegementFiscal(Entreprise e, T allegement) {
+		if (allegement.getDateFin() == null) {
+			throw new IllegalArgumentException("Date de fin doit être assignée pour la clôture...");
+		}
+		final T saved = openAllegementFiscal(e, allegement);
+		closeAllegementFiscal(saved, saved.getDateFin());
+		return saved;
 	}
 
 	@Override

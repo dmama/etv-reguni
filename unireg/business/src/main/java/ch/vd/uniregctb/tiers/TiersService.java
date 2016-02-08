@@ -1659,6 +1659,23 @@ public interface TiersService {
                                                         AllegementFiscalCantonCommune.Type type);
 
     /**
+     * Crée un allègement fiscal cantonal sur l'entreprise passée en paramètre, avec les informations fournies
+     * @param e l'entreprise destinataire
+     * @param pourcentageAllegement le pourcentage d'allègement souhaité (0 -> 100)
+     * @param typeImpot le type d'impôt concerné par l'allègement (<code>null</code> pour "TOUS")
+     * @param dateDebut la date de début de la validité de l'allègement fiscal
+     * @param dateFin la date de fin de la validité de l'allègement fiscal
+     * @param type le type d'allègement ICC
+     * @return l'allègement nouvellement créé
+     */
+    AllegementFiscalCanton openAndCloseAllegementFiscalCantonal(Entreprise e,
+                                                                @Nullable BigDecimal pourcentageAllegement,
+                                                                AllegementFiscal.TypeImpot typeImpot,
+                                                                RegDate dateDebut,
+                                                                RegDate dateFin,
+                                                                AllegementFiscalCantonCommune.Type type);
+
+    /**
      * Crée un allègement fiscal sur l'entreprise passée en paramètre, avec les informations fournies
      * @param e l'entreprise destinataire
      * @param pourcentageAllegement le pourcentage d'allègement souhaité (0 -> 100)
@@ -1680,6 +1697,25 @@ public interface TiersService {
      * @param e l'entreprise destinataire
      * @param pourcentageAllegement le pourcentage d'allègement souhaité (0 -> 100)
      * @param typeImpot le type d'impôt concerné par l'allègement (<code>null</code> pour "TOUS")
+     * @param noOfsCommune le numéro ofs de la commune (vaudoise) (<code>null</code> pour "TOUTES")
+     * @param dateDebut la date de début de la validité de l'allègement fiscal
+     * @param dateFin la date de fin de la validité de l'allègement fiscal
+     * @param type le type d'allègement ICC
+     * @return l'allègement nouvellement créé
+     */
+    AllegementFiscalCommune openAndCloseAllegementFiscalCommunal(Entreprise e,
+                                                                 @Nullable BigDecimal pourcentageAllegement,
+                                                                 AllegementFiscal.TypeImpot typeImpot,
+                                                                 Integer noOfsCommune,
+                                                                 RegDate dateDebut,
+                                                                 RegDate dateFin,
+                                                                 AllegementFiscalCantonCommune.Type type);
+
+    /**
+     * Crée un allègement fiscal sur l'entreprise passée en paramètre, avec les informations fournies
+     * @param e l'entreprise destinataire
+     * @param pourcentageAllegement le pourcentage d'allègement souhaité (0 -> 100)
+     * @param typeImpot le type d'impôt concerné par l'allègement (<code>null</code> pour "TOUS")
      * @param dateDebut la date de début de la validité de l'allègement fiscal
      * @param type le type d'allègement IFD
      * @return l'allègement nouvellement créé
@@ -1689,6 +1725,23 @@ public interface TiersService {
                                                               AllegementFiscal.TypeImpot typeImpot,
                                                               RegDate dateDebut,
                                                               AllegementFiscalConfederation.Type type);
+
+    /**
+     * Crée un allègement fiscal sur l'entreprise passée en paramètre, avec les informations fournies
+     * @param e l'entreprise destinataire
+     * @param pourcentageAllegement le pourcentage d'allègement souhaité (0 -> 100)
+     * @param typeImpot le type d'impôt concerné par l'allègement (<code>null</code> pour "TOUS")
+     * @param dateDebut la date de début de la validité de l'allègement fiscal
+     * @param dateFin la date de fin de la validité de l'allègement fiscal
+     * @param type le type d'allègement IFD
+     * @return l'allègement nouvellement créé
+     */
+    AllegementFiscalConfederation openAndCloseAllegementFiscalFederal(Entreprise e,
+                                                                      @Nullable BigDecimal pourcentageAllegement,
+                                                                      AllegementFiscal.TypeImpot typeImpot,
+                                                                      RegDate dateDebut,
+                                                                      RegDate dateFin,
+                                                                      AllegementFiscalConfederation.Type type);
 
 	/**
 	 * Ferme l'allègement fiscal à la date indiquée
