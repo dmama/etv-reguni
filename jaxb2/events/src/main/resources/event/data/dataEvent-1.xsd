@@ -86,6 +86,8 @@
 			<xs:enumeration value="ACTIVITE_ECONOMIQUE"/>
 			<xs:enumeration value="MANDAT"/>
 			<xs:enumeration value="FUSION_ENTREPRISES"/>
+			<xs:enumeration value="ADMINISTRATION_ENTREPRISE"/>
+			<xs:enumeration value="SOCIETE_DIRECTION"/>
 		</xs:restriction>
 	</xs:simpleType>
 
