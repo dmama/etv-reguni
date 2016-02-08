@@ -9,24 +9,18 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import java.io.Serializable;
 
-import org.hibernate.annotations.Parameter;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
-import org.hibernate.annotations.TypeDefs;
 import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.migration.pm.regpm.usertype.BooleanYesNoUserType;
 import ch.vd.uniregctb.migration.pm.regpm.usertype.RegDateUserType;
 
 @Entity
-@Table(name = "SIEGE_ENTREPRISE")
-@TypeDefs({
-		@TypeDef(name = "RegDate", typeClass = RegDateUserType.class),
-		@TypeDef(name = "BooleanYesNo", typeClass = BooleanYesNoUserType.class)
-})
-public class RegpmSiegeEntreprise extends RegpmEntity implements Comparable<RegpmSiegeEntreprise> {
+@Table(name = "SOCIETE_DIRECTION")
+@TypeDef(name = "RegDate", typeClass = RegDateUserType.class)
+public class RegpmSocieteDirection extends RegpmEntity implements Comparable<RegpmSocieteDirection> {
 
 	/**
 	 * Ils ont fait une clé primaire avec le numéro de l'entreprise et un numéro de séquence
@@ -79,7 +73,7 @@ public class RegpmSiegeEntreprise extends RegpmEntity implements Comparable<Regp
 			this.seqNo = seqNo;
 		}
 
-		@Column(name = "FK_ENTPRNO")
+		@Column(name = "FK_D_ENTPRNO")
 		public Long getIdEntreprise() {
 			return idEntreprise;
 		}
@@ -91,12 +85,11 @@ public class RegpmSiegeEntreprise extends RegpmEntity implements Comparable<Regp
 
 	private PK id;
 	private RegDate dateValidite;
-	private boolean rectifiee;
-	private RegpmCommune commune;
-	private Integer noOfsPays;
+	private RegpmEntreprise direction;
+	private RegpmEntreprise fonds;
 
 	@Override
-	public int compareTo(@NotNull RegpmSiegeEntreprise o) {
+	public int compareTo(@NotNull RegpmSocieteDirection o) {
 		int comparison = NullDateBehavior.EARLIEST.compare(dateValidite, o.dateValidite);
 		if (comparison == 0) {
 			comparison = id.compareTo(o.id);
@@ -123,32 +116,23 @@ public class RegpmSiegeEntreprise extends RegpmEntity implements Comparable<Regp
 		this.dateValidite = dateValidite;
 	}
 
-	@Column(name = "RECTIFIEE")
-	@Type(type = "BooleanYesNo", parameters = @Parameter(name = "default", value = "false"))
-	public boolean isRectifiee() {
-		return rectifiee;
+	@ManyToOne
+	@JoinColumn(name = "FK_E_ENTPRNO")
+	public RegpmEntreprise getDirection() {
+		return direction;
 	}
 
-	public void setRectifiee(boolean rectifiee) {
-		this.rectifiee = rectifiee;
+	public void setDirection(RegpmEntreprise direction) {
+		this.direction = direction;
 	}
 
 	@ManyToOne
-	@JoinColumn(name = "FK_COMMUNENO")
-	public RegpmCommune getCommune() {
-		return commune;
+	@JoinColumn(name = "FK_D_ENTPRNO", insertable = false, updatable = false)
+	public RegpmEntreprise getFonds() {
+		return fonds;
 	}
 
-	public void setCommune(RegpmCommune commune) {
-		this.commune = commune;
-	}
-
-	@Column(name = "FK_PAYSNO")
-	public Integer getNoOfsPays() {
-		return noOfsPays;
-	}
-
-	public void setNoOfsPays(Integer noOfsPays) {
-		this.noOfsPays = noOfsPays;
+	public void setFonds(RegpmEntreprise fonds) {
+		this.fonds = fonds;
 	}
 }

@@ -4,8 +4,6 @@ import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import java.io.Serializable;
 
@@ -15,39 +13,43 @@ import org.hibernate.annotations.TypeDef;
 import org.hibernate.annotations.TypeDefs;
 import org.jetbrains.annotations.NotNull;
 
-import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.migration.pm.regpm.usertype.BooleanYesNoUserType;
 import ch.vd.uniregctb.migration.pm.regpm.usertype.RegDateUserType;
 
 @Entity
-@Table(name = "SIEGE_ENTREPRISE")
+@Table(name = "FIN_MANDAT_ADM")
 @TypeDefs({
 		@TypeDef(name = "RegDate", typeClass = RegDateUserType.class),
 		@TypeDef(name = "BooleanYesNo", typeClass = BooleanYesNoUserType.class)
 })
-public class RegpmSiegeEntreprise extends RegpmEntity implements Comparable<RegpmSiegeEntreprise> {
+public class RegpmFinMandatAdministrateur extends RegpmEntity {
 
 	/**
-	 * Ils ont fait une clé primaire avec le numéro de l'entreprise et un numéro de séquence
+	 * Ils ont fait une clé primaire avec le numéro de l'administrateur (= numéro d'individu et numéro de séquence) et un numéro de séquence
 	 */
 	@Embeddable
 	public static class PK implements Serializable, Comparable<PK> {
 
 		private Integer seqNo;
-		private Long idEntreprise;
+		private Long admIdIndividu;
+		private Integer admSeqNo;
 
 		public PK() {
 		}
 
-		public PK(Integer seqNo, Long idEntreprise) {
+		public PK(Integer seqNo, Long admIdIndividu, Integer admSeqNo) {
 			this.seqNo = seqNo;
-			this.idEntreprise = idEntreprise;
+			this.admIdIndividu = admIdIndividu;
+			this.admSeqNo = admSeqNo;
 		}
 
 		@Override
 		public int compareTo(@NotNull PK o) {
-			int comparison = Long.compare(idEntreprise, o.idEntreprise);
+			int comparison = Long.compare(admIdIndividu, o.admIdIndividu);
+			if (comparison == 0) {
+				comparison = admSeqNo - o.admSeqNo;
+			}
 			if (comparison == 0) {
 				comparison = seqNo - o.seqNo;
 			}
@@ -60,13 +62,17 @@ public class RegpmSiegeEntreprise extends RegpmEntity implements Comparable<Regp
 			if (o == null || getClass() != o.getClass()) return false;
 
 			final PK pk = (PK) o;
-			return !(idEntreprise != null ? !idEntreprise.equals(pk.idEntreprise) : pk.idEntreprise != null) && !(seqNo != null ? !seqNo.equals(pk.seqNo) : pk.seqNo != null);
+
+			if (seqNo != null ? !seqNo.equals(pk.seqNo) : pk.seqNo != null) return false;
+			if (admIdIndividu != null ? !admIdIndividu.equals(pk.admIdIndividu) : pk.admIdIndividu != null) return false;
+			return admSeqNo != null ? admSeqNo.equals(pk.admSeqNo) : pk.admSeqNo == null;
 		}
 
 		@Override
 		public int hashCode() {
 			int result = seqNo != null ? seqNo.hashCode() : 0;
-			result = 31 * result + (idEntreprise != null ? idEntreprise.hashCode() : 0);
+			result = 31 * result + (admIdIndividu != null ? admIdIndividu.hashCode() : 0);
+			result = 31 * result + (admSeqNo != null ? admSeqNo.hashCode() : 0);
 			return result;
 		}
 
@@ -79,30 +85,28 @@ public class RegpmSiegeEntreprise extends RegpmEntity implements Comparable<Regp
 			this.seqNo = seqNo;
 		}
 
-		@Column(name = "FK_ENTPRNO")
-		public Long getIdEntreprise() {
-			return idEntreprise;
+		@Column(name = "FK_ADMEURFKIND")
+		public Long getAdmIdIndividu() {
+			return admIdIndividu;
 		}
 
-		public void setIdEntreprise(Long idEntreprise) {
-			this.idEntreprise = idEntreprise;
+		public void setAdmIdIndividu(Long admIdIndividu) {
+			this.admIdIndividu = admIdIndividu;
+		}
+
+		@Column(name = "FK_ADMEURNO")
+		public Integer getAdmSeqNo() {
+			return admSeqNo;
+		}
+
+		public void setAdmSeqNo(Integer admSeqNo) {
+			this.admSeqNo = admSeqNo;
 		}
 	}
 
 	private PK id;
-	private RegDate dateValidite;
+	private RegDate dateFinMandat;
 	private boolean rectifiee;
-	private RegpmCommune commune;
-	private Integer noOfsPays;
-
-	@Override
-	public int compareTo(@NotNull RegpmSiegeEntreprise o) {
-		int comparison = NullDateBehavior.EARLIEST.compare(dateValidite, o.dateValidite);
-		if (comparison == 0) {
-			comparison = id.compareTo(o.id);
-		}
-		return comparison;
-	}
 
 	@EmbeddedId
 	public PK getId() {
@@ -113,14 +117,14 @@ public class RegpmSiegeEntreprise extends RegpmEntity implements Comparable<Regp
 		this.id = id;
 	}
 
-	@Column(name = "DA_VALIDITE")
+	@Column(name = "DAF_FONCTION")
 	@Type(type = "RegDate")
-	public RegDate getDateValidite() {
-		return dateValidite;
+	public RegDate getDateFinMandat() {
+		return dateFinMandat;
 	}
 
-	public void setDateValidite(RegDate dateValidite) {
-		this.dateValidite = dateValidite;
+	public void setDateFinMandat(RegDate dateFinMandat) {
+		this.dateFinMandat = dateFinMandat;
 	}
 
 	@Column(name = "RECTIFIEE")
@@ -131,24 +135,5 @@ public class RegpmSiegeEntreprise extends RegpmEntity implements Comparable<Regp
 
 	public void setRectifiee(boolean rectifiee) {
 		this.rectifiee = rectifiee;
-	}
-
-	@ManyToOne
-	@JoinColumn(name = "FK_COMMUNENO")
-	public RegpmCommune getCommune() {
-		return commune;
-	}
-
-	public void setCommune(RegpmCommune commune) {
-		this.commune = commune;
-	}
-
-	@Column(name = "FK_PAYSNO")
-	public Integer getNoOfsPays() {
-		return noOfsPays;
-	}
-
-	public void setNoOfsPays(Integer noOfsPays) {
-		this.noOfsPays = noOfsPays;
 	}
 }

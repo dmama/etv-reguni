@@ -31,6 +31,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.uniregctb.common.GentilIterator;
 import ch.vd.uniregctb.migration.pm.engine.probe.ProgressMeasurementProbe;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmAdministrateur;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmAppartenanceGroupeProprietaire;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmAssocieSC;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmDossierFiscal;
@@ -47,6 +48,7 @@ import ch.vd.uniregctb.migration.pm.regpm.RegpmLiquidation;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmMandat;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmPrononceFaillite;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmRattachementProprietaire;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmSocieteDirection;
 import ch.vd.uniregctb.migration.pm.regpm.WithLongId;
 import ch.vd.uniregctb.migration.pm.utils.DataLoadHelper;
 
@@ -267,6 +269,7 @@ public class FromDbFeeder implements Feeder, DisposableBean {
 		individu.getCaracteristiques().size();
 		individu.getAdresses().size();
 		individu.getMandants().size();
+		individu.getAdministrations().size();
 	}
 
 	private static void forceLoad(RegpmEntreprise pm, GrapheRecorder graphe) {
@@ -306,6 +309,19 @@ public class FromDbFeeder implements Feeder, DisposableBean {
 				for (RegpmEnvironnementTaxation et : df.getEnvironnementsTaxation()) {
 					et.getDecisionsTaxation().size();
 				}
+			}
+		}
+		{
+			final Set<RegpmSocieteDirection> directions = pm.getDirections();
+			for (RegpmSocieteDirection direction : directions) {
+				forceLoad(direction.getFonds(), graphe);        // normalement, c'est la pm
+				forceLoad(direction.getDirection(), graphe);
+			}
+		}
+		{
+			final Set<RegpmAdministrateur> administrateurs = pm.getAdministrateurs();
+			for (RegpmAdministrateur admin : administrateurs) {
+				forceLoad(admin.getAdministrateur(), graphe);
 			}
 		}
 		{

@@ -227,6 +227,8 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		entreprise.setSieges(new TreeSet<>());
 		entreprise.setNotes(new TreeSet<>());
 		entreprise.setCriteresSegmentation(new HashSet<>());
+		entreprise.setDirections(new TreeSet<>());
+		entreprise.setAdministrateurs(new HashSet<>());
 
 		return entreprise;
 	}

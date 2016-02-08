@@ -5,6 +5,7 @@ import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.TreeSet;
 
 import org.jetbrains.annotations.Nullable;
 import org.junit.Assert;
@@ -74,6 +75,8 @@ public class IndividuMigratorTest extends AbstractEntityMigratorTest {
 		// extraite de la base de données
 		individu.setMandants(new HashSet<>());
 		individu.setAdresses(new HashSet<>());
+		individu.setCaracteristiques(new TreeSet<>());
+		individu.setAdministrations(new HashSet<>());
 
 		return individu;
 	}
