@@ -2,7 +2,7 @@ package ch.vd.uniregctb.migration.pm;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.util.HashSet;
+import java.util.Collections;
 
 import org.hibernate.SessionFactory;
 import org.junit.Assert;
@@ -19,8 +19,7 @@ public class FromDbFeederTest extends AbstractSpringTest {
 		super.onSetup();
 
 		feeder = new FromDbFeeder();
-		feeder.setIdsEntreprisesDejaMigrees(new HashSet<>());
-		feeder.setMode(MigrationMode.DUMP);
+		feeder.setIdsEntreprisesDejaMigrees(Collections.emptySet());
 		feeder.setNomFichierIdentifiantsAExtraire(null);
 		feeder.setRegpmTransactionManager(getBean(PlatformTransactionManager.class, "regpmTransactionManager"));
 		feeder.setSessionFactory(getBean(SessionFactory.class, "regpmSessionFactory"));

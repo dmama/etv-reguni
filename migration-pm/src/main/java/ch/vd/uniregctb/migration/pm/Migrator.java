@@ -9,16 +9,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.SmartLifecycle;
 
-import ch.vd.uniregctb.migration.pm.engine.MigrationWorker;
-
 public class Migrator implements SmartLifecycle, MigrationInitializationRegistrar {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(Migrator.class);
 
 	private MigrationMode mode;
-	private FromDbFeeder fromDbFeeder;
-	private SerializationIntermediary serializationIntermediary;
-	private MigrationWorker migrationWorker;
+	private Feeder feeder;
+	private Worker worker;
 	private boolean enabled = true;
 
 	private final List<Runnable> initCallbacks = new LinkedList<>();
@@ -29,16 +26,12 @@ public class Migrator implements SmartLifecycle, MigrationInitializationRegistra
 		this.mode = mode;
 	}
 
-	public void setFromDbFeeder(FromDbFeeder fromDbFeeder) {
-		this.fromDbFeeder = fromDbFeeder;
+	public void setFeeder(Feeder feeder) {
+		this.feeder = feeder;
 	}
 
-	public void setSerializationIntermediary(SerializationIntermediary serializationIntermediary) {
-		this.serializationIntermediary = serializationIntermediary;
-	}
-
-	public void setMigrationWorker(MigrationWorker migrationWorker) {
-		this.migrationWorker = migrationWorker;
+	public void setWorker(Worker worker) {
+		this.worker = worker;
 	}
 
 	public void setEnabled(boolean enabled) {
@@ -102,22 +95,19 @@ public class Migrator implements SmartLifecycle, MigrationInitializationRegistra
 					}
 					catch (Exception e) {
 						// on va sortir, il faut dire au worker de s'arrêter...
-						migrationWorker.feedingOver();
+						worker.feedingOver();
 						throw e;
 					}
 				}
 			}
 
-			if (mode != MigrationMode.NOOP) {
-				final Feeder feeder = mode == MigrationMode.FROM_DUMP ? serializationIntermediary : fromDbFeeder;
-				final Worker worker = mode == MigrationMode.DUMP ? serializationIntermediary : migrationWorker;
-
-				try {
+			try {
+				if (mode != MigrationMode.NOOP) {
 					feeder.feed(worker);
 				}
-				finally {
-					worker.feedingOver();
-				}
+			}
+			finally {
+				worker.feedingOver();
 			}
 		}
 		catch (Throwable e) {

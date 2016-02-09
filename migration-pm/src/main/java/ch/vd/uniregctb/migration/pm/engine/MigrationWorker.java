@@ -29,7 +29,6 @@ import org.springframework.beans.factory.InitializingBean;
 import ch.vd.uniregctb.common.DefaultThreadFactory;
 import ch.vd.uniregctb.common.DefaultThreadNameGenerator;
 import ch.vd.uniregctb.migration.pm.Graphe;
-import ch.vd.uniregctb.migration.pm.MigrationMode;
 import ch.vd.uniregctb.migration.pm.Worker;
 import ch.vd.uniregctb.migration.pm.log.LogCategory;
 import ch.vd.uniregctb.migration.pm.log.LogLevel;
@@ -55,7 +54,6 @@ public class MigrationWorker implements Worker, InitializingBean, DisposableBean
 	private CompletionService<LoggedMessages> completionService;
 	private GatheringThread gatheringThread;
 
-	private MigrationMode mode;
 	private GrapheMigrator grapheMigrator;
 	private int nbThreads = 1;
 	private GrapheHelper grapheHelper;
@@ -128,10 +126,6 @@ public class MigrationWorker implements Worker, InitializingBean, DisposableBean
 		return t.getClass().getName() + ": " + ExceptionUtils.getStackTrace(t);
 	}
 
-	public void setMode(MigrationMode mode) {
-		this.mode = mode;
-	}
-
 	public void setGrapheMigrator(GrapheMigrator grapheMigrator) {
 		this.grapheMigrator = grapheMigrator;
 	}
@@ -154,9 +148,7 @@ public class MigrationWorker implements Worker, InitializingBean, DisposableBean
 
 		this.completionService = new ExecutorCompletionService<>(this.executor);
 		this.gatheringThread = new GatheringThread();
-		if (this.mode == MigrationMode.FROM_DUMP || this.mode == MigrationMode.DIRECT) {
-			this.gatheringThread.start();
-		}
+		this.gatheringThread.start();
 	}
 
 	@Override

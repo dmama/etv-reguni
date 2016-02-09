@@ -63,7 +63,6 @@ public class FromDbFeeder implements Feeder, DisposableBean {
 	private SessionFactory sessionFactory;
 	private Set<Long> idsEntreprisesDejaMigrees;
 	private String nomFichierIdentifiantsAExtraire;
-	private MigrationMode mode;
 	private volatile boolean shutdownInProgress = false;
 	private ProgressMeasurementProbe progressMonitor;
 
@@ -420,10 +419,6 @@ public class FromDbFeeder implements Feeder, DisposableBean {
 		this.nomFichierIdentifiantsAExtraire = StringUtils.trimToNull(nomFichierIdentifiantsAExtraire);
 	}
 
-	public void setMode(MigrationMode mode) {
-		this.mode = mode;
-	}
-
 	public void setProgressMonitor(ProgressMeasurementProbe progressMonitor) {
 		this.progressMonitor = progressMonitor;
 	}
@@ -442,10 +437,7 @@ public class FromDbFeeder implements Feeder, DisposableBean {
 
 		// container des identifiants des entreprises déjà traitées (dans un graphe précédent ou même carrément déjà migrées)
 		final Set<Long> idsDejaTrouvees = new HashSet<>(ids.size());
-		if (mode != MigrationMode.DUMP) {
-			// en mode DUMP, on ne fait pas attention à ce qu'il y a déja en base de destination...
-			idsDejaTrouvees.addAll(idsEntreprisesDejaMigrees);
-		}
+		idsDejaTrouvees.addAll(idsEntreprisesDejaMigrees);
 
 		// boucle sur les identifiants d'entreprise trouvés et envoi vers le worker
 		final GentilIterator<Long> idIterator = new GentilIterator<>(ids);

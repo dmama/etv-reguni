@@ -56,6 +56,7 @@ import ch.vd.uniregctb.common.AuthenticationHelper;
 		"classpath:spring/validation.xml",
 		"classpath:spring/interfaces.xml",
 		"classpath:spring/migration.xml",
+		"classpath:spring/migration-direct.xml",
 		"classpath:spring/services.xml",
 		"classpath:spring/ut-database.xml",
 		"classpath:spring/ut-properties.xml",

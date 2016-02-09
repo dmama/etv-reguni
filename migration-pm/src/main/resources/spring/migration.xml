@@ -3,34 +3,10 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans	http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
 
-	<bean id="migrationProgressMeasurement" class="ch.vd.uniregctb.migration.pm.engine.probe.ProgressMeasurementProbeImpl"/>
-	<bean id="indexationProgressMeasurement" class="ch.vd.uniregctb.migration.pm.engine.probe.ProgressMeasurementProbeImpl"/>
-
-	<bean id="migrator" class="ch.vd.uniregctb.migration.pm.Migrator">
-		<property name="mode" value="${migration.mode}"/>
-		<property name="fromDbFeeder" ref="fromDbFeeder"/>
-		<property name="serializationIntermediary" ref="serializationIntermediary"/>
-		<property name="migrationWorker" ref="migrationWorker"/>
-		<property name="enabled" value="${migrator.enabled}"/>
-	</bean>
-
-	<bean id="alreadyMigratedEntrepriseIds" class="ch.vd.uniregctb.migration.pm.mapping.AlreadyMigratedEntrepriseListFactory">
-		<property name="uniregTransactionManager" ref="uniregTransactionManager"/>
-		<property name="uniregSessionFactory" ref="uniregSessionFactory"/>
-	</bean>
-
-	<bean id="fromDbFeeder" class="ch.vd.uniregctb.migration.pm.FromDbFeeder">
-		<property name="regpmTransactionManager" ref="regpmTransactionManager"/>
-		<property name="sessionFactory" ref="regpmSessionFactory"/>
-		<property name="idsEntreprisesDejaMigrees" ref="alreadyMigratedEntrepriseIds"/>
-		<property name="nomFichierIdentifiantsAExtraire" value="${migration.test.extracted.pm.file}"/>
-		<property name="mode" value="${migration.mode}"/>
-		<property name="progressMonitor" ref="migrationProgressMeasurement"/>
-	</bean>
-
-	<bean id="serializationIntermediary" class="ch.vd.uniregctb.migration.pm.SerializationIntermediary">
-		<property name="fsDirectory" value="${migration.dump.dir}"/>
-		<property name="progressMonitor" ref="migrationProgressMeasurement"/>
+	<bean id="migrationWorker" class="ch.vd.uniregctb.migration.pm.engine.MigrationWorker">
+		<property name="nbThreads" value="${migrator.threads.nb}"/>
+		<property name="grapheMigrator" ref="grapheMigrator"/>
+		<property name="grapheHelper" ref="grapheHelper"/>
 	</bean>
 
 	<bean id="grapheHelper" class="ch.vd.uniregctb.migration.pm.utils.GrapheHelper">
@@ -73,15 +49,8 @@
 		<constructor-arg name="frequencePriseEnCompteIdCantonal" value="${rcent.frqPriseEnCompte}"/>
 	</bean>
 
-	<bean id="migrationWorker" class="ch.vd.uniregctb.migration.pm.engine.MigrationWorker">
-		<property name="mode" value="${migration.mode}"/>
-		<property name="nbThreads" value="${migrator.threads.nb}"/>
-		<property name="grapheMigrator" ref="grapheMigrator"/>
-		<property name="grapheHelper" ref="grapheHelper"/>
-	</bean>
-
 	<bean id="entityMigrator" abstract="true" class="ch.vd.uniregctb.migration.pm.engine.AbstractEntityMigrator">
-        <constructor-arg name="migrationContexte" ref="migrationContexte"/>
+		<constructor-arg name="migrationContexte" ref="migrationContexte"/>
 	</bean>
 
 	<bean id="entrepriseMigrator" class="ch.vd.uniregctb.migration.pm.engine.EntrepriseMigrator" parent="entityMigrator"/>
@@ -89,8 +58,8 @@
 	<bean id="individuMigrator" class="ch.vd.uniregctb.migration.pm.engine.IndividuMigrator" parent="entityMigrator"/>
 
 	<bean id="adresseHelper" class="ch.vd.uniregctb.migration.pm.engine.helpers.AdresseHelper">
-        <constructor-arg name="streetDataMigrator" ref="streetDataMigrator"/>
-    </bean>
+		<constructor-arg name="streetDataMigrator" ref="streetDataMigrator"/>
+	</bean>
 
 	<bean id="noOrdrePosteProvider" class="ch.vd.uniregctb.migration.pm.adresse.NoOrdrePosteProvider">
 		<constructor-arg value="${mapping.noOrdreP.file}"/>
