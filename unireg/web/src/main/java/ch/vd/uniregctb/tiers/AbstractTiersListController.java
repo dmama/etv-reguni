@@ -61,6 +61,7 @@ public abstract class AbstractTiersListController extends AbstractTiersControlle
 
 		// le critère de recherche sur la date de naissance peut être une date partielle
 		binder.registerCustomEditor(RegDate.class, "dateNaissance", new RegDateEditor(true, true, false));
+		binder.registerCustomEditor(RegDate.class, "dateNaissanceInscriptionRC", new RegDateEditor(true, true, false));
 	}
 
 	protected ModelAndView showFormForList(	HttpServletRequest request, HttpServletResponse response, BindException errors, Map<?, ?> model,

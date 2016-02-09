@@ -79,7 +79,7 @@ public class AnnulationDecesController {
 	@InitBinder(ANNULATION_DECES_CRITERIA)
 	public void initBinder(WebDataBinder binder) {
 		binder.setValidator(validator);
-		binder.registerCustomEditor(RegDate.class, "dateNaissance", new RegDateEditor(true, true, false));
+		binder.registerCustomEditor(RegDate.class, "dateNaissanceInscriptionRC", new RegDateEditor(true, true, false));
 		binder.registerCustomEditor(String.class, "numeroAVS", new PropertyEditorSupport() {
 			@Override
 			public void setAsText(String text) {
