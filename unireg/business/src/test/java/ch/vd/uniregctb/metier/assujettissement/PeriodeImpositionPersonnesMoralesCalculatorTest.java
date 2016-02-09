@@ -1055,4 +1055,35 @@ public class PeriodeImpositionPersonnesMoralesCalculatorTest extends MetierTest 
 		assertPeriodeImpositionPersonnesMorales(date(2014, 2, 1), date(2015, 1, 31), false, TypeContribuable.VAUDOIS_ORDINAIRE, false, false, false, periodes.get(1));
 		assertPeriodeImpositionPersonnesMorales(date(2015, 2, 1), dateFinFor, false, TypeContribuable.VAUDOIS_ORDINAIRE, false, false, false, periodes.get(2));
 	}
+
+	/**
+	 * Si le motif d'ouverture du premier for (VD) est ARRIVEE_HC, et que la date de début du premier exercice commercial
+	 * est antérieure à l'ouverture de ce premier for, la période d'imposition de l'arrivée HC commence bien avant l'arrivée
+	 * (= à la date du premier exercice commercial)
+	 */
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testCasPremiereArriveeHorsCantonEnCoursExerciceCommercial() throws Exception {
+
+		final RegDate dateDebutExerciceCommercial = date(2013, 4, 1);
+		final RegDate dateArriveeHorsCanton = date(2013, 6, 15);
+		final RegDate dateFinFor = date(2016, 1, 31);
+
+		final Entreprise e = addEntrepriseInconnueAuCivil();
+		addRaisonSociale(e, dateArriveeHorsCanton, null, "Toto SA");
+		addFormeJuridique(e, dateArriveeHorsCanton, null, FormeJuridiqueEntreprise.SA);
+		addRegimeFiscalVD(e, dateArriveeHorsCanton, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+		addRegimeFiscalCH(e, dateArriveeHorsCanton, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+		addForPrincipal(e, dateArriveeHorsCanton, MotifFor.ARRIVEE_HC, dateFinFor, MotifFor.FIN_EXPLOITATION, MockCommune.Bussigny);
+		addBouclement(e, date(2013, 12, 1), DayMonth.get(12, 31), 12);          // bouclement tous les 31.12 depuis le 31.12.2013
+		e.setDateDebutPremierExerciceCommercial(dateDebutExerciceCommercial);
+
+		final List<PeriodeImposition> periodes = determine(e);
+		Assert.assertNotNull(periodes);
+		Assert.assertEquals(4, periodes.size());
+		assertPeriodeImpositionPersonnesMorales(dateDebutExerciceCommercial, date(2013, 12, 31), false, TypeContribuable.VAUDOIS_ORDINAIRE, false, false, false, periodes.get(0));
+		assertPeriodeImpositionPersonnesMorales(date(2014, 1, 1), date(2014, 12, 31), false, TypeContribuable.VAUDOIS_ORDINAIRE, false, false, false, periodes.get(1));
+		assertPeriodeImpositionPersonnesMorales(date(2015, 1, 1), date(2015, 12, 31), false, TypeContribuable.VAUDOIS_ORDINAIRE, false, false, false, periodes.get(2));
+		assertPeriodeImpositionPersonnesMorales(date(2016, 1, 1), dateFinFor, false, TypeContribuable.VAUDOIS_ORDINAIRE, false, false, false, periodes.get(3));
+	}
 }

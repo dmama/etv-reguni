@@ -256,4 +256,194 @@ public class TacheSynchronizerInterceptorTest extends BusinessTest {
 			}
 		});
 	}
+
+	/**
+	 * [SIFISC-17927] Si on demande un recalcul des tâches après avoir changé la date de début du premier exercice commercial
+	 * à avant la date d'ouverture du premier for (VD) ouvert pour arrivée HC, alors la période d'imposition attachée à la tâche
+	 * d'envoi de DI doit être mise-à-jour
+	 */
+	@Test
+	public void testRecalculTacheEnvoiDIApresChangementDateDebutExerciceCommercialArriveeHC() throws Exception {
+
+		final RegDate dateDebutPremierExerciceCommercial = date(2014, 1, 14);       // véritable date de création HC, en fait
+		final RegDate dateArriveeHC = date(2014, 4, 1);
+		final RegDate dateFin = date(2014, 12, 31);
+
+		// création d'une entreprise avec une tâche d'envoi de DI dans laquelle la catégorie d'entreprise n'est pas la bonne
+		final long idpm = doInNewTransactionAndSessionUnderSwitch(tacheSynchronizer, false, new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
+				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+				addRaisonSociale(entreprise, dateArriveeHC, null, "Truc machin SA");
+				addFormeJuridique(entreprise, dateArriveeHC, null, FormeJuridiqueEntreprise.SA);
+				addBouclement(entreprise, dateArriveeHC, DayMonth.get(12, 31), 12);
+				addRegimeFiscalVD(entreprise, dateArriveeHC, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addRegimeFiscalCH(entreprise, dateArriveeHC, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addForPrincipal(entreprise, dateArriveeHC, MotifFor.ARRIVEE_HC, dateFin, MotifFor.FIN_EXPLOITATION, MockCommune.Aubonne);
+
+				// la tâche débute à une date qui n'est a priori pas la bonne (correspond à l'arrivée hors-canton, alors que l'exercice commercial avait peut-être déjà commencé - sauf
+				// qu'on ne le sait pas encore...)
+				addTacheEnvoiDIPM(TypeEtatTache.EN_INSTANCE, null, dateArriveeHC, dateFin, dateArriveeHC, dateFin, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_PM, entreprise, CategorieEntreprise.PM, oipm);
+				return entreprise.getNumero();
+			}
+		});
+
+		// modification de la date de début de l'exercice commercial
+		doInNewTransactionAndSessionUnderSwitch(tacheSynchronizer, true, new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				// vérification de la tâche existante
+				final List<Tache> taches = tacheDAO.find(idpm);
+				assertEquals(1, taches.size());
+				final Tache tache = taches.get(0);
+				assertNotNull(tache);
+				assertEquals(TypeEtatTache.EN_INSTANCE, tache.getEtat());
+				assertFalse(tache.isAnnule());
+				assertInstanceOf(TacheEnvoiDeclarationImpotPM.class, tache);
+				assertEquals(dateArriveeHC, ((TacheEnvoiDeclarationImpotPM) tache).getDateDebut());
+
+				// ok, maintenant, on connait la date de début de l'exercice commercial HC
+				final Entreprise e = (Entreprise) tache.getContribuable();
+				e.setDateDebutPremierExerciceCommercial(dateDebutPremierExerciceCommercial);
+
+				// et le flush de la session va causer un recalcul des tâches
+			}
+		});
+
+		// normalement, la synchronisation a été lancée et a tout corrigé
+		// (comme la période d'imposition a changé, on se trouve face à une annulation/re-création de tâche)
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final List<Tache> taches = tacheDAO.find(idpm);
+				assertNotNull(taches);
+				assertEquals(2, taches.size());     // l'ancienne tâche annulée et la nouvelle, triées par id croissant
+
+				{
+					final Tache tache = taches.get(0);
+					assertNotNull(tache);
+					assertInstanceOf(TacheEnvoiDeclarationImpotPM.class, tache);
+					assertEquals(TypeEtatTache.EN_INSTANCE, tache.getEtat());
+					assertTrue(tache.isAnnule());
+
+					final TacheEnvoiDeclarationImpotPM tacheEnvoi = (TacheEnvoiDeclarationImpotPM) tache;
+					assertEquals(dateArriveeHC, tacheEnvoi.getDateDebut());
+					assertEquals(dateFin, tacheEnvoi.getDateFin());
+					assertEquals(dateArriveeHC, tacheEnvoi.getDateDebutExercice());
+					assertEquals(dateFin, tacheEnvoi.getDateFinExercice());
+					assertEquals(TypeDocument.DECLARATION_IMPOT_PM, tacheEnvoi.getTypeDocument());
+					assertEquals(TypeContribuable.VAUDOIS_ORDINAIRE, tacheEnvoi.getTypeContribuable());
+					assertEquals(CategorieEntreprise.PM, tacheEnvoi.getCategorieEntreprise());
+				}
+				{
+					final Tache tache = taches.get(1);
+					assertNotNull(tache);
+					assertInstanceOf(TacheEnvoiDeclarationImpotPM.class, tache);
+					assertEquals(TypeEtatTache.EN_INSTANCE, tache.getEtat());
+					assertFalse(tache.isAnnule());
+
+					final TacheEnvoiDeclarationImpotPM tacheEnvoi = (TacheEnvoiDeclarationImpotPM) tache;
+					assertEquals(dateDebutPremierExerciceCommercial, tacheEnvoi.getDateDebut());
+					assertEquals(dateFin, tacheEnvoi.getDateFin());
+					assertEquals(dateDebutPremierExerciceCommercial, tacheEnvoi.getDateDebutExercice());
+					assertEquals(dateFin, tacheEnvoi.getDateFinExercice());
+					assertEquals(TypeDocument.DECLARATION_IMPOT_PM, tacheEnvoi.getTypeDocument());
+					assertEquals(TypeContribuable.VAUDOIS_ORDINAIRE, tacheEnvoi.getTypeContribuable());
+					assertEquals(CategorieEntreprise.PM, tacheEnvoi.getCategorieEntreprise());
+				}
+			}
+		});
+	}
+
+	/**
+	 * [SIFISC-17927] Si on demande un recalcul des tâches après avoir changé la date de début du premier exercice commercial
+	 * à avant la date d'ouverture du premier for (VD) ouvert pour autre chose que arrivée HC, alors la période d'imposition attachée à la tâche
+	 * d'envoi de DI n'est pas mise-à-jour (mais l'exercice commercial rattaché, oui...)
+	 */
+	@Test
+	public void testRecalculTacheEnvoiDIApresChangementDateDebutExerciceCommercialNonArriveeHC() throws Exception {
+
+		final RegDate dateDebutPremierExerciceCommercial = date(2014, 1, 14);       // véritable date de création HC, en fait
+		final RegDate dateArriveeHC = date(2014, 4, 1);
+		final RegDate dateFin = date(2014, 12, 31);
+
+		// création d'une entreprise avec une tâche d'envoi de DI dans laquelle la catégorie d'entreprise n'est pas la bonne
+		final long idpm = doInNewTransactionAndSessionUnderSwitch(tacheSynchronizer, false, new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
+				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+				addRaisonSociale(entreprise, dateArriveeHC, null, "Truc machin SA");
+				addFormeJuridique(entreprise, dateArriveeHC, null, FormeJuridiqueEntreprise.SA);
+				addBouclement(entreprise, dateArriveeHC, DayMonth.get(12, 31), 12);
+				addRegimeFiscalVD(entreprise, dateArriveeHC, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addRegimeFiscalCH(entreprise, dateArriveeHC, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addForPrincipal(entreprise, dateArriveeHC, MotifFor.DEBUT_EXPLOITATION, dateFin, MotifFor.FIN_EXPLOITATION, MockCommune.Aubonne);       // le motif est faux...
+
+				// la tâche débute à une date qui n'est a priori pas la bonne (correspond à l'arrivée hors-canton, alors que l'exercice commercial avait peut-être déjà commencé - sauf
+				// qu'on ne le sait pas encore...)
+				addTacheEnvoiDIPM(TypeEtatTache.EN_INSTANCE, null, dateArriveeHC, dateFin, dateArriveeHC, dateFin, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_PM, entreprise, CategorieEntreprise.PM, oipm);
+				return entreprise.getNumero();
+			}
+		});
+
+		// modification de la date de début de l'exercice commercial
+		doInNewTransactionAndSessionUnderSwitch(tacheSynchronizer, true, new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				// vérification de la tâche existante
+				final List<Tache> taches = tacheDAO.find(idpm);
+				assertEquals(1, taches.size());
+				final Tache tache = taches.get(0);
+				assertNotNull(tache);
+				assertEquals(TypeEtatTache.EN_INSTANCE, tache.getEtat());
+				assertFalse(tache.isAnnule());
+				assertInstanceOf(TacheEnvoiDeclarationImpotPM.class, tache);
+
+				final TacheEnvoiDeclarationImpotPM tacheEnvoi = (TacheEnvoiDeclarationImpotPM) tache;
+				assertEquals(dateArriveeHC, tacheEnvoi.getDateDebut());
+				assertEquals(dateFin, tacheEnvoi.getDateFin());
+				assertEquals(dateArriveeHC, tacheEnvoi.getDateDebutExercice());
+				assertEquals(dateFin, tacheEnvoi.getDateFinExercice());
+				assertEquals(TypeDocument.DECLARATION_IMPOT_PM, tacheEnvoi.getTypeDocument());
+				assertEquals(TypeContribuable.VAUDOIS_ORDINAIRE, tacheEnvoi.getTypeContribuable());
+				assertEquals(CategorieEntreprise.PM, tacheEnvoi.getCategorieEntreprise());
+
+				// ok, maintenant, on connait la date de début de l'exercice commercial HC
+				final Entreprise e = (Entreprise) tache.getContribuable();
+				e.setDateDebutPremierExerciceCommercial(dateDebutPremierExerciceCommercial);
+
+				// et le flush de la session va causer un recalcul des tâches
+			}
+		});
+
+		// normalement, la synchronisation a été lancée et a corrigé la date de début de l'exercice commercial dans la tâche existante
+		// (la période d'imposition, en revanche, ne change pas)
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final List<Tache> taches = tacheDAO.find(idpm);
+				assertNotNull(taches);
+				assertEquals(1, taches.size());     // la tâche a été modifiée en place
+
+				{
+					final Tache tache = taches.get(0);
+					assertNotNull(tache);
+					assertInstanceOf(TacheEnvoiDeclarationImpotPM.class, tache);
+					assertEquals(TypeEtatTache.EN_INSTANCE, tache.getEtat());
+					assertFalse(tache.isAnnule());
+
+					final TacheEnvoiDeclarationImpotPM tacheEnvoi = (TacheEnvoiDeclarationImpotPM) tache;
+					assertEquals(dateArriveeHC, tacheEnvoi.getDateDebut());
+					assertEquals(dateFin, tacheEnvoi.getDateFin());
+					assertEquals(dateDebutPremierExerciceCommercial, tacheEnvoi.getDateDebutExercice());
+					assertEquals(dateFin, tacheEnvoi.getDateFinExercice());
+					assertEquals(TypeDocument.DECLARATION_IMPOT_PM, tacheEnvoi.getTypeDocument());
+					assertEquals(TypeContribuable.VAUDOIS_ORDINAIRE, tacheEnvoi.getTypeContribuable());
+					assertEquals(CategorieEntreprise.PM, tacheEnvoi.getCategorieEntreprise());
+				}
+			}
+		});
+	}
 }
