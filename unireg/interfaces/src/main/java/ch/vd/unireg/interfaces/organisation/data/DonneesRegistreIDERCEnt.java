@@ -3,8 +3,6 @@ package ch.vd.unireg.interfaces.organisation.data;
 import java.io.Serializable;
 import java.util.List;
 
-import org.jetbrains.annotations.NotNull;
-
 import ch.vd.registre.base.date.RegDate;
 
 /**
@@ -17,7 +15,6 @@ public class DonneesRegistreIDERCEnt implements DonneesRegistreIDE, Serializable
 
 	private static final long serialVersionUID = -6444917918127810542L;
 
-	@NotNull
 	private final List<DateRanged<StatusRegistreIDE>> status;
 	private final List<DateRanged<TypeOrganisationRegistreIDE>> typeOrganisation;
 	private final List<AdresseRCEnt> adresseEffective;
@@ -52,7 +49,6 @@ public class DonneesRegistreIDERCEnt implements DonneesRegistreIDE, Serializable
 	}
 
 	@Override
-	@NotNull
 	public List<DateRanged<StatusRegistreIDE>> getStatus() {
 		return status;
 	}
