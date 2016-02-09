@@ -55,6 +55,7 @@
 		<property name="securityProvider" ref="securityProviderInterface"/>
 		<property name="parametreAppService" ref="parametreAppService"/>
 		<property name="bouclementService" ref="bouclementService"/>
+		<property name="hibernateTemplate" ref="hibernateTemplate"/>
 	</bean>
 
 </beans>

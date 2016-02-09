@@ -38,6 +38,7 @@ import ch.vd.uniregctb.common.Flash;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePM;
+import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.metier.bouclement.BouclementService;
 import ch.vd.uniregctb.metier.bouclement.ExerciceCommercial;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
@@ -60,6 +61,7 @@ public class ExerciceCommercialController {
 	private ControllerUtils controllerUtils;
 	private ParametreAppService parametreAppService;
 	private BouclementService bouclementService;
+	private HibernateTemplate hibernateTemplate;
 
 	public void setTiersService(TiersService tiersService) {
 		this.tiersService = tiersService;
@@ -83,6 +85,10 @@ public class ExerciceCommercialController {
 
 	public void setBouclementService(BouclementService bouclementService) {
 		this.bouclementService = bouclementService;
+	}
+
+	public void setHibernateTemplate(HibernateTemplate hibernateTemplate) {
+		this.hibernateTemplate = hibernateTemplate;
 	}
 
 	@InitBinder
@@ -199,6 +205,10 @@ public class ExerciceCommercialController {
 		// les autres problèmes seront détectés à la validation de l'entreprise...
 		entreprise.setDateDebutPremierExerciceCommercial(view.getNouvelleDate());
 
+		// ... validation que l'on lance maintenant explicitement avec un flush
+		hibernateTemplate.flush();
+
+		// si on est ici, c'est que la validation s'est bien passée
 		Flash.message(String.format("Date de début du premier exercice commercial déplacée %s au %s.", RegDateHelper.dateToDisplayString(view.getAncienneDate()), RegDateHelper.dateToDisplayString(view.getNouvelleDate())), 4000);
 		return "redirect:/exercices/edit.do?pmId=" + view.getPmId();
 	}
@@ -315,6 +325,10 @@ public class ExerciceCommercialController {
 			}
 		}
 
+		// forçons une validation du tout
+		hibernateTemplate.flush();
+
+		// si on est ici, c'est que la validation s'est bien passée
 		Flash.message(String.format("Bouclement du %s déplacé au %s.", RegDateHelper.dateToDisplayString(view.getAncienneDate()), RegDateHelper.dateToDisplayString(view.getNouvelleDate())), 4000);
 		return "redirect:/exercices/edit.do?pmId=" + view.getPmId();
 	}
