@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.EnumMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -14,6 +15,7 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang3.mutable.Mutable;
 import org.apache.commons.lang3.mutable.MutableLong;
@@ -5834,6 +5836,197 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 			Assert.assertEquals(RegDate.get(dateDebut.year(), 12, 1), bouclement.getDateDebut());       // dès 2015, donc...
 			Assert.assertEquals(DayMonth.get(12, 31), bouclement.getAncrage());
 			Assert.assertEquals(12, bouclement.getPeriodeMois());
+		});
+	}
+
+	@Test
+	public void testFlagsEntreprise() throws Exception {
+
+		final long noEntreprise = 74984L;
+		final RegpmEntreprise e = buildEntreprise(noEntreprise);
+		final RegDate dateDebut = RegDate.get(2010, 5, 1);
+
+		addRaisonSociale(e, dateDebut, "Toto SA", null, null, true);
+		addFormeJuridique(e, dateDebut, createTypeFormeJuridique("S.A.", RegpmCategoriePersonneMorale.PM));
+		addForPrincipalSuisse(e, dateDebut, RegpmTypeForPrincipal.SIEGE, Commune.ECHALLENS);
+		addRegimeFiscalVD(e, dateDebut, null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
+		addRegimeFiscalVD(e, dateDebut.addMonths(2), null, RegpmTypeRegimeFiscal._20_SOCIETE_DE_SERVICES);
+		addRegimeFiscalVD(e, dateDebut.addMonths(4), null, RegpmTypeRegimeFiscal._31_SOCIETE_ORDINAIRE);
+		addRegimeFiscalVD(e, dateDebut.addMonths(6), null, RegpmTypeRegimeFiscal._32_SOCIETE_ORDINAIRE_SUBVENTION);
+		addRegimeFiscalVD(e, dateDebut.addMonths(8), null, RegpmTypeRegimeFiscal._33_SOCIETE_ORDINAIRE_CARACTERE_SOCIAL);
+		addRegimeFiscalVD(e, dateDebut.addMonths(10), null, RegpmTypeRegimeFiscal._35_SOCIETE_ORDINAIRE_SIAL);
+		addRegimeFiscalVD(e, dateDebut.addMonths(12), null, RegpmTypeRegimeFiscal._7020_SERVICES_ASSOCIATION_FONDATION);
+		addRegimeFiscalVD(e, dateDebut.addMonths(14), null, RegpmTypeRegimeFiscal._7032_APM_SI_SUBVENTIONNEE);
+		addRegimeFiscalVD(e, dateDebut.addMonths(16), null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
+		addRegimeFiscalCH(e, dateDebut, null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
+		addRegimeFiscalCH(e, dateDebut.addMonths(16), null, RegpmTypeRegimeFiscal._20_SOCIETE_DE_SERVICES);
+		addRegimeFiscalCH(e, dateDebut.addMonths(18), null, RegpmTypeRegimeFiscal._31_SOCIETE_ORDINAIRE);
+		addRegimeFiscalCH(e, dateDebut.addMonths(20), null, RegpmTypeRegimeFiscal._7020_SERVICES_ASSOCIATION_FONDATION);
+		addRegimeFiscalCH(e, dateDebut.addMonths(22), null, RegpmTypeRegimeFiscal._7032_APM_SI_SUBVENTIONNEE);
+		addAssujettissement(e, dateDebut, null, RegpmTypeAssujettissement.LILIC);
+
+		final MockGraphe graphe = new MockGraphe(Collections.singletonList(e),
+		                                         null,
+		                                         null);
+		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
+		final EntityLinkCollector linkCollector = new EntityLinkCollector();
+		final IdMapper idMapper = new IdMapper();
+		migrator.initMigrationResult(mr, idMapper);
+		migrate(e, migrator, mr, linkCollector, idMapper);
+
+		// vérification des flags migrés sur l'entreprise
+		doInUniregTransaction(true, status -> {
+			final Entreprise entreprise = uniregStore.getEntityFromDb(Entreprise.class, noEntreprise);
+			Assert.assertNotNull(entreprise);
+
+			final List<FlagEntreprise> flags = entreprise.getFlags().stream()
+					.peek(flag -> {
+						if (flag.isAnnule()) {
+							Assert.fail("Aucun flag ne devrait être généré annulé!");
+						}
+					})
+					.sorted(DateRangeComparator::compareRanges)
+					.collect(Collectors.toList());
+			Assert.assertEquals(11, flags.size());
+			{
+				final FlagEntreprise flag = flags.get(0);
+				Assert.assertNotNull(flag);
+				Assert.assertEquals(dateDebut.addMonths(2), flag.getDateDebut());
+				Assert.assertEquals(dateDebut.addMonths(4).getOneDayBefore(), flag.getDateFin());
+				Assert.assertEquals(TypeFlagEntreprise.SOC_SERVICE, flag.getType());
+			}
+			{
+				final FlagEntreprise flag = flags.get(1);
+				Assert.assertNotNull(flag);
+				Assert.assertEquals(dateDebut.addMonths(4), flag.getDateDebut());
+				Assert.assertEquals(dateDebut.addMonths(6).getOneDayBefore(), flag.getDateFin());
+				Assert.assertEquals(TypeFlagEntreprise.SOC_IMM_ORDINAIRE, flag.getType());
+			}
+			{
+				final FlagEntreprise flag = flags.get(2);
+				Assert.assertNotNull(flag);
+				Assert.assertEquals(dateDebut.addMonths(6), flag.getDateDebut());
+				Assert.assertEquals(dateDebut.addMonths(8).getOneDayBefore(), flag.getDateFin());
+				Assert.assertEquals(TypeFlagEntreprise.SOC_IMM_SUBVENTIONNEE, flag.getType());
+			}
+			{
+				final FlagEntreprise flag = flags.get(3);
+				Assert.assertNotNull(flag);
+				Assert.assertEquals(dateDebut.addMonths(8), flag.getDateDebut());
+				Assert.assertEquals(dateDebut.addMonths(10).getOneDayBefore(), flag.getDateFin());
+				Assert.assertEquals(TypeFlagEntreprise.SOC_IMM_CARACTERE_SOCIAL, flag.getType());
+			}
+			{
+				final FlagEntreprise flag = flags.get(4);
+				Assert.assertNotNull(flag);
+				Assert.assertEquals(dateDebut.addMonths(10), flag.getDateDebut());
+				Assert.assertEquals(dateDebut.addMonths(12).getOneDayBefore(), flag.getDateFin());
+				Assert.assertEquals(TypeFlagEntreprise.SOC_IMM_ACTIONNAIRES_LOCATAIRES, flag.getType());
+			}
+			{
+				final FlagEntreprise flag = flags.get(5);
+				Assert.assertNotNull(flag);
+				Assert.assertEquals(dateDebut.addMonths(12), flag.getDateDebut());
+				Assert.assertEquals(dateDebut.addMonths(14).getOneDayBefore(), flag.getDateFin());
+				Assert.assertEquals(TypeFlagEntreprise.SOC_SERVICE, flag.getType());
+			}
+			{
+				final FlagEntreprise flag = flags.get(6);
+				Assert.assertNotNull(flag);
+				Assert.assertEquals(dateDebut.addMonths(14), flag.getDateDebut());
+				Assert.assertEquals(dateDebut.addMonths(16).getOneDayBefore(), flag.getDateFin());
+				Assert.assertEquals(TypeFlagEntreprise.APM_SOC_IMM_SUBVENTIONNEE, flag.getType());
+			}
+			{
+				final FlagEntreprise flag = flags.get(7);
+				Assert.assertNotNull(flag);
+				Assert.assertEquals(dateDebut.addMonths(16), flag.getDateDebut());
+				Assert.assertEquals(dateDebut.addMonths(18).getOneDayBefore(), flag.getDateFin());
+				Assert.assertEquals(TypeFlagEntreprise.SOC_SERVICE, flag.getType());
+			}
+			{
+				final FlagEntreprise flag = flags.get(8);
+				Assert.assertNotNull(flag);
+				Assert.assertEquals(dateDebut.addMonths(18), flag.getDateDebut());
+				Assert.assertEquals(dateDebut.addMonths(20).getOneDayBefore(), flag.getDateFin());
+				Assert.assertEquals(TypeFlagEntreprise.SOC_IMM_ORDINAIRE, flag.getType());
+			}
+			{
+				final FlagEntreprise flag = flags.get(9);
+				Assert.assertNotNull(flag);
+				Assert.assertEquals(dateDebut.addMonths(20), flag.getDateDebut());
+				Assert.assertEquals(dateDebut.addMonths(22).getOneDayBefore(), flag.getDateFin());
+				Assert.assertEquals(TypeFlagEntreprise.SOC_SERVICE, flag.getType());
+			}
+			{
+				final FlagEntreprise flag = flags.get(10);
+				Assert.assertNotNull(flag);
+				Assert.assertEquals(dateDebut.addMonths(22), flag.getDateDebut());
+				Assert.assertNull(flag.getDateFin());
+				Assert.assertEquals(TypeFlagEntreprise.APM_SOC_IMM_SUBVENTIONNEE, flag.getType());
+			}
+
+			// et les régimes fiscaux.. ?
+			final EnumMap<RegimeFiscal.Portee, List<RegimeFiscal>> regimes = entreprise.getRegimesFiscaux().stream()
+					.peek(rf -> {
+						if (rf.isAnnule()) {
+							Assert.fail("Aucun régime fiscal ne devrait être annulé!");
+						}
+					})
+					.sorted(DateRangeComparator::compareRanges)
+					.collect(Collectors.toMap(RegimeFiscal::getPortee,
+					                          Collections::singletonList,
+					                          (l1, l2) -> Stream.concat(l1.stream(), l2.stream()).collect(Collectors.toList()),
+					                          () -> new EnumMap<>(RegimeFiscal.Portee.class)));
+			Assert.assertEquals(2, regimes.size());     // les deux portées sont représentées
+			{
+				final List<RegimeFiscal> vd = regimes.get(RegimeFiscal.Portee.VD);
+				Assert.assertEquals(3, vd.size());
+				{
+					final RegimeFiscal rf = vd.get(0);
+					Assert.assertNotNull(rf);
+					Assert.assertFalse(rf.isAnnule());
+					Assert.assertEquals(dateDebut, rf.getDateDebut());
+					Assert.assertEquals(dateDebut.addMonths(12).getOneDayBefore(), rf.getDateFin());
+					Assert.assertEquals(RegpmTypeRegimeFiscal._01_ORDINAIRE.getCode(), rf.getCode());
+				}
+				{
+					final RegimeFiscal rf = vd.get(1);
+					Assert.assertNotNull(rf);
+					Assert.assertFalse(rf.isAnnule());
+					Assert.assertEquals(dateDebut.addMonths(12), rf.getDateDebut());
+					Assert.assertEquals(dateDebut.addMonths(16).getOneDayBefore(), rf.getDateFin());
+					Assert.assertEquals(RegpmTypeRegimeFiscal._70_ORDINAIRE_ASSOCIATION_FONDATION.getCode(), rf.getCode());
+				}
+				{
+					final RegimeFiscal rf = vd.get(2);
+					Assert.assertNotNull(rf);
+					Assert.assertFalse(rf.isAnnule());
+					Assert.assertEquals(dateDebut.addMonths(16), rf.getDateDebut());
+					Assert.assertNull(rf.getDateFin());
+					Assert.assertEquals(RegpmTypeRegimeFiscal._01_ORDINAIRE.getCode(), rf.getCode());
+				}
+			}
+			{
+				final List<RegimeFiscal> ch = regimes.get(RegimeFiscal.Portee.CH);
+				Assert.assertEquals(2, ch.size());
+				{
+					final RegimeFiscal rf = ch.get(0);
+					Assert.assertNotNull(rf);
+					Assert.assertFalse(rf.isAnnule());
+					Assert.assertEquals(dateDebut, rf.getDateDebut());
+					Assert.assertEquals(dateDebut.addMonths(20).getOneDayBefore(), rf.getDateFin());
+					Assert.assertEquals(RegpmTypeRegimeFiscal._01_ORDINAIRE.getCode(), rf.getCode());
+				}
+				{
+					final RegimeFiscal rf = ch.get(1);
+					Assert.assertNotNull(rf);
+					Assert.assertFalse(rf.isAnnule());
+					Assert.assertEquals(dateDebut.addMonths(20), rf.getDateDebut());
+					Assert.assertNull(rf.getDateFin());
+					Assert.assertEquals(RegpmTypeRegimeFiscal._70_ORDINAIRE_ASSOCIATION_FONDATION.getCode(), rf.getCode());
+				}
+			}
 		});
 	}
 }

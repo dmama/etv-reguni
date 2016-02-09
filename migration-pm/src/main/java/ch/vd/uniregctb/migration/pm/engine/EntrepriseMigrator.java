@@ -2058,6 +2058,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 
 		// doit être fait après les exercices commerciaux
 		migrateLIASF(regpm, unireg, mr);
+		migrateFlagsDApresRegimesFiscaux(regpm, unireg, mr);
 
 		migrateMandataires(regpm, mr, linkCollector, idMapper);
 		migrateFusionsApres(regpm, linkCollector, idMapper);
@@ -2124,6 +2125,57 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 				                                          flag.isAnnule() ? " (annulé)" : StringUtils.EMPTY,
 				                                          StringRenderers.DATE_RANGE_RENDERER.toString(flag))))
 				.forEach(unireg::addFlag);
+	}
+
+	/**
+	 * Migration des flags LIASF de l'entreprise de RegPM
+	 * @param regpm l'entreprise dans RegPM
+	 * @param unireg l'entreprise cible dans Unireg
+	 * @param mr le collecteur de messages de suivi
+	 */
+	private void migrateFlagsDApresRegimesFiscaux(RegpmEntreprise regpm, Entreprise unireg, MigrationResultProduction mr) {
+		final RegimesFiscauxHistoData data = mr.getExtractedData(RegimesFiscauxHistoData.class, buildEntrepriseKey(regpm));
+
+		// construction d'une map qui, pour chaque type de flag, possède une liste des ranges de date
+		final Map<TypeFlagEntreprise, List<DateRange>> map = Stream.concat(buildRanges(data.getCH()).stream().map(range -> range.withPayload(range.getPayload().getType())),
+		                                                                               buildRanges(data.getVD()).stream().map(range -> range.withPayload(range.getPayload().getType())))
+				.map(range -> range.withPayload(migrationContexte.getRegimeFiscalHelper().getTypeFlagEntreprise(range.getPayload())))
+				.filter(range -> range.getPayload() != null)
+				.collect(Collectors.toMap(DateRangeHelper.Ranged::getPayload,
+				                          range -> Collections.singletonList(new DateRangeHelper.Range(range)),
+				                          (l1, l2) -> Stream.concat(l1.stream(), l2.stream()).collect(Collectors.toList()),
+				                          () -> new EnumMap<>(TypeFlagEntreprise.class)));
+
+		if (!map.isEmpty()) {
+			for (Map.Entry<TypeFlagEntreprise, List<DateRange>> entry : map.entrySet()) {
+				// trions la liste en question avant de fusionner les périodes
+				final List<DateRange> periodes = DateRangeHelper.merge(entry.getValue().stream()
+						                                                       .sorted(DateRangeComparator::compareRanges)
+						                                                       .collect(Collectors.toList()));
+				if (periodes != null && !periodes.isEmpty()) {
+					periodes.stream()
+							.map(range -> new FlagEntreprise(entry.getKey(), range.getDateDebut(), range.getDateFin()))
+							.peek(flag -> mr.addMessage(LogCategory.SUIVI, LogLevel.INFO,
+							                            String.format("Génération d'un flag entreprise %s sur la période %s.",
+							                                          flag.getType(),
+							                                          StringRenderers.DATE_RANGE_RENDERER.toString(flag))))
+							.forEach(unireg::addFlag);
+				}
+			}
+		}
+	}
+
+	private static <T> List<DateRangeHelper.Ranged<T>> buildRanges(NavigableMap<RegDate, T> map) {
+		final List<DateRangeHelper.Ranged<T>> ranges = new ArrayList<>(map.size());
+		for (Map.Entry<RegDate, T> entry : map.entrySet()) {
+			final RegDate dateFin = Optional.of(entry.getKey())
+					.map(map::higherKey)
+					.map(RegDate::getOneDayBefore)
+					.orElse(null);
+			final DateRangeHelper.Ranged<T> range = new DateRangeHelper.Ranged<>(entry.getKey(), dateFin, entry.getValue());
+			ranges.add(range);
+		}
+		return ranges;
 	}
 
 	/**
@@ -4200,6 +4252,64 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		});
 	}
 
+	/**
+	 * Classe interne pour proposer une simplification de la suite des régimes fiscaux migrés
+	 * s'ils ont le même type
+	 */
+	private static class CollatableRegimeFiscal implements CollatableDateRange {
+
+		private final RegimeFiscal.Portee portee;
+		private final RegDate dateDebut;
+		private final RegDate dateFin;
+		private final String code;
+
+		public CollatableRegimeFiscal(RegimeFiscal rf) {
+			this(rf.getPortee(), rf.getDateDebut(), rf.getDateFin(), rf.getCode());
+		}
+
+		private CollatableRegimeFiscal(RegimeFiscal.Portee portee, RegDate dateDebut, RegDate dateFin, String code) {
+			this.portee = portee;
+			this.dateDebut = dateDebut;
+			this.dateFin = dateFin;
+			this.code = code;
+		}
+
+		@Override
+		public boolean isValidAt(RegDate date) {
+			return RegDateHelper.isBetween(date, dateDebut, dateFin, NullDateBehavior.LATEST);
+		}
+
+		@Override
+		public RegDate getDateDebut() {
+			return dateDebut;
+		}
+
+		@Override
+		public RegDate getDateFin() {
+			return dateFin;
+		}
+
+		@Override
+		public boolean isCollatable(DateRange next) {
+			return next instanceof CollatableRegimeFiscal
+					&& DateRangeHelper.isCollatable(this, next)
+					&& this.portee == ((CollatableRegimeFiscal) next).portee
+					&& Objects.equals(this.code, ((CollatableRegimeFiscal) next).code);
+		}
+
+		@Override
+		public CollatableRegimeFiscal collate(DateRange next) {
+			if (!isCollatable(next)) {
+				throw new IllegalArgumentException("Les deux ranges ne sont pas collatable !!");
+			}
+			return new CollatableRegimeFiscal(portee, dateDebut, next.getDateFin(), code);
+		}
+
+		public RegimeFiscal asRegimeFiscal() {
+			return new RegimeFiscal(dateDebut, dateFin, portee, code);
+		}
+	}
+
 	private <T extends RegpmRegimeFiscal> List<RegimeFiscal> mapRegimesFiscaux(RegimeFiscal.Portee portee,
 	                                                                           NavigableMap<RegDate, T> regimes,
 	                                                                           MigrationResultContextManipulation mr) {
@@ -4210,7 +4320,15 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 
 		// ... puis attribution des dates de fin
 		assigneDatesFin(null, liste);
-		return liste;
+
+		// et finalement collations...
+		final List<CollatableRegimeFiscal> collated = DateRangeHelper.collate(liste.stream()
+				                                                                      .map(CollatableRegimeFiscal::new)
+				                                                                      .collect(Collectors.toList()));
+
+		return collated.stream()
+				.map(CollatableRegimeFiscal::asRegimeFiscal)
+				.collect(Collectors.toList());
 	}
 
 	private void migrateRegimesFiscaux(RegpmEntreprise regpm, Entreprise unireg, MigrationResultContextManipulation mr) {

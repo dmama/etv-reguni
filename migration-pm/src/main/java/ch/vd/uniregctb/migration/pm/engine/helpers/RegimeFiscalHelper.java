@@ -1,9 +1,11 @@
 package ch.vd.uniregctb.migration.pm.engine.helpers;
 
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
 import java.util.NavigableMap;
+import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
@@ -19,10 +21,16 @@ import ch.vd.uniregctb.migration.pm.log.LogLevel;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmRegimeFiscal;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeRegimeFiscal;
 import ch.vd.uniregctb.tiers.RegimeFiscal;
+import ch.vd.uniregctb.type.TypeFlagEntreprise;
 
 public class RegimeFiscalHelper {
 
 	private final DateHelper dateHelper;
+
+	private static final Set<RegpmTypeRegimeFiscal> REGIMES_POUR_SOCIETE_IMMOBILIERE = EnumSet.of(RegpmTypeRegimeFiscal._31_SOCIETE_ORDINAIRE,
+	                                                                                              RegpmTypeRegimeFiscal._32_SOCIETE_ORDINAIRE_SUBVENTION,
+	                                                                                              RegpmTypeRegimeFiscal._33_SOCIETE_ORDINAIRE_CARACTERE_SOCIAL,
+	                                                                                              RegpmTypeRegimeFiscal._35_SOCIETE_ORDINAIRE_SIAL);
 
 	public RegimeFiscalHelper(DateHelper dateHelper) {
 		this.dateHelper = dateHelper;
@@ -132,6 +140,13 @@ public class RegimeFiscalHelper {
 		case _40_SOCIETE_DE_BASE:
 			typeEffectif = RegpmTypeRegimeFiscal._41C_SOCIETE_DE_BASE_MIXTE;
 			break;
+		case _71_FONDATION_ECCLESIASTIQUE:
+		case _72_FONDATION_PREVOYANCE:
+		case _701_APM_IMPORTANTES:
+		case _7020_SERVICES_ASSOCIATION_FONDATION:
+		case _7032_APM_SI_SUBVENTIONNEE:
+			typeEffectif = RegpmTypeRegimeFiscal._70_ORDINAIRE_ASSOCIATION_FONDATION;
+			break;
 		default:
 			typeEffectif = RegpmTypeRegimeFiscal._01_ORDINAIRE;
 			break;
@@ -149,6 +164,17 @@ public class RegimeFiscalHelper {
 		case _40_SOCIETE_DE_BASE:
 			typeEffectif = RegpmTypeRegimeFiscal._41C_SOCIETE_DE_BASE_MIXTE;
 			break;
+		case _7020_SERVICES_ASSOCIATION_FONDATION:
+		case _7032_APM_SI_SUBVENTIONNEE:
+			typeEffectif = RegpmTypeRegimeFiscal._70_ORDINAIRE_ASSOCIATION_FONDATION;
+			break;
+		case _20_SOCIETE_DE_SERVICES:
+		case _31_SOCIETE_ORDINAIRE:
+		case _32_SOCIETE_ORDINAIRE_SUBVENTION:
+		case _33_SOCIETE_ORDINAIRE_CARACTERE_SOCIAL:
+		case _35_SOCIETE_ORDINAIRE_SIAL:
+			typeEffectif = RegpmTypeRegimeFiscal._01_ORDINAIRE;
+			break;
 		default:
 			typeEffectif = type;
 			break;
@@ -156,4 +182,45 @@ public class RegimeFiscalHelper {
 		return typeEffectif.getCode();
 	}
 
+	/**
+	 * @param type un type de régime fiscal
+	 * @return <code>true</code> si ce type correspond à un type de société immobilière
+	 */
+	public boolean isSocieteImmobiliere(RegpmTypeRegimeFiscal type) {
+		return REGIMES_POUR_SOCIETE_IMMOBILIERE.contains(type);
+	}
+
+	/**
+	 * @param type le type de régime fiscal
+	 * @return si applicable, le type de flag entreprise correspondant au régime fiscal donné
+	 */
+	@Nullable
+	public TypeFlagEntreprise getTypeFlagEntreprise(RegpmTypeRegimeFiscal type) {
+		final TypeFlagEntreprise flag;
+		switch (type) {
+		case _20_SOCIETE_DE_SERVICES:
+		case _7020_SERVICES_ASSOCIATION_FONDATION:
+			flag = TypeFlagEntreprise.SOC_SERVICE;
+			break;
+		case _31_SOCIETE_ORDINAIRE:
+			flag = TypeFlagEntreprise.SOC_IMM_ORDINAIRE;
+			break;
+		case _32_SOCIETE_ORDINAIRE_SUBVENTION:
+			flag = TypeFlagEntreprise.SOC_IMM_SUBVENTIONNEE;
+			break;
+		case _33_SOCIETE_ORDINAIRE_CARACTERE_SOCIAL:
+			flag = TypeFlagEntreprise.SOC_IMM_CARACTERE_SOCIAL;
+			break;
+		case _35_SOCIETE_ORDINAIRE_SIAL:
+			flag = TypeFlagEntreprise.SOC_IMM_ACTIONNAIRES_LOCATAIRES;
+			break;
+		case _7032_APM_SI_SUBVENTIONNEE:
+			flag = TypeFlagEntreprise.APM_SOC_IMM_SUBVENTIONNEE;
+			break;
+		default:
+			flag = null;
+			break;
+		}
+		return flag;
+	}
 }

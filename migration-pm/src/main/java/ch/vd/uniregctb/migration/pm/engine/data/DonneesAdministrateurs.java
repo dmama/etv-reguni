@@ -1,7 +1,6 @@
 package ch.vd.uniregctb.migration.pm.engine.data;
 
 import java.util.Collections;
-import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
 import java.util.NavigableMap;
@@ -23,7 +22,6 @@ import ch.vd.uniregctb.migration.pm.regpm.RegpmEntreprise;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmFonction;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmIndividu;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmRegimeFiscalVD;
-import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeRegimeFiscal;
 import ch.vd.uniregctb.migration.pm.utils.EntityKey;
 import ch.vd.uniregctb.tiers.RegimeFiscal;
 
@@ -36,11 +34,6 @@ public class DonneesAdministrateurs {
 
 	private static final StringRenderer<RegpmAdministrateur> FROM_ENTREPRISE_RENDERER =
 			adm -> String.format("%s par l'administrateur %s", adm.getFonction(), adm.getId().getIdIndividu());
-
-	private static final Set<RegpmTypeRegimeFiscal> REGIMES_POUR_SOCIETE_IMMOBILIERE = EnumSet.of(RegpmTypeRegimeFiscal._31_SOCIETE_ORDINAIRE,
-	                                                                                              RegpmTypeRegimeFiscal._32_SOCIETE_ORDINAIRE_SUBVENTION,
-	                                                                                              RegpmTypeRegimeFiscal._33_SOCIETE_ORDINAIRE_CARACTERE_SOCIAL,
-	                                                                                              RegpmTypeRegimeFiscal._35_SOCIETE_ORDINAIRE_SIAL);
 
 	private DonneesAdministrateurs(List<RegpmAdministrateur> administrations) {
 		this.administrations = administrations == null ? Collections.emptyList() : administrations;
@@ -123,7 +116,7 @@ public class DonneesAdministrateurs {
 					                                                                                                                            null,
 					                                                                                                                            RegimeFiscal.Portee.VD,
 					                                                                                                                            silentmr);
-					return isSocieteImmobiliere(regimes);
+					return isSocieteImmobiliere(regimes, migrationContexte);
 				});
 
 		// comme on vient de l'administrateur, il ne faut prendre que les entreprises où il y a
@@ -144,7 +137,7 @@ public class DonneesAdministrateurs {
 	 */
 	public static DonneesAdministrateurs fromEntrepriseAdministree(RegpmEntreprise entreprise, MigrationContexte migrationContexte, MigrationResultProduction mr) {
 		final NavigableMap<RegDate, RegpmRegimeFiscalVD> vd = mr.getExtractedData(RegimesFiscauxHistoData.class, EntityKey.of(entreprise)).getVD();
-		if (!isSocieteImmobiliere(vd)) {
+		if (!isSocieteImmobiliere(vd, migrationContexte)) {
 			return new DonneesAdministrateurs(null);
 		}
 
@@ -176,10 +169,12 @@ public class DonneesAdministrateurs {
 
 	/**
 	 * @param regimes la donnée officielle des régimes fiscaux vaudois de l'entreprise
+	 * @param migrationContexte contexte de migration, accès aux services
 	 * @return <code>true</code> si le dernier régime connu correspond à une société immobilière
 	 */
-	private static boolean isSocieteImmobiliere(NavigableMap<RegDate, RegpmRegimeFiscalVD> regimes) {
-		return !regimes.isEmpty() && REGIMES_POUR_SOCIETE_IMMOBILIERE.contains(regimes.lastEntry().getValue().getType());
+	private static boolean isSocieteImmobiliere(NavigableMap<RegDate, RegpmRegimeFiscalVD> regimes,
+	                                            MigrationContexte migrationContexte) {
+		return !regimes.isEmpty() && migrationContexte.getRegimeFiscalHelper().isSocieteImmobiliere(regimes.lastEntry().getValue().getType());
 	}
 
 	/**
