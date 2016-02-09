@@ -63,7 +63,7 @@
 		<div style="margin-top:1em;">
 			<!-- Debut Boutons -->
 			<c:if test="${!command.depuisTache}">
-				<unireg:buttonTo name="Retour" action="/di/list.do" method="get" params="{tiersId:${command.tiersId}}"/>
+				<unireg:buttonTo name="Retour" action="/di/list.do" id="boutonRetour" method="get" params="{tiersId:${command.tiersId}}"/>
 				<c:if test="${command.allowedSommation && command.sommable}">
 					<input type="button" name="sommer" value="<fmt:message key="label.bouton.sommer" />"  onclick="return sommerDI(${command.id});" />
 					<script type="text/javascript">
@@ -71,7 +71,7 @@
 							if(!confirm('Voulez-vous vraiment sommer cette déclaration d\'impôt ?')) {
 								return false;
 							}
-							$(":button").attr('disabled', true);
+							$(":button:not('#boutonRetour')").attr('disabled', true);
 							Form.dynamicSubmit('post', App.curl('/di/sommer.do'), {id:id});
 							return true;
 						}
@@ -87,7 +87,7 @@
 							<input type="button" id="bouton_duplicata_pm" value="<fmt:message key="label.bouton.imprimer.duplicata" />" onclick="imprimerDI(${command.id});">
 							<script type="text/javascript">
 								function imprimerDI(id) {
-									$(":button").attr('disabled', true);
+									$(":button:not('#boutonRetour')").attr('disabled', true);
 									Form.dynamicSubmit('post', App.curl('/di/duplicata-pm.do'), {id:id});
 								}
 							</script>
