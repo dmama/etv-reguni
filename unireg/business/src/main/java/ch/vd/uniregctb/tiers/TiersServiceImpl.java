@@ -4459,8 +4459,14 @@ public class TiersServiceImpl implements TiersService {
 
 			final ForFiscalPrincipalPM dernierForPrincipal = forsPrincipaux.get(forsPrincipaux.size() - 1);
 			if (dernierForPrincipal.getDateFin() != null) {
-				// si le dernier for principal est fermé, on s'arrête là
-				dateFinDernierExercice = dernierForPrincipal.getDateFin();
+				// [SIFISC-17850] si le dernier for principal est fermé, on s'arrête là, sauf si le motif de fermeture est "FAILLITE"
+				if (dernierForPrincipal.getMotifFermeture() == MotifFor.FAILLITE) {
+					// en cas de faillite, on continue jusqu'à la fin du cycle en cours
+					dateFinDernierExercice = bouclementService.getDateProchainBouclement(bouclements, dernierForPrincipal.getDateFin(), true);
+				}
+				else {
+					dateFinDernierExercice = dernierForPrincipal.getDateFin();
+				}
 			}
 			else if (noBouclements) {
 				// arbitrairement, fin de l'exercice à la fin de cette année

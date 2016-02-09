@@ -866,4 +866,47 @@ public class AssujettissementPersonnesMoralesCalculatorTest extends MetierTest {
 		final List<Assujettissement> assujettissements = determine(e);
 		Assert.assertNull(assujettissements);
 	}
+
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testFinAssujettissementFaillite() throws Exception {
+
+		final RegDate dateCreation = date(2012, 4, 12);
+		final RegDate dateLiquidation = date(2014, 8, 25);
+
+		final Entreprise e = addEntrepriseInconnueAuCivil();
+		addRaisonSociale(e, dateCreation, null, "Turlutu sàrl");
+		addFormeJuridique(e, dateCreation, null, FormeJuridiqueEntreprise.SARL);
+		addRegimeFiscalVD(e, dateCreation, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+		addRegimeFiscalCH(e, dateCreation, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+		addForPrincipal(e, dateCreation, MotifFor.DEBUT_EXPLOITATION, dateLiquidation, MotifFor.FAILLITE, MockCommune.Lausanne);
+		addBouclement(e, date(2012, 9, 1), DayMonth.get(9, 30), 12);      // bouclements tous les 30.09 depuis le 30.09.2012
+
+		final List<Assujettissement> assujettissements = determine(e);
+		Assert.assertNotNull(assujettissements);
+		Assert.assertEquals(1, assujettissements.size());
+		assertOrdinaire(dateCreation, date(2014, 9, 30), MotifFor.DEBUT_EXPLOITATION, MotifFor.FAILLITE, assujettissements.get(0));
+
+	}
+
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testFinAssujettissementFusion() throws Exception {
+
+		final RegDate dateCreation = date(2012, 4, 12);
+		final RegDate dateLiquidation = date(2014, 8, 25);
+
+		final Entreprise e = addEntrepriseInconnueAuCivil();
+		addRaisonSociale(e, dateCreation, null, "Turlutu sàrl");
+		addFormeJuridique(e, dateCreation, null, FormeJuridiqueEntreprise.SARL);
+		addRegimeFiscalVD(e, dateCreation, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+		addRegimeFiscalCH(e, dateCreation, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+		addForPrincipal(e, dateCreation, MotifFor.DEBUT_EXPLOITATION, dateLiquidation, MotifFor.FUSION_ENTREPRISES, MockCommune.Lausanne);
+		addBouclement(e, date(2012, 9, 1), DayMonth.get(9, 30), 12);      // bouclements tous les 30.09 depuis le 30.09.2012
+
+		final List<Assujettissement> assujettissements = determine(e);
+		Assert.assertNotNull(assujettissements);
+		Assert.assertEquals(1, assujettissements.size());
+		assertOrdinaire(dateCreation, dateLiquidation, MotifFor.DEBUT_EXPLOITATION, MotifFor.FUSION_ENTREPRISES, assujettissements.get(0));
+	}
 }
