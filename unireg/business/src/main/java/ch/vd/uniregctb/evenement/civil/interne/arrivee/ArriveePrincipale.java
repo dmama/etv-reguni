@@ -247,7 +247,7 @@ public class ArriveePrincipale extends Arrivee {
 					final ForFiscalPrincipal forFP = mc.getForFiscalPrincipalAt(getDate());
 					if (forFP != null && forFP.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD && nouvelleCommune.getNoOFS() != forFP.getNumeroOfsAutoriteFiscale()) {
 						erreurs.addErreur(String.format("A la date de l'événement, la personne physique (ctb: %s) associée à l'individu a un for principal vaudois " +
-								"différent de celui du menage commun (ctb:%s) qu'il est sensé rejoindre)", pp.getNumero(),mc.getNumero()));
+								"différent de celui du menage commun (ctb:%s) qu'il est sensé rejoindre", pp.getNumero(),mc.getNumero()));
 					}
 				}
 
