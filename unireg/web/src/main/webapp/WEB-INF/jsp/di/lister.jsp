@@ -66,10 +66,12 @@
 						</c:if>
 					</display:column>
 					<display:column style="action">
-						<c:if test="${!di.annule}">
-							<unireg:linkTo name="" action="/di/editer.do" method="get" params="{id:${di.id}}" title="Editer la déclaration" link_class="edit"/>
-						</c:if>
 						<c:if test="${di.diPP}">
+							<authz:authorize ifAnyGranted="ROLE_DI_QUIT_PP, ROLE_DI_DELAI_PP, ROLE_DI_SOM_PP, ROLE_DI_DUPLIC_PP">
+								<c:if test="${!di.annule}">
+									<unireg:linkTo name="" action="/di/editer.do" method="get" params="{id:${di.id}}" title="Editer la déclaration" link_class="edit"/>
+								</c:if>
+							</authz:authorize>
 							<authz:authorize ifAnyGranted="ROLE_DI_DESANNUL_PP">
 								<c:if test="${di.annule}">
 									<unireg:linkTo name="" title="Désannuler la déclaration" action="/di/desannuler-pp.do" method="post" params="{id:${di.id}}"
@@ -78,6 +80,11 @@
 							</authz:authorize>
 						</c:if>
 						<c:if test="${di.diPM}">
+							<authz:authorize ifAnyGranted="ROLE_DI_QUIT_PM, ROLE_DI_DELAI_PM, ROLE_DI_SOM_PM, ROLE_DI_DUPLIC_PM">
+								<c:if test="${!di.annule}">
+									<unireg:linkTo name="" action="/di/editer.do" method="get" params="{id:${di.id}}" title="Editer la déclaration" link_class="edit"/>
+								</c:if>
+							</authz:authorize>
 							<authz:authorize ifAnyGranted="ROLE_DI_DESANNUL_PM">
 								<c:if test="${di.annule}">
 									<unireg:linkTo name="" title="Désannuler la déclaration" action="/di/desannuler-pm.do" method="post" params="{id:${di.id}}"
