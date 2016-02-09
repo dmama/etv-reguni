@@ -155,7 +155,7 @@ public class DemenagementTest extends AbstractEvenementOrganisationProcessorTest
 				                             // vérification des événements fiscaux
 				                             final List<EvenementFiscal> evtsFiscaux = evtFiscalDAO.getAll();
 				                             Assert.assertNotNull(evtsFiscaux);
-				                             Assert.assertEquals(1, evtsFiscaux.size()); // deux pour le for principal, on n'a pas créé les régimes lors du test.
+				                             Assert.assertEquals(2, evtsFiscaux.size()); // deux pour le for principal (fermeture + ouverture du nouveau), on n'a pas créé les régimes lors du test.
 
 				                             final List<EvenementFiscal> evtsFiscauxTries = new ArrayList<>(evtsFiscaux);
 				                             Collections.sort(evtsFiscauxTries, new Comparator<EvenementFiscal>() {
@@ -167,6 +167,16 @@ public class DemenagementTest extends AbstractEvenementOrganisationProcessorTest
 
 				                             {
 					                             final EvenementFiscal ef = evtsFiscauxTries.get(0);
+					                             Assert.assertNotNull(ef);
+					                             Assert.assertEquals(EvenementFiscalFor.class, ef.getClass());
+					                             Assert.assertEquals(date(2015, 6, 23), ef.getDateValeur());
+
+					                             final EvenementFiscalFor eff = (EvenementFiscalFor) ef;
+					                             Assert.assertEquals(EvenementFiscalFor.TypeEvenementFiscalFor.FERMETURE, eff.getType());
+					                             Assert.assertEquals(date(2015, 6, 23), eff.getForFiscal().getDateFin());
+				                             }
+				                             {
+					                             final EvenementFiscal ef = evtsFiscauxTries.get(1);
 					                             Assert.assertNotNull(ef);
 					                             Assert.assertEquals(EvenementFiscalFor.class, ef.getClass());
 					                             Assert.assertEquals(date(2015, 6, 24), ef.getDateValeur());
@@ -288,7 +298,7 @@ public class DemenagementTest extends AbstractEvenementOrganisationProcessorTest
 				                             // vérification des événements fiscaux
 				                             final List<EvenementFiscal> evtsFiscaux = evtFiscalDAO.getAll();
 				                             Assert.assertNotNull(evtsFiscaux);
-				                             Assert.assertEquals(1, evtsFiscaux.size()); // deux pour le for principal, on n'a pas créé les régimes lors du test.
+				                             Assert.assertEquals(2, evtsFiscaux.size()); // deux pour le for principal (fermeture + ouverture du nouveau), on n'a pas créé les régimes lors du test.
 
 				                             final List<EvenementFiscal> evtsFiscauxTries = new ArrayList<>(evtsFiscaux);
 				                             Collections.sort(evtsFiscauxTries, new Comparator<EvenementFiscal>() {
@@ -300,6 +310,16 @@ public class DemenagementTest extends AbstractEvenementOrganisationProcessorTest
 
 				                             {
 					                             final EvenementFiscal ef = evtsFiscauxTries.get(0);
+					                             Assert.assertNotNull(ef);
+					                             Assert.assertEquals(EvenementFiscalFor.class, ef.getClass());
+					                             Assert.assertEquals(date(2015, 6, 23), ef.getDateValeur());
+
+					                             final EvenementFiscalFor eff = (EvenementFiscalFor) ef;
+					                             Assert.assertEquals(EvenementFiscalFor.TypeEvenementFiscalFor.FERMETURE, eff.getType());
+					                             Assert.assertEquals(date(2015, 6, 23), eff.getForFiscal().getDateFin());
+				                             }
+				                             {
+					                             final EvenementFiscal ef = evtsFiscauxTries.get(1);
 					                             Assert.assertNotNull(ef);
 					                             Assert.assertEquals(EvenementFiscalFor.class, ef.getClass());
 					                             Assert.assertEquals(date(2015, 6, 24), ef.getDateValeur());
@@ -544,7 +564,7 @@ public class DemenagementTest extends AbstractEvenementOrganisationProcessorTest
 				                             // vérification des événements fiscaux
 				                             final List<EvenementFiscal> evtsFiscaux = evtFiscalDAO.getAll();
 				                             Assert.assertNotNull(evtsFiscaux);
-				                             Assert.assertEquals(1, evtsFiscaux.size()); // deux pour le for principal, on n'a pas créé les régimes lors du test.
+				                             Assert.assertEquals(2, evtsFiscaux.size()); // deux pour le for principal (fermeture + ouverture du nouveau), on n'a pas créé les régimes lors du test.
 
 				                             final List<EvenementFiscal> evtsFiscauxTries = new ArrayList<>(evtsFiscaux);
 				                             Collections.sort(evtsFiscauxTries, new Comparator<EvenementFiscal>() {
@@ -556,6 +576,16 @@ public class DemenagementTest extends AbstractEvenementOrganisationProcessorTest
 
 				                             {
 					                             final EvenementFiscal ef = evtsFiscauxTries.get(0);
+					                             Assert.assertNotNull(ef);
+					                             Assert.assertEquals(EvenementFiscalFor.class, ef.getClass());
+					                             Assert.assertEquals(date(2015, 6, 23), ef.getDateValeur());
+
+					                             final EvenementFiscalFor eff = (EvenementFiscalFor) ef;
+					                             Assert.assertEquals(EvenementFiscalFor.TypeEvenementFiscalFor.FERMETURE, eff.getType());
+					                             Assert.assertEquals(date(2015, 6, 23), eff.getForFiscal().getDateFin());
+				                             }
+				                             {
+					                             final EvenementFiscal ef = evtsFiscauxTries.get(1);
 					                             Assert.assertNotNull(ef);
 					                             Assert.assertEquals(EvenementFiscalFor.class, ef.getClass());
 					                             Assert.assertEquals(date(2015, 6, 24), ef.getDateValeur());

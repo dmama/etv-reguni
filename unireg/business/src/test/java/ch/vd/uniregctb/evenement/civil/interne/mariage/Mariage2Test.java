@@ -308,14 +308,14 @@ public class Mariage2Test extends AbstractEvenementCivilInterneTest {
 		
 		/*
 		 * Evénements fiscaux devant être générés :
-		 *  - fermeture for fiscal principal sur momo
+		 *  - fermeture for fiscal principal et du for secondaire sur momo
 		 *  - fermeture for fiscal principal sur bea
-		 *  - ouverture for fiscal principal sur le ménage commun
+		 *  - ouverture for fiscal principal et du for secondaire sur le ménage commun
 		 */
-		Assert.assertEquals(3, eventSender.count);
-		Assert.assertEquals(1, getEvenementFiscalService().getEvenementsFiscaux(momo).size());
+		Assert.assertEquals(5, eventSender.count);
+		Assert.assertEquals(2, getEvenementFiscalService().getEvenementsFiscaux(momo).size());
 		Assert.assertEquals(1, getEvenementFiscalService().getEvenementsFiscaux(bea).size());
-		Assert.assertEquals(1, getEvenementFiscalService().getEvenementsFiscaux(menageCommun).size());
+		Assert.assertEquals(2, getEvenementFiscalService().getEvenementsFiscaux(menageCommun).size());
 	}
 
 	/**

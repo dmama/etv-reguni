@@ -2430,14 +2430,7 @@ public class TiersServiceImpl implements TiersService {
             if (motifOuverture == MotifFor.CHGT_MODE_IMPOSITION || motifOuverture == MotifFor.PERMIS_C_SUISSE) {
                 this.evenementFiscalService.publierEvenementFiscalChangementModeImposition(forFiscalPrincipal);
             }
-            else if (motifOuverture == MotifFor.DEMENAGEMENT_VD ||
-		            motifOuverture == MotifFor.FUSION_COMMUNES ||
-		            motifOuverture == MotifFor.MAJORITE ||
-		            motifOuverture == MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION ||
-		            motifOuverture == MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT ||
-                    motifOuverture == MotifFor.VEUVAGE_DECES ||
-                    motifOuverture == MotifFor.ARRIVEE_HC ||
-                    motifOuverture == MotifFor.ARRIVEE_HS) {
+            else  {
                 this.evenementFiscalService.publierEvenementFiscalOuvertureFor(forFiscalPrincipal);
             }
 
@@ -2452,6 +2445,9 @@ public class TiersServiceImpl implements TiersService {
                     }
                 }
             }
+        }
+		else {
+	        this.evenementFiscalService.publierEvenementFiscalOuvertureFor(forFiscalPrincipal);
         }
 
         // [UNIREG-1373] Un départ HS ajuste la date de fin d'une eventuelle DI libre.
@@ -2527,24 +2523,7 @@ public class TiersServiceImpl implements TiersService {
     }
 
     private void afterForFiscalSecondaireAdded(Contribuable contribuable, ForFiscalSecondaire forFiscalSecondaire) {
-        if (contribuable.getForFiscalPrincipalAt(forFiscalSecondaire.getDateDebut()).getTypeAutoriteFiscale() != TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
-            boolean isFirst = true;
-            List<ForFiscal> fors = contribuable.getForsFiscauxValidAt(forFiscalSecondaire.getDateDebut());
-            for (ForFiscal forFiscal : fors) {
-                if (!forFiscal.isAnnule() && forFiscal instanceof ForFiscalSecondaire && forFiscal != forFiscalSecondaire) {
-                    ForFiscalSecondaire forSec = (ForFiscalSecondaire) forFiscal;
-                    MotifRattachement motifRattachement = forFiscalSecondaire.getMotifRattachement();
-                    if (forSec.getMotifRattachement() == motifRattachement) {
-                        isFirst = false;
-                        break;
-                    }
-                }
-            }
-            // PBO (26-06-2009) ajout des motifs de rattachement pour la génération d'événements fiscaux
-            if (isFirst && (forFiscalSecondaire.getMotifRattachement() == MotifRattachement.ACTIVITE_INDEPENDANTE || forFiscalSecondaire.getMotifRattachement() == MotifRattachement.IMMEUBLE_PRIVE)) {
-                this.evenementFiscalService.publierEvenementFiscalOuvertureFor(forFiscalSecondaire);
-            }
-        }
+	    evenementFiscalService.publierEvenementFiscalOuvertureFor(forFiscalSecondaire);
         tacheService.genereTacheDepuisOuvertureForSecondaire(contribuable, forFiscalSecondaire);
     }
 
@@ -2830,18 +2809,7 @@ public class TiersServiceImpl implements TiersService {
 	}
 
     private void afterForFiscalPrincipalClosed(Contribuable contribuable, ForFiscalPrincipal forFiscalPrincipal) {
-
-        if (forFiscalPrincipal.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
-	        final MotifFor motifFermeture = forFiscalPrincipal.getMotifFermeture();
-            if (motifFermeture == MotifFor.DEPART_HC ||
-                    motifFermeture == MotifFor.DEPART_HS ||
-                    motifFermeture == MotifFor.VEUVAGE_DECES ||
-                    motifFermeture == MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION ||
-                    motifFermeture == MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT) {
-                evenementFiscalService.publierEvenementFiscalFermetureFor(forFiscalPrincipal);
-            }
-        }
-
+	    evenementFiscalService.publierEvenementFiscalFermetureFor(forFiscalPrincipal);
         tacheService.genereTacheDepuisFermetureForPrincipal(contribuable, forFiscalPrincipal);
         resetFlagBlocageRemboursementAutomatiqueSelonFors(contribuable);
     }
@@ -2872,22 +2840,7 @@ public class TiersServiceImpl implements TiersService {
     }
 
     private void afterForFiscalSecondaireClosed(Contribuable contribuable, ForFiscalSecondaire forFiscalSecondaire) {
-        if (contribuable.getForFiscalPrincipalAt(forFiscalSecondaire.getDateFin()).getTypeAutoriteFiscale() != TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
-            boolean isLast = true;
-            List<ForFiscal> fors = contribuable.getForsFiscauxValidAt(forFiscalSecondaire.getDateFin());
-            for (ForFiscal forFiscal : fors) {
-                if (forFiscal instanceof ForFiscalSecondaire) {
-                    ForFiscalSecondaire forSec = (ForFiscalSecondaire) forFiscal;
-                    if (forSec.getMotifRattachement() == forFiscalSecondaire.getMotifRattachement()) {
-                        isLast = false;
-                        break;
-                    }
-                }
-            }
-            if (isLast) {
-                this.evenementFiscalService.publierEvenementFiscalFermetureFor(forFiscalSecondaire);
-            }
-        }
+	    evenementFiscalService.publierEvenementFiscalFermetureFor(forFiscalSecondaire);
         tacheService.genereTacheDepuisFermetureForSecondaire(contribuable, forFiscalSecondaire);
     }
 
@@ -2959,12 +2912,10 @@ public class TiersServiceImpl implements TiersService {
 		forCorrige = tiersDAO.addAndSave(tiers, forCorrige);
 
 		// notifie le reste du monde
-		if (forFiscal.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
-			evenementFiscalService.publierEvenementFiscalAnnulationFor(forFiscal);
-			evenementFiscalService.publierEvenementFiscalOuvertureFor(forCorrige);
-			if (forCorrige.getDateFin() != null) {
-				evenementFiscalService.publierEvenementFiscalFermetureFor(forCorrige);
-			}
+		evenementFiscalService.publierEvenementFiscalAnnulationFor(forFiscal);
+		evenementFiscalService.publierEvenementFiscalOuvertureFor(forCorrige);
+		if (forCorrige.getDateFin() != null) {
+			evenementFiscalService.publierEvenementFiscalFermetureFor(forCorrige);
 		}
 
 		return forCorrige;
@@ -3944,42 +3895,7 @@ public class TiersServiceImpl implements TiersService {
         //
         // Envoi d'un événement fiscal
         //
-
-        boolean envoi = false;
-        if (forFiscal instanceof ForDebiteurPrestationImposable) {
-            envoi = true;
-        }
-        else if (forFiscal instanceof ForFiscalPrincipal) {
-            if (TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD == forFiscal.getTypeAutoriteFiscale()) {
-                envoi = true;
-            }
-        }
-        else if (forFiscal instanceof ForFiscalSecondaire) {
-            /*
-			 * Dans le cas d'un for secondaire pour un hors-Canton ou hors-Suisse, on envoie un événement, sauf s'il subsiste un autre for
-			 * secondaire avec le même motif de rattachement
-			 */
-            final ForFiscalPrincipal forPrincipalCourant = forFiscal.getTiers().getDernierForFiscalPrincipal();
-            Assert.notNull(forPrincipalCourant);
-
-            if (TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD != forPrincipalCourant.getTypeAutoriteFiscale()) {
-                envoi = true;
-                final List<ForFiscal> fors = forFiscal.getTiers().getForsFiscauxValidAt(null);
-                final MotifRattachement motifRattachement = ((ForFiscalSecondaire) forFiscal).getMotifRattachement();
-                for (ForFiscal f : fors) {
-                    if (f instanceof ForFiscalSecondaire) {
-                        final ForFiscalSecondaire fs = (ForFiscalSecondaire) f;
-                        if (fs.getMotifRattachement() == motifRattachement) {
-                            envoi = false;
-                            break;
-                        }
-                    }
-                }
-            }
-        }
-        if (envoi) {
-            evenementFiscalService.publierEvenementFiscalAnnulationFor(forFiscal);
-        }
+        evenementFiscalService.publierEvenementFiscalAnnulationFor(forFiscal);
 
         //
         // Création des tâches

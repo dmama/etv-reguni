@@ -78,4 +78,9 @@ public abstract class EvenementFiscal extends HibernateEntity {
 	public void setDateValeur(RegDate dateValeur) {
 		this.dateValeur = dateValeur;
 	}
+
+	@Override
+	public String toString() {
+		return String.format("%s{id=%d, dateValeur=%s, tiers=%d}", getClass().getSimpleName(), id, dateValeur, tiers.getNumero());
+	}
 }

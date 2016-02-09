@@ -334,7 +334,7 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
         });
     }
 
-    protected static interface ExecuteCallback<T> {
+    protected interface ExecuteCallback<T> {
         T execute() throws Exception;
     }
 
