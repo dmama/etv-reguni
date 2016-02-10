@@ -18,7 +18,7 @@ import ch.vd.uniregctb.type.TypeDocument;
 public abstract class DeclarationImpotOrdinaire extends Declaration {
 
 	/**
-	 * Numéro de séquence de la déclaration pour une période fiscale. La première déclaration prends le numéro 1.
+	 * Numéro de séquence de la déclaration pour une période fiscale. La première déclaration prend le numéro 1.
 	 */
 	private Integer numero;
 
