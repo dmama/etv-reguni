@@ -21,7 +21,6 @@ import ch.vd.uniregctb.declaration.PeriodeFiscaleDAO;
 import ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotService;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionPersonnesPhysiques;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionService;
-import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.MotifFor;
@@ -150,7 +149,7 @@ public class EnvoiAnnexeImmeubleEnMasseProcessorTest extends BusinessTest {
 				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, pf);
 
 				// Contribuable sans di 2011 -> 1
-				final Contribuable erich = addNonHabitant("Erich", "Honekker", date(1934, 1, 1), Sexe.MASCULIN);
+				final PersonnePhysique erich = addNonHabitant("Erich", "Honekker", date(1934, 1, 1), Sexe.MASCULIN);
 				assertEquals(1, EnvoiAnnexeImmeubleEnMasseProcessor.getNoSequenceAnnexeImmeuble(erich, anneeComplete));
 
 				final Ids ids = new Ids();

@@ -224,7 +224,7 @@ public class ImportCodesSegmentProcessorTest extends BusinessTest {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(noTiers);
-				final DeclarationImpotOrdinairePP di = (DeclarationImpotOrdinairePP) pp.getDerniereDeclaration();
+				final DeclarationImpotOrdinairePP di = pp.getDerniereDeclaration(DeclarationImpotOrdinairePP.class);
 				Assert.assertEquals(4, (int) di.getCodeSegment());
 				return null;
 			}
@@ -275,7 +275,7 @@ public class ImportCodesSegmentProcessorTest extends BusinessTest {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(noTiers);
-				final DeclarationImpotOrdinairePP di = (DeclarationImpotOrdinairePP) pp.getDerniereDeclaration();
+				final DeclarationImpotOrdinairePP di = pp.getDerniereDeclaration(DeclarationImpotOrdinairePP.class);
 				Assert.assertEquals(4, (int) di.getCodeSegment());
 				return null;
 			}
@@ -326,7 +326,7 @@ public class ImportCodesSegmentProcessorTest extends BusinessTest {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(noTiers);
-				final DeclarationImpotOrdinairePP di = (DeclarationImpotOrdinairePP) pp.getDerniereDeclaration();
+				final DeclarationImpotOrdinairePP di = pp.getDerniereDeclaration(DeclarationImpotOrdinairePP.class);
 				Assert.assertEquals(4, (int) di.getCodeSegment());
 				return null;
 			}
@@ -422,7 +422,7 @@ public class ImportCodesSegmentProcessorTest extends BusinessTest {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(noTiers);
-				final DeclarationImpotOrdinairePP di = (DeclarationImpotOrdinairePP) pp.getDerniereDeclaration();
+				final DeclarationImpotOrdinairePP di = pp.getDerniereDeclaration(DeclarationImpotOrdinairePP.class);
 				Assert.assertEquals(date(2009, 10, 31), di.getDateFin());
 				Assert.assertEquals(4, (int) di.getCodeSegment());
 				return null;

@@ -18,7 +18,7 @@ import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.BatchTransactionTemplateWithResults;
 import ch.vd.uniregctb.common.LoggingStatusManager;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
-import ch.vd.uniregctb.declaration.Declaration;
+import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DelaiDeclaration;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.declaration.PeriodeFiscaleDAO;
@@ -151,13 +151,13 @@ public class DemandeDelaiCollectiveProcessor {
 	                                        RegDate nouveauDelai, RegDate dateTraitement,
 	                                        DemandeDelaiCollectiveResults r) {
 
-		final List<Declaration> declarations = ctb.getDeclarationsForPeriode(annee, false);
+		final List<DeclarationImpotOrdinaire> declarations = ctb.getDeclarationsDansPeriode(DeclarationImpotOrdinaire.class, annee, false);
 		if (declarations == null || declarations.isEmpty()) {
 			r.addErrorCtbSansDI(ctb);
 			return;
 		}
 
-		for (Declaration d : declarations) {
+		for (DeclarationImpotOrdinaire d : declarations) {
 			Assert.isFalse(d.isAnnule());
 			final TypeEtatDeclaration etatDeclaration = d.getDernierEtat().getEtat();
 			switch (etatDeclaration) {
@@ -194,7 +194,7 @@ public class DemandeDelaiCollectiveProcessor {
 		}
 	}
 
-	private void accorderDelaiDeclaration(Declaration declaration, DelaiDeclaration delai) {
+	private void accorderDelaiDeclaration(DeclarationImpotOrdinaire declaration, DelaiDeclaration delai) {
 		declaration.addDelai(delai);
 
 		// pour les Déclarations PM, il faut envoyer un courrier...

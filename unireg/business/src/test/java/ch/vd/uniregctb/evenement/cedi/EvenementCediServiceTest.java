@@ -107,14 +107,14 @@ public class EvenementCediServiceTest extends BusinessTest {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 
-				final PersonnePhysique eric = (PersonnePhysique) hibernateTemplate.get(PersonnePhysique.class, id);
+				final PersonnePhysique eric = hibernateTemplate.get(PersonnePhysique.class, id);
 				assertEquals("zuzu@gmail.com", eric.getAdresseCourrierElectronique());
 				assertEquals("CFE2145000321457", eric.getNumeroCompteBancaire());
 				assertEquals("Famille devel", eric.getTitulaireCompteBancaire());
 				assertEquals("0215478936", eric.getNumeroTelephonePrive());
 				assertEquals("0789651243", eric.getNumeroTelephonePortable());
 
-				final List<Declaration> list = eric.getDeclarationsForPeriode(2008, false);
+				final List<Declaration> list = eric.getDeclarationsDansPeriode(Declaration.class, 2008, false);
 				assertNotNull(list);
 				assertEquals(1, list.size());
 				
@@ -180,14 +180,14 @@ public class EvenementCediServiceTest extends BusinessTest {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 
-				final PersonnePhysique eric = (PersonnePhysique) hibernateTemplate.get(PersonnePhysique.class, id);
+				final PersonnePhysique eric = hibernateTemplate.get(PersonnePhysique.class, id);
 				assertEquals("Maison: zuzu@gmail.com Boulot: toto@monentreprise.ch", eric.getAdresseCourrierElectronique());
 				assertEquals("CFE2145000321457", eric.getNumeroCompteBancaire());
 				assertEquals("Famille devel", eric.getTitulaireCompteBancaire());
 				assertEquals("Rez: 0215478936 A l'étage tout en h", eric.getNumeroTelephonePrive());
 				assertEquals("Moi 0789651243 Ma copine 0791234567", eric.getNumeroTelephonePortable());
 
-				final List<Declaration> list = eric.getDeclarationsForPeriode(2008, false);
+				final List<Declaration> list = eric.getDeclarationsDansPeriode(Declaration.class, 2008, false);
 				assertNotNull(list);
 				assertEquals(1, list.size());
 
@@ -348,13 +348,13 @@ public class EvenementCediServiceTest extends BusinessTest {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 
-				final PersonnePhysique eric = (PersonnePhysique) hibernateTemplate.get(PersonnePhysique.class, id);
+				final PersonnePhysique eric = hibernateTemplate.get(PersonnePhysique.class, id);
 				assertEquals("zuzu@gmail.com", eric.getAdresseCourrierElectronique());
 				assertEquals("CFE2145000321457", eric.getNumeroCompteBancaire());
 				assertEquals("Famille devel", eric.getTitulaireCompteBancaire());
 				assertEquals("0215478936", eric.getNumeroTelephonePrive());
 				assertEquals("0789651243", eric.getNumeroTelephonePortable());
-				final List<Declaration> list = eric.getDeclarationsForPeriode(2014, false);
+				final List<Declaration> list = eric.getDeclarationsDansPeriode(Declaration.class, 2014, false);
 				assertNotNull(list);
 				assertEquals(1, list.size());
 

@@ -4,7 +4,7 @@ import java.util.List;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.CollectionsUtils;
-import ch.vd.uniregctb.declaration.Declaration;
+import ch.vd.uniregctb.declaration.DeclarationImpotSource;
 import ch.vd.uniregctb.declaration.Periodicite;
 import ch.vd.uniregctb.iban.IbanValidator;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
@@ -55,15 +55,8 @@ public class DebiteurEditView {
 	}
 
 	private static RegDate getDateReferencePourPeriodiciteActive(DebiteurPrestationImposable dpi) {
-		final List<Declaration> lrTriees = dpi.getDeclarationsSorted();
-		if (lrTriees != null) {
-			for (Declaration lr : CollectionsUtils.revertedOrder(lrTriees)) {
-				if (!lr.isAnnule()) {
-					return lr.getDateFin();
-				}
-			}
-		}
-		return RegDate.get();
+		final List<DeclarationImpotSource> lrs = dpi.getDeclarationsTriees(DeclarationImpotSource.class, false);
+		return lrs == null || lrs.isEmpty() ? RegDate.get() : CollectionsUtils.getLastElement(lrs).getDateFin();
 	}
 
 	public Long getId() {

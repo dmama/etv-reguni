@@ -14,7 +14,7 @@ import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.common.CollectionsUtils;
-import ch.vd.uniregctb.declaration.Declaration;
+import ch.vd.uniregctb.declaration.DeclarationImpotSource;
 import ch.vd.uniregctb.declaration.Periodicite;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.ForDebiteurPrestationImposable;
@@ -159,11 +159,11 @@ public class ForDebiteurPrestationImposableValidator extends ForFiscalAvecMotifs
 
 		// construction de la liste des périodes postérieures à dateDebutFor et couvertes par des LR
 		// -> parce que le for ne peut être fermé avant la fin des LR qui sont dans le trou
-		final List<Declaration> lrsTriees = dpi.getDeclarationsSorted();
+		final List<DeclarationImpotSource> lrsTriees = dpi.getDeclarationsTriees(DeclarationImpotSource.class, false);
 		RegDate candidate = null;
 		if (lrsTriees != null) {
-			for (Declaration lr : CollectionsUtils.revertedOrder(lrsTriees)) {
-				if (!lr.isAnnule() && DateRangeHelper.intersect(lr, premierTrou)) {
+			for (DeclarationImpotSource lr : CollectionsUtils.revertedOrder(lrsTriees)) {
+				if (DateRangeHelper.intersect(lr, premierTrou)) {
 					candidate = lr.getDateDebut().getOneDayBefore();
 					break;
 				}

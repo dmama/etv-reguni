@@ -84,6 +84,7 @@ import ch.vd.uniregctb.common.MovingWindow;
 import ch.vd.uniregctb.common.NationaliteHelper;
 import ch.vd.uniregctb.common.NumeroIDEHelper;
 import ch.vd.uniregctb.declaration.Declaration;
+import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP;
 import ch.vd.uniregctb.declaration.DeclarationImpotSource;
 import ch.vd.uniregctb.declaration.Periodicite;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEch;
@@ -2454,10 +2455,10 @@ public class TiersServiceImpl implements TiersService {
         if (TypeAutoriteFiscale.PAYS_HS == typeAutoriteFiscale && MotifFor.DEPART_HS == motifOuverture) {
             if (forFiscalPrincipal.getDateDebut().year() == RegDate.get().year()) {
                 // Le for ouvert est dans la période courante, on verifie que le contribuable n'ait pas une DI libre
-                final List<Declaration> dis = contribuable.getDeclarationsForPeriode(RegDate.get().year(), false);
+                final List<DeclarationImpotOrdinairePP> dis = contribuable.getDeclarationsDansPeriode(DeclarationImpotOrdinairePP.class, RegDate.get().year(), false);
                 if (dis != null && !dis.isEmpty()) {
-                    Collections.sort(dis, new DateRangeComparator<Declaration>());
-                    final Declaration di = dis.get(dis.size() - 1);
+                    Collections.sort(dis, new DateRangeComparator<>());
+                    final DeclarationImpotOrdinairePP di = dis.get(dis.size() - 1);
                     // Le contribuable a une DI libre, on ajuste la periode d'imposition
                     di.setDateFin(forFiscalPrincipal.getDateDebut());
                 }
@@ -4470,7 +4471,7 @@ public class TiersServiceImpl implements TiersService {
     @Override
     public RegDate getDateDebutNouvellePeriodicite(DebiteurPrestationImposable debiteur, PeriodiciteDecompte souhait) {
 	    final RegDate debutValidite;
-        final Declaration derniereDeclaration = debiteur.getDerniereDeclaration();
+        final Declaration derniereDeclaration = debiteur.getDerniereDeclaration(DeclarationImpotSource.class);
         if (derniereDeclaration != null) {
 
 	        final DeclarationImpotSource lr = (DeclarationImpotSource) derniereDeclaration;

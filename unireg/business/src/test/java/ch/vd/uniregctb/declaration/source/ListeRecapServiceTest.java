@@ -344,7 +344,7 @@ public class ListeRecapServiceTest extends BusinessTest {
 				Assert.assertNotNull(dpi);
 
 				// toute l'année, répartie entre 5 LR (une semestrielle, une trimestrielle, et trois mensuelles)
-				final List<Declaration> lrs = dpi.getDeclarationsSorted();
+				final List<Declaration> lrs = dpi.getDeclarationsTriees(Declaration.class, true);
 				Assert.assertNotNull(lrs);
 				Assert.assertEquals(5, lrs.size());
 				{

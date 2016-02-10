@@ -252,12 +252,13 @@ public class EnvoiLRsEnMasseProcessorTest extends BusinessTest {
 				final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId);
 				Assert.assertNotNull(dpi);
 
-				final List<Declaration> lrs = dpi.getDeclarationsForPeriode(anneeReference, true);
+				final List<Declaration> lrs = dpi.getDeclarationsDansPeriode(Declaration.class, anneeReference, true);
 				Assert.assertNotNull(lrs);
 				Assert.assertEquals(1, lrs.size());
 
 				final Declaration lr = lrs.get(0);
 				Assert.assertNotNull(lr);
+				Assert.assertEquals(DeclarationImpotSource.class, lr.getClass());
 				Assert.assertEquals(date(anneeReference, 4, 1), lr.getDateDebut());
 				Assert.assertEquals(date(anneeReference, 4, 30), lr.getDateFin());
 			}
@@ -386,12 +387,13 @@ public class EnvoiLRsEnMasseProcessorTest extends BusinessTest {
 					final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId);
 					Assert.assertNotNull(dpi);
 
-					final List<Declaration> lrs = dpi.getDeclarationsForPeriode(annee, true);
+					final List<Declaration> lrs = dpi.getDeclarationsDansPeriode(Declaration.class, annee, true);
 					Assert.assertNotNull(lrs);
 					Assert.assertEquals(1, lrs.size());
 
 					final Declaration lr = lrs.get(0);
 					Assert.assertNotNull(lr);
+					Assert.assertEquals(DeclarationImpotSource.class, lr.getClass());
 					Assert.assertEquals(date(annee, 1, 1), lr.getDateDebut());
 					Assert.assertEquals(date(annee, 3, 31), lr.getDateFin());
 				}

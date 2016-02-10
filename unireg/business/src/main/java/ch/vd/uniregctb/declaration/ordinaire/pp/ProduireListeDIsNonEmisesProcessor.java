@@ -19,8 +19,8 @@ import ch.vd.uniregctb.cache.ServiceCivilCacheWarmer;
 import ch.vd.uniregctb.common.BatchTransactionTemplateWithResults;
 import ch.vd.uniregctb.common.LoggingStatusManager;
 import ch.vd.uniregctb.common.TicketService;
-import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationException;
+import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP;
 import ch.vd.uniregctb.declaration.ModeleDocumentDAO;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.declaration.PeriodeFiscaleDAO;
@@ -174,8 +174,8 @@ public class ProduireListeDIsNonEmisesProcessor {
 		final RegDate datePeriode = RegDate.get(periode.getAnnee());
 
 		// Le contribuable est sensé avoir été assujetti.
-		final Declaration declarationActive = contribuable.getDeclarationActive(datePeriode);
-		if (declarationActive != null && !declarationActive.isAnnule()) {
+		final DeclarationImpotOrdinairePP declarationActive = contribuable.getDeclarationActiveAt(datePeriode);
+		if (declarationActive != null) {
 			LOGGER.info("DI ok pour " + contribuable.toString());
 			return;
 		}

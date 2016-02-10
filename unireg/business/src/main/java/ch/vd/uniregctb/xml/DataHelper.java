@@ -25,6 +25,7 @@ import ch.vd.registre.base.validation.ValidationException;
 import ch.vd.unireg.interfaces.infra.data.TypeAffranchissement;
 import ch.vd.uniregctb.adresse.AdresseEnvoiDetaillee;
 import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
+import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.indexer.tiers.AutreCommunauteIndexable;
 import ch.vd.uniregctb.indexer.tiers.CollectiviteAdministrativeIndexable;
@@ -463,15 +464,15 @@ public abstract class DataHelper {
 	public static Long getAssociatedDi(PeriodeImposition periodeImposition) {
 
 		final Contribuable contribuable = periodeImposition.getContribuable();
-		final List<ch.vd.uniregctb.declaration.Declaration> dis = contribuable.getDeclarationsForPeriode(periodeImposition.getDateDebut().year(), false);
-		if (dis == null) {
+		final List<DeclarationImpotOrdinaire> dis = contribuable.getDeclarationsDansPeriode(DeclarationImpotOrdinaire.class, periodeImposition.getDateFin().year(), false);
+		if (dis == null || dis.isEmpty()) {
 			return null;
 		}
 
 		Long idDi = null;
 
-		for (ch.vd.uniregctb.declaration.Declaration di : dis) {
-			if (!di.isAnnule() && DateRangeHelper.intersect(periodeImposition, di)) {
+		for (DeclarationImpotOrdinaire di : dis) {
+			if (DateRangeHelper.intersect(periodeImposition, di)) {
 				if (idDi != null) {
 					final String erreur = String.format("Incohérence des données: trouvé deux déclarations (ids %d et %d) "
 							+ "associées avec la période d'imposition du %s au %s sur le contribuable n°%d", idDi, di.getId(),

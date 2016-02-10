@@ -7,6 +7,8 @@ import java.util.List;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.declaration.Declaration;
+import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePM;
 
 @Entity
 public abstract class ContribuableImpositionPersonnesMorales extends Contribuable {
@@ -22,6 +24,21 @@ public abstract class ContribuableImpositionPersonnesMorales extends Contribuabl
 	@Override
 	public String getRoleLigne1() {
 		return "Contribuable PM";
+	}
+
+	@Override
+	public synchronized void addDeclaration(Declaration declaration) {
+		if (declaration instanceof DeclarationImpotOrdinairePM) {
+			final int pf = declaration.getPeriode().getAnnee();
+			if (pf >= DeclarationImpotOrdinairePM.PREMIERE_ANNEE_RETOUR_ELECTRONIQUE) {
+				final DeclarationImpotOrdinairePM di = (DeclarationImpotOrdinairePM) declaration;
+				if (di.getCodeControle() == null) {
+					// nouveau numéro pour chaque déclaration
+					di.setCodeControle(DeclarationImpotOrdinairePM.generateCodeControle());
+				}
+			}
+		}
+		super.addDeclaration(declaration);
 	}
 
 	@Override

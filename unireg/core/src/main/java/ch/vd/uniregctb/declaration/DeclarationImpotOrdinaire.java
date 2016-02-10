@@ -15,12 +15,7 @@ import ch.vd.uniregctb.type.TypeContribuable;
 import ch.vd.uniregctb.type.TypeDocument;
 
 @Entity
-public abstract class DeclarationImpotOrdinaire extends Declaration {
-
-	/**
-	 * Numéro de séquence de la déclaration pour une période fiscale. La première déclaration prend le numéro 1.
-	 */
-	private Integer numero;
+public abstract class DeclarationImpotOrdinaire extends DeclarationAvecNumeroSequence {
 
 	private Date dateImpressionChemiseTaxationOffice;
 
@@ -54,15 +49,6 @@ public abstract class DeclarationImpotOrdinaire extends Declaration {
 
 	public void setRetourCollectiviteAdministrativeId(Long retourCollectiviteAdministrativeId) {
 		this.retourCollectiviteAdministrativeId = retourCollectiviteAdministrativeId;
-	}
-
-	@Column(name = "NUMERO")
-	public Integer getNumero() {
-		return numero;
-	}
-
-	public void setNumero(Integer theNumero) {
-		numero = theNumero;
 	}
 
 	@Column(name = "DATE_IMPR_CHEMISE_TO")

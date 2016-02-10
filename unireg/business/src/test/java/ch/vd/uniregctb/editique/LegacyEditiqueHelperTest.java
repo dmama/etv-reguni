@@ -165,7 +165,7 @@ public class LegacyEditiqueHelperTest extends BusinessTest {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
 				assertNotNull(pp);
 
-				final Declaration di = pp.getDeclarationActive(dateVenteImmeuble);
+				final Declaration di = pp.getDeclarationActiveAt(dateVenteImmeuble);
 				assertNotNull(di);
 				try {
 					final String commune = editiqueHelper.getCommune(di);

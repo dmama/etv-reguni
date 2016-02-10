@@ -402,37 +402,6 @@ public class TiersTest extends WithoutSpringTest {
 		assertEquals(codeControle, d1.getCodeControle());
 	}
 
-	@Test
-	public void testGetDerniereDeclaration(){
-		final PeriodeFiscale periode2008 = new PeriodeFiscale();
-		periode2008.setAnnee(2008);
-
-		final PeriodeFiscale periode2009 = new PeriodeFiscale();
-		periode2009.setAnnee(2009);
-
-		final PersonnePhysique tiers = new PersonnePhysique(true);
-		assertEmpty(tiers.getDeclarations());
-
-		// 2008
-
-		DeclarationImpotOrdinairePP d1 = new DeclarationImpotOrdinairePP();
-		d1.setPeriode(periode2008);
-		tiers.addDeclaration(d1);
-
-		 // 2009
-		DeclarationImpotOrdinairePP d2 = new DeclarationImpotOrdinairePP();
-		d2.setPeriode(periode2009);
-		tiers.addDeclaration(d2);
-		assertEquals(d2.getId(),tiers.getDerniereDeclaration().getId());
-		DeclarationImpotOrdinairePP d3 = new DeclarationImpotOrdinairePP();
-		d3.setPeriode(periode2009);
-		tiers.addDeclaration(d3);
-		d3.setAnnule(true);
-		assertEquals(d2.getId(),tiers.getDerniereDeclaration().getId());
-
-
-	}
-
 	private PersonnePhysique createHabitantWithFors() {
 
 		PersonnePhysique hab = new PersonnePhysique(true);

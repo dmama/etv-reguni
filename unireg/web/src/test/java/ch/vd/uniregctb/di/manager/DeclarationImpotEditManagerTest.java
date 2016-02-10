@@ -633,10 +633,7 @@ public class DeclarationImpotEditManagerTest extends WebTest {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
-				final Declaration d = pp.getDeclarationActive(finAnneeCourante);
-				assertInstanceOf(DeclarationImpotOrdinairePP.class, d);
-
-				final DeclarationImpotOrdinairePP di = (DeclarationImpotOrdinairePP) d;
+				final DeclarationImpotOrdinairePP di = pp.getDeclarationActiveAt(finAnneeCourante);
 				assertEquals(Integer.valueOf(6), di.getCodeSegment());
 				return null;
 			}
@@ -694,7 +691,7 @@ public class DeclarationImpotEditManagerTest extends WebTest {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique pp = hibernateTemplate.get(PersonnePhysique.class, ids.ppId);
-				final List<Declaration> decls = pp.getDeclarationsForPeriode(2009, false);
+				final List<Declaration> decls = pp.getDeclarationsDansPeriode(Declaration.class, 2009, false);
 				assertNotNull(decls);
 				assertEquals(1, decls.size());
 				assertDIPP(date(2009, 1, 1), date(2009, 12, 31), TypeEtatDeclaration.EMISE, TypeContribuable.HORS_CANTON, TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, ids.oidCedi, delaiAccorde, decls.get(0));

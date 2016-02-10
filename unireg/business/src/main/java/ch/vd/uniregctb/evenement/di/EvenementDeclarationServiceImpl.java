@@ -12,7 +12,6 @@ import org.springframework.core.io.ClassPathResource;
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.validation.ValidationResults;
-import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotService;
 import ch.vd.uniregctb.jms.BamMessageHelper;
@@ -61,7 +60,7 @@ public class EvenementDeclarationServiceImpl implements EvenementDeclarationServ
 		}
 
 		final int annee = quittance.getPeriodeFiscale();
-		final List<Declaration> declarations = ctb.getDeclarationsForPeriode(annee, false);
+		final List<DeclarationImpotOrdinaire> declarations = ctb.getDeclarationsDansPeriode(DeclarationImpotOrdinaire.class, annee, false);
 		if (declarations == null || declarations.isEmpty()) {
 			throw new EvenementDeclarationException(EsbBusinessCode.DECLARATION_ABSENTE, "Le contribuable n°" + ctbId + " ne possède pas de déclaration pour la période fiscale " + annee + '.');
 		}
@@ -73,7 +72,7 @@ public class EvenementDeclarationServiceImpl implements EvenementDeclarationServ
 		quittancerDeclarations(ctb, declarations, quittance, quittance.getSource());
 	}
 
-	private void sendQuittancementToBam(long ctbId, int annee, List<Declaration> declarations, RegDate dateQuittancement, Map<String, String> incomingHeaders) throws EvenementDeclarationException {
+	private void sendQuittancementToBam(long ctbId, int annee, List<DeclarationImpotOrdinaire> declarations, RegDate dateQuittancement, Map<String, String> incomingHeaders) throws EvenementDeclarationException {
 		final String processDefinitionId = EsbMessageHelper.getProcessDefinitionId(incomingHeaders);
 		final String processInstanceId = EsbMessageHelper.getProcessInstanceId(incomingHeaders);
 		if (StringUtils.isNotBlank(processDefinitionId) && StringUtils.isNotBlank(processInstanceId)) {
@@ -95,10 +94,10 @@ public class EvenementDeclarationServiceImpl implements EvenementDeclarationServ
 		}
 	}
 
-	private void quittancerDeclarations(Contribuable ctb, List<Declaration> declarations, QuittancementDI quittance, String source) {
-		for (Declaration declaration : declarations) {
+	private void quittancerDeclarations(Contribuable ctb, List<DeclarationImpotOrdinaire> declarations, QuittancementDI quittance, String source) {
+		for (DeclarationImpotOrdinaire declaration : declarations) {
 			if (!declaration.isAnnule()) {
-				diService.quittancementDI(ctb, (DeclarationImpotOrdinaire) declaration, quittance.getDate(), source, true);
+				diService.quittancementDI(ctb, declaration, quittance.getDate(), source, true);
 			}
 		}
 	}

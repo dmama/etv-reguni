@@ -24,6 +24,8 @@ import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.common.ComparisonHelper;
+import ch.vd.uniregctb.declaration.Declaration;
+import ch.vd.uniregctb.declaration.DeclarationAvecNumeroSequence;
 import ch.vd.uniregctb.mouvement.MouvementDossier;
 import ch.vd.uniregctb.rf.Immeuble;
 import ch.vd.uniregctb.type.MotifFor;
@@ -400,5 +402,34 @@ public abstract class Contribuable extends Tiers {
 	 */
 	public boolean hasDecisionRecenteFor(RegDate date){
 		return hasDecisionEnCours() || existDecisionAciOuverteApres(date);
+	}
+
+	@Override
+	public synchronized void addDeclaration(Declaration declaration) {
+		if (declaration instanceof DeclarationAvecNumeroSequence) {
+			final DeclarationAvecNumeroSequence avecNumero = (DeclarationAvecNumeroSequence) declaration;
+			if (avecNumero.getNumero() == null) {
+				// assignation d'un nouveau numéro de séquence par période fiscale
+				final Set<Declaration> declarations = getOrCreateDeclarationSet();
+				final int pf = declaration.getPeriode().getAnnee();
+				int numero = 0;
+				Integer maxFound = null;
+				for (Declaration existante : declarations) {
+					if (existante.getPeriode().getAnnee() == pf && existante instanceof DeclarationAvecNumeroSequence) {
+						++ numero;
+
+						final Integer numeroExistante = ((DeclarationAvecNumeroSequence) existante).getNumero();
+						if (numeroExistante != null && (maxFound == null || numeroExistante > maxFound)) {
+							maxFound = numeroExistante;
+						}
+					}
+				}
+
+				avecNumero.setNumero(maxFound == null
+						                     ? numero + 1
+						                     : Math.max(numero, maxFound) + 1);
+			}
+		}
+		super.addDeclaration(declaration);
 	}
 }

@@ -453,7 +453,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			public void execute(TransactionStatus status) throws Exception {
 				for (Map.Entry<TaxDeclarationKey, AckStatus> entry : expected.entrySet()) {
 					final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(entry.getKey().getTaxpayerNumber(), false);
-					final List<Declaration> decls = pp.getDeclarationsForPeriode(annee, false);
+					final List<Declaration> decls = pp.getDeclarationsDansPeriode(Declaration.class, annee, false);
 					Assert.assertNotNull(decls);
 					Assert.assertEquals(1, decls.size());
 
@@ -512,7 +512,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
 				Assert.assertNotNull(pp);
 
-				final Declaration di = pp.getDeclarationActive(date(annee, 1, 1));
+				final Declaration di = pp.getDeclarationActiveAt(date(annee, 1, 1));
 				Assert.assertNotNull(di);
 
 				final DelaiDeclaration delai = di.getDernierDelaiAccorde();
@@ -536,7 +536,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
 				Assert.assertNotNull(pp);
 
-				final Declaration di = pp.getDeclarationActive(date(annee, 1, 1));
+				final Declaration di = pp.getDeclarationActiveAt(date(annee, 1, 1));
 				Assert.assertNotNull(di);
 
 				final DelaiDeclaration delai = di.getDernierDelaiAccorde();
@@ -562,7 +562,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
 				Assert.assertNotNull(pp);
 
-				final Declaration di = pp.getDeclarationActive(date(annee, 1, 1));
+				final Declaration di = pp.getDeclarationActiveAt(date(annee, 1, 1));
 				Assert.assertNotNull(di);
 
 				final DelaiDeclaration delai = di.getDernierDelaiAccorde();

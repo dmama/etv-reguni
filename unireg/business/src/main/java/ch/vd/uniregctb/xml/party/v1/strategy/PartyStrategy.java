@@ -415,15 +415,15 @@ public abstract class PartyStrategy<T extends Party> {
 	}
 
 	private static void initTaxDeclarations(Party tiers, final ch.vd.uniregctb.tiers.Tiers right, Set<PartyPart> parts) {
-		for (ch.vd.uniregctb.declaration.Declaration declaration : right.getDeclarationsSorted()) {
+		for (ch.vd.uniregctb.declaration.Declaration declaration : right.getDeclarationsTriees()) {
 			if (declaration instanceof ch.vd.uniregctb.declaration.DeclarationImpotSource) {
 				tiers.getTaxDeclarations().add(TaxDeclarationBuilder.newWithholdingTaxDeclaration((ch.vd.uniregctb.declaration.DeclarationImpotSource) declaration, parts));
 			}
 			else if (declaration instanceof ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP) {
 				tiers.getTaxDeclarations().add(TaxDeclarationBuilder.newOrdinaryTaxDeclaration((ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP) declaration, parts));
 			}
-			else if (declaration instanceof ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePM) {
-				// cette version ne supporte pas les DI PM
+			else {
+				// cette version ne supporte pas les DI PM ni les questionnaires SNC
 			}
 		}
 	}

@@ -18,6 +18,8 @@ import org.jetbrains.annotations.Nullable;
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.ComparisonHelper;
+import ch.vd.uniregctb.declaration.Declaration;
+import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP;
 
 @Entity
 public abstract class ContribuableImpositionPersonnesPhysiques extends Contribuable {
@@ -132,6 +134,60 @@ public abstract class ContribuableImpositionPersonnesPhysiques extends Contribua
 
 		final ContribuableImpositionPersonnesPhysiques other = (ContribuableImpositionPersonnesPhysiques) obj;
 		return ComparisonHelper.areEqual(situationsFamille, other.situationsFamille);
+	}
+
+	@Override
+	public synchronized void addDeclaration(Declaration declaration) {
+		if (declaration instanceof DeclarationImpotOrdinairePP) {
+			final int pf = declaration.getPeriode().getAnnee();
+			if (pf >= DeclarationImpotOrdinairePP.PREMIERE_ANNEE_RETOUR_ELECTRONIQUE) {
+				// [SIFISC-1368] Les déclaration d'impôt ordinaires possèdent un code contrôle (un pour chaque pair contribuable/période fiscale) qui doit
+				// être générée/assigné au moment de l'insertion
+				final DeclarationImpotOrdinairePP di = (DeclarationImpotOrdinairePP) declaration;
+
+				if (di.getCodeControle() == null) {
+					// pour les PP, on reprend le même code de contrôle pour toutes les DI de l'année
+					final Set<Declaration> declarationsExistantes = getOrCreateDeclarationSet();
+					String codeControleUtilise = null;
+					for (Declaration existante : declarationsExistantes) {
+						if (existante.getPeriode().getAnnee() == pf && existante instanceof DeclarationImpotOrdinairePP) {
+							codeControleUtilise = ((DeclarationImpotOrdinairePP) existante).getCodeControle();
+							if (codeControleUtilise != null) {
+								break;
+							}
+						}
+					}
+
+					// aucun code déjà utilisé sur cette PF pour le moment, il faut en générer un nouveau
+					if (codeControleUtilise == null) {
+						codeControleUtilise = DeclarationImpotOrdinairePP.generateCodeControle();
+						for (Declaration existante : declarationsExistantes) {
+							// on profite pour assigner le code de contrôle généré à toutes les déclarations préexistantes de la période (= rattrapage de données)
+							if (existante.getPeriode().getAnnee() == pf && existante instanceof DeclarationImpotOrdinairePP) {
+								((DeclarationImpotOrdinairePP) existante).setCodeControle(codeControleUtilise);
+							}
+						}
+					}
+
+					// assignation du code de contrôle
+					di.setCodeControle(codeControleUtilise);
+				}
+			}
+		}
+		super.addDeclaration(declaration);
+	}
+
+	public DeclarationImpotOrdinairePP getDeclarationActiveAt(RegDate date) {
+		final Set<Declaration> declarations = getDeclarations();
+		if (declarations == null || declarations.isEmpty()) {
+			return null;
+		}
+		for (Declaration declaration : declarations) {
+			if (declaration.isValidAt(date) && declaration instanceof DeclarationImpotOrdinairePP) {
+				return (DeclarationImpotOrdinairePP) declaration;
+			}
+		}
+		return null;
 	}
 
 	@Override

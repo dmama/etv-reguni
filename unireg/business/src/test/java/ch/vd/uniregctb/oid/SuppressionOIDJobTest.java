@@ -192,7 +192,7 @@ public class SuppressionOIDJobTest extends BusinessTest {
 				assertNotNull(t);
 				assertEquals(MockOfficeImpot.OID_MORGES.getNoColAdm(), t.getOfficeImpotId().intValue());
 
-				final List<Declaration> decl = t.getDeclarationsSorted();
+				final List<Declaration> decl = t.getDeclarationsTriees();
 				assertNotNull(decl);
 				final DeclarationImpotOrdinaire decl0 = (DeclarationImpotOrdinaire) decl.get(0);
 				assertEquals("Fermeture-OID-7-10", decl0.getLogModifUser());
@@ -566,7 +566,7 @@ public class SuppressionOIDJobTest extends BusinessTest {
 				assertEquals("Fermeture-OID-7-10", t.getLogModifUser());
 				assertEquals(MockOfficeImpot.OID_MORGES.getNoColAdm(), t.getOfficeImpotId().intValue());
 
-				final List<Declaration> decl = t.getDeclarationsSorted();
+				final List<Declaration> decl = t.getDeclarationsTriees();
 				assertNotNull(decl);
 				final DeclarationImpotOrdinaire decl0 = (DeclarationImpotOrdinaire) decl.get(0);
 				assertEquals("Fermeture-OID-7-10", decl0.getLogModifUser());

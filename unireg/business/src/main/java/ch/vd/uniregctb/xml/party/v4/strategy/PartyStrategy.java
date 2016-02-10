@@ -413,7 +413,7 @@ public abstract class PartyStrategy<T extends Party> {
 	}
 
 	private static void initTaxDeclarations(Party tiers, final Tiers right, Set<PartyPart> parts) {
-		for (ch.vd.uniregctb.declaration.Declaration declaration : right.getDeclarationsSorted()) {
+		for (ch.vd.uniregctb.declaration.Declaration declaration : right.getDeclarationsTriees()) {
 			if (declaration instanceof ch.vd.uniregctb.declaration.DeclarationImpotSource) {
 				tiers.getTaxDeclarations().add(TaxDeclarationBuilder.newWithholdingTaxDeclaration((ch.vd.uniregctb.declaration.DeclarationImpotSource) declaration, parts));
 			}

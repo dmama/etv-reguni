@@ -288,7 +288,7 @@ public class DemandeDelaiCollectiveProcessorTest extends BusinessTest {
 			@Override
 			protected void doInTransactionWithoutResult(TransactionStatus status) {
 				final Entreprise e = (Entreprise) tiersDAO.get(pmId);
-				final Declaration d = e.getDerniereDeclaration();
+				final Declaration d = e.getDerniereDeclaration(Declaration.class);
 				assertNotNull(d);
 				assertEquals((Integer) annee, d.getPeriode().getAnnee());
 				assertEquals(dateDelai, d.getDelaiAccordeAu());
@@ -352,7 +352,7 @@ public class DemandeDelaiCollectiveProcessorTest extends BusinessTest {
 				@Override
 				protected void doInTransactionWithoutResult(TransactionStatus status) {
 					final Entreprise e = (Entreprise) tiersDAO.get(pmId);
-					final Declaration d = e.getDerniereDeclaration();
+					final Declaration d = e.getDerniereDeclaration(Declaration.class);
 					assertNotNull(d);
 					assertEquals((Integer) annee, d.getPeriode().getAnnee());
 					assertEquals(RegDateHelper.dateToDisplayString(dateDelaiDemande), 1, d.getDelais().size());
@@ -388,7 +388,7 @@ public class DemandeDelaiCollectiveProcessorTest extends BusinessTest {
 				@Override
 				protected void doInTransactionWithoutResult(TransactionStatus status) {
 					final Entreprise e = (Entreprise) tiersDAO.get(pmId);
-					final Declaration d = e.getDerniereDeclaration();
+					final Declaration d = e.getDerniereDeclaration(Declaration.class);
 					assertNotNull(d);
 					assertEquals((Integer) annee, d.getPeriode().getAnnee());
 					assertEquals(RegDateHelper.dateToDisplayString(dateDelaiDemande), nbDelaisAttendus, d.getDelais().size());

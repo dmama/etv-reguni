@@ -2,7 +2,10 @@ package ch.vd.uniregctb.validation.tiers;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.collections4.Predicate;
@@ -119,23 +122,47 @@ public abstract class TiersValidator<T extends Tiers> extends EntityValidatorImp
 		final ValidationService validationService = getValidationService();
 		final ValidationResults results = new ValidationResults();
 
-		final List<Declaration> decls = tiers.getDeclarationsSorted();
-		if (decls != null) {
-			Declaration last = null;
-			for (Declaration d : decls) {
-				if (d.isAnnule()) {
-					continue;
-				}
-				// On valide la déclaration pour elle-même
-				results.merge(validationService.validate(d));
+		final List<Declaration> decls = tiers.getDeclarationsTriees(Declaration.class, false);
+		if (decls != null && !decls.isEmpty()) {
 
-				// Les plages de validité des déclarations ne doivent pas se chevaucher
-				if (last != null && DateRangeHelper.intersect(last, d)) {
-					final String message = String.format("La déclaration n°%d %s chevauche la déclaration précédente n°%d %s", d.getId(),
-							DateRangeHelper.toString(d), last.getId(), DateRangeHelper.toString(last));
-					results.addError(message);
+			// on sépare d'abord les déclarations par type (parce que des déclarations de types identitiques
+			// ne doivent pas se chevaucher, mais rien n'est dit pour les déclarations de types différents,
+			// cf. la réponse à la question "que se passe-t-il au passage de SNC à SA ?", par exemple)
+			final Map<Class<? extends Declaration>, List<Declaration>> parType = new HashMap<>();
+			for (Declaration declaration : decls) {
+				final List<Declaration> liste;
+				final Class<? extends Declaration> declarationClass = declaration.getClass();
+				if (parType.containsKey(declarationClass)) {
+					liste = parType.get(declarationClass);
 				}
-				last = d;
+				else {
+					liste = new LinkedList<>();
+					parType.put(declarationClass, liste);
+				}
+				liste.add(declaration);
+			}
+
+			// chaque type de déclaration doit être contrôlé séparément
+			for (Map.Entry<Class<? extends Declaration>, List<Declaration>> entry : parType.entrySet()) {
+
+				final List<Declaration> declarations = entry.getValue();
+
+				// on valide d'abord toutes les déclarations pour elles-mêmes
+				for (Declaration declaration : declarations) {
+					results.merge(validationService.validate(declaration));
+				}
+
+				// puis on contrôle les non-chevauchements
+				if (declarations.size() > 1) {
+					final List<DateRange> overlaps = DateRangeHelper.overlaps(declarations);
+					if (overlaps != null && !overlaps.isEmpty()) {
+						for (DateRange range : overlaps) {
+							results.addError(String.format("La période %s est couverte par plusieurs déclarations non-annulées de type %s.",
+							                               DateRangeHelper.toDisplayString(range),
+							                               entry.getKey().getSimpleName()));
+						}
+					}
+				}
 			}
 		}
 

@@ -10,7 +10,6 @@ import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.common.MovingWindow;
-import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImposition;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionService;
@@ -120,21 +119,15 @@ public abstract class ContribuableValidator<T extends Contribuable> extends Tier
 	protected ValidationResults validateDeclarations(T ctb) {
 		final ValidationResults results = super.validateDeclarations(ctb);
 
-		final List<Declaration> decls = ctb.getDeclarationsSorted();
-		if (decls != null) {
+		final List<DeclarationImpotOrdinaire> decls = ctb.getDeclarationsTriees(DeclarationImpotOrdinaire.class, false);
+		if (decls != null && !decls.isEmpty()) {
 
 			// [SIFISC-3127] on valide les déclarations d'impôts ordinaires par rapport aux périodes d'imposition théoriques
 			try {
 				final List<PeriodeImposition> periodes = periodeImpositionService.determine(ctb);
-				for (Declaration d : decls) {
-					if (d.isAnnule()) {
-						continue;
-					}
-					if (d instanceof DeclarationImpotOrdinaire) {
-						final DeclarationImpotOrdinaire di = (DeclarationImpotOrdinaire) d;
-						if (isPeriodeImpositionExpected(di)) {
-							validateDeclarationVsPeriodeImposition(di, periodes, results);
-						}
+				for (DeclarationImpotOrdinaire di : decls) {
+					if (isPeriodeImpositionExpected(di)) {
+						validateDeclarationVsPeriodeImposition(di, periodes, results);
 					}
 				}
 			}

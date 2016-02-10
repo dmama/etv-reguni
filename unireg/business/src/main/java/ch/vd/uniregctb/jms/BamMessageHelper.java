@@ -138,12 +138,11 @@ public abstract class BamMessageHelper {
 	 * @return les attributs à ajouter au message pour le BAM
 	 */
 	@Nullable
-	public static Map<String, String> buildCustomBamHeadersForQuittancementDeclarations(List<Declaration> dis, RegDate dateQuittancement, @Nullable Map<String, String> incomingMessageHeaders) {
+	public static Map<String, String> buildCustomBamHeadersForQuittancementDeclarations(List<DeclarationImpotOrdinaire> dis, RegDate dateQuittancement, @Nullable Map<String, String> incomingMessageHeaders) {
 		final StringBuilder bNoSequences = new StringBuilder();
 		final StringBuilder bPeriodes = new StringBuilder();
-		for (Declaration d : dis) {
-			if (!d.isAnnule() && d instanceof DeclarationImpotOrdinaire) {
-				final DeclarationImpotOrdinaire di = (DeclarationImpotOrdinaire) d;
+		for (DeclarationImpotOrdinaire di : dis) {
+			if (!di.isAnnule()) {
 				if (bNoSequences.length() > 0) {
 					bNoSequences.append(';');
 				}

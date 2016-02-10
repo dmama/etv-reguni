@@ -151,7 +151,9 @@ public class EvenementExterneProcessorTest extends BusinessTest {
 
 				// la LR doit être quittancée...
 				final DebiteurPrestationImposable dpi = tiersDAO.getDebiteurPrestationImposableByNumero(ids.dpiId);
-				final DeclarationImpotSource lr = (DeclarationImpotSource) dpi.getDeclarationActive(dateDebut);
+				final DeclarationImpotSource lr = dpi.getDerniereDeclaration(DeclarationImpotSource.class);
+				Assert.assertNotNull(lr);
+				Assert.assertEquals(dateDebut, lr.getDateDebut());
 				final EtatDeclaration etat = lr.getDernierEtat();
 				Assert.assertNotNull(etat);
 				Assert.assertEquals(RegDateHelper.get(quittancement), etat.getDateObtention());
@@ -226,7 +228,9 @@ public class EvenementExterneProcessorTest extends BusinessTest {
 
 				// la LR doit être quittancée...
 				final DebiteurPrestationImposable dpi = tiersDAO.getDebiteurPrestationImposableByNumero(ids.dpiId);
-				final DeclarationImpotSource lr = (DeclarationImpotSource) dpi.getDeclarationActive(dateDebut);
+				final DeclarationImpotSource lr = dpi.getDerniereDeclaration(DeclarationImpotSource.class);
+				Assert.assertNotNull(lr);
+				Assert.assertEquals(dateDebut, lr.getDateDebut());
 				final EtatDeclaration etat = lr.getDernierEtat();
 				Assert.assertNotNull(etat);
 				Assert.assertEquals(RegDateHelper.get(quittancement), etat.getDateObtention());
@@ -310,7 +314,9 @@ public class EvenementExterneProcessorTest extends BusinessTest {
 
 				// la LR doit être quittancée
 				final DebiteurPrestationImposable dpi = tiersDAO.getDebiteurPrestationImposableByNumero(ids.dpiId);
-				final DeclarationImpotSource lr = (DeclarationImpotSource) dpi.getDeclarationActive(dateDebut);
+				final DeclarationImpotSource lr = dpi.getDerniereDeclaration(DeclarationImpotSource.class);
+				Assert.assertNotNull(lr);
+				Assert.assertEquals(dateDebut, lr.getDateDebut());
 				final Set<EtatDeclaration> etats = lr.getEtats();
 				Assert.assertNotNull(etats);
 				Assert.assertEquals(3, etats.size());       // "EMISE", 2x "RETOURNEE", dont un annulé
@@ -451,7 +457,9 @@ public class EvenementExterneProcessorTest extends BusinessTest {
 
 				// la LR doit être quittancée
 				final DebiteurPrestationImposable dpi = tiersDAO.getDebiteurPrestationImposableByNumero(ids.dpiId);
-				final DeclarationImpotSource lr = (DeclarationImpotSource) dpi.getDeclarationActive(dateDebut);
+				final DeclarationImpotSource lr = dpi.getDerniereDeclaration(DeclarationImpotSource.class);
+				Assert.assertNotNull(lr);
+				Assert.assertEquals(dateDebut, lr.getDateDebut());
 				final Set<EtatDeclaration> etats = lr.getEtats();
 				Assert.assertNotNull(etats);
 				Assert.assertEquals(4, etats.size());       // "EMISE", 2x "RETOURNEE et annulée", 1 RETOURNEE
@@ -555,7 +563,9 @@ public class EvenementExterneProcessorTest extends BusinessTest {
 
 				// la LR ne doit toujours pas être quittancée
 				final DebiteurPrestationImposable dpi = tiersDAO.getDebiteurPrestationImposableByNumero(ids.dpiId);
-				final DeclarationImpotSource lr = (DeclarationImpotSource) dpi.getDeclarationActive(dateDebut);
+				final DeclarationImpotSource lr = dpi.getDerniereDeclaration(DeclarationImpotSource.class);
+				Assert.assertNotNull(lr);
+				Assert.assertEquals(dateDebut, lr.getDateDebut());
 				final Set<EtatDeclaration> etats = lr.getEtats();
 				Assert.assertNotNull(etats);
 				Assert.assertEquals(1, etats.size());       // "EMISE"

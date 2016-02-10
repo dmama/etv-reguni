@@ -112,7 +112,7 @@ public class TacheServiceTest2 extends BusinessTest {
 				final Contribuable ctb = (Contribuable) tiersDAO.get(ids.ppId);
 				assertNotNull(ctb);
 
-				final List<Declaration> declarations = ctb.getDeclarationsForPeriode(2009, false);
+				final List<Declaration> declarations = ctb.getDeclarationsDansPeriode(Declaration.class, 2009, false);
 				assertNotNull(declarations);
 				assertEquals(2, declarations.size());
 
@@ -169,7 +169,7 @@ public class TacheServiceTest2 extends BusinessTest {
 				final Contribuable ctb = (Contribuable) tiersDAO.get(ids.ppId);
 				assertNotNull(ctb);
 
-				final List<Declaration> declarations = ctb.getDeclarationsForPeriode(2009, true);
+				final List<Declaration> declarations = ctb.getDeclarationsDansPeriode(Declaration.class, 2009, true);
 				assertNotNull(declarations);
 				assertEquals(2, declarations.size());
 

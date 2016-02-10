@@ -12,7 +12,6 @@ import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.common.LengthConstants;
-import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.ModeleDocument;
 import ch.vd.uniregctb.declaration.ModeleDocumentDAO;
@@ -72,7 +71,7 @@ public class EvenementCediServiceImpl implements EvenementCediService {
 		}
 
 		final int annee = scan.getPeriodeFiscale();
-		final List<Declaration> declarations = ctb.getDeclarationsForPeriode(annee, false);
+		final List<DeclarationImpotOrdinaire> declarations = ctb.getDeclarationsDansPeriode(DeclarationImpotOrdinaire.class, annee, false);
 		if (declarations == null || declarations.isEmpty()) {
 			throw new EvenementCediException(EsbBusinessCode.DECLARATION_ABSENTE, "Le contribuable n°" + ctbId + " ne possède pas de déclaration pour la période fiscale " + annee + '.');
 		}
@@ -197,13 +196,12 @@ public class EvenementCediServiceImpl implements EvenementCediService {
 	 * @param declarations les déclaration de la période considérée
 	 * @return la déclaration correspondante
 	 */
-	public static DeclarationImpotOrdinaire findDeclaration(int noSequenceDI, List<Declaration> declarations) {
+	public static DeclarationImpotOrdinaire findDeclaration(int noSequenceDI, List<DeclarationImpotOrdinaire> declarations) {
 
 		DeclarationImpotOrdinaire declaration = null;
 
 		if (declarations != null && !declarations.isEmpty()) {
-			for (Declaration d : declarations) {
-				DeclarationImpotOrdinaire di = (DeclarationImpotOrdinaire) d;
+			for (DeclarationImpotOrdinaire di : declarations) {
 				if (noSequenceDI != 0) {
 					if (di.getNumero() == noSequenceDI) {
 						declaration = di;

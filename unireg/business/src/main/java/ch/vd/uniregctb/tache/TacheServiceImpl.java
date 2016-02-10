@@ -830,14 +830,7 @@ public class TacheServiceImpl implements TacheService {
 	 * @return la liste des questionnaires SNC existants, non-annulés, triés
 	 */
 	private List<QuestionnaireSNC> getQuestionnairesSNCExistants(Entreprise entreprise) {
-		final List<Declaration> declarations = entreprise.getDeclarationsSorted();
-		final List<QuestionnaireSNC> questionnaires = new ArrayList<>(declarations.size());
-		for (Declaration declaration : declarations) {
-			if (!declaration.isAnnule() && declaration instanceof QuestionnaireSNC) {
-				questionnaires.add((QuestionnaireSNC) declaration);
-			}
-		}
-		return questionnaires;
+		return entreprise.getDeclarationsTriees(QuestionnaireSNC.class, false);
 	}
 
 	/**

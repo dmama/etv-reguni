@@ -64,8 +64,8 @@ import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.avatar.TypeAvatar;
 import ch.vd.uniregctb.common.BatchTransactionTemplateWithResults;
 import ch.vd.uniregctb.common.XmlUtils;
-import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
+import ch.vd.uniregctb.declaration.DeclarationImpotSource;
 import ch.vd.uniregctb.declaration.DelaiDeclaration;
 import ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotService;
 import ch.vd.uniregctb.declaration.source.ListeRecapService;
@@ -629,7 +629,7 @@ public class PartyWebServiceImpl implements PartyWebService {
 			final DebiteurPrestationImposable debiteur = (DebiteurPrestationImposable) tiers;
 
 			// [UNIREG-2110] Détermine les LRs émises et celles manquantes
-			final List<? extends DateRange> lrEmises = debiteur.getDeclarationsForPeriode(params.getTaxPeriod(), false);
+			final List<? extends DateRange> lrEmises = debiteur.getDeclarationsDansPeriode(DeclarationImpotSource.class, params.getTaxPeriod(), false);
 			final List<DateRange> lrManquantes = context.lrService.findLRsManquantes(debiteur, RegDate.get(params.getTaxPeriod(), 12, 31), new ArrayList<DateRange>());
 
 			return DebtorInfoBuilder.newDebtorInfo(params, lrEmises, lrManquantes);
@@ -918,13 +918,9 @@ public class PartyWebServiceImpl implements PartyWebService {
 
 		DeclarationImpotOrdinaire declaration = null;
 		DeclarationImpotOrdinaire declarationAnnuleeTrouvee = null;
-		final List<Declaration> declarations = contribuable.getDeclarationsSorted();
+		final List<DeclarationImpotOrdinaire> declarations = contribuable.getDeclarationsDansPeriode(DeclarationImpotOrdinaire.class, annee, true);
 		if (declarations != null && !declarations.isEmpty()) {
-			for (Declaration d : declarations) {
-				if (d.getPeriode().getAnnee() != annee) {
-					continue;
-				}
-				final DeclarationImpotOrdinaire di = (DeclarationImpotOrdinaire) d;
+			for (DeclarationImpotOrdinaire di : declarations) {
 				if (numeroSequenceDI == 0) {
 					// Dans le cas où le numero dans l'année n'est pas spécifié on prend la dernière DI trouvée sur la période
 					declaration = di;

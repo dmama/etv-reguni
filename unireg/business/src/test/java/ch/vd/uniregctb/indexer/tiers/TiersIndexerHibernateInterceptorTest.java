@@ -546,7 +546,7 @@ public class TiersIndexerHibernateInterceptorTest extends BusinessTest {
 	/**
 	 * [UNIREG-1988] Vérifie qu'un tiers nouvellement créé n'est pas indexé si la transaction est rollée-back
 	 */
-	@Test(timeout = 120000)
+	@Test       //(timeout = 120000)
 	@Transactional(rollbackFor = Throwable.class)
 	public void testIndexOnRollback() throws Exception {
 

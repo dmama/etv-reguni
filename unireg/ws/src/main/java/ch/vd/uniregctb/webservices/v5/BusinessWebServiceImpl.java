@@ -76,8 +76,8 @@ import ch.vd.uniregctb.common.BatchTransactionTemplateWithResults;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.common.StandardBatchIterator;
 import ch.vd.uniregctb.common.TiersNotFoundException;
-import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
+import ch.vd.uniregctb.declaration.DeclarationImpotSource;
 import ch.vd.uniregctb.declaration.DelaiDeclaration;
 import ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotService;
 import ch.vd.uniregctb.declaration.source.ListeRecapService;
@@ -430,10 +430,9 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 
 		DeclarationImpotOrdinaire declaration = null;
 		DeclarationImpotOrdinaire declarationAnnuleeTrouvee = null;
-		final List<Declaration> declarations = contribuable.getDeclarationsForPeriode(annee, true);
+		final List<DeclarationImpotOrdinaire> declarations = contribuable.getDeclarationsDansPeriode(DeclarationImpotOrdinaire.class, annee, true);
 		if (declarations != null && !declarations.isEmpty()) {
-			for (Declaration d : declarations) {
-				final DeclarationImpotOrdinaire di = (DeclarationImpotOrdinaire) d;
+			for (DeclarationImpotOrdinaire di : declarations) {
 				if (numeroSequenceDI == 0) {
 					// Dans le cas où le numero dans l'année n'est pas spécifié on prend la dernière DI trouvée sur la période
 					declaration = di;
@@ -583,7 +582,7 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 				}
 
 				final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiers;
-				final List<? extends DateRange> lrEmises = dpi.getDeclarationsForPeriode(pf, false);
+				final List<? extends DateRange> lrEmises = dpi.getDeclarationsDansPeriode(DeclarationImpotSource.class, pf, false);
 				final List<DateRange> lrManquantes = context.lrService.findLRsManquantes(dpi, RegDate.get(pf, 12, 31), new ArrayList<DateRange>());
 				final List<DateRange> lrManquantesInPf = extractIntersecting(lrManquantes, new DateRangeHelper.Range(RegDate.get(pf, 1, 1), RegDate.get(pf, 12, 31)));
 				return new DebtorInfo(debtorNo, pf, lrManquantesInPf.size() + lrEmises.size(), lrEmises.size(), null);

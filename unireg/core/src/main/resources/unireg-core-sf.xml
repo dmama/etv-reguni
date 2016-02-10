@@ -19,6 +19,7 @@
 		<value>ch.vd.uniregctb.adresse.AdresseSupplementaire</value>
 		<value>ch.vd.uniregctb.audit.AuditLine</value>
 		<value>ch.vd.uniregctb.declaration.Declaration</value>
+		<value>ch.vd.uniregctb.declaration.DeclarationAvecNumeroSequence</value>
 		<value>ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire</value>
 		<value>ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePM</value>
 		<value>ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP</value>

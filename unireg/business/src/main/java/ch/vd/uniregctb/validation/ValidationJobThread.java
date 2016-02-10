@@ -187,22 +187,7 @@ public class ValidationJobThread extends Thread {
 	}
 
 	private static void checkCoherencePeriodeImpositionAvecDI(Contribuable contribuable, ValidationJobResults results, int annee, List<PeriodeImposition> periodesImposition) {
-
-		// filtrage des di annulées
-		final List<Declaration> toutesDIs = contribuable.getDeclarationsForPeriode(annee, false);
-		List<Declaration> dis = toutesDIs == null || toutesDIs.isEmpty() ? null : new ArrayList<Declaration>(toutesDIs.size());
-		if (dis != null) {
-			for (Declaration di : toutesDIs) {
-				if (!di.isAnnule()) {
-					dis.add(di);
-				}
-			}
-			if (dis.isEmpty()) {
-				// toutes ont été annulées !
-				dis = null;
-			}
-		}
-
+		final List<Declaration> dis = contribuable.getDeclarationsDansPeriode(Declaration.class, annee, false);
 		checkCoherencePeriodesImpositionAvecDIs(contribuable, results, annee, periodesImposition, dis);
 	}
 

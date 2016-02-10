@@ -12,8 +12,6 @@ import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.declaration.Declaration;
-import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
@@ -426,14 +424,24 @@ public class PeriodeImpositionPersonnesPhysiquesCalculator implements PeriodeImp
 		return codeSegment;
 	}
 
+	private static List<DeclarationImpotOrdinairePP> getDeclarationsDansPeriode(ContribuableImpositionPersonnesPhysiques ctb, int... pf) {
+		final List<DeclarationImpotOrdinairePP> declarations = ctb.getDeclarationsTriees(DeclarationImpotOrdinairePP.class, false);
+		final List<DeclarationImpotOrdinairePP> dis = new ArrayList<>(declarations.size());
+		if (pf != null && pf.length > 0) {
+			for (DeclarationImpotOrdinairePP declaration : declarations) {
+				if (ArrayUtils.contains(pf, declaration.getPeriode().getAnnee())) {
+					dis.add(declaration);
+				}
+			}
+		}
+		return dis.isEmpty() ? Collections.<DeclarationImpotOrdinairePP>emptyList() : dis;
+	}
+
 	private static DeclarationImpotOrdinairePP getDeclarationPrecedente(ContribuableImpositionPersonnesPhysiques contribuable, int anneePrecedente) {
 		DeclarationImpotOrdinairePP precedenteDI = null;
-		final List<Declaration> declarations = contribuable.getDeclarationsForPeriode(anneePrecedente, false);
+		final List<DeclarationImpotOrdinairePP> declarations = getDeclarationsDansPeriode(contribuable, anneePrecedente);
 		if (declarations != null && !declarations.isEmpty()) {
-			Declaration precedenteDeclaration = declarations.get(declarations.size() - 1);
-			if (precedenteDeclaration instanceof DeclarationImpotOrdinairePP) {
-				precedenteDI = (DeclarationImpotOrdinairePP) precedenteDeclaration;
-			}
+			precedenteDI = declarations.get(declarations.size() - 1);
 		}
 		return precedenteDI;
 	}
@@ -466,12 +474,12 @@ public class PeriodeImpositionPersonnesPhysiquesCalculator implements PeriodeImp
 	 */
 	protected FormatDIOrdinaire determineFormatDIOrdinaire(ContribuableImpositionPersonnesPhysiques contribuable, int annee, DonneesAssujettissement data) {
 
-		final List<DeclarationImpotOrdinaire> dis = getDeclarationsPourAnnees(contribuable, annee - 1, annee - 2);
+		final List<DeclarationImpotOrdinairePP> dis = getDeclarationsDansPeriode(contribuable, annee - 1, annee - 2);
 
 		if (dis != null && !dis.isEmpty()) {
 			// inspecte les déclarations des deux dernières années et retourne le type de la première déclaration ordinaire trouvée
 			for (int i = dis.size() - 1; i >= 0; i--) {
-				final DeclarationImpotOrdinaire di = dis.get(i);
+				final DeclarationImpotOrdinairePP di = dis.get(i);
 				switch (di.getTypeDeclaration()) {
 				case DECLARATION_IMPOT_VAUDTAX:
 					return FormatDIOrdinaire.VAUDTAX;
@@ -496,36 +504,6 @@ public class PeriodeImpositionPersonnesPhysiquesCalculator implements PeriodeImp
 				return FormatDIOrdinaire.COMPLETE;
 			}
 		}
-	}
-
-	/**
-	 * Retourne les déclarations d'impôt ordinaires valides pour des années données.
-	 *
-	 * @param contribuable un contribuable
-	 * @param annees       une ou plusieurs années
-	 * @return les déclarations d'impôt ordinaires valides pour les années spécifiées, et triées par ordre croissant.
-	 */
-	private static List<DeclarationImpotOrdinaire> getDeclarationsPourAnnees(ContribuableImpositionPersonnesPhysiques contribuable, int... annees) {
-
-		final List<DeclarationImpotOrdinaire> results = new ArrayList<>();
-
-		final List<Declaration> declarations = contribuable.getDeclarationsSorted();
-		if (declarations != null && !declarations.isEmpty()) {
-			for (Declaration d : declarations) {
-				if (d.isAnnule()) {
-					continue;
-				}
-				if (d instanceof DeclarationImpotOrdinaire) {
-					final DeclarationImpotOrdinaire di = (DeclarationImpotOrdinaire) d;
-					final int anneeDi = di.getPeriode().getAnnee();
-					if (ArrayUtils.contains(annees, anneeDi)) {
-						results.add(di);
-					}
-				}
-			}
-		}
-
-		return results;
 	}
 
 	private static boolean is31Decembre(RegDate date) {

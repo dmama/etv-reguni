@@ -1371,11 +1371,11 @@ public class EnvoiDIsPPEnMasseProcessorTest extends BusinessTest {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
-				final List<Declaration> decls = pp.getDeclarationsForPeriode(annee, false);
+				final List<Declaration> decls = pp.getDeclarationsDansPeriode(Declaration.class, annee, false);
 				assertNotNull(decls);
 				assertEquals(1, decls.size());
 
-				final DeclarationImpotOrdinaire di = (DeclarationImpotOrdinaire) decls.get(0);
+				final DeclarationImpotOrdinairePP di = (DeclarationImpotOrdinairePP) decls.get(0);
 				assertNotNull(di);
 				assertFalse(di.isAnnule());
 				assertEquals(2, (int) di.getNumero());
@@ -1417,7 +1417,7 @@ public class EnvoiDIsPPEnMasseProcessorTest extends BusinessTest {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
-				final List<Declaration> decls = pp.getDeclarationsForPeriode(annee, false);
+				final List<Declaration> decls = pp.getDeclarationsDansPeriode(Declaration.class, annee, false);
 				assertNotNull(decls);
 				assertEquals(1, decls.size());
 
@@ -1462,7 +1462,7 @@ public class EnvoiDIsPPEnMasseProcessorTest extends BusinessTest {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
-				final List<Declaration> decls = pp.getDeclarationsForPeriode(annee, false);
+				final List<Declaration> decls = pp.getDeclarationsDansPeriode(Declaration.class, annee, false);
 				assertNotNull(decls);
 				assertEquals(1, decls.size());
 
@@ -1513,7 +1513,7 @@ public class EnvoiDIsPPEnMasseProcessorTest extends BusinessTest {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
-				final List<Declaration> decls = pp.getDeclarationsForPeriode(annee, false);
+				final List<Declaration> decls = pp.getDeclarationsDansPeriode(Declaration.class, annee, false);
 				assertNotNull(decls);
 				assertEquals(2, decls.size());
 
@@ -1568,7 +1568,7 @@ public class EnvoiDIsPPEnMasseProcessorTest extends BusinessTest {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
-				final List<Declaration> decls = pp.getDeclarationsForPeriode(annee, false);
+				final List<Declaration> decls = pp.getDeclarationsDansPeriode(Declaration.class, annee, false);
 				assertNotNull(decls);
 				assertEquals(2, decls.size());
 
@@ -1626,7 +1626,7 @@ public class EnvoiDIsPPEnMasseProcessorTest extends BusinessTest {
 					final String prenom = pp.getPrenomUsuel();
 					assertTrue(prenom.startsWith("Jean-"));
 					final int index = Integer.parseInt(prenom.substring(5)) - 1;
-					final List<Declaration> dis = pp.getDeclarationsForPeriode(annee, false);
+					final List<Declaration> dis = pp.getDeclarationsDansPeriode(Declaration.class, annee, false);
 					final String message = "Contribuable " + pp.getNumero() + " (" + index + ")";
 					assertEquals(message, 1, dis.size());
 					assertNotNull(message, dis.get(0));
@@ -1818,20 +1818,20 @@ public class EnvoiDIsPPEnMasseProcessorTest extends BusinessTest {
 			public Object doInTransaction(TransactionStatus status) {
 				{
 					final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.pp1);
-					final List<Declaration> decls = pp.getDeclarationsForPeriode(annee, false);
+					final List<Declaration> decls = pp.getDeclarationsDansPeriode(Declaration.class, annee, false);
 					assertNotNull(decls);
 					assertEquals(1, decls.size());
 
-					final DeclarationImpotOrdinaire di = (DeclarationImpotOrdinaire) decls.get(0);
+					final DeclarationImpotOrdinairePP di = (DeclarationImpotOrdinairePP) decls.get(0);
 					assertNotNull(di);
 				}
 				{
 					final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.pp2);
-					final List<Declaration> decls = pp.getDeclarationsForPeriode(annee, false);
+					final List<Declaration> decls = pp.getDeclarationsDansPeriode(Declaration.class, annee, false);
 					assertNotNull(decls);
 					assertEquals(1, decls.size());
 
-					final DeclarationImpotOrdinaire di = (DeclarationImpotOrdinaire) decls.get(0);
+					final DeclarationImpotOrdinairePP di = (DeclarationImpotOrdinairePP) decls.get(0);
 					assertNotNull(di);
 				}
 				return null;
@@ -1942,20 +1942,20 @@ public class EnvoiDIsPPEnMasseProcessorTest extends BusinessTest {
 			public Object doInTransaction(TransactionStatus status) {
 				{
 					final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.pp1);
-					final List<Declaration> decls = pp.getDeclarationsForPeriode(annee, false);
+					final List<Declaration> decls = pp.getDeclarationsDansPeriode(Declaration.class, annee, false);
 					assertNotNull(decls);
 					assertEquals(1, decls.size());
 
-					final DeclarationImpotOrdinaire di = (DeclarationImpotOrdinaire) decls.get(0);
+					final DeclarationImpotOrdinairePP di = (DeclarationImpotOrdinairePP) decls.get(0);
 					assertNotNull(di);
 				}
 				{
 					final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.pp2);
-					final List<Declaration> decls = pp.getDeclarationsForPeriode(annee, false);
+					final List<Declaration> decls = pp.getDeclarationsDansPeriode(Declaration.class, annee, false);
 					assertNotNull(decls);
 					assertEquals(1, decls.size());
 
-					final DeclarationImpotOrdinaire di = (DeclarationImpotOrdinaire) decls.get(0);
+					final DeclarationImpotOrdinairePP di = (DeclarationImpotOrdinairePP) decls.get(0);
 					assertNotNull(di);
 				}
 				return null;

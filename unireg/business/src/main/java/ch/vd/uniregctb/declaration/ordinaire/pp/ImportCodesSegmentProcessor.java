@@ -90,25 +90,27 @@ public class ImportCodesSegmentProcessor {
 					rapport.addErrorPasUnContribuable(ctb.getNoContribuable(), tiers.getNatureTiers());
 				}
 				else {
-					final Declaration derniereDeclaration = tiers.getDerniereDeclaration();
-					if (derniereDeclaration == null) {
-						// contribuable sans déclaration -> comment a-t-on fait pour assigner un code de segmentation (sensé être basé sur la taxation de l'année dernière...) ?
-						rapport.addErrorCtbSansDeclaration(ctb.getNoContribuable());
-					}
-					else if (derniereDeclaration instanceof DeclarationImpotOrdinairePP) {
-							final DeclarationImpotOrdinairePP di = (DeclarationImpotOrdinairePP) derniereDeclaration;
-							final Integer ancienCodeSegment = di.getCodeSegment();
-							if (ancienCodeSegment == null || ancienCodeSegment != ctb.getCodeSegment()) {
-								setNewCodeSegment(di, ctb.getCodeSegment());
-								rapport.addCtbTraite(ctb.getNoContribuable(), ctb.getCodeSegment());
-							}
-							else {
-								rapport.addCtbIgnoreDejaBonCode(ctb.getNoContribuable());
-							}
+					final DeclarationImpotOrdinairePP derniereDI = tiers.getDerniereDeclaration(DeclarationImpotOrdinairePP.class);
+					if (derniereDI == null) {
+						final Declaration derniereDecla = tiers.getDerniereDeclaration(Declaration.class);
+						if (derniereDecla != null) {
+							// si ce ne sont pas des déclarations d'impôt ordinaires, que sont-ce ?
+							rapport.addErrorCtbAvecMauvaisTypeDeDeclaration(ctb.getNoContribuable(), derniereDecla.getClass().getName());
+						}
+						else {
+							// contribuable sans déclaration -> comment a-t-on fait pour assigner un code de segmentation (sensé être basé sur la taxation de l'année dernière...) ?
+							rapport.addErrorCtbSansDeclaration(ctb.getNoContribuable());
+						}
 					}
 					else {
-						// si ce ne sont pas des déclarations d'impôt ordinaires, que sont-ce ?
-						rapport.addErrorCtbAvecMauvaisTypeDeDeclaration(ctb.getNoContribuable(), derniereDeclaration.getClass().getName());
+						final Integer ancienCodeSegment = derniereDI.getCodeSegment();
+						if (ancienCodeSegment == null || ancienCodeSegment != ctb.getCodeSegment()) {
+							setNewCodeSegment(derniereDI, ctb.getCodeSegment());
+							rapport.addCtbTraite(ctb.getNoContribuable(), ctb.getCodeSegment());
+						}
+						else {
+							rapport.addCtbIgnoreDejaBonCode(ctb.getNoContribuable());
+						}
 					}
 				}
 			}

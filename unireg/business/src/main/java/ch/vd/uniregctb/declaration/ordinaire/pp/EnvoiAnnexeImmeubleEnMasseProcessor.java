@@ -22,9 +22,8 @@ import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.cache.ServiceCivilCacheWarmer;
 import ch.vd.uniregctb.common.BatchTransactionTemplateWithResults;
 import ch.vd.uniregctb.common.LoggingStatusManager;
-import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationException;
-import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
+import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP;
 import ch.vd.uniregctb.declaration.ModeleDocument;
 import ch.vd.uniregctb.declaration.ModeleDocumentDAO;
 import ch.vd.uniregctb.declaration.ModeleFeuilleDocument;
@@ -37,7 +36,6 @@ import ch.vd.uniregctb.metier.assujettissement.PeriodeImposition;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionPersonnesPhysiques;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionService;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
-import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
 import ch.vd.uniregctb.tiers.ForGestion;
 import ch.vd.uniregctb.tiers.Tiers;
@@ -208,17 +206,17 @@ public class EnvoiAnnexeImmeubleEnMasseProcessor {
 		}
 	}
 
-	protected static int getNoSequenceAnnexeImmeuble(Contribuable ctb, DateRange pi) {
-		final List<Declaration> decls = ctb.getDeclarationsForPeriode(pi.getDateFin().year(), true);
+	protected static int getNoSequenceAnnexeImmeuble(ContribuableImpositionPersonnesPhysiques ctb, DateRange pi) {
+		final List<DeclarationImpotOrdinairePP> decls = ctb.getDeclarationsDansPeriode(DeclarationImpotOrdinairePP.class, pi.getDateFin().year(), true);
 		final int noSequence;
 		if (decls == null || decls.isEmpty()) {
 			noSequence = 1;
 		}
 		else {
-			final Declaration declFinPeriode = ctb.getDeclarationActive(pi.getDateFin());
+			final DeclarationImpotOrdinairePP declFinPeriode = ctb.getDeclarationActiveAt(pi.getDateFin());
 			if (declFinPeriode != null) {
 				// il y a déjà une DI valide à la fin de la période considérée... on reprend donc le même numéro!
-				noSequence = ((DeclarationImpotOrdinaire) declFinPeriode).getNumero();
+				noSequence = declFinPeriode.getNumero();
 			}
 			else {
 				// attribution d'un nouveau numéro -> la prochaine fois que l'on générera une DI, c'est ce numéro

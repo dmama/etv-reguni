@@ -18,7 +18,6 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
@@ -28,6 +27,7 @@ import java.util.Set;
 import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,9 +46,6 @@ import ch.vd.uniregctb.common.ComparisonHelper;
 import ch.vd.uniregctb.common.HibernateEntity;
 import ch.vd.uniregctb.common.LengthConstants;
 import ch.vd.uniregctb.declaration.Declaration;
-import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
-import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePM;
-import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.TypeAdresseTiers;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
@@ -530,88 +527,61 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 		return declarations;
 	}
 
-	/**
-	 * @return les déclarations triées par ordre croissant.
-	 */
-	@Transient
-	public List<Declaration> getDeclarationsSorted() {
-		if (declarations == null) {
-			return null;
-		}
-		List<Declaration> list = new ArrayList<>();
-		list.addAll(declarations);
-		Collections.sort(list, new DateRangeComparator<Declaration>());
-		return list;
+	public void setDeclarations(Set<Declaration> theDeclarations) {
+		declarations = theDeclarations;
 	}
 
 	/**
-	 * Retourne la déclaration active à une date donnée.
-	 *
-	 * @param date
-	 *            la date à laquelle la déclaration est active, ou <b>null</b> pour obtenir la déclaration courante.
-	 * @return la déclaration trouvée, ou nulle si aucune déclaration ne correspond aux critères.
+	 * @return la liste de toutes les déclarations du contribuable (y compris les déclarations annulées), triées
 	 */
 	@Transient
-	public Declaration getDeclarationActive(RegDate date) {
+	public List<Declaration> getDeclarationsTriees() {
+		return getDeclarationsTriees(Declaration.class, true);
+	}
 
-		if (declarations == null) {
-			return null;
+	@Transient
+	public <T extends Declaration> List<T> getDeclarationsTriees(Class<T> clazz, boolean avecAnnulees) {
+		if (declarations == null || declarations.isEmpty()) {
+			return Collections.emptyList();
 		}
-
-		Declaration result = null;
+		final List<T> triees = new ArrayList<>(declarations.size());
 		for (Declaration declaration : declarations) {
-			if (declaration.isValidAt(date)) {
-				result = declaration;
-				break;
+			if (clazz.isAssignableFrom(declaration.getClass()) && (avecAnnulees || !declaration.isAnnule())) {
+				//noinspection unchecked
+				triees.add((T) declaration);
 			}
 		}
-
-		return result;
+		Collections.sort(triees, new DateRangeComparator<>());
+		return triees;
 	}
 
-	/**Retourne la dernière declaration non annulée du tiers
-	 *
-	 * @return la derniere declaration ou null si le tiers n'a aucune déclaration
-	 */
 	@Transient
-	public Declaration getDerniereDeclaration() {
-		final List<Declaration> listeTriees = getDeclarationsSorted();
-		if (listeTriees != null) {
-			for (Declaration candidate : CollectionsUtils.revertedOrder(listeTriees)) {
-				if (!candidate.isAnnule()) {
-					return candidate;
+	public <T extends Declaration> List<T> getDeclarationsDansPeriode(Class<T> clazz, int pf, boolean avecAnnulees) {
+		if (declarations == null || declarations.isEmpty()) {
+			return Collections.emptyList();
+		}
+		final List<T> filtrees = new ArrayList<>(declarations.size());
+		for (Declaration declaration : declarations) {
+			if ((avecAnnulees || !declaration.isAnnule()) && pf == declaration.getPeriode().getAnnee()) {
+				if (clazz.isAssignableFrom(declaration.getClass())) {
+					//noinspection unchecked
+					filtrees.add((T) declaration);
 				}
 			}
 		}
-
-		return null;
-
+		if (filtrees.isEmpty()) {
+			return Collections.emptyList();
+		}
+		else {
+			Collections.sort(filtrees, new DateRangeComparator<>());
+			return filtrees;
+		}
 	}
 
-	/**
-	 * Retourne la liste des déclarations correspondantes à la période fiscale (= année) spécifiée.
-	 *
-	 * @param annee        l'année correspondant à la période fiscale
-	 * @param avecAnnulees <b>vrai</b> s'il faut inclure les déclarations annulées; <b>faux</b> s'il faut les exclure.
-	 * @return une liste de déclaration, ou <b>null</b> si le tiers ne possède pas de déclaration pour la période spécifiée.
-	 */
-	public List<Declaration> getDeclarationsForPeriode(int annee, boolean avecAnnulees) {
-		if (declarations == null) {
-			return null;
-		}
-
-		final List<Declaration> result = new ArrayList<>();
-		for (Declaration declaration : getDeclarationsSorted()) {
-			if ((avecAnnulees || !declaration.isAnnule()) && declaration.getPeriode().getAnnee() == annee) {
-				result.add(declaration);
-			}
-		}
-
-		return result;
-	}
-
-	public void setDeclarations(Set<Declaration> theDeclarations) {
-		declarations = theDeclarations;
+	@Transient
+	public <T extends Declaration> T getDerniereDeclaration(Class<T> clazz) {
+		final List<T> toutes = getDeclarationsTriees(clazz, false);
+		return toutes == null || toutes.isEmpty() ? null : CollectionsUtils.getLastElement(toutes);
 	}
 
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
@@ -935,97 +905,19 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 		adressesTiers.add(adresse);
 	}
 
-	public synchronized void addDeclaration(Declaration declaration) {
-		Assert.notNull(declaration);
-
+	@Transient
+	@NotNull
+	protected synchronized Set<Declaration> getOrCreateDeclarationSet() {
 		if (declarations == null) {
 			declarations = new HashSet<>();
 		}
-
-		if (declaration instanceof DeclarationImpotOrdinaire) {
-
-			final int annee = declaration.getPeriode().getAnnee();
-
-			/*
-			 * Les déclarations d'impôt ordinaires possèdent un numéro de séquence (unique par année) qui doit être calculé au moment de
-			 * l'insertion.
-			 */
-			final DeclarationImpotOrdinaire di = (DeclarationImpotOrdinaire) declaration;
-			if (di.getNumero() == null) {
-				int numero = 0;
-				for (Declaration d : declarations) {
-					if (d.getPeriode().getAnnee() == annee) {
-						++numero;
-					}
-				}
-				di.setNumero(numero + 1);
-			}
-
-			// les déclarations d'impôt ordinaires se voient parfois affublées d'un code de contrôle
-			if (di.getCodeControle() == null) {
-
-				// cas des déclarations PP depuis 2011
-				if (di instanceof DeclarationImpotOrdinairePP && annee >= DeclarationImpotOrdinairePP.PREMIERE_ANNEE_RETOUR_ELECTRONIQUE) {
-					// [SIFISC-1368] Les déclaration d'impôt ordinaires possèdent un code contrôle (un pour chaque pair contribuable/période fiscale) qui doit
-					// être générée/assigné au moment de l'insertion
-
-					final List<Declaration> declsPeriode = getDeclarationsForPeriode(annee, true); // on veut les déclarations annulées !
-
-					// on recherche un code de contrôle déjà généré sur les déclarations préexistantes de la période
-					String codeControle = null;
-					if (declsPeriode != null) {
-						for (Declaration d : declsPeriode) {
-							final DeclarationImpotOrdinairePP dio = (DeclarationImpotOrdinairePP) d;
-							if (dio.getCodeControle() != null) {
-								codeControle = dio.getCodeControle();
-								break;
-							}
-						}
-					}
-
-					if (codeControle == null) {
-						// pas de code déjà généré : on en génère un nouveau
-						codeControle = DeclarationImpotOrdinairePP.generateCodeControle();
-						if (declsPeriode != null) {
-							// on profite pour assigner le code de contrôle généré à toutes les déclarations préexistantes de la période (= rattrapage de données)
-							for (Declaration d : declsPeriode) {
-								final DeclarationImpotOrdinairePP dio = (DeclarationImpotOrdinairePP) d;
-								dio.setCodeControle(codeControle);
-							}
-						}
-					}
-
-					di.setCodeControle(codeControle);
-				}
-
-				// cas des déclarations PM
-				else if (di instanceof DeclarationImpotOrdinairePM && annee >= DeclarationImpotOrdinairePM.PREMIERE_ANNEE_RETOUR_ELECTRONIQUE) {
-					// nouveau numéro pour chaque déclaration
-					di.setCodeControle(DeclarationImpotOrdinairePM.generateCodeControle());
-				}
-			}
-		}
-		
-		declarations.add(declaration);
-		declaration.setTiers(this);
+		return declarations;
 	}
 
-	/**
-	 * Méthode réservée à la migration qui ajoute toutes les déclarations d'un coup. Les déclarations doivent posséder leur numéro de
-	 * séquence.
-	 */
-	public void addAllDeclarations(Collection<Declaration> coll) {
-		Assert.notNull(coll);
-		if (declarations == null) {
-			declarations = new HashSet<>();
-		}
-		for (Declaration declaration : coll) {
-			if (declaration instanceof DeclarationImpotOrdinaire) {
-				Assert.notNull(((DeclarationImpotOrdinaire) declaration).getNumero());
-			}
-			declarations.add(declaration);
-			declaration.setTiers(this);
-		}
+	public synchronized void addDeclaration(Declaration declaration) {
+		Assert.notNull(declaration);
+		getOrCreateDeclarationSet().add(declaration);
+		declaration.setTiers(this);
 	}
 
 	@Transient

@@ -8,7 +8,6 @@ import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.tiers.AnnuleEtRemplace;
 import ch.vd.uniregctb.tiers.Contribuable;
@@ -107,25 +106,14 @@ public class ActivationServiceImpl implements ActivationService {
 	 */
 	private static void checkDeclarationsEnConflitAvecDesactivation(Tiers tiers, RegDate dateAnnulation) throws ActivationServiceException {
 		final RegDate seuilPourDeclarationBloquante = dateAnnulation.getOneDayAfter();
-		final List<Declaration> declarations = tiers.getDeclarationsSorted();
-		if (declarations != null && !declarations.isEmpty()) {
 
-			// puisqu'elles sont triées, il suffit de trouver la dernière déclaration non annulée et de la tester
-			Declaration nonAnnulee = null;
-			for (Declaration candidate : CollectionsUtils.revertedOrder(declarations)) {
-				if (!candidate.isAnnule()) {
-					nonAnnulee = candidate;
-					break;
-				}
-			}
-
-			// si toutes sont annulées, pas de souci...
-			if (nonAnnulee != null) {
-				final RegDate dateFin = nonAnnulee.getDateFin();
-				if (seuilPourDeclarationBloquante.isBeforeOrEqual(dateFin)) {
-					// problème...
-					throw new ActivationServiceException("Il est interdit d'annuler un tiers pour lequel il existe encore des déclarations couvrant une période postérieure à la date d'annulation souhaitée.");
-				}
+		// puisqu'elles sont triées, il suffit de trouver la dernière déclaration non annulée et de la tester
+		final Declaration derniereDeclaration = tiers.getDerniereDeclaration(Declaration.class);
+		if (derniereDeclaration != null) {
+			final RegDate dateFin = derniereDeclaration.getDateFin();
+			if (seuilPourDeclarationBloquante.isBeforeOrEqual(dateFin)) {
+				// problème...
+				throw new ActivationServiceException("Il est interdit d'annuler un tiers pour lequel il existe encore des déclarations couvrant une période postérieure à la date d'annulation souhaitée.");
 			}
 		}
 	}

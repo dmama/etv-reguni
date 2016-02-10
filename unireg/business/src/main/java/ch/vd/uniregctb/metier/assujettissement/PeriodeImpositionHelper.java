@@ -8,7 +8,7 @@ import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
-import ch.vd.uniregctb.declaration.Declaration;
+import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
@@ -56,12 +56,9 @@ public abstract class PeriodeImpositionHelper {
 	@Nullable
 	private static DeclarationImpotOrdinairePP getDerniereDeclaration(ContribuableImpositionPersonnesPhysiques contribuable, int annee) {
 		DeclarationImpotOrdinairePP derniereDI = null;
-		final List<Declaration> declarations = contribuable.getDeclarationsForPeriode(annee, false);
+		final List<DeclarationImpotOrdinairePP> declarations = contribuable.getDeclarationsDansPeriode(DeclarationImpotOrdinairePP.class, annee, false);
 		if (declarations != null && !declarations.isEmpty()) {
-			final Declaration derniereDeclaration = declarations.get(declarations.size() - 1);
-			if (derniereDeclaration instanceof DeclarationImpotOrdinairePP) {
-				derniereDI = (DeclarationImpotOrdinairePP) derniereDeclaration;
-			}
+			derniereDI = CollectionsUtils.getLastElement(declarations);
 		}
 		return derniereDI;
 	}

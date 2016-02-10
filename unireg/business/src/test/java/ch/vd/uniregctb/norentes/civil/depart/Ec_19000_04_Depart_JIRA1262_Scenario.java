@@ -131,7 +131,7 @@ public class Ec_19000_04_Depart_JIRA1262_Scenario extends DepartScenario {
 			assertNull(ffp.getDateFin(), "Date de fin du dernier for de Sebastien fausse");
 			assertEquals(communeDepart.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale(), "For pas attaché à la bonne commune");
 
-			final List<Declaration> declarations = sebastien.getDeclarationsSorted();
+			final List<Declaration> declarations = sebastien.getDeclarationsTriees();
 			assertNotNull(declarations, "Liste des DI nulle");
 			assertTrue(!declarations.isEmpty(), "Mauvais nombre de déclarations");
 
