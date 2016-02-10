@@ -3442,7 +3442,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 			final Entreprise e = uniregStore.getEntityFromDb(Entreprise.class, idEntreprise);
 			Assert.assertNotNull(e);
 
-			final List<Declaration> declarations = e.getDeclarationsSorted();
+			final List<Declaration> declarations = e.getDeclarationsTriees();
 			Assert.assertNotNull(declarations);
 			Assert.assertEquals(2, declarations.size());        // une en 2013, une en 2014
 
@@ -3587,7 +3587,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 			final Entreprise e = uniregStore.getEntityFromDb(Entreprise.class, idEntreprise);
 			Assert.assertNotNull(e);
 
-			final List<Declaration> declarations = e.getDeclarationsSorted();
+			final List<Declaration> declarations = e.getDeclarationsTriees();
 			Assert.assertNotNull(declarations);
 			Assert.assertEquals(2, declarations.size());        // une en 2013, une en 2014
 

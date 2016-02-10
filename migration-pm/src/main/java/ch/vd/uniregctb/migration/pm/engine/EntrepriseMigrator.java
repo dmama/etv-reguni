@@ -67,9 +67,11 @@ import ch.vd.uniregctb.declaration.DelaiDeclaration;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
 import ch.vd.uniregctb.declaration.EtatDeclarationEchue;
 import ch.vd.uniregctb.declaration.EtatDeclarationEmise;
+import ch.vd.uniregctb.declaration.EtatDeclarationRappelee;
 import ch.vd.uniregctb.declaration.EtatDeclarationRetournee;
 import ch.vd.uniregctb.declaration.EtatDeclarationSommee;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
+import ch.vd.uniregctb.declaration.QuestionnaireSNC;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementException;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImposition;
@@ -120,6 +122,7 @@ import ch.vd.uniregctb.migration.pm.regpm.RegpmMandat;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmModeImposition;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmObjectImpot;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmPrononceFaillite;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmQuestionnaireSNC;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmRegimeFiscal;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmRegimeFiscalCH;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmRegimeFiscalVD;
@@ -134,6 +137,7 @@ import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeEtatDecisionTaxation;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeEtatDemandeDelai;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeEtatDossierFiscal;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeEtatEntreprise;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeEtatQuestionnaireSNC;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeForPrincipal;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeFormeJuridique;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeMandat;
@@ -2031,7 +2035,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		// enregistrement de cette entreprise pour la comparaison des assujettissements avant/après
 		mr.addPreTransactionCommitData(new ComparaisonAssujettissementsData(regpm, migrationContexte.getActivityManager().isActive(regpm), moi));
 
-		// TODO migrer les documents (questionnaires SNC...)
+		// TODO migrer les documents (lettres de bienvenue...)
 
 		final String raisonSociale = Optional.ofNullable(mr.getExtractedData(RaisonSocialeHistoData.class, moi.getKey()).histo.lastEntry()).map(Map.Entry::getValue).orElse(null);
 		migrateCoordonneesFinancieres(regpm::getCoordonneesFinancieres, raisonSociale, unireg, mr);
@@ -2046,6 +2050,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		migrateRegimesFiscaux(regpm, unireg, mr);
 		migrateExercicesCommerciaux(regpm, unireg, mr);
 		migrateDeclarationsImpot(regpm, unireg, mr, idMapper);
+		migrateQuestionnairesSNC(regpm, unireg, mr, idMapper);
 		generateForsPrincipaux(regpm, unireg, mr);
 		migrateImmeubles(regpm, unireg, mr);
 
@@ -3284,7 +3289,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		}
 	}
 
-	private Declaration migrateDeclaration(RegpmDossierFiscal dossier, RegDate dateDebut, RegDate dateFin, MigrationResultProduction mr) {
+	private DeclarationImpotOrdinairePM migrateDeclaration(RegpmDossierFiscal dossier, RegDate dateDebut, RegDate dateFin, MigrationResultProduction mr) {
 		final PeriodeFiscale pf = getPeriodeFiscaleByYear(dossier.getPf());
 
 		final DeclarationImpotOrdinairePM di = new DeclarationImpotOrdinairePM();
@@ -3294,7 +3299,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		di.setDateDebutExerciceCommercial(dateDebut);
 		di.setDateFinExerciceCommercial(dateFin);
 		di.setDelais(migrateDelaisDeclaration(dossier, di, mr));
-		di.setEtats(migrateEtatsDeclaration(dossier, di, mr));
+		di.setEtats(migrateEtatsDeclaration(dossier, mr));
 		di.setNumero(dossier.getNoParAnnee());
 		di.setPeriode(pf);
 
@@ -3303,6 +3308,95 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 			di.setAnnulationDate(Optional.ofNullable((Date) dossier.getLastMutationTimestamp()).orElseGet(ch.vd.registre.base.date.DateHelper::getCurrentDate));
 		}
 		return di;
+	}
+
+	/**
+	 * Migration d'un questionnaire SNC de RegPM
+	 */
+	private QuestionnaireSNC migrateQuestionnaireSNC(RegpmQuestionnaireSNC regpm, MigrationResultProduction mr) {
+		final int anneeFiscale = regpm.getAnneeFiscale();
+		final PeriodeFiscale pf = getPeriodeFiscaleByYear(anneeFiscale);
+		final QuestionnaireSNC unireg = new QuestionnaireSNC();
+		copyCreationMutation(regpm, unireg);
+		unireg.setDateDebut(RegDate.get(anneeFiscale, 1, 1));
+		unireg.setDateFin(RegDate.get(anneeFiscale, 12, 31));
+		unireg.setDelais(migrateDelaisQuestionnaireSNC(regpm, mr));
+		unireg.setEtats(migrateEtatsQuestionnaireSNC(regpm, mr));
+		unireg.setPeriode(pf);
+		return unireg;
+	}
+
+	/**
+	 * Migration des états d'un questionnaire SNC
+	 */
+	private static Set<EtatDeclaration> migrateEtatsQuestionnaireSNC(RegpmQuestionnaireSNC regpm, MigrationResultProduction mr) {
+
+		final Set<EtatDeclaration> etats = new LinkedHashSet<>();
+
+		// envoi
+		if (regpm.getDateEnvoi() != null) {
+			etats.add(new EtatDeclarationEmise(regpm.getDateEnvoi()));
+		}
+
+		// rappel
+		if (regpm.getDateRappel() != null) {
+			etats.add(new EtatDeclarationRappelee(regpm.getDateRappel(), regpm.getDateRappel()));
+		}
+
+		// retour
+		if (regpm.getDateRetour() != null) {
+			etats.add(new EtatDeclarationRetournee(regpm.getDateRetour(), MigrationConstants.SOURCE_RETOUR_QSNC_MIGRE));
+		}
+
+		// un peu de traçabilité sur le travail accompli ici
+		etats.forEach(etat -> mr.addMessage(LogCategory.DECLARATIONS, LogLevel.INFO,
+		                                    String.format("Etat '%s' migré au %s.",
+		                                                  etat.getEtat(),
+		                                                  StringRenderers.DATE_RENDERER.toString(etat.getDateObtention()))));
+
+		return etats;
+	}
+
+	/**
+	 * Migration du délai initial d'un questionnaire SNC
+	 */
+	private static Set<DelaiDeclaration> migrateDelaisQuestionnaireSNC(RegpmQuestionnaireSNC regpm, MigrationResultProduction mr) {
+		// un seul délai -> le délai initial, basé sur le champ délai retour du questionnaire source
+		final DelaiDeclaration delaiInitial = new DelaiDeclaration();
+		delaiInitial.setDateDemande(regpm.getDateEnvoi());
+		delaiInitial.setDateTraitement(regpm.getDateEnvoi());
+		delaiInitial.setDelaiAccordeAu(regpm.getDelaiRetour());
+		delaiInitial.setEtat(EtatDelaiDeclaration.ACCORDE);
+
+		// un peu de log
+		mr.addMessage(LogCategory.DECLARATIONS, LogLevel.INFO,
+		              String.format("Délai initial fixé au %s.", StringRenderers.DATE_RENDERER.toString(regpm.getDelaiRetour())));
+
+		return Collections.singleton(delaiInitial);
+	}
+
+	/**
+	 * Migration des questionnaires SNC avec leurs délais, états...
+	 * @param regpm entreprise dans RegPM
+	 * @param unireg entreprise dans Unireg
+	 * @param mr collecteur des messages de suivi
+	 * @param idMapper mapping des identifiants RegPM -> Unireg
+	 */
+	private void migrateQuestionnairesSNC(RegpmEntreprise regpm, Entreprise unireg, MigrationResultProduction mr, IdMapping idMapper) {
+		regpm.getQuestionnairesSNC().stream()
+				.filter(q -> q.getEtat() != RegpmTypeEtatQuestionnaireSNC.ANNULE)       // on ne migre pas les questionnaires annulés
+				.filter(q -> {
+					if (q.getAnneeFiscale() < MigrationConstants.PREMIERE_PF) {
+						mr.addMessage(LogCategory.DECLARATIONS, LogLevel.WARN,
+						              String.format("Questionnaire SNC non-annulé ignoré car sa période fiscale est avant %d.", MigrationConstants.PREMIERE_PF));
+						return false;
+					}
+					return true;
+				})
+				.peek(q -> mr.addMessage(LogCategory.DECLARATIONS, LogLevel.INFO,
+				                         String.format("Génération d'un questionnaire SNC sur la période fiscale %d.", q.getAnneeFiscale())))
+				.map(q -> migrateQuestionnaireSNC(q, mr))
+				.forEach(unireg::addDeclaration);
 	}
 
 	/**
@@ -3387,8 +3481,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 			final Entreprise entreprise = data.entrepriseSupplier.get();
 			if (entreprise.isDebiteurInactif() || entreprise.isAnnule()) {
 				// les éventuelles déclarations non-annulées
-				neverNull(entreprise.getDeclarationsSorted()).stream()
-						.filter(decl -> !decl.isAnnule())
+				neverNull(entreprise.getDeclarationsTriees(Declaration.class, false)).stream()
 						.peek(decl -> mr.addMessage(LogCategory.DECLARATIONS, LogLevel.INFO,
 						                            String.format("Déclaration %s sur la période fiscale %d annulée car l'entreprise a été identifée comme un débiteur inactif.",
 						                                          StringRenderers.DATE_RANGE_RENDERER.toString(decl),
@@ -3617,7 +3710,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 	/**
 	 * Génération des états d'une déclaration
 	 */
-	private static Set<EtatDeclaration> migrateEtatsDeclaration(RegpmDossierFiscal dossier, Declaration di, MigrationResultProduction mr) {
+	private static Set<EtatDeclaration> migrateEtatsDeclaration(RegpmDossierFiscal dossier, MigrationResultProduction mr) {
 
 		final Set<EtatDeclaration> etats = new LinkedHashSet<>();
 
@@ -3646,7 +3739,10 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		}
 
 		// un peu de traçabilité sur le travail accompli ici
-		etats.forEach(etat -> mr.addMessage(LogCategory.DECLARATIONS, LogLevel.INFO, String.format("Etat '%s' migré au %s.", etat.getEtat(), StringRenderers.DATE_RENDERER.toString(etat.getDateObtention()))));
+		etats.forEach(etat -> mr.addMessage(LogCategory.DECLARATIONS, LogLevel.INFO,
+		                                    String.format("Etat '%s' migré au %s.",
+		                                                  etat.getEtat(),
+		                                                  StringRenderers.DATE_RENDERER.toString(etat.getDateObtention()))));
 
 		return etats;
 	}

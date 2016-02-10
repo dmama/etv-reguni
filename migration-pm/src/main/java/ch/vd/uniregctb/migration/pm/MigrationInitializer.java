@@ -41,8 +41,6 @@ public class MigrationInitializer implements InitializingBean {
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(MigrationInitializer.class);
 
-	private static final int PREMIERE_PF = 1995;
-
 	private MigrationInitializationRegistrar registrar;
 
 	private SessionFactory uniregSessionFactory;
@@ -107,7 +105,8 @@ public class MigrationInitializer implements InitializingBean {
 			final List<Long> ids = doInUniregTransaction(true, status -> {
 				final Session currentSession = uniregSessionFactory.getCurrentSession();
 				final Query query = currentSession.createQuery("select p.numero from PersonnePhysique p where numeroIndividu is null");
-				return query.list();
+				//noinspection unchecked
+				return (List<Long>) query.list();
 			});
 
 			LOGGER.info(String.format("%d non-habitants inconnus de RCPers trouvés.", ids.size()));
@@ -171,7 +170,7 @@ public class MigrationInitializer implements InitializingBean {
 	}
 
 	private void initMissingPeriodesFiscales() {
-		LOGGER.info("Ajout des PF manquantes dans Unireg (depuis " + PREMIERE_PF + ").");
+		LOGGER.info("Ajout des PF manquantes dans Unireg (depuis " + MigrationConstants.PREMIERE_PF + ").");
 		AuthenticationHelper.pushPrincipal(MigrationConstants.VISA_MIGRATION);
 		try {
 			doInUniregTransaction(false, status -> {
@@ -181,7 +180,7 @@ public class MigrationInitializer implements InitializingBean {
 				final List<PeriodeFiscale> pfExistantes = Optional.ofNullable((List<PeriodeFiscale>) query.list()).orElse(Collections.emptyList());
 				final Map<Integer, PeriodeFiscale> pfParAnnee = pfExistantes.stream()
 						.collect(Collectors.toMap(PeriodeFiscale::getAnnee, Function.identity()));
-				for (int annee = PREMIERE_PF ; annee <= RegDate.get().year() ; ++ annee) {
+				for (int annee = MigrationConstants.PREMIERE_PF ; annee <= RegDate.get().year() ; ++ annee) {
 					if (!pfParAnnee.containsKey(annee)) {
 						LOGGER.info("Création de la PF manquante " + annee + ".");
 						final PeriodeFiscale pf = new PeriodeFiscale();

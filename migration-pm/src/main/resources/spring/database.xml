@@ -16,12 +16,14 @@
 		<value>ch.vd.uniregctb.adresse.AdresseSupplementaire</value>
 		<value>ch.vd.uniregctb.audit.AuditLine</value>
 		<value>ch.vd.uniregctb.declaration.Declaration</value>
+		<value>ch.vd.uniregctb.declaration.DeclarationAvecNumeroSequence</value>
 		<value>ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire</value>
 		<value>ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP</value>
 		<value>ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePM</value>
 		<value>ch.vd.uniregctb.declaration.DeclarationImpotSource</value>
 		<value>ch.vd.uniregctb.declaration.DelaiDeclaration</value>
 		<value>ch.vd.uniregctb.declaration.EtatDeclaration</value>
+		<value>ch.vd.uniregctb.declaration.EtatDeclarationRappelee</value>
 		<value>ch.vd.uniregctb.declaration.EtatDeclarationSommee</value>
 		<value>ch.vd.uniregctb.declaration.EtatDeclarationEchue</value>
 		<value>ch.vd.uniregctb.declaration.EtatDeclarationEmise</value>
@@ -33,6 +35,7 @@
 		<value>ch.vd.uniregctb.declaration.ModeleDocument</value>
 		<value>ch.vd.uniregctb.declaration.ModeleFeuilleDocument</value>
 		<value>ch.vd.uniregctb.declaration.Periodicite</value>
+		<value>ch.vd.uniregctb.declaration.QuestionnaireSNC</value>
 		<value>ch.vd.uniregctb.migreg.MigrationError</value>
 		<value>ch.vd.uniregctb.tiers.ActiviteEconomique</value>
 		<value>ch.vd.uniregctb.tiers.AdministrationEntreprise</value>
