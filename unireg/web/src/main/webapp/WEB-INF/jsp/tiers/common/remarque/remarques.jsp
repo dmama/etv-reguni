@@ -104,12 +104,14 @@
                 }
 
                 html += '<td style="width:2em;">';
-                if (!remarque.annule) {
-                    html += '<a class="delete"';
-                    html += ' onclick="if (!confirm(\'Voulez-vous vraiment annuler cette remarque ?\')) return false;';
-                    html += 'Form.dynamicSubmit(\'POST\',\'<c:url value="/remarque/cancel.do"/>\',{\'remarqueId\':\'' + remarque.id + '\'}); return false;"';
-                    html += ' title="Annulation de remarque" href="<c:url value="/remarque/cancel.do"/>"></a>&nbsp;';
-                }
+                <authz:authorize ifAnyGranted="ROLE_REMARQUE_TIERS">
+                    if (!remarque.annule) {
+                        html += '<a class="delete"';
+                        html += ' onclick="if (!confirm(\'Voulez-vous vraiment annuler cette remarque ?\')) return false;';
+                        html += 'Form.dynamicSubmit(\'POST\',\'<c:url value="/remarque/cancel.do"/>\',{\'remarqueId\':\'' + remarque.id + '\'}); return false;"';
+                        html += ' title="Annulation de remarque" href="<c:url value="/remarque/cancel.do"/>"></a>&nbsp;';
+                    }
+                </authz:authorize>
                 html += '<a href="#" class="consult" title="Consultation des logs" onclick="return Dialog.open_consulter_log(\'Remarque\', ' + remarque.id + ');">&nbsp;</a></td>';
                 html += '</tr>\n';
             }
