@@ -10,7 +10,6 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
@@ -25,7 +24,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.DateRange;
-import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
@@ -37,7 +35,6 @@ import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.common.BatchTransactionTemplateWithResults;
 import ch.vd.uniregctb.common.FiscalDateHelper;
-import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaireDAO;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePM;
@@ -1583,19 +1580,7 @@ public class TacheServiceImpl implements TacheService {
 
 	@SuppressWarnings({"unchecked"})
 	private List<DeclarationImpotOrdinaire> getDeclarationsActives(Contribuable contribuable) {
-		final Set<Declaration> declarations = contribuable.getDeclarations();
-		if (declarations == null || declarations.isEmpty()) {
-			return Collections.emptyList();
-		}
-		final List<DeclarationImpotOrdinaire> list = new ArrayList<>(declarations.size());
-		for (Declaration d : declarations) {
-			if (d.isAnnule()) {
-				continue;
-			}
-			list.add((DeclarationImpotOrdinaire) d);
-		}
-		Collections.sort(list, new DateRangeComparator<>());
-		return list;
+		return contribuable.getDeclarationsTriees(DeclarationImpotOrdinaire.class, false);
 	}
 
 	private List<TacheAnnulationDeclarationImpot> getTachesAnnulationDIsEnInstance(Contribuable contribuable) {

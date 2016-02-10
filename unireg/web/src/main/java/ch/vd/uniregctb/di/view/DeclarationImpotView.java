@@ -9,7 +9,6 @@ import org.springframework.context.MessageSource;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.Annulable;
-import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePM;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP;
@@ -21,10 +20,10 @@ import ch.vd.uniregctb.type.TypeEtatDeclaration;
 import ch.vd.uniregctb.utils.WebContextUtils;
 
 /**
- * Vue d'une déclaration d'impôt (ordinaire ou source).
+ * Vue d'une déclaration d'impôt (ordinaire)
  */
 @SuppressWarnings("UnusedDeclaration")
-public class DeclarationView implements Annulable {
+public class DeclarationImpotView implements Annulable {
 
 	private final long id;
 	private final Long tiersId;
@@ -46,16 +45,16 @@ public class DeclarationView implements Annulable {
 	private final RegDate dateDebutExercice;
 	private final RegDate dateFinExercice;
 
-	public DeclarationView(Declaration decl, MessageSource messageSource) {
-		this.id = decl.getId();
-		this.tiersId = decl.getTiers().getId();
-		this.periodeFiscale = decl.getPeriode().getAnnee();
-		this.dateDebut = decl.getDateDebut();
-		this.dateFin = decl.getDateFin();
-		this.delaiAccorde = decl.getDelaiAccordeAu();
-		this.dateRetour = decl.getDateRetour();
+	public DeclarationImpotView(DeclarationImpotOrdinaire di, MessageSource messageSource) {
+		this.id = di.getId();
+		this.tiersId = di.getTiers().getId();
+		this.periodeFiscale = di.getPeriode().getAnnee();
+		this.dateDebut = di.getDateDebut();
+		this.dateFin = di.getDateFin();
+		this.delaiAccorde = di.getDelaiAccordeAu();
+		this.dateRetour = di.getDateRetour();
 
-		final EtatDeclaration etat = decl.getDernierEtat();
+		final EtatDeclaration etat = di.getDernierEtat();
 		this.etat = (etat == null ? null : etat.getEtat());
 		if (etat instanceof EtatDeclarationRetournee) {
 			this.sourceRetour = ((EtatDeclarationRetournee) etat).getSource();
@@ -64,39 +63,31 @@ public class DeclarationView implements Annulable {
 			this.sourceRetour = null;
 		}
 
-		this.annule = decl.isAnnule();
-		if (decl instanceof DeclarationImpotOrdinaire) {
-			final DeclarationImpotOrdinaire di = (DeclarationImpotOrdinaire) decl;
-			this.codeControle = di.getCodeControle();
-			this.typeDocument = di.getTypeDeclaration();
-			if (this.typeDocument != null) {
-				this.typeDocumentMessage = messageSource.getMessage("option.type.document." + this.typeDocument.name(), null, WebContextUtils.getDefaultLocale());
-			}
-			else {
-				this.typeDocumentMessage = null;
-			}
+		this.annule = di.isAnnule();
+		this.codeControle = di.getCodeControle();
+		this.typeDocument = di.getTypeDeclaration();
+		if (this.typeDocument != null) {
+			this.typeDocumentMessage = messageSource.getMessage("option.type.document." + this.typeDocument.name(), null, WebContextUtils.getDefaultLocale());
 		}
 		else {
-			this.codeControle = null;
-			this.typeDocument = null;
 			this.typeDocumentMessage = null;
 		}
 
-		if (decl instanceof DeclarationImpotOrdinairePM) {
-			final DeclarationImpotOrdinairePM di = (DeclarationImpotOrdinairePM) decl;
-			this.dateDebutExercice = di.getDateDebutExerciceCommercial();
-			this.dateFinExercice = di.getDateFinExerciceCommercial();
+		if (di instanceof DeclarationImpotOrdinairePM) {
+			final DeclarationImpotOrdinairePM dipm = (DeclarationImpotOrdinairePM) di;
+			this.dateDebutExercice = dipm.getDateDebutExerciceCommercial();
+			this.dateFinExercice = dipm.getDateFinExerciceCommercial();
 		}
 		else {
 			this.dateDebutExercice = null;
 			this.dateFinExercice = null;
 		}
 
-		this.delais = initDelais(decl.getDelais(), decl.getPremierDelai(), messageSource);
-		this.etats = initEtats(decl.getEtats(), messageSource);
+		this.delais = initDelais(di.getDelais(), di.getPremierDelai(), messageSource);
+		this.etats = initEtats(di.getEtats(), messageSource);
 
-		this.diPP = decl instanceof DeclarationImpotOrdinairePP;
-		this.diPM = decl instanceof DeclarationImpotOrdinairePM;
+		this.diPP = di instanceof DeclarationImpotOrdinairePP;
+		this.diPM = di instanceof DeclarationImpotOrdinairePM;
 	}
 
 	private static List<DelaiDeclarationView> initDelais(Set<DelaiDeclaration> delais, RegDate premierDelai, MessageSource messageSource) {

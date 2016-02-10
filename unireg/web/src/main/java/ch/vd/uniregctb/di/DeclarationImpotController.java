@@ -59,8 +59,8 @@ import ch.vd.uniregctb.di.view.AbstractEditionDelaiDeclarationView;
 import ch.vd.uniregctb.di.view.AjouterDelaiDeclarationView;
 import ch.vd.uniregctb.di.view.AjouterEtatDeclarationView;
 import ch.vd.uniregctb.di.view.ChoixDeclarationImpotView;
-import ch.vd.uniregctb.di.view.DeclarationListView;
-import ch.vd.uniregctb.di.view.DeclarationView;
+import ch.vd.uniregctb.di.view.DeclarationImpotListView;
+import ch.vd.uniregctb.di.view.DeclarationImpotView;
 import ch.vd.uniregctb.di.view.EditerDeclarationImpotView;
 import ch.vd.uniregctb.di.view.ImprimerDuplicataDeclarationImpotView;
 import ch.vd.uniregctb.di.view.ImprimerNouvelleDeclarationImpotView;
@@ -253,7 +253,7 @@ public class DeclarationImpotController {
 		// vérification des droits en écriture
 		controllerUtils.checkAccesDossierEnEcriture(tiersId);
 
-		model.addAttribute("command", new DeclarationListView(ctb, messageSource));
+		model.addAttribute("command", new DeclarationImpotListView(ctb, messageSource));
 		return "/di/lister";
 	}
 
@@ -264,13 +264,13 @@ public class DeclarationImpotController {
 	@Transactional(rollbackFor = Throwable.class, readOnly = true)
 	@RequestMapping(value = "/di/details.do", method = RequestMethod.GET)
 	@ResponseBody
-	public DeclarationView details(@RequestParam("id") long id) throws AccessDeniedException {
+	public DeclarationImpotView details(@RequestParam("id") long id) throws AccessDeniedException {
 
 		if (!SecurityHelper.isAnyGranted(securityProvider, Role.VISU_ALL)) {
 			throw new AccessDeniedException("vous ne possédez aucun droit IfoSec de consultation pour l'application Unireg");
 		}
 
-		final Declaration decl = hibernateTemplate.get(Declaration.class, id);
+		final DeclarationImpotOrdinaire decl = hibernateTemplate.get(DeclarationImpotOrdinaire.class, id);
 		if (decl == null) {
 			return null;
 		}
@@ -279,7 +279,7 @@ public class DeclarationImpotController {
 		final Long tiersId = decl.getTiers().getId();
 		controllerUtils.checkAccesDossierEnLecture(tiersId);
 
-		return new DeclarationView(decl, messageSource);
+		return new DeclarationImpotView(decl, messageSource);
 	}
 
 	/**

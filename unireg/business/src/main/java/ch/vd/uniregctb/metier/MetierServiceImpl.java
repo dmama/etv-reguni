@@ -35,7 +35,7 @@ import ch.vd.uniregctb.cache.ServiceCivilCacheWarmer;
 import ch.vd.uniregctb.common.EtatCivilHelper;
 import ch.vd.uniregctb.common.FiscalDateHelper;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
-import ch.vd.uniregctb.declaration.Declaration;
+import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.efacture.EFactureService;
 import ch.vd.uniregctb.efacture.EvenementEfactureException;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
@@ -1156,18 +1156,8 @@ public class MetierServiceImpl implements MetierService {
 	}
 
 	private boolean hasDiNonAnnulee(Tiers tiers) {
-		Set<Declaration> declarations = tiers.getDeclarations();
-
-		if (declarations != null) {
-			for (Declaration declaration : declarations) {
-				if (!declaration.isAnnule()) {
-					return true;
-				}
-			}
-		}
-
-		return false;
-
+		final List<DeclarationImpotOrdinaire> declarations = tiers.getDeclarationsTriees(DeclarationImpotOrdinaire.class, false);
+		return !declarations.isEmpty();
 	}
 
 	@Override

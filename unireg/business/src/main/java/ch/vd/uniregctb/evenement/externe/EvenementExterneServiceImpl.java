@@ -8,7 +8,6 @@ import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.data.DataEventService;
-import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationImpotSource;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
 import ch.vd.uniregctb.declaration.EtatDeclarationRetournee;
@@ -119,12 +118,10 @@ public class EvenementExterneServiceImpl implements EvenementExterneService {
 		DeclarationImpotSource declarationImpotSource = null;
 		// La période de décompte a été ouverte et n’a pas été annulée.
 		final Tiers tiers = quittance.getTiers();
-		for (Declaration declaration : tiers.getDeclarations()) {
-			if (declaration instanceof DeclarationImpotSource && !declaration.isAnnule()) {
-				if (declaration.getDateDebut() == quittance.getDateDebut()) {
-					declarationImpotSource = (DeclarationImpotSource) declaration;
-					break;
-				}
+		for (DeclarationImpotSource candidate : tiers.getDeclarationsTriees(DeclarationImpotSource.class, false)) {
+			if (candidate.getDateDebut() == quittance.getDateDebut()) {
+				declarationImpotSource = candidate;
+				break;
 			}
 		}
 		if (declarationImpotSource == null) {

@@ -23,7 +23,7 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.common.ComparisonHelper;
 import ch.vd.uniregctb.common.LengthConstants;
-import ch.vd.uniregctb.declaration.Declaration;
+import ch.vd.uniregctb.declaration.DeclarationImpotSource;
 import ch.vd.uniregctb.declaration.Periodicite;
 import ch.vd.uniregctb.type.CategorieImpotSource;
 import ch.vd.uniregctb.type.ModeCommunication;
@@ -204,16 +204,8 @@ public class DebiteurPrestationImposable extends Tiers {
 
 	@Transient
 	public boolean isSansLREmises(){
-		final Set<Declaration> declarations = getDeclarations();
-		if (declarations == null) {
-			return true;
-		}
-		for (Declaration declaration : declarations) {
-			if (!declaration.isAnnule()){
-				return false;
-			}
-		}
-		return true;
+		final List<DeclarationImpotSource> declarations = getDeclarationsTriees(DeclarationImpotSource.class, false);
+		return declarations.isEmpty();
 	}
 
 	/**

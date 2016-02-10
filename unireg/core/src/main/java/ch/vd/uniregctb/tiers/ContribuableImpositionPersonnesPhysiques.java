@@ -16,6 +16,7 @@ import org.hibernate.annotations.ForeignKey;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.DateRangeComparator;
+import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.ComparisonHelper;
 import ch.vd.uniregctb.declaration.Declaration;
@@ -178,16 +179,11 @@ public abstract class ContribuableImpositionPersonnesPhysiques extends Contribua
 	}
 
 	public DeclarationImpotOrdinairePP getDeclarationActiveAt(RegDate date) {
-		final Set<Declaration> declarations = getDeclarations();
+		final List<DeclarationImpotOrdinairePP> declarations = getDeclarationsTriees(DeclarationImpotOrdinairePP.class, false);
 		if (declarations == null || declarations.isEmpty()) {
 			return null;
 		}
-		for (Declaration declaration : declarations) {
-			if (declaration.isValidAt(date) && declaration instanceof DeclarationImpotOrdinairePP) {
-				return (DeclarationImpotOrdinairePP) declaration;
-			}
-		}
-		return null;
+		return DateRangeHelper.rangeAt(declarations, date);
 	}
 
 	@Override

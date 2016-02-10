@@ -36,7 +36,6 @@ import ch.vd.uniregctb.common.AnnulableHelper;
 import ch.vd.uniregctb.common.ControllerUtils;
 import ch.vd.uniregctb.common.Flash;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
-import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePM;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.metier.bouclement.BouclementService;
@@ -113,15 +112,7 @@ public class ExerciceCommercialController {
 	}
 
 	private List<DeclarationImpotOrdinairePM> getDeclarationsNonAnnuleesTriees(Entreprise entreprise) {
-		final List<Declaration> declarations = AnnulableHelper.sansElementsAnnules(entreprise.getDeclarations());
-		final List<DeclarationImpotOrdinairePM> dis = new ArrayList<>(declarations.size());
-		for (Declaration declaration : declarations) {
-			if (declaration instanceof DeclarationImpotOrdinairePM) {
-				dis.add((DeclarationImpotOrdinairePM) declaration);
-			}
-		}
-		Collections.sort(dis, new DateRangeComparator<>());
-		return dis;
+		return entreprise.getDeclarationsTriees(DeclarationImpotOrdinairePM.class, false);
 	}
 
 	private List<ExerciceCommercialView> getViewExercicesCommerciaux(Entreprise entreprise, boolean reversed) {

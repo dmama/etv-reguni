@@ -8,7 +8,6 @@ import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.Predicate;
@@ -231,18 +230,16 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 			return null;
 		}
 
-		final Set<Declaration> declarations = contribuable.getDeclarations();
+		final List<DeclarationImpotOrdinaire> declarations = contribuable.getDeclarationsTriees(DeclarationImpotOrdinaire.class, false);
 
 		// On ne retourne que les périodes qui ne sont pas déjà associées avec une déclaration
 		final List<PeriodeImposition> periodesNonAssociees = new ArrayList<>();
 		for (PeriodeImposition a : periodes) {
 			boolean match = false;
-			if (declarations != null) {
-				for (Declaration d : declarations) {
-					if (!d.isAnnule() && DateRangeHelper.intersect(d, a)) {
-						match = true;
-						break;
-					}
+			for (DeclarationImpotOrdinaire d : declarations) {
+				if (DateRangeHelper.intersect(d, a)) {
+					match = true;
+					break;
 				}
 			}
 			if (!match) {
@@ -315,15 +312,12 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 
 		// on vérifie qu'il n'existe pas déjà une déclaration
 
-		Declaration declaration = null;
-
-		final Set<Declaration> declarations = contribuable.getDeclarations();
-		if (declarations != null) {
-			for (Declaration d : declarations) {
-				if (!d.isAnnule() && DateRangeHelper.intersect(d, range)) {
-					declaration = d;
-					break;
-				}
+		DeclarationImpotOrdinaire declaration = null;
+		final List<DeclarationImpotOrdinaire> declarations = contribuable.getDeclarationsTriees(DeclarationImpotOrdinaire.class, false);
+		for (DeclarationImpotOrdinaire d : declarations) {
+			if (DateRangeHelper.intersect(d, range)) {
+				declaration = d;
+				break;
 			}
 		}
 

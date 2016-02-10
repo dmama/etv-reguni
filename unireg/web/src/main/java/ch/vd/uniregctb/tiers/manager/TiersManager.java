@@ -46,7 +46,6 @@ import ch.vd.uniregctb.common.NpaEtLocalite;
 import ch.vd.uniregctb.common.RueEtNumero;
 import ch.vd.uniregctb.common.WebParamPagination;
 import ch.vd.uniregctb.decision.aci.DecisionAciViewComparator;
-import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationImpotSource;
 import ch.vd.uniregctb.declaration.DelaiDeclaration;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
@@ -426,36 +425,33 @@ public class TiersManager implements MessageSourceAware {
 	 */
 	private List<ListeRecapDetailView> getListesRecapitulatives(DebiteurPrestationImposable dpi) {
 
-		List<ListeRecapDetailView> lrsView = new ArrayList<>();
-		Set<Declaration> declarations = dpi.getDeclarations();
-		for (Declaration declaration : declarations) {
-			if (declaration instanceof DeclarationImpotSource) {
-				DeclarationImpotSource lr = (DeclarationImpotSource) declaration;
-				ListeRecapDetailView lrView = new ListeRecapDetailView();
-				lrView.setId(lr.getId());
-				final EtatDeclaration dernierEtat = lr.getDernierEtat();
-				lrView.setEtat(dernierEtat == null ? null : dernierEtat.getEtat());
-				lrView.setDateDebutPeriode(lr.getDateDebut());
-				lrView.setDateFinPeriode(lr.getDateFin());
-				lrView.setDateRetour(lr.getDateRetour());
-				lrView.setAnnule(lr.isAnnule());
-				Set<DelaiDeclaration> echeances = lr.getDelais();
-				Iterator<DelaiDeclaration> itEcheance = echeances.iterator();
-				RegDate delai;
-				RegDate delaiMax = null;
-				while (itEcheance.hasNext()) {
-					DelaiDeclaration echeance = itEcheance.next();
-					delai = echeance.getDelaiAccordeAu();
-					if (delaiMax == null) {
-						delaiMax = delai;
-					}
-					if (delai.isAfter(delaiMax)) {
-						delaiMax = delai;
-					}
+		final List<ListeRecapDetailView> lrsView = new ArrayList<>();
+		final List<DeclarationImpotSource> declarations = dpi.getDeclarationsTriees(DeclarationImpotSource.class, true);
+		for (DeclarationImpotSource lr : declarations) {
+			final ListeRecapDetailView lrView = new ListeRecapDetailView();
+			lrView.setId(lr.getId());
+			final EtatDeclaration dernierEtat = lr.getDernierEtat();
+			lrView.setEtat(dernierEtat == null ? null : dernierEtat.getEtat());
+			lrView.setDateDebutPeriode(lr.getDateDebut());
+			lrView.setDateFinPeriode(lr.getDateFin());
+			lrView.setDateRetour(lr.getDateRetour());
+			lrView.setAnnule(lr.isAnnule());
+			final Set<DelaiDeclaration> echeances = lr.getDelais();
+			final Iterator<DelaiDeclaration> itEcheance = echeances.iterator();
+			RegDate delai;
+			RegDate delaiMax = null;
+			while (itEcheance.hasNext()) {
+				DelaiDeclaration echeance = itEcheance.next();
+				delai = echeance.getDelaiAccordeAu();
+				if (delaiMax == null) {
+					delaiMax = delai;
 				}
-				lrView.setDelaiAccorde(delaiMax);
-				lrsView.add(lrView);
+				if (delai.isAfter(delaiMax)) {
+					delaiMax = delai;
+				}
 			}
+			lrView.setDelaiAccorde(delaiMax);
+			lrsView.add(lrView);
 		}
 		Collections.sort(lrsView, new ListeRecapDetailComparator());
 		return lrsView;

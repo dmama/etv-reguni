@@ -28,7 +28,7 @@ import ch.vd.uniregctb.common.StandardBatchIterator;
 import ch.vd.uniregctb.common.TiersNotFoundException;
 import ch.vd.uniregctb.common.WebParamPagination;
 import ch.vd.uniregctb.decision.aci.DecisionAciViewComparator;
-import ch.vd.uniregctb.di.view.DeclarationListView;
+import ch.vd.uniregctb.di.view.DeclarationImpotListView;
 import ch.vd.uniregctb.hibernate.HibernateCallback;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.interfaces.InterfaceDataException;
@@ -142,7 +142,7 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 			if (tiers instanceof Contribuable) {
 				final Contribuable contribuable = (Contribuable) tiers;
 				tiersVisuView.setDebiteurs(getDebiteurs(contribuable));
-				tiersVisuView.setDis(DeclarationListView.initDeclarations(contribuable.getDeclarations(), messageSource));
+				tiersVisuView.setDis(new DeclarationImpotListView(contribuable, messageSource).getDis());
 				tiersVisuView.setMouvements(getMouvements(contribuable));
 				setForsFiscaux(tiersVisuView, contribuable);
 				setDecisionAciView(tiersVisuView,contribuable);

@@ -12,7 +12,7 @@ import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.di.view.DeclarationView;
+import ch.vd.uniregctb.di.view.DeclarationImpotView;
 import ch.vd.uniregctb.entreprise.EntrepriseView;
 import ch.vd.uniregctb.entreprise.EtablissementView;
 import ch.vd.uniregctb.general.view.TiersGeneralView;
@@ -85,7 +85,7 @@ public class TiersView {
 
 	private List<ListeRecapDetailView> lrs;
 
-	private List<DeclarationView> dis;
+	private List<DeclarationImpotView> dis;
 
 	private ForFiscalView forsPrincipalActif;
 
@@ -477,11 +477,11 @@ public class TiersView {
 		this.adressesEnErreurMessage = adressesEnErreurMessage;
 	}
 
-	public List<DeclarationView> getDis() {
+	public List<DeclarationImpotView> getDis() {
 		return dis;
 	}
 
-	public void setDis(List<DeclarationView> dis) {
+	public void setDis(List<DeclarationImpotView> dis) {
 		this.dis = dis;
 	}
 

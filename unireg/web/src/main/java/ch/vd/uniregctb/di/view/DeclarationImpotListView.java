@@ -8,37 +8,37 @@ import java.util.List;
 
 import org.springframework.context.MessageSource;
 
-import ch.vd.uniregctb.declaration.Declaration;
+import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesMorales;
 import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
 
 @SuppressWarnings("UnusedDeclaration")
-public class DeclarationListView {
+public class DeclarationImpotListView {
 
 	private final long ctbId;
-	private final List<DeclarationView> dis;
+	private final List<DeclarationImpotView> dis;
 	private boolean ctbPP;
 	private boolean ctbPM;
 
-	public DeclarationListView(Contribuable ctb, MessageSource messageSource) {
+	public DeclarationImpotListView(Contribuable ctb, MessageSource messageSource) {
 		this.ctbId = ctb.getId();
-		this.dis = initDeclarations(ctb.getDeclarations(), messageSource);
+		this.dis = initDeclarations(ctb.getDeclarationsTriees(DeclarationImpotOrdinaire.class, true), messageSource);
 		this.ctbPP = ctb instanceof ContribuableImpositionPersonnesPhysiques;
 		this.ctbPM = ctb instanceof ContribuableImpositionPersonnesMorales;
 	}
 
-	public static List<DeclarationView> initDeclarations(Collection<Declaration> declarations, MessageSource messageSource) {
+	public static List<DeclarationImpotView> initDeclarations(Collection<? extends DeclarationImpotOrdinaire> declarations, MessageSource messageSource) {
 		if (declarations == null || declarations.isEmpty()) {
 			return Collections.emptyList();
 		}
-		final List<DeclarationView> views = new ArrayList<>(declarations.size());
-		for (Declaration declaration : declarations) {
-			views.add(new DeclarationView(declaration, messageSource));
+		final List<DeclarationImpotView> views = new ArrayList<>(declarations.size());
+		for (DeclarationImpotOrdinaire declaration : declarations) {
+			views.add(new DeclarationImpotView(declaration, messageSource));
 		}
-		Collections.sort(views, new Comparator<DeclarationView>() {
+		Collections.sort(views, new Comparator<DeclarationImpotView>() {
 			@Override
-			public int compare(DeclarationView o1, DeclarationView o2) {
+			public int compare(DeclarationImpotView o1, DeclarationImpotView o2) {
 				if (o1.isAnnule() && !o2.isAnnule()) {
 					return 1;
 				}
@@ -57,7 +57,7 @@ public class DeclarationListView {
 		return ctbId;
 	}
 
-	public List<DeclarationView> getDis() {
+	public List<DeclarationImpotView> getDis() {
 		return dis;
 	}
 

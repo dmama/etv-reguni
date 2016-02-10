@@ -4,7 +4,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 
 import org.hibernate.Criteria;
 import org.hibernate.FetchMode;
@@ -35,9 +34,9 @@ import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.AuthenticationInterface;
 import ch.vd.uniregctb.common.LoggingStatusManager;
 import ch.vd.uniregctb.common.ParallelBatchTransactionTemplateWithResults;
-import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationException;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
+import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePM;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.declaration.PeriodeFiscaleDAO;
 import ch.vd.uniregctb.hibernate.HibernateCallback;
@@ -290,11 +289,10 @@ public class DeterminationDIsPMAEmettreProcessor {
 		// qui n'apparaissent pas dans la liste des périodes d'imposition car celles-ci ont été éliminées en raison de leur position
 		// relative à la date de traitement)
 
-		final Set<Declaration> declarations = entreprise.getDeclarations();
+		final List<DeclarationImpotOrdinairePM> declarations = entreprise.getDeclarationsTriees(DeclarationImpotOrdinairePM.class, false);
 		if (declarations != null && !declarations.isEmpty()) {
-			for (Declaration d : declarations) {
-				final DeclarationImpotOrdinaire di = (DeclarationImpotOrdinaire) d;
-				if (!di.isAnnule() && di.getPeriode().getAnnee().equals(periodeFiscale.getAnnee())) {
+			for (DeclarationImpotOrdinairePM di : declarations) {
+				if (di.getPeriode().getAnnee().equals(periodeFiscale.getAnnee())) {
 					verifierValiditeDeclaration(entreprise, data, di, rapport);
 				}
 			}
@@ -603,21 +601,15 @@ public class DeterminationDIsPMAEmettreProcessor {
 
 		ExistenceResults<DeclarationImpotOrdinaire> status = null;
 
-		final Set<Declaration> declarations = entreprise.getDeclarations();
-		if (declarations != null) {
-			for (Declaration d : declarations) {
-
-				// [UNIREG-1417] : ne pas tenir compte des DI annulées...
-				if (!d.isAnnule()) {
-					final DeclarationImpotOrdinaire di = (DeclarationImpotOrdinaire) d;
-					if (DateRangeHelper.equals(d, periode)) {
-						status = new ExistenceResults<>(ExistenceResults.TacheStatus.EXISTE_DEJA, di);
-					}
-					else if (DateRangeHelper.intersect(d, periode)) {
-						status = new ExistenceResults<>(ExistenceResults.TacheStatus.INTERSECTE, di);
-						break; // inutile de continuer
-					}
-				}
+		// [UNIREG-1417] : ne pas tenir compte des DI annulées...
+		final List<DeclarationImpotOrdinairePM> declarations = entreprise.getDeclarationsTriees(DeclarationImpotOrdinairePM.class, false);
+		for (DeclarationImpotOrdinaire di : declarations) {
+			if (DateRangeHelper.equals(di, periode)) {
+				status = new ExistenceResults<>(ExistenceResults.TacheStatus.EXISTE_DEJA, di);
+			}
+			else if (DateRangeHelper.intersect(di, periode)) {
+				status = new ExistenceResults<>(ExistenceResults.TacheStatus.INTERSECTE, di);
+				break; // inutile de continuer
 			}
 		}
 

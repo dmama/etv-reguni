@@ -41,7 +41,6 @@ import ch.vd.uniregctb.common.LoggingStatusManager;
 import ch.vd.uniregctb.common.ParallelBatchTransactionTemplateWithResults;
 import ch.vd.uniregctb.common.TicketService;
 import ch.vd.uniregctb.common.TicketTimeoutException;
-import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationException;
 import ch.vd.uniregctb.declaration.DeclarationGenerationOperation;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePM;
@@ -580,15 +579,11 @@ public class EnvoiDeclarationsPMProcessor {
 			if (declarations.containsKey(ctb.getNumero())) {
 				return declarations.get(ctb.getNumero());
 			}
-			final Set<Declaration> toutes = ctb.getDeclarations();
-			final List<DeclarationImpotOrdinairePM> computed = new ArrayList<>(toutes.size());
-			for (Declaration d : toutes) {
-				if (d instanceof DeclarationImpotOrdinairePM) {
-					computed.add((DeclarationImpotOrdinairePM) d);
-				}
-			}
-			declarations.put(ctb.getNumero(), computed);
-			return computed;
+
+			// new ArrayList<>() pour être certain d'avoir une copie modifiable de la liste...
+			final List<DeclarationImpotOrdinairePM> toutes = new ArrayList<>(ctb.getDeclarationsTriees(DeclarationImpotOrdinairePM.class, true));
+			declarations.put(ctb.getNumero(), toutes);
+			return toutes;
 		}
 
 		/**

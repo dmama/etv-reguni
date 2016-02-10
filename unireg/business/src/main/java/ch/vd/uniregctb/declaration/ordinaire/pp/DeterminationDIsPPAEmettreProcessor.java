@@ -32,9 +32,9 @@ import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.AuthenticationInterface;
 import ch.vd.uniregctb.common.LoggingStatusManager;
 import ch.vd.uniregctb.common.ParallelBatchTransactionTemplateWithResults;
-import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationException;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
+import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.declaration.PeriodeFiscaleDAO;
 import ch.vd.uniregctb.declaration.ordinaire.pp.DeterminationDIsPPAEmettreProcessor.ExistenceResults.TacheStatus;
@@ -279,13 +279,10 @@ public class DeterminationDIsPPAEmettreProcessor {
 	                                          PeriodeFiscale periodeFiscale,
 	                                          List<PeriodeImpositionPersonnesPhysiques> periodes,
 	                                          DeterminationDIsPPResults r) {
-		final Set<Declaration> declarations = contribuable.getDeclarations();
-		if (declarations != null && !declarations.isEmpty()) {
-			for (Declaration d : declarations) {
-				final DeclarationImpotOrdinaire di = (DeclarationImpotOrdinaire) d;
-				if (!di.isAnnule() && di.getPeriode().getAnnee().equals(periodeFiscale.getAnnee())) {
-					verifierValiditeDeclaration(contribuable, periodes, di, r);
-				}
+		final List<DeclarationImpotOrdinairePP> declarations = contribuable.getDeclarationsTriees(DeclarationImpotOrdinairePP.class, false);
+		for (DeclarationImpotOrdinairePP di : declarations) {
+			if (di.getPeriode().getAnnee().equals(periodeFiscale.getAnnee())) {
+				verifierValiditeDeclaration(contribuable, periodes, di, r);
 			}
 		}
 	}
@@ -603,21 +600,15 @@ public class DeterminationDIsPPAEmettreProcessor {
 
 		ExistenceResults<DeclarationImpotOrdinaire> status = null;
 
-		final Set<Declaration> declarations = contribuable.getDeclarations();
-		if (declarations != null) {
-			for (Declaration d : declarations) {
-
-				// [UNIREG-1417] : ne pas tenir compte des DI annulées...
-				if (!d.isAnnule()) {
-					final DeclarationImpotOrdinaire di = (DeclarationImpotOrdinaire) d;
-					if (DateRangeHelper.equals(d, periode)) {
-						status = new ExistenceResults<>(TacheStatus.EXISTE_DEJA, di);
-					}
-					else if (DateRangeHelper.intersect(d, periode)) {
-						status = new ExistenceResults<>(TacheStatus.INTERSECTE, di);
-						break; // inutile de continuer
-					}
-				}
+		// [UNIREG-1417] : ne pas tenir compte des DI annulées...
+		final List<DeclarationImpotOrdinairePP> declarations = contribuable.getDeclarationsTriees(DeclarationImpotOrdinairePP.class, false);
+		for (DeclarationImpotOrdinaire di : declarations) {
+			if (DateRangeHelper.equals(di, periode)) {
+				status = new ExistenceResults<>(TacheStatus.EXISTE_DEJA, di);
+			}
+			else if (DateRangeHelper.intersect(di, periode)) {
+				status = new ExistenceResults<>(TacheStatus.INTERSECTE, di);
+				break; // inutile de continuer
 			}
 		}
 
