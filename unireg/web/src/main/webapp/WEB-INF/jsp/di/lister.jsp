@@ -80,7 +80,7 @@
 							</authz:authorize>
 						</c:if>
 						<c:if test="${di.diPM}">
-							<authz:authorize ifAnyGranted="ROLE_DI_QUIT_PM, ROLE_DI_DELAI_PM, ROLE_DI_SOM_PM, ROLE_DI_DUPLIC_PM">
+							<authz:authorize ifAnyGranted="ROLE_DI_QUIT_PM, ROLE_DI_DELAI_PM, ROLE_DI_SOM_PM, ROLE_DI_DUPLIC_PM, ROLE_DI_SUPENDRE_PM, ROLE_DI_DESUPENDRE_PM">
 								<c:if test="${!di.annule}">
 									<unireg:linkTo name="" action="/di/editer.do" method="get" params="{id:${di.id}}" title="Editer la déclaration" link_class="edit"/>
 								</c:if>

@@ -45,10 +45,8 @@
 				</c:if>
 			</display:column>
 			<display:column style="action">
+				<unireg:consulterLog entityNature="EtatDeclaration" entityId="${etat.id}"/>
 				<c:choose>
-					<c:when test="${command.depuisTache}">
-						<unireg:consulterLog entityNature="EtatDeclaration" entityId="${etat.id}"/>
-					</c:when>
 					<c:when test="${!etat.annule && etat.etat == 'RETOURNEE' && command.allowedQuittancement}">
 						<unireg:linkTo name="" title="Annuler le quittancement" confirm="Voulez-vous vraiment annuler ce quittancement ?"
 						               action="/di/etat/annuler-quittance.do" method="post" params="{id:${etat.id}}" link_class="delete"/>

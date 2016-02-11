@@ -189,43 +189,83 @@ public class DeclarationImpotController {
 		binder.registerCustomEditor(RegDate.class, "delaiAccordeAu", new RegDateEditor(true, false, false, RegDateHelper.StringFormat.DISPLAY));
 	}
 
-	private void checkAccessRights(DeclarationImpotOrdinaire di, boolean emission, boolean quittancement, boolean delais, boolean sommation, boolean duplicata) {
+	private void checkAccessRights(DeclarationImpotOrdinaire di, boolean emission, boolean quittancement, boolean delais, boolean sommation, boolean duplicata,
+	                               boolean desannulation, boolean suspension, boolean desuspension) {
+		final boolean emissionOk;
+		final boolean quittancementOk;
+		final boolean delaisOk;
+		final boolean sommationOk;
+		final boolean duplicataOk;
+		final boolean desannulationOk;
+		final boolean suspensionOk;
+		final boolean desuspensionOk;
+		final String qualificatifPersonnes;
 		if (di instanceof DeclarationImpotOrdinairePP) {
-			if (emission && !SecurityHelper.isGranted(securityProvider, Role.DI_EMIS_PP)) {
-				throw new AccessDeniedException("vous ne possédez pas le droit IfoSec d'émission des déclarations d'impôt des personnes physiques.");
-			}
-			if (quittancement && !SecurityHelper.isGranted(securityProvider, Role.DI_QUIT_PP)) {
-				throw new AccessDeniedException("vous ne possédez pas le droit IfoSec de quittancement des déclarations d'impôt des personnes physiques.");
-			}
-			if (delais && !SecurityHelper.isGranted(securityProvider, Role.DI_DELAI_PP)) {
-				throw new AccessDeniedException("vous ne possédez pas le droit IfoSec de gestion des délais des déclarations d'impôt des personnes physiques.");
-			}
-			if (sommation && !SecurityHelper.isGranted(securityProvider, Role.DI_SOM_PP)) {
-				throw new AccessDeniedException("vous ne possédez pas le droit IfoSec de sommation des déclarations d'impôt des personnes physiques.");
-			}
-			if (duplicata && !SecurityHelper.isGranted(securityProvider, Role.DI_DUPLIC_PP)) {
-				throw new AccessDeniedException("vous ne possédez pas le droit IfoSec d'émission de duplicata des déclarations d'impôt des personnes physiques.");
-			}
+			emissionOk = emission && SecurityHelper.isGranted(securityProvider, Role.DI_EMIS_PP);
+			quittancementOk = quittancement && SecurityHelper.isGranted(securityProvider, Role.DI_QUIT_PP);
+			delaisOk = delais && SecurityHelper.isGranted(securityProvider, Role.DI_DELAI_PP);
+			sommationOk = sommation && SecurityHelper.isGranted(securityProvider, Role.DI_SOM_PP);
+			duplicataOk = duplicata && SecurityHelper.isGranted(securityProvider, Role.DI_DUPLIC_PP);
+			desannulationOk = desannulation && SecurityHelper.isGranted(securityProvider, Role.DI_DESANNUL_PP);
+			suspensionOk = false;
+			desuspensionOk = false;
+			qualificatifPersonnes = "physiques";
 		}
 		else if (di instanceof DeclarationImpotOrdinairePM) {
-			if (emission && !SecurityHelper.isGranted(securityProvider, Role.DI_EMIS_PM)) {
-				throw new AccessDeniedException("vous ne possédez pas le droit IfoSec d'émission des déclarations d'impôt des personnes morales.");
-			}
-			if (quittancement && !SecurityHelper.isGranted(securityProvider, Role.DI_QUIT_PM)) {
-				throw new AccessDeniedException("vous ne possédez pas le droit IfoSec de quittancement des déclarations d'impôt des personnes morales.");
-			}
-			if (delais && !SecurityHelper.isGranted(securityProvider, Role.DI_DELAI_PM)) {
-				throw new AccessDeniedException("vous ne possédez pas le droit IfoSec de gestion des délais des déclarations d'impôt des personnes morales.");
-			}
-			if (sommation && !SecurityHelper.isGranted(securityProvider, Role.DI_SOM_PM)) {
-				throw new AccessDeniedException("vous ne possédez pas le droit IfoSec de sommation des déclarations d'impôt des personnes morales.");
-			}
-			if (duplicata && !SecurityHelper.isGranted(securityProvider, Role.DI_DUPLIC_PM)) {
-				throw new AccessDeniedException("vous ne possédez pas le droit IfoSec d'émission de duplicata des déclarations d'impôt des personnes morales.");
-			}
+			emissionOk = emission && SecurityHelper.isGranted(securityProvider, Role.DI_EMIS_PM);
+			quittancementOk = quittancement && SecurityHelper.isGranted(securityProvider, Role.DI_QUIT_PM);
+			delaisOk = delais && SecurityHelper.isGranted(securityProvider, Role.DI_DELAI_PM);
+			sommationOk = sommation && SecurityHelper.isGranted(securityProvider, Role.DI_SOM_PM);
+			duplicataOk = duplicata && SecurityHelper.isGranted(securityProvider, Role.DI_DUPLIC_PM);
+			desannulationOk = desannulation && SecurityHelper.isGranted(securityProvider, Role.DI_DESANNUL_PM);
+			suspensionOk = suspension && SecurityHelper.isGranted(securityProvider, Role.DI_SUSPENDRE_PM);
+			desuspensionOk = desuspension && SecurityHelper.isGranted(securityProvider, Role.DI_DESUSPENDRE_PM);
+			qualificatifPersonnes = "morales";
 		}
 		else {
 			throw new ObjectNotFoundException(messageSource.getMessage("error.di.inexistante", null, WebContextUtils.getDefaultLocale()));
+		}
+
+		if (!emissionOk && !quittancementOk && !delaisOk && !sommationOk && !duplicataOk && !desannulationOk && !suspensionOk && !desuspensionOk) {
+			// on n'a pas le(s) droit(s) demandé(s)
+			// pour plus de précision dans le message, si un seul droit était exigé, on va dire lequel manque (sinon, message générique)
+			final int nbDroitsAutorises = (emission ? 1 : 0) + (quittancement ? 1 : 0) + (delais ? 1 : 0) + (sommation ? 1 : 0) + (duplicata ? 1 : 0) + (desannulation ? 1 : 0) + (suspension ? 1 : 0) + (desuspension ? 1 : 0);
+			final String msg;
+			if (nbDroitsAutorises == 1) {
+				final String droitSpecifique;
+				if (emission) {
+					droitSpecifique = "d'émission";
+				}
+				else if (quittancement) {
+					droitSpecifique = "de quittancement";
+				}
+				else if (delais) {
+					droitSpecifique = "de gestion des délais";
+				}
+				else if (sommation) {
+					droitSpecifique = "de sommation";
+				}
+				else if (duplicata) {
+					droitSpecifique = "d'émission de duplicata";
+				}
+				else if (desannulation) {
+					droitSpecifique = "de réactivation";
+				}
+				else if (suspension) {
+					droitSpecifique = "de suspension";
+				}
+				else if (desuspension) {
+					droitSpecifique = "de levée de suspension";
+				}
+				else {
+					throw new IllegalArgumentException("Cas non supporté...");
+				}
+				msg = String.format("Vous ne possédez pas le droit IfoSec %s des déclarations d'impôt des personnes %s.", droitSpecifique, qualificatifPersonnes);
+			}
+			else {
+				msg = String.format("Vous ne possédez pas les droits IfoSec nécessaires sur les déclarations d'impôt des personnes %s.", qualificatifPersonnes);
+			}
+			throw new AccessDeniedException(msg);
 		}
 	}
 
@@ -762,7 +802,7 @@ public class DeclarationImpotController {
 		if (di == null) {
 			throw new ObjectNotFoundException(messageSource.getMessage("error.di.inexistante", null, WebContextUtils.getDefaultLocale()));
 		}
-		checkAccessRights(di, false, true, false, false, false);
+		checkAccessRights(di, false, true, false, false, false, false, false, false);
 
 		final Contribuable ctb = di.getTiers();
 		controllerUtils.checkAccesDossierEnEcriture(ctb.getId());
@@ -799,7 +839,7 @@ public class DeclarationImpotController {
 		if (di == null) {
 			throw new ObjectNotFoundException(messageSource.getMessage("error.di.inexistante", null, WebContextUtils.getDefaultLocale()));
 		}
-		checkAccessRights(di, false, true, false, false, false);
+		checkAccessRights(di, false, true, false, false, false, false, false, false);
 
 		if (result.hasErrors()) {
 			view.initReadOnlyValues(di, view.isTypeDocumentEditable(), messageSource);
@@ -844,7 +884,7 @@ public class DeclarationImpotController {
 		}
 
 		final DeclarationImpotOrdinaire di = (DeclarationImpotOrdinaire) etat.getDeclaration();
-		checkAccessRights(di, false, true, false, false, false);
+		checkAccessRights(di, false, true, false, false, false, false, false, false);
 		final Contribuable ctb = di.getTiers();
 		controllerUtils.checkAccesDossierEnEcriture(ctb.getId());
 
@@ -891,7 +931,7 @@ public class DeclarationImpotController {
 	                     @RequestParam(value = "tacheId", required = false) Long tacheId,
 	                     Model model) throws AccessDeniedException {
 
-		if (!SecurityHelper.isAnyGranted(securityProvider, Role.DI_QUIT_PP, Role.DI_QUIT_PM, Role.DI_DELAI_PP, Role.DI_DELAI_PM, Role.DI_SOM_PP, Role.DI_SOM_PM, Role.DI_DUPLIC_PP, Role.DI_DUPLIC_PM)) {
+		if (!SecurityHelper.isAnyGranted(securityProvider, Role.DI_QUIT_PP, Role.DI_QUIT_PM, Role.DI_DELAI_PP, Role.DI_DELAI_PM, Role.DI_SOM_PP, Role.DI_SOM_PM, Role.DI_DUPLIC_PP, Role.DI_DUPLIC_PM, Role.DI_SUSPENDRE_PM, Role.DI_DESUSPENDRE_PM)) {
 			throw new AccessDeniedException("vous ne possédez pas le droit IfoSec d'édition des déclarations d'impôt.");
 		}
 
@@ -899,7 +939,7 @@ public class DeclarationImpotController {
 		if (di == null) {
 			throw new ObjectNotFoundException(messageSource.getMessage("error.di.inexistante", null, WebContextUtils.getDefaultLocale()));
 		}
-		checkAccessRights(di, false, true, true, false, false);
+		checkAccessRights(di, false, true, true, true, true, false, true, true);
 
 		final Contribuable ctb = di.getTiers();
 		controllerUtils.checkAccesDossierEnEcriture(ctb.getId());
@@ -965,7 +1005,7 @@ public class DeclarationImpotController {
 				if (di == null) {
 					throw new ObjectNotFoundException(messageSource.getMessage("error.di.inexistante", null, WebContextUtils.getDefaultLocale()));
 				}
-				checkAccessRights(di, false, false, false, true, false);
+				checkAccessRights(di, false, false, false, true, false, false, false, false);
 
 				if (!EditerDeclarationImpotView.isSommable(di)) {
 					throw new IllegalArgumentException("La déclaration n°" + id + " n'est pas dans un état sommable.");
@@ -1030,7 +1070,7 @@ public class DeclarationImpotController {
 		if (di == null) {
 			throw new ObjectNotFoundException(messageSource.getMessage("error.di.inexistante", null, WebContextUtils.getDefaultLocale()));
 		}
-		checkAccessRights(di, false, false, false, false, true);
+		checkAccessRights(di, false, false, false, false, true, false, false, false);
 
 		final Contribuable ctb = di.getTiers();
 		controllerUtils.checkAccesDossierEnEcriture(ctb.getId());

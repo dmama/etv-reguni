@@ -13,6 +13,8 @@ import ch.vd.uniregctb.common.Flash;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
+import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePM;
+import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP;
 import ch.vd.uniregctb.declaration.DeclarationImpotSource;
 import ch.vd.uniregctb.declaration.DelaiDeclaration;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
@@ -21,6 +23,7 @@ import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.security.SecurityHelper;
 import ch.vd.uniregctb.security.SecurityProviderInterface;
 import ch.vd.uniregctb.tiers.Tiers;
+import ch.vd.uniregctb.type.EtatDelaiDeclaration;
 import ch.vd.uniregctb.utils.WebContextUtils;
 
 @Controller
@@ -62,9 +65,14 @@ public class DelaiController {
 		}
 
 		final Declaration declaration = delai.getDeclaration();
-		if (declaration instanceof DeclarationImpotOrdinaire) {
+		if (declaration instanceof DeclarationImpotOrdinairePP) {
 			if (!SecurityHelper.isGranted(securityProvider, Role.DI_DELAI_PP)) {
 				throw new AccessDeniedException("Vous ne possédez pas le droit IfoSec d'édition des délais sur les déclarations d'impôt des personnes physiques.");
+			}
+		}
+		else if (declaration instanceof DeclarationImpotOrdinairePM) {
+			if (!SecurityHelper.isGranted(securityProvider, Role.DI_DELAI_PM)) {
+				throw new AccessDeniedException("Vous ne possédez pas le droit IfoSec d'édition des délais sur les déclarations d'impôt des personnes morales.");
 			}
 		}
 		else if (declaration instanceof DeclarationImpotSource) {
@@ -79,18 +87,29 @@ public class DelaiController {
 			throw new IllegalArgumentException("Type de déclaration inattendu : " + declaration.getClass().getName());
 		}
 
-		final RegDate premier = declaration.getPremierDelai();
-		if (declaration.getDelaiAccordeAu() == premier) {
-			throw new IllegalArgumentException("Le premier délai accordé ne peut pas être annulé.");
+		// si le délai est déjà annulé, on ne fait rien
+		if (!delai.isAnnule()) {
+
+			// on refuse l'annulation du premier délai accordé
+			if (delai.getEtat() == EtatDelaiDeclaration.ACCORDE) {
+				final RegDate premier = declaration.getPremierDelai();
+				if (declaration.getDelaiAccordeAu() == premier) {
+					throw new IllegalArgumentException("Le premier délai accordé ne peut pas être annulé.");
+				}
+			}
+
+			final Tiers tiers = declaration.getTiers();
+			controllerUtils.checkAccesDossierEnEcriture(tiers.getId());
+
+			// On annule le délai
+			delai.setAnnule(true);
+
+			Flash.message("Le délai a été annulé.");
+		}
+		else {
+			Flash.message("Le délai était déjà annulé.");
 		}
 
-		final Tiers tiers = declaration.getTiers();
-		controllerUtils.checkAccesDossierEnEcriture(tiers.getId());
-
-		// On annule le délai
-		delai.setAnnule(true);
-
-		Flash.message("Le délai a été annulé.");
 		return (declaration instanceof DeclarationImpotOrdinaire ? "redirect:/di/editer.do?id=" : "redirect:/lr/edit.do?id=") + declaration.getId();
 	}
 }
