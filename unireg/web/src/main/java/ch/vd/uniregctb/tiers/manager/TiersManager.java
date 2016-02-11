@@ -72,6 +72,7 @@ import ch.vd.uniregctb.security.SecurityProviderInterface;
 import ch.vd.uniregctb.situationfamille.SituationFamilleService;
 import ch.vd.uniregctb.situationfamille.VueSituationFamille;
 import ch.vd.uniregctb.situationfamille.VueSituationFamilleMenageCommun;
+import ch.vd.uniregctb.tiers.ActiviteEconomique;
 import ch.vd.uniregctb.tiers.AllegementFiscal;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.ContactImpotSource;
@@ -228,6 +229,50 @@ public class TiersManager implements MessageSourceAware {
 			tiersView.setDecisionRecente(tiersService.isSousInfluenceDecisions(contribuable));
 		}
 
+	}
+
+	/**
+	 * Alimente List<RapportView>
+	 */
+	protected List<RapportView> getRapportsEtablissements(Tiers tiers) throws AdresseException {
+		final List<RapportView> rapportsView = new ArrayList<>();
+
+		// Rapport entre tiers Sujet
+		for (RapportEntreTiers rapportEntreTiers : tiers.getRapportsSujet()) {
+			if (rapportEntreTiers.getType() == TypeRapportEntreTiers.ACTIVITE_ECONOMIQUE) {
+				final RapportView rapportView = new RapportView();
+				rapportView.setId(rapportEntreTiers.getId());
+				rapportView.setAnnule(rapportEntreTiers.isAnnule());
+				rapportView.setSensRapportEntreTiers(SensRapportEntreTiers.SUJET);
+				rapportView.setTypeRapportEntreTiers(TypeRapportEntreTiersWeb.fromCore(rapportEntreTiers.getType()));
+				rapportView.setDateDebut(rapportEntreTiers.getDateDebut());
+				rapportView.setDateFin(rapportEntreTiers.getDateFin());
+
+				if (((ActiviteEconomique) rapportEntreTiers).isPrincipal()) {
+					rapportView.setActiviteEconomiquePrincipale(true);
+				}
+
+				final Tiers tiersObjet = tiersDAO.get(rapportEntreTiers.getObjetId());
+				rapportView.setNumero(tiersObjet.getNumero());
+
+				List<String> nomObjet;
+				try {
+					nomObjet = adresseService.getNomCourrier(tiersObjet, null, false);
+				}
+				catch (Exception e) {
+					nomObjet = new ArrayList<>();
+					nomObjet.add(e.getMessage());
+				}
+				rapportView.setNomCourrier(nomObjet);
+
+				final String toolTipMessage = TiersWebHelper.getRapportEntreTiersTooltips(rapportEntreTiers, adresseService, tiersService);
+				rapportView.setToolTipMessage(toolTipMessage);
+
+				rapportsView.add(rapportView);
+			}
+		}
+		Collections.sort(rapportsView);
+		return rapportsView;
 	}
 
 	/**

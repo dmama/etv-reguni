@@ -50,6 +50,7 @@ public class AutorisationManagerImpl implements AutorisationManager {
 	static final String MODIF_ADRESSE = "ADR";
 	static final String MODIF_COMPLEMENT = "CPLT";
 	static final String MODIF_RAPPORT = "RPT";
+	static final String MODIF_ETABLISSEMENT = "ETAB";
 	static final String MODIF_DOSSIER = "DOS";
 	static final String MODIF_DEBITEUR = "DBT";
 	static final String MODIF_DI = "DI";
@@ -350,7 +351,7 @@ public class AutorisationManagerImpl implements AutorisationManager {
 			}
 			map.put(MODIF_FISCAL, Boolean.TRUE); // pour la création de débiteur
 			return map;
-		}
+			}
 
 		final Niveau acces = SecurityHelper.getDroitAcces(securityProvider, visa, tiers.getNumero());
 		if (acces == null || acces == Niveau.LECTURE || !SecurityHelper.isGranted(securityProvider, Role.VISU_ALL)) {
@@ -359,6 +360,7 @@ public class AutorisationManagerImpl implements AutorisationManager {
 			map.put(MODIF_ADRESSE, Boolean.FALSE);
 			map.put(MODIF_COMPLEMENT, Boolean.FALSE);
 			map.put(MODIF_RAPPORT, Boolean.FALSE);
+			map.put(MODIF_ETABLISSEMENT, Boolean.FALSE);
 			map.put(MODIF_DOSSIER, Boolean.FALSE);
 			map.put(MODIF_DEBITEUR, Boolean.FALSE);
 			map.put(MODIF_MOUVEMENT, Boolean.FALSE);
@@ -403,6 +405,7 @@ public class AutorisationManagerImpl implements AutorisationManager {
 			// droits pour un contribuable annulé
 			if (SecurityHelper.isGranted(securityProvider, Role.MODIF_NONHAB_INACTIF, visa, oid)) {
 				map.put(MODIF_DOSSIER, Boolean.FALSE);
+				map.put(MODIF_ETABLISSEMENT, Boolean.FALSE);
 				map.put(MODIF_FISCAL, Boolean.FALSE);
 				map.put(MODIF_DI, Boolean.FALSE);
 				map.put(MODIF_IDE, Boolean.FALSE);
@@ -579,6 +582,9 @@ public class AutorisationManagerImpl implements AutorisationManager {
 			}
 			if (SecurityHelper.isGranted(securityProvider, Role.ETAT_PM, visa, oid)) {
 				map.put(MODIF_ETATS_PM, Boolean.TRUE);
+			}
+			if (SecurityHelper.isGranted(securityProvider, Role.ETABLISSEMENTS, visa, oid)) {
+				map.put(MODIF_ETABLISSEMENT, Boolean.TRUE);
 			}
 		}
 		else if (tiers instanceof Etablissement) {

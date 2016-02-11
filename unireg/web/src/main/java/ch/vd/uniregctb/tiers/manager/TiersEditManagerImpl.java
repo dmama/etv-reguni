@@ -273,6 +273,9 @@ public class TiersEditManagerImpl extends TiersManager implements TiersEditManag
 		}
 
 		if (tiersEditView.getTiers() != null){
+			if (tiers instanceof Entreprise || tiers instanceof PersonnePhysique) {
+				tiersEditView.setRapportsEtablissements(getRapportsEtablissements(tiers));
+			}
 			if(tiers instanceof Contribuable) {
 				final Contribuable contribuable = (Contribuable) tiers;
 				tiersEditView.setDebiteurs(getDebiteurs(contribuable));

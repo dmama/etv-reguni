@@ -46,6 +46,7 @@ public class Autorisations {
 	 * Si <b>vrai</b>, l'édition des rapports-entre-tiers est autorisée selon les détails des booléens qui suivent. Si <b>faux</b>, l'édition des rapports-entre-tiers est interdite.
 	 */
 	private final boolean rapports;
+	private final boolean rapportsEtablissements;
 	private final boolean rapportsDePrestations;
 	private final boolean rapportsDeTravail;
 	private final boolean autresRapports;
@@ -82,6 +83,7 @@ public class Autorisations {
 		this.complementsCoordonneesFinancieres = false;
 
 		this.rapports = false;
+		this.rapportsEtablissements = false;
 		this.rapportsDePrestations = false;
 		this.rapportsDeTravail = false;
 		this.autresRapports = false;
@@ -119,6 +121,7 @@ public class Autorisations {
 		this.complementsCoordonneesFinancieres = isAllowed(map, AutorisationManagerImpl.COMPLEMENT_COOR_FIN);
 
 		this.rapports = isAllowed(map, AutorisationManagerImpl.MODIF_DOSSIER);
+		this.rapportsEtablissements = isAllowed(map, AutorisationManagerImpl.MODIF_ETABLISSEMENT);
 		this.rapportsDePrestations = isAllowed(map, AutorisationManagerImpl.MODIF_RAPPORT);
 		this.rapportsDeTravail = isAllowed(map, AutorisationManagerImpl.DOSSIER_TRAVAIL);
 		this.autresRapports = isAllowed(map, AutorisationManagerImpl.DOSSIER_NO_TRAVAIL);
@@ -141,7 +144,7 @@ public class Autorisations {
 		return (donneesFiscales && (forsPrincipaux || forsSecondaires || forsAutresElementsImposables || decisionsAci || forsAutresImpots || identificationEntreprise))
 				|| (adresses && (adressesDomicile || adressesCourrier || adressesRepresentation || adressesPoursuite))
 				|| (complements && (complementsCommunications || complementsCoordonneesFinancieres))
-				|| (rapports && (rapportsDePrestations || rapportsDeTravail || autresRapports))
+				|| (rapports && (rapportsEtablissements || rapportsDePrestations || rapportsDeTravail || autresRapports))
 				|| declarationImpots || bouclements || donneesCiviles || debiteurs || mouvements || situationsFamille
 				|| etatsPM || regimesFiscaux || allegementsFiscaux || flagsPM;
 	}
@@ -208,6 +211,10 @@ public class Autorisations {
 
 	public boolean isRapports() {
 		return rapports;
+	}
+
+	public boolean isRapportsEtablissements() {
+		return rapportsEtablissements;
 	}
 
 	public boolean isRapportsDePrestations() {
@@ -287,6 +294,7 @@ public class Autorisations {
 				", complementsCommunications=" + complementsCommunications +
 				", complementsCoordonneesFinancieres=" + complementsCoordonneesFinancieres +
 				", rapports=" + rapports +
+				", rapportsEtablissements=" + rapportsEtablissements +
 				", rapportsDePrestations=" + rapportsDePrestations +
 				", rapportsDeTravail=" + rapportsDeTravail +
 				", autresRapports=" + autresRapports +

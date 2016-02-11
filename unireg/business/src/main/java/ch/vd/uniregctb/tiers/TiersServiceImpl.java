@@ -1473,6 +1473,31 @@ public class TiersServiceImpl implements TiersService {
         return addRapport(rapport, contribuable, debiteur);
     }
 
+	/**
+	 * Ajout d'un rapport de type activité économique entre l'établissement et le contribuable
+	 *
+	 * @return le rapport
+	 */
+	@Override
+	public RapportEntreTiers addActiviteEconomique(Etablissement etablissement, Contribuable contribuable) {
+
+		return addActiviteEconomique(etablissement, contribuable, RegDate.get());
+	}
+
+	/**
+	 * Ajout d'un rapport de type activité économique entre l'établissement et le contribuable avec une date de début
+	 *
+	 * @return le rapport
+	 */
+	@Override
+	public RapportEntreTiers addActiviteEconomique(Etablissement etablissement, Contribuable contribuable, RegDate dateDebut) {
+
+		RapportEntreTiers rapport = new ActiviteEconomique();
+		rapport.setDateDebut(dateDebut);
+
+		return addRapport(rapport, contribuable, etablissement);
+	}
+
     /**
      * Etabli et sauve en base un rapport entre deux tiers.
      *

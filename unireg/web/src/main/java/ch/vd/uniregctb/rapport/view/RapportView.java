@@ -18,6 +18,7 @@ import ch.vd.uniregctb.common.NomCourrierViewPart;
 import ch.vd.uniregctb.general.view.TiersGeneralView;
 import ch.vd.uniregctb.rapport.SensRapportEntreTiers;
 import ch.vd.uniregctb.rapport.TypeRapportEntreTiersWeb;
+import ch.vd.uniregctb.tiers.ActiviteEconomique;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.tiers.RepresentationConventionnelle;
@@ -26,6 +27,7 @@ import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.tiers.TiersWebHelper;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
+import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 
 /**
  * Classe utilisée pour le fromBackingObject du RapportEditController
@@ -53,6 +55,8 @@ public class RapportView implements Comparable<RapportView>, Annulable {
 	private boolean annule;
 
 	private TypeRapportEntreTiersWeb typeRapportEntreTiers;
+
+	private boolean activiteEconomiquePrincipale;
 
 	/**
 	 * Le numéro du tiers courant
@@ -104,6 +108,10 @@ public class RapportView implements Comparable<RapportView>, Annulable {
 		this.sensRapportEntreTiers = sens;
 		this.annule = rapport.isAnnule();
 		this.typeRapportEntreTiers = TypeRapportEntreTiersWeb.fromCore(rapport.getType());
+		if (rapport.getType() == TypeRapportEntreTiers.ACTIVITE_ECONOMIQUE && sens == SensRapportEntreTiers.SUJET && ((ActiviteEconomique) rapport).isPrincipal()) {
+			this.activiteEconomiquePrincipale = true;
+		}
+
 		this.numeroCourant = (sens == SensRapportEntreTiers.SUJET ? rapport.getSujetId() : rapport.getObjetId());
 		this.numero = (sens == SensRapportEntreTiers.SUJET ? rapport.getObjetId() : rapport.getSujetId());
 		this.nomCourrier = buildNomCourrier(getTiers(this.numero, tiersService), adresseService);
@@ -154,6 +162,14 @@ public class RapportView implements Comparable<RapportView>, Annulable {
 
 	public void setTypeRapportEntreTiers(TypeRapportEntreTiersWeb typeRapportEntreTiers) {
 		this.typeRapportEntreTiers = typeRapportEntreTiers;
+	}
+
+	public boolean isActiviteEconomiquePrincipale() {
+		return activiteEconomiquePrincipale;
+	}
+
+	public void setActiviteEconomiquePrincipale(boolean activiteEconomiquePrincipale) {
+		this.activiteEconomiquePrincipale = activiteEconomiquePrincipale;
 	}
 
 	public RegDate getRegDateDebut() {

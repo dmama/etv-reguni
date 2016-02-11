@@ -4029,6 +4029,75 @@ debut PF                                                                        
 	}
 
 	@Test
+	public void testGetRaisonSocialeActiviteEconomiqueSansTiersReferent() throws Exception {
+
+		// mise en place des données fiscales
+		final long etbId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final Etablissement etb = addEtablissement();
+				etb.setRaisonSociale("Une super raison sociale");
+				etb.setComplementNom("Titi");
+				return etb.getNumero();
+			}
+		});
+
+		// vérification de la raison sociale d'un débiteur sans tiers référent
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final Etablissement etb = (Etablissement) tiersDAO.get(etbId);
+				final String raisonSociale = tiersService.getRaisonSociale(etb);
+				Assert.assertNotNull(raisonSociale);
+				Assert.assertEquals("Une super raison sociale", raisonSociale);
+				return null;
+			}
+		});
+	}
+
+	@Test
+	public void testGetRapportActiviteEconomiqueAvecTiersReferentPM() throws Exception {
+
+		// mise en place du service PM
+		serviceOrganisation.setUp(new MockServiceOrganisation() {
+			@Override
+			protected void init() {
+				addOrganisation(MockOrganisationFactory.NESTLE);
+			}
+		});
+
+		// mise en place des données fiscales
+		final long etbId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final Etablissement etb = addEtablissement();
+				etb.setRaisonSociale("Une super raison sociale");
+				etb.setComplementNom("Titi");
+
+				// on indique le tiers référent
+				final Entreprise pm = addEntrepriseConnueAuCivil(MockOrganisationFactory.NESTLE.getNumeroOrganisation());
+				tiersService.addActiviteEconomique(etb, pm, date(2009, 1, 1));
+
+				return etb.getNumero();
+			}
+		});
+
+		// vérification de la raison sociale d'un débiteur avec tiers référent
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final Etablissement etb = (Etablissement) tiersDAO.get(etbId);
+				final String raisonSociale = tiersService.getRaisonSociale(etb);
+				Assert.assertNotNull(raisonSociale);
+				final Set<RapportEntreTiers> rapportsEntreTiers = etb.getRapportsObjet();
+				Assert.assertNotNull(rapportsEntreTiers);
+				Assert.assertEquals(1, rapportsEntreTiers.size());
+				return null;
+			}
+		});
+	}
+
+	@Test
 	public void testGetRaisonSocialeDebiteurSansTiersReferent() throws Exception {
 
 		// mise en place des données fiscales

@@ -32,16 +32,20 @@ import ch.vd.uniregctb.security.SecurityHelper;
 import ch.vd.uniregctb.security.SecurityProviderInterface;
 import ch.vd.uniregctb.tiers.validator.CreateAutreCommunauteViewValidator;
 import ch.vd.uniregctb.tiers.validator.CreateDebiteurViewValidator;
+import ch.vd.uniregctb.tiers.validator.CreateEtablissementViewValidator;
 import ch.vd.uniregctb.tiers.validator.CreateNonHabitantViewValidator;
 import ch.vd.uniregctb.tiers.view.AutreCommunauteCivilView;
 import ch.vd.uniregctb.tiers.view.CreateAutreCommunauteView;
 import ch.vd.uniregctb.tiers.view.CreateDebiteurView;
+import ch.vd.uniregctb.tiers.view.CreateEtablissementView;
 import ch.vd.uniregctb.tiers.view.CreateNonHabitantView;
 import ch.vd.uniregctb.tiers.view.DebiteurFiscalView;
+import ch.vd.uniregctb.tiers.view.EtablissementCivilView;
 import ch.vd.uniregctb.tiers.view.IdentificationPersonneView;
 import ch.vd.uniregctb.tiers.view.NonHabitantCivilView;
 import ch.vd.uniregctb.type.PeriodeDecompte;
 import ch.vd.uniregctb.type.PeriodiciteDecompte;
+import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.utils.RegDateEditor;
 
 @Controller
@@ -101,6 +105,7 @@ public class TiersCreateController {
 			addSubValidator(CreateNonHabitantView.class, new CreateNonHabitantViewValidator(ibanValidator));
 			addSubValidator(CreateAutreCommunauteView.class, new CreateAutreCommunauteViewValidator(ibanValidator));
 			addSubValidator(CreateDebiteurView.class, new CreateDebiteurViewValidator(ibanValidator));
+			addSubValidator(CreateEtablissementView.class, new CreateEtablissementViewValidator(ibanValidator));
 		}
 	}
 
@@ -298,6 +303,77 @@ public class TiersCreateController {
 		final DebiteurPrestationImposable saved = (DebiteurPrestationImposable) tiersDAO.save(dpi);
 		final Contribuable ctbAss = (Contribuable) tiersDAO.get(noCtbAssocie);
 		tiersService.addContactImpotSource(saved, ctbAss);
+
+		return "redirect:/tiers/visu.do?id=" + saved.getNumero();
+	}
+
+	@Transactional(readOnly = true)
+	@RequestMapping(value = "/etablissement/create.do", method = RequestMethod.GET)
+	public String createEtablissement(Model model, @RequestParam(value = "numeroCtbAss") long noCtbAssocie) {
+		if (!SecurityHelper.isGranted(securityProvider, Role.ETABLISSEMENTS)) {
+			throw new AccessDeniedException("Vous ne possédez pas les droits d'accès suffisants à la création d'un établissement.");
+		}
+
+		Entreprise entreprise = (Entreprise) tiersDAO.get(noCtbAssocie);
+		// On récupère la dernière raison sociale de l'entreprise pour la raison sociale par défaut de l'établissement
+		String raisonSociale = entreprise.getRaisonsSocialesNonAnnuleesTriees().get(0).getRaisonSociale();
+
+		return showCreateEtablissement(model, noCtbAssocie, new CreateEtablissementView(raisonSociale));
+	}
+
+	private String showCreateEtablissement(Model model, long noCtbAssocie, CreateEtablissementView view) {
+		model.addAttribute(DATA, view);
+		model.addAttribute(CTB_ASSOCIE, noCtbAssocie);
+		return "tiers/edition/creation-etablissement";
+	}
+
+	@Transactional(rollbackFor = Throwable.class)
+	@RequestMapping(value = "/etablissement/create.do", method = RequestMethod.POST)
+	public String doCreateEtablissement(Model model, @RequestParam(value = "numeroCtbAss") long noCtbAssocie, @Valid @ModelAttribute(DATA) CreateEtablissementView view, BindingResult results) {
+		if (!SecurityHelper.isGranted(securityProvider, Role.ETABLISSEMENTS)) {
+			throw new AccessDeniedException("Vous ne possédez pas les droits d'accès suffisants à la création d'un établissement.");
+		}
+		if (results.hasErrors()) {
+			return showCreateEtablissement(model, noCtbAssocie, view);
+		}
+
+		final Entreprise tiers = (Entreprise) tiersService.getTiers(noCtbAssocie);
+		final Etablissement etablissement = new Etablissement();
+
+		final EtablissementCivilView civilView = view.getCivil();
+		etablissement.setRaisonSociale(civilView.getRaisonSociale());
+		etablissement.setEnseigne(civilView.getNomEnseigne());
+		etablissement.addDomicile(new DomicileEtablissement(civilView.getDateDebut(), civilView.getDateFin(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, civilView.getNoOfsCommune(), etablissement));
+
+		if (StringUtils.isNotBlank(civilView.getNumeroIDE())) {
+			IdentificationEntreprise identification = new IdentificationEntreprise();
+			identification.setNumeroIde(civilView.getNumeroIDE());
+			etablissement.addIdentificationEntreprise(identification);
+		}
+
+		final ComplementsEditCommunicationsView cpltCommView = view.getComplementCommunication();
+		etablissement.setPersonneContact(cpltCommView.getPersonneContact());
+		etablissement.setComplementNom(cpltCommView.getComplementNom());
+		etablissement.setNumeroTelephonePrive(cpltCommView.getNumeroTelephonePrive());
+		etablissement.setNumeroTelephonePortable(cpltCommView.getNumeroTelephonePortable());
+		etablissement.setNumeroTelephoneProfessionnel(cpltCommView.getNumeroTelephoneProfessionnel());
+		etablissement.setNumeroTelecopie(cpltCommView.getNumeroTelecopie());
+		etablissement.setAdresseCourrierElectronique(cpltCommView.getAdresseCourrierElectronique());
+
+		final ComplementsEditCoordonneesFinancieresView cpltCoordFinView = view.getComplementCoordFinanciere();
+		final String iban = IbanHelper.normalize(cpltCoordFinView.getIban());
+		final String bicSwift = StringUtils.trimToNull(FormatNumeroHelper.removeSpaceAndDash(cpltCoordFinView.getAdresseBicSwift()));
+		if (iban != null || bicSwift != null) {
+			etablissement.setCoordonneesFinancieres(new CoordonneesFinancieres(iban, bicSwift));
+		}
+		else {
+			etablissement.setCoordonneesFinancieres(null);
+		}
+		etablissement.setTitulaireCompteBancaire(cpltCoordFinView.getTitulaireCompteBancaire());
+
+		final Etablissement saved = (Etablissement) tiersDAO.save(etablissement);
+		final Contribuable ctbAss = (Contribuable) tiersDAO.get(noCtbAssocie);
+		tiersService.addActiviteEconomique(saved, ctbAss, civilView.getDateDebut());
 
 		return "redirect:/tiers/visu.do?id=" + saved.getNumero();
 	}

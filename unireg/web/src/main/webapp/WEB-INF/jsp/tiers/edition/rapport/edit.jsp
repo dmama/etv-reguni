@@ -37,6 +37,11 @@
 					<jsp:include page="dossiers-apparentes.jsp" />
 				</div>
 			</c:if>
+			<c:if test="${autorisations.rapportsEtablissements}">
+				<div id="tabContent_dossiersApparentesTab" class="visuTiers">
+					<jsp:include page="../etablissement/etablissements.jsp" />
+				</div>
+			</c:if>
 			<c:if test="${autorisations.debiteurs}">
 				<div id="tabContent_dossiersApparentesTab" class="visuTiers">
 					<jsp:include page="../debiteur/debiteur.jsp" />

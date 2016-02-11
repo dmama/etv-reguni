@@ -21,6 +21,8 @@ import ch.vd.uniregctb.security.SecurityHelper;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
+import ch.vd.uniregctb.tiers.Entreprise;
+import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.tiers.RapportPrestationImposable;
 import ch.vd.uniregctb.tiers.RepresentationConventionnelle;
@@ -260,6 +262,9 @@ public class RapportEditManagerImpl extends TiersManager implements RapportEditM
 		tiersEditView.setTiersGeneral(tiersGeneralView);
 		if (!(tiers instanceof CollectiviteAdministrative)) { // [SIFISC-2561] il n'est pas permis d'éditer les rapports des collectivités, inutiles donc les charger
 			tiersEditView.setDossiersApparentes(getRapports(tiers));
+		}
+		if (tiers instanceof Entreprise || tiers instanceof PersonnePhysique) {
+			tiersEditView.setRapportsEtablissements(getRapportsEtablissements(tiers));
 		}
 		if (tiers instanceof Contribuable) {
 			Contribuable contribuable = (Contribuable) tiers;

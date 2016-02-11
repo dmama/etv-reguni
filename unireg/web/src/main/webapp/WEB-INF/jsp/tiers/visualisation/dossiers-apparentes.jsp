@@ -1,22 +1,30 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="/WEB-INF/jsp/include/common.jsp"%>
 
-<!-- Debut Dossiers Apparentes -->
 <unireg:setAuth var="autorisations" tiersId="${command.tiers.numero}"/>
-<c:if test="${autorisations.rapports || autorisations.debiteurs}">
-	<table border="0">
-		<tr><td>
-			<c:if test="${empty param['message'] && empty param['retour']}">
-					<unireg:raccourciModifier link="../dossiers-apparentes/edit.do?id=${command.tiers.numero}" tooltip="Modifier les dossiers apparentés" display="label.bouton.modifier"/>
-			</c:if>
-		</td></tr>
-	</table>
+
+<c:if test="${autorisations.debiteurs || autorisations.rapports || autorisations.rapportsEtablissements}">
+    <table border="0">
+        <tr><td>
+            <c:if test="${empty param['message'] && empty param['retour']}">
+                <unireg:raccourciModifier link="../dossiers-apparentes/edit.do?id=${command.tiers.numero}" tooltip="Modifier les débiteurs IS" display="label.bouton.modifier"/>
+            </c:if>
+        </td></tr>
+    </table>
 </c:if>
 
+<!-- Debut Dossiers Apparentes -->
 <div id="rapportsDiv" style="position:relative"><img src="<c:url value="/images/loading.gif"/>"/></div>
+
+<!-- Debut Liens de parentés -->
 <authz:authorize ifAnyGranted="ROLE_VISU_ALL">
 	<div id="parentesDiv" style="position:relative"></div>
 </authz:authorize>
+
+<!-- Debut Etablissements -->
+<div id="etablissementsDiv" style="position:relative"><img src="<c:url value="/images/loading.gif"/>"/></div>
+
+<!-- Debut Débiteurs IS -->
 <div id="debiteursDiv" style="position:relative"></div>
 
 <script>
@@ -27,6 +35,7 @@
 			DossiersApparentes.loadParentes();
 		</authz:authorize>
         DossiersApparentes.loadDebiteurs();
+        DossiersApparentes.loadEtablissements(1);
 	});
 
     var DossiersApparentes = {
@@ -124,7 +133,7 @@
 
             var html = '<table id="rapport" class="display"><thead><tr>\n';
 		    if (sortable) {
-	            html += '<th class="sortable"><a href="#" onclick="return DossiersApparentes.sortRapportBy(\'class\');">Rapport avec le tiers</a></th>';
+                html += '<th class="sortable"><a href="#" onclick="return DossiersApparentes.sortRapportBy(\'class\');">Rapport avec le tiers</a></th>';
 	            html += '<th class="sortable"><a href="#" onclick="return DossiersApparentes.sortRapportBy(\'dateDebut\');">Date début</a></th>';
 	            html += '<th class="sortable"><a href="#" onclick="return DossiersApparentes.sortRapportBy(\'dateFin\');">Date fin</a></th>';
 	            html += '<th class="sortable"><a href="#" onclick="return DossiersApparentes.sortRapportBy(\'tiersId\');">N° de tiers</a></th>';
@@ -137,7 +146,7 @@
 	            }
 	        }
 		    else {
-			    html += '<th>Rapport avec le tiers</th>';
+                html += '<th>Rapport avec le tiers</th>';
 			    html += '<th>Date début</th>';
 			    html += '<th>Date fin</th>';
 			    html += '<th>N° de tiers</th>';
@@ -275,6 +284,117 @@
                 html += '</tr>\n';
             }
 
+            return html;
+        },
+
+        loadEtablissements: function(page) {
+            $('#etablissementsSpinner').show();
+            var showHisto = $('#isEtablissementHisto').attr('checked') ? 'true' : 'false';
+            var sortField = $('#etablissementSortField').val() || '';
+            var sortOrder = $('#etablissementSortOrder').val() || '';
+
+            // get the data
+            var params = '&page=' + page + '&showHisto=' + showHisto + '&sortField=' + sortField + '&sortOrder=' + sortOrder;
+            $.get('<c:url value="/rapport/etablissements.do?tiers=${command.tiersGeneral.numero}"/>' + params + '&' + new Date().getTime(),
+                  function(etablissementsPage) {
+                      var html = '';
+                      if (etablissementsPage.totalCount > 0) {
+                          html += '<fieldset>\n';
+                          html += '<legend><span><fmt:message key="label.etablissements" /></span></legend>\n';
+                          html += '<div id="etablissementsSpinner" style="position:absolute;right:1.5em;width:24px;display:none"><img src="<c:url value="/images/loading.gif"/>"/></div>';
+                          html += DossiersApparentes.buildEtablissementsOptions(etablissementsPage.page, etablissementsPage.showHisto, etablissementsPage.sortField, etablissementsPage.sortOrder);
+                          html += DossiersApparentes.buildEtablissementsPagination(etablissementsPage.page, 10, etablissementsPage.totalCount);
+                          html += DossiersApparentes.buildEtablissementsTable(etablissementsPage.rapports, 'ret-', true) + '\n';
+                          html += '</fieldset>\n';
+                      }
+                      $('#etablissementsDiv').html(html);
+                      Tooltips.activate_static_tooltips($('#etablissementsDiv'));
+                  }, 'json')
+                    .error(Ajax.popupErrorHandler);
+            return false;
+        },
+
+        buildEtablissementsOptions: function(page, showHisto, sortField, sortOrder) {
+            var html = '<table><tr>\n';
+            html += '<td width="25%"><input class="noprint" type="checkbox" id="isEtablissementHisto"' + (showHisto ? ' checked="true"' : '') + ' onclick="return DossiersApparentes.loadEtablissements(' + page + ');"> ';
+            html += '<label class="noprint" for="isEtablissementHisto">Historique</label></td>\n';
+            html += '<td width="75%">&nbsp;</td>\n';
+            html += '</tr></tbody></table>\n';
+            html += '<input type="hidden" id="etablissementSortField" value="' + sortField +'"/>';
+            html += '<input type="hidden" id="etablissementSortOrder" value="' + sortOrder +'"/>';
+            html += '<input type="hidden" id="etablissementCurrentPage" value="' + page +'"/>\n';
+            return html;
+        },
+
+        buildEtablissementsPagination: function(page, pageSize, totalCount) {
+            return DisplayTable.buildPagination(page, pageSize, totalCount, function(i) {
+                return 'DossiersApparentes.loadEtablissements(' + i + ')';
+            });
+        },
+
+        sortEtablissementBy: function(field) {
+            var current = $('#etablissementSortField').val();
+            if (field == current) {
+                DossiersApparentes.toogleSortOrder($('#etablissementSortOrder'));
+            }
+            else {
+                $('#etablissementSortField').val(field);
+                $('#etablissementSortOrder').val('ASC');
+            }
+            var page = $('#etablissementCurrentPage').val();
+            DossiersApparentes.loadEtablissements(page);
+        },
+
+        buildEtablissementsTable: function(etablissements, tooltipIdPrefix, sortable) {
+
+            var html = '<table id="etablissement" class="display"><thead><tr>\n';
+            if (sortable) {
+                html += '<th class="sortable"><a href="#" onclick="return DossiersApparentes.sortEtablissementBy(\'class\');">Rapport avec le tiers</a></th>';
+                html += '<th class="sortable"><a href="#" onclick="return DossiersApparentes.sortEtablissementBy(\'dateDebut\');">Date début</a></th>';
+                html += '<th class="sortable"><a href="#" onclick="return DossiersApparentes.sortEtablissementBy(\'dateFin\');">Date fin</a></th>';
+                html += '<th class="sortable"><a href="#" onclick="return DossiersApparentes.sortEtablissementBy(\'tiersId\');">N° de tiers</a></th>';
+                html += '<th>Nom / Raison sociale</th>';
+            }
+            else {
+                html += '<th>Rapport avec le tiers</th>';
+                html += '<th>Date début</th>';
+                html += '<th>Date fin</th>';
+                html += '<th>N° de tiers</th>';
+                html += '<th>Nom / Raison sociale</th>';
+            }
+            html += '<th></th>';
+            html += '</tr></thead>\n';
+
+            html += '<tbody>\n';
+
+            for (var i in etablissements) {
+                var etablissement = etablissements[i];
+                html += '<tr class="' + (i % 2 == 0 ? 'odd' : 'even') + (etablissement.annule ? ' strike' : '') +'">';
+
+                html += '<td>' + DossiersApparentes.escape(etablissement.type);
+                if (etablissement.toolTipMessage) {
+                    var filId = tooltipIdPrefix + i;
+                    html += ' <a href="#tooltip" class="staticTip" id="' + filId +'">?</a><div id="' + filId + '-tooltip" style="display:none;">' + etablissement.toolTipMessage + '</div></td>';
+                }
+                html += '</td>';
+
+                html += '<td>' + DossiersApparentes.escape(etablissement.dateDebut) + '</td>';
+                html += '<td>' + DossiersApparentes.escape(etablissement.dateFin) + '</td>';
+                html += '<td>' + Tiers.linkTo(etablissement.numeroAutreTiers) + '</td>';
+
+                html += '<td>';
+                if (etablissement.nomCourrier.nomCourrier1) {
+                    html += DossiersApparentes.escape(etablissement.nomCourrier.nomCourrier1);
+                }
+                if (etablissement.nomCourrier.nomCourrier2) {
+                    html += '<br/>' + DossiersApparentes.escape(etablissement.nomCourrier.nomCourrier2);
+                }
+                html += '</td>';
+
+                html += '<td><a href="#" class="consult" title="Consultation des logs" onclick="return Dialog.open_consulter_log(\'RapportEntreTiers\', ' + etablissement.id + ');">&nbsp;</a></td>';
+                html += '</tr>\n';
+            }
+            html +='</table>\n';
             return html;
         },
 

@@ -114,6 +114,11 @@ public class RapportEntreTiersDAOImpl extends BaseDAOImpl<RapportEntreTiers, Lon
 
 	@Override
 	public List<RapportEntreTiers> findBySujetAndObjet(final long tiersId, final boolean showHisto, Set<TypeRapportEntreTiers> types, final ParamPagination pagination) {
+		return findBySujetAndObjet(tiersId, showHisto, types, pagination, false);
+	}
+
+	@Override
+	public List<RapportEntreTiers> findBySujetAndObjet(final long tiersId, final boolean showHisto, Set<TypeRapportEntreTiers> types, final ParamPagination pagination, boolean fullList) {
 
 		// aucun type demandé -> aucun rapport trouvé!
 		if (types == null || types.isEmpty()) {
@@ -129,10 +134,13 @@ public class RapportEntreTiersDAOImpl extends BaseDAOImpl<RapportEntreTiers, Lon
 
 		final Session session = getCurrentSession();
 		final Query queryObject = fragment.createQuery(session);
-		final int firstResult = pagination.getSqlFirstResult();
-		final int maxResult = pagination.getSqlMaxResults();
-		queryObject.setFirstResult(firstResult);
-		queryObject.setMaxResults(maxResult);
+		// On définit si on veut tous les résultats ou pas (si false -> filtre Java pour la pagination)
+		if (!fullList) {
+			final int firstResult = pagination.getSqlFirstResult();
+			final int maxResult = pagination.getSqlMaxResults();
+			queryObject.setFirstResult(firstResult);
+			queryObject.setMaxResults(maxResult);
+		}
 
 		//noinspection unchecked
 		return queryObject.list();

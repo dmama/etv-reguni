@@ -102,7 +102,7 @@ public class RapportController {
 			types = EnumSet.of(TypeRapportEntreTiers.APPARTENANCE_MENAGE);
 		}
 		else {
-			final EnumSet<TypeRapportEntreTiers> excluded = EnumSet.of(TypeRapportEntreTiers.PARENTE, TypeRapportEntreTiers.MANDAT);
+			final EnumSet<TypeRapportEntreTiers> excluded = EnumSet.of(TypeRapportEntreTiers.PARENTE, TypeRapportEntreTiers.MANDAT, TypeRapportEntreTiers.ACTIVITE_ECONOMIQUE);
 			if (tiers instanceof Contribuable) {
 				excluded.add(TypeRapportEntreTiers.CONTACT_IMPOT_SOURCE);
 			}
@@ -170,7 +170,7 @@ public class RapportController {
 		final Map<TypeRapportEntreTiers, String> choosableTypes = new LinkedHashMap<>(allTypes);
 		choosableTypes.keySet().retainAll(allowedTypes);
 
-		final List<RapportsPage.RapportView> views = getRapportViews(tiersId, showHisto, types, pagination);
+		final List<RapportsPage.RapportView> views = getRapportViews(tiersId, showHisto, types, pagination, false);
 		return new RapportsPage(tiersId, views, showHisto, typeRapport, choosableTypes, page, totalCount, sortField, sortOrder);
 	}
 
@@ -203,20 +203,8 @@ public class RapportController {
 		final int totalCount = getRapportsTotalCount(tiers, true, types);
 
 		final ParamPagination pagination = new ParamPagination(1, Integer.MAX_VALUE, "tiersId", true);
-		final List<RapportsPage.RapportView> views = getRapportViews(tiersId, true, types, pagination);
-		Collections.sort(views, new Comparator<RapportsPage.RapportView>() {
-			@Override
-			public int compare(RapportsPage.RapportView o1, RapportsPage.RapportView o2) {
-				// on garde l'ordre fourni par la base en plaçant les éléments annulés à la fin
-				if (o1.isAnnule() != o2.isAnnule()) {
-					return o1.isAnnule() ? 1 : -1;
-				}
-				else {
-					// on ne change pas l'ordre donné (car la méthode Collections#sort est dite "stable")
-					return 0;
-				}
-			}
-		});
+		final List<RapportsPage.RapportView> views = getRapportViews(tiersId, true, types, pagination, true);
+
 		return new RapportsPage(tiersId, views, true, typeRapport, null, 1, totalCount, null, null);
 	}
 
@@ -247,14 +235,86 @@ public class RapportController {
 		return getDebiteurViews(tiers);
 	}
 
-	private List<RapportsPage.RapportView> getRapportViews(long tiersId, boolean showHisto, Set<TypeRapportEntreTiers> types, ParamPagination pagination) {
-		final List<RapportEntreTiers> rapports = rapportEntreTiersDAO.findBySujetAndObjet(tiersId, showHisto, types, pagination);
-		if (rapports.size() > 5) {
-			prechargeIndividus(rapports);
+	/**
+	 * Retourne toutes les établissements (principal et secondaire) associés à un contribuable sous format JSON.
+	 *
+	 * @param tiersId le numéro de tiers
+	 * @return une liste de liens vers les établissements sous format JSON
+	 * @throws ch.vd.uniregctb.security.AccessDeniedException
+	 *          si l'utilisateur ne possède les droits de visualisation suffisants.
+	 */
+	@ResponseBody
+	@RequestMapping(value = "/etablissements.do", method = RequestMethod.GET)
+	@Transactional(readOnly = true, rollbackFor = Throwable.class)
+	public RapportsPage etablissements(@RequestParam("tiers") long tiersId,
+	                             @RequestParam(value = "showHisto", required = false, defaultValue = "false") boolean showHisto,
+	                             @RequestParam(value = "sortField", required = false) String sortField,
+	                             @RequestParam(value = "sortOrder", required = false) String sortOrder,
+	                             @RequestParam(value = "page", required = false, defaultValue = "1") int page,
+	                             @RequestParam(value = "pageSize", required = false, defaultValue = "10") int pageSize) throws AccessDeniedException {
+
+		if (!SecurityHelper.isAnyGranted(securityProvider, Role.VISU_LIMITE, Role.VISU_ALL)) {
+			throw new AccessDeniedException("vous ne possédez aucun droit IfoSec pour visualiser les établissements d'un tiers");
 		}
 
-		final List<RapportsPage.RapportView> views = new ArrayList<>(rapports.size());
-		for (RapportEntreTiers r : rapports) {
+		controllerUtils.checkAccesDossierEnLecture(tiersId);
+
+		final Tiers tiers = tiersService.getTiers(tiersId);
+		if (tiers == null) {
+			throw new TiersNotFoundException(tiersId);
+		}
+
+		final TypeRapportEntreTiers typeRapport = TypeRapportEntreTiers.ACTIVITE_ECONOMIQUE;
+		final Set<TypeRapportEntreTiers> types = EnumSet.of(typeRapport);
+		final int totalCount = getRapportsTotalCount(tiers, showHisto, types);
+
+		page = ParamPagination.adjustPage(page, pageSize, totalCount);
+		final ParamPagination pagination = new ParamPagination(page, pageSize, ((StringUtils.isBlank(sortField)) ? null : sortField), "ASC".equalsIgnoreCase(sortOrder));
+
+		// Si pas de tri défini, on met les annulés en queue de liste
+		List<RapportsPage.RapportView> views = null;
+		if (StringUtils.isBlank(sortField)) {
+			views = getRapportViews(tiersId, showHisto, types, pagination, true);
+		} else {
+			views = getRapportViews(tiersId, showHisto, types, pagination, false);
+		}
+
+		return new RapportsPage(tiersId, views, showHisto, null, null, page, totalCount, sortField, sortOrder);
+	}
+
+	private List<RapportsPage.RapportView> getRapportViews(long tiersId, boolean showHisto, Set<TypeRapportEntreTiers> types, final ParamPagination pagination, boolean annulesEnDernier) {
+		// Récupération de tous les rapports (triés)
+		final List<RapportEntreTiers> rapports = rapportEntreTiersDAO.findBySujetAndObjet(tiersId, showHisto, types, pagination, true);
+
+		if (annulesEnDernier) {
+			Collections.sort(rapports, new Comparator<RapportEntreTiers>() {
+				@Override
+				public int compare(RapportEntreTiers o1, RapportEntreTiers o2) {
+					// on garde l'ordre fourni par la base en plaçant les éléments annulés à la fin
+					if (o1.isAnnule() != o2.isAnnule()) {
+						return o1.isAnnule() ? 1 : -1;
+					}
+					else {
+						// on ne change pas l'ordre donné (car la méthode Collections#sort est dite "stable")
+						return 0;
+					}
+				}
+			});
+		}
+
+		// On ne peuple dans la vue que les rapports concernés par la page courante
+		List<RapportEntreTiers> currentRapports = new ArrayList<RapportEntreTiers>(rapports);
+		if (currentRapports.size() > pagination.getSqlMaxResults()) {
+			int toIndex = (pagination.getSqlMaxResults()*pagination.getNumeroPage() > rapports.size()) ? rapports.size() : pagination.getSqlMaxResults()*pagination.getNumeroPage();
+			currentRapports = rapports.subList(pagination.getSqlFirstResult(), toIndex);
+		}
+
+		if (currentRapports.size() > 5) {
+			prechargeIndividus(currentRapports);
+		}
+
+		final List<RapportsPage.RapportView> views = new ArrayList<>(currentRapports.size());
+		for (RapportEntreTiers r : currentRapports) {
 			if (r.getObjetId().equals(tiersId)) {
 				views.add(new RapportsPage.RapportView(r, SensRapportEntreTiers.OBJET, tiersService, adresseService, messageSource));
 			}

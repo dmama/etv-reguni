@@ -71,6 +71,8 @@ public class TiersView {
 
 	private String adressesEnErreurMessage;
 
+	private List<RapportView> rapportsEtablissements;
+
 	private List<RapportView> dossiersApparentes;
 
 	private List<RapportPrestationView> rapportsPrestation;
@@ -252,6 +254,14 @@ public class TiersView {
 
 	public void setTiersPrincipal(Tiers tiersPrincipal) {
 		this.tiersPrincipal = tiersPrincipal;
+	}
+
+	public List<RapportView> getRapportsEtablissements() {
+		return rapportsEtablissements;
+	}
+
+	public void setRapportsEtablissements(List<RapportView> rapportsEtablissements) {
+		this.rapportsEtablissements = rapportsEtablissements;
 	}
 
 	public List<RapportView> getDossiersApparentes() {
