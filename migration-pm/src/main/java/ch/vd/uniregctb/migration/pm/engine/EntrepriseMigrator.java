@@ -4670,10 +4670,10 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 				type = null;
 				break;
 			case 51:
-				type = AllegementFiscalConfederation.Type.DECISION_DFE;
+				type = AllegementFiscalConfederation.Type.TEMPORAIRE_91LI;
 				break;
 			case 52:
-				type = AllegementFiscalConfederation.Type.AUTRE_TYPE;
+				type = AllegementFiscalConfederation.Type.EXONERATION_SPECIALE;
 				break;
 			default:
 				throw new IllegalArgumentException("Valeur invalide pour le type d'allègement 999 : " + value);
@@ -4693,34 +4693,24 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 				type = null;
 				break;
 			case 1:
-				type = AllegementFiscalCantonCommune.Type.ARTICLE_91_LI;
+				type = AllegementFiscalCantonCommune.Type.TEMPORAIRE_91LI;
 				break;
 			case 2:
-				type = AllegementFiscalCantonCommune.Type.ARTICLE_90IG_LI;
-				break;
 			case 3:
-				type = AllegementFiscalCantonCommune.Type.ARTICLE_90H_LI;
-				break;
 			case 4:
-				type = AllegementFiscalCantonCommune.Type.ARTICLE_90C_LI;
-				break;
 			case 6:
-				type = AllegementFiscalCantonCommune.Type.ARTICLE_90E_LI;
+			case 12:
+				type = AllegementFiscalCantonCommune.Type.EXONERATION_90LI;
 				break;
 			case 8:
-				type = AllegementFiscalCantonCommune.Type.SOCIETE_DE_BASE;
+				type = AllegementFiscalCantonCommune.Type.SOCIETE_SERVICE;
 				break;
 			case 9:
-				type = AllegementFiscalCantonCommune.Type.IMMEUBLE_SOC_IMMOB_SUBV;
+				type = AllegementFiscalCantonCommune.Type.IMMEUBLE_SI_SUBVENTIONNEE;
 				break;
 			case 11:
-				type = AllegementFiscalCantonCommune.Type.EXONERATION_SPECIALE;
-				break;
-			case 12:
-				type = AllegementFiscalCantonCommune.Type.ARTICLE_90F_LI;
-				break;
 			case 17:
-				type = AllegementFiscalCantonCommune.Type.SOCIETE_MEXICAINE;
+				type = AllegementFiscalCantonCommune.Type.EXONERATION_SPECIALE;
 				break;
 			default:
 				throw new IllegalArgumentException("Valeur invalide pour le type d'allègement 998 : " + value);

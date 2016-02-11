@@ -2362,7 +2362,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 				Assert.assertEquals(AllegementFiscal.TypeImpot.CAPITAL, a.getTypeImpot());
 
 				Assert.assertNull(((AllegementFiscalCommune) a).getNoOfsCommune());
-				Assert.assertEquals(AllegementFiscalCantonCommune.Type.ARTICLE_90E_LI, ((AllegementFiscalCommune) a).getType());
+				Assert.assertEquals(AllegementFiscalCantonCommune.Type.EXONERATION_90LI, ((AllegementFiscalCommune) a).getType());
 			}
 			{
 				final AllegementFiscal a = allegementsTries.get(1);
@@ -2375,7 +2375,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 				Assert.assertEquals(AllegementFiscal.TypeCollectivite.CONFEDERATION, a.getTypeCollectivite());
 				Assert.assertEquals(AllegementFiscal.TypeImpot.CAPITAL, a.getTypeImpot());
 
-				Assert.assertEquals(AllegementFiscalConfederation.Type.DECISION_DFE, ((AllegementFiscalConfederation) a).getType());
+				Assert.assertEquals(AllegementFiscalConfederation.Type.TEMPORAIRE_91LI, ((AllegementFiscalConfederation) a).getType());
 			}
 		});
 
