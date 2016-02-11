@@ -22,7 +22,7 @@ public class AllegementFiscalCommuneValidatorTest extends AllegementFiscalCanton
 
 	@Override
 	protected AllegementFiscalCommune build(RegDate dateDebut, @Nullable RegDate dateFin, AllegementFiscal.TypeImpot typeImpot, @Nullable BigDecimal pourcentage) {
-		return new AllegementFiscalCommune(dateDebut, dateFin, pourcentage, typeImpot, AllegementFiscalCantonCommune.Type.ARTICLE_91_LI, null);
+		return new AllegementFiscalCommune(dateDebut, dateFin, pourcentage, typeImpot, AllegementFiscalCantonCommune.Type.TEMPORAIRE_91LI, null);
 	}
 
 	protected AllegementFiscalCommune build(RegDate dateDebut, @Nullable RegDate dateFin, AllegementFiscal.TypeImpot typeImpot, @Nullable BigDecimal pourcentage, AllegementFiscalCantonCommune.Type type, @Nullable MockCommune commune) {
@@ -46,7 +46,7 @@ public class AllegementFiscalCommuneValidatorTest extends AllegementFiscalCanton
 
 		// valeur non vide vaudoise -> ok
 		{
-			final AllegementFiscalCommune af = build(date(2000, 1, 1), date(2005, 12, 31), AllegementFiscal.TypeImpot.BENEFICE, BigDecimal.TEN, AllegementFiscalCantonCommune.Type.ARTICLE_91_LI, MockCommune.Lausanne);
+			final AllegementFiscalCommune af = build(date(2000, 1, 1), date(2005, 12, 31), AllegementFiscal.TypeImpot.BENEFICE, BigDecimal.TEN, AllegementFiscalCantonCommune.Type.TEMPORAIRE_91LI, MockCommune.Lausanne);
 			final ValidationResults vr = validate(af);
 			Assert.assertEquals(0, vr.errorsCount());
 			Assert.assertEquals(0, vr.warningsCount());
@@ -54,7 +54,7 @@ public class AllegementFiscalCommuneValidatorTest extends AllegementFiscalCanton
 
 		// valeur non-vide non-vaudoise -> toujours refusée
 		{
-			final AllegementFiscalCommune af = build(date(2000, 1, 1), date(2005, 12, 31), AllegementFiscal.TypeImpot.BENEFICE, BigDecimal.TEN, AllegementFiscalCantonCommune.Type.ARTICLE_91_LI, MockCommune.Bern);
+			final AllegementFiscalCommune af = build(date(2000, 1, 1), date(2005, 12, 31), AllegementFiscal.TypeImpot.BENEFICE, BigDecimal.TEN, AllegementFiscalCantonCommune.Type.TEMPORAIRE_91LI, MockCommune.Bern);
 			final ValidationResults vr = validate(af);
 			Assert.assertEquals(1, vr.errorsCount());
 			Assert.assertEquals(0, vr.warningsCount());

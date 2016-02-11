@@ -18,6 +18,6 @@ public class AllegementFiscalCantonValidatorTest extends AllegementFiscalCantonC
 
 	@Override
 	protected AllegementFiscalCanton build(RegDate dateDebut, @Nullable RegDate dateFin, AllegementFiscal.TypeImpot typeImpot, @Nullable BigDecimal pourcentage) {
-		return new AllegementFiscalCanton(dateDebut, dateFin, pourcentage, typeImpot, AllegementFiscalCantonCommune.Type.ARTICLE_91_LI);
+		return new AllegementFiscalCanton(dateDebut, dateFin, pourcentage, typeImpot, AllegementFiscalCantonCommune.Type.TEMPORAIRE_91LI);
 	}
 }

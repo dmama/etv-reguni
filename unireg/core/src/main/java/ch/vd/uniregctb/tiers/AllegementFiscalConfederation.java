@@ -18,8 +18,11 @@ import ch.vd.uniregctb.common.LengthConstants;
 public class AllegementFiscalConfederation extends AllegementFiscal {
 
 	public enum Type {
-		DECISION_DFE,
-		AUTRE_TYPE
+		TEMPORAIRE_91LI,
+		EXONERATION_90LI,
+		IMMEUBLE_SI_SUBVENTIONNEE,
+		EXONERATION_SPECIALE,
+		TRANSPORTS_CONCESSIONNES
 	}
 
 	private Type type;

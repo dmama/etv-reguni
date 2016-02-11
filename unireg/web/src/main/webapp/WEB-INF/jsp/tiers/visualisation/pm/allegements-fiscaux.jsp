@@ -40,10 +40,14 @@
 			<display:column titleKey="label.type">
 				<c:choose>
 					<c:when test="${allegement.typeCollectivite == 'COMMUNE' || allegement.typeCollectivite == 'CANTON'}">
-						<fmt:message key="option.allegement.icc.type.${allegement.typeICC}"/>
+						<c:if test="${allegement.typeICC != null}">
+							<fmt:message key="option.allegement.icc.type.${allegement.typeICC}"/>
+						</c:if>
 					</c:when>
 					<c:when test="${allegement.typeCollectivite == 'CONFEDERATION'}">
-						<fmt:message key="option.allegement.ifd.type.${allegement.typeIFD}"/>
+						<c:if test="${allegement.typeIFD != null}">
+							<fmt:message key="option.allegement.ifd.type.${allegement.typeIFD}"/>
+						</c:if>
 					</c:when>
 					<c:otherwise>
 						&nbsp;

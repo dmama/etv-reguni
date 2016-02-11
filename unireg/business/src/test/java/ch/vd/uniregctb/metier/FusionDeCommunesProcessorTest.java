@@ -1049,8 +1049,8 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 			@Override
 			public Long doInTransaction(TransactionStatus status) {
 				final Entreprise entreprise = (Entreprise) getCurrentSession().merge(new Entreprise(12L));
-				addAllegementFiscalFederal(entreprise, date(1995, 1, 1), null, AllegementFiscal.TypeImpot.CAPITAL, BigDecimal.TEN, AllegementFiscalConfederation.Type.DECISION_DFE);
-				addAllegementFiscalCommunal(entreprise, date(1997, 1, 1), null, AllegementFiscal.TypeImpot.BENEFICE, BigDecimal.ONE, MockCommune.Croy, AllegementFiscalCantonCommune.Type.ARTICLE_91_LI);
+				addAllegementFiscalFederal(entreprise, date(1995, 1, 1), null, AllegementFiscal.TypeImpot.CAPITAL, BigDecimal.TEN, AllegementFiscalConfederation.Type.EXONERATION_SPECIALE);
+				addAllegementFiscalCommunal(entreprise, date(1997, 1, 1), null, AllegementFiscal.TypeImpot.BENEFICE, BigDecimal.ONE, MockCommune.Croy, AllegementFiscalCantonCommune.Type.TEMPORAIRE_91LI);
 				return entreprise.getNumero();
 			}
 		});

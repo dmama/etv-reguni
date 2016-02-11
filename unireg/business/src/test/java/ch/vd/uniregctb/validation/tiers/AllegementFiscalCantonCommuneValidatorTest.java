@@ -34,7 +34,7 @@ public abstract class AllegementFiscalCantonCommuneValidatorTest<T extends Alleg
 
 		// valeur présente -> ok
 		{
-			final T af = build(date(2000, 1, 1), date(2005, 12, 31), AllegementFiscal.TypeImpot.BENEFICE, null, AllegementFiscalCantonCommune.Type.ARTICLE_91_LI);
+			final T af = build(date(2000, 1, 1), date(2005, 12, 31), AllegementFiscal.TypeImpot.BENEFICE, null, AllegementFiscalCantonCommune.Type.TEMPORAIRE_91LI);
 			final ValidationResults vr = validate(af);
 			Assert.assertEquals(0, vr.errorsCount());
 			Assert.assertEquals(0, vr.warningsCount());

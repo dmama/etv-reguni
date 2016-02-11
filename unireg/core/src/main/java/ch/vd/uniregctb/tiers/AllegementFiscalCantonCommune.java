@@ -15,16 +15,13 @@ import ch.vd.uniregctb.common.LengthConstants;
 public abstract class AllegementFiscalCantonCommune extends AllegementFiscal {
 
 	public enum Type {
-		ARTICLE_91_LI,
-		ARTICLE_90IG_LI,
-		ARTICLE_90H_LI,
-		ARTICLE_90C_LI,
-		ARTICLE_90E_LI,
-		SOCIETE_DE_BASE,
-		IMMEUBLE_SOC_IMMOB_SUBV,
+		TEMPORAIRE_91LI,
+		EXONERATION_90LI,
+		SOCIETE_SERVICE,
+		IMMEUBLE_SI_SUBVENTIONNEE,
 		EXONERATION_SPECIALE,
-		ARTICLE_90F_LI,
-		SOCIETE_MEXICAINE
+		TRANSPORTS_CONCESSIONNES,
+		HOLDING_IMMEUBLE
 	}
 
 	private Type type;

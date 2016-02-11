@@ -16,6 +16,6 @@ public class AllegementFiscalConfederationValidatorTest extends AllegementFiscal
 	}
 
 	protected AllegementFiscalConfederation build(RegDate dateDebut, @Nullable RegDate dateFin, AllegementFiscal.TypeImpot typeImpot, @Nullable BigDecimal pourcentage) {
-		return new AllegementFiscalConfederation(dateDebut, dateFin, pourcentage, typeImpot, AllegementFiscalConfederation.Type.DECISION_DFE);
+		return new AllegementFiscalConfederation(dateDebut, dateFin, pourcentage, typeImpot, AllegementFiscalConfederation.Type.EXONERATION_SPECIALE);
 	}
 }
