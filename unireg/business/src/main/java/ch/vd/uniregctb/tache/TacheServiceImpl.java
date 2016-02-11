@@ -889,7 +889,7 @@ public class TacheServiceImpl implements TacheService {
 			final RegDate dateFin = r.getDateFin() == null ? RegDate.get(RegDate.get().year(), 12, 31) : r.getDateFin();
 			final RegDate dateDebut = r.getDateDebut();
 			if (dateFin.year() == dateDebut.year()) {
-				ranges.add(r);
+				ranges.add(new DateRangeHelper.Range(dateDebut, dateFin));
 			}
 			else {
 				ranges.add(new DateRangeHelper.Range(dateDebut, RegDate.get(dateDebut.year(), 12, 31)));
