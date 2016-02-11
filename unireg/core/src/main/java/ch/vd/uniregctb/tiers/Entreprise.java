@@ -23,6 +23,9 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.AnnulableHelper;
 import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.common.ComparisonHelper;
+import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePM;
+import ch.vd.uniregctb.type.TypeAutoriteFiscale;
+import ch.vd.uniregctb.type.TypeDocument;
 
 /**
  * Entreprise connue du registre des personnes morales de l'ACI
@@ -348,5 +351,21 @@ public class Entreprise extends ContribuableImpositionPersonnesMorales {
 	@Transient
 	public boolean isConnueAuCivil() {
 		return numeroEntreprise != null;
+	}
+
+	@Override
+	public boolean shouldAssignCodeControle(DeclarationImpotOrdinairePM di) {
+		if (super.shouldAssignCodeControle(di)) {
+			// [SIFISC-17952] seulement pour les PM non-HC à la fin de la période d'imposition
+			if (di.getModeleDocument() != null && di.getModeleDocument().getTypeDocument() == TypeDocument.DECLARATION_IMPOT_PM) {
+				// ok, nous avons une PM (par opposition à APM), voyons maintenant le for principal
+				final ForFiscalPrincipal ffp = getDernierForFiscalPrincipalAvant(di.getDateFinExerciceCommercial());
+				if (ffp != null && ffp.getTypeAutoriteFiscale() != TypeAutoriteFiscale.COMMUNE_HC) {
+					// si le for fiscal est VD ou HS, on génère un code de contrôle
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 }

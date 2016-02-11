@@ -21,6 +21,7 @@ import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePM;
 import ch.vd.uniregctb.declaration.DelaiDeclaration;
 import ch.vd.uniregctb.declaration.ModeleDocumentDAO;
+import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.declaration.PeriodeFiscaleDAO;
 import ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotService;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscal;
@@ -91,11 +92,10 @@ public class EnvoiDeclarationsPMProcessorTest extends BusinessTest {
 	}
 
 	@Test
-	public void testTacheEnInstance() throws Exception {
+	public void testTachePMEnInstance() throws Exception {
 
-		final int year = RegDate.get().year();
-		final int pf = year - 1;
-		final RegDate dateTraitement = date(pf, 10, 5);
+		final int pf = 2016;
+		final RegDate dateTraitement = date(pf, 2, 2);
 
 		// mise en place civile
 		serviceOrganisation.setUp(new MockServiceOrganisation() {
@@ -117,14 +117,16 @@ public class EnvoiDeclarationsPMProcessorTest extends BusinessTest {
 				addRegimeFiscalCH(e, RegDate.get(pf - 1, 5, 3), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 				addForPrincipal(e, date(pf - 1, 5, 3), MotifFor.DEBUT_EXPLOITATION, MockCommune.YverdonLesBains);
 				addAdresseSuisse(e, TypeAdresseTiers.COURRIER, date(pf - 1, 5, 3), null, MockRue.YverdonLesBains.RueDeLaFaiencerie, null);
-				addBouclement(e, date(pf - 1, 7, 1), DayMonth.get(6, 30), 12);
+				addBouclement(e, date(pf - 1, 7, 1), DayMonth.get(1, 31), 12);      // bouclements les 31.01
 
 				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
-				addPeriodeFiscale(pf);
+				final PeriodeFiscale periodeFiscale = addPeriodeFiscale(pf);
+				addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM, periodeFiscale);
+				addModeleDocument(TypeDocument.DECLARATION_IMPOT_APM, periodeFiscale);
 
 				// la tâche de DI "pf" (= celle que l'on va traiter)
-				addTacheEnvoiDIPM(TypeEtatTache.EN_INSTANCE, RegDate.get(), date(pf - 1, 5, 3), date(pf, 6, 30),
-				                  date(pf - 1, 5, 3), date(pf, 6, 30), TypeContribuable.VAUDOIS_ORDINAIRE,
+				addTacheEnvoiDIPM(TypeEtatTache.EN_INSTANCE, RegDate.get(), date(pf - 1, 5, 3), date(pf, 1, 31),
+				                  date(pf - 1, 5, 3), date(pf, 1, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
 				                  TypeDocument.DECLARATION_IMPOT_PM, e, CategorieEntreprise.PM, oipm);
 
 				return e.getNumero();
@@ -166,7 +168,7 @@ public class EnvoiDeclarationsPMProcessorTest extends BusinessTest {
 
 					final TacheEnvoiDeclarationImpotPM tidipm = (TacheEnvoiDeclarationImpotPM) tache;
 					Assert.assertEquals(date(pf - 1, 5, 3), tidipm.getDateDebut());
-					Assert.assertEquals(date(pf, 6, 30), tidipm.getDateFin());
+					Assert.assertEquals(date(pf, 1, 31), tidipm.getDateFin());
 					Assert.assertEquals(TypeEtatTache.EN_INSTANCE, tidipm.getEtat());
 					Assert.assertEquals(TypeContribuable.VAUDOIS_ORDINAIRE, tidipm.getTypeContribuable());
 					Assert.assertEquals(TypeDocument.DECLARATION_IMPOT_PM, tidipm.getTypeDocument());
@@ -176,12 +178,12 @@ public class EnvoiDeclarationsPMProcessorTest extends BusinessTest {
 
 		// lancement du job "pf" (on testera la limite de bouclement dans un autre test)
 		{
-			final EnvoiDIsPMResults res = processor.run(pf, TypeDeclarationImpotPM.PM, date(pf, 12, 31), null, dateTraitement, 1, null);
+			final EnvoiDIsPMResults res = processor.run(pf, TypeDeclarationImpotPM.PM, date(pf, 2, 10), null, dateTraitement, 1, null);
 			Assert.assertNotNull(res);
 			Assert.assertEquals(1, res.getEnvoyees().size());
 			Assert.assertEquals(0, res.getIgnorees().size());
 			Assert.assertEquals(0, res.getErreurs().size());
-			Assert.assertEquals(date(pf, 12, 31), res.getDateLimiteBouclements());
+			Assert.assertEquals(date(pf, 2, 10), res.getDateLimiteBouclements());
 			Assert.assertEquals(dateTraitement, res.getDateTraitement());
 			Assert.assertEquals(1, res.getNbContribuablesVus());
 			Assert.assertNull(res.getNbMaxEnvois());
@@ -193,7 +195,7 @@ public class EnvoiDeclarationsPMProcessorTest extends BusinessTest {
 			Assert.assertNotNull(envoyee);
 			Assert.assertEquals(pmId, envoyee.getNoCtb());
 			Assert.assertEquals(date(pf - 1, 5, 3), envoyee.getDateDebut());
-			Assert.assertEquals(date(pf, 6, 30), envoyee.getDateFin());
+			Assert.assertEquals(date(pf, 1, 31), envoyee.getDateFin());
 
 			// vérification des données en base
 			doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
@@ -208,7 +210,7 @@ public class EnvoiDeclarationsPMProcessorTest extends BusinessTest {
 					Assert.assertNotNull(declaration);
 					Assert.assertFalse(declaration.isAnnule());
 					Assert.assertEquals(date(pf - 1, 5, 3), declaration.getDateDebut());
-					Assert.assertEquals(date(pf, 6, 30), declaration.getDateFin());
+					Assert.assertEquals(date(pf, 1, 31), declaration.getDateFin());
 					Assert.assertEquals(dateTraitement, declaration.getDateExpedition());
 					Assert.assertEquals(null, declaration.getDateRetour());
 					Assert.assertNotNull(declaration.getDernierEtat());
@@ -220,7 +222,7 @@ public class EnvoiDeclarationsPMProcessorTest extends BusinessTest {
 					Assert.assertFalse(delai.isAnnule());
 					Assert.assertEquals(dateTraitement, delai.getDateDemande());
 					Assert.assertEquals(dateTraitement, delai.getDateTraitement());
-					Assert.assertEquals(date(pf, 6, 30).addMonths(6).addDays(75), delai.getDelaiAccordeAu());       // 6 mois + 75 jours de tolérance
+					Assert.assertEquals(date(pf, 1, 31).addMonths(6).addDays(75), delai.getDelaiAccordeAu());       // 6 mois + 75 jours de tolérance
 
 					Assert.assertEquals(DeclarationImpotOrdinairePM.class, declaration.getClass());
 					final DeclarationImpotOrdinairePM di = (DeclarationImpotOrdinairePM) declaration;
@@ -239,10 +241,360 @@ public class EnvoiDeclarationsPMProcessorTest extends BusinessTest {
 
 					final TacheEnvoiDeclarationImpotPM tidipm = (TacheEnvoiDeclarationImpotPM) tache;
 					Assert.assertEquals(date(pf - 1, 5, 3), tidipm.getDateDebut());
-					Assert.assertEquals(date(pf, 6, 30), tidipm.getDateFin());
+					Assert.assertEquals(date(pf, 1, 31), tidipm.getDateFin());
 					Assert.assertEquals(TypeEtatTache.TRAITE, tidipm.getEtat());
 					Assert.assertEquals(TypeContribuable.VAUDOIS_ORDINAIRE, tidipm.getTypeContribuable());
 					Assert.assertEquals(TypeDocument.DECLARATION_IMPOT_PM, tidipm.getTypeDocument());
+
+					// vérification de la présence d'un événement fiscal
+					final List<EvenementFiscal> all = evenementFiscalDAO.getAll();
+					Assert.assertNotNull(all);
+					Assert.assertEquals(1, all.size());
+
+					final EvenementFiscal evtFiscal = all.get(0);
+					Assert.assertNotNull(evtFiscal);
+					Assert.assertFalse(evtFiscal.isAnnule());
+					Assert.assertSame(evtFiscal.getTiers(), e);
+					Assert.assertEquals(EvenementFiscalDeclaration.class, evtFiscal.getClass());
+
+					final EvenementFiscalDeclaration evtFiscalDeclaration = (EvenementFiscalDeclaration) evtFiscal;
+					Assert.assertSame(declaration, evtFiscalDeclaration.getDeclaration());
+					Assert.assertEquals(EvenementFiscalDeclaration.TypeAction.EMISSION, evtFiscalDeclaration.getTypeAction());
+				}
+			});
+		}
+	}
+
+	@Test
+	public void testTachePMEntrepriseHorsCantonEnInstance() throws Exception {
+
+		final int pf = 2016;
+		final RegDate dateTraitement = date(pf, 2, 2);
+
+		// mise en place civile
+		serviceOrganisation.setUp(new MockServiceOrganisation() {
+			@Override
+			protected void init() {
+				// vide...
+			}
+		});
+
+		// mise en place fiscale
+		final long pmId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				// l'entreprise
+				final Entreprise e = addEntrepriseInconnueAuCivil();
+				addRaisonSociale(e, date(pf - 1, 5, 3), null, "Ma petite entreprise");
+				addFormeJuridique(e, date(pf - 1, 5, 3), null, FormeJuridiqueEntreprise.SARL);
+				addRegimeFiscalVD(e, RegDate.get(pf - 1, 5, 3), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addRegimeFiscalCH(e, RegDate.get(pf - 1, 5, 3), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addForPrincipal(e, date(pf - 1, 5, 3), MotifFor.DEBUT_EXPLOITATION, date(pf - 1, 10, 12), MotifFor.DEPART_HC, MockCommune.YverdonLesBains);
+				addForPrincipal(e, date(pf - 1, 10, 13), MotifFor.DEPART_HC, MockCommune.Sierre);
+				addAdresseSuisse(e, TypeAdresseTiers.COURRIER, date(pf - 1, 5, 3), null, MockRue.YverdonLesBains.RueDeLaFaiencerie, null);
+				addBouclement(e, date(pf - 1, 7, 1), DayMonth.get(1, 31), 12);      // bouclements les 31.01
+
+				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
+				final PeriodeFiscale periodeFiscale = addPeriodeFiscale(pf);
+				addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM, periodeFiscale);
+				addModeleDocument(TypeDocument.DECLARATION_IMPOT_APM, periodeFiscale);
+
+				// la tâche de DI "pf" (= celle que l'on va traiter)
+				addTacheEnvoiDIPM(TypeEtatTache.EN_INSTANCE, RegDate.get(), date(pf - 1, 5, 3), date(pf, 1, 31),
+				                  date(pf - 1, 5, 3), date(pf, 1, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
+				                  TypeDocument.DECLARATION_IMPOT_PM, e, CategorieEntreprise.PM, oipm);
+
+				return e.getNumero();
+			}
+		});
+
+		// lancement du job "pf - 1" -> rien à faire
+		{
+			final EnvoiDIsPMResults res = processor.run(pf - 1, TypeDeclarationImpotPM.PM, date(pf - 1, 12, 31), null, dateTraitement, 1, null);
+			Assert.assertNotNull(res);
+			Assert.assertEquals(0, res.getEnvoyees().size());
+			Assert.assertEquals(0, res.getIgnorees().size());
+			Assert.assertEquals(0, res.getErreurs().size());
+			Assert.assertEquals(date(pf - 1, 12, 31), res.getDateLimiteBouclements());
+			Assert.assertEquals(dateTraitement, res.getDateTraitement());
+			Assert.assertEquals(0, res.getNbContribuablesVus());
+			Assert.assertNull(res.getNbMaxEnvois());
+			Assert.assertEquals(1, res.getNbThreads());
+			Assert.assertEquals(pf - 1, res.getPeriodeFiscale());
+			Assert.assertEquals(TypeDeclarationImpotPM.PM, res.getType());
+
+			// vérification des données en base
+			doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+				@Override
+				protected void doInTransactionWithoutResult(TransactionStatus status) {
+					final Entreprise e = (Entreprise) tiersDAO.get(pmId);
+					Assert.assertNotNull(e);
+					Assert.assertNotNull(e.getDeclarations());
+					Assert.assertEquals(0, e.getDeclarations().size());
+
+					final List<Tache> taches = tacheDAO.find(e.getNumero());
+					Assert.assertNotNull(taches);
+					Assert.assertEquals(1, taches.size());
+
+					final Tache tache = taches.get(0);
+					Assert.assertNotNull(tache);
+					Assert.assertFalse(tache.isAnnule());
+					Assert.assertEquals(TacheEnvoiDeclarationImpotPM.class, tache.getClass());
+
+					final TacheEnvoiDeclarationImpotPM tidipm = (TacheEnvoiDeclarationImpotPM) tache;
+					Assert.assertEquals(date(pf - 1, 5, 3), tidipm.getDateDebut());
+					Assert.assertEquals(date(pf, 1, 31), tidipm.getDateFin());
+					Assert.assertEquals(TypeEtatTache.EN_INSTANCE, tidipm.getEtat());
+					Assert.assertEquals(TypeContribuable.VAUDOIS_ORDINAIRE, tidipm.getTypeContribuable());
+					Assert.assertEquals(TypeDocument.DECLARATION_IMPOT_PM, tidipm.getTypeDocument());
+				}
+			});
+		}
+
+		// lancement du job "pf" (on testera la limite de bouclement dans un autre test)
+		{
+			final EnvoiDIsPMResults res = processor.run(pf, TypeDeclarationImpotPM.PM, date(pf, 2, 10), null, dateTraitement, 1, null);
+			Assert.assertNotNull(res);
+			Assert.assertEquals(1, res.getEnvoyees().size());
+			Assert.assertEquals(0, res.getIgnorees().size());
+			Assert.assertEquals(0, res.getErreurs().size());
+			Assert.assertEquals(date(pf, 2, 10), res.getDateLimiteBouclements());
+			Assert.assertEquals(dateTraitement, res.getDateTraitement());
+			Assert.assertEquals(1, res.getNbContribuablesVus());
+			Assert.assertNull(res.getNbMaxEnvois());
+			Assert.assertEquals(1, res.getNbThreads());
+			Assert.assertEquals(pf, res.getPeriodeFiscale());
+			Assert.assertEquals(TypeDeclarationImpotPM.PM, res.getType());
+
+			final EnvoiDIsPMResults.DiEnvoyee envoyee = res.getEnvoyees().get(0);
+			Assert.assertNotNull(envoyee);
+			Assert.assertEquals(pmId, envoyee.getNoCtb());
+			Assert.assertEquals(date(pf - 1, 5, 3), envoyee.getDateDebut());
+			Assert.assertEquals(date(pf, 1, 31), envoyee.getDateFin());
+
+			// vérification des données en base
+			doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+				@Override
+				protected void doInTransactionWithoutResult(TransactionStatus status) {
+					final Entreprise e = (Entreprise) tiersDAO.get(pmId);
+					Assert.assertNotNull(e);
+					Assert.assertNotNull(e.getDeclarations());
+					Assert.assertEquals(1, e.getDeclarations().size());
+
+					final Declaration declaration = e.getDeclarations().iterator().next();
+					Assert.assertNotNull(declaration);
+					Assert.assertFalse(declaration.isAnnule());
+					Assert.assertEquals(date(pf - 1, 5, 3), declaration.getDateDebut());
+					Assert.assertEquals(date(pf, 1, 31), declaration.getDateFin());
+					Assert.assertEquals(dateTraitement, declaration.getDateExpedition());
+					Assert.assertEquals(null, declaration.getDateRetour());
+					Assert.assertNotNull(declaration.getDernierEtat());
+					Assert.assertEquals(TypeEtatDeclaration.EMISE, declaration.getDernierEtat().getEtat());
+					Assert.assertNotNull(declaration.getDelais());
+					Assert.assertEquals(1, declaration.getDelais().size());
+					final DelaiDeclaration delai = declaration.getDelais().iterator().next();
+					Assert.assertNotNull(delai);
+					Assert.assertFalse(delai.isAnnule());
+					Assert.assertEquals(dateTraitement, delai.getDateDemande());
+					Assert.assertEquals(dateTraitement, delai.getDateTraitement());
+					Assert.assertEquals(date(pf, 1, 31).addMonths(6).addDays(75), delai.getDelaiAccordeAu());       // 6 mois + 75 jours de tolérance
+
+					Assert.assertEquals(DeclarationImpotOrdinairePM.class, declaration.getClass());
+					final DeclarationImpotOrdinairePM di = (DeclarationImpotOrdinairePM) declaration;
+					Assert.assertNull(di.getCodeControle());            // pas de code de contrôle pour les entreprises avec for principal HC à la fin de l'exercice
+					Assert.assertEquals(pf, di.getPeriode().getAnnee().intValue());
+					Assert.assertEquals((Integer) 1, di.getNumero());
+
+					final List<Tache> taches = tacheDAO.find(e.getNumero());
+					Assert.assertNotNull(taches);
+					Assert.assertEquals(1, taches.size());
+
+					final Tache tache = taches.get(0);
+					Assert.assertNotNull(tache);
+					Assert.assertFalse(tache.isAnnule());
+					Assert.assertEquals(TacheEnvoiDeclarationImpotPM.class, tache.getClass());
+
+					final TacheEnvoiDeclarationImpotPM tidipm = (TacheEnvoiDeclarationImpotPM) tache;
+					Assert.assertEquals(date(pf - 1, 5, 3), tidipm.getDateDebut());
+					Assert.assertEquals(date(pf, 1, 31), tidipm.getDateFin());
+					Assert.assertEquals(TypeEtatTache.TRAITE, tidipm.getEtat());
+					Assert.assertEquals(TypeContribuable.VAUDOIS_ORDINAIRE, tidipm.getTypeContribuable());
+					Assert.assertEquals(TypeDocument.DECLARATION_IMPOT_PM, tidipm.getTypeDocument());
+
+					// vérification de la présence d'un événement fiscal
+					final List<EvenementFiscal> all = evenementFiscalDAO.getAll();
+					Assert.assertNotNull(all);
+					Assert.assertEquals(1, all.size());
+
+					final EvenementFiscal evtFiscal = all.get(0);
+					Assert.assertNotNull(evtFiscal);
+					Assert.assertFalse(evtFiscal.isAnnule());
+					Assert.assertSame(evtFiscal.getTiers(), e);
+					Assert.assertEquals(EvenementFiscalDeclaration.class, evtFiscal.getClass());
+
+					final EvenementFiscalDeclaration evtFiscalDeclaration = (EvenementFiscalDeclaration) evtFiscal;
+					Assert.assertSame(declaration, evtFiscalDeclaration.getDeclaration());
+					Assert.assertEquals(EvenementFiscalDeclaration.TypeAction.EMISSION, evtFiscalDeclaration.getTypeAction());
+				}
+			});
+		}
+	}
+
+	@Test
+	public void testTacheAPMEnInstance() throws Exception {
+
+		final int pf = 2016;
+		final RegDate dateTraitement = date(pf, 2, 2);
+
+		// mise en place civile
+		serviceOrganisation.setUp(new MockServiceOrganisation() {
+			@Override
+			protected void init() {
+				// vide...
+			}
+		});
+
+		// mise en place fiscale
+		final long pmId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				// l'entreprise
+				final Entreprise e = addEntrepriseInconnueAuCivil();
+				addRaisonSociale(e, date(pf - 1, 5, 3), null, "Ma petite association");
+				addFormeJuridique(e, date(pf - 1, 5, 3), null, FormeJuridiqueEntreprise.ASSOCIATION);
+				addRegimeFiscalVD(e, RegDate.get(pf - 1, 5, 3), null, MockTypeRegimeFiscal.ORDINAIRE_APM);
+				addRegimeFiscalCH(e, RegDate.get(pf - 1, 5, 3), null, MockTypeRegimeFiscal.ORDINAIRE_APM);
+				addForPrincipal(e, date(pf - 1, 5, 3), MotifFor.DEBUT_EXPLOITATION, MockCommune.YverdonLesBains);
+				addAdresseSuisse(e, TypeAdresseTiers.COURRIER, date(pf - 1, 5, 3), null, MockRue.YverdonLesBains.RueDeLaFaiencerie, null);
+				addBouclement(e, date(pf - 1, 7, 1), DayMonth.get(1, 31), 12);      // bouclements les 31.01
+
+				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
+				final PeriodeFiscale periodeFiscale = addPeriodeFiscale(pf);
+				addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM, periodeFiscale);
+				addModeleDocument(TypeDocument.DECLARATION_IMPOT_APM, periodeFiscale);
+
+				// la tâche de DI "pf" (= celle que l'on va traiter)
+				addTacheEnvoiDIPM(TypeEtatTache.EN_INSTANCE, RegDate.get(), date(pf - 1, 5, 3), date(pf, 1, 31),
+				                  date(pf - 1, 5, 3), date(pf, 1, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
+				                  TypeDocument.DECLARATION_IMPOT_APM, e, CategorieEntreprise.APM, oipm);
+
+				return e.getNumero();
+			}
+		});
+
+		// lancement du job "pf - 1" -> rien à faire
+		{
+			final EnvoiDIsPMResults res = processor.run(pf - 1, TypeDeclarationImpotPM.APM, date(pf - 1, 12, 31), null, dateTraitement, 1, null);
+			Assert.assertNotNull(res);
+			Assert.assertEquals(0, res.getEnvoyees().size());
+			Assert.assertEquals(0, res.getIgnorees().size());
+			Assert.assertEquals(0, res.getErreurs().size());
+			Assert.assertEquals(date(pf - 1, 12, 31), res.getDateLimiteBouclements());
+			Assert.assertEquals(dateTraitement, res.getDateTraitement());
+			Assert.assertEquals(0, res.getNbContribuablesVus());
+			Assert.assertNull(res.getNbMaxEnvois());
+			Assert.assertEquals(1, res.getNbThreads());
+			Assert.assertEquals(pf - 1, res.getPeriodeFiscale());
+			Assert.assertEquals(TypeDeclarationImpotPM.APM, res.getType());
+
+			// vérification des données en base
+			doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+				@Override
+				protected void doInTransactionWithoutResult(TransactionStatus status) {
+					final Entreprise e = (Entreprise) tiersDAO.get(pmId);
+					Assert.assertNotNull(e);
+					Assert.assertNotNull(e.getDeclarations());
+					Assert.assertEquals(0, e.getDeclarations().size());
+
+					final List<Tache> taches = tacheDAO.find(e.getNumero());
+					Assert.assertNotNull(taches);
+					Assert.assertEquals(1, taches.size());
+
+					final Tache tache = taches.get(0);
+					Assert.assertNotNull(tache);
+					Assert.assertFalse(tache.isAnnule());
+					Assert.assertEquals(TacheEnvoiDeclarationImpotPM.class, tache.getClass());
+
+					final TacheEnvoiDeclarationImpotPM tidipm = (TacheEnvoiDeclarationImpotPM) tache;
+					Assert.assertEquals(date(pf - 1, 5, 3), tidipm.getDateDebut());
+					Assert.assertEquals(date(pf, 1, 31), tidipm.getDateFin());
+					Assert.assertEquals(TypeEtatTache.EN_INSTANCE, tidipm.getEtat());
+					Assert.assertEquals(TypeContribuable.VAUDOIS_ORDINAIRE, tidipm.getTypeContribuable());
+					Assert.assertEquals(TypeDocument.DECLARATION_IMPOT_APM, tidipm.getTypeDocument());
+				}
+			});
+		}
+
+		// lancement du job "pf" (on testera la limite de bouclement dans un autre test)
+		{
+			final EnvoiDIsPMResults res = processor.run(pf, TypeDeclarationImpotPM.APM, date(pf, 2, 10), null, dateTraitement, 1, null);
+			Assert.assertNotNull(res);
+			Assert.assertEquals(1, res.getEnvoyees().size());
+			Assert.assertEquals(0, res.getIgnorees().size());
+			Assert.assertEquals(0, res.getErreurs().size());
+			Assert.assertEquals(date(pf, 2, 10), res.getDateLimiteBouclements());
+			Assert.assertEquals(dateTraitement, res.getDateTraitement());
+			Assert.assertEquals(1, res.getNbContribuablesVus());
+			Assert.assertNull(res.getNbMaxEnvois());
+			Assert.assertEquals(1, res.getNbThreads());
+			Assert.assertEquals(pf, res.getPeriodeFiscale());
+			Assert.assertEquals(TypeDeclarationImpotPM.APM, res.getType());
+
+			final EnvoiDIsPMResults.DiEnvoyee envoyee = res.getEnvoyees().get(0);
+			Assert.assertNotNull(envoyee);
+			Assert.assertEquals(pmId, envoyee.getNoCtb());
+			Assert.assertEquals(date(pf - 1, 5, 3), envoyee.getDateDebut());
+			Assert.assertEquals(date(pf, 1, 31), envoyee.getDateFin());
+
+			// vérification des données en base
+			doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+				@Override
+				protected void doInTransactionWithoutResult(TransactionStatus status) {
+					final Entreprise e = (Entreprise) tiersDAO.get(pmId);
+					Assert.assertNotNull(e);
+					Assert.assertNotNull(e.getDeclarations());
+					Assert.assertEquals(1, e.getDeclarations().size());
+
+					final Declaration declaration = e.getDeclarations().iterator().next();
+					Assert.assertNotNull(declaration);
+					Assert.assertFalse(declaration.isAnnule());
+					Assert.assertEquals(date(pf - 1, 5, 3), declaration.getDateDebut());
+					Assert.assertEquals(date(pf, 1, 31), declaration.getDateFin());
+					Assert.assertEquals(dateTraitement, declaration.getDateExpedition());
+					Assert.assertEquals(null, declaration.getDateRetour());
+					Assert.assertNotNull(declaration.getDernierEtat());
+					Assert.assertEquals(TypeEtatDeclaration.EMISE, declaration.getDernierEtat().getEtat());
+					Assert.assertEquals(TypeDocument.DECLARATION_IMPOT_APM, declaration.getModeleDocument().getTypeDocument());
+					Assert.assertNotNull(declaration.getDelais());
+					Assert.assertEquals(1, declaration.getDelais().size());
+					final DelaiDeclaration delai = declaration.getDelais().iterator().next();
+					Assert.assertNotNull(delai);
+					Assert.assertFalse(delai.isAnnule());
+					Assert.assertEquals(dateTraitement, delai.getDateDemande());
+					Assert.assertEquals(dateTraitement, delai.getDateTraitement());
+					Assert.assertEquals(date(pf, 1, 31).addMonths(6).addDays(75), delai.getDelaiAccordeAu());       // 6 mois + 75 jours de tolérance
+
+					Assert.assertEquals(DeclarationImpotOrdinairePM.class, declaration.getClass());
+					final DeclarationImpotOrdinairePM di = (DeclarationImpotOrdinairePM) declaration;
+					Assert.assertNull(di.getCodeControle());        // pas de code de contrôle sur les APM
+					Assert.assertEquals(pf, di.getPeriode().getAnnee().intValue());
+					Assert.assertEquals((Integer) 1, di.getNumero());
+
+					final List<Tache> taches = tacheDAO.find(e.getNumero());
+					Assert.assertNotNull(taches);
+					Assert.assertEquals(1, taches.size());
+
+					final Tache tache = taches.get(0);
+					Assert.assertNotNull(tache);
+					Assert.assertFalse(tache.isAnnule());
+					Assert.assertEquals(TacheEnvoiDeclarationImpotPM.class, tache.getClass());
+
+					final TacheEnvoiDeclarationImpotPM tidipm = (TacheEnvoiDeclarationImpotPM) tache;
+					Assert.assertEquals(date(pf - 1, 5, 3), tidipm.getDateDebut());
+					Assert.assertEquals(date(pf, 1, 31), tidipm.getDateFin());
+					Assert.assertEquals(TypeEtatTache.TRAITE, tidipm.getEtat());
+					Assert.assertEquals(TypeContribuable.VAUDOIS_ORDINAIRE, tidipm.getTypeContribuable());
+					Assert.assertEquals(TypeDocument.DECLARATION_IMPOT_APM, tidipm.getTypeDocument());
 
 					// vérification de la présence d'un événement fiscal
 					final List<EvenementFiscal> all = evenementFiscalDAO.getAll();
@@ -358,9 +710,8 @@ public class EnvoiDeclarationsPMProcessorTest extends BusinessTest {
 	@Test
 	public void testLimiteBouclementFinExcerciceCommercialJustePasse() throws Exception {
 
-		final int year = RegDate.get().year();
-		final int pf = year - 1;
-		final RegDate dateTraitement = date(pf, 10, 5);
+		final int pf = 2016;
+		final RegDate dateTraitement = date(pf, 2, 10);
 
 		// mise en place civile
 		serviceOrganisation.setUp(new MockServiceOrganisation() {
@@ -382,14 +733,16 @@ public class EnvoiDeclarationsPMProcessorTest extends BusinessTest {
 				addRegimeFiscalCH(e, RegDate.get(pf - 1, 5, 3), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 				addForPrincipal(e, date(pf - 1, 5, 3), MotifFor.DEBUT_EXPLOITATION, MockCommune.YverdonLesBains);
 				addAdresseSuisse(e, TypeAdresseTiers.COURRIER, date(pf - 1, 5, 3), null, MockRue.YverdonLesBains.RueDeLaFaiencerie, null);
-				addBouclement(e, date(pf - 1, 7, 1), DayMonth.get(6, 30), 12);
+				addBouclement(e, date(pf - 1, 7, 1), DayMonth.get(1, 31), 12);      // bouclements tous les 31.01
 
 				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
-				addPeriodeFiscale(pf);
+				final PeriodeFiscale periodeFiscale = addPeriodeFiscale(pf);
+				addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM, periodeFiscale);
+				addModeleDocument(TypeDocument.DECLARATION_IMPOT_APM, periodeFiscale);
 
 				// la tâche de DI "pf" (= celle que l'on va traiter)
-				addTacheEnvoiDIPM(TypeEtatTache.EN_INSTANCE, RegDate.get(), date(pf - 1, 5, 3), date(pf, 6, 30),
-				                  date(pf - 1, 5, 3), date(pf, 6, 30), TypeContribuable.VAUDOIS_ORDINAIRE,
+				addTacheEnvoiDIPM(TypeEtatTache.EN_INSTANCE, RegDate.get(), date(pf - 1, 5, 3), date(pf, 1, 31),
+				                  date(pf - 1, 5, 3), date(pf, 1, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
 				                  TypeDocument.DECLARATION_IMPOT_PM, e, CategorieEntreprise.PM, oipm);
 
 				return e.getNumero();
@@ -398,12 +751,12 @@ public class EnvoiDeclarationsPMProcessorTest extends BusinessTest {
 
 		// lancement du job "pf" avec la limite de date de bouclement à la date effective de bouclement
 		{
-			final EnvoiDIsPMResults res = processor.run(pf, TypeDeclarationImpotPM.PM, date(pf, 6, 30), null, dateTraitement, 1, null);
+			final EnvoiDIsPMResults res = processor.run(pf, TypeDeclarationImpotPM.PM, date(pf, 1, 31), null, dateTraitement, 1, null);
 			Assert.assertNotNull(res);
 			Assert.assertEquals(1, res.getEnvoyees().size());
 			Assert.assertEquals(0, res.getIgnorees().size());
 			Assert.assertEquals(0, res.getErreurs().size());
-			Assert.assertEquals(date(pf, 6, 30), res.getDateLimiteBouclements());
+			Assert.assertEquals(date(pf, 1, 31), res.getDateLimiteBouclements());
 			Assert.assertEquals(dateTraitement, res.getDateTraitement());
 			Assert.assertEquals(1, res.getNbContribuablesVus());
 			Assert.assertNull(res.getNbMaxEnvois());
@@ -415,7 +768,7 @@ public class EnvoiDeclarationsPMProcessorTest extends BusinessTest {
 			Assert.assertNotNull(envoyee);
 			Assert.assertEquals(pmId, envoyee.getNoCtb());
 			Assert.assertEquals(date(pf - 1, 5, 3), envoyee.getDateDebut());
-			Assert.assertEquals(date(pf, 6, 30), envoyee.getDateFin());
+			Assert.assertEquals(date(pf, 1, 31), envoyee.getDateFin());
 
 			// vérification des données en base
 			doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
@@ -430,7 +783,7 @@ public class EnvoiDeclarationsPMProcessorTest extends BusinessTest {
 					Assert.assertNotNull(declaration);
 					Assert.assertFalse(declaration.isAnnule());
 					Assert.assertEquals(date(pf - 1, 5, 3), declaration.getDateDebut());
-					Assert.assertEquals(date(pf, 6, 30), declaration.getDateFin());
+					Assert.assertEquals(date(pf, 1, 31), declaration.getDateFin());
 					Assert.assertEquals(dateTraitement, declaration.getDateExpedition());
 					Assert.assertEquals(null, declaration.getDateRetour());
 					Assert.assertNotNull(declaration.getDernierEtat());
@@ -442,7 +795,7 @@ public class EnvoiDeclarationsPMProcessorTest extends BusinessTest {
 					Assert.assertFalse(delai.isAnnule());
 					Assert.assertEquals(dateTraitement, delai.getDateDemande());
 					Assert.assertEquals(dateTraitement, delai.getDateTraitement());
-					Assert.assertEquals(date(pf, 6, 30).addMonths(6).addDays(75), delai.getDelaiAccordeAu());        // 6 mois + 75 jours de tolérance
+					Assert.assertEquals(date(pf, 1, 31).addMonths(6).addDays(75), delai.getDelaiAccordeAu());        // 6 mois + 75 jours de tolérance
 
 					Assert.assertEquals(DeclarationImpotOrdinairePM.class, declaration.getClass());
 					final DeclarationImpotOrdinairePM di = (DeclarationImpotOrdinairePM) declaration;
@@ -461,7 +814,7 @@ public class EnvoiDeclarationsPMProcessorTest extends BusinessTest {
 
 					final TacheEnvoiDeclarationImpotPM tidipm = (TacheEnvoiDeclarationImpotPM) tache;
 					Assert.assertEquals(date(pf - 1, 5, 3), tidipm.getDateDebut());
-					Assert.assertEquals(date(pf, 6, 30), tidipm.getDateFin());
+					Assert.assertEquals(date(pf, 1, 31), tidipm.getDateFin());
 					Assert.assertEquals(TypeEtatTache.TRAITE, tidipm.getEtat());
 					Assert.assertEquals(TypeContribuable.VAUDOIS_ORDINAIRE, tidipm.getTypeContribuable());
 					Assert.assertEquals(TypeDocument.DECLARATION_IMPOT_PM, tidipm.getTypeDocument());
@@ -473,9 +826,8 @@ public class EnvoiDeclarationsPMProcessorTest extends BusinessTest {
 	@Test
 	public void testLimiteBouclementFinAssujettissementPasse() throws Exception {
 
-		final int year = RegDate.get().year();
-		final int pf = year - 1;
-		final RegDate dateTraitement = date(pf, 10, 5);
+		final int pf = 2016;
+		final RegDate dateTraitement = date(pf, 2, 10);
 
 		// mise en place civile
 		serviceOrganisation.setUp(new MockServiceOrganisation() {
@@ -495,16 +847,18 @@ public class EnvoiDeclarationsPMProcessorTest extends BusinessTest {
 				addFormeJuridique(e, date(pf - 1, 5, 3), null, FormeJuridiqueEntreprise.SARL);
 				addRegimeFiscalVD(e, RegDate.get(pf - 1, 5, 3), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 				addRegimeFiscalCH(e, RegDate.get(pf - 1, 5, 3), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addForPrincipal(e, date(pf - 1, 5, 3), MotifFor.DEBUT_EXPLOITATION, date(pf, 6, 15), MotifFor.CESSATION_ACTIVITE_FUSION_FAILLITE, MockCommune.YverdonLesBains);
+				addForPrincipal(e, date(pf - 1, 5, 3), MotifFor.DEBUT_EXPLOITATION, date(pf, 1, 15), MotifFor.CESSATION_ACTIVITE, MockCommune.YverdonLesBains);
 				addAdresseSuisse(e, TypeAdresseTiers.COURRIER, date(pf - 1, 5, 3), null, MockRue.YverdonLesBains.RueDeLaFaiencerie, null);
-				addBouclement(e, date(pf - 1, 7, 1), DayMonth.get(6, 30), 12);
+				addBouclement(e, date(pf - 1, 7, 1), DayMonth.get(1, 31), 12);          // bouclements tous les 31.01
 
 				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
-				addPeriodeFiscale(pf);
+				final PeriodeFiscale periodeFiscale = addPeriodeFiscale(pf);
+				addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM, periodeFiscale);
+				addModeleDocument(TypeDocument.DECLARATION_IMPOT_APM, periodeFiscale);
 
 				// la tâche de DI "pf" (= celle que l'on va traiter)
-				addTacheEnvoiDIPM(TypeEtatTache.EN_INSTANCE, RegDate.get(), date(pf - 1, 5, 3), date(pf, 6, 15),
-				                  date(pf - 1, 5, 3), date(pf, 6, 30), TypeContribuable.VAUDOIS_ORDINAIRE,
+				addTacheEnvoiDIPM(TypeEtatTache.EN_INSTANCE, RegDate.get(), date(pf - 1, 5, 3), date(pf, 1, 15),
+				                  date(pf - 1, 5, 3), date(pf, 1, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
 				                  TypeDocument.DECLARATION_IMPOT_PM, e, CategorieEntreprise.PM, oipm);
 
 				return e.getNumero();
@@ -513,12 +867,12 @@ public class EnvoiDeclarationsPMProcessorTest extends BusinessTest {
 
 		// lancement du job "pf" avec la limite de date de bouclement avant la date effective de bouclement sur une fin d'assujettissement
 		{
-			final EnvoiDIsPMResults res = processor.run(pf, TypeDeclarationImpotPM.PM, date(pf, 3, 31), null, dateTraitement, 1, null);
+			final EnvoiDIsPMResults res = processor.run(pf, TypeDeclarationImpotPM.PM, date(pf, 1, 25), null, dateTraitement, 1, null);
 			Assert.assertNotNull(res);
 			Assert.assertEquals(1, res.getEnvoyees().size());
 			Assert.assertEquals(0, res.getIgnorees().size());
 			Assert.assertEquals(0, res.getErreurs().size());
-			Assert.assertEquals(date(pf, 3, 31), res.getDateLimiteBouclements());
+			Assert.assertEquals(date(pf, 1, 25), res.getDateLimiteBouclements());
 			Assert.assertEquals(dateTraitement, res.getDateTraitement());
 			Assert.assertEquals(1, res.getNbContribuablesVus());
 			Assert.assertNull(res.getNbMaxEnvois());
@@ -530,7 +884,7 @@ public class EnvoiDeclarationsPMProcessorTest extends BusinessTest {
 			Assert.assertNotNull(envoyee);
 			Assert.assertEquals(pmId, envoyee.getNoCtb());
 			Assert.assertEquals(date(pf - 1, 5, 3), envoyee.getDateDebut());
-			Assert.assertEquals(date(pf, 6, 15), envoyee.getDateFin());
+			Assert.assertEquals(date(pf, 1, 15), envoyee.getDateFin());
 
 			// vérification des données en base
 			doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
@@ -545,7 +899,7 @@ public class EnvoiDeclarationsPMProcessorTest extends BusinessTest {
 					Assert.assertNotNull(declaration);
 					Assert.assertFalse(declaration.isAnnule());
 					Assert.assertEquals(date(pf - 1, 5, 3), declaration.getDateDebut());
-					Assert.assertEquals(date(pf, 6, 15), declaration.getDateFin());
+					Assert.assertEquals(date(pf, 1, 15), declaration.getDateFin());
 					Assert.assertEquals(dateTraitement, declaration.getDateExpedition());
 					Assert.assertEquals(null, declaration.getDateRetour());
 					Assert.assertNotNull(declaration.getDernierEtat());
@@ -557,7 +911,7 @@ public class EnvoiDeclarationsPMProcessorTest extends BusinessTest {
 					Assert.assertFalse(delai.isAnnule());
 					Assert.assertEquals(dateTraitement, delai.getDateDemande());
 					Assert.assertEquals(dateTraitement, delai.getDateTraitement());
-					Assert.assertEquals(date(pf, 6, 15).addMonths(6).addDays(75), delai.getDelaiAccordeAu());        // 6 mois + 75 jours de tolérance
+					Assert.assertEquals(date(pf, 1, 15).addMonths(6).addDays(75), delai.getDelaiAccordeAu());        // 6 mois + 75 jours de tolérance
 
 					Assert.assertEquals(DeclarationImpotOrdinairePM.class, declaration.getClass());
 					final DeclarationImpotOrdinairePM di = (DeclarationImpotOrdinairePM) declaration;
@@ -576,7 +930,7 @@ public class EnvoiDeclarationsPMProcessorTest extends BusinessTest {
 
 					final TacheEnvoiDeclarationImpotPM tidipm = (TacheEnvoiDeclarationImpotPM) tache;
 					Assert.assertEquals(date(pf - 1, 5, 3), tidipm.getDateDebut());
-					Assert.assertEquals(date(pf, 6, 15), tidipm.getDateFin());
+					Assert.assertEquals(date(pf, 1, 15), tidipm.getDateFin());
 					Assert.assertEquals(TypeEtatTache.TRAITE, tidipm.getEtat());
 					Assert.assertEquals(TypeContribuable.VAUDOIS_ORDINAIRE, tidipm.getTypeContribuable());
 					Assert.assertEquals(TypeDocument.DECLARATION_IMPOT_PM, tidipm.getTypeDocument());

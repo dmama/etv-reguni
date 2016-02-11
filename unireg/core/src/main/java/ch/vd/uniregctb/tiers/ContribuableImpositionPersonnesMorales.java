@@ -2,7 +2,10 @@ package ch.vd.uniregctb.tiers;
 
 import javax.persistence.Entity;
 import javax.persistence.Transient;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -29,16 +32,43 @@ public abstract class ContribuableImpositionPersonnesMorales extends Contribuabl
 	@Override
 	public synchronized void addDeclaration(Declaration declaration) {
 		if (declaration instanceof DeclarationImpotOrdinairePM) {
-			final int pf = declaration.getPeriode().getAnnee();
-			if (pf >= DeclarationImpotOrdinairePM.PREMIERE_ANNEE_RETOUR_ELECTRONIQUE) {
-				final DeclarationImpotOrdinairePM di = (DeclarationImpotOrdinairePM) declaration;
-				if (di.getCodeControle() == null) {
-					// nouveau numéro pour chaque déclaration
-					di.setCodeControle(DeclarationImpotOrdinairePM.generateCodeControle());
-				}
+			final DeclarationImpotOrdinairePM di = (DeclarationImpotOrdinairePM) declaration;
+			if (shouldAssignCodeControle(di)) {
+				di.setCodeControle(generateNewCodeControle(getDeclarationsTriees(DeclarationImpotOrdinairePM.class, true)));
 			}
 		}
 		super.addDeclaration(declaration);
+	}
+
+	/**
+	 * @param di nouvelle déclaration en cours d'ajout
+	 * @return <code>true</code> si un code de contrôle doit être généré pour la DI
+	 */
+	public boolean shouldAssignCodeControle(DeclarationImpotOrdinairePM di) {
+		final int pf = di.getPeriode().getAnnee();
+		return pf >= DeclarationImpotOrdinairePM.PREMIERE_ANNEE_RETOUR_ELECTRONIQUE && di.getCodeControle() == null;
+	}
+
+	/**
+	 * @param declarationsExistantes collection des déclarations existantes sur la PM
+	 * @return un nouveau code de contrôle pour la déclaration (différent de tous les autres codes de contrôles des DI existantes, annulées ou pas)
+	 */
+	public static String generateNewCodeControle(Collection<DeclarationImpotOrdinairePM> declarationsExistantes) {
+		// faisons le tour de tous les codes de contrôles existant afin de ne pas reprendre une deuxième fois le même
+		final Set<String> codesExistants = new HashSet<>(declarationsExistantes.size());
+		for (DeclarationImpotOrdinairePM di : declarationsExistantes) {
+			if (di.getCodeControle() != null) {
+				codesExistants.add(di.getCodeControle());
+			}
+		}
+
+		// on boucle la génération tant qu'on n'a pas quelque chose de neuf...
+		String codeControle;
+		do {
+			codeControle = DeclarationImpotOrdinairePM.generateCodeControle();
+		}
+		while (codesExistants.contains(codeControle));
+		return codeControle;
 	}
 
 	@Override

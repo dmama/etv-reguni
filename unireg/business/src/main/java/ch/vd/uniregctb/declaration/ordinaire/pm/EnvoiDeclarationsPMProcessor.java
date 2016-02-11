@@ -5,11 +5,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
@@ -67,7 +65,6 @@ import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.transaction.TransactionTemplate;
 import ch.vd.uniregctb.type.EtatDelaiDeclaration;
 import ch.vd.uniregctb.type.TypeContribuable;
-import ch.vd.uniregctb.type.TypeDocument;
 import ch.vd.uniregctb.type.TypeEtatTache;
 
 public class EnvoiDeclarationsPMProcessor {
@@ -285,13 +282,14 @@ public class EnvoiDeclarationsPMProcessor {
 		di.setTypeContribuable(tache.getTypeContribuable());
 		di.setTiers(pm);
 		di.setNumero(getNewSequenceNumber(pm, informationsFiscales));
-		if (tache.getTypeDocument() == TypeDocument.DECLARATION_IMPOT_PM) {
-			di.setCodeControle(getNewCodeControle(pm, informationsFiscales));
-		}
 
 		final PeriodeFiscale periodeFiscale = informationsFiscales.getPeriodeFiscale();
 		di.setPeriode(periodeFiscale);
 		di.setModeleDocument(periodeFiscale.get(tache.getTypeDocument()));
+
+		if (pm.shouldAssignCodeControle(di)) {
+			di.setCodeControle(ContribuableImpositionPersonnesMorales.generateNewCodeControle(informationsFiscales.getDeclarations(pm)));
+		}
 
 		final DeclarationImpotOrdinairePM savedDi = hibernateTemplate.merge(di);
 
@@ -431,29 +429,6 @@ public class EnvoiDeclarationsPMProcessor {
 			}
 		}
 		return highWaterMark + 1;
-	}
-
-	/**
-	 * Génère un nouveau code de contrôle différent de tous les codes de contrôles jusqu'ici utilisés pour le contribuable
-	 * @param pm le contribuable personne morale
-	 * @param informationsFiscales les données fiscales
-	 * @return un nouveau code de contrôle unique
-	 */
-	private static String getNewCodeControle(ContribuableImpositionPersonnesMorales pm, InformationsFiscales informationsFiscales) {
-		// faisons le tour de tous les codes de contrôles existant
-		final Collection<DeclarationImpotOrdinairePM> toutes = informationsFiscales.getDeclarations(pm);
-		final Set<String> codesExistants = new HashSet<>(toutes.size());
-		for (DeclarationImpotOrdinairePM di : toutes) {
-			codesExistants.add(di.getCodeControle());
-		}
-
-		// on boucle la génération tant qu'on n'a pas quelque chose de neuf...
-		String codeControle;
-		do {
-			codeControle = DeclarationImpotOrdinairePM.generateCodeControle();
-		}
-		while (codesExistants.contains(codeControle));
-		return codeControle;
 	}
 
 	/**
