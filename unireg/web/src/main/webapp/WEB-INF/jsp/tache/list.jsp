@@ -57,6 +57,9 @@
 							<c:when test="${tache.typeTache == 'TacheAnnulationDeclarationImpot'}">
 								<a href="../di/editer.do?id=${tache.idDI}&tacheId=${tache.id}"><unireg:numCTB numero="${tache.numero}" /></a>
 							</c:when>
+							<c:otherwise>
+								<unireg:numCTB numero="${tache.numero}" />
+							</c:otherwise>
 						</c:choose>
 					</c:when>
 					<c:otherwise>
