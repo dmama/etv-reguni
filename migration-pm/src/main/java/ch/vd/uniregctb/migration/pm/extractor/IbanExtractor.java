@@ -7,6 +7,7 @@ import java.util.regex.Pattern;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
 
+import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.migration.pm.MigrationResultProduction;
 import ch.vd.uniregctb.migration.pm.log.LogCategory;
 import ch.vd.uniregctb.migration.pm.log.LogLevel;
@@ -48,7 +49,7 @@ public abstract class IbanExtractor {
 
 		// si l'IBAN est déjà là, on le renvoie tout simplement
 		if (StringUtils.isNotBlank(coordonneesFinancieres.getIban())) {
-			iban = coordonneesFinancieres.getIban();
+			iban = canonizeIban(coordonneesFinancieres.getIban());
 			mr.addMessage(LogCategory.COORDONNEES_FINANCIERES, LogLevel.INFO, String.format("IBAN déjà présent dans les données source : %s.", iban));
 		}
 
@@ -60,7 +61,7 @@ public abstract class IbanExtractor {
 
 		// si on a un compte bancaire, on le convertit
 		else if (StringUtils.isNotBlank(coordonneesFinancieres.getNoCompteBancaire())) {
-			iban = extractIbanFromCompteBancaire(coordonneesFinancieres.getNoCompteBancaire(), coordonneesFinancieres.getInstitutionFinanciere(), mr);
+			iban = canonizeIban(extractIbanFromCompteBancaire(coordonneesFinancieres.getNoCompteBancaire(), coordonneesFinancieres.getInstitutionFinanciere(), mr));
 			mr.addMessage(LogCategory.COORDONNEES_FINANCIERES, LogLevel.INFO, String.format("IBAN extrait du numéro de compte '%s' et du clearing '%s' : %s.",
 			                                                                                coordonneesFinancieres.getNoCompteBancaire(),
 			                                                                                coordonneesFinancieres.getInstitutionFinanciere().getNoClearing(),
@@ -73,6 +74,14 @@ public abstract class IbanExtractor {
 		}
 
 		return iban;
+	}
+
+	@Nullable
+	private static String canonizeIban(String iban) {
+		if (iban == null || StringUtils.isBlank(iban)) {
+			return null;
+		}
+		return StringUtils.trimToNull(FormatNumeroHelper.removeSpaceAndDash(StringUtils.upperCase(iban)));
 	}
 
 	private static String buildIban(int clearing, String noCompte) throws IbanExtractorException {

@@ -65,6 +65,16 @@ public class IbanExtractorTest {
 			final List<String> textes = messages.get(LogCategory.COORDONNEES_FINANCIERES).stream().map(m -> m.text).collect(Collectors.toList());
 			Assert.assertEquals(Collections.singletonList("IBAN déjà présent dans les données source : CH003247824."), textes);
 		}
+		{
+			final MigrationResultCollector mr = new MigrationResultCollector(new MockGraphe(null, null, null));
+			Assert.assertEquals("CH003247824", IbanExtractor.extractIban(buildCoordonneesFinancieres("DUMMY", "Ch00 3247 824", null, "1-000001-2", "36324214423"), mr));
+
+			final Map<LogCategory, List<MigrationResultCollector.Message>> messages = mr.getMessages();
+			Assert.assertEquals(EnumSet.of(LogCategory.COORDONNEES_FINANCIERES), messages.keySet());
+
+			final List<String> textes = messages.get(LogCategory.COORDONNEES_FINANCIERES).stream().map(m -> m.text).collect(Collectors.toList());
+			Assert.assertEquals(Collections.singletonList("IBAN déjà présent dans les données source : CH003247824."), textes);
+		}
 	}
 
 	@Test
