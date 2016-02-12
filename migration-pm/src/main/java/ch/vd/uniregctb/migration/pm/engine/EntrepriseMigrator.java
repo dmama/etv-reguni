@@ -3065,30 +3065,65 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 						throw new IllegalArgumentException("On ne devrait pas se trouver là...");
 					}
 
-					final String bicSwift = mandat.getBicSwift();
+					// [SIFISC-17979] on ne migre la coordonnée financière que sur les mandats "tiers"
+					final String bicSwift;
 					String iban;
-					try {
-						iban = IbanExtractor.extractIban(mandat, mr);
+					if (mandat.getType() == RegpmTypeMandat.TIERS) {
+						bicSwift = mandat.getBicSwift();
+						try {
+							iban = IbanExtractor.extractIban(mandat, mr);
 
-						// TODO ne manque-t-il pas le titulaire du compte pour les coordonnées financières ?
+							// TODO ne manque-t-il pas le titulaire du compte pour les coordonnées financières ?
+						}
+						catch (IbanExtractor.IbanExtractorException e) {
+							mr.addMessage(LogCategory.SUIVI, LogLevel.ERROR, "Impossible d'extraire un IBAN du mandat " + mandat.getId() + " (" + e.getMessage() + ")");
+							iban = null;
+						}
 					}
-					catch (IbanExtractor.IbanExtractorException e) {
-						mr.addMessage(LogCategory.SUIVI, LogLevel.ERROR, "Impossible d'extraire un IBAN du mandat " + mandat.getId() + " (" + e.getMessage() + ")");
+					else {
 						iban = null;
+						bicSwift = null;
+					}
+
+					// [SIFISC-17979] on ne migre les coordonnées de contact que sur les mandats "généraux"
+					final String nomContact;
+					final String prenomContact;
+					final String telContact;
+					if (mandat.getType() == RegpmTypeMandat.GENERAL) {
+						nomContact = mandat.getNomContact();
+						prenomContact = mandat.getPrenomContact();
+						telContact = canonizeTelephoneNumber(mandat.getNoTelContact(), String.format("téléphone du mandat général %d", mandat.getId().getNoSequence()), mr);
+					}
+					else {
+						nomContact = null;
+						prenomContact = null;
+						telContact = null;
 					}
 
 					// ajout du lien entre l'entreprise et son mandataire
-					linkCollector.addLink(new EntityLinkCollector.MandantMandataireLink<>(moi, mandataire, mandat.getDateAttribution(), mandat.getDateResiliation(), extractTypeMandat(mandat.getType()), iban, bicSwift));
+					linkCollector.addLink(new EntityLinkCollector.MandantMandataireLink<>(moi,
+					                                                                      mandataire,
+					                                                                      mandat.getDateAttribution(),
+					                                                                      mandat.getDateResiliation(),
+					                                                                      extractTypeMandat(mandat.getType()),
+					                                                                      iban,
+					                                                                      bicSwift,
+					                                                                      nomContact,
+					                                                                      prenomContact,
+					                                                                      telContact));
 				});
 	}
 
 	private static TypeMandat extractTypeMandat(RegpmTypeMandat type) {
-		if (type == RegpmTypeMandat.GENERAL) {
+		switch (type) {
+		case GENERAL:
 			return TypeMandat.GENERAL;
+		case TIERS:
+			return TypeMandat.TIERS;
+		default:
+			// TODO si on doit un jour migrer d'autres types, ça va sauter (doit être cohérent avec l'extraction des mandats)
+			throw new IllegalArgumentException("Type de mandat non-supporté : " + type);
 		}
-
-		// TODO si on doit un jour migrer d'autres types, ça va sauter (doit être cohérent avec l'extraction des mandats)
-		throw new IllegalArgumentException("Type de mandat non-supporté : " + type);
 	}
 
 	/**

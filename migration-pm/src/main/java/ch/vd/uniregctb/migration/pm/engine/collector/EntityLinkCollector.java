@@ -294,12 +294,27 @@ public class EntityLinkCollector {
 		private final TypeMandat typeMandat;
 		private final String iban;
 		private final String bicSwift;
+		private final String nomContact;
+		private final String prenomContact;
+		private final String noTelephoneContact;
 
-		public MandantMandataireLink(KeyedSupplier<S> mandant, KeyedSupplier<D> mandataire, RegDate dateDebut, RegDate dateFin, TypeMandat typeMandat, String iban, String bicSwift) {
+		public MandantMandataireLink(KeyedSupplier<S> mandant,
+		                             KeyedSupplier<D> mandataire,
+		                             RegDate dateDebut,
+		                             RegDate dateFin,
+		                             TypeMandat typeMandat,
+		                             String iban,
+		                             String bicSwift,
+		                             String nomContact,
+		                             String prenomContact,
+		                             String noTelephoneContact) {
 			super(LinkType.MANDANT_MANDATAIRE, mandant, mandataire, dateDebut, dateFin);
 			this.typeMandat = typeMandat;
 			this.iban = iban;
 			this.bicSwift = bicSwift;
+			this.nomContact = nomContact;
+			this.prenomContact = prenomContact;
+			this.noTelephoneContact = noTelephoneContact;
 		}
 
 		public S resolveMandant() {
@@ -315,6 +330,9 @@ public class EntityLinkCollector {
 			final CoordonneesFinancieres cf = iban != null || bicSwift != null ? new CoordonneesFinancieres(iban, bicSwift) : null;
 			final Mandat mandat = new Mandat(getDateDebut(), getDateFin(), resolveMandant(), resolveMandataire(), typeMandat);
 			mandat.setCoordonneesFinancieres(cf);
+			mandat.setNomPersonneContact(nomContact);
+			mandat.setPrenomPersonneContact(prenomContact);
+			mandat.setNoTelephoneContact(noTelephoneContact);
 			return mandat;
 		}
 	}

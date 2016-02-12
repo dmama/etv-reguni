@@ -876,8 +876,8 @@ public abstract class AbstractEntityMigrator<T extends RegpmEntity> implements E
 			return false;
 		}
 
-		// on ne reprend que les mandats généraux
-		if (mandat.getType() != RegpmTypeMandat.GENERAL) {
+		// [SIFISC-17979] on ne reprend que les mandats généraux et les mandats tiers
+		if (mandat.getType() != RegpmTypeMandat.GENERAL && mandat.getType() != RegpmTypeMandat.TIERS) {
 			mr.addMessage(logCategory, LogLevel.WARN,
 			              String.format("Le mandat %d de l'entreprise mandante %d vers l'entité mandataire %d de type %s est ignoré à cause de son type (%s).",
 			                            mandat.getId().getNoSequence(),
@@ -886,6 +886,51 @@ public abstract class AbstractEntityMigrator<T extends RegpmEntity> implements E
 			                            mandataire.getType(),
 			                            mandat.getType()));
 			return false;
+		}
+
+		// [SIFISC-17979] pour les mandats "tiers", on ne reprend que les mandats encore actifs
+		if (mandat.getType() == RegpmTypeMandat.TIERS && mandat.getDateResiliation() != null) {
+			mr.addMessage(logCategory, LogLevel.WARN,
+			              String.format("Le mandat %s %d de l'entreprise mandante %d vers l'entité mandataire %d de type %s est ignoré car il est résilié.",
+			                            mandat.getType(),
+			                            mandat.getId().getNoSequence(),
+			                            mandat.getId().getIdEntreprise(),
+			                            mandataire.getId(),
+			                            mandataire.getType()));
+			return false;
+		}
+
+		// [SIFISC-17979] pour les mandats "tiers", on ne reprends que les mandats qui pointent vers une entreprise
+		if (mandat.getType() == RegpmTypeMandat.TIERS && mandataire.getType() != EntityKey.Type.ENTREPRISE) {
+			mr.addMessage(logCategory, LogLevel.WARN,
+			              String.format("Le mandat %s %d de l'entreprise mandante %d vers l'entité mandataire %d de type %s est ignoré à cause du type du mandataire.",
+			                            mandat.getType(),
+			                            mandat.getId().getNoSequence(),
+			                            mandat.getId().getIdEntreprise(),
+			                            mandataire.getId(),
+			                            mandataire.getType()));
+			return false;
+		}
+
+		// [SIFISC-17979] pour les mandats, "tiers", le numéro de compte doit être interprétable
+		if (mandat.getType() == RegpmTypeMandat.TIERS) {
+			try {
+				final String iban = IbanExtractor.extractIban(mandat, mr);
+				if (iban == null) {
+					mr.addMessage(logCategory, LogLevel.ERROR,
+					              String.format("Le mandat %s %d de l'entreprise mandante %d vers l'entité mandataire %d de type %s est ignoré car aucune coordonnée financière n'a pu en être extraite.",
+					                            mandat.getType(),
+					                            mandat.getId().getNoSequence(),
+					                            mandat.getId().getIdEntreprise(),
+					                            mandataire.getId(),
+					                            mandataire.getType()));
+					return false;
+				}
+			}
+			catch (IbanExtractor.IbanExtractorException e) {
+				mr.addMessage(LogCategory.SUIVI, LogLevel.ERROR, "Impossible d'extraire un IBAN du mandat " + mandat.getId() + " (" + e.getMessage() + "), mandat non repris.");
+				return false;
+			}
 		}
 
 		// on ne reprend de toute façon que les mandats assez récents

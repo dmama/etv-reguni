@@ -160,6 +160,7 @@ import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeEtatDeclaration;
 import ch.vd.uniregctb.type.TypeEtatEntreprise;
 import ch.vd.uniregctb.type.TypeFlagEntreprise;
+import ch.vd.uniregctb.type.TypeMandat;
 
 public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 
@@ -1248,13 +1249,16 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 	}
 
 	@Test
-	public void testMandataire() throws Exception {
+	public void testMandataireGeneral() throws Exception {
 
 		final long noEntrepriseMandant = 42L;
 		final long noEntrepriseMandataire = 548L;
 		final RegpmEntreprise mandant = buildEntreprise(noEntrepriseMandant);
 		final RegpmEntreprise mandataire = buildEntreprise(noEntrepriseMandataire);
-		addMandat(mandant, mandataire, RegpmTypeMandat.GENERAL, "17-331-7", RegDate.get(2001, 5, 1), null);
+		final RegpmMandat mandat = addMandat(mandant, mandataire, RegpmTypeMandat.GENERAL, "17-331-7", RegDate.get(2001, 5, 1), null);
+		mandat.setNomContact("Nom contact");
+		mandat.setPrenomContact("Prénom contact");
+		mandat.setNoTelContact("021 316'00'00");
 
 		final MockGraphe graphe = new MockGraphe(Arrays.asList(mandant, mandataire),
 		                                         null,
@@ -1289,7 +1293,68 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		Assert.assertNull(ret.getDateFin());
 		Assert.assertEquals((Long) idEntreprise[0], ret.getSujetId());
 		Assert.assertEquals((Long) idEntreprise[1], ret.getObjetId());
+
+		final Mandat retMandat = (Mandat) ret;
+		Assert.assertEquals(TypeMandat.GENERAL, retMandat.getTypeMandat());
+		Assert.assertNull(retMandat.getCoordonneesFinancieres());       // les coordonnées financières ne sont pas reprises sur les mandats généraux
+		Assert.assertEquals("Nom contact", retMandat.getNomPersonneContact());
+		Assert.assertEquals("Prénom contact", retMandat.getPrenomPersonneContact());
+		Assert.assertEquals("0213160000", retMandat.getNoTelephoneContact());
+	}
+
+	@Test
+	public void testMandataireTiers() throws Exception {
+
+		final long noEntrepriseMandant = 42L;
+		final long noEntrepriseMandataire = 548L;
+		final RegpmEntreprise mandant = buildEntreprise(noEntrepriseMandant);
+		final RegpmEntreprise mandataire = buildEntreprise(noEntrepriseMandataire);
+		final RegpmMandat mandat = addMandat(mandant, mandataire, RegpmTypeMandat.TIERS, "17-331-7", RegDate.get(2001, 5, 1), null);
+		mandat.setNomContact("Nom contact");
+		mandat.setPrenomContact("Prénom contact");
+		mandat.setNoTelContact("021 316'00'00");
+
+		final MockGraphe graphe = new MockGraphe(Arrays.asList(mandant, mandataire),
+		                                         null,
+		                                         null);
+		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
+		final EntityLinkCollector linkCollector = new EntityLinkCollector();
+		final IdMapper idMapper = new IdMapper();
+		migrator.initMigrationResult(mr, idMapper);
+		migrate(mandataire, migrator, mr, linkCollector, idMapper);
+		migrate(mandant, migrator, mr, linkCollector, idMapper);
+
+		// vérification du contenu de la base -> deux nouvelles entreprises
+		final long[] idEntreprise = doInUniregTransaction(true, status -> {
+			final List<Long> ids = getTiersDAO().getAllIdsFor(true, TypeTiers.ENTREPRISE);
+			final List<Long> sorted = new ArrayList<>(ids);
+			Collections.sort(sorted);
+			Assert.assertNotNull(sorted);
+			Assert.assertEquals(2, sorted.size());
+			return new long[] {sorted.get(0), sorted.get(1)};
+		});
+
+		// vérification de l'instantiation du lien
+		final RapportEntreTiers ret = doInUniregTransaction(true, status -> {
+			final List<EntityLinkCollector.EntityLink> collectedLinks = linkCollector.getCollectedLinks();
+			Assert.assertEquals(1, collectedLinks.size());
+			final EntityLinkCollector.EntityLink link = collectedLinks.get(0);
+			Assert.assertNotNull(link);
+			return link.toRapportEntreTiers();
+		});
+		Assert.assertEquals(Mandat.class, ret.getClass());
+		Assert.assertEquals(RegDate.get(2001, 5, 1), ret.getDateDebut());
+		Assert.assertNull(ret.getDateFin());
+		Assert.assertEquals((Long) idEntreprise[0], ret.getSujetId());
+		Assert.assertEquals((Long) idEntreprise[1], ret.getObjetId());
+
+		final Mandat retMandat = (Mandat) ret;
+		Assert.assertEquals(TypeMandat.TIERS, retMandat.getTypeMandat());
+		Assert.assertNotNull(retMandat.getCoordonneesFinancieres());
 		Assert.assertEquals("CH7009000000170003317", ((Mandat) ret).getCoordonneesFinancieres().getIban());
+		Assert.assertNull(retMandat.getNomPersonneContact());       // les données de contact ne sont pas migrées sur les mandats 'tiers'
+		Assert.assertNull(retMandat.getPrenomPersonneContact());
+		Assert.assertNull(retMandat.getNoTelephoneContact());
 	}
 
 	@Test
@@ -1385,7 +1450,55 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 	}
 
 	@Test
-	public void testMandataireDateResiliationFuture() throws Exception {
+	public void testMandataireTiersAvecDateResiliation() throws Exception {
+
+		final long noEntrepriseMandant = 42L;
+		final long noEntrepriseMandataire = 548L;
+		final RegpmEntreprise mandant = buildEntreprise(noEntrepriseMandant);
+		final RegpmEntreprise mandataire = buildEntreprise(noEntrepriseMandataire);
+		addMandat(mandant, mandataire, RegpmTypeMandat.TIERS, "17-331-7", RegDate.get(2001, 5, 1), RegDate.get().getOneDayBefore());  // fermé hier = résilié
+
+		final MockGraphe graphe = new MockGraphe(Arrays.asList(mandant, mandataire),
+		                                         null,
+		                                         null);
+		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
+		final EntityLinkCollector linkCollector = new EntityLinkCollector();
+		final IdMapper idMapper = new IdMapper();
+		migrator.initMigrationResult(mr, idMapper);
+		migrate(mandataire, migrator, mr, linkCollector, idMapper);
+		migrate(mandant, migrator, mr, linkCollector, idMapper);
+
+		// vérification du contenu de la base -> deux nouvelles entreprises
+		final long[] idEntreprise = doInUniregTransaction(true, status -> {
+			final List<Long> ids = getTiersDAO().getAllIdsFor(true, TypeTiers.ENTREPRISE);
+			final List<Long> sorted = new ArrayList<>(ids);
+			Collections.sort(sorted);
+			Assert.assertNotNull(sorted);
+			Assert.assertEquals(2, sorted.size());
+			return new long[] {sorted.get(0), sorted.get(1)};
+		});
+
+		// vérification de l'instantiation du lien
+		doInUniregTransaction(true, status -> {
+			final List<EntityLinkCollector.EntityLink> collectedLinks = linkCollector.getCollectedLinks();
+			Assert.assertEquals(0, collectedLinks.size());
+		});
+
+		// vérification du message ad'hoc dans le collecteur
+		final List<MigrationResultCollector.Message> msgSuivi = mr.getMessages().get(LogCategory.SUIVI);
+		Assert.assertNotNull(msgSuivi);
+		final List<String> messages = msgSuivi.stream().map(msg -> msg.text).collect(Collectors.toList());
+		final String messageMandatDateDebutFuture = messages.stream()
+				.filter(s -> s.matches("Le mandat TIERS .* est ignoré car il est résilié\\."))
+				.findAny()
+				.orElse(null);
+		if (messageMandatDateDebutFuture == null) {
+			Assert.fail("Aucun message ne parle du mandat TIERS résilié et donc ignoré... : " + Arrays.toString(messages.toArray(new String[messages.size()])));
+		}
+	}
+
+	@Test
+	public void testMandataireGeneralDateResiliationFuture() throws Exception {
 
 		final long noEntrepriseMandant = 42L;
 		final long noEntrepriseMandataire = 548L;
@@ -1426,7 +1539,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		Assert.assertNull(ret.getDateFin());                                // malgré la date présente dans RegPM, elle est nulle ici
 		Assert.assertEquals((Long) idEntreprise[0], ret.getSujetId());
 		Assert.assertEquals((Long) idEntreprise[1], ret.getObjetId());
-		Assert.assertEquals("CH7009000000170003317", ((Mandat) ret).getCoordonneesFinancieres().getIban());
+		Assert.assertNull(((Mandat) ret).getCoordonneesFinancieres());      // les coordonnées financières ne sont pas reprises sur les mandats généraux
 
 		// vérification du message ad'hoc dans le collecteur
 		final List<MigrationResultCollector.Message> msgSuivi = mr.getMessages().get(LogCategory.SUIVI);
