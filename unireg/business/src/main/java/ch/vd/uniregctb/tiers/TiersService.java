@@ -525,15 +525,6 @@ public interface TiersService {
     RapportEntreTiers addContactImpotSource(DebiteurPrestationImposable debiteur, Contribuable contribuable, RegDate dateDebut);
 
     /**
-     * Ajout d'un rapport de type activité économique entre l'établissement et le contribuable
-     *
-     * @param etablissement un établissement
-     * @param contribuable un contribuable
-     * @return le rapport
-     */
-    RapportEntreTiers addActiviteEconomique(Etablissement etablissement, Contribuable contribuable);
-
-    /**
      * Ajout d'un rapport de type activité économique entre l'établissement et le contribuable avec une date de début
      *
      * @param etablissement un établissement

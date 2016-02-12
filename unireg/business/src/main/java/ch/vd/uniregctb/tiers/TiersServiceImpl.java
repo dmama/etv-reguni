@@ -1474,17 +1474,6 @@ public class TiersServiceImpl implements TiersService {
     }
 
 	/**
-	 * Ajout d'un rapport de type activité économique entre l'établissement et le contribuable
-	 *
-	 * @return le rapport
-	 */
-	@Override
-	public RapportEntreTiers addActiviteEconomique(Etablissement etablissement, Contribuable contribuable) {
-
-		return addActiviteEconomique(etablissement, contribuable, RegDate.get());
-	}
-
-	/**
 	 * Ajout d'un rapport de type activité économique entre l'établissement et le contribuable avec une date de début
 	 *
 	 * @return le rapport

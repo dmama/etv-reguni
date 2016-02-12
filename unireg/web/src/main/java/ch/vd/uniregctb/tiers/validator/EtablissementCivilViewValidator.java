@@ -7,6 +7,7 @@ import org.springframework.validation.Validator;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.common.LengthConstants;
+import ch.vd.uniregctb.common.NumeroIDEHelper;
 import ch.vd.uniregctb.tiers.view.EtablissementCivilView;
 
 public class EtablissementCivilViewValidator implements Validator {
@@ -37,8 +38,10 @@ public class EtablissementCivilViewValidator implements Validator {
 			}
 
 			// Numéro IDE
-			if (StringUtils.isNotBlank(view.getNumeroIDE()) && view.getNumeroIDE().length() != LengthConstants.IDENT_ENTREPRISE_IDE) {
-				errors.rejectValue("numeroIDE", "error.numero.ide.invalide");
+			if (StringUtils.isNotBlank(view.getNumeroIDE())) {
+				if (!NumeroIDEHelper.isValid(view.getNumeroIDE())) {
+					errors.rejectValue("numeroIDE", "error.numero.ide.invalide");
+				}
 			}
 
 			RegDate dateDebut = null;

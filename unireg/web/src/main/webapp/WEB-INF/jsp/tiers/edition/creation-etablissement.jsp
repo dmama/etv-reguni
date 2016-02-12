@@ -107,7 +107,7 @@
 									</td>
 								</tr>
 
-								<c:set var="length_numeroIDE" value="<%=LengthConstants.IDENT_ENTREPRISE_IDE%>" scope="request" />
+								<c:set var="length_numeroIDE" value="<%=LengthConstants.IDENT_ENTREPRISE_IDE + 3%>" scope="request" />
 								<tr class="<unireg:nextRowClass/>" >
 									<td>
 										<fmt:message key="label.numero.ide"/>&nbsp;:
