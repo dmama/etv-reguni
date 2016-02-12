@@ -35,6 +35,9 @@ public class Mandat extends RapportEntreTiers {
 
 	private TypeMandat typeMandat;
 	private CoordonneesFinancieres coordonneesFinancieres;
+	private String nomPersonneContact;
+	private String prenomPersonneContact;
+	private String noTelephoneContact;
 
 	public Mandat() {
 		// empty
@@ -49,6 +52,9 @@ public class Mandat extends RapportEntreTiers {
 		super(src);
 		this.typeMandat = src.typeMandat;
 		this.coordonneesFinancieres = src.coordonneesFinancieres != null ? new CoordonneesFinancieres(src.getCoordonneesFinancieres()) : null;
+		this.nomPersonneContact = src.nomPersonneContact;
+		this.prenomPersonneContact = src.prenomPersonneContact;
+		this.noTelephoneContact = src.noTelephoneContact;
 	}
 
 	@Column(name = "TYPE_MANDAT", length = LengthConstants.MANDAT_TYPE)
@@ -72,6 +78,33 @@ public class Mandat extends RapportEntreTiers {
 
 	public void setCoordonneesFinancieres(CoordonneesFinancieres coordonneesFinancieres) {
 		this.coordonneesFinancieres = coordonneesFinancieres;
+	}
+
+	@Column(name = "NOM_CONTACT_MANDAT", length = LengthConstants.MANDAT_NOM_CONTACT)
+	public String getNomPersonneContact() {
+		return nomPersonneContact;
+	}
+
+	public void setNomPersonneContact(String nomPersonneContact) {
+		this.nomPersonneContact = nomPersonneContact;
+	}
+
+	@Column(name = "PRENOM_CONTACT_MANDAT", length = LengthConstants.MANDAT_NOM_CONTACT)
+	public String getPrenomPersonneContact() {
+		return prenomPersonneContact;
+	}
+
+	public void setPrenomPersonneContact(String prenomPersonneContact) {
+		this.prenomPersonneContact = prenomPersonneContact;
+	}
+
+	@Column(name = "TEL_CONTACT_MANDAT", length = LengthConstants.TIERS_NUMTEL)
+	public String getNoTelephoneContact() {
+		return noTelephoneContact;
+	}
+
+	public void setNoTelephoneContact(String noTelephoneContact) {
+		this.noTelephoneContact = noTelephoneContact;
 	}
 
 	@Override
