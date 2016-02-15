@@ -6,6 +6,7 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -3565,7 +3566,64 @@ public class TiersServiceImpl implements TiersService {
         this.evenementFiscalService = evenementFiscalService;
     }
 
-    @Override
+	/**
+	 * @param tiers un tiers
+	 * @return sur une ligne, le nom ou la raison sociale du tiers à la date demandée
+	 */
+	@Override
+	public String getNomRaisonSociale(Tiers tiers) {
+		if (tiers instanceof PersonnePhysique) {
+			return getNomPrenom((PersonnePhysique) tiers);
+		}
+		if (tiers instanceof MenageCommun) {
+			final EnsembleTiersCouple couple = getEnsembleTiersCouple((MenageCommun) tiers, null);
+			if (couple != null) {
+				final PersonnePhysique principal = couple.getPrincipal();
+				final PersonnePhysique conjoint = couple.getConjoint();
+				final String nomPrincipal = principal != null ? getNomRaisonSociale(principal) : null;
+				final String nomConjoint = conjoint != null ? getNomRaisonSociale(conjoint) : null;
+				if (nomPrincipal == null && nomConjoint == null) {
+					return null;
+				}
+				else if (nomConjoint == null) {
+					return nomPrincipal;
+				}
+				else if (nomPrincipal == null) {
+					return nomConjoint;
+				}
+				else {
+					return CollectionsUtils.concat(Arrays.asList(nomPrincipal, nomConjoint), " / ");
+				}
+			}
+			else {
+				return null;
+			}
+		}
+		if (tiers instanceof Entreprise) {
+			return getRaisonSociale((Entreprise) tiers);
+		}
+		if (tiers instanceof Etablissement) {
+			return getRaisonSociale((Etablissement) tiers);
+		}
+		if (tiers instanceof CollectiviteAdministrative) {
+			return getNomCollectiviteAdministrative((CollectiviteAdministrative) tiers);
+		}
+		if (tiers instanceof AutreCommunaute) {
+			return ((AutreCommunaute) tiers).getNom();
+		}
+		if (tiers instanceof DebiteurPrestationImposable) {
+			final List<String> lignes = getRaisonSociale((DebiteurPrestationImposable) tiers);
+			if (lignes != null && !lignes.isEmpty()) {
+				return CollectionsUtils.concat(lignes, " / ");
+			}
+			else {
+				return null;
+			}
+		}
+		return null;
+	}
+
+	@Override
     public String getNomPrenom(PersonnePhysique personne) {
         Assert.notNull(personne);
         final NomPrenom nomPrenom = getDecompositionNomPrenom(personne, false);

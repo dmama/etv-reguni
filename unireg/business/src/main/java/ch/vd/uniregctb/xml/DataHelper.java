@@ -656,6 +656,7 @@ public abstract class DataHelper {
 			case CHILDREN:
 			case PARENTS:
 			case HOUSEHOLD_MEMBERS:
+			case BANK_ACCOUNTS:
 				results.add(TiersDAO.Parts.RAPPORTS_ENTRE_TIERS);
 				break;
 			case FAMILY_STATUSES:
@@ -677,7 +678,6 @@ public abstract class DataHelper {
 			case TAX_SYSTEMS:
 				results.add(TiersDAO.Parts.REGIMES_FISCAUX);
 				break;
-			case BANK_ACCOUNTS:
 			case LEGAL_SEATS:
 				// rien à faire
 				break;
@@ -719,6 +719,7 @@ public abstract class DataHelper {
 			case CHILDREN:
 			case PARENTS:
 			case HOUSEHOLD_MEMBERS:
+			case BANK_ACCOUNTS:
 				results.add(TiersDAO.Parts.RAPPORTS_ENTRE_TIERS);
 				break;
 			case FAMILY_STATUSES:
@@ -740,7 +741,6 @@ public abstract class DataHelper {
 			case TAX_SYSTEMS:
 				results.add(TiersDAO.Parts.REGIMES_FISCAUX);
 				break;
-			case BANK_ACCOUNTS:
 			case LEGAL_SEATS:
 				// rien à faire
 				break;
@@ -786,6 +786,7 @@ public abstract class DataHelper {
 			case PARENTS:
 			case RELATIONS_BETWEEN_PARTIES:
 			case HOUSEHOLD_MEMBERS:
+			case BANK_ACCOUNTS:
 				results.add(TiersDAO.Parts.RAPPORTS_ENTRE_TIERS);
 				break;
 			case FAMILY_STATUSES:
@@ -807,7 +808,6 @@ public abstract class DataHelper {
 			case TAX_SYSTEMS:
 				results.add(TiersDAO.Parts.REGIMES_FISCAUX);
 				break;
-			case BANK_ACCOUNTS:
 			case LEGAL_SEATS:
 			case EBILLING_STATUSES:
 				// rien à faire
@@ -854,6 +854,7 @@ public abstract class DataHelper {
 			case PARENTS:
 			case RELATIONS_BETWEEN_PARTIES:
 			case HOUSEHOLD_MEMBERS:
+			case BANK_ACCOUNTS:
 				results.add(TiersDAO.Parts.RAPPORTS_ENTRE_TIERS);
 				break;
 			case FAMILY_STATUSES:
@@ -884,7 +885,6 @@ public abstract class DataHelper {
 			case CORPORATION_FLAGS:
 			    results.add(TiersDAO.Parts.FLAGS);
 				break;
-			case BANK_ACCOUNTS:
 			case LEGAL_SEATS:
 			case EBILLING_STATUSES:
 				// rien à faire

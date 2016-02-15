@@ -20,9 +20,12 @@ import ch.vd.unireg.xml.party.taxdeclaration.v2.TaxDeclaration;
 import ch.vd.unireg.xml.party.taxresidence.v1.TaxResidence;
 import ch.vd.unireg.xml.party.v2.Party;
 import ch.vd.unireg.xml.party.v2.PartyPart;
+import ch.vd.uniregctb.tiers.Mandat;
 import ch.vd.uniregctb.tiers.Parente;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
+import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.tiers.Tiers;
+import ch.vd.uniregctb.type.TypeMandat;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 import ch.vd.uniregctb.xml.Context;
 import ch.vd.uniregctb.xml.DataHelper;
@@ -171,6 +174,20 @@ public abstract class PartyStrategy<T extends Party> {
 		final String numero = tiers.getNumeroCompteBancaire();
 		if (StringUtils.isNotBlank(numero) && context.ibanValidator.isValidIban(numero)) {
 			left.getBankAccounts().add(BankAccountBuilder.newBankAccount(tiers, context));
+		}
+
+		// [SIFISC-18022] les mandats tiers sont aussi concernés, dès qu'ils ont une coordonnée financière
+		for (RapportEntreTiers ret : tiers.getRapportsSujet()) {
+			if (!ret.isAnnule() && ret.getType() == TypeRapportEntreTiers.MANDAT) {
+				final Mandat mandat = (Mandat) ret;
+				if (mandat.getTypeMandat() == TypeMandat.TIERS
+						&& mandat.getCoordonneesFinancieres() != null
+						&& context.ibanValidator.isValidIban(mandat.getCoordonneesFinancieres().getIban())) {
+
+					// à exposer !
+					left.getBankAccounts().add(BankAccountBuilder.newBankAccount(mandat, context));
+				}
+			}
 		}
 	}
 

@@ -909,6 +909,12 @@ public interface TiersService {
      */
     void fusionne(PersonnePhysique habitant, PersonnePhysique nonHabitant);
 
+	/**
+	 * @param tiers un tiers
+	 * @return sur une ligne, le nom ou la raison sociale du tiers à la date demandée
+	 */
+	String getNomRaisonSociale(Tiers tiers);
+
     /**
      * Retourne les nom et prénoms de l'individu spécifié
      *
