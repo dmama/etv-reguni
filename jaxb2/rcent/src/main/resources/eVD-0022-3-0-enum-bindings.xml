@@ -5,10 +5,10 @@
               xmlns:xs="http://www.w3.org/2001/XMLSchema"
               xsi:schemaLocation="http://java.sun.com/xml/ns/jaxb http://java.sun.com/xml/ns/jaxb/bindingschema_2_0.xsd"
 
-              schemaLocation="http://evd.vd.ch/xmlns/eVD-0022/1/eVD-0022-1-3.xsd"
+              schemaLocation="http://evd.vd.ch/xmlns/eVD-0022/3/eVD-0022-3-0.xsd"
               >
 
-    <!-- Java enumeration bindings for eVD-0022-1-1.xsd -->
+    <!-- Java enumeration bindings for eVD-0022-3-0.xsd -->
 
     <jxb:bindings node="//xs:simpleType[@name='senderIdentificationType']">
         <jxb:typesafeEnumClass name="SenderIdentification">
@@ -18,24 +18,13 @@
             <jxb:typesafeEnumMember name="FOSC" value="3"/>
         </jxb:typesafeEnumClass>
     </jxb:bindings>
-    <jxb:bindings node="//xs:simpleType[@name='liquidationReasonType']">
-        <jxb:typesafeEnumClass name="LiquidationReason">
+    <jxb:bindings node="//xs:simpleType[@name='dissolutionReasonType']">
+        <jxb:typesafeEnumClass name="DissolutionReasonType">
             <jxb:typesafeEnumMember name="FUSION" value="1"/>
             <jxb:typesafeEnumMember name="LIQUIDATION" value="2"/>
             <jxb:typesafeEnumMember name="FAILLITE" value="3"/>
             <jxb:typesafeEnumMember name="TRANSFORMATION" value="4"/>
             <jxb:typesafeEnumMember name="CARENCE_DANS_ORGANISATION" value="5"/>
-        </jxb:typesafeEnumClass>
-    </jxb:bindings>
-    <jxb:bindings node="//xs:simpleType[@name='typeOfCapitalChangeType']">
-        <jxb:typesafeEnumClass name="TypeOfCapitalChange">
-            <jxb:typesafeEnumMember name="CAPITAL_NOMINAL" value="1"/>
-            <jxb:typesafeEnumMember name="CAPITAL_LIBERE" value="2"/>
-            <jxb:typesafeEnumMember name="CAPITAL_NOMINAL_ET_LIBERE" value="3"/>
-            <jxb:typesafeEnumMember name="FRACTIONNEMENT_PARTS" value="4"/>
-            <jxb:typesafeEnumMember name="CAPITAL_NOMINAL_ET_FRACTIONNEMENT_PARTS" value="5"/>
-            <jxb:typesafeEnumMember name="CAPITAL_LIBERE_ET_FRACTIONNEMENT_PARTS" value="6"/>
-            <jxb:typesafeEnumMember name="CAPITAL_NOMINAL_ET_CAPITAL_LIBERE_ET_FRACTIONNEMENT_PARTS" value="7"/>
         </jxb:typesafeEnumClass>
     </jxb:bindings>
     <jxb:bindings node="//xs:simpleType[@name='typeOfFusionType']">
@@ -123,28 +112,23 @@
             <jxb:typesafeEnumMember name="N_0441_ENTREPRISE_ETRANGERE" value="0441"/>
         </jxb:typesafeEnumClass>
     </jxb:bindings>
-    <jxb:bindings node="//xs:simpleType[@name='kindOfLocationType']">
-        <jxb:typesafeEnumClass name="KindOfLocation">
+    <jxb:bindings node="//xs:simpleType[@name='typeOfLocationType']">
+        <jxb:typesafeEnumClass name="TypeOfLocation">
             <jxb:typesafeEnumMember name="ETABLISSEMENT_PRINCIPAL" value="1"/>
             <jxb:typesafeEnumMember name="ETABLISSEMENT_SECONDAIRE" value="2"/>
         </jxb:typesafeEnumClass>
     </jxb:bindings>
     <jxb:bindings node="//xs:simpleType[@name='commercialRegisterStatusType']">
         <jxb:typesafeEnumClass name="CommercialRegisterStatus">
-            <jxb:typesafeEnumMember name="INCONNU" value="1"/>
-            <jxb:typesafeEnumMember name="INSCRIT" value="2"/>
-            <jxb:typesafeEnumMember name="NON_INSCRIT" value="3"/>
+            <jxb:typesafeEnumMember name="INCONNU" value="0"/>
+            <jxb:typesafeEnumMember name="NON_INSCRIT" value="1"/>
+            <jxb:typesafeEnumMember name="ACTIF" value="2"/>
+            <jxb:typesafeEnumMember name="EN_LIQUIDATION" value="3"/>
+            <jxb:typesafeEnumMember name="RADIE" value="4"/>
+            <jxb:typesafeEnumMember name="PROVISOIRE" value="5"/>
         </jxb:typesafeEnumClass>
     </jxb:bindings>
-    <jxb:bindings node="//xs:simpleType[@name='commercialRegisterEntryStatusType']">
-        <jxb:typesafeEnumClass name="CommercialRegisterEntryStatus">
-            <jxb:typesafeEnumMember name="AUTRE" value="0"/>
-            <jxb:typesafeEnumMember name="ACTIF" value="1"/>
-            <jxb:typesafeEnumMember name="EN_LIQUIDATION" value="2"/>
-            <jxb:typesafeEnumMember name="RADIE" value="3"/>
-            <jxb:typesafeEnumMember name="PROVISOIRE" value="4"/>
-        </jxb:typesafeEnumClass>
-    </jxb:bindings>
+
     <jxb:bindings node="//xs:simpleType[@name='diaryKindOfEntryType']">
         <jxb:typesafeEnumClass name='DiaryKindOfEntry'>
             <jxb:typesafeEnumMember name="AUTRE" value="0"/>
@@ -213,12 +197,6 @@
             <jxb:typesafeEnumMember name="BLOCAGE_DE_RENSEIGNEMENT" value="2"/>
         </jxb:typesafeEnumClass>
     </jxb:bindings>
-    <jxb:bindings node="//xs:simpleType[@name='sexType']">
-        <jxb:typesafeEnumClass name="Sex">
-            <jxb:typesafeEnumMember name="MASCULIN" value="1"/>
-            <jxb:typesafeEnumMember name="FEMININ" value="2"/>
-        </jxb:typesafeEnumClass>
-    </jxb:bindings>
     <jxb:bindings node="//xs:simpleType[@name='uidRegisterStatusType']">
         <jxb:typesafeEnumClass name="UidRegisterStatus">
             <jxb:typesafeEnumMember name="AUTRE" value="0"/>
@@ -231,8 +209,8 @@
             <jxb:typesafeEnumMember name="ANNULE" value="7"/>
         </jxb:typesafeEnumClass>
     </jxb:bindings>
-    <jxb:bindings node="//xs:simpleType[@name='uidRegisterTypeOfOrganisationType']">
-        <jxb:typesafeEnumClass name="UidRegisterTypeOfOrganisation">
+    <jxb:bindings node="//xs:simpleType[@name='kindOfUidEntityType']">
+        <jxb:typesafeEnumClass name="KindOfUidEntityType">
             <jxb:typesafeEnumMember name="AUTRE" value="0"/>
             <jxb:typesafeEnumMember name="PERSONNE_JURIDIQUE" value="1"/>
             <jxb:typesafeEnumMember name="PROFESSION_MEDICALE_UNIVERSITAIRE" value="2"/>
@@ -258,14 +236,14 @@
             <jxb:typesafeEnumMember name="BLOQUE" value="0"/>
         </jxb:typesafeEnumClass>
     </jxb:bindings>
-    <jxb:bindings node="//xs:simpleType[@name='uidRegisterLiquidationReasonType']">
-        <jxb:typesafeEnumClass name="UidRegisterLiquidationReason">
+    <jxb:bindings node="//xs:simpleType[@name='uidDeregistrationReasonType']">
+        <jxb:typesafeEnumClass name="UidDeregistrationReasonType">
             <jxb:typesafeEnumMember name="AUTRE" value="0"/>
             <jxb:typesafeEnumMember name="FUSION_ABSORPTION" value="1"/>
             <jxb:typesafeEnumMember name="FUSION_COMBINAISON" value="2"/>
             <jxb:typesafeEnumMember name="CESSATION_SCISSION_RETRAITE_SALARIE" value="3"/>
             <jxb:typesafeEnumMember name="ABSENCE_AUTORISATION" value="4"/>
-            <jxb:typesafeEnumMember name="REMISE_OU_MODIFICATION_DE_LA_RAISON" value="5"/>
+            <jxb:typesafeEnumMember name="REMISE_DE_COMMERCE_OU_MODIFICATION_DE_LA_RAISON_DE_COMMERCE" value="5"/>
             <jxb:typesafeEnumMember name="FIN_CONSORTIUM_PROJET_EVT_OU_ACTIVITE_EN_SUISSE" value="6"/>
             <jxb:typesafeEnumMember name="DECES" value="7"/>
             <jxb:typesafeEnumMember name="DOUBLON_OU_ERREUR" value="8"/>
@@ -273,15 +251,10 @@
     </jxb:bindings>
     <jxb:bindings node="//xs:simpleType[@name='vatRegisterStatusType']">
         <jxb:typesafeEnumClass name="VatRegisterStatus">
-            <jxb:typesafeEnumMember name="INCONNU" value="1"/>
-            <jxb:typesafeEnumMember name="INSCRIT" value="2"/>
-            <jxb:typesafeEnumMember name="NON_INSCRIT" value="3"/>
-        </jxb:typesafeEnumClass>
-    </jxb:bindings>
-    <jxb:bindings node="//xs:simpleType[@name='vatRegisterEntryStatusType']">
-        <jxb:typesafeEnumClass name="VatRegisterEntryStatus">
-            <jxb:typesafeEnumMember name="ACTIF" value="1"/>
-            <jxb:typesafeEnumMember name="RADIE" value="2"/>
+            <jxb:typesafeEnumMember name="INCONNU" value="0"/>
+            <jxb:typesafeEnumMember name="NON_INSCRIT" value="1"/>
+            <jxb:typesafeEnumMember name="ACTIF" value="2"/>
+            <jxb:typesafeEnumMember name="RADIE" value="3"/>
         </jxb:typesafeEnumClass>
     </jxb:bindings>
 
@@ -331,16 +304,22 @@
             <jxb:typesafeEnumMember name="FOSC_APPEL_AUX_CREANCIERS_SUITE_REDUCTION_CAPITAL" value="42"/>
             <jxb:typesafeEnumMember name="FOSC_APPEL_AUX_CREANCIERS_SUITE_TRANSFORMATION_SA_EN_SARL" value="43"/>
             <jxb:typesafeEnumMember name="FOSC_APPEL_AUX_CREANCIERS_SUITE_TRANSFERT_ETRANGER" value="44"/>
-            <jxb:typesafeEnumMember name="IDE_NOUVELLE_INSCRIPTION_DANS_REGISTRE" value="45"/>
-            <jxb:typesafeEnumMember name="IDE_MUTATION_DANS_REGISTRE" value="46"/>
-            <jxb:typesafeEnumMember name="IDE_RADIATION_DANS_REGISTRE" value="47"/>
-            <jxb:typesafeEnumMember name="IDE_REACTIVATION_DANS_REGISTRE" value="48"/>
-            <jxb:typesafeEnumMember name="IDE_ANNULATION_DANS_REGISTRE" value="49"/>
+            <jxb:typesafeEnumMember name="IDE_NOUVELLE_INSCRIPTION" value="45"/>
+            <jxb:typesafeEnumMember name="IDE_MUTATION" value="46"/>
+            <jxb:typesafeEnumMember name="IDE_RADIATION" value="47"/>
+            <jxb:typesafeEnumMember name="IDE_REACTIVATION" value="48"/>
+            <jxb:typesafeEnumMember name="IDE_ANNULATION" value="49"/>
             <jxb:typesafeEnumMember name="RCPERS_DECES" value="50"/>
             <jxb:typesafeEnumMember name="RCPERS_ANNULATION_DECES" value="51"/>
             <jxb:typesafeEnumMember name="RCPERS_DEPART" value="52"/>
             <jxb:typesafeEnumMember name="RCPERS_ANNULATION_DEPART" value="53"/>
             <jxb:typesafeEnumMember name="RCPERS_CORRECTION_DONNEES" value="54"/>
+            <jxb:typesafeEnumMember name="REE_NOUVELLE_INSCRIPTION" value="55"/>
+            <jxb:typesafeEnumMember name="REE_MUTATION" value="56"/>
+            <jxb:typesafeEnumMember name="REE_SUPPRESSION" value="57"/>
+            <jxb:typesafeEnumMember name="REE_RADIATION" value="58"/>
+            <jxb:typesafeEnumMember name="REE_TRANSFERT_ETABLISSEMENT" value="59"/>
+            <jxb:typesafeEnumMember name="REE_REACTIVATION" value="60"/>
         </jxb:typesafeEnumClass>
     </jxb:bindings>
     <jxb:bindings node="//xs:simpleType[@name='typeOfNoticeRequestType']">
@@ -357,10 +336,12 @@
             <jxb:typesafeEnumMember name="A_TRANSMETTRE" value="1"/>
             <jxb:typesafeEnumMember name="A_ANALYSER" value="2"/>
             <jxb:typesafeEnumMember name="TRANSMIS" value="3"/>
-            <jxb:typesafeEnumMember name="TRAITE_IDE" value="4"/>
+            <jxb:typesafeEnumMember name="ACCEPTE_IDE" value="4"/>
             <jxb:typesafeEnumMember name="REFUSE_IDE" value="5"/>
 	        <jxb:typesafeEnumMember name="REJET_RCENT" value="6"/>
 	        <jxb:typesafeEnumMember name="VALIDATION_SANS_ERREUR" value="7"/>
+            <jxb:typesafeEnumMember name="ACCEPTE_REE" value="8"/>
+            <jxb:typesafeEnumMember name="REFUSE_REE" value="9"/>
         </jxb:typesafeEnumClass>
     </jxb:bindings>
 </jxb:bindings>

@@ -42,6 +42,7 @@
 					<bindingDirectory>src/main/resources</bindingDirectory>
 					<bindingIncludes>
 						<include>bindings.xml</include>
+						<include>eCH-0044-4-1-enum-bindings.xml</include>
 					</bindingIncludes>
 					<args>
 						<arg>-extension</arg>
@@ -50,6 +51,7 @@
 						<arg>-Xts</arg>
 						<arg>-Xts:style:ch.vd.unireg.UniregToStringStyle.STYLE</arg>
 						<arg>-Xvalue-constructor</arg>
+						<arg>-Xinheritance</arg>
 					</args>
 				</configuration>
 				<executions>
@@ -82,8 +84,8 @@
 					</dependency>
 					<dependency>
 						<groupId>org.jvnet.jaxb2_commons</groupId>
-					   <artifactId>jaxb2-basics</artifactId>
-					   <version>0.5.3</version>
+					    <artifactId>jaxb2-basics</artifactId>
+					    <version>0.5.3</version>
 					</dependency>
 				</dependencies>
 			</plugin>
