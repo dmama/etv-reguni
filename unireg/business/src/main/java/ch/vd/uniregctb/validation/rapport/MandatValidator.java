@@ -1,9 +1,9 @@
 package ch.vd.uniregctb.validation.rapport;
 
 import ch.vd.registre.base.validation.ValidationResults;
+import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.Mandat;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.Tiers;
 
 public class MandatValidator extends RapportEntreTiersValidator<Mandat> {
@@ -36,8 +36,8 @@ public class MandatValidator extends RapportEntreTiersValidator<Mandat> {
 		if (sujet == null) {
 			vr.addError("Le mandant n'existe pas");
 		}
-		else if (!(sujet instanceof PersonnePhysique) && !(sujet instanceof Entreprise)) {
-			vr.addError("Le mandant n'est ni une personne physique ni une entreprise");
+		else if (!(sujet instanceof ContribuableImpositionPersonnesPhysiques) && !(sujet instanceof Entreprise)) {
+			vr.addError("Le mandant n'est ni une personne physique, ni un ménage commun, ni une entreprise");
 		}
 	}
 
