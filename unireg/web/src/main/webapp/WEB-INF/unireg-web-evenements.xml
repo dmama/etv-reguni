@@ -53,6 +53,7 @@
 		<property name="adresseService" ref="adresseService" />
 		<property name="tiersService" ref="tiersService" />
 		<property name="serviceInfrastructureService" ref="serviceInfrastructureService" />
+		<property name="messageSource" ref="messageSource" />
 		<property name="evenementService" ref="evtOrganisationService" />
 		<property name="evenementNotificationQueue" ref="evtOrganisationNotificationQueue" />
 		<property name="evenementProcessor" ref="evtOrganisationProcessor" />
