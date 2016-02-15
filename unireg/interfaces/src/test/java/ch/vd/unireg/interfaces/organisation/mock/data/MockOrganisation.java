@@ -1,7 +1,6 @@
 package ch.vd.unireg.interfaces.organisation.mock.data;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -14,7 +13,6 @@ import org.jetbrains.annotations.Nullable;
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.unireg.interfaces.common.Adresse;
 import ch.vd.unireg.interfaces.infra.mock.MockAdresse;
 import ch.vd.unireg.interfaces.organisation.data.Capital;
@@ -46,35 +44,12 @@ import ch.vd.unireg.interfaces.organisation.data.TypeDeSite;
 public class MockOrganisation implements Organisation {
 
 	private final long idOrganisation;
-	private final NavigableMap<RegDate, String> nom = new TreeMap<>();
-	private final NavigableMap<RegDate, Long> remplacePar = new TreeMap<>();
-	private final NavigableMap<RegDate, List<String>> nomsAdditionnels = new TreeMap<>();
-	private final NavigableMap<RegDate, List<Long>> enRemplacementDe = new TreeMap<>();
-	private final NavigableMap<RegDate, FormeLegale> formeLegale = new TreeMap<>();
 	private final NavigableMap<RegDate, String> ide = new TreeMap<>();
 	private final Map<Long, MockSiteOrganisation> sites = new HashMap<>();
 	private final List<Adresse> adresses = new ArrayList<>();
 
-	public MockOrganisation(long idOrganisation, RegDate dateDebut, String nom, FormeLegale formeLegale) {
+	public MockOrganisation(long idOrganisation) {
 		this.idOrganisation = idOrganisation;
-		changeNom(dateDebut, nom);
-		changeFormeLegale(dateDebut, formeLegale);
-	}
-
-	public void changeNom(RegDate date, String nouveauNom) {
-		MockOrganisationHelper.changeRangedData(nom, date, nouveauNom);
-	}
-
-	public void addNom(RegDate dateDebut, @Nullable RegDate dateFin, String nouveauNom) {
-		MockOrganisationHelper.addRangedData(nom, dateDebut, dateFin, nouveauNom);
-	}
-
-	public void changeFormeLegale(RegDate date, FormeLegale nouvelleFormeLegale) {
-		MockOrganisationHelper.changeRangedData(formeLegale, date, nouvelleFormeLegale);
-	}
-
-	public void addFormeLegale(RegDate dateDebut, @Nullable RegDate dateFin, FormeLegale nouvelleFormeLegale) {
-		MockOrganisationHelper.addRangedData(formeLegale, dateDebut, dateFin, nouvelleFormeLegale);
 	}
 
 	public void changeNumeroIDE(RegDate date, String nouveauNumeroIDE) {
@@ -87,18 +62,6 @@ public class MockOrganisation implements Organisation {
 
 	public void addDonneesSite(MockSiteOrganisation site) {
 		sites.put(site.getNumeroSite(), site);
-	}
-
-	public void addNomsAdditionnels(RegDate dateDebut, RegDate dateFin, String... nouveauxNomsAdditionnels) {
-		MockOrganisationHelper.addRangedData(nomsAdditionnels, dateDebut, dateFin, nouveauxNomsAdditionnels != null ? Arrays.asList(nouveauxNomsAdditionnels) : Collections.<String>emptyList());
-	}
-
-	public void addRemplacePar(RegDate dateDebut, @Nullable RegDate dateFin, Long nouveauRemplacePar) {
-		MockOrganisationHelper.addRangedData(remplacePar, dateDebut, dateFin, nouveauRemplacePar);
-	}
-
-	public void addEnRemplacementDe(RegDate dateDebut, @Nullable RegDate dateFin, List<Long> nouveauEnRemplacementDe) {
-		MockOrganisationHelper.addRangedData(enRemplacementDe, dateDebut, dateFin, nouveauEnRemplacementDe);
 	}
 
 	public void addAdresse(MockAdresse adresse) {
@@ -117,73 +80,13 @@ public class MockOrganisation implements Organisation {
 	}
 
 	@Override
-	public Map<Long, List<DateRanged<Long>>> getEnRemplacementDe() {
-		return MockOrganisationHelper.reconstitueMultiValeur(enRemplacementDe);
-	}
-
-	@Override
-	public List<Long> getEnRemplacementDe(RegDate date) {
-		return OrganisationHelper.valuesForDate(getEnRemplacementDe(), date);
-	}
-
-	@Override
-	public List<DateRanged<FormeLegale>> getFormeLegale() {
-		return MockOrganisationHelper.getHisto(formeLegale);
-	}
-
-	@Override
-	public FormeLegale getFormeLegale(RegDate date) {
-		return OrganisationHelper.valueForDate(getFormeLegale(), date);
-	}
-
-	@Override
 	public List<DateRanged<String>> getNumeroIDE() {
 		return MockOrganisationHelper.getHisto(ide);
 	}
 
 	@Override
-	public List<DateRanged<String>> getNom() {
-		return MockOrganisationHelper.getHisto(nom);
-	}
-
-	@Override
-	public String getNom(RegDate date) {
-		return OrganisationHelper.valueForDate(getNom(), date);
-	}
-
-	@Override
-	public Map<String, List<DateRanged<String>>> getNomsAdditionnels() {
-		return MockOrganisationHelper.reconstitueMultiValeur(this.nomsAdditionnels);
-	}
-
-	@Override
-	public List<String> getNomsAdditionnels(RegDate date) {
-		return OrganisationHelper.valuesForDate(getNomsAdditionnels(), date);
-	}
-
-	@Override
 	public Domicile getSiegePrincipal(RegDate date) {
 		return OrganisationHelper.dateRangeForDate(getSiegesPrincipaux(), date);
-	}
-
-	@Override
-	public List<DateRanged<Long>> getRemplacePar() {
-		return MockOrganisationHelper.getHisto(remplacePar);
-	}
-
-	@Override
-	public Long getRemplacePar(RegDate date) {
-		return OrganisationHelper.valueForDate(getRemplacePar(), date);
-	}
-
-	@Override
-	public Map<Long, List<DateRanged<Long>>> getTransferDe() {
-		throw new NotImplementedException();
-	}
-
-	@Override
-	public Map<Long, List<DateRanged<Long>>> getTransfereA() {
-		throw new NotImplementedException();
 	}
 
 	@Override
@@ -239,5 +142,102 @@ public class MockOrganisation implements Organisation {
 		}
 		Collections.sort(sieges, new DateRangeComparator<>());
 		return DateRangeHelper.collate(sieges);
+	}
+
+	@Override
+	public List<DateRanged<FormeLegale>> getFormeLegale() {
+		return OrganisationHelper.getFormesLegalesPrincipaux(sites);
+	}
+
+	/**
+	 * Retourne l'identifiant OFS de la commune de siège à la date donnée, ou à la date du jour.
+	 * si pas de date.
+	 *
+	 * @param date
+	 * @return La forme legale, ou null si absente
+	 */
+	@Override
+	public FormeLegale getFormeLegale(RegDate date) {
+		return OrganisationHelper.valueForDate(getFormeLegale(), date);
+	}
+
+	/**
+	 * @return l'historique du nom de l'entreprise, c'est-à-dire le nom du site principal de l'entreprise.
+	 */
+	@Override
+	public List<DateRanged<String>> getNom() {
+		return OrganisationHelper.getNomsPrincipaux(sites);
+	}
+
+	/**
+	 * Retourne le nom de l'entreprise à la date donnée, ou à la date du jour.
+	 * si pas de date.
+	 *
+	 * @param date
+	 * @return le nom
+	 */
+	@Override
+	public String getNom(RegDate date) {
+		return OrganisationHelper.valueForDate(getNom(), date);
+	}
+
+	/**
+	 * @return l'historique du nom additionnel de l'entreprise, c'est-à-dire le nom additionnel du site principal de l'entreprise.
+	 */
+	@Override
+	public List<DateRanged<String>> getNomAdditionnel() {
+		return OrganisationHelper.getNomsAdditionnelsPrincipaux(sites);
+	}
+
+	/**
+	 * Retourne le nom additionnel de l'entreprise à la date donnée, ou à la date du jour.
+	 * si pas de date.
+	 *
+	 * @param date
+	 * @return le nom
+	 */
+	@Override
+	public String getNomAdditionnel(RegDate date) {
+		return OrganisationHelper.valueForDate(getNom(), date);
+	}
+
+	/**
+	 * Indique si un l'organisation est inscrite au RC à la date indiquée. Si la date est nulle, la date du jour est utilisée.
+	 */
+	@Override
+	public boolean isInscritAuRC(RegDate date) {
+		return OrganisationHelper.isInscritAuRC(this, date);
+	}
+
+	/**
+	 * Indique si un l'organisation est radiée au RC à la date indiquée. Si la date est nulle, la date du jour est utilisée.
+	 */
+	@Override
+	public boolean isRadieRC(RegDate date) {
+		return OrganisationHelper.isRadieDuRC(this, date);
+	}
+
+	/**
+	 * Indique si un l'organisation est radiée de l'IDE à la date indiquée. Si la date est nulle, la date du jour est utilisée.
+	 */
+	@Override
+	public boolean isRadieIDE(RegDate date) {
+		return OrganisationHelper.isRadieIDE(this, date);
+	}
+
+	/**
+	 * Indique si un l'organisation possède son siège principal sur Vaud. Si la date est nulle, la date du jour est utilisée.
+	 */
+	@Override
+	public boolean hasSitePrincipalVD(RegDate date) {
+		return OrganisationHelper.hasSitePrincipalVD(this, date);
+	}
+
+	/**
+	 * @return true si un site de l'organisation est domicilié dans le canton de Vaud (principal ou secondaire), false sinon
+	 */
+	@Override
+	public boolean hasSiteVD(RegDate date) {
+		return OrganisationHelper.hasSiteVD(this, date);
 	}
 }

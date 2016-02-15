@@ -2,7 +2,7 @@ package ch.vd.unireg.interfaces.organisation.rcent.converters;
 
 import org.jetbrains.annotations.NotNull;
 
-import ch.vd.evd0021.v1.Address;
+import ch.vd.evd0022.v3.Address;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.unireg.interfaces.organisation.data.AdresseRCEnt;
 

@@ -12,8 +12,6 @@ import ch.vd.uniregctb.type.FormeJuridiqueEntreprise;
  */
 public enum FormeLegale {
 
-	N_00_AUTRE("00", "Autre"),
-	N_01_FORMES_JUR_DE_DROIT_PRIVE_UTILISEES_DANS_RC("01", "Formes juridiques de droit privé"),
 	N_0101_ENTREPRISE_INDIVIDUELLE("0101", FormeJuridiqueEntreprise.EI.getLibelle()),
 	N_0103_SOCIETE_NOM_COLLECTIF("0103", FormeJuridiqueEntreprise.SNC.getLibelle()),
 	N_0104_SOCIETE_EN_COMMANDITE("0104", FormeJuridiqueEntreprise.SC.getLibelle()),
@@ -32,7 +30,6 @@ public enum FormeLegale {
 	N_0118_PROCURATIONS_NON_COMMERCIALES("0118", FormeJuridiqueEntreprise.PNC.getLibelle()),
 	N_0119_CHEF_INDIVISION("0119", FormeJuridiqueEntreprise.INDIVISION.getLibelle()),
 	N_0151_SUCCURSALE_SUISSE_AU_RC("0151", FormeJuridiqueEntreprise.FILIALE_CH_RC.getLibelle()),
-	N_02_FORMES_JUR_DE_DROIT_PUBLIC_NON_UTILISEES_DANS_RC("02", "Formes juridiques de droit public"),
 	N_0220_ADMINISTRATION_CONFEDERATION("0220", FormeJuridiqueEntreprise.ADM_CH.getLibelle()),
 	N_0221_ADMINISTRATION_CANTON("0221", FormeJuridiqueEntreprise.ADM_CT.getLibelle()),
 	N_0222_ADMINISTRATION_DISTRICT("0222", FormeJuridiqueEntreprise.ADM_DI.getLibelle()),
@@ -43,13 +40,11 @@ public enum FormeLegale {
 	N_0232_ENTREPRISE_DISTRICT("0232", FormeJuridiqueEntreprise.ENT_DI.getLibelle()),
 	N_0233_ENTREPRISE_COMMUNE("0233", FormeJuridiqueEntreprise.ENT_CO.getLibelle()),
 	N_0234_CORPORATION_DE_DROIT_PUBLIC_ENTREPRISE("0234", FormeJuridiqueEntreprise.CORP_DP_ENT.getLibelle()),
-	N_03_AUTRES_FORMES_JUR_NON_UTILISEES_DANS_RC("03", "Autres formes juridiques non utilisées dans le registre du commerce"),
 	N_0302_SOCIETE_SIMPLE("0302", FormeJuridiqueEntreprise.SS.getLibelle()),
 	N_0312_FILIALE_ETRANGERE_NON_AU_RC("0312", FormeJuridiqueEntreprise.FILIALE_HS_NIRC.getLibelle()),
 	N_0327_ENTREPRISE_PUBLIQUE_ETRANGERE("0327", FormeJuridiqueEntreprise.ENT_PUBLIQUE_HS.getLibelle()),
 	N_0328_ADMINISTRATION_PUBLIQUE_ETRANGERE("0328", FormeJuridiqueEntreprise.ADM_PUBLIQUE_HS.getLibelle()),
 	N_0329_ORGANISATION_INTERNATIONALE("0329", FormeJuridiqueEntreprise.ORG_INTERNAT.getLibelle()),
-	N_04_ENTREPRISE_ETRANGERE("04", "Entreprise étrangère"),
 	N_0441_ENTREPRISE_ETRANGERE("0441", FormeJuridiqueEntreprise.ENT_HS.getLibelle());
 
 	private final String code;

@@ -9,7 +9,6 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.mutable.MutableInt;
-import org.jetbrains.annotations.Nullable;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
@@ -25,22 +24,18 @@ import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationBasicInfo;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationDAO;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationProcessingMode;
 import ch.vd.uniregctb.evenement.organisation.engine.processor.EvenementOrganisationProcessor;
-import ch.vd.uniregctb.type.EmetteurEvenementOrganisation;
 import ch.vd.uniregctb.type.EtatEvenementOrganisation;
 import ch.vd.uniregctb.type.TypeEvenementOrganisation;
 
 public class EvenementOrganisationRetryProcessorTest extends BusinessTest {
 
-	private EvenementOrganisation addEvent(Long noOrganisation, long id, TypeEvenementOrganisation type, RegDate date, EtatEvenementOrganisation etat,
-	                                       EmetteurEvenementOrganisation senderId, @Nullable String refDataEmetteur) {
+	private EvenementOrganisation addEvent(Long noOrganisation, long id, TypeEvenementOrganisation type, RegDate date, EtatEvenementOrganisation etat) {
 		final EvenementOrganisation event = new EvenementOrganisation();
 		event.setId(id);
 		event.setNoOrganisation(noOrganisation);
 		event.setType(type);
 		event.setDateEvenement(date);
 		event.setEtat(etat);
-		event.setIdentiteEmetteur(senderId);
-		event.setRefDataEmetteur(refDataEmetteur);
 		return hibernateTemplate.merge(event);
 	}
 
@@ -71,21 +66,20 @@ public class EvenementOrganisationRetryProcessorTest extends BusinessTest {
 
 				final TypeEvenementOrganisation type = TypeEvenementOrganisation.FOSC_AUTRE_MUTATION;
 
-				final String refData = "";
-				addEvent(noOrganisationSans, ++id, type, date, EtatEvenementOrganisation.A_VERIFIER, EmetteurEvenementOrganisation.FOSC, refData);
-				addEvent(noOrganisationSans, ++id, type, date, EtatEvenementOrganisation.FORCE, EmetteurEvenementOrganisation.FOSC, refData);
-				addEvent(noOrganisationSans, ++id, type, date, EtatEvenementOrganisation.REDONDANT, EmetteurEvenementOrganisation.FOSC, refData);
-				addEvent(noOrganisationSans, ++id, type, date, EtatEvenementOrganisation.TRAITE, EmetteurEvenementOrganisation.FOSC, refData);
+				addEvent(noOrganisationSans, ++id, type, date, EtatEvenementOrganisation.A_VERIFIER);
+				addEvent(noOrganisationSans, ++id, type, date, EtatEvenementOrganisation.FORCE);
+				addEvent(noOrganisationSans, ++id, type, date, EtatEvenementOrganisation.REDONDANT);
+				addEvent(noOrganisationSans, ++id, type, date, EtatEvenementOrganisation.TRAITE);
 
-				addEvent(noOrganisationAvecAttente, ++id, type, date, EtatEvenementOrganisation.A_VERIFIER, EmetteurEvenementOrganisation.FOSC, refData);
-				addEvent(noOrganisationAvecAttente, ++id, type, date, EtatEvenementOrganisation.EN_ATTENTE, EmetteurEvenementOrganisation.FOSC, refData);
+				addEvent(noOrganisationAvecAttente, ++id, type, date, EtatEvenementOrganisation.A_VERIFIER);
+				addEvent(noOrganisationAvecAttente, ++id, type, date, EtatEvenementOrganisation.EN_ATTENTE);
 
-				addEvent(noOrganisationAvecErreur, ++id, type, date, EtatEvenementOrganisation.FORCE, EmetteurEvenementOrganisation.FOSC, refData);
-				addEvent(noOrganisationAvecErreur, ++id, type, date, EtatEvenementOrganisation.EN_ERREUR, EmetteurEvenementOrganisation.FOSC, refData);
+				addEvent(noOrganisationAvecErreur, ++id, type, date, EtatEvenementOrganisation.FORCE);
+				addEvent(noOrganisationAvecErreur, ++id, type, date, EtatEvenementOrganisation.EN_ERREUR);
 
-				addEvent(noOrganisationAvecAttenteEtErreur, ++id, type, date, EtatEvenementOrganisation.TRAITE, EmetteurEvenementOrganisation.FOSC, refData);
-				addEvent(noOrganisationAvecAttenteEtErreur, ++id, type, date, EtatEvenementOrganisation.EN_ATTENTE, EmetteurEvenementOrganisation.FOSC, refData);
-				addEvent(noOrganisationAvecAttenteEtErreur, ++id, type, date, EtatEvenementOrganisation.EN_ERREUR, EmetteurEvenementOrganisation.FOSC, refData);
+				addEvent(noOrganisationAvecAttenteEtErreur, ++id, type, date, EtatEvenementOrganisation.TRAITE);
+				addEvent(noOrganisationAvecAttenteEtErreur, ++id, type, date, EtatEvenementOrganisation.EN_ATTENTE);
+				addEvent(noOrganisationAvecAttenteEtErreur, ++id, type, date, EtatEvenementOrganisation.EN_ERREUR);
 
 
 				return null;

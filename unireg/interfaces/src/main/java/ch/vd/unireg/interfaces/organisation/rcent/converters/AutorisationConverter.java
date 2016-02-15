@@ -2,7 +2,7 @@ package ch.vd.unireg.interfaces.organisation.rcent.converters;
 
 import org.jetbrains.annotations.NotNull;
 
-import ch.vd.evd0022.v1.Authorisation;
+import ch.vd.evd0022.v3.Authorisation;
 import ch.vd.unireg.interfaces.organisation.data.Autorisation;
 
 public class AutorisationConverter extends BaseEnumConverter<Authorisation, Autorisation> {

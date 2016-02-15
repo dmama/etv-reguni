@@ -14,7 +14,7 @@ import ch.vd.unireg.interfaces.organisation.data.AdresseRCEnt;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
 import ch.vd.unireg.interfaces.organisation.data.DonneesRegistreIDE;
 import ch.vd.unireg.interfaces.organisation.data.OrganisationHelper;
-import ch.vd.unireg.interfaces.organisation.data.RaisonLiquidationRegistreIDE;
+import ch.vd.unireg.interfaces.organisation.data.RaisonDeRadiationRegistreIDE;
 import ch.vd.unireg.interfaces.organisation.data.StatusRegistreIDE;
 import ch.vd.unireg.interfaces.organisation.data.TypeOrganisationRegistreIDE;
 
@@ -27,13 +27,13 @@ public class MockDonneesRegistreIDE implements DonneesRegistreIDE {
 	private NavigableMap<RegDate, TypeOrganisationRegistreIDE> typeOrganisation = new TreeMap<>();
 	private NavigableMap<RegDate, AdresseRCEnt> adresseEffective = new TreeMap<>();
 	private NavigableMap<RegDate, AdresseRCEnt> adresseBoitePostale = new TreeMap<>();
-	private NavigableMap<RegDate, RaisonLiquidationRegistreIDE> raisonDeLiquidation = new TreeMap<>();
+	private NavigableMap<RegDate, RaisonDeRadiationRegistreIDE> raisonDeLiquidation = new TreeMap<>();
 
 	public MockDonneesRegistreIDE() {}
 
 	public MockDonneesRegistreIDE(NavigableMap<RegDate, StatusRegistreIDE> status, NavigableMap<RegDate, TypeOrganisationRegistreIDE> typeOrganisation,
 	                              NavigableMap<RegDate, AdresseRCEnt> adresseEffective, NavigableMap<RegDate, AdresseRCEnt> adresseBoitePostale,
-	                              NavigableMap<RegDate, RaisonLiquidationRegistreIDE> raisonDeLiquidation) {
+	                              NavigableMap<RegDate, RaisonDeRadiationRegistreIDE> raisonDeLiquidation) {
 		this.status = status;
 		this.typeOrganisation = typeOrganisation;
 		this.adresseEffective = adresseEffective;
@@ -84,15 +84,15 @@ public class MockDonneesRegistreIDE implements DonneesRegistreIDE {
 	}
 
 	@Override
-	public List<DateRanged<RaisonLiquidationRegistreIDE>> getRaisonDeLiquidation() {
+	public List<DateRanged<RaisonDeRadiationRegistreIDE>> getRaisonDeLiquidation() {
 		return MockOrganisationHelper.getHisto(raisonDeLiquidation);
 	}
 
-	public void changeRaisonDeLiquidation(RegDate date, RaisonLiquidationRegistreIDE nouvelleRaisonDeLiquidation) {
+	public void changeRaisonDeLiquidation(RegDate date, RaisonDeRadiationRegistreIDE nouvelleRaisonDeLiquidation) {
 		MockOrganisationHelper.changeRangedData(raisonDeLiquidation, date, nouvelleRaisonDeLiquidation);
 	}
 
-	public void addRaisonDeLiquidation(RegDate dateDebut, RegDate dateFin, RaisonLiquidationRegistreIDE nouvelleRaisonDeLiquidation) {
+	public void addRaisonDeLiquidation(RegDate dateDebut, RegDate dateFin, RaisonDeRadiationRegistreIDE nouvelleRaisonDeLiquidation) {
 		MockOrganisationHelper.addRangedData(raisonDeLiquidation, dateDebut, dateFin, nouvelleRaisonDeLiquidation);
 	}
 

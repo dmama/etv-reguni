@@ -2,7 +2,7 @@ package ch.vd.unireg.interfaces.organisation.rcent.converters;
 
 import org.jetbrains.annotations.NotNull;
 
-import ch.vd.evd0022.v1.UidRegisterStatus;
+import ch.vd.evd0022.v3.UidRegisterStatus;
 import ch.vd.unireg.interfaces.organisation.data.StatusRegistreIDE;
 
 public class UidRegisterStatusConverter extends BaseEnumConverter<UidRegisterStatus, StatusRegistreIDE> {

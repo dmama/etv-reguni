@@ -49,8 +49,8 @@ public class DoublonEntrepriseStrategy extends AbstractOrganisationStrategy {
 		final RegDate dateAvant = event.getDateEvenement().getOneDayBefore();
 		final RegDate dateApres = event.getDateEvenement();
 
-		final Long remplaceParAvant = organisation.getRemplacePar(dateAvant);
-		final Long remplaceParApres = organisation.getRemplacePar(dateApres);
+		final Long remplaceParAvant = organisation.getSitePrincipal(dateAvant).getPayload().getIdeRemplacePar(dateAvant);
+		final Long remplaceParApres = organisation.getSitePrincipal(dateAvant).getPayload().getIdeRemplacePar(dateApres);
 
 		if (remplaceParAvant == null && remplaceParApres!= null) {
 

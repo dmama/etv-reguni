@@ -29,6 +29,7 @@ import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.interfaces.organisation.mock.MockServiceOrganisation;
 import ch.vd.unireg.interfaces.organisation.mock.data.MockOrganisation;
+import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockOrganisationFactory;
 import ch.vd.unireg.webservices.party3.AcknowledgeTaxDeclarationRequest;
 import ch.vd.unireg.webservices.party3.AcknowledgeTaxDeclarationResponse;
 import ch.vd.unireg.webservices.party3.AcknowledgeTaxDeclarationsRequest;
@@ -1412,7 +1413,9 @@ public class PartyWebServiceTest extends WebserviceTest {
 		serviceOrganisation.setUp(new MockServiceOrganisation() {
 			@Override
 			protected void init() {
-				final MockOrganisation org = addOrganisation(noPM, date(1993, 7, 23), "Fiduciaire Galper S.A.", FormeLegale.N_0106_SOCIETE_ANONYME);
+				final MockOrganisation org = MockOrganisationFactory.createSimpleEntrepriseRC(noPM, noPM + 1011, "Fiduciaire Galper S.A.", date(1993, 7, 23), null,
+				                                                                              FormeLegale.N_0106_SOCIETE_ANONYME, MockCommune.Cossonay);
+				addOrganisation(org);
 				addAdresse(org, TypeAdresseCivil.PRINCIPALE, null, "3bis", null, MockLocalite.CossonayVille, date(1993, 7, 23), date(1999, 12, 31));
 				addAdresse(org, TypeAdresseCivil.PRINCIPALE, MockRue.CossonayVille.AvenueDuFuniculaire, "3bis", null, MockLocalite.CossonayVille, date(2000, 1, 1), null);
 			}
@@ -1861,7 +1864,9 @@ public class PartyWebServiceTest extends WebserviceTest {
 		serviceOrganisation.setUp(new MockServiceOrganisation() {
 			@Override
 			protected void init() {
-				addOrganisation(idOrganisation, date(1990, 4, 5), "Biscottes Duchmole", FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE);
+				final MockOrganisation org = MockOrganisationFactory.createSimpleEntrepriseRC(idOrganisation, idOrganisation + 1011, "Biscottes Duchmole", date(1990, 4, 5), null,
+				                                                                              FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE, MockCommune.Cossonay);
+				addOrganisation(org);
 			}
 		});
 

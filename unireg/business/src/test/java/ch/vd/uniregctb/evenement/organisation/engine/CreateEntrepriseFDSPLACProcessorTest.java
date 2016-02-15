@@ -19,7 +19,6 @@ import ch.vd.uniregctb.tiers.Etablissement;
 import ch.vd.uniregctb.type.EtatEvenementOrganisation;
 import ch.vd.uniregctb.type.TypeEvenementOrganisation;
 
-import static ch.vd.uniregctb.type.EmetteurEvenementOrganisation.FOSC;
 import static ch.vd.uniregctb.type.EtatEvenementOrganisation.A_TRAITER;
 
 /**
@@ -53,7 +52,7 @@ public class CreateEntrepriseFDSPLACProcessorTest extends AbstractEvenementOrgan
 		doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction(TransactionStatus transactionStatus) {
-				final EvenementOrganisation event = createEvent(evtId, noOrganisation, TypeEvenementOrganisation.FOSC_NOUVELLE_ENTREPRISE, RegDate.get(2015, 6, 24), A_TRAITER, FOSC, "abcdefgh");
+				final EvenementOrganisation event = createEvent(evtId, noOrganisation, TypeEvenementOrganisation.FOSC_NOUVELLE_ENTREPRISE, RegDate.get(2015, 6, 24), A_TRAITER);
 				return hibernateTemplate.merge(event).getId();
 			}
 		});

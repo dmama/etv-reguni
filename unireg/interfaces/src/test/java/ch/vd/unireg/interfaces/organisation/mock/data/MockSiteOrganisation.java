@@ -20,6 +20,7 @@ import ch.vd.unireg.interfaces.organisation.data.Domicile;
 import ch.vd.unireg.interfaces.organisation.data.DonneesRC;
 import ch.vd.unireg.interfaces.organisation.data.DonneesRegistreIDE;
 import ch.vd.unireg.interfaces.organisation.data.FonctionOrganisation;
+import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.interfaces.organisation.data.OrganisationHelper;
 import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 import ch.vd.unireg.interfaces.organisation.data.TypeDeSite;
@@ -46,13 +47,15 @@ public class MockSiteOrganisation implements SiteOrganisation {
 
 	private final long numeroSite;
 	private final NavigableMap<RegDate, String> nom = new TreeMap<>();
+	private final NavigableMap<RegDate, String> nomAdditionnel = new TreeMap<>();
 	private final NavigableMap<RegDate, String> ide = new TreeMap<>();
 	private final NavigableMap<RegDate, Pair<TypeAutoriteFiscale, Integer>> domicile = new TreeMap<>();
 	private final NavigableMap<RegDate, TypeDeSite> typeDeSite = new TreeMap<>();
+	private final NavigableMap<RegDate, FormeLegale> formeLegale = new TreeMap<>();
 	private final DonneesRegistreIDE donneesRegistreIDE;
 	private final DonneesRC donneesRC;
-	private final NavigableMap<RegDate, Long> remplacePar = new TreeMap<>();
-	private final NavigableMap<RegDate, List<Long>> enRemplacementDe = new TreeMap<>();
+	private final NavigableMap<RegDate, Long> ideRemplacePar = new TreeMap<>();
+	private final NavigableMap<RegDate, Long> ideEnRemplacementDe = new TreeMap<>();
 	private final List<Adresse> adresses = new ArrayList<>();
 
 	public MockSiteOrganisation(long numeroSite, DonneesRegistreIDE donneesRegistreIDE, DonneesRC donneesRC) {
@@ -69,6 +72,22 @@ public class MockSiteOrganisation implements SiteOrganisation {
 		MockOrganisationHelper.addRangedData(nom, dateDebut, dateFin, nouveauNom);
 	}
 
+	public void changeNomAdditionnel(RegDate date, String nouveauNom) {
+		MockOrganisationHelper.changeRangedData(nomAdditionnel, date, nouveauNom);
+	}
+
+	public void addNomAdditionnel(RegDate dateDebut, RegDate dateFin, String nouveauNom) {
+		MockOrganisationHelper.addRangedData(nomAdditionnel, dateDebut, dateFin, nouveauNom);
+	}
+
+	public void changeFormeLegale(RegDate date, FormeLegale nouvelleFormeLegale) {
+		MockOrganisationHelper.changeRangedData(formeLegale, date, nouvelleFormeLegale);
+	}
+
+	public void addFormeLegale(RegDate dateDebut, @Nullable RegDate dateFin, FormeLegale nouvelleFormeLegale) {
+		MockOrganisationHelper.addRangedData(formeLegale, dateDebut, dateFin, nouvelleFormeLegale);
+	}
+
 	public void changeNumeroIDE(RegDate date, String nouveauNumeroIDE) {
 		MockOrganisationHelper.changeRangedData(ide, date, nouveauNumeroIDE);
 	}
@@ -77,12 +96,12 @@ public class MockSiteOrganisation implements SiteOrganisation {
 		MockOrganisationHelper.addRangedData(ide, dateDebut, dateFin, nouveauNumeroIDE);
 	}
 
-	public void addRemplacePar(RegDate dateDebut, @Nullable RegDate dateFin, Long nouveauRemplacePar) {
-		MockOrganisationHelper.addRangedData(remplacePar, dateDebut, dateFin, nouveauRemplacePar);
+	public void addIdeRemplacePar(RegDate dateDebut, @Nullable RegDate dateFin, Long nouveauRemplacePar) {
+		MockOrganisationHelper.addRangedData(ideRemplacePar, dateDebut, dateFin, nouveauRemplacePar);
 	}
 
-	public void addEnRemplacementDe(RegDate dateDebut, @Nullable RegDate dateFin, List<Long> nouveauEnRemplacementDe) {
-		MockOrganisationHelper.addRangedData(enRemplacementDe, dateDebut, dateFin, nouveauEnRemplacementDe);
+	public void addIdeEnRemplacementDe(RegDate dateDebut, @Nullable RegDate dateFin, Long nouveauEnRemplacementDe) {
+		MockOrganisationHelper.addRangedData(ideEnRemplacementDe, dateDebut, dateFin, nouveauEnRemplacementDe);
 	}
 
 	public void changeDomicile(RegDate date, TypeAutoriteFiscale typeAutoriteFiscale, Integer ofs) {
@@ -91,6 +110,16 @@ public class MockSiteOrganisation implements SiteOrganisation {
 			payload = Pair.of(typeAutoriteFiscale, ofs);
 		}
 		MockOrganisationHelper.changeRangedData(domicile, date, payload);
+	}
+
+	@Override
+	public List<DateRanged<FormeLegale>> getFormeLegale() {
+		return MockOrganisationHelper.getHisto(formeLegale);
+	}
+
+	@Override
+	public FormeLegale getFormeLegale(RegDate date) {
+		return OrganisationHelper.valueForDate(getFormeLegale(), date);
 	}
 
 	public void addSiege(RegDate dateDebut, RegDate dateFin, TypeAutoriteFiscale typeAutoriteFiscale, Integer ofs) {
@@ -141,6 +170,16 @@ public class MockSiteOrganisation implements SiteOrganisation {
 	}
 
 	@Override
+	public List<DateRanged<String>> getNomAdditionnel() {
+		return MockOrganisationHelper.getHisto(nomAdditionnel);
+	}
+
+	@Override
+	public String getNomAdditionnel(RegDate date) {
+		return OrganisationHelper.valueForDate(getNom(), date);
+	}
+
+	@Override
 	public DonneesRC getDonneesRC() {
 		return donneesRC;
 	}
@@ -176,22 +215,37 @@ public class MockSiteOrganisation implements SiteOrganisation {
 	}
 
 	@Override
-	public List<DateRanged<Long>> getRemplacePar() {
-		return MockOrganisationHelper.getHisto(remplacePar);
+	public List<DateRanged<Long>> getIdeRemplacePar() {
+		return MockOrganisationHelper.getHisto(ideRemplacePar);
 	}
 
 	@Override
-	public Long getRemplacePar(RegDate date) {
-		return OrganisationHelper.valueForDate(getRemplacePar(), date);
+	public Long getIdeRemplacePar(RegDate date) {
+		return OrganisationHelper.valueForDate(getIdeRemplacePar(), date);
 	}
 
 	@Override
-	public Map<Long, List<DateRanged<Long>>> getEnRemplacementDe() {
-		return MockOrganisationHelper.reconstitueMultiValeur(enRemplacementDe);
+	public List<DateRanged<Long>> getIdeEnRemplacementDe() {
+		return MockOrganisationHelper.getHisto(ideEnRemplacementDe);
 	}
 
 	@Override
-	public List<Long> getEnRemplacementDe(RegDate date) {
-		return OrganisationHelper.valuesForDate(getEnRemplacementDe(), date);
+	public Long getIdeEnRemplacementDe(RegDate date) {
+		return OrganisationHelper.valueForDate(getIdeEnRemplacementDe(), date);
+	}
+
+	@Override
+	public boolean isInscritAuRC(RegDate date) {
+		return OrganisationHelper.isInscritAuRC(this, date);
+	}
+
+	@Override
+	public boolean isRadieDuRC(RegDate date) {
+		return OrganisationHelper.isRadieDuRC(this, date);
+	}
+
+	@Override
+	public boolean isRadieIDE(RegDate date) {
+		return OrganisationHelper.isRadieIDE(this, date);
 	}
 }

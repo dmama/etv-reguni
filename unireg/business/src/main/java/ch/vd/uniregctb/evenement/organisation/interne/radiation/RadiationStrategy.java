@@ -7,8 +7,6 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
-import ch.vd.unireg.interfaces.organisation.data.StatusInscriptionRC;
-import ch.vd.unireg.interfaces.organisation.data.StatusRC;
 import ch.vd.unireg.interfaces.organisation.data.StatusRegistreIDE;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationContext;
@@ -60,27 +58,20 @@ public class RadiationStrategy extends AbstractOrganisationStrategy {
 		final SiteOrganisation sitePrincipalAvant = getSitePrincipal(organisation, dateAvant);
 		final SiteOrganisation sitePrincipalApres = getSitePrincipal(organisation, dateApres);
 
-		final StatusRC statusRCAvant = getStatus(sitePrincipalAvant, dateAvant);
-		final StatusRC statusRCApres = getStatus(sitePrincipalApres, dateApres);
-
-		final StatusInscriptionRC statusInscriptionRCAvant = getStatusInscription(sitePrincipalAvant, dateAvant);
-		final StatusInscriptionRC statusInscriptionRCApres = getStatusInscription(sitePrincipalApres, dateApres);
-
-		final StatusRegistreIDE statusRegistreIDEAvant = getStatusIde(sitePrincipalAvant, dateAvant);
 		final StatusRegistreIDE statusRegistreIDEApres = getStatusIde(sitePrincipalApres, dateApres);
 
-		final boolean enCoursDeRadiationRC = isInscritRC(statusRCAvant) && ! isRadieRC(statusInscriptionRCAvant) && isRadieRC(statusInscriptionRCApres);
-		final boolean enCoursDeRadiationIDE = ! isRadieIDE(statusRegistreIDEAvant) && isRadieIDE(statusRegistreIDEApres);
+		final boolean enCoursDeRadiationRC = sitePrincipalAvant.isInscritAuRC(dateAvant) && ! sitePrincipalAvant.isRadieDuRC(dateAvant) && sitePrincipalApres.isRadieDuRC(dateApres);
+		final boolean enCoursDeRadiationIDE = ! sitePrincipalAvant.isRadieIDE(dateAvant) && sitePrincipalApres.isRadieIDE(dateApres);
 
 		try {
 			if (enCoursDeRadiationIDE) {
-				if (isInscritRC(statusRCApres) && !isRadieRC(statusInscriptionRCApres)) {
+				if (sitePrincipalApres.isInscritAuRC(dateApres) && !sitePrincipalApres.isRadieDuRC(dateApres)) {
 					throw new EvenementOrganisationException(String.format("L'entreprise %s est radiée de l'IDE mais pas du RC!", entreprise));
 				}
 
 				if (isAssujetti(entreprise, dateApres, context)) {
 					LOGGER.info(String.format("Entreprise %s %s %sradiée de l'IDE, mais encore assujettie.",
-					                          entreprise.getNumero(), enCoursDeRadiationRC ? "radiée du RC, " : "", isInscritRC(statusRCAvant) ? "" : "non inscrite au RC "));
+					                          entreprise.getNumero(), enCoursDeRadiationRC ? "radiée du RC, " : "", sitePrincipalAvant.isInscritAuRC(dateAvant) ? "" : "non inscrite au RC "));
 					return new TraitementManuel(event, organisation, entreprise, context, options,
 					                            "Traitement manuel requis pour le contrôle de la radiation d’une entreprise encore assujettie.");
 				}
@@ -114,14 +105,6 @@ public class RadiationStrategy extends AbstractOrganisationStrategy {
 
 	protected StatusRegistreIDE getStatusIde(SiteOrganisation sitePrincipalAvant, RegDate dateAvant) {
 		return sitePrincipalAvant == null ? null : sitePrincipalAvant.getDonneesRegistreIDE().getStatus(dateAvant);
-	}
-
-	protected StatusInscriptionRC getStatusInscription(SiteOrganisation sitePrincipalAvant, RegDate dateAvant) {
-		return sitePrincipalAvant == null ? null : sitePrincipalAvant.getDonneesRC().getStatusInscription(dateAvant);
-	}
-
-	protected StatusRC getStatus(SiteOrganisation sitePrincipalAvant, RegDate dateAvant) {
-		return sitePrincipalAvant == null ? null : sitePrincipalAvant.getDonneesRC().getStatus(dateAvant);
 	}
 
 	protected SiteOrganisation getSitePrincipal(Organisation organisation, RegDate dateAvant) {

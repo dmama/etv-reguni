@@ -13,7 +13,6 @@ import ch.vd.unireg.interfaces.organisation.ServiceOrganisationException;
 import ch.vd.unireg.interfaces.organisation.ServiceOrganisationRaw;
 import ch.vd.unireg.interfaces.organisation.data.DonneesRC;
 import ch.vd.unireg.interfaces.organisation.data.DonneesRegistreIDE;
-import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.mock.data.MockOrganisation;
 import ch.vd.unireg.interfaces.organisation.mock.data.MockSiteOrganisation;
@@ -54,8 +53,8 @@ public abstract class MockServiceOrganisation implements ServiceOrganisationRaw 
 		// un mock fonctionne toujours
 	}
 
-	protected MockOrganisation addOrganisation(long cantonalId, RegDate dateCreation, String nom, FormeLegale formeLegale) {
-		final MockOrganisation org = new MockOrganisation(cantonalId, dateCreation, nom, formeLegale);
+	protected MockOrganisation addOrganisation(long cantonalId) {
+		final MockOrganisation org = new MockOrganisation(cantonalId);
 		addOrganisation(org);
 		return org;
 	}

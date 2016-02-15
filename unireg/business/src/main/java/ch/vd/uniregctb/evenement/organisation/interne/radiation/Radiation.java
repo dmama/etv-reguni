@@ -6,7 +6,6 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 import ch.vd.unireg.interfaces.organisation.data.StatusInscriptionRC;
-import ch.vd.unireg.interfaces.organisation.data.StatusRC;
 import ch.vd.unireg.interfaces.organisation.data.StatusRegistreIDE;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationContext;
@@ -27,7 +26,6 @@ import ch.vd.uniregctb.type.CategorieEntreprise;
 public class Radiation extends EvenementOrganisationInterneDeTraitement {
 
 	private final RegDate dateApres;
-	private final StatusRC statusRCApres;
 	private final StatusInscriptionRC statusInscriptionRCApres;
 	private final StatusRegistreIDE statusRegistreIDEApres;
 
@@ -40,7 +38,6 @@ public class Radiation extends EvenementOrganisationInterneDeTraitement {
 
 		final SiteOrganisation sitePrincipalApres = organisation.getSitePrincipal(dateApres).getPayload();
 
-		statusRCApres = sitePrincipalApres.getDonneesRC().getStatus(dateApres);
 		statusInscriptionRCApres = sitePrincipalApres.getDonneesRC().getStatusInscription(dateApres);
 		statusRegistreIDEApres = sitePrincipalApres.getDonneesRegistreIDE().getStatus(dateApres);
 	}

@@ -2,14 +2,14 @@ package ch.vd.unireg.interfaces.organisation.rcent.converters;
 
 import org.jetbrains.annotations.NotNull;
 
-import ch.vd.evd0022.v1.UidRegisterTypeOfOrganisation;
+import ch.vd.evd0022.v3.KindOfUidEntity;
 import ch.vd.unireg.interfaces.organisation.data.TypeOrganisationRegistreIDE;
 
-public class UidRegisterTypeOfOrganisationConverter extends BaseEnumConverter<UidRegisterTypeOfOrganisation, TypeOrganisationRegistreIDE> {
+public class UidRegisterTypeOfOrganisationConverter extends BaseEnumConverter<KindOfUidEntity, TypeOrganisationRegistreIDE> {
 
 	@Override
 	@NotNull
-	protected TypeOrganisationRegistreIDE convert(@NotNull UidRegisterTypeOfOrganisation value) {
+	protected TypeOrganisationRegistreIDE convert(@NotNull KindOfUidEntity value) {
 		switch (value) {
 		case AUTRE:
 			return TypeOrganisationRegistreIDE.AUTRE;

@@ -2,7 +2,7 @@ package ch.vd.unireg.interfaces.organisation.rcent.converters;
 
 import org.jetbrains.annotations.NotNull;
 
-import ch.vd.evd0022.v1.TypeOfCapital;
+import ch.vd.evd0022.v3.TypeOfCapital;
 import ch.vd.unireg.interfaces.organisation.data.TypeDeCapital;
 
 public class TypeOfCapitalConverter extends BaseEnumConverter<TypeOfCapital, TypeDeCapital> {

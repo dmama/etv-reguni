@@ -5,7 +5,6 @@ import java.util.Date;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
-import ch.vd.uniregctb.type.EmetteurEvenementOrganisation;
 import ch.vd.uniregctb.type.EtatEvenementOrganisation;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeEvenementOrganisation;
@@ -25,7 +24,6 @@ public class EvenementOrganisationElementListeRechercheView implements Serializa
 	private String commentaireTraitement;
 	private Integer noOFSSiege;
 	private TypeAutoriteFiscale typeSiege;
-	private EmetteurEvenementOrganisation source;
 
 	public EvenementOrganisationElementListeRechercheView(EvenementOrganisation evt) {
 		this.id = evt.getId();
@@ -123,13 +121,5 @@ public class EvenementOrganisationElementListeRechercheView implements Serializa
 
 	public void setTypeSiege(TypeAutoriteFiscale typeSiege) {
 		this.typeSiege = typeSiege;
-	}
-
-	public EmetteurEvenementOrganisation getSource() {
-		return source;
-	}
-
-	public void setSource(EmetteurEvenementOrganisation source) {
-		this.source = source;
 	}
 }

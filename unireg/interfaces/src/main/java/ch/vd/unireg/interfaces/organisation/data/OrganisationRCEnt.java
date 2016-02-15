@@ -30,41 +30,19 @@ public class OrganisationRCEnt implements Organisation, Serializable {
 	private final List<DateRanged<String>> numeroIDE;
 
 	@NotNull
-	private final List<DateRanged<String>> nom;
-	private final Map<String, List<DateRanged<String>>> nomsAdditionnels;
-	private final List<DateRanged<FormeLegale>> formeLegale;
-
-	@NotNull
 	private final Map<Long, List<DateRanged<Long>>> sites;
 
 	@NotNull
 	private final Map<Long, SiteOrganisation> donneesSites;
 
-	private final Map<Long, List<DateRanged<Long>>> transfereA;
-	private final Map<Long, List<DateRanged<Long>>> transferDe;
-	private final List<DateRanged<Long>> remplacePar;
-	private final Map<Long, List<DateRanged<Long>>> enRemplacementDe;
-
 	public OrganisationRCEnt(long numeroOrganisation,
 	                         @NotNull Map<String, List<DateRanged<String>>> identifiants,
-	                         @NotNull List<DateRanged<String>> nom,
-	                         Map<String, List<DateRanged<String>>> nomsAdditionnels,
-	                         List<DateRanged<FormeLegale>> formeLegale,
 	                         @NotNull Map<Long, List<DateRanged<Long>>> sites,
-	                         @NotNull Map<Long, SiteOrganisation> donneesSites,
-	                         Map<Long, List<DateRanged<Long>>> transfereA, Map<Long, List<DateRanged<Long>>> transferDe,
-	                         List<DateRanged<Long>> remplacePar, Map<Long, List<DateRanged<Long>>> enRemplacementDe) {
+	                         @NotNull Map<Long, SiteOrganisation> donneesSites) {
 		this.numeroOrganisation = numeroOrganisation;
 		this.numeroIDE = OrganisationHelper.extractIdentifiant(identifiants, OrganisationConstants.CLE_IDE);
-		this.nom = nom;
-		this.nomsAdditionnels = nomsAdditionnels;
-		this.formeLegale = formeLegale;
 		this.sites = sites;
 		this.donneesSites = donneesSites;
-		this.transfereA = transfereA;
-		this.transferDe = transferDe;
-		this.remplacePar = remplacePar;
-		this.enRemplacementDe = enRemplacementDe;
 	}
 
 	@Override
@@ -105,6 +83,14 @@ public class OrganisationRCEnt implements Organisation, Serializable {
 	}
 
 	/**
+	 * @return l'historique des formes juridique du site principal de l'entreprise.
+	 */
+	@Override
+	public List<DateRanged<FormeLegale>> getFormeLegale() {
+		return OrganisationHelper.getFormesLegalesPrincipaux(donneesSites);
+	}
+
+	/**
 	 * Retourne l'identifiant OFS de la commune de siège à la date donnée, ou à la date du jour.
 	 * si pas de date.
 	 *
@@ -113,7 +99,47 @@ public class OrganisationRCEnt implements Organisation, Serializable {
 	 */
 	@Override
 	public FormeLegale getFormeLegale(RegDate date) {
-		return OrganisationHelper.valueForDate(formeLegale, date);
+		return OrganisationHelper.valueForDate(getFormeLegale(), date);
+	}
+
+	/**
+	 * @return l'historique du nom de l'entreprise, c'est-à-dire le nom du site principal de l'entreprise.
+	 */
+	@Override
+	public List<DateRanged<String>> getNom() {
+		return OrganisationHelper.getNomsPrincipaux(donneesSites);
+	}
+
+	/**
+	 * Retourne le nom de l'entreprise à la date donnée, ou à la date du jour.
+	 * si pas de date.
+	 *
+	 * @param date
+	 * @return le nom
+	 */
+	@Override
+	public String getNom(RegDate date) {
+		return OrganisationHelper.valueForDate(getNom(), date);
+	}
+
+	/**
+	 * @return l'historique du nom additionnel de l'entreprise, c'est-à-dire le nom additionnel du site principal de l'entreprise.
+	 */
+	@Override
+	public List<DateRanged<String>> getNomAdditionnel() {
+		return OrganisationHelper.getNomsAdditionnelsPrincipaux(donneesSites);
+	}
+
+	/**
+	 * Retourne le nom additionnel de l'entreprise à la date donnée, ou à la date du jour.
+	 * si pas de date.
+	 *
+	 * @param date
+	 * @return le nom
+	 */
+	@Override
+	public String getNomAdditionnel(RegDate date) {
+		return OrganisationHelper.valueForDate(getNomAdditionnel(), date);
 	}
 
 	/**
@@ -141,62 +167,6 @@ public class OrganisationRCEnt implements Organisation, Serializable {
 	@NotNull
 	public List<SiteOrganisation> getDonneesSites() {
 		return new ArrayList<>(donneesSites.values());
-	}
-
-	@Override
-	public Map<Long, List<DateRanged<Long>>> getEnRemplacementDe() {
-		return enRemplacementDe;
-	}
-
-	@Override
-	public List<Long> getEnRemplacementDe(RegDate date) {
-		return OrganisationHelper.valuesForDate(enRemplacementDe, date);
-	}
-
-	@Override
-	public List<DateRanged<FormeLegale>> getFormeLegale() {
-		return formeLegale;
-	}
-
-	@Override
-	@NotNull
-	public List<DateRanged<String>> getNom() {
-		return nom;
-	}
-
-	@Override
-	public String getNom(RegDate date) {
-		return OrganisationHelper.valueForDate(nom, date);
-	}
-
-	@Override
-	public Map<String, List<DateRanged<String>>> getNomsAdditionnels() {
-		return nomsAdditionnels;
-	}
-
-	@Override
-	public List<String> getNomsAdditionnels(RegDate date) {
-		return OrganisationHelper.valuesForDate(nomsAdditionnels, date);
-	}
-
-	@Override
-	public List<DateRanged<Long>> getRemplacePar() {
-		return remplacePar;
-	}
-
-	@Override
-	public Long getRemplacePar(RegDate date) {
-		return OrganisationHelper.valueForDate(remplacePar, date);
-	}
-
-	@Override
-	public Map<Long, List<DateRanged<Long>>> getTransferDe() {
-		return transferDe;
-	}
-
-	@Override
-	public Map<Long, List<DateRanged<Long>>> getTransfereA() {
-		return transfereA;
 	}
 
 	@Override
@@ -242,5 +212,45 @@ public class OrganisationRCEnt implements Organisation, Serializable {
 	@Override
 	public SiteOrganisation getSiteForNo(Long noSite) {
 		return donneesSites.get(noSite);
+	}
+
+	/**
+	 * Indique si un l'organisation est inscrite au RC à la date indiquée. Si la date est nulle, la date du jour est utilisée.
+	 */
+	@Override
+	public boolean isInscritAuRC(RegDate date) {
+		return OrganisationHelper.isInscritAuRC(this, date);
+	}
+
+	/**
+	 * Indique si un l'organisation est radiée au RC à la date indiquée. Si la date est nulle, la date du jour est utilisée.
+	 */
+	@Override
+	public boolean isRadieRC(RegDate date) {
+		return OrganisationHelper.isRadieDuRC(this, date);
+	}
+
+	/**
+	 * Indique si un l'organisation est radiée de l'IDE à la date indiquée. Si la date est nulle, la date du jour est utilisée.
+	 */
+	@Override
+	public boolean isRadieIDE(RegDate date) {
+		return OrganisationHelper.isRadieIDE(this, date);
+	}
+
+	/**
+	 * Indique si un l'organisation possède son siège principal sur Vaud. Si la date est nulle, la date du jour est utilisée.
+	 */
+	@Override
+	public boolean hasSitePrincipalVD(RegDate date) {
+		return OrganisationHelper.hasSitePrincipalVD(this, date);
+	}
+
+	/**
+	 * @return true si un site de l'organisation est domicilié dans le canton de Vaud (principal ou secondaire), false sinon
+	 */
+	@Override
+	public boolean hasSiteVD(RegDate date) {
+		return OrganisationHelper.hasSiteVD(this, date);
 	}
 }

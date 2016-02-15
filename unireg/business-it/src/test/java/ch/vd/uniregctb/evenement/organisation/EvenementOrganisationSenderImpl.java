@@ -7,31 +7,27 @@ import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.math.BigInteger;
-import java.util.Date;
 
+import ch.ech.ech0007.v6.SwissMunicipality;
+import ch.ech.ech0097.v2.NamedOrganisationId;
 import org.springframework.beans.factory.InitializingBean;
 import org.w3c.dom.Document;
 
-import ch.vd.evd0022.v1.Header;
-import ch.vd.evd0022.v1.Identification;
-import ch.vd.evd0022.v1.Identifier;
-import ch.vd.evd0022.v1.KindOfLocation;
-import ch.vd.evd0022.v1.LegalForm;
-import ch.vd.evd0022.v1.Notice;
-import ch.vd.evd0022.v1.NoticeOrganisation;
-import ch.vd.evd0022.v1.NoticeRoot;
-import ch.vd.evd0022.v1.ObjectFactory;
-import ch.vd.evd0022.v1.Organisation;
-import ch.vd.evd0022.v1.OrganisationLocation;
-import ch.vd.evd0022.v1.SenderIdentification;
-import ch.vd.evd0022.v1.SwissMunicipality;
-import ch.vd.evd0022.v1.TypeOfNotice;
+import ch.vd.evd0022.v3.Identification;
+import ch.vd.evd0022.v3.LegalForm;
+import ch.vd.evd0022.v3.Notice;
+import ch.vd.evd0022.v3.NoticeOrganisation;
+import ch.vd.evd0022.v3.ObjectFactory;
+import ch.vd.evd0022.v3.Organisation;
+import ch.vd.evd0022.v3.OrganisationLocation;
+import ch.vd.evd0022.v3.OrganisationsOfNotice;
+import ch.vd.evd0022.v3.TypeOfLocation;
+import ch.vd.evd0022.v3.TypeOfNotice;
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.EsbMessageFactory;
 import ch.vd.technical.esb.jms.AbstractEsbJmsTemplate;
 import ch.vd.uniregctb.common.BusinessItTest;
 import ch.vd.uniregctb.jms.EsbMessageValidator;
-import ch.vd.uniregctb.type.EmetteurEvenementOrganisation;
 import ch.vd.uniregctb.type.TypeEvenementOrganisation;
 
 /**
@@ -86,16 +82,9 @@ public class EvenementOrganisationSenderImpl implements EvenementOrganisationSen
 		notice.setNoticeId(BigInteger.valueOf(evt.getId()));
 		notice.setTypeOfNotice(convertNoticeType(evt.getType()));
 
-		final Header header = objectFactory.createHeaderType();
-		header.setMessageDateTime(new Date());
-		header.setMessageId("abcdefgh");
-		header.setSenderIdentification(convertIdentiteEmetteur(evt.getIdentiteEmetteur()));
-		header.setSenderReferenceData(evt.getRefDataEmetteur());
-		header.setNotice(notice);
-
-		final Identifier identifier = new Identifier();
-		identifier.setIdentifierCategory("CH.IDE");
-		identifier.setIdentifierValue("65465465164");
+		final NamedOrganisationId identifier = new NamedOrganisationId();
+		identifier.setOrganisationIdCategory("CH.IDE");
+		identifier.setOrganisationId("65465465164");
 
 		final Identification ident = new Identification();
 		ident.setCantonalId(BigInteger.valueOf(evt.getNoOrganisation()));
@@ -108,26 +97,25 @@ public class EvenementOrganisationSenderImpl implements EvenementOrganisationSen
 		final SwissMunicipality muni = new SwissMunicipality();
 		muni.setMunicipalityId(34);
 		muni.setMunicipalityName("Glausenstadt");
-		location.setSeat(muni);
+		location.setMunicipality(muni);
 		location.setName("ESB TEST SENDER FAKE NAME");
-		location.setKindOfLocation(KindOfLocation.ETABLISSEMENT_PRINCIPAL);
+		location.setTypeOfLocation(TypeOfLocation.ETABLISSEMENT_PRINCIPAL);
+		location.setLegalForm(LegalForm.N_0106_SOCIETE_ANONYME);
 
 		final Organisation organisation = new Organisation();
 		organisation.setCantonalId(BigInteger.valueOf(evt.getNoOrganisation()));
-		organisation.getOrganisationIdentifier().add(identifier);
-		organisation.setOrganisationName("ESB TEST SENDER FAKE NAME");
-		organisation.setLegalForm(LegalForm.N_0106_SOCIETE_ANONYME);
+		organisation.getIdentifier().add(identifier);
 		organisation.getOrganisationLocation().add(location);
 
 		final NoticeOrganisation noticeOrganisation = new NoticeOrganisation();
-		noticeOrganisation.setOrganisationIdentification(ident);
+		noticeOrganisation.setOrganisationLocationIdentification(ident);
 		noticeOrganisation.setOrganisation(organisation);
 
-		final NoticeRoot root =  objectFactory.createNoticeRootType();
-		root.setHeader(header);
-		root.getNoticeOrganisation().add(noticeOrganisation);
+		final OrganisationsOfNotice root =  objectFactory.createOrganisationsOfNoticeType();
+		root.setNotice(notice);
+		root.getOrganisation().add(noticeOrganisation);
 		marshaller.marshal(
-				new JAXBElement<>(new QName("http://evd.vd.ch/xmlns/eVD-0024/1", "noticeRoot"), NoticeRoot.class, root),
+				new JAXBElement<>(new QName("http://evd.vd.ch/xmlns/eVD-0024/3", "noticeRoot"), OrganisationsOfNotice.class, root),
 				doc
 		);
 
@@ -148,10 +136,6 @@ public class EvenementOrganisationSenderImpl implements EvenementOrganisationSen
 			esbValidator.validate(m);
 		}
 		esbTemplate.send(m);
-	}
-
-	private static SenderIdentification convertIdentiteEmetteur(EmetteurEvenementOrganisation identiteEmetteur) {
-		return SenderIdentification.valueOf(identiteEmetteur.name());
 	}
 
 	private static TypeOfNotice convertNoticeType(TypeEvenementOrganisation type) {

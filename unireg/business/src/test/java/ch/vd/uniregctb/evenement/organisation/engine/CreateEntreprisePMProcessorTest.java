@@ -16,7 +16,6 @@ import ch.vd.unireg.interfaces.infra.mock.MockTypeRegimeFiscal;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.interfaces.organisation.data.StatusInscriptionRC;
-import ch.vd.unireg.interfaces.organisation.data.StatusRC;
 import ch.vd.unireg.interfaces.organisation.data.StatusRegistreIDE;
 import ch.vd.unireg.interfaces.organisation.data.TypeOrganisationRegistreIDE;
 import ch.vd.unireg.interfaces.organisation.mock.MockServiceOrganisation;
@@ -41,8 +40,6 @@ import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeEvenementOrganisation;
 
-import static ch.vd.uniregctb.type.EmetteurEvenementOrganisation.FOSC;
-import static ch.vd.uniregctb.type.EmetteurEvenementOrganisation.IDE;
 import static ch.vd.uniregctb.type.EtatEvenementOrganisation.A_TRAITER;
 
 /**
@@ -84,7 +81,7 @@ public class CreateEntreprisePMProcessorTest extends AbstractEvenementOrganisati
 		doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction(TransactionStatus transactionStatus) {
-				final EvenementOrganisation event = createEvent(evtId, noOrganisation, TypeEvenementOrganisation.FOSC_NOUVELLE_ENTREPRISE, RegDate.get(2015, 6, 24), A_TRAITER, FOSC, "abcdefgh");
+				final EvenementOrganisation event = createEvent(evtId, noOrganisation, TypeEvenementOrganisation.FOSC_NOUVELLE_ENTREPRISE, RegDate.get(2015, 6, 24), A_TRAITER);
 				return hibernateTemplate.merge(event).getId();
 			}
 		});
@@ -191,17 +188,17 @@ public class CreateEntreprisePMProcessorTest extends AbstractEvenementOrganisati
 		final Long noOrganisation = 101202100L;
 
 		final MockOrganisation org = MockOrganisationFactory.createOrganisation(noOrganisation, noOrganisation + 1000000, "Synergy SA", RegDate.get(2010, 6, 24), RegDate.get(2015, 6, 23), FormeLegale.N_0106_SOCIETE_ANONYME,
-		                                                                        TypeAutoriteFiscale.COMMUNE_HC, MockCommune.Zurich.getNoOFS(), StatusRC.INSCRIT, StatusInscriptionRC.ACTIF, StatusRegistreIDE.DEFINITIF,
+		                                                                        TypeAutoriteFiscale.COMMUNE_HC, MockCommune.Zurich.getNoOFS(), StatusInscriptionRC.ACTIF, StatusRegistreIDE.DEFINITIF,
 		                                                                        TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE);
 		MockSiteOrganisationFactory.addSite(1012021001234L,
 		                                    org,
 		                                    RegDate.get(2015, 6, 24),
 		                                    null,
 		                                    "Synergy SA",
+		                                    FormeLegale.N_0106_SOCIETE_ANONYME,
 		                                    true,
 		                                    TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
 		                                    MockCommune.Lausanne.getNoOFS(),
-		                                    StatusRC.INSCRIT,
 		                                    StatusInscriptionRC.ACTIF,
 		                                    StatusRegistreIDE.DEFINITIF,
 		                                    TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE);
@@ -223,7 +220,7 @@ public class CreateEntreprisePMProcessorTest extends AbstractEvenementOrganisati
 		doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction(TransactionStatus transactionStatus) {
-				final EvenementOrganisation event = createEvent(evtId, noOrganisation, TypeEvenementOrganisation.FOSC_NOUVELLE_ENTREPRISE, RegDate.get(2015, 6, 24), A_TRAITER, FOSC, "abcdefgh");
+				final EvenementOrganisation event = createEvent(evtId, noOrganisation, TypeEvenementOrganisation.FOSC_NOUVELLE_ENTREPRISE, RegDate.get(2015, 6, 24), A_TRAITER);
 				return hibernateTemplate.merge(event).getId();
 			}
 		});
@@ -344,7 +341,7 @@ public class CreateEntreprisePMProcessorTest extends AbstractEvenementOrganisati
 		doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction(TransactionStatus transactionStatus) {
-				final EvenementOrganisation event = createEvent(evtId, noOrganisation, TypeEvenementOrganisation.FOSC_NOUVELLE_ENTREPRISE, RegDate.get(2015, 6, 24), A_TRAITER, FOSC, "abcdefgh");
+				final EvenementOrganisation event = createEvent(evtId, noOrganisation, TypeEvenementOrganisation.FOSC_NOUVELLE_ENTREPRISE, RegDate.get(2015, 6, 24), A_TRAITER);
 				return hibernateTemplate.merge(event).getId();
 			}
 		});
@@ -400,7 +397,7 @@ public class CreateEntreprisePMProcessorTest extends AbstractEvenementOrganisati
 			protected void init() {
 				addOrganisation(
 						MockOrganisationFactory.createOrganisation(noOrganisation, noOrganisation + 1000000, "Synergy SA", RegDate.get(2015, 6, 24), null, FormeLegale.N_0106_SOCIETE_ANONYME,
-						                                           TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), null, null, StatusRegistreIDE.DEFINITIF,
+						                                           TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), null, StatusRegistreIDE.DEFINITIF,
 						                                           TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE));
 			}
 		});
@@ -412,7 +409,7 @@ public class CreateEntreprisePMProcessorTest extends AbstractEvenementOrganisati
 		doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction(TransactionStatus transactionStatus) {
-				final EvenementOrganisation event = createEvent(evtId, noOrganisation, TypeEvenementOrganisation.FOSC_NOUVELLE_ENTREPRISE, RegDate.get(2015, 6, 24), A_TRAITER, IDE, "abcdefgh");
+				final EvenementOrganisation event = createEvent(evtId, noOrganisation, TypeEvenementOrganisation.FOSC_NOUVELLE_ENTREPRISE, RegDate.get(2015, 6, 24), A_TRAITER);
 				return hibernateTemplate.merge(event).getId();
 			}
 		});

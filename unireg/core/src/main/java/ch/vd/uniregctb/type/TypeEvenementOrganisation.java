@@ -58,16 +58,22 @@ public enum TypeEvenementOrganisation {
 		FOSC_APPEL_AUX_CREANCIERS_SUITE_REDUCTION_CAPITAL(42, "FOSC: Appel aux créanciers en suite de réduction du capital"),
 		FOSC_APPEL_AUX_CREANCIERS_SUITE_TRANSFORMATION_SA_EN_SARL(43, "FOSC: Appel aux créanciers en suite de transformation d'une SA en une Sàrl selon l'art. 824 CO"),
 		FOSC_APPEL_AUX_CREANCIERS_SUITE_TRANSFERT_ETRANGER(44, "FOSC: Appel aux créanciers en suite de transfert à l'étranger"),
-		IDE_NOUVELLE_INSCRIPTION_DANS_REGISTRE(45, "IDE: Nouvelle inscription dans le registre IDE"),
-		IDE_MUTATION_DANS_REGISTRE(46, "IDE: Mutation dans le registre IDE"),
-		IDE_RADIATION_DANS_REGISTRE(47, "IDE: Radiation dans le registre IDE"),
-		IDE_REACTIVATION_DANS_REGISTRE(48, "IDE: Réactivation dans le registre IDE"),
-		IDE_ANNULATION_DANS_REGISTRE(49, "IDE: Annulation dans le registre IDE"),
+		IDE_NOUVELLE_INSCRIPTION(45, "IDE: Nouvelle inscription dans le registre IDE"),
+		IDE_MUTATION(46, "IDE: Mutation dans le registre IDE"),
+		IDE_RADIATION(47, "IDE: Radiation dans le registre IDE"),
+		IDE_REACTIVATION(48, "IDE: Réactivation dans le registre IDE"),
+		IDE_ANNULATION(49, "IDE: Annulation dans le registre IDE"),
 		RCPERS_DECES(50, "RCPers: Décès d'une personne"),
 		RCPERS_ANNULATION_DECES(51, "RCPers: Annulation du décès d'une personne"),
 		RCPERS_DEPART(52, "RCPers: Départ d'une personne"),
 		RCPERS_ANNULATION_DEPART(53, "RCPers: Annulation du départ d'une personne"),
-		RCPERS_CORRECTION_DONNEES(54, "RCPers: Correction des données relatives à une personne");
+		RCPERS_CORRECTION_DONNEES(54, "RCPers: Correction des données relatives à une personne"),
+		REE_NOUVELLE_INSCRIPTION(55, "Nouvelle inscription dans le registre REE"),
+		REE_MUTATION(56, "Mutation dans le registre REE"),
+		REE_SUPPRESSION(57, "Suppression dans le registre REE"),
+		REE_RADIATION(58, "Radiation dans le registre REE"),
+		REE_TRANSFERT_ETABLISSEMENT(59, "Transfert d'établissement dans le registre REE"),
+		REE_REACTIVATION(60, "Réactivation dans le registre REE");
 
 	/**
 	 * Code technique du type d'événement.

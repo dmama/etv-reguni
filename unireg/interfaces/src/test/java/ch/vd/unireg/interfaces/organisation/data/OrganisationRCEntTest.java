@@ -31,18 +31,9 @@ public class OrganisationRCEntTest {
 	@Before
 	public void setUp() throws Exception {
 		organisation = new OrganisationBuilder(101202100L)
-				.addNom(RegDate.get(2015, 4, 29), RegDate.get(2015, 5, 29), "Springbok Ski Tours S.A.R.L.")
-				.addNom(RegDate.get(2015, 5, 30), RegDate.get(2015, 9, 30), "Springbok Ski Tours S.A.")
-				.addNom(RegDate.get(2015, 10, 1), null, "Springbok Ski Tours S.A., en liquidation")
-				.addNomAdditionnel("SST S.A.R.L.", RegDate.get(2015, 4, 29), RegDate.get(2015, 5, 29), "SST S.A.R.L.")
-				.addNomAdditionnel("SST S.A.", RegDate.get(2015, 5, 30), RegDate.get(2015, 9, 30), "SST S.A.")
-				.addNomAdditionnel("SST S.A., en liquidation", RegDate.get(2015, 10, 1), null, "SST S.A., en liquidation")
 
 				.addAutreIdentifiant(OrganisationConstants.CLE_IDE, RegDate.get(2015, 4, 29), null, "CHE543257199")
 				.addAutreIdentifiant("CH.RC", RegDate.get(2015, 4, 29), null, "CHE123456199")
-
-				.addFormeLegale(RegDate.get(2015, 4, 29), RegDate.get(2015, 5, 29), FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE)
-				.addFormeLegale(RegDate.get(2015, 5, 30), null, FormeLegale.N_0106_SOCIETE_ANONYME)
 
 				.addSite(101072613L, RegDate.get(2015, 4, 29), null, 101072613L)
 				.addSite(101072656L, RegDate.get(2015, 4, 29), null, 101072656L)
@@ -53,8 +44,14 @@ public class OrganisationRCEntTest {
 								.addNom(RegDate.get(2015, 4, 29), RegDate.get(2015, 5, 29), "Springbok Ski Tours S.A.R.L.")
 								.addNom(RegDate.get(2015, 5, 30), RegDate.get(2015, 9, 30), "Springbok Ski Tours S.A.")
 								.addNom(RegDate.get(2015, 10, 1), null, "Springbok Ski Tours S.A., en liquidation")
+								.addNomAdditionnel(RegDate.get(2015, 4, 29), RegDate.get(2015, 5, 29), "SST S.A.R.L.")
+								.addNomAdditionnel(RegDate.get(2015, 5, 30), RegDate.get(2015, 9, 30), "SST S.A.")
+								.addNomAdditionnel(RegDate.get(2015, 10, 1), null, "SST S.A., en liquidation")
 
-								.addAutreIdentifiant(OrganisationConstants.CLE_IDE, RegDate.get(2015, 4, 29), null, "CHE100057199")
+								.addIdentifiant(OrganisationConstants.CLE_IDE, RegDate.get(2015, 4, 29), null, "CHE100057199")
+
+								.addFormeLegale(RegDate.get(2015, 4, 29), RegDate.get(2015, 5, 29), FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE)
+								.addFormeLegale(RegDate.get(2015, 5, 30), null, FormeLegale.N_0106_SOCIETE_ANONYME)
 
 								.addSiege(new Domicile(RegDate.get(2015, 4, 29), null, MockCommune.Leysin))
 
@@ -63,12 +60,6 @@ public class OrganisationRCEntTest {
 
 								.withRC(
 										new DonneesRCBuilder()
-												.addNom(RegDate.get(2015, 4, 29), RegDate.get(2015, 5, 29), "Springbok Ski Tours S.A.R.L.")
-												.addNom(RegDate.get(2015, 5, 30), RegDate.get(2015, 9, 30), "Springbok Ski Tours S.A.")
-												.addNom(RegDate.get(2015, 10, 1), null, "Springbok Ski Tours S.A., en liquidation")
-
-												.addStatus(RegDate.get(2015, 4, 29), null, StatusRC.INSCRIT)
-
 												.addAdresseLegale(new AdresseBuilder()
 														                  .withDateDebut(RegDate.get(2015, 4, 29))
 														                  .withTitre("Robert Plant")
@@ -98,7 +89,7 @@ public class OrganisationRCEntTest {
 												.addTypeOrganisation(RegDate.get(2015, 4, 29), null, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE)
 												.addStatus(RegDate.get(2015, 4, 29), RegDate.get(2015, 9, 30), StatusRegistreIDE.DEFINITIF)
 												.addStatus(RegDate.get(2015, 10, 1), null, StatusRegistreIDE.RADIE)
-												.addRaisonDeLiquidation(RegDate.get(2015, 10, 1), null, RaisonLiquidationRegistreIDE.CESSATION_SCISSION_RETRAITE_SALARIE)
+												.addRaisonDeLiquidation(RegDate.get(2015, 10, 1), null, RaisonDeRadiationRegistreIDE.CESSATION_SCISSION_RETRAITE_SALARIE)
 												.addAdresseEffective(new AdresseBuilder()
 														                     .withDateDebut(RegDate.get(2015, 4, 29))
 														                     .withDateFin(RegDate.get(2015, 9, 30))
@@ -128,20 +119,17 @@ public class OrganisationRCEntTest {
 								.addNom(RegDate.get(2015, 5, 30), RegDate.get(2015, 9, 30), "Springbok Ski Tours S.A.")
 								.addNom(RegDate.get(2015, 10, 1), null, "Springbok Ski Tours S.A., en liquidation")
 
-								.addAutreIdentifiant(OrganisationConstants.CLE_IDE, RegDate.get(2015, 4, 29), null, "CHE100052312")
+								.addIdentifiant(OrganisationConstants.CLE_IDE, RegDate.get(2015, 4, 29), null, "CHE100052312")
 
 								.addSiege(new Domicile(RegDate.get(2015, 4, 29), null, MockCommune.Lausanne))
 
 								.addTypeDeSite(RegDate.get(2015, 4, 29), null, TypeDeSite.ETABLISSEMENT_SECONDAIRE)
 
+								.addFormeLegale(RegDate.get(2015, 4, 29), RegDate.get(2015, 5, 29), FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE)
+								.addFormeLegale(RegDate.get(2015, 5, 30), null, FormeLegale.N_0106_SOCIETE_ANONYME)
+
 								.withRC(
 										new DonneesRCBuilder()
-												.addNom(RegDate.get(2015, 4, 29), RegDate.get(2015, 5, 29), "Springbok Ski Tours S.A.R.L.")
-												.addNom(RegDate.get(2015, 5, 30), RegDate.get(2015, 9, 30), "Springbok Ski Tours S.A.")
-												.addNom(RegDate.get(2015, 10, 1), null, "Springbok Ski Tours S.A., en liquidation")
-
-												.addStatus(RegDate.get(2015, 4, 29), null, StatusRC.INSCRIT)
-
 												.addAdresseLegale(new AdresseBuilder()
 														                  .withDateDebut(RegDate.get(2015, 4, 29))
 														                  .withRue("Avenue de la gare")
@@ -161,7 +149,7 @@ public class OrganisationRCEntTest {
 												.addTypeOrganisation(RegDate.get(2015, 4, 29), null, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE)
 												.addStatus(RegDate.get(2015, 4, 29), RegDate.get(2015, 9, 30), StatusRegistreIDE.DEFINITIF)
 												.addStatus(RegDate.get(2015, 10, 1), null, StatusRegistreIDE.RADIE)
-												.addRaisonDeLiquidation(RegDate.get(2015, 10, 1), null, RaisonLiquidationRegistreIDE.CESSATION_SCISSION_RETRAITE_SALARIE)
+												.addRaisonDeLiquidation(RegDate.get(2015, 10, 1), null, RaisonDeRadiationRegistreIDE.CESSATION_SCISSION_RETRAITE_SALARIE)
 												.addAdresseEffective(new AdresseBuilder()
 														                     .withDateDebut(RegDate.get(2015, 10, 1))
 														                     .withRue("Avenue de la gare")
@@ -179,19 +167,17 @@ public class OrganisationRCEntTest {
 								.addNom(RegDate.get(2015, 5, 30), RegDate.get(2015, 9, 30), "Springbok Ski Tours S.A.")
 								.addNom(RegDate.get(2015, 10, 1), null, "Springbok Ski Tours S.A., en liquidation")
 
-								.addAutreIdentifiant(OrganisationConstants.CLE_IDE, RegDate.get(2015, 5, 30), null, "CHE12345678")
+								.addIdentifiant(OrganisationConstants.CLE_IDE, RegDate.get(2015, 5, 30), null, "CHE12345678")
 
 								.addSiege(new Domicile(RegDate.get(2015, 5, 30), null, MockCommune.Zurich))
 
 								.addTypeDeSite(RegDate.get(2015, 5, 30), null, TypeDeSite.ETABLISSEMENT_PRINCIPAL)
 
+								.addFormeLegale(RegDate.get(2015, 4, 29), RegDate.get(2015, 5, 29), FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE)
+								.addFormeLegale(RegDate.get(2015, 5, 30), null, FormeLegale.N_0106_SOCIETE_ANONYME)
+
 								.withRC(
 										new DonneesRCBuilder()
-												.addNom(RegDate.get(2015, 5, 30), RegDate.get(2015, 9, 30), "Springbok Ski Tours S.A.")
-												.addNom(RegDate.get(2015, 10, 1), null, "Springbok Ski Tours S.A., en liquidation")
-
-												.addStatus(RegDate.get(2015, 5, 30), null, StatusRC.INSCRIT)
-
 												.addAdresseLegale(new AdresseBuilder()
 														                  .withDateDebut(RegDate.get(2015, 5, 30))
 														                  .withTitre("Albert Truc")
@@ -219,7 +205,7 @@ public class OrganisationRCEntTest {
 												.addTypeOrganisation(RegDate.get(2015, 5, 30), null, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE)
 												.addStatus(RegDate.get(2015, 5, 30), RegDate.get(2015, 9, 30), StatusRegistreIDE.DEFINITIF)
 												.addStatus(RegDate.get(2015, 10, 1), null, StatusRegistreIDE.RADIE)
-												.addRaisonDeLiquidation(RegDate.get(2015, 10, 1), null, RaisonLiquidationRegistreIDE.CESSATION_SCISSION_RETRAITE_SALARIE)
+												.addRaisonDeLiquidation(RegDate.get(2015, 10, 1), null, RaisonDeRadiationRegistreIDE.CESSATION_SCISSION_RETRAITE_SALARIE)
 												.addAdresseEffective(new AdresseBuilder()
 														                     .withDateDebut(RegDate.get(2015, 5, 30))
 														                     .withTitre("Albert Truc")

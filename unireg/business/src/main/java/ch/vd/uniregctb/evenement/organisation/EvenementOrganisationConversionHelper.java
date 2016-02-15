@@ -3,11 +3,8 @@ package ch.vd.uniregctb.evenement.organisation;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 
-import ch.vd.evd0022.v1.Header;
-import ch.vd.evd0022.v1.Notice;
-import ch.vd.evd0022.v1.SenderIdentification;
-import ch.vd.evd0022.v1.TypeOfNotice;
-import ch.vd.uniregctb.type.EmetteurEvenementOrganisation;
+import ch.vd.evd0022.v3.Notice;
+import ch.vd.evd0022.v3.TypeOfNotice;
 import ch.vd.uniregctb.type.EtatEvenementOrganisation;
 import ch.vd.uniregctb.type.TypeEvenementOrganisation;
 
@@ -30,10 +27,9 @@ public class EvenementOrganisationConversionHelper {
     */
 	public static final String[] RCENT_SCHEMA = new String[]{
 			"eVD-0004-3-0.xsd",
-			"eVD-0021-1-1.xsd",
-			"eVD-0022-1-3.xsd",
-			"eVD-0023-1-3.xsd",
-			"eVD-0024-1-3.xsd"
+			"eVD-0022-3-0.xsd",
+			"eVD-0023-3-0.xsd",
+			"eVD-0024-3-0.xsd"
 	};
 
 	public static Resource[] getRCEntSchemaClassPathResource() {
@@ -44,34 +40,15 @@ public class EvenementOrganisationConversionHelper {
 		return ar;
 	}
 
-	public static EvenementOrganisation createEvenement(ch.vd.evd0022.v1.NoticeRoot message) {
-		Header header = message.getHeader();
-		Notice notice = header.getNotice();
+	public static EvenementOrganisation createEvenement(ch.vd.evd0022.v3.OrganisationsOfNotice message) {
+		Notice notice = message.getNotice();
 		return new EvenementOrganisation(
 				notice.getNoticeId().longValue(),
-				convertSenderIdentification(header.getSenderIdentification()),
-				header.getSenderReferenceData(),
 				convertTypeOfNotice(notice.getTypeOfNotice()),
 				notice.getNoticeDate(),
-				message.getNoticeOrganisation().get(0).getOrganisationIdentification().getCantonalId().longValue(),
+				message.getOrganisation().get(0).getOrganisation().getCantonalId().longValue(),
 				EtatEvenementOrganisation.A_TRAITER
 		);
-	}
-
-	public static EmetteurEvenementOrganisation convertSenderIdentification(SenderIdentification senderId) {
-
-		switch (senderId) {
-		case FOSC:
-			return EmetteurEvenementOrganisation.FOSC;
-		case IDE:
-			return EmetteurEvenementOrganisation.IDE;
-		case REE:
-			return EmetteurEvenementOrganisation.REE;
-		case AUTRE:
-			return EmetteurEvenementOrganisation.AUTRE;
-		default:
-			throw new IllegalArgumentException("SenderIdentification inconnue: " + senderId.name());
-		}
 	}
 
 	public static TypeEvenementOrganisation convertTypeOfNotice(TypeOfNotice typeOfNotice) {
@@ -165,16 +142,16 @@ public class EvenementOrganisationConversionHelper {
 			return TypeEvenementOrganisation.FOSC_APPEL_AUX_CREANCIERS_SUITE_TRANSFORMATION_SA_EN_SARL;
 		case FOSC_APPEL_AUX_CREANCIERS_SUITE_TRANSFERT_ETRANGER:
 			return TypeEvenementOrganisation.FOSC_APPEL_AUX_CREANCIERS_SUITE_TRANSFERT_ETRANGER;
-		case IDE_NOUVELLE_INSCRIPTION_DANS_REGISTRE:
-			return TypeEvenementOrganisation.IDE_NOUVELLE_INSCRIPTION_DANS_REGISTRE;
-		case IDE_MUTATION_DANS_REGISTRE:
-			return TypeEvenementOrganisation.IDE_MUTATION_DANS_REGISTRE;
-		case IDE_RADIATION_DANS_REGISTRE:
-			return TypeEvenementOrganisation.IDE_RADIATION_DANS_REGISTRE;
-		case IDE_REACTIVATION_DANS_REGISTRE:
-			return TypeEvenementOrganisation.IDE_REACTIVATION_DANS_REGISTRE;
-		case IDE_ANNULATION_DANS_REGISTRE:
-			return TypeEvenementOrganisation.IDE_ANNULATION_DANS_REGISTRE;
+		case IDE_NOUVELLE_INSCRIPTION:
+			return TypeEvenementOrganisation.IDE_NOUVELLE_INSCRIPTION;
+		case IDE_MUTATION:
+			return TypeEvenementOrganisation.IDE_MUTATION;
+		case IDE_RADIATION:
+			return TypeEvenementOrganisation.IDE_RADIATION;
+		case IDE_REACTIVATION:
+			return TypeEvenementOrganisation.IDE_REACTIVATION;
+		case IDE_ANNULATION:
+			return TypeEvenementOrganisation.IDE_ANNULATION;
 		case RCPERS_DECES:
 			return TypeEvenementOrganisation.RCPERS_DECES;
 		case RCPERS_ANNULATION_DECES:
@@ -185,6 +162,18 @@ public class EvenementOrganisationConversionHelper {
 			return TypeEvenementOrganisation.RCPERS_ANNULATION_DEPART;
 		case RCPERS_CORRECTION_DONNEES:
 			return TypeEvenementOrganisation.RCPERS_CORRECTION_DONNEES;
+		case REE_NOUVELLE_INSCRIPTION:
+			return TypeEvenementOrganisation.REE_NOUVELLE_INSCRIPTION;
+		case REE_MUTATION:
+			return TypeEvenementOrganisation.REE_MUTATION;
+		case REE_SUPPRESSION:
+			return TypeEvenementOrganisation.REE_SUPPRESSION;
+		case REE_RADIATION:
+			return TypeEvenementOrganisation.REE_RADIATION;
+		case REE_TRANSFERT_ETABLISSEMENT:
+			return TypeEvenementOrganisation.REE_TRANSFERT_ETABLISSEMENT;
+		case REE_REACTIVATION:
+			return TypeEvenementOrganisation.REE_REACTIVATION;
 		default:
 			throw new IllegalArgumentException("TypeEvenementOrganisation inconnu: " + typeOfNotice.name());
 		}

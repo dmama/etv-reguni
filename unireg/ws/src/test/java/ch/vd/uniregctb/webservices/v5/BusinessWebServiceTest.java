@@ -41,6 +41,7 @@ import ch.vd.unireg.interfaces.infra.mock.MockTypeRegimeFiscal;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.interfaces.organisation.mock.MockServiceOrganisation;
 import ch.vd.unireg.interfaces.organisation.mock.data.MockOrganisation;
+import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockOrganisationFactory;
 import ch.vd.unireg.ws.ack.v1.AckStatus;
 import ch.vd.unireg.ws.ack.v1.OrdinaryTaxDeclarationAckRequest;
 import ch.vd.unireg.ws.ack.v1.OrdinaryTaxDeclarationAckResponse;
@@ -1236,8 +1237,10 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		serviceOrganisation.setUp(new MockServiceOrganisation() {
 			@Override
 			protected void init() {
-				final MockOrganisation org = addOrganisation(noOrganisation, pmActivityStartDate, "Au petit coin", FormeLegale.N_0106_SOCIETE_ANONYME);
+				final MockOrganisation org = MockOrganisationFactory.createSimpleEntrepriseRC(noOrganisation, noOrganisation + 1011, "Au petit coin", pmActivityStartDate, null,
+				                                                                              FormeLegale.N_0106_SOCIETE_ANONYME, MockCommune.Lausanne);
 				addNumeroIDE(org, "CHE123456788", pmActivityStartDate, null);
+				addOrganisation(org);
 			}
 		});
 
@@ -3368,8 +3371,10 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		serviceOrganisation.setUp(new MockServiceOrganisation() {
 			@Override
 			protected void init() {
-				final MockOrganisation org = addOrganisation(noOrganisation, pmActivityStartDate, "Au petit coin", FormeLegale.N_0106_SOCIETE_ANONYME);
+				final MockOrganisation org = MockOrganisationFactory.createSimpleEntrepriseRC(noOrganisation, noOrganisation + 1011, "Au petit coin", pmActivityStartDate, null,
+				                                                                              FormeLegale.N_0106_SOCIETE_ANONYME, MockCommune.Lausanne);
 				addNumeroIDE(org, "CHE123456788", pmActivityStartDate, null);
+				addOrganisation(org);
 			}
 		});
 

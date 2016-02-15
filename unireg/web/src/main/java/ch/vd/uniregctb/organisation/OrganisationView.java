@@ -38,7 +38,7 @@ public class OrganisationView implements Serializable {
 		numeroIDE = organisation.getNumeroIDE().isEmpty() ? null : organisation.getNumeroIDE().get(0).getPayload();
 		final StatusRegistreIDE statusRegistreIDE = organisation.getSitePrincipal(date).getPayload().getDonneesRegistreIDE().getStatus(date);
 		canceled = statusRegistreIDE != null && statusRegistreIDE == StatusRegistreIDE.RADIE;
-		numeroOrganisationRemplacant = organisation.getRemplacePar(date);
+		numeroOrganisationRemplacant = organisation.getSitePrincipal(date).getPayload().getIdeRemplacePar(date);
 		categorie = CategorieEntrepriseHelper.getCategorieEntreprise(organisation, date);
 	}
 

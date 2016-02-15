@@ -145,7 +145,7 @@ public class CorporationStrategy extends TaxPayerStrategy<Corporation> {
 			final LegalForm lf = new LegalForm();
 			lf.setDateFrom(DataHelper.coreToXMLv2(fl.getDateDebut()));
 			lf.setDateTo(DataHelper.coreToXMLv2(fl.getDateFin()));
-			lf.setShortType(EnumHelper.coreToXMLv4Short(fl.getFormeLegale()));
+			lf.setShortType(null);
 			lf.setType(EnumHelper.coreToXMLv4Full(fl.getFormeLegale()));
 			lf.setLabel(fl.getFormeLegale().getLibelle());
 			liste.add(lf);

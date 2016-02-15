@@ -23,7 +23,6 @@ import org.jetbrains.annotations.Nullable;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.HibernateEntity;
 import ch.vd.uniregctb.common.LengthConstants;
-import ch.vd.uniregctb.type.EmetteurEvenementOrganisation;
 import ch.vd.uniregctb.type.EtatEvenementOrganisation;
 import ch.vd.uniregctb.type.TypeEvenementOrganisation;
 
@@ -32,27 +31,20 @@ import ch.vd.uniregctb.type.TypeEvenementOrganisation;
 public class EvenementOrganisation extends HibernateEntity {
 
 	/**
-	 * ch.vd.evd0024.v1:noticeRoot:header:notice:noticeId
+	 * ch.vd.evd0024.v3:noticeRoot:notice:noticeId
 	 */
 	private long id;
 	/**
-	 * ch.vd.evd0024.v1:noticeRoot:header:senderIdentification
-	 */
-	private EmetteurEvenementOrganisation identiteEmetteur;
-	/**
-	 * ch.vd.evd0024.v1:noticeRoot:header:senderReferenceData
-	 */
-	private String refDataEmetteur;
-	/**
-	 * ch.vd.evd0024.v1:noticeRoot:header:notice:typeOfNotice
+	 * ch.vd.evd0024.v3:noticeRoot:notice:typeOfNotice
 	 */
 	private TypeEvenementOrganisation type;
 	/**
-	 * ch.vd.evd0024.v1:noticeRoot:header:notice:noticeDate
+	 * ch.vd.evd0024.v3:noticeRoot:notice:noticeDate
 	 */
 	private RegDate dateEvenement;
 	/**
-	 * ch.vd.evd0024.v1:noticeRoot:noticeOrganisation:organisationIdentification:cantonalId
+	 * ch.vd.evd0024.v3:noticeRoot:notice:organisation[0]:Organisation:cantonalId
+	 * Il peut y avoir plusieurs organisations, mais on ne prend que la première
 	 */
 	private long noOrganisation;
 
@@ -69,8 +61,6 @@ public class EvenementOrganisation extends HibernateEntity {
 
 	public EvenementOrganisation(
 			long id,
-			EmetteurEvenementOrganisation identiteEmetteur,
-			String refDataEmetteur,
 			TypeEvenementOrganisation type,
 			RegDate dateEvenement,
 			long noOrganisation,
@@ -79,9 +69,7 @@ public class EvenementOrganisation extends HibernateEntity {
 		this.dateEvenement = dateEvenement;
 		this.etat = etat;
 		this.id = id;
-		this.identiteEmetteur = identiteEmetteur;
 		this.noOrganisation = noOrganisation;
-		this.refDataEmetteur = refDataEmetteur;
 		this.type = type;
 	}
 
@@ -98,25 +86,6 @@ public class EvenementOrganisation extends HibernateEntity {
 
 	public void setId(long id) {
 		this.id = id;
-	}
-
-	@Column(name = "IDENT_EMETTEUR", length = LengthConstants.EVTORGANISATION_IDENTITEEMETTEUR, nullable = false)
-	@Type(type = "ch.vd.uniregctb.hibernate.EmetteurEvenementOrganisationUserType")
-	public EmetteurEvenementOrganisation getIdentiteEmetteur() {
-		return identiteEmetteur;
-	}
-
-	public void setIdentiteEmetteur(@NotNull EmetteurEvenementOrganisation identiteEmetteur) {
-		this.identiteEmetteur = identiteEmetteur;
-	}
-
-	@Column(name = "REFDATA_EMETTEUR", length = LengthConstants.EVTORGANISATION_REFDATAEMETTEUR)
-	public String getRefDataEmetteur() {
-		return refDataEmetteur;
-	}
-
-	public void setRefDataEmetteur(String refDataEmetteur) {
-		this.refDataEmetteur = refDataEmetteur;
 	}
 
 	@Column(name = "TYPE", length = LengthConstants.EVTORGANISATION_TYPE, nullable = false)

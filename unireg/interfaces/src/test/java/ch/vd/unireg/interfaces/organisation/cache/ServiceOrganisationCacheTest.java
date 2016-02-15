@@ -7,16 +7,22 @@ import org.junit.Test;
 import org.springframework.util.ResourceUtils;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.organisation.ServiceOrganisationException;
 import ch.vd.unireg.interfaces.organisation.ServiceOrganisationRaw;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
+import ch.vd.unireg.interfaces.organisation.data.StatusInscriptionRC;
+import ch.vd.unireg.interfaces.organisation.data.StatusRegistreIDE;
+import ch.vd.unireg.interfaces.organisation.data.TypeOrganisationRegistreIDE;
 import ch.vd.unireg.interfaces.organisation.mock.MockServiceOrganisation;
+import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockOrganisationFactory;
 import ch.vd.uniregctb.cache.UniregCacheManagerImpl;
 import ch.vd.uniregctb.common.WithoutSpringTest;
 import ch.vd.uniregctb.data.DataEventListener;
 import ch.vd.uniregctb.data.DataEventService;
 import ch.vd.uniregctb.stats.MockStatsService;
+import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 
 import static org.junit.Assert.assertEquals;
@@ -105,8 +111,14 @@ public class ServiceOrganisationCacheTest extends WithoutSpringTest {
 		target = new CallCounterServiceOrganisation(new MockServiceOrganisation() {
 			@Override
 			protected void init() {
-				 addOrganisation(101202100L, RegDate.get(2000, 5, 14), "Les gentils joueurs de belotte", FormeLegale.N_0109_ASSOCIATION);
-				 addOrganisation(101202101L, RegDate.get(2004, 2, 4), "Le Tarot, c'est rigolo", FormeLegale.N_0109_ASSOCIATION);
+				 addOrganisation(
+						 MockOrganisationFactory.createOrganisation(101202100L, 872394879L, "Les gentils joueurs de belotte", RegDate.get(2000, 5, 14), null, FormeLegale.N_0109_ASSOCIATION,
+						                                            TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Aubonne.getNoOFS(), StatusInscriptionRC.ACTIF, StatusRegistreIDE.DEFINITIF,
+						                                            TypeOrganisationRegistreIDE.ASSOCIATION));
+				 addOrganisation(
+				                 MockOrganisationFactory.createOrganisation(101202101L, 872394812L, "Le Tarot, c'est rigolo", RegDate.get(2005, 1, 11), null, FormeLegale.N_0109_ASSOCIATION,
+				                                                            TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF, StatusRegistreIDE.DEFINITIF,
+				                                                            TypeOrganisationRegistreIDE.ASSOCIATION));
 			}
 		});
 
@@ -129,7 +141,6 @@ public class ServiceOrganisationCacheTest extends WithoutSpringTest {
 		final Organisation organisationFromService = target.getOrganisationHistory(id);
 		final Organisation organisationFromCache = cache.getOrganisationHistory(id);
 		assertEquals(organisationFromService.getNumeroOrganisation(), organisationFromCache.getNumeroOrganisation());
-		assertEquals("Les gentils joueurs de belotte", organisationFromCache.getNom().get(0).getPayload());
 	}
 
 	@Test

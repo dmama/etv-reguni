@@ -8,7 +8,6 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 import ch.vd.unireg.interfaces.organisation.data.StatusInscriptionRC;
-import ch.vd.unireg.interfaces.organisation.data.StatusRC;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationContext;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationException;
@@ -33,8 +32,8 @@ public class Reinscription extends EvenementOrganisationInterneDeTraitement {
 	private final SiteOrganisation sitePrincipalAvant;
 	private final SiteOrganisation sitePrincipalApres;
 
-	private final StatusRC statusAvant;
 	private final StatusInscriptionRC statusInscriptionAvant;
+	private final StatusInscriptionRC statusInscriptionApres;
 
 	private final RegDate dateRadiationAvant;
 	private final RegDate dateRadiationApres;
@@ -50,8 +49,8 @@ public class Reinscription extends EvenementOrganisationInterneDeTraitement {
 		sitePrincipalAvant = organisation.getSitePrincipal(dateAvant).getPayload();
 		sitePrincipalApres = organisation.getSitePrincipal(dateApres).getPayload();
 
-		statusAvant = sitePrincipalAvant.getDonneesRC().getStatus(dateAvant);
 		statusInscriptionAvant = sitePrincipalAvant.getDonneesRC().getStatusInscription(dateAvant);
+		statusInscriptionApres = sitePrincipalAvant.getDonneesRC().getStatusInscription(dateApres);
 
 		dateRadiationAvant = sitePrincipalAvant.getDonneesRC().getDateRadiation(dateAvant);
 		dateRadiationApres = sitePrincipalApres.getDonneesRC().getDateRadiation(dateApres);
@@ -94,7 +93,7 @@ public class Reinscription extends EvenementOrganisationInterneDeTraitement {
 		Assert.notNull(getEntreprise());
 
 		// Vérifier qu'on est bien en présence d'une réinscription
-		Assert.state(statusAvant == StatusRC.INSCRIT);
+		Assert.state(statusInscriptionApres == StatusInscriptionRC.ACTIF || statusInscriptionApres == StatusInscriptionRC.EN_LIQUIDATION);
 		Assert.state(statusInscriptionAvant == StatusInscriptionRC.RADIE);
 		Assert.isNull(dateRadiationApres, "Date de radiation toujours présente après l'annonce. Nous ne sommes pas en présence d'une réinscription.");
 		Assert.notNull(dateRadiationAvant, "Date de radiation absente avant l'annonce. Nous ne sommes pas en présence d'une réinscription.");
@@ -122,10 +121,6 @@ public class Reinscription extends EvenementOrganisationInterneDeTraitement {
 
 	public RegDate getDateRadiationApres() {
 		return dateRadiationApres;
-	}
-
-	public StatusRC getStatusAvant() {
-		return statusAvant;
 	}
 
 	public StatusInscriptionRC getStatusInscriptionAvant() {

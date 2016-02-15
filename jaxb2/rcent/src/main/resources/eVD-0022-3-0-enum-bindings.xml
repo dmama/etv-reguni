@@ -125,7 +125,6 @@
             <jxb:typesafeEnumMember name="ACTIF" value="2"/>
             <jxb:typesafeEnumMember name="EN_LIQUIDATION" value="3"/>
             <jxb:typesafeEnumMember name="RADIE" value="4"/>
-            <jxb:typesafeEnumMember name="PROVISOIRE" value="5"/>
         </jxb:typesafeEnumClass>
     </jxb:bindings>
 

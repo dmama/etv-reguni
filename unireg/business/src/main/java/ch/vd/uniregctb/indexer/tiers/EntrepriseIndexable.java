@@ -1,7 +1,6 @@
 package ch.vd.uniregctb.indexer.tiers;
 
 import java.util.List;
-import java.util.Map;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
@@ -59,12 +58,12 @@ public class EntrepriseIndexable extends ContribuableIndexable<Entreprise> {
 			data.setNom1(rss.get(rss.size() - 1).getRaisonSociale());
 		}
 
-		// les 'autres noms' (en provenance du civil seulement)
+		// l'historique du nom additionnel (en provenance du civil seulement)
 		if (organisation != null) {
-			final Map<String, List<DateRanged<String>>> historiqueNomsAdditionels = organisation.getNomsAdditionnels();
-			if (historiqueNomsAdditionels != null && !historiqueNomsAdditionels.isEmpty()) {
-				for (String nomAdditionnel : historiqueNomsAdditionels.keySet()) {
-					data.addAutresNom(nomAdditionnel);
+			final List<DateRanged<String>> historiqueNomAdditionnel = organisation.getNomAdditionnel();
+			if (historiqueNomAdditionnel != null && !historiqueNomAdditionnel.isEmpty()) {
+				for (DateRanged<String> nomAdditionnel : historiqueNomAdditionnel) {
+					data.addAutresNom(nomAdditionnel.getPayload());
 				}
 			}
 		}

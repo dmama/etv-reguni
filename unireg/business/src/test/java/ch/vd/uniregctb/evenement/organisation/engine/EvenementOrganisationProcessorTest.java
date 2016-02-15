@@ -34,7 +34,6 @@ import ch.vd.uniregctb.type.EtatEvenementOrganisation;
 import ch.vd.uniregctb.type.TypeEvenementErreur;
 import ch.vd.uniregctb.type.TypeEvenementOrganisation;
 
-import static ch.vd.uniregctb.type.EmetteurEvenementOrganisation.FOSC;
 import static ch.vd.uniregctb.type.EtatEvenementOrganisation.A_TRAITER;
 import static ch.vd.uniregctb.type.EtatEvenementOrganisation.EN_ERREUR;
 import static ch.vd.uniregctb.type.TypeEvenementOrganisation.FOSC_COMMUNICATION_DANS_FAILLITE;
@@ -105,7 +104,7 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 		// Création de l'événement
 		final Long evtId = 12344321L;
 
-		final EvenementOrganisation event = createEvent(evtId, noOrganisation, FOSC_COMMUNICATION_DANS_FAILLITE, RegDate.get(2015, 6, 24), A_TRAITER, FOSC, "abcdefgh");
+		final EvenementOrganisation event = createEvent(evtId, noOrganisation, FOSC_COMMUNICATION_DANS_FAILLITE, RegDate.get(2015, 6, 24), A_TRAITER);
 
 		// Persistence événement
 		doInNewTransactionAndSession(new TransactionCallback<Long>() {
@@ -181,7 +180,7 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 			public Long doInTransaction(TransactionStatus transactionStatus) {
 				// Création de l'événement
 				final Long evtId = 12344321L;
-				final EvenementOrganisation event = createEvent(evtId, noOrganisation, FOSC_COMMUNICATION_DANS_FAILLITE, RegDate.get(2015, 6, 24), A_TRAITER, FOSC, "abcdefgh");
+				final EvenementOrganisation event = createEvent(evtId, noOrganisation, FOSC_COMMUNICATION_DANS_FAILLITE, RegDate.get(2015, 6, 24), A_TRAITER);
 				return hibernateTemplate.merge(event).getId();
 			}
 		});
@@ -217,7 +216,7 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
 			@Override
 			public void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-				final EvenementOrganisation eventCreation = createEvent(evtId, noOrganisation, TypeEvenementOrganisation.FOSC_NOUVELLE_ENTREPRISE, RegDate.get(2015, 6, 24), EN_ERREUR, FOSC, "abcdefgh");
+				final EvenementOrganisation eventCreation = createEvent(evtId, noOrganisation, TypeEvenementOrganisation.FOSC_NOUVELLE_ENTREPRISE, RegDate.get(2015, 6, 24), EN_ERREUR);
 				EvenementOrganisation event = hibernateTemplate.merge(eventCreation);
 				event.setErreurs(new ArrayList<EvenementOrganisationErreur>());
 				{

@@ -2,11 +2,11 @@ package ch.vd.unireg.interfaces.organisation.data;
 
 import java.io.Serializable;
 
+import ch.ech.ech0010.v6.Country;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
 
-import ch.vd.evd0021.v1.Address;
-import ch.vd.evd0021.v1.Country;
+import ch.vd.evd0022.v3.Address;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
@@ -74,21 +74,21 @@ public class AdresseRCEnt implements Serializable, Adresse, DateRangeLimitable<A
         this.dateFin = dateFin;
         DateRangeHelper.assertValidRange(this.dateDebut, this.dateFin, ServiceOrganisationException.class);
 
-        this.localite = address.getTown();
-        this.numeroMaison = address.getHouseNumber();
-        this.numeroAppartement = address.getDwellingNumber();
-        this.numeroOrdrePostal = address.getSwissZipCodeId();
+        this.localite = address.getAddressInformation().getTown();
+        this.numeroMaison = address.getAddressInformation().getHouseNumber();
+        this.numeroAppartement = address.getAddressInformation().getDwellingNumber();
+        this.numeroOrdrePostal = address.getAddressInformation().getSwissZipCodeId();
         this.numeroPostal = initNPA(address);
-        this.numeroPostalComplementaire = address.getSwissZipCodeAddOn();
-        this.noOfsPays = initNoOfsPays(address.getCountry());
-        this.rue = address.getStreet();
+        this.numeroPostalComplementaire = address.getAddressInformation().getSwissZipCodeAddOn();
+        this.noOfsPays = initNoOfsPays(address.getAddressInformation().getCountry());
+        this.rue = address.getAddressInformation().getStreet();
 
         // [SIFISC-13878] on prend en compte la deuxième ligne de complément si la première est vide
-        this.titre = StringUtils.isBlank(address.getAddressLine1()) ? address.getAddressLine2() : address.getAddressLine1();
+        this.titre = StringUtils.isBlank(address.getAddressInformation().getAddressLine1()) ? address.getAddressInformation().getAddressLine2() : address.getAddressInformation().getAddressLine1();
 
         // case postale
-        if (StringUtils.isNotBlank(address.getPostOfficeBoxText()) || address.getPostOfficeBoxNumber() != null) {
-            this.casePostale = new CasePostale(address.getPostOfficeBoxText(), address.getPostOfficeBoxNumber());
+        if (StringUtils.isNotBlank(address.getAddressInformation().getPostOfficeBoxText()) || address.getAddressInformation().getPostOfficeBoxNumber() != null) {
+            this.casePostale = new CasePostale(address.getAddressInformation().getPostOfficeBoxText(), address.getAddressInformation().getPostOfficeBoxNumber());
         }
         else {
             this.casePostale = null;
@@ -128,11 +128,11 @@ public class AdresseRCEnt implements Serializable, Adresse, DateRangeLimitable<A
     }
 
     private static String initNPA(Address addressInfo) {
-        final Long swissZipCode = addressInfo.getSwissZipCode();
+        final Long swissZipCode = addressInfo.getAddressInformation().getSwissZipCode();
         if (swissZipCode != null) {
             return String.valueOf(swissZipCode);
         }
-        return addressInfo.getForeignZipCode();
+        return addressInfo.getAddressInformation().getForeignZipCode();
     }
 
     private static Integer initNoOfsPays(Country country) {

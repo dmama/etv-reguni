@@ -10,7 +10,6 @@ import ch.vd.unireg.interfaces.organisation.ServiceOrganisationException;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.StatusInscriptionRC;
-import ch.vd.unireg.interfaces.organisation.data.StatusRC;
 import ch.vd.unireg.interfaces.organisation.data.StatusRegistreIDE;
 import ch.vd.unireg.interfaces.organisation.data.TypeOrganisationRegistreIDE;
 import ch.vd.unireg.interfaces.organisation.mock.data.MockOrganisation;
@@ -23,13 +22,11 @@ import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationOptions;
 import ch.vd.uniregctb.interfaces.model.AdressesCivilesHistoriques;
 import ch.vd.uniregctb.interfaces.service.ServiceOrganisationService;
 import ch.vd.uniregctb.tiers.Entreprise;
-import ch.vd.uniregctb.type.EmetteurEvenementOrganisation;
 import ch.vd.uniregctb.type.EtatEvenementOrganisation;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeEvenementOrganisation;
 
 import static ch.vd.uniregctb.evenement.fiscal.EvenementFiscalInformationComplementaire.TypeInformationComplementaire;
-import static ch.vd.uniregctb.type.EmetteurEvenementOrganisation.FOSC;
 import static ch.vd.uniregctb.type.EtatEvenementOrganisation.A_TRAITER;
 
 /**
@@ -73,7 +70,7 @@ public class FailliteConcordatStrategyTest extends WithoutSpringTest {
 
 	MockOrganisation organisation = MockOrganisationFactory
 			.createOrganisation(1L, 1L, "Synergy SA", RegDate.get(2010, 6, 24), null, FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE,
-			                    TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusRC.INSCRIT, StatusInscriptionRC.ACTIF, StatusRegistreIDE.DEFINITIF,
+			                    TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(),StatusInscriptionRC.ACTIF, StatusRegistreIDE.DEFINITIF,
 			                    TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE);
 
 	final Entreprise entreprise = new Entreprise();
@@ -124,16 +121,22 @@ public class FailliteConcordatStrategyTest extends WithoutSpringTest {
 		Assert.assertNull(createEventAndMatch(TypeEvenementOrganisation.FOSC_APPEL_AUX_CREANCIERS_SUITE_REDUCTION_CAPITAL));
 		Assert.assertNull(createEventAndMatch(TypeEvenementOrganisation.FOSC_APPEL_AUX_CREANCIERS_SUITE_TRANSFORMATION_SA_EN_SARL));
 		assertEvenementFiscalAvecImpact(TypeInformationComplementaire.APPEL_CREANCIERS_TRANSFERT_HS, TypeEvenementOrganisation.FOSC_APPEL_AUX_CREANCIERS_SUITE_TRANSFERT_ETRANGER);
-		Assert.assertNull(createEventAndMatch(TypeEvenementOrganisation.IDE_NOUVELLE_INSCRIPTION_DANS_REGISTRE));
-		Assert.assertNull(createEventAndMatch(TypeEvenementOrganisation.IDE_MUTATION_DANS_REGISTRE));
-		Assert.assertNull(createEventAndMatch(TypeEvenementOrganisation.IDE_RADIATION_DANS_REGISTRE));
-		Assert.assertNull(createEventAndMatch(TypeEvenementOrganisation.IDE_REACTIVATION_DANS_REGISTRE));
-		Assert.assertNull(createEventAndMatch(TypeEvenementOrganisation.IDE_ANNULATION_DANS_REGISTRE));
+		Assert.assertNull(createEventAndMatch(TypeEvenementOrganisation.IDE_NOUVELLE_INSCRIPTION));
+		Assert.assertNull(createEventAndMatch(TypeEvenementOrganisation.IDE_MUTATION));
+		Assert.assertNull(createEventAndMatch(TypeEvenementOrganisation.IDE_RADIATION));
+		Assert.assertNull(createEventAndMatch(TypeEvenementOrganisation.IDE_REACTIVATION));
+		Assert.assertNull(createEventAndMatch(TypeEvenementOrganisation.IDE_ANNULATION));
 		Assert.assertNull(createEventAndMatch(TypeEvenementOrganisation.RCPERS_DECES));
 		Assert.assertNull(createEventAndMatch(TypeEvenementOrganisation.RCPERS_ANNULATION_DECES));
 		Assert.assertNull(createEventAndMatch(TypeEvenementOrganisation.RCPERS_DEPART));
 		Assert.assertNull(createEventAndMatch(TypeEvenementOrganisation.RCPERS_ANNULATION_DEPART));
 		Assert.assertNull(createEventAndMatch(TypeEvenementOrganisation.RCPERS_CORRECTION_DONNEES));
+		Assert.assertNull(createEventAndMatch(TypeEvenementOrganisation.REE_NOUVELLE_INSCRIPTION));
+		Assert.assertNull(createEventAndMatch(TypeEvenementOrganisation.REE_MUTATION));
+		Assert.assertNull(createEventAndMatch(TypeEvenementOrganisation.REE_SUPPRESSION));
+		Assert.assertNull(createEventAndMatch(TypeEvenementOrganisation.REE_RADIATION));
+		Assert.assertNull(createEventAndMatch(TypeEvenementOrganisation.REE_TRANSFERT_ETABLISSEMENT));
+		Assert.assertNull(createEventAndMatch(TypeEvenementOrganisation.REE_REACTIVATION));
 	}
 
 	private void assertEvenementFiscalAvecImpact(TypeInformationComplementaire envoye, TypeEvenementOrganisation recu) throws EvenementOrganisationException {
@@ -152,7 +155,7 @@ public class FailliteConcordatStrategyTest extends WithoutSpringTest {
 	public void testEntrepriseNull() throws Exception {
 		Assert.assertNull(
 				strategy.matchAndCreate(
-						createEvent(1000000L, 1L, TypeEvenementOrganisation.FOSC_AVIS_PREALABLE_OUVERTURE_FAILLITE, RegDate.get(2015, 6, 24), A_TRAITER, FOSC, "rcent-ut"),
+						createEvent(1000000L, 1L, TypeEvenementOrganisation.FOSC_AVIS_PREALABLE_OUVERTURE_FAILLITE, RegDate.get(2015, 6, 24), A_TRAITER),
 						organisation,
 						null,
 						context,
@@ -161,20 +164,17 @@ public class FailliteConcordatStrategyTest extends WithoutSpringTest {
 	}
 
 	private InformationComplementaire createEventAndMatch(TypeEvenementOrganisation typeEvt) throws EvenementOrganisationException {
-		return (InformationComplementaire) strategy.matchAndCreate(createEvent(1000000L, 1L, typeEvt, RegDate.get(2015, 6, 24), A_TRAITER, FOSC, "rcent-ut"), organisation, entreprise, context, options);
+		return (InformationComplementaire) strategy.matchAndCreate(createEvent(1000000L, 1L, typeEvt, RegDate.get(2015, 6, 24), A_TRAITER), organisation, entreprise, context, options);
 	}
 
 	@NotNull
-	private static EvenementOrganisation createEvent(Long evtId, Long noOrganisation, TypeEvenementOrganisation type, RegDate date, EtatEvenementOrganisation etat,
-	                                                   EmetteurEvenementOrganisation emetteur, String refDataEmetteur) {
+	private static EvenementOrganisation createEvent(Long evtId, Long noOrganisation, TypeEvenementOrganisation type, RegDate date, EtatEvenementOrganisation etat) {
 		final EvenementOrganisation event = new EvenementOrganisation();
 		event.setId(evtId);
 		event.setNoOrganisation(noOrganisation);
 		event.setType(type);
 		event.setDateEvenement(date);
 		event.setEtat(etat);
-		event.setIdentiteEmetteur(emetteur);
-		event.setRefDataEmetteur(refDataEmetteur);
 		return event;
 	}
 

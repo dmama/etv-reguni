@@ -11,12 +11,9 @@ import ch.vd.unireg.interfaces.organisation.data.DateRanged;
 import ch.vd.unireg.interfaces.organisation.data.DonneesRC;
 import ch.vd.unireg.interfaces.organisation.data.DonneesRCRCEnt;
 import ch.vd.unireg.interfaces.organisation.data.StatusInscriptionRC;
-import ch.vd.unireg.interfaces.organisation.data.StatusRC;
 
 public class DonneesRCBuilder implements DataBuilder<DonneesRC> {
 
-	private List<DateRanged<StatusRC>> status;
-	private List<DateRanged<String>> nom;
 	private List<DateRanged<StatusInscriptionRC>> statusInscription;
 	private List<DateRanged<RegDate>> dateInscription;
 	private List<Capital> capital;
@@ -27,26 +24,15 @@ public class DonneesRCBuilder implements DataBuilder<DonneesRC> {
 
 	public DonneesRCBuilder() {}
 
-	public DonneesRCBuilder(@NotNull List<DateRanged<StatusRC>> status, @NotNull List<DateRanged<String>> nom, List<DateRanged<String>> buts, List<DateRanged<RegDate>> dateStatus) {
-		this.status = status;
-		this.nom = nom;
+	public DonneesRCBuilder(@NotNull List<DateRanged<StatusInscriptionRC>> statusInscription, List<DateRanged<String>> buts, List<DateRanged<RegDate>> dateStatus) {
+		this.statusInscription = statusInscription;
 		this.buts = buts;
 		this.dateStatus = dateStatus;
 	}
 
 	@Override
 	public DonneesRCRCEnt build() {
-		return new DonneesRCRCEnt(adresseLegale, status, nom, statusInscription, dateInscription, capital, buts, dateStatus, dateRadiation);
-	}
-
-	public DonneesRCBuilder addStatus(@NotNull RegDate dateDebut, RegDate dateDeFin, @NotNull StatusRC valeur) {
-		status = BuilderHelper.addValueToList(status, new DateRanged<>(dateDebut, dateDeFin, valeur));
-		return this;
-	}
-
-	public DonneesRCBuilder addNom(@NotNull RegDate dateDebut, RegDate dateDeFin, @NotNull String valeur) {
-		nom = BuilderHelper.addValueToList(nom, new DateRanged<>(dateDebut, dateDeFin, valeur));
-		return this;
+		return new DonneesRCRCEnt(adresseLegale, statusInscription, dateInscription, capital, buts, dateStatus, dateRadiation);
 	}
 
 	public DonneesRCBuilder addStatusInscription(@NotNull RegDate dateDebut, RegDate dateDeFin, @NotNull StatusInscriptionRC valeur) {
@@ -71,11 +57,6 @@ public class DonneesRCBuilder implements DataBuilder<DonneesRC> {
 
 	public DonneesRCBuilder addButs(@NotNull DateRanged<String> buts) {
 		this.buts = BuilderHelper.addValueToList(this.buts, buts);
-		return this;
-	}
-
-	public DonneesRCBuilder addDateStatus(@NotNull DateRanged<RegDate> dateStatus) {
-		this.dateStatus = BuilderHelper.addValueToList(this.dateStatus, dateStatus);
 		return this;
 	}
 

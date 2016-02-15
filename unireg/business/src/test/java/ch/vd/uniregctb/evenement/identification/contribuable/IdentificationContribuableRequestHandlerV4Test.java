@@ -17,7 +17,6 @@ import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.interfaces.organisation.data.StatusInscriptionRC;
-import ch.vd.unireg.interfaces.organisation.data.StatusRC;
 import ch.vd.unireg.interfaces.organisation.data.StatusRegistreIDE;
 import ch.vd.unireg.interfaces.organisation.data.TypeOrganisationRegistreIDE;
 import ch.vd.unireg.interfaces.organisation.mock.MockServiceOrganisation;
@@ -381,10 +380,11 @@ public class IdentificationContribuableRequestHandlerV4Test extends BusinessTest
 		serviceOrganisation.setUp(new MockServiceOrganisation() {
 			@Override
 			protected void init() {
-				final MockOrganisation organisation = addOrganisation(noCivilPM, date(1989, 7, 4), raisonSociale, FormeLegale.N_0106_SOCIETE_ANONYME);
+				final MockOrganisation organisation = addOrganisation(noCivilPM);
 				organisation.addNumeroIDE(date(1989, 7, 4), null, ide);
-				MockSiteOrganisationFactory.addSite(noCivilPM+9876, organisation, date(1989, 7, 4), null, raisonSociale, true, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
-				                                    MockCommune.Lausanne.getNoOFS(), StatusRC.INSCRIT, StatusInscriptionRC.ACTIF, StatusRegistreIDE.DEFINITIF,
+				MockSiteOrganisationFactory.addSite(noCivilPM+9876, organisation, date(1989, 7, 4), null, raisonSociale, FormeLegale.N_0106_SOCIETE_ANONYME,
+				                                    true, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
+				                                    MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF, StatusRegistreIDE.DEFINITIF,
 				                                    TypeOrganisationRegistreIDE.SITE, BigDecimal.valueOf(50000), "CHF");
 			}
 		});

@@ -57,8 +57,8 @@ public class DoublonEtablissementStrategy extends AbstractOrganisationStrategy {
 		List<EvenementOrganisationInterne> doublons = new ArrayList<>();
 
 		for (SiteOrganisation site : organisation.getDonneesSites()) {
-			final Long remplaceParAvant = site.getRemplacePar(dateAvant);
-			final Long remplaceParApres = site.getRemplacePar(dateApres);
+			final Long remplaceParAvant = site.getIdeRemplacePar(dateAvant);
+			final Long remplaceParApres = site.getIdeRemplacePar(dateApres);
 
 			if (remplaceParAvant == null && remplaceParApres!= null) {
 				final String message = String.format("Situation de doublon d'organisation détectée. Etablissement remplacé (civil): %s, remplaçant: %s.",

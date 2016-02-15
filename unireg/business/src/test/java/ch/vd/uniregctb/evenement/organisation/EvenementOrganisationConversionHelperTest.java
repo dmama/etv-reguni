@@ -2,9 +2,7 @@ package ch.vd.uniregctb.evenement.organisation;
 
 import org.junit.Test;
 
-import ch.vd.evd0022.v1.SenderIdentification;
-import ch.vd.evd0022.v1.TypeOfNotice;
-import ch.vd.uniregctb.type.EmetteurEvenementOrganisation;
+import ch.vd.evd0022.v3.TypeOfNotice;
 import ch.vd.uniregctb.type.TypeEvenementOrganisation;
 
 import static org.junit.Assert.assertEquals;
@@ -16,18 +14,10 @@ import static org.junit.Assert.assertNotNull;
 public class EvenementOrganisationConversionHelperTest {
 
 	@Test
-	public void testConvertSenderIdentification() throws Exception {
-		assertEquals(EmetteurEvenementOrganisation.values().length, SenderIdentification.values().length);
-		for (SenderIdentification val : SenderIdentification.values()) {
-			assertNotNull(EvenementOrganisationConversionHelper.convertSenderIdentification(val));
-		}
-	}
-
-	@Test
 	public void testConvertTypeOfNotice() throws Exception {
 		assertEquals(TypeEvenementOrganisation.values().length, TypeOfNotice.values().length);
-		for (SenderIdentification val : SenderIdentification.values()) {
-			assertNotNull(EvenementOrganisationConversionHelper.convertSenderIdentification(val));
+		for (TypeOfNotice val : TypeOfNotice.values()) {
+			assertNotNull(EvenementOrganisationConversionHelper.convertTypeOfNotice(val));
 		}
 	}
 }

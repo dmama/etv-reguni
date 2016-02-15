@@ -26,8 +26,8 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.util.ResourceUtils;
 import org.xml.sax.SAXException;
 
-import ch.vd.evd0022.v1.OrganisationData;
-import ch.vd.evd0023.v1.ObjectFactory;
+import ch.vd.evd0022.v3.OrganisationData;
+import ch.vd.evd0023.v3.ObjectFactory;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.wsclient.rcent.RcEntClient;
 import ch.vd.unireg.wsclient.rcent.RcEntClientImpl;
@@ -90,7 +90,7 @@ public class ServiceOrganisationRCEntItTest extends BusinessItTest {
 		OrganisationData data = client.getOrganisation(ID_CANTONAL_HORLOGERS_PRADO, null, true);
 		Assert.assertNotNull(data);
 		Assert.assertEquals(ID_CANTONAL_HORLOGERS_PRADO, data.getOrganisationSnapshot().get(0).getOrganisation().getCantonalId().longValue());
-		Assert.assertEquals(Les_HORLOGERS_DU_PRADO_SA_EN_LIQUIDATION, data.getOrganisationSnapshot().get(0).getOrganisation().getOrganisationName());
+		Assert.assertEquals(Les_HORLOGERS_DU_PRADO_SA_EN_LIQUIDATION, data.getOrganisationSnapshot().get(0).getOrganisation().getOrganisationLocation().get(0).getName());
 	}
 
 	@Test
@@ -99,7 +99,7 @@ public class ServiceOrganisationRCEntItTest extends BusinessItTest {
 		OrganisationData data = client.getOrganisation(ID_CANTONAL_HORLOGERS_PRADO, null, true);
 		Assert.assertNotNull(data);
 		Assert.assertEquals(ID_CANTONAL_HORLOGERS_PRADO, data.getOrganisationSnapshot().get(0).getOrganisation().getCantonalId().longValue());
-		Assert.assertEquals(Les_HORLOGERS_DU_PRADO_SA_EN_LIQUIDATION, data.getOrganisationSnapshot().get(0).getOrganisation().getOrganisationName());
+		Assert.assertEquals(Les_HORLOGERS_DU_PRADO_SA_EN_LIQUIDATION, data.getOrganisationSnapshot().get(0).getOrganisation().getOrganisationLocation().get(0).getName());
 	}
 
 	@Test
@@ -109,7 +109,7 @@ public class ServiceOrganisationRCEntItTest extends BusinessItTest {
 		OrganisationData data = (OrganisationData) ((JAXBElement) createMarshaller(false).unmarshal(new StringReader(xml))).getValue();
 		Assert.assertNotNull(data);
 		Assert.assertEquals(ID_CANTONAL_HORLOGERS_PRADO, data.getOrganisationSnapshot().get(0).getOrganisation().getCantonalId().longValue());
-		Assert.assertEquals(Les_HORLOGERS_DU_PRADO_SA_EN_LIQUIDATION, data.getOrganisationSnapshot().get(0).getOrganisation().getOrganisationName());
+		Assert.assertEquals(Les_HORLOGERS_DU_PRADO_SA_EN_LIQUIDATION, data.getOrganisationSnapshot().get(0).getOrganisation().getOrganisationLocation().get(0).getName());
 	}
 
 	@Test
@@ -119,7 +119,7 @@ public class ServiceOrganisationRCEntItTest extends BusinessItTest {
 		OrganisationData data = (OrganisationData) ((JAXBElement) createMarshaller(true).unmarshal(new StringReader(xml))).getValue();
 		Assert.assertNotNull(data);
 		Assert.assertEquals(ID_CANTONAL_HORLOGERS_PRADO, data.getOrganisationSnapshot().get(0).getOrganisation().getCantonalId().longValue());
-		Assert.assertEquals(Les_HORLOGERS_DU_PRADO_SA_EN_LIQUIDATION, data.getOrganisationSnapshot().get(0).getOrganisation().getOrganisationName());
+		Assert.assertEquals(Les_HORLOGERS_DU_PRADO_SA_EN_LIQUIDATION, data.getOrganisationSnapshot().get(0).getOrganisation().getOrganisationLocation().get(0).getName());
 	}
 
 	@Test
@@ -127,7 +127,7 @@ public class ServiceOrganisationRCEntItTest extends BusinessItTest {
 		OrganisationData data = (OrganisationData) ((JAXBElement) createMarshaller(true).unmarshal(new StringReader(loadFile(FILE_SAMPLE_ORGANISATION_100983251_HISTORY)))).getValue();
 		Assert.assertNotNull(data);
 		Assert.assertEquals(NO100983251, data.getOrganisationSnapshot().get(0).getOrganisation().getCantonalId().longValue());
-		Assert.assertEquals(BOMACO_SÀRL_EN_LIQUIDATION, data.getOrganisationSnapshot().get(0).getOrganisation().getOrganisationName());
+		Assert.assertEquals(BOMACO_SÀRL_EN_LIQUIDATION, data.getOrganisationSnapshot().get(0).getOrganisation().getOrganisationLocation().get(0).getName());
 	}
 
 	private RcEntClient createRCEntClient(boolean validating) throws Exception {

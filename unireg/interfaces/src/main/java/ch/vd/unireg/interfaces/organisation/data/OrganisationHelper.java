@@ -13,6 +13,7 @@ import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.common.Adresse;
+import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
 /**
  * Quelques méthodes pratiques d'interprétation des données dans le cadre des organisations
@@ -145,7 +146,7 @@ public abstract class OrganisationHelper {
 		return siteSecondaires;
 	}
 
-	public static List<Adresse> getAdresses(Map<Long, SiteOrganisation> donneesSites) {
+	public static List<Adresse> getAdresses(Map<Long, ? extends SiteOrganisation> donneesSites) {
 		// la règle dit :
 		// - en l'absence de données IDE, on prend l'adresse légale des données RC
 		// - sinon, c'est l'adresse effective des données IDE qui fait foi
@@ -191,7 +192,7 @@ public abstract class OrganisationHelper {
 	 *
 	 * @return La succession de plage contenant l'information de capital.
 	 */
-	public static List<Capital> getCapitaux(Map<Long, SiteOrganisation> donneesSites) {
+	public static List<Capital> getCapitaux(Map<Long, ? extends SiteOrganisation> donneesSites) {
 		return extractDataFromSitesPrincipaux(donneesSites, new DateRangeLimitatorImpl<Capital>(), new SiteDataExtractor<List<Capital>>() {
 			@Override
 			public List<Capital> extractData(SiteOrganisation site) {
@@ -214,7 +215,7 @@ public abstract class OrganisationHelper {
 	 *
 	 * @return La succession de plage contenant l'information de siege.
 	 */
-	public static List<Domicile> getSiegesPrincipaux(Map<Long, SiteOrganisation> donneesSites) {
+	public static List<Domicile> getSiegesPrincipaux(Map<Long, ? extends SiteOrganisation> donneesSites) {
 		return extractDataFromSitesPrincipaux(donneesSites, new DateRangeLimitatorImpl<Domicile>(), new SiteDataExtractor<List<Domicile>>() {
 			@Override
 			public List<Domicile> extractData(SiteOrganisation site) {
@@ -223,11 +224,179 @@ public abstract class OrganisationHelper {
 		});
 	}
 
-	public static boolean isInscritAuRC(Organisation organisation, RegDate date) {
-		DateRanged<StatusRC> statusRCDateRanged = DateRangeHelper.rangeAt(organisation.getSitePrincipal(defaultDate(date)).getPayload().getDonneesRC().getStatus(), defaultDate(date));
-		return statusRCDateRanged != null && statusRCDateRanged.getPayload() == StatusRC.INSCRIT;
+	/**
+	 * Prepare une liste de plages représantant la succession des noms des établissements principaux
+	 *
+	 * Pour y arriver, pour chaque etablissement (site), on parcoure la liste des plages de type (principal ou secondaire)
+	 * et pour chaque plage principale on recherche le nom qui lui est contemporain.
+	 *
+	 * On extraie ensuite toute les plages noms correspondant à la plage type principal.
+	 *
+	 * @return La succession de plage contenant l'information de nom.
+	 */
+	public static List<DateRanged<String>> getNomsPrincipaux(Map<Long, ? extends SiteOrganisation> donneesSites) {
+		return extractRangedDataFromSitesPrincipaux(donneesSites, new SiteDataExtractor<List<DateRanged<String>>>() {
+			@Override
+			public List<DateRanged<String>> extractData(SiteOrganisation site) {
+				return site.getNom();
+			}
+		});
 	}
 
+	/**
+	 * Prepare une liste de plages représantant la succession des noms additionnels des établissements principaux
+	 *
+	 * Pour y arriver, pour chaque etablissement (site), on parcoure la liste des plages de type (principal ou secondaire)
+	 * et pour chaque plage principale on recherche le nom additionnel qui lui est contemporain.
+	 *
+	 * On extraie ensuite toute les plages noms additionnels correspondant à la plage type principal.
+	 *
+	 * @return La succession de plage contenant l'information de nom.
+	 */
+	public static List<DateRanged<String>> getNomsAdditionnelsPrincipaux(Map<Long, ? extends SiteOrganisation> donneesSites) {
+		return extractRangedDataFromSitesPrincipaux(donneesSites, new SiteDataExtractor<List<DateRanged<String>>>() {
+			@Override
+			public List<DateRanged<String>> extractData(SiteOrganisation site) {
+				return site.getNomAdditionnel();
+			}
+		});
+	}
+
+	/**
+	 * Prepare une liste de plages représantant la succession des formes legales des établissements principaux
+	 *
+	 * Pour y arriver, pour chaque etablissement (site), on parcoure la liste des plages de type (principal ou secondaire)
+	 * et pour chaque plage principale on recherche la forme legale qui lui est contemporain.
+	 *
+	 * On extraie ensuite toute les plages formes legales correspondant à la plage type principal.
+	 *
+	 * @return La succession de plage contenant l'information de forme legale.
+	 */
+	public static List<DateRanged<FormeLegale>> getFormesLegalesPrincipaux(Map<Long, ? extends SiteOrganisation> donneesSites) {
+		return extractRangedDataFromSitesPrincipaux(donneesSites, new SiteDataExtractor<List<DateRanged<FormeLegale>>>() {
+			@Override
+			public List<DateRanged<FormeLegale>> extractData(SiteOrganisation site) {
+				return site.getFormeLegale();
+			}
+		});
+	}
+
+	/**
+	 * Une organisation est réputée inscrite au RC à la date fournie si le statut de son site principal n'est ni INCONNU, ni NON_INSCRIT.
+	 *
+ 	 * @param organisation l'organisation
+	 * @param date la date pour laquelle on veut connaitre la situation au RC
+	 * @return true si inscrite, false sinon
+	 */
+	public static boolean isInscritAuRC(Organisation organisation, RegDate date) {
+		final RegDate dateEffective = defaultDate(date);
+		final DateRanged<SiteOrganisation> sitePrincipal = organisation.getSitePrincipal(dateEffective);
+		return sitePrincipal != null && isInscritAuRC(sitePrincipal.getPayload(), dateEffective);
+	}
+
+	/**
+	 * Un site est réputé inscrit au RC à la date fournie si son statut n'est ni INCONNU, ni NON_INSCRIT.
+	 *
+	 * @param site le site
+	 * @param date la date pour laquelle on veut connaitre la situation au RC
+	 * @return true si inscrite, false sinon
+	 */
+	public static boolean isInscritAuRC(SiteOrganisation site, RegDate date) {
+		final DonneesRC donneesRC = site.getDonneesRC();
+		if (donneesRC != null && donneesRC.getStatusInscription() != null && ! donneesRC.getStatusInscription().isEmpty()) {
+			final StatusInscriptionRC statusInscription = donneesRC.getStatusInscription(defaultDate(date));
+			return ! (statusInscription == StatusInscriptionRC.NON_INSCRIT || statusInscription == StatusInscriptionRC.INCONNU);
+		}
+		return false;
+	}
+
+	/**
+	 * Une organisation est réputée radiée du RC à la date fournie si le statut de son site principal RADIE.
+	 *
+	 * @param organisation l'organisation
+	 * @param date la date pour laquelle on veut connaitre la situation au RC
+	 * @return true si inscrite, false sinon
+	 */
+	public static boolean isRadieDuRC(Organisation organisation, RegDate date) {
+		final RegDate dateEffective = defaultDate(date);
+		final DateRanged<SiteOrganisation> sitePrincipal = organisation.getSitePrincipal(dateEffective);
+		return sitePrincipal != null && isRadieDuRC(sitePrincipal.getPayload(), dateEffective);
+	}
+
+	/**
+	 * Un site est réputé radié du RC à la date fournie si son statut est RADIE
+	 *
+	 * @param site le site
+	 * @param date la date pour laquelle on veut connaitre la situation au RC
+	 * @return true si inscrite, false sinon
+	 */
+	public static boolean isRadieDuRC(SiteOrganisation site, RegDate date) {
+		final DonneesRC donneesRC = site.getDonneesRC();
+		if (donneesRC != null && donneesRC.getStatusInscription() != null && ! donneesRC.getStatusInscription().isEmpty()) {
+			return donneesRC.getStatusInscription(defaultDate(date)) == StatusInscriptionRC.RADIE;
+		}
+		return false;
+	}
+
+	/**
+	 * Une organisation est réputée radiée de l'IDE à la date fournie si le statut de son site principal RADIE ou DEFINITIVEMENT_RADIE.
+	 *
+	 * @param organisation l'organisation
+	 * @param date la date pour laquelle on veut connaitre la situation au RC
+	 * @return true si inscrite, false sinon
+	 */
+	public static boolean isRadieIDE(Organisation organisation, RegDate date) {
+		final RegDate dateEffective = defaultDate(date);
+		final DateRanged<SiteOrganisation> sitePrincipal = organisation.getSitePrincipal(dateEffective);
+		return sitePrincipal != null && isRadieIDE(sitePrincipal.getPayload(), dateEffective);
+	}
+
+	/**
+	 * Un site est réputé radié de l'IDE à la date fournie si son statut est RADIE ou DEFINITIVEMENT_RADIE
+	 *
+	 * @param site le site
+	 * @param date la date pour laquelle on veut connaitre la situation au RC
+	 * @return true si inscrite, false sinon
+	 */
+	public static boolean isRadieIDE(SiteOrganisation site, RegDate date) {
+		final DonneesRegistreIDE donneesIDE = site.getDonneesRegistreIDE();
+		if (donneesIDE != null && donneesIDE.getStatus() != null && ! donneesIDE.getStatus().isEmpty()) {
+			final RegDate dateEffective = defaultDate(date);
+			final StatusRegistreIDE statusIde = donneesIDE.getStatus(dateEffective);
+			return statusIde == StatusRegistreIDE.RADIE || donneesIDE.getStatus(dateEffective) == StatusRegistreIDE.DEFINITIVEMENT_RADIE;
+		}
+		return false;
+	}
+
+	/**
+	 * Détermine si l'organisation a son site principal (siège) domicilié sur Vaud.
+	 *
+	 * @param organisation l'organisation
+	 * @param date la date pour laquelle on veut l'information
+	 * @return true si le site principal est domicilié dans le canton de Vaud, false sinon
+	 */
+	public static boolean hasSitePrincipalVD(Organisation organisation, RegDate date) {
+		Domicile siegePrincipal = organisation.getSiegePrincipal(defaultDate(date));
+		return siegePrincipal != null && siegePrincipal.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD;
+	}
+
+	/**
+	 * Détermine si l'organisation a un intérêt sur VD sous la forme d'un site principal ou secondaire
+	 * domicilié sur Vaud.
+	 *
+	 * @param organisation l'organisation
+	 * @param date la date pour laquelle on veut l'information
+	 * @return true si un site est domicilié dans le canton de Vaud, false sinon
+	 */
+	public static boolean hasSiteVD(Organisation organisation, RegDate date) {
+		for (SiteOrganisation site : organisation.getDonneesSites()) {
+			final Domicile domicile = site.getDomicile(defaultDate(date));
+			if (domicile != null && domicile.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
+				return true;
+			}
+		}
+		return false;
+	}
 
 	private static RegDate defaultDate(RegDate date) {
 		return date != null ? date : RegDate.get();
@@ -248,9 +417,9 @@ public abstract class OrganisationHelper {
 	}
 
 	@NotNull
-	private static <T> List<DateRanged<T>> extractRangedDataFromSitesPrincipaux(Map<Long, SiteOrganisation> donneesSites, SiteDataExtractor<List<DateRanged<T>>> extractor) {
+	private static <T> List<DateRanged<T>> extractRangedDataFromSitesPrincipaux(Map<Long, ? extends SiteOrganisation> donneesSites, SiteDataExtractor<List<DateRanged<T>>> extractor) {
 		final List<DateRanged<T>> extracted = new ArrayList<>();
-		for (Map.Entry<Long, SiteOrganisation> entry : donneesSites.entrySet()) {
+		for (Map.Entry<Long, ? extends SiteOrganisation> entry : donneesSites.entrySet()) {
 			final SiteOrganisation site = entry.getValue();
 			final List<DateRanged<T>> toExtract = extractor.extractData(site);
 			if (toExtract != null && !toExtract.isEmpty()) {
@@ -277,9 +446,9 @@ public abstract class OrganisationHelper {
 	}
 
 	@NotNull
-	private static <T extends DateRange> List<T> extractDataFromSitesPrincipaux(Map<Long, SiteOrganisation> donneesSites, final DateRangeLimitator<T> limitator, SiteDataExtractor<List<T>> extractor) {
+	private static <T extends DateRange> List<T> extractDataFromSitesPrincipaux(Map<Long, ? extends SiteOrganisation> donneesSites, final DateRangeLimitator<T> limitator, SiteDataExtractor<List<T>> extractor) {
 		final List<T> extracted = new ArrayList<>();
-		for (Map.Entry<Long, SiteOrganisation> entry : donneesSites.entrySet()) {
+		for (Map.Entry<Long, ? extends SiteOrganisation> entry : donneesSites.entrySet()) {
 			final SiteOrganisation site = entry.getValue();
 			final List<T> toExtract = extractor.extractData(site);
 			if (toExtract != null && !toExtract.isEmpty()) {

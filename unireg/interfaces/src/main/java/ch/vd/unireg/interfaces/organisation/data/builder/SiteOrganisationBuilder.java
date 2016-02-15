@@ -11,6 +11,7 @@ import ch.vd.unireg.interfaces.organisation.data.Domicile;
 import ch.vd.unireg.interfaces.organisation.data.DonneesRC;
 import ch.vd.unireg.interfaces.organisation.data.DonneesRegistreIDE;
 import ch.vd.unireg.interfaces.organisation.data.FonctionOrganisation;
+import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.interfaces.organisation.data.SiteOrganisationRCEnt;
 import ch.vd.unireg.interfaces.organisation.data.TypeDeSite;
 
@@ -22,13 +23,17 @@ public class SiteOrganisationBuilder implements DataBuilder<SiteOrganisationRCEn
 	public DonneesRegistreIDE ide;
 
 	private final long numeroSite;
-	private Map<String, List<DateRanged<String>>> autresIdentifiants;
-	private Map<String, List<DateRanged<String>>> nomsAdditionnels;
+	private Map<String, List<DateRanged<String>>> identifiants;
+	private List<DateRanged<String>> nomAdditionnel;
 	private List<DateRanged<TypeDeSite>> typesDeSite;
+	private List<DateRanged<FormeLegale>> formeLegale;
 	private List<Domicile> domiciles;
 	private Map<String, List<DateRanged<FonctionOrganisation>>> fonction;
+
+	private List<DateRanged<Long>> transfereA;
+	private List<DateRanged<Long>> transferDe;
 	private List<DateRanged<Long>> remplacePar;
-	private Map<Long, List<DateRanged<Long>>> enRemplacementDe;
+	private List<DateRanged<Long>> enRemplacementDe;
 
 	public SiteOrganisationBuilder(long numeroSite) {
 		this.numeroSite = numeroSite;
@@ -36,11 +41,11 @@ public class SiteOrganisationBuilder implements DataBuilder<SiteOrganisationRCEn
 
 	@NotNull
 	public SiteOrganisationRCEnt build() {
-		return new SiteOrganisationRCEnt(numeroSite, autresIdentifiants, nom, rc, ide, nomsAdditionnels, typesDeSite, domiciles, fonction, remplacePar, enRemplacementDe);
+		return new SiteOrganisationRCEnt(numeroSite, identifiants, nom, nomAdditionnel, typesDeSite, formeLegale, domiciles, fonction, rc, ide, remplacePar, enRemplacementDe, transfereA, transferDe);
 	}
 
-	public SiteOrganisationBuilder addAutreIdentifiant(@NotNull String cle, @NotNull RegDate dateDebut, RegDate dateDeFin, @NotNull String valeur) {
-		autresIdentifiants = BuilderHelper.addValueToMapOfList(autresIdentifiants, cle, new DateRanged<>(dateDebut, dateDeFin, valeur));
+	public SiteOrganisationBuilder addIdentifiant(@NotNull String cle, @NotNull RegDate dateDebut, RegDate dateDeFin, @NotNull String valeur) {
+		identifiants = BuilderHelper.addValueToMapOfList(identifiants, cle, new DateRanged<>(dateDebut, dateDeFin, valeur));
 		return this;
 	}
 
@@ -49,8 +54,23 @@ public class SiteOrganisationBuilder implements DataBuilder<SiteOrganisationRCEn
 		return this;
 	}
 
-	public SiteOrganisationBuilder addNomAdditionnel(@NotNull String cle, @NotNull RegDate dateDebut, RegDate dateDeFin, @NotNull String valeur) {
-		nomsAdditionnels = BuilderHelper.addValueToMapOfList(nomsAdditionnels, cle, new DateRanged<>(dateDebut, dateDeFin, valeur));
+	public SiteOrganisationBuilder addNomAdditionnel(@NotNull RegDate dateDebut, RegDate dateDeFin, @NotNull String valeur) {
+		nomAdditionnel = BuilderHelper.addValueToList(nomAdditionnel, new DateRanged<>(dateDebut, dateDeFin, valeur));
+		return this;
+	}
+
+	public SiteOrganisationBuilder addFormeLegale(@NotNull RegDate dateDebut, RegDate dateDeFin, @NotNull FormeLegale valeur) {
+		formeLegale = BuilderHelper.addValueToList(formeLegale, new DateRanged<>(dateDebut, dateDeFin, valeur));
+		return this;
+	}
+
+	public SiteOrganisationBuilder addTransfereA(@NotNull RegDate dateDebut, RegDate dateDeFin, @NotNull Long valeur) {
+		transfereA = BuilderHelper.addValueToList(transfereA, new DateRanged<>(dateDebut, dateDeFin, valeur));
+		return this;
+	}
+
+	public SiteOrganisationBuilder addTransferDe(@NotNull RegDate dateDebut, RegDate dateDeFin, @NotNull Long valeur) {
+		transferDe = BuilderHelper.addValueToList(transferDe, new DateRanged<>(dateDebut, dateDeFin, valeur));
 		return this;
 	}
 
@@ -59,8 +79,8 @@ public class SiteOrganisationBuilder implements DataBuilder<SiteOrganisationRCEn
 		return this;
 	}
 
-	public SiteOrganisationBuilder addEnRemplacementDe(@NotNull Long cle, @NotNull RegDate dateDebut, RegDate dateDeFin, @NotNull Long valeur) {
-		enRemplacementDe = BuilderHelper.addValueToMapOfList(enRemplacementDe, cle, new DateRanged<>(dateDebut, dateDeFin, valeur));
+	public SiteOrganisationBuilder addEnRemplacementDe(@NotNull RegDate dateDebut, RegDate dateDeFin, @NotNull Long valeur) {
+		enRemplacementDe = BuilderHelper.addValueToList(enRemplacementDe, new DateRanged<>(dateDebut, dateDeFin, valeur));
 		return this;
 	}
 
@@ -94,8 +114,8 @@ public class SiteOrganisationBuilder implements DataBuilder<SiteOrganisationRCEn
 		return this;
 	}
 
-	public SiteOrganisationBuilder withAutresIdentifiants(Map<String, List<DateRanged<String>>> autresIdentifiants) {
-		this.autresIdentifiants = autresIdentifiants;
+	public SiteOrganisationBuilder withIdentifiants(Map<String, List<DateRanged<String>>> autresIdentifiants) {
+		this.identifiants = autresIdentifiants;
 		return this;
 	}
 
@@ -104,13 +124,13 @@ public class SiteOrganisationBuilder implements DataBuilder<SiteOrganisationRCEn
 		return this;
 	}
 
-	public SiteOrganisationBuilder withEnRemplacementDe(Map<Long, List<DateRanged<Long>>> enRemplacementDe) {
+	public SiteOrganisationBuilder withEnRemplacementDe(List<DateRanged<Long>> enRemplacementDe) {
 		this.enRemplacementDe = enRemplacementDe;
 		return this;
 	}
 
-	public SiteOrganisationBuilder withNomsAdditionnels(Map<String, List<DateRanged<String>>> nomsAdditionnels) {
-		this.nomsAdditionnels = nomsAdditionnels;
+	public SiteOrganisationBuilder withNomAdditionnel(List<DateRanged<String>> nomAdditionnel) {
+		this.nomAdditionnel = nomAdditionnel;
 		return this;
 	}
 

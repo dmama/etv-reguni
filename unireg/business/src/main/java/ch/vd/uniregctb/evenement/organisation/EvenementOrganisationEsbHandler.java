@@ -23,11 +23,9 @@ import org.springframework.context.SmartLifecycle;
 import org.springframework.core.io.ClassPathResource;
 import org.xml.sax.SAXException;
 
-import ch.vd.evd0022.v1.Header;
-import ch.vd.evd0022.v1.Notice;
-import ch.vd.evd0022.v1.NoticeOrganisation;
-import ch.vd.evd0022.v1.NoticeRoot;
-import ch.vd.evd0024.v1.ObjectFactory;
+import ch.vd.evd0022.v3.Notice;
+import ch.vd.evd0022.v3.OrganisationsOfNotice;
+import ch.vd.evd0024.v3.ObjectFactory;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.unireg.xml.tools.ClasspathCatalogResolver;
@@ -60,20 +58,17 @@ public class EvenementOrganisationEsbHandler implements EsbMessageHandler, Initi
 	/**
 	 * Renderer d'un événement organisation à la réception (on ne renvoie que les données fournies à la réception de l'événement)
 	 */
-	private static final StringRenderer<NoticeRoot> RECEPTION_EVT_ORGANISATION_RENDERER = new StringRenderer<NoticeRoot>() {
+	private static final StringRenderer<OrganisationsOfNotice> RECEPTION_EVT_ORGANISATION_RENDERER = new StringRenderer<OrganisationsOfNotice>() {
 		@Override
-		public String toString(NoticeRoot message) {
-			Header header = message.getHeader();
-			Notice notice = header.getNotice();
-			NoticeOrganisation content = message.getNoticeOrganisation().get(0);
-			return String.format("id=%d, type=%s, date=%s, senderId=%s, refData='%s', noOrganisation=%d, nom='%s'",
+		public String toString(OrganisationsOfNotice message) {
+			Notice notice = message.getNotice();
+			return String.format("id=%d, type=%s, date=%s, reportingId=%s, noOrganisation=%d, nom='%s'",
 			                     notice.getNoticeId(),
 			                     notice.getTypeOfNotice(),
 			                     notice.getNoticeDate(),
-			                     header.getSenderIdentification(),
-			                     header.getSenderReferenceData(),
-			                     content.getOrganisationIdentification().getCantonalId(),
-			                     content.getOrganisation().getOrganisationName()
+			                     notice.getNoticeRequest().getReportingApplication(),
+			                     message.getOrganisation().get(0).getOrganisation().getCantonalId(),
+			                     message.getOrganisation().get(0).getOrganisation().getOrganisationLocation().get(0).getName()
 			);
 		}
 	};
@@ -161,7 +156,7 @@ public class EvenementOrganisationEsbHandler implements EsbMessageHandler, Initi
 	 */
 	private void onEvenementOrganisation(Source xml) throws EvenementOrganisationEsbException {
 
-		NoticeRoot message = decodeEvenementOrganisation(xml);
+		OrganisationsOfNotice message = decodeEvenementOrganisation(xml);
 
 		checkValidIncomingEventData(message);
 
@@ -190,7 +185,7 @@ public class EvenementOrganisationEsbHandler implements EsbMessageHandler, Initi
 		une exception adéquate doit être lancée pour être remontée à l'ESB. Interdit de sortir d'ici sans un objet.
 	 */
 	@NotNull
-	private NoticeRoot decodeEvenementOrganisation(Source xml) throws EvenementOrganisationEsbException {
+	private OrganisationsOfNotice decodeEvenementOrganisation(Source xml) throws EvenementOrganisationEsbException {
 		try {
 			return parse(xml);
 		}
@@ -208,7 +203,7 @@ public class EvenementOrganisationEsbHandler implements EsbMessageHandler, Initi
 		une exception adéquate doit être lancée pour être remontée à l'ESB. Interdit de sortir d'ici sans un objet.
 	 */
 	@NotNull
-	private EvenementOrganisation createEvenementOrganisation(NoticeRoot message) throws EvenementOrganisationEsbException {
+	private EvenementOrganisation createEvenementOrganisation(OrganisationsOfNotice message) throws EvenementOrganisationEsbException {
 		try {
 			return EvenementOrganisationConversionHelper.createEvenement(message);
 		}
@@ -223,24 +218,21 @@ public class EvenementOrganisationEsbHandler implements EsbMessageHandler, Initi
 	 En réalité, l'absence d'une bonne partie de ces champs entrainera une erreur de déserialisation JAXB en amont, car
 	 ils sont obligatoire de part le xsd. Mais on ne contrôle pas le xsd.
 	  */
-	private static void checkValidIncomingEventData(NoticeRoot message) throws EvenementOrganisationEsbException {
+	private static void checkValidIncomingEventData(OrganisationsOfNotice message) throws EvenementOrganisationEsbException {
 		final List<String> attributs = new ArrayList<>();
 
-		final Notice notice = message.getHeader().getNotice();
+		final Notice notice = message.getNotice();
 		if (notice.getNoticeId() == null) {
 			attributs.add("notice id");
 		}
 		if (notice.getNoticeDate() == null) {
 			attributs.add("notice date");
 		}
-		if (message.getNoticeOrganisation().get(0).getOrganisationIdentification().getCantonalId() == null) {
+		if (message.getOrganisation().get(0).getOrganisationLocationIdentification().getCantonalId() == null) {
 			attributs.add("cantonal id");
 		}
 		if (notice.getTypeOfNotice() == null) {
 			attributs.add("type of notice");
-		}
-		if (message.getHeader().getSenderIdentification() == null) {
-			attributs.add("sender identification");
 		}
 
 		final int size = attributs.size();
@@ -276,9 +268,9 @@ public class EvenementOrganisationEsbHandler implements EsbMessageHandler, Initi
 	/*
 		Action lorsqu'on ignore le message entrant. On tient compte du fait que des exceptions peuvent être lancées en parcourant le message.
 	 */
-	protected void onIgnoredEvent(NoticeRoot message) throws EvenementOrganisationEsbException {
+	protected void onIgnoredEvent(OrganisationsOfNotice message) throws EvenementOrganisationEsbException {
 		try {
-			Notice notice = message.getHeader().getNotice();
+			Notice notice = message.getNotice();
 			Audit.info(notice.getNoticeId().longValue(), String.format("Evénement organisation ignoré (id=%d, type=%s)",
 			                                                           notice.getNoticeId(),
 			                                                           notice.getTypeOfNotice().name()));
@@ -291,17 +283,13 @@ public class EvenementOrganisationEsbHandler implements EsbMessageHandler, Initi
 	/*
 		Contrôle si on doit ignorer le message entrant. On tient compte du fait que des exceptions peuvent être lancées en parcourant le message.
 	 */
-	private boolean isIgnored(NoticeRoot message) throws EvenementOrganisationEsbException {
+	private boolean isIgnored(OrganisationsOfNotice message) throws EvenementOrganisationEsbException {
 		try {
-			return ignoredEventTypes != null && ignoredEventTypes.contains(TypeEvenementOrganisation.valueOf(message.getHeader().getNotice().getTypeOfNotice().name()));
+			return ignoredEventTypes != null && ignoredEventTypes.contains(TypeEvenementOrganisation.valueOf(message.getNotice().getTypeOfNotice().name()));
 		}
 		catch (RuntimeException e) {
 			throw new EvenementOrganisationEsbException(EsbBusinessCode.EVT_ORGANISATION, e);
 		}
-	}
-
-	public static StringRenderer<NoticeRoot> getReceptionEvtOrganisationRenderer() {
-		return RECEPTION_EVT_ORGANISATION_RENDERER;
 	}
 
 	private EvenementOrganisation saveIncomingEvent(EvenementOrganisation event) {
@@ -310,10 +298,10 @@ public class EvenementOrganisationEsbHandler implements EsbMessageHandler, Initi
 		return receptionHandler.saveIncomingEvent(event);
 	}
 
-	private NoticeRoot parse(Source xml) throws JAXBException, SAXException, IOException {
+	private OrganisationsOfNotice parse(Source xml) throws JAXBException, SAXException, IOException {
 		final Unmarshaller u = jaxbContext.createUnmarshaller();
 		u.setSchema(getRequestSchema());
-		return (NoticeRoot) ((JAXBElement) u.unmarshal(xml)).getValue();
+		return (OrganisationsOfNotice) ((JAXBElement) u.unmarshal(xml)).getValue();
 	}
 
 	private Schema getRequestSchema() throws SAXException, IOException {

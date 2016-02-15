@@ -15,8 +15,6 @@ public class DonneesRCRCEnt implements DonneesRC, Serializable {
 
 	private static final long serialVersionUID = -3484161288369635015L;
 
-	private final List<DateRanged<StatusRC>> status;
-	private final List<DateRanged<String>> nom;
 	private final List<DateRanged<StatusInscriptionRC>> statusInscription;
 	private final List<DateRanged<RegDate>> dateInscription;
 	private final List<Capital> capital;
@@ -25,12 +23,10 @@ public class DonneesRCRCEnt implements DonneesRC, Serializable {
 	private final List<DateRanged<RegDate>> dateStatuts;
 	private final List<DateRanged<RegDate>> dateRadiation;
 
-	public DonneesRCRCEnt(List<AdresseRCEnt> adresseLegale, List<DateRanged<StatusRC>> status, List<DateRanged<String>> nom,
+	public DonneesRCRCEnt(List<AdresseRCEnt> adresseLegale,
 	                      List<DateRanged<StatusInscriptionRC>> statusInscription, List<DateRanged<RegDate>> dateInscription, List<Capital> capital, List<DateRanged<String>> buts,
 	                      List<DateRanged<RegDate>> dateStatuts, List<DateRanged<RegDate>> dateRadiation) {
 		this.adresseLegale = adresseLegale;
-		this.status = status;
-		this.nom = nom;
 		this.statusInscription = statusInscription;
 		this.dateInscription = dateInscription;
 		this.capital = capital;
@@ -47,21 +43,6 @@ public class DonneesRCRCEnt implements DonneesRC, Serializable {
 	@Override
 	public List<Capital> getCapital() {
 		return capital;
-	}
-
-	@Override
-	public List<DateRanged<String>> getNom() {
-		return nom;
-	}
-
-	@Override
-	public List<DateRanged<StatusRC>> getStatus() {
-		return status;
-	}
-
-	@Override
-	public StatusRC getStatus(RegDate date) {
-		return OrganisationHelper.valueForDate(status, date);
 	}
 
 	@Override

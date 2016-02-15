@@ -35,6 +35,14 @@ public interface SiteOrganisation {
 
 	String getNom(RegDate date);
 
+	List<DateRanged<FormeLegale>> getFormeLegale();
+
+	FormeLegale getFormeLegale(RegDate date);
+
+	List<DateRanged<String>> getNomAdditionnel();
+
+	String getNomAdditionnel(RegDate date);
+
 	/**
 	 * @return les données historisées en provenance du registre RC
 	 */
@@ -61,11 +69,26 @@ public interface SiteOrganisation {
 
 	List<Adresse> getAdresses();
 
-	List<DateRanged<Long>> getRemplacePar();
+	List<DateRanged<Long>> getIdeRemplacePar();
 
-	Long getRemplacePar(RegDate date);
+	Long getIdeRemplacePar(RegDate date);
 
-	Map<Long, List<DateRanged<Long>>> getEnRemplacementDe();
+	List<DateRanged<Long>> getIdeEnRemplacementDe();
 
-	List<Long> getEnRemplacementDe(RegDate date);
+	Long getIdeEnRemplacementDe(RegDate date);
+
+	/**
+	 * @return true si le site est inscrit au RC à une date donnée. Si la date est nulle, la date du jour est utilisée.
+	 */
+	boolean isInscritAuRC(RegDate date);
+
+	/**
+	 * @return true si le site est radié au RC à à une date donnée. Si la date est nulle, la date du jour est utilisée.
+	 */
+	boolean isRadieDuRC(RegDate date);
+
+	/**
+	 * @return true si le site est radié de l'IDE à à une date donnée. Si la date est nulle, la date du jour est utilisée.
+	 */
+	boolean isRadieIDE(RegDate date);
 }

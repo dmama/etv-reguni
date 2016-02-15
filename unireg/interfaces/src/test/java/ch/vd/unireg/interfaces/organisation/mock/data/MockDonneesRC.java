@@ -15,14 +15,11 @@ import ch.vd.unireg.interfaces.organisation.data.DateRanged;
 import ch.vd.unireg.interfaces.organisation.data.DonneesRC;
 import ch.vd.unireg.interfaces.organisation.data.OrganisationHelper;
 import ch.vd.unireg.interfaces.organisation.data.StatusInscriptionRC;
-import ch.vd.unireg.interfaces.organisation.data.StatusRC;
 
 /**
  * @author Raphaël Marmier, 2015-11-04
  */
 public class MockDonneesRC implements DonneesRC {
-	private NavigableMap<RegDate, StatusRC> status = new TreeMap<>();
-	private NavigableMap<RegDate, String> nom = new TreeMap<>();
 	private NavigableMap<RegDate, StatusInscriptionRC> statusInscription = new TreeMap<>();
 	private NavigableMap<RegDate, RegDate> dateInscription = new TreeMap<>();
 	private NavigableMap<RegDate, Capital> capital = new TreeMap<>();
@@ -33,11 +30,9 @@ public class MockDonneesRC implements DonneesRC {
 
 	public MockDonneesRC() {};
 
-	public MockDonneesRC(NavigableMap<RegDate, StatusRC> status, NavigableMap<RegDate, String> nom, NavigableMap<RegDate, StatusInscriptionRC> statusInscription,
+	public MockDonneesRC(NavigableMap<RegDate, StatusInscriptionRC> statusInscription,
 	                     NavigableMap<RegDate, Capital> capital, NavigableMap<RegDate, AdresseRCEnt> adresseLegale, NavigableMap<RegDate, String> buts,
 	                     NavigableMap<RegDate, RegDate> dateStatus, NavigableMap<RegDate, RegDate> dateRadiation) {
-		this.status = status;
-		this.nom = nom;
 		this.statusInscription = statusInscription;
 		this.capital = capital;
 		this.adresseLegale = adresseLegale;
@@ -84,37 +79,6 @@ public class MockDonneesRC implements DonneesRC {
 			                                                 previous.getCapitalLibere(), previous.getRepartition()));
 		}
 		MockOrganisationHelper.addRangedData(capital, dateDebut, dateFin, nouveauCapital);
-	}
-
-	@Override
-	public List<DateRanged<String>> getNom() {
-		return MockOrganisationHelper.getHisto(nom);
-	}
-
-	public void changeNom(RegDate date, String nouveauNom) {
-		MockOrganisationHelper.changeRangedData(nom, date, nouveauNom);
-	}
-
-	public void addNom(RegDate dateDebut, @Nullable RegDate dateFin, String nouveauNom) {
-		MockOrganisationHelper.addRangedData(nom, dateDebut, dateFin, nouveauNom);
-	}
-
-	@Override
-	public List<DateRanged<StatusRC>> getStatus() {
-		return MockOrganisationHelper.getHisto(status);
-	}
-
-	@Override
-	public StatusRC getStatus(RegDate date) {
-		return OrganisationHelper.valueForDate(getStatus(), date);
-	}
-
-	public void changeStatus(RegDate date, StatusRC nouveauStatus) {
-		MockOrganisationHelper.changeRangedData(status, date, nouveauStatus);
-	}
-
-	public void addStatus(RegDate dateDebut, @Nullable RegDate dateFin, StatusRC nouveauStatus) {
-		MockOrganisationHelper.addRangedData(status, dateDebut, dateFin, nouveauStatus);
 	}
 
 	@Override

@@ -5,8 +5,8 @@ import java.math.BigDecimal;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.interfaces.organisation.data.StatusInscriptionRC;
-import ch.vd.unireg.interfaces.organisation.data.StatusRC;
 import ch.vd.unireg.interfaces.organisation.data.StatusRegistreIDE;
 import ch.vd.unireg.interfaces.organisation.data.TypeOrganisationRegistreIDE;
 import ch.vd.unireg.interfaces.organisation.data.builder.CapitalBuilder;
@@ -29,14 +29,14 @@ public abstract class MockSiteOrganisationFactory {
 	                                           RegDate dateDebut,
 	                                           RegDate dateFin,
 	                                           String nom,
+	                                           FormeLegale formeLegale,
 	                                           @Nullable Boolean principal,
 	                                           @Nullable TypeAutoriteFiscale typeAutoriteFiscaleDomicile,
 	                                           @Nullable Integer noOfsDomicile,
-	                                           @Nullable StatusRC statusRC,
 	                                           @Nullable StatusInscriptionRC statusInscriptionRC,
 	                                           @Nullable StatusRegistreIDE statusIde,
 	                                           @Nullable TypeOrganisationRegistreIDE typeIde) {
-		return addSite(cantonalId, organisation, dateDebut, dateFin, nom, principal, typeAutoriteFiscaleDomicile, noOfsDomicile, statusRC, statusInscriptionRC, statusIde, typeIde, null, null);
+		return addSite(cantonalId, organisation, dateDebut, dateFin, nom, formeLegale, principal, typeAutoriteFiscaleDomicile, noOfsDomicile, statusInscriptionRC, statusIde, typeIde, null, null);
 	}
 
 	public static MockSiteOrganisation addSite(long cantonalId,
@@ -44,10 +44,10 @@ public abstract class MockSiteOrganisationFactory {
 	                                           RegDate dateDebut,
 	                                           RegDate dateFin,
 	                                           String nom,
+	                                           FormeLegale formeLegale,
 	                                           @Nullable Boolean principal,
 	                                           @Nullable TypeAutoriteFiscale typeAutoriteFiscaleDomicile,
 	                                           @Nullable Integer noOfsDomicile,
-	                                           @Nullable StatusRC statusRC,
 	                                           @Nullable StatusInscriptionRC statusInscriptionRC,
 	                                           @Nullable StatusRegistreIDE statusIde,
 	                                           @Nullable TypeOrganisationRegistreIDE typeIde,
@@ -55,12 +55,8 @@ public abstract class MockSiteOrganisationFactory {
 	                                           @Nullable String capitalCurrency) {
 
 		final MockDonneesRC donneesRC = new MockDonneesRC();
-		if (statusRC != null) {
-			donneesRC.addStatus(dateDebut, dateFin, statusRC);
-			donneesRC.addNom(dateDebut, dateFin, nom);
-			if (statusInscriptionRC != null) {
-				donneesRC.addStatusInscription(dateDebut, dateFin, statusInscriptionRC);
-			}
+		if (statusInscriptionRC != null) {
+			donneesRC.addStatusInscription(dateDebut, dateFin, statusInscriptionRC);
 			if (capitalAmount != null) {
 				donneesRC.addCapital(dateDebut,
 				                     dateFin,
@@ -93,6 +89,11 @@ public abstract class MockSiteOrganisationFactory {
 			if (dateFin != null) {
 				mock.changeTypeDeSite(dateFin.getOneDayAfter(), null);
 			}
+		}
+
+		mock.changeFormeLegale(dateDebut, formeLegale);
+		if (dateFin != null) {
+			mock.changeFormeLegale(dateFin.getOneDayAfter(), null);
 		}
 
 		if (typeAutoriteFiscaleDomicile != null && noOfsDomicile != null) {

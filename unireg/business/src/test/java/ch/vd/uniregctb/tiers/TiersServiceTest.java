@@ -53,11 +53,11 @@ import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.unireg.interfaces.infra.mock.MockTypeRegimeFiscal;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.interfaces.organisation.data.StatusInscriptionRC;
-import ch.vd.unireg.interfaces.organisation.data.StatusRC;
 import ch.vd.unireg.interfaces.organisation.data.StatusRegistreIDE;
 import ch.vd.unireg.interfaces.organisation.data.TypeOrganisationRegistreIDE;
 import ch.vd.unireg.interfaces.organisation.mock.MockServiceOrganisation;
 import ch.vd.unireg.interfaces.organisation.mock.data.MockOrganisation;
+import ch.vd.unireg.interfaces.organisation.mock.data.MockSiteOrganisation;
 import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockOrganisationFactory;
 import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockSiteOrganisationFactory;
 import ch.vd.uniregctb.adresse.AdresseGenerique;
@@ -9640,10 +9640,10 @@ debut PF                                                                        
 		serviceOrganisation.setUp(new MockServiceOrganisation() {
 			@Override
 			protected void init() {
-				final MockOrganisation org = addOrganisation(noOrganisation, dateDebut, "Turlututu SARL", FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE);
-				MockSiteOrganisationFactory.addSite(noSite, org, dateDebut, null, "Turlututu SARL", true,
+				final MockOrganisation org = addOrganisation(noOrganisation);
+				MockSiteOrganisationFactory.addSite(noSite, org, dateDebut, null, "Turlututu SARL", FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE, true,
 				                                    TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Aubonne.getNoOFS(),
-				                                    StatusRC.INSCRIT, StatusInscriptionRC.ACTIF, StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.SITE,
+				                                    StatusInscriptionRC.ACTIF, StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.SITE,
 				                                    BigDecimal.valueOf(10000000L), MontantMonetaire.CHF);
 			}
 		});
@@ -9710,12 +9710,13 @@ debut PF                                                                        
 		serviceOrganisation.setUp(new MockServiceOrganisation() {
 			@Override
 			protected void init() {
-				final MockOrganisation org = addOrganisation(noOrganisation, dateDebutConnueCivil, "Tuturlutu SA", FormeLegale.N_0106_SOCIETE_ANONYME);
-				MockSiteOrganisationFactory.addSite(noSite, org, dateDebutConnueCivil, null, "Tuturlutu SA", true,
+				final MockOrganisation org = addOrganisation(noOrganisation);
+				MockSiteOrganisationFactory.addSite(noSite, org, dateDebutConnueCivil, null, "Tuturlutu SA", FormeLegale.N_0106_SOCIETE_ANONYME, true,
 				                                    TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Aubonne.getNoOFS(),
-				                                    StatusRC.INSCRIT, StatusInscriptionRC.ACTIF, StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.SITE);
-				org.changeFormeLegale(dateDebutChangementFormeLegale, FormeLegale.N_0234_CORPORATION_DE_DROIT_PUBLIC_ENTREPRISE);
-				org.changeNom(dateDebutChangementFormeLegale, "Tuturlutu");
+				                                    StatusInscriptionRC.ACTIF, StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.SITE);
+				MockSiteOrganisation site = (MockSiteOrganisation) org.getDonneesSites().iterator().next();
+				site.changeFormeLegale(dateDebutChangementFormeLegale, FormeLegale.N_0234_CORPORATION_DE_DROIT_PUBLIC_ENTREPRISE);
+				site.changeNom(dateDebutChangementFormeLegale, "Tuturlutu");
 			}
 		});
 

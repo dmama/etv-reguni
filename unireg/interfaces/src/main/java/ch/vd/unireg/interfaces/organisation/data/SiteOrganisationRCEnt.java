@@ -26,39 +26,47 @@ public class SiteOrganisationRCEnt implements Serializable, SiteOrganisation {
 	private final List<DateRanged<String>> nom;
 	private final List<DateRanged<String>> numeroIDE;
 
-	public final DonneesRC rc;
-	public final DonneesRegistreIDE ide;
-
-	private final Map<String, List<DateRanged<String>>> nomsAdditionnels;
+	private final List<DateRanged<String>> nomAdditionnel;
 	private final List<DateRanged<TypeDeSite>> typeDeSite;
+	private final List<DateRanged<FormeLegale>> formeLegale;
 
 	private final List<Domicile> domicile;
 	private final Map<String, List<DateRanged<FonctionOrganisation>>> fonction;
 
-	private final List<DateRanged<Long>> remplacePar;
-	private final Map<Long, List<DateRanged<Long>>> enRemplacementDe;
+	public final DonneesRC rc;
+	public final DonneesRegistreIDE ide;
+
+	private final List<DateRanged<Long>> ideRemplacePar;
+	private final List<DateRanged<Long>> ideEnRemplacementDe;
+
+	private final List<DateRanged<Long>> burTransfereA;
+	private final List<DateRanged<Long>> burTransferDe;
 
 	public SiteOrganisationRCEnt(long numeroSite,
 	                             Map<String, List<DateRanged<String>>> autresIdentifiants,
 	                             List<DateRanged<String>> nom,
-	                             DonneesRC rc,
-	                             DonneesRegistreIDE ide,
-	                             Map<String, List<DateRanged<String>>> nomsAdditionnels,
-	                             List<DateRanged<TypeDeSite>> typeDeSite, List<Domicile> domicile,
+	                             List<DateRanged<String>> nomAdditionnel,
+	                             List<DateRanged<TypeDeSite>> typeDeSite,
+	                             List<DateRanged<FormeLegale>> formeLegale,
+	                             List<Domicile> domicile,
 	                             Map<String, List<DateRanged<FonctionOrganisation>>> fonction,
-	                             List<DateRanged<Long>> remplacePar,
-	                             Map<Long, List<DateRanged<Long>>> enRemplacementDe) {
+	                             DonneesRC rc,
+	                             DonneesRegistreIDE ide, List<DateRanged<Long>> ideRemplacePar, List<DateRanged<Long>> ideEnRemplacementDe, List<DateRanged<Long>> burTransfereA,
+	                             List<DateRanged<Long>> burTransferDe) {
 		this.numeroSite = numeroSite;
+		this.nomAdditionnel = nomAdditionnel;
+		this.formeLegale = formeLegale;
+		this.ideRemplacePar = ideRemplacePar;
+		this.ideEnRemplacementDe = ideEnRemplacementDe;
+		this.burTransfereA = burTransfereA;
+		this.burTransferDe = burTransferDe;
 		this.numeroIDE = OrganisationHelper.extractIdentifiant(autresIdentifiants, OrganisationConstants.CLE_IDE);
 		this.nom = nom;
 		this.rc = rc;
 		this.ide = ide;
-		this.nomsAdditionnels = nomsAdditionnels;
 		this.typeDeSite = typeDeSite;
 		this.domicile = domicile;
 		this.fonction = fonction;
-		this.remplacePar = remplacePar;
-		this.enRemplacementDe = enRemplacementDe;
 	}
 
 	@Override
@@ -89,12 +97,22 @@ public class SiteOrganisationRCEnt implements Serializable, SiteOrganisation {
 		return OrganisationHelper.valueForDate(getNom(), date);
 	}
 
-	public Map<String, List<DateRanged<String>>> getNomsAdditionnels() {
-		return nomsAdditionnels;
+	public List<DateRanged<String>> getNomAdditionnel() {
+		return nomAdditionnel;
 	}
 
-	public List<String> getNomsAdditionnels(RegDate date) {
-		return OrganisationHelper.valuesForDate(nomsAdditionnels, date);
+	public String getNomAdditionnel(RegDate date) {
+		return OrganisationHelper.valueForDate(nomAdditionnel, date);
+	}
+
+	@Override
+	public List<DateRanged<FormeLegale>> getFormeLegale() {
+		return formeLegale;
+	}
+
+	@Override
+	public FormeLegale getFormeLegale(RegDate date) {
+		return OrganisationHelper.valueForDate(formeLegale, date);
 	}
 
 	public DonneesRC getDonneesRC() {
@@ -125,22 +143,62 @@ public class SiteOrganisationRCEnt implements Serializable, SiteOrganisation {
 	}
 
 	@Override
-	public List<DateRanged<Long>> getRemplacePar() {
-		return remplacePar;
+	public List<DateRanged<Long>> getIdeRemplacePar() {
+		return ideRemplacePar;
 	}
 
 	@Override
-	public Long getRemplacePar(RegDate date) {
-		return OrganisationHelper.valueForDate(remplacePar, date);
+	public Long getIdeRemplacePar(RegDate date) {
+		return OrganisationHelper.valueForDate(ideRemplacePar, date);
 	}
 
 	@Override
-	public Map<Long, List<DateRanged<Long>>> getEnRemplacementDe() {
-		return enRemplacementDe;
+	public List<DateRanged<Long>> getIdeEnRemplacementDe() {
+		return ideEnRemplacementDe;
 	}
 
 	@Override
-	public List<Long> getEnRemplacementDe(RegDate date) {
-		return OrganisationHelper.valuesForDate(enRemplacementDe, date);
+	public Long getIdeEnRemplacementDe(RegDate date) {
+		return OrganisationHelper.valueForDate(ideEnRemplacementDe, date);
+	}
+
+	public List<DateRanged<Long>> getBurTransferDe() {
+		return burTransferDe;
+	}
+
+	public Long getBurTransferDe(RegDate date) {
+		return OrganisationHelper.valueForDate(burTransferDe, date);
+	}
+
+	public List<DateRanged<Long>> getBurTransfereA() {
+		return burTransfereA;
+	}
+
+	public Long getBurTransfereA(RegDate date) {
+		return OrganisationHelper.valueForDate(burTransfereA, date);
+	}
+
+	/**
+	 * Indique si un l'organisation est inscrite au RC à la date indiquée. Si la date est nulle, la date du jour est utilisée.
+	 */
+	@Override
+	public boolean isInscritAuRC(RegDate date) {
+		return OrganisationHelper.isInscritAuRC(this, date);
+	}
+
+	/**
+	 * Indique si un l'organisation est radiée au RC à la date indiquée. Si la date est nulle, la date du jour est utilisée.
+	 */
+	@Override
+	public boolean isRadieDuRC(RegDate date) {
+		return OrganisationHelper.isRadieDuRC(this, date);
+	}
+
+	/**
+	 * Indique si un l'organisation est radiée de l'IDE à la date indiquée. Si la date est nulle, la date du jour est utilisée.
+	 */
+	@Override
+	public boolean isRadieIDE(RegDate date) {
+		return OrganisationHelper.isRadieIDE(this, date);
 	}
 }

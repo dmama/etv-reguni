@@ -2,9 +2,9 @@ package ch.vd.unireg.interfaces.organisation.data;
 
 public enum StatusInscriptionRC {
 
-	AUTRE,
+	INCONNU,
+	NON_INSCRIT,
 	ACTIF,
 	EN_LIQUIDATION,
-	RADIE,
-	PROVISOIRE
+	RADIE
 }

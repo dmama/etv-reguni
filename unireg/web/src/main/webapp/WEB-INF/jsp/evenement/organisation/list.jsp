@@ -51,10 +51,6 @@
 
 			<!-- ID -->
 			<display:column property="id" sortable ="${sortable}" titleKey="label.evenement" href="visu.do" paramId="id" paramProperty="id" sortName="id" />
-			<!-- Source -->
-			<display:column titleKey="label.evenement.source">
-				<c:out value="${tableEvtsOrganisation.source}" />
-			</display:column>
 			<!-- NO Organisation -->
 			<display:column sortable ="${sortable}" titleKey="label.organisation" sortProperty="noOrganisation" sortName="noOrganisation">
 				${tableEvtsOrganisation.numeroOrganisation}

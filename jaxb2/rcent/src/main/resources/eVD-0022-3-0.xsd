@@ -79,7 +79,7 @@ Modification des complexType :
 		Ajout de usualName
 		Ajout de nameTranslation
 		Modification du type de identifier pour être de type eCH-0097:namedOrganisationIdTy
-	commercialRegisterDataType : 
+	commercialRegisterDataType : Identification et
 		Suppression de nameTranslation
 		Suppression de name
 		Suppression de entryStatus

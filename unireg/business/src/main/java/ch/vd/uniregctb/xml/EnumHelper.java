@@ -11,7 +11,6 @@ import ch.vd.unireg.interfaces.efacture.data.TypeEtatDestinataire;
 import ch.vd.unireg.interfaces.infra.data.TypeAffranchissement;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.xml.party.corporation.v4.CorporationFlagType;
-import ch.vd.unireg.xml.party.taxpayer.v4.ShortLegalForm;
 import ch.vd.uniregctb.avatar.TypeAvatar;
 import ch.vd.uniregctb.interfaces.model.CompteBancaire;
 import ch.vd.uniregctb.metier.assujettissement.TypeAssujettissement;
@@ -3012,11 +3011,6 @@ public abstract class EnumHelper {
 		case N_0118_PROCURATIONS_NON_COMMERCIALES:
 		case N_0302_SOCIETE_SIMPLE:
 		case N_0151_SUCCURSALE_SUISSE_AU_RC:
-		case N_00_AUTRE:
-		case N_01_FORMES_JUR_DE_DROIT_PRIVE_UTILISEES_DANS_RC:
-		case N_02_FORMES_JUR_DE_DROIT_PUBLIC_NON_UTILISEES_DANS_RC:
-		case N_03_AUTRES_FORMES_JUR_NON_UTILISEES_DANS_RC:
-		case N_04_ENTREPRISE_ETRANGERE:
 			return null;
 
 		default:
@@ -3100,69 +3094,6 @@ public abstract class EnumHelper {
 			return ch.vd.unireg.xml.party.taxpayer.v4.FullLegalForm.NON_COMMERCIAL_PROXY;
 		case N_0302_SOCIETE_SIMPLE:
 			return ch.vd.unireg.xml.party.taxpayer.v4.FullLegalForm.SIMPLE_COMPANY;
-		case N_00_AUTRE:
-		case N_01_FORMES_JUR_DE_DROIT_PRIVE_UTILISEES_DANS_RC:
-		case N_02_FORMES_JUR_DE_DROIT_PUBLIC_NON_UTILISEES_DANS_RC:
-		case N_03_AUTRES_FORMES_JUR_NON_UTILISEES_DANS_RC:
-		case N_04_ENTREPRISE_ETRANGERE:
-			return null;
-		default:
-			throw new IllegalArgumentException("Forme juridique inconnue : " + fl);
-		}
-	}
-
-	@Nullable
-	public static ch.vd.unireg.xml.party.taxpayer.v4.ShortLegalForm coreToXMLv4Short(FormeLegale fl) {
-		if (fl == null) {
-			return null;
-		}
-
-		switch (fl) {
-
-		case N_0109_ASSOCIATION:
-		case N_0108_SOCIETE_COOPERATIVE:
-		case N_0220_ADMINISTRATION_CONFEDERATION:
-		case N_0221_ADMINISTRATION_CANTON:
-		case N_0222_ADMINISTRATION_DISTRICT:
-		case N_0223_ADMINISTRATION_COMMUNE:
-		case N_0224_CORPORATION_DE_DROIT_PUBLIC_ADMINISTRATION:
-		case N_0230_ENTREPRISE_CONFEDERATION:
-		case N_0231_ENTREPRISE_CANTON:
-		case N_0232_ENTREPRISE_DISTRICT:
-		case N_0233_ENTREPRISE_COMMUNE:
-		case N_0234_CORPORATION_DE_DROIT_PUBLIC_ENTREPRISE:
-		case N_0110_FONDATION:
-		case N_0106_SOCIETE_ANONYME:
-		case N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE:
-		case N_0104_SOCIETE_EN_COMMANDITE:
-		case N_0105_SOCIETE_EN_COMMANDITE_PAR_ACTIONS:
-		case N_0103_SOCIETE_NOM_COLLECTIF:
-		case N_0114_SOCIETE_EN_COMMANDITE_POUR_PLACEMENTS_CAPITAUX:
-		case N_0115_SOCIETE_INVESTISSEMENT_CAPITAL_VARIABLE:
-		case N_0116_SOCIETE_INVESTISSEMENT_CAPITAL_FIXE:
-		case N_0101_ENTREPRISE_INDIVIDUELLE:
-		case N_0328_ADMINISTRATION_PUBLIQUE_ETRANGERE:
-		case N_0441_ENTREPRISE_ETRANGERE:
-		case N_0327_ENTREPRISE_PUBLIQUE_ETRANGERE:
-		case N_0312_FILIALE_ETRANGERE_NON_AU_RC:
-		case N_0111_FILIALE_ETRANGERE_AU_RC:
-		case N_0117_INSTITUT_DE_DROIT_PUBLIC:
-		case N_0119_CHEF_INDIVISION:
-		case N_0151_SUCCURSALE_SUISSE_AU_RC:
-		case N_0329_ORGANISATION_INTERNATIONALE:
-		case N_0113_FORME_JURIDIQUE_PARTICULIERE:
-		case N_0118_PROCURATIONS_NON_COMMERCIALES:
-		case N_0302_SOCIETE_SIMPLE:
-		case N_00_AUTRE:
-			return null;
-		case N_01_FORMES_JUR_DE_DROIT_PRIVE_UTILISEES_DANS_RC:
-			return ShortLegalForm.LF_01;
-		case N_02_FORMES_JUR_DE_DROIT_PUBLIC_NON_UTILISEES_DANS_RC:
-			return ShortLegalForm.LF_02;
-		case N_03_AUTRES_FORMES_JUR_NON_UTILISEES_DANS_RC:
-			return ShortLegalForm.LF_03;
-		case N_04_ENTREPRISE_ETRANGERE:
-			return ShortLegalForm.LF_04;
 		default:
 			throw new IllegalArgumentException("Forme juridique inconnue : " + fl);
 		}

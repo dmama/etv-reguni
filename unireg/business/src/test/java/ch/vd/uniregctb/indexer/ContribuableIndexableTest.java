@@ -13,6 +13,7 @@ import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.infra.mock.DefaultMockServiceInfrastructureService;
+import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockLocalite;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
@@ -111,8 +112,10 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 		serviceOrganisation.setUp(new MockServiceOrganisation() {
 			@Override
 			protected void init() {
-				final MockOrganisation org = addOrganisation(784512L, RegDate.get(1924, 4, 1), "Pittet Levage S.A.R.L", FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE);
+				final MockOrganisation org = MockOrganisationFactory.createSimpleEntrepriseRC(784512L, 7845121001L, "Pittet Levage S.A.R.L", date(1924, 4, 1), null,
+				                                                                              FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE, MockCommune.Lausanne);
 				addNumeroIDE(org, "CHE123456788", RegDate.get(2009, 1, 1), null);
+				addOrganisation(org);
 
 				addOrganisation(MockOrganisationFactory.BCV);
 			}

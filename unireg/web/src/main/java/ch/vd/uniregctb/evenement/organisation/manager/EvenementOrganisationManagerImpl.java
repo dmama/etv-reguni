@@ -271,7 +271,6 @@ public class EvenementOrganisationManagerImpl implements EvenementOrganisationMa
 			final Domicile siegePrincipal = organisation.getSiegePrincipal(dateEvenement);
 			view.setNoOFSSiege(siegePrincipal.getNoOfs());
 			view.setTypeSiege(siegePrincipal.getTypeAutoriteFiscale());
-			view.setSource(evt.getIdentiteEmetteur());
 
 		}
 		catch (ServiceOrganisationException e) {

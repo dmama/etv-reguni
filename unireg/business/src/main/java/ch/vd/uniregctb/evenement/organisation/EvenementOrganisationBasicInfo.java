@@ -3,7 +3,6 @@ package ch.vd.uniregctb.evenement.organisation;
 import java.io.Serializable;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.type.EmetteurEvenementOrganisation;
 import ch.vd.uniregctb.type.EtatEvenementOrganisation;
 import ch.vd.uniregctb.type.TypeEvenementOrganisation;
 
@@ -18,8 +17,6 @@ public final class EvenementOrganisationBasicInfo implements Serializable {
 
 	private final long id;
 	private final long noOrganisation;
-	private final EmetteurEvenementOrganisation identiteEmetteur;
-	private final String refDataEmetteur;
 	private final EtatEvenementOrganisation etat;
 	private final TypeEvenementOrganisation type;
 	private final RegDate date;
@@ -31,19 +28,15 @@ public final class EvenementOrganisationBasicInfo implements Serializable {
 		}
 		this.id = evt.getId();
 		this.noOrganisation = evt.getNoOrganisation();
-		this.identiteEmetteur = evt.getIdentiteEmetteur();
-		this.refDataEmetteur = evt.getRefDataEmetteur();
 		this.etat = evt.getEtat();
 		this.type = evt.getType();
 		this.date = evt.getDateEvenement();
 	}
 
-	public EvenementOrganisationBasicInfo(long id, long noOrganisation, EmetteurEvenementOrganisation identiteEmetteur, String refDataEmetteur, EtatEvenementOrganisation etat,
+	public EvenementOrganisationBasicInfo(long id, long noOrganisation, EtatEvenementOrganisation etat,
 	                                      TypeEvenementOrganisation type, RegDate date) {
 		this.id = id;
 		this.noOrganisation = noOrganisation;
-		this.identiteEmetteur = identiteEmetteur;
-		this.refDataEmetteur = refDataEmetteur;
 		this.etat = etat;
 		this.type = type;
 		this.date = date;
@@ -61,16 +54,8 @@ public final class EvenementOrganisationBasicInfo implements Serializable {
 		return id;
 	}
 
-	public EmetteurEvenementOrganisation getIdentiteEmetteur() {
-		return identiteEmetteur;
-	}
-
 	public long getNoOrganisation() {
 		return noOrganisation;
-	}
-
-	public String getRefDataEmetteur() {
-		return refDataEmetteur;
 	}
 
 	public static long getSerialVersionUID() {

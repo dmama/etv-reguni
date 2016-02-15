@@ -9,7 +9,7 @@ import ch.vd.unireg.interfaces.organisation.data.AdresseRCEnt;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
 import ch.vd.unireg.interfaces.organisation.data.DonneesRegistreIDE;
 import ch.vd.unireg.interfaces.organisation.data.DonneesRegistreIDERCEnt;
-import ch.vd.unireg.interfaces.organisation.data.RaisonLiquidationRegistreIDE;
+import ch.vd.unireg.interfaces.organisation.data.RaisonDeRadiationRegistreIDE;
 import ch.vd.unireg.interfaces.organisation.data.StatusRegistreIDE;
 import ch.vd.unireg.interfaces.organisation.data.TypeOrganisationRegistreIDE;
 
@@ -19,7 +19,7 @@ public class DonneesRegistreIDEBuilder implements DataBuilder<DonneesRegistreIDE
 	private List<DateRanged<TypeOrganisationRegistreIDE>> typeOrganisation;
 	private List<AdresseRCEnt> adresseEffective;
 	private List<AdresseRCEnt> adresseBoitePostale;
-	private List<DateRanged<RaisonLiquidationRegistreIDE>> raisonDeLiquidation;
+	private List<DateRanged<RaisonDeRadiationRegistreIDE>> raisonDeLiquidation;
 
 	public DonneesRegistreIDEBuilder() {}
 
@@ -52,7 +52,7 @@ public class DonneesRegistreIDEBuilder implements DataBuilder<DonneesRegistreIDE
 		return this;
 	}
 
-	public DonneesRegistreIDEBuilder addRaisonDeLiquidation(@NotNull RegDate dateDebut, RegDate dateDeFin, @NotNull RaisonLiquidationRegistreIDE valeur) {
+	public DonneesRegistreIDEBuilder addRaisonDeLiquidation(@NotNull RegDate dateDebut, RegDate dateDeFin, @NotNull RaisonDeRadiationRegistreIDE valeur) {
 		raisonDeLiquidation = BuilderHelper.addValueToList(raisonDeLiquidation, new DateRanged<>(dateDebut, dateDeFin, valeur));
 		return this;
 	}
@@ -67,7 +67,7 @@ public class DonneesRegistreIDEBuilder implements DataBuilder<DonneesRegistreIDE
 		return this;
 	}
 
-	public DonneesRegistreIDEBuilder withRaisonDeLiquidation(List<DateRanged<RaisonLiquidationRegistreIDE>> raisonDeLiquidation) {
+	public DonneesRegistreIDEBuilder withRaisonDeLiquidation(List<DateRanged<RaisonDeRadiationRegistreIDE>> raisonDeLiquidation) {
 		this.raisonDeLiquidation = raisonDeLiquidation;
 		return this;
 	}

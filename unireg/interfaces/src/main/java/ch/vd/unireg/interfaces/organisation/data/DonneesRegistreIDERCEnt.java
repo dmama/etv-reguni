@@ -19,13 +19,13 @@ public class DonneesRegistreIDERCEnt implements DonneesRegistreIDE, Serializable
 	private final List<DateRanged<TypeOrganisationRegistreIDE>> typeOrganisation;
 	private final List<AdresseRCEnt> adresseEffective;
 	private final List<AdresseRCEnt> adresseBoitePostale;
-	private final List<DateRanged<RaisonLiquidationRegistreIDE>> raisonDeLiquidation;
+	private final List<DateRanged<RaisonDeRadiationRegistreIDE>> raisonDeLiquidation;
 
 	public DonneesRegistreIDERCEnt(List<AdresseRCEnt> adresseBoitePostale,
 	                          List<DateRanged<StatusRegistreIDE>> status,
 	                          List<DateRanged<TypeOrganisationRegistreIDE>> typeOrganisation,
 	                          List<AdresseRCEnt> adresseEffective,
-	                          List<DateRanged<RaisonLiquidationRegistreIDE>> raisonDeLiquidation) {
+	                          List<DateRanged<RaisonDeRadiationRegistreIDE>> raisonDeLiquidation) {
 		this.adresseBoitePostale = adresseBoitePostale;
 		this.status = status;
 		this.typeOrganisation = typeOrganisation;
@@ -44,7 +44,7 @@ public class DonneesRegistreIDERCEnt implements DonneesRegistreIDE, Serializable
 	}
 
 	@Override
-	public List<DateRanged<RaisonLiquidationRegistreIDE>> getRaisonDeLiquidation() {
+	public List<DateRanged<RaisonDeRadiationRegistreIDE>> getRaisonDeLiquidation() {
 		return raisonDeLiquidation;
 	}
 

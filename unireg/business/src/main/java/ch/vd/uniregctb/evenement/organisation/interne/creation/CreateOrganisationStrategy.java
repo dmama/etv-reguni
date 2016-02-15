@@ -59,7 +59,7 @@ public class CreateOrganisationStrategy extends AbstractOrganisationStrategy {
 		if (category != null) {
 
 			// On crée une entreprise pour les organisations ayant un siège dans la canton de VD
-			if (hasSitePrincipalVD(organisation, dateEvenement)) {
+			if (organisation.hasSitePrincipalVD(dateEvenement)) {
 
 				switch (category) {
 
@@ -100,7 +100,7 @@ public class CreateOrganisationStrategy extends AbstractOrganisationStrategy {
 					LOGGER.info("L'entité organisation {} est installée sur Vaud. Catégorie [{}] -> Traitement manuel.", organisation.getNumeroOrganisation(), category);
 					return new TraitementManuel(event, organisation, null, context, options, MSG_CREATION_AUTOMATIQUE_IMPOSSIBLE);
 				}
-			} else if (hasSiteVD(organisation, dateEvenement)) {
+			} else if (organisation.hasSiteVD(dateEvenement)) {
 				switch (category) {
 
 				case PP:

@@ -3,8 +3,8 @@ package ch.vd.uniregctb.wsclient.rcent;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
-import ch.vd.evd0022.v1.OrganisationData;
-import ch.vd.evd0022.v1.OrganisationsOfNotice;
+import ch.vd.evd0022.v3.OrganisationData;
+import ch.vd.evd0022.v3.OrganisationsOfNotice;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.wsclient.rcent.RcEntClient;
 import ch.vd.unireg.wsclient.rcent.RcEntClientException;
@@ -81,7 +81,7 @@ public class RcEntClientTracing implements RcEntClient, InitializingBean, Dispos
 		try {
 			final OrganisationsOfNotice data = target.getOrganisationsOfNotice(noticeId, when);
 			if (data != null) {
-				items = data.getNumberOfResults();
+				items = data.getOrganisation().size();
 			}
 			return data;
 		}

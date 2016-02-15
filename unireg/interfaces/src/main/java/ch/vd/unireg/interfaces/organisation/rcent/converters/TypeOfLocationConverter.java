@@ -2,14 +2,14 @@ package ch.vd.unireg.interfaces.organisation.rcent.converters;
 
 import org.jetbrains.annotations.NotNull;
 
-import ch.vd.evd0022.v1.KindOfLocation;
+import ch.vd.evd0022.v3.TypeOfLocation;
 import ch.vd.unireg.interfaces.organisation.data.TypeDeSite;
 
-public class KindOfLocationConverter extends BaseEnumConverter<KindOfLocation, TypeDeSite> {
+public class TypeOfLocationConverter extends BaseEnumConverter<TypeOfLocation, TypeDeSite> {
 
 	@Override
 	@NotNull
-	protected TypeDeSite convert(@NotNull KindOfLocation value) {
+	protected TypeDeSite convert(@NotNull TypeOfLocation value) {
 		switch (value) {
 		case ETABLISSEMENT_PRINCIPAL:
 			return TypeDeSite.ETABLISSEMENT_PRINCIPAL;

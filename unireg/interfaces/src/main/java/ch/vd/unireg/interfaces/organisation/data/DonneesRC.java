@@ -12,12 +12,6 @@ public interface DonneesRC {
 
 	List<Capital> getCapital();
 
-	List<DateRanged<String>> getNom();
-
-	List<DateRanged<StatusRC>> getStatus();
-
-	StatusRC getStatus(RegDate date);
-
 	List<DateRanged<StatusInscriptionRC>> getStatusInscription();
 
 	StatusInscriptionRC getStatusInscription(RegDate date);

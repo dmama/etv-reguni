@@ -17,6 +17,7 @@ import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.common.CasePostale;
 import ch.vd.unireg.interfaces.infra.mock.MockAdresse;
 import ch.vd.unireg.interfaces.infra.mock.MockCollectiviteAdministrative;
+import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockLocalite;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
@@ -3569,7 +3570,9 @@ public class AdresseServiceTest extends BusinessTest {
 		serviceOrganisation.setUp(new MockServiceOrganisation() {
 			@Override
 			protected void init() {
-				final MockOrganisation ent = addOrganisation(noOrganisation, date(1970, 7, 1), "Ma Petite Entreprise", FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE);
+				final MockOrganisation ent = MockOrganisationFactory.createSimpleEntrepriseRC(noOrganisation, noOrganisation + 1001, "Ma Petite Entreprise", date(1970, 7, 1), null,
+				                                                                              FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE, MockCommune.Lausanne);
+				addOrganisation(ent);
 
 				// adresses courriers
 				addAdresse(ent, TypeAdresseCivil.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, date(1980, 1, 1), date(1987, 12, 11));

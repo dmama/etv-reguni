@@ -12,7 +12,7 @@ import org.junit.Test;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.jms.connection.JmsTransactionManager;
 
-import ch.vd.evd0022.v1.NoticeRoot;
+import ch.vd.evd0022.v3.OrganisationsOfNotice;
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.technical.esb.EsbMessage;
@@ -22,7 +22,6 @@ import ch.vd.uniregctb.common.BusinessItTest;
 import ch.vd.uniregctb.evenement.EvenementTest;
 import ch.vd.uniregctb.jms.EsbBusinessException;
 import ch.vd.uniregctb.jms.GentilEsbMessageEndpointListener;
-import ch.vd.uniregctb.type.EmetteurEvenementOrganisation;
 import ch.vd.uniregctb.type.EtatEvenementOrganisation;
 import ch.vd.uniregctb.type.TypeEvenementOrganisation;
 
@@ -32,7 +31,7 @@ public class EvenementOrganisationEsbHandlerItTest extends EvenementTest {
 	private EvenementOrganisationSenderImpl sender;
 	private EvenementOrganisationEsbHandler esbHandler;
 	private List<EvenementOrganisation> evenementsTraites;
-	private List<NoticeRoot> evenementsIgnores;
+	private List<OrganisationsOfNotice> evenementsIgnores;
 	private List<Pair<String, Throwable>> evenementsExploses;
 	private List<String> evenementsVusPasser;
 
@@ -96,7 +95,7 @@ public class EvenementOrganisationEsbHandlerItTest extends EvenementTest {
 			}
 
 			@Override
-			protected void onIgnoredEvent(NoticeRoot message) throws EvenementOrganisationEsbException {
+			protected void onIgnoredEvent(OrganisationsOfNotice message) throws EvenementOrganisationEsbException {
 				super.onIgnoredEvent(message);
 				evenementsIgnores.add(message);
 			}
@@ -122,14 +121,11 @@ public class EvenementOrganisationEsbHandlerItTest extends EvenementTest {
 	public void testReceptionEvenement() throws Exception {
 		final Long idEvenement = 5640006354L;
 		final RegDate dateEvenement = RegDate.get();
-		final String refData = "26541888874";
 		long noOrganisation = 657133465L;
 		final TypeEvenementOrganisation type = TypeEvenementOrganisation.FOSC_AUTRE_MUTATION;
 
 		final EvenementOrganisation evt = new EvenementOrganisation(
 				idEvenement,
-				EmetteurEvenementOrganisation.FOSC,
-		        refData,
 		        type,
 		        dateEvenement,
 				noOrganisation,
@@ -159,7 +155,6 @@ public class EvenementOrganisationEsbHandlerItTest extends EvenementTest {
 		Assert.assertNull(recu.getDateTraitement());
 		Assert.assertEquals(EtatEvenementOrganisation.A_TRAITER, recu.getEtat());
 		Assert.assertEquals(noOrganisation, recu.getNoOrganisation());
-		Assert.assertEquals(refData, recu.getRefDataEmetteur());
 		Assert.assertEquals(type, recu.getType());
 
 		Assert.assertEquals(0, evenementsIgnores.size());
@@ -183,8 +178,6 @@ public class EvenementOrganisationEsbHandlerItTest extends EvenementTest {
 
 			final EvenementOrganisation evt = new EvenementOrganisation(
 					idEvenement,
-					EmetteurEvenementOrganisation.FOSC,
-					refData,
 					type,
 					dateEvenement,
 					noOrganisation,
@@ -216,7 +209,6 @@ public class EvenementOrganisationEsbHandlerItTest extends EvenementTest {
 			Assert.assertNull("type " + type, recu.getCommentaireTraitement());
 			Assert.assertNull("type " + type, recu.getDateTraitement());
 			Assert.assertEquals("type " + type, EtatEvenementOrganisation.A_TRAITER, recu.getEtat());
-			Assert.assertEquals("type " + type, refData, recu.getRefDataEmetteur());
 			Assert.assertEquals("type " + type, type, recu.getType());
 		}
 	}
@@ -237,8 +229,6 @@ public class EvenementOrganisationEsbHandlerItTest extends EvenementTest {
 
 		final EvenementOrganisation evt = new EvenementOrganisation(
 				idEvenement,
-				EmetteurEvenementOrganisation.FOSC,
-				refData,
 				type,
 				dateEvenement,
 				noOrganisation,
@@ -272,7 +262,7 @@ public class EvenementOrganisationEsbHandlerItTest extends EvenementTest {
 		//noinspection ThrowableResultOfMethodCallIgnored
 		final Throwable t = explosionData.getRight();
 		Assert.assertEquals(EvenementOrganisationEsbException.class, t.getClass());
-		Assert.assertEquals("org.xml.sax.SAXParseException; cvc-complex-type.2.4.b: The content of element 'eVD-0022-1:notice' is not complete. One of '{\"http://evd.vd.ch/xmlns/eVD-0022/1\":noticeDate}' is expected.",
+		Assert.assertEquals("org.xml.sax.SAXParseException; cvc-complex-type.2.4.b: The content of element 'eVD-0022-3:notice' is not complete. One of '{\"http://evd.vd.ch/xmlns/eVD-0022/3\":noticeDate}' is expected.",
 		                    t.getMessage());
 	}
 }

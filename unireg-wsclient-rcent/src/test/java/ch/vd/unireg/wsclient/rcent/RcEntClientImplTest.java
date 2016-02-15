@@ -2,6 +2,7 @@ package ch.vd.unireg.wsclient.rcent;
 
 import java.util.Arrays;
 
+import ch.ech.ech0010.v6.AddressInformation;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;

@@ -13,7 +13,6 @@ import ch.vd.unireg.interfaces.organisation.ServiceOrganisationException;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.StatusInscriptionRC;
-import ch.vd.unireg.interfaces.organisation.data.StatusRC;
 import ch.vd.unireg.interfaces.organisation.data.StatusRegistreIDE;
 import ch.vd.unireg.interfaces.organisation.data.TypeOrganisationRegistreIDE;
 import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockOrganisationFactory;
@@ -120,7 +119,7 @@ public class TransitionEtatEntrepriseServiceTest extends WithoutSpringTest {
 
 		Organisation organisation = MockOrganisationFactory
 				.createOrganisation(1L, 1L, "Synergy SA", RegDate.get(2010, 6, 24), null, FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE,
-				                    TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusRC.INSCRIT, StatusInscriptionRC.ACTIF, StatusRegistreIDE.DEFINITIF,
+				                    TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF, StatusRegistreIDE.DEFINITIF,
 				                    TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE);
 
 
@@ -147,7 +146,7 @@ public class TransitionEtatEntrepriseServiceTest extends WithoutSpringTest {
 
 		Organisation organisation = MockOrganisationFactory
 				.createOrganisation(1L, 1L, "Synergy SA", RegDate.get(2010, 6, 24), null, FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE,
-				                    TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), null, null, StatusRegistreIDE.DEFINITIF,
+				                    TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), null, StatusRegistreIDE.DEFINITIF,
 				                    TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE);
 
 
@@ -197,7 +196,7 @@ public class TransitionEtatEntrepriseServiceTest extends WithoutSpringTest {
 
 		Organisation organisation = MockOrganisationFactory
 				.createOrganisation(1L, 1L, "Synergy SA", RegDate.get(2010, 6, 24), null, FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE,
-				                    TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusRC.INSCRIT, StatusInscriptionRC.ACTIF, StatusRegistreIDE.DEFINITIF,
+				                    TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF, StatusRegistreIDE.DEFINITIF,
 				                    TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE);
 
 
@@ -224,7 +223,7 @@ public class TransitionEtatEntrepriseServiceTest extends WithoutSpringTest {
 
 		Organisation organisation = MockOrganisationFactory
 				.createOrganisation(1L, 1L, "Assoc SA", RegDate.get(2010, 6, 24), null, FormeLegale.N_0109_ASSOCIATION,
-				                    TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), null, null, StatusRegistreIDE.DEFINITIF,
+				                    TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), null, StatusRegistreIDE.DEFINITIF,
 				                    TypeOrganisationRegistreIDE.ASSOCIATION);
 
 

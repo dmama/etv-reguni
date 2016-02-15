@@ -72,10 +72,7 @@ public class EntrepriseServiceImpl implements EntrepriseService {
 
 			Organisation organisation = serviceOrganisationService.getOrganisationHistory(numeroEntreprise);
 
-			List<DateRanged<String>> nomsAdditionnels = new ArrayList<>();
-			for (List<DateRanged<String>> noms : organisation.getNomsAdditionnels().values()) {
-				nomsAdditionnels.addAll(noms);
-			}
+			List<DateRanged<String>> nomsAdditionnels = organisation.getNomAdditionnel();
 			Collections.sort(nomsAdditionnels, new DateRangeComparator<>());
 			entrepriseView.setNomsAdditionnels(nomsAdditionnels);
 
