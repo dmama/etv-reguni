@@ -34,12 +34,10 @@
 			<td><fmt:message key="label.complement.numeroTelPortable" />&nbsp;:</td>
 			<td><c:out value="${command.complement.numeroTelephonePortable}"/></td>
 		</tr>
-		<c:if test="${!command.pmOuEtablissement}">
-			<tr class="<unireg:nextRowClass/>" >
-				<td><fmt:message key="label.complement.numeroTelProfessionnel" />&nbsp;:</td>
-				<td><c:out value="${command.complement.numeroTelephoneProfessionnel}"/></td>
-			</tr>
-		</c:if>
+		<tr class="<unireg:nextRowClass/>" >
+			<td><fmt:message key="label.complement.numeroTelProfessionnel" />&nbsp;:</td>
+			<td><c:out value="${command.complement.numeroTelephoneProfessionnel}"/></td>
+		</tr>
 		<tr class="<unireg:nextRowClass/>" >
 			<td><fmt:message key="label.complement.numeroFax" />&nbsp;:</td>
 			<td><c:out value="${command.complement.numeroTelecopie}"/></td>

@@ -1,8 +1,6 @@
 package ch.vd.uniregctb.complements;
 
-import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesMorales;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
-import ch.vd.uniregctb.tiers.Etablissement;
 import ch.vd.uniregctb.tiers.Tiers;
 
 @SuppressWarnings("UnusedDeclaration")
@@ -12,7 +10,6 @@ public class ComplementsEditCommunicationsView {
 
 	// seulement pour les débiteurs sans contribuables associés
 	private boolean debiteurWithoutCtb;
-	private boolean pmOuEtablissement;
 	private String nom1;
 	private String nom2;
 
@@ -48,7 +45,6 @@ public class ComplementsEditCommunicationsView {
 	public void initReadOnlyData(Tiers tiers) {
 		this.id = tiers.getId();
 		this.debiteurWithoutCtb = tiers instanceof DebiteurPrestationImposable && ((DebiteurPrestationImposable)tiers).getContribuableId() == null;
-		this.pmOuEtablissement = tiers instanceof ContribuableImpositionPersonnesMorales || tiers instanceof Etablissement;
 	}
 
 	public long getId() {
@@ -61,14 +57,6 @@ public class ComplementsEditCommunicationsView {
 
 	public boolean isDebiteurWithoutCtb() {
 		return debiteurWithoutCtb;
-	}
-
-	public boolean isPmOuEtablissement() {
-		return pmOuEtablissement;
-	}
-
-	public void setPmOuEtablissement(boolean pmOuEtablissement) {
-		this.pmOuEtablissement = pmOuEtablissement;
 	}
 
 	public String getNom1() {

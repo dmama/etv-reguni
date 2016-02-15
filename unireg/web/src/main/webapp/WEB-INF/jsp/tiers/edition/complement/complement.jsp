@@ -61,8 +61,6 @@
 				<form:errors path="tiers.numeroTelephonePortable" cssClass="error"/>
 			</td>
 		</tr>
-		<form:hidden path="complement.pmOuEtablissement" id="pmOuEtablissement"/>
-		<c:if test="${!command.pmOuEtablissement}">
 		<tr class="<unireg:nextRowClass/>" >
 			<td width="30%"><fmt:message key="label.complement.numeroTelProfessionnel" />&nbsp;:</td>
 			<td width="70%">
@@ -71,7 +69,6 @@
 				<form:errors path="tiers.numeroTelephoneProfessionnel" cssClass="error"/>
 			</td>
 		</tr>
-	</c:if>
 		<tr class="<unireg:nextRowClass/>" >
 			<td width="30%"><fmt:message key="label.complement.numeroFax" />&nbsp;:</td>
 			<td width="70%">
