@@ -5,16 +5,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import ch.vd.evd0021.v1.Address;
-import ch.vd.evd0022.v1.Capital;
-import ch.vd.evd0022.v1.CommercialRegisterEntryStatus;
-import ch.vd.evd0022.v1.CommercialRegisterStatus;
-import ch.vd.evd0022.v1.Function;
-import ch.vd.evd0022.v1.Identifier;
-import ch.vd.evd0022.v1.KindOfLocation;
-import ch.vd.evd0022.v1.UidRegisterLiquidationReason;
-import ch.vd.evd0022.v1.UidRegisterStatus;
-import ch.vd.evd0022.v1.UidRegisterTypeOfOrganisation;
+import ch.ech.ech0097.v2.NamedOrganisationId;
+
+import ch.vd.evd0022.v3.Address;
+import ch.vd.evd0022.v3.Capital;
+import ch.vd.evd0022.v3.CommercialRegisterStatus;
+import ch.vd.evd0022.v3.Function;
+import ch.vd.evd0022.v3.KindOfUidEntity;
+import ch.vd.evd0022.v3.LegalForm;
+import ch.vd.evd0022.v3.TypeOfLocation;
+import ch.vd.evd0022.v3.UidDeregistrationReason;
+import ch.vd.evd0022.v3.UidRegisterStatus;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.adapter.rcent.historizer.convertor.DateRangedConvertor;
@@ -24,18 +25,19 @@ import ch.vd.uniregctb.adapter.rcent.model.OrganisationLocation;
 
 public class OrganisationLocationBuilder {
 
-	private final Map<BigInteger, List<DateRangeHelper.Ranged<Identifier>>> identifiers;
+	private final Map<BigInteger, List<DateRangeHelper.Ranged<NamedOrganisationId>>> identifiers;
 	private final Map<BigInteger, List<DateRangeHelper.Ranged<String>>> names;
-	private final Map<BigInteger, List<DateRangeHelper.Ranged<String>>> otherNames;
-	private final Map<BigInteger, List<DateRangeHelper.Ranged<KindOfLocation>>> kindOfLocations;
+	private final Map<BigInteger, List<DateRangeHelper.Ranged<String>>> additionalName;
+	private final Map<BigInteger, List<DateRangeHelper.Ranged<TypeOfLocation>>> kindOfLocations;
+	private final Map<BigInteger, List<DateRangeHelper.Ranged<LegalForm>>> legalForm;
 	private final Map<BigInteger, List<DateRangeHelper.Ranged<Integer>>> seats;
 	private final Map<BigInteger, List<DateRangeHelper.Ranged<Function>>> function;
-	private final Map<BigInteger, List<DateRangeHelper.Ranged<BigInteger>>> replacedBy;
-	private final Map<BigInteger, List<DateRangeHelper.Ranged<BigInteger>>> inReplacementOf;
+	private final Map<BigInteger, List<DateRangeHelper.Ranged<BigInteger>>> burTransferTo;
+	private final Map<BigInteger, List<DateRangeHelper.Ranged<BigInteger>>> burTransferFrom;
+	private final Map<BigInteger, List<DateRangeHelper.Ranged<BigInteger>>> uidReplacedBy;
+	private final Map<BigInteger, List<DateRangeHelper.Ranged<BigInteger>>> uidInReplacementOf;
 
 	private final Map<BigInteger, List<DateRangeHelper.Ranged<CommercialRegisterStatus>>> rcStatus;
-	private final Map<BigInteger, List<DateRangeHelper.Ranged<String>>> rcName;
-	private final Map<BigInteger, List<DateRangeHelper.Ranged<CommercialRegisterEntryStatus>>> entryStatus;
 	private final Map<BigInteger, List<DateRangeHelper.Ranged<RegDate>>> entryDate;
 	private final Map<BigInteger, List<DateRangeHelper.Ranged<Capital>>> capital;
 	private final Map<BigInteger, List<DateRangeHelper.Ranged<Address>>> rcLegalAddresses;
@@ -45,49 +47,49 @@ public class OrganisationLocationBuilder {
 
 
 	private final Map<BigInteger, List<DateRangeHelper.Ranged<UidRegisterStatus>>> uidStatus;
-	private final Map<BigInteger, List<DateRangeHelper.Ranged<UidRegisterTypeOfOrganisation>>> uidTypeOfOrganisation;
+	private final Map<BigInteger, List<DateRangeHelper.Ranged<KindOfUidEntity>>> uidTypeOfOrganisation;
 	private final Map<BigInteger, List<DateRangeHelper.Ranged<Address>>> uidEffectiveAddesses;
 	private final Map<BigInteger, List<DateRangeHelper.Ranged<Address>>> uidPostalBoxAddresses;
-	private final Map<BigInteger, List<DateRangeHelper.Ranged<UidRegisterLiquidationReason>>> uidLiquidationReason;
+	private final Map<BigInteger, List<DateRangeHelper.Ranged<UidDeregistrationReason>>> uidLiquidationReason;
 
-	public OrganisationLocationBuilder(Map<BigInteger, List<DateRangeHelper.Ranged<Identifier>>> identifiers,
+	public OrganisationLocationBuilder(Map<BigInteger, List<DateRangeHelper.Ranged<NamedOrganisationId>>> identifiers,
 	                                   Map<BigInteger, List<DateRangeHelper.Ranged<String>>> names,
-	                                   Map<BigInteger, List<DateRangeHelper.Ranged<String>>> otherNames,
-	                                   Map<BigInteger, List<DateRangeHelper.Ranged<KindOfLocation>>> kindOfLocations,
-	                                   Map<BigInteger, List<DateRangeHelper.Ranged<Integer>>> seats,
+	                                   Map<BigInteger, List<DateRangeHelper.Ranged<String>>> additionalName,
+	                                   Map<BigInteger, List<DateRangeHelper.Ranged<TypeOfLocation>>> kindOfLocations,
+	                                   Map<BigInteger, List<DateRangeHelper.Ranged<LegalForm>>> legalForm, Map<BigInteger, List<DateRangeHelper.Ranged<Integer>>> seats,
 	                                   Map<BigInteger, List<DateRangeHelper.Ranged<Function>>> function,
-	                                   Map<BigInteger, List<DateRangeHelper.Ranged<BigInteger>>> replacedBy,
-	                                   Map<BigInteger, List<DateRangeHelper.Ranged<BigInteger>>> inReplacementOf,
-	                                   Map<BigInteger, List<DateRangeHelper.Ranged<String>>> rcName,
+	                                   Map<BigInteger, List<DateRangeHelper.Ranged<BigInteger>>> burTransferTo, Map<BigInteger, List<DateRangeHelper.Ranged<BigInteger>>> burTransferFrom,
+	                                   Map<BigInteger, List<DateRangeHelper.Ranged<BigInteger>>> uidReplacedBy,
+	                                   Map<BigInteger, List<DateRangeHelper.Ranged<BigInteger>>> UidInReplacementOf,
 	                                   Map<BigInteger, List<DateRangeHelper.Ranged<Address>>> rcLegalAddresses,
 	                                   Map<BigInteger, List<DateRangeHelper.Ranged<CommercialRegisterStatus>>> rcStatus,
-	                                   Map<BigInteger, List<DateRangeHelper.Ranged<CommercialRegisterEntryStatus>>> entryStatus,
 	                                   Map<BigInteger, List<DateRangeHelper.Ranged<RegDate>>> entryDate,
 	                                   Map<BigInteger, List<DateRangeHelper.Ranged<Capital>>> capital,
 	                                   Map<BigInteger, List<DateRangeHelper.Ranged<String>>> purpose,
 	                                   Map<BigInteger, List<DateRangeHelper.Ranged<RegDate>>> byLawsDate,
 	                                   Map<BigInteger, List<DateRangeHelper.Ranged<RegDate>>> cancellationDate,
 	                                   Map<BigInteger, List<DateRangeHelper.Ranged<UidRegisterStatus>>> uidStatus,
-	                                   Map<BigInteger, List<DateRangeHelper.Ranged<UidRegisterTypeOfOrganisation>>> uidTypeOfOrganisation,
+	                                   Map<BigInteger, List<DateRangeHelper.Ranged<KindOfUidEntity>>> uidTypeOfOrganisation,
 	                                   Map<BigInteger, List<DateRangeHelper.Ranged<Address>>> uidEffectiveAddesses,
 	                                   Map<BigInteger, List<DateRangeHelper.Ranged<Address>>> uidPostalBoxAddresses,
-	                                   Map<BigInteger, List<DateRangeHelper.Ranged<UidRegisterLiquidationReason>>> uidLiquidationReason) {
-		this.replacedBy = replacedBy;
-		this.inReplacementOf = inReplacementOf;
+	                                   Map<BigInteger, List<DateRangeHelper.Ranged<UidDeregistrationReason>>> uidLiquidationReason) {
+		this.legalForm = legalForm;
+		this.burTransferTo = burTransferTo;
+		this.burTransferFrom = burTransferFrom;
+		this.uidReplacedBy = uidReplacedBy;
+		this.uidInReplacementOf = UidInReplacementOf;
 		this.purpose = purpose;
 		this.byLawsDate = byLawsDate;
 		this.uidTypeOfOrganisation = uidTypeOfOrganisation;
 		this.uidPostalBoxAddresses = uidPostalBoxAddresses;
 		this.identifiers = identifiers;
 		this.names = names;
-		this.otherNames = otherNames;
+		this.additionalName = additionalName;
 		this.kindOfLocations = kindOfLocations;
 		this.seats = seats;
 		this.function = function;
-		this.rcName = rcName;
 		this.rcStatus = rcStatus;
 		this.entryDate = entryDate;
-		this.entryStatus = entryStatus;
 		this.capital = capital;
 		this.rcLegalAddresses = rcLegalAddresses;
 		this.uidStatus = uidStatus;
@@ -101,8 +103,6 @@ public class OrganisationLocationBuilder {
 				.map(e -> new OrganisationLocation(e.getKey().longValue(),
 				                                   e.getValue(),
 				                                   new OrganisationLocation.RCEntRCData(rcStatus.get(e.getKey()),
-				                                                                        rcName.get(e.getKey()),
-				                                                                        entryStatus.get(e.getKey()),
 				                                                                        capital.get(e.getKey()),
 				                                                                        rcLegalAddresses.get(e.getKey()),
 				                                                                        entryDate.get(e.getKey()),
@@ -115,19 +115,18 @@ public class OrganisationLocationBuilder {
 				                                                                         uidPostalBoxAddresses.get(e.getKey()),
 				                                                                         uidLiquidationReason.get(e.getKey())
 				                                   ),
-				                                   MultivalueListConverter.toMapOfListsOfDateRangedValues(identifiers.get(e.getKey()), Identifier::getIdentifierCategory,
-				                                                                                          Identifier::getIdentifierValue),
-				                                   otherNames.get(e.getKey()) == null ? null : MultivalueListConverter.toMapOfListsOfDateRangedValues(otherNames.get(e.getKey()),
-				                                                                                                                                      java.util.function.Function.identity(),
-				                                                                                                                                      java.util.function.Function.identity()),
+				                                   MultivalueListConverter.toMapOfListsOfDateRangedValues(identifiers.get(e.getKey()), NamedOrganisationId::getOrganisationIdCategory,
+				                                                                                          NamedOrganisationId::getOrganisationId),
+				                                   additionalName.get(e.getKey()) == null ? null : additionalName.get(e.getKey()),
 				                                   kindOfLocations.get(e.getKey()),
+				                                   legalForm.get(e.getKey()),
 				                                   seats.get(e.getKey()),
 				                                   function.get(e.getKey()) == null ? null : MultivalueListConverter
 						                                   .toMapOfListsOfDateRangedValues(function.get(e.getKey()), f -> f.getParty().getPerson().getName(), OrganisationFunction::new),
-				                                   replacedBy.get(e.getKey()) == null ? null : DateRangedConvertor.convert(replacedBy.get(e.getKey()), BigInteger::longValue),
-				                                   inReplacementOf.get(e.getKey()) == null ? null :
-						                                   MultivalueListConverter.toMapOfListsOfDateRangedValues(inReplacementOf.get(e.getKey()), BigInteger::longValue,
-						                                                                                          BigInteger::longValue)
+				                                   burTransferTo.get(e.getKey()) == null ? null : DateRangedConvertor.convert(burTransferTo.get(e.getKey()), BigInteger::longValue),
+				                                   burTransferFrom.get(e.getKey()) == null ? null : DateRangedConvertor.convert(burTransferFrom.get(e.getKey()), BigInteger::longValue),
+				                                   uidReplacedBy.get(e.getKey()) == null ? null : DateRangedConvertor.convert(uidReplacedBy.get(e.getKey()), BigInteger::longValue),
+				                                   uidInReplacementOf.get(e.getKey()) == null ? null : DateRangedConvertor.convert(uidInReplacementOf.get(e.getKey()), BigInteger::longValue)
 				     )
 				)
 				.collect(Collectors.toList());

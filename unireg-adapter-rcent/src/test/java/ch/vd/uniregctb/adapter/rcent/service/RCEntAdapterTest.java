@@ -4,7 +4,12 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
+import javax.xml.transform.Source;
+import javax.xml.transform.stream.StreamSource;
+import javax.xml.validation.Schema;
+import javax.xml.validation.SchemaFactory;
 import java.io.File;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
@@ -13,19 +18,21 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.core.io.ClassPathResource;
+import org.xml.sax.SAXException;
 
-import ch.vd.evd0021.v1.Address;
-import ch.vd.evd0022.v1.Authorisation;
-import ch.vd.evd0022.v1.Capital;
-import ch.vd.evd0022.v1.CommercialRegisterEntryStatus;
-import ch.vd.evd0022.v1.KindOfLocation;
-import ch.vd.evd0022.v1.LegalForm;
-import ch.vd.evd0022.v1.OrganisationData;
-import ch.vd.evd0022.v1.TypeOfCapital;
-import ch.vd.evd0022.v1.UidRegisterStatus;
+import ch.vd.evd0022.v3.Address;
+import ch.vd.evd0022.v3.Capital;
+import ch.vd.evd0022.v3.CommercialRegisterStatus;
+import ch.vd.evd0022.v3.LegalForm;
+import ch.vd.evd0022.v3.OrganisationData;
+import ch.vd.evd0022.v3.TypeOfCapital;
+import ch.vd.evd0022.v3.TypeOfLocation;
+import ch.vd.evd0022.v3.UidRegisterStatus;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.wsclient.rcent.RcEntClient;
+import ch.vd.unireg.xml.tools.ClasspathCatalogResolver;
 import ch.vd.uniregctb.adapter.rcent.historizer.OrganisationHistorizer;
 import ch.vd.uniregctb.adapter.rcent.model.Organisation;
 import ch.vd.uniregctb.adapter.rcent.model.OrganisationFunction;
@@ -40,6 +47,17 @@ import static org.mockito.Mockito.when;
 
 public class RCEntAdapterTest {
 
+	/*
+		Configuration des schémas applicables pour le décodage des annonces RCEnt
+    */
+	public static final String[] RCENT_SCHEMA = new String[]{
+			"eVD-0004-3-0.xsd",
+//			"eVD-0021-1-1.xsd",
+			"eVD-0022-3-0.xsd",
+			"eVD-0023-3-0.xsd",
+			"eVD-0024-3-0.xsd"
+	};
+
 	@Mock
 	private RcEntClient client;
 
@@ -51,12 +69,29 @@ public class RCEntAdapterTest {
 
 	@Before
 	public void setUp() throws Exception {
-		JAXBContext jc = JAXBContext.newInstance("ch.vd.evd0023.v1");
+		JAXBContext jc = JAXBContext.newInstance("ch.vd.evd0023.v3");
 		unmarshaller = jc.createUnmarshaller();
+		unmarshaller.setSchema(buildRequestSchema());
 
 		MockitoAnnotations.initMocks(this);
 
 		service = new RCEntAdapter(client, historizer);
+	}
+
+	private synchronized Schema buildRequestSchema() throws SAXException, IOException {
+		final SchemaFactory sf = SchemaFactory.newInstance(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI);
+		sf.setResourceResolver(new ClasspathCatalogResolver());
+		final Source[] source = getClasspathSources(RCENT_SCHEMA);
+		return sf.newSchema(source);
+	}
+
+	private static Source[] getClasspathSources(String... pathes) throws IOException {
+		final Source[] sources = new Source[pathes.length];
+		for (int i = 0, pathLength = pathes.length; i < pathLength; i++) {
+			final String path = pathes[i];
+			sources[i] = new StreamSource(new ClassPathResource(path).getURL().toExternalForm());
+		}
+		return sources;
 	}
 
 	@Test
@@ -71,12 +106,12 @@ public class RCEntAdapterTest {
 
 		// Check basic organisation data
 		{
-			assertThat(organisation.getLegalForm().get(0).getDateDebut(), equalTo(RegDate.get(2015, 5, 1)));
-			assertThat(organisation.getLegalForm().get(0).getDateFin(), nullValue());
-			assertThat(organisation.getLegalForm().get(0).getPayload(), equalTo(LegalForm.N_0101_ENTREPRISE_INDIVIDUELLE));
+			assertThat(organisation.getLocationData().get(0).getLegalForm().get(0).getDateDebut(), equalTo(RegDate.get(2015, 5, 1)));
+			assertThat(organisation.getLocationData().get(0).getLegalForm().get(0).getDateFin(), nullValue());
+			assertThat(organisation.getLocationData().get(0).getLegalForm().get(0).getPayload(), equalTo(LegalForm.N_0101_ENTREPRISE_INDIVIDUELLE));
 		}
 
-		assertThat(organisation.getOrganisationName().get(0).getPayload(), equalTo("Jean-François Niklaus"));
+		assertThat(organisation.getLocationData().get(0).getName().get(0).getPayload(), equalTo("Jean-François Niklaus"));
 
 		// Locations
 		assertThat(organisation.getLocations().size(), equalTo(1));
@@ -99,20 +134,20 @@ public class RCEntAdapterTest {
 		assertThat(identifierMap.get("CT.VD.PARTY").size(), equalTo(1));
 		assertThat(identifierMap.get("CT.VD.PARTY").get(0).getPayload(), equalTo("101072745"));
 
-		final KindOfLocation kindOfLocation = organisation.getLocationData().get(0).getKindOfLocation().get(0).getPayload();
-		assertThat(kindOfLocation, equalTo(KindOfLocation.ETABLISSEMENT_PRINCIPAL));
+		final TypeOfLocation kindOfLocation = organisation.getLocationData().get(0).getTypeOfLocation().get(0).getPayload();
+		assertThat(kindOfLocation, equalTo(TypeOfLocation.ETABLISSEMENT_PRINCIPAL));
 
 		assertThat(organisation.getLocationData().get(0).getSeat().get(0).getPayload(), equalTo(5561));
 
 		// Adresse
 		Address effectiveAddress = organisation.getLocationData().get(0).getUid().getEffectiveAddress().get(0).getPayload();
-		assertThat(effectiveAddress.getAddressLine1(), equalTo("Les Tuileries"));
-		assertThat(effectiveAddress.getAddressLine2(), nullValue());
-		assertThat(effectiveAddress.getStreet(), equalTo("Chemin du Mont"));
-		assertThat(effectiveAddress.getHouseNumber(), equalTo("15"));
-		assertThat(effectiveAddress.getSwissZipCode(), equalTo(1422L));
-		assertThat(effectiveAddress.getCountry().getCountryName(), equalTo("CH"));
-		assertThat(effectiveAddress.getTown(), equalTo("Grandson"));
+		assertThat(effectiveAddress.getAddressInformation().getAddressLine1(), equalTo("Les Tuileries"));
+		assertThat(effectiveAddress.getAddressInformation().getAddressLine2(), nullValue());
+		assertThat(effectiveAddress.getAddressInformation().getStreet(), equalTo("Chemin du Mont"));
+		assertThat(effectiveAddress.getAddressInformation().getHouseNumber(), equalTo("15"));
+		assertThat(effectiveAddress.getAddressInformation().getSwissZipCode(), equalTo(1422L));
+		assertThat(effectiveAddress.getAddressInformation().getCountry().getCountryNameShort(), equalTo("Suisse"));
+		assertThat(effectiveAddress.getAddressInformation().getTown(), equalTo("Grandson"));
 		assertThat(effectiveAddress.getFederalBuildingId(), equalTo(872180L));
 
 	}
@@ -132,26 +167,26 @@ public class RCEntAdapterTest {
 		Address postalAddress_period1 = postOfficeBoxAddressRange1.getPayload();
 		assertThat(postOfficeBoxAddressRange1.getDateDebut(), equalTo(RegDate.get(2015, 4, 29)));
 		assertThat(postOfficeBoxAddressRange1.getDateFin(), equalTo(RegDate.get(2015, 4, 30)));
-		assertThat(postalAddress_period1.getAddressLine1(), nullValue());
-		assertThat(postalAddress_period1.getAddressLine2(), nullValue());
-		assertThat(postalAddress_period1.getStreet(), equalTo("Chemin du Mont"));
-		assertThat(postalAddress_period1.getHouseNumber(), equalTo("15"));
-		assertThat(postalAddress_period1.getTown(), equalTo("Triffouilli les oies"));
-		assertThat(postalAddress_period1.getSwissZipCode(), equalTo(1101L));
-		assertThat(postalAddress_period1.getCountry().getCountryName(), equalTo("CH"));
+		assertThat(postalAddress_period1.getAddressInformation().getAddressLine1(), nullValue());
+		assertThat(postalAddress_period1.getAddressInformation().getAddressLine2(), nullValue());
+		assertThat(postalAddress_period1.getAddressInformation().getStreet(), equalTo("Chemin du Mont"));
+		assertThat(postalAddress_period1.getAddressInformation().getHouseNumber(), equalTo("15"));
+		assertThat(postalAddress_period1.getAddressInformation().getTown(), equalTo("Triffouilli les oies"));
+		assertThat(postalAddress_period1.getAddressInformation().getSwissZipCode(), equalTo(1101L));
+		assertThat(postalAddress_period1.getAddressInformation().getCountry().getCountryIdISO2(), equalTo("CH"));
 
 		// Adresse changée
 		final DateRangeHelper.Ranged<Address> postOfficeBoxAddressRange2 = organisation.getLocationData().get(0).getUid().getPostOfficeBoxAddress().get(1);
 		Address postalAddress_period2 = postOfficeBoxAddressRange2.getPayload();
 		assertThat(postOfficeBoxAddressRange2.getDateDebut(), equalTo(RegDate.get(2015, 5, 1)));
 		assertThat(postOfficeBoxAddressRange2.getDateFin(), nullValue());
-		assertThat(postalAddress_period2.getAddressLine1(), nullValue());
-		assertThat(postalAddress_period2.getAddressLine2(), nullValue());
-		assertThat(postalAddress_period2.getStreet(), equalTo("Chemin du Mont"));
-		assertThat(postalAddress_period2.getHouseNumber(), equalTo("15"));
-		assertThat(postalAddress_period2.getTown(), equalTo("Grandson"));
-		assertThat(postalAddress_period2.getSwissZipCode(), equalTo(1422L));
-		assertThat(postalAddress_period2.getCountry().getCountryName(), equalTo("CH"));
+		assertThat(postalAddress_period2.getAddressInformation().getAddressLine1(), nullValue());
+		assertThat(postalAddress_period2.getAddressInformation().getAddressLine2(), nullValue());
+		assertThat(postalAddress_period2.getAddressInformation().getStreet(), equalTo("Chemin du Mont"));
+		assertThat(postalAddress_period2.getAddressInformation().getHouseNumber(), equalTo("15"));
+		assertThat(postalAddress_period2.getAddressInformation().getTown(), equalTo("Grandson"));
+		assertThat(postalAddress_period2.getAddressInformation().getSwissZipCode(), equalTo(1422L));
+		assertThat(postalAddress_period2.getAddressInformation().getCountry().getCountryIdISO2(), equalTo("CH"));
 	}
 
 	@Test
@@ -171,39 +206,39 @@ public class RCEntAdapterTest {
 		Address postalAddress_period1 = addressDateRanged1.getPayload();
 		assertThat(addressDateRanged1.getDateDebut(), equalTo(RegDate.get(2015, 4, 29)));
 		assertThat(addressDateRanged1.getDateFin(), equalTo(RegDate.get(2015, 4, 30)));
-		assertThat(postalAddress_period1.getAddressLine1(), nullValue());
-		assertThat(postalAddress_period1.getAddressLine2(), nullValue());
-		assertThat(postalAddress_period1.getStreet(), equalTo("Chemin du Mont"));
-		assertThat(postalAddress_period1.getHouseNumber(), equalTo("15"));
-		assertThat(postalAddress_period1.getTown(), equalTo("Triffouilli les oies"));
-		assertThat(postalAddress_period1.getSwissZipCode(), equalTo(1101L));
-		assertThat(postalAddress_period1.getCountry().getCountryName(), equalTo("CH"));
+		assertThat(postalAddress_period1.getAddressInformation().getAddressLine1(), nullValue());
+		assertThat(postalAddress_period1.getAddressInformation().getAddressLine2(), nullValue());
+		assertThat(postalAddress_period1.getAddressInformation().getStreet(), equalTo("Chemin du Mont"));
+		assertThat(postalAddress_period1.getAddressInformation().getHouseNumber(), equalTo("15"));
+		assertThat(postalAddress_period1.getAddressInformation().getTown(), equalTo("Triffouilli les oies"));
+		assertThat(postalAddress_period1.getAddressInformation().getSwissZipCode(), equalTo(1101L));
+		assertThat(postalAddress_period1.getAddressInformation().getCountry().getCountryNameShort(), equalTo("Suisse"));
 
 		// Adresse changée
 		final DateRangeHelper.Ranged<Address> addressDateRanged2 = organisation.getLocationData().get(0).getUid().getPostOfficeBoxAddress().get(1);
 		Address postalAddress_period2 = addressDateRanged2.getPayload();
 		assertThat(addressDateRanged2.getDateDebut(), equalTo(RegDate.get(2015, 5, 1)));
 		assertThat(addressDateRanged2.getDateFin(), equalTo(RegDate.get(2015, 5, 23)));
-		assertThat(postalAddress_period2.getAddressLine1(), nullValue());
-		assertThat(postalAddress_period2.getAddressLine2(), nullValue());
-		assertThat(postalAddress_period2.getStreet(), equalTo("Chemin du Mont"));
-		assertThat(postalAddress_period2.getHouseNumber(), equalTo("15"));
-		assertThat(postalAddress_period2.getTown(), equalTo("Grandson"));
-		assertThat(postalAddress_period2.getSwissZipCode(), equalTo(1422L));
-		assertThat(postalAddress_period2.getCountry().getCountryName(), equalTo("CH"));
+		assertThat(postalAddress_period2.getAddressInformation().getAddressLine1(), nullValue());
+		assertThat(postalAddress_period2.getAddressInformation().getAddressLine2(), nullValue());
+		assertThat(postalAddress_period2.getAddressInformation().getStreet(), equalTo("Chemin du Mont"));
+		assertThat(postalAddress_period2.getAddressInformation().getHouseNumber(), equalTo("15"));
+		assertThat(postalAddress_period2.getAddressInformation().getTown(), equalTo("Grandson"));
+		assertThat(postalAddress_period2.getAddressInformation().getSwissZipCode(), equalTo(1422L));
+		assertThat(postalAddress_period2.getAddressInformation().getCountry().getCountryNameShort(), equalTo("Suisse"));
 
 		// Adresse enlevée puis nouvelle plus tard
 		final DateRangeHelper.Ranged<Address> addressDateRanged3 = organisation.getLocationData().get(0).getUid().getPostOfficeBoxAddress().get(2);
 		Address postalAddress_period3 = addressDateRanged3.getPayload();
 		assertThat(addressDateRanged3.getDateDebut(), equalTo(RegDate.get(2015, 6, 6)));
 		assertThat(addressDateRanged3.getDateFin(), nullValue());
-		assertThat(postalAddress_period3.getAddressLine1(), nullValue());
-		assertThat(postalAddress_period3.getAddressLine2(), nullValue());
-		assertThat(postalAddress_period3.getStreet(), equalTo("Chemin du lac"));
-		assertThat(postalAddress_period3.getHouseNumber(), equalTo("18"));
-		assertThat(postalAddress_period3.getTown(), equalTo("Hiverdon"));
-		assertThat(postalAddress_period3.getSwissZipCode(), equalTo(1919L));
-		assertThat(postalAddress_period3.getCountry().getCountryName(), equalTo("CH"));
+		assertThat(postalAddress_period3.getAddressInformation().getAddressLine1(), nullValue());
+		assertThat(postalAddress_period3.getAddressInformation().getAddressLine2(), nullValue());
+		assertThat(postalAddress_period3.getAddressInformation().getStreet(), equalTo("Chemin du lac"));
+		assertThat(postalAddress_period3.getAddressInformation().getHouseNumber(), equalTo("18"));
+		assertThat(postalAddress_period3.getAddressInformation().getTown(), equalTo("Hiverdon"));
+		assertThat(postalAddress_period3.getAddressInformation().getSwissZipCode(), equalTo(1919L));
+		assertThat(postalAddress_period3.getAddressInformation().getCountry().getCountryNameShort(), equalTo("Suisse"));
 	}
 
 	@Test
@@ -217,22 +252,22 @@ public class RCEntAdapterTest {
 		assertThat(organisation.getCantonalId(), equalTo(101202213L));
 
 		// Check basic organisation data
-		assertThat(organisation.getLegalForm().get(0).getDateDebut(), equalTo(RegDate.get(2015, 4, 29)));
-		assertThat(organisation.getLegalForm().get(0).getDateFin(), nullValue());
-		assertThat(organisation.getLegalForm().get(0).getPayload(), equalTo(LegalForm.N_0106_SOCIETE_ANONYME));
+		assertThat(organisation.getLocationData().get(0).getLegalForm().get(0).getDateDebut(), equalTo(RegDate.get(2015, 4, 29)));
+		assertThat(organisation.getLocationData().get(0).getLegalForm().get(0).getDateFin(), nullValue());
+		assertThat(organisation.getLocationData().get(0).getLegalForm().get(0).getPayload(), equalTo(LegalForm.N_0106_SOCIETE_ANONYME));
 
 		{ // Nom
-			assertThat(organisation.getOrganisationName().get(0).getDateDebut(), equalTo(RegDate.get(2015, 4, 29)));
-			assertThat(organisation.getOrganisationName().get(0).getDateFin(), equalTo(RegDate.get(2015, 5, 24)));
-			assertThat(organisation.getOrganisationName().get(0).getPayload(), equalTo("Seroc S.A."));
+			assertThat(organisation.getLocationData().get(0).getName().get(0).getDateDebut(), equalTo(RegDate.get(2015, 4, 29)));
+			assertThat(organisation.getLocationData().get(0).getName().get(0).getDateFin(), equalTo(RegDate.get(2015, 5, 24)));
+			assertThat(organisation.getLocationData().get(0).getName().get(0).getPayload(), equalTo("Seroc S.A."));
 
-			assertThat(organisation.getOrganisationName().get(1).getDateDebut(), equalTo(RegDate.get(2015, 5, 25)));
-			assertThat(organisation.getOrganisationName().get(1).getDateFin(), equalTo(RegDate.get(2015, 6, 5)));
-			assertThat(organisation.getOrganisationName().get(1).getPayload(), equalTo("SeroKK S.A."));
+			assertThat(organisation.getLocationData().get(0).getName().get(1).getDateDebut(), equalTo(RegDate.get(2015, 5, 25)));
+			assertThat(organisation.getLocationData().get(0).getName().get(1).getDateFin(), equalTo(RegDate.get(2015, 6, 5)));
+			assertThat(organisation.getLocationData().get(0).getName().get(1).getPayload(), equalTo("SeroKK S.A."));
 
-			assertThat(organisation.getOrganisationName().get(2).getDateDebut(), equalTo(RegDate.get(2015, 6, 6)));
-			assertThat(organisation.getOrganisationName().get(2).getDateFin(), nullValue());
-			assertThat(organisation.getOrganisationName().get(2).getPayload(), equalTo("ZeroXX S.A."));
+			assertThat(organisation.getLocationData().get(0).getName().get(2).getDateDebut(), equalTo(RegDate.get(2015, 6, 6)));
+			assertThat(organisation.getLocationData().get(0).getName().get(2).getDateFin(), nullValue());
+			assertThat(organisation.getLocationData().get(0).getName().get(2).getPayload(), equalTo("ZeroXX S.A."));
 		}
 
 		// Locations
@@ -291,8 +326,8 @@ public class RCEntAdapterTest {
 		assertThat(identifierMap.get("CT.VD.PARTY").size(), equalTo(1));
 		assertThat(identifierMap.get("CT.VD.PARTY").get(0).getPayload(), equalTo("101072728"));
 
-		final KindOfLocation kindOfLocation = organisation.getLocationData().get(0).getKindOfLocation().get(0).getPayload();
-		assertThat(kindOfLocation, equalTo(KindOfLocation.ETABLISSEMENT_PRINCIPAL));
+		final TypeOfLocation kindOfLocation = organisation.getLocationData().get(0).getTypeOfLocation().get(0).getPayload();
+		assertThat(kindOfLocation, equalTo(TypeOfLocation.ETABLISSEMENT_PRINCIPAL));
 
 		assertThat(organisation.getLocationData().get(0).getSeat().get(0).getPayload(), equalTo(5413));
 
@@ -304,26 +339,26 @@ public class RCEntAdapterTest {
 		Address postalAddress_period1 = addressDateRanged1.getPayload();
 		assertThat(addressDateRanged1.getDateDebut(), equalTo(RegDate.get(2015, 4, 29)));
 		assertThat(addressDateRanged1.getDateFin(), equalTo(RegDate.get(2015, 4, 30)));
-		assertThat(postalAddress_period1.getAddressLine1(), nullValue());
-		assertThat(postalAddress_period1.getAddressLine2(), nullValue());
-		assertThat(postalAddress_period1.getStreet(), equalTo("Zone Industrielle La Coche"));
-		assertThat(postalAddress_period1.getHouseNumber(), equalTo("11"));
-		assertThat(postalAddress_period1.getTown(), equalTo("Roche VD"));
-		assertThat(postalAddress_period1.getSwissZipCode(), equalTo(1852L));
-		assertThat(postalAddress_period1.getCountry().getCountryName(), equalTo("CH"));
+		assertThat(postalAddress_period1.getAddressInformation().getAddressLine1(), nullValue());
+		assertThat(postalAddress_period1.getAddressInformation().getAddressLine2(), nullValue());
+		assertThat(postalAddress_period1.getAddressInformation().getStreet(), equalTo("Zone Industrielle La Coche"));
+		assertThat(postalAddress_period1.getAddressInformation().getHouseNumber(), equalTo("11"));
+		assertThat(postalAddress_period1.getAddressInformation().getTown(), equalTo("Roche VD"));
+		assertThat(postalAddress_period1.getAddressInformation().getSwissZipCode(), equalTo(1852L));
+		assertThat(postalAddress_period1.getAddressInformation().getCountry().getCountryNameShort(), equalTo("Suisse"));
 
 		// Adresse enlevée puis nouvelle plus tard, à l'identique
 		final DateRangeHelper.Ranged<Address> addressDateRanged2 = organisation.getLocationData().get(0).getUid().getPostOfficeBoxAddress().get(1);
 		Address postalAddress_period2 = addressDateRanged2.getPayload();
 		assertThat(addressDateRanged2.getDateDebut(), equalTo(RegDate.get(2015, 5, 15)));
 		assertThat(addressDateRanged2.getDateFin(), nullValue());
-		assertThat(postalAddress_period2.getAddressLine1(), nullValue());
-		assertThat(postalAddress_period2.getAddressLine2(), nullValue());
-		assertThat(postalAddress_period2.getStreet(), equalTo("Zone Industrielle La Coche"));
-		assertThat(postalAddress_period2.getHouseNumber(), equalTo("11"));
-		assertThat(postalAddress_period2.getTown(), equalTo("Roche VD"));
-		assertThat(postalAddress_period2.getSwissZipCode(), equalTo(1852L));
-		assertThat(postalAddress_period2.getCountry().getCountryName(), equalTo("CH"));
+		assertThat(postalAddress_period2.getAddressInformation().getAddressLine1(), nullValue());
+		assertThat(postalAddress_period2.getAddressInformation().getAddressLine2(), nullValue());
+		assertThat(postalAddress_period2.getAddressInformation().getStreet(), equalTo("Zone Industrielle La Coche"));
+		assertThat(postalAddress_period2.getAddressInformation().getHouseNumber(), equalTo("11"));
+		assertThat(postalAddress_period2.getAddressInformation().getTown(), equalTo("Roche VD"));
+		assertThat(postalAddress_period2.getAddressInformation().getSwissZipCode(), equalTo(1852L));
+		assertThat(postalAddress_period2.getAddressInformation().getCountry().getCountryNameShort(), equalTo("Suisse"));
 	}
 
 	@Test
@@ -347,13 +382,13 @@ public class RCEntAdapterTest {
 		assertEquals(new BigDecimal(23000), capital.getCashedInAmount());
 		assertEquals(TypeOfCapital.CAPITAL_SOCIAL, capital.getTypeOfCapital());
 
-		List<DateRangeHelper.Ranged<String>> locationRcName = organisation.getLocationData().get(0).getRc().getName();
-		assertEquals("Bomaco Sàrl en liquidation", locationRcName.get(0).getPayload());
+		List<DateRangeHelper.Ranged<String>> locationName = organisation.getLocationData().get(0).getName();
+		assertEquals("Bomaco Sàrl en liquidation", locationName.get(0).getPayload());
 
-		List<DateRangeHelper.Ranged<CommercialRegisterEntryStatus>> locationRcEntryStatus = organisation.getLocationData().get(0).getRc().getEntryStatus();
-		assertEquals(CommercialRegisterEntryStatus.ACTIF, locationRcEntryStatus.get(0).getPayload());
+		List<DateRangeHelper.Ranged<CommercialRegisterStatus>> locationRcEntryStatus = organisation.getLocationData().get(0).getRc().getRegistrationStatus();
+		assertEquals(CommercialRegisterStatus.ACTIF, locationRcEntryStatus.get(0).getPayload());
 
-		List<DateRangeHelper.Ranged<RegDate>> locationRcEntryDate = organisation.getLocationData().get(0).getRc().getEntryDate();
+		List<DateRangeHelper.Ranged<RegDate>> locationRcEntryDate = organisation.getLocationData().get(0).getRc().getRegistrationDate();
 		assertEquals(RegDate.get(2007, 4, 16), locationRcEntryDate.get(0).getPayload());
 
 		// JDE 27.01.2016 : déconnecté l'interprétation des fonctions qui pêtait dès qu'une même personne avait plusieurs fonctions à un moment donné

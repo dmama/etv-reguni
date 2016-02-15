@@ -1,6 +1,6 @@
 package ch.vd.uniregctb.adapter.rcent.historizer.equalator;
 
-import ch.vd.evd0022.v1.Function;
+import ch.vd.evd0022.v3.Function;
 import ch.vd.uniregctb.adapter.rcent.model.OrganisationFunction;
 
 public class OrganisationFunctionEqualator implements Equalator<Function> {

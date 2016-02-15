@@ -4,8 +4,8 @@ import java.math.BigInteger;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
-import ch.vd.evd0022.v1.Organisation;
-import ch.vd.evd0022.v1.OrganisationLocation;
+import ch.vd.evd0022.v3.Organisation;
+import ch.vd.evd0022.v3.OrganisationLocation;
 
 public class LocationsExtractor implements Function<Organisation, Stream<? extends BigInteger>> {
 

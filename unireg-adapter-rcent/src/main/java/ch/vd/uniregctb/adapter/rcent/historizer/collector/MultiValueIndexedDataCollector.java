@@ -34,6 +34,10 @@ public class MultiValueIndexedDataCollector<S, D, KS, KI> extends IndexedDataCol
 	private final Map<KS, MultiValueDataCollector<S, Keyed<KS, D>, KI>> groupings = new HashMap<>();
 
 	/**
+	 * ATTENTION: Si l'extracteur utilisé renvoie un type complexe, il faut impérativement fournir un dataEqualator dédié.
+	 *            La simple équivalence n'est pas suffisante, puisque qu'il faut séparer la valeur (que l'on compare) de
+	 *            la clé de regroupement (qui détermine l'appartenance à un historique de valeurs). Pour les types de base,
+	 *            equals() suffit car ils sont leur propre clé.
 	 * @param dataExtractor extracteur des données du snapshot
 	 * @param dataEqualator prédicat qui permet de dire si une donnée extraite est restée idendique ou pas
 	 * @param groupingKeyExtractor extracteur de la clé (interne) de regroupement (ce seront pas les clés dans la map de résultats finaux)

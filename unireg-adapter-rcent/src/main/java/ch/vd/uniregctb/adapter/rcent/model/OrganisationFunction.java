@@ -1,6 +1,6 @@
 package ch.vd.uniregctb.adapter.rcent.model;
 
-import ch.vd.evd0022.v1.Authorisation;
+import ch.vd.evd0022.v3.Authorisation;
 
 /**
  * @author Raphaël Marmier, 2015-08-25
@@ -17,7 +17,7 @@ public class OrganisationFunction {
 	private final Authorisation authorisation;
 	private final String authorisationRestriction;
 
-	public OrganisationFunction(ch.vd.evd0022.v1.Function function) {
+	public OrganisationFunction(ch.vd.evd0022.v3.Function function) {
 		this.cantonalId = function.getParty().getPerson().getCantonalId();
 		this.name = function.getParty().getPerson().getName();
 		this.firstName = function.getParty().getPerson().getFirstName();

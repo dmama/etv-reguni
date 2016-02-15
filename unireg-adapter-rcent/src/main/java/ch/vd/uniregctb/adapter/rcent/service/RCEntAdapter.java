@@ -1,7 +1,7 @@
 package ch.vd.uniregctb.adapter.rcent.service;
 
 
-import ch.vd.evd0022.v1.OrganisationData;
+import ch.vd.evd0022.v3.OrganisationData;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.wsclient.rcent.RcEntClient;
 import ch.vd.uniregctb.adapter.rcent.historizer.OrganisationHistorizer;

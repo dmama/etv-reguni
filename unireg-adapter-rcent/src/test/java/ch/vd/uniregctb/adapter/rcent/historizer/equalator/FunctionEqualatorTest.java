@@ -2,11 +2,11 @@ package ch.vd.uniregctb.adapter.rcent.historizer.equalator;
 
 import org.junit.Test;
 
-import ch.vd.evd0022.v1.Authorisation;
-import ch.vd.evd0022.v1.Function;
-import ch.vd.evd0022.v1.Party;
-import ch.vd.evd0022.v1.Person;
-import ch.vd.evd0022.v1.PlaceOfResidence;
+import ch.vd.evd0022.v3.Authorisation;
+import ch.vd.evd0022.v3.Function;
+import ch.vd.evd0022.v3.Party;
+import ch.vd.evd0022.v3.Person;
+import ch.vd.evd0022.v3.PlaceOfResidence;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
