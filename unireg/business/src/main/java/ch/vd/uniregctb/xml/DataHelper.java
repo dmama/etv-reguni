@@ -647,10 +647,13 @@ public abstract class DataHelper {
 			case TAX_RESIDENCES:
 			case VIRTUAL_TAX_RESIDENCES:
 			case MANAGING_TAX_RESIDENCES:
+				results.add(TiersDAO.Parts.FORS_FISCAUX);
+				break;
 			case TAX_LIABILITIES:
 			case SIMPLIFIED_TAX_LIABILITIES:
 			case TAXATION_PERIODS:
 				results.add(TiersDAO.Parts.FORS_FISCAUX);
+				results.add(TiersDAO.Parts.BOUCLEMENTS);
 				break;
 			case RELATIONS_BETWEEN_PARTIES:
 			case CHILDREN:
@@ -710,10 +713,13 @@ public abstract class DataHelper {
 			case TAX_RESIDENCES:
 			case VIRTUAL_TAX_RESIDENCES:
 			case MANAGING_TAX_RESIDENCES:
+				results.add(TiersDAO.Parts.FORS_FISCAUX);
+				break;
 			case TAX_LIABILITIES:
 			case SIMPLIFIED_TAX_LIABILITIES:
 			case TAXATION_PERIODS:
 				results.add(TiersDAO.Parts.FORS_FISCAUX);
+				results.add(TiersDAO.Parts.BOUCLEMENTS);
 				break;
 			case RELATIONS_BETWEEN_PARTIES:
 			case CHILDREN:
@@ -773,10 +779,13 @@ public abstract class DataHelper {
 			case TAX_RESIDENCES:
 			case VIRTUAL_TAX_RESIDENCES:
 			case MANAGING_TAX_RESIDENCES:
+				results.add(TiersDAO.Parts.FORS_FISCAUX);
+				break;
 			case TAX_LIABILITIES:
 			case SIMPLIFIED_TAX_LIABILITIES:
 			case TAXATION_PERIODS:
 				results.add(TiersDAO.Parts.FORS_FISCAUX);
+				results.add(TiersDAO.Parts.BOUCLEMENTS);
 				break;
 			case WITHHOLDING_TAXATION_PERIODS:
 				results.add(TiersDAO.Parts.FORS_FISCAUX);
@@ -841,10 +850,13 @@ public abstract class DataHelper {
 			case TAX_RESIDENCES:
 			case VIRTUAL_TAX_RESIDENCES:
 			case MANAGING_TAX_RESIDENCES:
+				results.add(TiersDAO.Parts.FORS_FISCAUX);
+				break;
 			case TAX_LIABILITIES:
 			case SIMPLIFIED_TAX_LIABILITIES:
 			case TAXATION_PERIODS:
 				results.add(TiersDAO.Parts.FORS_FISCAUX);
+				results.add(TiersDAO.Parts.BOUCLEMENTS);
 				break;
 			case WITHHOLDING_TAXATION_PERIODS:
 				results.add(TiersDAO.Parts.FORS_FISCAUX);
