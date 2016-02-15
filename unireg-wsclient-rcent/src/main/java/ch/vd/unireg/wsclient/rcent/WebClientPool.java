@@ -14,7 +14,7 @@ import org.apache.cxf.jaxrs.client.WebClient;
 import org.apache.cxf.jaxrs.provider.JAXBElementProvider;
 import org.apache.cxf.transport.http.HTTPConduit;
 
-import ch.vd.evd0022.v1.OrganisationData;
+import ch.vd.evd0022.v3.OrganisationData;
 
 public class WebClientPool {
 

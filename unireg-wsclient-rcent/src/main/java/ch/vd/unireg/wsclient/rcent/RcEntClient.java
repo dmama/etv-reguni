@@ -1,7 +1,7 @@
 package ch.vd.unireg.wsclient.rcent;
 
-import ch.vd.evd0022.v1.OrganisationData;
-import ch.vd.evd0022.v1.OrganisationsOfNotice;
+import ch.vd.evd0022.v3.OrganisationData;
+import ch.vd.evd0022.v3.OrganisationsOfNotice;
 import ch.vd.registre.base.date.RegDate;
 
 /**

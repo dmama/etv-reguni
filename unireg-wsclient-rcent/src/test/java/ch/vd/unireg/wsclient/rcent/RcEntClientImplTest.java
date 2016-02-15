@@ -7,7 +7,7 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import ch.vd.evd0022.v1.OrganisationData;
+import ch.vd.evd0022.v3.OrganisationData;
 
 /**
  * Classe de tests utilitaires permettant de vérifier rapidement le bon fonctionnement du
@@ -18,15 +18,14 @@ public class RcEntClientImplTest {
 
 	public static final String[] RCENT_SCHEMA = new String[]{
 			"eVD-0004-3-0.xsd",
-			"eVD-0021-1-1.xsd",
-			"eVD-0022-1-1.xsd",
-			"eVD-0023-1-1.xsd",
-			"eVD-0024-1-1.xsd"
+			"eVD-0022-3-0.xsd",
+			"eVD-0023-3-0.xsd",
+			"eVD-0024-3-0.xsd"
 	};
 
 	private static final String BASE_URL = "http://slv2737v.etat-de-vaud.ch:8040/services";
-	private static final String ORGANISATION_PATH = "/v1/organisation/CT.VD.PARTY";
-	private static final String ORGANISATIONS_OF_NOTICE_PATH = "/v1/organisationsOfNotice";
+	private static final String ORGANISATION_PATH = "/v3/organisation/CT.VD.PARTY";
+	private static final String ORGANISATIONS_OF_NOTICE_PATH = "/v3/organisationsOfNotice";
 
 	// Organisation cible pour les tests. Une seule suffit.
 	private static final long NO100983251 = 100983251L;
@@ -43,7 +42,7 @@ public class RcEntClientImplTest {
 		OrganisationData data = client.getOrganisation(NO100983251, null, true);
 		Assert.assertNotNull(data);
 		Assert.assertEquals(NO100983251, data.getOrganisationSnapshot().get(0).getOrganisation().getCantonalId().longValue());
-		Assert.assertEquals(BOMACO_SÀRL_EN_LIQUIDATION, data.getOrganisationSnapshot().get(0).getOrganisation().getOrganisationName());
+		Assert.assertEquals(BOMACO_SÀRL_EN_LIQUIDATION, data.getOrganisationSnapshot().get(0).getOrganisation().getOrganisationLocation().get(0).getName());
 	}
 
 	@Ignore
@@ -53,7 +52,7 @@ public class RcEntClientImplTest {
 		OrganisationData data = client.getOrganisation(NO100983251, null, true);
 		Assert.assertNotNull(data);
 		Assert.assertEquals(NO100983251, data.getOrganisationSnapshot().get(0).getOrganisation().getCantonalId().longValue());
-		Assert.assertEquals(BOMACO_SÀRL_EN_LIQUIDATION, data.getOrganisationSnapshot().get(0).getOrganisation().getOrganisationName());
+		Assert.assertEquals(BOMACO_SÀRL_EN_LIQUIDATION, data.getOrganisationSnapshot().get(0).getOrganisation().getOrganisationLocation().get(0).getName());
 	}
 
 	private RcEntClient createRCEntClient(boolean validating) throws Exception {

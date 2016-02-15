@@ -6,8 +6,8 @@ import org.apache.cxf.jaxrs.client.ServerWebApplicationException;
 import org.apache.cxf.jaxrs.client.WebClient;
 import org.springframework.beans.factory.InitializingBean;
 
-import ch.vd.evd0022.v1.OrganisationData;
-import ch.vd.evd0022.v1.OrganisationsOfNotice;
+import ch.vd.evd0022.v3.OrganisationData;
+import ch.vd.evd0022.v3.OrganisationsOfNotice;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 
