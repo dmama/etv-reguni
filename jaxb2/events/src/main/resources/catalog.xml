@@ -22,7 +22,9 @@
 	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/numbers-request-1.xsd" uri="event/party/numbers-request-1.xsd"/>
 	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/numbers-response-1.xsd" uri="event/party/numbers-response-1.xsd"/>
 	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/request-1.xsd" uri="event/party/request-1.xsd"/>
+	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/request-2.xsd" uri="event/party/request-2.xsd"/>
 	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/response-1.xsd" uri="event/party/response-1.xsd"/>
+	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/response-2.xsd" uri="event/party/response-2.xsd"/>
 	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/party-request-1.xsd" uri="event/party/party-request-1.xsd"/>
 	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/party-request-2.xsd" uri="event/party/party-request-2.xsd"/>
 	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/party-request-3.xsd" uri="event/party/party-request-3.xsd"/>
@@ -46,6 +48,8 @@
 	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/fiscact-request-1.xsd" uri="event/party/fiscact-request-1.xsd"/>
 	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/fiscact-response-1.xsd" uri="event/party/fiscact-response-1.xsd"/>
 	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/periodic-fiscact-request-1.xsd" uri="event/party/periodic-fiscact-request-1.xsd"/>
+	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/advance-payment-corporations-request-1.xsd" uri="event/party/advance-payment-corporations-request-1.xsd"/>
+	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/advance-payment-corporations-response-1.xsd" uri="event/party/advance-payment-corporations-response-1.xsd"/>
 
 	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/data/dataEvent-1.xsd" uri="event/data/dataEvent-1.xsd"/>
 
