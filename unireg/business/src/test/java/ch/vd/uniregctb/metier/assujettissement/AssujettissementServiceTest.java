@@ -4710,6 +4710,30 @@ public class AssujettissementServiceTest extends MetierTest {
 			assertEquals(noOfsCommunesActives.size(), nbActives);
 		}
 	}
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testAssujeHCAvecVenteImmeublesuiviRuptureHS() throws Exception {
+
+		final int annee = 2015;
+		final RegDate dateArriveeHorsCanton = date(2013, 1, 22);
+		final RegDate dateDepartHS = date(2015, 7, 31);
+		final PersonnePhysique pp = createContribuableSansFor();
+
+		final RegDate dateDepartHorsCanton = date(2014, 10, 02);
+		addForPrincipal(pp, dateArriveeHorsCanton, MotifFor.ARRIVEE_HC, dateDepartHorsCanton, MotifFor.DEPART_HC, MockCommune.Moudon, ModeImposition.ORDINAIRE);
+
+		addForPrincipal(pp, dateDepartHorsCanton.addDays(1), MotifFor.DEPART_HC, dateDepartHS, MotifFor.DEPART_HS, MockCommune.Geneve);
+		addForPrincipal(pp, dateDepartHS.addDays(1), MotifFor.DEPART_HS, MockPays.France);
+		addForSecondaire(pp, date(2013,2,7), MotifFor.ACHAT_IMMOBILIER, date(2015,6,23),MotifFor.VENTE_IMMOBILIER, MockCommune.Moudon.getNoOFS(),MotifRattachement.IMMEUBLE_PRIVE);
+
+		final List<Assujettissement> ass = service.determine(pp, annee);
+		assertNotNull(ass);
+		assertEquals(1, ass.size());
+
+		assertHorsSuisse(date(annee, 1, 1), dateDepartHS, MotifFor.DEPART_HS, MotifFor.VENTE_IMMOBILIER, ass.get(0));
+	}
+
+
 //
 //	@Test
 //	public void testPasseAuRoleDansLAnneeEtLeReste() throws Exception {
