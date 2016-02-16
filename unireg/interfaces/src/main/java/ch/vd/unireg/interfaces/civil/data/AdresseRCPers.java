@@ -131,8 +131,9 @@ public class AdresseRCPers implements Adresse, Serializable {
 		this.noOfsCommuneAdresse = residence.getResidenceMunicipality().getMunicipalityId();
 		this.egid = dwelling == null || dwelling.getEGID() == null ? null : dwelling.getEGID().intValue();
 		this.ewid = dwelling == null || dwelling.getEWID() == null ? null : dwelling.getEWID().intValue();
-
-		if (residence.getDwellingAddress().getMovingDate() != null) {
+		//SIFISC-17551 La presence d'une moving date ne suffit visiblement pas à definir un démenagement.
+		//on regarde si un pays n'est pas renseigné
+		if (residence.getDwellingAddress().getMovingDate() != null && residence.getComesFrom().getForeignCountry()==null) {
 			this.localisationPrecedente = null; // [SIFISC-4833] en cas de déménagement à l'intérieur de la commune, la localisation précédente doit être nulle
 		}
 		else {
