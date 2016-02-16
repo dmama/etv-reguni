@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.evenement.civil.engine.ech;
 
+import java.util.List;
 import java.util.Set;
 
 import org.junit.Assert;
@@ -27,6 +28,7 @@ import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
 import ch.vd.uniregctb.tiers.MenageCommun;
+import ch.vd.uniregctb.tiers.Parente;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.ActionEvenementCivilEch;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
@@ -838,7 +840,7 @@ public class DecesEchProcessorTest extends AbstractEvenementCivilEchProcessorTes
 			public Object execute(TransactionStatus status) throws Exception {
 				PersonnePhysique monsieur = addHabitant(noMonsieur);
 				PersonnePhysique madame = addHabitant(noMadame);
-				addForPrincipal(madame, dateNaissanceMadame.addYears(18), MotifFor.MAJORITE,dateMariage.getOneDayBefore(),MotifFor.ANNULATION, MockCommune.Echallens);
+				addForPrincipal(madame, dateNaissanceMadame.addYears(18), MotifFor.MAJORITE, dateMariage.getOneDayBefore(), MotifFor.ANNULATION, MockCommune.Echallens);
 				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(monsieur, madame, dateMariage, null);
 				addForPrincipal(ensemble.getMenage(), dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Echallens);
 				return null;
@@ -1027,5 +1029,179 @@ public class DecesEchProcessorTest extends AbstractEvenementCivilEchProcessorTes
 			}
 		});
 	}
+
+
+	//@Test(timeout = 10000L)
+	@Test
+	public void testDeces2ConjointsAvecFiliation () throws Exception {
+
+		// 1. Création d'un couple marié
+		final long noMadame = 46215611L;
+		final long noMonsieur = 78215611L;
+		final long noHeritier = 12547856L;
+		final long noHeritiere = 6214478L;
+		final RegDate dateDecesMonsieur = RegDate.get(2015, 4, 27);
+		final RegDate dateDecesMadame = RegDate.get(2015, 10, 27);
+		final RegDate dateNaissanceEnfants = date(1975, 2, 12);
+
+		// Dans le civil
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				MockIndividu monsieur = addIndividu(noMonsieur, date(1923, 2, 12), "Crispus", "Santacorpus", true);
+				MockIndividu madame = addIndividu(noMadame, date(1924, 8, 1), "Lisette", "Bouton", false);
+
+				MockIndividu heritier = addIndividu(noHeritier, dateNaissanceEnfants, "Crispus Junior", "Santacorpus", true);
+				MockIndividu heritiere = addIndividu(noHeritiere, dateNaissanceEnfants, "Crispus Juniorette", "Santacorpus", false);
+				addNationalite(monsieur, MockPays.Suisse, date(1923, 2, 12), null);
+				addNationalite(madame, MockPays.Suisse, date(1924, 8, 1), null);
+				addNationalite(heritier,MockPays.Suisse, dateNaissanceEnfants,null);
+				addNationalite(heritiere,MockPays.Suisse, dateNaissanceEnfants,null);
+				addLienVersParent(heritier,madame,dateNaissanceEnfants,null);
+				addLienVersParent(heritiere,madame,dateNaissanceEnfants,null);
+				addLienVersParent(heritier,monsieur,dateNaissanceEnfants,null);
+				addLienVersParent(heritiere,monsieur,dateNaissanceEnfants,null);
+				marieIndividus(monsieur, madame, RegDate.get(1947, 7, 14));
+			}
+		});
+
+		// Dans le fiscal
+		final Long[] ids = doInNewTransactionAndSession(new ch.vd.registre.base.tx.TxCallback<Long[]>() {
+			@Override
+			public Long[] execute(TransactionStatus status) throws Exception {
+				PersonnePhysique monsieur = addHabitant(noMonsieur);
+				addForPrincipal(monsieur, date(1943, 2, 12), MotifFor.MAJORITE, date(1947, 7, 13), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Echallens);
+				addAdresseSuisse(monsieur, TypeAdresseTiers.DOMICILE, date(1943, 2, 12), null, MockRue.Echallens.GrandRue);
+				PersonnePhysique madame = addHabitant(noMadame);
+				addForPrincipal(madame, date(1944, 8, 1), MotifFor.MAJORITE, date(1947, 7, 13), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Chamblon);
+				addAdresseSuisse(madame, TypeAdresseTiers.DOMICILE, date(1944, 8, 1), date(1947, 7, 13), MockRue.Chamblon.RueDesUttins);
+				addAdresseSuisse(madame, TypeAdresseTiers.DOMICILE, date(1947, 7, 14), null, MockRue.Echallens.GrandRue);
+				EnsembleTiersCouple ensembleTiersCouple = addEnsembleTiersCouple(monsieur, madame, date(1947, 7, 14), null);
+				addForPrincipal(ensembleTiersCouple.getMenage(), date(1947, 7, 14), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Echallens);
+				PersonnePhysique heritier = addHabitant(noHeritier);
+				PersonnePhysique heritiere = addHabitant(noHeritiere);
+				addParente(heritier,madame,dateNaissanceEnfants,null);
+				addParente(heritier,monsieur,dateNaissanceEnfants,null);
+				addParente(heritiere,madame,dateNaissanceEnfants,null);
+				addParente(heritiere,monsieur,dateNaissanceEnfants,null);
+				return new Long[] {ensembleTiersCouple.getMenage().getId(), ensembleTiersCouple.getPrincipal().getId(), ensembleTiersCouple.getConjoint().getId(),heritier.getId(),heritiere.getId()};
+			}
+		});
+		final long menageId = ids[0];
+		final long monsieurId = ids[1];
+		final long madameId = ids[2];
+		final long heritierId = ids[3];
+		final long heritiereId = ids[4];
+
+
+		//veuvage de Madame
+		doModificationIndividu( noMadame, new IndividuModification() {
+			@Override
+			public void modifyIndividu(MockIndividu mme) {
+				mme.getEtatsCivils().add(new MockEtatCivil(dateDecesMonsieur, TypeEtatCivil.VEUF));
+			}
+		});
+
+		// réception et traitement du veuvage pour Madame
+		final long veuvageId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final EvenementCivilEch evt = new EvenementCivilEch();
+				evt.setId(14532L);
+				evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+				evt.setDateEvenement(dateDecesMonsieur);
+				evt.setEtat(EtatEvenementCivil.A_TRAITER);
+				evt.setNumeroIndividu(noMadame);
+				evt.setType(TypeEvenementCivilEch.CHGT_ETAT_CIVIL_PARTENAIRE);
+				return hibernateTemplate.merge(evt).getId();
+			}
+		});
+		traiterEvenements(noMadame);
+
+
+		// 4. Contrôle de cohérence des fors pour les 2 membres du couple
+		//    - for du couple fermé pour motif déces à la date de l'événement
+		//    - ouverture d'un for sur le survivant
+
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final EvenementCivilEch evt = evtCivilDAO.get(veuvageId);
+				assertNotNull(evt);
+				assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
+
+				final PersonnePhysique madame = (PersonnePhysique) tiersDAO.get(madameId);
+				assertNotNull(madame);
+				assertEquals((Long) noMadame, madame.getNumeroIndividu());
+
+				final PersonnePhysique monsieur = (PersonnePhysique) tiersDAO.get(monsieurId);
+				assertNotNull(monsieur);
+				assertEquals((Long) noMonsieur, monsieur.getNumeroIndividu());
+
+
+//				// Verification des liens de parentés
+//
+//				final List<Parente> parenteMonsieur = tiersService.getEnfants(monsieur, false);
+//				assertNotNull("Le lien de parenté doit être fermé à la date du décès", parenteMonsieur.get(0).getDateFin());
+//				assertNotNull("Le lien de parenté doit être fermé à la date du décès", parenteMonsieur.get(1).getDateFin());
+
+
+				final List<Parente> parenteMadame = tiersService.getEnfants(madame,true);
+				assertEquals(2,parenteMadame.size());
+				assertNull("Le lien de parenté doit être ouvert", parenteMadame.get(0).getDateFin());
+				assertNull("Le lien de parenté doit être ouvert", parenteMadame.get(1).getDateFin());
+
+
+
+				return null;
+			}
+		});
+
+		doModificationIndividu(noMonsieur, new IndividuModification() {
+			@Override
+			public void modifyIndividu(MockIndividu individu) {
+				individu.setDateDeces(dateDecesMonsieur);
+			}
+		});
+
+		// 2. Création d'un evenement de "deces" pour un membre du couple (ici monsieur)
+		final long decesMonsieurId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final EvenementCivilEch evt = new EvenementCivilEch();
+				evt.setId(1235563456L);
+				evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+				evt.setDateEvenement(dateDecesMonsieur);
+				evt.setEtat(EtatEvenementCivil.A_TRAITER);
+				evt.setNumeroIndividu(noMonsieur);
+				evt.setType(TypeEvenementCivilEch.DECES);
+				return hibernateTemplate.merge(evt).getId();
+			}
+		});
+
+		// 3. Traitement de l'évenement
+		traiterEvenements(noMonsieur);
+
+
+		// 7. Verification de l'événement est traité et que le for de monsieur precedemment ouvert à bien étét annulé.
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final EvenementCivilEch evtMr = evtCivilDAO.get(decesMonsieurId);
+				assertNotNull(evtMr);
+				assertEquals(EtatEvenementCivil.TRAITE, evtMr.getEtat());
+
+				final PersonnePhysique monsieur = (PersonnePhysique) tiersDAO.get(monsieurId);
+				final List<Parente> parenteMonsieur = tiersService.getEnfants(monsieur,false);
+				assertEquals(2, parenteMonsieur.size());
+				assertNotNull("Le lien de parenté doit être fermé", parenteMonsieur.get(0).getDateFin());
+				assertNotNull("Le lien de parenté doit être fermé", parenteMonsieur.get(1).getDateFin());
+
+				return null;
+			}
+		});
+
+	}
+
 
 }
