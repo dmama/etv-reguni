@@ -257,7 +257,7 @@ public class AssujettissementPersonnesMoralesCalculatorTest extends MetierTest {
 		addRegimeFiscalVD(e, dateAchat, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 		addRegimeFiscalCH(e, dateAchat, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 		addForPrincipal(e, dateAchat, null, MockCommune.Bale);
-		addForSecondaire(e, dateAchat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Cossonay.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+		addForSecondaire(e, dateAchat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Cossonay.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE, GenreImpot.BENEFICE_CAPITAL);
 		addBouclement(e, date(2013, 3, 31), DayMonth.get(3, 31), 12);       // bouclements tous les 31.03 depuis le 31.03.2013
 
 		final List<Assujettissement> assujettissements = determine(e);
@@ -276,7 +276,7 @@ public class AssujettissementPersonnesMoralesCalculatorTest extends MetierTest {
 		addRegimeFiscalVD(e, dateAchat, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 		addRegimeFiscalCH(e, dateAchat, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 		addForPrincipal(e, dateAchat, null, MockCommune.Bale);
-		addForSecondaire(e, dateAchat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Cossonay.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+		addForSecondaire(e, dateAchat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Cossonay.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE, GenreImpot.BENEFICE_CAPITAL);
 		addBouclement(e, date(2012, 12, 31), DayMonth.get(12, 31), 12);       // bouclements tous les 31.12 depuis le 31.12.2012
 
 		final List<Assujettissement> assujettissements = determine(e);
@@ -295,7 +295,7 @@ public class AssujettissementPersonnesMoralesCalculatorTest extends MetierTest {
 		addRegimeFiscalVD(e, dateDebutExploitation, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 		addRegimeFiscalCH(e, dateDebutExploitation, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 		addForPrincipal(e, dateDebutExploitation, null, MockCommune.Bale);
-		addForSecondaire(e, dateDebutExploitation, MotifFor.DEBUT_EXPLOITATION, MockCommune.Cossonay.getNoOFS(), MotifRattachement.ACTIVITE_INDEPENDANTE);
+		addForSecondaire(e, dateDebutExploitation, MotifFor.DEBUT_EXPLOITATION, MockCommune.Cossonay.getNoOFS(), MotifRattachement.ACTIVITE_INDEPENDANTE, GenreImpot.BENEFICE_CAPITAL);
 		addBouclement(e, date(2013, 3, 31), DayMonth.get(3, 31), 12);       // bouclements tous les 31.03 depuis le 31.03.2013
 
 		final List<Assujettissement> assujettissements = determine(e);
@@ -314,7 +314,7 @@ public class AssujettissementPersonnesMoralesCalculatorTest extends MetierTest {
 		addRegimeFiscalVD(e, dateDebutExploitation, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 		addRegimeFiscalCH(e, dateDebutExploitation, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 		addForPrincipal(e, dateDebutExploitation, null, MockCommune.Bale);
-		addForSecondaire(e, dateDebutExploitation, MotifFor.DEBUT_EXPLOITATION, MockCommune.Cossonay.getNoOFS(), MotifRattachement.ACTIVITE_INDEPENDANTE);
+		addForSecondaire(e, dateDebutExploitation, MotifFor.DEBUT_EXPLOITATION, MockCommune.Cossonay.getNoOFS(), MotifRattachement.ACTIVITE_INDEPENDANTE, GenreImpot.BENEFICE_CAPITAL);
 		addBouclement(e, date(2012, 12, 31), DayMonth.get(12, 31), 12);       // bouclements tous les 31.12 depuis le 31.12.2012
 
 		final List<Assujettissement> assujettissements = determine(e);
@@ -333,7 +333,7 @@ public class AssujettissementPersonnesMoralesCalculatorTest extends MetierTest {
 		addRegimeFiscalVD(e, dateAchat, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 		addRegimeFiscalCH(e, dateAchat, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 		addForPrincipal(e, dateAchat, null, MockPays.Allemagne);
-		addForSecondaire(e, dateAchat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Cossonay.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+		addForSecondaire(e, dateAchat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Cossonay.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE, GenreImpot.BENEFICE_CAPITAL);
 		addBouclement(e, date(2013, 3, 31), DayMonth.get(3, 31), 12);       // bouclements tous les 31.03 depuis le 31.03.2013
 
 		final List<Assujettissement> assujettissements = determine(e);
@@ -352,7 +352,7 @@ public class AssujettissementPersonnesMoralesCalculatorTest extends MetierTest {
 		addRegimeFiscalVD(e, dateAchat, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 		addRegimeFiscalCH(e, dateAchat, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 		addForPrincipal(e, dateAchat, null, MockPays.Allemagne);
-		addForSecondaire(e, dateAchat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Cossonay.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+		addForSecondaire(e, dateAchat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Cossonay.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE, GenreImpot.BENEFICE_CAPITAL);
 		addBouclement(e, date(2012, 12, 31), DayMonth.get(12, 31), 12);       // bouclements tous les 31.12 depuis le 31.12.2012
 
 		final List<Assujettissement> assujettissements = determine(e);
@@ -371,7 +371,7 @@ public class AssujettissementPersonnesMoralesCalculatorTest extends MetierTest {
 		addRegimeFiscalVD(e, dateDebutExploitation, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 		addRegimeFiscalCH(e, dateDebutExploitation, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 		addForPrincipal(e, dateDebutExploitation, null, MockPays.France);
-		addForSecondaire(e, dateDebutExploitation, MotifFor.DEBUT_EXPLOITATION, MockCommune.Cossonay.getNoOFS(), MotifRattachement.ACTIVITE_INDEPENDANTE);
+		addForSecondaire(e, dateDebutExploitation, MotifFor.DEBUT_EXPLOITATION, MockCommune.Cossonay.getNoOFS(), MotifRattachement.ACTIVITE_INDEPENDANTE, GenreImpot.BENEFICE_CAPITAL);
 		addBouclement(e, date(2013, 3, 31), DayMonth.get(3, 31), 12);       // bouclements tous les 31.03 depuis le 31.03.2013
 
 		final List<Assujettissement> assujettissements = determine(e);
@@ -390,7 +390,7 @@ public class AssujettissementPersonnesMoralesCalculatorTest extends MetierTest {
 		addRegimeFiscalVD(e, dateDebutExploitation, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 		addRegimeFiscalCH(e, dateDebutExploitation, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 		addForPrincipal(e, dateDebutExploitation, null, MockPays.RoyaumeUni);
-		addForSecondaire(e, dateDebutExploitation, MotifFor.DEBUT_EXPLOITATION, MockCommune.Cossonay.getNoOFS(), MotifRattachement.ACTIVITE_INDEPENDANTE);
+		addForSecondaire(e, dateDebutExploitation, MotifFor.DEBUT_EXPLOITATION, MockCommune.Cossonay.getNoOFS(), MotifRattachement.ACTIVITE_INDEPENDANTE, GenreImpot.BENEFICE_CAPITAL);
 		addBouclement(e, date(2012, 12, 31), DayMonth.get(12, 31), 12);       // bouclements tous les 31.12 depuis le 31.12.2012
 
 		final List<Assujettissement> assujettissements = determine(e);
@@ -411,7 +411,7 @@ public class AssujettissementPersonnesMoralesCalculatorTest extends MetierTest {
 		addRegimeFiscalCH(e, dateAchat, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 		addForPrincipal(e, dateAchat, null, dateArriveeSiege.getOneDayBefore(), MotifFor.ARRIVEE_HC, MockCommune.Bale);
 		addForPrincipal(e, dateArriveeSiege, MotifFor.ARRIVEE_HC, MockCommune.Morges);
-		addForSecondaire(e, dateAchat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Cossonay.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+		addForSecondaire(e, dateAchat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Cossonay.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE, GenreImpot.BENEFICE_CAPITAL);
 		addBouclement(e, date(2012, 3, 31), DayMonth.get(3, 31), 12);       // bouclements tous les 31.03 depuis le 31.03.2012
 
 		final List<Assujettissement> assujettissements = determine(e);
@@ -433,7 +433,7 @@ public class AssujettissementPersonnesMoralesCalculatorTest extends MetierTest {
 		addRegimeFiscalCH(e, dateDebutExploitation, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 		addForPrincipal(e, dateDebutExploitation, null, dateArriveeSiege.getOneDayBefore(), MotifFor.ARRIVEE_HC, MockCommune.Bale);
 		addForPrincipal(e, dateArriveeSiege, MotifFor.ARRIVEE_HC, MockCommune.Morges);
-		addForSecondaire(e, dateDebutExploitation, MotifFor.DEBUT_EXPLOITATION, MockCommune.Cossonay.getNoOFS(), MotifRattachement.ACTIVITE_INDEPENDANTE);
+		addForSecondaire(e, dateDebutExploitation, MotifFor.DEBUT_EXPLOITATION, MockCommune.Cossonay.getNoOFS(), MotifRattachement.ACTIVITE_INDEPENDANTE, GenreImpot.BENEFICE_CAPITAL);
 		addBouclement(e, date(2012, 3, 31), DayMonth.get(3, 31), 12);       // bouclements tous les 31.03 depuis le 31.03.2012
 
 		final List<Assujettissement> assujettissements = determine(e);
@@ -456,7 +456,7 @@ public class AssujettissementPersonnesMoralesCalculatorTest extends MetierTest {
 		addRegimeFiscalCH(e, dateAchat, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 		addForPrincipal(e, dateAchat, null, dateArriveeSiege.getOneDayBefore(), MotifFor.ARRIVEE_HS, MockPays.Allemagne);
 		addForPrincipal(e, dateArriveeSiege, MotifFor.ARRIVEE_HS, MockCommune.Morges);
-		addForSecondaire(e, dateAchat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Cossonay.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+		addForSecondaire(e, dateAchat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Cossonay.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE, GenreImpot.BENEFICE_CAPITAL);
 		addBouclement(e, date(2012, 3, 31), DayMonth.get(3, 31), 12);       // bouclements tous les 31.03 depuis le 31.03.2012
 
 		final List<Assujettissement> assujettissements = determine(e);
@@ -478,7 +478,7 @@ public class AssujettissementPersonnesMoralesCalculatorTest extends MetierTest {
 		addRegimeFiscalCH(e, dateDebutExploitation, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 		addForPrincipal(e, dateDebutExploitation, null, dateArriveeSiege.getOneDayBefore(), MotifFor.ARRIVEE_HS, MockPays.Allemagne);
 		addForPrincipal(e, dateArriveeSiege, MotifFor.ARRIVEE_HS, MockCommune.Morges);
-		addForSecondaire(e, dateDebutExploitation, MotifFor.DEBUT_EXPLOITATION, MockCommune.Cossonay.getNoOFS(), MotifRattachement.ACTIVITE_INDEPENDANTE);
+		addForSecondaire(e, dateDebutExploitation, MotifFor.DEBUT_EXPLOITATION, MockCommune.Cossonay.getNoOFS(), MotifRattachement.ACTIVITE_INDEPENDANTE, GenreImpot.BENEFICE_CAPITAL);
 		addBouclement(e, date(2012, 3, 31), DayMonth.get(3, 31), 12);       // bouclements tous les 31.03 depuis le 31.03.2012
 
 		final List<Assujettissement> assujettissements = determine(e);
@@ -501,7 +501,7 @@ public class AssujettissementPersonnesMoralesCalculatorTest extends MetierTest {
 		addRegimeFiscalCH(e, dateCreationEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 		addForPrincipal(e, dateCreationEntreprise, MotifFor.INDETERMINE, dateDepartSiege, MotifFor.DEPART_HC, MockCommune.Echallens);
 		addForPrincipal(e, dateDepartSiege.getOneDayAfter(), MotifFor.DEPART_HC, MockCommune.Geneve);
-		addForSecondaire(e, dateAchat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Cossonay.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+		addForSecondaire(e, dateAchat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Cossonay.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE, GenreImpot.BENEFICE_CAPITAL);
 		addBouclement(e, date(2012, 3, 31), DayMonth.get(3, 31), 12);       // bouclements tous les 31.03 depuis le 31.03.2012
 		addBouclement(e, date(2014, 4, 1), DayMonth.get(9, 30), 12);       // bouclements tous les 30.09 depuis le 30.09.2014
 
@@ -525,7 +525,7 @@ public class AssujettissementPersonnesMoralesCalculatorTest extends MetierTest {
 		addRegimeFiscalCH(e, dateCreationEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 		addForPrincipal(e, dateCreationEntreprise, MotifFor.INDETERMINE, dateDepartSiege, MotifFor.DEPART_HC, MockCommune.Echallens);
 		addForPrincipal(e, dateDepartSiege.getOneDayAfter(), MotifFor.DEPART_HC, MockCommune.Geneve);
-		addForSecondaire(e, dateDebutActivite, MotifFor.DEBUT_EXPLOITATION, MockCommune.Cossonay.getNoOFS(), MotifRattachement.ACTIVITE_INDEPENDANTE);
+		addForSecondaire(e, dateDebutActivite, MotifFor.DEBUT_EXPLOITATION, MockCommune.Cossonay.getNoOFS(), MotifRattachement.ACTIVITE_INDEPENDANTE, GenreImpot.BENEFICE_CAPITAL);
 		addBouclement(e, date(2012, 3, 31), DayMonth.get(3, 31), 12);       // bouclements tous les 31.03 depuis le 31.03.2012
 		addBouclement(e, date(2014, 4, 1), DayMonth.get(9, 30), 12);       // bouclements tous les 30.09 depuis le 30.09.2014
 
@@ -549,7 +549,7 @@ public class AssujettissementPersonnesMoralesCalculatorTest extends MetierTest {
 		addRegimeFiscalCH(e, dateCreationEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 		addForPrincipal(e, dateCreationEntreprise, MotifFor.INDETERMINE, dateDepartSiege, MotifFor.DEPART_HS, MockCommune.Echallens);
 		addForPrincipal(e, dateDepartSiege.getOneDayAfter(), MotifFor.DEPART_HS, MockPays.Allemagne);
-		addForSecondaire(e, dateAchat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Cossonay.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+		addForSecondaire(e, dateAchat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Cossonay.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE, GenreImpot.BENEFICE_CAPITAL);
 		addBouclement(e, date(2012, 3, 31), DayMonth.get(3, 31), 12);       // bouclements tous les 31.03 depuis le 31.03.2012
 		addBouclement(e, date(2014, 4, 1), DayMonth.get(9, 30), 12);       // bouclements tous les 30.09 depuis le 30.09.2014
 
@@ -573,7 +573,7 @@ public class AssujettissementPersonnesMoralesCalculatorTest extends MetierTest {
 		addRegimeFiscalCH(e, dateCreationEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 		addForPrincipal(e, dateCreationEntreprise, MotifFor.INDETERMINE, dateDepartSiege, MotifFor.DEPART_HS, MockCommune.Echallens);
 		addForPrincipal(e, dateDepartSiege.getOneDayAfter(), MotifFor.DEPART_HS, MockPays.Allemagne);
-		addForSecondaire(e, dateAchat, MotifFor.DEBUT_EXPLOITATION, MockCommune.Cossonay.getNoOFS(), MotifRattachement.ACTIVITE_INDEPENDANTE);
+		addForSecondaire(e, dateAchat, MotifFor.DEBUT_EXPLOITATION, MockCommune.Cossonay.getNoOFS(), MotifRattachement.ACTIVITE_INDEPENDANTE, GenreImpot.BENEFICE_CAPITAL);
 		addBouclement(e, date(2012, 3, 31), DayMonth.get(3, 31), 12);       // bouclements tous les 31.03 depuis le 31.03.2012
 		addBouclement(e, date(2014, 4, 1), DayMonth.get(9, 30), 12);       // bouclements tous les 30.09 depuis le 30.09.2014
 
@@ -692,7 +692,7 @@ public class AssujettissementPersonnesMoralesCalculatorTest extends MetierTest {
 		addForPrincipal(e, dateCreationEntreprise, MotifFor.INDETERMINE, dateDepartSiege, MotifFor.DEPART_HC, MockCommune.CheseauxSurLausanne);
 		addForPrincipal(e, dateDepartSiege.getOneDayAfter(), MotifFor.DEPART_HC, dateRetourSiege.getOneDayBefore(), MotifFor.ARRIVEE_HC, MockCommune.Geneve);
 		addForPrincipal(e, dateRetourSiege, MotifFor.ARRIVEE_HC, MockCommune.Lausanne);
-		addForSecondaire(e, dateDebutForSecondaire, MotifFor.ACHAT_IMMOBILIER, dateFinForSecondaire, MotifFor.VENTE_IMMOBILIER, MockCommune.Cossonay.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+		addForSecondaire(e, dateDebutForSecondaire, MotifFor.ACHAT_IMMOBILIER, dateFinForSecondaire, MotifFor.VENTE_IMMOBILIER, MockCommune.Cossonay.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE, GenreImpot.BENEFICE_CAPITAL);
 		addBouclement(e, date(2014, 1, 1), DayMonth.get(3, 31), 12);        // bouclements tous les 31.03 depuis le 31.03.2014
 		addBouclement(e, date(2014, 4, 1), DayMonth.get(6, 30), 3);         // bouclements tous les 3 mois depuis le 30.06.2014
 		addBouclement(e, date(2014, 10, 1), DayMonth.get(9, 30), 12);       // bouclements tous les 30.09 depuis le 30.09.2015
@@ -815,7 +815,7 @@ public class AssujettissementPersonnesMoralesCalculatorTest extends MetierTest {
 		addForPrincipal(e, dateCreationEntreprise, MotifFor.INDETERMINE, dateDepartSiege, MotifFor.DEPART_HS, MockCommune.CheseauxSurLausanne);
 		addForPrincipal(e, dateDepartSiege.getOneDayAfter(), MotifFor.DEPART_HS, dateRetourSiege.getOneDayBefore(), MotifFor.ARRIVEE_HS, MockPays.Allemagne);
 		addForPrincipal(e, dateRetourSiege, MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
-		addForSecondaire(e, dateDebutForSecondaire, MotifFor.ACHAT_IMMOBILIER, dateFinForSecondaire, MotifFor.VENTE_IMMOBILIER, MockCommune.Cossonay.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+		addForSecondaire(e, dateDebutForSecondaire, MotifFor.ACHAT_IMMOBILIER, dateFinForSecondaire, MotifFor.VENTE_IMMOBILIER, MockCommune.Cossonay.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE, GenreImpot.BENEFICE_CAPITAL);
 		addBouclement(e, date(2014, 1, 1), DayMonth.get(3, 31), 12);        // bouclements tous les 31.03 depuis le 31.03.2014
 		addBouclement(e, date(2014, 4, 1), DayMonth.get(6, 30), 3);         // bouclements tous les 3 mois depuis le 30.06.2014
 		addBouclement(e, date(2014, 10, 1), DayMonth.get(9, 30), 12);       // bouclements tous les 30.09 depuis le 30.09.2015

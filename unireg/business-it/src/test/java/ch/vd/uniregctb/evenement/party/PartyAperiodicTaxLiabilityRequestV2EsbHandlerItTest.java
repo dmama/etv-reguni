@@ -29,7 +29,7 @@ import static org.junit.Assert.assertNull;
  *
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */
-public class PartyAperiodicTaxLiabilityRequestV2EsbHandlerItTest extends PartyRequestEsbHandlerItTest {
+public class PartyAperiodicTaxLiabilityRequestV2EsbHandlerItTest extends PartyRequestEsbHandlerV1ItTest {
 
 	private AperiodicTaxLiabilityRequestHandlerV2 handler;
 

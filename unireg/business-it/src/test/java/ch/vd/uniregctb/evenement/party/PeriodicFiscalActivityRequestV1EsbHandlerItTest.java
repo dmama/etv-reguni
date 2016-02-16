@@ -25,7 +25,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-public class PeriodicFiscalActivityRequestV1EsbHandlerItTest extends PartyRequestEsbHandlerItTest {
+public class PeriodicFiscalActivityRequestV1EsbHandlerItTest extends PartyRequestEsbHandlerV1ItTest {
 
 	private PeriodicFiscalActivityRequestHandlerV1 handler;
 

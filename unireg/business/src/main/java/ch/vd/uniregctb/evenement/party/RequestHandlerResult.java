@@ -7,11 +7,13 @@ import java.util.Map;
 
 import ch.vd.technical.esb.util.EsbDataHandler;
 import ch.vd.technical.esb.util.EsbUrlDataHandler;
-import ch.vd.unireg.xml.event.party.v1.Response;
 
-public class RequestHandlerResult {
+/**
+ * @param <R> le type de réponse
+ */
+public class RequestHandlerResult<R> {
 
-	private Response response;
+	private R response;
 	private Map<String, EsbDataHandler> attachments = new HashMap<>();
 
 	/**
@@ -19,15 +21,15 @@ public class RequestHandlerResult {
 	 * veut pas que la réponse envoyée dans l'ESB soit validée en sortie
 	 * <p><b>A utiliser avec la plus grande parcimonie !</b></p>
 	 */
-	public static class NotValidatedResult extends RequestHandlerResult {
+	public static class NotValidatedResult<R> extends RequestHandlerResult<R> {
 		public NotValidatedResult() {
 		}
 
-		public NotValidatedResult(Response response) {
+		public NotValidatedResult(R response) {
 			super(response);
 		}
 
-		public NotValidatedResult(Response response, Map<String, EsbDataHandler> attachments) {
+		public NotValidatedResult(R response, Map<String, EsbDataHandler> attachments) {
 			super(response, attachments);
 		}
 
@@ -40,20 +42,20 @@ public class RequestHandlerResult {
 	public RequestHandlerResult() {
 	}
 
-	public RequestHandlerResult(Response response) {
+	public RequestHandlerResult(R response) {
 		this.response = response;
 	}
 
-	public RequestHandlerResult(Response response, Map<String, EsbDataHandler> attachments) {
+	public RequestHandlerResult(R response, Map<String, EsbDataHandler> attachments) {
 		this.response = response;
 		this.attachments = attachments;
 	}
 
-	public Response getResponse() {
+	public R getResponse() {
 		return response;
 	}
 
-	public void setResponse(Response response) {
+	public void setResponse(R response) {
 		this.response = response;
 	}
 

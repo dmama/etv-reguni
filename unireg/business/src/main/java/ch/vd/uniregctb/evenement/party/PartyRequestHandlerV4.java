@@ -43,7 +43,7 @@ import ch.vd.uniregctb.xml.DataHelper;
 import ch.vd.uniregctb.xml.ServiceException;
 import ch.vd.uniregctb.xml.party.v4.PartyBuilder;
 
-public class PartyRequestHandlerV4 implements RequestHandler<PartyRequest> {
+public class PartyRequestHandlerV4 implements RequestHandlerV1<PartyRequest> {
 
 	private final Context context = new Context();
 
@@ -124,7 +124,7 @@ public class PartyRequestHandlerV4 implements RequestHandler<PartyRequest> {
 	}
 
 	@Override
-	public RequestHandlerResult handle(PartyRequest request) throws EsbBusinessException {
+	public RequestHandlerResult<PartyResponse> handle(PartyRequest request) throws EsbBusinessException {
 
 		// Vérification des droits d'accès
 		final UserLogin login = request.getLogin();
@@ -186,7 +186,7 @@ public class PartyRequestHandlerV4 implements RequestHandler<PartyRequest> {
 			throw new EsbBusinessException(EsbBusinessCode.REPONSE_IMPOSSIBLE, e.getMessage(), e);
 		}
 
-		return new RequestHandlerResult(response);
+		return new RequestHandlerResult<>(response);
 	}
 
 	@Override

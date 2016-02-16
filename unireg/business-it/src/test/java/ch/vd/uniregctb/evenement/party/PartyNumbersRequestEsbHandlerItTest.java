@@ -32,7 +32,7 @@ import static org.junit.Assert.assertNotNull;
  *
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */
-public class PartyNumbersRequestEsbHandlerItTest extends PartyRequestEsbHandlerItTest {
+public class PartyNumbersRequestEsbHandlerItTest extends PartyRequestEsbHandlerV1ItTest {
 
 	private NumbersRequestHandler handler;
 

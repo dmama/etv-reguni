@@ -43,7 +43,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
-public class GetPartyRequestV4EsbHandlerItTest extends PartyRequestEsbHandlerItTest {
+public class GetPartyRequestV4EsbHandlerItTest extends PartyRequestEsbHandlerV1ItTest {
 
 	private PartyRequestHandlerV4 handler;
 	private ProxyServiceCivil serviceCivil;

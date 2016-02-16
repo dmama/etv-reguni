@@ -23,7 +23,7 @@ import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TypeTiers;
 import ch.vd.uniregctb.xml.ServiceException;
 
-public class NumbersRequestHandler implements RequestHandler<NumbersRequest> {
+public class NumbersRequestHandler implements RequestHandlerV1<NumbersRequest> {
 
 	private TiersDAO tiersDAO;
 	private SecurityProviderInterface securityProvider;
@@ -37,7 +37,7 @@ public class NumbersRequestHandler implements RequestHandler<NumbersRequest> {
 	}
 
 	@Override
-	public RequestHandlerResult handle(NumbersRequest request) throws ServiceException {
+	public RequestHandlerResult<NumbersResponse> handle(NumbersRequest request) throws ServiceException {
 
 		// Vérification des droits d'accès
 		final UserLogin login = request.getLogin();
@@ -61,7 +61,7 @@ public class NumbersRequestHandler implements RequestHandler<NumbersRequest> {
 		response.setIncludeCancelled(request.isIncludeCancelled());
 		response.setIdsCount(ids.size());
 
-		final RequestHandlerResult r = new RequestHandlerResult(response);
+		final RequestHandlerResult<NumbersResponse> r = new RequestHandlerResult<>(response);
 		r.addAttachment("ids", ids2byteArray(ids));
 		return r;
 	}
@@ -110,14 +110,6 @@ public class NumbersRequestHandler implements RequestHandler<NumbersRequest> {
 		}
 	}
 
-	private static List<Integer> long2Int(List<Long> ids) {
-		final List<Integer> list = new ArrayList<>(ids.size());
-		for (Long id : ids) {
-			list.add(id.intValue());
-		}
-		return list;
-	}
-
 	@Override
 	public ClassPathResource getRequestXSD() {
 		return new ClassPathResource("event/party/numbers-request-1.xsd");
@@ -125,6 +117,6 @@ public class NumbersRequestHandler implements RequestHandler<NumbersRequest> {
 
 	@Override
 	public List<ClassPathResource> getResponseXSD() {
-		return Arrays.asList(new ClassPathResource("event/party/numbers-response-1.xsd"));
+		return Collections.singletonList(new ClassPathResource("event/party/numbers-response-1.xsd"));
 	}
 }

@@ -1,6 +1,6 @@
 package ch.vd.uniregctb.evenement.party;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.springframework.core.io.ClassPathResource;
@@ -21,7 +21,7 @@ import ch.vd.uniregctb.xml.DataHelper;
 import ch.vd.uniregctb.xml.EnumHelper;
 import ch.vd.uniregctb.xml.ServiceException;
 
-public class CreateNonresidentRequestHandlerV2 implements RequestHandler<CreateNonresidentRequest> {
+public class CreateNonresidentRequestHandlerV2 implements RequestHandlerV1<CreateNonresidentRequest> {
 
 	private HibernateTemplate hibernateTemplate;
 
@@ -36,7 +36,7 @@ public class CreateNonresidentRequestHandlerV2 implements RequestHandler<CreateN
 	}
 
 	@Override
-	public RequestHandlerResult handle(CreateNonresidentRequest request) throws ServiceException {
+	public RequestHandlerResult<CreateNonresidentResponse> handle(CreateNonresidentRequest request) throws ServiceException {
 		// Vérification des droits d'accès
 		final UserLogin login = request.getLogin();
 		if (!securityProvider.isGranted(Role.CREATE_NONHAB, login.getUserId(), login.getOid())) {
@@ -65,7 +65,7 @@ public class CreateNonresidentRequestHandlerV2 implements RequestHandler<CreateN
 		// l'authentification n'est plus valide au moment ou hibernate veut sauver l'eventuelle IdentificationPersonne
 		hibernateTemplate.flush();
 
-		return new RequestHandlerResult(new CreateNonresidentResponse(XmlUtils.date2xmlcal(DateHelper.getCurrentDate()), idNouveauNonHabitant));
+		return new RequestHandlerResult<>(new CreateNonresidentResponse(XmlUtils.date2xmlcal(DateHelper.getCurrentDate()), idNouveauNonHabitant));
 	}
 
 	@Override
@@ -75,6 +75,6 @@ public class CreateNonresidentRequestHandlerV2 implements RequestHandler<CreateN
 
 	@Override
 	public List<ClassPathResource> getResponseXSD() {
-		return Arrays.asList(new ClassPathResource("event/party/create-nonresident-response-2.xsd"));
+		return Collections.singletonList(new ClassPathResource("event/party/create-nonresident-response-2.xsd"));
 	}
 }

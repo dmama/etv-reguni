@@ -1,7 +1,7 @@
 package ch.vd.uniregctb.evenement.party;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.jetbrains.annotations.NotNull;
@@ -26,7 +26,7 @@ import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.xml.ServiceException;
 
-public abstract class TaxLiabilityRequestHandlerV2<T extends TaxLiabilityRequest> implements RequestHandler<T> {
+public abstract class TaxLiabilityRequestHandlerV2<T extends TaxLiabilityRequest> implements RequestHandlerV1<T> {
 
 	private TiersDAO tiersDAO;
 	private SecurityProviderInterface securityProvider;
@@ -49,7 +49,7 @@ public abstract class TaxLiabilityRequestHandlerV2<T extends TaxLiabilityRequest
 	}
 
 	@Override
-	public RequestHandlerResult handle(T request) throws ServiceException {
+	public RequestHandlerResult<TaxLiabilityResponse> handle(T request) throws ServiceException {
 		// Vérification des droits d'accès
 		final UserLogin login = request.getLogin();
 		if (!securityProvider.isGranted(Role.VISU_ALL, login.getUserId(), login.getOid())) {
@@ -82,7 +82,7 @@ public abstract class TaxLiabilityRequestHandlerV2<T extends TaxLiabilityRequest
 	 */
 	protected abstract TaxLiabilityControlResult<?> doControl(T request, @NotNull Tiers tiers) throws ControlRuleException;
 
-	private RequestHandlerResult builtRequestHandler(TaxLiabilityControlResult<?> result) {
+	private RequestHandlerResult<TaxLiabilityResponse> builtRequestHandler(TaxLiabilityControlResult<?> result) {
 
 		Integer partyNumber = null;
 		Failure failure = null;
@@ -143,7 +143,7 @@ public abstract class TaxLiabilityRequestHandlerV2<T extends TaxLiabilityRequest
 		}
 
 		final TaxLiabilityResponse response = new TaxLiabilityResponse(partyNumber, failure);
-		return new RequestHandlerResult(response);
+		return new RequestHandlerResult<>(response);
 	}
 
 	private List<Integer> getListOfInteger(List<Long> menageCommunIds) {
@@ -156,6 +156,6 @@ public abstract class TaxLiabilityRequestHandlerV2<T extends TaxLiabilityRequest
 
 	@Override
 	public List<ClassPathResource> getResponseXSD() {
-		return Arrays.asList(new ClassPathResource("event/party/taxliab-response-2.xsd"));
+		return Collections.singletonList(new ClassPathResource("event/party/taxliab-response-2.xsd"));
 	}
 }

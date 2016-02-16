@@ -26,7 +26,7 @@ import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.xml.ServiceException;
 
-public class PeriodicFiscalActivityRequestHandlerV1 implements RequestHandler<PeriodicFiscalActivityRequest> {
+public class PeriodicFiscalActivityRequestHandlerV1 implements RequestHandlerV1<PeriodicFiscalActivityRequest> {
 
 	private TiersDAO tiersDAO;
 	private SecurityProviderInterface securityProvider;
@@ -50,7 +50,7 @@ public class PeriodicFiscalActivityRequestHandlerV1 implements RequestHandler<Pe
 	}
 
 	@Override
-	public RequestHandlerResult handle(PeriodicFiscalActivityRequest request) throws ServiceException, EsbBusinessException {
+	public RequestHandlerResult<FiscalActivityResponse> handle(PeriodicFiscalActivityRequest request) throws ServiceException, EsbBusinessException {
 
 		// droits généraux sur l'application
 		final UserLogin login = request.getLogin();
@@ -91,7 +91,7 @@ public class PeriodicFiscalActivityRequestHandlerV1 implements RequestHandler<Pe
 		}
 
 		// construction de la réponse
-		return new RequestHandlerResult(new FiscalActivityResponse(hasActivite, MESSAGES_TRAITEMENT.get(hasActivite)));
+		return new RequestHandlerResult<>(new FiscalActivityResponse(hasActivite, MESSAGES_TRAITEMENT.get(hasActivite)));
 	}
 
 	@Override

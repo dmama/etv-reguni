@@ -30,7 +30,7 @@ import static org.junit.Assert.assertTrue;
  * Classe de test du listener de requêtes de création de non-habitant. Cette classe nécessite une connexion à l'ESB de développement pour fonctionner.
  *
  */
-public class PartyCreateNonresidentRequestV2EsbHandlerItTest extends PartyRequestEsbHandlerItTest {
+public class PartyCreateNonresidentRequestV2EsbHandlerItTest extends PartyRequestEsbHandlerV1ItTest {
 
 	private CreateNonresidentRequestHandlerV2 handler;
 

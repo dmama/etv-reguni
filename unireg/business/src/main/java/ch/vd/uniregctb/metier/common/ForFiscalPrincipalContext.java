@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 
 import ch.vd.registre.base.date.DateRangeHelper;
+import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.common.MovingWindow;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 
@@ -77,6 +78,19 @@ public final class ForFiscalPrincipalContext<FFP extends ForFiscalPrincipal> {
 
 	public boolean hasPrevious() {
 		return !previouses.isEmpty();
+	}
+
+	/**
+	 * @return la liste triée de tous les fors successifs du contexte (= couverture des fors qui se touchent)
+	 */
+	public List<FFP> getAll() {
+		final List<FFP> all = new ArrayList<>(nexts.size() + previouses.size() + 1);
+		for (FFP ffp : CollectionsUtils.revertedOrder(previouses)) {
+			all.add(ffp);
+		}
+		all.add(current);
+		all.addAll(nexts);
+		return all;
 	}
 
 	/**

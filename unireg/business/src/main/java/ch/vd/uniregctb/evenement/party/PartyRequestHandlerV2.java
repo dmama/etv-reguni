@@ -43,7 +43,7 @@ import ch.vd.uniregctb.xml.DataHelper;
 import ch.vd.uniregctb.xml.ServiceException;
 import ch.vd.uniregctb.xml.party.v2.PartyBuilder;
 
-public class PartyRequestHandlerV2 implements RequestHandler<PartyRequest> {
+public class PartyRequestHandlerV2 implements RequestHandlerV1<PartyRequest> {
 
 	private final Context context = new Context();
 
@@ -133,7 +133,7 @@ public class PartyRequestHandlerV2 implements RequestHandler<PartyRequest> {
 	}
 
 	@Override
-	public RequestHandlerResult handle(PartyRequest request) throws ServiceException {
+	public RequestHandlerResult<PartyResponse> handle(PartyRequest request) throws ServiceException {
 
 		// Vérification des droits d'accès
 		final UserLogin login = request.getLogin();
@@ -192,7 +192,7 @@ public class PartyRequestHandlerV2 implements RequestHandler<PartyRequest> {
 		}
 
 		// on ne valide pas la donnée en sortie (voir cas SIFISC-8901)
-		return new RequestHandlerResult.NotValidatedResult(response);
+		return new RequestHandlerResult.NotValidatedResult<>(response);
 	}
 
 	@Override

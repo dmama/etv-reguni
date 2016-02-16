@@ -1227,12 +1227,18 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 	/**
 	 * Ajoute un for fiscal secondaire ouvert.
 	 */
-	protected ForFiscalSecondaire addForSecondaire(Contribuable tiers, RegDate ouverture, MotifFor motifOuverture, Integer noOFS,
-			MotifRattachement motif) {
+	protected ForFiscalSecondaire addForSecondaire(Contribuable tiers, RegDate ouverture, MotifFor motifOuverture, Integer noOFS, MotifRattachement motif) {
+		return addForSecondaire(tiers, ouverture, motifOuverture, noOFS, motif, GenreImpot.REVENU_FORTUNE);
+	}
+
+	/**
+	 * Ajoute un for fiscal secondaire ouvert.
+	 */
+	protected ForFiscalSecondaire addForSecondaire(Contribuable tiers, RegDate ouverture, MotifFor motifOuverture, Integer noOFS, MotifRattachement motif, GenreImpot genreImpot) {
 		ForFiscalSecondaire f = new ForFiscalSecondaire();
 		f.setDateDebut(ouverture);
 		f.setMotifOuverture(motifOuverture);
-		f.setGenreImpot(GenreImpot.REVENU_FORTUNE);
+		f.setGenreImpot(genreImpot);
 		f.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
 		f.setNumeroOfsAutoriteFiscale(noOFS);
 		f.setMotifRattachement(motif);
@@ -1244,13 +1250,21 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 	 * Ajoute un for fiscal secondaire fermé.
 	 */
 	protected ForFiscalSecondaire addForSecondaire(Contribuable tiers, RegDate ouverture, MotifFor motifOuverture, RegDate fermeture,
-			MotifFor motifFermeture, Integer noOFS, MotifRattachement motif) {
+	                                               MotifFor motifFermeture, Integer noOFS, MotifRattachement motif) {
+		return addForSecondaire(tiers, ouverture, motifOuverture, fermeture, motifFermeture, noOFS, motif, GenreImpot.REVENU_FORTUNE);
+	}
+
+	/**
+	 * Ajoute un for fiscal secondaire fermé.
+	 */
+	protected ForFiscalSecondaire addForSecondaire(Contribuable tiers, RegDate ouverture, MotifFor motifOuverture, RegDate fermeture,
+	                                               MotifFor motifFermeture, Integer noOFS, MotifRattachement motif, GenreImpot genreImpot) {
 		ForFiscalSecondaire f = new ForFiscalSecondaire();
 		f.setDateDebut(ouverture);
 		f.setMotifOuverture(motifOuverture);
 		f.setDateFin(fermeture);
 		f.setMotifFermeture(motifFermeture);
-		f.setGenreImpot(GenreImpot.REVENU_FORTUNE);
+		f.setGenreImpot(genreImpot);
 		f.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
 		f.setNumeroOfsAutoriteFiscale(noOFS);
 		f.setMotifRattachement(motif);

@@ -102,6 +102,14 @@ public class AssujettissementPersonnesMoralesCalculator implements Assujettissem
 			return null;
 		}
 
+		// filtrage des fors secondaires sur le même principe (= le genre impôt doit être "bénéfice-capital"
+		final List<ForFiscalSecondaire> forsSecondaires = new ArrayList<>(fpt.secondaires.size());
+		for (ForFiscalSecondaire ffs : fpt.secondaires) {
+			if (ffs.getGenreImpot() == GenreImpot.BENEFICE_CAPITAL) {
+				forsSecondaires.add(ffs);
+			}
+		}
+
 		// première chose, recalculer les exercices commerciaux de l'entreprise jusque et y compris l'exercice courant
 		final List<ExerciceCommercial> exercices = tiersService.getExercicesCommerciaux(entreprise);
 
@@ -114,7 +122,7 @@ public class AssujettissementPersonnesMoralesCalculator implements Assujettissem
 		AssujettissementHelper.assertCoherenceRanges(sieges);
 
 		// et finalement aux influences des rattachements économiques
-		final List<Data> economiques = determinerAssujettissementEconomique(fpt.secondaires, fractionnements, exercices, noOfsCommunesVaudoises);
+		final List<Data> economiques = determinerAssujettissementEconomique(forsSecondaires, fractionnements, exercices, noOfsCommunesVaudoises);
 
 		// fusion des deux
 		final List<Data> fusion = fusionnerAssujettissementsSiegesEtEconomiques(sieges, economiques);

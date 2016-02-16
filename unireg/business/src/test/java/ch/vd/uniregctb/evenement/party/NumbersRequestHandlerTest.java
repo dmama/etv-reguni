@@ -159,8 +159,8 @@ public class NumbersRequestHandlerTest extends BusinessTest {
 			// sans les tiers annulés
 			request.setIncludeCancelled(false);
 			{
-				final RequestHandlerResult r = handler.handle(request);
-				final NumbersResponse response = (NumbersResponse) r.getResponse();
+				final RequestHandlerResult<NumbersResponse> r = handler.handle(request);
+				final NumbersResponse response = r.getResponse();
 				assertNotNull(response);
 				assertFalse(response.isIncludeCancelled());
 
@@ -178,8 +178,8 @@ public class NumbersRequestHandlerTest extends BusinessTest {
 			// avec les tiers annulés
 			request.setIncludeCancelled(true);
 			{
-				final RequestHandlerResult r = handler.handle(request);
-				final NumbersResponse response = (NumbersResponse) r.getResponse();
+				final RequestHandlerResult<NumbersResponse>  r = handler.handle(request);
+				final NumbersResponse response = r.getResponse();
 				assertNotNull(response);
 				assertTrue(response.isIncludeCancelled());
 
@@ -199,7 +199,7 @@ public class NumbersRequestHandlerTest extends BusinessTest {
 		}
 	}
 
-	private static List<Integer> extractIds(RequestHandlerResult r) throws IOException {
+	private static List<Integer> extractIds(RequestHandlerResult<NumbersResponse> r) throws IOException {
 		final EsbDataHandler attachement = r.getAttachments().get("ids");
 		assertNotNull(attachement);
 

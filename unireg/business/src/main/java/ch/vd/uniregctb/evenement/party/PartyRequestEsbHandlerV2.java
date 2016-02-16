@@ -36,9 +36,9 @@ import ch.vd.technical.esb.EsbMessageFactory;
 import ch.vd.technical.esb.jms.EsbJmsTemplate;
 import ch.vd.technical.esb.util.EsbDataHandler;
 import ch.vd.technical.esb.util.exception.ESBValidationException;
-import ch.vd.unireg.xml.event.party.v1.ObjectFactory;
-import ch.vd.unireg.xml.event.party.v1.Request;
-import ch.vd.unireg.xml.event.party.v1.Response;
+import ch.vd.unireg.xml.event.party.v2.ObjectFactory;
+import ch.vd.unireg.xml.event.party.v2.Request;
+import ch.vd.unireg.xml.event.party.v2.Response;
 import ch.vd.unireg.xml.exception.v1.AccessDeniedExceptionInfo;
 import ch.vd.unireg.xml.exception.v1.BusinessExceptionCode;
 import ch.vd.unireg.xml.exception.v1.BusinessExceptionInfo;
@@ -57,13 +57,13 @@ import ch.vd.uniregctb.xml.ServiceException;
 /**
  * Listener qui écoute les requêtes de données de tiers et qui répond en conséquence.
  */
-public class PartyRequestEsbHandler implements EsbMessageHandler, InitializingBean {
+public class PartyRequestEsbHandlerV2 implements EsbMessageHandler, InitializingBean {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(PartyRequestEsbHandler.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(PartyRequestEsbHandlerV2.class);
 
 	private ServiceTracing esbMessageValidatorServiceTracing;
 	private EsbJmsTemplate esbTemplate;
-	private Map<Class<? extends Request>, RequestHandler> handlers;
+	private Map<Class<? extends Request>, RequestHandlerV2<? extends Request>> handlers;
 
 	private final ObjectFactory objectFactory = new ObjectFactory();
 	private EsbMessageValidator esbValidator;
@@ -72,7 +72,7 @@ public class PartyRequestEsbHandler implements EsbMessageHandler, InitializingBe
 	private JAXBContext outputJaxbContext;
 
 	@SuppressWarnings({"UnusedDeclaration"})
-	public void setHandlers(Map<Class<? extends Request>, RequestHandler> handlers) {
+	public void setHandlers(Map<Class<? extends Request>, RequestHandlerV2<? extends Request>> handlers) {
 		this.handlers = handlers;
 	}
 
@@ -119,7 +119,7 @@ public class PartyRequestEsbHandler implements EsbMessageHandler, InitializingBe
 
 	private void onMessage(EsbMessage message) throws Exception {
 
-		RequestHandlerResult result;
+		RequestHandlerResult<? extends Response> result;
 		try {
 			// on décode la requête
 			final Request request = parse(message.getBodyAsSource());
@@ -165,7 +165,7 @@ public class PartyRequestEsbHandler implements EsbMessageHandler, InitializingBe
 			final SchemaFactory sf = SchemaFactory.newInstance(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI);
 			sf.setResourceResolver(new ClasspathCatalogResolver());
 			final List<Source> sources = new ArrayList<>(handlers.size());
-			for (RequestHandler handler : handlers.values()) {
+			for (RequestHandlerV2 handler : handlers.values()) {
 				final ClassPathResource resource = handler.getRequestXSD();
 				sources.add(new StreamSource(resource.getURL().toExternalForm()));
 			}
@@ -173,9 +173,9 @@ public class PartyRequestEsbHandler implements EsbMessageHandler, InitializingBe
 		}
 	}
 
-	protected RequestHandlerResult handle(Request request) throws ServiceException, EsbBusinessException {
+	protected RequestHandlerResult<? extends Response> handle(Request request) throws ServiceException, EsbBusinessException {
 
-		final RequestHandler handler = handlers.get(request.getClass());
+		final RequestHandlerV2 handler = handlers.get(request.getClass());
 		if (handler == null) {
 			throw new IllegalArgumentException("Aucun handler connu pour la requête [" + request.getClass() + ']');
 		}
@@ -234,7 +234,7 @@ public class PartyRequestEsbHandler implements EsbMessageHandler, InitializingBe
 	public void afterPropertiesSet() throws Exception {
 
 		final List<Resource> resources = new ArrayList<>(handlers.size());
-		for (RequestHandler<?> handler : handlers.values()) {
+		for (RequestHandlerV2<?> handler : handlers.values()) {
 			final List<ClassPathResource> resource = handler.getResponseXSD();
 			resources.addAll(resource);
 		}

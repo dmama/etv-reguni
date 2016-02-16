@@ -30,7 +30,7 @@ import static org.junit.Assert.assertNull;
  *
  * @author Baba NGOM <baba-issa.ngom@vd.ch>
  */
-public class PartyAperiodicTaxLiabilityRequestV3EsbHandlerItTest extends PartyRequestEsbHandlerItTest {
+public class PartyAperiodicTaxLiabilityRequestV3EsbHandlerItTest extends PartyRequestEsbHandlerV1ItTest {
 
 	private AperiodicTaxLiabilityRequestHandlerV3 handlerV3;
 
