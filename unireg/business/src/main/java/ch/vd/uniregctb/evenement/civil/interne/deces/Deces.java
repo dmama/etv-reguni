@@ -229,6 +229,10 @@ public class Deces extends EvenementCivilInterne {
 		try {
 			if (!redondantSelonFors) {
 				context.getMetierService().deces(defunt, getDate(), null, getNumeroEvenement());
+			}else{
+				//les rapports sont ils tous fermés?
+				//Va permettre de fermer tous les rapports restants. Si aucun rapport ouvert, alors pas de modification apportée
+				context.getTiersService().closeAllRapports(defunt,getDate());
 			}
 		}
 		catch (MetierServiceException e) {
