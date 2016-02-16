@@ -11,6 +11,7 @@ import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.MovingWindow;
 import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.ForsParType;
 import ch.vd.uniregctb.tiers.Tiers;
@@ -190,5 +191,25 @@ public abstract class AssujettissementHelper {
 	public static boolean isForPrincipalHorsSuisse(Tiers tiers, RegDate date) {
 		final ForFiscalPrincipal ffp = tiers.getForFiscalPrincipalAt(date);
 		return ffp != null && ffp.getTypeAutoriteFiscale() == TypeAutoriteFiscale.PAYS_HS;
+	}
+
+	/**
+	 * Retourne la date de fin de présence en suisse si le départ a eu lieu la même année que la date passé en paramètre
+	 * @param tiers à analyser
+	 * @param date de référence
+	 * @return la date de fin de présence en suisse, Null si aucun départ HS dans l'année trouvé
+	 */
+	public static RegDate getDateFinPresenceSuisseDansAnnee(Tiers tiers, RegDate date) {
+		Set<ForFiscal> fors = tiers.getForsFiscaux();
+		for (ForFiscal f : fors) {
+			final boolean isAfterDateReference = f.getDateDebut().isAfterOrEqual(date);
+			final boolean isMemeAnnee = f.getDateDebut().year()== date.year();
+			final boolean isHorsSuisse = f.getTypeAutoriteFiscale() == TypeAutoriteFiscale.PAYS_HS;
+			if (f.isPrincipal() && isAfterDateReference && isHorsSuisse && isMemeAnnee) {
+
+				return f.getDateDebut().getOneDayBefore();
+			}
+		}
+		return null;
 	}
 }
