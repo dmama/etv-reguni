@@ -18,7 +18,9 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.apache.commons.lang3.mutable.Mutable;
 import org.apache.commons.lang3.mutable.MutableLong;
+import org.apache.commons.lang3.mutable.MutableObject;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Assert;
 import org.junit.Ignore;
@@ -40,6 +42,8 @@ import ch.vd.unireg.interfaces.organisation.data.TypeDeCapital;
 import ch.vd.unireg.interfaces.organisation.data.TypeDeSite;
 import ch.vd.unireg.interfaces.organisation.data.builder.DonneesRCBuilder;
 import ch.vd.unireg.interfaces.organisation.mock.MockServiceOrganisation;
+import ch.vd.unireg.interfaces.organisation.mock.data.MockDonneesRC;
+import ch.vd.unireg.interfaces.organisation.mock.data.MockDonneesRegistreIDE;
 import ch.vd.unireg.interfaces.organisation.mock.data.MockOrganisation;
 import ch.vd.unireg.interfaces.organisation.mock.data.MockSiteOrganisation;
 import ch.vd.unireg.wsclient.rcpers.RcPersClient;
@@ -4304,8 +4308,11 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 	@Test
 	public void testEntrepriseAvecIdentifiantCantonalMaisRaisonSocialeDifferente() throws Exception {
 
-		final long noEntreprise = 74984L;
 		final long noCantonalEntreprise = 42L;
+		final long noCantonalEtablissementPrincipal = 43732L;
+		final RegDate dateCreationEntrepriseCivile = RegDate.get(1924, 4, 1);
+
+		final long noEntreprise = 74984L;
 		final RegpmEntreprise e = EntrepriseMigratorTest.buildEntreprise(noEntreprise);
 		final RegDate dateDebut = RegDate.get(1986, 1, 1);
 
@@ -4321,7 +4328,11 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		organisationService.setUp(new MockServiceOrganisation() {
 			@Override
 			protected void init() {
-				final MockOrganisation org = addOrganisation(noCantonalEntreprise, RegDate.get(1924, 4, 1), "Pittet Levage S.A.R.L", FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE);
+				final MockOrganisation org = addOrganisation(noCantonalEntreprise);
+				final MockSiteOrganisation sitePrincipal = addSite(org, noCantonalEtablissementPrincipal, dateCreationEntrepriseCivile, new MockDonneesRegistreIDE(), new MockDonneesRC());
+				sitePrincipal.changeTypeDeSite(dateCreationEntrepriseCivile, TypeDeSite.ETABLISSEMENT_PRINCIPAL);
+				sitePrincipal.changeNom(dateCreationEntrepriseCivile, "Pittet Levage S.A.R.L.");
+				sitePrincipal.changeFormeLegale(dateCreationEntrepriseCivile, FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE);
 				addNumeroIDE(org, "CHE123456788", RegDate.get(2009, 1, 1), null);
 			}
 		});
@@ -4335,11 +4346,22 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		final LoggedMessages lms = grapheMigrator.migrate(graphe);
 		Assert.assertNotNull(lms);
 
+		// pour récupérer le numéro de l'établissement principal créé
+		final Mutable<Long> noEtablissementPrincipal = new MutableObject<>();
+
 		// migration
 		doInUniregTransaction(true, status -> {
 			final Entreprise entreprise = uniregStore.getEntityFromDb(Entreprise.class, noEntreprise);
 			Assert.assertNotNull(entreprise);
 			Assert.assertEquals((Long) noCantonalEntreprise, entreprise.getNumeroEntreprise());
+
+			final Set<RapportEntreTiers> versObjets = entreprise.getRapportsSujet();
+			Assert.assertNotNull(versObjets);
+			Assert.assertEquals(1, versObjets.size());
+			final RapportEntreTiers ret = versObjets.iterator().next();
+			Assert.assertNotNull(ret);
+			Assert.assertEquals(ActiviteEconomique.class, ret.getClass());
+			noEtablissementPrincipal.setValue(ret.getObjetId());
 		});
 
 		final Map<LogCategory, List<String>> messages = buildTextualMessages(lms);
@@ -4349,14 +4371,14 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 			Assert.assertEquals(4, msgs.size());
 			Assert.assertEquals("WARN;" + noEntreprise + ";Active;CHE123456788;" + noCantonalEntreprise + ";;;;;;;;;;;;;L'entreprise n'existait pas dans Unireg avec ce numéro de contribuable.", msgs.get(0));
 			Assert.assertEquals("WARN;" + noEntreprise + ";Active;CHE123456788;" + noCantonalEntreprise + ";;;;;;;;;;;;;Entreprise sans exercice commercial ni date de bouclement futur.", msgs.get(1));
-			Assert.assertEquals("WARN;" + noEntreprise + ";Active;CHE123456788;" + noCantonalEntreprise + ";;;;;;;;;;;;;Pas de siège associé dans les données fiscales, pas d'établissement principal créé à partir des données fiscales.", msgs.get(2));
+			Assert.assertEquals("INFO;" + noEntreprise + ";Active;CHE123456788;" + noCantonalEntreprise + ";;;;;;;;;;;;;Etablissement principal " + FormatNumeroHelper.numeroCTBToDisplay(noEtablissementPrincipal.getValue()) + " créé en liaison avec le site civil " + noCantonalEtablissementPrincipal + ".", msgs.get(2));
 			Assert.assertEquals("INFO;" + noEntreprise + ";Active;CHE123456788;" + noCantonalEntreprise + ";;;;;;;;;;;;;Entreprise migrée : " + FormatNumeroHelper.numeroCTBToDisplay(noEntreprise) + ".", msgs.get(3));
 		}
 		// ... et dans la liste des différences
 		{
 			final List<String> msgs = messages.get(LogCategory.DIFFERENCES_DONNEES_CIVILES);
 			Assert.assertEquals(1, msgs.size());
-			Assert.assertEquals("INFO;" + noEntreprise + ";Active;CHE123456788;" + noCantonalEntreprise + ";Toto SA;Pittet Levage S.A.R.L;Différentes;S.A.;N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE;Différentes;CHE123456788;CHE123456788;Identiques;", msgs.get(0));
+			Assert.assertEquals("INFO;" + noEntreprise + ";Active;CHE123456788;" + noCantonalEntreprise + ";Toto SA;Pittet Levage S.A.R.L.;Différentes;S.A.;N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE;Différentes;CHE123456788;CHE123456788;Identiques;", msgs.get(0));
 		}
 	}
 
@@ -4391,13 +4413,15 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		organisationService.setUp(new MockServiceOrganisation() {
 			@Override
 			protected void init() {
-				final MockOrganisation org = addOrganisation(noCantonalEntreprise, dateChargementRCEnt, "Toto SA", FormeLegale.N_0106_SOCIETE_ANONYME);
+				final MockOrganisation org = addOrganisation(noCantonalEntreprise);
 				addNumeroIDE(org, "CHE123456788", RegDate.get(2009, 1, 1), null);
 
 				final MockSiteOrganisation site = addSite(org, noCantonalEtablissementPrincipal, dateChargementRCEnt, null, new DonneesRCBuilder()
 						.addCapital(new Capital(dateChargementRCEnt, null, TypeDeCapital.CAPITAL_SOCIAL, MontantMonetaire.CHF, BigDecimal.valueOf(400000L), "répartition ??"))
 						.build());
 				site.changeTypeDeSite(dateChargementRCEnt, TypeDeSite.ETABLISSEMENT_PRINCIPAL);
+				site.changeNom(dateChargementRCEnt, "Toto SA");
+				site.changeFormeLegale(dateChargementRCEnt, FormeLegale.N_0106_SOCIETE_ANONYME);
 			}
 		});
 
@@ -4571,12 +4595,14 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		organisationService.setUp(new MockServiceOrganisation() {
 			@Override
 			protected void init() {
-				final MockOrganisation org = addOrganisation(noCantonalEntreprise, dateChargementRCEnt, "Toto", FormeLegale.N_0101_ENTREPRISE_INDIVIDUELLE);
+				final MockOrganisation org = addOrganisation(noCantonalEntreprise);
 				addNumeroIDE(org, "CHE123456788", dateChargementRCEnt, null);
 
 				final MockSiteOrganisation sitePrincipal = addSite(org, noCantonalEtablissementPrincipal, dateChargementRCEnt, null, null);
 				sitePrincipal.addSiege(dateChargementRCEnt, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Echallens.getNoOFS());
 				sitePrincipal.changeTypeDeSite(dateChargementRCEnt, TypeDeSite.ETABLISSEMENT_PRINCIPAL);
+				sitePrincipal.changeNom(dateChargementRCEnt, "Toto");
+				sitePrincipal.changeFormeLegale(dateChargementRCEnt, FormeLegale.N_0101_ENTREPRISE_INDIVIDUELLE);
 			}
 		});
 
@@ -4635,7 +4661,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		organisationService.setUp(new MockServiceOrganisation() {
 			@Override
 			protected void init() {
-				final MockOrganisation org = addOrganisation(noCantonalEntreprise, dateChargementRCEnt, "Toto SA", FormeLegale.N_0106_SOCIETE_ANONYME);
+				final MockOrganisation org = addOrganisation(noCantonalEntreprise);
 				addNumeroIDE(org, "CHE123456788", RegDate.get(2009, 1, 1), null);
 
 				final MockSiteOrganisation sitePrincipal = addSite(org, noCantonalEtablissementPrincipal, dateChargementRCEnt, null, new DonneesRCBuilder()
@@ -4643,6 +4669,8 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 						.build());
 				sitePrincipal.addSiege(dateChargementRCEnt, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Echallens.getNoOFS());
 				sitePrincipal.changeTypeDeSite(dateChargementRCEnt, TypeDeSite.ETABLISSEMENT_PRINCIPAL);
+				sitePrincipal.changeNom(dateChargementRCEnt, "Toto SA");
+				sitePrincipal.changeFormeLegale(dateChargementRCEnt, FormeLegale.N_0106_SOCIETE_ANONYME);
 
 				final MockSiteOrganisation siteSecondaire = addSite(org, noCantonalEtablissementSecondaire, dateChargementRCEnt, null, null);
 				siteSecondaire.addSiege(dateChargementRCEnt, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Morges.getNoOFS());
