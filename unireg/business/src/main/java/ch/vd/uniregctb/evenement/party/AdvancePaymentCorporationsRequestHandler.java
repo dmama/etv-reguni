@@ -9,6 +9,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
@@ -387,7 +388,7 @@ public class AdvancePaymentCorporationsRequestHandler implements RequestHandlerV
 					}
 					else {
 						final Taxpayer donneeExtraite = new Taxpayer();
-						donneeExtraite.setName(tiersService.getRaisonSociale(entreprise));
+						donneeExtraite.setName(StringUtils.trimToEmpty(tiersService.getRaisonSociale(entreprise)));
 						donneeExtraite.setNumber(id.intValue());
 
 						donneeExtraite.setFutureEndOfBusinessYear(DataHelper.coreToXMLv2(exerciceCourant.getDateFin()));

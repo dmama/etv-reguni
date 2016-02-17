@@ -50,6 +50,48 @@ public abstract class DataHelper {
 
 	//private static final Logger LOGGER = LoggerFactory.getLogger(DataHelper.class);
 
+	private static final RegDate MIN_DATE_V1_V2 = RegDate.get(1800, 1, 1);
+
+	private static ch.vd.unireg.xml.common.v1.Date dateV1(int year, int month, int day) {
+		if (year < MIN_DATE_V1_V2.year()) {
+			// la date sera donc transmise fausse, mais de toute façon elle est tellement vieille...
+			return new ch.vd.unireg.xml.common.v1.Date(MIN_DATE_V1_V2.year(), MIN_DATE_V1_V2.month(), MIN_DATE_V1_V2.day());
+		}
+		else {
+			return new ch.vd.unireg.xml.common.v1.Date(year, month, day);
+		}
+	}
+
+	private static ch.vd.unireg.xml.common.v1.PartialDate partialDateV1(int year, Integer month, Integer day) {
+		if (year < MIN_DATE_V1_V2.year()) {
+			// la date sera donc transmise fausse, mais de toute façon elle est tellement vieille...
+			return new ch.vd.unireg.xml.common.v1.PartialDate(MIN_DATE_V1_V2.year(), MIN_DATE_V1_V2.month(), MIN_DATE_V1_V2.day());
+		}
+		else {
+			return new ch.vd.unireg.xml.common.v1.PartialDate(year, month, day);
+		}
+	}
+
+	private static ch.vd.unireg.xml.common.v2.Date dateV2(int year, int month, int day) {
+		if (year < MIN_DATE_V1_V2.year()) {
+			// la date sera donc transmise fausse, mais de toute façon elle est tellement vieille...
+			return new ch.vd.unireg.xml.common.v2.Date(MIN_DATE_V1_V2.year(), MIN_DATE_V1_V2.month(), MIN_DATE_V1_V2.day());
+		}
+		else {
+			return new ch.vd.unireg.xml.common.v2.Date(year, month, day);
+		}
+	}
+
+	private static ch.vd.unireg.xml.common.v2.PartialDate partialDateV2(int year, Integer month, Integer day) {
+		if (year < MIN_DATE_V1_V2.year()) {
+			// la date sera donc transmise fausse, mais de toute façon elle est tellement vieille...
+			return new ch.vd.unireg.xml.common.v2.PartialDate(MIN_DATE_V1_V2.year(), MIN_DATE_V1_V2.month(), MIN_DATE_V1_V2.day());
+		}
+		else {
+			return new ch.vd.unireg.xml.common.v2.PartialDate(year, month, day);
+		}
+	}
+
 	public static boolean coreToXML(Boolean value) {
 		return value != null && value;
 	}
@@ -65,7 +107,7 @@ public abstract class DataHelper {
 			final int year = cal.get(Calendar.YEAR);
 			final int month = cal.get(Calendar.MONTH) + 1;
 			final int day = cal.get(Calendar.DAY_OF_MONTH);
-			return new ch.vd.unireg.xml.common.v1.Date(year, month, day);
+			return dateV1(year, month, day);
 		}
 	}
 
@@ -80,7 +122,7 @@ public abstract class DataHelper {
 			final int year = cal.get(Calendar.YEAR);
 			final int month = cal.get(Calendar.MONTH) + 1;
 			final int day = cal.get(Calendar.DAY_OF_MONTH);
-			return new ch.vd.unireg.xml.common.v2.Date(year, month, day);
+			return dateV2(year, month, day);
 		}
 	}
 
@@ -89,7 +131,7 @@ public abstract class DataHelper {
 			return null;
 		}
 		else {
-			return new ch.vd.unireg.xml.common.v1.Date(date.year(), date.month(), date.day());
+			return dateV1(date.year(), date.month(), date.day());
 		}
 	}
 
@@ -98,7 +140,7 @@ public abstract class DataHelper {
 			return null;
 		}
 		else {
-			return new ch.vd.unireg.xml.common.v2.Date(date.year(), date.month(), date.day());
+			return dateV2(date.year(), date.month(), date.day());
 		}
 	}
 
@@ -121,7 +163,7 @@ public abstract class DataHelper {
 			return null;
 		}
 		else {
-			return new ch.vd.unireg.xml.common.v1.PartialDate(date.year(), date.month() == RegDate.UNDEFINED ? null : date.month(), date.day() == RegDate.UNDEFINED ? null : date.day());
+			return partialDateV1(date.year(), date.month() == RegDate.UNDEFINED ? null : date.month(), date.day() == RegDate.UNDEFINED ? null : date.day());
 		}
 	}
 
@@ -130,7 +172,7 @@ public abstract class DataHelper {
 			return null;
 		}
 		else {
-			return new ch.vd.unireg.xml.common.v2.PartialDate(date.year(), date.month() == RegDate.UNDEFINED ? null : date.month(), date.day() == RegDate.UNDEFINED ? null : date.day());
+			return partialDateV2(date.year(), date.month() == RegDate.UNDEFINED ? null : date.month(), date.day() == RegDate.UNDEFINED ? null : date.day());
 		}
 	}
 
