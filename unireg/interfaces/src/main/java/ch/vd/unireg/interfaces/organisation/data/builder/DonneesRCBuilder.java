@@ -5,7 +5,7 @@ import java.util.List;
 import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.organisation.data.AdresseRCEnt;
+import ch.vd.unireg.interfaces.organisation.data.AdresseLegaleRCEnt;
 import ch.vd.unireg.interfaces.organisation.data.Capital;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
 import ch.vd.unireg.interfaces.organisation.data.DonneesRC;
@@ -17,7 +17,7 @@ public class DonneesRCBuilder implements DataBuilder<DonneesRC> {
 	private List<DateRanged<StatusInscriptionRC>> statusInscription;
 	private List<DateRanged<RegDate>> dateInscription;
 	private List<Capital> capital;
-	private List<AdresseRCEnt> adresseLegale;
+	private List<AdresseLegaleRCEnt> adresseLegale;
 	private List<DateRanged<String>> buts;
 	private List<DateRanged<RegDate>> dateStatus;
 	private List<DateRanged<RegDate>> dateRadiation;
@@ -50,7 +50,7 @@ public class DonneesRCBuilder implements DataBuilder<DonneesRC> {
 		return this;
 	}
 
-	public DonneesRCBuilder addAdresseLegale(@NotNull AdresseRCEnt valeur) {
+	public DonneesRCBuilder addAdresseLegale(@NotNull AdresseLegaleRCEnt valeur) {
 		adresseLegale = BuilderHelper.addValueToList(adresseLegale, valeur);
 		return this;
 	}
@@ -65,7 +65,7 @@ public class DonneesRCBuilder implements DataBuilder<DonneesRC> {
 		return this;
 	}
 
-	public DonneesRCBuilder withAdresseLegale(List<AdresseRCEnt> adresseLegale) {
+	public DonneesRCBuilder withAdresseLegale(List<AdresseLegaleRCEnt> adresseLegale) {
 		this.adresseLegale = adresseLegale;
 		return this;
 	}

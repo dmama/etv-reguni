@@ -16,11 +16,10 @@ import ch.vd.unireg.interfaces.common.Adresse;
 import ch.vd.unireg.interfaces.common.CasePostale;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
 import ch.vd.unireg.interfaces.organisation.ServiceOrganisationException;
-import ch.vd.uniregctb.type.TypeAdresseCivil;
 
-public class AdresseRCEnt implements Serializable, Adresse, DateRangeLimitable<AdresseRCEnt> {
+public abstract class AdresseRCEnt<T extends AdresseRCEnt<T>> implements Serializable, Adresse, DateRangeLimitable<T> {
 
-    private static final long serialVersionUID = -137576466393353912L;
+    private static final long serialVersionUID = 2308060557947322636L;
 
     private final RegDate dateDebut;
     private final RegDate dateFin;
@@ -33,26 +32,12 @@ public class AdresseRCEnt implements Serializable, Adresse, DateRangeLimitable<A
     private final Integer noOfsPays;
     private final String rue;
     private final String titre;
-    private final TypeAdresseCivil typeAdresse;
     private final Integer egid;
     private final CasePostale casePostale;
 
-    public static AdresseRCEnt get(DateRangeHelper.Ranged<Address> source) {
-        if (source == null) {
-            return null;
-        }
-        return new AdresseRCEnt(source.getDateDebut(), source.getDateFin(), source.getPayload());
-    }
-
-    public AdresseRCEnt limitTo(RegDate dateDebut, RegDate dateFin) {
-        return new AdresseRCEnt(dateDebut == null ? this.dateDebut : dateDebut,
-                                dateFin == null ? this.dateFin : dateFin,
-                                this);
-    }
-
     public AdresseRCEnt(RegDate dateDebut, RegDate dateFin, String localite, String numeroMaison, String numeroAppartement,
                         Integer numeroOrdrePostal, String numeroPostal, String numeroPostalComplementaire, Integer noOfsPays, String rue,
-                        String titre, TypeAdresseCivil typeAdresse, Integer egid, CasePostale casePostale) {
+                        String titre, Integer egid, CasePostale casePostale) {
         this.dateDebut = dateDebut;
         this.dateFin = dateFin;
         this.localite = localite;
@@ -64,12 +49,11 @@ public class AdresseRCEnt implements Serializable, Adresse, DateRangeLimitable<A
         this.noOfsPays = noOfsPays;
         this.rue = rue;
         this.titre = titre;
-        this.typeAdresse = typeAdresse;
         this.egid = egid;
         this.casePostale = casePostale;
     }
 
-    private AdresseRCEnt(RegDate dateDebut, RegDate dateFin, Address address) {
+    protected AdresseRCEnt(RegDate dateDebut, RegDate dateFin, Address address) {
         this.dateDebut = dateDebut;
         this.dateFin = dateFin;
         DateRangeHelper.assertValidRange(this.dateDebut, this.dateFin, ServiceOrganisationException.class);
@@ -94,11 +78,10 @@ public class AdresseRCEnt implements Serializable, Adresse, DateRangeLimitable<A
             this.casePostale = null;
         }
 
-        this.typeAdresse = TypeAdresseCivil.PRINCIPALE;
         this.egid = toInt(address.getFederalBuildingId());
     }
 
-    private AdresseRCEnt(RegDate dateDebut, RegDate dateFin, AdresseRCEnt source) {
+    protected AdresseRCEnt(RegDate dateDebut, RegDate dateFin, AdresseRCEnt source) {
         this.dateDebut = dateDebut;
         this.dateFin = dateFin;
         DateRangeHelper.assertValidRange(this.dateDebut, this.dateFin, ServiceOrganisationException.class);
@@ -112,7 +95,6 @@ public class AdresseRCEnt implements Serializable, Adresse, DateRangeLimitable<A
         this.noOfsPays = source.noOfsPays;
         this.rue = source.rue;
         this.titre = source.titre;
-        this.typeAdresse = source.typeAdresse;
         this.egid = source.egid;
         this.casePostale = source.casePostale;
     }
@@ -229,11 +211,6 @@ public class AdresseRCEnt implements Serializable, Adresse, DateRangeLimitable<A
     @Override
     public String getTitre() {
         return titre;
-    }
-
-    @Override
-    public TypeAdresseCivil getTypeAdresse() {
-        return typeAdresse;
     }
 
     @Override

@@ -37,7 +37,6 @@ import ch.vd.uniregctb.common.FiscalDateHelper;
 import ch.vd.uniregctb.common.NpaEtLocalite;
 import ch.vd.uniregctb.common.RueEtNumero;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
-import ch.vd.uniregctb.interfaces.model.AdresseEntreprise;
 import ch.vd.uniregctb.interfaces.model.AdressesCivilesHistoriques;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
@@ -1864,53 +1863,6 @@ public class AdresseServiceImpl implements AdresseService {
 				}
 				// en mode non-strict, on ignore simplement l'adresse en erreur
 			}
-		}
-		return adresses;
-	}
-
-	/**
-	 * Converti les adresses PM spécifiées en adresses fiscales.
-	 * <p/>
-	 * La régle de mapping entre les adresses PM et fiscales est :
-	 * <p/>
-	 * <pre>
-	 * PM              Fiscal
-	 * -----           ------
-	 * Courrier  ----- Courrier
-	 *             `-- Représentation
-	 * Siège     ----- Domicile
-	 *             `-- Poursuite
-	 * Facturation     (non-mappée)
-	 * </pre>
-	 *
-	 * @param entreprise        l'entreprise qui possède les adresses PM
-	 * @param adressesPM        les adresses PM de base
-	 * @param adressesPMDefault les adresses PM par défaut utilisées pour boucher les trous dans les adresses PM de base
-	 * @return les adresses génériques qui représentent les adresses PM.
-	 */
-	@SuppressWarnings({"unchecked"})
-	private List<AdresseGenerique> initAdressesPMHisto(Entreprise entreprise, List<AdresseEntreprise> adressesPM, List<AdresseEntreprise> adressesPMDefault) {
-
-		// Adapte la liste des adresses civiles
-		List<AdresseGenerique> adresses = adapteAdressesPM(entreprise, adressesPM, false);
-		List<AdresseGenerique> defauts = adapteAdressesPM(entreprise, adressesPMDefault, true);
-
-		// Détermine les trous éventuels et construit la liste des adresses pour les boucher
-		final List<AdresseGenerique> boucheTrous = AdresseMixer.determineBoucheTrous(adresses, defauts);
-
-		// Bouche tous les éventuels trous avec les adresses par défaut
-		if (boucheTrous != null) {
-			adresses.addAll(boucheTrous);
-			Collections.sort(adresses, new DateRangeComparator<AdresseGenerique>());
-		}
-
-		return adresses;
-	}
-
-	private List<AdresseGenerique> adapteAdressesPM(Entreprise entreprise, List<AdresseEntreprise> adressesPM, boolean isDefault) {
-		List<AdresseGenerique> adresses = new ArrayList<>();
-		for (AdresseEntreprise adresse : adressesPM) {
-			adresses.add(new AdressePMAdapter(adresse, entreprise, isDefault));
 		}
 		return adresses;
 	}

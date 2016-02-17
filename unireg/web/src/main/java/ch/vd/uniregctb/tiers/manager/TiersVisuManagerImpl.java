@@ -39,13 +39,13 @@ import ch.vd.uniregctb.security.SecurityHelper;
 import ch.vd.uniregctb.tiers.AutreCommunaute;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.DecisionAci;
 import ch.vd.uniregctb.tiers.DecisionAciView;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.Etablissement;
 import ch.vd.uniregctb.tiers.MenageCommun;
-import ch.vd.uniregctb.tiers.NatureTiers;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.tiers.RapportPrestationImposable;
@@ -175,9 +175,7 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 				}
 			});
 
-			//Les entreprises et les etablissement ne sont pas pris en charge par l'adresseService
-			if (NatureTiers.Entreprise != tiersVisuView.getNatureTiers() &&
-					NatureTiers.Etablissement != tiersVisuView.getNatureTiers()) {
+			if (tiers instanceof ContribuableImpositionPersonnesPhysiques) {
 				try {
 					tiersVisuView.setHistoriqueAdressesCiviles(getAdressesHistoriquesCiviles(tiers, true));
 				}
@@ -192,6 +190,14 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 					catch (DonneesCivilesException e) {
 						tiersVisuView.setExceptionAdresseCivilesConjoint(e.getMessage());
 					}
+				}
+			}
+			else if (tiers instanceof Entreprise) {
+				try {
+					tiersVisuView.setHistoriqueAdressesCiviles(getAdressesHistoriquesCiviles((Entreprise) tiers, true));
+				}
+				catch (DonneesCivilesException e) {
+					tiersVisuView.setExceptionAdresseCiviles(e.getMessage());
 				}
 			}
 		}

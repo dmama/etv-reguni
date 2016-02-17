@@ -8,9 +8,10 @@ import ch.vd.registre.base.date.RegDate;
  * @author Raphaël Marmier, 2015-11-10
  */
 public interface DonneesRegistreIDE {
-	List<AdresseRCEnt> getAdresseBoitePostale();
 
-	List<AdresseRCEnt> getAdresseEffective();
+	List<AdresseBoitePostaleRCEnt> getAdresseBoitePostale();
+
+	List<AdresseEffectiveRCEnt> getAdresseEffective();
 
 	List<DateRanged<RaisonDeRadiationRegistreIDE>> getRaisonDeLiquidation();
 

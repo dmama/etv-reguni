@@ -5,7 +5,8 @@ import java.util.List;
 import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.organisation.data.AdresseRCEnt;
+import ch.vd.unireg.interfaces.organisation.data.AdresseBoitePostaleRCEnt;
+import ch.vd.unireg.interfaces.organisation.data.AdresseEffectiveRCEnt;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
 import ch.vd.unireg.interfaces.organisation.data.DonneesRegistreIDE;
 import ch.vd.unireg.interfaces.organisation.data.DonneesRegistreIDERCEnt;
@@ -17,8 +18,8 @@ public class DonneesRegistreIDEBuilder implements DataBuilder<DonneesRegistreIDE
 
 	private List<DateRanged<StatusRegistreIDE>> status;
 	private List<DateRanged<TypeOrganisationRegistreIDE>> typeOrganisation;
-	private List<AdresseRCEnt> adresseEffective;
-	private List<AdresseRCEnt> adresseBoitePostale;
+	private List<AdresseEffectiveRCEnt> adresseEffective;
+	private List<AdresseBoitePostaleRCEnt> adresseBoitePostale;
 	private List<DateRanged<RaisonDeRadiationRegistreIDE>> raisonDeLiquidation;
 
 	public DonneesRegistreIDEBuilder() {}
@@ -42,12 +43,12 @@ public class DonneesRegistreIDEBuilder implements DataBuilder<DonneesRegistreIDE
 		return this;
 	}
 
-	public DonneesRegistreIDEBuilder addAdresseEffective(@NotNull AdresseRCEnt valeur) {
+	public DonneesRegistreIDEBuilder addAdresseEffective(@NotNull AdresseEffectiveRCEnt valeur) {
 		adresseEffective = BuilderHelper.addValueToList(adresseEffective, valeur);
 		return this;
 	}
 
-	public DonneesRegistreIDEBuilder addAdresseBoitePostale(@NotNull AdresseRCEnt valeur) {
+	public DonneesRegistreIDEBuilder addAdresseBoitePostale(@NotNull AdresseBoitePostaleRCEnt valeur) {
 		adresseBoitePostale = BuilderHelper.addValueToList(adresseBoitePostale, valeur);
 		return this;
 	}
@@ -57,12 +58,12 @@ public class DonneesRegistreIDEBuilder implements DataBuilder<DonneesRegistreIDE
 		return this;
 	}
 
-	public DonneesRegistreIDEBuilder withAdresseBoitePostale(List<AdresseRCEnt> adresseBoitePostale) {
+	public DonneesRegistreIDEBuilder withAdresseBoitePostale(List<AdresseBoitePostaleRCEnt> adresseBoitePostale) {
 		this.adresseBoitePostale = adresseBoitePostale;
 		return this;
 	}
 
-	public DonneesRegistreIDEBuilder withAdresseEffective(List<AdresseRCEnt> adresseEffective) {
+	public DonneesRegistreIDEBuilder withAdresseEffective(List<AdresseEffectiveRCEnt> adresseEffective) {
 		this.adresseEffective = adresseEffective;
 		return this;
 	}

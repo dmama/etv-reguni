@@ -13,18 +13,18 @@ import ch.vd.registre.base.date.RegDate;
  */
 public class DonneesRegistreIDERCEnt implements DonneesRegistreIDE, Serializable {
 
-	private static final long serialVersionUID = -6444917918127810542L;
+	private static final long serialVersionUID = 8992760212437586681L;
 
 	private final List<DateRanged<StatusRegistreIDE>> status;
 	private final List<DateRanged<TypeOrganisationRegistreIDE>> typeOrganisation;
-	private final List<AdresseRCEnt> adresseEffective;
-	private final List<AdresseRCEnt> adresseBoitePostale;
+	private final List<AdresseEffectiveRCEnt> adresseEffective;
+	private final List<AdresseBoitePostaleRCEnt> adresseBoitePostale;
 	private final List<DateRanged<RaisonDeRadiationRegistreIDE>> raisonDeLiquidation;
 
-	public DonneesRegistreIDERCEnt(List<AdresseRCEnt> adresseBoitePostale,
+	public DonneesRegistreIDERCEnt(List<AdresseBoitePostaleRCEnt> adresseBoitePostale,
 	                          List<DateRanged<StatusRegistreIDE>> status,
 	                          List<DateRanged<TypeOrganisationRegistreIDE>> typeOrganisation,
-	                          List<AdresseRCEnt> adresseEffective,
+	                          List<AdresseEffectiveRCEnt> adresseEffective,
 	                          List<DateRanged<RaisonDeRadiationRegistreIDE>> raisonDeLiquidation) {
 		this.adresseBoitePostale = adresseBoitePostale;
 		this.status = status;
@@ -34,12 +34,12 @@ public class DonneesRegistreIDERCEnt implements DonneesRegistreIDE, Serializable
 	}
 
 	@Override
-	public List<AdresseRCEnt> getAdresseBoitePostale() {
+	public List<AdresseBoitePostaleRCEnt> getAdresseBoitePostale() {
 		return adresseBoitePostale;
 	}
 
 	@Override
-	public List<AdresseRCEnt> getAdresseEffective() {
+	public List<AdresseEffectiveRCEnt> getAdresseEffective() {
 		return adresseEffective;
 	}
 

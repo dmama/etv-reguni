@@ -9,7 +9,7 @@ import ch.vd.unireg.interfaces.organisation.data.DonneesRCRCEnt;
 import ch.vd.unireg.interfaces.organisation.data.DonneesRegistreIDE;
 import ch.vd.unireg.interfaces.organisation.data.DonneesRegistreIDERCEnt;
 import ch.vd.unireg.interfaces.organisation.data.SiteOrganisationRCEnt;
-import ch.vd.unireg.interfaces.organisation.rcent.converters.AddressConverter;
+import ch.vd.unireg.interfaces.organisation.rcent.converters.AddressConverters;
 import ch.vd.unireg.interfaces.organisation.rcent.converters.CapitalConverter;
 import ch.vd.unireg.interfaces.organisation.rcent.converters.CapitalPredicate;
 import ch.vd.unireg.interfaces.organisation.rcent.converters.CommercialRegisterStatusConverter;
@@ -26,7 +26,9 @@ public class RCEntSiteOrganisationHelper {
 
 	private static final TypeOfLocationConverter TYPE_OF_LOCATION_CONVERTER = new TypeOfLocationConverter();
 	private static final OrganisationFunctionConverter FUNCTION_CONVERTER = new OrganisationFunctionConverter();
-	private static final AddressConverter ADDRESS_CONVERTER = new AddressConverter();
+	private static final AddressConverters.LegalAddressConverter ADDRESS_LEGALE_CONVERTER = new AddressConverters.LegalAddressConverter();
+	private static final AddressConverters.POBoxAddressConverter ADDRESS_BOITE_POSTALE_CONVERTER = new AddressConverters.POBoxAddressConverter();
+	private static final AddressConverters.EffectiveAddressConverter ADDRESS_EFFECIVE_CONVERTER = new AddressConverters.EffectiveAddressConverter();
 	private static final CommercialRegisterStatusConverter COMMERCIAL_REGISTER_STATUS_INSCRIPTION_CONVERTER = new CommercialRegisterStatusConverter();
 	private static final CapitalConverter CAPITAL_CONVERTER = new CapitalConverter();
 	private static final UidRegisterStatusConverter UID_REGISTER_STATUS_CONVERTER = new UidRegisterStatusConverter();
@@ -59,7 +61,7 @@ public class RCEntSiteOrganisationHelper {
 
 	private static DonneesRC createDonneesRC(OrganisationLocation.RCEntRCData rc) {
 		return new DonneesRCRCEnt(
-				RCEntHelper.convertAndFlatmap(rc.getLegalAddress(), ADDRESS_CONVERTER),
+				RCEntHelper.convertAndFlatmap(rc.getLegalAddress(), ADDRESS_LEGALE_CONVERTER),
 				RCEntHelper.convertAndMap(rc.getRegistrationStatus(), COMMERCIAL_REGISTER_STATUS_INSCRIPTION_CONVERTER),
 				RCEntHelper.convert(rc.getRegistrationDate()),
 				RCEntHelper.convertAndFlatmap(rc.getCapital(), CAPITAL_CONVERTER, CAPITAL_PREDICATE),
@@ -70,10 +72,10 @@ public class RCEntSiteOrganisationHelper {
 
 	private static DonneesRegistreIDE createDonneesIDE(final OrganisationLocation.RCEntUIDData uid) {
 		return new DonneesRegistreIDERCEnt(
-				RCEntHelper.convertAndFlatmap(uid.getPostOfficeBoxAddress(), ADDRESS_CONVERTER),
+				RCEntHelper.convertAndFlatmap(uid.getPostOfficeBoxAddress(), ADDRESS_BOITE_POSTALE_CONVERTER),
 				RCEntHelper.convertAndMap(uid.getStatus(), UID_REGISTER_STATUS_CONVERTER),
 				RCEntHelper.convertAndMap(uid.getTypeOfOrganisation(), UID_REGISTER_TYPE_OF_ORGANISATION_CONVERTER),
-				RCEntHelper.convertAndFlatmap(uid.getEffectiveAddress(), ADDRESS_CONVERTER),
+				RCEntHelper.convertAndFlatmap(uid.getEffectiveAddress(), ADDRESS_EFFECIVE_CONVERTER),
 				RCEntHelper.convertAndMap(uid.getLiquidationReason(), UID_REGISTER_LIQUIDATION_REASON_CONVERTER)
 		);
 	}

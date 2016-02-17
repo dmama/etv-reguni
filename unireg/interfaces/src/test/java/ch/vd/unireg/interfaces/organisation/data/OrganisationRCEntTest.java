@@ -8,7 +8,8 @@ import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
-import ch.vd.unireg.interfaces.organisation.data.builder.AdresseBuilder;
+import ch.vd.unireg.interfaces.organisation.data.builder.AdresseEffectiveBuilder;
+import ch.vd.unireg.interfaces.organisation.data.builder.AdresseLegaleBuilder;
 import ch.vd.unireg.interfaces.organisation.data.builder.CapitalBuilder;
 import ch.vd.unireg.interfaces.organisation.data.builder.DonneesRCBuilder;
 import ch.vd.unireg.interfaces.organisation.data.builder.DonneesRegistreIDEBuilder;
@@ -60,7 +61,7 @@ public class OrganisationRCEntTest {
 
 								.withRC(
 										new DonneesRCBuilder()
-												.addAdresseLegale(new AdresseBuilder()
+												.addAdresseLegale(new AdresseLegaleBuilder()
 														                  .withDateDebut(RegDate.get(2015, 4, 29))
 														                  .withTitre("Robert Plant")
 														                  .withRue("Rue principale")
@@ -90,7 +91,7 @@ public class OrganisationRCEntTest {
 												.addStatus(RegDate.get(2015, 4, 29), RegDate.get(2015, 9, 30), StatusRegistreIDE.DEFINITIF)
 												.addStatus(RegDate.get(2015, 10, 1), null, StatusRegistreIDE.RADIE)
 												.addRaisonDeLiquidation(RegDate.get(2015, 10, 1), null, RaisonDeRadiationRegistreIDE.CESSATION_SCISSION_RETRAITE_SALARIE)
-												.addAdresseEffective(new AdresseBuilder()
+												.addAdresseEffective(new AdresseEffectiveBuilder()
 														                     .withDateDebut(RegDate.get(2015, 4, 29))
 														                     .withDateFin(RegDate.get(2015, 9, 30))
 														                     .withTitre("Robert Plant")
@@ -100,7 +101,7 @@ public class OrganisationRCEntTest {
 														                     .withNoOfsPays(Suisse.getNoOFS())
 														                     .build()
 												)
-												.addAdresseEffective(new AdresseBuilder()
+												.addAdresseEffective(new AdresseEffectiveBuilder()
 														                     .withDateDebut(RegDate.get(2015, 10, 1))
 														                     .withTitre("c/o André Hefti")
 														                     .withRue("Place Large")
@@ -130,7 +131,7 @@ public class OrganisationRCEntTest {
 
 								.withRC(
 										new DonneesRCBuilder()
-												.addAdresseLegale(new AdresseBuilder()
+												.addAdresseLegale(new AdresseLegaleBuilder()
 														                  .withDateDebut(RegDate.get(2015, 4, 29))
 														                  .withRue("Avenue de la gare")
 														                  .withLocalite(Lausanne.getNom())
@@ -150,7 +151,7 @@ public class OrganisationRCEntTest {
 												.addStatus(RegDate.get(2015, 4, 29), RegDate.get(2015, 9, 30), StatusRegistreIDE.DEFINITIF)
 												.addStatus(RegDate.get(2015, 10, 1), null, StatusRegistreIDE.RADIE)
 												.addRaisonDeLiquidation(RegDate.get(2015, 10, 1), null, RaisonDeRadiationRegistreIDE.CESSATION_SCISSION_RETRAITE_SALARIE)
-												.addAdresseEffective(new AdresseBuilder()
+												.addAdresseEffective(new AdresseEffectiveBuilder()
 														                     .withDateDebut(RegDate.get(2015, 10, 1))
 														                     .withRue("Avenue de la gare")
 														                     .withLocalite(Lausanne.getNom())
@@ -178,7 +179,7 @@ public class OrganisationRCEntTest {
 
 								.withRC(
 										new DonneesRCBuilder()
-												.addAdresseLegale(new AdresseBuilder()
+												.addAdresseLegale(new AdresseLegaleBuilder()
 														                  .withDateDebut(RegDate.get(2015, 5, 30))
 														                  .withTitre("Albert Truc")
 														                  .withRue("Place courte")
@@ -206,7 +207,7 @@ public class OrganisationRCEntTest {
 												.addStatus(RegDate.get(2015, 5, 30), RegDate.get(2015, 9, 30), StatusRegistreIDE.DEFINITIF)
 												.addStatus(RegDate.get(2015, 10, 1), null, StatusRegistreIDE.RADIE)
 												.addRaisonDeLiquidation(RegDate.get(2015, 10, 1), null, RaisonDeRadiationRegistreIDE.CESSATION_SCISSION_RETRAITE_SALARIE)
-												.addAdresseEffective(new AdresseBuilder()
+												.addAdresseEffective(new AdresseEffectiveBuilder()
 														                     .withDateDebut(RegDate.get(2015, 5, 30))
 														                     .withTitre("Albert Truc")
 														                     .withRue("Place courte")

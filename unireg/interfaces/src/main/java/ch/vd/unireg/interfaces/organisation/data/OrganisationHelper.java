@@ -146,39 +146,37 @@ public abstract class OrganisationHelper {
 		return siteSecondaires;
 	}
 
-	public static List<Adresse> getAdresses(Map<Long, ? extends SiteOrganisation> donneesSites) {
-		// la règle dit :
-		// - en l'absence de données IDE, on prend l'adresse légale des données RC
-		// - sinon, c'est l'adresse effective des données IDE qui fait foi
+	private static List<Adresse> concat(@Nullable List<? extends Adresse> one, @Nullable List<? extends Adresse> two) {
+		final List<Adresse> liste = new ArrayList<>((one != null ? one.size() : 0) + (two != null ? two.size() : 0));
+		if (one != null) {
+			liste.addAll(one);
+		}
+		if (two != null) {
+			liste.addAll(two);
+		}
+		return liste;
+	}
 
-		final DateRangeLimitatorImpl<AdresseRCEnt> limitator = new DateRangeLimitatorImpl<>();
-		final List<AdresseRCEnt> rcLegale = extractDataFromSitesPrincipaux(donneesSites, limitator, new SiteDataExtractor<List<AdresseRCEnt>>() {
+	public static List<Adresse> getAdresses(Map<Long, ? extends SiteOrganisation> donneesSites) {
+		final List<AdresseLegaleRCEnt> rcLegale = extractDataFromSitesPrincipaux(donneesSites, new DateRangeLimitatorImpl<AdresseLegaleRCEnt>(), new SiteDataExtractor<List<AdresseLegaleRCEnt>>() {
 			@Override
-			public List<AdresseRCEnt> extractData(SiteOrganisation site) {
+			public List<AdresseLegaleRCEnt> extractData(SiteOrganisation site) {
 				return site.getDonneesRC() == null ? null : site.getDonneesRC().getAdresseLegale();
 			}
 		});
-		final List<AdresseRCEnt> ideEffective = extractDataFromSitesPrincipaux(donneesSites, limitator, new SiteDataExtractor<List<AdresseRCEnt>>() {
+		final List<AdresseEffectiveRCEnt> ideEffective = extractDataFromSitesPrincipaux(donneesSites, new DateRangeLimitatorImpl<AdresseEffectiveRCEnt>(), new SiteDataExtractor<List<AdresseEffectiveRCEnt>>() {
 			@Override
-			public List<AdresseRCEnt> extractData(SiteOrganisation site) {
+			public List<AdresseEffectiveRCEnt> extractData(SiteOrganisation site) {
 				return site.getDonneesRegistreIDE() == null ? null : site.getDonneesRegistreIDE().getAdresseEffective();
 			}
 		});
-		final List<AdresseRCEnt> flat = DateRangeHelper.override(rcLegale, ideEffective, buildAdapterCallbackFromLimitator(limitator));
-		return new ArrayList<Adresse>(flat);
+		return concat(rcLegale, ideEffective);
 	}
 
 	public static List<Adresse> getAdressesPourSite(SiteOrganisation site) {
-		// la règle dit :
-		// - en l'absence de données IDE, on prend l'adresse légale des données RC
-		// - sinon, c'est l'adresse effective des données IDE qui fait foi
-
-		List<AdresseRCEnt> rcLegale = site.getDonneesRC() == null ? null : site.getDonneesRC().getAdresseLegale();
-		List<AdresseRCEnt> ideEffective = site.getDonneesRegistreIDE() == null ? null : site.getDonneesRegistreIDE().getAdresseEffective();
-
-		final DateRangeLimitatorImpl<AdresseRCEnt> limitator = new DateRangeLimitatorImpl<>();
-		final List<AdresseRCEnt> flat = DateRangeHelper.override(rcLegale, ideEffective, buildAdapterCallbackFromLimitator(limitator));
-		return new ArrayList<Adresse>(flat);
+		final List<AdresseLegaleRCEnt> rcLegale = site.getDonneesRC() == null ? null : site.getDonneesRC().getAdresseLegale();
+		final List<AdresseEffectiveRCEnt> ideEffective = site.getDonneesRegistreIDE() == null ? null : site.getDonneesRegistreIDE().getAdresseEffective();
+		return concat(rcLegale, ideEffective);
 	}
 
 	/**

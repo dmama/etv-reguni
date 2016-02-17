@@ -10,7 +10,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.organisation.data.AdresseRCEnt;
+import ch.vd.unireg.interfaces.organisation.data.AdresseBoitePostaleRCEnt;
+import ch.vd.unireg.interfaces.organisation.data.AdresseEffectiveRCEnt;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
 import ch.vd.unireg.interfaces.organisation.data.DonneesRegistreIDE;
 import ch.vd.unireg.interfaces.organisation.data.OrganisationHelper;
@@ -25,14 +26,14 @@ public class MockDonneesRegistreIDE implements DonneesRegistreIDE {
 
 	private NavigableMap<RegDate, StatusRegistreIDE> status = new TreeMap<>();
 	private NavigableMap<RegDate, TypeOrganisationRegistreIDE> typeOrganisation = new TreeMap<>();
-	private NavigableMap<RegDate, AdresseRCEnt> adresseEffective = new TreeMap<>();
-	private NavigableMap<RegDate, AdresseRCEnt> adresseBoitePostale = new TreeMap<>();
+	private NavigableMap<RegDate, AdresseEffectiveRCEnt> adresseEffective = new TreeMap<>();
+	private NavigableMap<RegDate, AdresseBoitePostaleRCEnt> adresseBoitePostale = new TreeMap<>();
 	private NavigableMap<RegDate, RaisonDeRadiationRegistreIDE> raisonDeLiquidation = new TreeMap<>();
 
 	public MockDonneesRegistreIDE() {}
 
 	public MockDonneesRegistreIDE(NavigableMap<RegDate, StatusRegistreIDE> status, NavigableMap<RegDate, TypeOrganisationRegistreIDE> typeOrganisation,
-	                              NavigableMap<RegDate, AdresseRCEnt> adresseEffective, NavigableMap<RegDate, AdresseRCEnt> adresseBoitePostale,
+	                              NavigableMap<RegDate, AdresseEffectiveRCEnt> adresseEffective, NavigableMap<RegDate, AdresseBoitePostaleRCEnt> adresseBoitePostale,
 	                              NavigableMap<RegDate, RaisonDeRadiationRegistreIDE> raisonDeLiquidation) {
 		this.status = status;
 		this.typeOrganisation = typeOrganisation;
@@ -42,43 +43,43 @@ public class MockDonneesRegistreIDE implements DonneesRegistreIDE {
 	}
 
 	@Override
-	public List<AdresseRCEnt> getAdresseBoitePostale() {
+	public List<AdresseBoitePostaleRCEnt> getAdresseBoitePostale() {
 		return new ArrayList<>(adresseBoitePostale.values());
 	}
 
-	public void changeAdresseBoitePostale(RegDate date, AdresseRCEnt nouvelleAdresseBoitePostale) {
+	public void changeAdresseBoitePostale(RegDate date, AdresseBoitePostaleRCEnt nouvelleAdresseBoitePostale) {
 		throw new UnsupportedOperationException();
 	}
 
-	public void addAdresseBoitePostale(RegDate dateDebut, @Nullable RegDate dateFin, AdresseRCEnt nouvelleAdresseBoitePostale) {
-		final Map.Entry<RegDate, AdresseRCEnt> previousEntry = adresseBoitePostale.lastEntry();
+	public void addAdresseBoitePostale(RegDate dateDebut, @Nullable RegDate dateFin, AdresseBoitePostaleRCEnt nouvelleAdresseBoitePostale) {
+		final Map.Entry<RegDate, AdresseBoitePostaleRCEnt> previousEntry = adresseBoitePostale.lastEntry();
 		if (previousEntry != null) {
-			final AdresseRCEnt previous = previousEntry.getValue();
-			adresseBoitePostale.put(previous.getDateDebut(), (new AdresseRCEnt(previous.getDateDebut(), dateDebut.getOneDayBefore(), previous.getLocalite(), previous.getNumero(),
-			                                                             previous.getNumeroAppartement(), previous.getNumeroOrdrePostal(), previous.getNumeroPostal(),
-			                                                             previous.getNumeroPostalComplementaire(), previous.getNoOfsPays(), previous.getRue(),
-			                                                             previous.getTitre(), previous.getTypeAdresse(), previous.getEgid(), previous.getCasePostale())));
+			final AdresseBoitePostaleRCEnt previous = previousEntry.getValue();
+			adresseBoitePostale.put(previous.getDateDebut(), (new AdresseBoitePostaleRCEnt(previous.getDateDebut(), dateDebut.getOneDayBefore(), previous.getLocalite(), previous.getNumero(),
+			                                                                               previous.getNumeroAppartement(), previous.getNumeroOrdrePostal(), previous.getNumeroPostal(),
+			                                                                               previous.getNumeroPostalComplementaire(), previous.getNoOfsPays(), previous.getRue(),
+			                                                                               previous.getTitre(), previous.getEgid(), previous.getCasePostale())));
 		}
 		MockOrganisationHelper.addRangedData(adresseBoitePostale, dateDebut, dateFin, nouvelleAdresseBoitePostale);
 	}
 
 	@Override
-	public List<AdresseRCEnt> getAdresseEffective() {
+	public List<AdresseEffectiveRCEnt> getAdresseEffective() {
 		return new ArrayList<>(adresseEffective.values());
 	}
 
-	public void changeAdresseEffective(RegDate date, AdresseRCEnt nouvelleAdresseEffective) {
+	public void changeAdresseEffective(RegDate date, AdresseEffectiveRCEnt nouvelleAdresseEffective) {
 		throw new UnsupportedOperationException();
 	}
 
-	public void addAdresseEffective(RegDate dateDebut, @Nullable RegDate dateFin, AdresseRCEnt nouvelleAdresseEffective) {
-		final Map.Entry<RegDate, AdresseRCEnt> previousEntry = adresseEffective.lastEntry();
+	public void addAdresseEffective(RegDate dateDebut, @Nullable RegDate dateFin, AdresseEffectiveRCEnt nouvelleAdresseEffective) {
+		final Map.Entry<RegDate, AdresseEffectiveRCEnt> previousEntry = adresseEffective.lastEntry();
 		if (previousEntry != null) {
-			final AdresseRCEnt previous = previousEntry.getValue();
-			adresseEffective.put(previous.getDateDebut(), (new AdresseRCEnt(previous.getDateDebut(), dateDebut.getOneDayBefore(), previous.getLocalite(), previous.getNumero(),
-			                                                                   previous.getNumeroAppartement(), previous.getNumeroOrdrePostal(), previous.getNumeroPostal(),
-			                                                                   previous.getNumeroPostalComplementaire(), previous.getNoOfsPays(), previous.getRue(),
-			                                                                   previous.getTitre(), previous.getTypeAdresse(), previous.getEgid(), previous.getCasePostale())));
+			final AdresseEffectiveRCEnt previous = previousEntry.getValue();
+			adresseEffective.put(previous.getDateDebut(), (new AdresseEffectiveRCEnt(previous.getDateDebut(), dateDebut.getOneDayBefore(), previous.getLocalite(), previous.getNumero(),
+			                                                                         previous.getNumeroAppartement(), previous.getNumeroOrdrePostal(), previous.getNumeroPostal(),
+			                                                                         previous.getNumeroPostalComplementaire(), previous.getNoOfsPays(), previous.getRue(),
+			                                                                         previous.getTitre(), previous.getEgid(), previous.getCasePostale())));
 		}
 		MockOrganisationHelper.addRangedData(adresseEffective, dateDebut, dateFin, nouvelleAdresseEffective);
 	}

@@ -137,7 +137,7 @@ public class TiersManager implements MessageSourceAware {
 
 	protected final Logger LOGGER = LoggerFactory.getLogger(TiersManager.class);
 
-	private final List<TypeAdresseCivil> typesAdressesCiviles = Arrays.asList(TypeAdresseCivil.COURRIER, TypeAdresseCivil.PRINCIPALE, TypeAdresseCivil.SECONDAIRE, TypeAdresseCivil.TUTEUR);
+	private static final List<TypeAdresseCivil> TYPES_ADRESSES_CIVILES = Arrays.asList(TypeAdresseCivil.COURRIER, TypeAdresseCivil.PRINCIPALE, TypeAdresseCivil.SECONDAIRE, TypeAdresseCivil.TUTEUR);
 
 	private WebCivilService webCivilService;
 
@@ -892,7 +892,7 @@ public class TiersManager implements MessageSourceAware {
 				final AdressesCivilesHistoriques adressesCivilesHisto = serviceCivilService.getAdressesHisto(noIndividu, false);
 				if (adressesCivilesHisto != null) {
 					// rempli tous les types d'adresse
-					for (TypeAdresseCivil type : typesAdressesCiviles) {
+					for (TypeAdresseCivil type : TYPES_ADRESSES_CIVILES) {
 						fillAdressesHistoCivilesView(adresses, adressesCivilesHisto, type);
 					}
 				}
@@ -901,8 +901,36 @@ public class TiersManager implements MessageSourceAware {
 				final AdressesCivilesActives adressesCiviles = serviceCivilService.getAdresses(noIndividu, RegDate.get(), false);
 				if (adressesCiviles != null) {
 					// rempli tous les types d'adresse
-					for (TypeAdresseCivil type : typesAdressesCiviles) {
+					for (TypeAdresseCivil type : TYPES_ADRESSES_CIVILES) {
 						fillAdressesCivilesView(adresses, adressesCiviles, type);
+					}
+				}
+			}
+		}
+
+		Collections.sort(adresses, new AdresseCivilViewComparator());
+		return adresses;
+	}
+
+	public List<AdresseCivilView> getAdressesHistoriquesCiviles(Entreprise entreprise, boolean addressesHistoCiviles) throws DonneesCivilesException {
+		final List<AdresseCivilView> adresses = new ArrayList<>();
+		if (entreprise.isConnueAuCivil()) {
+			final AdressesCivilesHistoriques histo = serviceOrganisationService.getAdressesOrganisationHisto(entreprise.getNumeroEntreprise());
+			if (histo != null) {
+				// on remplit tous les types d'adresse
+				for (TypeAdresseCivil type : TYPES_ADRESSES_CIVILES) {
+					if (addressesHistoCiviles) {
+						fillAdressesHistoCivilesView(adresses, histo, type);
+					}
+					else {
+						final List<Adresse> typed = histo.ofType(type);
+						if (typed != null && !typed.isEmpty()) {
+							for (Adresse a : typed) {
+								if (a.isValidAt(RegDate.get())) {
+									adresses.add(new AdresseCivilView(a, type));
+								}
+							}
+						}
 					}
 				}
 			}

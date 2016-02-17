@@ -13,17 +13,17 @@ import ch.vd.registre.base.date.RegDate;
  */
 public class DonneesRCRCEnt implements DonneesRC, Serializable {
 
-	private static final long serialVersionUID = -3484161288369635015L;
+	private static final long serialVersionUID = 8809887249010115302L;
 
 	private final List<DateRanged<StatusInscriptionRC>> statusInscription;
 	private final List<DateRanged<RegDate>> dateInscription;
 	private final List<Capital> capital;
-	private final List<AdresseRCEnt> adresseLegale;
+	private final List<AdresseLegaleRCEnt> adresseLegale;
 	private final List<DateRanged<String>> buts;
 	private final List<DateRanged<RegDate>> dateStatuts;
 	private final List<DateRanged<RegDate>> dateRadiation;
 
-	public DonneesRCRCEnt(List<AdresseRCEnt> adresseLegale,
+	public DonneesRCRCEnt(List<AdresseLegaleRCEnt> adresseLegale,
 	                      List<DateRanged<StatusInscriptionRC>> statusInscription, List<DateRanged<RegDate>> dateInscription, List<Capital> capital, List<DateRanged<String>> buts,
 	                      List<DateRanged<RegDate>> dateStatuts, List<DateRanged<RegDate>> dateRadiation) {
 		this.adresseLegale = adresseLegale;
@@ -36,7 +36,7 @@ public class DonneesRCRCEnt implements DonneesRC, Serializable {
 	}
 
 	@Override
-	public List<AdresseRCEnt> getAdresseLegale() {
+	public List<AdresseLegaleRCEnt> getAdresseLegale() {
 		return adresseLegale;
 	}
 

@@ -8,7 +8,8 @@ import ch.vd.registre.base.date.RegDate;
  * @author Raphaël Marmier, 2015-11-04
  */
 public interface DonneesRC {
-	List<AdresseRCEnt> getAdresseLegale();
+
+	List<AdresseLegaleRCEnt> getAdresseLegale();
 
 	List<Capital> getCapital();
 

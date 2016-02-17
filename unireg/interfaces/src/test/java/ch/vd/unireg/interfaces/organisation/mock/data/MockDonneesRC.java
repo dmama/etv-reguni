@@ -9,7 +9,7 @@ import java.util.TreeMap;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.organisation.data.AdresseRCEnt;
+import ch.vd.unireg.interfaces.organisation.data.AdresseLegaleRCEnt;
 import ch.vd.unireg.interfaces.organisation.data.Capital;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
 import ch.vd.unireg.interfaces.organisation.data.DonneesRC;
@@ -20,10 +20,11 @@ import ch.vd.unireg.interfaces.organisation.data.StatusInscriptionRC;
  * @author Raphaël Marmier, 2015-11-04
  */
 public class MockDonneesRC implements DonneesRC {
+
 	private NavigableMap<RegDate, StatusInscriptionRC> statusInscription = new TreeMap<>();
 	private NavigableMap<RegDate, RegDate> dateInscription = new TreeMap<>();
 	private NavigableMap<RegDate, Capital> capital = new TreeMap<>();
-	private NavigableMap<RegDate, AdresseRCEnt> adresseLegale = new TreeMap<>();
+	private NavigableMap<RegDate, AdresseLegaleRCEnt> adresseLegale = new TreeMap<>();
 	private NavigableMap<RegDate, String> buts = new TreeMap<>();
 	private NavigableMap<RegDate, RegDate> dateStatus = new TreeMap<>();
 	private NavigableMap<RegDate, RegDate> dateRadiation = new TreeMap<>();
@@ -31,7 +32,7 @@ public class MockDonneesRC implements DonneesRC {
 	public MockDonneesRC() {};
 
 	public MockDonneesRC(NavigableMap<RegDate, StatusInscriptionRC> statusInscription,
-	                     NavigableMap<RegDate, Capital> capital, NavigableMap<RegDate, AdresseRCEnt> adresseLegale, NavigableMap<RegDate, String> buts,
+	                     NavigableMap<RegDate, Capital> capital, NavigableMap<RegDate, AdresseLegaleRCEnt> adresseLegale, NavigableMap<RegDate, String> buts,
 	                     NavigableMap<RegDate, RegDate> dateStatus, NavigableMap<RegDate, RegDate> dateRadiation) {
 		this.statusInscription = statusInscription;
 		this.capital = capital;
@@ -42,22 +43,22 @@ public class MockDonneesRC implements DonneesRC {
 	}
 
 	@Override
-	public List<AdresseRCEnt> getAdresseLegale() {
+	public List<AdresseLegaleRCEnt> getAdresseLegale() {
 		return new ArrayList<>(adresseLegale.values());
 	}
 
-	public void changeAdresseLegale(RegDate date, AdresseRCEnt nouvelleAdresseLegale) {
+	public void changeAdresseLegale(RegDate date, AdresseLegaleRCEnt nouvelleAdresseLegale) {
 		throw new UnsupportedOperationException();
 	}
 
-	public void addAdresseLegale(RegDate dateDebut, @Nullable RegDate dateFin, AdresseRCEnt nouvelleAdresseLegale) {
-		final Map.Entry<RegDate, AdresseRCEnt> previousEntry = adresseLegale.lastEntry();
+	public void addAdresseLegale(RegDate dateDebut, @Nullable RegDate dateFin, AdresseLegaleRCEnt nouvelleAdresseLegale) {
+		final Map.Entry<RegDate, AdresseLegaleRCEnt> previousEntry = adresseLegale.lastEntry();
 		if (previousEntry != null) {
-			final AdresseRCEnt previous = previousEntry.getValue();
-			adresseLegale.put(previous.getDateDebut(), (new AdresseRCEnt(previous.getDateDebut(), dateDebut.getOneDayBefore(), previous.getLocalite(), previous.getNumero(),
-			                                                             previous.getNumeroAppartement(), previous.getNumeroOrdrePostal(), previous.getNumeroPostal(),
-			                                                             previous.getNumeroPostalComplementaire(), previous.getNoOfsPays(), previous.getRue(),
-			                                                             previous.getTitre(), previous.getTypeAdresse(), previous.getEgid(), previous.getCasePostale())));
+			final AdresseLegaleRCEnt previous = previousEntry.getValue();
+			adresseLegale.put(previous.getDateDebut(), (new AdresseLegaleRCEnt(previous.getDateDebut(), dateDebut.getOneDayBefore(), previous.getLocalite(), previous.getNumero(),
+			                                                                   previous.getNumeroAppartement(), previous.getNumeroOrdrePostal(), previous.getNumeroPostal(),
+			                                                                   previous.getNumeroPostalComplementaire(), previous.getNoOfsPays(), previous.getRue(),
+			                                                                   previous.getTitre(), previous.getEgid(), previous.getCasePostale())));
 		}
 		MockOrganisationHelper.addRangedData(adresseLegale, dateDebut, dateFin, nouvelleAdresseLegale);
 	}
