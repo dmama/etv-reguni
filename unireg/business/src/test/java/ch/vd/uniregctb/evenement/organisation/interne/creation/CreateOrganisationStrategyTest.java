@@ -31,6 +31,10 @@ import static ch.vd.uniregctb.type.TypeEvenementOrganisation.IDE_NOUVELLE_INSCRI
  */
 public class CreateOrganisationStrategyTest extends AbstractEvenementOrganisationInterneTest {
 
+	public CreateOrganisationStrategyTest() {
+		setWantIndexationTiers(true);
+	}
+
 	private CreateOrganisationStrategy strategy;
 
 	/**

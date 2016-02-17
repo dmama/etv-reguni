@@ -39,6 +39,10 @@ import static ch.vd.uniregctb.type.EtatEvenementOrganisation.A_TRAITER;
  */
 public class InformationComplementaireProcessorTest extends AbstractEvenementOrganisationProcessorTest {
 
+	public InformationComplementaireProcessorTest() {
+		setWantIndexationTiers(true);
+	}
+
 	private EvenementFiscalDAO evtFiscalDAO;
 
 	@Override

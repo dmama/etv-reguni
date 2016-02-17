@@ -33,6 +33,10 @@ import static ch.vd.uniregctb.type.EtatEvenementOrganisation.A_TRAITER;
  */
 public class DoublonsProcessorTest extends AbstractEvenementOrganisationProcessorTest {
 
+	public DoublonsProcessorTest() {
+		setWantIndexationTiers(true);
+	}
+
 	private EvenementFiscalDAO evtFiscalDAO;
 
 	@Override

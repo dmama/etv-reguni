@@ -85,6 +85,11 @@ public class MockOrganisation implements Organisation {
 	}
 
 	@Override
+	public String getNumeroIDE(RegDate date) {
+		return OrganisationHelper.valueForDate(getNumeroIDE(), date);
+	}
+
+	@Override
 	public Domicile getSiegePrincipal(RegDate date) {
 		return OrganisationHelper.dateRangeForDate(getSiegesPrincipaux(), date);
 	}

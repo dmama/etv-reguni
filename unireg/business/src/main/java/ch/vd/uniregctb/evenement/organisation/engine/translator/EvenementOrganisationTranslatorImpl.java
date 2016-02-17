@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.utils.StringsUtils;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
@@ -16,6 +17,7 @@ import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.data.DataEventService;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
+import ch.vd.uniregctb.evenement.identification.contribuable.CriteresEntreprise;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationContext;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationException;
@@ -24,6 +26,8 @@ import ch.vd.uniregctb.evenement.organisation.interne.EvenementOrganisationInter
 import ch.vd.uniregctb.evenement.organisation.interne.EvenementOrganisationInterneComposite;
 import ch.vd.uniregctb.evenement.organisation.interne.Indexation;
 import ch.vd.uniregctb.evenement.organisation.interne.IndexationPure;
+import ch.vd.uniregctb.evenement.organisation.interne.MessageSuivi;
+import ch.vd.uniregctb.evenement.organisation.interne.TraitementManuel;
 import ch.vd.uniregctb.evenement.organisation.interne.creation.CreateOrganisationStrategy;
 import ch.vd.uniregctb.evenement.organisation.interne.demenagement.DemenagementSiegeStrategy;
 import ch.vd.uniregctb.evenement.organisation.interne.doublon.DoublonEntrepriseStrategy;
@@ -35,6 +39,8 @@ import ch.vd.uniregctb.evenement.organisation.interne.information.ModificationCa
 import ch.vd.uniregctb.evenement.organisation.interne.information.ModificationStatutsStrategy;
 import ch.vd.uniregctb.evenement.organisation.interne.radiation.RadiationStrategy;
 import ch.vd.uniregctb.evenement.organisation.interne.reinscription.ReinscriptionStrategy;
+import ch.vd.uniregctb.identification.contribuable.IdentificationContribuableService;
+import ch.vd.uniregctb.identification.contribuable.TooManyIdentificationPossibilitiesException;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.ServiceOrganisationService;
@@ -61,6 +67,7 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 	private MetierServicePM metierServicePM;
 	private AdresseService adresseService;
 	private GlobalTiersIndexer indexer;
+	private IdentificationContribuableService identCtbService;
 	private EvenementFiscalService evenementFiscalService;
 	private AssujettissementService assujettissementService;
 	private ParametreAppService parametreAppService;
@@ -98,10 +105,19 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 	/**
 	 * Traduit un événement organisation en zéro, un ou plusieurs événements externes correspondant (Dans ce cas, un événement composite est retourné.
 	 * <p>
-	 * AVERTISSEMENT: Contrairement au traitement des événements Civil Ech, pour lesquel un cablage explicite des stratégies est en vigueur, le traitement des événements organisation fait l'objet d'un
-	 * essai de chaque stratégie disponible, chacune détectant un cas particulier de changement et donnant lieu à un événement interne. Au cas ou aucune stratégie ne fonctionne, un événement
-	 * d'indexation est AUTOMATIQUEMENT ajouté. De fait, les nouveaux types d'événements organisation sont donc silencieusement ignorés jusqu'à ce qu'une stratégie soit codée pour les reconnaître.
-	 *
+	 *     AVERTISSEMENT: Contrairement au traitement des événements Civil Ech, pour lesquel un cablage explicite des stratégies est en vigueur, le traitement des événements
+	 *     organisation fait l'objet d'un essai de chaque stratégie disponible, chacune détectant un cas particulier de changement et donnant lieu à un événement interne.
+	 *     De fait, les nouveaux types d'événements organisation sont donc silencieusement ignorés jusqu'à ce qu'une stratégie soit codée pour les reconnaître.
+	 * </p>
+	 * <p>
+	 *     NOTE: Au cas ou l'on ne trouve pas de tiers par le biais du numéro cantonal, le service d'identification est utilisé pour rechercher le tiers correspondant
+	 *     par le numéro IDE et la raison sociale. Si cette recherche ne retourne aucun tiers on considère que le tiers n'existe pas en base. Dans tous les cas, un
+	 *     événement interne de suivi est généré à titre de renseignement.
+	 * </p>
+	 * <p>
+	 *     Au cas ou aucune stratégie ne retourne d'événement interne, un événement d'indexation pure est AUTOMATIQUEMENT ajouté. Dans le cas contraire, un événement
+	 *     d'indexation neutre (qui ne modifie pas le statut) est ajouté afin que la réindexation du tiers ait lieu quoi qu'il arrive.
+	 * </p>
 	 * @param event   un événement organisation externe
 	 * @param options les options d'exécution de l'événement
 	 * @return Un événement interne correspondant à l'événement passé en paramètre
@@ -113,35 +129,96 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 		// Sanity check. Pourquoi ici? Pour ne pas courir le risque d'ignorer des entreprise (passer à TRAITE) sur la foi d'information manquantes.
 		sanityCheck(event, organisation);
 
-		Audit.info(event.getId(), String.format("Organisation trouvée: %s", serviceOrganisationService.createOrganisationDescription(organisation, event.getDateEvenement())));
-
-		final Entreprise entreprise = context.getTiersDAO().getEntrepriseByNumeroOrganisation(organisation.getNumeroOrganisation());
-
-		// TODO: S'assurer que tous les sites de l'organisation ont une forme juridique
-		// TODO: S'assurer que tous les sites de l'organisation ont une autorité fiscale (seat)
+		final String organisationDescription = serviceOrganisationService.createOrganisationDescription(organisation, event.getDateEvenement());
+		Audit.info(event.getId(), String.format("Organisation trouvée: %s", organisationDescription));
 
 		final List<EvenementOrganisationInterne> evenements = new ArrayList<>();
-		/*
-			Essayer chaque stratégie. Chacune est responsable de détecter l'événement dans les données.
-		 */
-		for (EvenementOrganisationTranslationStrategy strategy : strategies) {
-			EvenementOrganisationInterne e = strategy.matchAndCreate(event, organisation, entreprise, context, options);
-			if (e != null) {
-				evenements.add(e);
+
+		Entreprise entreprise = context.getTiersDAO().getEntrepriseByNumeroOrganisation(organisation.getNumeroOrganisation());
+
+		/* L'entreprise est retrouvé grâce au numéro cantonal. Pas de doute possible. */
+		if (entreprise != null) {
+			final String message = String.format("Le numéro civil %s correspond à l'entreprise %s. Pas besoin d'identification.",
+			                                     organisation.getNumeroOrganisation(), entreprise.toString());
+			evenements.add(new MessageSuivi(event, organisation, entreprise, context, options, message));
+
+		/* L'entreprise n'a pas été retrouvée par identifiant cantonal, on utilise le service d'identification pour tenter de la retrouver
+		 si elle existe quand même sans avoir été rapprochée. */
+		} else {
+			evenements.add(new MessageSuivi(event, organisation, null, context, options, String.format("Pas d'entreprise associée au numéro civil de l'organisation %s.", organisationDescription)));
+
+			final String raisonSociale = organisation.getNom(event.getDateEvenement());
+			final String noIde = organisation.getNumeroIDE(event.getDateEvenement());
+			LOGGER.info(String.format("Pas d'entreprise associée au numéro cantonal %s. Tentative de la localiser via le service d'identification: %s%s",
+			                          organisation.getNumeroOrganisation(), noIde != null ? noIde + " " : "", raisonSociale));
+
+			final CriteresEntreprise criteres = new CriteresEntreprise();
+			criteres.setRaisonSociale(raisonSociale);
+			criteres.setIde(noIde);
+			try {
+				final List<Long> found = identCtbService.identifieEntreprise(criteres);
+
+				// L'identificatione est un succès
+				if (found.size() == 1) {
+					entreprise = (Entreprise) tiersDAO.get(found.get(0));
+					if (entreprise == null) {
+						panicNotFoundAfterIdent(found.get(0), organisationDescription);
+					}
+					final String message = String.format("Identifié l'entreprise %s %s", entreprise.toString(), entreprise.getRaisonSociale());
+					evenements.add(new MessageSuivi(event, organisation, entreprise, context, options, message));
+					Audit.info(event.getId(), message);
+
+					// L'identificatione est un échec: selon toute vraisemblance, on connait le tiers mais on n'arrive pas à l'identifier avec certitude.
+				} else if (found.size() > 1) {
+					final String listeTrouves = StringsUtils.appendsWithDelimiter(", ", found);
+					Audit.info(event.getId(), String.format("Impossible de continuer car plusieurs entreprises trouvées: %s", listeTrouves));
+					String message = String.format("Arrêt du traitement en raison de l'incertitude sur l'identification de l'organisation %s. Plusieurs tiers candidats: %s.",
+					                               organisationDescription, listeTrouves);
+					return new TraitementManuel(event, organisation, null, context, options, message);
+				}
+			}
+			// L'identificatione est un échec: selon toute vraisemblance, on connait le tiers mais il y a beaucoup trop de résultat.
+			catch (TooManyIdentificationPossibilitiesException e) {
+				Audit.info(event.getId(), "Impossible de continuer car la recherche renvoie trop de résultats!");
+				String message = String.format("Arrêt du traitement en raison de l'incertitude sur l'identification de l'organisation %s. La recherche a renvoyé un nombre de résultats trop grand.",
+				                               organisationDescription);
+				return new TraitementManuel(event, organisation, null, context, options, message);
+			}
+			// L'identification n'a rien retourné. Cela veut dire qu'on ne connait pas déjà le tiers. On rapporte simplement cet état de fait.
+			if (entreprise == null) {
+				final String message = String.format("L'identification n'a pas trouvé d'entreprise pour%s la raison sociale %s.",
+				                                     noIde == null ? "" : " le numéro IDE " + noIde + " et", raisonSociale);
+				Audit.info(event.getId(), message);
+				evenements.add(new MessageSuivi(event, organisation, null, context, options, message));
 			}
 		}
 
-		/*
-		 * Aucun événement n'est créé, indexation seulement, le status sera TRAITE.
-		 */
-		if (evenements.size() == 0) {
-			LOGGER.info("Pas de changement ni d'événement fiscal. L'entité sera simplement réindexée (si connue).");
-			return new IndexationPure(event, organisation, entreprise, context, options);
+		/* Essayer chaque stratégie. Chacune est responsable de détecter l'événement dans les données. */
+		final List<EvenementOrganisationInterne> resultatEvaluationStrategies = new ArrayList<>();
+		for (EvenementOrganisationTranslationStrategy strategy : strategies) {
+			EvenementOrganisationInterne e = strategy.matchAndCreate(event, organisation, entreprise, context, options);
+			if (e != null) {
+				resultatEvaluationStrategies.add(e);
+			}
 		}
-		/* Indexation obligatoire pour toute entité connue d'Unireg. Le status sera inchangé. */
-		LOGGER.info("L'entité sera (re)indexée.");
-		evenements.add(new Indexation(event, organisation, entreprise, context, options));
+
+		/* Pas de véritable traitement à exécuter. Indexation seulement. Le status sera TRAITE. */
+		if (resultatEvaluationStrategies.size() == 0) {
+			LOGGER.info("Pas de changement ni d'événement fiscal. L'entité sera simplement réindexée (si connue).");
+			evenements.add(new IndexationPure(event, organisation, entreprise, context, options));
+
+		/* Il y a des traitements à exécuter. Indexation obligatoire pour toute entité connue d'Unireg. Le status sera laissé inchangé. */
+		} else {
+			evenements.addAll(resultatEvaluationStrategies);
+			LOGGER.info("L'entité sera (re)indexée.");
+			evenements.add(new Indexation(event, organisation, entreprise, context, options));
+		}
 		return new EvenementOrganisationInterneComposite(event, organisation, evenements.get(0).getEntreprise(), context, options, evenements);
+	}
+
+	private void panicNotFoundAfterIdent(Long found, String organisationDescription) throws EvenementOrganisationException {
+		throw new EvenementOrganisationException(String.format("L'identifiant de tiers %s retourné par le service d'identification ne correspond à aucun tiers! Organisation recherchée: %s",
+		                                                       found, organisationDescription));
 	}
 
 	// Selon SIFISC-16998 : mise en erreur des annonces sans données obligatoires
@@ -214,6 +291,11 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setIndexer(GlobalTiersIndexer indexer) {
 		this.indexer = indexer;
+	}
+
+	@SuppressWarnings({"UnusedDeclaration"})
+	public void setIdentCtbService(IdentificationContribuableService identCtbService) {
+		this.identCtbService = identCtbService;
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})

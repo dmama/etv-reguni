@@ -99,6 +99,7 @@ import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.Parente;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
+import ch.vd.uniregctb.tiers.RaisonSocialeFiscaleEntreprise;
 import ch.vd.uniregctb.tiers.RepresentationConventionnelle;
 import ch.vd.uniregctb.tiers.SituationFamilleMenageCommun;
 import ch.vd.uniregctb.tiers.TacheAnnulationDeclarationImpot;
@@ -1097,6 +1098,12 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 	protected Entreprise addEntrepriseInconnueAuCivil(long noContribuable) {
 		final Entreprise ent = new Entreprise(noContribuable);
 		return merge(ent);
+	}
+
+	protected RaisonSocialeFiscaleEntreprise addRaisonSocialeFiscaleEntreprise(Entreprise entreprise, RegDate dateDebut, RegDate dateFin, String raisonSociale) {
+		final RaisonSocialeFiscaleEntreprise raisonSocialeFiscale = new RaisonSocialeFiscaleEntreprise(dateDebut, dateFin, raisonSociale);
+		entreprise.addDonneeCivile(raisonSocialeFiscale);
+		return merge(raisonSocialeFiscale);
 	}
 
 	protected Etablissement addEtablissement() {

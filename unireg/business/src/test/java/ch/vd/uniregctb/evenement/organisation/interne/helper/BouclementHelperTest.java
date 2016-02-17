@@ -3,6 +3,7 @@ package ch.vd.uniregctb.evenement.organisation.interne.helper;
 import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.common.WithoutSpringTest;
 import ch.vd.uniregctb.tiers.Bouclement;
 import ch.vd.uniregctb.type.DayMonth;
 
@@ -12,7 +13,7 @@ import static org.junit.Assert.assertNotNull;
 /**
  * @author Raphaël Marmier, 2015-09-23
  */
-public class BouclementHelperTest {
+public class BouclementHelperTest extends WithoutSpringTest {
 
 	@Test
 	public void testCreateBouclementSelonSemestre() throws Exception {

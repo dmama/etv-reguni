@@ -43,6 +43,10 @@ import static ch.vd.uniregctb.type.EtatEvenementOrganisation.A_TRAITER;
  */
 public class ReinscriptionProcessorTest extends AbstractEvenementOrganisationProcessorTest {
 
+	public ReinscriptionProcessorTest() {
+		setWantIndexationTiers(true);
+	}
+
 	private EvenementFiscalDAO evtFiscalDAO;
 
 	@Override

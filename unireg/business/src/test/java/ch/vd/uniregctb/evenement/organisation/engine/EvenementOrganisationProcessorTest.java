@@ -1,6 +1,9 @@
 package ch.vd.uniregctb.evenement.organisation.engine;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -11,10 +14,14 @@ import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
+import ch.vd.unireg.interfaces.organisation.data.StatusInscriptionRC;
+import ch.vd.unireg.interfaces.organisation.data.StatusRegistreIDE;
+import ch.vd.unireg.interfaces.organisation.data.TypeOrganisationRegistreIDE;
 import ch.vd.unireg.interfaces.organisation.mock.MockServiceOrganisation;
 import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockOrganisationFactory;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.data.DataEventService;
+import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalDAO;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationErreur;
@@ -22,7 +29,12 @@ import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationException;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationOptions;
 import ch.vd.uniregctb.evenement.organisation.engine.translator.EvenementOrganisationTranslatorImpl;
 import ch.vd.uniregctb.evenement.organisation.interne.EvenementOrganisationInterne;
+import ch.vd.uniregctb.evenement.organisation.interne.EvenementOrganisationInterneComposite;
 import ch.vd.uniregctb.evenement.organisation.interne.Indexation;
+import ch.vd.uniregctb.evenement.organisation.interne.MessageSuivi;
+import ch.vd.uniregctb.evenement.organisation.interne.TraitementManuel;
+import ch.vd.uniregctb.evenement.organisation.interne.information.InformationComplementaire;
+import ch.vd.uniregctb.identification.contribuable.IdentificationContribuableService;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer;
 import ch.vd.uniregctb.interfaces.service.mock.ProxyServiceInfrastructureService;
 import ch.vd.uniregctb.metier.MetierServicePM;
@@ -31,6 +43,7 @@ import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.EtatEvenementOrganisation;
+import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeEvenementErreur;
 import ch.vd.uniregctb.type.TypeEvenementOrganisation;
 
@@ -42,6 +55,18 @@ import static ch.vd.uniregctb.type.TypeEvenementOrganisation.FOSC_COMMUNICATION_
  * @author Raphaël Marmier, 2015-09-03
  */
 public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganisationProcessorTest {
+
+	public EvenementOrganisationProcessorTest() {
+		setWantIndexationTiers(true);
+	}
+
+	EvenementFiscalDAO evtFiscalDAO;
+
+	@Override
+	protected void runOnSetUp() throws Exception {
+		super.runOnSetUp();
+		evtFiscalDAO = getBean(EvenementFiscalDAO.class, "evenementFiscalDAO");
+	}
 
 	// TODO: Par analogie de EvenementCivilEchProcessorTest, contrôler les cas limites, comme la réindexation après la réception d'un message qui finit en erreur. etc...
 
@@ -95,6 +120,7 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 		translator.setMetierServicePM(getBean(MetierServicePM.class, "metierServicePM"));
 		translator.setAdresseService(getBean(AdresseService.class, "adresseService"));
 		translator.setIndexer(getBean(GlobalTiersIndexer.class, "globalTiersIndexer"));
+		translator.setIdentCtbService(getBean(IdentificationContribuableService.class, "identCtbService"));
 		translator.setEvenementFiscalService(getBean(EvenementFiscalService.class, "evenementFiscalService"));
 		translator.setParametreAppService(getBean(ParametreAppService.class, "parametreAppService"));
 		translator.afterPropertiesSet();
@@ -118,7 +144,10 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 		traiterEvenements(noOrganisation);
 
 		// Verification de l'événement interne créé
-		Assert.assertTrue(translator.getCreatedEvent() instanceof Indexation);
+		List<EvenementOrganisationInterne> listEvtInterne = getListeEvtInternesCrees(translator);
+		Assert.assertEquals(2, listEvtInterne.size());
+		Assert.assertTrue(listEvtInterne.get(0) instanceof MessageSuivi);
+		Assert.assertTrue(listEvtInterne.get(1) instanceof Indexation);
 
 		// Vérification du traitement de l'événement
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
@@ -131,6 +160,18 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 			                             }
 		                             }
 		);
+	}
+
+	private List<EvenementOrganisationInterne> getListeEvtInternesCrees(SpyEvenementOrganisationTranslatorImpl translator) throws NoSuchFieldException,
+			IllegalAccessException {
+		final EvenementOrganisationInterne createdEvent = translator.getCreatedEvent();
+		if (createdEvent instanceof EvenementOrganisationInterneComposite) {
+			Class<?> spyClass = createdEvent.getClass();
+			Field listEvtInterneField = spyClass.getDeclaredField("listEvtOrganisation");
+			listEvtInterneField.setAccessible(true);
+			return (List<EvenementOrganisationInterne>) listEvtInterneField.get(createdEvent);
+		}
+		return Collections.singletonList(createdEvent);
 	}
 
 	@Test(timeout = 10000L)
@@ -168,6 +209,7 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 		translator.setMetierServicePM(getBean(MetierServicePM.class, "metierServicePM"));
 		translator.setAdresseService(getBean(AdresseService.class, "adresseService"));
 		translator.setIndexer(getBean(GlobalTiersIndexer.class, "globalTiersIndexer"));
+		translator.setIdentCtbService(getBean(IdentificationContribuableService.class, "identCtbService"));
 		translator.setEvenementFiscalService(getBean(EvenementFiscalService.class, "evenementFiscalService"));
 		translator.setParametreAppService(getBean(ParametreAppService.class, "parametreAppService"));
 		translator.afterPropertiesSet();
@@ -189,7 +231,10 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 		traiterEvenements(noOrganisation);
 
 		// Verification de l'événement interne créé
-		Assert.assertTrue(translator.getCreatedEvent() instanceof Indexation);
+		List<EvenementOrganisationInterne> listEvtInterne = getListeEvtInternesCrees(translator);
+		Assert.assertEquals(2, listEvtInterne.size());
+		Assert.assertTrue(listEvtInterne.get(0) instanceof MessageSuivi);
+		Assert.assertTrue(listEvtInterne.get(1) instanceof Indexation);
 
 		// Vérification du traitement de l'événement
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
@@ -365,5 +410,195 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 				Assert.assertEquals("4567891011121314151617181920", orderSignature.toString());
 			}
 		});
+	}
+
+	@Test(timeout = 10000L)
+	public void testEntrepriseNonRapprocheeIdentifieeCorrectement() throws Exception {
+
+		// Mise en place service mock
+		final RegDate dateDebut = date(2010, 6, 24);
+		final String nom = "Synergy SA";
+		final Long noOrganisation = 101202100L;
+		final Long noSite = noOrganisation + 1000000;
+
+		serviceOrganisation.setUp(new MockServiceOrganisation() {
+			@Override
+			protected void init() {
+				addOrganisation(MockOrganisationFactory.createOrganisation(noOrganisation, noSite, nom, dateDebut, null, FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE,
+				                                                           TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF, StatusRegistreIDE.DEFINITIF,
+				                                                           TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE));
+
+			}
+		});
+
+		// Création de l'entreprise
+
+		doInNewTransactionAndSession(new TransactionCallback<Entreprise>() {
+			@Override
+			public Entreprise doInTransaction(TransactionStatus transactionStatus) {
+
+				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+				addRaisonSocialeFiscaleEntreprise(entreprise, dateDebut, null, nom);
+				return entreprise;
+			}
+		});
+		globalTiersIndexer.sync();
+
+		// Création de l'événement
+		final Long evtId = 12344321L;
+
+		// Persistence événement
+		doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus transactionStatus) {
+				final EvenementOrganisation event = createEvent(evtId, noOrganisation, TypeEvenementOrganisation.FOSC_AVIS_PREALABLE_OUVERTURE_FAILLITE, RegDate.get(2015, 6, 24), A_TRAITER);
+				return hibernateTemplate.merge(event).getId();
+			}
+		});
+
+		// Mise en place Translator "espion"
+		SpyEvenementOrganisationTranslatorImpl translator = new SpyEvenementOrganisationTranslatorImpl();
+
+		translator.setServiceOrganisationService(serviceOrganisation);
+		translator.setServiceInfrastructureService(getBean(ProxyServiceInfrastructureService.class, "serviceInfrastructureService"));
+		translator.setTiersDAO(getBean(TiersDAO.class, "tiersDAO"));
+		translator.setDataEventService(getBean(DataEventService.class, "dataEventService"));
+		translator.setTiersService(getBean(TiersService.class, "tiersService"));
+		translator.setMetierServicePM(getBean(MetierServicePM.class, "metierServicePM"));
+		translator.setAdresseService(getBean(AdresseService.class, "adresseService"));
+		translator.setIndexer(getBean(GlobalTiersIndexer.class, "globalTiersIndexer"));
+		translator.setIdentCtbService(getBean(IdentificationContribuableService.class, "identCtbService"));
+		translator.setEvenementFiscalService(getBean(EvenementFiscalService.class, "evenementFiscalService"));
+		translator.setParametreAppService(getBean(ParametreAppService.class, "parametreAppService"));
+		translator.afterPropertiesSet();
+
+		buildProcessor(translator);
+
+		// Traitement synchrone de l'événement
+		traiterEvenements(noOrganisation);
+
+		// Verification de l'événement interne créé
+		List<EvenementOrganisationInterne> listEvtInterne = getListeEvtInternesCrees(translator);
+		Assert.assertEquals(4, listEvtInterne.size());
+		Assert.assertTrue(listEvtInterne.get(0) instanceof MessageSuivi);
+		Assert.assertTrue(listEvtInterne.get(1) instanceof MessageSuivi);
+		String message = getMessageFromMessageSuivi((MessageSuivi) listEvtInterne.get(1));
+		Assert.assertTrue(message.startsWith("Identifié l'entreprise Entreprise "));
+		Assert.assertTrue(message.endsWith(" Synergy SA"));
+		Assert.assertTrue(listEvtInterne.get(2) instanceof InformationComplementaire);
+		Assert.assertTrue(listEvtInterne.get(3) instanceof Indexation);
+
+		// Vérification du traitement de l'événement
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			                             @Override
+			                             public Object doInTransaction(TransactionStatus status) {
+				                             final EvenementOrganisation evt = evtOrganisationDAO.get(evtId);
+				                             Assert.assertNotNull(evt);
+				                             Assert.assertEquals(EtatEvenementOrganisation.TRAITE, evt.getEtat());
+				                             return null;
+			                             }
+		                             }
+		);
+	}
+
+	private String getMessageFromMessageSuivi(MessageSuivi msgSuivi) throws NoSuchFieldException, IllegalAccessException {
+		Class<?> spyClass = msgSuivi.getClass();
+		Field suiviField = spyClass.getDeclaredField("suivi");
+		suiviField.setAccessible(true);
+		return (String) suiviField.get(msgSuivi);
+	}
+
+	@Test(timeout = 10000L)
+	public void testEntrepriseNonRapprocheePlusieursPossibles() throws Exception {
+
+		// Mise en place service mock
+		final RegDate dateDebut = date(2010, 6, 24);
+		final String nom = "Synergy SA";
+		final Long noOrganisation = 101202100L;
+		final Long noSite = noOrganisation + 1000000;
+
+		serviceOrganisation.setUp(new MockServiceOrganisation() {
+			@Override
+			protected void init() {
+				addOrganisation(MockOrganisationFactory.createOrganisation(noOrganisation, noSite, nom, dateDebut, null, FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE,
+				                                                           TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF, StatusRegistreIDE.DEFINITIF,
+				                                                           TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE));
+
+			}
+		});
+
+		// Création de l'entreprise
+
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			public void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
+
+				final Entreprise entreprise1 = addEntrepriseInconnueAuCivil();
+				addRaisonSocialeFiscaleEntreprise(entreprise1, dateDebut, null, "Synergy truc bidule");
+
+				final Entreprise entreprise2 = addEntrepriseInconnueAuCivil();
+				addRaisonSocialeFiscaleEntreprise(entreprise2, dateDebut, null, "Synergy machin chose");
+			}
+		});
+		globalTiersIndexer.sync();
+
+		// Création de l'événement
+		final Long evtId = 12344321L;
+
+		// Persistence événement
+		doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus transactionStatus) {
+				final EvenementOrganisation event = createEvent(evtId, noOrganisation, TypeEvenementOrganisation.FOSC_AVIS_PREALABLE_OUVERTURE_FAILLITE, RegDate.get(2015, 6, 24), A_TRAITER);
+				return hibernateTemplate.merge(event).getId();
+			}
+		});
+
+		// Mise en place Translator "espion"
+		SpyEvenementOrganisationTranslatorImpl translator = new SpyEvenementOrganisationTranslatorImpl();
+
+		translator.setServiceOrganisationService(serviceOrganisation);
+		translator.setServiceInfrastructureService(getBean(ProxyServiceInfrastructureService.class, "serviceInfrastructureService"));
+		translator.setTiersDAO(getBean(TiersDAO.class, "tiersDAO"));
+		translator.setDataEventService(getBean(DataEventService.class, "dataEventService"));
+		translator.setTiersService(getBean(TiersService.class, "tiersService"));
+		translator.setMetierServicePM(getBean(MetierServicePM.class, "metierServicePM"));
+		translator.setAdresseService(getBean(AdresseService.class, "adresseService"));
+		translator.setIndexer(getBean(GlobalTiersIndexer.class, "globalTiersIndexer"));
+		translator.setIdentCtbService(getBean(IdentificationContribuableService.class, "identCtbService"));
+		translator.setEvenementFiscalService(getBean(EvenementFiscalService.class, "evenementFiscalService"));
+		translator.setParametreAppService(getBean(ParametreAppService.class, "parametreAppService"));
+		translator.afterPropertiesSet();
+
+		buildProcessor(translator);
+
+		// Traitement synchrone de l'événement
+		traiterEvenements(noOrganisation);
+
+		// Verification de l'événement interne créé
+		List<EvenementOrganisationInterne> listEvtInterne = getListeEvtInternesCrees(translator);
+		Assert.assertEquals(1, listEvtInterne.size());
+		Assert.assertTrue(listEvtInterne.get(0) instanceof TraitementManuel);
+		String message = getMessageFromTraitementManuel((TraitementManuel) listEvtInterne.get(0));
+		Assert.assertTrue(message.startsWith("Arrêt du traitement en raison de l'incertitude sur l'identification de l'organisation [En date du 24.06.2015] Synergy SA (civil: 101202100), Lausanne (VD) (ofs: 5586), forme juridique (0107) Société à responsabilité limitée. Plusieurs tiers candidats: "));
+
+		// Vérification du traitement de l'événement
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			                             @Override
+			                             public Object doInTransaction(TransactionStatus status) {
+				                             final EvenementOrganisation evt = evtOrganisationDAO.get(evtId);
+				                             Assert.assertNotNull(evt);
+				                             Assert.assertEquals(EtatEvenementOrganisation.EN_ERREUR, evt.getEtat());
+				                             return null;
+			                             }
+		                             }
+		);
+	}
+
+	private String getMessageFromTraitementManuel(TraitementManuel msg) throws NoSuchFieldException, IllegalAccessException {
+		Class<?> spyClass = msg.getClass();
+		Field messageField = spyClass.getDeclaredField("message");
+		messageField.setAccessible(true);
+		return (String) messageField.get(msg);
 	}
 }

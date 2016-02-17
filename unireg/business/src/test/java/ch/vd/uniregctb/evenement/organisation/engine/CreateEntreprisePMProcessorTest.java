@@ -47,6 +47,10 @@ import static ch.vd.uniregctb.type.EtatEvenementOrganisation.A_TRAITER;
  */
 public class CreateEntreprisePMProcessorTest extends AbstractEvenementOrganisationProcessorTest {
 
+	public CreateEntreprisePMProcessorTest() {
+		setWantIndexationTiers(true);
+	}
+
 	private EvenementFiscalDAO evtFiscalDAO;
 
 	@Override

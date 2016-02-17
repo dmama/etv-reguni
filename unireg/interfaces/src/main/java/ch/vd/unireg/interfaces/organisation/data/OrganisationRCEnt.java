@@ -55,6 +55,11 @@ public class OrganisationRCEnt implements Organisation, Serializable {
 		return numeroIDE;
 	}
 
+	@Override
+	public String getNumeroIDE(RegDate date) {
+		return OrganisationHelper.valueForDate(getNumeroIDE(), date);
+	}
+
 	/**
 	 * Prepare une liste de plages représantant la succession des sièges des établissements principaux
 	 *

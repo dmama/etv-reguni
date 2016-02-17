@@ -14,6 +14,7 @@
 		<property name="metierServicePM" ref="metierServicePM" />
 		<property name="adresseService" ref="adresseService"/>
 		<property name="indexer" ref="globalTiersIndexer" />
+		<property name="identCtbService" ref="identCtbService" />
 		<property name="evenementFiscalService" ref="evenementFiscalService" />
 		<property name="assujettissementService" ref="assujettissementService" />
 		<property name="parametreAppService" ref="parametreAppService" />

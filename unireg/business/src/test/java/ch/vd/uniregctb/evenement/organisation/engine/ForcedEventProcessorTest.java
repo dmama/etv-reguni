@@ -43,6 +43,10 @@ import static ch.vd.uniregctb.type.EtatEvenementOrganisation.EN_ERREUR;
  */
 public class ForcedEventProcessorTest extends AbstractEvenementOrganisationProcessorTest {
 
+	public ForcedEventProcessorTest() {
+		setWantIndexationTiers(true);
+	}
+
 	private EvenementFiscalDAO evtFiscalDAO;
 
 	@Override

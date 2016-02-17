@@ -56,6 +56,10 @@ import static ch.vd.uniregctb.type.EtatEvenementOrganisation.A_TRAITER;
  */
 public class RadiationProcessorTest extends AbstractEvenementOrganisationProcessorTest {
 
+	public RadiationProcessorTest() {
+		setWantIndexationTiers(true);
+	}
+
 	private EvenementFiscalDAO evtFiscalDAO;
 
 	@Override

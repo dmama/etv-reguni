@@ -29,6 +29,10 @@ import static ch.vd.uniregctb.type.EtatEvenementOrganisation.A_TRAITER;
  */
 public class CreateEntrepriseSPProcessorTest extends AbstractEvenementOrganisationProcessorTest {
 
+	public CreateEntrepriseSPProcessorTest() {
+		setWantIndexationTiers(true);
+	}
+
 	protected boolean buildProcessorOnSetup() {
 		return true;
 	}

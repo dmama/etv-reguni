@@ -40,6 +40,10 @@ import static ch.vd.uniregctb.type.EtatEvenementOrganisation.A_TRAITER;
  */
 public class ChangementFormeJuridiqueProcessorTest extends AbstractEvenementOrganisationProcessorTest {
 
+	public ChangementFormeJuridiqueProcessorTest() {
+		setWantIndexationTiers(true);
+	}
+
 	private EvenementFiscalDAO evtFiscalDAO;
 
 	@Override

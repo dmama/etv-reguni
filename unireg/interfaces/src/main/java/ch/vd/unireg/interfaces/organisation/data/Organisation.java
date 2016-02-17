@@ -30,6 +30,11 @@ public interface Organisation {
 	List<DateRanged<String>> getNumeroIDE();
 
 	/**
+	 * @return l'dentifiant IDE pour une date donnée, ou null si aucun
+	 */
+	String getNumeroIDE(RegDate date);
+
+	/**
 	 * @return historique des raisons sociales de l'organisation
 	 */
 	List<DateRanged<String>> getNom();

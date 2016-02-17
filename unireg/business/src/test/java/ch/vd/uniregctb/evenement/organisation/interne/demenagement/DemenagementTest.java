@@ -45,6 +45,10 @@ import static ch.vd.uniregctb.type.EtatEvenementOrganisation.A_TRAITER;
  */
 public class DemenagementTest extends AbstractEvenementOrganisationProcessorTest {
 
+	public DemenagementTest() {
+		setWantIndexationTiers(true);
+	}
+
 	private EvenementFiscalDAO evtFiscalDAO;
 
 	@Override

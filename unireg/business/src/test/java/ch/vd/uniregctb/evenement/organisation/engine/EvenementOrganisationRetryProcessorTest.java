@@ -29,6 +29,10 @@ import ch.vd.uniregctb.type.TypeEvenementOrganisation;
 
 public class EvenementOrganisationRetryProcessorTest extends BusinessTest {
 
+	public EvenementOrganisationRetryProcessorTest() {
+		setWantIndexationTiers(true);
+	}
+
 	private EvenementOrganisation addEvent(Long noOrganisation, long id, TypeEvenementOrganisation type, RegDate date, EtatEvenementOrganisation etat) {
 		final EvenementOrganisation event = new EvenementOrganisation();
 		event.setId(id);
