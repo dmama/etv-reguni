@@ -4779,17 +4779,9 @@ public class TiersServiceImpl implements TiersService {
 
     @Override
     public String getRaisonSociale(Entreprise entreprise) {
-	    if (entreprise.isConnueAuCivil()) {
-		    final Organisation organisation = serviceOrganisationService.getOrganisationHistory(entreprise.getNumeroEntreprise());
-		    final List<DateRanged<String>> nom = organisation.getNom();
-		    return nom.get(nom.size() - 1).getPayload();
-	    }
-	    else {
-		    final List<RaisonSocialeFiscaleEntreprise> rss = entreprise.getRaisonsSocialesNonAnnuleesTriees();
-		    if (!rss.isEmpty()) {
-			    final RaisonSocialeFiscaleEntreprise data = rss.get(rss.size() - 1);
-			    return data.getRaisonSociale();
-		    }
+	    final List<RaisonSocialeHisto> rss = getRaisonsSociales(entreprise);
+	    if (! rss.isEmpty()) {
+		    return CollectionsUtils.getLastElement(rss).getRaisonSociale();
 	    }
 	    return null;
     }
