@@ -27,11 +27,29 @@
 							</xs:appinfo>
 						</xs:annotation>
 					</xs:element>
-					<xs:element minOccurs="0" maxOccurs="unbounded" name="taxpayer" type="taxpayerType">
+					<xs:element name="population" type="attachmentDescriptorType">
 						<xs:annotation>
 							<xs:appinfo>
 								<jxb:property>
-									<jxb:javadoc>Population éligible aux acomptes pour la date de référence donnée en entrée.</jxb:javadoc>
+									<jxb:javadoc>"Lien" vers l'attachement qui contient le fichier CSV de la population élue.</jxb:javadoc>
+								</jxb:property>
+							</xs:appinfo>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="ignored" minOccurs="0" type="attachmentDescriptorType">
+						<xs:annotation>
+							<xs:appinfo>
+								<jxb:property>
+									<jxb:javadoc>"Lien" vers l'attachement qui contient le fichier CSV de la population ignorée (absent si aucune entreprise n'a été ignorée).</jxb:javadoc>
+								</jxb:property>
+							</xs:appinfo>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="errors" minOccurs="0" type="attachmentDescriptorType">
+						<xs:annotation>
+							<xs:appinfo>
+								<jxb:property>
+									<jxb:javadoc>"Lien" vers l'attachement qui contient le fichier CSV de la population en erreur (absent si aucune entreprise n'est partie en erreur).</jxb:javadoc>
 								</jxb:property>
 							</xs:appinfo>
 						</xs:annotation>
@@ -51,139 +69,43 @@
 		</xs:complexContent>
 	</xs:complexType>
 
-	<xs:complexType name="taxpayerType">
+	<xs:complexType name="attachmentDescriptorType">
 		<xs:annotation>
 			<xs:appinfo>
 				<jxb:class>
-					<jxb:javadoc>Données d'un contribuable soumis aux acomptes des personnes morales.</jxb:javadoc>
+					<jxb:javadoc>Requête qui permet de demander à Unireg les données d'une population PM soumise aux acomptes.</jxb:javadoc>
 				</jxb:class>
 			</xs:appinfo>
 		</xs:annotation>
-		<xs:sequence>
-			<xs:element name="number" type="common:partyNumberType">
-				<xs:annotation>
-					<xs:appinfo>
-						<jxb:property>
-							<jxb:javadoc>Le numéro de tiers qui identifie de manière unique un contribuable.</jxb:javadoc>
-						</jxb:property>
-					</xs:appinfo>
-				</xs:annotation>
-			</xs:element>
-			<xs:element name="name" type="xs:string">
-				<xs:annotation>
-					<xs:appinfo>
-						<jxb:property>
-							<jxb:javadoc>Raison sociale.</jxb:javadoc>
-						</jxb:property>
-					</xs:appinfo>
-				</xs:annotation>
-			</xs:element>
-			<xs:element name="futureEndOfBusinessYear" type="common:dateType">
-				<xs:annotation>
-					<xs:appinfo>
-						<jxb:property>
-							<jxb:javadoc>Date de bouclement supposé (future).</jxb:javadoc>
-						</jxb:property>
-					</xs:appinfo>
-				</xs:annotation>
-			</xs:element>
-			<xs:element name="pastEndOfBusinessYear" minOccurs="0" type="common:dateType">
-				<xs:annotation>
-					<xs:appinfo>
-						<jxb:property>
-							<jxb:javadoc>Dernière date de bouclement (passée).</jxb:javadoc>
-						</jxb:property>
-					</xs:appinfo>
-				</xs:annotation>
-			</xs:element>
-			<xs:element name="vdTaxSystemType" type="taxSystemTypeType">
-				<xs:annotation>
-					<xs:appinfo>
-						<jxb:property>
-							<jxb:javadoc>Code du régime fiscal VD (= ICC).</jxb:javadoc>
-						</jxb:property>
-					</xs:appinfo>
-				</xs:annotation>
-			</xs:element>
-			<xs:element name="chTaxSystemType" type="taxSystemTypeType">
-				<xs:annotation>
-					<xs:appinfo>
-						<jxb:property>
-							<jxb:javadoc>Code du régime fiscal CH (= IFD).</jxb:javadoc>
-						</jxb:property>
-					</xs:appinfo>
-				</xs:annotation>
-			</xs:element>
-			<xs:element name="vdTaxLiability" type="taxLiabilityRangeType">
-				<xs:annotation>
-					<xs:appinfo>
-						<jxb:property>
-							<jxb:javadoc>Période d'assujettissement ICC.</jxb:javadoc>
-						</jxb:property>
-					</xs:appinfo>
-				</xs:annotation>
-			</xs:element>
-			<xs:element name="chTaxLiability" minOccurs="0" type="taxLiabilityRangeType">
-				<xs:annotation>
-					<xs:appinfo>
-						<jxb:property>
-							<jxb:javadoc>Période d'assujettissement IFD.</jxb:javadoc>
-						</jxb:property>
-					</xs:appinfo>
-				</xs:annotation>
-			</xs:element>
-			<xs:element name="padding" type="xs:int">
-				<xs:annotation>
-					<xs:appinfo>
-						<jxb:property>
-							<jxb:javadoc>Padding pour supporter l'élément xs:any ci-dessous. A ignorer.</jxb:javadoc>
-						</jxb:property>
-					</xs:appinfo>
-				</xs:annotation>
-			</xs:element>
-			<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax" />
-		</xs:sequence>
+		<xs:sequence/>
+		<xs:attribute name="attachmentName" type="attachmentNameType" use="required">
+			<xs:annotation>
+				<xs:documentation>Nom de l'attachement concerné.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="lines" type="lineNumberType" use="required">
+			<xs:annotation>
+				<xs:documentation>Nombre de lignes significatives dans le fichier (= sans la ligne qui donne le nom des colonnes).</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="characterEncoding" type="xs:token" use="required">
+			<xs:annotation>
+				<xs:documentation>Encodage utilisé pour le fichier CSV de l'attachement (UTF-8, ISO-8859-15...)</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
 	</xs:complexType>
 
-	<xs:simpleType name="taxSystemTypeType">
-		<xs:annotation>
-			<xs:documentation>Le code du régime fiscal (voir FiDoR pour sa signification).</xs:documentation>
-		</xs:annotation>
-		<xs:restriction base="xs:NMTOKEN">
-			<xs:minLength value="1"/>
-			<xs:maxLength value="10"/>
+	<xs:simpleType name="attachmentNameType">
+		<xs:restriction base="xs:string">
+			<xs:pattern value="[a-zA-Z_][a-zA-Z0-9_]*"/>
+			<xs:maxLength value="25"/>
 		</xs:restriction>
 	</xs:simpleType>
 
-	<xs:complexType name="taxLiabilityRangeType">
-		<xs:annotation>
-			<xs:appinfo>
-				<jxb:class>
-					<jxb:javadoc>Données d'une période d'assujettissement.</jxb:javadoc>
-				</jxb:class>
-			</xs:appinfo>
-		</xs:annotation>
-		<xs:sequence>
-			<xs:element name="dateTo" minOccurs="0" type="common:dateType">
-				<xs:annotation>
-					<xs:appinfo>
-						<jxb:property>
-							<jxb:javadoc>Date de fin d'assujettissement.</jxb:javadoc>
-						</jxb:property>
-					</xs:appinfo>
-				</xs:annotation>
-			</xs:element>
-			<xs:element name="dateFrom" type="common:dateType">
-				<xs:annotation>
-					<xs:appinfo>
-						<jxb:property>
-							<jxb:javadoc>Date de début d'assujettissement.</jxb:javadoc>
-						</jxb:property>
-					</xs:appinfo>
-				</xs:annotation>
-			</xs:element>
-			<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax" />
-		</xs:sequence>
-	</xs:complexType>
+	<xs:simpleType name="lineNumberType">
+		<xs:restriction base="xs:int">
+			<xs:minInclusive value="0"/>
+		</xs:restriction>
+	</xs:simpleType>
 
 </xs:schema>

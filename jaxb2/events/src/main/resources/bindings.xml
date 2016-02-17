@@ -403,9 +403,6 @@
 		<jxb:schemaBindings>
 			<jxb:package name="ch.vd.unireg.xml.event.party.advancepayment.corporation.v1" />
 		</jxb:schemaBindings>
-		<jxb:bindings node="//xs:complexType[@name='taxLiabilityRangeType']">
-			<inheritance:implements>ch.vd.unireg.xml.common.v2.DateRange</inheritance:implements>
-		</jxb:bindings>
 		<jxb:bindings>
 			<namespace:prefix name="apcorp-res-1" />
 		</jxb:bindings>
