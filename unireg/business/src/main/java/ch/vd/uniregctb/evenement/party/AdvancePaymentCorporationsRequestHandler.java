@@ -9,7 +9,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
@@ -24,14 +23,14 @@ import org.springframework.transaction.PlatformTransactionManager;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.shared.batchtemplate.BatchResults;
 import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
 import ch.vd.shared.batchtemplate.Behavior;
 import ch.vd.shared.batchtemplate.ParallelBatchTransactionTemplateWithResults;
 import ch.vd.unireg.xml.event.party.advancepayment.corporation.v1.AdvancePaymentPopulationRequest;
 import ch.vd.unireg.xml.event.party.advancepayment.corporation.v1.AdvancePaymentPopulationResponse;
-import ch.vd.unireg.xml.event.party.advancepayment.corporation.v1.TaxLiabilityRange;
-import ch.vd.unireg.xml.event.party.advancepayment.corporation.v1.Taxpayer;
+import ch.vd.unireg.xml.event.party.advancepayment.corporation.v1.AttachmentDescriptor;
 import ch.vd.unireg.xml.exception.v1.AccessDeniedExceptionInfo;
 import ch.vd.uniregctb.common.AuthenticationInterface;
 import ch.vd.uniregctb.common.CollectionsUtils;
@@ -66,8 +65,9 @@ public class AdvancePaymentCorporationsRequestHandler implements RequestHandlerV
 	private static final int BATCH_SIZE = 50;
 	private static final int NB_THREADS = 4;
 
-	private static final String ATTACHEMENT_IGNOREES = "ignorees_csv";
-	private static final String ATTACHEMENT_ERREURS = "erreurs_csv";
+	private static final String ATTACHEMENT_EXTRAITES = "extracted";
+	private static final String ATTACHEMENT_IGNOREES = "ignored";
+	private static final String ATTACHEMENT_ERREURS = "errors";
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(AdvancePaymentCorporationsRequestHandler.class);
 
@@ -113,8 +113,29 @@ public class AdvancePaymentCorporationsRequestHandler implements RequestHandlerV
 		}
 
 		final ExtractionResult population = buildPopulation(dateReference, NB_THREADS);
+		final AdvancePaymentPopulationResponse response = new AdvancePaymentPopulationResponse();
+		response.setReferenceDate(request.getReferenceDate());
 
-		final RequestHandlerResult<AdvancePaymentPopulationResponse> res = new RequestHandlerResult<>(new AdvancePaymentPopulationResponse(request.getReferenceDate(), population.extraits, 0, null));
+		final RequestHandlerResult<AdvancePaymentPopulationResponse> result = new RequestHandlerResult<>(response);
+		try (TemporaryFile file = buildListeExtraction(population.extraits)) {
+			final long size = file.getFullPath().length();
+			if (size > Integer.MAX_VALUE) {
+				throw new Exception("Taille du fichier des extraits trop grande (" + size + ")... abandonné!");
+			}
+
+			final byte[] contenu;
+			try (ByteArrayOutputStream baos = new ByteArrayOutputStream((int) size);
+			     InputStream is = file.openInputStream()) {
+
+				IOUtils.copy(is, baos);
+				contenu = baos.toByteArray();
+			}
+			result.addAttachment(ATTACHEMENT_EXTRAITES, contenu);
+			response.setPopulation(new AttachmentDescriptor(ATTACHEMENT_EXTRAITES, population.extraits.size(), CsvHelper.CHARSET));
+		}
+		catch (Exception e) {
+			LOGGER.error("Problème à la génération de la liste des contribuables extraits", e);
+		}
 		if (!population.ignores.isEmpty()) {
 			try (TemporaryFile file = buildListeIgnores(population.ignores)) {
 				final long size = file.getFullPath().length();
@@ -129,7 +150,8 @@ public class AdvancePaymentCorporationsRequestHandler implements RequestHandlerV
 					IOUtils.copy(is, baos);
 					contenu = baos.toByteArray();
 				}
-				res.addAttachment(ATTACHEMENT_IGNOREES, contenu);
+				result.addAttachment(ATTACHEMENT_IGNOREES, contenu);
+				response.setIgnored(new AttachmentDescriptor(ATTACHEMENT_IGNOREES, population.ignores.size(), CsvHelper.CHARSET));
 			}
 			catch (Exception e) {
 				LOGGER.error("Problème à la génération de la liste des contribuables ignorés", e);
@@ -149,13 +171,48 @@ public class AdvancePaymentCorporationsRequestHandler implements RequestHandlerV
 					IOUtils.copy(is, baos);
 					contenu = baos.toByteArray();
 				}
-				res.addAttachment(ATTACHEMENT_ERREURS, contenu);
+				result.addAttachment(ATTACHEMENT_ERREURS, contenu);
+				response.setIgnored(new AttachmentDescriptor(ATTACHEMENT_ERREURS, population.erreurs.size(), CsvHelper.CHARSET));
 			}
 			catch (Exception e) {
 				LOGGER.error("Problème à la génération de la liste des contribuables en erreur", e);
 			}
 		}
-		return res;
+
+		return result;
+	}
+
+	private static TemporaryFile buildListeExtraction(List<ExtractionResult.Extrait> extraits) {
+		return CsvHelper.asCsvTemporaryFile(extraits, null, null, new CsvHelper.FileFiller<ExtractionResult.Extrait>() {
+			@Override
+			public void fillHeader(CsvHelper.LineFiller b) {
+				b.append("NO_CTB").append(CsvHelper.COMMA);
+				b.append("RAISON_SOCIALE").append(CsvHelper.COMMA);
+				b.append("DATE_BOUCLEMENT_FUTUR").append(CsvHelper.COMMA);
+				b.append("DATE_BOUCLEMENT_PRECEDENT").append(CsvHelper.COMMA);
+				b.append("DEBUT_ICC").append(CsvHelper.COMMA);
+				b.append("FIN_ICC").append(CsvHelper.COMMA);
+				b.append("DEBUT_IFD").append(CsvHelper.COMMA);
+				b.append("FIN_IFD").append(CsvHelper.COMMA);
+				b.append("RF_VD").append(CsvHelper.COMMA);
+				b.append("RF_CH");
+			}
+
+			@Override
+			public boolean fillLine(CsvHelper.LineFiller b, ExtractionResult.Extrait elt) {
+				b.append(elt.noCtb).append(CsvHelper.COMMA);
+				b.append(CsvHelper.escapeChars(elt.raisonSociale)).append(CsvHelper.COMMA);
+				b.append(RegDateHelper.dateToDisplayString(elt.dateBouclementFutur)).append(CsvHelper.COMMA);
+				b.append(RegDateHelper.dateToDisplayString(elt.dateDenierBouclement)).append(CsvHelper.COMMA);
+				b.append(RegDateHelper.dateToDisplayString(elt.dateDebutIcc)).append(CsvHelper.COMMA);
+				b.append(RegDateHelper.dateToDisplayString(elt.dateFinIcc)).append(CsvHelper.COMMA);
+				b.append(RegDateHelper.dateToDisplayString(elt.dateDebutIfd)).append(CsvHelper.COMMA);
+				b.append(RegDateHelper.dateToDisplayString(elt.dateFinIfd)).append(CsvHelper.COMMA);
+				b.append(elt.codeRegimeFiscalVD).append(CsvHelper.COMMA);
+				b.append(elt.codeRegimeFiscalCH);
+				return true;
+			}
+		});
 	}
 
 	private static TemporaryFile buildListeIgnores(List<ExtractionResult.Ignore> ignores) {
@@ -218,6 +275,7 @@ public class AdvancePaymentCorporationsRequestHandler implements RequestHandlerV
 		}, null);
 
 		// et on renvoie le résultat de l'extraction
+		rapportFinal.sort();
 		return rapportFinal;
 	}
 
@@ -254,7 +312,7 @@ public class AdvancePaymentCorporationsRequestHandler implements RequestHandlerV
 			}
 		}
 
-		public static class Ignore {
+		public static class Ignore implements Comparable<Ignore> {
 			public final long noCtb;
 			public final RaisonIgnore raison;
 
@@ -262,9 +320,14 @@ public class AdvancePaymentCorporationsRequestHandler implements RequestHandlerV
 				this.noCtb = noCtb;
 				this.raison = raison;
 			}
+
+			@Override
+			public int compareTo(@NotNull Ignore o) {
+				return Long.compare(noCtb, o.noCtb);
+			}
 		}
 
-		public static class EnErreur {
+		public static class EnErreur implements Comparable<EnErreur> {
 			public final long noCtb;
 			public final String message;
 
@@ -276,11 +339,48 @@ public class AdvancePaymentCorporationsRequestHandler implements RequestHandlerV
 			public EnErreur(long noCtb, RaisonErreur raison) {
 				this(noCtb, raison.getLibelle());
 			}
+
+			@Override
+			public int compareTo(@NotNull EnErreur o) {
+				return Long.compare(noCtb, o.noCtb);
+			}
+		}
+
+		public static class Extrait  implements Comparable<Extrait> {
+			public final long noCtb;
+			public final String raisonSociale;
+			public final RegDate dateBouclementFutur;
+			public final RegDate dateDenierBouclement;
+			public final RegDate dateDebutIcc;
+			public final RegDate dateFinIcc;
+			public final RegDate dateDebutIfd;
+			public final RegDate dateFinIfd;
+			public final String codeRegimeFiscalVD;
+			public final String codeRegimeFiscalCH;
+
+			public Extrait(long noCtb, String raisonSociale, RegDate dateBouclementFutur, RegDate dateDenierBouclement,
+			               RegDate dateDebutIcc, RegDate dateFinIcc, RegDate dateDebutIfd, RegDate dateFinIfd, String codeRegimeFiscalVD, String codeRegimeFiscalCH) {
+				this.noCtb = noCtb;
+				this.raisonSociale = raisonSociale;
+				this.dateBouclementFutur = dateBouclementFutur;
+				this.dateDenierBouclement = dateDenierBouclement;
+				this.dateDebutIcc = dateDebutIcc;
+				this.dateFinIcc = dateFinIcc;
+				this.dateDebutIfd = dateDebutIfd;
+				this.dateFinIfd = dateFinIfd;
+				this.codeRegimeFiscalVD = codeRegimeFiscalVD;
+				this.codeRegimeFiscalCH = codeRegimeFiscalCH;
+			}
+
+			@Override
+			public int compareTo(@NotNull Extrait o) {
+				return Long.compare(noCtb, o.noCtb);
+			}
 		}
 
 		public final List<Ignore> ignores = new LinkedList<>();
 		public final List<EnErreur> erreurs = new LinkedList<>();
-		public final List<Taxpayer> extraits = new LinkedList<>();
+		public final List<Extrait> extraits = new LinkedList<>();
 
 		@Override
 		public void addErrorException(Long element, Exception e) {
@@ -295,8 +395,9 @@ public class AdvancePaymentCorporationsRequestHandler implements RequestHandlerV
 			this.ignores.add(new Ignore(element, raison));
 		}
 
-		public void addExtrait(Taxpayer data) {
-			this.extraits.add(data);
+		public void addExtrait(long noCtb, String raisonSociale, RegDate dateBouclementFutur, RegDate dateDenierBouclement,
+		                       RegDate dateDebutIcc, RegDate dateFinIcc, RegDate dateDebutIfd, RegDate dateFinIfd, String codeRegimeFiscalVD, String codeRegimeFiscalCH) {
+			this.extraits.add(new Extrait(noCtb, raisonSociale, dateBouclementFutur, dateDenierBouclement, dateDebutIcc, dateFinIcc, dateDebutIfd, dateFinIfd, codeRegimeFiscalVD, codeRegimeFiscalCH));
 		}
 
 		@Override
@@ -304,6 +405,12 @@ public class AdvancePaymentCorporationsRequestHandler implements RequestHandlerV
 			this.ignores.addAll(right.ignores);
 			this.erreurs.addAll(right.erreurs);
 			this.extraits.addAll(right.extraits);
+		}
+
+		public void sort() {
+			Collections.sort(this.ignores);
+			Collections.sort(this.erreurs);
+			Collections.sort(this.extraits);
 		}
 	}
 
@@ -387,39 +494,21 @@ public class AdvancePaymentCorporationsRequestHandler implements RequestHandlerV
 						results.addError(id, ExtractionResult.RaisonErreur.PAS_REGIME_FISCAL);
 					}
 					else {
-						final Taxpayer donneeExtraite = new Taxpayer();
-						donneeExtraite.setName(StringUtils.trimToEmpty(tiersService.getRaisonSociale(entreprise)));
-						donneeExtraite.setNumber(id.intValue());
-
-						donneeExtraite.setFutureEndOfBusinessYear(DataHelper.coreToXMLv2(exerciceCourant.getDateFin()));
 						final RegDate veilleDebutExerciceCourant = exerciceCourant.getDateDebut().getOneDayBefore();
-						if (DateRangeHelper.rangeAt(exercicesCommerciaux, veilleDebutExerciceCourant) != null) {
-							donneeExtraite.setPastEndOfBusinessYear(DataHelper.coreToXMLv2(veilleDebutExerciceCourant));
-						}
-
-						donneeExtraite.setChTaxSystemType(codeRegimeCH);
-						donneeExtraite.setChTaxLiability(ofRange(ifd));
-
-						donneeExtraite.setVdTaxSystemType(codeRegimeVD);
-						donneeExtraite.setVdTaxLiability(ofRange(icc));
-
-						results.addExtrait(donneeExtraite);
+						results.addExtrait(id,
+						                   tiersService.getRaisonSociale(entreprise),
+						                   exerciceCourant.getDateFin(),
+						                   DateRangeHelper.rangeAt(exercicesCommerciaux, veilleDebutExerciceCourant) != null ? veilleDebutExerciceCourant : null,
+						                   icc != null ? icc.getDateDebut() : null,
+						                   icc != null ? icc.getDateFin() : null,
+						                   ifd != null ? ifd.getDateDebut() : null,
+						                   ifd != null ? ifd.getDateFin() : null,
+						                   codeRegimeVD,
+						                   codeRegimeCH);
 					}
 				}
 			}
 		}
-	}
-
-	@Nullable
-	private static TaxLiabilityRange ofRange(@Nullable DateRange range) {
-		if (range == null) {
-			return null;
-		}
-
-		final TaxLiabilityRange tlRange = new TaxLiabilityRange();
-		tlRange.setDateFrom(DataHelper.coreToXMLv2(range.getDateDebut()));
-		tlRange.setDateTo(DataHelper.coreToXMLv2(range.getDateFin()));
-		return tlRange;
 	}
 
 	@Nullable

@@ -1,20 +1,27 @@
 package ch.vd.uniregctb.evenement.party;
 
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.tx.TxCallbackWithoutResult;
+import ch.vd.technical.esb.EsbMessage;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockTypeRegimeFiscal;
 import ch.vd.unireg.xml.event.party.advancepayment.corporation.v1.AdvancePaymentPopulationRequest;
 import ch.vd.unireg.xml.event.party.advancepayment.corporation.v1.AdvancePaymentPopulationResponse;
-import ch.vd.unireg.xml.event.party.advancepayment.corporation.v1.Taxpayer;
+import ch.vd.unireg.xml.event.party.advancepayment.corporation.v1.AttachmentDescriptor;
 import ch.vd.unireg.xml.event.party.v2.Response;
 import ch.vd.uniregctb.common.BusinessItTest;
 import ch.vd.uniregctb.security.MockSecurityProvider;
@@ -64,7 +71,7 @@ public class AdvancePaymentCorporationsRequestEsbHandlerItTest extends PartyRequ
 			@Override
 			public Long doInTransaction(TransactionStatus status) {
 				final Entreprise e = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(e, date(2000, 1, 12), null, "Les joueurs de Belotte du coin");
+				addRaisonSociale(e, date(2000, 1, 12), null, "Les joueurs de Belotte du préau");
 				addFormeJuridique(e, date(2000, 1, 12), null, FormeJuridiqueEntreprise.ASSOCIATION);
 				addRegimeFiscalVD(e, date(2000, 1, 12), null, MockTypeRegimeFiscal.ORDINAIRE_APM);
 				addRegimeFiscalCH(e, date(2000, 1, 12), null, MockTypeRegimeFiscal.ORDINAIRE_APM);
@@ -87,30 +94,47 @@ public class AdvancePaymentCorporationsRequestEsbHandlerItTest extends PartyRequ
 		});
 
 		// attente de la réponse
-		final Response response = parseResponse(getEsbMessage(getOutputQueue()));
+		final EsbMessage esbMessage = getEsbMessage(getOutputQueue());
+		Assert.assertNotNull(esbMessage);
+		final Response response = parseResponse(esbMessage);
 		Assert.assertNotNull(response);
 		Assert.assertEquals(AdvancePaymentPopulationResponse.class, response.getClass());
 
 		final AdvancePaymentPopulationResponse populationResponse = (AdvancePaymentPopulationResponse) response;
 		Assert.assertEquals(RegDate.get(), DataHelper.xmlToCore(populationResponse.getReferenceDate()));
 
-		final List<Taxpayer> list = populationResponse.getTaxpayer();
-		Assert.assertNotNull(list);
-		Assert.assertEquals(1, list.size());
+		final AttachmentDescriptor population = populationResponse.getPopulation();
+		Assert.assertNotNull(population);
+		Assert.assertEquals(1, population.getLines());
+		final String populationFilename = population.getAttachmentName();
+		Assert.assertNotNull(populationFilename);
+		final String encoding = population.getCharacterEncoding();
+		Assert.assertNotNull(encoding);
 
-		final Taxpayer taxpayer = list.get(0);
-		Assert.assertNotNull(taxpayer);
-		Assert.assertEquals(pmId, taxpayer.getNumber());
-		Assert.assertEquals(MockTypeRegimeFiscal.ORDINAIRE_APM.getCode(), taxpayer.getChTaxSystemType());
-		Assert.assertEquals(MockTypeRegimeFiscal.ORDINAIRE_APM.getCode(), taxpayer.getVdTaxSystemType());
-		Assert.assertEquals(date(RegDate.get().year(), 12, 31), DataHelper.xmlToCore(taxpayer.getFutureEndOfBusinessYear()));
-		Assert.assertEquals(date(RegDate.get().year() - 1, 12, 31), DataHelper.xmlToCore(taxpayer.getPastEndOfBusinessYear()));
-		Assert.assertEquals("Les joueurs de Belotte du coin", taxpayer.getName());
-		Assert.assertNotNull(taxpayer.getVdTaxLiability());
-		Assert.assertEquals(date(2000, 1, 12), DataHelper.xmlToCore(taxpayer.getVdTaxLiability().getDateFrom()));
-		Assert.assertNull(taxpayer.getVdTaxLiability().getDateTo());
-		Assert.assertNotNull(taxpayer.getChTaxLiability());
-		Assert.assertEquals(date(2000, 1, 12), DataHelper.xmlToCore(taxpayer.getChTaxLiability().getDateFrom()));
-		Assert.assertNull(taxpayer.getChTaxLiability().getDateTo());
+		try (InputStream is = esbMessage.getAttachmentAsStream(populationFilename);
+		     Reader r = new InputStreamReader(is, encoding);
+		     BufferedReader br = new BufferedReader(r)) {
+
+			// il doit y avoir deux lignes dans ce fichier : la ligne des colonnes et la ligne des données de l'entreprise
+
+			final String colonnes = br.readLine();
+			Assert.assertEquals("NO_CTB;RAISON_SOCIALE;DATE_BOUCLEMENT_FUTUR;DATE_BOUCLEMENT_PRECEDENT;DEBUT_ICC;FIN_ICC;DEBUT_IFD;FIN_IFD;RF_VD;RF_CH", colonnes);
+
+			final String data = br.readLine();
+			Assert.assertEquals(String.format("%d;%s;%s;%s;%s;%s;%s;%s;%s;%s",
+			                                  pmId,
+			                                  "Les joueurs de Belotte du préau",
+			                                  RegDateHelper.dateToDisplayString(date(RegDate.get().year(), 12, 31)),
+			                                  RegDateHelper.dateToDisplayString(date(RegDate.get().year() - 1, 12, 31)),
+			                                  "12.01.2000",
+			                                  StringUtils.EMPTY,
+			                                  "12.01.2000",
+			                                  StringUtils.EMPTY,
+			                                  MockTypeRegimeFiscal.ORDINAIRE_APM.getCode(),
+			                                  MockTypeRegimeFiscal.ORDINAIRE_APM.getCode()),
+			                    data);
+
+			Assert.assertNull(br.readLine());
+		}
 	}
 }

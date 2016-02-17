@@ -8,16 +8,16 @@ import org.springframework.transaction.support.TransactionCallback;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockTypeRegimeFiscal;
-import ch.vd.unireg.xml.event.party.advancepayment.corporation.v1.Taxpayer;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
+import ch.vd.uniregctb.security.MockSecurityProvider;
+import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.type.DayMonth;
 import ch.vd.uniregctb.type.FormeJuridiqueEntreprise;
 import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
-import ch.vd.uniregctb.xml.DataHelper;
 
 public class AdvancePaymentCorporationsRequestHandlerTest extends BusinessTest {
 
@@ -31,6 +31,7 @@ public class AdvancePaymentCorporationsRequestHandlerTest extends BusinessTest {
 		handler.setHibernateTemplate(hibernateTemplate);
 		handler.setTiersService(tiersService);
 		handler.setTransactionManager(transactionManager);
+		handler.setSecurityProvider(new MockSecurityProvider(Role.VISU_ALL));
 	}
 
 	@Test
@@ -105,22 +106,20 @@ public class AdvancePaymentCorporationsRequestHandlerTest extends BusinessTest {
 		Assert.assertEquals(1, result.extraits.size());
 
 		{
-			final Taxpayer extraite = result.extraits.get(0);
+			final AdvancePaymentCorporationsRequestHandler.ExtractionResult.Extrait extraite = result.extraits.get(0);
 			Assert.assertNotNull(extraite);
-			Assert.assertEquals(pmId, extraite.getNumber());
-			Assert.assertEquals("Ma petite entreprise", extraite.getName());
-			Assert.assertEquals(date(2015, 6, 30), DataHelper.xmlToCore(extraite.getPastEndOfBusinessYear()));
-			Assert.assertEquals(date(2016, 6, 30), DataHelper.xmlToCore(extraite.getFutureEndOfBusinessYear()));
+			Assert.assertEquals(pmId, extraite.noCtb);
+			Assert.assertEquals("Ma petite entreprise", extraite.raisonSociale);
+			Assert.assertEquals(date(2015, 6, 30), extraite.dateDenierBouclement);
+			Assert.assertEquals(date(2016, 6, 30), extraite.dateBouclementFutur);
 
-			Assert.assertNotNull(extraite.getVdTaxLiability());
-			Assert.assertEquals(dateDebut, DataHelper.xmlToCore(extraite.getVdTaxLiability().getDateFrom()));
-			Assert.assertNull(extraite.getVdTaxLiability().getDateTo());
-			Assert.assertEquals(MockTypeRegimeFiscal.ORDINAIRE_PM.getCode(), extraite.getVdTaxSystemType());
+			Assert.assertEquals(dateDebut, extraite.dateDebutIcc);
+			Assert.assertNull(extraite.dateFinIcc);
+			Assert.assertEquals(MockTypeRegimeFiscal.ORDINAIRE_PM.getCode(), extraite.codeRegimeFiscalVD);
 
-			Assert.assertNotNull(extraite.getChTaxLiability());
-			Assert.assertEquals(dateDebut, DataHelper.xmlToCore(extraite.getChTaxLiability().getDateFrom()));
-			Assert.assertNull(extraite.getChTaxLiability().getDateTo());
-			Assert.assertEquals(MockTypeRegimeFiscal.ORDINAIRE_PM.getCode(), extraite.getChTaxSystemType());
+			Assert.assertEquals(dateDebut, extraite.dateDebutIfd);
+			Assert.assertNull(extraite.dateFinIfd);
+			Assert.assertEquals(MockTypeRegimeFiscal.ORDINAIRE_PM.getCode(), extraite.codeRegimeFiscalCH);
 		}
 	}
 
@@ -154,22 +153,20 @@ public class AdvancePaymentCorporationsRequestHandlerTest extends BusinessTest {
 		Assert.assertEquals(1, result.extraits.size());
 
 		{
-			final Taxpayer extraite = result.extraits.get(0);
+			final AdvancePaymentCorporationsRequestHandler.ExtractionResult.Extrait extraite = result.extraits.get(0);
 			Assert.assertNotNull(extraite);
-			Assert.assertEquals(pmId, extraite.getNumber());
-			Assert.assertEquals("Ma petite entreprise", extraite.getName());
-			Assert.assertEquals(date(2015, 6, 30), DataHelper.xmlToCore(extraite.getPastEndOfBusinessYear()));
-			Assert.assertEquals(date(2016, 6, 30), DataHelper.xmlToCore(extraite.getFutureEndOfBusinessYear()));
+			Assert.assertEquals(pmId, extraite.noCtb);
+			Assert.assertEquals("Ma petite entreprise", extraite.raisonSociale);
+			Assert.assertEquals(date(2015, 6, 30), extraite.dateDenierBouclement);
+			Assert.assertEquals(date(2016, 6, 30), extraite.dateBouclementFutur);
 
-			Assert.assertNotNull(extraite.getVdTaxLiability());
-			Assert.assertEquals(dateDebut, DataHelper.xmlToCore(extraite.getVdTaxLiability().getDateFrom()));
-			Assert.assertEquals(dateDepartHC, DataHelper.xmlToCore(extraite.getVdTaxLiability().getDateTo()));
-			Assert.assertEquals(MockTypeRegimeFiscal.ORDINAIRE_PM.getCode(), extraite.getVdTaxSystemType());
+			Assert.assertEquals(dateDebut, extraite.dateDebutIcc);
+			Assert.assertEquals(dateDepartHC, extraite.dateFinIcc);
+			Assert.assertEquals(MockTypeRegimeFiscal.ORDINAIRE_PM.getCode(), extraite.codeRegimeFiscalVD);
 
-			Assert.assertNotNull(extraite.getChTaxLiability());
-			Assert.assertEquals(dateDebut, DataHelper.xmlToCore(extraite.getChTaxLiability().getDateFrom()));
-			Assert.assertEquals(date(2015, 6, 30), DataHelper.xmlToCore(extraite.getChTaxLiability().getDateTo()));
-			Assert.assertEquals(MockTypeRegimeFiscal.ORDINAIRE_PM.getCode(), extraite.getChTaxSystemType());
+			Assert.assertEquals(dateDebut, extraite.dateDebutIfd);
+			Assert.assertEquals(date(2015, 6, 30), extraite.dateFinIfd);
+			Assert.assertEquals(MockTypeRegimeFiscal.ORDINAIRE_PM.getCode(), extraite.codeRegimeFiscalCH);
 		}
 	}
 
@@ -274,22 +271,20 @@ public class AdvancePaymentCorporationsRequestHandlerTest extends BusinessTest {
 		Assert.assertEquals(1, result.extraits.size());
 
 		{
-			final Taxpayer extraite = result.extraits.get(0);
+			final AdvancePaymentCorporationsRequestHandler.ExtractionResult.Extrait extraite = result.extraits.get(0);
 			Assert.assertNotNull(extraite);
-			Assert.assertEquals(pmId, extraite.getNumber());
-			Assert.assertEquals("Ma petite entreprise", extraite.getName());
-			Assert.assertEquals(date(2015, 6, 30), DataHelper.xmlToCore(extraite.getPastEndOfBusinessYear()));
-			Assert.assertEquals(date(2016, 6, 30), DataHelper.xmlToCore(extraite.getFutureEndOfBusinessYear()));
+			Assert.assertEquals(pmId, extraite.noCtb);
+			Assert.assertEquals("Ma petite entreprise", extraite.raisonSociale);
+			Assert.assertEquals(date(2015, 6, 30), extraite.dateDenierBouclement);
+			Assert.assertEquals(date(2016, 6, 30), extraite.dateBouclementFutur);
 
-			Assert.assertNotNull(extraite.getVdTaxLiability());
-			Assert.assertEquals(dateDebut, DataHelper.xmlToCore(extraite.getVdTaxLiability().getDateFrom()));
-			Assert.assertNull(extraite.getVdTaxLiability().getDateTo());
-			Assert.assertEquals(MockTypeRegimeFiscal.ORDINAIRE_PM.getCode(), extraite.getVdTaxSystemType());
+			Assert.assertEquals(dateDebut, extraite.dateDebutIcc);
+			Assert.assertNull(extraite.dateFinIcc);
+			Assert.assertEquals(MockTypeRegimeFiscal.ORDINAIRE_PM.getCode(), extraite.codeRegimeFiscalVD);
 
-			Assert.assertNotNull(extraite.getChTaxLiability());
-			Assert.assertEquals(dateDebut, DataHelper.xmlToCore(extraite.getChTaxLiability().getDateFrom()));
-			Assert.assertNull(extraite.getChTaxLiability().getDateTo());
-			Assert.assertEquals(MockTypeRegimeFiscal.ORDINAIRE_PM.getCode(), extraite.getChTaxSystemType());
+			Assert.assertEquals(dateDebut, extraite.dateDebutIfd);
+			Assert.assertNull(extraite.dateFinIfd);
+			Assert.assertEquals(MockTypeRegimeFiscal.ORDINAIRE_PM.getCode(), extraite.codeRegimeFiscalCH);
 		}
 	}
 
@@ -368,22 +363,20 @@ public class AdvancePaymentCorporationsRequestHandlerTest extends BusinessTest {
 		Assert.assertEquals(1, result.extraits.size());
 
 		{
-			final Taxpayer extraite = result.extraits.get(0);
+			final AdvancePaymentCorporationsRequestHandler.ExtractionResult.Extrait extraite = result.extraits.get(0);
 			Assert.assertNotNull(extraite);
-			Assert.assertEquals(pmId, extraite.getNumber());
-			Assert.assertEquals("Ma petite entreprise", extraite.getName());
-			Assert.assertEquals(date(2015, 6, 30), DataHelper.xmlToCore(extraite.getPastEndOfBusinessYear()));
-			Assert.assertEquals(date(2016, 6, 30), DataHelper.xmlToCore(extraite.getFutureEndOfBusinessYear()));
+			Assert.assertEquals(pmId, extraite.noCtb);
+			Assert.assertEquals("Ma petite entreprise", extraite.raisonSociale);
+			Assert.assertEquals(date(2015, 6, 30), extraite.dateDenierBouclement);
+			Assert.assertEquals(date(2016, 6, 30), extraite.dateBouclementFutur);
 
-			Assert.assertNotNull(extraite.getVdTaxLiability());
-			Assert.assertEquals(date(2015, 7, 4), DataHelper.xmlToCore(extraite.getVdTaxLiability().getDateFrom()));
-			Assert.assertEquals(dateDepartHC, DataHelper.xmlToCore(extraite.getVdTaxLiability().getDateTo()));
-			Assert.assertEquals(MockTypeRegimeFiscal.ORDINAIRE_PM.getCode(), extraite.getVdTaxSystemType());
+			Assert.assertEquals(date(2015, 7, 4), extraite.dateDebutIcc);
+			Assert.assertEquals(dateDepartHC, extraite.dateFinIcc);
+			Assert.assertEquals(MockTypeRegimeFiscal.ORDINAIRE_PM.getCode(), extraite.codeRegimeFiscalVD);
 
-			Assert.assertNotNull(extraite.getChTaxLiability());
-			Assert.assertEquals(dateDebut, DataHelper.xmlToCore(extraite.getChTaxLiability().getDateFrom()));
-			Assert.assertEquals(date(2014, 6, 30), DataHelper.xmlToCore(extraite.getChTaxLiability().getDateTo()));
-			Assert.assertEquals(MockTypeRegimeFiscal.ORDINAIRE_PM.getCode(), extraite.getChTaxSystemType());
+			Assert.assertEquals(dateDebut, extraite.dateDebutIfd);
+			Assert.assertEquals(date(2014, 6, 30), extraite.dateFinIfd);
+			Assert.assertEquals(MockTypeRegimeFiscal.ORDINAIRE_PM.getCode(), extraite.codeRegimeFiscalCH);
 		}
 	}
 
@@ -416,20 +409,20 @@ public class AdvancePaymentCorporationsRequestHandlerTest extends BusinessTest {
 		Assert.assertEquals(1, result.extraits.size());
 
 		{
-			final Taxpayer extraite = result.extraits.get(0);
+			final AdvancePaymentCorporationsRequestHandler.ExtractionResult.Extrait extraite = result.extraits.get(0);
 			Assert.assertNotNull(extraite);
-			Assert.assertEquals(pmId, extraite.getNumber());
-			Assert.assertEquals("Ma petite entreprise", extraite.getName());
-			Assert.assertEquals(date(2015, 6, 30), DataHelper.xmlToCore(extraite.getPastEndOfBusinessYear()));
-			Assert.assertEquals(date(2016, 6, 30), DataHelper.xmlToCore(extraite.getFutureEndOfBusinessYear()));
+			Assert.assertEquals(pmId, extraite.noCtb);
+			Assert.assertEquals("Ma petite entreprise", extraite.raisonSociale);
+			Assert.assertEquals(date(2015, 6, 30), extraite.dateDenierBouclement);
+			Assert.assertEquals(date(2016, 6, 30), extraite.dateBouclementFutur);
 
-			Assert.assertNotNull(extraite.getVdTaxLiability());
-			Assert.assertEquals(date(2015, 6, 21), DataHelper.xmlToCore(extraite.getVdTaxLiability().getDateFrom()));
-			Assert.assertEquals(date(2015, 12, 3), DataHelper.xmlToCore(extraite.getVdTaxLiability().getDateTo()));
-			Assert.assertEquals(MockTypeRegimeFiscal.ORDINAIRE_PM.getCode(), extraite.getVdTaxSystemType());
+			Assert.assertEquals(date(2015, 6, 21), extraite.dateDebutIcc);
+			Assert.assertEquals(date(2015, 12, 3), extraite.dateFinIcc);
+			Assert.assertEquals(MockTypeRegimeFiscal.ORDINAIRE_PM.getCode(), extraite.codeRegimeFiscalVD);
 
-			Assert.assertNull(extraite.getChTaxLiability());
-			Assert.assertEquals(MockTypeRegimeFiscal.ORDINAIRE_PM.getCode(), extraite.getChTaxSystemType());
+			Assert.assertNull(extraite.dateDebutIfd);
+			Assert.assertNull(extraite.dateFinIfd);
+			Assert.assertEquals(MockTypeRegimeFiscal.ORDINAIRE_PM.getCode(), extraite.codeRegimeFiscalCH);
 		}
 	}
 }
