@@ -60,6 +60,7 @@ import ch.vd.uniregctb.common.Duplicable;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.common.HibernateDateRangeEntity;
 import ch.vd.uniregctb.common.MovingWindow;
+import ch.vd.uniregctb.common.NumeroIDEHelper;
 import ch.vd.uniregctb.common.StringRenderer;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePM;
@@ -166,6 +167,7 @@ import ch.vd.uniregctb.tiers.ForFiscalPrincipalPM;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
 import ch.vd.uniregctb.tiers.FormeJuridiqueFiscaleEntreprise;
 import ch.vd.uniregctb.tiers.ForsParType;
+import ch.vd.uniregctb.tiers.IdentificationEntreprise;
 import ch.vd.uniregctb.tiers.LocalisationDatee;
 import ch.vd.uniregctb.tiers.LocalizedDateRange;
 import ch.vd.uniregctb.tiers.MontantMonetaire;
@@ -2011,6 +2013,20 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 			}
 			else {
 				mr.addMessage(LogCategory.IDE_SANS_NO_CANTONAL, LogLevel.WARN, StringUtils.EMPTY);
+			}
+
+			// dans ce cas, on reprend le numéro IDE dans Unireg
+			final String noIde = String.format("%3s%09d", regpm.getNumeroIDE().getCategorie(), regpm.getNumeroIDE().getNumero());
+			if (NumeroIDEHelper.isValid(noIde)) {
+				final IdentificationEntreprise ide = new IdentificationEntreprise();
+				ide.setNumeroIde(noIde);
+				unireg.addIdentificationEntreprise(ide);
+			}
+			else {
+				mr.addMessage(LogCategory.SUIVI, LogLevel.ERROR,
+				              String.format("Le numéro IDE présent dans RegPM (catégorie = %s, numéro = %d) est invalide, il sera ignoré.",
+				                            regpm.getNumeroIDE().getCategorie(),
+				                            regpm.getNumeroIDE().getNumero()));
 			}
 		}
 

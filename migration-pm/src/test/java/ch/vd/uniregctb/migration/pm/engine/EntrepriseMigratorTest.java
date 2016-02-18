@@ -143,6 +143,7 @@ import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipalPM;
 import ch.vd.uniregctb.tiers.FormeJuridiqueFiscaleEntreprise;
+import ch.vd.uniregctb.tiers.IdentificationEntreprise;
 import ch.vd.uniregctb.tiers.Mandat;
 import ch.vd.uniregctb.tiers.RaisonSocialeFiscaleEntreprise;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
@@ -6155,13 +6156,13 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 	public void testMigrationQuestionnairesSNC() throws Exception {
 
 		final long noEntreprise = 74984L;
-		final RegpmEntreprise e = buildEntreprise(noEntreprise);
 		final RegDate dateDebut = RegDate.get(2010, 1, 1);
 		final RegDate dateEnvoi = RegDate.get(2011, 2, 10);
 		final RegDate delaiRetour = RegDate.get(2011, 9, 30);
 		final RegDate dateRappel = RegDate.get(2011, 12, 10);
 		final RegDate dateRetour = RegDate.get(2011, 12, 25);
 
+		final RegpmEntreprise e = buildEntreprise(noEntreprise);
 		addRaisonSociale(e, dateDebut, "Notre groupe d'amis", null, null, true);
 		addFormeJuridique(e, dateDebut, createTypeFormeJuridique("S.N.C.", RegpmCategoriePersonneMorale.SP));
 		addForPrincipalSuisse(e, dateDebut, RegpmTypeForPrincipal.SIEGE, Commune.ECHALLENS);
@@ -6245,6 +6246,96 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 			Assert.assertEquals("Etat 'EMISE' migré au 10.02.2011.", textes.get(2));
 			Assert.assertEquals("Etat 'RAPPELEE' migré au 10.12.2011.", textes.get(3));
 			Assert.assertEquals("Etat 'RETOURNEE' migré au 25.12.2011.", textes.get(4));
+		}
+	}
+
+	@Test
+	public void testRepriseNumeroIdeSiPasDeRapprochementRCEnt() throws Exception {
+
+		final long noEntreprise = 74984L;
+		final RegDate dateDebut = RegDate.get(2010, 1, 1);
+
+		final RegpmEntreprise e = buildEntreprise(noEntreprise);
+		addRaisonSociale(e, dateDebut, "Turlututu SA", null, null, true);
+		addFormeJuridique(e, dateDebut, createTypeFormeJuridique("S.A.", RegpmCategoriePersonneMorale.PM));
+		addForPrincipalSuisse(e, dateDebut, RegpmTypeForPrincipal.SIEGE, Commune.ECHALLENS);
+
+		final NumeroIDE noIde = new NumeroIDE();
+		noIde.setCategorie("CHE");
+		noIde.setNumero(999999996L);
+		e.setNumeroIDE(noIde);
+
+		final MockGraphe graphe = new MockGraphe(Collections.singletonList(e),
+		                                         null,
+		                                         null);
+		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
+		final EntityLinkCollector linkCollector = new EntityLinkCollector();
+		final IdMapper idMapper = new IdMapper();
+		migrator.initMigrationResult(mr, idMapper);
+		migrate(e, migrator, mr, linkCollector, idMapper);
+
+		// la date du for principal de l'entreprise ne doit pas avoir été modifiée
+		doInUniregTransaction(true, status -> {
+			final Entreprise entreprise = uniregStore.getEntityFromDb(Entreprise.class, noEntreprise);
+			Assert.assertNotNull(entreprise);
+
+			final Set<IdentificationEntreprise> identsEntreprise = entreprise.getIdentificationsEntreprise();
+			Assert.assertNotNull(identsEntreprise);
+			Assert.assertEquals(1, identsEntreprise.size());
+			final IdentificationEntreprise identEntreprise = identsEntreprise.iterator().next();
+			Assert.assertNotNull(identEntreprise);
+			Assert.assertEquals("CHE999999996", identEntreprise.getNumeroIde());
+		});
+	}
+
+	@Test
+	public void testRepriseNumeroIdeInvalideSiPasDeRapprochementRCEnt() throws Exception {
+
+		final long noEntreprise = 74984L;
+		final RegDate dateDebut = RegDate.get(2010, 1, 1);
+
+		final RegpmEntreprise e = buildEntreprise(noEntreprise);
+		addRaisonSociale(e, dateDebut, "Turlututu SA", null, null, true);
+		addFormeJuridique(e, dateDebut, createTypeFormeJuridique("S.A.", RegpmCategoriePersonneMorale.PM));
+		addForPrincipalSuisse(e, dateDebut, RegpmTypeForPrincipal.SIEGE, Commune.ECHALLENS);
+
+		final NumeroIDE noIde = new NumeroIDE();
+		noIde.setCategorie("CHE");
+		noIde.setNumero(999999999L);        // le dernier chiffre devrait être un 6
+		e.setNumeroIDE(noIde);
+
+		final MockGraphe graphe = new MockGraphe(Collections.singletonList(e),
+		                                         null,
+		                                         null);
+		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
+		final EntityLinkCollector linkCollector = new EntityLinkCollector();
+		final IdMapper idMapper = new IdMapper();
+		migrator.initMigrationResult(mr, idMapper);
+		migrate(e, migrator, mr, linkCollector, idMapper);
+
+		// la date du for principal de l'entreprise ne doit pas avoir été modifiée
+		doInUniregTransaction(true, status -> {
+			final Entreprise entreprise = uniregStore.getEntityFromDb(Entreprise.class, noEntreprise);
+			Assert.assertNotNull(entreprise);
+
+			final Set<IdentificationEntreprise> identsEntreprise = entreprise.getIdentificationsEntreprise();
+			Assert.assertNotNull(identsEntreprise);
+			Assert.assertEquals(0, identsEntreprise.size());
+		});
+
+		// vérification des messages dans le contexte "SUIVI"
+		{
+			final List<MigrationResultCollector.Message> messages = mr.getMessages().get(LogCategory.SUIVI);
+			Assert.assertNotNull(messages);
+			final List<String> textes = messages.stream().map(msg -> msg.text).collect(Collectors.toList());
+			Assert.assertEquals(7, textes.size());
+			Assert.assertEquals("L'entreprise n'existait pas dans Unireg avec ce numéro de contribuable.", textes.get(0));
+			Assert.assertEquals("Le numéro IDE présent dans RegPM (catégorie = CHE, numéro = 999999999) est invalide, il sera ignoré.", textes.get(1));
+			Assert.assertEquals("Entreprise sans exercice commercial ni date de bouclement futur.", textes.get(2));
+			Assert.assertEquals("Ajout d'un régime fiscal VD de type '01' sur la période [01.01.2010 -> ?] pour couvrir les fors de l'entreprise.", textes.get(3));
+			Assert.assertEquals("Ajout d'un régime fiscal CH de type '01' sur la période [01.01.2010 -> ?] pour couvrir les fors de l'entreprise.", textes.get(4));
+			Assert.assertEquals("Pas de siège associé dans les données fiscales, pas d'établissement principal créé à partir des données fiscales.", textes.get(5));
+			Assert.assertEquals("Entreprise migrée : 749.84.", textes.get(6));
 		}
 	}
 }
