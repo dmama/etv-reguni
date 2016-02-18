@@ -3,6 +3,7 @@ package ch.vd.uniregctb.evenement.organisation.engine.translator;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -15,6 +16,7 @@ import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.audit.Audit;
+import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.data.DataEventService;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
 import ch.vd.uniregctb.evenement.identification.contribuable.CriteresEntreprise;
@@ -48,6 +50,7 @@ import ch.vd.uniregctb.metier.MetierServicePM;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.tiers.Entreprise;
+import ch.vd.uniregctb.tiers.RaisonSocialeFiscaleEntreprise;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersService;
 
@@ -164,7 +167,7 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 					if (entreprise == null) {
 						panicNotFoundAfterIdent(found.get(0), organisationDescription);
 					}
-					final String message = String.format("Identifié l'entreprise %s %s", entreprise.toString(), entreprise.getRaisonSociale());
+					final String message = String.format("Identifié l'entreprise %s %s", entreprise.toString(), getDerniereRaisonSocialeFiscale(entreprise));
 					evenements.add(new MessageSuivi(event, organisation, entreprise, context, options, message));
 					Audit.info(event.getId(), message);
 
@@ -251,6 +254,15 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 					String.format("Donnée RCEnt invalide: Champ obligatoire 'nom' pas trouvé pour l'organisation no civil: %s",
 					              organisation.getNumeroOrganisation()));
 		}
+	}
+
+	@Nullable
+	private static RaisonSocialeFiscaleEntreprise getDerniereRaisonSocialeFiscale(Entreprise e) {
+		final List<RaisonSocialeFiscaleEntreprise> toutes = e.getRaisonsSocialesNonAnnuleesTriees();
+		if (toutes.isEmpty()) {
+			return null;
+		}
+		return CollectionsUtils.getLastElement(toutes);
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})

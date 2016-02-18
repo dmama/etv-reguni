@@ -5511,6 +5511,9 @@ public class TiersServiceImpl implements TiersService {
 	@Nullable
 	private static RaisonSocialeFiscaleEntreprise getDerniereRaisonSocialeFiscale(Entreprise e) {
 		final List<RaisonSocialeFiscaleEntreprise> toutes = e.getRaisonsSocialesNonAnnuleesTriees();
+		if (toutes.isEmpty()) {
+			return null;
+		}
 		return CollectionsUtils.getLastElement(toutes);
 	}
 
@@ -5564,6 +5567,9 @@ public class TiersServiceImpl implements TiersService {
 	@Nullable
 	private static FormeJuridiqueFiscaleEntreprise getDerniereFormeJuridiqueFiscale(Entreprise e) {
 		final List<FormeJuridiqueFiscaleEntreprise> toutes = e.getFormesJuridiquesNonAnnuleesTriees();
+		if (toutes.isEmpty()) {
+			return null;
+		}
 		return CollectionsUtils.getLastElement(toutes);
 	}
 
@@ -5617,6 +5623,9 @@ public class TiersServiceImpl implements TiersService {
 	@Nullable
 	private static CapitalFiscalEntreprise getDernierCapitalFiscal(Entreprise e) {
 		final List<CapitalFiscalEntreprise> tous = e.getCapitauxNonAnnulesTries();
+		if (tous.isEmpty()) {
+			return null;
+		}
 		return CollectionsUtils.getLastElement(tous);
 	}
 
@@ -5945,6 +5954,9 @@ public class TiersServiceImpl implements TiersService {
 	@NotNull
 	private List<CapitalHisto> extractCapitauxFiscaux(@NotNull Entreprise entreprise) {
 		final List<CapitalFiscalEntreprise> capitaux = entreprise.getCapitauxNonAnnulesTries();
+		if (capitaux.isEmpty()) {
+			return Collections.emptyList();
+		}
 		final List<CapitalHisto> liste = new ArrayList<>(capitaux.size());
 		for (CapitalFiscalEntreprise capital : capitaux) {
 			liste.add(new CapitalHisto(capital));
@@ -6012,6 +6024,9 @@ public class TiersServiceImpl implements TiersService {
 
 	private List<FormeLegaleHisto> extractFormesLegalesFiscales(Entreprise entreprise) {
 		final List<FormeJuridiqueFiscaleEntreprise> fjs = entreprise.getFormesJuridiquesNonAnnuleesTriees();
+		if (fjs.isEmpty()) {
+			return Collections.emptyList();
+		}
 		final List<FormeLegaleHisto> histo = new ArrayList<>(fjs.size());
 		for (FormeJuridiqueFiscaleEntreprise fj : fjs) {
 			histo.add(new FormeLegaleHisto(fj));
@@ -6049,6 +6064,9 @@ public class TiersServiceImpl implements TiersService {
 
 	private List<RaisonSocialeHisto> extractRaisonsSocialesFiscales(Entreprise entreprise) {
 		final List<RaisonSocialeFiscaleEntreprise> rss = entreprise.getRaisonsSocialesNonAnnuleesTriees();
+		if (rss.isEmpty()) {
+			return Collections.emptyList();
+		}
 		final List<RaisonSocialeHisto> histo = new ArrayList<>(rss.size());
 		for (RaisonSocialeFiscaleEntreprise rs : rss) {
 			histo.add(new RaisonSocialeHisto(rs));

@@ -154,15 +154,6 @@ public class Entreprise extends ContribuableImpositionPersonnesMorales {
 	}
 
 	@Transient
-	public String getRaisonSociale() {
-		final List<RaisonSocialeFiscaleEntreprise> raisonsSocialesNonAnnuleesTriees = getRaisonsSocialesNonAnnuleesTriees();
-		if (!raisonsSocialesNonAnnuleesTriees.isEmpty()) {
-			return CollectionsUtils.getLastElement(raisonsSocialesNonAnnuleesTriees).getRaisonSociale();
-		}
-		return null;
-	}
-
-	@Transient
 	@NotNull
 	public List<FormeJuridiqueFiscaleEntreprise> getFormesJuridiquesNonAnnuleesTriees() {
 		return extractDonneesCiviles(FormeJuridiqueFiscaleEntreprise.class, false, true);
