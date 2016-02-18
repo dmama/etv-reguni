@@ -1638,15 +1638,7 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 			afin = fin;
 		}
 		else {
-			//SIFISC-17170 Si rupture Hors Suisse detectée alors il faut que la date de fin soit ramenée à la veille du départ HS
-			final RegDate dateFinPresenceSuisseDansAnnee = getDateFinPresenceSuisseDansAnnee(ffs.getTiers(), fin);
-			if (dateFinPresenceSuisseDansAnnee !=null) {
-				afin = dateFinPresenceSuisseDansAnnee;
-			}
-
-			else {
-				afin = getProchain31Decembre(fin);
-			}
+			afin = getProchain31Decembre(fin);
 		}
 
 		// Dans tous les cas, si on trouve une date de fractionnement entre la date réelle du début du for et la date de début de l'assujettissement,
@@ -1682,26 +1674,6 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 			}
 		}
 		return false;
-	}
-
-	/**
-	 * Retourne la date de fin de présence en suisse si le départ a eu lieu la même année que la date passé en paramètre
-	 * @param tiers à analyser
-	 * @param date de référence
-	 * @return la date de fin de présence en suisse, Null si aucun départ HS dans l'année trouvé
-	 */
-	private static RegDate getDateFinPresenceSuisseDansAnnee(Tiers tiers, RegDate date) {
-		Set<ForFiscal> fors = tiers.getForsFiscaux();
-		for (ForFiscal f : fors) {
-			final boolean isAfterDateReference = f.getDateDebut().isAfterOrEqual(date);
-			final boolean isMemeAnnee = f.getDateDebut().year()== date.year();
-			final boolean isHorsSuisse = f.getTypeAutoriteFiscale() == TypeAutoriteFiscale.PAYS_HS;
-			if (f.isPrincipal() && isAfterDateReference && isHorsSuisse && isMemeAnnee) {
-
-				return f.getDateDebut().getOneDayBefore();
-			}
-		}
-		return null;
 	}
 
 	/**
