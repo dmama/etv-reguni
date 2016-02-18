@@ -1416,14 +1416,7 @@ public class AssujettissementPersonnesPhysiquesCalculator implements Assujettiss
 			afin = fin;
 		}
 		else {
-			//SIFISC-17170 Si rupture Hors Suisse detectée alors il faut que la date de fin soit ramenée à la veille du départ HS
-			final RegDate dateFinPresenceSuisseDansAnnee = AssujettissementHelper.getDateFinPresenceSuisseDansAnnee(ffs.getTiers(), fin);
-			if (dateFinPresenceSuisseDansAnnee !=null) {
-				afin = dateFinPresenceSuisseDansAnnee;
-			}
-			else {
-				afin = getProchain31Decembre(fin);
-			}
+			afin = getProchain31Decembre(fin);
 		}
 
 		// Dans tous les cas, si on trouve une date de fractionnement entre la date réelle du début du for et la date de début de l'assujettissement,
