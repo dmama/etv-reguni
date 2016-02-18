@@ -365,7 +365,7 @@ public class AnnulationDecesRecapManagerTest extends WebTest {
 				Assert.assertNotNull(pp);
 				//Assert.assertNull(pp.getDateDeces());
 
-				final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
+				final ForFiscalPrincipalPP ffp = pp.getDernierForFiscalPrincipal();
 				Assert.assertNotNull(ffp);
 				Assert.assertEquals(dateDebut, ffp.getDateDebut());
 				Assert.assertEquals(MotifFor.INDETERMINE, ffp.getMotifOuverture());
