@@ -3,6 +3,8 @@ package ch.vd.uniregctb.evenement.organisation.engine.translator;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -135,29 +137,29 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 		final String organisationDescription = serviceOrganisationService.createOrganisationDescription(organisation, event.getDateEvenement());
 		Audit.info(event.getId(), String.format("Organisation trouvée: %s", organisationDescription));
 
+		final String raisonSocialeCivile = organisation.getNom(event.getDateEvenement());
+		final String noIdeCivil = organisation.getNumeroIDE(event.getDateEvenement());
+
 		final List<EvenementOrganisationInterne> evenements = new ArrayList<>();
 
 		Entreprise entreprise = context.getTiersDAO().getEntrepriseByNumeroOrganisation(organisation.getNumeroOrganisation());
 
 		/* L'entreprise est retrouvé grâce au numéro cantonal. Pas de doute possible. */
 		if (entreprise != null) {
-			final String message = String.format("Le numéro civil %s correspond à l'entreprise %s. Pas besoin d'identification.",
-			                                     organisation.getNumeroOrganisation(), entreprise.toString());
+			final String message = String.format("%s (%s%s) identifiée sur la base du numéro civil %s (numéro cantonal).",
+			                                     entreprise.toString(),
+			                                     raisonSocialeCivile,
+			                                     noIdeCivil != null ? ", IDE: " + noIdeCivil : "",
+			                                     organisation.getNumeroOrganisation());
+			Audit.info(event.getId(), message);
 			evenements.add(new MessageSuivi(event, organisation, entreprise, context, options, message));
 
 		/* L'entreprise n'a pas été retrouvée par identifiant cantonal, on utilise le service d'identification pour tenter de la retrouver
 		 si elle existe quand même sans avoir été rapprochée. */
 		} else {
-			evenements.add(new MessageSuivi(event, organisation, null, context, options, String.format("Pas d'entreprise associée au numéro civil de l'organisation %s.", organisationDescription)));
-
-			final String raisonSociale = organisation.getNom(event.getDateEvenement());
-			final String noIde = organisation.getNumeroIDE(event.getDateEvenement());
-			LOGGER.info(String.format("Pas d'entreprise associée au numéro cantonal %s. Tentative de la localiser via le service d'identification: %s%s",
-			                          organisation.getNumeroOrganisation(), noIde != null ? noIde + " " : "", raisonSociale));
-
 			final CriteresEntreprise criteres = new CriteresEntreprise();
-			criteres.setRaisonSociale(raisonSociale);
-			criteres.setIde(noIde);
+			criteres.setRaisonSociale(raisonSocialeCivile);
+			criteres.setIde(noIdeCivil);
 			try {
 				final List<Long> found = identCtbService.identifieEntreprise(criteres);
 
@@ -167,30 +169,38 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 					if (entreprise == null) {
 						panicNotFoundAfterIdent(found.get(0), organisationDescription);
 					}
-					final String message = String.format("Identifié l'entreprise %s %s", entreprise.toString(), getDerniereRaisonSocialeFiscale(entreprise));
-					evenements.add(new MessageSuivi(event, organisation, entreprise, context, options, message));
+
+					final String derniereRaisonSocialeFiscale = getDerniereRaisonSocialeFiscale(entreprise);
+
+					final String message = String.format("%s%s identifiée sur la base de ses attributs civils [%s].",
+					                                     entreprise.toString(),
+					                                     StringUtils.isNotBlank(derniereRaisonSocialeFiscale) ? " (" + derniereRaisonSocialeFiscale + ")" : "",
+					                                     attributsCivilsAffichage(raisonSocialeCivile, noIdeCivil));
 					Audit.info(event.getId(), message);
+					evenements.add(new MessageSuivi(event, organisation, entreprise, context, options, message));
 
 					// L'identificatione est un échec: selon toute vraisemblance, on connait le tiers mais on n'arrive pas à l'identifier avec certitude.
 				} else if (found.size() > 1) {
 					final String listeTrouves = StringsUtils.appendsWithDelimiter(", ", found);
-					Audit.info(event.getId(), String.format("Impossible de continuer car plusieurs entreprises trouvées: %s", listeTrouves));
-					String message = String.format("Arrêt du traitement en raison de l'incertitude sur l'identification de l'organisation %s. Plusieurs tiers candidats: %s.",
-					                               organisationDescription, listeTrouves);
+					String message = String.format("Plusieurs entreprises ont été trouvées (numéros %s) pour les attributs civils [%s]. Arrêt du traitement.",
+					                               listeTrouves,
+					                               attributsCivilsAffichage(raisonSocialeCivile, noIdeCivil));
+					Audit.info(event.getId(), message);
 					return new TraitementManuel(event, organisation, null, context, options, message);
 				}
 			}
 			// L'identificatione est un échec: selon toute vraisemblance, on connait le tiers mais il y a beaucoup trop de résultat.
 			catch (TooManyIdentificationPossibilitiesException e) {
-				Audit.info(event.getId(), "Impossible de continuer car la recherche renvoie trop de résultats!");
-				String message = String.format("Arrêt du traitement en raison de l'incertitude sur l'identification de l'organisation %s. La recherche a renvoyé un nombre de résultats trop grand.",
-				                               organisationDescription);
+				String message = String.format("L'identification de l'organisation a renvoyé un trop grand nombre de résultats pour les attributs civils [%s]! Arrêt du traitement.",
+				                               attributsCivilsAffichage(raisonSocialeCivile, noIdeCivil));
+				Audit.info(event.getId(), message);
 				return new TraitementManuel(event, organisation, null, context, options, message);
 			}
 			// L'identification n'a rien retourné. Cela veut dire qu'on ne connait pas déjà le tiers. On rapporte simplement cet état de fait.
 			if (entreprise == null) {
-				final String message = String.format("L'identification n'a pas trouvé d'entreprise pour%s la raison sociale %s.",
-				                                     noIde == null ? "" : " le numéro IDE " + noIde + " et", raisonSociale);
+				final String message = String.format("Aucune entreprise identifiée pour le numéro civil %s ou les attributs civils [%s].",
+				                                     organisation.getNumeroOrganisation(),
+				                                     attributsCivilsAffichage(raisonSocialeCivile, noIdeCivil));
 				Audit.info(event.getId(), message);
 				evenements.add(new MessageSuivi(event, organisation, null, context, options, message));
 			}
@@ -219,6 +229,9 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 		return new EvenementOrganisationInterneComposite(event, organisation, evenements.get(0).getEntreprise(), context, options, evenements);
 	}
 
+	private String attributsCivilsAffichage(@NotNull String raisonSociale, @Nullable String noIde) {
+		return String.format("%s%s", raisonSociale, noIde != null ? ", IDE: " + noIde : "");
+	}
 	private void panicNotFoundAfterIdent(Long found, String organisationDescription) throws EvenementOrganisationException {
 		throw new EvenementOrganisationException(String.format("L'identifiant de tiers %s retourné par le service d'identification ne correspond à aucun tiers! Organisation recherchée: %s",
 		                                                       found, organisationDescription));

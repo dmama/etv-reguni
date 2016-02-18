@@ -479,13 +479,12 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 
 		// Verification de l'événement interne créé
 		List<EvenementOrganisationInterne> listEvtInterne = getListeEvtInternesCrees(translator);
-		Assert.assertEquals(4, listEvtInterne.size());
+		Assert.assertEquals(3, listEvtInterne.size());
 		Assert.assertTrue(listEvtInterne.get(0) instanceof MessageSuivi);
-		Assert.assertTrue(listEvtInterne.get(1) instanceof MessageSuivi);
-		String message = getMessageFromMessageSuivi((MessageSuivi) listEvtInterne.get(1));
-		Assert.assertEquals(String.format("Identifié l'entreprise Entreprise n°%d Synergy SA", noEntreprise), message);
-		Assert.assertTrue(listEvtInterne.get(2) instanceof InformationComplementaire);
-		Assert.assertTrue(listEvtInterne.get(3) instanceof Indexation);
+		String message = getMessageFromMessageSuivi((MessageSuivi) listEvtInterne.get(0));
+		Assert.assertEquals(String.format("Entreprise n°%d (%s) identifiée sur la base de ses attributs civils [%s].", noEntreprise, nom, nom), message);
+		Assert.assertTrue(listEvtInterne.get(1) instanceof InformationComplementaire);
+		Assert.assertTrue(listEvtInterne.get(2) instanceof Indexation);
 
 		// Vérification du traitement de l'événement
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
@@ -587,10 +586,105 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 		Assert.assertEquals(1, listEvtInterne.size());
 		Assert.assertTrue(listEvtInterne.get(0) instanceof TraitementManuel);
 		String message = getMessageFromTraitementManuel((TraitementManuel) listEvtInterne.get(0));
-		Assert.assertEquals(String.format("Arrêt du traitement en raison de l'incertitude sur l'identification de l'organisation [En date du 24.06.2015] " +
-				                                  "Synergy SA (civil: 101202100), Lausanne (VD) (ofs: 5586), forme juridique (0107) Société à responsabilité " +
-				                                  "limitée. Plusieurs tiers candidats: [%d, %d].",
-		                                  noEntrerpise1, noEntrerpise2),
+		Assert.assertEquals(String.format("Plusieurs entreprises ont été trouvées (numéros [%d, %d]) pour les attributs civils [%s]. Arrêt du traitement.",
+		                                  noEntrerpise1, noEntrerpise2, nom),
+		                    message);
+
+		// Vérification du traitement de l'événement
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			                             @Override
+			                             public Object doInTransaction(TransactionStatus status) {
+				                             final EvenementOrganisation evt = evtOrganisationDAO.get(evtId);
+				                             Assert.assertNotNull(evt);
+				                             Assert.assertEquals(EtatEvenementOrganisation.EN_ERREUR, evt.getEtat());
+				                             return null;
+			                             }
+		                             }
+		);
+	}
+
+	@Test(timeout = 10000L)
+	public void testAucuneEntrepriseIdentifiee() throws Exception {
+
+		// Mise en place service mock
+		final RegDate dateDebut = date(2010, 6, 24);
+		final String nom = "Synergy SA";
+		final Long noOrganisation = 101202100L;
+		final Long noSite = noOrganisation + 1000000;
+
+		serviceOrganisation.setUp(new MockServiceOrganisation() {
+			@Override
+			protected void init() {
+				addOrganisation(MockOrganisationFactory.createOrganisation(noOrganisation, noSite, nom, dateDebut, null, FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE,
+				                                                           TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF, StatusRegistreIDE.DEFINITIF,
+				                                                           TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE));
+
+			}
+		});
+
+		// Création des entreprises
+
+		long noEntrerpise1 = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus transactionStatus) {
+
+				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+				addRaisonSocialeFiscaleEntreprise(entreprise, dateDebut, null, "Syntétiques Sarl");
+				return entreprise.getNumero();
+			}
+		});
+
+		long noEntrerpise2 = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus transactionStatus) {
+
+				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+				addRaisonSocialeFiscaleEntreprise(entreprise, dateDebut, null, "Synergios S.A.");
+				return entreprise.getNumero();
+			}
+		});
+		globalTiersIndexer.sync();
+
+		// Création de l'événement
+		final Long evtId = 12344321L;
+
+		// Persistence événement
+		doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus transactionStatus) {
+				final EvenementOrganisation event = createEvent(evtId, noOrganisation, TypeEvenementOrganisation.FOSC_AVIS_PREALABLE_OUVERTURE_FAILLITE, RegDate.get(2015, 6, 24), A_TRAITER);
+				return hibernateTemplate.merge(event).getId();
+			}
+		});
+
+		// Mise en place Translator "espion"
+		SpyEvenementOrganisationTranslatorImpl translator = new SpyEvenementOrganisationTranslatorImpl();
+
+		translator.setServiceOrganisationService(serviceOrganisation);
+		translator.setServiceInfrastructureService(getBean(ProxyServiceInfrastructureService.class, "serviceInfrastructureService"));
+		translator.setTiersDAO(getBean(TiersDAO.class, "tiersDAO"));
+		translator.setDataEventService(getBean(DataEventService.class, "dataEventService"));
+		translator.setTiersService(getBean(TiersService.class, "tiersService"));
+		translator.setMetierServicePM(getBean(MetierServicePM.class, "metierServicePM"));
+		translator.setAdresseService(getBean(AdresseService.class, "adresseService"));
+		translator.setIndexer(getBean(GlobalTiersIndexer.class, "globalTiersIndexer"));
+		translator.setIdentCtbService(getBean(IdentificationContribuableService.class, "identCtbService"));
+		translator.setEvenementFiscalService(getBean(EvenementFiscalService.class, "evenementFiscalService"));
+		translator.setParametreAppService(getBean(ParametreAppService.class, "parametreAppService"));
+		translator.afterPropertiesSet();
+
+		buildProcessor(translator);
+
+		// Traitement synchrone de l'événement
+		traiterEvenements(noOrganisation);
+
+		// Verification de l'événement interne créé
+		List<EvenementOrganisationInterne> listEvtInterne = getListeEvtInternesCrees(translator);
+		Assert.assertEquals(3, listEvtInterne.size());
+		Assert.assertTrue(listEvtInterne.get(0) instanceof MessageSuivi);
+		String message = getMessageFromMessageSuivi((MessageSuivi) listEvtInterne.get(0));
+		Assert.assertEquals(String.format("Aucune entreprise identifiée pour le numéro civil %s ou les attributs civils [%s].",
+		                                  noOrganisation, nom),
 		                    message);
 
 		// Vérification du traitement de l'événement
