@@ -257,12 +257,12 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 	}
 
 	@Nullable
-	private static RaisonSocialeFiscaleEntreprise getDerniereRaisonSocialeFiscale(Entreprise e) {
+	private static String getDerniereRaisonSocialeFiscale(Entreprise e) {
 		final List<RaisonSocialeFiscaleEntreprise> toutes = e.getRaisonsSocialesNonAnnuleesTriees();
 		if (toutes.isEmpty()) {
 			return null;
 		}
-		return CollectionsUtils.getLastElement(toutes);
+		return CollectionsUtils.getLastElement(toutes).getRaisonSociale();
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})

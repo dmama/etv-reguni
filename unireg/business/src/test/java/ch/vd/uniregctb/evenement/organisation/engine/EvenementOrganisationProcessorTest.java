@@ -433,13 +433,13 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 
 		// Création de l'entreprise
 
-		doInNewTransactionAndSession(new TransactionCallback<Entreprise>() {
+		long noEntreprise = doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			@Override
-			public Entreprise doInTransaction(TransactionStatus transactionStatus) {
+			public Long doInTransaction(TransactionStatus transactionStatus) {
 
 				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
 				addRaisonSocialeFiscaleEntreprise(entreprise, dateDebut, null, nom);
-				return entreprise;
+				return entreprise.getNumero();
 			}
 		});
 		globalTiersIndexer.sync();
@@ -483,8 +483,7 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 		Assert.assertTrue(listEvtInterne.get(0) instanceof MessageSuivi);
 		Assert.assertTrue(listEvtInterne.get(1) instanceof MessageSuivi);
 		String message = getMessageFromMessageSuivi((MessageSuivi) listEvtInterne.get(1));
-		Assert.assertTrue(message.startsWith("Identifié l'entreprise Entreprise "));
-		Assert.assertTrue(message.endsWith(" Synergy SA"));
+		Assert.assertEquals(String.format("Identifié l'entreprise Entreprise n°%d Synergy SA", noEntreprise), message);
 		Assert.assertTrue(listEvtInterne.get(2) instanceof InformationComplementaire);
 		Assert.assertTrue(listEvtInterne.get(3) instanceof Indexation);
 
@@ -527,17 +526,25 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 			}
 		});
 
-		// Création de l'entreprise
+		// Création des entreprises
 
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+		long noEntrerpise1 = doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			@Override
-			public void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
+			public Long doInTransaction(TransactionStatus transactionStatus) {
 
-				final Entreprise entreprise1 = addEntrepriseInconnueAuCivil();
-				addRaisonSocialeFiscaleEntreprise(entreprise1, dateDebut, null, "Synergy truc bidule");
+				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+				addRaisonSocialeFiscaleEntreprise(entreprise, dateDebut, null, "Synergy truc bidule");
+				return entreprise.getNumero();
+			}
+		});
 
-				final Entreprise entreprise2 = addEntrepriseInconnueAuCivil();
-				addRaisonSocialeFiscaleEntreprise(entreprise2, dateDebut, null, "Synergy machin chose");
+		long noEntrerpise2 = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus transactionStatus) {
+
+				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+				addRaisonSocialeFiscaleEntreprise(entreprise, dateDebut, null, "Synergy machin chose");
+				return entreprise.getNumero();
 			}
 		});
 		globalTiersIndexer.sync();
@@ -580,7 +587,11 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 		Assert.assertEquals(1, listEvtInterne.size());
 		Assert.assertTrue(listEvtInterne.get(0) instanceof TraitementManuel);
 		String message = getMessageFromTraitementManuel((TraitementManuel) listEvtInterne.get(0));
-		Assert.assertTrue(message.startsWith("Arrêt du traitement en raison de l'incertitude sur l'identification de l'organisation [En date du 24.06.2015] Synergy SA (civil: 101202100), Lausanne (VD) (ofs: 5586), forme juridique (0107) Société à responsabilité limitée. Plusieurs tiers candidats: "));
+		Assert.assertEquals(String.format("Arrêt du traitement en raison de l'incertitude sur l'identification de l'organisation [En date du 24.06.2015] " +
+				                                  "Synergy SA (civil: 101202100), Lausanne (VD) (ofs: 5586), forme juridique (0107) Société à responsabilité " +
+				                                  "limitée. Plusieurs tiers candidats: [%d, %d].",
+		                                  noEntrerpise1, noEntrerpise2),
+		                    message);
 
 		// Vérification du traitement de l'événement
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
