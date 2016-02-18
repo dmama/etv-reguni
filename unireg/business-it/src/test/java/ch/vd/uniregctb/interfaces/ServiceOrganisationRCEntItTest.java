@@ -50,8 +50,8 @@ public class ServiceOrganisationRCEntItTest extends BusinessItTest {
 	private static final String BASE_PATH_ORGANISATION = "/organisation/CT.VD.PARTY";
 
 	// Organisation cible sur RCEnt
-	private static final long ID_CANTONAL_HORLOGERS_PRADO = 101319305L;
-	private static final String Les_HORLOGERS_DU_PRADO_SA_EN_LIQUIDATION = "Les Horlogers du Prado SA en liquidation";
+	private static final long ID_ROMANDIE_ASSURANCES = 101600000L;
+	private static final String NOM_ROMANDIE_ASSURANCES = "Romandie Assurances, Qëndrim Ibrahimi";
 	private static final String BASE_PATH_ORGANISATIONS_OF_NOTICE = "/organisationsOfNotice";
 
 	// Organisation de l'échantillon fichier
@@ -78,47 +78,47 @@ public class ServiceOrganisationRCEntItTest extends BusinessItTest {
 
 	@Test
 	public void testGetOrganisation() throws Exception {
-		Organisation org = service.getOrganisationHistory(ID_CANTONAL_HORLOGERS_PRADO);
+		Organisation org = service.getOrganisationHistory(ID_ROMANDIE_ASSURANCES);
 		assertNotNull(org);
-		assertContains(Les_HORLOGERS_DU_PRADO_SA_EN_LIQUIDATION, org.getNom().get(0).getPayload());
+		assertContains(NOM_ROMANDIE_ASSURANCES, org.getNom().get(0).getPayload());
 	}
 
 	@Test
 	public void testRCEntClientGetOrganisationWithoutValidation() throws Exception {
 		final RcEntClient client = createRCEntClient(false);
-		OrganisationData data = client.getOrganisation(ID_CANTONAL_HORLOGERS_PRADO, null, true);
+		OrganisationData data = client.getOrganisation(ID_ROMANDIE_ASSURANCES, null, true);
 		Assert.assertNotNull(data);
-		Assert.assertEquals(ID_CANTONAL_HORLOGERS_PRADO, data.getOrganisationSnapshot().get(0).getOrganisation().getCantonalId().longValue());
-		Assert.assertEquals(Les_HORLOGERS_DU_PRADO_SA_EN_LIQUIDATION, data.getOrganisationSnapshot().get(0).getOrganisation().getOrganisationLocation().get(0).getName());
+		Assert.assertEquals(ID_ROMANDIE_ASSURANCES, data.getOrganisationSnapshot().get(0).getOrganisation().getCantonalId().longValue());
+		Assert.assertEquals(NOM_ROMANDIE_ASSURANCES, data.getOrganisationSnapshot().get(0).getOrganisation().getOrganisationLocation().get(0).getName());
 	}
 
 	@Test
 	public void testRCEntClientGetOrganisationWithValidation() throws Exception {
 		final RcEntClient client = createRCEntClient(true);
-		OrganisationData data = client.getOrganisation(ID_CANTONAL_HORLOGERS_PRADO, null, true);
+		OrganisationData data = client.getOrganisation(ID_ROMANDIE_ASSURANCES, null, true);
 		Assert.assertNotNull(data);
-		Assert.assertEquals(ID_CANTONAL_HORLOGERS_PRADO, data.getOrganisationSnapshot().get(0).getOrganisation().getCantonalId().longValue());
-		Assert.assertEquals(Les_HORLOGERS_DU_PRADO_SA_EN_LIQUIDATION, data.getOrganisationSnapshot().get(0).getOrganisation().getOrganisationLocation().get(0).getName());
+		Assert.assertEquals(ID_ROMANDIE_ASSURANCES, data.getOrganisationSnapshot().get(0).getOrganisation().getCantonalId().longValue());
+		Assert.assertEquals(NOM_ROMANDIE_ASSURANCES, data.getOrganisationSnapshot().get(0).getOrganisation().getOrganisationLocation().get(0).getName());
 	}
 
 	@Test
 	public void testDirectGetOrganisationWithoutValidation() throws Exception {
-		String url = baseUrl + BASE_PATH_ORGANISATION + "/" + ID_CANTONAL_HORLOGERS_PRADO;
+		String url = baseUrl + BASE_PATH_ORGANISATION + "/" + ID_ROMANDIE_ASSURANCES;
 		String xml = getUrlContent(url);
 		OrganisationData data = (OrganisationData) ((JAXBElement) createMarshaller(false).unmarshal(new StringReader(xml))).getValue();
 		Assert.assertNotNull(data);
-		Assert.assertEquals(ID_CANTONAL_HORLOGERS_PRADO, data.getOrganisationSnapshot().get(0).getOrganisation().getCantonalId().longValue());
-		Assert.assertEquals(Les_HORLOGERS_DU_PRADO_SA_EN_LIQUIDATION, data.getOrganisationSnapshot().get(0).getOrganisation().getOrganisationLocation().get(0).getName());
+		Assert.assertEquals(ID_ROMANDIE_ASSURANCES, data.getOrganisationSnapshot().get(0).getOrganisation().getCantonalId().longValue());
+		Assert.assertEquals(NOM_ROMANDIE_ASSURANCES, data.getOrganisationSnapshot().get(0).getOrganisation().getOrganisationLocation().get(0).getName());
 	}
 
 	@Test
 	public void testDirectGetOrganisationWithValidation() throws Exception {
-		String url = baseUrl + BASE_PATH_ORGANISATION + "/" + ID_CANTONAL_HORLOGERS_PRADO;
+		String url = baseUrl + BASE_PATH_ORGANISATION + "/" + ID_ROMANDIE_ASSURANCES;
 		String xml = getUrlContent(url);
 		OrganisationData data = (OrganisationData) ((JAXBElement) createMarshaller(true).unmarshal(new StringReader(xml))).getValue();
 		Assert.assertNotNull(data);
-		Assert.assertEquals(ID_CANTONAL_HORLOGERS_PRADO, data.getOrganisationSnapshot().get(0).getOrganisation().getCantonalId().longValue());
-		Assert.assertEquals(Les_HORLOGERS_DU_PRADO_SA_EN_LIQUIDATION, data.getOrganisationSnapshot().get(0).getOrganisation().getOrganisationLocation().get(0).getName());
+		Assert.assertEquals(ID_ROMANDIE_ASSURANCES, data.getOrganisationSnapshot().get(0).getOrganisation().getCantonalId().longValue());
+		Assert.assertEquals(NOM_ROMANDIE_ASSURANCES, data.getOrganisationSnapshot().get(0).getOrganisation().getOrganisationLocation().get(0).getName());
 	}
 
 	@Test
