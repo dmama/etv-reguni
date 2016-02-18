@@ -1031,9 +1031,8 @@ public class DecesEchProcessorTest extends AbstractEvenementCivilEchProcessorTes
 	}
 
 
-	//@Test(timeout = 10000L)
-	@Test
-	public void testDeces2ConjointsAvecFiliation () throws Exception {
+	@Test(timeout = 10000L)
+	public void testDecesConjointsAvecFiliation () throws Exception {
 
 		// 1. Création d'un couple marié
 		final long noMadame = 46215611L;
@@ -1141,10 +1140,6 @@ public class DecesEchProcessorTest extends AbstractEvenementCivilEchProcessorTes
 
 //				// Verification des liens de parentés
 //
-//				final List<Parente> parenteMonsieur = tiersService.getEnfants(monsieur, false);
-//				assertNotNull("Le lien de parenté doit être fermé à la date du décès", parenteMonsieur.get(0).getDateFin());
-//				assertNotNull("Le lien de parenté doit être fermé à la date du décès", parenteMonsieur.get(1).getDateFin());
-
 
 				final List<Parente> parenteMadame = tiersService.getEnfants(madame,true);
 				assertEquals(2,parenteMadame.size());
