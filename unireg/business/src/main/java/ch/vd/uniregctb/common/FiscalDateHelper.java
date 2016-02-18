@@ -189,7 +189,17 @@ public abstract class FiscalDateHelper {
 		}
 
 		// pas dans le même mois ... on se ramène au cas simple
-		final int debutVersFinMois = debutDebutDeMois ? 30 : dateDebut.getLastDayOfTheMonth().day() - dateDebut.day() + 1;
+		final boolean debutFinDeMois = dateDebut.getLastDayOfTheMonth() == dateDebut;
+		final int debutVersFinMois;
+		if (debutFinDeMois) {
+			debutVersFinMois = 1;
+		}
+		else if (debutDebutDeMois) {
+			debutVersFinMois = 30;
+		}
+		else {
+			debutVersFinMois = 30 - dateDebut.day() + 1;
+		}
 		final int finDepuisDebutMois = finFinDeMois ? 30 : dateFin.day();
 		final RegDate nouveauDebut = dateDebut.getLastDayOfTheMonth().getOneDayAfter();
 		final RegDate nouvelleFin = RegDate.get(dateFin.year(), dateFin.month(), 1).getOneDayBefore();

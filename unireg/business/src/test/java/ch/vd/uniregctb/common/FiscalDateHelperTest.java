@@ -136,9 +136,18 @@ public class FiscalDateHelperTest extends WithoutSpringTest {
 		assertEquals("1.2 -> 1.3", 31, FiscalDateHelper.getLongueurEnJours(new DateRangeHelper.Range(date(2000, 2, 1), date(2000, 3, 1))));
 		assertEquals("1.2 -> 2.3", 32, FiscalDateHelper.getLongueurEnJours(new DateRangeHelper.Range(date(2000, 2, 1), date(2000, 3, 2))));
 
+		// cas fournis par [SIFISC-18066]
+		assertEquals("18.04 -> 31.12", 253, FiscalDateHelper.getLongueurEnJours(new DateRangeHelper.Range(date(2015, 4, 18), date(2015, 12, 31))));
+		assertEquals("13.10 -> 31.12", 78, FiscalDateHelper.getLongueurEnJours(new DateRangeHelper.Range(date(2015, 10, 13), date(2015, 12, 31))));
+		assertEquals("15.05 -> 31.12", 226, FiscalDateHelper.getLongueurEnJours(new DateRangeHelper.Range(date(2015, 5, 15), date(2015, 12, 31))));
+		assertEquals("18.02 -> 31.12", 313, FiscalDateHelper.getLongueurEnJours(new DateRangeHelper.Range(date(2015, 2, 18), date(2015, 12, 31))));
+		assertEquals("18.02 (bissextile) -> 31.12", 313, FiscalDateHelper.getLongueurEnJours(new DateRangeHelper.Range(date(2016, 2, 18), date(2016, 12, 31))));
+		assertEquals("28.02 -> 31.12", 301, FiscalDateHelper.getLongueurEnJours(new DateRangeHelper.Range(date(2015, 2, 28), date(2015, 12, 31))));
+		assertEquals("28.02 (bissextile) -> 31.12", 303, FiscalDateHelper.getLongueurEnJours(new DateRangeHelper.Range(date(2016, 2, 28), date(2016, 12, 31))));
+
 		// cas pris au hasard
 		assertEquals("5.12.2000 -> 18.08.2003",
-		             (31 - 5 + 1) + 2 * 360 + 7 * 30 + 18,
+		             (30 - 5 + 1) + 2 * 360 + 7 * 30 + 18,
 		             FiscalDateHelper.getLongueurEnJours(new DateRangeHelper.Range(date(2000, 12, 5), date(2003, 8, 18))));
 	}
 }
