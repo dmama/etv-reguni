@@ -313,4 +313,69 @@ public class AnnulationDecesRecapManagerTest extends WebTest {
 			}
 		});
 	}
+
+	/**
+	 * [SIFISC-17422] crash à la tentative d'annulation du décès d'un marié seul veuf
+	 */
+	@Test
+	public void testAnnulationDecesSurMarieSeul() throws Exception {
+
+		final RegDate dateDebut = date(1990, 8, 31);
+		final RegDate dateMariage = date(2000, 2, 5);
+		final RegDate dateDeces =  date(2005, 7, 10);
+		final RegDate dateVeuvage = dateDeces.getOneDayAfter();
+
+		// mise en place civile
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				// personne
+			}
+		});
+
+		// mise en place fiscale
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addNonHabitant("Alfred", "Tartempion", date(1935, 3, 4), Sexe.MASCULIN);
+				final EnsembleTiersCouple couple = addEnsembleTiersCouple(pp, null, dateMariage, dateDeces);
+				//pp.setDateDeces(dateDeces);
+
+				final MenageCommun mc = couple.getMenage();
+				addForPrincipal(pp, dateDebut, MotifFor.INDETERMINE, dateMariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Aigle, ModeImposition.SOURCE);
+				addForPrincipal(mc, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, dateDeces, MotifFor.VEUVAGE_DECES, MockCommune.Aigle, ModeImposition.SOURCE);
+				addForPrincipal(pp, dateVeuvage, MotifFor.VEUVAGE_DECES, null, null, MockCommune.Aigle, ModeImposition.SOURCE);
+
+				addSituation(pp, dateMariage, dateDeces.getOneDayBefore(), 0, EtatCivil.MARIE);
+				addSituation(pp, dateDeces, null, 0, EtatCivil.VEUF);
+
+				return pp.getNumero();
+			}
+		});
+
+		// annulation de Veuvage comme fait dans le contrôleur
+		final AnnulationDecesRecapView annulationDecesView = manager.get(ppId);
+		manager.save(annulationDecesView);
+
+		// vérification du résultat
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+				Assert.assertNotNull(pp);
+				//Assert.assertNull(pp.getDateDeces());
+
+				final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
+				Assert.assertNotNull(ffp);
+				Assert.assertEquals(dateDebut, ffp.getDateDebut());
+				Assert.assertEquals(MotifFor.INDETERMINE, ffp.getMotifOuverture());
+				Assert.assertEquals(dateMariage.getOneDayBefore(),ffp.getDateFin());
+				Assert.assertEquals(MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION,ffp.getMotifFermeture());
+				Assert.assertEquals(ModeImposition.SOURCE, ffp.getModeImposition());
+				Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
+				Assert.assertEquals((Integer) MockCommune.Aigle.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale());
+			}
+		});
+
+	}
 }

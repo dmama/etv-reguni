@@ -3676,11 +3676,13 @@ public class TiersServiceImpl implements TiersService {
 
     @Override
     public RegDate getDateDebutVeuvage(PersonnePhysique pp, RegDate date) {
-        final VueSituationFamille situation = situationFamilleService.getVue(pp, date, true);
-        if (situation != null && EtatCivil.VEUF == situation.getEtatCivil()) {
-            return situation.getDateDebut();
-        }
-        return null;
+	    final List<ForFiscal> forsFiscauxValides = pp.getForsFiscauxValidAt(date);
+	    for (ForFiscal forFiscal : forsFiscauxValides) {
+		    if (forFiscal.isPrincipal() && MotifFor.VEUVAGE_DECES == ((ForFiscalPrincipal)forFiscal).getMotifOuverture()) {
+			    return forFiscal.getDateDebut();
+		    }
+	    }
+	    return null;
     }
 
     /**
