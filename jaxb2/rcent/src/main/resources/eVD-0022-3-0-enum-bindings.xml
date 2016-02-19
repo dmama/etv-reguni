@@ -29,13 +29,13 @@
     </jxb:bindings>
     <jxb:bindings node="//xs:simpleType[@name='typeOfFusionType']">
         <jxb:typesafeEnumClass name="TypeOfFusion">
-            <jxb:typesafeEnumMember name="SOCIETES_COOPERATIVES" value="1"/>
-            <jxb:typesafeEnumMember name="SOCIETES_ANONYMES" value="2"/>
-            <jxb:typesafeEnumMember name="SOCIETES_ANONYMES_ET_COMMANDITE_PAR_ACTIONS" value="3"/>
+            <jxb:typesafeEnumMember name="FUSION_SOCIETES_COOPERATIVES" value="1"/>
+            <jxb:typesafeEnumMember name="FUSION_SOCIETES_ANONYMES" value="2"/>
+            <jxb:typesafeEnumMember name="FUSION_SOCIETES_ANONYMES_ET_COMMANDITE_PAR_ACTIONS" value="3"/>
             <jxb:typesafeEnumMember name="AUTRE_FUSION" value="4"/>
             <jxb:typesafeEnumMember name="FUSION_INTERNATIONALE" value="5"/>
             <jxb:typesafeEnumMember name="FUSION_ART_25_LFUS" value="6"/>
-            <jxb:typesafeEnumMember name="INSTITUTIONS_DE_PREVOYANCE" value="7"/>
+            <jxb:typesafeEnumMember name="FUSION_INSTITUTIONS_DE_PREVOYANCE" value="7"/>
             <jxb:typesafeEnumMember name="SCISSION_ART_45_LFUS" value="8"/>
             <jxb:typesafeEnumMember name="FUSION_SUISSE_VERS_ETRANGER" value="9"/>
             <jxb:typesafeEnumMember name="SCISSION_SUISSE_VERS_ETRANGER" value="10"/>
