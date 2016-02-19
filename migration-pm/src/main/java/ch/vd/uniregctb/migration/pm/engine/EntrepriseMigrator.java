@@ -582,7 +582,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 									.filter(fin -> !fin.isRectifiee())
 									.map(RegpmFinFaillite::getDateRevocation)
 									.filter(Objects::nonNull)
-									.filter(prononce.getDatePrononceFaillite()::isBefore)
+									.filter(prononce.getDatePrononceFaillite()::isBeforeOrEqual)
 									.findAny()
 									.orElse(null);
 							if (revocation != null) {
