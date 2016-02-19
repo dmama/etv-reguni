@@ -14,6 +14,8 @@ public interface ParametreAppAccessor {
 
 	Integer getDelaiCadevImpressionListesRecapitulatives();
 
+	Integer getDelaiCadevImpressionLettreBienvenue();
+
 	Integer getDelaiEcheanceSommationDeclarationImpotPP();
 
 	Integer getDelaiEcheanceSommationDeclarationImpotPM();
@@ -31,6 +33,12 @@ public interface ParametreAppAccessor {
 	Integer getDelaiRetourListeRecapitulative();
 
 	Integer getDelaiRetourSommationListeRecapitulative();
+
+	Integer[] getDateDebutEnvoiLettresBienvenue();
+
+	Integer getDelaiRetourLettreBienvenue();
+
+	Integer getTailleTrouAssujettissementPourNouvelleLettreBienvenue();
 
 	Integer[] getFeteNationale();
 
@@ -60,7 +68,6 @@ public interface ParametreAppAccessor {
 
 	/**
 	 * [UNIREG-2507]
-	 *
 	 * @return l'année minimale acceptée lors de la création de nouveaux fors débiteur.
 	 */
 	Integer getAnneeMinimaleForDebiteur();
@@ -79,6 +86,8 @@ public interface ParametreAppAccessor {
 
 	void setDelaiCadevImpressionListesRecapitulatives(Integer val);
 
+	void setDelaiCadevImpressionLettreBienvenue(Integer val);
+
 	void setDelaiEcheanceSommationDeclarationImpotPP(Integer val);
 
 	void setDelaiEcheanceSommationDeclarationImpotPM(Integer val);
@@ -96,6 +105,12 @@ public interface ParametreAppAccessor {
 	void setDelaiRetourListeRecapitulative(Integer val);
 
 	void setDelaiRetourSommationListeRecapitulative(Integer val);
+
+	void setDateDebutEnvoiLettresBienvenue(Integer[] val);
+
+	void setDelaiRetourLettreBienvenue(Integer val);
+
+	void setTailleTrouAssujettissementPourNouvelleLettreBienvenue(Integer val);
 
 	void setFeteNationale(Integer[] val);
 

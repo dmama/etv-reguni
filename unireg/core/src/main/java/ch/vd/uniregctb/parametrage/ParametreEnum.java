@@ -1,6 +1,9 @@
 package ch.vd.uniregctb.parametrage;
 
+import java.text.ParseException;
 import java.util.Arrays;
+
+import ch.vd.registre.base.date.RegDateHelper;
 
 /**
  * Enumeration des differents paramètres de l'application
@@ -31,6 +34,11 @@ public enum ParametreEnum {
 	delaiEnvoiSommationDeclarationImpotPM("0", Type.delaisEnJour, true),
 	delaiEcheanceSommationDeclarationImpotPM("30", Type.delaisEnJour, true),
 
+	dateDebutEnvoiLettresBienvenue("11.06.2016", Type.date, true),
+	delaiRetourLettreBienvenue("30", Type.delaisEnJour, true),
+	delaiCadevImpressionLettreBienvenue("3", Type.delaisEnJour, true),
+	tailleTrouAssujettissementPourNouvelleLettreBienvenue("720", Type.delaisEnJour, true),
+
 	jourDuMoisEnvoiListesRecapitulatives("20", Type.jourDansMois, true),
  	delaiCadevImpressionListesRecapitulatives("3", Type.delaisEnJour, true),
 	delaiRetourListeRecapitulative("30", Type.delaisEnJour, true),
@@ -48,17 +56,16 @@ public enum ParametreEnum {
 
 	/**
 	 * Les differents type de paramétres possibles
-	 *
 	 */
 	public enum Type {
-		entierPositif, annee, jourDansAnnee, jourDansMois, delaisEnJour, delaisEnMois
+		entierPositif, annee, jourDansAnnee, jourDansMois, delaisEnJour, delaisEnMois, date
 	}
 
 	private final Type type;
 	private final String defaut;
 	private final boolean resetable;
 
-	private ParametreEnum(String d, Type t, boolean resetable) {
+	ParametreEnum(String d, Type t, boolean resetable) {
 		defaut = d;
 		type = t;
 		this.resetable = resetable;
@@ -128,6 +135,14 @@ public enum ParametreEnum {
 					throw new ValeurInvalideException(msgErr + " - La valeur doit etre un entier compris entre 1 et 28");
 				}
 				break;
+			case date:
+				try {
+					RegDateHelper.displayStringToRegDate(s, false);
+				}
+				catch (ParseException e) {
+					throw new ValeurInvalideException(msgErr + " - " + e.getMessage(), e);
+				}
+				break;
 			default:
 				throw new RuntimeException("Code théoriquement inatteignable...");
 			}
@@ -159,12 +174,21 @@ public enum ParametreEnum {
 			throw new IllegalArgumentException(e.getMessage(), e);
 		}
 		switch (type) {
-			case jourDansAnnee:
-				String[] jourMois = valeur.split("\\.");
-				Integer jour = Integer.parseInt(jourMois[0]);
-				Integer mois = Integer.parseInt(jourMois[1]);
+			case jourDansAnnee: {
+				final String[] jourMois = valeur.split("\\.");
+				final int jour = Integer.parseInt(jourMois[0]);
+				final int mois = Integer.parseInt(jourMois[1]);
 				valeur = String.format("%02d.%02d", jour, mois);
 				break;
+			}
+			case date: {
+				final String[] jourMoisAnnee = valeur.split("\\.");
+				final int jour = Integer.parseInt(jourMoisAnnee[0]);
+				final int mois = Integer.parseInt(jourMoisAnnee[1]);
+				final int annee = Integer.parseInt(jourMoisAnnee[2]);
+				valeur = String.format("%02d.%02d.%04d", jour, mois, annee);
+				break;
+			}
 			default:
 				break;
 		}
@@ -245,11 +269,21 @@ public enum ParametreEnum {
 	 */
 	public Object convertirStringVersValeurTypee (String valeur) {
 		if (Type.jourDansAnnee == type) {
+			final String[] split = valeur.split("\\.");
 			return new Integer[] {
-					Integer.parseInt(valeur.split("\\.")[0]),
-					Integer.parseInt(valeur.split("\\.")[1])
+					Integer.parseInt(split[0]),
+					Integer.parseInt(split[1])
 			};
-		} else {
+		}
+		else if (Type.date == type) {
+			final String[] split = valeur.split("\\.");
+			return new Integer[] {
+					Integer.parseInt(split[0]),
+					Integer.parseInt(split[1]),
+					Integer.parseInt(split[2])
+			};
+		}
+		else {
 			return Integer.parseInt(valeur);
 		}
 	}
@@ -261,9 +295,14 @@ public enum ParametreEnum {
 	 */
 	public String convertirValeurTypeeVersString (Object valeur) {
 		if (Type.jourDansAnnee == type) {
-			Integer[] val = (Integer[]) valeur;
+			final Integer[] val = (Integer[]) valeur;
 			return String.format("%02d.%02d", val[0], val[1]);
-		} else {
+		}
+		else if (Type.date == type) {
+			final Integer[] val = (Integer[]) valeur;
+			return String.format("%02d.%02d.%04d", val[0], val[1], val[2]);
+		}
+		else {
 			return valeur.toString();
 		}
 	}

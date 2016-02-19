@@ -71,6 +71,18 @@ public interface DelaisService {
 	RegDate getDateFinDelaiCadevImpressionListesRecapitulatives(RegDate dateDebut);
 
 	/**
+	 * Determine la date d'échéance du délai technique d’impression par la CADEV lettres de bienvenue PM.<br>
+	 * <br>
+	 * Les jours fériés sont comptés dans le délai.<br>
+	 * Le délai est repoussé au premier jour ouvrable s'il tombe sur un jour non-ouvré.<br>
+	 *
+	 * @param dateDebut date
+	 *
+	 * @return la date d'échéance du délai
+	 */
+	RegDate getDateFinDelaiCadevImpressionLettreBienvenue(RegDate dateDebut);
+
+	/**
 	 * Determine la date d'échéance du délai d’échéance d’une sommation de déposer la déclaration d’impôt PP (art. 174 al. 4 LI).<br>
 	 * <br>
 	 * Les jours fériés sont comptés dans le délai.<br>

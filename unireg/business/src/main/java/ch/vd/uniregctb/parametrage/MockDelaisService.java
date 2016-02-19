@@ -30,6 +30,11 @@ public class MockDelaisService implements DelaisService {
 	}
 
 	@Override
+	public RegDate getDateFinDelaiCadevImpressionLettreBienvenue(RegDate dateDebut) {
+		throw new IllegalArgumentException("no meant to be called");
+	}
+
+	@Override
 	public RegDate getDateFinDelaiEcheanceSommationDeclarationImpotPP(RegDate dateDebut) {
 		throw new IllegalArgumentException("no meant to be called");
 	}

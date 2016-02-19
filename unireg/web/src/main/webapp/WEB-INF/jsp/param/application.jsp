@@ -32,6 +32,10 @@
   				width: 35px;
   				text-align: right;
   			}
+  			input.valeur-longue {
+  				width: 80px;
+  				text-align: right;
+  			}
   			.nombre, .date, td.valeur {
   				text-align: right;
   			}	
@@ -283,6 +287,42 @@
 		                <sf:input path="delaiMinimalRetourDeclarationImpotPM" cssClass="valeur nombre" cssErrorClass="valeur input-with-errors nombre" maxlength="3"/>
 		            </td>
 					 <td><sf:errors path="delaiMinimalRetourDeclarationImpotPM" cssClass="erreur"/></td>
+		        </tr><tr class="separator"><th colspan="4" ></th></tr>
+		        <tr class="<unireg:nextRowClass/>">
+		            <td><fmt:message key="label.param.dateDebutEnvoiLettresBienvenue"/></td>
+		            <%--@elvariable id="dateDebutEnvoiLettresBienvenueParDefaut" type="java.lang.String"--%>
+					<td class="date">${dateDebutEnvoiLettresBienvenueParDefaut}</td>
+		            <td class="valeur">
+		                <sf:input path="dateDebutEnvoiLettresBienvenue" cssClass="valeur-longue date" cssErrorClass="valeur-longue input-with-errors date" maxlength="10"/>
+		            </td>
+					 <td><sf:errors path="dateDebutEnvoiLettresBienvenue" cssClass="erreur"/></td>
+			    </tr>
+		        <tr class="<unireg:nextRowClass/>">
+		            <td><fmt:message key="label.param.delaiRetourLettreBienvenue"/></td>
+		            <%--@elvariable id="delaiRetourLettreBienvenueParDefaut" type="java.lang.String"--%>
+					<td class="nombre">${delaiRetourLettreBienvenueParDefaut}</td>
+		            <td class="valeur">
+		                <sf:input path="delaiRetourLettreBienvenue" cssClass="valeur nombre" cssErrorClass="valeur input-with-errors nombre" maxlength="3"/>
+		            </td>
+					 <td><sf:errors path="delaiRetourLettreBienvenue" cssClass="erreur"/></td>
+			    </tr>
+		        <tr class="<unireg:nextRowClass/>">
+		            <td><fmt:message key="label.param.delaiCadevImpressionLettreBienvenue"/></td>
+		            <%--@elvariable id="delaiCadevImpressionLettreBienvenueParDefaut" type="java.lang.String"--%>
+					<td class="nombre">${delaiCadevImpressionLettreBienvenueParDefaut}</td>
+		            <td class="valeur">
+		                <sf:input path="delaiCadevImpressionLettreBienvenue" cssClass="valeur nombre" cssErrorClass="valeur input-with-errors nombre" maxlength="3"/>
+		            </td>
+					 <td><sf:errors path="delaiCadevImpressionLettreBienvenue" cssClass="erreur"/></td>
+			    </tr>
+		        <tr class="<unireg:nextRowClass/>">
+		            <td><fmt:message key="label.param.tailleTrouAssujettissementPourNouvelleLettreBienvenue"/></td>
+		            <%--@elvariable id="tailleTrouAssujettissementPourNouvelleLettreBienvenueParDefaut" type="java.lang.String"--%>
+					<td class="nombre">${tailleTrouAssujettissementPourNouvelleLettreBienvenueParDefaut}</td>
+		            <td class="valeur">
+		                <sf:input path="tailleTrouAssujettissementPourNouvelleLettreBienvenue" cssClass="valeur nombre" cssErrorClass="valeur input-with-errors nombre" maxlength="4"/>
+		            </td>
+					 <td><sf:errors path="tailleTrouAssujettissementPourNouvelleLettreBienvenue" cssClass="erreur"/></td>
 		        </tr><tr class="separator"><th colspan="4" ></th></tr>
 		        <tr class="<unireg:nextRowClass/>">
 		            <td><fmt:message key="label.param.dateExclusionDecedeEnvoiDI"/></td>

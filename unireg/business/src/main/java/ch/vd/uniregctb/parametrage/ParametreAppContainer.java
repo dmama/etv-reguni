@@ -10,6 +10,8 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.apache.commons.lang3.tuple.Pair;
 
+import ch.vd.registre.base.utils.Assert;
+
 class ParametreAppContainer implements ParametreAppAccessor {
 
 	private final ReentrantReadWriteLock rwLock = new ReentrantReadWriteLock();
@@ -136,6 +138,11 @@ class ParametreAppContainer implements ParametreAppAccessor {
 	@Override
 	public Integer getDelaiCadevImpressionListesRecapitulatives() {
 		return Integer.parseInt(get(ParametreEnum.delaiCadevImpressionListesRecapitulatives));
+	}
+
+	@Override
+	public Integer getDelaiCadevImpressionLettreBienvenue() {
+		return Integer.parseInt(get(ParametreEnum.delaiCadevImpressionLettreBienvenue));
 	}
 
 	@Override
@@ -270,7 +277,28 @@ class ParametreAppContainer implements ParametreAppAccessor {
 		return Integer.parseInt(get(ParametreEnum.delaiMinimalRetourDeclarationImpotPM));
 	}
 
+	@Override
+	public Integer[] getDateDebutEnvoiLettresBienvenue() {
+		return getValeurPourParametreDeTypeDate(ParametreEnum.dateDebutEnvoiLettresBienvenue);
+	}
+
+	@Override
+	public Integer getDelaiRetourLettreBienvenue() {
+		return Integer.parseInt(get(ParametreEnum.delaiRetourLettreBienvenue));
+	}
+
+	@Override
+	public Integer getTailleTrouAssujettissementPourNouvelleLettreBienvenue() {
+		return Integer.parseInt(get(ParametreEnum.tailleTrouAssujettissementPourNouvelleLettreBienvenue));
+	}
+
 	private Integer[] getValeurPourParametreDeTypeJoursDansAnnee(ParametreEnum p) {
+		Assert.isEqual(ParametreEnum.Type.jourDansAnnee, p.getType());
+		return (Integer[]) p.convertirStringVersValeurTypee(get(p));
+	}
+
+	private Integer[] getValeurPourParametreDeTypeDate(ParametreEnum p) {
+		Assert.isEqual(ParametreEnum.Type.date, p.getType());
 		return (Integer[]) p.convertirStringVersValeurTypee(get(p));
 	}
 
@@ -318,6 +346,11 @@ class ParametreAppContainer implements ParametreAppAccessor {
 	}
 
 	@Override
+	public void setDelaiCadevImpressionLettreBienvenue(Integer val) {
+		setValeur(ParametreEnum.delaiCadevImpressionLettreBienvenue, val.toString());
+	}
+
+	@Override
 	public void setDelaiEcheanceSommationDeclarationImpotPP(Integer val) {
 		setValeur(ParametreEnum.delaiEcheanceSommationDeclarationImpotPP, val.toString());
 	}
@@ -359,7 +392,7 @@ class ParametreAppContainer implements ParametreAppAccessor {
 
 	@Override
 	public void setFeteNationale(Integer[] val) {
-		assert val.length == 2;
+		Assert.isEqual(2, val.length);
 		setValeur(ParametreEnum.feteNationale, String.valueOf(val[0]) + '.' + val[1]);
 	}
 
@@ -370,7 +403,7 @@ class ParametreAppContainer implements ParametreAppAccessor {
 
 	@Override
 	public void setLendemainNouvelAn(Integer[] val) {
-		assert val.length == 2;
+		Assert.isEqual(2, val.length);
 		setValeur(ParametreEnum.lendemainNouvelAn, String.valueOf(val[0]) + '.' + val[1]);
 	}
 
@@ -386,13 +419,13 @@ class ParametreAppContainer implements ParametreAppAccessor {
 
 	@Override
 	public void setNoel(Integer[] val) {
-		assert val.length == 2;
+		Assert.isEqual(2, val.length);
 		setValeur(ParametreEnum.noel, String.valueOf(val[0]) + '.' + val[1]);
 	}
 
 	@Override
 	public void setNouvelAn(Integer[] val) {
-		assert val.length == 2;
+		Assert.isEqual(2, val.length);
 		setValeur(ParametreEnum.nouvelAn, String.valueOf(val[0]) + '.' + val[1]);
 	}
 
@@ -431,7 +464,7 @@ class ParametreAppContainer implements ParametreAppAccessor {
 
 	@Override
 	public void setDateExclusionDecedeEnvoiDI(Integer[] val) {
-		assert val.length == 2;
+		Assert.isEqual(2, val.length);
 		setValeur(ParametreEnum.dateExclusionDecedeEnvoiDI, String.valueOf(val[0]) + '.' + val[1]);
 	}
 
@@ -453,5 +486,21 @@ class ParametreAppContainer implements ParametreAppAccessor {
 	@Override
 	public void setDelaiEnvoiSommationDeclarationImpotPM(Integer val) {
 		setValeur(ParametreEnum.delaiEnvoiSommationDeclarationImpotPM, val.toString());
+	}
+
+	@Override
+	public void setDateDebutEnvoiLettresBienvenue(Integer[] val) {
+		Assert.isEqual(3, val.length);
+		setValeur(ParametreEnum.dateDebutEnvoiLettresBienvenue, String.valueOf(val[0]) + '.' + val[1] + '.' + val[2]);
+	}
+
+	@Override
+	public void setDelaiRetourLettreBienvenue(Integer val) {
+		setValeur(ParametreEnum.delaiRetourLettreBienvenue, val.toString());
+	}
+
+	@Override
+	public void setTailleTrouAssujettissementPourNouvelleLettreBienvenue(Integer val) {
+		setValeur(ParametreEnum.tailleTrouAssujettissementPourNouvelleLettreBienvenue, val.toString());
 	}
 }

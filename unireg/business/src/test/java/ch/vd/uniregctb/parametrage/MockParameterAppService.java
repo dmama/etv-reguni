@@ -43,6 +43,11 @@ public final class MockParameterAppService implements ParametreAppService {
 	}
 
 	@Override
+	public Integer getDelaiCadevImpressionLettreBienvenue() {
+		return container.getDelaiCadevImpressionLettreBienvenue();
+	}
+
+	@Override
 	public Integer getDelaiEcheanceSommationDeclarationImpotPP() {
 		return container.getDelaiEcheanceSommationDeclarationImpotPP();
 	}
@@ -85,6 +90,21 @@ public final class MockParameterAppService implements ParametreAppService {
 	@Override
 	public Integer getDelaiRetourSommationListeRecapitulative() {
 		return container.getDelaiRetourSommationListeRecapitulative();
+	}
+
+	@Override
+	public Integer getTailleTrouAssujettissementPourNouvelleLettreBienvenue() {
+		return container.getTailleTrouAssujettissementPourNouvelleLettreBienvenue();
+	}
+
+	@Override
+	public Integer getDelaiRetourLettreBienvenue() {
+		return container.getDelaiRetourLettreBienvenue();
+	}
+
+	@Override
+	public Integer[] getDateDebutEnvoiLettresBienvenue() {
+		return container.getDateDebutEnvoiLettresBienvenue();
 	}
 
 	@Override
@@ -203,6 +223,11 @@ public final class MockParameterAppService implements ParametreAppService {
 	}
 
 	@Override
+	public void setDelaiCadevImpressionLettreBienvenue(Integer val) {
+		container.setDelaiCadevImpressionLettreBienvenue(val);
+	}
+
+	@Override
 	public void setDelaiEcheanceSommationDeclarationImpotPP(Integer val) {
 		container.setDelaiEcheanceSommationDeclarationImpotPP(val);
 	}
@@ -240,6 +265,21 @@ public final class MockParameterAppService implements ParametreAppService {
 	@Override
 	public void setDelaiRetourSommationListeRecapitulative(Integer val) {
 		container.setDelaiRetourSommationListeRecapitulative(val);
+	}
+
+	@Override
+	public void setDateDebutEnvoiLettresBienvenue(Integer[] val) {
+		container.setDateDebutEnvoiLettresBienvenue(val);
+	}
+
+	@Override
+	public void setDelaiRetourLettreBienvenue(Integer val) {
+		container.setDelaiRetourLettreBienvenue(val);
+	}
+
+	@Override
+	public void setTailleTrouAssujettissementPourNouvelleLettreBienvenue(Integer val) {
+		container.setTailleTrouAssujettissementPourNouvelleLettreBienvenue(val);
 	}
 
 	@Override

@@ -43,6 +43,7 @@ public class ParamApplicationView {
 	private String jourDuMoisEnvoiListesRecapitulatives;
 	private String delaiCadevImpressionDeclarationImpot;
 	private String delaiCadevImpressionListesRecapitulatives;
+	private String delaiCadevImpressionLettreBienvenue;
 	private String nbMaxParListe;
 	private String nbMaxParPage;
 	private String delaiRetourListeRecapitulative;
@@ -54,6 +55,9 @@ public class ParamApplicationView {
 	private String ageRentierFemme;
 	private String ageRentierHomme;
 	private String delaiMinimalRetourDeclarationImpotPM;
+	private String tailleTrouAssujettissementPourNouvelleLettreBienvenue;
+	private String delaiRetourLettreBienvenue;
+	private String dateDebutEnvoiLettresBienvenue;
 
 	public ParamApplicationView() {}
 
@@ -74,6 +78,7 @@ public class ParamApplicationView {
 		this.jourDuMoisEnvoiListesRecapitulatives = ParametreEnum.jourDuMoisEnvoiListesRecapitulatives.convertirValeurTypeeVersString(service.getJourDuMoisEnvoiListesRecapitulatives());
 		this.delaiCadevImpressionDeclarationImpot = ParametreEnum.delaiCadevImpressionDeclarationImpot.convertirValeurTypeeVersString(service.getDelaiCadevImpressionDeclarationImpot());
 		this.delaiCadevImpressionListesRecapitulatives = ParametreEnum.delaiCadevImpressionListesRecapitulatives.convertirValeurTypeeVersString(service.getDelaiCadevImpressionListesRecapitulatives());
+		this.delaiCadevImpressionLettreBienvenue = ParametreEnum.delaiCadevImpressionLettreBienvenue.convertirValeurTypeeVersString(service.getDelaiCadevImpressionLettreBienvenue());
 		this.nbMaxParListe = ParametreEnum.nbMaxParListe.convertirValeurTypeeVersString(service.getNbMaxParListe());
 		this.nbMaxParPage = ParametreEnum.nbMaxParPage.convertirValeurTypeeVersString(service.getNbMaxParPage());
 		this.delaiRetourListeRecapitulative = ParametreEnum.delaiRetourListeRecapitulative.convertirValeurTypeeVersString(service.getDelaiRetourListeRecapitulative());
@@ -87,6 +92,9 @@ public class ParamApplicationView {
 		this.delaiMinimalRetourDeclarationImpotPM = ParametreEnum.delaiMinimalRetourDeclarationImpotPM.convertirValeurTypeeVersString(service.getDelaiMinimalRetourDeclarationImpotPM());
 		this.delaiEnvoiSommationDeclarationImpotPM = ParametreEnum.delaiEnvoiSommationDeclarationImpotPM.convertirValeurTypeeVersString(service.getDelaiEnvoiSommationDeclarationImpotPM());
 		this.delaiEcheanceSommationDeclarationImpotPM = ParametreEnum.delaiEcheanceSommationDeclarationImpotPM.convertirValeurTypeeVersString(service.getDelaiEcheanceSommationDeclarationImpotPM());
+		this.tailleTrouAssujettissementPourNouvelleLettreBienvenue = ParametreEnum.tailleTrouAssujettissementPourNouvelleLettreBienvenue.convertirValeurTypeeVersString(service.getTailleTrouAssujettissementPourNouvelleLettreBienvenue());
+		this.delaiRetourLettreBienvenue = ParametreEnum.delaiRetourLettreBienvenue.convertirValeurTypeeVersString(service.getDelaiRetourLettreBienvenue());
+		this.dateDebutEnvoiLettresBienvenue = ParametreEnum.dateDebutEnvoiLettresBienvenue.convertirValeurTypeeVersString(service.getDateDebutEnvoiLettresBienvenue());
 	}
 
 	public void saveTo(ParametreAppService service) {
@@ -105,16 +113,14 @@ public class ParamApplicationView {
 		service.setDelaiEcheanceSommationDeclarationImpotPP((Integer) ParametreEnum.delaiEcheanceSommationDeclarationImpotPP.convertirStringVersValeurTypee(this.delaiEcheanceSommationDeclarationImpotPP));
 		service.setJourDuMoisEnvoiListesRecapitulatives((Integer) ParametreEnum.jourDuMoisEnvoiListesRecapitulatives.convertirStringVersValeurTypee(this.jourDuMoisEnvoiListesRecapitulatives));
 		service.setDelaiCadevImpressionDeclarationImpot((Integer) ParametreEnum.delaiCadevImpressionDeclarationImpot.convertirStringVersValeurTypee(this.delaiCadevImpressionDeclarationImpot));
-		service.setDelaiCadevImpressionListesRecapitulatives(
-				(Integer) ParametreEnum.delaiCadevImpressionListesRecapitulatives.convertirStringVersValeurTypee(this.delaiCadevImpressionListesRecapitulatives));
+		service.setDelaiCadevImpressionListesRecapitulatives((Integer) ParametreEnum.delaiCadevImpressionListesRecapitulatives.convertirStringVersValeurTypee(this.delaiCadevImpressionListesRecapitulatives));
+		service.setDelaiCadevImpressionLettreBienvenue((Integer) ParametreEnum.delaiCadevImpressionLettreBienvenue.convertirStringVersValeurTypee(this.delaiCadevImpressionLettreBienvenue));
 		service.setNbMaxParListe((Integer) ParametreEnum.nbMaxParListe.convertirStringVersValeurTypee(this.nbMaxParListe));
 		service.setNbMaxParPage((Integer) ParametreEnum.nbMaxParPage.convertirStringVersValeurTypee(this.nbMaxParPage));
 		service.setDelaiRetourListeRecapitulative((Integer) ParametreEnum.delaiRetourListeRecapitulative.convertirStringVersValeurTypee(this.delaiRetourListeRecapitulative));
 		service.setDelaiEnvoiSommationListeRecapitulative((Integer) ParametreEnum.delaiEnvoiSommationListeRecapitulative.convertirStringVersValeurTypee(this.delaiEnvoiSommationListeRecapitulative));
-		service.setDelaiRetourSommationListeRecapitulative(
-				(Integer) ParametreEnum.delaiRetourSommationListeRecapitulative.convertirStringVersValeurTypee(this.delaiRetourSommationListeRecapitulative));
-		service.setDelaiEcheanceSommationListeRecapitualtive(
-				(Integer) ParametreEnum.delaiEcheanceSommationListeRecapitualtive.convertirStringVersValeurTypee(this.delaiEcheanceSommationListeRecapitualtive));
+		service.setDelaiRetourSommationListeRecapitulative((Integer) ParametreEnum.delaiRetourSommationListeRecapitulative.convertirStringVersValeurTypee(this.delaiRetourSommationListeRecapitulative));
+		service.setDelaiEcheanceSommationListeRecapitualtive((Integer) ParametreEnum.delaiEcheanceSommationListeRecapitualtive.convertirStringVersValeurTypee(this.delaiEcheanceSommationListeRecapitualtive));
 		service.setDelaiRetentionRapportTravailInactif((Integer) ParametreEnum.delaiRetentionRapportTravailInactif.convertirStringVersValeurTypee(this.delaiRetentionRapportTravailInactif));
 		service.setDateExclusionDecedeEnvoiDI((Integer[])ParametreEnum.dateExclusionDecedeEnvoiDI.convertirStringVersValeurTypee(this.dateExclusionDecedeEnvoiDI));
 		service.setAgeRentierFemme((Integer) ParametreEnum.ageRentierFemme.convertirStringVersValeurTypee(this.ageRentierFemme));
@@ -122,6 +128,9 @@ public class ParamApplicationView {
 		service.setDelaiMinimalRetourDeclarationImpotPM((Integer) ParametreEnum.delaiMinimalRetourDeclarationImpotPM.convertirStringVersValeurTypee(this.delaiMinimalRetourDeclarationImpotPM));
 		service.setDelaiEnvoiSommationDeclarationImpotPM((Integer) ParametreEnum.delaiEnvoiSommationDeclarationImpotPM.convertirStringVersValeurTypee(this.delaiEnvoiSommationDeclarationImpotPM));
 		service.setDelaiEcheanceSommationDeclarationImpotPM((Integer) ParametreEnum.delaiEcheanceSommationDeclarationImpotPM.convertirStringVersValeurTypee(this.delaiEcheanceSommationDeclarationImpotPM));
+		service.setTailleTrouAssujettissementPourNouvelleLettreBienvenue((Integer) ParametreEnum.tailleTrouAssujettissementPourNouvelleLettreBienvenue.convertirStringVersValeurTypee(this.tailleTrouAssujettissementPourNouvelleLettreBienvenue));
+		service.setDelaiRetourLettreBienvenue((Integer) ParametreEnum.delaiRetourLettreBienvenue.convertirStringVersValeurTypee(this.delaiRetourLettreBienvenue));
+		service.setDateDebutEnvoiLettresBienvenue((Integer[]) ParametreEnum.dateDebutEnvoiLettresBienvenue.convertirStringVersValeurTypee(this.dateDebutEnvoiLettresBienvenue));
 	}
 
 	public String getNoel() {
@@ -252,6 +261,14 @@ public class ParamApplicationView {
 		this.delaiCadevImpressionListesRecapitulatives = delaiCadevImpressionListesRecapitulatives;
 	}
 
+	public String getDelaiCadevImpressionLettreBienvenue() {
+		return delaiCadevImpressionLettreBienvenue;
+	}
+
+	public void setDelaiCadevImpressionLettreBienvenue(String delaiCadevImpressionLettreBienvenue) {
+		this.delaiCadevImpressionLettreBienvenue = delaiCadevImpressionLettreBienvenue;
+	}
+
 	public String getNbMaxParListe() {
 		return nbMaxParListe;
 	}
@@ -354,5 +371,29 @@ public class ParamApplicationView {
 
 	public void setDelaiEcheanceSommationDeclarationImpotPM(String delaiEcheanceSommationDeclarationImpotPM) {
 		this.delaiEcheanceSommationDeclarationImpotPM = delaiEcheanceSommationDeclarationImpotPM;
+	}
+
+	public String getTailleTrouAssujettissementPourNouvelleLettreBienvenue() {
+		return tailleTrouAssujettissementPourNouvelleLettreBienvenue;
+	}
+
+	public void setTailleTrouAssujettissementPourNouvelleLettreBienvenue(String tailleTrouAssujettissementPourNouvelleLettreBienvenue) {
+		this.tailleTrouAssujettissementPourNouvelleLettreBienvenue = tailleTrouAssujettissementPourNouvelleLettreBienvenue;
+	}
+
+	public String getDelaiRetourLettreBienvenue() {
+		return delaiRetourLettreBienvenue;
+	}
+
+	public void setDelaiRetourLettreBienvenue(String delaiRetourLettreBienvenue) {
+		this.delaiRetourLettreBienvenue = delaiRetourLettreBienvenue;
+	}
+
+	public String getDateDebutEnvoiLettresBienvenue() {
+		return dateDebutEnvoiLettresBienvenue;
+	}
+
+	public void setDateDebutEnvoiLettresBienvenue(String dateDebutEnvoiLettresBienvenue) {
+		this.dateDebutEnvoiLettresBienvenue = dateDebutEnvoiLettresBienvenue;
 	}
 }
