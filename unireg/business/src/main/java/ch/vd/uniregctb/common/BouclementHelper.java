@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.organisation.interne.helper;
+package ch.vd.uniregctb.common;
 
 import org.jetbrains.annotations.NotNull;
 
