@@ -115,6 +115,7 @@ import ch.vd.uniregctb.migration.pm.regpm.RegpmEntreprise;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmEnvironnementTaxation;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmEtatEntreprise;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmExerciceCommercial;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmFinFaillite;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmFonction;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmForPrincipal;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmForSecondaire;
@@ -560,7 +561,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 			// [SIFISC-16744] nouvelle règle pour l'ordre des dates à prendre en compte
 			// - date de réquisition de radiation
 			// - date de bilan de fusion
-			// - date de prononcé de faillite
+			// - date de prononcé de faillite ([SIFISC-18088] à ignorer s'il existe une révocation de faillite plus récente)
 			// - date de dissolution
 
 			final RegDate dateBilanFusion = e.getFusionsApres().stream()
@@ -574,6 +575,26 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 					.filter(etat -> !etat.isRectifie())
 					.map(RegpmEtatEntreprise::getPrononcesFaillite)
 					.flatMap(Set::stream)
+					.filter(prononce -> {
+						// [SIFISC-18088] ne pas prendre en compte le prononcé de faillite qui est révoqué
+						if (prononce.getFinsFaillite() != null && !prononce.getFinsFaillite().isEmpty()) {
+							final RegDate revocation = prononce.getFinsFaillite().stream()
+									.filter(fin -> !fin.isRectifiee())
+									.map(RegpmFinFaillite::getDateRevocation)
+									.filter(Objects::nonNull)
+									.filter(prononce.getDatePrononceFaillite()::isBefore)
+									.findAny()
+									.orElse(null);
+							if (revocation != null) {
+								mr.addMessage(LogCategory.SUIVI, LogLevel.INFO,
+								              String.format("Prononcé de faillite au %s ignoré (dans le calcul de la date de fin d'activité) pour cause de révocation au %s.",
+								                            StringRenderers.DATE_RENDERER.toString(prononce.getDatePrononceFaillite()),
+								                            StringRenderers.DATE_RENDERER.toString(revocation)));
+								return false;
+							}
+						}
+						return true;
+					})
 					.map(RegpmPrononceFaillite::getDatePrononceFaillite)
 					.sorted(Comparator.reverseOrder())
 					.findFirst()

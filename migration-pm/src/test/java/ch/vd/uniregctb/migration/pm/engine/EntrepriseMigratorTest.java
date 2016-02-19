@@ -87,6 +87,7 @@ import ch.vd.uniregctb.migration.pm.regpm.RegpmEnvironnementTaxation;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmEtablissement;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmEtatEntreprise;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmExerciceCommercial;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmFinFaillite;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmFinMandatAdministrateur;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmFonction;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmForPrincipal;
@@ -613,6 +614,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 
 	static RegpmPrononceFaillite addPrononceFaillite(RegpmEtatEntreprise etat, RegDate datePrononceFaillite) {
 		final RegpmPrononceFaillite prononce = new RegpmPrononceFaillite();
+		assignMutationVisa(prononce, REGPM_VISA, REGPM_MODIF);
 		prononce.setId(new RegpmPrononceFaillite.PK(computeNewSeqNo(etat.getPrononcesFaillite(), x -> x.getId().getNoSeq()), etat.getId().getSeqNo(), etat.getId().getIdEntreprise()));
 		prononce.setDatePrononceFaillite(datePrononceFaillite);
 		prononce.setFinsFaillite(new HashSet<>());
@@ -624,6 +626,22 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 	static RegpmPrononceFaillite addPrononceFaillite(RegpmEntreprise entreprise, RegDate dateValiditeEtat, RegpmTypeEtatEntreprise typeEtat, RegDate datePrononceFaillite) {
 		final RegpmEtatEntreprise etat = addEtatEntreprise(entreprise, dateValiditeEtat, typeEtat);
 		return addPrononceFaillite(etat, datePrononceFaillite);
+	}
+
+	static RegpmFinFaillite addRevocationPrononceFaillite(RegpmPrononceFaillite prononceFaillite, RegDate dateRevocation) {
+		final RegpmFinFaillite fin = new RegpmFinFaillite();
+		assignMutationVisa(fin, REGPM_VISA, REGPM_MODIF);
+
+		final RegpmFinFaillite.PK id = new RegpmFinFaillite.PK();
+		id.setNoSeq(computeNewSeqNo(prononceFaillite.getFinsFaillite(), x -> x.getId().getNoSeq()));
+		id.setNoSequenceEtatEntreprise(prononceFaillite.getId().getNoSequenceEtatEntreprise());
+		id.setNoSequencePrononceFaillite(prononceFaillite.getId().getNoSeq());
+		id.setIdEntreprise(prononceFaillite.getId().getIdEntreprise());
+		fin.setId(id);
+
+		fin.setDateRevocation(dateRevocation);
+		prononceFaillite.getFinsFaillite().add(fin);
+		return fin;
 	}
 
 	static RegpmFusion addFusion(RegpmEntreprise avant, RegpmEntreprise apres, RegDate dateBilan) {
@@ -4416,6 +4434,67 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 			Assert.assertEquals("Pas de siège associé dans les données fiscales, pas d'établissement principal créé à partir des données fiscales.", textes.get(4));
 			Assert.assertEquals("Etat 'EN_FAILLITE' migré, dès le 23.05.2005.", textes.get(5));
 			Assert.assertEquals("Entreprise migrée : 26.23.", textes.get(6));
+		}
+	}
+
+	@Test
+	public void testDateFinActivitePrononceFailliteRevoque() throws Exception {
+
+		final long noEntreprise = 2623L;
+		final RegDate dateCreationFor = RegDate.get(2005, 2, 1);
+		final RegDate dateRequisitionRadiation = RegDate.get(2006, 4, 21);
+		final RegDate datePrononceFaillite = RegDate.get(2005, 6, 2);
+		final RegDate dateDissolution = RegDate.get(2007, 3, 4);
+
+		final RegpmEntreprise e = buildEntreprise(noEntreprise);
+		addForPrincipalSuisse(e, dateCreationFor, RegpmTypeForPrincipal.SIEGE, Commune.LAUSANNE);
+//		e.setDateRequisitionRadiation(dateRequisitionRadiation);
+//		addFusion(e, buildEntreprise(noEntrepriseApresFusion), dateBilanFusion);
+		final RegpmPrononceFaillite prononce = addPrononceFaillite(e, datePrononceFaillite.addDays(-10), RegpmTypeEtatEntreprise.EN_FAILLITE, datePrononceFaillite);
+		addRevocationPrononceFaillite(prononce, datePrononceFaillite.addDays(3));
+		addEtatEntreprise(e, datePrononceFaillite.addDays(3), RegpmTypeEtatEntreprise.INSCRITE_AU_RC);      // une fois la faillite révoquée, on revient à l'état "INSCRIT"...
+
+		e.setDateDissolution(dateDissolution);
+
+		final MockGraphe graphe = new MockGraphe(Collections.singletonList(e),
+		                                         null,
+		                                         null);
+		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
+		final EntityLinkCollector linkCollector = new EntityLinkCollector();
+		final IdMapper idMapper = new IdMapper();
+		migrator.initMigrationResult(mr, idMapper);
+		migrate(e, migrator, mr, linkCollector, idMapper);
+
+		// en base : le for principal doit avoir été limité à la date de dissolution
+		doInUniregTransaction(true, status -> {
+			final Entreprise entreprise = uniregStore.getEntityFromDb(Entreprise.class, noEntreprise);
+			Assert.assertNotNull(entreprise);
+
+			final ForFiscalPrincipalPM ffp = entreprise.getDernierForFiscalPrincipal();
+			Assert.assertNotNull(ffp);
+			Assert.assertEquals(dateCreationFor, ffp.getDateDebut());
+			Assert.assertEquals(dateDissolution, ffp.getDateFin());
+			Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
+			Assert.assertEquals(Commune.LAUSANNE.getNoOfs(), ffp.getNumeroOfsAutoriteFiscale());
+			Assert.assertFalse(ffp.isAnnule());
+			Assert.assertEquals(MotifFor.INDETERMINE, ffp.getMotifOuverture());
+			Assert.assertEquals(MotifFor.INDETERMINE, ffp.getMotifFermeture());
+		});
+
+		// et dans les messages de suivi ?
+		{
+			final List<MigrationResultCollector.Message> messages = mr.getMessages().get(LogCategory.SUIVI);
+			Assert.assertNotNull(messages);
+			final List<String> textes = messages.stream().map(msg -> msg.text).collect(Collectors.toList());
+			Assert.assertEquals(8, textes.size());
+			Assert.assertEquals("L'entreprise n'existait pas dans Unireg avec ce numéro de contribuable.", textes.get(0));
+			Assert.assertEquals("Prononcé de faillite au 02.06.2005 ignoré (dans le calcul de la date de fin d'activité) pour cause de révocation au 05.06.2005.", textes.get(1));
+			Assert.assertEquals("Date de fin d'activité proposée (date de dissolution) : 04.03.2007.", textes.get(2));
+			Assert.assertEquals("Entreprise sans exercice commercial ni date de bouclement futur.", textes.get(3));
+			Assert.assertEquals("Pas de siège associé dans les données fiscales, pas d'établissement principal créé à partir des données fiscales.", textes.get(4));
+			Assert.assertEquals("Etat 'EN_FAILLITE' migré, dès le 23.05.2005.", textes.get(5));
+			Assert.assertEquals("Etat 'INSCRITE_RC' migré, dès le 05.06.2005.", textes.get(6));
+			Assert.assertEquals("Entreprise migrée : 26.23.", textes.get(7));
 		}
 	}
 
