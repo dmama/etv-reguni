@@ -1,10 +1,8 @@
-package ch.vd.uniregctb.evenement.organisation.interne.helper;
+package ch.vd.uniregctb.common;
 
 import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.BouclementHelper;
-import ch.vd.uniregctb.common.WithoutSpringTest;
 import ch.vd.uniregctb.tiers.Bouclement;
 import ch.vd.uniregctb.type.DayMonth;
 
