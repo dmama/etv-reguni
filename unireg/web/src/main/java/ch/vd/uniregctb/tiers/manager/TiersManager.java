@@ -255,6 +255,11 @@ public class TiersManager implements MessageSourceAware {
 				final Tiers tiersObjet = tiersDAO.get(rapportEntreTiers.getObjetId());
 				rapportView.setNumero(tiersObjet.getNumero());
 
+				if (tiersObjet instanceof Etablissement && !rapportView.isActiviteEconomiquePrincipale()
+						&& !rapportView.isAnnule() && ((Etablissement) tiersObjet).getNumeroEtablissement() == null) {
+					rapportView.setEtablissementAnnulable(true);
+				}
+
 				List<String> nomObjet;
 				try {
 					nomObjet = adresseService.getNomCourrier(tiersObjet, null, false);

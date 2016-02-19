@@ -58,7 +58,7 @@
 				<unireg:consulterLog entityNature="RapportEntreTiers" entityId="${rapportEtablissement.id}"/>
 			</c:if>
 			<c:if test="${page == 'edit' }">
-				<c:if test="${!rapportEtablissement.annule && !rapportEtablissement.activiteEconomiquePrincipale}">
+				<c:if test="${rapportEtablissement.etablissementAnnulable}">
 					<unireg:raccourciAnnuler onClick="javascript:Rapport.annulerRapport(${rapportEtablissement.id})" tooltip="Annuler"/>
 				</c:if>
 			</c:if>

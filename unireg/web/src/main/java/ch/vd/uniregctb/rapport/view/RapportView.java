@@ -19,6 +19,7 @@ import ch.vd.uniregctb.general.view.TiersGeneralView;
 import ch.vd.uniregctb.rapport.SensRapportEntreTiers;
 import ch.vd.uniregctb.rapport.TypeRapportEntreTiersWeb;
 import ch.vd.uniregctb.tiers.ActiviteEconomique;
+import ch.vd.uniregctb.tiers.Etablissement;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.tiers.RepresentationConventionnelle;
@@ -27,7 +28,6 @@ import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.tiers.TiersWebHelper;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
-import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 
 /**
  * Classe utilisée pour le fromBackingObject du RapportEditController
@@ -53,6 +53,8 @@ public class RapportView implements Comparable<RapportView>, Annulable {
 	private Long id;
 
 	private boolean annule;
+
+	private boolean etablissementAnnulable;
 
 	private TypeRapportEntreTiersWeb typeRapportEntreTiers;
 
@@ -108,8 +110,14 @@ public class RapportView implements Comparable<RapportView>, Annulable {
 		this.sensRapportEntreTiers = sens;
 		this.annule = rapport.isAnnule();
 		this.typeRapportEntreTiers = TypeRapportEntreTiersWeb.fromCore(rapport.getType());
-		if (rapport.getType() == TypeRapportEntreTiers.ACTIVITE_ECONOMIQUE && sens == SensRapportEntreTiers.SUJET && ((ActiviteEconomique) rapport).isPrincipal()) {
-			this.activiteEconomiquePrincipale = true;
+		if (rapport instanceof ActiviteEconomique && sens == SensRapportEntreTiers.SUJET) {
+			if (((ActiviteEconomique) rapport).isPrincipal()) {
+				this.activiteEconomiquePrincipale = true;
+			}
+			Etablissement etablissement = (Etablissement) tiersService.getTiers(rapport.getObjetId());
+			if (!this.activiteEconomiquePrincipale && !this.annule && etablissement.getNumeroEtablissement() == null) {
+				this.etablissementAnnulable = true;
+			}
 		}
 
 		this.numeroCourant = (sens == SensRapportEntreTiers.SUJET ? rapport.getSujetId() : rapport.getObjetId());
@@ -155,6 +163,13 @@ public class RapportView implements Comparable<RapportView>, Annulable {
 		this.annule = annule;
 	}
 
+	public boolean isEtablissementAnnulable() {
+		return etablissementAnnulable;
+	}
+
+	public void setEtablissementAnnulable(boolean etablissementAnnulable) {
+		this.etablissementAnnulable = etablissementAnnulable;
+	}
 
 	public TypeRapportEntreTiersWeb getTypeRapportEntreTiers() {
 		return typeRapportEntreTiers;
