@@ -65,6 +65,7 @@ import ch.vd.uniregctb.declaration.EtatDeclarationSuspendue;
 import ch.vd.uniregctb.declaration.ModeleDocument;
 import ch.vd.uniregctb.declaration.ModeleFeuilleDocument;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
+import ch.vd.uniregctb.documentfiscal.LettreBienvenue;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.rf.GenrePropriete;
 import ch.vd.uniregctb.rf.Immeuble;
@@ -133,6 +134,7 @@ import ch.vd.uniregctb.type.TypeEtatEntreprise;
 import ch.vd.uniregctb.type.TypeEtatTache;
 import ch.vd.uniregctb.type.TypeFlagEntreprise;
 import ch.vd.uniregctb.type.TypeGenerationEtatEntreprise;
+import ch.vd.uniregctb.type.TypeLettreBienvenue;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -1334,6 +1336,16 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 		bouclement.setDateDebut(dateDebut);
 		bouclement.setPeriodeMois(periodeEnMois);
 		return tiersDAO.addAndSave(e, bouclement);
+	}
+
+	protected LettreBienvenue addLettreBienvenue(Entreprise e, RegDate dateEnvoi, RegDate delaiRetour, @Nullable RegDate dateRetour, @Nullable RegDate dateRappel, TypeLettreBienvenue type) {
+		final LettreBienvenue lettre = new LettreBienvenue();
+		lettre.setDateEnvoi(dateEnvoi);
+		lettre.setDelaiRetour(delaiRetour);
+		lettre.setDateRetour(dateRetour);
+		lettre.setDateRappel(dateRappel);
+		lettre.setType(type);
+		return tiersDAO.addAndSave(e, lettre);
 	}
 
 	protected EtatEntreprise addEtatEntreprise(Entreprise e, RegDate dateObtention, TypeEtatEntreprise type, TypeGenerationEtatEntreprise generation) {

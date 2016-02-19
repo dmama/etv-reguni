@@ -41,6 +41,7 @@
 		<property name="impressionBordereauMouvementDossierHelper" ref="impressionBordereauMouvementDossierHelper" />
 		<property name="serviceSecurite" ref="serviceSecuriteService" />
 		<property name="impressionEfactureHelper" ref="impressionEfactureHelper" />
+		<property name="impressionLettreBienvenueHelper" ref="impressionLettreBienvenueHelper"/>
 	</bean>
 
 </beans>

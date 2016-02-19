@@ -62,6 +62,7 @@ import ch.vd.unireg.interfaces.organisation.data.DateRanged;
 import ch.vd.unireg.interfaces.organisation.data.Domicile;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
+import ch.vd.unireg.interfaces.organisation.data.OrganisationHelper;
 import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdresseGenerique;
@@ -6171,6 +6172,15 @@ public class TiersServiceImpl implements TiersService {
 		}
 		Collections.sort(domiciles, new DateRangeComparator<DomicileHisto>());
 		return domiciles;
+	}
+
+	@Override
+	public boolean isInscriteRC(@NotNull Entreprise entreprise, RegDate dateReference) {
+		final Organisation organisation = getOrganisation(entreprise);
+		if (organisation != null) {
+			return OrganisationHelper.isInscritAuRC(organisation, dateReference);
+		}
+		return false;
 	}
 
 	@Override

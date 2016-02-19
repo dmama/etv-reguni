@@ -20,7 +20,6 @@ public interface ImpressionSommationDeclarationImpotPersonnesMoralesHelper {
 	 */
 	String construitIdDocument(DeclarationImpotOrdinairePM declaration);
 
-
 	/**
 	 * Construit le champ idDocument pour l'archivage de la sommation de la déclaration donnée
 	 */

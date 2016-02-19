@@ -38,6 +38,7 @@ import ch.vd.uniregctb.common.BaseDAOImpl;
 import ch.vd.uniregctb.common.HibernateEntity;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.Periodicite;
+import ch.vd.uniregctb.documentfiscal.AutreDocumentFiscal;
 import ch.vd.uniregctb.rf.Immeuble;
 import ch.vd.uniregctb.tracing.TracePoint;
 import ch.vd.uniregctb.tracing.TracingManager;
@@ -1669,6 +1670,30 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 		return addAndSave(entreprise, flag, FLAG_ENTREPRISE_ACCESSOR);
 	}
 
+	private static final class AutreDocumentFiscalAccessor<T extends AutreDocumentFiscal> implements EntityAccessor<Entreprise, T> {
+		@Override
+		public Collection<AutreDocumentFiscal> getEntities(Entreprise tiers) {
+			return tiers.getAutresDocumentsFiscaux();
+		}
+
+		@Override
+		public void addEntity(Entreprise tiers, T entity) {
+			tiers.addAutreDocumentFiscal(entity);
+		}
+
+		@Override
+		public void assertSame(T entity1, T entity2) {
+			Assert.isSame(entity1.getDateEnvoi(), entity2.getDateEnvoi());
+			Assert.isSame(entity1.getEtat(), entity2.getEtat());
+			Assert.isSame(entity1.getClass(), entity2.getClass());
+		}
+	}
+
+	@Override
+	public <T extends AutreDocumentFiscal> T addAndSave(Entreprise entreprise, T document) {
+		return addAndSave(entreprise, document, new AutreDocumentFiscalAccessor<T>());
+	}
+
 	@SuppressWarnings({"unchecked"})
 	private <T extends Tiers, E extends HibernateEntity> E addAndSave(T tiers, E entity, EntityAccessor<T, E> accessor) {
 		if (entity.getKey() == null) {
@@ -1676,13 +1701,13 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 
 			// on mémorise les clés des entités existantes
 			final Set<Object> keys;
-			final Collection<E> entities = accessor.getEntities(tiers);
+			final Collection<? extends HibernateEntity> entities = accessor.getEntities(tiers);
 			if (entities == null || entities.isEmpty()) {
 				keys = Collections.emptySet();
 			}
 			else {
 				keys = new HashSet<>(entities.size());
-				for (E d : entities) {
+				for (HibernateEntity d : entities) {
 					final Object key = d.getKey();
 					Assert.notNull(key, "Les entités existantes doivent être déjà persistées.");
 					keys.add(key);
@@ -1695,9 +1720,9 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 
 			// rebelotte pour trouver la nouvelle entité
 			E newEntity = null;
-			for (E d : accessor.getEntities(tiers)) {
+			for (HibernateEntity d : accessor.getEntities(tiers)) {
 				if (!keys.contains(d.getKey())) {
-					newEntity = d;
+					newEntity = (E) d;
 					break;
 				}
 			}
@@ -1803,7 +1828,7 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 	}
 
 	private interface EntityAccessor<T extends Tiers, E extends HibernateEntity> {
-		Collection<E> getEntities(T tiers);
+		Collection<? extends HibernateEntity> getEntities(T tiers);
 
 		void addEntity(T tiers, E entity);
 
@@ -1812,9 +1837,8 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 
 	private static class ForFiscalAccessor<T extends ForFiscal> implements EntityAccessor<Tiers, T> {
 		@Override
-		public Collection<T> getEntities(Tiers tiers) {
-			//noinspection unchecked,RedundantCast
-			return (Collection<T>) tiers.getForsFiscaux();
+		public Collection<ForFiscal> getEntities(Tiers tiers) {
+			return tiers.getForsFiscaux();
 		}
 
 		@Override

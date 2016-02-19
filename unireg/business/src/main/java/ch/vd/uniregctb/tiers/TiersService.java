@@ -175,6 +175,13 @@ public interface TiersService {
 	List<DomicileHisto> getDomiciles(@NotNull Etablissement etablissement);
 
 	/**
+	 * @param entreprise une entreprise
+	 * @param dateReference une date de référence (si <code>null</code>, on prendra la dernier état connu)
+	 * @return si oui ou non cette entreprise est inscrite au RC à la date de référence donnée
+	 */
+	boolean isInscriteRC(@NotNull Entreprise entreprise, RegDate dateReference);
+
+	/**
 	 * Renvoie la liste des types de changements d'état d'entreprise disponibles pour une date donnée en fonction des conditions règnant à la date,
 	 * et si l'historique existant le permet.
 	 *

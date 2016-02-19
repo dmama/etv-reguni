@@ -18,6 +18,7 @@ import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.uniregctb.adresse.AdresseTiers;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.Periodicite;
+import ch.vd.uniregctb.documentfiscal.AutreDocumentFiscal;
 import ch.vd.uniregctb.rf.Immeuble;
 
 public class MockTiersDAO implements TiersDAO {
@@ -330,6 +331,11 @@ public class MockTiersDAO implements TiersDAO {
 
 	@Override
 	public FlagEntreprise addAndSave(Entreprise entreprise, FlagEntreprise flag) {
+		throw new NotImplementedException();
+	}
+
+	@Override
+	public <T extends AutreDocumentFiscal> T addAndSave(Entreprise entreprise, T document) {
 		throw new NotImplementedException();
 	}
 

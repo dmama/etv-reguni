@@ -22,6 +22,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.adresse.AdresseTiers;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.Periodicite;
+import ch.vd.uniregctb.documentfiscal.AutreDocumentFiscal;
 import ch.vd.uniregctb.rf.Immeuble;
 
 /**
@@ -370,6 +371,11 @@ public class TiersDAOBooster implements TiersDAO, InitializingBean {
 	@Override
 	public FlagEntreprise addAndSave(Entreprise entreprise, FlagEntreprise flag) {
 		return target.addAndSave(entreprise, flag);
+	}
+
+	@Override
+	public <T extends AutreDocumentFiscal> T addAndSave(Entreprise entreprise, T document) {
+		return target.addAndSave(entreprise, document);
 	}
 
 	@Override

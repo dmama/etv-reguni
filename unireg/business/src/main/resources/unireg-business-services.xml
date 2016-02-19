@@ -255,6 +255,8 @@
 
 	<bean id="impressionLettreDecisionDelaiPMHelper" parent="editiqueAbstractHelper" class="ch.vd.uniregctb.declaration.ordinaire.pm.ImpressionLettreDecisionDelaiPMHelperImpl"/>
 
+	<bean id="impressionLettreBienvenueHelper" parent="editiqueAbstractHelper" class="ch.vd.uniregctb.documentfiscal.ImpressionLettreBienvenueHelperImpl"/>
+
 	<bean id="printPCLService" class="ch.vd.uniregctb.editique.print.PrintPCLServiceImpl">
 	</bean>
 

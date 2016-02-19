@@ -5,6 +5,7 @@ import java.util.Collection;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DeclarationImpotSource;
+import ch.vd.uniregctb.documentfiscal.LettreBienvenue;
 import ch.vd.uniregctb.tiers.AllegementFiscal;
 import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
 import ch.vd.uniregctb.tiers.Entreprise;
@@ -204,4 +205,9 @@ public interface EvenementFiscalService {
 	 */
 	void publierEvenementFiscalInformationComplementaire(Entreprise entreprise, EvenementFiscalInformationComplementaire.TypeInformationComplementaire type, RegDate dateEvenement);
 
+	/**
+	 * Publie un événement fiscal de type 'émission de lettre de bienvenue'
+	 * @param lettre la lettre émise
+	 */
+	void publierEvenementFiscalEmissionLettreBienvenue(LettreBienvenue lettre);
 }

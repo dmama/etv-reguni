@@ -13,6 +13,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.adresse.AdresseTiers;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.Periodicite;
+import ch.vd.uniregctb.documentfiscal.AutreDocumentFiscal;
 import ch.vd.uniregctb.rf.Immeuble;
 
 public interface TiersDAO extends GenericDAO<Tiers, Long> {
@@ -408,6 +409,15 @@ public interface TiersDAO extends GenericDAO<Tiers, Long> {
 	 * @return une nouvelle instance de flag avec son ID renseigné
 	 */
 	FlagEntreprise addAndSave(Entreprise entreprise, FlagEntreprise flag);
+
+	/**
+	 * Ajoute un nouvel "autre document fiscal" à l'entreprise fournie
+	 * @param entreprise l'entreprise en question
+	 * @param document le document à ajouter
+	 * @param <T> le type exact du document
+	 * @return une nouvelle instance du document avec son ID renseigné
+	 */
+	<T extends AutreDocumentFiscal> T addAndSave(Entreprise entreprise, T document);
 
 	/**
 	 * Retourne les numéros des contribuables modifiés entre un intervalle de temps passé en paramètre.

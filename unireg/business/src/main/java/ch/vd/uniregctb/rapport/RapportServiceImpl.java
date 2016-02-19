@@ -33,6 +33,7 @@ import ch.vd.uniregctb.declaration.source.DeterminerLRsEchuesResults;
 import ch.vd.uniregctb.declaration.source.EnvoiLRsResults;
 import ch.vd.uniregctb.declaration.source.EnvoiSommationLRsResults;
 import ch.vd.uniregctb.document.*;
+import ch.vd.uniregctb.documentfiscal.EnvoiLettresBienvenueResults;
 import ch.vd.uniregctb.droits.ListeDroitsAccesResults;
 import ch.vd.uniregctb.evenement.externe.TraiterEvenementExterneResult;
 import ch.vd.uniregctb.identification.contribuable.IdentifierContribuableResults;
@@ -1262,6 +1263,29 @@ public class RapportServiceImpl implements RapportService {
 				@Override
 				public void writeDoc(AssujettiParSubstitutionRapport doc, OutputStream os) throws Exception {
 					final PdfAssujettistParSubstitutionRapport document = new PdfAssujettistParSubstitutionRapport();
+					document.write(results, nom, description, dateGeneration, os, status);
+				}
+			});
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	@Override
+	public EnvoiLettresBienvenueRapport generateRapport(final EnvoiLettresBienvenueResults results, StatusManager s) {
+
+		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
+
+		final String nom = "EnvoiLettresBienvenue";
+		final String description = "Rapport d'exécution du job qui envoie les lettres de bienvenue.";
+		final Date dateGeneration = DateHelper.getCurrentDate();
+
+		try {
+			return docService.newDoc(EnvoiLettresBienvenueRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<EnvoiLettresBienvenueRapport>() {
+				@Override
+				public void writeDoc(EnvoiLettresBienvenueRapport doc, OutputStream os) throws Exception {
+					final PdfEnvoiLettresBienvenueRapport document = new PdfEnvoiLettresBienvenueRapport();
 					document.write(results, nom, description, dateGeneration, os, status);
 				}
 			});

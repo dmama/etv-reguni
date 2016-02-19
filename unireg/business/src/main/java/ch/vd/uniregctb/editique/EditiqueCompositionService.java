@@ -17,6 +17,7 @@ import ch.vd.uniregctb.declaration.ModeleFeuilleDocument;
 import ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotService;
 import ch.vd.uniregctb.declaration.ordinaire.pp.InformationsDocumentAdapter;
 import ch.vd.uniregctb.declaration.ordinaire.pp.ModeleFeuilleDocumentEditique;
+import ch.vd.uniregctb.documentfiscal.LettreBienvenue;
 import ch.vd.uniregctb.mouvement.BordereauMouvementDossier;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.Tiers;
@@ -243,4 +244,12 @@ public interface EditiqueCompositionService {
 	 * @throws EditiqueException
 	 */
 	int imprimeAnnexeImmeubleForBatch(InformationsDocumentAdapter infosDocument, Set<ModeleFeuilleDocument> listeModele, int nombreAnnexesImmeuble) throws EditiqueException;
+
+	/**
+	 * Envoie à l'éditique la lettre de bienvenue à imprimer en masse
+	 * @param lettre la lettre en question
+	 * @param dateTraitement la date de traitement de l'envoi
+	 * @throws EditiqueException en cas de problème
+	 */
+	void imprimeLettreBienvenueForBatch(LettreBienvenue lettre, RegDate dateTraitement) throws EditiqueException;
 }

@@ -257,6 +257,17 @@
 
 	<bean id="bouclementService" class="ch.vd.uniregctb.metier.bouclement.BouclementServiceImpl"/>
 
+	<bean id="autreDocumentFiscalService" class="ch.vd.uniregctb.documentfiscal.AutreDocumentFiscalServiceImpl">
+		<property name="transactionManager" ref="transactionManager"/>
+		<property name="tiersService" ref="tiersService"/>
+		<property name="assujettissementService" ref="assujettissementService"/>
+		<property name="delaiService" ref="delaisService"/>
+		<property name="hibernateTemplate" ref="hibernateTemplate"/>
+		<property name="parametreAppService" ref="parametreAppService"/>
+		<property name="editiqueCompositionService" ref="editiqueCompositionService"/>
+		<property name="evenementFiscalService" ref="evenementFiscalService"/>
+	</bean>
+
 	<bean id="entityValidator" class="ch.vd.uniregctb.validation.EntityValidatorImpl" abstract="true">
 		<property name="validationService" ref="validationService" />
 	</bean>

@@ -24,6 +24,7 @@ import ch.vd.uniregctb.declaration.source.DeterminerLRsEchuesResults;
 import ch.vd.uniregctb.declaration.source.EnvoiLRsResults;
 import ch.vd.uniregctb.declaration.source.EnvoiSommationLRsResults;
 import ch.vd.uniregctb.document.*;
+import ch.vd.uniregctb.documentfiscal.EnvoiLettresBienvenueResults;
 import ch.vd.uniregctb.droits.ListeDroitsAccesResults;
 import ch.vd.uniregctb.evenement.externe.TraiterEvenementExterneResult;
 import ch.vd.uniregctb.identification.contribuable.IdentifierContribuableResults;
@@ -483,4 +484,12 @@ public interface RapportService {
 	 * @return le rapport
 	 */
 	AssujettiParSubstitutionRapport generateRapport(AssujettisParSubstitutionResults results, StatusManager status);
+
+	/**
+	 * Génère le rapport d'exécution du batch qui envoie les lettres de bienvenue
+	 * @param results le résultat du batch
+	 * @param status le status manager
+	 * @return le rapport
+	 */
+	EnvoiLettresBienvenueRapport generateRapport(EnvoiLettresBienvenueResults results, StatusManager status);
 }

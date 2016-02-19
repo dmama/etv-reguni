@@ -17,6 +17,7 @@ import ch.vd.uniregctb.declaration.DelaiDeclaration;
 import ch.vd.uniregctb.declaration.ModeleFeuilleDocument;
 import ch.vd.uniregctb.declaration.ordinaire.pp.InformationsDocumentAdapter;
 import ch.vd.uniregctb.declaration.ordinaire.pp.ModeleFeuilleDocumentEditique;
+import ch.vd.uniregctb.documentfiscal.LettreBienvenue;
 import ch.vd.uniregctb.editique.EditiqueCompositionService;
 import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.EditiqueResultat;
@@ -129,5 +130,9 @@ public class MockEditiqueCompositionService implements EditiqueCompositionServic
 	@Override
 	public int imprimeAnnexeImmeubleForBatch(InformationsDocumentAdapter infosDocument, Set<ModeleFeuilleDocument> listeModele, int nombreAnnexesImmeuble) throws EditiqueException {
 		return nombreAnnexesImmeuble;
+	}
+
+	@Override
+	public void imprimeLettreBienvenueForBatch(LettreBienvenue lettre, RegDate dateTraitement) throws EditiqueException {
 	}
 }

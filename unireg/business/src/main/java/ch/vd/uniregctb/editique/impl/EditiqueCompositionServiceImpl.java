@@ -40,13 +40,15 @@ import ch.vd.uniregctb.declaration.ordinaire.pp.InformationsDocumentAdapter;
 import ch.vd.uniregctb.declaration.ordinaire.pp.ModeleFeuilleDocumentEditique;
 import ch.vd.uniregctb.declaration.source.ImpressionListeRecapHelper;
 import ch.vd.uniregctb.declaration.source.ImpressionSommationLRHelper;
+import ch.vd.uniregctb.documentfiscal.ImpressionLettreBienvenueHelper;
+import ch.vd.uniregctb.documentfiscal.LettreBienvenue;
 import ch.vd.uniregctb.editique.EditiqueCompositionService;
 import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.EditiqueResultat;
 import ch.vd.uniregctb.editique.EditiqueService;
 import ch.vd.uniregctb.editique.FormatDocumentEditique;
 import ch.vd.uniregctb.editique.TypeDocumentEditique;
-import ch.vd.uniregctb.efacture.ImpressionDocumentEfactureHelperImpl;
+import ch.vd.uniregctb.efacture.ImpressionDocumentEfactureHelper;
 import ch.vd.uniregctb.efacture.ImpressionDocumentEfactureParams;
 import ch.vd.uniregctb.interfaces.service.ServiceSecuriteService;
 import ch.vd.uniregctb.mouvement.BordereauMouvementDossier;
@@ -76,7 +78,8 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 	private ImpressionLettreDecisionDelaiPMHelper impressionLettreDecisionDelaiPMHelper;
 	private ServiceSecuriteService serviceSecurite;
 	private ImpressionBordereauMouvementDossierHelper impressionBordereauMouvementDossierHelper;
-	private ImpressionDocumentEfactureHelperImpl impressionEfactureHelper;
+	private ImpressionDocumentEfactureHelper impressionEfactureHelper;
+	private ImpressionLettreBienvenueHelper impressionLettreBienvenueHelper;
 
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setEditiqueService(EditiqueService editiqueService) {
@@ -138,10 +141,14 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
-	public void setImpressionEfactureHelper(ImpressionDocumentEfactureHelperImpl impressionEfactureHelper) {
+	public void setImpressionEfactureHelper(ImpressionDocumentEfactureHelper impressionEfactureHelper) {
 		this.impressionEfactureHelper = impressionEfactureHelper;
 	}
 
+	@SuppressWarnings({"UnusedDeclaration"})
+	public void setImpressionLettreBienvenueHelper(ImpressionLettreBienvenueHelper impressionLettreBienvenueHelper) {
+		this.impressionLettreBienvenueHelper = impressionLettreBienvenueHelper;
+	}
 
 	private static List<ModeleFeuilleDocumentEditique> buildDefaultAnnexes(DeclarationImpotOrdinaire di) {
 		final Set<ModeleFeuilleDocument> listFeuille = di.getModeleDocument().getModelesFeuilleDocument();
@@ -356,6 +363,16 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 		                                         declaration.getPeriode().getAnnee(),
 		                                         FormatNumeroHelper.numeroCTBToDisplay(declaration.getTiers().getNumero()));
 		return editiqueService.creerDocumentImmediatementSynchroneOuInbox(nomDocument, typeDocument, FormatDocumentEditique.PDF, root, true, description);
+	}
+
+	@Override
+	public void imprimeLettreBienvenueForBatch(LettreBienvenue lettre, RegDate dateTraitement) throws EditiqueException {
+		final TypeDocumentEditique typeDocument = impressionLettreBienvenueHelper.getTypeDocumentEditique();
+		final FichierImpression root = new FichierImpression();
+		final FichierImpression.Document document = impressionLettreBienvenueHelper.buildDocument(lettre, dateTraitement, true);
+		root.getDocument().add(document);
+		final String nomDocument = impressionLettreBienvenueHelper.construitIdDocument(lettre);
+		editiqueService.creerDocumentParBatch(nomDocument, typeDocument, root, true);
 	}
 
 	/**

@@ -9,6 +9,7 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DeclarationImpotSource;
+import ch.vd.uniregctb.documentfiscal.LettreBienvenue;
 import ch.vd.uniregctb.tiers.AllegementFiscal;
 import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
 import ch.vd.uniregctb.tiers.Entreprise;
@@ -233,5 +234,10 @@ public class EvenementFiscalServiceImpl implements EvenementFiscalService {
 	@Override
 	public void publierEvenementFiscalInformationComplementaire(Entreprise entreprise, EvenementFiscalInformationComplementaire.TypeInformationComplementaire type, RegDate dateEvenement) {
 		saveAndPublish(new EvenementFiscalInformationComplementaire(entreprise, dateEvenement, type));
+	}
+
+	@Override
+	public void publierEvenementFiscalEmissionLettreBienvenue(LettreBienvenue lettre) {
+		saveAndPublish(new EvenementFiscalEnvoiLettreBienvenue(lettre.getEntreprise(), lettre.getDateEnvoi()));
 	}
 }

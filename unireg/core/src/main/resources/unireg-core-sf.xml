@@ -183,6 +183,7 @@
 		<value>ch.vd.uniregctb.document.RecuperationDonneesAnciensHabitantsRapport</value>
 		<value>ch.vd.uniregctb.document.RecuperationOriginesNonHabitantsRapport</value>
 		<value>ch.vd.uniregctb.document.AssujettiParSubstitutionRapport</value>
+		<value>ch.vd.uniregctb.document.EnvoiLettresBienvenueRapport</value>
 		<value>ch.vd.uniregctb.parametrage.ParametreApp</value>
 		<value>ch.vd.uniregctb.rf.Immeuble</value>
 		<value>ch.vd.uniregctb.reqdes.ErreurTraitement</value>
