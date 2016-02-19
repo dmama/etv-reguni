@@ -326,7 +326,7 @@ public class RCEntHelperTest extends WithoutSpringTest {
 			{
 				assertThat(rangeResult.get(1).getDateDebut(), equalTo(date(2015, 5, 25)));
 				assertThat(rangeResult.get(1).getDateFin(), equalTo(date(2015, 5, 26)));
-				assertThat(rangeResult.get(1).getData(), equalTo("DATAd_CONVERTED"));
+				assertThat(rangeResult.get(1).getData(), equalTo("DATA2_CONVERTED"));
 			}
 		}
 		{
