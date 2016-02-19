@@ -20,6 +20,7 @@ import ch.vd.uniregctb.adresse.AdresseCivile;
 import ch.vd.uniregctb.adresse.AdresseTiers;
 import ch.vd.uniregctb.common.AnnulableHelper;
 import ch.vd.uniregctb.common.CollectionsUtils;
+import ch.vd.uniregctb.documentfiscal.AutreDocumentFiscal;
 import ch.vd.uniregctb.tiers.AllegementFiscal;
 import ch.vd.uniregctb.tiers.AllegementFiscalHelper;
 import ch.vd.uniregctb.tiers.Bouclement;
@@ -45,6 +46,7 @@ public class EntrepriseValidator extends ContribuableImpositionPersonnesMoralesV
 			vr.merge(validateEtats(entreprise));
 			vr.merge(validateFlags(entreprise));
 			vr.merge(validateForsEtRegimesFiscaux(entreprise));
+			vr.merge(validateAutresDocumentsFiscaux(entreprise));
 
 			// validation de la date de début du premier exercice commercial
 			if (entreprise.getDateDebutPremierExerciceCommercial() != null) {
@@ -322,6 +324,17 @@ public class EntrepriseValidator extends ContribuableImpositionPersonnesMoralesV
 						                          DateRangeHelper.within(range, relevant) ? StringUtils.EMPTY : " (seule la période depuis " + premiereAnnee + " est réellement problématique)"));
 					}
 				}
+			}
+		}
+		return vr;
+	}
+
+	private ValidationResults validateAutresDocumentsFiscaux(Entreprise entreprise) {
+		final ValidationResults vr = new ValidationResults();
+		final Set<AutreDocumentFiscal> docs = entreprise.getAutresDocumentsFiscaux();
+		if (docs != null && !docs.isEmpty()) {
+			for (AutreDocumentFiscal doc : docs) {
+				vr.merge(getValidationService().validate(doc));
 			}
 		}
 		return vr;

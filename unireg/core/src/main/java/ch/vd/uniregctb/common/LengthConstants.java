@@ -156,6 +156,9 @@ public abstract class LengthConstants {
 	public static final int MANDAT_TYPE = 15;
 	public static final int MANDAT_NOM_CONTACT = 50;
 
+	public static final int AUTRE_DOCUMENT_FISCAL_TYPE = 25;
+	public static final int LETTRE_BIENVENUE_TYPE = 20;
+
 	public static final int MAXLEN = 2000;
 
 	private static final Pattern MULTI_BLANKS = Pattern.compile("\\s{2,}");

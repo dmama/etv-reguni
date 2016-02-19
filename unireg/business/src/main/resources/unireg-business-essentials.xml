@@ -390,4 +390,8 @@
 
 	<bean id="flagEntrepriseValidator" class="ch.vd.uniregctb.validation.tiers.FlagEntrepriseValidator" parent="dateRangeEntityValidator"/>
 
+	<bean id="autreDocumentFiscalValidator" class="ch.vd.uniregctb.validation.documentfiscal.AutreDocumentFiscalValidator" abstract="true" parent="entityValidator"/>
+	<bean id="autreDocumentFiscalAvecRetourValidator" class="ch.vd.uniregctb.validation.documentfiscal.AutreDocumentFiscalAvecRetourValidator" abstract="true" parent="autreDocumentFiscalValidator"/>
+	<bean id="lettreBienvenueValidator" class="ch.vd.uniregctb.validation.documentfiscal.LettreBienvenueValidator" parent="autreDocumentFiscalAvecRetourValidator"/>
+
 </beans>

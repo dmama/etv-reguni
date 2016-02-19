@@ -24,6 +24,7 @@ import ch.vd.uniregctb.common.AnnulableHelper;
 import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.common.ComparisonHelper;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePM;
+import ch.vd.uniregctb.documentfiscal.AutreDocumentFiscal;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeDocument;
 
@@ -50,6 +51,7 @@ public class Entreprise extends ContribuableImpositionPersonnesMorales {
 	private Set<EtatEntreprise> etats;
 	private Set<FlagEntreprise> flags;
 	private RegDate dateDebutPremierExerciceCommercial;
+	private Set<AutreDocumentFiscal> autresDocumentsFiscaux;
 
 	@Column(name = "NUMERO_ENTREPRISE")
 	@Index(name = "IDX_TIERS_NO_ENTREPRISE")
@@ -314,6 +316,28 @@ public class Entreprise extends ContribuableImpositionPersonnesMorales {
 
 	public void setDateDebutPremierExerciceCommercial(RegDate dateDebutPremierExerciceCommercial) {
 		this.dateDebutPremierExerciceCommercial = dateDebutPremierExerciceCommercial;
+	}
+
+	@OneToMany(cascade = CascadeType.ALL)
+	@JoinColumn(name = "ENTREPRISE_ID")
+	public Set<AutreDocumentFiscal> getAutresDocumentsFiscaux() {
+		return autresDocumentsFiscaux;
+	}
+
+	public void setAutresDocumentsFiscaux(Set<AutreDocumentFiscal> autresDocumentsFiscaux) {
+		this.autresDocumentsFiscaux = autresDocumentsFiscaux;
+	}
+
+	public void addAutreDocumentFiscal(AutreDocumentFiscal document) {
+		if (document.getEntreprise() != null && document.getEntreprise() != this) {
+			throw new IllegalArgumentException("Ce document est déjà associé à une autre entreprise.");
+		}
+
+		if (this.autresDocumentsFiscaux == null) {
+			this.autresDocumentsFiscaux = new HashSet<>();
+		}
+		this.autresDocumentsFiscaux.add(document);
+		document.setEntreprise(this);
 	}
 
 	public Entreprise() {

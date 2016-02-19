@@ -94,6 +94,8 @@ drop table ETAT_ENTREPRISE cascade constraints;
 
 drop table ALLEGEMENT_FISCAL cascade constraints;
 
+drop table AUTRE_DOCUMENT_FISCAL cascade constraints;
+
 drop table TIERS cascade constraints;
 
 

@@ -17,6 +17,9 @@
 		<value>ch.vd.uniregctb.adresse.AdresseSuisse</value>
 		<value>ch.vd.uniregctb.adresse.AdresseTiers</value>
 		<value>ch.vd.uniregctb.adresse.AdresseSupplementaire</value>
+		<value>ch.vd.uniregctb.documentfiscal.AutreDocumentFiscal</value>
+		<value>ch.vd.uniregctb.documentfiscal.AutreDocumentFiscalAvecRetour</value>
+		<value>ch.vd.uniregctb.documentfiscal.LettreBienvenue</value>
 		<value>ch.vd.uniregctb.audit.AuditLine</value>
 		<value>ch.vd.uniregctb.declaration.Declaration</value>
 		<value>ch.vd.uniregctb.declaration.DeclarationAvecNumeroSequence</value>
