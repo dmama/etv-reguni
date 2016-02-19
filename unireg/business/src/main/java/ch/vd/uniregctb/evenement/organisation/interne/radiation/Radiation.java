@@ -50,7 +50,7 @@ public class Radiation extends EvenementOrganisationInterneDeTraitement {
 
 	@Override
 	public void doHandle(EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) throws EvenementOrganisationException {
-		if (isRadieIDE(statusRegistreIDEApres)) {
+		if (getOrganisation().isRadieIDE(dateApres)) {
 			warnings.addWarning("Une vérification manuelle est requise pour cause de Radiation de l'entreprise.");
 		} else {
 			if (CategorieEntrepriseHelper.getCategorieEntreprise(getOrganisation(), dateApres) != CategorieEntreprise.APM) {
@@ -63,14 +63,6 @@ public class Radiation extends EvenementOrganisationInterneDeTraitement {
 
 	@Override
 	protected void validateSpecific(EvenementOrganisationErreurCollector erreurs, EvenementOrganisationWarningCollector warnings) throws EvenementOrganisationException {
-		Assert.isTrue(isRadieRC(statusInscriptionRCApres));
-	}
-
-	protected boolean isRadieIDE(StatusRegistreIDE statusRegistreIDE) {
-		return statusRegistreIDE != null && (statusRegistreIDE == StatusRegistreIDE.RADIE || statusRegistreIDE == StatusRegistreIDE.DEFINITIVEMENT_RADIE);
-	}
-
-	private boolean isRadieRC(StatusInscriptionRC statusInscriptionRC) {
-		return statusInscriptionRC != null && statusInscriptionRC == StatusInscriptionRC.RADIE;
+		Assert.isTrue(getOrganisation().isRadieRC(dateApres));
 	}
 }
