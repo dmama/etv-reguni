@@ -9,6 +9,7 @@ import ch.vd.evd0022.v3.Address;
 import ch.vd.evd0022.v3.BusinessPublication;
 import ch.vd.evd0022.v3.Capital;
 import ch.vd.evd0022.v3.CommercialRegisterStatus;
+import ch.vd.evd0022.v3.DissolutionReason;
 import ch.vd.evd0022.v3.KindOfUidEntity;
 import ch.vd.evd0022.v3.LegalForm;
 import ch.vd.evd0022.v3.TypeOfLocation;
@@ -161,7 +162,8 @@ public class OrganisationLocation {
 	}
 
 	public static class RCEntRCData {
-		private final List<DateRangeHelper.Ranged<CommercialRegisterStatus>> status;
+		private final List<DateRangeHelper.Ranged<CommercialRegisterStatus>> registrationStatus;
+		private final List<DateRangeHelper.Ranged<DissolutionReason>> vdDissolutionReason;
 		private final List<DateRangeHelper.Ranged<Capital>> capital;
 		private final List<DateRangeHelper.Ranged<Address>> legalAddress;
 		private final List<DateRangeHelper.Ranged<RegDate>> registrationDate;
@@ -169,16 +171,23 @@ public class OrganisationLocation {
 		private final List<DateRangeHelper.Ranged<RegDate>> byLawsDate;
 		private final List<DateRangeHelper.Ranged<RegDate>> deregistrationDate;
 
-		public RCEntRCData(List<DateRangeHelper.Ranged<CommercialRegisterStatus>> status,
-		                   List<DateRangeHelper.Ranged<Capital>> capital, List<DateRangeHelper.Ranged<Address>> legalAddress, List<DateRangeHelper.Ranged<RegDate>> registrationDate,
+		public RCEntRCData(List<DateRangeHelper.Ranged<CommercialRegisterStatus>> registrationStatus,
+		                   List<DateRangeHelper.Ranged<DissolutionReason>> vdDissolutionReason,
+		                   List<DateRangeHelper.Ranged<Capital>> capital, List<DateRangeHelper.Ranged<Address>> legalAddress,
+		                   List<DateRangeHelper.Ranged<RegDate>> registrationDate,
 		                   List<DateRangeHelper.Ranged<String>> purpose, List<DateRangeHelper.Ranged<RegDate>> byLawsDate, List<DateRangeHelper.Ranged<RegDate>> deregistrationDate) {
-			this.status = status;
+			this.registrationStatus = registrationStatus;
+			this.vdDissolutionReason = vdDissolutionReason;
 			this.capital = capital;
 			this.legalAddress = legalAddress;
 			this.registrationDate = registrationDate;
 			this.purpose = purpose;
 			this.byLawsDate = byLawsDate;
 			this.deregistrationDate = deregistrationDate;
+		}
+
+		public List<DateRangeHelper.Ranged<DissolutionReason>> getVdDissolutionReason() {
+			return vdDissolutionReason;
 		}
 
 		public List<DateRangeHelper.Ranged<Capital>> getCapital() {
@@ -190,7 +199,7 @@ public class OrganisationLocation {
 		}
 
 		public List<DateRangeHelper.Ranged<CommercialRegisterStatus>> getRegistrationStatus() {
-			return status;
+			return registrationStatus;
 		}
 
 		public List<DateRangeHelper.Ranged<RegDate>> getRegistrationDate() {

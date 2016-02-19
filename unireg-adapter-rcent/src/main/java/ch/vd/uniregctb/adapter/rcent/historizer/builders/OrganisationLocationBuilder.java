@@ -11,6 +11,7 @@ import ch.vd.evd0022.v3.Address;
 import ch.vd.evd0022.v3.BusinessPublication;
 import ch.vd.evd0022.v3.Capital;
 import ch.vd.evd0022.v3.CommercialRegisterStatus;
+import ch.vd.evd0022.v3.DissolutionReason;
 import ch.vd.evd0022.v3.Function;
 import ch.vd.evd0022.v3.KindOfUidEntity;
 import ch.vd.evd0022.v3.LegalForm;
@@ -40,6 +41,7 @@ public class OrganisationLocationBuilder {
 	private final Map<BigInteger, List<DateRangeHelper.Ranged<BigInteger>>> uidInReplacementOf;
 
 	private final Map<BigInteger, List<DateRangeHelper.Ranged<CommercialRegisterStatus>>> rcStatus;
+	private final Map<BigInteger, List<DateRangeHelper.Ranged<DissolutionReason>>> rcVdDissolutionReason;
 	private final Map<BigInteger, List<DateRangeHelper.Ranged<RegDate>>> entryDate;
 	private final Map<BigInteger, List<DateRangeHelper.Ranged<Capital>>> capital;
 	private final Map<BigInteger, List<DateRangeHelper.Ranged<Address>>> rcLegalAddresses;
@@ -68,6 +70,7 @@ public class OrganisationLocationBuilder {
 	                                   Map<BigInteger, List<DateRangeHelper.Ranged<BigInteger>>> UidInReplacementOf,
 	                                   Map<BigInteger, List<DateRangeHelper.Ranged<Address>>> rcLegalAddresses,
 	                                   Map<BigInteger, List<DateRangeHelper.Ranged<CommercialRegisterStatus>>> rcStatus,
+	                                   Map<BigInteger, List<DateRangeHelper.Ranged<DissolutionReason>>> rcVdDissolutionReason,
 	                                   Map<BigInteger, List<DateRangeHelper.Ranged<RegDate>>> entryDate,
 	                                   Map<BigInteger, List<DateRangeHelper.Ranged<Capital>>> capital,
 	                                   Map<BigInteger, List<DateRangeHelper.Ranged<String>>> purpose,
@@ -83,6 +86,7 @@ public class OrganisationLocationBuilder {
 		this.burTransferFrom = burTransferFrom;
 		this.uidReplacedBy = uidReplacedBy;
 		this.uidInReplacementOf = UidInReplacementOf;
+		this.rcVdDissolutionReason = rcVdDissolutionReason;
 		this.purpose = purpose;
 		this.byLawsDate = byLawsDate;
 		this.uidTypeOfOrganisation = uidTypeOfOrganisation;
@@ -109,6 +113,7 @@ public class OrganisationLocationBuilder {
 				.map(e -> new OrganisationLocation(e.getKey().longValue(),
 				                                   e.getValue(),
 				                                   new OrganisationLocation.RCEntRCData(rcStatus.get(e.getKey()),
+				                                                                        rcVdDissolutionReason.get(e.getKey()),
 				                                                                        capital.get(e.getKey()),
 				                                                                        rcLegalAddresses.get(e.getKey()),
 				                                                                        entryDate.get(e.getKey()),

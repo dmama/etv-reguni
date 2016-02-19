@@ -13,6 +13,7 @@ import ch.vd.evd0022.v3.Address;
 import ch.vd.evd0022.v3.BusinessPublication;
 import ch.vd.evd0022.v3.Capital;
 import ch.vd.evd0022.v3.CommercialRegisterStatus;
+import ch.vd.evd0022.v3.DissolutionReason;
 import ch.vd.evd0022.v3.KindOfUidEntity;
 import ch.vd.evd0022.v3.LegalForm;
 import ch.vd.evd0022.v3.Organisation;
@@ -54,6 +55,7 @@ import ch.vd.uniregctb.adapter.rcent.historizer.extractor.LocationUidReplacedByE
 import ch.vd.uniregctb.adapter.rcent.historizer.extractor.LocationsExtractor;
 import ch.vd.uniregctb.adapter.rcent.historizer.extractor.RCCapitalExtractor;
 import ch.vd.uniregctb.adapter.rcent.historizer.extractor.RcStatusExtractor;
+import ch.vd.uniregctb.adapter.rcent.historizer.extractor.RcVdDissolutionReasonExtractor;
 import ch.vd.uniregctb.adapter.rcent.historizer.extractor.UidDeregistrationReasonExtractor;
 import ch.vd.uniregctb.adapter.rcent.historizer.extractor.UidKindOfUidEntityExtractor;
 import ch.vd.uniregctb.adapter.rcent.historizer.extractor.UidRegistrationStatusExtractor;
@@ -130,6 +132,9 @@ public class OrganisationHistorizer {
 		final IndexedDataCollector<Organisation, CommercialRegisterStatus, BigInteger> locationRcStatusCollector = new SingleValueIndexedDataCollector<>(new RcStatusExtractor(),
 		                                                                                                                                                 Equalator.DEFAULT
 		);
+		final IndexedDataCollector<Organisation, DissolutionReason, BigInteger> locationRcVdDissolutionReasonCollector = new SingleValueIndexedDataCollector<>(new RcVdDissolutionReasonExtractor(),
+		                                                                                                                                                       Equalator.DEFAULT
+		);
 		final IndexedDataCollector<Organisation, RegDate, BigInteger> locationRcEntryDateCollector = new SingleValueIndexedDataCollector<>(new LocationRcRegistrationDateExtractor(),
 		                                                                                                                                  Equalator.DEFAULT
 		);
@@ -185,6 +190,7 @@ public class OrganisationHistorizer {
 		                                                    locationBurTransferFromCollector,
 
 		                                                    locationRcStatusCollector,
+		                                                    locationRcVdDissolutionReasonCollector,
 		                                                    locationRcEntryDateCollector,
 		                                                    locationRcCancellationDateCollector,
 		                                                    locationRcLegalAddressCollector,
@@ -221,6 +227,7 @@ public class OrganisationHistorizer {
 
 				locationRcLegalAddressCollector.getCollectedData(),
 				locationRcStatusCollector.getCollectedData(),
+				locationRcVdDissolutionReasonCollector.getCollectedData(),
 				locationRcEntryDateCollector.getCollectedData(),
 				locationRcCapitalCollector.getCollectedData(),
 				locationRcPurposeCollector.getCollectedData(),
