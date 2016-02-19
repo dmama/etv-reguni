@@ -1,14 +1,12 @@
 package ch.vd.uniregctb.evenement.organisation.interne.dissolution;
 
-import java.util.List;
-import java.util.Map;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.interfaces.organisation.data.DonneesRC;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
-import ch.vd.unireg.interfaces.organisation.data.PublicationBusiness;
+import ch.vd.unireg.interfaces.organisation.data.RaisonDeDissolutionRC;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationContext;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationException;
@@ -22,9 +20,9 @@ import ch.vd.uniregctb.tiers.Entreprise;
  *
  * @author Raphaël Marmier, 2016-02-18.
  */
-public class FusionScissionStrategy extends AbstractOrganisationStrategy {
+public class DissolutionStrategy extends AbstractOrganisationStrategy {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(FusionScissionStrategy.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(DissolutionStrategy.class);
 
 	/**
 	 * Détecte les mutations pour lesquelles la création d'un événement interne est nécessaire.
@@ -48,30 +46,21 @@ public class FusionScissionStrategy extends AbstractOrganisationStrategy {
 
 		final RegDate dateApres = event.getDateEvenement();
 
-		final Map<RegDate, List<PublicationBusiness>> publications = organisation.getSitePrincipal(dateApres).getPayload().getPublications();
-		if (publications != null && !publications.isEmpty()) {
-			for (PublicationBusiness publication : publications.get(event.getDateEvenement())) {
-				if (publication.getTypeDeFusion() != null) {
-					switch (publication.getTypeDeFusion()) {
-					case FUSION_SOCIETES_COOPERATIVES:
-					case FUSION_SOCIETES_ANONYMES:
-					case FUSION_SOCIETES_ANONYMES_ET_COMMANDITE_PAR_ACTIONS:
-					case AUTRE_FUSION:
-					case FUSION_INTERNATIONALE:
-					case FUSION_ART_25_LFUS:
-					case FUSION_INSTITUTIONS_DE_PREVOYANCE:
-					case FUSION_SUISSE_VERS_ETRANGER:
-						return new Fusion(event, organisation, entreprise, context, options);
-					case SCISSION_ART_45_LFUS:
-					case SCISSION_SUISSE_VERS_ETRANGER:
-						return new Scission(event, organisation, entreprise, context, options);
-					default:
-						// rien
-					}
-				}
+		final DonneesRC donneesRC = organisation.getSitePrincipal(dateApres).getPayload().getDonneesRC();
+		RaisonDeDissolutionRC raisonDeDissolution = donneesRC.getRaisonDeDissolutionVd(dateApres);
+		if (raisonDeDissolution != null) {
+			switch (raisonDeDissolution) {
+			case FUSION:
+			case LIQUIDATION:
+			case FAILLITE:
+			case TRANSFORMATION:
+			case CARENCE_DANS_ORGANISATION:
+				return new Dissolution(event, organisation, entreprise, context, options);
+			default:
+				// rien
 			}
 		}
-		LOGGER.info("Pas de fusion ou scission.");
+		LOGGER.info("Pas de dissolution.");
 		return null;
 	}
 }

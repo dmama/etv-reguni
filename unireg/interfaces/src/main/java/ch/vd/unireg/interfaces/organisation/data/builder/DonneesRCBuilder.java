@@ -32,7 +32,7 @@ public class DonneesRCBuilder implements DataBuilder<DonneesRC> {
 
 	@Override
 	public DonneesRCRCEnt build() {
-		return new DonneesRCRCEnt(adresseLegale, statusInscription, dateInscription, capital, buts, dateStatus, dateRadiation);
+		return new DonneesRCRCEnt(adresseLegale, statusInscription, null, dateInscription, capital, buts, dateStatus, dateRadiation);
 	}
 
 	public DonneesRCBuilder addStatusInscription(@NotNull RegDate dateDebut, RegDate dateDeFin, @NotNull StatusInscriptionRC valeur) {

@@ -15,7 +15,11 @@ public interface DonneesRC {
 
 	List<DateRanged<StatusInscriptionRC>> getStatusInscription();
 
+	List<DateRanged<RaisonDeDissolutionRC>> getRaisonDeDissolutionVd();
+
 	StatusInscriptionRC getStatusInscription(RegDate date);
+
+	RaisonDeDissolutionRC getRaisonDeDissolutionVd(RegDate date);
 
 	List<DateRanged<RegDate>> getDateInscription();
 

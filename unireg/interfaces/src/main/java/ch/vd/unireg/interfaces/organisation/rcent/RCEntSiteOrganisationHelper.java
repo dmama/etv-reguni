@@ -16,6 +16,7 @@ import ch.vd.unireg.interfaces.organisation.rcent.converters.CapitalPredicate;
 import ch.vd.unireg.interfaces.organisation.rcent.converters.CommercialRegisterStatusConverter;
 import ch.vd.unireg.interfaces.organisation.rcent.converters.LegalFormConverter;
 import ch.vd.unireg.interfaces.organisation.rcent.converters.OrganisationFunctionConverter;
+import ch.vd.unireg.interfaces.organisation.rcent.converters.RaisonDeDissolutionRCConverter;
 import ch.vd.unireg.interfaces.organisation.rcent.converters.SeatConverter;
 import ch.vd.unireg.interfaces.organisation.rcent.converters.TypeOfLocationConverter;
 import ch.vd.unireg.interfaces.organisation.rcent.converters.UidRegisterRaisonDeRadiationRegistreIDEConverter;
@@ -30,7 +31,8 @@ public class RCEntSiteOrganisationHelper {
 	private static final AddressConverters.LegalAddressConverter ADDRESS_LEGALE_CONVERTER = new AddressConverters.LegalAddressConverter();
 	private static final AddressConverters.POBoxAddressConverter ADDRESS_BOITE_POSTALE_CONVERTER = new AddressConverters.POBoxAddressConverter();
 	private static final AddressConverters.EffectiveAddressConverter ADDRESS_EFFECIVE_CONVERTER = new AddressConverters.EffectiveAddressConverter();
-	private static final CommercialRegisterStatusConverter COMMERCIAL_REGISTER_STATUS_INSCRIPTION_CONVERTER = new CommercialRegisterStatusConverter();
+	private static final CommercialRegisterStatusConverter COMMERCIAL_REGISTER_STATUS_CONVERTER = new CommercialRegisterStatusConverter();
+	private static final RaisonDeDissolutionRCConverter RC_DISSOLUTION_REASON_CONVERTER = new RaisonDeDissolutionRCConverter();
 	private static final CapitalConverter CAPITAL_CONVERTER = new CapitalConverter();
 	private static final BusinessPublicationConverter BUSINESS_PUBLICATION_CONVERTER = new BusinessPublicationConverter();
 	private static final UidRegisterStatusConverter UID_REGISTER_STATUS_CONVERTER = new UidRegisterStatusConverter();
@@ -65,7 +67,8 @@ public class RCEntSiteOrganisationHelper {
 	private static DonneesRC createDonneesRC(OrganisationLocation.RCEntRCData rc) {
 		return new DonneesRCRCEnt(
 				RCEntHelper.convertAndDerange(rc.getLegalAddress(), ADDRESS_LEGALE_CONVERTER),
-				RCEntHelper.convertAndMap(rc.getRegistrationStatus(), COMMERCIAL_REGISTER_STATUS_INSCRIPTION_CONVERTER),
+				RCEntHelper.convertAndMap(rc.getRegistrationStatus(), COMMERCIAL_REGISTER_STATUS_CONVERTER),
+				RCEntHelper.convertAndMap(rc.getVdDissolutionReason(), RC_DISSOLUTION_REASON_CONVERTER),
 				RCEntHelper.convert(rc.getRegistrationDate()),
 				RCEntHelper.convertAndDerange(rc.getCapital(), CAPITAL_CONVERTER, CAPITAL_PREDICATE),
 				RCEntHelper.convert(rc.getPurpose()),

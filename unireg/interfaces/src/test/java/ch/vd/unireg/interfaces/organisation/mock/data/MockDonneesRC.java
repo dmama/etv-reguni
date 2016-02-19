@@ -14,6 +14,7 @@ import ch.vd.unireg.interfaces.organisation.data.Capital;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
 import ch.vd.unireg.interfaces.organisation.data.DonneesRC;
 import ch.vd.unireg.interfaces.organisation.data.OrganisationHelper;
+import ch.vd.unireg.interfaces.organisation.data.RaisonDeDissolutionRC;
 import ch.vd.unireg.interfaces.organisation.data.StatusInscriptionRC;
 
 /**
@@ -22,6 +23,7 @@ import ch.vd.unireg.interfaces.organisation.data.StatusInscriptionRC;
 public class MockDonneesRC implements DonneesRC {
 
 	private NavigableMap<RegDate, StatusInscriptionRC> statusInscription = new TreeMap<>();
+	private NavigableMap<RegDate, RaisonDeDissolutionRC> raisonDeDissolutionVd = new TreeMap<>();
 	private NavigableMap<RegDate, RegDate> dateInscription = new TreeMap<>();
 	private NavigableMap<RegDate, Capital> capital = new TreeMap<>();
 	private NavigableMap<RegDate, AdresseLegaleRCEnt> adresseLegale = new TreeMap<>();
@@ -98,6 +100,24 @@ public class MockDonneesRC implements DonneesRC {
 
 	public void addStatusInscription(RegDate dateDebut, @Nullable RegDate dateFin, StatusInscriptionRC nouveauStatusInscription) {
 		MockOrganisationHelper.addRangedData(statusInscription, dateDebut, dateFin, nouveauStatusInscription);
+	}
+
+	@Override
+	public List<DateRanged<RaisonDeDissolutionRC>> getRaisonDeDissolutionVd() {
+		return MockOrganisationHelper.getHisto(raisonDeDissolutionVd);
+	}
+
+	@Override
+	public RaisonDeDissolutionRC getRaisonDeDissolutionVd(RegDate date) {
+		return OrganisationHelper.valueForDate(getRaisonDeDissolutionVd(), date);
+	}
+
+	public void changeRaisonDeDissolutionVd(RegDate date, RaisonDeDissolutionRC nouvelleRaisonDeDissolution) {
+		MockOrganisationHelper.changeRangedData(raisonDeDissolutionVd, date, nouvelleRaisonDeDissolution);
+	}
+
+	public void addRaisonDeDissolutionVd(RegDate dateDebut, @Nullable RegDate dateFin, RaisonDeDissolutionRC nouvelleRaisonDeDissolution) {
+		MockOrganisationHelper.addRangedData(raisonDeDissolutionVd, dateDebut, dateFin, nouvelleRaisonDeDissolution);
 	}
 
 	@Override

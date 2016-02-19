@@ -31,9 +31,9 @@ import static ch.vd.uniregctb.type.EtatEvenementOrganisation.A_TRAITER;
 /**
  * @author Raphaël Marmier, 2016-02-19
  */
-public class LiquidationTest extends AbstractEvenementOrganisationProcessorTest {
+public class LiquidationProcessorTest extends AbstractEvenementOrganisationProcessorTest {
 
-	public LiquidationTest() {
+	public LiquidationProcessorTest() {
 		setWantIndexationTiers(true);
 	}
 
@@ -61,8 +61,8 @@ public class LiquidationTest extends AbstractEvenementOrganisationProcessorTest 
 						                                           TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.EN_LIQUIDATION,
 						                                           StatusRegistreIDE.RADIE,
 						                                           TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, BigDecimal.valueOf(50000), "CHF");
-				MockSiteOrganisation rc = (MockSiteOrganisation) organisation.getDonneesSites().get(0);
-				rc.addPublicationBusiness(RegDate.get(2015, 7, 5), Collections.singletonList(new PublicationBusiness(date(2010, 6, 24), null, date(2010, 6, 24), "Inconnu", null, null, null,
+				MockSiteOrganisation sitePrincipal = (MockSiteOrganisation) organisation.getDonneesSites().get(0);
+				sitePrincipal.addPublicationBusiness(RegDate.get(2015, 7, 5), Collections.singletonList(new PublicationBusiness(date(2010, 6, 24), null, date(2010, 6, 24), "Inconnu", null, null, null,
 				                                                                                                        null, null, null, TypeDeLiquidation.SOCIETE_RESPONSABILITE_LIMITE)));
 				addOrganisation(organisation);
 
@@ -125,8 +125,8 @@ public class LiquidationTest extends AbstractEvenementOrganisationProcessorTest 
 						                                           TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.EN_LIQUIDATION,
 						                                           StatusRegistreIDE.RADIE,
 						                                           TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, BigDecimal.valueOf(50000), "CHF");
-				MockSiteOrganisation rc = (MockSiteOrganisation) organisation.getDonneesSites().get(0);
-				rc.addPublicationBusiness(RegDate.get(2015, 7, 5), Collections.singletonList(new PublicationBusiness(date(2010, 6, 24), null, date(2010, 6, 24), "Inconnu", null, null, null,
+				MockSiteOrganisation sitePrincipal = (MockSiteOrganisation) organisation.getDonneesSites().get(0);
+				sitePrincipal.addPublicationBusiness(RegDate.get(2015, 7, 5), Collections.singletonList(new PublicationBusiness(date(2010, 6, 24), null, date(2010, 6, 24), "Inconnu", null, null, null,
 				                                                                                                     null, null, null, null)));
 				addOrganisation(organisation);
 
@@ -189,8 +189,8 @@ public class LiquidationTest extends AbstractEvenementOrganisationProcessorTest 
 						                                           TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.EN_LIQUIDATION,
 						                                           StatusRegistreIDE.DEFINITIF,
 						                                           TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, BigDecimal.valueOf(50000), "CHF");
-				MockSiteOrganisation rc = (MockSiteOrganisation) organisation.getDonneesSites().get(0);
-				rc.addPublicationBusiness(RegDate.get(2015, 7, 5), Collections.singletonList(new PublicationBusiness(date(2010, 6, 24), null, date(2010, 6, 24), "Inconnu", null, null, null,
+				MockSiteOrganisation sitePrincipal = (MockSiteOrganisation) organisation.getDonneesSites().get(0);
+				sitePrincipal.addPublicationBusiness(RegDate.get(2015, 7, 5), Collections.singletonList(new PublicationBusiness(date(2010, 6, 24), null, date(2010, 6, 24), "Inconnu", null, null, null,
 				                                                                                                     null, null, null, TypeDeLiquidation.SOCIETE_RESPONSABILITE_LIMITE)));
 				addOrganisation(organisation);
 
