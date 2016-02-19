@@ -43,6 +43,8 @@ import ch.vd.uniregctb.declaration.EtatDeclarationEmise;
 import ch.vd.uniregctb.declaration.EtatDeclarationRappelee;
 import ch.vd.uniregctb.declaration.EtatDeclarationRetournee;
 import ch.vd.uniregctb.declaration.QuestionnaireSNC;
+import ch.vd.uniregctb.documentfiscal.AutreDocumentFiscal;
+import ch.vd.uniregctb.documentfiscal.LettreBienvenue;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.mock.ProxyServiceOrganisation;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
@@ -2687,13 +2689,14 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		final List<MigrationResultCollector.Message> messages = mr.getMessages().get(LogCategory.SUIVI);
 		Assert.assertNotNull(messages);
 		final List<String> textes = messages.stream().map(msg -> msg.text).collect(Collectors.toList());
-		Assert.assertEquals(6, textes.size());
+		Assert.assertEquals(7, textes.size());
 		Assert.assertEquals("L'entreprise n'existait pas dans Unireg avec ce numéro de contribuable.", textes.get(0));
 		Assert.assertEquals("Ajout d'une date de bouclement estimée au 31.03.2015 pour combler l'absence d'exercice commercial dans RegPM sur la période [01.04.2014 -> 31.03.2016].", textes.get(1));
 		Assert.assertEquals("Cycle de bouclements créé, applicable dès le 01.03.2000 : tous les 12 mois, à partir du premier 31.03.", textes.get(2));
-		Assert.assertEquals(String.format("Création de l'établissement principal %s.", FormatNumeroHelper.numeroCTBToDisplay(noEtablissementPrincipal.longValue())), textes.get(3));
-		Assert.assertEquals(String.format("Domicile de l'établissement principal %s : [01.01.2000 -> ?] sur COMMUNE_OU_FRACTION_VD/5586.", FormatNumeroHelper.numeroCTBToDisplay(noEtablissementPrincipal.longValue())), textes.get(4));
-		Assert.assertEquals("Entreprise migrée : 47.84.", textes.get(5));
+		Assert.assertEquals("Aucune date d'envoi de lettre de bienvenue trouvée malgré la présence d'assujettissement(s).", textes.get(3));
+		Assert.assertEquals(String.format("Création de l'établissement principal %s.", FormatNumeroHelper.numeroCTBToDisplay(noEtablissementPrincipal.longValue())), textes.get(4));
+		Assert.assertEquals(String.format("Domicile de l'établissement principal %s : [01.01.2000 -> ?] sur COMMUNE_OU_FRACTION_VD/5586.", FormatNumeroHelper.numeroCTBToDisplay(noEtablissementPrincipal.longValue())), textes.get(5));
+		Assert.assertEquals("Entreprise migrée : 47.84.", textes.get(6));
 	}
 
 	/**
@@ -2762,7 +2765,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		final List<MigrationResultCollector.Message> messages = mr.getMessages().get(LogCategory.SUIVI);
 		Assert.assertNotNull(messages);
 		final List<String> textes = messages.stream().map(msg -> msg.text).collect(Collectors.toList());
-		Assert.assertEquals(14, textes.size());
+		Assert.assertEquals(15, textes.size());
 		Assert.assertEquals("L'entreprise n'existait pas dans Unireg avec ce numéro de contribuable.", textes.get(0));
 		Assert.assertEquals("Ajout d'une date de bouclement estimée au 31.03.1997 pour combler l'absence d'exercice commercial dans RegPM sur la période [01.01.1997 -> 31.03.1997].", textes.get(1));
 		Assert.assertEquals("Ajout d'une date de bouclement estimée au 31.03.2007 pour combler l'absence d'exercice commercial dans RegPM sur la période [01.04.1998 -> 31.03.2007].", textes.get(2));
@@ -2775,8 +2778,9 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		Assert.assertEquals("Ajout d'une date de bouclement estimée au 31.03.2000 pour combler l'absence d'exercice commercial dans RegPM sur la période [01.04.1998 -> 31.03.2007].", textes.get(9));
 		Assert.assertEquals("Ajout d'une date de bouclement estimée au 31.03.1999 pour combler l'absence d'exercice commercial dans RegPM sur la période [01.04.1998 -> 31.03.2007].", textes.get(10));
 		Assert.assertEquals("Cycle de bouclements créé, applicable dès le 01.03.1997 : tous les 12 mois, à partir du premier 31.03.", textes.get(11));
-		Assert.assertEquals("Pas de siège associé dans les données fiscales, pas d'établissement principal créé à partir des données fiscales.", textes.get(12));
-		Assert.assertEquals("Entreprise migrée : 246.71.", textes.get(13));
+		Assert.assertEquals("Aucune date d'envoi de lettre de bienvenue trouvée malgré la présence d'assujettissement(s).", textes.get(12));
+		Assert.assertEquals("Pas de siège associé dans les données fiscales, pas d'établissement principal créé à partir des données fiscales.", textes.get(13));
+		Assert.assertEquals("Entreprise migrée : 246.71.", textes.get(14));
 	}
 
 	/**
@@ -2864,7 +2868,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		final List<MigrationResultCollector.Message> messages = mr.getMessages().get(LogCategory.SUIVI);
 		Assert.assertNotNull(messages);
 		final List<String> textes = messages.stream().map(msg -> msg.text).collect(Collectors.toList());
-		Assert.assertEquals(17, textes.size());
+		Assert.assertEquals(18, textes.size());
 		Assert.assertEquals("L'entreprise n'existait pas dans Unireg avec ce numéro de contribuable.", textes.get(0));
 		Assert.assertEquals("Ajout d'une date de bouclement estimée au 31.03.1997 pour combler l'absence d'exercice commercial dans RegPM sur la période [01.01.1997 -> 31.03.1997].", textes.get(1));
 		Assert.assertEquals("Ajout d'une date de bouclement estimée au 31.12.2007 pour combler l'absence d'exercice commercial dans RegPM sur la période [01.04.1998 -> 31.12.2007].", textes.get(2));
@@ -2879,9 +2883,10 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		Assert.assertEquals("Ajout d'une date de bouclement estimée au 31.12.1998 pour combler l'absence d'exercice commercial dans RegPM sur la période [01.04.1998 -> 31.12.2007].", textes.get(11));
 		Assert.assertEquals("Cycle de bouclements créé, applicable dès le 01.03.1997 : tous les 12 mois, à partir du premier 31.03.", textes.get(12));
 		Assert.assertEquals("Cycle de bouclements créé, applicable dès le 01.12.1998 : tous les 12 mois, à partir du premier 31.12.", textes.get(13));
-		Assert.assertEquals(String.format("Création de l'établissement principal %s.", FormatNumeroHelper.numeroCTBToDisplay(noEtablissementPrincipal.longValue())), textes.get(14));
-		Assert.assertEquals(String.format("Domicile de l'établissement principal %s : [01.01.1997 -> ?] sur COMMUNE_HC/2701.", FormatNumeroHelper.numeroCTBToDisplay(noEtablissementPrincipal.longValue())), textes.get(15));
-		Assert.assertEquals("Entreprise migrée : 246.71.", textes.get(16));
+		Assert.assertEquals("Aucune date d'envoi de lettre de bienvenue trouvée malgré la présence d'assujettissement(s).", textes.get(14));
+		Assert.assertEquals(String.format("Création de l'établissement principal %s.", FormatNumeroHelper.numeroCTBToDisplay(noEtablissementPrincipal.longValue())), textes.get(15));
+		Assert.assertEquals(String.format("Domicile de l'établissement principal %s : [01.01.1997 -> ?] sur COMMUNE_HC/2701.", FormatNumeroHelper.numeroCTBToDisplay(noEtablissementPrincipal.longValue())), textes.get(16));
+		Assert.assertEquals("Entreprise migrée : 246.71.", textes.get(17));
 	}
 
 	/**
@@ -2948,7 +2953,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		final List<MigrationResultCollector.Message> messages = mr.getMessages().get(LogCategory.SUIVI);
 		Assert.assertNotNull(messages);
 		final List<String> textes = messages.stream().map(msg -> msg.text).collect(Collectors.toList());
-		Assert.assertEquals(14, textes.size());
+		Assert.assertEquals(15, textes.size());
 		Assert.assertEquals("L'entreprise n'existait pas dans Unireg avec ce numéro de contribuable.", textes.get(0));
 		Assert.assertEquals("Ajout d'une date de bouclement estimée au 31.03.1997 pour combler l'absence d'exercice commercial dans RegPM sur la période [01.01.1997 -> 31.03.1997].", textes.get(1));
 		Assert.assertEquals("Ajout d'une date de bouclement estimée au 31.03.2007 pour combler l'absence d'exercice commercial dans RegPM sur la période [01.04.1998 -> 31.03.2008].", textes.get(2));
@@ -2961,8 +2966,9 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		Assert.assertEquals("Ajout d'une date de bouclement estimée au 31.03.2000 pour combler l'absence d'exercice commercial dans RegPM sur la période [01.04.1998 -> 31.03.2008].", textes.get(9));
 		Assert.assertEquals("Ajout d'une date de bouclement estimée au 31.03.1999 pour combler l'absence d'exercice commercial dans RegPM sur la période [01.04.1998 -> 31.03.2008].", textes.get(10));
 		Assert.assertEquals("Cycle de bouclements créé, applicable dès le 01.03.1997 : tous les 12 mois, à partir du premier 31.03.", textes.get(11));
-		Assert.assertEquals("Pas de siège associé dans les données fiscales, pas d'établissement principal créé à partir des données fiscales.", textes.get(12));
-		Assert.assertEquals("Entreprise migrée : 246.71.", textes.get(13));
+		Assert.assertEquals("Aucune date d'envoi de lettre de bienvenue trouvée malgré la présence d'assujettissement(s).", textes.get(12));
+		Assert.assertEquals("Pas de siège associé dans les données fiscales, pas d'établissement principal créé à partir des données fiscales.", textes.get(13));
+		Assert.assertEquals("Entreprise migrée : 246.71.", textes.get(14));
 	}
 
 	/**
@@ -3025,7 +3031,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		final List<MigrationResultCollector.Message> messages = mr.getMessages().get(LogCategory.SUIVI);
 		Assert.assertNotNull(messages);
 		final List<String> textes = messages.stream().map(msg -> msg.text).collect(Collectors.toList());
-		Assert.assertEquals(16, textes.size());
+		Assert.assertEquals(17, textes.size());
 		Assert.assertEquals("L'entreprise n'existait pas dans Unireg avec ce numéro de contribuable.", textes.get(0));
 		Assert.assertEquals("Date de bouclement futur (31.12.1992) ignorée car antérieure à la date de fin du dernier exercice commercial connu (31.12.2001).", textes.get(1));
 		Assert.assertEquals("Ajout d'une date de bouclement estimée au 31.12.2000 pour combler l'absence d'exercice commercial dans RegPM sur la période [01.01.1990 -> 31.12.2000].", textes.get(2));
@@ -3040,8 +3046,9 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		Assert.assertEquals("Ajout d'une date de bouclement estimée au 31.12.1991 pour combler l'absence d'exercice commercial dans RegPM sur la période [01.01.1990 -> 31.12.2000].", textes.get(11));
 		Assert.assertEquals("Ajout d'une date de bouclement estimée au 31.12.1990 pour combler l'absence d'exercice commercial dans RegPM sur la période [01.01.1990 -> 31.12.2000].", textes.get(12));
 		Assert.assertEquals("Cycle de bouclements créé, applicable dès le 01.12.1990 : tous les 12 mois, à partir du premier 31.12.", textes.get(13));
-		Assert.assertEquals("Pas de siège associé dans les données fiscales, pas d'établissement principal créé à partir des données fiscales.", textes.get(14));
-		Assert.assertEquals("Entreprise migrée : 324.14.", textes.get(15));
+		Assert.assertEquals("Aucune date d'envoi de lettre de bienvenue trouvée malgré la présence d'assujettissement(s).", textes.get(14));
+		Assert.assertEquals("Pas de siège associé dans les données fiscales, pas d'établissement principal créé à partir des données fiscales.", textes.get(15));
+		Assert.assertEquals("Entreprise migrée : 324.14.", textes.get(16));
 	}
 
 	@Test
@@ -5391,15 +5398,16 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 			final List<MigrationResultCollector.Message> messages = mr.getMessages().get(LogCategory.SUIVI);
 			Assert.assertNotNull(messages);
 			final List<String> textes = messages.stream().map(msg -> msg.text).collect(Collectors.toList());
-			Assert.assertEquals(8, textes.size());
+			Assert.assertEquals(9, textes.size());
 			Assert.assertEquals("L'entreprise n'existait pas dans Unireg avec ce numéro de contribuable.", textes.get(0));
 			Assert.assertEquals("Date de fin d'activité proposée (date de fin d'assujettissement ICC) : 27.08.2007.", textes.get(1));
 			Assert.assertEquals("La date de fin d'activité proposée (27.08.2007) est antérieure à la date de début du for principal 2 (28.08.2007), cette date de fin d'activité sera donc ignorée.", textes.get(2));
 			Assert.assertEquals("Entreprise sans exercice commercial ni date de bouclement futur.", textes.get(3));
-			Assert.assertEquals("Création de l'établissement principal " + FormatNumeroHelper.numeroCTBToDisplay(noEtablissementPrincipal.getValue()) + ".", textes.get(4));
-			Assert.assertEquals("Domicile de l'établissement principal " + FormatNumeroHelper.numeroCTBToDisplay(noEtablissementPrincipal.getValue()) + " : [27.08.2004 -> 27.08.2007] sur COMMUNE_OU_FRACTION_VD/5518.", textes.get(5));
-			Assert.assertEquals("Domicile de l'établissement principal " + FormatNumeroHelper.numeroCTBToDisplay(noEtablissementPrincipal.getValue()) + " : [28.08.2007 -> ?] sur COMMUNE_HC/351.", textes.get(6));
-			Assert.assertEquals("Entreprise migrée : 749.84.", textes.get(7));
+			Assert.assertEquals("Aucune date d'envoi de lettre de bienvenue trouvée malgré la présence d'assujettissement(s).", textes.get(4));
+			Assert.assertEquals("Création de l'établissement principal " + FormatNumeroHelper.numeroCTBToDisplay(noEtablissementPrincipal.getValue()) + ".", textes.get(5));
+			Assert.assertEquals("Domicile de l'établissement principal " + FormatNumeroHelper.numeroCTBToDisplay(noEtablissementPrincipal.getValue()) + " : [27.08.2004 -> 27.08.2007] sur COMMUNE_OU_FRACTION_VD/5518.", textes.get(6));
+			Assert.assertEquals("Domicile de l'établissement principal " + FormatNumeroHelper.numeroCTBToDisplay(noEtablissementPrincipal.getValue()) + " : [28.08.2007 -> ?] sur COMMUNE_HC/351.", textes.get(7));
+			Assert.assertEquals("Entreprise migrée : 749.84.", textes.get(8));
 		}
 	}
 
@@ -5466,14 +5474,15 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 			final List<MigrationResultCollector.Message> messages = mr.getMessages().get(LogCategory.SUIVI);
 			Assert.assertNotNull(messages);
 			final List<String> textes = messages.stream().map(msg -> msg.text).collect(Collectors.toList());
-			Assert.assertEquals(7, textes.size());
+			Assert.assertEquals(8, textes.size());
 			Assert.assertEquals("L'entreprise n'existait pas dans Unireg avec ce numéro de contribuable.", textes.get(0));
 			Assert.assertEquals("Date de fin d'activité proposée (date de réquisition de radiation) : 27.08.2007.", textes.get(1));
 			Assert.assertEquals("Entreprise sans exercice commercial ni date de bouclement futur.", textes.get(2));
-			Assert.assertEquals("Le siège 2 est ignoré car sa date de début de validité (28.08.2007) est postérieure à la date de fin d'activité de l'entreprise (27.08.2007).", textes.get(3));
-			Assert.assertEquals("Création de l'établissement principal " + FormatNumeroHelper.numeroCTBToDisplay(noEtablissementPrincipal.getValue()) + ".", textes.get(4));
-			Assert.assertEquals("Domicile de l'établissement principal " + FormatNumeroHelper.numeroCTBToDisplay(noEtablissementPrincipal.getValue()) + " : [27.08.2004 -> 27.08.2007] sur COMMUNE_OU_FRACTION_VD/5518.", textes.get(5));
-			Assert.assertEquals("Entreprise migrée : 749.84.", textes.get(6));
+			Assert.assertEquals("Aucune date d'envoi de lettre de bienvenue trouvée malgré la présence d'assujettissement(s).", textes.get(3));
+			Assert.assertEquals("Le siège 2 est ignoré car sa date de début de validité (28.08.2007) est postérieure à la date de fin d'activité de l'entreprise (27.08.2007).", textes.get(4));
+			Assert.assertEquals("Création de l'établissement principal " + FormatNumeroHelper.numeroCTBToDisplay(noEtablissementPrincipal.getValue()) + ".", textes.get(5));
+			Assert.assertEquals("Domicile de l'établissement principal " + FormatNumeroHelper.numeroCTBToDisplay(noEtablissementPrincipal.getValue()) + " : [27.08.2004 -> 27.08.2007] sur COMMUNE_OU_FRACTION_VD/5518.", textes.get(6));
+			Assert.assertEquals("Entreprise migrée : 749.84.", textes.get(7));
 		}
 	}
 
@@ -6313,7 +6322,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		migrator.initMigrationResult(mr, idMapper);
 		migrate(e, migrator, mr, linkCollector, idMapper);
 
-		// la date du for principal de l'entreprise ne doit pas avoir été modifiée
+		// vérification que le numéro IDE n'a pas été migré (car invalide)
 		doInUniregTransaction(true, status -> {
 			final Entreprise entreprise = uniregStore.getEntityFromDb(Entreprise.class, noEntreprise);
 			Assert.assertNotNull(entreprise);
@@ -6336,6 +6345,64 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 			Assert.assertEquals("Ajout d'un régime fiscal CH de type '01' sur la période [01.01.2010 -> ?] pour couvrir les fors de l'entreprise.", textes.get(4));
 			Assert.assertEquals("Pas de siège associé dans les données fiscales, pas d'établissement principal créé à partir des données fiscales.", textes.get(5));
 			Assert.assertEquals("Entreprise migrée : 749.84.", textes.get(6));
+		}
+	}
+
+	@Test
+	public void testMigrationLettreBienvenue() throws Exception {
+
+		final long noEntreprise = 74984L;
+		final RegDate dateDebut = RegDate.get(2010, 5, 3);
+		final RegDate dateEnvoiLettreBienvenue = RegDate.get(2010, 6, 1);
+
+		final RegpmEntreprise e = buildEntreprise(noEntreprise);
+		addRaisonSociale(e, dateDebut, "Turlututu SA", null, null, true);
+		addFormeJuridique(e, dateDebut, createTypeFormeJuridique("S.A.", RegpmCategoriePersonneMorale.PM));
+		addForPrincipalSuisse(e, dateDebut, RegpmTypeForPrincipal.SIEGE, Commune.ECHALLENS);
+		final RegpmAssujettissement assujettissement = addAssujettissement(e, dateDebut, null, RegpmTypeAssujettissement.LILIC);
+		assujettissement.setDateEnvoiLettre(dateEnvoiLettreBienvenue);
+
+		final MockGraphe graphe = new MockGraphe(Collections.singletonList(e),
+		                                         null,
+		                                         null);
+		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
+		final EntityLinkCollector linkCollector = new EntityLinkCollector();
+		final IdMapper idMapper = new IdMapper();
+		migrator.initMigrationResult(mr, idMapper);
+		migrate(e, migrator, mr, linkCollector, idMapper);
+
+		// vérification de la présence d'une lettre de bienvenue au 3 mai 2010
+		doInUniregTransaction(true, status -> {
+			final Entreprise entreprise = uniregStore.getEntityFromDb(Entreprise.class, noEntreprise);
+			Assert.assertNotNull(entreprise);
+
+			final Set<AutreDocumentFiscal> adfs = entreprise.getAutresDocumentsFiscaux();
+			Assert.assertNotNull(adfs);
+			Assert.assertEquals(1, adfs.size());
+
+			final AutreDocumentFiscal adf = adfs.iterator().next();
+			Assert.assertNotNull(adf);
+			Assert.assertEquals(LettreBienvenue.class, adf.getClass());
+			final LettreBienvenue lb = (LettreBienvenue) adf;
+			Assert.assertEquals(dateEnvoiLettreBienvenue, lb.getDateEnvoi());
+			Assert.assertEquals(dateEnvoiLettreBienvenue.addDays(20), lb.getDateRetour());
+			Assert.assertEquals(dateEnvoiLettreBienvenue.addDays(30), lb.getDelaiRetour());
+			Assert.assertNull(lb.getDateRappel());
+			Assert.assertFalse(lb.isAnnule());
+		});
+
+		// vérification des messages dans le contexte "SUIVI"
+		{
+			final List<MigrationResultCollector.Message> messages = mr.getMessages().get(LogCategory.SUIVI);
+			Assert.assertNotNull(messages);
+			final List<String> textes = messages.stream().map(msg -> msg.text).collect(Collectors.toList());
+			Assert.assertEquals(6, textes.size());
+			Assert.assertEquals("L'entreprise n'existait pas dans Unireg avec ce numéro de contribuable.", textes.get(0));
+			Assert.assertEquals("Entreprise sans exercice commercial ni date de bouclement futur.", textes.get(1));
+			Assert.assertEquals("Ajout d'un régime fiscal VD de type '01' sur la période [03.05.2010 -> ?] pour couvrir les fors de l'entreprise.", textes.get(2));
+			Assert.assertEquals("Ajout d'un régime fiscal CH de type '01' sur la période [03.05.2010 -> ?] pour couvrir les fors de l'entreprise.", textes.get(3));
+			Assert.assertEquals("Pas de siège associé dans les données fiscales, pas d'établissement principal créé à partir des données fiscales.", textes.get(4));
+			Assert.assertEquals("Entreprise migrée : 749.84.", textes.get(5));
 		}
 	}
 }

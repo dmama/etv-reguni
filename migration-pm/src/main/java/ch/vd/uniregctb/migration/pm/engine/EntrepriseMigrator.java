@@ -73,6 +73,7 @@ import ch.vd.uniregctb.declaration.EtatDeclarationRetournee;
 import ch.vd.uniregctb.declaration.EtatDeclarationSommee;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.declaration.QuestionnaireSNC;
+import ch.vd.uniregctb.documentfiscal.LettreBienvenue;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementException;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImposition;
@@ -186,6 +187,7 @@ import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeEtatEntreprise;
 import ch.vd.uniregctb.type.TypeFlagEntreprise;
 import ch.vd.uniregctb.type.TypeGenerationEtatEntreprise;
+import ch.vd.uniregctb.type.TypeLettreBienvenue;
 import ch.vd.uniregctb.type.TypeMandat;
 
 public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> {
@@ -2051,8 +2053,6 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		// enregistrement de cette entreprise pour la comparaison des assujettissements avant/après
 		mr.addPreTransactionCommitData(new ComparaisonAssujettissementsData(regpm, migrationContexte.getActivityManager().isActive(regpm), moi));
 
-		// TODO migrer les documents (lettres de bienvenue...)
-
 		final String raisonSociale = Optional.ofNullable(mr.getExtractedData(RaisonSocialeHistoData.class, moi.getKey()).histo.lastEntry()).map(Map.Entry::getValue).orElse(null);
 		migrateCoordonneesFinancieres(regpm::getCoordonneesFinancieres, raisonSociale, unireg, mr);
 		migratePersonneContact(regpm.getContact1(), unireg, mr);
@@ -2066,7 +2066,8 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		migrateRegimesFiscaux(regpm, unireg, mr);
 		migrateExercicesCommerciaux(regpm, unireg, mr);
 		migrateDeclarationsImpot(regpm, unireg, mr, idMapper);
-		migrateQuestionnairesSNC(regpm, unireg, mr, idMapper);
+		migrateQuestionnairesSNC(regpm, unireg, mr);
+		migrateLettresBienvenue(regpm, unireg, mr, idMapper);
 		generateForsPrincipaux(regpm, unireg, mr);
 		migrateImmeubles(regpm, unireg, mr);
 
@@ -3431,9 +3432,8 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 	 * @param regpm entreprise dans RegPM
 	 * @param unireg entreprise dans Unireg
 	 * @param mr collecteur des messages de suivi
-	 * @param idMapper mapping des identifiants RegPM -> Unireg
 	 */
-	private void migrateQuestionnairesSNC(RegpmEntreprise regpm, Entreprise unireg, MigrationResultProduction mr, IdMapping idMapper) {
+	private void migrateQuestionnairesSNC(RegpmEntreprise regpm, Entreprise unireg, MigrationResultProduction mr) {
 		regpm.getQuestionnairesSNC().stream()
 				.filter(q -> q.getEtat() != RegpmTypeEtatQuestionnaireSNC.ANNULE)       // on ne migre pas les questionnaires annulés
 				.filter(q -> {
@@ -3448,6 +3448,73 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 				                         String.format("Génération d'un questionnaire SNC sur la période fiscale %d.", q.getAnneeFiscale())))
 				.map(q -> migrateQuestionnaireSNC(q, mr))
 				.forEach(unireg::addDeclaration);
+	}
+
+	/**
+	 * Migration des lettres de bienvenue des entreprises de RegPM
+	 * @param regpm entreprise dans RegPM
+	 * @param unireg entreprise dans Unireg
+	 * @param mr collecteur de messages de suivi
+	 * @param idMapper mapping des identifiants RegPM -> Unireg
+	 */
+	private void migrateLettresBienvenue(RegpmEntreprise regpm, Entreprise unireg, MigrationResultProduction mr, IdMapping idMapper) {
+		// s'il n'y a pas d'assujettissement, il n'y a rien à migrer
+		if (!regpm.getAssujettissements().isEmpty()) {
+
+			// on ne migre que le dernier envoi
+			final RegDate dateDernierEnvoi = regpm.getAssujettissements().stream()
+					.map(RegpmAssujettissement::getDateEnvoiLettre)
+					.filter(Objects::nonNull)
+					.max(Comparator.naturalOrder())
+					.orElse(null);
+
+			// des assujettissements mais pas de lettre -> erreur
+			if (dateDernierEnvoi == null) {
+				mr.addMessage(LogCategory.SUIVI, LogLevel.ERROR, "Aucune date d'envoi de lettre de bienvenue trouvée malgré la présence d'assujettissement(s).");
+			}
+			else {
+				// quelle est la catégorie d'entreprise à la date d'envoi ?
+				final NavigableMap<RegDate, RegpmTypeFormeJuridique> histoFormesJuridiques = mr.getExtractedData(FormeJuridiqueHistoData.class, buildEntrepriseKey(regpm)).histo;
+				final RegpmTypeFormeJuridique tfj = Optional.of(dateDernierEnvoi)
+						.map(histoFormesJuridiques::floorEntry)
+						.map(Map.Entry::getValue)
+						.orElse(null);
+				if (tfj == null) {
+					mr.addMessage(LogCategory.SUIVI, LogLevel.ERROR,
+					              String.format("Pas de forme juridique valide à la date d'envoi de la lettre de bienvenue (%s), la lettre est ignorée.",
+					                            StringRenderers.DATE_RENDERER.toString(dateDernierEnvoi)));
+				}
+				else {
+					final TypeLettreBienvenue typeLettre;
+					switch (tfj.getCategorie()) {
+					case APM:
+						typeLettre = TypeLettreBienvenue.APM_VD_NON_RC;
+						break;
+					case PM:
+						typeLettre = TypeLettreBienvenue.VD_RC;
+						break;
+					default:
+						typeLettre = null;
+						break;
+					}
+
+					if (typeLettre == null) {
+						mr.addMessage(LogCategory.SUIVI, LogLevel.ERROR,
+						              String.format("Forme juridique de catégorie non-supportée (%s) dans la reprise de la lettre de bienvenue, la lettre est ignorée.",
+						                            tfj.getCategorie()));
+
+					}
+					else {
+						final LettreBienvenue lettre = new LettreBienvenue();
+						lettre.setDateEnvoi(dateDernierEnvoi);
+						lettre.setDelaiRetour(dateDernierEnvoi.addDays(30));
+						lettre.setDateRetour(dateDernierEnvoi.addDays(20));
+						lettre.setType(typeLettre);
+						unireg.addAutreDocumentFiscal(lettre);
+					}
+				}
+			}
+		}
 	}
 
 	/**

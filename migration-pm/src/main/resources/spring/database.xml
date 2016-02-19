@@ -36,6 +36,9 @@
 		<value>ch.vd.uniregctb.declaration.ModeleFeuilleDocument</value>
 		<value>ch.vd.uniregctb.declaration.Periodicite</value>
 		<value>ch.vd.uniregctb.declaration.QuestionnaireSNC</value>
+		<value>ch.vd.uniregctb.documentfiscal.AutreDocumentFiscal</value>
+		<value>ch.vd.uniregctb.documentfiscal.AutreDocumentFiscalAvecRetour</value>
+		<value>ch.vd.uniregctb.documentfiscal.LettreBienvenue</value>
 		<value>ch.vd.uniregctb.migreg.MigrationError</value>
 		<value>ch.vd.uniregctb.tiers.ActiviteEconomique</value>
 		<value>ch.vd.uniregctb.tiers.AdministrationEntreprise</value>
