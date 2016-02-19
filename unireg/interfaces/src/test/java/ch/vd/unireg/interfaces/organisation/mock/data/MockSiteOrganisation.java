@@ -22,6 +22,7 @@ import ch.vd.unireg.interfaces.organisation.data.DonneesRegistreIDE;
 import ch.vd.unireg.interfaces.organisation.data.FonctionOrganisation;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.interfaces.organisation.data.OrganisationHelper;
+import ch.vd.unireg.interfaces.organisation.data.PublicationBusiness;
 import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 import ch.vd.unireg.interfaces.organisation.data.TypeDeSite;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
@@ -52,6 +53,7 @@ public class MockSiteOrganisation implements SiteOrganisation {
 	private final NavigableMap<RegDate, Pair<TypeAutoriteFiscale, Integer>> domicile = new TreeMap<>();
 	private final NavigableMap<RegDate, TypeDeSite> typeDeSite = new TreeMap<>();
 	private final NavigableMap<RegDate, FormeLegale> formeLegale = new TreeMap<>();
+	private final NavigableMap<RegDate, List<PublicationBusiness>> publicationsBusiness = new TreeMap<>();
 	private final DonneesRegistreIDE donneesRegistreIDE;
 	private final DonneesRC donneesRC;
 	private final NavigableMap<RegDate, Long> ideRemplacePar = new TreeMap<>();
@@ -94,6 +96,10 @@ public class MockSiteOrganisation implements SiteOrganisation {
 
 	public void addNumeroIDE(RegDate dateDebut, RegDate dateFin, String nouveauNumeroIDE) {
 		MockOrganisationHelper.addRangedData(ide, dateDebut, dateFin, nouveauNumeroIDE);
+	}
+
+	public void addPublicationBusiness(RegDate dateDebut, List<PublicationBusiness> nouvelleListePublicationBusiness) {
+		publicationsBusiness.put(dateDebut, nouvelleListePublicationBusiness);
 	}
 
 	public void addIdeRemplacePar(RegDate dateDebut, @Nullable RegDate dateFin, Long nouveauRemplacePar) {
@@ -232,6 +238,16 @@ public class MockSiteOrganisation implements SiteOrganisation {
 	@Override
 	public Long getIdeEnRemplacementDe(RegDate date) {
 		return OrganisationHelper.valueForDate(getIdeEnRemplacementDe(), date);
+	}
+
+	@Override
+	public Map<RegDate, List<PublicationBusiness>> getPublications() {
+		return publicationsBusiness;
+	}
+
+	@Override
+	public List<PublicationBusiness> getPublications(RegDate date) {
+		return publicationsBusiness.get(date);
 	}
 
 	@Override

@@ -78,6 +78,17 @@ public interface SiteOrganisation {
 	Long getIdeEnRemplacementDe(RegDate date);
 
 	/**
+	 * @return La map des publications concernant le site, indexée par date.
+	 */
+	Map<RegDate, List<PublicationBusiness>> getPublications();
+
+	/**
+	 * @param date la date
+	 * @return la liste des publications concernant l'entité à la date donnée
+	 */
+	List<PublicationBusiness>  getPublications(RegDate date);
+
+	/**
 	 * @return true si le site est inscrit au RC à une date donnée. Si la date est nulle, la date du jour est utilisée.
 	 */
 	boolean isInscritAuRC(RegDate date);

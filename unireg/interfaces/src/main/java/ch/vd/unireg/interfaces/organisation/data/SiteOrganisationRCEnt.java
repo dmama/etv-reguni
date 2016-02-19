@@ -36,6 +36,8 @@ public class SiteOrganisationRCEnt implements Serializable, SiteOrganisation {
 	public final DonneesRC rc;
 	public final DonneesRegistreIDE ide;
 
+	private final Map<RegDate, List<PublicationBusiness>> publications;
+
 	private final List<DateRanged<Long>> ideRemplacePar;
 	private final List<DateRanged<Long>> ideEnRemplacementDe;
 
@@ -51,7 +53,11 @@ public class SiteOrganisationRCEnt implements Serializable, SiteOrganisation {
 	                             List<Domicile> domicile,
 	                             Map<String, List<DateRanged<FonctionOrganisation>>> fonction,
 	                             DonneesRC rc,
-	                             DonneesRegistreIDE ide, List<DateRanged<Long>> ideRemplacePar, List<DateRanged<Long>> ideEnRemplacementDe, List<DateRanged<Long>> burTransfereA,
+	                             DonneesRegistreIDE ide,
+	                             Map<RegDate, List<PublicationBusiness>> publications,
+	                             List<DateRanged<Long>> ideRemplacePar,
+	                             List<DateRanged<Long>> ideEnRemplacementDe,
+	                             List<DateRanged<Long>> burTransfereA,
 	                             List<DateRanged<Long>> burTransferDe) {
 		this.numeroSite = numeroSite;
 		this.nomAdditionnel = nomAdditionnel;
@@ -63,6 +69,7 @@ public class SiteOrganisationRCEnt implements Serializable, SiteOrganisation {
 		this.numeroIDE = OrganisationHelper.extractIdentifiant(autresIdentifiants, OrganisationConstants.CLE_IDE);
 		this.nom = nom;
 		this.rc = rc;
+		this.publications = publications;
 		this.ide = ide;
 		this.typeDeSite = typeDeSite;
 		this.domicile = domicile;
@@ -176,6 +183,16 @@ public class SiteOrganisationRCEnt implements Serializable, SiteOrganisation {
 
 	public Long getBurTransfereA(RegDate date) {
 		return OrganisationHelper.valueForDate(burTransfereA, date);
+	}
+
+	@Override
+	public Map<RegDate, List<PublicationBusiness>>  getPublications() {
+		return publications;
+	}
+
+	@Override
+	public List<PublicationBusiness>  getPublications(RegDate date) {
+		return publications.get(date);
 	}
 
 	/**

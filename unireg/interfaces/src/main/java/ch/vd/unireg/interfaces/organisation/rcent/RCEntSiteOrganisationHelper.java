@@ -10,6 +10,7 @@ import ch.vd.unireg.interfaces.organisation.data.DonneesRegistreIDE;
 import ch.vd.unireg.interfaces.organisation.data.DonneesRegistreIDERCEnt;
 import ch.vd.unireg.interfaces.organisation.data.SiteOrganisationRCEnt;
 import ch.vd.unireg.interfaces.organisation.rcent.converters.AddressConverters;
+import ch.vd.unireg.interfaces.organisation.rcent.converters.BusinessPublicationConverter;
 import ch.vd.unireg.interfaces.organisation.rcent.converters.CapitalConverter;
 import ch.vd.unireg.interfaces.organisation.rcent.converters.CapitalPredicate;
 import ch.vd.unireg.interfaces.organisation.rcent.converters.CommercialRegisterStatusConverter;
@@ -31,6 +32,7 @@ public class RCEntSiteOrganisationHelper {
 	private static final AddressConverters.EffectiveAddressConverter ADDRESS_EFFECIVE_CONVERTER = new AddressConverters.EffectiveAddressConverter();
 	private static final CommercialRegisterStatusConverter COMMERCIAL_REGISTER_STATUS_INSCRIPTION_CONVERTER = new CommercialRegisterStatusConverter();
 	private static final CapitalConverter CAPITAL_CONVERTER = new CapitalConverter();
+	private static final BusinessPublicationConverter BUSINESS_PUBLICATION_CONVERTER = new BusinessPublicationConverter();
 	private static final UidRegisterStatusConverter UID_REGISTER_STATUS_CONVERTER = new UidRegisterStatusConverter();
 	private static final UidRegisterTypeOfOrganisationConverter UID_REGISTER_TYPE_OF_ORGANISATION_CONVERTER = new UidRegisterTypeOfOrganisationConverter();
 	private static final UidRegisterRaisonDeRadiationRegistreIDEConverter UID_REGISTER_LIQUIDATION_REASON_CONVERTER = new UidRegisterRaisonDeRadiationRegistreIDEConverter();
@@ -48,10 +50,11 @@ public class RCEntSiteOrganisationHelper {
 				RCEntHelper.convert(rcEntLocation.getAdditionalName()),
 				RCEntHelper.convertAndMap(rcEntLocation.getTypeOfLocation(), TYPE_OF_LOCATION_CONVERTER),
 				RCEntHelper.convertAndMap(rcEntLocation.getLegalForm(), new LegalFormConverter()),
-				RCEntHelper.convertAndFlatmap(rcEntLocation.getSeat(), new SeatConverter(infraService)),
+				RCEntHelper.convertAndDerange(rcEntLocation.getSeat(), new SeatConverter(infraService)),
 				RCEntHelper.convertAndMap(rcEntLocation.getFunction(), FUNCTION_CONVERTER),
 				createDonneesRC(rc),
 				createDonneesIDE(uid),
+				RCEntHelper.convertAndMapDerange(rcEntLocation.getBusinessPublication(), BUSINESS_PUBLICATION_CONVERTER),
 				RCEntHelper.convert(rcEntLocation.getUidReplacedBy()),
 				RCEntHelper.convert(rcEntLocation.getUidInReplacementOf()),
 				RCEntHelper.convert(rcEntLocation.getBurTransferTo()),
@@ -61,10 +64,10 @@ public class RCEntSiteOrganisationHelper {
 
 	private static DonneesRC createDonneesRC(OrganisationLocation.RCEntRCData rc) {
 		return new DonneesRCRCEnt(
-				RCEntHelper.convertAndFlatmap(rc.getLegalAddress(), ADDRESS_LEGALE_CONVERTER),
+				RCEntHelper.convertAndDerange(rc.getLegalAddress(), ADDRESS_LEGALE_CONVERTER),
 				RCEntHelper.convertAndMap(rc.getRegistrationStatus(), COMMERCIAL_REGISTER_STATUS_INSCRIPTION_CONVERTER),
 				RCEntHelper.convert(rc.getRegistrationDate()),
-				RCEntHelper.convertAndFlatmap(rc.getCapital(), CAPITAL_CONVERTER, CAPITAL_PREDICATE),
+				RCEntHelper.convertAndDerange(rc.getCapital(), CAPITAL_CONVERTER, CAPITAL_PREDICATE),
 				RCEntHelper.convert(rc.getPurpose()),
 				RCEntHelper.convert(rc.getByLawsDate()),
 				RCEntHelper.convert(rc.getDeregistrationDate()));
@@ -72,10 +75,10 @@ public class RCEntSiteOrganisationHelper {
 
 	private static DonneesRegistreIDE createDonneesIDE(final OrganisationLocation.RCEntUIDData uid) {
 		return new DonneesRegistreIDERCEnt(
-				RCEntHelper.convertAndFlatmap(uid.getPostOfficeBoxAddress(), ADDRESS_BOITE_POSTALE_CONVERTER),
+				RCEntHelper.convertAndDerange(uid.getPostOfficeBoxAddress(), ADDRESS_BOITE_POSTALE_CONVERTER),
 				RCEntHelper.convertAndMap(uid.getStatus(), UID_REGISTER_STATUS_CONVERTER),
 				RCEntHelper.convertAndMap(uid.getTypeOfOrganisation(), UID_REGISTER_TYPE_OF_ORGANISATION_CONVERTER),
-				RCEntHelper.convertAndFlatmap(uid.getEffectiveAddress(), ADDRESS_EFFECIVE_CONVERTER),
+				RCEntHelper.convertAndDerange(uid.getEffectiveAddress(), ADDRESS_EFFECIVE_CONVERTER),
 				RCEntHelper.convertAndMap(uid.getLiquidationReason(), UID_REGISTER_LIQUIDATION_REASON_CONVERTER)
 		);
 	}

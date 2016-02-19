@@ -12,12 +12,13 @@ import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.organisation.rcent.converters.Converter;
+import ch.vd.uniregctb.common.WithoutSpringTest;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
 
-public class RCEntHelperTest {
+public class RCEntHelperTest extends WithoutSpringTest {
 
 	private static final Converter<String, String> converter = new Converter<String, String>() {
 		@Override
@@ -255,7 +256,7 @@ public class RCEntHelperTest {
 	}
 
 	@Test
-	public void testConvertAndFlatMapList() throws Exception {
+	public void testConvertAndDerangeList() throws Exception {
 
 		List<DateRangeHelper.Ranged<String>> ranges = Arrays.asList(
 				new DateRangeHelper.Ranged<>(RegDate.get(2015, 5, 25), RegDate.get(2015, 5, 26), "DATA1"),
@@ -264,7 +265,7 @@ public class RCEntHelperTest {
 				new DateRangeHelper.Ranged<>(RegDate.get(2015, 5, 31), RegDate.get(2015, 6, 1), "DATA4")
 		);
 
-		List<FlatMapResultTestData> rangesResult = RCEntHelper.convertAndFlatmap(ranges, new Converter<DateRangeHelper.Ranged<String>, FlatMapResultTestData>() {
+		List<FlatMapResultTestData> rangesResult = RCEntHelper.convertAndDerange(ranges, new Converter<DateRangeHelper.Ranged<String>, FlatMapResultTestData>() {
 			@Override
 			public FlatMapResultTestData apply(DateRangeHelper.Ranged<String> stringRanged) {
 				return new FlatMapResultTestData(stringRanged.getDateDebut(), stringRanged.getDateFin(), converter.apply(stringRanged.getPayload()));
@@ -294,7 +295,57 @@ public class RCEntHelperTest {
 	}
 
 	@Test
-	public void testConvertAndFlatMapListAvecPredicat() throws Exception {
+	public void testConvertAndMapDerangeList() throws Exception {
+
+		List<DateRangeHelper.Ranged<String>> ranges1 = Arrays.asList(
+				new DateRangeHelper.Ranged<>(date(2015, 5, 25), date(2015, 5, 26), "DATA1"),
+				new DateRangeHelper.Ranged<>(date(2015, 5, 25), date(2015, 5, 26), "DATA2")
+		);
+		List<DateRangeHelper.Ranged<String>> ranges2 = Arrays.asList(
+				new DateRangeHelper.Ranged<>(date(2015, 5, 27), date(2015, 5, 30), "DATA3"),
+				new DateRangeHelper.Ranged<>(date(2015, 5, 27), date(2015, 5, 30), "DATA4")
+		);
+		Map<RegDate, List<DateRangeHelper.Ranged<String>>> rangeMap = new HashMap<>();
+		rangeMap.put(date(2015, 5, 25), ranges1);
+		rangeMap.put(date(2015, 5, 27), ranges2);
+
+		Map<RegDate, List<FlatMapResultTestData>> mapResult = RCEntHelper.convertAndMapDerange(rangeMap, new Converter<DateRangeHelper.Ranged<String>, FlatMapResultTestData>() {
+			@Override
+			public FlatMapResultTestData apply(DateRangeHelper.Ranged<String> stringRanged) {
+				return new FlatMapResultTestData(stringRanged.getDateDebut(), stringRanged.getDateFin(), converter.apply(stringRanged.getPayload()));
+			}
+		});
+
+		{
+			List<FlatMapResultTestData> rangeResult = mapResult.get(date(2015, 5, 25));
+			{
+				assertThat(rangeResult.get(0).getDateDebut(), equalTo(date(2015, 5, 25)));
+				assertThat(rangeResult.get(0).getDateFin(), equalTo(date(2015, 5, 26)));
+				assertThat(rangeResult.get(0).getData(), equalTo("DATA1_CONVERTED"));
+			}
+			{
+				assertThat(rangeResult.get(1).getDateDebut(), equalTo(date(2015, 5, 25)));
+				assertThat(rangeResult.get(1).getDateFin(), equalTo(date(2015, 5, 26)));
+				assertThat(rangeResult.get(1).getData(), equalTo("DATAd_CONVERTED"));
+			}
+		}
+		{
+			List<FlatMapResultTestData> rangeResult = mapResult.get(date(2015, 5, 27));
+			{
+				assertThat(rangeResult.get(0).getDateDebut(), equalTo(date(2015, 5, 27)));
+				assertThat(rangeResult.get(0).getDateFin(), equalTo(date(2015, 5, 30)));
+				assertThat(rangeResult.get(0).getData(), equalTo("DATA3_CONVERTED"));
+			}
+			{
+				assertThat(rangeResult.get(1).getDateDebut(), equalTo(date(2015, 5, 27)));
+				assertThat(rangeResult.get(1).getDateFin(), equalTo(date(2015, 5, 30)));
+				assertThat(rangeResult.get(1).getData(), equalTo("DATA4_CONVERTED"));
+			}
+		}
+	}
+
+	@Test
+	public void testConvertAndDerangeListAvecPredicat() throws Exception {
 
 		List<DateRangeHelper.Ranged<String>> ranges = Arrays.asList(
 				new DateRangeHelper.Ranged<>(RegDate.get(2015, 5, 25), RegDate.get(2015, 5, 26), "DATA1"),
@@ -303,7 +354,7 @@ public class RCEntHelperTest {
 				new DateRangeHelper.Ranged<>(RegDate.get(2015, 5, 31), RegDate.get(2015, 6, 1), "DATA4")
 		);
 
-		List<FlatMapResultTestData> rangesResult = RCEntHelper.convertAndFlatmap(ranges,
+		List<FlatMapResultTestData> rangesResult = RCEntHelper.convertAndDerange(ranges,
 		                                                                         new Converter<DateRangeHelper.Ranged<String>, FlatMapResultTestData>() {
 			                                                                         @Override
 			                                                                         public FlatMapResultTestData apply(DateRangeHelper.Ranged<String> stringRanged) {

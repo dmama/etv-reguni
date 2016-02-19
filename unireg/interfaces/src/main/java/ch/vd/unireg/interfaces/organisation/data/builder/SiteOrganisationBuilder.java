@@ -41,7 +41,7 @@ public class SiteOrganisationBuilder implements DataBuilder<SiteOrganisationRCEn
 
 	@NotNull
 	public SiteOrganisationRCEnt build() {
-		return new SiteOrganisationRCEnt(numeroSite, identifiants, nom, nomAdditionnel, typesDeSite, formeLegale, domiciles, fonction, rc, ide, remplacePar, enRemplacementDe, transfereA, transferDe);
+		return new SiteOrganisationRCEnt(numeroSite, identifiants, nom, nomAdditionnel, typesDeSite, formeLegale, domiciles, fonction, rc, ide, null, remplacePar, enRemplacementDe, transfereA, transferDe);
 	}
 
 	public SiteOrganisationBuilder addIdentifiant(@NotNull String cle, @NotNull RegDate dateDebut, RegDate dateDeFin, @NotNull String valeur) {

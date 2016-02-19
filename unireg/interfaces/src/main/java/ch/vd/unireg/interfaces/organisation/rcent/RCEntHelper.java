@@ -137,7 +137,7 @@ public class RCEntHelper {
 	 * @param <D> Le type des données en sortie.
 	 * @return Une nouvelle liste contenant les données transformées.
 	 */
-	public static <S, D extends DateRange> List<D> convertAndFlatmap(List<? extends DateRangeHelper.Ranged<S>> source,
+	public static <S, D extends DateRange> List<D> convertAndDerange(List<? extends DateRangeHelper.Ranged<S>> source,
 	                                                                 Converter<? super DateRangeHelper.Ranged<S>, ? extends D> flatMapper,
 	                                                                 @Nullable Predicate<S> filterPredicate) {
 		if (source == null) {
@@ -163,8 +163,31 @@ public class RCEntHelper {
 		return filterPredicate == null || filterPredicate.evaluate(src.getPayload());
 	}
 
-	public static <S, D extends DateRange> List<D> convertAndFlatmap(List<? extends DateRangeHelper.Ranged<S>> source,
+	public static <S, D extends DateRange> List<D> convertAndDerange(List<? extends DateRangeHelper.Ranged<S>> source,
 	                                                                 Converter<? super DateRangeHelper.Ranged<S>, ? extends D> flatMapper) {
-		return convertAndFlatmap(source, flatMapper, null);
+		return convertAndDerange(source, flatMapper, null);
+	}
+
+	/**
+	 * Converti une {@link Map} de listes RCEnt en Map de liste de données Unireg, en transformant la donnée originale de chaque DateRanged à
+	 * l'aide du flatMapper. La donnée Unireg implément DateRange et reprend le début et la fin de chaque période DateRanged.
+	 *
+	 * @param rcEntDrListMap Une Map de listes de DateRanged RCEnt.
+	 * @param flatMapper Une fonction de transformation des données.
+	 * @param <K> Le type des clés de la Map.
+	 * @param <U> Le type de la donnée enveloppée dans les DateRanged des listes.
+	 * @param <R> Le type des donnée enveloppée dans les DateRanged RCEnt en entrée.
+	 * @return Une nouvelle Map de listes de données Unireg.
+	 */
+	public static <K, U, R extends DateRange> Map<K, List<R>>  convertAndMapDerange(Map<K, List<DateRangeHelper.Ranged<U>>> rcEntDrListMap,
+	                                                              Converter<? super DateRangeHelper.Ranged<U>, ? extends R> flatMapper) {
+		if (rcEntDrListMap == null) {
+			return null;
+		}
+		final Map<K, List<R>> map = new HashMap<>(rcEntDrListMap.size());
+		for (Map.Entry<K, List<DateRangeHelper.Ranged<U>>> e : rcEntDrListMap.entrySet()) {
+			map.put(e.getKey(), convertAndDerange(e.getValue(), flatMapper));
+		}
+		return map;
 	}
 }
