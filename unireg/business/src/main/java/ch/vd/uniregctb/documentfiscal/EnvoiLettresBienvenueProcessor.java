@@ -67,7 +67,7 @@ public class EnvoiLettresBienvenueProcessor {
 		this.autreDocumentFiscalService = autreDocumentFiscalService;
 	}
 
-	public EnvoiLettresBienvenueResults run(final RegDate dateTraitement, StatusManager statusManager) {
+	public EnvoiLettresBienvenueResults run(final RegDate dateTraitement, final int delaiCarence, StatusManager statusManager) {
 
 		final StatusManager status = statusManager != null ? statusManager : new LoggingStatusManager(LOGGER);
 
@@ -80,7 +80,7 @@ public class EnvoiLettresBienvenueProcessor {
 		final List<Long> ids = fetchIds(dateOrigine);
 
 		final int tailleTrouAssujettissement = parametreAppService.getTailleTrouAssujettissementPourNouvelleLettreBienvenue();
-		final EnvoiLettresBienvenueResults rapportFinal = new EnvoiLettresBienvenueResults(dateTraitement, dateOrigine, tailleTrouAssujettissement);
+		final EnvoiLettresBienvenueResults rapportFinal = new EnvoiLettresBienvenueResults(dateTraitement, delaiCarence, dateOrigine, tailleTrouAssujettissement);
 		final ProgressMonitor progressMonitor = new SimpleProgressMonitor();
 		final BatchTransactionTemplateWithResults<Long, EnvoiLettresBienvenueResults> template = new BatchTransactionTemplateWithResults<>(ids, BATCH_SIZE, Behavior.REPRISE_AUTOMATIQUE, transactionManager, status);
 		template.execute(rapportFinal, new BatchWithResultsCallback<Long, EnvoiLettresBienvenueResults>() {
@@ -92,7 +92,7 @@ public class EnvoiLettresBienvenueProcessor {
 
 			@Override
 			public EnvoiLettresBienvenueResults createSubRapport() {
-				return new EnvoiLettresBienvenueResults(dateTraitement, dateOrigine, tailleTrouAssujettissement);
+				return new EnvoiLettresBienvenueResults(dateTraitement, delaiCarence, dateOrigine, tailleTrouAssujettissement);
 			}
 		}, progressMonitor);
 
@@ -108,7 +108,8 @@ public class EnvoiLettresBienvenueProcessor {
 			final List<Assujettissement> assujettissements = assujettissementService.determine(e);
 
 			// pas d'assujettissement maintenant, aucune raison d'avoir une lettre de bienvenue...
-			if (assujettissements == null || assujettissements.isEmpty() || DateRangeHelper.rangeAt(assujettissements, rapport.dateTraitement) == null) {
+			final RegDate dateReferencePourAssujettissement = rapport.dateTraitement.addDays(-rapport.delaiCarence);
+			if (assujettissements == null || assujettissements.isEmpty() || DateRangeHelper.rangeAt(assujettissements, dateReferencePourAssujettissement) == null) {
 				rapport.addIgnoreNonAssujetti(id);
 			}
 			else {

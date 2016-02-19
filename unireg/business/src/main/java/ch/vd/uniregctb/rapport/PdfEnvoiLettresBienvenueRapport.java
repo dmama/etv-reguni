@@ -41,6 +41,7 @@ public class PdfEnvoiLettresBienvenueRapport extends PdfRapport {
 				@Override
 				public void fillTable(PdfTableSimple table) throws DocumentException {
 					table.addLigne("Date de traitement :", RegDateHelper.dateToDisplayString(results.dateTraitement));
+					table.addLigne("Délai de carence (jours) :", Integer.toString(results.delaiCarence));
 					table.addLigne("Date seuil pour les nouveaux assujettissements :", RegDateHelper.dateToDisplayString(results.dateOrigine));
 					table.addLigne("Taille minimale (jours) du trou d'assujettissement pour une nouvelle lettre :", Integer.toString(results.tailleMinimaleTrouAssujettissement));
 				}

@@ -12,10 +12,11 @@ public interface AutreDocumentFiscalService {
 	/**
 	 * Envoi des lettres de bienvenue en masse
 	 * @param dateTraitement date de traitement (= date du jour, ou assimilée)
+	 * @param delaiCarence délai (en jours) de décalage pour la prise en compte des assujettissements
 	 * @param statusManager status manager (pour la gestion, par exemple, de l'interruption du job, ou de la mesure de progression...)
 	 * @return les données du rapport d'exécution
 	 */
-	EnvoiLettresBienvenueResults envoyerLettresBienvenueEnMasse(RegDate dateTraitement, StatusManager statusManager);
+	EnvoiLettresBienvenueResults envoyerLettresBienvenueEnMasse(RegDate dateTraitement, int delaiCarence, StatusManager statusManager);
 
 	/**
 	 * @param e entreprise pour laquelle on doit envoyer une lettre de bienvenue (en mode batch)

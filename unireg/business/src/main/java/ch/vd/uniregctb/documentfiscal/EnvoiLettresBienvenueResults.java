@@ -13,6 +13,7 @@ import ch.vd.uniregctb.type.TypeLettreBienvenue;
 public class EnvoiLettresBienvenueResults extends AbstractJobResults<Long, EnvoiLettresBienvenueResults> {
 
 	public final RegDate dateTraitement;
+	public final int delaiCarence;
 	public final RegDate dateOrigine;
 	public final int tailleMinimaleTrouAssujettissement;
 
@@ -80,8 +81,9 @@ public class EnvoiLettresBienvenueResults extends AbstractJobResults<Long, Envoi
 	private final List<Traite> traites = new LinkedList<>();
 	private boolean interrompu = false;
 
-	public EnvoiLettresBienvenueResults(RegDate dateTraitement, RegDate dateOrigine, int tailleMinimaleTrouAssujettissement) {
+	public EnvoiLettresBienvenueResults(RegDate dateTraitement, int delaiCarence, RegDate dateOrigine, int tailleMinimaleTrouAssujettissement) {
 		this.dateTraitement = dateTraitement;
+		this.delaiCarence = delaiCarence;
 		this.dateOrigine = dateOrigine;
 		this.tailleMinimaleTrouAssujettissement = tailleMinimaleTrouAssujettissement;
 	}

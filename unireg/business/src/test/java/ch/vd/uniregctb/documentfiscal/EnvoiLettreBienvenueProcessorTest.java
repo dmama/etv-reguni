@@ -85,7 +85,7 @@ public class EnvoiLettreBienvenueProcessorTest extends BusinessTest {
 
 		// lancement du processeur
 		// l'entreprise n'est même pas prise en compte dans la requête initiale car elle n'a pas de nouveau for vaudois
-		final EnvoiLettresBienvenueResults results = processor.run(RegDate.get(), null);
+		final EnvoiLettresBienvenueResults results = processor.run(RegDate.get(), 0, null);
 		Assert.assertNotNull(results);
 		Assert.assertEquals(0, results.getErreurs().size());
 		Assert.assertEquals(0, results.getIgnores().size());
@@ -125,7 +125,7 @@ public class EnvoiLettreBienvenueProcessorTest extends BusinessTest {
 		});
 
 		// lancement du processeur
-		final EnvoiLettresBienvenueResults results = processor.run(RegDate.get(), null);
+		final EnvoiLettresBienvenueResults results = processor.run(RegDate.get(), 0, null);
 		Assert.assertNotNull(results);
 		Assert.assertEquals(0, results.getErreurs().size());
 		Assert.assertEquals(1, results.getIgnores().size());
@@ -174,7 +174,7 @@ public class EnvoiLettreBienvenueProcessorTest extends BusinessTest {
 		});
 
 		// lancement du processeur
-		final EnvoiLettresBienvenueResults results = processor.run(RegDate.get(), null);
+		final EnvoiLettresBienvenueResults results = processor.run(RegDate.get(), 0, null);
 		Assert.assertNotNull(results);
 		Assert.assertEquals(0, results.getErreurs().size());
 		Assert.assertEquals(1, results.getIgnores().size());
@@ -219,7 +219,7 @@ public class EnvoiLettreBienvenueProcessorTest extends BusinessTest {
 		});
 
 		// lancement du processeur
-		final EnvoiLettresBienvenueResults results = processor.run(RegDate.get(), null);
+		final EnvoiLettresBienvenueResults results = processor.run(RegDate.get(), 0, null);
 		Assert.assertNotNull(results);
 		Assert.assertEquals(1, results.getErreurs().size());
 		Assert.assertEquals(0, results.getIgnores().size());
@@ -268,7 +268,7 @@ public class EnvoiLettreBienvenueProcessorTest extends BusinessTest {
 		});
 
 		// lancement du processeur
-		final EnvoiLettresBienvenueResults results = processor.run(RegDate.get(), null);
+		final EnvoiLettresBienvenueResults results = processor.run(RegDate.get(), 0, null);
 		Assert.assertNotNull(results);
 		Assert.assertEquals(0, results.getErreurs().size());
 		Assert.assertEquals(1, results.getIgnores().size());
@@ -335,7 +335,7 @@ public class EnvoiLettreBienvenueProcessorTest extends BusinessTest {
 
 		// lancement du processeur
 		final RegDate dateTraitement = RegDate.get();
-		final EnvoiLettresBienvenueResults results = processor.run(dateTraitement, null);
+		final EnvoiLettresBienvenueResults results = processor.run(dateTraitement, 0, null);
 		Assert.assertNotNull(results);
 		Assert.assertEquals(0, results.getErreurs().size());
 		Assert.assertEquals(0, results.getIgnores().size());
@@ -408,7 +408,7 @@ public class EnvoiLettreBienvenueProcessorTest extends BusinessTest {
 
 		// lancement du processeur
 		final RegDate dateTraitement = RegDate.get();
-		final EnvoiLettresBienvenueResults results = processor.run(dateTraitement, null);
+		final EnvoiLettresBienvenueResults results = processor.run(dateTraitement, 0, null);
 		Assert.assertNotNull(results);
 		Assert.assertEquals(0, results.getErreurs().size());
 		Assert.assertEquals(0, results.getIgnores().size());
@@ -481,7 +481,7 @@ public class EnvoiLettreBienvenueProcessorTest extends BusinessTest {
 
 		// lancement du processeur
 		final RegDate dateTraitement = RegDate.get();
-		final EnvoiLettresBienvenueResults results = processor.run(dateTraitement, null);
+		final EnvoiLettresBienvenueResults results = processor.run(dateTraitement, 0, null);
 		Assert.assertNotNull(results);
 		Assert.assertEquals(0, results.getErreurs().size());
 		Assert.assertEquals(0, results.getIgnores().size());
@@ -541,7 +541,7 @@ public class EnvoiLettreBienvenueProcessorTest extends BusinessTest {
 
 		// lancement du processeur
 		final RegDate dateTraitement = RegDate.get();
-		final EnvoiLettresBienvenueResults results = processor.run(dateTraitement, null);
+		final EnvoiLettresBienvenueResults results = processor.run(dateTraitement, 0, null);
 		Assert.assertNotNull(results);
 		Assert.assertEquals(0, results.getErreurs().size());
 		Assert.assertEquals(0, results.getIgnores().size());
@@ -601,7 +601,7 @@ public class EnvoiLettreBienvenueProcessorTest extends BusinessTest {
 
 		// lancement du processeur
 		final RegDate dateTraitement = RegDate.get();
-		final EnvoiLettresBienvenueResults results = processor.run(dateTraitement, null);
+		final EnvoiLettresBienvenueResults results = processor.run(dateTraitement, 0, null);
 		Assert.assertNotNull(results);
 		Assert.assertEquals(0, results.getErreurs().size());
 		Assert.assertEquals(0, results.getIgnores().size());
@@ -662,7 +662,7 @@ public class EnvoiLettreBienvenueProcessorTest extends BusinessTest {
 
 		// lancement du processeur
 		final RegDate dateTraitement = RegDate.get();
-		final EnvoiLettresBienvenueResults results = processor.run(dateTraitement, null);
+		final EnvoiLettresBienvenueResults results = processor.run(dateTraitement, 0, null);
 		Assert.assertNotNull(results);
 		Assert.assertEquals(0, results.getErreurs().size());
 		Assert.assertEquals(0, results.getIgnores().size());
@@ -722,7 +722,7 @@ public class EnvoiLettreBienvenueProcessorTest extends BusinessTest {
 
 		// lancement du processeur
 		final RegDate dateTraitement = RegDate.get();
-		final EnvoiLettresBienvenueResults results = processor.run(dateTraitement, null);
+		final EnvoiLettresBienvenueResults results = processor.run(dateTraitement, 0, null);
 		Assert.assertNotNull(results);
 		Assert.assertEquals(0, results.getErreurs().size());
 		Assert.assertEquals(0, results.getIgnores().size());
@@ -782,7 +782,7 @@ public class EnvoiLettreBienvenueProcessorTest extends BusinessTest {
 
 		// lancement du processeur
 		final RegDate dateTraitement = RegDate.get();
-		final EnvoiLettresBienvenueResults results = processor.run(dateTraitement, null);
+		final EnvoiLettresBienvenueResults results = processor.run(dateTraitement, 0, null);
 		Assert.assertNotNull(results);
 		Assert.assertEquals(0, results.getErreurs().size());
 		Assert.assertEquals(0, results.getIgnores().size());
@@ -843,7 +843,7 @@ public class EnvoiLettreBienvenueProcessorTest extends BusinessTest {
 
 		// lancement du processeur
 		final RegDate dateTraitement = RegDate.get();
-		final EnvoiLettresBienvenueResults results = processor.run(dateTraitement, null);
+		final EnvoiLettresBienvenueResults results = processor.run(dateTraitement, 0, null);
 		Assert.assertNotNull(results);
 		Assert.assertEquals(0, results.getErreurs().size());
 		Assert.assertEquals(0, results.getIgnores().size());
@@ -882,4 +882,88 @@ public class EnvoiLettreBienvenueProcessorTest extends BusinessTest {
 		});
 	}
 
+	@Test
+	public void testDelaiCarence() throws Exception {
+
+		final RegDate dateDebut = date(2016, 1, 4);
+		final RegDate dateTraitement = dateDebut.addDays(2);
+
+		// mise en place fiscale
+		final long pmId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+				addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addRegimeFiscalCH(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addForPrincipal(entreprise, dateDebut, null, MockPays.RoyaumeUni);
+				addForSecondaire(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne.getNoOFS(), MotifRattachement.ETABLISSEMENT_STABLE, GenreImpot.BENEFICE_CAPITAL);
+				addForSecondaire(entreprise, dateDebut, MotifFor.ACHAT_IMMOBILIER, MockCommune.Renens.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE, GenreImpot.BENEFICE_CAPITAL);
+				addBouclement(entreprise, dateDebut, DayMonth.get(12, 31), 12);
+				return entreprise.getNumero();
+			}
+		});
+
+		// lancement du processeur (rien ne doit être traité car le début d'assujettissement est occulté par le délai de carence)
+		final EnvoiLettresBienvenueResults resultsAvecCarenceOccultante = processor.run(dateTraitement, 4, null);
+		Assert.assertNotNull(resultsAvecCarenceOccultante);
+		Assert.assertEquals(0, resultsAvecCarenceOccultante.getErreurs().size());
+		Assert.assertEquals(1, resultsAvecCarenceOccultante.getIgnores().size());
+		Assert.assertEquals(0, resultsAvecCarenceOccultante.getTraites().size());
+
+		{
+			final EnvoiLettresBienvenueResults.Ignore ignore = resultsAvecCarenceOccultante.getIgnores().get(0);
+			Assert.assertNotNull(ignore);
+			Assert.assertEquals(pmId, ignore.noCtb);
+			Assert.assertEquals(EnvoiLettresBienvenueResults.RaisonIgnorement.NON_ASSUJETTI, ignore.raison);
+		}
+
+		// vérification de la non-émission de lettre
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final Entreprise entreprise = (Entreprise) tiersDAO.get(pmId);
+				Assert.assertNotNull(entreprise);
+				Assert.assertEquals(0, entreprise.getAutresDocumentsFiscaux().size());
+			}
+		});
+
+		// nouveau lancement du processeur (cette fois-ci, la lettre doit partir car le début d'assujettissement n'est plus occulté par le délai de carence)
+		final EnvoiLettresBienvenueResults resultsEfficace = processor.run(dateTraitement, 1, null);
+		Assert.assertNotNull(resultsEfficace);
+		Assert.assertEquals(0, resultsEfficace.getErreurs().size());
+		Assert.assertEquals(0, resultsEfficace.getIgnores().size());
+		Assert.assertEquals(1, resultsEfficace.getTraites().size());
+
+		{
+			final EnvoiLettresBienvenueResults.Traite traite = resultsEfficace.getTraites().get(0);
+			Assert.assertNotNull(traite);
+			Assert.assertEquals(pmId, traite.noCtb);
+			Assert.assertEquals(TypeLettreBienvenue.HS_HC_IMMEUBLE, traite.typeLettreEnvoyee);
+		}
+
+		// vérification de l'émission de lettre
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final Entreprise entreprise = (Entreprise) tiersDAO.get(pmId);
+				Assert.assertNotNull(entreprise);
+
+				final Set<AutreDocumentFiscal> adfs = entreprise.getAutresDocumentsFiscaux();
+				Assert.assertNotNull(adfs);
+				Assert.assertEquals(1, adfs.size());
+
+				final AutreDocumentFiscal adf = adfs.iterator().next();
+				Assert.assertNotNull(adf);
+				Assert.assertEquals(LettreBienvenue.class, adf.getClass());
+
+				final LettreBienvenue lb = (LettreBienvenue) adf;
+				Assert.assertEquals(TypeLettreBienvenue.HS_HC_IMMEUBLE, lb.getType());
+				Assert.assertEquals(addJours(dateTraitement, 3), lb.getDateEnvoi());
+				Assert.assertEquals(addJours(dateTraitement, 3).addDays(30), lb.getDelaiRetour());
+				Assert.assertNull(lb.getDateRappel());
+				Assert.assertNull(lb.getDateRetour());
+				Assert.assertEquals(TypeEtatAutreDocumentFiscal.EMIS, lb.getEtat());
+			}
+		});
+	}
 }
