@@ -6,6 +6,7 @@ import java.util.Map;
 import org.jetbrains.annotations.NotNull;
 
 import ch.vd.evd0022.v3.Address;
+import ch.vd.evd0022.v3.BusinessPublication;
 import ch.vd.evd0022.v3.Capital;
 import ch.vd.evd0022.v3.CommercialRegisterStatus;
 import ch.vd.evd0022.v3.KindOfUidEntity;
@@ -28,9 +29,11 @@ public class OrganisationLocation {
 	public final RCEntRCData rc;
 	public final RCEntUIDData uid;
 
+	public final Map<RegDate, List<DateRangeHelper.Ranged<BusinessPublication>>> businessPublication;
+
 	private final Map<String,List<DateRangeHelper.Ranged<String>>> identifiers;
 	private final List<DateRangeHelper.Ranged<String>> additionalName;
-	private final List<DateRangeHelper.Ranged<TypeOfLocation>> kindOfLocation;
+	private final List<DateRangeHelper.Ranged<TypeOfLocation>> typeOfLocation;
 	private final List<DateRangeHelper.Ranged<LegalForm>> legalForm;
 	private final List<DateRangeHelper.Ranged<Integer>> seat;
 	private final Map<String, List<DateRangeHelper.Ranged<OrganisationFunction>>> function;
@@ -41,17 +44,19 @@ public class OrganisationLocation {
 
 	public OrganisationLocation(long cantonalId, @NotNull List<DateRangeHelper.Ranged<String>> name, RCEntRCData rc, RCEntUIDData uid,
 	                            Map<String, List<DateRangeHelper.Ranged<String>>> identifiers, List<DateRangeHelper.Ranged<String>> additionalName,
-	                            List<DateRangeHelper.Ranged<TypeOfLocation>> kindOfLocation, List<DateRangeHelper.Ranged<LegalForm>> legalForm, List<DateRangeHelper.Ranged<Integer>> seat,
+	                            List<DateRangeHelper.Ranged<TypeOfLocation>> typeOfLocation, List<DateRangeHelper.Ranged<LegalForm>> legalForm,
+	                            List<DateRangeHelper.Ranged<Integer>> seat, Map<RegDate, List<DateRangeHelper.Ranged<BusinessPublication>>> businessPublication,
 	                            Map<String, List<DateRangeHelper.Ranged<OrganisationFunction>>> function, List<DateRangeHelper.Ranged<Long>> burTransferTo,
-	                           List<DateRangeHelper.Ranged<Long>> burTransferFrom, List<DateRangeHelper.Ranged<Long>> uidReplacedBy,
+	                            List<DateRangeHelper.Ranged<Long>> burTransferFrom, List<DateRangeHelper.Ranged<Long>> uidReplacedBy,
 	                            List<DateRangeHelper.Ranged<Long>> UidInReplacementOf) {
 		this.cantonalId = cantonalId;
 		this.name = name;
 		this.rc = rc;
 		this.uid = uid;
+		this.businessPublication = businessPublication;
 		this.identifiers = identifiers;
 		this.additionalName = additionalName;
-		this.kindOfLocation = kindOfLocation;
+		this.typeOfLocation = typeOfLocation;
 		this.legalForm = legalForm;
 		this.seat = seat;
 		this.function = function;
@@ -85,7 +90,7 @@ public class OrganisationLocation {
 	}
 
 	public List<DateRangeHelper.Ranged<TypeOfLocation>> getTypeOfLocation() {
-		return kindOfLocation;
+		return typeOfLocation;
 	}
 
 	@NotNull
@@ -114,6 +119,13 @@ public class OrganisationLocation {
 
 	public RCEntUIDData getUid() {
 		return uid;
+	}
+
+	/**
+	 * @return Les historiques de publication FOSC, indexés par date de publication.
+	 */
+	public Map<RegDate, List<DateRangeHelper.Ranged<BusinessPublication>>> getBusinessPublication() {
+		return businessPublication;
 	}
 
 	/**

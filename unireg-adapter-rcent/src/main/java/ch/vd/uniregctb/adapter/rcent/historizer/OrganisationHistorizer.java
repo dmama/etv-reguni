@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 import ch.ech.ech0097.v2.NamedOrganisationId;
 
 import ch.vd.evd0022.v3.Address;
+import ch.vd.evd0022.v3.BusinessPublication;
 import ch.vd.evd0022.v3.Capital;
 import ch.vd.evd0022.v3.CommercialRegisterStatus;
 import ch.vd.evd0022.v3.KindOfUidEntity;
@@ -28,6 +29,7 @@ import ch.vd.uniregctb.adapter.rcent.historizer.collector.MultiValueDataCollecto
 import ch.vd.uniregctb.adapter.rcent.historizer.collector.MultiValueIndexedDataCollector;
 import ch.vd.uniregctb.adapter.rcent.historizer.collector.SingleValueIndexedDataCollector;
 import ch.vd.uniregctb.adapter.rcent.historizer.equalator.AdresseEqualator;
+import ch.vd.uniregctb.adapter.rcent.historizer.equalator.BusinessPublicationEqualator;
 import ch.vd.uniregctb.adapter.rcent.historizer.equalator.CapitalEqualator;
 import ch.vd.uniregctb.adapter.rcent.historizer.equalator.Equalator;
 import ch.vd.uniregctb.adapter.rcent.historizer.equalator.NamedOrganisationIdEqualator;
@@ -37,6 +39,7 @@ import ch.vd.uniregctb.adapter.rcent.historizer.extractor.AdressesLegalesExtract
 import ch.vd.uniregctb.adapter.rcent.historizer.extractor.LocationAdditionalNameExtractor;
 import ch.vd.uniregctb.adapter.rcent.historizer.extractor.LocationBurTransferFromExtractor;
 import ch.vd.uniregctb.adapter.rcent.historizer.extractor.LocationBurTransferToExtractor;
+import ch.vd.uniregctb.adapter.rcent.historizer.extractor.LocationBusinessPublicationExtractor;
 import ch.vd.uniregctb.adapter.rcent.historizer.extractor.LocationIdentifiersExtractor;
 import ch.vd.uniregctb.adapter.rcent.historizer.extractor.LocationLegalFormExtractor;
 import ch.vd.uniregctb.adapter.rcent.historizer.extractor.LocationMunicipalityExtractor;
@@ -105,6 +108,10 @@ public class OrganisationHistorizer {
 		final IndexedDataCollector<Organisation, Integer, BigInteger> locationMunicipalityCollector = new SingleValueIndexedDataCollector<>(new LocationMunicipalityExtractor(),
 		                                                                                                                                    Equalator.DEFAULT
 		);
+		final IndexedDataCollector<Organisation, BusinessPublication, BigInteger> locationBusinessPublicationCollector = new MultiValueIndexedDataCollector<>(new LocationBusinessPublicationExtractor(),
+		                                                                                                                                                      new BusinessPublicationEqualator(),
+		                                                                                                                                                      java.util.function.Function.identity()
+		);
 		final IndexedDataCollector<Organisation, BigInteger, BigInteger> locationUidReplacedByCollector = new SingleValueIndexedDataCollector<>(new LocationUidReplacedByExtractor(),
 		                                                                                                                                        Equalator.DEFAULT
 		);
@@ -171,6 +178,7 @@ public class OrganisationHistorizer {
 		                                                    locationKindsOfLocationCollector,
 		                                                    locationLegalFormsCollector,
 		                                                    locationMunicipalityCollector,
+		                                                    locationBusinessPublicationCollector,
 		                                                    locationUidInReplacementOfCollector,
 		                                                    locationUidReplacedByCollector,
 		                                                    locationBurTransferToCollector,
@@ -203,6 +211,7 @@ public class OrganisationHistorizer {
 				locationAdditionalNameCollector.getCollectedData(),
 				locationKindsOfLocationCollector.getCollectedData(),
 				locationLegalFormsCollector.getCollectedData(),
+				locationBusinessPublicationCollector.getCollectedData(),
 				locationMunicipalityCollector.getCollectedData(),
 				Collections.emptyMap(),
 				locationBurTransferToCollector.getCollectedData(),
