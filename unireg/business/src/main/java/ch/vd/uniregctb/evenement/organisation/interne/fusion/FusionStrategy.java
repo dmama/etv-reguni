@@ -51,13 +51,13 @@ public class FusionStrategy extends AbstractOrganisationStrategy {
 			for (PublicationBusiness publication : publications.get(event.getDateEvenement())) {
 				if (publication.getTypeDeFusion() != null) {
 					switch (publication.getTypeDeFusion()) {
-					case SOCIETES_COOPERATIVES:
-					case SOCIETES_ANONYMES:
-					case SOCIETES_ANONYMES_ET_COMMANDITE_PAR_ACTIONS:
+					case FUSION_SOCIETES_COOPERATIVES:
+					case FUSION_SOCIETES_ANONYMES:
+					case FUSION_SOCIETES_ANONYMES_ET_COMMANDITE_PAR_ACTIONS:
 					case AUTRE_FUSION:
 					case FUSION_INTERNATIONALE:
 					case FUSION_ART_25_LFUS:
-					case INSTITUTIONS_DE_PREVOYANCE:
+					case FUSION_INSTITUTIONS_DE_PREVOYANCE:
 					case FUSION_SUISSE_VERS_ETRANGER:
 						return new Fusion(event, organisation, entreprise, context, options);
 					default:
