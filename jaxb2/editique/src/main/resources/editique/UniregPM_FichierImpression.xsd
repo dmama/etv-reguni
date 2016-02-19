@@ -60,7 +60,11 @@
                     <xs:documentation>Accord Délai Après Sommation : CodDoc=U1P8, typDoc=CO</xs:documentation>
                 </xs:annotation>
             </xs:group>
-            <xs:group ref="lettreBienvenue"/>
+            <xs:group ref="lettreBienvenue">
+                <xs:annotation>
+                    <xs:documentation>Lettre de bienvenue : CodDoc=U1P3, typDoc=CO </xs:documentation>
+                </xs:annotation>
+            </xs:group>
         </xs:choice>
     </xs:group>
     <xs:group name="DI">
@@ -255,9 +259,14 @@
     </xs:group>
     <xs:group name="lettreBienvenue">
         <xs:sequence>
-            <xs:element name="lettreDeBienvenue">
+            <xs:element name="lettreBienvenue">
+                <xs:annotation>
+                    <xs:documentation>U1P3</xs:documentation>
+                </xs:annotation>
                 <xs:complexType>
-                    <xs:sequence> </xs:sequence>
+                    <xs:sequence>
+                        <xs:element name="typeLettre" type="STypeLettreBienvenue"/>
+                    </xs:sequence>
                 </xs:complexType>
             </xs:element>
         </xs:sequence>
@@ -738,6 +747,14 @@ U1P8ADASROUTE
     <xs:simpleType name="STypeCodeFlyer">
         <xs:restriction base="xs:string">
             <xs:pattern value="[0-9]"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name="STypeLettreBienvenue">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="InscriptionVD"/>
+            <xs:enumeration value="APM"/>
+            <xs:enumeration value="HCHSImmeubleVD"/>
+            <xs:enumeration value="HCHSEtablissementStableVD"/>
         </xs:restriction>
     </xs:simpleType>
 </xs:schema>
