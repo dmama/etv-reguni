@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.organisation.interne.fusion;
+package ch.vd.uniregctb.evenement.organisation.interne.dissolution;
 
 import java.util.List;
 import java.util.Map;
@@ -9,6 +9,9 @@ import org.slf4j.LoggerFactory;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.PublicationBusiness;
+import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
+import ch.vd.unireg.interfaces.organisation.data.StatusInscriptionRC;
+import ch.vd.unireg.interfaces.organisation.data.StatusRegistreIDE;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationContext;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationException;
@@ -18,13 +21,13 @@ import ch.vd.uniregctb.evenement.organisation.interne.EvenementOrganisationInter
 import ch.vd.uniregctb.tiers.Entreprise;
 
 /**
- * Evénements portant sur la fusion.
+ * Evénements portant sur la liquidation.
  *
  * @author Raphaël Marmier, 2016-02-18.
  */
-public class FusionStrategy extends AbstractOrganisationStrategy {
+public class LiquidationStrategy extends AbstractOrganisationStrategy {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(FusionStrategy.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(LiquidationStrategy.class);
 
 	/**
 	 * Détecte les mutations pour lesquelles la création d'un événement interne est nécessaire.
@@ -46,27 +49,36 @@ public class FusionStrategy extends AbstractOrganisationStrategy {
 			return null;
 		}
 
-		final Map<RegDate, List<PublicationBusiness>> publications = organisation.getSitePrincipal(event.getDateEvenement()).getPayload().getPublications();
-		if (publications != null && !publications.isEmpty()) {
+		final RegDate dateApres = event.getDateEvenement();
+		final SiteOrganisation sitePrincipal = organisation.getSitePrincipal(dateApres).getPayload();
+
+		final Map<RegDate, List<PublicationBusiness>> publications = sitePrincipal.getPublications();
+		final StatusInscriptionRC statusInscription = sitePrincipal.getDonneesRC().getStatusInscription(dateApres);
+		final StatusRegistreIDE statusRegistreIDE = sitePrincipal.getDonneesRegistreIDE().getStatus(dateApres);
+
+		if (statusInscription == StatusInscriptionRC.EN_LIQUIDATION &&
+				statusRegistreIDE == StatusRegistreIDE.RADIE &&
+				publications != null && !publications.isEmpty()) {
+
 			for (PublicationBusiness publication : publications.get(event.getDateEvenement())) {
-				if (publication.getTypeDeFusion() != null) {
-					switch (publication.getTypeDeFusion()) {
-					case FUSION_SOCIETES_COOPERATIVES:
-					case FUSION_SOCIETES_ANONYMES:
-					case FUSION_SOCIETES_ANONYMES_ET_COMMANDITE_PAR_ACTIONS:
-					case AUTRE_FUSION:
-					case FUSION_INTERNATIONALE:
-					case FUSION_ART_25_LFUS:
-					case FUSION_INSTITUTIONS_DE_PREVOYANCE:
-					case FUSION_SUISSE_VERS_ETRANGER:
-						return new Fusion(event, organisation, entreprise, context, options);
+				if (publication.getTypeDeLiquidation() != null) {
+					switch (publication.getTypeDeLiquidation()) {
+					case SOCIETE_ANONYME:
+					case SOCIETE_RESPONSABILITE_LIMITE:
+					case SOCIETE_COOPERATIVE:
+					case ASSOCIATION:
+					case FONDATION:
+					case SOCIETE_NOM_COLLECTIF:
+					case SOCIETE_COMMANDITE:
+					case SOCIETE_COMMANDITE_PAR_ACTION:
+						return new Liquidation(event, organisation, entreprise, context, options);
 					default:
 						// rien
 					}
 				}
 			}
 		}
-		LOGGER.info("Pas de fusion.");
+		LOGGER.info("Pas de liquidation.");
 		return null;
 	}
 }

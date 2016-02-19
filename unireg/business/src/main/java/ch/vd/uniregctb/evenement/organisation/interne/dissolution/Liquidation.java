@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.organisation.interne.fusion;
+package ch.vd.uniregctb.evenement.organisation.interne.dissolution;
 
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
@@ -15,23 +15,23 @@ import ch.vd.uniregctb.tiers.Entreprise;
 /**
  * @author Raphaël Marmier, 2016-02-19
  */
-public class Fusion extends EvenementOrganisationInterneDeTraitement {
+public class Liquidation extends EvenementOrganisationInterneDeTraitement {
 
-	protected Fusion(EvenementOrganisation evenement, Organisation organisation,
-	                 Entreprise entreprise, EvenementOrganisationContext context,
-	                 EvenementOrganisationOptions options) throws EvenementOrganisationException {
+	protected Liquidation(EvenementOrganisation evenement, Organisation organisation,
+	                      Entreprise entreprise, EvenementOrganisationContext context,
+	                      EvenementOrganisationOptions options) throws EvenementOrganisationException {
 		super(evenement, organisation, entreprise, context, options);
 	}
 
 	@Override
 	public String describe() {
-		return "Fusion";
+		return "Liquidation";
 	}
 
 
 	@Override
 	public void doHandle(EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) throws EvenementOrganisationException {
-		warnings.addWarning("Une vérification, pouvant aboutir à un traitement manuel (processus complexe), est requise pour cause de fusion d'entreprise.");
+		warnings.addWarning("Une vérification, pouvant aboutir à un traitement manuel (processus complexe), est requise pour cause de Liquidation de l'entreprise.");
 		raiseStatusTo(HandleStatus.TRAITE);
 	}
 

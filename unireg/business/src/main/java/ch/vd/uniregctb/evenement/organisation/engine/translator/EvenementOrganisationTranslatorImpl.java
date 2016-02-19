@@ -34,10 +34,11 @@ import ch.vd.uniregctb.evenement.organisation.interne.MessageSuivi;
 import ch.vd.uniregctb.evenement.organisation.interne.TraitementManuel;
 import ch.vd.uniregctb.evenement.organisation.interne.creation.CreateOrganisationStrategy;
 import ch.vd.uniregctb.evenement.organisation.interne.demenagement.DemenagementSiegeStrategy;
+import ch.vd.uniregctb.evenement.organisation.interne.dissolution.FusionScissionStrategy;
+import ch.vd.uniregctb.evenement.organisation.interne.dissolution.LiquidationStrategy;
 import ch.vd.uniregctb.evenement.organisation.interne.doublon.DoublonEntrepriseStrategy;
 import ch.vd.uniregctb.evenement.organisation.interne.doublon.DoublonEtablissementStrategy;
 import ch.vd.uniregctb.evenement.organisation.interne.formejuridique.ChangementFormeJuridiqueStrategy;
-import ch.vd.uniregctb.evenement.organisation.interne.fusion.FusionStrategy;
 import ch.vd.uniregctb.evenement.organisation.interne.information.FailliteConcordatStrategy;
 import ch.vd.uniregctb.evenement.organisation.interne.information.ModificationButsStrategy;
 import ch.vd.uniregctb.evenement.organisation.interne.information.ModificationCapitalStrategy;
@@ -106,7 +107,8 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 		strategies.add(new DoublonEtablissementStrategy());
 		strategies.add(new DemenagementSiegeStrategy());
 		strategies.add(new RadiationStrategy());
-		strategies.add(new FusionStrategy());
+		strategies.add(new FusionScissionStrategy());
+		strategies.add(new LiquidationStrategy());
 	}
 
 	/**
