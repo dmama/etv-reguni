@@ -321,6 +321,47 @@
             <jxb:typesafeEnumMember name="REE_REACTIVATION" value="60"/>
         </jxb:typesafeEnumClass>
     </jxb:bindings>
+
+    <jxb:bindings node="//xs:simpleType[@name='typeOfBusinessPublicationType']">
+        <jxb:typesafeEnumClass name="TypeOfBusinessPublication">
+            <jxb:typesafeEnumMember name="FOSC_AVIS_PREALABLE_OUVERTURE_FAILLITE" value="10"/>
+            <jxb:typesafeEnumMember name="FOSC_PUBLICATION_FAILLITE_ET_APPEL_AUX_CREANCIERS" value="11"/>
+            <jxb:typesafeEnumMember name="FOSC_SUSPENSION_FAILLITE" value="12"/>
+            <jxb:typesafeEnumMember name="FOSC_ETAT_DE_COLLOCATION_ET_INVENTAIRE_DANS_FAILLITE" value="13"/>
+            <jxb:typesafeEnumMember name="FOSC_TABLEAU_DE_DISTRIBUTION_ET_DECOMPTE_FINAL_DANS_FAILLITE" value="14"/>
+            <jxb:typesafeEnumMember name="FOSC_CLOTURE_DE_LA_FAILLITE" value="15"/>
+            <jxb:typesafeEnumMember name="FOSC_REVOCATION_DE_LA_FAILLITE" value="16"/>
+            <jxb:typesafeEnumMember name="FOSC_VENTE_AUX_ENCHERES_FORCEE_IMMEUBLES_DANS_FAILLITE" value="17"/>
+            <jxb:typesafeEnumMember name="FOSC_ETAT_DES_CHARGES_DANS_FAILLITE" value="18"/>
+            <jxb:typesafeEnumMember name="FOSC_COMMUNICATION_DANS_FAILLITE" value="19"/>
+            <jxb:typesafeEnumMember name="FOSC_DEMANDE_SURSIS_CONCORDATAIRE" value="20"/>
+            <jxb:typesafeEnumMember name="FOSC_SURSIS_CONCORDATAIRE_PROVISOIRE" value="21"/>
+            <jxb:typesafeEnumMember name="FOSC_SURSIS_CONCORDATAIRE" value="22"/>
+            <jxb:typesafeEnumMember name="FOSC_APPEL_AUX_CREANCIERS_DANS_CONCORDAT" value="23"/>
+            <jxb:typesafeEnumMember name="FOSC_AUDIENCE_DE_LIQUIDATION_PAR_ABANDON_ACTIF" value="24"/>
+            <jxb:typesafeEnumMember name="FOSC_PROLONGATION_SURSIS_CONCORDATAIRE" value="25"/>
+            <jxb:typesafeEnumMember name="FOSC_ANNULATION_SURSIS_CONCORDATAIRE" value="26"/>
+            <jxb:typesafeEnumMember name="FOSC_CONVOCATION_A_ASSEMBLEE_DES_CREANCIERS" value="27"/>
+            <jxb:typesafeEnumMember name="FOSC_HOMOLOGATION_DU_CONCORDAT" value="28"/>
+            <jxb:typesafeEnumMember name="FOSC_REFUS_HOMOLOGATION_DU_CONCORDAT" value="29"/>
+            <jxb:typesafeEnumMember name="FOSC_REVOCATION_DU_CONCORDAT" value="30"/>
+            <jxb:typesafeEnumMember name="FOSC_ETAT_DE_COLLOCATION_DANS_CONCORDAT_PAR_ABANDON_D_ACTIF" value="31"/>
+            <jxb:typesafeEnumMember name="FOSC_TABLEAU_DE_DISTRIBUTION_ET_DECOMPTE_FINAL_DANS_CONCORDAT_PAR_ABANDON_D_ACTIF" value="32"/>
+            <jxb:typesafeEnumMember name="FOSC_CONCORDAT_DE_BANQUE_ET_DE_CAISSE_EPARGNE" value="33"/>
+            <jxb:typesafeEnumMember name="FOSC_COMMUNICATION_DANS_LE_CONCORDAT" value="34"/>
+            <jxb:typesafeEnumMember name="FOSC_VENTE_AUX_ENCHERES_FORCEE_IMMEUBLES_DANS_POURSUITE" value="35"/>
+            <jxb:typesafeEnumMember name="FOSC_COMMANDEMENT_DE_PAYER" value="36"/>
+            <jxb:typesafeEnumMember name="FOSC_PROCES_VERBAL_SEQUESTRE" value="37"/>
+            <jxb:typesafeEnumMember name="FOSC_PROCES_VERBAL_SAISIE" value="38"/>
+            <jxb:typesafeEnumMember name="FOSC_COMMUNICATION_DANS_LA_PROUSUITE" value="39"/>
+            <jxb:typesafeEnumMember name="FOSC_APPEL_AUX_CREANCIERS_SUITE_FUSION_OU_SCISSION" value="40"/>
+            <jxb:typesafeEnumMember name="FOSC_APPEL_AUX_CREANCIERS_SUITE_LIQUIDATION" value="41"/>
+            <jxb:typesafeEnumMember name="FOSC_APPEL_AUX_CREANCIERS_SUITE_REDUCTION_CAPITAL" value="42"/>
+            <jxb:typesafeEnumMember name="FOSC_APPEL_AUX_CREANCIERS_SUITE_TRANSFORMATION_SA_EN_SARL" value="43"/>
+            <jxb:typesafeEnumMember name="FOSC_APPEL_AUX_CREANCIERS_SUITE_TRANSFERT_ETRANGER" value="44"/>
+        </jxb:typesafeEnumClass>
+    </jxb:bindings>
+
     <jxb:bindings node="//xs:simpleType[@name='typeOfNoticeRequestType']">
         <jxb:typesafeEnumClass name="TypeOfNoticeRequest">
             <jxb:typesafeEnumMember name="CREATION" value="1"/>
