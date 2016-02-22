@@ -189,7 +189,9 @@ public abstract class EvenementOrganisationInterne {
 
 		if (!(this instanceof EvenementOrganisationInterneComposite ||
 				this instanceof Indexation)) {
-			suivis.addSuivi(String.format("Mutation : %s", this.describe()));
+			if (this.describe() != null) {
+				suivis.addSuivi(String.format("Mutation : %s", this.describe()));
+			}
 		}
 
 		this.doHandle(warnings, suivis);

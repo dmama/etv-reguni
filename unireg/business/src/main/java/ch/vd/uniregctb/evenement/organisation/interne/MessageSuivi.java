@@ -33,7 +33,7 @@ public class MessageSuivi extends EvenementOrganisationInterneDeTraitement {
 
 	@Override
 	public String describe() {
-		return "Message de suivi";
+		return null; // On ne veut pas de message descriptif sur cet événement qui n'en est pas un.
 	}
 
 	@Override
