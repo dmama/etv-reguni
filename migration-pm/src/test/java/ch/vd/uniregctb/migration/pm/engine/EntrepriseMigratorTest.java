@@ -148,6 +148,7 @@ import ch.vd.uniregctb.tiers.ForFiscalPrincipalPM;
 import ch.vd.uniregctb.tiers.FormeJuridiqueFiscaleEntreprise;
 import ch.vd.uniregctb.tiers.IdentificationEntreprise;
 import ch.vd.uniregctb.tiers.Mandat;
+import ch.vd.uniregctb.tiers.MontantMonetaire;
 import ch.vd.uniregctb.tiers.RaisonSocialeFiscaleEntreprise;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.tiers.RegimeFiscal;
@@ -6482,6 +6483,157 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 			Assert.assertEquals("Ajout d'un régime fiscal CH de type '01' sur la période [03.05.2010 -> ?] pour couvrir les fors de l'entreprise.", textes.get(3));
 			Assert.assertEquals("Pas de siège associé dans les données fiscales, pas d'établissement principal créé à partir des données fiscales.", textes.get(4));
 			Assert.assertEquals("Entreprise migrée : 749.84.", textes.get(5));
+		}
+	}
+
+	/**
+	 * [SIFISC-18084] les valeurs de capital à 0 sont ignorées si elles sont à la même date qu'une valeur non-0
+	 * (et donc, ne sont pas ignorées si elles sont seules...)
+	 */
+	@Test
+	public void testCapitalZeroSeulPourDate() throws Exception {
+
+		final long noEntreprise = 74984L;
+		final RegDate dateDebut = RegDate.get(2010, 5, 3);
+		final RegDate dateCapitalNul = dateDebut.addYears(2);
+
+		final RegpmEntreprise e = buildEntreprise(noEntreprise);
+		addRaisonSociale(e, dateDebut, "Turlututu SA", null, null, true);
+		addFormeJuridique(e, dateDebut, createTypeFormeJuridique("S.A.", RegpmCategoriePersonneMorale.PM));
+		addForPrincipalSuisse(e, dateDebut, RegpmTypeForPrincipal.SIEGE, Commune.ECHALLENS);
+		addAssujettissement(e, dateDebut, null, RegpmTypeAssujettissement.LILIC);
+		addCapital(e, dateDebut, 1000L);
+		addCapital(e, dateCapitalNul, 0);
+
+		final MockGraphe graphe = new MockGraphe(Collections.singletonList(e),
+		                                         null,
+		                                         null);
+		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
+		final EntityLinkCollector linkCollector = new EntityLinkCollector();
+		final IdMapper idMapper = new IdMapper();
+		migrator.initMigrationResult(mr, idMapper);
+		migrate(e, migrator, mr, linkCollector, idMapper);
+
+		// données en base -> deux valeurs pour le capital, dont une à zéro
+		doInUniregTransaction(true, status -> {
+			final Entreprise entreprise = uniregStore.getEntityFromDb(Entreprise.class, noEntreprise);
+			Assert.assertNotNull(entreprise);
+
+			final Set<DonneeCivileEntreprise> donneesCiviles = entreprise.getDonneesCiviles();
+			final List<CapitalFiscalEntreprise> capitaux = donneesCiviles.stream()
+					.filter(dc -> dc instanceof CapitalFiscalEntreprise)
+					.map(dc -> (CapitalFiscalEntreprise) dc)
+					.sorted(DateRangeComparator::compareRanges)
+					.collect(Collectors.toList());
+			Assert.assertEquals(2, capitaux.size());
+			{
+				final CapitalFiscalEntreprise capital = capitaux.get(0);
+				Assert.assertNotNull(capital);
+				Assert.assertNotNull(capital.getMontant());
+				Assert.assertEquals((Long) 1000L, capital.getMontant().getMontant());
+				Assert.assertEquals(MontantMonetaire.CHF, capital.getMontant().getMonnaie());
+				Assert.assertEquals(dateDebut, capital.getDateDebut());
+				Assert.assertEquals(dateCapitalNul.getOneDayBefore(), capital.getDateFin());
+				Assert.assertFalse(capital.isAnnule());
+			}
+			{
+				final CapitalFiscalEntreprise capital = capitaux.get(1);
+				Assert.assertNotNull(capital);
+				Assert.assertNotNull(capital.getMontant());
+				Assert.assertEquals((Long) 0L, capital.getMontant().getMontant());
+				Assert.assertEquals(MontantMonetaire.CHF, capital.getMontant().getMonnaie());
+				Assert.assertEquals(dateCapitalNul, capital.getDateDebut());
+				Assert.assertNull(capital.getDateFin());
+				Assert.assertFalse(capital.isAnnule());
+			}
+		});
+
+		// vérification des messages dans le contexte "DONNEES_CIVILES_REGPM"
+		{
+			final List<MigrationResultCollector.Message> messages = mr.getMessages().get(LogCategory.DONNEES_CIVILES_REGPM);
+			Assert.assertNotNull(messages);
+			final List<String> textes = messages.stream().map(msg -> msg.text).collect(Collectors.toList());
+			Assert.assertEquals(4, textes.size());
+			Assert.assertEquals("Donnée de raison sociale migrée : sur la période [03.05.2010 -> ?], 'Turlututu SA'.", textes.get(0));
+			Assert.assertEquals("Donnée de forme juridique migrée : sur la période [03.05.2010 -> ?], SA.", textes.get(1));
+			Assert.assertEquals("Donnée de capital migrée : sur la période [03.05.2010 -> 02.05.2012], 1000 CHF.", textes.get(2));
+			Assert.assertEquals("Donnée de capital migrée : sur la période [03.05.2012 -> ?], 0 CHF.", textes.get(3));
+		}
+	}
+
+	/**
+	 * [SIFISC-18084] les valeurs de capital à 0 sont ignorées si elles sont à la même date qu'une valeur non-0
+	 */
+	@Test
+	public void testCapitalZeroAvecAutreValeurPourDate() throws Exception {
+
+		final long noEntreprise = 74984L;
+		final RegDate dateDebut = RegDate.get(2010, 5, 3);
+		final RegDate dateCapitalNul = dateDebut.addYears(2);
+
+		final RegpmEntreprise e = buildEntreprise(noEntreprise);
+		addRaisonSociale(e, dateDebut, "Turlututu SA", null, null, true);
+		addFormeJuridique(e, dateDebut, createTypeFormeJuridique("S.A.", RegpmCategoriePersonneMorale.PM));
+		addForPrincipalSuisse(e, dateDebut, RegpmTypeForPrincipal.SIEGE, Commune.ECHALLENS);
+		addAssujettissement(e, dateDebut, null, RegpmTypeAssujettissement.LILIC);
+		addCapital(e, dateDebut, 1000L);
+		addCapital(e, dateCapitalNul, 1500);        // celui-ci a un numéro de séquence inférieur au "0" mais sera pris quand-même !
+		addCapital(e, dateCapitalNul, 0);
+
+		final MockGraphe graphe = new MockGraphe(Collections.singletonList(e),
+		                                         null,
+		                                         null);
+		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
+		final EntityLinkCollector linkCollector = new EntityLinkCollector();
+		final IdMapper idMapper = new IdMapper();
+		migrator.initMigrationResult(mr, idMapper);
+		migrate(e, migrator, mr, linkCollector, idMapper);
+
+		// données en base -> deux valeurs pour le capital
+		doInUniregTransaction(true, status -> {
+			final Entreprise entreprise = uniregStore.getEntityFromDb(Entreprise.class, noEntreprise);
+			Assert.assertNotNull(entreprise);
+
+			final Set<DonneeCivileEntreprise> donneesCiviles = entreprise.getDonneesCiviles();
+			final List<CapitalFiscalEntreprise> capitaux = donneesCiviles.stream()
+					.filter(dc -> dc instanceof CapitalFiscalEntreprise)
+					.map(dc -> (CapitalFiscalEntreprise) dc)
+					.sorted(DateRangeComparator::compareRanges)
+					.collect(Collectors.toList());
+			Assert.assertEquals(2, capitaux.size());
+			{
+				final CapitalFiscalEntreprise capital = capitaux.get(0);
+				Assert.assertNotNull(capital);
+				Assert.assertNotNull(capital.getMontant());
+				Assert.assertEquals((Long) 1000L, capital.getMontant().getMontant());
+				Assert.assertEquals(MontantMonetaire.CHF, capital.getMontant().getMonnaie());
+				Assert.assertEquals(dateDebut, capital.getDateDebut());
+				Assert.assertEquals(dateCapitalNul.getOneDayBefore(), capital.getDateFin());
+				Assert.assertFalse(capital.isAnnule());
+			}
+			{
+				final CapitalFiscalEntreprise capital = capitaux.get(1);
+				Assert.assertNotNull(capital);
+				Assert.assertNotNull(capital.getMontant());
+				Assert.assertEquals((Long) 1500L, capital.getMontant().getMontant());
+				Assert.assertEquals(MontantMonetaire.CHF, capital.getMontant().getMonnaie());
+				Assert.assertEquals(dateCapitalNul, capital.getDateDebut());
+				Assert.assertNull(capital.getDateFin());
+				Assert.assertFalse(capital.isAnnule());
+			}
+		});
+
+		// vérification des messages dans le contexte "DONNEES_CIVILES_REGPM"
+		{
+			final List<MigrationResultCollector.Message> messages = mr.getMessages().get(LogCategory.DONNEES_CIVILES_REGPM);
+			Assert.assertNotNull(messages);
+			final List<String> textes = messages.stream().map(msg -> msg.text).collect(Collectors.toList());
+			Assert.assertEquals(5, textes.size());
+			Assert.assertEquals("Capital 0 du 03.05.2012 ignoré car une valeur non-nulle existe à la même date.", textes.get(0));
+			Assert.assertEquals("Donnée de raison sociale migrée : sur la période [03.05.2010 -> ?], 'Turlututu SA'.", textes.get(1));
+			Assert.assertEquals("Donnée de forme juridique migrée : sur la période [03.05.2010 -> ?], SA.", textes.get(2));
+			Assert.assertEquals("Donnée de capital migrée : sur la période [03.05.2010 -> 02.05.2012], 1000 CHF.", textes.get(3));
+			Assert.assertEquals("Donnée de capital migrée : sur la période [03.05.2012 -> ?], 1500 CHF.", textes.get(4));
 		}
 	}
 }

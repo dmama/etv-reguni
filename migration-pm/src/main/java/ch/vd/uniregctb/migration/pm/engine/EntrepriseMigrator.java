@@ -867,13 +867,43 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 			final NavigableMap<RegDate, BigDecimal> reduced = strict.entrySet().stream()
 					.map(entry -> {
 						final List<BigDecimal> values = entry.getValue();
+						final List<BigDecimal> significantValues;
 						if (values.size() > 1) {
-							values.subList(0, values.size() - 1).forEach(capital -> mr.addMessage(LogCategory.DONNEES_CIVILES_REGPM, LogLevel.ERROR,
-							                                                                      String.format("Capital %s du %s ignoré car remplacé par une autre valeur à la même date.",
-							                                                                                    capital,
-							                                                                                    StringRenderers.DATE_RENDERER.toString(entry.getKey()))));
+							// [SIFISC-18084] s'il y a plusieurs valeurs, on ignore les "0"
+							// on regarde d'abord s'il y a autre chose que des zéros
+							final boolean hasNonZero = values.stream()
+									.filter(capital -> capital.compareTo(BigDecimal.ZERO) != 0)
+									.findAny()
+									.isPresent();
+
+							if (hasNonZero) {
+								// on enlève les zéros !
+								significantValues = values.stream()
+										.filter(capital -> {
+											if (capital.compareTo(BigDecimal.ZERO) == 0) {
+												mr.addMessage(LogCategory.DONNEES_CIVILES_REGPM, LogLevel.WARN,
+												              String.format("Capital 0 du %s ignoré car une valeur non-nulle existe à la même date.",
+												                            StringRenderers.DATE_RENDERER.toString(entry.getKey())));
+												return false;
+											}
+											return true;
+										})
+										.collect(Collectors.toList());
+							}
+							else {
+								significantValues = values;
+							}
+
+							// un peu de log de toutes ces valeurs ignorées...
+							significantValues.subList(0, significantValues.size() - 1).forEach(capital -> mr.addMessage(LogCategory.DONNEES_CIVILES_REGPM, LogLevel.ERROR,
+							                                                                                            String.format("Capital %s du %s ignoré car remplacé par une autre valeur à la même date.",
+							                                                                                                          capital,
+							                                                                                                          StringRenderers.DATE_RENDERER.toString(entry.getKey()))));
 						}
-						return Pair.of(entry.getKey(), values.get(values.size() - 1));
+						else {
+							significantValues = values;
+						}
+						return Pair.of(entry.getKey(), significantValues.get(significantValues.size() - 1));
 					})
 					.collect(Collectors.toMap(Pair::getLeft,
 					                          Pair::getRight,
