@@ -104,6 +104,8 @@ public class LiquidationProcessorTest extends AbstractEvenementOrganisationProce
 				                             Assert.assertNotNull(evt);
 				                             Assert.assertEquals(EtatEvenementOrganisation.A_VERIFIER, evt.getEtat());
 
+				                             Assert.assertEquals("Une vérification, pouvant aboutir à un traitement manuel (processus complexe), est requise pour cause de Liquidation de l'entreprise.",
+				                                                 evt.getErreurs().get(2).getMessage());
 				                             return null;
 			                             }
 		                             }

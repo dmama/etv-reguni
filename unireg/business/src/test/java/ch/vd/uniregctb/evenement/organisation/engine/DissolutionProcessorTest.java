@@ -104,6 +104,8 @@ public class DissolutionProcessorTest extends AbstractEvenementOrganisationProce
 				                             Assert.assertNotNull(evt);
 				                             Assert.assertEquals(EtatEvenementOrganisation.A_VERIFIER, evt.getEtat());
 
+				                             Assert.assertEquals("Une vérification est requise pour cause de Dissolution de l'entreprise.",
+				                                                 evt.getErreurs().get(2).getMessage());
 				                             return null;
 			                             }
 		                             }

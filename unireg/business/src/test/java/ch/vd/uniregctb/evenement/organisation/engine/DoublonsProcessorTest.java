@@ -21,7 +21,6 @@ import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockOrganisationFa
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscal;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalDAO;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
-import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.type.EtatEvenementOrganisation;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeEvenementOrganisation;
@@ -55,6 +54,7 @@ public class DoublonsProcessorTest extends AbstractEvenementOrganisationProcesso
 		// Mise en place service mock
 		final Long noOrganisation = 101202100L;
 		final Long noSite = noOrganisation + 1000000;
+		final long noOrganisationRamplacante = 4096L;
 
 		serviceOrganisation.setUp(new MockServiceOrganisation() {
 			@Override
@@ -65,7 +65,7 @@ public class DoublonsProcessorTest extends AbstractEvenementOrganisationProcesso
 						                                           StatusRegistreIDE.DEFINITIF,
 						                                           TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, BigDecimal.valueOf(50000), "CHF");
 				MockSiteOrganisation site = (MockSiteOrganisation) organisation.getDonneesSites().iterator().next();
-				site.addIdeRemplacePar(RegDate.get(2015, 7, 5), null, 4096L);
+				site.addIdeRemplacePar(RegDate.get(2015, 7, 5), null, noOrganisationRamplacante);
 				addOrganisation(organisation);
 
 			}
@@ -73,11 +73,11 @@ public class DoublonsProcessorTest extends AbstractEvenementOrganisationProcesso
 
 		// Création de l'entreprise
 
-		doInNewTransactionAndSession(new TransactionCallback<Entreprise>() {
+		final Long tiersId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			@Override
-			public Entreprise doInTransaction(TransactionStatus transactionStatus) {
+			public Long doInTransaction(TransactionStatus transactionStatus) {
 
-				return addEntrepriseConnueAuCivil(noOrganisation);
+				return addEntrepriseConnueAuCivil(noOrganisation).getNumero();
 			}
 		});
 
@@ -110,6 +110,8 @@ public class DoublonsProcessorTest extends AbstractEvenementOrganisationProcesso
 				                             Assert.assertNotNull(evtsFiscaux);
 				                             Assert.assertEquals(0, evtsFiscaux.size());
 
+				                             Assert.assertEquals(String.format("Traitement manuel requis pour la gestion de doublon d’entreprises: Organisation remplacée (civil): %d, remplaçante: %d.", noOrganisation, noOrganisationRamplacante),
+				                                                 evt.getErreurs().get(0).getMessage());
 				                             return null;
 			                             }
 		                             }
@@ -122,6 +124,7 @@ public class DoublonsProcessorTest extends AbstractEvenementOrganisationProcesso
 		// Mise en place service mock
 		final Long noOrganisation = 101202100L;
 		final Long noSite = noOrganisation + 1000000;
+		final long noSiteRemplacant = 4096321L;
 
 		serviceOrganisation.setUp(new MockServiceOrganisation() {
 			@Override
@@ -132,18 +135,18 @@ public class DoublonsProcessorTest extends AbstractEvenementOrganisationProcesso
 						                                           StatusRegistreIDE.DEFINITIF,
 						                                           TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, BigDecimal.valueOf(50000), "CHF");
 				MockSiteOrganisation site = (MockSiteOrganisation) organisation.getDonneesSites().iterator().next();
-				site.addIdeRemplacePar(RegDate.get(2015, 7, 5), null, 4096321L);
+				site.addIdeRemplacePar(RegDate.get(2015, 7, 5), null, noSiteRemplacant);
 				addOrganisation(organisation);
 			}
 		});
 
 		// Création de l'entreprise
 
-		doInNewTransactionAndSession(new TransactionCallback<Entreprise>() {
+		final Long tiersId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			@Override
-			public Entreprise doInTransaction(TransactionStatus transactionStatus) {
+			public Long doInTransaction(TransactionStatus transactionStatus) {
 
-				return addEntrepriseConnueAuCivil(noOrganisation);
+				return addEntrepriseConnueAuCivil(noOrganisation).getNumero();
 			}
 		});
 
@@ -176,6 +179,8 @@ public class DoublonsProcessorTest extends AbstractEvenementOrganisationProcesso
 				                             Assert.assertNotNull(evtsFiscaux);
 				                             Assert.assertEquals(0, evtsFiscaux.size());
 
+				                             Assert.assertEquals(String.format("Traitement manuel requis: Situation de doublon d'organisation détectée. Etablissement remplacé (civil): %d, remplaçant: %d.", noSite, noSiteRemplacant),
+				                                                 evt.getErreurs().get(1).getMessage());
 				                             return null;
 			                             }
 		                             }

@@ -104,6 +104,8 @@ public class FusionScissionProcessorTest extends AbstractEvenementOrganisationPr
 				                             Assert.assertNotNull(evt);
 				                             Assert.assertEquals(EtatEvenementOrganisation.A_VERIFIER, evt.getEtat());
 
+				                             Assert.assertEquals("Une vérification, pouvant aboutir à un traitement manuel (processus complexe), est requise pour cause de Fusion d'entreprises.",
+				                                                 evt.getErreurs().get(2).getMessage());
 				                             return null;
 			                             }
 		                             }
@@ -232,6 +234,8 @@ public class FusionScissionProcessorTest extends AbstractEvenementOrganisationPr
 				                             Assert.assertNotNull(evt);
 				                             Assert.assertEquals(EtatEvenementOrganisation.A_VERIFIER, evt.getEtat());
 
+				                             Assert.assertEquals("Une vérification, pouvant aboutir à un traitement manuel (processus complexe), est requise pour cause de Scission de l'entreprise.",
+				                                                 evt.getErreurs().get(2).getMessage());
 				                             return null;
 			                             }
 		                             }
