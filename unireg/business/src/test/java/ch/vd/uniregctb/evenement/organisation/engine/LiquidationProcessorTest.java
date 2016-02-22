@@ -15,6 +15,7 @@ import ch.vd.unireg.interfaces.organisation.data.PublicationBusiness;
 import ch.vd.unireg.interfaces.organisation.data.StatusInscriptionRC;
 import ch.vd.unireg.interfaces.organisation.data.StatusRegistreIDE;
 import ch.vd.unireg.interfaces.organisation.data.TypeDeLiquidation;
+import ch.vd.unireg.interfaces.organisation.data.TypeDePublicationBusiness;
 import ch.vd.unireg.interfaces.organisation.data.TypeOrganisationRegistreIDE;
 import ch.vd.unireg.interfaces.organisation.mock.MockServiceOrganisation;
 import ch.vd.unireg.interfaces.organisation.mock.data.MockOrganisation;
@@ -62,8 +63,10 @@ public class LiquidationProcessorTest extends AbstractEvenementOrganisationProce
 						                                           StatusRegistreIDE.RADIE,
 						                                           TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, BigDecimal.valueOf(50000), "CHF");
 				MockSiteOrganisation sitePrincipal = (MockSiteOrganisation) organisation.getDonneesSites().get(0);
-				sitePrincipal.addPublicationBusiness(RegDate.get(2015, 7, 5), Collections.singletonList(new PublicationBusiness(date(2010, 6, 24), null, date(2010, 6, 24), "Inconnu", null, null, null,
-				                                                                                                        null, null, null, TypeDeLiquidation.SOCIETE_RESPONSABILITE_LIMITE)));
+				sitePrincipal.addPublicationBusiness(RegDate.get(2015, 7, 5), Collections.singletonList(
+						new PublicationBusiness(date(2010, 6, 24), null, date(2010, 6, 24), TypeDePublicationBusiness.FOSC_PUBLICATION_FAILLITE_ET_APPEL_AUX_CREANCIERS, null, null, null,
+						                        null, null, null, TypeDeLiquidation.SOCIETE_RESPONSABILITE_LIMITE)
+				));
 				addOrganisation(organisation);
 
 			}
@@ -128,8 +131,9 @@ public class LiquidationProcessorTest extends AbstractEvenementOrganisationProce
 						                                           StatusRegistreIDE.RADIE,
 						                                           TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, BigDecimal.valueOf(50000), "CHF");
 				MockSiteOrganisation sitePrincipal = (MockSiteOrganisation) organisation.getDonneesSites().get(0);
-				sitePrincipal.addPublicationBusiness(RegDate.get(2015, 7, 5), Collections.singletonList(new PublicationBusiness(date(2010, 6, 24), null, date(2010, 6, 24), "Inconnu", null, null, null,
-				                                                                                                     null, null, null, null)));
+				sitePrincipal.addPublicationBusiness(RegDate.get(2015, 7, 5), Collections.singletonList(
+						new PublicationBusiness(date(2010, 6, 24), null, date(2010, 6, 24), TypeDePublicationBusiness.FOSC_COMMANDEMENT_DE_PAYER, null, null, null,
+						                        null, null, null, null)));
 				addOrganisation(organisation);
 
 			}
@@ -192,8 +196,10 @@ public class LiquidationProcessorTest extends AbstractEvenementOrganisationProce
 						                                           StatusRegistreIDE.DEFINITIF,
 						                                           TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, BigDecimal.valueOf(50000), "CHF");
 				MockSiteOrganisation sitePrincipal = (MockSiteOrganisation) organisation.getDonneesSites().get(0);
-				sitePrincipal.addPublicationBusiness(RegDate.get(2015, 7, 5), Collections.singletonList(new PublicationBusiness(date(2010, 6, 24), null, date(2010, 6, 24), "Inconnu", null, null, null,
-				                                                                                                     null, null, null, TypeDeLiquidation.SOCIETE_RESPONSABILITE_LIMITE)));
+				sitePrincipal.addPublicationBusiness(RegDate.get(2015, 7, 5), Collections.singletonList(
+						new PublicationBusiness(date(2010, 6, 24), null, date(2010, 6, 24), TypeDePublicationBusiness.FOSC_PUBLICATION_FAILLITE_ET_APPEL_AUX_CREANCIERS, null, null, null,
+						                        null, null, null, TypeDeLiquidation.SOCIETE_RESPONSABILITE_LIMITE)
+				));
 				addOrganisation(organisation);
 
 			}

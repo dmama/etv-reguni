@@ -19,7 +19,7 @@ public class PublicationBusiness implements Serializable, DateRange {
 	private final RegDate dateFin;
 
 	private final RegDate dateEvenement;
-	private final String typeDePublication;
+	private final TypeDePublicationBusiness typeDePublication;
 	private final String foscNumeroDeDocument;
 	private final RegDate foscDateDePublication;
 	private final String foscTexteDeLaPublication;
@@ -28,7 +28,7 @@ public class PublicationBusiness implements Serializable, DateRange {
 	private final TypeDeTransfere typeDeTransfere;
 	private final TypeDeLiquidation typeDeLiquidation;
 
-	public PublicationBusiness(RegDate dateDebut, RegDate dateFin, RegDate dateEvenement, String typeDePublication, String foscNumeroDeDocument, RegDate foscDateDePublication,
+	public PublicationBusiness(RegDate dateDebut, RegDate dateFin, RegDate dateEvenement, TypeDePublicationBusiness typeDePublication, String foscNumeroDeDocument, RegDate foscDateDePublication,
 	                           String foscTexteDeLaPublication, TypeDeFusion typeDeFusion, TypeDeReductionDuCapital typeDeReductionDuCapital, TypeDeTransfere typeDeTransfere,
 	                           TypeDeLiquidation typeDeLiquidation) {
 		this.dateDebut = dateDebut;
@@ -63,7 +63,7 @@ public class PublicationBusiness implements Serializable, DateRange {
 		return dateEvenement;
 	}
 
-	public String getTypeDePublication() {
+	public TypeDePublicationBusiness getTypeDePublication() {
 		return typeDePublication;
 	}
 
