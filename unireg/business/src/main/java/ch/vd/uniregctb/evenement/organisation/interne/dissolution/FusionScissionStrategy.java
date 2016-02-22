@@ -66,7 +66,7 @@ public class FusionScissionStrategy extends AbstractOrganisationStrategy {
 					case SCISSION_SUISSE_VERS_ETRANGER:
 						return new Scission(event, organisation, entreprise, context, options);
 					default:
-						// rien
+						throw new EvenementOrganisationException("Type de fusion inconnu: " + publication.getTypeDeFusion());
 					}
 				}
 			}
