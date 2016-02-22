@@ -73,7 +73,7 @@ public class LiquidationStrategy extends AbstractOrganisationStrategy {
 					case SOCIETE_COMMANDITE_PAR_ACTION:
 						return new Liquidation(event, organisation, entreprise, context, options);
 					default:
-						// rien
+						throw new EvenementOrganisationException("Type de liquidation inconnu: " + publication.getTypeDeLiquidation());
 					}
 				}
 			}

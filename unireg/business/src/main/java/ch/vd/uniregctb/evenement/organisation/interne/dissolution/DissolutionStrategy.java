@@ -57,7 +57,7 @@ public class DissolutionStrategy extends AbstractOrganisationStrategy {
 			case CARENCE_DANS_ORGANISATION:
 				return new Dissolution(event, organisation, entreprise, context, options);
 			default:
-				// rien
+				throw new EvenementOrganisationException("Type de dissolution inconnu: " + raisonDeDissolution);
 			}
 		}
 		LOGGER.info("Pas de dissolution.");
