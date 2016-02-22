@@ -67,6 +67,10 @@ public enum LoggedElementAttribute {
 	ADRESSE_LIEU(String.class, s -> s, LoggedElementHelper.<String>exceptionThrowing()),
 	ADRESSE_LOCALITE(String.class, s -> s, LoggedElementHelper.<String>exceptionThrowing()),
 	ADRESSE_PAYS(Number.class, Object::toString, LoggedElementHelper.<Number>exceptionThrowing()),
+	ADRESSE_COMPLEMENT(String.class, s -> s, LoggedElementHelper.<String>exceptionThrowing()),
+	ADRESSE_NPA(String.class, s -> s, LoggedElementHelper.<String>exceptionThrowing()),
+	ADRESSE_DATE_DEBUT(RegDate.class, RegDateHelper::dateToDashString, LoggedElementHelper.<RegDate>exceptionThrowing()),
+	ADRESSE_DATE_FIN(RegDate.class, RegDateHelper::dateToDashString, LoggedElementHelper.<RegDate>exceptionThrowing()),
 
 	//
 	// spécifiques aux rapports entre tiers

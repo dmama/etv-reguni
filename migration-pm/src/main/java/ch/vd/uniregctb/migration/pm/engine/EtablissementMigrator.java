@@ -30,7 +30,7 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.interfaces.organisation.data.Domicile;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
-import ch.vd.uniregctb.adresse.AdresseTiers;
+import ch.vd.uniregctb.adresse.AdresseSupplementaire;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.migration.pm.ConsolidationPhase;
 import ch.vd.uniregctb.migration.pm.MigrationResultContextManipulation;
@@ -666,7 +666,7 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 		}
 
 		// TODO usage de l'adresse = COURRIER ou plutôt DOMICILE ?
-		final AdresseTiers adresse = migrationContexte.getAdresseHelper().buildAdresse(regpm.getAdresse(rangeAdresse), mr, regpm.getChez(), false);
+		final AdresseSupplementaire adresse = migrationContexte.getAdresseHelper().buildAdresse(regpm.getAdresse(rangeAdresse), mr, regpm.getChez(), false);
 		if (adresse != null) {
 			adresse.setUsage(TypeAdresseTiers.COURRIER);
 			unireg.addAdresseTiers(adresse);

@@ -41,6 +41,17 @@
 		<appender-ref ref="ADRESSES"/>
 	</logger>
 
+	<appender name="ADRESSES_PERMANENTES" class="ch.qos.logback.core.FileAppender">
+		<file>log/adresses_permanentes.csv</file>
+		<append>true</append>
+		<encoder>
+			<pattern>%msg%n</pattern>
+		</encoder>
+	</appender>
+	<logger name="ch.vd.uniregctb.migration.pm.log.LogCategory.ADRESSES_PERMANENTES" additivity="false">
+		<appender-ref ref="ADRESSES_PERMANENTES"/>
+	</logger>
+
 	<appender name="INDIVIDUS_PM" class="ch.qos.logback.core.FileAppender">
 		<file>log/individus-pm.csv</file>
 		<append>true</append>

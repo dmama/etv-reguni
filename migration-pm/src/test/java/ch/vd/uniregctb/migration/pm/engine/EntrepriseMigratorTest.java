@@ -4915,7 +4915,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 			Assert.assertEquals(RegDate.get(2004, 8, 27), adresse.getDateDebut());
 			Assert.assertNull(adresse.getDateFin());
 			Assert.assertEquals(AdresseSuisse.class, adresse.getClass());
-			Assert.assertEquals(TypeAdresseTiers.COURRIER, adresse.getUsage());
+			Assert.assertEquals(TypeAdresseTiers.POURSUITE, adresse.getUsage());
 
 			final AdresseSuisse adresseSuisse = (AdresseSuisse) adresse;
 			Assert.assertEquals("42", adresseSuisse.getNumeroMaison());
@@ -4952,21 +4952,41 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 
 			final Set<AdresseTiers> adresses = entreprise.getAdressesTiers();
 			Assert.assertNotNull(adresses);
-			Assert.assertEquals(1, adresses.size());
+			Assert.assertEquals(2, adresses.size());
 
-			final AdresseTiers adresse = adresses.iterator().next();
-			Assert.assertNotNull(adresse);
-			Assert.assertFalse(adresse.isAnnule());
-			Assert.assertEquals(RegDate.get(2010, 7, 22), adresse.getDateDebut());
-			Assert.assertNull(adresse.getDateFin());
-			Assert.assertEquals(AdresseSuisse.class, adresse.getClass());
-			Assert.assertEquals(TypeAdresseTiers.COURRIER, adresse.getUsage());
+			final Map<TypeAdresseTiers, AdresseTiers> mapAdresses = adresses.stream()
+					.collect(Collectors.toMap(AdresseTiers::getUsage, Function.identity()));
 
-			final AdresseSuisse adresseSuisse = (AdresseSuisse) adresse;
-			Assert.assertEquals("24", adresseSuisse.getNumeroMaison());
-			Assert.assertEquals("Rue des étangs", adresseSuisse.getRue());
-			Assert.assertNull(adresseSuisse.getNumeroRue());
-			Assert.assertEquals((Integer) LocalitePostale.RENENS.getNoOrdreP().intValue(), adresseSuisse.getNumeroOrdrePoste());
+			{
+				final AdresseTiers adresse = mapAdresses.get(TypeAdresseTiers.COURRIER);
+				Assert.assertNotNull(adresse);
+				Assert.assertFalse(adresse.isAnnule());
+				Assert.assertEquals(RegDate.get(2010, 7, 22), adresse.getDateDebut());
+				Assert.assertNull(adresse.getDateFin());
+				Assert.assertEquals(AdresseSuisse.class, adresse.getClass());
+				Assert.assertEquals(TypeAdresseTiers.COURRIER, adresse.getUsage());
+
+				final AdresseSuisse adresseSuisse = (AdresseSuisse) adresse;
+				Assert.assertEquals("24", adresseSuisse.getNumeroMaison());
+				Assert.assertEquals("Rue des étangs", adresseSuisse.getRue());
+				Assert.assertNull(adresseSuisse.getNumeroRue());
+				Assert.assertEquals((Integer) LocalitePostale.RENENS.getNoOrdreP().intValue(), adresseSuisse.getNumeroOrdrePoste());
+			}
+			{
+				final AdresseTiers adresse = mapAdresses.get(TypeAdresseTiers.POURSUITE);
+				Assert.assertNotNull(adresse);
+				Assert.assertFalse(adresse.isAnnule());
+				Assert.assertEquals(RegDate.get(2004, 8, 27), adresse.getDateDebut());
+				Assert.assertNull(adresse.getDateFin());
+				Assert.assertEquals(AdresseSuisse.class, adresse.getClass());
+				Assert.assertEquals(TypeAdresseTiers.POURSUITE, adresse.getUsage());
+
+				final AdresseSuisse adresseSuisse = (AdresseSuisse) adresse;
+				Assert.assertEquals("42", adresseSuisse.getNumeroMaison());
+				Assert.assertEquals("Rue des champs", adresseSuisse.getRue());
+				Assert.assertNull(adresseSuisse.getNumeroRue());
+				Assert.assertEquals((Integer) LocalitePostale.RENENS.getNoOrdreP().intValue(), adresseSuisse.getNumeroOrdrePoste());
+			}
 		});
 	}
 

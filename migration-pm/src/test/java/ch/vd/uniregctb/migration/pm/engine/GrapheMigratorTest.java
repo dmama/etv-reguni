@@ -33,8 +33,11 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.validation.ValidationException;
 import ch.vd.registre.base.validation.ValidationMessage;
 import ch.vd.registre.base.validation.ValidationResults;
+import ch.vd.unireg.interfaces.infra.mock.MockAdresse;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
+import ch.vd.unireg.interfaces.infra.mock.MockLocalite;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
+import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.unireg.interfaces.organisation.ServiceOrganisationRaw;
 import ch.vd.unireg.interfaces.organisation.data.Capital;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
@@ -47,6 +50,8 @@ import ch.vd.unireg.interfaces.organisation.mock.data.MockDonneesRegistreIDE;
 import ch.vd.unireg.interfaces.organisation.mock.data.MockOrganisation;
 import ch.vd.unireg.interfaces.organisation.mock.data.MockSiteOrganisation;
 import ch.vd.unireg.wsclient.rcpers.RcPersClient;
+import ch.vd.uniregctb.adresse.AdresseSuisse;
+import ch.vd.uniregctb.adresse.AdresseTiers;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePM;
@@ -83,6 +88,7 @@ import ch.vd.uniregctb.migration.pm.regpm.RegpmGroupeProprietaire;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmImmeuble;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmIndividu;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmModeImposition;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeAdresseEntreprise;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeAssujettissement;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeEtatDossierFiscal;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeEtatEntreprise;
@@ -122,6 +128,8 @@ import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.Sexe;
+import ch.vd.uniregctb.type.TypeAdresseCivil;
+import ch.vd.uniregctb.type.TypeAdresseTiers;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 import ch.vd.uniregctb.validation.EntityValidator;
@@ -5545,6 +5553,110 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		{
 			final List<String> msgs = messages.get(LogCategory.RAPPORTS_ENTRE_TIERS);
 			Assert.assertNull(msgs);
+		}
+	}
+
+	@Test
+	public void testMigrationAdressesAvecRCEnt() throws Exception {
+
+		final long noEntreprise = 35623L;
+		final long noCantonalEntreprise = 272462L;
+		final long noCantonalEtablissementPrincipal = 3627472L;
+		final RegDate dateDebut = RegDate.get(1995, 6, 12);
+		final RegDate dateSnapshotRCEnt = RegDate.get(2016, 2, 5);
+
+		final RegpmEntreprise e = EntrepriseMigratorTest.buildEntreprise(noEntreprise);
+		EntrepriseMigratorTest.addRaisonSociale(e, dateDebut, "Tarlatata SARL", null, null, true);
+		EntrepriseMigratorTest.addFormeJuridique(e, dateDebut, EntrepriseMigratorTest.createTypeFormeJuridique("S.A.R.L.", RegpmCategoriePersonneMorale.PM));
+		EntrepriseMigratorTest.addRegimeFiscalCH(e, dateDebut, null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
+		EntrepriseMigratorTest.addRegimeFiscalVD(e, dateDebut, null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
+		EntrepriseMigratorTest.addAdresse(e, RegpmTypeAdresseEntreprise.COURRIER, dateDebut.addMonths(4), null, null, null, "1bis", Rue.LONGEMALLE_RENENS, null);
+		EntrepriseMigratorTest.addAdresse(e, RegpmTypeAdresseEntreprise.SIEGE, dateDebut, null, null, null, "1", Rue.LONGEMALLE_RENENS, null);
+		e.setNumeroCantonal(noCantonalEntreprise);
+
+		final MockGraphe graphe = new MockGraphe(Collections.singletonList(e),
+		                                         null,
+		                                         null);
+
+		activityManager.setup(ALL_ACTIVE);
+
+		organisationService.setUp(new MockServiceOrganisation() {
+			@Override
+			protected void init() {
+				final MockOrganisation org = addOrganisation(noCantonalEntreprise);
+				final MockSiteOrganisation sitePrincipal = addSite(org, noCantonalEtablissementPrincipal, dateSnapshotRCEnt, new MockDonneesRegistreIDE(), new MockDonneesRC());
+				sitePrincipal.changeTypeDeSite(dateSnapshotRCEnt, TypeDeSite.ETABLISSEMENT_PRINCIPAL);
+				sitePrincipal.changeNom(dateSnapshotRCEnt, "Tarlatata S.A.R.L.");
+				sitePrincipal.changeFormeLegale(dateSnapshotRCEnt, FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE);
+				org.addAdresse(new MockAdresse(TypeAdresseCivil.PRINCIPALE, MockRue.Renens.QuatorzeAvril, null, dateSnapshotRCEnt, null));
+				org.addAdresse(new MockAdresse(TypeAdresseCivil.COURRIER, null, "Avenue de Longemalle", MockLocalite.Renens, dateSnapshotRCEnt, null));
+				addNumeroIDE(org, "CHE123456788", RegDate.get(2009, 1, 1), null);
+			}
+		});
+
+		final LoggedMessages lms = grapheMigrator.migrate(graphe);
+		Assert.assertNotNull(lms);
+
+		// vérification du contenu de la base de données (par rapport aux adresses, surtout...)
+		doInUniregTransaction(true, status -> {
+			final Entreprise entreprise = uniregStore.getEntityFromDb(Entreprise.class, noEntreprise);
+			Assert.assertNotNull(entreprise);
+
+			final Set<AdresseTiers> adresses = entreprise.getAdressesTiers();
+			Assert.assertNotNull(adresses);
+			Assert.assertEquals(2, adresses.size());
+
+			final Map<TypeAdresseTiers, AdresseTiers> mapAdresses = adresses.stream()
+					.collect(Collectors.toMap(AdresseTiers::getUsage, Function.identity()));
+			{
+				final AdresseTiers adresse = mapAdresses.get(TypeAdresseTiers.COURRIER);
+				Assert.assertNotNull(adresse);
+				Assert.assertFalse(adresse.isAnnule());
+				Assert.assertEquals(AdresseSuisse.class, adresse.getClass());
+
+				final AdresseSuisse adresseSuisse = (AdresseSuisse) adresse;
+				Assert.assertNotNull(adresseSuisse.getNumeroRue());
+				Assert.assertEquals(MockLocalite.Renens.getNoOrdre(), adresseSuisse.getNumeroOrdrePoste());
+				Assert.assertEquals("1bis", adresseSuisse.getNumeroMaison());
+				Assert.assertTrue(adresseSuisse.isPermanente());
+				Assert.assertEquals(dateDebut.addMonths(4), adresseSuisse.getDateDebut());
+				Assert.assertNull(adresseSuisse.getDateFin());
+			}
+			{
+				final AdresseTiers adresse = mapAdresses.get(TypeAdresseTiers.POURSUITE);
+				Assert.assertNotNull(adresse);
+				Assert.assertFalse(adresse.isAnnule());
+				Assert.assertEquals(AdresseSuisse.class, adresse.getClass());
+
+				final AdresseSuisse adresseSuisse = (AdresseSuisse) adresse;
+				Assert.assertNotNull(adresseSuisse.getNumeroRue());
+				Assert.assertEquals(MockLocalite.Renens.getNoOrdre(), adresseSuisse.getNumeroOrdrePoste());
+				Assert.assertEquals("1", adresseSuisse.getNumeroMaison());
+				Assert.assertFalse(adresseSuisse.isPermanente());
+				Assert.assertEquals(dateDebut, adresseSuisse.getDateDebut());
+				Assert.assertEquals(dateSnapshotRCEnt.getOneDayBefore(), adresseSuisse.getDateFin());
+			}
+		});
+
+		final Map<LogCategory, List<String>> messages = buildTextualMessages(lms);
+		Assert.assertNotNull(messages);
+
+		{
+			final List<String> msgs = messages.get(LogCategory.ADRESSES);
+			Assert.assertNotNull(msgs);
+			Assert.assertEquals(4, msgs.size());
+			Assert.assertEquals("INFO;" + noEntreprise + ";Active;;" + noCantonalEntreprise + ";;;;;;;;;;;;;Avenue de Longemalle;1bis;;Renens (VD);;Adresse 'Avenue de Longemalle' à 'Renens (VD)' mappée sur l'estrid 1134510.", msgs.get(0));
+			Assert.assertEquals("INFO;" + noEntreprise + ";Active;;" + noCantonalEntreprise + ";;;;;;;;;;;;;Avenue de Longemalle;1;;Renens (VD);;Adresse 'Avenue de Longemalle' à 'Renens (VD)' mappée sur l'estrid 1134510.", msgs.get(1));
+			Assert.assertEquals("INFO;" + noEntreprise + ";Active;;" + noCantonalEntreprise + ";;;;;;;;;;;;;;;;;;Adresse fiscale de siège migrée (en tant qu'adresse de poursuite) sur la période [12.06.1995 -> 04.02.2016].", msgs.get(2));
+			Assert.assertEquals("INFO;" + noEntreprise + ";Active;;" + noCantonalEntreprise + ";;;;;;;;;;;;;;;;;;Adresse fiscale de courrier migrée sur la période [12.10.1995 -> ?].", msgs.get(3));
+		}
+
+		// on va regarder la liste des adresses permanentes
+		{
+			final List<String> msgs = messages.get(LogCategory.ADRESSES_PERMANENTES);
+			Assert.assertNotNull(msgs);
+			Assert.assertEquals(1, msgs.size());
+			Assert.assertEquals("INFO;" + noEntreprise + ";Active;;" + noCantonalEntreprise + ";1995-10-12;;;Avenue de Longemalle;1bis;;Renens VD;8100;", msgs.get(0));
 		}
 	}
 

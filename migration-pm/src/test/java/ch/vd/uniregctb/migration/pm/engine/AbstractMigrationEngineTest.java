@@ -25,6 +25,7 @@ import ch.vd.uniregctb.migration.pm.regpm.RegpmGroupeProprietaire;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmImmeuble;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmInstitutionFinanciere;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmLocalitePostale;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmRue;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeGroupeProprietaire;
 
 public abstract class AbstractMigrationEngineTest extends AbstractSpringTest {
@@ -109,6 +110,10 @@ public abstract class AbstractMigrationEngineTest extends AbstractSpringTest {
 		public static final RegpmLocalitePostale RENENS = buildLocalitePostale("Renens (VD)", MockLocalite.Renens.getNoOrdre(), MockLocalite.Renens.getNPA());
 	}
 
+	public static final class Rue {
+		public static final RegpmRue LONGEMALLE_RENENS = buildRue("Avenue de Longemalle", LocalitePostale.RENENS);
+	}
+
 	static RegpmCommune buildCommune(RegpmCanton canton, String nom, int noOfs) {
 		final RegpmCommune commune = new RegpmCommune();
 		commune.setId(ID_GENERATOR.next());
@@ -134,6 +139,14 @@ public abstract class AbstractMigrationEngineTest extends AbstractSpringTest {
 		lp.setNoOrdreP(onrp);
 		lp.setNpa(npa);
 		return lp;
+	}
+
+	static RegpmRue buildRue(String designation, RegpmLocalitePostale localitePostale) {
+		final RegpmRue rue = new RegpmRue();
+		rue.setDesignation(designation);
+		rue.setDesignationCourrier(designation);
+		rue.setLocalitePostale(localitePostale);
+		return rue;
 	}
 
 	/**

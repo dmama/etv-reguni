@@ -88,6 +88,11 @@ public enum LogCategory {
 	/**
 	 * Liste des différences entre les raison sociale, forme juridique et numéro IDE entre les données de RegPM et les données issues de RCEnt
 	 */
-	DIFFERENCES_DONNEES_CIVILES
+	DIFFERENCES_DONNEES_CIVILES,
+
+	/**
+	 * Liste des adresses permanentes
+	 */
+	ADRESSES_PERMANENTES
 
 }

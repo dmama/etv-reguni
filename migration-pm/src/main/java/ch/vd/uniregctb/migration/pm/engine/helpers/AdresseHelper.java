@@ -28,7 +28,7 @@ public class AdresseHelper {
 	 * @param permanente <code>true</code> si l'adresse doit être flaggée comme "permanente"
 	 * @return une adresse presque prête à persister
 	 */
-	public AdresseTiers buildAdresse(AdresseAvecRue source, MigrationResultContextManipulation mr, String complement, boolean permanente) {
+	public AdresseSupplementaire buildAdresse(AdresseAvecRue source, MigrationResultContextManipulation mr, String complement, boolean permanente) {
 		if (source == null) {
 			return null;
 		}

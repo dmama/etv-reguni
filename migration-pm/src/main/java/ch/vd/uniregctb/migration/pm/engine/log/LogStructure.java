@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 import org.jetbrains.annotations.NotNull;
 
 import ch.vd.uniregctb.migration.pm.log.AdresseLoggedElement;
+import ch.vd.uniregctb.migration.pm.log.AdressePermanenteLoggedElement;
 import ch.vd.uniregctb.migration.pm.log.DifferencesDonneesCivilesLoggedElement;
 import ch.vd.uniregctb.migration.pm.log.EmptyValuedLoggedElement;
 import ch.vd.uniregctb.migration.pm.log.EntrepriseLoggedElement;
@@ -65,6 +66,7 @@ public abstract class LogStructure {
 		final Function<LogContexte, LoggedElement> donneesEtablissement = new FromContextInformationSource(EtablissementLoggedElement.class, EtablissementLoggedElement.EMPTY);
 		final Function<LogContexte, LoggedElement> donneesIndividu = new FromContextInformationSource(IndividuLoggedElement.class, IndividuLoggedElement.EMPTY);
 		final Function<LogContexte, LoggedElement> donneesAdresse = new FromContextInformationSource(AdresseLoggedElement.class, AdresseLoggedElement.EMPTY);
+		final Function<LogContexte, LoggedElement> donneesAdressePermanente = new FromContextInformationSource(AdressePermanenteLoggedElement.class, AdressePermanenteLoggedElement.EMPTY);
 		final Function<LogContexte, LoggedElement> donneesRapportEntreTiers = new FromContextInformationSource(RapportEntreTiersLoggedElement.class, RapportEntreTiersLoggedElement.EMPTY);
 		final Function<LogContexte, LoggedElement> donneesForsOuvertsApresFinAssuj = new FromContextInformationSource(ForPrincipalOuvertApresFinAssujettissementLoggedElement.class, ForPrincipalOuvertApresFinAssujettissementLoggedElement.EMPTY);
 		final Function<LogContexte, LoggedElement> donneesForsIgnoresAucunAssujettissement = new FromContextInformationSource(ForFiscalIgnoreAbsenceAssujettissementLoggedElement.class, ForFiscalIgnoreAbsenceAssujettissementLoggedElement.EMPTY);
@@ -120,6 +122,9 @@ public abstract class LogStructure {
 
 		// Liste des entreprises qui présentent des différences au niveau des données civiles entre RegPM et RCEnt
 		map.put(LogCategory.DIFFERENCES_DONNEES_CIVILES, Arrays.asList(donneesNiveau, donneesEntreprise, donneesDifferencesDonneesCiviles));
+
+		// Liste des adresses migrées avec le flag "permanente" à "true"
+		map.put(LogCategory.ADRESSES_PERMANENTES, Arrays.asList(donneesNiveau, donneesEntreprise, donneesAdressePermanente));
 
 		// Dans le log des erreurs, on ne met aucun contexte -> seul le texte sera affiché
 		map.put(LogCategory.EXCEPTIONS, Collections.singletonList(donneesNiveau));

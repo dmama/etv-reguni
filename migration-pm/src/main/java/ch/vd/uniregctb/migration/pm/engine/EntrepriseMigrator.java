@@ -47,15 +47,22 @@ import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.common.NomPrenom;
+import ch.vd.unireg.interfaces.common.Adresse;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.infra.data.Pays;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
+import ch.vd.uniregctb.adresse.AdresseCivileAdapter;
+import ch.vd.uniregctb.adresse.AdresseGenerique;
+import ch.vd.uniregctb.adresse.AdresseGeneriqueAdapter;
+import ch.vd.uniregctb.adresse.AdresseSupplementaire;
+import ch.vd.uniregctb.adresse.AdresseSupplementaireAdapter;
 import ch.vd.uniregctb.adresse.AdresseTiers;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.CollectionsUtils;
+import ch.vd.uniregctb.common.DonneesCivilesException;
 import ch.vd.uniregctb.common.Duplicable;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.common.HibernateDateRangeEntity;
@@ -89,6 +96,7 @@ import ch.vd.uniregctb.migration.pm.engine.data.DonneesMandats;
 import ch.vd.uniregctb.migration.pm.engine.data.RegimesFiscauxHistoData;
 import ch.vd.uniregctb.migration.pm.engine.helpers.StringRenderers;
 import ch.vd.uniregctb.migration.pm.extractor.IbanExtractor;
+import ch.vd.uniregctb.migration.pm.log.AdressePermanenteLoggedElement;
 import ch.vd.uniregctb.migration.pm.log.DifferencesDonneesCivilesLoggedElement;
 import ch.vd.uniregctb.migration.pm.log.ForFiscalIgnoreAbsenceAssujettissementLoggedElement;
 import ch.vd.uniregctb.migration.pm.log.ForPrincipalOuvertApresFinAssujettissementLoggedElement;
@@ -183,6 +191,7 @@ import ch.vd.uniregctb.type.FormeJuridiqueEntreprise;
 import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
+import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypeAdresseTiers;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeEtatEntreprise;
@@ -2112,7 +2121,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		migrateDonneesCiviles(regpm, rcent, unireg, mr);
 		logDroitPublicAPM(regpm, mr);
 
-		migrateAdresses(regpm, unireg, mr);
+		migrateAdresses(regpm, rcent, unireg, mr, idMapper);
 		migrateAllegementsFiscaux(regpm, unireg, mr);
 		migrateRegimesFiscaux(regpm, unireg, mr);
 		migrateExercicesCommerciaux(regpm, unireg, mr);
@@ -2267,15 +2276,21 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 	/**
 	 * Migration des adresses de l'entreprise
 	 * @param regpm entreprise de RegPM
+	 * @param rcent organisation dans RCEnt, si applicable
 	 * @param unireg entreprise dans Unireg
 	 * @param mr collecteur de messages de suivi et manipulateur de contexte de log
 	 */
-	private void migrateAdresses(RegpmEntreprise regpm, Entreprise unireg, MigrationResultContextManipulation mr) {
+	private void migrateAdresses(RegpmEntreprise regpm, @Nullable Organisation rcent, Entreprise unireg, MigrationResultContextManipulation mr, IdMapping idMapper) {
+
+		// [SIFISC-17970] l'adresse "SIEGE" de RegPM doit être prise en adresse "POURSUITE" dans Unireg sur les période où RCEnt ne fournit pas d'adresse légale
+		// [SIFISC-17970] l'adresse "COURRIER" de RegPM doit être migrée en adresse "COURRIER" dans Unireg sur les périodes où
+		//      1. RCEnt ne fournit pas d'adresse effective, ou
+		//      2. RCEnt fournit bien une adresse effective, mais celle-ci est différente
 
 		final Map<RegpmTypeAdresseEntreprise, RegpmAdresseEntreprise> adresses = regpm.getAdressesTypees();
 
-		// on prend l'adresse courrier et, à défaut, l'adresse siège
-		Stream.of(RegpmTypeAdresseEntreprise.COURRIER, RegpmTypeAdresseEntreprise.SIEGE)
+		// construction d'un référentiel des adresses fiscales candidates à la reprise
+		final Map<TypeAdresseTiers, AdresseSupplementaire> candidatsSurcharge = Stream.of(RegpmTypeAdresseEntreprise.COURRIER, RegpmTypeAdresseEntreprise.SIEGE)
 				.map(adresses::get)
 				.filter(Objects::nonNull)
 				.filter(a -> {
@@ -2300,15 +2315,219 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 				                                                             () -> String.format("La date de début de validité de l'adresse %s", a.getTypeAdresse()),
 				                                                             LogCategory.ADRESSES,
 				                                                             mr))
-				.findFirst()
-				.ifPresent(a -> {
+				.map(a -> {
 					final String complement = a.getChez() == null ? regpm.getEnseigne() : a.getChez();
-					final AdresseTiers adresse = migrationContexte.getAdresseHelper().buildAdresse(a, mr, complement, false);
+					final AdresseSupplementaire adresse = migrationContexte.getAdresseHelper().buildAdresse(a, mr, complement, false);
 					if (adresse != null) {
-						adresse.setUsage(TypeAdresseTiers.COURRIER);
-						unireg.addAdresseTiers(adresse);
+						final TypeAdresseTiers type = a.getTypeAdresse() == RegpmTypeAdresseEntreprise.SIEGE ? TypeAdresseTiers.POURSUITE : TypeAdresseTiers.COURRIER;
+						adresse.setUsage(type);
 					}
-				});
+					return adresse;
+				})
+				.filter(Objects::nonNull)
+				.collect(Collectors.toMap(AdresseTiers::getUsage,
+				                          Function.identity(),
+				                          (a1, a2) -> { throw new IllegalArgumentException("Erreur d'algorithme, il ne devrait jamais avoir plusieurs usages identiques ici..."); },
+				                          () -> new EnumMap<>(TypeAdresseTiers.class)));
+
+		// même chose côté civil
+		final Map<TypeAdresseCivil, List<Adresse>> adressesCiviles;
+		if (rcent == null || rcent.getAdresses().isEmpty()) {
+			adressesCiviles = Collections.emptyMap();
+		}
+		else {
+			adressesCiviles = rcent.getAdresses().stream()
+					.collect(Collectors.toMap(Adresse::getTypeAdresse,
+					                          Collections::singletonList,
+					                          (l1, l2) -> Stream.concat(l1.stream(), l2.stream()).collect(Collectors.toList()),
+					                          () -> new EnumMap<>(TypeAdresseCivil.class)));
+		}
+
+		// on regarde d'abord l'adresse de siège/poursuite (RegPM) vs. légale (RCEnt)
+		final AdresseSupplementaire poursuite = candidatsSurcharge.get(TypeAdresseTiers.POURSUITE);
+		if (poursuite != null) {
+
+			// y a-t-il une adresse légale dans RCEnt ?
+			final List<Adresse> adressesLegales = adressesCiviles.get(TypeAdresseCivil.PRINCIPALE);
+			if (adressesLegales == null || adressesLegales.isEmpty()) {
+				// non, aucune... -> il faut migrer l'adresse de poursuite sur toute sa plage de validité
+
+				// un peu de log
+				mr.addMessage(LogCategory.ADRESSES, LogLevel.INFO,
+				              String.format("Adresse fiscale de siège migrée (en tant qu'adresse de poursuite) sur la période %s.",
+				                            StringRenderers.DATE_RANGE_RENDERER.toString(poursuite)));
+
+				unireg.addAdresseTiers(poursuite);
+			}
+			else {
+				// on ne migre l'adresse poursuite de RegPM que jusqu'à la veille de la première date de validité de l'adresse RCEnt
+				final RegDate dateFin = adressesLegales.stream()
+						.map(Adresse::getDateDebut)
+						.min(Comparator.naturalOrder())
+						.map(RegDate::getOneDayBefore)
+						.get();
+
+				// on vérifie, par acquis de conscience, que l'adresse de RegPM commence bien avant la date de RCEnt
+				// (sinon, on l'oublie, tout simplement)
+				if (dateFin.isBefore(poursuite.getDateDebut())) {
+					mr.addMessage(LogCategory.ADRESSES, LogLevel.WARN,
+					              String.format("L'adresse de siège de RegPM sera ignorée car sa date de début de validité (%s) est postérieure ou égale à la date de début de l'adresse légale de RCEnt (%s).",
+					                            StringRenderers.DATE_RENDERER.toString(poursuite.getDateDebut()),
+					                            StringRenderers.DATE_RENDERER.toString(dateFin.getOneDayAfter())));
+				}
+				else {
+					final AdresseTiers surcharge = poursuite.duplicate();
+					surcharge.setDateFin(dateFin);
+
+					// un peu de log
+					mr.addMessage(LogCategory.ADRESSES, LogLevel.INFO,
+					              String.format("Adresse fiscale de siège migrée (en tant qu'adresse de poursuite) sur la période %s.",
+					                            StringRenderers.DATE_RANGE_RENDERER.toString(surcharge)));
+
+					unireg.addAdresseTiers(surcharge);
+				}
+			}
+		}
+
+		// on regarde ensui les adresses courrier (RegPM) vs. effectives (RCEnt)
+		final AdresseSupplementaire courrier = candidatsSurcharge.get(TypeAdresseTiers.COURRIER);
+		if (courrier != null) {
+
+			// y a-t-il une adresse effective dans RCEnt ?
+			final List<Adresse> adressesEffectives = adressesCiviles.get(TypeAdresseCivil.COURRIER);
+			if (adressesEffectives == null || !DateRangeHelper.intersect(courrier, adressesEffectives)) {
+				// pas d'adresse effective qui intersecte avec l'adresse courrier fiscale, elle est donc migrée telle-qu'elle
+				unireg.addAdresseTiers(courrier);
+				assigneFlagPermanentSurAdresseCourrier(courrier, poursuite, regpm, unireg, mr, idMapper);
+			}
+			else {
+
+				// une AdresseGenerique est une représentation "canonique" d'une adresse...
+				final AdresseGenerique courrierGenerique = new AdresseSupplementaireAdapter(courrier, unireg, false, migrationContexte.getInfraService());
+
+				// on ne va garder dans ces "adresses effectives" que celles que l'on veut garder en provenance du civil
+				// (= celles qui ne doivent pas être surchargées, i.e. celles qui sont finalement identiques aux données de RegPM)
+				final List<AdresseGenerique> aGarder = adressesEffectives.stream()
+						.map(adresse -> {
+							try {
+								return new AdresseCivileAdapter(adresse, unireg, false, migrationContexte.getInfraService());
+							}
+							catch (DonneesCivilesException e) {
+								LOGGER.error(String.format("Problème à la résolution de l'adresse effective RCEnt sur la période %s : %s.",
+								                           StringRenderers.DATE_RANGE_RENDERER.toString(adresse),
+								                           e.getMessage()),
+								             e);
+								mr.addMessage(LogCategory.ADRESSES, LogLevel.ERROR,
+								              String.format("Impossible de résoudre l'adresse effective civile (%s).", e.getMessage()));
+								return null;
+							}
+						})
+						.filter(Objects::nonNull)
+						.map(civile -> {
+							// on découpe en : partie intersectante et partie juste civile
+							// (afin que, à partir d'ici, il n'y ait pas d'intersection partielle)
+							final Stream.Builder<AdresseGenerique> builder = Stream.builder();
+
+							// partie intersectante
+							final DateRange intersection = DateRangeHelper.intersection(civile, courrier);
+							if (intersection != null) {
+								builder.accept(new AdresseGeneriqueAdapter(civile, intersection.getDateDebut(), intersection.getDateFin(), civile.getSource(), false));
+							}
+
+							// partie juste civile
+							final List<DateRange> justeCiviles = DateRangeHelper.subtract(civile, Collections.singletonList(courrier));
+							if (justeCiviles != null) {
+								justeCiviles.stream()
+										.map(range -> new AdresseGeneriqueAdapter(civile, range.getDateDebut(), range.getDateFin(), civile.getSource(), false))
+										.forEach(builder);
+							}
+							return builder.build();
+						})
+						.flatMap(Function.identity())
+						.filter(adresse -> !DateRangeHelper.intersect(adresse, courrier) || isMemeDestination(adresse, courrierGenerique))
+						.collect(Collectors.toList());
+
+				// on peut la migrer telle qu'elle sur les périodes où il n'y a pas d'adresse civile
+				final List<DateRange> absenceAdresseEffective = DateRangeHelper.subtract(courrier, aGarder);
+				if (absenceAdresseEffective != null) {
+					absenceAdresseEffective.stream()
+							.map(range -> {
+								final AdresseSupplementaire surcharge = (AdresseSupplementaire) courrier.duplicate();
+								surcharge.setDateDebut(range.getDateDebut());
+								surcharge.setDateFin(range.getDateFin());
+								assigneFlagPermanentSurAdresseCourrier(surcharge, poursuite, regpm, unireg, mr, idMapper);
+								return surcharge;
+							})
+							.peek(a -> mr.addMessage(LogCategory.ADRESSES, LogLevel.INFO,
+							                         String.format("Adresse fiscale de courrier migrée sur la période %s.",
+							                                       StringRenderers.DATE_RANGE_RENDERER.toString(a))))
+							.forEach(unireg::addAdresseTiers);
+				}
+			}
+		}
+	}
+
+	/**
+	 * Assigne le flag permanent sur l'adresse courrier passée en paramètre.<br/>
+	 * [SIFISC-17970] gestion de la permanence : le traitement détermine au jour du traitement de reprise si l'entreprise est PM ou APM<br/>
+	 * <ul>
+	 *     <li>PM : si l'adresse courrier possède une date de validité différente de la date de validité de l'adresse siège et que l'adresse courrier doit être reprise comme adresse surchargée, alors elle est permanente</li>
+	 *     <li>APM : si l'adresse courrier est différente de l'adresse siège et que l'adresse courrier doit être reprise comme adresse surchargée, alors elle est permanente</li>
+	 * </ul>
+	 * Toute adresse reprise comme permanente est listée dans une liste spécifique avec le n°CTB, la raison sociale, le complément d'adresse, la rue et n° police, le NPA , la localité postale et le pays</li>
+	 * @param courrier l'adresse à flagger
+	 * @param siege l'adresse de siège (pour information)
+	 * @param regpm entreprise dans RegPM
+	 * @param mr collecteur de messages de suivi et manipulateur de contexte de log
+	 * @param idMapper mapper des identifiants RegPM -> Unireg
+	 */
+	private void assigneFlagPermanentSurAdresseCourrier(AdresseSupplementaire courrier, @Nullable AdresseSupplementaire siege, RegpmEntreprise regpm, Entreprise unireg, MigrationResultContextManipulation mr, IdMapping idMapper) {
+		final NavigableMap<RegDate, RegpmTypeFormeJuridique> formesJuridiques = mr.getExtractedData(FormeJuridiqueHistoData.class, buildEntityKey(regpm)).histo;
+		if (formesJuridiques != null && !formesJuridiques.isEmpty()) {
+
+			// on recherhe la forme juridique valable à la date du jour (ou la dernière si l'entreprise n'existe plus vraiment à la date du jour)
+			final RegpmTypeFormeJuridique fj = Optional.of(RegDate.get())
+					.map(formesJuridiques::floorEntry)
+					.map(Map.Entry::getValue)
+					.orElse(null);
+
+			final AdresseSupplementaireAdapter courrierGenerique = new AdresseSupplementaireAdapter(courrier, unireg, false, migrationContexte.getInfraService());
+			final AdresseSupplementaireAdapter siegeGenerique = siege != null ? new AdresseSupplementaireAdapter(siege, unireg, false, migrationContexte.getInfraService()) : null;
+
+			// si pas de forme juridique (ou si c'est une société de personnes), pas de flag permanent
+			final boolean permanente;
+			if (fj != null) {
+
+				// la règle dépend donc de la catégorie d'entreprise
+				switch (fj.getCategorie()) {
+				case PM:
+					permanente = siege == null || courrier.getDateDebut() != siege.getDateDebut();
+					break;
+				case APM:
+					permanente = siege == null || !isMemeDestination(courrierGenerique, siegeGenerique);
+					break;
+				case SP:
+				default:
+					permanente = false;
+					break;
+				}
+			}
+			else {
+				permanente = false;
+			}
+
+			courrier.setPermanente(permanente);
+			if (permanente) {
+				// il faut sortir une liste...
+				mr.pushContextValue(AdressePermanenteLoggedElement.class, new AdressePermanenteLoggedElement(courrierGenerique));
+				try {
+					mr.addMessage(LogCategory.ADRESSES_PERMANENTES, LogLevel.INFO, StringUtils.EMPTY);
+				}
+				finally {
+					mr.popContexteValue(AdressePermanenteLoggedElement.class);
+				}
+			}
+		}
 	}
 
 	/**
@@ -2319,7 +2538,36 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 	 * @return <code>true</code> si les deux instances sont différentes (une instance <code>null</code> est toujours différente d'une instance non-<code>null</code>)
 	 */
 	private static <T> boolean areDifferent(@Nullable T one, @Nullable T two, BiPredicate<T, T> equalator) {
-		return one != two && (one == null || two == null || !equalator.test(one, two));
+		return !areEqual(one, two, equalator);
+	}
+
+	/**
+	 * @param one une instance
+	 * @param two une autre instance
+	 * @param equalator un prédicat de comparaison entre deux instances
+	 * @param <T> le type des instances comparées
+	 * @return <code>true</code> si les deux instances sont équivalentes (une instance <code>null</code> est toujours différente d'une instance non-<code>null</code>)
+	 */
+	private static <T> boolean areEqual(@Nullable T one, @Nullable T two, BiPredicate<T, T> equalator) {
+		return one == two || (one != null && two != null && equalator.test(one, two));
+	}
+
+	/**
+	 * @param adresse1 une adresse civile
+	 * @param adresse2 une adresse fiscale
+	 * @return <code>true</code> si les deux adresses pointent vers le même endroit (les dates n'ont pas d'importance ici)
+	 */
+	private static boolean isMemeDestination(AdresseGenerique adresse1, AdresseGenerique adresse2) {
+		return areEqual(adresse1.getLocalite(), adresse2.getLocalite(), String::equalsIgnoreCase)
+				&& areEqual(adresse1.getCasePostale(), adresse2.getCasePostale(), Object::equals)
+				&& areEqual(adresse1.getComplement(), adresse2.getComplement(), String::equalsIgnoreCase)
+				&& areEqual(adresse1.getLocaliteComplete(), adresse2.getLocaliteComplete(), String::equalsIgnoreCase)
+				&& areEqual(adresse1.getNoOfsPays(), adresse2.getNoOfsPays(), Object::equals)
+				&& areEqual(adresse1.getNumero(), adresse2.getNumero(), Object::equals)
+				&& areEqual(adresse1.getNumeroOrdrePostal(), adresse2.getNumeroOrdrePostal(), Object::equals)
+				&& areEqual(adresse1.getNumeroPostal(), adresse2.getNumeroPostal(), Object::equals)
+				&& areEqual(adresse1.getNumeroPostalComplementaire(), adresse2.getNumeroPostalComplementaire(), Object::equals)
+				&& areEqual(adresse1.getRue(), adresse2.getRue(), String::equalsIgnoreCase);
 	}
 
 	/**
