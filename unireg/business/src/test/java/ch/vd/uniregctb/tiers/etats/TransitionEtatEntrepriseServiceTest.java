@@ -97,6 +97,45 @@ public class TransitionEtatEntrepriseServiceTest extends WithoutSpringTest {
 		assertTransition(disponibles, TypeEtatEntreprise.FONDEE, ToFondeeTransitionEtatEntreprise.class);
 	}
 
+	@Test
+	public void testGetTransitionsDisponiblesInscriteRCEtatVide() throws Exception {
+
+		final Entreprise entreprise = new Entreprise(1234);
+		entreprise.setNumeroEntreprise(1L);
+
+		Organisation organisation = MockOrganisationFactory
+				.createOrganisation(1L, 1L, "Synergy SA", RegDate.get(2010, 6, 24), null, FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE,
+				                    TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF, StatusRegistreIDE.DEFINITIF,
+				                    TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE);
+
+		TransitionEtatEntrepriseServiceImpl service = createService(dao, organisation);
+
+		Map<TypeEtatEntreprise, TransitionEtatEntreprise> disponibles = service.getTransitionsDisponibles(entreprise, date(2015, 12, 31), TypeGenerationEtatEntreprise.MANUELLE);
+
+		Assert.assertNotNull(disponibles);
+		Assert.assertTrue(disponibles.size() == 1);
+		assertTransition(disponibles, TypeEtatEntreprise.INSCRITE_RC, ToInscriteRCTransitionEtatEntreprise.class);
+	}
+
+	@Test
+	public void testGetTransitionsDisponiblesNonRCEtatVide() throws Exception {
+
+		final Entreprise entreprise = new Entreprise(1234);
+		entreprise.setNumeroEntreprise(1L);
+
+		Organisation organisation = MockOrganisationFactory
+				.createOrganisation(1L, 1L, "Synergy SA", RegDate.get(2010, 6, 24), null, FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE,
+				                    TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), null, StatusRegistreIDE.DEFINITIF,
+				                    TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE);
+
+		TransitionEtatEntrepriseServiceImpl service = createService(dao, organisation);
+
+		Map<TypeEtatEntreprise, TransitionEtatEntreprise> disponibles = service.getTransitionsDisponibles(entreprise, date(2015, 12, 31), TypeGenerationEtatEntreprise.MANUELLE);
+
+		Assert.assertNotNull(disponibles);
+		Assert.assertTrue(disponibles.size() == 1);
+		assertTransition(disponibles, TypeEtatEntreprise.FONDEE, ToFondeeTransitionEtatEntreprise.class);
+	}
 
 	private void assertTransition(Map<TypeEtatEntreprise, TransitionEtatEntreprise> disponibles, TypeEtatEntreprise toType, Class clazz) {
 		TransitionEtatEntreprise transition = disponibles.get(toType);

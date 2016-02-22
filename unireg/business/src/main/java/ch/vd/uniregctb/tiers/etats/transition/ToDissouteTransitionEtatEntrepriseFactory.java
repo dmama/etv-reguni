@@ -21,6 +21,9 @@ public class ToDissouteTransitionEtatEntrepriseFactory extends BaseTransitionEta
 	@Override
 	public TransitionEtatEntreprise create(Entreprise entreprise, RegDate date, TypeGenerationEtatEntreprise generation) {
 		final EtatEntreprise actuel = getEtatActuel(entreprise);
+		if (actuel == null) {
+			return null;
+		}
 		if (!checkDateValid(actuel, date)) {
 			return null;
 		}

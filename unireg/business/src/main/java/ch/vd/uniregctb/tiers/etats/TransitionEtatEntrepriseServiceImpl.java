@@ -1,6 +1,5 @@
 package ch.vd.uniregctb.tiers.etats;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -62,10 +61,6 @@ public class TransitionEtatEntrepriseServiceImpl implements TransitionEtatEntrep
 
 	@Override
 	public Map<TypeEtatEntreprise, TransitionEtatEntreprise> getTransitionsDisponibles(Entreprise entreprise, RegDate date, TypeGenerationEtatEntreprise generation) {
-		if (entreprise.getEtatActuel() == null) {
-			LOGGER.info("{} n'a pas d'état! Pas de transitions d'état disponibles.", entreprise.toString());
-			return Collections.emptyMap();
-		}
 		Map<TypeEtatEntreprise, TransitionEtatEntreprise> disponibles = new HashMap<>();
 		for (Map.Entry<TypeEtatEntreprise, TransitionEtatEntrepriseFactory> entry : transitionFactoryMap.entrySet()) {
 			final TransitionEtatEntreprise transition = entry.getValue().create(entreprise, date, generation);

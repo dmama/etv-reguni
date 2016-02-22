@@ -4,7 +4,6 @@ import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
-import ch.vd.unireg.interfaces.organisation.data.StatusInscriptionRC;
 import ch.vd.uniregctb.interfaces.service.ServiceOrganisationService;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.EtatEntreprise;
@@ -44,7 +43,7 @@ public abstract class BaseTransitionEtatEntrepriseFactory implements TransitionE
 	 * @return true si le nouvel état peut commencer à la date, false sinon
 	 */
 	protected static boolean checkDateValid(EtatEntreprise actuel, RegDate date) {
-		return actuel.getDateObtention().isBeforeOrEqual(date);
+		return actuel == null || actuel.getDateObtention().isBeforeOrEqual(date);
 	}
 
 	/**
@@ -53,9 +52,7 @@ public abstract class BaseTransitionEtatEntrepriseFactory implements TransitionE
 	protected boolean isInscriteRC(Entreprise entreprise, RegDate date) {
 		if (entreprise.isConnueAuCivil()) {
 			Organisation organisation = serviceOrganisation.getOrganisationHistory(entreprise.getNumeroEntreprise());
-			if (organisation.getSitePrincipal(date).getPayload().getDonneesRC().getStatusInscription(date) == StatusInscriptionRC.ACTIF) {
-				return true;
-			}
+			return organisation.isInscritAuRC(date);
 		}
 		return false;
 	}
