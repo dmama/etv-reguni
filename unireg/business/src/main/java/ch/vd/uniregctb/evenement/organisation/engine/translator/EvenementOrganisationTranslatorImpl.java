@@ -33,6 +33,7 @@ import ch.vd.uniregctb.evenement.organisation.interne.IndexationPure;
 import ch.vd.uniregctb.evenement.organisation.interne.MessageSuivi;
 import ch.vd.uniregctb.evenement.organisation.interne.TraitementManuel;
 import ch.vd.uniregctb.evenement.organisation.interne.creation.CreateOrganisationStrategy;
+import ch.vd.uniregctb.evenement.organisation.interne.decisionaci.DecisionAciStrategy;
 import ch.vd.uniregctb.evenement.organisation.interne.demenagement.DemenagementSiegeStrategy;
 import ch.vd.uniregctb.evenement.organisation.interne.dissolution.DissolutionStrategy;
 import ch.vd.uniregctb.evenement.organisation.interne.dissolution.FusionScissionStrategy;
@@ -97,6 +98,7 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 		/*
 			L'ordre des stratégies est important.
 		 */
+		strategies.add(new DecisionAciStrategy());
 		strategies.add(new CreateOrganisationStrategy());
 		strategies.add(new ReinscriptionStrategy());
 		strategies.add(new ChangementFormeJuridiqueStrategy());
