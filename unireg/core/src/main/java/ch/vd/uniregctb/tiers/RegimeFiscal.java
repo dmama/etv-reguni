@@ -69,7 +69,7 @@ public class RegimeFiscal extends HibernateDateRangeEntity implements LinkedEnti
 		this.entreprise = entreprise;
 	}
 
-	@Column(name = "PORTEE", length = LengthConstants.REGIME_FISCAL_PORTEE, nullable = false, updatable = false)
+	@Column(name = "PORTEE", length = LengthConstants.REGIME_FISCAL_PORTEE, nullable = false)
 	@Enumerated(EnumType.STRING)
 	public Portee getPortee() {
 		return portee;
@@ -79,7 +79,7 @@ public class RegimeFiscal extends HibernateDateRangeEntity implements LinkedEnti
 		this.portee = portee;
 	}
 
-	@Column(name = "CODE", length = LengthConstants.REGIME_FISCAL_TYPE, nullable = false, updatable = false)
+	@Column(name = "CODE", length = LengthConstants.REGIME_FISCAL_TYPE, nullable = false)
 	public String getCode() {
 		return code;
 	}
