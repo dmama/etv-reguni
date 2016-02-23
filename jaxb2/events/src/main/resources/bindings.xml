@@ -279,6 +279,15 @@
 		</jxb:bindings>
 	</jxb:bindings>
 
+	<jxb:bindings schemaLocation="http://www.vd.ch/fiscalite/cyber/codeControle-2.xsd">
+		<jxb:schemaBindings>
+			<jxb:package name="ch.vd.unireg.xml.event.di.cyber.codecontrole.v2" />
+		</jxb:schemaBindings>
+		<jxb:bindings>
+			<namespace:prefix name="ev-di-cyber-cc-2" />
+		</jxb:bindings>
+	</jxb:bindings>
+
 	<jxb:bindings schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/fiscal/evt-fiscal-2.xsd">
 		<jxb:schemaBindings>
 			<jxb:package name="ch.vd.unireg.xml.event.fiscal.v2" />
