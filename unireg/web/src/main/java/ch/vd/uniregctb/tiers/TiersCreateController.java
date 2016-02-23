@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.infra.data.Commune;
+import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
+import ch.vd.uniregctb.common.BouclementHelper;
 import ch.vd.uniregctb.common.DelegatingValidator;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.complements.ComplementsEditCommunicationsView;
@@ -32,20 +34,29 @@ import ch.vd.uniregctb.security.SecurityHelper;
 import ch.vd.uniregctb.security.SecurityProviderInterface;
 import ch.vd.uniregctb.tiers.validator.CreateAutreCommunauteViewValidator;
 import ch.vd.uniregctb.tiers.validator.CreateDebiteurViewValidator;
+import ch.vd.uniregctb.tiers.validator.CreateEntrepriseViewValidator;
 import ch.vd.uniregctb.tiers.validator.CreateEtablissementViewValidator;
 import ch.vd.uniregctb.tiers.validator.CreateNonHabitantViewValidator;
 import ch.vd.uniregctb.tiers.view.AutreCommunauteCivilView;
 import ch.vd.uniregctb.tiers.view.CreateAutreCommunauteView;
 import ch.vd.uniregctb.tiers.view.CreateDebiteurView;
+import ch.vd.uniregctb.tiers.view.CreateEntrepriseView;
 import ch.vd.uniregctb.tiers.view.CreateEtablissementView;
 import ch.vd.uniregctb.tiers.view.CreateNonHabitantView;
 import ch.vd.uniregctb.tiers.view.DebiteurFiscalView;
+import ch.vd.uniregctb.tiers.view.EntrepriseCivilView;
 import ch.vd.uniregctb.tiers.view.EtablissementCivilView;
 import ch.vd.uniregctb.tiers.view.IdentificationPersonneView;
 import ch.vd.uniregctb.tiers.view.NonHabitantCivilView;
+import ch.vd.uniregctb.type.CategorieEntreprise;
+import ch.vd.uniregctb.type.GenreImpot;
+import ch.vd.uniregctb.type.MotifFor;
+import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.PeriodeDecompte;
 import ch.vd.uniregctb.type.PeriodiciteDecompte;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
+import ch.vd.uniregctb.type.TypeEtatEntreprise;
+import ch.vd.uniregctb.type.TypeGenerationEtatEntreprise;
 import ch.vd.uniregctb.utils.RegDateEditor;
 
 @Controller
@@ -56,11 +67,13 @@ public class TiersCreateController {
 	private static final String SEXE_MAP_NAME = "sexes";
 	private static final String CATEGORIE_ETRANGER_MAP_NAME = "categoriesEtrangers";
 	private static final String FORME_JURIDIQUE_MAP_NAME = "formesJuridiques";
+	private static final String FORME_JURIDIQUE_ENTREPRISE_MAP_NAME = "formesJuridiquesEntreprise";
 	private static final String CTB_ASSOCIE = "ctbAssocie";
 	private static final String CATEGORIE_IMPOT_SOURCE_MAP_NAME = "categoriesImpotSource";
 	private static final String MODE_COMMUNICATION_MAP_NAME = "modesCommunication";
 	private static final String PERIODE_DECOMPTE_MAP_NAME = "periodesDecompte";
 	private static final String PERIODICITE_DECOMPTE_MAP_NAME = "periodicitesDecompte";
+	private static final String TYPES_AUTORITES_FISCALES = "typesAutoritesFiscales";
 
 	private SecurityProviderInterface securityProvider;
 	private TiersMapHelper tiersMapHelper;
@@ -104,6 +117,7 @@ public class TiersCreateController {
 		private TiersCreationValidator(IbanValidator ibanValidator) {
 			addSubValidator(CreateNonHabitantView.class, new CreateNonHabitantViewValidator(ibanValidator));
 			addSubValidator(CreateAutreCommunauteView.class, new CreateAutreCommunauteViewValidator(ibanValidator));
+			addSubValidator(CreateEntrepriseView.class, new CreateEntrepriseViewValidator(ibanValidator));
 			addSubValidator(CreateDebiteurView.class, new CreateDebiteurViewValidator(ibanValidator));
 			addSubValidator(CreateEtablissementView.class, new CreateEtablissementViewValidator(ibanValidator));
 		}
@@ -163,27 +177,103 @@ public class TiersCreateController {
 		final IdentificationPersonneView ipView = civilView.getIdentificationPersonne();
 		tiersService.setIdentifiantsPersonne(pp, ipView.getAncienNumAVS(), ipView.getNumRegistreEtranger());
 
-		final ComplementsEditCommunicationsView cpltCommView = view.getComplementCommunication();
-		pp.setPersonneContact(cpltCommView.getPersonneContact());
-		pp.setComplementNom(cpltCommView.getComplementNom());
-		pp.setNumeroTelephonePrive(cpltCommView.getNumeroTelephonePrive());
-		pp.setNumeroTelephonePortable(cpltCommView.getNumeroTelephonePortable());
-		pp.setNumeroTelephoneProfessionnel(cpltCommView.getNumeroTelephoneProfessionnel());
-		pp.setNumeroTelecopie(cpltCommView.getNumeroTelecopie());
-		pp.setAdresseCourrierElectronique(cpltCommView.getAdresseCourrierElectronique());
-
-		final ComplementsEditCoordonneesFinancieresView cpltCoordFinView = view.getComplementCoordFinanciere();
-		final String iban = IbanHelper.normalize(cpltCoordFinView.getIban());
-		final String bicSwift = StringUtils.trimToNull(FormatNumeroHelper.removeSpaceAndDash(cpltCoordFinView.getAdresseBicSwift()));
-		if (iban != null || bicSwift != null) {
-			pp.setCoordonneesFinancieres(new CoordonneesFinancieres(iban, bicSwift));
-		}
-		else {
-			pp.setCoordonneesFinancieres(null);
-		}
-		pp.setTitulaireCompteBancaire(cpltCoordFinView.getTitulaireCompteBancaire());
+		setComplementCommunication(pp, view.getComplementCommunication());
+		setComplementCoordFinanciere(pp, view.getComplementCoordFinanciere());
 
 		final PersonnePhysique saved = (PersonnePhysique) tiersDAO.save(pp);
+		return "redirect:/tiers/visu.do?id=" + saved.getNumero();
+	}
+
+	@RequestMapping(value = "/entreprise/create.do", method = RequestMethod.GET)
+	public String createEntreprise(Model model) {
+		if (!SecurityHelper.isGranted(securityProvider, Role.CREATE_ENTREPRISE)) {
+			throw new AccessDeniedException("Vous ne possédez pas les droits d'accès suffisants à la création d'une entreprise.");
+		}
+		return showCreateEntreprise(model, new CreateEntrepriseView());
+	}
+
+	private String showCreateEntreprise(Model model, CreateEntrepriseView view) {
+		model.addAttribute(DATA, view);
+		model.addAttribute(TYPES_AUTORITES_FISCALES, tiersMapHelper.getMapTypeAutoriteFiscaleEntreprise());
+		model.addAttribute(FORME_JURIDIQUE_ENTREPRISE_MAP_NAME, tiersMapHelper.getMapFormeJuridiqueEntreprise());
+		return "tiers/edition/creation-entreprise";
+	}
+
+	@Transactional(rollbackFor = Throwable.class)
+	@RequestMapping(value = "/entreprise/create.do", method = RequestMethod.POST)
+	public String doCreateEntreprise(Model model, @Valid @ModelAttribute(DATA) CreateEntrepriseView view, BindingResult result) {
+		if (!SecurityHelper.isGranted(securityProvider, Role.CREATE_ENTREPRISE)) {
+			throw new AccessDeniedException("Vous ne possédez pas les droits d'accès suffisants à la création d'une entreprise.");
+		}
+		if (result.hasErrors()) {
+			return showCreateEntreprise(model, view);
+		}
+
+		final Entreprise entreprise = new Entreprise();
+		final EntrepriseCivilView civilView = view.getCivil();
+
+		// Numéro IDE
+		if (StringUtils.isNotBlank(civilView.getNumeroIde())) {
+			IdentificationEntreprise ident = new IdentificationEntreprise();
+			ident.setNumeroIde(civilView.getNumeroIde());
+			entreprise.addIdentificationEntreprise(ident);
+		}
+
+		// Compléments
+		setComplementCommunication(entreprise, view.getComplementCommunication());
+		setComplementCoordFinanciere(entreprise, view.getComplementCoordFinanciere());
+
+		final Entreprise saved = (Entreprise) tiersDAO.save(entreprise);
+
+		// Forme juridique
+		tiersService.addFormeJuridiqueFiscale(saved, civilView.getFormeJuridique(), civilView.getDateCreation(), null);
+
+		// Capital
+		if (civilView.getCapitalLibere() != null) {
+			tiersService.addCapitalFiscal(saved, Long.valueOf(civilView.getCapitalLibere()), civilView.getDevise(), civilView.getDateCreation(), null);
+		}
+
+		// Raison sociale
+		tiersService.addRaisonSocialeFiscale(saved, civilView.getRaisonSociale(), civilView.getDateCreation(), null);
+
+		// Siège (établissement)
+		Etablissement etablissement = new Etablissement();
+		etablissement.setRaisonSociale(civilView.getRaisonSociale());
+		final Etablissement savedEtablissement = (Etablissement) tiersDAO.save(etablissement);
+		tiersService.addDomicileEtablissement(savedEtablissement, civilView.getTypeAutoriteFiscale(), civilView.getNumeroOfsSiege(), civilView.getDateCreation(), null);
+
+		// Rapport entre entreprise et établissement principal
+		tiersService.addActiviteEconomique(savedEtablissement, saved, civilView.getDateCreation(), true);
+
+		// Régimes fiscaux + For principal (différents en fonction de la forme juridique/catégorie entreprise)
+		CategorieEntreprise categorieEntreprise = CategorieEntrepriseHelper.map(civilView.getFormeJuridique());
+		if (categorieEntreprise == CategorieEntreprise.PM || categorieEntreprise == CategorieEntreprise.DPPM
+			|| categorieEntreprise == CategorieEntreprise.APM || categorieEntreprise == CategorieEntreprise.DPAPM) {
+
+			// Récupération du type de régime fiscal
+			TypeRegimeFiscal trf = tiersService.getTypeRegimeFiscalParDefault(categorieEntreprise);
+
+			tiersService.addRegimeFiscal(saved, RegimeFiscal.Portee.CH, trf, civilView.getDateCreation(), null);
+			tiersService.addRegimeFiscal(saved, RegimeFiscal.Portee.VD, trf, civilView.getDateCreation(), null);
+
+			// Bouclement et premier exercice commercial
+			Bouclement bouclement = BouclementHelper.createBouclement3112SelonSemestre(civilView.getDateCreation());
+			saved.addBouclement(bouclement);
+			saved.setDateDebutPremierExerciceCommercial(RegDate.get(civilView.getDateCreation().year(), 1, 1));
+
+			// For principal
+			tiersService.addForPrincipal(saved, civilView.getDateCreation(), MotifFor.DEBUT_EXPLOITATION, null, null, MotifRattachement.DOMICILE, civilView.getNumeroOfsSiege(), civilView.getTypeAutoriteFiscale(), GenreImpot.BENEFICE_CAPITAL);
+
+		} else if (categorieEntreprise == CategorieEntreprise.SP) {
+			// Pas de régime fiscal (et donc pas de bouclement)
+			// For principal
+			tiersService.addForPrincipal(saved, civilView.getDateCreation(), MotifFor.DEBUT_EXPLOITATION, null, null, MotifRattachement.DOMICILE, civilView.getNumeroOfsSiege(), civilView.getTypeAutoriteFiscale(), GenreImpot.REVENU_FORTUNE);
+		}
+
+		// Etat fiscal
+		TypeEtatEntreprise typeEtatEntreprise = (civilView.isInscriteRC()) ? TypeEtatEntreprise.INSCRITE_RC : TypeEtatEntreprise.FONDEE;
+		tiersService.changeEtatEntreprise(typeEtatEntreprise, saved, civilView.getDateCreation(), TypeGenerationEtatEntreprise.MANUELLE);
+
 		return "redirect:/tiers/visu.do?id=" + saved.getNumero();
 	}
 
@@ -218,25 +308,8 @@ public class TiersCreateController {
 		ac.setNom(civilView.getNom());
 		tiersService.setIdentifiantEntreprise(ac, StringUtils.trimToNull(civilView.getIde()));
 
-		final ComplementsEditCommunicationsView cpltCommView = view.getComplementCommunication();
-		ac.setPersonneContact(cpltCommView.getPersonneContact());
-		ac.setComplementNom(cpltCommView.getComplementNom());
-		ac.setNumeroTelephonePrive(cpltCommView.getNumeroTelephonePrive());
-		ac.setNumeroTelephonePortable(cpltCommView.getNumeroTelephonePortable());
-		ac.setNumeroTelephoneProfessionnel(cpltCommView.getNumeroTelephoneProfessionnel());
-		ac.setNumeroTelecopie(cpltCommView.getNumeroTelecopie());
-		ac.setAdresseCourrierElectronique(cpltCommView.getAdresseCourrierElectronique());
-
-		final ComplementsEditCoordonneesFinancieresView cpltCoordFinView = view.getComplementCoordFinanciere();
-		final String iban = IbanHelper.normalize(cpltCoordFinView.getIban());
-		final String bicSwift = StringUtils.trimToNull(FormatNumeroHelper.removeSpaceAndDash(cpltCoordFinView.getAdresseBicSwift()));
-		if (iban != null || bicSwift != null) {
-			ac.setCoordonneesFinancieres(new CoordonneesFinancieres(iban, bicSwift));
-		}
-		else {
-			ac.setCoordonneesFinancieres(null);
-		}
-		ac.setTitulaireCompteBancaire(cpltCoordFinView.getTitulaireCompteBancaire());
+		setComplementCommunication(ac, view.getComplementCommunication());
+		setComplementCoordFinanciere(ac, view.getComplementCoordFinanciere());
 
 		final AutreCommunaute saved = (AutreCommunaute) tiersDAO.save(ac);
 		return "redirect:/tiers/visu.do?id=" + saved.getNumero();
@@ -280,25 +353,8 @@ public class TiersCreateController {
 		final PeriodeDecompte periode = periodicite == PeriodiciteDecompte.UNIQUE ? fiscalView.getPeriodeDecompte() : null;
 		dpi.setPeriodicites(new HashSet<>(Arrays.asList(new Periodicite(periodicite, periode, RegDate.get(RegDate.get().year(), 1, 1), null))));
 
-		final ComplementsEditCommunicationsView cpltCommView = view.getComplementCommunication();
-		dpi.setPersonneContact(cpltCommView.getPersonneContact());
-		dpi.setComplementNom(cpltCommView.getComplementNom());
-		dpi.setNumeroTelephonePrive(cpltCommView.getNumeroTelephonePrive());
-		dpi.setNumeroTelephonePortable(cpltCommView.getNumeroTelephonePortable());
-		dpi.setNumeroTelephoneProfessionnel(cpltCommView.getNumeroTelephoneProfessionnel());
-		dpi.setNumeroTelecopie(cpltCommView.getNumeroTelecopie());
-		dpi.setAdresseCourrierElectronique(cpltCommView.getAdresseCourrierElectronique());
-
-		final ComplementsEditCoordonneesFinancieresView cpltCoordFinView = view.getComplementCoordFinanciere();
-		final String iban = IbanHelper.normalize(cpltCoordFinView.getIban());
-		final String bicSwift = StringUtils.trimToNull(FormatNumeroHelper.removeSpaceAndDash(cpltCoordFinView.getAdresseBicSwift()));
-		if (iban != null || bicSwift != null) {
-			dpi.setCoordonneesFinancieres(new CoordonneesFinancieres(iban, bicSwift));
-		}
-		else {
-			dpi.setCoordonneesFinancieres(null);
-		}
-		dpi.setTitulaireCompteBancaire(cpltCoordFinView.getTitulaireCompteBancaire());
+		setComplementCommunication(dpi, view.getComplementCommunication());
+		setComplementCoordFinanciere(dpi, view.getComplementCoordFinanciere());
 
 		final DebiteurPrestationImposable saved = (DebiteurPrestationImposable) tiersDAO.save(dpi);
 		final Contribuable ctbAss = (Contribuable) tiersDAO.get(noCtbAssocie);
@@ -337,7 +393,6 @@ public class TiersCreateController {
 			return showCreateEtablissement(model, noCtbAssocie, view);
 		}
 
-		final Entreprise tiers = (Entreprise) tiersService.getTiers(noCtbAssocie);
 		final Etablissement etablissement = new Etablissement();
 
 		final EtablissementCivilView civilView = view.getCivil();
@@ -351,31 +406,36 @@ public class TiersCreateController {
 			etablissement.addIdentificationEntreprise(identification);
 		}
 
-		final ComplementsEditCommunicationsView cpltCommView = view.getComplementCommunication();
-		etablissement.setPersonneContact(cpltCommView.getPersonneContact());
-		etablissement.setComplementNom(cpltCommView.getComplementNom());
-		etablissement.setNumeroTelephonePrive(cpltCommView.getNumeroTelephonePrive());
-		etablissement.setNumeroTelephonePortable(cpltCommView.getNumeroTelephonePortable());
-		etablissement.setNumeroTelephoneProfessionnel(cpltCommView.getNumeroTelephoneProfessionnel());
-		etablissement.setNumeroTelecopie(cpltCommView.getNumeroTelecopie());
-		etablissement.setAdresseCourrierElectronique(cpltCommView.getAdresseCourrierElectronique());
-
-		final ComplementsEditCoordonneesFinancieresView cpltCoordFinView = view.getComplementCoordFinanciere();
-		final String iban = IbanHelper.normalize(cpltCoordFinView.getIban());
-		final String bicSwift = StringUtils.trimToNull(FormatNumeroHelper.removeSpaceAndDash(cpltCoordFinView.getAdresseBicSwift()));
-		if (iban != null || bicSwift != null) {
-			etablissement.setCoordonneesFinancieres(new CoordonneesFinancieres(iban, bicSwift));
-		}
-		else {
-			etablissement.setCoordonneesFinancieres(null);
-		}
-		etablissement.setTitulaireCompteBancaire(cpltCoordFinView.getTitulaireCompteBancaire());
+		setComplementCommunication(etablissement, view.getComplementCommunication());
+		setComplementCoordFinanciere(etablissement, view.getComplementCoordFinanciere());
 
 		final Etablissement saved = (Etablissement) tiersDAO.save(etablissement);
 		final Contribuable ctbAss = (Contribuable) tiersDAO.get(noCtbAssocie);
-		tiersService.addActiviteEconomique(saved, ctbAss, civilView.getDateDebut());
+		tiersService.addActiviteEconomique(saved, ctbAss, civilView.getDateDebut(), false);
 
 		return "redirect:/tiers/visu.do?id=" + saved.getNumero();
+	}
+
+	private void setComplementCoordFinanciere(Tiers tiers, ComplementsEditCoordonneesFinancieresView cpltCoordFinView) {
+		final String iban = IbanHelper.normalize(cpltCoordFinView.getIban());
+		final String bicSwift = StringUtils.trimToNull(FormatNumeroHelper.removeSpaceAndDash(cpltCoordFinView.getAdresseBicSwift()));
+		if (iban != null || bicSwift != null) {
+			tiers.setCoordonneesFinancieres(new CoordonneesFinancieres(iban, bicSwift));
+		}
+		else {
+			tiers.setCoordonneesFinancieres(null);
+		}
+		tiers.setTitulaireCompteBancaire(cpltCoordFinView.getTitulaireCompteBancaire());
+	}
+
+	private void setComplementCommunication(Tiers tiers, ComplementsEditCommunicationsView cpltCommView) {
+		tiers.setPersonneContact(cpltCommView.getPersonneContact());
+		tiers.setComplementNom(cpltCommView.getComplementNom());
+		tiers.setNumeroTelephonePrive(cpltCommView.getNumeroTelephonePrive());
+		tiers.setNumeroTelephonePortable(cpltCommView.getNumeroTelephonePortable());
+		tiers.setNumeroTelephoneProfessionnel(cpltCommView.getNumeroTelephoneProfessionnel());
+		tiers.setNumeroTelecopie(cpltCommView.getNumeroTelecopie());
+		tiers.setAdresseCourrierElectronique(cpltCommView.getAdresseCourrierElectronique());
 	}
 
 }

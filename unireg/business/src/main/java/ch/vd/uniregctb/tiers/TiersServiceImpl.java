@@ -1481,9 +1481,9 @@ public class TiersServiceImpl implements TiersService {
 	 * @return le rapport
 	 */
 	@Override
-	public RapportEntreTiers addActiviteEconomique(Etablissement etablissement, Contribuable contribuable, RegDate dateDebut) {
+	public RapportEntreTiers addActiviteEconomique(Etablissement etablissement, Contribuable contribuable, RegDate dateDebut, boolean principal) {
 
-		RapportEntreTiers rapport = new ActiviteEconomique();
+		RapportEntreTiers rapport = new ActiviteEconomique(dateDebut, null, contribuable, etablissement, principal);
 		rapport.setDateDebut(dateDebut);
 
 		return addRapport(rapport, contribuable, etablissement);
@@ -6204,5 +6204,21 @@ public class TiersServiceImpl implements TiersService {
 				throw new ValidationException(etat, "Seul le dernier état peut être annulé.");
 		}
 		etat.setAnnule(true);
+	}
+
+	@Nullable
+	@Override
+	public TypeRegimeFiscal getTypeRegimeFiscalParDefault(CategorieEntreprise categorieEntreprise) {
+		final List<TypeRegimeFiscal> regimes = serviceInfra.getRegimesFiscaux();
+		for (TypeRegimeFiscal regime : regimes) {
+			if ((categorieEntreprise == CategorieEntreprise.PM || categorieEntreprise == CategorieEntreprise.DPPM)
+					&& regime.isDefaultPourPM()) {
+				return regime;
+			} else if ((categorieEntreprise == CategorieEntreprise.APM || categorieEntreprise == CategorieEntreprise.DPAPM || categorieEntreprise == CategorieEntreprise.FP)
+					&& regime.isDefaultPourAPM()) {
+				return regime;
+			}
+		}
+		return null;
 	}
 }

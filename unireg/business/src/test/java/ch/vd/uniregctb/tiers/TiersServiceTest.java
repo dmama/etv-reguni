@@ -4076,7 +4076,7 @@ debut PF                                                                        
 
 				// on indique le tiers référent
 				final Entreprise pm = addEntrepriseConnueAuCivil(MockOrganisationFactory.NESTLE.getNumeroOrganisation());
-				tiersService.addActiviteEconomique(etb, pm, date(2009, 1, 1));
+				tiersService.addActiviteEconomique(etb, pm, date(2009, 1, 1), false);
 
 				return etb.getNumero();
 			}

@@ -225,6 +225,17 @@ public interface TiersService {
 	 */
 	void annuleEtatEntreprise(EtatEntreprise etatEntreprise);
 
+    /**
+     * Retourne le type de régime fiscal par défaut en fonction d'une catégorie d'entreprise
+     * Peut retourner null si :
+     * - la catégorie d'entreprise n'est pas prise en compte dans le mapping de la méthode (pour le moment, PP, SP et AUTRE ne sont pas gérés)
+     * - aucun régime fiscal n'est renvoyé par le service infra
+     *
+     * @param categorieEntreprise la catégorie de l'entreprise
+     * @return le type de régime fiscal pour autant que la catégorie soit prise en compte dans le mapping (sinon NULL)
+     */
+    TypeRegimeFiscal getTypeRegimeFiscalParDefault(CategorieEntreprise categorieEntreprise);
+
 	enum UpdateHabitantFlagResultat {
 		PAS_DE_CHANGEMENT,
 		CHANGE_EN_HABITANT,
@@ -539,7 +550,7 @@ public interface TiersService {
      * @param dateDebut    la date de début du rapport
      * @return le rapport
      */
-    RapportEntreTiers addActiviteEconomique(Etablissement etablissement, Contribuable contribuable, RegDate dateDebut);
+    RapportEntreTiers addActiviteEconomique(Etablissement etablissement, Contribuable contribuable, RegDate dateDebut, boolean principal);
 
     /**
      * Crée et sauvegarde en base un ménage-commun avec ces deux parties.

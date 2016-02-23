@@ -69,6 +69,9 @@
 								<authz:authorize ifAnyGranted="ROLE_CREATE_NONHAB">
 									<li><a href="<c:url value='/tiers/nonhabitant/create.do'/>"><fmt:message key="title.inconnu.controle.habitants" /></a></li>
 								</authz:authorize>
+								<authz:authorize ifAnyGranted="ROLE_CREATE_ENTREPRISE">
+									<li><a href="<c:url value='/tiers/entreprise/create.do'/>"><fmt:message key="title.entreprise" /></a></li>
+								</authz:authorize>
 								<authz:authorize ifAnyGranted="ROLE_CREATE_AC">
 									<li><a href="<c:url value='/tiers/autrecommunaute/create.do'/>"><fmt:message key="title.inconnu.pm" /></a></li>
 								</authz:authorize>

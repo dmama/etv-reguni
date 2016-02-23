@@ -75,6 +75,7 @@ public class TiersMapHelper extends CommonMapHelper {
 	private Map<GenreImpot, String> mapGenreImpot;
 	private Map<TypeAutoriteFiscale, String> mapTypeAutoriteFiscale;
 	private Map<TypeAutoriteFiscale, String> mapTypeAutoriteFiscaleDPI;
+	private Map<TypeAutoriteFiscale, String> mapTypeAutoriteFiscaleEntreprise;
 	private Map<ModeImposition, String> mapModeImposition;
 	private Map<CategorieImpotSource, String> mapCategorieImpotSource;
 	private Map<PeriodiciteDecompte, String> mapPeriodiciteDecompte;
@@ -257,6 +258,18 @@ public class TiersMapHelper extends CommonMapHelper {
 			mapTypeAutoriteFiscaleDPI = initMapEnum(ApplicationConfig.masterKeyTypeAutoriteFiscale, TypeAutoriteFiscale.class, TypeAutoriteFiscale.PAYS_HS);
 		}
 		return mapTypeAutoriteFiscaleDPI;
+	}
+
+	/**
+	 * Initialise la map des types de fors fiscaux pour les DPI
+	 *
+	 * @return une map
+	 */
+	public Map<TypeAutoriteFiscale, String> getMapTypeAutoriteFiscaleEntreprise() {
+		if (mapTypeAutoriteFiscaleEntreprise == null) {
+			mapTypeAutoriteFiscaleEntreprise = initMapEnum(ApplicationConfig.masterKeyTypeAutoriteFiscale, TypeAutoriteFiscale.class, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
+		}
+		return mapTypeAutoriteFiscaleEntreprise;
 	}
 
 	/**
@@ -695,7 +708,10 @@ public class TiersMapHelper extends CommonMapHelper {
 	 */
 	public Map<FormeJuridiqueEntreprise, String> getMapFormeJuridiqueEntreprise() {
 		if (mapFormeJuridiqueEntreprise == null) {
-			mapFormeJuridiqueEntreprise = initMapEnum(ApplicationConfig.masterKeyFormeJuridiqueEntreprise, FormeJuridiqueEntreprise.class);
+			// On exclue les formes juridiques liées à certaines catégories d'entreprise
+			EnumSet<CategorieEntreprise> categoriesAExclure = EnumSet.of(CategorieEntreprise.PP, CategorieEntreprise.SP, CategorieEntreprise.AUTRE);
+			EnumSet<FormeJuridiqueEntreprise> formesAExclure = FormeJuridiqueEntrepriseHelper.getFormesJuridiquesFromCategoriesEntreprise(categoriesAExclure);
+			mapFormeJuridiqueEntreprise = initMapEnum(ApplicationConfig.masterKeyFormeJuridiqueEntreprise, FormeJuridiqueEntreprise.class, formesAExclure.toArray(new FormeJuridiqueEntreprise[formesAExclure.size()]));
 		}
 		return mapFormeJuridiqueEntreprise;
 	}
