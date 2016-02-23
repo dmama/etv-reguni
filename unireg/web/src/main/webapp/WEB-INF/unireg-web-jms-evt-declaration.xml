@@ -27,11 +27,18 @@
 		<property name="description" value="Réception des évènements de quittance des DI electroniques"/>
 	</bean>
 
-	<bean id="evenementDeclarationSender" class="ch.vd.uniregctb.evenement.di.EvenementDeclarationSenderImpl">
+	<bean id="evenementDeclarationPPSender" class="ch.vd.uniregctb.evenement.di.EvenementDeclarationPPSenderImpl">
 		<property name="esbTemplate" ref="esbJmsTemplate" />
 		<property name="esbValidator" ref="esbMessageValidator"/>
-		<property name="serviceDestination" value="${extprop.jms.queue.evtDeclaration.output}" />
-		<property name="enabled" value="${extprop.jms.queue.evtDeclaration.output.enabled}" />
+		<property name="serviceDestination" value="${extprop.jms.queue.evtDeclaration.pp.output}" />
+		<property name="enabled" value="${extprop.jms.queue.evtDeclaration.pp.output.enabled}" />
+	</bean>
+
+	<bean id="evenementDeclarationPMSender" class="ch.vd.uniregctb.evenement.di.EvenementDeclarationPMSenderImpl">
+		<property name="esbTemplate" ref="esbJmsTemplate" />
+		<property name="esbValidator" ref="esbMessageValidator"/>
+		<property name="serviceDestination" value="${extprop.jms.queue.evtDeclaration.pm.output}" />
+		<property name="enabled" value="${extprop.jms.queue.evtDeclaration.pm.output.enabled}" />
 	</bean>
 
 </beans>

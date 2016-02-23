@@ -37,6 +37,7 @@ import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.EditiqueResultat;
 import ch.vd.uniregctb.metier.assujettissement.CategorieEnvoiDI;
 import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.type.TypeDocument;
 
 public interface DeclarationImpotService {
@@ -354,4 +355,13 @@ public interface DeclarationImpotService {
 	 */
 	EchoirDIsPMResults echoirDIsPMHorsDelai(RegDate dateTraitement, StatusManager statusManager) throws DeclarationException;
 
+	/**
+	 * Calcule le "code segment" à utiliser pour une déclaration d'impôt dont la période d'imposition se termine à la date donnée
+	 * @param entreprise entreprise considérée
+	 * @param dateReference date de fin de la période d'imposition
+	 * @param typeDocument type de document considéré
+	 * @return valeur du code segment considéré
+	 * @throws DeclarationException en l'absence de données suffisantes pour calculer ce code segment...
+	 */
+	int computeCodeSegment(Entreprise entreprise, RegDate dateReference, TypeDocument typeDocument) throws DeclarationException;
 }

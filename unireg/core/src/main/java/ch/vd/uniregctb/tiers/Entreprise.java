@@ -102,6 +102,19 @@ public class Entreprise extends ContribuableImpositionPersonnesMorales {
 		return nonAnnules;
 	}
 
+	@Transient
+	@NotNull
+	public List<RegimeFiscal> getRegimesFiscauxNonAnnulesTries(RegimeFiscal.Portee portee) {
+		final List<RegimeFiscal> all = getRegimesFiscauxNonAnnulesTries();
+		final List<RegimeFiscal> pourPortee = new ArrayList<>(all.size());
+		for (RegimeFiscal rf : all) {
+			if (rf.getPortee() == portee) {
+				pourPortee.add(rf);
+			}
+		}
+		return pourPortee;
+	}
+
 	@OneToMany(cascade = CascadeType.ALL)
 	@JoinColumn(name = "ENTREPRISE_ID")
 	public Set<DonneeCivileEntreprise> getDonneesCiviles() {

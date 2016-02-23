@@ -2,7 +2,7 @@ package ch.vd.uniregctb.evenement.di;
 
 import ch.vd.registre.base.date.RegDate;
 
-public class MockEvenementDeclarationSender implements EvenementDeclarationSender {
+public class MockEvenementDeclarationPPSender implements EvenementDeclarationPPSender {
 	@Override
 	public void sendEmissionEvent(long numeroContribuable, int periodeFiscale, RegDate date, String codeControle, String codeRoutage) throws EvenementDeclarationException {
 	}

@@ -42,8 +42,8 @@ import ch.vd.uniregctb.declaration.ordinaire.pp.EnvoiDIsPPResults;
 import ch.vd.uniregctb.declaration.ordinaire.pp.ImpressionDeclarationImpotPersonnesPhysiquesHelper;
 import ch.vd.uniregctb.editique.EditiqueCompositionService;
 import ch.vd.uniregctb.evenement.di.EvenementDeclarationException;
-import ch.vd.uniregctb.evenement.di.EvenementDeclarationSender;
-import ch.vd.uniregctb.evenement.di.MockEvenementDeclarationSender;
+import ch.vd.uniregctb.evenement.di.EvenementDeclarationPPSender;
+import ch.vd.uniregctb.evenement.di.MockEvenementDeclarationPPSender;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscal;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
 import ch.vd.uniregctb.evenement.fiscal.MockEvenementFiscalService;
@@ -120,7 +120,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 		parametres = getBean(ParametreAppService.class, "parametreAppService");
 		final ServiceCivilCacheWarmer cacheWarmer = getBean(ServiceCivilCacheWarmer.class, "serviceCivilCacheWarmer");
 		validationService = getBean(ValidationService.class, "validationService");
-		final EvenementDeclarationSender evenementDeclarationSender = new MockEvenementDeclarationSender();
+		final EvenementDeclarationPPSender evenementDeclarationSender = new MockEvenementDeclarationPPSender();
 		periodeImpositionService = getBean(PeriodeImpositionService.class, "periodeImpositionService");
 		final AssujettissementService assujettissementService = getBean(AssujettissementService.class, "assujettissementService");
 		adresseService = getBean(AdresseService.class, "adresseService");
@@ -1663,7 +1663,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 				fiscEventAnnulationDI.add(di.getId());
 			}
 		});
-		service.setEvenementDeclarationSender(new MockEvenementDeclarationSender() {
+		service.setEvenementDeclarationPPSender(new MockEvenementDeclarationPPSender() {
 			@Override
 			public void sendEmissionEvent(long numeroContribuable, int periodeFiscale, RegDate date, String codeControle, String codeRoutage) throws EvenementDeclarationException {
 				diEventEmission.add(periodeFiscale);
@@ -1774,7 +1774,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 				fiscEventAnnulationDI.add(di.getId());
 			}
 		});
-		service.setEvenementDeclarationSender(new MockEvenementDeclarationSender(){
+		service.setEvenementDeclarationPPSender(new MockEvenementDeclarationPPSender(){
 			@Override
 			public void sendEmissionEvent(long numeroContribuable, int periodeFiscale, RegDate date, String codeControle, String codeRoutage) throws EvenementDeclarationException {
 				diEventEmission.add(periodeFiscale);
@@ -1870,7 +1870,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 				fiscEventAnnulationDI.add(di.getId());
 			}
 		});
-		service.setEvenementDeclarationSender(new MockEvenementDeclarationSender(){
+		service.setEvenementDeclarationPPSender(new MockEvenementDeclarationPPSender(){
 			@Override
 			public void sendEmissionEvent(long numeroContribuable, int periodeFiscale, RegDate date, String codeControle, String codeRoutage) throws EvenementDeclarationException {
 				diEventEmission.add(periodeFiscale);
@@ -1962,7 +1962,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 				fiscEventAnnulationDI.add(di.getId());
 			}
 		});
-		service.setEvenementDeclarationSender(new MockEvenementDeclarationSender(){
+		service.setEvenementDeclarationPPSender(new MockEvenementDeclarationPPSender(){
 			@Override
 			public void sendEmissionEvent(long numeroContribuable, int periodeFiscale, RegDate date, String codeControle, String codeRoutage) throws EvenementDeclarationException {
 				diEventEmission.add(periodeFiscale);

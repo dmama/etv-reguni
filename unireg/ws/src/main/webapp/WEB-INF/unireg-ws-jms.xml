@@ -65,6 +65,10 @@
 				<value>classpath*:party/*.xsd</value>
 				<value>classpath:xsd/fiscal/evenementFiscalMaster-v1.xsd</value>
 				<value>classpath:event/fiscal/evt-fiscal-2.xsd</value>
+				<value>classpath:unireg-common-1.xsd</value>
+				<value>classpath:event/di/evenementDeclarationImpot-common-1.xsd</value>
+				<value>classpath:event/di/evenementDeclarationImpot-output-1.xsd</value>
+				<value>classpath:event/di/evtPublicationCodeControleCyber-2.xsd</value>
 			</list>
 		</property>
 	</bean>

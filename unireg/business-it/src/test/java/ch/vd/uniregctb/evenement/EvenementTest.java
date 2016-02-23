@@ -4,6 +4,8 @@ import javax.jms.ConnectionFactory;
 import javax.jms.MessageListener;
 import java.util.Date;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.activemq.ra.ActiveMQResourceAdapter;
 import org.jetbrains.annotations.Nullable;
@@ -22,6 +24,7 @@ import ch.vd.uniregctb.utils.UniregProperties;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author Manuel Siggen <manuel.siggen@vd.ch>
@@ -64,17 +67,31 @@ public abstract class EvenementTest {
 		EvenementHelper.clearQueue(esbTemplate, queueName);
 	}
 
-	protected void assertTextMessage(String queueName, final String texte) throws Exception {
-
+	private String receiveTextMessage(String queueName) throws Exception {
 		esbTemplate.setReceiveTimeout(3000);        // On attend le message jusqu'à 3 secondes
 		final EsbMessage msg = esbTemplate.receive(queueName);
 		assertNotNull("L'événement n'a pas été reçu.", msg);
 		String actual = msg.getBodyAsString();
 		actual = actual.replaceAll(" standalone=\"(no|yes)\"", ""); // on ignore l'attribut standalone s'il existe
-		assertEquals(texte, actual);
+		return actual;
+	}
 
+	private void checkNoMoreMessage(String queueName) throws Exception {
 		final EsbMessage noMsg = esbTemplate.receive(queueName);
 		assertNull(noMsg);
+	}
+
+	protected void assertTextMessage(String queueName, final String texte) throws Exception {
+		final String actual = receiveTextMessage(queueName);
+		assertEquals(texte, actual);
+		checkNoMoreMessage(queueName);
+	}
+
+	protected void assertTextMessage(String queueName, Pattern pattern) throws Exception {
+		final String actual = receiveTextMessage(queueName);
+		final Matcher matcher = pattern.matcher(actual);
+		assertTrue(matcher.matches());
+		checkNoMoreMessage(queueName);
 	}
 
 	protected void sendTextMessage(String queueName, String texte, @Nullable Map<String, String> customAttributes) throws Exception {

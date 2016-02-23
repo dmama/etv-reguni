@@ -1,15 +1,18 @@
 package ch.vd.uniregctb.declaration.ordinaire;
 
 import javax.jms.JMSException;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.transaction.PlatformTransactionManager;
 
+import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.shared.batchtemplate.StatusManager;
@@ -76,7 +79,8 @@ import ch.vd.uniregctb.editique.EditiqueResultat;
 import ch.vd.uniregctb.editique.EditiqueService;
 import ch.vd.uniregctb.editique.TypeDocumentEditique;
 import ch.vd.uniregctb.evenement.di.EvenementDeclarationException;
-import ch.vd.uniregctb.evenement.di.EvenementDeclarationSender;
+import ch.vd.uniregctb.evenement.di.EvenementDeclarationPMSender;
+import ch.vd.uniregctb.evenement.di.EvenementDeclarationPPSender;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
@@ -86,17 +90,27 @@ import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionService;
 import ch.vd.uniregctb.parametrage.DelaisService;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesMorales;
 import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
+import ch.vd.uniregctb.tiers.Entreprise;
+import ch.vd.uniregctb.tiers.ForFiscalPrincipalPM;
+import ch.vd.uniregctb.tiers.RegimeFiscal;
 import ch.vd.uniregctb.tiers.Tache;
 import ch.vd.uniregctb.tiers.TacheDAO;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.EtatDelaiDeclaration;
+import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeDocument;
 import ch.vd.uniregctb.type.TypeEtatDeclaration;
 import ch.vd.uniregctb.type.TypeEtatTache;
 import ch.vd.uniregctb.validation.ValidationService;
 
 public class DeclarationImpotServiceImpl implements DeclarationImpotService {
+
+	/**
+	 * Ce sont les codes des régimes fiscaux vaudois spécifiques aux holdings (11 et 13) et sociétés de base (41C et 42C)
+	 */
+	private static final Set<String> CODES_REGIMES_FISCAUX_SOCIETE_BASE_HOLDING = new HashSet<>(Arrays.asList("11", "13", "41C", "42C"));
 
 	// private final Logger LOGGER = LoggerFactory.getLogger(DeclarationImpotServiceImpl.class);
 
@@ -119,7 +133,8 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 	private TiersService tiersService;
 	private ParametreAppService parametres;
 	private ValidationService validationService;
-	private EvenementDeclarationSender evenementDeclarationSender;
+	private EvenementDeclarationPPSender evenementDeclarationPPSender;
+	private EvenementDeclarationPMSender evenementDeclarationPMSender;
 	private ImpressionConfirmationDelaiPPHelper impressionConfirmationDelaiPPHelper;
 	private PeriodeImpositionService periodeImpositionService;
 	private AssujettissementService assujettissementService;
@@ -136,7 +151,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 	                                   TacheDAO tacheDAO, ModeleDocumentDAO modeleDAO, DelaisService delaisService, ServiceInfrastructureService infraService,
 	                                   TiersService tiersService, ImpressionDeclarationImpotPersonnesPhysiquesHelper impressionDIPPHelper, PlatformTransactionManager transactionManager,
 	                                   ParametreAppService parametres, ServiceCivilCacheWarmer serviceCivilCacheWarmer, ValidationService validationService,
-	                                   EvenementFiscalService evenementFiscalService, EvenementDeclarationSender evenementDeclarationSender, PeriodeImpositionService periodeImpositionService,
+	                                   EvenementFiscalService evenementFiscalService, EvenementDeclarationPPSender evenementDeclarationPPSender, PeriodeImpositionService periodeImpositionService,
 	                                   AssujettissementService assujettissementService, TicketService ticketService) {
 		this.editiqueCompositionService = editiqueCompositionService;
 		this.hibernateTemplate = hibernateTemplate;
@@ -152,7 +167,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 		this.serviceCivilCacheWarmer = serviceCivilCacheWarmer;
 		this.validationService = validationService;
 		this.evenementFiscalService = evenementFiscalService;
-		this.evenementDeclarationSender = evenementDeclarationSender;
+		this.evenementDeclarationPPSender = evenementDeclarationPPSender;
 		this.periodeImpositionService = periodeImpositionService;
 		this.assujettissementService = assujettissementService;
 		this.ticketService = ticketService;
@@ -235,8 +250,12 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 		this.validationService = validationService;
 	}
 
-	public void setEvenementDeclarationSender(EvenementDeclarationSender evenementDeclarationSender) {
-		this.evenementDeclarationSender = evenementDeclarationSender;
+	public void setEvenementDeclarationPPSender(EvenementDeclarationPPSender evenementDeclarationPPSender) {
+		this.evenementDeclarationPPSender = evenementDeclarationPPSender;
+	}
+
+	public void setEvenementDeclarationPMSender(EvenementDeclarationPMSender evenementDeclarationPMSender) {
+		this.evenementDeclarationPMSender = evenementDeclarationPMSender;
 	}
 
 	public void setImpressionConfirmationDelaiPPHelper(ImpressionConfirmationDelaiPPHelper impressionConfirmationDelaiPPHelper) {
@@ -362,7 +381,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 			final int pf = declaration.getPeriode().getAnnee();
 			if (pf >= DeclarationImpotOrdinairePP.PREMIERE_ANNEE_RETOUR_ELECTRONIQUE) {
 				final String codeSegmentString = Integer.toString(declaration.getCodeSegment() != null ? declaration.getCodeSegment() : VALEUR_DEFAUT_CODE_SEGMENT);
-				evenementDeclarationSender.sendEmissionEvent(ctb.getNumero(), pf, dateEvenement, declaration.getCodeControle(), codeSegmentString);
+				evenementDeclarationPPSender.sendEmissionEvent(ctb.getNumero(), pf, dateEvenement, declaration.getCodeControle(), codeSegmentString);
 			}
 
 			// [UNIREG-2705] il est maintenant possible de créer des déclarations déjà retournées (et pas seulement pour les indigents)
@@ -380,9 +399,18 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 
 	@Override
 	public EditiqueResultat envoiDIOnline(DeclarationImpotOrdinairePM declaration, RegDate dateEvenement) throws DeclarationException {
+
+		final ContribuableImpositionPersonnesMorales ctb = declaration.getTiers();
+
 		try {
 			final EditiqueResultat resultat = editiqueCompositionService.imprimeDIOnline(declaration);
 			evenementFiscalService.publierEvenementFiscalEmissionDeclarationImpot(declaration, dateEvenement);
+
+			// envoi du NIP à qui de droit
+			if (StringUtils.isNotBlank(declaration.getCodeControle())) {
+				final String codeSegment = declaration.getCodeSegment() != null ? Integer.toString(declaration.getCodeSegment()) : null;
+				evenementDeclarationPMSender.sendEmissionEvent(ctb.getNumero(), declaration.getPeriode().getAnnee(), declaration.getNumero(), declaration.getCodeControle(), codeSegment);
+			}
 
 			// [UNIREG-2705] il est maintenant possible de créer des déclarations déjà retournées (et pas seulement pour les indigents)
 			final EtatDeclaration etatRetour = declaration.getDernierEtatOfType(TypeEtatDeclaration.RETOURNEE);
@@ -392,7 +420,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 
 			return resultat;
 		}
-		catch (EditiqueException | JMSException e) {
+		catch (EditiqueException | EvenementDeclarationException | JMSException e) {
 			throw new DeclarationException(e);
 		}
 	}
@@ -428,7 +456,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 			evenementFiscalService.publierEvenementFiscalEmissionDeclarationImpot(declaration, dateEvenement);
 
 			final String codeSegmentString = Integer.toString(declaration.getCodeSegment() != null ? declaration.getCodeSegment() : VALEUR_DEFAUT_CODE_SEGMENT);
-			evenementDeclarationSender.sendEmissionEvent(tiers.getNumero(), declaration.getPeriode().getAnnee(), dateEvenement, declaration.getCodeControle(), codeSegmentString);
+			evenementDeclarationPPSender.sendEmissionEvent(tiers.getNumero(), declaration.getPeriode().getAnnee(), dateEvenement, declaration.getCodeControle(), codeSegmentString);
 		}
 		catch (EditiqueException | EvenementDeclarationException e) {
 			throw new DeclarationException(e);
@@ -438,10 +466,15 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 	@Override
 	public void envoiDIForBatch(DeclarationImpotOrdinairePM declaration, RegDate dateEvenement) throws DeclarationException {
 		try {
+			final ContribuableImpositionPersonnesMorales ctb = declaration.getTiers();
 			editiqueCompositionService.imprimeDIForBatch(declaration);
 			evenementFiscalService.publierEvenementFiscalEmissionDeclarationImpot(declaration, dateEvenement);
+			if (StringUtils.isNotBlank(declaration.getCodeControle())) {
+				final String codeSegment = declaration.getCodeSegment() != null ? Integer.toString(declaration.getCodeSegment()) : null;
+				evenementDeclarationPMSender.sendEmissionEvent(ctb.getNumero(), declaration.getPeriode().getAnnee(), declaration.getNumero(), declaration.getCodeControle(), codeSegment);
+			}
 		}
-		catch (EditiqueException e) {
+		catch (EditiqueException | EvenementDeclarationException e) {
 			throw new DeclarationException(e);
 		}
 	}
@@ -524,7 +557,10 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 			// [SIFISC-3103] Pour les périodes fiscales avant 2011, on n'envoie aucun événement d'annulation de DI (pour le moment, il ne s'agit que d'ADDI)
 			final int pf = di.getPeriode().getAnnee();
 			if (di instanceof DeclarationImpotOrdinairePP && pf >= DeclarationImpotOrdinairePP.PREMIERE_ANNEE_RETOUR_ELECTRONIQUE) {
-				evenementDeclarationSender.sendAnnulationEvent(contribuable.getNumero(), pf, dateEvenement);
+				evenementDeclarationPPSender.sendAnnulationEvent(contribuable.getNumero(), pf, dateEvenement);
+			}
+			if (di instanceof DeclarationImpotOrdinairePM && StringUtils.isNotBlank(di.getCodeControle())) {
+				evenementDeclarationPMSender.sendAnnulationEvent(contribuable.getNumero(), pf, di.getNumero(), di.getCodeControle());
 			}
 		}
 		catch (EvenementDeclarationException e) {
@@ -549,7 +585,14 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 				final DeclarationImpotOrdinairePP dipp = (DeclarationImpotOrdinairePP) di;
 				if (pf > DeclarationImpotOrdinairePP.PREMIERE_ANNEE_RETOUR_ELECTRONIQUE || (pf == DeclarationImpotOrdinairePP.PREMIERE_ANNEE_RETOUR_ELECTRONIQUE && dipp.getCodeControle() != null)) {
 					final String codeSegmentString = Integer.toString(dipp.getCodeSegment() != null ? dipp.getCodeSegment() : VALEUR_DEFAUT_CODE_SEGMENT);
-					evenementDeclarationSender.sendEmissionEvent(ctb.getNumero(), pf, dateEvenement, dipp.getCodeControle(), codeSegmentString);
+					evenementDeclarationPPSender.sendEmissionEvent(ctb.getNumero(), pf, dateEvenement, dipp.getCodeControle(), codeSegmentString);
+				}
+			}
+			else if (di instanceof DeclarationImpotOrdinairePM) {
+				final DeclarationImpotOrdinairePM dipm = (DeclarationImpotOrdinairePM) di;
+				if (StringUtils.isNotBlank(dipm.getCodeControle())) {
+					final String codeRoutage = dipm.getCodeSegment() != null ? Integer.toString(dipm.getCodeSegment()) : null;
+					evenementDeclarationPMSender.sendEmissionEvent(ctb.getNumero(), pf, dipm.getNumero(), dipm.getCodeControle(), codeRoutage);
 				}
 			}
 		}
@@ -791,5 +834,44 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 		                                                                                  periodeImpositionService, adresseService);
 
 		return processor.run(dateTraitement, nombreMax, statusManager);
+	}
+
+	@Override
+	public int computeCodeSegment(Entreprise entreprise, RegDate dateReference, TypeDocument typeDocument) throws DeclarationException {
+
+		// dépendant du régime fiscal vaudois à la date
+		final RegimeFiscal vd = DateRangeHelper.rangeAt(entreprise.getRegimesFiscauxNonAnnulesTries(RegimeFiscal.Portee.VD), dateReference);
+		if (vd == null) {
+			// pas de régime fiscal... on fait comment ?
+			throw new DeclarationException("Pas de régime fiscal vaudois à la date de référence.");
+		}
+
+		final ForFiscalPrincipalPM ffp = entreprise.getDernierForFiscalPrincipalAvant(dateReference);
+		if (ffp == null) {
+			throw new DeclarationException("Pas de for fiscal principal avant la date de référence.");
+		}
+
+		// APM -> "2"
+		if (typeDocument == TypeDocument.DECLARATION_IMPOT_APM) {
+			return 2;
+		}
+
+		// autre chose que "PM" -> boum !
+		if (typeDocument != TypeDocument.DECLARATION_IMPOT_PM) {
+			throw new IllegalArgumentException("Type de document absent ou non-supporté dans l'envoi des déclarations d'impôt PM : " + typeDocument);
+		}
+
+		// PM société de base ou holding -> "4"
+		if (CODES_REGIMES_FISCAUX_SOCIETE_BASE_HOLDING.contains(vd.getCode())) {
+			return 4;
+		}
+
+		// PM vaudoise -> "1"
+		if (ffp.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
+			return 1;
+		}
+
+		// PM HC ou HS -> "3"
+		return 3;
 	}
 }

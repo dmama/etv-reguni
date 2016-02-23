@@ -178,7 +178,8 @@
 		<property name="adresseService" ref="adresseService" />
 		<property name="serviceCivilCacheWarmer" ref="serviceCivilCacheWarmer" />
 		<property name="validationService" ref="validationService" />
-		<property name="evenementDeclarationSender" ref="evenementDeclarationSender" />
+		<property name="evenementDeclarationPPSender" ref="evenementDeclarationPPSender" />
+		<property name="evenementDeclarationPMSender" ref="evenementDeclarationPMSender" />
 		<property name="impressionConfirmationDelaiPPHelper" ref="impressionConfirmationDelaiPPHelper" />
 		<property name="assujettissementService" ref="assujettissementService" />
 		<property name="periodeImpositionService" ref="periodeImpositionService" />

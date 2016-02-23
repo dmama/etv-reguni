@@ -3,12 +3,12 @@ package ch.vd.uniregctb.evenement.di;
 import ch.vd.registre.base.date.RegDate;
 
 /**
- * Interface pour envoyer des événements de déclarations à destination d'ADDI.
+ * Interface pour envoyer des événements de déclarations PP à destination d'ADDI.
  */
-public interface EvenementDeclarationSender {
+public interface EvenementDeclarationPPSender {
 
 	/**
-	 * Envoie un événement d'émission d'une déclaration d'impôt ordinaire.
+	 * Envoie un événement d'émission d'une déclaration d'impôt ordinaire PP.
 	 *
 	 * @param numeroContribuable le numéro du contribuable à qui l'on envoie une déclaration
 	 * @param periodeFiscale     la période fiscale de la déclaration considérée
@@ -20,7 +20,7 @@ public interface EvenementDeclarationSender {
 	void sendEmissionEvent(long numeroContribuable, int periodeFiscale, RegDate date, String codeControle, String codeRoutage) throws EvenementDeclarationException;
 
 	/**
-	 * Envoie un événement d'annulation d'une déclaration d'impôt ordinaire.
+	 * Envoie un événement d'annulation d'une déclaration d'impôt ordinaire PP.
 	 *
 	 * @param numeroContribuable le numéro du contribuable
 	 * @param periodeFiscale     la période fiscale de la déclaration annulée

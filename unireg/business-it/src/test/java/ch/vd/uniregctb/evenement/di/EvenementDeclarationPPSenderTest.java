@@ -17,11 +17,11 @@ import static org.junit.Assert.fail;
 /**
  * Vérifie le fonctionnement de l'émetteur d'événement de déclarations à destination d'ADDI.
  */
-public class EvenementDeclarationSenderTest extends EvenementTest {
+public class EvenementDeclarationPPSenderTest extends EvenementTest {
 
 	private String OUTPUT_QUEUE;
 
-	private EvenementDeclarationSenderImpl sender;
+	private EvenementDeclarationPPSenderImpl sender;
 
 	@Before
 	public void setUp() throws Exception {
@@ -47,7 +47,7 @@ public class EvenementDeclarationSenderTest extends EvenementTest {
 				new ClassPathResource("event/di/evenementDeclarationImpot-output-1.xsd")
 		});
 
-		sender = new EvenementDeclarationSenderImpl();
+		sender = new EvenementDeclarationPPSenderImpl();
 		sender.setEsbTemplate(esbTemplate);
 		sender.setEsbValidator(esbValidator);
 		sender.setServiceDestination(OUTPUT_QUEUE);

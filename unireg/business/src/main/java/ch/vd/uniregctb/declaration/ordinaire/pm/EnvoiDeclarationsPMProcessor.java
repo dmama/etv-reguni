@@ -60,6 +60,7 @@ import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionService;
 import ch.vd.uniregctb.parametrage.DelaisService;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesMorales;
+import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.TacheEnvoiDeclarationImpotPM;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.transaction.TransactionTemplate;
@@ -289,6 +290,9 @@ public class EnvoiDeclarationsPMProcessor {
 
 		if (pm.shouldAssignCodeControle(di)) {
 			di.setCodeControle(ContribuableImpositionPersonnesMorales.generateNewCodeControle(informationsFiscales.getDeclarations(pm)));
+		}
+		if (pm instanceof Entreprise && tache.getTypeDocument() != null) {
+			di.setCodeSegment(declarationImpotService.computeCodeSegment((Entreprise) pm, tache.getDateFin(), tache.getTypeDocument()));
 		}
 
 		final DeclarationImpotOrdinairePM savedDi = hibernateTemplate.merge(di);

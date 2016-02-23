@@ -542,11 +542,17 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 	protected DeclarationImpotOrdinairePM creerNouvelleDI(ContribuableImpositionPersonnesMorales ctb, RegDate dateDebut, RegDate dateFin,
 	                                                      RegDate dateDebutExercice, RegDate dateFinExercice,
 	                                                      @Nullable TypeDocument typeDocument, @Nullable TypeAdresseRetour typeAdresseRetour,
-	                                                      RegDate delaiAccorde, @Nullable RegDate dateRetour) throws AssujettissementException {
+	                                                      RegDate delaiAccorde, @Nullable RegDate dateRetour) throws AssujettissementException, DeclarationException {
 
 		final DeclarationImpotOrdinairePM di = new DeclarationImpotOrdinairePM();
 		di.setDateDebutExerciceCommercial(dateDebutExercice);
 		di.setDateFinExerciceCommercial(dateFinExercice);
+
+		// assignation du code segment
+		if (ctb instanceof Entreprise && typeDocument != null) {
+			di.setCodeSegment(diService.computeCodeSegment((Entreprise) ctb, dateFin, typeDocument));
+		}
+
 		return creerNouvelleDI(ctb, di, dateDebut, dateFin, typeDocument, typeAdresseRetour, delaiAccorde, dateRetour, TypeTache.TacheEnvoiDeclarationImpotPM);
 	}
 
