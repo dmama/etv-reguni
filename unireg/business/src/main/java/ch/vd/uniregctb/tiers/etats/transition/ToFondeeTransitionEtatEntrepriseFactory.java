@@ -1,7 +1,6 @@
 package ch.vd.uniregctb.tiers.etats.transition;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.interfaces.service.ServiceOrganisationService;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.EtatEntreprise;
 import ch.vd.uniregctb.tiers.TiersDAO;
@@ -14,31 +13,23 @@ import ch.vd.uniregctb.type.TypeGenerationEtatEntreprise;
  */
 public class ToFondeeTransitionEtatEntrepriseFactory extends BaseTransitionEtatEntrepriseFactory {
 
-	public ToFondeeTransitionEtatEntrepriseFactory(TiersDAO tiersDAO, ServiceOrganisationService serviceOrganisation) {
-		super(tiersDAO, serviceOrganisation);
+	public ToFondeeTransitionEtatEntrepriseFactory(TiersDAO tiersDAO) {
+		super(tiersDAO);
 	}
 
 	@Override
 	public TransitionEtatEntreprise create(Entreprise entreprise, RegDate date, TypeGenerationEtatEntreprise generation) {
 		final EtatEntreprise actuel = getEtatActuel(entreprise);
 		if (actuel == null) {
-			if (!isInscriteRC(entreprise, date)) {
-				return new ToFondeeTransitionEtatEntreprise(getTiersDAO(), entreprise, date, generation);
-			} else {
-				return null;
-			}
+			return new ToFondeeTransitionEtatEntreprise(getTiersDAO(), entreprise, date, generation);
 		}
 		if (!checkDateValid(actuel, date)) {
 			return null;
 		}
 		switch (actuel.getType()) {
 		case INSCRITE_RC:
-			return new ToFondeeTransitionEtatEntreprise(getTiersDAO(), entreprise, date, generation);
 		case EN_FAILLITE:
-			if (!isInscriteRC(entreprise, date)) {
-				return new ToFondeeTransitionEtatEntreprise(getTiersDAO(), entreprise, date, generation);
-			}
-			return null;
+			return new ToFondeeTransitionEtatEntreprise(getTiersDAO(), entreprise, date, generation);
 		default:
 			return null;
 		}

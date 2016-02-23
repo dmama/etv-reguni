@@ -2,23 +2,11 @@ package ch.vd.uniregctb.tiers.etats;
 
 import java.util.Map;
 
-import org.jetbrains.annotations.NotNull;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.infra.mock.MockCommune;
-import ch.vd.unireg.interfaces.organisation.ServiceOrganisationException;
-import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
-import ch.vd.unireg.interfaces.organisation.data.Organisation;
-import ch.vd.unireg.interfaces.organisation.data.StatusInscriptionRC;
-import ch.vd.unireg.interfaces.organisation.data.StatusRegistreIDE;
-import ch.vd.unireg.interfaces.organisation.data.TypeOrganisationRegistreIDE;
-import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockOrganisationFactory;
 import ch.vd.uniregctb.common.WithoutSpringTest;
-import ch.vd.uniregctb.interfaces.model.AdressesCivilesHistoriques;
-import ch.vd.uniregctb.interfaces.service.ServiceOrganisationService;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.EtatEntreprise;
 import ch.vd.uniregctb.tiers.TiersDAO;
@@ -30,7 +18,6 @@ import ch.vd.uniregctb.tiers.etats.transition.ToFondeeTransitionEtatEntreprise;
 import ch.vd.uniregctb.tiers.etats.transition.ToInscriteRCTransitionEtatEntreprise;
 import ch.vd.uniregctb.tiers.etats.transition.ToRadieeRCTransitionEtatEntreprise;
 import ch.vd.uniregctb.tiers.etats.transition.TransitionEtatEntreprise;
-import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeEtatEntreprise;
 import ch.vd.uniregctb.type.TypeGenerationEtatEntreprise;
 
@@ -46,10 +33,9 @@ public class TransitionEtatEntrepriseServiceTest extends WithoutSpringTest {
 		dao = new TransitionEtatMockTiersDao();
 	}
 
-	private TransitionEtatEntrepriseServiceImpl createService(TiersDAO dao, Organisation organisation) throws Exception {
+	private TransitionEtatEntrepriseServiceImpl createService(TiersDAO dao) throws Exception {
 		TransitionEtatEntrepriseServiceImpl factory = new TransitionEtatEntrepriseServiceImpl();
 		factory.setTiersDAO(dao);
-		factory.setServiceOrganisation(new MockServiceOrganisationService(organisation));
 		factory.afterPropertiesSet();
 		return factory;
 	}
@@ -66,7 +52,7 @@ public class TransitionEtatEntrepriseServiceTest extends WithoutSpringTest {
 		actuel.setEntreprise(entreprise);
 		entreprise.addEtat(actuel);
 
-		TransitionEtatEntrepriseServiceImpl service = createService(dao, null);
+		TransitionEtatEntrepriseServiceImpl service = createService(dao);
 
 		TransitionEtatEntreprise translator = service.getTransitionVersEtat(TypeEtatEntreprise.EN_LIQUIDATION, entreprise, date(2015, 12, 31), TypeGenerationEtatEntreprise.MANUELLE);
 
@@ -85,7 +71,7 @@ public class TransitionEtatEntrepriseServiceTest extends WithoutSpringTest {
 		actuel.setEntreprise(entreprise);
 		entreprise.addEtat(actuel);
 
-		TransitionEtatEntrepriseServiceImpl service = createService(dao, null);
+		TransitionEtatEntrepriseServiceImpl service = createService(dao);
 
 		Map<TypeEtatEntreprise, TransitionEtatEntreprise> disponibles = service.getTransitionsDisponibles(entreprise, date(2015, 12, 31), TypeGenerationEtatEntreprise.MANUELLE);
 
@@ -103,18 +89,14 @@ public class TransitionEtatEntrepriseServiceTest extends WithoutSpringTest {
 		final Entreprise entreprise = new Entreprise(1234);
 		entreprise.setNumeroEntreprise(1L);
 
-		Organisation organisation = MockOrganisationFactory
-				.createOrganisation(1L, 1L, "Synergy SA", RegDate.get(2010, 6, 24), null, FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE,
-				                    TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF, StatusRegistreIDE.DEFINITIF,
-				                    TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE);
-
-		TransitionEtatEntrepriseServiceImpl service = createService(dao, organisation);
+		TransitionEtatEntrepriseServiceImpl service = createService(dao);
 
 		Map<TypeEtatEntreprise, TransitionEtatEntreprise> disponibles = service.getTransitionsDisponibles(entreprise, date(2015, 12, 31), TypeGenerationEtatEntreprise.MANUELLE);
 
 		Assert.assertNotNull(disponibles);
-		Assert.assertTrue(disponibles.size() == 1);
+		Assert.assertTrue(disponibles.size() == 2);
 		assertTransition(disponibles, TypeEtatEntreprise.INSCRITE_RC, ToInscriteRCTransitionEtatEntreprise.class);
+		assertTransition(disponibles, TypeEtatEntreprise.FONDEE, ToFondeeTransitionEtatEntreprise.class);
 	}
 
 	@Test
@@ -123,17 +105,13 @@ public class TransitionEtatEntrepriseServiceTest extends WithoutSpringTest {
 		final Entreprise entreprise = new Entreprise(1234);
 		entreprise.setNumeroEntreprise(1L);
 
-		Organisation organisation = MockOrganisationFactory
-				.createOrganisation(1L, 1L, "Synergy SA", RegDate.get(2010, 6, 24), null, FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE,
-				                    TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), null, StatusRegistreIDE.DEFINITIF,
-				                    TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE);
-
-		TransitionEtatEntrepriseServiceImpl service = createService(dao, organisation);
+		TransitionEtatEntrepriseServiceImpl service = createService(dao);
 
 		Map<TypeEtatEntreprise, TransitionEtatEntreprise> disponibles = service.getTransitionsDisponibles(entreprise, date(2015, 12, 31), TypeGenerationEtatEntreprise.MANUELLE);
 
 		Assert.assertNotNull(disponibles);
-		Assert.assertTrue(disponibles.size() == 1);
+		Assert.assertTrue(disponibles.size() == 2);
+		assertTransition(disponibles, TypeEtatEntreprise.INSCRITE_RC, ToInscriteRCTransitionEtatEntreprise.class);
 		assertTransition(disponibles, TypeEtatEntreprise.FONDEE, ToFondeeTransitionEtatEntreprise.class);
 	}
 
@@ -156,20 +134,16 @@ public class TransitionEtatEntrepriseServiceTest extends WithoutSpringTest {
 		actuel.setEntreprise(entreprise);
 		entreprise.addEtat(actuel);
 
-		Organisation organisation = MockOrganisationFactory
-				.createOrganisation(1L, 1L, "Synergy SA", RegDate.get(2010, 6, 24), null, FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE,
-				                    TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF, StatusRegistreIDE.DEFINITIF,
-				                    TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE);
-
-
-		TransitionEtatEntrepriseServiceImpl service = createService(dao, organisation);
+		TransitionEtatEntrepriseServiceImpl service = createService(dao);
 
 		Map<TypeEtatEntreprise, TransitionEtatEntreprise> disponibles = service.getTransitionsDisponibles(entreprise, date(2015, 12, 31), TypeGenerationEtatEntreprise.MANUELLE);
 
 		Assert.assertNotNull(disponibles);
-		Assert.assertTrue(disponibles.size() == 2);
+		Assert.assertTrue(disponibles.size() == 4);
 		assertTransition(disponibles, TypeEtatEntreprise.RADIEE_RC, ToRadieeRCTransitionEtatEntreprise.class);
 		assertTransition(disponibles, TypeEtatEntreprise.INSCRITE_RC, ToInscriteRCTransitionEtatEntreprise.class);
+		assertTransition(disponibles, TypeEtatEntreprise.FONDEE, ToFondeeTransitionEtatEntreprise.class);
+		assertTransition(disponibles, TypeEtatEntreprise.DISSOUTE, ToDissouteTransitionEtatEntreprise.class);
 	}
 
 	@Test
@@ -183,18 +157,14 @@ public class TransitionEtatEntrepriseServiceTest extends WithoutSpringTest {
 		actuel.setEntreprise(entreprise);
 		entreprise.addEtat(actuel);
 
-		Organisation organisation = MockOrganisationFactory
-				.createOrganisation(1L, 1L, "Synergy SA", RegDate.get(2010, 6, 24), null, FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE,
-				                    TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), null, StatusRegistreIDE.DEFINITIF,
-				                    TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE);
-
-
-		TransitionEtatEntrepriseServiceImpl service = createService(dao, organisation);
+		TransitionEtatEntrepriseServiceImpl service = createService(dao);
 
 		Map<TypeEtatEntreprise, TransitionEtatEntreprise> disponibles = service.getTransitionsDisponibles(entreprise, date(2015, 12, 31), TypeGenerationEtatEntreprise.MANUELLE);
 
 		Assert.assertNotNull(disponibles);
-		Assert.assertTrue(disponibles.size() == 2);
+		Assert.assertTrue(disponibles.size() == 4);
+		assertTransition(disponibles, TypeEtatEntreprise.RADIEE_RC, ToRadieeRCTransitionEtatEntreprise.class);
+		assertTransition(disponibles, TypeEtatEntreprise.INSCRITE_RC, ToInscriteRCTransitionEtatEntreprise.class);
 		assertTransition(disponibles, TypeEtatEntreprise.FONDEE, ToFondeeTransitionEtatEntreprise.class);
 		assertTransition(disponibles, TypeEtatEntreprise.DISSOUTE, ToDissouteTransitionEtatEntreprise.class);
 	}
@@ -210,7 +180,7 @@ public class TransitionEtatEntrepriseServiceTest extends WithoutSpringTest {
 		actuel.setEntreprise(entreprise);
 		entreprise.addEtat(actuel);
 
-		TransitionEtatEntrepriseServiceImpl service = createService(dao, null);
+		TransitionEtatEntrepriseServiceImpl service = createService(dao);
 
 		Map<TypeEtatEntreprise, TransitionEtatEntreprise> disponibles = service.getTransitionsDisponibles(entreprise, date(2015, 12, 31), TypeGenerationEtatEntreprise.MANUELLE);
 
@@ -233,13 +203,7 @@ public class TransitionEtatEntrepriseServiceTest extends WithoutSpringTest {
 		actuel.setEntreprise(entreprise);
 		entreprise.addEtat(actuel);
 
-		Organisation organisation = MockOrganisationFactory
-				.createOrganisation(1L, 1L, "Synergy SA", RegDate.get(2010, 6, 24), null, FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE,
-				                    TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF, StatusRegistreIDE.DEFINITIF,
-				                    TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE);
-
-
-		TransitionEtatEntrepriseServiceImpl service = createService(dao, organisation);
+		TransitionEtatEntrepriseServiceImpl service = createService(dao);
 
 		Map<TypeEtatEntreprise, TransitionEtatEntreprise> disponibles = service.getTransitionsDisponibles(entreprise, date(2015, 12, 31), TypeGenerationEtatEntreprise.MANUELLE);
 
@@ -260,18 +224,13 @@ public class TransitionEtatEntrepriseServiceTest extends WithoutSpringTest {
 		actuel.setEntreprise(entreprise);
 		entreprise.addEtat(actuel);
 
-		Organisation organisation = MockOrganisationFactory
-				.createOrganisation(1L, 1L, "Assoc SA", RegDate.get(2010, 6, 24), null, FormeLegale.N_0109_ASSOCIATION,
-				                    TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), null, StatusRegistreIDE.DEFINITIF,
-				                    TypeOrganisationRegistreIDE.ASSOCIATION);
-
-
-		TransitionEtatEntrepriseServiceImpl service = createService(dao, organisation);
+		TransitionEtatEntrepriseServiceImpl service = createService(dao);
 
 		Map<TypeEtatEntreprise, TransitionEtatEntreprise> disponibles = service.getTransitionsDisponibles(entreprise, date(2015, 12, 31), TypeGenerationEtatEntreprise.MANUELLE);
 
 		Assert.assertNotNull(disponibles);
-		Assert.assertTrue(disponibles.size() == 0);
+		Assert.assertTrue(disponibles.size() == 1);
+		assertTransition(disponibles, TypeEtatEntreprise.RADIEE_RC, ToRadieeRCTransitionEtatEntreprise.class);
 	}
 
 	@Test
@@ -285,7 +244,7 @@ public class TransitionEtatEntrepriseServiceTest extends WithoutSpringTest {
 		actuel.setEntreprise(entreprise);
 		entreprise.addEtat(actuel);
 
-		TransitionEtatEntrepriseServiceImpl service = createService(dao, null);
+		TransitionEtatEntrepriseServiceImpl service = createService(dao);
 
 		Map<TypeEtatEntreprise, TransitionEtatEntreprise> disponibles = service.getTransitionsDisponibles(entreprise, date(2015, 12, 31), TypeGenerationEtatEntreprise.MANUELLE);
 
@@ -305,7 +264,7 @@ public class TransitionEtatEntrepriseServiceTest extends WithoutSpringTest {
 		actuel.setEntreprise(entreprise);
 		entreprise.addEtat(actuel);
 
-		TransitionEtatEntrepriseServiceImpl service = createService(dao, null);
+		TransitionEtatEntrepriseServiceImpl service = createService(dao);
 
 		Map<TypeEtatEntreprise, TransitionEtatEntreprise> disponibles = service.getTransitionsDisponibles(entreprise, date(2015, 12, 31), TypeGenerationEtatEntreprise.MANUELLE);
 
@@ -328,47 +287,11 @@ public class TransitionEtatEntrepriseServiceTest extends WithoutSpringTest {
 		actuel.setEntreprise(entreprise);
 		entreprise.addEtat(actuel);
 
-		TransitionEtatEntrepriseServiceImpl service = createService(dao, null);
+		TransitionEtatEntrepriseServiceImpl service = createService(dao);
 
 		Map<TypeEtatEntreprise, TransitionEtatEntreprise> disponibles = service.getTransitionsDisponibles(entreprise, date(2015, 12, 31), TypeGenerationEtatEntreprise.MANUELLE);
 
 		Assert.assertNotNull(disponibles);
 		Assert.assertTrue(disponibles.size() == 0);
 	}
-
-
-	private static class MockServiceOrganisationService implements ServiceOrganisationService {
-		private Organisation organisation;
-
-		public MockServiceOrganisationService(Organisation organisation) {
-			this.organisation = organisation;
-		}
-
-		@Override
-		public Organisation getOrganisationHistory(long noOrganisation) throws ServiceOrganisationException {
-			return organisation;
-		}
-
-		@Override
-		public Long getOrganisationPourSite(Long noSite) throws ServiceOrganisationException {
-			throw new UnsupportedOperationException();
-		}
-
-		@Override
-		public AdressesCivilesHistoriques getAdressesOrganisationHisto(long noOrganisation) throws ServiceOrganisationException {
-			throw new UnsupportedOperationException();
-		}
-
-		@Override
-		public AdressesCivilesHistoriques getAdressesSiteOrganisationHisto(long noSite) throws ServiceOrganisationException {
-			throw new UnsupportedOperationException();
-		}
-
-		@NotNull
-		@Override
-		public String createOrganisationDescription(Organisation organisation, RegDate date) {
-			throw new UnsupportedOperationException();
-		}
-	}
-
 }

@@ -3,8 +3,6 @@ package ch.vd.uniregctb.tiers.etats.transition;
 import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.organisation.data.Organisation;
-import ch.vd.uniregctb.interfaces.service.ServiceOrganisationService;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.EtatEntreprise;
 import ch.vd.uniregctb.tiers.TiersDAO;
@@ -14,11 +12,9 @@ import ch.vd.uniregctb.tiers.TiersDAO;
  */
 public abstract class BaseTransitionEtatEntrepriseFactory implements TransitionEtatEntrepriseFactory {
 	private final TiersDAO tiersDAO;
-	protected ServiceOrganisationService serviceOrganisation;
 
-	public BaseTransitionEtatEntrepriseFactory(TiersDAO tiersDAO, ServiceOrganisationService serviceOrganisation) {
+	public BaseTransitionEtatEntrepriseFactory(TiersDAO tiersDAO) {
 		this.tiersDAO = tiersDAO;
-		this.serviceOrganisation = serviceOrganisation;
 	}
 
 	protected TiersDAO getTiersDAO() {
@@ -44,16 +40,5 @@ public abstract class BaseTransitionEtatEntrepriseFactory implements TransitionE
 	 */
 	protected static boolean checkDateValid(EtatEntreprise actuel, RegDate date) {
 		return actuel == null || actuel.getDateObtention().isBeforeOrEqual(date);
-	}
-
-	/**
-	 * Contrôle que l'entreprise est inscrite au RC selon RCEnt.
-	 */
-	protected boolean isInscriteRC(Entreprise entreprise, RegDate date) {
-		if (entreprise.isConnueAuCivil()) {
-			Organisation organisation = serviceOrganisation.getOrganisationHistory(entreprise.getNumeroEntreprise());
-			return organisation.isInscritAuRC(date);
-		}
-		return false;
 	}
 }

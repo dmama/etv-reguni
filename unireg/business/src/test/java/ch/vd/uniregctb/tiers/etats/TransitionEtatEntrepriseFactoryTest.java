@@ -36,7 +36,7 @@ public class TransitionEtatEntrepriseFactoryTest extends WithoutSpringTest {
 		final Entreprise entreprise = new Entreprise(1234);
 		entreprise.addEtat(actuel);
 
-		TransitionEtatEntrepriseFactory factory = new ToEnLiquidationTransitionEtatEntrepriseFactory(dao, null);
+		TransitionEtatEntrepriseFactory factory = new ToEnLiquidationTransitionEtatEntrepriseFactory(dao);
 
 		TransitionEtatEntreprise transition = factory.create(entreprise, date(2015, 12, 31), TypeGenerationEtatEntreprise.MANUELLE);
 		Assert.assertNotNull(transition);
@@ -67,7 +67,7 @@ public class TransitionEtatEntrepriseFactoryTest extends WithoutSpringTest {
 		final Entreprise entreprise = new Entreprise(1234);
 		entreprise.addEtat(actuel);
 
-		TransitionEtatEntrepriseFactory factory = new ToEnLiquidationTransitionEtatEntrepriseFactory(dao, null);
+		TransitionEtatEntrepriseFactory factory = new ToEnLiquidationTransitionEtatEntrepriseFactory(dao);
 
 		TransitionEtatEntreprise transition = factory.create(entreprise, date(2014, 12, 31), TypeGenerationEtatEntreprise.MANUELLE);
 		Assert.assertNull(transition);
