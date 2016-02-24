@@ -709,10 +709,7 @@ public class TiersMapHelper extends CommonMapHelper {
 	 */
 	public Map<FormeJuridiqueEntreprise, String> getMapFormeJuridiqueEntreprise() {
 		if (mapFormeJuridiqueEntreprise == null) {
-			// On exclue les formes juridiques liées à certaines catégories d'entreprise
-			EnumSet<CategorieEntreprise> categoriesAExclure = EnumSet.of(CategorieEntreprise.PP, CategorieEntreprise.SP, CategorieEntreprise.AUTRE);
-			EnumSet<FormeJuridiqueEntreprise> formesAExclure = FormeJuridiqueEntrepriseHelper.getFormesJuridiquesFromCategoriesEntreprise(categoriesAExclure);
-			mapFormeJuridiqueEntreprise = initMapEnum(ApplicationConfig.masterKeyFormeJuridiqueEntreprise, FormeJuridiqueEntreprise.class, formesAExclure.toArray(new FormeJuridiqueEntreprise[formesAExclure.size()]));
+			mapFormeJuridiqueEntreprise = initMapEnum(ApplicationConfig.masterKeyFormeJuridiqueEntreprise, FormeJuridiqueEntreprise.class);
 		}
 		return mapFormeJuridiqueEntreprise;
 	}
