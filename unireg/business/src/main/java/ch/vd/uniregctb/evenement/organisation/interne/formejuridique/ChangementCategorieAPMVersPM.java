@@ -16,6 +16,7 @@ import ch.vd.uniregctb.tiers.CategorieEntrepriseHelper;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.RegimeFiscal;
 import ch.vd.uniregctb.type.CategorieEntreprise;
+import ch.vd.uniregctb.type.TypeEtatEntreprise;
 
 /**
  * Classe de base implémentant détection de changement de catégorie.
@@ -69,6 +70,7 @@ public class ChangementCategorieAPMVersPM extends EvenementOrganisationInterneDe
 	public void doHandle(EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) throws EvenementOrganisationException {
 
 		closeRegimesFiscauxOrdinairesCHVD(regimeFiscalCHAvant, regimeFiscalVDAvant, dateAvant, suivis);
+		changeEtatEntreprise(getEntreprise(), TypeEtatEntreprise.INSCRITE_RC, dateApres, suivis);
 		openRegimesFiscauxOrdinairesCHVD(getEntreprise(), getOrganisation(), dateApres, suivis);
 	}
 

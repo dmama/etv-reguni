@@ -76,6 +76,11 @@ public class DonneesRCRCEnt implements DonneesRC, Serializable {
 	}
 
 	@Override
+	public RegDate getDateInscription(RegDate date) {
+		return OrganisationHelper.valueForDate(dateInscription, date);
+	}
+
+	@Override
 	public List<DateRanged<String>> getButs() {
 		return buts;
 	}

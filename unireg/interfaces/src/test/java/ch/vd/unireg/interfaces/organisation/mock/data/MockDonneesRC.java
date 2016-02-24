@@ -134,6 +134,11 @@ public class MockDonneesRC implements DonneesRC {
 	}
 
 	@Override
+	public RegDate getDateInscription(RegDate date) {
+		return OrganisationHelper.valueForDate(getDateInscription(), date);
+	}
+
+	@Override
 	public List<DateRanged<String>> getButs() {
 		return MockOrganisationHelper.getHisto(buts);
 	}

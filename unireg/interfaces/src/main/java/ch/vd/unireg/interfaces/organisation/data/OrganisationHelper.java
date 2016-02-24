@@ -301,11 +301,11 @@ public abstract class OrganisationHelper {
 	 */
 	public static boolean isInscritAuRC(SiteOrganisation site, RegDate date) {
 		final DonneesRC donneesRC = site.getDonneesRC();
-		if (donneesRC != null && donneesRC.getStatusInscription() != null && ! donneesRC.getStatusInscription().isEmpty()) {
-			final StatusInscriptionRC statusInscription = donneesRC.getStatusInscription(defaultDate(date));
-			return ! (statusInscription == StatusInscriptionRC.NON_INSCRIT || statusInscription == StatusInscriptionRC.INCONNU);
+		if (donneesRC == null) {
+			return false;
 		}
-		return false;
+		final StatusInscriptionRC statusInscription = donneesRC.getStatusInscription(defaultDate(date));
+		return statusInscription != null && !(statusInscription == StatusInscriptionRC.NON_INSCRIT || statusInscription == StatusInscriptionRC.INCONNU);
 	}
 
 	/**

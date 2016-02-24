@@ -19,6 +19,7 @@ import ch.vd.uniregctb.evenement.organisation.interne.HandleStatus;
 import ch.vd.uniregctb.tiers.CategorieEntrepriseHelper;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.type.CategorieEntreprise;
+import ch.vd.uniregctb.type.TypeEtatEntreprise;
 
 /**
  * @author Raphaël Marmier, 2015-11-10
@@ -51,11 +52,13 @@ public class Radiation extends EvenementOrganisationInterneDeTraitement {
 	@Override
 	public void doHandle(EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) throws EvenementOrganisationException {
 		if (getOrganisation().isRadieIDE(dateApres)) {
+			changeEtatEntreprise(getEntreprise(), TypeEtatEntreprise.RADIEE_RC, dateApres, suivis);
 			warnings.addWarning("Une vérification manuelle est requise pour cause de Radiation de l'entreprise.");
 		} else {
 			if (CategorieEntrepriseHelper.getCategorieEntreprise(getOrganisation(), dateApres) != CategorieEntreprise.APM) {
 				throw new EvenementOrganisationException("Entreprise radiée du RC, toujours présente de l'IDE, mais pas une APM.");
 			}
+			changeEtatEntreprise(getEntreprise(), TypeEtatEntreprise.FONDEE, dateApres, suivis);
 			suivis.addSuivi("Aucune action requise pour une APM désinscrite du RC toujours en activité.");
 		}
 		raiseStatusTo(HandleStatus.TRAITE);

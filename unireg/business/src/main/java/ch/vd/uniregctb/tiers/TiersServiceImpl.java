@@ -355,6 +355,12 @@ public class TiersServiceImpl implements TiersService {
 		final Domicile autoriteFiscale = sitePrincipal.getDomicile(dateDebut);
 
 		final Entreprise entreprise = createEntreprise(noOrganisation);
+		if (organisation.isInscritAuRC(dateDebut)) {
+			changeEtatEntreprise(TypeEtatEntreprise.INSCRITE_RC, entreprise, dateDebut, TypeGenerationEtatEntreprise.MANUELLE);
+		} else {
+			changeEtatEntreprise(TypeEtatEntreprise.FONDEE, entreprise, dateDebut, TypeGenerationEtatEntreprise.MANUELLE);
+		}
+
 		final Etablissement etablissement = createEtablissement(sitePrincipal.getNumeroSite());
 		tiersDAO.addAndSave(etablissement, new DomicileEtablissement(dateDebut, null, autoriteFiscale.getTypeAutoriteFiscale(), autoriteFiscale.getNoOfs(), etablissement));
 
@@ -363,7 +369,7 @@ public class TiersServiceImpl implements TiersService {
 
 		final EvenementOrganisationErreur evtErreur = new EvenementOrganisationErreur();
 		evtErreur.setType(TypeEvenementErreur.SUIVI);
-		evtErreur.setMessage(String.format("Entreprise créée manuellement avec le numéro de contribuable %s pour l'organisation %s", entreprise.getNumero(), noOrganisation));
+		evtErreur.setMessage(String.format("Entreprise créée manuellement avec le numéro de contribuable %s et l'état initial %s pour l'organisation %s", entreprise.getNumero(), entreprise.getEtatActuel(), noOrganisation));
 		evt.getErreurs().add(evtErreur);
 		return entreprise;
 	}
@@ -6177,10 +6183,7 @@ public class TiersServiceImpl implements TiersService {
 	@Override
 	public boolean isInscriteRC(@NotNull Entreprise entreprise, RegDate dateReference) {
 		final Organisation organisation = getOrganisation(entreprise);
-		if (organisation != null) {
-			return OrganisationHelper.isInscritAuRC(organisation, dateReference);
-		}
-		return false;
+		return organisation != null && OrganisationHelper.isInscritAuRC(organisation, dateReference);
 	}
 
 	@Override
@@ -6192,8 +6195,15 @@ public class TiersServiceImpl implements TiersService {
 
 	@Override
 	public EtatEntreprise changeEtatEntreprise(TypeEtatEntreprise type, Entreprise entreprise, RegDate date, TypeGenerationEtatEntreprise generation) {
+		final EtatEntreprise etatActuel = entreprise.getEtatActuel();
+		if (etatActuel != null && etatActuel.getType() == type) {
+			return etatActuel;
+		}
 		final TransitionEtatEntreprise transition = transitionEtatEntrepriseService.getTransitionVersEtat(type, entreprise, date, generation);
-		return transition != null ? transition.apply() : null;
+		if (transition == null) {
+			throw new IllegalArgumentException(String.format("La transition vers l'état demandé (%s) n'est pas possible. Etat actuel: %s.", type, etatActuel != null ? etatActuel.getKey() : null));
+		}
+		return transition.apply();
 	}
 
 	@Override

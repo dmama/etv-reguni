@@ -34,7 +34,9 @@ import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
+import ch.vd.uniregctb.type.TypeEtatEntreprise;
 import ch.vd.uniregctb.type.TypeEvenementOrganisation;
+import ch.vd.uniregctb.type.TypeGenerationEtatEntreprise;
 
 import static ch.vd.uniregctb.type.EtatEvenementOrganisation.A_TRAITER;
 
@@ -92,6 +94,9 @@ public class ReinscriptionProcessorTest extends AbstractEvenementOrganisationPro
 			@Override
 			public Entreprise doInTransaction(TransactionStatus transactionStatus) {
 				final Entreprise entreprise = addEntrepriseConnueAuCivil(noOrganisation);
+				tiersService.changeEtatEntreprise(TypeEtatEntreprise.INSCRITE_RC, entreprise, date(2010, 6, 24), TypeGenerationEtatEntreprise.AUTOMATIQUE);
+				tiersService.changeEtatEntreprise(TypeEtatEntreprise.EN_LIQUIDATION, entreprise, date(2012, 1, 1), TypeGenerationEtatEntreprise.AUTOMATIQUE);
+				tiersService.changeEtatEntreprise(TypeEtatEntreprise.RADIEE_RC, entreprise, date(2013, 2, 1), TypeGenerationEtatEntreprise.AUTOMATIQUE);
 				addRegimeFiscalVD(entreprise, RegDate.get(2010, 6, 25), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 				addRegimeFiscalCH(entreprise, RegDate.get(2010, 6, 25), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 				addForPrincipal(entreprise, RegDate.get(2010, 6, 25), MotifFor.DEBUT_EXPLOITATION, RegDate.get(2012, 1, 26), MotifFor.FIN_EXPLOITATION, MockCommune.Lausanne, MotifRattachement.DOMICILE);
@@ -124,6 +129,7 @@ public class ReinscriptionProcessorTest extends AbstractEvenementOrganisationPro
 				                             Assert.assertEquals(EtatEvenementOrganisation.A_VERIFIER, evt.getEtat());
 
 				                             final Entreprise entreprise = tiersDAO.getEntrepriseByNumeroOrganisation(evt.getNoOrganisation());
+				                             Assert.assertEquals(TypeEtatEntreprise.INSCRITE_RC, entreprise.getEtatActuel().getType());
 
 				                             ForFiscalPrincipal forFiscalPrincipal = (ForFiscalPrincipal) entreprise.getForsFiscauxValidAt(RegDate.get(2015, 7, 5)).get(0);
 				                             Assert.assertEquals(RegDate.get(2010, 6, 25), forFiscalPrincipal.getDateDebut());
@@ -205,10 +211,14 @@ public class ReinscriptionProcessorTest extends AbstractEvenementOrganisationPro
 
 		// Création de l'entreprise
 
-		final Entreprise entreprise = doInNewTransactionAndSession(new TransactionCallback<Entreprise>() {
+		final Long tiersId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			@Override
-			public Entreprise doInTransaction(TransactionStatus transactionStatus) {
-				return addEntrepriseConnueAuCivil(noOrganisation);
+			public Long doInTransaction(TransactionStatus transactionStatus) {
+				final Entreprise entreprise = addEntrepriseConnueAuCivil(noOrganisation);
+				tiersService.changeEtatEntreprise(TypeEtatEntreprise.INSCRITE_RC, entreprise, date(2010, 6, 24), TypeGenerationEtatEntreprise.AUTOMATIQUE);
+				tiersService.changeEtatEntreprise(TypeEtatEntreprise.EN_LIQUIDATION, entreprise, date(2012, 1, 1), TypeGenerationEtatEntreprise.AUTOMATIQUE);
+				tiersService.changeEtatEntreprise(TypeEtatEntreprise.RADIEE_RC, entreprise, date(2013, 2, 1), TypeGenerationEtatEntreprise.AUTOMATIQUE);
+				return entreprise.getNumero();
 			}
 		});
 
@@ -237,6 +247,7 @@ public class ReinscriptionProcessorTest extends AbstractEvenementOrganisationPro
 				                             Assert.assertEquals(EtatEvenementOrganisation.TRAITE, evt.getEtat());
 
 				                             final Entreprise entreprise = tiersDAO.getEntrepriseByNumeroOrganisation(evt.getNoOrganisation());
+				                             Assert.assertEquals(TypeEtatEntreprise.INSCRITE_RC, entreprise.getEtatActuel().getType());
 
 				                             Assert.assertTrue(entreprise.getForsFiscauxValidAt(RegDate.get(2015, 7, 5)).isEmpty());
 
@@ -284,6 +295,9 @@ public class ReinscriptionProcessorTest extends AbstractEvenementOrganisationPro
 			@Override
 			public Entreprise doInTransaction(TransactionStatus transactionStatus) {
 				final Entreprise entreprise = addEntrepriseConnueAuCivil(noOrganisation);
+				tiersService.changeEtatEntreprise(TypeEtatEntreprise.INSCRITE_RC, entreprise, date(2010, 6, 24), TypeGenerationEtatEntreprise.AUTOMATIQUE);
+				tiersService.changeEtatEntreprise(TypeEtatEntreprise.EN_LIQUIDATION, entreprise, date(2012, 1, 1), TypeGenerationEtatEntreprise.AUTOMATIQUE);
+				tiersService.changeEtatEntreprise(TypeEtatEntreprise.RADIEE_RC, entreprise, date(2013, 2, 1), TypeGenerationEtatEntreprise.AUTOMATIQUE);
 				addRegimeFiscalVD(entreprise, RegDate.get(2010, 6, 25), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 				addRegimeFiscalCH(entreprise, RegDate.get(2010, 6, 25), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 				addForPrincipal(entreprise, RegDate.get(2010, 6, 25), MotifFor.DEBUT_EXPLOITATION, null, null, MockCommune.Lausanne, MotifRattachement.DOMICILE);
@@ -316,6 +330,7 @@ public class ReinscriptionProcessorTest extends AbstractEvenementOrganisationPro
 				                             Assert.assertEquals(EtatEvenementOrganisation.A_VERIFIER, evt.getEtat());
 
 				                             final Entreprise entreprise = tiersDAO.getEntrepriseByNumeroOrganisation(evt.getNoOrganisation());
+				                             Assert.assertEquals(TypeEtatEntreprise.INSCRITE_RC, entreprise.getEtatActuel().getType());
 
 				                             ForFiscalPrincipal forFiscalPrincipal = (ForFiscalPrincipal) entreprise.getForsFiscauxValidAt(RegDate.get(2015, 7, 5)).get(0);
 				                             Assert.assertEquals(RegDate.get(2010, 6, 25), forFiscalPrincipal.getDateDebut());

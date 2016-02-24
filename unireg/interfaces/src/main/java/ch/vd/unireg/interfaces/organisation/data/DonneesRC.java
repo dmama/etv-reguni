@@ -23,6 +23,8 @@ public interface DonneesRC {
 
 	List<DateRanged<RegDate>> getDateInscription();
 
+	RegDate getDateInscription(RegDate date);
+
 	List<DateRanged<String>> getButs();
 
 	List<DateRanged<RegDate>> getDateStatuts();

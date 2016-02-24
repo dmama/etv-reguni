@@ -1,10 +1,11 @@
-package ch.vd.uniregctb.evenement.organisation.interne.reinscription;
+package ch.vd.uniregctb.evenement.organisation.interne.inscription;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.interfaces.organisation.data.DateRanged;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 import ch.vd.unireg.interfaces.organisation.data.StatusInscriptionRC;
@@ -16,50 +17,57 @@ import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationErreurC
 import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationSuiviCollector;
 import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationWarningCollector;
 import ch.vd.uniregctb.evenement.organisation.interne.EvenementOrganisationInterneDeTraitement;
-import ch.vd.uniregctb.evenement.organisation.interne.HandleStatus;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipalPM;
 import ch.vd.uniregctb.type.TypeEtatEntreprise;
 
 /**
- * @author Raphaël Marmier, 2015-11-11
+ * @author Raphaël Marmier, 2016-02-23
  */
-public class Reinscription extends EvenementOrganisationInterneDeTraitement {
+public class Inscription extends EvenementOrganisationInterneDeTraitement {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(Reinscription.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(Inscription.class);
 	private final RegDate dateAvant;
 	private final RegDate dateApres;
 
-	private final SiteOrganisation sitePrincipalAvant;
+	private SiteOrganisation sitePrincipalAvant = null;
 	private final SiteOrganisation sitePrincipalApres;
 
-	private final StatusInscriptionRC statusInscriptionAvant;
+	private StatusInscriptionRC statusInscriptionAvant = null;
 	private final StatusInscriptionRC statusInscriptionApres;
 
-	private final RegDate dateRadiationAvant;
+	private RegDate dateInscriptionAvant = null;
+	private final RegDate dateInscriptionApres;
+
+	private RegDate dateRadiationAvant = null;
 	private final RegDate dateRadiationApres;
 
-	public Reinscription(EvenementOrganisation evenement, Organisation organisation, Entreprise entreprise,
-	                     EvenementOrganisationContext context,
-	                     EvenementOrganisationOptions options) throws EvenementOrganisationException {
+	public Inscription(EvenementOrganisation evenement, Organisation organisation, Entreprise entreprise,
+	                   EvenementOrganisationContext context,
+	                   EvenementOrganisationOptions options) throws EvenementOrganisationException {
 		super(evenement, organisation, entreprise, context, options);
 
 		dateApres = evenement.getDateEvenement();
 		dateAvant = dateApres.getOneDayBefore();
 
-		sitePrincipalAvant = organisation.getSitePrincipal(dateAvant).getPayload();
+		final DateRanged<SiteOrganisation> sitePrincipalAvantRange = organisation.getSitePrincipal(dateAvant);
 		sitePrincipalApres = organisation.getSitePrincipal(dateApres).getPayload();
 
-		statusInscriptionAvant = sitePrincipalAvant.getDonneesRC().getStatusInscription(dateAvant);
-		statusInscriptionApres = sitePrincipalApres.getDonneesRC().getStatusInscription(dateApres);
+		if (sitePrincipalAvantRange != null) {
+			sitePrincipalAvant = sitePrincipalAvantRange.getPayload();
+			statusInscriptionAvant = sitePrincipalAvant.getDonneesRC().getStatusInscription(dateAvant);
+			dateInscriptionAvant = sitePrincipalAvant.getDonneesRC().getDateInscription(dateAvant);
+			dateRadiationAvant = sitePrincipalAvant.getDonneesRC().getDateRadiation(dateAvant);
+		}
 
-		dateRadiationAvant = sitePrincipalAvant.getDonneesRC().getDateRadiation(dateAvant);
+		statusInscriptionApres = sitePrincipalApres.getDonneesRC().getStatusInscription(dateApres);
+		dateInscriptionApres = sitePrincipalApres.getDonneesRC().getDateInscription(dateApres);
 		dateRadiationApres = sitePrincipalApres.getDonneesRC().getDateRadiation(dateApres);
 	}
 
 	@Override
 	public String describe() {
-		return "Réinscription au RC";
+		return "Inscription au RC";
 	}
 
 
@@ -67,20 +75,8 @@ public class Reinscription extends EvenementOrganisationInterneDeTraitement {
 	public void doHandle(EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) throws EvenementOrganisationException {
 
 		ForFiscalPrincipalPM dernierForPrincipal = getEntreprise().getDernierForFiscalPrincipal();
-		if (dernierForPrincipal != null) {
-			if (dernierForPrincipal.isValidAt(dateApres)) {
-				LOGGER.info(String.format("Réinscription RC de l'entreprise %s: un for actif est déjà présent en date du %s",
-				                          getEntreprise().getNumero(), dateApres));
-			} else {
-				reopenForFiscalPrincipal(dernierForPrincipal, suivis);
-			}
-			changeEtatEntreprise(getEntreprise(), TypeEtatEntreprise.INSCRITE_RC, dateApres, suivis);
-			warnings.addWarning("Une vérification manuelle est requise pour la réinscription au RC d’une entreprise radiée.");
-		} else {
-			changeEtatEntreprise(getEntreprise(), TypeEtatEntreprise.INSCRITE_RC, dateApres, suivis);
-			LOGGER.info(String.format("Réinscription RC de l'entreprise %s: aucun for trouvé. Pas de changement.", getEntreprise().getNumero()));
-			raiseStatusTo(HandleStatus.TRAITE);
-		}
+		warnings.addWarning("Une vérification manuelle est requise pour l'inscription au RC d’une entreprise déjà connue du régistre fiscale.");
+		changeEtatEntreprise(getEntreprise(), TypeEtatEntreprise.INSCRITE_RC, dateApres, suivis);
 	}
 
 	@Override
@@ -95,11 +91,11 @@ public class Reinscription extends EvenementOrganisationInterneDeTraitement {
 		// Vérifier qu'il y a bien une entreprise préexistante en base ? (Ca ne devrait pas se produire ici)
 		Assert.notNull(getEntreprise());
 
-		// Vérifier qu'on est bien en présence d'une réinscription
+		// Vérifier qu'on est bien en présence d'une inscription
 		Assert.state(statusInscriptionApres == StatusInscriptionRC.ACTIF || statusInscriptionApres == StatusInscriptionRC.EN_LIQUIDATION);
-		Assert.state(statusInscriptionAvant == StatusInscriptionRC.RADIE);
-		Assert.isNull(dateRadiationApres, "Date de radiation toujours présente après l'annonce. Nous ne sommes pas en présence d'une réinscription.");
-		Assert.notNull(dateRadiationAvant, "Date de radiation absente avant l'annonce. Nous ne sommes pas en présence d'une réinscription.");
+		Assert.state(!getOrganisation().isInscritAuRC(dateAvant));
+		Assert.isNull(dateRadiationApres, "Date de radiation présente après l'annonce. Nous ne sommes pas en présence d'une inscription.");
+		Assert.isNull(dateRadiationAvant, "Date de radiation présente avant l'annonce. Nous ne sommes pas en présence d'une inscription mais d'une réinscription.");
 	}
 
 	public RegDate getDateAvant() {
@@ -118,12 +114,12 @@ public class Reinscription extends EvenementOrganisationInterneDeTraitement {
 		return sitePrincipalApres;
 	}
 
-	public RegDate getDateRadiationAvant() {
-		return dateRadiationAvant;
+	public RegDate getDateInscriptionAvant() {
+		return dateInscriptionAvant;
 	}
 
-	public RegDate getDateRadiationApres() {
-		return dateRadiationApres;
+	public RegDate getDateInscriptionApres() {
+		return dateInscriptionApres;
 	}
 
 	public StatusInscriptionRC getStatusInscriptionAvant() {

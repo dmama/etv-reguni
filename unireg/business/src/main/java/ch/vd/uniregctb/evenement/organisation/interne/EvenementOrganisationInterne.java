@@ -41,6 +41,8 @@ import ch.vd.uniregctb.type.EtatEvenementOrganisation;
 import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
+import ch.vd.uniregctb.type.TypeEtatEntreprise;
+import ch.vd.uniregctb.type.TypeGenerationEtatEntreprise;
 
 /**
  * Classe de base de traitement des événements organisation en provenance du RCEnt.
@@ -401,7 +403,18 @@ public abstract class EvenementOrganisationInterne {
 		setEntreprise(entreprise);
 		raiseStatusTo(HandleStatus.TRAITE);
 
+		if (organisation.isInscritAuRC(dateDebut)) {
+			changeEtatEntreprise(entreprise, TypeEtatEntreprise.INSCRITE_RC, dateDebut, suivis);
+		} else {
+			changeEtatEntreprise(entreprise, TypeEtatEntreprise.FONDEE, dateDebut, suivis);
+		}
 		openRegimesFiscauxOrdinairesCHVD(entreprise, organisation, dateDebut, suivis);
+	}
+
+	protected void changeEtatEntreprise(Entreprise entreprise, TypeEtatEntreprise etat, RegDate dateDebut, EvenementOrganisationSuiviCollector suivis) {
+		context.getTiersService().changeEtatEntreprise(etat, entreprise, dateDebut, TypeGenerationEtatEntreprise.AUTOMATIQUE);
+		suivis.addSuivi(String.format("Réglage de l'état: %s.", etat.getLibelle()));
+		raiseStatusTo(HandleStatus.TRAITE);
 	}
 
 	/**
