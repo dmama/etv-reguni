@@ -47,7 +47,6 @@ public class RadiationStrategy extends AbstractOrganisationStrategy {
 	                                                   EvenementOrganisationOptions options) throws EvenementOrganisationException {
 
 		// On ne s'occupe que d'entités déjà connues
-		// TODO: Retrouver aussi les entreprises n'ayant pas d'id cantonal.
 		if (entreprise == null) {
 			return null;
 		}

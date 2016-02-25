@@ -49,7 +49,6 @@ public class ChangementFormeJuridiqueStrategy extends AbstractOrganisationStrate
 		final RegDate dateApres = event.getDateEvenement();
 
 		// On ne s'occupe que d'entités déjà connues
-		// TODO: Retrouver aussi les entreprises n'ayant pas d'id cantonal.
 		if (entreprise == null) {
 			return null;
 		}

@@ -47,7 +47,6 @@ public class CreateOrganisationStrategy extends AbstractOrganisationStrategy {
 	                                                   EvenementOrganisationOptions options) throws EvenementOrganisationException {
 
 		// On décide qu'on a affaire à une création uniquement selon la présence d'un tiers entreprise dans Unireg, et rien d'autre.
-		// TODO: Retrouver aussi les entreprises n'ayant pas d'id cantonal.
 		if (entreprise != null) {
 			return null;
 		}

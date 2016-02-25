@@ -42,7 +42,6 @@ public class DemenagementSiegeStrategy extends AbstractOrganisationStrategy {
 	                                                   EvenementOrganisationOptions options) throws EvenementOrganisationException {
 
 		// On vérifie qu'on a bien retrouvé l'entreprise concernée par ce type de changement
-		// TODO: Retrouver aussi les entreprises n'ayant pas d'id cantonal.
 		if (entreprise == null) {
 			return null;
 		}
