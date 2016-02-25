@@ -1490,7 +1490,6 @@ public class TiersServiceImpl implements TiersService {
 	public RapportEntreTiers addActiviteEconomique(Etablissement etablissement, Contribuable contribuable, RegDate dateDebut, boolean principal) {
 
 		RapportEntreTiers rapport = new ActiviteEconomique(dateDebut, null, contribuable, etablissement, principal);
-		rapport.setDateDebut(dateDebut);
 
 		return addRapport(rapport, contribuable, etablissement);
 	}

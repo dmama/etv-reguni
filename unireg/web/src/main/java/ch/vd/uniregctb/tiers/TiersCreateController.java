@@ -195,7 +195,7 @@ public class TiersCreateController {
 	private String showCreateEntreprise(Model model, CreateEntrepriseView view) {
 		model.addAttribute(DATA, view);
 		model.addAttribute(TYPES_AUTORITES_FISCALES, tiersMapHelper.getMapTypeAutoriteFiscaleEntreprise());
-		model.addAttribute(FORME_JURIDIQUE_ENTREPRISE_MAP_NAME, tiersMapHelper.getMapFormeJuridiqueEntreprisePM());
+		model.addAttribute(FORME_JURIDIQUE_ENTREPRISE_MAP_NAME, tiersMapHelper.getMapFormeJuridiqueEntrepriseEditableFiscalement());
 		return "tiers/edition/creation-entreprise";
 	}
 
