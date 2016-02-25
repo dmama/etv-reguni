@@ -235,7 +235,7 @@ public class PeriodeImpositionImpotSourceServiceImpl implements PeriodeImpositio
 	 */
 	private boolean isDepartHC(ForFiscalPrincipal ffp, @Nullable ForFiscalPrincipal forSuivant, int pf) {
 		final MotifFor motive;
-		if (RegDateHelper.isAfter(ffp.getDateFin(), RegDate.get(pf, 12, 31), NullDateBehavior.LATEST)) {
+		if (RegDateHelper.isAfterOrEqual(ffp.getDateFin(), RegDate.get(pf, 12, 31), NullDateBehavior.LATEST)) {
 			motive = null;
 		}
 		else if (forSuivant != null && forSuivant.getDateDebut().getOneDayBefore() == ffp.getDateFin()) {
