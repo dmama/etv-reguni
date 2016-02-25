@@ -20,8 +20,10 @@ import javax.persistence.Transient;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.hibernate.annotations.ForeignKey;
@@ -632,6 +634,32 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 			Collections.sort(ffps, new DateRangeComparator<ForFiscal>());
 		}
 		return ffps;
+	}
+
+	/**
+	 * Trie les fors secondaires par date, sans les annulés
+	 *
+	 * @return Renvoie les fors secondaires dans une map indexée par no ofs de la commune
+	 */
+	@Transient
+	public Map<Integer, List<ForFiscalSecondaire>> getForsFiscauxSecondairesActifsSortedMapped() {
+		Map<Integer, List<ForFiscalSecondaire>> map = new HashMap<>();
+		if (forsFiscaux != null) {
+			for (ForFiscal ff : forsFiscaux) {
+				if (ff instanceof ForFiscalSecondaire && !ff.isAnnule()) {
+					List<ForFiscalSecondaire> ffps = map.get(ff.getNumeroOfsAutoriteFiscale());
+					if (ffps == null) {
+						ffps = new ArrayList<>();
+						map.put(ff.getNumeroOfsAutoriteFiscale(), ffps);
+					}
+					ffps.add((ForFiscalSecondaire) ff);
+				}
+			}
+			for (Map.Entry<Integer, List<ForFiscalSecondaire>> e : map.entrySet()) {
+				Collections.sort(e.getValue(), new DateRangeComparator<ForFiscal>());
+			}
+		}
+		return map;
 	}
 
 	/**

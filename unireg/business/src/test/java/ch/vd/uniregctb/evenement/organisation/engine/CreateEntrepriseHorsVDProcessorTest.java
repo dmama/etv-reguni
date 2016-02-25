@@ -109,7 +109,7 @@ public class CreateEntrepriseHorsVDProcessorTest extends AbstractEvenementOrgani
 				                             }
 				                             {
 					                             final List<DateRanged<Etablissement>> etbsSecs = tiersService.getEtablissementsSecondairesEntreprise(entreprise);
-					                             Assert.assertEquals(0, etbsSecs.size());
+					                             Assert.assertEquals(1, etbsSecs.size());
 				                             }
 
 				                             return null;

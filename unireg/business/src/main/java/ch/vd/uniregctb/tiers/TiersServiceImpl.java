@@ -310,6 +310,22 @@ public class TiersServiceImpl implements TiersService {
 		});
 	}
 
+	@Override
+	public List<Etablissement> getEtablissementsSecondairesEntreprise(Entreprise entreprise, final RegDate date) {
+		final List<DateRanged<Etablissement>> etablissementsEntreprise = getEtablissementsEntreprise(entreprise, true, new Predicate<ActiviteEconomique>() {
+			@Override
+			public boolean evaluate(ActiviteEconomique value) {
+				final RegDate dateDeValeur = date != null ? date : RegDate.get();
+				return value.isValidAt(dateDeValeur) && !value.isPrincipal();
+			}
+		});
+		List<Etablissement> etablissements = new ArrayList<>(etablissementsEntreprise.size());
+		for (DateRanged<Etablissement> etablissementDateRanged : etablissementsEntreprise) {
+			etablissements.add(etablissementDateRanged.getPayload());
+		}
+		return etablissements;
+	}
+
 	private List<DateRanged<Etablissement>> getEtablissementsEntreprise(Entreprise entreprise, boolean avecTri, Predicate<ActiviteEconomique> filtre) {
 		final Set<RapportEntreTiers> sujets = entreprise.getRapportsSujet();
 		final List<DateRanged<Etablissement>> etablissements = new LinkedList<>();
@@ -2544,7 +2560,53 @@ public class TiersServiceImpl implements TiersService {
         return addForSecondaire(contribuable, dateOuverture, null, motifRattachement, numeroOfsAutoriteFiscale, typeAutoriteFiscale, motifOuverture, null, genreImpot);
     }
 
-    private void afterForFiscalSecondaireAdded(Contribuable contribuable, ForFiscalSecondaire forFiscalSecondaire) {
+	@Override
+	public void mergeNewForFiscalSecondaire(Contribuable contribuable, RegDate dateOuverture, RegDate dateFermeture, MotifRattachement motifRattachement,
+	                                        int numeroOfsAutoriteFiscale, TypeAutoriteFiscale typeAutoriteFiscale, MotifFor motifOuverture, MotifFor motifFermeture,
+	                                        final GenreImpot genreImpot) {
+		final Map<Integer, List<ForFiscalSecondaire>> fors = contribuable.getForsFiscauxSecondairesActifsSortedMapped();
+		final List<ForFiscalSecondaire> forsPourMotifEtCommune = new ArrayList<>();
+		if (!fors.isEmpty()) {
+			for (ForFiscalSecondaire forFiscal : fors.get(numeroOfsAutoriteFiscale)) {
+				if (forFiscal.getMotifRattachement() == motifRattachement) {
+					forsPourMotifEtCommune.add(forFiscal);
+				}
+			}
+		}
+		final ForFiscalSecondaire modeleNouveauFor = new ForFiscalSecondaire(
+				dateOuverture, motifOuverture, dateFermeture, motifFermeture, numeroOfsAutoriteFiscale, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, motifRattachement);
+		modeleNouveauFor.setGenreImpot(genreImpot);
+
+		final List<ForFiscalSecondaire> pourMerge = new ArrayList<>(forsPourMotifEtCommune);
+		pourMerge.add(modeleNouveauFor);
+		Collections.sort(pourMerge, new DateRangeComparator<ForFiscal>());
+		final List<DateRange> nouvelleListe = DateRangeHelper.merge(pourMerge);
+
+		// Enlever les vieux
+		for (ForFiscalSecondaire forFiscalAncien : forsPourMotifEtCommune) {
+			for (DateRange forFiscalNouveau : nouvelleListe) {
+				if (!DateRangeHelper.equals(forFiscalAncien, forFiscalNouveau)) {
+					annuleForFiscal(forFiscalAncien);
+				}
+			}
+		}
+
+		// Ouvrir le nouveau, s'il existe
+		for (DateRange forFiscalNouveau : nouvelleListe) {
+			boolean found = false;
+			for (DateRange forFiscalAncien : forsPourMotifEtCommune) {
+				if (DateRangeHelper.equals(forFiscalNouveau, forFiscalAncien)) {
+					found = true;
+				}
+			}
+			if (!found) {
+				openForFiscalSecondaire(contribuable, forFiscalNouveau.getDateDebut(), motifRattachement, numeroOfsAutoriteFiscale,
+				                               typeAutoriteFiscale, motifOuverture, genreImpot);
+			}
+		}
+	}
+
+	private void afterForFiscalSecondaireAdded(Contribuable contribuable, ForFiscalSecondaire forFiscalSecondaire) {
 	    evenementFiscalService.publierEvenementFiscalOuvertureFor(forFiscalSecondaire);
         tacheService.genereTacheDepuisOuvertureForSecondaire(contribuable, forFiscalSecondaire);
     }

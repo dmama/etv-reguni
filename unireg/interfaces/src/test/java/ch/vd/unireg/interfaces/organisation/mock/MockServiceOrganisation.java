@@ -14,6 +14,7 @@ import ch.vd.unireg.interfaces.organisation.ServiceOrganisationRaw;
 import ch.vd.unireg.interfaces.organisation.data.DonneesRC;
 import ch.vd.unireg.interfaces.organisation.data.DonneesRegistreIDE;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
+import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 import ch.vd.unireg.interfaces.organisation.mock.data.MockOrganisation;
 import ch.vd.unireg.interfaces.organisation.mock.data.MockSiteOrganisation;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
@@ -41,7 +42,14 @@ public abstract class MockServiceOrganisation implements ServiceOrganisationRaw 
 
 	@Override
 	public Long getOrganisationPourSite(Long noSite) throws ServiceOrganisationException {
-		throw new UnsupportedOperationException();
+		for (Map.Entry<Long, MockOrganisation> organisation : organisationMap.entrySet()) {
+			for (SiteOrganisation site : organisation.getValue().getDonneesSites()) {
+				if (site.getNumeroSite() == noSite) {
+					return organisation.getValue().getNumeroOrganisation();
+				}
+			}
+		}
+		return null;
 	}
 
 	protected void addOrganisation(MockOrganisation organisation) {

@@ -17,6 +17,7 @@ import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.OrganisationHelper;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.common.BouclementHelper;
+import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalInformationComplementaire;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
@@ -30,17 +31,18 @@ import ch.vd.uniregctb.tiers.ActiviteEconomique;
 import ch.vd.uniregctb.tiers.Bouclement;
 import ch.vd.uniregctb.tiers.CategorieEntrepriseHelper;
 import ch.vd.uniregctb.tiers.DomicileEtablissement;
+import ch.vd.uniregctb.tiers.DomicileHisto;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.Etablissement;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipalPM;
-import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
 import ch.vd.uniregctb.tiers.RegimeFiscal;
 import ch.vd.uniregctb.type.CategorieEntreprise;
 import ch.vd.uniregctb.type.EtatEvenementOrganisation;
 import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
+import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeEtatEntreprise;
 import ch.vd.uniregctb.type.TypeGenerationEtatEntreprise;
 
@@ -575,7 +577,7 @@ public abstract class EvenementOrganisationInterne {
 	}
 
 	/**
-	 * Ouvre un nouveau for fiscal secondaire. // TODO: verifier qu'on n'a pas besoin de créer une classe spécifique PM pour les for secondiares établissements.
+	 * Ouvre un nouveau for fiscal secondaire.
 	 *
 	 * @param dateOuverture            la date à laquelle le nouveau for est ouvert
 	 * @param autoriteFiscale          l'autorité fiscale sur laquelle est ouvert le nouveau for.
@@ -584,7 +586,7 @@ public abstract class EvenementOrganisationInterne {
 	 * @param suivis       Le collector pour le suivi
 	 * @return le nouveau for fiscal principal
 	 */
-	protected ForFiscalSecondaire openForFiscalSecondaire(final RegDate dateOuverture, Domicile autoriteFiscale,
+	protected void openForFiscalSecondaire(final RegDate dateOuverture, Domicile autoriteFiscale,
 	                                                      MotifRattachement rattachement, MotifFor motifOuverture, EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) {
 		final Commune commune = context.getServiceInfra().getCommuneByNumeroOfs(autoriteFiscale.getNoOfs(), dateOuverture);
 		if (!commune.isPrincipale()) {
@@ -593,13 +595,13 @@ public abstract class EvenementOrganisationInterne {
 			                              entreprise.getNumero(), entreprise.getNumeroEntreprise(),
 			                              RegDateHelper.dateToDisplayString(dateOuverture), motifOuverture, rattachement));
 			raiseStatusTo(HandleStatus.TRAITE);
-			return context.getTiersService().openForFiscalSecondaire(entreprise, dateOuverture, rattachement, autoriteFiscale.getNoOfs(), autoriteFiscale.getTypeAutoriteFiscale(), motifOuverture, GenreImpot.BENEFICE_CAPITAL);
+			context.getTiersService().mergeNewForFiscalSecondaire(entreprise, dateOuverture, null, rattachement, autoriteFiscale.getNoOfs(), autoriteFiscale.getTypeAutoriteFiscale(),
+			                                                      motifOuverture, null, GenreImpot.BENEFICE_CAPITAL);
 		} else {
 			warnings.addWarning(
 					String.format("Ouverture de for fiscal secondaire sur une commune faîtière de fractions, %s: Veuillez saisir le for fiscal secondaire manuellement.",
 					              commune.getNomOfficielAvecCanton()));
 		}
-		return null;
 	}
 
 	/**
@@ -694,4 +696,53 @@ public abstract class EvenementOrganisationInterne {
 		raiseStatusTo(HandleStatus.TRAITE);
 	}
 
+	/**
+	 * Méthode de haut niveau parcourant les établissements de l'entreprise et ouvrant les for secondaires correspondant.
+	 * <ol>
+	 *     <li>On ouvre un for secondaire par établissement secondaire par commune VD.</li>
+	 *     <li>Pas de for secondaire si commune HC.</li>
+	 *     <li>Pas d'établissement secondaire si pas de for principal couvrant intégralement la période prévue.</li>
+	 * </ol>
+	 * @param date la date de référence pour la création des fors
+	 * @param entreprise l'entreprise concernée
+	 * @param warnings Le collector pour les avertissements
+	 * @param suivis Le collector pour le suivi
+	 */
+	protected void openForSecondairesPourEtablissementsVD(RegDate date, Entreprise entreprise, EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) throws
+			EvenementOrganisationException {
+		List<Etablissement> etablissements = getContext().getTiersService().getEtablissementsSecondairesEntreprise(entreprise, date);
+
+		for (Etablissement etablissement : etablissements) {
+			final List<DomicileHisto> domiciles = context.getTiersService().getDomiciles(etablissement);
+			if (domiciles != null && !domiciles.isEmpty()) {
+				DomicileHisto domicile = CollectionsUtils.getLastElement(domiciles);
+
+				// Vérifier qu'on est bien en présence du dernier domicile histo, sinon arrêter le traitement.
+				if (!domicile.isValidAt(date)) {
+					throw new EvenementOrganisationException(
+							String.format("L'établissement (civil: %s) a déménagé depuis l'événement en cours de traitement. Traitement manuel obligatoire.",
+							              etablissement.getNumeroEtablissement()));
+				}
+				if (domicile.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
+					final List<ForFiscalPrincipalPM> forsFiscauxPrincipauxActifsSorted = entreprise.getForsFiscauxPrincipauxActifsSorted();
+					final boolean forPrincipalExiste = isForPrincipalExistantSurTouteLaPeriode(domicile, forsFiscauxPrincipauxActifsSorted);
+					if (forPrincipalExiste) {
+						openForFiscalSecondaire(date,
+						                        new Domicile(domicile.getDateDebut(), domicile.getDateFin(), domicile.getTypeAutoriteFiscale(), domicile.getNoOfs()),
+						                        MotifRattachement.ETABLISSEMENT_STABLE,
+						                        MotifFor.DEBUT_EXPLOITATION,
+						                        warnings,
+						                        suivis);
+					} else {
+						warnings.addWarning("Une vérification manuelle pour la création d’un for secondaire, celle-ci est impossible en l’absence de for principal valide sur la période. ");
+					}
+				}
+			}
+		}
+	}
+
+	private boolean isForPrincipalExistantSurTouteLaPeriode(DomicileHisto domicile, List<ForFiscalPrincipalPM> forsFiscauxPrincipauxActifsSorted) {
+		final List<DateRange> intersections = DateRangeHelper.intersections(domicile, forsFiscauxPrincipauxActifsSorted);
+		return intersections.size() == 1 && DateRangeHelper.within(domicile, intersections.get(0));
+	}
 }
