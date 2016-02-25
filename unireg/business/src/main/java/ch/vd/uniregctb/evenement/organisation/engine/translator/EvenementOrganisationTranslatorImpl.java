@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.evenement.organisation.engine.translator;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -191,6 +192,7 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 
 					// L'identificatione est un échec: selon toute vraisemblance, on connait le tiers mais on n'arrive pas à l'identifier avec certitude.
 				} else if (found.size() > 1) {
+					Collections.sort(found);
 					final String listeTrouves = StringsUtils.appendsWithDelimiter(", ", found);
 					String message = String.format("Plusieurs entreprises ont été trouvées (numéros %s) pour les attributs civils [%s]. Arrêt du traitement.",
 					                               listeTrouves,
