@@ -2560,52 +2560,6 @@ public class TiersServiceImpl implements TiersService {
         return addForSecondaire(contribuable, dateOuverture, null, motifRattachement, numeroOfsAutoriteFiscale, typeAutoriteFiscale, motifOuverture, null, genreImpot);
     }
 
-	@Override
-	public void mergeNewForFiscalSecondaire(Contribuable contribuable, RegDate dateOuverture, RegDate dateFermeture, MotifRattachement motifRattachement,
-	                                        int numeroOfsAutoriteFiscale, TypeAutoriteFiscale typeAutoriteFiscale, MotifFor motifOuverture, MotifFor motifFermeture,
-	                                        final GenreImpot genreImpot) {
-		final Map<Integer, List<ForFiscalSecondaire>> fors = contribuable.getForsFiscauxSecondairesActifsSortedMapped();
-		final List<ForFiscalSecondaire> forsPourMotifEtCommune = new ArrayList<>();
-		if (!fors.isEmpty()) {
-			for (ForFiscalSecondaire forFiscal : fors.get(numeroOfsAutoriteFiscale)) {
-				if (forFiscal.getMotifRattachement() == motifRattachement) {
-					forsPourMotifEtCommune.add(forFiscal);
-				}
-			}
-		}
-		final ForFiscalSecondaire modeleNouveauFor = new ForFiscalSecondaire(
-				dateOuverture, motifOuverture, dateFermeture, motifFermeture, numeroOfsAutoriteFiscale, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, motifRattachement);
-		modeleNouveauFor.setGenreImpot(genreImpot);
-
-		final List<ForFiscalSecondaire> pourMerge = new ArrayList<>(forsPourMotifEtCommune);
-		pourMerge.add(modeleNouveauFor);
-		Collections.sort(pourMerge, new DateRangeComparator<ForFiscal>());
-		final List<DateRange> nouvelleListe = DateRangeHelper.merge(pourMerge);
-
-		// Enlever les vieux
-		for (ForFiscalSecondaire forFiscalAncien : forsPourMotifEtCommune) {
-			for (DateRange forFiscalNouveau : nouvelleListe) {
-				if (!DateRangeHelper.equals(forFiscalAncien, forFiscalNouveau)) {
-					annuleForFiscal(forFiscalAncien);
-				}
-			}
-		}
-
-		// Ouvrir le nouveau, s'il existe
-		for (DateRange forFiscalNouveau : nouvelleListe) {
-			boolean found = false;
-			for (DateRange forFiscalAncien : forsPourMotifEtCommune) {
-				if (DateRangeHelper.equals(forFiscalNouveau, forFiscalAncien)) {
-					found = true;
-				}
-			}
-			if (!found) {
-				openForFiscalSecondaire(contribuable, forFiscalNouveau.getDateDebut(), motifRattachement, numeroOfsAutoriteFiscale,
-				                               typeAutoriteFiscale, motifOuverture, genreImpot);
-			}
-		}
-	}
-
 	private void afterForFiscalSecondaireAdded(Contribuable contribuable, ForFiscalSecondaire forFiscalSecondaire) {
 	    evenementFiscalService.publierEvenementFiscalOuvertureFor(forFiscalSecondaire);
         tacheService.genereTacheDepuisOuvertureForSecondaire(contribuable, forFiscalSecondaire);

@@ -54,7 +54,7 @@ public class CreateEntreprisePM extends CreateEntreprise {
 		createAddBouclement(getDateDeDebut(), suivis);
 
 		// Ajoute les for secondaires
-		openForSecondairesPourEtablissementsVD(getDateDeDebut(), getEntreprise(), warnings, suivis);
+		adapteForsSecondairesPourEtablissementsVD(getEntreprise(), getDateDeDebut(), warnings, suivis);
 	}
 
 	@Override

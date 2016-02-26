@@ -650,27 +650,6 @@ public interface TiersService {
                                                 TypeAutoriteFiscale typeAutoriteFiscale, MotifFor motifOuverture, GenreImpot genreImpot);
 
 	/**
-	 * Insert un nouveau for fiscal secondaire sur un contribuable. Ce faisant, fusionne le nouveau for aux for éventuellements présents sur
-	 * la même commune avec le même motif de rattachement.
-	 * <b>Note:</b> pour ajouter un for fiscal fermé voir la méthode {@link #addForSecondaire(Contribuable, ch.vd.registre.base.date.RegDate, ch.vd.registre.base.date.RegDate,
-	 * ch.vd.uniregctb.type.MotifRattachement, int, ch.vd.uniregctb.type.TypeAutoriteFiscale, ch.vd.uniregctb.type.MotifFor, ch.vd.uniregctb.type.MotifFor)}
-	 *
-	 * @param contribuable             le contribuable sur lequel le nouveau for est ouvert
-	 * @param dateOuverture            la date à laquelle le nouveau for est ouvert
-	 * @param dateFermeture            la date de fermeture du for à créer (peut être nulle)
-	 * @param motifRattachement        le motif de rattachement du nouveau for
-	 * @param numeroOfsAutoriteFiscale le numéro OFS de l'autorité fiscale sur laquelle est ouverte le nouveau fort.
-	 * @param typeAutoriteFiscale      le type d'autorité fiscale
-	 * @param motifOuverture           le motif d'ouverture
-	 * @param motifFermeture           le motif de fermeture du for à créer (peut être nul)
-	 * @param genreImpot               le genre d'impôt du for à créer
-	 * @return le nouveau for fiscal secondaire, ou le for existant qui englobe entièrement le nouveau for demandé
-	 */
-	void mergeNewForFiscalSecondaire(Contribuable contribuable, RegDate dateOuverture, RegDate dateFermeture, MotifRattachement motifRattachement,
-	                                 int numeroOfsAutoriteFiscale, TypeAutoriteFiscale typeAutoriteFiscale, MotifFor motifOuverture, MotifFor motifFermeture,
-	                                 GenreImpot genreImpot);
-
-	/**
      * Ouvre un nouveau for fiscal autre élément imposable sur un contribuable.
      *
      * @param contribuable             le contribuable sur lequel le nouveau for est ouvert

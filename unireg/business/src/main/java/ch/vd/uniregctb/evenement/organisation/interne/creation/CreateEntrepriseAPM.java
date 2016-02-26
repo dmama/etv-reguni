@@ -58,7 +58,7 @@ public class CreateEntrepriseAPM extends CreateEntreprise {
 		}
 
 		// Ajoute les for secondaires
-		openForSecondairesPourEtablissementsVD(getDateDeDebut(), getEntreprise(), warnings, suivis);
+		adapteForsSecondairesPourEtablissementsVD(getEntreprise(), getDateDeDebut(), warnings, suivis);
 	}
 
 	@Override

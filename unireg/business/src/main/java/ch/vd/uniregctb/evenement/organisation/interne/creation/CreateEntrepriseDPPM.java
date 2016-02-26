@@ -51,7 +51,7 @@ public class CreateEntrepriseDPPM extends CreateEntreprise {
 		createAddBouclement(getDateDeDebut(), suivis);
 
 		// Ajoute les for secondaires
-		openForSecondairesPourEtablissementsVD(getDateDeDebut(), getEntreprise(), warnings, suivis);
+		adapteForsSecondairesPourEtablissementsVD(getEntreprise(), getDateDeDebut(), warnings, suivis);
 
 		warnings.addWarning("Une vérification manuelle est requise pour nouvelle entreprise de type DP/PM.");
 	}
