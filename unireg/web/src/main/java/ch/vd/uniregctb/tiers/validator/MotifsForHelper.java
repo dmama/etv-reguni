@@ -49,6 +49,11 @@ public class MotifsForHelper {
 		switch (type.rattachement) {
 		case DOMICILE:
 			motifs.add(MotifFor.DEBUT_EXPLOITATION);
+			motifs.add(MotifFor.DEMENAGEMENT_VD);
+			motifs.add(MotifFor.ARRIVEE_HS);
+			motifs.add(MotifFor.ARRIVEE_HC);
+			motifs.add(MotifFor.DEPART_HS);
+			motifs.add(MotifFor.DEPART_HC);
 			break;
 		case IMMEUBLE_PRIVE:
 			motifs.add(MotifFor.ACHAT_IMMOBILIER);
