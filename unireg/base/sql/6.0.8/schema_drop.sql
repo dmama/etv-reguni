@@ -4,6 +4,8 @@ drop table EVENEMENT_FISCAL cascade constraints;
 
 drop table ADRESSE_TIERS cascade constraints;
 
+drop table ADRESSE_MANDATAIRE cascade constraints;
+
 drop table AUDIT_LOG cascade constraints;
 
 drop table BORDEREAU_MVT_DOSSIER cascade constraints;

@@ -9,6 +9,7 @@ import org.jetbrains.annotations.NotNull;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.validation.ValidationResults;
+import ch.vd.uniregctb.adresse.AdresseMandataire;
 import ch.vd.uniregctb.common.MovingWindow;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImposition;
@@ -40,6 +41,7 @@ public abstract class ContribuableValidator<T extends Contribuable> extends Tier
 		final ValidationResults vr = super.validate(ctb);
 		if (!ctb.isAnnule()) {
 			vr.merge(validateDecisions(ctb));
+			vr.merge(validateAdressesMandataires(ctb));
 		}
 		return vr;
 	}
@@ -112,6 +114,21 @@ public abstract class ContribuableValidator<T extends Contribuable> extends Tier
 			results.merge(validationService.validate(d));
 		}
 
+		return results;
+	}
+
+	private ValidationResults validateAdressesMandataires(Contribuable ctb) {
+
+		final ValidationResults results = new ValidationResults();
+		final Set<AdresseMandataire> adressesMandataires = ctb.getAdressesMandataires();
+		if (adressesMandataires == null || adressesMandataires.isEmpty()) {
+			return results;
+		}
+
+		final ValidationService service = getValidationService();
+		for (AdresseMandataire am : adressesMandataires) {
+			results.merge(service.validate(am));
+		}
 		return results;
 	}
 

@@ -15,7 +15,7 @@ import ch.vd.uniregctb.type.TexteCasePostale;
  * Adresse libre non issue d'une adresse de l'individu ou de l'adresse courrier du représentant légal
  */
 @Entity
-public abstract class AdresseSupplementaire extends AdresseTiers {
+public abstract class AdresseSupplementaire extends AdresseTiers implements AdresseFiscale {
 
 	/**
 	 * Ligne libre additionnelle pour les données d'adresse supplémentaires qui ne trouvent pas leur place dans les autres champs de l'adresse (p. ex. pour la mention c/o, etc.).

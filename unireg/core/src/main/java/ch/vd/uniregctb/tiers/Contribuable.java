@@ -23,6 +23,7 @@ import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.uniregctb.adresse.AdresseMandataire;
 import ch.vd.uniregctb.common.ComparisonHelper;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationAvecNumeroSequence;
@@ -36,6 +37,7 @@ public abstract class Contribuable extends Tiers {
 	private Set<MouvementDossier> mouvementsDossier;
 	private Set<Immeuble> immeubles;
 	private Set<IdentificationEntreprise> identificationsEntreprise;
+	private Set<AdresseMandataire> adressesMandataires;
 
 	private RegDate dateLimiteExclusionEnvoiDeclarationImpot;
 	private Set<DecisionAci> decisionsAci;
@@ -254,7 +256,24 @@ public abstract class Contribuable extends Tiers {
 		}
 	}
 
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+	@JoinColumn(name = "CTB_ID", nullable = false)
+	@ForeignKey(name = "FK_ADR_MAND_CTB_ID")
+	public Set<AdresseMandataire> getAdressesMandataires() {
+		return adressesMandataires;
+	}
 
+	public void setAdressesMandataires(Set<AdresseMandataire> adressesMandataires) {
+		this.adressesMandataires = adressesMandataires;
+	}
+
+	public void addAdresseMandataire(AdresseMandataire adresse) {
+		if (this.adressesMandataires == null) {
+			this.adressesMandataires = new HashSet<>();
+		}
+		adresse.setMandant(this);
+		this.adressesMandataires.add(adresse);
+	}
 
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	@JoinColumn(name = "TIERS_ID", nullable = false)

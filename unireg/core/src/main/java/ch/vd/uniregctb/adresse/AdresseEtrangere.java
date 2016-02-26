@@ -8,7 +8,7 @@ import ch.vd.uniregctb.common.LengthConstants;
 
 @Entity
 @DiscriminatorValue("AdresseEtrangere")
-public class AdresseEtrangere extends AdresseSupplementaire {
+public class AdresseEtrangere extends AdresseSupplementaire implements AdresseFiscaleEtrangere {
 
 	/**
 	 * Données complémentaires quant au lieu, comme par exemple la région, la province, l'état fédéral ou le quartier.

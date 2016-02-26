@@ -59,7 +59,11 @@ public interface AdresseGenerique extends DateRange, Loggable, AdresseAvecCommun
 		/**
 		 * Cas du contribuable associé à un débiteur
 		 */
-		CONTRIBUABLE(false);
+		CONTRIBUABLE(false),
+		/**
+		 * Cas du mandataire
+		 */
+		MANDATAIRE(false);
 
 		private final boolean representation;
 

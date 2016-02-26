@@ -6,7 +6,7 @@ import javax.persistence.Entity;
 
 @Entity
 @DiscriminatorValue("AdresseSuisse")
-public class AdresseSuisse extends AdresseSupplementaire {
+public class AdresseSuisse extends AdresseSupplementaire implements AdresseFiscaleSuisse {
 
 	/**
 	 * Numéro de la rue du répertoire des rues fourni par DCL Data Care (entreprise de la Poste suisse) pour compléter l'offre NPA.
@@ -46,15 +46,15 @@ public class AdresseSuisse extends AdresseSupplementaire {
 	 * Surcharge du npa de l'adresse avec le npa de la case postale lorsque que celui-ci diffère.
 	 * Voir <a href ="http://issuetracker.etat-de-vaud.ch/jira/browse/SIFISC-143">SIFISC-143</a>
 	 */
-	private Integer NpaCasePostale;
+	private Integer npaCasePostale;
 
 	@Column(name = "NPA_CASE_POSTALE")
 	public Integer getNpaCasePostale() {
-		return NpaCasePostale;
+		return npaCasePostale;
 	}
 
 	public void setNpaCasePostale(Integer npaCasePostale) {
-		NpaCasePostale = npaCasePostale;
+		this.npaCasePostale = npaCasePostale;
 	}
 
 	public AdresseSuisse() {
@@ -64,7 +64,7 @@ public class AdresseSuisse extends AdresseSupplementaire {
 		super(src);
 		this.numeroRue = src.numeroRue;
 		this.numeroOrdrePoste = src.numeroOrdrePoste;
-		this.NpaCasePostale = src.NpaCasePostale;
+		this.npaCasePostale = src.npaCasePostale;
 	}
 
 	@Override

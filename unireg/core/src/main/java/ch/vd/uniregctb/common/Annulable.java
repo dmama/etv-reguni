@@ -10,6 +10,6 @@ public interface Annulable {
 	 *
 	 * @return true si l'entite est annulée false sinon
 	 */
-	public boolean isAnnule();
+	boolean isAnnule();
 
 }
