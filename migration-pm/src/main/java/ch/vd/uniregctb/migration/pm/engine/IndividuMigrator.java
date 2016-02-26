@@ -260,11 +260,13 @@ public class IndividuMigrator extends AbstractEntityMigrator<RegpmIndividu> {
 			// comme on ne doit pas le créer, il ne faut pas oublier de neutraliser la création des liens avec cet individu,,,
 			mr.addMessage(LogCategory.INDIVIDUS_PM, LogLevel.ERROR, "Individu non migré car aucune correspondance univoque n'a pu être trouvée avec une personne physique existante dans Unireg.");
 
-			// on ne doit finalement générer aucun des liens avec l'individu
+			// on ne doit finalement générer aucun des liens avec l'individu, mais on peut avoir à recopier l'adresse
+			// de l'individu comme adresse mandataire chez ses mandants...
 			linkCollector.addNeutralizedEntity(buildIndividuKey(regpm), buildActionRecopieAdresseMandataire(regpm));
 		}
 	}
 
+	@NotNull
 	private NeutralizedLinkAction buildActionRecopieAdresseMandataire(RegpmIndividu regpm) {
 		return (link, neutralizationReason, mr, idMapper) -> {
 
