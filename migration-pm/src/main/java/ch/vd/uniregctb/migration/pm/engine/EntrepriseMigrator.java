@@ -3914,8 +3914,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 
 				// par période fiscale, cherchons les périodes d'imposition non-encore couvertes
 				// 1. on commence par retrouver les déclarations par période fiscale
-				final Map<Integer, List<DeclarationImpotOrdinairePM>> diExistantes = neverNull(entreprise.getDeclarations()).stream()
-						.map(d -> (DeclarationImpotOrdinairePM) d)
+				final Map<Integer, List<DeclarationImpotOrdinairePM>> diExistantes = entreprise.getDeclarationsTriees(DeclarationImpotOrdinairePM.class, false).stream()
 						.collect(Collectors.toMap(di -> di.getPeriode().getAnnee(),
 						                          Collections::singletonList,
 						                          (l1, l2) -> Stream.concat(l1.stream(), l2.stream()).sorted(DateRangeComparator::compareRanges).collect(Collectors.toList())));
