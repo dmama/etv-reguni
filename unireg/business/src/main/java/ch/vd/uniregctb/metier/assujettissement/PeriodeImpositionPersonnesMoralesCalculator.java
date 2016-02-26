@@ -85,11 +85,14 @@ public class PeriodeImpositionPersonnesMoralesCalculator implements PeriodeImpos
 					final TypeDocument typeDocument = computeTypeDocument(entreprise, intersection.getDateFin());
 					final CategorieEntreprise categorieEntreprise = getLastKnownCategorieEntrepriseAtOrBefore(entreprise, intersection.getDateFin());
 
+					// [SIFISC-17721] sur les DP/APM, les déclarations sont optionnelles
+					final boolean isOptionnelle = categorieEntreprise == CategorieEntreprise.DPAPM;
+
 					// création de la structure pour la période d'imposition
 					resultat.add(new PeriodeImpositionPersonnesMorales(intersection.getDateDebut(),
 					                                                   intersection.getDateFin(),
 					                                                   entreprise,
-					                                                   false,
+					                                                   isOptionnelle,
 					                                                   false,
 					                                                   causeFermeture,
 					                                                   null,
