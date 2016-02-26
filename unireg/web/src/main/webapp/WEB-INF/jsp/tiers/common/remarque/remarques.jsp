@@ -84,7 +84,7 @@
 
 	    buildRemarquesTable: function(remarques) {
 
-            var html = '<table id="remarque" class="remarques">\n';
+            var html = '<table id="remarque" class="remarques" cellspacing="0" border="0">\n';
 
             html += '<tbody>\n';
 
