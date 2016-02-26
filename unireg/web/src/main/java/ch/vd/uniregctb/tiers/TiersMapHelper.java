@@ -64,7 +64,7 @@ public class TiersMapHelper extends CommonMapHelper {
 
 	private Map<FormeJuridique, String> mapFormeJuridique;
 	private Map<FormeJuridiqueEntreprise, String> mapFormeJuridiqueEntreprise;
-	private Map<FormeJuridiqueEntreprise, String> mapFormeJuridiqueEntreprisePM;
+	private Map<FormeJuridiqueEntreprise, String> mapFormeJuridiqueEntrepriseEditableFiscalement;
 	private Map<CategorieEntreprise, String> mapCategorieEntreprise;
 	private Map<NatureJuridique, String> mapNatureJuridique;
 	private Map<TypeRecherche, String> mapTypeRechercheNom;
@@ -720,13 +720,13 @@ public class TiersMapHelper extends CommonMapHelper {
 	 * @return une map
 	 */
 	public Map<FormeJuridiqueEntreprise, String> getMapFormeJuridiqueEntrepriseEditableFiscalement() {
-		if (mapFormeJuridiqueEntreprisePM == null) {
+		if (mapFormeJuridiqueEntrepriseEditableFiscalement == null) {
 			// On exclue les formes juridiques liées à certaines catégories d'entreprise
 			Set<CategorieEntreprise> categoriesAExclure = EnumSet.of(CategorieEntreprise.PP, CategorieEntreprise.SP, CategorieEntreprise.AUTRE);
 			Set<FormeJuridiqueEntreprise> formesAExclure = FormeJuridiqueEntrepriseHelper.getFormesJuridiquesFromCategoriesEntreprise(categoriesAExclure);
-			mapFormeJuridiqueEntreprisePM = initMapEnum(ApplicationConfig.masterKeyFormeJuridiqueEntreprise, FormeJuridiqueEntreprise.class, formesAExclure.toArray(new FormeJuridiqueEntreprise[formesAExclure.size()]));
+			mapFormeJuridiqueEntrepriseEditableFiscalement = initMapEnum(ApplicationConfig.masterKeyFormeJuridiqueEntreprise, FormeJuridiqueEntreprise.class, formesAExclure.toArray(new FormeJuridiqueEntreprise[formesAExclure.size()]));
 		}
-		return mapFormeJuridiqueEntreprisePM;
+		return mapFormeJuridiqueEntrepriseEditableFiscalement;
 	}
 
 	/**
