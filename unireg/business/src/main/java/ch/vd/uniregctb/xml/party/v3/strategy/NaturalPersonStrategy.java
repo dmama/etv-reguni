@@ -84,7 +84,9 @@ public class NaturalPersonStrategy extends TaxPayerStrategy<NaturalPerson> {
 			to.setDateOfDeath(DataHelper.coreToXMLv2(personne.getDateDeces()));
 
 			final NaturalPersonCategoryType categoryType = EnumHelper.coreToXMLv3(personne.getCategorieEtranger());
-			to.getCategories().add(new NaturalPersonCategory(DataHelper.coreToXMLv2(personne.getDateDebutValiditeAutorisation()), null, categoryType, null));
+			if (categoryType != null) {
+				to.getCategories().add(new NaturalPersonCategory(DataHelper.coreToXMLv2(personne.getDateDebutValiditeAutorisation()), null, categoryType, null));
+			}
 
 			// les noms et prénoms des parents (SIFISC-12136)
 			if (StringUtils.isNotBlank(personne.getPrenomsMere()) || StringUtils.isNotBlank(personne.getNomMere())) {
