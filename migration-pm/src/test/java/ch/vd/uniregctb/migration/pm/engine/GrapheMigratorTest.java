@@ -5733,7 +5733,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 			Assert.assertEquals("WARN;" + noEntrepriseMandante + ";Active;;;;;;;;;;;;;;;Entreprise sans exercice commercial ni for principal.", msgs.get(2));
 			Assert.assertEquals("WARN;" + noEntrepriseMandante + ";Active;;;;;;;;;;;;;;;Entreprise sans exercice commercial ni date de bouclement futur.", msgs.get(3));
 			Assert.assertEquals("WARN;" + noEntrepriseMandante + ";Active;;;;;;;;;;;;;;;Pas de siège associé dans les données fiscales, pas d'établissement principal créé à partir des données fiscales.", msgs.get(4));
-			Assert.assertEquals("INFO;" + noEntrepriseMandante + ";Active;;;;;;;;;;;;;;;Mandat vers l'établissement 'activité indépendante' migré en tant que simple adresse mandataire sur la période [01.05.1993 -> 12.08.2015].", msgs.get(5));
+			Assert.assertEquals("INFO;" + noEntrepriseMandante + ";Active;;;" + noEtablissementMandataire + ";;;;;" + noIndividu + ";;;;;;;Mandat vers l'établissement 'activité indépendante' migré en tant que simple adresse mandataire sur la période [01.05.1993 -> 12.08.2015].", msgs.get(5));
 			Assert.assertEquals("INFO;" + noEntrepriseMandante + ";Active;;;;;;;;;;;;;;;Entreprise migrée : " + FormatNumeroHelper.numeroCTBToDisplay(noEntrepriseMandante) + ".", msgs.get(6));
 		}
 		{

@@ -3344,23 +3344,22 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 	 * @param mr collecteur de messages de suivi et manipulateur du contexte de log
 	 */
 	private void migrateMandatAvecSimpleAdresse(DateRange rangeMandat, TypeMandat typeMandat, RegpmEtablissement etablissementMandataire, Entreprise unireg, MigrationResultContextManipulation mr, IdMapping idMapper) {
-		final AdresseMandataire adresse = doInLogContext(buildEtablissementKey(etablissementMandataire),
-		                                                 mr,
-		                                                 idMapper,
-		                                                 () -> migrationContexte.getAdresseHelper().buildAdresseMandataire(etablissementMandataire.getAdresse(rangeMandat), mr, null));
-		if (adresse == null) {
-			mr.addMessage(LogCategory.SUIVI, LogLevel.ERROR,
-			              String.format("Aucune adresse retrouvée pour le mandat vers l'activité indépendante représentée par l'établissement %d.", etablissementMandataire.getId()));
-		}
-		else {
-			adresse.setTypeMandat(typeMandat);
-			adresse.setNomDestinataire(extractRaisonSociale(etablissementMandataire.getRaisonSociale1(), etablissementMandataire.getRaisonSociale2(), etablissementMandataire.getRaisonSociale3()));
-			unireg.addAdresseMandataire(adresse);
+		doInLogContext(buildEtablissementKey(etablissementMandataire), mr, idMapper, () -> {
+			final AdresseMandataire adresse = migrationContexte.getAdresseHelper().buildAdresseMandataire(etablissementMandataire.getAdresse(rangeMandat), mr, null);
+			if (adresse == null) {
+				mr.addMessage(LogCategory.SUIVI, LogLevel.ERROR,
+				              String.format("Aucune adresse retrouvée pour le mandat vers l'activité indépendante représentée par l'établissement %d.", etablissementMandataire.getId()));
+			}
+			else {
+				adresse.setTypeMandat(typeMandat);
+				adresse.setNomDestinataire(extractRaisonSociale(etablissementMandataire.getRaisonSociale1(), etablissementMandataire.getRaisonSociale2(), etablissementMandataire.getRaisonSociale3()));
+				unireg.addAdresseMandataire(adresse);
 
-			mr.addMessage(LogCategory.SUIVI, LogLevel.INFO,
-			              String.format("Mandat vers l'établissement 'activité indépendante' migré en tant que simple adresse mandataire sur la période %s.",
-			                            StringRenderers.DATE_RANGE_RENDERER.toString(adresse)));
-		}
+				mr.addMessage(LogCategory.SUIVI, LogLevel.INFO,
+				              String.format("Mandat vers l'établissement 'activité indépendante' migré en tant que simple adresse mandataire sur la période %s.",
+				                            StringRenderers.DATE_RANGE_RENDERER.toString(adresse)));
+			}
+		});
 	}
 
 	/**
