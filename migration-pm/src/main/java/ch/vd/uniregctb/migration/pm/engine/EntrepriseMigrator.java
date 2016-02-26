@@ -2997,42 +2997,20 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 
 		for (Map.Entry<Long, List<DateRanged<SiteOrganisation>>> entry : validiteSitesPrincipaux.entrySet()) {
 
-			// si l'établissement avec cet identifiant cantonal a déjà été créé en base, on le ré-utilise
-			// (ça marche parce que les différents threads de migration sont synchronisés sur les identifiants cantonaux aussi)
-			final Etablissement etbPrincipal;
-			final List<Etablissement> etbPrincipauxExistants = migrationContexte.getUniregStore().getEntitiesFromDb(Etablissement.class, Collections.singletonMap("numeroEtablissement", entry.getKey()));
-			if (etbPrincipauxExistants == null || etbPrincipauxExistants.isEmpty()) {
-				etbPrincipal = migrationContexte.getUniregStore().saveEntityToDb(new Etablissement());
-				etbPrincipal.setNumeroEtablissement(entry.getKey());        // lien vers le civil
+			// création d'un nouvel établissement associé au numéro cantonal donné
+			final Etablissement etbPrincipal = migrationContexte.getUniregStore().saveEntityToDb(new Etablissement());
+			etbPrincipal.setNumeroEtablissement(entry.getKey());        // lien vers le civil
 
-				// [SIFISC-17744] on annule aussi l'établissement principal
-				if (migrationContexte.getDoublonProvider().isDoublon(regpm)) {
-					etbPrincipal.setAnnule(true);
-				}
+			// [SIFISC-17744] on annule aussi l'établissement principal
+			if (migrationContexte.getDoublonProvider().isDoublon(regpm)) {
+				etbPrincipal.setAnnule(true);
+			}
 
-				mr.addMessage(LogCategory.SUIVI, LogLevel.INFO,
-				              String.format("Etablissement principal %s%s créé en liaison avec le site civil %d.",
-				                            FormatNumeroHelper.numeroCTBToDisplay(etbPrincipal.getNumero()),
-				                            etbPrincipal.isAnnule() ? " (annulé)" : StringUtils.EMPTY,
-				                            entry.getKey()));
-			}
-			else if (etbPrincipauxExistants.size() > 1) {
-				throw new IllegalStateException(String.format("Plus d'un (%d) établissement dans Unireg associé au numéro cantonal %d : %s.",
-				                                              etbPrincipauxExistants.size(),
-				                                              entry.getKey(),
-				                                              etbPrincipauxExistants.stream()
-						                                              .map(Etablissement::getNumeroEtablissement)
-						                                              .map(FormatNumeroHelper::numeroCTBToDisplay)
-						                                              .collect(Collectors.joining(", ", "{", "}"))));
-			}
-			else {
-				etbPrincipal = etbPrincipauxExistants.get(0);
-
-				mr.addMessage(LogCategory.SUIVI, LogLevel.INFO,
-				              String.format("Etablissement principal %s ré-utilisé en liaison avec le site civil %d.",
-				                            FormatNumeroHelper.numeroCTBToDisplay(etbPrincipal.getNumero()),
-				                            entry.getKey()));
-			}
+			mr.addMessage(LogCategory.SUIVI, LogLevel.INFO,
+			              String.format("Etablissement principal %s%s créé en liaison avec le site civil %d.",
+			                            FormatNumeroHelper.numeroCTBToDisplay(etbPrincipal.getNumero()),
+			                            etbPrincipal.isAnnule() ? " (annulé)" : StringUtils.EMPTY,
+			                            entry.getKey()));
 
 			// on récupère le premier établissement
 			if (entry.getKey().equals(idCantonalPremierEtablissement)) {

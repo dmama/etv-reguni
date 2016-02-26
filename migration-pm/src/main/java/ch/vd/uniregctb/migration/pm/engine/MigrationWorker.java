@@ -266,10 +266,9 @@ public class MigrationWorker implements Worker, InitializingBean, DisposableBean
 
 		final Set<Long> idsEntreprise = graphe.getEntreprises().keySet();
 		final Set<Long> idsIndividus = graphe.getIndividus().keySet();
-		final Set<Long> idsCantonaux = grapheHelper.extractNumerosCantonaux(graphe);
 		try {
 			while (true) {
-				final SynchronizationTicket ticket = synchronizer.hold(idsEntreprise, idsIndividus, idsCantonaux, Duration.of(1, ChronoUnit.SECONDS));
+				final SynchronizationTicket ticket = synchronizer.hold(idsEntreprise, idsIndividus, Duration.of(1, ChronoUnit.SECONDS));
 				if (ticket != null) {
 					try {
 						return grapheMigrator.migrate(graphe);

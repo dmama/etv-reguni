@@ -58,15 +58,6 @@ public class EntityMigrationSynchronizer {
 	}
 
 	/**
-	 * Variante du {@link SlaveSynchronizationTicket} pour le niveau des identifiants cantonaux
-	 */
-	private final class CantonalIdsSynchronizationTicket extends SlaveSynchronizationTicket {
-		public CantonalIdsSynchronizationTicket(SortedSet<Long> heldData, @Nullable SynchronizationTicket prerequisiteTicket) {
-			super(heldData, lockedCantonalIds, prerequisiteTicket);
-		}
-	}
-
-	/**
 	 * Implémentation du ticket effectivement exposé à l'extérieur (il gère un verrou global pendant la
 	 * phase de restitution du ticket)
 	 */
@@ -100,11 +91,6 @@ public class EntityMigrationSynchronizer {
 	 * Identifiants d'individus verrouillés (dont l'accès doit être protégé par un verrou centralisé)
 	 */
 	private final Set<Long> lockedIndividualIds = new HashSet<>();
-
-	/**
-	 * Identifiants cantonaux verrouillés (dont l'accès doit être protégé par un verrou centralisé)
-	 */
-	private final Set<Long> lockedCantonalIds = new HashSet<>();
 
 	/**
 	 * Verrou de synchronisation sur les ensembles d'identifiants
@@ -151,23 +137,21 @@ public class EntityMigrationSynchronizer {
 	/**
 	 * @param idsEntreprise les identifiants d'entreprises qui vont être prises en charge par ce thread
 	 * @param idsIndividus les identifiants des individus pris en charge par ce thread
-	 * @param idsCantonaux les identifiants cantonaux des entreprises/établissements qui vont être traités par ce thread
 	 * @param timeout attente maximale
 	 * @return le ticket à relâcher plus tard (= accès accordé), ou <code>null</code> (= resource toujours pas accessible après le temps maximal d'attente)
 	 * @throws InterruptedException si le thread d'attente a été interrompu
 	 */
-	public SynchronizationTicket hold(Collection<Long> idsEntreprise, Collection<Long> idsIndividus, Collection<Long> idsCantonaux, Duration timeout) throws InterruptedException {
+	public SynchronizationTicket hold(Collection<Long> idsEntreprise, Collection<Long> idsIndividus, Duration timeout) throws InterruptedException {
 
 		//
 		// il est important d'ordonner les identifiants (= toujours prendre le même) afin d'éviter les deadlocks :
-		// 1. d'abord les identifiants d'entreprises, puis les identifiants de personnes, puis les identifiants cantonaux
+		// 1. d'abord les identifiants d'entreprises, puis les identifiants de personnes
 		// 2. dans chacune des catégories, les identifiants sont traités par ordre croissant
 		//
 
 		final Instant timeoutExpiration = Instant.now().plus(timeout);
 		final List<SynchronizationStage<Long>> stages = Arrays.asList(new SynchronizationStage<>(buildSortedSet(idsEntreprise), lockedEntrepriseIds, EntrepriseIdsSychronizationTicket::new),
-		                                                              new SynchronizationStage<>(buildSortedSet(idsIndividus), lockedIndividualIds, IndividualIdsSynchronizationTicket::new),
-		                                                              new SynchronizationStage<>(buildSortedSet(idsCantonaux), lockedCantonalIds, CantonalIdsSynchronizationTicket::new));
+		                                                              new SynchronizationStage<>(buildSortedSet(idsIndividus), lockedIndividualIds, IndividualIdsSynchronizationTicket::new));
 
 		SynchronizationTicket ticket = null;
 		lock.lock();
