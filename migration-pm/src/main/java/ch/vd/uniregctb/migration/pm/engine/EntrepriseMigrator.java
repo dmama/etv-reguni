@@ -57,6 +57,7 @@ import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 import ch.vd.uniregctb.adresse.AdresseCivileAdapter;
 import ch.vd.uniregctb.adresse.AdresseGenerique;
 import ch.vd.uniregctb.adresse.AdresseGeneriqueAdapter;
+import ch.vd.uniregctb.adresse.AdresseMandataire;
 import ch.vd.uniregctb.adresse.AdresseSupplementaire;
 import ch.vd.uniregctb.adresse.AdresseSupplementaireAdapter;
 import ch.vd.uniregctb.adresse.AdresseTiers;
@@ -121,6 +122,7 @@ import ch.vd.uniregctb.migration.pm.regpm.RegpmDemandeDelaiSommation;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmDossierFiscal;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmEntreprise;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmEnvironnementTaxation;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmEtablissement;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmEtatEntreprise;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmExerciceCommercial;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmFinFaillite;
@@ -2142,7 +2144,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		migrateLIASF(regpm, unireg, mr);
 		migrateFlagsDApresRegimesFiscaux(regpm, unireg, mr);
 
-		migrateMandataires(regpm, mr, linkCollector, idMapper);
+		migrateMandataires(regpm, unireg, mr, linkCollector, idMapper);
 		migrateFusionsApres(regpm, linkCollector, idMapper);
 		migrateSocietesDeDirection(regpm, mr, linkCollector, idMapper);
 		migrateAdministrateursSocieteImmobiliere(regpm, mr, linkCollector, idMapper);
@@ -2317,7 +2319,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 				                                                             mr))
 				.map(a -> {
 					final String complement = a.getChez() == null ? regpm.getEnseigne() : a.getChez();
-					final AdresseSupplementaire adresse = migrationContexte.getAdresseHelper().buildAdresse(a, mr, complement, false);
+					final AdresseSupplementaire adresse = migrationContexte.getAdresseHelper().buildAdresseSupplementaire(a, mr, complement, false);
 					if (adresse != null) {
 						final TypeAdresseTiers type = a.getTypeAdresse() == RegpmTypeAdresseEntreprise.SIEGE ? TypeAdresseTiers.POURSUITE : TypeAdresseTiers.COURRIER;
 						adresse.setUsage(type);
@@ -3335,80 +3337,134 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 	}
 
 	/**
+	 * Migration d'un mandat sous la forme d'une simple adresse de mandataire
+	 * @param rangeMandat dates de validité du mandat (et donc de l'adresse)
+	 * @param etablissementMandataire l'établissement dont on doit prendre l'adresse
+	 * @param unireg entreprise après migration
+	 * @param mr collecteur de messages de suivi et manipulateur du contexte de log
+	 */
+	private void migrateMandatAvecSimpleAdresse(DateRange rangeMandat, TypeMandat typeMandat, RegpmEtablissement etablissementMandataire, Entreprise unireg, MigrationResultContextManipulation mr, IdMapping idMapper) {
+		final AdresseMandataire adresse = doInLogContext(buildEtablissementKey(etablissementMandataire),
+		                                                 mr,
+		                                                 idMapper,
+		                                                 () -> migrationContexte.getAdresseHelper().buildAdresseMandataire(etablissementMandataire.getAdresse(rangeMandat), mr, null));
+		if (adresse == null) {
+			mr.addMessage(LogCategory.SUIVI, LogLevel.ERROR,
+			              String.format("Aucune adresse retrouvée pour le mandat vers l'activité indépendante représentée par l'établissement %d.", etablissementMandataire.getId()));
+		}
+		else {
+			adresse.setTypeMandat(typeMandat);
+			adresse.setNomDestinataire(extractRaisonSociale(etablissementMandataire.getRaisonSociale1(), etablissementMandataire.getRaisonSociale2(), etablissementMandataire.getRaisonSociale3()));
+			unireg.addAdresseMandataire(adresse);
+
+			mr.addMessage(LogCategory.SUIVI, LogLevel.INFO,
+			              String.format("Mandat vers l'établissement 'activité indépendante' migré en tant que simple adresse mandataire sur la période %s.",
+			                            StringRenderers.DATE_RANGE_RENDERER.toString(adresse)));
+		}
+	}
+
+	/**
+	 * Migration d'un mandat à l'aide d'un lien explicite entre tiers
+	 * @param mandant l'entreprise mandante
+	 * @param mandat le mandat à migrer
+	 * @param mr collecteur de messages, de données à logguer...
+	 * @param linkCollector collecteur de liens à créer
+	 * @param idMapper mapper des identifiants RegPM -> Unireg
+	 */
+	private void migrateMandatAvecLien(RegpmEntreprise mandant, RegpmMandat mandat, MigrationResultProduction mr, EntityLinkCollector linkCollector, IdMapping idMapper) {
+
+		// récupération du mandataire qui peut être une autre entreprise, un établissement ou un individu
+		final KeyedSupplier<? extends Contribuable> mandataire = getPolymorphicSupplier(idMapper, mandat::getMandataireEntreprise, mandat::getMandataireEtablissement, mandat::getMandataireIndividu);
+		if (mandataire == null) {
+			// cas normalement impossible, puisque le cas a dû être écarté déjà dans l'extracteur
+			throw new IllegalArgumentException("On ne devrait pas se trouver là...");
+		}
+
+		// [SIFISC-17979] on ne migre la coordonnée financière que sur les mandats "tiers"
+		final String bicSwift;
+		String iban;
+		if (mandat.getType() == RegpmTypeMandat.TIERS) {
+			bicSwift = mandat.getBicSwift();
+			try {
+				iban = IbanExtractor.extractIban(mandat, mr);
+
+				// TODO ne manque-t-il pas le titulaire du compte pour les coordonnées financières ?
+			}
+			catch (IbanExtractor.IbanExtractorException e) {
+				mr.addMessage(LogCategory.SUIVI, LogLevel.ERROR, "Impossible d'extraire un IBAN du mandat " + mandat.getId() + " (" + e.getMessage() + ")");
+				iban = null;
+			}
+		}
+		else {
+			iban = null;
+			bicSwift = null;
+		}
+
+		// [SIFISC-17979] on ne migre les coordonnées de contact que sur les mandats "généraux"
+		final String nomContact;
+		final String prenomContact;
+		final String telContact;
+		if (mandat.getType() == RegpmTypeMandat.GENERAL) {
+			nomContact = mandat.getNomContact();
+			prenomContact = mandat.getPrenomContact();
+			telContact = canonizeTelephoneNumber(mandat.getNoTelContact(), String.format("téléphone du mandat général %d", mandat.getId().getNoSequence()), mr);
+		}
+		else {
+			nomContact = null;
+			prenomContact = null;
+			telContact = null;
+		}
+
+		// un supplier qui va renvoyer l'entreprise en cours de migration
+		final KeyedSupplier<Entreprise> moi = getEntrepriseSupplier(idMapper, mandant);
+
+		// ajout du lien entre l'entreprise et son mandataire
+		linkCollector.addLink(new EntityLinkCollector.MandantMandataireLink<>(moi,
+		                                                                      mandataire,
+		                                                                      mandat.getDateAttribution(),
+		                                                                      mandat.getDateResiliation(),
+		                                                                      extractTypeMandat(mandat),
+		                                                                      iban,
+		                                                                      bicSwift,
+		                                                                      nomContact,
+		                                                                      prenomContact,
+		                                                                      telContact));
+	}
+
+	/**
 	 * Migration des mandataires d'une entreprise
 	 * @param regpm entreprise à migrer
 	 * @param mr collecteur de messages, de données à logguer...
 	 * @param linkCollector collecteur de liens à créer
 	 * @param idMapper mapper des identifiants RegPM -> Unireg
 	 */
-	private void migrateMandataires(RegpmEntreprise regpm, MigrationResultProduction mr, EntityLinkCollector linkCollector, IdMapping idMapper) {
+	private void migrateMandataires(RegpmEntreprise regpm, Entreprise unireg, MigrationResultContextManipulation mr, EntityLinkCollector linkCollector, IdMapping idMapper) {
 		// un supplier qui va renvoyer l'entreprise en cours de migration
 		final KeyedSupplier<Entreprise> moi = getEntrepriseSupplier(idMapper, regpm);
 
-		// on va chercher les mandats (rôle mandant -> les mandataires) reprise
+		// on va chercher les mandats (rôle mandant -> les mandataires) repris
 		final Collection<RegpmMandat> mandataires = mr.getExtractedData(DonneesMandats.class, moi.getKey()).getRolesMandant();
 
 		// migration des mandataires -> liens à créer par la suite
 		mandataires.stream()
 				.forEach(mandat -> {
-
-					// récupération du mandataire qui peut être une autre entreprise, un établissement ou un individu
-					final KeyedSupplier<? extends Contribuable> mandataire = getPolymorphicSupplier(idMapper, mandat::getMandataireEntreprise, mandat::getMandataireEtablissement, mandat::getMandataireIndividu);
-					if (mandataire == null) {
-						// cas normalement impossible, puisque le cas a dû être écarté déjà dans l'extracteur
-						throw new IllegalArgumentException("On ne devrait pas se trouver là...");
-					}
-
-					// [SIFISC-17979] on ne migre la coordonnée financière que sur les mandats "tiers"
-					final String bicSwift;
-					String iban;
-					if (mandat.getType() == RegpmTypeMandat.TIERS) {
-						bicSwift = mandat.getBicSwift();
-						try {
-							iban = IbanExtractor.extractIban(mandat, mr);
-
-							// TODO ne manque-t-il pas le titulaire du compte pour les coordonnées financières ?
-						}
-						catch (IbanExtractor.IbanExtractorException e) {
-							mr.addMessage(LogCategory.SUIVI, LogLevel.ERROR, "Impossible d'extraire un IBAN du mandat " + mandat.getId() + " (" + e.getMessage() + ")");
-							iban = null;
-						}
+					// [SIFISC-18034] les mandataires "indépendants" (= établissements pointant vers un individu) doivent être repris sous la forme d'une adresse de mandataire seulement
+					if (mandat.getMandataireEtablissement() != null && mandat.getMandataireEtablissement().getIndividu() != null) {
+						final DateRange rangeMandat = new DateRangeHelper.Range(mandat.getDateAttribution(), mandat.getDateResiliation());
+						migrateMandatAvecSimpleAdresse(rangeMandat, extractTypeMandat(mandat), mandat.getMandataireEtablissement(), unireg, mr, idMapper);
 					}
 					else {
-						iban = null;
-						bicSwift = null;
+						// cas plus "normal" avec des liens de type "Mandat"
+						migrateMandatAvecLien(regpm, mandat, mr, linkCollector, idMapper);
 					}
-
-					// [SIFISC-17979] on ne migre les coordonnées de contact que sur les mandats "généraux"
-					final String nomContact;
-					final String prenomContact;
-					final String telContact;
-					if (mandat.getType() == RegpmTypeMandat.GENERAL) {
-						nomContact = mandat.getNomContact();
-						prenomContact = mandat.getPrenomContact();
-						telContact = canonizeTelephoneNumber(mandat.getNoTelContact(), String.format("téléphone du mandat général %d", mandat.getId().getNoSequence()), mr);
-					}
-					else {
-						nomContact = null;
-						prenomContact = null;
-						telContact = null;
-					}
-
-					// ajout du lien entre l'entreprise et son mandataire
-					linkCollector.addLink(new EntityLinkCollector.MandantMandataireLink<>(moi,
-					                                                                      mandataire,
-					                                                                      mandat.getDateAttribution(),
-					                                                                      mandat.getDateResiliation(),
-					                                                                      extractTypeMandat(mandat.getType()),
-					                                                                      iban,
-					                                                                      bicSwift,
-					                                                                      nomContact,
-					                                                                      prenomContact,
-					                                                                      telContact));
 				});
 	}
 
-	private static TypeMandat extractTypeMandat(RegpmTypeMandat type) {
+	private static TypeMandat extractTypeMandat(RegpmMandat mandat) {
+		return mapTypeMandat(mandat.getType());
+	}
+
+	private static TypeMandat mapTypeMandat(RegpmTypeMandat type) {
 		switch (type) {
 		case GENERAL:
 			return TypeMandat.GENERAL;

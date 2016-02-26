@@ -50,6 +50,8 @@ import ch.vd.unireg.interfaces.organisation.mock.data.MockDonneesRegistreIDE;
 import ch.vd.unireg.interfaces.organisation.mock.data.MockOrganisation;
 import ch.vd.unireg.interfaces.organisation.mock.data.MockSiteOrganisation;
 import ch.vd.unireg.wsclient.rcpers.RcPersClient;
+import ch.vd.uniregctb.adresse.AdresseMandataire;
+import ch.vd.uniregctb.adresse.AdresseMandataireSuisse;
 import ch.vd.uniregctb.adresse.AdresseSuisse;
 import ch.vd.uniregctb.adresse.AdresseTiers;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
@@ -5660,6 +5662,92 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		}
 	}
 
+	/**
+	 * [SIFISC-18034] Cas d'un mandataire établissement directement lié à une personne physique
+	 */
+	@Test
+	public void testMandataireActiviteIndependante() throws Exception {
+
+		final long noIndividu = 234672L;
+		final long noEntrepriseMandante = 32132L;
+		final long noEtablissementMandataire = 432128L;
+		final RegDate debutMandat = RegDate.get(1993, 5, 1);
+		final RegDate finMandat = RegDate.get(2015, 8, 12);
+		final RegDate dateDebut = RegDate.get(1990, 1, 1);
+
+		final RegpmIndividu individu = IndividuMigratorTest.buildBaseIndividu(noIndividu, "Bollomittet", "Alphonse", RegDate.get(1954, 5, 12), Sexe.MASCULIN);
+		final RegpmEtablissement etablissement = EtablissementMigratorTest.buildEtablissement(noEtablissementMandataire, individu);
+		etablissement.setRaisonSociale1("Bollomittet consulting");
+		etablissement.setRue(Rue.LONGEMALLE_RENENS);
+		final RegpmEntreprise entreprise = EntrepriseMigratorTest.buildEntreprise(noEntrepriseMandante);
+		EntrepriseMigratorTest.addRaisonSociale(entreprise, dateDebut, "Turlututu SA", null, null, true);
+		EntrepriseMigratorTest.addFormeJuridique(entreprise, dateDebut, EntrepriseMigratorTest.createTypeFormeJuridique("S.A.", RegpmCategoriePersonneMorale.PM));
+		EntrepriseMigratorTest.addMandat(entreprise, etablissement, RegpmTypeMandat.GENERAL, null, debutMandat, finMandat);
+
+		final MockGraphe graphe = new MockGraphe(Collections.singletonList(entreprise),
+		                                         Collections.singletonList(etablissement),
+		                                         Collections.singletonList(individu));
+
+		activityManager.setup(ALL_ACTIVE);
+
+		final LoggedMessages lms = grapheMigrator.migrate(graphe);
+		Assert.assertNotNull(lms);
+
+		// vérification de la présence d'une adresse mandataire en base
+		doInUniregTransaction(true, status -> {
+			final Entreprise e = uniregStore.getEntityFromDb(Entreprise.class, noEntrepriseMandante);
+			Assert.assertNotNull(e);
+
+			// pas de personne physique ni d'établissement
+			final List<Etablissement> etablissements = uniregStore.getEntitiesFromDb(Etablissement.class, null);
+			Assert.assertEquals(0, etablissements.size());
+			final List<PersonnePhysique> personnesPhysiques = uniregStore.getEntitiesFromDb(PersonnePhysique.class, null);
+			Assert.assertEquals(0, personnesPhysiques.size());
+
+			// adresses mandataire -> 1
+			final Set<AdresseMandataire> adresses = e.getAdressesMandataires();
+			Assert.assertNotNull(adresses);
+			Assert.assertEquals(1, adresses.size());
+
+			final AdresseMandataire adresse = adresses.iterator().next();
+			Assert.assertNotNull(adresse);
+			Assert.assertFalse(adresse.isAnnule());
+			Assert.assertEquals("Bollomittet consulting", adresse.getNomDestinataire());
+			Assert.assertEquals(debutMandat, adresse.getDateDebut());
+			Assert.assertEquals(finMandat, adresse.getDateFin());
+			Assert.assertEquals(AdresseMandataireSuisse.class, adresse.getClass());
+
+			final AdresseMandataireSuisse adresseSuisse = (AdresseMandataireSuisse) adresse;
+			Assert.assertEquals((Integer) 1134510, adresseSuisse.getNumeroRue());
+			Assert.assertEquals((Integer) LocalitePostale.RENENS.getNoOrdreP().intValue(), adresseSuisse.getNumeroOrdrePoste());
+		});
+
+		final Map<LogCategory, List<String>> messages = buildTextualMessages(lms);
+		{
+			// vérification des messages dans le contexte "SUIVI"
+			final List<String> msgs = messages.get(LogCategory.SUIVI);
+			Assert.assertEquals(7, msgs.size());
+			Assert.assertEquals("WARN;" + noEntrepriseMandante + ";Active;;;;;;;;;;;;;;;L'entreprise n'existait pas dans Unireg avec ce numéro de contribuable.", msgs.get(0));
+			Assert.assertEquals("ERROR;" + noEntrepriseMandante + ";Active;;;;;;;;;;;;;;;Pas de numéro cantonal assigné sur l'entreprise, pas de lien vers le civil.", msgs.get(1));
+			Assert.assertEquals("WARN;" + noEntrepriseMandante + ";Active;;;;;;;;;;;;;;;Entreprise sans exercice commercial ni for principal.", msgs.get(2));
+			Assert.assertEquals("WARN;" + noEntrepriseMandante + ";Active;;;;;;;;;;;;;;;Entreprise sans exercice commercial ni date de bouclement futur.", msgs.get(3));
+			Assert.assertEquals("WARN;" + noEntrepriseMandante + ";Active;;;;;;;;;;;;;;;Pas de siège associé dans les données fiscales, pas d'établissement principal créé à partir des données fiscales.", msgs.get(4));
+			Assert.assertEquals("INFO;" + noEntrepriseMandante + ";Active;;;;;;;;;;;;;;;Mandat vers l'établissement 'activité indépendante' migré en tant que simple adresse mandataire sur la période [01.05.1993 -> 12.08.2015].", msgs.get(5));
+			Assert.assertEquals("INFO;" + noEntrepriseMandante + ";Active;;;;;;;;;;;;;;;Entreprise migrée : " + FormatNumeroHelper.numeroCTBToDisplay(noEntrepriseMandante) + ".", msgs.get(6));
+		}
+		{
+			// vérification des messages dans le contexte "ADRESSES"
+			final List<String> msgs = messages.get(LogCategory.ADRESSES);
+			Assert.assertEquals(1, msgs.size());
+			Assert.assertEquals("INFO;" + noEntrepriseMandante + ";Active;;;" + noEtablissementMandataire + ";;;;;" + noIndividu + ";;;;;;;Avenue de Longemalle;;;Renens (VD);8100;Adresse 'Avenue de Longemalle' à 'Renens (VD)' mappée sur l'estrid 1134510.", msgs.get(0));
+		}
+		{
+			// vérification des messages dans le contexte "ETABLISSEMENTS"
+			final List<String> msgs = messages.get(LogCategory.ETABLISSEMENTS);
+			Assert.assertEquals(1, msgs.size());
+			Assert.assertEquals("WARN;" + noEtablissementMandataire + ";;;;;" + noIndividu + ";Etablissement avec un lien vers un individu, donc non-migré en tant qu'établissement (au mieux en tant qu'adresses de mandataire).", msgs.get(0));
+		}
+	}
 	/**
 	 * Ceci est un test utile au debugging, on charge un graphe depuis un fichier sur disque (identique à ce que
 	 * l'on peut envoyer dans la vraie migration) et on tente la migration du graphe en question

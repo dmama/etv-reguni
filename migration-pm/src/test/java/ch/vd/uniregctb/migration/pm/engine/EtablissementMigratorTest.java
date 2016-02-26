@@ -137,6 +137,7 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 		etablissement.setRadiationsRC(new TreeSet<>());
 		etablissement.setRattachementsProprietaires(new HashSet<>());
 		etablissement.setSuccursales(new HashSet<>());
+		etablissement.setMandants(new HashSet<>());
 		etablissement.setNotes(new TreeSet<>());
 
 		return etablissement;

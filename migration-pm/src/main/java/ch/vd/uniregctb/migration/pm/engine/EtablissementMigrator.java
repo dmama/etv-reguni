@@ -489,6 +489,13 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 		if (entiteJuridique == null) {
 			mr.addMessage(LogCategory.ETABLISSEMENTS, LogLevel.ERROR, "Etablissement sans lien vers une entreprise ou un individu.");
 		}
+		else if (entiteJuridique.getKey().getType() == EntityKey.Type.INDIVIDU) {
+			// [SIFISC-18034] on ne cherche pas à migrer les établissements dont l'entité juridique n'est pas une entreprise
+			// (si un tel établissement est utilisé comme mandataire, alors son adresse aura déjà été prise en compte par la ou les
+			// entreprises mandantes sans création de lien)
+			mr.addMessage(LogCategory.ETABLISSEMENTS, LogLevel.WARN, "Etablissement avec un lien vers un individu, donc non-migré en tant qu'établissement (au mieux en tant qu'adresses de mandataire).");
+			return;
+		}
 		else {
 			// les éventuels immeubles (à transférer sur l'entité juridique parente)
 			migrateImmeubles(regpm, entiteJuridique, mr);
@@ -666,7 +673,7 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 		}
 
 		// TODO usage de l'adresse = COURRIER ou plutôt DOMICILE ?
-		final AdresseSupplementaire adresse = migrationContexte.getAdresseHelper().buildAdresse(regpm.getAdresse(rangeAdresse), mr, regpm.getChez(), false);
+		final AdresseSupplementaire adresse = migrationContexte.getAdresseHelper().buildAdresseSupplementaire(regpm.getAdresse(rangeAdresse), mr, regpm.getChez(), false);
 		if (adresse != null) {
 			adresse.setUsage(TypeAdresseTiers.COURRIER);
 			unireg.addAdresseTiers(adresse);

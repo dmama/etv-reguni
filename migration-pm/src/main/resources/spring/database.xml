@@ -10,6 +10,9 @@
 		<value>ch.vd.uniregctb.adresse.AdresseAutreTiers</value>
 		<value>ch.vd.uniregctb.adresse.AdresseCivile</value>
 		<value>ch.vd.uniregctb.adresse.AdresseEtrangere</value>
+		<value>ch.vd.uniregctb.adresse.AdresseMandataire</value>
+		<value>ch.vd.uniregctb.adresse.AdresseMandataireEtrangere</value>
+		<value>ch.vd.uniregctb.adresse.AdresseMandataireSuisse</value>
 		<value>ch.vd.uniregctb.adresse.AdressePM</value>
 		<value>ch.vd.uniregctb.adresse.AdresseSuisse</value>
 		<value>ch.vd.uniregctb.adresse.AdresseTiers</value>

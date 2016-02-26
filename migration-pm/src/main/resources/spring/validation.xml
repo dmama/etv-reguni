@@ -104,6 +104,10 @@
 	<bean id="autreDocumentFiscalAvecRetourValidator" class="ch.vd.uniregctb.validation.documentfiscal.AutreDocumentFiscalAvecRetourValidator" abstract="true" parent="autreDocumentFiscalValidator"/>
 	<bean id="lettreBienvenueValidator" class="ch.vd.uniregctb.validation.documentfiscal.LettreBienvenueValidator" parent="autreDocumentFiscalAvecRetourValidator"/>
 
+	<bean id="adresseMandataireValidator" class="ch.vd.uniregctb.validation.adresse.AdresseMandataireValidator" abstract="true" parent="dateRangeEntityValidator"/>
+	<bean id="adresseMandataireSuisseValidator" class="ch.vd.uniregctb.validation.adresse.AdresseMandataireSuisseValidator" parent="adresseMandataireValidator"/>
+	<bean id="adresseMandataireEtrangereValidator" class="ch.vd.uniregctb.validation.adresse.AdresseMandataireEtrangereValidator" parent="adresseMandataireValidator"/>
+
 	<!-- TODO mettre en place les validateurs nécessaires... -->
 
 </beans>
