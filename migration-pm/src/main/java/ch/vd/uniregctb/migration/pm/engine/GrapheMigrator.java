@@ -9,6 +9,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
 
@@ -127,6 +128,16 @@ public class GrapheMigrator implements InitializingBean {
 			catch (Exception e) {
 				mr.addMessage(LogCategory.EXCEPTIONS, LogLevel.WARN, String.format("Exception levée lors de l'exécution des callbacks post-transaction : %s", dump(e)));
 			}
+		}
+		catch (OptimisticLockingFailureException e) {
+			// aha... un problème de verrou optimiste... vu une fois quand les deux individus de RegPM 518417 (Thomas Vonäsch) et 5005 (Thomas Vonaesch)
+			// ont été traités en même temps dans deux threads concurrents... dans les deux cas (soit directement par le numéro RCPers 518417, soit
+			// indirectement par le nom car le numéro ne correspond plus à rien), c'est la même personne physique qui a été identifiée (103.522.85),
+			// d'où le souci...
+			LOGGER.warn("Détecté un problème de verrou optimiste... on ré-essaie.", e);
+
+			// on va juste ré-essayer... (ce devrait être tellement rare que la récursivité ne devrait pas gêner...)
+			return migrate(graphe);
 		}
 		catch (Exception e) {
 			final MigrationException me = new MigrationException(e, graphe, resolveInReadOnlyTransaction(mr));
