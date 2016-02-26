@@ -3,7 +3,9 @@ package ch.vd.uniregctb.migration.pm.engine;
 import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -17,15 +19,20 @@ import ch.vd.evd0001.v5.FoundPerson;
 import ch.vd.evd0001.v5.ListOfFoundPersons;
 import ch.vd.evd0001.v5.ListOfPersons;
 import ch.vd.evd0001.v5.Person;
+import ch.vd.registre.base.date.DateRange;
+import ch.vd.registre.base.date.DateRangeHelper;
+import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.common.NomPrenom;
 import ch.vd.unireg.interfaces.civil.rcpers.EchHelper;
 import ch.vd.uniregctb.adapter.rcent.historizer.equalator.Equalator;
+import ch.vd.uniregctb.adresse.AdresseMandataire;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.migration.pm.MigrationResultContextManipulation;
 import ch.vd.uniregctb.migration.pm.MigrationResultInitialization;
 import ch.vd.uniregctb.migration.pm.MigrationResultProduction;
 import ch.vd.uniregctb.migration.pm.engine.collector.EntityLinkCollector;
+import ch.vd.uniregctb.migration.pm.engine.collector.NeutralizedLinkAction;
 import ch.vd.uniregctb.migration.pm.engine.data.DonneesAdministrateurs;
 import ch.vd.uniregctb.migration.pm.engine.data.DonneesMandats;
 import ch.vd.uniregctb.migration.pm.engine.helpers.StringRenderers;
@@ -33,12 +40,19 @@ import ch.vd.uniregctb.migration.pm.indexeur.NonHabitantIndex;
 import ch.vd.uniregctb.migration.pm.log.LogCategory;
 import ch.vd.uniregctb.migration.pm.log.LogLevel;
 import ch.vd.uniregctb.migration.pm.mapping.IdMapping;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmAdresseIndividu;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmIndividu;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeAdresseIndividu;
 import ch.vd.uniregctb.migration.pm.utils.EntityKey;
+import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.Sexe;
 
 public class IndividuMigrator extends AbstractEntityMigrator<RegpmIndividu> {
+
+	private static final Equalator<RegDate> DATE_EQUALATOR = (d1, d2) -> d1 == d2 || (d1 != null && d2 != null && (d1.isPartial() || d2.isPartial()) && d1.compareTo(d2) == 0);
+	private static final Equalator<String> NAME_EQUALATOR = (d1, d2) -> (d1 == null && d2 == null) || (d1 != null && d1.equalsIgnoreCase(d2));
+	private static final Equalator<Enum<?>> ENUM_EQUALATOR = (e1, e2) -> e1 == e2;
 
 	public IndividuMigrator(MigrationContexte migrationContexte) {
 		super(migrationContexte);
@@ -90,11 +104,10 @@ public class IndividuMigrator extends AbstractEntityMigrator<RegpmIndividu> {
 	}
 
 	private static boolean checkNomPrenom(RegpmIndividu regpm, Person rcpers, MigrationResultProduction mr) {
-		final Equalator<String> nameEqualator = (d1, d2) -> (d1 == null && d2 == null) || (d1 != null && d1.equalsIgnoreCase(d2));
 		final NomPrenom npRegpm = new NomPrenom(regpm.getNom(), regpm.getPrenom());
 		final NomPrenom npRcpers = new NomPrenom(rcpers.getIdentity().getOfficialName(), rcpers.getIdentity().getFirstNames());
-		final boolean equals = checkEquality(npRegpm.getNom(), npRcpers.getNom(), nameEqualator, false)
-				&& (checkEquality(npRegpm.getPrenom(), npRcpers.getPrenom(), nameEqualator, false) || checkEquality(npRegpm.getPrenom(), extractPrenomUsuel(npRcpers.getPrenom()), nameEqualator, false));
+		final boolean equals = checkEquality(npRegpm.getNom(), npRcpers.getNom(), NAME_EQUALATOR, false)
+				&& (checkEquality(npRegpm.getPrenom(), npRcpers.getPrenom(), NAME_EQUALATOR, false) || checkEquality(npRegpm.getPrenom(), extractPrenomUsuel(npRcpers.getPrenom()), NAME_EQUALATOR, false));
 		if (!equals) {
 			mr.addMessage(LogCategory.INDIVIDUS_PM, LogLevel.INFO, String.format("Noms différents dans RegPM (%s) et RCPers (%s).", npRegpm, npRcpers));
 		}
@@ -102,10 +115,9 @@ public class IndividuMigrator extends AbstractEntityMigrator<RegpmIndividu> {
 	}
 
 	private static boolean checkSexe(RegpmIndividu regpm, Person rcpers, MigrationResultProduction mr) {
-		final Equalator<Enum> enumEqualator = (e1, e2) -> e1 == e2;
 		final Sexe sRegpm = regpm.getSexe();
 		final Sexe sRcpers = EchHelper.sexeFromEch44(rcpers.getIdentity().getSex());
-		final boolean equals = checkEquality(sRegpm, sRcpers, enumEqualator, false);
+		final boolean equals = checkEquality(sRegpm, sRcpers, ENUM_EQUALATOR, false);
 		if (!equals) {
 			mr.addMessage(LogCategory.INDIVIDUS_PM, LogLevel.INFO, String.format("Sexes différents dans RegPM (%s) et RCPers (%s).", sRegpm, sRcpers));
 		}
@@ -113,12 +125,52 @@ public class IndividuMigrator extends AbstractEntityMigrator<RegpmIndividu> {
 	}
 
 	private static boolean checkDateNaissance(RegpmIndividu regpm, Person rcpers, MigrationResultProduction mr) {
-		final Equalator<RegDate> dateEqualator = (d1, d2) -> d1 == d2 || (d1 != null && d2 != null && (d1.isPartial() || d2.isPartial()) && d1.compareTo(d2) == 0);
 		final RegDate dRegpm = regpm.getDateNaissance();
 		final RegDate dRcpers = EchHelper.partialDateFromEch44(rcpers.getIdentity().getDateOfBirth());
-		final boolean equals = checkEquality(dRegpm, dRcpers, dateEqualator, false);
+		final boolean equals = checkEquality(dRegpm, dRcpers, DATE_EQUALATOR, false);
 		if (!equals) {
 			mr.addMessage(LogCategory.INDIVIDUS_PM, LogLevel.INFO, String.format("Dates de naissance différentes dans RegPM (%s) et RCPers (%s).", dRegpm, dRcpers));
+		}
+		return equals;
+	}
+
+	private static boolean checkIdentite(RegpmIndividu regpm, PersonnePhysique unireg, MigrationResultProduction mr) {
+		boolean ok = checkNomPrenom(regpm, unireg, mr);
+		ok = checkSexe(regpm, unireg, mr) && ok;
+		ok = checkDateNaissance(regpm, unireg, mr) && ok;
+		if (!ok) {
+			mr.addMessage(LogCategory.INDIVIDUS_PM, LogLevel.INFO, "Correspondance avec personne trouvée dans les non-habitants d'Unireg ignorée.");
+		}
+		return ok;
+	}
+
+	private static boolean checkNomPrenom(RegpmIndividu regpm, PersonnePhysique unireg, MigrationResultProduction mr) {
+		final NomPrenom npRegpm = new NomPrenom(regpm.getNom(), regpm.getPrenom());
+		final NomPrenom npUnireg = new NomPrenom(unireg.getNom(), unireg.getTousPrenoms());
+		final boolean equals = checkEquality(npRegpm.getNom(), npUnireg.getNom(), NAME_EQUALATOR, false)
+				&& (checkEquality(npRegpm.getPrenom(), npUnireg.getPrenom(), NAME_EQUALATOR, false) || checkEquality(npRegpm.getPrenom(), unireg.getPrenomUsuel(), NAME_EQUALATOR, false));
+		if (!equals) {
+			mr.addMessage(LogCategory.INDIVIDUS_PM, LogLevel.INFO, String.format("Noms différents dans RegPM (%s) et Unireg (%s).", npRegpm, npUnireg));
+		}
+		return equals;
+	}
+
+	private static boolean checkSexe(RegpmIndividu regpm, PersonnePhysique unireg, MigrationResultProduction mr) {
+		final Sexe sRegpm = regpm.getSexe();
+		final Sexe sUnireg = unireg.getSexe();
+		final boolean equals = checkEquality(sRegpm, sUnireg, ENUM_EQUALATOR, false);
+		if (!equals) {
+			mr.addMessage(LogCategory.INDIVIDUS_PM, LogLevel.INFO, String.format("Sexes différents dans RegPM (%s) et Unireg (%s).", sRegpm, sUnireg));
+		}
+		return equals;
+	}
+
+	private static boolean checkDateNaissance(RegpmIndividu regpm, PersonnePhysique unireg, MigrationResultProduction mr) {
+		final RegDate dRegpm = regpm.getDateNaissance();
+		final RegDate dUnireg = unireg.getDateNaissance();
+		final boolean equals = checkEquality(dRegpm, dUnireg, DATE_EQUALATOR, false);
+		if (!equals) {
+			mr.addMessage(LogCategory.INDIVIDUS_PM, LogLevel.INFO, String.format("Dates de naissance différentes dans RegPM (%s) et Unireg (%s).", dRegpm, dUnireg));
 		}
 		return equals;
 	}
@@ -209,8 +261,54 @@ public class IndividuMigrator extends AbstractEntityMigrator<RegpmIndividu> {
 			mr.addMessage(LogCategory.INDIVIDUS_PM, LogLevel.ERROR, "Individu non migré car aucune correspondance univoque n'a pu être trouvée avec une personne physique existante dans Unireg.");
 
 			// on ne doit finalement générer aucun des liens avec l'individu
-			linkCollector.addNeutralizedEntity(buildIndividuKey(regpm));
+			linkCollector.addNeutralizedEntity(buildIndividuKey(regpm), buildActionRecopieAdresseMandataire(regpm));
 		}
+	}
+
+	private NeutralizedLinkAction buildActionRecopieAdresseMandataire(RegpmIndividu regpm) {
+		return (link, neutralizationReason, mr, idMapper) -> {
+
+			if (link.getType() == EntityLinkCollector.LinkType.MANDANT_MANDATAIRE && !neutralizationReason.isSourceNeutralisee()) {
+				// c'est donc que nous sommes sur une relation mandant/mandataire dont seul le mandataire a été neutralisé
+				final Contribuable mandant = (Contribuable) link.resolveSource();
+
+				// on pose un contexte de log car ce code ne sera exécuté que beaucoup plus tard, hors de toute migration individuelle identifiée
+				doInLogContext(buildIndividuKey(regpm),
+				               mr,
+				               idMapper,
+				               () -> doInLogContext(link.getSourceKey(),
+				                                    mr,
+				                                    idMapper,
+				                                    () -> regpm.getAdresses().stream()
+						                                    .filter(a -> a.getType() == RegpmTypeAdresseIndividu.COURRIER)
+						                                    .filter(a -> a.getDateAnnulation() == null)
+						                                    .map(a -> Pair.<RegpmAdresseIndividu, DateRange>of(a, new DateRangeHelper.Range(a.getDateDebut(), a.getDateFin())))
+						                                    .filter(pair -> DateRangeHelper.intersect(link, pair.getRight()))
+						                                    .map(Pair::getLeft)
+						                                    .sorted(Comparator.comparing(RegpmAdresseIndividu::getDateDebut, NullDateBehavior.EARLIEST::compare))
+						                                    .map(a -> {
+							                                    final AdresseMandataire am = migrationContexte.getAdresseHelper().buildAdresseMandataire(a, mr, null);
+							                                    if (am == null) {
+								                                    mr.addMessage(LogCategory.SUIVI, LogLevel.ERROR, "Aucune adresse trouvée pour le mandat vers l'individu.");
+							                                    }
+							                                    return am;
+						                                    })
+						                                    .filter(Objects::nonNull)
+						                                    .forEach(am -> {
+							                                    am.setDateDebut(link.getDateDebut());
+							                                    am.setDateFin(link.getDateFin());
+							                                    am.setNomDestinataire(new NomPrenom(regpm.getNom(), regpm.getPrenom()).getNomPrenom());
+							                                    am.setTypeMandat(((EntityLinkCollector.MandantMandataireLink) link).getTypeMandat());
+
+							                                    mr.addMessage(LogCategory.SUIVI, LogLevel.INFO,
+							                                                  String.format("Mandat vers l'individu migré en tant que simple adresse mandataire sur la période %s.",
+							                                                                StringRenderers.DATE_RANGE_RENDERER.toString(am)));
+
+							                                    mandant.addAdresseMandataire(am);
+						                                    }))
+				);
+			}
+		};
 	}
 
 	/**
@@ -256,7 +354,17 @@ public class IndividuMigrator extends AbstractEntityMigrator<RegpmIndividu> {
 				ppExistant = null;
 			}
 			else {
-				ppExistant = (PersonnePhysique) migrationContexte.getTiersDAO().get(idsPP.get(0));
+				// [SIFISC-18034][SIFISC-17354] Vérification additionnelle
+				final PersonnePhysique candidatExistant = (PersonnePhysique) migrationContexte.getTiersDAO().get(idsPP.get(0));
+				final boolean ok = candidatExistant != null && checkIdentite(regpm, candidatExistant, mr);
+				if (ok) {
+					ppExistant = candidatExistant;
+				}
+				else {
+					mr.addMessage(LogCategory.INDIVIDUS_PM, LogLevel.WARN, String.format("Candidat non-habitant Unireg trouvé mais sans correspondance exacte avec les données de nom (%s), prénom (%s), sexe (%s) et date de naissance (%s).",
+					                                                                     regpm.getNom(), regpm.getPrenom(), regpm.getSexe(), StringRenderers.DATE_RENDERER.toString(regpm.getDateNaissance())));
+					ppExistant = null;
+				}
 			}
 		}
 		return ppExistant;

@@ -431,7 +431,7 @@ public class IndividuMigratorTest extends AbstractEntityMigratorTest {
 
 		// on construit un individu simple (qui n'existe pas dans Unireg, ni dans RCPers, avec un numéro comme ça...), et on le migre
 		final long noIndividuRegpm = 7484841141411857L;
-		final RegpmIndividu individu = buildBaseIndividu(noIndividuRegpm, "Dantès", "Edmond Alexandre", RegDate.get(1978, 5, 12), Sexe.MASCULIN);
+		final RegpmIndividu individu = buildBaseIndividu(noIndividuRegpm, "Dantès", "Edmond", RegDate.get(1978, 5, 12), Sexe.MASCULIN);
 
 		// rôle mandataire pour faire fonctionner la migration
 		final long idEntreprise = 4521L;

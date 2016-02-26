@@ -1,15 +1,18 @@
 package ch.vd.uniregctb.migration.pm.engine.collector;
 
 import java.util.Collections;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.DateRange;
@@ -42,7 +45,7 @@ public class EntityLinkCollector {
 	/**
 	 * Les entités neutralisées (parce qu'en fait, elles ne seront pas migrées...)
 	 */
-	private final Set<EntityKey> neutralizedKeys = new HashSet<>();
+	private final Map<EntityKey, List<NeutralizedLinkAction>> neutralizedKeys = new HashMap<>();
 
 	/**
 	 * Ajout d'un nouveau lien
@@ -56,9 +59,13 @@ public class EntityLinkCollector {
 	 * Ajout d'une entité déclarée comme finalement non-migrée (cela aura
 	 * pour conséquence de ne pas générer les liens de et vers cette entité)
 	 * @param key clé de l'entité à neutraliser
+	 * @param action une action à lancer sur les liens neutralisés en raison de cette clé
 	 */
-	public void addNeutralizedEntity(EntityKey key) {
-		neutralizedKeys.add(key);
+	public void addNeutralizedEntity(EntityKey key, @Nullable NeutralizedLinkAction action) {
+		final List<NeutralizedLinkAction> actions = neutralizedKeys.computeIfAbsent(key, k -> new LinkedList<>());
+		if (action != null) {
+			actions.add(action);
+		}
 	}
 
 	/**
@@ -67,8 +74,8 @@ public class EntityLinkCollector {
 	 */
 	public List<EntityLink> getCollectedLinks() {
 		return collectedLinks.stream()
-				.filter(link -> !neutralizedKeys.contains(link.getSourceKey()))
-				.filter(link -> !neutralizedKeys.contains(link.getDestinationKey()))
+				.filter(link -> !neutralizedKeys.containsKey(link.getSourceKey()))
+				.filter(link -> !neutralizedKeys.containsKey(link.getDestinationKey()))
 				.collect(Collectors.toList());
 	}
 
@@ -109,13 +116,14 @@ public class EntityLinkCollector {
 
 	/**
 	 * @return la liste des liens finalement écartés d'une réelle création car l'un des participants a été neutralisé
-	 * @see #addNeutralizedEntity(EntityKey)
+	 * @see #addNeutralizedEntity(EntityKey, NeutralizedLinkAction)
 	 */
+	@NotNull
 	public List<Pair<NeutralizationReason, EntityLink>> getNeutralizedLinks() {
 		return collectedLinks.stream()
 				.map(link -> {
-					final boolean sourceNeutralisee = neutralizedKeys.contains(link.getSourceKey());
-					final boolean destinationNeutralisee = neutralizedKeys.contains(link.getDestinationKey());
+					final boolean sourceNeutralisee = neutralizedKeys.containsKey(link.getSourceKey());
+					final boolean destinationNeutralisee = neutralizedKeys.containsKey(link.getDestinationKey());
 					if (sourceNeutralisee && destinationNeutralisee) {
 						return Pair.of(NeutralizationReason.BOTH_NEUTRALIZED, link);
 					}
@@ -134,11 +142,24 @@ public class EntityLinkCollector {
 	}
 
 	/**
+	 * Récupère toutes les actions à lancer lors de la neutralisation des entités
+	 * par rapport au lien donné
+	 */
+	@NotNull
+	public List<NeutralizedLinkAction> getNeutralizedLinkActions(EntityLink link) {
+		return Stream.of(link.getSourceKey(), link.getDestinationKey())
+				.map(neutralizedKeys::get)
+				.filter(Objects::nonNull)
+				.flatMap(List::stream)
+				.collect(Collectors.toList());
+	}
+
+	/**
 	 * Pour les tests seulement...
 	 * @return une version Read-Only de l'ensemble des clés neutralisées
 	 */
 	public Set<EntityKey> getNeutralizedKeys() {
-		return Collections.unmodifiableSet(neutralizedKeys);
+		return Collections.unmodifiableSet(neutralizedKeys.keySet());
 	}
 
 	public enum LinkType {
@@ -323,6 +344,10 @@ public class EntityLinkCollector {
 
 		public D resolveMandataire() {
 			return resolveDestination();
+		}
+
+		public TypeMandat getTypeMandat() {
+			return typeMandat;
 		}
 
 		@Override

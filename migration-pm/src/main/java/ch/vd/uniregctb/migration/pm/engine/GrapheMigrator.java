@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.migration.pm.engine;
 
 import java.util.Collection;
+import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -17,6 +18,7 @@ import ch.vd.uniregctb.migration.pm.MigrationConstants;
 import ch.vd.uniregctb.migration.pm.MigrationResultContextManipulation;
 import ch.vd.uniregctb.migration.pm.MigrationResultMessageProvider;
 import ch.vd.uniregctb.migration.pm.engine.collector.EntityLinkCollector;
+import ch.vd.uniregctb.migration.pm.engine.collector.NeutralizedLinkAction;
 import ch.vd.uniregctb.migration.pm.log.LogCategory;
 import ch.vd.uniregctb.migration.pm.log.LogLevel;
 import ch.vd.uniregctb.migration.pm.log.LoggedMessages;
@@ -170,7 +172,15 @@ public class GrapheMigrator implements InitializingBean {
 		doMigrateEtablissements(graphe.getEtablissements().values(), mr, linkCollector, idMapper);
 		doMigrateEntreprises(graphe.getEntreprises().values(), mr, linkCollector, idMapper);
 		doMigrateIndividus(graphe.getIndividus().values(), mr, linkCollector, idMapper);
-		addLinks(linkCollector.getCollectedLinks(), linkCollector.getNeutralizedLinks(), mr);
+
+		final List<Pair<EntityLinkCollector.NeutralizationReason, EntityLinkCollector.EntityLink>> neutralizedLinks = linkCollector.getNeutralizedLinks();
+		addLinks(linkCollector.getCollectedLinks(), neutralizedLinks, mr);
+		neutralizedLinks.forEach(pair -> {
+			final EntityLinkCollector.NeutralizationReason reason = pair.getLeft();
+			final EntityLinkCollector.EntityLink link = pair.getRight();
+			final List<NeutralizedLinkAction> actions = linkCollector.getNeutralizedLinkActions(link);
+			actions.forEach(action -> action.execute(link, reason, mr, idMapper));
+		});
 	}
 
 	private void doMigrateEntreprises(Collection<RegpmEntreprise> entreprises, MigrationResultContextManipulation mr, EntityLinkCollector linkCollector, IdMapping idMapper) {
