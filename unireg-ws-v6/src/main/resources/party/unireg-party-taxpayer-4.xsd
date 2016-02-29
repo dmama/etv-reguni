@@ -492,4 +492,56 @@
 		</xs:restriction>
 	</xs:simpleType>
 
+	<xs:simpleType name="legalFormCategoryType">
+		<xs:annotation>
+			<xs:appinfo>
+				<jxb:typesafeEnumClass>
+					<jxb:javadoc>La catégorie d'entreprise</jxb:javadoc>
+				</jxb:typesafeEnumClass>
+			</xs:appinfo>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="SINGLE_PERSON_BUSINESS">
+				<xs:annotation>
+					<xs:documentation>Société individuelle.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="SOLE_OWNERSHIP_COMPANY">
+				<xs:annotation>
+					<xs:documentation>Société de personnes.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="CAPITAL_COMPANY">
+				<xs:annotation>
+					<xs:documentation>Société de capitaux (PM).</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="ASSOCIATION_FOUNDATION">
+				<xs:annotation>
+					<xs:documentation>Association / fondation (APM).</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="INVESTMENT_FUND">
+				<xs:annotation>
+					<xs:documentation>Fonds de placement.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="STATUTORY_CORPORATION">
+				<xs:annotation>
+					<xs:documentation>Entreprise de droit public (DP/PM).</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="PUBLIC_ADMINISTRATION">
+				<xs:annotation>
+					<xs:documentation>Administration de droit public (DP/APM).</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="OTHER">
+				<xs:annotation>
+					<xs:documentation>Autre.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+		</xs:restriction>
+	</xs:simpleType>
+
 </xs:schema>
