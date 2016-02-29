@@ -25,6 +25,7 @@ import ch.vd.unireg.xml.party.v4.UidNumberList;
 import ch.vd.uniregctb.metier.bouclement.ExerciceCommercial;
 import ch.vd.uniregctb.tiers.AllegementFiscal;
 import ch.vd.uniregctb.tiers.CapitalHisto;
+import ch.vd.uniregctb.tiers.CategorieEntrepriseHelper;
 import ch.vd.uniregctb.tiers.DomicileEtablissement;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.Etablissement;
@@ -148,6 +149,7 @@ public class CorporationStrategy extends TaxPayerStrategy<Corporation> {
 			lf.setShortType(null);
 			lf.setType(EnumHelper.coreToXMLv4Full(fl.getFormeLegale()));
 			lf.setLabel(fl.getFormeLegale().getLibelle());
+			lf.setLegalFormCategory(EnumHelper.coreToXMLv4(CategorieEntrepriseHelper.map(fl.getFormeLegale())));
 			liste.add(lf);
 		}
 		return liste;

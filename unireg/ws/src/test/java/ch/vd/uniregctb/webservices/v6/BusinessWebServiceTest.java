@@ -90,6 +90,7 @@ import ch.vd.unireg.xml.party.taxdeclaration.v4.TaxDeclarationStatusType;
 import ch.vd.unireg.xml.party.taxdeclaration.v4.TaxPeriod;
 import ch.vd.unireg.xml.party.taxpayer.v4.FamilyStatus;
 import ch.vd.unireg.xml.party.taxpayer.v4.FullLegalForm;
+import ch.vd.unireg.xml.party.taxpayer.v4.LegalFormCategory;
 import ch.vd.unireg.xml.party.taxpayer.v4.MaritalStatus;
 import ch.vd.unireg.xml.party.taxpayer.v4.Taxpayer;
 import ch.vd.unireg.xml.party.taxresidence.v3.IndividualTaxLiabilityType;
@@ -3356,6 +3357,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 				Assert.assertNull(lf.getShortType());
 				Assert.assertEquals(FullLegalForm.LIMITED_LIABILITY_COMPANY, lf.getType());
 				Assert.assertEquals("Société à responsabilité limitée", lf.getLabel());
+				Assert.assertEquals(LegalFormCategory.CAPITAL_COMPANY, lf.getLegalFormCategory());
 			}
 
 			final RegDate today = RegDate.get();

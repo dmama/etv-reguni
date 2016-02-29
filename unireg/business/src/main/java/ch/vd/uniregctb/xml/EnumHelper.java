@@ -21,6 +21,7 @@ import ch.vd.uniregctb.rf.TypeMutation;
 import ch.vd.uniregctb.tiers.AllegementFiscal;
 import ch.vd.uniregctb.tiers.RegimeFiscal;
 import ch.vd.uniregctb.tiers.TiersCriteria;
+import ch.vd.uniregctb.type.CategorieEntreprise;
 import ch.vd.uniregctb.type.CategorieEtranger;
 import ch.vd.uniregctb.type.CategorieImpotSource;
 import ch.vd.uniregctb.type.FormeJuridique;
@@ -3347,6 +3348,33 @@ public abstract class EnumHelper {
 			return ch.vd.unireg.xml.party.corporation.v4.CorporationStatusType.REMOVED_FROM_COMMERCIAL_REGISTER;
 		default:
 			throw new IllegalArgumentException("Type d'état entreprise inconnu : [" + type + ']');
+		}
+	}
+
+	public static ch.vd.unireg.xml.party.taxpayer.v4.LegalFormCategory coreToXMLv4(CategorieEntreprise categorie) {
+		if (categorie == null) {
+			return null;
+		}
+
+		switch (categorie) {
+		case APM:
+			return ch.vd.unireg.xml.party.taxpayer.v4.LegalFormCategory.ASSOCIATION_FOUNDATION;
+		case AUTRE:
+			return ch.vd.unireg.xml.party.taxpayer.v4.LegalFormCategory.OTHER;
+		case DPAPM:
+			return ch.vd.unireg.xml.party.taxpayer.v4.LegalFormCategory.PUBLIC_ADMINISTRATION;
+		case DPPM:
+			return ch.vd.unireg.xml.party.taxpayer.v4.LegalFormCategory.STATUTORY_CORPORATION;
+		case FP:
+			return ch.vd.unireg.xml.party.taxpayer.v4.LegalFormCategory.INVESTMENT_FUND;
+		case PM:
+			return ch.vd.unireg.xml.party.taxpayer.v4.LegalFormCategory.CAPITAL_COMPANY;
+		case PP:
+			return ch.vd.unireg.xml.party.taxpayer.v4.LegalFormCategory.SINGLE_PERSON_BUSINESS;
+		case SP:
+			return ch.vd.unireg.xml.party.taxpayer.v4.LegalFormCategory.SOLE_OWNERSHIP_COMPANY;
+		default:
+			throw new IllegalArgumentException("Type de catégorie d'entreprise inconnu : [" + categorie + ']');
 		}
 	}
 }
