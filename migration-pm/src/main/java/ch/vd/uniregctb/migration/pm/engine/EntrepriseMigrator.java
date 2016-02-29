@@ -57,7 +57,6 @@ import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 import ch.vd.uniregctb.adresse.AdresseCivileAdapter;
 import ch.vd.uniregctb.adresse.AdresseGenerique;
 import ch.vd.uniregctb.adresse.AdresseGeneriqueAdapter;
-import ch.vd.uniregctb.adresse.AdresseMandataire;
 import ch.vd.uniregctb.adresse.AdresseSupplementaire;
 import ch.vd.uniregctb.adresse.AdresseSupplementaireAdapter;
 import ch.vd.uniregctb.adresse.AdresseTiers;
@@ -122,7 +121,6 @@ import ch.vd.uniregctb.migration.pm.regpm.RegpmDemandeDelaiSommation;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmDossierFiscal;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmEntreprise;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmEnvironnementTaxation;
-import ch.vd.uniregctb.migration.pm.regpm.RegpmEtablissement;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmEtatEntreprise;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmExerciceCommercial;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmFinFaillite;
@@ -3337,32 +3335,6 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 	}
 
 	/**
-	 * Migration d'un mandat sous la forme d'une simple adresse de mandataire
-	 * @param rangeMandat dates de validité du mandat (et donc de l'adresse)
-	 * @param etablissementMandataire l'établissement dont on doit prendre l'adresse
-	 * @param unireg entreprise après migration
-	 * @param mr collecteur de messages de suivi et manipulateur du contexte de log
-	 */
-	private void migrateMandatAvecSimpleAdresse(DateRange rangeMandat, TypeMandat typeMandat, RegpmEtablissement etablissementMandataire, Entreprise unireg, MigrationResultContextManipulation mr, IdMapping idMapper) {
-		doInLogContext(buildEtablissementKey(etablissementMandataire), mr, idMapper, () -> {
-			final AdresseMandataire adresse = migrationContexte.getAdresseHelper().buildAdresseMandataire(etablissementMandataire.getAdresse(rangeMandat), mr, null);
-			if (adresse == null) {
-				mr.addMessage(LogCategory.SUIVI, LogLevel.ERROR,
-				              String.format("Aucune adresse retrouvée pour le mandat vers l'activité indépendante représentée par l'établissement %d.", etablissementMandataire.getId()));
-			}
-			else {
-				adresse.setTypeMandat(typeMandat);
-				adresse.setNomDestinataire(extractRaisonSociale(etablissementMandataire.getRaisonSociale1(), etablissementMandataire.getRaisonSociale2(), etablissementMandataire.getRaisonSociale3()));
-				unireg.addAdresseMandataire(adresse);
-
-				mr.addMessage(LogCategory.SUIVI, LogLevel.INFO,
-				              String.format("Mandat vers l'établissement 'activité indépendante' migré en tant que simple adresse mandataire sur la période %s.",
-				                            StringRenderers.DATE_RANGE_RENDERER.toString(adresse)));
-			}
-		});
-	}
-
-	/**
 	 * Migration d'un mandat à l'aide d'un lien explicite entre tiers
 	 * @param mandant l'entreprise mandante
 	 * @param mandat le mandat à migrer
@@ -3446,17 +3418,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 
 		// migration des mandataires -> liens à créer par la suite
 		mandataires.stream()
-				.forEach(mandat -> {
-					// [SIFISC-18034] les mandataires "indépendants" (= établissements pointant vers un individu) doivent être repris sous la forme d'une adresse de mandataire seulement
-					if (mandat.getMandataireEtablissement() != null && mandat.getMandataireEtablissement().getIndividu() != null) {
-						final DateRange rangeMandat = new DateRangeHelper.Range(mandat.getDateAttribution(), mandat.getDateResiliation());
-						migrateMandatAvecSimpleAdresse(rangeMandat, extractTypeMandat(mandat), mandat.getMandataireEtablissement(), unireg, mr, idMapper);
-					}
-					else {
-						// cas plus "normal" avec des liens de type "Mandat"
-						migrateMandatAvecLien(regpm, mandat, mr, linkCollector, idMapper);
-					}
-				});
+				.forEach(mandat -> migrateMandatAvecLien(regpm, mandat, mr, linkCollector, idMapper));
 	}
 
 	private static TypeMandat extractTypeMandat(RegpmMandat mandat) {

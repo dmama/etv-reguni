@@ -30,6 +30,7 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.interfaces.organisation.data.Domicile;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
+import ch.vd.uniregctb.adresse.AdresseMandataire;
 import ch.vd.uniregctb.adresse.AdresseSupplementaire;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.migration.pm.ConsolidationPhase;
@@ -37,6 +38,7 @@ import ch.vd.uniregctb.migration.pm.MigrationResultContextManipulation;
 import ch.vd.uniregctb.migration.pm.MigrationResultInitialization;
 import ch.vd.uniregctb.migration.pm.MigrationResultProduction;
 import ch.vd.uniregctb.migration.pm.engine.collector.EntityLinkCollector;
+import ch.vd.uniregctb.migration.pm.engine.collector.NeutralizedLinkAction;
 import ch.vd.uniregctb.migration.pm.engine.data.DonneesCiviles;
 import ch.vd.uniregctb.migration.pm.engine.data.DonneesMandats;
 import ch.vd.uniregctb.migration.pm.engine.helpers.StringRenderers;
@@ -491,9 +493,12 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 		}
 		else if (entiteJuridique.getKey().getType() == EntityKey.Type.INDIVIDU) {
 			// [SIFISC-18034] on ne cherche pas à migrer les établissements dont l'entité juridique n'est pas une entreprise
-			// (si un tel établissement est utilisé comme mandataire, alors son adresse aura déjà été prise en compte par la ou les
+			// (si un tel établissement est utilisé comme mandataire, alors son adresse devra être prise en compte par la ou les
 			// entreprises mandantes sans création de lien)
 			mr.addMessage(LogCategory.ETABLISSEMENTS, LogLevel.WARN, "Etablissement avec un lien vers un individu, donc non-migré en tant qu'établissement (au mieux en tant qu'adresses de mandataire).");
+
+			// il faut donc invalider l'entité et demander la reprise de l'adresse comme adresse mandataire le cas échéant
+			linkCollector.addNeutralizedEntity(buildEtablissementKey(regpm), buildActionRecopieAdresseMandataire(regpm));
 			return;
 		}
 		else {
@@ -508,6 +513,7 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 		final boolean isMandataire = donneesMandats.isMandataire();
 		if (datesEtablissementsStables.isEmpty() && !isMandataire) {
 			mr.addMessage(LogCategory.ETABLISSEMENTS, LogLevel.WARN, "Etablissement ignoré car sans établissement stable ni rôle de mandataire.");
+			linkCollector.addNeutralizedEntity(moi.getKey(), null);
 			return;
 		}
 
@@ -620,6 +626,41 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 
 		// log de suivi à la fin des opérations pour cet établissement
 		mr.addMessage(LogCategory.SUIVI, LogLevel.INFO, String.format("Etablissement migré : %s.", FormatNumeroHelper.numeroCTBToDisplay(unireg.getNumero())));
+	}
+
+	@NotNull
+	private NeutralizedLinkAction buildActionRecopieAdresseMandataire(RegpmEtablissement regpm) {
+		return (link, neutralizationReason, mr, idMapper) -> {
+
+			if (link.getType() == EntityLinkCollector.LinkType.MANDANT_MANDATAIRE && !neutralizationReason.isSourceNeutralisee()) {
+				// c'est donc que nous sommes sur une relation mandant/mandataire dont seul le mandataire a été neutralisé
+				final Contribuable mandant = (Contribuable) link.resolveSource();
+
+				// on pose un contexte de log car ce code ne sera exécuté que beaucoup plus tard, hors de toute migration individuelle identifiée
+				doInLogContext(buildEtablissementKey(regpm),
+				               mr,
+				               idMapper,
+				               () -> doInLogContext(link.getSourceKey(),
+				                                    mr,
+				                                    idMapper,
+				                                    () -> {
+					                                    final AdresseMandataire adresse = migrationContexte.getAdresseHelper().buildAdresseMandataire(regpm.getAdresse(link), mr, null);
+					                                    if (adresse == null) {
+						                                    mr.addMessage(LogCategory.SUIVI, LogLevel.ERROR, "Aucune adresse retrouvée pour le mandat vers l'activité indépendante représentée par l'établissement.");
+					                                    }
+					                                    else {
+						                                    adresse.setTypeMandat(((EntityLinkCollector.MandantMandataireLink) link).getTypeMandat());
+						                                    adresse.setNomDestinataire(extractRaisonSociale(regpm));
+
+						                                    mr.addMessage(LogCategory.SUIVI, LogLevel.INFO,
+						                                                  String.format("Mandat vers l'établissement 'activité indépendante' migré en tant que simple adresse mandataire sur la période %s.",
+						                                                                StringRenderers.DATE_RANGE_RENDERER.toString(adresse)));
+
+						                                    mandant.addAdresseMandataire(adresse);
+					                                    }
+				                                    }));
+			}
+		};
 	}
 
 	@Nullable

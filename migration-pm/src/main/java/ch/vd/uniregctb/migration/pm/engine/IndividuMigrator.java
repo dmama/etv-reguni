@@ -222,6 +222,7 @@ public class IndividuMigrator extends AbstractEntityMigrator<RegpmIndividu> {
 		final boolean isAdministrateur = isAdministrateur(regpm, mr);
 		if (!hasMandats && !isAdministrateur) {
 			mr.addMessage(LogCategory.INDIVIDUS_PM, LogLevel.WARN, "Individu PM ignoré car n'a pas de rôle de mandataire ni d'administrateur.");
+			linkCollector.addNeutralizedEntity(buildIndividuKey(regpm), null);
 			return;
 		}
 
