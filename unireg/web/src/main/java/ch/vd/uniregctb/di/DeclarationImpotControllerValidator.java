@@ -25,6 +25,7 @@ import ch.vd.uniregctb.di.view.ImprimerNouvelleDeclarationImpotView;
 import ch.vd.uniregctb.di.view.ModifierDemandeDelaiDeclarationView;
 import ch.vd.uniregctb.di.view.NouvelleDemandeDelaiDeclarationView;
 import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.type.EtatDelaiDeclaration;
@@ -137,7 +138,9 @@ public class DeclarationImpotControllerValidator implements Validator {
 		if (delaiAccorde == null) {
 			errors.rejectValue("delaiAccorde", "error.delai.accorde.vide");
 		}
-		else if (delaiAccorde.isBefore(RegDate.get()) || delaiAccorde.isAfter(RegDate.get().addMonths(6))) {
+
+		// [SIFISC-17773] Le délai maximal de 6 mois n'est valide que pour les DI PP
+		else if (delaiAccorde.isBefore(RegDate.get()) || (delaiAccorde.isAfter(RegDate.get().addMonths(6)) && ctb instanceof ContribuableImpositionPersonnesPhysiques)) {
 			errors.rejectValue("delaiAccorde", "error.delai.accorde.invalide");
 		}
 	}
