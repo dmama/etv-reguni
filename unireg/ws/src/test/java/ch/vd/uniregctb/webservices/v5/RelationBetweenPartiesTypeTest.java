@@ -1,0 +1,62 @@
+package ch.vd.uniregctb.webservices.v5;
+
+import java.util.EnumSet;
+import java.util.Set;
+
+import org.junit.Test;
+
+import ch.vd.unireg.xml.party.relation.v2.RelationBetweenPartiesType;
+import ch.vd.uniregctb.type.TypeRapportEntreTiers;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
+
+/**
+ * Test qui vérifie que l'enum exposé dans les web-services est compatible avec celui utilisé en interne par Unireg.
+ */
+public class RelationBetweenPartiesTypeTest extends EnumTest {
+
+	@Test
+	public void testCoherence() {
+		// Suite à l'ajout des enfants et des parents, les deux enums ne sont plus comparables sur la longueur (SIFISC-2588)
+//		assertEnumLengthEquals(RelationBetweenPartiesType.class, ch.vd.uniregctb.type.TypeRapportEntreTiers.class);
+
+		// vérification que toutes les valeurs sont mappées sur quelque chose
+		final Set<TypeRapportEntreTiers> notMapped = EnumSet.of(TypeRapportEntreTiers.PARENTE,
+		                                                        TypeRapportEntreTiers.ASSUJETTISSEMENT_PAR_SUBSTITUTION,
+		                                                        TypeRapportEntreTiers.ACTIVITE_ECONOMIQUE,
+		                                                        TypeRapportEntreTiers.MANDAT,
+		                                                        TypeRapportEntreTiers.FUSION_ENTREPRISES,
+		                                                        TypeRapportEntreTiers.ADMINISTRATION_ENTREPRISE,
+		                                                        TypeRapportEntreTiers.SOCIETE_DIRECTION);
+		for (TypeRapportEntreTiers tret : TypeRapportEntreTiers.values()) {
+			if (notMapped.contains(tret)) {
+				try {
+					EnumHelper.coreToWeb(tret);
+					fail("Mapping devrait exploser pour " + tret);
+				}
+				catch (IllegalArgumentException e) {
+					assertEquals("Erreur de mapping?", e.getMessage());
+				}
+			}
+			else {
+				assertNotNull(tret.name(), EnumHelper.coreToWeb(tret));
+			}
+		}
+	}
+
+	@Test
+	public void testFromValue() {
+		assertNull(EnumHelper.coreToWeb((TypeRapportEntreTiers) null));
+		assertEquals(RelationBetweenPartiesType.GUARDIAN, EnumHelper.coreToWeb(TypeRapportEntreTiers.TUTELLE));
+		assertEquals(RelationBetweenPartiesType.WELFARE_ADVOCATE, EnumHelper.coreToWeb(TypeRapportEntreTiers.CURATELLE));
+		assertEquals(RelationBetweenPartiesType.LEGAL_ADVISER, EnumHelper.coreToWeb(TypeRapportEntreTiers.CONSEIL_LEGAL));
+		assertEquals(RelationBetweenPartiesType.TAXABLE_REVENUE, EnumHelper.coreToWeb(TypeRapportEntreTiers.PRESTATION_IMPOSABLE));
+		assertEquals(RelationBetweenPartiesType.HOUSEHOLD_MEMBER, EnumHelper.coreToWeb(TypeRapportEntreTiers.APPARTENANCE_MENAGE));
+		assertEquals(RelationBetweenPartiesType.REPRESENTATIVE, EnumHelper.coreToWeb(TypeRapportEntreTiers.REPRESENTATION));
+		assertEquals(RelationBetweenPartiesType.WITHHOLDING_TAX_CONTACT, EnumHelper.coreToWeb(TypeRapportEntreTiers.CONTACT_IMPOT_SOURCE));
+		assertEquals(RelationBetweenPartiesType.CANCELS_AND_REPLACES, EnumHelper.coreToWeb(TypeRapportEntreTiers.ANNULE_ET_REMPLACE));
+	}
+}

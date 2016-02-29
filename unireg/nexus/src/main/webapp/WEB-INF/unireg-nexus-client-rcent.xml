@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+
+	<bean id="rcEntClientRaw" class="ch.vd.unireg.wsclient.rcent.RcEntClientImpl">
+		<property name="baseUrl" value="${extprop.webservice.rcent.url}"/>
+		<property name="username" value="${extprop.webservice.rcent.username}"/>
+		<property name="password" value="${extprop.webservice.rcent.password}"/>
+		<property name="organisationPath" value="/organisation/CT.VD.PARTY"/>
+		<property name="organisationsOfNoticePath" value="/organisationsOfNotice"/>
+		<property name="pingPath" value="/infrastructure/ping"/>
+		<property name="validationEnabled" value="${extprop.webservice.rcent.validate}"/>
+		<property name="schemasLocations">
+			<list>
+				<value>eVD-0004-3-0.xsd</value>
+				<value>eVD-0022-3-0.xsd</value>
+				<value>eVD-0023-3-0.xsd</value>
+				<value>eVD-0024-3-0.xsd</value>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="rcEntClientTracing" class="ch.vd.uniregctb.wsclient.rcent.RcEntClientTracing">
+		<property name="statsService" ref="statsService"/>
+		<property name="target" ref="rcEntClientRaw"/>
+	</bean>
+
+	<alias alias="rcEntClient" name="rcEntClientTracing"/>
+
+</beans>

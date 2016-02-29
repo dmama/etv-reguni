@@ -1,0 +1,51 @@
+#tabs {
+	display:none;
+}
+
+#tabs ul {
+}
+
+#tabs li {
+}
+
+#tabnav {
+}
+
+#tabnav ul {
+}
+
+#tabnav li {
+}
+
+#tabnav a {
+}
+
+#tabnav li.tab-with-errors {
+}
+
+#tabnav li.tab-with-errors a {
+}
+
+#tabnav a {
+}
+
+#tabnav a:hover {
+}
+
+#tabnav .current,#tabnav .tab-with-errors {
+}
+
+#tabnav li.current a {
+}
+
+#tabnav li:hover,#tabnav li:hover a {
+}
+
+#tabnav li:hover a {
+}
+
+#tabnav-enable { /*	float:right;*/
+}
+
+#tabnav-disable { /*	float:right;*/
+}

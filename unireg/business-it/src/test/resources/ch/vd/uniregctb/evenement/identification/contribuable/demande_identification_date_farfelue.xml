@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<identificationCTB xmlns="http://www.vd.ch/fiscalite/registre/identificationContribuable-v1.7">
+	<demande>
+		<demande>
+			<messageId>dem_tiers_1461_20110502_105200392</messageId>
+			<emetteurId>LAUSANNE-LOGEMENT</emetteurId>
+			<typeMessage>DemandeTiers</typeMessage>
+			<periodeFiscale>2011</periodeFiscale>
+			<prioriteEmetteur>false</prioriteEmetteur>
+			<prioriteUtilisateur>0</prioriteUtilisateur>
+			<modeIdentification>SANS_MANUEL</modeIdentification>
+		</demande>
+		<personne>
+			<nom>ZUMBRUNNEN</nom>
+			<prenoms>CATHERINE</prenoms>
+			<sexe>2</sexe>
+			<dateNaissance>
+				<anneeMoisJour>2965-01-24+01:00</anneeMoisJour>
+			</dateNaissance>
+			<adresse>
+				<localite>LAUSANNE</localite>
+			</adresse>
+		</personne>
+	</demande>
+</identificationCTB>

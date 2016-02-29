@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ev-lr-3:evtListe xmlns:ev-lr-3="http://www.vd.ch/fiscalite/taxation/is/evt-liste/3" businessId="123456789" codeApplication="test" timestamp="2009-12-07T09:30:47.0Z" versionApplication="0.0">
+	<ev-lr-3:typeEvenement>QUITTANCE</ev-lr-3:typeEvenement>
+	<ev-lr-3:dateEvenement>2009-12-07T09:30:47.0Z</ev-lr-3:dateEvenement>
+	<ev-lr-3:caracteristiquesListe>
+		<ev-lr-3:typeListe>LR</ev-lr-3:typeListe>
+		<ev-lr-3:numeroSequence>1</ev-lr-3:numeroSequence>
+		<ev-lr-3:periodeDeclaration>
+			<ev-lr-3:dateDebut>2008-01-01</ev-lr-3:dateDebut>
+			<ev-lr-3:dateFin>2008-01-31</ev-lr-3:dateFin>
+		</ev-lr-3:periodeDeclaration>
+		<ev-lr-3:periodeFiscale>2008</ev-lr-3:periodeFiscale>
+	</ev-lr-3:caracteristiquesListe>
+	<ev-lr-3:caracteristiquesDebiteur>
+		<ev-lr-3:numeroDebiteur>1500001</ev-lr-3:numeroDebiteur>
+	</ev-lr-3:caracteristiquesDebiteur>
+	<ev-lr-3:utilisateur>
+		<ev-lr-3:visa>testuser</ev-lr-3:visa>
+		<ev-lr-3:oid>22</ev-lr-3:oid>
+	</ev-lr-3:utilisateur>
+</ev-lr-3:evtListe>
