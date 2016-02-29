@@ -295,6 +295,7 @@ public class ExerciceCommercialController {
 		}
 
 		// contrôle des dates (au moins un bouclement par an sauf potentiellement la première année)
+		// ([SIFISC-18030] ce contrôle n'est effectif qu'à partir de la première année vraiment "unireg" des PM...)
 		final Set<Integer> anneesBouclements = new HashSet<>(nouvellesDatesBouclement.size());
 		for (RegDate dateBouclement : nouvellesDatesBouclement) {
 			anneesBouclements.add(dateBouclement.year());
@@ -302,12 +303,13 @@ public class ExerciceCommercialController {
 		final int premiereAnnee = nouvellesDatesBouclement.first().year();
 		final int derniereAnnee = nouvellesDatesBouclement.last().year();
 		final int debutPremierExercice = anciensExercicesCommerciaux.get(0).getDateDebut().year();
-		if (premiereAnnee - debutPremierExercice > 1) {
+		final int premierePeriodeFiscaleDeclarationsPersonnesMorales = parametreAppService.getPremierePeriodeFiscaleDeclarationsPersonnesMorales();
+		if (premiereAnnee - debutPremierExercice > 1 && premiereAnnee >= premierePeriodeFiscaleDeclarationsPersonnesMorales) {
 			throw new ActionException(String.format("Impossible de déplacer la date de bouclement du %s au %s car alors le premier exercice commercial s'étendrait sur plus de deux années civiles.",
 			                                        RegDateHelper.dateToDisplayString(view.getAncienneDate()),
 			                                        RegDateHelper.dateToDisplayString(view.getNouvelleDate())));
 		}
-		for (int annee = premiereAnnee + 1 ; annee < derniereAnnee ; ++ annee) {
+		for (int annee = Math.max(premiereAnnee + 1, premierePeriodeFiscaleDeclarationsPersonnesMorales) ; annee < derniereAnnee ; ++ annee) {
 			if (!anneesBouclements.contains(annee)) {
 				throw new ActionException(String.format("Impossible de déplacer la date de bouclement du %s au %s car alors il n'y aurait plus de bouclement sur l'année civile %d.",
 				                                        RegDateHelper.dateToDisplayString(view.getAncienneDate()),
