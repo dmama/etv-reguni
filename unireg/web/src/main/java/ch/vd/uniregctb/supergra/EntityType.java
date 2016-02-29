@@ -30,7 +30,9 @@ public enum EntityType {
 	AllegementFiscal(ch.vd.uniregctb.tiers.AllegementFiscal.class, "allègement fiscal", "l'allègement fiscal", "de l'allègement fiscal"),
 	Bouclement(ch.vd.uniregctb.tiers.Bouclement.class, "bouclement", "le bouclement", "du bouclement"),
 	EtatEntreprise(ch.vd.uniregctb.tiers.EtatEntreprise.class, "état", "l'état", "de l'état"),
-	FlagEntreprise(ch.vd.uniregctb.tiers.FlagEntreprise.class, "flag entreprise", "le flag entreprise", "du flag entreprise");
+	FlagEntreprise(ch.vd.uniregctb.tiers.FlagEntreprise.class, "flag entreprise", "le flag entreprise", "du flag entreprise"),
+	AdresseMandataire(ch.vd.uniregctb.adresse.AdresseMandataire.class, "adresse mandataire", "l'adresse mandataire", "de l'adresse mandataire"),
+	AutreDocumentFiscal(ch.vd.uniregctb.documentfiscal.AutreDocumentFiscal.class, "document fiscal", "le document fiscal", "du document fiscal");
 
 	private final Class<?> hibernateClass;
 	private final String displayName;   // "chat"
