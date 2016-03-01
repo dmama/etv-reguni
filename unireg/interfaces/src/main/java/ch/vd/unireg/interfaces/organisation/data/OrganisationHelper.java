@@ -280,6 +280,25 @@ public abstract class OrganisationHelper {
 	}
 
 	/**
+	 * Prepare une liste de plages représantant la succession des numéros IDE des établissements principaux
+	 *
+	 * Pour y arriver, pour chaque etablissement (site), on parcoure la liste des plages de type (principal ou secondaire)
+	 * et pour chaque plage principale on recherche le numéro IDE qui lui est contemporain.
+	 *
+	 * On extraie ensuite toute les plages numéros IDE correspondant à la plage type principal.
+	 *
+	 * @return La succession de plage contenant l'information des numéros IDE.
+	 */
+	public static List<DateRanged<String>> getNumerosIDEPrincipaux(Map<Long, ? extends SiteOrganisation> donneesSites) {
+		return extractRangedDataFromSitesPrincipaux(donneesSites, new SiteDataExtractor<List<DateRanged<String>>>() {
+			@Override
+			public List<DateRanged<String>> extractData(SiteOrganisation site) {
+				return site.getNumeroIDE();
+			}
+		});
+	}
+
+	/**
 	 * Une organisation est réputée inscrite au RC à la date fournie si le statut de son site principal n'est ni INCONNU, ni NON_INSCRIT.
 	 *
  	 * @param organisation l'organisation
