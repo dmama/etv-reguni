@@ -196,7 +196,8 @@ public abstract class MockOrganisationFactory {
 		                                                MockCommune.Vevey.getNoOFS(),
 		                                                StatusInscriptionRC.ACTIF,
 		                                                StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE);
-		org.addNumeroIDE(dateDebut, null, "CHE10123723");
+		MockSiteOrganisation site = (MockSiteOrganisation) org.getDonneesSites().get(0);
+		site.addNumeroIDE(dateDebut, null, "CHE10123723");
 		org.addAdresse(new MockAdresse(TypeAdresseCivil.PRINCIPALE, null, "Entre-Deux-Villes", MockLocalite.Vevey, dateDebut, null));
 		org.addAdresse(new MockAdresse(TypeAdresseCivil.COURRIER, new CasePostale(TexteCasePostale.CASE_POSTALE, 352), "pa Myriam Steiner", MockLocalite.Vevey, dateDebut, null));
 		return org;
@@ -216,7 +217,8 @@ public abstract class MockOrganisationFactory {
 		                                                MockCommune.Lausanne.getNoOFS(),
 		                                                StatusInscriptionRC.ACTIF,
 		                                                StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE);
-		org.addNumeroIDE(dateDebut, null, "CHE105934376");
+		MockSiteOrganisation site = (MockSiteOrganisation) org.getDonneesSites().get(0);
+		site.addNumeroIDE(dateDebut, null, "CHE105934376");
 		org.addAdresse(new MockAdresse(TypeAdresseCivil.PRINCIPALE, null, "Place Saint-François 14", MockLocalite.Lausanne, dateDebut, null));
 		return org;
 	}
@@ -232,7 +234,8 @@ public abstract class MockOrganisationFactory {
 		                                                MockCommune.Zurich.getNoOFS(),
 		                                                StatusInscriptionRC.ACTIF,
 		                                                StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE);
-		org.addNumeroIDE(dateDebut, null, "CHE269292664");
+		MockSiteOrganisation site = (MockSiteOrganisation) org.getDonneesSites().get(0);
+		site.addNumeroIDE(dateDebut, null, "CHE269292664");
 		org.addAdresse(new MockAdresse(TypeAdresseCivil.PRINCIPALE, null, "Badenerstrasse 172", MockLocalite.Zurich8004, dateDebut, null));
 		return org;
 	}
@@ -248,7 +251,8 @@ public abstract class MockOrganisationFactory {
 		                                                MockCommune.Chur.getNoOFS(),
 		                                                StatusInscriptionRC.ACTIF,
 		                                                StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE);
-		org.addNumeroIDE(dateDebut, null, "CHE107060819");
+		MockSiteOrganisation site = (MockSiteOrganisation) org.getDonneesSites().get(0);
+		site.addNumeroIDE(dateDebut, null, "CHE107060819");
 		org.addAdresse(new MockAdresse(TypeAdresseCivil.PRINCIPALE, null, "Grabenstrasse 15", MockLocalite.Chur, dateDebut, null));
 		return org;
 	}
@@ -264,7 +268,8 @@ public abstract class MockOrganisationFactory {
 		                                                MockCommune.Lausanne.getNoOFS(),
 		                                                StatusInscriptionRC.ACTIF,
 		                                                StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE);
-		org.addNumeroIDE(dateDebut, null, "CHE102392906");
+		MockSiteOrganisation site = (MockSiteOrganisation) org.getDonneesSites().get(0);
+		site.addNumeroIDE(dateDebut, null, "CHE102392906");
 
 		final MockAdresse adresse = new MockAdresse(TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.CheminMessidor, null, dateDebut, null);
 		adresse.setNumero("5");
@@ -284,7 +289,8 @@ public abstract class MockOrganisationFactory {
 		                                                MockCommune.Bale.getNoOFS(),
 		                                                StatusInscriptionRC.ACTIF,
 		                                                StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE);
-		org.addNumeroIDE(dateDebut, null, "CHE101390939");
+		MockSiteOrganisation site = (MockSiteOrganisation) org.getDonneesSites().get(0);
+		site.addNumeroIDE(dateDebut, null, "CHE101390939");
 		org.addAdresse(new MockAdresse(TypeAdresseCivil.PRINCIPALE, null, "Paradestrasse 2", MockLocalite.Bale, dateDebut, null));
 		final MockSiteOrganisation siteOrganisation = (MockSiteOrganisation) org.getDonneesSites().get(0);
 		siteOrganisation.addNomAdditionnel(dateDebut, null, "Banque Coop SA");

@@ -8,8 +8,6 @@ import java.util.Map;
 import java.util.NavigableMap;
 import java.util.TreeMap;
 
-import org.jetbrains.annotations.Nullable;
-
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
@@ -52,14 +50,6 @@ public class MockOrganisation implements Organisation {
 		this.idOrganisation = idOrganisation;
 	}
 
-	public void changeNumeroIDE(RegDate date, String nouveauNumeroIDE) {
-		MockOrganisationHelper.changeRangedData(ide, date, nouveauNumeroIDE);
-	}
-
-	public void addNumeroIDE(RegDate dateDebut, @Nullable RegDate dateFin, String nouveauNumeroIDE) {
-		MockOrganisationHelper.addRangedData(ide, dateDebut, dateFin, nouveauNumeroIDE);
-	}
-
 	public void addDonneesSite(MockSiteOrganisation site) {
 		sites.put(site.getNumeroSite(), site);
 	}
@@ -81,7 +71,7 @@ public class MockOrganisation implements Organisation {
 
 	@Override
 	public List<DateRanged<String>> getNumeroIDE() {
-		return MockOrganisationHelper.getHisto(ide);
+		return OrganisationHelper.getNumerosIDEPrincipaux(sites);
 	}
 
 	@Override

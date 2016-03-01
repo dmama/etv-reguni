@@ -52,7 +52,7 @@ public class OrganisationRCEnt implements Organisation, Serializable {
 
 	@Override
 	public List<DateRanged<String>> getNumeroIDE() {
-		return numeroIDE;
+		return OrganisationHelper.getNumerosIDEPrincipaux(donneesSites);
 	}
 
 	@Override

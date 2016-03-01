@@ -75,7 +75,8 @@ public abstract class MockServiceOrganisation implements ServiceOrganisationRaw 
 	}
 
 	protected void addNumeroIDE(MockOrganisation organisation, String numeroIDE, RegDate dateDebut, RegDate dateFin) {
-		organisation.addNumeroIDE(dateDebut, dateFin, numeroIDE);
+		MockSiteOrganisation site = (MockSiteOrganisation) organisation.getDonneesSites().get(0);
+		site.addNumeroIDE(dateDebut, dateFin, numeroIDE);
 	}
 
 	protected void addNumeroIDE(MockSiteOrganisation site, String numeroIDE, RegDate dateDebut, RegDate dateFin) {
