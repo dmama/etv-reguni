@@ -36,7 +36,7 @@ public class OrganisationRCEnt implements Organisation, Serializable {
 	private final Map<Long, SiteOrganisation> donneesSites;
 
 	public OrganisationRCEnt(long numeroOrganisation,
-	                         @NotNull Map<String, List<DateRanged<String>>> identifiants,
+	                         Map<String, List<DateRanged<String>>> identifiants,
 	                         @NotNull Map<Long, List<DateRanged<Long>>> sites,
 	                         @NotNull Map<Long, SiteOrganisation> donneesSites) {
 		this.numeroOrganisation = numeroOrganisation;

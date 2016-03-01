@@ -33,9 +33,6 @@ public class OrganisationRCEntTest {
 	public void setUp() throws Exception {
 		organisation = new OrganisationBuilder(101202100L)
 
-				.addAutreIdentifiant(OrganisationConstants.CLE_IDE, RegDate.get(2015, 4, 29), null, "CHE543257199")
-				.addAutreIdentifiant("CH.RC", RegDate.get(2015, 4, 29), null, "CHE123456199")
-
 				.addSite(101072613L, RegDate.get(2015, 4, 29), null, 101072613L)
 				.addSite(101072656L, RegDate.get(2015, 4, 29), null, 101072656L)
 				.addSite(12345678L, RegDate.get(2015, 5, 30), null, 12345678L)
@@ -49,7 +46,8 @@ public class OrganisationRCEntTest {
 								.addNomAdditionnel(RegDate.get(2015, 5, 30), RegDate.get(2015, 9, 30), "SST S.A.")
 								.addNomAdditionnel(RegDate.get(2015, 10, 1), null, "SST S.A., en liquidation")
 
-								.addIdentifiant(OrganisationConstants.CLE_IDE, RegDate.get(2015, 4, 29), null, "CHE100057199")
+								.addIdentifiant(OrganisationConstants.CLE_IDE, RegDate.get(2015, 4, 29), null, "CHE543257199")
+								.addIdentifiant(OrganisationConstants.CLE_IDE, RegDate.get(2015, 5, 30), null, "CHE982034234")
 
 								.addFormeLegale(RegDate.get(2015, 4, 29), RegDate.get(2015, 5, 29), FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE)
 								.addFormeLegale(RegDate.get(2015, 5, 30), null, FormeLegale.N_0106_SOCIETE_ANONYME)
@@ -168,7 +166,7 @@ public class OrganisationRCEntTest {
 								.addNom(RegDate.get(2015, 5, 30), RegDate.get(2015, 9, 30), "Springbok Ski Tours S.A.")
 								.addNom(RegDate.get(2015, 10, 1), null, "Springbok Ski Tours S.A., en liquidation")
 
-								.addIdentifiant(OrganisationConstants.CLE_IDE, RegDate.get(2015, 5, 30), null, "CHE12345678")
+								.addIdentifiant(OrganisationConstants.CLE_IDE, RegDate.get(2015, 5, 30), null, "CHE543257199")
 
 								.addSiege(new Domicile(RegDate.get(2015, 5, 30), null, MockCommune.Zurich))
 
