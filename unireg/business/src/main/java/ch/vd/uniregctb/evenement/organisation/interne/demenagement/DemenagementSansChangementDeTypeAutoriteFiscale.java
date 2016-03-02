@@ -27,7 +27,7 @@ public class DemenagementSansChangementDeTypeAutoriteFiscale extends Demenagemen
 	@Override
 	public void doHandle(EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) throws EvenementOrganisationException {
 
-		final MotifFor motifFor = MotifFor.DEMENAGEMENT_SIEGE;
+		final MotifFor motifFor = MotifFor.DEMENAGEMENT_VD;
 		effectueChangementSiege(motifFor, warnings, suivis);
 	}
 
