@@ -53,7 +53,7 @@ public class ImpressionSommationDeclarationImpotPersonnesMoralesHelperImpl exten
 			final CTypeInfoArchivage infoArchivage = buildInfoArchivage(getTypeDocumentEditique(), construitCleArchivageDocument(declaration), tiers.getNumero(), dateSommation);
 			final CTypeInfoEnteteDocument infoEnteteDocument = buildInfoEnteteDocument(tiers, dateSommation, TRAITE_PAR, infraService.getACIOIPM());
 			final FichierImpression.Document.Sommation sommation = buildInfoSommation(declaration, dateSommation, batch);
-			return new FichierImpression.Document(infoDocument, infoArchivage, infoEnteteDocument, null, null, null, sommation, null, null, null);
+			return new FichierImpression.Document(infoDocument, infoArchivage, infoEnteteDocument, null, null, null, null, sommation, null, null, null, null, null, null);
 		}
 		catch (Exception e) {
 			throw new EditiqueException(e);
@@ -79,8 +79,7 @@ public class ImpressionSommationDeclarationImpotPersonnesMoralesHelperImpl exten
 
 	private FichierImpression.Document.Sommation buildInfoSommation(DeclarationImpotOrdinairePM declaration, RegDate dateTraitement, boolean batch) {
 		final FichierImpression.Document.Sommation sommation = new FichierImpression.Document.Sommation();
-		final RegDate dateExpedition = batch ? delaisService.getDateFinDelaiCadevImpressionDeclarationImpot(dateTraitement) : dateTraitement;
-		sommation.setDateEnvoiSommation(RegDateHelper.toIndexString(dateExpedition));
+		sommation.setDateBaseSommation(RegDateHelper.toIndexString(dateTraitement));
 		sommation.setPeriodeFiscale(XmlUtils.regdate2xmlcal(RegDate.get(declaration.getPeriode().getAnnee())));
 		return sommation;
 	}
