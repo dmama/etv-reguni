@@ -35,6 +35,8 @@ public abstract class EditiqueAbstractHelper {
 
 	public static final Logger LOGGER = LoggerFactory.getLogger(EditiqueAbstractHelper.class);
 
+	public static final String IMPOT_BENEFICE_CAPITAL = "IMPÔT SUR LE BÉNÉFICE ET LE CAPITAL";
+
 	protected AdresseService adresseService;
 	protected TiersService tiersService;
 	protected ServiceInfrastructureService infraService;
@@ -138,6 +140,7 @@ public abstract class EditiqueAbstractHelper {
 		entete.setExpediteur(buildExpediteur(expediteur, dateExpedition, traitePar));
 		entete.setLigReference(null);
 		entete.setPorteAdresse(null);
+		entete.setLibelleTitre(IMPOT_BENEFICE_CAPITAL);     // valeur par défaut, certains types de document mettront peut-être une autre valeur
 		return entete;
 	}
 

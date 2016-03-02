@@ -12,6 +12,7 @@ import org.jetbrains.annotations.Nullable;
 
 import ch.vd.editique.unireg.CTypeAdresse;
 import ch.vd.editique.unireg.CTypeAffranchissement;
+import ch.vd.editique.unireg.CTypeDeclarationImpot;
 import ch.vd.editique.unireg.CTypeInfoDocument;
 import ch.vd.editique.unireg.FichierImpression;
 import ch.vd.editique.unireg.STypeZoneAffranchissement;
@@ -102,7 +103,17 @@ public class ImpressionDeclarationImpotPersonnesMoralesHelperImpl extends Editiq
 	public FichierImpression.Document buildDocument(DeclarationImpotOrdinairePM declaration) throws EditiqueException {
 		try {
 			final FichierImpression.Document document = new FichierImpression.Document();
-			document.setDeclarationImpot(buildDeclarationImpot(declaration));
+			final CTypeDeclarationImpot declarationImpot = buildDeclarationImpot(declaration);
+			switch (declaration.getTypeDeclaration()) {
+			case DECLARATION_IMPOT_PM:
+				document.setDeclarationImpot(declarationImpot);
+				break;
+			case DECLARATION_IMPOT_APM:
+				document.setDeclarationImpotAssociation(declarationImpot);
+				break;
+			default:
+				throw new IllegalArgumentException("Type de document non-supporté dans les DI PM : " + declaration.getTypeDeclaration());
+			}
 			document.setInfoDocument(buildInfoDocument(declaration, getAdresseEnvoi(declaration.getTiers())));
 			document.setInfoEnteteDocument(buildInfoEnteteDocument(declaration.getTiers(), declaration.getDateExpedition(), TRAITE_PAR, infraService.getACIOIPM()));
 			document.setInfoRoutage(null);
@@ -194,7 +205,7 @@ public class ImpressionDeclarationImpotPersonnesMoralesHelperImpl extends Editiq
 	 * @param entreprise l'entreprise qui nous intéresse
 	 * @param dateFinPeriode la date de fin de la période d'imposition correspondant à la déclaration
 	 */
-	private void remplirSiegeEtAdministrationEffective(FichierImpression.Document.DeclarationImpot di, Entreprise entreprise, RegDate dateFinPeriode) {
+	private void remplirSiegeEtAdministrationEffective(CTypeDeclarationImpot di, Entreprise entreprise, RegDate dateFinPeriode) {
 
 		// récupération du dernier for principal et du dernier domicile de l'établissement principal
 		final ForFiscalPrincipalPM forPrincipal = entreprise.getDernierForFiscalPrincipalAvant(dateFinPeriode);
@@ -249,8 +260,8 @@ public class ImpressionDeclarationImpotPersonnesMoralesHelperImpl extends Editiq
 		return new CTypeAdresse(Collections.singletonList(tiersService.getRaisonSociale(entreprise)));
 	}
 
-	private FichierImpression.Document.DeclarationImpot buildDeclarationImpot(DeclarationImpotOrdinairePM declaration) throws AdresseException, DonneesCivilesException {
-		final FichierImpression.Document.DeclarationImpot di = new FichierImpression.Document.DeclarationImpot();
+	private CTypeDeclarationImpot buildDeclarationImpot(DeclarationImpotOrdinairePM declaration) throws AdresseException, DonneesCivilesException {
+		final CTypeDeclarationImpot di = new CTypeDeclarationImpot();
 		final Entreprise pm = (Entreprise) declaration.getTiers();
 
 		remplirSiegeEtAdministrationEffective(di, pm, declaration.getDateFin());

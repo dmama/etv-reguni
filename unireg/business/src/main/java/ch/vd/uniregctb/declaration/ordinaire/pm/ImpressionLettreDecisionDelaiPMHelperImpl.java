@@ -104,7 +104,7 @@ public class ImpressionLettreDecisionDelaiPMHelperImpl extends EditiqueAbstractH
 			final FichierImpression.Document.AccordDelai accordDelai = buildAccordDelai(params);
 			final FichierImpression.Document.AccordDelaiApresSommation sursis = buildSursis(params);
 
-			return new FichierImpression.Document(infoDocument, infoArchivage, infoEnteteDocument, null, refusDelai, accordDelai, null, sursis, null, null);
+			return new FichierImpression.Document(infoDocument, infoArchivage, infoEnteteDocument, null, null, refusDelai, accordDelai, null, sursis, null, null, null, null, null);
 		}
 		catch (Exception e) {
 			throw new EditiqueException(e);
@@ -164,7 +164,6 @@ public class ImpressionLettreDecisionDelaiPMHelperImpl extends EditiqueAbstractH
 		return new FichierImpression.Document.AccordDelai(XmlUtils.regdate2xmlcal(RegDate.get(di.getPeriode().getAnnee())),
 		                                                  String.valueOf(di.getDateDebut().index()),
 		                                                  String.valueOf(di.getDateFin().index()),
-		                                                  String.valueOf(params.getDateDemande().index()),
 		                                                  String.valueOf(params.getDateDelaiAccorde().index()));
 	}
 
@@ -178,6 +177,7 @@ public class ImpressionLettreDecisionDelaiPMHelperImpl extends EditiqueAbstractH
 		return new FichierImpression.Document.AccordDelaiApresSommation(XmlUtils.regdate2xmlcal(RegDate.get(di.getPeriode().getAnnee())),
 		                                                                String.valueOf(di.getDateDebut().index()),
 		                                                                String.valueOf(di.getDateFin().index()),
+		                                                                String.valueOf(params.getDateDemande().index()),    // on n'a pas cette info...
 		                                                                String.valueOf(params.getDateDemande().index()),
 		                                                                String.valueOf(params.getDateSommation().index()),
 		                                                                String.valueOf(params.getDateDelaiAccorde().index()));
