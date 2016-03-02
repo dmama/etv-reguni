@@ -1,9 +1,7 @@
 package ch.vd.uniregctb.evenement.organisation.interne;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -15,12 +13,13 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
-import ch.vd.unireg.interfaces.organisation.data.DateRanged;
 import ch.vd.unireg.interfaces.organisation.data.Domicile;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.OrganisationHelper;
+import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.common.BouclementHelper;
+import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalInformationComplementaire;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
@@ -30,16 +29,17 @@ import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationOptions;
 import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationErreurCollector;
 import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationSuiviCollector;
 import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationWarningCollector;
+import ch.vd.uniregctb.metier.MetierServicePMImpl;
 import ch.vd.uniregctb.tiers.ActiviteEconomique;
 import ch.vd.uniregctb.tiers.Bouclement;
 import ch.vd.uniregctb.tiers.CategorieEntrepriseHelper;
 import ch.vd.uniregctb.tiers.DomicileEtablissement;
-import ch.vd.uniregctb.tiers.DomicileHisto;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.Etablissement;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipalPM;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
+import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.tiers.RegimeFiscal;
 import ch.vd.uniregctb.type.CategorieEntreprise;
 import ch.vd.uniregctb.type.EtatEvenementOrganisation;
@@ -49,6 +49,7 @@ import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeEtatEntreprise;
 import ch.vd.uniregctb.type.TypeGenerationEtatEntreprise;
+import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 
 /**
  * Classe de base de traitement des événements organisation en provenance du RCEnt.
@@ -512,6 +513,36 @@ public abstract class EvenementOrganisationInterne {
 		this.entreprise = entreprise;
 	}
 
+
+	/**
+	 * Méthode de convenance à utiliser de préférence pour la création de nouveaux établissements.
+	 * Cette méthode effectue certains contrôles supplémentaires.
+	 *
+	 * @param site
+	 * @param warnings
+	 * @param suivis
+	 * @throws EvenementOrganisationException
+	 */
+	protected void addEtablissementSecondaire(SiteOrganisation site, RegDate dateDebut, EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) throws EvenementOrganisationException {
+		long numeroSite = site.getNumeroSite();
+		Etablissement etablissement = getEtablissementByNumeroSite(numeroSite);
+		if (etablissement != null) {
+			throw new EvenementOrganisationException(
+					String.format("%s existe déjà pour l'organisation en création %s(%s). Impossible de continuer.",
+					              etablissement, getNoOrganisation(), getOrganisation().getNom(dateDebut)));
+		}
+
+		final Domicile autoriteFiscale = site.getDomicile(getDateEvt());
+		if (autoriteFiscale == null) {
+			throw new EvenementOrganisationException(
+					String.format(
+							"Autorité fiscale (siège) introuvable pour le site secondaire %s de l'organisation %s %s. Impossible de créer le domicile de l'établissement secondaire.",
+							site.getNumeroSite(), getNoOrganisation(), getOrganisation().getNom(getDateEvt())));
+		}
+
+		createAddEtablissement(site.getNumeroSite(), autoriteFiscale, false, dateDebut, suivis);
+	}
+
 	/**
 	 * Créer un établissement, avec toutes ses caractéristiques usuelles, et le rattacher à l'entreprise en cours au
 	 * moyen d'un rapport entre tiers d'activité économique.
@@ -542,6 +573,18 @@ public abstract class EvenementOrganisationInterne {
 		                              commune,
 		                              autoriteFiscale.getNoOfs(),
 		                              RegDateHelper.dateToDisplayString(dateDebut)));
+		raiseStatusTo(HandleStatus.TRAITE);
+	}
+
+	protected void demenageDomicileEtablissement(Etablissement etablissement, DomicileEtablissement ancienDomicile, Domicile nouveauDomicile, RegDate dateDebut, EvenementOrganisationSuiviCollector suivis) {
+		final String commune = DateRangeHelper.rangeAt(context.getServiceInfra().getCommuneHistoByNumeroOfs(nouveauDomicile.getNoOfs()), dateDebut).getNomOfficielAvecCanton();
+		suivis.addSuivi(String.format("Déménagement de l'établissement %s. Nouveau domicile %s (ofs: %s), à partir du %s.",
+		                              etablissement.getNumero(),
+		                              commune,
+		                              nouveauDomicile.getNoOfs(),
+		                              RegDateHelper.dateToDisplayString(dateDebut)));
+		context.getTiersService().closeDomicileEtablissement(ancienDomicile, dateDebut.getOneDayBefore());
+		context.getTiersDAO().addAndSave(etablissement, new DomicileEtablissement(dateDebut, null, nouveauDomicile.getTypeAutoriteFiscale(), nouveauDomicile.getNoOfs(), etablissement));
 		raiseStatusTo(HandleStatus.TRAITE);
 	}
 
@@ -646,6 +689,23 @@ public abstract class EvenementOrganisationInterne {
 		return null;
 	}
 
+	/**
+	 * Ferme un for secondaire.
+	 *
+	 * @param dateDeFermeture la date à laquelle le for est fermé
+	 * @param motifFermeture  le motif de fermeture du for fiscal principal
+	 * @param suivis       Le collector pour le suivi
+	 * @return
+	 */
+	protected ForFiscalSecondaire closeForFiscalSecondaire(RegDate dateDeFermeture, ForFiscalSecondaire forAFermer, MotifFor motifFermeture, EvenementOrganisationSuiviCollector suivis) {
+
+		suivis.addSuivi(String.format("Fermeture d'un for secondaire pour l'entreprise %s (civil: %s), en date du %s, motif fermeture %s",
+		                              entreprise.getNumero(), entreprise.getNumeroEntreprise(), RegDateHelper.dateToDisplayString(dateDeFermeture), motifFermeture));
+
+		raiseStatusTo(HandleStatus.TRAITE);
+		return context.getTiersService().closeForFiscalSecondaire(entreprise, forAFermer, dateDeFermeture, motifFermeture);
+	}
+
 	protected void annulerForFiscalSecondaire(final ForFiscalSecondaire forAAnnuler, EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) {
 		suivis.addSuivi(String.format("Annulation d'un for fiscal secondaire pour l'entreprise no %s avec le no organisation civil %s, date de début %s, motif ouverture %s, rattachement %s.",
 		                              entreprise.getNumero(), entreprise.getNumeroEntreprise(),
@@ -732,6 +792,22 @@ public abstract class EvenementOrganisationInterne {
 		raiseStatusTo(HandleStatus.TRAITE);
 	}
 
+	protected void closeEtablissement(Etablissement etablissement, RegDate dateFin,  EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) throws
+			EvenementOrganisationException {
+		final List<DomicileEtablissement> sortedDomiciles = etablissement.getSortedDomiciles(false);
+		final DomicileEtablissement domicile = DateRangeHelper.rangeAt(sortedDomiciles, dateFin);
+		if (!DateRangeHelper.equals(domicile, CollectionsUtils.getLastElement(sortedDomiciles))) {
+			throw new EvenementOrganisationException(String.format("L'établissement %s a déménagé depuis la date pour laquelle on cherche à le fermer!", etablissement.getNumero()));
+		}
+
+		suivis.addSuivi(String.format("Fermeture de l'établissement %s pour le %s", etablissement.getNumero(), RegDateHelper.dateToDisplayString(dateFin)));
+		context.getTiersService().closeDomicileEtablissement(domicile, dateFin);
+		final RapportEntreTiers rapportEntreprise = etablissement.getRapportObjetValidAt(dateFin, TypeRapportEntreTiers.ACTIVITE_ECONOMIQUE);
+		context.getTiersService().closeRapportEntreTiers(rapportEntreprise, dateFin);
+
+		raiseStatusTo(HandleStatus.TRAITE);
+	}
+
 	/**
 	 * Publie un événement fiscal d'information.
 	 *
@@ -747,10 +823,12 @@ public abstract class EvenementOrganisationInterne {
 	}
 
 	/**
-	 * Méthode "magique" qui parcoure les établissements de l'entreprise et qui ajuste les fors secondaires en prenant soin d'éviter
-	 * les chevauchements. Elle crée les fors nécessaires et annule ceux qui sont devenus redondants.
+	 * Méthode qui aligne les fors secondaires sur les établissements secondaires de l'entreprise.
+	 * Elle crée, ferme et annule en fonction de la nécessité.
 	 *
-	 * La méthode crée les for secondaires uniquement sur VD
+	 * La méthode crée les for secondaires uniquement sur VD.
+	 *
+	 * La détermination des fors eux-même est sous-traitée au service métier de haut niveau.
 	 *
 	 * @param entreprise l'entreprise concernée
 	 * @param dateAuPlusTot une date qui coupe le début d'historique des fors secondaire à créer. Sert à faire démarrer le for secondaire d'une nouvelle entreprise à j + 1 comme le for principal. sinon laisser vide.
@@ -759,106 +837,21 @@ public abstract class EvenementOrganisationInterne {
 	 */
 	protected void adapteForsSecondairesPourEtablissementsVD(Entreprise entreprise, RegDate dateAuPlusTot, EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) throws
 			EvenementOrganisationException {
-		List<DateRanged<Etablissement>> etablissements = getContext().getTiersService().getEtablissementsSecondairesEntreprise(entreprise);
 
-		final List<ForFiscalPrincipalPM> forsFiscauxPrincipauxActifsSorted = entreprise.getForsFiscauxPrincipauxActifsSorted();
+		final MetierServicePMImpl.ResultatAdapterForsSecondaires resultatAdapterForsSecondaires =
+				getContext().getMetierServicePM().calculAdaptationForsSecondairesPourEtablissementsVD(entreprise, dateAuPlusTot);
 
-		// Les domiciles classés par commune
-		final Map<Integer, List<DomicileHisto>> tousLesDomiciles = new HashMap<>();
-		for (DateRanged<Etablissement> etablissement : etablissements) {
-			final List<DomicileHisto> domiciles = context.getTiersService().getDomiciles(etablissement.getPayload());
-			if (domiciles != null && !domiciles.isEmpty()) {
-				for (DomicileHisto domicile : domiciles) {
-					if (domicile.getTypeAutoriteFiscale() != TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
-						continue; // On ne crée des fors secondaires que pour VD
-					}
-					List<DomicileHisto> histoPourCommune = tousLesDomiciles.get(domicile.getNoOfs());
-					if (histoPourCommune == null) {
-						histoPourCommune = new ArrayList<>();
-						tousLesDomiciles.put(domicile.getNoOfs(), histoPourCommune);
-					}
-					histoPourCommune.add(domicile);
-				}
-			}
-		}
-
-		// Charger les historiques de fors secondaire existant pour chaque commune
-		final Map<Integer, List<ForFiscalSecondaire>> tousLesForsFiscauxSecondairesParCommune = entreprise.getForsFiscauxSecondairesActifsSortedMapped();
-
-		// On ne coupe rien qui existe déjà! Sécurité.
-		if (dateAuPlusTot != null) {
-			for (Map.Entry<Integer, List<ForFiscalSecondaire>> entry : tousLesForsFiscauxSecondairesParCommune.entrySet()) {
-				final ForFiscalSecondaire existant = DateRangeHelper.rangeAt(entry.getValue(), dateAuPlusTot);
-				if (existant != null) {
-					throw new EvenementOrganisationException(String.format("Au moins un for secondaire valide avant la date au plus tot %s a été trouvé sur la commune %s débutant le %s%s. " +
-							                                                       "Ceci indique une situation potentiellement créée à la main. Impossible de continuer.",
-					                                                       dateAuPlusTot,
-					                                                       existant.getNumeroOfsAutoriteFiscale(),
-					                                                       RegDateHelper.dateToDisplayString(existant.getDateDebut()),
-					                                                       existant.getDateFin() != null ? " et se terminant le " + RegDateHelper.dateToDisplayString(existant.getDateFin()) : ""
-					));
-				}
-			}
-		}
-
-		List<ForFiscalSecondaire> aAnnuler = new ArrayList<>();
-		List<ForFiscalSecondaire> aCreer = new ArrayList<>();
-
-		/* Fusion des ranges qui se chevauchent pour obtenir la liste des ranges tels qu'on les veut, les candidats.
-		   Ensuite de quoi on détermine ceux à annuler et ceux à créer pour la commune en cours.
-		 */
-		for (Map.Entry<Integer, List<DomicileHisto>> domicilePourCommune : tousLesDomiciles.entrySet()) {
-			if (!domicilePourCommune.getValue().isEmpty()) {
-				final Integer noOfsCommune = domicilePourCommune.getKey();
-				final TypeAutoriteFiscale typeAutoriteFiscale = domicilePourCommune.getValue().get(0).getTypeAutoriteFiscale(); // Pour connaitre le type d'autorité
-
-				final List<DateRange> rangesCandidatsPourCommune = DateRangeHelper.merge(domicilePourCommune.getValue());
-
-				// Determiner les fors à annuler dans la base Unireg (ils sont devenus redondant)
-				final List<ForFiscalSecondaire> forFiscalSecondaires = tousLesForsFiscauxSecondairesParCommune.get(noOfsCommune);
-				if (forFiscalSecondaires != null) {
-					for (ForFiscalSecondaire forExistant : forFiscalSecondaires) {
-						// Rechercher dans les nouveaux projetés
-						for (DateRange rangeCandidat : rangesCandidatsPourCommune) {
-							if (!DateRangeHelper.equals(forExistant, rangeCandidat)) {
-								aAnnuler.add(forExistant);
-							}
-						}
-					}
-				}
-
-				// Determiner les fors à créer dans la base Unireg
-				for (DateRange rangesCandidat : rangesCandidatsPourCommune) {
-					// Recherche dans les anciens fors, pour la commune en cours
-					boolean existe = false;
-					if (forFiscalSecondaires != null) {
-						for (ForFiscalSecondaire forExistant : forFiscalSecondaires) {
-							if (!DateRangeHelper.equals(rangesCandidat, forExistant)) {
-								existe = true;
-							}
-						}
-					}
-					if (!existe) {
-						aCreer.add(new ForFiscalSecondaire(rangesCandidat.getDateDebut(), MotifFor.DEBUT_EXPLOITATION,
-						                                   rangesCandidat.getDateFin(), rangesCandidat.getDateFin() != null ? MotifFor.FIN_EXPLOITATION : null,
-						                                   noOfsCommune, typeAutoriteFiscale, MotifRattachement.ETABLISSEMENT_STABLE));
-					}
-				}
-			}
-		}
-
-		for (ForFiscalSecondaire forAAnnuler : aAnnuler) {
+		for (ForFiscalSecondaire forAAnnuler : resultatAdapterForsSecondaires.getAAnnuler()) {
 			annulerForFiscalSecondaire(forAAnnuler, warnings, suivis);
 		}
 
-		for (ForFiscalSecondaire forACreer : aCreer) {
-			if (dateAuPlusTot != null && forACreer.getDateFin() != null && dateAuPlusTot.isAfter(forACreer.getDateFin())) {
-				continue;
-			}
-			else if (forACreer.isValidAt(dateAuPlusTot)) {
-				forACreer = new ForFiscalSecondaire(dateAuPlusTot, forACreer.getMotifOuverture(), forACreer.getDateFin(), forACreer.getMotifFermeture(),
-				                                    forACreer.getNumeroOfsAutoriteFiscale(), forACreer.getTypeAutoriteFiscale(), forACreer.getMotifRattachement());
-			}
+		final List<ForFiscalPrincipalPM> forsFiscauxPrincipauxActifsSorted = entreprise.getForsFiscauxPrincipauxActifsSorted();
+
+		for (MetierServicePMImpl.ForAFermer forAFermer : resultatAdapterForsSecondaires.getAFermer()) {
+			closeForFiscalSecondaire(forAFermer.getDateFermeture(), forAFermer.getForFiscal(), MotifFor.FIN_EXPLOITATION, suivis);
+		}
+
+		for (ForFiscalSecondaire forACreer : resultatAdapterForsSecondaires.getACreer()) {
 			final boolean forPrincipalCouvreLaPeriode = isForPrincipalExistantSurTouteLaPeriode(forACreer, forsFiscauxPrincipauxActifsSorted);
 			if (forPrincipalCouvreLaPeriode) {
 				creerForFiscalSecondaire(forACreer.getDateDebut(), forACreer.getDateFin(), forACreer.getMotifRattachement(), forACreer.getNumeroOfsAutoriteFiscale(), forACreer.getTypeAutoriteFiscale(),
@@ -869,7 +862,7 @@ public abstract class EvenementOrganisationInterne {
 				                                  forACreer.getNumeroOfsAutoriteFiscale(),
 				                                  RegDateHelper.dateToDisplayString(forACreer.getDateDebut()),
 				                                  forACreer.getDateFin() != null ? " et se terminant le " + RegDateHelper.dateToDisplayString(forACreer.getDateFin()) : ""
-				                                  ));
+				));
 			}
 		}
 	}

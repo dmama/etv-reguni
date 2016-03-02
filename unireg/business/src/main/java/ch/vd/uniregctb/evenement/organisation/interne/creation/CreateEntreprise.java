@@ -19,7 +19,6 @@ import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationWarning
 import ch.vd.uniregctb.evenement.organisation.interne.EvenementOrganisationInterneDeTraitement;
 import ch.vd.uniregctb.tiers.CategorieEntrepriseHelper;
 import ch.vd.uniregctb.tiers.Entreprise;
-import ch.vd.uniregctb.tiers.Etablissement;
 import ch.vd.uniregctb.type.CategorieEntreprise;
 
 /**
@@ -94,28 +93,8 @@ public abstract class CreateEntreprise extends EvenementOrganisationInterneDeTra
 
 		// Création des établissement secondaires
 		for (SiteOrganisation site : getOrganisation().getSitesSecondaires(getDateEvt())) {
-			addEtablissementSecondaire(site, warnings, suivis);
+			addEtablissementSecondaire(site, getDateDeDebut(), warnings, suivis);
 		}
-	}
-
-	private void addEtablissementSecondaire(SiteOrganisation site, EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) throws EvenementOrganisationException {
-		long numeroSite = site.getNumeroSite();
-		Etablissement etablissement = getEtablissementByNumeroSite(numeroSite);
-		if (etablissement != null) {
-			throw new EvenementOrganisationException(
-					String.format("%s existe déjà pour l'organisation en création %s(%s). Impossible de continuer.",
-					              etablissement, getNoOrganisation(), getOrganisation().getNom(getDateDeDebut())));
-		}
-
-		final Domicile autoriteFiscale = site.getDomicile(getDateEvt());
-		if (autoriteFiscale == null) {
-			throw new EvenementOrganisationException(
-					String.format(
-							"Autorité fiscale (siège) introuvable pour le site secondaire %s de l'organisation %s %s. Impossible de créer le domicile de l'établissement secondaire.",
-							site.getNumeroSite(), getNoOrganisation(), getOrganisation().getNom(getDateEvt())));
-		}
-
-		createAddEtablissement(site.getNumeroSite(), autoriteFiscale, false, getDateDeDebut(), suivis);
 	}
 
 	@Override
