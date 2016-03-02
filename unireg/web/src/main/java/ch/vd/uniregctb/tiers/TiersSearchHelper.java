@@ -22,7 +22,7 @@ public class TiersSearchHelper {
 
 	private static final Pattern POSITIVE_NUMBER_PATTERN = Pattern.compile("^[0-9]+$");
 
-	private static final String TYPES_RECHERCHE_NOM_NAME = "typesRechercheNomEnum";
+	private static final String TYPES_RECHERCHE_NOM_NAME = "typesRechercheNom";
 	private static final String CATEGORIES_IMPOT_SOURCE_NAME = "categoriesImpotSourceEnum";
 	private static final String MODES_IMPOSITION_NAME = "modesImpositionEnum";
 	private static final String FORMES_JURIDIQUES_NAME = "formesJuridiquesEnum";

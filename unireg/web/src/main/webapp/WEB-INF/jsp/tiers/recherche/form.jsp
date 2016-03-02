@@ -43,7 +43,7 @@
 			</c:if>
 		</td>
 		<td>
-			<form:select path="typeRechercheDuNom" items="${typesRechercheNomEnum}" />
+			<form:select path="typeRechercheDuNom" items="${typesRechercheNom}" />
 		</td>
 		<td colspan="2">
 			<form:input  path="nomRaison" id="nomRaison" cssErrorClass="input-with-errors" size ="65" />
