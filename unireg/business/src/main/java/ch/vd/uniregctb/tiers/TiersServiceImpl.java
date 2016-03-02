@@ -6004,17 +6004,16 @@ public class TiersServiceImpl implements TiersService {
 	@Override
 	public List<CategorieEntrepriseHisto> getCategoriesEntrepriseHisto(@NotNull Entreprise entreprise) {
 		final List<CategorieEntrepriseHisto> ces;
-
-			final List<FormeLegaleHisto> formesLegales = getFormesLegales(entreprise);
-			if (formesLegales.isEmpty()) {
-				ces = Collections.emptyList();
+		final List<FormeLegaleHisto> formesLegales = getFormesLegales(entreprise);
+		if (formesLegales.isEmpty()) {
+			ces = Collections.emptyList();
+		}
+		else {
+			ces = new ArrayList<>(formesLegales.size());
+			for (FormeLegaleHisto fj : formesLegales) {
+				ces.add(new CategorieEntrepriseHisto(fj.getDateDebut(), fj.getDateFin(), CategorieEntrepriseHelper.map(fj.getFormeLegale())));
 			}
-			else {
-				ces = new ArrayList<>(formesLegales.size());
-				for (FormeLegaleHisto fj : formesLegales) {
-					ces.add(new CategorieEntrepriseHisto(fj.getDateDebut(), fj.getDateFin(), CategorieEntrepriseHelper.map(fj.getFormeLegale())));
-				}
-			}
+		}
 		return DateRangeHelper.collate(ces);
 	}
 
