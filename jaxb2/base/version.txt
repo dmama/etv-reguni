@@ -1,8 +1,8 @@
 BEGIN_SVERSION
-short=4.6
+short=4.7
 END_SVERSION
 
 BEGIN_LVERSION
-long=4.6
+long=4.7
 END_LVERSION
 
