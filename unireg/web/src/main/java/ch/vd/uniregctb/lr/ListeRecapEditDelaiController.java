@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
 
-import ch.vd.uniregctb.di.view.DelaiDeclarationView;
+import ch.vd.uniregctb.declaration.view.DelaiDeclarationView;
 import ch.vd.uniregctb.lr.manager.ListeRecapEditManager;
 import ch.vd.uniregctb.security.AccessDeniedException;
 import ch.vd.uniregctb.security.Role;

@@ -128,6 +128,15 @@
 							</li>
 						</c:if>
 						<c:if test="${command.natureTiers == 'Entreprise'}">
+							<li id="qsncTab">
+								<a href="#tabContent_qsncTab"><fmt:message key="label.questionnaires.snc"/></a>
+							</li>
+							<li id="autresDocumentsFiscauxTab">
+								<a href="#tabContent_autresDocumentsTab"><fmt:message key="label.autres.documents.fiscaux"/></a>
+							</li>
+							<li id="mandatairesTab">
+								<a href="#tabContent_mandatairesTab"><fmt:message key="label.mandataires"/></a>
+							</li>
 							<li id="specificitesFiscalesTab">
 								<a href="#tabContent_specificitesFiscalesTab"><fmt:message key="label.specificites.fiscales"/></a>
 							</li>
@@ -218,6 +227,15 @@
 						</div>
 					</c:if>
 					<c:if test="${command.natureTiers == 'Entreprise'}">
+						<div id="tabContent_qsncTab" class="visuTiers">
+							<jsp:include page="pm/qsnc.jsp"/>
+						</div>
+						<div id="tabContent_autresDocumentsTab" class="visuTiers">
+							<jsp:include page="pm/autresdocs.jsp"/>
+						</div>
+						<div id="tabContent_mandatairesTab" class="visuTiers">
+							<jsp:include page="pm/mandataires.jsp"/>
+						</div>
 						<div id="tabContent_specificitesFiscalesTab">
 							<jsp:include page="pm/specificites.jsp"/>
 						</div>

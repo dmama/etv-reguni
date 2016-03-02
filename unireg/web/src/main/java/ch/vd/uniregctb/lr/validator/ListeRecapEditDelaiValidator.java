@@ -8,7 +8,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.declaration.DeclarationImpotSource;
 import ch.vd.uniregctb.declaration.ListeRecapitulativeDAO;
-import ch.vd.uniregctb.di.view.DelaiDeclarationView;
+import ch.vd.uniregctb.declaration.view.DelaiDeclarationView;
 import ch.vd.uniregctb.utils.ValidatorUtils;
 
 public class ListeRecapEditDelaiValidator implements Validator {
