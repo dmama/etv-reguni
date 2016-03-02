@@ -9,12 +9,15 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import ch.vd.uniregctb.adresse.AdresseMandataire;
 import ch.vd.uniregctb.adresse.AdresseTiers;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DeclarationImpotSource;
 import ch.vd.uniregctb.declaration.DelaiDeclaration;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
 import ch.vd.uniregctb.declaration.Periodicite;
+import ch.vd.uniregctb.declaration.QuestionnaireSNC;
+import ch.vd.uniregctb.documentfiscal.AutreDocumentFiscal;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEch;
 import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
 import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuable;
@@ -49,8 +52,10 @@ public class ConsultLogController {
 	 * Les modalités sont les valeurs passables dans le paramètre "nature" de l'appel HTTP
 	 */
 	private enum LoggableEntity {
+		AdresseMandataire(AdresseMandataire.class),
 		AdresseTiers(AdresseTiers.class),
 		AllegementFiscal(AllegementFiscal.class),
+		AutreDocumentFiscal(AutreDocumentFiscal.class),
 		DecisionAci(DecisionAci.class),
 		DelaiDeclaration(DelaiDeclaration.class),
 		DI(DeclarationImpotOrdinaire.class),
@@ -69,6 +74,7 @@ public class ConsultLogController {
 		LR(DeclarationImpotSource.class),
 		MouvementDossier(MouvementDossier.class),
 		Periodicite(Periodicite.class),
+		QSNC(QuestionnaireSNC.class),
 		RapportEntreTiers(RapportEntreTiers.class),
 		RegimeFiscal(RegimeFiscal.class),
 		Remarque(Remarque.class),

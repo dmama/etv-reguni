@@ -23,6 +23,7 @@ import org.springframework.context.MessageSourceAware;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.DateRangeHelper;
+import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.interfaces.civil.ServiceCivilException;
@@ -33,6 +34,8 @@ import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdresseGenerique;
 import ch.vd.uniregctb.adresse.AdresseGenerique.SourceType;
+import ch.vd.uniregctb.adresse.AdresseMandataire;
+import ch.vd.uniregctb.adresse.AdresseMandataireAdapter;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.adresse.AdresseServiceImpl;
 import ch.vd.uniregctb.adresse.AdresseTiers;
@@ -50,6 +53,10 @@ import ch.vd.uniregctb.declaration.DeclarationImpotSource;
 import ch.vd.uniregctb.declaration.DelaiDeclaration;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
 import ch.vd.uniregctb.declaration.Periodicite;
+import ch.vd.uniregctb.declaration.QuestionnaireSNC;
+import ch.vd.uniregctb.declaration.view.QuestionnaireSNCView;
+import ch.vd.uniregctb.documentfiscal.AutreDocumentFiscal;
+import ch.vd.uniregctb.documentfiscal.AutreDocumentFiscalView;
 import ch.vd.uniregctb.entreprise.EntrepriseService;
 import ch.vd.uniregctb.general.manager.TiersGeneralManager;
 import ch.vd.uniregctb.general.view.TiersGeneralView;
@@ -63,6 +70,8 @@ import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.ServiceOrganisationService;
 import ch.vd.uniregctb.lr.view.ListeRecapDetailComparator;
 import ch.vd.uniregctb.lr.view.ListeRecapDetailView;
+import ch.vd.uniregctb.mandataire.AdresseMandataireView;
+import ch.vd.uniregctb.mandataire.LienMandataireView;
 import ch.vd.uniregctb.metier.bouclement.ExerciceCommercial;
 import ch.vd.uniregctb.rapport.SensRapportEntreTiers;
 import ch.vd.uniregctb.rapport.TypeRapportEntreTiersWeb;
@@ -90,6 +99,7 @@ import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
 import ch.vd.uniregctb.tiers.ForGestion;
 import ch.vd.uniregctb.tiers.IndividuNotFoundException;
+import ch.vd.uniregctb.tiers.Mandat;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
@@ -620,6 +630,82 @@ public class TiersManager implements MessageSourceAware {
 			tiersView.setFlags(views);
 		}
 
+		// les questionnaires SNC
+		final List<QuestionnaireSNC> qsnc = entreprise.getDeclarationsTriees(QuestionnaireSNC.class, true);
+		if (qsnc != null && !qsnc.isEmpty()) {
+			final List<QuestionnaireSNCView> views = new ArrayList<>(qsnc.size());
+			for (QuestionnaireSNC q : qsnc) {
+				views.add(new QuestionnaireSNCView(q, messageSource));
+			}
+			Collections.sort(views, new Comparator<QuestionnaireSNCView>() {
+				@Override
+				public int compare(QuestionnaireSNCView o1, QuestionnaireSNCView o2) {
+					return -NullDateBehavior.EARLIEST.compare(o1.getDateDebut(), o2.getDateDebut());
+				}
+			});
+			tiersView.setQuestionnairesSNC(views);
+		}
+
+		// les autres documents fiscaux
+		final Set<AutreDocumentFiscal> autresDocuments = entreprise.getAutresDocumentsFiscaux();
+		if (autresDocuments != null && !autresDocuments.isEmpty()) {
+			final List<AutreDocumentFiscalView> views = new ArrayList<>(autresDocuments.size());
+			for (AutreDocumentFiscal document : autresDocuments) {
+				views.add(AutreDocumentFiscalView.of(document, messageSource));
+			}
+			Collections.sort(views, new Comparator<AutreDocumentFiscalView>() {
+				@Override
+				public int compare(AutreDocumentFiscalView o1, AutreDocumentFiscalView o2) {
+					return -NullDateBehavior.EARLIEST.compare(o1.getDateEnvoi(), o2.getDateEnvoi());
+				}
+			});
+			tiersView.setAutresDocumentsFiscaux(views);
+		}
+
+		// les liens vers les mandataires
+		final Set<RapportEntreTiers> rapportsSujet = entreprise.getRapportsSujet();
+		if (rapportsSujet != null && !rapportsSujet.isEmpty()) {
+			final List<LienMandataireView> liens = new ArrayList<>(rapportsSujet.size());
+			for (RapportEntreTiers ret : rapportsSujet) {
+				if (ret instanceof Mandat) {
+					liens.add(new LienMandataireView((Mandat) ret, tiersService, adresseService));
+				}
+			}
+			if (!liens.isEmpty()) {
+				Collections.sort(liens, new AnnulableHelper.AnnulesApresWrappingComparator<>(new Comparator<LienMandataireView>() {
+					@Override
+					public int compare(LienMandataireView o1, LienMandataireView o2) {
+						int comparison = -NullDateBehavior.LATEST.compare(o1.getRegDateFin(), o2.getRegDateFin());
+						if (comparison == 0) {
+							comparison = -NullDateBehavior.EARLIEST.compare(o1.getRegDateDebut(), o2.getRegDateDebut());
+						}
+						return comparison;
+					}
+				}));
+				tiersView.setLiensMandataires(liens);
+			}
+		}
+
+		// les adresses mandataires
+		final Set<AdresseMandataire> adressesMandataires = entreprise.getAdressesMandataires();
+		if (adressesMandataires != null && !adressesMandataires.isEmpty()) {
+			final List<AdresseMandataireView> views = new ArrayList<>(adressesMandataires.size());
+			for (AdresseMandataire adresse : adressesMandataires) {
+				views.add(createAdresseMandataireView(adresse));
+			}
+			Collections.sort(views, new AnnulableHelper.AnnulesApresWrappingComparator<>(new Comparator<AdresseMandataireView>() {
+				@Override
+				public int compare(AdresseMandataireView o1, AdresseMandataireView o2) {
+					int comparison = -NullDateBehavior.LATEST.compare(o1.getRegDateFin(), o2.getRegDateFin());
+					if (comparison == 0) {
+						comparison = -NullDateBehavior.EARLIEST.compare(o1.getRegDateDebut(), o2.getRegDateDebut());
+					}
+					return comparison;
+				}
+			}));
+			tiersView.setAdressesMandataires(views);
+		}
+
 		tiersView.setEntreprise(getEntrepriseService().getEntreprise(entreprise)); // OrganisationView
 	}
 
@@ -1099,6 +1185,36 @@ public class TiersManager implements MessageSourceAware {
 		}
 	}
 
+	private void fillAdresseView(AdresseView tofill, AdresseGenerique source, TypeAdresseTiers type) {
+		tofill.setDateDebut(source.getDateDebut());
+		tofill.setDateFin(source.getDateFin());
+		tofill.setAnnule(source.isAnnule());
+		tofill.setId(source.getId());
+		tofill.setPermanente(source.isPermanente());
+		tofill.setEgid(source.getEgid());
+		tofill.setEwid(source.getEwid());
+
+		final RueEtNumero rueEtNumero = AdresseServiceImpl.buildRueEtNumero(source);
+		tofill.setRue(rueEtNumero == null ? null : rueEtNumero.getRueEtNumero());
+
+		final NpaEtLocalite npaEtLocalite = AdresseServiceImpl.buildNpaEtLocalite(source);
+		tofill.setLocalite(npaEtLocalite == null ? null : npaEtLocalite.toString());
+
+		tofill.setUsage(type);
+		tofill.setPaysOFS(source.getNoOfsPays());
+		tofill.setSource(source.getSource().getType());
+		tofill.setDefault(source.isDefault());
+		tofill.setComplements(source.getComplement());
+		tofill.setActive(source.isValidAt(RegDate.get()));
+		tofill.setSurVaud(estDansLeCanton(source));
+
+		if (source.getCasePostale() != null) {
+			tofill.setTexteCasePostale(source.getCasePostale().getType());
+			tofill.setNumeroCasePostale(source.getCasePostale().getNumero());
+			tofill.setNpaCasePostale(source.getCasePostale().getNpa());
+		}
+	}
+
 	/**
 	 * Crée une adresse view à partir d'une adresse générique.
 	 *
@@ -1107,37 +1223,23 @@ public class TiersManager implements MessageSourceAware {
 	 * @return une adresse view
 	 */
 	public AdresseView createAdresseView(AdresseGenerique adresse, TypeAdresseTiers type) {
-
 		final AdresseView adresseView = new AdresseView();
-		adresseView.setDateDebut(adresse.getDateDebut());
-		adresseView.setDateFin(adresse.getDateFin());
-		adresseView.setAnnule(adresse.isAnnule());
-		adresseView.setId(adresse.getId());
-		adresseView.setPermanente(adresse.isPermanente());
-		adresseView.setEgid(adresse.getEgid());
-		adresseView.setEwid(adresse.getEwid());
-
-		final RueEtNumero rueEtNumero = AdresseServiceImpl.buildRueEtNumero(adresse);
-		adresseView.setRue(rueEtNumero == null ? null : rueEtNumero.getRueEtNumero());
-
-		final NpaEtLocalite npaEtLocalite = AdresseServiceImpl.buildNpaEtLocalite(adresse);
-		adresseView.setLocalite(npaEtLocalite == null ? null : npaEtLocalite.toString());
-
-		adresseView.setUsage(type);
-		adresseView.setPaysOFS(adresse.getNoOfsPays());
-		adresseView.setSource(adresse.getSource().getType());
-		adresseView.setDefault(adresse.isDefault());
-		adresseView.setComplements(adresse.getComplement());
-		adresseView.setActive(adresse.isValidAt(RegDate.get()));
-		adresseView.setSurVaud(estDansLeCanton(adresse));
-
-		if (adresse.getCasePostale() != null) {
-			adresseView.setTexteCasePostale(adresse.getCasePostale().getType());
-			adresseView.setNumeroCasePostale(adresse.getCasePostale().getNumero());
-			adresseView.setNpaCasePostale(adresse.getCasePostale().getNpa());
-		}
-
+		fillAdresseView(adresseView, adresse, type);
 		return adresseView;
+	}
+
+	/**
+	 * Crée une adresse mandataire view à partir d'une adresse mandataire
+	 * @param adresse
+	 * @return
+	 */
+	public AdresseMandataireView createAdresseMandataireView(AdresseMandataire adresse) {
+		final AdresseMandataireView view = new AdresseMandataireView();
+		final AdresseMandataireAdapter adapter = new AdresseMandataireAdapter(adresse, serviceInfrastructureService);
+		fillAdresseView(view, adapter, TypeAdresseTiers.COURRIER);
+		view.setNomDestinataire(adresse.getNomDestinataire());
+		view.setTypeMandat(adresse.getTypeMandat());
+		return view;
 	}
 
 	private boolean estDansLeCanton(AdresseGenerique adresse) {

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.di.view;
+package ch.vd.uniregctb.declaration.view;
 
 import java.util.Date;
 
@@ -8,6 +8,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.common.Annulable;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
+import ch.vd.uniregctb.declaration.EtatDeclarationRappelee;
 import ch.vd.uniregctb.declaration.EtatDeclarationRetournee;
 import ch.vd.uniregctb.declaration.EtatDeclarationSommee;
 import ch.vd.uniregctb.type.TypeEtatDeclaration;
@@ -53,6 +54,11 @@ public class EtatDeclarationView implements Comparable<EtatDeclarationView>, Ann
 		}
 		if (etat instanceof EtatDeclarationSommee) {
 			this.dateEnvoiCourrier = ((EtatDeclarationSommee) etat).getDateEnvoiCourrier();
+			this.dateEnvoiCourrierMessage =
+					messageSource.getMessage("label.date.envoi.courrier", new Object[]{RegDateHelper.dateToDisplayString(this.dateEnvoiCourrier)}, WebContextUtils.getDefaultLocale());
+		}
+		if (etat instanceof EtatDeclarationRappelee) {
+			this.dateEnvoiCourrier = ((EtatDeclarationRappelee) etat).getDateEnvoiCourrier();
 			this.dateEnvoiCourrierMessage =
 					messageSource.getMessage("label.date.envoi.courrier", new Object[]{RegDateHelper.dateToDisplayString(this.dateEnvoiCourrier)}, WebContextUtils.getDefaultLocale());
 		}

@@ -12,12 +12,16 @@ import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.declaration.view.QuestionnaireSNCView;
 import ch.vd.uniregctb.di.view.DeclarationImpotView;
+import ch.vd.uniregctb.documentfiscal.AutreDocumentFiscalView;
 import ch.vd.uniregctb.entreprise.EntrepriseView;
 import ch.vd.uniregctb.entreprise.EtablissementView;
 import ch.vd.uniregctb.general.view.TiersGeneralView;
 import ch.vd.uniregctb.individu.IndividuView;
 import ch.vd.uniregctb.lr.view.ListeRecapDetailView;
+import ch.vd.uniregctb.mandataire.AdresseMandataireView;
+import ch.vd.uniregctb.mandataire.LienMandataireView;
 import ch.vd.uniregctb.metier.bouclement.ExerciceCommercial;
 import ch.vd.uniregctb.mouvement.view.MouvementDetailView;
 import ch.vd.uniregctb.rapport.view.RapportView;
@@ -60,6 +64,7 @@ public class TiersView {
 	private IndividuView individuConjoint;
 
 	private List<AdresseView> historiqueAdresses;
+	private List<AdresseMandataireView> adressesMandataires;
 
 	private List<AdresseCivilView> historiqueAdressesCiviles;
 	private String exceptionAdresseCiviles;
@@ -72,9 +77,8 @@ public class TiersView {
 	private String adressesEnErreurMessage;
 
 	private List<RapportView> rapportsEtablissements;
-
 	private List<RapportView> dossiersApparentes;
-
+	private List<LienMandataireView> liensMandataires;
 	private List<RapportPrestationView> rapportsPrestation;
 
 	private boolean rapportsPrestationHisto;
@@ -86,8 +90,8 @@ public class TiersView {
 	private List<RapportView> contribuablesAssocies;
 
 	private List<ListeRecapDetailView> lrs;
-
 	private List<DeclarationImpotView> dis;
+	private List<QuestionnaireSNCView> questionnairesSNC;
 
 	private ForFiscalView forsPrincipalActif;
 
@@ -111,6 +115,8 @@ public class TiersView {
 	private List<AllegementFiscalView> allegementsFiscaux;
 	private List<ExerciceCommercial> exercicesCommerciaux;
 	private List<FlagEntrepriseView> flags;
+
+	private List<AutreDocumentFiscalView> autresDocumentsFiscaux;
 
 	private List<DomicileEtablissementView> domicilesEtablissement;
 
@@ -236,6 +242,14 @@ public class TiersView {
 		this.historiqueAdresses = historiqueAdresses;
 	}
 
+	public List<AdresseMandataireView> getAdressesMandataires() {
+		return adressesMandataires;
+	}
+
+	public void setAdressesMandataires(List<AdresseMandataireView> adressesMandataires) {
+		this.adressesMandataires = adressesMandataires;
+	}
+
 	public NatureTiers getNatureMembrePrincipal() {
 		if(tiersPrincipal != null)
 			return tiersPrincipal.getNatureTiers();
@@ -270,6 +284,14 @@ public class TiersView {
 
 	public void setDossiersApparentes(List<RapportView> dossiersApparentes) {
 		this.dossiersApparentes = dossiersApparentes;
+	}
+
+	public List<LienMandataireView> getLiensMandataires() {
+		return liensMandataires;
+	}
+
+	public void setLiensMandataires(List<LienMandataireView> liensMandataires) {
+		this.liensMandataires = liensMandataires;
 	}
 
 	public Set<DebiteurView> getDebiteurs() {
@@ -379,6 +401,14 @@ public class TiersView {
 
 	public void setDomicilesEtablissement(List<DomicileEtablissementView> domicilesEtablissement) {
 		this.domicilesEtablissement = domicilesEtablissement;
+	}
+
+	public List<AutreDocumentFiscalView> getAutresDocumentsFiscaux() {
+		return autresDocumentsFiscaux;
+	}
+
+	public void setAutresDocumentsFiscaux(List<AutreDocumentFiscalView> autresDocumentsFiscaux) {
+		this.autresDocumentsFiscaux = autresDocumentsFiscaux;
 	}
 
 	public ForFiscalView getForsPrincipalActif() {
@@ -493,6 +523,14 @@ public class TiersView {
 
 	public void setDis(List<DeclarationImpotView> dis) {
 		this.dis = dis;
+	}
+
+	public List<QuestionnaireSNCView> getQuestionnairesSNC() {
+		return questionnairesSNC;
+	}
+
+	public void setQuestionnairesSNC(List<QuestionnaireSNCView> questionnairesSNC) {
+		this.questionnairesSNC = questionnairesSNC;
 	}
 
 	public List<MouvementDetailView> getMouvements() {

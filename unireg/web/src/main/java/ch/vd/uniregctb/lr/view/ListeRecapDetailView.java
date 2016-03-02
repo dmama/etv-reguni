@@ -7,7 +7,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.common.NomCourrierViewPart;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
-import ch.vd.uniregctb.di.view.DelaiDeclarationView;
+import ch.vd.uniregctb.declaration.view.DelaiDeclarationView;
 import ch.vd.uniregctb.general.view.TiersGeneralView;
 import ch.vd.uniregctb.type.CategorieImpotSource;
 import ch.vd.uniregctb.type.ModeCommunication;
