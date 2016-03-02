@@ -27,7 +27,6 @@
 							<jsp:include page="/WEB-INF/jsp/include/inputCalendar.jsp">
 								<jsp:param name="path" value="dateDebut"/>
 								<jsp:param name="id" value="dateDebut"/>
-								<jsp:param name="onChange" value="AddRegimeFiscal.displayTypeWarning();"/>
 							</jsp:include>
 							<span style="color: red;">*</span>
 						</td>

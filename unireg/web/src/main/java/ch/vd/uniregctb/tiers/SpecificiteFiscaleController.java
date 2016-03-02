@@ -245,7 +245,7 @@ public class SpecificiteFiscaleController {
 
 			if (date != null) {
 				if (rf.getDernierePeriodeFiscaleValidite() != null && date.year() > rf.getDernierePeriodeFiscaleValidite()) {
-					return new StringHolder("Ce régime fiscal n'est valide que jusquà la période " + rf.getDernierePeriodeFiscaleValidite() + '.');
+					return new StringHolder("Ce régime fiscal n'est valide que jusqu'à la période " + rf.getDernierePeriodeFiscaleValidite() + '.');
 				}
 				if (rf.getPremierePeriodeFiscaleValidite() != null && date.year() < rf.getPremierePeriodeFiscaleValidite()) {
 					return new StringHolder("Ce régime fiscal n'est valide qu'à partir de la période " + rf.getPremierePeriodeFiscaleValidite() + '.');

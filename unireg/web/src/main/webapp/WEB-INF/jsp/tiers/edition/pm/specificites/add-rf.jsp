@@ -29,7 +29,7 @@
 							<jsp:include page="/WEB-INF/jsp/include/inputCalendar.jsp">
 								<jsp:param name="path" value="dateDebut" />
 								<jsp:param name="id" value="dateDebut" />
-								<jsp:param name="onChange" value="AddRegimeFiscal.displayTypeWarning();"/>
+								<jsp:param name="onChange" value="AddRegimeFiscal.displayTypeWarning"/>
 							</jsp:include>
 							<span style="color: red;">*</span>
 						</td>
@@ -62,7 +62,7 @@
 
 				var AddRegimeFiscal = {
 
-					displayTypeWarning: function() {
+					displayTypeWarning: function(obj) {
 						var dateDebut = $('#dateDebut').get(0).value;
 						var codeSelect = $('#codeSelect').get(0);
 						var selectedCode = codeSelect.options[codeSelect.selectedIndex].value;
@@ -88,7 +88,7 @@
 				};
 
 				$(function() {
-					AddRegimeFiscal.displayTypeWarning();
+					AddRegimeFiscal.displayTypeWarning(null);
 				});
 
 			</script>
