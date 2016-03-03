@@ -8223,5 +8223,6 @@ public class AdresseServiceTest extends BusinessTest {
 		assertEquals(Arrays.asList("Ma petite entreprise intercantonale des", "éleveurs de champignons vénéneux qui", "font super mal quand on a le malheur ..."), AdresseServiceImpl.segmenteRaisonSocialeSurPlusieursLignes("Ma petite entreprise intercantonale des éleveurs de champignons vénéneux qui font super mal quand on a le malheur d'y goûter"));
 		assertEquals(Arrays.asList("Ma petite entreprise bien de chez nous-", "de derrière la colline"), AdresseServiceImpl.segmenteRaisonSocialeSurPlusieursLignes("Ma petite entreprise bien de chez nous-de derrière la colline"));
 		assertEquals(Arrays.asList("1234567890123456789012345678901234567890", "123456789012345"), AdresseServiceImpl.segmenteRaisonSocialeSurPlusieursLignes("1234567890123456789012345678901234567890123456789012345"));
+		assertEquals(Arrays.asList("Fonds prévoyance en faveur du personnel", "Sté électrique intercommunale de la Côte"), AdresseServiceImpl.segmenteRaisonSocialeSurPlusieursLignes("Fonds prévoyance en faveur du personnel Sté électrique intercommunale de la Côte"));
 	}
 }

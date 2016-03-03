@@ -526,7 +526,7 @@ public class AdresseServiceImpl implements AdresseService {
 		int curseur = 0;
 		do {
 			final int fin;
-			if (curseur + longueurLigneMax > raisonSociale.length()) {
+			if (curseur + longueurLigneMax >= raisonSociale.length()) {
 				// on va jusqu'au bout, direct
 				fin = raisonSociale.length();
 			}
