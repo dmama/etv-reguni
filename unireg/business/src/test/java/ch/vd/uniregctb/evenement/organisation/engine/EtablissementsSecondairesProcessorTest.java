@@ -27,7 +27,6 @@ import ch.vd.uniregctb.evenement.fiscal.EvenementFiscal;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalDAO;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalFor;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
-import ch.vd.uniregctb.tiers.DomicileEtablissement;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.Etablissement;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
@@ -38,6 +37,7 @@ import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeEvenementOrganisation;
+import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 
 import static ch.vd.uniregctb.type.EtatEvenementOrganisation.A_TRAITER;
 
@@ -98,8 +98,6 @@ public class EtablissementsSecondairesProcessorTest extends AbstractEvenementOrg
 				Etablissement etablissement = addEtablissement();
 				etablissement.setNumeroEtablissement(noSite);
 
-				addDomicileEtablissement(etablissement, date(2010, 6, 24), null, MockCommune.Lausanne);
-
 				addActiviteEconomique(entreprise, etablissement, date(2010, 6, 24), null, true);
 
 				addRegimeFiscalVD(entreprise, date(2010, 6, 24), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
@@ -137,11 +135,10 @@ public class EtablissementsSecondairesProcessorTest extends AbstractEvenementOrg
 				                             final Entreprise entreprise = tiersDAO.getEntrepriseByNumeroOrganisation(evt.getNoOrganisation());
 
 				                             final Etablissement etablissementPrincipal = tiersService.getEtablissementsPrincipauxEntreprise(entreprise).get(0).getPayload();
-											 Assert.assertEquals(1, etablissementPrincipal.getDomiciles().size());
-				                             Assert.assertEquals(date(2010, 6, 24), etablissementPrincipal.getSortedDomiciles(false).get(0).getDateDebut());
+											 Assert.assertNotNull(etablissementPrincipal);
+				                             Assert.assertEquals(date(2010, 6, 24), etablissementPrincipal.getRapportObjetValidAt(date(2010, 6, 24), TypeRapportEntreTiers.ACTIVITE_ECONOMIQUE).getDateDebut());
 				                             final Etablissement etablissementSecondaire = tiersService.getEtablissementsSecondairesEntreprise(entreprise).get(0).getPayload();
-											 Assert.assertEquals(1, etablissementSecondaire.getDomiciles().size());
-				                             Assert.assertEquals(date(2015, 7, 5), etablissementSecondaire.getSortedDomiciles(false).get(0).getDateDebut());
+											 Assert.assertNotNull(etablissementSecondaire);
 
 				                             {
 					                             ForFiscalPrincipal forFiscalPrincipal = entreprise.getDernierForFiscalPrincipal();
@@ -238,13 +235,11 @@ public class EtablissementsSecondairesProcessorTest extends AbstractEvenementOrg
 
 				Etablissement etablissement = addEtablissement();
 				etablissement.setNumeroEtablissement(noSite);
-				addDomicileEtablissement(etablissement, date(2010, 6, 24), null, MockCommune.Lausanne);
 
 				addActiviteEconomique(entreprise, etablissement, date(2010, 6, 24), null, true);
 
 				Etablissement etablissementSecondaire = addEtablissement();
 				etablissementSecondaire.setNumeroEtablissement(noSite2);
-				addDomicileEtablissement(etablissementSecondaire, date(2010, 6, 24), null, MockCommune.Aubonne);
 
 				addActiviteEconomique(entreprise, etablissementSecondaire, date(2010, 6, 24), null, false);
 
@@ -284,11 +279,9 @@ public class EtablissementsSecondairesProcessorTest extends AbstractEvenementOrg
 				                             final Entreprise entreprise = tiersDAO.getEntrepriseByNumeroOrganisation(evt.getNoOrganisation());
 
 				                             final Etablissement etablissementPrincipal = tiersService.getEtablissementsPrincipauxEntreprise(entreprise).get(0).getPayload();
-				                             Assert.assertEquals(1, etablissementPrincipal.getDomiciles().size());
-				                             Assert.assertEquals(date(2010, 6, 24), etablissementPrincipal.getSortedDomiciles(false).get(0).getDateDebut());
+				                             Assert.assertNotNull(etablissementPrincipal);
 				                             final Etablissement etablissementSecondaire = tiersService.getEtablissementsSecondairesEntreprise(entreprise).get(0).getPayload();
-				                             Assert.assertEquals(1, etablissementSecondaire.getDomiciles().size());
-				                             Assert.assertEquals(date(2010, 6, 24), etablissementSecondaire.getSortedDomiciles(false).get(0).getDateDebut());
+				                             Assert.assertNotNull(etablissementSecondaire);
 
 				                             {
 					                             ForFiscalPrincipal forFiscalPrincipal = entreprise.getDernierForFiscalPrincipal();
@@ -366,13 +359,11 @@ public class EtablissementsSecondairesProcessorTest extends AbstractEvenementOrg
 
 				Etablissement etablissement = addEtablissement();
 				etablissement.setNumeroEtablissement(noSite);
-				addDomicileEtablissement(etablissement, date(2010, 6, 24), null, MockCommune.Lausanne);
 
 				addActiviteEconomique(entreprise, etablissement, date(2010, 6, 24), null, true);
 
 				Etablissement etablissementSecondaire = addEtablissement();
 				etablissementSecondaire.setNumeroEtablissement(noSite2);
-				addDomicileEtablissement(etablissementSecondaire, date(2010, 6, 24), null, MockCommune.Aubonne);
 
 				addActiviteEconomique(entreprise, etablissementSecondaire, date(2010, 6, 24), null, false);
 
@@ -413,17 +404,11 @@ public class EtablissementsSecondairesProcessorTest extends AbstractEvenementOrg
 				                             final Entreprise entreprise = tiersDAO.getEntrepriseByNumeroOrganisation(evt.getNoOrganisation());
 
 				                             final Etablissement etablissementPrincipal = tiersService.getEtablissementsPrincipauxEntreprise(entreprise).get(0).getPayload();
-				                             Assert.assertEquals(1, etablissementPrincipal.getDomiciles().size());
-				                             Assert.assertEquals(date(2010, 6, 24), etablissementPrincipal.getSortedDomiciles(false).get(0).getDateDebut());
+				                             Assert.assertNotNull(etablissementPrincipal);
 				                             final Etablissement etablissementSecondaire = tiersService.getEtablissementsSecondairesEntreprise(entreprise).get(0).getPayload();
-				                             Assert.assertEquals(1, etablissementSecondaire.getDomiciles().size());
-				                             final DomicileEtablissement domicileEtablissement = etablissementSecondaire.getSortedDomiciles(false).get(0);
-				                             Assert.assertEquals(date(2010, 6, 24), domicileEtablissement.getDateDebut());
-				                             Assert.assertEquals(date(2015, 7, 4), domicileEtablissement.getDateFin());
+				                             Assert.assertNotNull(etablissementSecondaire);
 				                             final Etablissement etablissementSecondaire2 = tiersService.getEtablissementsSecondairesEntreprise(entreprise).get(1).getPayload();
-				                             Assert.assertEquals(1, etablissementSecondaire2.getDomiciles().size());
-				                             Assert.assertEquals(date(2015, 7, 5), etablissementSecondaire2.getSortedDomiciles(false).get(0).getDateDebut());
-				                             Assert.assertNull(etablissementSecondaire2.getSortedDomiciles(false).get(0).getDateFin());
+				                             Assert.assertNotNull(etablissementSecondaire2);
 
 				                             {
 					                             ForFiscalPrincipal forFiscalPrincipal = entreprise.getDernierForFiscalPrincipal();
@@ -557,19 +542,16 @@ public class EtablissementsSecondairesProcessorTest extends AbstractEvenementOrg
 
 				Etablissement etablissement = addEtablissement();
 				etablissement.setNumeroEtablissement(noSite);
-				addDomicileEtablissement(etablissement, date(2010, 6, 24), null, MockCommune.Lausanne);
 
 				addActiviteEconomique(entreprise, etablissement, date(2010, 6, 24), null, true);
 
 				Etablissement etablissementSecondaire2 = addEtablissement();
 				etablissementSecondaire2.setNumeroEtablissement(noSite2);
-				addDomicileEtablissement(etablissementSecondaire2, date(2010, 6, 24), date(2015, 7, 4), MockCommune.Aubonne);
 
 				addActiviteEconomique(entreprise, etablissementSecondaire2, date(2010, 6, 24), date(2015, 7, 4), false);
 
 				Etablissement etablissementSecondaire3 = addEtablissement();
 				etablissementSecondaire3.setNumeroEtablissement(noSite3);
-				addDomicileEtablissement(etablissementSecondaire3, date(2015, 7, 5), null, MockCommune.Lausanne);
 
 				addActiviteEconomique(entreprise, etablissementSecondaire3, date(2015, 7, 5), null, false);
 
@@ -612,8 +594,7 @@ public class EtablissementsSecondairesProcessorTest extends AbstractEvenementOrg
 				                             final Entreprise entreprise = tiersDAO.getEntrepriseByNumeroOrganisation(evt.getNoOrganisation());
 
 				                             final Etablissement etablissementPrincipal = tiersService.getEtablissementsPrincipauxEntreprise(entreprise).get(0).getPayload();
-				                             Assert.assertEquals(1, etablissementPrincipal.getDomiciles().size());
-				                             Assert.assertEquals(date(2010, 6, 24), etablissementPrincipal.getSortedDomiciles(false).get(0).getDateDebut());
+				                             Assert.assertNotNull(etablissementPrincipal);
 				                             final List<DateRanged<Etablissement>> etablissementsSecondairesEntreprise = tiersService.getEtablissementsSecondairesEntreprise(entreprise);
 				                             Collections.sort(etablissementsSecondairesEntreprise, new Comparator<DateRanged<Etablissement>>() {
 					                             @Override
@@ -621,19 +602,13 @@ public class EtablissementsSecondairesProcessorTest extends AbstractEvenementOrg
 						                             return o1.getPayload().getNumero().compareTo(o2.getPayload().getNumero());
 					                             }
 				                             });
+
 				                             final Etablissement etablissementSecondaire = etablissementsSecondairesEntreprise.get(0).getPayload();
-				                             Assert.assertEquals(1, etablissementSecondaire.getDomiciles().size());
-				                             final DomicileEtablissement domicileEtablissement = etablissementSecondaire.getSortedDomiciles(false).get(0);
-				                             Assert.assertEquals(date(2010, 6, 24), domicileEtablissement.getDateDebut());
-				                             Assert.assertEquals(date(2015, 7, 4), domicileEtablissement.getDateFin());
+				                             Assert.assertNotNull(etablissementSecondaire);
 				                             final Etablissement etablissementSecondaire2 = etablissementsSecondairesEntreprise.get(1).getPayload();
-				                             Assert.assertEquals(1, etablissementSecondaire2.getDomiciles().size());
-				                             Assert.assertEquals(date(2015, 7, 5), etablissementSecondaire2.getSortedDomiciles(false).get(0).getDateDebut());
-				                             Assert.assertNull(etablissementSecondaire2.getSortedDomiciles(false).get(0).getDateFin());
+				                             Assert.assertNotNull(etablissementSecondaire2);
 				                             final Etablissement etablissementSecondaire3 = etablissementsSecondairesEntreprise.get(2).getPayload();
-				                             Assert.assertEquals(1, etablissementSecondaire3.getDomiciles().size());
-				                             Assert.assertEquals(date(2015, 6, 10), etablissementSecondaire3.getSortedDomiciles(false).get(0).getDateDebut());
-				                             Assert.assertNull(etablissementSecondaire3.getSortedDomiciles(false).get(0).getDateFin());
+				                             Assert.assertNotNull(etablissementSecondaire3);
 
 				                             {
 					                             ForFiscalPrincipal forFiscalPrincipal = entreprise.getDernierForFiscalPrincipal();
@@ -749,13 +724,11 @@ public class EtablissementsSecondairesProcessorTest extends AbstractEvenementOrg
 
 				Etablissement etablissement = addEtablissement();
 				etablissement.setNumeroEtablissement(noSite);
-				addDomicileEtablissement(etablissement, date(2010, 6, 24), null, MockCommune.Lausanne);
 
 				addActiviteEconomique(entreprise, etablissement, date(2010, 6, 24), null, true);
 
 				Etablissement etablissementSecondaire = addEtablissement();
 				etablissementSecondaire.setNumeroEtablissement(noSite2);
-				addDomicileEtablissement(etablissementSecondaire, date(2010, 6, 24), null, MockCommune.Aubonne);
 
 				addActiviteEconomique(entreprise, etablissementSecondaire, date(2010, 6, 24), null, false);
 
@@ -795,11 +768,9 @@ public class EtablissementsSecondairesProcessorTest extends AbstractEvenementOrg
 				                             final Entreprise entreprise = tiersDAO.getEntrepriseByNumeroOrganisation(evt.getNoOrganisation());
 
 				                             final Etablissement etablissementPrincipal = tiersService.getEtablissementsPrincipauxEntreprise(entreprise).get(0).getPayload();
-				                             Assert.assertEquals(1, etablissementPrincipal.getDomiciles().size());
-				                             Assert.assertEquals(date(2010, 6, 24), etablissementPrincipal.getSortedDomiciles(false).get(0).getDateDebut());
+				                             Assert.assertNotNull(etablissementPrincipal);
 				                             final Etablissement etablissementSecondaire = tiersService.getEtablissementsSecondairesEntreprise(entreprise).get(0).getPayload();
-				                             Assert.assertEquals(2, etablissementSecondaire.getDomiciles().size());
-				                             Assert.assertEquals(date(2010, 6, 24), etablissementSecondaire.getSortedDomiciles(false).get(0).getDateDebut());
+				                             Assert.assertNotNull(etablissementSecondaire);
 
 				                             {
 					                             ForFiscalPrincipal forFiscalPrincipal = entreprise.getDernierForFiscalPrincipal();
@@ -929,19 +900,16 @@ public class EtablissementsSecondairesProcessorTest extends AbstractEvenementOrg
 
 				Etablissement etablissement = addEtablissement();
 				etablissement.setNumeroEtablissement(noSite);
-				addDomicileEtablissement(etablissement, date(2010, 6, 24), null, MockCommune.Lausanne);
 
 				addActiviteEconomique(entreprise, etablissement, date(2010, 6, 24), null, true);
 
 				Etablissement etablissementSecondaire2 = addEtablissement();
 				etablissementSecondaire2.setNumeroEtablissement(noSite2);
-				addDomicileEtablissement(etablissementSecondaire2, date(2010, 6, 24), null, MockCommune.Aubonne);
 
 				addActiviteEconomique(entreprise, etablissementSecondaire2, date(2010, 6, 24), null, false);
 
 				Etablissement etablissementSecondaire3 = addEtablissement();
 				etablissementSecondaire3.setNumeroEtablissement(noSite3);
-				addDomicileEtablissement(etablissementSecondaire3, date(2015, 7, 5), null, MockCommune.Lausanne);
 
 				addActiviteEconomique(entreprise, etablissementSecondaire3, date(2015, 7, 5), null, false);
 
@@ -984,27 +952,9 @@ public class EtablissementsSecondairesProcessorTest extends AbstractEvenementOrg
 				                             final Entreprise entreprise = tiersDAO.getEntrepriseByNumeroOrganisation(evt.getNoOrganisation());
 
 				                             final Etablissement etablissementPrincipal = tiersService.getEtablissementsPrincipauxEntreprise(entreprise).get(0).getPayload();
-				                             Assert.assertEquals(1, etablissementPrincipal.getDomiciles().size());
-				                             Assert.assertEquals(date(2010, 6, 24), etablissementPrincipal.getSortedDomiciles(false).get(0).getDateDebut());
-				                             final List<DateRanged<Etablissement>> etablissementsSecondairesEntreprise = tiersService.getEtablissementsSecondairesEntreprise(entreprise);
-				                             Collections.sort(etablissementsSecondairesEntreprise, new Comparator<DateRanged<Etablissement>>() {
-					                             @Override
-					                             public int compare(DateRanged<Etablissement> o1, DateRanged<Etablissement> o2) {
-						                             return o1.getPayload().getNumero().compareTo(o2.getPayload().getNumero());
-					                             }
-				                             });
-				                             final Etablissement etablissementSecondaire = etablissementsSecondairesEntreprise.get(0).getPayload();
-				                             Assert.assertEquals(2, etablissementSecondaire.getDomiciles().size());
-				                             final DomicileEtablissement domicileEtablissement = etablissementSecondaire.getSortedDomiciles(false).get(0);
-				                             Assert.assertEquals(date(2010, 6, 24), domicileEtablissement.getDateDebut());
-				                             Assert.assertEquals(date(2015, 6, 9), domicileEtablissement.getDateFin());
-				                             final DomicileEtablissement domicileEtablissement2 = etablissementSecondaire.getSortedDomiciles(false).get(1);
-				                             Assert.assertEquals(date(2015, 6, 10), domicileEtablissement2.getDateDebut());
-				                             Assert.assertEquals(null, domicileEtablissement2.getDateFin());
-				                             final Etablissement etablissementSecondaire2 = etablissementsSecondairesEntreprise.get(1).getPayload();
-				                             Assert.assertEquals(1, etablissementSecondaire2.getDomiciles().size());
-				                             Assert.assertEquals(date(2015, 7, 5), etablissementSecondaire2.getSortedDomiciles(false).get(0).getDateDebut());
-				                             Assert.assertNull(etablissementSecondaire2.getSortedDomiciles(false).get(0).getDateFin());
+				                             Assert.assertNotNull(etablissementPrincipal);
+				                             final Etablissement etablissementSecondaire = tiersService.getEtablissementsSecondairesEntreprise(entreprise).get(0).getPayload();
+				                             Assert.assertNotNull(etablissementSecondaire);
 
 				                             {
 					                             ForFiscalPrincipal forFiscalPrincipal = entreprise.getDernierForFiscalPrincipal();
@@ -1143,19 +1093,16 @@ public class EtablissementsSecondairesProcessorTest extends AbstractEvenementOrg
 
 				Etablissement etablissement = addEtablissement();
 				etablissement.setNumeroEtablissement(noSite);
-				addDomicileEtablissement(etablissement, date(2010, 6, 24), null, MockCommune.Lausanne);
 
 				addActiviteEconomique(entreprise, etablissement, date(2010, 6, 24), null, true);
 
 				Etablissement etablissementSecondaire2 = addEtablissement();
 				etablissementSecondaire2.setNumeroEtablissement(noSite2);
-				addDomicileEtablissement(etablissementSecondaire2, date(2010, 6, 24), date(2015, 7, 4), MockCommune.Aubonne);
 
 				addActiviteEconomique(entreprise, etablissementSecondaire2, date(2010, 6, 24), date(2015, 7, 4), false);
 
 				Etablissement etablissementSecondaire3 = addEtablissement();
 				etablissementSecondaire3.setNumeroEtablissement(noSite3);
-				addDomicileEtablissement(etablissementSecondaire3, date(2010, 6, 24), null, MockCommune.Aubonne);
 
 				addActiviteEconomique(entreprise, etablissementSecondaire3, date(2010, 6, 24), null, false);
 
@@ -1196,31 +1143,13 @@ public class EtablissementsSecondairesProcessorTest extends AbstractEvenementOrg
 				                             final Entreprise entreprise = tiersDAO.getEntrepriseByNumeroOrganisation(evt.getNoOrganisation());
 
 				                             final Etablissement etablissementPrincipal = tiersService.getEtablissementsPrincipauxEntreprise(entreprise).get(0).getPayload();
-				                             Assert.assertEquals(1, etablissementPrincipal.getDomiciles().size());
-				                             Assert.assertEquals(date(2010, 6, 24), etablissementPrincipal.getSortedDomiciles(false).get(0).getDateDebut());
-				                             final List<DateRanged<Etablissement>> etablissementsSecondairesEntreprise = tiersService.getEtablissementsSecondairesEntreprise(entreprise);
-				                             Collections.sort(etablissementsSecondairesEntreprise, new Comparator<DateRanged<Etablissement>>() {
-					                             @Override
-					                             public int compare(DateRanged<Etablissement> o1, DateRanged<Etablissement> o2) {
-						                             return o1.getPayload().getNumero().compareTo(o2.getPayload().getNumero());
-					                             }
-				                             });
-				                             final Etablissement etablissementSecondaire2 = etablissementsSecondairesEntreprise.get(0).getPayload();
-				                             Assert.assertEquals(1, etablissementSecondaire2.getDomiciles().size());
-				                             final DomicileEtablissement domicileEtablissement1 = etablissementSecondaire2.getSortedDomiciles(false).get(0);
-				                             Assert.assertEquals(date(2010, 6, 24), domicileEtablissement1.getDateDebut());
-				                             Assert.assertEquals(date(2015, 7, 4), domicileEtablissement1.getDateFin());
-
-				                             final Etablissement etablissementSecondaire3 = etablissementsSecondairesEntreprise.get(1).getPayload();
-				                             Assert.assertEquals(2, etablissementSecondaire3.getDomiciles().size());
-				                             final DomicileEtablissement domicileEtablissement = etablissementSecondaire3.getSortedDomiciles(false).get(0);
-				                             Assert.assertEquals(MockCommune.Aubonne.getNoOFS(), domicileEtablissement.getNumeroOfsAutoriteFiscale().intValue());
-				                             Assert.assertEquals(date(2010, 6, 24), domicileEtablissement.getDateDebut());
-				                             Assert.assertEquals(date(2015, 6, 9), domicileEtablissement.getDateFin());
-				                             final DomicileEtablissement domicileEtablissement2 = etablissementSecondaire3.getSortedDomiciles(false).get(1);
-				                             Assert.assertEquals(MockCommune.Echallens.getNoOFS(), domicileEtablissement2.getNumeroOfsAutoriteFiscale().intValue());
-				                             Assert.assertEquals(date(2015, 6, 10), domicileEtablissement2.getDateDebut());
-				                             Assert.assertNull(domicileEtablissement2.getDateFin());
+				                             Assert.assertNotNull(etablissementPrincipal);
+				                             final Etablissement etablissementSecondaire = tiersService.getEtablissementsSecondairesEntreprise(entreprise).get(0).getPayload();
+				                             Assert.assertNotNull(etablissementSecondaire);
+				                             final Etablissement etablissementSecondaire2 = tiersService.getEtablissementsSecondairesEntreprise(entreprise).get(1).getPayload();
+				                             Assert.assertNotNull(etablissementSecondaire2);
+				                             final Etablissement etablissementSecondaire3 = tiersService.getEtablissementsSecondairesEntreprise(entreprise).get(1).getPayload();
+				                             Assert.assertNotNull(etablissementSecondaire3);
 
 				                             {
 					                             ForFiscalPrincipal forFiscalPrincipal = entreprise.getDernierForFiscalPrincipal();

@@ -16,9 +16,9 @@ import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationException;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationOptions;
 import ch.vd.uniregctb.evenement.organisation.interne.AbstractOrganisationStrategy;
 import ch.vd.uniregctb.evenement.organisation.interne.EvenementOrganisationInterne;
-import ch.vd.uniregctb.tiers.DomicileEtablissement;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.Etablissement;
+import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
 /**
  * Modification des établissement secondaires
@@ -57,12 +57,12 @@ public class EtablissementsSecondairesStrategy extends AbstractOrganisationStrat
 		final List<Etablissement> etablissementsAFermer = new ArrayList<>();
 		final List<SiteOrganisation> sitesACreer = new ArrayList<>();
 
-		List<SiteOrganisation> sitesAvant = organisation.getSitesSecondaires(dateAvant);
-		List<SiteOrganisation> sitesApres = organisation.getSitesSecondaires(dateApres);
+		List<SiteOrganisation> sitesVDAvant = filtreSitesHC(organisation.getSitesSecondaires(dateAvant), dateAvant);
+		List<SiteOrganisation> sitesVDApres = filtreSitesHC(organisation.getSitesSecondaires(dateApres), dateApres);
 
-		determineChangementsEtablissements(sitesAvant, sitesApres, etablissementsAFermer, sitesACreer, context);
+		determineChangementsEtablissements(sitesVDAvant, sitesVDApres, etablissementsAFermer, sitesACreer, context);
 
-		List<EtablissementsSecondaires.Demenagement> demenagements = determineChangementsDomiciles(sitesAvant, sitesApres, dateApres, context);
+		List<EtablissementsSecondaires.Demenagement> demenagements = determineChangementsDomiciles(sitesVDAvant, sitesVDApres, dateApres, context);
 
 		if (!etablissementsAFermer.isEmpty() || !sitesACreer.isEmpty() || !demenagements.isEmpty()) {
 			LOGGER.info(String.format("Modification des établissements secondaires de l'entreprise %s (civil: %s).", entreprise.getNumero(), organisation.getNumeroOrganisation()));
@@ -71,6 +71,17 @@ public class EtablissementsSecondairesStrategy extends AbstractOrganisationStrat
 
 		LOGGER.info("Pas de modification des établissements secondaires");
 		return null;
+	}
+
+	private List<SiteOrganisation> filtreSitesHC(List<SiteOrganisation> sitesSecondaires, RegDate date) {
+		List<SiteOrganisation> filtre = new ArrayList<>(sitesSecondaires.size());
+		for (SiteOrganisation site : sitesSecondaires) {
+			Domicile domicile = site.getDomicile(date);
+			if (domicile != null && domicile.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
+				filtre.add(site);
+			}
+		}
+		return filtre;
 	}
 
 	protected void determineChangementsEtablissements(List<SiteOrganisation> sitesAvant, List<SiteOrganisation> sitesApres, List<Etablissement> etablissementsAFermer, List<SiteOrganisation> siteACreer, EvenementOrganisationContext context) throws
@@ -96,7 +107,9 @@ public class EtablissementsSecondairesStrategy extends AbstractOrganisationStrat
 			boolean nouveau = true;
 			for (SiteOrganisation ancienSite : sitesAvant) {
 				if (presentSite.getNumeroSite() == ancienSite.getNumeroSite()) {
-					nouveau = false;
+					Etablissement etablissement = context.getTiersDAO().getEtablissementByNumeroSite(ancienSite.getNumeroSite());
+					nouveau = etablissement == null;
+					break;
 				}
 			}
 			if (nouveau) {
@@ -113,33 +126,20 @@ public class EtablissementsSecondairesStrategy extends AbstractOrganisationStrat
 		// Determiner les sites qui ont déménagé.
 		for (SiteOrganisation ancienSite : sitesAvant) {
 			for (SiteOrganisation presentSite : sitesApres) {
-				if (ancienSite.getNumeroSite() == presentSite.getNumeroSite()) {
+				if (ancienSite.getNumeroSite() == presentSite.getNumeroSite()) { // On ne retient que les cas ou l'établissement n'a pas changé.
+
+					// On compare les domiciles tels que les voit RCEnt
 					final Domicile domicileAvant = ancienSite.getDomicile(date.getOneDayBefore());
 					final Domicile domicileApres = presentSite.getDomicile(date);
 
+					// On considère qu'on est en présence d'un déménagement que si on connait déjà l'établissement dans Unireg.
 					Etablissement etablissement = context.getTiersDAO().getEtablissementByNumeroSite(ancienSite.getNumeroSite());
-					if (etablissement != null) {
-						final List<DomicileEtablissement> sortedDomiciles = etablissement.getSortedDomiciles(false);
-
-						DomicileEtablissement domicileEtablissement = null;
-						for (DomicileEtablissement de : sortedDomiciles) {
-							if (de.getNumeroOfsAutoriteFiscale() == domicileAvant.getNoOfs()) {
-								domicileEtablissement = de;
-								break;
-							}
-						}
-
-						/* Determiner les déménagements pour ce Site/Etablissement. On le fait en comparant les données
-						   civiles, mais seulement pour les sites déjà connus d'Unireg.
-						 */
-						if (domicileEtablissement != null && domicileAvant.getNoOfs() != domicileApres.getNoOfs()) {
-							demenagements.add(new EtablissementsSecondaires.Demenagement(etablissement, domicileEtablissement, domicileApres, date));
-						}
+					if (etablissement != null && domicileAvant.getNoOfs() != domicileApres.getNoOfs()) {
+						demenagements.add(new EtablissementsSecondaires.Demenagement(etablissement, domicileAvant, domicileApres, date));
 					}
 				}
 			}
 		}
 		return demenagements;
 	}
-
 }

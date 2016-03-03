@@ -19,7 +19,6 @@ import ch.vd.unireg.interfaces.organisation.mock.data.MockOrganisation;
 import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockOrganisationFactory;
 import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockSiteOrganisationFactory;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
-import ch.vd.uniregctb.tiers.DomicileEtablissement;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.Etablissement;
 import ch.vd.uniregctb.type.EtatEvenementOrganisation;
@@ -101,11 +100,6 @@ public class CreateEntrepriseHorsVDProcessorTest extends AbstractEvenementOrgani
 					                             final List<DateRanged<Etablissement>> etbsPrns = tiersService.getEtablissementsPrincipauxEntreprise(entreprise);
 					                             Assert.assertEquals(1, etbsPrns.size());
 					                             Assert.assertEquals(RegDate.get(2015, 6, 25), etbsPrns.get(0).getDateDebut());
-
-					                             final Etablissement etablissement = etbsPrns.get(0).getPayload();
-					                             DomicileEtablissement domicile = etablissement.getDomiciles().iterator().next();
-					                             Assert.assertEquals(RegDate.get(2015, 6, 25), domicile.getDateDebut());
-					                             Assert.assertEquals(domicile.getNumeroOfsAutoriteFiscale().longValue(), MockCommune.Zurich.getNoOFS());
 				                             }
 				                             {
 					                             final List<DateRanged<Etablissement>> etbsSecs = tiersService.getEtablissementsSecondairesEntreprise(entreprise);

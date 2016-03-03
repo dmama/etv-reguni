@@ -95,9 +95,6 @@ public class CreateEntrepriseDPPMProcessorTest extends AbstractEvenementOrganisa
 					                             final List<DateRanged<Etablissement>> etbsPrns = tiersService.getEtablissementsPrincipauxEntreprise(entreprise);
 					                             Assert.assertEquals(1, etbsPrns.size());
 					                             Assert.assertEquals(RegDate.get(2015, 6, 25), etbsPrns.get(0).getDateDebut());
-
-					                             final Etablissement etablissement = etbsPrns.get(0).getPayload();
-					                             Assert.assertEquals(RegDate.get(2015, 6, 25), etablissement.getDomiciles().iterator().next().getDateDebut());
 				                             }
 				                             {
 					                             final List<DateRanged<Etablissement>> etbsSecs = tiersService.getEtablissementsSecondairesEntreprise(entreprise);

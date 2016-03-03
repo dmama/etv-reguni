@@ -18,7 +18,6 @@ import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationErreurC
 import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationSuiviCollector;
 import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationWarningCollector;
 import ch.vd.uniregctb.evenement.organisation.interne.EvenementOrganisationInterneDeTraitement;
-import ch.vd.uniregctb.tiers.DomicileEtablissement;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.Etablissement;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
@@ -66,10 +65,18 @@ public class EtablissementsSecondaires extends EvenementOrganisationInterneDeTra
 			closeEtablissement(aFermer, dateAvant, warnings, suivis);
 		}
 		for (SiteOrganisation aCreer : sitesACreer) {
+
+			// Contrôle du cas ou on va crée un établissement existant mais qu'on ne connaissait pas. On le crée quand même mais on avertit.
+			Domicile ancienDomicile = aCreer.getDomicile(dateAvant);
+			if (ancienDomicile != null) {
+				warnings.addWarning(String.format("Vérification manuelle requise: découverte de l'établissement secondaire (n°%s civil) préexistant au civil mais inconnu d'Unireg à ce jour. " +
+						                                  "Sa date de création doit probablement être ajustée à la main.",
+				                                  aCreer.getNumeroSite()));
+			}
 			addEtablissementSecondaire(aCreer, dateApres, warnings, suivis);
 		}
 		for (EtablissementsSecondaires.Demenagement demenagement : demenagements) {
-			demenageDomicileEtablissement(demenagement.etablissement, demenagement.getAncienDomicile(), demenagement.getNouveauDomicile(), demenagement.getDate(), suivis);
+			signaleDemenagement(demenagement.etablissement, demenagement.getAncienDomicile(), demenagement.getNouveauDomicile(), demenagement.getDate(), suivis);
 		}
 
 		adapteForsSecondairesPourEtablissementsVD(getEntreprise(), null, warnings, suivis);
@@ -125,11 +132,11 @@ public class EtablissementsSecondaires extends EvenementOrganisationInterneDeTra
 
 	public static class Demenagement {
 		private final Etablissement etablissement;
-		private final DomicileEtablissement ancienDomicile;
+		private final Domicile ancienDomicile;
 		private final Domicile nouveauDomicile;
 		private final RegDate date;
 
-		public Demenagement(Etablissement etablissement, DomicileEtablissement ancienDomicile, Domicile nouveauDomicile, RegDate date) {
+		public Demenagement(Etablissement etablissement, Domicile ancienDomicile, Domicile nouveauDomicile, RegDate date) {
 			this.etablissement = etablissement;
 			this.ancienDomicile = ancienDomicile;
 			this.nouveauDomicile = nouveauDomicile;
@@ -140,7 +147,7 @@ public class EtablissementsSecondaires extends EvenementOrganisationInterneDeTra
 			return etablissement;
 		}
 
-		public DomicileEtablissement getAncienDomicile() {
+		public Domicile getAncienDomicile() {
 			return ancienDomicile;
 		}
 
