@@ -1630,6 +1630,8 @@ public interface TiersService {
 	 */
 	void closeDomicileEtablissement(DomicileEtablissement domicile, RegDate dateFin);
 
+	void closeRapportEntreTiers(RapportEntreTiers rapport, RegDate dateFin);
+
 	/**
 	 * Crée un allègement fiscal cantonal sur l'entreprise passée en paramètre, avec les informations fournies
 	 * @param e l'entreprise destinataire

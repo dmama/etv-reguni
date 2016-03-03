@@ -5400,6 +5400,18 @@ public class TiersServiceImpl implements TiersService {
 		domicile.setDateFin(dateFin);
 	}
 
+	@Override
+	public void closeRapportEntreTiers(RapportEntreTiers rapport, RegDate dateFin) {
+		Assert.notNull(rapport);
+		if (rapport.getDateDebut().isAfter(dateFin)) {
+			throw new ValidationException(rapport, "La date de fermeture (" + RegDateHelper.dateToDisplayString(dateFin) + ") est avant la date de début (" +
+					RegDateHelper.dateToDisplayString(rapport.getDateDebut())
+					+ ") du rapport");
+		}
+
+		rapport.setDateFin(dateFin);
+	}
+
 	@Nullable
 	private static AllegementFiscal getDernierAllegementFiscal(Entreprise e, AllegementFiscalHelper.OverlappingKey key) {
 		final List<AllegementFiscal> tous = e.getAllegementsFiscauxNonAnnulesTries();
