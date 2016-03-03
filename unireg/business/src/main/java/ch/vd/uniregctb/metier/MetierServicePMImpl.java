@@ -107,7 +107,7 @@ public class MetierServicePMImpl implements MetierServicePM {
 	}
 
 	/**
-	 * Méthode "magique" qui parcoure les établissements de l'entreprise, extrait les domiciles et qui ajuste les fors secondaires en prenant soin d'éviter
+	 * Méthode qui parcoure les établissements de l'entreprise et qui ajuste les fors secondaires en prenant soin d'éviter
 	 * les chevauchements. Elle crée les fors nécessaires, ferme ceux qui se terminent et annule ceux qui sont devenus redondants.
 	 *
 	 * La méthode gère les fors secondaires uniquement sur VD
