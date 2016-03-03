@@ -49,6 +49,7 @@ import ch.vd.uniregctb.common.HibernateEntity;
 import ch.vd.uniregctb.common.LengthConstants;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.type.MotifFor;
+import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.TypeAdresseTiers;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
@@ -642,17 +643,21 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 	 * @return Renvoie les fors secondaires dans une map indexée par no ofs de la commune
 	 */
 	@Transient
-	public Map<Integer, List<ForFiscalSecondaire>> getForsFiscauxSecondairesActifsSortedMapped() {
+	public Map<Integer, List<ForFiscalSecondaire>> getForsFiscauxSecondairesActifsSortedMapped(MotifRattachement filtreMotifRattachement) {
 		Map<Integer, List<ForFiscalSecondaire>> map = new HashMap<>();
 		if (forsFiscaux != null) {
 			for (ForFiscal ff : forsFiscaux) {
 				if (ff instanceof ForFiscalSecondaire && !ff.isAnnule()) {
-					List<ForFiscalSecondaire> ffps = map.get(ff.getNumeroOfsAutoriteFiscale());
+					ForFiscalSecondaire ffsec = (ForFiscalSecondaire) ff;
+					if (filtreMotifRattachement != null && ffsec.getMotifRattachement() != filtreMotifRattachement) {
+						continue;
+					}
+					List<ForFiscalSecondaire> ffps = map.get(ffsec.getNumeroOfsAutoriteFiscale());
 					if (ffps == null) {
 						ffps = new ArrayList<>();
-						map.put(ff.getNumeroOfsAutoriteFiscale(), ffps);
+						map.put(ffsec.getNumeroOfsAutoriteFiscale(), ffps);
 					}
-					ffps.add((ForFiscalSecondaire) ff);
+					ffps.add(ffsec);
 				}
 			}
 			for (Map.Entry<Integer, List<ForFiscalSecondaire>> e : map.entrySet()) {
@@ -660,6 +665,16 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 			}
 		}
 		return map;
+	}
+
+	/**
+	 * Trie les fors secondaires par date, sans les annulés
+	 *
+	 * @return Renvoie les fors secondaires dans une map indexée par no ofs de la commune
+	 */
+	@Transient
+	public Map<Integer, List<ForFiscalSecondaire>> getForsFiscauxSecondairesActifsSortedMapped() {
+		return getForsFiscauxSecondairesActifsSortedMapped(null);
 	}
 
 	/**

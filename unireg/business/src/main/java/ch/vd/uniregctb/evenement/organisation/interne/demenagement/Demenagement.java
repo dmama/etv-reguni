@@ -66,9 +66,9 @@ public abstract class Demenagement extends EvenementOrganisationInterneDeTraitem
 	 * @param warnings
 	 */
 	protected void changeSiegeEtablissement(Etablissement etablissementPrincipal, MotifFor motifFor, EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) throws EvenementOrganisationException {
-		changeDomicileEtablissement(etablissementPrincipal, getSiegeApres(), getDateAvant(), getDateApres(), suivis);
+		signaleDemenagement(etablissementPrincipal, getSiegeAvant(), getSiegeApres(), getDateApres(), suivis);
 
-		final ForFiscalPrincipal forFiscalPrincipal = getEntreprise().getForFiscalPrincipalAt(null);
+		final ForFiscalPrincipal forFiscalPrincipal = getEntreprise().getForFiscalPrincipalAt(getDateAvant());
 		if (forFiscalPrincipal == null) {
 			throw new EvenementOrganisationException("Aucun for trouvé pour l'établissement principal.");
 		}

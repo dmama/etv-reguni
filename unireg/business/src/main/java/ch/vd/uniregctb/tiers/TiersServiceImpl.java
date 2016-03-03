@@ -6198,6 +6198,9 @@ public class TiersServiceImpl implements TiersService {
 
 	private List<DomicileHisto> extractDomicilesFiscauxEtablissement(Etablissement etablissement) {
 		final Set<DomicileEtablissement> domicileEtablissement = etablissement.getDomiciles();
+		if (domicileEtablissement == null) {
+			return Collections.emptyList();
+		}
 		final List<DomicileHisto> domiciles = new ArrayList<>(domicileEtablissement.size());
 		for (DomicileEtablissement domicile: domicileEtablissement) {
 			domiciles.add(new DomicileHisto(domicile));

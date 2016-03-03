@@ -29,6 +29,7 @@ import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationOptions;
 import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationErreurCollector;
 import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationSuiviCollector;
 import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationWarningCollector;
+import ch.vd.uniregctb.metier.MetierServicePM;
 import ch.vd.uniregctb.metier.MetierServicePMImpl;
 import ch.vd.uniregctb.tiers.ActiviteEconomique;
 import ch.vd.uniregctb.tiers.Bouclement;
@@ -559,8 +560,6 @@ public abstract class EvenementOrganisationInterne {
 
 		// L'établissement
 		Etablissement etablissement = (Etablissement) context.getTiersDAO().save(createEtablissement(numeroSite));
-		// Le domicile
-		context.getTiersDAO().addAndSave(etablissement, new DomicileEtablissement(dateDebut, null, autoriteFiscale.getTypeAutoriteFiscale(), autoriteFiscale.getNoOfs(), etablissement));
 		// L'activité économique
 		getContext().getTiersService().addRapport(new ActiviteEconomique(dateDebut, null, entreprise, etablissement, principal), getEntreprise(), etablissement);
 
@@ -576,16 +575,25 @@ public abstract class EvenementOrganisationInterne {
 		raiseStatusTo(HandleStatus.TRAITE);
 	}
 
-	protected void demenageDomicileEtablissement(Etablissement etablissement, DomicileEtablissement ancienDomicile, Domicile nouveauDomicile, RegDate dateDebut, EvenementOrganisationSuiviCollector suivis) {
-		final String commune = DateRangeHelper.rangeAt(context.getServiceInfra().getCommuneHistoByNumeroOfs(nouveauDomicile.getNoOfs()), dateDebut).getNomOfficielAvecCanton();
-		suivis.addSuivi(String.format("Déménagement de l'établissement %s. Nouveau domicile %s (ofs: %s), à partir du %s.",
+	/**
+	 * Méthode qui se contente de signaler le changement de domicile de l'établissement.
+	 *
+	 * @param etablissement
+	 * @param ancienDomicile
+	 * @param nouveauDomicile
+	 * @param dateDebut
+	 * @param suivis
+	 */
+	protected void signaleDemenagement(Etablissement etablissement, Domicile ancienDomicile, Domicile nouveauDomicile, RegDate dateDebut, EvenementOrganisationSuiviCollector suivis) {
+		final String ancienneCommune = DateRangeHelper.rangeAt(context.getServiceInfra().getCommuneHistoByNumeroOfs(ancienDomicile.getNoOfs()), dateDebut.getOneDayBefore()).getNomOfficielAvecCanton();
+		final String nouvelleCommune = DateRangeHelper.rangeAt(context.getServiceInfra().getCommuneHistoByNumeroOfs(nouveauDomicile.getNoOfs()), dateDebut).getNomOfficielAvecCanton();
+		suivis.addSuivi(String.format("L'établissement %s a déménagé (Pas d'impact Unireg). Ancien domicile  %s (ofs: %s). Nouveau domicile %s (ofs: %s), à partir du %s.",
 		                              etablissement.getNumero(),
-		                              commune,
+		                              ancienneCommune,
+		                              nouveauDomicile.getNoOfs(),
+		                              nouvelleCommune,
 		                              nouveauDomicile.getNoOfs(),
 		                              RegDateHelper.dateToDisplayString(dateDebut)));
-		context.getTiersService().closeDomicileEtablissement(ancienDomicile, dateDebut.getOneDayBefore());
-		context.getTiersDAO().addAndSave(etablissement, new DomicileEtablissement(dateDebut, null, nouveauDomicile.getTypeAutoriteFiscale(), nouveauDomicile.getNoOfs(), etablissement));
-		raiseStatusTo(HandleStatus.TRAITE);
 	}
 
 	private Etablissement createEtablissement(Long numeroSite) {
@@ -762,46 +770,18 @@ public abstract class EvenementOrganisationInterne {
 		raiseStatusTo(HandleStatus.TRAITE);
 	}
 
-	/**
-	 * Opère un changement de domicile sur un établissement donné.
-	 * <p>
-	 * <b>Note:</b> La méthode utilise les dates avant/après de l'événement interne en cours de traitement.
-	 * </p>
-	 * @param etablissement L'établissement concerné par le changement de domicile
-	 * @param domicileApres    Le siège d'où extrapoler le domicile.
-	 * @param dateAvant     La date du dernier jour du domicile précédant
-	 * @param dateApres     La date du premier jour du nouveau domicile
-	 * @param suivis        Le collector pour le suivi
-	 */
-	protected void changeDomicileEtablissement(@NotNull Etablissement etablissement, @NotNull Domicile domicileApres, @NotNull RegDate dateAvant, @NotNull RegDate dateApres, EvenementOrganisationSuiviCollector suivis) {
-		final DomicileEtablissement domicilePrecedant = DateRangeHelper.rangeAt(etablissement.getSortedDomiciles(false), dateApres);
-		context.getTiersService().closeDomicileEtablissement(domicilePrecedant, dateAvant);
-		context.getTiersService().addDomicileEtablissement(etablissement, domicileApres.getTypeAutoriteFiscale(),
-		                                                   domicileApres.getNoOfs(), dateApres, null);
-
-		Commune communePrecedante = context.getServiceInfra().getCommuneByNumeroOfs(domicilePrecedant.getNumeroOfsAutoriteFiscale(), dateAvant);
-		Commune nouvelleCommune = context.getServiceInfra().getCommuneByNumeroOfs(domicileApres.getNoOfs(), dateApres);
-
-		suivis.addSuivi(
-		           String.format("Changement du domicile de l'établissement no %s (civil: %s) de %s (civil: %s) vers %s (civil: %s).",
-		                         etablissement.getNumero(), etablissement.getNumeroEtablissement(),
-		                         communePrecedante.getNomOfficielAvecCanton(), domicilePrecedant.getNumeroOfsAutoriteFiscale(),
-		                         nouvelleCommune.getNomOfficielAvecCanton(), nouvelleCommune.getNoOFS())
-		);
-
-		raiseStatusTo(HandleStatus.TRAITE);
-	}
-
 	protected void closeEtablissement(Etablissement etablissement, RegDate dateFin,  EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) throws
 			EvenementOrganisationException {
+		suivis.addSuivi(String.format("Fermeture de l'établissement %s pour le %s", etablissement.getNumero(), RegDateHelper.dateToDisplayString(dateFin)));
 		final List<DomicileEtablissement> sortedDomiciles = etablissement.getSortedDomiciles(false);
 		final DomicileEtablissement domicile = DateRangeHelper.rangeAt(sortedDomiciles, dateFin);
-		if (!DateRangeHelper.equals(domicile, CollectionsUtils.getLastElement(sortedDomiciles))) {
-			throw new EvenementOrganisationException(String.format("L'établissement %s a déménagé depuis la date pour laquelle on cherche à le fermer!", etablissement.getNumero()));
-		}
+		if (domicile != null) {
+			if (!DateRangeHelper.equals(domicile, CollectionsUtils.getLastElement(sortedDomiciles))) {
+				throw new EvenementOrganisationException(String.format("L'établissement %s a déménagé depuis la date pour laquelle on cherche à le fermer!", etablissement.getNumero()));
+			}
 
-		suivis.addSuivi(String.format("Fermeture de l'établissement %s pour le %s", etablissement.getNumero(), RegDateHelper.dateToDisplayString(dateFin)));
-		context.getTiersService().closeDomicileEtablissement(domicile, dateFin);
+			context.getTiersService().closeDomicileEtablissement(domicile, dateFin);
+		}
 		final RapportEntreTiers rapportEntreprise = etablissement.getRapportObjetValidAt(dateFin, TypeRapportEntreTiers.ACTIVITE_ECONOMIQUE);
 		context.getTiersService().closeRapportEntreTiers(rapportEntreprise, dateFin);
 
@@ -838,20 +818,20 @@ public abstract class EvenementOrganisationInterne {
 	protected void adapteForsSecondairesPourEtablissementsVD(Entreprise entreprise, RegDate dateAuPlusTot, EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) throws
 			EvenementOrganisationException {
 
-		final MetierServicePMImpl.ResultatAdapterForsSecondaires resultatAdapterForsSecondaires =
-				getContext().getMetierServicePM().calculAdaptationForsSecondairesPourEtablissementsVD(entreprise, dateAuPlusTot);
+		final MetierServicePM.ResultatAjustementForsSecondaires ajustementForsSecondaires =
+				getContext().getMetierServicePM().calculAjustementForsSecondairesPourEtablissementsVD(entreprise, dateAuPlusTot);
 
-		for (ForFiscalSecondaire forAAnnuler : resultatAdapterForsSecondaires.getAAnnuler()) {
+		for (ForFiscalSecondaire forAAnnuler : ajustementForsSecondaires.getAAnnuler()) {
 			annulerForFiscalSecondaire(forAAnnuler, warnings, suivis);
 		}
 
 		final List<ForFiscalPrincipalPM> forsFiscauxPrincipauxActifsSorted = entreprise.getForsFiscauxPrincipauxActifsSorted();
 
-		for (MetierServicePMImpl.ForAFermer forAFermer : resultatAdapterForsSecondaires.getAFermer()) {
+		for (MetierServicePMImpl.ForAFermer forAFermer : ajustementForsSecondaires.getAFermer()) {
 			closeForFiscalSecondaire(forAFermer.getDateFermeture(), forAFermer.getForFiscal(), MotifFor.FIN_EXPLOITATION, suivis);
 		}
 
-		for (ForFiscalSecondaire forACreer : resultatAdapterForsSecondaires.getACreer()) {
+		for (ForFiscalSecondaire forACreer : ajustementForsSecondaires.getACreer()) {
 			final boolean forPrincipalCouvreLaPeriode = isForPrincipalExistantSurTouteLaPeriode(forACreer, forsFiscauxPrincipauxActifsSorted);
 			if (forPrincipalCouvreLaPeriode) {
 				creerForFiscalSecondaire(forACreer.getDateDebut(), forACreer.getDateFin(), forACreer.getMotifRattachement(), forACreer.getNumeroOfsAutoriteFiscale(), forACreer.getTypeAutoriteFiscale(),

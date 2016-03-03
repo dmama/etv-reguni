@@ -119,15 +119,15 @@ public class MetierServicePMImpl implements MetierServicePM {
 	 * @param dateAuPlusTot la date de coupure pour la création d'entreprise.
 	 */
 	@Override
-	public ResultatAdapterForsSecondaires calculAdaptationForsSecondairesPourEtablissementsVD(Entreprise entreprise, RegDate dateAuPlusTot) throws EvenementOrganisationException {
+	public MetierServicePM.ResultatAjustementForsSecondaires calculAjustementForsSecondairesPourEtablissementsVD(Entreprise entreprise, RegDate dateAuPlusTot) throws EvenementOrganisationException {
 		final List<ForFiscalSecondaire> aAnnulerResultat = new ArrayList<>();
 		final List<ForAFermer> aFermerResultat = new ArrayList<>();
 		final List<ForFiscalSecondaire> aCreerResultat = new ArrayList<>();
 
 		List<DateRanged<Etablissement>> etablissements = tiersService.getEtablissementsSecondairesEntreprise(entreprise);
 
-		// Les domiciles classés par commune
-		final Map<Integer, List<DomicileHisto>> tousLesDomiciles = new HashMap<>();
+		// Les domiciles VD classés par commune
+		final Map<Integer, List<DomicileHisto>> tousLesDomicilesVD = new HashMap<>();
 		for (DateRanged<Etablissement> etablissement : etablissements) {
 			final List<DomicileHisto> domiciles = tiersService.getDomiciles(etablissement.getPayload());
 			if (domiciles != null && !domiciles.isEmpty()) {
@@ -135,30 +135,32 @@ public class MetierServicePMImpl implements MetierServicePM {
 					if (domicile.getTypeAutoriteFiscale() != TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
 						continue; // On ne crée des fors secondaires que pour VD
 					}
-					List<DomicileHisto> histoPourCommune = tousLesDomiciles.get(domicile.getNoOfs());
+					List<DomicileHisto> histoPourCommune = tousLesDomicilesVD.get(domicile.getNoOfs());
 					if (histoPourCommune == null) {
 						histoPourCommune = new ArrayList<>();
-						tousLesDomiciles.put(domicile.getNoOfs(), histoPourCommune);
+						tousLesDomicilesVD.put(domicile.getNoOfs(), histoPourCommune);
 					}
 					histoPourCommune.add(domicile);
 				}
 			}
 		}
 
-		// Charger les historiques de fors secondaire existant pour chaque commune
-		final Map<Integer, List<ForFiscalSecondaire>> tousLesForsFiscauxSecondairesParCommune = entreprise.getForsFiscauxSecondairesActifsSortedMapped();
+		// Charger les historiques de fors secondaire établissement stables existant pour chaque commune
+		final Map<Integer, List<ForFiscalSecondaire>> tousLesForsFiscauxSecondairesParCommune =
+				entreprise.getForsFiscauxSecondairesActifsSortedMapped(MotifRattachement.ETABLISSEMENT_STABLE);
 
 		// On ne coupe rien qui existe déjà! Sécurité.
 		if (dateAuPlusTot != null) {
 			for (Map.Entry<Integer, List<ForFiscalSecondaire>> entry : tousLesForsFiscauxSecondairesParCommune.entrySet()) {
 				final ForFiscalSecondaire existant = DateRangeHelper.rangeAt(entry.getValue(), dateAuPlusTot);
 				if (existant != null) {
-					throw new EvenementOrganisationException(String.format("Au moins un for secondaire valide avant la date au plus tot %s a été trouvé sur la commune %s débutant le %s%s. " +
-							                                                       "Ceci indique une situation potentiellement créée à la main. Impossible de continuer.",
-					                                                       dateAuPlusTot,
+					throw new EvenementOrganisationException(String.format("Une date au plus tôt %s est précisée pour le recalcul des fors secondaires, indiquant qu'on est en mode création. Mais " +
+							                                                       "au moins un for secondaire valide débutant antiérieurement a été trouvé sur la commune %s. " +
+							                                                       "Début %s%s. Impossible de continuer. Veuillez signaler l'erreur.",
+					                                                       RegDateHelper.dateToDisplayString(dateAuPlusTot),
 					                                                       existant.getNumeroOfsAutoriteFiscale(),
 					                                                       RegDateHelper.dateToDisplayString(existant.getDateDebut()),
-					                                                       existant.getDateFin() != null ? " et se terminant le " + RegDateHelper.dateToDisplayString(existant.getDateFin()) : ""
+					                                                       existant.getDateFin() != null ? " , fin " + RegDateHelper.dateToDisplayString(existant.getDateFin()) : ""
 					));
 				}
 			}
@@ -169,10 +171,9 @@ public class MetierServicePMImpl implements MetierServicePM {
 		/* Fusion des ranges qui se chevauchent pour obtenir la liste des ranges tels qu'on les veut, les candidats.
 		   Ensuite de quoi on détermine ceux à annuler et ceux à créer pour la commune en cours.
 		 */
-		for (Map.Entry<Integer, List<DomicileHisto>> domicilesPourCommune : tousLesDomiciles.entrySet()) {
+		for (Map.Entry<Integer, List<DomicileHisto>> domicilesPourCommune : tousLesDomicilesVD.entrySet()) {
 			if (!domicilesPourCommune.getValue().isEmpty()) {
 				final Integer noOfsCommune = domicilesPourCommune.getKey();
-				final TypeAutoriteFiscale typeAutoriteFiscale = domicilesPourCommune.getValue().get(0).getTypeAutoriteFiscale(); // Pour connaitre le type d'autorité
 
 				final List<DateRange> rangesCandidatsPourCommune = DateRangeHelper.merge(domicilesPourCommune.getValue());
 
@@ -223,7 +224,7 @@ public class MetierServicePMImpl implements MetierServicePM {
 					if (!existe) {
 						aCreer.add(new ForFiscalSecondaire(rangesCandidat.getDateDebut(), MotifFor.DEBUT_EXPLOITATION,
 						                                   rangesCandidat.getDateFin(), rangesCandidat.getDateFin() != null ? MotifFor.FIN_EXPLOITATION : null,
-						                                   noOfsCommune, typeAutoriteFiscale, MotifRattachement.ETABLISSEMENT_STABLE));
+						                                   noOfsCommune, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.ETABLISSEMENT_STABLE));
 					}
 				}
 			}
@@ -242,7 +243,7 @@ public class MetierServicePMImpl implements MetierServicePM {
 			aCreerResultat.add(forACreer);
 		}
 
-		return new ResultatAdapterForsSecondairesImpl(aAnnulerResultat, aFermerResultat, aCreerResultat);
+		return new ResultatAjustementForsSecondairesImpl(aAnnulerResultat, aFermerResultat, aCreerResultat);
 	}
 
 	public static class ForAFermer {
@@ -263,30 +264,12 @@ public class MetierServicePMImpl implements MetierServicePM {
 		}
 	}
 
-	public interface ResultatAdapterForsSecondaires {
-
-		/**
-		 * @return liste des fors à annuler
-		 */
-		List<ForFiscalSecondaire> getAAnnuler();
-
-		/**
-		 * @return liste des fors à fermer
-		 */
-		List<ForAFermer> getAFermer();
-
-		/**
-		 * @return liste des fors à créer
-		 */
-		List<ForFiscalSecondaire> getACreer();
-	}
-
-	public class ResultatAdapterForsSecondairesImpl implements ResultatAdapterForsSecondaires {
+	public class ResultatAjustementForsSecondairesImpl implements MetierServicePM.ResultatAjustementForsSecondaires {
 		private final List<ForFiscalSecondaire> aAnnuler;
 		private final List<ForAFermer> aFermer;
 		private final List<ForFiscalSecondaire> aCreer;
 
-		public ResultatAdapterForsSecondairesImpl(List<ForFiscalSecondaire> aAnnuler, List<ForAFermer> aFermer, List<ForFiscalSecondaire> aCreer) {
+		public ResultatAjustementForsSecondairesImpl(List<ForFiscalSecondaire> aAnnuler, List<ForAFermer> aFermer, List<ForFiscalSecondaire> aCreer) {
 			this.aAnnuler = aAnnuler;
 			this.aFermer = aFermer;
 			this.aCreer = aCreer;
