@@ -22,7 +22,6 @@ import ch.vd.uniregctb.security.SecurityProviderInterface;
 import ch.vd.uniregctb.tiers.AutreCommunaute;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.Contribuable;
-import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesMorales;
 import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
@@ -471,40 +470,6 @@ public class AutorisationManagerImpl implements AutorisationManager {
 			}
 		}
 
-		if (tiers instanceof ContribuableImpositionPersonnesMorales) {
-			if (SecurityHelper.isAnyGranted(securityProvider, visa, oid,  Role.DI_EMIS_PM, Role.DI_DELAI_PM, Role.DI_DUPLIC_PM, Role.DI_QUIT_PM, Role.DI_SOM_PM, Role.DI_SUSPENDRE_PM, Role.DI_DESUSPENDRE_PM, Role.DI_DESANNUL_PM)) {
-				map.put(MODIF_DI, Boolean.TRUE);
-			}
-
-			if (SecurityHelper.isGranted(securityProvider, Role.GEST_DECISION_ACI, visa, oid)) {
-				map.put(FISCAL_DECISION_ACI, Boolean.TRUE);
-				map.put(MODIF_FISCAL, Boolean.TRUE);
-			}
-
-			final boolean ctbModifiableSelonRoleEtDecision = isCtbModifiableSelonRoleEtDecisions((ContribuableImpositionPersonnesMorales) tiers, visa, oid);
-			if (ctbModifiableSelonRoleEtDecision && SecurityHelper.isGranted(securityProvider, Role.FOR_PRINC_PM, visa, oid)) {
-				map.put(FISCAL_FOR_PRINC, Boolean.TRUE);
-				map.put(MODIF_FISCAL, Boolean.TRUE);
-			}
-			if (ctbModifiableSelonRoleEtDecision && SecurityHelper.isGranted(securityProvider, Role.FOR_SECOND_PM, visa, oid)) {
-				map.put(FISCAL_FOR_SEC, Boolean.TRUE);
-				map.put(MODIF_FISCAL, Boolean.TRUE);
-			}
-			if (ctbModifiableSelonRoleEtDecision && SecurityHelper.isGranted(securityProvider, Role.BOUCLEMENTS_PM, visa, oid)) {
-				map.put(MODIF_BOUCLEMENTS, Boolean.TRUE);
-			}
-
-			if (SecurityHelper.isGranted(securityProvider, Role.REGIMES_FISCAUX, visa, oid)) {
-				map.put(MODIF_REGIMES_FISCAUX, Boolean.TRUE);
-			}
-			if (SecurityHelper.isGranted(securityProvider, Role.ALLEGEMENTS_FISCAUX, visa, oid)) {
-				map.put(MODIF_ALLEGEMENTS_FISCAUX, Boolean.TRUE);
-			}
-			if (SecurityHelper.isGranted(securityProvider, Role.FLAGS_PM, visa, oid)) {
-				map.put(MODIF_FLAGS_PM, Boolean.TRUE);
-			}
-		}
-
 		if (tiers instanceof PersonnePhysique) {
 			PersonnePhysique pp = (PersonnePhysique) tiers;
 			if (pp.isHabitantVD()) {
@@ -585,6 +550,38 @@ public class AutorisationManagerImpl implements AutorisationManager {
 			}
 			if (SecurityHelper.isGranted(securityProvider, Role.ETABLISSEMENTS, visa, oid)) {
 				map.put(MODIF_ETABLISSEMENT, Boolean.TRUE);
+			}
+
+			if (SecurityHelper.isAnyGranted(securityProvider, visa, oid,  Role.DI_EMIS_PM, Role.DI_DELAI_PM, Role.DI_DUPLIC_PM, Role.DI_QUIT_PM, Role.DI_SOM_PM, Role.DI_SUSPENDRE_PM, Role.DI_DESUSPENDRE_PM, Role.DI_DESANNUL_PM)) {
+				map.put(MODIF_DI, Boolean.TRUE);
+			}
+
+			if (SecurityHelper.isGranted(securityProvider, Role.GEST_DECISION_ACI, visa, oid)) {
+				map.put(FISCAL_DECISION_ACI, Boolean.TRUE);
+				map.put(MODIF_FISCAL, Boolean.TRUE);
+			}
+
+			final boolean ctbModifiableSelonRoleEtDecision = isCtbModifiableSelonRoleEtDecisions((Entreprise) tiers, visa, oid);
+			if (ctbModifiableSelonRoleEtDecision && SecurityHelper.isGranted(securityProvider, Role.FOR_PRINC_PM, visa, oid)) {
+				map.put(FISCAL_FOR_PRINC, Boolean.TRUE);
+				map.put(MODIF_FISCAL, Boolean.TRUE);
+			}
+			if (ctbModifiableSelonRoleEtDecision && SecurityHelper.isGranted(securityProvider, Role.FOR_SECOND_PM, visa, oid)) {
+				map.put(FISCAL_FOR_SEC, Boolean.TRUE);
+				map.put(MODIF_FISCAL, Boolean.TRUE);
+			}
+			if (ctbModifiableSelonRoleEtDecision && SecurityHelper.isGranted(securityProvider, Role.BOUCLEMENTS_PM, visa, oid)) {
+				map.put(MODIF_BOUCLEMENTS, Boolean.TRUE);
+			}
+
+			if (SecurityHelper.isGranted(securityProvider, Role.REGIMES_FISCAUX, visa, oid)) {
+				map.put(MODIF_REGIMES_FISCAUX, Boolean.TRUE);
+			}
+			if (SecurityHelper.isGranted(securityProvider, Role.ALLEGEMENTS_FISCAUX, visa, oid)) {
+				map.put(MODIF_ALLEGEMENTS_FISCAUX, Boolean.TRUE);
+			}
+			if (SecurityHelper.isGranted(securityProvider, Role.FLAGS_PM, visa, oid)) {
+				map.put(MODIF_FLAGS_PM, Boolean.TRUE);
 			}
 		}
 		else if (tiers instanceof Etablissement) {
