@@ -570,11 +570,11 @@ public class PartyWebServiceSIPFTest extends AbstractPartyWebServiceTest {
 		final Address courrier = courriers.get(courriers.size() - 1);
 		final FormattedAddress adresseEnvoi = courrier.getFormattedAddress();
 		assertNotNull(adresseEnvoi);
-		assertEquals("Fonds prévoyance en faveur du personnel Sté électrique intercommunale de la Côte", trimValiPattern(adresseEnvoi.getLine1()));
-		assertEquals("Rte des Avouillons 2", trimValiPattern(adresseEnvoi.getLine2()));
-		assertEquals("Case Postale 321", trimValiPattern(adresseEnvoi.getLine3()));
-		assertEquals("1196 Gland", trimValiPattern(adresseEnvoi.getLine4()));
-		assertNull(adresseEnvoi.getLine5());
+		assertEquals("Fonds prévoyance en faveur du personnel", trimValiPattern(adresseEnvoi.getLine1()));
+		assertEquals("Sté électrique intercommunale de la Côte", trimValiPattern(adresseEnvoi.getLine2()));
+		assertEquals("Rte des Avouillons 2", trimValiPattern(adresseEnvoi.getLine3()));
+		assertEquals("Case Postale 321", trimValiPattern(adresseEnvoi.getLine4()));
+		assertEquals("1196 Gland", trimValiPattern(adresseEnvoi.getLine5()));
 		assertNull(adresseEnvoi.getLine6());
 		assertEquals(TariffZone.SWITZERLAND, courrier.getAddressInformation().getTariffZone());
 	}
