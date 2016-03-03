@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.NavigableSet;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
@@ -465,7 +467,10 @@ public class AdresseServiceImpl implements AdresseService {
 			if (fillFormulePolitesse) {
 				adresse.addFormulePolitesse(FormulePolitesse.PERSONNE_MORALE); // [UNIREG-2302]
 			}
-			adresse.addRaisonSociale(getRaisonSociale(entreprise));
+			final List<String> lignesRaisonSociale = segmenteRaisonSocialeSurPlusieursLignes(getRaisonSociale(entreprise));
+			for (String ligne : lignesRaisonSociale) {
+				adresse.addRaisonSociale(ligne);
+			}
 		}
 		else if (tiers instanceof Etablissement) {
 			final Etablissement etb = (Etablissement) tiers;
@@ -474,7 +479,10 @@ public class AdresseServiceImpl implements AdresseService {
 			}
 
 			// [SIFISC-16876] On n'utilise que la raison sociale pour l'adresse, l'enseigne ne sert que pour la recherche
-			adresse.addRaisonSociale(getRaisonSociale(etb));
+			final List<String> lignesRaisonSociale = segmenteRaisonSocialeSurPlusieursLignes(getRaisonSociale(etb));
+			for (String ligne : lignesRaisonSociale) {
+				adresse.addRaisonSociale(ligne);
+			}
 		}
 		else {
 			throw new NotImplementedException("Type de tiers [" + tiers.getNatureTiers() + "] inconnu");
@@ -483,6 +491,67 @@ public class AdresseServiceImpl implements AdresseService {
 		if (tiersPourAdresse != null) {
 			adresse.addPourAdresse(getPourAdresse(tiersPourAdresse));
 		}
+	}
+
+	@NotNull
+	protected static List<String> segmenteRaisonSocialeSurPlusieursLignes(String raisonSociale) {
+		if (StringUtils.isBlank(raisonSociale)) {
+			return Collections.emptyList();
+		}
+
+		final int longueurLigneMax = 40;
+		if (raisonSociale.length() <= longueurLigneMax) {
+			// un raccourci facile...
+			return Collections.singletonList(raisonSociale);
+		}
+
+		final int nbLignesMax = 3;
+		final char[] separateurs = " -".toCharArray();
+
+		// valeur = longueur de la chaîne de caractères avant le séparateur (séparateur non-compris), ou index du séparateur dans la chaîne
+		final NavigableSet<Integer> set = new TreeSet<>();
+		for (char separateur : separateurs) {
+			int index = -1;
+			while (true) {
+				index = raisonSociale.indexOf(separateur, index + 1);
+				if (index < 0) {
+					break;
+				}
+				set.add(index);
+			}
+		}
+
+		// remplissons les lignes
+		final List<String> lignes = new ArrayList<>(nbLignesMax);
+		int curseur = 0;
+		do {
+			final int fin;
+			if (curseur + longueurLigneMax > raisonSociale.length()) {
+				// on va jusqu'au bout, direct
+				fin = raisonSociale.length();
+			}
+			else {
+				final Integer dernierIndex = set.floor(curseur + longueurLigneMax);
+				if (dernierIndex == null || dernierIndex < curseur) {
+					// il n'y a pas de bloc de moins de x caractères juste après le curseur, il va falloir y aller au hachoir!
+					fin = curseur + longueurLigneMax;
+				}
+				else {
+					// on a un certain texte, que l'on peut prendre en compte
+					fin = dernierIndex + 1;
+				}
+			}
+			lignes.add(raisonSociale.substring(curseur, fin).trim());
+			curseur = fin;
+		}
+		while (lignes.size() < nbLignesMax && curseur < raisonSociale.length());
+
+		if (curseur < raisonSociale.length()) {
+			// la dernière ligne doit être tronquée proprement
+			final String derniereLigne = String.format(String.format("%%-%ds", longueurLigneMax + 1), lignes.get(lignes.size() - 1));
+			lignes.set(lignes.size() - 1, StringUtils.abbreviate(derniereLigne, longueurLigneMax));
+		}
+		return lignes;
 	}
 
 	/**
