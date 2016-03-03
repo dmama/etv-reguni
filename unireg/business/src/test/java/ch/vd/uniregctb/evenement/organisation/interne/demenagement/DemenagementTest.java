@@ -141,7 +141,7 @@ public class DemenagementTest extends AbstractEvenementOrganisationProcessorTest
 					                             Assert.assertEquals(MockCommune.Lausanne.getNoOFS(), forFiscalPrincipalPrecedant.getNumeroOfsAutoriteFiscale().intValue());
 					                             Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, forFiscalPrincipalPrecedant.getTypeAutoriteFiscale());
 					                             Assert.assertEquals(MotifFor.DEBUT_EXPLOITATION, forFiscalPrincipalPrecedant.getMotifOuverture());
-					                             Assert.assertEquals(MotifFor.DEMENAGEMENT_SIEGE, forFiscalPrincipalPrecedant.getMotifFermeture());
+					                             Assert.assertEquals(MotifFor.DEMENAGEMENT_VD, forFiscalPrincipalPrecedant.getMotifFermeture());
 				                             }
 				                             {
 					                             ForFiscalPrincipal forFiscalPrincipalNouveau = (ForFiscalPrincipal) entreprise.getForsFiscauxValidAt(RegDate.get(2015, 6, 24)).get(0);
@@ -150,7 +150,7 @@ public class DemenagementTest extends AbstractEvenementOrganisationProcessorTest
 					                             Assert.assertEquals(GenreImpot.BENEFICE_CAPITAL, forFiscalPrincipalNouveau.getGenreImpot());
 					                             Assert.assertEquals(MockCommune.Morges.getNoOFS(), forFiscalPrincipalNouveau.getNumeroOfsAutoriteFiscale().intValue());
 					                             Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, forFiscalPrincipalNouveau.getTypeAutoriteFiscale());
-					                             Assert.assertEquals(MotifFor.DEMENAGEMENT_SIEGE, forFiscalPrincipalNouveau.getMotifOuverture());
+					                             Assert.assertEquals(MotifFor.DEMENAGEMENT_VD, forFiscalPrincipalNouveau.getMotifOuverture());
 					                             Assert.assertNull(forFiscalPrincipalNouveau.getMotifFermeture());
 				                             }
 
@@ -284,7 +284,7 @@ public class DemenagementTest extends AbstractEvenementOrganisationProcessorTest
 					                             Assert.assertEquals(MockCommune.Lausanne.getNoOFS(), forFiscalPrincipalPrecedant.getNumeroOfsAutoriteFiscale().intValue());
 					                             Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, forFiscalPrincipalPrecedant.getTypeAutoriteFiscale());
 					                             Assert.assertEquals(MotifFor.DEBUT_EXPLOITATION, forFiscalPrincipalPrecedant.getMotifOuverture());
-					                             Assert.assertEquals(MotifFor.DEMENAGEMENT_SIEGE, forFiscalPrincipalPrecedant.getMotifFermeture());
+					                             Assert.assertEquals(MotifFor.DEMENAGEMENT_VD, forFiscalPrincipalPrecedant.getMotifFermeture());
 				                             }
 				                             {
 					                             ForFiscalPrincipal forFiscalPrincipalNouveau = (ForFiscalPrincipal) entreprise.getForsFiscauxValidAt(RegDate.get(2015, 6, 24)).get(0);
@@ -293,7 +293,7 @@ public class DemenagementTest extends AbstractEvenementOrganisationProcessorTest
 					                             Assert.assertEquals(GenreImpot.BENEFICE_CAPITAL, forFiscalPrincipalNouveau.getGenreImpot());
 					                             Assert.assertEquals(MockCommune.Morges.getNoOFS(), forFiscalPrincipalNouveau.getNumeroOfsAutoriteFiscale().intValue());
 					                             Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, forFiscalPrincipalNouveau.getTypeAutoriteFiscale());
-					                             Assert.assertEquals(MotifFor.DEMENAGEMENT_SIEGE, forFiscalPrincipalNouveau.getMotifOuverture());
+					                             Assert.assertEquals(MotifFor.DEMENAGEMENT_VD, forFiscalPrincipalNouveau.getMotifOuverture());
 					                             Assert.assertNull(forFiscalPrincipalNouveau.getMotifFermeture());
 				                             }
 
