@@ -29,8 +29,7 @@ import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationOptions;
 import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationErreurCollector;
 import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationSuiviCollector;
 import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationWarningCollector;
-import ch.vd.uniregctb.metier.MetierServicePM;
-import ch.vd.uniregctb.metier.MetierServicePMImpl;
+import ch.vd.uniregctb.metier.AjustementForsSecondairesResult;
 import ch.vd.uniregctb.tiers.ActiviteEconomique;
 import ch.vd.uniregctb.tiers.Bouclement;
 import ch.vd.uniregctb.tiers.CategorieEntrepriseHelper;
@@ -818,7 +817,7 @@ public abstract class EvenementOrganisationInterne {
 	protected void adapteForsSecondairesPourEtablissementsVD(Entreprise entreprise, RegDate dateAuPlusTot, EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) throws
 			EvenementOrganisationException {
 
-		final MetierServicePM.ResultatAjustementForsSecondaires ajustementForsSecondaires =
+		final AjustementForsSecondairesResult ajustementForsSecondaires =
 				getContext().getMetierServicePM().calculAjustementForsSecondairesPourEtablissementsVD(entreprise, dateAuPlusTot);
 
 		for (ForFiscalSecondaire forAAnnuler : ajustementForsSecondaires.getAAnnuler()) {
@@ -827,7 +826,7 @@ public abstract class EvenementOrganisationInterne {
 
 		final List<ForFiscalPrincipalPM> forsFiscauxPrincipauxActifsSorted = entreprise.getForsFiscauxPrincipauxActifsSorted();
 
-		for (MetierServicePMImpl.ForAFermer forAFermer : ajustementForsSecondaires.getAFermer()) {
+		for (AjustementForsSecondairesResult.ForAFermer forAFermer : ajustementForsSecondaires.getAFermer()) {
 			closeForFiscalSecondaire(forAFermer.getDateFermeture(), forAFermer.getForFiscal(), MotifFor.FIN_EXPLOITATION, suivis);
 		}
 
