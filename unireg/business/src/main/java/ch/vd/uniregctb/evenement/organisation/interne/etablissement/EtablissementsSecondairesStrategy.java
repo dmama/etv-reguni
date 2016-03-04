@@ -57,8 +57,8 @@ public class EtablissementsSecondairesStrategy extends AbstractOrganisationStrat
 		final List<Etablissement> etablissementsAFermer = new ArrayList<>();
 		final List<SiteOrganisation> sitesACreer = new ArrayList<>();
 
-		List<SiteOrganisation> sitesVDAvant = filtreSitesHC(organisation.getSitesSecondaires(dateAvant), dateAvant);
-		List<SiteOrganisation> sitesVDApres = filtreSitesHC(organisation.getSitesSecondaires(dateApres), dateApres);
+		List<SiteOrganisation> sitesVDAvant = uniquementSitesVD(organisation.getSitesSecondaires(dateAvant), dateAvant);
+		List<SiteOrganisation> sitesVDApres = uniquementSitesVD(organisation.getSitesSecondaires(dateApres), dateApres);
 
 		determineChangementsEtablissements(sitesVDAvant, sitesVDApres, etablissementsAFermer, sitesACreer, context);
 
@@ -73,7 +73,7 @@ public class EtablissementsSecondairesStrategy extends AbstractOrganisationStrat
 		return null;
 	}
 
-	private List<SiteOrganisation> filtreSitesHC(List<SiteOrganisation> sitesSecondaires, RegDate date) {
+	private List<SiteOrganisation> uniquementSitesVD(List<SiteOrganisation> sitesSecondaires, RegDate date) {
 		List<SiteOrganisation> filtre = new ArrayList<>(sitesSecondaires.size());
 		for (SiteOrganisation site : sitesSecondaires) {
 			Domicile domicile = site.getDomicile(date);
