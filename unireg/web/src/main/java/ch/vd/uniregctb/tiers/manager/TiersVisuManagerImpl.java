@@ -83,7 +83,8 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 	@Override
 	@Transactional(readOnly = true)
 	public TiersVisuView getView(Long numero, boolean adressesHisto, boolean adressesHistoCiviles, boolean adressesHistoCivilesConjoint, boolean rapportsPrestationHisto,
-	                             boolean ctbAssocieHisto, boolean modeImpression, WebParamPagination webParamPagination) throws AdresseException, ServiceInfrastructureException, DonneesCivilesException {
+	                             boolean ctbAssocieHisto, boolean modeImpression, boolean forsPrincipauxPagines, boolean forsSecondairesPagines, boolean autresForsPagines,
+	                             WebParamPagination webParamPagination) throws AdresseException, ServiceInfrastructureException, DonneesCivilesException {
 
 		final TiersVisuView tiersVisuView = new TiersVisuView();
 		tiersVisuView.setAdressesHisto(adressesHisto);
@@ -201,13 +202,11 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 				}
 			}
 		}
-		if (modeImpression) {
-			tiersVisuView.setNombreElementsTable(0);
-		}
-		else{
-			tiersVisuView.setNombreElementsTable(10);
-		}
 
+		tiersVisuView.setNombreElementsTable(modeImpression ? 0 : 10);
+		tiersVisuView.setForsPrincipauxPagines(forsPrincipauxPagines && !modeImpression);
+		tiersVisuView.setForsSecondairesPagines(forsSecondairesPagines && !modeImpression);
+		tiersVisuView.setAutresForsPagines(autresForsPagines && !modeImpression);
 		return tiersVisuView;
 	}
 

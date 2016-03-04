@@ -343,4 +343,24 @@ public class JspTagRaccourci extends BodyTagSupport implements MessageSourceAwar
 			return "detail";
 		}
 	}
+
+	/**
+	 * Déplier (= plus)
+	 */
+	public static class Deplier extends JspTagRaccourci {
+		@Override
+		protected String getCssClass() {
+			return "deplier";
+		}
+	}
+
+	/**
+	 * Plier (= moins)
+	 */
+	public static class Plier extends JspTagRaccourci {
+		@Override
+		protected String getCssClass() {
+			return "plier";
+		}
+	}
 }

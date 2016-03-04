@@ -20,6 +20,8 @@ import ch.vd.uniregctb.tiers.manager.TiersEditManager;
 import ch.vd.uniregctb.tiers.manager.TiersVisuManager;
 import ch.vd.uniregctb.tiers.view.TiersVisuView;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
+import ch.vd.uniregctb.utils.HttpSessionConstants;
+import ch.vd.uniregctb.utils.HttpSessionUtils;
 
 /**
  * Controller spring permettant la visualisation ou la saisie d'une objet metier
@@ -51,11 +53,6 @@ public class TiersVisuController extends AbstractTiersController {
 	private static final String TABLE_NAME = "rapportPrestation";
 	private static final int PAGE_SIZE = 10;
 
-	private static boolean getBooleanParam(HttpServletRequest request, String paramName) {
-		final String param = request.getParameter(paramName);
-		return param != null && param.equalsIgnoreCase("true");
-	}
-
 	/**
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
 	 */
@@ -73,14 +70,19 @@ public class TiersVisuController extends AbstractTiersController {
 		final boolean ctbAssocieHisto = getBooleanParam(request, CTB_ASSOCIE_HISTO_PARAM);
 		final boolean modeImpression = getBooleanParam(request, MODE_IMPRESSION);
 
+		@SuppressWarnings("ConstantConditions") final boolean forsPrincipauxPagines = HttpSessionUtils.getFromSession(request.getSession(), HttpSessionConstants.FORS_PRINCIPAUX_PAGINES, Boolean.class, Boolean.TRUE, getOptionalBooleanParam(request, HttpSessionConstants.FORS_PRINCIPAUX_PAGINES));
+		@SuppressWarnings("ConstantConditions") final boolean forsSecondairesPagines = HttpSessionUtils.getFromSession(request.getSession(), HttpSessionConstants.FORS_SECONDAIRES_PAGINES, Boolean.class, Boolean.TRUE, getOptionalBooleanParam(request, HttpSessionConstants.FORS_SECONDAIRES_PAGINES));
+		@SuppressWarnings("ConstantConditions") final boolean autresForsPrincipauxPagines = HttpSessionUtils.getFromSession(request.getSession(), HttpSessionConstants.AUTRES_FORS_PAGINES, Boolean.class, Boolean.TRUE, getOptionalBooleanParam(request, HttpSessionConstants.AUTRES_FORS_PAGINES));
+
 		if (idParam != null && !idParam.isEmpty()) {
 			Long id = Long.parseLong(idParam);
 
 			// vérification des droits d'accès au dossier du contribuable
 			checkAccesDossierEnLecture(id);
 
-			WebParamPagination pagination = new WebParamPagination(request, TABLE_NAME, PAGE_SIZE);
-			tiersVisuView = tiersVisuManager.getView(id, adrHistoParam, adrCivileHistoParam, adrCivileHistoConjParam, rapportsPrestationHisto, ctbAssocieHisto,modeImpression, pagination);
+			final WebParamPagination pagination = new WebParamPagination(request, TABLE_NAME, PAGE_SIZE);
+			tiersVisuView = tiersVisuManager.getView(id, adrHistoParam, adrCivileHistoParam, adrCivileHistoConjParam, rapportsPrestationHisto, ctbAssocieHisto,
+			                                         modeImpression, forsPrincipauxPagines, forsSecondairesPagines, autresForsPrincipauxPagines, pagination);
 
 			//vérification des droits de visualisation
 			boolean isAllowed = true;

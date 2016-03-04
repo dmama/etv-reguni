@@ -3,12 +3,13 @@ a.deplier {
 	/* Ne pas optimiser ces "background-xxx" en "background:" car cela surcharge implicitement l'élément "background-image" que l'on ne veut pas surcharger */
 	background-position: left top;
 	background-repeat: no-repeat;
-	padding: 4px;
-	height: 1px;
-	display: block;
-	float: left;
+	width: 16px;
+	height: 16px;
 	position: relative;
 	text-decoration: none;
+	padding-left:13px;
+	padding-bottom:2px;
+	overflow:hidden;
 }
 
 a.stop,
@@ -94,7 +95,7 @@ a.reOpenFor:hover,
 .button_placeholder:hover,
 a.padding:hover,
 a.pdf:hover,
-span.pdf-grayed:hover
+span.pdf-grayed:hover,
 a.key:hover,
 a.save:hover,
 a.printer:hover,

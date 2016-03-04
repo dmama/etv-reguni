@@ -642,6 +642,80 @@
 	</tag>
 
 	<tag>
+		<description>Affiche une icône d'accès à une liste complète (= déplier/plus)</description>
+		<name>raccourciDeplier</name>
+		<tag-class>ch.vd.uniregctb.taglibs.JspTagRaccourci$Deplier</tag-class>
+		<body-content>JSP</body-content>
+		<attribute>
+			<description>Valeur du lien</description>
+			<name>link</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
+			<description>Action à lancer en cas de click (nécessaire si l'attribut link n'est pas renseigné)</description>
+			<name>onClick</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
+			<description>Valeur à afficher dans le lien associé à l'icône</description>
+			<name>display</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
+			<description>Valeur à afficher dans le tooltip associé au lien</description>
+			<name>tooltip</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
+			<description>id à associer au lien</description>
+			<name>id</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<description>Affiche une icône de restractation d'une liste complète (= plier/moins)</description>
+		<name>raccourciPlier</name>
+		<tag-class>ch.vd.uniregctb.taglibs.JspTagRaccourci$Plier</tag-class>
+		<body-content>JSP</body-content>
+		<attribute>
+			<description>Valeur du lien</description>
+			<name>link</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
+			<description>Action à lancer en cas de click (nécessaire si l'attribut link n'est pas renseigné)</description>
+			<name>onClick</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
+			<description>Valeur à afficher dans le lien associé à l'icône</description>
+			<name>display</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
+			<description>Valeur à afficher dans le tooltip associé au lien</description>
+			<name>tooltip</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
+			<description>id à associer au lien</description>
+			<name>id</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
 		<description>Affiche un bouton qui soumet un formulaire vers une autre page lorsqu'il est cliqué.</description>
 		<name>buttonTo</name>
 		<tag-class>ch.vd.uniregctb.taglibs.JspTagButtonTo</tag-class>

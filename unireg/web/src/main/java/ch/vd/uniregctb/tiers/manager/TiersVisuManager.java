@@ -26,17 +26,19 @@ public interface TiersVisuManager {
 	 * @param adressesHistoCivilesConjoint
 	 * @param rapportsPrestationHisto <b>vrai</b> s'il faut charger tout l'historique des rapports de prestation entre débiteur et sourciers
 	 * @param modeImpression
-	 *@param webParamPagination      les informations de pagination  @return un objet TiersVisuView  @Param ctbAssocieHisto <b>vrai</b> s'il faut charger tout l'historique des rapports de contribuable associé
+	 * @param forsPrincipauxPagines <b>vrai</b> s'il faut paginer les fors principaux (et donc <b>faux</b> si on veut la vue complète)
+	 * @param forsSecondairesPagines <b>vrai</b> s'il faut paginer les fors secondaires (et donc <b>faux</b> si on veut la vue complète)
+	 * @param autresForsPagines <b>vrai</b> s'il faut paginer les "autres fors fiscaux" (et donc <b>faux</b> si on veut la vue complète)
+	 * @param webParamPagination      les informations de pagination  @return un objet TiersVisuView  @Param ctbAssocieHisto <b>vrai</b> s'il faut charger tout l'historique des rapports de contribuable associé
 	 * @return les informations de visualisation demandées.
-	 * @throws ch.vd.infrastructure.service.ServiceInfrastructureException
+	 * @throws ch.vd.unireg.interfaces.infra.ServiceInfrastructureException
 	 *          en cas de problème de connexion au service d'infrastructure.
 	 * @throws ch.vd.uniregctb.adresse.AdresseException
 	 *          en cas de problème de résolution des adresses
 	 */
 	@Transactional(readOnly = true)
-	public TiersVisuView getView(Long numero, boolean adressesHisto, boolean adressesHistoCiviles, boolean adressesHistoCivilesConjoint, boolean rapportsPrestationHisto, boolean ctbAssocieHisto,
-	                             boolean modeImpression, WebParamPagination webParamPagination
-	) throws AdresseException, ServiceInfrastructureException, DonneesCivilesException;
+	TiersVisuView getView(Long numero, boolean adressesHisto, boolean adressesHistoCiviles, boolean adressesHistoCivilesConjoint, boolean rapportsPrestationHisto, boolean ctbAssocieHisto,
+	                      boolean modeImpression, boolean forsPrincipauxPagines, boolean forsSecondairesPagines, boolean autresForsPagines, WebParamPagination webParamPagination) throws AdresseException, ServiceInfrastructureException, DonneesCivilesException;
 
 	/**
 	 * Compte le nombre de rapports prestation imposable pour un débiteur
@@ -46,7 +48,7 @@ public interface TiersVisuManager {
 	 * @return le nombre de rapports trouvés
 	 */
 	@Transactional(readOnly = true)
-	public int countRapportsPrestationImposable(Long numeroDebiteur, boolean rapportsPrestationHisto);
+	int countRapportsPrestationImposable(Long numeroDebiteur, boolean rapportsPrestationHisto);
 
 	@Transactional(readOnly = true)
 	void fillRapportsPrestationView(long noDebiteur, RapportsPrestationView view);

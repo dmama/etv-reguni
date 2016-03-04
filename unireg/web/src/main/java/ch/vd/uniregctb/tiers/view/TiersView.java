@@ -133,6 +133,10 @@ public class TiersView {
 	//10 éléments à afficher par défaut
 	private int nombreElementsTable = 10;
 
+	private boolean forsPrincipauxPagines = true;
+	private boolean forsSecondairesPagines = true;
+	private boolean autresForsPagines = true;
+
 	public boolean isPmOuEtablissement() {
 		return tiers instanceof ContribuableImpositionPersonnesMorales || tiers instanceof Etablissement;
 	}
@@ -176,12 +180,10 @@ public class TiersView {
 
 
 	/**
-	 * @return la nature du tiers (	Entreprise / Etablissement
-	 * 								/ Habitant / Non Habitant
-	 * 								/ AutreCommunaute / MenageCommun)
+	 * @return la nature du tiers (	Entreprise / Etablissement / Habitant / Non Habitant / AutreCommunaute / MenageCommun)
 	 */
 	public NatureTiers getNatureTiers() {
-		if(tiers != null){
+		if (tiers != null) {
 			return tiers.getNatureTiers();
 		}
 		return null;
@@ -191,7 +193,7 @@ public class TiersView {
 	 * @return si le tiers est inactif (ancien I107)
 	 */
 	public boolean isDebiteurInactif() {
-		if(tiers != null)
+		if (tiers != null)
 			return tiers.isDebiteurInactif();
 		return true;
 	}
@@ -201,9 +203,9 @@ public class TiersView {
 	 */
 	public TypeAutoriteFiscale getTypeAutoriteFiscale() {
 		TypeAutoriteFiscale result = null;
-		if(tiers instanceof Contribuable){
+		if (tiers instanceof Contribuable) {
 			ForFiscalPrincipal forFiscal = tiers.getForFiscalPrincipalAt(null);
-			if(forFiscal != null){
+			if (forFiscal != null) {
 				result = forFiscal.getTypeAutoriteFiscale();
 			}
 		}
@@ -251,13 +253,13 @@ public class TiersView {
 	}
 
 	public NatureTiers getNatureMembrePrincipal() {
-		if(tiersPrincipal != null)
+		if (tiersPrincipal != null)
 			return tiersPrincipal.getNatureTiers();
 		return null;
 	}
 
 	public NatureTiers getNatureMembreConjoint() {
-		if(tiersConjoint != null)
+		if (tiersConjoint != null)
 			return tiersConjoint.getNatureTiers();
 		return null;
 	}
@@ -667,5 +669,29 @@ public class TiersView {
 
 	public void setNombreElementsTable(int nombreElementsTable) {
 		this.nombreElementsTable = nombreElementsTable;
+	}
+
+	public boolean isForsPrincipauxPagines() {
+		return forsPrincipauxPagines;
+	}
+
+	public void setForsPrincipauxPagines(boolean forsPrincipauxPagines) {
+		this.forsPrincipauxPagines = forsPrincipauxPagines;
+	}
+
+	public boolean isForsSecondairesPagines() {
+		return forsSecondairesPagines;
+	}
+
+	public void setForsSecondairesPagines(boolean forsSecondairesPagines) {
+		this.forsSecondairesPagines = forsSecondairesPagines;
+	}
+
+	public boolean isAutresForsPagines() {
+		return autresForsPagines;
+	}
+
+	public void setAutresForsPagines(boolean autresForsPagines) {
+		this.autresForsPagines = autresForsPagines;
 	}
 }

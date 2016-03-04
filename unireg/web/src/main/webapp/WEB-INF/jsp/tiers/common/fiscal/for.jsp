@@ -14,21 +14,47 @@
 	<fieldset>
 		<legend><span><fmt:message key="label.fors.fiscaux.principaux"/></span></legend>
 
-		<c:if test="${page == 'edit'}">
-			<table border="0">
-				<tr><td>
-					<c:if test="${autorisations.forsPrincipaux}">
-						<unireg:linkTo name="Ajouter" title="Ajouter un for" action="/fors/principal/add.do" params="{tiersId:${command.tiersGeneral.numero}}" link_class="add margin_right_10"/>
-					</c:if>
-					<c:if test="${command.forsPrincipalActif != null && autorisations.forsPrincipaux && command.natureTiers != 'Entreprise'}">
-						<unireg:linkTo name="Changer le mode d'imposition" title="Changer le mode d'imposition" action="/fors/principal/editModeImposition.do" params="{forId:${command.forsPrincipalActif.id}}" link_class="add"/>
-					</c:if>
-				</td></tr>
-			</table>
-		</c:if>
+		<c:choose>
+			<c:when test="${page == 'edit'}">
+				<table border="0">
+					<tr><td>
+						<c:if test="${fn:length(command.forsFiscauxPrincipaux) > command.nombreElementsTable && command.nombreElementsTable > 0}">
+							<c:choose>
+								<c:when test="${command.forsPrincipauxPagines}">
+									<unireg:linkTo name="Liste complète" action="/fiscal/edit.do" title="Liste complète des fors principaux" params="{id:${command.tiers.numero},forsFiscauxPrincipauxPagines:false}" link_class="deplier margin_right_10"/>
+								</c:when>
+								<c:otherwise>
+									<unireg:linkTo name="Liste paginée" action="/fiscal/edit.do" title="Liste paginée des fors principaux" params="{id:${command.tiers.numero},forsFiscauxPrincipauxPagines:true}" link_class="plier margin_right_10"/>
+								</c:otherwise>
+							</c:choose>
+						</c:if>
+						<c:if test="${autorisations.forsPrincipaux}">
+							<unireg:linkTo name="Ajouter" title="Ajouter un for" action="/fors/principal/add.do" params="{tiersId:${command.tiersGeneral.numero}}" link_class="add margin_right_10"/>
+						</c:if>
+						<c:if test="${command.forsPrincipalActif != null && autorisations.forsPrincipaux && command.natureTiers != 'Entreprise'}">
+							<unireg:linkTo name="Changer le mode d'imposition" title="Changer le mode d'imposition" action="/fors/principal/editModeImposition.do" params="{forId:${command.forsPrincipalActif.id}}" link_class="add"/>
+						</c:if>
+					</td></tr>
+				</table>
+			</c:when>
+			<c:when test="${fn:length(command.forsFiscauxPrincipaux) > command.nombreElementsTable && command.nombreElementsTable > 0}">
+				<table border="0">
+					<tr><td>
+						<c:choose>
+							<c:when test="${command.forsPrincipauxPagines}">
+								<unireg:linkTo name="Liste complète" action="/tiers/visu.do" title="Liste complète des fors principaux" params="{id:${command.tiers.numero},forsFiscauxPrincipauxPagines:false}" link_class="deplier margin_right_10"/>
+							</c:when>
+							<c:otherwise>
+								<unireg:linkTo name="Liste paginée" action="/tiers/visu.do" title="Liste paginée des fors principaux" params="{id:${command.tiers.numero},forsFiscauxPrincipauxPagines:true}" link_class="plier margin_right_10"/>
+							</c:otherwise>
+						</c:choose>
+					</td></tr>
+				</table>
+			</c:when>
+		</c:choose>
 
 		<c:if test="${not empty command.forsFiscauxPrincipaux}">
-			<display:table name="command.forsFiscauxPrincipaux" id="ffp" pagesize="${command.nombreElementsTable}"
+			<display:table name="command.forsFiscauxPrincipaux" id="ffp" pagesize="${(command.nombreElementsTable == 0 || !command.forsPrincipauxPagines) ? 0 : command.nombreElementsTable}"
 			               requestURI="${url}"
 			               class="display" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator">
 
@@ -111,16 +137,44 @@
 	<fieldset>
 		<legend><span><fmt:message key="label.fors.fiscaux.secondaires"/></span></legend>
 
-		<c:if test="${page == 'edit' && autorisations.forsSecondaires}">
-			<table border="0">
-				<tr><td>
-					<unireg:linkTo name="Ajouter" title="Ajouter un for" action="/fors/secondaire/add.do" params="{tiersId:${command.tiersGeneral.numero}}" link_class="add margin_right_10"/>
-				</td></tr>
-			</table>
-		</c:if>
+		<c:choose>
+			<c:when test="${page == 'edit'}">
+				<table border="0">
+					<tr><td>
+						<c:if test="${fn:length(command.forsFiscauxSecondaires) > command.nombreElementsTable && command.nombreElementsTable > 0}">
+							<c:choose>
+								<c:when test="${command.forsSecondairesPagines}">
+									<unireg:linkTo name="Liste complète" action="/fiscal/edit.do" title="Liste complète des fors secondaires" params="{id:${command.tiers.numero},forsFiscauxSecondairesPagines:false}" link_class="deplier margin_right_10"/>
+								</c:when>
+								<c:otherwise>
+									<unireg:linkTo name="Liste paginée" action="/fiscal/edit.do" title="Liste paginée des fors secondaires" params="{id:${command.tiers.numero},forsFiscauxSecondairesPagines:true}" link_class="plier margin_right_10"/>
+								</c:otherwise>
+							</c:choose>
+						</c:if>
+						<c:if test="${autorisations.forsSecondaires}">
+							<unireg:linkTo name="Ajouter" title="Ajouter un for" action="/fors/secondaire/add.do" params="{tiersId:${command.tiersGeneral.numero}}" link_class="add margin_right_10"/>
+						</c:if>
+					</td></tr>
+				</table>
+			</c:when>
+			<c:when test="${fn:length(command.forsFiscauxSecondaires) > command.nombreElementsTable && command.nombreElementsTable > 0}">
+				<table border="0">
+					<tr><td>
+						<c:choose>
+							<c:when test="${command.forsSecondairesPagines}">
+								<unireg:linkTo name="Liste complète" action="/tiers/visu.do" title="Liste complète des fors secondaires" params="{id:${command.tiers.numero},forsFiscauxSecondairesPagines:false}" link_class="deplier margin_right_10"/>
+							</c:when>
+							<c:otherwise>
+								<unireg:linkTo name="Liste paginée" action="/tiers/visu.do" title="Liste paginée des fors secondaires" params="{id:${command.tiers.numero},forsFiscauxSecondairesPagines:true}" link_class="plier margin_right_10"/>
+							</c:otherwise>
+						</c:choose>
+					</td></tr>
+				</table>
+			</c:when>
+		</c:choose>
 
 		<c:if test="${not empty command.forsFiscauxSecondaires}">
-			<display:table name="command.forsFiscauxSecondaires" id="ffs" pagesize="${command.nombreElementsTable}"
+			<display:table name="command.forsFiscauxSecondaires" id="ffs" pagesize="${(command.nombreElementsTable == 0 || !command.forsSecondairesPagines) ? 0 : command.nombreElementsTable}"
 			               requestURI="${url}"
 			               class="display" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator">
 
@@ -197,16 +251,44 @@
 	<fieldset>
 		<legend><span><fmt:message key="label.fors.fiscaux.autres"/></span></legend>
 
-		<c:if test="${page == 'edit' && autorisations.forsAutresElementsImposables}">
-			<table border="0">
-				<tr><td>
-					<unireg:linkTo name="Ajouter" title="Ajouter un for" action="/fors/autreelementimposable/add.do" params="{tiersId:${command.tiersGeneral.numero}}" link_class="add margin_right_10"/>
-				</td></tr>
-			</table>
-		</c:if>
+		<c:choose>
+			<c:when test="${page == 'edit'}">
+				<table border="0">
+					<tr><td>
+						<c:if test="${fn:length(command.autresForsFiscaux) > command.nombreElementsTable && command.nombreElementsTable > 0}">
+							<c:choose>
+								<c:when test="${command.autresForsPagines}">
+									<unireg:linkTo name="Liste complète" action="/fiscal/edit.do" title="Liste complète des autres fors fiscaux" params="{id:${command.tiers.numero},autresForsFiscauxPagines:false}" link_class="deplier margin_right_10"/>
+								</c:when>
+								<c:otherwise>
+									<unireg:linkTo name="Liste paginée" action="/fiscal/edit.do" title="Liste paginée des autres fors fiscaux" params="{id:${command.tiers.numero},autresForsFiscauxPagines:true}" link_class="plier margin_right_10"/>
+								</c:otherwise>
+							</c:choose>
+						</c:if>
+						<c:if test="${autorisations.forsAutresElementsImposables}">
+							<unireg:linkTo name="Ajouter" title="Ajouter un for" action="/fors/autreelementimposable/add.do" params="{tiersId:${command.tiersGeneral.numero}}" link_class="add margin_right_10"/>
+						</c:if>
+					</td></tr>
+				</table>
+			</c:when>
+			<c:when test="${fn:length(command.autresForsFiscaux) > command.nombreElementsTable && command.nombreElementsTable > 0}">
+				<table border="0">
+					<tr><td>
+						<c:choose>
+							<c:when test="${command.autresForsPagines}">
+								<unireg:linkTo name="Liste complète" action="/tiers/visu.do" title="Liste complète des autres fors fiscaux" params="{id:${command.tiers.numero},autresForsFiscauxPagines:false}" link_class="deplier margin_right_10"/>
+							</c:when>
+							<c:otherwise>
+								<unireg:linkTo name="Liste paginée" action="/tiers/visu.do" title="Liste paginée des autres fors fiscaux" params="{id:${command.tiers.numero},autresForsFiscauxPagines:true}" link_class="plier margin_right_10"/>
+							</c:otherwise>
+						</c:choose>
+					</td></tr>
+				</table>
+			</c:when>
+		</c:choose>
 
 		<c:if test="${not empty command.autresForsFiscaux}">
-			<display:table name="command.autresForsFiscaux" id="ffa" pagesize="${command.nombreElementsTable}"
+			<display:table name="command.autresForsFiscaux" id="ffa" pagesize="${(command.nombreElementsTable == 0 || !command.autresForsPagines) ? 0 : command.nombreElementsTable}"
 			               requestURI="${url}"
 			               class="display" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator">
 

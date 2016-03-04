@@ -7,6 +7,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.Nullable;
+
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.common.AbstractSimpleFormController;
 import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
@@ -255,7 +258,6 @@ public abstract class AbstractTiersController extends AbstractSimpleFormControll
 
 	public static final String BUTTON_SAVE = "__confirmed_save";
 
-
 	protected TiersMapHelper tiersMapHelper;
 
 	/**
@@ -287,6 +289,21 @@ public abstract class AbstractTiersController extends AbstractSimpleFormControll
 		}
 
 		return list;
+	}
+
+	protected static boolean getBooleanParam(HttpServletRequest request, String paramName) {
+		return getBooleanParam(request, paramName, false);
+	}
+
+	protected static boolean getBooleanParam(HttpServletRequest request, String paramName, boolean defaultValue) {
+		final Boolean value = getOptionalBooleanParam(request, paramName);
+		return value == null ? defaultValue : value;
+	}
+
+	@Nullable
+	protected static Boolean getOptionalBooleanParam(HttpServletRequest request, String paramName) {
+		final String param = request.getParameter(paramName);
+		return StringUtils.isBlank(param) ? null : param.equalsIgnoreCase("true");
 	}
 }
 

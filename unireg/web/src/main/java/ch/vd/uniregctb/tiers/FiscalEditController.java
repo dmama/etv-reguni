@@ -12,6 +12,8 @@ import ch.vd.uniregctb.tiers.manager.ForFiscalManager;
 import ch.vd.uniregctb.tiers.manager.SituationFamilleManager;
 import ch.vd.uniregctb.tiers.manager.TiersEditManager;
 import ch.vd.uniregctb.tiers.view.TiersEditView;
+import ch.vd.uniregctb.utils.HttpSessionConstants;
+import ch.vd.uniregctb.utils.HttpSessionUtils;
 
 /**
  * @author xcifde
@@ -54,6 +56,13 @@ public class FiscalEditController extends AbstractTiersController {
 				//gestion des droits d'édition d'un tier par tiersEditManager
 				checkAccesDossierEnLecture(id);
 				tiersView = forFiscalManager.getView(id);
+
+				@SuppressWarnings("ConstantConditions") final boolean forsPrincipauxPagines = HttpSessionUtils.getFromSession(request.getSession(), HttpSessionConstants.FORS_PRINCIPAUX_PAGINES, Boolean.class, Boolean.TRUE, getOptionalBooleanParam(request, HttpSessionConstants.FORS_PRINCIPAUX_PAGINES));
+				@SuppressWarnings("ConstantConditions") final boolean forsSecondairesPagines = HttpSessionUtils.getFromSession(request.getSession(), HttpSessionConstants.FORS_SECONDAIRES_PAGINES, Boolean.class, Boolean.TRUE, getOptionalBooleanParam(request, HttpSessionConstants.FORS_SECONDAIRES_PAGINES));
+				@SuppressWarnings("ConstantConditions") final boolean autresForsPrincipauxPagines = HttpSessionUtils.getFromSession(request.getSession(), HttpSessionConstants.AUTRES_FORS_PAGINES, Boolean.class, Boolean.TRUE, getOptionalBooleanParam(request, HttpSessionConstants.AUTRES_FORS_PAGINES));
+				tiersView.setForsPrincipauxPagines(forsPrincipauxPagines);
+				tiersView.setForsSecondairesPagines(forsSecondairesPagines);
+				tiersView.setAutresForsPagines(autresForsPrincipauxPagines);
 			}
 		}
 		return tiersView;
