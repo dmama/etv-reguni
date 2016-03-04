@@ -4443,14 +4443,13 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 			@Override
 			protected void init() {
 				final MockOrganisation org = addOrganisation(noCantonalEntreprise);
-				addNumeroIDE(org, "CHE123456788", RegDate.get(2009, 1, 1), null);
-
 				final MockSiteOrganisation site = addSite(org, noCantonalEtablissementPrincipal, dateChargementRCEnt, null, new DonneesRCBuilder()
 						.addCapital(new Capital(dateChargementRCEnt, null, TypeDeCapital.CAPITAL_SOCIAL, MontantMonetaire.CHF, BigDecimal.valueOf(400000L), "répartition ??"))
 						.build());
 				site.changeTypeDeSite(dateChargementRCEnt, TypeDeSite.ETABLISSEMENT_PRINCIPAL);
 				site.changeNom(dateChargementRCEnt, "Toto SA");
 				site.changeFormeLegale(dateChargementRCEnt, FormeLegale.N_0106_SOCIETE_ANONYME);
+				site.changeNumeroIDE(RegDate.get(2009, 1, 1), "CHE123456788");
 			}
 		});
 
@@ -4626,13 +4625,12 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 			@Override
 			protected void init() {
 				final MockOrganisation org = addOrganisation(noCantonalEntreprise);
-				addNumeroIDE(org, "CHE123456788", dateChargementRCEnt, null);
-
 				final MockSiteOrganisation sitePrincipal = addSite(org, noCantonalEtablissementPrincipal, dateChargementRCEnt, null, null);
 				sitePrincipal.addSiege(dateChargementRCEnt, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Echallens.getNoOFS());
 				sitePrincipal.changeTypeDeSite(dateChargementRCEnt, TypeDeSite.ETABLISSEMENT_PRINCIPAL);
 				sitePrincipal.changeNom(dateChargementRCEnt, "Toto");
 				sitePrincipal.changeFormeLegale(dateChargementRCEnt, FormeLegale.N_0101_ENTREPRISE_INDIVIDUELLE);
+				sitePrincipal.changeNumeroIDE(dateChargementRCEnt, "CHE123456788");
 			}
 		});
 
@@ -4692,8 +4690,6 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 			@Override
 			protected void init() {
 				final MockOrganisation org = addOrganisation(noCantonalEntreprise);
-				addNumeroIDE(org, "CHE123456788", RegDate.get(2009, 1, 1), null);
-
 				final MockSiteOrganisation sitePrincipal = addSite(org, noCantonalEtablissementPrincipal, dateChargementRCEnt, null, new DonneesRCBuilder()
 						.addCapital(new Capital(dateChargementRCEnt, null, TypeDeCapital.CAPITAL_SOCIAL, MontantMonetaire.CHF, BigDecimal.valueOf(400000L), "répartition ??"))
 						.build());
@@ -4701,6 +4697,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 				sitePrincipal.changeTypeDeSite(dateChargementRCEnt, TypeDeSite.ETABLISSEMENT_PRINCIPAL);
 				sitePrincipal.changeNom(dateChargementRCEnt, "Toto SA");
 				sitePrincipal.changeFormeLegale(dateChargementRCEnt, FormeLegale.N_0106_SOCIETE_ANONYME);
+				sitePrincipal.changeNumeroIDE(RegDate.get(2009, 1, 1), "CHE123456788");
 
 				final MockSiteOrganisation siteSecondaire = addSite(org, noCantonalEtablissementSecondaire, dateChargementRCEnt, null, null);
 				siteSecondaire.addSiege(dateChargementRCEnt, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Morges.getNoOFS());
