@@ -5,8 +5,10 @@ import org.slf4j.LoggerFactory;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.unireg.interfaces.organisation.data.DateRanged;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
+import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationContext;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationException;
@@ -53,39 +55,51 @@ public class ChangementFormeJuridiqueStrategy extends AbstractOrganisationStrate
 			return null;
 		}
 
-		final FormeLegale formeLegaleAvant = organisation.getFormeLegale(dateAvant);
-		final FormeLegale formeLegaleApres = organisation.getFormeLegale(dateApres);
+		final DateRanged<SiteOrganisation> sitePrincipalAvantRange = organisation.getSitePrincipal(dateAvant);
+		if (sitePrincipalAvantRange == null) {
+			LOGGER.info("Organisation nouvelle au civil mais déjà connue d'Unireg.");
+			return null; // On n'existait pas hier, en fait.
+		} else {
 
-		if (formeLegaleAvant == null) {
-			if (isExisting(organisation, dateApres)) {
+			final FormeLegale formeLegaleAvant = organisation.getFormeLegale(dateAvant);
+			final FormeLegale formeLegaleApres = organisation.getFormeLegale(dateApres);
+
+			if (formeLegaleAvant == null) {
+				if (isExisting(organisation, dateApres)) {
+					throw new EvenementOrganisationException(
+							String.format(MESSAGE_FORME_JURIDIQUE_MANQUANTE, organisation.getNumeroOrganisation(), RegDateHelper.dateToDisplayString(dateAvant)));
+				}
+				LOGGER.info("Organisation nouvellement connue au civil. Pas de changement de catégorie.");
+				return null;
+			}
+			else if (formeLegaleApres == null) {
 				throw new EvenementOrganisationException(
-						String.format(MESSAGE_FORME_JURIDIQUE_MANQUANTE, organisation.getNumeroOrganisation(), RegDateHelper.dateToDisplayString(dateAvant)));
+						String.format(MESSAGE_FORME_JURIDIQUE_MANQUANTE, organisation.getNumeroOrganisation(), RegDateHelper.dateToDisplayString(dateApres)));
 			}
-			LOGGER.info("Organisation nouvellement connue au civil. Pas de changement de catégorie.");
-			return null;
-		} else if (formeLegaleApres == null) {
-			throw new EvenementOrganisationException(
-					String.format(MESSAGE_FORME_JURIDIQUE_MANQUANTE, organisation.getNumeroOrganisation(), RegDateHelper.dateToDisplayString(dateApres)));
-		} else if (formeLegaleAvant != formeLegaleApres) {
+			else if (formeLegaleAvant != formeLegaleApres) {
 
-			final CategorieEntreprise categoryAvant = CategorieEntrepriseHelper.getCategorieEntreprise(organisation, dateAvant);
-			final CategorieEntreprise categoryApres = CategorieEntrepriseHelper.getCategorieEntreprise(organisation, dateApres);
+				final CategorieEntreprise categoryAvant = CategorieEntrepriseHelper.getCategorieEntreprise(organisation, dateAvant);
+				final CategorieEntreprise categoryApres = CategorieEntrepriseHelper.getCategorieEntreprise(organisation, dateApres);
 
-			if (categoryAvant == CategorieEntreprise.APM && categoryApres == CategorieEntreprise.PM) {
-				LOGGER.info("La forme juridique passe de {} à {}. Changement de catégorie: APM -> PM. ", formeLegaleAvant, formeLegaleApres);
-				return new ChangementCategorieAPMVersPM(event, organisation, entreprise, context, options);
-			} else
-			if (categoryAvant != null && categoryAvant == categoryApres) {
-				LOGGER.info("La forme juridique passe de {} à {}. Pas de changement de catégorie.", formeLegaleAvant, formeLegaleApres);
-				return new ChangementNeutreFormeJuridique(event, organisation, entreprise, context, options);
+				if (categoryAvant == CategorieEntreprise.APM && categoryApres == CategorieEntreprise.PM) {
+					LOGGER.info("La forme juridique passe de {} à {}. Changement de catégorie: APM -> PM. ", formeLegaleAvant, formeLegaleApres);
+					return new ChangementCategorieAPMVersPM(event, organisation, entreprise, context, options);
+				}
+				else if (categoryAvant != null && categoryAvant == categoryApres) {
+					LOGGER.info("La forme juridique passe de {} à {}. Pas de changement de catégorie.", formeLegaleAvant, formeLegaleApres);
+					return new ChangementNeutreFormeJuridique(event, organisation, entreprise, context, options);
+				}
+
+				return new TraitementManuel(event, organisation, null, context, options,
+				                            String.format(
+						                            "La forme juridique passe de %s à %s, entraînant un changement de catégorie d'entreprise non pris en charge: %s vers %s. Veuillez traiter manuellement.",
+						                            formeLegaleAvant, formeLegaleApres, defaultCategorie(categoryAvant), defaultCategorie(categoryApres))
+				);
 			}
-
-			return new TraitementManuel(event, organisation, null, context, options,
-			                            String.format("La forme juridique passe de %s à %s, entraînant un changement de catégorie d'entreprise non pris en charge: %s vers %s. Veuillez traiter manuellement.",
-			                                          formeLegaleAvant, formeLegaleApres, defaultCategorie(categoryAvant), defaultCategorie(categoryApres))
-			);
+			LOGGER.info("La forme juridique n'a pas changée. Avant: {}, après: {}. Pas de changement de catégorie.", formeLegaleAvant, formeLegaleApres);
 		}
-		LOGGER.info("La forme juridique n'a pas changée. Avant: {}, après: {}. Pas de changement de catégorie.", formeLegaleAvant, formeLegaleApres);
+
+		LOGGER.info("La forme juridique n'a pas changée.");
 		return null;
 	}
 

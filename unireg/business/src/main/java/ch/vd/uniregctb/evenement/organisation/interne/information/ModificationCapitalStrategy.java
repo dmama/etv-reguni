@@ -6,7 +6,9 @@ import org.slf4j.LoggerFactory;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.organisation.data.Capital;
+import ch.vd.unireg.interfaces.organisation.data.DateRanged;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
+import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationContext;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationException;
@@ -51,16 +53,22 @@ public class ModificationCapitalStrategy extends AbstractOrganisationStrategy {
 		final RegDate dateAvant = event.getDateEvenement().getOneDayBefore();
 		final RegDate dateApres = event.getDateEvenement();
 
-		final Capital capitalAvant = organisation.getCapital(dateAvant);
-		final Capital capitalApres = organisation.getCapital(dateApres);
-
-		if (changementCapital(capitalAvant, capitalApres)) {
-			LOGGER.info("Modification du capital -> Propagation.");
-			return new InformationComplementaire(event, organisation, entreprise, context, options, TypeInformationComplementaire.MODIFICATION_CAPITAL);
+		final DateRanged<SiteOrganisation> sitePrincipalAvantRange = organisation.getSitePrincipal(dateAvant);
+		if (sitePrincipalAvantRange == null) {
+			LOGGER.info("Organisation nouvelle au civil mais déjà connue d'Unireg.");
+			return null; // On n'existait pas hier, en fait.
 		} else {
-			LOGGER.info("Pas de modification du capital.");
-			return null;
+
+			final Capital capitalAvant = organisation.getCapital(dateAvant);
+			final Capital capitalApres = organisation.getCapital(dateApres);
+
+			if (changementCapital(capitalAvant, capitalApres)) {
+				LOGGER.info("Modification du capital -> Propagation.");
+				return new InformationComplementaire(event, organisation, entreprise, context, options, TypeInformationComplementaire.MODIFICATION_CAPITAL);
+			}
 		}
+		LOGGER.info("Pas de modification du capital.");
+		return null;
 	}
 
 	private boolean changementCapital(@Nullable Capital capitalAvant, @Nullable Capital capitalApres) {

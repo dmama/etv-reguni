@@ -4,7 +4,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.interfaces.organisation.data.DateRanged;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
+import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationContext;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationException;
@@ -48,16 +50,24 @@ public class DoublonEntrepriseStrategy extends AbstractOrganisationStrategy {
 		final RegDate dateAvant = event.getDateEvenement().getOneDayBefore();
 		final RegDate dateApres = event.getDateEvenement();
 
-		final Long remplaceParAvant = organisation.getSitePrincipal(dateAvant).getPayload().getIdeRemplacePar(dateAvant);
-		final Long remplaceParApres = organisation.getSitePrincipal(dateAvant).getPayload().getIdeRemplacePar(dateApres);
+		final DateRanged<SiteOrganisation> sitePrincipalAvantRange = organisation.getSitePrincipal(dateAvant);
+		if (sitePrincipalAvantRange == null) {
+			LOGGER.info("Organisation nouvelle au civil mais déjà connue d'Unireg.");
+			return null; // On n'existait pas hier, en fait.
+		} else {
 
-		if (remplaceParAvant == null && remplaceParApres!= null) {
+			final Long remplaceParAvant = sitePrincipalAvantRange.getPayload().getIdeRemplacePar(dateAvant);
+			final Long remplaceParApres = organisation.getSitePrincipal(dateApres).getPayload().getIdeRemplacePar(dateApres);
 
-			final String message = String.format("Organisation remplacée (civil): %s, remplaçante: %s.",
-			                                    organisation.getNumeroOrganisation(), remplaceParApres);
-			LOGGER.info(message);
-			return new TraitementManuel(event, organisation, entreprise, context, options, "Traitement manuel requis pour la gestion de doublon d’entreprises: " + message);
+			if (remplaceParAvant == null && remplaceParApres != null) {
+
+				final String message = String.format("Organisation remplacée (civil): %s, remplaçante: %s.",
+				                                     organisation.getNumeroOrganisation(), remplaceParApres);
+				LOGGER.info(message);
+				return new TraitementManuel(event, organisation, entreprise, context, options, "Traitement manuel requis pour la gestion de doublon d’entreprises: " + message);
+			}
 		}
+
 		LOGGER.info("Pas de doublon d'organisation.");
 		return null;
 	}

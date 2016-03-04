@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.interfaces.organisation.data.DateRanged;
 import ch.vd.unireg.interfaces.organisation.data.Domicile;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
@@ -57,16 +58,23 @@ public class EtablissementsSecondairesStrategy extends AbstractOrganisationStrat
 		final List<Etablissement> etablissementsAFermer = new ArrayList<>();
 		final List<SiteOrganisation> sitesACreer = new ArrayList<>();
 
-		List<SiteOrganisation> sitesVDAvant = uniquementSitesVD(organisation.getSitesSecondaires(dateAvant), dateAvant);
-		List<SiteOrganisation> sitesVDApres = uniquementSitesVD(organisation.getSitesSecondaires(dateApres), dateApres);
+		final DateRanged<SiteOrganisation> sitePrincipalAvantRange = organisation.getSitePrincipal(dateAvant);
+		if (sitePrincipalAvantRange == null) {
+			LOGGER.info("Organisation nouvelle au civil mais déjà connue d'Unireg.");
+			return null; // On n'existait pas hier, en fait.
+		} else {
 
-		determineChangementsEtablissements(sitesVDAvant, sitesVDApres, etablissementsAFermer, sitesACreer, context);
+			List<SiteOrganisation> sitesVDAvant = uniquementSitesVD(organisation.getSitesSecondaires(dateAvant), dateAvant);
+			List<SiteOrganisation> sitesVDApres = uniquementSitesVD(organisation.getSitesSecondaires(dateApres), dateApres);
 
-		List<EtablissementsSecondaires.Demenagement> demenagements = determineChangementsDomiciles(sitesVDAvant, sitesVDApres, dateApres, context);
+			determineChangementsEtablissements(sitesVDAvant, sitesVDApres, etablissementsAFermer, sitesACreer, context);
 
-		if (!etablissementsAFermer.isEmpty() || !sitesACreer.isEmpty() || !demenagements.isEmpty()) {
-			LOGGER.info(String.format("Modification des établissements secondaires de l'entreprise %s (civil: %s).", entreprise.getNumero(), organisation.getNumeroOrganisation()));
-			return new EtablissementsSecondaires(event, organisation, entreprise, context, options, etablissementsAFermer, sitesACreer, demenagements);
+			List<EtablissementsSecondaires.Demenagement> demenagements = determineChangementsDomiciles(sitesVDAvant, sitesVDApres, dateApres, context);
+
+			if (!etablissementsAFermer.isEmpty() || !sitesACreer.isEmpty() || !demenagements.isEmpty()) {
+				LOGGER.info(String.format("Modification des établissements secondaires de l'entreprise %s (civil: %s).", entreprise.getNumero(), organisation.getNumeroOrganisation()));
+				return new EtablissementsSecondaires(event, organisation, entreprise, context, options, etablissementsAFermer, sitesACreer, demenagements);
+			}
 		}
 
 		LOGGER.info("Pas de modification des établissements secondaires");

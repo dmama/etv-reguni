@@ -51,25 +51,27 @@ public class InscriptionStrategy extends AbstractOrganisationStrategy {
 		final RegDate dateAvant = event.getDateEvenement().getOneDayBefore();
 		final RegDate dateApres = event.getDateEvenement();
 
-		final DateRanged<SiteOrganisation> sitePrincipalAvantRange = organisation.getSitePrincipal(dateAvant);
-
 		RegDate dateInscriptionRCAvant = null;
 		RegDate dateRadiationRCAvant = null;
-		SiteOrganisation sitePrincipalAvant = null;
 
-		if (sitePrincipalAvantRange != null) {
-			sitePrincipalAvant = sitePrincipalAvantRange.getPayload();
+		final DateRanged<SiteOrganisation> sitePrincipalAvantRange = organisation.getSitePrincipal(dateAvant);
+		if (sitePrincipalAvantRange == null) {
+			LOGGER.info("Organisation nouvelle au civil mais déjà connue d'Unireg.");
+			return null; // On n'existait pas hier, en fait.
+		} else {
+
+			SiteOrganisation sitePrincipalAvant = sitePrincipalAvantRange.getPayload();
 			dateInscriptionRCAvant = sitePrincipalAvant.getDonneesRC().getDateInscription(dateAvant);
 			dateRadiationRCAvant = sitePrincipalAvant.getDonneesRC().getDateRadiation(dateAvant);
-		}
-		final SiteOrganisation sitePrincipalApres = organisation.getSitePrincipal(dateApres).getPayload();
+			final SiteOrganisation sitePrincipalApres = organisation.getSitePrincipal(dateApres).getPayload();
 
-		final RegDate dateInscriptionRCApres = sitePrincipalApres.getDonneesRC().getDateInscription(dateApres);
+			final RegDate dateInscriptionRCApres = sitePrincipalApres.getDonneesRC().getDateInscription(dateApres);
 
 
-		if (dateInscriptionRCAvant == null && dateRadiationRCAvant == null && dateInscriptionRCApres != null) {
-			LOGGER.info(String.format("Inscription au RC de l'entreprise %s (civil: %s).", entreprise.getNumero(), organisation.getNumeroOrganisation()));
-			return new Inscription(event, organisation, entreprise, context, options);
+			if (dateInscriptionRCAvant == null && dateRadiationRCAvant == null && dateInscriptionRCApres != null) {
+				LOGGER.info(String.format("Inscription au RC de l'entreprise %s (civil: %s).", entreprise.getNumero(), organisation.getNumeroOrganisation()));
+				return new Inscription(event, organisation, entreprise, context, options);
+			}
 		}
 		LOGGER.info("Pas d'inscription au RC de l'entreprise.");
 		return null;
