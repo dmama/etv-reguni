@@ -5,7 +5,6 @@ import org.slf4j.LoggerFactory;
 
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
@@ -57,10 +56,8 @@ public class ModificationButsStrategy extends AbstractOrganisationStrategy {
 		String butsAvant = null;
 		final DateRanged<SiteOrganisation> sitePrincipalAvantRange = organisation.getSitePrincipal(dateAvant);
 		if (sitePrincipalAvantRange == null) {
-			if (isExisting(organisation, dateApres)) {
-				throw new EvenementOrganisationException(
-						String.format("Site principal introuvable sur organisation %s en date du %s", organisation.getNumeroOrganisation(), RegDateHelper.dateToDisplayString(dateAvant)));
-			}
+			LOGGER.info("Organisation nouvelle au civil mais déjà connue d'Unireg.");
+			return null; // On n'existait pas hier, en fait.
 		} else {
 			DateRanged<String> butsAvantDateRanged = DateRangeHelper.rangeAt(sitePrincipalAvantRange.getPayload().getDonneesRC().getButs(), dateAvant);
 			if (butsAvantDateRanged != null) {

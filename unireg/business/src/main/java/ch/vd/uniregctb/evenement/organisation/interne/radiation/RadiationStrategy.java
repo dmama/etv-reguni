@@ -55,47 +55,55 @@ public class RadiationStrategy extends AbstractOrganisationStrategy {
 		final RegDate dateAvant = event.getDateEvenement().getOneDayBefore();
 
 		final SiteOrganisation sitePrincipalAvant = getSitePrincipal(organisation, dateAvant);
-		final SiteOrganisation sitePrincipalApres = getSitePrincipal(organisation, dateApres);
+		if (sitePrincipalAvant == null) {
+			LOGGER.info("Organisation nouvelle au civil mais déjà connue d'Unireg.");
+			return null; // On n'existait pas hier, en fait.
+		} else {
 
-		final StatusRegistreIDE statusRegistreIDEApres = getStatusIde(sitePrincipalApres, dateApres);
+			final SiteOrganisation sitePrincipalApres = getSitePrincipal(organisation, dateApres);
 
-		final boolean enCoursDeRadiationRC = sitePrincipalAvant.isInscritAuRC(dateAvant) && ! sitePrincipalAvant.isRadieDuRC(dateAvant) && sitePrincipalApres.isRadieDuRC(dateApres);
-		final boolean enCoursDeRadiationIDE = ! sitePrincipalAvant.isRadieIDE(dateAvant) && sitePrincipalApres.isRadieIDE(dateApres);
+			final StatusRegistreIDE statusRegistreIDEApres = getStatusIde(sitePrincipalApres, dateApres);
 
-		try {
-			if (enCoursDeRadiationIDE) {
-				if (sitePrincipalApres.isInscritAuRC(dateApres) && !sitePrincipalApres.isRadieDuRC(dateApres)) {
-					throw new EvenementOrganisationException(String.format("L'entreprise %s est radiée de l'IDE mais pas du RC!", entreprise));
+			final boolean enCoursDeRadiationRC = sitePrincipalAvant.isInscritAuRC(dateAvant) && !sitePrincipalAvant.isRadieDuRC(dateAvant) && sitePrincipalApres.isRadieDuRC(dateApres);
+			final boolean enCoursDeRadiationIDE = !sitePrincipalAvant.isRadieIDE(dateAvant) && sitePrincipalApres.isRadieIDE(dateApres);
+
+			try {
+				if (enCoursDeRadiationIDE) {
+					if (sitePrincipalApres.isInscritAuRC(dateApres) && !sitePrincipalApres.isRadieDuRC(dateApres)) {
+						throw new EvenementOrganisationException(String.format("L'entreprise %s est radiée de l'IDE mais pas du RC!", entreprise));
+					}
+
+					if (isAssujetti(entreprise, dateApres, context)) {
+						LOGGER.info(String.format("Entreprise %s %s %sradiée de l'IDE, mais encore assujettie.",
+						                          entreprise.getNumero(), enCoursDeRadiationRC ? "radiée du RC, " : "", sitePrincipalAvant.isInscritAuRC(dateAvant) ? "" : "non inscrite au RC "));
+						return new TraitementManuel(event, organisation, entreprise, context, options,
+						                            "Traitement manuel requis pour le contrôle de la radiation d’une entreprise encore assujettie.");
+					}
+					LOGGER.info(String.format("Entreprise %s radiée %sde l'IDE.", entreprise.getNumero(), enCoursDeRadiationRC ? "du RC et " : ""));
+					return new Radiation(event, organisation, entreprise, context, options);
+
 				}
-
-				if (isAssujetti(entreprise, dateApres, context)) {
-					LOGGER.info(String.format("Entreprise %s %s %sradiée de l'IDE, mais encore assujettie.",
-					                          entreprise.getNumero(), enCoursDeRadiationRC ? "radiée du RC, " : "", sitePrincipalAvant.isInscritAuRC(dateAvant) ? "" : "non inscrite au RC "));
-					return new TraitementManuel(event, organisation, entreprise, context, options,
-					                            "Traitement manuel requis pour le contrôle de la radiation d’une entreprise encore assujettie.");
-				}
-				LOGGER.info(String.format("Entreprise %s radiée %sde l'IDE.", entreprise.getNumero(), enCoursDeRadiationRC ? "du RC et " : ""));
-				return new Radiation(event, organisation, entreprise, context, options);
-
-			} else if (statusRegistreIDEApres == null && enCoursDeRadiationRC) {
-				String message = String.format("Le status de l'entreprise %s est radiée du RC, mais indéterminé à l'IDE.%s",
-				                               entreprise.getNumero(), isAssujetti(entreprise, dateApres, context) ? " De plus, l'entreprise est toujours assujettie." : "");
-				LOGGER.info(message);
-				return new TraitementManuel(event, organisation, entreprise, context, options, message);
-
-			} else if (enCoursDeRadiationRC) {
-				if (CategorieEntrepriseHelper.getCategorieEntreprise(organisation, dateApres) != CategorieEntreprise.APM) {
-					final String message = String.format("Entreprise %s non APM radiée du RC mais pourtant toujours présente à l'IDE.", entreprise.getNumero());
+				else if (statusRegistreIDEApres == null && enCoursDeRadiationRC) {
+					String message = String.format("Le status de l'entreprise %s est radiée du RC, mais indéterminé à l'IDE.%s",
+					                               entreprise.getNumero(), isAssujetti(entreprise, dateApres, context) ? " De plus, l'entreprise est toujours assujettie." : "");
 					LOGGER.info(message);
 					return new TraitementManuel(event, organisation, entreprise, context, options, message);
-				}
-				LOGGER.info(String.format("Entreprise %s de type APM radiée du RC mais qui reste à l'IDE.", entreprise.getNumero()));
-				return new Radiation(event, organisation, entreprise, context, options);
 
+				}
+				else if (enCoursDeRadiationRC) {
+					if (CategorieEntrepriseHelper.getCategorieEntreprise(organisation, dateApres) != CategorieEntreprise.APM) {
+						final String message = String.format("Entreprise %s non APM radiée du RC mais pourtant toujours présente à l'IDE.", entreprise.getNumero());
+						LOGGER.info(message);
+						return new TraitementManuel(event, organisation, entreprise, context, options, message);
+					}
+					LOGGER.info(String.format("Entreprise %s de type APM radiée du RC mais qui reste à l'IDE.", entreprise.getNumero()));
+					return new Radiation(event, organisation, entreprise, context, options);
+
+				}
 			}
-		}
-		catch (AssujettissementException e) {
-			throw new EvenementOrganisationException(String.format("Impossible de déterminer si l'entreprise %s est assujettie: %s", entreprise.getNumero(), e.getMessage()), e);
+			catch (AssujettissementException e) {
+				throw new EvenementOrganisationException(String.format("Impossible de déterminer si l'entreprise %s est assujettie: %s", entreprise.getNumero(), e.getMessage()), e);
+			}
 		}
 
 		LOGGER.info("Pas de radiation de l'entreprise.");
