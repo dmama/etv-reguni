@@ -164,6 +164,7 @@ public class RegimeFiscalHelper {
 		case _40_SOCIETE_DE_BASE:
 			typeEffectif = RegpmTypeRegimeFiscal._41C_SOCIETE_DE_BASE_MIXTE;
 			break;
+		case _701_APM_IMPORTANTES:
 		case _7020_SERVICES_ASSOCIATION_FONDATION:
 		case _7032_APM_SI_SUBVENTIONNEE:
 			typeEffectif = RegpmTypeRegimeFiscal._70_ORDINAIRE_ASSOCIATION_FONDATION;
