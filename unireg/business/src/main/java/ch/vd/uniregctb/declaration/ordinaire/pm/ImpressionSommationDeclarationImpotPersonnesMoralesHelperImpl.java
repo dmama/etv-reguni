@@ -80,6 +80,9 @@ public class ImpressionSommationDeclarationImpotPersonnesMoralesHelperImpl exten
 	private FichierImpression.Document.Sommation buildInfoSommation(DeclarationImpotOrdinairePM declaration, RegDate dateTraitement, boolean batch) {
 		final FichierImpression.Document.Sommation sommation = new FichierImpression.Document.Sommation();
 		sommation.setDateBaseSommation(RegDateHelper.toIndexString(dateTraitement));
+		sommation.setDebutExerciceCommercial(RegDateHelper.toIndexString(declaration.getDateDebutExerciceCommercial()));
+		sommation.setFinExerciceCommercial(RegDateHelper.toIndexString(declaration.getDateFinExerciceCommercial()));
+		sommation.setCodeControleNIP(declaration.getCodeControle());
 		sommation.setPeriodeFiscale(XmlUtils.regdate2xmlcal(RegDate.get(declaration.getPeriode().getAnnee())));
 		return sommation;
 	}
