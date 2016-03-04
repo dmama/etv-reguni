@@ -18,6 +18,7 @@ import ch.vd.uniregctb.metier.assujettissement.PeriodeImposition;
 import ch.vd.uniregctb.rf.Immeuble;
 import ch.vd.uniregctb.situationfamille.VueSituationFamille;
 import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesMorales;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.xml.Context;
 import ch.vd.uniregctb.xml.DataHelper;
@@ -46,7 +47,8 @@ public abstract class TaxPayerStrategy<T extends Taxpayer> extends PartyStrategy
 			initTaxLiabilities(to, ctb, parts, context);
 		}
 
-		if (parts != null && parts.contains(PartyPart.TAXATION_PERIODS)) {
+		// [SIFISC-18249] les versions antérieures au WS v6 ne renvoyaient aucune période d'imposition pour les personnes morales
+		if (parts != null && parts.contains(PartyPart.TAXATION_PERIODS) && !(from instanceof ContribuableImpositionPersonnesMorales)) {
 			initTaxationPeriods(to, ctb, context);
 		}
 
