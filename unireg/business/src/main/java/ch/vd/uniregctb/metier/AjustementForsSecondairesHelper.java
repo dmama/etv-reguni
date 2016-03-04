@@ -26,7 +26,7 @@ import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 public class AjustementForsSecondairesHelper {
 
 	@NotNull
-	protected static AjustementForsSecondairesResult getResultatAjustementForsSecondaires(Map<Integer, List<DomicileHisto>> tousLesDomicilesVD,
+	public static AjustementForsSecondairesResult getResultatAjustementForsSecondaires(Map<Integer, List<DomicileHisto>> tousLesDomicilesVD,
 	                                                                                      Map<Integer, List<ForFiscalSecondaire>> tousLesForsFiscauxSecondairesParCommune, RegDate dateAuPlusTot) throws
 			EvenementOrganisationException {
 		final List<ForFiscalSecondaire> aAnnulerResultat = new ArrayList<>();

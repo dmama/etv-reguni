@@ -32,8 +32,8 @@ import static org.junit.Assert.assertTrue;
  */
 public class AjustementForsSecondairesHelperTest extends WithoutSpringTest {
 
-	Map<Integer, List<DomicileHisto>> tousLesDomicilesVD;
-	Map<Integer, List<ForFiscalSecondaire>> tousLesForsFiscauxSecondairesParCommune;
+	private Map<Integer, List<DomicileHisto>> tousLesDomicilesVD;
+	private Map<Integer, List<ForFiscalSecondaire>> tousLesForsFiscauxSecondairesParCommune;
 
 	@Before
 	public void setup() {
