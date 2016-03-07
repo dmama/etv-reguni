@@ -49,8 +49,8 @@
 					<c:out value="${debiteur.roleLigne2}" />
 				</c:if>
 			</display:column>
-			<display:column sortable ="true" titleKey="label.date.naissance" sortProperty="dateNaissance">
-				<unireg:date date="${debiteur.dateNaissance}"></unireg:date>
+			<display:column sortable ="true" titleKey="label.date.naissance" sortProperty="dateNaissanceInscriptionRC">
+				<unireg:date date="${debiteur.dateNaissanceInscriptionRC}"/>
 			</display:column>
 			<display:column property="localiteOuPays" sortable ="true" titleKey="label.localitePays"  />
 		</display:table>

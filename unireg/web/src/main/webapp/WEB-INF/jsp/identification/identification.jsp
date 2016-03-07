@@ -48,8 +48,8 @@
 							</c:if>
 							</span>
 					    </display:column>
-					    <display:column titleKey="label.date.naissance" sortable="true" sortName="dateNaissance" sortProperty="dateNaissance">
-						    <unireg:date date="${personne.dateNaissance}"></unireg:date>
+					    <display:column titleKey="label.date.naissance.ou.rc" sortable="true" sortName="dateNaissanceInscriptionRC" sortProperty="dateNaissanceInscriptionRC">
+						    <unireg:date date="${personne.dateNaissanceInscriptionRC}"></unireg:date>
 					    </display:column>
 					    <display:column sortable ="true" titleKey="label.npa" >
 						    <c:out value="${personne.npa}" />

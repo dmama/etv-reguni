@@ -46,8 +46,8 @@
 			<display:column sortable ="true" titleKey="label.prenom.nom" >
 				<c:out value="${row.nom1}" />
 			</display:column>
-			<display:column sortable ="true" titleKey="label.date.naissance" sortProperty="dateNaissance">
-				<unireg:date date="${row.dateNaissance}"></unireg:date>
+			<display:column sortable ="true" titleKey="label.date.naissance" sortProperty="dateNaissanceInscriptionRC">
+				<unireg:date date="${row.dateNaissanceInscriptionRC}"/>
 			</display:column>
 			<display:column property="localiteOuPays" sortable ="true" titleKey="label.localitePays"  />
 		</display:table>

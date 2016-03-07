@@ -44,8 +44,8 @@
 					<br><c:out value="${row.nom2}" />
 				</c:if>
 			</display:column>
-			<display:column sortable ="true" titleKey="label.date.naissance" sortProperty="dateNaissance">
-				<unireg:date date="${row.dateNaissance}"></unireg:date>
+			<display:column sortable ="true" titleKey="label.date.naissance" sortProperty="dateNaissanceInscriptionRC">
+				<unireg:date date="${row.dateNaissanceInscriptionRC}"/>
 			</display:column>
 			<display:column sortable ="true" titleKey="label.mode.imposition" >
 				<c:if test="${row.roleLigne2 != null}">
