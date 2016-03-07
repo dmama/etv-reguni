@@ -134,8 +134,4 @@ public abstract class CreateEntreprise extends EvenementOrganisationInterneDeTra
 	protected boolean inscritAuRC() {
 		return OrganisationHelper.isInscritAuRC(getOrganisation(), getDateEvt());
 	}
-
-	protected boolean hasCapital() {
-		return getOrganisation().getCapital(getDateEvt()) != null;
-	}
 }

@@ -17,6 +17,7 @@ import ch.vd.uniregctb.evenement.organisation.interne.EvenementOrganisationInter
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.Etablissement;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
+import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
 
@@ -72,8 +73,9 @@ public abstract class Demenagement extends EvenementOrganisationInterneDeTraitem
 		if (forFiscalPrincipal == null) {
 			throw new EvenementOrganisationException("Aucun for trouvé pour l'établissement principal.");
 		}
+		GenreImpot genreImpot = forFiscalPrincipal.getGenreImpot();
 		closeForFiscalPrincipal(getDateAvant(), motifFor, suivis);
-		openForFiscalPrincipal(getDateApres(), getSiegeApres(), MotifRattachement.DOMICILE, motifFor, warnings, suivis);
+		openForFiscalPrincipal(getDateApres(), getSiegeApres(), MotifRattachement.DOMICILE, motifFor, genreImpot, warnings, suivis);
 	}
 
 	/**
