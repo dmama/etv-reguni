@@ -774,7 +774,8 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 
 		// Verification de l'événement interne créé
 		List<EvenementOrganisationInterne> listEvtInterne = getListeEvtInternesCrees(translator);
-		Assert.assertEquals(2, listEvtInterne.size());
+		Assert.assertTrue(listEvtInterne.size() > 2);
+		Assert.assertTrue(listEvtInterne.get(2) instanceof TraitementManuel);
 
 		// Vérification du traitement de l'événement
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
@@ -782,7 +783,7 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 			                             public Object doInTransaction(TransactionStatus status) {
 				                             final EvenementOrganisation evt = evtOrganisationDAO.get(evtId);
 				                             Assert.assertNotNull(evt);
-				                             Assert.assertEquals(EtatEvenementOrganisation.TRAITE, evt.getEtat());
+				                             Assert.assertEquals(EtatEvenementOrganisation.EN_ERREUR, evt.getEtat());
 				                             return null;
 			                             }
 		                             }
