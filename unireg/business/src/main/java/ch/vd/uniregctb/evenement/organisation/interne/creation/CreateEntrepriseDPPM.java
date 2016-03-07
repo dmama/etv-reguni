@@ -14,6 +14,7 @@ import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationSuiviCo
 import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationWarningCollector;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.type.CategorieEntreprise;
+import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
 
@@ -45,6 +46,7 @@ public class CreateEntrepriseDPPM extends CreateEntreprise {
 		                       getAutoriteFiscalePrincipale(),
 		                       MotifRattachement.DOMICILE,
 		                       motifOuverture,
+		                       GenreImpot.BENEFICE_CAPITAL,
 		                       warnings, suivis);
 
 		// Création du bouclement
@@ -68,7 +70,7 @@ public class CreateEntrepriseDPPM extends CreateEntreprise {
 
 		Assert.state(getCategory() == CategorieEntreprise.DPPM, String.format("Catégorie d'entreprise non supportée! %s", getCategory()));
 
-		if (!hasCapital()) {
+		if (!hasCapital(getOrganisation(), getDateEvt())) {
 			erreurs.addErreur(String.format("Création impossible, capital introuvable. %s", getOrganisationDescription()));
 		}
 	}

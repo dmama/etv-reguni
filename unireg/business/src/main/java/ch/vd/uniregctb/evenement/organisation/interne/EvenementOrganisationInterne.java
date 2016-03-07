@@ -607,12 +607,13 @@ public abstract class EvenementOrganisationInterne {
 	 * @param dateOuverture            la date à laquelle le nouveau for est ouvert
 	 * @param autoriteFiscale          l'autorité fiscale sur laquelle est ouvert le nouveau for.
 	 * @param rattachement             le motif de rattachement du nouveau for
+	 * @param genreImpot               le genre d'impôt du nouveau for
 	 * @param motifOuverture           le motif d'ouverture du for fiscal principal
 	 * @param suivis       Le collector pour le suivi
 	 * @return le nouveau for fiscal principal
 	 */
 	protected ForFiscalPrincipalPM openForFiscalPrincipal(final RegDate dateOuverture, Domicile autoriteFiscale,
-	                                                      MotifRattachement rattachement, MotifFor motifOuverture, EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) {
+	                                                      MotifRattachement rattachement, MotifFor motifOuverture, GenreImpot genreImpot, EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) {
 		Assert.notNull(motifOuverture, "Le motif d'ouverture est obligatoire sur un for principal dans le canton");
 
 		final Commune commune = context.getServiceInfra().getCommuneByNumeroOfs(autoriteFiscale.getNoOfs(), dateOuverture);
@@ -621,7 +622,7 @@ public abstract class EvenementOrganisationInterne {
 			                              entreprise.getNumero(), entreprise.getNumeroEntreprise(),
 			                              RegDateHelper.dateToDisplayString(dateOuverture), motifOuverture, rattachement));
 			raiseStatusTo(HandleStatus.TRAITE);
-			return context.getTiersService().openForFiscalPrincipal(entreprise, dateOuverture, rattachement, autoriteFiscale.getNoOfs(), autoriteFiscale.getTypeAutoriteFiscale(), motifOuverture, GenreImpot.BENEFICE_CAPITAL);
+			return context.getTiersService().openForFiscalPrincipal(entreprise, dateOuverture, rattachement, autoriteFiscale.getNoOfs(), autoriteFiscale.getTypeAutoriteFiscale(), motifOuverture, genreImpot);
 		} else {
 			warnings.addWarning(
 					String.format("Ouverture de for fiscal principal sur une commune faîtière de fractions, %s: Veuillez saisir le for fiscal principal manuellement.",
@@ -849,5 +850,9 @@ public abstract class EvenementOrganisationInterne {
 	private boolean isForPrincipalExistantSurTouteLaPeriode(DateRange periode, List<ForFiscalPrincipalPM> forsFiscauxPrincipauxActifsSorted) {
 		final List<DateRange> intersections = DateRangeHelper.intersections(periode, forsFiscauxPrincipauxActifsSorted);
 		return intersections.size() == 1 && DateRangeHelper.within(periode, intersections.get(0)); // S'il devait y avoir des trous, cela voudrait dire qu'il n'y a pas une couverture continue par un for principal.
+	}
+
+	protected boolean hasCapital(Organisation organisation, RegDate date) {
+		return organisation.getCapital(date) != null && organisation.getCapital(date).getCapitalLibere().longValue() > 0;
 	}
 }

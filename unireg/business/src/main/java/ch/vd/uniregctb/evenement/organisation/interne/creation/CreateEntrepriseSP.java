@@ -14,6 +14,9 @@ import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationSuiviCo
 import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationWarningCollector;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.type.CategorieEntreprise;
+import ch.vd.uniregctb.type.GenreImpot;
+import ch.vd.uniregctb.type.MotifFor;
+import ch.vd.uniregctb.type.MotifRattachement;
 
 /**
  * Evénement interne de création d'entreprise de catégorie "Société de personnes" (SP)
@@ -37,6 +40,16 @@ public class CreateEntrepriseSP extends CreateEntreprise {
 	@Override
 	public void doHandle(EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) throws EvenementOrganisationException {
 		super.doHandle(warnings, suivis);
+
+		MotifFor motifOuverture = determineMotifOuvertureFor();
+
+		openForFiscalPrincipal(getDateDeDebut(),
+		                       getAutoriteFiscalePrincipale(),
+		                       MotifRattachement.DOMICILE,
+		                       motifOuverture,
+		                       GenreImpot.REVENU_FORTUNE,
+		                       warnings, suivis);
+
 	}
 
 	@Override

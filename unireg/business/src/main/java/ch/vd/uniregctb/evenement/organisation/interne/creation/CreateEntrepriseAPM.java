@@ -14,6 +14,7 @@ import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationWarning
 import ch.vd.uniregctb.evenement.organisation.interne.HandleStatus;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.type.CategorieEntreprise;
+import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
 
@@ -48,6 +49,7 @@ public class CreateEntrepriseAPM extends CreateEntreprise {
 			                       getAutoriteFiscalePrincipale(),
 			                       MotifRattachement.DOMICILE,
 			                       motifOuverture,
+			                       GenreImpot.BENEFICE_CAPITAL,
 			                       warnings, suivis);
 
 			// Création du bouclement

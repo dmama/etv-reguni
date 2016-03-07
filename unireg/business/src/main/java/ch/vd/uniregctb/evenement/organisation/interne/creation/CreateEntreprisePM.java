@@ -15,6 +15,7 @@ import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationSuiviCo
 import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationWarningCollector;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.type.CategorieEntreprise;
+import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
 
@@ -48,7 +49,9 @@ public class CreateEntreprisePM extends CreateEntreprise {
 		openForFiscalPrincipal(getDateDeDebut(),
 		                       autoriteFiscalePrincipale,
 		                       MotifRattachement.DOMICILE,
-		                       motifOuverture, warnings, suivis);
+		                       motifOuverture,
+		                       GenreImpot.BENEFICE_CAPITAL,
+		                       warnings, suivis);
 
 		// Création du bouclement
 		createAddBouclement(getDateDeDebut(), suivis);
