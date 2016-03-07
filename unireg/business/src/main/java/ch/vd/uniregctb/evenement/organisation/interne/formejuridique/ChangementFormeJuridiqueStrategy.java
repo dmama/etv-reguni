@@ -57,8 +57,7 @@ public class ChangementFormeJuridiqueStrategy extends AbstractOrganisationStrate
 
 		final DateRanged<SiteOrganisation> sitePrincipalAvantRange = organisation.getSitePrincipal(dateAvant);
 		if (sitePrincipalAvantRange == null) {
-			LOGGER.info("Organisation nouvelle au civil mais déjà connue d'Unireg.");
-			return null; // On n'existait pas hier, en fait.
+			return new TraitementManuel(event, organisation, entreprise, context, options, "Organisation nouvelle au civil mais déjà connue d'Unireg. Impossible de déterminer automatiquement ce qu'il faut faire.");
 		} else {
 
 			final FormeLegale formeLegaleAvant = organisation.getFormeLegale(dateAvant);

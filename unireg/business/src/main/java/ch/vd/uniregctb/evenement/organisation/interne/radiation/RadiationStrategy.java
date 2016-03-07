@@ -56,8 +56,7 @@ public class RadiationStrategy extends AbstractOrganisationStrategy {
 
 		final SiteOrganisation sitePrincipalAvant = getSitePrincipal(organisation, dateAvant);
 		if (sitePrincipalAvant == null) {
-			LOGGER.info("Organisation nouvelle au civil mais déjà connue d'Unireg.");
-			return null; // On n'existait pas hier, en fait.
+			return new TraitementManuel(event, organisation, entreprise, context, options, "Organisation nouvelle au civil mais déjà connue d'Unireg. Impossible de déterminer automatiquement ce qu'il faut faire.");
 		} else {
 
 			final SiteOrganisation sitePrincipalApres = getSitePrincipal(organisation, dateApres);
