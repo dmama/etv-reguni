@@ -59,9 +59,9 @@
 					</c:if>
 				<c:if test="${tiers.annule}"></strike></c:if>
 			</display:column>
-			<display:column sortable ="true" titleKey="label.date.naissance" sortProperty="dateNaissance">
+			<display:column sortable ="true" titleKey="label.date.naissance.ou.rc" sortProperty="dateNaissanceInscriptionRC">
 				<c:if test="${tiers.annule}"><strike></c:if>
-					<unireg:date date="${tiers.dateNaissance}"/>
+					<unireg:date date="${tiers.dateNaissanceInscriptionRC}"/>
 				<c:if test="${tiers.annule}"></strike></c:if>
 			</display:column>
 			<display:column sortable ="true" titleKey="label.localitePays" >

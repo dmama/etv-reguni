@@ -40,8 +40,8 @@
 				<a href="par-dossier/restrictions.do?numero=${row.numero}"><unireg:numCTB numero="${row.numero}" /></a>
 			</display:column>
 			<display:column sortable ="true" titleKey="label.prenom.nom" property="nom1"/>
-			<display:column sortable ="true" titleKey="label.date.naissance" sortProperty="dateNaissance">
-				<unireg:date date="${row.dateNaissance}"/>
+			<display:column sortable ="true" titleKey="label.date.naissance" sortProperty="dateNaissanceInscriptionRC">
+				<unireg:date date="${row.dateNaissanceInscriptionRC}"/>
 			</display:column>
 			<display:column property="localiteOuPays" sortable ="true" titleKey="label.localitePays"  />
 		</display:table>
