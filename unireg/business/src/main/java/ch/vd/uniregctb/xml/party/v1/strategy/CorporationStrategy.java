@@ -9,10 +9,8 @@ import java.util.Set;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.organisation.data.DateRanged;
 import ch.vd.unireg.xml.party.corporation.v1.Capital;
 import ch.vd.unireg.xml.party.corporation.v1.Corporation;
 import ch.vd.unireg.xml.party.corporation.v1.CorporationStatus;
@@ -23,9 +21,8 @@ import ch.vd.unireg.xml.party.v1.PartyPart;
 import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.metier.bouclement.ExerciceCommercial;
 import ch.vd.uniregctb.tiers.CapitalHisto;
-import ch.vd.uniregctb.tiers.DomicileEtablissement;
+import ch.vd.uniregctb.tiers.DomicileHisto;
 import ch.vd.uniregctb.tiers.Entreprise;
-import ch.vd.uniregctb.tiers.Etablissement;
 import ch.vd.uniregctb.tiers.EtatEntreprise;
 import ch.vd.uniregctb.tiers.FormeLegaleHisto;
 import ch.vd.uniregctb.tiers.RegimeFiscal;
@@ -153,19 +150,15 @@ public class CorporationStrategy extends TaxPayerStrategy<Corporation> {
 	@NotNull
 	private List<LegalSeat> extractSieges(Entreprise entreprise, Context context) {
 		final List<LegalSeat> liste = new ArrayList<>();
-		final List<DateRanged<Etablissement>> etablissements = context.tiersService.getEtablissementsPrincipauxEntreprise(entreprise);
-		for (DateRanged<Etablissement> etb : etablissements) {
-			final List<DomicileEtablissement> domiciles = etb.getPayload().getSortedDomiciles(false);
-			for (DomicileEtablissement domicile : domiciles) {
-				final DateRange intersection = DateRangeHelper.intersection(domicile, etb);
-				if (intersection != null) {
-					final LegalSeat seat = new LegalSeat();
-					seat.setDateFrom(DataHelper.coreToXMLv1(intersection.getDateDebut()));
-					seat.setDateTo(DataHelper.coreToXMLv1(intersection.getDateFin()));
-					seat.setFsoId(domicile.getNumeroOfsAutoriteFiscale());
-					seat.setType(EnumHelper.coreToXMLLegalSeatv1(domicile.getTypeAutoriteFiscale()));
-					liste.add(seat);
-				}
+		final List<DomicileHisto> sieges = context.tiersService.getSieges(entreprise);
+		for (DomicileHisto siege : sieges) {
+			if (!siege.isAnnule()) {
+				final LegalSeat seat = new LegalSeat();
+				seat.setDateFrom(DataHelper.coreToXMLv1(siege.getDateDebut()));
+				seat.setDateTo(DataHelper.coreToXMLv1(siege.getDateFin()));
+				seat.setFsoId(siege.getNoOfs());
+				seat.setType(EnumHelper.coreToXMLLegalSeatv1(siege.getTypeAutoriteFiscale()));
+				liste.add(seat);
 			}
 		}
 		return liste;
