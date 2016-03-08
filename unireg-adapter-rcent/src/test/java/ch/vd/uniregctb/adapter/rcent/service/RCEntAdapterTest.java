@@ -52,9 +52,9 @@ public class RCEntAdapterTest {
     */
 	public static final String[] RCENT_SCHEMA = new String[]{
 			"eVD-0004-3-0.xsd",
-			"eVD-0022-3-0.xsd",
-			"eVD-0023-3-0.xsd",
-			"eVD-0024-3-0.xsd"
+			"eVD-0022-3-1.xsd",
+			"eVD-0023-3-1.xsd",
+			"eVD-0024-3-1.xsd"
 	};
 
 	@Mock
