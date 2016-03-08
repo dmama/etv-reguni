@@ -66,6 +66,7 @@ import ch.vd.uniregctb.di.view.ImprimerDuplicataDeclarationImpotView;
 import ch.vd.uniregctb.di.view.ImprimerNouvelleDeclarationImpotView;
 import ch.vd.uniregctb.di.view.ModifierDemandeDelaiDeclarationView;
 import ch.vd.uniregctb.di.view.NouvelleDemandeDelaiDeclarationView;
+import ch.vd.uniregctb.di.view.TypeDeclaration;
 import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.EditiqueResultat;
 import ch.vd.uniregctb.editique.EditiqueResultatErreur;
@@ -87,6 +88,7 @@ import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersMapHelper;
 import ch.vd.uniregctb.transaction.TransactionTemplate;
 import ch.vd.uniregctb.type.EtatDelaiDeclaration;
+import ch.vd.uniregctb.type.GroupeTypesDocumentBatchLocal;
 import ch.vd.uniregctb.type.TypeDocument;
 import ch.vd.uniregctb.type.TypeEtatDeclaration;
 import ch.vd.uniregctb.utils.RegDateEditor;
@@ -1024,16 +1026,45 @@ public class DeclarationImpotController {
 		return retourEditiqueControllerHelper.traiteRetourEditique(resultat, response, "sommationDi", inbox, null, erreur);
 	}
 
-	/**
-	 * Imprime un duplicata de DI PM (= sans possibilité de choisir les annexes ou le type de document, repris de l'original)
-	 */
-	@RequestMapping(value = "/di/duplicata-pm.do", method = RequestMethod.POST)
-	public String duplicataDeclarationPersonnesMorales(@RequestParam("id") final long id, HttpServletResponse response) throws Exception {
+	@Transactional(rollbackFor = Throwable.class, readOnly = true)
+	@RequestMapping(value = "/di/duplicata-pm.do", method = RequestMethod.GET)
+	public String choixDuplicataDeclarationPersonnesMorales(@RequestParam("id") long id, Model model) throws AccessDeniedException {
 
 		if (!SecurityHelper.isAnyGranted(securityProvider, Role.DI_DUPLIC_PM)) {
-			throw new AccessDeniedException("vous ne possédez pas le droit IfoSec pour imprimer des duplicata de déclarations d'impôt des personnes morales.");
+			throw new AccessDeniedException("Vous ne possédez pas le droit IfoSec pour imprimer des duplicata de déclarations d'impôt des personnes morales.");
 		}
 
+		final DeclarationImpotOrdinaire di = diDAO.get(id);
+		if (di == null) {
+			throw new ObjectNotFoundException(messageSource.getMessage("error.di.inexistante", null, WebContextUtils.getDefaultLocale()));
+		}
+		checkAccessRights(di, false, false, false, false, true, false, false, false);
+
+		final Contribuable ctb = di.getTiers();
+		controllerUtils.checkAccesDossierEnEcriture(ctb.getId());
+
+		final GroupeTypesDocumentBatchLocal groupe = GroupeTypesDocumentBatchLocal.of(di.getTypeDeclaration());
+		final TypeDeclaration typeDeclaration = TypeDeclaration.of(groupe);
+		model.addAttribute("command", new ImprimerDuplicataDeclarationImpotView(di, typeDeclaration, modeleDocumentDAO));
+		return "di/duplicata-pm";
+	}
+
+	/**
+	 * Imprime un duplicata de DI PM
+	 */
+	@RequestMapping(value = "/di/duplicata-pm.do", method = RequestMethod.POST)
+	public String duplicataDeclarationPersonnesMorales(@Valid @ModelAttribute("command") final ImprimerDuplicataDeclarationImpotView view,
+	                                                   BindingResult result, HttpServletResponse response) throws Exception {
+
+		if (!SecurityHelper.isAnyGranted(securityProvider, Role.DI_DUPLIC_PM)) {
+			throw new AccessDeniedException("Vous ne possédez pas le droit IfoSec pour imprimer des duplicata de déclarations d'impôt des personnes morales.");
+		}
+
+		if (result.hasErrors()) {
+			return "di/duplicata-pm";
+		}
+
+		final Long id = view.getIdDI();
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		final TypeDocument typeDocument = template.execute(new TxCallback<TypeDocument>() {
 			@Override
@@ -1049,7 +1080,7 @@ public class DeclarationImpotController {
 			}
 		});
 
-		final EditiqueResultat resultat = manager.envoieImpressionLocalDuplicataDI(id, typeDocument, null, false);
+		final EditiqueResultat resultat = manager.envoieImpressionLocalDuplicataDI(id, typeDocument, view.getSelectedAnnexes(), false);
 		final RedirectEditDI inbox = new RedirectEditDI(id);
 		final RedirectEditDIApresErreur erreur = new RedirectEditDIApresErreur(id, messageSource);
 		return retourEditiqueControllerHelper.traiteRetourEditique(resultat, response, "di", inbox, null, erreur);
@@ -1060,7 +1091,7 @@ public class DeclarationImpotController {
 	 */
 	@Transactional(rollbackFor = Throwable.class, readOnly = true)
 	@RequestMapping(value = "/di/duplicata-pp.do", method = RequestMethod.GET)
-	public String choixDuplicata(@RequestParam("id") long id, Model model) throws AccessDeniedException {
+	public String choixDuplicataDeclarationPersonnesPhysiques(@RequestParam("id") long id, Model model) throws AccessDeniedException {
 
 		if (!SecurityHelper.isAnyGranted(securityProvider, Role.DI_DUPLIC_PP)) {
 			throw new AccessDeniedException("vous ne possédez pas le droit IfoSec pour imprimer des duplicata de déclarations d'impôt des personnes physiques.");
@@ -1075,9 +1106,9 @@ public class DeclarationImpotController {
 		final Contribuable ctb = di.getTiers();
 		controllerUtils.checkAccesDossierEnEcriture(ctb.getId());
 
-		model.addAttribute("command", new ImprimerDuplicataDeclarationImpotView(di, modeleDocumentDAO));
+		model.addAttribute("command", new ImprimerDuplicataDeclarationImpotView(di, TypeDeclaration.DI_PP, modeleDocumentDAO));
 		model.addAttribute("typesDeclarationImpot", tiersMapHelper.getTypesDeclarationImpotPP());       // seules les DI PP en ont besoin, les autres sont en duplicata "direct"
-		return "di/duplicata";
+		return "di/duplicata-pp";
 	}
 
 	/**
@@ -1092,7 +1123,7 @@ public class DeclarationImpotController {
 		}
 
 		if (result.hasErrors()) {
-			return "di/duplicata";
+			return "di/duplicata-pp";
 		}
 
 		// Vérifie les paramètres

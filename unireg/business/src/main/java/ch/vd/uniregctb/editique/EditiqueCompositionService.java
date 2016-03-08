@@ -67,9 +67,10 @@ public interface EditiqueCompositionService {
 	 * {@link DeclarationImpotService#envoiDuplicataDIOnline(DeclarationImpotOrdinairePM)}.
 	 *
 	 * @param declaration   la déclaration d'impôt ordinaire à imprimer
+	 * @param annexes       la liste des annexes
 	 * @return le document imprimé
 	 */
-	EditiqueResultat imprimeDuplicataDIOnline(DeclarationImpotOrdinairePM declaration) throws EditiqueException, JMSException;
+	EditiqueResultat imprimeDuplicataDIOnline(DeclarationImpotOrdinairePM declaration, List<ModeleFeuilleDocumentEditique> annexes) throws EditiqueException, JMSException;
 
 	/**
 	 * Imprime la déclaration PP spécifiée pour un envoi en masse. Cette méthode retourne immédiatement et du moment que la transaction est committée, il est de la responsabilité d'éditique d'imprimer la

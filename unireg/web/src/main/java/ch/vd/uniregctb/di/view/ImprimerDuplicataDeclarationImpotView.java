@@ -13,6 +13,7 @@ import ch.vd.uniregctb.declaration.ModeleDocumentDAO;
 import ch.vd.uniregctb.declaration.ModeleFeuilleDocument;
 import ch.vd.uniregctb.declaration.ordinaire.common.ModeleFeuilleDocumentEditique;
 import ch.vd.uniregctb.param.ModeleFeuilleDocumentComparator;
+import ch.vd.uniregctb.type.GroupeTypesDocumentBatchLocal;
 import ch.vd.uniregctb.type.TypeDocument;
 
 @SuppressWarnings("UnusedDeclaration")
@@ -26,20 +27,25 @@ public class ImprimerDuplicataDeclarationImpotView {
 	public ImprimerDuplicataDeclarationImpotView() {
 	}
 
-	public ImprimerDuplicataDeclarationImpotView(DeclarationImpotOrdinaire di, ModeleDocumentDAO modeleDocumentDAO) {
+	public ImprimerDuplicataDeclarationImpotView(DeclarationImpotOrdinaire di, TypeDeclaration typeDeclaration, ModeleDocumentDAO modeleDocumentDAO) {
 		this.idDI = di.getId();
 		this.selectedTypeDocument = initTypeDocument(di);
-		this.setModelesDocumentView(initModelesDocuments(di, modeleDocumentDAO));
+		this.setModelesDocumentView(initModelesDocuments(di, typeDeclaration, modeleDocumentDAO));
 		this.toSave = null;
 	}
 
-	private static List<ModeleDocumentView> initModelesDocuments(DeclarationImpotOrdinaire di, ModeleDocumentDAO modeleDocumentDAO) {
+	private static List<ModeleDocumentView> initModelesDocuments(DeclarationImpotOrdinaire di,
+	                                                             TypeDeclaration typeDeclaration,
+	                                                             ModeleDocumentDAO modeleDocumentDAO) {
 
 		final List<ModeleDocument> modelesDocument = modeleDocumentDAO.getByPeriodeFiscale(di.getPeriode());
 
+		final GroupeTypesDocumentBatchLocal batchLocal = typeDeclaration.getBatchLocal();
+		final Set<TypeDocument> typesDocument = typeDeclaration.getTypesDocument();
+
 		// [UNIREG-2001] si une annexe est dans la partie "LOCAL" mais pas dans la partie "BATCH", on ne la demande pas par défaut
 		// (on stocke ici donc tous les formulaires existants dans la partie "BATCH" pour un contrôle rapide)
-		final ModeleDocument modeleDocumentCompleteBatch = findModeleOfType(modelesDocument, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH);
+		final ModeleDocument modeleDocumentCompleteBatch = findModeleOfType(modelesDocument, batchLocal.getBatch());
 		final Set<Integer> numerosCADEVBatch = new HashSet<>();
 		if (modeleDocumentCompleteBatch != null) {
 			for (ModeleFeuilleDocument modeleFeuille : modeleDocumentCompleteBatch.getModelesFeuilleDocument()) {
@@ -49,7 +55,7 @@ public class ImprimerDuplicataDeclarationImpotView {
 
 		final List<ModeleDocumentView> modelesDocumentView = new ArrayList<>();
 		for (ModeleDocument modele : modelesDocument) {
-			if (modele.getTypeDocument() != TypeDocument.LISTE_RECAPITULATIVE && modele.getTypeDocument() != TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH) {
+			if (typesDocument.contains(modele.getTypeDocument()) && modele.getTypeDocument() != batchLocal.getBatch()) {
 
 				// [SIFISC-2066] on trie les feuilles dans l'ordre spécifié dans la paramétrisation
 				final List<ModeleFeuilleDocument> modelesFeuilleDocument = new ArrayList<>(modele.getModelesFeuilleDocument());
@@ -60,7 +66,7 @@ public class ImprimerDuplicataDeclarationImpotView {
 
 					// [UNIREG-2001] si une annexe est dans la partie "LOCAL" mais pas dans la partie "BATCH", on ne la demande pas par défaut
 					final int nbreFeuilles;
-					if (!numerosCADEVBatch.isEmpty() && modele.getTypeDocument() == TypeDocument.DECLARATION_IMPOT_COMPLETE_LOCAL) {
+					if (!numerosCADEVBatch.isEmpty() && modele.getTypeDocument() == batchLocal.getLocal()) {
 						if (numerosCADEVBatch.contains(modeleFeuilleDocument.getNoCADEV())) {
 							nbreFeuilles = 1;
 						}
@@ -103,8 +109,9 @@ public class ImprimerDuplicataDeclarationImpotView {
 
 	private static TypeDocument initTypeDocument(DeclarationImpotOrdinaire di) {
 		final TypeDocument t;
-		if (di.getTypeDeclaration() == TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH) {
-			t = TypeDocument.DECLARATION_IMPOT_COMPLETE_LOCAL;
+		final GroupeTypesDocumentBatchLocal groupe = GroupeTypesDocumentBatchLocal.of(di.getTypeDeclaration());
+		if (groupe != null) {
+			t = groupe.getLocal();
 		}
 		else {
 			t = di.getTypeDeclaration();

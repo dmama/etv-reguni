@@ -151,9 +151,10 @@ public interface DeclarationImpotService {
 	 * sur l'inbox
 	 *
 	 * @param declaration   la déclaration d'impôt ordinaire à imprimer
+	 * @param annexes       la liste des annexes
 	 * @return l'ID du document d'impression
 	 */
-	EditiqueResultat envoiDuplicataDIOnline(DeclarationImpotOrdinairePM declaration) throws DeclarationException;
+	EditiqueResultat envoiDuplicataDIOnline(DeclarationImpotOrdinairePM declaration, List<ModeleFeuilleDocumentEditique> annexes) throws DeclarationException;
 
 	/**
 	 * Envoie à l'impression la déclaration spécifiée pour un envoi en masse, et envoie un événement fiscal correspondant. Cette méthode retourne immédiatement et du moment que la transaction est

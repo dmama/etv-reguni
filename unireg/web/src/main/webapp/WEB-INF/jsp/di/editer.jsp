@@ -84,20 +84,49 @@
 					<c:choose>
 
 						<c:when test="${command.diPM}">
-							<input type="button" id="bouton_duplicata_pm" value="<fmt:message key="label.bouton.imprimer.duplicata" />" onclick="imprimerDI(${command.id});">
+							<input type="button" id="bouton_duplicata_pm" value="<fmt:message key="label.bouton.imprimer.duplicata" />" onclick="return open_imprime_di_pm(${command.id});">
 							<script type="text/javascript">
-								function imprimerDI(id) {
-									$(":button:not('#boutonRetour')").attr('disabled', true);
-									Form.dynamicSubmit('post', App.curl('/di/duplicata-pm.do'), {id:id});
+								function open_imprime_di_pm(id) {
+									var dialog = Dialog.create_dialog_div('imprime-di-pm-dialog');
+
+									// charge le contenu de la boîte de dialogue
+									dialog.load(App.curl('/di/duplicata-pm.do') + '?id=' + id + '&' + new Date().getTime());
+
+									dialog.dialog({
+										              title: "Impression d'un duplicata",
+										              height: 350,
+										              width:  500,
+										              modal: true,
+										              buttons: {
+											              "Imprimer": function() {
+												              // les boutons ne font pas partie de la boîte de dialogue (au niveau du DOM), on peut donc utiliser le sélecteur jQuery normal
+
+												              var form = dialog.find('#formImpression');
+												              var buttons = $('.ui-button');
+												              buttons.each(function () {
+													              if ($(this).text() == 'Imprimer') {
+														              $(this).addClass('ui-state-disabled');
+														              $(this).attr('disabled', true);
+													              }
+												              });
+
+												              form.attr('action', App.curl('/di/duplicata-pm.do'));
+												              form.submit();
+											              },
+											              "Fermer": function() {
+												              dialog.dialog("close");
+											              }
+										              }
+									              });
 								}
 							</script>
 						</c:when>
 
 						<c:when test="${command.diPP}">
-							<input type="button" value="<fmt:message key="label.bouton.imprimer.duplicata" />" onclick="return open_imprime_di(${command.id});">
+							<input type="button" value="<fmt:message key="label.bouton.imprimer.duplicata" />" onclick="return open_imprime_di_pp(${command.id});">
 							<script type="text/javascript">
-								function open_imprime_di(id) {
-									var dialog = Dialog.create_dialog_div('imprime-di-dialog');
+								function open_imprime_di_pp(id) {
+									var dialog = Dialog.create_dialog_div('imprime-di-pp-dialog');
 
 									// charge le contenu de la boîte de dialogue
 									dialog.load(App.curl('/di/duplicata-pp.do') + '?id=' + id + '&' + new Date().getTime());

@@ -908,7 +908,7 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 			if (!(declaration instanceof DeclarationImpotOrdinairePM)) {
 				throw new DeclarationException("La déclaration n'est pas une déclaration associée aux personnes morales");
 			}
-			return diService.envoiDuplicataDIOnline((DeclarationImpotOrdinairePM) declaration);
+			return diService.envoiDuplicataDIOnline((DeclarationImpotOrdinairePM) declaration, annexes);
 		}
 	}
 

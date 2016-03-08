@@ -439,9 +439,9 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 	}
 
 	@Override
-	public EditiqueResultat envoiDuplicataDIOnline(DeclarationImpotOrdinairePM declaration) throws DeclarationException {
+	public EditiqueResultat envoiDuplicataDIOnline(DeclarationImpotOrdinairePM declaration, List<ModeleFeuilleDocumentEditique> annexes) throws DeclarationException {
 		try {
-			return editiqueCompositionService.imprimeDuplicataDIOnline(declaration);
+			return editiqueCompositionService.imprimeDuplicataDIOnline(declaration, annexes);
 		}
 		catch (EditiqueException | JMSException e) {
 			throw new DeclarationException(e);

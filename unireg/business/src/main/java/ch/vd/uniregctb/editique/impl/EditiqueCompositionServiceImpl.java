@@ -221,7 +221,7 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 
 	@Override
 	public EditiqueResultat imprimeDIOnline(DeclarationImpotOrdinairePM declaration) throws EditiqueException, JMSException {
-		return imprimeDIOnline(declaration, false);
+		return imprimeDIOnline(declaration, buildDefaultAnnexes(declaration), false);
 	}
 
 	@Override
@@ -230,8 +230,8 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 	}
 
 	@Override
-	public EditiqueResultat imprimeDuplicataDIOnline(DeclarationImpotOrdinairePM declaration) throws EditiqueException, JMSException {
-		return imprimeDIOnline(declaration, true);
+	public EditiqueResultat imprimeDuplicataDIOnline(DeclarationImpotOrdinairePM declaration, List<ModeleFeuilleDocumentEditique> annexes) throws EditiqueException, JMSException {
+		return imprimeDIOnline(declaration, annexes, true);
 	}
 
 	private EditiqueResultat imprimeDIOnline(DeclarationImpotOrdinairePP declaration, TypeDocument typeDocument, List<ModeleFeuilleDocumentEditique> annexes, boolean isDuplicata) throws EditiqueException, JMSException {
@@ -259,10 +259,14 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 		return editiqueService.creerDocumentImmediatementSynchroneOuInbox(nomDocument, typeDocumentMessage, FormatDocumentEditique.PCL, mainDocument, false, description);
 	}
 
-	private EditiqueResultat imprimeDIOnline(DeclarationImpotOrdinairePM declaration, boolean isDuplicata) throws EditiqueException, JMSException {
+	private EditiqueResultat imprimeDIOnline(DeclarationImpotOrdinairePM declaration, List<ModeleFeuilleDocumentEditique> annexes, boolean isDuplicata) throws EditiqueException, JMSException {
 		final FichierImpression root = new FichierImpression();
-		final FichierImpression.Document document = impressionDIPMHelper.buildDocument(declaration, null);      // TODO gestion des annexes en impression locale
+		final FichierImpression.Document document = impressionDIPMHelper.buildDocument(declaration, annexes);
 		root.getDocument().add(document);
+		if (!isDuplicata) {
+			// 2 exemplaires pour les envois originaux
+			root.getDocument().add(document);
+		}
 		final TypeDocumentEditique typeDocument = impressionDIPMHelper.getTypeDocumentEditique(declaration);
 		final String nomDocument = impressionDIPMHelper.getIdDocument(declaration);
 
@@ -301,6 +305,7 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 		final FichierImpression root = new FichierImpression();
 		final FichierImpression.Document document = impressionDIPMHelper.buildDocument(declaration, buildDefaultAnnexesForBatch(declaration));
 		root.getDocument().add(document);
+		root.getDocument().add(document);       // 2 exemplaires pour les envois originaux
 		final TypeDocumentEditique typeDocument = impressionDIPMHelper.getTypeDocumentEditique(declaration);
 		final String nomDocument = impressionDIPMHelper.getIdDocument(declaration);
 		editiqueService.creerDocumentParBatch(nomDocument, typeDocument, root, false);

@@ -49,7 +49,7 @@ public class MockEditiqueCompositionService implements EditiqueCompositionServic
 	}
 
 	@Override
-	public EditiqueResultat imprimeDuplicataDIOnline(DeclarationImpotOrdinairePM declaration) throws EditiqueException, JMSException {
+	public EditiqueResultat imprimeDuplicataDIOnline(DeclarationImpotOrdinairePM declaration, List<ModeleFeuilleDocumentEditique> annexes) throws EditiqueException, JMSException {
 		return dummyResultat();
 	}
 

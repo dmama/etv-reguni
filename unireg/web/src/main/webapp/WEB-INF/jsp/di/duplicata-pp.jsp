@@ -26,10 +26,7 @@
                 <legend><span>Veuillez choisir la composition et le nombre de documents à imprimer</span></legend>
                 <unireg:nextRowClass reset="0"/>
 
-                <input type="hidden" name="idDI" value="${command.idDI}"/>
-
-
-
+                <form:hidden path="idDI"/>
 
                 <c:forEach items="${command.modelesDocumentView}" var="modele" varStatus="statusModele">
                     <c:set var="rowClass"><unireg:nextRowClass/></c:set>
@@ -42,7 +39,7 @@
                                 <td width="10%">&nbsp;</td>
                                 <td width="45%">${feuille.intituleFeuille}&nbsp;:</td>
                                 <td width="45%" style="padding-bottom:4px">
-                                    <form:input path="modelesDocumentView[${statusModele.index}].modelesFeuilles[${statusFeuille.index}].nbreIntituleFeuille"
+                                    <form:input path="modelesDocumentView[${statusModele.index}].modelesFeuilles[${statusFeuille.index}].nombreFeuilles"
                                                 cssClass="document-type-${modele.typeDocument}" size="2" maxlength="1"/>
                                     <form:hidden path="modelesDocumentView[${statusModele.index}].modelesFeuilles[${statusFeuille.index}].intituleFeuille"/>
                                     <form:hidden path="modelesDocumentView[${statusModele.index}].modelesFeuilles[${statusFeuille.index}].noCADEV"/>
