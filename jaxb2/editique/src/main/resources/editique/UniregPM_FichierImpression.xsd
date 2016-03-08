@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified"
-    targetNamespace="http://vd.ch/Editique/PM/UniregImpression-15.2"
-    xmlns="http://vd.ch/Editique/PM/UniregImpression-15.2">
+    targetNamespace="http://vd.ch/Editique/PM/UniregImpression"
+    xmlns="http://vd.ch/Editique/PM/UniregImpression">
     <xs:annotation>
         <xs:appinfo>IMPORTANT : Le namespace par défaut ne doit pas contenir de préfixe !!!</xs:appinfo>
     </xs:annotation>
@@ -40,6 +40,7 @@
                     <xs:documentation>DI PM : CodDoc=U1P1, typDoc=DI</xs:documentation>
                 </xs:annotation>
             </xs:group>
+            <xs:group ref="DIAPM"/>
             <xs:group ref="refusDelai">
                 <xs:annotation>
                     <xs:documentation>Refus de délai : CodDoc=U1P6, typDoc=CO</xs:documentation>
@@ -65,7 +66,6 @@
                     <xs:documentation>Lettre de bienvenue : CodDoc=U1P3, typDoc=CO </xs:documentation>
                 </xs:annotation>
             </xs:group>
-            <xs:group ref="DIA"/>
             <xs:group ref="lettreRappel">
                 <xs:annotation>
                     <xs:documentation>Lettre de bienvenue : CodDoc=U1P7, typDoc=CO</xs:documentation>
@@ -75,15 +75,12 @@
     </xs:group>
     <xs:group name="DI">
         <xs:sequence>
-            <xs:element minOccurs="0" name="declarationImpot" type="CTypeDeclarationImpot"> </xs:element>
-            <xs:element maxOccurs="1" minOccurs="0" name="annexesDI" type="CTypeAnnexeDI"/>
+            <xs:element name="declarationImpot" type="CTypeDeclarationImpotPM"/>
         </xs:sequence>
     </xs:group>
-    <xs:group name="DIA">
+    <xs:group name="DIAPM">
         <xs:sequence>
-            <xs:element minOccurs="0" name="declarationImpotAssociation"
-                type="CTypeDeclarationImpot"> </xs:element>
-            <xs:element maxOccurs="1" minOccurs="0" name="annexesDIA" type="CTypeAnnexeDIA"/>
+            <xs:element name="declarationImpotAPM" type="CTypeDeclarationImpotAPM"/>
         </xs:sequence>
     </xs:group>
     <xs:group name="refusDelai">
@@ -97,16 +94,6 @@
                         <xs:element name="periodeFiscale" type="xs:gYear">
                             <xs:annotation>
                                 <xs:documentation>AAAA</xs:documentation>
-                            </xs:annotation>
-                        </xs:element>
-                        <xs:element minOccurs="1" name="debutExerciceCommercial" type="STypeDate">
-                            <xs:annotation>
-                                <xs:documentation>AAAAMMJJ</xs:documentation>
-                            </xs:annotation>
-                        </xs:element>
-                        <xs:element minOccurs="1" name="finExerciceCommercial" type="STypeDate">
-                            <xs:annotation>
-                                <xs:documentation>AAAAMMJJ</xs:documentation>
                             </xs:annotation>
                         </xs:element>
                         <xs:element name="dateEnvoiContribuable" type="STypeDate">
@@ -127,21 +114,6 @@
                 </xs:annotation>
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element name="periodeFiscale" type="xs:gYear">
-                            <xs:annotation>
-                                <xs:documentation>AAAA</xs:documentation>
-                            </xs:annotation>
-                        </xs:element>
-                        <xs:element minOccurs="1" name="debutExerciceCommercial" type="STypeDate">
-                            <xs:annotation>
-                                <xs:documentation>AAAAMMJJ</xs:documentation>
-                            </xs:annotation>
-                        </xs:element>
-                        <xs:element minOccurs="1" name="finExerciceCommercial" type="STypeDate">
-                            <xs:annotation>
-                                <xs:documentation>AAAAMMJJ</xs:documentation>
-                            </xs:annotation>
-                        </xs:element>
                         <xs:element name="dateAccord" type="STypeDate">
                             <xs:annotation>
                                 <xs:documentation>AAAAMMJJ</xs:documentation>
@@ -163,16 +135,6 @@
                         <xs:element name="periodeFiscale" type="xs:gYear">
                             <xs:annotation>
                                 <xs:documentation>AAAA</xs:documentation>
-                            </xs:annotation>
-                        </xs:element>
-                        <xs:element minOccurs="1" name="debutExerciceCommercial" type="STypeDate">
-                            <xs:annotation>
-                                <xs:documentation>AAAAMMJJ</xs:documentation>
-                            </xs:annotation>
-                        </xs:element>
-                        <xs:element minOccurs="1" name="finExerciceCommercial" type="STypeDate">
-                            <xs:annotation>
-                                <xs:documentation>AAAAMMJJ</xs:documentation>
                             </xs:annotation>
                         </xs:element>
                         <xs:element minOccurs="0" name="codeControleNIP" type="STypeCodeNIP">
@@ -197,21 +159,6 @@
                         <xs:element name="periodeFiscale" type="xs:gYear">
                             <xs:annotation>
                                 <xs:documentation>AAAA</xs:documentation>
-                            </xs:annotation>
-                        </xs:element>
-                        <xs:element minOccurs="1" name="debutExerciceCommercial" type="STypeDate">
-                            <xs:annotation>
-                                <xs:documentation>AAAAMMJJ</xs:documentation>
-                            </xs:annotation>
-                        </xs:element>
-                        <xs:element minOccurs="1" name="finExerciceCommercial" type="STypeDate">
-                            <xs:annotation>
-                                <xs:documentation>AAAAMMJJ</xs:documentation>
-                            </xs:annotation>
-                        </xs:element>
-                        <xs:element name="dateEnvoiContribuable" type="STypeDate">
-                            <xs:annotation>
-                                <xs:documentation>AAAAMMJJ</xs:documentation>
                             </xs:annotation>
                         </xs:element>
                         <xs:element name="dateReceptionDemande" type="STypeDate">
@@ -387,6 +334,11 @@ PMP21101_aaaammjj.xml</xs:documentation>
     </xs:complexType>
     <xs:complexType name="CTypeInfoDocument">
         <xs:sequence>
+            <xs:element name="versionXSD" type="STypeVersionXSD">
+                <xs:annotation>
+                    <xs:documentation>EDITIQUE : Incrémenter cette valeur à chaque diffusion de la XSD !!!</xs:documentation>
+                </xs:annotation>
+            </xs:element>
             <xs:element name="prefixe" type="STypePrefixeDOCUM">
                 <xs:annotation>
                     <xs:appinfo/>
@@ -571,51 +523,12 @@ U1P8ADASROUTE
             </xs:element>
         </xs:sequence>
     </xs:complexType>
-    <xs:complexType name="CTypeAnnexeDI">
-        <xs:sequence>
-            <xs:element maxOccurs="unbounded" minOccurs="1" name="referenceAnnexe">
-                <xs:simpleType>
-                    <xs:restriction base="xs:string">
-                        <xs:enumeration value="A01a"/>
-                        <xs:enumeration value="A01b"/>
-                        <xs:enumeration value="A01c"/>
-                        <xs:enumeration value="A01d"/>
-                        <xs:enumeration value="A01e"/>
-                        <xs:enumeration value="A02"/>
-                        <xs:enumeration value="A03"/>
-                        <xs:enumeration value="A04a"/>
-                        <xs:enumeration value="A04b"/>
-                    </xs:restriction>
-                </xs:simpleType>
-            </xs:element>
-        </xs:sequence>
-    </xs:complexType>
-    <xs:complexType name="CTypeAnnexeDIA">
-        <xs:sequence>
-            <xs:element maxOccurs="unbounded" name="referenceAnnexe">
-                <xs:simpleType>
-                    <xs:restriction base="xs:string">
-                        <xs:enumeration value="A01a"/>
-                        <xs:enumeration value="A01b"/>
-                        <xs:enumeration value="A02"/>
-                        <xs:enumeration value="A03a"/>
-                        <xs:enumeration value="A03b"/>
-                        <xs:enumeration value="A04"/>
-                    </xs:restriction>
-                </xs:simpleType>
-            </xs:element>
-        </xs:sequence>
-    </xs:complexType>
-    <xs:complexType name="CTypeDeclarationImpot">
+
+    <xs:complexType name="CTypeDeclarationImpot" abstract="true">
         <xs:sequence>
             <xs:element name="periodeFiscale" type="xs:gYear">
                 <xs:annotation>
                     <xs:documentation>AAAA</xs:documentation>
-                </xs:annotation>
-            </xs:element>
-            <xs:element name="codeBarreDI" type="STypeCodeBarreDI">
-                <xs:annotation>
-                    <xs:documentation/>
                 </xs:annotation>
             </xs:element>
             <xs:element minOccurs="0" name="codeControleNIP" type="STypeCodeNIP">
@@ -634,7 +547,7 @@ U1P8ADASROUTE
                 <xs:annotation>
                     <xs:documentation>21-X
 
-(avec X=1 pour les entreprises de catégorie « PM » dont le siège est vaudois et X=3 pour les entreprises de catégorie « PM » dont le siège est hors Vaud (hors Canton ou étranger)</xs:documentation>
+                        (avec X=1 pour les entreprises de catégorie « PM » dont le siège est vaudois et X=3 pour les entreprises de catégorie « PM » dont le siège est hors Vaud (hors Canton ou étranger)</xs:documentation>
                 </xs:annotation>
             </xs:element>
             <xs:element name="siege" type="xs:string"/>
@@ -653,11 +566,48 @@ U1P8ADASROUTE
                 <xs:annotation>
                     <xs:documentation>CHxx BBBB BCCC CCCC CCCC C
 
-(avec xx : Clé, B=code banque, C=numéro de compte)</xs:documentation>
+                        (avec xx : Clé, B=code banque, C=numéro de compte)</xs:documentation>
                 </xs:annotation>
             </xs:element>
             <xs:element minOccurs="0" name="titulaireCompte" type="xs:string"/>
             <xs:element minOccurs="0" name="codeFlyer" type="STypeCodeFlyer"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="CTypeDeclarationImpotPM">
+        <xs:complexContent>
+            <xs:extension base="CTypeDeclarationImpot">
+                <xs:sequence>
+                    <xs:element maxOccurs="unbounded" name="feuilles" type="CTypeAnnexesDI"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <xs:complexType name="CTypeDeclarationImpotAPM">
+        <xs:complexContent>
+            <xs:extension base="CTypeDeclarationImpot">
+                <xs:sequence>
+                    <xs:element maxOccurs="unbounded" name="feuilles" type="CTypeAnnexesDIAPM"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <xs:complexType name="CTypeAnnexesDI">
+        <xs:sequence>
+            <xs:element maxOccurs="1" minOccurs="1" name="referenceFeuille"
+                type="STypeReferenceAnnexeDI"/>
+            <xs:element name="nombreFeuille" type="xs:integer"/>
+            <xs:element minOccurs="1" name="codeBarreFeuille" type="STypeCodeBarreDI"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="CTypeAnnexesDIAPM">
+        <xs:sequence>
+            <xs:element maxOccurs="1" minOccurs="1" name="referenceFeuille"
+                type="STypeReferenceAnnexeDIAPM"/>
+            <xs:element name="nombreFeuille" type="xs:integer"/>
+            <xs:element minOccurs="1" name="codeBarreFeuille" type="STypeCodeBarreDI"/>
         </xs:sequence>
     </xs:complexType>
     <xs:simpleType name="STypePrefixeTECHN">
@@ -846,6 +796,36 @@ U1P8ADASROUTE
         <xs:restriction base="xs:string">
             <xs:enumeration value="LettreBienvenue"/>
             <xs:enumeration value="QuestionnaireSNC"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name="STypeReferenceAnnexeDI">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="A01a"/>
+            <xs:enumeration value="A01b"/>
+            <xs:enumeration value="A01c"/>
+            <xs:enumeration value="A01d"/>
+            <xs:enumeration value="A01e"/>
+            <xs:enumeration value="A02"/>
+            <xs:enumeration value="A03"/>
+            <xs:enumeration value="A04a"/>
+            <xs:enumeration value="A04b"/>
+            <xs:enumeration value="DI"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name="STypeReferenceAnnexeDIAPM">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="A01a"/>
+            <xs:enumeration value="A01b"/>
+            <xs:enumeration value="A02"/>
+            <xs:enumeration value="A03a"/>
+            <xs:enumeration value="A03b"/>
+            <xs:enumeration value="A04"/>
+            <xs:enumeration value="DI"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name="STypeVersionXSD">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="16.3"/>
         </xs:restriction>
     </xs:simpleType>
 </xs:schema>
