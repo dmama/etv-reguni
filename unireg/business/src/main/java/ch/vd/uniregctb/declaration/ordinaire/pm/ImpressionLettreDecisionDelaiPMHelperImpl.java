@@ -13,6 +13,7 @@ import ch.vd.editique.unireg.CTypeInfoEnteteDocument;
 import ch.vd.editique.unireg.FichierImpression;
 import ch.vd.editique.unireg.STypeZoneAffranchissement;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.adresse.AdresseEnvoiDetaillee;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.XmlUtils;
@@ -94,11 +95,18 @@ public class ImpressionLettreDecisionDelaiPMHelperImpl extends EditiqueAbstractH
 	@Override
 	public FichierImpression.Document buildDocument(ImpressionLettreDecisionDelaiPMHelperParams params, String cleArchivage) throws EditiqueException {
 		try {
-			final ContribuableImpositionPersonnesMorales tiers = params.getDi().getTiers();
+			final DeclarationImpotOrdinairePM declaration = params.getDi();
+			final ContribuableImpositionPersonnesMorales tiers = declaration.getTiers();
 			final TypeDocumentEditique typeDocument = getTypeDocumentEditique(params);
 			final CTypeInfoDocument infoDocument = buildInfoDocument(getAdresseEnvoi(tiers), typeDocument, getCodeDocument(params));
 			final CTypeInfoArchivage infoArchivage = buildInfoArchivage(typeDocument, cleArchivage, tiers.getNumero(), params.getDateTraitement());
-			final CTypeInfoEnteteDocument infoEnteteDocument = buildInfoEnteteDocument(tiers, params.getDateTraitement(), TRAITE_PAR, infraService.getACIOIPM());
+
+			final String titre = String.format("IMPÔT SUR LE BÉNÉFICE ET LE CAPITAL %d (du %s au %s)",
+			                                   declaration.getPeriode().getAnnee(),
+			                                   RegDateHelper.dateToDisplayString(declaration.getDateDebutExerciceCommercial()),
+			                                   RegDateHelper.dateToDisplayString(declaration.getDateFinExerciceCommercial()));
+
+			final CTypeInfoEnteteDocument infoEnteteDocument = buildInfoEnteteDocument(tiers, params.getDateTraitement(), TRAITE_PAR, infraService.getACIOIPM(), titre);
 
 			final FichierImpression.Document.RefusDelai refusDelai = buildRefusDelai(params);
 			final FichierImpression.Document.AccordDelai accordDelai = buildAccordDelai(params);

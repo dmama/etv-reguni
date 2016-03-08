@@ -51,7 +51,13 @@ public class ImpressionSommationDeclarationImpotPersonnesMoralesHelperImpl exten
 			final ContribuableImpositionPersonnesMorales tiers = declaration.getTiers();
 			final CTypeInfoDocument infoDocument = buildInfoDocument(getAdresseEnvoi(tiers));
 			final CTypeInfoArchivage infoArchivage = buildInfoArchivage(getTypeDocumentEditique(), construitCleArchivageDocument(declaration), tiers.getNumero(), dateSommation);
-			final CTypeInfoEnteteDocument infoEnteteDocument = buildInfoEnteteDocument(tiers, dateSommation, TRAITE_PAR, infraService.getACIOIPM());
+
+			final String titre = String.format("INVITATION À DÉPOSER LA DÉCLARATION %d - SOMMATION (du %s au %s)",
+			                                   declaration.getPeriode().getAnnee(),
+			                                   RegDateHelper.dateToDisplayString(declaration.getDateDebutExerciceCommercial()),
+			                                   RegDateHelper.dateToDisplayString(declaration.getDateFinExerciceCommercial()));
+
+			final CTypeInfoEnteteDocument infoEnteteDocument = buildInfoEnteteDocument(tiers, dateSommation, TRAITE_PAR, infraService.getACIOIPM(), titre);
 			final FichierImpression.Document.Sommation sommation = buildInfoSommation(declaration, dateSommation, batch);
 			return new FichierImpression.Document(infoDocument, infoArchivage, infoEnteteDocument, null, null, null, null, sommation, null, null, null, null);
 		}
