@@ -11,8 +11,8 @@
 			<legend><span><fmt:message key="label.exercices.commerciaux" /></span></legend>
 
 			<c:if test="${not empty exercices}">
-				<display:table name="exercices" id="ex" class="display" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator" requestURI="/exercices/list.do" sort="list">
-					<display:column sortable="true" titleKey="label.date.debut" sortProperty="dateDebut" style="width: 50%;">
+				<display:table name="exercices" id="ex" class="display" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator" requestURI="/exercices/list.do">
+					<display:column titleKey="label.date.debut" style="width: 50%;">
 						<c:choose>
 							<c:when test="${ex.first}">
 								<form:form action="change-date-debut.do" commandName="command" method="post">
@@ -44,7 +44,7 @@
 						<c:if test="${ex.first}">
 						</c:if>
 					</display:column>
-					<display:column sortable="true" titleKey="label.date.fin" sortProperty="dateFin" style="width: 50%;">
+					<display:column titleKey="label.date.fin" style="width: 50%;">
 						<c:choose>
 							<c:when test="${!ex.withDI && !ex.tooOldToHaveDI}">
 								<form:form action="change-date-fin.do" commandName="command" method="post">
