@@ -18,6 +18,7 @@ import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.di.view.AjouterEtatDeclarationView;
 import ch.vd.uniregctb.di.view.ImprimerNouvelleDeclarationImpotView;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
+import ch.vd.uniregctb.type.ModeleFeuille;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeContribuable;
@@ -80,11 +81,11 @@ public class DeclarationImpotControllerValidatorTest extends WebTest {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final PeriodeFiscale periode2010 = addPeriodeFiscale(2010);
-				ModeleDocument declarationComplete2010 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2010);
-				addModeleFeuilleDocument("Déclaration", "210", declarationComplete2010);
-				addModeleFeuilleDocument("Annexe 1", "220", declarationComplete2010);
-				addModeleFeuilleDocument("Annexe 2-3", "230", declarationComplete2010);
-				addModeleFeuilleDocument("Annexe 4-5", "240", declarationComplete2010);
+				final ModeleDocument declarationComplete2010 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2010);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, declarationComplete2010);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, declarationComplete2010);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, declarationComplete2010);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, declarationComplete2010);
 
 				// Un contribuable quelconque
 				PersonnePhysique eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
@@ -136,11 +137,11 @@ public class DeclarationImpotControllerValidatorTest extends WebTest {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final PeriodeFiscale periode2010 = addPeriodeFiscale(2010);
-				ModeleDocument declarationComplete2010 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2010);
-				addModeleFeuilleDocument("Déclaration", "210", declarationComplete2010);
-				addModeleFeuilleDocument("Annexe 1", "220", declarationComplete2010);
-				addModeleFeuilleDocument("Annexe 2-3", "230", declarationComplete2010);
-				addModeleFeuilleDocument("Annexe 4-5", "240", declarationComplete2010);
+				final ModeleDocument declarationComplete2010 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2010);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, declarationComplete2010);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, declarationComplete2010);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, declarationComplete2010);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, declarationComplete2010);
 
 				// Un contribuable quelconque
 				PersonnePhysique jeanne = addNonHabitant("Jeanne", "dupont", date(1965, 4, 13), Sexe.MASCULIN);
@@ -184,11 +185,11 @@ public class DeclarationImpotControllerValidatorTest extends WebTest {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final PeriodeFiscale periode2010 = addPeriodeFiscale(2010);
-				ModeleDocument declarationComplete2010 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2010);
-				addModeleFeuilleDocument("Déclaration", "210", declarationComplete2010);
-				addModeleFeuilleDocument("Annexe 1", "220", declarationComplete2010);
-				addModeleFeuilleDocument("Annexe 2-3", "230", declarationComplete2010);
-				addModeleFeuilleDocument("Annexe 4-5", "240", declarationComplete2010);
+				final ModeleDocument declarationComplete2010 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2010);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, declarationComplete2010);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, declarationComplete2010);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, declarationComplete2010);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, declarationComplete2010);
 
 				// Un contribuable quelconque
 				PersonnePhysique gustave = addNonHabitant("Gustave", "Eiffel", date(1965, 4, 13), Sexe.MASCULIN);
@@ -241,11 +242,11 @@ public class DeclarationImpotControllerValidatorTest extends WebTest {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final PeriodeFiscale periode2010 = addPeriodeFiscale(2010);
-				ModeleDocument declarationComplete2010 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2010);
-				addModeleFeuilleDocument("Déclaration", "210", declarationComplete2010);
-				addModeleFeuilleDocument("Annexe 1", "220", declarationComplete2010);
-				addModeleFeuilleDocument("Annexe 2-3", "230", declarationComplete2010);
-				addModeleFeuilleDocument("Annexe 4-5", "240", declarationComplete2010);
+				final ModeleDocument declarationComplete2010 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2010);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, declarationComplete2010);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, declarationComplete2010);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, declarationComplete2010);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, declarationComplete2010);
 
 				// Un contribuable quelconque
 				PersonnePhysique coridon = addNonHabitant("Coridon", "De la Mouette", date(1965, 4, 13), Sexe.MASCULIN);

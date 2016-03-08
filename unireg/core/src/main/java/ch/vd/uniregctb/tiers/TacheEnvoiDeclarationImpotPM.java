@@ -26,8 +26,10 @@ public class TacheEnvoiDeclarationImpotPM extends TacheEnvoiDeclarationImpot {
 	/**
 	 * Tous les types de documents acceptés pour une tâche d'envoi de DI PM
 	 */
-	private static final Set<TypeDocument> TYPES_DOCUMENTS_AUTORISES = EnumSet.of(TypeDocument.DECLARATION_IMPOT_APM,
-	                                                                              TypeDocument.DECLARATION_IMPOT_PM);
+	private static final Set<TypeDocument> TYPES_DOCUMENTS_AUTORISES = EnumSet.of(TypeDocument.DECLARATION_IMPOT_APM_BATCH,
+	                                                                              TypeDocument.DECLARATION_IMPOT_APM_LOCAL,
+	                                                                              TypeDocument.DECLARATION_IMPOT_PM_BATCH,
+	                                                                              TypeDocument.DECLARATION_IMPOT_PM_LOCAL);
 
 	/**
 	 * Catégorie d'entreprise

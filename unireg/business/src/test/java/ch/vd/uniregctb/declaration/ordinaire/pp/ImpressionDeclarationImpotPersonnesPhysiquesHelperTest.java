@@ -48,6 +48,7 @@ import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP;
 import ch.vd.uniregctb.declaration.ModeleDocument;
 import ch.vd.uniregctb.declaration.ModeleFeuilleDocument;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
+import ch.vd.uniregctb.declaration.ordinaire.common.ModeleFeuilleDocumentEditique;
 import ch.vd.uniregctb.editique.LegacyEditiqueHelper;
 import ch.vd.uniregctb.editique.ZoneAffranchissementEditique;
 import ch.vd.uniregctb.situationfamille.SituationFamilleService;
@@ -60,6 +61,7 @@ import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.EtatCivil;
 import ch.vd.uniregctb.type.ModeImposition;
+import ch.vd.uniregctb.type.ModeleFeuille;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
@@ -691,10 +693,7 @@ public class ImpressionDeclarationImpotPersonnesPhysiquesHelperTest extends Busi
 		final List<ModeleFeuilleDocumentEditique> annexes = new ArrayList<>();
 		final Set<ModeleFeuilleDocument> listFeuille = di.getModeleDocument().getModelesFeuilleDocument();
 		for (ModeleFeuilleDocument feuille : listFeuille) {
-			ModeleFeuilleDocumentEditique feuilleEditique = new ModeleFeuilleDocumentEditique();
-			feuilleEditique.setIntituleFeuille(feuille.getIntituleFeuille());
-			feuilleEditique.setNumeroFormulaire(feuille.getNumeroFormulaire());
-			feuilleEditique.setNbreIntituleFeuille(1);
+			final ModeleFeuilleDocumentEditique feuilleEditique = new ModeleFeuilleDocumentEditique(feuille, 1);
 			annexes.add(feuilleEditique);
 		}
 		return annexes;
@@ -723,10 +722,10 @@ public class ImpressionDeclarationImpotPersonnesPhysiquesHelperTest extends Busi
 
 				final PeriodeFiscale pf = addPeriodeFiscale(annee);
 				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, pf);
-				addModeleFeuilleDocument("Intitulé 210", "210", md);
-				addModeleFeuilleDocument("Intitulé 220", "220", md);
-				addModeleFeuilleDocument("Intitulé 230", "230", md);
-				addModeleFeuilleDocument("Intitulé 240", "240", md);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, md);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, md);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, md);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, md);
 
 				final DeclarationImpotOrdinairePP di = addDeclarationImpot(mc, pf, date(annee, 1, 1), date(annee, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, md);
 				di.setNumeroOfsForGestion(MockCommune.VillarsSousYens.getNoOFS());
@@ -796,12 +795,12 @@ public class ImpressionDeclarationImpotPersonnesPhysiquesHelperTest extends Busi
 
 				final PeriodeFiscale pf = addPeriodeFiscale(annee);
 				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, pf);
-				addModeleFeuilleDocument("Intitulé 210", "210", md);
-				addModeleFeuilleDocument("Intitulé 220", "220", md);
-				addModeleFeuilleDocument("Intitulé 230", "230", md);
-				addModeleFeuilleDocument("Intitulé 240", "240", md);
-				addModeleFeuilleDocument("Intitulé 320", "320", md);
-				addModeleFeuilleDocument("Intitulé 330", "330", md);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, md);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, md);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, md);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, md);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_320, md);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_330, md);
 
 				final DeclarationImpotOrdinairePP di = addDeclarationImpot(mc, pf, date(annee, 1, 1), date(annee, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, md);
 				di.setNumeroOfsForGestion(MockCommune.VillarsSousYens.getNoOFS());

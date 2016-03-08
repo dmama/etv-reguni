@@ -250,7 +250,7 @@ public class DemandeDelaiCollectiveProcessorTest extends BusinessTest {
 				addForPrincipal(e, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Aubonne);
 
 				final PeriodeFiscale periode = addPeriodeFiscale(annee);
-				final ModeleDocument modeleDocument = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM, periode);
+				final ModeleDocument modeleDocument = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_LOCAL, periode);
 				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
 				final Declaration d = addDeclarationImpot(e, periode, RegDate.get(annee, 1, 1), RegDate.get(annee, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, modeleDocument);
 				d.setDelais(new HashSet<DelaiDeclaration>());
@@ -316,7 +316,7 @@ public class DemandeDelaiCollectiveProcessorTest extends BusinessTest {
 				addForPrincipal(e, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Aubonne);
 
 				final PeriodeFiscale periode = addPeriodeFiscale(annee);
-				final ModeleDocument modeleDocument = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM, periode);
+				final ModeleDocument modeleDocument = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_LOCAL, periode);
 				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
 				final Declaration d = addDeclarationImpot(e, periode, RegDate.get(annee, 1, 1), RegDate.get(annee, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, modeleDocument);
 
@@ -417,7 +417,7 @@ public class DemandeDelaiCollectiveProcessorTest extends BusinessTest {
 				addForPrincipal(e, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Aubonne);
 
 				final PeriodeFiscale periode = addPeriodeFiscale(annee);
-				final ModeleDocument modeleDocument = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM, periode);
+				final ModeleDocument modeleDocument = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, periode);
 				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
 				final Declaration d = addDeclarationImpot(e, periode, RegDate.get(annee, 1, 1), RegDate.get(annee, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, modeleDocument);
 
@@ -468,7 +468,7 @@ public class DemandeDelaiCollectiveProcessorTest extends BusinessTest {
 				addForPrincipal(e, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Aubonne);
 
 				final PeriodeFiscale periode = addPeriodeFiscale(annee);
-				final ModeleDocument modeleDocument = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM, periode);
+				final ModeleDocument modeleDocument = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_LOCAL, periode);
 				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
 				final Declaration d = addDeclarationImpot(e, periode, RegDate.get(annee, 1, 1), RegDate.get(annee, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, modeleDocument);
 
@@ -519,7 +519,7 @@ public class DemandeDelaiCollectiveProcessorTest extends BusinessTest {
 				addForPrincipal(e, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Aubonne);
 
 				final PeriodeFiscale periode = addPeriodeFiscale(annee);
-				final ModeleDocument modeleDocument = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM, periode);
+				final ModeleDocument modeleDocument = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, periode);
 				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
 				final Declaration d = addDeclarationImpot(e, periode, RegDate.get(annee, 1, 1), RegDate.get(annee, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, modeleDocument);
 

@@ -1613,9 +1613,11 @@ public abstract class EnumHelper {
 			return ch.vd.unireg.xml.party.taxdeclaration.v4.DocumentType.EXPENDITURE_BASED_TAX_DECLARATION;
 		case DECLARATION_IMPOT_HC_IMMEUBLE:
 			return ch.vd.unireg.xml.party.taxdeclaration.v4.DocumentType.IMMOVABLE_PROPERTY_OTHER_CANTON_TAX_DECLARATION;
-		case DECLARATION_IMPOT_APM:
+		case DECLARATION_IMPOT_APM_BATCH:
+		case DECLARATION_IMPOT_APM_LOCAL:
 			return ch.vd.unireg.xml.party.taxdeclaration.v4.DocumentType.OTHER_CORPORATE_ENTITY_TAX_DECLARATION;
-		case DECLARATION_IMPOT_PM:
+		case DECLARATION_IMPOT_PM_BATCH:
+		case DECLARATION_IMPOT_PM_LOCAL:
 			return ch.vd.unireg.xml.party.taxdeclaration.v4.DocumentType.CORPORATE_ENTITY_TAX_DECLARATION;
 		default:
 			throw new IllegalArgumentException("Type de document inconnu = [" + type + ']');

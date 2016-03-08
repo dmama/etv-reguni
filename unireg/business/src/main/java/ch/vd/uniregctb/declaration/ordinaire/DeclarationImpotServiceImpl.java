@@ -36,6 +36,7 @@ import ch.vd.uniregctb.declaration.ModeleFeuilleDocument;
 import ch.vd.uniregctb.declaration.PeriodeFiscaleDAO;
 import ch.vd.uniregctb.declaration.ordinaire.common.DemandeDelaiCollectiveProcessor;
 import ch.vd.uniregctb.declaration.ordinaire.common.DemandeDelaiCollectiveResults;
+import ch.vd.uniregctb.declaration.ordinaire.common.ModeleFeuilleDocumentEditique;
 import ch.vd.uniregctb.declaration.ordinaire.pm.DeterminationDIsPMAEmettreProcessor;
 import ch.vd.uniregctb.declaration.ordinaire.pm.DeterminationDIsPMResults;
 import ch.vd.uniregctb.declaration.ordinaire.pm.EchoirDIsPMProcessor;
@@ -67,7 +68,6 @@ import ch.vd.uniregctb.declaration.ordinaire.pp.InformationsDocumentAdapter;
 import ch.vd.uniregctb.declaration.ordinaire.pp.ListeDIsPPNonEmises;
 import ch.vd.uniregctb.declaration.ordinaire.pp.ListeNoteProcessor;
 import ch.vd.uniregctb.declaration.ordinaire.pp.ListeNoteResults;
-import ch.vd.uniregctb.declaration.ordinaire.pp.ModeleFeuilleDocumentEditique;
 import ch.vd.uniregctb.declaration.ordinaire.pp.ProduireListeDIsNonEmisesProcessor;
 import ch.vd.uniregctb.declaration.ordinaire.pp.ProduireStatsCtbsProcessor;
 import ch.vd.uniregctb.declaration.ordinaire.pp.ProduireStatsDIsProcessor;
@@ -852,12 +852,12 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 		}
 
 		// APM -> "2"
-		if (typeDocument == TypeDocument.DECLARATION_IMPOT_APM) {
+		if (typeDocument == TypeDocument.DECLARATION_IMPOT_APM_BATCH || typeDocument == TypeDocument.DECLARATION_IMPOT_APM_LOCAL) {
 			return 2;
 		}
 
 		// autre chose que "PM" -> boum !
-		if (typeDocument != TypeDocument.DECLARATION_IMPOT_PM) {
+		if (typeDocument != TypeDocument.DECLARATION_IMPOT_PM_BATCH && typeDocument != TypeDocument.DECLARATION_IMPOT_PM_LOCAL) {
 			throw new IllegalArgumentException("Type de document absent ou non-supporté dans l'envoi des déclarations d'impôt PM : " + typeDocument);
 		}
 

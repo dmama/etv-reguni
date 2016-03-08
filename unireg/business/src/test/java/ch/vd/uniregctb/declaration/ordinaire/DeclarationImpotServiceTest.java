@@ -66,6 +66,7 @@ import ch.vd.uniregctb.tiers.TacheEnvoiDeclarationImpotPP;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.ModeImposition;
+import ch.vd.uniregctb.type.ModeleFeuille;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.Sexe;
@@ -191,10 +192,10 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				ModeleDocument declarationComplete2007 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, addPeriodeFiscale(2007));
-				addModeleFeuilleDocument("Déclaration", "210", declarationComplete2007);
-				addModeleFeuilleDocument("Annexe 1", "220", declarationComplete2007);
-				addModeleFeuilleDocument("Annexe 2-3", "230", declarationComplete2007);
-				addModeleFeuilleDocument("Annexe 4-5", "240", declarationComplete2007);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, declarationComplete2007);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, declarationComplete2007);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, declarationComplete2007);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, declarationComplete2007);
 
 				// Un contribuable quelconque
 				PersonnePhysique eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
@@ -325,10 +326,10 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 
 				PeriodeFiscale periode = addPeriodeFiscale(2007);
 				ModeleDocument declarationComplete2007 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
-				addModeleFeuilleDocument("Déclaration", "210", declarationComplete2007);
-				addModeleFeuilleDocument("Annexe 1", "220", declarationComplete2007);
-				addModeleFeuilleDocument("Annexe 2-3", "230", declarationComplete2007);
-				addModeleFeuilleDocument("Annexe 4-5", "240", declarationComplete2007);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, declarationComplete2007);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, declarationComplete2007);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, declarationComplete2007);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, declarationComplete2007);
 
 				// Un contribuable habitant dans le canton
 				PersonnePhysique eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
@@ -395,17 +396,17 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 
 				PeriodeFiscale periode2006 = addPeriodeFiscale(2006);
 				ModeleDocument declarationComplete2006 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2006);
-				addModeleFeuilleDocument("Déclaration", "210", declarationComplete2006);
-				addModeleFeuilleDocument("Annexe 1", "220", declarationComplete2006);
-				addModeleFeuilleDocument("Annexe 2-3", "230", declarationComplete2006);
-				addModeleFeuilleDocument("Annexe 4-5", "240", declarationComplete2006);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, declarationComplete2006);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, declarationComplete2006);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, declarationComplete2006);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, declarationComplete2006);
 
 				PeriodeFiscale periode2007 = addPeriodeFiscale(2007);
 				ModeleDocument declarationComplete2007 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2007);
-				addModeleFeuilleDocument("Déclaration", "210", declarationComplete2007);
-				addModeleFeuilleDocument("Annexe 1", "220", declarationComplete2007);
-				addModeleFeuilleDocument("Annexe 2-3", "230", declarationComplete2007);
-				addModeleFeuilleDocument("Annexe 4-5", "240", declarationComplete2007);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, declarationComplete2007);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, declarationComplete2007);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, declarationComplete2007);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, declarationComplete2007);
 
 				// Un tiers tout ce quil y a de plus ordinaire
 				PersonnePhysique eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
@@ -522,29 +523,29 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 
 				final PeriodeFiscale periode2006 = addPeriodeFiscale(2006);
 				final ModeleDocument declarationComplete2006 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2006);
-				addModeleFeuilleDocument("Déclaration", "210", declarationComplete2006);
-				addModeleFeuilleDocument("Annexe 1", "220", declarationComplete2006);
-				addModeleFeuilleDocument("Annexe 2-3", "230", declarationComplete2006);
-				addModeleFeuilleDocument("Annexe 4-5", "240", declarationComplete2006);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, declarationComplete2006);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, declarationComplete2006);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, declarationComplete2006);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, declarationComplete2006);
 				final ModeleDocument declarationVaudTax2006 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, periode2006);
-				addModeleFeuilleDocument("Déclaration vaud tax", "250", declarationVaudTax2006);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_250, declarationVaudTax2006);
 				final ModeleDocument declarationDep2006 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_DEPENSE, periode2006);
-				addModeleFeuilleDocument("Déclaration dépense", "270", declarationDep2006);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_270, declarationDep2006);
 				ModeleDocument declarationHC2006 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, periode2006);
-				addModeleFeuilleDocument("Déclaration HC", "200", declarationHC2006);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_200, declarationHC2006);
 
 				final PeriodeFiscale periode2007 = addPeriodeFiscale(2007);
 				final ModeleDocument declarationComplete2007 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2007);
-				addModeleFeuilleDocument("Déclaration", "210", declarationComplete2007);
-				addModeleFeuilleDocument("Annexe 1", "220", declarationComplete2007);
-				addModeleFeuilleDocument("Annexe 2-3", "230", declarationComplete2007);
-				addModeleFeuilleDocument("Annexe 4-5", "240", declarationComplete2007);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, declarationComplete2007);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, declarationComplete2007);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, declarationComplete2007);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, declarationComplete2007);
 				final ModeleDocument declarationVaudTax2007 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, periode2007);
-				addModeleFeuilleDocument("Déclaration vaud tax", "250", declarationVaudTax2007);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_250, declarationVaudTax2007);
 				final ModeleDocument declarationDep2007 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_DEPENSE, periode2007);
-				addModeleFeuilleDocument("Déclaration dépense", "270", declarationDep2007);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_270, declarationDep2007);
 				final ModeleDocument declarationHC2007 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, periode2007);
-				addModeleFeuilleDocument("Déclaration HC", "200", declarationHC2007);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_200, declarationHC2007);
 
 				// Un tiers imposé à la dépense
 				PersonnePhysique paul = addNonHabitant("Paul", "Duchêne", date(1965, 4, 13), Sexe.MASCULIN);
@@ -921,10 +922,10 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 				final CollectiviteAdministrative colAdm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm());
 
 				ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, addPeriodeFiscale(2007));
-				addModeleFeuilleDocument("Déclaration", "210", modele);
-				addModeleFeuilleDocument("Annexe 1", "220", modele);
-				addModeleFeuilleDocument("Annexe 2-3", "230", modele);
-				addModeleFeuilleDocument("Annexe 4-5", "240", modele);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, modele);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, modele);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, modele);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, modele);
 
 				// Un contribuable quelconque
 				PersonnePhysique eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
@@ -983,10 +984,10 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 				final CollectiviteAdministrative colAdm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm());
 
 				ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, addPeriodeFiscale(2007));
-				addModeleFeuilleDocument("Déclaration", "210", modele);
-				addModeleFeuilleDocument("Annexe 1", "220", modele);
-				addModeleFeuilleDocument("Annexe 2-3", "230", modele);
-				addModeleFeuilleDocument("Annexe 4-5", "240", modele);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, modele);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, modele);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, modele);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, modele);
 
 				// Un contribuable quelconque
 				PersonnePhysique eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
@@ -1046,10 +1047,10 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 				final CollectiviteAdministrative colAdm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm());
 
 				ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, addPeriodeFiscale(2007));
-				addModeleFeuilleDocument("Déclaration", "210", modele);
-				addModeleFeuilleDocument("Annexe 1", "220", modele);
-				addModeleFeuilleDocument("Annexe 2-3", "230", modele);
-				addModeleFeuilleDocument("Annexe 4-5", "240", modele);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, modele);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, modele);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, modele);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, modele);
 
 				// Un contribuable quelconque
 				PersonnePhysique eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
@@ -1121,8 +1122,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 
 				final CollectiviteAdministrative colAdm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm());
 
-				addModeleFeuilleDocument("Déclaration HC", "200", addModeleDocument(TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE,
-						addPeriodeFiscale(2007)));
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_200, addModeleDocument(TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, addPeriodeFiscale(2007)));
 
 				// Un contribuable hors-canton possédant deux immeubles dans le canton
 				PersonnePhysique eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
@@ -1203,10 +1203,10 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 
 				PeriodeFiscale periode2007 = addPeriodeFiscale(2007);
 				ModeleDocument declarationComplete2007 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2007);
-				addModeleFeuilleDocument("Déclaration", "210", declarationComplete2007);
-				addModeleFeuilleDocument("Annexe 1", "220", declarationComplete2007);
-				addModeleFeuilleDocument("Annexe 2-3", "230", declarationComplete2007);
-				addModeleFeuilleDocument("Annexe 4-5", "240", declarationComplete2007);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, declarationComplete2007);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, declarationComplete2007);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, declarationComplete2007);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, declarationComplete2007);
 
 				PersonnePhysique jean = addNonHabitant("Jean", "Dumont", date(1962, 3, 12), Sexe.MASCULIN);
 				ids.jeanId = jean.getNumero();
@@ -1307,10 +1307,10 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 
 				PeriodeFiscale periode = addPeriodeFiscale(2007);
 				ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
-				addModeleFeuilleDocument("Déclaration", "210", modele);
-				addModeleFeuilleDocument("Annexe 1", "220", modele);
-				addModeleFeuilleDocument("Annexe 2-3", "230", modele);
-				addModeleFeuilleDocument("Annexe 4-5", "240", modele);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, modele);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, modele);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, modele);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, modele);
 
 				// Un contribuable normal
 				PersonnePhysique eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
@@ -1450,26 +1450,26 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 			public Object execute(TransactionStatus status) throws Exception {
 				PeriodeFiscale periode2006 = addPeriodeFiscale(2006);
 				ModeleDocument declarationComplete2006 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2006);
-				addModeleFeuilleDocument("Déclaration", "210", declarationComplete2006);
-				addModeleFeuilleDocument("Annexe 1", "220", declarationComplete2006);
-				addModeleFeuilleDocument("Annexe 2-3", "230", declarationComplete2006);
-				addModeleFeuilleDocument("Annexe 4-5", "240", declarationComplete2006);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, declarationComplete2006);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, declarationComplete2006);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, declarationComplete2006);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, declarationComplete2006);
 				ModeleDocument declarationComplete2007 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, addPeriodeFiscale(2007));
-				addModeleFeuilleDocument("Déclaration", "210", declarationComplete2007);
-				addModeleFeuilleDocument("Annexe 1", "220", declarationComplete2007);
-				addModeleFeuilleDocument("Annexe 2-3", "230", declarationComplete2007);
-				addModeleFeuilleDocument("Annexe 4-5", "240", declarationComplete2007);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, declarationComplete2007);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, declarationComplete2007);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, declarationComplete2007);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, declarationComplete2007);
 				ModeleDocument declarationComplete2008 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, addPeriodeFiscale(2008));
-				addModeleFeuilleDocument("Déclaration", "210", declarationComplete2008);
-				addModeleFeuilleDocument("Annexe 1", "220", declarationComplete2008);
-				addModeleFeuilleDocument("Annexe 2-3", "230", declarationComplete2008);
-				addModeleFeuilleDocument("Annexe 4-5", "240", declarationComplete2008);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, declarationComplete2008);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, declarationComplete2008);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, declarationComplete2008);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, declarationComplete2008);
 				ModeleDocument declarationComplete2009 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, addPeriodeFiscale(2009));
-				addModeleFeuilleDocument("Déclaration", "210", declarationComplete2009);
-				addModeleFeuilleDocument("Annexe 1", "220", declarationComplete2009);
-				addModeleFeuilleDocument("Annexe 2-3", "230", declarationComplete2009);
-				addModeleFeuilleDocument("Annexe 4-5", "240", declarationComplete2009);
-				addModeleFeuilleDocument("Annexe 1-1", "310", declarationComplete2009);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, declarationComplete2009);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, declarationComplete2009);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, declarationComplete2009);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, declarationComplete2009);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_310, declarationComplete2009);
 
 				// Contribuable propriétaire d'un immeubles à Lausanne et ayant déménagé fin 2006 au Danemark.
 				PersonnePhysique jacky = addNonHabitant("Jacky", "Galager", date(1948, 11, 3), Sexe.MASCULIN);
@@ -1540,10 +1540,10 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 				PeriodeFiscale periode2006 = addPeriodeFiscale(2006);
 				addPeriodeFiscale(2007);
 				ModeleDocument declarationComplete = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2006);
-				addModeleFeuilleDocument("Déclaration", "210", declarationComplete);
-				addModeleFeuilleDocument("Annexe 1", "220", declarationComplete);
-				addModeleFeuilleDocument("Annexe 2-3", "230", declarationComplete);
-				addModeleFeuilleDocument("Annexe 4-5", "240", declarationComplete);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, declarationComplete);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, declarationComplete);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, declarationComplete);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, declarationComplete);
 
 				// Un tiers indigent depuis toujours
 				PersonnePhysique eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
@@ -2024,17 +2024,17 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 
 				PeriodeFiscale periode2006 = addPeriodeFiscale(2006);
 				ModeleDocument declarationComplete2006 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2006);
-				addModeleFeuilleDocument("Déclaration", "210", declarationComplete2006);
-				addModeleFeuilleDocument("Annexe 1", "220", declarationComplete2006);
-				addModeleFeuilleDocument("Annexe 2-3", "230", declarationComplete2006);
-				addModeleFeuilleDocument("Annexe 4-5", "240", declarationComplete2006);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, declarationComplete2006);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, declarationComplete2006);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, declarationComplete2006);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, declarationComplete2006);
 
 				PeriodeFiscale periode2007 = addPeriodeFiscale(2007);
 				ModeleDocument declarationComplete2007 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2007);
-				addModeleFeuilleDocument("Déclaration", "210", declarationComplete2007);
-				addModeleFeuilleDocument("Annexe 1", "220", declarationComplete2007);
-				addModeleFeuilleDocument("Annexe 2-3", "230", declarationComplete2007);
-				addModeleFeuilleDocument("Annexe 4-5", "240", declarationComplete2007);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, declarationComplete2007);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, declarationComplete2007);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, declarationComplete2007);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, declarationComplete2007);
 
 				// Un tiers tout ce quil y a de plus ordinaire
 				PersonnePhysique eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
@@ -2161,17 +2161,17 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 
 				PeriodeFiscale periode2006 = addPeriodeFiscale(2006);
 				ModeleDocument declarationComplete2006 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2006);
-				addModeleFeuilleDocument("Déclaration", "210", declarationComplete2006);
-				addModeleFeuilleDocument("Annexe 1", "220", declarationComplete2006);
-				addModeleFeuilleDocument("Annexe 2-3", "230", declarationComplete2006);
-				addModeleFeuilleDocument("Annexe 4-5", "240", declarationComplete2006);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, declarationComplete2006);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, declarationComplete2006);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, declarationComplete2006);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, declarationComplete2006);
 
 				PeriodeFiscale periode2007 = addPeriodeFiscale(2007);
 				ModeleDocument declarationComplete2007 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2007);
-				addModeleFeuilleDocument("Déclaration", "210", declarationComplete2007);
-				addModeleFeuilleDocument("Annexe 1", "220", declarationComplete2007);
-				addModeleFeuilleDocument("Annexe 2-3", "230", declarationComplete2007);
-				addModeleFeuilleDocument("Annexe 4-5", "240", declarationComplete2007);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, declarationComplete2007);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, declarationComplete2007);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, declarationComplete2007);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, declarationComplete2007);
 
 				// Un tiers tout ce quil y a de plus ordinaire
 				PersonnePhysique eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);

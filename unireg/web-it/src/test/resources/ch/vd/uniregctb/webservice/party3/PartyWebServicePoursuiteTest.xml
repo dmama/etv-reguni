@@ -1146,7 +1146,7 @@
     <column>LOG_MDATE</column>
     <column>LOG_MUSER</column>
     <column>INTITULE_FEUILLE</column>
-    <column>NO_FORMULAIRE</column>
+    <column>NO_CADEV</column>
     <column>MODELE_ID</column>
   </table>
   <table name="MIGREG_ERROR">

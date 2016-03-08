@@ -11,7 +11,7 @@ import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.ModeleDocument;
 import ch.vd.uniregctb.declaration.ModeleDocumentDAO;
 import ch.vd.uniregctb.declaration.ModeleFeuilleDocument;
-import ch.vd.uniregctb.declaration.ordinaire.pp.ModeleFeuilleDocumentEditique;
+import ch.vd.uniregctb.declaration.ordinaire.common.ModeleFeuilleDocumentEditique;
 import ch.vd.uniregctb.param.ModeleFeuilleDocumentComparator;
 import ch.vd.uniregctb.type.TypeDocument;
 
@@ -40,10 +40,10 @@ public class ImprimerDuplicataDeclarationImpotView {
 		// [UNIREG-2001] si une annexe est dans la partie "LOCAL" mais pas dans la partie "BATCH", on ne la demande pas par défaut
 		// (on stocke ici donc tous les formulaires existants dans la partie "BATCH" pour un contrôle rapide)
 		final ModeleDocument modeleDocumentCompleteBatch = findModeleOfType(modelesDocument, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH);
-		final Set<String> numerosFormulairesBatch = new HashSet<>();
+		final Set<Integer> numerosCADEVBatch = new HashSet<>();
 		if (modeleDocumentCompleteBatch != null) {
 			for (ModeleFeuilleDocument modeleFeuille : modeleDocumentCompleteBatch.getModelesFeuilleDocument()) {
-				numerosFormulairesBatch.add(modeleFeuille.getNumeroFormulaire());
+				numerosCADEVBatch.add(modeleFeuille.getNoCADEV());
 			}
 		}
 
@@ -60,8 +60,8 @@ public class ImprimerDuplicataDeclarationImpotView {
 
 					// [UNIREG-2001] si une annexe est dans la partie "LOCAL" mais pas dans la partie "BATCH", on ne la demande pas par défaut
 					final int nbreFeuilles;
-					if (!numerosFormulairesBatch.isEmpty() && modele.getTypeDocument() == TypeDocument.DECLARATION_IMPOT_COMPLETE_LOCAL) {
-						if (numerosFormulairesBatch.contains(modeleFeuilleDocument.getNumeroFormulaire())) {
+					if (!numerosCADEVBatch.isEmpty() && modele.getTypeDocument() == TypeDocument.DECLARATION_IMPOT_COMPLETE_LOCAL) {
+						if (numerosCADEVBatch.contains(modeleFeuilleDocument.getNoCADEV())) {
 							nbreFeuilles = 1;
 						}
 						else {
@@ -72,10 +72,7 @@ public class ImprimerDuplicataDeclarationImpotView {
 						nbreFeuilles = 1;
 					}
 
-					final ModeleFeuilleDocumentEditique modeleFeuilleDocumentView = new ModeleFeuilleDocumentEditique();
-					modeleFeuilleDocumentView.setIntituleFeuille(modeleFeuilleDocument.getIntituleFeuille());
-					modeleFeuilleDocumentView.setNumeroFormulaire(modeleFeuilleDocument.getNumeroFormulaire());
-					modeleFeuilleDocumentView.setNbreIntituleFeuille(nbreFeuilles);
+					final ModeleFeuilleDocumentEditique modeleFeuilleDocumentView = new ModeleFeuilleDocumentEditique(modeleFeuilleDocument, nbreFeuilles);
 					modelesFeuilleDocumentView.add(modeleFeuilleDocumentView);
 				}
 

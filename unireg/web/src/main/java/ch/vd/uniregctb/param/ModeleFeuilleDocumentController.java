@@ -31,6 +31,7 @@ import ch.vd.uniregctb.param.manager.ParamPeriodeManager;
 import ch.vd.uniregctb.param.view.ModeleFeuilleDocumentView;
 import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.security.SecurityCheck;
+import ch.vd.uniregctb.type.ModeleFeuille;
 
 /**
  * Ce contrôleur est responsable de l'ajout, de l'édition et de la suppression des feuilles sur les modèles de documents.
@@ -68,7 +69,6 @@ public class ModeleFeuilleDocumentController {
 		binder.setValidator(modeleFeuilleDocumentValidator);
 	}
 
-
 	@RequestMapping(value = "/add.do", method = RequestMethod.GET)
 	@Transactional(readOnly = true, rollbackFor = Throwable.class)
 	@SecurityCheck(rolesToCheck = {Role.PARAM_PERIODE}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
@@ -76,6 +76,7 @@ public class ModeleFeuilleDocumentController {
 
 		final ModeleFeuilleDocumentView view = manager.createModeleFeuilleDocumentViewAdd(periodeId, modeleId);
 		model.addAttribute("command", view);
+		model.addAttribute("modelesFeuilles", ModeleFeuille.forDocument(view.getModeleDocumentTypeDocument()));
 
 		return "param/feuille-add";
 	}
@@ -83,8 +84,9 @@ public class ModeleFeuilleDocumentController {
 	@RequestMapping(value = "/add.do", method = RequestMethod.POST)
 	@Transactional(rollbackFor = Throwable.class)
 	@SecurityCheck(rolesToCheck = {Role.PARAM_PERIODE}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
-	public String add(@Valid @ModelAttribute("command") ModeleFeuilleDocumentView view, BindingResult result) throws Exception {
+	public String add(Model model, @Valid @ModelAttribute("command") ModeleFeuilleDocumentView view, BindingResult result) throws Exception {
 		if (result.hasErrors()) {
+			model.addAttribute("modelesFeuilles", ModeleFeuille.forDocument(view.getModeleDocumentTypeDocument()));
 			return "param/feuille-add";
 		}
 		manager.addFeuille(view.getIdModele(), view.getModeleFeuille());
@@ -98,15 +100,16 @@ public class ModeleFeuilleDocumentController {
 	public String edit(@RequestParam("pf") Long periodeId, @RequestParam("md") Long modeleId, @RequestParam("mfd") Long feuilleId, Model model) throws Exception {
 		final ModeleFeuilleDocumentView view = manager.createModeleFeuilleDocumentViewEdit(periodeId, modeleId, feuilleId);
 		model.addAttribute("command", view);
-
+		model.addAttribute("modelesFeuilles", ModeleFeuille.forDocument(view.getModeleDocumentTypeDocument()));
 		return "param/feuille-edit";
 	}
 
 	@RequestMapping(value = "/edit.do", method = RequestMethod.POST)
 	@Transactional(rollbackFor = Throwable.class)
 	@SecurityCheck(rolesToCheck = {Role.PARAM_PERIODE}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
-	public String edit(@Valid @ModelAttribute("command") ModeleFeuilleDocumentView view, BindingResult result) throws Exception {
+	public String edit(Model model, @Valid @ModelAttribute("command") ModeleFeuilleDocumentView view, BindingResult result) throws Exception {
 		if (result.hasErrors()) {
+			model.addAttribute("modelesFeuilles", ModeleFeuille.forDocument(view.getModeleDocumentTypeDocument()));
 			return "param/feuille-edit";
 		}
 		manager.updateFeuille(view.getIdFeuille(), view.getModeleFeuille());

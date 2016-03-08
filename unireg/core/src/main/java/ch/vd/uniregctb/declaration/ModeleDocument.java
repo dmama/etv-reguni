@@ -33,8 +33,6 @@ import ch.vd.uniregctb.type.TypeDocument;
 @Table(name = "MODELE_DOCUMENT")
 public class ModeleDocument extends HibernateEntity {
 
-	private static final long serialVersionUID = -8958189002571119165L;
-
 	private Long id;
 
 	/**
@@ -167,9 +165,9 @@ public class ModeleDocument extends HibernateEntity {
 	}
 
 	@Transient
-	public boolean possedeModeleFeuilleDocument(String codeModeleFeuille){
+	public boolean possedeModeleFeuilleDocument(int noCADEV){
 		for (ModeleFeuilleDocument feuilleDocument : modelesFeuilleDocument) {
-			if(codeModeleFeuille.equals(feuilleDocument.getNumeroFormulaire())){
+			if (noCADEV == feuilleDocument.getNoCADEV()) {
 				return true;
 			}
 		}

@@ -121,13 +121,13 @@ public class EnvoiDeclarationsPMProcessorTest extends BusinessTest {
 
 				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
 				final PeriodeFiscale periodeFiscale = addPeriodeFiscale(pf);
-				addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM, periodeFiscale);
-				addModeleDocument(TypeDocument.DECLARATION_IMPOT_APM, periodeFiscale);
+				addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, periodeFiscale);
+				addModeleDocument(TypeDocument.DECLARATION_IMPOT_APM_BATCH, periodeFiscale);
 
 				// la tâche de DI "pf" (= celle que l'on va traiter)
 				addTacheEnvoiDIPM(TypeEtatTache.EN_INSTANCE, RegDate.get(), date(pf - 1, 5, 3), date(pf, 1, 31),
 				                  date(pf - 1, 5, 3), date(pf, 1, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
-				                  TypeDocument.DECLARATION_IMPOT_PM, e, CategorieEntreprise.PM, oipm);
+				                  TypeDocument.DECLARATION_IMPOT_PM_BATCH, e, CategorieEntreprise.PM, oipm);
 
 				return e.getNumero();
 			}
@@ -171,7 +171,7 @@ public class EnvoiDeclarationsPMProcessorTest extends BusinessTest {
 					Assert.assertEquals(date(pf, 1, 31), tidipm.getDateFin());
 					Assert.assertEquals(TypeEtatTache.EN_INSTANCE, tidipm.getEtat());
 					Assert.assertEquals(TypeContribuable.VAUDOIS_ORDINAIRE, tidipm.getTypeContribuable());
-					Assert.assertEquals(TypeDocument.DECLARATION_IMPOT_PM, tidipm.getTypeDocument());
+					Assert.assertEquals(TypeDocument.DECLARATION_IMPOT_PM_BATCH, tidipm.getTypeDocument());
 				}
 			});
 		}
@@ -244,7 +244,7 @@ public class EnvoiDeclarationsPMProcessorTest extends BusinessTest {
 					Assert.assertEquals(date(pf, 1, 31), tidipm.getDateFin());
 					Assert.assertEquals(TypeEtatTache.TRAITE, tidipm.getEtat());
 					Assert.assertEquals(TypeContribuable.VAUDOIS_ORDINAIRE, tidipm.getTypeContribuable());
-					Assert.assertEquals(TypeDocument.DECLARATION_IMPOT_PM, tidipm.getTypeDocument());
+					Assert.assertEquals(TypeDocument.DECLARATION_IMPOT_PM_BATCH, tidipm.getTypeDocument());
 
 					// vérification de la présence d'un événement fiscal
 					final List<EvenementFiscal> all = evenementFiscalDAO.getAll();
@@ -296,13 +296,13 @@ public class EnvoiDeclarationsPMProcessorTest extends BusinessTest {
 
 				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
 				final PeriodeFiscale periodeFiscale = addPeriodeFiscale(pf);
-				addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM, periodeFiscale);
-				addModeleDocument(TypeDocument.DECLARATION_IMPOT_APM, periodeFiscale);
+				addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, periodeFiscale);
+				addModeleDocument(TypeDocument.DECLARATION_IMPOT_APM_BATCH, periodeFiscale);
 
 				// la tâche de DI "pf" (= celle que l'on va traiter)
 				addTacheEnvoiDIPM(TypeEtatTache.EN_INSTANCE, RegDate.get(), date(pf - 1, 5, 3), date(pf, 1, 31),
 				                  date(pf - 1, 5, 3), date(pf, 1, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
-				                  TypeDocument.DECLARATION_IMPOT_PM, e, CategorieEntreprise.PM, oipm);
+				                  TypeDocument.DECLARATION_IMPOT_PM_BATCH, e, CategorieEntreprise.PM, oipm);
 
 				return e.getNumero();
 			}
@@ -346,7 +346,7 @@ public class EnvoiDeclarationsPMProcessorTest extends BusinessTest {
 					Assert.assertEquals(date(pf, 1, 31), tidipm.getDateFin());
 					Assert.assertEquals(TypeEtatTache.EN_INSTANCE, tidipm.getEtat());
 					Assert.assertEquals(TypeContribuable.VAUDOIS_ORDINAIRE, tidipm.getTypeContribuable());
-					Assert.assertEquals(TypeDocument.DECLARATION_IMPOT_PM, tidipm.getTypeDocument());
+					Assert.assertEquals(TypeDocument.DECLARATION_IMPOT_PM_BATCH, tidipm.getTypeDocument());
 				}
 			});
 		}
@@ -419,7 +419,7 @@ public class EnvoiDeclarationsPMProcessorTest extends BusinessTest {
 					Assert.assertEquals(date(pf, 1, 31), tidipm.getDateFin());
 					Assert.assertEquals(TypeEtatTache.TRAITE, tidipm.getEtat());
 					Assert.assertEquals(TypeContribuable.VAUDOIS_ORDINAIRE, tidipm.getTypeContribuable());
-					Assert.assertEquals(TypeDocument.DECLARATION_IMPOT_PM, tidipm.getTypeDocument());
+					Assert.assertEquals(TypeDocument.DECLARATION_IMPOT_PM_BATCH, tidipm.getTypeDocument());
 
 					// vérification de la présence d'un événement fiscal
 					final List<EvenementFiscal> all = evenementFiscalDAO.getAll();
@@ -470,13 +470,13 @@ public class EnvoiDeclarationsPMProcessorTest extends BusinessTest {
 
 				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
 				final PeriodeFiscale periodeFiscale = addPeriodeFiscale(pf);
-				addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM, periodeFiscale);
-				addModeleDocument(TypeDocument.DECLARATION_IMPOT_APM, periodeFiscale);
+				addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, periodeFiscale);
+				addModeleDocument(TypeDocument.DECLARATION_IMPOT_APM_BATCH, periodeFiscale);
 
 				// la tâche de DI "pf" (= celle que l'on va traiter)
 				addTacheEnvoiDIPM(TypeEtatTache.EN_INSTANCE, RegDate.get(), date(pf - 1, 5, 3), date(pf, 1, 31),
 				                  date(pf - 1, 5, 3), date(pf, 1, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
-				                  TypeDocument.DECLARATION_IMPOT_APM, e, CategorieEntreprise.APM, oipm);
+				                  TypeDocument.DECLARATION_IMPOT_APM_BATCH, e, CategorieEntreprise.APM, oipm);
 
 				return e.getNumero();
 			}
@@ -520,7 +520,7 @@ public class EnvoiDeclarationsPMProcessorTest extends BusinessTest {
 					Assert.assertEquals(date(pf, 1, 31), tidipm.getDateFin());
 					Assert.assertEquals(TypeEtatTache.EN_INSTANCE, tidipm.getEtat());
 					Assert.assertEquals(TypeContribuable.VAUDOIS_ORDINAIRE, tidipm.getTypeContribuable());
-					Assert.assertEquals(TypeDocument.DECLARATION_IMPOT_APM, tidipm.getTypeDocument());
+					Assert.assertEquals(TypeDocument.DECLARATION_IMPOT_APM_BATCH, tidipm.getTypeDocument());
 				}
 			});
 		}
@@ -564,7 +564,7 @@ public class EnvoiDeclarationsPMProcessorTest extends BusinessTest {
 					Assert.assertEquals(null, declaration.getDateRetour());
 					Assert.assertNotNull(declaration.getDernierEtat());
 					Assert.assertEquals(TypeEtatDeclaration.EMISE, declaration.getDernierEtat().getEtat());
-					Assert.assertEquals(TypeDocument.DECLARATION_IMPOT_APM, declaration.getModeleDocument().getTypeDocument());
+					Assert.assertEquals(TypeDocument.DECLARATION_IMPOT_APM_BATCH, declaration.getModeleDocument().getTypeDocument());
 					Assert.assertNotNull(declaration.getDelais());
 					Assert.assertEquals(1, declaration.getDelais().size());
 					final DelaiDeclaration delai = declaration.getDelais().iterator().next();
@@ -594,7 +594,7 @@ public class EnvoiDeclarationsPMProcessorTest extends BusinessTest {
 					Assert.assertEquals(date(pf, 1, 31), tidipm.getDateFin());
 					Assert.assertEquals(TypeEtatTache.TRAITE, tidipm.getEtat());
 					Assert.assertEquals(TypeContribuable.VAUDOIS_ORDINAIRE, tidipm.getTypeContribuable());
-					Assert.assertEquals(TypeDocument.DECLARATION_IMPOT_APM, tidipm.getTypeDocument());
+					Assert.assertEquals(TypeDocument.DECLARATION_IMPOT_APM_BATCH, tidipm.getTypeDocument());
 
 					// vérification de la présence d'un événement fiscal
 					final List<EvenementFiscal> all = evenementFiscalDAO.getAll();
@@ -650,7 +650,7 @@ public class EnvoiDeclarationsPMProcessorTest extends BusinessTest {
 				// la tâche de DI "pf" (= celle que l'on va traiter)
 				addTacheEnvoiDIPM(TypeEtatTache.EN_INSTANCE, RegDate.get(), date(pf - 1, 5, 3), date(pf, 6, 30),
 				                  date(pf - 1, 5, 3), date(pf, 6, 30), TypeContribuable.VAUDOIS_ORDINAIRE,
-				                  TypeDocument.DECLARATION_IMPOT_PM, e, CategorieEntreprise.PM, oipm);
+				                  TypeDocument.DECLARATION_IMPOT_PM_BATCH, e, CategorieEntreprise.PM, oipm);
 
 				return e.getNumero();
 			}
@@ -701,7 +701,7 @@ public class EnvoiDeclarationsPMProcessorTest extends BusinessTest {
 					Assert.assertEquals(date(pf, 6, 30), tidipm.getDateFin());
 					Assert.assertEquals(TypeEtatTache.EN_INSTANCE, tidipm.getEtat());
 					Assert.assertEquals(TypeContribuable.VAUDOIS_ORDINAIRE, tidipm.getTypeContribuable());
-					Assert.assertEquals(TypeDocument.DECLARATION_IMPOT_PM, tidipm.getTypeDocument());
+					Assert.assertEquals(TypeDocument.DECLARATION_IMPOT_PM_BATCH, tidipm.getTypeDocument());
 				}
 			});
 		}
@@ -737,13 +737,13 @@ public class EnvoiDeclarationsPMProcessorTest extends BusinessTest {
 
 				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
 				final PeriodeFiscale periodeFiscale = addPeriodeFiscale(pf);
-				addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM, periodeFiscale);
-				addModeleDocument(TypeDocument.DECLARATION_IMPOT_APM, periodeFiscale);
+				addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, periodeFiscale);
+				addModeleDocument(TypeDocument.DECLARATION_IMPOT_APM_BATCH, periodeFiscale);
 
 				// la tâche de DI "pf" (= celle que l'on va traiter)
 				addTacheEnvoiDIPM(TypeEtatTache.EN_INSTANCE, RegDate.get(), date(pf - 1, 5, 3), date(pf, 1, 31),
 				                  date(pf - 1, 5, 3), date(pf, 1, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
-				                  TypeDocument.DECLARATION_IMPOT_PM, e, CategorieEntreprise.PM, oipm);
+				                  TypeDocument.DECLARATION_IMPOT_PM_BATCH, e, CategorieEntreprise.PM, oipm);
 
 				return e.getNumero();
 			}
@@ -817,7 +817,7 @@ public class EnvoiDeclarationsPMProcessorTest extends BusinessTest {
 					Assert.assertEquals(date(pf, 1, 31), tidipm.getDateFin());
 					Assert.assertEquals(TypeEtatTache.TRAITE, tidipm.getEtat());
 					Assert.assertEquals(TypeContribuable.VAUDOIS_ORDINAIRE, tidipm.getTypeContribuable());
-					Assert.assertEquals(TypeDocument.DECLARATION_IMPOT_PM, tidipm.getTypeDocument());
+					Assert.assertEquals(TypeDocument.DECLARATION_IMPOT_PM_BATCH, tidipm.getTypeDocument());
 				}
 			});
 		}
@@ -853,13 +853,13 @@ public class EnvoiDeclarationsPMProcessorTest extends BusinessTest {
 
 				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
 				final PeriodeFiscale periodeFiscale = addPeriodeFiscale(pf);
-				addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM, periodeFiscale);
-				addModeleDocument(TypeDocument.DECLARATION_IMPOT_APM, periodeFiscale);
+				addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, periodeFiscale);
+				addModeleDocument(TypeDocument.DECLARATION_IMPOT_APM_BATCH, periodeFiscale);
 
 				// la tâche de DI "pf" (= celle que l'on va traiter)
 				addTacheEnvoiDIPM(TypeEtatTache.EN_INSTANCE, RegDate.get(), date(pf - 1, 5, 3), date(pf, 1, 15),
 				                  date(pf - 1, 5, 3), date(pf, 1, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
-				                  TypeDocument.DECLARATION_IMPOT_PM, e, CategorieEntreprise.PM, oipm);
+				                  TypeDocument.DECLARATION_IMPOT_PM_BATCH, e, CategorieEntreprise.PM, oipm);
 
 				return e.getNumero();
 			}
@@ -933,7 +933,7 @@ public class EnvoiDeclarationsPMProcessorTest extends BusinessTest {
 					Assert.assertEquals(date(pf, 1, 15), tidipm.getDateFin());
 					Assert.assertEquals(TypeEtatTache.TRAITE, tidipm.getEtat());
 					Assert.assertEquals(TypeContribuable.VAUDOIS_ORDINAIRE, tidipm.getTypeContribuable());
-					Assert.assertEquals(TypeDocument.DECLARATION_IMPOT_PM, tidipm.getTypeDocument());
+					Assert.assertEquals(TypeDocument.DECLARATION_IMPOT_PM_BATCH, tidipm.getTypeDocument());
 				}
 			});
 		}
@@ -974,7 +974,7 @@ public class EnvoiDeclarationsPMProcessorTest extends BusinessTest {
 				// la tâche de DI "pf" (= celle que l'on va traiter)
 				addTacheEnvoiDIPM(TypeEtatTache.EN_INSTANCE, RegDate.get(), date(pf - 1, 5, 3), date(pf, 6, 15),
 				                  date(pf - 1, 5, 3), date(pf, 6, 30), TypeContribuable.VAUDOIS_ORDINAIRE,
-				                  TypeDocument.DECLARATION_IMPOT_PM, e, CategorieEntreprise.PM, oipm);
+				                  TypeDocument.DECLARATION_IMPOT_PM_BATCH, e, CategorieEntreprise.PM, oipm);
 
 				return e.getNumero();
 			}
@@ -1027,7 +1027,7 @@ public class EnvoiDeclarationsPMProcessorTest extends BusinessTest {
 					Assert.assertEquals(date(pf, 6, 15), tidipm.getDateFin());
 					Assert.assertEquals(TypeEtatTache.EN_INSTANCE, tidipm.getEtat());
 					Assert.assertEquals(TypeContribuable.VAUDOIS_ORDINAIRE, tidipm.getTypeContribuable());
-					Assert.assertEquals(TypeDocument.DECLARATION_IMPOT_PM, tidipm.getTypeDocument());
+					Assert.assertEquals(TypeDocument.DECLARATION_IMPOT_PM_BATCH, tidipm.getTypeDocument());
 				}
 			});
 		}

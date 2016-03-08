@@ -1,5 +1,8 @@
 package ch.vd.uniregctb.declaration.ordinaire.pm;
 
+import java.util.Set;
+
+import ch.vd.uniregctb.type.GroupeTypesDocumentBatchLocal;
 import ch.vd.uniregctb.type.TypeDocument;
 
 /**
@@ -7,16 +10,16 @@ import ch.vd.uniregctb.type.TypeDocument;
  */
 public enum TypeDeclarationImpotPM {
 
-	PM(TypeDocument.DECLARATION_IMPOT_PM),
-	APM(TypeDocument.DECLARATION_IMPOT_APM);
+	PM(GroupeTypesDocumentBatchLocal.DI_PM),
+	APM(GroupeTypesDocumentBatchLocal.DI_APM);
 
-	private final TypeDocument typeDocument;
+	private final GroupeTypesDocumentBatchLocal groupe;
 
-	TypeDeclarationImpotPM(TypeDocument typeDocument) {
-		this.typeDocument = typeDocument;
+	TypeDeclarationImpotPM(GroupeTypesDocumentBatchLocal groupe) {
+		this.groupe = groupe;
 	}
 
-	public TypeDocument getTypeDocument() {
-		return typeDocument;
+	public Set<TypeDocument> getTypesDocument() {
+		return groupe.getComposants();
 	}
 }

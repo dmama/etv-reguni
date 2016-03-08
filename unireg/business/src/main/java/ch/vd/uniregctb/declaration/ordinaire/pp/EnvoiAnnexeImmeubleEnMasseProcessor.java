@@ -70,10 +70,11 @@ public class EnvoiAnnexeImmeubleEnMasseProcessor {
 			this.periode = periode;
 			this.aci = aci;
 
-			ModeleFeuilleDocument modeleAnnexeImmeuble = new ModeleFeuilleDocument();
+			final ModeleFeuilleDocument modeleAnnexeImmeuble = new ModeleFeuilleDocument();
 			modeleAnnexeImmeuble.setModeleDocument(null);
 			modeleAnnexeImmeuble.setIntituleFeuille(ModeleFeuille.ANNEXE_320.getDescription());
-			modeleAnnexeImmeuble.setNumeroFormulaire(ModeleFeuille.ANNEXE_320.getCode());
+			modeleAnnexeImmeuble.setNoCADEV(ModeleFeuille.ANNEXE_320.getNoCADEV());
+			modeleAnnexeImmeuble.setNoFormulaireACI(ModeleFeuille.ANNEXE_320.getNoFormulaireACI());
 
 			setAnnexeImmeuble = new HashSet<>();
 			setAnnexeImmeuble.add(modeleAnnexeImmeuble);

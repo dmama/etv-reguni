@@ -245,10 +245,11 @@ public class ParamPeriodeManagerImpl implements ParamPeriodeManager {
 	@Override
 	@Transactional(readOnly = true)
 	public ModeleFeuilleDocumentView createModeleFeuilleDocumentViewEdit(Long periodeId, Long modeleId, Long feuilleId) {
-		ModeleFeuilleDocumentView mfdv = createModeleFeuilleDocumentViewAdd(periodeId, modeleId);
-		ModeleFeuilleDocument mfd = retrieveFeuilleFromDAO(feuilleId);
+		final ModeleFeuilleDocumentView mfdv = createModeleFeuilleDocumentViewAdd(periodeId, modeleId);
+		final ModeleFeuilleDocument mfd = retrieveFeuilleFromDAO(feuilleId);
 		mfdv.setIdFeuille(feuilleId);
-		ModeleFeuille modeleFeuille = ModeleFeuille.fromCode(mfd.getNumeroFormulaire());
+
+		final ModeleFeuille modeleFeuille = ModeleFeuille.fromNoCADEV(mfd.getNoCADEV());
 		mfdv.setModeleFeuille(modeleFeuille);
 		return mfdv;
 	}
@@ -357,9 +358,10 @@ public class ParamPeriodeManagerImpl implements ParamPeriodeManager {
 	@Override
 	@Transactional(rollbackFor = Throwable.class)
 	public void addFeuille(Long idModele, ModeleFeuille modeleFeuille) {
-		ModeleDocument md = modeleDocumentDAO.get(idModele);
-		ModeleFeuilleDocument mfd = new ModeleFeuilleDocument();
-		mfd.setNumeroFormulaire(modeleFeuille.getCode());
+		final ModeleDocument md = modeleDocumentDAO.get(idModele);
+		final ModeleFeuilleDocument mfd = new ModeleFeuilleDocument();
+		mfd.setNoCADEV(modeleFeuille.getNoCADEV());
+		mfd.setNoFormulaireACI(modeleFeuille.getNoFormulaireACI());
 		mfd.setIntituleFeuille(modeleFeuille.getDescription());
 		md.addModeleFeuilleDocument(mfd);
 	}
@@ -368,7 +370,8 @@ public class ParamPeriodeManagerImpl implements ParamPeriodeManager {
 	@Transactional(rollbackFor = Throwable.class)
 	public void updateFeuille(Long idFeuille, ModeleFeuille modeleFeuille) {
 		final ModeleFeuilleDocument mfd = modeleFeuilleDocumentDAO.get(idFeuille);
-		mfd.setNumeroFormulaire(modeleFeuille.getCode());
+		mfd.setNoCADEV(modeleFeuille.getNoCADEV());
+		mfd.setNoFormulaireACI(modeleFeuille.getNoFormulaireACI());
 		mfd.setIntituleFeuille(modeleFeuille.getDescription());
 	}
 

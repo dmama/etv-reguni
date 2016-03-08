@@ -45,6 +45,7 @@ import ch.vd.uniregctb.tiers.TacheEnvoiDeclarationImpot;
 import ch.vd.uniregctb.tiers.TacheEnvoiDeclarationImpotPP;
 import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.ModeImposition;
+import ch.vd.uniregctb.type.ModeleFeuille;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.Qualification;
@@ -100,10 +101,10 @@ public class DeterminationDIsPPAEmettreProcessorTest extends BusinessTest {
 
 		final PeriodeFiscale periode2007 = addPeriodeFiscale(2007);
 		final ModeleDocument model2007 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2007);
-		addModeleFeuilleDocument("Déclaration", "210", model2007);
-		addModeleFeuilleDocument("Annexe 1", "220", model2007);
-		addModeleFeuilleDocument("Annexe 2-3", "230", model2007);
-		addModeleFeuilleDocument("Annexe 4-5", "240", model2007);
+		addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, model2007);
+		addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, model2007);
+		addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, model2007);
+		addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, model2007);
 
 		/*
 		 * Contribuable devant être pris en compte
@@ -212,15 +213,15 @@ public class DeterminationDIsPPAEmettreProcessorTest extends BusinessTest {
 		PeriodeFiscale periode2006 = addPeriodeFiscale(2006);
 		PeriodeFiscale periode2007 = addPeriodeFiscale(2007);
 		ModeleDocument declarationComplete2006 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2006);
-		addModeleFeuilleDocument("Déclaration", "210", declarationComplete2006);
-		addModeleFeuilleDocument("Annexe 1", "220", declarationComplete2006);
-		addModeleFeuilleDocument("Annexe 2-3", "230", declarationComplete2006);
-		addModeleFeuilleDocument("Annexe 4-5", "240", declarationComplete2006);
+		addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, declarationComplete2006);
+		addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, declarationComplete2006);
+		addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, declarationComplete2006);
+		addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, declarationComplete2006);
 		ModeleDocument declarationComplete2007 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2007);
-		addModeleFeuilleDocument("Déclaration", "210", declarationComplete2007);
-		addModeleFeuilleDocument("Annexe 1", "220", declarationComplete2007);
-		addModeleFeuilleDocument("Annexe 2-3", "230", declarationComplete2007);
-		addModeleFeuilleDocument("Annexe 4-5", "240", declarationComplete2007);
+		addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, declarationComplete2007);
+		addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, declarationComplete2007);
+		addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, declarationComplete2007);
+		addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, declarationComplete2007);
 
 		// Un tiers avec un for ouvert sans déclaration envoyée pour 2007
 		PersonnePhysique paul = addNonHabitant("Paul", "Duchêne", date(1965, 4, 13), Sexe.MASCULIN);
@@ -411,12 +412,12 @@ public class DeterminationDIsPPAEmettreProcessorTest extends BusinessTest {
 
 		PeriodeFiscale periode2006 = addPeriodeFiscale(2006);
 		ModeleDocument declarationComplete = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2006);
-		addModeleFeuilleDocument("Déclaration", "210", declarationComplete);
-		addModeleFeuilleDocument("Annexe 1", "220", declarationComplete);
-		addModeleFeuilleDocument("Annexe 2-3", "230", declarationComplete);
-		addModeleFeuilleDocument("Annexe 4-5", "240", declarationComplete);
+		addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, declarationComplete);
+		addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, declarationComplete);
+		addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, declarationComplete);
+		addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, declarationComplete);
 		ModeleDocument declarationVaudTax = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, periode2006);
-		addModeleFeuilleDocument("Déclaration vaud tax", "250", declarationVaudTax);
+		addModeleFeuilleDocument(ModeleFeuille.ANNEXE_250, declarationVaudTax);
 
 		// Un tiers imposé à la dépense
 		PersonnePhysique paul = addNonHabitant("Paul", "Duchêne", date(1965, 4, 13), Sexe.MASCULIN);
@@ -512,12 +513,12 @@ public class DeterminationDIsPPAEmettreProcessorTest extends BusinessTest {
 
 
 		ModeleDocument declarationComplete = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2006);
-		addModeleFeuilleDocument("Déclaration", "210", declarationComplete);
-		addModeleFeuilleDocument("Annexe 1", "220", declarationComplete);
-		addModeleFeuilleDocument("Annexe 2-3", "230", declarationComplete);
-		addModeleFeuilleDocument("Annexe 4-5", "240", declarationComplete);
+		addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, declarationComplete);
+		addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, declarationComplete);
+		addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, declarationComplete);
+		addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, declarationComplete);
 		ModeleDocument declarationVaudTax = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, periode2006);
-		addModeleFeuilleDocument("Déclaration vaud tax", "250", declarationVaudTax);
+		addModeleFeuilleDocument(ModeleFeuille.ANNEXE_250, declarationVaudTax);
 
 
 		// Un tiers qui part hors canton le 31.12
@@ -704,10 +705,10 @@ public class DeterminationDIsPPAEmettreProcessorTest extends BusinessTest {
 
 		final PeriodeFiscale periode = addPeriodeFiscale(2007);
 		ModeleDocument declarationComplete2007 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
-		addModeleFeuilleDocument("Déclaration", "210", declarationComplete2007);
-		addModeleFeuilleDocument("Annexe 1", "220", declarationComplete2007);
-		addModeleFeuilleDocument("Annexe 2-3", "230", declarationComplete2007);
-		addModeleFeuilleDocument("Annexe 4-5", "240", declarationComplete2007);
+		addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, declarationComplete2007);
+		addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, declarationComplete2007);
+		addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, declarationComplete2007);
+		addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, declarationComplete2007);
 
 		// Un contribuable normal
 		{
@@ -755,10 +756,10 @@ public class DeterminationDIsPPAEmettreProcessorTest extends BusinessTest {
 
 		final PeriodeFiscale periode2009 = addPeriodeFiscale(2009);
 		ModeleDocument declarationComplete2009 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2009);
-		addModeleFeuilleDocument("Déclaration", "210", declarationComplete2009);
-		addModeleFeuilleDocument("Annexe 1", "220", declarationComplete2009);
-		addModeleFeuilleDocument("Annexe 2-3", "230", declarationComplete2009);
-		addModeleFeuilleDocument("Annexe 4-5", "240", declarationComplete2009);
+		addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, declarationComplete2009);
+		addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, declarationComplete2009);
+		addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, declarationComplete2009);
+		addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, declarationComplete2009);
 
 		// Un contribuable normal
 		PersonnePhysique eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
@@ -791,10 +792,10 @@ public class DeterminationDIsPPAEmettreProcessorTest extends BusinessTest {
 
 		final PeriodeFiscale periode = addPeriodeFiscale(2007);
 		ModeleDocument declarationComplete2007 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
-		addModeleFeuilleDocument("Déclaration", "210", declarationComplete2007);
-		addModeleFeuilleDocument("Annexe 1", "220", declarationComplete2007);
-		addModeleFeuilleDocument("Annexe 2-3", "230", declarationComplete2007);
-		addModeleFeuilleDocument("Annexe 4-5", "240", declarationComplete2007);
+		addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, declarationComplete2007);
+		addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, declarationComplete2007);
+		addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, declarationComplete2007);
+		addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, declarationComplete2007);
 
 		// Un contribuable normal avec une tâche d'envoi de DI pré-existante
 		PersonnePhysique eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
@@ -1119,10 +1120,10 @@ public class DeterminationDIsPPAEmettreProcessorTest extends BusinessTest {
 
 				final PeriodeFiscale periode2008 = addPeriodeFiscale(2008);
 				final ModeleDocument declarationComplete2008 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2008);
-				addModeleFeuilleDocument("Déclaration", "210", declarationComplete2008);
-				addModeleFeuilleDocument("Annexe 1", "220", declarationComplete2008);
-				addModeleFeuilleDocument("Annexe 2-3", "230", declarationComplete2008);
-				addModeleFeuilleDocument("Annexe 4-5", "240", declarationComplete2008);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, declarationComplete2008);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, declarationComplete2008);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, declarationComplete2008);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, declarationComplete2008);
 				ids.periodeId = periode2008.getId();
 
 				// cas #1: un tiers avec une DI libre "honorée" (cas simple)
@@ -1177,10 +1178,10 @@ public class DeterminationDIsPPAEmettreProcessorTest extends BusinessTest {
 
 		final PeriodeFiscale periode2007 = addPeriodeFiscale(2007);
 		final ModeleDocument model2007 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2007);
-		addModeleFeuilleDocument("Déclaration", "210", model2007);
-		addModeleFeuilleDocument("Annexe 1", "220", model2007);
-		addModeleFeuilleDocument("Annexe 2-3", "230", model2007);
-		addModeleFeuilleDocument("Annexe 4-5", "240", model2007);
+		addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, model2007);
+		addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, model2007);
+		addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, model2007);
+		addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, model2007);
 
 		// Un contribuable non-assujetti, mais avec une déclaration d'impôt (invalide) pré-existante
 		PersonnePhysique malko = addNonHabitant("Malko", "Totor", date(1955, 2, 11), Sexe.MASCULIN);
@@ -1216,10 +1217,10 @@ public class DeterminationDIsPPAEmettreProcessorTest extends BusinessTest {
 
 		final PeriodeFiscale periode2007 = addPeriodeFiscale(2007);
 		final ModeleDocument model2007 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2007);
-		addModeleFeuilleDocument("Déclaration", "210", model2007);
-		addModeleFeuilleDocument("Annexe 1", "220", model2007);
-		addModeleFeuilleDocument("Annexe 2-3", "230", model2007);
-		addModeleFeuilleDocument("Annexe 4-5", "240", model2007);
+		addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, model2007);
+		addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, model2007);
+		addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, model2007);
+		addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, model2007);
 
 		// Un contribuable non-assujetti, mais avec une déclaration d'impôt (invalide) pré-existante ainsi qu'une tâche d'annulation de cette déclaration non-traitée
 		PersonnePhysique malko = addNonHabitant("Malko", "Totor", date(1955, 2, 11), Sexe.MASCULIN);
@@ -1247,10 +1248,10 @@ public class DeterminationDIsPPAEmettreProcessorTest extends BusinessTest {
 
 		final PeriodeFiscale periode2007 = addPeriodeFiscale(2007);
 		final ModeleDocument model2007 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2007);
-		addModeleFeuilleDocument("Déclaration", "210", model2007);
-		addModeleFeuilleDocument("Annexe 1", "220", model2007);
-		addModeleFeuilleDocument("Annexe 2-3", "230", model2007);
-		addModeleFeuilleDocument("Annexe 4-5", "240", model2007);
+		addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, model2007);
+		addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, model2007);
+		addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, model2007);
+		addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, model2007);
 
 		// Un contribuable non-assujetti, mais avec une tâche (invalide) d'envoi de déclaration d'impôt pré-existante
 		PersonnePhysique eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
@@ -1285,10 +1286,10 @@ public class DeterminationDIsPPAEmettreProcessorTest extends BusinessTest {
 
 		final PeriodeFiscale periode2007 = addPeriodeFiscale(2007);
 		final ModeleDocument model2007 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2007);
-		addModeleFeuilleDocument("Déclaration", "210", model2007);
-		addModeleFeuilleDocument("Annexe 1", "220", model2007);
-		addModeleFeuilleDocument("Annexe 2-3", "230", model2007);
-		addModeleFeuilleDocument("Annexe 4-5", "240", model2007);
+		addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, model2007);
+		addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, model2007);
+		addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, model2007);
+		addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, model2007);
 
 		// Un contribuable parti hors-Suisse en cours d'année avec une tâche (valide) pour sa période en Suisse, et une autre tâche (invalide) pour sa période hors-Suisse.
 		PersonnePhysique arnold = addNonHabitant("Arnold", "Charbon", date(1965, 4, 13), Sexe.MASCULIN);
@@ -1328,10 +1329,10 @@ public class DeterminationDIsPPAEmettreProcessorTest extends BusinessTest {
 
 		final PeriodeFiscale periode2007 = addPeriodeFiscale(2007);
 		final ModeleDocument model2007 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2007);
-		addModeleFeuilleDocument("Déclaration", "210", model2007);
-		addModeleFeuilleDocument("Annexe 1", "220", model2007);
-		addModeleFeuilleDocument("Annexe 2-3", "230", model2007);
-		addModeleFeuilleDocument("Annexe 4-5", "240", model2007);
+		addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, model2007);
+		addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, model2007);
+		addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, model2007);
+		addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, model2007);
 
 		// Un contribuable non-assujetti, mais avec une tâche (invalide) d'envoi de déclaration d'impôt pré-existante déjà traitée
 		PersonnePhysique eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
@@ -1366,10 +1367,10 @@ public class DeterminationDIsPPAEmettreProcessorTest extends BusinessTest {
 
 		final PeriodeFiscale periode2007 = addPeriodeFiscale(2007);
 		final ModeleDocument model2007 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2007);
-		addModeleFeuilleDocument("Déclaration", "210", model2007);
-		addModeleFeuilleDocument("Annexe 1", "220", model2007);
-		addModeleFeuilleDocument("Annexe 2-3", "230", model2007);
-		addModeleFeuilleDocument("Annexe 4-5", "240", model2007);
+		addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, model2007);
+		addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, model2007);
+		addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, model2007);
+		addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, model2007);
 
 		// Un contribuable arrivé de hors-Suisse en cours d'année, mais avec une tâche (invalide) d'envoi de déclaration d'impôt pré-existante sur toute l'année
 		PersonnePhysique eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
@@ -1404,10 +1405,10 @@ public class DeterminationDIsPPAEmettreProcessorTest extends BusinessTest {
 
 		final PeriodeFiscale periode2007 = addPeriodeFiscale(2007);
 		final ModeleDocument model2007 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2007);
-		addModeleFeuilleDocument("Déclaration", "210", model2007);
-		addModeleFeuilleDocument("Annexe 1", "220", model2007);
-		addModeleFeuilleDocument("Annexe 2-3", "230", model2007);
-		addModeleFeuilleDocument("Annexe 4-5", "240", model2007);
+		addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, model2007);
+		addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, model2007);
+		addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, model2007);
+		addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, model2007);
 
 		// Un contribuable vaudois ordinaire, avec une tâche (valide) d'envoi de déclaration d'impôt déjà traitée
 		PersonnePhysique eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
@@ -1440,10 +1441,10 @@ public class DeterminationDIsPPAEmettreProcessorTest extends BusinessTest {
 
 		final PeriodeFiscale periode2007 = addPeriodeFiscale(2007);
 		final ModeleDocument model2007 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2007);
-		addModeleFeuilleDocument("Déclaration", "210", model2007);
-		addModeleFeuilleDocument("Annexe 1", "220", model2007);
-		addModeleFeuilleDocument("Annexe 2-3", "230", model2007);
-		addModeleFeuilleDocument("Annexe 4-5", "240", model2007);
+		addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, model2007);
+		addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, model2007);
+		addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, model2007);
+		addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, model2007);
 
 		// Un contribuable vaudois ordinaire, avec une tâche (valide) d'envoi de déclaration d'impôt déjà traitée
 		final PersonnePhysique eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);

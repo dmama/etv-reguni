@@ -49,6 +49,7 @@ import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP;
 import ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotService;
+import ch.vd.uniregctb.declaration.ordinaire.common.ModeleFeuilleDocumentEditique;
 import ch.vd.uniregctb.editique.ConstantesEditique;
 import ch.vd.uniregctb.editique.EditiqueAbstractLegacyHelper;
 import ch.vd.uniregctb.editique.EditiqueException;
@@ -66,6 +67,7 @@ import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.EtatCivil;
+import ch.vd.uniregctb.type.ModeleFeuille;
 import ch.vd.uniregctb.type.Qualification;
 import ch.vd.uniregctb.type.TypeDocument;
 
@@ -305,13 +307,13 @@ public class ImpressionDeclarationImpotPersonnesPhysiquesHelperImpl extends Edit
 		final Tiers tiers = informationsDocument.getTiers();
 		remplitAdresseSuite(tiers, di);
 
-		final int nbAnnexes210 = getNbOfAnnexes(annexes, "210", 0, 0);
-		final int nbAnnexes220 = getNbOfAnnexes(annexes, "220", 0, 0);
-		final int nbAnnexes230 = getNbOfAnnexes(annexes, "230", 0, 0);
-		final int nbAnnexes240 = getNbOfAnnexes(annexes, "240", 0, 0);
-		final int nbAnnexes310 = getNbOfAnnexes(annexes, "310", 0, 0);
-		final int nbAnnexes320 = getNbOfAnnexes(annexes, "320", 0, 0);
-		final int nbAnnexes330 = getNbOfAnnexes(annexes, "330", 0, 0);
+		final int nbAnnexes210 = getNbOfAnnexes(annexes, ModeleFeuille.ANNEXE_210.getNoCADEV(), 0, 0);
+		final int nbAnnexes220 = getNbOfAnnexes(annexes, ModeleFeuille.ANNEXE_220.getNoCADEV(), 0, 0);
+		final int nbAnnexes230 = getNbOfAnnexes(annexes, ModeleFeuille.ANNEXE_230.getNoCADEV(), 0, 0);
+		final int nbAnnexes240 = getNbOfAnnexes(annexes, ModeleFeuille.ANNEXE_240.getNoCADEV(), 0, 0);
+		final int nbAnnexes310 = getNbOfAnnexes(annexes, ModeleFeuille.ANNEXE_310.getNoCADEV(), 0, 0);
+		final int nbAnnexes320 = getNbOfAnnexes(annexes, ModeleFeuille.ANNEXE_320.getNoCADEV(), 0, 0);
+		final int nbAnnexes330 = getNbOfAnnexes(annexes, ModeleFeuille.ANNEXE_330.getNoCADEV(), 0, 0);
 
 		// pour être certain d'imprimer toujours quelque chose!
 		int correctionAnnexes210 = 0;
@@ -542,7 +544,7 @@ public class ImpressionDeclarationImpotPersonnesPhysiquesHelperImpl extends Edit
 		return collAdm;
 	}
 
-	private static int getNbOfAnnexes(List<ModeleFeuilleDocumentEditique> annexes, String codeFormulaire, int valeurSiAbsent, int valeurSiZero) {
+	private static int getNbOfAnnexes(List<ModeleFeuilleDocumentEditique> annexes, int noCADEV, int valeurSiAbsent, int valeurSiZero) {
 		final int nbAnnexes;
 		if (annexes == null) {
 			nbAnnexes = valeurSiAbsent;
@@ -550,14 +552,14 @@ public class ImpressionDeclarationImpotPersonnesPhysiquesHelperImpl extends Edit
 		else {
 			ModeleFeuilleDocumentEditique found = null;
 			for (ModeleFeuilleDocumentEditique candidate : annexes) {
-				if (codeFormulaire.equals(candidate.getNumeroFormulaire())) {
+				if (noCADEV == candidate.getNoCADEV()) {
 					found = candidate;
 					break;
 				}
 			}
 
-			if (found != null && found.getNbreIntituleFeuille() != null && found.getNbreIntituleFeuille() > 0) {
-				nbAnnexes = found.getNbreIntituleFeuille();
+			if (found != null && found.getNombreFeuilles() > 0) {
+				nbAnnexes = found.getNombreFeuilles();
 			}
 			else if (found == null) {
 				nbAnnexes = valeurSiAbsent;
@@ -580,7 +582,7 @@ public class ImpressionDeclarationImpotPersonnesPhysiquesHelperImpl extends Edit
 		remplitDIRetour(informationsDocument, divdtax);
 
 		// retrouve le nombre d'annexes 250 (seules autorisées par la DI VDTAX), au minimum une
-		final int nbAnnexes = getNbOfAnnexes(annexes, "250", NBRE_COPIE_ANNEXE_DEFAUT, NBRE_COPIE_ANNEXE_DEFAUT);
+		final int nbAnnexes = getNbOfAnnexes(annexes, ModeleFeuille.ANNEXE_250.getNoCADEV(), NBRE_COPIE_ANNEXE_DEFAUT, NBRE_COPIE_ANNEXE_DEFAUT);
 		final DIVDTAX.Annexes a = divdtax.addNewAnnexes();
 		a.setAnnexe250(nbAnnexes);
 
@@ -597,7 +599,7 @@ public class ImpressionDeclarationImpotPersonnesPhysiquesHelperImpl extends Edit
 		remplitDIRetour(informationsDocument, didp);
 
 		// retrouve le nombre d'annexes 270 (seules autorisées par la DI ICCD), au minimum une
-		final int nbAnnexes = getNbOfAnnexes(annexes, "270", NBRE_COPIE_ANNEXE_DEFAUT, NBRE_COPIE_ANNEXE_DEFAUT);
+		final int nbAnnexes = getNbOfAnnexes(annexes, ModeleFeuille.ANNEXE_270.getNoCADEV(), NBRE_COPIE_ANNEXE_DEFAUT, NBRE_COPIE_ANNEXE_DEFAUT);
 		final DIDP.Annexes a = didp.addNewAnnexes();
 		a.setAnnexe270(nbAnnexes);
 
@@ -615,7 +617,7 @@ public class ImpressionDeclarationImpotPersonnesPhysiquesHelperImpl extends Edit
 		remplitDIRetour(informationsDocument, dihc);
 
 		// retrouve le nombre d'annexes 200 (seules autorisées par la DI HC (immeuble)), au minimum une
-		final int nbAnnexes = getNbOfAnnexes(annexes, "200", NBRE_COPIE_ANNEXE_DEFAUT, NBRE_COPIE_ANNEXE_DEFAUT);
+		final int nbAnnexes = getNbOfAnnexes(annexes, ModeleFeuille.ANNEXE_200.getNoCADEV(), NBRE_COPIE_ANNEXE_DEFAUT, NBRE_COPIE_ANNEXE_DEFAUT);
 		final DIHC.Annexes a = dihc.addNewAnnexes();
 		a.setAnnexe200(nbAnnexes);
 

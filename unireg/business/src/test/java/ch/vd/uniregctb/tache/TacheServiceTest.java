@@ -84,6 +84,7 @@ import ch.vd.uniregctb.type.EtatCivil;
 import ch.vd.uniregctb.type.FormeJuridiqueEntreprise;
 import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.ModeImposition;
+import ch.vd.uniregctb.type.ModeleFeuille;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.Qualification;
@@ -738,41 +739,41 @@ public class TacheServiceTest extends BusinessTest {
 				PeriodeFiscale pf2008 = pfDAO.getPeriodeFiscaleByYear(2008);
 				PeriodeFiscale pf2009 = pfDAO.getPeriodeFiscaleByYear(2009);
 				ModeleDocument modele2003 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, pf2003);
-				addModeleFeuilleDocument("Déclaration", "210", modele2003);
-				addModeleFeuilleDocument("Annexe 1", "220", modele2003);
-				addModeleFeuilleDocument("Annexe 2-3", "230", modele2003);
-				addModeleFeuilleDocument("Annexe 4-5", "240", modele2003);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, modele2003);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, modele2003);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, modele2003);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, modele2003);
 				ModeleDocument modele2004 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, pf2004);
-				addModeleFeuilleDocument("Déclaration", "210", modele2004);
-				addModeleFeuilleDocument("Annexe 1", "220", modele2004);
-				addModeleFeuilleDocument("Annexe 2-3", "230", modele2004);
-				addModeleFeuilleDocument("Annexe 4-5", "240", modele2004);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, modele2004);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, modele2004);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, modele2004);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, modele2004);
 				ModeleDocument modele2005 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, pf2005);
-				addModeleFeuilleDocument("Déclaration", "210", modele2005);
-				addModeleFeuilleDocument("Annexe 1", "220", modele2005);
-				addModeleFeuilleDocument("Annexe 2-3", "230", modele2005);
-				addModeleFeuilleDocument("Annexe 4-5", "240", modele2005);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, modele2005);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, modele2005);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, modele2005);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, modele2005);
 				ModeleDocument modele2006 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, pf2006);
-				addModeleFeuilleDocument("Déclaration", "210", modele2006);
-				addModeleFeuilleDocument("Annexe 1", "220", modele2006);
-				addModeleFeuilleDocument("Annexe 2-3", "230", modele2006);
-				addModeleFeuilleDocument("Annexe 4-5", "240", modele2006);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, modele2006);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, modele2006);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, modele2006);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, modele2006);
 				ModeleDocument modele2007 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, pf2007);
-				addModeleFeuilleDocument("Déclaration", "210", modele2007);
-				addModeleFeuilleDocument("Annexe 1", "220", modele2007);
-				addModeleFeuilleDocument("Annexe 2-3", "230", modele2007);
-				addModeleFeuilleDocument("Annexe 4-5", "240", modele2007);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, modele2007);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, modele2007);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, modele2007);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, modele2007);
 				ModeleDocument modele2008 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, pf2008);
-				addModeleFeuilleDocument("Déclaration", "210", modele2008);
-				addModeleFeuilleDocument("Annexe 1", "220", modele2008);
-				addModeleFeuilleDocument("Annexe 2-3", "230", modele2008);
-				addModeleFeuilleDocument("Annexe 4-5", "240", modele2008);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, modele2008);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, modele2008);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, modele2008);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, modele2008);
 				ModeleDocument modele2009 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, pf2009);
-				addModeleFeuilleDocument("Déclaration", "210", modele2009);
-				addModeleFeuilleDocument("Annexe 1", "220", modele2009);
-				addModeleFeuilleDocument("Annexe 2-3", "230", modele2009);
-				addModeleFeuilleDocument("Annexe 4-5", "240", modele2009);
-				addModeleFeuilleDocument("Annexe 1-1", "310", modele2009);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, modele2009);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, modele2009);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, modele2009);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, modele2009);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_310, modele2009);
 
 				// Contribuable vaudois depuis 1998 avec des DIs jusqu'en 2007
 				PersonnePhysique raoul = addNonHabitant("Raoul", "Lavanchy", date(1963, 1, 1), Sexe.MASCULIN);
@@ -2838,15 +2839,15 @@ public class TacheServiceTest extends BusinessTest {
 				final PeriodeFiscale pf2006 = pfDAO.getPeriodeFiscaleByYear(2006);
 				final PeriodeFiscale pf2007 = pfDAO.getPeriodeFiscaleByYear(2007);
 				final ModeleDocument modele2006 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, pf2006);
-				addModeleFeuilleDocument("Déclaration", "210", modele2006);
-				addModeleFeuilleDocument("Annexe 1", "220", modele2006);
-				addModeleFeuilleDocument("Annexe 2-3", "230", modele2006);
-				addModeleFeuilleDocument("Annexe 4-5", "240", modele2006);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, modele2006);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, modele2006);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, modele2006);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, modele2006);
 				final ModeleDocument modele2007 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, pf2007);
-				addModeleFeuilleDocument("Déclaration", "210", modele2007);
-				addModeleFeuilleDocument("Annexe 1", "220", modele2007);
-				addModeleFeuilleDocument("Annexe 2-3", "230", modele2007);
-				addModeleFeuilleDocument("Annexe 4-5", "240", modele2007);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, modele2007);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, modele2007);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, modele2007);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, modele2007);
 
 				// Contribuable vaudois depuis 1998 avec des DIs jusqu'en 2007
 				final PersonnePhysique pp = addNonHabitant("Gérald", "Bolomey", date(1945, 2, 23), Sexe.MASCULIN);
@@ -5607,7 +5608,7 @@ public class TacheServiceTest extends BusinessTest {
 						assertEquals(DateRangeHelper.toDisplayString(tacheDi), TypeContribuable.VAUDOIS_ORDINAIRE, tacheDi.getTypeContribuable());
 						assertEquals(TypeEtatTache.EN_INSTANCE, tache.getEtat());
 						assertFalse(tache.isAnnule());
-						assertEquals(DateRangeHelper.toDisplayString(tacheDi), TypeDocument.DECLARATION_IMPOT_PM, tacheDi.getTypeDocument());
+						assertEquals(DateRangeHelper.toDisplayString(tacheDi), TypeDocument.DECLARATION_IMPOT_PM_BATCH, tacheDi.getTypeDocument());
 					}
 					return null;
 				}
@@ -5621,7 +5622,7 @@ public class TacheServiceTest extends BusinessTest {
 					assertNotNull(pm);
 					final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(ServiceInfrastructureService.noOIPM);
 					final PeriodeFiscale pf = pfDAO.getPeriodeFiscaleByYear(dateDebutActivite.year());
-					final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM, pf);
+					final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pf);
 					addDeclarationImpot(pm, pf, dateDebutActivite, date(dateDebutActivite.year(), 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
 					return null;
 				}
@@ -5651,7 +5652,7 @@ public class TacheServiceTest extends BusinessTest {
 				assertEquals(date(dateDebutActivite.year() + 1, 1, 1), tacheDi.getDateDebut());
 				assertEquals(date(dateDebutActivite.year() + 1, 12, 31), tacheDi.getDateFin());
 				assertEquals(TypeContribuable.VAUDOIS_ORDINAIRE, tacheDi.getTypeContribuable());
-				assertEquals(TypeDocument.DECLARATION_IMPOT_PM, tacheDi.getTypeDocument());
+				assertEquals(TypeDocument.DECLARATION_IMPOT_PM_BATCH, tacheDi.getTypeDocument());
 				return null;
 			}
 		});
@@ -5725,7 +5726,7 @@ public class TacheServiceTest extends BusinessTest {
 					assertNotNull(pm);
 					final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(ServiceInfrastructureService.noOIPM);
 					final PeriodeFiscale pf = pfDAO.getPeriodeFiscaleByYear(dateDebutActivite.year());
-					final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_APM, pf);
+					final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_APM_BATCH, pf);
 					addDeclarationImpot(pm, pf, dateDebutActivite, date(dateDebutActivite.year(), 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
 					return null;
 				}
@@ -5793,7 +5794,7 @@ public class TacheServiceTest extends BusinessTest {
 					// avec DI du mauvais type de document (on imagine que la DI a été émise puis la forme juridique modifiée...)
 					final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(ServiceInfrastructureService.noOIPM);
 					final PeriodeFiscale pf = pfDAO.getPeriodeFiscaleByYear(dateDebutActivite.year());
-					final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_APM, pf);        // <-- ce n'est pas le bon type de document pour une SARL
+					final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_APM_BATCH, pf);        // <-- ce n'est pas le bon type de document pour une SARL
 					addDeclarationImpot(pm, pf, dateDebutActivite, date(dateDebutActivite.year(), 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
 
 					return pm.getNumero();
@@ -5844,7 +5845,7 @@ public class TacheServiceTest extends BusinessTest {
 					assertEquals(TypeContribuable.VAUDOIS_ORDINAIRE, tacheDi.getTypeContribuable());
 					assertEquals(TypeEtatTache.EN_INSTANCE, tache.getEtat());
 					assertFalse(tache.isAnnule());
-					assertEquals(TypeDocument.DECLARATION_IMPOT_PM, tacheDi.getTypeDocument());
+					assertEquals(TypeDocument.DECLARATION_IMPOT_PM_BATCH, tacheDi.getTypeDocument());
 				}
 				return null;
 			}

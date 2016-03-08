@@ -117,7 +117,8 @@ public class PeriodeFiscaleServiceImpl implements PeriodeFiscaleService, Initial
 				final ModeleFeuilleDocument newMfd = new ModeleFeuilleDocument();
 				newMfd.setModeleDocument(newMd);
 				newMfd.setIntituleFeuille(mfd.getIntituleFeuille());
-				newMfd.setNumeroFormulaire(mfd.getNumeroFormulaire());
+				newMfd.setNoCADEV(mfd.getNoCADEV());
+				newMfd.setNoFormulaireACI(mfd.getNoFormulaireACI());
 				setModeleFeuilleDocument.add(newMfd);
 			}
 			newMd.setModelesFeuilleDocument(setModeleFeuilleDocument);

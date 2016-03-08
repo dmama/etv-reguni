@@ -8,17 +8,8 @@ public class ModeleFeuilleDocumentComparator implements Comparator<ModeleFeuille
 	@Override
 	public int compare(ModeleFeuilleDocument o1, ModeleFeuilleDocument o2) {
 		if (o1.getIndex() == null || o2.getIndex() == null) {
-			// pas d'indexe renseigné (données historiques) : on se rabat sur les numéros de formulaire
-			if (o1.getNumeroFormulaire() == null && o2.getNumeroFormulaire() == null) {
-				return 0;
-			}
-			if (o1.getNumeroFormulaire() == null) {
-				return -1;
-			}
-			if (o2.getNumeroFormulaire() == null) {
-				return 1;
-			}
-			return o1.getNumeroFormulaire().compareTo(o2.getNumeroFormulaire());
+			// pas d'indexe renseigné (données historiques) : on se rabat sur les numéros de formulaire CADEV
+			return Integer.compare(o1.getNoCADEV(), o2.getNoCADEV());
 		}
 		else {
 			// [SIFISC-2066] on trie par numéro d'index croissant

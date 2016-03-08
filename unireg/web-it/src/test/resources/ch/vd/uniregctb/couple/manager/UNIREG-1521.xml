@@ -1763,7 +1763,7 @@
     <column>LOG_MDATE</column>
     <column>LOG_MUSER</column>
     <column>INTITULE_FEUILLE</column>
-    <column>NO_FORMULAIRE</column>
+    <column>NO_CADEV</column>
     <column>MODELE_ID</column>
     <row>
       <value>59</value>

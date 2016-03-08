@@ -5,7 +5,6 @@
 	<!--
 		Configuration des beans pour : Paramètre d'application 
 	 -->
-	<bean id="paramHelper" class="ch.vd.uniregctb.param.ParamHelper" />
 
 	<bean id="paramApplicationManager" class="ch.vd.uniregctb.param.manager.ParamApplicationManagerImpl">
 		<property name="service" ref="parametreAppService" />

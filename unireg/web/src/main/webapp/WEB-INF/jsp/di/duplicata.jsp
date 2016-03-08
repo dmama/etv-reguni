@@ -45,7 +45,7 @@
                                     <form:input path="modelesDocumentView[${statusModele.index}].modelesFeuilles[${statusFeuille.index}].nbreIntituleFeuille"
                                                 cssClass="document-type-${modele.typeDocument}" size="2" maxlength="1"/>
                                     <form:hidden path="modelesDocumentView[${statusModele.index}].modelesFeuilles[${statusFeuille.index}].intituleFeuille"/>
-                                    <form:hidden path="modelesDocumentView[${statusModele.index}].modelesFeuilles[${statusFeuille.index}].numeroFormulaire"/>
+                                    <form:hidden path="modelesDocumentView[${statusModele.index}].modelesFeuilles[${statusFeuille.index}].noCADEV"/>
                                 </td>
                             </tr>
                         </c:forEach>

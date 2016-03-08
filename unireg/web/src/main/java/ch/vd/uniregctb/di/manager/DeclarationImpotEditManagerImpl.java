@@ -51,7 +51,7 @@ import ch.vd.uniregctb.declaration.ModeleDocumentDAO;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.declaration.PeriodeFiscaleDAO;
 import ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotService;
-import ch.vd.uniregctb.declaration.ordinaire.pp.ModeleFeuilleDocumentEditique;
+import ch.vd.uniregctb.declaration.ordinaire.common.ModeleFeuilleDocumentEditique;
 import ch.vd.uniregctb.editique.EditiqueCompositionService;
 import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.EditiqueResultat;
@@ -948,12 +948,14 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 		final DeclarationPrinter pmPrinter = new DeclarationImpotPersonnesMoralesPrinter(pmGenerator);
 
 		this.printers = new EnumMap<>(TypeDocument.class);
-		this.printers.put(TypeDocument.DECLARATION_IMPOT_APM, pmPrinter);
+		this.printers.put(TypeDocument.DECLARATION_IMPOT_APM_BATCH, pmPrinter);
+		this.printers.put(TypeDocument.DECLARATION_IMPOT_APM_LOCAL, pmPrinter);
 		this.printers.put(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, ppPrinter);
 		this.printers.put(TypeDocument.DECLARATION_IMPOT_COMPLETE_LOCAL, ppPrinter);
 		this.printers.put(TypeDocument.DECLARATION_IMPOT_DEPENSE, ppPrinter);
 		this.printers.put(TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, ppPrinter);
-		this.printers.put(TypeDocument.DECLARATION_IMPOT_PM, pmPrinter);
+		this.printers.put(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pmPrinter);
+		this.printers.put(TypeDocument.DECLARATION_IMPOT_PM_LOCAL, pmPrinter);
 		this.printers.put(TypeDocument.DECLARATION_IMPOT_VAUDTAX, ppPrinter);
 
 		this.diGenerators = new HashMap<>(3);

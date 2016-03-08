@@ -3,7 +3,10 @@ package ch.vd.uniregctb.declaration.ordinaire.pm;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -12,6 +15,8 @@ import org.jetbrains.annotations.Nullable;
 
 import ch.vd.editique.unireg.CTypeAdresse;
 import ch.vd.editique.unireg.CTypeAffranchissement;
+import ch.vd.editique.unireg.CTypeAnnexeDI;
+import ch.vd.editique.unireg.CTypeAnnexeDIA;
 import ch.vd.editique.unireg.CTypeDeclarationImpot;
 import ch.vd.editique.unireg.CTypeInfoDocument;
 import ch.vd.editique.unireg.FichierImpression;
@@ -36,6 +41,9 @@ import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.common.DonneesCivilesException;
 import ch.vd.uniregctb.common.XmlUtils;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePM;
+import ch.vd.uniregctb.declaration.ModeleDocument;
+import ch.vd.uniregctb.declaration.ModeleFeuilleDocument;
+import ch.vd.uniregctb.declaration.ordinaire.common.ModeleFeuilleDocumentEditique;
 import ch.vd.uniregctb.editique.ConstantesEditique;
 import ch.vd.uniregctb.editique.EditiqueAbstractHelper;
 import ch.vd.uniregctb.editique.EditiqueException;
@@ -49,6 +57,8 @@ import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.Etablissement;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipalPM;
 import ch.vd.uniregctb.tiers.LocalisationDatee;
+import ch.vd.uniregctb.type.GroupeTypesDocumentBatchLocal;
+import ch.vd.uniregctb.type.ModeleFeuille;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeDocument;
 
@@ -61,8 +71,36 @@ public class ImpressionDeclarationImpotPersonnesMoralesHelperImpl extends Editiq
 
 	private IbanValidator ibanValidator;
 
+	private static final Map<Integer, String> MAP_ANNEXES_PM = buildMapAnnexesPM();
+	private static final Map<Integer, String> MAP_ANNEXES_APM = buildMapAnnexesAPM();
+
 	public void setIbanValidator(IbanValidator ibanValidator) {
 		this.ibanValidator = ibanValidator;
+	}
+
+	private static Map<Integer, String> buildMapAnnexesPM() {
+		final Map<Integer, String> map = new HashMap<>();
+		map.put(ModeleFeuille.ANNEXE_141.getNoCADEV(), "A01a");
+		map.put(ModeleFeuille.ANNEXE_142.getNoCADEV(), "A01b");
+		map.put(ModeleFeuille.ANNEXE_143.getNoCADEV(), "A01c");
+		map.put(ModeleFeuille.ANNEXE_144.getNoCADEV(), "A01d");
+		map.put(ModeleFeuille.ANNEXE_145.getNoCADEV(), "A01e");
+		map.put(ModeleFeuille.ANNEXE_146.getNoCADEV(), "A02");
+		map.put(ModeleFeuille.ANNEXE_147.getNoCADEV(), "A03");
+		map.put(ModeleFeuille.ANNEXE_148.getNoCADEV(), "A04a");
+		map.put(ModeleFeuille.ANNEXE_149.getNoCADEV(), "A04b");
+		return map;
+	}
+
+	private static Map<Integer, String> buildMapAnnexesAPM() {
+		final Map<Integer, String> map = new HashMap<>();
+		map.put(ModeleFeuille.ANNEXE_132.getNoCADEV(), "A01a");
+		map.put(ModeleFeuille.ANNEXE_134.getNoCADEV(), "A01b");
+		map.put(ModeleFeuille.ANNEXE_136.getNoCADEV(), "A02");
+		map.put(ModeleFeuille.ANNEXE_137.getNoCADEV(), "A03a");
+		map.put(ModeleFeuille.ANNEXE_138.getNoCADEV(), "A03b");
+		map.put(ModeleFeuille.ANNEXE_139.getNoCADEV(), "A04");
+		return map;
 	}
 
 	@Override
@@ -91,9 +129,11 @@ public class ImpressionDeclarationImpotPersonnesMoralesHelperImpl extends Editiq
 			return null;
 		}
 		switch (type) {
-		case DECLARATION_IMPOT_PM:
+		case DECLARATION_IMPOT_PM_LOCAL:
+		case DECLARATION_IMPOT_PM_BATCH:
 			return TypeDocumentEditique.DI_PM;
-		case DECLARATION_IMPOT_APM:
+		case DECLARATION_IMPOT_APM_LOCAL:
+		case DECLARATION_IMPOT_APM_BATCH:
 			return TypeDocumentEditique.DI_APM;
 		default:
 			throw new IllegalArgumentException("Type de document non-supporté pour les déclarations des personnes morales : " + type);
@@ -101,27 +141,72 @@ public class ImpressionDeclarationImpotPersonnesMoralesHelperImpl extends Editiq
 	}
 
 	@Override
-	public FichierImpression.Document buildDocument(DeclarationImpotOrdinairePM declaration) throws EditiqueException {
+	public FichierImpression.Document buildDocument(DeclarationImpotOrdinairePM declaration, List<ModeleFeuilleDocumentEditique> annexes) throws EditiqueException {
 		try {
 			final FichierImpression.Document document = new FichierImpression.Document();
-			final CTypeDeclarationImpot declarationImpot = buildDeclarationImpot(declaration);
-			switch (declaration.getTypeDeclaration()) {
-			case DECLARATION_IMPOT_PM:
-				document.setDeclarationImpot(declarationImpot);
-				break;
-			case DECLARATION_IMPOT_APM:
-				document.setDeclarationImpotAssociation(declarationImpot);
-				break;
-			default:
-				throw new IllegalArgumentException("Type de document non-supporté dans les DI PM : " + declaration.getTypeDeclaration());
+			if (GroupeTypesDocumentBatchLocal.DI_PM.hasType(declaration.getTypeDeclaration())) {
+				fillDocumentDIPM(document, declaration, annexes);
+			}
+			else if (GroupeTypesDocumentBatchLocal.DI_APM.hasType(declaration.getTypeDeclaration())) {
+				fillDocumentDIAPM(document, declaration, annexes);
+			}
+			else {
+				throw new IllegalArgumentException("Type de document non-supporté dans les DI des personnes morales : " + declaration.getTypeDeclaration());
 			}
 			document.setInfoDocument(buildInfoDocument(declaration, getAdresseEnvoi(declaration.getTiers())));
 			document.setInfoEnteteDocument(buildInfoEnteteDocument(declaration.getTiers(), declaration.getDateExpedition(), TRAITE_PAR, infraService.getACIOIPM()));
 			document.setInfoRoutage(null);
 			return document;
 		}
+		catch (EditiqueException e) {
+			throw e;
+		}
 		catch (Exception e) {
 			throw new EditiqueException(e);
+		}
+	}
+
+	private void fillDocumentDIPM(FichierImpression.Document document, DeclarationImpotOrdinairePM di, List<ModeleFeuilleDocumentEditique> annexes) throws AdresseException, DonneesCivilesException, EditiqueException {
+		final CTypeDeclarationImpot declarationImpot = buildDeclarationImpot(di);
+		final CTypeAnnexeDI docAnnexes = new CTypeAnnexeDI();
+		final List<String> referenceAnnexe = docAnnexes.getReferenceAnnexe();
+		for (ModeleFeuilleDocumentEditique annexe : annexes) {
+			if (annexe.getNoCADEV() == ModeleFeuille.ANNEXE_140.getNoCADEV()) {
+				document.setDeclarationImpot(declarationImpot);
+			}
+			else {
+				final String code = MAP_ANNEXES_PM.get(annexe.getNoCADEV());
+				if (code != null && annexe.getNombreFeuilles() > 0) {
+					for (int i = 0 ; i < annexe.getNombreFeuilles() ; ++ i) {
+						referenceAnnexe.add(code);
+					}
+				}
+			}
+		}
+		if (!referenceAnnexe.isEmpty()) {
+			document.setAnnexesDI(docAnnexes);
+		}
+	}
+
+	private void fillDocumentDIAPM(FichierImpression.Document document, DeclarationImpotOrdinairePM di, List<ModeleFeuilleDocumentEditique> annexes) throws AdresseException, DonneesCivilesException, EditiqueException {
+		final CTypeDeclarationImpot declarationImpot = buildDeclarationImpot(di);
+		final CTypeAnnexeDIA docAnnexes = new CTypeAnnexeDIA();
+		final List<String> referenceAnnexe = docAnnexes.getReferenceAnnexe();
+		for (ModeleFeuilleDocumentEditique annexe : annexes) {
+			if (annexe.getNoCADEV() == ModeleFeuille.ANNEXE_130.getNoCADEV()) {
+				document.setDeclarationImpotAssociation(declarationImpot);
+			}
+			else {
+				final String code = MAP_ANNEXES_APM.get(annexe.getNoCADEV());
+				if (code != null && annexe.getNombreFeuilles() > 0) {
+					for (int i = 0 ; i < annexe.getNombreFeuilles() ; ++ i) {
+						referenceAnnexe.add(code);
+					}
+				}
+			}
+		}
+		if (!referenceAnnexe.isEmpty()) {
+			document.setAnnexesDIA(docAnnexes);
 		}
 	}
 
@@ -261,7 +346,7 @@ public class ImpressionDeclarationImpotPersonnesMoralesHelperImpl extends Editiq
 		return new CTypeAdresse(Collections.singletonList(tiersService.getRaisonSociale(entreprise)));
 	}
 
-	private CTypeDeclarationImpot buildDeclarationImpot(DeclarationImpotOrdinairePM declaration) throws AdresseException, DonneesCivilesException {
+	private CTypeDeclarationImpot buildDeclarationImpot(DeclarationImpotOrdinairePM declaration) throws AdresseException, DonneesCivilesException, EditiqueException {
 		final CTypeDeclarationImpot di = new CTypeDeclarationImpot();
 		final Entreprise pm = (Entreprise) declaration.getTiers();
 
@@ -269,7 +354,7 @@ public class ImpressionDeclarationImpotPersonnesMoralesHelperImpl extends Editiq
 
 		di.setAdresseRaisonSociale(buildAdresseRaisonSociale(pm, declaration.getDateFin()));
 		di.setAdresseRetour(buildAdresseCEDI());      // TODO autre choix que retour au CEDI ?
-		di.setCodeBarreDI(buildCodeBarre(declaration));
+		di.setCodeBarreDI(buildCodeBarre(declaration, getModelePrincipal(declaration)));
 		di.setCodeControleNIP(declaration.getCodeControle());
 
 		if (declaration.getCodeSegment() != null) {
@@ -289,10 +374,39 @@ public class ImpressionDeclarationImpotPersonnesMoralesHelperImpl extends Editiq
 		return di;
 	}
 
-	private static String buildCodeBarre(DeclarationImpotOrdinairePM declaration) {
+	@NotNull
+	private static ModeleFeuilleDocument getModelePrincipal(DeclarationImpotOrdinairePM declaration) throws EditiqueException {
+		final TypeDocumentEditique type = getTypeDocumentEditique(declaration.getTypeDeclaration());
+		final int noCADEV;
+		switch (type) {
+		case DI_APM:
+			noCADEV = ModeleFeuille.ANNEXE_130.getNoCADEV();
+			break;
+		case DI_PM:
+			noCADEV = ModeleFeuille.ANNEXE_140.getNoCADEV();
+			break;
+		default:
+			throw new IllegalArgumentException("Type de document éditique inattendu ici : " + type);
+		}
+
+		final Set<ModeleDocument> modeles = declaration.getPeriode().getModelesDocument();
+		for (ModeleDocument modele : modeles) {
+			if (modele.getTypeDocument() == declaration.getTypeDeclaration()) {
+				final Set<ModeleFeuilleDocument> feuilles = modele.getModelesFeuilleDocument();
+				for (ModeleFeuilleDocument feuille : feuilles) {
+					if (feuille.getNoCADEV() == noCADEV) {
+						return feuille;
+					}
+				}
+			}
+		}
+		throw new EditiqueException("Le modèle de document " + declaration.getTypeDeclaration() + " pour la PF " + declaration.getPeriode().getAnnee() + " n'a pas de feuille identifiée comme 'principale'");
+	}
+
+	private static String buildCodeBarre(DeclarationImpotOrdinairePM declaration, ModeleFeuilleDocument modele) {
 		return String.format("%04d%05d%04d%09d%02d%02d",
-		                     0,             // TODO no UIDFIN / CADEV ???
-		                     0,             // TODO numéro de formulaire ACI ???
+		                     modele.getNoCADEV(),
+		                     modele.getNoFormulaireACI() != null ? modele.getNoFormulaireACI() : 0,
 		                     declaration.getPeriode().getAnnee(),
 		                     declaration.getTiers().getNumero(),
 		                     declaration.getNumero() % 100,

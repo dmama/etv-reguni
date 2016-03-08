@@ -161,11 +161,11 @@ public class PeriodeImpositionPersonnesMoralesCalculator implements PeriodeImpos
 		case APM:
 		case FP:
 		case DPAPM:
-			return TypeDocument.DECLARATION_IMPOT_APM;
+			return TypeDocument.DECLARATION_IMPOT_APM_BATCH;
 		case PM:
 		case DPPM:
 		case AUTRE:
-			return TypeDocument.DECLARATION_IMPOT_PM;
+			return TypeDocument.DECLARATION_IMPOT_PM_BATCH;
 		case SP:
 			return null;            // TODO si une SP est ici, c'est qu'elle est assujettie...
 		default:

@@ -27,7 +27,7 @@ public class ModeleFeuilleDocumentValidator implements Validator {
 	public void validate(Object target, Errors errors) {
 		ModeleFeuilleDocumentView view = (ModeleFeuilleDocumentView) target;
 		ModeleDocument modeleDocument = modeleDocumentDAO.get(view.getIdModele());
-		if (modeleDocument.possedeModeleFeuilleDocument(view.getModeleFeuille().getCode())) {
+		if (modeleDocument.possedeModeleFeuilleDocument(view.getModeleFeuille().getNoCADEV())) {
 			errors.rejectValue("modeleFeuille", "error.modele.feuille.existante");
 		}
 	}

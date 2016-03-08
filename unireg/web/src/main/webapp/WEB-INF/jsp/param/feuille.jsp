@@ -26,21 +26,7 @@
 		</th>
 		<td>
 			<form:select path="modeleFeuille">
-					<c:choose>
-						<c:when test="${(command.modeleDocumentTypeDocument == 'DECLARATION_IMPOT_COMPLETE_BATCH') ||
-						(command.modeleDocumentTypeDocument == 'DECLARATION_IMPOT_COMPLETE_LOCAL')}">
-							<form:options items="${modelesFeuillesForCompletes}" />
-						</c:when>
-						<c:when test="${(command.modeleDocumentTypeDocument == 'DECLARATION_IMPOT_VAUDTAX')}">
-                            <form:options items="${modelesFeuillesForVaudTax}" />
-						</c:when>
-						<c:when test="${(command.modeleDocumentTypeDocument == 'DECLARATION_IMPOT_DEPENSE')}">
-                            <form:options items="${modelesFeuillesForDepense}" />
-						</c:when>
-						<c:when test="${(command.modeleDocumentTypeDocument == 'DECLARATION_IMPOT_HC_IMMEUBLE')}">
-                            <form:options items="${modelesFeuillesForHC}" />
-						</c:when>
-					</c:choose>
+				<form:options items="${modelesFeuilles}"/>
 			</form:select>
 			<c:if test="${status.error}">
 				&nbsp;<span class="erreur">${status.errorMessage}</span>

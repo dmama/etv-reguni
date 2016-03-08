@@ -28,7 +28,7 @@ public class TacheEnvoiDeclarationImpotPMValidatorTest extends AbstractValidator
 		final int annee = RegDate.get().year() - 1;
 		final RegDate debut = RegDate.get(annee, 1, 1);
 		final RegDate fin = RegDate.get(annee, 12, 31);
-		final TacheEnvoiDeclarationImpotPM tache = new TacheEnvoiDeclarationImpotPM(TypeEtatTache.EN_INSTANCE, RegDate.get(), null, debut, fin, debut, fin, TypeContribuable.HORS_SUISSE, TypeDocument.DECLARATION_IMPOT_PM, null, null);
+		final TacheEnvoiDeclarationImpotPM tache = new TacheEnvoiDeclarationImpotPM(TypeEtatTache.EN_INSTANCE, RegDate.get(), null, debut, fin, debut, fin, TypeContribuable.HORS_SUISSE, TypeDocument.DECLARATION_IMPOT_PM_BATCH, null, null);
 
 		// Adresse invalide (type contribuable nul) mais annulée => pas d'erreur
 		{
@@ -38,7 +38,7 @@ public class TacheEnvoiDeclarationImpotPMValidatorTest extends AbstractValidator
 
 		// Adresse valide et annulée => pas d'erreur
 		{
-			tache.setTypeDocument(TypeDocument.DECLARATION_IMPOT_PM);
+			tache.setTypeDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH);
 			tache.setContribuable(new Entreprise());
 			tache.setCollectiviteAdministrativeAssignee(new CollectiviteAdministrative());
 			tache.setAnnule(true);

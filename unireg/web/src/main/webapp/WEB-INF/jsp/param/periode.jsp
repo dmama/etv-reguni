@@ -40,11 +40,11 @@
 			}
 
 			.colonneFeuille{
-				width: 20%;
+				width: 17%;
 			}
 
 			.colonneFeuilleAction {
-				width: 20%;
+				width: 15%;
 				text-align: right;
 			}
 
@@ -328,7 +328,8 @@
 							<table>
 								<tr>
 									<th class="colonneFeuille"><fmt:message key="title.param.periode" /></th>
-									<th class="colonneFeuille"><fmt:message key="title.param.num.form"/></th>
+									<th class="colonneFeuille"><fmt:message key="title.param.num.cadev"/></th>
+									<th class="colonneFeuille"><fmt:message key="title.param.num.form.aci"/></th>
 									<th class="colonneFeuille"><fmt:message key="title.param.int.feuille"/></th>
 									<th class="colonneFeuille">&nbsp;</th>
 									<th class="colonneFeuilleAction" ><fmt:message key="title.param.action"/></th>
@@ -336,7 +337,8 @@
 								<c:forEach var="feuille" varStatus="i" items="${feuilles}">
 									<tr class="odd">
 										<td class="colonneFeuille">${periodeSelectionnee.annee}</td>
-										<td class="colonneFeuille">${feuille.numeroFormulaire}</td>
+										<td class="colonneFeuille">${feuille.noCADEV}</td>
+										<td class="colonneFeuille">${feuille.noFormulaireACI}</td>
 										<td class="colonneFeuille">${feuille.intituleFeuille}</td>
 										<td class="colonneFeuille">
 											<c:if test="${not empty error_feuille[feuille.id]}">

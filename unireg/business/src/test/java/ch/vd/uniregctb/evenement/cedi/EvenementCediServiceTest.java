@@ -23,6 +23,7 @@ import ch.vd.uniregctb.jms.BamMessageSender;
 import ch.vd.uniregctb.tiers.CoordonneesFinancieres;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.TiersDAO;
+import ch.vd.uniregctb.type.ModeleFeuille;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeContribuable;
@@ -67,10 +68,10 @@ public class EvenementCediServiceTest extends BusinessTest {
 				final PeriodeFiscale periode2008 = addPeriodeFiscale(2008);
 				final ModeleDocument declarationComplete2008 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2008);
 				addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, periode2008);
-				addModeleFeuilleDocument("Déclaration", "210", declarationComplete2008);
-				addModeleFeuilleDocument("Annexe 1", "220", declarationComplete2008);
-				addModeleFeuilleDocument("Annexe 2-3", "230", declarationComplete2008);
-				addModeleFeuilleDocument("Annexe 4-5", "240", declarationComplete2008);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, declarationComplete2008);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, declarationComplete2008);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, declarationComplete2008);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, declarationComplete2008);
 
 
 				// Un tiers tout ce quil y a de plus ordinaire
@@ -140,10 +141,10 @@ public class EvenementCediServiceTest extends BusinessTest {
 				final PeriodeFiscale periode2008 = addPeriodeFiscale(2008);
 				final ModeleDocument declarationComplete2008 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2008);
 				addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, periode2008);
-				addModeleFeuilleDocument("Déclaration", "210", declarationComplete2008);
-				addModeleFeuilleDocument("Annexe 1", "220", declarationComplete2008);
-				addModeleFeuilleDocument("Annexe 2-3", "230", declarationComplete2008);
-				addModeleFeuilleDocument("Annexe 4-5", "240", declarationComplete2008);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, declarationComplete2008);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, declarationComplete2008);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, declarationComplete2008);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, declarationComplete2008);
 
 
 				// Un tiers tout ce quil y a de plus ordinaire
@@ -209,10 +210,10 @@ public class EvenementCediServiceTest extends BusinessTest {
 				final PeriodeFiscale periode2008 = addPeriodeFiscale(2008);
 				final ModeleDocument declarationComplete2008 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2008);
 				addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, periode2008);
-				addModeleFeuilleDocument("Déclaration", "210", declarationComplete2008);
-				addModeleFeuilleDocument("Annexe 1", "220", declarationComplete2008);
-				addModeleFeuilleDocument("Annexe 2-3", "230", declarationComplete2008);
-				addModeleFeuilleDocument("Annexe 4-5", "240", declarationComplete2008);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, declarationComplete2008);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, declarationComplete2008);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, declarationComplete2008);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, declarationComplete2008);
 				return null;
 			}
 		});
@@ -304,11 +305,10 @@ public class EvenementCediServiceTest extends BusinessTest {
 				final PeriodeFiscale periode2014 = addPeriodeFiscale(2014);
 				final ModeleDocument declarationComplete2014 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2014);
 				addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, periode2014);
-				addModeleFeuilleDocument("Déclaration", "210", declarationComplete2014);
-				addModeleFeuilleDocument("Annexe 1", "220", declarationComplete2014);
-				addModeleFeuilleDocument("Annexe 2-3", "230", declarationComplete2014);
-				addModeleFeuilleDocument("Annexe 4-5", "240", declarationComplete2014);
-
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, declarationComplete2014);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, declarationComplete2014);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, declarationComplete2014);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, declarationComplete2014);
 
 				// Un tiers tout ce quil y a de plus ordinaire
 				final PersonnePhysique eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);

@@ -118,6 +118,7 @@ import ch.vd.uniregctb.type.DayMonth;
 import ch.vd.uniregctb.type.EtatDelaiDeclaration;
 import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.ModeImposition;
+import ch.vd.uniregctb.type.ModeleFeuille;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.Niveau;
@@ -740,12 +741,11 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 	/**
 	 * Ajoute un nouveau modele de feuille dans la base de données
 	 */
-	protected ModeleFeuilleDocument addModeleFeuilleDocument(String intitule, String numero, ModeleDocument modeleDoc) {
-		assertNotNull(intitule);
-		assertNotNull(numero);
+	protected ModeleFeuilleDocument addModeleFeuilleDocument(ModeleFeuille modele, ModeleDocument modeleDoc) {
 		ModeleFeuilleDocument feuille = new ModeleFeuilleDocument();
-		feuille.setNumeroFormulaire(numero);
-		feuille.setIntituleFeuille(intitule);
+		feuille.setNoCADEV(modele.getNoCADEV());
+		feuille.setNoFormulaireACI(modele.getNoFormulaireACI());
+		feuille.setIntituleFeuille(modele.getDescription());
 		feuille.setModeleDocument(modeleDoc);
 		feuille = merge(feuille);
 		return feuille;

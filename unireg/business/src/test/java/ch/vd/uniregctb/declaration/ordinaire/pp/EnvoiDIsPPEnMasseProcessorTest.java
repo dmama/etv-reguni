@@ -58,6 +58,7 @@ import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.TacheEnvoiDeclarationImpot;
 import ch.vd.uniregctb.tiers.TacheEnvoiDeclarationImpotPP;
 import ch.vd.uniregctb.type.ModeImposition;
+import ch.vd.uniregctb.type.ModeleFeuille;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.Qualification;
@@ -254,10 +255,10 @@ public class EnvoiDIsPPEnMasseProcessorTest extends BusinessTest {
 				final CollectiviteAdministrative colAdm = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noACI);
 
 				ModeleDocument declarationComplete2007 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, addPeriodeFiscale(2007));
-				addModeleFeuilleDocument("Déclaration", "210", declarationComplete2007);
-				addModeleFeuilleDocument("Annexe 1", "220", declarationComplete2007);
-				addModeleFeuilleDocument("Annexe 2-3", "230", declarationComplete2007);
-				addModeleFeuilleDocument("Annexe 4-5", "240", declarationComplete2007);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, declarationComplete2007);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, declarationComplete2007);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, declarationComplete2007);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, declarationComplete2007);
 
 				// Contribuable sans for de gestion
 				PersonnePhysique contribuable = addNonHabitant("Werner", "Karey", date(1963, 1, 1), Sexe.MASCULIN);
@@ -302,10 +303,10 @@ public class EnvoiDIsPPEnMasseProcessorTest extends BusinessTest {
 
 				final PeriodeFiscale periode2007 = addPeriodeFiscale(2007);
 				final ModeleDocument declarationComplete = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2007);
-				addModeleFeuilleDocument("Déclaration", "210", declarationComplete);
-				addModeleFeuilleDocument("Annexe 1", "220", declarationComplete);
-				addModeleFeuilleDocument("Annexe 2-3", "230", declarationComplete);
-				addModeleFeuilleDocument("Annexe 4-5", "240", declarationComplete);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, declarationComplete);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, declarationComplete);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, declarationComplete);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, declarationComplete);
 
 				// Un tiers sans déclaration
 				final PersonnePhysique marc = addNonHabitant("Marc", "Dumont", date(1962, 3, 12), Sexe.MASCULIN);
@@ -408,10 +409,10 @@ public class EnvoiDIsPPEnMasseProcessorTest extends BusinessTest {
 
 				final PeriodeFiscale periode = addPeriodeFiscale(annee);
 				final ModeleDocument declarationComplete = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
-				addModeleFeuilleDocument("Déclaration", "210", declarationComplete);
-				addModeleFeuilleDocument("Annexe 1", "220", declarationComplete);
-				addModeleFeuilleDocument("Annexe 2-3", "230", declarationComplete);
-				addModeleFeuilleDocument("Annexe 4-5", "240", declarationComplete);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, declarationComplete);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, declarationComplete);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, declarationComplete);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, declarationComplete);
 
 				// for fiscal ouvert à Lausanne -> assujetti
 				final PersonnePhysique marc = addNonHabitant("Marc", "Dumont", date(1961, 3, 12), Sexe.MASCULIN);
@@ -496,10 +497,10 @@ public class EnvoiDIsPPEnMasseProcessorTest extends BusinessTest {
 
 				final PeriodeFiscale periode2008 = addPeriodeFiscale(2008);
 				final ModeleDocument declarationComplete = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2008);
-				addModeleFeuilleDocument("Déclaration", "210", declarationComplete);
-				addModeleFeuilleDocument("Annexe 1", "220", declarationComplete);
-				addModeleFeuilleDocument("Annexe 2-3", "230", declarationComplete);
-				addModeleFeuilleDocument("Annexe 4-5", "240", declarationComplete);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, declarationComplete);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, declarationComplete);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, declarationComplete);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, declarationComplete);
 
 				// Un tiers sans exclusion
 				final PersonnePhysique marc = addNonHabitant("Marc", "Dumont", date(1962, 3, 12), Sexe.MASCULIN);
@@ -588,10 +589,10 @@ public class EnvoiDIsPPEnMasseProcessorTest extends BusinessTest {
 
 				final PeriodeFiscale periode2008 = addPeriodeFiscale(2008);
 				final ModeleDocument declarationComplete = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2008);
-				addModeleFeuilleDocument("Déclaration", "210", declarationComplete);
-				addModeleFeuilleDocument("Annexe 1", "220", declarationComplete);
-				addModeleFeuilleDocument("Annexe 2-3", "230", declarationComplete);
-				addModeleFeuilleDocument("Annexe 4-5", "240", declarationComplete);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, declarationComplete);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, declarationComplete);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, declarationComplete);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, declarationComplete);
 
 				// Un contribuable habitant à Lausanne
 				final PersonnePhysique marc = addNonHabitant("Marc", "Dumont", date(1962, 3, 12), Sexe.MASCULIN);
@@ -704,10 +705,10 @@ public class EnvoiDIsPPEnMasseProcessorTest extends BusinessTest {
 
 				final PeriodeFiscale periode2008 = addPeriodeFiscale(2008);
 				final ModeleDocument declarationComplete = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2008);
-				addModeleFeuilleDocument("Déclaration", "210", declarationComplete);
-				addModeleFeuilleDocument("Annexe 1", "220", declarationComplete);
-				addModeleFeuilleDocument("Annexe 2-3", "230", declarationComplete);
-				addModeleFeuilleDocument("Annexe 4-5", "240", declarationComplete);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, declarationComplete);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, declarationComplete);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, declarationComplete);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, declarationComplete);
 
 				// Un contribuable habitant à Lausanne décédé courant 2008
 				final PersonnePhysique marc = addNonHabitant("Marc", "Dumont", date(1962, 3, 12), Sexe.MASCULIN);
@@ -791,10 +792,10 @@ public class EnvoiDIsPPEnMasseProcessorTest extends BusinessTest {
 
 				final PeriodeFiscale periode2008 = addPeriodeFiscale(2008);
 				final ModeleDocument declarationComplete = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2008);
-				addModeleFeuilleDocument("Déclaration", "210", declarationComplete);
-				addModeleFeuilleDocument("Annexe 1", "220", declarationComplete);
-				addModeleFeuilleDocument("Annexe 2-3", "230", declarationComplete);
-				addModeleFeuilleDocument("Annexe 4-5", "240", declarationComplete);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, declarationComplete);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, declarationComplete);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, declarationComplete);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, declarationComplete);
 
 				// Un contribuable habitant à Lausanne décédé courant 2008
 				final PersonnePhysique marc = addNonHabitant("Marc", "Dumont", date(1962, 3, 12), Sexe.MASCULIN);
@@ -849,10 +850,10 @@ public class EnvoiDIsPPEnMasseProcessorTest extends BusinessTest {
 
 				final PeriodeFiscale periode2008 = addPeriodeFiscale(2008);
 				final ModeleDocument declarationComplete = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2008);
-				addModeleFeuilleDocument("Déclaration", "210", declarationComplete);
-				addModeleFeuilleDocument("Annexe 1", "220", declarationComplete);
-				addModeleFeuilleDocument("Annexe 2-3", "230", declarationComplete);
-				addModeleFeuilleDocument("Annexe 4-5", "240", declarationComplete);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, declarationComplete);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, declarationComplete);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, declarationComplete);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, declarationComplete);
 
 				// Un contribuable habitant à Lausanne
 				final PersonnePhysique marc = addNonHabitant("Marc", "Dumont", date(1962, 3, 12), Sexe.MASCULIN);
@@ -1107,10 +1108,10 @@ public class EnvoiDIsPPEnMasseProcessorTest extends BusinessTest {
 
 				final PeriodeFiscale periode2008 = addPeriodeFiscale(2008);
 				final ModeleDocument declarationComplete = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2008);
-				addModeleFeuilleDocument("Déclaration", "210", declarationComplete);
-				addModeleFeuilleDocument("Annexe 1", "220", declarationComplete);
-				addModeleFeuilleDocument("Annexe 2-3", "230", declarationComplete);
-				addModeleFeuilleDocument("Annexe 4-5", "240", declarationComplete);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, declarationComplete);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, declarationComplete);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, declarationComplete);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, declarationComplete);
 
 				// Un contribuable indigent habitant à Lausanne, décédé en 2008
 				final PersonnePhysique marc = addNonHabitant("Marc", "Dumont", date(1962, 3, 12), Sexe.MASCULIN);
@@ -1168,10 +1169,10 @@ public class EnvoiDIsPPEnMasseProcessorTest extends BusinessTest {
 
 				final PeriodeFiscale periode2008 = addPeriodeFiscale(2008);
 				final ModeleDocument declarationComplete = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2008);
-				addModeleFeuilleDocument("Déclaration", "210", declarationComplete);
-				addModeleFeuilleDocument("Annexe 1", "220", declarationComplete);
-				addModeleFeuilleDocument("Annexe 2-3", "230", declarationComplete);
-				addModeleFeuilleDocument("Annexe 4-5", "240", declarationComplete);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, declarationComplete);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, declarationComplete);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, declarationComplete);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, declarationComplete);
 
 				// Un contribuable indigent habitant à Lausanne, décédé en 2008
 				final PersonnePhysique marc = addNonHabitant("Marc", "Dumont", date(1962, 3, 12), Sexe.MASCULIN);
@@ -1228,10 +1229,10 @@ public class EnvoiDIsPPEnMasseProcessorTest extends BusinessTest {
 
 				final PeriodeFiscale periode2008 = addPeriodeFiscale(2008);
 				final ModeleDocument declarationComplete = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2008);
-				addModeleFeuilleDocument("Déclaration", "210", declarationComplete);
-				addModeleFeuilleDocument("Annexe 1", "220", declarationComplete);
-				addModeleFeuilleDocument("Annexe 2-3", "230", declarationComplete);
-				addModeleFeuilleDocument("Annexe 4-5", "240", declarationComplete);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, declarationComplete);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, declarationComplete);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, declarationComplete);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, declarationComplete);
 
 				// Un contribuable indigent habitant à Lausanne, décédé en 2008
 				final PersonnePhysique marc = addNonHabitant("Marc", "Dumont", date(1962, 3, 12), Sexe.MASCULIN);
@@ -1286,10 +1287,10 @@ public class EnvoiDIsPPEnMasseProcessorTest extends BusinessTest {
 
 				final PeriodeFiscale periode2008 = addPeriodeFiscale(2008);
 				final ModeleDocument declarationComplete = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2008);
-				addModeleFeuilleDocument("Déclaration", "210", declarationComplete);
-				addModeleFeuilleDocument("Annexe 1", "220", declarationComplete);
-				addModeleFeuilleDocument("Annexe 2-3", "230", declarationComplete);
-				addModeleFeuilleDocument("Annexe 4-5", "240", declarationComplete);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_210, declarationComplete);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_220, declarationComplete);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_230, declarationComplete);
+				addModeleFeuilleDocument(ModeleFeuille.ANNEXE_240, declarationComplete);
 
 				// Un contribuable indigent habitant à Lausanne
 				final PersonnePhysique marc = addNonHabitant("Marc", "Dumont", date(1962, 3, 12), Sexe.MASCULIN);

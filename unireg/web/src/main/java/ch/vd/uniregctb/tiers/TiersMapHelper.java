@@ -550,8 +550,10 @@ public class TiersMapHelper extends CommonMapHelper {
 			                                         TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH,
 			                                         TypeDocument.E_FACTURE_ATTENTE_CONTACT,
 			                                         TypeDocument.E_FACTURE_ATTENTE_SIGNATURE,
-			                                         TypeDocument.DECLARATION_IMPOT_APM,
-			                                         TypeDocument.DECLARATION_IMPOT_PM,
+			                                         TypeDocument.DECLARATION_IMPOT_APM_BATCH,
+			                                         TypeDocument.DECLARATION_IMPOT_APM_LOCAL,
+			                                         TypeDocument.DECLARATION_IMPOT_PM_BATCH,
+			                                         TypeDocument.DECLARATION_IMPOT_PM_LOCAL,
 			                                         TypeDocument.QUESTIONNAIRE_SNC);
 		}
 		return mapTypesDeclarationImpotPP;

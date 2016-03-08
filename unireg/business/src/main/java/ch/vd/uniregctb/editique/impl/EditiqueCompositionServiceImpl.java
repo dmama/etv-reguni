@@ -11,6 +11,7 @@ import java.util.Set;
 import noNamespace.FichierImpressionDocument;
 import noNamespace.TypFichierImpression;
 import org.apache.commons.lang3.tuple.Pair;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
@@ -26,7 +27,10 @@ import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePM;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP;
 import ch.vd.uniregctb.declaration.DeclarationImpotSource;
 import ch.vd.uniregctb.declaration.DelaiDeclaration;
+import ch.vd.uniregctb.declaration.ModeleDocument;
 import ch.vd.uniregctb.declaration.ModeleFeuilleDocument;
+import ch.vd.uniregctb.declaration.PeriodeFiscale;
+import ch.vd.uniregctb.declaration.ordinaire.common.ModeleFeuilleDocumentEditique;
 import ch.vd.uniregctb.declaration.ordinaire.pm.ImpressionDeclarationImpotPersonnesMoralesHelper;
 import ch.vd.uniregctb.declaration.ordinaire.pm.ImpressionLettreDecisionDelaiPMHelper;
 import ch.vd.uniregctb.declaration.ordinaire.pm.ImpressionLettreDecisionDelaiPMHelperParams;
@@ -37,7 +41,6 @@ import ch.vd.uniregctb.declaration.ordinaire.pp.ImpressionDeclarationImpotPerson
 import ch.vd.uniregctb.declaration.ordinaire.pp.ImpressionSommationDIHelperParams;
 import ch.vd.uniregctb.declaration.ordinaire.pp.ImpressionSommationDeclarationImpotPersonnesPhysiquesHelper;
 import ch.vd.uniregctb.declaration.ordinaire.pp.InformationsDocumentAdapter;
-import ch.vd.uniregctb.declaration.ordinaire.pp.ModeleFeuilleDocumentEditique;
 import ch.vd.uniregctb.declaration.source.ImpressionListeRecapHelper;
 import ch.vd.uniregctb.declaration.source.ImpressionSommationLRHelper;
 import ch.vd.uniregctb.documentfiscal.ImpressionLettreBienvenueHelper;
@@ -58,6 +61,7 @@ import ch.vd.uniregctb.security.IfoSecProfil;
 import ch.vd.uniregctb.tache.ImpressionNouveauxDossiersHelper;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.Tiers;
+import ch.vd.uniregctb.type.GroupeTypesDocumentBatchLocal;
 import ch.vd.uniregctb.type.ModeleFeuille;
 import ch.vd.uniregctb.type.TypeDocument;
 
@@ -153,30 +157,57 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 	private static List<ModeleFeuilleDocumentEditique> buildDefaultAnnexes(DeclarationImpotOrdinaire di) {
 		final Set<ModeleFeuilleDocument> listFeuille = di.getModeleDocument().getModelesFeuilleDocument();
 		return buildDefaultAnnexes(listFeuille);
+	}
 
+	@Nullable
+	private static ModeleDocument getModeleDocument(PeriodeFiscale pf, TypeDocument typeDocument) {
+		final Set<ModeleDocument> modeles = pf.getModelesDocument();
+		for (ModeleDocument modele : modeles) {
+			if (!modele.isAnnule() && modele.getTypeDocument() == typeDocument) {
+				return modele;
+			}
+		}
+		return null;
+	}
+
+	private static List<ModeleFeuilleDocumentEditique> buildDefaultAnnexesForBatch(DeclarationImpotOrdinaire di) {
+		// il faut trouver le bon type de document
+		final TypeDocument typeDocument;
+
+		// de quel groupe de DI fait partie la DI donnée...
+		final TypeDocument typeDocumentOriginal = di.getTypeDeclaration();
+		final GroupeTypesDocumentBatchLocal groupe = GroupeTypesDocumentBatchLocal.of(typeDocumentOriginal);
+		if (groupe != null) {
+			typeDocument = groupe.getBatch();
+		}
+		else {
+			typeDocument = typeDocumentOriginal;
+		}
+
+		// récupération du modèle pour le type de document donné dans la PF de la déclaration
+		final ModeleDocument modele = getModeleDocument(di.getPeriode(), typeDocument);
+		if (modele != null) {
+			return buildDefaultAnnexes(modele.getModelesFeuilleDocument());
+		}
+		else {
+			return Collections.emptyList();
+		}
 	}
 
 	private static List<ModeleFeuilleDocumentEditique> buildDefaultAnnexes(Set<ModeleFeuilleDocument> listFeuille) {
 		final List<ModeleFeuilleDocumentEditique> annexes = new ArrayList<>();
 		for (ModeleFeuilleDocument feuille : listFeuille) {
-			ModeleFeuilleDocumentEditique feuilleEditique = new ModeleFeuilleDocumentEditique();
-			feuilleEditique.setIntituleFeuille(feuille.getIntituleFeuille());
-			feuilleEditique.setNumeroFormulaire(feuille.getNumeroFormulaire());
-			feuilleEditique.setNbreIntituleFeuille(1);
+			final ModeleFeuilleDocumentEditique feuilleEditique = new ModeleFeuilleDocumentEditique(feuille, 1);
 			annexes.add(feuilleEditique);
 		}
 		return annexes;
-
 	}
 
 	private static List<ModeleFeuilleDocumentEditique> buildAnnexesImmeuble(Set<ModeleFeuilleDocument> listFeuille, int nombreAnnexes) {
 		final List<ModeleFeuilleDocumentEditique> annexes = new ArrayList<>();
 		for (ModeleFeuilleDocument feuille : listFeuille) {
-			if (ModeleFeuille.ANNEXE_320.getCode().equals(feuille.getNumeroFormulaire())) {
-				ModeleFeuilleDocumentEditique feuilleEditique = new ModeleFeuilleDocumentEditique();
-				feuilleEditique.setIntituleFeuille(feuille.getIntituleFeuille());
-				feuilleEditique.setNumeroFormulaire(feuille.getNumeroFormulaire());
-				feuilleEditique.setNbreIntituleFeuille(nombreAnnexes);
+			if (ModeleFeuille.ANNEXE_320.getNoCADEV() == feuille.getNoCADEV()) {
+				final ModeleFeuilleDocumentEditique feuilleEditique = new ModeleFeuilleDocumentEditique(feuille, nombreAnnexes);
 				annexes.add(feuilleEditique);
 			}
 		}
@@ -230,7 +261,7 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 
 	private EditiqueResultat imprimeDIOnline(DeclarationImpotOrdinairePM declaration, boolean isDuplicata) throws EditiqueException, JMSException {
 		final FichierImpression root = new FichierImpression();
-		final FichierImpression.Document document = impressionDIPMHelper.buildDocument(declaration);
+		final FichierImpression.Document document = impressionDIPMHelper.buildDocument(declaration, null);      // TODO gestion des annexes en impression locale
 		root.getDocument().add(document);
 		final TypeDocumentEditique typeDocument = impressionDIPMHelper.getTypeDocumentEditique(declaration);
 		final String nomDocument = impressionDIPMHelper.getIdDocument(declaration);
@@ -268,7 +299,7 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 	@Override
 	public void imprimeDIForBatch(DeclarationImpotOrdinairePM declaration) throws EditiqueException {
 		final FichierImpression root = new FichierImpression();
-		final FichierImpression.Document document = impressionDIPMHelper.buildDocument(declaration);
+		final FichierImpression.Document document = impressionDIPMHelper.buildDocument(declaration, buildDefaultAnnexesForBatch(declaration));
 		root.getDocument().add(document);
 		final TypeDocumentEditique typeDocument = impressionDIPMHelper.getTypeDocumentEditique(declaration);
 		final String nomDocument = impressionDIPMHelper.getIdDocument(declaration);

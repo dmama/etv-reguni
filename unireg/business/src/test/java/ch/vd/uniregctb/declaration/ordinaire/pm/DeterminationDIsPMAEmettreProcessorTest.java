@@ -279,7 +279,7 @@ public class DeterminationDIsPMAEmettreProcessorTest extends BusinessTest {
 	public void testTraiterPeriodeImposition() throws Exception {
 
 		final PeriodeFiscale periode = addPeriodeFiscale(2014);
-		addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM, periode);
+		addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, periode);
 
 		final Entreprise entreprise = addEntrepriseInconnueAuCivil();
 		addRaisonSociale(entreprise, date(2012, 4, 5), null, "Bricolage SARL");
@@ -300,7 +300,7 @@ public class DeterminationDIsPMAEmettreProcessorTest extends BusinessTest {
 		final TacheEnvoiDeclarationImpotPM tacheEnvoi = service.traiterPeriodeImposition(entreprise, (PeriodeImpositionPersonnesMorales) periodeImposition, dateTraitement, r);
 		assertNotNull(tacheEnvoi);
 		assertTache(TypeEtatTache.EN_INSTANCE, Tache.getDefaultEcheance(dateTraitement), date(2014, 1, 1), date(2014, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
-		            TypeDocument.DECLARATION_IMPOT_PM, tacheEnvoi);
+		            TypeDocument.DECLARATION_IMPOT_PM_BATCH, tacheEnvoi);
 	}
 
 	@Test
@@ -308,7 +308,7 @@ public class DeterminationDIsPMAEmettreProcessorTest extends BusinessTest {
 	public void testTraiterPeriodeImpositionTacheDejaTraitee() throws Exception {
 
 		final PeriodeFiscale periode = addPeriodeFiscale(2014);
-		addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM, periode);
+		addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, periode);
 
 		final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
 
@@ -327,7 +327,7 @@ public class DeterminationDIsPMAEmettreProcessorTest extends BusinessTest {
 		final RegDate dateEcheanceExistante = dateTraitement.addDays(-50);
 		addTacheEnvoiDIPM(TypeEtatTache.TRAITE, dateEcheanceExistante, date(2014, 1, 1), date(2014, 12, 31),
 		                  date(2014, 1, 1), date(2014, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
-		                  TypeDocument.DECLARATION_IMPOT_PM, entreprise, CategorieEntreprise.PM, oipm);
+		                  TypeDocument.DECLARATION_IMPOT_PM_BATCH, entreprise, CategorieEntreprise.PM, oipm);
 		hibernateTemplate.flush();
 
 		final List<PeriodeImposition> periodes = periodeImpositionService.determine(entreprise, 2014);
@@ -339,7 +339,7 @@ public class DeterminationDIsPMAEmettreProcessorTest extends BusinessTest {
 		final TacheEnvoiDeclarationImpotPM tacheEnvoi = service.traiterPeriodeImposition(entreprise, (PeriodeImpositionPersonnesMorales) periodeImposition, dateTraitement, r);
 		assertNotNull(tacheEnvoi);
 		assertTache(TypeEtatTache.EN_INSTANCE, Tache.getDefaultEcheance(dateTraitement), date(2014, 1, 1), date(2014, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
-		            TypeDocument.DECLARATION_IMPOT_PM, tacheEnvoi);
+		            TypeDocument.DECLARATION_IMPOT_PM_BATCH, tacheEnvoi);
 	}
 
 	/**
@@ -350,7 +350,7 @@ public class DeterminationDIsPMAEmettreProcessorTest extends BusinessTest {
 	public void testTraiterPeriodeImpositionDuplication() throws Exception {
 
 		final PeriodeFiscale periode = addPeriodeFiscale(2014);
-		addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM, periode);
+		addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, periode);
 
 		final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
 
@@ -369,7 +369,7 @@ public class DeterminationDIsPMAEmettreProcessorTest extends BusinessTest {
 		final RegDate dateEcheanceExistante = dateTraitement.addDays(-50);
 		addTacheEnvoiDIPM(TypeEtatTache.EN_INSTANCE, dateEcheanceExistante, date(2014, 1, 1), date(2014, 12, 31),
 		                  date(2014, 1, 1), date(2014, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
-		                  TypeDocument.DECLARATION_IMPOT_PM, entreprise, CategorieEntreprise.PM, oipm);
+		                  TypeDocument.DECLARATION_IMPOT_PM_BATCH, entreprise, CategorieEntreprise.PM, oipm);
 		hibernateTemplate.flush();
 
 		final List<PeriodeImposition> periodes = periodeImpositionService.determine(entreprise, 2014);
@@ -422,7 +422,7 @@ public class DeterminationDIsPMAEmettreProcessorTest extends BusinessTest {
 
 			addTacheEnvoiDIPM(TypeEtatTache.EN_INSTANCE, date(2015, 1, 5), date(2013, 1, 1), date(2013, 12, 31),
 			                  date(2013, 1, 1), date(2013, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
-			                  TypeDocument.DECLARATION_IMPOT_PM, entreprise, CategorieEntreprise.PM, oipm);
+			                  TypeDocument.DECLARATION_IMPOT_PM_BATCH, entreprise, CategorieEntreprise.PM, oipm);
 
 			final DateRange range = new DateRangeHelper.Range(date(2014, 1, 1), date(2014, 12, 31));        // ne correspond pas du tout
 			assertNull(service.checkExistenceTache(entreprise, range));
@@ -441,7 +441,7 @@ public class DeterminationDIsPMAEmettreProcessorTest extends BusinessTest {
 
 			addTacheEnvoiDIPM(TypeEtatTache.EN_INSTANCE, date(2015, 1, 5), date(2014, 1, 1), date(2014, 12, 31),
 			                  date(2014, 1, 1), date(2014, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
-			                  TypeDocument.DECLARATION_IMPOT_PM, entreprise, CategorieEntreprise.PM, oipm);
+			                  TypeDocument.DECLARATION_IMPOT_PM_BATCH, entreprise, CategorieEntreprise.PM, oipm);
 			hibernateTemplate.flush();
 
 			final DateRange range = new DateRangeHelper.Range(date(2014, 1, 1), date(2014, 12, 31));
@@ -465,7 +465,7 @@ public class DeterminationDIsPMAEmettreProcessorTest extends BusinessTest {
 
 			addTacheEnvoiDIPM(TypeEtatTache.EN_INSTANCE, date(2015, 1, 5), date(2014, 5, 1), date(2014, 12, 31),
 			                  date(2014, 1, 1), date(2014, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
-			                  TypeDocument.DECLARATION_IMPOT_PM, entreprise, CategorieEntreprise.PM, oipm);
+			                  TypeDocument.DECLARATION_IMPOT_PM_BATCH, entreprise, CategorieEntreprise.PM, oipm);
 			hibernateTemplate.flush();
 
 			final DateRange range = new DateRangeHelper.Range(date(2014, 1, 1), date(2014, 12, 31));
@@ -489,7 +489,7 @@ public class DeterminationDIsPMAEmettreProcessorTest extends BusinessTest {
 
 			addTacheEnvoiDIPM(TypeEtatTache.TRAITE, date(2015, 1, 5), date(2014, 5, 1), date(2014, 12, 31),
 			                  date(2014, 1, 1), date(2014, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
-			                  TypeDocument.DECLARATION_IMPOT_PM, entreprise, CategorieEntreprise.PM, oipm);
+			                  TypeDocument.DECLARATION_IMPOT_PM_BATCH, entreprise, CategorieEntreprise.PM, oipm);
 			hibernateTemplate.flush();
 
 			final DateRange range = new DateRangeHelper.Range(date(2014, 1, 1), date(2014, 12, 31));
@@ -503,7 +503,7 @@ public class DeterminationDIsPMAEmettreProcessorTest extends BusinessTest {
 	public void testAnnulationDeclarationSansPeriodeCorrespondante() throws Exception {
 
 		final PeriodeFiscale periode2014 = addPeriodeFiscale(2014);
-		final ModeleDocument modele2014 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM, periode2014);
+		final ModeleDocument modele2014 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, periode2014);
 		final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
 
 		// Un contribuable non-assujetti, mais avec une déclaration d'impôt (invalide) pré-existante
@@ -545,7 +545,7 @@ public class DeterminationDIsPMAEmettreProcessorTest extends BusinessTest {
 	public void testAnnulationDeclarationSansPeriodeMaisAvecTacheAnnulationPreexistante() throws Exception {
 
 		final PeriodeFiscale periode2014 = addPeriodeFiscale(2014);
-		final ModeleDocument modele2014 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM, periode2014);
+		final ModeleDocument modele2014 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, periode2014);
 		final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
 
 		// Un contribuable non-assujetti, mais avec une déclaration d'impôt (invalide) pré-existante
@@ -593,7 +593,7 @@ public class DeterminationDIsPMAEmettreProcessorTest extends BusinessTest {
 		final RegDate dateTraitement = RegDate.get();
 		addTacheEnvoiDIPM(TypeEtatTache.EN_INSTANCE, dateTraitement.addDays(-41), date(2014, 1, 1), date(2014, 12, 31),
 		                  date(2014, 1, 1), date(2014, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
-		                  TypeDocument.DECLARATION_IMPOT_PM, entreprise, CategorieEntreprise.PM, oipm);
+		                  TypeDocument.DECLARATION_IMPOT_PM_BATCH, entreprise, CategorieEntreprise.PM, oipm);
 		hibernateTemplate.flush();
 
 		final DeterminationDIsPMResults rapport = new DeterminationDIsPMResults(2014, dateTraitement, 1, tiersService, adresseService);
@@ -636,7 +636,7 @@ public class DeterminationDIsPMAEmettreProcessorTest extends BusinessTest {
 		final RegDate dateTraitement = RegDate.get();
 		final TacheEnvoiDeclarationImpotPM tache = addTacheEnvoiDIPM(TypeEtatTache.TRAITE, dateTraitement.addDays(-41), date(2014, 1, 1), date(2014, 12, 31),
 		                                                             date(2014, 1, 1), date(2014, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
-		                                                             TypeDocument.DECLARATION_IMPOT_PM, entreprise, CategorieEntreprise.PM, oipm);
+		                                                             TypeDocument.DECLARATION_IMPOT_PM_BATCH, entreprise, CategorieEntreprise.PM, oipm);
 		hibernateTemplate.flush();
 
 		final DeterminationDIsPMResults rapport = new DeterminationDIsPMResults(2014, dateTraitement, 1, tiersService, adresseService);
@@ -678,7 +678,7 @@ public class DeterminationDIsPMAEmettreProcessorTest extends BusinessTest {
 		final RegDate dateTraitement = RegDate.get();
 		final TacheEnvoiDeclarationImpotPM tache = addTacheEnvoiDIPM(TypeEtatTache.EN_INSTANCE, dateTraitement.addDays(-41), date(2014, 1, 1), date(2014, 9, 30),
 		                                                             date(2014, 1, 1), date(2014, 9, 30), TypeContribuable.VAUDOIS_ORDINAIRE,
-		                                                             TypeDocument.DECLARATION_IMPOT_PM, entreprise, CategorieEntreprise.PM, oipm);
+		                                                             TypeDocument.DECLARATION_IMPOT_PM_BATCH, entreprise, CategorieEntreprise.PM, oipm);
 		hibernateTemplate.flush();
 
 		final DeterminationDIsPMResults rapport = new DeterminationDIsPMResults(2014, dateTraitement, 1, tiersService, adresseService);
@@ -719,7 +719,7 @@ public class DeterminationDIsPMAEmettreProcessorTest extends BusinessTest {
 		final RegDate dateTraitement = RegDate.get();
 		final TacheEnvoiDeclarationImpotPM tache = addTacheEnvoiDIPM(TypeEtatTache.TRAITE, dateTraitement.addDays(-41), date(2014, 1, 1), date(2014, 12, 31),
 		                                                             date(2014, 1, 1), date(2014, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
-		                                                             TypeDocument.DECLARATION_IMPOT_PM, entreprise, CategorieEntreprise.PM, oipm);
+		                                                             TypeDocument.DECLARATION_IMPOT_PM_BATCH, entreprise, CategorieEntreprise.PM, oipm);
 		hibernateTemplate.flush();
 
 		final DeterminationDIsPMResults rapport = new DeterminationDIsPMResults(2014, dateTraitement, 1, tiersService, adresseService);
@@ -745,7 +745,7 @@ public class DeterminationDIsPMAEmettreProcessorTest extends BusinessTest {
 	public void testIgnoreDeclarationAnnulee() throws Exception {
 
 		final PeriodeFiscale periode2014 = addPeriodeFiscale(2014);
-		final ModeleDocument modele2014 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM, periode2014);
+		final ModeleDocument modele2014 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, periode2014);
 		final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
 
 		// Un contribuable assujetti, mais avec une déclaration d'impôt (annulée) pré-existante
@@ -798,7 +798,7 @@ public class DeterminationDIsPMAEmettreProcessorTest extends BusinessTest {
 				// tâche pour laquelle le type de document n'est pas le bon...
 				addTacheEnvoiDIPM(TypeEtatTache.EN_INSTANCE, null, date(2014, 1, 1), date(2014, 12, 31),
 				                  date(2014, 1, 1), date(2014, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
-				                  TypeDocument.DECLARATION_IMPOT_APM, entreprise, CategorieEntreprise.DPAPM, oipm);
+				                  TypeDocument.DECLARATION_IMPOT_APM_BATCH, entreprise, CategorieEntreprise.DPAPM, oipm);
 				return entreprise.getNumero();
 			}
 		});
@@ -827,7 +827,7 @@ public class DeterminationDIsPMAEmettreProcessorTest extends BusinessTest {
 					final TacheEnvoiDeclarationImpotPM tacheEnvoi = (TacheEnvoiDeclarationImpotPM) tache;
 					assertEquals(date(2014, 1, 1), tacheEnvoi.getDateDebut());
 					assertEquals(date(2014, 12, 31), tacheEnvoi.getDateFin());
-					assertEquals(TypeDocument.DECLARATION_IMPOT_APM, tacheEnvoi.getTypeDocument());
+					assertEquals(TypeDocument.DECLARATION_IMPOT_APM_BATCH, tacheEnvoi.getTypeDocument());
 					assertEquals(CategorieEntreprise.DPAPM, tacheEnvoi.getCategorieEntreprise());
 				}
 				{
@@ -839,7 +839,7 @@ public class DeterminationDIsPMAEmettreProcessorTest extends BusinessTest {
 					final TacheEnvoiDeclarationImpotPM tacheEnvoi = (TacheEnvoiDeclarationImpotPM) tache;
 					assertEquals(date(2014, 1, 1), tacheEnvoi.getDateDebut());
 					assertEquals(date(2014, 12, 31), tacheEnvoi.getDateFin());
-					assertEquals(TypeDocument.DECLARATION_IMPOT_PM, tacheEnvoi.getTypeDocument());
+					assertEquals(TypeDocument.DECLARATION_IMPOT_PM_BATCH, tacheEnvoi.getTypeDocument());
 					assertEquals(CategorieEntreprise.PM, tacheEnvoi.getCategorieEntreprise());
 				}
 			}
@@ -871,7 +871,7 @@ public class DeterminationDIsPMAEmettreProcessorTest extends BusinessTest {
 				// tâche pour laquelle les dates et le type de document sont bons, mais pas la catégorie d'entreprise
 				addTacheEnvoiDIPM(TypeEtatTache.EN_INSTANCE, null, date(2014, 1, 1), date(2014, 12, 31),
 				                  date(2014, 1, 1), date(2014, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
-				                  TypeDocument.DECLARATION_IMPOT_PM, entreprise, CategorieEntreprise.DPAPM, oipm);
+				                  TypeDocument.DECLARATION_IMPOT_PM_BATCH, entreprise, CategorieEntreprise.DPAPM, oipm);
 				return entreprise.getNumero();
 			}
 		});
@@ -899,7 +899,7 @@ public class DeterminationDIsPMAEmettreProcessorTest extends BusinessTest {
 					final TacheEnvoiDeclarationImpotPM tacheEnvoi = (TacheEnvoiDeclarationImpotPM) tache;
 					assertEquals(date(2014, 1, 1), tacheEnvoi.getDateDebut());
 					assertEquals(date(2014, 12, 31), tacheEnvoi.getDateFin());
-					assertEquals(TypeDocument.DECLARATION_IMPOT_PM, tacheEnvoi.getTypeDocument());
+					assertEquals(TypeDocument.DECLARATION_IMPOT_PM_BATCH, tacheEnvoi.getTypeDocument());
 					assertEquals(CategorieEntreprise.PM, tacheEnvoi.getCategorieEntreprise());          // donnée corrigée
 				}
 			}
@@ -1006,7 +1006,7 @@ public class DeterminationDIsPMAEmettreProcessorTest extends BusinessTest {
 		assertEquals(date(2015, 10, 31), traite.dateFin);
 		assertEquals(DeterminationDIsPMResults.TraiteType.TACHE_ENVOI_CREEE, traite.raison);
 		assertEquals(TypeContribuable.VAUDOIS_ORDINAIRE, traite.typeContribuable);
-		assertEquals(TypeDocument.DECLARATION_IMPOT_PM, traite.typeDocument);
+		assertEquals(TypeDocument.DECLARATION_IMPOT_PM_BATCH, traite.typeDocument);
 
 		// vérification en base -> une tâche d'envoi de DI
 		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {

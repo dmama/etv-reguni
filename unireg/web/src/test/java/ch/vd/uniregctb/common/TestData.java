@@ -47,6 +47,7 @@ import ch.vd.uniregctb.type.FormeJuridique;
 import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.ModeCommunication;
 import ch.vd.uniregctb.type.ModeImposition;
+import ch.vd.uniregctb.type.ModeleFeuille;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.PeriodiciteDecompte;
@@ -576,7 +577,8 @@ public class TestData {
 		mfd0.setId(1L);
 		mfd0.setIntituleFeuille("Déclaration d'impot standard");
 		mfd0.setLogModifDate(new Timestamp(1199142000000L));
-		mfd0.setNumeroFormulaire("210");
+		mfd0.setNoCADEV(ModeleFeuille.ANNEXE_210.getNoCADEV());
+		mfd0.setNoFormulaireACI(ModeleFeuille.ANNEXE_210.getNoFormulaireACI());
 		md0.addModeleFeuilleDocument(mfd0);
 		md0 = hibernateTemplate.merge(md0);
 
@@ -584,7 +586,8 @@ public class TestData {
 		mfd1.setId(2L);
 		mfd1.setIntituleFeuille("Annexe 1");
 		mfd1.setLogModifDate(new Timestamp(1199142000000L));
-		mfd1.setNumeroFormulaire("220");
+		mfd1.setNoCADEV(ModeleFeuille.ANNEXE_220.getNoCADEV());
+		mfd1.setNoFormulaireACI(ModeleFeuille.ANNEXE_220.getNoFormulaireACI());
 		md0.addModeleFeuilleDocument(mfd1);
 		md0 = hibernateTemplate.merge(md0);
 
@@ -592,7 +595,8 @@ public class TestData {
 		mfd2.setId(3L);
 		mfd2.setIntituleFeuille("Annexe 2 et 3");
 		mfd2.setLogModifDate(new Timestamp(1199142000000L));
-		mfd2.setNumeroFormulaire("230");
+		mfd2.setNoCADEV(ModeleFeuille.ANNEXE_230.getNoCADEV());
+		mfd2.setNoFormulaireACI(ModeleFeuille.ANNEXE_230.getNoFormulaireACI());
 		md0.addModeleFeuilleDocument(mfd2);
 		md0 = hibernateTemplate.merge(md0);
 
@@ -600,7 +604,8 @@ public class TestData {
 		mfd3.setId(4L);
 		mfd3.setIntituleFeuille("Annexe 4 et 5");
 		mfd3.setLogModifDate(new Timestamp(1199142000000L));
-		mfd3.setNumeroFormulaire("240");
+		mfd3.setNoCADEV(ModeleFeuille.ANNEXE_240.getNoCADEV());
+		mfd3.setNoFormulaireACI(ModeleFeuille.ANNEXE_240.getNoFormulaireACI());
 		md0.addModeleFeuilleDocument(mfd3);
 		md0 = hibernateTemplate.merge(md0);
 
@@ -608,7 +613,8 @@ public class TestData {
 		mfd4.setId(5L);
 		mfd4.setIntituleFeuille("Déclaration d'impot vaud tax");
 		mfd4.setLogModifDate(new Timestamp(1199142000000L));
-		mfd4.setNumeroFormulaire("250");
+		mfd4.setNoCADEV(ModeleFeuille.ANNEXE_250.getNoCADEV());
+		mfd4.setNoFormulaireACI(ModeleFeuille.ANNEXE_250.getNoFormulaireACI());
 		md2.addModeleFeuilleDocument(mfd4);
 		md2 = hibernateTemplate.merge(md2);
 
@@ -616,7 +622,8 @@ public class TestData {
 		mfd5.setId(6L);
 		mfd5.setIntituleFeuille("Déclaration d'impot standard");
 		mfd5.setLogModifDate(new Timestamp(1199142000000L));
-		mfd5.setNumeroFormulaire("210");
+		mfd5.setNoCADEV(ModeleFeuille.ANNEXE_210.getNoCADEV());
+		mfd5.setNoFormulaireACI(ModeleFeuille.ANNEXE_210.getNoFormulaireACI());
 		md3.addModeleFeuilleDocument(mfd5);
 		md3 = hibernateTemplate.merge(md3);
 
@@ -624,7 +631,8 @@ public class TestData {
 		mfd6.setId(10L);
 		mfd6.setIntituleFeuille("Annexe dépense");
 		mfd6.setLogModifDate(new Timestamp(1199142000000L));
-		mfd6.setNumeroFormulaire("270");
+		mfd6.setNoCADEV(ModeleFeuille.ANNEXE_270.getNoCADEV());
+		mfd6.setNoFormulaireACI(ModeleFeuille.ANNEXE_270.getNoFormulaireACI());
 		md3.addModeleFeuilleDocument(mfd6);
 		md3 = hibernateTemplate.merge(md3);
 
@@ -632,7 +640,8 @@ public class TestData {
 		mfd7.setId(11L);
 		mfd7.setIntituleFeuille("Déclaration d'impot HC");
 		mfd7.setLogModifDate(new Timestamp(1199142000000L));
-		mfd7.setNumeroFormulaire("200");
+		mfd7.setNoCADEV(ModeleFeuille.ANNEXE_200.getNoCADEV());
+		mfd7.setNoFormulaireACI(ModeleFeuille.ANNEXE_200.getNoFormulaireACI());
 		md4.addModeleFeuilleDocument(mfd7);
 		md4 = hibernateTemplate.merge(md4);
 
@@ -640,7 +649,8 @@ public class TestData {
 		mfd8.setId(12L);
 		mfd8.setIntituleFeuille("Déclaration d'impot standard");
 		mfd8.setLogModifDate(new Timestamp(1199142000000L));
-		mfd8.setNumeroFormulaire("210");
+		mfd8.setNoCADEV(ModeleFeuille.ANNEXE_210.getNoCADEV());
+		mfd8.setNoFormulaireACI(ModeleFeuille.ANNEXE_210.getNoFormulaireACI());
 		md5.addModeleFeuilleDocument(mfd8);
 		md5 = hibernateTemplate.merge(md5);
 
@@ -648,7 +658,8 @@ public class TestData {
 		mfd9.setId(13L);
 		mfd9.setIntituleFeuille("Annexe 1");
 		mfd9.setLogModifDate(new Timestamp(1199142000000L));
-		mfd9.setNumeroFormulaire("220");
+		mfd9.setNoCADEV(ModeleFeuille.ANNEXE_220.getNoCADEV());
+		mfd9.setNoFormulaireACI(ModeleFeuille.ANNEXE_220.getNoFormulaireACI());
 		md5.addModeleFeuilleDocument(mfd9);
 		md5 = hibernateTemplate.merge(md5);
 
@@ -656,7 +667,8 @@ public class TestData {
 		mfd10.setId(14L);
 		mfd10.setIntituleFeuille("Annexe 2 et 3");
 		mfd10.setLogModifDate(new Timestamp(1199142000000L));
-		mfd10.setNumeroFormulaire("230");
+		mfd10.setNoCADEV(ModeleFeuille.ANNEXE_230.getNoCADEV());
+		mfd10.setNoFormulaireACI(ModeleFeuille.ANNEXE_230.getNoFormulaireACI());
 		md5.addModeleFeuilleDocument(mfd10);
 		md5 = hibernateTemplate.merge(md5);
 
@@ -664,7 +676,8 @@ public class TestData {
 		mfd11.setId(15L);
 		mfd11.setIntituleFeuille("Annexe 4 et 5");
 		mfd11.setLogModifDate(new Timestamp(1199142000000L));
-		mfd11.setNumeroFormulaire("240");
+		mfd11.setNoCADEV(ModeleFeuille.ANNEXE_240.getNoCADEV());
+		mfd11.setNoFormulaireACI(ModeleFeuille.ANNEXE_240.getNoFormulaireACI());
 		md5.addModeleFeuilleDocument(mfd11);
 		md5 = hibernateTemplate.merge(md5);
 
@@ -672,7 +685,8 @@ public class TestData {
 		mfd12.setId(16L);
 		mfd12.setIntituleFeuille("Déclaration d'impot vaud tax");
 		mfd12.setLogModifDate(new Timestamp(1199142000000L));
-		mfd12.setNumeroFormulaire("250");
+		mfd12.setNoCADEV(ModeleFeuille.ANNEXE_250.getNoCADEV());
+		mfd12.setNoFormulaireACI(ModeleFeuille.ANNEXE_250.getNoFormulaireACI());
 		md7.addModeleFeuilleDocument(mfd12);
 		md7 = hibernateTemplate.merge(md7);
 
@@ -680,7 +694,8 @@ public class TestData {
 		mfd13.setId(17L);
 		mfd13.setIntituleFeuille("Déclaration d'impot standard");
 		mfd13.setLogModifDate(new Timestamp(1199142000000L));
-		mfd13.setNumeroFormulaire("210");
+		mfd13.setNoCADEV(ModeleFeuille.ANNEXE_210.getNoCADEV());
+		mfd13.setNoFormulaireACI(ModeleFeuille.ANNEXE_210.getNoFormulaireACI());
 		md8.addModeleFeuilleDocument(mfd13);
 		md8 = hibernateTemplate.merge(md8);
 
@@ -688,7 +703,8 @@ public class TestData {
 		mfd14.setId(18L);
 		mfd14.setIntituleFeuille("Annexe 1");
 		mfd14.setLogModifDate(new Timestamp(1199142000000L));
-		mfd14.setNumeroFormulaire("220");
+		mfd14.setNoCADEV(ModeleFeuille.ANNEXE_220.getNoCADEV());
+		mfd14.setNoFormulaireACI(ModeleFeuille.ANNEXE_220.getNoFormulaireACI());
 		md8.addModeleFeuilleDocument(mfd14);
 		md8 = hibernateTemplate.merge(md8);
 
@@ -696,7 +712,8 @@ public class TestData {
 		mfd15.setId(19L);
 		mfd15.setIntituleFeuille("Annexe 2 et 3");
 		mfd15.setLogModifDate(new Timestamp(1199142000000L));
-		mfd15.setNumeroFormulaire("230");
+		mfd15.setNoCADEV(ModeleFeuille.ANNEXE_230.getNoCADEV());
+		mfd15.setNoFormulaireACI(ModeleFeuille.ANNEXE_230.getNoFormulaireACI());
 		md8.addModeleFeuilleDocument(mfd15);
 		md8 = hibernateTemplate.merge(md8);
 
@@ -704,7 +721,8 @@ public class TestData {
 		mfd16.setId(20L);
 		mfd16.setIntituleFeuille("Annexe 4 et 5");
 		mfd16.setLogModifDate(new Timestamp(1199142000000L));
-		mfd16.setNumeroFormulaire("240");
+		mfd16.setNoCADEV(ModeleFeuille.ANNEXE_240.getNoCADEV());
+		mfd16.setNoFormulaireACI(ModeleFeuille.ANNEXE_240.getNoFormulaireACI());
 		md8.addModeleFeuilleDocument(mfd16);
 		md8 = hibernateTemplate.merge(md8);
 
@@ -712,7 +730,8 @@ public class TestData {
 		mfd17.setId(21L);
 		mfd17.setIntituleFeuille("Annexe dépense");
 		mfd17.setLogModifDate(new Timestamp(1199142000000L));
-		mfd17.setNumeroFormulaire("270");
+		mfd17.setNoCADEV(ModeleFeuille.ANNEXE_270.getNoCADEV());
+		mfd17.setNoFormulaireACI(ModeleFeuille.ANNEXE_270.getNoFormulaireACI());
 		md8.addModeleFeuilleDocument(mfd17);
 		md8 = hibernateTemplate.merge(md8);
 
@@ -720,7 +739,8 @@ public class TestData {
 		mfd18.setId(22L);
 		mfd18.setIntituleFeuille("Déclaration d'impot HC");
 		mfd18.setLogModifDate(new Timestamp(1199142000000L));
-		mfd18.setNumeroFormulaire("200");
+		mfd18.setNoCADEV(ModeleFeuille.ANNEXE_200.getNoCADEV());
+		mfd18.setNoFormulaireACI(ModeleFeuille.ANNEXE_200.getNoFormulaireACI());
 		md9.addModeleFeuilleDocument(mfd18);
 		md9 = hibernateTemplate.merge(md9);
 
@@ -728,7 +748,8 @@ public class TestData {
 		mfd19.setId(23L);
 		mfd19.setIntituleFeuille("Déclaration d'impot standard");
 		mfd19.setLogModifDate(new Timestamp(1199142000000L));
-		mfd19.setNumeroFormulaire("210");
+		mfd19.setNoCADEV(ModeleFeuille.ANNEXE_210.getNoCADEV());
+		mfd19.setNoFormulaireACI(ModeleFeuille.ANNEXE_210.getNoFormulaireACI());
 		md10.addModeleFeuilleDocument(mfd19);
 		md10 = hibernateTemplate.merge(md10);
 
@@ -736,7 +757,8 @@ public class TestData {
 		mfd20.setId(24L);
 		mfd20.setIntituleFeuille("Annexe 1");
 		mfd20.setLogModifDate(new Timestamp(1199142000000L));
-		mfd20.setNumeroFormulaire("220");
+		mfd20.setNoCADEV(ModeleFeuille.ANNEXE_220.getNoCADEV());
+		mfd20.setNoFormulaireACI(ModeleFeuille.ANNEXE_220.getNoFormulaireACI());
 		md10.addModeleFeuilleDocument(mfd20);
 		md10 = hibernateTemplate.merge(md10);
 
@@ -744,7 +766,8 @@ public class TestData {
 		mfd21.setId(25L);
 		mfd21.setIntituleFeuille("Annexe 2 et 3");
 		mfd21.setLogModifDate(new Timestamp(1199142000000L));
-		mfd21.setNumeroFormulaire("230");
+		mfd21.setNoCADEV(ModeleFeuille.ANNEXE_230.getNoCADEV());
+		mfd21.setNoFormulaireACI(ModeleFeuille.ANNEXE_230.getNoFormulaireACI());
 		md10.addModeleFeuilleDocument(mfd21);
 		md10 = hibernateTemplate.merge(md10);
 
@@ -752,7 +775,8 @@ public class TestData {
 		mfd22.setId(26L);
 		mfd22.setIntituleFeuille("Annexe 4 et 5");
 		mfd22.setLogModifDate(new Timestamp(1199142000000L));
-		mfd22.setNumeroFormulaire("240");
+		mfd22.setNoCADEV(ModeleFeuille.ANNEXE_240.getNoCADEV());
+		mfd22.setNoFormulaireACI(ModeleFeuille.ANNEXE_240.getNoFormulaireACI());
 		md10.addModeleFeuilleDocument(mfd22);
 		md10 = hibernateTemplate.merge(md10);
 
@@ -760,7 +784,8 @@ public class TestData {
 		mfd23.setId(27L);
 		mfd23.setIntituleFeuille("Annexe 1-1");
 		mfd23.setLogModifDate(new Timestamp(1199142000000L));
-		mfd23.setNumeroFormulaire("310");
+		mfd23.setNoCADEV(ModeleFeuille.ANNEXE_310.getNoCADEV());
+		mfd23.setNoFormulaireACI(ModeleFeuille.ANNEXE_310.getNoFormulaireACI());
 		md10.addModeleFeuilleDocument(mfd23);
 		md10 = hibernateTemplate.merge(md10);
 
@@ -768,7 +793,8 @@ public class TestData {
 		mfd24.setId(28L);
 		mfd24.setIntituleFeuille("Déclaration d'impot vaud tax");
 		mfd24.setLogModifDate(new Timestamp(1199142000000L));
-		mfd24.setNumeroFormulaire("250");
+		mfd24.setNoCADEV(ModeleFeuille.ANNEXE_250.getNoCADEV());
+		mfd24.setNoFormulaireACI(ModeleFeuille.ANNEXE_250.getNoFormulaireACI());
 		md12.addModeleFeuilleDocument(mfd24);
 		md12 = hibernateTemplate.merge(md12);
 
@@ -776,7 +802,8 @@ public class TestData {
 		mfd25.setId(29L);
 		mfd25.setIntituleFeuille("Annexe dépense");
 		mfd25.setLogModifDate(new Timestamp(1199142000000L));
-		mfd25.setNumeroFormulaire("270");
+		mfd25.setNoCADEV(ModeleFeuille.ANNEXE_270.getNoCADEV());
+		mfd25.setNoFormulaireACI(ModeleFeuille.ANNEXE_270.getNoFormulaireACI());
 		md13.addModeleFeuilleDocument(mfd25);
 		md13 = hibernateTemplate.merge(md13);
 
@@ -784,7 +811,8 @@ public class TestData {
 		mfd26.setId(30L);
 		mfd26.setIntituleFeuille("Déclaration d'impot HC");
 		mfd26.setLogModifDate(new Timestamp(1199142000000L));
-		mfd26.setNumeroFormulaire("200");
+		mfd26.setNoCADEV(ModeleFeuille.ANNEXE_200.getNoCADEV());
+		mfd26.setNoFormulaireACI(ModeleFeuille.ANNEXE_200.getNoFormulaireACI());
 		md14.addModeleFeuilleDocument(mfd26);
 		md14 = hibernateTemplate.merge(md14);
 

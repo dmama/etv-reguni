@@ -607,7 +607,7 @@ public class EnvoiDeclarationsPMProcessor {
 	 * Requête d'extraction des identifiants de contribuable PM concernés par l'envoi en masse
 	 */
 	private static final String HQL_CTB =
-			"SELECT DISTINCT tache.contribuable.id FROM TacheEnvoiDeclarationImpotPM AS tache WHERE tache.annulationDate IS NULL AND tache.etat = 'EN_INSTANCE' AND tache.dateFin BETWEEN :debut AND :fin AND tache.typeDocument = :typeDoc ORDER BY tache.contribuable.id ASC";
+			"SELECT DISTINCT tache.contribuable.id FROM TacheEnvoiDeclarationImpotPM AS tache WHERE tache.annulationDate IS NULL AND tache.etat = 'EN_INSTANCE' AND tache.dateFin BETWEEN :debut AND :fin AND tache.typeDocument in (:typesDoc) ORDER BY tache.contribuable.id ASC";
 
 	private List<Long> getIdsContribuables(final TypeDeclarationImpotPM typeDeclaration, final int periodeFiscale) {
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
@@ -622,7 +622,7 @@ public class EnvoiDeclarationsPMProcessor {
 						final Query query = session.createQuery(HQL_CTB);
 						query.setParameter("debut", RegDate.get(periodeFiscale, 1, 1));
 						query.setParameter("fin", RegDate.get(periodeFiscale, 12, 31));
-						query.setParameter("typeDoc", typeDeclaration.getTypeDocument());
+						query.setParameterList("typesDoc", typeDeclaration.getTypesDocument());
 						//noinspection unchecked
 						return query.list();
 					}
@@ -635,7 +635,7 @@ public class EnvoiDeclarationsPMProcessor {
 	 * Requête d'extraction des tâches correspondant à un ensembles de contribuables
 	 */
 	private static final String HQL_TACHE =
-			"SELECT tache FROM TacheEnvoiDeclarationImpotPM AS tache WHERE tache.annulationDate IS NULL AND tache.etat = 'EN_INSTANCE' AND tache.dateFin BETWEEN :debut AND :fin AND tache.typeDocument =:typeDoc AND tache.contribuable.id in (:ids) ORDER BY tache.contribuable.id ASC, tache.id ASC";
+			"SELECT tache FROM TacheEnvoiDeclarationImpotPM AS tache WHERE tache.annulationDate IS NULL AND tache.etat = 'EN_INSTANCE' AND tache.dateFin BETWEEN :debut AND :fin AND tache.typeDocument in (:typesDoc) AND tache.contribuable.id in (:ids) ORDER BY tache.contribuable.id ASC, tache.id ASC";
 
 	private Iterator<TacheEnvoiDeclarationImpotPM> getTaches(final TypeDeclarationImpotPM typeDeclaration, final int periodeFiscale, final Collection<Long> idsContribuables) {
 		return hibernateTemplate.execute(new HibernateCallback<Iterator<TacheEnvoiDeclarationImpotPM>>() {
@@ -644,7 +644,7 @@ public class EnvoiDeclarationsPMProcessor {
 				final Query query = session.createQuery(HQL_TACHE);
 				query.setParameter("debut", RegDate.get(periodeFiscale, 1, 1));
 				query.setParameter("fin", RegDate.get(periodeFiscale, 12, 31));
-				query.setParameter("typeDoc", typeDeclaration.getTypeDocument());
+				query.setParameterList("typesDoc", typeDeclaration.getTypesDocument());
 				query.setParameterList("ids", idsContribuables);
 				//noinspection unchecked
 				return query.iterate();
