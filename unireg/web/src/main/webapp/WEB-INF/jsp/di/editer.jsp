@@ -101,7 +101,19 @@
 											              "Imprimer": function() {
 												              // les boutons ne font pas partie de la boîte de dialogue (au niveau du DOM), on peut donc utiliser le sélecteur jQuery normal
 
+												              // correction des nombres de feuilles invalides
 												              var form = dialog.find('#formImpression');
+												              var invalidNumbers = form.find(':text').filter(function() {return !(/^[0-9]+/.test(this.value));});
+												              invalidNumbers.val('0');
+
+												              // il doit y avoir au moins une feuille de demandée
+												              var nbtotal = 0;
+												              form.find(":text").each(function() {nbtotal += Number($(this).val());});
+												              if (nbtotal < 1) {
+													              alert("Il faut sélectionner au moins une feuille à imprimer !");
+													              return;
+												              }
+
 												              var buttons = $('.ui-button');
 												              buttons.each(function () {
 													              if ($(this).text() == 'Imprimer') {
@@ -148,6 +160,18 @@
 													alert('Veuillez préciser votre choix concernant la sauvegarde de type de document');
 												}
 												else {
+
+													// correction des nombres de feuilles invalides
+													var invalidNumbers = form.find(':text').filter(function() {return !(/^[0-9]+/.test(this.value));});
+													invalidNumbers.val('0');
+
+													// il doit y avoir au moins une feuille de demandée
+													var nbtotal = 0;
+													form.find(":text").each(function() {nbtotal += Number($(this).val());});
+													if (nbtotal < 1) {
+														alert("Il faut sélectionner au moins une feuille à imprimer !");
+														return;
+													}
 
 													var buttons = $('.ui-button');
 													buttons.each(function () {
