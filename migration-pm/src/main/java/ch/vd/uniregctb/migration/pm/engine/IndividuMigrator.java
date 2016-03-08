@@ -10,6 +10,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import ch.ech.ech0044.v2.NamedPersonId;
+import ch.ech.ech0044.v2.PersonIdentificationPartner;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
@@ -134,6 +135,47 @@ public class IndividuMigrator extends AbstractEntityMigrator<RegpmIndividu> {
 		return equals;
 	}
 
+	/**
+	 * @return <code>true</code> si la personne rcpers correspond raisonablement bien à l'individu regpm (au cas où l'identifiant regpm aurait été ré-utilisé plus tard dans RCPers)
+	 */
+	private static boolean checkIdentite(RegpmIndividu regpm, PersonIdentificationPartner rcpers, MigrationResultProduction mr) {
+		boolean ok = checkNomPrenom(regpm, rcpers, mr);
+		ok = checkSexe(regpm, rcpers, mr) && ok;
+		ok = checkDateNaissance(regpm, rcpers, mr) && ok;
+		return ok;
+	}
+
+	private static boolean checkNomPrenom(RegpmIndividu regpm, PersonIdentificationPartner rcpers, MigrationResultProduction mr) {
+		final NomPrenom npRegpm = new NomPrenom(regpm.getNom(), regpm.getPrenom());
+		final NomPrenom npRcpers = new NomPrenom(rcpers.getOfficialName(), rcpers.getFirstName());
+		final boolean equals = checkEquality(npRegpm.getNom(), npRcpers.getNom(), NAME_EQUALATOR, false)
+				&& (checkEquality(npRegpm.getPrenom(), npRcpers.getPrenom(), NAME_EQUALATOR, false) || checkEquality(npRegpm.getPrenom(), extractPrenomUsuel(npRcpers.getPrenom()), NAME_EQUALATOR, false));
+		if (!equals) {
+			mr.addMessage(LogCategory.INDIVIDUS_PM, LogLevel.INFO, String.format("Noms différents dans RegPM (%s) et RCPers (%s).", npRegpm, npRcpers));
+		}
+		return equals;
+	}
+
+	private static boolean checkSexe(RegpmIndividu regpm, PersonIdentificationPartner rcpers, MigrationResultProduction mr) {
+		final Sexe sRegpm = regpm.getSexe();
+		final Sexe sRcpers = EchHelper.sexeFromEch44(rcpers.getSex());
+		final boolean equals = checkEquality(sRegpm, sRcpers, ENUM_EQUALATOR, false);
+		if (!equals) {
+			mr.addMessage(LogCategory.INDIVIDUS_PM, LogLevel.INFO, String.format("Sexes différents dans RegPM (%s) et RCPers (%s).", sRegpm, sRcpers));
+		}
+		return equals;
+	}
+
+	private static boolean checkDateNaissance(RegpmIndividu regpm, PersonIdentificationPartner rcpers, MigrationResultProduction mr) {
+		final RegDate dRegpm = regpm.getDateNaissance();
+		final RegDate dRcpers = EchHelper.partialDateFromEch44(rcpers.getDateOfBirth());
+		final boolean equals = checkEquality(dRegpm, dRcpers, DATE_EQUALATOR, false);
+		if (!equals) {
+			mr.addMessage(LogCategory.INDIVIDUS_PM, LogLevel.INFO, String.format("Dates de naissance différentes dans RegPM (%s) et RCPers (%s).", dRegpm, dRcpers));
+		}
+		return equals;
+	}
+
 	private static boolean checkIdentite(RegpmIndividu regpm, PersonnePhysique unireg, MigrationResultProduction mr) {
 		boolean ok = checkNomPrenom(regpm, unireg, mr);
 		ok = checkSexe(regpm, unireg, mr) && ok;
@@ -235,7 +277,7 @@ public class IndividuMigrator extends AbstractEntityMigrator<RegpmIndividu> {
 			mr.addMessage(LogCategory.INDIVIDUS_PM, LogLevel.INFO, "Individu trouvé avec le même identifiant et la même identité dans RCPers.");
 		}
 		else {
-			trouveRCPersId = searchDansRCPers(regpm.getNom(), regpm.getPrenom(), regpm.getSexe(), regpm.getDateNaissance(), mr);
+			trouveRCPersId = searchDansRCPers(regpm, mr);
 		}
 
 		// passage du civil au fiscal
@@ -243,7 +285,7 @@ public class IndividuMigrator extends AbstractEntityMigrator<RegpmIndividu> {
 		if (trouveRCPersId != null) {
 			ppExistant = migrationContexte.getTiersDAO().getPPByNumeroIndividu(trouveRCPersId.getLeft());
 		}
-		else {
+		else  {
 			ppExistant = rechercheNonHabitantExistant(regpm, mr);
 		}
 
@@ -337,6 +379,17 @@ public class IndividuMigrator extends AbstractEntityMigrator<RegpmIndividu> {
 	@Nullable
 	private PersonnePhysique rechercheNonHabitantExistant(RegpmIndividu regpm, MigrationResultProduction mr) {
 
+		if (regpm.getNom() == null || regpm.getPrenom() == null || regpm.getSexe() == null || regpm.getDateNaissance() == null) {
+			mr.addMessage(LogCategory.INDIVIDUS_PM, LogLevel.WARN,
+			              String.format("Un des éléments nom (%s), prénom (%s), sexe (%s) ou date de naissance (%s) au moins n'est pas renseigné, pas de recherche dans Unireg avec ces éléments.",
+			                            regpm.getNom(),
+			                            regpm.getPrenom(),
+			                            regpm.getSexe(),
+			                            StringRenderers.DATE_RENDERER.toString(regpm.getDateNaissance())));
+
+			return null;
+		}
+
 		final PersonnePhysique ppExistant;
 		final NonHabitantIndex.NonHabitantSearchParameters params = new NonHabitantIndex.NonHabitantSearchParameters(regpm.getNom(), regpm.getPrenom(), regpm.getSexe(), regpm.getDateNaissance());
 		if (params.isEmpty()) {
@@ -360,11 +413,24 @@ public class IndividuMigrator extends AbstractEntityMigrator<RegpmIndividu> {
 				// [SIFISC-18034][SIFISC-17354] Vérification additionnelle
 				final PersonnePhysique candidatExistant = (PersonnePhysique) migrationContexte.getTiersDAO().get(idsPP.get(0));
 				final boolean ok = candidatExistant != null && checkIdentite(regpm, candidatExistant, mr);
-				if (ok) {
-					ppExistant = candidatExistant;
+				if (candidatExistant != null) {
+					if (checkIdentite(regpm, candidatExistant, mr)) {
+						ppExistant = candidatExistant;
+					}
+					else {
+						mr.addMessage(LogCategory.INDIVIDUS_PM, LogLevel.WARN,
+						              String.format("Candidat non-habitant Unireg trouvé (%s) mais sans correspondance exacte avec les données de nom (%s -> %s), prénom (%s -> %s), sexe (%s -> %s) et date de naissance (%s -> %s).",
+						                            FormatNumeroHelper.numeroCTBToDisplay(candidatExistant.getNumero()),
+						                            regpm.getNom(), candidatExistant.getNom(),
+						                            regpm.getPrenom(), candidatExistant.getTousPrenoms(),
+						                            regpm.getSexe(), candidatExistant.getSexe(),
+						                            StringRenderers.DATE_RENDERER.toString(regpm.getDateNaissance()), StringRenderers.DATE_RENDERER.toString(candidatExistant.getDateNaissance())));
+						ppExistant = null;
+					}
 				}
 				else {
-					mr.addMessage(LogCategory.INDIVIDUS_PM, LogLevel.WARN, String.format("Candidat non-habitant Unireg trouvé mais sans correspondance exacte avec les données de nom (%s), prénom (%s), sexe (%s) et date de naissance (%s).",
+					mr.addMessage(LogCategory.INDIVIDUS_PM, LogLevel.WARN, String.format("Candidat non-habitant Unireg trouvé (%s) dans l'indexeur mais sans correspondance avec un contribuable en base (bug ?) pour les nom (%s), prénom (%s), sexe (%s) et date de naissance (%s).",
+					                                                                     FormatNumeroHelper.numeroCTBToDisplay(idsPP.get(0)),
 					                                                                     regpm.getNom(), regpm.getPrenom(), regpm.getSexe(), StringRenderers.DATE_RENDERER.toString(regpm.getDateNaissance())));
 					ppExistant = null;
 				}
@@ -396,23 +462,32 @@ public class IndividuMigrator extends AbstractEntityMigrator<RegpmIndividu> {
 	}
 
 	/**
-	 * Recherche dans RCPers un individu correspondant aux caractèristiques données
-	 * @param nom nom recherché
-	 * @param prenom prénom recherché
-	 * @param sexe sexe recherché
-	 * @param dateNaissance date de naissance recherchée
+	 * Recherche dans RCPers un individu correspondant aux caractèristiques de l'individu RegPM donné
+	 * @param regpm individu de RegPM
 	 * @param mr collecteur de messages de migration
 	 * @return un couple (id,flagHabitant) si une seule personne a été trouvée, <code>null</code> sinon
 	 */
 	@Nullable
-	private Pair<Long, Boolean> searchDansRCPers(String nom, String prenom, Sexe sexe, RegDate dateNaissance, MigrationResultProduction mr) {
+	private Pair<Long, Boolean> searchDansRCPers(RegpmIndividu regpm, MigrationResultProduction mr) {
+
+		final String nom = regpm.getNom();
+		final String prenom = regpm.getPrenom();
+		final Sexe sexe = regpm.getSexe();
+		final RegDate dateNaissance = regpm.getDateNaissance();
+		if (nom == null || prenom == null || sexe == null || dateNaissance == null) {
+			mr.addMessage(LogCategory.INDIVIDUS_PM, LogLevel.WARN,
+			              String.format("Un des éléments nom (%s), prénom (%s), sexe (%s) ou date de naissance (%s) au moins n'est pas renseigné, pas de recherche dans RCPers avec ces éléments.",
+			                            regpm.getNom(),
+			                            regpm.getPrenom(),
+			                            regpm.getSexe(),
+			                            StringRenderers.DATE_RENDERER.toString(regpm.getDateNaissance())));
+
+			return null;
+		}
+
 		final RegDate dateNaissanceMin;
 		final RegDate dateNaissanceMax;
-		if (dateNaissance == null) {
-			dateNaissanceMin = null;
-			dateNaissanceMax = null;
-		}
-		else if (dateNaissance.isPartial()) {
+		if (dateNaissance.isPartial()) {
 			final RegDate[] range = dateNaissance.getPartialDateRange();
 			dateNaissanceMin = range[0];
 			dateNaissanceMax = range[1];
@@ -445,12 +520,24 @@ public class IndividuMigrator extends AbstractEntityMigrator<RegpmIndividu> {
 			return null;
 		}
 
-		// un seul résultat -> ok
+		// un seul résultat -> ok, à un dernier contrôle près
 		final FoundPerson fp = found.getListOfResults().getFoundPerson().get(0);
 		final long id = idExtractor.apply(fp);
-		mr.addMessage(LogCategory.INDIVIDUS_PM, LogLevel.INFO, String.format("Trouvé un individu (%d) de RCPers pour le nom (%s), prénom (%s), sexe (%s) et date de naissance (%s).",
-		                                                                     id, nom, prenom, sexe, StringRenderers.DATE_RENDERER.toString(dateNaissance)));
+		final PersonIdentificationPartner identification = fp.getPerson().getIdentification();
+		if (checkIdentite(regpm, identification, mr)) {
+			mr.addMessage(LogCategory.INDIVIDUS_PM, LogLevel.INFO, String.format("Trouvé un individu (%d) de RCPers pour le nom (%s), prénom (%s), sexe (%s) et date de naissance (%s).",
+			                                                                     id, nom, prenom, sexe, StringRenderers.DATE_RENDERER.toString(dateNaissance)));
 
-		return Pair.of(id, fp.getResidence() != null);
+			return Pair.of(id, fp.getResidence() != null);
+		}
+		else {
+			mr.addMessage(LogCategory.INDIVIDUS_PM, LogLevel.WARN, String.format("Trouvé un individu (%d) de RCPers qui ne correspond pas complètement pour le nom (%s -> %s), prénom (%s -> %s), sexe (%s -> %s) et date de naissance (%s -> %s).",
+			                                                                     id, nom, identification.getOfficialName(),
+			                                                                     prenom, identification.getFirstName(),
+			                                                                     sexe, EchHelper.sexeFromEch44(identification.getSex()),
+			                                                                     StringRenderers.DATE_RENDERER.toString(dateNaissance), StringRenderers.DATE_RENDERER.toString(EchHelper.partialDateFromEch44(identification.getDateOfBirth()))));
+
+			return null;
+		}
 	}
 }
