@@ -88,27 +88,39 @@
 							<span style="color:red;">*</span>
 						</td>
 					</tr>
-					<tr class="<unireg:nextRowClass/>" >
-						<td width="25%"><fmt:message key="label.type.adresse.retour" />&nbsp;:</td>
-						<td width="25%">
-							<%--@elvariable id="typesAdresseRetour" type="java.util.Map<TypeAdresseRetour, String>"--%>
-							<form:select path="typeAdresseRetour" items="${typesAdresseRetour}" />
-						</td>
-						<c:if test="${command.allowedQuittancement && command.dateRetour != null && command.dateRetourProposeeCarDeclarationRetourneeAnnuleeExiste}">
-							<td width="25%"><fmt:message key="label.date.retour" />&nbsp;:</td>
-							<td width="25%">
-								<jsp:include page="/WEB-INF/jsp/include/inputCalendar.jsp">
-									<jsp:param name="path" value="dateRetour" />
-									<jsp:param name="id" value="dateRetour" />
-									<jsp:param name="inputFieldClass" value="flash" />
-								</jsp:include>
-							</td>
-						</c:if>
-						<c:if test="${!command.allowedQuittancement || command.dateRetour == null || !command.dateRetourProposeeCarDeclarationRetourneeAnnuleeExiste}">
-							<td width="25%">&nbsp;</td>
-							<td width="25%">&nbsp;</td>
-						</c:if>
-					</tr>
+					<c:if test="${command.typeContribuable == 'PP' || (command.allowedQuittancement && command.dateRetour != null && command.dateRetourProposeeCarDeclarationRetourneeAnnuleeExiste)}">
+						<tr class="<unireg:nextRowClass/>" >
+							<c:choose>
+								<c:when test="${command.typeContribuable == 'PP'}">
+									<td width="25%"><fmt:message key="label.type.adresse.retour" />&nbsp;:</td>
+									<td width="25%">
+											<%--@elvariable id="typesAdresseRetour" type="java.util.Map<TypeAdresseRetour, String>"--%>
+										<form:select path="typeAdresseRetour" items="${typesAdresseRetour}" />
+									</td>
+								</c:when>
+								<c:otherwise>
+									<td width="25%">&nbsp;</td>
+									<td width="25%">&nbsp;</td>
+								</c:otherwise>
+							</c:choose>
+							<c:choose>
+								<c:when test="${command.allowedQuittancement && command.dateRetour != null && command.dateRetourProposeeCarDeclarationRetourneeAnnuleeExiste}">
+									<td width="25%"><fmt:message key="label.date.retour" />&nbsp;:</td>
+									<td width="25%">
+										<jsp:include page="/WEB-INF/jsp/include/inputCalendar.jsp">
+											<jsp:param name="path" value="dateRetour" />
+											<jsp:param name="id" value="dateRetour" />
+											<jsp:param name="inputFieldClass" value="flash" />
+										</jsp:include>
+									</td>
+								</c:when>
+								<c:otherwise>
+									<td width="25%">&nbsp;</td>
+									<td width="25%">&nbsp;</td>
+								</c:otherwise>
+							</c:choose>
+						</tr>
+					</c:if>
 				</table>
 
 			</fieldset>
