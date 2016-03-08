@@ -104,7 +104,7 @@ public class ImpressionLettreDecisionDelaiPMHelperImpl extends EditiqueAbstractH
 			final FichierImpression.Document.AccordDelai accordDelai = buildAccordDelai(params);
 			final FichierImpression.Document.AccordDelaiApresSommation sursis = buildSursis(params);
 
-			return new FichierImpression.Document(infoDocument, infoArchivage, infoEnteteDocument, null, null, refusDelai, accordDelai, null, sursis, null, null, null, null, null);
+			return new FichierImpression.Document(infoDocument, infoArchivage, infoEnteteDocument, null, null, refusDelai, accordDelai, null, sursis, null, null, null);
 		}
 		catch (Exception e) {
 			throw new EditiqueException(e);
@@ -119,6 +119,7 @@ public class ImpressionLettreDecisionDelaiPMHelperImpl extends EditiqueAbstractH
 		final Pair<STypeZoneAffranchissement, String> infosAffranchissement = getInformationsAffranchissement(adresseEnvoi, false, ServiceInfrastructureService.noOIPM);
 		infoDoc.setIdEnvoi(infosAffranchissement.getRight());
 		infoDoc.setAffranchissement(new CTypeAffranchissement(infosAffranchissement.getLeft(), null));
+		infoDoc.setVersionXSD(VERSION_XSD);
 
 		infoDoc.setCodDoc(codeDocument);
 		infoDoc.setPopulations(ConstantesEditique.POPULATION_PM);
@@ -149,8 +150,6 @@ public class ImpressionLettreDecisionDelaiPMHelperImpl extends EditiqueAbstractH
 
 		final DeclarationImpotOrdinairePM di = params.getDi();
 		return new FichierImpression.Document.RefusDelai(XmlUtils.regdate2xmlcal(RegDate.get(di.getPeriode().getAnnee())),
-		                                                 String.valueOf(di.getDateDebut().index()),
-		                                                 String.valueOf(di.getDateFin().index()),
 		                                                 String.valueOf(params.getDateDemande().index()));
 	}
 
@@ -160,11 +159,7 @@ public class ImpressionLettreDecisionDelaiPMHelperImpl extends EditiqueAbstractH
 			return null;
 		}
 
-		final DeclarationImpotOrdinairePM di = params.getDi();
-		return new FichierImpression.Document.AccordDelai(XmlUtils.regdate2xmlcal(RegDate.get(di.getPeriode().getAnnee())),
-		                                                  String.valueOf(di.getDateDebut().index()),
-		                                                  String.valueOf(di.getDateFin().index()),
-		                                                  String.valueOf(params.getDateDelaiAccorde().index()));
+		return new FichierImpression.Document.AccordDelai(String.valueOf(params.getDateDelaiAccorde().index()));
 	}
 
 	@Nullable
@@ -175,9 +170,6 @@ public class ImpressionLettreDecisionDelaiPMHelperImpl extends EditiqueAbstractH
 
 		final DeclarationImpotOrdinairePM di = params.getDi();
 		return new FichierImpression.Document.AccordDelaiApresSommation(XmlUtils.regdate2xmlcal(RegDate.get(di.getPeriode().getAnnee())),
-		                                                                String.valueOf(di.getDateDebut().index()),
-		                                                                String.valueOf(di.getDateFin().index()),
-		                                                                String.valueOf(params.getDateDemande().index()),    // on n'a pas cette info...
 		                                                                String.valueOf(params.getDateDemande().index()),
 		                                                                String.valueOf(params.getDateSommation().index()),
 		                                                                String.valueOf(params.getDateDelaiAccorde().index()));

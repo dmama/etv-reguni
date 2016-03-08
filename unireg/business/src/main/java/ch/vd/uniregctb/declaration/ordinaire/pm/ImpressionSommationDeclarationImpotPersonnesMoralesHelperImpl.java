@@ -53,7 +53,7 @@ public class ImpressionSommationDeclarationImpotPersonnesMoralesHelperImpl exten
 			final CTypeInfoArchivage infoArchivage = buildInfoArchivage(getTypeDocumentEditique(), construitCleArchivageDocument(declaration), tiers.getNumero(), dateSommation);
 			final CTypeInfoEnteteDocument infoEnteteDocument = buildInfoEnteteDocument(tiers, dateSommation, TRAITE_PAR, infraService.getACIOIPM());
 			final FichierImpression.Document.Sommation sommation = buildInfoSommation(declaration, dateSommation, batch);
-			return new FichierImpression.Document(infoDocument, infoArchivage, infoEnteteDocument, null, null, null, null, sommation, null, null, null, null, null, null);
+			return new FichierImpression.Document(infoDocument, infoArchivage, infoEnteteDocument, null, null, null, null, sommation, null, null, null, null);
 		}
 		catch (Exception e) {
 			throw new EditiqueException(e);
@@ -68,6 +68,7 @@ public class ImpressionSommationDeclarationImpotPersonnesMoralesHelperImpl exten
 		final Pair<STypeZoneAffranchissement, String> infosAffranchissement = getInformationsAffranchissement(adresseEnvoi, false, ServiceInfrastructureService.noOIPM);
 		infoDoc.setIdEnvoi(infosAffranchissement.getRight());
 		infoDoc.setAffranchissement(new CTypeAffranchissement(infosAffranchissement.getLeft(), null));
+		infoDoc.setVersionXSD(VERSION_XSD);
 
 		infoDoc.setCodDoc(CODE_DOCUMENT_SOMMATION_PM);
 		infoDoc.setPopulations(ConstantesEditique.POPULATION_PM);
@@ -80,8 +81,6 @@ public class ImpressionSommationDeclarationImpotPersonnesMoralesHelperImpl exten
 	private FichierImpression.Document.Sommation buildInfoSommation(DeclarationImpotOrdinairePM declaration, RegDate dateTraitement, boolean batch) {
 		final FichierImpression.Document.Sommation sommation = new FichierImpression.Document.Sommation();
 		sommation.setDateBaseSommation(RegDateHelper.toIndexString(dateTraitement));
-		sommation.setDebutExerciceCommercial(RegDateHelper.toIndexString(declaration.getDateDebutExerciceCommercial()));
-		sommation.setFinExerciceCommercial(RegDateHelper.toIndexString(declaration.getDateFinExerciceCommercial()));
 		sommation.setCodeControleNIP(declaration.getCodeControle());
 		sommation.setPeriodeFiscale(XmlUtils.regdate2xmlcal(RegDate.get(declaration.getPeriode().getAnnee())));
 		return sommation;

@@ -36,6 +36,7 @@ public abstract class EditiqueAbstractHelper {
 	public static final Logger LOGGER = LoggerFactory.getLogger(EditiqueAbstractHelper.class);
 
 	public static final String IMPOT_BENEFICE_CAPITAL = "IMPÔT SUR LE BÉNÉFICE ET LE CAPITAL";
+	public static final String VERSION_XSD = "16.3";
 
 	protected AdresseService adresseService;
 	protected TiersService tiersService;
@@ -135,12 +136,18 @@ public abstract class EditiqueAbstractHelper {
 
 	protected CTypeInfoEnteteDocument buildInfoEnteteDocument(Tiers destinataire, RegDate dateExpedition,
 	                                                          String traitePar, CollectiviteAdministrative expediteur) throws ServiceInfrastructureException, AdresseException {
+		return buildInfoEnteteDocument(destinataire, dateExpedition, traitePar, expediteur, IMPOT_BENEFICE_CAPITAL);
+	}
+
+	protected CTypeInfoEnteteDocument buildInfoEnteteDocument(Tiers destinataire, RegDate dateExpedition,
+	                                                          String traitePar, CollectiviteAdministrative expediteur,
+	                                                          String libelleTitre) throws ServiceInfrastructureException, AdresseException {
 		final CTypeInfoEnteteDocument entete = new CTypeInfoEnteteDocument();
 		entete.setDestinataire(buildDestinataire(destinataire));
 		entete.setExpediteur(buildExpediteur(expediteur, dateExpedition, traitePar));
 		entete.setLigReference(null);
 		entete.setPorteAdresse(null);
-		entete.setLibelleTitre(IMPOT_BENEFICE_CAPITAL);     // valeur par défaut, certains types de document mettront peut-être une autre valeur
+		entete.setLibelleTitre(libelleTitre);
 		return entete;
 	}
 

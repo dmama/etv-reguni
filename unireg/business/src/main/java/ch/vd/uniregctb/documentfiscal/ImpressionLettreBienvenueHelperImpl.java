@@ -42,7 +42,7 @@ public class ImpressionLettreBienvenueHelperImpl extends EditiqueAbstractHelper 
 			final CTypeInfoArchivage infoArchivage = buildInfoArchivage(getTypeDocumentEditique(), construitCleArchivage(lettre), entreprise.getNumero(), dateTraitement);
 			final CTypeInfoEnteteDocument infoEnteteDocument = buildInfoEnteteDocument(entreprise, lettre.getDateEnvoi(), TRAITE_PAR, infraService.getACIOIPM());
 			final FichierImpression.Document.LettreBienvenue lb = new FichierImpression.Document.LettreBienvenue(mapType(lettre.getType()));
-			return new FichierImpression.Document(infoDocument, infoArchivage, infoEnteteDocument, null, null, null, null, null, null, lb, null, null, null, null);
+			return new FichierImpression.Document(infoDocument, infoArchivage, infoEnteteDocument, null, null, null, null, null, null, lb, null, null);
 		}
 		catch (Exception e) {
 			throw new EditiqueException(e);
@@ -57,6 +57,7 @@ public class ImpressionLettreBienvenueHelperImpl extends EditiqueAbstractHelper 
 		final Pair<STypeZoneAffranchissement, String> infosAffranchissement = getInformationsAffranchissement(adresseEnvoi, false, ServiceInfrastructureService.noOIPM);
 		infoDoc.setIdEnvoi(infosAffranchissement.getRight());
 		infoDoc.setAffranchissement(new CTypeAffranchissement(infosAffranchissement.getLeft(), null));
+		infoDoc.setVersionXSD(VERSION_XSD);
 
 		infoDoc.setCodDoc(CODE_DOCUMENT_LETTRE_BIENVENUE);
 		infoDoc.setPopulations(ConstantesEditique.POPULATION_PM);
