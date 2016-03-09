@@ -61,7 +61,7 @@ public class TiersCriteriaValidator implements Validator {
 			if (bean.getDateNaissanceInscriptionRC() != null) {
 				RegDate dateDuJour = RegDate.get();
 				if (bean.getDateNaissanceInscriptionRC().isAfter(dateDuJour)) {
-					errors.rejectValue("dateNaissance", "error.date.naissance.posterieure.date.jour");
+					errors.rejectValue("dateNaissanceInscriptionRC", "error.date.naissance.posterieure.date.jour");
 				}
 			}
 		}
