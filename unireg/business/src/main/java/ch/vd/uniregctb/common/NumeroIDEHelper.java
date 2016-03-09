@@ -5,6 +5,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.Nullable;
 
 public abstract class NumeroIDEHelper {
 
@@ -58,6 +59,7 @@ public abstract class NumeroIDEHelper {
 	 * @param valeurBrutte valeur brutte telle que saisie, avec des points, tirets et/ou espaces
 	 * @return la valeur épurée des points, tirets et espaces (<code>null</code> s'il ne reste plus rien après ça)
 	 */
+	@Nullable
 	public static String normalize(String valeurBrutte) {
 		return valeurBrutte == null
 				? null
@@ -71,6 +73,10 @@ public abstract class NumeroIDEHelper {
 	 */
 	public static boolean isValid(String ide) {
 		final String normalized = normalize(ide);
+		if (normalized == null) {
+			// aucune information intéressante -> ce n'est pas un numéro IDE valide...
+			return false;
+		}
 		final Matcher matcher = IDE_PATTERN.matcher(normalized);
 		if (!matcher.matches()) {
 			// la syntaxe même des lettres et chiffres ne va pas

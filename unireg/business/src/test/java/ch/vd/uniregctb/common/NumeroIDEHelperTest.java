@@ -37,6 +37,9 @@ public class NumeroIDEHelperTest extends WithoutSpringTest {
 
 	@Test
 	public void testIsValid() throws Exception {
+		assertFalse(NumeroIDEHelper.isValid("..-..-"));
+		assertFalse(NumeroIDEHelper.isValid(null));
+
 		assertFalse(NumeroIDEHelper.isValid("ZZZ-999.999.996"));
 		assertFalse(NumeroIDEHelper.isValid("ZZZ999999996"));
 		assertTrue(NumeroIDEHelper.isValid("ADM-999.999.996"));

@@ -26,6 +26,7 @@ import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
+import ch.vd.uniregctb.common.NumeroIDEHelper;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.Tiers;
@@ -156,9 +157,9 @@ public abstract class EditiqueAbstractHelper {
 		destinataire.setAdresse(buildAdresse(tiers));
 		destinataire.setNumContribuable(FormatNumeroHelper.numeroCTBToDisplay(tiers.getNumero()));
 		if (tiers instanceof Entreprise) {
-			final String ide = FormatNumeroHelper.formatNumIDE(tiersService.getNumeroIDE((Entreprise) tiers));
-			if (StringUtils.isNotBlank(ide)) {
-				destinataire.getNumIDE().add(ide);
+			final String ideBrut = tiersService.getNumeroIDE((Entreprise) tiers);
+			if (NumeroIDEHelper.isValid(ideBrut)) {
+				destinataire.getNumIDE().add(FormatNumeroHelper.formatNumIDE(ideBrut));
 			}
 		}
 		return destinataire;
