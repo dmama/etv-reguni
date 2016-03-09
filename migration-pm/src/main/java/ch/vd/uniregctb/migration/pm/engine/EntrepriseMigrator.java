@@ -1791,28 +1791,81 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 
 					// y a-t-il des fors principaux ?
 					if (fp == null || fp.isEmpty()) {
-						// non -> aucun, on va créer des fors "pays inconnu"
-						rangesNonCouverts.stream()
-								.map(range -> new ForFiscalPrincipalPM(range.getDateDebut(),
-								                                       MotifFor.INDETERMINE,
-								                                       range.getDateFin(),
-								                                       range.getDateFin() != null ? MotifFor.INDETERMINE : null,
-								                                       ServiceInfrastructureService.noPaysInconnu,
-								                                       TypeAutoriteFiscale.PAYS_HS,
-								                                       MotifRattachement.DOMICILE))
-								.peek(ff -> ff.setGenreImpot(GenreImpot.BENEFICE_CAPITAL))
-								.peek(ff -> mr.addMessage(LogCategory.FORS, LogLevel.WARN,
-								                          String.format("Création d'un for principal 'bouche-trou' %s pour couvrir les fors secondaires.",
-								                                        StringRenderers.DATE_RANGE_RENDERER.toString(ff))))
-								.forEach(entreprise::addForFiscal);
+						// [SIFISC-17164] s'il y avait des fors dans RegPM, on va essayer de les reprendre
+						final List<RegpmForPrincipal> forsRegPM = mr.getExtractedData(ForsPrincipauxData.class, keyEntreprise).liste;
+						if (forsRegPM.isEmpty()) {
+							// vraiment rien... on va créer des fors "pays inconnu"
+							rangesNonCouverts.stream()
+									.map(range -> new ForFiscalPrincipalPM(range.getDateDebut(),
+									                                       MotifFor.INDETERMINE,
+									                                       range.getDateFin(),
+									                                       range.getDateFin() != null ? MotifFor.INDETERMINE : null,
+									                                       ServiceInfrastructureService.noPaysInconnu,
+									                                       TypeAutoriteFiscale.PAYS_HS,
+									                                       MotifRattachement.DOMICILE))
+									.peek(ff -> ff.setGenreImpot(GenreImpot.BENEFICE_CAPITAL))
+									.peek(ff -> mr.addMessage(LogCategory.FORS, LogLevel.WARN,
+									                          String.format("Création d'un for principal 'bouche-trou' %s pour couvrir les fors secondaires.",
+									                                        StringRenderers.DATE_RANGE_RENDERER.toString(ff))))
+									.forEach(entreprise::addForFiscal);
+						}
+						else {
+							// on fait le travail à partir des données de RegPM
+							final NavigableMap<RegDate, RegpmForPrincipal> mapForsPrincipaux = forsRegPM.stream()
+									.collect(Collectors.toMap(RegpmForPrincipal::getDateValidite,
+									                          Function.identity(),
+									                          (f1, f2) -> { throw new IllegalArgumentException("Plusieurs fors principaux qui commencent le même jour ? aurait dû être traité en amont..."); },
+									                          TreeMap::new));
+
+							// boucle sur les trous
+							final List<ForFiscalPrincipalPM> forsPrincipaux = new LinkedList<>();
+							for (DateRange nonCouvert : rangesNonCouverts) {
+								// les fors principaux de RegPM sont valides jusqu'à preuve du contraire...
+								RegDate curseur = nonCouvert.getDateDebut();
+								while (curseur != null && nonCouvert.isValidAt(curseur)) {
+									// puisqu'il y a au moins un for dans RegPM, on le trouve forcément en regardant derrière puis devant
+									final RegDate dateDebut = curseur;
+									final RegpmForPrincipal forSource = Optional.of(dateDebut)
+											.map(mapForsPrincipaux::floorEntry)
+											.orElseGet(() -> mapForsPrincipaux.higherEntry(dateDebut))
+											.getValue();
+									final RegDate dateFin = RegDateHelper.minimum(nonCouvert.getDateFin(),
+									                                              Optional.ofNullable(mapForsPrincipaux.higherKey(curseur)).map(RegDate::getOneDayBefore).orElse(null),
+									                                              NullDateBehavior.LATEST);
+
+									final ForFiscalPrincipalPM ffp = new ForFiscalPrincipalPM();
+									ffp.setGenreImpot(GenreImpot.BENEFICE_CAPITAL);
+									ffp.setDateDebut(dateDebut);
+									ffp.setDateFin(dateFin);
+									ffp.setMotifOuverture(MotifFor.INDETERMINE);
+									ffp.setMotifFermeture(dateFin != null ? MotifFor.INDETERMINE : null);
+									final CommuneOuPays communeOuPays = new CommuneOuPays(forSource);
+									ffp.setTypeAutoriteFiscale(communeOuPays.getTypeAutoriteFiscale());
+									ffp.setNumeroOfsAutoriteFiscale(communeOuPays.getNumeroOfsAutoriteFiscale());
+									ffp.setMotifRattachement(MotifRattachement.DOMICILE);
+									forsPrincipaux.add(ffp);
+
+									// prochaine boucle (= changement de for possible dans le même trou)
+									curseur = Optional.ofNullable(dateFin).map(RegDate::getOneDayAfter).orElse(null);
+								}
+							}
+
+							// gestion des fusions de communes, si jamais...
+							forsPrincipaux.stream()
+									.peek(ff -> mr.addMessage(LogCategory.FORS, LogLevel.WARN,
+									                          String.format("For principal %s généré (d'après les données RegPM précédemment ignorées) pour couvrir les fors secondaires.",
+									                                        StringRenderers.LOCALISATION_DATEE_RENDERER.toString(ff))))
+									.map(ff -> adapterAutourFusionsCommunes(ff, mr, LogCategory.FORS, AbstractEntityMigrator::adapteMotifsForsFusionCommunes))
+									.flatMap(List::stream)
+									.forEach(entreprise::addForFiscal);
+						}
 					}
 					else {
 						// il y a des fors principaux, donc il y a toujours au moins un for principal
 						// avant ou après chaque trou... (pas forcément juste avant ou juste après car la période des ranges non-couverts
 						// ne concerne que les fors secondaires...)
 
-						final NavigableMap<RegDate, ForFiscalPrincipalPM> forsPrincipaux = entreprise.getForsFiscauxPrincipauxActifsSorted()
-								.stream()
+						final NavigableMap<RegDate, ForFiscalPrincipalPM> forsPrincipaux = entreprise.getForsFiscauxPrincipauxActifsSorted().stream()
 								.collect(Collectors.toMap(ForFiscalPrincipalPM::getDateDebut,
 								                          Function.identity(),
 								                          (f1, f2) -> { throw new IllegalArgumentException("Plusieurs fors principaux commençant le même jour ???"); },

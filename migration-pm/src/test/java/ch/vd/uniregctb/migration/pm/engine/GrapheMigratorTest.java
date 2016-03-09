@@ -5835,6 +5835,100 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 	}
 
 	/**
+	 * [SIFISC-17164] les fors principaux de RegPM ont été ignorés car l'entreprise était SP et PM/APM au cours de son existence
+	 * mais nous sommes également en présence d'établissements stables, donc de fors secondaires... et on ne veut pas de for principal 'pays inconnu'...
+	 */
+	@Test
+	public void testGenerationForPrincipalBoucheTrouSurEntrepriseSPetPM() throws Exception {
+
+		final long noEntreprise = 46232L;
+		final long noEtablissement = 3236L;
+		final RegDate dateDebut = RegDate.get(2000, 3, 1);
+		final RegDate dateDebutPM = RegDate.get(2005, 6, 1);
+		final RegDate dateDebutEtablissement = dateDebutPM.addMonths(-3);
+		final RegDate dateFinEtablissement = RegDate.get(2015, 10, 3);
+
+		final RegpmEntreprise entreprise = EntrepriseMigratorTest.buildEntreprise(noEntreprise);
+		EntrepriseMigratorTest.addRaisonSociale(entreprise, dateDebut, "Notre petite entreprise", "devenue grande", null, true);
+		EntrepriseMigratorTest.addFormeJuridique(entreprise, dateDebut, EntrepriseMigratorTest.createTypeFormeJuridique("S.N.C.", RegpmCategoriePersonneMorale.SP));
+		EntrepriseMigratorTest.addFormeJuridique(entreprise, dateDebutPM, EntrepriseMigratorTest.createTypeFormeJuridique("S.A.R.L.", RegpmCategoriePersonneMorale.PM));
+		EntrepriseMigratorTest.addForPrincipalSuisse(entreprise, dateDebut, RegpmTypeForPrincipal.SIEGE, Commune.BALE);
+		EntrepriseMigratorTest.addRegimeFiscalCH(entreprise, dateDebutPM, null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
+		EntrepriseMigratorTest.addRegimeFiscalVD(entreprise, dateDebutPM, null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
+		EntrepriseMigratorTest.addAssujettissement(entreprise, dateDebutEtablissement, dateFinEtablissement, RegpmTypeAssujettissement.LILIC);
+		entreprise.setDateBouclementFutur(RegDate.get(2015, 12, 31));
+
+		final RegpmEtablissement etablissement = EtablissementMigratorTest.buildEtablissement(noEtablissement, entreprise);
+		EtablissementMigratorTest.addEtablissementStable(etablissement, dateDebutEtablissement, dateFinEtablissement);
+		EtablissementMigratorTest.addDomicileEtablissement(etablissement, dateDebutPM, Commune.ECHALLENS, false);
+
+		final MockGraphe graphe = new MockGraphe(Collections.singletonList(entreprise),
+		                                         Collections.singletonList(etablissement),
+		                                         null);
+
+		activityManager.setup(ALL_ACTIVE);
+
+		final LoggedMessages lms = grapheMigrator.migrate(graphe);
+		Assert.assertNotNull(lms);
+
+		// vérification des fors fiscaux de l'entreprise migrée
+		doInUniregTransaction(true, status -> {
+			final Entreprise e = uniregStore.getEntityFromDb(Entreprise.class, noEntreprise);
+			Assert.assertNotNull(e);
+
+			final ForsParType fors = e.getForsParType(true);
+			Assert.assertNotNull(fors);
+
+			Assert.assertEquals(0, fors.principauxPP.size());
+			Assert.assertEquals(0, fors.dpis.size());
+			Assert.assertEquals(0, fors.autresImpots.size());
+			Assert.assertEquals(0, fors.autreElementImpot.size());
+
+			// le for secondaire activité, c'est clair...
+			final List<ForFiscalSecondaire> ffss = fors.secondaires;
+			Assert.assertEquals(1, ffss.size());
+			final ForFiscalSecondaire fs = ffss.get(0);
+			Assert.assertNotNull(fs);
+			Assert.assertFalse(fs.isAnnule());
+			Assert.assertEquals(dateDebutEtablissement, fs.getDateDebut());
+			Assert.assertEquals(dateFinEtablissement, fs.getDateFin());
+			Assert.assertEquals(MotifFor.DEBUT_EXPLOITATION, fs.getMotifOuverture());
+			Assert.assertEquals(MotifFor.FIN_EXPLOITATION, fs.getMotifFermeture());
+			Assert.assertEquals(GenreImpot.BENEFICE_CAPITAL, fs.getGenreImpot());
+			Assert.assertEquals(MotifRattachement.ETABLISSEMENT_STABLE, fs.getMotifRattachement());
+			Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, fs.getTypeAutoriteFiscale());
+			Assert.assertEquals(Commune.ECHALLENS.getNoOfs(), fs.getNumeroOfsAutoriteFiscale());
+
+			// et les fors principaux, dans tout ça ?
+			final List<ForFiscalPrincipalPM> ffps = fors.principauxPM;
+			Assert.assertEquals(1, ffps.size());
+			final ForFiscalPrincipalPM fp = ffps.get(0);
+			Assert.assertNotNull(fp);
+			Assert.assertFalse(fp.isAnnule());
+			Assert.assertEquals(dateDebutEtablissement, fp.getDateDebut());
+			Assert.assertEquals(dateFinEtablissement, fp.getDateFin());
+			Assert.assertNull(fp.getMotifOuverture());          // c'est le premier for principal, et il est HC... on peut donc rester à null
+			Assert.assertEquals(MotifFor.CESSATION_ACTIVITE, fp.getMotifFermeture());
+			Assert.assertEquals(GenreImpot.BENEFICE_CAPITAL, fp.getGenreImpot());
+			Assert.assertEquals(MotifRattachement.DOMICILE, fp.getMotifRattachement());
+			Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_HC, fp.getTypeAutoriteFiscale());
+			Assert.assertEquals(Commune.BALE.getNoOfs(), fp.getNumeroOfsAutoriteFiscale());
+		});
+
+		// vérification des messages de log
+		final Map<LogCategory, List<String>> messages = buildTextualMessages(lms);
+		{
+			// vérification des messages dans le contexte "FORS"
+			final List<String> msgs = messages.get(LogCategory.FORS);
+			Assert.assertEquals(4, msgs.size());
+			Assert.assertEquals("ERROR;" + noEntreprise + ";Active;;;For fiscal principal 1 du 01.03.2000 non-migré car l'entreprise a été SP et PM/APM au cours de son existence.", msgs.get(0));
+			Assert.assertEquals("INFO;" + noEntreprise + ";Active;;;For secondaire 'activité' [01.03.2005 -> 03.10.2015] ajouté sur la commune 5518.", msgs.get(1));
+			Assert.assertEquals("WARN;" + noEntreprise + ";Active;;;Il n'y avait pas de fors secondaires sur la commune OFS 5518 (maintenant : [01.03.2005 -> 03.10.2015]).", msgs.get(2));
+			Assert.assertEquals("WARN;" + noEntreprise + ";Active;;;For principal ForFiscalPrincipalPM [01.03.2005 -> 03.10.2015] sur COMMUNE_HC/2701 généré (d'après les données RegPM précédemment ignorées) pour couvrir les fors secondaires.", msgs.get(3));
+		}
+	}
+
+	/**
 	 * Ceci est un test utile au debugging, on charge un graphe depuis un fichier sur disque (identique à ce que
 	 * l'on peut envoyer dans la vraie migration) et on tente la migration du graphe en question
 	 */
