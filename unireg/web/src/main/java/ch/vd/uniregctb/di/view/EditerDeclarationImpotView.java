@@ -71,7 +71,7 @@ public class EditerDeclarationImpotView {
 	public void initReadOnlyValues(DeclarationImpotOrdinaire di, MessageSource messageSource, boolean allowedQuittancement, boolean allowedDelai, boolean allowedSommation, boolean allowedDuplicata, boolean allowedSuspension, boolean allowedAnnulationSuspension) {
 		this.tiersId = di.getTiers().getId();
 		this.id = di.getId();
-		this.periodeFiscale = di.getDateDebut().year();
+		this.periodeFiscale = di.getDateFin().year();
 		this.dateDebutPeriodeImposition = di.getDateDebut();
 		this.dateFinPeriodeImposition = di.getDateFin();
 		this.codeControle = di.getCodeControle();

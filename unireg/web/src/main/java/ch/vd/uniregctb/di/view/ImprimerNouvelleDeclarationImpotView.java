@@ -51,7 +51,7 @@ public class ImprimerNouvelleDeclarationImpotView {
 
 	public void setPeriode(PeriodeImpositionPersonnesPhysiques periode) {
 		this.imprimable = true;
-		this.periodeFiscale = periode.getDateDebut().year();
+		this.periodeFiscale = periode.getDateFin().year();
 		this.dateDebutPeriodeImposition = periode.getDateDebut();
 		this.dateFinPeriodeImposition = periode.getDateFin();
 		this.typeAdresseRetour = periode.getAdresseRetour();
@@ -60,7 +60,7 @@ public class ImprimerNouvelleDeclarationImpotView {
 
 	public void setPeriode(PeriodeImpositionPersonnesMorales periode) {
 		this.imprimable = true;
-		this.periodeFiscale = periode.getDateDebut().year();
+		this.periodeFiscale = periode.getDateFin().year();
 		this.dateDebutPeriodeImposition = periode.getDateDebut();
 		this.dateFinPeriodeImposition = periode.getDateFin();
 		this.typeAdresseRetour = TypeAdresseRetour.CEDI;

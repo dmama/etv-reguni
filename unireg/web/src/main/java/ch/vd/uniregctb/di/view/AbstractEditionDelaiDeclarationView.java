@@ -26,7 +26,7 @@ public abstract class AbstractEditionDelaiDeclarationView {
 
 	public void setDiInfo (DeclarationImpotOrdinaire di) {
 		this.tiersId = di.getTiers().getId();
-		this.declarationPeriode = di.getDateDebut().year();
+		this.declarationPeriode = di.getDateFin().year();
 		this.declarationRange = new DateRangeHelper.Range(di);
 		this.dateExpedition = di.getDateExpedition();
 		this.idDeclaration = di.getId();

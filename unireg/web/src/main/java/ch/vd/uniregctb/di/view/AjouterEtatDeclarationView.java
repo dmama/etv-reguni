@@ -51,7 +51,7 @@ public class AjouterEtatDeclarationView {
 	public void initReadOnlyValues(DeclarationImpotOrdinaire di, boolean typeDocumentEditable, MessageSource messageSource) {
 		this.tiersId = di.getTiers().getId();
 		this.id = di.getId();
-		this.periodeFiscale = di.getDateDebut().year();
+		this.periodeFiscale = di.getDateFin().year();
 		this.dateDebutPeriodeImposition = di.getDateDebut();
 		this.dateFinPeriodeImposition = di.getDateFin();
 		this.etats = initEtats(di.getEtats(), messageSource);
