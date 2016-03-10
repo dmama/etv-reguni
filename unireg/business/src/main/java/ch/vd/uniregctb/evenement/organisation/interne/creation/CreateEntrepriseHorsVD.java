@@ -4,6 +4,7 @@ import org.springframework.util.Assert;
 
 import ch.vd.unireg.interfaces.organisation.data.Domicile;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
+import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationContext;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationException;
@@ -11,6 +12,7 @@ import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationOptions;
 import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationErreurCollector;
 import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationSuiviCollector;
 import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationWarningCollector;
+import ch.vd.uniregctb.evenement.organisation.interne.EvenementOrganisationInterneDeTraitement;
 import ch.vd.uniregctb.tiers.CategorieEntrepriseHelper;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.type.CategorieEntreprise;
@@ -23,12 +25,28 @@ import ch.vd.uniregctb.type.MotifRattachement;
  *
  * @author Raphaël Marmier, 2015-09-02
  */
-public class CreateEntrepriseHorsVD extends CreateEntreprise {
+public class CreateEntrepriseHorsVD extends EvenementOrganisationInterneDeTraitement {
+
+	final private CategorieEntreprise category;
+	final private SiteOrganisation sitePrincipal;
+	final private Domicile autoriteFiscalePrincipale;
 
 	protected CreateEntrepriseHorsVD(EvenementOrganisation evenement, Organisation organisation, Entreprise entreprise,
 	                                 EvenementOrganisationContext context,
 	                                 EvenementOrganisationOptions options) throws EvenementOrganisationException {
 		super(evenement, organisation, entreprise, context, options);
+
+		sitePrincipal = organisation.getSitePrincipal(getDateEvt()).getPayload();
+
+		autoriteFiscalePrincipale = sitePrincipal.getDomicile(getDateEvt());
+		if (autoriteFiscalePrincipale == null) { // Indique un établissement "probablement" à l'étranger. Nous ne savons pas traiter ce cas pour l'instant.
+			throw new EvenementOrganisationException(
+					String.format(
+							"Autorité fiscale (siège) introuvable pour le site principal %s de l'organisation %s %s. Site probablement à l'étranger. Impossible de créer le domicile de l'établissement principal.",
+							sitePrincipal.getNumeroSite(), getNoOrganisation(), getOrganisation().getNom(getDateEvt())));
+		}
+
+		category = CategorieEntrepriseHelper.getCategorieEntreprise(getOrganisation(), getDateEvt());
 	}
 
 	@Override
@@ -38,60 +56,71 @@ public class CreateEntrepriseHorsVD extends CreateEntreprise {
 
 	@Override
 	public void doHandle(EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) throws EvenementOrganisationException {
-		super.doHandle(warnings, suivis);
 
-		final CategorieEntreprise categorieEntreprise = CategorieEntrepriseHelper.getCategorieEntreprise(getOrganisation(), getDateEvt());
-		if (categorieEntreprise != null) {
-			switch (categorieEntreprise) {
+		final String messageWarning = "Une vérification manuelle est requise pour une nouvelle entreprise de catégorie « %s » dont le siège est Hors Canton avec étab. sur VD.";
+
+		/*
+		 * Comme la solution actuelle est d'utiliser la date d'événement comme début des fors secondaires (date correspondant au début des périodes de domiciles),
+		 * on fait de même pour l'entreprise, les établissements et for principal hors canton.
+		 */
+
+		// Création de l'entreprise
+		createEntreprise(getDateEvt(), suivis);
+
+		// Création de l'établissement principal
+		createAddEtablissement(sitePrincipal.getNumeroSite(), autoriteFiscalePrincipale, true, getDateEvt(), suivis);
+
+		// Création des établissement secondaires
+		for (SiteOrganisation site : getOrganisation().getSitesSecondaires(getDateEvt())) {
+			addEtablissementSecondaire(site, getDateEvt(), warnings, suivis);
+		}
+
+		if (category != null) {
+			switch (category) {
 			case DPPM:
 				if (hasCapital(getOrganisation(), getDateEvt())) {
-					Domicile autoriteFiscalePrincipale1 = getAutoriteFiscalePrincipale();
-
-					openForFiscalPrincipal(getDateDeDebut(),
-					                       autoriteFiscalePrincipale1,
+					openForFiscalPrincipal(getDateEvt(),
+					                       autoriteFiscalePrincipale,
 					                       MotifRattachement.DOMICILE,
 					                       MotifFor.DEBUT_EXPLOITATION,
 					                       GenreImpot.BENEFICE_CAPITAL,
 					                       warnings, suivis);
 
 					// Création du bouclement
-					createAddBouclement(getDateDeDebut(), suivis);
+					createAddBouclement(getDateEvt(), isCreation(), suivis);
 
 					// Ajoute les for secondaires
-					adapteForsSecondairesPourEtablissementsVD(getEntreprise(), getDateDeDebut(), warnings, suivis);
-					warnings.addWarning("Une vérification manuelle est requise pour nouvelle entreprise de catégorie « DP/PM » avec capital non nul.");
+					adapteForsSecondairesPourEtablissementsVD(getEntreprise(), getDateEvt(), warnings, suivis);
+					warnings.addWarning(String.format(messageWarning , category.getLibelle() + " (capital non nul)"));
 				}
 				break;
 			case PM:
 			case APM:
-				Domicile autoriteFiscalePrincipale1 = getAutoriteFiscalePrincipale();
-
-				openForFiscalPrincipal(getDateDeDebut(),
-				                       autoriteFiscalePrincipale1,
+				openForFiscalPrincipal(getDateEvt(),
+				                       autoriteFiscalePrincipale,
 				                       MotifRattachement.DOMICILE,
 				                       MotifFor.DEBUT_EXPLOITATION,
 				                       GenreImpot.BENEFICE_CAPITAL,
 				                       warnings, suivis);
 
 				// Création du bouclement
-				createAddBouclement(getDateDeDebut(), suivis);
+				createAddBouclement(getDateEvt(), isCreation(), suivis);
 
 				// Ajoute les for secondaires
-				adapteForsSecondairesPourEtablissementsVD(getEntreprise(), getDateDeDebut(), warnings, suivis);
+				adapteForsSecondairesPourEtablissementsVD(getEntreprise(), getDateEvt(), warnings, suivis);
+				warnings.addWarning(String.format(messageWarning, category.getLibelle()));
 				break;
 			case SP:
-				Domicile autoriteFiscalePrincipale = getAutoriteFiscalePrincipale();
-
-				openForFiscalPrincipal(getDateDeDebut(),
+				openForFiscalPrincipal(getDateEvt(),
 				                       autoriteFiscalePrincipale,
 				                       MotifRattachement.DOMICILE,
 				                       MotifFor.DEBUT_EXPLOITATION,
 				                       GenreImpot.REVENU_FORTUNE,
 				                       warnings, suivis);
-				warnings.addWarning("Une vérification manuelle est requise pour une nouvelle entreprise de catégorie SP dont le siège est hors Canton avec étab. sur VD");
+				warnings.addWarning(String.format(messageWarning, category.getLibelle()));
 				break;
 			case FP:
-				warnings.addWarning("Une vérification manuelle est requise pour nouvelle entreprise de type Fond de placements (FDS FLAC).");
+				warnings.addWarning(String.format(messageWarning, category.getLibelle()));
 				break;
 			default:
 				// Rien à faire
@@ -101,10 +130,11 @@ public class CreateEntrepriseHorsVD extends CreateEntreprise {
 
 	@Override
 	protected void validateSpecific(EvenementOrganisationErreurCollector erreurs, EvenementOrganisationWarningCollector warnings) throws EvenementOrganisationException {
-		super.validateSpecific(erreurs, warnings);
 
-		if (getCategory() != null) {
-			Assert.state(getCategory() != CategorieEntreprise.PP, String.format("Catégorie d'entreprise non supportée! %s", getCategory()));
+		if (category != null) {
+			Assert.state(category != CategorieEntreprise.PP, String.format("Catégorie d'entreprise non supportée! %s", category));
 		}
 	}
+
+
 }

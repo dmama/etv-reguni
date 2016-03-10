@@ -306,7 +306,7 @@ public class EnvoiLettreBienvenueProcessorTest extends BusinessTest {
 
 		final long noOrganisation = 4327324L;
 		final long noSitePrincipal = 4372L;
-		final RegDate dateDebut = date(2016, 1, 4);
+		final RegDate dateDebut = date(2016, 1, 7);
 
 		// mise en place civile
 		serviceOrganisation.setUp(new MockServiceOrganisation() {
@@ -315,8 +315,9 @@ public class EnvoiLettreBienvenueProcessorTest extends BusinessTest {
 				MockOrganisation org = addOrganisation(noOrganisation);
 				MockSiteOrganisationFactory.addSite(noSitePrincipal, org, dateDebut, null, "Titi & Co SA", FormeLegale.N_0106_SOCIETE_ANONYME,
 				                                    true, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
-				                                    MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF, StatusRegistreIDE.DEFINITIF,
-				                                    TypeOrganisationRegistreIDE.SITE, BigDecimal.valueOf(50000), MontantMonetaire.CHF);
+				                                    MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF, dateDebut.addDays(-3),
+				                                    StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.SITE,
+				                                    BigDecimal.valueOf(50000), MontantMonetaire.CHF);
 			}
 		});
 
@@ -379,7 +380,7 @@ public class EnvoiLettreBienvenueProcessorTest extends BusinessTest {
 
 		final long noOrganisation = 4327324L;
 		final long noSitePrincipal = 4372L;
-		final RegDate dateDebut = date(2016, 1, 4);
+		final RegDate dateDebut = date(2016, 1, 7);
 
 		// mise en place civile
 		serviceOrganisation.setUp(new MockServiceOrganisation() {
@@ -388,8 +389,8 @@ public class EnvoiLettreBienvenueProcessorTest extends BusinessTest {
 				MockOrganisation org = addOrganisation(noOrganisation);
 				MockSiteOrganisationFactory.addSite(noSitePrincipal, org, dateDebut, null, "Titi et ses amis", FormeLegale.N_0109_ASSOCIATION,
 				                                    true, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
-				                                    MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF, StatusRegistreIDE.DEFINITIF,
-				                                    TypeOrganisationRegistreIDE.SITE, null, null);
+				                                    MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF, dateDebut.addDays(-3),
+				                                    StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.SITE, null, null);
 			}
 		});
 
@@ -461,7 +462,7 @@ public class EnvoiLettreBienvenueProcessorTest extends BusinessTest {
 				MockOrganisation org = addOrganisation(noOrganisation);
 				MockSiteOrganisationFactory.addSite(noSitePrincipal, org, dateDebut, null, "Titi et ses amis", FormeLegale.N_0109_ASSOCIATION,
 				                                    true, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
-				                                    MockCommune.Lausanne.getNoOFS(), null, StatusRegistreIDE.DEFINITIF,
+				                                    MockCommune.Lausanne.getNoOFS(), null, null, StatusRegistreIDE.DEFINITIF,
 				                                    TypeOrganisationRegistreIDE.SITE, null, null);
 			}
 		});

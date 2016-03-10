@@ -46,7 +46,7 @@ public class CreateEntreprisePM extends CreateEntreprise {
 
 		MotifFor motifOuverture = determineMotifOuvertureFor();
 
-		openForFiscalPrincipal(getDateDeDebut(),
+		openForFiscalPrincipal(getDateDeCreation(),
 		                       autoriteFiscalePrincipale,
 		                       MotifRattachement.DOMICILE,
 		                       motifOuverture,
@@ -54,10 +54,10 @@ public class CreateEntreprisePM extends CreateEntreprise {
 		                       warnings, suivis);
 
 		// Création du bouclement
-		createAddBouclement(getDateDeDebut(), suivis);
+		createAddBouclement(getDateDeCreation(), isCreation(), suivis);
 
 		// Ajoute les for secondaires
-		adapteForsSecondairesPourEtablissementsVD(getEntreprise(), getDateDeDebut(), warnings, suivis);
+		adapteForsSecondairesPourEtablissementsVD(getEntreprise(), getDateDeCreation(), warnings, suivis);
 	}
 
 	@Override
@@ -67,9 +67,9 @@ public class CreateEntreprisePM extends CreateEntreprise {
 		Assert.state(getCategory() == CategorieEntreprise.PM, String.format("Catégorie d'entreprise non supportée! %s", getCategory()));
 
 		if (getCategory() == null) {
-			FormeLegale formeLegale = getOrganisation().getFormeLegale(getDateDeDebut());
+			FormeLegale formeLegale = getOrganisation().getFormeLegale(getDateDeCreation());
 			erreurs.addErreur(String.format("Catégorie introuvable pour l'organisation no %s de forme juridique %s, en date du %s.", getOrganisation().getNumeroOrganisation(),
-			                                formeLegale != null ? formeLegale : "inconnue", RegDateHelper.dateToDisplayString(getDateDeDebut())));
+			                                formeLegale != null ? formeLegale : "inconnue", RegDateHelper.dateToDisplayString(getDateDeCreation())));
 		}
 
 		if (!inscritAuRC()) {

@@ -113,11 +113,11 @@ public class ServiceOrganisationCacheTest extends WithoutSpringTest {
 			protected void init() {
 				 addOrganisation(
 						 MockOrganisationFactory.createOrganisation(101202100L, 872394879L, "Les gentils joueurs de belotte", RegDate.get(2000, 5, 14), null, FormeLegale.N_0109_ASSOCIATION,
-						                                            TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Aubonne.getNoOFS(), StatusInscriptionRC.ACTIF, StatusRegistreIDE.DEFINITIF,
+						                                            TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Aubonne.getNoOFS(), StatusInscriptionRC.ACTIF, RegDate.get(2000, 5, 16), StatusRegistreIDE.DEFINITIF,
 						                                            TypeOrganisationRegistreIDE.ASSOCIATION));
 				 addOrganisation(
 				                 MockOrganisationFactory.createOrganisation(101202101L, 872394812L, "Le Tarot, c'est rigolo", RegDate.get(2005, 1, 11), null, FormeLegale.N_0109_ASSOCIATION,
-				                                                            TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF, StatusRegistreIDE.DEFINITIF,
+				                                                            TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF, RegDate.get(2000, 5, 16), StatusRegistreIDE.DEFINITIF,
 				                                                            TypeOrganisationRegistreIDE.ASSOCIATION));
 			}
 		});

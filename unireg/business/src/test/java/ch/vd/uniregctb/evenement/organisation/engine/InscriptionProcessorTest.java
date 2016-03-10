@@ -66,12 +66,12 @@ public class InscriptionProcessorTest extends AbstractEvenementOrganisationProce
 			protected void init() {
 				MockOrganisation organisation =
 						MockOrganisationFactory.createOrganisation(noOrganisation, noSite, "Association Synergy", date(2010, 6, 24), null, FormeLegale.N_0109_ASSOCIATION,
-						                                           TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), null,
+						                                           TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), null, null,
 						                                           StatusRegistreIDE.DEFINITIF,
 						                                           TypeOrganisationRegistreIDE.ASSOCIATION, null, null);
 				MockDonneesRC rc = (MockDonneesRC) organisation.getDonneesSites().get(0).getDonneesRC();
-				rc.changeStatusInscription(date(2015, 7, 5), StatusInscriptionRC.ACTIF);
-				rc.changeDateInscription(date(2015, 7, 5), date(2015, 7, 5));
+				rc.changeStatusInscription(date(2015, 7, 8), StatusInscriptionRC.ACTIF);
+				rc.changeDateInscription(date(2015, 7, 8), date(2015, 7, 5));
 				addOrganisation(organisation);
 			}
 		});
@@ -97,7 +97,7 @@ public class InscriptionProcessorTest extends AbstractEvenementOrganisationProce
 		doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction(TransactionStatus transactionStatus) {
-				final EvenementOrganisation event = createEvent(evtId, noOrganisation, TypeEvenementOrganisation.FOSC_NOUVELLE_ENTREPRISE, date(2015, 7, 5), A_TRAITER);
+				final EvenementOrganisation event = createEvent(evtId, noOrganisation, TypeEvenementOrganisation.FOSC_NOUVELLE_ENTREPRISE, date(2015, 7, 8), A_TRAITER);
 				return hibernateTemplate.merge(event).getId();
 			}
 		});

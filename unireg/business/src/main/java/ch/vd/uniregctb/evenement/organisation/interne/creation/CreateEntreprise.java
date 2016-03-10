@@ -20,6 +20,7 @@ import ch.vd.uniregctb.evenement.organisation.interne.EvenementOrganisationInter
 import ch.vd.uniregctb.tiers.CategorieEntrepriseHelper;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.type.CategorieEntreprise;
+import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
 /**
  * Classe de base implémentant la création d'une entreprise et de son établissement principal dans Unireg.
@@ -28,7 +29,7 @@ import ch.vd.uniregctb.type.CategorieEntreprise;
  */
 public abstract class CreateEntreprise extends EvenementOrganisationInterneDeTraitement {
 
-	final private RegDate dateDeDebut;
+	final private RegDate dateDeCreation;
 	final private CategorieEntreprise category;
 	final private SiteOrganisation sitePrincipal;
 	final private Domicile autoriteFiscalePrincipale;
@@ -38,14 +39,23 @@ public abstract class CreateEntreprise extends EvenementOrganisationInterneDeTra
 	                           EvenementOrganisationOptions options) throws EvenementOrganisationException {
 		super(evenement, organisation, entreprise, context, options);
 
+		sitePrincipal = organisation.getSitePrincipal(getDateEvt()).getPayload();
+
 		/*
 		  Demande du métier: date de référence pour la création à la date de l'événement + 1 jour
 		  */
-		dateDeDebut = getDateEvt().getOneDayAfter();
+		if (organisation.isInscritAuRC(getDateEvt())) {
+			if (sitePrincipal.getDomicile(getDateEvt()).getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD){
+				// TODO: Utiliser la date VD
+				dateDeCreation = sitePrincipal.getDateInscriptionRC(getDateEvt()).getOneDayAfter();
+			} else {
+				dateDeCreation = sitePrincipal.getDateInscriptionRC(getDateEvt()).getOneDayAfter();
+			}
+		} else {
+			dateDeCreation = getDateEvt().getOneDayAfter();
+		}
 
 		category = CategorieEntrepriseHelper.getCategorieEntreprise(getOrganisation(), getDateEvt());
-
-		sitePrincipal = organisation.getSitePrincipal(getDateEvt()).getPayload();
 
 		autoriteFiscalePrincipale = sitePrincipal.getDomicile(getDateEvt());
 
@@ -64,8 +74,8 @@ public abstract class CreateEntreprise extends EvenementOrganisationInterneDeTra
 	}
 
 	@NotNull
-	public RegDate getDateDeDebut() {
-		return dateDeDebut;
+	public RegDate getDateDeCreation() {
+		return dateDeCreation;
 	}
 
 	public CategorieEntreprise getCategory() {
@@ -86,14 +96,14 @@ public abstract class CreateEntreprise extends EvenementOrganisationInterneDeTra
 	public void doHandle(EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) throws EvenementOrganisationException {
 
 		// Création de l'entreprise
-		createEntreprise(dateDeDebut, suivis);
+		createEntreprise(dateDeCreation, suivis);
 
 		// Création de l'établissement principal
-		createAddEtablissement(sitePrincipal.getNumeroSite(), autoriteFiscalePrincipale, true, dateDeDebut, suivis);
+		createAddEtablissement(sitePrincipal.getNumeroSite(), autoriteFiscalePrincipale, true, dateDeCreation, suivis);
 
 		// Création des établissement secondaires
 		for (SiteOrganisation site : getOrganisation().getSitesSecondaires(getDateEvt())) {
-			addEtablissementSecondaire(site, getDateDeDebut(), warnings, suivis);
+			addEtablissementSecondaire(site, getDateDeCreation(), warnings, suivis);
 		}
 	}
 
@@ -103,7 +113,7 @@ public abstract class CreateEntreprise extends EvenementOrganisationInterneDeTra
 		/*
 		 Erreurs techniques fatale
 		  */
-		Assert.notNull(dateDeDebut);
+		Assert.notNull(dateDeCreation);
 
 		// Vérifier qu'il n'y a pas d'entreprise préexistante en base ? (Ca ne devrait pas se produire ici)
 		Assert.isNull(getEntreprise());
@@ -117,12 +127,12 @@ public abstract class CreateEntreprise extends EvenementOrganisationInterneDeTra
 
 		if (sitePrincipal == null) {
 			erreurs.addErreur(String.format("Aucun établissement principal trouvé pour la date du %s. [no organisation: %s]",
-			                                RegDateHelper.dateToDisplayString(getDateDeDebut()), getOrganisation().getNumeroOrganisation()));
+			                                RegDateHelper.dateToDisplayString(getDateDeCreation()), getOrganisation().getNumeroOrganisation()));
 		}
 
 		if (autoriteFiscalePrincipale == null) {
 			erreurs.addErreur(String.format("Autorité fiscale introuvable pour la date du %s. [no organisation: %s]",
-			                                RegDateHelper.dateToDisplayString(getDateDeDebut()), getOrganisation().getNumeroOrganisation()));
+			                                RegDateHelper.dateToDisplayString(getDateDeCreation()), getOrganisation().getNumeroOrganisation()));
 		}
 
 		// TODO: Vérifier que le siège n'est pas sur une commune faîtière et passer en manuel si c'est le cas. (fractions de communes)

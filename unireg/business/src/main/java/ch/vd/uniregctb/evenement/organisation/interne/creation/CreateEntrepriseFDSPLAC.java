@@ -46,9 +46,9 @@ public class CreateEntrepriseFDSPLAC extends CreateEntreprise {
 		super.validateSpecific(erreurs, warnings);
 
 		if (getCategory() == null) {
-			FormeLegale formeLegale = getOrganisation().getFormeLegale(getDateDeDebut());
+			FormeLegale formeLegale = getOrganisation().getFormeLegale(getDateDeCreation());
 			erreurs.addErreur(String.format("Catégorie introuvable pour l'organisation no %s de forme juridique %s, en date du %s.", getOrganisation().getNumeroOrganisation(),
-			                                formeLegale != null ? formeLegale : "inconnue", RegDateHelper.dateToDisplayString(getDateDeDebut())));
+			                                formeLegale != null ? formeLegale : "inconnue", RegDateHelper.dateToDisplayString(getDateDeCreation())));
 		}
 		Assert.state(getCategory() == CategorieEntreprise.FP, String.format("Catégorie d'entreprise non supportée! %s", getCategory()));
 	}

@@ -44,7 +44,7 @@ public class CreateEntrepriseFDSPLACProcessorTest extends AbstractEvenementOrgan
 			@Override
 			protected void init() {
 				addOrganisation(
-						MockOrganisationFactory.createSimpleEntrepriseRC(noOrganisation, noOrganisation + 1000000, "Kramer Placements", RegDate.get(2015, 6, 24), null, FormeLegale.N_0114_SOCIETE_EN_COMMANDITE_POUR_PLACEMENTS_CAPITAUX,
+						MockOrganisationFactory.createSimpleEntrepriseRC(noOrganisation, noOrganisation + 1000000, "Kramer Placements", RegDate.get(2015, 6, 27), null, FormeLegale.N_0114_SOCIETE_EN_COMMANDITE_POUR_PLACEMENTS_CAPITAUX,
 						                                                 MockCommune.Lausanne));
 			}
 		});
@@ -56,7 +56,7 @@ public class CreateEntrepriseFDSPLACProcessorTest extends AbstractEvenementOrgan
 		doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction(TransactionStatus transactionStatus) {
-				final EvenementOrganisation event = createEvent(evtId, noOrganisation, TypeEvenementOrganisation.FOSC_NOUVELLE_ENTREPRISE, RegDate.get(2015, 6, 24), A_TRAITER);
+				final EvenementOrganisation event = createEvent(evtId, noOrganisation, TypeEvenementOrganisation.FOSC_NOUVELLE_ENTREPRISE, RegDate.get(2015, 6, 27), A_TRAITER);
 				return hibernateTemplate.merge(event).getId();
 			}
 		});

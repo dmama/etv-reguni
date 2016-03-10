@@ -416,7 +416,7 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 	public void testEntrepriseNonRapprocheeIdentifieeCorrectement() throws Exception {
 
 		// Mise en place service mock
-		final RegDate dateDebut = date(2010, 6, 24);
+		final RegDate dateDebut = date(2010, 6, 26);
 		final String nom = "Synergy SA";
 		final Long noOrganisation = 101202100L;
 		final Long noSite = noOrganisation + 1000000;
@@ -425,8 +425,8 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 			@Override
 			protected void init() {
 				addOrganisation(MockOrganisationFactory.createOrganisation(noOrganisation, noSite, nom, dateDebut, null, FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE,
-				                                                           TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF, StatusRegistreIDE.DEFINITIF,
-				                                                           TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE));
+				                                                           TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF, date(2010, 6, 24),
+				                                                           StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE));
 
 			}
 		});
@@ -451,7 +451,7 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 		doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction(TransactionStatus transactionStatus) {
-				final EvenementOrganisation event = createEvent(evtId, noOrganisation, TypeEvenementOrganisation.FOSC_AVIS_PREALABLE_OUVERTURE_FAILLITE, RegDate.get(2015, 6, 24), A_TRAITER);
+				final EvenementOrganisation event = createEvent(evtId, noOrganisation, TypeEvenementOrganisation.FOSC_AVIS_PREALABLE_OUVERTURE_FAILLITE, date(2015, 7, 5), A_TRAITER);
 				return hibernateTemplate.merge(event).getId();
 			}
 		});
@@ -510,7 +510,7 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 	public void testEntrepriseNonRapprocheePlusieursPossibles() throws Exception {
 
 		// Mise en place service mock
-		final RegDate dateDebut = date(2010, 6, 24);
+		final RegDate dateDeDebut = date(2010, 6, 26);
 		final String nom = "Synergy SA";
 		final Long noOrganisation = 101202100L;
 		final Long noSite = noOrganisation + 1000000;
@@ -518,9 +518,9 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 		serviceOrganisation.setUp(new MockServiceOrganisation() {
 			@Override
 			protected void init() {
-				addOrganisation(MockOrganisationFactory.createOrganisation(noOrganisation, noSite, nom, dateDebut, null, FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE,
-				                                                           TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF, StatusRegistreIDE.DEFINITIF,
-				                                                           TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE));
+				addOrganisation(MockOrganisationFactory.createOrganisation(noOrganisation, noSite, nom, dateDeDebut, null, FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE,
+				                                                           TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF, date(2010, 6, 24),
+				                                                           StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE));
 
 			}
 		});
@@ -532,7 +532,7 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 			public Long doInTransaction(TransactionStatus transactionStatus) {
 
 				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addRaisonSocialeFiscaleEntreprise(entreprise, dateDebut, null, "Synergy truc bidule");
+				addRaisonSocialeFiscaleEntreprise(entreprise, dateDeDebut, null, "Synergy truc bidule");
 				return entreprise.getNumero();
 			}
 		});
@@ -542,7 +542,7 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 			public Long doInTransaction(TransactionStatus transactionStatus) {
 
 				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addRaisonSocialeFiscaleEntreprise(entreprise, dateDebut, null, "Synergy machin chose");
+				addRaisonSocialeFiscaleEntreprise(entreprise, dateDeDebut, null, "Synergy machin chose");
 				return entreprise.getNumero();
 			}
 		});
@@ -555,7 +555,7 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 		doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction(TransactionStatus transactionStatus) {
-				final EvenementOrganisation event = createEvent(evtId, noOrganisation, TypeEvenementOrganisation.FOSC_AVIS_PREALABLE_OUVERTURE_FAILLITE, RegDate.get(2015, 6, 24), A_TRAITER);
+				final EvenementOrganisation event = createEvent(evtId, noOrganisation, TypeEvenementOrganisation.FOSC_AVIS_PREALABLE_OUVERTURE_FAILLITE, date(2015, 7, 5), A_TRAITER);
 				return hibernateTemplate.merge(event).getId();
 			}
 		});
@@ -607,7 +607,7 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 	public void testAucuneEntrepriseIdentifiee() throws Exception {
 
 		// Mise en place service mock
-		final RegDate dateDebut = date(2010, 6, 24);
+		final RegDate dateDebut = date(2010, 6, 26);
 		final String nom = "Synergy SA";
 		final Long noOrganisation = 101202100L;
 		final Long noSite = noOrganisation + 1000000;
@@ -616,8 +616,8 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 			@Override
 			protected void init() {
 				addOrganisation(MockOrganisationFactory.createOrganisation(noOrganisation, noSite, nom, dateDebut, null, FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE,
-				                                                           TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF, StatusRegistreIDE.DEFINITIF,
-				                                                           TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE));
+				                                                           TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF, date(2010, 6, 24),
+				                                                           StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE));
 
 			}
 		});
@@ -652,7 +652,7 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 		doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction(TransactionStatus transactionStatus) {
-				final EvenementOrganisation event = createEvent(evtId, noOrganisation, TypeEvenementOrganisation.FOSC_AVIS_PREALABLE_OUVERTURE_FAILLITE, RegDate.get(2015, 6, 24), A_TRAITER);
+				final EvenementOrganisation event = createEvent(evtId, noOrganisation, TypeEvenementOrganisation.FOSC_AVIS_PREALABLE_OUVERTURE_FAILLITE, date(2105, 7, 5), A_TRAITER);
 				return hibernateTemplate.merge(event).getId();
 			}
 		});
@@ -711,7 +711,7 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 	public void testEntrepriseConnueMaisNouvelleAuCivil() throws Exception {
 
 		// Mise en place service mock
-		final RegDate dateDebut = date(2010, 6, 24);
+		final RegDate dateEvt = date(2015, 6, 26);
 		final String nom = "Synergy SA";
 		final Long noOrganisation = 101202100L;
 		final Long noSite = noOrganisation + 1000000;
@@ -719,9 +719,9 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 		serviceOrganisation.setUp(new MockServiceOrganisation() {
 			@Override
 			protected void init() {
-				addOrganisation(MockOrganisationFactory.createOrganisation(noOrganisation, noSite, nom, date(2015, 6, 24), null, FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE,
-				                                                           TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF, StatusRegistreIDE.DEFINITIF,
-				                                                           TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE));
+				addOrganisation(MockOrganisationFactory.createOrganisation(noOrganisation, noSite, nom, dateEvt, null, FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE,
+				                                                           TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF, date(2010, 6, 24),
+				                                                           StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE));
 
 			}
 		});
@@ -733,7 +733,7 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 			public Long doInTransaction(TransactionStatus transactionStatus) {
 
 				final Entreprise entreprise = addEntrepriseConnueAuCivil(noOrganisation);
-				addRaisonSocialeFiscaleEntreprise(entreprise, dateDebut, null, nom);
+				addRaisonSocialeFiscaleEntreprise(entreprise, dateEvt, null, nom);
 				return entreprise.getNumero();
 			}
 		});
@@ -746,7 +746,7 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 		doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction(TransactionStatus transactionStatus) {
-				final EvenementOrganisation event = createEvent(evtId, noOrganisation, TypeEvenementOrganisation.FOSC_AUTRE_MUTATION, date(2015, 6, 24), A_TRAITER);
+				final EvenementOrganisation event = createEvent(evtId, noOrganisation, TypeEvenementOrganisation.FOSC_AUTRE_MUTATION, dateEvt, A_TRAITER);
 				return hibernateTemplate.merge(event).getId();
 			}
 		});

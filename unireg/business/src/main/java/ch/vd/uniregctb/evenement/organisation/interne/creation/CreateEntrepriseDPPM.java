@@ -42,7 +42,7 @@ public class CreateEntrepriseDPPM extends CreateEntreprise {
 
 		MotifFor motifOuverture = determineMotifOuvertureFor();
 
-		openForFiscalPrincipal(getDateDeDebut(),
+		openForFiscalPrincipal(getDateDeCreation(),
 		                       getAutoriteFiscalePrincipale(),
 		                       MotifRattachement.DOMICILE,
 		                       motifOuverture,
@@ -50,10 +50,10 @@ public class CreateEntrepriseDPPM extends CreateEntreprise {
 		                       warnings, suivis);
 
 		// Création du bouclement
-		createAddBouclement(getDateDeDebut(), suivis);
+		createAddBouclement(getDateDeCreation(), isCreation(), suivis);
 
 		// Ajoute les for secondaires
-		adapteForsSecondairesPourEtablissementsVD(getEntreprise(), getDateDeDebut(), warnings, suivis);
+		adapteForsSecondairesPourEtablissementsVD(getEntreprise(), getDateDeCreation(), warnings, suivis);
 
 		warnings.addWarning("Une vérification manuelle est requise pour nouvelle entreprise de type DP/PM.");
 	}
@@ -63,9 +63,9 @@ public class CreateEntrepriseDPPM extends CreateEntreprise {
 		super.validateSpecific(erreurs, warnings);
 
 		if (getCategory() == null) {
-			FormeLegale formeLegale = getOrganisation().getFormeLegale(getDateDeDebut());
+			FormeLegale formeLegale = getOrganisation().getFormeLegale(getDateDeCreation());
 			erreurs.addErreur(String.format("Catégorie introuvable pour l'organisation no %s de forme juridique %s, en date du %s.", getOrganisation().getNumeroOrganisation(),
-			                                formeLegale != null ? formeLegale : "inconnue", RegDateHelper.dateToDisplayString(getDateDeDebut())));
+			                                formeLegale != null ? formeLegale : "inconnue", RegDateHelper.dateToDisplayString(getDateDeCreation())));
 		}
 
 		Assert.state(getCategory() == CategorieEntreprise.DPPM, String.format("Catégorie d'entreprise non supportée! %s", getCategory()));

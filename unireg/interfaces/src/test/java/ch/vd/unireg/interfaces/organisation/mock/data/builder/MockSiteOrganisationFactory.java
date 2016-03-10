@@ -34,9 +34,10 @@ public abstract class MockSiteOrganisationFactory {
 	                                           @Nullable TypeAutoriteFiscale typeAutoriteFiscaleDomicile,
 	                                           @Nullable Integer noOfsDomicile,
 	                                           @Nullable StatusInscriptionRC statusInscriptionRC,
+	                                           @Nullable RegDate dateInscriptionRC,
 	                                           @Nullable StatusRegistreIDE statusIde,
 	                                           @Nullable TypeOrganisationRegistreIDE typeIde) {
-		return addSite(cantonalId, organisation, dateDebut, dateFin, nom, formeLegale, principal, typeAutoriteFiscaleDomicile, noOfsDomicile, statusInscriptionRC, statusIde, typeIde, null, null);
+		return addSite(cantonalId, organisation, dateDebut, dateFin, nom, formeLegale, principal, typeAutoriteFiscaleDomicile, noOfsDomicile, statusInscriptionRC, dateInscriptionRC, statusIde, typeIde, null, null);
 	}
 
 	public static MockSiteOrganisation addSite(long cantonalId,
@@ -49,6 +50,7 @@ public abstract class MockSiteOrganisationFactory {
 	                                           @Nullable TypeAutoriteFiscale typeAutoriteFiscaleDomicile,
 	                                           @Nullable Integer noOfsDomicile,
 	                                           @Nullable StatusInscriptionRC statusInscriptionRC,
+	                                           @Nullable RegDate dateInscriptionRC,
 	                                           @Nullable StatusRegistreIDE statusIde,
 	                                           @Nullable TypeOrganisationRegistreIDE typeIde,
 	                                           @Nullable BigDecimal capitalAmount,
@@ -57,6 +59,7 @@ public abstract class MockSiteOrganisationFactory {
 		final MockDonneesRC donneesRC = new MockDonneesRC();
 		if (statusInscriptionRC != null) {
 			donneesRC.addStatusInscription(dateDebut, dateFin, statusInscriptionRC);
+			donneesRC.addDateInscription(dateDebut, dateFin, dateInscriptionRC);
 			if (capitalAmount != null) {
 				donneesRC.addCapital(dateDebut,
 				                     dateFin,

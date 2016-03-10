@@ -9632,7 +9632,7 @@ debut PF                                                                        
 
 		final long noOrganisation = 48518745L;
 		final long noSite = 346742L;
-		final RegDate dateDebut = date(2000, 1, 1);
+		final RegDate dateDebut = date(2000, 1, 4);
 		final RegDate dateDebutSurchargeCapital = date(2005, 3, 1);
 		final RegDate dateFinSurchargeCapital = date(2012, 6, 30);
 
@@ -9643,7 +9643,8 @@ debut PF                                                                        
 				final MockOrganisation org = addOrganisation(noOrganisation);
 				MockSiteOrganisationFactory.addSite(noSite, org, dateDebut, null, "Turlututu SARL", FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE, true,
 				                                    TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Aubonne.getNoOFS(),
-				                                    StatusInscriptionRC.ACTIF, StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.SITE,
+				                                    StatusInscriptionRC.ACTIF, dateDebut.addDays(-3),
+				                                    StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.SITE,
 				                                    BigDecimal.valueOf(10000000L), MontantMonetaire.CHF);
 			}
 		});
@@ -9703,7 +9704,7 @@ debut PF                                                                        
 		final long noOrganisation = 48518745L;
 		final long noSite = 346742L;
 		final RegDate dateDebut = date(2000, 1, 1);
-		final RegDate dateDebutConnueCivil = date(2005, 3, 1);
+		final RegDate dateDebutConnueCivil = date(2005, 3, 4);
 		final RegDate dateDebutChangementFormeLegale = date(2012, 6, 30);
 
 		// mise en place civile
@@ -9713,7 +9714,7 @@ debut PF                                                                        
 				final MockOrganisation org = addOrganisation(noOrganisation);
 				MockSiteOrganisationFactory.addSite(noSite, org, dateDebutConnueCivil, null, "Tuturlutu SA", FormeLegale.N_0106_SOCIETE_ANONYME, true,
 				                                    TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Aubonne.getNoOFS(),
-				                                    StatusInscriptionRC.ACTIF, StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.SITE);
+				                                    StatusInscriptionRC.ACTIF, dateDebutConnueCivil.addDays(-3), StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.SITE);
 				MockSiteOrganisation site = (MockSiteOrganisation) org.getDonneesSites().iterator().next();
 				site.changeFormeLegale(dateDebutChangementFormeLegale, FormeLegale.N_0234_CORPORATION_DE_DROIT_PUBLIC_ENTREPRISE);
 				site.changeNom(dateDebutChangementFormeLegale, "Tuturlutu");

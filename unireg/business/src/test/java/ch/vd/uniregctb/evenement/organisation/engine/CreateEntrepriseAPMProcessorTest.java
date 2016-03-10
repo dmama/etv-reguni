@@ -49,7 +49,7 @@ public class CreateEntrepriseAPMProcessorTest extends AbstractEvenementOrganisat
 			@Override
 			protected void init() {
 				addOrganisation(
-						MockOrganisationFactory.createSimpleEntrepriseRC(noOrganisation, noOrganisation + 1000000, "Association bidule", RegDate.get(2015, 6, 24), null, FormeLegale.N_0110_FONDATION,
+						MockOrganisationFactory.createSimpleEntrepriseRC(noOrganisation, noOrganisation + 1000000, "Association bidule", RegDate.get(2015, 6, 27), null, FormeLegale.N_0110_FONDATION,
 						                                                 MockCommune.Lausanne));
 			}
 		});
@@ -61,7 +61,7 @@ public class CreateEntrepriseAPMProcessorTest extends AbstractEvenementOrganisat
 		doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction(TransactionStatus transactionStatus) {
-				final EvenementOrganisation event = createEvent(evtId, noOrganisation, TypeEvenementOrganisation.FOSC_NOUVELLE_ENTREPRISE, RegDate.get(2015, 6, 24), A_TRAITER);
+				final EvenementOrganisation event = createEvent(evtId, noOrganisation, TypeEvenementOrganisation.FOSC_NOUVELLE_ENTREPRISE, RegDate.get(2015, 6, 27), A_TRAITER);
 				return hibernateTemplate.merge(event).getId();
 			}
 		});
@@ -114,7 +114,7 @@ public class CreateEntrepriseAPMProcessorTest extends AbstractEvenementOrganisat
 			protected void init() {
 				addOrganisation(
 						MockOrganisationFactory.createOrganisation(noOrganisation, noOrganisation + 1000000, "Association bidule", RegDate.get(2015, 6, 24), null, FormeLegale.N_0110_FONDATION,
-						                                           TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), null, StatusRegistreIDE.DEFINITIF,
+						                                           TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), null, null, StatusRegistreIDE.DEFINITIF,
 						                                           TypeOrganisationRegistreIDE.ASSOCIATION));
 			}
 		});

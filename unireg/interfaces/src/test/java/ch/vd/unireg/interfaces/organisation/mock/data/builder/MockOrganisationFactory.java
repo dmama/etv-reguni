@@ -38,6 +38,9 @@ public abstract class MockOrganisationFactory {
 		return createSimpleEntrepriseRC(cantonalId, cantonalId + 999373737, nom, dateDebut, null, formeLegale, MockCommune.Lausanne);
 	}
 
+	/**
+	 * Crée une entreprise au RC et à l'IDE. La date d'inscription au RC est trois jours avant la date de l'événement.
+	 */
 	public static MockOrganisation createSimpleEntrepriseRC(long cantonalId, long cantonalIdSitePrincipal, String nom, RegDate dateDebut, RegDate dateFin, FormeLegale formeLegale, MockCommune commune) {
 		return createOrganisation(cantonalId,
 		                          cantonalIdSitePrincipal,
@@ -48,11 +51,15 @@ public abstract class MockOrganisationFactory {
 		                          commune != null ? (commune.isVaudoise() ? TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD : TypeAutoriteFiscale.COMMUNE_HC) : null,
 		                          commune != null ? commune.getNoOFS() : null,
 		                          StatusInscriptionRC.ACTIF,
+		                          dateDebut.addDays(-3),
 		                          StatusRegistreIDE.DEFINITIF,
 		                          TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE
 		);
 	}
 
+	/**
+	 * Crée une entreprise au RC et à l'IDE. La date d'inscription au RC est trois jours avant la date de l'événement.
+	 */
 	public static MockOrganisation createSimpleEntrepriseRC(long cantonalId, long cantonalIdSitePrincipal, String nom, RegDate dateDebut, RegDate dateFin, FormeLegale formeLegale, MockPays pays) {
 		return createOrganisation(cantonalId,
 		                          cantonalIdSitePrincipal,
@@ -63,6 +70,7 @@ public abstract class MockOrganisationFactory {
 		                          pays != null ? TypeAutoriteFiscale.PAYS_HS : null,
 		                          pays != null ? pays.getNoOFS() : null,
 		                          StatusInscriptionRC.ACTIF,
+		                          dateDebut.addDays(-3),
 		                          StatusRegistreIDE.DEFINITIF,
 		                          TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE
 		);
@@ -77,6 +85,7 @@ public abstract class MockOrganisationFactory {
 	                                                  @Nullable TypeAutoriteFiscale typeAutoriteFiscaleSiegePrincipal,
 	                                                  @Nullable Integer noOfsSiegePrincipal,
 	                                                  @Nullable StatusInscriptionRC statusInscriptionRC,
+	                                                  @Nullable RegDate dateInscriptionRC,
 	                                                  @Nullable StatusRegistreIDE statusIde,
 	                                                  @Nullable TypeOrganisationRegistreIDE typeIde) {
 
@@ -92,6 +101,7 @@ public abstract class MockOrganisationFactory {
 		                                    typeAutoriteFiscaleSiegePrincipal,
 		                                    noOfsSiegePrincipal,
 		                                    statusInscriptionRC,
+		                                    dateInscriptionRC,
 		                                    statusIde,
 		                                    typeIde);
 
@@ -107,6 +117,7 @@ public abstract class MockOrganisationFactory {
 	                                                  @Nullable TypeAutoriteFiscale typeAutoriteFiscaleSiegePrincipal,
 	                                                  @Nullable Integer noOfsSiegePrincipal,
 	                                                  @Nullable StatusInscriptionRC statusInscriptionRC,
+	                                                  @Nullable RegDate dateInscriptionRC,
 	                                                  @Nullable StatusRegistreIDE statusIde,
 	                                                  @Nullable TypeOrganisationRegistreIDE typeIde,
 	                                                  @Nullable BigDecimal capitalAmount,
@@ -124,6 +135,7 @@ public abstract class MockOrganisationFactory {
 		                                    typeAutoriteFiscaleSiegePrincipal,
 		                                    noOfsSiegePrincipal,
 		                                    statusInscriptionRC,
+		                                    dateInscriptionRC,
 		                                    statusIde,
 		                                    typeIde,
 		                                    capitalAmount,
@@ -144,7 +156,9 @@ public abstract class MockOrganisationFactory {
 	                                                                    @Nullable TypeAutoriteFiscale tafDomicileSecondaire,
 	                                                                    @Nullable Integer noOfsDomicileSecondaire,
 	                                                                    @Nullable StatusInscriptionRC statusInscriptionRCPrincipal,
+	                                                                    @Nullable RegDate dateInscriptionRCPrincipal,
 	                                                                    @Nullable StatusInscriptionRC statusInscriptionRCSecondaire,
+	                                                                    @Nullable RegDate dateInscriptionRCSecondaire,
 	                                                                    @Nullable StatusRegistreIDE statusIdePrincipal,
 	                                                                    @Nullable StatusRegistreIDE statusIdeSecondaire,
 	                                                                    @Nullable TypeOrganisationRegistreIDE typeIdePrincipal,
@@ -162,6 +176,7 @@ public abstract class MockOrganisationFactory {
 		                                    tafSiegePrincipal,
 		                                    noOfsSiegePrincipal,
 		                                    statusInscriptionRCPrincipal,
+		                                    dateInscriptionRCPrincipal,
 		                                    statusIdePrincipal,
 		                                    typeIdePrincipal);
 
@@ -175,6 +190,7 @@ public abstract class MockOrganisationFactory {
 		                                    tafDomicileSecondaire,
 		                                    noOfsDomicileSecondaire,
 		                                    statusInscriptionRCSecondaire,
+		                                    dateInscriptionRCSecondaire,
 		                                    statusIdeSecondaire,
 		                                    typeIdeSecondaire);
 
@@ -185,7 +201,7 @@ public abstract class MockOrganisationFactory {
 	 * @return une organisation qui ressemble à Nestlé
 	 */
 	private static MockOrganisation createNestle() {
-		final RegDate dateDebut = RegDate.get(1996, 12, 18);
+		final RegDate dateDebut = RegDate.get(1996, 12, 21);
 		final MockOrganisation org = createOrganisation(45121L,
 		                                                48751L,
 		                                                "Nestlé Suisse S.A.",
@@ -195,6 +211,7 @@ public abstract class MockOrganisationFactory {
 		                                                TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
 		                                                MockCommune.Vevey.getNoOFS(),
 		                                                StatusInscriptionRC.ACTIF,
+		                                                RegDate.get(1996, 12, 18),
 		                                                StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE);
 		MockSiteOrganisation site = (MockSiteOrganisation) org.getDonneesSites().get(0);
 		site.addNumeroIDE(dateDebut, null, "CHE10123723");
@@ -207,7 +224,7 @@ public abstract class MockOrganisationFactory {
 	 * @return une organisation qui ressemble à la BCV
 	 */
 	private static MockOrganisation createBCV() {
-		final RegDate dateDebut = RegDate.get(1883, 1, 6);
+		final RegDate dateDebut = RegDate.get(1883, 1, 11);
 		final MockOrganisation org = createOrganisation(45518L, 481554L,
 		                                                "Banque Cantonale Vaudoise",
 		                                                dateDebut,
@@ -216,6 +233,7 @@ public abstract class MockOrganisationFactory {
 		                                                TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
 		                                                MockCommune.Lausanne.getNoOFS(),
 		                                                StatusInscriptionRC.ACTIF,
+		                                                RegDate.get(1883, 1, 6),
 		                                                StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE);
 		MockSiteOrganisation site = (MockSiteOrganisation) org.getDonneesSites().get(0);
 		site.addNumeroIDE(dateDebut, null, "CHE105934376");
@@ -224,7 +242,7 @@ public abstract class MockOrganisationFactory {
 	}
 
 	private static MockOrganisation createKPMG() {
-		final RegDate dateDebut = RegDate.get(1901, 1, 1);
+		final RegDate dateDebut = RegDate.get(1901, 1, 5);
 		final MockOrganisation org = createOrganisation(81574L, 8157L,
 		                                                "KPMG SA",
 		                                                dateDebut,
@@ -233,6 +251,7 @@ public abstract class MockOrganisationFactory {
 		                                                TypeAutoriteFiscale.COMMUNE_HC,
 		                                                MockCommune.Zurich.getNoOFS(),
 		                                                StatusInscriptionRC.ACTIF,
+		                                                RegDate.get(1901, 1, 1),
 		                                                StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE);
 		MockSiteOrganisation site = (MockSiteOrganisation) org.getDonneesSites().get(0);
 		site.addNumeroIDE(dateDebut, null, "CHE269292664");
@@ -241,7 +260,7 @@ public abstract class MockOrganisationFactory {
 	}
 
 	private static MockOrganisation createCuriaTreuhand() {
-		final RegDate dateDebut = RegDate.get(1901, 1, 1);
+		final RegDate dateDebut = RegDate.get(1901, 1, 3);
 		final MockOrganisation org = createOrganisation(784515L, 418451L,
 		                                                "Curia Treuhand AG",
 		                                                dateDebut,
@@ -250,6 +269,7 @@ public abstract class MockOrganisationFactory {
 		                                                TypeAutoriteFiscale.COMMUNE_HC,
 		                                                MockCommune.Chur.getNoOFS(),
 		                                                StatusInscriptionRC.ACTIF,
+		                                                RegDate.get(1901, 1, 1),
 		                                                StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE);
 		MockSiteOrganisation site = (MockSiteOrganisation) org.getDonneesSites().get(0);
 		site.addNumeroIDE(dateDebut, null, "CHE107060819");
@@ -258,7 +278,7 @@ public abstract class MockOrganisationFactory {
 	}
 
 	private static MockOrganisation createJalHolding() {
-		final RegDate dateDebut = RegDate.get(1975, 12, 24);
+		final RegDate dateDebut = RegDate.get(1975, 12, 25);
 		final MockOrganisation org = createOrganisation(454585L, 4656484L,
 		                                                "JAL Holding, en liquidation",
 		                                                dateDebut,
@@ -267,6 +287,7 @@ public abstract class MockOrganisationFactory {
 		                                                TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
 		                                                MockCommune.Lausanne.getNoOFS(),
 		                                                StatusInscriptionRC.ACTIF,
+		                                                RegDate.get(1975, 12, 24),
 		                                                StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE);
 		MockSiteOrganisation site = (MockSiteOrganisation) org.getDonneesSites().get(0);
 		site.addNumeroIDE(dateDebut, null, "CHE102392906");
@@ -279,7 +300,7 @@ public abstract class MockOrganisationFactory {
 	}
 
 	private static MockOrganisation createBanqueCoop() {
-		final RegDate dateDebut = RegDate.get(1971, 3, 23);
+		final RegDate dateDebut = RegDate.get(1971, 3, 26);
 		final MockOrganisation org = createOrganisation(1874515L, 8791056469L,
 		                                                "Bank Coop AG",
 		                                                dateDebut,
@@ -288,6 +309,7 @@ public abstract class MockOrganisationFactory {
 		                                                TypeAutoriteFiscale.COMMUNE_HC,
 		                                                MockCommune.Bale.getNoOFS(),
 		                                                StatusInscriptionRC.ACTIF,
+		                                                RegDate.get(1971, 3, 23),
 		                                                StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE);
 		MockSiteOrganisation site = (MockSiteOrganisation) org.getDonneesSites().get(0);
 		site.addNumeroIDE(dateDebut, null, "CHE101390939");

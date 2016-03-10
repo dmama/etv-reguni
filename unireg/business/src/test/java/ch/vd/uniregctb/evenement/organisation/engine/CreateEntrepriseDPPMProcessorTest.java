@@ -51,8 +51,8 @@ public class CreateEntrepriseDPPMProcessorTest extends AbstractEvenementOrganisa
 			@Override
 			protected void init() {
 				addOrganisation(MockOrganisationFactory
-						                .createOrganisation(noOrganisation, noOrganisation + 1000000, "Corpotruc", RegDate.get(2015, 6, 24), null, FormeLegale.N_0234_CORPORATION_DE_DROIT_PUBLIC_ENTREPRISE,
-						                                    TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF,
+						                .createOrganisation(noOrganisation, noOrganisation + 1000000, "Corpotruc", RegDate.get(2015, 6, 26), null, FormeLegale.N_0234_CORPORATION_DE_DROIT_PUBLIC_ENTREPRISE,
+						                                    TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF, date(2015, 6, 24),
 						                                    StatusRegistreIDE.DEFINITIF,
 						                                    TypeOrganisationRegistreIDE.ASSOCIATION, BigDecimal.valueOf(100000), "CHF"));
 			}
@@ -65,10 +65,11 @@ public class CreateEntrepriseDPPMProcessorTest extends AbstractEvenementOrganisa
 		doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction(TransactionStatus transactionStatus) {
-				final EvenementOrganisation event = createEvent(evtId, noOrganisation, TypeEvenementOrganisation.FOSC_NOUVELLE_ENTREPRISE, RegDate.get(2015, 6, 24), A_TRAITER);
+				final EvenementOrganisation event = createEvent(evtId, noOrganisation, TypeEvenementOrganisation.FOSC_NOUVELLE_ENTREPRISE, RegDate.get(2015, 6, 26), A_TRAITER);
 				return hibernateTemplate.merge(event).getId();
 			}
 		});
+
 
 		// Traitement synchrone de l'événement
 		traiterEvenements(noOrganisation);

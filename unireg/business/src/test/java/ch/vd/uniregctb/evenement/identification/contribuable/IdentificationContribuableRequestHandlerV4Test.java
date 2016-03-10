@@ -382,11 +382,11 @@ public class IdentificationContribuableRequestHandlerV4Test extends BusinessTest
 			@Override
 			protected void init() {
 				final MockOrganisation organisation = addOrganisation(noCivilPM);
-				MockSiteOrganisation site = MockSiteOrganisationFactory.addSite(noCivilPM+9876, organisation, date(1989, 7, 4), null, raisonSociale, FormeLegale.N_0106_SOCIETE_ANONYME,
+				MockSiteOrganisation site = MockSiteOrganisationFactory.addSite(noCivilPM+9876, organisation, date(1989, 7, 7), null, raisonSociale, FormeLegale.N_0106_SOCIETE_ANONYME,
 				                                                         true, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
-				                                                         MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF, StatusRegistreIDE.DEFINITIF,
+				                                                         MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF, date(1989, 7, 4), StatusRegistreIDE.DEFINITIF,
 				                                                         TypeOrganisationRegistreIDE.SITE, BigDecimal.valueOf(50000), "CHF");
-				site.addNumeroIDE(date(1989, 7, 4), null, ide);
+				site.addNumeroIDE(date(1989, 7, 7), null, ide);
 			}
 		});
 
