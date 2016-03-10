@@ -32,6 +32,11 @@ public enum ConsolidationPhase {
 	EFFACEMENT_FORS_ANNULES,
 
 	/**
+	 * Ajout de fors secondaires annulés pour couvrir les établissements stables d'un jour seulement (et ignorés par ailleurs)
+	 */
+	AJOUT_FORS_SECONDAIRES_ANNULES_ETABLISSEMENT_STABLE_UN_JOUR,
+
+	/**
 	 * Le recalcul des motifs des fors principaux encore {@link ch.vd.uniregctb.type.MotifFor#INDETERMINE indéterminés}
 	 */
 	RECALCUL_MOTIFS_INDETERMINES,

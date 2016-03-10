@@ -7,8 +7,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.NavigableMap;
 import java.util.Optional;
+import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeMap;
+import java.util.TreeSet;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -88,6 +90,24 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 		}
 	}
 
+	private static final class IntroductionForSecondaireAnnuleData {
+		final KeyedSupplier<? extends Tiers> entiteJuridiqueSupplier;
+		final RegpmEtablissement etablissement;
+		final SortedSet<RegDate> jours;
+        public IntroductionForSecondaireAnnuleData(RegpmEtablissement etablissement, KeyedSupplier<? extends Tiers> entiteJuridiqueSupplier, RegDate jour) {
+			this.etablissement = etablissement;
+	        this.entiteJuridiqueSupplier = entiteJuridiqueSupplier;
+	        this.jours = new TreeSet<>();
+	        this.jours.add(jour);
+		}
+		public IntroductionForSecondaireAnnuleData(IntroductionForSecondaireAnnuleData source, Set<RegDate> jours) {
+			this.etablissement = source.etablissement;
+			this.entiteJuridiqueSupplier = source.entiteJuridiqueSupplier;
+			this.jours = new TreeSet<>(source.jours);
+			this.jours.addAll(jours);
+		}
+	}
+
 	@Override
 	public void initMigrationResult(MigrationResultInitialization mr, IdMapping idMapper) {
 		super.initMigrationResult(mr, idMapper);
@@ -99,6 +119,13 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 		                                        d -> d.entiteJuridiqueSupplier,
 		                                        (d1, d2) -> new ForsSecondairesData.Activite(d1.entiteJuridiqueSupplier, DATE_RANGE_MAP_MERGER.apply(d1.communes, d2.communes)),
 		                                        d -> createForsSecondairesEtablissement(d, mr, idMapper));
+
+		// action de génération des fors secondaires annulés
+		mr.registerPreTransactionCommitCallback(IntroductionForSecondaireAnnuleData.class,
+		                                        ConsolidationPhase.AJOUT_FORS_SECONDAIRES_ANNULES_ETABLISSEMENT_STABLE_UN_JOUR,
+		                                        d -> d.etablissement.getId(),
+		                                        (d1, d2) -> new IntroductionForSecondaireAnnuleData(d1, d2.jours),
+		                                        d -> createForsSecondairesAnnulesUnJour(d, mr, idMapper));
 
 		//
 		// données "cachées" sur les établissements
@@ -130,24 +157,85 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 	}
 
 	@NotNull
+	private NavigableMap<RegDate, RegpmDomicileEtablissement> buildMapDomicilesEtablissement(RegpmEtablissement etablissement) {
+		final NavigableMap<RegDate, RegpmDomicileEtablissement> mapDomiciles;
+		final SortedSet<RegpmDomicileEtablissement> domiciles = etablissement.getDomicilesEtablissements();
+		if (domiciles != null && !domiciles.isEmpty()) {
+			// on trie les entités avant de les collecter en map afin de s'assurer que, à dates égales,
+			// c'est le dernier qui aura raison...
+			mapDomiciles = domiciles.stream()
+					.filter(de -> !de.isRectifiee())
+					.sorted()
+					.collect(Collectors.toMap(RegpmDomicileEtablissement::getDateValidite, Function.identity(), (u, v) -> v, TreeMap::new));
+		}
+		else {
+			mapDomiciles = Collections.emptyNavigableMap();
+		}
+		return mapDomiciles;
+	}
+
+	/**
+	 * [SIFISC-17356] Création des fors secondaires annulés d'un jour correspondant à des établissements stables d'un jour
+	 * @param data dates des fors à générer
+	 * @param mr collecteur de messages de migrations et manipulateur de contexte de log
+	 * @param idMapper mapper d'identifiants RegPM -> Unireg
+	 */
+	private void createForsSecondairesAnnulesUnJour(IntroductionForSecondaireAnnuleData data, MigrationResultContextManipulation mr, IdMapping idMapper) {
+		doInLogContext(data.entiteJuridiqueSupplier.getKey(),
+		               mr,
+		               idMapper,
+		               () -> {
+
+			               // on va déjà chercher les domiciles valides
+			               final NavigableMap<RegDate, RegpmDomicileEtablissement> mapDomiciles = buildMapDomicilesEtablissement(data.etablissement);
+			               for (RegDate jour : data.jours) {
+				               final RegpmDomicileEtablissement domicile = Optional.of(jour).map(mapDomiciles::floorEntry).map(Map.Entry::getValue).orElse(null);
+				               if (domicile == null || domicile.getCommune() == null) {
+					               mr.addMessage(LogCategory.FORS, LogLevel.WARN,
+					                             String.format("Impossible de trouver de localisation pour un for secondaire annulé d'un jour au %s issu de l'établissement %d.",
+					                                           StringRenderers.DATE_RENDERER.toString(jour),
+					                                           data.etablissement.getId()));
+				               }
+				               else if (domicile.getCommune().getCanton() != RegpmCanton.VD) {
+					               mr.addMessage(LogCategory.FORS, LogLevel.WARN,
+					                             String.format("Localisation pour un for secondaire annulé d'un jour au %s (issu de l'établissement %d) ignorée car non-vaudoise (%s / %d / %s).",
+					                                           StringRenderers.DATE_RENDERER.toString(jour),
+					                                           data.etablissement.getId(),
+					                                           domicile.getCommune().getNom(),
+					                                           domicile.getCommune().getNoOfs(),
+					                                           domicile.getCommune().getCanton()));
+				               }
+				               else {
+					               final ForFiscalSecondaire ffs = new ForFiscalSecondaire();
+					               ffs.setAnnule(true);
+					               ffs.setDateDebut(jour);
+					               ffs.setDateFin(jour);
+					               ffs.setGenreImpot(GenreImpot.BENEFICE_CAPITAL);
+					               ffs.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
+					               ffs.setNumeroOfsAutoriteFiscale(domicile.getCommune().getNoOfs());
+					               ffs.setMotifRattachement(MotifRattachement.ETABLISSEMENT_STABLE);
+					               ffs.setMotifOuverture(MotifFor.DEBUT_EXPLOITATION);
+					               ffs.setMotifFermeture(MotifFor.FIN_EXPLOITATION);
+
+					               mr.addMessage(LogCategory.FORS, LogLevel.WARN,
+					                             String.format("Création d'un for secondaire annulé %s pour garder une trace d'un établissement stable d'un jour ignoré par ailleurs (établissement %d).",
+					                                           StringRenderers.LOCALISATION_DATEE_RENDERER.toString(ffs),
+					                                           data.etablissement.getId()));
+
+					               final Tiers entiteJuridique = data.entiteJuridiqueSupplier.get();
+					               entiteJuridique.addForFiscal(ffs);
+				               }
+			               }
+		               });
+	}
+
+	@NotNull
 	private DomicilesStables extractDomicilesStables(RegpmEtablissement e, MigrationResultContextManipulation mr, IdMapping idMapper) {
 		final EntityKey key = buildEtablissementKey(e);
 		return doInLogContext(key, mr, idMapper, () -> {
 
 			// on va déjà chercher les domiciles valides
-			final NavigableMap<RegDate, RegpmDomicileEtablissement> mapDomiciles;
-			final SortedSet<RegpmDomicileEtablissement> domiciles = e.getDomicilesEtablissements();
-			if (domiciles != null && !domiciles.isEmpty()) {
-				// on trie les entités avant de les collecter en map afin de s'assurer que, à dates égales,
-				// c'est le dernier qui aura raison...
-				mapDomiciles = domiciles.stream()
-						.filter(de -> !de.isRectifiee())
-						.sorted()
-						.collect(Collectors.toMap(RegpmDomicileEtablissement::getDateValidite, Function.identity(), (u, v) -> v, TreeMap::new));
-			}
-			else {
-				mapDomiciles = Collections.emptyNavigableMap();
-			}
+			final NavigableMap<RegDate, RegpmDomicileEtablissement> mapDomiciles = buildMapDomicilesEtablissement(e);
 
 			// on va également chercher les ranges d'établissements stables
 			final List<DateRange> rangesStables = mr.getExtractedData(DatesEtablissementsStables.class, key).liste;
@@ -277,6 +365,22 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 						else {
 							return new DateRangeHelper.Range(etb);
 						}
+					})
+					.filter(range -> {
+						// les "stabilités" d'une seule journée doivent être ignorées pour elles-mêmes et retranscrites en fors secondaires annulés dans Unireg
+						if (range.getDateDebut() == range.getDateFin()) {
+							// seuls les établissements d'entreprise ont ce comportement
+							if (e.getEntreprise() != null) {
+								mr.addMessage(LogCategory.ETABLISSEMENTS, LogLevel.WARN,
+								              String.format("Période d'établissement stable d'un jour ignorée au %s.",
+								                            StringRenderers.DATE_RENDERER.toString(range.getDateDebut())));
+
+								// demande de callback pour l'insertion du for secondaire annulé
+								mr.addPreTransactionCommitData(new IntroductionForSecondaireAnnuleData(e, getEntrepriseSupplier(idMapper, e.getEntreprise()), range.getDateDebut()));
+							}
+							return false;
+						}
+						return true;
 					})
 					.sorted(DateRangeComparator::compareRanges)
 					.collect(Collectors.toList());

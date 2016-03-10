@@ -5929,6 +5929,98 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 	}
 
 	/**
+	 * [SIFISC-17356] les périodes de stabilité d'établissement d'un jour seulement doivent être ignorées et transcrite en un for secondaire annulé
+	 */
+	@Test
+	public void testEtablissementStableUnJour() throws Exception {
+
+		final long idEntreprise = 4623L;
+		final long idEtablissement = 43623L;
+		final RegDate dateDebut = RegDate.get(2005, 7, 22);
+		final RegDate dateJourEtablissementStable = RegDate.get(2006, 8, 13);
+
+		final RegpmEntreprise entreprise = EntrepriseMigratorTest.buildEntreprise(idEntreprise);
+		EntrepriseMigratorTest.addRaisonSociale(entreprise, dateDebut, "Notre petite entreprise", "devenue grande", null, true);
+		EntrepriseMigratorTest.addFormeJuridique(entreprise, dateDebut, EntrepriseMigratorTest.createTypeFormeJuridique("S.A.", RegpmCategoriePersonneMorale.PM));
+		EntrepriseMigratorTest.addForPrincipalSuisse(entreprise, dateDebut, RegpmTypeForPrincipal.SIEGE, Commune.LAUSANNE);
+		EntrepriseMigratorTest.addRegimeFiscalCH(entreprise, dateDebut, null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
+		EntrepriseMigratorTest.addRegimeFiscalVD(entreprise, dateDebut, null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
+		EntrepriseMigratorTest.addAssujettissement(entreprise, dateDebut, null, RegpmTypeAssujettissement.LILIC);
+		entreprise.setDateBouclementFutur(RegDate.get(2015, 12, 31));
+
+		final RegpmEtablissement etablissement = EtablissementMigratorTest.buildEtablissement(idEtablissement, entreprise);
+		EtablissementMigratorTest.addEtablissementStable(etablissement, dateJourEtablissementStable, dateJourEtablissementStable);
+		EtablissementMigratorTest.addDomicileEtablissement(etablissement, dateJourEtablissementStable, Commune.ECHALLENS, false);
+
+		final MockGraphe graphe = new MockGraphe(Collections.singletonList(entreprise),
+		                                         Collections.singletonList(etablissement),
+		                                         null);
+
+		activityManager.setup(ALL_ACTIVE);
+
+		final LoggedMessages lms = grapheMigrator.migrate(graphe);
+		Assert.assertNotNull(lms);
+
+		// vérification de la présence du for secondaire annulé
+		doInUniregTransaction(true, status -> {
+			final Entreprise e = uniregStore.getEntityFromDb(Entreprise.class, idEntreprise);
+			Assert.assertNotNull(e);
+
+			final List<ForFiscal> fors = e.getForsFiscauxSorted();
+			Assert.assertNotNull(fors);
+			Assert.assertEquals(2, fors.size());        // le for principal + le for secondaire annulé
+
+			final Map<Class<?>, ForFiscal> mapFors = fors.stream()
+					.collect(Collectors.toMap(ForFiscal::getClass, Function.identity()));
+			Assert.assertTrue(mapFors.containsKey(ForFiscalPrincipalPM.class));
+			Assert.assertTrue(mapFors.containsKey(ForFiscalSecondaire.class));
+			{
+				final ForFiscalPrincipalPM ffp = (ForFiscalPrincipalPM) mapFors.get(ForFiscalPrincipalPM.class);
+				Assert.assertNotNull(ffp);
+				Assert.assertFalse(ffp.isAnnule());
+				Assert.assertEquals(dateDebut, ffp.getDateDebut());
+				Assert.assertNull(ffp.getDateFin());
+				Assert.assertEquals(MotifFor.INDETERMINE, ffp.getMotifOuverture());
+				Assert.assertNull(ffp.getMotifFermeture());
+				Assert.assertEquals(GenreImpot.BENEFICE_CAPITAL, ffp.getGenreImpot());
+				Assert.assertEquals(MotifRattachement.DOMICILE, ffp.getMotifRattachement());
+				Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
+				Assert.assertEquals(Commune.LAUSANNE.getNoOfs(), ffp.getNumeroOfsAutoriteFiscale());
+			}
+			{
+				final ForFiscalSecondaire ffs = (ForFiscalSecondaire) mapFors.get(ForFiscalSecondaire.class);
+				Assert.assertNotNull(ffs);
+				Assert.assertTrue(ffs.isAnnule());
+				Assert.assertEquals(dateJourEtablissementStable, ffs.getDateDebut());
+				Assert.assertEquals(dateJourEtablissementStable, ffs.getDateFin());
+				Assert.assertEquals(MotifFor.DEBUT_EXPLOITATION, ffs.getMotifOuverture());
+				Assert.assertEquals(MotifFor.FIN_EXPLOITATION, ffs.getMotifFermeture());
+				Assert.assertEquals(GenreImpot.BENEFICE_CAPITAL, ffs.getGenreImpot());
+				Assert.assertEquals(MotifRattachement.ETABLISSEMENT_STABLE, ffs.getMotifRattachement());
+				Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffs.getTypeAutoriteFiscale());
+				Assert.assertEquals(Commune.ECHALLENS.getNoOfs(), ffs.getNumeroOfsAutoriteFiscale());
+			}
+		});
+
+		// vérification des messages de log
+		final Map<LogCategory, List<String>> messages = buildTextualMessages(lms);
+		{
+			// vérification des messages dans le contexte "ETABLISSEMENTS"
+			final List<String> msgs = messages.get(LogCategory.ETABLISSEMENTS);
+			Assert.assertEquals(2, msgs.size());
+			Assert.assertEquals("WARN;" + idEtablissement + ";;;;" + idEntreprise + ";;Période d'établissement stable d'un jour ignorée au 13.08.2006.", msgs.get(0));
+			Assert.assertEquals("WARN;" + idEtablissement + ";;;;" + idEntreprise + ";;Etablissement ignoré car sans établissement stable ni rôle de mandataire.", msgs.get(1));
+		}
+		{
+			// vérification des messages dans le contexte "FORS"
+			final List<String> msgs = messages.get(LogCategory.FORS);
+			Assert.assertEquals(2, msgs.size());
+			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;For principal COMMUNE_OU_FRACTION_VD/5586 [22.07.2005 -> ?] généré.", msgs.get(0));
+			Assert.assertEquals("WARN;" + idEntreprise + ";Active;;;Création d'un for secondaire annulé ForFiscalSecondaire [13.08.2006 -> 13.08.2006] sur COMMUNE_OU_FRACTION_VD/5518 pour garder une trace d'un établissement stable d'un jour ignoré par ailleurs (établissement " + idEtablissement + ").", msgs.get(1));
+		}
+	}
+
+	/**
 	 * Ceci est un test utile au debugging, on charge un graphe depuis un fichier sur disque (identique à ce que
 	 * l'on peut envoyer dans la vraie migration) et on tente la migration du graphe en question
 	 */
