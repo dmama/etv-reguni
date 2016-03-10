@@ -114,7 +114,7 @@ public class CreateEntrepriseHorsVDProcessorTest extends AbstractEvenementOrgani
 
 				                             final EvenementOrganisation evt = evtOrganisationDAO.get(evtId);
 				                             Assert.assertNotNull(evt);
-				                             Assert.assertEquals(EtatEvenementOrganisation.A_VERIFIER, evt.getEtat());
+				                             Assert.assertEquals(EtatEvenementOrganisation.TRAITE, evt.getEtat());
 
 				                             final Entreprise entreprise = tiersDAO.getEntrepriseByNumeroOrganisation(evt.getNoOrganisation());
 				                             Assert.assertEquals(2, entreprise.getRegimesFiscaux().size());
@@ -258,7 +258,7 @@ public class CreateEntrepriseHorsVDProcessorTest extends AbstractEvenementOrgani
 
 				                             final EvenementOrganisation evt = evtOrganisationDAO.get(evtId);
 				                             Assert.assertNotNull(evt);
-				                             Assert.assertEquals(EtatEvenementOrganisation.A_VERIFIER, evt.getEtat());
+				                             Assert.assertEquals(EtatEvenementOrganisation.TRAITE, evt.getEtat());
 
 				                             final Entreprise entreprise = tiersDAO.getEntrepriseByNumeroOrganisation(evt.getNoOrganisation());
 				                             Assert.assertEquals(0, entreprise.getRegimesFiscaux().size());
@@ -411,7 +411,7 @@ public class CreateEntrepriseHorsVDProcessorTest extends AbstractEvenementOrgani
 
 					                             final EvenementOrganisation evt = evtOrganisationDAO.get(evtId);
 					                             Assert.assertNotNull(evt);
-					                             Assert.assertEquals(EtatEvenementOrganisation.A_VERIFIER, evt.getEtat());
+					                             Assert.assertEquals(EtatEvenementOrganisation.TRAITE, evt.getEtat());
 
 					                             final Entreprise entreprise = tiersDAO.getEntrepriseByNumeroOrganisation(evt.getNoOrganisation());
 					                             Assert.assertEquals(2, entreprise.getRegimesFiscaux().size());

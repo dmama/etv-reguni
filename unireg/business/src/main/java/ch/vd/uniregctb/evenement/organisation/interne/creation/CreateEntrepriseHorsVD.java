@@ -108,7 +108,6 @@ public class CreateEntrepriseHorsVD extends EvenementOrganisationInterneDeTraite
 
 				// Ajoute les for secondaires
 				adapteForsSecondairesPourEtablissementsVD(getEntreprise(), getDateEvt(), warnings, suivis);
-				warnings.addWarning(String.format(messageWarning, category.getLibelle()));
 				break;
 			case SP:
 				openForFiscalPrincipal(getDateEvt(),
@@ -117,7 +116,6 @@ public class CreateEntrepriseHorsVD extends EvenementOrganisationInterneDeTraite
 				                       MotifFor.DEBUT_EXPLOITATION,
 				                       GenreImpot.REVENU_FORTUNE,
 				                       warnings, suivis);
-				warnings.addWarning(String.format(messageWarning, category.getLibelle()));
 				break;
 			case FP:
 				warnings.addWarning(String.format(messageWarning, category.getLibelle()));
