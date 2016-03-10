@@ -25,6 +25,10 @@ public interface DonneesRC {
 
 	RegDate getDateInscription(RegDate date);
 
+	List<DateRanged<RegDate>> getDateInscriptionVd();
+
+	RegDate getDateInscriptionVd(RegDate date);
+
 	List<DateRanged<String>> getButs();
 
 	List<DateRanged<RegDate>> getDateStatuts();
@@ -32,4 +36,8 @@ public interface DonneesRC {
 	List<DateRanged<RegDate>> getDateRadiation();
 
 	RegDate getDateRadiation(RegDate date);
+
+	List<DateRanged<RegDate>> getDateRadiationVd();
+
+	RegDate getDateRadiationVd(RegDate date);
 }

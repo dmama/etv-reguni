@@ -70,10 +70,12 @@ public class RCEntSiteOrganisationHelper {
 				RCEntHelper.convertAndMap(rc.getRegistrationStatus(), COMMERCIAL_REGISTER_STATUS_CONVERTER),
 				RCEntHelper.convertAndMap(rc.getVdDissolutionReason(), RC_DISSOLUTION_REASON_CONVERTER),
 				RCEntHelper.convert(rc.getRegistrationDate()),
+				RCEntHelper.convert(rc.getVdRegistrationDate()),
 				RCEntHelper.convertAndDerange(rc.getCapital(), CAPITAL_CONVERTER, CAPITAL_PREDICATE),
 				RCEntHelper.convert(rc.getPurpose()),
 				RCEntHelper.convert(rc.getByLawsDate()),
-				RCEntHelper.convert(rc.getDeregistrationDate()));
+				RCEntHelper.convert(rc.getDeregistrationDate()),
+				RCEntHelper.convert(rc.getVdDeregistrationDate()));
 	}
 
 	private static DonneesRegistreIDE createDonneesIDE(final OrganisationLocation.RCEntUIDData uid) {

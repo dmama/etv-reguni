@@ -16,11 +16,13 @@ public class DonneesRCBuilder implements DataBuilder<DonneesRC> {
 
 	private List<DateRanged<StatusInscriptionRC>> statusInscription;
 	private List<DateRanged<RegDate>> dateInscription;
+	private List<DateRanged<RegDate>> dateInscriptionVd;
 	private List<Capital> capital;
 	private List<AdresseLegaleRCEnt> adresseLegale;
 	private List<DateRanged<String>> buts;
 	private List<DateRanged<RegDate>> dateStatus;
 	private List<DateRanged<RegDate>> dateRadiation;
+	private List<DateRanged<RegDate>> dateRadiationVd;
 
 	public DonneesRCBuilder() {}
 
@@ -32,7 +34,7 @@ public class DonneesRCBuilder implements DataBuilder<DonneesRC> {
 
 	@Override
 	public DonneesRCRCEnt build() {
-		return new DonneesRCRCEnt(adresseLegale, statusInscription, null, dateInscription, capital, buts, dateStatus, dateRadiation);
+		return new DonneesRCRCEnt(adresseLegale, statusInscription, null, dateInscription, dateInscriptionVd, capital, buts, dateStatus, dateRadiation, dateRadiationVd);
 	}
 
 	public DonneesRCBuilder addStatusInscription(@NotNull RegDate dateDebut, RegDate dateDeFin, @NotNull StatusInscriptionRC valeur) {
@@ -42,6 +44,11 @@ public class DonneesRCBuilder implements DataBuilder<DonneesRC> {
 
 	public DonneesRCBuilder addDateInscription(@NotNull RegDate dateDebut, RegDate dateDeFin, @NotNull RegDate valeur) {
 		dateInscription = BuilderHelper.addValueToList(dateInscription, new DateRanged<>(dateDebut, dateDeFin, valeur));
+		return this;
+	}
+
+	public DonneesRCBuilder addDateInscriptionVd(@NotNull RegDate dateDebut, RegDate dateDeFin, @NotNull RegDate valeur) {
+		dateInscriptionVd = BuilderHelper.addValueToList(dateInscriptionVd, new DateRanged<>(dateDebut, dateDeFin, valeur));
 		return this;
 	}
 
@@ -65,6 +72,11 @@ public class DonneesRCBuilder implements DataBuilder<DonneesRC> {
 		return this;
 	}
 
+	public DonneesRCBuilder addDateRadiationVd(@NotNull DateRanged<RegDate> dateRadiationVd) {
+		this.dateRadiationVd = BuilderHelper.addValueToList(this.dateRadiationVd, dateRadiationVd);
+		return this;
+	}
+
 	public DonneesRCBuilder withAdresseLegale(List<AdresseLegaleRCEnt> adresseLegale) {
 		this.adresseLegale = adresseLegale;
 		return this;
@@ -84,4 +96,5 @@ public class DonneesRCBuilder implements DataBuilder<DonneesRC> {
 		this.dateInscription = dateInscription;
 		return this;
 	}
+
 }

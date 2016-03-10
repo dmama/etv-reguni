@@ -25,11 +25,13 @@ public class MockDonneesRC implements DonneesRC {
 	private NavigableMap<RegDate, StatusInscriptionRC> statusInscription = new TreeMap<>();
 	private NavigableMap<RegDate, RaisonDeDissolutionRC> raisonDeDissolutionVd = new TreeMap<>();
 	private NavigableMap<RegDate, RegDate> dateInscription = new TreeMap<>();
+	private NavigableMap<RegDate, RegDate> dateInscriptionVd = new TreeMap<>();
 	private NavigableMap<RegDate, Capital> capital = new TreeMap<>();
 	private NavigableMap<RegDate, AdresseLegaleRCEnt> adresseLegale = new TreeMap<>();
 	private NavigableMap<RegDate, String> buts = new TreeMap<>();
 	private NavigableMap<RegDate, RegDate> dateStatus = new TreeMap<>();
 	private NavigableMap<RegDate, RegDate> dateRadiation = new TreeMap<>();
+	private NavigableMap<RegDate, RegDate> dateRadiationVd = new TreeMap<>();
 
 	public MockDonneesRC() {};
 
@@ -139,6 +141,24 @@ public class MockDonneesRC implements DonneesRC {
 	}
 
 	@Override
+	public List<DateRanged<RegDate>> getDateInscriptionVd() {
+		return MockOrganisationHelper.getHisto(dateInscriptionVd);
+	}
+
+	public void changeDateInscriptionVd(RegDate date, RegDate nouvelleDateInscriptionVd) {
+		MockOrganisationHelper.changeRangedData(dateInscriptionVd, date, nouvelleDateInscriptionVd);
+	}
+
+	public void addDateInscriptionVd(RegDate dateDebut, @Nullable RegDate dateFin, RegDate nouvelleDateInscriptionVd) {
+		MockOrganisationHelper.addRangedData(dateInscriptionVd, dateDebut, dateFin, nouvelleDateInscriptionVd);
+	}
+
+	@Override
+	public RegDate getDateInscriptionVd(RegDate date) {
+		return OrganisationHelper.valueForDate(getDateInscriptionVd(), date);
+	}
+
+	@Override
 	public List<DateRanged<String>> getButs() {
 		return MockOrganisationHelper.getHisto(buts);
 	}
@@ -180,6 +200,24 @@ public class MockDonneesRC implements DonneesRC {
 
 	public void addDateRadiation(RegDate dateDebut, @Nullable RegDate dateFin, RegDate nouvelleDateRadiation) {
 		MockOrganisationHelper.addRangedData(dateRadiation, dateDebut, dateFin, nouvelleDateRadiation);
+	}
+
+	@Override
+	public List<DateRanged<RegDate>> getDateRadiationVd() {
+		return MockOrganisationHelper.getHisto(dateRadiationVd);
+	}
+
+	@Override
+	public RegDate getDateRadiationVd(RegDate date) {
+		return OrganisationHelper.valueForDate(getDateRadiationVd(), date);
+	}
+
+	public void changeDateRadiationVd(RegDate date, RegDate nouvelleDateRadiation) {
+		MockOrganisationHelper.changeRangedData(dateRadiationVd, date, nouvelleDateRadiation);
+	}
+
+	public void addDateRadiationVd(RegDate dateDebut, @Nullable RegDate dateFin, RegDate nouvelleDateRadiation) {
+		MockOrganisationHelper.addRangedData(dateRadiationVd, dateDebut, dateFin, nouvelleDateRadiation);
 	}
 
 }
