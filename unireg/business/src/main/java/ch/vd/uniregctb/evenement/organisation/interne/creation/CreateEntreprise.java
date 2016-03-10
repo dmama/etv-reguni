@@ -103,7 +103,7 @@ public abstract class CreateEntreprise extends EvenementOrganisationInterneDeTra
 
 		// Création des établissement secondaires
 		for (SiteOrganisation site : getOrganisation().getSitesSecondaires(getDateEvt())) {
-			addEtablissementSecondaire(site, getDateDeCreation(), warnings, suivis);
+			addEtablissementSecondaire(site, getDateEvt(), warnings, suivis);
 		}
 	}
 
