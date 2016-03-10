@@ -167,23 +167,28 @@ public class OrganisationLocation {
 		private final List<DateRangeHelper.Ranged<Capital>> capital;
 		private final List<DateRangeHelper.Ranged<Address>> legalAddress;
 		private final List<DateRangeHelper.Ranged<RegDate>> registrationDate;
+		private final List<DateRangeHelper.Ranged<RegDate>> vDRegistrationDate;
 		private final List<DateRangeHelper.Ranged<String>> purpose;
 		private final List<DateRangeHelper.Ranged<RegDate>> byLawsDate;
 		private final List<DateRangeHelper.Ranged<RegDate>> deregistrationDate;
+		private final List<DateRangeHelper.Ranged<RegDate>> vDDeregistrationDate;
 
 		public RCEntRCData(List<DateRangeHelper.Ranged<CommercialRegisterStatus>> registrationStatus,
 		                   List<DateRangeHelper.Ranged<DissolutionReason>> vdDissolutionReason,
 		                   List<DateRangeHelper.Ranged<Capital>> capital, List<DateRangeHelper.Ranged<Address>> legalAddress,
-		                   List<DateRangeHelper.Ranged<RegDate>> registrationDate,
-		                   List<DateRangeHelper.Ranged<String>> purpose, List<DateRangeHelper.Ranged<RegDate>> byLawsDate, List<DateRangeHelper.Ranged<RegDate>> deregistrationDate) {
+		                   List<DateRangeHelper.Ranged<RegDate>> registrationDate, List<DateRangeHelper.Ranged<RegDate>> vDRegistrationDate,
+		                   List<DateRangeHelper.Ranged<String>> purpose, List<DateRangeHelper.Ranged<RegDate>> byLawsDate,
+		                   List<DateRangeHelper.Ranged<RegDate>> deregistrationDate, List<DateRangeHelper.Ranged<RegDate>> vDDeregistrationDate) {
 			this.registrationStatus = registrationStatus;
 			this.vdDissolutionReason = vdDissolutionReason;
 			this.capital = capital;
 			this.legalAddress = legalAddress;
 			this.registrationDate = registrationDate;
+			this.vDRegistrationDate = vDRegistrationDate;
 			this.purpose = purpose;
 			this.byLawsDate = byLawsDate;
 			this.deregistrationDate = deregistrationDate;
+			this.vDDeregistrationDate = vDDeregistrationDate;
 		}
 
 		public List<DateRangeHelper.Ranged<DissolutionReason>> getVdDissolutionReason() {
@@ -206,6 +211,10 @@ public class OrganisationLocation {
 			return registrationDate;
 		}
 
+		public List<DateRangeHelper.Ranged<RegDate>> getVdRegistrationDate() {
+			return vDRegistrationDate;
+		}
+
 		public List<DateRangeHelper.Ranged<String>> getPurpose() {
 			return purpose;
 		}
@@ -216,6 +225,10 @@ public class OrganisationLocation {
 
 		public List<DateRangeHelper.Ranged<RegDate>> getDeregistrationDate() {
 			return deregistrationDate;
+		}
+
+		public List<DateRangeHelper.Ranged<RegDate>> getVdDeregistrationDate() {
+			return vDDeregistrationDate;
 		}
 	}
 

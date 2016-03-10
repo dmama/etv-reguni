@@ -49,6 +49,8 @@ import ch.vd.uniregctb.adapter.rcent.historizer.extractor.LocationRcByLawsDateEx
 import ch.vd.uniregctb.adapter.rcent.historizer.extractor.LocationRcDeregistrationDateExtractor;
 import ch.vd.uniregctb.adapter.rcent.historizer.extractor.LocationRcPurposeExtractor;
 import ch.vd.uniregctb.adapter.rcent.historizer.extractor.LocationRcRegistrationDateExtractor;
+import ch.vd.uniregctb.adapter.rcent.historizer.extractor.LocationRcVdDeregistrationDateExtractor;
+import ch.vd.uniregctb.adapter.rcent.historizer.extractor.LocationRcVdRegistrationDateExtractor;
 import ch.vd.uniregctb.adapter.rcent.historizer.extractor.LocationTypeExtractor;
 import ch.vd.uniregctb.adapter.rcent.historizer.extractor.LocationUidInReplacementOfExtractor;
 import ch.vd.uniregctb.adapter.rcent.historizer.extractor.LocationUidReplacedByExtractor;
@@ -136,7 +138,10 @@ public class OrganisationHistorizer {
 		                                                                                                                                                       Equalator.DEFAULT
 		);
 		final IndexedDataCollector<Organisation, RegDate, BigInteger> locationRcEntryDateCollector = new SingleValueIndexedDataCollector<>(new LocationRcRegistrationDateExtractor(),
-		                                                                                                                                  Equalator.DEFAULT
+		                                                                                                                                   Equalator.DEFAULT
+		);
+		final IndexedDataCollector<Organisation, RegDate, BigInteger> locationRcVdEntryDateCollector = new SingleValueIndexedDataCollector<>(new LocationRcVdRegistrationDateExtractor(),
+		                                                                                                                                     Equalator.DEFAULT
 		);
 		final IndexedDataCollector<Organisation, Address, BigInteger> locationRcLegalAddressCollector = new SingleValueIndexedDataCollector<>(new AdressesLegalesExtractor(),
 		                                                                                                                                      ADDRESS_EQUALATOR
@@ -152,6 +157,9 @@ public class OrganisationHistorizer {
 		);
 		final IndexedDataCollector<Organisation, RegDate, BigInteger> locationRcCancellationDateCollector = new SingleValueIndexedDataCollector<>(new LocationRcDeregistrationDateExtractor(),
 		                                                                                                                                          Equalator.DEFAULT
+		);
+		final IndexedDataCollector<Organisation, RegDate, BigInteger> locationRcVdCancellationDateCollector = new SingleValueIndexedDataCollector<>(new LocationRcVdDeregistrationDateExtractor(),
+		                                                                                                                                            Equalator.DEFAULT
 		);
 
 		// IDE
@@ -192,7 +200,9 @@ public class OrganisationHistorizer {
 		                                                    locationRcStatusCollector,
 		                                                    locationRcVdDissolutionReasonCollector,
 		                                                    locationRcEntryDateCollector,
+		                                                    locationRcVdEntryDateCollector,
 		                                                    locationRcCancellationDateCollector,
+		                                                    locationRcVdCancellationDateCollector,
 		                                                    locationRcLegalAddressCollector,
 		                                                    locationRcByLawsDateCollector,
 		                                                    locationRcPurposeCollector,
@@ -229,10 +239,12 @@ public class OrganisationHistorizer {
 				locationRcStatusCollector.getCollectedData(),
 				locationRcVdDissolutionReasonCollector.getCollectedData(),
 				locationRcEntryDateCollector.getCollectedData(),
+				locationRcVdEntryDateCollector.getCollectedData(),
 				locationRcCapitalCollector.getCollectedData(),
 				locationRcPurposeCollector.getCollectedData(),
 				locationRcByLawsDateCollector.getCollectedData(),
 				locationRcCancellationDateCollector.getCollectedData(),
+				locationRcVdCancellationDateCollector.getCollectedData(),
 
 				locationUidStatus.getCollectedData(),
 				locationUidTypeOfOrganisation.getCollectedData(),

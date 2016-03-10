@@ -43,11 +43,13 @@ public class OrganisationLocationBuilder {
 	private final Map<BigInteger, List<DateRangeHelper.Ranged<CommercialRegisterStatus>>> rcStatus;
 	private final Map<BigInteger, List<DateRangeHelper.Ranged<DissolutionReason>>> rcVdDissolutionReason;
 	private final Map<BigInteger, List<DateRangeHelper.Ranged<RegDate>>> entryDate;
+	private final Map<BigInteger, List<DateRangeHelper.Ranged<RegDate>>> VdEntryDate;
 	private final Map<BigInteger, List<DateRangeHelper.Ranged<Capital>>> capital;
 	private final Map<BigInteger, List<DateRangeHelper.Ranged<Address>>> rcLegalAddresses;
 	private final Map<BigInteger, List<DateRangeHelper.Ranged<String>>> purpose;
 	private final Map<BigInteger, List<DateRangeHelper.Ranged<RegDate>>> byLawsDate;
 	private final Map<BigInteger, List<DateRangeHelper.Ranged<RegDate>>> cancellationDate;
+	private final Map<BigInteger, List<DateRangeHelper.Ranged<RegDate>>> vDCancellationDate;
 
 
 	private final Map<BigInteger, List<DateRangeHelper.Ranged<UidRegisterStatus>>> uidStatus;
@@ -72,10 +74,12 @@ public class OrganisationLocationBuilder {
 	                                   Map<BigInteger, List<DateRangeHelper.Ranged<CommercialRegisterStatus>>> rcStatus,
 	                                   Map<BigInteger, List<DateRangeHelper.Ranged<DissolutionReason>>> rcVdDissolutionReason,
 	                                   Map<BigInteger, List<DateRangeHelper.Ranged<RegDate>>> entryDate,
+	                                   Map<BigInteger, List<DateRangeHelper.Ranged<RegDate>>> VdEntryDate,
 	                                   Map<BigInteger, List<DateRangeHelper.Ranged<Capital>>> capital,
 	                                   Map<BigInteger, List<DateRangeHelper.Ranged<String>>> purpose,
 	                                   Map<BigInteger, List<DateRangeHelper.Ranged<RegDate>>> byLawsDate,
 	                                   Map<BigInteger, List<DateRangeHelper.Ranged<RegDate>>> cancellationDate,
+	                                   Map<BigInteger, List<DateRangeHelper.Ranged<RegDate>>> vDCancellationDate,
 	                                   Map<BigInteger, List<DateRangeHelper.Ranged<UidRegisterStatus>>> uidStatus,
 	                                   Map<BigInteger, List<DateRangeHelper.Ranged<KindOfUidEntity>>> uidTypeOfOrganisation,
 	                                   Map<BigInteger, List<DateRangeHelper.Ranged<Address>>> uidEffectiveAddesses,
@@ -99,12 +103,14 @@ public class OrganisationLocationBuilder {
 		this.function = function;
 		this.rcStatus = rcStatus;
 		this.entryDate = entryDate;
+		this.VdEntryDate = VdEntryDate;
 		this.capital = capital;
 		this.rcLegalAddresses = rcLegalAddresses;
 		this.uidStatus = uidStatus;
 		this.uidEffectiveAddesses = uidEffectiveAddesses;
 		this.uidLiquidationReason = uidLiquidationReason;
 		this.cancellationDate = cancellationDate;
+		this.vDCancellationDate = vDCancellationDate;
 		this.businessPublication = businessPublication;
 	}
 
@@ -117,9 +123,11 @@ public class OrganisationLocationBuilder {
 				                                                                        capital.get(e.getKey()),
 				                                                                        rcLegalAddresses.get(e.getKey()),
 				                                                                        entryDate.get(e.getKey()),
+				                                                                        VdEntryDate.get(e.getKey()),
 				                                                                        purpose.get(e.getKey()),
 				                                                                        byLawsDate.get(e.getKey()),
-				                                                                        cancellationDate.get(e.getKey())),
+				                                                                        cancellationDate.get(e.getKey()),
+				                                                                        vDCancellationDate.get(e.getKey())),
 				                                   new OrganisationLocation.RCEntUIDData(uidEffectiveAddesses.get(e.getKey()),
 				                                                                         uidStatus.get(e.getKey()),
 				                                                                         uidTypeOfOrganisation.get(e.getKey()),
