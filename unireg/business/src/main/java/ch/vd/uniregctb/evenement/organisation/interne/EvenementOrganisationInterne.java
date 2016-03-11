@@ -991,11 +991,12 @@ public abstract class EvenementOrganisationInterne {
 	 */
 	private boolean nouveauAuRc() {
 		if (organisation.isInscritAuRC(getDateEvt())) {
-			// TODO: Refactor, mais là ce n'est pas vraiment le moment.
+			// TODO: Refactor, mais la il n'y pas vraiment pas le temps.
 			final SiteOrganisation sitePrincipal = organisation.getSitePrincipal(getDateEvt()).getPayload();
 			final RegDate dateInscriptionCh = sitePrincipal.getDonneesRC().getDateInscription(getDateEvt());
-			final RegDate dateInscriptionVd = sitePrincipal.getDonneesRC().getDateInscriptionVd(getDateEvt());
-			if (RegDateHelper.equals(dateInscriptionVd, dateInscriptionCh)) {
+			// FIXME: A remplacer par l'égalité entre date RCVD et date RCCH
+			RegDate dateSeuil = getDateEvt().addDays(-7);
+			if (dateSeuil.isBeforeOrEqual(dateInscriptionCh)) {
 				return true;
 			}
 		}

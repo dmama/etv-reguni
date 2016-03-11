@@ -487,7 +487,7 @@ public class DemenagementTest extends AbstractEvenementOrganisationProcessorTest
 				MockSiteOrganisation site = (MockSiteOrganisation) org.getSitePrincipaux().get(0).getPayload();
 				site.changeDomicile(RegDate.get(2015, 6, 24), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Morges.getNoOFS());
 				MockDonneesRC rc = (MockDonneesRC) site.getDonneesRC();
-				rc.changeDateInscriptionVd(date(2015, 6, 24), date(2015, 6, 20));
+				rc.changeDateInscriptionVd(date(2015, 6, 24), date(2010, 6, 24));
 				addOrganisation(org);
 
 			}
@@ -547,7 +547,7 @@ public class DemenagementTest extends AbstractEvenementOrganisationProcessorTest
 				                             {
 					                             ForFiscalPrincipal forFiscalPrincipalPrecedant = (ForFiscalPrincipal) entreprise.getForsFiscauxValidAt(RegDate.get(2010, 6, 24)).get(0);
 					                             Assert.assertEquals(RegDate.get(2010, 6, 24), forFiscalPrincipalPrecedant.getDateDebut());
-					                             Assert.assertEquals(RegDate.get(2015, 6, 19), forFiscalPrincipalPrecedant.getDateFin());
+					                             Assert.assertEquals(RegDate.get(2015, 6, 23), forFiscalPrincipalPrecedant.getDateFin());
 					                             Assert.assertEquals(GenreImpot.BENEFICE_CAPITAL, forFiscalPrincipalPrecedant.getGenreImpot());
 					                             Assert.assertEquals(MockCommune.Zurich.getNoOFS(), forFiscalPrincipalPrecedant.getNumeroOfsAutoriteFiscale().intValue());
 					                             Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_HC, forFiscalPrincipalPrecedant.getTypeAutoriteFiscale());
@@ -556,7 +556,7 @@ public class DemenagementTest extends AbstractEvenementOrganisationProcessorTest
 				                             }
 				                             {
 					                             ForFiscalPrincipal forFiscalPrincipalNouveau = (ForFiscalPrincipal) entreprise.getForsFiscauxValidAt(RegDate.get(2015, 6, 24)).get(0);
-					                             Assert.assertEquals(RegDate.get(2015, 6, 20), forFiscalPrincipalNouveau.getDateDebut());
+					                             Assert.assertEquals(RegDate.get(2015, 6, 24), forFiscalPrincipalNouveau.getDateDebut());
 					                             Assert.assertNull(forFiscalPrincipalNouveau.getDateFin());
 					                             Assert.assertEquals(GenreImpot.BENEFICE_CAPITAL, forFiscalPrincipalNouveau.getGenreImpot());
 					                             Assert.assertEquals(MockCommune.Morges.getNoOFS(), forFiscalPrincipalNouveau.getNumeroOfsAutoriteFiscale().intValue());
@@ -589,21 +589,21 @@ public class DemenagementTest extends AbstractEvenementOrganisationProcessorTest
 					                             final EvenementFiscal ef = evtsFiscauxTries.get(0);
 					                             Assert.assertNotNull(ef);
 					                             Assert.assertEquals(EvenementFiscalFor.class, ef.getClass());
-					                             Assert.assertEquals(date(2015, 6, 19), ef.getDateValeur());
+					                             Assert.assertEquals(date(2015, 6, 23), ef.getDateValeur());
 
 					                             final EvenementFiscalFor eff = (EvenementFiscalFor) ef;
 					                             Assert.assertEquals(EvenementFiscalFor.TypeEvenementFiscalFor.FERMETURE, eff.getType());
-					                             Assert.assertEquals(date(2015, 6, 19), eff.getForFiscal().getDateFin());
+					                             Assert.assertEquals(date(2015, 6, 23), eff.getForFiscal().getDateFin());
 				                             }
 				                             {
 					                             final EvenementFiscal ef = evtsFiscauxTries.get(1);
 					                             Assert.assertNotNull(ef);
 					                             Assert.assertEquals(EvenementFiscalFor.class, ef.getClass());
-					                             Assert.assertEquals(date(2015, 6, 20), ef.getDateValeur());
+					                             Assert.assertEquals(date(2015, 6, 24), ef.getDateValeur());
 
 					                             final EvenementFiscalFor eff = (EvenementFiscalFor) ef;
 					                             Assert.assertEquals(EvenementFiscalFor.TypeEvenementFiscalFor.OUVERTURE, eff.getType());
-					                             Assert.assertEquals(date(2015, 6, 20), eff.getForFiscal().getDateDebut());
+					                             Assert.assertEquals(date(2015, 6, 24), eff.getForFiscal().getDateDebut());
 				                             }
 
 				                             return null;

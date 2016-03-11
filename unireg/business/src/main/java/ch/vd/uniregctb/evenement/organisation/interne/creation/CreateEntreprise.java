@@ -47,13 +47,13 @@ public abstract class CreateEntreprise extends EvenementOrganisationInterneDeTra
 		if (organisation.isInscritAuRC(getDateEvt())) {
 			if (isCreation()) {
 				if (sitePrincipal.getDomicile(getDateEvt()).getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
-					dateDeCreation = sitePrincipal.getDateInscriptionRCVd(getDateEvt()).getOneDayAfter();
+					dateDeCreation = sitePrincipal.getDateInscriptionRC(getDateEvt()).getOneDayAfter();
 				}
 				else {
 					dateDeCreation = sitePrincipal.getDateInscriptionRC(getDateEvt()).getOneDayAfter();
 				}
 			} else { // Une arrivée
-				dateDeCreation = sitePrincipal.getDateInscriptionRCVd(getDateEvt());
+				dateDeCreation = getDateEvt();
 			}
 		} else {
 			if (isCreation()) {
