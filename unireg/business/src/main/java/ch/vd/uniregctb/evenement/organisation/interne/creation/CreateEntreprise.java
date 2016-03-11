@@ -45,11 +45,16 @@ public abstract class CreateEntreprise extends EvenementOrganisationInterneDeTra
 		  Demande du métier: date de référence pour la création à la date de l'événement + 1 jour
 		  */
 		if (organisation.isInscritAuRC(getDateEvt())) {
-			if (sitePrincipal.getDomicile(getDateEvt()).getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD){
-				// TODO: Utiliser la date VD
-				dateDeCreation = sitePrincipal.getDateInscriptionRC(getDateEvt()).getOneDayAfter();
-			} else {
-				dateDeCreation = sitePrincipal.getDateInscriptionRC(getDateEvt()).getOneDayAfter();
+			if (isCreation()) {
+				if (sitePrincipal.getDomicile(getDateEvt()).getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
+					// TODO: Utiliser la date VD
+					dateDeCreation = sitePrincipal.getDateInscriptionRC(getDateEvt()).getOneDayAfter();
+				}
+				else {
+					dateDeCreation = sitePrincipal.getDateInscriptionRC(getDateEvt()).getOneDayAfter();
+				}
+			} else { // Une arrivée
+				dateDeCreation = getDateEvt();
 			}
 		} else {
 			dateDeCreation = getDateEvt().getOneDayAfter();

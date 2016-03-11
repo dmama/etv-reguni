@@ -67,9 +67,9 @@ public class CreateEntreprisePM extends CreateEntreprise {
 		Assert.state(getCategory() == CategorieEntreprise.PM, String.format("Catégorie d'entreprise non supportée! %s", getCategory()));
 
 		if (getCategory() == null) {
-			FormeLegale formeLegale = getOrganisation().getFormeLegale(getDateDeCreation());
+			FormeLegale formeLegale = getOrganisation().getFormeLegale(getDateEvt());
 			erreurs.addErreur(String.format("Catégorie introuvable pour l'organisation no %s de forme juridique %s, en date du %s.", getOrganisation().getNumeroOrganisation(),
-			                                formeLegale != null ? formeLegale : "inconnue", RegDateHelper.dateToDisplayString(getDateDeCreation())));
+			                                formeLegale != null ? formeLegale : "inconnue", RegDateHelper.dateToDisplayString(getDateEvt())));
 		}
 
 		if (!inscritAuRC()) {

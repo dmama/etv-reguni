@@ -262,21 +262,25 @@ public abstract class EvenementOrganisationInterne {
 	protected MotifFor determineMotifOuvertureFor() throws EvenementOrganisationException {
 		final MotifFor motifOuverture;
 		Domicile siegePrecedant = OrganisationHelper.siegePrincipalPrecedant(getOrganisation(), getDateEvt());
-		if (siegePrecedant == null) {
+		if (isCreation()) {
 			motifOuverture = MotifFor.DEBUT_EXPLOITATION;
 		} else {
-			switch (siegePrecedant.getTypeAutoriteFiscale()) {
-			case COMMUNE_OU_FRACTION_VD:
-				throw new EvenementOrganisationException(
-						"L'organisation a un précédent siège sur Vaud. C'est donc une organisation existante inconnue jusque là (association nouvellement inscrite au RC?) Veuillez traiter le cas manuellement.");
-			case COMMUNE_HC:
+			if (siegePrecedant == null) {
 				motifOuverture = MotifFor.ARRIVEE_HC;
-				break;
-			case PAYS_HS:
-				motifOuverture = MotifFor.ARRIVEE_HS;
-				break;
-			default:
-				throw new EvenementOrganisationException("L'organisation a un précédent siège avec un type d'autorité fiscal inconnu. Veuillez traiter le cas manuellement.");
+			} else {
+				switch (siegePrecedant.getTypeAutoriteFiscale()) {
+				case COMMUNE_OU_FRACTION_VD:
+					throw new EvenementOrganisationException(
+							"L'organisation a un précédent siège sur Vaud. C'est donc une organisation existante inconnue jusque là (association nouvellement inscrite au RC?) Veuillez traiter le cas manuellement.");
+				case COMMUNE_HC:
+					motifOuverture = MotifFor.ARRIVEE_HC;
+					break;
+				case PAYS_HS:
+					motifOuverture = MotifFor.ARRIVEE_HS;
+					break;
+				default:
+					throw new EvenementOrganisationException("L'organisation a un précédent siège avec un type d'autorité fiscal inconnu. Veuillez traiter le cas manuellement.");
+				}
 			}
 		}
 		return motifOuverture;
@@ -852,9 +856,9 @@ public abstract class EvenementOrganisationInterne {
 		TypeEvenementOrganisation typeEvt = evenement.getType();
 		switch (typeEvt) {
 		case FOSC_NOUVELLE_ENTREPRISE:
-			return true;
+			return nouveauAuRc();
 		case FOSC_NOUVELLE_SUCCURSALE:
-			return true;
+			return nouveauAuRc();
 		case FOSC_DISSOLUTION_ENTREPRISE:
 			return false;
 		case FOSC_RADIATION_ENTREPRISE:
@@ -940,7 +944,7 @@ public abstract class EvenementOrganisationInterne {
 		case FOSC_APPEL_AUX_CREANCIERS_SUITE_TRANSFERT_ETRANGER:
 			return false;
 		case IDE_NOUVELLE_INSCRIPTION:
-			return true;
+			return !organisation.isInscritAuRC(getDateEvt()) || nouveauAuRc();
 		case IDE_MUTATION:
 			return false;
 		case IDE_RADIATION:
@@ -960,7 +964,7 @@ public abstract class EvenementOrganisationInterne {
 		case RCPERS_CORRECTION_DONNEES:
 			return false;
 		case REE_NOUVELLE_INSCRIPTION:
-			return true;
+			return !organisation.isInscritAuRC(getDateEvt()) || nouveauAuRc();
 		case REE_MUTATION:
 			return false;
 		case REE_SUPPRESSION:
@@ -974,6 +978,27 @@ public abstract class EvenementOrganisationInterne {
 		default:
 			throw new IllegalArgumentException("TypeEvenementOrganisation non supporté. Impossible de déterminer la création d'entreprise: " + typeEvt.name());
 		}
+	}
+
+	/**
+	 * @return Vrai si la date d'inscription au RC se situe dans les 7 jours précédant la date de publication.
+	 */
+	private boolean nouveauAuRc() {
+		if (organisation.isInscritAuRC(getDateEvt())) {
+			// TODO: Refactor, mais la il n'y pas vraiment pas le temps.
+			final SiteOrganisation sitePrincipal = organisation.getSitePrincipal(getDateEvt()).getPayload();
+			final RegDate dateInscriptionCh = sitePrincipal.getDonneesRC().getDateInscription(getDateEvt());
+			// FIXME: A remplacer par l'égalité entre date RCVD et date RCCH
+			RegDate dateSeuil = getDateEvt().addDays(-7);
+			if (dateSeuil.isBeforeOrEqual(dateInscriptionCh)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private boolean isPremierSnapshot() {
+		return organisation.getSitePrincipal(getDateEvt().getOneDayBefore()) == null;
 	}
 
 	private boolean isForPrincipalExistantSurTouteLaPeriode(DateRange periode, List<ForFiscalPrincipalPM> forsFiscauxPrincipauxActifsSorted) {
