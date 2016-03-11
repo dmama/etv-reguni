@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.xml.party.v2;
 
 import ch.vd.unireg.xml.party.taxresidence.v1.TaxResidence;
+import ch.vd.unireg.xml.party.taxresidence.v1.TaxType;
 import ch.vd.uniregctb.xml.DataHelper;
 import ch.vd.uniregctb.xml.EnumHelper;
 
@@ -12,6 +13,12 @@ public class TaxResidenceBuilder {
 			final ch.vd.uniregctb.tiers.ForFiscalPrincipalPP forPrincipal = (ch.vd.uniregctb.tiers.ForFiscalPrincipalPP) forFiscal;
 			f.setTaxationMethod(EnumHelper.coreToXMLv1(forPrincipal.getModeImposition()));
 		}
+
+		// [SIFISC-18334] Les version antérieures au v6 du WS ont toujours renvoyé IBC comme genre d'impôt pour les fors principaux PM
+		if (forFiscal instanceof ch.vd.uniregctb.tiers.ForFiscalPrincipalPM) {
+			f.setTaxType(TaxType.PROFITS_CAPITAL);
+		}
+
 		return f;
 	}
 
