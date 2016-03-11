@@ -63,19 +63,21 @@ public abstract class Demenagement extends EvenementOrganisationInterneDeTraitem
 	 * Changement de siège principal avec établissement stable
 	 *
 	 * @param etablissementPrincipal L'établissement dont l'autorité fiscale change.
+	 * @param dateDebutNouveauSiege la date à laquelle on souhaite que le déménagement soit effectif
 	 * @param motifFor Le motif du changement
 	 * @param warnings
 	 */
-	protected void changeSiegeEtablissement(Etablissement etablissementPrincipal, MotifFor motifFor, EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) throws EvenementOrganisationException {
-		signaleDemenagement(etablissementPrincipal, getSiegeAvant(), getSiegeApres(), getDateApres(), suivis);
+	protected void changeSiegeEtablissement(Etablissement etablissementPrincipal, RegDate dateDebutNouveauSiege, MotifFor motifFor, EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) throws EvenementOrganisationException {
 
-		final ForFiscalPrincipal forFiscalPrincipal = getEntreprise().getForFiscalPrincipalAt(getDateAvant());
+		signaleDemenagement(etablissementPrincipal, getSiegeAvant(), getSiegeApres(), dateDebutNouveauSiege, suivis);
+
+		final ForFiscalPrincipal forFiscalPrincipal = getEntreprise().getForFiscalPrincipalAt(dateDebutNouveauSiege.getOneDayBefore());
 		if (forFiscalPrincipal == null) {
 			throw new EvenementOrganisationException("Aucun for trouvé pour l'établissement principal.");
 		}
 		GenreImpot genreImpot = forFiscalPrincipal.getGenreImpot();
-		closeForFiscalPrincipal(getDateAvant(), motifFor, suivis);
-		openForFiscalPrincipal(getDateApres(), getSiegeApres(), MotifRattachement.DOMICILE, motifFor, genreImpot, warnings, suivis);
+		closeForFiscalPrincipal(dateDebutNouveauSiege.getOneDayBefore(), motifFor, suivis);
+		openForFiscalPrincipal(dateDebutNouveauSiege, getSiegeApres(), MotifRattachement.DOMICILE, motifFor, genreImpot, warnings, suivis);
 	}
 
 	/**
@@ -90,7 +92,7 @@ public abstract class Demenagement extends EvenementOrganisationInterneDeTraitem
 	 * @param warnings
 	 * @throws EvenementOrganisationException
 	 */
-	protected void effectueChangementSiege(MotifFor motifFor, EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) throws EvenementOrganisationException {
+	protected void effectueChangementSiege(MotifFor motifFor, RegDate dateDebutNouveauSiege, EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) throws EvenementOrganisationException {
 		// On a affaire à un établissement inconnu
 		final Etablissement etablissementPrincipalApres = getEtablissementPrincipalApres();
 		if (etablissementPrincipalApres == null) {
@@ -100,7 +102,7 @@ public abstract class Demenagement extends EvenementOrganisationInterneDeTraitem
 		else {
 			// On est sur le même établissement -> changer le domicile, fermer l'ancien for et ouvrir un nouveau
 			if (getEtablissementPrincipalAvant().getNumero().equals(etablissementPrincipalApres.getNumero())) {
-				changeSiegeEtablissement(etablissementPrincipalApres, motifFor, warnings, suivis);
+				changeSiegeEtablissement(etablissementPrincipalApres, dateDebutNouveauSiege, motifFor, warnings, suivis);
 			}
 			// On n'est pas sur le même établissement -> Changer les domiciles de chaque établissement pour refléter les domiciles respectifs, fermer l'ancien for et ouvrir un nouveau.
 			else {

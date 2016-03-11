@@ -18,7 +18,6 @@ import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
 
 public abstract class MockOrganisationHelper {
@@ -30,9 +29,7 @@ public abstract class MockOrganisationHelper {
 	 * @param <T> le type de la donnée
 	 */
 	public static <T> void changeRangedData(SortedMap<RegDate, T> map, RegDate date, @Nullable T newValue) {
-		if (map.put(date, newValue) != null) {
-			throw new NotImplementedException("Le cas de plusieurs données à la même date n'est pas supporté dans ce Mock...");
-		}
+		map.put(date, newValue);
 	}
 
 	/**

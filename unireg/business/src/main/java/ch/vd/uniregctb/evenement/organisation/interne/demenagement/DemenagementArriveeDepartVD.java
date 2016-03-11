@@ -2,6 +2,7 @@ package ch.vd.uniregctb.evenement.organisation.interne.demenagement;
 
 import org.springframework.util.Assert;
 
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationContext;
@@ -29,15 +30,25 @@ public class DemenagementArriveeDepartVD extends Demenagement {
 	public void doHandle(EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) throws EvenementOrganisationException {
 
 		MotifFor motifFor;
-
+		RegDate dateDebutNouveauSiege;
 		//
 		if (getSiegeAvant().getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD &&
 				getSiegeApres().getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_HC) {
 			motifFor = MotifFor.DEPART_HC;
+			dateDebutNouveauSiege = getDateApres();
 		} else {
 		if (getSiegeAvant().getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_HC &&
 				getSiegeApres().getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
 			motifFor = MotifFor.ARRIVEE_HC;
+			if (getSitePrincipalApres().isInscritAuRC(getDateApres())) {
+				final RegDate dateInscriptionRCVd = getSitePrincipalApres().getDateInscriptionRCVd(getDateApres());
+				if (dateInscriptionRCVd == null) {
+					throw new EvenementOrganisationException("Date d'inscription au régistre vaudois du commerce introuvable pour l'établissement principal en déménagement.");
+				}
+				dateDebutNouveauSiege = dateInscriptionRCVd;
+			} else {
+				dateDebutNouveauSiege = getDateApres();
+			}
 			if (getEntreprise().getDernierForFiscalPrincipal() == null) {
 				regleDateDebutPremierExerciceCommercial(getEntreprise(), getDateApres(), suivis);
 			}
@@ -45,7 +56,7 @@ public class DemenagementArriveeDepartVD extends Demenagement {
 			throw new EvenementOrganisationException(String.format("Une combinaison non supportée de déplacement de siège est survenue. type avant: %s, type après: %s", getSiegeAvant().getTypeAutoriteFiscale(), getSiegeApres().getTypeAutoriteFiscale()));
 		}
 
-		effectueChangementSiege(motifFor, warnings, suivis);
+		effectueChangementSiege(motifFor, dateDebutNouveauSiege, warnings, suivis);
 	}
 
 	@Override

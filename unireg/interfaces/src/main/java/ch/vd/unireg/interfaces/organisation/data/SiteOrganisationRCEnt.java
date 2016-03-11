@@ -145,6 +145,11 @@ public class SiteOrganisationRCEnt implements Serializable, SiteOrganisation {
 	}
 
 	@Override
+	public RegDate getDateInscriptionRCVd(RegDate date) {
+		return OrganisationHelper.valueForDate(this.getDonneesRC().getDateInscriptionVd(), date);
+	}
+
+	@Override
 	public List<Adresse> getAdresses() {
 		return OrganisationHelper.getAdressesPourSite(this);
 	}

@@ -60,6 +60,7 @@ public abstract class MockSiteOrganisationFactory {
 		if (statusInscriptionRC != null) {
 			donneesRC.addStatusInscription(dateDebut, dateFin, statusInscriptionRC);
 			donneesRC.addDateInscription(dateDebut, dateFin, dateInscriptionRC);
+			donneesRC.addDateInscriptionVd(dateDebut, dateFin, dateInscriptionRC);
 			if (capitalAmount != null) {
 				donneesRC.addCapital(dateDebut,
 				                     dateFin,

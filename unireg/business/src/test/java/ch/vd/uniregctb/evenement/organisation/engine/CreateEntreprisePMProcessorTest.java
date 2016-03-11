@@ -19,7 +19,9 @@ import ch.vd.unireg.interfaces.organisation.data.StatusInscriptionRC;
 import ch.vd.unireg.interfaces.organisation.data.StatusRegistreIDE;
 import ch.vd.unireg.interfaces.organisation.data.TypeOrganisationRegistreIDE;
 import ch.vd.unireg.interfaces.organisation.mock.MockServiceOrganisation;
+import ch.vd.unireg.interfaces.organisation.mock.data.MockDonneesRC;
 import ch.vd.unireg.interfaces.organisation.mock.data.MockOrganisation;
+import ch.vd.unireg.interfaces.organisation.mock.data.MockSiteOrganisation;
 import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockOrganisationFactory;
 import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockSiteOrganisationFactory;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscal;
@@ -362,7 +364,7 @@ public class CreateEntreprisePMProcessorTest extends AbstractEvenementOrganisati
 						                                                             StatusInscriptionRC.ACTIF, date(2015, 6, 24), StatusInscriptionRC.ACTIF, date(2015, 6, 24),
 						                                                             StatusRegistreIDE.DEFINITIF, StatusRegistreIDE.DEFINITIF,
 						                                                             TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE);
-				MockSiteOrganisationFactory.addSite(noSiteSecondaire2, organisation, RegDate.get(2015, 6, 26), null, "Synergy Plus Plus SA", FormeLegale.N_0106_SOCIETE_ANONYME,
+				MockSiteOrganisation siteSec = MockSiteOrganisationFactory.addSite(noSiteSecondaire2, organisation, RegDate.get(2015, 6, 26), null, "Synergy Plus Plus SA", FormeLegale.N_0106_SOCIETE_ANONYME,
 				                                    false, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(),
 				                                    StatusInscriptionRC.ACTIF, date(2015, 6, 24), StatusRegistreIDE.DEFINITIF,
 				                                    TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, null, null);
@@ -500,8 +502,10 @@ public class CreateEntreprisePMProcessorTest extends AbstractEvenementOrganisati
 		final Long noOrganisation = 101202100L;
 
 		final MockOrganisation org = MockOrganisationFactory.createOrganisation(noOrganisation, noOrganisation + 1000000, "Synergy SA", RegDate.get(2015, 6, 26), null, FormeLegale.N_0106_SOCIETE_ANONYME,
-		                                                                        TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF, date(2010, 6, 24), StatusRegistreIDE.DEFINITIF,
-		                                                                        TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE);
+		                                                                        TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF, date(2010, 6, 24),
+		                                                                        StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE);
+		MockDonneesRC rc = (MockDonneesRC) org.getDonneesSites().get(0).getDonneesRC();
+		rc.changeDateInscriptionVd(date(2015, 6, 26), date(2015, 6, 20));
 
 		serviceOrganisation.setUp(new MockServiceOrganisation() {
 			@Override
@@ -538,14 +542,16 @@ public class CreateEntreprisePMProcessorTest extends AbstractEvenementOrganisati
 				                             final Entreprise entreprise = tiersDAO.getEntrepriseByNumeroOrganisation(evt.getNoOrganisation());
 				                             Assert.assertEquals(2, entreprise.getRegimesFiscaux().size());
 
-				                             ForFiscalPrincipal forFiscalPrincipal = (ForFiscalPrincipal) entreprise.getForsFiscauxValidAt(RegDate.get(2015, 6, 26)).get(0);
-				                             Assert.assertEquals(RegDate.get(2015, 6, 26), forFiscalPrincipal.getDateDebut());
+				                             ForFiscalPrincipal forFiscalPrincipal = (ForFiscalPrincipal) entreprise.getForsFiscauxValidAt(date(2015, 6, 20)).get(0);
+				                             Assert.assertEquals(date(2015, 6, 20), forFiscalPrincipal.getDateDebut());
+
 				                             Assert.assertNull(forFiscalPrincipal.getDateFin());
 				                             Assert.assertEquals(GenreImpot.BENEFICE_CAPITAL, forFiscalPrincipal.getGenreImpot());
 				                             Assert.assertEquals(MockCommune.Lausanne.getNoOFS(), forFiscalPrincipal.getNumeroOfsAutoriteFiscale().intValue());
 				                             Assert.assertEquals(MotifFor.ARRIVEE_HC, forFiscalPrincipal.getMotifOuverture());
 
 				                             final Bouclement bouclement = entreprise.getBouclements().iterator().next();
+
 				                             Assert.assertEquals(date(2015, 12, 1), bouclement.getDateDebut());
 				                             Assert.assertEquals(DayMonth.get(12, 31), bouclement.getAncrage());
 				                             Assert.assertEquals(12, bouclement.getPeriodeMois());
@@ -555,7 +561,7 @@ public class CreateEntreprisePMProcessorTest extends AbstractEvenementOrganisati
 				                             {
 					                             final List<DateRanged<Etablissement>> etbsPrns = tiersService.getEtablissementsPrincipauxEntreprise(entreprise);
 					                             Assert.assertEquals(1, etbsPrns.size());
-					                             Assert.assertEquals(RegDate.get(2015, 6, 26), etbsPrns.get(0).getDateDebut());
+					                             Assert.assertEquals(date(2015, 6, 20), etbsPrns.get(0).getDateDebut());
 				                             }
 				                             {
 					                             final List<DateRanged<Etablissement>> etbsSecs = tiersService.getEtablissementsSecondairesEntreprise(entreprise);
@@ -581,7 +587,7 @@ public class CreateEntreprisePMProcessorTest extends AbstractEvenementOrganisati
 					                             final EvenementFiscal ef = evtsFiscauxTries.get(0);
 					                             Assert.assertNotNull(ef);
 					                             Assert.assertEquals(EvenementFiscalRegimeFiscal.class, ef.getClass());
-					                             Assert.assertEquals(date(2015, 6, 26), ef.getDateValeur());
+					                             Assert.assertEquals(date(2015, 6, 20), ef.getDateValeur());
 
 					                             final EvenementFiscalRegimeFiscal efrf = (EvenementFiscalRegimeFiscal) ef;
 					                             Assert.assertEquals(EvenementFiscalRegimeFiscal.TypeEvenementFiscalRegime.OUVERTURE, efrf.getType());
@@ -592,7 +598,7 @@ public class CreateEntreprisePMProcessorTest extends AbstractEvenementOrganisati
 					                             final EvenementFiscal ef = evtsFiscauxTries.get(1);
 					                             Assert.assertNotNull(ef);
 					                             Assert.assertEquals(EvenementFiscalRegimeFiscal.class, ef.getClass());
-					                             Assert.assertEquals(date(2015, 6, 26), ef.getDateValeur());
+					                             Assert.assertEquals(date(2015, 6, 20), ef.getDateValeur());
 
 					                             final EvenementFiscalRegimeFiscal efrf = (EvenementFiscalRegimeFiscal) ef;
 					                             Assert.assertEquals(EvenementFiscalRegimeFiscal.TypeEvenementFiscalRegime.OUVERTURE, efrf.getType());
@@ -603,11 +609,11 @@ public class CreateEntreprisePMProcessorTest extends AbstractEvenementOrganisati
 					                             final EvenementFiscal ef = evtsFiscauxTries.get(2);
 					                             Assert.assertNotNull(ef);
 					                             Assert.assertEquals(EvenementFiscalFor.class, ef.getClass());
-					                             Assert.assertEquals(date(2015, 6, 26), ef.getDateValeur());
+					                             Assert.assertEquals(date(2015, 6, 20), ef.getDateValeur());
 
 					                             final EvenementFiscalFor eff = (EvenementFiscalFor) ef;
 					                             Assert.assertEquals(EvenementFiscalFor.TypeEvenementFiscalFor.OUVERTURE, eff.getType());
-					                             Assert.assertEquals(date(2015, 6, 26), eff.getForFiscal().getDateDebut());
+					                             Assert.assertEquals(date(2015, 6, 20), eff.getForFiscal().getDateDebut());
 				                             }
 
 				                             return null;

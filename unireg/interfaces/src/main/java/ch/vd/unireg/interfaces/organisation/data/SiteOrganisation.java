@@ -67,6 +67,8 @@ public interface SiteOrganisation {
 
 	RegDate getDateInscriptionRC(RegDate date);
 
+	RegDate getDateInscriptionRCVd(RegDate date);
+
 	List<Adresse> getAdresses();
 
 	List<DateRanged<Long>> getIdeRemplacePar();
