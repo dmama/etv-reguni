@@ -46,7 +46,6 @@ import ch.vd.uniregctb.declaration.ordinaire.pm.EnvoiDeclarationsPMProcessor;
 import ch.vd.uniregctb.declaration.ordinaire.pm.EnvoiSommationsDIsPMProcessor;
 import ch.vd.uniregctb.declaration.ordinaire.pm.EnvoiSommationsDIsPMResults;
 import ch.vd.uniregctb.declaration.ordinaire.pm.ImpressionSommationDeclarationImpotPersonnesMoralesHelper;
-import ch.vd.uniregctb.declaration.ordinaire.pm.TypeDeclarationImpotPM;
 import ch.vd.uniregctb.declaration.ordinaire.pp.ContribuableAvecCodeSegment;
 import ch.vd.uniregctb.declaration.ordinaire.pp.ContribuableAvecImmeuble;
 import ch.vd.uniregctb.declaration.ordinaire.pp.DeterminationDIsPPAEmettreProcessor;
@@ -85,7 +84,8 @@ import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
-import ch.vd.uniregctb.metier.assujettissement.CategorieEnvoiDI;
+import ch.vd.uniregctb.metier.assujettissement.CategorieEnvoiDIPM;
+import ch.vd.uniregctb.metier.assujettissement.CategorieEnvoiDIPP;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionService;
 import ch.vd.uniregctb.parametrage.DelaisService;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
@@ -302,7 +302,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 	}
 
 	@Override
-	public EnvoiDIsPPResults envoyerDIsPPEnMasse(int anneePeriode, CategorieEnvoiDI categorie, @Nullable Long noCtbMin, @Nullable Long noCtbMax, int nbMax, RegDate dateTraitement, boolean exclureDecedes,
+	public EnvoiDIsPPResults envoyerDIsPPEnMasse(int anneePeriode, CategorieEnvoiDIPP categorie, @Nullable Long noCtbMin, @Nullable Long noCtbMax, int nbMax, RegDate dateTraitement, boolean exclureDecedes,
 	                                             int nbThreads, @Nullable StatusManager status) throws DeclarationException {
 
 		final EnvoiDIsPPEnMasseProcessor processor = new EnvoiDIsPPEnMasseProcessor(tiersService, hibernateTemplate, modeleDAO, periodeDAO,
@@ -816,16 +816,16 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 
 	@Override
 	public EnvoiDIsPMResults envoyerDIsPMEnMasse(int periodeFiscale,
-	                                             TypeDeclarationImpotPM typeDeclaration,
+	                                             CategorieEnvoiDIPM categorieEnvoi,
 	                                             RegDate dateLimiteBouclements,
 	                                             @Nullable Integer nbMaxEnvois,
 	                                             RegDate dateTraitement,
 	                                             int nbThreads,
 	                                             StatusManager statusManager) throws DeclarationException {
-		final EnvoiDeclarationsPMProcessor processor = new EnvoiDeclarationsPMProcessor(tiersService, hibernateTemplate, modeleDAO, periodeDAO,
-		                                                                                delaisService, this, assujettissementService, periodeImpositionService,
-		                                                                                tailleLot, transactionManager, parametres, adresseService, ticketService);
-		return processor.run(periodeFiscale, typeDeclaration, dateLimiteBouclements, nbMaxEnvois, dateTraitement, nbThreads, statusManager);
+		final EnvoiDeclarationsPMProcessor processor = new EnvoiDeclarationsPMProcessor(hibernateTemplate, periodeDAO,
+		                                                                                this, assujettissementService, periodeImpositionService,
+		                                                                                tailleLot, transactionManager, parametres, ticketService);
+		return processor.run(periodeFiscale, categorieEnvoi, dateLimiteBouclements, nbMaxEnvois, dateTraitement, nbThreads, statusManager);
 	}
 
 	@Override

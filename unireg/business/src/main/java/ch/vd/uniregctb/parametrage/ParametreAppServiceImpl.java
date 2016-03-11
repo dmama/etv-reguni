@@ -277,6 +277,11 @@ public class ParametreAppServiceImpl implements ParametreAppService, Initializin
 	}
 
 	@Override
+	public Integer[] getDateLimiteEnvoiMasseDeclarationsUtilitePublique() {
+		return container.getDateLimiteEnvoiMasseDeclarationsUtilitePublique();
+	}
+
+	@Override
 	public void setDelaiAttenteDeclarationImpotPersonneDecedee(Integer val) {
 		container.setDelaiAttenteDeclarationImpotPersonneDecedee(val);
 	}
@@ -444,5 +449,10 @@ public class ParametreAppServiceImpl implements ParametreAppService, Initializin
 	@Override
 	public void setDelaiEnvoiSommationDeclarationImpotPM(Integer val) {
 		container.setDelaiEnvoiSommationDeclarationImpotPM(val);
+	}
+
+	@Override
+	public void setDateLimiteEnvoiMasseDeclarationsUtilitePublique(Integer[] val) {
+		container.setDateLimiteEnvoiMasseDeclarationsUtilitePublique(val);
 	}
 }

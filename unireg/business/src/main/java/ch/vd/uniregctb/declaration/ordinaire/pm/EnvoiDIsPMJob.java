@@ -8,6 +8,7 @@ import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotService;
 import ch.vd.uniregctb.document.EnvoiDIsPMRapport;
+import ch.vd.uniregctb.metier.assujettissement.CategorieEnvoiDIPM;
 import ch.vd.uniregctb.rapport.RapportService;
 import ch.vd.uniregctb.scheduler.JobCategory;
 import ch.vd.uniregctb.scheduler.JobDefinition;
@@ -44,11 +45,11 @@ public class EnvoiDIsPMJob extends JobDefinition {
 		}
 		{
 			final JobParam param = new JobParam();
-			param.setDescription("Type de document");
+			param.setDescription("Type d'envoi");
 			param.setName(TYPE_DI);
 			param.setMandatory(true);
-			param.setType(new JobParamEnum(TypeDeclarationImpotPM.class));
-			addParameterDefinition(param, TypeDeclarationImpotPM.PM);
+			param.setType(new JobParamEnum(CategorieEnvoiDIPM.class));
+			addParameterDefinition(param, CategorieEnvoiDIPM.DI_PM);
 		}
 		{
 			final JobParam param = new JobParam();
@@ -118,7 +119,7 @@ public class EnvoiDIsPMJob extends JobDefinition {
 	protected void doExecute(Map<String, Object> params) throws Exception {
 		// Récupération des paramètres
 		final int pf = getIntegerValue(params, PERIODE_FISCALE);
-		final TypeDeclarationImpotPM typeDoc = getEnumValue(params, TYPE_DI, TypeDeclarationImpotPM.class);
+		final CategorieEnvoiDIPM categorieEnvoi = getEnumValue(params, TYPE_DI, CategorieEnvoiDIPM.class);
 		final Integer nbMaxEnvois = getOptionalIntegerValue(params, NB_MAX_ENVOIS);
 		final RegDate dateTraitement = getRegDateValue(params, DATE_TRAITEMENT);
 		final RegDate dateLimiteBouclements = getRegDateValue(params, DATE_LIMITE_BOUCLEMENT);
@@ -133,7 +134,7 @@ public class EnvoiDIsPMJob extends JobDefinition {
 		}
 
 		final StatusManager status = getStatusManager();
-		final EnvoiDIsPMResults results = service.envoyerDIsPMEnMasse(pf, typeDoc, dateLimiteBouclements, nbMaxEnvois, now, nbThreads, status);
+		final EnvoiDIsPMResults results = service.envoyerDIsPMEnMasse(pf, categorieEnvoi, dateLimiteBouclements, nbMaxEnvois, now, nbThreads, status);
 		final EnvoiDIsPMRapport rapport = rapportService.generateRapport(results, status);
 
 		setLastRunReport(rapport);
@@ -142,7 +143,7 @@ public class EnvoiDIsPMJob extends JobDefinition {
 		builder.append("L'envoi des DIs PM en masse pour la période fiscale ");
 		builder.append(pf);
 		builder.append(" et la type de document ");
-		builder.append(typeDoc.name());
+		builder.append(categorieEnvoi.name());
 		builder.append(" à la date du ");
 		builder.append(RegDateHelper.dateToDisplayString(now));
 		builder.append(" est terminé.");

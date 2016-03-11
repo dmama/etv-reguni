@@ -128,6 +128,11 @@ public class ParamPeriodeManagerImpl implements ParamPeriodeManager {
 	}
 
 	@Override
+	public ParametrePeriodeFiscalePM getPMUtilitePubliqueByPeriodeFiscale(PeriodeFiscale periodeFiscale) {
+		return parametrePeriodeFiscaleDAO.getPMUtilitePubliqueByPeriodeFiscale(periodeFiscale);
+	}
+
+	@Override
 	@Transactional(readOnly = true)
 	public ParametrePeriodeFiscalePP getPPVaudByPeriodeFiscale(PeriodeFiscale periodeFiscale) {
 		return parametrePeriodeFiscaleDAO.getPPVaudByPeriodeFiscale(periodeFiscale);
@@ -195,26 +200,38 @@ public class ParamPeriodeManagerImpl implements ParamPeriodeManager {
 
 		final ParametrePeriodeFiscalePM hc = pf.getParametrePeriodeFiscalePM(TypeContribuable.HORS_CANTON);
 		if (hc != null) {
-			ppfv.setDelaiImprimeMoisHorsCanton(hc.getDelaiImprimeMoisDepuisBouclement());
+			ppfv.setDelaiImprimeMoisHorsCanton(hc.getDelaiImprimeMois());
 			ppfv.setDelaiImprimeRepousseFinDeMoisHorsCanton(hc.isDelaiImprimeRepousseFinDeMois());
 			ppfv.setToleranceJoursHorsCanton(hc.getDelaiToleranceJoursEffective());
 			ppfv.setToleranceRepousseeFinDeMoisHorsCanton(hc.isDelaiTolereRepousseFinDeMois());
+			ppfv.setRefDelaiHorsCanton(hc.getReferenceDelaiInitial());
 		}
 
 		final ParametrePeriodeFiscalePM hs = pf.getParametrePeriodeFiscalePM(TypeContribuable.HORS_SUISSE);
 		if (hs != null) {
-			ppfv.setDelaiImprimeMoisHorsSuisse(hs.getDelaiImprimeMoisDepuisBouclement());
+			ppfv.setDelaiImprimeMoisHorsSuisse(hs.getDelaiImprimeMois());
 			ppfv.setDelaiImprimeRepousseFinDeMoisHorsSuisse(hs.isDelaiImprimeRepousseFinDeMois());
 			ppfv.setToleranceJoursHorsSuisse(hs.getDelaiToleranceJoursEffective());
 			ppfv.setToleranceRepousseeFinDeMoisHorsSuisse(hs.isDelaiTolereRepousseFinDeMois());
+			ppfv.setRefDelaiHorsSuisse(hs.getReferenceDelaiInitial());
 		}
 
 		final ParametrePeriodeFiscalePM vd = pf.getParametrePeriodeFiscalePM(TypeContribuable.VAUDOIS_ORDINAIRE);
 		if (vd != null) {
-			ppfv.setDelaiImprimeMoisVaud(vd.getDelaiImprimeMoisDepuisBouclement());
+			ppfv.setDelaiImprimeMoisVaud(vd.getDelaiImprimeMois());
 			ppfv.setDelaiImprimeRepousseFinDeMoisVaud(vd.isDelaiImprimeRepousseFinDeMois());
 			ppfv.setToleranceJoursVaud(vd.getDelaiToleranceJoursEffective());
 			ppfv.setToleranceRepousseeFinDeMoisVaud(vd.isDelaiTolereRepousseFinDeMois());
+			ppfv.setRefDelaiVaud(vd.getReferenceDelaiInitial());
+		}
+
+		final ParametrePeriodeFiscalePM up = pf.getParametrePeriodeFiscalePM(TypeContribuable.UTILITE_PUBLIQUE);
+		if (up != null) {
+			ppfv.setDelaiImprimeMoisUtilitePublique(up.getDelaiImprimeMois());
+			ppfv.setDelaiImprimeRepousseFinDeMoisUtilitePublique(up.isDelaiImprimeRepousseFinDeMois());
+			ppfv.setToleranceJoursUtilitePublique(up.getDelaiToleranceJoursEffective());
+			ppfv.setToleranceRepousseeFinDeMoisUtilitePublique(up.isDelaiTolereRepousseFinDeMois());
+			ppfv.setRefDelaiUtilitePublique(up.getReferenceDelaiInitial());
 		}
 
 		return ppfv;
@@ -313,19 +330,29 @@ public class ParamPeriodeManagerImpl implements ParamPeriodeManager {
 		final ParametrePeriodeFiscalePM[] ppfs = new ParametrePeriodeFiscalePM[] {
 				pf.getParametrePeriodeFiscalePM(TypeContribuable.VAUDOIS_ORDINAIRE),
 				pf.getParametrePeriodeFiscalePM(TypeContribuable.HORS_CANTON),
-				pf.getParametrePeriodeFiscalePM(TypeContribuable.HORS_SUISSE)
+				pf.getParametrePeriodeFiscalePM(TypeContribuable.HORS_SUISSE),
+				pf.getParametrePeriodeFiscalePM(TypeContribuable.UTILITE_PUBLIQUE),
 		};
 
 		final int[][] delais = new int[][] {
 				{view.getDelaiImprimeMoisVaud(), view.getToleranceJoursVaud()},
 				{view.getDelaiImprimeMoisHorsCanton(), view.getToleranceJoursHorsCanton()},
-				{view.getDelaiImprimeMoisHorsSuisse(), view.getToleranceJoursHorsSuisse()}
+				{view.getDelaiImprimeMoisHorsSuisse(), view.getToleranceJoursHorsSuisse()},
+				{view.getDelaiImprimeMoisUtilitePublique(), view.getToleranceJoursUtilitePublique()}
+		};
+
+		final ParametrePeriodeFiscalePM.ReferencePourDelai[] refDelais = new ParametrePeriodeFiscalePM.ReferencePourDelai[] {
+				view.getRefDelaiVaud(),
+				view.getRefDelaiHorsCanton(),
+				view.getRefDelaiHorsSuisse(),
+				view.getRefDelaiUtilitePublique()
 		};
 
 		final boolean[][] reportsFinDeMois = new boolean[][] {
 				{view.getDelaiImprimeRepousseFinDeMoisVaud(), view.getToleranceRepousseeFinDeMoisVaud()},
 				{view.getDelaiImprimeRepousseFinDeMoisHorsCanton(), view.getToleranceRepousseeFinDeMoisHorsCanton()},
-				{view.getDelaiImprimeRepousseFinDeMoisHorsSuisse(), view.getToleranceRepousseeFinDeMoisHorsSuisse()}
+				{view.getDelaiImprimeRepousseFinDeMoisHorsSuisse(), view.getToleranceRepousseeFinDeMoisHorsSuisse()},
+				{view.getDelaiImprimeRepousseFinDeMoisUtilitePublique(), view.getToleranceRepousseeFinDeMoisUtilitePublique()}
 		};
 
 		// On verifie que tous les parametres de periode fiscale ne soient pas null
@@ -339,10 +366,11 @@ public class ParamPeriodeManagerImpl implements ParamPeriodeManager {
 
 		// mise à jour des paramètres
 		for (int i = 0 ; i < ppfs.length ; ++ i) {
-			ppfs[i].setDelaiImprimeMoisDepuisBouclement(delais[i][0]);
+			ppfs[i].setDelaiImprimeMois(delais[i][0]);
 			ppfs[i].setDelaiImprimeRepousseFinDeMois(reportsFinDeMois[i][0]);
 			ppfs[i].setDelaiToleranceJoursEffective(delais[i][1]);
 			ppfs[i].setDelaiTolereRepousseFinDeMois(reportsFinDeMois[i][1]);
+			ppfs[i].setReferenceDelaiInitial(refDelais[i]);
 		}
 	}
 

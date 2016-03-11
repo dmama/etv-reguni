@@ -30,8 +30,18 @@
 			</display:column>
 			<display:column titleKey="label.type.document">
 				<c:choose>
-					<c:when test="${tache.typeTache == 'TacheEnvoiDeclarationImpotPP' || tache.typeTache == 'TacheEnvoiDeclarationImpotPM'}">
+					<c:when test="${tache.typeTache == 'TacheEnvoiDeclarationImpotPP' || tache.typeTache == 'TacheEnvoiDeclarationImpotPM' || tache.typeTache == 'TacheEnvoiQuestionnaireSNC'}">
 						<fmt:message key="option.type.document.${tache.typeDocument}"/>
+					</c:when>
+					<c:otherwise>
+						&nbsp;
+					</c:otherwise>
+				</c:choose>
+			</display:column>
+			<display:column titleKey="label.type.contribuable">
+				<c:choose>
+					<c:when test="${tache.typeTache == 'TacheEnvoiDeclarationImpotPP' || tache.typeTache == 'TacheEnvoiDeclarationImpotPM'}">
+						<fmt:message key="option.type.contribuable.${tache.typeContribuable}"/>
 					</c:when>
 					<c:otherwise>
 						&nbsp;

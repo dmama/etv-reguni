@@ -1,24 +1,35 @@
 package ch.vd.uniregctb.param.view;
 
+import ch.vd.uniregctb.declaration.ParametrePeriodeFiscalePM;
+
 public class ParametrePeriodeFiscalePMEditView {
 
 	private Long idPeriodeFiscale;
 	private Integer anneePeriodeFiscale;
 
 	private Integer delaiImprimeMoisVaud;
+	private ParametrePeriodeFiscalePM.ReferencePourDelai refDelaiVaud;
 	private Boolean delaiImprimeRepousseFinDeMoisVaud;
 	private Integer toleranceJoursVaud;
 	private Boolean toleranceRepousseeFinDeMoisVaud;
 
 	private Integer delaiImprimeMoisHorsCanton;
+	private ParametrePeriodeFiscalePM.ReferencePourDelai refDelaiHorsCanton;
 	private Boolean delaiImprimeRepousseFinDeMoisHorsCanton;
 	private Integer toleranceJoursHorsCanton;
 	private Boolean toleranceRepousseeFinDeMoisHorsCanton;
 
 	private Integer delaiImprimeMoisHorsSuisse;
+	private ParametrePeriodeFiscalePM.ReferencePourDelai refDelaiHorsSuisse;
 	private Boolean delaiImprimeRepousseFinDeMoisHorsSuisse;
 	private Integer toleranceJoursHorsSuisse;
 	private Boolean toleranceRepousseeFinDeMoisHorsSuisse;
+
+	private Integer delaiImprimeMoisUtilitePublique;
+	private ParametrePeriodeFiscalePM.ReferencePourDelai refDelaiUtilitePublique;
+	private Boolean delaiImprimeRepousseFinDeMoisUtilitePublique;
+	private Integer toleranceJoursUtilitePublique;
+	private Boolean toleranceRepousseeFinDeMoisUtilitePublique;
 
 	public Long getIdPeriodeFiscale() {
 		return idPeriodeFiscale;
@@ -130,5 +141,69 @@ public class ParametrePeriodeFiscalePMEditView {
 
 	public void setToleranceRepousseeFinDeMoisHorsSuisse(Boolean toleranceRepousseeFinDeMoisHorsSuisse) {
 		this.toleranceRepousseeFinDeMoisHorsSuisse = toleranceRepousseeFinDeMoisHorsSuisse;
+	}
+
+	public Integer getDelaiImprimeMoisUtilitePublique() {
+		return delaiImprimeMoisUtilitePublique;
+	}
+
+	public void setDelaiImprimeMoisUtilitePublique(Integer delaiImprimeMoisUtilitePublique) {
+		this.delaiImprimeMoisUtilitePublique = delaiImprimeMoisUtilitePublique;
+	}
+
+	public Boolean getDelaiImprimeRepousseFinDeMoisUtilitePublique() {
+		return delaiImprimeRepousseFinDeMoisUtilitePublique;
+	}
+
+	public void setDelaiImprimeRepousseFinDeMoisUtilitePublique(Boolean delaiImprimeRepousseFinDeMoisUtilitePublique) {
+		this.delaiImprimeRepousseFinDeMoisUtilitePublique = delaiImprimeRepousseFinDeMoisUtilitePublique;
+	}
+
+	public Integer getToleranceJoursUtilitePublique() {
+		return toleranceJoursUtilitePublique;
+	}
+
+	public void setToleranceJoursUtilitePublique(Integer toleranceJoursUtilitePublique) {
+		this.toleranceJoursUtilitePublique = toleranceJoursUtilitePublique;
+	}
+
+	public Boolean getToleranceRepousseeFinDeMoisUtilitePublique() {
+		return toleranceRepousseeFinDeMoisUtilitePublique;
+	}
+
+	public void setToleranceRepousseeFinDeMoisUtilitePublique(Boolean toleranceRepousseeFinDeMoisUtilitePublique) {
+		this.toleranceRepousseeFinDeMoisUtilitePublique = toleranceRepousseeFinDeMoisUtilitePublique;
+	}
+
+	public ParametrePeriodeFiscalePM.ReferencePourDelai getRefDelaiVaud() {
+		return refDelaiVaud;
+	}
+
+	public void setRefDelaiVaud(ParametrePeriodeFiscalePM.ReferencePourDelai refDelaiVaud) {
+		this.refDelaiVaud = refDelaiVaud;
+	}
+
+	public ParametrePeriodeFiscalePM.ReferencePourDelai getRefDelaiHorsCanton() {
+		return refDelaiHorsCanton;
+	}
+
+	public void setRefDelaiHorsCanton(ParametrePeriodeFiscalePM.ReferencePourDelai refDelaiHorsCanton) {
+		this.refDelaiHorsCanton = refDelaiHorsCanton;
+	}
+
+	public ParametrePeriodeFiscalePM.ReferencePourDelai getRefDelaiHorsSuisse() {
+		return refDelaiHorsSuisse;
+	}
+
+	public void setRefDelaiHorsSuisse(ParametrePeriodeFiscalePM.ReferencePourDelai refDelaiHorsSuisse) {
+		this.refDelaiHorsSuisse = refDelaiHorsSuisse;
+	}
+
+	public ParametrePeriodeFiscalePM.ReferencePourDelai getRefDelaiUtilitePublique() {
+		return refDelaiUtilitePublique;
+	}
+
+	public void setRefDelaiUtilitePublique(ParametrePeriodeFiscalePM.ReferencePourDelai refDelaiUtilitePublique) {
+		this.refDelaiUtilitePublique = refDelaiUtilitePublique;
 	}
 }

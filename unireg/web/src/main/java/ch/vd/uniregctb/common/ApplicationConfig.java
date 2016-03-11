@@ -69,6 +69,7 @@ public class ApplicationConfig {
 	public static final String masterKeyTypeIFDAllegement = "option.allegement.ifd.type.";
 	public static final String masterKeyTypeFlagEntreprise = "option.flag.entreprise.";
 	public static final String masterKeyEtatEntreprise = "option.etat.entreprise.";
+	public static final String masterKeyReferencePourDelai = "option.reference.delai.";
 
 	public static final String masterKeyEtatTraitementReqDes = "option.etat.traitement.reqdes.";
 }

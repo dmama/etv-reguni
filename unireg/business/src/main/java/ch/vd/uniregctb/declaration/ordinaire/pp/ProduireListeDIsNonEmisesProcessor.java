@@ -27,7 +27,7 @@ import ch.vd.uniregctb.declaration.PeriodeFiscaleDAO;
 import ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotService;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementException;
-import ch.vd.uniregctb.metier.assujettissement.CategorieEnvoiDI;
+import ch.vd.uniregctb.metier.assujettissement.CategorieEnvoiDIPP;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionPersonnesPhysiques;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionService;
 import ch.vd.uniregctb.parametrage.DelaisService;
@@ -133,7 +133,7 @@ public class ProduireListeDIsNonEmisesProcessor {
 
 	protected void traiterBatch(List<Long> batch, int anneePeriode, RegDate dateTraitement, ListeDIsPPNonEmises r) throws DeclarationException, AssujettissementException {
 
-		final EnvoiDIsPPEnMasseProcessor.Cache cache = this.envoiDIsEnMasseProcessor.initCache(anneePeriode, CategorieEnvoiDI.VAUDOIS_COMPLETE);
+		final EnvoiDIsPPEnMasseProcessor.Cache cache = this.envoiDIsEnMasseProcessor.initCache(anneePeriode, CategorieEnvoiDIPP.VAUDOIS_COMPLETE);
 
 		// Récupère la période fiscale
 		final PeriodeFiscale periode = periodeDAO.getPeriodeFiscaleByYear(anneePeriode);

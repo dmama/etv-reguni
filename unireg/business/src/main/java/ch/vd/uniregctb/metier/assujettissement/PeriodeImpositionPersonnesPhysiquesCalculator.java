@@ -243,13 +243,13 @@ public class PeriodeImpositionPersonnesPhysiquesCalculator implements PeriodeImp
 		if (assujettissement instanceof DiplomateSuisse) {
 			if (assujettissement.getFors().secondairesDansLaPeriode.contains(MotifRattachement.IMMEUBLE_PRIVE)) {
 				// [UNIREG-1976] diplomates suisses basés à l'étranger et qui possèdent un ou plusieurs immeubles => déclaration ordinaire
-				final CategorieEnvoiDI categorie = determineCategorieEnvoiDIOrdinaire(TypeContribuable.DIPLOMATE_SUISSE, contribuable, annee, data);
+				final CategorieEnvoiDIPP categorie = determineCategorieEnvoiDIOrdinaire(TypeContribuable.DIPLOMATE_SUISSE, contribuable, annee, data);
 				final boolean optionnelle = (assujettissement.getMotifFractFin() != MotifFor.VENTE_IMMOBILIER && assujettissement.getMotifFractFin() != MotifFor.VEUVAGE_DECES);
 				return new PeriodeImpositionPersonnesPhysiques(debutAssujettissement, finAssujettissement, contribuable, optionnelle, false, causeFermeture, codeSegment, categorie, adresseRetour);
 			}
 			else {
 				// Les diplomates Suisses basés à l'étranger ne reçoivent pas de déclaration, mais la période d'imposition existe bel et bien.
-				return new PeriodeImpositionPersonnesPhysiques(debutAssujettissement, finAssujettissement, contribuable, false, false, causeFermeture, null, CategorieEnvoiDI.DIPLOMATE_SUISSE, null);
+				return new PeriodeImpositionPersonnesPhysiques(debutAssujettissement, finAssujettissement, contribuable, false, false, causeFermeture, null, CategorieEnvoiDIPP.DIPLOMATE_SUISSE, null);
 			}
 		}
 
@@ -291,17 +291,17 @@ public class PeriodeImpositionPersonnesPhysiquesCalculator implements PeriodeImp
 			if (mixte.getTypeAutoriteFiscalePrincipale() == TypeAutoriteFiscale.COMMUNE_HC) {
 				if (forsPeriode.secondairesDansLaPeriode.contains(MotifRattachement.ACTIVITE_INDEPENDANTE)) {
 					// Sourcier mixte hc avec activité indépendante => déclaration ordinaire
-					final CategorieEnvoiDI categorie = determineCategorieEnvoiDIOrdinaire(TypeContribuable.HORS_CANTON, contribuable, annee, data);
+					final CategorieEnvoiDIPP categorie = determineCategorieEnvoiDIOrdinaire(TypeContribuable.HORS_CANTON, contribuable, annee, data);
 					return new PeriodeImpositionPersonnesPhysiques(debutAssujettissement, finAssujettissement, contribuable, optionnelle, remplaceeParNote, causeFermeture, codeSegment, categorie, adresseRetour);
 				}
 				else {
 					// Sourciers mixtes hors-canton avec immeuble => déclaration HC immeuble
-					return new PeriodeImpositionPersonnesPhysiques(debutAssujettissement, finAssujettissement, contribuable, false, false, causeFermeture, codeSegment, CategorieEnvoiDI.HC_IMMEUBLE, TypeAdresseRetour.ACI);
+					return new PeriodeImpositionPersonnesPhysiques(debutAssujettissement, finAssujettissement, contribuable, false, false, causeFermeture, codeSegment, CategorieEnvoiDIPP.HC_IMMEUBLE, TypeAdresseRetour.ACI);
 				}
 			}
 			else {
 				// Sourcier mixte vaudois => déclaration ordinaire
-				final CategorieEnvoiDI categorie = determineCategorieEnvoiDIOrdinaire(TypeContribuable.VAUDOIS_ORDINAIRE, contribuable, annee, data);
+				final CategorieEnvoiDIPP categorie = determineCategorieEnvoiDIOrdinaire(TypeContribuable.VAUDOIS_ORDINAIRE, contribuable, annee, data);
 				return new PeriodeImpositionPersonnesPhysiques(debutAssujettissement, finAssujettissement, contribuable, optionnelle, remplaceeParNote, causeFermeture, codeSegment, categorie, adresseRetour);
 			}
 		}
@@ -310,7 +310,7 @@ public class PeriodeImpositionPersonnesPhysiquesCalculator implements PeriodeImp
 		 * Vaudois à la dépense
 		 */
 		if (assujettissement instanceof VaudoisDepense) {
-			return new PeriodeImpositionPersonnesPhysiques(debutAssujettissement, finAssujettissement, contribuable, false, false, causeFermeture, codeSegment, CategorieEnvoiDI.VAUDOIS_DEPENSE, adresseRetour);
+			return new PeriodeImpositionPersonnesPhysiques(debutAssujettissement, finAssujettissement, contribuable, false, false, causeFermeture, codeSegment, CategorieEnvoiDIPP.VAUDOIS_DEPENSE, adresseRetour);
 		}
 
 		/*
@@ -318,7 +318,7 @@ public class PeriodeImpositionPersonnesPhysiquesCalculator implements PeriodeImp
 		 */
 		if (assujettissement instanceof VaudoisOrdinaire || assujettissement instanceof Indigent) {
 			// Vaudois ordinaire => déclaration ordinaire
-			final CategorieEnvoiDI categorie = determineCategorieEnvoiDIOrdinaire(TypeContribuable.VAUDOIS_ORDINAIRE, contribuable, annee, data);
+			final CategorieEnvoiDIPP categorie = determineCategorieEnvoiDIOrdinaire(TypeContribuable.VAUDOIS_ORDINAIRE, contribuable, annee, data);
 			return new PeriodeImpositionPersonnesPhysiques(debutAssujettissement, finAssujettissement, contribuable, false, false, causeFermeture, codeSegment, categorie, adresseRetour);
 		}
 
@@ -349,12 +349,12 @@ public class PeriodeImpositionPersonnesPhysiquesCalculator implements PeriodeImp
 
 			if (fors.secondairesDansLaPeriode.contains(MotifRattachement.ACTIVITE_INDEPENDANTE)) {
 				// Activité indépendante dans le canton => déclaration ordinaires
-				final CategorieEnvoiDI categorie = determineCategorieEnvoiDIOrdinaire(TypeContribuable.HORS_CANTON, contribuable, annee, data);
+				final CategorieEnvoiDIPP categorie = determineCategorieEnvoiDIOrdinaire(TypeContribuable.HORS_CANTON, contribuable, annee, data);
 				return new PeriodeImpositionPersonnesPhysiques(debutAssujettissement, finAssujettissement, contribuable, false, remplaceeParNote, causeFermeture, codeSegment, categorie, adresseRetour);
 			}
 			else {
 				// Immeuble dans le canton => déclaration HC immeuble
-				return new PeriodeImpositionPersonnesPhysiques(debutAssujettissement, finAssujettissement, contribuable, false, remplaceeParNote, causeFermeture, codeSegment, CategorieEnvoiDI.HC_IMMEUBLE, adresseRetour);
+				return new PeriodeImpositionPersonnesPhysiques(debutAssujettissement, finAssujettissement, contribuable, false, remplaceeParNote, causeFermeture, codeSegment, CategorieEnvoiDIPP.HC_IMMEUBLE, adresseRetour);
 			}
 		}
 
@@ -366,14 +366,14 @@ public class PeriodeImpositionPersonnesPhysiquesCalculator implements PeriodeImp
 
 			if (assujettissement.getFors().secondairesDansLaPeriode.contains(MotifRattachement.ACTIVITE_INDEPENDANTE)) {
 				// Activité indépendante dans le canton => déclaration ordinaire
-				final CategorieEnvoiDI categorie = determineCategorieEnvoiDIOrdinaire(TypeContribuable.HORS_SUISSE, contribuable, annee, data);
+				final CategorieEnvoiDIPP categorie = determineCategorieEnvoiDIOrdinaire(TypeContribuable.HORS_SUISSE, contribuable, annee, data);
 				return new PeriodeImpositionPersonnesPhysiques(debutAssujettissement, finAssujettissement, contribuable, false, false, causeFermeture, codeSegment, categorie, adresseRetour);
 			}
 
 			final ForFiscalPrincipal dernierPrincipal = assujettissement.getFors().principauxDansLaPeriode.last();
 			if (dernierPrincipal.getMotifRattachement() == MotifRattachement.DIPLOMATE_ETRANGER) {
 				// Fonctionnaire international ou diplomate étranger propriétaire d'immeuble dans le canton => déclaration ordinaire
-				final CategorieEnvoiDI categorie = determineCategorieEnvoiDIOrdinaire(TypeContribuable.VAUDOIS_ORDINAIRE, contribuable, annee, data);
+				final CategorieEnvoiDIPP categorie = determineCategorieEnvoiDIOrdinaire(TypeContribuable.VAUDOIS_ORDINAIRE, contribuable, annee, data);
 				return new PeriodeImpositionPersonnesPhysiques(debutAssujettissement, finAssujettissement, contribuable, false, false, causeFermeture, codeSegment, categorie, adresseRetour);
 			}
 
@@ -382,7 +382,7 @@ public class PeriodeImpositionPersonnesPhysiquesCalculator implements PeriodeImp
 				// selon un mode forfaitaire et *peuvent* recevoir une déclaration d'impôt à leur demande (dès l’année d’acquisition du 1er immeuble),
 				// mais n’en bénéficient *plus* l’année de la vente du dernier immeuble ou du décès.
 				final boolean optionnelle = (assujettissement.getMotifFractFin() != MotifFor.VENTE_IMMOBILIER && assujettissement.getMotifFractFin() != MotifFor.VEUVAGE_DECES);
-				final CategorieEnvoiDI categorie = determineCategorieEnvoiDIOrdinaire(TypeContribuable.HORS_SUISSE, contribuable, annee, data);
+				final CategorieEnvoiDIPP categorie = determineCategorieEnvoiDIOrdinaire(TypeContribuable.HORS_SUISSE, contribuable, annee, data);
 				return new PeriodeImpositionPersonnesPhysiques(debutAssujettissement, finAssujettissement, contribuable, optionnelle, false, causeFermeture, codeSegment, categorie, adresseRetour);
 			}
 
@@ -401,9 +401,9 @@ public class PeriodeImpositionPersonnesPhysiquesCalculator implements PeriodeImp
 	 * @param data             les données d'assujettissement complètes du contribuable
 	 * @return le type d'envoi de DI
 	 */
-	private CategorieEnvoiDI determineCategorieEnvoiDIOrdinaire(TypeContribuable typeContribuable, ContribuableImpositionPersonnesPhysiques contribuable, int annee, DonneesAssujettissement data) {
+	private CategorieEnvoiDIPP determineCategorieEnvoiDIOrdinaire(TypeContribuable typeContribuable, ContribuableImpositionPersonnesPhysiques contribuable, int annee, DonneesAssujettissement data) {
 		final FormatDIOrdinaire formatDI = determineFormatDIOrdinaire(contribuable, annee, data);
-		return CategorieEnvoiDI.ordinaireFor(typeContribuable, formatDI);
+		return CategorieEnvoiDIPP.ordinaireFor(typeContribuable, formatDI);
 	}
 
 	private static Qualification getQualification(ContribuableImpositionPersonnesPhysiques contribuable, int anneePrecedente) {

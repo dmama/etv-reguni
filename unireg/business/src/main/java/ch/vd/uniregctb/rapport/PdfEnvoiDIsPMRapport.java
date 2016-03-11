@@ -44,7 +44,7 @@ public class PdfEnvoiDIsPMRapport extends PdfRapport {
                 public void fillTable(PdfTableSimple table) throws DocumentException {
                     table.addLigne("Période fiscale considérée :", String.valueOf(results.getPeriodeFiscale()));
                     table.addLigne("Date limite de bouclement :", RegDateHelper.dateToDisplayString(results.getDateLimiteBouclements()));
-                    table.addLigne("Type de document :", results.getType().name());
+                    table.addLigne("Type d'envoi :", results.getCategorieEnvoi().name());
                     table.addLigne("Nombre maximum d'envois :", results.getNbMaxEnvois() == null ? "-" : String.valueOf(results.getNbMaxEnvois()));
 	                table.addLigne("Nombre de threads :", String.valueOf(results.getNbThreads()));
                     table.addLigne("Date de traitement :", RegDateHelper.dateToDisplayString(results.getDateTraitement()));

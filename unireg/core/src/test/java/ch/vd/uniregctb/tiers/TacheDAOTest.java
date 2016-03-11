@@ -538,7 +538,23 @@ public class TacheDAOTest extends CoreDAOTest {
 				pf0 = hibernateTemplate.merge(pf0);
 			}
 			if (typeCtb.isUsedForPM()) {
-				final ParametrePeriodeFiscalePM ppf = new ParametrePeriodeFiscalePM(typeCtb, 6, false, 75, false, pf0);
+				final ParametrePeriodeFiscalePM.ReferencePourDelai refDelaiInitial;
+				final int delaiInitialMois ;
+				final int toleranceJours;
+				switch (typeCtb) {
+				case UTILITE_PUBLIQUE:
+					refDelaiInitial = ParametrePeriodeFiscalePM.ReferencePourDelai.EMISSION;
+					delaiInitialMois = 24;
+					toleranceJours = 15;
+					break;
+				default:
+					refDelaiInitial = ParametrePeriodeFiscalePM.ReferencePourDelai.FIN_PERIODE;
+					delaiInitialMois = 6;
+					toleranceJours = 75;
+					break;
+				}
+
+				final ParametrePeriodeFiscalePM ppf = new ParametrePeriodeFiscalePM(typeCtb, delaiInitialMois, false, toleranceJours, false, refDelaiInitial, pf0);
 				ppf.setLogModifDate(new Timestamp(1199142000000L));
 				pf0.addParametrePeriodeFiscale(ppf);
 				pf0 = hibernateTemplate.merge(pf0);

@@ -8,7 +8,7 @@ import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotService;
 import ch.vd.uniregctb.document.EnvoiDIsPPRapport;
-import ch.vd.uniregctb.metier.assujettissement.CategorieEnvoiDI;
+import ch.vd.uniregctb.metier.assujettissement.CategorieEnvoiDIPP;
 import ch.vd.uniregctb.rapport.RapportService;
 import ch.vd.uniregctb.scheduler.JobCategory;
 import ch.vd.uniregctb.scheduler.JobDefinition;
@@ -53,8 +53,8 @@ public class EnvoiDIsJob extends JobDefinition {
 			param.setDescription("Catégorie de contribuables");
 			param.setName(CATEGORIE_CTB);
 			param.setMandatory(true);
-			param.setType(new JobParamEnum(CategorieEnvoiDI.class));
-			addParameterDefinition(param, CategorieEnvoiDI.VAUDOIS_COMPLETE);
+			param.setType(new JobParamEnum(CategorieEnvoiDIPP.class));
+			addParameterDefinition(param, CategorieEnvoiDIPP.VAUDOIS_COMPLETE);
 		}
 		{
 			final JobParam param = new JobParam();
@@ -111,7 +111,7 @@ public class EnvoiDIsJob extends JobDefinition {
 
 		// Récupération des paramètres
 		final int annee = getIntegerValue(params, PERIODE_FISCALE);
-		final CategorieEnvoiDI categorie = getEnumValue(params, CATEGORIE_CTB, CategorieEnvoiDI.class);
+		final CategorieEnvoiDIPP categorie = getEnumValue(params, CATEGORIE_CTB, CategorieEnvoiDIPP.class);
 
 		final Long noCtbMin = getOptionalLongValue(params, CTB_NO_MIN);
 		final Long noCtbMax = getOptionalLongValue(params, CTB_NO_MAX);

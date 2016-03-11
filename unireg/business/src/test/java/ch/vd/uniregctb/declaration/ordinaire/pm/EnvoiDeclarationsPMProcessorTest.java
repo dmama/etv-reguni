@@ -14,13 +14,11 @@ import ch.vd.unireg.interfaces.infra.mock.MockOfficeImpot;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.unireg.interfaces.infra.mock.MockTypeRegimeFiscal;
 import ch.vd.unireg.interfaces.organisation.mock.MockServiceOrganisation;
-import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.common.TicketService;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePM;
 import ch.vd.uniregctb.declaration.DelaiDeclaration;
-import ch.vd.uniregctb.declaration.ModeleDocumentDAO;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.declaration.PeriodeFiscaleDAO;
 import ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotService;
@@ -28,8 +26,8 @@ import ch.vd.uniregctb.evenement.fiscal.EvenementFiscal;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalDAO;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalDeclaration;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
+import ch.vd.uniregctb.metier.assujettissement.CategorieEnvoiDIPM;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionService;
-import ch.vd.uniregctb.parametrage.DelaisService;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.Entreprise;
@@ -59,17 +57,14 @@ public class EnvoiDeclarationsPMProcessorTest extends BusinessTest {
 		super.runOnSetUp();
 
 		final PeriodeFiscaleDAO periodeDAO = getBean(PeriodeFiscaleDAO.class, "periodeFiscaleDAO");
-		final ModeleDocumentDAO modeleDAO = getBean(ModeleDocumentDAO.class, "modeleDocumentDAO");
-		final DelaisService delaisService = getBean(DelaisService.class, "delaisService");
 		final DeclarationImpotService diService = getBean(DeclarationImpotService.class, "diService");
 		final ParametreAppService parametreAppService = getBean(ParametreAppService.class, "parametreAppService");
-		final AdresseService adresseService = getBean(AdresseService.class, "adresseService");
 		final TicketService ticketService = getBean(TicketService.class, "ticketService");
 		final AssujettissementService assujettissementService = getBean(AssujettissementService.class, "assujettissementService");
 		final PeriodeImpositionService periodeImpositionService = getBean(PeriodeImpositionService.class, "periodeImpositionService");
 
-		processor = new EnvoiDeclarationsPMProcessor(tiersService, hibernateTemplate, modeleDAO, periodeDAO, delaisService, diService, assujettissementService,
-		                                             periodeImpositionService, TAILLE_LOT, transactionManager, parametreAppService, adresseService, ticketService);
+		processor = new EnvoiDeclarationsPMProcessor(hibernateTemplate, periodeDAO, diService, assujettissementService,
+		                                             periodeImpositionService, TAILLE_LOT, transactionManager, parametreAppService, ticketService);
 
 		tacheDAO = getBean(TacheDAO.class, "tacheDAO");
 		evenementFiscalDAO = getBean(EvenementFiscalDAO.class, "evenementFiscalDAO");
@@ -77,7 +72,7 @@ public class EnvoiDeclarationsPMProcessorTest extends BusinessTest {
 
 	@Test
 	public void testAucuneTache() throws Exception {
-		final EnvoiDIsPMResults res = processor.run(2014, TypeDeclarationImpotPM.APM, date(2014, 11, 30), null, RegDate.get(), 3, null);
+		final EnvoiDIsPMResults res = processor.run(2014, CategorieEnvoiDIPM.DI_APM, date(2014, 11, 30), null, RegDate.get(), 3, null);
 		Assert.assertNotNull(res);
 		Assert.assertEquals(0, res.getEnvoyees().size());
 		Assert.assertEquals(0, res.getIgnorees().size());
@@ -88,7 +83,7 @@ public class EnvoiDeclarationsPMProcessorTest extends BusinessTest {
 		Assert.assertNull(res.getNbMaxEnvois());
 		Assert.assertEquals(3, res.getNbThreads());
 		Assert.assertEquals(2014, res.getPeriodeFiscale());
-		Assert.assertEquals(TypeDeclarationImpotPM.APM, res.getType());
+		Assert.assertEquals(CategorieEnvoiDIPM.DI_APM, res.getCategorieEnvoi());
 	}
 
 	@Test
@@ -135,7 +130,7 @@ public class EnvoiDeclarationsPMProcessorTest extends BusinessTest {
 
 		// lancement du job "pf - 1" -> rien à faire
 		{
-			final EnvoiDIsPMResults res = processor.run(pf - 1, TypeDeclarationImpotPM.PM, date(pf - 1, 12, 31), null, dateTraitement, 1, null);
+			final EnvoiDIsPMResults res = processor.run(pf - 1, CategorieEnvoiDIPM.DI_PM, date(pf - 1, 12, 31), null, dateTraitement, 1, null);
 			Assert.assertNotNull(res);
 			Assert.assertEquals(0, res.getEnvoyees().size());
 			Assert.assertEquals(0, res.getIgnorees().size());
@@ -146,7 +141,7 @@ public class EnvoiDeclarationsPMProcessorTest extends BusinessTest {
 			Assert.assertNull(res.getNbMaxEnvois());
 			Assert.assertEquals(1, res.getNbThreads());
 			Assert.assertEquals(pf - 1, res.getPeriodeFiscale());
-			Assert.assertEquals(TypeDeclarationImpotPM.PM, res.getType());
+			Assert.assertEquals(CategorieEnvoiDIPM.DI_PM, res.getCategorieEnvoi());
 
 			// vérification des données en base
 			doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
@@ -178,7 +173,7 @@ public class EnvoiDeclarationsPMProcessorTest extends BusinessTest {
 
 		// lancement du job "pf" (on testera la limite de bouclement dans un autre test)
 		{
-			final EnvoiDIsPMResults res = processor.run(pf, TypeDeclarationImpotPM.PM, date(pf, 2, 10), null, dateTraitement, 1, null);
+			final EnvoiDIsPMResults res = processor.run(pf, CategorieEnvoiDIPM.DI_PM, date(pf, 2, 10), null, dateTraitement, 1, null);
 			Assert.assertNotNull(res);
 			Assert.assertEquals(1, res.getEnvoyees().size());
 			Assert.assertEquals(0, res.getIgnorees().size());
@@ -189,7 +184,7 @@ public class EnvoiDeclarationsPMProcessorTest extends BusinessTest {
 			Assert.assertNull(res.getNbMaxEnvois());
 			Assert.assertEquals(1, res.getNbThreads());
 			Assert.assertEquals(pf, res.getPeriodeFiscale());
-			Assert.assertEquals(TypeDeclarationImpotPM.PM, res.getType());
+			Assert.assertEquals(CategorieEnvoiDIPM.DI_PM, res.getCategorieEnvoi());
 
 			final EnvoiDIsPMResults.DiEnvoyee envoyee = res.getEnvoyees().get(0);
 			Assert.assertNotNull(envoyee);
@@ -310,7 +305,7 @@ public class EnvoiDeclarationsPMProcessorTest extends BusinessTest {
 
 		// lancement du job "pf - 1" -> rien à faire
 		{
-			final EnvoiDIsPMResults res = processor.run(pf - 1, TypeDeclarationImpotPM.PM, date(pf - 1, 12, 31), null, dateTraitement, 1, null);
+			final EnvoiDIsPMResults res = processor.run(pf - 1, CategorieEnvoiDIPM.DI_PM, date(pf - 1, 12, 31), null, dateTraitement, 1, null);
 			Assert.assertNotNull(res);
 			Assert.assertEquals(0, res.getEnvoyees().size());
 			Assert.assertEquals(0, res.getIgnorees().size());
@@ -321,7 +316,7 @@ public class EnvoiDeclarationsPMProcessorTest extends BusinessTest {
 			Assert.assertNull(res.getNbMaxEnvois());
 			Assert.assertEquals(1, res.getNbThreads());
 			Assert.assertEquals(pf - 1, res.getPeriodeFiscale());
-			Assert.assertEquals(TypeDeclarationImpotPM.PM, res.getType());
+			Assert.assertEquals(CategorieEnvoiDIPM.DI_PM, res.getCategorieEnvoi());
 
 			// vérification des données en base
 			doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
@@ -353,7 +348,7 @@ public class EnvoiDeclarationsPMProcessorTest extends BusinessTest {
 
 		// lancement du job "pf" (on testera la limite de bouclement dans un autre test)
 		{
-			final EnvoiDIsPMResults res = processor.run(pf, TypeDeclarationImpotPM.PM, date(pf, 2, 10), null, dateTraitement, 1, null);
+			final EnvoiDIsPMResults res = processor.run(pf, CategorieEnvoiDIPM.DI_PM, date(pf, 2, 10), null, dateTraitement, 1, null);
 			Assert.assertNotNull(res);
 			Assert.assertEquals(1, res.getEnvoyees().size());
 			Assert.assertEquals(0, res.getIgnorees().size());
@@ -364,7 +359,7 @@ public class EnvoiDeclarationsPMProcessorTest extends BusinessTest {
 			Assert.assertNull(res.getNbMaxEnvois());
 			Assert.assertEquals(1, res.getNbThreads());
 			Assert.assertEquals(pf, res.getPeriodeFiscale());
-			Assert.assertEquals(TypeDeclarationImpotPM.PM, res.getType());
+			Assert.assertEquals(CategorieEnvoiDIPM.DI_PM, res.getCategorieEnvoi());
 
 			final EnvoiDIsPMResults.DiEnvoyee envoyee = res.getEnvoyees().get(0);
 			Assert.assertNotNull(envoyee);
@@ -484,7 +479,7 @@ public class EnvoiDeclarationsPMProcessorTest extends BusinessTest {
 
 		// lancement du job "pf - 1" -> rien à faire
 		{
-			final EnvoiDIsPMResults res = processor.run(pf - 1, TypeDeclarationImpotPM.APM, date(pf - 1, 12, 31), null, dateTraitement, 1, null);
+			final EnvoiDIsPMResults res = processor.run(pf - 1, CategorieEnvoiDIPM.DI_APM, date(pf - 1, 12, 31), null, dateTraitement, 1, null);
 			Assert.assertNotNull(res);
 			Assert.assertEquals(0, res.getEnvoyees().size());
 			Assert.assertEquals(0, res.getIgnorees().size());
@@ -495,7 +490,7 @@ public class EnvoiDeclarationsPMProcessorTest extends BusinessTest {
 			Assert.assertNull(res.getNbMaxEnvois());
 			Assert.assertEquals(1, res.getNbThreads());
 			Assert.assertEquals(pf - 1, res.getPeriodeFiscale());
-			Assert.assertEquals(TypeDeclarationImpotPM.APM, res.getType());
+			Assert.assertEquals(CategorieEnvoiDIPM.DI_APM, res.getCategorieEnvoi());
 
 			// vérification des données en base
 			doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
@@ -527,7 +522,7 @@ public class EnvoiDeclarationsPMProcessorTest extends BusinessTest {
 
 		// lancement du job "pf" (on testera la limite de bouclement dans un autre test)
 		{
-			final EnvoiDIsPMResults res = processor.run(pf, TypeDeclarationImpotPM.APM, date(pf, 2, 10), null, dateTraitement, 1, null);
+			final EnvoiDIsPMResults res = processor.run(pf, CategorieEnvoiDIPM.DI_APM, date(pf, 2, 10), null, dateTraitement, 1, null);
 			Assert.assertNotNull(res);
 			Assert.assertEquals(1, res.getEnvoyees().size());
 			Assert.assertEquals(0, res.getIgnorees().size());
@@ -538,7 +533,7 @@ public class EnvoiDeclarationsPMProcessorTest extends BusinessTest {
 			Assert.assertNull(res.getNbMaxEnvois());
 			Assert.assertEquals(1, res.getNbThreads());
 			Assert.assertEquals(pf, res.getPeriodeFiscale());
-			Assert.assertEquals(TypeDeclarationImpotPM.APM, res.getType());
+			Assert.assertEquals(CategorieEnvoiDIPM.DI_APM, res.getCategorieEnvoi());
 
 			final EnvoiDIsPMResults.DiEnvoyee envoyee = res.getEnvoyees().get(0);
 			Assert.assertNotNull(envoyee);
@@ -658,7 +653,7 @@ public class EnvoiDeclarationsPMProcessorTest extends BusinessTest {
 
 		// lancement du job "pf" avec la limite de date de bouclement avant la date effective de bouclement
 		{
-			final EnvoiDIsPMResults res = processor.run(pf, TypeDeclarationImpotPM.PM, date(pf, 6, 29), null, dateTraitement, 1, null);
+			final EnvoiDIsPMResults res = processor.run(pf, CategorieEnvoiDIPM.DI_PM, date(pf, 6, 29), null, dateTraitement, 1, null);
 			Assert.assertNotNull(res);
 			Assert.assertEquals(0, res.getEnvoyees().size());
 			Assert.assertEquals(1, res.getIgnorees().size());
@@ -669,7 +664,7 @@ public class EnvoiDeclarationsPMProcessorTest extends BusinessTest {
 			Assert.assertNull(res.getNbMaxEnvois());
 			Assert.assertEquals(1, res.getNbThreads());
 			Assert.assertEquals(pf, res.getPeriodeFiscale());
-			Assert.assertEquals(TypeDeclarationImpotPM.PM, res.getType());
+			Assert.assertEquals(CategorieEnvoiDIPM.DI_PM, res.getCategorieEnvoi());
 
 			final EnvoiDIsPMResults.TacheIgnoree ignoree = res.getIgnorees().get(0);
 			Assert.assertNotNull(ignoree);
@@ -751,7 +746,7 @@ public class EnvoiDeclarationsPMProcessorTest extends BusinessTest {
 
 		// lancement du job "pf" avec la limite de date de bouclement à la date effective de bouclement
 		{
-			final EnvoiDIsPMResults res = processor.run(pf, TypeDeclarationImpotPM.PM, date(pf, 1, 31), null, dateTraitement, 1, null);
+			final EnvoiDIsPMResults res = processor.run(pf, CategorieEnvoiDIPM.DI_PM, date(pf, 1, 31), null, dateTraitement, 1, null);
 			Assert.assertNotNull(res);
 			Assert.assertEquals(1, res.getEnvoyees().size());
 			Assert.assertEquals(0, res.getIgnorees().size());
@@ -762,7 +757,7 @@ public class EnvoiDeclarationsPMProcessorTest extends BusinessTest {
 			Assert.assertNull(res.getNbMaxEnvois());
 			Assert.assertEquals(1, res.getNbThreads());
 			Assert.assertEquals(pf, res.getPeriodeFiscale());
-			Assert.assertEquals(TypeDeclarationImpotPM.PM, res.getType());
+			Assert.assertEquals(CategorieEnvoiDIPM.DI_PM, res.getCategorieEnvoi());
 
 			final EnvoiDIsPMResults.DiEnvoyee envoyee = res.getEnvoyees().get(0);
 			Assert.assertNotNull(envoyee);
@@ -867,7 +862,7 @@ public class EnvoiDeclarationsPMProcessorTest extends BusinessTest {
 
 		// lancement du job "pf" avec la limite de date de bouclement avant la date effective de bouclement sur une fin d'assujettissement
 		{
-			final EnvoiDIsPMResults res = processor.run(pf, TypeDeclarationImpotPM.PM, date(pf, 1, 25), null, dateTraitement, 1, null);
+			final EnvoiDIsPMResults res = processor.run(pf, CategorieEnvoiDIPM.DI_PM, date(pf, 1, 25), null, dateTraitement, 1, null);
 			Assert.assertNotNull(res);
 			Assert.assertEquals(1, res.getEnvoyees().size());
 			Assert.assertEquals(0, res.getIgnorees().size());
@@ -878,7 +873,7 @@ public class EnvoiDeclarationsPMProcessorTest extends BusinessTest {
 			Assert.assertNull(res.getNbMaxEnvois());
 			Assert.assertEquals(1, res.getNbThreads());
 			Assert.assertEquals(pf, res.getPeriodeFiscale());
-			Assert.assertEquals(TypeDeclarationImpotPM.PM, res.getType());
+			Assert.assertEquals(CategorieEnvoiDIPM.DI_PM, res.getCategorieEnvoi());
 
 			final EnvoiDIsPMResults.DiEnvoyee envoyee = res.getEnvoyees().get(0);
 			Assert.assertNotNull(envoyee);
@@ -983,7 +978,7 @@ public class EnvoiDeclarationsPMProcessorTest extends BusinessTest {
 		// lancement du job "pf" avec la limite de date de bouclement avant la date effective de bouclement sur une fin d'assujettissement
 		// avec une date de traitement antérieure à la date de bouclement
 		{
-			final EnvoiDIsPMResults res = processor.run(pf, TypeDeclarationImpotPM.PM, date(pf, 3, 31), null, dateTraitement, 1, null);
+			final EnvoiDIsPMResults res = processor.run(pf, CategorieEnvoiDIPM.DI_PM, date(pf, 3, 31), null, dateTraitement, 1, null);
 			Assert.assertNotNull(res);
 			Assert.assertEquals(0, res.getEnvoyees().size());
 			Assert.assertEquals(1, res.getIgnorees().size());
@@ -994,7 +989,7 @@ public class EnvoiDeclarationsPMProcessorTest extends BusinessTest {
 			Assert.assertNull(res.getNbMaxEnvois());
 			Assert.assertEquals(1, res.getNbThreads());
 			Assert.assertEquals(pf, res.getPeriodeFiscale());
-			Assert.assertEquals(TypeDeclarationImpotPM.PM, res.getType());
+			Assert.assertEquals(CategorieEnvoiDIPM.DI_PM, res.getCategorieEnvoi());
 
 			final EnvoiDIsPMResults.TacheIgnoree ignoree = res.getIgnorees().get(0);
 			Assert.assertNotNull(ignoree);

@@ -8,8 +8,11 @@
 				width: 50%;
 				text-align: center;
 			}
-			div.checkbox {
-				margin: 10px;
+			input.duree {
+				width: 30px;
+			}
+			input[type=checkbox] {
+				vertical-align: bottom;
 			}
 		</style>
 	</tiles:put>
@@ -35,51 +38,114 @@
 
 			<table>
 			<tr>
-				<th></th>
-				<th><fmt:message key="label.param.entete.VD"/> / <fmt:message key="label.param.entete.report.fin.mois"/></th>
-				<th><fmt:message key="label.param.entete.HC"/> / <fmt:message key="label.param.entete.report.fin.mois"/></th>
-				<th><fmt:message key="label.param.entete.HS"/> / <fmt:message key="label.param.entete.report.fin.mois"/></th>
+				<th>&nbsp;</th>
+				<th colspan="2" style="text-align: center;"><fmt:message key="label.param.entete.VD"/></th>
+				<th colspan="2" style="text-align: center;"><fmt:message key="label.param.entete.HC"/></th>
+				<th colspan="2" style="text-align: center;"><fmt:message key="label.param.entete.HS"/></th>
+				<th colspan="2" style="text-align: center;"><fmt:message key="label.param.entete.utilite.publique"/></th>
 			</tr>
 			<tr>
-				<th><fmt:message key="label.param.pm.delai.imprime"/></th>
-				<td>
-					<form:input path="delaiImprimeMoisVaud"/>
+				<th rowspan="2"><fmt:message key="label.param.pm.delai.imprime"/></th>
+
+				<td rowspan="2">
+					<form:input path="delaiImprimeMoisVaud" cssClass="duree"/>
 					<fmt:message key="label.param.pm.delai.mois"/>
-					&nbsp;/&nbsp;<form:checkbox path="delaiImprimeRepousseFinDeMoisVaud"/>
 					<form:errors path="delaiImprimeMoisVaud" cssClass="error"/>
 				</td>
 				<td>
-					<form:input path="delaiImprimeMoisHorsCanton"/>
+					<form:select path="refDelaiVaud">
+						<form:options items="${referencesPourDelais}"/>
+					</form:select>
+				</td>
+
+				<td rowspan="2">
+					<form:input path="delaiImprimeMoisHorsCanton" cssClass="duree"/>
 					<fmt:message key="label.param.pm.delai.mois"/>
-					&nbsp;/&nbsp;<form:checkbox path="delaiImprimeRepousseFinDeMoisHorsCanton"/>
 					<form:errors path="delaiImprimeMoisHorsCanton" cssClass="error"/>
 				</td>
 				<td>
-					<form:input path="delaiImprimeMoisHorsSuisse"/>
+					<form:select path="refDelaiHorsCanton">
+						<form:options items="${referencesPourDelais}"/>
+					</form:select>
+				</td>
+
+				<td rowspan="2">
+					<form:input path="delaiImprimeMoisHorsSuisse" cssClass="duree"/>
 					<fmt:message key="label.param.pm.delai.mois"/>
-					&nbsp;/&nbsp;<form:checkbox path="delaiImprimeRepousseFinDeMoisHorsSuisse"/>
 					<form:errors path="delaiImprimeMoisHorsSuisse" cssClass="error"/>
+				</td>
+				<td>
+					<form:select path="refDelaiHorsSuisse">
+						<form:options items="${referencesPourDelais}"/>
+					</form:select>
+				</td>
+
+				<td rowspan="2">
+					<form:input path="delaiImprimeMoisUtilitePublique" cssClass="duree"/>
+					<fmt:message key="label.param.pm.delai.mois"/>
+					<form:errors path="delaiImprimeMoisUtilitePublique" cssClass="error"/>
+				</td>
+				<td>
+					<form:select path="refDelaiUtilitePublique">
+						<form:options items="${referencesPourDelais}"/>
+					</form:select>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<form:checkbox path="delaiImprimeRepousseFinDeMoisVaud"/>
+					<fmt:message key="label.param.pm.report.fin.mois"/>
+				</td>
+				<td>
+					<form:checkbox path="delaiImprimeRepousseFinDeMoisHorsCanton"/>
+					<fmt:message key="label.param.pm.report.fin.mois"/>
+				</td>
+				<td>
+					<form:checkbox path="delaiImprimeRepousseFinDeMoisHorsSuisse"/>
+					<fmt:message key="label.param.pm.report.fin.mois"/>
+				</td>
+				<td>
+					<form:checkbox path="delaiImprimeRepousseFinDeMoisUtilitePublique"/>
+					<fmt:message key="label.param.pm.report.fin.mois"/>
 				</td>
 			</tr>
 			<tr>
 				<th><fmt:message key="label.param.pm.delai.tolerance"/></th>
 				<td>
-					<form:input path="toleranceJoursVaud"/>
+					<form:input path="toleranceJoursVaud" cssClass="duree"/>
 					<fmt:message key="label.param.pm.delai.jours"/>
-					&nbsp;/&nbsp;<form:checkbox path="toleranceRepousseeFinDeMoisVaud"/>
 					<form:errors path="toleranceJoursVaud" cssClass="error"/>
 				</td>
 				<td>
-					<form:input path="toleranceJoursHorsCanton"/>
+					<form:checkbox path="toleranceRepousseeFinDeMoisVaud"/>
+					<fmt:message key="label.param.pm.report.fin.mois"/>
+				</td>
+				<td>
+					<form:input path="toleranceJoursHorsCanton" cssClass="duree"/>
 					<fmt:message key="label.param.pm.delai.jours"/>
-					&nbsp;/&nbsp;<form:checkbox path="toleranceRepousseeFinDeMoisHorsCanton"/>
 					<form:errors path="toleranceJoursHorsCanton" cssClass="error"/>
 				</td>
 				<td>
-					<form:input path="toleranceJoursHorsSuisse"/>
+					<form:checkbox path="toleranceRepousseeFinDeMoisHorsCanton"/>
+					<fmt:message key="label.param.pm.report.fin.mois"/>
+				</td>
+				<td>
+					<form:input path="toleranceJoursHorsSuisse" cssClass="duree"/>
 					<fmt:message key="label.param.pm.delai.jours"/>
-					&nbsp;/&nbsp;<form:checkbox path="toleranceRepousseeFinDeMoisHorsSuisse"/>
 					<form:errors path="toleranceJoursHorsSuisse" cssClass="error"/>
+				</td>
+				<td>
+					<form:checkbox path="toleranceRepousseeFinDeMoisHorsSuisse"/>
+					<fmt:message key="label.param.pm.report.fin.mois"/>
+				</td>
+				<td>
+					<form:input path="toleranceJoursUtilitePublique" cssClass="duree"/>
+					<fmt:message key="label.param.pm.delai.jours"/>
+					<form:errors path="toleranceJoursUtilitePublique" cssClass="error"/>
+				</td>
+				<td>
+					<form:checkbox path="toleranceRepousseeFinDeMoisUtilitePublique"/>
+					<fmt:message key="label.param.pm.report.fin.mois"/>
 				</td>
 			</tr>
 		</table>

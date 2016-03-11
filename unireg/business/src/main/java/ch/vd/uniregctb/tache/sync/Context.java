@@ -4,6 +4,7 @@ import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaireDAO;
 import ch.vd.uniregctb.declaration.PeriodeFiscaleDAO;
 import ch.vd.uniregctb.declaration.QuestionnaireSNCDAO;
 import ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotService;
+import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.TacheDAO;
@@ -20,9 +21,10 @@ public class Context {
 	public final DeclarationImpotOrdinaireDAO diDAO;
 	public final QuestionnaireSNCDAO qsncDAO;
 	public final PeriodeFiscaleDAO periodeFiscaleDAO;
+	public final ParametreAppService parametreAppService;
 
 	public Context(Contribuable contribuable, CollectiviteAdministrative collectivite, TacheDAO tacheDAO, DeclarationImpotService diService, CollectiviteAdministrative officeSuccessions,
-	               TiersService tiersService, DeclarationImpotOrdinaireDAO diDAO, QuestionnaireSNCDAO qsncDAO, PeriodeFiscaleDAO periodeFiscaleDAO) {
+	               TiersService tiersService, DeclarationImpotOrdinaireDAO diDAO, QuestionnaireSNCDAO qsncDAO, PeriodeFiscaleDAO periodeFiscaleDAO, ParametreAppService parametreAppService) {
 		this.contribuable = contribuable;
 		this.collectivite = collectivite;
 		this.tacheDAO = tacheDAO;
@@ -32,5 +34,6 @@ public class Context {
 		this.diDAO = diDAO;
 		this.qsncDAO = qsncDAO;
 		this.periodeFiscaleDAO = periodeFiscaleDAO;
+		this.parametreAppService = parametreAppService;
 	}
 }

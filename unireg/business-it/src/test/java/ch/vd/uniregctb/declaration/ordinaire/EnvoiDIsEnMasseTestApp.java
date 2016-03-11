@@ -9,7 +9,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.BusinessItTestApplication;
 import ch.vd.uniregctb.declaration.DeclarationException;
-import ch.vd.uniregctb.metier.assujettissement.CategorieEnvoiDI;
+import ch.vd.uniregctb.metier.assujettissement.CategorieEnvoiDIPP;
 import ch.vd.uniregctb.transaction.TransactionTemplate;
 
 /**
@@ -58,11 +58,11 @@ public class EnvoiDIsEnMasseTestApp extends BusinessItTestApplication {
 		LOGGER.info("Envoi de toutes les DIs en masse...");
 		TransactionTemplate template = new TransactionTemplate(transactionManager);
 
-		envoyerDIsEnMasseEnTransaction(template, CategorieEnvoiDI.VAUDOIS_COMPLETE);
-		envoyerDIsEnMasseEnTransaction(template, CategorieEnvoiDI.VAUDOIS_VAUDTAX);
-		envoyerDIsEnMasseEnTransaction(template, CategorieEnvoiDI.VAUDOIS_DEPENSE);
-		envoyerDIsEnMasseEnTransaction(template, CategorieEnvoiDI.HC_IMMEUBLE);
-		envoyerDIsEnMasseEnTransaction(template, CategorieEnvoiDI.HS_COMPLETE);
+		envoyerDIsEnMasseEnTransaction(template, CategorieEnvoiDIPP.VAUDOIS_COMPLETE);
+		envoyerDIsEnMasseEnTransaction(template, CategorieEnvoiDIPP.VAUDOIS_VAUDTAX);
+		envoyerDIsEnMasseEnTransaction(template, CategorieEnvoiDIPP.VAUDOIS_DEPENSE);
+		envoyerDIsEnMasseEnTransaction(template, CategorieEnvoiDIPP.HC_IMMEUBLE);
+		envoyerDIsEnMasseEnTransaction(template, CategorieEnvoiDIPP.HS_COMPLETE);
 
 		long duree = (System.currentTimeMillis() - start);
 		LOGGER.info("Envoi terminé : " + (duree / 1000) + " secondes.");
@@ -71,7 +71,7 @@ public class EnvoiDIsEnMasseTestApp extends BusinessItTestApplication {
 	/**
 	 * Exécution de l'envoi dans une transaction.
 	 */
-	private void envoyerDIsEnMasseEnTransaction(TransactionTemplate template, final CategorieEnvoiDI categorie) {
+	private void envoyerDIsEnMasseEnTransaction(TransactionTemplate template, final CategorieEnvoiDIPP categorie) {
 
 		template.execute(new TransactionCallback<Object>() {
 			@Override

@@ -91,7 +91,7 @@ public class PeriodeImpositionPersonnesPhysiquesCalculatorTest extends MetierTes
 					assertNotNull(list);
 					assertEquals(1, list.size());
 					// hors-Suisse toute l'année
-					assertPeriodeImpositionPersonnesPhysiques(date(2006, 1, 1), date(2006, 12, 31), CategorieEnvoiDI.HS_COMPLETE, TypeAdresseRetour.CEDI, true, false, false, false, list.get(0));
+					assertPeriodeImpositionPersonnesPhysiques(date(2006, 1, 1), date(2006, 12, 31), CategorieEnvoiDIPP.HS_COMPLETE, TypeAdresseRetour.CEDI, true, false, false, false, list.get(0));
 				}
 
 				// 2007
@@ -100,7 +100,7 @@ public class PeriodeImpositionPersonnesPhysiquesCalculatorTest extends MetierTes
 					assertNotNull(list);
 					assertEquals(1, list.size());
 					// hors-Suisse jusqu'à la date de la vente de l'immeuble
-					assertPeriodeImpositionPersonnesPhysiques(date(2007, 1, 1), dateVente, CategorieEnvoiDI.HS_COMPLETE, TypeAdresseRetour.CEDI, false, false, false, true, list.get(0)); // [UNIREG-1742] vente de l'immeuble -> déclaration pas optionnelle
+					assertPeriodeImpositionPersonnesPhysiques(date(2007, 1, 1), dateVente, CategorieEnvoiDIPP.HS_COMPLETE, TypeAdresseRetour.CEDI, false, false, false, true, list.get(0)); // [UNIREG-1742] vente de l'immeuble -> déclaration pas optionnelle
 				}
 
 				// 2008
@@ -114,11 +114,11 @@ public class PeriodeImpositionPersonnesPhysiquesCalculatorTest extends MetierTes
 					List<PeriodeImposition> list = determine(paul, RANGE_2000_2008);
 					assertNotNull(list);
 					assertEquals(5, list.size());
-					assertPeriodeImpositionPersonnesPhysiques(dateAchat, date(2003, 12, 31), CategorieEnvoiDI.HS_VAUDTAX, TypeAdresseRetour.CEDI, true, false, false, false, list.get(0));  // [UNIREG-1742] la DI est optionnelle dès la première année
-					assertPeriodeImpositionPersonnesPhysiques(date(2004, 1, 1), date(2004, 12, 31), CategorieEnvoiDI.HS_COMPLETE, TypeAdresseRetour.CEDI, true, false, false, false, list.get(1));
-					assertPeriodeImpositionPersonnesPhysiques(date(2005, 1, 1), date(2005, 12, 31), CategorieEnvoiDI.HS_COMPLETE, TypeAdresseRetour.CEDI, true, false, false, false, list.get(2));
-					assertPeriodeImpositionPersonnesPhysiques(date(2006, 1, 1), date(2006, 12, 31), CategorieEnvoiDI.HS_COMPLETE, TypeAdresseRetour.CEDI, true, false, false, false, list.get(3));
-					assertPeriodeImpositionPersonnesPhysiques(date(2007, 1, 1), dateVente, CategorieEnvoiDI.HS_COMPLETE, TypeAdresseRetour.CEDI, false, false, false, true, list.get(4));
+					assertPeriodeImpositionPersonnesPhysiques(dateAchat, date(2003, 12, 31), CategorieEnvoiDIPP.HS_VAUDTAX, TypeAdresseRetour.CEDI, true, false, false, false, list.get(0));  // [UNIREG-1742] la DI est optionnelle dès la première année
+					assertPeriodeImpositionPersonnesPhysiques(date(2004, 1, 1), date(2004, 12, 31), CategorieEnvoiDIPP.HS_COMPLETE, TypeAdresseRetour.CEDI, true, false, false, false, list.get(1));
+					assertPeriodeImpositionPersonnesPhysiques(date(2005, 1, 1), date(2005, 12, 31), CategorieEnvoiDIPP.HS_COMPLETE, TypeAdresseRetour.CEDI, true, false, false, false, list.get(2));
+					assertPeriodeImpositionPersonnesPhysiques(date(2006, 1, 1), date(2006, 12, 31), CategorieEnvoiDIPP.HS_COMPLETE, TypeAdresseRetour.CEDI, true, false, false, false, list.get(3));
+					assertPeriodeImpositionPersonnesPhysiques(date(2007, 1, 1), dateVente, CategorieEnvoiDIPP.HS_COMPLETE, TypeAdresseRetour.CEDI, false, false, false, true, list.get(4));
 				}
 			}
 		});
@@ -149,9 +149,9 @@ public class PeriodeImpositionPersonnesPhysiquesCalculatorTest extends MetierTes
 					final List<PeriodeImposition> list = determine(ctb, 2008);
 					assertNotNull(list);
 					assertEquals(2, list.size());
-					assertPeriodeImpositionPersonnesPhysiques(immeuble1.getDateDebut(), immeuble1.getDateFin(), CategorieEnvoiDI.HS_VAUDTAX, TypeAdresseRetour.CEDI, false, false, false, true,
+					assertPeriodeImpositionPersonnesPhysiques(immeuble1.getDateDebut(), immeuble1.getDateFin(), CategorieEnvoiDIPP.HS_VAUDTAX, TypeAdresseRetour.CEDI, false, false, false, true,
 					                                          list.get(0)); // pas optionnelle car vente de l'immeuble
-					assertPeriodeImpositionPersonnesPhysiques(immeuble2.getDateDebut(), immeuble2.getDateFin(), CategorieEnvoiDI.HS_VAUDTAX, TypeAdresseRetour.CEDI, false, false, false, true,
+					assertPeriodeImpositionPersonnesPhysiques(immeuble2.getDateDebut(), immeuble2.getDateFin(), CategorieEnvoiDIPP.HS_VAUDTAX, TypeAdresseRetour.CEDI, false, false, false, true,
 					                                          list.get(1)); // pas optionnelle car vente de l'immeuble
 				}
 
@@ -178,7 +178,7 @@ public class PeriodeImpositionPersonnesPhysiquesCalculatorTest extends MetierTes
 					assertNotNull(list);
 					assertEquals(1, list.size());
 					// hors-Suisse toute l'année
-					assertPeriodeImpositionPersonnesPhysiques(date(2006, 1, 1), date(2006, 12, 31), CategorieEnvoiDI.HS_COMPLETE, TypeAdresseRetour.CEDI, true, false, false, false, list.get(0));
+					assertPeriodeImpositionPersonnesPhysiques(date(2006, 1, 1), date(2006, 12, 31), CategorieEnvoiDIPP.HS_COMPLETE, TypeAdresseRetour.CEDI, true, false, false, false, list.get(0));
 				}
 
 				// 2007
@@ -188,7 +188,7 @@ public class PeriodeImpositionPersonnesPhysiquesCalculatorTest extends MetierTes
 					assertEquals(1, list.size());
 					// hors-Suisse avant l'arrivée et ordinaire ensuite, mais les deux assujettissements se confondent en un au niveau de la période
 					// d'imposition puisque les types de DI sont les mêmes.
-					assertPeriodeImpositionPersonnesPhysiques(date(2007, 1, 1), date(2007, 12, 31), CategorieEnvoiDI.VAUDOIS_COMPLETE, TypeAdresseRetour.CEDI, false, false, false, false, list.get(0));
+					assertPeriodeImpositionPersonnesPhysiques(date(2007, 1, 1), date(2007, 12, 31), CategorieEnvoiDIPP.VAUDOIS_COMPLETE, TypeAdresseRetour.CEDI, false, false, false, false, list.get(0));
 				}
 
 				// 2008
@@ -197,7 +197,7 @@ public class PeriodeImpositionPersonnesPhysiquesCalculatorTest extends MetierTes
 					assertNotNull(list);
 					assertEquals(1, list.size());
 					// ordinaire toute l'année
-					assertPeriodeImpositionPersonnesPhysiques(date(2008, 1, 1), date(2008, 12, 31), CategorieEnvoiDI.VAUDOIS_COMPLETE, TypeAdresseRetour.CEDI, false, false, false, false, list.get(0));
+					assertPeriodeImpositionPersonnesPhysiques(date(2008, 1, 1), date(2008, 12, 31), CategorieEnvoiDIPP.VAUDOIS_COMPLETE, TypeAdresseRetour.CEDI, false, false, false, false, list.get(0));
 				}
 
 				// 2000-2008 (-> transformé en 2003-2008 car on ne calcule pas de période d'imposition avant 2003 pour les personnes physiques)
@@ -205,12 +205,12 @@ public class PeriodeImpositionPersonnesPhysiquesCalculatorTest extends MetierTes
 					final List<PeriodeImposition> list = determine(paul, RANGE_2000_2008);
 					assertNotNull(list);
 					assertEquals(6, list.size());
-					assertPeriodeImpositionPersonnesPhysiques(date(2003, 1, 1), date(2003, 12, 31), CategorieEnvoiDI.HS_COMPLETE, TypeAdresseRetour.CEDI, true, false, false, false, list.get(0));
-					assertPeriodeImpositionPersonnesPhysiques(date(2004, 1, 1), date(2004, 12, 31), CategorieEnvoiDI.HS_COMPLETE, TypeAdresseRetour.CEDI, true, false, false, false, list.get(1));
-					assertPeriodeImpositionPersonnesPhysiques(date(2005, 1, 1), date(2005, 12, 31), CategorieEnvoiDI.HS_COMPLETE, TypeAdresseRetour.CEDI, true, false, false, false, list.get(2));
-					assertPeriodeImpositionPersonnesPhysiques(date(2006, 1, 1), date(2006, 12, 31), CategorieEnvoiDI.HS_COMPLETE, TypeAdresseRetour.CEDI, true, false, false, false, list.get(3));
-					assertPeriodeImpositionPersonnesPhysiques(date(2007, 1, 1), date(2007, 12, 31), CategorieEnvoiDI.VAUDOIS_COMPLETE, TypeAdresseRetour.CEDI, false, false, false, false, list.get(4));
-					assertPeriodeImpositionPersonnesPhysiques(date(2008, 1, 1), date(2008, 12, 31), CategorieEnvoiDI.VAUDOIS_COMPLETE, TypeAdresseRetour.CEDI, false, false, false, false, list.get(5));
+					assertPeriodeImpositionPersonnesPhysiques(date(2003, 1, 1), date(2003, 12, 31), CategorieEnvoiDIPP.HS_COMPLETE, TypeAdresseRetour.CEDI, true, false, false, false, list.get(0));
+					assertPeriodeImpositionPersonnesPhysiques(date(2004, 1, 1), date(2004, 12, 31), CategorieEnvoiDIPP.HS_COMPLETE, TypeAdresseRetour.CEDI, true, false, false, false, list.get(1));
+					assertPeriodeImpositionPersonnesPhysiques(date(2005, 1, 1), date(2005, 12, 31), CategorieEnvoiDIPP.HS_COMPLETE, TypeAdresseRetour.CEDI, true, false, false, false, list.get(2));
+					assertPeriodeImpositionPersonnesPhysiques(date(2006, 1, 1), date(2006, 12, 31), CategorieEnvoiDIPP.HS_COMPLETE, TypeAdresseRetour.CEDI, true, false, false, false, list.get(3));
+					assertPeriodeImpositionPersonnesPhysiques(date(2007, 1, 1), date(2007, 12, 31), CategorieEnvoiDIPP.VAUDOIS_COMPLETE, TypeAdresseRetour.CEDI, false, false, false, false, list.get(4));
+					assertPeriodeImpositionPersonnesPhysiques(date(2008, 1, 1), date(2008, 12, 31), CategorieEnvoiDIPP.VAUDOIS_COMPLETE, TypeAdresseRetour.CEDI, false, false, false, false, list.get(5));
 				}
 			}
 		});
@@ -237,7 +237,7 @@ public class PeriodeImpositionPersonnesPhysiquesCalculatorTest extends MetierTes
 					assertNotNull(list);
 					assertEquals(1, list.size());
 					// hors-Suisse toute l'année
-					assertPeriodeImpositionPersonnesPhysiques(date(2006, 1, 1), date(2006, 12, 31), CategorieEnvoiDI.HS_COMPLETE, TypeAdresseRetour.CEDI, true, false, false, false, list.get(0));
+					assertPeriodeImpositionPersonnesPhysiques(date(2006, 1, 1), date(2006, 12, 31), CategorieEnvoiDIPP.HS_COMPLETE, TypeAdresseRetour.CEDI, true, false, false, false, list.get(0));
 				}
 
 				// 2007
@@ -247,7 +247,7 @@ public class PeriodeImpositionPersonnesPhysiquesCalculatorTest extends MetierTes
 					assertEquals(1, list.size());
 					// hors-Suisse avant l'arrivée et ordinaire ensuite, mais les deux assujettissements se confondent en un au niveau de la période
 					// d'imposition puisque les types de DI sont les mêmes.
-					assertPeriodeImpositionPersonnesPhysiques(date(2007, 1, 1), date(2007, 12, 31), CategorieEnvoiDI.VAUDOIS_COMPLETE, TypeAdresseRetour.CEDI, false, false, false, false, list.get(0));
+					assertPeriodeImpositionPersonnesPhysiques(date(2007, 1, 1), date(2007, 12, 31), CategorieEnvoiDIPP.VAUDOIS_COMPLETE, TypeAdresseRetour.CEDI, false, false, false, false, list.get(0));
 				}
 
 				// 2008
@@ -256,7 +256,7 @@ public class PeriodeImpositionPersonnesPhysiquesCalculatorTest extends MetierTes
 					assertNotNull(list);
 					assertEquals(1, list.size());
 					// ordinaire toute l'année
-					assertPeriodeImpositionPersonnesPhysiques(date(2008, 1, 1), date(2008, 12, 31), CategorieEnvoiDI.VAUDOIS_COMPLETE, TypeAdresseRetour.CEDI, false, false, false, false, list.get(0));
+					assertPeriodeImpositionPersonnesPhysiques(date(2008, 1, 1), date(2008, 12, 31), CategorieEnvoiDIPP.VAUDOIS_COMPLETE, TypeAdresseRetour.CEDI, false, false, false, false, list.get(0));
 				}
 
 				// 2000-2008 (-> transformé en 2003-2008 car on ne calcule pas de période d'imposition avant 2003 pour les personnes physiques)
@@ -264,12 +264,12 @@ public class PeriodeImpositionPersonnesPhysiquesCalculatorTest extends MetierTes
 					final List<PeriodeImposition> list = determine(paul, RANGE_2000_2008);
 					assertNotNull(list);
 					assertEquals(6, list.size());
-					assertPeriodeImpositionPersonnesPhysiques(date(2003, 1, 1), date(2003, 12, 31), CategorieEnvoiDI.HS_COMPLETE, TypeAdresseRetour.CEDI, true, false, false, false, list.get(0));
-					assertPeriodeImpositionPersonnesPhysiques(date(2004, 1, 1), date(2004, 12, 31), CategorieEnvoiDI.HS_COMPLETE, TypeAdresseRetour.CEDI, true, false, false, false, list.get(1));
-					assertPeriodeImpositionPersonnesPhysiques(date(2005, 1, 1), date(2005, 12, 31), CategorieEnvoiDI.HS_COMPLETE, TypeAdresseRetour.CEDI, true, false, false, false, list.get(2));
-					assertPeriodeImpositionPersonnesPhysiques(date(2006, 1, 1), date(2006, 12, 31), CategorieEnvoiDI.HS_COMPLETE, TypeAdresseRetour.CEDI, true, false, false, false, list.get(3));
-					assertPeriodeImpositionPersonnesPhysiques(date(2007, 1, 1), date(2007, 12, 31), CategorieEnvoiDI.VAUDOIS_COMPLETE, TypeAdresseRetour.CEDI, false, false, false, false, list.get(4));
-					assertPeriodeImpositionPersonnesPhysiques(date(2008, 1, 1), date(2008, 12, 31), CategorieEnvoiDI.VAUDOIS_COMPLETE, TypeAdresseRetour.CEDI, false, false, false, false, list.get(5));
+					assertPeriodeImpositionPersonnesPhysiques(date(2003, 1, 1), date(2003, 12, 31), CategorieEnvoiDIPP.HS_COMPLETE, TypeAdresseRetour.CEDI, true, false, false, false, list.get(0));
+					assertPeriodeImpositionPersonnesPhysiques(date(2004, 1, 1), date(2004, 12, 31), CategorieEnvoiDIPP.HS_COMPLETE, TypeAdresseRetour.CEDI, true, false, false, false, list.get(1));
+					assertPeriodeImpositionPersonnesPhysiques(date(2005, 1, 1), date(2005, 12, 31), CategorieEnvoiDIPP.HS_COMPLETE, TypeAdresseRetour.CEDI, true, false, false, false, list.get(2));
+					assertPeriodeImpositionPersonnesPhysiques(date(2006, 1, 1), date(2006, 12, 31), CategorieEnvoiDIPP.HS_COMPLETE, TypeAdresseRetour.CEDI, true, false, false, false, list.get(3));
+					assertPeriodeImpositionPersonnesPhysiques(date(2007, 1, 1), date(2007, 12, 31), CategorieEnvoiDIPP.VAUDOIS_COMPLETE, TypeAdresseRetour.CEDI, false, false, false, false, list.get(4));
+					assertPeriodeImpositionPersonnesPhysiques(date(2008, 1, 1), date(2008, 12, 31), CategorieEnvoiDIPP.VAUDOIS_COMPLETE, TypeAdresseRetour.CEDI, false, false, false, false, list.get(5));
 				}
 			}
 		});
@@ -305,7 +305,7 @@ public class PeriodeImpositionPersonnesPhysiquesCalculatorTest extends MetierTes
 					// hors-Suisse non-assujetti avant l'arrivée, ordinaire ensuite puis de nouveau hors-Suisse mais assujetti suite au départ ->
 					// deux assujettissements (ordinaire + hors-Suisse) qui se confondent en un au niveau de la période d'imposition puisque les
 					// types de DI sont les mêmes.
-					assertPeriodeImpositionPersonnesPhysiques(dateArrivee, date(2007, 12, 31), CategorieEnvoiDI.HS_VAUDTAX, TypeAdresseRetour.CEDI, false, false, false, false, list.get(0));
+					assertPeriodeImpositionPersonnesPhysiques(dateArrivee, date(2007, 12, 31), CategorieEnvoiDIPP.HS_VAUDTAX, TypeAdresseRetour.CEDI, false, false, false, false, list.get(0));
 				}
 
 				// 2008
@@ -314,7 +314,7 @@ public class PeriodeImpositionPersonnesPhysiquesCalculatorTest extends MetierTes
 					assertNotNull(list);
 					assertEquals(1, list.size());
 					// hors-Suisse toute l'année
-					assertPeriodeImpositionPersonnesPhysiques(date(2008, 1, 1), date(2008, 12, 31), CategorieEnvoiDI.HS_COMPLETE, TypeAdresseRetour.CEDI, true, false, false, false, list.get(0));
+					assertPeriodeImpositionPersonnesPhysiques(date(2008, 1, 1), date(2008, 12, 31), CategorieEnvoiDIPP.HS_COMPLETE, TypeAdresseRetour.CEDI, true, false, false, false, list.get(0));
 				}
 
 				// 2000-2008
@@ -322,8 +322,8 @@ public class PeriodeImpositionPersonnesPhysiquesCalculatorTest extends MetierTes
 					final List<PeriodeImposition> list = determine(paul, RANGE_2000_2008);
 					assertNotNull(list);
 					assertEquals(2, list.size());
-					assertPeriodeImpositionPersonnesPhysiques(dateArrivee, date(2007, 12, 31), CategorieEnvoiDI.HS_VAUDTAX, TypeAdresseRetour.CEDI, false, false, false, false, list.get(0));
-					assertPeriodeImpositionPersonnesPhysiques(date(2008, 1, 1), date(2008, 12, 31), CategorieEnvoiDI.HS_COMPLETE, TypeAdresseRetour.CEDI, true, false, false, false, list.get(1));
+					assertPeriodeImpositionPersonnesPhysiques(dateArrivee, date(2007, 12, 31), CategorieEnvoiDIPP.HS_VAUDTAX, TypeAdresseRetour.CEDI, false, false, false, false, list.get(0));
+					assertPeriodeImpositionPersonnesPhysiques(date(2008, 1, 1), date(2008, 12, 31), CategorieEnvoiDIPP.HS_COMPLETE, TypeAdresseRetour.CEDI, true, false, false, false, list.get(1));
 				}
 			}
 		});
@@ -357,10 +357,10 @@ public class PeriodeImpositionPersonnesPhysiquesCalculatorTest extends MetierTes
 					assertNotNull(list);
 					assertEquals(2, list.size());
 					// assujetti comme ordinaire pendant son passage en suisse
-					assertPeriodeImpositionPersonnesPhysiques(dateArrivee, dateDepart, CategorieEnvoiDI.VAUDOIS_VAUDTAX, TypeAdresseRetour.CEDI, false, false, false, false, list.get(0));
+					assertPeriodeImpositionPersonnesPhysiques(dateArrivee, dateDepart, CategorieEnvoiDIPP.VAUDOIS_VAUDTAX, TypeAdresseRetour.CEDI, false, false, false, false, list.get(0));
 					// assujetti comme hors-Suisse suite à l'achat de son immeuble
 					// [UNIREG-1742] la déclaration est optionnelle dans ce cas (HS avec immeuble)
-					assertPeriodeImpositionPersonnesPhysiques(dateAchat, date(2007, 12, 31), CategorieEnvoiDI.HS_VAUDTAX, TypeAdresseRetour.CEDI, true, false, false, false, list.get(1));
+					assertPeriodeImpositionPersonnesPhysiques(dateAchat, date(2007, 12, 31), CategorieEnvoiDIPP.HS_VAUDTAX, TypeAdresseRetour.CEDI, true, false, false, false, list.get(1));
 				}
 
 				// 2008
@@ -369,7 +369,7 @@ public class PeriodeImpositionPersonnesPhysiquesCalculatorTest extends MetierTes
 					assertNotNull(list);
 					assertEquals(1, list.size());
 					// hors-Suisse toute l'année
-					assertPeriodeImpositionPersonnesPhysiques(date(2008, 1, 1), date(2008, 12, 31), CategorieEnvoiDI.HS_COMPLETE, TypeAdresseRetour.CEDI, true, false, false, false, list.get(0));
+					assertPeriodeImpositionPersonnesPhysiques(date(2008, 1, 1), date(2008, 12, 31), CategorieEnvoiDIPP.HS_COMPLETE, TypeAdresseRetour.CEDI, true, false, false, false, list.get(0));
 				}
 
 				// 2000-2008
@@ -377,9 +377,9 @@ public class PeriodeImpositionPersonnesPhysiquesCalculatorTest extends MetierTes
 					final List<PeriodeImposition> list = determine(paul, RANGE_2000_2008);
 					assertNotNull(list);
 					assertEquals(3, list.size());
-					assertPeriodeImpositionPersonnesPhysiques(dateArrivee, dateDepart, CategorieEnvoiDI.VAUDOIS_VAUDTAX, TypeAdresseRetour.CEDI, false, false, false, false, list.get(0));
-					assertPeriodeImpositionPersonnesPhysiques(dateAchat, date(2007, 12, 31), CategorieEnvoiDI.HS_VAUDTAX, TypeAdresseRetour.CEDI, true, false, false, false, list.get(1));
-					assertPeriodeImpositionPersonnesPhysiques(date(2008, 1, 1), date(2008, 12, 31), CategorieEnvoiDI.HS_COMPLETE, TypeAdresseRetour.CEDI, true, false, false, false, list.get(2));
+					assertPeriodeImpositionPersonnesPhysiques(dateArrivee, dateDepart, CategorieEnvoiDIPP.VAUDOIS_VAUDTAX, TypeAdresseRetour.CEDI, false, false, false, false, list.get(0));
+					assertPeriodeImpositionPersonnesPhysiques(dateAchat, date(2007, 12, 31), CategorieEnvoiDIPP.HS_VAUDTAX, TypeAdresseRetour.CEDI, true, false, false, false, list.get(1));
+					assertPeriodeImpositionPersonnesPhysiques(date(2008, 1, 1), date(2008, 12, 31), CategorieEnvoiDIPP.HS_COMPLETE, TypeAdresseRetour.CEDI, true, false, false, false, list.get(2));
 				}
 			}
 		});
@@ -400,7 +400,7 @@ public class PeriodeImpositionPersonnesPhysiquesCalculatorTest extends MetierTes
 					final List<PeriodeImposition> list = determine(paul, 2006);
 					assertNotNull(list);
 					assertEquals(1, list.size());
-					assertPeriodeImpositionPersonnesPhysiques(date(2006, 1, 1), date(2006, 12, 31), CategorieEnvoiDI.VAUDOIS_COMPLETE, TypeAdresseRetour.CEDI, false, false, false, false, list.get(0));
+					assertPeriodeImpositionPersonnesPhysiques(date(2006, 1, 1), date(2006, 12, 31), CategorieEnvoiDIPP.VAUDOIS_COMPLETE, TypeAdresseRetour.CEDI, false, false, false, false, list.get(0));
 				}
 
 				// 2007 (départ hors-Suisse dans l'année)
@@ -409,7 +409,7 @@ public class PeriodeImpositionPersonnesPhysiquesCalculatorTest extends MetierTes
 					assertNotNull(list);
 					assertEquals(1, list.size());
 					// vaudois ordinaire jusqu'au départ puis hors-Suisse, mais les deux périodes se fusionnent car les types de document sont les mêmes
-					assertPeriodeImpositionPersonnesPhysiques(date(2007, 1, 1), date(2007, 12, 31), CategorieEnvoiDI.HS_COMPLETE, TypeAdresseRetour.CEDI, false, false, false, false, list.get(0));
+					assertPeriodeImpositionPersonnesPhysiques(date(2007, 1, 1), date(2007, 12, 31), CategorieEnvoiDIPP.HS_COMPLETE, TypeAdresseRetour.CEDI, false, false, false, false, list.get(0));
 				}
 
 				// 2008 (hors-Suisse)
@@ -418,7 +418,7 @@ public class PeriodeImpositionPersonnesPhysiquesCalculatorTest extends MetierTes
 					assertNotNull(list);
 					assertEquals(1, list.size());
 					// vaudois ordinaire jusqu'au départ puis hors-Suisse, mais les deux périodes se fusionnent car les types de document sont les mêmes
-					assertPeriodeImpositionPersonnesPhysiques(date(2008, 1, 1), date(2008, 12, 31), CategorieEnvoiDI.HS_COMPLETE, TypeAdresseRetour.CEDI, true, false, false, false, list.get(0));
+					assertPeriodeImpositionPersonnesPhysiques(date(2008, 1, 1), date(2008, 12, 31), CategorieEnvoiDIPP.HS_COMPLETE, TypeAdresseRetour.CEDI, true, false, false, false, list.get(0));
 				}
 
 				// 2006-2008
@@ -426,9 +426,9 @@ public class PeriodeImpositionPersonnesPhysiquesCalculatorTest extends MetierTes
 					final List<PeriodeImposition> list = determine(paul, RANGE_2006_2008);
 					assertNotNull(list);
 					assertEquals(3, list.size());
-					assertPeriodeImpositionPersonnesPhysiques(date(2006, 1, 1), date(2006, 12, 31), CategorieEnvoiDI.VAUDOIS_COMPLETE, TypeAdresseRetour.CEDI, false, false, false, false, list.get(0));
-					assertPeriodeImpositionPersonnesPhysiques(date(2007, 1, 1), date(2007, 12, 31), CategorieEnvoiDI.HS_COMPLETE, TypeAdresseRetour.CEDI, false, false, false, false, list.get(1));
-					assertPeriodeImpositionPersonnesPhysiques(date(2008, 1, 1), date(2008, 12, 31), CategorieEnvoiDI.HS_COMPLETE, TypeAdresseRetour.CEDI, true, false, false, false, list.get(2));
+					assertPeriodeImpositionPersonnesPhysiques(date(2006, 1, 1), date(2006, 12, 31), CategorieEnvoiDIPP.VAUDOIS_COMPLETE, TypeAdresseRetour.CEDI, false, false, false, false, list.get(0));
+					assertPeriodeImpositionPersonnesPhysiques(date(2007, 1, 1), date(2007, 12, 31), CategorieEnvoiDIPP.HS_COMPLETE, TypeAdresseRetour.CEDI, false, false, false, false, list.get(1));
+					assertPeriodeImpositionPersonnesPhysiques(date(2008, 1, 1), date(2008, 12, 31), CategorieEnvoiDIPP.HS_COMPLETE, TypeAdresseRetour.CEDI, true, false, false, false, list.get(2));
 				}
 			}
 		});
@@ -447,7 +447,7 @@ public class PeriodeImpositionPersonnesPhysiquesCalculatorTest extends MetierTes
 					final List<PeriodeImposition> list = determine(ctb, 2006);
 					assertNotNull(list);
 					assertEquals(1, list.size());
-					assertPeriodeImpositionPersonnesPhysiques(date(2006, 1, 1), date(2006, 12, 31), CategorieEnvoiDI.HC_IMMEUBLE, TypeAdresseRetour.OID, false, false, false, false, list.get(0));
+					assertPeriodeImpositionPersonnesPhysiques(date(2006, 1, 1), date(2006, 12, 31), CategorieEnvoiDIPP.HC_IMMEUBLE, TypeAdresseRetour.OID, false, false, false, false, list.get(0));
 				}
 
 				// 2007 (hors-canton -> hors-Suisse)
@@ -456,7 +456,7 @@ public class PeriodeImpositionPersonnesPhysiquesCalculatorTest extends MetierTes
 					assertNotNull(list);
 					assertEquals(1, list.size());
 					// [UNIREG-1742] le départ hors-Suisse depuis hors-canton ne doit pas fractionner la période d'assujettissement (car le rattachement économique n'est pas interrompu)
-					assertPeriodeImpositionPersonnesPhysiques(date(2007, 1, 1), date(2007, 12, 31), CategorieEnvoiDI.HS_COMPLETE, TypeAdresseRetour.CEDI, true, false, false, false, list.get(0));
+					assertPeriodeImpositionPersonnesPhysiques(date(2007, 1, 1), date(2007, 12, 31), CategorieEnvoiDIPP.HS_COMPLETE, TypeAdresseRetour.CEDI, true, false, false, false, list.get(0));
 				}
 
 				// 2008 (hors-Suisse)
@@ -465,7 +465,7 @@ public class PeriodeImpositionPersonnesPhysiquesCalculatorTest extends MetierTes
 					assertNotNull(list);
 					assertEquals(1, list.size());
 					// vaudois ordinaire jusqu'au départ puis hors-Suisse, mais les deux périodes se fusionnent car les types de document sont les mêmes
-					assertPeriodeImpositionPersonnesPhysiques(date(2008, 1, 1), date(2008, 12, 31), CategorieEnvoiDI.HS_COMPLETE, TypeAdresseRetour.CEDI, true, false, false, false, list.get(0));
+					assertPeriodeImpositionPersonnesPhysiques(date(2008, 1, 1), date(2008, 12, 31), CategorieEnvoiDIPP.HS_COMPLETE, TypeAdresseRetour.CEDI, true, false, false, false, list.get(0));
 				}
 
 				// 2006-2008
@@ -473,9 +473,9 @@ public class PeriodeImpositionPersonnesPhysiquesCalculatorTest extends MetierTes
 					final List<PeriodeImposition> list = determine(ctb, RANGE_2006_2008);
 					assertNotNull(list);
 					assertEquals(3, list.size());
-					assertPeriodeImpositionPersonnesPhysiques(date(2006, 1, 1), date(2006, 12, 31), CategorieEnvoiDI.HC_IMMEUBLE, TypeAdresseRetour.OID, false, false, false, false, list.get(0));
-					assertPeriodeImpositionPersonnesPhysiques(date(2007, 1, 1), date(2007, 12, 31), CategorieEnvoiDI.HS_COMPLETE, TypeAdresseRetour.CEDI, true, false, false, false, list.get(1));
-					assertPeriodeImpositionPersonnesPhysiques(date(2008, 1, 1), date(2008, 12, 31), CategorieEnvoiDI.HS_COMPLETE, TypeAdresseRetour.CEDI, true, false, false, false, list.get(2));
+					assertPeriodeImpositionPersonnesPhysiques(date(2006, 1, 1), date(2006, 12, 31), CategorieEnvoiDIPP.HC_IMMEUBLE, TypeAdresseRetour.OID, false, false, false, false, list.get(0));
+					assertPeriodeImpositionPersonnesPhysiques(date(2007, 1, 1), date(2007, 12, 31), CategorieEnvoiDIPP.HS_COMPLETE, TypeAdresseRetour.CEDI, true, false, false, false, list.get(1));
+					assertPeriodeImpositionPersonnesPhysiques(date(2008, 1, 1), date(2008, 12, 31), CategorieEnvoiDIPP.HS_COMPLETE, TypeAdresseRetour.CEDI, true, false, false, false, list.get(2));
 				}
 			}
 		});
@@ -494,7 +494,7 @@ public class PeriodeImpositionPersonnesPhysiquesCalculatorTest extends MetierTes
 					final List<PeriodeImposition> list = determine(ctb, 2006);
 					assertNotNull(list);
 					assertEquals(1, list.size());
-					assertPeriodeImpositionPersonnesPhysiques(date(2006, 1, 1), date(2006, 12, 31), CategorieEnvoiDI.HC_ACTIND_COMPLETE, TypeAdresseRetour.CEDI, false, false, false, false,
+					assertPeriodeImpositionPersonnesPhysiques(date(2006, 1, 1), date(2006, 12, 31), CategorieEnvoiDIPP.HC_ACTIND_COMPLETE, TypeAdresseRetour.CEDI, false, false, false, false,
 					                                          list.get(0));
 				}
 
@@ -504,7 +504,7 @@ public class PeriodeImpositionPersonnesPhysiquesCalculatorTest extends MetierTes
 					assertNotNull(list);
 					assertEquals(1, list.size());
 					// [UNIREG-1742] le départ hors-Suisse depuis hors-canton ne doit pas fractionner la période d'assujettissement (car le rattachement économique n'est pas interrompu)
-					assertPeriodeImpositionPersonnesPhysiques(date(2007, 1, 1), date(2007, 12, 31), CategorieEnvoiDI.HS_COMPLETE, TypeAdresseRetour.CEDI, false, false, false, false, list.get(0));
+					assertPeriodeImpositionPersonnesPhysiques(date(2007, 1, 1), date(2007, 12, 31), CategorieEnvoiDIPP.HS_COMPLETE, TypeAdresseRetour.CEDI, false, false, false, false, list.get(0));
 				}
 
 				// 2008 (hors-Suisse)
@@ -513,7 +513,7 @@ public class PeriodeImpositionPersonnesPhysiquesCalculatorTest extends MetierTes
 					assertNotNull(list);
 					assertEquals(1, list.size());
 					// vaudois ordinaire jusqu'au départ puis hors-Suisse, mais les deux périodes se fusionnent car les types de document sont les mêmes
-					assertPeriodeImpositionPersonnesPhysiques(date(2008, 1, 1), date(2008, 12, 31), CategorieEnvoiDI.HS_COMPLETE, TypeAdresseRetour.CEDI, false, false, false, false, list.get(0));
+					assertPeriodeImpositionPersonnesPhysiques(date(2008, 1, 1), date(2008, 12, 31), CategorieEnvoiDIPP.HS_COMPLETE, TypeAdresseRetour.CEDI, false, false, false, false, list.get(0));
 				}
 
 				// 2006-2008
@@ -521,9 +521,9 @@ public class PeriodeImpositionPersonnesPhysiquesCalculatorTest extends MetierTes
 					final List<PeriodeImposition> list = determine(ctb, RANGE_2006_2008);
 					assertNotNull(list);
 					assertEquals(3, list.size());
-					assertPeriodeImpositionPersonnesPhysiques(date(2006, 1, 1), date(2006, 12, 31), CategorieEnvoiDI.HC_ACTIND_COMPLETE, TypeAdresseRetour.CEDI, false, false, false, false, list.get(0));
-					assertPeriodeImpositionPersonnesPhysiques(date(2007, 1, 1), date(2007, 12, 31), CategorieEnvoiDI.HS_COMPLETE, TypeAdresseRetour.CEDI, false, false, false, false, list.get(1));
-					assertPeriodeImpositionPersonnesPhysiques(date(2008, 1, 1), date(2008, 12, 31), CategorieEnvoiDI.HS_COMPLETE, TypeAdresseRetour.CEDI, false, false, false, false, list.get(2));
+					assertPeriodeImpositionPersonnesPhysiques(date(2006, 1, 1), date(2006, 12, 31), CategorieEnvoiDIPP.HC_ACTIND_COMPLETE, TypeAdresseRetour.CEDI, false, false, false, false, list.get(0));
+					assertPeriodeImpositionPersonnesPhysiques(date(2007, 1, 1), date(2007, 12, 31), CategorieEnvoiDIPP.HS_COMPLETE, TypeAdresseRetour.CEDI, false, false, false, false, list.get(1));
+					assertPeriodeImpositionPersonnesPhysiques(date(2008, 1, 1), date(2008, 12, 31), CategorieEnvoiDIPP.HS_COMPLETE, TypeAdresseRetour.CEDI, false, false, false, false, list.get(2));
 				}
 			}
 		});
@@ -547,7 +547,7 @@ public class PeriodeImpositionPersonnesPhysiquesCalculatorTest extends MetierTes
 				final List<PeriodeImposition> list = determine(ctb, 2009);
 				assertNotNull(list);
 				assertEquals(1, list.size());
-				assertPeriodeImpositionPersonnesPhysiques(date(2009, 1, 1), dateVente, CategorieEnvoiDI.HS_COMPLETE, TypeAdresseRetour.CEDI, false, false, false, true, list.get(0));
+				assertPeriodeImpositionPersonnesPhysiques(date(2009, 1, 1), dateVente, CategorieEnvoiDIPP.HS_COMPLETE, TypeAdresseRetour.CEDI, false, false, false, true, list.get(0));
 			}
 		});
 	}
@@ -574,7 +574,7 @@ public class PeriodeImpositionPersonnesPhysiquesCalculatorTest extends MetierTes
 				final List<PeriodeImposition> list = determine(ctb, dateChangement.year());
 				assertNotNull(list);
 				assertEquals(1, list.size());
-				assertPeriodeImpositionPersonnesPhysiques(date(2008, 1, 1), date(2008, 12, 31), CategorieEnvoiDI.VAUDOIS_VAUDTAX, TypeAdresseRetour.CEDI, false, false, false, false, list.get(0));
+				assertPeriodeImpositionPersonnesPhysiques(date(2008, 1, 1), date(2008, 12, 31), CategorieEnvoiDIPP.VAUDOIS_VAUDTAX, TypeAdresseRetour.CEDI, false, false, false, false, list.get(0));
 			}
 		});
 	}
@@ -599,7 +599,7 @@ public class PeriodeImpositionPersonnesPhysiquesCalculatorTest extends MetierTes
 					final List<PeriodeImposition> list = determine(ctb, 2007);
 					assertNotNull(list);
 					assertEquals(1, list.size());
-					assertPeriodeImpositionPersonnesPhysiques(date(2007, 1, 1), date(2007, 12, 31), CategorieEnvoiDI.VAUDOIS_DEPENSE, TypeAdresseRetour.OID, false, false, false, false, list.get(0));
+					assertPeriodeImpositionPersonnesPhysiques(date(2007, 1, 1), date(2007, 12, 31), CategorieEnvoiDIPP.VAUDOIS_DEPENSE, TypeAdresseRetour.OID, false, false, false, false, list.get(0));
 				}
 
 				// 2008
@@ -607,7 +607,7 @@ public class PeriodeImpositionPersonnesPhysiquesCalculatorTest extends MetierTes
 					final List<PeriodeImposition> list = determine(ctb, 2008);
 					assertNotNull(list);
 					assertEquals(1, list.size());
-					assertPeriodeImpositionPersonnesPhysiques(date(2008, 1, 1), date(2008, 12, 31), CategorieEnvoiDI.VAUDOIS_DEPENSE, TypeAdresseRetour.OID, false, false, false, false, list.get(0));
+					assertPeriodeImpositionPersonnesPhysiques(date(2008, 1, 1), date(2008, 12, 31), CategorieEnvoiDIPP.VAUDOIS_DEPENSE, TypeAdresseRetour.OID, false, false, false, false, list.get(0));
 				}
 
 				// 2009 (décès)
@@ -615,7 +615,7 @@ public class PeriodeImpositionPersonnesPhysiquesCalculatorTest extends MetierTes
 					final List<PeriodeImposition> list = determine(ctb, 2009);
 					assertNotNull(list);
 					assertEquals(1, list.size());
-					assertPeriodeImpositionPersonnesPhysiques(date(2009, 1, 1), dateDeces, CategorieEnvoiDI.VAUDOIS_DEPENSE, TypeAdresseRetour.ACI, false, false, true, false, list.get(0));
+					assertPeriodeImpositionPersonnesPhysiques(date(2009, 1, 1), dateDeces, CategorieEnvoiDIPP.VAUDOIS_DEPENSE, TypeAdresseRetour.ACI, false, false, true, false, list.get(0));
 				}
 			}
 		});
@@ -641,7 +641,7 @@ public class PeriodeImpositionPersonnesPhysiquesCalculatorTest extends MetierTes
 					final List<PeriodeImposition> list = determine(ctb, 2007);
 					assertNotNull(list);
 					assertEquals(1, list.size());
-					assertPeriodeImpositionPersonnesPhysiques(date(2007, 1, 1), date(2007, 12, 31), CategorieEnvoiDI.HC_IMMEUBLE, TypeAdresseRetour.OID, false, false, false, false, list.get(0));
+					assertPeriodeImpositionPersonnesPhysiques(date(2007, 1, 1), date(2007, 12, 31), CategorieEnvoiDIPP.HC_IMMEUBLE, TypeAdresseRetour.OID, false, false, false, false, list.get(0));
 				}
 
 				// 2008
@@ -649,7 +649,7 @@ public class PeriodeImpositionPersonnesPhysiquesCalculatorTest extends MetierTes
 					final List<PeriodeImposition> list = determine(ctb, 2008);
 					assertNotNull(list);
 					assertEquals(1, list.size());
-					assertPeriodeImpositionPersonnesPhysiques(date(2008, 1, 1), date(2008, 12, 31), CategorieEnvoiDI.HC_IMMEUBLE, TypeAdresseRetour.OID, false, false, false, false, list.get(0));
+					assertPeriodeImpositionPersonnesPhysiques(date(2008, 1, 1), date(2008, 12, 31), CategorieEnvoiDIPP.HC_IMMEUBLE, TypeAdresseRetour.OID, false, false, false, false, list.get(0));
 				}
 
 				// 2009 (décès)
@@ -659,7 +659,7 @@ public class PeriodeImpositionPersonnesPhysiquesCalculatorTest extends MetierTes
 					final List<PeriodeImposition> list = determine(ctb, 2009);
 					assertNotNull(list);
 					assertEquals(1, list.size());
-					assertPeriodeImpositionPersonnesPhysiques(date(2009, 1, 1), dateDeces, CategorieEnvoiDI.HC_IMMEUBLE, TypeAdresseRetour.ACI, false, false, true, false, list.get(0));
+					assertPeriodeImpositionPersonnesPhysiques(date(2009, 1, 1), dateDeces, CategorieEnvoiDIPP.HC_IMMEUBLE, TypeAdresseRetour.ACI, false, false, true, false, list.get(0));
 				}
 			}
 		});
@@ -688,7 +688,7 @@ public class PeriodeImpositionPersonnesPhysiquesCalculatorTest extends MetierTes
 					final List<PeriodeImposition> list = determine(ctb, 2007);
 					assertNotNull(list);
 					assertEquals(1, list.size());
-					assertPeriodeImpositionPersonnesPhysiques(date(2007, 1, 1), date(2007, 12, 31), CategorieEnvoiDI.HC_IMMEUBLE, TypeAdresseRetour.OID, false, false, false, false, list.get(0));
+					assertPeriodeImpositionPersonnesPhysiques(date(2007, 1, 1), date(2007, 12, 31), CategorieEnvoiDIPP.HC_IMMEUBLE, TypeAdresseRetour.OID, false, false, false, false, list.get(0));
 				}
 
 				// 2008
@@ -696,7 +696,7 @@ public class PeriodeImpositionPersonnesPhysiquesCalculatorTest extends MetierTes
 					final List<PeriodeImposition> list = determine(ctb, 2008);
 					assertNotNull(list);
 					assertEquals(1, list.size());
-					assertPeriodeImpositionPersonnesPhysiques(date(2008, 1, 1), date(2008, 12, 31), CategorieEnvoiDI.HC_IMMEUBLE, TypeAdresseRetour.OID, false, false, false, false, list.get(0));
+					assertPeriodeImpositionPersonnesPhysiques(date(2008, 1, 1), date(2008, 12, 31), CategorieEnvoiDIPP.HC_IMMEUBLE, TypeAdresseRetour.OID, false, false, false, false, list.get(0));
 				}
 
 				// 2009 (décès)
@@ -705,7 +705,7 @@ public class PeriodeImpositionPersonnesPhysiquesCalculatorTest extends MetierTes
 					final List<PeriodeImposition> list = determine(ctb, 2009);
 					assertNotNull(list);
 					assertEquals(1, list.size());
-					assertPeriodeImpositionPersonnesPhysiques(date(2009, 1, 1), dateDeces, CategorieEnvoiDI.HC_IMMEUBLE, TypeAdresseRetour.ACI, false, true, true, false, list.get(0));
+					assertPeriodeImpositionPersonnesPhysiques(date(2009, 1, 1), dateDeces, CategorieEnvoiDIPP.HC_IMMEUBLE, TypeAdresseRetour.ACI, false, true, true, false, list.get(0));
 				}
 			}
 		});
@@ -731,7 +731,7 @@ public class PeriodeImpositionPersonnesPhysiquesCalculatorTest extends MetierTes
 					assertNotNull(list);
 					assertEquals(1, list.size());
 					// hors-Suisse toute l'année
-					assertPeriodeImpositionPersonnesPhysiques(date(2006, 1, 1), date(2006, 12, 31), CategorieEnvoiDI.HS_COMPLETE, TypeAdresseRetour.CEDI, true, false, false, false, list.get(0));
+					assertPeriodeImpositionPersonnesPhysiques(date(2006, 1, 1), date(2006, 12, 31), CategorieEnvoiDIPP.HS_COMPLETE, TypeAdresseRetour.CEDI, true, false, false, false, list.get(0));
 				}
 
 				// 2007 (décès)
@@ -740,7 +740,7 @@ public class PeriodeImpositionPersonnesPhysiquesCalculatorTest extends MetierTes
 					assertNotNull(list);
 					assertEquals(1, list.size());
 					// hors-Suisse jusqu'à la date du décès
-					assertPeriodeImpositionPersonnesPhysiques(date(2007, 1, 1), dateDeces, CategorieEnvoiDI.HS_COMPLETE, TypeAdresseRetour.ACI, false, false, true, false, list.get(0)); // [UNIREG-1742] décès -> déclaration pas optionnelle
+					assertPeriodeImpositionPersonnesPhysiques(date(2007, 1, 1), dateDeces, CategorieEnvoiDIPP.HS_COMPLETE, TypeAdresseRetour.ACI, false, false, true, false, list.get(0)); // [UNIREG-1742] décès -> déclaration pas optionnelle
 				}
 
 				// 2008
@@ -754,11 +754,11 @@ public class PeriodeImpositionPersonnesPhysiquesCalculatorTest extends MetierTes
 					List<PeriodeImposition> list = determine(paul, RANGE_2000_2008);
 					assertNotNull(list);
 					assertEquals(5, list.size());
-					assertPeriodeImpositionPersonnesPhysiques(dateAchat, date(2003, 12, 31), CategorieEnvoiDI.HS_VAUDTAX, TypeAdresseRetour.CEDI, true, false, false, false, list.get(0));
-					assertPeriodeImpositionPersonnesPhysiques(date(2004, 1, 1), date(2004, 12, 31), CategorieEnvoiDI.HS_COMPLETE, TypeAdresseRetour.CEDI, true, false, false, false, list.get(1));
-					assertPeriodeImpositionPersonnesPhysiques(date(2005, 1, 1), date(2005, 12, 31), CategorieEnvoiDI.HS_COMPLETE, TypeAdresseRetour.CEDI, true, false, false, false, list.get(2));
-					assertPeriodeImpositionPersonnesPhysiques(date(2006, 1, 1), date(2006, 12, 31), CategorieEnvoiDI.HS_COMPLETE, TypeAdresseRetour.CEDI, true, false, false, false, list.get(3));
-					assertPeriodeImpositionPersonnesPhysiques(date(2007, 1, 1), dateDeces, CategorieEnvoiDI.HS_COMPLETE, TypeAdresseRetour.ACI, false, false, true, false, list.get(4));
+					assertPeriodeImpositionPersonnesPhysiques(dateAchat, date(2003, 12, 31), CategorieEnvoiDIPP.HS_VAUDTAX, TypeAdresseRetour.CEDI, true, false, false, false, list.get(0));
+					assertPeriodeImpositionPersonnesPhysiques(date(2004, 1, 1), date(2004, 12, 31), CategorieEnvoiDIPP.HS_COMPLETE, TypeAdresseRetour.CEDI, true, false, false, false, list.get(1));
+					assertPeriodeImpositionPersonnesPhysiques(date(2005, 1, 1), date(2005, 12, 31), CategorieEnvoiDIPP.HS_COMPLETE, TypeAdresseRetour.CEDI, true, false, false, false, list.get(2));
+					assertPeriodeImpositionPersonnesPhysiques(date(2006, 1, 1), date(2006, 12, 31), CategorieEnvoiDIPP.HS_COMPLETE, TypeAdresseRetour.CEDI, true, false, false, false, list.get(3));
+					assertPeriodeImpositionPersonnesPhysiques(date(2007, 1, 1), dateDeces, CategorieEnvoiDIPP.HS_COMPLETE, TypeAdresseRetour.ACI, false, false, true, false, list.get(4));
 				}
 			}
 		});
@@ -784,7 +784,7 @@ public class PeriodeImpositionPersonnesPhysiquesCalculatorTest extends MetierTes
 					final List<PeriodeImposition> list = determine(ctb, 2007);
 					assertNotNull(list);
 					assertEquals(1, list.size());
-					assertPeriodeImpositionPersonnesPhysiques(date(2007, 1, 1), date(2007, 12, 31), CategorieEnvoiDI.HC_ACTIND_COMPLETE, TypeAdresseRetour.CEDI, false, false, false, false, list.get(0));
+					assertPeriodeImpositionPersonnesPhysiques(date(2007, 1, 1), date(2007, 12, 31), CategorieEnvoiDIPP.HC_ACTIND_COMPLETE, TypeAdresseRetour.CEDI, false, false, false, false, list.get(0));
 				}
 
 				// 2008
@@ -792,7 +792,7 @@ public class PeriodeImpositionPersonnesPhysiquesCalculatorTest extends MetierTes
 					final List<PeriodeImposition> list = determine(ctb, 2008);
 					assertNotNull(list);
 					assertEquals(1, list.size());
-					assertPeriodeImpositionPersonnesPhysiques(date(2008, 1, 1), date(2008, 12, 31), CategorieEnvoiDI.HC_ACTIND_COMPLETE, TypeAdresseRetour.CEDI, false, false, false, false, list.get(0));
+					assertPeriodeImpositionPersonnesPhysiques(date(2008, 1, 1), date(2008, 12, 31), CategorieEnvoiDIPP.HC_ACTIND_COMPLETE, TypeAdresseRetour.CEDI, false, false, false, false, list.get(0));
 				}
 
 				// 2009 (décès)
@@ -802,7 +802,7 @@ public class PeriodeImpositionPersonnesPhysiquesCalculatorTest extends MetierTes
 					final List<PeriodeImposition> list = determine(ctb, 2009);
 					assertNotNull(list);
 					assertEquals(1, list.size());
-					assertPeriodeImpositionPersonnesPhysiques(date(2009, 1, 1), dateDeces, CategorieEnvoiDI.HC_ACTIND_COMPLETE, TypeAdresseRetour.ACI, false, false, true, false, list.get(0));
+					assertPeriodeImpositionPersonnesPhysiques(date(2009, 1, 1), dateDeces, CategorieEnvoiDIPP.HC_ACTIND_COMPLETE, TypeAdresseRetour.ACI, false, false, true, false, list.get(0));
 				}
 			}
 		});
@@ -828,7 +828,7 @@ public class PeriodeImpositionPersonnesPhysiquesCalculatorTest extends MetierTes
 					final List<PeriodeImposition> list = determine(ctb, 2007);
 					assertNotNull(list);
 					assertEquals(1, list.size());
-					assertPeriodeImpositionPersonnesPhysiques(date(2007, 1, 1), date(2007, 12, 31), CategorieEnvoiDI.VAUDOIS_COMPLETE, TypeAdresseRetour.CEDI, false, false, false, false, list.get(0));
+					assertPeriodeImpositionPersonnesPhysiques(date(2007, 1, 1), date(2007, 12, 31), CategorieEnvoiDIPP.VAUDOIS_COMPLETE, TypeAdresseRetour.CEDI, false, false, false, false, list.get(0));
 				}
 
 				// 2008
@@ -836,7 +836,7 @@ public class PeriodeImpositionPersonnesPhysiquesCalculatorTest extends MetierTes
 					final List<PeriodeImposition> list = determine(ctb, 2008);
 					assertNotNull(list);
 					assertEquals(1, list.size());
-					assertPeriodeImpositionPersonnesPhysiques(date(2008, 1, 1), date(2008, 12, 31), CategorieEnvoiDI.VAUDOIS_COMPLETE, TypeAdresseRetour.CEDI, false, false, false, false, list.get(0));
+					assertPeriodeImpositionPersonnesPhysiques(date(2008, 1, 1), date(2008, 12, 31), CategorieEnvoiDIPP.VAUDOIS_COMPLETE, TypeAdresseRetour.CEDI, false, false, false, false, list.get(0));
 				}
 
 				// 2009 (décès)
@@ -844,7 +844,7 @@ public class PeriodeImpositionPersonnesPhysiquesCalculatorTest extends MetierTes
 					final List<PeriodeImposition> list = determine(ctb, 2009);
 					assertNotNull(list);
 					assertEquals(1, list.size());
-					assertPeriodeImpositionPersonnesPhysiques(date(2009, 1, 1), dateDeces, CategorieEnvoiDI.VAUDOIS_COMPLETE, TypeAdresseRetour.ACI, false, false, true, false, list.get(0));
+					assertPeriodeImpositionPersonnesPhysiques(date(2009, 1, 1), dateDeces, CategorieEnvoiDIPP.VAUDOIS_COMPLETE, TypeAdresseRetour.ACI, false, false, true, false, list.get(0));
 				}
 			}
 		});
@@ -887,7 +887,7 @@ public class PeriodeImpositionPersonnesPhysiquesCalculatorTest extends MetierTes
 					final List<PeriodeImposition> list = determine(ctb, 2007);
 					assertNotNull(list);
 					assertEquals(1, list.size());
-					assertPeriodeImpositionPersonnesPhysiques(date(2007, 1, 1), date(2007, 12, 31), CategorieEnvoiDI.VAUDOIS_COMPLETE, TypeAdresseRetour.CEDI, false, false, false, false, list.get(0));
+					assertPeriodeImpositionPersonnesPhysiques(date(2007, 1, 1), date(2007, 12, 31), CategorieEnvoiDIPP.VAUDOIS_COMPLETE, TypeAdresseRetour.CEDI, false, false, false, false, list.get(0));
 				}
 
 				// 2008 (départ en cours d'année)
@@ -895,7 +895,7 @@ public class PeriodeImpositionPersonnesPhysiquesCalculatorTest extends MetierTes
 					final List<PeriodeImposition> list = determine(ctb, 2008);
 					assertNotNull(list);
 					assertEquals(1, list.size());
-					assertPeriodeImpositionPersonnesPhysiques(date(2008, 1, 1), date(2008, 12, 31), CategorieEnvoiDI.HC_IMMEUBLE, TypeAdresseRetour.OID, false, false, false, false, list.get(0));
+					assertPeriodeImpositionPersonnesPhysiques(date(2008, 1, 1), date(2008, 12, 31), CategorieEnvoiDIPP.HC_IMMEUBLE, TypeAdresseRetour.OID, false, false, false, false, list.get(0));
 				}
 
 				// 2009
@@ -903,7 +903,7 @@ public class PeriodeImpositionPersonnesPhysiquesCalculatorTest extends MetierTes
 					final List<PeriodeImposition> list = determine(ctb, 2009);
 					assertNotNull(list);
 					assertEquals(1, list.size());
-					assertPeriodeImpositionPersonnesPhysiques(date(2009, 1, 1), date(2009, 12, 31), CategorieEnvoiDI.HC_IMMEUBLE, TypeAdresseRetour.OID, false, false, false, false, list.get(0));
+					assertPeriodeImpositionPersonnesPhysiques(date(2009, 1, 1), date(2009, 12, 31), CategorieEnvoiDIPP.HC_IMMEUBLE, TypeAdresseRetour.OID, false, false, false, false, list.get(0));
 				}
 			}
 		});
@@ -926,7 +926,7 @@ public class PeriodeImpositionPersonnesPhysiquesCalculatorTest extends MetierTes
 					final List<PeriodeImposition> list = determine(ctb, 2007);
 					assertNotNull(list);
 					assertEquals(1, list.size());
-					assertPeriodeImpositionPersonnesPhysiques(date(2007, 1, 1), date(2007, 12, 31), CategorieEnvoiDI.VAUDOIS_COMPLETE, TypeAdresseRetour.CEDI, false, false, false, false, list.get(0));
+					assertPeriodeImpositionPersonnesPhysiques(date(2007, 1, 1), date(2007, 12, 31), CategorieEnvoiDIPP.VAUDOIS_COMPLETE, TypeAdresseRetour.CEDI, false, false, false, false, list.get(0));
 				}
 
 				// 2008 (départ en cours d'année)
@@ -968,7 +968,7 @@ public class PeriodeImpositionPersonnesPhysiquesCalculatorTest extends MetierTes
 					final List<PeriodeImposition> list = determine(ctb, 2007);
 					assertNotNull(list);
 					assertEquals(1, list.size());
-					assertPeriodeImpositionPersonnesPhysiques(date(2007, 1, 1), date(2007, 12, 31), CategorieEnvoiDI.VAUDOIS_COMPLETE, TypeAdresseRetour.CEDI, false, false, false, false, list.get(0));
+					assertPeriodeImpositionPersonnesPhysiques(date(2007, 1, 1), date(2007, 12, 31), CategorieEnvoiDIPP.VAUDOIS_COMPLETE, TypeAdresseRetour.CEDI, false, false, false, false, list.get(0));
 				}
 
 				// 2008 (départ en cours d'année)
@@ -982,7 +982,7 @@ public class PeriodeImpositionPersonnesPhysiquesCalculatorTest extends MetierTes
 					final List<PeriodeImposition> list = determine(ctb, 2008);
 					assertNotNull(list);
 					assertEquals(1, list.size());
-					assertPeriodeImpositionPersonnesPhysiques(date(2008, 1, 1), dateDepart, CategorieEnvoiDI.VAUDOIS_COMPLETE, TypeAdresseRetour.CEDI, true, true, false, false, list.get(0));
+					assertPeriodeImpositionPersonnesPhysiques(date(2008, 1, 1), dateDepart, CategorieEnvoiDIPP.VAUDOIS_COMPLETE, TypeAdresseRetour.CEDI, true, true, false, false, list.get(0));
 				}
 
 				// 2009
@@ -1031,7 +1031,7 @@ public class PeriodeImpositionPersonnesPhysiquesCalculatorTest extends MetierTes
 					final List<PeriodeImposition> list = determine(ctb, 2007);
 					assertNotNull(list);
 					assertEquals(1, list.size());
-					assertPeriodeImpositionPersonnesPhysiques(date(2007, 1, 1), date(2007, 12, 31), CategorieEnvoiDI.HC_IMMEUBLE, TypeAdresseRetour.OID, false, false, false, false, list.get(0));
+					assertPeriodeImpositionPersonnesPhysiques(date(2007, 1, 1), date(2007, 12, 31), CategorieEnvoiDIPP.HC_IMMEUBLE, TypeAdresseRetour.OID, false, false, false, false, list.get(0));
 				}
 
 				// 2008 (arrivée en cours d'année)
@@ -1039,7 +1039,7 @@ public class PeriodeImpositionPersonnesPhysiquesCalculatorTest extends MetierTes
 					final List<PeriodeImposition> list = determine(ctb, 2008);
 					assertNotNull(list);
 					assertEquals(1, list.size());
-					assertPeriodeImpositionPersonnesPhysiques(date(2008, 1, 1), date(2008, 12, 31), CategorieEnvoiDI.VAUDOIS_COMPLETE, TypeAdresseRetour.CEDI, false, false, false, false, list.get(0));
+					assertPeriodeImpositionPersonnesPhysiques(date(2008, 1, 1), date(2008, 12, 31), CategorieEnvoiDIPP.VAUDOIS_COMPLETE, TypeAdresseRetour.CEDI, false, false, false, false, list.get(0));
 				}
 
 				// 2009
@@ -1047,7 +1047,7 @@ public class PeriodeImpositionPersonnesPhysiquesCalculatorTest extends MetierTes
 					final List<PeriodeImposition> list = determine(ctb, 2009);
 					assertNotNull(list);
 					assertEquals(1, list.size());
-					assertPeriodeImpositionPersonnesPhysiques(date(2009, 1, 1), date(2009, 12, 31), CategorieEnvoiDI.VAUDOIS_COMPLETE, TypeAdresseRetour.CEDI, false, false, false, false, list.get(0));
+					assertPeriodeImpositionPersonnesPhysiques(date(2009, 1, 1), date(2009, 12, 31), CategorieEnvoiDIPP.VAUDOIS_COMPLETE, TypeAdresseRetour.CEDI, false, false, false, false, list.get(0));
 				}
 			}
 		});
@@ -1085,7 +1085,7 @@ public class PeriodeImpositionPersonnesPhysiquesCalculatorTest extends MetierTes
 					final List<PeriodeImposition> list = determine(ctb, 2008);
 					assertNotNull(list);
 					assertEquals(1, list.size());
-					assertPeriodeImpositionPersonnesPhysiques(date(2008, 1, 1), date(2008, 12, 31), CategorieEnvoiDI.VAUDOIS_VAUDTAX, TypeAdresseRetour.CEDI, false, false, false, false, list.get(0));
+					assertPeriodeImpositionPersonnesPhysiques(date(2008, 1, 1), date(2008, 12, 31), CategorieEnvoiDIPP.VAUDOIS_VAUDTAX, TypeAdresseRetour.CEDI, false, false, false, false, list.get(0));
 				}
 
 				// 2009
@@ -1094,7 +1094,7 @@ public class PeriodeImpositionPersonnesPhysiquesCalculatorTest extends MetierTes
 					final List<PeriodeImposition> list = determine(ctb, 2009);
 					assertNotNull(list);
 					assertEquals(1, list.size());
-					assertPeriodeImpositionPersonnesPhysiques(date(2009, 1, 1), date(2009, 12, 31), CategorieEnvoiDI.VAUDOIS_COMPLETE, TypeAdresseRetour.CEDI, false, false, false, false, list.get(0));
+					assertPeriodeImpositionPersonnesPhysiques(date(2009, 1, 1), date(2009, 12, 31), CategorieEnvoiDIPP.VAUDOIS_COMPLETE, TypeAdresseRetour.CEDI, false, false, false, false, list.get(0));
 				}
 			}
 		});
@@ -1115,7 +1115,7 @@ public class PeriodeImpositionPersonnesPhysiquesCalculatorTest extends MetierTes
 					final List<PeriodeImposition> list = determine(ctb, 2007);
 					assertNotNull(list);
 					assertEquals(1, list.size());
-					assertPeriodeImpositionPersonnesPhysiques(date(2007, 1, 1), date(2007, 12, 31), CategorieEnvoiDI.HC_IMMEUBLE, TypeAdresseRetour.OID, false, false, false, false, list.get(0));
+					assertPeriodeImpositionPersonnesPhysiques(date(2007, 1, 1), date(2007, 12, 31), CategorieEnvoiDIPP.HC_IMMEUBLE, TypeAdresseRetour.OID, false, false, false, false, list.get(0));
 				}
 
 				// 2008 (vente de l'immeuble en cours d'année)
@@ -1125,7 +1125,7 @@ public class PeriodeImpositionPersonnesPhysiquesCalculatorTest extends MetierTes
 					final List<PeriodeImposition> list = determine(ctb, 2008);
 					assertNotNull(list);
 					assertEquals(1, list.size());
-					assertPeriodeImpositionPersonnesPhysiques(date(2008, 1, 1), date(2008, 12, 31), CategorieEnvoiDI.HC_IMMEUBLE, TypeAdresseRetour.OID, false, true, false, false, list.get(0));
+					assertPeriodeImpositionPersonnesPhysiques(date(2008, 1, 1), date(2008, 12, 31), CategorieEnvoiDIPP.HC_IMMEUBLE, TypeAdresseRetour.OID, false, true, false, false, list.get(0));
 				}
 
 				// 2009
@@ -1152,7 +1152,7 @@ public class PeriodeImpositionPersonnesPhysiquesCalculatorTest extends MetierTes
 					final List<PeriodeImposition> list = determine(ctb, 2007);
 					assertNotNull(list);
 					assertEquals(1, list.size());
-					assertPeriodeImpositionPersonnesPhysiques(date(2007, 1, 1), date(2007, 12, 31), CategorieEnvoiDI.HC_ACTIND_COMPLETE, TypeAdresseRetour.CEDI, false, false, false, false, list.get(0));
+					assertPeriodeImpositionPersonnesPhysiques(date(2007, 1, 1), date(2007, 12, 31), CategorieEnvoiDIPP.HC_ACTIND_COMPLETE, TypeAdresseRetour.CEDI, false, false, false, false, list.get(0));
 				}
 
 				// 2008 (fin d'activité indépendante en cours d'année)
@@ -1162,7 +1162,7 @@ public class PeriodeImpositionPersonnesPhysiquesCalculatorTest extends MetierTes
 					final List<PeriodeImposition> list = determine(ctb, 2008);
 					assertNotNull(list);
 					assertEquals(1, list.size());
-					assertPeriodeImpositionPersonnesPhysiques(date(2008, 1, 1), date(2008, 12, 31), CategorieEnvoiDI.HC_ACTIND_COMPLETE, TypeAdresseRetour.CEDI, false, true, false, false, list.get(0));
+					assertPeriodeImpositionPersonnesPhysiques(date(2008, 1, 1), date(2008, 12, 31), CategorieEnvoiDIPP.HC_ACTIND_COMPLETE, TypeAdresseRetour.CEDI, false, true, false, false, list.get(0));
 				}
 
 				// 2009
@@ -1189,7 +1189,7 @@ public class PeriodeImpositionPersonnesPhysiquesCalculatorTest extends MetierTes
 					final List<PeriodeImposition> list = determine(ctb, 2007);
 					assertNotNull(list);
 					assertEquals(1, list.size());
-					assertPeriodeImpositionPersonnesPhysiques(date(2007, 1, 1), date(2007, 12, 31), CategorieEnvoiDI.VAUDOIS_COMPLETE, TypeAdresseRetour.CEDI, false, false, false, false, list.get(0));
+					assertPeriodeImpositionPersonnesPhysiques(date(2007, 1, 1), date(2007, 12, 31), CategorieEnvoiDIPP.VAUDOIS_COMPLETE, TypeAdresseRetour.CEDI, false, false, false, false, list.get(0));
 				}
 
 				// 2008 (nomination comme diplomate en cours d'année)
@@ -1197,9 +1197,9 @@ public class PeriodeImpositionPersonnesPhysiquesCalculatorTest extends MetierTes
 					final List<PeriodeImposition> list = determine(ctb, 2008);
 					assertNotNull(list);
 					assertEquals(2, list.size());
-					assertPeriodeImpositionPersonnesPhysiques(date(2008, 1, 1), dateNomination.getOneDayBefore(), CategorieEnvoiDI.VAUDOIS_COMPLETE, TypeAdresseRetour.CEDI, false, false, false, false,
+					assertPeriodeImpositionPersonnesPhysiques(date(2008, 1, 1), dateNomination.getOneDayBefore(), CategorieEnvoiDIPP.VAUDOIS_COMPLETE, TypeAdresseRetour.CEDI, false, false, false, false,
 					                                          list.get(0));
-					assertPeriodeImpositionPersonnesPhysiques(dateNomination, date(2008, 12, 31), CategorieEnvoiDI.DIPLOMATE_SUISSE, null, false, false, false, false, list.get(1));
+					assertPeriodeImpositionPersonnesPhysiques(dateNomination, date(2008, 12, 31), CategorieEnvoiDIPP.DIPLOMATE_SUISSE, null, false, false, false, false, list.get(1));
 				}
 
 				// 2009
@@ -1207,7 +1207,7 @@ public class PeriodeImpositionPersonnesPhysiquesCalculatorTest extends MetierTes
 					final List<PeriodeImposition> list = determine(ctb, 2009);
 					assertNotNull(list);
 					assertEquals(1, list.size());
-					assertPeriodeImpositionPersonnesPhysiques(date(2009, 1, 1), date(2009, 12, 31), CategorieEnvoiDI.DIPLOMATE_SUISSE, null, false, false, false, false, list.get(0));
+					assertPeriodeImpositionPersonnesPhysiques(date(2009, 1, 1), date(2009, 12, 31), CategorieEnvoiDIPP.DIPLOMATE_SUISSE, null, false, false, false, false, list.get(0));
 				}
 			}
 		});
@@ -1226,7 +1226,7 @@ public class PeriodeImpositionPersonnesPhysiquesCalculatorTest extends MetierTes
 					final List<PeriodeImposition> list = determine(paul, 2003);
 					assertNotNull(list);
 					assertEquals(1, list.size());
-					assertPeriodeImpositionPersonnesPhysiques(date(2003, 1, 1), date(2003, 12, 31), CategorieEnvoiDI.VAUDOIS_COMPLETE, TypeAdresseRetour.CEDI, false, false, false, false, list.get(0));
+					assertPeriodeImpositionPersonnesPhysiques(date(2003, 1, 1), date(2003, 12, 31), CategorieEnvoiDIPP.VAUDOIS_COMPLETE, TypeAdresseRetour.CEDI, false, false, false, false, list.get(0));
 				}
 
 				// 2000 (nomination comme diplomate suisse basé à l'étanger)
@@ -1234,7 +1234,7 @@ public class PeriodeImpositionPersonnesPhysiquesCalculatorTest extends MetierTes
 					final List<PeriodeImposition> list = determine(paul, 2004);
 					assertNotNull(list);
 					assertEquals(1, list.size());
-					assertPeriodeImpositionPersonnesPhysiques(date(2004, 1, 1), date(2004, 12, 31), CategorieEnvoiDI.DIPLOMATE_SUISSE, null, false, false, false, false, list.get(0));
+					assertPeriodeImpositionPersonnesPhysiques(date(2004, 1, 1), date(2004, 12, 31), CategorieEnvoiDIPP.DIPLOMATE_SUISSE, null, false, false, false, false, list.get(0));
 				}
 
 				// 2001 (achat d'un immeuble au 13 juin)
@@ -1243,7 +1243,7 @@ public class PeriodeImpositionPersonnesPhysiquesCalculatorTest extends MetierTes
 					assertNotNull(list);
 					assertEquals(1, list.size());
 					// [UNIREG-1976] le fait de posséder un immeuble en suisse ne fait plus basculer le diplomate dans la catégorie hors-Suisse: il reste diplomate suisse.
-					assertPeriodeImpositionPersonnesPhysiques(date(2005, 1, 1), date(2005, 12, 31), CategorieEnvoiDI.DIPLOMATE_SUISSE_IMMEUBLE_COMPLETE, TypeAdresseRetour.CEDI, true, false, false, false, list.get(0));
+					assertPeriodeImpositionPersonnesPhysiques(date(2005, 1, 1), date(2005, 12, 31), CategorieEnvoiDIPP.DIPLOMATE_SUISSE_IMMEUBLE_COMPLETE, TypeAdresseRetour.CEDI, true, false, false, false, list.get(0));
 				}
 			}
 		});
@@ -1263,7 +1263,7 @@ public class PeriodeImpositionPersonnesPhysiquesCalculatorTest extends MetierTes
 				final List<PeriodeImposition> list = determine(ctb, 2009);
 				assertNotNull(list);
 				assertEquals(1, list.size());
-				assertPeriodeImpositionPersonnesPhysiques(date(2009, 1, 1), date(2009, 12, 31), CategorieEnvoiDI.VAUDOIS_VAUDTAX, TypeAdresseRetour.CEDI, false, false, false, false, list.get(0));
+				assertPeriodeImpositionPersonnesPhysiques(date(2009, 1, 1), date(2009, 12, 31), CategorieEnvoiDIPP.VAUDOIS_VAUDTAX, TypeAdresseRetour.CEDI, false, false, false, false, list.get(0));
 			}
 		});
 	}

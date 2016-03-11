@@ -188,6 +188,11 @@ public final class MockParameterAppService implements ParametreAppService {
 	}
 
 	@Override
+	public Integer[] getDateLimiteEnvoiMasseDeclarationsUtilitePublique() {
+		return container.getDateLimiteEnvoiMasseDeclarationsUtilitePublique();
+	}
+
+	@Override
 	public void reset() {
 		container.reset();
 	}
@@ -365,5 +370,10 @@ public final class MockParameterAppService implements ParametreAppService {
 	@Override
 	public void setDelaiEnvoiSommationDeclarationImpotPM(Integer val) {
 		container.setDelaiEnvoiSommationDeclarationImpotPM(val);
+	}
+
+	@Override
+	public void setDateLimiteEnvoiMasseDeclarationsUtilitePublique(Integer[] val) {
+		container.setDateLimiteEnvoiMasseDeclarationsUtilitePublique(val);
 	}
 }

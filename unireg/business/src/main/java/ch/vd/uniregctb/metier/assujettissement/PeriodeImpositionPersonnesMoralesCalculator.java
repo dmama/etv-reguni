@@ -19,11 +19,13 @@ import ch.vd.uniregctb.metier.bouclement.ExerciceCommercial;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.tiers.CategorieEntrepriseHisto;
 import ch.vd.uniregctb.tiers.Entreprise;
+import ch.vd.uniregctb.tiers.FlagEntreprise;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.CategorieEntreprise;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.TypeContribuable;
 import ch.vd.uniregctb.type.TypeDocument;
+import ch.vd.uniregctb.type.TypeFlagEntreprise;
 
 /**
  * Calculateur des périodes d'imposition des entreprises
@@ -81,7 +83,7 @@ public class PeriodeImpositionPersonnesMoralesCalculator implements PeriodeImpos
 					}
 
 					// détermination du type de contribuable et du type de document
-					final TypeContribuable typeContribuable = computeTypeContribuable(assujettissement);
+					final TypeContribuable typeContribuable = computeTypeContribuable(entreprise, intersection.getDateFin(), assujettissement);
 					final TypeDocument typeDocument = computeTypeDocument(entreprise, intersection.getDateFin());
 					final CategorieEntreprise categorieEntreprise = getLastKnownCategorieEntrepriseAtOrBefore(entreprise, intersection.getDateFin());
 
@@ -127,7 +129,13 @@ public class PeriodeImpositionPersonnesMoralesCalculator implements PeriodeImpos
 		return null;
 	}
 
-	private static TypeContribuable computeTypeContribuable(Assujettissement assujettissement) {
+	private static TypeContribuable computeTypeContribuable(Entreprise pm, RegDate dateFinPeriode, Assujettissement assujettissement) {
+		// [SIFISC-18113] séparation des entreprise LIASF dans une population différente
+		final FlagEntreprise flag = DateRangeHelper.rangeAt(pm.getFlagsNonAnnulesTries(), dateFinPeriode);
+		if (flag != null && flag.getType() == TypeFlagEntreprise.UTILITE_PUBLIQUE) {
+			return TypeContribuable.UTILITE_PUBLIQUE;
+		}
+
 		switch (assujettissement.getType()) {
 		case HORS_CANTON:
 			return TypeContribuable.HORS_CANTON;
@@ -136,7 +144,7 @@ public class PeriodeImpositionPersonnesMoralesCalculator implements PeriodeImpos
 		case VAUDOIS_ORDINAIRE:
 			return TypeContribuable.VAUDOIS_ORDINAIRE;
 		default:
-			throw new IllegalArgumentException("Type d'assujettissement PM non-supporté dans le calculateur de périodes d'assujettissement : " + assujettissement.getType());
+			throw new IllegalArgumentException("Type d'assujettissement PM non-supporté dans le calculateur de périodes d'imposition : " + assujettissement.getType());
 		}
 	}
 

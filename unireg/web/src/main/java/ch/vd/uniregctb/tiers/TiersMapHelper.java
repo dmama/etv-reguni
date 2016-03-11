@@ -16,6 +16,7 @@ import ch.vd.unireg.interfaces.infra.data.Logiciel;
 import ch.vd.unireg.interfaces.infra.data.LogicielMetier;
 import ch.vd.uniregctb.common.ApplicationConfig;
 import ch.vd.uniregctb.common.CommonMapHelper;
+import ch.vd.uniregctb.declaration.ParametrePeriodeFiscalePM;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.reqdes.EtatTraitement;
 import ch.vd.uniregctb.tiers.TiersCriteria.TypeRecherche;
@@ -110,6 +111,7 @@ public class TiersMapHelper extends CommonMapHelper {
 	private Map<AllegementFiscalConfederation.Type, String> mapTypesIFDAllegement;
 	private Map<AllegementFiscalCantonCommune.Type, String> mapTypesICCAllegement;
 	private Map<TypeFlagEntreprise, String> mapTypesFlagEntreprise;
+	private Map<ParametrePeriodeFiscalePM.ReferencePourDelai, String> mapReferencesPourDelai;
 
 	private ServiceInfrastructureService infraService;
 
@@ -800,5 +802,15 @@ public class TiersMapHelper extends CommonMapHelper {
 			mapTypesFlagEntreprise = initMapEnum(ApplicationConfig.masterKeyTypeFlagEntreprise, TypeFlagEntreprise.class);
 		}
 		return mapTypesFlagEntreprise;
+	}
+
+	/**
+	 * @return la map des types disponibles pour les références pour délai
+	 */
+	public Map<ParametrePeriodeFiscalePM.ReferencePourDelai, String> getMapReferencesPourDelai() {
+		if (mapReferencesPourDelai == null) {
+			mapReferencesPourDelai = initMapEnum(ApplicationConfig.masterKeyReferencePourDelai, ParametrePeriodeFiscalePM.ReferencePourDelai.class);
+		}
+		return mapReferencesPourDelai;
 	}
 }

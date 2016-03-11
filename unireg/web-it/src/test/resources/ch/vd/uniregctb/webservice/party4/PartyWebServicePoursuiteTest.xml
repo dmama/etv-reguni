@@ -915,6 +915,7 @@
     <column>PM_DELAI_IMPRIME_FIN_MOIS</column>
     <column>PM_TOLERANCE_JOURS</column>
     <column>PM_TOLERANCE_FIN_MOIS</column>
+    <column>PM_REF_DELAI</column>
   </table>
   <table name="PARAMETRE">
     <column>NOM</column>

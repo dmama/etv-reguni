@@ -58,6 +58,7 @@ public class ParamApplicationView {
 	private String tailleTrouAssujettissementPourNouvelleLettreBienvenue;
 	private String delaiRetourLettreBienvenue;
 	private String dateDebutEnvoiLettresBienvenue;
+	private String dateLimiteEnvoiMasseDeclarationsUtilitePublique;
 
 	public ParamApplicationView() {}
 
@@ -95,6 +96,7 @@ public class ParamApplicationView {
 		this.tailleTrouAssujettissementPourNouvelleLettreBienvenue = ParametreEnum.tailleTrouAssujettissementPourNouvelleLettreBienvenue.convertirValeurTypeeVersString(service.getTailleTrouAssujettissementPourNouvelleLettreBienvenue());
 		this.delaiRetourLettreBienvenue = ParametreEnum.delaiRetourLettreBienvenue.convertirValeurTypeeVersString(service.getDelaiRetourLettreBienvenue());
 		this.dateDebutEnvoiLettresBienvenue = ParametreEnum.dateDebutEnvoiLettresBienvenue.convertirValeurTypeeVersString(service.getDateDebutEnvoiLettresBienvenue());
+		this.dateLimiteEnvoiMasseDeclarationsUtilitePublique = ParametreEnum.dateLimiteEnvoiMasseDeclarationsUtilitePublique.convertirValeurTypeeVersString(service.getDateLimiteEnvoiMasseDeclarationsUtilitePublique());
 	}
 
 	public void saveTo(ParametreAppService service) {
@@ -131,6 +133,7 @@ public class ParamApplicationView {
 		service.setTailleTrouAssujettissementPourNouvelleLettreBienvenue((Integer) ParametreEnum.tailleTrouAssujettissementPourNouvelleLettreBienvenue.convertirStringVersValeurTypee(this.tailleTrouAssujettissementPourNouvelleLettreBienvenue));
 		service.setDelaiRetourLettreBienvenue((Integer) ParametreEnum.delaiRetourLettreBienvenue.convertirStringVersValeurTypee(this.delaiRetourLettreBienvenue));
 		service.setDateDebutEnvoiLettresBienvenue((Integer[]) ParametreEnum.dateDebutEnvoiLettresBienvenue.convertirStringVersValeurTypee(this.dateDebutEnvoiLettresBienvenue));
+		service.setDateLimiteEnvoiMasseDeclarationsUtilitePublique((Integer[]) ParametreEnum.dateLimiteEnvoiMasseDeclarationsUtilitePublique.convertirStringVersValeurTypee(this.dateLimiteEnvoiMasseDeclarationsUtilitePublique));
 	}
 
 	public String getNoel() {
@@ -395,5 +398,13 @@ public class ParamApplicationView {
 
 	public void setDateDebutEnvoiLettresBienvenue(String dateDebutEnvoiLettresBienvenue) {
 		this.dateDebutEnvoiLettresBienvenue = dateDebutEnvoiLettresBienvenue;
+	}
+
+	public String getDateLimiteEnvoiMasseDeclarationsUtilitePublique() {
+		return dateLimiteEnvoiMasseDeclarationsUtilitePublique;
+	}
+
+	public void setDateLimiteEnvoiMasseDeclarationsUtilitePublique(String dateLimiteEnvoiMasseDeclarationsUtilitePublique) {
+		this.dateLimiteEnvoiMasseDeclarationsUtilitePublique = dateLimiteEnvoiMasseDeclarationsUtilitePublique;
 	}
 }

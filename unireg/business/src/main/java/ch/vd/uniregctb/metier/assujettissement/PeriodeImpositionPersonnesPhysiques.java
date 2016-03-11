@@ -19,12 +19,12 @@ public class PeriodeImpositionPersonnesPhysiques extends PeriodeImposition {
 	                                                                        TypeDocument.DECLARATION_IMPOT_COMPLETE_LOCAL,
 	                                                                        TypeDocument.DECLARATION_IMPOT_VAUDTAX);
 
-	private final CategorieEnvoiDI categorieEnvoiDI;
+	private final CategorieEnvoiDIPP categorieEnvoiDI;
 	private final TypeAdresseRetour adresseRetour; // [UNIREG-1741]
 
 	public PeriodeImpositionPersonnesPhysiques(RegDate debut, RegDate fin, ContribuableImpositionPersonnesPhysiques contribuable,
 	                                           boolean declarationOptionnelle, boolean declarationRemplaceeParNote, CauseFermeture causeFermeture, Integer codeSegment,
-	                                           CategorieEnvoiDI categorieEnvoiDI, TypeAdresseRetour adresseRetour) {
+	                                           CategorieEnvoiDIPP categorieEnvoiDI, TypeAdresseRetour adresseRetour) {
 		super(debut, fin, contribuable, declarationOptionnelle, declarationRemplaceeParNote, causeFermeture, codeSegment);
 		this.categorieEnvoiDI = categorieEnvoiDI;
 		this.adresseRetour = adresseRetour;
@@ -50,7 +50,7 @@ public class PeriodeImpositionPersonnesPhysiques extends PeriodeImposition {
 		return categorieEnvoiDI.getTypeDocument();
 	}
 
-	public CategorieEnvoiDI getCategorieEnvoiDI() {
+	public CategorieEnvoiDIPP getCategorieEnvoiDI() {
 		return categorieEnvoiDI;
 	}
 
@@ -60,7 +60,7 @@ public class PeriodeImpositionPersonnesPhysiques extends PeriodeImposition {
 
 	@Override
 	public boolean isDiplomateSuisseSansImmeuble() {
-		return categorieEnvoiDI == CategorieEnvoiDI.DIPLOMATE_SUISSE;
+		return categorieEnvoiDI == CategorieEnvoiDIPP.DIPLOMATE_SUISSE;
 	}
 
 	/**
@@ -78,15 +78,15 @@ public class PeriodeImpositionPersonnesPhysiques extends PeriodeImposition {
 	 * @param right le type de droite
 	 * @return <b>vrai</b> si les deux types de documents sont égaux, en <b>ne faisant pas</b> de différence entre DECLARATION_IMPOT_COMPLETE et DECLARATION_IMPOT_VAUDTAX.
 	 */
-	private static boolean isEquivalent(CategorieEnvoiDI left, CategorieEnvoiDI right) {
+	private static boolean isEquivalent(CategorieEnvoiDIPP left, CategorieEnvoiDIPP right) {
 		return (left == right) || (COMPLETE_OU_VAUDTAX.contains(left.getTypeDocument()) && COMPLETE_OU_VAUDTAX.contains(right.getTypeDocument()));
 	}
 
-	private static CategorieEnvoiDI collateCategorieEnvoi(CategorieEnvoiDI left, CategorieEnvoiDI right) {
+	private static CategorieEnvoiDIPP collateCategorieEnvoi(CategorieEnvoiDIPP left, CategorieEnvoiDIPP right) {
 		// Dans la plupart des cas, on prend le type de contribuable le plus à jour, c'est-à-dire la valeur 'right'.
 		// Sauf lorsque on a le choix entre en déclaration d'impôt vaudtax et une complète; dans ce cas on préfère la vaudtax.
-		if (left == CategorieEnvoiDI.VAUDOIS_VAUDTAX && right == CategorieEnvoiDI.VAUDOIS_COMPLETE) {
-			return CategorieEnvoiDI.VAUDOIS_VAUDTAX;
+		if (left == CategorieEnvoiDIPP.VAUDOIS_VAUDTAX && right == CategorieEnvoiDIPP.VAUDOIS_COMPLETE) {
+			return CategorieEnvoiDIPP.VAUDOIS_VAUDTAX;
 		}
 		else {
 			return right;

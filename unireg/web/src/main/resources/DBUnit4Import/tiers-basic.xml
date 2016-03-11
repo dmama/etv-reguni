@@ -7418,6 +7418,7 @@
     <column>PM_DELAI_IMPRIME_FIN_MOIS</column>
     <column>PM_TOLERANCE_JOURS</column>
     <column>PM_TOLERANCE_FIN_MOIS</column>
+    <column>PM_REF_DELAI</column>
     <row>
       <value>1</value>
       <null/>
@@ -7432,6 +7433,7 @@
       <value>VAUDOIS_ORDINAIRE</value>
       <value>2</value>
       <value>PP</value>
+      <null/>
       <null/>
       <null/>
       <null/>
@@ -7455,6 +7457,7 @@
       <null/>
       <null/>
       <null/>
+      <null/>
     </row>
     <row>
       <value>3</value>
@@ -7470,6 +7473,7 @@
       <value>HORS_CANTON</value>
       <value>2</value>
       <value>PP</value>
+      <null/>
       <null/>
       <null/>
       <null/>
@@ -7493,6 +7497,7 @@
       <null/>
       <null/>
       <null/>
+      <null/>
     </row>
     <row>
       <value>5</value>
@@ -7508,6 +7513,7 @@
       <value>DIPLOMATE_SUISSE</value>
       <value>2</value>
       <value>PP</value>
+      <null/>
       <null/>
       <null/>
       <null/>
@@ -7531,6 +7537,7 @@
       <null/>
       <null/>
       <null/>
+      <null/>
     </row>
     <row>
       <value>7</value>
@@ -7546,6 +7553,7 @@
       <value>VAUDOIS_DEPENSE</value>
       <value>3</value>
       <value>PP</value>
+      <null/>
       <null/>
       <null/>
       <null/>
@@ -7569,6 +7577,7 @@
       <null/>
       <null/>
       <null/>
+      <null/>
     </row>
     <row>
       <value>9</value>
@@ -7584,6 +7593,7 @@
       <value>HORS_SUISSE</value>
       <value>3</value>
       <value>PP</value>
+      <null/>
       <null/>
       <null/>
       <null/>
@@ -7607,6 +7617,7 @@
       <null/>
       <null/>
       <null/>
+      <null/>
     </row>
     <row>
       <value>11</value>
@@ -7622,6 +7633,7 @@
       <value>VAUDOIS_ORDINAIRE</value>
       <value>4</value>
       <value>PP</value>
+      <null/>
       <null/>
       <null/>
       <null/>
@@ -7645,6 +7657,7 @@
       <null/>
       <null/>
       <null/>
+      <null/>
     </row>
     <row>
       <value>13</value>
@@ -7660,6 +7673,7 @@
       <value>HORS_CANTON</value>
       <value>4</value>
       <value>PP</value>
+      <null/>
       <null/>
       <null/>
       <null/>
@@ -7683,6 +7697,7 @@
       <null/>
       <null/>
       <null/>
+      <null/>
     </row>
     <row>
       <value>15</value>
@@ -7698,6 +7713,7 @@
       <value>DIPLOMATE_SUISSE</value>
       <value>4</value>
       <value>PP</value>
+      <null/>
       <null/>
       <null/>
       <null/>
@@ -7721,6 +7737,7 @@
       <null/>
       <null/>
       <null/>
+      <null/>
     </row>
     <row>
       <value>17</value>
@@ -7736,6 +7753,7 @@
       <value>VAUDOIS_DEPENSE</value>
       <value>5</value>
       <value>PP</value>
+      <null/>
       <null/>
       <null/>
       <null/>
@@ -7759,6 +7777,7 @@
       <null/>
       <null/>
       <null/>
+      <null/>
     </row>
     <row>
       <value>19</value>
@@ -7774,6 +7793,7 @@
       <value>HORS_SUISSE</value>
       <value>5</value>
       <value>PP</value>
+      <null/>
       <null/>
       <null/>
       <null/>
@@ -7797,6 +7817,7 @@
       <null/>
       <null/>
       <null/>
+      <null/>
     </row>
     <row>
       <value>21</value>
@@ -7812,6 +7833,7 @@
       <value>VAUDOIS_ORDINAIRE</value>
       <value>6</value>
       <value>PP</value>
+      <null/>
       <null/>
       <null/>
       <null/>
@@ -7835,6 +7857,7 @@
       <null/>
       <null/>
       <null/>
+      <null/>
     </row>
     <row>
       <value>23</value>
@@ -7850,6 +7873,7 @@
       <value>HORS_CANTON</value>
       <value>6</value>
       <value>PP</value>
+      <null/>
       <null/>
       <null/>
       <null/>
@@ -7873,6 +7897,7 @@
       <null/>
       <null/>
       <null/>
+      <null/>
     </row>
     <row>
       <value>25</value>
@@ -7888,6 +7913,7 @@
       <value>DIPLOMATE_SUISSE</value>
       <value>6</value>
       <value>PP</value>
+      <null/>
       <null/>
       <null/>
       <null/>
@@ -7911,6 +7937,7 @@
       <null/>
       <null/>
       <null/>
+      <null/>
     </row>
     <row>
       <value>27</value>
@@ -7926,6 +7953,7 @@
       <value>VAUDOIS_DEPENSE</value>
       <value>7</value>
       <value>PP</value>
+      <null/>
       <null/>
       <null/>
       <null/>
@@ -7949,6 +7977,7 @@
       <null/>
       <null/>
       <null/>
+      <null/>
     </row>
     <row>
       <value>29</value>
@@ -7964,6 +7993,7 @@
       <value>HORS_SUISSE</value>
       <value>7</value>
       <value>PP</value>
+      <null/>
       <null/>
       <null/>
       <null/>
@@ -7987,6 +8017,7 @@
       <null/>
       <null/>
       <null/>
+      <null/>
     </row>
     <row>
       <value>31</value>
@@ -8002,6 +8033,7 @@
       <value>VAUDOIS_ORDINAIRE</value>
       <value>8</value>
       <value>PP</value>
+      <null/>
       <null/>
       <null/>
       <null/>
@@ -8025,6 +8057,7 @@
       <null/>
       <null/>
       <null/>
+      <null/>
     </row>
     <row>
       <value>33</value>
@@ -8040,6 +8073,7 @@
       <value>HORS_CANTON</value>
       <value>8</value>
       <value>PP</value>
+      <null/>
       <null/>
       <null/>
       <null/>
@@ -8063,6 +8097,7 @@
       <null/>
       <null/>
       <null/>
+      <null/>
     </row>
     <row>
       <value>35</value>
@@ -8078,6 +8113,7 @@
       <value>DIPLOMATE_SUISSE</value>
       <value>8</value>
       <value>PP</value>
+      <null/>
       <null/>
       <null/>
       <null/>
@@ -8101,6 +8137,7 @@
       <null/>
       <null/>
       <null/>
+      <null/>
     </row>
     <row>
       <value>37</value>
@@ -8116,6 +8153,7 @@
       <value>VAUDOIS_DEPENSE</value>
       <value>9</value>
       <value>PP</value>
+      <null/>
       <null/>
       <null/>
       <null/>
@@ -8139,6 +8177,7 @@
       <null/>
       <null/>
       <null/>
+      <null/>
     </row>
     <row>
       <value>39</value>
@@ -8154,6 +8193,7 @@
       <value>HORS_SUISSE</value>
       <value>9</value>
       <value>PP</value>
+      <null/>
       <null/>
       <null/>
       <null/>
@@ -8177,6 +8217,7 @@
       <null/>
       <null/>
       <null/>
+      <null/>
     </row>
     <row>
       <value>37888066</value>
@@ -8192,6 +8233,7 @@
       <value>HORS_CANTON</value>
       <value>37888052</value>
       <value>PP</value>
+      <null/>
       <null/>
       <null/>
       <null/>
@@ -8215,6 +8257,7 @@
       <null/>
       <null/>
       <null/>
+      <null/>
     </row>
     <row>
       <value>37888068</value>
@@ -8230,6 +8273,7 @@
       <value>VAUDOIS_ORDINAIRE</value>
       <value>37888052</value>
       <value>PP</value>
+      <null/>
       <null/>
       <null/>
       <null/>
@@ -8253,6 +8297,7 @@
       <null/>
       <null/>
       <null/>
+      <null/>
     </row>
     <row>
       <value>37888070</value>
@@ -8268,6 +8313,7 @@
       <value>DIPLOMATE_SUISSE</value>
       <value>37888052</value>
       <value>PP</value>
+      <null/>
       <null/>
       <null/>
       <null/>
@@ -8291,6 +8337,7 @@
       <null/>
       <null/>
       <null/>
+      <null/>
     </row>
     <row>
       <value>37888086</value>
@@ -8306,6 +8353,7 @@
       <value>VAUDOIS_DEPENSE</value>
       <value>37888071</value>
       <value>PP</value>
+      <null/>
       <null/>
       <null/>
       <null/>
@@ -8329,6 +8377,7 @@
       <null/>
       <null/>
       <null/>
+      <null/>
     </row>
     <row>
       <value>37888088</value>
@@ -8344,6 +8393,7 @@
       <value>DIPLOMATE_SUISSE</value>
       <value>37888071</value>
       <value>PP</value>
+      <null/>
       <null/>
       <null/>
       <null/>
@@ -8367,6 +8417,7 @@
       <null/>
       <null/>
       <null/>
+      <null/>
     </row>
     <row>
       <value>37888104</value>
@@ -8382,6 +8433,7 @@
       <value>HORS_SUISSE</value>
       <value>37888090</value>
       <value>PP</value>
+      <null/>
       <null/>
       <null/>
       <null/>
@@ -8405,6 +8457,7 @@
       <null/>
       <null/>
       <null/>
+      <null/>
     </row>
     <row>
       <value>37888106</value>
@@ -8420,6 +8473,7 @@
       <value>VAUDOIS_DEPENSE</value>
       <value>37888090</value>
       <value>PP</value>
+      <null/>
       <null/>
       <null/>
       <null/>
@@ -8443,6 +8497,7 @@
       <null/>
       <null/>
       <null/>
+      <null/>
     </row>
     <row>
       <value>37888108</value>
@@ -8458,6 +8513,7 @@
       <value>HORS_CANTON</value>
       <value>37888090</value>
       <value>PP</value>
+      <null/>
       <null/>
       <null/>
       <null/>

@@ -49,7 +49,7 @@ import ch.vd.uniregctb.declaration.ordinaire.pp.AbstractEnvoiDIsPPResults.Ignore
 import ch.vd.uniregctb.declaration.ordinaire.pp.EnvoiDIsPPEnMasseProcessor.DeclarationsCache;
 import ch.vd.uniregctb.hibernate.interceptor.ModificationInterceptor;
 import ch.vd.uniregctb.hibernate.interceptor.ModificationSubInterceptor;
-import ch.vd.uniregctb.metier.assujettissement.CategorieEnvoiDI;
+import ch.vd.uniregctb.metier.assujettissement.CategorieEnvoiDIPP;
 import ch.vd.uniregctb.parametrage.DelaisService;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
@@ -208,7 +208,7 @@ public class EnvoiDIsPPEnMasseProcessorTest extends BusinessTest {
 	public void testInitCachePeriodeFiscaleInexistante() {
 
 		try {
-			processor.initCache(2007, CategorieEnvoiDI.VAUDOIS_COMPLETE);
+			processor.initCache(2007, CategorieEnvoiDIPP.VAUDOIS_COMPLETE);
 			fail();
 		}
 		catch (DeclarationException e) {
@@ -229,7 +229,7 @@ public class EnvoiDIsPPEnMasseProcessorTest extends BusinessTest {
 		});
 
 		try {
-			processor.initCache(2007, CategorieEnvoiDI.VAUDOIS_COMPLETE);
+			processor.initCache(2007, CategorieEnvoiDIPP.VAUDOIS_COMPLETE);
 			fail();
 		}
 		catch (DeclarationException e) {
@@ -272,9 +272,9 @@ public class EnvoiDIsPPEnMasseProcessorTest extends BusinessTest {
 		});
 
 		final RegDate dateTraitement = date(2008, 1, 23);
-		final EnvoiDIsPPResults rapport = new EnvoiDIsPPResults(2007, CategorieEnvoiDI.VAUDOIS_COMPLETE, dateTraitement, 10, null, null, null, 1, tiersService, adresseService);
+		final EnvoiDIsPPResults rapport = new EnvoiDIsPPResults(2007, CategorieEnvoiDIPP.VAUDOIS_COMPLETE, dateTraitement, 10, null, null, null, 1, tiersService, adresseService);
 		final DeclarationsCache dcache = processor.new DeclarationsCache(2007, Arrays.asList(ids.ctb));
-		final EnvoiDIsPPEnMasseProcessor.Cache cache = processor.initCache(2007, CategorieEnvoiDI.VAUDOIS_COMPLETE);
+		final EnvoiDIsPPEnMasseProcessor.Cache cache = processor.initCache(2007, CategorieEnvoiDIPP.VAUDOIS_COMPLETE);
 		final TacheEnvoiDeclarationImpotPP tache = hibernateTemplate.get(TacheEnvoiDeclarationImpotPP.class, ids.tache);
 
 		assertNull(processor.creeDI(tache, rapport, cache, dcache, false));
@@ -438,8 +438,8 @@ public class EnvoiDIsPPEnMasseProcessorTest extends BusinessTest {
 				final RegDate dateTraitement = date(annee + 1, 1, 15);
 				final List<Long> idsCtb = Arrays.asList(ids.marcId);
 
-				final EnvoiDIsPPResults rapport = new EnvoiDIsPPResults(annee, CategorieEnvoiDI.VAUDOIS_COMPLETE, dateTraitement, 10, null, null, null, 1, tiersService, adresseService);
-				processor.traiterBatch(idsCtb, rapport, annee, CategorieEnvoiDI.VAUDOIS_COMPLETE, dateTraitement);
+				final EnvoiDIsPPResults rapport = new EnvoiDIsPPResults(annee, CategorieEnvoiDIPP.VAUDOIS_COMPLETE, dateTraitement, 10, null, null, null, 1, tiersService, adresseService);
+				processor.traiterBatch(idsCtb, rapport, annee, CategorieEnvoiDIPP.VAUDOIS_COMPLETE, dateTraitement);
 				return null;
 			}
 		});
@@ -541,9 +541,9 @@ public class EnvoiDIsPPEnMasseProcessorTest extends BusinessTest {
 
 			final RegDate dateTraitement = date(2009, 1, 15);
 			final DeclarationsCache dcache = processor.new DeclarationsCache(2008, idsList);
-			final EnvoiDIsPPEnMasseProcessor.Cache cache = processor.initCache(2008, CategorieEnvoiDI.VAUDOIS_COMPLETE);
+			final EnvoiDIsPPEnMasseProcessor.Cache cache = processor.initCache(2008, CategorieEnvoiDIPP.VAUDOIS_COMPLETE);
 
-			final EnvoiDIsPPResults rapport = new EnvoiDIsPPResults(2008, CategorieEnvoiDI.VAUDOIS_COMPLETE, dateTraitement, 10, null, null, null, 1, tiersService, adresseService);
+			final EnvoiDIsPPResults rapport = new EnvoiDIsPPResults(2008, CategorieEnvoiDIPP.VAUDOIS_COMPLETE, dateTraitement, 10, null, null, null, 1, tiersService, adresseService);
 
 			// Le tiers sans exclusion
 			final TacheEnvoiDeclarationImpotPP tacheMarc = hibernateTemplate.get(TacheEnvoiDeclarationImpotPP.class, ids.tacheMarcId);
@@ -617,7 +617,7 @@ public class EnvoiDIsPPEnMasseProcessorTest extends BusinessTest {
 		});
 
 		final RegDate dateTraitement = date(2009, 1, 15);
-		final EnvoiDIsPPResults results = processor.run(2008, CategorieEnvoiDI.VAUDOIS_COMPLETE, null, null, 1000, dateTraitement, false, 1, null);
+		final EnvoiDIsPPResults results = processor.run(2008, CategorieEnvoiDIPP.VAUDOIS_COMPLETE, null, null, 1000, dateTraitement, false, 1, null);
 		assertNotNull(results);
 		assertEquals(1, results.nbCtbsTotal);
 
@@ -734,7 +734,7 @@ public class EnvoiDIsPPEnMasseProcessorTest extends BusinessTest {
 
 
 		final RegDate dateTraitement = date(2009, 1, 15);
-		final EnvoiDIsPPResults results = processor.run(2008, CategorieEnvoiDI.VAUDOIS_COMPLETE, null, null, 1000, dateTraitement, false, 1, null);
+		final EnvoiDIsPPResults results = processor.run(2008, CategorieEnvoiDIPP.VAUDOIS_COMPLETE, null, null, 1000, dateTraitement, false, 1, null);
 		assertNotNull(results);
 		assertEquals(1, results.nbCtbsTotal);
 
@@ -812,7 +812,7 @@ public class EnvoiDIsPPEnMasseProcessorTest extends BusinessTest {
 
 
 		final RegDate dateTraitement = date(2009, 1, 15);
-		final EnvoiDIsPPResults results = processor.run(2008, CategorieEnvoiDI.VAUDOIS_COMPLETE, null, null, 1000, dateTraitement, false, 1, null);
+		final EnvoiDIsPPResults results = processor.run(2008, CategorieEnvoiDIPP.VAUDOIS_COMPLETE, null, null, 1000, dateTraitement, false, 1, null);
 		assertNotNull(results);
 		assertEquals(1, results.nbCtbsTotal);
 
@@ -870,7 +870,7 @@ public class EnvoiDIsPPEnMasseProcessorTest extends BusinessTest {
 
 
 		final RegDate dateTraitement = date(2009, 1, 15);
-		final EnvoiDIsPPResults results = processor.run(2008, CategorieEnvoiDI.VAUDOIS_COMPLETE, null, null, 1000, dateTraitement, false, 1, null);
+		final EnvoiDIsPPResults results = processor.run(2008, CategorieEnvoiDIPP.VAUDOIS_COMPLETE, null, null, 1000, dateTraitement, false, 1, null);
 		assertNotNull(results);
 		assertEquals(1, results.nbCtbsTotal);
 
@@ -1129,7 +1129,7 @@ public class EnvoiDIsPPEnMasseProcessorTest extends BusinessTest {
 
 
 		final RegDate dateTraitement = date(2009, 1, 15);
-		final EnvoiDIsPPResults results = processor.run(2008, CategorieEnvoiDI.VAUDOIS_COMPLETE, null, null, 1000, dateTraitement, false, 1, null);
+		final EnvoiDIsPPResults results = processor.run(2008, CategorieEnvoiDIPP.VAUDOIS_COMPLETE, null, null, 1000, dateTraitement, false, 1, null);
 		assertNotNull(results);
 		assertEquals(1, results.nbCtbsTotal);
 
@@ -1190,7 +1190,7 @@ public class EnvoiDIsPPEnMasseProcessorTest extends BusinessTest {
 
 
 		final RegDate dateTraitement = date(2009, 1, 15);
-		final EnvoiDIsPPResults results = processor.run(2008, CategorieEnvoiDI.VAUDOIS_COMPLETE, null, null, 1000, dateTraitement, true, 1, null);
+		final EnvoiDIsPPResults results = processor.run(2008, CategorieEnvoiDIPP.VAUDOIS_COMPLETE, null, null, 1000, dateTraitement, true, 1, null);
 		assertNotNull(results);
 		assertEquals(1, results.nbCtbsTotal);
 		assertEquals(1, results.ctbsIgnores.size());
@@ -1250,7 +1250,7 @@ public class EnvoiDIsPPEnMasseProcessorTest extends BusinessTest {
 
 
 		final RegDate dateTraitement = date(2009, 1, 15);
-		final EnvoiDIsPPResults results = processor.run(2008, CategorieEnvoiDI.VAUDOIS_COMPLETE, null, null, 1000, dateTraitement, true, 1, null);
+		final EnvoiDIsPPResults results = processor.run(2008, CategorieEnvoiDIPP.VAUDOIS_COMPLETE, null, null, 1000, dateTraitement, true, 1, null);
 		assertNotNull(results);
 		assertEquals(1, results.nbCtbsTotal);
 
@@ -1308,7 +1308,7 @@ public class EnvoiDIsPPEnMasseProcessorTest extends BusinessTest {
 
 
 		final RegDate dateTraitement = date(2009, 1, 15);
-		final EnvoiDIsPPResults results = processor.run(2008, CategorieEnvoiDI.VAUDOIS_COMPLETE, null, null, 1000, dateTraitement, false, 1, null);
+		final EnvoiDIsPPResults results = processor.run(2008, CategorieEnvoiDIPP.VAUDOIS_COMPLETE, null, null, 1000, dateTraitement, false, 1, null);
 		assertNotNull(results);
 		assertEquals(1, results.nbCtbsTotal);
 
@@ -1364,7 +1364,7 @@ public class EnvoiDIsPPEnMasseProcessorTest extends BusinessTest {
 		});
 
 		final RegDate dateTraitement = date(annee + 1, 1, 15);
-		final EnvoiDIsPPResults results = processor.run(annee, CategorieEnvoiDI.HC_IMMEUBLE, null, null, 1000, dateTraitement, false, 1, null);
+		final EnvoiDIsPPResults results = processor.run(annee, CategorieEnvoiDIPP.HC_IMMEUBLE, null, null, 1000, dateTraitement, false, 1, null);
 		assertNotNull(results);
 		assertEquals(1, results.nbCtbsTotal);
 
@@ -1410,7 +1410,7 @@ public class EnvoiDIsPPEnMasseProcessorTest extends BusinessTest {
 		});
 
 		final RegDate dateTraitement = date(annee + 1, 1, 15);
-		final EnvoiDIsPPResults results = processor.run(annee, CategorieEnvoiDI.HC_IMMEUBLE, null, null, 1000, dateTraitement, false, 1, null);
+		final EnvoiDIsPPResults results = processor.run(annee, CategorieEnvoiDIPP.HC_IMMEUBLE, null, null, 1000, dateTraitement, false, 1, null);
 		assertNotNull(results);
 		assertEquals(1, results.nbCtbsTotal);
 
@@ -1455,7 +1455,7 @@ public class EnvoiDIsPPEnMasseProcessorTest extends BusinessTest {
 		});
 
 		final RegDate dateTraitement = date(annee + 1, 1, 15);
-		final EnvoiDIsPPResults results = processor.run(annee, CategorieEnvoiDI.HC_IMMEUBLE, null, null, 1000, dateTraitement, false, 1, null);
+		final EnvoiDIsPPResults results = processor.run(annee, CategorieEnvoiDIPP.HC_IMMEUBLE, null, null, 1000, dateTraitement, false, 1, null);
 		assertNotNull(results);
 		assertEquals(1, results.nbCtbsTotal);
 
@@ -1506,7 +1506,7 @@ public class EnvoiDIsPPEnMasseProcessorTest extends BusinessTest {
 		});
 
 		final RegDate dateTraitement = date(annee + 1, 1, 15);
-		final EnvoiDIsPPResults results = processor.run(annee, CategorieEnvoiDI.VAUDOIS_COMPLETE, null, null, 1000, dateTraitement, false, 1, null);
+		final EnvoiDIsPPResults results = processor.run(annee, CategorieEnvoiDIPP.VAUDOIS_COMPLETE, null, null, 1000, dateTraitement, false, 1, null);
 		assertNotNull(results);
 		assertEquals(1, results.nbCtbsTotal);
 
@@ -1560,7 +1560,7 @@ public class EnvoiDIsPPEnMasseProcessorTest extends BusinessTest {
 		});
 
 		final RegDate dateTraitement = date(annee + 1, 1, 15);
-		final EnvoiDIsPPResults results = processor.run(annee, CategorieEnvoiDI.VAUDOIS_COMPLETE, null, null, 1000, dateTraitement, false, 1, null);
+		final EnvoiDIsPPResults results = processor.run(annee, CategorieEnvoiDIPP.VAUDOIS_COMPLETE, null, null, 1000, dateTraitement, false, 1, null);
 		assertNotNull(results);
 		assertEquals(1, results.nbCtbsTotal);
 
@@ -1613,7 +1613,7 @@ public class EnvoiDIsPPEnMasseProcessorTest extends BusinessTest {
 			}
 		});
 
-		final EnvoiDIsPPResults results = processor.run(annee, CategorieEnvoiDI.VAUDOIS_VAUDTAX, null, null, 0, RegDate.get(), false, nbThreads, null);
+		final EnvoiDIsPPResults results = processor.run(annee, CategorieEnvoiDIPP.VAUDOIS_VAUDTAX, null, null, 0, RegDate.get(), false, nbThreads, null);
 		assertNotNull(results);
 		assertEquals(nbCtbs, results.ctbsAvecDiGeneree.size());
 		assertEquals(0, results.ctbsEnErrors.size());
@@ -1675,7 +1675,7 @@ public class EnvoiDIsPPEnMasseProcessorTest extends BusinessTest {
 		});
 
 		// envoi de la DI ?
-		final EnvoiDIsPPResults results = processor.run(annee, CategorieEnvoiDI.VAUDOIS_VAUDTAX, null, null, 0, RegDate.get(), false, 1, null);
+		final EnvoiDIsPPResults results = processor.run(annee, CategorieEnvoiDIPP.VAUDOIS_VAUDTAX, null, null, 0, RegDate.get(), false, 1, null);
 		assertNotNull(results);
 		assertEquals(1, results.ctbsAvecDiGeneree.size());
 		assertEquals(0, results.ctbsEnErrors.size());
@@ -1791,7 +1791,7 @@ public class EnvoiDIsPPEnMasseProcessorTest extends BusinessTest {
 
 			// lancement du traitement
 			final RegDate dateTraitement = date(annee + 1, 1, 15);
-			final EnvoiDIsPPResults results = processor.run(annee, CategorieEnvoiDI.VAUDOIS_VAUDTAX, null, null, 1000, dateTraitement, false, 1, null);
+			final EnvoiDIsPPResults results = processor.run(annee, CategorieEnvoiDIPP.VAUDOIS_VAUDTAX, null, null, 1000, dateTraitement, false, 1, null);
 			assertNotNull(results);
 			assertEquals(2, results.nbCtbsTotal);
 
@@ -1922,7 +1922,7 @@ public class EnvoiDIsPPEnMasseProcessorTest extends BusinessTest {
 
 			// lancement du traitement
 			final RegDate dateTraitement = date(annee + 1, 1, 15);
-			final EnvoiDIsPPResults results = processor.run(annee, CategorieEnvoiDI.VAUDOIS_VAUDTAX, null, null, 1000, dateTraitement, false, 1, null);
+			final EnvoiDIsPPResults results = processor.run(annee, CategorieEnvoiDIPP.VAUDOIS_VAUDTAX, null, null, 1000, dateTraitement, false, 1, null);
 			assertNotNull(results);
 			assertEquals(2, results.nbCtbsTotal);
 

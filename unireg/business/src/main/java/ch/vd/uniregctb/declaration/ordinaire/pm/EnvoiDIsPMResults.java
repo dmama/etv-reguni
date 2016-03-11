@@ -15,6 +15,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.common.AbstractJobResults;
 import ch.vd.uniregctb.common.JobResults;
+import ch.vd.uniregctb.metier.assujettissement.CategorieEnvoiDIPM;
 
 public class EnvoiDIsPMResults extends AbstractJobResults<Long, EnvoiDIsPMResults> {
 
@@ -25,17 +26,17 @@ public class EnvoiDIsPMResults extends AbstractJobResults<Long, EnvoiDIsPMResult
 
 	private final RegDate dateTraitement;
 	private final int nbThreads;
-	private final TypeDeclarationImpotPM type;
+	private final CategorieEnvoiDIPM categorieEnvoi;
 	private final int periodeFiscale;
 	private final RegDate dateLimiteBouclements;
 	private final Integer nbMaxEnvois;
 
 	public boolean interrompu;
 
-	public EnvoiDIsPMResults(RegDate dateTraitement, int nbThreads, TypeDeclarationImpotPM type, int periodeFiscale, RegDate dateLimiteBouclements, @Nullable Integer nbMaxEnvois) {
+	public EnvoiDIsPMResults(RegDate dateTraitement, int nbThreads, CategorieEnvoiDIPM categorieEnvoi, int periodeFiscale, RegDate dateLimiteBouclements, @Nullable Integer nbMaxEnvois) {
 		this.dateTraitement = dateTraitement;
 		this.nbThreads = nbThreads;
-		this.type = type;
+		this.categorieEnvoi = categorieEnvoi;
 		this.periodeFiscale = periodeFiscale;
 		this.dateLimiteBouclements = dateLimiteBouclements;
 		this.nbMaxEnvois = nbMaxEnvois;
@@ -238,8 +239,8 @@ public class EnvoiDIsPMResults extends AbstractJobResults<Long, EnvoiDIsPMResult
 		return nbThreads;
 	}
 
-	public TypeDeclarationImpotPM getType() {
-		return type;
+	public CategorieEnvoiDIPM getCategorieEnvoi() {
+		return categorieEnvoi;
 	}
 
 	public int getPeriodeFiscale() {

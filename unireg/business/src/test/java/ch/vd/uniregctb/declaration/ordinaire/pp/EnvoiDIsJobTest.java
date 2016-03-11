@@ -10,7 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.JobTest;
-import ch.vd.uniregctb.metier.assujettissement.CategorieEnvoiDI;
+import ch.vd.uniregctb.metier.assujettissement.CategorieEnvoiDIPP;
 import ch.vd.uniregctb.scheduler.BatchScheduler;
 import ch.vd.uniregctb.scheduler.JobDefinition;
 
@@ -42,7 +42,7 @@ public class EnvoiDIsJobTest extends JobTest {
 
 		final Map<String, Object> params = new HashMap<>();
 		params.put(EnvoiDIsJob.PERIODE_FISCALE, RegDate.get().year() -1);
-		params.put(EnvoiDIsJob.CATEGORIE_CTB, CategorieEnvoiDI.VAUDOIS_COMPLETE);
+		params.put(EnvoiDIsJob.CATEGORIE_CTB, CategorieEnvoiDIPP.VAUDOIS_COMPLETE);
 		params.put(EnvoiDIsJob.EXCLURE_DCD, Boolean.FALSE);
 		params.put(EnvoiDIsJob.NB_THREADS, 4);
 		final JobDefinition job = batchScheduler.startJob(EnvoiDIsJob.NAME, params);

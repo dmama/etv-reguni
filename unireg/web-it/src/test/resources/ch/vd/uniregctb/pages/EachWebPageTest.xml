@@ -938,6 +938,7 @@
     <column>PM_DELAI_IMPRIME_FIN_MOIS</column>
     <column>PM_TOLERANCE_JOURS</column>
     <column>PM_TOLERANCE_FIN_MOIS</column>
+    <column>PM_REF_DELAI</column>
     <row>
       <value>2008-01-01</value>
       <value>1</value>
@@ -947,6 +948,7 @@
       <value>VAUDOIS_ORDINAIRE</value>
       <value>2</value>
       <value>PP</value>
+      <null/>
       <null/>
       <null/>
       <null/>
@@ -965,6 +967,7 @@
       <null/>
       <null/>
       <null/>
+      <null/>
     </row>
     <row>
       <value>2008-01-01</value>
@@ -979,6 +982,7 @@
       <null/>
       <null/>
       <null/>
+      <null/>
     </row>
     <row>
       <value>2008-01-01</value>
@@ -989,6 +993,7 @@
       <value>HORS_SUISSE</value>
       <value>2</value>
       <value>PP</value>
+      <null/>
       <null/>
       <null/>
       <null/>
@@ -1007,6 +1012,7 @@
       <null/>
       <null/>
       <null/>
+      <null/>
     </row>
     <row>
       <value>2008-01-01</value>
@@ -1017,6 +1023,7 @@
       <value>VAUDOIS_DEPENSE</value>
       <value>3</value>
       <value>PP</value>
+      <null/>
       <null/>
       <null/>
       <null/>
@@ -1035,6 +1042,7 @@
       <null/>
       <null/>
       <null/>
+      <null/>
     </row>
     <row>
       <value>2008-01-01</value>
@@ -1045,6 +1053,7 @@
       <value>HORS_SUISSE</value>
       <value>3</value>
       <value>PP</value>
+      <null/>
       <null/>
       <null/>
       <null/>
@@ -1063,6 +1072,7 @@
       <null/>
       <null/>
       <null/>
+      <null/>
     </row>
     <row>
       <value>2008-01-01</value>
@@ -1073,6 +1083,7 @@
       <value>VAUDOIS_DEPENSE</value>
       <value>4</value>
       <value>PP</value>
+      <null/>
       <null/>
       <null/>
       <null/>
@@ -1091,6 +1102,7 @@
       <null/>
       <null/>
       <null/>
+      <null/>
     </row>
     <row>
       <value>2008-01-01</value>
@@ -1101,6 +1113,7 @@
       <value>HORS_SUISSE</value>
       <value>4</value>
       <value>PP</value>
+      <null/>
       <null/>
       <null/>
       <null/>
@@ -1119,6 +1132,7 @@
       <null/>
       <null/>
       <null/>
+      <null/>
     </row>
     <row>
       <value>2008-01-01</value>
@@ -1129,6 +1143,7 @@
       <value>VAUDOIS_DEPENSE</value>
       <value>5</value>
       <value>PP</value>
+      <null/>
       <null/>
       <null/>
       <null/>
@@ -1147,6 +1162,7 @@
       <null/>
       <null/>
       <null/>
+      <null/>
     </row>
     <row>
       <value>2008-01-01</value>
@@ -1157,6 +1173,7 @@
       <value>HORS_SUISSE</value>
       <value>5</value>
       <value>PP</value>
+      <null/>
       <null/>
       <null/>
       <null/>
@@ -1175,6 +1192,7 @@
       <null/>
       <null/>
       <null/>
+      <null/>
     </row>
     <row>
       <value>2008-01-01</value>
@@ -1185,6 +1203,7 @@
       <value>VAUDOIS_DEPENSE</value>
       <value>6</value>
       <value>PP</value>
+      <null/>
       <null/>
       <null/>
       <null/>
@@ -1203,6 +1222,7 @@
       <null/>
       <null/>
       <null/>
+      <null/>
     </row>
     <row>
       <value>2008-01-01</value>
@@ -1213,6 +1233,7 @@
       <value>HORS_SUISSE</value>
       <value>6</value>
       <value>PP</value>
+      <null/>
       <null/>
       <null/>
       <null/>
@@ -1231,6 +1252,7 @@
       <null/>
       <null/>
       <null/>
+      <null/>
     </row>
     <row>
       <value>2008-01-01</value>
@@ -1241,6 +1263,7 @@
       <value>VAUDOIS_DEPENSE</value>
       <value>7</value>
       <value>PP</value>
+      <null/>
       <null/>
       <null/>
       <null/>
@@ -1259,6 +1282,7 @@
       <null/>
       <null/>
       <null/>
+      <null/>
     </row>
     <row>
       <value>2008-01-01</value>
@@ -1269,6 +1293,7 @@
       <value>HORS_SUISSE</value>
       <value>7</value>
       <value>PP</value>
+      <null/>
       <null/>
       <null/>
       <null/>
@@ -1287,6 +1312,7 @@
       <null/>
       <null/>
       <null/>
+      <null/>
     </row>
     <row>
       <value>2008-01-01</value>
@@ -1297,6 +1323,7 @@
       <value>VAUDOIS_DEPENSE</value>
       <value>8</value>
       <value>PP</value>
+      <null/>
       <null/>
       <null/>
       <null/>
@@ -1315,6 +1342,7 @@
       <null/>
       <null/>
       <null/>
+      <null/>
     </row>
     <row>
       <value>2008-01-01</value>
@@ -1325,6 +1353,7 @@
       <value>HORS_SUISSE</value>
       <value>8</value>
       <value>PP</value>
+      <null/>
       <null/>
       <null/>
       <null/>

@@ -3,15 +3,35 @@ package ch.vd.uniregctb.declaration;
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 
+import ch.vd.uniregctb.common.LengthConstants;
 import ch.vd.uniregctb.type.TypeContribuable;
 
 @Entity
 @DiscriminatorValue(value = "PM")
 public class ParametrePeriodeFiscalePM extends ParametrePeriodeFiscale {
 
-	private int delaiImprimeMoisDepuisBouclement;           // en mois
+	/**
+	 * Date de référence à prende en compte pour le délai initial
+	 */
+	public enum ReferencePourDelai {
+
+		/**
+		 * La fin de la période d'imposition correspondant à la déclaration émise
+		 */
+		FIN_PERIODE,
+
+		/**
+		 * La date d'émission de la déclaration
+		 */
+		EMISSION
+	}
+
+	private int delaiImprimeMois;           // en mois
 	private boolean delaiImprimeRepousseFinDeMois;
+	private ReferencePourDelai referenceDelaiInitial;
 	private int delaiToleranceJoursEffective;                // en jours
 	private boolean delaiTolereRepousseFinDeMois;
 
@@ -20,14 +40,16 @@ public class ParametrePeriodeFiscalePM extends ParametrePeriodeFiscale {
 	}
 
 	public ParametrePeriodeFiscalePM(TypeContribuable typeContribuable,
-	                                 int delaiImprimeMoisDepuisBouclement, boolean delaiImprimeRepousseFinDeMois,
+	                                 int delaiImprimeMois, boolean delaiImprimeRepousseFinDeMois,
 	                                 int delaiToleranceJoursEffective, boolean delaiTolereRepousseFinDeMois,
+	                                 ReferencePourDelai referenceDelaiInitial,
 	                                 PeriodeFiscale periodefiscale) {
 		super(periodefiscale, typeContribuable);
-		this.delaiImprimeMoisDepuisBouclement = delaiImprimeMoisDepuisBouclement;
+		this.delaiImprimeMois = delaiImprimeMois;
 		this.delaiImprimeRepousseFinDeMois = delaiImprimeRepousseFinDeMois;
 		this.delaiToleranceJoursEffective = delaiToleranceJoursEffective;
 		this.delaiTolereRepousseFinDeMois = delaiTolereRepousseFinDeMois;
+		this.referenceDelaiInitial = referenceDelaiInitial;
 		checkTypeContribuable(typeContribuable);
 	}
 
@@ -44,12 +66,12 @@ public class ParametrePeriodeFiscalePM extends ParametrePeriodeFiscale {
 	}
 
 	@Column(name = "PM_DELAI_IMPRIME_MOIS")
-	public int getDelaiImprimeMoisDepuisBouclement() {
-		return delaiImprimeMoisDepuisBouclement;
+	public int getDelaiImprimeMois() {
+		return delaiImprimeMois;
 	}
 
-	public void setDelaiImprimeMoisDepuisBouclement(int delaiImprimeMoisDepuisBouclement) {
-		this.delaiImprimeMoisDepuisBouclement = delaiImprimeMoisDepuisBouclement;
+	public void setDelaiImprimeMois(int delaiImprimeMois) {
+		this.delaiImprimeMois = delaiImprimeMois;
 	}
 
 	@Column(name = "PM_DELAI_IMPRIME_FIN_MOIS")
@@ -77,5 +99,15 @@ public class ParametrePeriodeFiscalePM extends ParametrePeriodeFiscale {
 
 	public void setDelaiTolereRepousseFinDeMois(boolean delaiTolereRepousseFinDeMois) {
 		this.delaiTolereRepousseFinDeMois = delaiTolereRepousseFinDeMois;
+	}
+
+	@Column(name = "PM_REF_DELAI", length = LengthConstants.PARAMETRE_PF_REF_DELAI)
+	@Enumerated(value = EnumType.STRING)
+	public ReferencePourDelai getReferenceDelaiInitial() {
+		return referenceDelaiInitial;
+	}
+
+	public void setReferenceDelaiInitial(ReferencePourDelai referenceDelaiInitial) {
+		this.referenceDelaiInitial = referenceDelaiInitial;
 	}
 }

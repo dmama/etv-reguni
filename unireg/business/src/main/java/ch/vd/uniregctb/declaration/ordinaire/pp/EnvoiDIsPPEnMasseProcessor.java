@@ -55,7 +55,7 @@ import ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotService;
 import ch.vd.uniregctb.hibernate.HibernateCallback;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.metier.assujettissement.CategorieEnvoiDI;
+import ch.vd.uniregctb.metier.assujettissement.CategorieEnvoiDIPP;
 import ch.vd.uniregctb.parametrage.DelaisService;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
@@ -139,8 +139,8 @@ public class EnvoiDIsPPEnMasseProcessor {
 		Assert.isTrue(tailleLot > 0);
 	}
 
-	public EnvoiDIsPPResults run(final int anneePeriode, final CategorieEnvoiDI categorie, @Nullable final Long noCtbMin, @Nullable final Long noCtbMax, final int nbMax,
-	                           final RegDate dateTraitement, final boolean exclureDecedes, final int nbThreads, @Nullable StatusManager s) throws DeclarationException {
+	public EnvoiDIsPPResults run(final int anneePeriode, final CategorieEnvoiDIPP categorie, @Nullable final Long noCtbMin, @Nullable final Long noCtbMax, final int nbMax,
+	                             final RegDate dateTraitement, final boolean exclureDecedes, final int nbThreads, @Nullable StatusManager s) throws DeclarationException {
 
 		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
 		if (exclureDecedes) {
@@ -208,7 +208,7 @@ public class EnvoiDIsPPEnMasseProcessor {
 	 * @param dateTraitement la date de traitement
 	 * @throws DeclarationException en cas d'erreur dans le traitement d'un contribuable.
 	 */
-	protected void traiterBatch(List<Long> ids, EnvoiDIsPPResults rapport, int anneePeriode, CategorieEnvoiDI categorie, RegDate dateTraitement) throws DeclarationException {
+	protected void traiterBatch(List<Long> ids, EnvoiDIsPPResults rapport, int anneePeriode, CategorieEnvoiDIPP categorie, RegDate dateTraitement) throws DeclarationException {
 
 		rapport.nbCtbsTotal += ids.size();
 
@@ -236,7 +236,7 @@ public class EnvoiDIsPPEnMasseProcessor {
 	 * @param categorie      la catégorie de contribuable considérée
 	 * @throws DeclarationException en cas d'erreur dans le traitement d'un contribuable.
 	 */
-	protected Cache initCache(int anneePeriode, CategorieEnvoiDI categorie) throws DeclarationException {
+	protected Cache initCache(int anneePeriode, CategorieEnvoiDIPP categorie) throws DeclarationException {
 
 		// Récupère le CEDI
 		final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(ServiceInfrastructureService.noCEDI);

@@ -9,10 +9,16 @@ public enum TypeContribuable {
 	VAUDOIS_DEPENSE("à la dépense", true, false),
 	HORS_CANTON("hors canton", true, true),
 	HORS_SUISSE("hors suisse", true, true),
+
 	/**
 	 * Diplomate Suisse basé à l'étranger [UNIREG-1976]
 	 */
-	DIPLOMATE_SUISSE("diplomate suisse", true, false);
+	DIPLOMATE_SUISSE("diplomate suisse", true, false),
+
+	/**
+	 * Fondation placée sous la coupe de l'autorité surveillance des fondations (LIASF) [SIFISC-18113]
+	 */
+	UTILITE_PUBLIQUE("utilité publique (LIASF)", false, true);
 
 	private final String description;
 	private final boolean pp;

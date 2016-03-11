@@ -30,7 +30,6 @@ import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
 import ch.vd.shared.batchtemplate.Behavior;
 import ch.vd.shared.batchtemplate.SimpleProgressMonitor;
 import ch.vd.shared.batchtemplate.StatusManager;
-import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.common.AnnulableHelper;
 import ch.vd.uniregctb.common.AuthenticationInterface;
@@ -44,7 +43,6 @@ import ch.vd.uniregctb.declaration.DeclarationGenerationOperation;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePM;
 import ch.vd.uniregctb.declaration.DelaiDeclaration;
 import ch.vd.uniregctb.declaration.EtatDeclarationEmise;
-import ch.vd.uniregctb.declaration.ModeleDocumentDAO;
 import ch.vd.uniregctb.declaration.ParametrePeriodeFiscalePM;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.declaration.PeriodeFiscaleDAO;
@@ -54,15 +52,14 @@ import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.metier.assujettissement.Assujettissement;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementException;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
+import ch.vd.uniregctb.metier.assujettissement.CategorieEnvoiDIPM;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImposition;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionPersonnesMorales;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionService;
-import ch.vd.uniregctb.parametrage.DelaisService;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesMorales;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.TacheEnvoiDeclarationImpotPM;
-import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.transaction.TransactionTemplate;
 import ch.vd.uniregctb.type.EtatDelaiDeclaration;
 import ch.vd.uniregctb.type.TypeContribuable;
@@ -72,35 +69,28 @@ public class EnvoiDeclarationsPMProcessor {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(EnvoiDeclarationsPMProcessor.class);
 
-	private final TiersService tiersService;
 	private final HibernateTemplate hibernateTemplate;
-	private final ModeleDocumentDAO modeleDAO;
 	private final PeriodeFiscaleDAO periodeDAO;
-	private final DelaisService delaisService;
 	private final DeclarationImpotService declarationImpotService;
 	private final AssujettissementService assujettissementService;
 	private final PeriodeImpositionService periodeImpositionService;
 	private final int tailleLot;
 	private final PlatformTransactionManager transactionManager;
 	private final ParametreAppService parametres;
-	private final AdresseService adresseService;
 	private final TicketService ticketService;
 
-	public EnvoiDeclarationsPMProcessor(TiersService tiersService, HibernateTemplate hibernateTemplate, ModeleDocumentDAO modeleDAO, PeriodeFiscaleDAO periodeDAO, DelaisService delaisService, DeclarationImpotService declarationImpotService,
-	                                    AssujettissementService assujettissementService, PeriodeImpositionService periodeImpositionService, int tailleLot, PlatformTransactionManager transactionManager, ParametreAppService parametres,
-	                                    AdresseService adresseService, TicketService ticketService) {
-		this.tiersService = tiersService;
+	public EnvoiDeclarationsPMProcessor(HibernateTemplate hibernateTemplate, PeriodeFiscaleDAO periodeDAO, DeclarationImpotService declarationImpotService,
+	                                    AssujettissementService assujettissementService, PeriodeImpositionService periodeImpositionService, int tailleLot,
+	                                    PlatformTransactionManager transactionManager, ParametreAppService parametres,
+	                                    TicketService ticketService) {
 		this.hibernateTemplate = hibernateTemplate;
-		this.modeleDAO = modeleDAO;
 		this.periodeDAO = periodeDAO;
-		this.delaisService = delaisService;
 		this.declarationImpotService = declarationImpotService;
 		this.assujettissementService = assujettissementService;
 		this.periodeImpositionService = periodeImpositionService;
 		this.tailleLot = tailleLot;
 		this.transactionManager = transactionManager;
 		this.parametres = parametres;
-		this.adresseService = adresseService;
 		this.ticketService = ticketService;
 	}
 
@@ -108,7 +98,7 @@ public class EnvoiDeclarationsPMProcessor {
 	 * C'est ici que ça commence réellement...
 	 */
 	public EnvoiDIsPMResults run(final int periodeFiscale,
-	                             final TypeDeclarationImpotPM typeDeclaration,
+	                             final CategorieEnvoiDIPM categorieEnvoi,
 	                             final RegDate dateLimiteBouclements,
 	                             @Nullable final Integer nbMaxEnvois,
 	                             final RegDate dateTraitement,
@@ -116,10 +106,10 @@ public class EnvoiDeclarationsPMProcessor {
 	                             StatusManager s) throws DeclarationException {
 
 		final StatusManager status = s == null ? new LoggingStatusManager(LOGGER) : s;
-		final EnvoiDIsPMResults rapportFinal = new EnvoiDIsPMResults(dateTraitement, nbThreads, typeDeclaration, periodeFiscale, dateLimiteBouclements, nbMaxEnvois);
+		final EnvoiDIsPMResults rapportFinal = new EnvoiDIsPMResults(dateTraitement, nbThreads, categorieEnvoi, periodeFiscale, dateLimiteBouclements, nbMaxEnvois);
 
 		status.setMessage("Récupération des contribuables à traiter...");
-		final List<Long> idsContribuables = getIdsContribuables(typeDeclaration, periodeFiscale);
+		final List<Long> idsContribuables = getIdsContribuables(categorieEnvoi, periodeFiscale);
 
 		// Traitement des contribuables par lots
 		final SimpleProgressMonitor progressMonitor = new SimpleProgressMonitor();
@@ -128,7 +118,7 @@ public class EnvoiDeclarationsPMProcessor {
 		template.execute(rapportFinal, new BatchWithResultsCallback<Long, EnvoiDIsPMResults>() {
 			@Override
 			public EnvoiDIsPMResults createSubRapport() {
-				return new EnvoiDIsPMResults(dateTraitement, nbThreads, typeDeclaration, periodeFiscale, dateLimiteBouclements, nbMaxEnvois);
+				return new EnvoiDIsPMResults(dateTraitement, nbThreads, categorieEnvoi, periodeFiscale, dateLimiteBouclements, nbMaxEnvois);
 			}
 
 			@Override
@@ -146,7 +136,7 @@ public class EnvoiDeclarationsPMProcessor {
 				}
 
 				if (!batch.isEmpty()) {
-					traiterBatch(batch, rapport, typeDeclaration, dateLimiteBouclements, dateTraitement);
+					traiterBatch(batch, rapport, categorieEnvoi, dateLimiteBouclements, dateTraitement);
 				}
 
 				return !rapportFinal.interrompu && (nbMaxEnvois == null || rapportFinal.getEnvoyees().size() + batch.size() < nbMaxEnvois);
@@ -172,18 +162,18 @@ public class EnvoiDeclarationsPMProcessor {
 	 * Traitement d'un lot de contribuable dans une transaction
 	 * @param idsContribuables identifiants des contribuables à traiter
 	 * @param rapport rapport à remplir
-	 * @param typeDeclaration type de document à générer
+	 * @param categorieEnvoi type de document à générer
 	 * @param dateLimiteBouclements date limite (incluse) des bouclements à prendre en compte
 	 * @param dateTraitement date du traitement
 	 */
-	private void traiterBatch(Collection<Long> idsContribuables, EnvoiDIsPMResults rapport, TypeDeclarationImpotPM typeDeclaration, RegDate dateLimiteBouclements, RegDate dateTraitement) throws DeclarationException {
+	private void traiterBatch(Collection<Long> idsContribuables, EnvoiDIsPMResults rapport, CategorieEnvoiDIPM categorieEnvoi, RegDate dateLimiteBouclements, RegDate dateTraitement) throws DeclarationException {
 		final PeriodeFiscale pf = periodeDAO.getPeriodeFiscaleByYear(rapport.getPeriodeFiscale());
 		if (pf == null) {
 			throw new DeclarationException("Période fiscale " + rapport.getPeriodeFiscale() + " inexistante!");
 		}
 		rapport.addLotContribuablesVus(idsContribuables.size());
 		final InformationsFiscales informationsFiscales = new InformationsFiscales(pf);
-		final Iterator<TacheEnvoiDeclarationImpotPM> tacheIterator = getTaches(typeDeclaration, rapport.getPeriodeFiscale(), idsContribuables);
+		final Iterator<TacheEnvoiDeclarationImpotPM> tacheIterator = getTaches(categorieEnvoi, rapport.getPeriodeFiscale(), idsContribuables);
 		while (tacheIterator.hasNext()) {
 			final TacheEnvoiDeclarationImpotPM tache = tacheIterator.next();
 			traiterTache(tache, rapport, dateLimiteBouclements, dateTraitement, informationsFiscales);
@@ -361,17 +351,29 @@ public class EnvoiDeclarationsPMProcessor {
 	 * Calcul de la date initiale limite de retour (brutte, car uniquement basée sur la date de bouclement, sans tenir compte de la date d'émission,
 	 * qui pourrait en théorie être très éloignée de la date de bouclement en cas de rattrapage)
 	 * @param typeContribuable type de contribuable : VD, HC, HS
+	 * @param dateEmission date d'émission du document
 	 * @param dateBouclement date de bouclement (= date de fin de la période d'imposition)
 	 * @param pf la période fiscale de la DI émise
 	 * @return le couple de date (imprimée/effective) à utiliser pour le délai initial de retour
 	 */
 	@NotNull
-	private DatesDelaiInitial getDelaiInitialBrutRetour(TypeContribuable typeContribuable, RegDate dateBouclement, PeriodeFiscale pf) throws DeclarationException {
+	private DatesDelaiInitial getDelaiInitialBrutRetour(TypeContribuable typeContribuable, RegDate dateEmission, RegDate dateBouclement, PeriodeFiscale pf) throws DeclarationException {
 		final ParametrePeriodeFiscalePM params = pf.getParametrePeriodeFiscalePM(typeContribuable);
 		if (params == null) {
 			throw new DeclarationException("Pas de paramètrage trouvé pour le type de contribuable " + typeContribuable + " et la PF " + pf.getAnnee());
 		}
-		final RegDate delaiImprime = appliquerDelaiEnMois(dateBouclement, params.getDelaiImprimeMoisDepuisBouclement(), params.isDelaiImprimeRepousseFinDeMois());
+		final RegDate dateReferenceDelaiInitial;
+		switch (params.getReferenceDelaiInitial()) {
+		case EMISSION:
+			dateReferenceDelaiInitial = dateEmission;
+			break;
+		case FIN_PERIODE:
+			dateReferenceDelaiInitial = dateBouclement;
+			break;
+		default:
+			throw new IllegalArgumentException("Valeur inconnue pour le type de référence du délai initial : " + params.getReferenceDelaiInitial());
+		}
+		final RegDate delaiImprime = appliquerDelaiEnMois(dateReferenceDelaiInitial, params.getDelaiImprimeMois(), params.isDelaiImprimeRepousseFinDeMois());
 		final RegDate delaiEffectif = appliquerDelaiEnJour(delaiImprime, params.getDelaiToleranceJoursEffective(), params.isDelaiTolereRepousseFinDeMois());
 		return new DatesDelaiInitial(delaiImprime, delaiEffectif);
 	}
@@ -414,7 +416,7 @@ public class EnvoiDeclarationsPMProcessor {
 	@NotNull
 	private DatesDelaiInitial getDelaiInitialRetour(TypeContribuable typeContribuable, RegDate dateBouclement, RegDate dateEmission, PeriodeFiscale pf) throws DeclarationException {
 		final RegDate dateMinimale = dateEmission.addMonths(parametres.getDelaiMinimalRetourDeclarationImpotPM());
-		final DatesDelaiInitial brut = getDelaiInitialBrutRetour(typeContribuable, dateBouclement, pf);
+		final DatesDelaiInitial brut = getDelaiInitialBrutRetour(typeContribuable, dateEmission, dateBouclement, pf);
 		return brut.auPlusTot(dateMinimale);
 	}
 
@@ -607,9 +609,9 @@ public class EnvoiDeclarationsPMProcessor {
 	 * Requête d'extraction des identifiants de contribuable PM concernés par l'envoi en masse
 	 */
 	private static final String HQL_CTB =
-			"SELECT DISTINCT tache.contribuable.id FROM TacheEnvoiDeclarationImpotPM AS tache WHERE tache.annulationDate IS NULL AND tache.etat = 'EN_INSTANCE' AND tache.dateFin BETWEEN :debut AND :fin AND tache.typeDocument in (:typesDoc) ORDER BY tache.contribuable.id ASC";
+			"SELECT DISTINCT tache.contribuable.id FROM TacheEnvoiDeclarationImpotPM AS tache WHERE tache.annulationDate IS NULL AND tache.etat = 'EN_INSTANCE' AND tache.dateFin BETWEEN :debut AND :fin AND tache.typeDocument in (:typesDoc) AND tache.typeContribuable in (:typesCtb) ORDER BY tache.contribuable.id ASC";
 
-	private List<Long> getIdsContribuables(final TypeDeclarationImpotPM typeDeclaration, final int periodeFiscale) {
+	private List<Long> getIdsContribuables(final CategorieEnvoiDIPM categorieEnvoi, final int periodeFiscale) {
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
 		template.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
@@ -622,7 +624,8 @@ public class EnvoiDeclarationsPMProcessor {
 						final Query query = session.createQuery(HQL_CTB);
 						query.setParameter("debut", RegDate.get(periodeFiscale, 1, 1));
 						query.setParameter("fin", RegDate.get(periodeFiscale, 12, 31));
-						query.setParameterList("typesDoc", typeDeclaration.getTypesDocument());
+						query.setParameterList("typesDoc", categorieEnvoi.getTypesDocument());
+						query.setParameterList("typesCtb", categorieEnvoi.getTypesContribuables());
 						//noinspection unchecked
 						return query.list();
 					}
@@ -635,16 +638,17 @@ public class EnvoiDeclarationsPMProcessor {
 	 * Requête d'extraction des tâches correspondant à un ensembles de contribuables
 	 */
 	private static final String HQL_TACHE =
-			"SELECT tache FROM TacheEnvoiDeclarationImpotPM AS tache WHERE tache.annulationDate IS NULL AND tache.etat = 'EN_INSTANCE' AND tache.dateFin BETWEEN :debut AND :fin AND tache.typeDocument in (:typesDoc) AND tache.contribuable.id in (:ids) ORDER BY tache.contribuable.id ASC, tache.id ASC";
+			"SELECT tache FROM TacheEnvoiDeclarationImpotPM AS tache WHERE tache.annulationDate IS NULL AND tache.etat = 'EN_INSTANCE' AND tache.dateFin BETWEEN :debut AND :fin AND tache.typeDocument in (:typesDoc) AND tache.contribuable.id in (:ids) AND tache.typeContribuable in (:typesCtb) ORDER BY tache.contribuable.id ASC, tache.id ASC";
 
-	private Iterator<TacheEnvoiDeclarationImpotPM> getTaches(final TypeDeclarationImpotPM typeDeclaration, final int periodeFiscale, final Collection<Long> idsContribuables) {
+	private Iterator<TacheEnvoiDeclarationImpotPM> getTaches(final CategorieEnvoiDIPM categorieEnvoi, final int periodeFiscale, final Collection<Long> idsContribuables) {
 		return hibernateTemplate.execute(new HibernateCallback<Iterator<TacheEnvoiDeclarationImpotPM>>() {
 			@Override
 			public Iterator<TacheEnvoiDeclarationImpotPM> doInHibernate(Session session) throws HibernateException, SQLException {
 				final Query query = session.createQuery(HQL_TACHE);
 				query.setParameter("debut", RegDate.get(periodeFiscale, 1, 1));
 				query.setParameter("fin", RegDate.get(periodeFiscale, 12, 31));
-				query.setParameterList("typesDoc", typeDeclaration.getTypesDocument());
+				query.setParameterList("typesDoc", categorieEnvoi.getTypesDocument());
+				query.setParameterList("typesCtb", categorieEnvoi.getTypesContribuables());
 				query.setParameterList("ids", idsContribuables);
 				//noinspection unchecked
 				return query.iterate();

@@ -8,7 +8,7 @@ import org.jetbrains.annotations.Nullable;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.adresse.AdresseService;
-import ch.vd.uniregctb.metier.assujettissement.CategorieEnvoiDI;
+import ch.vd.uniregctb.metier.assujettissement.CategorieEnvoiDIPP;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.TiersService;
 
@@ -72,7 +72,7 @@ public class ListeDIsPPNonEmises extends AbstractEnvoiDIsPPResults<ListeDIsPPNon
 
 
 	public ListeDIsPPNonEmises(int anneePeriode, RegDate dateTraitement, TiersService tiersService, AdresseService adresseService) {
-		super(anneePeriode, CategorieEnvoiDI.VAUDOIS_COMPLETE, dateTraitement, 1000000, null, null, null, 1, tiersService, adresseService);
+		super(anneePeriode, CategorieEnvoiDIPP.VAUDOIS_COMPLETE, dateTraitement, 1000000, null, null, null, 1, tiersService, adresseService);
 	}
 
 

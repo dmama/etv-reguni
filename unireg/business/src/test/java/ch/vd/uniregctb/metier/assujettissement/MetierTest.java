@@ -903,7 +903,7 @@ public abstract class MetierTest extends BusinessTest {
 		assertEquals(typeAutorite, a.getTypeAutoriteFiscalePrincipale());
 	}
 
-	protected void assertPeriodeImpositionPersonnesPhysiques(RegDate debut, RegDate fin, CategorieEnvoiDI categorie, @Nullable TypeAdresseRetour adresseRetour, boolean optionnelle,
+	protected void assertPeriodeImpositionPersonnesPhysiques(RegDate debut, RegDate fin, CategorieEnvoiDIPP categorie, @Nullable TypeAdresseRetour adresseRetour, boolean optionnelle,
 	                                                         boolean remplaceParNote, boolean fermetureCauseDeces, boolean fermetureCauseFinAssujettissementHS, PeriodeImposition periode) {
 
 		assertNotNull(periode);

@@ -4,11 +4,11 @@ import ch.vd.uniregctb.type.TypeContribuable;
 import ch.vd.uniregctb.type.TypeDocument;
 
 /**
- * Les différentes catégories de population dans le cadre des envois des DIs en masse (voir [UNIREG-1976]).
+ * Les différentes catégories de population dans le cadre des envois des DIs PP en masse (voir [UNIREG-1976]).
  *
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */
-public enum CategorieEnvoiDI {
+public enum CategorieEnvoiDIPP {
 
 	/**
 	 * Vaudois ordinaires (DI complète)
@@ -57,7 +57,7 @@ public enum CategorieEnvoiDI {
 	private final TypeDocument typeDocument;
 	private final String description;
 
-	private CategorieEnvoiDI(TypeContribuable typeContribuable, TypeDocument typeDocument, String description) {
+	CategorieEnvoiDIPP(TypeContribuable typeContribuable, TypeDocument typeDocument, String description) {
 		this.typeContribuable = typeContribuable;
 		this.typeDocument = typeDocument;
 		this.description = description;
@@ -82,7 +82,7 @@ public enum CategorieEnvoiDI {
 	 * @param format           le type de déclaration ordinaire (vaudtax ou complète)
 	 * @return le type de population d'envoi de DI déterminé.
 	 */
-	public static CategorieEnvoiDI ordinaireFor(TypeContribuable typeContribuable, FormatDIOrdinaire format) {
+	public static CategorieEnvoiDIPP ordinaireFor(TypeContribuable typeContribuable, FormatDIOrdinaire format) {
 		switch (typeContribuable) {
 		case VAUDOIS_ORDINAIRE:
 			if (format == FormatDIOrdinaire.COMPLETE) {

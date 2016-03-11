@@ -19,7 +19,6 @@ import ch.vd.uniregctb.declaration.ordinaire.pm.DeterminationDIsPMResults;
 import ch.vd.uniregctb.declaration.ordinaire.pm.EchoirDIsPMResults;
 import ch.vd.uniregctb.declaration.ordinaire.pm.EnvoiDIsPMResults;
 import ch.vd.uniregctb.declaration.ordinaire.pm.EnvoiSommationsDIsPMResults;
-import ch.vd.uniregctb.declaration.ordinaire.pm.TypeDeclarationImpotPM;
 import ch.vd.uniregctb.declaration.ordinaire.pp.ContribuableAvecCodeSegment;
 import ch.vd.uniregctb.declaration.ordinaire.pp.ContribuableAvecImmeuble;
 import ch.vd.uniregctb.declaration.ordinaire.pp.DeterminationDIsPPResults;
@@ -35,7 +34,8 @@ import ch.vd.uniregctb.declaration.ordinaire.pp.StatistiquesCtbs;
 import ch.vd.uniregctb.declaration.ordinaire.pp.StatistiquesDIs;
 import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.EditiqueResultat;
-import ch.vd.uniregctb.metier.assujettissement.CategorieEnvoiDI;
+import ch.vd.uniregctb.metier.assujettissement.CategorieEnvoiDIPM;
+import ch.vd.uniregctb.metier.assujettissement.CategorieEnvoiDIPP;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.type.TypeDocument;
@@ -72,7 +72,7 @@ public interface DeclarationImpotService {
 	 * @param nbThreads      le nombre de threads sur lesquels doit s'effectuer le traitement
 	 * @return le nombre de déclarations envoyées.
 	 */
-	EnvoiDIsPPResults envoyerDIsPPEnMasse(int anneePeriode, CategorieEnvoiDI categorie,
+	EnvoiDIsPPResults envoyerDIsPPEnMasse(int anneePeriode, CategorieEnvoiDIPP categorie,
 	                                      Long noCtbMin, Long noCtbMax,
 	                                      int nbMax, RegDate dateTraitement, boolean exclureDecedes, int nbThreads, StatusManager status) throws DeclarationException;
 
@@ -327,7 +327,7 @@ public interface DeclarationImpotService {
 	/**
 	 * Lancement du job multi-threadé d'envoi des DI des personnes morales
 	 * @param periodeFiscale la période fiscale cible
-	 * @param typeDeclaration le type de déclaration à envoyer
+	 * @param categorieEnvoi le type de déclaration à envoyer
 	 * @param dateLimiteBouclements la date limite (incluse) des bouclements à prendre en compte
 	 * @param nbMaxEnvois (optionnel) le nombre maximal de documents à envoyer
 	 * @param dateTraitement la date du traitement
@@ -335,7 +335,7 @@ public interface DeclarationImpotService {
 	 * @param statusManager status manager
 	 * @return les données du rapport d'exécution du job
 	 */
-	EnvoiDIsPMResults envoyerDIsPMEnMasse(int periodeFiscale, TypeDeclarationImpotPM typeDeclaration, RegDate dateLimiteBouclements, @Nullable Integer nbMaxEnvois, RegDate dateTraitement, int nbThreads, StatusManager statusManager) throws DeclarationException;
+	EnvoiDIsPMResults envoyerDIsPMEnMasse(int periodeFiscale, CategorieEnvoiDIPM categorieEnvoi, RegDate dateLimiteBouclements, @Nullable Integer nbMaxEnvois, RegDate dateTraitement, int nbThreads, StatusManager statusManager) throws DeclarationException;
 
 	/**
 	 * Envoi des sommations de DI PM à la date donnée

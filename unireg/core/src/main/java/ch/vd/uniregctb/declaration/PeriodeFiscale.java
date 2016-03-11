@@ -201,9 +201,10 @@ public class PeriodeFiscale extends HibernateEntity {
 	public void setDefaultPeriodeFiscaleParametres() {
 		addAllPeriodeFiscaleParametresPP(RegDate.get(this.getAnnee() + 1, 1, 31), // valeur par défaut des envoi de masse DI au 31 janvier
 		                                 RegDate.get(this.getAnnee() + 1, 3, 31), // valeur par défaut du terme reglementaire pour les sommations au 31 mars
-		                                 RegDate.get(this.getAnnee() + 1, 4, 30)     // valeur par défaut du terme effectif pour les sommations au 30 avril
+		                                 RegDate.get(this.getAnnee() + 1, 6, 30)     // valeur par défaut du terme effectif pour les sommations au 30 juin
 		);
-		addAllPeriodeFiscaleParametresPM(6, false, 75, false);
+		addPeriodeFiscaleParametrePM(6, false, 75, false, ParametrePeriodeFiscalePM.ReferencePourDelai.FIN_PERIODE, TypeContribuable.HORS_CANTON, TypeContribuable.HORS_SUISSE, TypeContribuable.VAUDOIS_ORDINAIRE);
+		addPeriodeFiscaleParametrePM(24, false, 15, false, ParametrePeriodeFiscalePM.ReferencePourDelai.EMISSION, TypeContribuable.UTILITE_PUBLIQUE);
 	}
 
 	/**
@@ -228,11 +229,13 @@ public class PeriodeFiscale extends HibernateEntity {
 	 * @param toleranceJours le délai effectif utilisé pour les DI de PM
 	 * @param delaiTolereRepousseFinDeMois <code>true</code> si le délai effectivement pris en compte (avec tolérance) doit être repoussé à la fin du mois
 	 */
-	public void addAllPeriodeFiscaleParametresPM(int delaiImprimeMois, boolean delaiImprimeRepousseFinDeMois,
-	                                             int toleranceJours, boolean delaiTolereRepousseFinDeMois) {
-		addParametrePeriodeFiscale(new ParametrePeriodeFiscalePM(TypeContribuable.VAUDOIS_ORDINAIRE, delaiImprimeMois, delaiImprimeRepousseFinDeMois, toleranceJours, delaiTolereRepousseFinDeMois, this));
-		addParametrePeriodeFiscale(new ParametrePeriodeFiscalePM(TypeContribuable.HORS_CANTON, delaiImprimeMois, delaiImprimeRepousseFinDeMois, toleranceJours, delaiTolereRepousseFinDeMois, this));
-		addParametrePeriodeFiscale(new ParametrePeriodeFiscalePM(TypeContribuable.HORS_SUISSE, delaiImprimeMois, delaiImprimeRepousseFinDeMois, toleranceJours, delaiTolereRepousseFinDeMois, this));
+	public void addPeriodeFiscaleParametrePM(int delaiImprimeMois, boolean delaiImprimeRepousseFinDeMois,
+	                                         int toleranceJours, boolean delaiTolereRepousseFinDeMois,
+	                                         ParametrePeriodeFiscalePM.ReferencePourDelai referenceDelaiInitial,
+	                                         TypeContribuable... typesContribuable) {
+		for (TypeContribuable typeContribuable : typesContribuable) {
+			addParametrePeriodeFiscale(new ParametrePeriodeFiscalePM(typeContribuable, delaiImprimeMois, delaiImprimeRepousseFinDeMois, toleranceJours, delaiTolereRepousseFinDeMois, referenceDelaiInitial, this));
+		}
 	}
 
 	public boolean possedeTypeDocument(TypeDocument typeDocument) {

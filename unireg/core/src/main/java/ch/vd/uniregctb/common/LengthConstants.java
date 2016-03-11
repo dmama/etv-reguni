@@ -150,6 +150,7 @@ public abstract class LengthConstants {
 	public static final int ETATENT_TYPE_GENERATION = 11;
 
 	public static final int PARAMETRE_PF_TYPE = 5;
+	public static final int PARAMETRE_PF_REF_DELAI = 12;
 
 	public static final int MONNAIE_ISO = 3;
 

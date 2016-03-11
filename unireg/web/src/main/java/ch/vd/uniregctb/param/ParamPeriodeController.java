@@ -123,6 +123,7 @@ public class ParamPeriodeController {
 		model.addAttribute("parametrePeriodeFiscalePMVaud", manager.getPMVaudByPeriodeFiscale(periodeSelectionnee));
 		model.addAttribute("parametrePeriodeFiscalePMHorsCanton", manager.getPMHorsCantonByPeriodeFiscale(periodeSelectionnee));
 		model.addAttribute("parametrePeriodeFiscalePMHorsSuisse", manager.getPMHorsSuisseByPeriodeFiscale(periodeSelectionnee));
+		model.addAttribute("parametrePeriodeFiscalePMUtilitePublique", manager.getPMUtilitePubliqueByPeriodeFiscale(periodeSelectionnee));
 
 		final List<ModeleDocument> modeles = new ArrayList<>(manager.getModeleDocuments(periodeSelectionnee));
 		Collections.sort(modeles, new Comparator<ModeleDocument>() {
@@ -202,6 +203,7 @@ public class ParamPeriodeController {
 	@SecurityCheck(rolesToCheck = {Role.PARAM_PERIODE}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
 	public String showEditPeriodPM(Model model, @RequestParam(value = PARAMETER_PERIODE_ID) Long pfId) {
 		final ParametrePeriodeFiscalePMEditView view = manager.createParametrePeriodeFiscalePMEditView(pfId);
+		model.addAttribute("referencesPourDelais", tiersMapHelper.getMapReferencesPourDelai());
 		return showEditPeriodPM(model, view);
 	}
 
@@ -214,6 +216,7 @@ public class ParamPeriodeController {
 	@SecurityCheck(rolesToCheck = {Role.PARAM_PERIODE}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
 	public String commitEditPeriodPM(Model model, @Valid @ModelAttribute("command") ParametrePeriodeFiscalePMEditView view, BindingResult bindingResult) {
 		if (bindingResult.hasErrors()) {
+			model.addAttribute("referencesPourDelais", tiersMapHelper.getMapReferencesPourDelai());
 			return showEditPeriodPM(model, view);
 		}
 		manager.saveParametrePeriodeFiscaleView(view);

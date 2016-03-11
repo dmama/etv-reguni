@@ -33,6 +33,7 @@ public enum ParametreEnum {
 	delaiMinimalRetourDeclarationImpotPM("3", Type.delaisEnMois, true),
 	delaiEnvoiSommationDeclarationImpotPM("0", Type.delaisEnJour, true),
 	delaiEcheanceSommationDeclarationImpotPM("30", Type.delaisEnJour, true),
+	dateLimiteEnvoiMasseDeclarationsUtilitePublique("31.01", Type.jourDansAnnee, true),
 
 	dateDebutEnvoiLettresBienvenue("11.06.2016", Type.date, true),
 	delaiRetourLettreBienvenue("30", Type.delaisEnJour, true),

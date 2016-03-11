@@ -19,6 +19,7 @@ import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.TypeContribuable;
+import ch.vd.uniregctb.type.TypeFlagEntreprise;
 
 /**
  * Tests des calculs des périodes d'imposition dans le contexte des personnes morales
@@ -1086,5 +1087,32 @@ public class PeriodeImpositionPersonnesMoralesCalculatorTest extends MetierTest 
 		assertPeriodeImpositionPersonnesMorales(date(2014, 1, 1), date(2014, 12, 31), false, TypeContribuable.VAUDOIS_ORDINAIRE, false, false, false, periodes.get(1));
 		assertPeriodeImpositionPersonnesMorales(date(2015, 1, 1), date(2015, 12, 31), false, TypeContribuable.VAUDOIS_ORDINAIRE, false, false, false, periodes.get(2));
 		assertPeriodeImpositionPersonnesMorales(date(2016, 1, 1), dateFinFor, false, TypeContribuable.VAUDOIS_ORDINAIRE, false, false, false, periodes.get(3));
+	}
+
+	/**
+	 * [SIFISC-18113][SIFISC-18114] Séparation des LIASF dans une catégorie de population séparée lors de l'envoi des DI
+	 */
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testTypeContribuableUtilitePublique() throws Exception {
+
+		final RegDate dateDebut = date(2014, 5, 12);
+		final RegDate dateFin = date(2016, 2, 22);
+
+		final Entreprise e = addEntrepriseInconnueAuCivil();
+		addRaisonSociale(e, dateDebut, null, "Les petits vieux du monde entier");
+		addFormeJuridique(e, dateDebut, null, FormeJuridiqueEntreprise.FONDATION);
+		addRegimeFiscalVD(e, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_APM);
+		addRegimeFiscalCH(e, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_APM);
+		addForPrincipal(e, dateDebut, MotifFor.DEBUT_EXPLOITATION, dateFin, MotifFor.CESSATION_ACTIVITE, MockCommune.Leysin);
+		addBouclement(e, dateDebut, DayMonth.get(12, 31), 12);
+		addFlagEntreprise(e, date(2015, 12, 1), date(2016, 1, 3), TypeFlagEntreprise.UTILITE_PUBLIQUE);
+
+		final List<PeriodeImposition> periodes = determine(e);
+		Assert.assertNotNull(periodes);
+		Assert.assertEquals(3, periodes.size());
+		assertPeriodeImpositionPersonnesMorales(dateDebut, date(2014, 12, 31), false, TypeContribuable.VAUDOIS_ORDINAIRE, false, false, false, periodes.get(0));
+		assertPeriodeImpositionPersonnesMorales(date(2015, 1, 1), date(2015, 12, 31), false, TypeContribuable.UTILITE_PUBLIQUE, false, false, false, periodes.get(1));
+		assertPeriodeImpositionPersonnesMorales(date(2016, 1, 1), dateFin, false, TypeContribuable.VAUDOIS_ORDINAIRE, false, false, false, periodes.get(2));
 	}
 }

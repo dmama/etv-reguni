@@ -26,6 +26,8 @@ public interface ParametreAppAccessor {
 
 	Integer getDelaiEnvoiSommationDeclarationImpotPM();
 
+	Integer[] getDateLimiteEnvoiMasseDeclarationsUtilitePublique();
+
 	Integer getDelaiEnvoiSommationListeRecapitulative();
 
 	Integer getDelaiRetentionRapportTravailInactif();
@@ -97,6 +99,8 @@ public interface ParametreAppAccessor {
 	void setDelaiEnvoiSommationDeclarationImpotPP(Integer val);
 
 	void setDelaiEnvoiSommationDeclarationImpotPM(Integer val);
+
+	void setDateLimiteEnvoiMasseDeclarationsUtilitePublique(Integer[] val);
 
 	void setDelaiEnvoiSommationListeRecapitulative(Integer val);
 

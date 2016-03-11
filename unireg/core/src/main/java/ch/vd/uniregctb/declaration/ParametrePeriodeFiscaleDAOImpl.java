@@ -81,4 +81,9 @@ public class ParametrePeriodeFiscaleDAOImpl extends BaseDAOImpl<ParametrePeriode
 	public ParametrePeriodeFiscalePM getPMHorsSuisseByPeriodeFiscale(PeriodeFiscale periodeFiscale) {
 		return getPMByPeriodeFiscaleAndTypeContribuable(periodeFiscale, TypeContribuable.HORS_SUISSE);
 	}
+
+	@Override
+	public ParametrePeriodeFiscalePM getPMUtilitePubliqueByPeriodeFiscale(PeriodeFiscale periodeFiscale) {
+		return getPMByPeriodeFiscaleAndTypeContribuable(periodeFiscale, TypeContribuable.UTILITE_PUBLIQUE);
+	}
 }

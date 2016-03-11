@@ -9,7 +9,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.JobResults;
-import ch.vd.uniregctb.metier.assujettissement.CategorieEnvoiDI;
+import ch.vd.uniregctb.metier.assujettissement.CategorieEnvoiDIPP;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.TiersService;
 
@@ -77,7 +77,7 @@ public abstract class AbstractEnvoiDIsPPResults<R extends AbstractEnvoiDIsPPResu
 
 	// Paramètres d'entrée
 	public final int annee;
-	public final CategorieEnvoiDI categorie;
+	public final CategorieEnvoiDIPP categorie;
 	public final RegDate dateTraitement;
 	public final int nbMax;
 	public final Long noCtbMin;
@@ -93,7 +93,7 @@ public abstract class AbstractEnvoiDIsPPResults<R extends AbstractEnvoiDIsPPResu
 	public final List<Erreur> ctbsEnErrors = new LinkedList<>();
 	public boolean interrompu;
 
-	public AbstractEnvoiDIsPPResults(int annee, CategorieEnvoiDI categorie, RegDate dateTraitement, int nbMax, @Nullable Long noCtbMin, @Nullable Long noCtbMax, @Nullable RegDate dateExclureDecede,
+	public AbstractEnvoiDIsPPResults(int annee, CategorieEnvoiDIPP categorie, RegDate dateTraitement, int nbMax, @Nullable Long noCtbMin, @Nullable Long noCtbMax, @Nullable RegDate dateExclureDecede,
 	                                 int nbThreads, TiersService tiersService, AdresseService adresseService) {
 		super(tiersService, adresseService);
 		this.annee = annee;

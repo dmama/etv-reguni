@@ -65,4 +65,10 @@ public interface ParametrePeriodeFiscaleDAO extends GenericDAO<ParametrePeriodeF
 	 * @return les parametres de période fiscale pour un contribuable PM hors Suisse, pour une période donnée
 	 */
 	ParametrePeriodeFiscalePM getPMHorsSuisseByPeriodeFiscale(PeriodeFiscale periodeFiscale);
+
+	/**
+	 * @param periodeFiscale la période fiscale
+	 * @return les parametres de période fiscale pour un contribuable PM reconnu d'utilité publique, pour une période donnée
+	 */
+	ParametrePeriodeFiscalePM getPMUtilitePubliqueByPeriodeFiscale(PeriodeFiscale periodeFiscale);
 }

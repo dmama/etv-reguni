@@ -2,6 +2,7 @@ package ch.vd.uniregctb.tache.sync;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.uniregctb.common.TacheHelper;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionPersonnesMorales;
 import ch.vd.uniregctb.metier.bouclement.ExerciceCommercial;
 import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesMorales;
@@ -22,7 +23,7 @@ public class AddDIPM extends AddDI<PeriodeImpositionPersonnesMorales> {
 	@Override
 	public void execute(Context context) {
 		final RegDate today = getToday();
-		final RegDate dateEcheance = TacheEnvoiDeclarationImpot.getDefaultEcheance(today);
+		final RegDate dateEcheance = TacheHelper.getDateEcheanceTacheEnvoiDIPM(context.parametreAppService, periodeImposition.getTypeContribuable(), today, periodeImposition.getDateFin());
 		final ExerciceCommercial exerciceCommercial = periodeImposition.getExerciceCommercial();
 		final TacheEnvoiDeclarationImpot tache = new TacheEnvoiDeclarationImpotPM(TypeEtatTache.EN_INSTANCE,
 		                                                                          dateEcheance,

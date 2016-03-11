@@ -171,6 +171,11 @@ class ParametreAppContainer implements ParametreAppAccessor {
 	}
 
 	@Override
+	public Integer[] getDateLimiteEnvoiMasseDeclarationsUtilitePublique() {
+		return getValeurPourParametreDeTypeJoursDansAnnee(ParametreEnum.dateLimiteEnvoiMasseDeclarationsUtilitePublique);
+	}
+
+	@Override
 	public Integer getDelaiEnvoiSommationListeRecapitulative() {
 		return Integer.parseInt(get(ParametreEnum.delaiEnvoiSommationListeRecapitulative));
 	}
@@ -358,6 +363,12 @@ class ParametreAppContainer implements ParametreAppAccessor {
 	@Override
 	public void setDelaiEcheanceSommationDeclarationImpotPM(Integer val) {
 		setValeur(ParametreEnum.delaiEcheanceSommationDeclarationImpotPM, val.toString());
+	}
+
+	@Override
+	public void setDateLimiteEnvoiMasseDeclarationsUtilitePublique(Integer[] val) {
+		Assert.isEqual(2, val.length);
+		setValeur(ParametreEnum.dateLimiteEnvoiMasseDeclarationsUtilitePublique, String.valueOf(val[0]) + '.' + val[1]);
 	}
 
 	@Override

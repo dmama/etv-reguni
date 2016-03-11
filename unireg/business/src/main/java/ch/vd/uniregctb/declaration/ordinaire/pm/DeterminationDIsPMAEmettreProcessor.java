@@ -34,6 +34,7 @@ import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.AuthenticationInterface;
 import ch.vd.uniregctb.common.LoggingStatusManager;
 import ch.vd.uniregctb.common.ParallelBatchTransactionTemplateWithResults;
+import ch.vd.uniregctb.common.TacheHelper;
 import ch.vd.uniregctb.declaration.DeclarationException;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePM;
@@ -528,7 +529,8 @@ public class DeterminationDIsPMAEmettreProcessor {
 
 		// Création et sauvegarde de la tâche en base
 		final ExerciceCommercial exercice = pi.getExerciceCommercial();
-		final TacheEnvoiDeclarationImpotPM tache = new TacheEnvoiDeclarationImpotPM(TypeEtatTache.EN_INSTANCE, Tache.getDefaultEcheance(dateTraitement),
+		final RegDate dateEcheance = TacheHelper.getDateEcheanceTacheEnvoiDIPM(parametres, pi.getTypeContribuable(), dateTraitement, pi.getDateFin());
+		final TacheEnvoiDeclarationImpotPM tache = new TacheEnvoiDeclarationImpotPM(TypeEtatTache.EN_INSTANCE, dateEcheance,
 		                                                                            entreprise, pi.getDateDebut(), pi.getDateFin(),
 		                                                                            exercice.getDateDebut(), exercice.getDateFin(),
 		                                                                            pi.getTypeContribuable(), pi.getTypeDocumentDeclaration(),

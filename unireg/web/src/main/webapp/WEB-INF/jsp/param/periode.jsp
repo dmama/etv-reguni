@@ -48,6 +48,9 @@
 				text-align: right;
 			}
 
+			input[type=checkbox] {
+				vertical-align: bottom;
+			}
 		</style>
 
 		<script type="text/javascript">
@@ -186,31 +189,51 @@
 					<table>
 						<tr>
 							<th class="colonneTitreParametres">&nbsp;</th>
-							<th><fmt:message key="label.param.entete.VD"/> / <fmt:message key="label.param.entete.report.fin.mois"/></th>
-							<th><fmt:message key="label.param.entete.HC"/> / <fmt:message key="label.param.entete.report.fin.mois"/></th>
-							<th><fmt:message key="label.param.entete.HS"/> / <fmt:message key="label.param.entete.report.fin.mois"/></th>
+							<th><fmt:message key="label.param.entete.VD"/></th>
+							<th><fmt:message key="label.param.entete.HC"/></th>
+							<th><fmt:message key="label.param.entete.HS"/></th>
+							<th><fmt:message key="label.param.entete.utilite.publique"/></th>
 						</tr>
 						<tr>
 							<th><fmt:message key="label.param.pm.delai.imprime"/></th>
 							<td>
-								<c:if test="${parametrePeriodeFiscalePMVaud.delaiImprimeMoisDepuisBouclement != null}">
-									${parametrePeriodeFiscalePMVaud.delaiImprimeMoisDepuisBouclement}
+								<c:if test="${parametrePeriodeFiscalePMVaud.delaiImprimeMois != null}">
+									${parametrePeriodeFiscalePMVaud.delaiImprimeMois}
 									<fmt:message key="label.param.pm.delai.mois"/>
-									&nbsp;/&nbsp;<input type="checkbox" readonly="readonly" disabled="disabled" <c:if test="${parametrePeriodeFiscalePMVaud.delaiImprimeRepousseFinDeMois}">checked="checked"</c:if>/>
+									<fmt:message key="option.reference.delai.${parametrePeriodeFiscalePMVaud.referenceDelaiInitial}"/>
+									<c:if test="${parametrePeriodeFiscalePMVaud.delaiImprimeRepousseFinDeMois}">
+										(<fmt:message key="label.param.pm.report.fin.mois"/>)
+									</c:if>
 								</c:if>
 							</td>
 							<td>
-								<c:if test="${parametrePeriodeFiscalePMHorsCanton.delaiImprimeMoisDepuisBouclement != null}">
-									${parametrePeriodeFiscalePMHorsCanton.delaiImprimeMoisDepuisBouclement}
+								<c:if test="${parametrePeriodeFiscalePMHorsCanton.delaiImprimeMois != null}">
+									${parametrePeriodeFiscalePMHorsCanton.delaiImprimeMois}
 									<fmt:message key="label.param.pm.delai.mois"/>
-									&nbsp;/&nbsp;<input type="checkbox" readonly="readonly" disabled="disabled" <c:if test="${parametrePeriodeFiscalePMHorsCanton.delaiImprimeRepousseFinDeMois}">checked="checked"</c:if>/>
+									<fmt:message key="option.reference.delai.${parametrePeriodeFiscalePMHorsCanton.referenceDelaiInitial}"/>
+									<c:if test="${parametrePeriodeFiscalePMHorsCanton.delaiImprimeRepousseFinDeMois}">
+										(<fmt:message key="label.param.pm.report.fin.mois"/>)
+									</c:if>
 								</c:if>
 							</td>
 							<td>
-								<c:if test="${parametrePeriodeFiscalePMHorsSuisse.delaiImprimeMoisDepuisBouclement != null}">
-									${parametrePeriodeFiscalePMHorsSuisse.delaiImprimeMoisDepuisBouclement}
+								<c:if test="${parametrePeriodeFiscalePMHorsSuisse.delaiImprimeMois != null}">
+									${parametrePeriodeFiscalePMHorsSuisse.delaiImprimeMois}
 									<fmt:message key="label.param.pm.delai.mois"/>
-									&nbsp;/&nbsp;<input type="checkbox" readonly="readonly" disabled="disabled" <c:if test="${parametrePeriodeFiscalePMHorsSuisse.delaiImprimeRepousseFinDeMois}">checked="checked"</c:if>/>
+									<fmt:message key="option.reference.delai.${parametrePeriodeFiscalePMHorsSuisse.referenceDelaiInitial}"/>
+									<c:if test="${parametrePeriodeFiscalePMHorsSuisse.delaiImprimeRepousseFinDeMois}">
+										(<fmt:message key="label.param.pm.report.fin.mois"/>)
+									</c:if>
+								</c:if>
+							</td>
+							<td>
+								<c:if test="${parametrePeriodeFiscalePMUtilitePublique.delaiImprimeMois != null}">
+									${parametrePeriodeFiscalePMUtilitePublique.delaiImprimeMois}
+									<fmt:message key="label.param.pm.delai.mois"/>
+									<fmt:message key="option.reference.delai.${parametrePeriodeFiscalePMUtilitePublique.referenceDelaiInitial}"/>
+									<c:if test="${parametrePeriodeFiscalePMUtilitePublique.delaiImprimeRepousseFinDeMois}">
+										(<fmt:message key="label.param.pm.report.fin.mois"/>)
+									</c:if>
 								</c:if>
 							</td>
 						</tr>
@@ -227,7 +250,9 @@
 											<fmt:message key="label.param.pm.delai.jours"/>
 										</c:otherwise>
 									</c:choose>
-									&nbsp;/&nbsp;<input type="checkbox" readonly="readonly" disabled="disabled" <c:if test="${parametrePeriodeFiscalePMVaud.delaiTolereRepousseFinDeMois}">checked="checked"</c:if>/>
+									<c:if test="${parametrePeriodeFiscalePMVaud.delaiTolereRepousseFinDeMois}">
+										(<fmt:message key="label.param.pm.report.fin.mois"/>)
+									</c:if>
 								</c:if>
 							</td>
 							<td>
@@ -241,7 +266,9 @@
 											<fmt:message key="label.param.pm.delai.jours"/>
 										</c:otherwise>
 									</c:choose>
-									&nbsp;/&nbsp;<input type="checkbox" readonly="readonly" disabled="disabled" <c:if test="${parametrePeriodeFiscalePMHorsCanton.delaiTolereRepousseFinDeMois}">checked="checked"</c:if>/>
+									<c:if test="${parametrePeriodeFiscalePMHorsCanton.delaiTolereRepousseFinDeMois}">
+										(<fmt:message key="label.param.pm.report.fin.mois"/>)
+									</c:if>
 								</c:if>
 							</td>
 							<td>
@@ -255,7 +282,25 @@
 											<fmt:message key="label.param.pm.delai.jours"/>
 										</c:otherwise>
 									</c:choose>
-									&nbsp;/&nbsp;<input type="checkbox" readonly="readonly" disabled="disabled" <c:if test="${parametrePeriodeFiscalePMHorsSuisse.delaiTolereRepousseFinDeMois}">checked="checked"</c:if>/>
+									<c:if test="${parametrePeriodeFiscalePMHorsSuisse.delaiTolereRepousseFinDeMois}">
+										(<fmt:message key="label.param.pm.report.fin.mois"/>)
+									</c:if>
+								</c:if>
+							</td>
+							<td>
+								<c:if test="${parametrePeriodeFiscalePMUtilitePublique.delaiToleranceJoursEffective != null}">
+									${parametrePeriodeFiscalePMUtilitePublique.delaiToleranceJoursEffective}
+									<c:choose>
+										<c:when test="${parametrePeriodeFiscalePMUtilitePublique.delaiToleranceJoursEffective == 1}">
+											<fmt:message key="label.param.pm.delai.jour"/>
+										</c:when>
+										<c:otherwise>
+											<fmt:message key="label.param.pm.delai.jours"/>
+										</c:otherwise>
+									</c:choose>
+									<c:if test="${parametrePeriodeFiscalePMUtilitePublique.delaiTolereRepousseFinDeMois}">
+										(<fmt:message key="label.param.pm.report.fin.mois"/>)
+									</c:if>
 								</c:if>
 							</td>
 						</tr>
