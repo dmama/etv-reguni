@@ -775,6 +775,12 @@ public abstract class EvenementOrganisationInterne {
 		raiseStatusTo(HandleStatus.TRAITE);
 	}
 
+	protected void regleDateDebutPremierExerciceCommercial(Entreprise entreprise, RegDate dateDebut, EvenementOrganisationSuiviCollector suivis) {
+		final RegDate dateDebutPremierExerciceCommercial = RegDate.get(dateDebut.year(), 1, 1);
+		suivis.addSuivi(String.format("Réglage de la date de début du premier exercice commercial au %s", dateDebutPremierExerciceCommercial));
+		entreprise.setDateDebutPremierExerciceCommercial(dateDebutPremierExerciceCommercial);
+	}
+
 	protected void closeEtablissement(Etablissement etablissement, RegDate dateFin,  EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) throws
 			EvenementOrganisationException {
 		suivis.addSuivi(String.format("Fermeture de l'établissement %s pour le %s", etablissement.getNumero(), RegDateHelper.dateToDisplayString(dateFin)));

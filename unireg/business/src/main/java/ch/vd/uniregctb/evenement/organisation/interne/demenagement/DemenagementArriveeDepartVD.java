@@ -38,6 +38,9 @@ public class DemenagementArriveeDepartVD extends Demenagement {
 		if (getSiegeAvant().getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_HC &&
 				getSiegeApres().getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
 			motifFor = MotifFor.ARRIVEE_HC;
+			if (getEntreprise().getDernierForFiscalPrincipal() == null) {
+				regleDateDebutPremierExerciceCommercial(getEntreprise(), getDateApres(), suivis);
+			}
 		} else
 			throw new EvenementOrganisationException(String.format("Une combinaison non supportée de déplacement de siège est survenue. type avant: %s, type après: %s", getSiegeAvant().getTypeAutoriteFiscale(), getSiegeApres().getTypeAutoriteFiscale()));
 		}
