@@ -17,7 +17,7 @@ import ch.vd.uniregctb.adresse.AdresseEnvoiDetaillee;
 import ch.vd.uniregctb.common.XmlUtils;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePM;
 import ch.vd.uniregctb.editique.ConstantesEditique;
-import ch.vd.uniregctb.editique.EditiqueAbstractHelper;
+import ch.vd.uniregctb.editique.EditiqueAbstractHelperImpl;
 import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.EditiquePrefixeHelper;
 import ch.vd.uniregctb.editique.TypeDocumentEditique;
@@ -28,7 +28,7 @@ import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesMorales;
 /**
  * Rassemblement des méthodes utiles pour la constitution d'un document de sommation de DI PM à envoyer à l'éditique
  */
-public class ImpressionSommationDeclarationImpotPersonnesMoralesHelperImpl extends EditiqueAbstractHelper implements ImpressionSommationDeclarationImpotPersonnesMoralesHelper {
+public class ImpressionSommationDeclarationImpotPersonnesMoralesHelperImpl extends EditiqueAbstractHelperImpl implements ImpressionSommationDeclarationImpotPersonnesMoralesHelper {
 
 	private static final String TYPE_DOCUMENT = "CO";           // pour "Courrier", apparemment
 	private static final String CODE_DOCUMENT_SOMMATION_PM = TypeDocumentEditique.SOMMATION_DI_PM.getCodeDocumentEditique().substring(0, 4);
@@ -68,8 +68,6 @@ public class ImpressionSommationDeclarationImpotPersonnesMoralesHelperImpl exten
 
 	private static CTypeInfoDocument buildInfoDocument(AdresseEnvoiDetaillee adresseEnvoi) {
 		final CTypeInfoDocument infoDoc = new CTypeInfoDocument();
-
-		// TODO document HS à renvoyer à l'OIPM ?
 
 		final Pair<STypeZoneAffranchissement, String> infosAffranchissement = getInformationsAffranchissement(adresseEnvoi, false, ServiceInfrastructureService.noOIPM);
 		infoDoc.setIdEnvoi(infosAffranchissement.getRight());

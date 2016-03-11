@@ -359,8 +359,13 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 	public void imprimeSommationDIForBatch(DeclarationImpotOrdinairePM declaration, RegDate dateEvenement) throws EditiqueException {
 		final TypeDocumentEditique typeDocument = impressionSommationDIPMHelper.getTypeDocumentEditique();
 		final FichierImpression root = new FichierImpression();
-		final FichierImpression.Document document = impressionSommationDIPMHelper.buildDocument(declaration, dateEvenement, true);
-		root.getDocument().add(document);
+		final FichierImpression.Document original = impressionSommationDIPMHelper.buildDocument(declaration, dateEvenement, true);
+		final FichierImpression.Document copieMandataire = impressionSommationDIPMHelper.buildCopieMandataire(original, declaration.getTiers(), RegDate.get());
+		root.getDocument().add(original);
+		if (copieMandataire != null) {
+			root.getDocument().add(copieMandataire);
+		}
+
 		final String nomDocument = impressionSommationDIPMHelper.construitIdDocument(declaration);
 		editiqueService.creerDocumentParBatch(nomDocument, typeDocument, root, true);
 	}
@@ -390,11 +395,16 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 	@Override
 	public EditiqueResultat imprimeSommationDIOnline(DeclarationImpotOrdinairePM declaration, RegDate dateEvenement) throws EditiqueException, JMSException {
 		final TypeDocumentEditique typeDocument = impressionSommationDIPMHelper.getTypeDocumentEditique();
-		final FichierImpression root = new FichierImpression();
-		final FichierImpression.Document document = impressionSommationDIPMHelper.buildDocument(declaration, dateEvenement, false);
-		root.getDocument().add(document);
-		final String nomDocument = impressionSommationDIPMHelper.construitIdDocument(declaration);
 
+		final FichierImpression root = new FichierImpression();
+		final FichierImpression.Document original = impressionSommationDIPMHelper.buildDocument(declaration, dateEvenement, false);
+		final FichierImpression.Document copieMandataire = impressionSommationDIPMHelper.buildCopieMandataire(original, declaration.getTiers(), RegDate.get());
+		root.getDocument().add(original);
+		if (copieMandataire != null) {
+			root.getDocument().add(copieMandataire);
+		}
+
+		final String nomDocument = impressionSommationDIPMHelper.construitIdDocument(declaration);
 		final String description = String.format("Sommation de la déclaration d'impôt %d du contribuable %s",
 		                                         declaration.getPeriode().getAnnee(),
 		                                         FormatNumeroHelper.numeroCTBToDisplay(declaration.getTiers().getNumero()));
@@ -404,9 +414,15 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 	@Override
 	public void imprimeLettreBienvenueForBatch(LettreBienvenue lettre, RegDate dateTraitement) throws EditiqueException {
 		final TypeDocumentEditique typeDocument = impressionLettreBienvenueHelper.getTypeDocumentEditique();
+
 		final FichierImpression root = new FichierImpression();
-		final FichierImpression.Document document = impressionLettreBienvenueHelper.buildDocument(lettre, dateTraitement, true);
-		root.getDocument().add(document);
+		final FichierImpression.Document original = impressionLettreBienvenueHelper.buildDocument(lettre, dateTraitement, true);
+		final FichierImpression.Document copieMandataire = impressionLettreDecisionDelaiPMHelper.buildCopieMandataire(original, lettre.getEntreprise(), RegDate.get());
+		root.getDocument().add(original);
+		if (copieMandataire != null) {
+			root.getDocument().add(copieMandataire);
+		}
+
 		final String nomDocument = impressionLettreBienvenueHelper.construitIdDocument(lettre);
 		editiqueService.creerDocumentParBatch(nomDocument, typeDocument, root, true);
 	}
@@ -485,10 +501,15 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 		final TypeDocumentEditique typeDocument = impressionLettreDecisionDelaiPMHelper.getTypeDocumentEditique(params);
 		final String cleArchivage = impressionLettreDecisionDelaiPMHelper.construitIdArchivageDocument(params);
 
-		final FichierImpression.Document document = impressionLettreDecisionDelaiPMHelper.buildDocument(params, cleArchivage);
-		final FichierImpression root = new FichierImpression(null, Collections.singletonList(document));
-		final String nomDocument = impressionLettreDecisionDelaiPMHelper.construitIdDocument(params);
+		final FichierImpression root = new FichierImpression();
+		final FichierImpression.Document original = impressionLettreDecisionDelaiPMHelper.buildDocument(params, cleArchivage);
+		final FichierImpression.Document copieMandataire = impressionLettreDecisionDelaiPMHelper.buildCopieMandataire(original, di.getTiers(), RegDate.get());
+		root.getDocument().add(original);
+		if (copieMandataire != null) {
+			root.getDocument().add(copieMandataire);
+		}
 
+		final String nomDocument = impressionLettreDecisionDelaiPMHelper.construitIdDocument(params);
 		final EditiqueResultat resultat = editiqueService.creerDocumentImmediatementSynchroneOuInbox(nomDocument, typeDocument, FormatDocumentEditique.PDF, root, true, params.getDescriptionDocument());
 		return Pair.of(resultat, cleArchivage);
 	}
@@ -499,10 +520,15 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 		final TypeDocumentEditique typeDocument = impressionLettreDecisionDelaiPMHelper.getTypeDocumentEditique(params);
 		final String cleArchivage = impressionLettreDecisionDelaiPMHelper.construitIdArchivageDocument(params);
 
-		final FichierImpression.Document document = impressionLettreDecisionDelaiPMHelper.buildDocument(params, cleArchivage);
-		final FichierImpression root = new FichierImpression(null, Collections.singletonList(document));
-		final String nomDocument = impressionLettreDecisionDelaiPMHelper.construitIdDocument(params);
+		final FichierImpression root = new FichierImpression();
+		final FichierImpression.Document original = impressionLettreDecisionDelaiPMHelper.buildDocument(params, cleArchivage);
+		final FichierImpression.Document copieMandataire = impressionLettreDecisionDelaiPMHelper.buildCopieMandataire(original, di.getTiers(), RegDate.get());
+		root.getDocument().add(original);
+		if (copieMandataire != null) {
+			root.getDocument().add(copieMandataire);
+		}
 
+		final String nomDocument = impressionLettreDecisionDelaiPMHelper.construitIdDocument(params);
 		editiqueService.creerDocumentParBatch(nomDocument, typeDocument, root, true);
 		return cleArchivage;
 	}

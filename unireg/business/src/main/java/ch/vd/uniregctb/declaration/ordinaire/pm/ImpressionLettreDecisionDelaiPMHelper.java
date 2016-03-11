@@ -1,10 +1,11 @@
 package ch.vd.uniregctb.declaration.ordinaire.pm;
 
 import ch.vd.editique.unireg.FichierImpression;
+import ch.vd.uniregctb.editique.EditiqueAbstractHelper;
 import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.TypeDocumentEditique;
 
-public interface ImpressionLettreDecisionDelaiPMHelper {
+public interface ImpressionLettreDecisionDelaiPMHelper extends EditiqueAbstractHelper {
 
 	/**
 	 * @param params détails de la demande de délai

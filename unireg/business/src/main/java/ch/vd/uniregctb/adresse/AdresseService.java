@@ -255,5 +255,5 @@ public interface AdresseService {
 	 * @param date date de référence
 	 * @return une adresse d'envoi détaillée
 	 */
-	AdresseEnvoi buildAdresseEnvoi(Tiers tiers, AdresseGenerique adresse, RegDate date) throws AdresseException;
+	AdresseEnvoiDetaillee buildAdresseEnvoi(Tiers tiers, AdresseGenerique adresse, RegDate date) throws AdresseException;
 }

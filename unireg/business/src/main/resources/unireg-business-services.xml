@@ -222,7 +222,7 @@
 	</bean>
 
 	<!-- Helper éditique par rapport aux nouveaux documents jaxb2 -->
-	<bean id="editiqueAbstractHelper" class="ch.vd.uniregctb.editique.EditiqueAbstractHelper" abstract="true">
+	<bean id="editiqueAbstractHelper" class="ch.vd.uniregctb.editique.EditiqueAbstractHelperImpl" abstract="true">
 		<property name="adresseService" ref="adresseService" />
 		<property name="tiersService" ref="tiersService" />
 		<property name="infraService" ref="serviceInfrastructureService"/>

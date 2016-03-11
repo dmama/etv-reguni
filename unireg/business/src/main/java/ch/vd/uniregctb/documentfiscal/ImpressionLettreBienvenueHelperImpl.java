@@ -15,7 +15,7 @@ import ch.vd.editique.unireg.STypeZoneAffranchissement;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.adresse.AdresseEnvoiDetaillee;
 import ch.vd.uniregctb.editique.ConstantesEditique;
-import ch.vd.uniregctb.editique.EditiqueAbstractHelper;
+import ch.vd.uniregctb.editique.EditiqueAbstractHelperImpl;
 import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.EditiquePrefixeHelper;
 import ch.vd.uniregctb.editique.TypeDocumentEditique;
@@ -23,7 +23,7 @@ import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.type.TypeLettreBienvenue;
 
-public class ImpressionLettreBienvenueHelperImpl extends EditiqueAbstractHelper implements ImpressionLettreBienvenueHelper {
+public class ImpressionLettreBienvenueHelperImpl extends EditiqueAbstractHelperImpl implements ImpressionLettreBienvenueHelper {
 
 	private static final String TYPE_DOCUMENT = "CO";           // pour "Courrier", apparemment
 	private static final String CODE_DOCUMENT_LETTRE_BIENVENUE = TypeDocumentEditique.LETTRE_BIENVENUE.getCodeDocumentEditique().substring(0, 4);
@@ -51,8 +51,6 @@ public class ImpressionLettreBienvenueHelperImpl extends EditiqueAbstractHelper 
 
 	private static CTypeInfoDocument buildInfoDocument(AdresseEnvoiDetaillee adresseEnvoi) {
 		final CTypeInfoDocument infoDoc = new CTypeInfoDocument();
-
-		// TODO document HS à renvoyer à l'OIPM ?
 
 		final Pair<STypeZoneAffranchissement, String> infosAffranchissement = getInformationsAffranchissement(adresseEnvoi, false, ServiceInfrastructureService.noOIPM);
 		infoDoc.setIdEnvoi(infosAffranchissement.getRight());

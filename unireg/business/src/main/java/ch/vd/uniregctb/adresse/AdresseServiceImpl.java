@@ -2139,7 +2139,7 @@ public class AdresseServiceImpl implements AdresseService {
 	}
 
 	@Override
-	public AdresseEnvoi buildAdresseEnvoi(Tiers tiers, AdresseGenerique adresse, RegDate date) throws AdresseException {
+	public AdresseEnvoiDetaillee buildAdresseEnvoi(Tiers tiers, AdresseGenerique adresse, RegDate date) throws AdresseException {
 		return createAdresseEnvoi(tiers, adresse, TypeAdresseFiscale.COURRIER, date);
 	}
 }

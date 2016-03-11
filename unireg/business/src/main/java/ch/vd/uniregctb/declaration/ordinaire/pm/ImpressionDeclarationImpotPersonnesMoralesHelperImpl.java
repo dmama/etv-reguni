@@ -47,7 +47,7 @@ import ch.vd.uniregctb.common.XmlUtils;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePM;
 import ch.vd.uniregctb.declaration.ordinaire.common.ModeleFeuilleDocumentEditique;
 import ch.vd.uniregctb.editique.ConstantesEditique;
-import ch.vd.uniregctb.editique.EditiqueAbstractHelper;
+import ch.vd.uniregctb.editique.EditiqueAbstractHelperImpl;
 import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.EditiquePrefixeHelper;
 import ch.vd.uniregctb.editique.TypeDocumentEditique;
@@ -64,7 +64,7 @@ import ch.vd.uniregctb.type.ModeleFeuille;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeDocument;
 
-public class ImpressionDeclarationImpotPersonnesMoralesHelperImpl extends EditiqueAbstractHelper implements ImpressionDeclarationImpotPersonnesMoralesHelper {
+public class ImpressionDeclarationImpotPersonnesMoralesHelperImpl extends EditiqueAbstractHelperImpl implements ImpressionDeclarationImpotPersonnesMoralesHelper {
 
 	private static final String TYPE_DOC = "DI";
 	private static final String COD_DOC_DI_PM = "U1P1";
@@ -202,8 +202,6 @@ public class ImpressionDeclarationImpotPersonnesMoralesHelperImpl extends Editiq
 
 	private CTypeInfoDocument buildInfoDocument(DeclarationImpotOrdinairePM declaration, AdresseEnvoiDetaillee adresseContribuable) throws AdresseException {
 		final CTypeInfoDocument infoDoc = new CTypeInfoDocument();
-
-		// TODO faut-il envoyer les courriers vers HS à l'OIPM ?
 
 		final Pair<STypeZoneAffranchissement, String> infoAffranchissement = getInformationsAffranchissement(adresseContribuable, false, ServiceInfrastructureService.noOIPM);
 		infoDoc.setIdEnvoi(infoAffranchissement.getRight());
