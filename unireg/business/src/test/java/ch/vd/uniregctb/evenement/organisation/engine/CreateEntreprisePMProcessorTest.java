@@ -209,7 +209,6 @@ public class CreateEntreprisePMProcessorTest extends AbstractEvenementOrganisati
 						                                                             TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE);
 				addOrganisation(
 						organisationAvecSiteSecondaire);
-				System.err.print(organisationAvecSiteSecondaire.getNumeroOrganisation());
 			}
 		});
 
