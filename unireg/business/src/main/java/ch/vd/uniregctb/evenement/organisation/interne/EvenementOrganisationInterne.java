@@ -30,6 +30,7 @@ import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationErreurC
 import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationSuiviCollector;
 import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationWarningCollector;
 import ch.vd.uniregctb.metier.AjustementForsSecondairesResult;
+import ch.vd.uniregctb.metier.MetierServiceException;
 import ch.vd.uniregctb.tiers.ActiviteEconomique;
 import ch.vd.uniregctb.tiers.Bouclement;
 import ch.vd.uniregctb.tiers.CategorieEntrepriseHelper;
@@ -829,8 +830,13 @@ public abstract class EvenementOrganisationInterne {
 	protected void adapteForsSecondairesPourEtablissementsVD(Entreprise entreprise, RegDate dateAuPlusTot, EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) throws
 			EvenementOrganisationException {
 
-		final AjustementForsSecondairesResult ajustementForsSecondaires =
-				getContext().getMetierServicePM().calculAjustementForsSecondairesPourEtablissementsVD(entreprise, dateAuPlusTot);
+		final AjustementForsSecondairesResult ajustementForsSecondaires;
+		try {
+			ajustementForsSecondaires = getContext().getMetierServicePM().calculAjustementForsSecondairesPourEtablissementsVD(entreprise, dateAuPlusTot);
+		}
+		catch (MetierServiceException e) {
+			throw new EvenementOrganisationException(e);
+		}
 
 		for (ForFiscalSecondaire forAAnnuler : ajustementForsSecondaires.getAAnnuler()) {
 			annulerForFiscalSecondaire(forAAnnuler, warnings, suivis);

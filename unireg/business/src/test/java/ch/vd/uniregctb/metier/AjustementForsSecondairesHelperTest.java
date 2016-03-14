@@ -11,7 +11,6 @@ import org.junit.Test;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.organisation.data.Domicile;
 import ch.vd.uniregctb.common.WithoutSpringTest;
-import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationException;
 import ch.vd.uniregctb.tiers.DomicileHisto;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
 import ch.vd.uniregctb.type.MotifFor;
@@ -42,7 +41,7 @@ public class AjustementForsSecondairesHelperTest extends WithoutSpringTest {
 	}
 
 	@Test
-	public void testNouvelEtablissement() throws EvenementOrganisationException {
+	public void testNouvelEtablissement() throws MetierServiceException {
 
 		addDomicile(date(2015, 1, 1), date(2015, 1, 31), COMMUNE_OU_FRACTION_VD, Echallens.getNoOFS());
 
@@ -58,7 +57,7 @@ public class AjustementForsSecondairesHelperTest extends WithoutSpringTest {
 	}
 
 	@Test
-	public void testEtablissementAnnule() throws EvenementOrganisationException {
+	public void testEtablissementAnnule() throws MetierServiceException {
 
 
 		ForFiscalSecondaire seraAnnule1 = addFor(date(2015, 1, 1), DEBUT_EXPLOITATION, date(2015, 1, 31), FIN_EXPLOITATION, Echallens.getNoOFS(), COMMUNE_OU_FRACTION_VD, ETABLISSEMENT_STABLE);
@@ -78,7 +77,7 @@ public class AjustementForsSecondairesHelperTest extends WithoutSpringTest {
 	}
 
 	@Test
-	public void testEtablisssmentFerme() throws EvenementOrganisationException {
+	public void testEtablisssmentFerme() throws MetierServiceException {
 
 		addDomicile(date(2015, 1, 1), date(2015, 1, 31), COMMUNE_OU_FRACTION_VD, Echallens.getNoOFS());
 		addDomicile(date(2015, 3, 1), date(2015, 3, 31), COMMUNE_OU_FRACTION_VD, Echallens.getNoOFS());
@@ -100,7 +99,7 @@ public class AjustementForsSecondairesHelperTest extends WithoutSpringTest {
 	}
 
 	@Test
-	public void testDeuxPresencesRienNeChange() throws EvenementOrganisationException {
+	public void testDeuxPresencesRienNeChange() throws MetierServiceException {
 
 		addDomicile(date(2015, 1, 1), date(2015, 1, 31), COMMUNE_OU_FRACTION_VD, Echallens.getNoOFS());
 		addDomicile(date(2015, 3, 1), date(2015, 3, 31), COMMUNE_OU_FRACTION_VD, Echallens.getNoOFS());
@@ -117,7 +116,7 @@ public class AjustementForsSecondairesHelperTest extends WithoutSpringTest {
 	}
 
 	@Test
-	public void testDeuxPresencesPremierNouveauEmpiete() throws EvenementOrganisationException {
+	public void testDeuxPresencesPremierNouveauEmpiete() throws MetierServiceException {
 
 		addDomicile(date(2015, 1, 1), date(2015, 1, 19), COMMUNE_OU_FRACTION_VD, Echallens.getNoOFS());
 		addDomicile(date(2015, 1, 25), date(2015, 3, 10), COMMUNE_OU_FRACTION_VD, Echallens.getNoOFS());
@@ -144,7 +143,7 @@ public class AjustementForsSecondairesHelperTest extends WithoutSpringTest {
 	}
 
 	@Test
-	public void testDeuxPresencesNouveauEmpieteDeuxiemeFerme() throws EvenementOrganisationException {
+	public void testDeuxPresencesNouveauEmpieteDeuxiemeFerme() throws MetierServiceException {
 
 		addDomicile(date(2015, 1, 1), date(2015, 1, 31), COMMUNE_OU_FRACTION_VD, Echallens.getNoOFS());
 		addDomicile(date(2015, 3, 1), date(2015, 4, 10), COMMUNE_OU_FRACTION_VD, Echallens.getNoOFS());

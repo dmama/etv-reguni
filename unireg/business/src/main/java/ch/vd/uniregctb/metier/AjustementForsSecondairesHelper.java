@@ -13,7 +13,6 @@ import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationException;
 import ch.vd.uniregctb.tiers.DomicileHisto;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
 import ch.vd.uniregctb.type.MotifFor;
@@ -27,8 +26,8 @@ public class AjustementForsSecondairesHelper {
 
 	@NotNull
 	public static AjustementForsSecondairesResult getResultatAjustementForsSecondaires(Map<Integer, List<DomicileHisto>> tousLesDomicilesVD,
-	                                                                                      Map<Integer, List<ForFiscalSecondaire>> tousLesForsFiscauxSecondairesParCommune, RegDate dateAuPlusTot) throws
-			EvenementOrganisationException {
+	                                                                                   Map<Integer, List<ForFiscalSecondaire>> tousLesForsFiscauxSecondairesParCommune, RegDate dateAuPlusTot) throws
+			MetierServiceException {
 		final List<ForFiscalSecondaire> aAnnulerResultat = new ArrayList<>();
 		final List<AjustementForsSecondairesResult.ForAFermer> aFermerResultat = new ArrayList<>();
 		final List<ForFiscalSecondaire> aCreerResultat = new ArrayList<>();
@@ -38,7 +37,7 @@ public class AjustementForsSecondairesHelper {
 			for (Map.Entry<Integer, List<ForFiscalSecondaire>> entry : tousLesForsFiscauxSecondairesParCommune.entrySet()) {
 				final ForFiscalSecondaire existant = DateRangeHelper.rangeAt(entry.getValue(), dateAuPlusTot);
 				if (existant != null) {
-					throw new EvenementOrganisationException(String.format("Une date au plus tôt %s est précisée pour le recalcul des fors secondaires, indiquant qu'on est en mode création. Mais " +
+					throw new MetierServiceException(String.format("Une date au plus tôt %s est précisée pour le recalcul des fors secondaires, indiquant qu'on est en mode création. Mais " +
 							                                                       "au moins un for secondaire valide débutant antiérieurement a été trouvé sur la commune %s. " +
 							                                                       "Début %s%s. Impossible de continuer. Veuillez signaler l'erreur.",
 					                                                       RegDateHelper.dateToDisplayString(dateAuPlusTot),

@@ -11,7 +11,6 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.efacture.EFactureService;
-import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationException;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.ServiceOrganisationService;
@@ -115,7 +114,7 @@ public class MetierServicePMImpl implements MetierServicePM {
 	 * @param dateAuPlusTot la date de coupure pour la création d'entreprise.
 	 */
 	@Override
-	public AjustementForsSecondairesResult calculAjustementForsSecondairesPourEtablissementsVD(Entreprise entreprise, RegDate dateAuPlusTot) throws EvenementOrganisationException {
+	public AjustementForsSecondairesResult calculAjustementForsSecondairesPourEtablissementsVD(Entreprise entreprise, RegDate dateAuPlusTot) throws MetierServiceException {
 
 		List<DateRanged<Etablissement>> etablissements = tiersService.getEtablissementsSecondairesEntreprise(entreprise);
 

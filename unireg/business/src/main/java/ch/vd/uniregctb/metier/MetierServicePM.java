@@ -1,7 +1,6 @@
 package ch.vd.uniregctb.metier;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationException;
 import ch.vd.uniregctb.tiers.Entreprise;
 
 /**
@@ -9,5 +8,5 @@ import ch.vd.uniregctb.tiers.Entreprise;
  */
 public interface MetierServicePM {
 
-	AjustementForsSecondairesResult calculAjustementForsSecondairesPourEtablissementsVD(Entreprise entreprise, RegDate dateAuPlusTot) throws EvenementOrganisationException;
+	AjustementForsSecondairesResult calculAjustementForsSecondairesPourEtablissementsVD(Entreprise entreprise, RegDate dateAuPlusTot) throws MetierServiceException;
 }
