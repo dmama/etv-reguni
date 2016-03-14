@@ -59,6 +59,7 @@ import ch.vd.uniregctb.metier.MetierServicePM;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.tiers.Entreprise;
+import ch.vd.uniregctb.tiers.PlusieursEntreprisesAvecMemeNumeroOrganisationException;
 import ch.vd.uniregctb.tiers.RaisonSocialeFiscaleEntreprise;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersService;
@@ -136,6 +137,9 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 	 *     Au cas ou aucune stratégie ne retourne d'événement interne, un événement d'indexation pure est AUTOMATIQUEMENT ajouté. Dans le cas contraire, un événement
 	 *     d'indexation neutre (qui ne modifie pas le statut) est ajouté afin que la réindexation du tiers ait lieu quoi qu'il arrive.
 	 * </p>
+	 * <p>
+	 *     Si plusieurs tiers détiennent le même numéro cantonal d'entreprise, le traitement est mis en erreur.
+	 * </p>
 	 * @param event   un événement organisation externe
 	 * @param options les options d'exécution de l'événement
 	 * @return Un événement interne correspondant à l'événement passé en paramètre
@@ -153,9 +157,15 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 		final String raisonSocialeCivile = organisation.getNom(event.getDateEvenement());
 		final String noIdeCivil = organisation.getNumeroIDE(event.getDateEvenement());
 
+		Entreprise entreprise;
 		final List<EvenementOrganisationInterne> evenements = new ArrayList<>();
 
-		Entreprise entreprise = context.getTiersDAO().getEntrepriseByNumeroOrganisation(organisation.getNumeroOrganisation());
+		try {
+			entreprise = context.getTiersDAO().getEntrepriseByNumeroOrganisation(organisation.getNumeroOrganisation());
+		}
+		catch (PlusieursEntreprisesAvecMemeNumeroOrganisationException e) {
+			return new TraitementManuel(event, organisation, null, context, options, e.getMessage());
+		}
 
 		/* L'entreprise est retrouvé grâce au numéro cantonal. Pas de doute possible. */
 		if (entreprise != null) {
@@ -167,9 +177,10 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 			Audit.info(event.getId(), message);
 			evenements.add(new MessageSuivi(event, organisation, entreprise, context, options, message));
 
+		}
 		/* L'entreprise n'a pas été retrouvée par identifiant cantonal, on utilise le service d'identification pour tenter de la retrouver
 		 si elle existe quand même sans avoir été rapprochée. */
-		} else {
+		else {
 			final CriteresEntreprise criteres = new CriteresEntreprise();
 			criteres.setRaisonSociale(raisonSocialeCivile);
 			criteres.setIde(noIdeCivil);
@@ -192,8 +203,9 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 					Audit.info(event.getId(), message);
 					evenements.add(new MessageSuivi(event, organisation, entreprise, context, options, message));
 
-					// L'identificatione est un échec: selon toute vraisemblance, on connait le tiers mais on n'arrive pas à l'identifier avec certitude.
-				} else if (found.size() > 1) {
+				}
+				// L'identificatione est un échec: selon toute vraisemblance, on connait le tiers mais on n'arrive pas à l'identifier avec certitude.
+				else if (found.size() > 1) {
 					Collections.sort(found);
 					final String listeTrouves = StringsUtils.appendsWithDelimiter(", ", found);
 					String message = String.format("Plusieurs entreprises ont été trouvées (numéros %s) pour les attributs civils [%s]. Arrêt du traitement.",

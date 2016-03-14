@@ -18,10 +18,11 @@ public class PlusieursEntreprisesAvecMemeNumeroOrganisationException extends Run
 	public PlusieursEntreprisesAvecMemeNumeroOrganisationException(long numeroOrganisation, long[] noEntreprises) {
 		this.numeroOrganisation = numeroOrganisation;
 		this.noEntreprises = noEntreprises;
+		Arrays.sort(this.noEntreprises);
 	}
 
 	@Override
 	public String getMessage() {
-		return String.format("Plusieurs entreprises non-annulées partagent le même numéro d'organisation %d (%s)", numeroOrganisation, Arrays.toString(noEntreprises));
+		return String.format("Plusieurs entreprises non-annulées partagent le même numéro d'organisation %d: (%s)", numeroOrganisation, Arrays.toString(noEntreprises));
 	}
 }

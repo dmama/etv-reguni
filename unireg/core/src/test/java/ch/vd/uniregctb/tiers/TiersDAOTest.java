@@ -367,7 +367,7 @@ public class TiersDAOTest extends CoreDAOTest {
 		} catch (Exception e) {
 			// On a bien l'exception correspondant à la situation de doublon
 			assertTrue(e instanceof PlusieursEntreprisesAvecMemeNumeroOrganisationException);
-			assertTrue(e.getMessage().startsWith(String.format("Plusieurs entreprises non-annulées partagent le même numéro d'organisation %d ", noOrganisation)));
+			assertTrue(e.getMessage().startsWith(String.format("Plusieurs entreprises non-annulées partagent le même numéro d'organisation %d: ", noOrganisation)));
 		}
 
 		/*
