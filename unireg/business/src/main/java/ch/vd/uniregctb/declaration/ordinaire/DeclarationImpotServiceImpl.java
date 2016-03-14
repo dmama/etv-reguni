@@ -560,7 +560,9 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 				evenementDeclarationPPSender.sendAnnulationEvent(contribuable.getNumero(), pf, dateEvenement);
 			}
 			if (di instanceof DeclarationImpotOrdinairePM && StringUtils.isNotBlank(di.getCodeControle())) {
-				evenementDeclarationPMSender.sendAnnulationEvent(contribuable.getNumero(), pf, di.getNumero(), di.getCodeControle());
+				final DeclarationImpotOrdinairePM dipm = (DeclarationImpotOrdinairePM) di;
+				final String codeRoutage = dipm.getCodeSegment() != null ? Integer.toString(dipm.getCodeSegment()) : null;
+				evenementDeclarationPMSender.sendAnnulationEvent(contribuable.getNumero(), pf, di.getNumero(), di.getCodeControle(), codeRoutage);
 			}
 		}
 		catch (EvenementDeclarationException e) {

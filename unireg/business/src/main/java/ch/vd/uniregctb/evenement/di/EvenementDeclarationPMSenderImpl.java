@@ -73,7 +73,19 @@ public class EvenementDeclarationPMSenderImpl implements EvenementDeclarationPMS
 			LOGGER.info("Evénements de déclarations désactivés: l'événement d'émission de DI sur le contribuable n° " + numeroContribuable + " n'est pas envoyé.");
 			return;
 		}
+		sendPublication(numeroContribuable, periodeFiscale, numeroSequence, codeControle, codeRoutage, true);
+	}
 
+	@Override
+	public void sendAnnulationEvent(long numeroContribuable, int periodeFiscale, int numeroSequence, String codeControle, String codeRoutage) throws EvenementDeclarationException {
+		if (!enabled) {
+			LOGGER.info("Evénements de déclarations désactivés: l'événement d'annulation de DI sur le contribuable n° " + numeroContribuable + " n'est pas envoyé.");
+			return;
+		}
+		sendPublication(numeroContribuable, periodeFiscale, numeroSequence, codeControle, codeRoutage, false);
+	}
+
+	private void sendPublication(long numeroContribuable, int periodeFiscale, int numeroSequence, String codeControle, String codeRoutage, boolean activation) throws EvenementDeclarationException {
 		final EvtPublicationCodeControleCyber evt = new EvtPublicationCodeControleCyber();
 		evt.setApplicationEmettrice(CodeApplication.UNIREG);
 		evt.setCodeControle(codeControle);
@@ -84,26 +96,7 @@ public class EvenementDeclarationPMSenderImpl implements EvenementDeclarationPMS
 		evt.setNumeroContribuable((int) numeroContribuable);
 		evt.setNumeroSequence(BigInteger.valueOf(numeroSequence));
 		evt.setPeriodeFiscale(periodeFiscale);
-		evt.setStatut(Statut.ACTIF);
-		evt.setTypeDocument(TypeDocument.DI_PM);
-		sendEvent(evt);
-	}
-
-	@Override
-	public void sendAnnulationEvent(long numeroContribuable, int periodeFiscale, int numeroSequence, String codeControle) throws EvenementDeclarationException {
-		if (!enabled) {
-			LOGGER.info("Evénements de déclarations désactivés: l'événement d'annulation de DI sur le contribuable n° " + numeroContribuable + " n'est pas envoyé.");
-			return;
-		}
-
-		final EvtPublicationCodeControleCyber evt = new EvtPublicationCodeControleCyber();
-		evt.setApplicationEmettrice(CodeApplication.UNIREG);
-		evt.setCodeControle(codeControle);
-		evt.setHorodatagePublication(XmlUtils.date2xmlcal(DateHelper.getCurrentDate()));
-		evt.setNumeroContribuable((int) numeroContribuable);
-		evt.setNumeroSequence(BigInteger.valueOf(numeroSequence));
-		evt.setPeriodeFiscale(periodeFiscale);
-		evt.setStatut(Statut.INACTIF);
+		evt.setStatut(activation ? Statut.ACTIF : Statut.INACTIF);
 		evt.setTypeDocument(TypeDocument.DI_PM);
 		sendEvent(evt);
 	}

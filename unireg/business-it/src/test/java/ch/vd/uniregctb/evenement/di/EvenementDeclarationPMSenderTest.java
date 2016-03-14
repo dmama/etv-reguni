@@ -86,7 +86,7 @@ public class EvenementDeclarationPMSenderTest extends EvenementTest {
 
 	@Test
 	public void testSendEvenementAnnulationDeclaration() throws Exception {
-		sender.sendAnnulationEvent(12344556L, 2000, 1, "5635sS");
+		sender.sendAnnulationEvent(12344556L, 2000, 1, "5635sS", "5");
 
 		final String expectedAvantHorodatage = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
 				"<ev-di-cyber-cc-2:evtPublicationCodeControleCyber xmlns:ev-di-cyber-cc-2=\"http://www.vd.ch/fiscalite/cyber/codeControle/2\">" +
@@ -99,6 +99,7 @@ public class EvenementDeclarationPMSenderTest extends EvenementTest {
 				"<ev-di-cyber-cc-2:numeroContribuable>12344556</ev-di-cyber-cc-2:numeroContribuable>" +
 				"<ev-di-cyber-cc-2:codeControle>5635sS</ev-di-cyber-cc-2:codeControle>" +
 				"<ev-di-cyber-cc-2:numeroSequence>1</ev-di-cyber-cc-2:numeroSequence>" +
+				"<ev-di-cyber-cc-2:informationsComplementaires><ev-di-cyber-cc-2:informationComplementaire><ev-di-cyber-cc-2:attribut>CODE_ROUTAGE</ev-di-cyber-cc-2:attribut><ev-di-cyber-cc-2:valeur>5</ev-di-cyber-cc-2:valeur></ev-di-cyber-cc-2:informationComplementaire></ev-di-cyber-cc-2:informationsComplementaires>" +
 				"</ev-di-cyber-cc-2:evtPublicationCodeControleCyber>";
 
 		final Pattern pattern = Pattern.compile(Pattern.quote(expectedAvantHorodatage) + "[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{1,3}[+-][0-9]{2}:[0-9]{2}" + Pattern.quote(expectedApresHorodatage));
@@ -120,7 +121,7 @@ public class EvenementDeclarationPMSenderTest extends EvenementTest {
 	@Test
 	public void testSendEvenementAnnulationDeclarationInvalide() throws Exception {
 		try {
-			sender.sendAnnulationEvent(1000000000L, 2000, 1, "2143d2");
+			sender.sendAnnulationEvent(1000000000L, 2000, 1, "2143d2", "5");
 			fail();
 		}
 		catch (EvenementDeclarationException e) {

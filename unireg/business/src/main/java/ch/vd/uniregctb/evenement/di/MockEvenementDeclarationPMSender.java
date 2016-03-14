@@ -7,6 +7,6 @@ public class MockEvenementDeclarationPMSender implements EvenementDeclarationPMS
 	}
 
 	@Override
-	public void sendAnnulationEvent(long numeroContribuable, int periodeFiscale, int numeroSequence, String codeControle) throws EvenementDeclarationException {
+	public void sendAnnulationEvent(long numeroContribuable, int periodeFiscale, int numeroSequence, String codeControle, String codeRoutage) throws EvenementDeclarationException {
 	}
 }
