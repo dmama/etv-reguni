@@ -141,11 +141,18 @@ public class RegimeFiscalHelper {
 			typeEffectif = RegpmTypeRegimeFiscal._41C_SOCIETE_DE_BASE_MIXTE;
 			break;
 		case _71_FONDATION_ECCLESIASTIQUE:
+			typeEffectif = RegpmTypeRegimeFiscal._719_BUTS_CULTUELS_ART_90H;
+			break;
 		case _72_FONDATION_PREVOYANCE:
+			typeEffectif = RegpmTypeRegimeFiscal._729_INSTITUTIONS_DE_PREVOYANCE_ART_90I;
+			break;
 		case _701_APM_IMPORTANTES:
 		case _7020_SERVICES_ASSOCIATION_FONDATION:
 		case _7032_APM_SI_SUBVENTIONNEE:
 			typeEffectif = RegpmTypeRegimeFiscal._70_ORDINAIRE_ASSOCIATION_FONDATION;
+			break;
+		case _609_TRANSPORTS_CONCESSIONNES_EXONERES:
+			typeEffectif = RegpmTypeRegimeFiscal._60_TRANSPORTS_CONCESSIONNES;
 			break;
 		default:
 			typeEffectif = RegpmTypeRegimeFiscal._01_ORDINAIRE;
@@ -175,6 +182,15 @@ public class RegimeFiscalHelper {
 		case _33_SOCIETE_ORDINAIRE_CARACTERE_SOCIAL:
 		case _35_SOCIETE_ORDINAIRE_SIAL:
 			typeEffectif = RegpmTypeRegimeFiscal._01_ORDINAIRE;
+			break;
+		case _609_TRANSPORTS_CONCESSIONNES_EXONERES:
+			typeEffectif = RegpmTypeRegimeFiscal._60_TRANSPORTS_CONCESSIONNES;
+			break;
+		case _71_FONDATION_ECCLESIASTIQUE:
+			typeEffectif = RegpmTypeRegimeFiscal._719_BUTS_CULTUELS_ART_90H;
+			break;
+		case _72_FONDATION_PREVOYANCE:
+			typeEffectif = RegpmTypeRegimeFiscal._729_INSTITUTIONS_DE_PREVOYANCE_ART_90I;
 			break;
 		default:
 			typeEffectif = type;
