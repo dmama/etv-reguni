@@ -16,7 +16,6 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.DateHelper;
-import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.data.DataEventService;
@@ -94,7 +93,7 @@ public class EvenementOrganisationProcessorInternal implements ProcessorInternal
 	 * {@inheritDoc}
 	 */
 	public boolean processEventAndDoPostProcessingOnError(EvenementOrganisationBasicInfo evt, List<EvenementOrganisationBasicInfo> evts, int pointer) {
-		AuthenticationHelper.pushPrincipal(String.format("EvtOrganisation-%d", evt.getId()));
+		AuthenticationHelper.pushPrincipal(String.format("EvtOrganisation-%d", evt.getNoEvenement()));
 		try {
 			final boolean success = processEvent(evt, false);
 			if (!success) {
@@ -112,7 +111,7 @@ public class EvenementOrganisationProcessorInternal implements ProcessorInternal
 	 */
 	public boolean forceEvent(EvenementOrganisationBasicInfo evt) {
 		if (evt.getEtat().isTraite() && evt.getEtat() != EtatEvenementOrganisation.A_VERIFIER) {
-			throw new IllegalArgumentException("L'état de l'événement " + evt.getId() + " ne lui permet pas d'être forcé");
+			throw new IllegalArgumentException("L'état de l'événement " + evt.getId() + " (rcent: " + evt.getNoEvenement() + ") ne lui permet pas d'être forcé");
 		}
 		return processEvent(evt, true);
 	}
@@ -149,7 +148,7 @@ public class EvenementOrganisationProcessorInternal implements ProcessorInternal
 					final EvenementOrganisation evt = fetchDatabaseEvent(info);
 					if (evt.getEtat().isTraite()) {
 						if (!force || info.getEtat() != EtatEvenementOrganisation.A_VERIFIER) {
-							LOGGER.info(String.format("Evénement %d déjà dans l'état %s, on ne le re-traite pas", info.getId(), evt.getEtat()));
+							LOGGER.info(String.format("Evénement %s (rcent: %d) déjà dans l'état %s, on ne le re-traite pas", info.getId(), info.getNoEvenement(), evt.getEtat()));
 							return Boolean.TRUE;
 						}
 					}
@@ -164,12 +163,12 @@ public class EvenementOrganisationProcessorInternal implements ProcessorInternal
 			});
 		}
 		catch (EvenementOrganisationWrappingException e) {
-			LOGGER.error(String.format("Exception reçue lors du traitement de l'événement %d", info.getId()), e.getCause());
+			LOGGER.error(String.format("Exception reçue lors du traitement de l'événement %d (rcent: %d)", info.getId(), info.getNoEvenement()), e.getCause());
 			onException(info, e.getCause(), force);
 			return false;
 		}
 		catch (Exception e) {
-			LOGGER.error(String.format("Exception reçue lors du traitement de l'événement %d", info.getId()), e);
+			LOGGER.error(String.format("Exception reçue lors du traitement de l'événement %d (rcent: %d)", info.getId(), info.getNoEvenement()), e);
 			onException(info, e, force);
 			return false;
 		}
@@ -184,7 +183,7 @@ public class EvenementOrganisationProcessorInternal implements ProcessorInternal
 	private EvenementOrganisation fetchDatabaseEvent(EvenementOrganisationBasicInfo info) {
 		final EvenementOrganisation evt = evtOrganisationDAO.get(info.getId());
 		if (evt == null) {
-			throw new IllegalArgumentException("Pas d'événement organisation trouvé avec le numéro " + info.getId());
+			throw new IllegalArgumentException("Pas d'événement organisation trouvé avec le numéro technique " + info.getId());
 		}
 		return evt;
 	}
@@ -295,10 +294,8 @@ public class EvenementOrganisationProcessorInternal implements ProcessorInternal
 	 * @throws EvenementOrganisationException en cas de problème métier
 	 */
 	private boolean processEvent(final EvenementOrganisation event, final boolean force) throws EvenementOrganisationException {
-		Audit.info(event.getId(), String.format("Début du traitement de l'événement organisation %d de type %s au %s sur l'organisation %d",
-		                                        event.getId(), event.getType(),
-		                                        RegDateHelper.dateToDisplayString(event.getDateEvenement()),
-		                                        event.getNoOrganisation()));
+		Audit.info(event.getNoEvenement(), String.format("Début du traitement de l'événement organisation %s, type %s.",
+		                                        event.toString(), event.getType()));
 
 		// élimination des erreurs et du commentaire de traitement en cas de retraitement
 		if (!force) {
@@ -357,13 +354,13 @@ public class EvenementOrganisationProcessorInternal implements ProcessorInternal
 		for (EvenementOrganisationErreur e : entrees) {
 			switch (e.getType()) {
 			case ERROR:
-				Audit.error(event.getId(), e.getMessage());
+				Audit.error(event.getNoEvenement(), e.getMessage());
 				break;
 			case WARNING:
-				Audit.warn(event.getId(), e.getMessage());
+				Audit.warn(event.getNoEvenement(), e.getMessage());
 				break;
 			case SUIVI:
-				Audit.info(event.getId(), e.getMessage());
+				Audit.info(event.getNoEvenement(), e.getMessage());
 				break;
 			default:
 				throw new IllegalArgumentException(String.format("Type d'erreur inconnu: %s", e.getType()));
@@ -376,13 +373,13 @@ public class EvenementOrganisationProcessorInternal implements ProcessorInternal
 
 		final String messageAudit = String.format("Statut de l'événement passé à '%s'", etat);
 		if (etat == EtatEvenementOrganisation.EN_ERREUR) {
-			Audit.error(event.getId(), messageAudit);
+			Audit.error(event.getNoEvenement(), messageAudit);
 		}
 		else if (etat == EtatEvenementOrganisation.A_VERIFIER) {
-			Audit.warn(event.getId(), messageAudit);
+			Audit.warn(event.getNoEvenement(), messageAudit);
 		}
 		else {
-			Audit.success(event.getId(), messageAudit);
+			Audit.success(event.getNoEvenement(), messageAudit);
 		}
 	}
 
@@ -394,7 +391,7 @@ public class EvenementOrganisationProcessorInternal implements ProcessorInternal
 		// Translate event
 		final EvenementOrganisationInterne evtInterne = buildInterne(event);
 		if (evtInterne == null) {
-			LOGGER.error(String.format("Aucun code de traitement trouvé pour l'événement %d", event.getId()));
+			LOGGER.error(String.format("Aucun code de traitement trouvé pour l'événement %s", event.toString()));
 			erreurs.addErreur("Aucun code de traitement trouvé.");
 			return EtatEvenementOrganisation.EN_ERREUR;
 		}

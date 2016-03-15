@@ -109,13 +109,13 @@ public class EtablissementsSecondairesProcessorTest extends AbstractEvenementOrg
 		});
 
 		// Création de l'événement
-		final Long evtId = 12344321L;
+		final Long noEvenement = 12344321L;
 
 		// Persistence événement
 		doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction(TransactionStatus transactionStatus) {
-				final EvenementOrganisation event = createEvent(evtId, noOrganisation, TypeEvenementOrganisation.FOSC_AUTRE_MUTATION, date(2015, 7, 8), A_TRAITER);
+				final EvenementOrganisation event = createEvent(noEvenement, noOrganisation, TypeEvenementOrganisation.FOSC_AUTRE_MUTATION, date(2015, 7, 8), A_TRAITER);
 				return hibernateTemplate.merge(event).getId();
 			}
 		});
@@ -128,7 +128,7 @@ public class EtablissementsSecondairesProcessorTest extends AbstractEvenementOrg
 			                             @Override
 			                             public Object doInTransaction(TransactionStatus status) {
 
-				                             final EvenementOrganisation evt = evtOrganisationDAO.get(evtId);
+				                             final EvenementOrganisation evt = getUniqueEvent(noEvenement);
 				                             Assert.assertNotNull(evt);
 				                             Assert.assertEquals(EtatEvenementOrganisation.TRAITE, evt.getEtat());
 
@@ -253,13 +253,13 @@ public class EtablissementsSecondairesProcessorTest extends AbstractEvenementOrg
 		});
 
 		// Création de l'événement
-		final Long evtId = 12344321L;
+		final Long noEvenement = 12344321L;
 
 		// Persistence événement
 		doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction(TransactionStatus transactionStatus) {
-				final EvenementOrganisation event = createEvent(evtId, noOrganisation, TypeEvenementOrganisation.FOSC_AUTRE_MUTATION, date(2015, 7, 8), A_TRAITER);
+				final EvenementOrganisation event = createEvent(noEvenement, noOrganisation, TypeEvenementOrganisation.FOSC_AUTRE_MUTATION, date(2015, 7, 8), A_TRAITER);
 				return hibernateTemplate.merge(event).getId();
 			}
 		});
@@ -272,7 +272,7 @@ public class EtablissementsSecondairesProcessorTest extends AbstractEvenementOrg
 			                             @Override
 			                             public Object doInTransaction(TransactionStatus status) {
 
-				                             final EvenementOrganisation evt = evtOrganisationDAO.get(evtId);
+				                             final EvenementOrganisation evt = getUniqueEvent(noEvenement);
 				                             Assert.assertNotNull(evt);
 				                             Assert.assertEquals(EtatEvenementOrganisation.TRAITE, evt.getEtat());
 
@@ -378,13 +378,13 @@ public class EtablissementsSecondairesProcessorTest extends AbstractEvenementOrg
 		});
 
 		// Création de l'événement
-		final Long evtId = 12344321L;
+		final Long noEvenement = 12344321L;
 
 		// Persistence événement
 		doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction(TransactionStatus transactionStatus) {
-				final EvenementOrganisation event = createEvent(evtId, noOrganisation, TypeEvenementOrganisation.FOSC_AUTRE_MUTATION, date(2015, 7, 8), A_TRAITER);
+				final EvenementOrganisation event = createEvent(noEvenement, noOrganisation, TypeEvenementOrganisation.FOSC_AUTRE_MUTATION, date(2015, 7, 8), A_TRAITER);
 				return hibernateTemplate.merge(event).getId();
 			}
 		});
@@ -397,7 +397,7 @@ public class EtablissementsSecondairesProcessorTest extends AbstractEvenementOrg
 			                             @Override
 			                             public Object doInTransaction(TransactionStatus status) {
 
-				                             final EvenementOrganisation evt = evtOrganisationDAO.get(evtId);
+				                             final EvenementOrganisation evt = getUniqueEvent(noEvenement);
 				                             Assert.assertNotNull(evt);
 				                             Assert.assertEquals(EtatEvenementOrganisation.TRAITE, evt.getEtat());
 
@@ -568,13 +568,13 @@ public class EtablissementsSecondairesProcessorTest extends AbstractEvenementOrg
 		});
 
 		// Création de l'événement
-		final Long evtId = 12344321L;
+		final Long noEvenement = 12344321L;
 
 		// Persistence événement
 		doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction(TransactionStatus transactionStatus) {
-				final EvenementOrganisation event = createEvent(evtId, noOrganisation, TypeEvenementOrganisation.FOSC_AUTRE_MUTATION, date(2015, 6, 13), A_TRAITER);
+				final EvenementOrganisation event = createEvent(noEvenement, noOrganisation, TypeEvenementOrganisation.FOSC_AUTRE_MUTATION, date(2015, 6, 13), A_TRAITER);
 				return hibernateTemplate.merge(event).getId();
 			}
 		});
@@ -587,7 +587,7 @@ public class EtablissementsSecondairesProcessorTest extends AbstractEvenementOrg
 			                             @Override
 			                             public Object doInTransaction(TransactionStatus status) {
 
-				                             final EvenementOrganisation evt = evtOrganisationDAO.get(evtId);
+				                             final EvenementOrganisation evt = getUniqueEvent(noEvenement);
 				                             Assert.assertNotNull(evt);
 				                             Assert.assertEquals(EtatEvenementOrganisation.TRAITE, evt.getEtat());
 
@@ -742,13 +742,13 @@ public class EtablissementsSecondairesProcessorTest extends AbstractEvenementOrg
 		});
 
 		// Création de l'événement
-		final Long evtId = 12344321L;
+		final Long noEvenement = 12344321L;
 
 		// Persistence événement
 		doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction(TransactionStatus transactionStatus) {
-				final EvenementOrganisation event = createEvent(evtId, noOrganisation, TypeEvenementOrganisation.FOSC_AUTRE_MUTATION, date(2015, 7, 5), A_TRAITER);
+				final EvenementOrganisation event = createEvent(noEvenement, noOrganisation, TypeEvenementOrganisation.FOSC_AUTRE_MUTATION, date(2015, 7, 5), A_TRAITER);
 				return hibernateTemplate.merge(event).getId();
 			}
 		});
@@ -761,7 +761,7 @@ public class EtablissementsSecondairesProcessorTest extends AbstractEvenementOrg
 			                             @Override
 			                             public Object doInTransaction(TransactionStatus status) {
 
-				                             final EvenementOrganisation evt = evtOrganisationDAO.get(evtId);
+				                             final EvenementOrganisation evt = getUniqueEvent(noEvenement);
 				                             Assert.assertNotNull(evt);
 				                             Assert.assertEquals(EtatEvenementOrganisation.TRAITE, evt.getEtat());
 
@@ -926,13 +926,13 @@ public class EtablissementsSecondairesProcessorTest extends AbstractEvenementOrg
 		});
 
 		// Création de l'événement
-		final Long evtId = 12344321L;
+		final Long noEvenement = 12344321L;
 
 		// Persistence événement
 		doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction(TransactionStatus transactionStatus) {
-				final EvenementOrganisation event = createEvent(evtId, noOrganisation, TypeEvenementOrganisation.FOSC_AUTRE_MUTATION, date(2015, 6, 10), A_TRAITER);
+				final EvenementOrganisation event = createEvent(noEvenement, noOrganisation, TypeEvenementOrganisation.FOSC_AUTRE_MUTATION, date(2015, 6, 10), A_TRAITER);
 				return hibernateTemplate.merge(event).getId();
 			}
 		});
@@ -945,7 +945,7 @@ public class EtablissementsSecondairesProcessorTest extends AbstractEvenementOrg
 			                             @Override
 			                             public Object doInTransaction(TransactionStatus status) {
 
-				                             final EvenementOrganisation evt = evtOrganisationDAO.get(evtId);
+				                             final EvenementOrganisation evt = getUniqueEvent(noEvenement);
 				                             Assert.assertNotNull(evt);
 				                             Assert.assertEquals(EtatEvenementOrganisation.TRAITE, evt.getEtat());
 
@@ -1117,13 +1117,13 @@ public class EtablissementsSecondairesProcessorTest extends AbstractEvenementOrg
 		});
 
 		// Création de l'événement
-		final Long evtId = 12344321L;
+		final Long noEvenement = 12344321L;
 
 		// Persistence événement
 		doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction(TransactionStatus transactionStatus) {
-				final EvenementOrganisation event = createEvent(evtId, noOrganisation, TypeEvenementOrganisation.FOSC_AUTRE_MUTATION, date(2015, 6, 10), A_TRAITER);
+				final EvenementOrganisation event = createEvent(noEvenement, noOrganisation, TypeEvenementOrganisation.FOSC_AUTRE_MUTATION, date(2015, 6, 10), A_TRAITER);
 				return hibernateTemplate.merge(event).getId();
 			}
 		});
@@ -1136,7 +1136,7 @@ public class EtablissementsSecondairesProcessorTest extends AbstractEvenementOrg
 			                             @Override
 			                             public Object doInTransaction(TransactionStatus status) {
 
-				                             final EvenementOrganisation evt = evtOrganisationDAO.get(evtId);
+				                             final EvenementOrganisation evt = getUniqueEvent(noEvenement);
 				                             Assert.assertNotNull(evt);
 				                             Assert.assertEquals(EtatEvenementOrganisation.TRAITE, evt.getEtat());
 

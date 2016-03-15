@@ -14,6 +14,7 @@ public class EvenementOrganisationElementListeRechercheView implements Serializa
 	private static final long serialVersionUID = -5244992269330676463L;
 
 	private Long id;
+	private Long noEvenement;
 	private TypeEvenementOrganisation type;
 	private EtatEvenementOrganisation etat;
 	private Date dateTraitement;
@@ -27,6 +28,7 @@ public class EvenementOrganisationElementListeRechercheView implements Serializa
 
 	public EvenementOrganisationElementListeRechercheView(EvenementOrganisation evt) {
 		this.id = evt.getId();
+		this.noEvenement = evt.getNoEvenement();
 		this.etat = evt.getEtat();
 		this.numeroOrganisation = evt.getNoOrganisation();
 		this.type = evt.getType();
@@ -41,6 +43,14 @@ public class EvenementOrganisationElementListeRechercheView implements Serializa
 
 	public void setId(Long id) {
 		this.id = id;
+	}
+
+	public Long getNoEvenement() {
+		return noEvenement;
+	}
+
+	public void setNoEvenement(Long noEvenement) {
+		this.noEvenement = noEvenement;
 	}
 
 	public TypeEvenementOrganisation getType() {

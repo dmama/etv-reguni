@@ -128,9 +128,9 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 		buildProcessor(translator);
 
 		// Création de l'événement
-		final Long evtId = 12344321L;
+		final Long noEvenement = 12344321L;
 
-		final EvenementOrganisation event = createEvent(evtId, noOrganisation, FOSC_COMMUNICATION_DANS_FAILLITE, RegDate.get(2015, 6, 24), A_TRAITER);
+		final EvenementOrganisation event = createEvent(noEvenement, noOrganisation, FOSC_COMMUNICATION_DANS_FAILLITE, RegDate.get(2015, 6, 24), A_TRAITER);
 
 		// Persistence événement
 		doInNewTransactionAndSession(new TransactionCallback<Long>() {
@@ -153,7 +153,7 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			                             @Override
 			                             public Object doInTransaction(TransactionStatus status) {
-				                             final EvenementOrganisation evt = evtOrganisationDAO.get(evtId);
+				                             final EvenementOrganisation evt = getUniqueEvent(noEvenement);
 				                             Assert.assertNotNull(evt);
 				                             Assert.assertEquals(EtatEvenementOrganisation.TRAITE, evt.getEtat());
 				                             return null;
@@ -217,12 +217,12 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 		buildProcessor(translator);
 
 		// Persistence événement
-		final long evtId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+		final long noEvenement = doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction(TransactionStatus transactionStatus) {
 				// Création de l'événement
-				final Long evtId = 12344321L;
-				final EvenementOrganisation event = createEvent(evtId, noOrganisation, FOSC_COMMUNICATION_DANS_FAILLITE, RegDate.get(2015, 6, 24), A_TRAITER);
+				final Long noEvenement = 12344321L;
+				final EvenementOrganisation event = createEvent(noEvenement, noOrganisation, FOSC_COMMUNICATION_DANS_FAILLITE, RegDate.get(2015, 6, 24), A_TRAITER);
 				return hibernateTemplate.merge(event).getId();
 			}
 		});
@@ -240,7 +240,7 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			                             @Override
 			                             public Object doInTransaction(TransactionStatus status) {
-				                             final EvenementOrganisation evt = evtOrganisationDAO.get(evtId);
+				                             final EvenementOrganisation evt = evtOrganisationDAO.get(noEvenement);
 				                             Assert.assertNotNull(evt);
 				                             Assert.assertEquals(EtatEvenementOrganisation.TRAITE, evt.getEtat());
 				                             return null;
@@ -255,13 +255,13 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 		final Long noOrganisation = 101202100L;
 
 		// Création de l'événement
-		final Long evtId = 12344321L;
+		final Long noEvenement = 12344321L;
 
 		// Persistence événement
 		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
 			@Override
 			public void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-				final EvenementOrganisation eventCreation = createEvent(evtId, noOrganisation, TypeEvenementOrganisation.FOSC_NOUVELLE_ENTREPRISE, RegDate.get(2015, 6, 24), EN_ERREUR);
+				final EvenementOrganisation eventCreation = createEvent(noEvenement, noOrganisation, TypeEvenementOrganisation.FOSC_NOUVELLE_ENTREPRISE, RegDate.get(2015, 6, 24), EN_ERREUR);
 				EvenementOrganisation event = hibernateTemplate.merge(eventCreation);
 				event.setErreurs(new ArrayList<EvenementOrganisationErreur>());
 				{
@@ -288,7 +288,7 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
 			@Override
 			protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-				EvenementOrganisation event = evtOrganisationDAO.get(evtId);
+				EvenementOrganisation event = getUniqueEvent(noEvenement);
 				Assert.assertEquals(3, event.getErreurs().size());
 
 				event.getErreurs().clear();
@@ -401,7 +401,7 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
 			@Override
 			protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-				EvenementOrganisation evenement = evtOrganisationDAO.get(evtId);
+				EvenementOrganisation evenement = getUniqueEvent(noEvenement);
 				Assert.assertEquals(17, evenement.getErreurs().size());
 				StringBuilder orderSignature = new StringBuilder();
 				for (EvenementOrganisationErreur err : evenement.getErreurs()) {
@@ -445,13 +445,13 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 		globalTiersIndexer.sync();
 
 		// Création de l'événement
-		final Long evtId = 12344321L;
+		final Long noEvenement = 12344321L;
 
 		// Persistence événement
 		doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction(TransactionStatus transactionStatus) {
-				final EvenementOrganisation event = createEvent(evtId, noOrganisation, TypeEvenementOrganisation.FOSC_AVIS_PREALABLE_OUVERTURE_FAILLITE, date(2015, 7, 5), A_TRAITER);
+				final EvenementOrganisation event = createEvent(noEvenement, noOrganisation, TypeEvenementOrganisation.FOSC_AVIS_PREALABLE_OUVERTURE_FAILLITE, date(2015, 7, 5), A_TRAITER);
 				return hibernateTemplate.merge(event).getId();
 			}
 		});
@@ -490,7 +490,7 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			                             @Override
 			                             public Object doInTransaction(TransactionStatus status) {
-				                             final EvenementOrganisation evt = evtOrganisationDAO.get(evtId);
+				                             final EvenementOrganisation evt = getUniqueEvent(noEvenement);
 				                             Assert.assertNotNull(evt);
 				                             Assert.assertEquals(EtatEvenementOrganisation.TRAITE, evt.getEtat());
 				                             return null;
@@ -549,13 +549,13 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 		globalTiersIndexer.sync();
 
 		// Création de l'événement
-		final Long evtId = 12344321L;
+		final Long noEvenement = 12344321L;
 
 		// Persistence événement
 		doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction(TransactionStatus transactionStatus) {
-				final EvenementOrganisation event = createEvent(evtId, noOrganisation, TypeEvenementOrganisation.FOSC_AVIS_PREALABLE_OUVERTURE_FAILLITE, date(2015, 7, 5), A_TRAITER);
+				final EvenementOrganisation event = createEvent(noEvenement, noOrganisation, TypeEvenementOrganisation.FOSC_AVIS_PREALABLE_OUVERTURE_FAILLITE, date(2015, 7, 5), A_TRAITER);
 				return hibernateTemplate.merge(event).getId();
 			}
 		});
@@ -594,7 +594,7 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			                             @Override
 			                             public Object doInTransaction(TransactionStatus status) {
-				                             final EvenementOrganisation evt = evtOrganisationDAO.get(evtId);
+				                             final EvenementOrganisation evt = getUniqueEvent(noEvenement);
 				                             Assert.assertNotNull(evt);
 				                             Assert.assertEquals(EtatEvenementOrganisation.EN_ERREUR, evt.getEtat());
 				                             return null;
@@ -646,13 +646,13 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 		globalTiersIndexer.sync();
 
 		// Création de l'événement
-		final Long evtId = 12344321L;
+		final Long noEvenement = 12344321L;
 
 		// Persistence événement
 		doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction(TransactionStatus transactionStatus) {
-				final EvenementOrganisation event = createEvent(evtId, noOrganisation, TypeEvenementOrganisation.FOSC_AVIS_PREALABLE_OUVERTURE_FAILLITE, date(2105, 7, 5), A_TRAITER);
+				final EvenementOrganisation event = createEvent(noEvenement, noOrganisation, TypeEvenementOrganisation.FOSC_AVIS_PREALABLE_OUVERTURE_FAILLITE, date(2105, 7, 5), A_TRAITER);
 				return hibernateTemplate.merge(event).getId();
 			}
 		});
@@ -691,7 +691,7 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			                             @Override
 			                             public Object doInTransaction(TransactionStatus status) {
-				                             final EvenementOrganisation evt = evtOrganisationDAO.get(evtId);
+				                             final EvenementOrganisation evt = getUniqueEvent(noEvenement);
 				                             Assert.assertNotNull(evt);
 				                             Assert.assertEquals(EtatEvenementOrganisation.EN_ERREUR, evt.getEtat());
 				                             return null;
@@ -740,13 +740,13 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 		globalTiersIndexer.sync();
 
 		// Création de l'événement
-		final Long evtId = 12344321L;
+		final Long noEvenement = 12344321L;
 
 		// Persistence événement
 		doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction(TransactionStatus transactionStatus) {
-				final EvenementOrganisation event = createEvent(evtId, noOrganisation, TypeEvenementOrganisation.FOSC_AUTRE_MUTATION, dateEvt, A_TRAITER);
+				final EvenementOrganisation event = createEvent(noEvenement, noOrganisation, TypeEvenementOrganisation.FOSC_AUTRE_MUTATION, dateEvt, A_TRAITER);
 				return hibernateTemplate.merge(event).getId();
 			}
 		});
@@ -781,7 +781,7 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			                             @Override
 			                             public Object doInTransaction(TransactionStatus status) {
-				                             final EvenementOrganisation evt = evtOrganisationDAO.get(evtId);
+				                             final EvenementOrganisation evt = getUniqueEvent(noEvenement);
 				                             Assert.assertNotNull(evt);
 				                             Assert.assertEquals(EtatEvenementOrganisation.EN_ERREUR, evt.getEtat());
 				                             return null;
@@ -833,13 +833,13 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 		globalTiersIndexer.sync();
 
 		// Création de l'événement
-		final Long evtId = 12344321L;
+		final Long noEvenement = 12344321L;
 
 		// Persistence événement
 		doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction(TransactionStatus transactionStatus) {
-				final EvenementOrganisation event = createEvent(evtId, noOrganisation, TypeEvenementOrganisation.FOSC_AVIS_PREALABLE_OUVERTURE_FAILLITE, date(2015, 7, 5), A_TRAITER);
+				final EvenementOrganisation event = createEvent(noEvenement, noOrganisation, TypeEvenementOrganisation.FOSC_AVIS_PREALABLE_OUVERTURE_FAILLITE, date(2015, 7, 5), A_TRAITER);
 				return hibernateTemplate.merge(event).getId();
 			}
 		});
@@ -878,7 +878,7 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			                             @Override
 			                             public Object doInTransaction(TransactionStatus status) {
-				                             final EvenementOrganisation evt = evtOrganisationDAO.get(evtId);
+				                             final EvenementOrganisation evt = getUniqueEvent(noEvenement);
 				                             Assert.assertNotNull(evt);
 				                             Assert.assertEquals(EtatEvenementOrganisation.EN_ERREUR, evt.getEtat());
 				                             return null;

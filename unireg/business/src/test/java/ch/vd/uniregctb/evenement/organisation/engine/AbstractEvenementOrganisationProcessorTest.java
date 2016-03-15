@@ -1,5 +1,7 @@
 package ch.vd.uniregctb.evenement.organisation.engine;
 
+import java.util.List;
+
 import org.apache.commons.lang3.mutable.MutableBoolean;
 import org.jetbrains.annotations.NotNull;
 
@@ -134,14 +136,30 @@ public abstract class AbstractEvenementOrganisationProcessorTest extends Busines
 	}
 
 	@NotNull
-	protected static EvenementOrganisation createEvent(Long evtId, Long noOrganisation, TypeEvenementOrganisation type, RegDate date, EtatEvenementOrganisation etat) {
+	protected static EvenementOrganisation createEvent(Long noEvenement, Long noOrganisation, TypeEvenementOrganisation type, RegDate date, EtatEvenementOrganisation etat) {
 		final EvenementOrganisation event = new EvenementOrganisation();
-		event.setId(evtId);
+		event.setNoEvenement(noEvenement);
 		event.setNoOrganisation(noOrganisation);
 		event.setType(type);
 		event.setDateEvenement(date);
 		event.setEtat(etat);
 		return event;
+	}
+
+	/**
+	 * Récupérer l'unique événement lié au numéro d'événement RCEnt. Une exception est retournée
+	 * s'il devait y en avoir plusieurs.
+	 *
+	 * Note: on trouve plusieurs événement en base pour un seul événement RCEnt si l'événement portait sur plusieurs organisations.
+	 * @param noEvenement Le numéro d'événement RCEnt
+	 * @return L'unique événement en base
+	 */
+	public EvenementOrganisation getUniqueEvent(long noEvenement) {
+		List<EvenementOrganisation> result = evtOrganisationDAO.getEvenementsForNoEvenement(noEvenement);
+		if (result.size() > 1) {
+			throw new IllegalStateException("Plusieurs événements organisations trouvés en base alors que par cet appel on s'attend à n'en trouver qu'un seul.");
+		}
+		return result.isEmpty() ? null : result.get(0);
 	}
 
 }

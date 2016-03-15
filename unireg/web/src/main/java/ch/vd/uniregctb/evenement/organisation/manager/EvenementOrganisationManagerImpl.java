@@ -118,6 +118,7 @@ public class EvenementOrganisationManagerImpl implements EvenementOrganisationMa
 		evtView.setEvtDateTraitement(evt.getDateTraitement());
 		evtView.setEvtEtat(evt.getEtat());
 		evtView.setEvtId(evt.getId());
+		evtView.setNoEvenement(evt.getNoEvenement());
 		evtView.setEvtType(evt.getType());
 		for (EvenementOrganisationErreur err : evt.getErreurs() ) {
 			evtView.addEvtErreur(new ErreurEvenementOrganisationView(err.getId(), err.getMessage(), err.getCallstack()));
@@ -134,7 +135,7 @@ public class EvenementOrganisationManagerImpl implements EvenementOrganisationMa
 		try {
 			evtView.setOrganisation(new OrganisationView(retrieveOrganisation(numeroOrganisation), evt.getDateEvenement()));
 			evtView.setAdresse(retrieveAdresse(numeroOrganisation));
-			retrieveTiersAssocie(evt.getId(), numeroOrganisation, evtView);
+			retrieveTiersAssocie(evt.getNoEvenement(), numeroOrganisation, evtView);
 		}
 		catch (Exception e) {
 			evtView.setOrganisationError(e.getMessage());
@@ -274,11 +275,11 @@ public class EvenementOrganisationManagerImpl implements EvenementOrganisationMa
 
 		}
 		catch (ServiceOrganisationException e) {
-			LOGGER.warn("Impossible d'afficher toutes les données de l'événement organisation n°" + evt.getId(), e);
-			view.setNom("<erreur: individu introuvable>");
+			LOGGER.warn("Impossible d'afficher toutes les données de l'événement organisation " + evt.toString(), e);
+			view.setNom("<erreur: organisation introuvable>");
 		}
 		catch (Exception e) {
-			LOGGER.warn("Impossible d'afficher toutes les données de l'événement organisation n°" + evt.getId(), e);
+			LOGGER.warn("Impossible d'afficher toutes les données de l'événement organisation " + evt.toString(), e);
 			view.setNom("<erreur: " + e.getMessage() + ">");
 		}
 		return view;
@@ -298,7 +299,7 @@ public class EvenementOrganisationManagerImpl implements EvenementOrganisationMa
 		return noCtb;
 	}
 
-	protected void retrieveTiersAssocie(Long idEvenement, Long numeroIndividu, EvenementOrganisationDetailView evtView) throws AdresseException {
+	protected void retrieveTiersAssocie(Long noEvenement, Long numeroIndividu, EvenementOrganisationDetailView evtView) throws AdresseException {
 		try {
 			final Entreprise entreprise = tiersService.getEntrepriseByNumeroOrganisation(numeroIndividu);
 			if (entreprise != null) {
@@ -307,7 +308,7 @@ public class EvenementOrganisationManagerImpl implements EvenementOrganisationMa
 			}
 		}
 		catch (RuntimeException e) {
-			LOGGER.warn(String.format("Détermination impossible des tiers associés à l'événement civil organisation %d : %s", idEvenement, e.getMessage()));
+			LOGGER.warn(String.format("Détermination impossible des tiers associés à l'événement civil organisation %d : %s", noEvenement, e.getMessage()));
 			evtView.addErreursTiersAssocies(e.getMessage());
 		}
 	}

@@ -51,6 +51,18 @@ public interface EvenementOrganisationDAO extends GenericDAO<EvenementOrganisati
 	List<EvenementOrganisation> find(EvenementOrganisationCriteria<TypeEvenementOrganisation> criterion, @Nullable ParamPagination paramPagination);
 
 	/**
+	 * Renvoie le ou les événements organisation en base Unireg émanant d'un même événement organisation.
+	 *
+	 * Note: On trouve plusieurs événement en base Unireg pour un seul événement RCEnt lorsque plusieurs organisations sont visées par cet événement. En effet,
+	 * on crée à la réception autant d'événements que nécessaire pour respecter la cardinalité d'un événement pour une organisation, car tous les
+	 * traitements sont construits sur cette hypothèse.
+	 *
+	 * @param noEvenement Le numéro de l'événement organisation d'origine
+	 * @return La liste contenant le ou les événements résultants, tels qu'enregistrés en base
+	 */
+	List<EvenementOrganisation> getEvenementsForNoEvenement(long noEvenement);
+
+	/**
 	 * @param criterion les critères de recherche
 	 * @return le nombre d'evenement correspondant aux critères de recherche
 	 */

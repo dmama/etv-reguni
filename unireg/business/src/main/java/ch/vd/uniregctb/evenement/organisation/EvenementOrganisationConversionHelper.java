@@ -1,10 +1,15 @@
 package ch.vd.uniregctb.evenement.organisation;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 
 import ch.vd.evd0022.v3.Notice;
+import ch.vd.evd0022.v3.NoticeOrganisation;
 import ch.vd.evd0022.v3.TypeOfNotice;
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.type.EtatEvenementOrganisation;
 import ch.vd.uniregctb.type.TypeEvenementOrganisation;
 
@@ -40,15 +45,23 @@ public class EvenementOrganisationConversionHelper {
 		return ar;
 	}
 
-	public static EvenementOrganisation createEvenement(ch.vd.evd0022.v3.OrganisationsOfNotice message) {
+	public static List<EvenementOrganisation> createEvenement(ch.vd.evd0022.v3.OrganisationsOfNotice message) {
+		List<EvenementOrganisation> evts = new ArrayList<>();
 		Notice notice = message.getNotice();
-		return new EvenementOrganisation(
-				notice.getNoticeId().longValue(),
-				convertTypeOfNotice(notice.getTypeOfNotice()),
-				notice.getNoticeDate(),
-				message.getOrganisation().get(0).getOrganisation().getCantonalId().longValue(),
-				EtatEvenementOrganisation.A_TRAITER
-		);
+		final long noEvenement = notice.getNoticeId().longValue();
+		final TypeEvenementOrganisation type = convertTypeOfNotice(notice.getTypeOfNotice());
+		final RegDate noticeDate = notice.getNoticeDate();
+		final List<NoticeOrganisation> organisation = message.getOrganisation();
+		for (NoticeOrganisation org : organisation) {
+			evts.add(new EvenementOrganisation(
+					noEvenement,
+					type,
+					noticeDate,
+					org.getOrganisation().getCantonalId().longValue(),
+					EtatEvenementOrganisation.A_TRAITER
+			));
+		}
+		return evts;
 	}
 
 	public static TypeEvenementOrganisation convertTypeOfNotice(TypeOfNotice typeOfNotice) {

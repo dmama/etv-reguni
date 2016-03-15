@@ -82,13 +82,13 @@ public class DoublonsProcessorTest extends AbstractEvenementOrganisationProcesso
 		});
 
 		// Création de l'événement
-		final Long evtId = 12344321L;
+		final Long noEvenement = 12344321L;
 
 		// Persistence événement
 		doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction(TransactionStatus transactionStatus) {
-				final EvenementOrganisation event = createEvent(evtId, noOrganisation, TypeEvenementOrganisation.FOSC_AUTRE_MUTATION, RegDate.get(2015, 7, 5), A_TRAITER);
+				final EvenementOrganisation event = createEvent(noEvenement, noOrganisation, TypeEvenementOrganisation.FOSC_AUTRE_MUTATION, RegDate.get(2015, 7, 5), A_TRAITER);
 				return hibernateTemplate.merge(event).getId();
 			}
 		});
@@ -101,7 +101,7 @@ public class DoublonsProcessorTest extends AbstractEvenementOrganisationProcesso
 			                             @Override
 			                             public Object doInTransaction(TransactionStatus status) {
 
-				                             final EvenementOrganisation evt = evtOrganisationDAO.get(evtId);
+				                             final EvenementOrganisation evt = getUniqueEvent(noEvenement);
 				                             Assert.assertNotNull(evt);
 				                             Assert.assertEquals(EtatEvenementOrganisation.EN_ERREUR, evt.getEtat());
 
@@ -151,13 +151,13 @@ public class DoublonsProcessorTest extends AbstractEvenementOrganisationProcesso
 		});
 
 		// Création de l'événement
-		final Long evtId = 12344321L;
+		final Long noEvenement = 12344321L;
 
 		// Persistence événement
 		doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction(TransactionStatus transactionStatus) {
-				final EvenementOrganisation event = createEvent(evtId, noOrganisation, TypeEvenementOrganisation.FOSC_AUTRE_MUTATION, RegDate.get(2015, 7, 5), A_TRAITER);
+				final EvenementOrganisation event = createEvent(noEvenement, noOrganisation, TypeEvenementOrganisation.FOSC_AUTRE_MUTATION, RegDate.get(2015, 7, 5), A_TRAITER);
 				return hibernateTemplate.merge(event).getId();
 			}
 		});
@@ -170,7 +170,7 @@ public class DoublonsProcessorTest extends AbstractEvenementOrganisationProcesso
 			                             @Override
 			                             public Object doInTransaction(TransactionStatus status) {
 
-				                             final EvenementOrganisation evt = evtOrganisationDAO.get(evtId);
+				                             final EvenementOrganisation evt = getUniqueEvent(noEvenement);
 				                             Assert.assertNotNull(evt);
 				                             Assert.assertEquals(EtatEvenementOrganisation.EN_ERREUR, evt.getEtat());
 

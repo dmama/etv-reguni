@@ -40,9 +40,9 @@ public class IndexationPure extends Indexation {
 			else {
 				event.setCommentaireTraitement(MESSAGE_INDEXATION_PURE);
 			}
-			Audit.info(event.getId(), MESSAGE_INDEXATION_PURE);
+			Audit.info(event.getNoEvenement(), MESSAGE_INDEXATION_PURE);
 		} else {
-			Audit.info(event.getId(), MESSAGE_PAS_INDEXEE);
+			Audit.info(event.getNoEvenement(), MESSAGE_PAS_INDEXEE);
 		}
 		raiseStatusTo(HandleStatus.TRAITE);
 	}

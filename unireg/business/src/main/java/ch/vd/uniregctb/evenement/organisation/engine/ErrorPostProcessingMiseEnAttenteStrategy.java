@@ -43,7 +43,7 @@ public class ErrorPostProcessingMiseEnAttenteStrategy implements ErrorPostProces
 
 	private static void setEnAttente(EvenementOrganisation evt) {
 		evt.setEtat(EtatEvenementOrganisation.EN_ATTENTE);
-		Audit.info(evt.getId(), String.format("Mise en attente de l'événement %d", evt.getId()));
+		Audit.info(evt.getNoEvenement(), String.format("Mise en attente de %s", evt.toString()));
 	}
 
 	@Override

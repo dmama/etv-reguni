@@ -230,8 +230,8 @@ public class CreateOrganisationStrategyTest extends AbstractEvenementOrganisatio
 	}
 
 	private void tryCreationAndExpectNull(long noOrganisation) throws EvenementOrganisationException {
-		final long evtId = 12121212L;
-		final EvenementOrganisation event = new EvenementOrganisation(evtId, IDE_NOUVELLE_INSCRIPTION, RegDate.get(2015, 9, 7), noOrganisation, A_TRAITER);
+		final long noEvenement = 12121212L;
+		final EvenementOrganisation event = new EvenementOrganisation(noEvenement, IDE_NOUVELLE_INSCRIPTION, RegDate.get(2015, 9, 7), noOrganisation, A_TRAITER);
 		Organisation organisation = serviceOrganisation.getOrganisationHistory(noOrganisation);
 		final Entreprise entreprise = context.getTiersDAO().getEntrepriseByNumeroOrganisation(organisation.getNumeroOrganisation());
 
@@ -241,15 +241,15 @@ public class CreateOrganisationStrategyTest extends AbstractEvenementOrganisatio
 	}
 
 	private void tryCreationEventAndCheckResult(long noOrganisation, Class<? extends EvenementOrganisationInterne> resultClass) throws EvenementOrganisationException {
-		final long evtId = 12121212L;
-		final EvenementOrganisation event = new EvenementOrganisation(evtId, IDE_NOUVELLE_INSCRIPTION, RegDate.get(2015, 9, 7), noOrganisation, A_TRAITER);
+		final long noEvenement = 12121212L;
+		final EvenementOrganisation event = new EvenementOrganisation(noEvenement, IDE_NOUVELLE_INSCRIPTION, RegDate.get(2015, 9, 7), noOrganisation, A_TRAITER);
 		Organisation organisation = serviceOrganisation.getOrganisationHistory(noOrganisation);
 		final Entreprise entreprise = context.getTiersDAO().getEntrepriseByNumeroOrganisation(organisation.getNumeroOrganisation());
 
 		EvenementOrganisationInterne interne = strategy.matchAndCreate(event, organisation, entreprise, context, options);
 
 		Assert.assertNotNull(interne);
-		Assert.assertEquals(event.getId(), interne.getNumeroEvenement().longValue());
+		Assert.assertEquals(event.getNoEvenement(), interne.getNumeroEvenement().longValue());
 		Assert.assertEquals(event.getNoOrganisation(), interne.getNoOrganisation());
 		Assert.assertEquals(event.getDateEvenement(), interne.getDateEvt());
 		Assert.assertEquals(resultClass, interne.getClass());

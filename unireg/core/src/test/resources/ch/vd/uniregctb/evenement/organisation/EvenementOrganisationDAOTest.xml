@@ -3,12 +3,14 @@
   <table name="EVENEMENT_ORGANISATION">
     <column>LOG_MDATE</column>
     <column>ID</column>
+    <column>NO_EVENEMENT</column>
     <column>TYPE</column>
     <column>DATE_EVENEMENT</column>
     <column>ETAT</column>
     <column>NO_ORGANISATION</column>
     <row>
       <value>2010-05-04</value>
+      <value>1</value>
       <value>19001</value>
       <value>FOSC_NOUVELLE_ENTREPRISE</value>
       <value>20100501</value>
@@ -17,6 +19,7 @@
     </row>
     <row>
       <value>2015-05-04</value>
+      <value>2</value>
       <value>19002</value>
       <value>FOSC_DISSOLUTION_ENTREPRISE</value>
       <value>20150501</value>

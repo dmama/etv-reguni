@@ -50,13 +50,13 @@ public class CreateEntrepriseFDSPLACProcessorTest extends AbstractEvenementOrgan
 		});
 
 		// Création de l'événement
-		final Long evtId = 12344321L;
+		final Long noEvenement = 12344321L;
 
 		// Persistence événement
 		doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction(TransactionStatus transactionStatus) {
-				final EvenementOrganisation event = createEvent(evtId, noOrganisation, TypeEvenementOrganisation.FOSC_NOUVELLE_ENTREPRISE, RegDate.get(2015, 6, 27), A_TRAITER);
+				final EvenementOrganisation event = createEvent(noEvenement, noOrganisation, TypeEvenementOrganisation.FOSC_NOUVELLE_ENTREPRISE, RegDate.get(2015, 6, 27), A_TRAITER);
 				return hibernateTemplate.merge(event).getId();
 			}
 		});
@@ -69,7 +69,7 @@ public class CreateEntrepriseFDSPLACProcessorTest extends AbstractEvenementOrgan
 			                             @Override
 			                             public Object doInTransaction(TransactionStatus status) {
 
-				                             final EvenementOrganisation evt = evtOrganisationDAO.get(evtId);
+				                             final EvenementOrganisation evt = getUniqueEvent(noEvenement);
 				                             Assert.assertNotNull(evt);
 				                             Assert.assertEquals(EtatEvenementOrganisation.A_VERIFIER, evt.getEtat());
 

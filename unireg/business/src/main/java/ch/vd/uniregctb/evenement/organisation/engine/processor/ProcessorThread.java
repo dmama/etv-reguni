@@ -81,7 +81,7 @@ class ProcessorThread extends PollingThread<EvenementOrganisationNotificationQue
 			}
 		}
 		catch (Exception e) {
-			LOGGER.error(String.format("Erreur lors du traitement de l'événement organisation %d", evts.get(pointer).getId()), e);
+			LOGGER.error(String.format("Erreur lors du traitement de l'événement organisation %d (rcent: %d)", evts.get(pointer).getId(), evts.get(pointer).getNoEvenement()), e);
 		}
 		finally {
 			final long end = System.nanoTime();

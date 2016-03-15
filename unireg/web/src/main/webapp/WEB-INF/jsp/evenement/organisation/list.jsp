@@ -49,8 +49,8 @@
 			<display:setProperty name="paging.banner.some_items_found"><span class="pagebanner">{0} <fmt:message key="banner.evenements.trouves" /></span></display:setProperty>
 			<display:setProperty name="paging.banner.all_items_found"><span class="pagebanner">{0} <fmt:message key="banner.evenements.trouves" /></span></display:setProperty>
 
-			<!-- ID -->
-			<display:column property="id" sortable ="${sortable}" titleKey="label.evenement" href="visu.do" paramId="id" paramProperty="id" sortName="id" />
+			<!-- No Evenement -->
+			<display:column property="noEvenement" sortable ="${sortable}" titleKey="label.evenement" href="visu.do" paramId="id" paramProperty="id" sortName="noEvenement" />
 			<!-- NO Organisation -->
 			<display:column sortable ="${sortable}" titleKey="label.organisation" sortProperty="noOrganisation" sortName="noOrganisation">
 				${tableEvtsOrganisation.numeroOrganisation}

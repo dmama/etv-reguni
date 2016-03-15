@@ -1,5 +1,8 @@
 package ch.vd.uniregctb.evenement.organisation;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -61,16 +64,17 @@ public class EvenementOrganisationEsbHandlerItTest extends EvenementTest {
 
 		evenementsTraites = new LinkedList<>();
 		final EvenementOrganisationReceptionHandler receptionHandler = new EvenementOrganisationReceptionHandler() {
+
 			@Override
-			public EvenementOrganisation saveIncomingEvent(EvenementOrganisation event) {
+			public List<EvenementOrganisation> saveIncomingEvent(List<EvenementOrganisation> events) {
 				// pas de sauvegarde ici...
-				return event;
+				return events;
 			}
 
 			@Override
-			public EvenementOrganisation handleEvent(EvenementOrganisation event, EvenementOrganisationProcessingMode mode) throws EvenementOrganisationException {
-				evenementsTraites.add(event);
-				return event;
+			public List<EvenementOrganisation> handleEvents(List<EvenementOrganisation> events, EvenementOrganisationProcessingMode mode) throws EvenementOrganisationException {
+				evenementsTraites.addAll(events);
+				return events;
 			}
 		};
 
@@ -119,13 +123,13 @@ public class EvenementOrganisationEsbHandlerItTest extends EvenementTest {
 
 	@Test(timeout = BusinessItTest.JMS_TIMEOUT)
 	public void testReceptionEvenement() throws Exception {
-		final Long idEvenement = 5640006354L;
+		final Long noEvenement = 5640006354L;
 		final RegDate dateEvenement = RegDate.get();
 		long noOrganisation = 657133465L;
 		final TypeEvenementOrganisation type = TypeEvenementOrganisation.FOSC_AUTRE_MUTATION;
 
 		final EvenementOrganisation evt = new EvenementOrganisation(
-				idEvenement,
+				noEvenement,
 		        type,
 		        dateEvenement,
 				noOrganisation,
@@ -149,7 +153,7 @@ public class EvenementOrganisationEsbHandlerItTest extends EvenementTest {
 
 		final EvenementOrganisation recu = evenementsTraites.get(0);
 		Assert.assertNotNull(recu);
-		Assert.assertEquals((long) idEvenement, recu.getId());
+		Assert.assertEquals((long) noEvenement, recu.getNoEvenement());
 		Assert.assertEquals(dateEvenement, recu.getDateEvenement());
 		Assert.assertNull(recu.getCommentaireTraitement());
 		Assert.assertNull(recu.getDateTraitement());
@@ -171,13 +175,13 @@ public class EvenementOrganisationEsbHandlerItTest extends EvenementTest {
 			evenementsIgnores.clear();
 			evenementsExploses.clear();
 
-			final Long idEvenement = 5640006354L + type.ordinal();
+			final Long noEvenement = 5640006354L + type.ordinal();
 			final RegDate dateEvenement = RegDate.get();
 			final String refData = "26541888874";
 			long noOrganisation = 657133465L;
 
 			final EvenementOrganisation evt = new EvenementOrganisation(
-					idEvenement,
+					noEvenement,
 					type,
 					dateEvenement,
 					noOrganisation,
@@ -202,9 +206,9 @@ public class EvenementOrganisationEsbHandlerItTest extends EvenementTest {
 			Assert.assertEquals("type " + type, 0, evenementsExploses.size());
 
 
-			final EvenementOrganisation recu = EvenementOrganisationConversionHelper.createEvenement(evenementsIgnores.get(0));
+			final EvenementOrganisation recu = EvenementOrganisationConversionHelper.createEvenement(evenementsIgnores.get(0)).get(0);
 			Assert.assertNotNull("type " + type, recu);
-			Assert.assertEquals("type " + type, (long) idEvenement, recu.getId());
+			Assert.assertEquals("type " + type, (long) noEvenement, recu.getNoEvenement());
 			Assert.assertEquals("type " + type, dateEvenement, recu.getDateEvenement());
 			Assert.assertNull("type " + type, recu.getCommentaireTraitement());
 			Assert.assertNull("type " + type, recu.getDateTraitement());
@@ -221,14 +225,14 @@ public class EvenementOrganisationEsbHandlerItTest extends EvenementTest {
 		evenementsIgnores.clear();
 		evenementsExploses.clear();
 
-		final Long idEvenement = 48515544L;
+		final Long noEvenement = 48515544L;
 		final RegDate dateEvenement = null;
 		final String refData = "26541888874";
 		long noOrganisation = 657133465L;
 		final TypeEvenementOrganisation type = TypeEvenementOrganisation.FOSC_AUTRE_MUTATION;
 
 		final EvenementOrganisation evt = new EvenementOrganisation(
-				idEvenement,
+				noEvenement,
 				type,
 				dateEvenement,
 				noOrganisation,
@@ -264,5 +268,100 @@ public class EvenementOrganisationEsbHandlerItTest extends EvenementTest {
 		Assert.assertEquals(EvenementOrganisationEsbException.class, t.getClass());
 		Assert.assertEquals("org.xml.sax.SAXParseException; cvc-complex-type.2.4.b: The content of element 'eVD-0022-3:notice' is not complete. One of '{\"http://evd.vd.ch/xmlns/eVD-0022/3\":noticeDate}' is expected.",
 		                    t.getMessage());
+	}
+
+	@Test(timeout = BusinessItTest.JMS_TIMEOUT)
+	public void testReceptionEvenementMultiplesOrganisations() throws Exception {
+		final Long noEvenement = 5640006354L;
+		final RegDate dateEvenement = RegDate.get();
+		long noOrganisation = 0;
+		final TypeEvenementOrganisation type = TypeEvenementOrganisation.FOSC_AUTRE_MUTATION;
+
+		final EvenementOrganisation evt = new EvenementOrganisation(
+				noEvenement,
+				type,
+				dateEvenement,
+				noOrganisation,
+				EtatEvenementOrganisation.A_TRAITER
+		);
+		evt.setCommentaireTraitement("turlututu");
+		evt.setDateTraitement(DateHelper.getCurrentDate());
+		evt.setEtat(EtatEvenementOrganisation.A_VERIFIER);
+
+		Assert.assertEquals(0, evenementsTraites.size());
+		sender.sendEventWithMultipleOrga(evt, Arrays.asList(1L, 2L , 3L, 4L), "toto", true);
+
+		// On attend le message
+		synchronized (evenementsVusPasser) {
+			while (evenementsVusPasser.size() == 0) {
+				evenementsVusPasser.wait();
+			}
+		}
+		Assert.assertEquals(1, evenementsVusPasser.size());
+		Assert.assertEquals(4, evenementsTraites.size());
+
+		Collections.sort(evenementsTraites, new Comparator<EvenementOrganisation>() {
+			@Override
+			public int compare(EvenementOrganisation o1, EvenementOrganisation o2) {
+				return Long.valueOf(o1.getNoOrganisation()).compareTo(o2.getNoOrganisation());
+			}
+		});
+
+		{
+			final EvenementOrganisation recu = evenementsTraites.get(0);
+			Assert.assertNotNull(recu);
+			Assert.assertEquals(noEvenement.longValue(), recu.getNoEvenement());
+			Assert.assertEquals(dateEvenement, recu.getDateEvenement());
+			Assert.assertNull(recu.getCommentaireTraitement());
+			Assert.assertNull(recu.getDateTraitement());
+			Assert.assertEquals(EtatEvenementOrganisation.A_TRAITER, recu.getEtat());
+			Assert.assertEquals(1L, recu.getNoOrganisation());
+			Assert.assertEquals(type, recu.getType());
+
+			Assert.assertEquals(0, evenementsIgnores.size());
+			Assert.assertEquals(0, evenementsExploses.size());
+		}
+		{
+			final EvenementOrganisation recu = evenementsTraites.get(1);
+			Assert.assertNotNull(recu);
+			Assert.assertEquals(noEvenement.longValue(), recu.getNoEvenement());
+			Assert.assertEquals(dateEvenement, recu.getDateEvenement());
+			Assert.assertNull(recu.getCommentaireTraitement());
+			Assert.assertNull(recu.getDateTraitement());
+			Assert.assertEquals(EtatEvenementOrganisation.A_TRAITER, recu.getEtat());
+			Assert.assertEquals(2L, recu.getNoOrganisation());
+			Assert.assertEquals(type, recu.getType());
+
+			Assert.assertEquals(0, evenementsIgnores.size());
+			Assert.assertEquals(0, evenementsExploses.size());
+		}
+		{
+			final EvenementOrganisation recu = evenementsTraites.get(2);
+			Assert.assertNotNull(recu);
+			Assert.assertEquals(noEvenement.longValue(), recu.getNoEvenement());
+			Assert.assertEquals(dateEvenement, recu.getDateEvenement());
+			Assert.assertNull(recu.getCommentaireTraitement());
+			Assert.assertNull(recu.getDateTraitement());
+			Assert.assertEquals(EtatEvenementOrganisation.A_TRAITER, recu.getEtat());
+			Assert.assertEquals(3L, recu.getNoOrganisation());
+			Assert.assertEquals(type, recu.getType());
+
+			Assert.assertEquals(0, evenementsIgnores.size());
+			Assert.assertEquals(0, evenementsExploses.size());
+		}
+		{
+			final EvenementOrganisation recu = evenementsTraites.get(3);
+			Assert.assertNotNull(recu);
+			Assert.assertEquals(noEvenement.longValue(), recu.getNoEvenement());
+			Assert.assertEquals(dateEvenement, recu.getDateEvenement());
+			Assert.assertNull(recu.getCommentaireTraitement());
+			Assert.assertNull(recu.getDateTraitement());
+			Assert.assertEquals(EtatEvenementOrganisation.A_TRAITER, recu.getEtat());
+			Assert.assertEquals(4L, recu.getNoOrganisation());
+			Assert.assertEquals(type, recu.getType());
+
+			Assert.assertEquals(0, evenementsIgnores.size());
+			Assert.assertEquals(0, evenementsExploses.size());
+		}
 	}
 }

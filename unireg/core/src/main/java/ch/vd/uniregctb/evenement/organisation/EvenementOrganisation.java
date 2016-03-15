@@ -4,6 +4,8 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
@@ -21,6 +23,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.common.HibernateEntity;
 import ch.vd.uniregctb.common.LengthConstants;
 import ch.vd.uniregctb.type.EtatEvenementOrganisation;
@@ -30,10 +33,11 @@ import ch.vd.uniregctb.type.TypeEvenementOrganisation;
 @Table(name = "EVENEMENT_ORGANISATION")
 public class EvenementOrganisation extends HibernateEntity {
 
+	private long id;
 	/**
 	 * ch.vd.evd0024.v3:noticeRoot:notice:noticeId
 	 */
-	private long id;
+	private long noEvenement;
 	/**
 	 * ch.vd.evd0024.v3:noticeRoot:notice:typeOfNotice
 	 */
@@ -60,7 +64,7 @@ public class EvenementOrganisation extends HibernateEntity {
 	}
 
 	public EvenementOrganisation(
-			long id,
+			long noEvenement,
 			TypeEvenementOrganisation type,
 			RegDate dateEvenement,
 			long noOrganisation,
@@ -68,7 +72,7 @@ public class EvenementOrganisation extends HibernateEntity {
 			) {
 		this.dateEvenement = dateEvenement;
 		this.etat = etat;
-		this.id = id;
+		this.noEvenement = noEvenement;
 		this.noOrganisation = noOrganisation;
 		this.type = type;
 	}
@@ -80,12 +84,27 @@ public class EvenementOrganisation extends HibernateEntity {
 	}
 
 	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
 	public long getId() {
 		return id;
 	}
 
 	public void setId(long id) {
 		this.id = id;
+	}
+
+
+	/**
+	 * @return le numéro d'événement RCEnt
+	 */
+	@Column(name = "NO_EVENEMENT", nullable = false)
+	@Index(name = "IDX_EV_ORGA_NO_EV")
+	public long getNoEvenement() {
+		return noEvenement;
+	}
+
+	public void setNoEvenement(long noEvenement) {
+		this.noEvenement = noEvenement;
 	}
 
 	@Column(name = "TYPE", length = LengthConstants.EVTORGANISATION_TYPE, nullable = false)
@@ -160,5 +179,10 @@ public class EvenementOrganisation extends HibernateEntity {
 
 	public void setErreurs(List<EvenementOrganisationErreur> erreurs) {
 		this.erreurs = erreurs;
+	}
+
+	@Override
+	public String toString() {
+		return String.format("Evt Org n°%d, rcent:%d, orga: %d, du %s", getId(), getNoEvenement(), getNoOrganisation(), RegDateHelper.dateToDisplayString(getDateEvenement()));
 	}
 }

@@ -83,13 +83,13 @@ public class LiquidationProcessorTest extends AbstractEvenementOrganisationProce
 		});
 
 		// Création de l'événement
-		final Long evtId = 12344321L;
+		final Long noEvenement = 12344321L;
 
 		// Persistence événement
 		doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction(TransactionStatus transactionStatus) {
-				final EvenementOrganisation event = createEvent(evtId, noOrganisation, TypeEvenementOrganisation.FOSC_AUTRE_MUTATION, RegDate.get(2015, 7, 5), A_TRAITER);
+				final EvenementOrganisation event = createEvent(noEvenement, noOrganisation, TypeEvenementOrganisation.FOSC_AUTRE_MUTATION, RegDate.get(2015, 7, 5), A_TRAITER);
 				return hibernateTemplate.merge(event).getId();
 			}
 		});
@@ -103,7 +103,7 @@ public class LiquidationProcessorTest extends AbstractEvenementOrganisationProce
 			                             @Override
 			                             public Object doInTransaction(TransactionStatus status) {
 
-				                             final EvenementOrganisation evt = evtOrganisationDAO.get(evtId);
+				                             final EvenementOrganisation evt = getUniqueEvent(noEvenement);
 				                             Assert.assertNotNull(evt);
 				                             Assert.assertEquals(EtatEvenementOrganisation.A_VERIFIER, evt.getEtat());
 
@@ -150,13 +150,13 @@ public class LiquidationProcessorTest extends AbstractEvenementOrganisationProce
 		});
 
 		// Création de l'événement
-		final Long evtId = 12344321L;
+		final Long noEvenement = 12344321L;
 
 		// Persistence événement
 		doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction(TransactionStatus transactionStatus) {
-				final EvenementOrganisation event = createEvent(evtId, noOrganisation, TypeEvenementOrganisation.FOSC_AUTRE_MUTATION, RegDate.get(2015, 7, 5), A_TRAITER);
+				final EvenementOrganisation event = createEvent(noEvenement, noOrganisation, TypeEvenementOrganisation.FOSC_AUTRE_MUTATION, RegDate.get(2015, 7, 5), A_TRAITER);
 				return hibernateTemplate.merge(event).getId();
 			}
 		});
@@ -170,7 +170,7 @@ public class LiquidationProcessorTest extends AbstractEvenementOrganisationProce
 			                             @Override
 			                             public Object doInTransaction(TransactionStatus status) {
 
-				                             final EvenementOrganisation evt = evtOrganisationDAO.get(evtId);
+				                             final EvenementOrganisation evt = getUniqueEvent(noEvenement);
 				                             Assert.assertNotNull(evt);
 				                             Assert.assertEquals(EtatEvenementOrganisation.TRAITE, evt.getEtat());
 
@@ -216,13 +216,13 @@ public class LiquidationProcessorTest extends AbstractEvenementOrganisationProce
 		});
 
 		// Création de l'événement
-		final Long evtId = 12344321L;
+		final Long noEvenement = 12344321L;
 
 		// Persistence événement
 		doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction(TransactionStatus transactionStatus) {
-				final EvenementOrganisation event = createEvent(evtId, noOrganisation, TypeEvenementOrganisation.FOSC_AUTRE_MUTATION, RegDate.get(2015, 7, 5), A_TRAITER);
+				final EvenementOrganisation event = createEvent(noEvenement, noOrganisation, TypeEvenementOrganisation.FOSC_AUTRE_MUTATION, RegDate.get(2015, 7, 5), A_TRAITER);
 				return hibernateTemplate.merge(event).getId();
 			}
 		});
@@ -235,7 +235,7 @@ public class LiquidationProcessorTest extends AbstractEvenementOrganisationProce
 			                             @Override
 			                             public Object doInTransaction(TransactionStatus status) {
 
-				                             final EvenementOrganisation evt = evtOrganisationDAO.get(evtId);
+				                             final EvenementOrganisation evt = getUniqueEvent(noEvenement);
 				                             Assert.assertNotNull(evt);
 				                             Assert.assertEquals(EtatEvenementOrganisation.TRAITE, evt.getEtat());
 

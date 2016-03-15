@@ -16,6 +16,7 @@ public final class EvenementOrganisationBasicInfo implements Serializable {
 	private static final long serialVersionUID = 8037880188053201128L;
 
 	private final long id;
+	private final long noEvenement;
 	private final long noOrganisation;
 	private final EtatEvenementOrganisation etat;
 	private final TypeEvenementOrganisation type;
@@ -27,15 +28,17 @@ public final class EvenementOrganisationBasicInfo implements Serializable {
 			throw new IllegalArgumentException("Numéros d'organisation différents : l'événement avait " + evt.getNoOrganisation() + " mais on veut le traiter avec " + noOrganisation);
 		}
 		this.id = evt.getId();
+		this.noEvenement = evt.getNoEvenement();
 		this.noOrganisation = evt.getNoOrganisation();
 		this.etat = evt.getEtat();
 		this.type = evt.getType();
 		this.date = evt.getDateEvenement();
 	}
 
-	public EvenementOrganisationBasicInfo(long id, long noOrganisation, EtatEvenementOrganisation etat,
+	public EvenementOrganisationBasicInfo(long id, long noEvenement, long noOrganisation, EtatEvenementOrganisation etat,
 	                                      TypeEvenementOrganisation type, RegDate date) {
 		this.id = id;
+		this.noEvenement = noEvenement;
 		this.noOrganisation = noOrganisation;
 		this.etat = etat;
 		this.type = type;
@@ -52,6 +55,10 @@ public final class EvenementOrganisationBasicInfo implements Serializable {
 
 	public long getId() {
 		return id;
+	}
+
+	public long getNoEvenement() {
+		return noEvenement;
 	}
 
 	public long getNoOrganisation() {

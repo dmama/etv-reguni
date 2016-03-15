@@ -168,9 +168,9 @@ public class FailliteConcordatStrategyTest extends WithoutSpringTest {
 	}
 
 	@NotNull
-	private static EvenementOrganisation createEvent(Long evtId, Long noOrganisation, TypeEvenementOrganisation type, RegDate date, EtatEvenementOrganisation etat) {
+	private static EvenementOrganisation createEvent(Long noEvenement, Long noOrganisation, TypeEvenementOrganisation type, RegDate date, EtatEvenementOrganisation etat) {
 		final EvenementOrganisation event = new EvenementOrganisation();
-		event.setId(evtId);
+		event.setId(noEvenement);
 		event.setNoOrganisation(noOrganisation);
 		event.setType(type);
 		event.setDateEvenement(date);

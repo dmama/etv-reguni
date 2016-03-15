@@ -4,7 +4,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.SmartLifecycle;
 
-import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationBasicInfo;
 import ch.vd.uniregctb.evenement.organisation.engine.EvenementOrganisationNotificationQueue;
@@ -111,9 +110,9 @@ public class EvenementOrganisationProcessorFacade implements EvenementOrganisati
 
 	@Override
 	public void forceEvenement(EvenementOrganisationBasicInfo evt) {
-		Audit.info(evt.getId(),
-		           String.format("Forçage manuel de l'événement organisation %d de type %s au %s sur l'organisation %d",
-		                         evt.getId(), evt.getType(), RegDateHelper.dateToDisplayString(evt.getDate()), evt.getNoOrganisation()));
+		Audit.info(evt.getNoEvenement(),
+		           String.format("Forçage manuel de l'événement organisation %s.",
+		                         evt.toString()));
 		internalProcessor.forceEvent(evt);
 	}
 }

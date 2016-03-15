@@ -25,6 +25,7 @@ public class EvenementOrganisationDetailView implements Serializable {
 	private static final long serialVersionUID = 4622877003735146179L;
 
 	private Long evtId;
+	private Long noEvenement;
 	private RegDate evtDate;
 	private TypeEvenementOrganisation evtType;
 	private Long refEvtId;
@@ -51,6 +52,14 @@ public class EvenementOrganisationDetailView implements Serializable {
 
 	public void setEvtId(Long evtId) {
 		this.evtId = evtId;
+	}
+
+	public Long getNoEvenement() {
+		return noEvenement;
+	}
+
+	public void setNoEvenement(Long noEvenement) {
+		this.noEvenement = noEvenement;
 	}
 
 	@SuppressWarnings("unused")

@@ -128,6 +128,15 @@ public class EvenementOrganisationDAOImpl extends BaseDAOImpl<EvenementOrganisat
 	}
 
 	@Override
+	@SuppressWarnings("unchecked")
+	public List<EvenementOrganisation> getEvenementsForNoEvenement(long noEvenement) {
+		Criteria query = getCurrentSession().createCriteria(EvenementOrganisation.class, "eo");
+		query.add(Restrictions.eq("noEvenement", noEvenement));
+		query.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
+		return query.list();
+	}
+
+	@Override
 	public int count(EvenementOrganisationCriteria<TypeEvenementOrganisation> criterion) {
 		Assert.notNull(criterion, "Les critères de recherche peuvent pas être nuls");
 		final Map<String, Object> criteria = new HashMap<>();

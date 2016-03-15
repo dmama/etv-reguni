@@ -1,5 +1,7 @@
 package ch.vd.uniregctb.evenement.organisation;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.jetbrains.annotations.Nullable;
@@ -10,6 +12,7 @@ import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
+import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.evenement.organisation.engine.EvenementOrganisationNotificationQueue;
 import ch.vd.uniregctb.load.BasicLoadMonitor;
@@ -108,37 +111,53 @@ public class EvenementOrganisationReceptionHandlerImpl implements EvenementOrgan
 		notificationQueue.post(noOrganisation, mode);
 	}
 
+
+	/**
+	 * Sauve les événements issus d'un événement organisation.
+	 *
+	 * Attention: on fait l'hypothèse que tous les événements passés viennent bien du même événement RCEnt.
+ 	 * @param events événements à persister
+	 * @return
+	 */
 	@Override
     @Nullable
-	public EvenementOrganisation saveIncomingEvent(final EvenementOrganisation event) {
+	public List<EvenementOrganisation> saveIncomingEvent(final List<EvenementOrganisation> events) {
+		Assert.isTrue(!events.isEmpty());
+
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
-		return template.execute(new TransactionCallback<EvenementOrganisation>() {
+		return template.execute(new TransactionCallback<List<EvenementOrganisation>>() {
 			@Nullable
 			@Override
-			public EvenementOrganisation doInTransaction(TransactionStatus status) {
+			public List<EvenementOrganisation> doInTransaction(TransactionStatus status) {
+				List<EvenementOrganisation> saved = new ArrayList<>();
 
 				// si un événement organnisation existe déjà avec l'ID donné, on log un warning et on s'arrête là...
-				final long id = event.getId();
-				if (evtOrganisationDAO.exists(id)) {
-					Audit.warn(id, String.format("L'événement organnisation %d existe déjà en base : cette nouvelle réception est donc ignorée!", id));
+				final long noEvenement = events.get(0).getNoEvenement();
+				List<EvenementOrganisation> existing = evtOrganisationDAO.getEvenementsForNoEvenement(noEvenement);
+				if (!existing.isEmpty()) {
+					Audit.warn(noEvenement, String.format("L'événement organnisation %d existe déjà en base : cette nouvelle réception est donc ignorée!", noEvenement));
 					return null;
 				}
 
 				// pour les stats
 				nombreEvenementsNonIgnores.incrementAndGet();
 
-				final EvenementOrganisation saved = evtOrganisationDAO.save(event);
-				Audit.info(id, String.format("L'événement organnisation %d est inséré en base de données", id));
+				for (EvenementOrganisation event : events) {
+					saved.add(evtOrganisationDAO.save(event));
+					Audit.info(noEvenement, String.format("L'événement organisation %d pour l'organisation %d est inséré en base de données", noEvenement, event.getNoOrganisation()));
+				}
 				return saved;
 			}
 		});
 	}
 
 	@Override
-	public EvenementOrganisation handleEvent(EvenementOrganisation event, EvenementOrganisationProcessingMode mode) throws EvenementOrganisationException {
-		demanderTraitementQueue(event.getNoOrganisation(), mode);
-		return event;
+	public List<EvenementOrganisation> handleEvents(List<EvenementOrganisation> events, EvenementOrganisationProcessingMode mode) throws EvenementOrganisationException {
+		for (EvenementOrganisation event : events) {
+			demanderTraitementQueue(event.getNoOrganisation(), mode);
+		}
+		return events;
 	}
 
 	@Override

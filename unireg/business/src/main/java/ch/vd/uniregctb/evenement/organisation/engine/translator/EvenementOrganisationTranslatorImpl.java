@@ -152,7 +152,7 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 		sanityCheck(event, organisation);
 
 		final String organisationDescription = serviceOrganisationService.createOrganisationDescription(organisation, event.getDateEvenement());
-		Audit.info(event.getId(), String.format("Organisation trouvée: %s", organisationDescription));
+		Audit.info(event.getNoEvenement(), String.format("Organisation trouvée: %s", organisationDescription));
 
 		final String raisonSocialeCivile = organisation.getNom(event.getDateEvenement());
 		final String noIdeCivil = organisation.getNumeroIDE(event.getDateEvenement());
@@ -174,7 +174,7 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 			                                     raisonSocialeCivile,
 			                                     noIdeCivil != null ? ", IDE: " + noIdeCivil : "",
 			                                     organisation.getNumeroOrganisation());
-			Audit.info(event.getId(), message);
+			Audit.info(event.getNoEvenement(), message);
 			evenements.add(new MessageSuivi(event, organisation, entreprise, context, options, message));
 
 		}
@@ -200,7 +200,7 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 					                                     entreprise.toString(),
 					                                     StringUtils.isNotBlank(derniereRaisonSocialeFiscale) ? " (" + derniereRaisonSocialeFiscale + ")" : "",
 					                                     attributsCivilsAffichage(raisonSocialeCivile, noIdeCivil));
-					Audit.info(event.getId(), message);
+					Audit.info(event.getNoEvenement(), message);
 					evenements.add(new MessageSuivi(event, organisation, entreprise, context, options, message));
 
 				}
@@ -211,7 +211,7 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 					String message = String.format("Plusieurs entreprises ont été trouvées (numéros %s) pour les attributs civils [%s]. Arrêt du traitement.",
 					                               listeTrouves,
 					                               attributsCivilsAffichage(raisonSocialeCivile, noIdeCivil));
-					Audit.info(event.getId(), message);
+					Audit.info(event.getNoEvenement(), message);
 					return new TraitementManuel(event, organisation, null, context, options, message);
 				}
 			}
@@ -219,7 +219,7 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 			catch (TooManyIdentificationPossibilitiesException e) {
 				String message = String.format("L'identification de l'organisation a renvoyé un trop grand nombre de résultats pour les attributs civils [%s]! Arrêt du traitement.",
 				                               attributsCivilsAffichage(raisonSocialeCivile, noIdeCivil));
-				Audit.info(event.getId(), message);
+				Audit.info(event.getNoEvenement(), message);
 				return new TraitementManuel(event, organisation, null, context, options, message);
 			}
 			// L'identification n'a rien retourné. Cela veut dire qu'on ne connait pas déjà le tiers. On rapporte simplement cet état de fait.
@@ -227,7 +227,7 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 				final String message = String.format("Aucune entreprise identifiée pour le numéro civil %s ou les attributs civils [%s].",
 				                                     organisation.getNumeroOrganisation(),
 				                                     attributsCivilsAffichage(raisonSocialeCivile, noIdeCivil));
-				Audit.info(event.getId(), message);
+				Audit.info(event.getNoEvenement(), message);
 				evenements.add(new MessageSuivi(event, organisation, null, context, options, message));
 			}
 		}
@@ -272,7 +272,7 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 			if (dateEvenement.isBefore(noms.get(0).getDateDebut())) {
 				throw new EvenementOrganisationException(
 						String.format("Erreur fatale: la date de l'événement %s (%s) est antérieure à la date de création (%s) de l'organisation telle que rapportée par RCEnt. No civil: %s, nom: %s.",
-						              event.getId(), dateEvenement, noms.get(0).getDateDebut(), organisation.getNumeroOrganisation(), noms.get(0).getPayload()));
+						              event.getNoEvenement(), dateEvenement, noms.get(0).getDateDebut(), organisation.getNumeroOrganisation(), noms.get(0).getPayload()));
 			}
 			StringBuilder champs = new StringBuilder();
 			FormeLegale formeLegale = organisation.getFormeLegale(dateEvenement);

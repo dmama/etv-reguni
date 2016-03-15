@@ -355,8 +355,11 @@ public abstract class EvenementOrganisationInterne {
 		return evenement;
 	}
 
+	/**
+	 * @return le numéro d'événement RCEnt
+	 */
 	public Long getNumeroEvenement() {
-		return evenement.getId();
+		return evenement.getNoEvenement();
 	}
 
 	public RegDate getDateEvt() {

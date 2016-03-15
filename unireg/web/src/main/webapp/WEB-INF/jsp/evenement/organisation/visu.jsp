@@ -19,7 +19,7 @@
         <tr class="<unireg:nextRowClass/>">
             <td width="25%"><fmt:message key="label.numero.evenement"/> :</td>
             <td width="25%">
-                    ${command.evtId}
+                    ${command.noEvenement}
                 <unireg:consulterLog entityNature="EvenementOrganisation" entityId="${command.evtId}"/>
             </td>
             <td width="25%"><fmt:message key="label.date.evenement"/> :</td>
@@ -254,10 +254,10 @@
 			</display:column>
 			<display:column titleKey="label.numero.evenement">
 				<c:if test="${aTraiter.id == command.evtId}">
-					<c:out value="${aTraiter.id}"/>
+					<c:out value="${aTraiter.noEvenement}"/>
 				</c:if>
 				<c:if test="${aTraiter.id != command.evtId}">
-					<a href="visu.do?id=<c:out value='${aTraiter.id}'/>"><c:out value="${aTraiter.id}"/></a>
+					<a href="visu.do?id=<c:out value='${aTraiter.noEvenement}'/>"><c:out value="${aTraiter.noEvenement}"/></a>
 				</c:if>
 			</display:column>
 			<display:column titleKey="label.type.evenement">

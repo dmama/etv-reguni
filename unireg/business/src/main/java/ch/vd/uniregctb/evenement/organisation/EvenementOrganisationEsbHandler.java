@@ -165,18 +165,21 @@ public class EvenementOrganisationEsbHandler implements EsbMessageHandler, Initi
 			return;
 		}
 
-		final EvenementOrganisation event = createEvenementOrganisation(message);
+		final List<EvenementOrganisation> events = createEvenementOrganisation(message);
 
-		saveIncomingEvent(event);
+		final EvenementOrganisation premierEvt = events.get(0);
+		Audit.info((Long) premierEvt.getNoEvenement(), String.format("Arrivée de l'événement organisation %d (%s au %s)", premierEvt.getNoEvenement(), premierEvt.getType(), RegDateHelper.dateToDisplayString(premierEvt.getDateEvenement())));
+
+		receptionHandler.saveIncomingEvent(events);
 
 		// à partir d'ici, l'événement est sauvegardé en base... Il n'est donc plus question
 		// de rejetter en erreur (ou exception) le message entrant...
 		try {
-			receptionHandler.handleEvent(event, processingMode);
+			receptionHandler.handleEvents(events, processingMode);
 		}
 		catch (Exception e) {
 			// le traitement sera re-tenté au plus tard au prochain démarrage de l'application...
-			LOGGER.error(String.format("Erreur à la réception de l'événement organisation %d", event.getId()), e);
+			LOGGER.error(String.format("Erreur à la réception de l'événement organisation %d", events.get(0).getNoEvenement()), e);
 		}
 	}
 
@@ -203,7 +206,7 @@ public class EvenementOrganisationEsbHandler implements EsbMessageHandler, Initi
 		une exception adéquate doit être lancée pour être remontée à l'ESB. Interdit de sortir d'ici sans un objet.
 	 */
 	@NotNull
-	private EvenementOrganisation createEvenementOrganisation(OrganisationsOfNotice message) throws EvenementOrganisationEsbException {
+	private List<EvenementOrganisation> createEvenementOrganisation(OrganisationsOfNotice message) throws EvenementOrganisationEsbException {
 		try {
 			return EvenementOrganisationConversionHelper.createEvenement(message);
 		}
@@ -290,12 +293,6 @@ public class EvenementOrganisationEsbHandler implements EsbMessageHandler, Initi
 		catch (RuntimeException e) {
 			throw new EvenementOrganisationEsbException(EsbBusinessCode.EVT_ORGANISATION, e);
 		}
-	}
-
-	private EvenementOrganisation saveIncomingEvent(EvenementOrganisation event) {
-		final Long id = event.getId();
-		Audit.info(id, String.format("Arrivée de l'événement organisation %d (%s au %s)", id, event.getType(), RegDateHelper.dateToDisplayString(event.getDateEvenement())));
-		return receptionHandler.saveIncomingEvent(event);
 	}
 
 	private OrganisationsOfNotice parse(Source xml) throws JAXBException, SAXException, IOException {
