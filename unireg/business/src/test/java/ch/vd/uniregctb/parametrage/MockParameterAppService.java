@@ -98,6 +98,11 @@ public final class MockParameterAppService implements ParametreAppService {
 	}
 
 	@Override
+	public Integer getDelaiEnvoiRappelLettreBienvenue() {
+		return container.getDelaiEnvoiRappelLettreBienvenue();
+	}
+
+	@Override
 	public Integer getDelaiRetourLettreBienvenue() {
 		return container.getDelaiRetourLettreBienvenue();
 	}
@@ -285,6 +290,11 @@ public final class MockParameterAppService implements ParametreAppService {
 	@Override
 	public void setTailleTrouAssujettissementPourNouvelleLettreBienvenue(Integer val) {
 		container.setTailleTrouAssujettissementPourNouvelleLettreBienvenue(val);
+	}
+
+	@Override
+	public void setDelaiEnvoiRappelLettreBienvenue(Integer val) {
+		container.setDelaiEnvoiRappelLettreBienvenue(val);
 	}
 
 	@Override

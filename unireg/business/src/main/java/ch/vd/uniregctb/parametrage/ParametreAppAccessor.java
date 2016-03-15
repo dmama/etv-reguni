@@ -42,6 +42,8 @@ public interface ParametreAppAccessor {
 
 	Integer getTailleTrouAssujettissementPourNouvelleLettreBienvenue();
 
+	Integer getDelaiEnvoiRappelLettreBienvenue();
+
 	Integer[] getFeteNationale();
 
 	Integer getJourDuMoisEnvoiListesRecapitulatives();
@@ -115,6 +117,8 @@ public interface ParametreAppAccessor {
 	void setDelaiRetourLettreBienvenue(Integer val);
 
 	void setTailleTrouAssujettissementPourNouvelleLettreBienvenue(Integer val);
+
+	void setDelaiEnvoiRappelLettreBienvenue(Integer val);
 
 	void setFeteNationale(Integer[] val);
 

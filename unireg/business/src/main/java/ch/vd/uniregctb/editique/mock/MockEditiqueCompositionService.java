@@ -135,4 +135,8 @@ public class MockEditiqueCompositionService implements EditiqueCompositionServic
 	@Override
 	public void imprimeLettreBienvenueForBatch(LettreBienvenue lettre, RegDate dateTraitement) throws EditiqueException {
 	}
+
+	@Override
+	public void imprimeRappelLettreBienvenueForBatch(LettreBienvenue lettre, RegDate dateTraitement) throws EditiqueException {
+	}
 }

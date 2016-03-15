@@ -30,9 +30,7 @@ import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesMorales;
  */
 public class ImpressionSommationDeclarationImpotPersonnesMoralesHelperImpl extends EditiqueAbstractHelperImpl implements ImpressionSommationDeclarationImpotPersonnesMoralesHelper {
 
-	private static final String TYPE_DOCUMENT = "CO";           // pour "Courrier", apparemment
 	private static final String CODE_DOCUMENT_SOMMATION_PM = TypeDocumentEditique.SOMMATION_DI_PM.getCodeDocumentEditique().substring(0, 4);
-	private static final String TRAITE_PAR = "Registre PM";
 
 	private DelaisService delaisService;
 
@@ -77,7 +75,7 @@ public class ImpressionSommationDeclarationImpotPersonnesMoralesHelperImpl exten
 		infoDoc.setCodDoc(CODE_DOCUMENT_SOMMATION_PM);
 		infoDoc.setPopulations(ConstantesEditique.POPULATION_PM);
 		infoDoc.setPrefixe(EditiquePrefixeHelper.buildPrefixeInfoDocument(TypeDocumentEditique.SOMMATION_DI_PM));
-		infoDoc.setTypDoc(TYPE_DOCUMENT);
+		infoDoc.setTypDoc(TYPE_DOCUMENT_CO);
 
 		return infoDoc;
 	}

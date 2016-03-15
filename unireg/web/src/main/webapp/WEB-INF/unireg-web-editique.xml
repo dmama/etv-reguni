@@ -42,6 +42,7 @@
 		<property name="serviceSecurite" ref="serviceSecuriteService" />
 		<property name="impressionEfactureHelper" ref="impressionEfactureHelper" />
 		<property name="impressionLettreBienvenueHelper" ref="impressionLettreBienvenueHelper"/>
+		<property name="impressionRappelHelper" ref="impressionRappelHelper"/>
 	</bean>
 
 </beans>

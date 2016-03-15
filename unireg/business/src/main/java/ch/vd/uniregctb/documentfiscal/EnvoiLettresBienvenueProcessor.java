@@ -14,6 +14,8 @@ import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
@@ -35,6 +37,7 @@ import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.TiersService;
+import ch.vd.uniregctb.transaction.TransactionTemplate;
 import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
@@ -192,16 +195,23 @@ public class EnvoiLettresBienvenueProcessor {
 	}
 
 	private List<Long> fetchIds(final RegDate dateOrigine) {
-		return hibernateTemplate.executeWithNewSession(new HibernateCallback<List<Long>>() {
+		final TransactionTemplate template = new TransactionTemplate(transactionManager);
+		template.setReadOnly(true);
+		return template.execute(new TransactionCallback<List<Long>>() {
 			@Override
-			public List<Long> doInHibernate(Session session) throws HibernateException, SQLException {
-				final String hql = "select distinct ff.tiers.numero from ForFiscal as ff where ff.annulationDate is null and ff.typeAutoriteFiscale=:taf and ff.genreImpot=:gi and ff.dateDebut>=:seuil and ff.tiers.class='Entreprise' order by ff.tiers.numero";
-				final Query query = session.createQuery(hql);
-				query.setParameter("taf", TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
-				query.setParameter("gi", GenreImpot.BENEFICE_CAPITAL);
-				query.setParameter("seuil", dateOrigine);
-				//noinspection unchecked
-				return query.list();
+			public List<Long> doInTransaction(TransactionStatus status) {
+				return hibernateTemplate.executeWithNewSession(new HibernateCallback<List<Long>>() {
+					@Override
+					public List<Long> doInHibernate(Session session) throws HibernateException, SQLException {
+						final String hql = "select distinct ff.tiers.numero from ForFiscal as ff where ff.annulationDate is null and ff.typeAutoriteFiscale=:taf and ff.genreImpot=:gi and ff.dateDebut>=:seuil and ff.tiers.class='Entreprise' order by ff.tiers.numero";
+						final Query query = session.createQuery(hql);
+						query.setParameter("taf", TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
+						query.setParameter("gi", GenreImpot.BENEFICE_CAPITAL);
+						query.setParameter("seuil", dateOrigine);
+						//noinspection unchecked
+						return query.list();
+					}
+				});
 			}
 		});
 	}

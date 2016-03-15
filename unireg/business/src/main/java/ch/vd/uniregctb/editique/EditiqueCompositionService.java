@@ -253,4 +253,12 @@ public interface EditiqueCompositionService {
 	 * @throws EditiqueException en cas de problème
 	 */
 	void imprimeLettreBienvenueForBatch(LettreBienvenue lettre, RegDate dateTraitement) throws EditiqueException;
+
+	/**
+	 * Envoie à l'éditique le rappel de la lettre de bienvenue à imprimer en masse
+	 * @param lettre la lettre rappelée
+	 * @param dateTraitement la date de traitement de l'envoi du rappel
+	 * @throws EditiqueException en cas de problème
+	 */
+	void imprimeRappelLettreBienvenueForBatch(LettreBienvenue lettre, RegDate dateTraitement) throws EditiqueException;
 }

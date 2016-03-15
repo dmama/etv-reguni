@@ -66,10 +66,8 @@ import ch.vd.uniregctb.type.TypeDocument;
 
 public class ImpressionDeclarationImpotPersonnesMoralesHelperImpl extends EditiqueAbstractHelperImpl implements ImpressionDeclarationImpotPersonnesMoralesHelper {
 
-	private static final String TYPE_DOC = "DI";
 	private static final String COD_DOC_DI_PM = "U1P1";
 	private static final String COD_DOC_DI_APM = "U1P2";
-	private static final String TRAITE_PAR = "Registre PM";
 
 	private IbanValidator ibanValidator;
 
@@ -212,7 +210,7 @@ public class ImpressionDeclarationImpotPersonnesMoralesHelperImpl extends Editiq
 		infoDoc.setCodDoc(getCodeDocument(typeDocumentEditique));
 		infoDoc.setPopulations(ConstantesEditique.POPULATION_PM);
 		infoDoc.setPrefixe(EditiquePrefixeHelper.buildPrefixeInfoDocument(typeDocumentEditique));
-		infoDoc.setTypDoc(TYPE_DOC);
+		infoDoc.setTypDoc(TYPE_DOCUMENT_DI);
 		return infoDoc;
 	}
 

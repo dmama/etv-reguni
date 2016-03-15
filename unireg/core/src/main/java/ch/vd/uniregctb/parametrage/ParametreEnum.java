@@ -39,6 +39,7 @@ public enum ParametreEnum {
 	delaiRetourLettreBienvenue("30", Type.delaisEnJour, true),
 	delaiCadevImpressionLettreBienvenue("3", Type.delaisEnJour, true),
 	tailleTrouAssujettissementPourNouvelleLettreBienvenue("720", Type.delaisEnJour, true),
+	delaiEnvoiRappelLettreBienvenue("15", Type.delaisEnJour, true),
 
 	jourDuMoisEnvoiListesRecapitulatives("20", Type.jourDansMois, true),
  	delaiCadevImpressionListesRecapitulatives("3", Type.delaisEnJour, true),

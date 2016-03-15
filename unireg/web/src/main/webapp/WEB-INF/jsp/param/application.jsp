@@ -333,6 +333,15 @@
 		                <sf:input path="tailleTrouAssujettissementPourNouvelleLettreBienvenue" cssClass="valeur nombre" cssErrorClass="valeur input-with-errors nombre" maxlength="4"/>
 		            </td>
 					<td><sf:errors path="tailleTrouAssujettissementPourNouvelleLettreBienvenue" cssClass="erreur"/></td>
+		        </tr>
+			    <tr class="<unireg:nextRowClass/>">
+		            <td><fmt:message key="label.param.delaiEnvoiRappelLettreBienvenue"/></td>
+		            <%--@elvariable id="delaiEnvoiRappelLettreBienvenueParDefaut" type="java.lang.String"--%>
+					<td class="nombre">${delaiEnvoiRappelLettreBienvenueParDefaut}</td>
+		            <td class="valeur">
+		                <sf:input path="delaiEnvoiRappelLettreBienvenue" cssClass="valeur nombre" cssErrorClass="valeur input-with-errors nombre" maxlength="4"/>
+		            </td>
+					<td><sf:errors path="delaiEnvoiRappelLettreBienvenue" cssClass="erreur"/></td>
 		        </tr><tr class="separator"><th colspan="4" ></th></tr>
 		        <tr class="<unireg:nextRowClass/>">
 		            <td><fmt:message key="label.param.dateExclusionDecedeEnvoiDI"/></td>

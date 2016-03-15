@@ -28,9 +28,6 @@ import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesMorales;
 
 public class ImpressionLettreDecisionDelaiPMHelperImpl extends EditiqueAbstractHelperImpl implements ImpressionLettreDecisionDelaiPMHelper {
 
-	private static final String TYPE_DOCUMENT = "CO";           // pour "Courrier", apparemment
-	private static final String TRAITE_PAR = "Registre PM";
-
 	private static final String CODE_DOCUMENT_ACCORD = TypeDocumentEditique.ACCORD_DELAI_PM.getCodeDocumentEditique().substring(0, 4);
 	private static final String CODE_DOCUMENT_SURSIS = TypeDocumentEditique.SURSIS.getCodeDocumentEditique().substring(0, 4);
 	private static final String CODE_DOCUMENT_REFUS = TypeDocumentEditique.REFUS_DELAI_PM.getCodeDocumentEditique().substring(0, 4);
@@ -130,7 +127,7 @@ public class ImpressionLettreDecisionDelaiPMHelperImpl extends EditiqueAbstractH
 		infoDoc.setCodDoc(codeDocument);
 		infoDoc.setPopulations(ConstantesEditique.POPULATION_PM);
 		infoDoc.setPrefixe(EditiquePrefixeHelper.buildPrefixeInfoDocument(typeDocument));
-		infoDoc.setTypDoc(TYPE_DOCUMENT);
+		infoDoc.setTypDoc(TYPE_DOCUMENT_CO);
 
 		return infoDoc;
 	}

@@ -44,6 +44,7 @@ import ch.vd.uniregctb.declaration.ordinaire.pp.InformationsDocumentAdapter;
 import ch.vd.uniregctb.declaration.source.ImpressionListeRecapHelper;
 import ch.vd.uniregctb.declaration.source.ImpressionSommationLRHelper;
 import ch.vd.uniregctb.documentfiscal.ImpressionLettreBienvenueHelper;
+import ch.vd.uniregctb.documentfiscal.ImpressionRappelHelper;
 import ch.vd.uniregctb.documentfiscal.LettreBienvenue;
 import ch.vd.uniregctb.editique.EditiqueCompositionService;
 import ch.vd.uniregctb.editique.EditiqueException;
@@ -84,6 +85,7 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 	private ImpressionBordereauMouvementDossierHelper impressionBordereauMouvementDossierHelper;
 	private ImpressionDocumentEfactureHelper impressionEfactureHelper;
 	private ImpressionLettreBienvenueHelper impressionLettreBienvenueHelper;
+	private ImpressionRappelHelper impressionRappelHelper;
 
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setEditiqueService(EditiqueService editiqueService) {
@@ -152,6 +154,11 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setImpressionLettreBienvenueHelper(ImpressionLettreBienvenueHelper impressionLettreBienvenueHelper) {
 		this.impressionLettreBienvenueHelper = impressionLettreBienvenueHelper;
+	}
+
+	@SuppressWarnings({"UnusedDeclaration"})
+	public void setImpressionRappelHelper(ImpressionRappelHelper impressionRappelHelper) {
+		this.impressionRappelHelper = impressionRappelHelper;
 	}
 
 	private static List<ModeleFeuilleDocumentEditique> buildDefaultAnnexes(DeclarationImpotOrdinaire di) {
@@ -424,6 +431,22 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 		}
 
 		final String nomDocument = impressionLettreBienvenueHelper.construitIdDocument(lettre);
+		editiqueService.creerDocumentParBatch(nomDocument, typeDocument, root, true);
+	}
+
+	@Override
+	public void imprimeRappelLettreBienvenueForBatch(LettreBienvenue lettre, RegDate dateTraitement) throws EditiqueException {
+		final TypeDocumentEditique typeDocument = impressionRappelHelper.getTypeDocumentEditique();
+
+		final FichierImpression root = new FichierImpression();
+		final FichierImpression.Document original = impressionRappelHelper.buildDocument(lettre, dateTraitement, true);
+		final FichierImpression.Document copieMandataire = impressionRappelHelper.buildCopieMandataire(original, lettre.getEntreprise(), RegDate.get());
+		root.getDocument().add(original);
+		if (copieMandataire != null) {
+			root.getDocument().add(copieMandataire);
+		}
+
+		final String nomDocument = impressionRappelHelper.construitIdDocument(lettre);
 		editiqueService.creerDocumentParBatch(nomDocument, typeDocument, root, true);
 	}
 

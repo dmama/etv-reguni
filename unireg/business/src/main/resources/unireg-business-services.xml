@@ -257,6 +257,8 @@
 
 	<bean id="impressionLettreBienvenueHelper" parent="editiqueAbstractHelper" class="ch.vd.uniregctb.documentfiscal.ImpressionLettreBienvenueHelperImpl"/>
 
+	<bean id="impressionRappelHelper" parent="editiqueAbstractHelper" class="ch.vd.uniregctb.documentfiscal.ImpressionRappelHelperImpl"/>
+
 	<bean id="printPCLService" class="ch.vd.uniregctb.editique.print.PrintPCLServiceImpl">
 	</bean>
 

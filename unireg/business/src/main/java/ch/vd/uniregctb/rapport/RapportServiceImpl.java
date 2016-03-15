@@ -71,6 +71,7 @@ import ch.vd.uniregctb.document.ListeTachesEnIsntanceParOIDRapport;
 import ch.vd.uniregctb.document.ListesNominativesRapport;
 import ch.vd.uniregctb.document.MajoriteRapport;
 import ch.vd.uniregctb.document.PassageNouveauxRentiersSourciersEnMixteRapport;
+import ch.vd.uniregctb.document.RappelLettresBienvenueRapport;
 import ch.vd.uniregctb.document.RapprocherCtbRapport;
 import ch.vd.uniregctb.document.RecalculTachesRapport;
 import ch.vd.uniregctb.document.RecuperationDonneesAnciensHabitantsRapport;
@@ -86,6 +87,7 @@ import ch.vd.uniregctb.document.SuppressionOIDRapport;
 import ch.vd.uniregctb.document.TraiterEvenementExterneRapport;
 import ch.vd.uniregctb.document.ValidationJobRapport;
 import ch.vd.uniregctb.documentfiscal.EnvoiLettresBienvenueResults;
+import ch.vd.uniregctb.documentfiscal.RappelLettresBienvenueResults;
 import ch.vd.uniregctb.droits.ListeDroitsAccesResults;
 import ch.vd.uniregctb.evenement.externe.TraiterEvenementExterneResult;
 import ch.vd.uniregctb.identification.contribuable.IdentifierContribuableResults;
@@ -1338,6 +1340,29 @@ public class RapportServiceImpl implements RapportService {
 				@Override
 				public void writeDoc(EnvoiLettresBienvenueRapport doc, OutputStream os) throws Exception {
 					final PdfEnvoiLettresBienvenueRapport document = new PdfEnvoiLettresBienvenueRapport();
+					document.write(results, nom, description, dateGeneration, os, status);
+				}
+			});
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	@Override
+	public RappelLettresBienvenueRapport generateRapport(final RappelLettresBienvenueResults results, StatusManager s) {
+
+		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
+
+		final String nom = "RappelLettresBienvenue";
+		final String description = "Rapport d'exécution du job qui envoie les rappels des lettres de bienvenue.";
+		final Date dateGeneration = DateHelper.getCurrentDate();
+
+		try {
+			return docService.newDoc(RappelLettresBienvenueRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<RappelLettresBienvenueRapport>() {
+				@Override
+				public void writeDoc(RappelLettresBienvenueRapport doc, OutputStream os) throws Exception {
+					final PdfRappelLettresBienvenueRapport document = new PdfRappelLettresBienvenueRapport();
 					document.write(results, nom, description, dateGeneration, os, status);
 				}
 			});

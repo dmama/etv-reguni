@@ -72,6 +72,12 @@ public class AutreDocumentFiscalServiceImpl implements AutreDocumentFiscalServic
 	}
 
 	@Override
+	public RappelLettresBienvenueResults envoyerRappelsLettresBienvenueEnMasse(RegDate dateTraitement, StatusManager statusManager) {
+		final RappelLettresBienvenueProcessor processor = new RappelLettresBienvenueProcessor(parametreAppService, hibernateTemplate, transactionManager, this, delaiService);
+		return processor.run(dateTraitement, statusManager);
+	}
+
+	@Override
 	public LettreBienvenue envoyerLettreBienvenueBatch(Entreprise entreprise, RegDate dateTraitement) throws AutreDocumentFiscalException {
 		final RegDate dateEnvoi = delaiService.getDateFinDelaiCadevImpressionLettreBienvenue(dateTraitement);
 		final RegDate delaiRetour = dateEnvoi.addDays(parametreAppService.getDelaiRetourLettreBienvenue());
@@ -157,5 +163,15 @@ public class AutreDocumentFiscalServiceImpl implements AutreDocumentFiscalServic
 		}
 
 		return type;
+	}
+
+	@Override
+	public void envoyerRappelLettreBienvenueBatch(LettreBienvenue lettre, RegDate dateTraitement) throws AutreDocumentFiscalException {
+		try {
+			editiqueCompositionService.imprimeRappelLettreBienvenueForBatch(lettre, dateTraitement);
+		}
+		catch (EditiqueException e) {
+			throw new AutreDocumentFiscalException(e);
+		}
 	}
 }

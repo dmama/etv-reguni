@@ -10,7 +10,7 @@ import ch.vd.editique.unireg.CTypeInfoArchivage;
 import ch.vd.editique.unireg.CTypeInfoDocument;
 import ch.vd.editique.unireg.CTypeInfoEnteteDocument;
 import ch.vd.editique.unireg.FichierImpression;
-import ch.vd.editique.unireg.STypeLettreBienvenue;
+import ch.vd.editique.unireg.STypeLettreRappel;
 import ch.vd.editique.unireg.STypeZoneAffranchissement;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.adresse.AdresseEnvoiDetaillee;
@@ -21,15 +21,14 @@ import ch.vd.uniregctb.editique.EditiquePrefixeHelper;
 import ch.vd.uniregctb.editique.TypeDocumentEditique;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.Entreprise;
-import ch.vd.uniregctb.type.TypeLettreBienvenue;
 
-public class ImpressionLettreBienvenueHelperImpl extends EditiqueAbstractHelperImpl implements ImpressionLettreBienvenueHelper {
+public class ImpressionRappelHelperImpl extends EditiqueAbstractHelperImpl implements ImpressionRappelHelper {
 
-	private static final String CODE_DOCUMENT_LETTRE_BIENVENUE = TypeDocumentEditique.LETTRE_BIENVENUE.getCodeDocumentEditique().substring(0, 4);
+	private static final String CODE_DOCUMENT_RAPPEL = TypeDocumentEditique.RAPPEL.getCodeDocumentEditique().substring(0, 4);
 
 	@Override
 	public TypeDocumentEditique getTypeDocumentEditique() {
-		return TypeDocumentEditique.LETTRE_BIENVENUE;
+		return TypeDocumentEditique.RAPPEL;
 	}
 
 	@Override
@@ -38,9 +37,9 @@ public class ImpressionLettreBienvenueHelperImpl extends EditiqueAbstractHelperI
 			final Entreprise entreprise = lettre.getEntreprise();
 			final CTypeInfoDocument infoDocument = buildInfoDocument(getAdresseEnvoi(entreprise));
 			final CTypeInfoArchivage infoArchivage = buildInfoArchivage(getTypeDocumentEditique(), construitCleArchivage(lettre), entreprise.getNumero(), dateTraitement);
-			final CTypeInfoEnteteDocument infoEnteteDocument = buildInfoEnteteDocument(entreprise, lettre.getDateEnvoi(), TRAITE_PAR, infraService.getACIOIPM());
-			final FichierImpression.Document.LettreBienvenue lb = new FichierImpression.Document.LettreBienvenue(mapType(lettre.getType()));
-			return new FichierImpression.Document(infoDocument, infoArchivage, infoEnteteDocument, null, null, null, null, null, null, lb, null, null);
+			final CTypeInfoEnteteDocument infoEnteteDocument = buildInfoEnteteDocument(entreprise, lettre.getDateRappel(), TRAITE_PAR, infraService.getACIOIPM());
+			final FichierImpression.Document.LettreRappel rappel = new FichierImpression.Document.LettreRappel(STypeLettreRappel.LETTRE_BIENVENUE);
+			return new FichierImpression.Document(infoDocument, infoArchivage, infoEnteteDocument, null, null, null, null, null, null, null, rappel, null);
 		}
 		catch (Exception e) {
 			throw new EditiqueException(e);
@@ -55,33 +54,17 @@ public class ImpressionLettreBienvenueHelperImpl extends EditiqueAbstractHelperI
 		infoDoc.setAffranchissement(new CTypeAffranchissement(infosAffranchissement.getLeft(), null));
 		infoDoc.setVersionXSD(VERSION_XSD);
 
-		infoDoc.setCodDoc(CODE_DOCUMENT_LETTRE_BIENVENUE);
+		infoDoc.setCodDoc(CODE_DOCUMENT_RAPPEL);
 		infoDoc.setPopulations(ConstantesEditique.POPULATION_PM);
-		infoDoc.setPrefixe(EditiquePrefixeHelper.buildPrefixeInfoDocument(TypeDocumentEditique.LETTRE_BIENVENUE));
+		infoDoc.setPrefixe(EditiquePrefixeHelper.buildPrefixeInfoDocument(TypeDocumentEditique.RAPPEL));
 		infoDoc.setTypDoc(TYPE_DOCUMENT_CO);
 
 		return infoDoc;
 	}
 
-
-	private static STypeLettreBienvenue mapType(TypeLettreBienvenue type) {
-		switch (type) {
-		case APM_VD_NON_RC:
-			return STypeLettreBienvenue.APM;
-		case HS_HC_ETABLISSEMENT:
-			return STypeLettreBienvenue.HCHS_ETABLISSEMENT_STABLE_VD;
-		case HS_HC_IMMEUBLE:
-			return STypeLettreBienvenue.HCHS_IMMEUBLE_VD;
-		case VD_RC:
-			return STypeLettreBienvenue.INSCRIPTION_VD;
-		default:
-			throw new IllegalArgumentException("Valeur non acceptée ici : " + type);
-		}
-	}
-
 	@Override
 	public String construitIdDocument(LettreBienvenue lettre) {
-		return String.format("LB %s %s",
+		return String.format("LB Rappel %s %s",
 		                     StringUtils.leftPad(lettre.getEntreprise().getNumero().toString(), 9, '0'),
 		                     new SimpleDateFormat("yyyyMMddHHmmssSSS").format(lettre.getLogCreationDate()));
 	}
@@ -89,7 +72,7 @@ public class ImpressionLettreBienvenueHelperImpl extends EditiqueAbstractHelperI
 	@Override
 	public String construitCleArchivage(LettreBienvenue lettre) {
 		return String.format("%s %s",
-		                     StringUtils.rightPad("Lettre bienvenue", 19, ' '),
+		                     StringUtils.rightPad("Rap_lett_bienvenue", 19, ' '),
 		                     new SimpleDateFormat("MMddHHmmssSSS").format(lettre.getLogCreationDate())
 		);
 	}

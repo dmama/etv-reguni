@@ -305,6 +305,13 @@
 		<property name="service" ref="autreDocumentFiscalService"/>
 	</bean>
 
+	<bean id="rappelLettresBienvenueJob" parent="schedulerJob" class="ch.vd.uniregctb.documentfiscal.RappelLettresBienvenueJob">
+		<constructor-arg value="476"/>
+		<constructor-arg value="Envoyer les rappels des lettres de bienvenue PM"/>
+		<property name="rapportService" ref="rapportService"/>
+		<property name="service" ref="autreDocumentFiscalService"/>
+	</bean>
+
     <bean id="ouvertureForsContribuablesMajeursJob" parent="schedulerJob" class="ch.vd.uniregctb.metier.OuvertureForsContribuablesMajeursJob">
         <constructor-arg value="500"/>
         <constructor-arg value="Ouvrir les fors des habitants majeurs domiciliés dans le canton"/>

@@ -35,7 +35,7 @@ import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeEtatAutreDocumentFiscal;
 import ch.vd.uniregctb.type.TypeLettreBienvenue;
 
-public class EnvoiLettreBienvenueProcessorTest extends BusinessTest {
+public class EnvoiLettresBienvenueProcessorTest extends BusinessTest {
 
 	private EnvoiLettresBienvenueProcessor processor;
 	private ParametreAppService paramAppService;

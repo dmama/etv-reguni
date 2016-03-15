@@ -297,6 +297,11 @@ class ParametreAppContainer implements ParametreAppAccessor {
 		return Integer.parseInt(get(ParametreEnum.tailleTrouAssujettissementPourNouvelleLettreBienvenue));
 	}
 
+	@Override
+	public Integer getDelaiEnvoiRappelLettreBienvenue() {
+		return Integer.parseInt(get(ParametreEnum.delaiEnvoiRappelLettreBienvenue));
+	}
+
 	private Integer[] getValeurPourParametreDeTypeJoursDansAnnee(ParametreEnum p) {
 		Assert.isEqual(ParametreEnum.Type.jourDansAnnee, p.getType());
 		return (Integer[]) p.convertirStringVersValeurTypee(get(p));
@@ -513,5 +518,10 @@ class ParametreAppContainer implements ParametreAppAccessor {
 	@Override
 	public void setTailleTrouAssujettissementPourNouvelleLettreBienvenue(Integer val) {
 		setValeur(ParametreEnum.tailleTrouAssujettissementPourNouvelleLettreBienvenue, val.toString());
+	}
+
+	@Override
+	public void setDelaiEnvoiRappelLettreBienvenue(Integer val) {
+		setValeur(ParametreEnum.delaiEnvoiRappelLettreBienvenue, val.toString());
 	}
 }
