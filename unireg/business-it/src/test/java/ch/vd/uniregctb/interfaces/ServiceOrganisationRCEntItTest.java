@@ -16,8 +16,8 @@ import java.io.StringReader;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.Arrays;
-import java.util.Base64;
 
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.FileUtils;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Assert;
@@ -181,7 +181,7 @@ public class ServiceOrganisationRCEntItTest extends BusinessItTest {
 
 		if (username != null && !"".equals(username)) {
 			String userpass = username + ":" + password;
-			String basicAuth = "Basic " + new String(Base64.getEncoder().encode(userpass.getBytes()));
+			String basicAuth = "Basic " + new String(Base64.encodeBase64(userpass.getBytes()));
 			rcent.setRequestProperty("Authorization", basicAuth);
 		}
 
