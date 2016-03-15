@@ -35,12 +35,12 @@ import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.infra.data.Pays;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
-import ch.vd.uniregctb.adresse.AdresseCivileAdapter;
 import ch.vd.uniregctb.adresse.AdresseEnvoi;
 import ch.vd.uniregctb.adresse.AdresseEnvoiDetaillee;
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdresseGenerique;
-import ch.vd.uniregctb.adresse.AdressesCivilesHisto;
+import ch.vd.uniregctb.adresse.AdressesFiscalesHisto;
+import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
 import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.common.DonneesCivilesException;
 import ch.vd.uniregctb.common.XmlUtils;
@@ -305,26 +305,24 @@ public class ImpressionDeclarationImpotPersonnesMoralesHelperImpl extends Editiq
 	}
 
 	/**
-	 * Remplissage de l'adresse légale et de la raison sociale
+	 * Remplissage de l'adresse légale (en fait, adresse fiscale de domicile) et de la raison sociale
 	 * @param entreprise l'entreprise qui nous intéresse
 	 * @param dateFinPeriode la date de fin de la période d'imposition correspondant à la déclaration
-	 * @return une adresse (au format 'éditique') correspondant à l'adresse légale (= civile) de l'entreprise, si elle est connue (et à la
-	 * raison sociale seule si l'adresse légale est inconnue)
+	 * @return une adresse (au format 'éditique') correspondant à l'adresse de domicile de l'entreprise, si elle est connue
 	 */
 	@NotNull
 	private CTypeAdresse buildAdresseRaisonSociale(Entreprise entreprise, RegDate dateFinPeriode) throws AdresseException, DonneesCivilesException {
 
 		// L'adresse qui m'intéresse est l'adresse à la date de fin de période
-		final AdressesCivilesHisto adressesCiviles = adresseService.getAdressesCivilesHisto(entreprise, false);
-		final List<Adresse> adressesDomicile = adressesCiviles != null ? adressesCiviles.principales : null;
-		Adresse adresseRetenue = null;
+		final AdressesFiscalesHisto histo = adresseService.getAdressesFiscalHisto(entreprise, false);
+		final List<AdresseGenerique> adressesDomicile = histo != null ? histo.ofType(TypeAdresseFiscale.DOMICILE) : null;
+		AdresseGenerique adresseRetenue = null;
 		if (adressesDomicile != null) {
 			adresseRetenue = getLastBeforeOrAt(adressesDomicile, dateFinPeriode);
 		}
 
 		if (adresseRetenue != null) {
-			final AdresseGenerique adresseCivile = new AdresseCivileAdapter(adresseRetenue, entreprise, false, infraService);
-			final AdresseEnvoi adresseEnvoi = adresseService.buildAdresseEnvoi(entreprise, adresseCivile, dateFinPeriode);
+			final AdresseEnvoi adresseEnvoi = adresseService.buildAdresseEnvoi(entreprise, adresseRetenue, dateFinPeriode);
 			final CTypeAdresse adresse = buildAdresse(adresseEnvoi);
 			if (adresse != null) {
 				return adresse;
