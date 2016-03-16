@@ -22,6 +22,7 @@ import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
 import ch.vd.uniregctb.common.BouclementHelper;
 import ch.vd.uniregctb.common.DelegatingValidator;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
+import ch.vd.uniregctb.common.NumeroIDEHelper;
 import ch.vd.uniregctb.complements.ComplementsEditCommunicationsView;
 import ch.vd.uniregctb.complements.ComplementsEditCoordonneesFinancieresView;
 import ch.vd.uniregctb.declaration.Periodicite;
@@ -213,9 +214,10 @@ public class TiersCreateController {
 		final EntrepriseCivilView civilView = view.getCivil();
 
 		// Numéro IDE
-		if (StringUtils.isNotBlank(civilView.getNumeroIde())) {
+		final String normalizedIde = NumeroIDEHelper.normalize(civilView.getNumeroIde());
+		if (StringUtils.isNotBlank(normalizedIde)) {
 			IdentificationEntreprise ident = new IdentificationEntreprise();
-			ident.setNumeroIde(civilView.getNumeroIde());
+			ident.setNumeroIde(normalizedIde);
 			entreprise.addIdentificationEntreprise(ident);
 		}
 
@@ -400,9 +402,10 @@ public class TiersCreateController {
 		etablissement.setEnseigne(civilView.getNomEnseigne());
 		etablissement.addDomicile(new DomicileEtablissement(civilView.getDateDebut(), civilView.getDateFin(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, civilView.getNoOfsCommune(), etablissement));
 
-		if (StringUtils.isNotBlank(civilView.getNumeroIDE())) {
+		final String normalizedIde = NumeroIDEHelper.normalize(civilView.getNumeroIDE());
+		if (StringUtils.isNotBlank(normalizedIde)) {
 			IdentificationEntreprise identification = new IdentificationEntreprise();
-			identification.setNumeroIde(civilView.getNumeroIDE());
+			identification.setNumeroIde(normalizedIde);
 			etablissement.addIdentificationEntreprise(identification);
 		}
 
