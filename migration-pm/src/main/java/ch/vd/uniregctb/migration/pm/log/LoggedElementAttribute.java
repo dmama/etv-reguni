@@ -108,7 +108,7 @@ public enum LoggedElementAttribute {
 	FORME_JURIDIQUE_REGPM(String.class, s -> s, LoggedElementHelper.<String>exceptionThrowing()),
 	FORME_JURIDIQUE_RCENT(FormeLegale.class, Enum::name, LoggedElementHelper.<FormeLegale>exceptionThrowing()),
 	FORME_JURIDIQUE_DIFF_FLAG(Boolean.class, b -> b ? "Différentes" : "Identiques", LoggedElementHelper.<Boolean>exceptionThrowing()),
-	IDE_REGPM(NumeroIDE.class, no -> String.format("%s%d", no.getCategorie(), no.getNumero()), LoggedElementHelper.<NumeroIDE>exceptionThrowing()),
+	IDE_REGPM(String.class, s -> s, LoggedElementHelper.<String>exceptionThrowing()),
 	IDE_RCENT(String.class, s -> s, LoggedElementHelper.<String>exceptionThrowing()),
 	IDE_DIFF_FLAG(Boolean.class, b -> b ? "Différents" : "Identiques", LoggedElementHelper.<Boolean>exceptionThrowing()),
 	SIEGE_REGPM(String.class, s -> s, LoggedElementHelper.<String>exceptionThrowing()),

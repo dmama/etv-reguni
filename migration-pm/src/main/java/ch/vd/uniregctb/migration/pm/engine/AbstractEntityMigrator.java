@@ -79,7 +79,7 @@ public abstract class AbstractEntityMigrator<T extends RegpmEntity> implements E
 		this.migrationContexte = migrationContexte;
 	}
 
-	protected static final BinaryOperator<List<DateRange>> DATE_RANGE_LIST_MERGER =
+	public static final BinaryOperator<List<DateRange>> DATE_RANGE_LIST_MERGER =
 			(l1, l2) -> {
 				final List<DateRange> liste = Stream.concat(l1.stream(), l2.stream())
 						.sorted(DateRangeComparator::compareRanges)
@@ -87,7 +87,7 @@ public abstract class AbstractEntityMigrator<T extends RegpmEntity> implements E
 				return DateRangeHelper.merge(liste);
 			};
 
-	protected static final BinaryOperator<Map<RegpmCommune, List<DateRange>>> DATE_RANGE_MAP_MERGER =
+	public static final BinaryOperator<Map<RegpmCommune, List<DateRange>>> DATE_RANGE_MAP_MERGER =
 			(m1, m2) -> Stream.concat(m1.entrySet().stream(), m2.entrySet().stream())
 					.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, DATE_RANGE_LIST_MERGER));
 
@@ -95,7 +95,7 @@ public abstract class AbstractEntityMigrator<T extends RegpmEntity> implements E
 	 * Extracteur du numéro OFS (au sens Unireg) d'une commune en prenant en compte la spécificité des fractions de communes
 	 * vaudoises (qui n'ont pas de numéro OFS officiel mais dont l'ID technique en tient lieu dans Unireg)
 	 */
-	protected static final Function<RegpmCommune, Integer> NO_OFS_COMMUNE_EXTRACTOR =
+	public static final Function<RegpmCommune, Integer> NO_OFS_COMMUNE_EXTRACTOR =
 			commune -> commune.getNoOfs() == null || commune.getNoOfs() == 0 ? commune.getId().intValue() : commune.getNoOfs();
 
 	/**

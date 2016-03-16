@@ -4410,7 +4410,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		{
 			final List<String> msgs = messages.get(LogCategory.DIFFERENCES_DONNEES_CIVILES);
 			Assert.assertEquals(1, msgs.size());
-			Assert.assertEquals("INFO;" + noEntreprise + ";Active;CHE123456788;" + noCantonalEntreprise + ";Toto SA;Pittet Levage S.A.R.L.;Différentes;S.A.;N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE;Différentes;CHE123456788;CHE123456788;Identiques;Grandson (VD/5561);COMMUNE_OU_FRACTION_VD/5561;Identiques;", msgs.get(0));
+			Assert.assertEquals("INFO;" + noEntreprise + ";Active;CHE123456788;" + noCantonalEntreprise + ";Toto SA;Pittet Levage S.A.R.L.;Différentes;S.A.;N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE;Différentes;CHE123456788;CHE123456788;Identiques;COMMUNE_OU_FRACTION_VD/5561;COMMUNE_OU_FRACTION_VD/5561;Identiques;", msgs.get(0));
 		}
 	}
 
@@ -4491,7 +4491,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		{
 			final List<String> msgs = messages.get(LogCategory.DIFFERENCES_DONNEES_CIVILES);
 			Assert.assertEquals(1, msgs.size());
-			Assert.assertEquals("INFO;" + noEntreprise + ";Active;CHE123456788;" + noCantonalEntreprise + ";Toto SA;Toto SA;Identiques;S.A.;N_0106_SOCIETE_ANONYME;Identiques;CHE123456788;CHE123456788;Identiques;Grandson (VD/5561);COMMUNE_OU_FRACTION_VD/5938;Différents;", msgs.get(0));
+			Assert.assertEquals("INFO;" + noEntreprise + ";Active;CHE123456788;" + noCantonalEntreprise + ";Toto SA;Toto SA;Identiques;S.A.;N_0106_SOCIETE_ANONYME;Identiques;CHE123456788;CHE123456788;Identiques;COMMUNE_OU_FRACTION_VD/5561;COMMUNE_OU_FRACTION_VD/5938;Différents;", msgs.get(0));
 		}
 	}
 

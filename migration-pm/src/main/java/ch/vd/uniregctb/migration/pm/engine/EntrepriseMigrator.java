@@ -91,6 +91,7 @@ import ch.vd.uniregctb.migration.pm.MigrationResultContextManipulation;
 import ch.vd.uniregctb.migration.pm.MigrationResultInitialization;
 import ch.vd.uniregctb.migration.pm.MigrationResultProduction;
 import ch.vd.uniregctb.migration.pm.engine.collector.EntityLinkCollector;
+import ch.vd.uniregctb.migration.pm.engine.data.CommuneOuPays;
 import ch.vd.uniregctb.migration.pm.engine.data.DonneesAdministrateurs;
 import ch.vd.uniregctb.migration.pm.engine.data.DonneesCiviles;
 import ch.vd.uniregctb.migration.pm.engine.data.DonneesMandats;
@@ -2656,7 +2657,8 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 
 		// [SIFISC-17198] comparaison des données RCEnt vs. RegPM
 		if (rcent != null) {
-			final String rcentFormeJuridique = Optional.ofNullable(OrganisationDataHelper.getLastValue(rcent.getFormeLegale())).map(FormeLegale::getCode).orElse(null);
+			final Optional<FormeLegale> rcentFormeJuridique = Optional.ofNullable(OrganisationDataHelper.getLastValue(rcent.getFormeLegale()));
+			final String rcentCodeFormeJuridique = rcentFormeJuridique.map(FormeLegale::getCode).orElse(null);
 			final String rcentRaisonSociale = OrganisationDataHelper.getLastValue(rcent.getNom());
 			final String rcentNumeroIde = OrganisationDataHelper.getLastValue(rcent.getNumeroIDE());
 			final CommuneOuPays rcentSiege = rcent.getSiegesPrincipaux().stream()
@@ -2664,22 +2666,26 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 					.map(domicile -> new CommuneOuPays(domicile.getNoOfs(), domicile.getTypeAutoriteFiscale()))
 					.orElse(null);
 
-			final String regpmFormeJuridique = Optional.ofNullable(toFormeJuridique(regpmFormesJuridiques.lastEntry().getValue().getCode())).map(FormeJuridiqueEntreprise::getCodeECH).orElse(null);
+			final Optional<String> regpmFormeJuridique = Optional.of(regpmFormesJuridiques).map(NavigableMap::lastEntry).map(Map.Entry::getValue).map(RegpmTypeFormeJuridique::getCode);
+			final String regpmCodeFormeJuridique = regpmFormeJuridique.map(EntrepriseMigrator::toFormeJuridique).map(FormeJuridiqueEntreprise::getCodeECH).orElse(null);
 			final String regpmRaisonSociale = regpmRaisonsSociales.lastEntry().getValue();
 			final String regpmNumeroIde = Optional.ofNullable(regpm.getNumeroIDE()).map(ide -> String.format("%s%09d", ide.getCategorie(), ide.getNumero())).orElse(null);
-			final CommuneOuPays regpmSiege = regpm.getSieges().stream()
-					.filter(siege -> !siege.isRectifiee())
-					.max(Comparator.comparing(RegpmSiegeEntreprise::getDateValidite))
+			final CommuneOuPays regpmSiege = Optional.of(mr.getExtractedData(SiegesHistoData.class, key).histo)
+					.map(NavigableMap::lastEntry)
+					.map(Map.Entry::getValue)
 					.map(siege -> new CommuneOuPays(siege::getCommune, siege::getNoOfsPays))
 					.orElse(null);
 
-			final boolean differenceFormeJuridique = areDifferent(rcentFormeJuridique, regpmFormeJuridique, Objects::equals);
+			final boolean differenceFormeJuridique = areDifferent(rcentCodeFormeJuridique, regpmCodeFormeJuridique, Objects::equals);
 			final boolean differenceRaisonSociale = areDifferent(rcentRaisonSociale, regpmRaisonSociale, Objects::equals);
 			final boolean differenceNumeroIde = areDifferent(rcentNumeroIde, regpmNumeroIde, Objects::equals);
 			final boolean differenceSiege = areDifferent(rcentSiege, regpmSiege, Objects::equals);
 
 			if (differenceFormeJuridique || differenceNumeroIde || differenceRaisonSociale || differenceSiege) {
-				mr.pushContextValue(DifferencesDonneesCivilesLoggedElement.class, new DifferencesDonneesCivilesLoggedElement(regpm, rcent, differenceRaisonSociale, differenceFormeJuridique, differenceNumeroIde, differenceSiege));
+				mr.pushContextValue(DifferencesDonneesCivilesLoggedElement.class, new DifferencesDonneesCivilesLoggedElement(regpmRaisonSociale, rcentRaisonSociale, differenceRaisonSociale,
+				                                                                                                             regpmFormeJuridique.orElse(null), rcentFormeJuridique.orElse(null), differenceFormeJuridique,
+				                                                                                                             regpmNumeroIde, rcentNumeroIde, differenceNumeroIde,
+				                                                                                                             regpmSiege, rcentSiege, differenceSiege));
 				try {
 					mr.addMessage(LogCategory.DIFFERENCES_DONNEES_CIVILES, LogLevel.INFO, StringUtils.EMPTY);
 				}
@@ -2924,74 +2930,6 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 	}
 
 	/**
-	 * Classe interne qui contient la donnée d'une commune Suisse ou d'un pays, de manière exclusive
-	 */
-	private static final class CommuneOuPays {
-
-		private final TypeAutoriteFiscale typeAutoriteFiscale;
-		private final Integer numeroOfsAutoriteFiscale;
-
-		public CommuneOuPays(Integer noOfs, TypeAutoriteFiscale typeAutoriteFiscale) {
-			this.numeroOfsAutoriteFiscale = noOfs;
-			this.typeAutoriteFiscale = typeAutoriteFiscale;
-		}
-
-		public CommuneOuPays(@NotNull Supplier<RegpmCommune> communeSupplier, @NotNull Supplier<Integer> noOfsPaysSupplier) {
-			final RegpmCommune commune = communeSupplier.get();
-			if (commune != null) {
-				this.numeroOfsAutoriteFiscale = NO_OFS_COMMUNE_EXTRACTOR.apply(commune);
-				this.typeAutoriteFiscale = commune.getCanton() == RegpmCanton.VD ? TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD : TypeAutoriteFiscale.COMMUNE_HC;
-			}
-			else {
-				this.numeroOfsAutoriteFiscale = noOfsPaysSupplier.get();
-				this.typeAutoriteFiscale = TypeAutoriteFiscale.PAYS_HS;
-			}
-		}
-
-		public CommuneOuPays(@NotNull RegpmForPrincipal ffp) {
-			this(ffp::getCommune, ffp::getOfsPays);
-		}
-
-		/**
-		 * @return le type d'autorité fiscale représentée par l'entité
-		 */
-		public TypeAutoriteFiscale getTypeAutoriteFiscale() {
-			return typeAutoriteFiscale;
-		}
-
-		/**
-		 * @return le numéro OFS de la commune ou du pays (voir {@link #getTypeAutoriteFiscale()})
-		 */
-		public Integer getNumeroOfsAutoriteFiscale() {
-			return numeroOfsAutoriteFiscale;
-		}
-
-		@Override
-		public boolean equals(Object o) {
-			if (this == o) return true;
-			if (o == null || getClass() != o.getClass()) return false;
-
-			final CommuneOuPays that = (CommuneOuPays) o;
-
-			if (typeAutoriteFiscale != that.typeAutoriteFiscale) return false;
-			return numeroOfsAutoriteFiscale != null ? numeroOfsAutoriteFiscale.equals(that.numeroOfsAutoriteFiscale) : that.numeroOfsAutoriteFiscale == null;
-
-		}
-
-		@Override
-		public int hashCode() {
-			int result = typeAutoriteFiscale != null ? typeAutoriteFiscale.hashCode() : 0;
-			result = 31 * result + (numeroOfsAutoriteFiscale != null ? numeroOfsAutoriteFiscale.hashCode() : 0);
-			return result;
-		}
-
-		@Override
-		public String toString() {
-			return String.format("%s/%d", getTypeAutoriteFiscale(), getNumeroOfsAutoriteFiscale());
-		}
-	}
-
-	/**
 	 * Construit une instance de {@link CommuneOuPays} en remplaçant éventuellement les territoires par l'état souverain correspond
 	 * @param dateReference date de référence pour les données du pays éventuel
 	 * @param communeSupplier accesseur à une commune (qui peut être absente)
@@ -3011,12 +2949,12 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 			// Dans le mainframe, il y avait un pays (8997 nommé 'Ex Gibraltar (voir 8213)') qui n'a pas été repris dans FiDoR...
 			// Ici, on va faire comme si le pays vu était Gibraltar (8213)
 			final int noOfsPays;
-			final int noOfsPaysCorrigeGibraltar = cop.numeroOfsAutoriteFiscale == 8997 ? 8213 : cop.numeroOfsAutoriteFiscale;
+			final int noOfsPaysCorrigeGibraltar = cop.getNumeroOfsAutoriteFiscale() == 8997 ? 8213 : cop.getNumeroOfsAutoriteFiscale();
 			final Pays pays = migrationContexte.getInfraService().getPays(noOfsPaysCorrigeGibraltar, dateReference);
 			if (pays != null && !pays.isEtatSouverain()) {
 				mr.addMessage(logCategory, LogLevel.WARN,
 				              String.format("Le pays %d%s n'est pas un état souverain, remplacé par l'état %d.",
-				                            cop.numeroOfsAutoriteFiscale,
+				                            cop.getNumeroOfsAutoriteFiscale(),
 				                            StringUtils.isBlank(contexte) ? StringUtils.EMPTY : String.format(" (%s)", contexte),
 				                            pays.getNoOfsEtatSouverain()));
 				noOfsPays = pays.getNoOfsEtatSouverain();
@@ -3025,7 +2963,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 				noOfsPays = noOfsPaysCorrigeGibraltar;
 			}
 
-			if (noOfsPays != cop.numeroOfsAutoriteFiscale) {
+			if (noOfsPays != cop.getNumeroOfsAutoriteFiscale()) {
 				return new CommuneOuPays(noOfsPays, TypeAutoriteFiscale.PAYS_HS);
 			}
 		}
