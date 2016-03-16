@@ -570,9 +570,10 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		return doInLogContext(entrepriseKey, mr, idMapper, () -> {
 
 			// [SIFISC-16744] nouvelle règle pour l'ordre des dates à prendre en compte
-			// - date de réquisition de radiation
+			// [SIFISC-18101] changement d'ordre
 			// - date de bilan de fusion
 			// - date de prononcé de faillite ([SIFISC-18088] à ignorer s'il existe une révocation de faillite plus récente)
+			// - date de réquisition de radiation
 			// - date de dissolution
 
 			final RegDate dateBilanFusion = e.getFusionsApres().stream()
@@ -612,9 +613,9 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 					.orElse(null);
 
 			// récupération de toutes les fins d'activité canditates (il faut logguer si on en a plusieurs)
-			final List<Pair<RegDate, String>> finsActivite = Stream.of(Pair.of(e.getDateRequisitionRadiation(), "réquisition de radiation"),
-			                                                           Pair.of(dateBilanFusion, "bilan de fusion"),
+			final List<Pair<RegDate, String>> finsActivite = Stream.of(Pair.of(dateBilanFusion, "bilan de fusion"),
 			                                                           Pair.of(datePrononceFaillite, "prononcé de faillite"),
+			                                                           Pair.of(e.getDateRequisitionRadiation(), "réquisition de radiation"),
 			                                                           Pair.of(e.getDateDissolution(), "dissolution"))
 					.filter(pair -> pair.getLeft() != null)
 					.filter(pair -> {

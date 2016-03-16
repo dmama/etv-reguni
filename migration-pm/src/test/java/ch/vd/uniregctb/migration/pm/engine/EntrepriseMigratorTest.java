@@ -4267,18 +4267,13 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 	public void testDateFinActiviteDateRequisitionRadiation() throws Exception {
 
 		final long noEntreprise = 2623L;
-		final long noEntrepriseApresFusion = 42632L;
 		final RegDate dateCreationFor = RegDate.get(2005, 2, 1);
-		final RegDate dateBilanFusion = RegDate.get(2007, 3, 12);
 		final RegDate dateRequisitionRadiation = RegDate.get(2006, 4, 21);
-		final RegDate datePrononceFaillite = RegDate.get(2005, 6, 2);
 		final RegDate dateDissolution = RegDate.get(2007, 3, 4);
 
 		final RegpmEntreprise e = buildEntreprise(noEntreprise);
 		addForPrincipalSuisse(e, dateCreationFor, RegpmTypeForPrincipal.SIEGE, Commune.LAUSANNE);
 		e.setDateRequisitionRadiation(dateRequisitionRadiation);
-		addFusion(e, buildEntreprise(noEntrepriseApresFusion), dateBilanFusion);
-		addPrononceFaillite(e, datePrononceFaillite.addDays(-10), RegpmTypeEtatEntreprise.EN_FAILLITE, datePrononceFaillite);
 		e.setDateDissolution(dateDissolution);
 
 		final MockGraphe graphe = new MockGraphe(Collections.singletonList(e),
@@ -4311,14 +4306,13 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 			final List<MigrationResultCollector.Message> messages = mr.getMessages().get(LogCategory.SUIVI);
 			Assert.assertNotNull(messages);
 			final List<String> textes = messages.stream().map(msg -> msg.text).collect(Collectors.toList());
-			Assert.assertEquals(7, textes.size());
+			Assert.assertEquals(6, textes.size());
 			Assert.assertEquals("L'entreprise n'existait pas dans Unireg avec ce numéro de contribuable.", textes.get(0));
-			Assert.assertEquals("Plusieurs dates de fin d'activité en concurrence : date de réquisition de radiation (21.04.2006), date de bilan de fusion (12.03.2007), date de prononcé de faillite (02.06.2005), date de dissolution (04.03.2007).", textes.get(1));
+			Assert.assertEquals("Plusieurs dates de fin d'activité en concurrence : date de réquisition de radiation (21.04.2006), date de dissolution (04.03.2007).", textes.get(1));
 			Assert.assertEquals("Date de fin d'activité proposée (date de réquisition de radiation) : 21.04.2006.", textes.get(2));
 			Assert.assertEquals("Entreprise sans exercice commercial ni date de bouclement futur.", textes.get(3));
 			Assert.assertEquals("Pas de siège associé dans les données fiscales, pas d'établissement principal créé à partir des données fiscales.", textes.get(4));
-			Assert.assertEquals("Etat 'EN_FAILLITE' migré, dès le 23.05.2005.", textes.get(5));
-			Assert.assertEquals("Entreprise migrée : 26.23.", textes.get(6));
+			Assert.assertEquals("Entreprise migrée : 26.23.", textes.get(5));
 		}
 	}
 
@@ -4335,7 +4329,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 
 		final RegpmEntreprise e = buildEntreprise(noEntreprise);
 		addForPrincipalSuisse(e, dateCreationFor, RegpmTypeForPrincipal.SIEGE, Commune.LAUSANNE);
-//		e.setDateRequisitionRadiation(dateRequisitionRadiation);
+		e.setDateRequisitionRadiation(dateRequisitionRadiation);
 		addFusion(e, buildEntreprise(noEntrepriseApresFusion), dateBilanFusion);
 		addPrononceFaillite(e, datePrononceFaillite.addDays(-10), RegpmTypeEtatEntreprise.EN_FAILLITE, datePrononceFaillite);
 		e.setDateDissolution(dateDissolution);
@@ -4372,7 +4366,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 			final List<String> textes = messages.stream().map(msg -> msg.text).collect(Collectors.toList());
 			Assert.assertEquals(7, textes.size());
 			Assert.assertEquals("L'entreprise n'existait pas dans Unireg avec ce numéro de contribuable.", textes.get(0));
-			Assert.assertEquals("Plusieurs dates de fin d'activité en concurrence : date de bilan de fusion (12.03.2007), date de prononcé de faillite (02.06.2005), date de dissolution (04.03.2007).", textes.get(1));
+			Assert.assertEquals("Plusieurs dates de fin d'activité en concurrence : date de bilan de fusion (12.03.2007), date de prononcé de faillite (02.06.2005), date de réquisition de radiation (21.04.2006), date de dissolution (04.03.2007).", textes.get(1));
 			Assert.assertEquals("Date de fin d'activité proposée (date de bilan de fusion) : 12.03.2007.", textes.get(2));
 			Assert.assertEquals("Entreprise sans exercice commercial ni date de bouclement futur.", textes.get(3));
 			Assert.assertEquals("Pas de siège associé dans les données fiscales, pas d'établissement principal créé à partir des données fiscales.", textes.get(4));
@@ -4392,7 +4386,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 
 		final RegpmEntreprise e = buildEntreprise(noEntreprise);
 		addForPrincipalSuisse(e, dateCreationFor, RegpmTypeForPrincipal.SIEGE, Commune.LAUSANNE);
-//		e.setDateRequisitionRadiation(dateRequisitionRadiation);
+		e.setDateRequisitionRadiation(dateRequisitionRadiation);
 //		addFusion(e, buildEntreprise(noEntrepriseApresFusion), dateBilanFusion);
 		addPrononceFaillite(e, datePrononceFaillite.addDays(-10), RegpmTypeEtatEntreprise.EN_FAILLITE, datePrononceFaillite);
 		e.setDateDissolution(dateDissolution);
@@ -4429,7 +4423,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 			final List<String> textes = messages.stream().map(msg -> msg.text).collect(Collectors.toList());
 			Assert.assertEquals(7, textes.size());
 			Assert.assertEquals("L'entreprise n'existait pas dans Unireg avec ce numéro de contribuable.", textes.get(0));
-			Assert.assertEquals("Plusieurs dates de fin d'activité en concurrence : date de prononcé de faillite (02.06.2005), date de dissolution (04.03.2007).", textes.get(1));
+			Assert.assertEquals("Plusieurs dates de fin d'activité en concurrence : date de prononcé de faillite (02.06.2005), date de réquisition de radiation (21.04.2006), date de dissolution (04.03.2007).", textes.get(1));
 			Assert.assertEquals("Date de fin d'activité proposée (date de prononcé de faillite) : 02.06.2005.", textes.get(2));
 			Assert.assertEquals("Entreprise sans exercice commercial ni date de bouclement futur.", textes.get(3));
 			Assert.assertEquals("Pas de siège associé dans les données fiscales, pas d'établissement principal créé à partir des données fiscales.", textes.get(4));
@@ -4449,7 +4443,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 
 		final RegpmEntreprise e = buildEntreprise(noEntreprise);
 		addForPrincipalSuisse(e, dateCreationFor, RegpmTypeForPrincipal.SIEGE, Commune.LAUSANNE);
-//		e.setDateRequisitionRadiation(dateRequisitionRadiation);
+		e.setDateRequisitionRadiation(dateRequisitionRadiation);
 //		addFusion(e, buildEntreprise(noEntrepriseApresFusion), dateBilanFusion);
 		final RegpmPrononceFaillite prononce = addPrononceFaillite(e, datePrononceFaillite.addDays(-10), RegpmTypeEtatEntreprise.EN_FAILLITE, datePrononceFaillite);
 		addRevocationPrononceFaillite(prononce, datePrononceFaillite.addDays(3));
@@ -4474,7 +4468,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 			final ForFiscalPrincipalPM ffp = entreprise.getDernierForFiscalPrincipal();
 			Assert.assertNotNull(ffp);
 			Assert.assertEquals(dateCreationFor, ffp.getDateDebut());
-			Assert.assertEquals(dateDissolution, ffp.getDateFin());
+			Assert.assertEquals(dateRequisitionRadiation, ffp.getDateFin());
 			Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
 			Assert.assertEquals(Commune.LAUSANNE.getNoOfs(), ffp.getNumeroOfsAutoriteFiscale());
 			Assert.assertFalse(ffp.isAnnule());
@@ -4487,15 +4481,16 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 			final List<MigrationResultCollector.Message> messages = mr.getMessages().get(LogCategory.SUIVI);
 			Assert.assertNotNull(messages);
 			final List<String> textes = messages.stream().map(msg -> msg.text).collect(Collectors.toList());
-			Assert.assertEquals(8, textes.size());
+			Assert.assertEquals(9, textes.size());
 			Assert.assertEquals("L'entreprise n'existait pas dans Unireg avec ce numéro de contribuable.", textes.get(0));
 			Assert.assertEquals("Prononcé de faillite au 02.06.2005 ignoré (dans le calcul de la date de fin d'activité) pour cause de révocation au 05.06.2005.", textes.get(1));
-			Assert.assertEquals("Date de fin d'activité proposée (date de dissolution) : 04.03.2007.", textes.get(2));
-			Assert.assertEquals("Entreprise sans exercice commercial ni date de bouclement futur.", textes.get(3));
-			Assert.assertEquals("Pas de siège associé dans les données fiscales, pas d'établissement principal créé à partir des données fiscales.", textes.get(4));
-			Assert.assertEquals("Etat 'EN_FAILLITE' migré, dès le 23.05.2005.", textes.get(5));
-			Assert.assertEquals("Etat 'INSCRITE_RC' migré, dès le 05.06.2005.", textes.get(6));
-			Assert.assertEquals("Entreprise migrée : 26.23.", textes.get(7));
+			Assert.assertEquals("Plusieurs dates de fin d'activité en concurrence : date de réquisition de radiation (21.04.2006), date de dissolution (04.03.2007).", textes.get(2));
+			Assert.assertEquals("Date de fin d'activité proposée (date de réquisition de radiation) : 21.04.2006.", textes.get(3));
+			Assert.assertEquals("Entreprise sans exercice commercial ni date de bouclement futur.", textes.get(4));
+			Assert.assertEquals("Pas de siège associé dans les données fiscales, pas d'établissement principal créé à partir des données fiscales.", textes.get(5));
+			Assert.assertEquals("Etat 'EN_FAILLITE' migré, dès le 23.05.2005.", textes.get(6));
+			Assert.assertEquals("Etat 'INSCRITE_RC' migré, dès le 05.06.2005.", textes.get(7));
+			Assert.assertEquals("Entreprise migrée : 26.23.", textes.get(8));
 		}
 	}
 
