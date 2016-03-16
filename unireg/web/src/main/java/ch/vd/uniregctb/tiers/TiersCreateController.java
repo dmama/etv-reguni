@@ -8,6 +8,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
+import org.springframework.util.Assert;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
@@ -29,6 +30,8 @@ import ch.vd.uniregctb.declaration.Periodicite;
 import ch.vd.uniregctb.iban.IbanHelper;
 import ch.vd.uniregctb.iban.IbanValidator;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
+import ch.vd.uniregctb.metier.AjustementForsSecondairesResult;
+import ch.vd.uniregctb.metier.MetierServicePM;
 import ch.vd.uniregctb.security.AccessDeniedException;
 import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.security.SecurityHelper;
@@ -82,6 +85,7 @@ public class TiersCreateController {
 	private TiersService tiersService;
 	private IbanValidator ibanValidator;
 	private ServiceInfrastructureService infraService;
+	private MetierServicePM metierServicePM;
 
 	public void setSecurityProvider(SecurityProviderInterface securityProvider) {
 		this.securityProvider = securityProvider;
@@ -105,6 +109,10 @@ public class TiersCreateController {
 
 	public void setInfraService(ServiceInfrastructureService infraService) {
 		this.infraService = infraService;
+	}
+
+	public void setMetierServicePM(MetierServicePM metierServicePM) {
+		this.metierServicePM = metierServicePM;
 	}
 
 	@InitBinder
@@ -387,7 +395,7 @@ public class TiersCreateController {
 
 	@Transactional(rollbackFor = Throwable.class)
 	@RequestMapping(value = "/etablissement/create.do", method = RequestMethod.POST)
-	public String doCreateEtablissement(Model model, @RequestParam(value = "numeroCtbAss") long noCtbAssocie, @Valid @ModelAttribute(DATA) CreateEtablissementView view, BindingResult results) {
+	public String doCreateEtablissement(Model model, @RequestParam(value = "numeroCtbAss") long noCtbAssocie, @Valid @ModelAttribute(DATA) CreateEtablissementView view, BindingResult results) throws Exception {
 		if (!SecurityHelper.isGranted(securityProvider, Role.ETABLISSEMENTS)) {
 			throw new AccessDeniedException("Vous ne possédez pas les droits d'accès suffisants à la création d'un établissement.");
 		}
@@ -413,8 +421,29 @@ public class TiersCreateController {
 		setComplementCoordFinanciere(etablissement, view.getComplementCoordFinanciere());
 
 		final Etablissement saved = (Etablissement) tiersDAO.save(etablissement);
-		final Contribuable ctbAss = (Contribuable) tiersDAO.get(noCtbAssocie);
-		tiersService.addActiviteEconomique(saved, ctbAss, civilView.getDateDebut(), false);
+		final Entreprise entreprise = (Entreprise) tiersDAO.get(noCtbAssocie);
+		tiersService.addActiviteEconomique(saved, entreprise, civilView.getDateDebut(), false);
+
+		// Calcul des éléments fiscaux
+		final AjustementForsSecondairesResult ajustementForsSecondaires = metierServicePM.calculAjustementForsSecondairesPourEtablissementsVD(entreprise, null);
+
+		for (ForFiscalSecondaire forAAnnuler : ajustementForsSecondaires.getAAnnuler()) {
+			tiersService.annuleForFiscal(forAAnnuler);
+		}
+
+		for (AjustementForsSecondairesResult.ForAFermer forAFermer : ajustementForsSecondaires.getAFermer()) {
+			tiersService.closeForFiscalSecondaire(entreprise, forAFermer.getForFiscal(), forAFermer.getDateFermeture(), MotifFor.FIN_EXPLOITATION);
+		}
+
+		for (ForFiscalSecondaire forACreer : ajustementForsSecondaires.getACreer()) {
+			final Commune commune = infraService.getCommuneByNumeroOfs(forACreer.getNumeroOfsAutoriteFiscale(), forACreer.getDateDebut());
+			if (!commune.isPrincipale()) {
+				Assert.notNull(forACreer.getMotifOuverture(), "Le motif d'ouverture est obligatoire sur un for secondaire dans le canton"); // TODO: is it?
+				tiersService.addForSecondaire(entreprise, forACreer.getDateDebut(), forACreer.getDateFin(), forACreer.getMotifRattachement(), forACreer.getNumeroOfsAutoriteFiscale(),
+				                              forACreer.getTypeAutoriteFiscale(),
+				                              forACreer.getMotifOuverture(), forACreer.getMotifFermeture(), GenreImpot.BENEFICE_CAPITAL);
+			}
+		}
 
 		return "redirect:/tiers/visu.do?id=" + saved.getNumero();
 	}

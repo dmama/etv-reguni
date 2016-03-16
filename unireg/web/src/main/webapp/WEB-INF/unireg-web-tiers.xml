@@ -109,6 +109,7 @@
 		<property name="tiersService" ref="tiersService"/>
 		<property name="ibanValidator" ref="ibanValidator"/>
 		<property name="infraService" ref="serviceInfrastructureService"/>
+		<property name="metierServicePM" ref="metierServicePM"/>
 	</bean>
 
 	<bean id="tiersManager" class="ch.vd.uniregctb.tiers.manager.TiersManager">
