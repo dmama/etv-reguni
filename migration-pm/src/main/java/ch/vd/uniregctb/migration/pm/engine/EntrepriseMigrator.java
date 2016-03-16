@@ -4349,7 +4349,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		// qu'à partir de la date du premier immeuble...
 		final List<Pair<ForFiscalPrincipalPM, Boolean>> donneesForsAGenerer;
 		if (!forsRegpm.isEmpty()) {
-			donneesForsAGenerer = generationDonneesMigrationForsPrincipaux(forsRegpm, hasSP, dateDebutPremierImmeubleDP, mr);
+			donneesForsAGenerer = generationDonneesMigrationForsPrincipaux(regpm, forsRegpm, hasSP, dateDebutPremierImmeubleDP, mr);
 		}
 		else {
 			// ok, pas de fors principaux dans RegPM... mais si nous n'avons pas affaire à une administration de droit
@@ -4371,7 +4371,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 				.collect(Collectors.toList());
 
 		// assignation des dates de fin
-		assigneDatesFin(dateFinActivite, liste);
+		assigneDatesFin(hasSP ? regpm.getDateFinSocietePersonnes() : dateFinActivite, liste);
 
 		// corrections dues aux fusions de communes passées
 		final List<CollatableForPrincipalPM> listeAvecTraitementFusions = liste.stream()
@@ -4477,7 +4477,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 			datePremierSiegeAPrendre = sieges.firstKey();
 		}
 
-		return sieges.tailMap(datePremierSiegeAPrendre, true).entrySet().stream()
+		final List<Pair<ForFiscalPrincipalPM, Boolean>> donneesFors = sieges.tailMap(datePremierSiegeAPrendre, true).entrySet().stream()
 				.map(entry -> {
 					final ForFiscalPrincipalPM ffp = new ForFiscalPrincipalPM();
 					final RegpmSiegeEntreprise siege = entry.getValue();
@@ -4523,17 +4523,28 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 				})
 				.map(ff -> Pair.of(ff, Boolean.FALSE))
 				.collect(Collectors.toList());
+
+		// [SIFISC-18118] dans le cas des sociétés de personnes, il faut prendre en compte les dates ad'hoc pour les fors
+		if (societeDePersonnes && regpm.getDateDebutSocietePersonnes() != null) {
+			final DateRange rangeSP = new DateRangeHelper.Range(regpm.getDateDebutSocietePersonnes(), regpm.getDateFinSocietePersonnes());
+			return fixForsSocietePersonnes(donneesFors, rangeSP, mr);
+		}
+		else {
+			return donneesFors;
+		}
 	}
 
 	/**
 	 * Génération des données servant à la migration des fors principaux existants en fors principaux pour Unireg
+	 * @param regpm entreprise de RegPM
 	 * @param forsRegpm les fors principaux retenus dans RegPM
 	 * @param societeDePersonnes <code>vrai</code> si l'entreprise a toujours été une société de personne, <code>false</code> si elle ne l'a jamais été (le cas hybride doit être traité en amont...)
 	 * @param dateDebutPremierImmeubleDP si non-<code>null</code>, nous sommes en présence d'une DP avec immeuble... il ne faut reprendre les fors principaux qu'à partir de cette date
 	 * @param mr collecteur de messages de suivi
 	 * @return une liste de données pour la création de fors (sans date de fin pour le moment) associés à un booléen qui indique si le for est une administration effective
 	 */
-	private List<Pair<ForFiscalPrincipalPM, Boolean>> generationDonneesMigrationForsPrincipaux(List<RegpmForPrincipal> forsRegpm,
+	private List<Pair<ForFiscalPrincipalPM, Boolean>> generationDonneesMigrationForsPrincipaux(RegpmEntreprise regpm,
+	                                                                                           List<RegpmForPrincipal> forsRegpm,
 	                                                                                           boolean societeDePersonnes,
 	                                                                                           @Nullable RegDate dateDebutPremierImmeubleDP,
 	                                                                                           MigrationResultProduction mr) {
@@ -4599,9 +4610,80 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 			datePremierForAPrendre = mapFors.firstKey();
 		}
 
-		return mapFors.tailMap(datePremierForAPrendre, true).values().stream()
+		final List<Pair<ForFiscalPrincipalPM, Boolean>> donneesFors = mapFors.tailMap(datePremierForAPrendre, true).values().stream()
 				.map(mapper)
 				.collect(Collectors.toList());
+
+		// [SIFISC-18118] dans le cas des sociétés de personnes, il faut prendre en compte les dates ad'hoc pour les fors
+		if (societeDePersonnes && regpm.getDateDebutSocietePersonnes() != null) {
+			final DateRange rangeSP = new DateRangeHelper.Range(regpm.getDateDebutSocietePersonnes(), regpm.getDateFinSocietePersonnes());
+			return fixForsSocietePersonnes(donneesFors, rangeSP, mr);
+		}
+		else {
+			return donneesFors;
+		}
+	}
+
+	private static List<Pair<ForFiscalPrincipalPM, Boolean>> fixForsSocietePersonnes(List<Pair<ForFiscalPrincipalPM, Boolean>> source, DateRange rangeSP, MigrationResultProduction mr) {
+		final List<Pair<ForFiscalPrincipalPM, Boolean>> donneesForsCorrigeesSP = new ArrayList<>(source.size());
+		for (Pair<ForFiscalPrincipalPM, Boolean> pair : source) {
+			final DateRange intersection = DateRangeHelper.intersection(rangeSP, pair.getLeft());
+			if (intersection == null) {
+				mr.addMessage(LogCategory.FORS, LogLevel.WARN,
+				              String.format("Le for principal %s normalement généré est finalement ignoré car en dehors de la période d'exploitation de la société de personnes (%s).",
+				                            StringRenderers.LOCALISATION_DATEE_RENDERER.toString(pair.getLeft()),
+				                            StringRenderers.DATE_RANGE_RENDERER.toString(rangeSP)));
+			}
+			else if (DateRangeHelper.equals(pair.getLeft(), intersection)) {
+				// complètement compris... on devra peut-être l'étendre, mais en tout cas pas le tronquer
+				donneesForsCorrigeesSP.add(pair);
+			}
+			else {
+				// intersection mais pas inclusion -> il faut tronquer...
+				mr.addMessage(LogCategory.FORS, LogLevel.WARN,
+				              String.format("Le for principal %s doit être tronqué à %s pour ne pas dépasser de la période d'exploitation de la société de personnes (%s).",
+				                            StringRenderers.LOCALISATION_DATEE_RENDERER.toString(pair.getLeft()),
+				                            StringRenderers.DATE_RANGE_RENDERER.toString(intersection),
+				                            StringRenderers.DATE_RANGE_RENDERER.toString(rangeSP)));
+
+				final ForFiscalPrincipalPM tronque = (ForFiscalPrincipalPM) pair.getLeft().duplicate();
+				tronque.setDateDebut(intersection.getDateDebut());
+				tronque.setDateFin(intersection.getDateFin());
+				donneesForsCorrigeesSP.add(Pair.of(tronque, pair.getRight()));
+			}
+		}
+
+		// doit-on étendre des fors (au début ou à la fin) ?
+		if (!donneesForsCorrigeesSP.isEmpty()) {
+			// début
+			final Pair<ForFiscalPrincipalPM, Boolean> first = donneesForsCorrigeesSP.get(0);
+			if (first.getLeft().getDateDebut() != rangeSP.getDateDebut()) {
+				mr.addMessage(LogCategory.FORS, LogLevel.WARN,
+				              String.format("Le date de début du for principal %s doit être avancée au %s pour couvrir la période d'exploitation de la société de personnes (%s).",
+				                            StringRenderers.LOCALISATION_DATEE_RENDERER.toString(first.getLeft()),
+				                            StringRenderers.DATE_RENDERER.toString(rangeSP.getDateDebut()),
+				                            StringRenderers.DATE_RANGE_RENDERER.toString(rangeSP)));
+
+				final ForFiscalPrincipalPM ralonge = (ForFiscalPrincipalPM) first.getLeft().duplicate();
+				ralonge.setDateDebut(rangeSP.getDateDebut());
+				donneesForsCorrigeesSP.set(0, Pair.of(ralonge, first.getRight()));
+			}
+
+			// fin
+			final Pair<ForFiscalPrincipalPM, Boolean> last = donneesForsCorrigeesSP.get(donneesForsCorrigeesSP.size() - 1);
+			if (last.getLeft().getDateFin() != rangeSP.getDateFin()) {
+				mr.addMessage(LogCategory.FORS, LogLevel.WARN,
+				              String.format("Le date de fin du for principal %s doit être repoussée au %s pour couvrir la période d'exploitation de la société de personnes (%s).",
+				                            StringRenderers.LOCALISATION_DATEE_RENDERER.toString(first.getLeft()),
+				                            StringRenderers.DATE_RENDERER.toString(rangeSP.getDateFin()),
+				                            StringRenderers.DATE_RANGE_RENDERER.toString(rangeSP)));
+
+				final ForFiscalPrincipalPM ralonge = (ForFiscalPrincipalPM) last.getLeft().duplicate();
+				ralonge.setDateFin(rangeSP.getDateFin());
+				donneesForsCorrigeesSP.set(donneesForsCorrigeesSP.size() - 1, Pair.of(ralonge, last.getRight()));
+			}
+		}
+		return donneesForsCorrigeesSP;
 	}
 
 	/**

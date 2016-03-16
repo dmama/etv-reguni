@@ -4992,12 +4992,15 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 	public void testMigrationForsSNC() throws Exception {
 
 		final long noEntreprise = 2623L;
+		final RegDate dateDebut = RegDate.get(2004, 8, 27);
+		final RegDate dateDebutSocietePersonnes = RegDate.get(2004, 7, 12);
 
 		final RegpmEntreprise e = buildEntreprise(noEntreprise);
-		addRaisonSociale(e, RegDate.get(2004, 8, 27), "Ma société à moi", "tout seul", "si si vraiment", true);
-		addFormeJuridique(e, RegDate.get(2004, 8, 27), createTypeFormeJuridique("S.N.C.", RegpmCategoriePersonneMorale.SP));
+		addRaisonSociale(e, dateDebut, "Ma société à moi", "tout seul", "si si vraiment", true);
+		addFormeJuridique(e, dateDebut, createTypeFormeJuridique("S.N.C.", RegpmCategoriePersonneMorale.SP));
 		addAdresse(e, RegpmTypeAdresseEntreprise.COURRIER, RegDate.get(2010, 7, 22), null, LocalitePostale.RENENS, "Rue des étangs", "24", null, null);
-		addForPrincipalSuisse(e, RegDate.get(2004, 8, 27), RegpmTypeForPrincipal.SIEGE, Commune.RENENS);
+		addForPrincipalSuisse(e, dateDebut, RegpmTypeForPrincipal.SIEGE, Commune.RENENS);
+		e.setDateDebutSocietePersonnes(dateDebutSocietePersonnes);
 
 		final MockGraphe graphe = new MockGraphe(Collections.singletonList(e),
 		                                         null,
@@ -5020,7 +5023,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 			Assert.assertNotNull(ff);
 			Assert.assertFalse(ff.isAnnule());
 			Assert.assertEquals(GenreImpot.REVENU_FORTUNE, ff.getGenreImpot());         // <-- c'est ce point qui va faire en sorte qu'il n'y ait pas d'assujettissement
-			Assert.assertEquals(RegDate.get(2004, 8, 27), ff.getDateDebut());
+			Assert.assertEquals(dateDebutSocietePersonnes, ff.getDateDebut());
 			Assert.assertNull(ff.getDateFin());
 			Assert.assertEquals(ForFiscalPrincipalPM.class, ff.getClass());
 			Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ff.getTypeAutoriteFiscale());
