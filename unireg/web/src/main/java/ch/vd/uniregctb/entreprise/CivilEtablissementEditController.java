@@ -177,17 +177,15 @@ public class CivilEtablissementEditController {
 			if (!auth.isDonneesCiviles() || !auth.isIdentificationEntreprise()) {      // FIXME: Et aussi IDE?
 				throw new AccessDeniedException("Vous ne possédez pas les droits IfoSec d'édition d'etablissements.");
 			}
-
+			if (bindingResult.hasErrors()) {
+				model.addAttribute(DATA, view);
+				model.addAttribute(TIERS_ID, id);
+				return "/tiers/edition/civil/edit-ide";
+			}
 			tiersService.setIdentifiantEntreprise((Etablissement) tiers, StringUtils.trimToNull(view.getIde()));
 		}
 		else {
 			throw new TiersNotFoundException(id);
-		}
-
-		if (bindingResult.hasErrors()) {
-			model.addAttribute(DATA, view);
-			model.addAttribute(TIERS_ID, id);
-			return "/tiers/edition/civil/edit-ide";
 		}
 
 		return "redirect:/civil/etablissement/edit.do?id=" + id;
