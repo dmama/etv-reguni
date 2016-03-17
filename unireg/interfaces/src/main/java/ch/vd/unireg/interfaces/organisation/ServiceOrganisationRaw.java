@@ -1,5 +1,7 @@
 package ch.vd.unireg.interfaces.organisation;
 
+import java.util.Map;
+
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 
 public interface ServiceOrganisationRaw {
@@ -23,6 +25,16 @@ public interface ServiceOrganisationRaw {
 	 * @throws ServiceOrganisationException
 	 */
 	Long getOrganisationPourSite(Long noSite) throws ServiceOrganisationException;
+
+
+	/**
+	 * Recherche les états avant et après de l'événement et contruit ls pseudo historique correspondant.
+	 *
+	 * @param noEvenement Identifiant de l'événement organisation
+	 * @return les données retournées par RCEnt sous forme de map indexée par no cantonal.
+	 * @throws ServiceOrganisationException
+	 */
+	Map<Long, Organisation> getPseudoOrganisationHistory(long noEvenement) throws ServiceOrganisationException;
 
 	/**
 	 * Méthode qui permet de tester que le service organisation répond bien. Cette méthode est insensible aux caches.

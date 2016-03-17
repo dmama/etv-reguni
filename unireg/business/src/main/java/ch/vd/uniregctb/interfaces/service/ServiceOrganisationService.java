@@ -1,5 +1,7 @@
 package ch.vd.uniregctb.interfaces.service;
 
+import java.util.Map;
+
 import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.RegDate;
@@ -19,6 +21,15 @@ public interface ServiceOrganisationService {
 	 * @throws ServiceOrganisationException
 	 */
 	Organisation getOrganisationHistory(long noOrganisation) throws ServiceOrganisationException;
+
+	/**
+	 * Recherche les états avant et après de l'événement et contruit la pseudo histoire correspondante.
+	 *
+	 * @param noEvenement Identifiant de l'événement organisation
+	 * @return les données retournées par RCEnt sous forme de map indexée par no cantonal.
+	 * @throws ServiceOrganisationException
+	 */
+	Map<Long, Organisation> getPseudoOrganisationHistory(long noEvenement) throws ServiceOrganisationException;
 
 	/**
 	 * Obtenir un numéro d'organisation à partir d'un numéro de site.

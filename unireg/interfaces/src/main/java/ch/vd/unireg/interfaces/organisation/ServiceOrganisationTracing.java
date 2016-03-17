@@ -1,5 +1,7 @@
 package ch.vd.unireg.interfaces.organisation;
 
+import java.util.Map;
+
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
@@ -97,6 +99,36 @@ public class ServiceOrganisationTracing implements ServiceOrganisationRaw, Initi
 				@Override
 				public String toString() {
 					return String.format("noSite=%d", noSite);
+				}
+			});
+		}
+	}
+
+	@Override
+	public Map<Long, Organisation> getPseudoOrganisationHistory(final long noEvenement) throws ServiceOrganisationException {
+		Throwable t = null;
+		int items = 0;
+		final long time = tracing.start();
+		try {
+			final Map<Long, Organisation> organisations = target.getPseudoOrganisationHistory(noEvenement);
+			if (organisations != null) {
+				items = 1;
+			}
+			return organisations;
+		}
+		catch (ServiceCivilException e) {
+			t = e;
+			throw e;
+		}
+		catch (RuntimeException | Error e) {
+			t = e;
+			throw e;
+		}
+		finally {
+			tracing.end(time, t, "getPseudoOrganisationHistory", items, new Object() {
+				@Override
+				public String toString() {
+					return String.format("noEvenement=%d", noEvenement);
 				}
 			});
 		}

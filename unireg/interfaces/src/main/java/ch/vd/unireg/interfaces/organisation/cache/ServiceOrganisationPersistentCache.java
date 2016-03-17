@@ -1,5 +1,6 @@
 package ch.vd.unireg.interfaces.organisation.cache;
 
+import java.util.Map;
 import java.util.Objects;
 
 import org.slf4j.Logger;
@@ -186,6 +187,11 @@ public class ServiceOrganisationPersistentCache implements ServiceOrganisationRa
 			return noOrganisation;
 		}
 		return value;
+	}
+
+	@Override
+	public Map<Long, Organisation> getPseudoOrganisationHistory(long noEvenement) throws ServiceOrganisationException {
+		return target.getPseudoOrganisationHistory(noEvenement);
 	}
 
 	@Override

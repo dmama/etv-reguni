@@ -84,12 +84,21 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 	private EvenementFiscalService evenementFiscalService;
 	private AssujettissementService assujettissementService;
 	private ParametreAppService parametreAppService;
+	private boolean useOrganisationsOfNotice;
 
 	/*
 	 * Non injecté mais créé ci-dessous dans afterPropertiesSet()
 	 */
 	private EvenementOrganisationContext context;
 	private List<EvenementOrganisationTranslationStrategy> strategies;
+
+	public EvenementOrganisationTranslatorImpl(boolean useOrganisationsOfNotice) {
+		this.useOrganisationsOfNotice = useOrganisationsOfNotice;
+	}
+
+	public EvenementOrganisationTranslatorImpl() {
+		this.useOrganisationsOfNotice = false;
+	}
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
@@ -147,7 +156,14 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 	 */
 	@Override
 	public EvenementOrganisationInterne toInterne(EvenementOrganisation event, EvenementOrganisationOptions options) throws EvenementOrganisationException {
-		final Organisation organisation = serviceOrganisationService.getOrganisationHistory(event.getNoOrganisation());
+		Organisation organisation;
+		if (useOrganisationsOfNotice) {
+			organisation = serviceOrganisationService.getPseudoOrganisationHistory(event.getNoOrganisation()).get(event.getNoOrganisation());
+		} else {
+			LOGGER.warn("Utilisation du service RCEnt WS Organisation à la place du WS OrganisationsOfNotice! Traitement à doubles possibles.");
+			organisation = serviceOrganisationService.getOrganisationHistory(event.getNoOrganisation());
+		}
+
 		// Sanity check. Pourquoi ici? Pour ne pas courir le risque d'ignorer des entreprise (passer à TRAITE) sur la foi d'information manquantes.
 		sanityCheck(event, organisation);
 
@@ -362,5 +378,9 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setParametreAppService(ParametreAppService parametreAppService) {
 		this.parametreAppService = parametreAppService;
+	}
+
+	public void setUseOrganisationsOfNotice(boolean useOrganisationsOfNotice) {
+		this.useOrganisationsOfNotice = useOrganisationsOfNotice;
 	}
 }

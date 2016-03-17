@@ -1,6 +1,8 @@
 package ch.vd.unireg.interfaces.organisation.cache;
 
 
+import java.util.Map;
+
 import net.sf.ehcache.CacheManager;
 import org.junit.Before;
 import org.junit.Test;
@@ -97,6 +99,11 @@ public class ServiceOrganisationCacheTest extends WithoutSpringTest {
 		@Override
 		public Long getOrganisationPourSite(Long noSite) throws ServiceOrganisationException {
 			return target.getOrganisationPourSite(noSite);
+		}
+
+		@Override
+		public Map<Long, Organisation> getPseudoOrganisationHistory(long noEvenement) throws ServiceOrganisationException {
+			return target.getPseudoOrganisationHistory(noEvenement);
 		}
 
 		@Override

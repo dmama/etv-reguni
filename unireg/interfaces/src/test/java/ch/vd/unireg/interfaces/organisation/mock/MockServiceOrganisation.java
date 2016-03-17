@@ -52,6 +52,11 @@ public abstract class MockServiceOrganisation implements ServiceOrganisationRaw 
 		return null;
 	}
 
+	@Override
+	public Map<Long, Organisation> getPseudoOrganisationHistory(long noEvenement) throws ServiceOrganisationException {
+		throw new UnsupportedOperationException();
+	}
+
 	protected void addOrganisation(MockOrganisation organisation) {
 		organisationMap.put(organisation.getNumeroOrganisation(), organisation);
 	}

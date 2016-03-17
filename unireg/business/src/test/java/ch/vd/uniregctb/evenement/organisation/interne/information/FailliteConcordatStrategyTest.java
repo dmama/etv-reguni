@@ -1,5 +1,7 @@
 package ch.vd.uniregctb.evenement.organisation.interne.information;
 
+import java.util.Map;
+
 import org.jetbrains.annotations.NotNull;
 import org.junit.Assert;
 import org.junit.Test;
@@ -37,6 +39,11 @@ public class FailliteConcordatStrategyTest extends WithoutSpringTest {
 	private static class MockServiceOrganisationService implements ServiceOrganisationService {
 		@Override
 		public Organisation getOrganisationHistory(long noOrganisation) throws ServiceOrganisationException {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public Map<Long, Organisation> getPseudoOrganisationHistory(long noEvenement) throws ServiceOrganisationException {
 			throw new UnsupportedOperationException();
 		}
 

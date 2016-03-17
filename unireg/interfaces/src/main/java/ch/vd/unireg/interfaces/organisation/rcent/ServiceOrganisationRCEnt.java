@@ -1,5 +1,8 @@
 package ch.vd.unireg.interfaces.organisation.rcent;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
 import ch.vd.unireg.interfaces.organisation.ServiceOrganisationException;
 import ch.vd.unireg.interfaces.organisation.ServiceOrganisationRaw;
@@ -38,6 +41,19 @@ public class ServiceOrganisationRCEnt implements ServiceOrganisationRaw {
 			return null;
 		}
 		return received.getCantonalId();
+	}
+
+	@Override
+	public Map<Long, Organisation> getPseudoOrganisationHistory(long noEvenement) throws ServiceOrganisationException {
+		final Map<Long, ch.vd.uniregctb.adapter.rcent.model.Organisation> received = adapter.getPseudoHistoryForEvent(noEvenement);
+		if (received == null || received.isEmpty()) {
+			return null;
+		}
+		Map<Long, Organisation> result = new HashMap<>();
+		for (Map.Entry<Long, ch.vd.uniregctb.adapter.rcent.model.Organisation> orgEntry : received.entrySet()) {
+			result.put(orgEntry.getKey(), RCEntOrganisationHelper.get(orgEntry.getValue(), infraService));
+		}
+		return result;
 	}
 
 	@Override

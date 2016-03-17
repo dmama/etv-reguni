@@ -87,6 +87,7 @@ public abstract class BusinessItTestApplication {
 				BusinessTestingConstants.UNIREG_BUSINESS_UT_CACHE,
 				BusinessTestingConstants.UNIREG_BUSINESS_UT_INTERFACES,
 				BusinessTestingConstants.UNIREG_BUSINESS_ESSENTIALS,
+				BusinessTestingConstants.UNIREG_BUSINESS_UT_EVT_ORGANISATION,
 				BusinessTestingConstants.UNIREG_BUSINESS_SERVICES,
 				BusinessTestingConstants.UNIREG_BUSINESS_EVT_CIVIL,
 				BusinessTestingConstants.UNIREG_BUSINESS_EVT_FISCAL,

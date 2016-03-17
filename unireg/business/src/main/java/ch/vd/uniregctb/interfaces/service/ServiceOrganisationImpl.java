@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.interfaces.service;
 
 import java.util.List;
+import java.util.Map;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -46,6 +47,11 @@ public class ServiceOrganisationImpl implements ServiceOrganisationService {
 	@Override
 	public Organisation getOrganisationHistory(long noOrganisation) throws DonneesOrganisationException {
 		return target.getOrganisationHistory(noOrganisation);
+	}
+
+	@Override
+	public Map<Long, Organisation> getPseudoOrganisationHistory(long noEvenement) throws ServiceOrganisationException {
+		return target.getPseudoOrganisationHistory(noEvenement);
 	}
 
 	@Override

@@ -2,6 +2,7 @@ package ch.vd.unireg.interfaces.organisation.cache;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import net.sf.ehcache.CacheManager;
@@ -239,6 +240,11 @@ public class ServiceOrganisationCache implements ServiceOrganisationRaw, UniregC
 			return noSiteRecupere;
 		}
 		return (Long) element.getObjectValue();
+	}
+
+	@Override
+	public Map<Long, Organisation> getPseudoOrganisationHistory(long noEvenement) throws ServiceOrganisationException {
+		return target.getPseudoOrganisationHistory(noEvenement);
 	}
 
 	@Override

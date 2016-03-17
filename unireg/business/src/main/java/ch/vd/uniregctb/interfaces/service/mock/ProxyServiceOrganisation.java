@@ -1,5 +1,7 @@
 package ch.vd.uniregctb.interfaces.service.mock;
 
+import java.util.Map;
+
 import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.RegDate;
@@ -35,6 +37,11 @@ public class ProxyServiceOrganisation implements ServiceOrganisationService, Ser
 	public Organisation getOrganisationHistory(long noOrganisation) throws ServiceOrganisationException {
 		assertTargetNotNull();
 		return service.getOrganisationHistory(noOrganisation);
+	}
+
+	@Override
+	public Map<Long, Organisation> getPseudoOrganisationHistory(long noEvenement) throws ServiceOrganisationException {
+		return service.getPseudoOrganisationHistory(noEvenement);
 	}
 
 	@Override

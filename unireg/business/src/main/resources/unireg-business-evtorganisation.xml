@@ -5,21 +5,6 @@
 
 	<!-- Evénements organisation -->
 
-	<bean id="evenementOrganisationTranslator" class="ch.vd.uniregctb.evenement.organisation.engine.translator.EvenementOrganisationTranslatorImpl">
-		<property name="serviceOrganisationService" ref="serviceOrganisationService" />
-		<property name="serviceInfrastructureService" ref="serviceInfrastructureService" />
-		<property name="tiersDAO" ref="tiersDAO" />
-		<property name="dataEventService" ref="dataEventService"/>
-		<property name="tiersService" ref="tiersService" />
-		<property name="metierServicePM" ref="metierServicePM" />
-		<property name="adresseService" ref="adresseService"/>
-		<property name="indexer" ref="globalTiersIndexer" />
-		<property name="identCtbService" ref="identCtbService" />
-		<property name="evenementFiscalService" ref="evenementFiscalService" />
-		<property name="assujettissementService" ref="assujettissementService" />
-		<property name="parametreAppService" ref="parametreAppService" />
-	</bean>
-
 	<bean id="evtOrganisationService" class="ch.vd.uniregctb.evenement.organisation.EvenementOrganisationServiceImpl">
 		<property name="evenementOrganisationDAO" ref="evenementOrganisationDAO"/>
 		<property name="serviceOrganisation" ref="serviceOrganisationService" />

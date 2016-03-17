@@ -123,6 +123,7 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 		translator.setIdentCtbService(getBean(IdentificationContribuableService.class, "identCtbService"));
 		translator.setEvenementFiscalService(getBean(EvenementFiscalService.class, "evenementFiscalService"));
 		translator.setParametreAppService(getBean(ParametreAppService.class, "parametreAppService"));
+		translator.setUseOrganisationsOfNotice(false);
 		translator.afterPropertiesSet();
 
 		buildProcessor(translator);
@@ -212,6 +213,7 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 		translator.setIdentCtbService(getBean(IdentificationContribuableService.class, "identCtbService"));
 		translator.setEvenementFiscalService(getBean(EvenementFiscalService.class, "evenementFiscalService"));
 		translator.setParametreAppService(getBean(ParametreAppService.class, "parametreAppService"));
+		translator.setUseOrganisationsOfNotice(false);
 		translator.afterPropertiesSet();
 
 		buildProcessor(translator);
@@ -470,6 +472,7 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 		translator.setIdentCtbService(getBean(IdentificationContribuableService.class, "identCtbService"));
 		translator.setEvenementFiscalService(getBean(EvenementFiscalService.class, "evenementFiscalService"));
 		translator.setParametreAppService(getBean(ParametreAppService.class, "parametreAppService"));
+		translator.setUseOrganisationsOfNotice(false);
 		translator.afterPropertiesSet();
 
 		buildProcessor(translator);
@@ -574,6 +577,7 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 		translator.setIdentCtbService(getBean(IdentificationContribuableService.class, "identCtbService"));
 		translator.setEvenementFiscalService(getBean(EvenementFiscalService.class, "evenementFiscalService"));
 		translator.setParametreAppService(getBean(ParametreAppService.class, "parametreAppService"));
+		translator.setUseOrganisationsOfNotice(false);
 		translator.afterPropertiesSet();
 
 		buildProcessor(translator);
@@ -671,6 +675,7 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 		translator.setIdentCtbService(getBean(IdentificationContribuableService.class, "identCtbService"));
 		translator.setEvenementFiscalService(getBean(EvenementFiscalService.class, "evenementFiscalService"));
 		translator.setParametreAppService(getBean(ParametreAppService.class, "parametreAppService"));
+		translator.setUseOrganisationsOfNotice(false);
 		translator.afterPropertiesSet();
 
 		buildProcessor(translator);
@@ -765,6 +770,7 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 		translator.setIdentCtbService(getBean(IdentificationContribuableService.class, "identCtbService"));
 		translator.setEvenementFiscalService(getBean(EvenementFiscalService.class, "evenementFiscalService"));
 		translator.setParametreAppService(getBean(ParametreAppService.class, "parametreAppService"));
+		translator.setUseOrganisationsOfNotice(false);
 		translator.afterPropertiesSet();
 
 		buildProcessor(translator);
@@ -858,6 +864,7 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 		translator.setIdentCtbService(getBean(IdentificationContribuableService.class, "identCtbService"));
 		translator.setEvenementFiscalService(getBean(EvenementFiscalService.class, "evenementFiscalService"));
 		translator.setParametreAppService(getBean(ParametreAppService.class, "parametreAppService"));
+		translator.setUseOrganisationsOfNotice(false);
 		translator.afterPropertiesSet();
 
 		buildProcessor(translator);

@@ -1,6 +1,7 @@
 package ch.vd.unireg.interfaces.organisation;
 
 import java.util.List;
+import java.util.Map;
 
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
@@ -35,6 +36,17 @@ public class ServiceOrganisationEndPoint implements ServiceOrganisationRaw, Deta
 		loadMeter.start(new MethodCallDescriptor("getOrganisationPourSite", "noSite", noSite));
 		try {
 			return target.getOrganisationPourSite(noSite);
+		}
+		finally {
+			loadMeter.end();
+		}
+	}
+
+	@Override
+	public Map<Long, Organisation> getPseudoOrganisationHistory(long noEvenement) throws ServiceOrganisationException {
+		loadMeter.start(new MethodCallDescriptor("getPseudoOrganisationHistory", "noEvenement", noEvenement));
+		try {
+			return target.getPseudoOrganisationHistory(noEvenement);
 		}
 		finally {
 			loadMeter.end();
