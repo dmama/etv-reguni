@@ -1,6 +1,7 @@
 package ch.vd.unireg.wsclient.rcent;
 
 import java.util.Arrays;
+import java.util.List;
 
 import ch.ech.ech0010.v6.AddressInformation;
 import org.junit.Assert;
@@ -8,6 +9,7 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import ch.vd.evd0004.v3.Error;
 import ch.vd.evd0022.v3.OrganisationData;
 
 /**
@@ -68,4 +70,49 @@ public class RcEntClientImplTest {
 		client.afterPropertiesSet();
 		return client;
 	}
+
+	@Test
+	public void testParseSimpleError() throws Exception {
+		final String erreurSimple = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+				"<eVD-0004:errors xmlns:eVD-0004=\"http://evd.vd.ch/xmlns/eVD-0004/3\"><eVD-0004:error><eVD-0004:code>100</eVD-0004:code><eVD-0004:message>Exception : catégorie de l'identifiant non valide : ct.vd.party</eVD-0004:message></eVD-0004:error></eVD-0004:errors>\n";
+
+		final RcEntClientImpl rcEntClient = new RcEntClientImpl();
+		rcEntClient.afterPropertiesSet();
+		final List<Error> extracted = rcEntClient.parseErrors(erreurSimple);
+
+		Assert.assertNotNull(extracted);
+		final Error error = extracted.get(0);
+		Assert.assertNotNull(error);
+		Assert.assertEquals(100, error.getCode().intValue());
+		Assert.assertEquals("Exception : catégorie de l'identifiant non valide : ct.vd.party", error.getMessage());
+	}
+
+	@Test
+	public void testParseMultipleMultilineErrors() throws Exception {
+		final String erreurMultipleMultiline = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+				"<eVD-0004:errors xmlns:eVD-0004=\"http://evd.vd.ch/xmlns/eVD-0004/3\">\n  <eVD-0004:error>\n    <eVD-0004:code>100</eVD-0004:code>\n    <eVD-0004:message>Exception : catégorie de l'identifiant non valide : ct.vd.party</eVD-0004:message>\n  </eVD-0004:error>\n\n" +
+				"  <eVD-0004:error>\n" +
+				"    <eVD-0004:code>101</eVD-0004:code>\n" +
+				"    <eVD-0004:message>Deuxième message d'erreur!</eVD-0004:message>\n" +
+				"  </eVD-0004:error>\n</eVD-0004:errors>\n";
+
+		final RcEntClientImpl rcEntClient = new RcEntClientImpl();
+		rcEntClient.afterPropertiesSet();
+		final List<Error> extracted = rcEntClient.parseErrors(erreurMultipleMultiline);
+
+		Assert.assertNotNull(extracted);
+		{
+			final Error error = extracted.get(0);
+			Assert.assertNotNull(error);
+			Assert.assertEquals(100, error.getCode().intValue());
+			Assert.assertEquals("Exception : catégorie de l'identifiant non valide : ct.vd.party", error.getMessage());
+		}
+		{
+			final Error error = extracted.get(1);
+			Assert.assertNotNull(error);
+			Assert.assertEquals(101, error.getCode().intValue());
+			Assert.assertEquals("Deuxième message d'erreur!", error.getMessage());
+		}
+	}
+
 }

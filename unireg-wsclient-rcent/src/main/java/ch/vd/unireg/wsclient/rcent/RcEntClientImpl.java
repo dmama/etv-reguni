@@ -1,11 +1,18 @@
 package ch.vd.unireg.wsclient.rcent;
 
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
+import java.io.ByteArrayInputStream;
 import java.util.List;
 
 import org.apache.cxf.jaxrs.client.ServerWebApplicationException;
 import org.apache.cxf.jaxrs.client.WebClient;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.InitializingBean;
 
+import ch.vd.evd0004.v3.Error;
+import ch.vd.evd0004.v3.Errors;
 import ch.vd.evd0022.v3.OrganisationData;
 import ch.vd.evd0022.v3.OrganisationsOfNotice;
 import ch.vd.registre.base.date.RegDate;
@@ -14,6 +21,8 @@ import ch.vd.registre.base.date.RegDateHelper;
 public class RcEntClientImpl implements RcEntClient, InitializingBean {
 
 	private static final int RECEIVE_TIMEOUT = 600000; // 10 minutes
+
+	private Unmarshaller errorunmarshaller;
 
 	private final WebClientPool wcPool = new WebClientPool();
 
@@ -56,6 +65,9 @@ public class RcEntClientImpl implements RcEntClient, InitializingBean {
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		this.wcPool.init();
+
+		JAXBContext jc = JAXBContext.newInstance(Errors.class);
+		errorunmarshaller = jc.createUnmarshaller();
 	}
 
 	@Override
@@ -77,12 +89,26 @@ public class RcEntClientImpl implements RcEntClient, InitializingBean {
 				return wc.get(OrganisationData.class);
 			}
 			catch (ServerWebApplicationException e) {
-				throw new RcEntClientException(e);
+				final String message = e.getMessage();
+				List<Error> errors = parseErrors(message);
+				throw new RcEntClientException(e, errors);
 			}
 		}
 		finally {
 			wcPool.returnClient(wc);
 		}
+	}
+
+	@Nullable
+	protected List<Error> parseErrors(String message) {
+		List<Error> errors = null;
+		try {
+			Errors unmarshalled = (Errors) errorunmarshaller.unmarshal(new ByteArrayInputStream(message.getBytes()));
+			errors = unmarshalled.getError();
+		}
+		catch (JAXBException e1) {
+		}
+		return errors;
 	}
 
 	@Override
@@ -97,7 +123,8 @@ public class RcEntClientImpl implements RcEntClient, InitializingBean {
 				return wc.get(OrganisationsOfNotice.class);
 			}
 			catch (ServerWebApplicationException e) {
-				throw new RcEntClientException(e);
+				List<Error> errors = parseErrors(e.getMessage());
+				throw new RcEntClientException(e, errors);
 			}
 		}
 		finally {
@@ -117,7 +144,8 @@ public class RcEntClientImpl implements RcEntClient, InitializingBean {
 				}
 			}
 			catch (ServerWebApplicationException e) {
-				throw new RcEntClientException(e);
+				List<Error> errors = parseErrors(e.getMessage());
+				throw new RcEntClientException(e, errors);
 			}
 		}
 		finally {

@@ -1,10 +1,11 @@
 package ch.vd.unireg.wsclient.rcent;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.cxf.jaxrs.client.ServerWebApplicationException;
+import org.jetbrains.annotations.Nullable;
+
+import ch.vd.evd0004.v3.Error;
 
 public class RcEntClientException extends RuntimeException {
 
@@ -15,12 +16,18 @@ public class RcEntClientException extends RuntimeException {
 	private final transient Throwable cause;
 
 	/**
+	 * La liste des erreurs renvoyées par RCEnt
+	 */
+	private List<Error> errors;
+
+	/**
 	 * Construit une exception spécifique avec un message clair et concis à partir d'une ServerWebApplicationException (qui expose la réponse complète dans son message).
 	 *
 	 * @param e une exception
 	 */
-	public RcEntClientException(ServerWebApplicationException e) {
-		this(buildShortMessage(e), e);
+	public RcEntClientException(ServerWebApplicationException e, @Nullable List<Error> errors) {
+		this(buildShortMessage(e, errors), e);
+		this.errors = errors;
 	}
 
 	/**
@@ -32,33 +39,33 @@ public class RcEntClientException extends RuntimeException {
 	protected RcEntClientException(String shortMessage, Throwable cause) {
 		super(shortMessage);
 		this.cause = cause;
+		this.errors = null;
 	}
 
-	private static String buildShortMessage(ServerWebApplicationException e) {
+	private static String buildShortMessage(ServerWebApplicationException e, @Nullable List<Error> errors) {
 		final StringBuilder s = new StringBuilder();
 		s.append("Status ").append(e.getStatus());
-		final String title = extractMessage(e.getMessage());
+		final String title = extractMessage(errors);
 		if (title != null) {
 			s.append(" (").append(title).append(")");
 		}
 		return s.toString();
 	}
 
-	private static final Pattern MESSAGE_PATTERN = Pattern.compile("<(?:[^:>]+:)?message>([^<]+)</(?:[^:>]+:)?message>", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
-
-	protected static String extractMessage(String xml) {
-		if (StringUtils.isBlank(xml)) {
+	protected static String extractMessage(List<Error> errors) {
+		if (errors == null || errors.isEmpty()) {
 			return null;
 		}
 
 		StringBuilder message = new StringBuilder();
 
-		final Matcher matcher = MESSAGE_PATTERN.matcher(xml);
-		while (matcher.find()) {
+		for (Error error : errors) {
 			if (message.length() > 0) {
 				message.append(" | ");
 			}
-			message.append(matcher.group(1));
+			message.append(error.getCode());
+			message.append(": ");
+			message.append(error.getMessage());
 		}
 		return message.toString();
 	}
@@ -66,5 +73,9 @@ public class RcEntClientException extends RuntimeException {
 	@Override
 	public Throwable getCause() {
 		return cause != null ? cause : super.getCause();
+	}
+
+	public List<Error> getErrors() {
+		return errors;
 	}
 }
