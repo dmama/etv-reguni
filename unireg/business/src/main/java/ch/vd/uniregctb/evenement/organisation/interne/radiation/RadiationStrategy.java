@@ -68,7 +68,7 @@ public class RadiationStrategy extends AbstractOrganisationStrategy {
 
 			try {
 				if (enCoursDeRadiationIDE) {
-					if (sitePrincipalApres.isInscritAuRC(dateApres) && !sitePrincipalApres.isRadieDuRC(dateApres)) {
+					if (!sitePrincipalApres.isRadieDuRC(dateApres)) {
 						throw new EvenementOrganisationException(String.format("L'entreprise %s est radiée de l'IDE mais pas du RC!", entreprise));
 					}
 
