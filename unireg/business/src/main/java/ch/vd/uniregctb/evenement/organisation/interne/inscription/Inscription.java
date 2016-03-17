@@ -18,7 +18,6 @@ import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationSuiviCo
 import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationWarningCollector;
 import ch.vd.uniregctb.evenement.organisation.interne.EvenementOrganisationInterneDeTraitement;
 import ch.vd.uniregctb.tiers.Entreprise;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipalPM;
 import ch.vd.uniregctb.type.TypeEtatEntreprise;
 
 /**
@@ -74,7 +73,6 @@ public class Inscription extends EvenementOrganisationInterneDeTraitement {
 	@Override
 	public void doHandle(EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) throws EvenementOrganisationException {
 
-		ForFiscalPrincipalPM dernierForPrincipal = getEntreprise().getDernierForFiscalPrincipal();
 		warnings.addWarning("Une vérification manuelle est requise pour l'inscription au RC d’une entreprise déjà connue du régistre fiscale.");
 		changeEtatEntreprise(getEntreprise(), TypeEtatEntreprise.INSCRITE_RC, dateApres, suivis);
 	}
