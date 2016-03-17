@@ -13,6 +13,7 @@ import ch.vd.uniregctb.migration.pm.regpm.NumeroIDE;
 import ch.vd.uniregctb.tiers.RegimeFiscal;
 import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.Sexe;
+import ch.vd.uniregctb.type.TypeAdresseTiers;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
 /**
@@ -71,6 +72,7 @@ public enum LoggedElementAttribute {
 	ADRESSE_NPA(String.class, s -> s, LoggedElementHelper.<String>exceptionThrowing()),
 	ADRESSE_DATE_DEBUT(RegDate.class, RegDateHelper::dateToDashString, LoggedElementHelper.<RegDate>exceptionThrowing()),
 	ADRESSE_DATE_FIN(RegDate.class, RegDateHelper::dateToDashString, LoggedElementHelper.<RegDate>exceptionThrowing()),
+	ADRESSE_USAGE(TypeAdresseTiers.class, Enum::name, LoggedElementHelper.<TypeAdresseTiers>exceptionThrowing()),
 
 	//
 	// spécifiques aux rapports entre tiers

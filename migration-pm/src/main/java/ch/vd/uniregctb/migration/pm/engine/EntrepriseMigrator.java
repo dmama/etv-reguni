@@ -2342,6 +2342,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		// [SIFISC-17970] l'adresse "COURRIER" de RegPM doit être migrée en adresse "COURRIER" dans Unireg sur les périodes où
 		//      1. RCEnt ne fournit pas d'adresse effective, ou
 		//      2. RCEnt fournit bien une adresse effective, mais celle-ci est différente
+		// [SIFISC-18360] les surcharges "COURRIER" doivent également apparaître comme surcharge "REPRESENTATION" si l'entreprise est mandataire
 
 		final Map<RegpmTypeAdresseEntreprise, RegpmAdresseEntreprise> adresses = regpm.getAdressesTypees();
 
@@ -2449,12 +2450,21 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		final AdresseSupplementaire courrier = candidatsSurcharge.get(TypeAdresseTiers.COURRIER);
 		if (courrier != null) {
 
+			// [SIFISC-18360] on a besoin de savoir si l'entreprise est mandataire
+			final boolean isMandataire = mr.getExtractedData(DonneesMandats.class, buildEntrepriseKey(regpm)).isMandataire();
+
 			// y a-t-il une adresse effective dans RCEnt ?
 			final List<Adresse> adressesEffectives = adressesCiviles.get(TypeAdresseCivil.COURRIER);
 			if (adressesEffectives == null || !DateRangeHelper.intersect(courrier, adressesEffectives)) {
 				// pas d'adresse effective qui intersecte avec l'adresse courrier fiscale, elle est donc migrée telle-qu'elle
 				unireg.addAdresseTiers(courrier);
 				assigneFlagPermanentSurAdresseCourrier(courrier, poursuite, regpm, unireg, mr, idMapper);
+
+				// [SIFISC-18360] si l'entreprise est mandataire, on pose aussi une adresse de représentation
+				if (isMandataire) {
+					final AdresseSupplementaire representation = recopieCourrierEnRepresentation(courrier, mr);
+					unireg.addAdresseTiers(representation);
+				}
 			}
 			else {
 
@@ -2514,13 +2524,45 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 								assigneFlagPermanentSurAdresseCourrier(surcharge, poursuite, regpm, unireg, mr, idMapper);
 								return surcharge;
 							})
-							.peek(a -> mr.addMessage(LogCategory.ADRESSES, LogLevel.INFO,
-							                         String.format("Adresse fiscale de courrier migrée sur la période %s.",
-							                                       StringRenderers.DATE_RANGE_RENDERER.toString(a))))
-							.forEach(unireg::addAdresseTiers);
+							.forEach(surchargeCourrier -> {
+								// surcharge courrier
+								mr.addMessage(LogCategory.ADRESSES, LogLevel.INFO,
+								              String.format("Adresse fiscale de courrier migrée sur la période %s.",
+								                            StringRenderers.DATE_RANGE_RENDERER.toString(surchargeCourrier)));
+								unireg.addAdresseTiers(surchargeCourrier);
+
+								// [SIFISC-18360] sur une entreprise mandataire, on pose aussi une surcharge en "représentation"
+								if (isMandataire) {
+									final AdresseSupplementaire representation = recopieCourrierEnRepresentation(surchargeCourrier, mr);
+
+									mr.addMessage(LogCategory.ADRESSES, LogLevel.INFO,
+									              String.format("Adresse fiscale de représentation migrée sur la période %s.",
+									                            StringRenderers.DATE_RANGE_RENDERER.toString(representation)));
+
+									unireg.addAdresseTiers(representation);
+								}
+							});
 				}
 			}
 		}
+	}
+
+	private AdresseSupplementaire recopieCourrierEnRepresentation(AdresseSupplementaire courrier, MigrationResultContextManipulation mr) {
+		final AdresseSupplementaire representation = (AdresseSupplementaire) courrier.duplicate();
+		representation.setUsage(TypeAdresseTiers.REPRESENTATION);
+
+		if (representation.isPermanente()) {
+			final AdresseGenerique generique = new AdresseSupplementaireAdapter(representation, courrier.getTiers(), false, migrationContexte.getInfraService());
+			mr.pushContextValue(AdressePermanenteLoggedElement.class, new AdressePermanenteLoggedElement(generique, TypeAdresseTiers.REPRESENTATION));
+			try {
+				mr.addMessage(LogCategory.ADRESSES_PERMANENTES, LogLevel.INFO, StringUtils.EMPTY);
+			}
+			finally {
+				mr.popContexteValue(AdressePermanenteLoggedElement.class);
+			}
+		}
+
+		return representation;
 	}
 
 	/**
@@ -2575,7 +2617,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 			courrier.setPermanente(permanente);
 			if (permanente) {
 				// il faut sortir une liste...
-				mr.pushContextValue(AdressePermanenteLoggedElement.class, new AdressePermanenteLoggedElement(courrierGenerique));
+				mr.pushContextValue(AdressePermanenteLoggedElement.class, new AdressePermanenteLoggedElement(courrierGenerique, TypeAdresseTiers.COURRIER));
 				try {
 					mr.addMessage(LogCategory.ADRESSES_PERMANENTES, LogLevel.INFO, StringUtils.EMPTY);
 				}
