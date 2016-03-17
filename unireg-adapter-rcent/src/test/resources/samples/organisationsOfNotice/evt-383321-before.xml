@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<eVD-0004:errors xmlns:eVD-0004="http://evd.vd.ch/xmlns/eVD-0004/3">
+	<eVD-0004:error>
+		<eVD-0004:code>9</eVD-0004:code>
+		<eVD-0004:message>Notice of creation type and parameter before: 383321</eVD-0004:message>
+	</eVD-0004:error>
+</eVD-0004:errors>

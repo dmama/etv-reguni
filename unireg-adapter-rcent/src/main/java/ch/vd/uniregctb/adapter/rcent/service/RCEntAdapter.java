@@ -1,9 +1,19 @@
 package ch.vd.uniregctb.adapter.rcent.service;
 
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import ch.vd.evd0004.v3.Error;
+import ch.vd.evd0022.v3.NoticeOrganisation;
 import ch.vd.evd0022.v3.OrganisationData;
+import ch.vd.evd0022.v3.OrganisationSnapshot;
+import ch.vd.evd0022.v3.OrganisationsOfNotice;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.wsclient.rcent.RcEntClient;
+import ch.vd.unireg.wsclient.rcent.RcEntClientException;
 import ch.vd.uniregctb.adapter.rcent.historizer.OrganisationHistorizer;
 import ch.vd.uniregctb.adapter.rcent.model.Organisation;
 
@@ -12,6 +22,7 @@ import ch.vd.uniregctb.adapter.rcent.model.Organisation;
  */
 public class RCEntAdapter {
 
+	private static final int RCENT_ERROR_NO_DATA_BEFORE = 9;
 	private RcEntClient rcentClient;
 	private OrganisationHistorizer historizer;
 
@@ -52,6 +63,71 @@ public class RCEntAdapter {
 	public Organisation getOrganisationHistory(long id) {
 		OrganisationData data = rcentClient.getOrganisation(id, null, true);
 		return historizer.mapOrganisation(data.getOrganisationSnapshot());
+	}
+
+	/**
+	 * Recherche les états avant et après de l'événement RCEnt et contruit le pseudo historique correspondant.
+	 *
+ 	 * @param eventId Identifiant de l'événement RCEnt
+	 * @return les pseudo historiques des organisations touchées par l'événement, indexés par no cantonal d'organisation
+	 */
+	public Map<Long, Organisation> getPseudoHistoryForEvent(long eventId) {
+		Map<Long, Organisation> resultMap = new HashMap<>();
+		Map<Long, NoticeOrganisation> beforeMap = new HashMap<>();
+		Map<Long, NoticeOrganisation> afterMap = new HashMap<>();
+
+		OrganisationsOfNotice before;
+		OrganisationsOfNotice after = rcentClient.getOrganisationsOfNotice(eventId, RcEntClient.OrganisationState.AFTER);
+		RegDate evtDate = after.getNotice().getNoticeDate();
+		/*
+		 Si on recoit une ou plusieurs erreur 9, on ignore car cela indique une absence de données due à l'arrivée dans RCEnt.
+		  */
+		before = null;
+		try {
+			before = rcentClient.getOrganisationsOfNotice(eventId, RcEntClient.OrganisationState.BEFORE);
+		} catch (RcEntClientException e) {
+			boolean real_error = false;
+			if (!e.getErrors().isEmpty()) {
+				for (Error error : e.getErrors()) {
+					if (error.getCode() != RCENT_ERROR_NO_DATA_BEFORE) {
+						real_error = true;
+						break;
+					}
+				}
+			}
+			if (real_error) {
+				throw e;
+			}
+		}
+
+		// Collecter les identifiants de toutes les organisations touchées
+		if (before != null) {
+			for (NoticeOrganisation noticeOrg : before.getOrganisation()) {
+				final long cantonalId = noticeOrg.getOrganisation().getCantonalId().longValue();
+				resultMap.put(cantonalId, null);
+				beforeMap.put(cantonalId, noticeOrg);
+			}
+		}
+		for (NoticeOrganisation noticeOrg : after.getOrganisation()) {
+			final long cantonalId = noticeOrg.getOrganisation().getCantonalId().longValue();
+			resultMap.put(cantonalId, null);
+			afterMap.put(cantonalId, noticeOrg);
+		}
+		// Pour chaque organisation, passer les données avant/après dans l'historizer
+		for (Long cantonalId : resultMap.keySet()) {
+			List<OrganisationSnapshot> pseudoSnapshots = new ArrayList<>();
+			OrganisationSnapshot snapBefore;
+			final NoticeOrganisation noticeOrganisationBefore = beforeMap.get(cantonalId);
+			if (noticeOrganisationBefore != null) {
+				snapBefore = new OrganisationSnapshot(evtDate.getOneDayBefore(), noticeOrganisationBefore.getOrganisation());
+				pseudoSnapshots.add(snapBefore);
+			}
+			OrganisationSnapshot snapAfter = new OrganisationSnapshot(evtDate, afterMap.get(cantonalId).getOrganisation());
+			pseudoSnapshots.add(snapAfter);
+			resultMap.put(cantonalId, historizer.mapOrganisation(pseudoSnapshots));
+		}
+
+		return resultMap;
 	}
 
 	/**
