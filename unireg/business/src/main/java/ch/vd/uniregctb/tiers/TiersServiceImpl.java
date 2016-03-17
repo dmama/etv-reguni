@@ -5571,7 +5571,7 @@ public class TiersServiceImpl implements TiersService {
 
 	@Override
 	public void updateRaisonSocialeFiscale(RaisonSocialeFiscaleEntreprise rs, String raisonSociale) {
-		annuleRaisonSocialeFiscale(rs);
+		rs.setAnnule(true);
 		addRaisonSocialeFiscale(rs.getEntreprise(), raisonSociale, rs.getDateDebut(), rs.getDateFin());
 	}
 
@@ -5627,7 +5627,7 @@ public class TiersServiceImpl implements TiersService {
 
 	@Override
 	public void updateFormeJuridiqueFiscale(FormeJuridiqueFiscaleEntreprise fj, FormeJuridiqueEntreprise formeJuridique) {
-		annuleFormeJuridiqueFiscale(fj);
+		fj.setAnnule(true);
 		addFormeJuridiqueFiscale(fj.getEntreprise(), formeJuridique, fj.getDateDebut(), fj.getDateFin());
 	}
 
@@ -5685,7 +5685,7 @@ public class TiersServiceImpl implements TiersService {
 
 	@Override
 	public void updateCapitalFiscal(CapitalFiscalEntreprise cf, Long montant, RegDate dateFin) {
-		annuleCapitalFiscal(cf);
+		cf.setAnnule(true);
 		addCapitalFiscal(cf.getEntreprise(), montant, cf.getMontant().getMonnaie(), cf.getDateDebut(), cf.getDateFin());
 	}
 
