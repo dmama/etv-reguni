@@ -60,7 +60,7 @@ public abstract class Demenagement extends EvenementOrganisationInterneDeTraitem
 	public abstract void doHandle(EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) throws EvenementOrganisationException;
 
 	/**
-	 * Changement de siège principal avec établissement stable
+	 * Changement de siège principal avec établissement stable. Déménage le for principal s'il en existe un.
 	 *
 	 * @param etablissementPrincipal L'établissement dont l'autorité fiscale change.
 	 * @param dateDebutNouveauSiege la date à laquelle on souhaite que le déménagement soit effectif
@@ -72,12 +72,12 @@ public abstract class Demenagement extends EvenementOrganisationInterneDeTraitem
 		signaleDemenagement(etablissementPrincipal, getSiegeAvant(), getSiegeApres(), dateDebutNouveauSiege, suivis);
 
 		final ForFiscalPrincipal forFiscalPrincipal = getEntreprise().getForFiscalPrincipalAt(dateDebutNouveauSiege.getOneDayBefore());
-		if (forFiscalPrincipal == null) {
-			throw new EvenementOrganisationException("Aucun for trouvé pour l'établissement principal.");
+
+		if (forFiscalPrincipal != null && forFiscalPrincipal.isValidAt(dateDebutNouveauSiege)) {
+			GenreImpot genreImpot = forFiscalPrincipal.getGenreImpot();
+			closeForFiscalPrincipal(dateDebutNouveauSiege.getOneDayBefore(), motifFor, suivis);
+			openForFiscalPrincipal(dateDebutNouveauSiege, getSiegeApres(), MotifRattachement.DOMICILE, motifFor, genreImpot, warnings, suivis);
 		}
-		GenreImpot genreImpot = forFiscalPrincipal.getGenreImpot();
-		closeForFiscalPrincipal(dateDebutNouveauSiege.getOneDayBefore(), motifFor, suivis);
-		openForFiscalPrincipal(dateDebutNouveauSiege, getSiegeApres(), MotifRattachement.DOMICILE, motifFor, genreImpot, warnings, suivis);
 	}
 
 	/**
