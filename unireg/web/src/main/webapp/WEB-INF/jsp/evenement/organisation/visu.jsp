@@ -261,7 +261,7 @@
 				</c:if>
 			</display:column>
 			<display:column titleKey="label.type.evenement">
-				<fmt:message key="${aTraiter.type}"/>
+				<fmt:message key="option.type.evenement.organisation.${aTraiter.type}" />
 			</display:column>
 			<display:column titleKey="label.etat.evenement">
 				<fmt:message key="option.etat.evenement.${aTraiter.etat}"/>
