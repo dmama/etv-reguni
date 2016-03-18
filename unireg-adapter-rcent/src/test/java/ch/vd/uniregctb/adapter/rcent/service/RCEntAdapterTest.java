@@ -37,6 +37,7 @@ import ch.vd.evd0022.v3.UidRegisterStatus;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.wsclient.rcent.RcEntClient;
+import ch.vd.unireg.wsclient.rcent.RcEntClientErrorMessage;
 import ch.vd.unireg.wsclient.rcent.RcEntClientException;
 import ch.vd.unireg.xml.tools.ClasspathCatalogResolver;
 import ch.vd.uniregctb.adapter.rcent.historizer.OrganisationHistorizer;
@@ -109,12 +110,12 @@ public class RCEntAdapterTest {
 
 	@Test
 	public void testGetOrganisation() throws Exception {
-		File xml = new File("src/test/resources/samples/organisationData/CHE101992624-no-history.xml");
-		JAXBElement<OrganisationData> data = (JAXBElement<OrganisationData>) unmarshaller.unmarshal(xml);
+		final File xml = new File("src/test/resources/samples/organisationData/CHE101992624-no-history.xml");
+		final JAXBElement<OrganisationData> data = (JAXBElement<OrganisationData>) unmarshaller.unmarshal(xml);
 
 		when(client.getOrganisation(101202262, null, false)).thenReturn(data.getValue());
 
-		Organisation organisation = service.getOrganisation(101202262, null);
+		final Organisation organisation = service.getOrganisation(101202262, null);
 		assertThat(organisation.getCantonalId(), equalTo(101202262L));
 
 		// Check basic organisation data
@@ -133,7 +134,7 @@ public class RCEntAdapterTest {
 		assertThat(organisation.getLocationData().size(), equalTo(1));
 		assertThat(organisation.getLocationData().get(0).getCantonalId(), equalTo(101072745L));
 
-		Map<String, List<DateRangeHelper.Ranged<String>>> identifierMap = organisation.getLocationData().get(0).getIdentifiers();
+		final Map<String, List<DateRangeHelper.Ranged<String>>> identifierMap = organisation.getLocationData().get(0).getIdentifiers();
 		assertThat(identifierMap.size(), equalTo(5));
 
 		assertThat(identifierMap.get("CH.HR").size(), equalTo(1));
@@ -167,17 +168,17 @@ public class RCEntAdapterTest {
 
 	@Test
 	public void testGetOrganisationHistory() throws Exception {
-		File xml = new File("src/test/resources/samples/organisationData/CHE101992624.xml");
-		JAXBElement<OrganisationData> data = (JAXBElement<OrganisationData>) unmarshaller.unmarshal(xml);
+		final File xml = new File("src/test/resources/samples/organisationData/CHE101992624.xml");
+		final JAXBElement<OrganisationData> data = (JAXBElement<OrganisationData>) unmarshaller.unmarshal(xml);
 
 		when(client.getOrganisation(101202262, null, true)).thenReturn(data.getValue());
 
-		Organisation organisation = service.getOrganisationHistory(101202262);
+		final Organisation organisation = service.getOrganisationHistory(101202262);
 		assertThat(organisation.getCantonalId(), equalTo(101202262L));
 
 		// Adresse
 		final DateRangeHelper.Ranged<Address> postOfficeBoxAddressRange1 = organisation.getLocationData().get(0).getUid().getPostOfficeBoxAddress().get(0);
-		Address postalAddress_period1 = postOfficeBoxAddressRange1.getPayload();
+		final Address postalAddress_period1 = postOfficeBoxAddressRange1.getPayload();
 		assertThat(postOfficeBoxAddressRange1.getDateDebut(), equalTo(RegDate.get(2015, 4, 29)));
 		assertThat(postOfficeBoxAddressRange1.getDateFin(), equalTo(RegDate.get(2015, 4, 30)));
 		assertThat(postalAddress_period1.getAddressInformation().getAddressLine1(), nullValue());
@@ -190,7 +191,7 @@ public class RCEntAdapterTest {
 
 		// Adresse changée
 		final DateRangeHelper.Ranged<Address> postOfficeBoxAddressRange2 = organisation.getLocationData().get(0).getUid().getPostOfficeBoxAddress().get(1);
-		Address postalAddress_period2 = postOfficeBoxAddressRange2.getPayload();
+		final Address postalAddress_period2 = postOfficeBoxAddressRange2.getPayload();
 		assertThat(postOfficeBoxAddressRange2.getDateDebut(), equalTo(RegDate.get(2015, 5, 1)));
 		assertThat(postOfficeBoxAddressRange2.getDateFin(), nullValue());
 		assertThat(postalAddress_period2.getAddressInformation().getAddressLine1(), nullValue());
@@ -204,19 +205,19 @@ public class RCEntAdapterTest {
 
 	@Test
 	public void testGetOrganisationHistory4Snapshots() throws Exception {
-		File xml = new File("src/test/resources/samples/organisationData/CHE101992624-4snaps.xml");
-		JAXBElement<OrganisationData> data = (JAXBElement<OrganisationData>) unmarshaller.unmarshal(xml);
+		final File xml = new File("src/test/resources/samples/organisationData/CHE101992624-4snaps.xml");
+		final JAXBElement<OrganisationData> data = (JAXBElement<OrganisationData>) unmarshaller.unmarshal(xml);
 
 		when(client.getOrganisation(101202262, null, true)).thenReturn(data.getValue());
 
-		Organisation organisation = service.getOrganisationHistory(101202262);
+		final Organisation organisation = service.getOrganisationHistory(101202262);
 		assertThat(organisation.getCantonalId(), equalTo(101202262L));
 
 		// Adresse postale
 		assertThat(organisation.getLocationData().get(0).getUid().getPostOfficeBoxAddress().size(), equalTo(3));
 
 		final DateRangeHelper.Ranged<Address> addressDateRanged1 = organisation.getLocationData().get(0).getUid().getPostOfficeBoxAddress().get(0);
-		Address postalAddress_period1 = addressDateRanged1.getPayload();
+		final Address postalAddress_period1 = addressDateRanged1.getPayload();
 		assertThat(addressDateRanged1.getDateDebut(), equalTo(RegDate.get(2015, 4, 29)));
 		assertThat(addressDateRanged1.getDateFin(), equalTo(RegDate.get(2015, 4, 30)));
 		assertThat(postalAddress_period1.getAddressInformation().getAddressLine1(), nullValue());
@@ -229,7 +230,7 @@ public class RCEntAdapterTest {
 
 		// Adresse changée
 		final DateRangeHelper.Ranged<Address> addressDateRanged2 = organisation.getLocationData().get(0).getUid().getPostOfficeBoxAddress().get(1);
-		Address postalAddress_period2 = addressDateRanged2.getPayload();
+		final Address postalAddress_period2 = addressDateRanged2.getPayload();
 		assertThat(addressDateRanged2.getDateDebut(), equalTo(RegDate.get(2015, 5, 1)));
 		assertThat(addressDateRanged2.getDateFin(), equalTo(RegDate.get(2015, 5, 23)));
 		assertThat(postalAddress_period2.getAddressInformation().getAddressLine1(), nullValue());
@@ -242,7 +243,7 @@ public class RCEntAdapterTest {
 
 		// Adresse enlevée puis nouvelle plus tard
 		final DateRangeHelper.Ranged<Address> addressDateRanged3 = organisation.getLocationData().get(0).getUid().getPostOfficeBoxAddress().get(2);
-		Address postalAddress_period3 = addressDateRanged3.getPayload();
+		final Address postalAddress_period3 = addressDateRanged3.getPayload();
 		assertThat(addressDateRanged3.getDateDebut(), equalTo(RegDate.get(2015, 6, 6)));
 		assertThat(addressDateRanged3.getDateFin(), nullValue());
 		assertThat(postalAddress_period3.getAddressInformation().getAddressLine1(), nullValue());
@@ -256,12 +257,12 @@ public class RCEntAdapterTest {
 
 	@Test
 	public void testGetOrganisationHistorySocieteAnonyme() throws Exception {
-		File xml = new File("src/test/resources/samples/organisationData/CHE105879116.xml");
-		JAXBElement<OrganisationData> data = (JAXBElement<OrganisationData>) unmarshaller.unmarshal(xml);
+		final File xml = new File("src/test/resources/samples/organisationData/CHE105879116.xml");
+		final JAXBElement<OrganisationData> data = (JAXBElement<OrganisationData>) unmarshaller.unmarshal(xml);
 
 		when(client.getOrganisation(101202213, null, false)).thenReturn(data.getValue());
 
-		Organisation organisation = service.getOrganisation(101202213, null);
+		final Organisation organisation = service.getOrganisation(101202213, null);
 		assertThat(organisation.getCantonalId(), equalTo(101202213L));
 
 		// Check basic organisation data
@@ -319,7 +320,7 @@ public class RCEntAdapterTest {
 		}
 
 
-		Map<String, List<DateRangeHelper.Ranged<String>>> identifierMap = organisation.getLocationData().get(0).getIdentifiers();
+		final Map<String, List<DateRangeHelper.Ranged<String>>> identifierMap = organisation.getLocationData().get(0).getIdentifiers();
 		assertThat(identifierMap.size(), equalTo(8));
 
 		assertThat(identifierMap.get("CH.HR").size(), equalTo(1));
@@ -349,7 +350,7 @@ public class RCEntAdapterTest {
 		assertThat(organisation.getLocationData().get(0).getUid().getPostOfficeBoxAddress().size(), equalTo(2));
 
 		final DateRangeHelper.Ranged<Address> addressDateRanged1 = organisation.getLocationData().get(0).getUid().getPostOfficeBoxAddress().get(0);
-		Address postalAddress_period1 = addressDateRanged1.getPayload();
+		final Address postalAddress_period1 = addressDateRanged1.getPayload();
 		assertThat(addressDateRanged1.getDateDebut(), equalTo(RegDate.get(2015, 4, 29)));
 		assertThat(addressDateRanged1.getDateFin(), equalTo(RegDate.get(2015, 4, 30)));
 		assertThat(postalAddress_period1.getAddressInformation().getAddressLine1(), nullValue());
@@ -362,7 +363,7 @@ public class RCEntAdapterTest {
 
 		// Adresse enlevée puis nouvelle plus tard, à l'identique
 		final DateRangeHelper.Ranged<Address> addressDateRanged2 = organisation.getLocationData().get(0).getUid().getPostOfficeBoxAddress().get(1);
-		Address postalAddress_period2 = addressDateRanged2.getPayload();
+		final Address postalAddress_period2 = addressDateRanged2.getPayload();
 		assertThat(addressDateRanged2.getDateDebut(), equalTo(RegDate.get(2015, 5, 15)));
 		assertThat(addressDateRanged2.getDateFin(), nullValue());
 		assertThat(postalAddress_period2.getAddressInformation().getAddressLine1(), nullValue());
@@ -376,67 +377,67 @@ public class RCEntAdapterTest {
 
 	@Test
 	public void testGetOrganisationHistorySample100983251() throws JAXBException {
-		File xml = new File("src/test/resources/samples/organisationData/organisation-100983251-history.xml");
-		JAXBElement<OrganisationData> data = (JAXBElement<OrganisationData>) unmarshaller.unmarshal(xml);
+		final File xml = new File("src/test/resources/samples/organisationData/organisation-100983251-history.xml");
+		final JAXBElement<OrganisationData> data = (JAXBElement<OrganisationData>) unmarshaller.unmarshal(xml);
 		when(client.getOrganisation(100983251L, null, true)).thenReturn(data.getValue());
 
-		Organisation organisation = service.getOrganisationHistory(100983251L);
+		final Organisation organisation = service.getOrganisationHistory(100983251L);
 		assertThat(organisation.getCantonalId(), equalTo(100983251L));
 
-		List<DateRangeHelper.Ranged<UidRegisterStatus>> ideStatus = organisation.getLocationData().get(0).getUid().getStatus();
+		final List<DateRangeHelper.Ranged<UidRegisterStatus>> ideStatus = organisation.getLocationData().get(0).getUid().getStatus();
 		assertNotNull(ideStatus);
 		assertEquals(UidRegisterStatus.DEFINITIF, ideStatus.get(0).getPayload());
 
-		List<DateRangeHelper.Ranged<Capital>> capitalRanges = organisation.getLocationData().get(0).getRc().getCapital();
+		final List<DateRangeHelper.Ranged<Capital>> capitalRanges = organisation.getLocationData().get(0).getRc().getCapital();
 		assertNotNull(capitalRanges);
-		Capital capital = capitalRanges.get(0).getPayload();
+		final Capital capital = capitalRanges.get(0).getPayload();
 		assertEquals("CHF", capital.getCurrency());
 		assertEquals(new BigDecimal(25000), capital.getCapitalAmount());
 		assertEquals(new BigDecimal(23000), capital.getCashedInAmount());
 		assertEquals(TypeOfCapital.CAPITAL_SOCIAL, capital.getTypeOfCapital());
 
-		List<DateRangeHelper.Ranged<String>> locationName = organisation.getLocationData().get(0).getName();
+		final List<DateRangeHelper.Ranged<String>> locationName = organisation.getLocationData().get(0).getName();
 		assertEquals("Bomaco Sàrl en liquidation", locationName.get(0).getPayload());
 
-		List<DateRangeHelper.Ranged<CommercialRegisterStatus>> locationRcEntryStatus = organisation.getLocationData().get(0).getRc().getRegistrationStatus();
+		final List<DateRangeHelper.Ranged<CommercialRegisterStatus>> locationRcEntryStatus = organisation.getLocationData().get(0).getRc().getRegistrationStatus();
 		assertEquals(CommercialRegisterStatus.ACTIF, locationRcEntryStatus.get(0).getPayload());
 
-		List<DateRangeHelper.Ranged<RegDate>> locationRcEntryDate = organisation.getLocationData().get(0).getRc().getRegistrationDate();
+		final List<DateRangeHelper.Ranged<RegDate>> locationRcEntryDate = organisation.getLocationData().get(0).getRc().getRegistrationDate();
 		assertEquals(RegDate.get(2007, 4, 16), locationRcEntryDate.get(0).getPayload());
 
 		// JDE 27.01.2016 : déconnecté l'interprétation des fonctions qui pêtait dès qu'une même personne avait plusieurs fonctions à un moment donné
-		Map<String, List<DateRangeHelper.Ranged<OrganisationFunction>>> locationFunctions = organisation.getLocationData().get(0).getFunction();
+		final Map<String, List<DateRangeHelper.Ranged<OrganisationFunction>>> locationFunctions = organisation.getLocationData().get(0).getFunction();
 		assertNull(locationFunctions); // S'il y en a plus, c'est que l'Historizer ne sait pas identifier proprement les fonctions qu'on doit considérer identiques.
 	}
 
 	@Test
 	public void testGetOrgaOfNoticeNouvelleOrganisation() throws JAXBException {
 		final long noticeId = 383321L;
-		File xmlBefore = new File("src/test/resources/samples/organisationsOfNotice/evt-383321-before.xml");
-		File xmlAfter = new File("src/test/resources/samples/organisationsOfNotice/evt-383321-after.xml");
-		JAXBElement<OrganisationsOfNotice> orgOfNoticeAfter = (JAXBElement<OrganisationsOfNotice>) unmarshaller.unmarshal(xmlAfter);
+		final File xmlBefore = new File("src/test/resources/samples/organisationsOfNotice/evt-383321-before.xml");
+		final File xmlAfter = new File("src/test/resources/samples/organisationsOfNotice/evt-383321-after.xml");
+		final JAXBElement<OrganisationsOfNotice> orgOfNoticeAfter = (JAXBElement<OrganisationsOfNotice>) unmarshaller.unmarshal(xmlAfter);
 		when(client.getOrganisationsOfNotice(noticeId, RcEntClient.OrganisationState.AFTER)).thenReturn(orgOfNoticeAfter.getValue());
 
-		Errors orgOfNoticeBeforeErrors = (Errors) errorunmarshaller.unmarshal(xmlBefore);
+		final Errors orgOfNoticeBeforeErrors = (Errors) errorunmarshaller.unmarshal(xmlBefore);
 		final Error error = orgOfNoticeBeforeErrors.getError().get(0);
-		final RcEntClientException rcEntClientException = new RcEntClientException(new ServerWebApplicationException(), Collections.singletonList(error));
+		final RcEntClientException rcEntClientException = new RcEntClientException(new ServerWebApplicationException(), Collections.singletonList(new RcEntClientErrorMessage(error)));
 		when(client.getOrganisationsOfNotice(noticeId, RcEntClient.OrganisationState.BEFORE)).thenThrow(rcEntClientException);
 
-		Long noOrganisation = 101704297L;
+		final Long noOrganisation = 101704297L;
 
-		Map<Long, Organisation> historyMap = service.getPseudoHistoryForEvent(noticeId);
+		final Map<Long, Organisation> historyMap = service.getPseudoHistoryForEvent(noticeId);
 
 		final Organisation organisation = historyMap.get(noOrganisation);
 		assertThat(organisation.getCantonalId(), equalTo(noOrganisation));
 
 		final OrganisationLocation organisationLocation = organisation.getLocationData().get(0);
 
-		List<DateRangeHelper.Ranged<String>> locationName = organisationLocation.getName();
+		final List<DateRangeHelper.Ranged<String>> locationName = organisationLocation.getName();
 		assertEquals(RegDate.get(2008, 9, 4), locationName.get(0).getDateDebut());
 		assertNull(locationName.get(0).getDateFin());
 		assertEquals("Agades AG", locationName.get(0).getPayload());
 
-		List<DateRangeHelper.Ranged<CommercialRegisterStatus>> rcStatus = organisationLocation.getRc().getRegistrationStatus();
+		final List<DateRangeHelper.Ranged<CommercialRegisterStatus>> rcStatus = organisationLocation.getRc().getRegistrationStatus();
 		assertNotNull(rcStatus);
 		assertEquals(CommercialRegisterStatus.RADIE, rcStatus.get(0).getPayload());
 
@@ -445,29 +446,29 @@ public class RCEntAdapterTest {
 	@Test
 	public void testGetOrgaOfNoticeOrganisationExistante() throws JAXBException {
 		final long eventId = 383322L;
-		File xmlBefore = new File("src/test/resources/samples/organisationsOfNotice/evt-383322-before.xml");
-		File xmlAfter = new File("src/test/resources/samples/organisationsOfNotice/evt-383322-after.xml");
-		JAXBElement<OrganisationsOfNotice> orgOfNoticeBefore = (JAXBElement<OrganisationsOfNotice>) unmarshaller.unmarshal(xmlBefore);
-		JAXBElement<OrganisationsOfNotice> orgOfNoticeAfter = (JAXBElement<OrganisationsOfNotice>) unmarshaller.unmarshal(xmlAfter);
+		final File xmlBefore = new File("src/test/resources/samples/organisationsOfNotice/evt-383322-before.xml");
+		final File xmlAfter = new File("src/test/resources/samples/organisationsOfNotice/evt-383322-after.xml");
+		final JAXBElement<OrganisationsOfNotice> orgOfNoticeBefore = (JAXBElement<OrganisationsOfNotice>) unmarshaller.unmarshal(xmlBefore);
+		final JAXBElement<OrganisationsOfNotice> orgOfNoticeAfter = (JAXBElement<OrganisationsOfNotice>) unmarshaller.unmarshal(xmlAfter);
 
 		when(client.getOrganisationsOfNotice(eventId, RcEntClient.OrganisationState.AFTER)).thenReturn(orgOfNoticeAfter.getValue());
 		when(client.getOrganisationsOfNotice(eventId, RcEntClient.OrganisationState.BEFORE)).thenReturn(orgOfNoticeBefore.getValue());
 
-		Long noOrganisation = 101704297L;
+		final Long noOrganisation = 101704297L;
 
-		Map<Long, Organisation> historyMap = service.getPseudoHistoryForEvent(eventId);
+		final Map<Long, Organisation> historyMap = service.getPseudoHistoryForEvent(eventId);
 
 		final Organisation organisation = historyMap.get(noOrganisation);
 		assertThat(organisation.getCantonalId(), equalTo(noOrganisation));
 
 		final OrganisationLocation organisationLocation = organisation.getLocationData().get(0);
 
-		List<DateRangeHelper.Ranged<String>> locationName = organisationLocation.getName();
+		final List<DateRangeHelper.Ranged<String>> locationName = organisationLocation.getName();
 		assertEquals(RegDate.get(2008, 9, 3), locationName.get(0).getDateDebut());
 		assertNull(locationName.get(0).getDateFin());
 		assertEquals("Agades AG", locationName.get(0).getPayload());
 
-		List<DateRangeHelper.Ranged<LegalForm>> legalForm = organisationLocation.getLegalForm();
+		final List<DateRangeHelper.Ranged<LegalForm>> legalForm = organisationLocation.getLegalForm();
 		{
 			final DateRangeHelper.Ranged<LegalForm> legalFormRanged = legalForm.get(0);
 			assertEquals(RegDate.get(2008, 9, 3), legalFormRanged.getDateDebut());
@@ -481,7 +482,7 @@ public class RCEntAdapterTest {
 			assertEquals(LegalForm.N_0106_SOCIETE_ANONYME, legalFormRanged.getPayload());
 		}
 
-		List<DateRangeHelper.Ranged<CommercialRegisterStatus>> rcStatus = organisationLocation.getRc().getRegistrationStatus();
+		final List<DateRangeHelper.Ranged<CommercialRegisterStatus>> rcStatus = organisationLocation.getRc().getRegistrationStatus();
 		assertNotNull(rcStatus);
 		assertEquals(CommercialRegisterStatus.ACTIF, rcStatus.get(0).getPayload());
 
@@ -490,15 +491,15 @@ public class RCEntAdapterTest {
 	@Test
 	public void testGetOrgaOfNoticeMelangePlusieurs() throws JAXBException {
 		final long eventId = 383323L;
-		File xmlBefore = new File("src/test/resources/samples/organisationsOfNotice/evt-383323-before.xml");
-		File xmlAfter = new File("src/test/resources/samples/organisationsOfNotice/evt-383323-after.xml");
-		JAXBElement<OrganisationsOfNotice> orgOfNoticeBefore = (JAXBElement<OrganisationsOfNotice>) unmarshaller.unmarshal(xmlBefore);
-		JAXBElement<OrganisationsOfNotice> orgOfNoticeAfter = (JAXBElement<OrganisationsOfNotice>) unmarshaller.unmarshal(xmlAfter);
+		final File xmlBefore = new File("src/test/resources/samples/organisationsOfNotice/evt-383323-before.xml");
+		final File xmlAfter = new File("src/test/resources/samples/organisationsOfNotice/evt-383323-after.xml");
+		final JAXBElement<OrganisationsOfNotice> orgOfNoticeBefore = (JAXBElement<OrganisationsOfNotice>) unmarshaller.unmarshal(xmlBefore);
+		final JAXBElement<OrganisationsOfNotice> orgOfNoticeAfter = (JAXBElement<OrganisationsOfNotice>) unmarshaller.unmarshal(xmlAfter);
 
 		when(client.getOrganisationsOfNotice(eventId, RcEntClient.OrganisationState.AFTER)).thenReturn(orgOfNoticeAfter.getValue());
 		when(client.getOrganisationsOfNotice(eventId, RcEntClient.OrganisationState.BEFORE)).thenReturn(orgOfNoticeBefore.getValue());
 
-		Map<Long, Organisation> historyMap = service.getPseudoHistoryForEvent(eventId);
+		final Map<Long, Organisation> historyMap = service.getPseudoHistoryForEvent(eventId);
 
 		{
 			final Organisation organisation = historyMap.get(201704297L);
@@ -506,12 +507,12 @@ public class RCEntAdapterTest {
 
 			final OrganisationLocation organisationLocation = organisation.getLocationData().get(0);
 
-			List<DateRangeHelper.Ranged<String>> locationName = organisationLocation.getName();
+			final List<DateRangeHelper.Ranged<String>> locationName = organisationLocation.getName();
 			assertEquals(RegDate.get(2008, 9, 4), locationName.get(0).getDateDebut());
 			assertNull(locationName.get(0).getDateFin());
 			assertEquals("Sedaga SA", locationName.get(0).getPayload());
 
-			List<DateRangeHelper.Ranged<CommercialRegisterStatus>> rcStatus = organisationLocation.getRc().getRegistrationStatus();
+			final List<DateRangeHelper.Ranged<CommercialRegisterStatus>> rcStatus = organisationLocation.getRc().getRegistrationStatus();
 			assertNotNull(rcStatus);
 			assertEquals(CommercialRegisterStatus.RADIE, rcStatus.get(0).getPayload());
 		}
@@ -522,12 +523,12 @@ public class RCEntAdapterTest {
 
 			final OrganisationLocation organisationLocation = organisation.getLocationData().get(0);
 
-			List<DateRangeHelper.Ranged<String>> locationName = organisationLocation.getName();
+			final List<DateRangeHelper.Ranged<String>> locationName = organisationLocation.getName();
 			assertEquals(RegDate.get(2008, 9, 3), locationName.get(0).getDateDebut());
 			assertNull(locationName.get(0).getDateFin());
 			assertEquals("Agades AG", locationName.get(0).getPayload());
 
-			List<DateRangeHelper.Ranged<LegalForm>> legalForm = organisationLocation.getLegalForm();
+			final List<DateRangeHelper.Ranged<LegalForm>> legalForm = organisationLocation.getLegalForm();
 			{
 				final DateRangeHelper.Ranged<LegalForm> legalFormRanged = legalForm.get(0);
 				assertEquals(RegDate.get(2008, 9, 3), legalFormRanged.getDateDebut());
@@ -541,7 +542,7 @@ public class RCEntAdapterTest {
 				assertEquals(LegalForm.N_0106_SOCIETE_ANONYME, legalFormRanged.getPayload());
 			}
 
-			List<DateRangeHelper.Ranged<CommercialRegisterStatus>> rcStatus = organisationLocation.getRc().getRegistrationStatus();
+			final List<DateRangeHelper.Ranged<CommercialRegisterStatus>> rcStatus = organisationLocation.getRc().getRegistrationStatus();
 			assertNotNull(rcStatus);
 			assertEquals(CommercialRegisterStatus.ACTIF, rcStatus.get(0).getPayload());
 		}
@@ -550,23 +551,22 @@ public class RCEntAdapterTest {
 	@Test
 	public void testGetOrgaOfNoticeVraieErreurDansBefore() throws JAXBException {
 		final long noticeId = 383324L;
-		File xmlBefore = new File("src/test/resources/samples/organisationsOfNotice/evt-383324-before.xml");
-		File xmlAfter = new File("src/test/resources/samples/organisationsOfNotice/evt-383324-after.xml");
-		JAXBElement<OrganisationsOfNotice> orgOfNoticeAfter = (JAXBElement<OrganisationsOfNotice>) unmarshaller.unmarshal(xmlAfter);
+		final File xmlBefore = new File("src/test/resources/samples/organisationsOfNotice/evt-383324-before.xml");
+		final File xmlAfter = new File("src/test/resources/samples/organisationsOfNotice/evt-383324-after.xml");
+		final JAXBElement<OrganisationsOfNotice> orgOfNoticeAfter = (JAXBElement<OrganisationsOfNotice>) unmarshaller.unmarshal(xmlAfter);
 		when(client.getOrganisationsOfNotice(noticeId, RcEntClient.OrganisationState.AFTER)).thenReturn(orgOfNoticeAfter.getValue());
 
-		Errors orgOfNoticeBeforeErrors = (Errors) errorunmarshaller.unmarshal(xmlBefore);
+		final Errors orgOfNoticeBeforeErrors = (Errors) errorunmarshaller.unmarshal(xmlBefore);
 		final Error error = orgOfNoticeBeforeErrors.getError().get(0);
-		final RcEntClientException rcEntClientException = new RcEntClientException(new ServerWebApplicationException(), Collections.singletonList(error));
+		final RcEntClientException rcEntClientException = new RcEntClientException(new ServerWebApplicationException(), Collections.singletonList(new RcEntClientErrorMessage(error)));
 		when(client.getOrganisationsOfNotice(noticeId, RcEntClient.OrganisationState.BEFORE)).thenThrow(rcEntClientException);
 
-		Map<Long, Organisation> historyMap = null;
 		try {
-			historyMap = service.getPseudoHistoryForEvent(noticeId);
-		} catch (RcEntClientException e) {
-			assertEquals("Status 500 (100: Grosse erreur: 383324)", e.getMessage());
-			return;
+			final Map<Long, Organisation> historyMap = service.getPseudoHistoryForEvent(noticeId);
+			fail("Une RcEntClientException aurait du être lancée.");
 		}
-		fail("Une RcEntClientException aurait du être lancée.");
+		catch (RcEntClientException e) {
+			assertEquals("Status 500 (100: Grosse erreur: 383324)", e.getMessage());
+		}
 	}
 }

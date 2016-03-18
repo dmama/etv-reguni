@@ -6,13 +6,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import ch.vd.evd0004.v3.Error;
 import ch.vd.evd0022.v3.NoticeOrganisation;
 import ch.vd.evd0022.v3.OrganisationData;
 import ch.vd.evd0022.v3.OrganisationSnapshot;
 import ch.vd.evd0022.v3.OrganisationsOfNotice;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.wsclient.rcent.RcEntClient;
+import ch.vd.unireg.wsclient.rcent.RcEntClientErrorMessage;
 import ch.vd.unireg.wsclient.rcent.RcEntClientException;
 import ch.vd.uniregctb.adapter.rcent.historizer.OrganisationHistorizer;
 import ch.vd.uniregctb.adapter.rcent.model.Organisation;
@@ -88,7 +88,7 @@ public class RCEntAdapter {
 		} catch (RcEntClientException e) {
 			boolean real_error = false;
 			if (!e.getErrors().isEmpty()) {
-				for (Error error : e.getErrors()) {
+				for (RcEntClientErrorMessage error : e.getErrors()) {
 					if (error.getCode() != RCENT_ERROR_NO_DATA_BEFORE) {
 						real_error = true;
 						break;
