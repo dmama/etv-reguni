@@ -72,10 +72,12 @@ import ch.vd.uniregctb.adresse.AdresseTiers;
 import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.cache.ServiceCivilCacheWarmer;
+import ch.vd.uniregctb.common.Annulable;
 import ch.vd.uniregctb.common.AnnulableHelper;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.common.DonneesCivilesException;
+import ch.vd.uniregctb.common.Duplicable;
 import ch.vd.uniregctb.common.EntityKey;
 import ch.vd.uniregctb.common.EtatCivilHelper;
 import ch.vd.uniregctb.common.FiscalDateHelper;
@@ -85,6 +87,7 @@ import ch.vd.uniregctb.common.HibernateEntity;
 import ch.vd.uniregctb.common.MovingWindow;
 import ch.vd.uniregctb.common.NationaliteHelper;
 import ch.vd.uniregctb.common.NumeroIDEHelper;
+import ch.vd.uniregctb.common.Rerangeable;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP;
 import ch.vd.uniregctb.declaration.DeclarationImpotSource;
@@ -4803,7 +4806,7 @@ public class TiersServiceImpl implements TiersService {
 
     @Override
     public String getRaisonSociale(Entreprise entreprise) {
-	    final List<RaisonSocialeHisto> rss = getRaisonsSociales(entreprise);
+	    final List<RaisonSocialeHisto> rss = getRaisonsSociales(entreprise, false);
 	    if (! rss.isEmpty()) {
 		    return CollectionsUtils.getLastElement(rss).getRaisonSociale();
 	    }
@@ -5964,11 +5967,11 @@ public class TiersServiceImpl implements TiersService {
 	}
 
 	@Override
-	public List<CapitalHisto> getCapitaux(@NotNull Entreprise entreprise) {
+	public List<CapitalHisto> getCapitaux(@NotNull Entreprise entreprise, boolean aussiAnnules) {
 		final List<CapitalHisto> donneesCiviles = extractCapitauxCivils(entreprise);
-		final List<CapitalHisto> donneesFiscales = extractCapitauxFiscaux(entreprise);
+		final List<CapitalHisto> donneesFiscales = extractCapitauxFiscaux(entreprise, aussiAnnules);
 
-		return DateRangeHelper.override(donneesCiviles, donneesFiscales, new GentilDateRangeExtendedAdapterCallback<CapitalHisto>());
+		return surchargeDonneesHisto(aussiAnnules, donneesCiviles, donneesFiscales);
 	}
 
 	@NotNull
@@ -5988,8 +5991,13 @@ public class TiersServiceImpl implements TiersService {
 	}
 
 	@NotNull
-	private List<CapitalHisto> extractCapitauxFiscaux(@NotNull Entreprise entreprise) {
-		final List<CapitalFiscalEntreprise> capitaux = entreprise.getCapitauxNonAnnulesTries();
+	private List<CapitalHisto> extractCapitauxFiscaux(@NotNull Entreprise entreprise, boolean aussiAnnules) {
+		final List<CapitalFiscalEntreprise> capitaux;
+		if (aussiAnnules) {
+			capitaux = entreprise.getCapitauxTries();
+		} else {
+			capitaux = entreprise.getCapitauxNonAnnulesTries();
+		}
 		if (capitaux.isEmpty()) {
 			return Collections.emptyList();
 		}
@@ -6016,7 +6024,7 @@ public class TiersServiceImpl implements TiersService {
 	@Override
 	public List<CategorieEntrepriseHisto> getCategoriesEntrepriseHisto(@NotNull Entreprise entreprise) {
 		final List<CategorieEntrepriseHisto> ces;
-		final List<FormeLegaleHisto> formesLegales = getFormesLegales(entreprise);
+		final List<FormeLegaleHisto> formesLegales = getFormesLegales(entreprise, false);
 		if (formesLegales.isEmpty()) {
 			ces = Collections.emptyList();
 		}
@@ -6030,11 +6038,11 @@ public class TiersServiceImpl implements TiersService {
 	}
 
 	@Override
-	public List<FormeLegaleHisto> getFormesLegales(@NotNull Entreprise entreprise) {
+	public List<FormeLegaleHisto> getFormesLegales(@NotNull Entreprise entreprise, boolean aussiAnnulees) {
 		final List<FormeLegaleHisto> donneesCiviles = extractFormesLegalesCiviles(entreprise);
-		final List<FormeLegaleHisto> donneesFiscales = extractFormesLegalesFiscales(entreprise);
+		final List<FormeLegaleHisto> donneesFiscales = extractFormesLegalesFiscales(entreprise, aussiAnnulees);
 
-		return DateRangeHelper.override(donneesCiviles, donneesFiscales, new GentilDateRangeExtendedAdapterCallback<FormeLegaleHisto>());
+		return surchargeDonneesHisto(aussiAnnulees, donneesCiviles, donneesFiscales);
 	}
 
 	private List<FormeLegaleHisto> extractFormesLegalesCiviles(Entreprise entreprise) {
@@ -6057,8 +6065,13 @@ public class TiersServiceImpl implements TiersService {
 	}
 
 
-	private List<FormeLegaleHisto> extractFormesLegalesFiscales(Entreprise entreprise) {
-		final List<FormeJuridiqueFiscaleEntreprise> fjs = entreprise.getFormesJuridiquesNonAnnuleesTriees();
+	private List<FormeLegaleHisto> extractFormesLegalesFiscales(Entreprise entreprise, boolean aussiAnnules) {
+		final List<FormeJuridiqueFiscaleEntreprise> fjs;
+		if (aussiAnnules) {
+			fjs = entreprise.getFormesJuridiquesTriees();
+		} else {
+			fjs = entreprise.getFormesJuridiquesNonAnnuleesTriees();
+		}
 		if (fjs.isEmpty()) {
 			return Collections.emptyList();
 		}
@@ -6070,11 +6083,33 @@ public class TiersServiceImpl implements TiersService {
 	}
 
 	@Override
-	public List<RaisonSocialeHisto> getRaisonsSociales(@NotNull Entreprise entreprise) {
+	public List<RaisonSocialeHisto> getRaisonsSociales(@NotNull Entreprise entreprise, boolean aussiAnnulees) {
 		final List<RaisonSocialeHisto> donneesCiviles = extractRaisonsSocialesCiviles(entreprise);
-		final List<RaisonSocialeHisto> donneesFiscales = extractRaisonsSocialesFiscales(entreprise);
+		final List<RaisonSocialeHisto> donneesFiscales = extractRaisonsSocialesFiscales(entreprise, aussiAnnulees);
 
-		return DateRangeHelper.override(donneesCiviles, donneesFiscales, new GentilDateRangeExtendedAdapterCallback<RaisonSocialeHisto>());
+		return surchargeDonneesHisto(aussiAnnulees, donneesCiviles, donneesFiscales);
+	}
+
+	private <T extends DateRange & Annulable & Duplicable<T> & Rerangeable<T>> List<T> surchargeDonneesHisto(boolean avecAnnulees, List<T> donneesCiviles, List<T> donneesFiscales) {
+		List<T> nonAnnulees = new ArrayList<>();
+		List<T> annulees = new ArrayList<>();
+		if (avecAnnulees) {
+			for (T raison : donneesFiscales) {
+				if (raison.isAnnule()) {
+					annulees.add(raison);
+				} else {
+					nonAnnulees.add(raison);
+				}
+			}
+		} else {
+			nonAnnulees = donneesFiscales;
+		}
+
+		final List<T> result = DateRangeHelper.override(donneesCiviles, nonAnnulees, new GentilDateRangeExtendedAdapterCallback<T>());
+		if (avecAnnulees) {
+			result.addAll(annulees);
+		}
+		return result;
 	}
 
 	private List<RaisonSocialeHisto> extractRaisonsSocialesCiviles(Entreprise entreprise) {
@@ -6097,8 +6132,13 @@ public class TiersServiceImpl implements TiersService {
 	}
 
 
-	private List<RaisonSocialeHisto> extractRaisonsSocialesFiscales(Entreprise entreprise) {
-		final List<RaisonSocialeFiscaleEntreprise> rss = entreprise.getRaisonsSocialesNonAnnuleesTriees();
+	private List<RaisonSocialeHisto> extractRaisonsSocialesFiscales(Entreprise entreprise, boolean avecAnnulees) {
+		final List<RaisonSocialeFiscaleEntreprise> rss;
+		if (avecAnnulees) {
+			rss = entreprise.getRaisonsSocialesTriees();
+		} else {
+			rss = entreprise.getRaisonsSocialesNonAnnuleesTriees();
+		}
 		if (rss.isEmpty()) {
 			return Collections.emptyList();
 		}
@@ -6110,11 +6150,11 @@ public class TiersServiceImpl implements TiersService {
 	}
 
 	@Override
-	public List<DomicileHisto> getSieges(@NotNull Entreprise entreprise) {
+	public List<DomicileHisto> getSieges(@NotNull Entreprise entreprise, boolean aussiAnnules) {
 		final List<DomicileHisto> donneesCiviles = extractSiegesCiviles(entreprise);
-		final List<DomicileHisto> donneesFiscales = extractSiegesFiscaux(entreprise);
+		final List<DomicileHisto> donneesFiscales = extractSiegesFiscaux(entreprise, aussiAnnules);
 
-		return DateRangeHelper.override(donneesCiviles, donneesFiscales, new GentilDateRangeExtendedAdapterCallback<DomicileHisto>());
+		return surchargeDonneesHisto(aussiAnnules, donneesCiviles, donneesFiscales);
 	}
 
 	private List<DomicileHisto> extractSiegesCiviles(Entreprise entreprise) {
@@ -6132,9 +6172,9 @@ public class TiersServiceImpl implements TiersService {
 		return Collections.emptyList();
 	}
 
-	private List<DomicileHisto> extractSiegesFiscaux(Entreprise entreprise) {
+	private List<DomicileHisto> extractSiegesFiscaux(Entreprise entreprise, boolean aussiAnnules) {
 		final List<DateRanged<Etablissement>> principaux = getEtablissementsPrincipauxEntreprise(entreprise);
-		final List<DomicileEtablissement> domicileEtablissements = extractDomicileFromEtablissements(principaux);
+		final List<DomicileEtablissement> domicileEtablissements = extractDomicileFromEtablissements(principaux, aussiAnnules);
 		final List<DomicileHisto> liste = new ArrayList<>(domicileEtablissements.size());
 		for (DomicileEtablissement domicile: domicileEtablissements) {
 			liste.add(new DomicileHisto(domicile));
@@ -6143,12 +6183,12 @@ public class TiersServiceImpl implements TiersService {
 		return liste;
 	}
 
-	private List<DomicileEtablissement> extractDomicileFromEtablissements(List<DateRanged<Etablissement>> principaux) {
+	private List<DomicileEtablissement> extractDomicileFromEtablissements(List<DateRanged<Etablissement>> principaux, boolean aussiAnnules) {
 		if (principaux != null) {
 			final List<DomicileEtablissement> domiciles = new ArrayList<>(principaux.size());
 			for (DateRanged<Etablissement> principal : principaux) {
 
-				List<DomicileEtablissement> extractedDomiciles = DateRangeHelper.extract(principal.getPayload().getSortedDomiciles(false),
+				List<DomicileEtablissement> extractedDomiciles = DateRangeHelper.extract(principal.getPayload().getSortedDomiciles(aussiAnnules),
 				                                                                         principal.getDateDebut(),
 				                                                                         principal.getDateFin(),
 				                                                                         new DateRangeHelper.AdapterCallback<DomicileEtablissement>() {
@@ -6172,11 +6212,11 @@ public class TiersServiceImpl implements TiersService {
 	}
 
 	@Override
-	public List<DomicileHisto> getDomiciles(@NotNull Etablissement etablissement) {
+	public List<DomicileHisto> getDomiciles(@NotNull Etablissement etablissement, boolean aussiAnnules) {
 		final List<DomicileHisto> donneesCiviles = extractDomicilesCivilsEtablissement(etablissement);
-		final List<DomicileHisto> donneesFiscales = extractDomicilesFiscauxEtablissement(etablissement);
+		final List<DomicileHisto> donneesFiscales = extractDomicilesFiscauxEtablissement(etablissement, aussiAnnules);
 
-		return DateRangeHelper.override(donneesCiviles, donneesFiscales, new GentilDateRangeExtendedAdapterCallback<DomicileHisto>());
+		return surchargeDonneesHisto(aussiAnnules, donneesCiviles, donneesFiscales);
 	}
 
 	private List<DomicileHisto> extractDomicilesCivilsEtablissement(Etablissement etablissement) {
@@ -6196,14 +6236,16 @@ public class TiersServiceImpl implements TiersService {
 		return domiciles;
 	}
 
-	private List<DomicileHisto> extractDomicilesFiscauxEtablissement(Etablissement etablissement) {
+	private List<DomicileHisto> extractDomicilesFiscauxEtablissement(Etablissement etablissement, boolean aussiAnnules) {
 		final Set<DomicileEtablissement> domicileEtablissement = etablissement.getDomiciles();
 		if (domicileEtablissement == null) {
 			return Collections.emptyList();
 		}
 		final List<DomicileHisto> domiciles = new ArrayList<>(domicileEtablissement.size());
 		for (DomicileEtablissement domicile: domicileEtablissement) {
-			domiciles.add(new DomicileHisto(domicile));
+			if (!domicile.isAnnule() || aussiAnnules) {
+				domiciles.add(new DomicileHisto(domicile));
+			}
 		}
 		Collections.sort(domiciles, new DateRangeComparator<DomicileHisto>());
 		return domiciles;

@@ -121,7 +121,7 @@ public class MetierServicePMImpl implements MetierServicePM {
 		// Les domiciles VD classés par commune
 		final Map<Integer, List<DomicileHisto>> tousLesDomicilesVD = new HashMap<>();
 		for (DateRanged<Etablissement> etablissement : etablissements) {
-			final List<DomicileHisto> domiciles = tiersService.getDomiciles(etablissement.getPayload());
+			final List<DomicileHisto> domiciles = tiersService.getDomiciles(etablissement.getPayload(), false);
 			if (domiciles != null && !domiciles.isEmpty()) {
 				for (DomicileHisto domicile : domiciles) {
 					if (domicile.getTypeAutoriteFiscale() != TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {

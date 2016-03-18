@@ -9664,7 +9664,7 @@ debut PF                                                                        
 			@Override
 			protected void doInTransactionWithoutResult(TransactionStatus status) {
 				final Entreprise entreprise = (Entreprise) tiersDAO.get(pmId);
-				final List<CapitalHisto> capitaux = tiersService.getCapitaux(entreprise);
+				final List<CapitalHisto> capitaux = tiersService.getCapitaux(entreprise, false);
 				Assert.assertNotNull(capitaux);
 				Assert.assertEquals(3, capitaux.size());
 				{

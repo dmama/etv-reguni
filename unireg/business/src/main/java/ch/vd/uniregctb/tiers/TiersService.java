@@ -167,19 +167,19 @@ public interface TiersService {
 	 */
 	StatutMenageCommun getStatutMenageCommun(MenageCommun menageCommun);
 
-	List<FormeLegaleHisto> getFormesLegales(@NotNull Entreprise entreprise);
+	List<FormeLegaleHisto> getFormesLegales(@NotNull Entreprise entreprise, boolean aussiAnnule);
 
-	List<RaisonSocialeHisto> getRaisonsSociales(@NotNull Entreprise entreprise);
+	List<RaisonSocialeHisto> getRaisonsSociales(@NotNull Entreprise entreprise, boolean avecAnnulees);
 
 	/**
 	 * @return la liste des sièges de l'entreprise, c'est-à-dire la liste des lieus de domicile des établissements PRINCIPAUX successifs.
 	 */
-	List<DomicileHisto> getSieges(@NotNull Entreprise entreprise);
+	List<DomicileHisto> getSieges(@NotNull Entreprise entreprise, boolean aussiAnnules);
 
 	/**
 	 * @return la liste des lieus successifs de domicile d'un établissement
 	 */
-	List<DomicileHisto> getDomiciles(@NotNull Etablissement etablissement);
+	List<DomicileHisto> getDomiciles(@NotNull Etablissement etablissement, boolean aussiAnnules);
 
 	/**
 	 * @param entreprise une entreprise
@@ -2036,7 +2036,7 @@ public interface TiersService {
      * @param entreprise une entreprise fiscale
      * @return la liste des données de capital de l'entreprise (en tenant compte des données civiles et d'éventuelles surcharges fiscales)
      */
-    List<CapitalHisto> getCapitaux(@NotNull Entreprise entreprise);
+    List<CapitalHisto> getCapitaux(@NotNull Entreprise entreprise, boolean aussiAnnule);
 
     /**
      * @param entreprise une entreprise (fiscale)

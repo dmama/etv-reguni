@@ -170,14 +170,32 @@ public class Entreprise extends ContribuableImpositionPersonnesMorales {
 
 	@Transient
 	@NotNull
+	public List<RaisonSocialeFiscaleEntreprise> getRaisonsSocialesTriees() {
+		return extractDonneesCiviles(RaisonSocialeFiscaleEntreprise.class, true, true);
+	}
+
+	@Transient
+	@NotNull
 	public List<FormeJuridiqueFiscaleEntreprise> getFormesJuridiquesNonAnnuleesTriees() {
 		return extractDonneesCiviles(FormeJuridiqueFiscaleEntreprise.class, false, true);
 	}
 
 	@Transient
 	@NotNull
+	public List<FormeJuridiqueFiscaleEntreprise> getFormesJuridiquesTriees() {
+		return extractDonneesCiviles(FormeJuridiqueFiscaleEntreprise.class, true, true);
+	}
+
+	@Transient
+	@NotNull
 	public List<CapitalFiscalEntreprise> getCapitauxNonAnnulesTries() {
 		return extractDonneesCiviles(CapitalFiscalEntreprise.class, false, true);
+	}
+
+	@Transient
+	@NotNull
+	public List<CapitalFiscalEntreprise> getCapitauxTries() {
+		return extractDonneesCiviles(CapitalFiscalEntreprise.class, true, true);
 	}
 
 	@OneToMany(cascade = CascadeType.ALL)

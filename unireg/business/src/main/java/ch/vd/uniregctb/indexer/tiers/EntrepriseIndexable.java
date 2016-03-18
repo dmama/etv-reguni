@@ -50,7 +50,7 @@ public class EntrepriseIndexable extends ContribuableIndexable<Entreprise> {
 		data.setNatureJuridique(IndexerFormatHelper.enumToString(NatureJuridique.PM));
 
 		// les noms
-		final List<RaisonSocialeHisto> rss = tiersService.getRaisonsSociales(tiers);
+		final List<RaisonSocialeHisto> rss = tiersService.getRaisonsSociales(tiers, false);
 		if (!rss.isEmpty()) {
 			for (RaisonSocialeHisto histo : rss) {
 				data.addNomRaison(histo.getRaisonSociale());
@@ -69,7 +69,7 @@ public class EntrepriseIndexable extends ContribuableIndexable<Entreprise> {
 		}
 
 		// la forme juridique
-		final List<FormeLegaleHisto> fjs = tiersService.getFormesLegales(tiers);
+		final List<FormeLegaleHisto> fjs = tiersService.getFormesLegales(tiers, false);
 		if (!fjs.isEmpty()) {
 			final FormeLegaleHisto fj = fjs.get(fjs.size() - 1);
 			data.setFormeJuridique(fj.getFormeLegale().getCode());

@@ -120,7 +120,7 @@ public class CorporationStrategy extends TaxPayerStrategy<Corporation> {
 
 	@NotNull
 	private List<Capital> extractCapitaux(Entreprise entreprise, Context context) {
-		final List<CapitalHisto> data = context.tiersService.getCapitaux(entreprise);
+		final List<CapitalHisto> data = context.tiersService.getCapitaux(entreprise, false);
 		if (data != null && !data.isEmpty()) {
 			final List<Capital> capitaux = new ArrayList<>(data.size());
 			for (CapitalHisto mmh : data) {
@@ -137,7 +137,7 @@ public class CorporationStrategy extends TaxPayerStrategy<Corporation> {
 
 	@NotNull
 	private List<LegalForm> extractFormesJuridiques(Entreprise entreprise, Context context) {
-		final List<FormeLegaleHisto> histo = context.tiersService.getFormesLegales(entreprise);
+		final List<FormeLegaleHisto> histo = context.tiersService.getFormesLegales(entreprise, false);
 		final List<LegalForm> liste = new ArrayList<>(histo.size());
 		for (FormeLegaleHisto fl : histo) {
 			final LegalForm lf = new LegalForm();
@@ -171,7 +171,7 @@ public class CorporationStrategy extends TaxPayerStrategy<Corporation> {
 	@NotNull
 	private List<LegalSeat> extractSieges(Entreprise entreprise, Context context) {
 		final List<LegalSeat> liste = new ArrayList<>();
-		final List<DomicileHisto> sieges = context.tiersService.getSieges(entreprise);
+		final List<DomicileHisto> sieges = context.tiersService.getSieges(entreprise, false);
 		for (DomicileHisto siege : sieges) {
 			if (!siege.isAnnule()) {
 				final LegalSeat seat = new LegalSeat();

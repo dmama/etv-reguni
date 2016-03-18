@@ -6,6 +6,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.collections4.comparators.ReverseComparator;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -89,15 +90,15 @@ public class EntrepriseServiceImpl implements EntrepriseService {
 		entrepriseView.setNumerosIDE(tiersService.getNumeroIDE(entreprise));
 
 		entrepriseView.setConnueAuCivil(entreprise.isConnueAuCivil());
-		entrepriseView.setSieges(getSieges(tiersService.getSieges(entreprise)));
+		entrepriseView.setSieges(getSieges(tiersService.getSieges(entreprise, true)));
 
-		final List<RaisonSocialeHisto> raisonsSociales = tiersService.getRaisonsSociales(entreprise);
+		final List<RaisonSocialeHisto> raisonsSociales = tiersService.getRaisonsSociales(entreprise, true);
 		entrepriseView.setRaisonsSociales(getRaisonSociale(raisonsSociales));
 
-		final List<FormeLegaleHisto> formesJuridiques = tiersService.getFormesLegales(entreprise);
+		final List<FormeLegaleHisto> formesJuridiques = tiersService.getFormesLegales(entreprise, true);
 		entrepriseView.setFormesJuridiques(getFormesJuridiques(formesJuridiques));
 
-		entrepriseView.setCapitaux(extractCapitaux(tiersService.getCapitaux(entreprise)));
+		entrepriseView.setCapitaux(extractCapitaux(tiersService.getCapitaux(entreprise, true)));
 
 		// les états
 		final List<EtatEntreprise> etats = new ArrayList<>(entreprise.getEtats());
@@ -145,7 +146,7 @@ public class EntrepriseServiceImpl implements EntrepriseService {
 
 		etablissementView.setEnseigne(etablissement.getEnseigne());
 
-		etablissementView.setDomiciles(getDomiciles(tiersService.getDomiciles(etablissement)));
+		etablissementView.setDomiciles(getDomiciles(tiersService.getDomiciles(etablissement, true)));
 
 		return etablissementView;
 	}
@@ -187,8 +188,7 @@ public class EntrepriseServiceImpl implements EntrepriseService {
 		for (CapitalHisto capital : capitaux) {
 			views.add(new CapitalView(capital));
 		}
-		Collections.sort(views, new DateRangeComparator<CapitalView>());
-		Collections.reverse(views);
+		Collections.sort(views, new AnnulableHelper.AnnulesApresWrappingComparator<>(new ReverseComparator<>(new DateRangeComparator<CapitalView>())));
 		if (AnnulableHelper.sansElementsAnnules(views).size() > 1) {
 			views.get(0).setDernierElement(true);
 		}
@@ -203,8 +203,7 @@ public class EntrepriseServiceImpl implements EntrepriseService {
 		for (FormeLegaleHisto formeLegale : formesLegale) {
 			list.add(new FormeJuridiqueView(formeLegale));
 		}
-		Collections.sort(list, new DateRangeComparator<FormeJuridiqueView>());
-		Collections.reverse(list);
+		Collections.sort(list, new AnnulableHelper.AnnulesApresWrappingComparator<>(new ReverseComparator<>(new DateRangeComparator<FormeJuridiqueView>())));
 		if (AnnulableHelper.sansElementsAnnules(list).size() > 1) {
 			list.get(0).setDernierElement(true);
 		}
@@ -219,8 +218,7 @@ public class EntrepriseServiceImpl implements EntrepriseService {
 		for (RaisonSocialeHisto raisonSociale : raisonsSociales) {
 			list.add(new RaisonSocialeView(raisonSociale, false));
 		}
-		Collections.sort(list, new DateRangeComparator<RaisonSocialeView>());
-		Collections.reverse(list);
+		Collections.sort(list, new AnnulableHelper.AnnulesApresWrappingComparator<>(new ReverseComparator<>(new DateRangeComparator<RaisonSocialeView>())));
 		if (AnnulableHelper.sansElementsAnnules(list).size() > 1) {
 			list.get(0).setDernierElement(true);
 		}
@@ -235,7 +233,7 @@ public class EntrepriseServiceImpl implements EntrepriseService {
 		for (DomicileHisto siege : sieges) {
 			list.add(new SiegeView(siege));
 		}
-		Collections.sort(list, new DateRangeComparator<SiegeView>());
+		Collections.sort(list, new AnnulableHelper.AnnulesApresWrappingComparator<>(new ReverseComparator<>(new DateRangeComparator<SiegeView>())));
 		Collections.reverse(list);
 		if (AnnulableHelper.sansElementsAnnules(list).size() > 1) {
 			list.get(0).setDernierElement(true);
@@ -251,8 +249,7 @@ public class EntrepriseServiceImpl implements EntrepriseService {
 		for (DomicileHisto siege : domiciles) {
 			list.add(new DomicileEtablissementView(siege));
 		}
-		Collections.sort(list, new DateRangeComparator<DomicileEtablissementView>());
-		Collections.reverse(list);
+		Collections.sort(list, new AnnulableHelper.AnnulesApresWrappingComparator<>(new ReverseComparator<>(new DateRangeComparator<DomicileEtablissementView>())));
 		if (AnnulableHelper.sansElementsAnnules(list).size() > 1) {
 			list.get(0).setDernierElement(true);
 		}

@@ -1352,9 +1352,10 @@ var Histo = {
 			}
 			var dateFin = line.cells[dateFinIndex].innerHTML;
 			var isHisto = (dateFin != null && StringUtils.isNotBlank(dateFin)); // date fin != null -> valeur historique
+			var isBarre = line.className.indexOf('strike') >= 0;
 
 			// affiche ou cache la ligne
-			if (isHisto) {
+			if (isHisto || isBarre) {
 				if (showHisto) {
 					line.style.display = '';
 				}
@@ -1368,7 +1369,14 @@ var Histo = {
 
 			if (showHisto || !isHisto) {
 				// on adapte le style des lignes odd/even
-				line.className = (++visibleCount % 2 == 0 ? 'even' : 'odd');
+				//line.className = (++visibleCount % 2 == 0 ? 'even' : 'odd');
+				if (++visibleCount % 2 == 0) {
+					$(line).removeClass('odd');
+					$(line).addClass('even');
+				} else {
+					$(line).removeClass('even');
+					$(line).addClass('odd');
+				}
 			}
 		}
 		if (!showHisto && !foundSomething && rows.length > 1) { // si toutes les valeurs sont historiques, on affiche au minimum la plus récente
