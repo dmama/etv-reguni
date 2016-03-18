@@ -54,6 +54,11 @@ public class ServiceOrganisationRCEntItTest extends BusinessItTest {
 	private static final String NOM_BCV = "Banque Cantonale Vaudoise";
 	private static final String BASE_PATH_ORGANISATIONS_OF_NOTICE = "/organisationsOfNotice";
 
+	// Evénement cible sur RCEnt
+	private static final long ID_EVT = 4466328L;
+	private static final long ID_ORGANISATION_EVT = 101584800L;
+	private static final String ID_NOM_EVT = "Global Health Consulting Sàrl";
+
 	// Organisation de l'échantillon fichier
 	private static final long ID_BOMACO = 101636326L;
 	private static final String BOMACO_SÀRL_EN_LIQUIDATION = "Bomaco Sàrl en liquidation";
@@ -81,6 +86,14 @@ public class ServiceOrganisationRCEntItTest extends BusinessItTest {
 		Organisation org = service.getOrganisationHistory(ID_BCV);
 		assertNotNull(org);
 		assertContains(NOM_BCV, org.getNom().get(0).getPayload());
+	}
+
+//	@Ignore
+	@Test
+	public void testGetPseudoOrganisationHistory() throws Exception {
+		Organisation org = service.getPseudoOrganisationHistory(ID_EVT).get(ID_ORGANISATION_EVT);
+		assertNotNull(org);
+		assertContains(ID_NOM_EVT, org.getNom().get(0).getPayload());
 	}
 
 	@Test
