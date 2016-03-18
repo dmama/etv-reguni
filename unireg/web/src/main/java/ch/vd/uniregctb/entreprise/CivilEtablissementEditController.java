@@ -22,6 +22,7 @@ import ch.vd.uniregctb.security.AccessDeniedException;
 import ch.vd.uniregctb.tiers.Etablissement;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
+import ch.vd.uniregctb.tiers.TiersException;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.tiers.manager.AutorisationManager;
 import ch.vd.uniregctb.tiers.manager.Autorisations;
@@ -88,11 +89,18 @@ public class CivilEtablissementEditController {
 			if (!auth.isDonneesCiviles()) {
 				throw new AccessDeniedException("Vous ne possédez pas les droits IfoSec d'édition d'etablissements.");
 			}
+			checkEditionAutorisee((Etablissement) tiers);
 			final EtablissementView view = entrepriseService.getEtablissement((Etablissement) tiers);
 			return showEditEtablissement(model, id, view);
 		}
 		else {
 			throw new TiersNotFoundException(id);
+		}
+	}
+
+	private void checkEditionAutorisee(Etablissement etablissement) {
+		if (etablissement.isConnuAuCivil()) {
+			throw new AccessDeniedException("Il n'est pas possible d'éditer les établissements connus au civil.");
 		}
 	}
 
@@ -132,7 +140,7 @@ public class CivilEtablissementEditController {
 			if (!auth.isDonneesCiviles()) {
 				throw new AccessDeniedException("Vous ne possédez pas les droits IfoSec d'édition d'etablissements.");
 			}
-
+			checkEditionAutorisee((Etablissement) tiers);
 			if (result.hasErrors()) {
 				return "donnees-civiles/edit-raison-enseigne";
 			}
@@ -169,7 +177,8 @@ public class CivilEtablissementEditController {
 
 	@Transactional(rollbackFor = Throwable.class)
 	@RequestMapping(value = "/ide/edit.do", method = RequestMethod.POST)
-	public String editIdeEtablissement(@RequestParam(value = ID) long id, Model model, @Valid @ModelAttribute(DATA) ContribuableInfosEntrepriseView view, BindingResult bindingResult) {
+	public String editIdeEtablissement(@RequestParam(value = ID) long id, Model model, @Valid @ModelAttribute(DATA) ContribuableInfosEntrepriseView view, BindingResult bindingResult) throws
+			TiersException {
 
 		final Tiers tiers = tiersDAO.get(id);
 		if (tiers != null && tiers instanceof Etablissement) {

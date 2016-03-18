@@ -728,13 +728,26 @@ public class TiersServiceImpl implements TiersService {
 	}
 
 	@Override
-	public void setIdentifiantEntreprise(Contribuable contribuable, String ide) {
+	public void setIdentifiantEntreprise(Contribuable contribuable, String ide) throws TiersException {
+		checkEditionAutorisee(contribuable);
 		final Set<IdentificationEntreprise> set = new HashSet<>(1);
 		final String normalizedIde = NumeroIDEHelper.normalize(ide);
 		if (StringUtils.isNotBlank(normalizedIde)) {
 			set.add(getOrCreateIdentifiantEntreprise(contribuable, normalizedIde));
 		}
 		contribuable.setIdentificationsEntreprise(set);
+	}
+
+	private void checkEditionAutorisee(Contribuable contribuable) throws TiersException {
+		if (contribuable instanceof Entreprise) {
+			if (((Entreprise) contribuable).isConnueAuCivil()) {
+				throw new TiersException("L'édition d'une entreprise connue au civil n'est pas permise.");
+			}
+		} else if (contribuable instanceof Etablissement) {
+			if (((Etablissement) contribuable).isConnuAuCivil()) {
+				throw new TiersException("L'édition d'un établissement connu au civil n'est pas permise.");
+			}
+		}
 	}
 
 	private static IdentificationEntreprise getOrCreateIdentifiantEntreprise(Contribuable contribuable, String ide) {
@@ -5557,7 +5570,8 @@ public class TiersServiceImpl implements TiersService {
 	}
 
 	@Override
-	public RaisonSocialeFiscaleEntreprise addRaisonSocialeFiscale(Entreprise e, String raisonSociale, RegDate dateDebut, RegDate dateFin) {
+	public RaisonSocialeFiscaleEntreprise addRaisonSocialeFiscale(Entreprise e, String raisonSociale, RegDate dateDebut, RegDate dateFin) throws TiersException {
+		checkEditionAutorisee(e);
 
 		RaisonSocialeFiscaleEntreprise existing = getDerniereRaisonSocialeFiscale(e);
 
@@ -5573,7 +5587,9 @@ public class TiersServiceImpl implements TiersService {
 	}
 
 	@Override
-	public void updateRaisonSocialeFiscale(RaisonSocialeFiscaleEntreprise rs, String raisonSociale) {
+	public void updateRaisonSocialeFiscale(RaisonSocialeFiscaleEntreprise rs, String raisonSociale) throws TiersException {
+		checkEditionAutorisee(rs.getEntreprise());
+
 		rs.setAnnule(true);
 		addRaisonSocialeFiscale(rs.getEntreprise(), raisonSociale, rs.getDateDebut(), rs.getDateFin());
 	}
@@ -5585,7 +5601,8 @@ public class TiersServiceImpl implements TiersService {
 	}
 
 	@Override
-	public void annuleRaisonSocialeFiscale(RaisonSocialeFiscaleEntreprise raisonSociale) {
+	public void annuleRaisonSocialeFiscale(RaisonSocialeFiscaleEntreprise raisonSociale) throws TiersException {
+		checkEditionAutorisee(raisonSociale.getEntreprise());
 		final RaisonSocialeFiscaleEntreprise dernier = getDerniereRaisonSocialeFiscale(raisonSociale.getEntreprise());
 		if (dernier != raisonSociale) {
 			throw new ValidationException(raisonSociale, "Seule la dernière raison sociale peut être annulée.");
@@ -5613,7 +5630,8 @@ public class TiersServiceImpl implements TiersService {
 	}
 
 	@Override
-	public FormeJuridiqueFiscaleEntreprise addFormeJuridiqueFiscale(Entreprise e, FormeJuridiqueEntreprise formeJuridique, RegDate dateDebut, RegDate dateFin) {
+	public FormeJuridiqueFiscaleEntreprise addFormeJuridiqueFiscale(Entreprise e, FormeJuridiqueEntreprise formeJuridique, RegDate dateDebut, RegDate dateFin) throws TiersException {
+		checkEditionAutorisee(e);
 
 		FormeJuridiqueFiscaleEntreprise existing = getDerniereFormeJuridiqueFiscale(e);
 
@@ -5629,7 +5647,8 @@ public class TiersServiceImpl implements TiersService {
 	}
 
 	@Override
-	public void updateFormeJuridiqueFiscale(FormeJuridiqueFiscaleEntreprise fj, FormeJuridiqueEntreprise formeJuridique) {
+	public void updateFormeJuridiqueFiscale(FormeJuridiqueFiscaleEntreprise fj, FormeJuridiqueEntreprise formeJuridique) throws TiersException {
+		checkEditionAutorisee(fj.getEntreprise());
 		fj.setAnnule(true);
 		addFormeJuridiqueFiscale(fj.getEntreprise(), formeJuridique, fj.getDateDebut(), fj.getDateFin());
 	}
@@ -5641,7 +5660,8 @@ public class TiersServiceImpl implements TiersService {
 	}
 
 	@Override
-	public void annuleFormeJuridiqueFiscale(FormeJuridiqueFiscaleEntreprise formeJuridique) {
+	public void annuleFormeJuridiqueFiscale(FormeJuridiqueFiscaleEntreprise formeJuridique) throws TiersException {
+		checkEditionAutorisee(formeJuridique.getEntreprise());
 		final FormeJuridiqueFiscaleEntreprise dernier = getDerniereFormeJuridiqueFiscale(formeJuridique.getEntreprise());
 		if (dernier != formeJuridique) {
 			throw new ValidationException(formeJuridique, "Seule la dernière forme juridique peut être annulée.");
@@ -5669,9 +5689,10 @@ public class TiersServiceImpl implements TiersService {
 	}
 
 	@Override
-	public CapitalFiscalEntreprise addCapitalFiscal(Entreprise e, Long montant, String monnaie, RegDate dateDebut, RegDate dateFin) {
+	public CapitalFiscalEntreprise addCapitalFiscal(Entreprise e, Long montant, String monnaie, RegDate dateDebut, RegDate dateFin) throws TiersException {
 		Assert.notNull(montant);
 		Assert.notNull(monnaie);
+		checkEditionAutorisee(e);
 
 		CapitalFiscalEntreprise existing = getDernierCapitalFiscal(e);
 
@@ -5687,7 +5708,8 @@ public class TiersServiceImpl implements TiersService {
 	}
 
 	@Override
-	public void updateCapitalFiscal(CapitalFiscalEntreprise cf, Long montant, RegDate dateFin) {
+	public void updateCapitalFiscal(CapitalFiscalEntreprise cf, Long montant, RegDate dateFin) throws TiersException {
+		checkEditionAutorisee(cf.getEntreprise());
 		cf.setAnnule(true);
 		addCapitalFiscal(cf.getEntreprise(), montant, cf.getMontant().getMonnaie(), cf.getDateDebut(), cf.getDateFin());
 	}
@@ -5699,7 +5721,9 @@ public class TiersServiceImpl implements TiersService {
 	}
 
 	@Override
-	public void annuleCapitalFiscal(CapitalFiscalEntreprise capital) {
+	public void annuleCapitalFiscal(CapitalFiscalEntreprise capital) throws TiersException {
+		checkEditionAutorisee(capital.getEntreprise());
+
 		final CapitalFiscalEntreprise dernier = getDernierCapitalFiscal(capital.getEntreprise());
 		if (dernier != capital) {
 			throw new ValidationException(capital, "Seul le dernier capital peut être annulé.");

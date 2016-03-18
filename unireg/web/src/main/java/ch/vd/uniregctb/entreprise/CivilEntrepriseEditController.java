@@ -28,6 +28,7 @@ import ch.vd.uniregctb.tiers.FormeJuridiqueFiscaleEntreprise;
 import ch.vd.uniregctb.tiers.RaisonSocialeFiscaleEntreprise;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
+import ch.vd.uniregctb.tiers.TiersException;
 import ch.vd.uniregctb.tiers.TiersMapHelper;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.tiers.manager.AutorisationManager;
@@ -115,11 +116,18 @@ public class CivilEntrepriseEditController {
 			if (!auth.isDonneesCiviles()) {
 				throw new AccessDeniedException("Vous ne possédez pas les droits IfoSec d'édition d'entreprises.");
 			}
+			checkEditionAutorisee((Entreprise) tiers);
 			final EntrepriseView view = entrepriseService.getEntreprise((Entreprise) tiers);
 			return showEditEntreprise(model, id, view);
 		}
 		else {
 			throw new TiersNotFoundException(id);
+		}
+	}
+
+	private void checkEditionAutorisee(Entreprise entreprise) {
+		if (entreprise.isConnueAuCivil()) {
+			throw new AccessDeniedException("Il n'est pas possible d'éditer les entreprises connues au civil.");
 		}
 	}
 
@@ -151,7 +159,7 @@ public class CivilEntrepriseEditController {
 
 	@Transactional(rollbackFor = Throwable.class)
 	@RequestMapping(value = "/raisonsociale/add.do", method = RequestMethod.POST)
-	public String addRaisonSociale(@Valid @ModelAttribute("command") final AddRaisonSocialeView view, BindingResult result, Model model) throws Exception {
+	public String addRaisonSociale(@Valid @ModelAttribute("command") final AddRaisonSocialeView view, BindingResult result, Model model) throws TiersException {
 
 		final long tiersId = view.getTiersId();
 
@@ -195,7 +203,7 @@ public class CivilEntrepriseEditController {
 
 	@Transactional(rollbackFor = Throwable.class)
 	@RequestMapping(value = "/raisonsociale/edit.do", method = RequestMethod.POST)
-	public String editRaisonSociale(@Valid @ModelAttribute("command") final EditRaisonSocialeView view, BindingResult result, Model model) throws Exception {
+	public String editRaisonSociale(@Valid @ModelAttribute("command") final EditRaisonSocialeView view, BindingResult result, Model model) throws TiersException {
 
 		final RaisonSocialeFiscaleEntreprise raisonSociale = hibernateTemplate.get(RaisonSocialeFiscaleEntreprise.class, view.getId());
 		if (raisonSociale == null) {
@@ -226,7 +234,7 @@ public class CivilEntrepriseEditController {
 
 	@Transactional(rollbackFor = Throwable.class)
 	@RequestMapping(value = "/cancel.do", method = RequestMethod.POST)
-	public String cancelRaisonSociale(long raisonSocialeId) throws Exception {
+	public String cancelRaisonSociale(long raisonSocialeId) throws TiersException {
 
 		final RaisonSocialeFiscaleEntreprise raisonSociale = hibernateTemplate.get(RaisonSocialeFiscaleEntreprise.class, raisonSocialeId);
 		if (raisonSociale == null) {
@@ -267,7 +275,7 @@ public class CivilEntrepriseEditController {
 
 	@Transactional(rollbackFor = Throwable.class)
 	@RequestMapping(value = "/formejuridique/add.do", method = RequestMethod.POST)
-	public String addFormeJuridique(@Valid @ModelAttribute("command") final AddFormeJuridiqueView view, BindingResult result, Model model) throws Exception {
+	public String addFormeJuridique(@Valid @ModelAttribute("command") final AddFormeJuridiqueView view, BindingResult result, Model model) throws TiersException {
 
 		final long tiersId = view.getTiersId();
 
@@ -313,7 +321,7 @@ public class CivilEntrepriseEditController {
 
 	@Transactional(rollbackFor = Throwable.class)
 	@RequestMapping(value = "/formejuridique/edit.do", method = RequestMethod.POST)
-	public String editFormeJuridique(@Valid @ModelAttribute("command") final EditFormeJuridiqueView view, BindingResult result, Model model) throws Exception {
+	public String editFormeJuridique(@Valid @ModelAttribute("command") final EditFormeJuridiqueView view, BindingResult result, Model model) throws TiersException {
 
 		final FormeJuridiqueFiscaleEntreprise formeJuridique = hibernateTemplate.get(FormeJuridiqueFiscaleEntreprise.class, view.getId());
 		if (formeJuridique == null) {
@@ -344,7 +352,7 @@ public class CivilEntrepriseEditController {
 
 	@Transactional(rollbackFor = Throwable.class)
 	@RequestMapping(value = "/formejuridique/cancel.do", method = RequestMethod.POST)
-	public String cancelFormeJuridique(long formeJuridiqueId) throws Exception {
+	public String cancelFormeJuridique(long formeJuridiqueId) throws TiersException {
 
 		final FormeJuridiqueFiscaleEntreprise formeJuridique = hibernateTemplate.get(FormeJuridiqueFiscaleEntreprise.class, formeJuridiqueId);
 		if (formeJuridique == null) {
@@ -384,7 +392,7 @@ public class CivilEntrepriseEditController {
 
 	@Transactional(rollbackFor = Throwable.class)
 	@RequestMapping(value = "/capital/add.do", method = RequestMethod.POST)
-	public String addCapital(@Valid @ModelAttribute("command") final AddCapitalView view, BindingResult result, Model model) throws Exception {
+	public String addCapital(@Valid @ModelAttribute("command") final AddCapitalView view, BindingResult result, Model model) throws TiersException {
 
 		final long tiersId = view.getTiersId();
 
@@ -428,7 +436,7 @@ public class CivilEntrepriseEditController {
 
 	@Transactional(rollbackFor = Throwable.class)
 	@RequestMapping(value = "/capital/edit.do", method = RequestMethod.POST)
-	public String editCapital(@Valid @ModelAttribute("command") final EditCapitalView view, BindingResult result, Model model) throws Exception {
+	public String editCapital(@Valid @ModelAttribute("command") final EditCapitalView view, BindingResult result, Model model) throws TiersException {
 
 		final CapitalFiscalEntreprise capital = hibernateTemplate.get(CapitalFiscalEntreprise.class, view.getId());
 		if (capital == null) {
@@ -460,7 +468,7 @@ public class CivilEntrepriseEditController {
 
 	@Transactional(rollbackFor = Throwable.class)
 	@RequestMapping(value = "/capital/cancel.do", method = RequestMethod.POST)
-	public String cancelCapital(long capitalId) throws Exception {
+	public String cancelCapital(long capitalId) throws TiersException {
 
 		final CapitalFiscalEntreprise capital = hibernateTemplate.get(CapitalFiscalEntreprise.class, capitalId);
 		if (capital == null) {
@@ -500,7 +508,8 @@ public class CivilEntrepriseEditController {
 
 	@Transactional(rollbackFor = Throwable.class)
 	@RequestMapping(value = "/ide/edit.do", method = RequestMethod.POST)
-	public String editIdeEntreprise(@RequestParam(value = ID) long id, Model model, @Valid @ModelAttribute(DATA) ContribuableInfosEntrepriseView view, BindingResult bindingResult) {
+	public String editIdeEntreprise(@RequestParam(value = ID) long id, Model model, @Valid @ModelAttribute(DATA) ContribuableInfosEntrepriseView view, BindingResult bindingResult) throws
+			TiersException {
 
 		final Tiers tiers = tiersDAO.get(id);
 		if (tiers != null && tiers instanceof Entreprise) {

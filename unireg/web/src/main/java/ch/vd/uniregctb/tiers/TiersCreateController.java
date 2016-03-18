@@ -210,7 +210,7 @@ public class TiersCreateController {
 
 	@Transactional(rollbackFor = Throwable.class)
 	@RequestMapping(value = "/entreprise/create.do", method = RequestMethod.POST)
-	public String doCreateEntreprise(Model model, @Valid @ModelAttribute(DATA) CreateEntrepriseView view, BindingResult result) {
+	public String doCreateEntreprise(Model model, @Valid @ModelAttribute(DATA) CreateEntrepriseView view, BindingResult result) throws TiersException {
 		if (!SecurityHelper.isGranted(securityProvider, Role.CREATE_ENTREPRISE)) {
 			throw new AccessDeniedException("Vous ne possédez pas les droits d'accès suffisants à la création d'une entreprise.");
 		}
@@ -303,7 +303,7 @@ public class TiersCreateController {
 
 	@Transactional(rollbackFor = Throwable.class)
 	@RequestMapping(value = "/autrecommunaute/create.do", method = RequestMethod.POST)
-	public String doCreateAutreCommunaute(Model model, @Valid @ModelAttribute(DATA) CreateAutreCommunauteView view, BindingResult results) {
+	public String doCreateAutreCommunaute(Model model, @Valid @ModelAttribute(DATA) CreateAutreCommunauteView view, BindingResult results) throws TiersException {
 		if (!SecurityHelper.isGranted(securityProvider, Role.CREATE_AC)) {
 			throw new AccessDeniedException("Vous ne possédez pas les droits d'accès suffisants à la création d'un inconnu PM.");
 		}

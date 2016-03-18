@@ -146,7 +146,8 @@ public class CivilEditController {
 
 	@Transactional(rollbackFor = Throwable.class)
 	@RequestMapping(value = "/personnephysique/ide/edit.do", method = RequestMethod.POST)
-	public String doEditIdeHabitant(@RequestParam(value = ID) long id, Model model, @Valid @ModelAttribute(DATA) ContribuableInfosEntrepriseView view, BindingResult bindingResult) {
+	public String doEditIdeHabitant(@RequestParam(value = ID) long id, Model model, @Valid @ModelAttribute(DATA) ContribuableInfosEntrepriseView view, BindingResult bindingResult) throws
+			TiersException {
 		if (!hasDroitsModificationsCtb()) {
 			throw new AccessDeniedException("Vous ne possédez pas les droits d'accès suffisants à la modification des tiers de ce type.");
 		}
@@ -197,7 +198,7 @@ public class CivilEditController {
 
 	@Transactional(rollbackFor = Throwable.class)
 	@RequestMapping(value = "/autrecommunaute/edit.do", method = RequestMethod.POST)
-	public String doEditAutreCommunaute(@RequestParam(value = ID) long id, Model model, @Valid @ModelAttribute(DATA) AutreCommunauteCivilView view, BindingResult bindingResult) {
+	public String doEditAutreCommunaute(@RequestParam(value = ID) long id, Model model, @Valid @ModelAttribute(DATA) AutreCommunauteCivilView view, BindingResult bindingResult) throws TiersException {
 		if (!SecurityHelper.isGranted(securityProvider, Role.MODIF_AC)) {
 			throw new AccessDeniedException("Vous ne possédez pas les droits d'accès suffisants à la modification des tiers de ce type.");
 		}

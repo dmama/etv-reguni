@@ -214,7 +214,7 @@
 <fieldset>
 	<legend><span><fmt:message key="label.capitaux"/></span></legend>
 
-	<c:if test="${page == 'visu' }">
+	<c:if test="${page == 'visu'}">
 		<input class="noprint" id="showCapitauxHisto" type="checkbox" onclick="refreshCapitauxTable(this);" />
 		<label class="noprint" for="showCapitauxHisto"><fmt:message key="label.historique" /></label>
 	</c:if>

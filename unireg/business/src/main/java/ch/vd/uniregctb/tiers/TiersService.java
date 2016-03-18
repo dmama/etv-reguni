@@ -143,7 +143,7 @@ public interface TiersService {
      * @param contribuable  le contribuable sur lequel changer cette valeur
      * @param ide           le numéro IDE (potentiellement avec des points, tirets...)
      */
-    void setIdentifiantEntreprise(Contribuable contribuable, String ide);
+    void setIdentifiantEntreprise(Contribuable contribuable, String ide) throws TiersException;
 
     /**
      * Change un non Habitant (qui n'a jamais été habitant) en ménage. Méthode a utiliser qu'en cas de strict necessité
@@ -1806,7 +1806,7 @@ public interface TiersService {
 	 * @param dateFin la date de fin, ou null si la durée de validité est indéterminée
 	 * @return la raison sociale nouvellement créée
 	 */
-	RaisonSocialeFiscaleEntreprise addRaisonSocialeFiscale(Entreprise e, String raisonSociale, RegDate dateDebut, RegDate dateFin);
+	RaisonSocialeFiscaleEntreprise addRaisonSocialeFiscale(Entreprise e, String raisonSociale, RegDate dateDebut, RegDate dateFin) throws TiersException;
 
 	/**
 	 * Met à jour la raison sociale de l'entreprise. Seule le libellé peut être changé, car on ne
@@ -1814,7 +1814,7 @@ public interface TiersService {
 	 * @param rs la raison sociale mise à jour
 	 * @param raisonSociale le libellé de la nouvelle raison sociale
 	 */
-	void updateRaisonSocialeFiscale(RaisonSocialeFiscaleEntreprise rs, String raisonSociale);
+	void updateRaisonSocialeFiscale(RaisonSocialeFiscaleEntreprise rs, String raisonSociale) throws TiersException;
 
 	/**
 	 * Ferme la raison sociale à la date indiquée
@@ -1827,7 +1827,7 @@ public interface TiersService {
 	 * Annule la raison sociale passée en paramètre
 	 * @param raisonSociale la raison sociale à annuler
 	 */
-	void annuleRaisonSocialeFiscale(RaisonSocialeFiscaleEntreprise raisonSociale);
+	void annuleRaisonSocialeFiscale(RaisonSocialeFiscaleEntreprise raisonSociale) throws TiersException;
 
 	/**
 	 * Crée une nouvelle forme juridique pour l'entreprise passée en paramètre.
@@ -1837,7 +1837,7 @@ public interface TiersService {
 	 * @param dateFin la date de fin, ou null si la durée de validité est indéterminée
 	 * @return la forme juridique nouvellement créée
 	 */
-	FormeJuridiqueFiscaleEntreprise addFormeJuridiqueFiscale(Entreprise e, FormeJuridiqueEntreprise formeJuridique, RegDate dateDebut, RegDate dateFin);
+	FormeJuridiqueFiscaleEntreprise addFormeJuridiqueFiscale(Entreprise e, FormeJuridiqueEntreprise formeJuridique, RegDate dateDebut, RegDate dateFin) throws TiersException;
 
 	/**
 	 * Met à jour la forme juridique de l'entreprise. Seule la forme peut être changée, car on ne
@@ -1845,7 +1845,7 @@ public interface TiersService {
 	 * @param fj la forme juridique mise à jour
 	 * @param formeJurique le libellé de la nouvelle forme juridique
 	 */
-	void updateFormeJuridiqueFiscale(FormeJuridiqueFiscaleEntreprise fj, FormeJuridiqueEntreprise formeJuridique);
+	void updateFormeJuridiqueFiscale(FormeJuridiqueFiscaleEntreprise fj, FormeJuridiqueEntreprise formeJuridique) throws TiersException;
 
 	/**
 	 * Ferme la forme juridique à la date indiquée
@@ -1858,7 +1858,7 @@ public interface TiersService {
 	 * Annule la forme juridique passée en paramètre
 	 * @param raisonSociale la forme juridique à annuler
 	 */
-	void annuleFormeJuridiqueFiscale(FormeJuridiqueFiscaleEntreprise formeJuridique);
+	void annuleFormeJuridiqueFiscale(FormeJuridiqueFiscaleEntreprise formeJuridique) throws TiersException;
 
 	/**
 	 * Crée un nouveau capital pour l'entreprise passée en paramètre.
@@ -1868,7 +1868,7 @@ public interface TiersService {
 	 * @param dateFin la date de fin, ou null si la durée de validité est indéterminée
 	 * @return le capital nouvellement créé
 	 */
-	CapitalFiscalEntreprise addCapitalFiscal(Entreprise e, Long montant, String monnaie, RegDate dateDebut, RegDate dateFin);
+	CapitalFiscalEntreprise addCapitalFiscal(Entreprise e, Long montant, String monnaie, RegDate dateDebut, RegDate dateFin) throws TiersException;
 
 	/**
 	 * Met à jour le capital de l'entreprise. On peut changer le montant et la date de fin, mais pas
@@ -1877,7 +1877,7 @@ public interface TiersService {
 	 * @param montant un nouveau montant
 	 * @param dateFin une nouvelle date de fin
 	 */
-	void updateCapitalFiscal(CapitalFiscalEntreprise cf, Long montant, RegDate dateFin);
+	void updateCapitalFiscal(CapitalFiscalEntreprise cf, Long montant, RegDate dateFin) throws TiersException;
 
 	/**
 	 * Ferme le capital à la date indiquée
@@ -1890,7 +1890,7 @@ public interface TiersService {
 	 * Annule le capital passé en paramètre
 	 * @param capital le capital à annuler
 	 */
-	void annuleCapitalFiscal(CapitalFiscalEntreprise capital);
+	void annuleCapitalFiscal(CapitalFiscalEntreprise capital) throws TiersException;
 
 	/**
      * Crée un régime fiscal sur l'entreprise passée en paramètre avec les informations fournies
