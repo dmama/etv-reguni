@@ -1,9 +1,12 @@
 package ch.vd.unireg.wsclient.rcent;
 
+import javax.ws.rs.core.Response;
 import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -130,11 +133,24 @@ public class RcEntClientImpl implements RcEntClient, InitializingBean {
 			wc.query("organisationsState", when != null ? when.toString() : null);
 
 			try {
-				return wc.get(OrganisationsOfNotice.class);
+				final Response response = wc.get();
+				if (response.getStatus() >= 400) {
+					throw new ServerWebApplicationException(response);
+				}
+
+				final JAXBContext jaxbContext = JAXBContext.newInstance(ch.vd.evd0023.v3.ObjectFactory.class);
+				final Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+
+				//noinspection unchecked
+				final JAXBElement<OrganisationsOfNotice> data = (JAXBElement<OrganisationsOfNotice>) unmarshaller.unmarshal((InputStream) response.getEntity());
+				return data.getValue();
 			}
 			catch (ServerWebApplicationException e) {
 				throw new RcEntClientException(e, parseErrors(e.getMessage()));
 			}
+		}
+		catch (JAXBException e) {
+			throw new RcEntClientException("Erreur lors du parsing de la réponse xml", e);
 		}
 		finally {
 			wcPool.returnClient(wc);
