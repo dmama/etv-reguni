@@ -158,9 +158,9 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 	public EvenementOrganisationInterne toInterne(EvenementOrganisation event, EvenementOrganisationOptions options) throws EvenementOrganisationException {
 		Organisation organisation;
 		if (useOrganisationsOfNotice) {
-			organisation = serviceOrganisationService.getPseudoOrganisationHistory(event.getNoOrganisation()).get(event.getNoOrganisation());
+			organisation = serviceOrganisationService.getPseudoOrganisationHistory(event.getNoEvenement()).get(event.getNoOrganisation());
 		} else {
-			LOGGER.warn("Utilisation du service RCEnt WS Organisation à la place du WS OrganisationsOfNotice! Traitement à doubles possibles.");
+			LOGGER.warn("Utilisation du service RCEnt WS Organisation à la place du WS OrganisationsOfNotice! Traitements à double possibles.");
 			organisation = serviceOrganisationService.getOrganisationHistory(event.getNoOrganisation());
 		}
 
