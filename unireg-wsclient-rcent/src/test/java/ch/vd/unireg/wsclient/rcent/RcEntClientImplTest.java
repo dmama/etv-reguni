@@ -78,10 +78,10 @@ public class RcEntClientImplTest {
 
 		final RcEntClientImpl rcEntClient = new RcEntClientImpl();
 		rcEntClient.afterPropertiesSet();
-		final List<Error> extracted = rcEntClient.parseErrors(erreurSimple);
+		final List<RcEntClientErrorMessage> extracted = rcEntClient.parseErrors(erreurSimple);
 
 		Assert.assertNotNull(extracted);
-		final Error error = extracted.get(0);
+		final RcEntClientErrorMessage error = extracted.get(0);
 		Assert.assertNotNull(error);
 		Assert.assertEquals(100, error.getCode().intValue());
 		Assert.assertEquals("Exception : catégorie de l'identifiant non valide : ct.vd.party", error.getMessage());
@@ -98,17 +98,17 @@ public class RcEntClientImplTest {
 
 		final RcEntClientImpl rcEntClient = new RcEntClientImpl();
 		rcEntClient.afterPropertiesSet();
-		final List<Error> extracted = rcEntClient.parseErrors(erreurMultipleMultiline);
+		final List<RcEntClientErrorMessage> extracted = rcEntClient.parseErrors(erreurMultipleMultiline);
 
 		Assert.assertNotNull(extracted);
 		{
-			final Error error = extracted.get(0);
+			final RcEntClientErrorMessage error = extracted.get(0);
 			Assert.assertNotNull(error);
 			Assert.assertEquals(100, error.getCode().intValue());
 			Assert.assertEquals("Exception : catégorie de l'identifiant non valide : ct.vd.party", error.getMessage());
 		}
 		{
-			final Error error = extracted.get(1);
+			final RcEntClientErrorMessage error = extracted.get(1);
 			Assert.assertNotNull(error);
 			Assert.assertEquals(101, error.getCode().intValue());
 			Assert.assertEquals("Deuxième message d'erreur!", error.getMessage());

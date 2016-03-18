@@ -18,14 +18,14 @@ public class RcEntClientException extends RuntimeException {
 	/**
 	 * La liste des erreurs renvoyées par RCEnt
 	 */
-	private List<Error> errors;
+	private List<RcEntClientErrorMessage> errors;
 
 	/**
 	 * Construit une exception spécifique avec un message clair et concis à partir d'une ServerWebApplicationException (qui expose la réponse complète dans son message).
 	 *
 	 * @param e une exception
 	 */
-	public RcEntClientException(ServerWebApplicationException e, @Nullable List<Error> errors) {
+	public RcEntClientException(ServerWebApplicationException e, @Nullable List<RcEntClientErrorMessage> errors) {
 		this(buildShortMessage(e, errors), e);
 		this.errors = errors;
 	}
@@ -42,7 +42,7 @@ public class RcEntClientException extends RuntimeException {
 		this.errors = null;
 	}
 
-	private static String buildShortMessage(ServerWebApplicationException e, @Nullable List<Error> errors) {
+	private static String buildShortMessage(ServerWebApplicationException e, @Nullable List<RcEntClientErrorMessage> errors) {
 		final StringBuilder s = new StringBuilder();
 		s.append("Status ").append(e.getStatus());
 		final String title = extractMessage(errors);
@@ -52,14 +52,13 @@ public class RcEntClientException extends RuntimeException {
 		return s.toString();
 	}
 
-	protected static String extractMessage(List<Error> errors) {
+	protected static String extractMessage(List<RcEntClientErrorMessage> errors) {
 		if (errors == null || errors.isEmpty()) {
 			return null;
 		}
 
-		StringBuilder message = new StringBuilder();
-
-		for (Error error : errors) {
+		final StringBuilder message = new StringBuilder();
+		for (RcEntClientErrorMessage error : errors) {
 			if (message.length() > 0) {
 				message.append(" | ");
 			}
@@ -75,7 +74,7 @@ public class RcEntClientException extends RuntimeException {
 		return cause != null ? cause : super.getCause();
 	}
 
-	public List<Error> getErrors() {
+	public List<RcEntClientErrorMessage> getErrors() {
 		return errors;
 	}
 }

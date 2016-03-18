@@ -19,10 +19,9 @@ public class RcEntClientExceptionTest {
 
 		final RcEntClientImpl rcEntClient = new RcEntClientImpl();
 		rcEntClient.afterPropertiesSet();
-		final List<Error> extracted = rcEntClient.parseErrors(erreurSimple);
+		final List<RcEntClientErrorMessage> extracted = rcEntClient.parseErrors(erreurSimple);
 
 		final String message = RcEntClientException.extractMessage(extracted);
-
 		Assert.assertEquals("100: Exception : catégorie de l'identifiant non valide : ct.vd.party", message);
 	}
 
@@ -37,10 +36,9 @@ public class RcEntClientExceptionTest {
 
 		final RcEntClientImpl rcEntClient = new RcEntClientImpl();
 		rcEntClient.afterPropertiesSet();
-		final List<Error> extracted = rcEntClient.parseErrors(erreurMultipleMultiline);
 
+		final List<RcEntClientErrorMessage> extracted = rcEntClient.parseErrors(erreurMultipleMultiline);
 		final String message = RcEntClientException.extractMessage(extracted);
-
 		Assert.assertEquals("100: Exception : catégorie de l'identifiant non valide : ct.vd.party | 101: Deuxième message d'erreur!", message);
 	}
 }

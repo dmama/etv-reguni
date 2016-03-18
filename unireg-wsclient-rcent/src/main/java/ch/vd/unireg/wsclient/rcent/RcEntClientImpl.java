@@ -4,11 +4,14 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import java.io.ByteArrayInputStream;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.cxf.jaxrs.client.ServerWebApplicationException;
 import org.apache.cxf.jaxrs.client.WebClient;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 
 import ch.vd.evd0004.v3.Error;
@@ -21,6 +24,8 @@ import ch.vd.registre.base.date.RegDateHelper;
 public class RcEntClientImpl implements RcEntClient, InitializingBean {
 
 	private static final int RECEIVE_TIMEOUT = 600000; // 10 minutes
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(RcEntClientImpl.class);
 
 	private Unmarshaller errorunmarshaller;
 
@@ -66,7 +71,7 @@ public class RcEntClientImpl implements RcEntClient, InitializingBean {
 	public void afterPropertiesSet() throws Exception {
 		this.wcPool.init();
 
-		JAXBContext jc = JAXBContext.newInstance(Errors.class);
+		final JAXBContext jc = JAXBContext.newInstance(Errors.class);
 		errorunmarshaller = jc.createUnmarshaller();
 	}
 
@@ -89,9 +94,7 @@ public class RcEntClientImpl implements RcEntClient, InitializingBean {
 				return wc.get(OrganisationData.class);
 			}
 			catch (ServerWebApplicationException e) {
-				final String message = e.getMessage();
-				List<Error> errors = parseErrors(message);
-				throw new RcEntClientException(e, errors);
+				throw new RcEntClientException(e, parseErrors(e.getMessage()));
 			}
 		}
 		finally {
@@ -100,15 +103,22 @@ public class RcEntClientImpl implements RcEntClient, InitializingBean {
 	}
 
 	@Nullable
-	protected List<Error> parseErrors(String message) {
-		List<Error> errors = null;
+	protected List<RcEntClientErrorMessage> parseErrors(String message) {
 		try {
-			Errors unmarshalled = (Errors) errorunmarshaller.unmarshal(new ByteArrayInputStream(message.getBytes()));
-			errors = unmarshalled.getError();
+			final Errors unmarshalled = (Errors) errorunmarshaller.unmarshal(new ByteArrayInputStream(message.getBytes()));
+			if (unmarshalled == null || unmarshalled.getError() == null || unmarshalled.getError().isEmpty()) {
+				return null;
+			}
+			final List<RcEntClientErrorMessage> messages = new ArrayList<>(unmarshalled.getError().size());
+			for (Error error : unmarshalled.getError()) {
+				messages.add(new RcEntClientErrorMessage(error));
+			}
+			return messages;
 		}
-		catch (JAXBException e1) {
+		catch (JAXBException e) {
+			LOGGER.error("Impossible de parser le message d'erreur revenu en tant que eVD-0004", e);
+			return null;
 		}
-		return errors;
 	}
 
 	@Override
@@ -123,8 +133,7 @@ public class RcEntClientImpl implements RcEntClient, InitializingBean {
 				return wc.get(OrganisationsOfNotice.class);
 			}
 			catch (ServerWebApplicationException e) {
-				List<Error> errors = parseErrors(e.getMessage());
-				throw new RcEntClientException(e, errors);
+				throw new RcEntClientException(e, parseErrors(e.getMessage()));
 			}
 		}
 		finally {
@@ -144,8 +153,7 @@ public class RcEntClientImpl implements RcEntClient, InitializingBean {
 				}
 			}
 			catch (ServerWebApplicationException e) {
-				List<Error> errors = parseErrors(e.getMessage());
-				throw new RcEntClientException(e, errors);
+				throw new RcEntClientException(e, parseErrors(e.getMessage()));
 			}
 		}
 		finally {
