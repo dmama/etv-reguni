@@ -196,7 +196,6 @@
 		<appender-ref ref="IDE_SANS_NO_CANTONAL"/>
 	</logger>
 
-
 	<appender name="DIFFERENCES_DONNEES_CIVILES" class="ch.qos.logback.core.FileAppender">
 		<file>log/differences-donnees-civiles.csv</file>
 		<append>true</append>
@@ -206,6 +205,17 @@
 	</appender>
 	<logger name="ch.vd.uniregctb.migration.pm.log.LogCategory.DIFFERENCES_DONNEES_CIVILES" additivity="false">
 		<appender-ref ref="DIFFERENCES_DONNEES_CIVILES"/>
+	</logger>
+
+	<appender name="FORMES_JURIDIQUES_INCOMPATIBLES" class="ch.qos.logback.core.FileAppender">
+		<file>log/formes-juridiques-incompatibles.csv</file>
+		<append>true</append>
+		<encoder>
+			<pattern>%msg%n</pattern>
+		</encoder>
+	</appender>
+	<logger name="ch.vd.uniregctb.migration.pm.log.LogCategory.FORMES_JURIDIQUES_INCOMPATIBLES" additivity="false">
+		<appender-ref ref="FORMES_JURIDIQUES_INCOMPATIBLES"/>
 	</logger>
 
 	<appender name="EXCEPTIONS" class="ch.qos.logback.core.FileAppender">

@@ -18,6 +18,7 @@ import ch.vd.uniregctb.migration.pm.log.EntrepriseLoggedElement;
 import ch.vd.uniregctb.migration.pm.log.EtablissementLoggedElement;
 import ch.vd.uniregctb.migration.pm.log.ForFiscalIgnoreAbsenceAssujettissementLoggedElement;
 import ch.vd.uniregctb.migration.pm.log.ForPrincipalOuvertApresFinAssujettissementLoggedElement;
+import ch.vd.uniregctb.migration.pm.log.FormesJuridiquesIncompatiblesLoggedElement;
 import ch.vd.uniregctb.migration.pm.log.IndividuLoggedElement;
 import ch.vd.uniregctb.migration.pm.log.LogCategory;
 import ch.vd.uniregctb.migration.pm.log.LoggedElement;
@@ -72,6 +73,7 @@ public abstract class LogStructure {
 		final Function<LogContexte, LoggedElement> donneesForsIgnoresAucunAssujettissement = new FromContextInformationSource(ForFiscalIgnoreAbsenceAssujettissementLoggedElement.class, ForFiscalIgnoreAbsenceAssujettissementLoggedElement.EMPTY);
 		final Function<LogContexte, LoggedElement> donneesDifferencesDonneesCiviles = new FromContextInformationSource(DifferencesDonneesCivilesLoggedElement.class, DifferencesDonneesCivilesLoggedElement.EMPTY);
 		final Function<LogContexte, LoggedElement> donneesMappingRegimeFiscal = new FromContextInformationSource(RegimeFiscalMappingLoggedElement.class, RegimeFiscalMappingLoggedElement.EMPTY);
+		final Function<LogContexte, LoggedElement> donneesFormesJuridiquesIncompatibles = new FromContextInformationSource(FormesJuridiquesIncompatiblesLoggedElement.class, FormesJuridiquesIncompatiblesLoggedElement.EMPTY);
 
 		final Map<LogCategory, List<Function<LogContexte, LoggedElement>>> map = new EnumMap<>(LogCategory.class);
 
@@ -125,6 +127,9 @@ public abstract class LogStructure {
 
 		// Liste des adresses migrées avec le flag "permanente" à "true"
 		map.put(LogCategory.ADRESSES_PERMANENTES, Arrays.asList(donneesNiveau, donneesEntreprise, donneesAdressePermanente));
+
+		// Liste des entreprises migrée sans réelle donnée fiscale car les formes juridiques de RCEnt et RegPM sont incompatible (au sens du SIFISC-18378)
+		map.put(LogCategory.FORMES_JURIDIQUES_INCOMPATIBLES, Arrays.asList(donneesNiveau, donneesEntreprise, donneesFormesJuridiquesIncompatibles));
 
 		// Dans le log des erreurs, on ne met aucun contexte -> seul le texte sera affiché
 		map.put(LogCategory.EXCEPTIONS, Collections.singletonList(donneesNiveau));

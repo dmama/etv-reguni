@@ -43,6 +43,7 @@ import ch.vd.uniregctb.migration.pm.engine.collector.EntityLinkCollector;
 import ch.vd.uniregctb.migration.pm.engine.collector.NeutralizedLinkAction;
 import ch.vd.uniregctb.migration.pm.engine.data.DonneesCiviles;
 import ch.vd.uniregctb.migration.pm.engine.data.DonneesMandats;
+import ch.vd.uniregctb.migration.pm.engine.data.FlagFormesJuridiquesIncompatiblesData;
 import ch.vd.uniregctb.migration.pm.engine.helpers.StringRenderers;
 import ch.vd.uniregctb.migration.pm.log.LogCategory;
 import ch.vd.uniregctb.migration.pm.log.LogLevel;
@@ -181,7 +182,15 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 	 * @param idMapper mapper d'identifiants RegPM -> Unireg
 	 */
 	private void createForsSecondairesAnnulesUnJour(IntroductionForSecondaireAnnuleData data, MigrationResultContextManipulation mr, IdMapping idMapper) {
-		doInLogContext(data.entiteJuridiqueSupplier.getKey(),
+
+		final EntityKey keyEntiteJuridique = data.entiteJuridiqueSupplier.getKey();
+
+		// [SIFISC-18378] si les formes juridiques entre RegPM et RCent sont incompatibles, on ne migre pas les fors
+		if (mr.getExtractedData(FlagFormesJuridiquesIncompatiblesData.class, keyEntiteJuridique).isIncompatible()) {
+			return;
+		}
+
+		doInLogContext(keyEntiteJuridique,
 		               mr,
 		               idMapper,
 		               () -> {
@@ -507,6 +516,13 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 	 */
 	private void createForsSecondairesEtablissement(ForsSecondairesData.Activite data, MigrationResultContextManipulation mr, IdMapping idMapper) {
 		final EntityKey keyEntiteJuridique = data.entiteJuridiqueSupplier.getKey();
+
+		// [SIFISC-18378] si les formes juridiques entre RegPM et RCent sont incompatibles, on ne migre pas les fors
+		if (mr.getExtractedData(FlagFormesJuridiquesIncompatiblesData.class, keyEntiteJuridique).isIncompatible()) {
+			mr.addMessage(LogCategory.FORS, LogLevel.WARN, "Aucun for fiscal 'activité économique' migré en raison des formes juridiques incompatibles entre RegPM et RCEnt.");
+			return;
+		}
+
 		doInLogContext(keyEntiteJuridique, mr, idMapper, () -> {
 			final Tiers entiteJuridique = data.entiteJuridiqueSupplier.get();
 			for (Map.Entry<RegpmCommune, List<DateRange>> communeData : data.communes.entrySet()) {

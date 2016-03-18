@@ -93,6 +93,11 @@ public enum LogCategory {
 	/**
 	 * Liste des adresses permanentes
 	 */
-	ADRESSES_PERMANENTES
+	ADRESSES_PERMANENTES,
+
+	/**
+	 * Liste des entreprises migrée sans réelle donnée fiscale car les formes juridiques de RCEnt et RegPM sont incompatible (au sens du SIFISC-18378)
+	 */
+	FORMES_JURIDIQUES_INCOMPATIBLES
 
 }

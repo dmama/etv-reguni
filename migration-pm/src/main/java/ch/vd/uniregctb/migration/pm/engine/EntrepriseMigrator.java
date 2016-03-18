@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.EnumMap;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -95,6 +96,7 @@ import ch.vd.uniregctb.migration.pm.engine.data.CommuneOuPays;
 import ch.vd.uniregctb.migration.pm.engine.data.DonneesAdministrateurs;
 import ch.vd.uniregctb.migration.pm.engine.data.DonneesCiviles;
 import ch.vd.uniregctb.migration.pm.engine.data.DonneesMandats;
+import ch.vd.uniregctb.migration.pm.engine.data.FlagFormesJuridiquesIncompatiblesData;
 import ch.vd.uniregctb.migration.pm.engine.data.RegimesFiscauxHistoData;
 import ch.vd.uniregctb.migration.pm.engine.helpers.StringRenderers;
 import ch.vd.uniregctb.migration.pm.extractor.IbanExtractor;
@@ -102,6 +104,7 @@ import ch.vd.uniregctb.migration.pm.log.AdressePermanenteLoggedElement;
 import ch.vd.uniregctb.migration.pm.log.DifferencesDonneesCivilesLoggedElement;
 import ch.vd.uniregctb.migration.pm.log.ForFiscalIgnoreAbsenceAssujettissementLoggedElement;
 import ch.vd.uniregctb.migration.pm.log.ForPrincipalOuvertApresFinAssujettissementLoggedElement;
+import ch.vd.uniregctb.migration.pm.log.FormesJuridiquesIncompatiblesLoggedElement;
 import ch.vd.uniregctb.migration.pm.log.LogCategory;
 import ch.vd.uniregctb.migration.pm.log.LogLevel;
 import ch.vd.uniregctb.migration.pm.log.RegimeFiscalMappingLoggedElement;
@@ -538,6 +541,12 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		// données des administrateurs
 		mr.registerDataExtractor(DonneesAdministrateurs.class,
 		                         e -> extractDonneesAdministrateurs(e, mr, idMapper),
+		                         null,
+		                         null);
+
+		// données du flag d'incompatibilité des formes juridiques civiles et fiscales
+		mr.registerDataExtractor(FlagFormesJuridiquesIncompatiblesData.class,
+		                         e -> extractFlagFormesJuridiquesIncompatibles(e, mr, idMapper),
 		                         null,
 		                         null);
 	}
@@ -2207,6 +2216,140 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		mr.addMessage(LogCategory.SUIVI, LogLevel.INFO, String.format("Entreprise migrée : %s.", FormatNumeroHelper.numeroCTBToDisplay(unireg.getNumero())));
 	}
 
+	@NotNull
+	private FlagFormesJuridiquesIncompatiblesData extractFlagFormesJuridiquesIncompatibles(RegpmEntreprise e, MigrationResultContextManipulation mr, IdMapping idMapper) {
+		final boolean rcentEnabled = migrationContexte.getOrganisationService().isRcentEnabled();
+		final EntityKey moi = buildEntrepriseKey(e);
+		return doInLogContext(moi, mr, idMapper, () -> {
+			final DonneesCiviles donneesCiviles = rcentEnabled ? mr.getExtractedData(DonneesCiviles.class, moi) : null;
+			final Organisation rcent = donneesCiviles != null ? donneesCiviles.getOrganisation() : null;
+			return new FlagFormesJuridiquesIncompatiblesData(hasFormesJuridiquesIncompatibles(e, rcent, mr));
+		});
+	}
+
+	/**
+	 * @param regpm entreprise de RegPM
+	 * @param rcent organisation de RCEnt (optionnelle)
+	 * @param mr collecteur de messages de suivi et manipulateur de contexte de log
+	 * @return <code>true</code> si les données RegPM et RCEnt contiennent des formes juridiques incompatibles (au sens du SIFISC-18378])
+	 */
+	private boolean hasFormesJuridiquesIncompatibles(RegpmEntreprise regpm, @Nullable Organisation rcent, MigrationResultContextManipulation mr) {
+		if (rcent == null) {
+			// pas de données RCEnt -> pas d'incompatibilité possible
+			return false;
+		}
+
+		// récupération des formes juridiques de chaque côté
+		final RegDate dateDebutPremiereFormeJuridiqueCivile = rcent.getFormeLegale().stream()
+				.map(DateRanged::getDateDebut)
+				.min(Comparator.naturalOrder())
+				.orElse(null);
+		final Set<FormeLegale> rcentFormesJuridiques = rcent.getFormeLegale().stream()
+				.map(DateRanged::getPayload)
+				.collect(Collectors.toCollection(() -> EnumSet.noneOf(FormeLegale.class)));
+
+		// rien côté RCEnt, on oublie...
+		if (dateDebutPremiereFormeJuridiqueCivile == null || rcentFormesJuridiques.isEmpty()) {
+			return false;
+		}
+
+		final Optional<String> codeRegpmFormeJuridique = Optional.of(mr.getExtractedData(FormeJuridiqueHistoData.class, buildEntityKey(regpm)).histo)
+				.map(map -> map.floorEntry(dateDebutPremiereFormeJuridiqueCivile))
+				.map(Map.Entry::getValue)
+				.map(RegpmTypeFormeJuridique::getCode);
+
+		// pas de forme juridique dans RegPM antérieure aux données civiles, on oublie (pas d'incompatibilité possible)
+		if (!codeRegpmFormeJuridique.isPresent()) {
+			return false;
+		}
+
+		final FormeJuridiqueEntreprise regpmFormeJuridique = toFormeJuridique(codeRegpmFormeJuridique.get());
+		FormeLegale rcentFormeJuridiqueGenante = null;
+
+		// 1. "entreprise individuelle" d'un côté et autre chose de l'autre...
+		final Set<FormeJuridiqueEntreprise> regpmFormesJuridiquesAccepteesPourEntrepriseIndividuelleCivile = EnumSet.of(FormeJuridiqueEntreprise.EI, FormeJuridiqueEntreprise.SC, FormeJuridiqueEntreprise.SNC);
+		if (rcentFormesJuridiques.contains(FormeLegale.N_0101_ENTREPRISE_INDIVIDUELLE) && !regpmFormesJuridiquesAccepteesPourEntrepriseIndividuelleCivile.contains(regpmFormeJuridique)) {
+			rcentFormeJuridiqueGenante = FormeLegale.N_0101_ENTREPRISE_INDIVIDUELLE;
+		}
+		else if (regpmFormeJuridique == FormeJuridiqueEntreprise.EI && containsSomethingElse(rcentFormesJuridiques, FormeLegale.N_0101_ENTREPRISE_INDIVIDUELLE)) {
+			rcentFormeJuridiqueGenante = rcentFormesJuridiques.stream()
+					.filter(fl -> fl != FormeLegale.N_0101_ENTREPRISE_INDIVIDUELLE)
+					.findAny()
+					.get();
+		}
+		else {
+			final Set<FormeLegale> rcentSocietePersonnes = EnumSet.of(FormeLegale.N_0103_SOCIETE_NOM_COLLECTIF, FormeLegale.N_0104_SOCIETE_EN_COMMANDITE, FormeLegale.N_0101_ENTREPRISE_INDIVIDUELLE);
+			final Set<FormeJuridiqueEntreprise> regpmSocietePersonnes = EnumSet.of(FormeJuridiqueEntreprise.SC, FormeJuridiqueEntreprise.SNC);
+
+			// 2. "société de personnes" d'un côté et pas de l'autre
+			if (regpmSocietePersonnes.contains(regpmFormeJuridique) && containsSomethingElse(FormeLegale.class, rcentFormesJuridiques, rcentSocietePersonnes)) {
+				rcentFormeJuridiqueGenante = rcentFormesJuridiques.stream()
+						.filter(fl -> !rcentSocietePersonnes.contains(fl))
+						.findAny()
+						.get();
+			}
+			else if (!regpmSocietePersonnes.contains(regpmFormeJuridique) && intersect(FormeLegale.class, rcentFormesJuridiques, rcentSocietePersonnes)) {
+				rcentFormeJuridiqueGenante = rcentFormesJuridiques.stream()
+						.filter(rcentSocietePersonnes::contains)
+						.findAny()
+						.get();
+			}
+		}
+
+		final boolean incompatible = rcentFormeJuridiqueGenante != null;
+		if (incompatible) {
+			// on doit sortir une liste...
+			final String regpmRaisonSociale = mr.getExtractedData(RaisonSocialeHistoData.class, buildEntrepriseKey(regpm)).histo.lastEntry().getValue();
+			final String rcentRaisonSociale = OrganisationDataHelper.getLastValue(rcent.getNom());
+			mr.pushContextValue(FormesJuridiquesIncompatiblesLoggedElement.class, new FormesJuridiquesIncompatiblesLoggedElement(codeRegpmFormeJuridique.get(), rcentFormeJuridiqueGenante, regpmRaisonSociale, rcentRaisonSociale));
+			try {
+				mr.addMessage(LogCategory.FORMES_JURIDIQUES_INCOMPATIBLES, LogLevel.ERROR, "Entreprise migrée sans fors, déclarations, régimes fiscaux ni spécificités fiscales (l'appariement est-il correct ?).");
+			}
+			finally {
+				mr.popContexteValue(FormesJuridiquesIncompatiblesLoggedElement.class);
+			}
+		}
+		return incompatible;
+	}
+
+	/**
+	 * @param set un ensemble de valeurs
+	 * @param value une valeur particulière
+	 * @param <T> le type des valeurs de l'ensemble
+	 * @return <code>true</code> si l'ensemble contient au moins une valeur qui n'est pas la valeur donnée
+	 */
+	private static <T extends Enum<T>> boolean containsSomethingElse(@NotNull Set<T> set, @NotNull T value) {
+		return !set.isEmpty() && (!set.contains(value) || set.size() > 1);
+	}
+
+	/**
+	 * @param clazz la classe des éléments des ensembles
+	 * @param set un ensemble de valeurs
+	 * @param values un autre ensemble de valeurs
+	 * @param <T> le types des valeurs
+	 * @return <code>true</code> si <i>set</i> contient au moins une valeur qui n'est pas dans <i>values</i>.
+	 */
+	private static <T extends Enum<T>> boolean containsSomethingElse(Class<T> clazz, @NotNull Set<T> set, @NotNull Set<T> values) {
+		final Set<T> reliquat = EnumSet.noneOf(clazz);
+		reliquat.addAll(set);
+		reliquat.removeAll(values);
+		return !reliquat.isEmpty();
+	}
+
+	/**
+	 * @param clazz la classe des éléments des ensembles
+	 * @param set1 un ensemble de valeurs
+	 * @param set2 un autre ensemble de valeurs
+	 * @param <T> le types des valeurs
+	 * @return <code>true</code> si l'intersection des deux ensembles n'est pas vide
+	 */
+	private static <T extends Enum<T>> boolean intersect(Class<T> clazz, @NotNull Set<T> set1, @NotNull Set<T> set2) {
+		final Set<T> intersection = EnumSet.noneOf(clazz);
+		intersection.addAll(set1);
+		intersection.retainAll(set2);
+		return !intersection.isEmpty();
+	}
+
 	/**
 	 * Migration des flags LIASF de l'entreprise de RegPM
 	 * @param regpm l'entreprise dans RegPM
@@ -2214,6 +2357,12 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 	 * @param mr le collecteur de messages de suivi
 	 */
 	private void migrateLIASF(RegpmEntreprise regpm, Entreprise unireg, MigrationResultProduction mr) {
+
+		// [SIFISC-18378] si les formes juridiques entre RegPM et RCent sont incompatibles, on ne migre pas les spécificités (flags)
+		if (mr.getExtractedData(FlagFormesJuridiquesIncompatiblesData.class, buildEntrepriseKey(regpm)).isIncompatible()) {
+			return;
+		}
+
 		final Set<Bouclement> bouclements = unireg.getBouclements();
 		regpm.getCriteresSegmentation().stream()
 				.filter(critere -> critere.getType() == RegpmTypeCritereSegmentation.LIASF)
@@ -2272,7 +2421,15 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 	 * @param mr le collecteur de messages de suivi
 	 */
 	private void migrateFlagsDApresRegimesFiscaux(RegpmEntreprise regpm, Entreprise unireg, MigrationResultProduction mr) {
-		final RegimesFiscauxHistoData data = mr.getExtractedData(RegimesFiscauxHistoData.class, buildEntrepriseKey(regpm));
+		final EntityKey key = buildEntrepriseKey(regpm);
+
+		// [SIFISC-18378] si les formes juridiques entre RegPM et RCent sont incompatibles, on ne migre pas les spécificités (flags)
+		if (mr.getExtractedData(FlagFormesJuridiquesIncompatiblesData.class, key).isIncompatible()) {
+			mr.addMessage(LogCategory.SUIVI, LogLevel.WARN, "Aucune spécificité fiscale migrée en raison des formes juridiques incompatibles entre RegPM et RCEnt.");
+			return;
+		}
+
+		final RegimesFiscauxHistoData data = mr.getExtractedData(RegimesFiscauxHistoData.class, key);
 
 		// construction d'une map qui, pour chaque type de flag, possède une liste des ranges de date
 		final Map<TypeFlagEntreprise, List<DateRange>> map = Stream.concat(buildRanges(data.getCH()).stream().map(range -> range.withPayload(range.getPayload().getType())),
@@ -3771,6 +3928,13 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 	 * @param mr collecteur des messages de suivi
 	 */
 	private void migrateQuestionnairesSNC(RegpmEntreprise regpm, Entreprise unireg, MigrationResultProduction mr) {
+
+		// [SIFISC-18378] si les formes juridiques entre RegPM et RCent sont incompatibles, on ne migre pas les déclarations
+		if (mr.getExtractedData(FlagFormesJuridiquesIncompatiblesData.class, buildEntrepriseKey(regpm)).isIncompatible()) {
+			mr.addMessage(LogCategory.DECLARATIONS, LogLevel.WARN, "Aucun questionnaire SNC migré en raison des formes juridiques incompatibles entre RegPM et RCEnt.");
+			return;
+		}
+
 		regpm.getQuestionnairesSNC().stream()
 				.filter(q -> q.getEtat() != RegpmTypeEtatQuestionnaireSNC.ANNULE)       // on ne migre pas les questionnaires annulés
 				.filter(q -> {
@@ -3860,6 +4024,13 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 	private void migrateDeclarationsImpot(RegpmEntreprise regpm, Entreprise unireg, MigrationResultProduction mr, IdMapping idMapper) {
 
 		final EntityKey moi = buildEntrepriseKey(regpm);
+
+		// [SIFISC-18378] si les formes juridiques entre RegPM et RCent sont incompatibles, on ne migre pas les déclarations
+		if (mr.getExtractedData(FlagFormesJuridiquesIncompatiblesData.class, moi).isIncompatible()) {
+			mr.addMessage(LogCategory.DECLARATIONS, LogLevel.WARN, "Aucune déclaration d'impôt migrée en raison des formes juridiques incompatibles entre RegPM et RCEnt.");
+			return;
+		}
+
 		final List<RegpmDossierFiscal> dossiers = mr.getExtractedData(DossiersFiscauxData.class, moi).liste;
 		final Set<RegpmDossierFiscal> dossiersFiscauxAttribuesAuxExercicesCommerciaux = new HashSet<>(dossiers.size());
 
@@ -4293,8 +4464,15 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 	 */
 	private void generateForsPrincipaux(RegpmEntreprise regpm, Entreprise unireg, MigrationResultProduction mr) {
 
-		// [SIFISC-16333] il faut faire attention à la forme juridique de l'entreprise
 		final EntityKey entrepriseKey = buildEntrepriseKey(regpm);
+
+		// [SIFISC-18378] si les formes juridiques entre RegPM et RCent sont incompatibles, on ne migre pas les fors
+		if (mr.getExtractedData(FlagFormesJuridiquesIncompatiblesData.class, entrepriseKey).isIncompatible()) {
+			mr.addMessage(LogCategory.FORS, LogLevel.WARN, "Aucun for fiscal principal migré en raison des formes juridiques incompatibles entre RegPM et RCEnt.");
+			return;
+		}
+
+		// [SIFISC-16333] il faut faire attention à la forme juridique de l'entreprise
 		final NavigableMap<RegDate, RegpmTypeFormeJuridique> histoFormesJuridiques = mr.getExtractedData(FormeJuridiqueHistoData.class, entrepriseKey).histo;
 		final boolean hasSP = histoFormesJuridiques.values().stream()
 				.filter(tfj -> tfj.getCategorie() == RegpmCategoriePersonneMorale.SP)
@@ -4785,8 +4963,16 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 	}
 
 	private void migrateImmeubles(RegpmEntreprise regpm, Entreprise unireg, MigrationResultProduction mr) {
+		final EntityKey key = buildEntrepriseKey(regpm);
+
+		// [SIFISC-18378] si les formes juridiques entre RegPM et RCent sont incompatibles, on ne migre pas les fors
+		if (mr.getExtractedData(FlagFormesJuridiquesIncompatiblesData.class, key).isIncompatible()) {
+			mr.addMessage(LogCategory.FORS, LogLevel.WARN, "Aucun for fiscal 'immeuble' migré en raison des formes juridiques incompatibles entre RegPM et RCEnt.");
+			return;
+		}
+
 		// les fors secondaires devront être créés sur l'entreprise migrée
-		final KeyedSupplier<Entreprise> moi = new KeyedSupplier<>(buildEntrepriseKey(regpm), getEntrepriseByUniregIdSupplier(unireg.getId()));
+		final KeyedSupplier<Entreprise> moi = new KeyedSupplier<>(key, getEntrepriseByUniregIdSupplier(unireg.getId()));
 
 		// les immeubles en possession directe
 		final Map<RegpmCommune, List<DateRange>> mapDirecte = couvertureDepuisRattachementsProprietaires(regpm.getRattachementsProprietaires());
@@ -4966,6 +5152,13 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 	private void migrateRegimesFiscaux(RegpmEntreprise regpm, Entreprise unireg, MigrationResultContextManipulation mr) {
 
 		final EntityKey key = buildEntrepriseKey(regpm);
+
+		// [SIFISC-18378] si les formes juridiques entre RegPM et RCent sont incompatibles, on ne migre pas les régimes fiscaux
+		if (mr.getExtractedData(FlagFormesJuridiquesIncompatiblesData.class, key).isIncompatible()) {
+			mr.addMessage(LogCategory.SUIVI, LogLevel.WARN, "Aucun régime fiscal migré en raison des formes juridiques incompatibles entre RegPM et RCEnt.");
+			return;
+		}
+
 		final RegimesFiscauxHistoData histoData = mr.getExtractedData(RegimesFiscauxHistoData.class, key);
 
 		// collecte des régimes fiscaux CH...
@@ -5256,6 +5449,12 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 	}
 
 	private void migrateAllegementsFiscaux(RegpmEntreprise regpm, Entreprise unireg, MigrationResultProduction mr) {
+
+		// [SIFISC-18378] si les formes juridiques entre RegPM et RCent sont incompatibles, on ne migre pas les allègements
+		if (mr.getExtractedData(FlagFormesJuridiquesIncompatiblesData.class, buildEntrepriseKey(regpm)).isIncompatible()) {
+			mr.addMessage(LogCategory.SUIVI, LogLevel.WARN, "Aucun allègement fiscal migré en raison des formes juridiques incompatibles entre RegPM et RCEnt.");
+			return;
+		}
 
 		// d'abord, il faut extraire les types d'allègements (998/999)
 		// Le booléen en clé signifie isIFD (= faux -> ICC)

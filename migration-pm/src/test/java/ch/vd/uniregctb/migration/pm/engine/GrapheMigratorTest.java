@@ -6230,6 +6230,141 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 	}
 
 	/**
+	 * [SIFISC-18378] Cas de formes juridiques tellements incompatibles (PM/APM vs. EI, SNC vs. PM/APM)
+	 */
+	@Test
+	public void testFormesJuridiquesIncompatibles() throws Exception {
+
+		final long idEntreprise = 4623L;
+		final long noCantonalEntreprise = 5644378467L;
+		final long noCantonalEtablissementPrincipal = 436724572254432L;
+		final RegDate dateDebut = RegDate.get(2005, 7, 22);
+		final RegDate dateSnapshotRCEnt = RegDate.get(2015, 12, 5);
+
+		final RegpmEntreprise entreprise = EntrepriseMigratorTest.buildEntreprise(idEntreprise);
+		EntrepriseMigratorTest.addRaisonSociale(entreprise, dateDebut, "Notre petite entreprise", "devenue grande", null, true);
+		EntrepriseMigratorTest.addFormeJuridique(entreprise, dateDebut, EntrepriseMigratorTest.createTypeFormeJuridique("S.A.", RegpmCategoriePersonneMorale.PM));
+		EntrepriseMigratorTest.addForPrincipalSuisse(entreprise, dateDebut, RegpmTypeForPrincipal.SIEGE, Commune.LAUSANNE);
+		EntrepriseMigratorTest.addRegimeFiscalCH(entreprise, dateDebut, null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
+		EntrepriseMigratorTest.addRegimeFiscalVD(entreprise, dateDebut, null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
+		EntrepriseMigratorTest.addAssujettissement(entreprise, dateDebut, null, RegpmTypeAssujettissement.LILIC);
+		EntrepriseMigratorTest.addRattachementProprietaire(entreprise, dateDebut, null, EntrepriseMigratorTest.createImmeuble(Commune.GRANDSON));
+		entreprise.setDateBouclementFutur(RegDate.get(2015, 12, 31));
+		entreprise.setNumeroCantonal(noCantonalEntreprise);
+
+		final MockGraphe graphe = new MockGraphe(Collections.singletonList(entreprise),
+		                                         null,
+		                                         null);
+
+		activityManager.setup(ALL_ACTIVE);
+
+		organisationService.setUp(new MockServiceOrganisation() {
+			@Override
+			protected void init() {
+				final MockOrganisation org = addOrganisation(noCantonalEntreprise);
+				final MockSiteOrganisation sitePrincipal = addSite(org, noCantonalEtablissementPrincipal, dateSnapshotRCEnt, new MockDonneesRegistreIDE(), new MockDonneesRC());
+				sitePrincipal.changeTypeDeSite(dateSnapshotRCEnt, TypeDeSite.ETABLISSEMENT_PRINCIPAL);
+				sitePrincipal.changeNom(dateSnapshotRCEnt, "Tarlatata");
+				sitePrincipal.changeFormeLegale(dateSnapshotRCEnt, FormeLegale.N_0101_ENTREPRISE_INDIVIDUELLE);
+				org.addAdresse(new MockAdresse(TypeAdresseCivil.PRINCIPALE, MockRue.Renens.QuatorzeAvril, null, dateSnapshotRCEnt, null));
+				org.addAdresse(new MockAdresse(TypeAdresseCivil.COURRIER, null, "Avenue de Longemalle", MockLocalite.Renens, dateSnapshotRCEnt, null));
+				addNumeroIDE(org, "CHE123456788", RegDate.get(2009, 1, 1), null);
+			}
+		});
+
+		final LoggedMessages lms = grapheMigrator.migrate(graphe);
+		Assert.assertNotNull(lms);
+
+		// vérification en base -> pas de données fiscales migrées en raison de l'incompatibilité entre SA et EI
+		final MutableObject<Long> idEtablissement = new MutableObject<>();
+		doInUniregTransaction(true, status -> {
+			final Entreprise e = uniregStore.getEntityFromDb(Entreprise.class, idEntreprise);
+			Assert.assertNotNull(e);
+			Assert.assertEquals(0, e.getForsFiscaux().size());
+			Assert.assertEquals(0, e.getRegimesFiscaux().size());
+			Assert.assertEquals(0, e.getAllegementsFiscaux().size());
+			Assert.assertEquals(0, e.getDeclarations().size());
+			Assert.assertEquals(0, e.getDecisionsAci().size());
+			Assert.assertEquals(0, e.getFlags().size());
+
+			final List<Etablissement> etbs = uniregStore.getEntitiesFromDb(Etablissement.class, null);
+			Assert.assertNotNull(etbs);
+			Assert.assertEquals(1, etbs.size());
+			final Etablissement etb = etbs.get(0);
+			Assert.assertNotNull(etb);
+			idEtablissement.setValue(etb.getNumero());
+		});
+
+		// vérification des messages de log
+		final Map<LogCategory, List<String>> messages = buildTextualMessages(lms);
+
+		{
+			// vérification des messages dans le contexte "SUIVI"
+			final List<String> msgs = messages.get(LogCategory.SUIVI);
+			Assert.assertEquals(17, msgs.size());
+			Assert.assertEquals("WARN;" + idEntreprise + ";Active;;" + noCantonalEntreprise + ";;;;;;;;;;;;;L'entreprise n'existait pas dans Unireg avec ce numéro de contribuable.", msgs.get(0));
+			Assert.assertEquals("WARN;" + idEntreprise + ";Active;;" + noCantonalEntreprise + ";;;;;;;;;;;;;Aucun allègement fiscal migré en raison des formes juridiques incompatibles entre RegPM et RCEnt.", msgs.get(1));
+			Assert.assertEquals("WARN;" + idEntreprise + ";Active;;" + noCantonalEntreprise + ";;;;;;;;;;;;;Aucun régime fiscal migré en raison des formes juridiques incompatibles entre RegPM et RCEnt.", msgs.get(2));
+			Assert.assertEquals("WARN;" + idEntreprise + ";Active;;" + noCantonalEntreprise + ";;;;;;;;;;;;;Ajout d'une date de bouclement estimée au 31.12.2014 pour combler l'absence d'exercice commercial dans RegPM sur la période [22.07.2005 -> 31.12.2015].", msgs.get(3));
+			Assert.assertEquals("WARN;" + idEntreprise + ";Active;;" + noCantonalEntreprise + ";;;;;;;;;;;;;Ajout d'une date de bouclement estimée au 31.12.2013 pour combler l'absence d'exercice commercial dans RegPM sur la période [22.07.2005 -> 31.12.2015].", msgs.get(4));
+			Assert.assertEquals("WARN;" + idEntreprise + ";Active;;" + noCantonalEntreprise + ";;;;;;;;;;;;;Ajout d'une date de bouclement estimée au 31.12.2012 pour combler l'absence d'exercice commercial dans RegPM sur la période [22.07.2005 -> 31.12.2015].", msgs.get(5));
+			Assert.assertEquals("WARN;" + idEntreprise + ";Active;;" + noCantonalEntreprise + ";;;;;;;;;;;;;Ajout d'une date de bouclement estimée au 31.12.2011 pour combler l'absence d'exercice commercial dans RegPM sur la période [22.07.2005 -> 31.12.2015].", msgs.get(6));
+			Assert.assertEquals("WARN;" + idEntreprise + ";Active;;" + noCantonalEntreprise + ";;;;;;;;;;;;;Ajout d'une date de bouclement estimée au 31.12.2010 pour combler l'absence d'exercice commercial dans RegPM sur la période [22.07.2005 -> 31.12.2015].", msgs.get(7));
+			Assert.assertEquals("WARN;" + idEntreprise + ";Active;;" + noCantonalEntreprise + ";;;;;;;;;;;;;Ajout d'une date de bouclement estimée au 31.12.2009 pour combler l'absence d'exercice commercial dans RegPM sur la période [22.07.2005 -> 31.12.2015].", msgs.get(8));
+			Assert.assertEquals("WARN;" + idEntreprise + ";Active;;" + noCantonalEntreprise + ";;;;;;;;;;;;;Ajout d'une date de bouclement estimée au 31.12.2008 pour combler l'absence d'exercice commercial dans RegPM sur la période [22.07.2005 -> 31.12.2015].", msgs.get(9));
+			Assert.assertEquals("WARN;" + idEntreprise + ";Active;;" + noCantonalEntreprise + ";;;;;;;;;;;;;Ajout d'une date de bouclement estimée au 31.12.2007 pour combler l'absence d'exercice commercial dans RegPM sur la période [22.07.2005 -> 31.12.2015].", msgs.get(10));
+			Assert.assertEquals("WARN;" + idEntreprise + ";Active;;" + noCantonalEntreprise + ";;;;;;;;;;;;;Ajout d'une date de bouclement estimée au 31.12.2006 pour combler l'absence d'exercice commercial dans RegPM sur la période [22.07.2005 -> 31.12.2015].", msgs.get(11));
+			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;" + noCantonalEntreprise + ";;;;;;;;;;;;;Cycle de bouclements créé, applicable dès le 01.12.2006 : tous les 12 mois, à partir du premier 31.12.", msgs.get(12));
+			Assert.assertEquals("ERROR;" + idEntreprise + ";Active;;" + noCantonalEntreprise + ";;;;;;;;;;;;;Aucune date d'envoi de lettre de bienvenue trouvée malgré la présence d'assujettissement(s).", msgs.get(13));
+			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;" + noCantonalEntreprise + ";;;;;;;;;;;;;Etablissement principal " + FormatNumeroHelper.numeroCTBToDisplay(idEtablissement.getValue()) + " créé en liaison avec le site civil " + noCantonalEtablissementPrincipal + ".", msgs.get(14));
+			Assert.assertEquals("WARN;" + idEntreprise + ";Active;;" + noCantonalEntreprise + ";;;;;;;;;;;;;Aucune spécificité fiscale migrée en raison des formes juridiques incompatibles entre RegPM et RCEnt.", msgs.get(15));
+			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;" + noCantonalEntreprise + ";;;;;;;;;;;;;Entreprise migrée : " + FormatNumeroHelper.numeroCTBToDisplay(idEntreprise) + ".", msgs.get(16));
+		}
+		{
+			// vérification des messages dans le contexte "ASSUJETTISSEMENTS"
+			final List<String> msgs = messages.get(LogCategory.ASSUJETTISSEMENTS);
+			Assert.assertEquals(1, msgs.size());
+			Assert.assertEquals("ERROR;" + idEntreprise + ";Active;;" + noCantonalEntreprise + ";Disparition totale de l'assujettissement précédent : [22.07.2005 -> ?].", msgs.get(0));
+		}
+		{
+			// vérification des messages dans le contexte "DONNEES_CIVILES_REGPM"
+			final List<String> msgs = messages.get(LogCategory.DONNEES_CIVILES_REGPM);
+			Assert.assertEquals(4, msgs.size());
+			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;" + noCantonalEntreprise + ";;;;;;;Données de forme juridique et/ou de raison sociale en provenance du registre civil dès le 05.12.2015 (les données ultérieures de RegPM seront ignorées).", msgs.get(0));
+			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;" + noCantonalEntreprise + ";;;;;;;Donnée de raison sociale migrée : sur la période [22.07.2005 -> 04.12.2015], 'Notre petite entreprise devenue grande'.", msgs.get(1));
+			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;" + noCantonalEntreprise + ";;;;;;;Donnée de forme juridique migrée : sur la période [22.07.2005 -> 04.12.2015], SA.", msgs.get(2));
+			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;" + noCantonalEntreprise + ";;;;;;;Les données de capital en provenance du registre civil font foi dès le 05.12.2015 (les données ultérieures de RegPM seront ignorées).", msgs.get(3));
+		}
+		{
+			// vérification des messages dans le contexte "DIFFERENCES_DONNEES_CIVILES"
+			final List<String> msgs = messages.get(LogCategory.DIFFERENCES_DONNEES_CIVILES);
+			Assert.assertEquals(1, msgs.size());
+			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;" + noCantonalEntreprise + ";Notre petite entreprise devenue grande;Tarlatata;Différentes;S.A.;N_0101_ENTREPRISE_INDIVIDUELLE;Différentes;;CHE123456788;Différents;;;Identiques;", msgs.get(0));
+		}
+		{
+			// vérification des messages dans le contexte "FORMES_JURIDIQUES_INCOMPATIBLES"
+			final List<String> msgs = messages.get(LogCategory.FORMES_JURIDIQUES_INCOMPATIBLES);
+			Assert.assertEquals(1, msgs.size());
+			Assert.assertEquals("ERROR;" + idEntreprise + ";Active;;" + noCantonalEntreprise + ";S.A.;N_0101_ENTREPRISE_INDIVIDUELLE;Notre petite entreprise devenue grande;Tarlatata;Entreprise migrée sans fors, déclarations, régimes fiscaux ni spécificités fiscales (l'appariement est-il correct ?).", msgs.get(0));
+		}
+		{
+			// vérification des messages dans le contexte "FORS"
+			final List<String> msgs = messages.get(LogCategory.FORS);
+			Assert.assertEquals(2, msgs.size());
+			Assert.assertEquals("WARN;" + idEntreprise + ";Active;;" + noCantonalEntreprise + ";Aucun for fiscal principal migré en raison des formes juridiques incompatibles entre RegPM et RCEnt.", msgs.get(0));
+			Assert.assertEquals("WARN;" + idEntreprise + ";Active;;" + noCantonalEntreprise + ";Aucun for fiscal 'immeuble' migré en raison des formes juridiques incompatibles entre RegPM et RCEnt.", msgs.get(1));
+		}
+		{
+			// vérification des messages dans le contexte "DECLARATIONS"
+			final List<String> msgs = messages.get(LogCategory.DECLARATIONS);
+			Assert.assertEquals(2, msgs.size());
+			Assert.assertEquals("WARN;" + idEntreprise + ";Active;;" + noCantonalEntreprise + ";Aucune déclaration d'impôt migrée en raison des formes juridiques incompatibles entre RegPM et RCEnt.", msgs.get(0));
+			Assert.assertEquals("WARN;" + idEntreprise + ";Active;;" + noCantonalEntreprise + ";Aucun questionnaire SNC migré en raison des formes juridiques incompatibles entre RegPM et RCEnt.", msgs.get(1));
+		}
+	}
+
+
+	/**
 	 * Ceci est un test utile au debugging, on charge un graphe depuis un fichier sur disque (identique à ce que
 	 * l'on peut envoyer dans la vraie migration) et on tente la migration du graphe en question
 	 */
