@@ -106,21 +106,27 @@
 					<authz:authorize ifAnyGranted="ROLE_LR">
 						<li><a href="<c:url value='/lr/list.do'/>"><fmt:message key="title.lr" /></a></li>
 					</authz:authorize>
-					<authz:authorize ifAnyGranted="ROLE_EVEN">
+					<authz:authorize ifAnyGranted="ROLE_EVEN, ROLE_EVEN_PM">
 					<li><fmt:message key="title.evenements" />
 						<ul>
-							<li><a href="<c:url value='/evenement/regpp/list.do'/>"><fmt:message key="title.evenements.regpp"/></a></li>
-							<li><a href="<c:url value='/evenement/ech/list.do'/>"><fmt:message key="title.evenements.ech"/></a></li>
-							<li><a href="<c:url value='/evenement/organisation/list.do'/>"><fmt:message key="title.evenements.organisation"/></a></li>
-							<unireg:ifReqDes>
-								<li><a href="<c:url value='/evenement/reqdes/list.do'/>"><fmt:message key="title.evenements.reqdes"/></a></li>
-							</unireg:ifReqDes>
+							<authz:authorize ifAnyGranted="ROLE_EVEN">
+								<li><a href="<c:url value='/evenement/regpp/list.do'/>"><fmt:message key="title.evenements.regpp"/></a></li>
+								<li><a href="<c:url value='/evenement/ech/list.do'/>"><fmt:message key="title.evenements.ech"/></a></li>
+							</authz:authorize>
+							<authz:authorize ifAnyGranted="ROLE_EVEN_PM">
+								<li><a href="<c:url value='/evenement/organisation/list.do'/>"><fmt:message key="title.evenements.organisation"/></a></li>
+							</authz:authorize>
+							<authz:authorize ifAnyGranted="ROLE_EVEN">
+								<unireg:ifReqDes>
+									<li><a href="<c:url value='/evenement/reqdes/list.do'/>"><fmt:message key="title.evenements.reqdes"/></a></li>
+								</unireg:ifReqDes>
+							</authz:authorize>
 						</ul>
 					</li>
 					</authz:authorize>
 
 					<authz:authorize ifAnyGranted="ROLE_VISU_ALL">
-					<authz:authorize ifAnyGranted="ROLE_MODIF_VD_ORD, ROLE_MODIF_VD_SOURC, ROLE_MODIF_HC_HS, ROLE_MODIF_HAB_DEBPUR, ROLE_MODIF_NONHAB_DEBPUR">
+					<authz:authorize ifAnyGranted="ROLE_MODIF_VD_ORD, ROLE_MODIF_VD_SOURC, ROLE_MODIF_HC_HS, ROLE_MODIF_HAB_DEBPUR, ROLE_MODIF_NONHAB_DEBPUR, ROLE_MODIF_PM">
 						<li><a href="<c:url value='/tache/list.do'/>"><fmt:message key="title.taches" /></a></li>
 					</authz:authorize>
 					</authz:authorize>

@@ -127,14 +127,14 @@ public class EvenementOrganisationController extends AbstractEvenementCivilContr
 	}
 
 	@RequestMapping(value = "/effacer.do", method = RequestMethod.GET)
-	@SecurityCheck(rolesToCheck = {Role.EVEN}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
+	@SecurityCheck(rolesToCheck = {Role.EVEN_PM}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
 	public ModelAndView effacerFormulaireDeRecherche(ModelMap model) {
 		populateModel(model, initEvenementOrganisationCriteria(), INITIAL_PAGINATION, null, 0);
 		return new ModelAndView("evenement/organisation/list", model);
 	}
 
 	@RequestMapping(value = "/rechercher.do", method = RequestMethod.GET)
-	@SecurityCheck(rolesToCheck = {Role.EVEN}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
+	@SecurityCheck(rolesToCheck = {Role.EVEN_PM}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
 	public String rechercher(@ModelAttribute("evenementOrganisationCriteria") @Valid EvenementOrganisationCriteriaView criteriaInSession,
 	                            BindingResult bindingResult,
 	                            ModelMap model ) throws AdresseException {
@@ -149,14 +149,14 @@ public class EvenementOrganisationController extends AbstractEvenementCivilContr
 	}
 
 	@RequestMapping(value = "/list.do", method = RequestMethod.GET)
-	@SecurityCheck(rolesToCheck = {Role.EVEN}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
+	@SecurityCheck(rolesToCheck = {Role.EVEN_PM}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
 	public String retourSurLaListe(@ModelAttribute("evenementOrganisationPagination") ParamPagination paginationInSession ) throws AdresseException 	{
 		// Redirect vers nav-list.do  avec en parametre la pagination en session
 		return buildNavListRedirect(paginationInSession);
 	}
 
 	@RequestMapping(value = "/nav-list.do", method = RequestMethod.GET)
-	@SecurityCheck(rolesToCheck = {Role.EVEN}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
+	@SecurityCheck(rolesToCheck = {Role.EVEN_PM}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
 	public ModelAndView navigationDansLaListe(HttpServletRequest request,
 	                                         @ModelAttribute("evenementOrganisationCriteria") @Valid EvenementOrganisationCriteriaView criteriaInSession,
 	                                         BindingResult bindingResult,
@@ -194,20 +194,20 @@ public class EvenementOrganisationController extends AbstractEvenementCivilContr
 	}
 
 	@RequestMapping(value = {"/visu.do"}, method = RequestMethod.GET)
-	@SecurityCheck(rolesToCheck = {Role.EVEN}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
+	@SecurityCheck(rolesToCheck = {Role.EVEN_PM}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
 	public ModelAndView onGetEvenementOrganisation(@RequestParam("id") Long id) throws AdresseException {
 		return new ModelAndView ("evenement/organisation/visu", "command", manager.get(id));
 	}
 
 	@RequestMapping(value = {"/forcer.do"}, method = RequestMethod.POST)
-	@SecurityCheck(rolesToCheck = {Role.EVEN}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
+	@SecurityCheck(rolesToCheck = {Role.EVEN_PM}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
 	public String onForcerEvenementOrganisation(@RequestParam("id") Long id) throws AdresseException {
 		manager.forceEvenement(id);
 		return "redirect:/evenement/organisation/visu.do?id=" + id;
 	}
 
 	@RequestMapping(value = {"/recycler.do"}, method = RequestMethod.POST)
-	@SecurityCheck(rolesToCheck = {Role.EVEN}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
+	@SecurityCheck(rolesToCheck = {Role.EVEN_PM}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
 	public String onRecyclerEvenementOrganisation(@RequestParam("id")  Long id) throws AdresseException, EvenementOrganisationException {
 		boolean recycle = manager.recycleEvenementOrganisation(id);
 		if (recycle) {
@@ -219,7 +219,7 @@ public class EvenementOrganisationController extends AbstractEvenementCivilContr
 	}
 
 	@RequestMapping(value = {"/creer-entreprise.do"}, method = RequestMethod.POST)
-	@SecurityCheck(rolesToCheck = {Role.EVEN}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
+	@SecurityCheck(rolesToCheck = {Role.EVEN_PM}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
 	public String onCreerEntreprisePourEvenementOrganisation(@RequestParam("id")  Long id) throws AdresseException, EvenementOrganisationException {
 
 		String errorMessage = "";
