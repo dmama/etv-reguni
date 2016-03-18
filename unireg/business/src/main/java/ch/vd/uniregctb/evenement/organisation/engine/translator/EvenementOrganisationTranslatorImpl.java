@@ -59,6 +59,7 @@ import ch.vd.uniregctb.metier.MetierServicePM;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.tiers.Entreprise;
+import ch.vd.uniregctb.tiers.OrganisationNotFoundException;
 import ch.vd.uniregctb.tiers.PlusieursEntreprisesAvecMemeNumeroOrganisationException;
 import ch.vd.uniregctb.tiers.RaisonSocialeFiscaleEntreprise;
 import ch.vd.uniregctb.tiers.TiersDAO;
@@ -159,9 +160,15 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 		Organisation organisation;
 		if (useOrganisationsOfNotice) {
 			organisation = serviceOrganisationService.getPseudoOrganisationHistory(event.getNoEvenement()).get(event.getNoOrganisation());
+			if (organisation == null) {
+				throw new EvenementOrganisationException(String.format("Fatal: le service n'a pas renvoyé d'organisation pour l'événement %d.", event.getNoEvenement()));
+			}
 		} else {
 			LOGGER.warn("Utilisation du service RCEnt WS Organisation à la place du WS OrganisationsOfNotice! Traitements à double possibles.");
 			organisation = serviceOrganisationService.getOrganisationHistory(event.getNoOrganisation());
+			if (organisation == null) {
+				throw new OrganisationNotFoundException(event.getNoOrganisation());
+			}
 		}
 
 		// Sanity check. Pourquoi ici? Pour ne pas courir le risque d'ignorer des entreprise (passer à TRAITE) sur la foi d'information manquantes.

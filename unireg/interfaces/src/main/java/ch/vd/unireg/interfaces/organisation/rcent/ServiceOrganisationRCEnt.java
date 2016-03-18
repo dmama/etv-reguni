@@ -1,5 +1,6 @@
 package ch.vd.unireg.interfaces.organisation.rcent;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -47,7 +48,7 @@ public class ServiceOrganisationRCEnt implements ServiceOrganisationRaw {
 	public Map<Long, Organisation> getPseudoOrganisationHistory(long noEvenement) throws ServiceOrganisationException {
 		final Map<Long, ch.vd.uniregctb.adapter.rcent.model.Organisation> received = adapter.getPseudoHistoryForEvent(noEvenement);
 		if (received == null || received.isEmpty()) {
-			return null;
+			return Collections.emptyMap();
 		}
 		Map<Long, Organisation> result = new HashMap<>();
 		for (Map.Entry<Long, ch.vd.uniregctb.adapter.rcent.model.Organisation> orgEntry : received.entrySet()) {
