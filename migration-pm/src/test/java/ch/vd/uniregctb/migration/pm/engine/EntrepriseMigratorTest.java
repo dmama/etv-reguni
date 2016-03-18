@@ -604,6 +604,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 
 	static RegpmEtatEntreprise addEtatEntreprise(RegpmEntreprise entreprise, RegDate dateValidite, RegpmTypeEtatEntreprise typeEtat) {
 		final RegpmEtatEntreprise etat = new RegpmEtatEntreprise();
+		assignMutationVisa(etat, REGPM_VISA, REGPM_MODIF);
 		etat.setId(new RegpmEtatEntreprise.PK(computeNewSeqNo(entreprise.getEtatsEntreprise(), x -> x.getId().getSeqNo()), entreprise.getId()));
 		etat.setDateValidite(dateValidite);
 		etat.setTypeEtat(typeEtat);
@@ -5209,6 +5210,108 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 			Assert.assertEquals("Etat 'RADIEE_RC' migré, dès le 01.03.2007.", textes.get(6));
 			Assert.assertEquals("Etat 'INSCRITE_RC' migré, dès le 01.03.2007.", textes.get(7));
 			Assert.assertEquals("Entreprise migrée : 26.23.", textes.get(8));
+		}
+	}
+
+	@Test
+	public void testMigrationEtatsEntrepriseFondeSansDate() throws Exception {
+
+		final long noEntreprise = 2623L;
+		final RegpmEntreprise e = buildEntreprise(noEntreprise);
+		final RegDate dateDebut = RegDate.get(2004, 8, 27);
+		addRaisonSociale(e, dateDebut, "Toto SA", null, null, true);
+		addFormeJuridique(e, dateDebut, createTypeFormeJuridique("S.A.", RegpmCategoriePersonneMorale.PM));
+		addEtatEntreprise(e, null, RegpmTypeEtatEntreprise.FONDEE);         // <- date nulle !!!
+		addEtatEntreprise(e, RegDate.get(2005, 3, 1), RegpmTypeEtatEntreprise.INSCRITE_AU_RC);
+		addEtatEntreprise(e, RegDate.get(2007, 3, 1), RegpmTypeEtatEntreprise.RADIEE_DU_RC);
+		addEtatEntreprise(e, RegDate.get(2007, 3, 1), RegpmTypeEtatEntreprise.INSCRITE_AU_RC);
+		addSiegeSuisse(e, dateDebut, Commune.BALE);
+
+		final MockGraphe graphe = new MockGraphe(Collections.singletonList(e),
+		                                         null,
+		                                         null);
+		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
+		final EntityLinkCollector linkCollector = new EntityLinkCollector();
+		final IdMapper idMapper = new IdMapper();
+		migrator.initMigrationResult(mr, idMapper);
+		migrate(e, migrator, mr, linkCollector, idMapper);
+
+		final MutableObject<Long> idEtablissementPrincipal = new MutableObject<>();
+		doInUniregTransaction(true, status -> {
+			final Entreprise entreprise = uniregStore.getEntityFromDb(Entreprise.class, noEntreprise);
+			Assert.assertNotNull(entreprise);
+
+			final Set<EtatEntreprise> etats = entreprise.getEtats();
+			Assert.assertNotNull(etats);
+			Assert.assertEquals(4, etats.size());
+
+			final List<EtatEntreprise> etatsTries = new ArrayList<>(etats);
+			Collections.sort(etatsTries);
+			{
+				final EtatEntreprise etat = etatsTries.get(0);
+				Assert.assertNotNull(etat);
+				Assert.assertFalse(etat.isAnnule());
+				Assert.assertEquals(dateDebut, etat.getDateObtention());            // <-- reprise du premier siège
+				Assert.assertEquals(TypeEtatEntreprise.FONDEE, etat.getType());
+			}
+			{
+				final EtatEntreprise etat = etatsTries.get(1);
+				Assert.assertNotNull(etat);
+				Assert.assertFalse(etat.isAnnule());
+				Assert.assertEquals(RegDate.get(2005, 3, 1), etat.getDateObtention());
+				Assert.assertEquals(TypeEtatEntreprise.INSCRITE_RC, etat.getType());
+			}
+			{
+				final EtatEntreprise etat = etatsTries.get(2);
+				Assert.assertNotNull(etat);
+				Assert.assertFalse(etat.isAnnule());
+				Assert.assertEquals(RegDate.get(2007, 3, 1), etat.getDateObtention());
+				Assert.assertEquals(TypeEtatEntreprise.RADIEE_RC, etat.getType());
+			}
+			{
+				final EtatEntreprise etat = etatsTries.get(3);
+				Assert.assertNotNull(etat);
+				Assert.assertFalse(etat.isAnnule());
+				Assert.assertEquals(RegDate.get(2007, 3, 1), etat.getDateObtention());
+				Assert.assertEquals(TypeEtatEntreprise.INSCRITE_RC, etat.getType());
+			}
+
+			final List<Etablissement> etbs = uniregStore.getEntitiesFromDb(Etablissement.class, null);
+			Assert.assertNotNull(etbs);
+			Assert.assertEquals(1, etbs.size());
+			final Etablissement etb = etbs.get(0);
+			Assert.assertNotNull(etb);
+			idEtablissementPrincipal.setValue(etb.getNumero());
+		});
+
+		{
+			// vérification des messages dans le contexte "SUIVI"
+			final List<MigrationResultCollector.Message> messages = mr.getMessages().get(LogCategory.SUIVI);
+			Assert.assertNotNull(messages);
+			final List<String> textes = messages.stream().map(msg -> msg.text).collect(Collectors.toList());
+			Assert.assertEquals(13, textes.size());
+			Assert.assertEquals("L'entreprise n'existait pas dans Unireg avec ce numéro de contribuable.", textes.get(0));
+			Assert.assertEquals("Entreprise sans exercice commercial ni for principal.", textes.get(1));
+			Assert.assertEquals("Entreprise sans exercice commercial ni date de bouclement futur.", textes.get(2));
+			Assert.assertEquals("Ajout d'un régime fiscal VD de type '01' sur la période [01.01.2009 -> ?] pour couvrir les fors de l'entreprise.", textes.get(3));
+			Assert.assertEquals("Ajout d'un régime fiscal CH de type '01' sur la période [01.01.2009 -> ?] pour couvrir les fors de l'entreprise.", textes.get(4));
+			Assert.assertEquals("Création de l'établissement principal " + FormatNumeroHelper.numeroCTBToDisplay(idEtablissementPrincipal.getValue()) + ".", textes.get(5));
+			Assert.assertEquals("Domicile de l'établissement principal " + FormatNumeroHelper.numeroCTBToDisplay(idEtablissementPrincipal.getValue()) + " : [27.08.2004 -> ?] sur COMMUNE_HC/2701.", textes.get(6));
+			Assert.assertEquals("Etat d'entreprise 1 (FONDEE) trouvé, dont la date de début de validité, nulle (ou antérieure au 01.08.1291), est ramenée à la date du premier siège (27.08.2004).", textes.get(7));
+			Assert.assertEquals("Etat 'FONDEE' migré, dès le 27.08.2004.", textes.get(8));
+			Assert.assertEquals("Etat 'INSCRITE_RC' migré, dès le 01.03.2005.", textes.get(9));
+			Assert.assertEquals("Etat 'RADIEE_RC' migré, dès le 01.03.2007.", textes.get(10));
+			Assert.assertEquals("Etat 'INSCRITE_RC' migré, dès le 01.03.2007.", textes.get(11));
+			Assert.assertEquals("Entreprise migrée : 26.23.", textes.get(12));
+		}
+		{
+			// vérification des messages dans le contexte "FORS"
+			final List<MigrationResultCollector.Message> messages = mr.getMessages().get(LogCategory.FORS);
+			Assert.assertNotNull(messages);
+			final List<String> textes = messages.stream().map(msg -> msg.text).collect(Collectors.toList());
+			Assert.assertEquals(2, textes.size());
+			Assert.assertEquals("Données du siège 1 utilisées pour les fors principaux : COMMUNE_HC/2701 depuis le 27.08.2004.", textes.get(0));
+			Assert.assertEquals("For principal COMMUNE_HC/2701 [27.08.2004 -> ?] généré.", textes.get(1));
 		}
 	}
 

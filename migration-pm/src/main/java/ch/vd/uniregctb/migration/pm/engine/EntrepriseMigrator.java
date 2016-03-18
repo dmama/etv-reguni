@@ -2866,7 +2866,11 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 					.map(domicile -> new CommuneOuPays(domicile.getNoOfs(), domicile.getTypeAutoriteFiscale()))
 					.orElse(null);
 
-			final Optional<String> regpmFormeJuridique = Optional.of(regpmFormesJuridiques).map(NavigableMap::lastEntry).map(Map.Entry::getValue).map(RegpmTypeFormeJuridique::getCode);
+			final Optional<String> regpmFormeJuridique = Optional.of(regpmFormesJuridiques)
+					.filter(map -> !map.isEmpty())
+					.map(NavigableMap::lastEntry)
+					.map(Map.Entry::getValue)
+					.map(RegpmTypeFormeJuridique::getCode);
 			final String regpmCodeFormeJuridique = regpmFormeJuridique.map(EntrepriseMigrator::toFormeJuridique).map(FormeJuridiqueEntreprise::getCodeECH).orElse(null);
 			final String regpmRaisonSociale = regpmRaisonsSociales.lastEntry().getValue();
 			final String regpmNumeroIde = Optional.ofNullable(regpm.getNumeroIDE()).map(ide -> String.format("%s%09d", ide.getCategorie(), ide.getNumero())).orElse(null);
@@ -5541,44 +5545,70 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		// une première structure par date de début (pour détecter les cas des états multiples à la même date
 		final NavigableMap<RegDate, List<RegpmEtatEntreprise>> map = regpm.getEtatsEntreprise().stream()
 				.filter(e -> !e.isRectifie())
-				.filter(e -> {
-					if (e.getDateValidite() == null) {
+				.map(e -> {
+					final RegDate dateValidite = Optional.ofNullable(e.getDateValidite()).orElseGet(() -> {
+						// [SIFISC-18151] si l'état est "fondée" et que la date est nulle (ce qui est le cas si nous sommes ici...)
+						// il faut reprendre la date du premier siège
+						if (e.getTypeEtat() == RegpmTypeEtatEntreprise.FONDEE) {
+							final RegDate premierSiege = Optional.of(mr.getExtractedData(SiegesHistoData.class, buildEntrepriseKey(regpm)).histo)
+									.filter(sieges -> !sieges.isEmpty())
+									.map(NavigableMap::firstKey)
+									.orElse(null);
+
+							if (premierSiege != null) {
+								mr.addMessage(LogCategory.SUIVI, LogLevel.WARN,
+								              String.format("Etat d'entreprise %d (%s) trouvé, dont la date de début de validité, nulle (ou antérieure au 01.08.1291), est ramenée à la date du premier siège (%s).",
+								                            e.getId().getSeqNo(),
+								                            e.getTypeEtat(),
+								                            StringRenderers.DATE_RENDERER.toString(premierSiege)));
+								return premierSiege;
+							}
+						}
+						return null;
+					});
+					if (dateValidite == null) {
 						mr.addMessage(LogCategory.SUIVI, LogLevel.ERROR,
 						              String.format("Etat d'entreprise %d (%s) ignoré car sa date de début de validité est nulle (ou antérieure au 01.08.1291).",
 						                            e.getId().getSeqNo(),
 						                            e.getTypeEtat()));
-						return false;
+						return null;
 					}
-					return true;
+					else {
+						return Pair.of(dateValidite, e);
+					}
 				})
-				.filter(e -> {
-					if (migrationContexte.getDateHelper().isFutureDate(e.getDateValidite())) {
+				.filter(Objects::nonNull)
+				.filter(pair -> {
+					if (migrationContexte.getDateHelper().isFutureDate(pair.getLeft())) {
 						mr.addMessage(LogCategory.SUIVI, LogLevel.ERROR,
 						              String.format("Etat d'entreprise %d (%s) ignoré en raison de sa date de début dans le futur (%s).",
-						                            e.getId().getSeqNo(),
-						                            e.getTypeEtat(),
-						                            StringRenderers.DATE_RENDERER.toString(e.getDateValidite())));
+						                            pair.getRight().getId().getSeqNo(),
+						                            pair.getRight().getTypeEtat(),
+						                            StringRenderers.DATE_RENDERER.toString(pair.getLeft())));
 						return false;
 					}
 					return true;
 				})
-				.collect(Collectors.toMap(RegpmEtatEntreprise::getDateValidite,
-				                          Collections::singletonList,
+				.collect(Collectors.toMap(Pair::getLeft,
+				                          pair -> Collections.singletonList(pair.getRight()),
 				                          (l1, l2) -> Stream.concat(l1.stream(), l2.stream()).collect(Collectors.toList()),
 				                          TreeMap::new));
 
 		// [SIFISC-17111] même si plusieurs états commencent à la même date, on les garde tous
-		final List<EtatEntreprise> liste = map.values().stream()
-				.flatMap(List::stream)
-				.peek(e -> migrationContexte.getDateHelper().checkDateLouche(e.getDateValidite(),
-				                                                             () -> String.format("Etat d'entreprise %d (%s) avec une date de début de validité", e.getId().getSeqNo(), e.getTypeEtat()),
-				                                                             LogCategory.SUIVI,
-				                                                             mr))
-				.map(e -> {
+		final List<EtatEntreprise> liste = map.entrySet().stream()
+				.map(entry -> entry.getValue().stream().map(e -> Pair.of(entry.getKey(), e)))
+				.flatMap(Function.identity())
+				.peek(pair -> migrationContexte.getDateHelper().checkDateLouche(pair.getLeft(),
+				                                                                () -> String.format("Etat d'entreprise %d (%s) avec une date de début de validité",
+				                                                                                    pair.getRight().getId().getSeqNo(),
+				                                                                                    pair.getRight().getTypeEtat()),
+				                                                                LogCategory.SUIVI,
+				                                                                mr))
+				.map(pair -> {
 					final EtatEntreprise etat = new EtatEntreprise();
-					copyCreationMutation(e, etat);
-					etat.setDateObtention(e.getDateValidite());
-					etat.setType(mapTypeEtatEntreprise(e.getTypeEtat()));
+					copyCreationMutation(pair.getRight(), etat);
+					etat.setDateObtention(pair.getLeft());
+					etat.setType(mapTypeEtatEntreprise(pair.getRight().getTypeEtat()));
 					etat.setGeneration(TypeGenerationEtatEntreprise.AUTOMATIQUE);
 					return etat;
 				})
