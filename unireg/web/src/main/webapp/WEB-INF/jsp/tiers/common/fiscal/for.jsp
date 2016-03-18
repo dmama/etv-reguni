@@ -55,7 +55,7 @@
 
 		<c:if test="${not empty command.forsFiscauxPrincipaux}">
 			<display:table name="command.forsFiscauxPrincipaux" id="ffp" pagesize="${(command.nombreElementsTable == 0 || !command.forsPrincipauxPagines) ? 0 : command.nombreElementsTable}"
-			               requestURI="${url}"
+			               requestURI="${url}" sort="list"
 			               class="display" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator">
 
 				<display:column style="width:16px;">
@@ -175,7 +175,7 @@
 
 		<c:if test="${not empty command.forsFiscauxSecondaires}">
 			<display:table name="command.forsFiscauxSecondaires" id="ffs" pagesize="${(command.nombreElementsTable == 0 || !command.forsSecondairesPagines) ? 0 : command.nombreElementsTable}"
-			               requestURI="${url}"
+			               requestURI="${url}" sort="list"
 			               class="display" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator">
 
 				<display:column style="width:16px;">
@@ -289,7 +289,7 @@
 
 		<c:if test="${not empty command.autresForsFiscaux}">
 			<display:table name="command.autresForsFiscaux" id="ffa" pagesize="${(command.nombreElementsTable == 0 || !command.autresForsPagines) ? 0 : command.nombreElementsTable}"
-			               requestURI="${url}"
+			               requestURI="${url}" sort="list"
 			               class="display" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator">
 
 				<display:column style="width:16px;">
