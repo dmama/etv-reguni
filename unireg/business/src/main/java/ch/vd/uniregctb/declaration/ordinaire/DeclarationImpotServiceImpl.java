@@ -108,9 +108,9 @@ import ch.vd.uniregctb.validation.ValidationService;
 public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 
 	/**
-	 * Ce sont les codes des régimes fiscaux vaudois spécifiques aux holdings (11 et 13) et sociétés de base (41C et 42C)
+	 * Ce sont les codes des régimes fiscaux vaudois spécifiques aux holdings (11 et 12) et sociétés de base (41C et 42C)
 	 */
-	private static final Set<String> CODES_REGIMES_FISCAUX_SOCIETE_BASE_HOLDING = new HashSet<>(Arrays.asList("11", "13", "41C", "42C"));
+	private static final Set<String> CODES_REGIMES_FISCAUX_SOCIETE_BASE_HOLDING = new HashSet<>(Arrays.asList("11", "12", "41C", "42C"));
 
 	// private final Logger LOGGER = LoggerFactory.getLogger(DeclarationImpotServiceImpl.class);
 
