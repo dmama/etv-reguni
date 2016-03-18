@@ -17,6 +17,8 @@
 		<property name="diService" ref="diService" />
 		<property name="manager" ref="diEditManager"/>
 		<property name="diDAO" ref="diDAO"/>
+		<property name="periodeFiscaleDAO" ref="periodeFiscaleDAO"/>
+		<property name="parametreAppService" ref="parametreAppService"/>
 		<property name="delaisService" ref="delaisService" />
 		<property name="tiersMapHelper" ref="tiersMapHelper" />
 		<property name="retourEditiqueControllerHelper" ref="retourEditiqueControllerHelper"/>

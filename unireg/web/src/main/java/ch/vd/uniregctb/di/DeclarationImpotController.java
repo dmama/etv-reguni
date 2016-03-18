@@ -27,6 +27,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
+import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.tx.TxCallback;
@@ -52,6 +53,9 @@ import ch.vd.uniregctb.declaration.EtatDeclaration;
 import ch.vd.uniregctb.declaration.EtatDeclarationRetournee;
 import ch.vd.uniregctb.declaration.EtatDeclarationSuspendue;
 import ch.vd.uniregctb.declaration.ModeleDocumentDAO;
+import ch.vd.uniregctb.declaration.ParametrePeriodeFiscalePM;
+import ch.vd.uniregctb.declaration.PeriodeFiscale;
+import ch.vd.uniregctb.declaration.PeriodeFiscaleDAO;
 import ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotService;
 import ch.vd.uniregctb.di.manager.DeclarationImpotEditManager;
 import ch.vd.uniregctb.di.view.AbstractEditionDelaiDeclarationPMView;
@@ -77,6 +81,7 @@ import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionPersonnesMorales
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionPersonnesPhysiques;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionService;
 import ch.vd.uniregctb.parametrage.DelaisService;
+import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.security.AccessDeniedException;
 import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.security.SecurityHelper;
@@ -103,6 +108,8 @@ public class DeclarationImpotController {
 	private HibernateTemplate hibernateTemplate;
 	private DeclarationImpotService diService;
 	private DeclarationImpotOrdinaireDAO diDAO;
+	private PeriodeFiscaleDAO periodeFiscaleDAO;
+	private ParametreAppService parametreAppService;
 	private MessageSource messageSource;
 	private DeclarationImpotEditManager manager;
 	private DelaisService delaisService;
@@ -130,6 +137,14 @@ public class DeclarationImpotController {
 
 	public void setDiDAO(DeclarationImpotOrdinaireDAO diDAO) {
 		this.diDAO = diDAO;
+	}
+
+	public void setPeriodeFiscaleDAO(PeriodeFiscaleDAO periodeFiscaleDAO) {
+		this.periodeFiscaleDAO = periodeFiscaleDAO;
+	}
+
+	public void setParametreAppService(ParametreAppService parametreAppService) {
+		this.parametreAppService = parametreAppService;
 	}
 
 	public void setManager(DeclarationImpotEditManager manager) {
@@ -623,7 +638,13 @@ public class DeclarationImpotController {
 			delaiAccorde = RegDate.get().addDays(delaiRetour);
 		}
 		else {
-			delaiAccorde = delaisService.getDateFinDelaiRetourDeclarationImpotPMEmiseManuellement(RegDate.get());
+			final PeriodeFiscale pf = periodeFiscaleDAO.getPeriodeFiscaleByYear(periode.getPeriodeFiscale());
+			final ParametrePeriodeFiscalePM params = pf.getParametrePeriodeFiscalePM(periode.getTypeContribuable());
+
+			final RegDate dateReferencePourDelai = params.getReferenceDelaiInitial() == ParametrePeriodeFiscalePM.ReferencePourDelai.EMISSION ? RegDate.get() : periode.getDateFin();
+			final RegDate delaiTheorique = dateReferencePourDelai.addMonths(params.getDelaiImprimeMois());
+			final RegDate delaiMinimal = RegDate.get().addMonths(parametreAppService.getDelaiMinimalRetourDeclarationImpotPM());
+			delaiAccorde = RegDateHelper.maximum(delaiTheorique, delaiMinimal, NullDateBehavior.EARLIEST);
 		}
 
 		if (typeDocument == null) {
