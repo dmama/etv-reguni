@@ -4435,8 +4435,12 @@ public class TiersServiceImpl implements TiersService {
 		return null;
 	}
 
-	@Override
-	public List<ExerciceCommercial> getExercicesCommerciaux(Entreprise entreprise) {
+	/**
+	 * @param entreprise entreprise dont on veut les exercices commerciaux
+	 * @param dateLimite date de référence (a priori aujourd'hui ou dans le futur) pour la détermination du dernier exercice à renvoyer (si l'entreprise est encore active)
+	 * @return les exercices commerciaux de cette entreprise (jusqu'à au plus tard l'exercice de la date de référence, ou, s'il n'y en a plus, le dernier exercice connu)
+	 */
+	private List<ExerciceCommercial> getExercicesCommerciauxJusqua(Entreprise entreprise, @NotNull RegDate dateLimite) {
 		final List<ForFiscalPrincipalPM> forsPrincipaux = entreprise.getForsFiscauxPrincipauxActifsSorted();
 		final List<Bouclement> bouclements = AnnulableHelper.sansElementsAnnules(entreprise.getBouclements());
 		final boolean noFors = forsPrincipaux.isEmpty();
@@ -4481,7 +4485,7 @@ public class TiersServiceImpl implements TiersService {
 		final RegDate dateFinDernierExercice;
 		if (noFors) {
 			// la seule limite de fin sera celle de l'exercice courant
-			dateFinDernierExercice = bouclementService.getDateProchainBouclement(bouclements, RegDate.get(), true);
+			dateFinDernierExercice = bouclementService.getDateProchainBouclement(bouclements, dateLimite, true);
 		}
 		else {
 			// ici, nous avons des fors principaux
@@ -4500,15 +4504,26 @@ public class TiersServiceImpl implements TiersService {
 			}
 			else if (noBouclements) {
 				// arbitrairement, fin de l'exercice à la fin de cette année
-				dateFinDernierExercice = RegDate.get(RegDate.get().year(), 12, 31);
+				dateFinDernierExercice = RegDate.get(dateLimite.year(), 12, 31);
 			}
 			else {
 				// for encore ouvert -> la seule limite de fin sera celle de l'exercice courant
-				dateFinDernierExercice = bouclementService.getDateProchainBouclement(bouclements, RegDate.get(), true);
+				dateFinDernierExercice = bouclementService.getDateProchainBouclement(bouclements, dateLimite, true);
 			}
 		}
 
 		return bouclementService.getExercicesCommerciaux(bouclements, new DateRangeHelper.Range(dateDebutPremierExercice, dateFinDernierExercice), false);
+	}
+
+	@Override
+	public List<ExerciceCommercial> getExercicesCommerciaux(Entreprise entreprise) {
+		return getExercicesCommerciauxJusqua(entreprise, RegDate.get());
+	}
+
+	@Override
+	public ExerciceCommercial getExerciceCommercialAt(Entreprise entreprise, RegDate date) {
+		final RegDate dateLimite = RegDateHelper.maximum(date, RegDate.get(), NullDateBehavior.EARLIEST);
+		return DateRangeHelper.rangeAt(getExercicesCommerciauxJusqua(entreprise, dateLimite), date);
 	}
 
 	/**

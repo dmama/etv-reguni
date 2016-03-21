@@ -5,11 +5,15 @@ import java.util.List;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ObjectError;
 
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
+import ch.vd.unireg.interfaces.infra.mock.MockTypeRegimeFiscal;
 import ch.vd.uniregctb.common.WebTest;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaireDAO;
@@ -17,7 +21,10 @@ import ch.vd.uniregctb.declaration.ModeleDocument;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.di.view.AjouterEtatDeclarationView;
 import ch.vd.uniregctb.di.view.ImprimerNouvelleDeclarationImpotView;
+import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
+import ch.vd.uniregctb.type.DayMonth;
+import ch.vd.uniregctb.type.FormeJuridiqueEntreprise;
 import ch.vd.uniregctb.type.ModeleFeuille;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.Sexe;
@@ -38,6 +45,7 @@ public class DeclarationImpotControllerValidatorTest extends WebTest {
 		validator = new DeclarationImpotControllerValidator();
 		validator.setTiersDAO(tiersDAO);
 		validator.setDiDAO(diDAO);
+		validator.setTiersService(tiersService);
 	}
 
 	@Test
@@ -274,5 +282,131 @@ public class DeclarationImpotControllerValidatorTest extends WebTest {
 		assertEquals(1, allErrors.size());
 		final ObjectError error = allErrors.get(0);
 		assertEquals("error.date.retour.anterieure.date.emission.sommation", error.getCode());
+	}
+
+	@Test
+	public void testChevauchementExerciceCommercial() throws Exception {
+		final RegDate dateDebut = date(2000, 7, 1);
+
+		final long pmId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+				addRaisonSociale(entreprise, dateDebut, null, "Toto le héros SA");
+				addFormeJuridique(entreprise, dateDebut, null, FormeJuridiqueEntreprise.SA);
+				addBouclement(entreprise, dateDebut, DayMonth.get(6, 30), 12);          // tous les 30.06
+				addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addRegimeFiscalCH(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addForPrincipal(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
+				return entreprise.getNumero();
+			}
+		});
+
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				// on tente d'ajouter une nouvelle DI qui chevauche la fontière du 30.06 (= fin d'exercice commercial)
+				final ImprimerNouvelleDeclarationImpotView view = new ImprimerNouvelleDeclarationImpotView();
+				view.setTiersId(pmId);
+				view.setPeriodeFiscale(2016);
+				view.setDateDebutPeriodeImposition(date(2016, 1, 1));
+				view.setDateFinPeriodeImposition(date(2016, 8, 31));        // 2 mois de trop
+				view.setDelaiAccorde(date(2017, 4, 30));
+				view.setTypeDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH);
+
+				final Errors errors = new BeanPropertyBindingResult(view, "view");
+				validator.validate(view, errors);
+
+				final List<ObjectError> allErrors = errors.getAllErrors();
+				assertNotNull(allErrors);
+				assertEquals(1, allErrors.size());
+
+				final ObjectError error = allErrors.get(0);
+				assertEquals("error.declaration.cheval.plusieurs.exercices.commerciaux", error.getCode());
+			}
+		});
+	}
+
+	@Test
+	public void testMauvaisePeriodeFiscale() throws Exception {
+		final RegDate dateDebut = date(2000, 7, 1);
+
+		final long pmId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+				addRaisonSociale(entreprise, dateDebut, null, "Toto le héros SA");
+				addFormeJuridique(entreprise, dateDebut, null, FormeJuridiqueEntreprise.SA);
+				addBouclement(entreprise, dateDebut, DayMonth.get(6, 30), 12);          // tous les 30.06
+				addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addRegimeFiscalCH(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addForPrincipal(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
+				return entreprise.getNumero();
+			}
+		});
+
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				// on tente d'ajouter une nouvelle DI qui chevauche la fontière du 30.06 (= fin d'exercice commercial)
+				final ImprimerNouvelleDeclarationImpotView view = new ImprimerNouvelleDeclarationImpotView();
+				view.setTiersId(pmId);
+				view.setPeriodeFiscale(2016);
+				view.setDateDebutPeriodeImposition(date(2016, 7, 1));
+				view.setDateFinPeriodeImposition(date(2017, 6, 30));        // pas la bonne année !
+				view.setDelaiAccorde(date(2017, 12, 31));
+				view.setTypeDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH);
+
+				final Errors errors = new BeanPropertyBindingResult(view, "view");
+				validator.validate(view, errors);
+
+				final List<ObjectError> allErrors = errors.getAllErrors();
+				assertNotNull(allErrors);
+				assertEquals(1, allErrors.size());
+
+				final ObjectError error = allErrors.get(0);
+				assertEquals("error.date.fin.pas.dans.periode.fiscale", error.getCode());
+			}
+		});
+	}
+
+	@Test
+	public void testNouvelleDeclarationChevalAnneesCiviles() throws Exception {
+		final RegDate dateDebut = date(2000, 7, 1);
+
+		final long pmId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+				addRaisonSociale(entreprise, dateDebut, null, "Toto le héros SA");
+				addFormeJuridique(entreprise, dateDebut, null, FormeJuridiqueEntreprise.SA);
+				addBouclement(entreprise, dateDebut, DayMonth.get(6, 30), 12);          // tous les 30.06
+				addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addRegimeFiscalCH(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addForPrincipal(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
+				return entreprise.getNumero();
+			}
+		});
+
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				// on tente d'ajouter une nouvelle DI qui chevauche la fontière du 30.06 (= fin d'exercice commercial)
+				final ImprimerNouvelleDeclarationImpotView view = new ImprimerNouvelleDeclarationImpotView();
+				view.setTiersId(pmId);
+				view.setPeriodeFiscale(2016);
+				view.setDateDebutPeriodeImposition(date(2015, 7, 1));
+				view.setDateFinPeriodeImposition(date(2016, 6, 30));
+				view.setDelaiAccorde(date(2017, 12, 31));
+				view.setTypeDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH);
+
+				final Errors errors = new BeanPropertyBindingResult(view, "view");
+				validator.validate(view, errors);
+
+				final List<ObjectError> allErrors = errors.getAllErrors();
+				assertNotNull(allErrors);
+				assertEquals(0, allErrors.size());
+			}
+		});
 	}
 }

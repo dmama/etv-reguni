@@ -1194,6 +1194,14 @@ public interface TiersService {
     List<ExerciceCommercial> getExercicesCommerciaux(Entreprise entreprise);
 
     /**
+     * @param entreprise une entreprise
+     * @param date date de référence
+     * @return L'exercice commercial de cette entreprise valide à la date donnée (si cette date est future et que l'exercice courant ne la contient pas,
+     * alors l'exercice commercial retourné pourra ne pas être présent dans la liste fournie par {@link #getExercicesCommerciaux(Entreprise)})
+     */
+    ExerciceCommercial getExerciceCommercialAt(Entreprise entreprise, RegDate date);
+
+    /**
      * Défini la date limite d'exclusion sur les contribuables spécifiés par leur numéros.
      *
      * @param ctbIds     les numéros des contribuables

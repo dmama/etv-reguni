@@ -24,10 +24,13 @@ import ch.vd.uniregctb.di.view.ImprimerDuplicataDeclarationImpotView;
 import ch.vd.uniregctb.di.view.ImprimerNouvelleDeclarationImpotView;
 import ch.vd.uniregctb.di.view.ModifierDemandeDelaiDeclarationView;
 import ch.vd.uniregctb.di.view.NouvelleDemandeDelaiDeclarationView;
+import ch.vd.uniregctb.metier.bouclement.ExerciceCommercial;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
+import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
+import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.EtatDelaiDeclaration;
 import ch.vd.uniregctb.type.TypeDocument;
 import ch.vd.uniregctb.type.TypeEtatDeclaration;
@@ -36,12 +39,17 @@ import ch.vd.uniregctb.utils.ValidatorUtils;
 public class DeclarationImpotControllerValidator implements Validator {
 
 	private TiersDAO tiersDAO;
+	private TiersService tiersService;
 	private DeclarationImpotOrdinaireDAO diDAO;
 	private DelaiDeclarationDAO delaiDeclarationDAO;
 	private DeclarationImpotEditManager manager;
 
 	public void setTiersDAO(TiersDAO tiersDAO) {
 		this.tiersDAO = tiersDAO;
+	}
+
+	public void setTiersService(TiersService tiersService) {
+		this.tiersService = tiersService;
 	}
 
 	public void setDiDAO(DeclarationImpotOrdinaireDAO diDAO) {
@@ -116,21 +124,35 @@ public class DeclarationImpotControllerValidator implements Validator {
 		else if (view.getDateFinPeriodeImposition() == null) {
 			errors.rejectValue("dateFinPeriodeImposition", "error.date.fin.vide");
 		}
-		else if (view.getDateDebutPeriodeImposition().year() == RegDate.get().year()) {
-			// si la période est ouverte les dates sont libres... dans la limite des valeurs raisonnables
-			if (view.getDateDebutPeriodeImposition().isAfter(view.getDateFinPeriodeImposition())) {
-				errors.rejectValue("dateFinPeriodeImposition", "error.date.fin.avant.debut");
-			}
-			else if (view.getDateDebutPeriodeImposition().year() != view.getDateFinPeriodeImposition().year()) {
-				errors.rejectValue("dateFinPeriodeImposition", "error.declaration.cheval.plusieurs.annees");
-			}
+		else if (view.getDateFinPeriodeImposition().year() != view.getPeriodeFiscale()) {
+			errors.rejectValue("dateFinPeriodeImposition", "error.date.fin.pas.dans.periode.fiscale");
 		}
 		else {
-			try {
-				manager.checkRangeDi(ctb, new DateRangeHelper.Range(view.getDateDebutPeriodeImposition(), view.getDateFinPeriodeImposition()));
+			// cas spécial pour les entreprise, la période d'imposition choisie pour la DI
+			// ne doit pas être à cheval sur plusieurs exercices commerciaux
+			if (ctb instanceof Entreprise) {
+				final ExerciceCommercial exerciceDebut = tiersService.getExerciceCommercialAt((Entreprise) ctb, view.getDateDebutPeriodeImposition());
+				if (exerciceDebut == null || !exerciceDebut.isValidAt(view.getDateFinPeriodeImposition())) {
+					errors.rejectValue("dateFinPeriodeImposition", "error.declaration.cheval.plusieurs.exercices.commerciaux");
+				}
 			}
-			catch (ValidationException e) {
-				errors.reject(e.getMessage());
+
+			if (view.getDateFinPeriodeImposition().year() == RegDate.get().year()) {
+				// si la période est ouverte les dates sont libres... dans la limite des valeurs raisonnables
+				if (view.getDateDebutPeriodeImposition().isAfter(view.getDateFinPeriodeImposition())) {
+					errors.rejectValue("dateFinPeriodeImposition", "error.date.fin.avant.debut");
+				}
+				else if (ctb instanceof ContribuableImpositionPersonnesPhysiques && view.getDateDebutPeriodeImposition().year() != view.getDateFinPeriodeImposition().year()) {
+					errors.rejectValue("dateFinPeriodeImposition", "error.declaration.cheval.plusieurs.annees");
+				}
+			}
+			else {
+				try {
+					manager.checkRangeDi(ctb, new DateRangeHelper.Range(view.getDateDebutPeriodeImposition(), view.getDateFinPeriodeImposition()));
+				}
+				catch (ValidationException e) {
+					errors.reject(e.getMessage());
+				}
 			}
 		}
 

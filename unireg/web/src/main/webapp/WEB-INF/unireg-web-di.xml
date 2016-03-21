@@ -9,6 +9,7 @@
 		<property name="tiersDAO" ref="tiersDAO"/>
 		<property name="diDAO" ref="diDAO"/>
 		<property name="delaiDeclarationDAO" ref="delaiDeclarationDAO" />
+		<property name="tiersService" ref="tiersService" />
 	</bean>
 
 	<bean id="declarationImpotController" class="ch.vd.uniregctb.di.DeclarationImpotController">
