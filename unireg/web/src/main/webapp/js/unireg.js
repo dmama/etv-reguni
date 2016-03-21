@@ -1342,7 +1342,6 @@ var Histo = {
 
 		var rows = $(table).prop('rows');
 		var foundSomething = false; // vrai si une ligne au moins est affichée
-		var visibleCount = 0;
 
 		for (var i = 1; i < rows.length; i++) { // on ignore l'entête
 			var line = rows[i];
@@ -1366,22 +1365,11 @@ var Histo = {
 			else {
 				foundSomething = true;
 			}
-
-			if (showHisto || !isHisto) {
-				// on adapte le style des lignes odd/even
-				//line.className = (++visibleCount % 2 == 0 ? 'even' : 'odd');
-				if (++visibleCount % 2 == 0) {
-					$(line).removeClass('odd');
-					$(line).addClass('even');
-				} else {
-					$(line).removeClass('even');
-					$(line).addClass('odd');
-				}
-			}
 		}
 		if (!showHisto && !foundSomething && rows.length > 1) { // si toutes les valeurs sont historiques, on affiche au minimum la plus récente
 			rows[1].style.display = ''
 		}
+		Histo.computeEvenOdd(table);
 	}
 };
 
