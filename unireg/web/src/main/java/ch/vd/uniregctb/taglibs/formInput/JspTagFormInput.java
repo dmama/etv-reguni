@@ -41,7 +41,7 @@ public class JspTagFormInput extends AbstractHtmlInputElementTag {
 
 	private boolean readonly;
 
-	protected static final Map<Class, Class<? extends Editor>> commonEditors = new HashMap<>();
+	protected static final Map<Class<?>, Class<? extends Editor>> commonEditors = new HashMap<>();
 	protected static final Map<Object, Class<? extends Editor>> specificEditors = new HashMap<>();
 
 	static {
@@ -151,8 +151,8 @@ public class JspTagFormInput extends AbstractHtmlInputElementTag {
 		}
 
 		if (editor == null) {
-			for (Map.Entry<Class, Class<? extends Editor>> entry : commonEditors.entrySet()) {
-				final Class key = entry.getKey();
+			for (Map.Entry<Class<?>, Class<? extends Editor>> entry : commonEditors.entrySet()) {
+				final Class<?> key = entry.getKey();
 				if (key.isAssignableFrom(type)) {
 					Class<? extends Editor> editorClass = entry.getValue();
 					editor = instanciateEditor(editorClass, params);
