@@ -589,7 +589,7 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 		try {
 			final Map<String, String> bamHeaders = BamMessageHelper.buildCustomBamHeadersForQuittancementDeclaration(di, dateQuittancement, null);
 			final String businessId = String.format("%d-%d-%d-%s", ctbId, annee, noSequence, new SimpleDateFormat("yyyyMMddHHmmssSSS").format(DateHelper.getCurrentDate()));
-			final String processDefinitionId = BamMessageHelper.PROCESS_DEFINITION_ID_PAPIER;       // nous allons assimiler les quittancements IHM à des quittancements "papier"
+			final String processDefinitionId = di instanceof DeclarationImpotOrdinairePM ? BamMessageHelper.PROCESS_DEFINITION_ID_PAPIER_PM : BamMessageHelper.PROCESS_DEFINITION_ID_PAPIER_PP;       // nous allons assimiler les quittancements IHM à des quittancements "papier"
 			final String processInstanceId = BamMessageHelper.buildProcessInstanceId(di);
 			bamMessageSender.sendBamMessageQuittancementDi(processDefinitionId, processInstanceId, businessId, ctbId, annee, bamHeaders);
 		}

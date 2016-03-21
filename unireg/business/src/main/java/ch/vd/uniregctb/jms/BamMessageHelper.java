@@ -1,7 +1,7 @@
 package ch.vd.uniregctb.jms;
 
-import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,14 +21,20 @@ import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
  */
 public abstract class BamMessageHelper {
 
-	public static final String PROCESS_DEFINITION_ID_PAPIER = "ACQUISITION_DI_PAPIER";
-	public static final String PROCESS_DEFINITION_ID_ELECTRONIQUE = "ACQUISITION_DI_ELECTRONIQUE";
+	public static final String PROCESS_DEFINITION_ID_PAPIER_PP = "ACQUISITION_DI_PAPIER";
+	public static final String PROCESS_DEFINITION_ID_ELECTRONIQUE_PP = "ACQUISITION_DI_ELECTRONIQUE";
+	public static final String PROCESS_DEFINITION_ID_PAPIER_PM = "ACQUISITION_DIPM_PAPIER";
+	public static final String PROCESS_DEFINITION_ID_ELECTRONIQUE_PM = "ACQUISITION_DIPM_ELECTRONIQUE";
 
-	public static final String TASK_DEFINITION_ID_QUITTANCEMENT_ELECTRONIQUE = "E_DI_ACKNOWLEDGEMENT_RECEIPT";
-	public static final String TASK_DEFINITION_ID_QUITTANCEMENT_PAPIER = "P_DI_ACKNOWLEDGEMENT_RECEIPT";
+	public static final String TASK_DEFINITION_ID_QUITTANCEMENT_ELECTRONIQUE_PP = "E_DI_ACKNOWLEDGEMENT_RECEIPT";
+	public static final String TASK_DEFINITION_ID_QUITTANCEMENT_PAPIER_PP = "P_DI_ACKNOWLEDGEMENT_RECEIPT";
+	public static final String TASK_DEFINITION_ID_QUITTANCEMENT_ELECTRONIQUE_PM = "E_DIPM_ACKNOWLEDGE_RECEIPT";
+	public static final String TASK_DEFINITION_ID_QUITTANCEMENT_PAPIER_PM = "P_DIPM_ACKNOWLEDGE_RECEIPT";
 
-	public static final String TASK_DEFINITION_ID_RETOUR_ELECTRONIQUE = "E_DI_UPDATE_UNIREG_RECEIVED";
-	public static final String TASK_DEFINITION_ID_RETOUR_PAPIER = "P_DI_UPDATE_UNIREG_RECEIVED";
+	public static final String TASK_DEFINITION_ID_RETOUR_ELECTRONIQUE_PP = "E_DI_UPDATE_UNIREG_RECEIVED";
+	public static final String TASK_DEFINITION_ID_RETOUR_PAPIER_PP = "P_DI_UPDATE_UNIREG_RECEIVED";
+	public static final String TASK_DEFINITION_ID_RETOUR_ELECTRONIQUE_PM = "E_DIPM_UPDATE_UNIREG_RECEIVED";
+	public static final String TASK_DEFINITION_ID_RETOUR_PAPIER_PM = "P_DIPM_UPDATE_UNIREG_RECEIVED";
 
 	public static final String NUMERO_SEQUENCE = "numeroSequenceFourre";
 	public static final String PERIODE_IMPOSITION = "periodeImposition";
@@ -50,21 +56,25 @@ public abstract class BamMessageHelper {
 	}
 
 	private static Map<String, String> buildTaskDefinitionIdsQuittancementFromProcessDefinitionIdMap() {
-		final Map<String, String> map = new HashMap<>(2);
-		map.put(PROCESS_DEFINITION_ID_PAPIER, TASK_DEFINITION_ID_QUITTANCEMENT_PAPIER);
-		map.put(PROCESS_DEFINITION_ID_ELECTRONIQUE, TASK_DEFINITION_ID_QUITTANCEMENT_ELECTRONIQUE);
+		final Map<String, String> map = new HashMap<>(4);
+		map.put(PROCESS_DEFINITION_ID_PAPIER_PP, TASK_DEFINITION_ID_QUITTANCEMENT_PAPIER_PP);
+		map.put(PROCESS_DEFINITION_ID_ELECTRONIQUE_PP, TASK_DEFINITION_ID_QUITTANCEMENT_ELECTRONIQUE_PP);
+		map.put(PROCESS_DEFINITION_ID_PAPIER_PM, TASK_DEFINITION_ID_QUITTANCEMENT_PAPIER_PM);
+		map.put(PROCESS_DEFINITION_ID_ELECTRONIQUE_PM, TASK_DEFINITION_ID_QUITTANCEMENT_ELECTRONIQUE_PM);
 		return map;
 	}
 
 	private static Map<String, String> buildTaskDefinitionIdsRetourFromProcessDefinitionIdMap() {
-		final Map<String, String> map = new HashMap<>(2);
-		map.put(PROCESS_DEFINITION_ID_PAPIER, TASK_DEFINITION_ID_RETOUR_PAPIER);
-		map.put(PROCESS_DEFINITION_ID_ELECTRONIQUE, TASK_DEFINITION_ID_RETOUR_ELECTRONIQUE);
+		final Map<String, String> map = new HashMap<>(4);
+		map.put(PROCESS_DEFINITION_ID_PAPIER_PP, TASK_DEFINITION_ID_RETOUR_PAPIER_PP);
+		map.put(PROCESS_DEFINITION_ID_ELECTRONIQUE_PP, TASK_DEFINITION_ID_RETOUR_ELECTRONIQUE_PP);
+		map.put(PROCESS_DEFINITION_ID_PAPIER_PM, TASK_DEFINITION_ID_RETOUR_PAPIER_PM);
+		map.put(PROCESS_DEFINITION_ID_ELECTRONIQUE_PM, TASK_DEFINITION_ID_RETOUR_ELECTRONIQUE_PM);
 		return map;
 	}
 
 	private static Collection<String> buildAttributeKeysToCopyFromIncomingMessages() {
-		return Arrays.asList(NUMERO_SEQUENCE_DI_ELECTRONIQUE);
+		return Collections.singletonList(NUMERO_SEQUENCE_DI_ELECTRONIQUE);
 	}
 
 	/**
