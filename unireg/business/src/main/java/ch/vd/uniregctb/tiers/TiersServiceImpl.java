@@ -4778,7 +4778,9 @@ public class TiersServiceImpl implements TiersService {
             } else if (referent instanceof AutreCommunaute) {
                 raisonSociale = Collections.singletonList(((AutreCommunaute) referent).getNom());
             } else if (referent instanceof Entreprise) {
-                raisonSociale = Collections.singletonList(getRaisonSociale((Entreprise) referent));
+	            raisonSociale = Collections.singletonList(getRaisonSociale((Entreprise) referent));
+            } else if (referent instanceof Etablissement) {
+	            raisonSociale = Collections.singletonList(getRaisonSociale((Etablissement) referent));
             } else if (referent instanceof CollectiviteAdministrative) {
                 try {
                     final ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative ca = serviceInfra.getCollectivite(((CollectiviteAdministrative) referent).getNumeroCollectiviteAdministrative());
