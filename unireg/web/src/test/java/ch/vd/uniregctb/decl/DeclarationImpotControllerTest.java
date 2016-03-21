@@ -120,6 +120,7 @@ public class DeclarationImpotControllerTest extends WebTestSpring3 {
 
 		request.setMethod("POST");
 		request.addParameter("tiersId", tiersId.toString());
+		request.addParameter("periodeFiscale", "2007");
 		request.addParameter("dateDebutPeriodeImposition", "01.01.2007");
 		request.addParameter("dateFinPeriodeImposition", "31.12.2007");
 		request.addParameter("typeDocument", TypeDocument.DECLARATION_IMPOT_COMPLETE_LOCAL.toString());
