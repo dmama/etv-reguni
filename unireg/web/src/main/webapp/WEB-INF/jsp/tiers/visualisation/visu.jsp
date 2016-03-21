@@ -236,7 +236,7 @@
 						<div id="tabContent_mandatairesTab" class="visuTiers">
 							<jsp:include page="pm/mandataires.jsp"/>
 						</div>
-						<div id="tabContent_specificitesFiscalesTab">
+						<div id="tabContent_specificitesFiscalesTab" class="visuTiers">
 							<jsp:include page="pm/specificites.jsp"/>
 						</div>
 						<div id="tabContent_etatsPMTab" class="visuTiers">
