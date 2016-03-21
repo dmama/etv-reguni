@@ -3,6 +3,7 @@ package ch.vd.unireg.interfaces.organisation.cache;
 import java.util.Map;
 import java.util.Objects;
 
+import org.apache.commons.collections4.Predicate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
@@ -203,12 +204,18 @@ public class ServiceOrganisationPersistentCache implements ServiceOrganisationRa
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void onOrganisationChange(long numero) {
-
+	public void onOrganisationChange(final long numero) {
 		if (LOGGER.isInfoEnabled()) {
 			LOGGER.info("Eviction des données cachées pour l'organisation n° " + numero);
 		}
 		cache.removeAll(numero);
+		siteCache.removeAll(numero);
+		siteCache.removeValues(new Predicate<Long>() {
+			@Override
+			public boolean evaluate(Long object) {
+				return numero == object;
+			}
+		});
 	}
 
 	@Override

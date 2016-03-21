@@ -6,6 +6,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.uniregctb.data.DataEventService;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer;
+import ch.vd.uniregctb.tiers.Entreprise;
+import ch.vd.uniregctb.tiers.Etablissement;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
@@ -22,11 +24,16 @@ public class IndexationManagerImpl implements IndexationManager {
 	@Transactional(rollbackFor = Throwable.class)
 	public void reindexTiers(long id) {
 
-		final Long indNo = getNumeroIndividu(id);
-		if (indNo != null) {
-			LOGGER.info("Demande de réindexation manuelle du tiers n°" + id + " (avec éviction du cache des données de l'individu n°" + indNo + ')');
+		final Long noIndividu = getNumeroIndividu(id);
+		final Long noCantonal = getNumeroCantonalRegistreEntreprises(id);
+		if (noIndividu != null) {
+			LOGGER.info("Demande de réindexation manuelle du tiers n°" + id + " (avec éviction du cache des données de l'individu n°" + noIndividu + ')');
 			// on en profite pour forcer l'éviction des données cachées pour l'individu
-			dataEventService.onIndividuChange(indNo);
+			dataEventService.onIndividuChange(noIndividu);
+		}
+		else if (noCantonal != null) {
+			LOGGER.info("Demande de réindexation manuelle du tiers n°" + id + " (avec éviction du cache des données de l'organisation/du site n°" + noCantonal + ')');
+			dataEventService.onOrganisationChange(noCantonal);
 		}
 		else {
 			LOGGER.info("Demande de réindexation manuelle du tiers n°" + id);
@@ -54,6 +61,26 @@ public class IndexationManagerImpl implements IndexationManager {
 			indNo = null;
 		}
 		return indNo;
+	}
+
+	/**
+	 * Retourne le numéro cantonal du registre des entreprises lié au tiers indiqué par son identifiant fiscal
+	 * @param id un numéro fiscal de tiers
+	 * @return le numéro cantonal du tiers entreprise (ou établissement) spécifié, ou <b>null</b> si cette information n'est pas disponible
+	 */
+	private Long getNumeroCantonalRegistreEntreprises(long id) {
+		final Tiers tiers = tiersDAO.get(id);
+		final Long noCantonal;
+		if (tiers instanceof Entreprise) {
+			noCantonal = ((Entreprise) tiers).getNumeroEntreprise();
+		}
+		else if (tiers instanceof Etablissement) {
+			noCantonal = ((Etablissement) tiers).getNumeroEtablissement();
+		}
+		else {
+			noCantonal = null;
+		}
+		return noCantonal;
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})

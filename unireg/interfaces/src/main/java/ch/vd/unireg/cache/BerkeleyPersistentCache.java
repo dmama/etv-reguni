@@ -2,6 +2,7 @@ package ch.vd.unireg.cache;
 
 import java.io.File;
 import java.io.Serializable;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -22,6 +23,7 @@ import com.sleepycat.je.SecondaryCursor;
 import com.sleepycat.je.SecondaryDatabase;
 import com.sleepycat.je.SecondaryKeyCreator;
 import com.sleepycat.je.Transaction;
+import org.apache.commons.collections4.Predicate;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
@@ -198,6 +200,17 @@ public class BerkeleyPersistentCache<T extends Serializable> implements Persiste
 	@Override
 	public void clear() {
 		map.clear();
+	}
+
+	@Override
+	public void removeValues(Predicate<? super T> removal) {
+		final Iterator<Map.Entry<ObjectKey, T>> iterator = map.entrySet().iterator();
+		while (iterator.hasNext()) {
+			final Map.Entry<ObjectKey, T> entry = iterator.next();
+			if (removal.evaluate(entry.getValue())) {
+				iterator.remove();
+			}
+		}
 	}
 
 	/**

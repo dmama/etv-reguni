@@ -10,10 +10,15 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.lang.management.ManagementFactory;
+import java.nio.file.FileVisitResult;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Map;
 
+import org.apache.commons.collections4.Predicate;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -62,41 +67,37 @@ public class SimpleDiskCache<T extends Serializable> implements PersistentCache<
 		final String filename = directory + calculateFilename(key);
 
 		// on recherche le fichier
-		FileInputStream fis;
+		final T read;
 		try {
-			fis = new FileInputStream(filename);
+			read = read(new File(filename));
 		}
 		catch (FileNotFoundException e) {
 			// le fichier n'existe pas -> pas d'objet
 			stats.addMiss();
 			return null;
 		}
-
-		// on désérialise le fichier
-		T object = null;
-		ObjectInputStream ois = null;
-		try {
-			ois = new ObjectInputStream(fis);
-			object = (T) ois.readObject();
-		}
 		catch (Throwable e) {
 			LOGGER.warn("Impossible de lire l'objet avec la clé [" + key.getId() + ',' + key.getComplement() + ']', e);
 			// le fichier est corrumpu ou illisible -> on l'efface
-			File file = new File(filename);
+			final File file = new File(filename);
 			//noinspection ResultOfMethodCallIgnored
 			file.delete();
 			stats.addMiss();
 			return null;
 		}
-		finally {
-			IOUtils.closeQuietly(fis);
-			IOUtils.closeQuietly(ois);
-		}
 
 		LOGGER.warn("time to get = " + ((System.nanoTime() - start) / 1000000L) + " ms");
-
 		stats.addHit();
-		return object;
+		return read;
+	}
+
+	private T read(File file) throws IOException, ClassNotFoundException {
+		try (FileInputStream fis = new FileInputStream(file);
+		     ObjectInputStream ois = new ObjectInputStream(fis)) {
+
+			//noinspection unchecked
+			return (T) ois.readObject();
+		}
 	}
 
 	private static String calculateFilename(ObjectKey key) {
@@ -151,28 +152,20 @@ public class SimpleDiskCache<T extends Serializable> implements PersistentCache<
 		final File tempfile = new File(tempname);
 
 		// on sérialise l'objet dans un fichier temporaire
-		FileOutputStream fos;
-		try {
-			fos = new FileOutputStream(tempfile);
+		;
+		try (FileOutputStream fos = new FileOutputStream(tempfile);
+			 ObjectOutputStream oos = new ObjectOutputStream(fos)) {
+
+			oos.writeObject(object);
 		}
 		catch (FileNotFoundException e) {
 			throw new RuntimeException(e);
-		}
-
-		ObjectOutputStream oos = null;
-		try {
-			oos = new ObjectOutputStream(fos);
-			oos.writeObject(object);
 		}
 		catch (Throwable e) {
 			LOGGER.warn("Impossible d'écrire l'objet avec la clé [" + key.getId() + ',' + key.getComplement() + ']', e);
 			//noinspection ResultOfMethodCallIgnored
 			tempfile.delete();
 			return;
-		}
-		finally {
-			IOUtils.closeQuietly(fos);
-			IOUtils.closeQuietly(oos);
 		}
 
 		// on renomme le fichier temporaire dans son appellation définitive (de manière aussi atomique que possible)
@@ -249,6 +242,39 @@ public class SimpleDiskCache<T extends Serializable> implements PersistentCache<
 					throw new RuntimeException("Impossible de supprimer le fichier [" + f + ']');
 				}
 			}
+		}
+	}
+
+	@Override
+	public void removeValues(final Predicate<? super T> removal) {
+		final File dir = new File(storeDir);
+		try {
+			Files.walkFileTree(dir.toPath(), new SimpleFileVisitor<Path>() {
+				@Override
+				public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+					final FileVisitResult result = super.visitFile(file, attrs);
+					T value;
+					try {
+						value = read(file.toFile());
+					}
+					catch (Throwable e) {
+						LOGGER.warn("Impossible de lire le fichier " + file.toString(), e);
+						file.toFile().delete();
+						value = null;
+					}
+
+					if (value != null && removal.evaluate(value)) {
+						if (!file.toFile().delete()) {
+							throw new RuntimeException("Impossible de supprimer le fichier [" + file + "]");
+						}
+					}
+
+					return result;
+				}
+			});
+		}
+		catch (IOException e) {
+			throw new RuntimeException(e);
 		}
 	}
 
