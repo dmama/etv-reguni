@@ -786,6 +786,13 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 		public int hashCode() {
 			return numeroOFS;
 		}
+
+		@Override
+		public String toString() {
+			return getClass().getSimpleName() + "{" +
+					"numeroOFS=" + numeroOFS +
+					'}';
+		}
 	}
 
 	@Override

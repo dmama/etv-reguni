@@ -8,7 +8,7 @@ import ch.vd.fidor.xml.regimefiscal.v1.RegimeFiscal;
 
 public class TypeRegimeFiscalImpl implements TypeRegimeFiscal, Serializable {
 
-	private static final long serialVersionUID = 8060746347370258231L;
+	private static final long serialVersionUID = 8700466175917224034L;
 
 	private final String code;
 	private final String libelle;
@@ -90,5 +90,21 @@ public class TypeRegimeFiscalImpl implements TypeRegimeFiscal, Serializable {
 	@Override
 	public Integer getDernierePeriodeFiscaleValidite() {
 		return dernierePeriodeFiscaleValidite;
+	}
+
+	@Override
+	public String toString() {
+		return "TypeRegimeFiscalImpl{" +
+				"code='" + code + '\'' +
+				", libelle='" + libelle + '\'' +
+				", cantonal=" + cantonal +
+				", federal=" + federal +
+				", pourPM=" + pourPM +
+				", pourAPM=" + pourAPM +
+				", defaultPourPM=" + defaultPourPM +
+				", defaultPourAPM=" + defaultPourAPM +
+				", premierePeriodeFiscaleValidite=" + premierePeriodeFiscaleValidite +
+				", dernierePeriodeFiscaleValidite=" + dernierePeriodeFiscaleValidite +
+				'}';
 	}
 }
