@@ -21,6 +21,7 @@ import ch.vd.unireg.interfaces.infra.mock.MockTypeRegimeFiscal;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.common.BusinessTestingConstants;
+import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.ModeleDocument;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.evenement.cedi.DossierElectroniqueHandler;
@@ -443,6 +444,60 @@ public class TacheSynchronizerInterceptorTest extends BusinessTest {
 					assertEquals(TypeContribuable.VAUDOIS_ORDINAIRE, tacheEnvoi.getTypeContribuable());
 					assertEquals(CategorieEntreprise.PM, tacheEnvoi.getCategorieEntreprise());
 				}
+			}
+		});
+	}
+
+	/**
+	 * [SIFISC-18358] Quand on créait manuellement une DI (sur la PF courante, en l'occurrence) avec des dates différentes des dates
+	 * de la période d'imposition calculée, la DI était ré-alignée sur ces dates de période d'imposition par l'intercepteur
+	 */
+	@Test
+	public void testCreationDILibreAvecDatesDifferentesDePeriodeTheorique() throws Exception {
+
+		final int thisYear = RegDate.get().year();
+		final RegDate dateDebut = date(thisYear, 1, 1);
+
+		// création d'une entreprise sans DI
+		final long pmId = doInNewTransactionAndSessionUnderSwitch(tacheSynchronizer, false, new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+				addRaisonSociale(entreprise, dateDebut, null, "Truc machin SA");
+				addFormeJuridique(entreprise, dateDebut, null, FormeJuridiqueEntreprise.SA);
+				addBouclement(entreprise, dateDebut, DayMonth.get(12, 31), 12);
+				addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addRegimeFiscalCH(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addForPrincipal(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Aubonne);
+				return entreprise.getNumero();
+			}
+		});
+
+		// création d'une DI "libre"
+		doInNewTransactionAndSessionUnderSwitch(tacheSynchronizer, true, new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final Entreprise entreprise = (Entreprise) tiersDAO.get(pmId);
+				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
+				final PeriodeFiscale pf = addPeriodeFiscale(thisYear);
+				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pf);
+				addDeclarationImpot(entreprise, pf, dateDebut.addDays(1), date(thisYear, 11, 30), dateDebut, date(thisYear, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
+			}
+		});
+
+		// vérifions que la DI a toujours les mêmes dates et ne s'est pas vue "réaligner"
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final Entreprise entreprise = (Entreprise) tiersDAO.get(pmId);
+				final List<Declaration> declarations = entreprise.getDeclarationsTriees();
+				assertNotNull(declarations);
+				assertEquals(1, declarations.size());
+				final Declaration declaration = declarations.get(0);
+				assertNotNull(declaration);
+				assertFalse(declaration.isAnnule());
+				assertEquals(dateDebut.addDays(1), declaration.getDateDebut());
+				assertEquals(date(thisYear, 11, 30), declaration.getDateFin());
 			}
 		});
 	}

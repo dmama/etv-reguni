@@ -1005,14 +1005,22 @@ public class TacheServiceImpl implements TacheService {
 
 			@Override
 			public Mutation compare(DeclarationImpotOrdinaire di, PeriodeImposition pi, RegDate dateReference) {
-				if (di.getTypeDeclaration() != pi.getTypeDocumentDeclaration()) {
-					return Mutation.MAJEURE;
+				if (di.getTypeContribuable() == pi.getTypeContribuable() && DateRangeHelper.equals(di, pi)) {
+					if (di.getTypeDeclaration() == pi.getTypeDocumentDeclaration() && DateRangeHelper.equals(((DeclarationImpotOrdinairePM) di).getExerciceCommercial(), ((PeriodeImpositionPersonnesMorales) pi).getExerciceCommercial())) {
+						return Mutation.AUCUNE;
+					}
+					else if (di.getTypeDeclaration() != pi.getTypeDocumentDeclaration()) {
+						return Mutation.MAJEURE;
+					}
+					else {
+						return Mutation.COMPATIBLE;
+					}
 				}
-				else if (di.getTypeContribuable() != pi.getTypeContribuable() || !DateRangeHelper.equals(((DeclarationImpotOrdinairePM) di).getExerciceCommercial(), ((PeriodeImpositionPersonnesMorales) pi).getExerciceCommercial())) {
+				else if (peutMettreAJourDeclarationExistante(di, pi, dateReference)) {
 					return Mutation.COMPATIBLE;
 				}
 				else {
-					return Mutation.AUCUNE;
+					return Mutation.MAJEURE;
 				}
 			}
 
