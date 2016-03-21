@@ -5997,7 +5997,7 @@ public class TiersServiceImpl implements TiersService {
 		final List<CapitalHisto> donneesCiviles = extractCapitauxCivils(entreprise);
 		final List<CapitalHisto> donneesFiscales = extractCapitauxFiscaux(entreprise, aussiAnnules);
 
-		return surchargeDonneesHisto(aussiAnnules, donneesCiviles, donneesFiscales);
+		return surchargeDonneesHisto(donneesCiviles, donneesFiscales);
 	}
 
 	@NotNull
@@ -6068,7 +6068,7 @@ public class TiersServiceImpl implements TiersService {
 		final List<FormeLegaleHisto> donneesCiviles = extractFormesLegalesCiviles(entreprise);
 		final List<FormeLegaleHisto> donneesFiscales = extractFormesLegalesFiscales(entreprise, aussiAnnulees);
 
-		return surchargeDonneesHisto(aussiAnnulees, donneesCiviles, donneesFiscales);
+		return surchargeDonneesHisto(donneesCiviles, donneesFiscales);
 	}
 
 	private List<FormeLegaleHisto> extractFormesLegalesCiviles(Entreprise entreprise) {
@@ -6091,9 +6091,9 @@ public class TiersServiceImpl implements TiersService {
 	}
 
 
-	private List<FormeLegaleHisto> extractFormesLegalesFiscales(Entreprise entreprise, boolean aussiAnnules) {
+	private List<FormeLegaleHisto> extractFormesLegalesFiscales(Entreprise entreprise, boolean aussiAnnulees) {
 		final List<FormeJuridiqueFiscaleEntreprise> fjs;
-		if (aussiAnnules) {
+		if (aussiAnnulees) {
 			fjs = entreprise.getFormesJuridiquesTriees();
 		} else {
 			fjs = entreprise.getFormesJuridiquesNonAnnuleesTriees();
@@ -6113,28 +6113,26 @@ public class TiersServiceImpl implements TiersService {
 		final List<RaisonSocialeHisto> donneesCiviles = extractRaisonsSocialesCiviles(entreprise);
 		final List<RaisonSocialeHisto> donneesFiscales = extractRaisonsSocialesFiscales(entreprise, aussiAnnulees);
 
-		return surchargeDonneesHisto(aussiAnnulees, donneesCiviles, donneesFiscales);
+		return surchargeDonneesHisto(donneesCiviles, donneesFiscales);
 	}
 
-	private <T extends DateRange & Annulable & Duplicable<T> & Rerangeable<T>> List<T> surchargeDonneesHisto(boolean avecAnnulees, List<T> donneesCiviles, List<T> donneesFiscales) {
+	/**
+	 * Surcharge les données civiles avec les données fiscales, en prenant soin de mettre les éventuelles données annulées de côté
+	 * et de appondre à la suite des données non-annulées.
+	 */
+	private static <T extends DateRange & Annulable & Duplicable<T> & Rerangeable<T>> List<T> surchargeDonneesHisto(List<T> donneesCiviles, List<T> donneesFiscales) {
 		List<T> nonAnnulees = new ArrayList<>();
 		List<T> annulees = new ArrayList<>();
-		if (avecAnnulees) {
-			for (T raison : donneesFiscales) {
-				if (raison.isAnnule()) {
-					annulees.add(raison);
-				} else {
-					nonAnnulees.add(raison);
-				}
+		for (T raison : donneesFiscales) {
+			if (raison.isAnnule()) {
+				annulees.add(raison);
+			} else {
+				nonAnnulees.add(raison);
 			}
-		} else {
-			nonAnnulees = donneesFiscales;
 		}
 
 		final List<T> result = DateRangeHelper.override(donneesCiviles, nonAnnulees, new GentilDateRangeExtendedAdapterCallback<T>());
-		if (avecAnnulees) {
-			result.addAll(annulees);
-		}
+		result.addAll(annulees);
 		return result;
 	}
 
@@ -6158,9 +6156,9 @@ public class TiersServiceImpl implements TiersService {
 	}
 
 
-	private List<RaisonSocialeHisto> extractRaisonsSocialesFiscales(Entreprise entreprise, boolean avecAnnulees) {
+	private List<RaisonSocialeHisto> extractRaisonsSocialesFiscales(Entreprise entreprise, boolean aussiAnnulees) {
 		final List<RaisonSocialeFiscaleEntreprise> rss;
-		if (avecAnnulees) {
+		if (aussiAnnulees) {
 			rss = entreprise.getRaisonsSocialesTriees();
 		} else {
 			rss = entreprise.getRaisonsSocialesNonAnnuleesTriees();
@@ -6180,7 +6178,7 @@ public class TiersServiceImpl implements TiersService {
 		final List<DomicileHisto> donneesCiviles = extractSiegesCiviles(entreprise);
 		final List<DomicileHisto> donneesFiscales = extractSiegesFiscaux(entreprise, aussiAnnules);
 
-		return surchargeDonneesHisto(aussiAnnules, donneesCiviles, donneesFiscales);
+		return surchargeDonneesHisto(donneesCiviles, donneesFiscales);
 	}
 
 	private List<DomicileHisto> extractSiegesCiviles(Entreprise entreprise) {
@@ -6242,7 +6240,7 @@ public class TiersServiceImpl implements TiersService {
 		final List<DomicileHisto> donneesCiviles = extractDomicilesCivilsEtablissement(etablissement);
 		final List<DomicileHisto> donneesFiscales = extractDomicilesFiscauxEtablissement(etablissement, aussiAnnules);
 
-		return surchargeDonneesHisto(aussiAnnules, donneesCiviles, donneesFiscales);
+		return surchargeDonneesHisto(donneesCiviles, donneesFiscales);
 	}
 
 	private List<DomicileHisto> extractDomicilesCivilsEtablissement(Etablissement etablissement) {
