@@ -6363,6 +6363,111 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		}
 	}
 
+	/**
+	 * [SIFISC-18108] Une entreprise radiée il y a quelques années se vo(ya)it attribuer deux liens vers son établissement principal :
+	 * - un pour la période fiscale
+	 * - un depuis la date de début des données civiles de RCEnt, sans date de fin
+	 * (ce deuxième lien ne devrait pas exister, puisque l'entreprise est en fait morte depuis un moment...)
+	 */
+	@Test
+	public void testMigrationEntrepriseFiscalementEnFaillite() throws Exception {
+
+		final long idEntreprise = 12761L;
+		final long noCantonalEntreprise = 45415187152L;
+		final long noCantonalEtablissementPrincipal = 445154123486L;
+		final RegDate dateDebut = RegDate.get(2005, 4, 12);
+		final RegDate datePrononceFaillite = RegDate.get(2009, 8, 4);
+		final RegDate dateDebutDonneesCiviles = RegDate.get(2015, 12, 5);
+
+		// mise en place dans RegPM
+		final RegpmEntreprise regpm = EntrepriseMigratorTest.buildEntreprise(idEntreprise);
+		regpm.setNumeroCantonal(noCantonalEntreprise);
+		EntrepriseMigratorTest.addRaisonSociale(regpm, dateDebut, "Toto & Cie", null, null, true);
+		EntrepriseMigratorTest.addFormeJuridique(regpm, dateDebut, EntrepriseMigratorTest.createTypeFormeJuridique("S.A.R.L.", RegpmCategoriePersonneMorale.PM));
+		EntrepriseMigratorTest.addForPrincipalSuisse(regpm, dateDebut, RegpmTypeForPrincipal.SIEGE, Commune.LAUSANNE);
+		EntrepriseMigratorTest.addSiegeSuisse(regpm, dateDebut, Commune.LAUSANNE);
+		EntrepriseMigratorTest.addAssujettissement(regpm, dateDebut, null, RegpmTypeAssujettissement.LILIC);
+		EntrepriseMigratorTest.addRegimeFiscalVD(regpm, dateDebut, null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
+		EntrepriseMigratorTest.addRegimeFiscalCH(regpm, dateDebut, null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
+		EntrepriseMigratorTest.addPrononceFaillite(regpm, datePrononceFaillite, RegpmTypeEtatEntreprise.EN_FAILLITE, datePrononceFaillite);
+		regpm.setDateBouclementFutur(RegDate.get(2009, 12, 31));
+
+		// mise en place dans RCEnt
+		organisationService.setUp(new MockServiceOrganisation() {
+			@Override
+			protected void init() {
+				final MockOrganisation org = addOrganisation(noCantonalEntreprise);
+				final MockSiteOrganisation sitePrincipal = addSite(org, noCantonalEtablissementPrincipal, dateDebutDonneesCiviles, new MockDonneesRegistreIDE(), new MockDonneesRC());
+				sitePrincipal.changeTypeDeSite(dateDebutDonneesCiviles, TypeDeSite.ETABLISSEMENT_PRINCIPAL);
+				sitePrincipal.changeNom(dateDebutDonneesCiviles, "Toto & Cie");
+				sitePrincipal.changeFormeLegale(dateDebutDonneesCiviles, FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE);
+				sitePrincipal.addSiege(dateDebutDonneesCiviles, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS());
+			}
+		});
+
+		final MockGraphe graphe = new MockGraphe(Collections.singletonList(regpm),
+		                                         null,
+		                                         null);
+
+		activityManager.setup(ALL_ACTIVE);
+
+		final LoggedMessages lms = grapheMigrator.migrate(graphe);
+		Assert.assertNotNull(lms);
+
+		// vérification des données en base et récupération de l'identifiant fiscal de l'établissement principal
+		final Mutable<Long> idEtablissementPrincipal = new MutableObject<>();
+		doInUniregTransaction(true, status -> {
+			final Entreprise entreprise = uniregStore.getEntityFromDb(Entreprise.class, idEntreprise);
+			Assert.assertNotNull(entreprise);
+
+			final List<ActiviteEconomique> rapportsActiviteEconomique = entreprise.getRapportsSujet().stream()
+					.filter(ret -> ret.getType() == TypeRapportEntreTiers.ACTIVITE_ECONOMIQUE)
+					.map(ret -> (ActiviteEconomique) ret)
+					.collect(Collectors.toList());
+			Assert.assertEquals(1, rapportsActiviteEconomique.size());
+
+			final ActiviteEconomique ae = rapportsActiviteEconomique.get(0);
+			Assert.assertNotNull(ae);
+			Assert.assertFalse(ae.isAnnule());
+			Assert.assertEquals(dateDebut, ae.getDateDebut());
+			Assert.assertEquals(datePrononceFaillite, ae.getDateFin());
+			Assert.assertTrue(ae.isPrincipal());
+			idEtablissementPrincipal.setValue(ae.getObjetId());
+
+			final Etablissement etbPrincipal = uniregStore.getEntityFromDb(Etablissement.class, idEtablissementPrincipal.getValue());
+			Assert.assertNotNull(etbPrincipal);
+			Assert.assertEquals((Long) noCantonalEtablissementPrincipal, etbPrincipal.getNumeroEtablissement());
+		});
+
+		// vérification des messages de log
+		final Map<LogCategory, List<String>> messages = buildTextualMessages(lms);
+		{
+			// vérification des messages dans le contexte "SUIVI"
+			final List<String> msgs = messages.get(LogCategory.SUIVI);
+			Assert.assertEquals(15, msgs.size());
+			Assert.assertEquals("WARN;" + idEntreprise + ";Active;;" + noCantonalEntreprise + ";;;;;;;;;;;;;L'entreprise n'existait pas dans Unireg avec ce numéro de contribuable.", msgs.get(0));
+			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;" + noCantonalEntreprise + ";;;;;;;;;;;;;Date de fin d'activité proposée (date de prononcé de faillite) : 04.08.2009.", msgs.get(1));
+			Assert.assertEquals("WARN;" + idEntreprise + ";Active;;" + noCantonalEntreprise + ";;;;;;;;;;;;;Ajout d'une date de bouclement estimée au 31.12.2008 pour combler l'absence d'exercice commercial dans RegPM sur la période [12.04.2005 -> 31.12.2009].", msgs.get(2));
+			Assert.assertEquals("WARN;" + idEntreprise + ";Active;;" + noCantonalEntreprise + ";;;;;;;;;;;;;Ajout d'une date de bouclement estimée au 31.12.2007 pour combler l'absence d'exercice commercial dans RegPM sur la période [12.04.2005 -> 31.12.2009].", msgs.get(3));
+			Assert.assertEquals("WARN;" + idEntreprise + ";Active;;" + noCantonalEntreprise + ";;;;;;;;;;;;;Ajout d'une date de bouclement estimée au 31.12.2006 pour combler l'absence d'exercice commercial dans RegPM sur la période [12.04.2005 -> 31.12.2009].", msgs.get(4));
+			Assert.assertEquals("WARN;" + idEntreprise + ";Active;;" + noCantonalEntreprise + ";;;;;;;;;;;;;Ajout d'une date de bouclement estimée au 31.12.2005 pour combler l'absence d'exercice commercial dans RegPM sur la période [12.04.2005 -> 31.12.2009].", msgs.get(5));
+			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;" + noCantonalEntreprise + ";;;;;;;;;;;;;Cycle de bouclements créé, applicable dès le 01.12.2005 : tous les 12 mois, à partir du premier 31.12.", msgs.get(6));
+			Assert.assertEquals("ERROR;" + idEntreprise + ";Active;;" + noCantonalEntreprise + ";;;;;;;;;;;;;Aucune date d'envoi de lettre de bienvenue trouvée malgré la présence d'assujettissement(s).", msgs.get(7));
+			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;" + noCantonalEntreprise + ";;;;;;;;;;;;;Etablissement principal " + FormatNumeroHelper.numeroCTBToDisplay(idEtablissementPrincipal.getValue()) + " créé en liaison avec le site civil " + noCantonalEtablissementPrincipal + ".", msgs.get(8));
+			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;" + noCantonalEntreprise + ";;;;;;;;;;;;;Données civiles d'établissement principal présentes dès le 05.12.2015, tous les sièges ultérieurs de RegPM seront ignorés.", msgs.get(9));
+			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;" + noCantonalEntreprise + ";;;;;;;;;;;;;Ré-utilisation de l'établissement principal " + FormatNumeroHelper.numeroCTBToDisplay(idEtablissementPrincipal.getValue()) + " identifié par son numéro cantonal.", msgs.get(10));
+			Assert.assertEquals("WARN;" + idEntreprise + ";Active;;" + noCantonalEntreprise + ";;;;;;;;;;;;;Entreprise clôturée fiscalement avant l'avènement des données RCEnt, pas de lien vers l'établissement principal généré après le 04.12.2015.", msgs.get(11));
+			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;" + noCantonalEntreprise + ";;;;;;;;;;;;;Domicile de l'établissement principal " + FormatNumeroHelper.numeroCTBToDisplay(idEtablissementPrincipal.getValue()) + " : [12.04.2005 -> 04.08.2009] sur COMMUNE_OU_FRACTION_VD/5586.", msgs.get(12));
+			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;" + noCantonalEntreprise + ";;;;;;;;;;;;;Etat 'EN_FAILLITE' migré, dès le 04.08.2009.", msgs.get(13));
+			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;" + noCantonalEntreprise + ";;;;;;;;;;;;;Entreprise migrée : " + FormatNumeroHelper.numeroCTBToDisplay(idEntreprise) + ".", msgs.get(14));
+		}
+		{
+			// vérification des messages dans le contexte "RAPPORTS_ENTRE_TIERS"
+			final List<String> msgs = messages.get(LogCategory.RAPPORTS_ENTRE_TIERS);
+			Assert.assertEquals(1, msgs.size());
+			Assert.assertEquals("INFO;ETABLISSEMENT_ENTITE_JURIDIQUE;2005-04-12;2009-08-04;;;;" + idEtablissementPrincipal.getValue() + ";" + idEntreprise + ";;;" + idEntreprise + ";", msgs.get(0));
+		}
+	}
 
 	/**
 	 * Ceci est un test utile au debugging, on charge un graphe depuis un fichier sur disque (identique à ce que

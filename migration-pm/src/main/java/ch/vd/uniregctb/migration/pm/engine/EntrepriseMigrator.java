@@ -3364,7 +3364,9 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 			final DateRange rangeLien = new DateRangeHelper.Range(sieges.firstKey(), dateFinDonneesFiscales);
 
 			// attention, s'il y avait des données civiles, il faut fusionner les deux...
-			if (premierEtablissementLieAvecCivil != null) {
+			// [SIFISC-18108] si l'entreprise avait arrêté son activité avant la date de prise en charge de RCEnt, on ne prend pas en compte le lien donné par RCEnt
+			// (qui n'est alors qu'une photo souvenir...)
+			if (premierEtablissementLieAvecCivil != null && RegDateHelper.isAfter(dateFinActivite, dateFinEtablissementFiscal, NullDateBehavior.LATEST)) {
 				final List<DateRange> ranges = DateRangeHelper.merge(Stream.concat(Stream.of(rangeLien), premierEtablissementLieAvecCivil.getRight().stream())
 						                                                     .sorted(Comparator.comparing(DateRange::getDateDebut))
 						                                                     .collect(Collectors.toList()));
@@ -3372,6 +3374,12 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 				addLinksAciviteEconomiquePrincipale(entrepriseSupplier, etbPrincipal, ranges, linkCollector);
 			}
 			else {
+				// [SIFISC-18108] un peu de log pour les entreprises liées à RCEnt mais fermées fiscalement bien avant
+				if (premierEtablissementLieAvecCivil != null && !premierEtablissementLieAvecCivil.getRight().isEmpty()) {
+					mr.addMessage(LogCategory.SUIVI, LogLevel.WARN,
+					              String.format("Entreprise clôturée fiscalement avant l'avènement des données RCEnt, pas de lien vers l'établissement principal généré après le %s.",
+					                            StringRenderers.DATE_RENDERER.toString(dateFinEtablissementFiscal)));
+				}
 				addLinksAciviteEconomiquePrincipale(entrepriseSupplier, etbPrincipal, Collections.singletonList(rangeLien), linkCollector);
 			}
 
