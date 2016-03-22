@@ -373,7 +373,7 @@
 				 <tr class="<unireg:nextRowClass/>">
 					<td><fmt:message key="label.param.ageRentierFemme"/></td>
 					<%--@elvariable id="ageRentierFemmeParDefaut" type="java.lang.String"--%>
-					td class="nombre">${ageRentierFemmeParDefaut}</td>
+					<td class="nombre">${ageRentierFemmeParDefaut}</td>
 					<td class="valeur">
 						 <sf:input path="ageRentierFemme" cssClass="valeur nombre" cssErrorClass="valeur input-with-errors nombre" maxlength="2"/>
 					</td>
