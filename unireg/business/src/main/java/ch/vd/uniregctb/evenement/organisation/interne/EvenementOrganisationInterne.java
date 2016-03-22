@@ -1018,7 +1018,7 @@ public abstract class EvenementOrganisationInterne {
 
 	private boolean isForPrincipalExistantSurTouteLaPeriode(DateRange periode, List<ForFiscalPrincipalPM> forsFiscauxPrincipauxActifsSorted) {
 		final List<DateRange> intersections = DateRangeHelper.intersections(periode, forsFiscauxPrincipauxActifsSorted);
-		return intersections.size() == 1 && DateRangeHelper.within(periode, intersections.get(0)); // S'il devait y avoir des trous, cela voudrait dire qu'il n'y a pas une couverture continue par un for principal.
+		return intersections != null && intersections.size() == 1 && DateRangeHelper.within(periode, intersections.get(0)); // S'il devait y avoir des trous, cela voudrait dire qu'il n'y a pas une couverture continue par un for principal.
 	}
 
 	protected boolean hasCapital(Organisation organisation, RegDate date) {

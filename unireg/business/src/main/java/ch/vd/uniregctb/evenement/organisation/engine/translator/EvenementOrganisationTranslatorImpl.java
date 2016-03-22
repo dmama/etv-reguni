@@ -20,6 +20,7 @@ import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.common.CollectionsUtils;
+import ch.vd.uniregctb.common.StringRenderer;
 import ch.vd.uniregctb.data.DataEventService;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
 import ch.vd.uniregctb.evenement.identification.contribuable.CriteresEntreprise;
@@ -55,10 +56,13 @@ import ch.vd.uniregctb.identification.contribuable.TooManyIdentificationPossibil
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.ServiceOrganisationService;
+import ch.vd.uniregctb.metier.MetierServiceException;
 import ch.vd.uniregctb.metier.MetierServicePM;
+import ch.vd.uniregctb.metier.RattachementOrganisationResult;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.tiers.Entreprise;
+import ch.vd.uniregctb.tiers.Etablissement;
 import ch.vd.uniregctb.tiers.OrganisationNotFoundException;
 import ch.vd.uniregctb.tiers.PlusieursEntreprisesAvecMemeNumeroOrganisationException;
 import ch.vd.uniregctb.tiers.RaisonSocialeFiscaleEntreprise;
@@ -72,6 +76,20 @@ import ch.vd.uniregctb.tiers.TiersService;
 public class EvenementOrganisationTranslatorImpl implements EvenementOrganisationTranslator, InitializingBean {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(EvenementOrganisationTranslatorImpl.class);
+
+	private static final StringRenderer<Etablissement> ETABLISSEMENT_RENDERER = new StringRenderer<Etablissement>() {
+		@Override
+		public String toString(Etablissement etablissement) {
+			return String.format("n°%s", etablissement.getNumero());
+		}
+	};
+
+	private static final StringRenderer<SiteOrganisation> SITE_RENDERER = new StringRenderer<SiteOrganisation>() {
+		@Override
+		public String toString(SiteOrganisation site) {
+			return String.format("n°%s", site.getNumeroSite());
+		}
+	};
 
 	private ServiceOrganisationService serviceOrganisationService;
 	private ServiceInfrastructureService serviceInfrastructureService;
@@ -225,6 +243,7 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 					                                     attributsCivilsAffichage(raisonSocialeCivile, noIdeCivil));
 					Audit.info(event.getNoEvenement(), message);
 					evenements.add(new MessageSuivi(event, organisation, entreprise, context, options, message));
+					evenements.add(rattacheOrganisation(event, organisation, entreprise, context, options));
 
 				}
 				// L'identificatione est un échec: selon toute vraisemblance, on connait le tiers mais on n'arrive pas à l'identifier avec certitude.
@@ -325,6 +344,36 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 			return null;
 		}
 		return CollectionsUtils.getLastElement(toutes).getRaisonSociale();
+	}
+
+	/**
+	 * Rapprocher une organisation et une entreprise en les rattachant l'une à l'autre, ainsi que leurs établissements.
+	 *
+	 * @param organisation l'organisation à rattacher
+	 * @param entreprise l'entreprise cible
+	 * @throws EvenementOrganisationException en cas d'echec de l'opération de rattachement
+	 */
+	protected EvenementOrganisationInterne rattacheOrganisation(EvenementOrganisation event, Organisation organisation, Entreprise entreprise, EvenementOrganisationContext context, EvenementOrganisationOptions options) throws
+			EvenementOrganisationException {
+		try {
+			RattachementOrganisationResult result = metierServicePM.rattacheOrganisationEntreprise(organisation, entreprise, event.getDateEvenement());
+			if (result.isPartiel()) {
+				String etablissementsNonRattaches = CollectionsUtils.toString(result.getEtablissementsNonRattaches(), ETABLISSEMENT_RENDERER, "");
+				String sitesNonRattaches = CollectionsUtils.toString(result.getSitesNonRattaches(), SITE_RENDERER, "");
+				return new MessageSuivi(event, organisation, entreprise, context, options,
+						String.format("Organisation civile n°%d rattachée à l'entreprise n°%d. Cependant, certains établissements n'ont pas trouvé d'équivalent civil: %s. Aussi des sites civils secondaires n'ont pas pu être rattachés et seront créés: %s",
+						              organisation.getNumeroOrganisation(), entreprise.getNumero(), etablissementsNonRattaches, sitesNonRattaches));
+			} else {
+				return new MessageSuivi(event, organisation, entreprise, context, options,
+						String.format("Organisation civile n°%d rattachée avec succès à l'entreprise n°%d, avec tous ses établissements.",
+						              organisation.getNumeroOrganisation(), entreprise.getNumero()));
+			}
+		}
+		catch (MetierServiceException e) {
+			throw new EvenementOrganisationException(
+					String.format("Impossible de rattacher l'organisation civile n°%d à l'entreprise n°%d", organisation.getNumeroOrganisation(), entreprise.getNumero()),
+					e);
+		}
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})

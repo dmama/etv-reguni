@@ -1104,7 +1104,7 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 	protected RaisonSocialeFiscaleEntreprise addRaisonSocialeFiscaleEntreprise(Entreprise entreprise, RegDate dateDebut, RegDate dateFin, String raisonSociale) {
 		final RaisonSocialeFiscaleEntreprise raisonSocialeFiscale = new RaisonSocialeFiscaleEntreprise(dateDebut, dateFin, raisonSociale);
 		entreprise.addDonneeCivile(raisonSocialeFiscale);
-		return merge(raisonSocialeFiscale);
+		return raisonSocialeFiscale;
 	}
 
 	protected Etablissement addEtablissement() {

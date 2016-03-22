@@ -8,17 +8,25 @@ import java.util.Map;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
+import ch.vd.unireg.interfaces.organisation.data.Organisation;
+import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 import ch.vd.uniregctb.adresse.AdresseService;
+import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.efacture.EFactureService;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.ServiceOrganisationService;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
+import ch.vd.uniregctb.tiers.CapitalFiscalEntreprise;
+import ch.vd.uniregctb.tiers.DomicileEtablissement;
 import ch.vd.uniregctb.tiers.DomicileHisto;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.Etablissement;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
+import ch.vd.uniregctb.tiers.FormeJuridiqueFiscaleEntreprise;
+import ch.vd.uniregctb.tiers.RaisonSocialeFiscaleEntreprise;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.tiers.dao.RemarqueDAO;
@@ -142,6 +150,89 @@ public class MetierServicePMImpl implements MetierServicePM {
 				entreprise.getForsFiscauxSecondairesActifsSortedMapped(MotifRattachement.ETABLISSEMENT_STABLE);
 
 		return AjustementForsSecondairesHelper.getResultatAjustementForsSecondaires(tousLesDomicilesVD, tousLesForsFiscauxSecondairesParCommune, dateAuPlusTot);
+	}
+
+	@Override
+	public RattachementOrganisationResult rattacheOrganisationEntreprise(Organisation organisation, Entreprise entreprise, RegDate date) throws MetierServiceException {
+
+		if (organisation.getSitePrincipal(date) == null) {
+			throw new MetierServiceException(String.format("L'organisation %d n'a pas de site principal à la date demandée %s.", organisation.getNumeroOrganisation(), RegDateHelper.dateToDisplayString(date)));
+		}
+
+		if (entreprise.getNumeroEntreprise() != null && entreprise.getNumeroEntreprise() != organisation.getNumeroOrganisation()) {
+			throw new MetierServiceException(String.format("L'entreprise %d est déjà rattachée à une autre organisation!", entreprise.getNumero()));
+		}
+
+		// Rapprochement de l'entreprise
+		entreprise.setNumeroEntreprise(organisation.getNumeroOrganisation());
+
+		final List<RaisonSocialeFiscaleEntreprise> raisonsSociales = entreprise.getRaisonsSocialesNonAnnuleesTriees();
+		if (!raisonsSociales.isEmpty()) {
+			final RaisonSocialeFiscaleEntreprise raisonSociale = CollectionsUtils.getLastElement(raisonsSociales);
+			if (raisonSociale.getDateFin() == null) {
+				tiersService.closeRaisonSocialeFiscale(raisonSociale, date.getOneDayBefore());
+			}
+		}
+
+		final List<FormeJuridiqueFiscaleEntreprise> formesJuridiques = entreprise.getFormesJuridiquesNonAnnuleesTriees();
+		if (!formesJuridiques.isEmpty()) {
+			tiersService.closeFormeJuridiqueFiscale(CollectionsUtils.getLastElement(formesJuridiques), date.getOneDayBefore());
+		}
+
+		final List<CapitalFiscalEntreprise> capitaux = entreprise.getCapitauxNonAnnulesTries();
+		if (!capitaux.isEmpty()) {
+			tiersService.closeCapitalFiscal(CollectionsUtils.getLastElement(capitaux), date.getOneDayBefore());
+		}
+
+		RattachementOrganisationResult result = new RattachementOrganisationResult(entreprise);
+
+		// Rapprochement de l'établissement principal
+		SiteOrganisation site = organisation.getSitePrincipal(date).getPayload();
+		DateRanged<Etablissement> etablissementPrincipalRange = CollectionsUtils.getLastElement(tiersService.getEtablissementsPrincipauxEntreprise(entreprise));
+		if (etablissementPrincipalRange.getDateDebut().isAfter(date)) {
+			throw new MetierServiceException(String.format("L'établissement principal %d commence à une date postérieure à la tentative de rapprochement du %s. Impossible de continuer.", organisation.getNumeroOrganisation(), RegDateHelper.dateToDisplayString(date)));
+		}
+
+		final Etablissement etablissementPrincipal = etablissementPrincipalRange.getPayload();
+
+		final DomicileEtablissement domicile = CollectionsUtils.getLastElement(etablissementPrincipal.getSortedDomiciles(false));
+
+		if (domicile != null && domicile.getNumeroOfsAutoriteFiscale().equals(organisation.getSiegePrincipal(date).getNoOfs())) {
+			etablissementPrincipal.setNumeroEtablissement(site.getNumeroSite());
+			tiersService.closeDomicileEtablissement(domicile, date.getOneDayBefore());
+			result.addEtablissementRattache(etablissementPrincipal);
+		} else {
+			throw new MetierServiceException(String.format("L'établissement principal %d n'a pas de domicile ou celui-ci ne correspond pas avec celui que rapporte le régistre civil.", etablissementPrincipal.getNumero()));
+		}
+
+		// Traitement minimum des établissements secondaires (vérifier si déjà connu et ne pas ajouter aux listes)
+		Map<Long, SiteOrganisation> matches = new HashMap<>();
+
+		for (SiteOrganisation siteSecondaire : organisation.getSitesSecondaires(date)) {
+			matches.put(siteSecondaire.getNumeroSite(), siteSecondaire);
+		}
+
+		for (Etablissement etablissementSecondaire : tiersService.getEtablissementsSecondairesEntreprise(entreprise, date)) {
+			if (etablissementSecondaire.isConnuAuCivil()) {
+				if (matches.get(etablissementSecondaire.getNumeroEtablissement()) != null) {
+					matches.remove(etablissementSecondaire.getNumeroEtablissement());
+					result.addEtablissementRattache(etablissementSecondaire);
+				}
+				else {
+					throw new MetierServiceException(String.format("L'établissement secondaire %d est connu au civil mais son numéro ne correspond à aucun des établissements civil!", etablissementSecondaire.getNumeroEtablissement()));
+				}
+			} else {
+				result.addEtablissementNonRattache(etablissementSecondaire);
+			}
+		}
+
+		for (Map.Entry<Long, SiteOrganisation> entry : matches.entrySet()) {
+			result.addSiteNonRattache(entry.getValue());
+		}
+
+		// TODO: Vrai rapprochement des établissements secondaires
+
+		return result;
 	}
 
 
