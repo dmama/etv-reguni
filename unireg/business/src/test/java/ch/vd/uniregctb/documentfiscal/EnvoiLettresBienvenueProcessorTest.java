@@ -1,7 +1,6 @@
 package ch.vd.uniregctb.documentfiscal;
 
 import java.math.BigDecimal;
-import java.util.EnumSet;
 import java.util.Set;
 
 import org.junit.Assert;
@@ -23,6 +22,7 @@ import ch.vd.unireg.interfaces.organisation.mock.data.MockOrganisation;
 import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockSiteOrganisationFactory;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
+import ch.vd.uniregctb.parametrage.DelaisService;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.MontantMonetaire;
@@ -39,6 +39,7 @@ public class EnvoiLettresBienvenueProcessorTest extends BusinessTest {
 
 	private EnvoiLettresBienvenueProcessor processor;
 	private ParametreAppService paramAppService;
+	private DelaisService delaisService;
 	private Integer[] seuilLettresBienvenue;
 
 	@Override
@@ -49,6 +50,8 @@ public class EnvoiLettresBienvenueProcessorTest extends BusinessTest {
 		final AutreDocumentFiscalService autreDocumentFiscalService = getBean(AutreDocumentFiscalService.class, "autreDocumentFiscalService");
 		processor = new EnvoiLettresBienvenueProcessor(paramAppService, hibernateTemplate, transactionManager,
 		                                               tiersService, assujettissementService, autreDocumentFiscalService);
+
+		delaisService = getBean(DelaisService.class, "delaisService");
 
 		// nécessaire tant que nous sommes avant le 11.06.2016
 		seuilLettresBienvenue = paramAppService.getDateDebutEnvoiLettresBienvenue();
@@ -292,13 +295,8 @@ public class EnvoiLettresBienvenueProcessorTest extends BusinessTest {
 		});
 	}
 
-	private static RegDate addJours(RegDate src, int nbJours) {
-		final Set<RegDate.WeekDay> WE = EnumSet.of(RegDate.WeekDay.SATURDAY, RegDate.WeekDay.SUNDAY);
-		RegDate net = src.addDays(nbJours);
-		while (WE.contains(net.getWeekDay())) {
-			net = net.getOneDayAfter();
-		}
-		return net;
+	private RegDate addJours(RegDate src, int nbJours) {
+		return delaisService.getFinDelai(src, nbJours, false, true);
 	}
 
 	@Test
