@@ -57,7 +57,7 @@ public enum ParametreEnum {
 	ageRentierFemme("64", Type.entierPositif, true);
 
 	/**
-	 * Les differents type de paramétres possibles
+	 * Les differents type de paramètres possibles
 	 */
 	public enum Type {
 		entierPositif, annee, jourDansAnnee, jourDansMois, delaisEnJour, delaisEnMois, date

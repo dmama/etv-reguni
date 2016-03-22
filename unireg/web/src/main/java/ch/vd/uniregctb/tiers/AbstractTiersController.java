@@ -218,7 +218,7 @@ public abstract class AbstractTiersController extends AbstractSimpleFormControll
 	public static final String PERIODE_DECOMPTE_MAP_NAME = "periodeDecomptes";
 
 	/**
-	 * Le nom de l'attribut utilise pour l'objet stockant les paramétres de l'application
+	 * Le nom de l'attribut utilise pour l'objet stockant les paramètres de l'application
 	 */
 	private static final String PARAMETRES_APP = "parametresApp";
 

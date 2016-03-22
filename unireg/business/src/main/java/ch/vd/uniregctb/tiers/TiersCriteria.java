@@ -258,7 +258,7 @@ public class TiersCriteria implements Serializable, TiersFilter {
 	private String numeroIDE;
 
 	/**
-	 * @return true si aucun paramétre de recherche n'est renseigné. false
+	 * @return true si aucun paramètre de recherche n'est renseigné. false
 	 *         autrement.
 	 */
 	public boolean isEmpty() {

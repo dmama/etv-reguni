@@ -59,7 +59,7 @@ public class TiersListController implements MessageSourceAware {
 	public static final String FOR_PRINCIPAL_ACTIF_PARAMETER_NAME = "forPrincipalActif";
 
 	/**
-	 * Le nom de l'attribut utilise pour l'objet stockant les paramétres de l'application
+	 * Le nom de l'attribut utilise pour l'objet stockant les paramètres de l'application
 	 */
 	private static final String PARAMETRES_APP = "parametresApp";
 

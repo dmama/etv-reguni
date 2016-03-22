@@ -70,7 +70,7 @@ public class ListeRecapCriteria implements Serializable {
 	}
 
 	/**
-	 * @return true si aucun paramétre de recherche n'est renseigné. false
+	 * @return true si aucun paramètre de recherche n'est renseigné. false
 	 *         autrement.
 	 */
 	public boolean isEmpty() {

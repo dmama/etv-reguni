@@ -16,7 +16,7 @@ public interface ParamApplicationManager {
 	/**
 	 * Sauvegarde les valeurs du formulaire
 	 * 
-	 * @param form le formBackingObject contenant les valeurs des paramétres à sauver
+	 * @param form le formBackingObject contenant les valeurs des paramètres à sauver
 	 */
 	@Transactional(rollbackFor = Throwable.class)
 	void save(ParamApplicationView form);

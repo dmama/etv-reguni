@@ -100,7 +100,7 @@ public class TacheCriteriaViewBase implements Serializable {
 	}
 
 	/**
-	 * @return true si aucun paramétre de recherche n'est renseigné. false autrement.
+	 * @return true si aucun paramètre de recherche n'est renseigné. false autrement.
 	 */
 	public boolean isEmpty() {
 		return etatTache == null &&

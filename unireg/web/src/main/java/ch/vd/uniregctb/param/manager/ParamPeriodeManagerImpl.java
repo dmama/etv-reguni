@@ -301,7 +301,7 @@ public class ParamPeriodeManagerImpl implements ParamPeriodeManager {
 		// On verifie que tous les parametres de periode fiscale ne soient pas null
 		for (ParametrePeriodeFiscalePP ppf : ppfs) {
 			if (ppf == null) {
-				String msgErr = "Impossible de retrouver tous les paramétres PP pour la période fiscale : " + ppfv.getAnneePeriodeFiscale();
+				String msgErr = "Impossible de retrouver tous les paramètres PP pour la période fiscale : " + ppfv.getAnneePeriodeFiscale();
 				LOGGER.error(msgErr);
 				throw new ObjectNotFoundException(msgErr);
 			}
@@ -358,7 +358,7 @@ public class ParamPeriodeManagerImpl implements ParamPeriodeManager {
 		// On verifie que tous les parametres de periode fiscale ne soient pas null
 		for (ParametrePeriodeFiscalePM ppf : ppfs) {
 			if (ppf == null) {
-				final String msgErr = "Impossible de retrouver tous les paramétres PM pour la période fiscale : " + pf.getAnnee();
+				final String msgErr = "Impossible de retrouver tous les paramètres PM pour la période fiscale : " + pf.getAnnee();
 				LOGGER.error(msgErr);
 				throw new ObjectNotFoundException(msgErr);
 			}
