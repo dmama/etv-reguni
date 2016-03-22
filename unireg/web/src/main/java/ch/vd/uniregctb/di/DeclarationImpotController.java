@@ -48,6 +48,7 @@ import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaireDAO;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePM;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP;
+import ch.vd.uniregctb.declaration.DeclarationImpotSource;
 import ch.vd.uniregctb.declaration.DelaiDeclaration;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
 import ch.vd.uniregctb.declaration.EtatDeclarationRetournee;
@@ -57,6 +58,7 @@ import ch.vd.uniregctb.declaration.ParametrePeriodeFiscalePM;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.declaration.PeriodeFiscaleDAO;
 import ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotService;
+import ch.vd.uniregctb.declaration.view.DeclarationView;
 import ch.vd.uniregctb.di.manager.DeclarationImpotEditManager;
 import ch.vd.uniregctb.di.view.AbstractEditionDelaiDeclarationPMView;
 import ch.vd.uniregctb.di.view.AbstractEditionDelaiDeclarationView;
@@ -321,7 +323,7 @@ public class DeclarationImpotController {
 	@Transactional(rollbackFor = Throwable.class, readOnly = true)
 	@RequestMapping(value = "/di/details.do", method = RequestMethod.GET)
 	@ResponseBody
-	public DeclarationImpotView details(@RequestParam("id") long id) throws AccessDeniedException {
+	public DeclarationImpotView detailsDI(@RequestParam("id") long id) throws AccessDeniedException {
 
 		if (!SecurityHelper.isAnyGranted(securityProvider, Role.VISU_ALL)) {
 			throw new AccessDeniedException("vous ne possédez aucun droit IfoSec de consultation pour l'application Unireg");
@@ -337,6 +339,31 @@ public class DeclarationImpotController {
 		controllerUtils.checkAccesDossierEnLecture(tiersId);
 
 		return new DeclarationImpotView(decl, messageSource);
+	}
+
+	/**
+	 * @param id l'id de la déclaration d'impôt ordinaire
+	 * @return les détails d'une déclaration d'impôt au format JSON
+	 */
+	@Transactional(rollbackFor = Throwable.class, readOnly = true)
+	@RequestMapping(value = "/lr/details.do", method = RequestMethod.GET)
+	@ResponseBody
+	public DeclarationView detailsLR(@RequestParam("id") long id) throws AccessDeniedException {
+
+		if (!SecurityHelper.isAnyGranted(securityProvider, Role.VISU_ALL)) {
+			throw new AccessDeniedException("vous ne possédez aucun droit IfoSec de consultation pour l'application Unireg");
+		}
+
+		final DeclarationImpotSource decl = hibernateTemplate.get(DeclarationImpotSource.class, id);
+		if (decl == null) {
+			return null;
+		}
+
+		// vérification des droits en lecture
+		final Long tiersId = decl.getTiers().getId();
+		controllerUtils.checkAccesDossierEnLecture(tiersId);
+
+		return new DeclarationView(decl, messageSource);
 	}
 
 	/**

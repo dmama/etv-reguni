@@ -2567,7 +2567,7 @@ var Decl = {
 	 */
 	open_details_lr: function(lrId) {
 
-		$.getJSON(App.curl("/di/details.do?id=") + lrId + "&" + new Date().getTime(), function(lr) {
+		$.getJSON(App.curl("/lr/details.do?id=") + lrId + "&" + new Date().getTime(), function(lr) {
 			if (lr) {
 				var info = '<fieldset class="information"><legend><span>Caractéristiques de la liste récapitulative</span></legend>';
 				info += '<table><tr class="odd"><td width="50%">Date début période&nbsp;:</td><td width="50%">' + RegDate.format(lr.dateDebut) + '</td></tr>';

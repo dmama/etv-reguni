@@ -59,14 +59,14 @@ public class CopieConformeController {
 	 * Traitement d'une demande de copie conforme
 	 * @param request HTTP request de la demande de copie conforme
 	 * @param response HTTP response (dans laquelle le document sera renvoyé)
-	 * @param filename nom du fichier du document à renvoyer
+	 * @param filenameRadical radical du nom du fichier du document à renvoyer
 	 * @param errorMessageIfNoSuchDocument message d'erreur au cas où le document demandé n'existe pas dans l'archivage
 	 * @param getter l'implémentation spécifique de récupération du document
 	 * @return <code>null</code> si le document a bien été renvoyé dans la réponse HTTP, "redirect:..." en cas d'erreur
 	 * @throws EditiqueException en cas d'erreur lors de la récupération du document depuis les archives
 	 * @throws IOException en cas d'erreurs lors du streaming du document
 	 */
-	private String getDocumentCopieConforme(final HttpServletRequest request, HttpServletResponse response, String filename, final String errorMessageIfNoSuchDocument, CopieConformeGetter getter) throws EditiqueException, IOException {
+	private String getDocumentCopieConforme(final HttpServletRequest request, HttpServletResponse response, String filenameRadical, final String errorMessageIfNoSuchDocument, CopieConformeGetter getter) throws EditiqueException, IOException {
 		final EditiqueResultat reponseEditique = getter.getCopieConforme();
 		final RetourEditiqueControllerHelper.TraitementRetourEditique<EditiqueResultat> redirect = new RetourEditiqueControllerHelper.TraitementRetourEditique<EditiqueResultat>() {
 			@Override
@@ -93,12 +93,12 @@ public class CopieConformeController {
 			}
 		};
 
-		return helper.traiteRetourEditique(reponseEditique, response, filename, redirect, null, erreur);
+		return helper.traiteRetourEditique(reponseEditique, response, filenameRadical, redirect, null, erreur);
 	}
 
 	@RequestMapping(value = "/declaration/copie-conforme-delai.do", method = RequestMethod.GET)
 	public String getDocumentDelai(HttpServletRequest request, HttpServletResponse response, @RequestParam(value = ID_DELAI, required = true) final Long idDelai) throws Exception {
-		return getDocumentCopieConforme(request, response, "copieDelai.pdf", "Aucun archivage trouvé pour la confirmation de délai demandée !", new CopieConformeGetter() {
+		return getDocumentCopieConforme(request, response, "copieDelai", "Aucun archivage trouvé pour la confirmation de délai demandée !", new CopieConformeGetter() {
 			@Override
 			public EditiqueResultat getCopieConforme() throws EditiqueException {
 				return copieConformeManager.getPdfCopieConformeDelai(idDelai);
@@ -108,7 +108,7 @@ public class CopieConformeController {
 
 	@RequestMapping(value = "/declaration/copie-conforme-sommation.do", method = RequestMethod.GET)
 	public String getDocumentSommation(HttpServletRequest request, HttpServletResponse response, @RequestParam(value = ID_ETAT, required = true) final Long idEtat) throws Exception {
-		return getDocumentCopieConforme(request, response, "copieSommation.pdf", "Aucun archivage trouvé pour la sommation de déclaration demandée !", new CopieConformeGetter() {
+		return getDocumentCopieConforme(request, response, "copieSommation", "Aucun archivage trouvé pour la sommation de déclaration demandée !", new CopieConformeGetter() {
 			@Override
 			public EditiqueResultat getCopieConforme() throws EditiqueException {
 				return copieConformeManager.getPdfCopieConformeSommation(idEtat);
@@ -121,7 +121,7 @@ public class CopieConformeController {
 	                          @RequestParam(value = NOCTB, required = true) final long noCtb,
 	                          @RequestParam(value = TYPE_DOC, required = true) final TypeDocumentEditique typeDoc,
 	                          @RequestParam(value = KEY, required = true) final String key) throws Exception {
-		return getDocumentCopieConforme(request, response, "document.pdf", "Aucun archivage trouvé pour le document demandé !", new CopieConformeGetter() {
+		return getDocumentCopieConforme(request, response, "document", "Aucun archivage trouvé pour le document demandé !", new CopieConformeGetter() {
 			@Override
 			public EditiqueResultat getCopieConforme() throws EditiqueException {
 				return copieConformeManager.getPdfCopieConforme(noCtb, typeDoc, key);
