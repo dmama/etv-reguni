@@ -43,7 +43,7 @@ public class HttpDocumentFetcherTest extends WebTest {
 
 	@Test
 	public void testRecupDocument() throws Exception {
-		final URL docUrl = new URL("http://www.vd.ch/fileadmin/user_upload/themes/etat_droit/democratie/fichiers_pdf/Demande_d_acc%C3%A8s_guide_succinct_pour_particuliers.pdf");
+		final URL docUrl = new URL("http://www.vd.ch/fileadmin/user_upload/organisation/dfin/aci/fichiers_pdf/Bareme_revenu_2012_14.pdf");
 		try (HttpDocumentFetcher.HttpDocument doc = fetcher.fetch(docUrl, null)) {
 			Assert.assertEquals("application/pdf", doc.getContentType());
 
