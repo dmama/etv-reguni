@@ -65,6 +65,13 @@ public class EtablissementsSecondaires extends EvenementOrganisationInterneDeTra
 			closeEtablissement(aFermer, dateAvant, warnings, suivis);
 		}
 		for (SiteOrganisation aCreer : sitesACreer) {
+			/*
+				Ne pas créer les établissements secondaires non succursales
+			 */
+			if (!aCreer.isSuccursale(getDateEvt())) {
+				suivis.addSuivi(String.format("L'établissement secondaire civil %d n'est pas une succursale et ne sera donc pas créé dans Unireg.", aCreer.getNumeroSite()));
+				continue;
+			}
 
 			// Contrôle du cas ou on va crée un établissement existant mais qu'on ne connaissait pas. On le crée quand même mais on avertit.
 			Domicile ancienDomicile = aCreer.getDomicile(dateAvant);

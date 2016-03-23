@@ -595,7 +595,7 @@ public abstract class EvenementOrganisationInterne {
 	protected void signaleDemenagement(Etablissement etablissement, Domicile ancienDomicile, Domicile nouveauDomicile, RegDate dateDebut, EvenementOrganisationSuiviCollector suivis) {
 		final String ancienneCommune = DateRangeHelper.rangeAt(context.getServiceInfra().getCommuneHistoByNumeroOfs(ancienDomicile.getNoOfs()), dateDebut.getOneDayBefore()).getNomOfficielAvecCanton();
 		final String nouvelleCommune = DateRangeHelper.rangeAt(context.getServiceInfra().getCommuneHistoByNumeroOfs(nouveauDomicile.getNoOfs()), dateDebut).getNomOfficielAvecCanton();
-		suivis.addSuivi(String.format("L'établissement %s a déménagé (Pas d'impact Unireg). Ancien domicile  %s (ofs: %s). Nouveau domicile %s (ofs: %s), à partir du %s.",
+		suivis.addSuivi(String.format("L'établissement %s a déménagé. Ancien domicile  %s (ofs: %s). Nouveau domicile %s (ofs: %s), à partir du %s.",
 		                              etablissement.getNumero(),
 		                              ancienneCommune,
 		                              nouveauDomicile.getNoOfs(),
