@@ -9,6 +9,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Transient;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -19,6 +20,7 @@ import org.hibernate.annotations.Type;
 import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.DateRangeComparator;
+import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.AnnulableHelper;
 import ch.vd.uniregctb.common.CollectionsUtils;
@@ -369,6 +371,33 @@ public class Entreprise extends ContribuableImpositionPersonnesMorales {
 		}
 		this.autresDocumentsFiscaux.add(document);
 		document.setEntreprise(this);
+	}
+
+	@NotNull
+	@Transient
+	public <T extends AutreDocumentFiscal> List<T> getAutresDocumentsFiscaux(Class<T> clazz, boolean sorted, boolean avecAnnules) {
+		if (this.autresDocumentsFiscaux == null || this.autresDocumentsFiscaux.isEmpty()) {
+			return Collections.emptyList();
+		}
+
+		final List<T> liste = new ArrayList<>(this.autresDocumentsFiscaux.size());
+		for (AutreDocumentFiscal adf : this.autresDocumentsFiscaux) {
+			if (adf != null && clazz.isAssignableFrom(adf.getClass())) {
+				if (avecAnnules || !adf.isAnnule()) {
+					//noinspection unchecked
+					liste.add((T) adf);
+				}
+			}
+		}
+		if (sorted && liste.size() > 1) {
+			Collections.sort(liste, new Comparator<T>() {
+				@Override
+				public int compare(T o1, T o2) {
+					return NullDateBehavior.EARLIEST.compare(o1.getDateEnvoi(), o2.getDateEnvoi());
+				}
+			});
+		}
+		return liste;
 	}
 
 	public Entreprise() {

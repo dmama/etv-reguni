@@ -9,8 +9,8 @@ public class ResultatQuittancement {
 	private static final ResultatQuittancement ETAT_FISCAL_INCOHERENT = new ResultatQuittancement(TypeResultatQuittancement.ETAT_FISCAL_INCOHERENT);
 	private static final ResultatQuittancement AUCUNE_DEMANDE_EN_ATTENTE_SIGNATURE = new ResultatQuittancement(TypeResultatQuittancement.AUCUNE_DEMANDE_EN_ATTENTE_SIGNATURE);
 
-	String businessId;
-	TypeResultatQuittancement typeResultat;
+	private final String businessId;
+	private final TypeResultatQuittancement typeResultat;
 
 	private ResultatQuittancement(TypeResultatQuittancement typeResultat) {
 		this(null, typeResultat);

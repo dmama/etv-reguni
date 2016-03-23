@@ -196,6 +196,15 @@
 	                        </li>
 	                    </authz:authorize>
 					</unireg:ifEfacture>
+
+					<authz:authorize ifAnyGranted="ROLE_GEST_QUIT_LETTRE_BIENVENUE">
+						<li><fmt:message key="label.autre.document.fiscal.lettre.bienvenue"/>
+							<ul>
+								<li><a href="<c:url value='/autresdocs/lettrebienvenue/quittancement/show.do'/>"><fmt:message key="label.autre.document.fiscal.lettre.bienvenue.quittancement"/></a></li>
+							</ul>
+
+						</li>
+					</authz:authorize>
 					
 					<authz:authorize ifAnyGranted="ROLE_TESTER, ROLE_ADMIN">
 						<li><fmt:message key="label.action.admin" />
