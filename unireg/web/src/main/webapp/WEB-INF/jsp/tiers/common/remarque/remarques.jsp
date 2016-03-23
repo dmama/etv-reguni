@@ -52,10 +52,13 @@
                     html += '<div id="remarquesSpinner" style="position:absolute;right:1.5em;width:24px;display:none"><img src="<c:url value="/images/loading.gif"/>"/></div>';
                     html += Remarques.buildRemarquesOptions(remarquesPage.page, remarquesPage.showHisto);
                     if (remarquesPage.totalCount > 0) {
+                        $('#remarqueTabAnchor').text('Remarques (' + remarquesPage.totalCount + ')');
+
                         html += Remarques.buildRemarquesPagination(remarquesPage.page, 20, remarquesPage.totalCount);
                         html += Remarques.buildRemarquesTable(remarquesPage.remarques) + '\n';
                     }
                     else {
+                        $('#remarqueTabAnchor').text('Remarques');
                         html += Remarques.escapeHTML("<fmt:message key="label.remarques.vide"/>");
                     }
                     html += '</fieldset>\n';
