@@ -58,12 +58,16 @@ public interface SiteOrganisation {
 	 */
 	List<DateRanged<TypeDeSite>> getTypeDeSite();
 
+	TypeDeSite getTypeDeSite(RegDate date);
+
 	/**
 	 * Retourne le siege correspondant à la date. Si la date est nulle, la date du jour est utilisée.
 	 * @param date La date désirée
 	 * @return Le siège, ou null si aucun siège valide à la date donnée
 	 */
 	Domicile getDomicile(RegDate date);
+
+	boolean isSuccursale(RegDate date);
 
 	RegDate getDateInscriptionRC(RegDate date);
 

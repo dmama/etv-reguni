@@ -81,6 +81,7 @@ public class SiteOrganisationRCEnt implements Serializable, SiteOrganisation {
 		return numeroSite;
 	}
 
+	@Override
 	public Map<String, List<DateRanged<FonctionOrganisation>>> getFonction() {
 		return fonction;
 	}
@@ -90,6 +91,7 @@ public class SiteOrganisationRCEnt implements Serializable, SiteOrganisation {
 		return numeroIDE;
 	}
 
+	@Override
 	public DonneesRegistreIDE getDonneesRegistreIDE() {
 		return ide;
 	}
@@ -104,10 +106,12 @@ public class SiteOrganisationRCEnt implements Serializable, SiteOrganisation {
 		return OrganisationHelper.valueForDate(getNom(), date);
 	}
 
+	@Override
 	public List<DateRanged<String>> getNomAdditionnel() {
 		return nomAdditionnel;
 	}
 
+	@Override
 	public String getNomAdditionnel(RegDate date) {
 		return OrganisationHelper.valueForDate(nomAdditionnel, date);
 	}
@@ -122,21 +126,34 @@ public class SiteOrganisationRCEnt implements Serializable, SiteOrganisation {
 		return OrganisationHelper.valueForDate(formeLegale, date);
 	}
 
+	@Override
 	public DonneesRC getDonneesRC() {
 		return rc;
 	}
 
+	@Override
 	public List<Domicile> getDomiciles() {
 		return domicile;
 	}
 
+	@Override
 	public List<DateRanged<TypeDeSite>> getTypeDeSite() {
 		return typeDeSite;
 	}
 
 	@Override
+	public TypeDeSite getTypeDeSite(RegDate date) {
+		return OrganisationHelper.valueForDate(getTypeDeSite(), date);
+	}
+
+	@Override
 	public Domicile getDomicile(RegDate date) {
 		return OrganisationHelper.dateRangeForDate(getDomiciles(), date);
+	}
+
+	@Override
+	public boolean isSuccursale(RegDate date) {
+		return getTypeDeSite(date) == TypeDeSite.ETABLISSEMENT_SECONDAIRE && isInscritAuRC(date) && !isRadieDuRC(date);
 	}
 
 	@Override

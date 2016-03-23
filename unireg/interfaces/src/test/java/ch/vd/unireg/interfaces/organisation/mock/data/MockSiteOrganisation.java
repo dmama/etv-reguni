@@ -205,10 +205,20 @@ public class MockSiteOrganisation implements SiteOrganisation {
 		return MockOrganisationHelper.getHisto(typeDeSite);
 	}
 
+	@Override
+	public TypeDeSite getTypeDeSite(RegDate date) {
+		return OrganisationHelper.valueForDate(getTypeDeSite(), date);
+	}
+
 	// Implémentation identique à la classe SiteOrganisation
 	@Override
 	public Domicile getDomicile(RegDate date) {
 		return OrganisationHelper.dateRangeForDate(getDomiciles(), date);	}
+
+	@Override
+	public boolean isSuccursale(RegDate date) {
+		return getTypeDeSite(date) == TypeDeSite.ETABLISSEMENT_SECONDAIRE && isInscritAuRC(date);
+	}
 
 	@Override
 	public RegDate getDateInscriptionRC(RegDate date) {
