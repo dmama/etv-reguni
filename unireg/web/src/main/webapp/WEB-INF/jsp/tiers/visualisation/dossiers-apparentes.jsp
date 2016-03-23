@@ -298,15 +298,15 @@
             $.get('<c:url value="/rapport/etablissements.do?tiers=${command.tiersGeneral.numero}"/>' + params + '&' + new Date().getTime(),
                   function(etablissementsPage) {
                       var html = '';
+                      html += '<fieldset>\n';
+                      html += '<legend><span><fmt:message key="label.etablissements" /></span></legend>\n';
+                      html += '<div id="etablissementsSpinner" style="position:absolute;right:1.5em;width:24px;display:none"><img src="<c:url value="/images/loading.gif"/>"/></div>';
+                      html += DossiersApparentes.buildEtablissementsOptions(etablissementsPage.page, etablissementsPage.showHisto, etablissementsPage.sortField, etablissementsPage.sortOrder);
+                      html += DossiersApparentes.buildEtablissementsPagination(etablissementsPage.page, 10, etablissementsPage.totalCount);
                       if (etablissementsPage.totalCount > 0) {
-                          html += '<fieldset>\n';
-                          html += '<legend><span><fmt:message key="label.etablissements" /></span></legend>\n';
-                          html += '<div id="etablissementsSpinner" style="position:absolute;right:1.5em;width:24px;display:none"><img src="<c:url value="/images/loading.gif"/>"/></div>';
-                          html += DossiersApparentes.buildEtablissementsOptions(etablissementsPage.page, etablissementsPage.showHisto, etablissementsPage.sortField, etablissementsPage.sortOrder);
-                          html += DossiersApparentes.buildEtablissementsPagination(etablissementsPage.page, 10, etablissementsPage.totalCount);
                           html += DossiersApparentes.buildEtablissementsTable(etablissementsPage.rapports, 'ret-', true) + '\n';
-                          html += '</fieldset>\n';
                       }
+                      html += '</fieldset>\n';
                       $('#etablissementsDiv').html(html);
                       Tooltips.activate_static_tooltips($('#etablissementsDiv'));
                   }, 'json')
