@@ -7,6 +7,7 @@ import java.util.Map;
 
 import org.springframework.transaction.PlatformTransactionManager;
 
+import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
@@ -14,6 +15,7 @@ import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.CollectionsUtils;
+import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.efacture.EFactureService;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
@@ -166,43 +168,48 @@ public class MetierServicePMImpl implements MetierServicePM {
 		// Rapprochement de l'entreprise
 		entreprise.setNumeroEntreprise(organisation.getNumeroOrganisation());
 
-		final List<RaisonSocialeFiscaleEntreprise> raisonsSociales = entreprise.getRaisonsSocialesNonAnnuleesTriees();
-		if (!raisonsSociales.isEmpty()) {
-			final RaisonSocialeFiscaleEntreprise raisonSociale = CollectionsUtils.getLastElement(raisonsSociales);
-			if (raisonSociale.getDateFin() == null) {
-				tiersService.closeRaisonSocialeFiscale(raisonSociale, date.getOneDayBefore());
-			}
+		final RaisonSocialeFiscaleEntreprise raisonSociale = getAssertLast(entreprise.getRaisonsSocialesNonAnnuleesTriees(), date);
+		if (raisonSociale != null && raisonSociale.getDateFin() == null) {
+			tiersService.closeRaisonSocialeFiscale(raisonSociale, date.getOneDayBefore());
 		}
 
-		final List<FormeJuridiqueFiscaleEntreprise> formesJuridiques = entreprise.getFormesJuridiquesNonAnnuleesTriees();
-		if (!formesJuridiques.isEmpty()) {
-			tiersService.closeFormeJuridiqueFiscale(CollectionsUtils.getLastElement(formesJuridiques), date.getOneDayBefore());
+		final FormeJuridiqueFiscaleEntreprise formeJuridique = getAssertLast(entreprise.getFormesJuridiquesNonAnnuleesTriees(), date);
+		if (formeJuridique != null && formeJuridique.getDateFin() == null) {
+			tiersService.closeFormeJuridiqueFiscale(formeJuridique, date.getOneDayBefore());
 		}
 
-		final List<CapitalFiscalEntreprise> capitaux = entreprise.getCapitauxNonAnnulesTries();
-		if (!capitaux.isEmpty()) {
-			tiersService.closeCapitalFiscal(CollectionsUtils.getLastElement(capitaux), date.getOneDayBefore());
+		final CapitalFiscalEntreprise capital = getAssertLast(entreprise.getCapitauxNonAnnulesTries(), date);
+		if (capital != null && capital.getDateFin() == null) {
+			tiersService.closeCapitalFiscal(capital, date.getOneDayBefore());
 		}
 
 		RattachementOrganisationResult result = new RattachementOrganisationResult(entreprise);
 
 		// Rapprochement de l'établissement principal
 		SiteOrganisation site = organisation.getSitePrincipal(date).getPayload();
-		DateRanged<Etablissement> etablissementPrincipalRange = CollectionsUtils.getLastElement(tiersService.getEtablissementsPrincipauxEntreprise(entreprise));
+		final List<DateRanged<Etablissement>> etablissementsPrincipauxEntreprise = tiersService.getEtablissementsPrincipauxEntreprise(entreprise);
+		if (etablissementsPrincipauxEntreprise.isEmpty() || CollectionsUtils.getLastElement(etablissementsPrincipauxEntreprise) == null) {
+			throw new MetierServiceException(String.format("L'entreprise %s ne possède pas d'établissement principal!", FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero())));
+		}
+		DateRanged<Etablissement> etablissementPrincipalRange = CollectionsUtils.getLastElement(etablissementsPrincipauxEntreprise);
 		if (etablissementPrincipalRange.getDateDebut().isAfter(date)) {
 			throw new MetierServiceException(String.format("L'établissement principal %d commence à une date postérieure à la tentative de rapprochement du %s. Impossible de continuer.", organisation.getNumeroOrganisation(), RegDateHelper.dateToDisplayString(date)));
 		}
 
 		final Etablissement etablissementPrincipal = etablissementPrincipalRange.getPayload();
 
-		final DomicileEtablissement domicile = CollectionsUtils.getLastElement(etablissementPrincipal.getSortedDomiciles(false));
+		final List<DomicileEtablissement> sortedDomiciles = etablissementPrincipal.getSortedDomiciles(false);
+		if (sortedDomiciles.isEmpty()) {
+			throw new MetierServiceException(String.format("L'établissement principal %d n'a pas de domicile en date du %s. Impossible de continuer le rapprochement.", organisation.getNumeroOrganisation(), RegDateHelper.dateToDisplayString(date)));
+		}
+		final DomicileEtablissement domicile = getAssertLast(sortedDomiciles, date);
 
 		if (domicile != null && domicile.getNumeroOfsAutoriteFiscale().equals(organisation.getSiegePrincipal(date).getNoOfs())) {
 			etablissementPrincipal.setNumeroEtablissement(site.getNumeroSite());
 			tiersService.closeDomicileEtablissement(domicile, date.getOneDayBefore());
 			result.addEtablissementRattache(etablissementPrincipal);
 		} else {
-			throw new MetierServiceException(String.format("L'établissement principal %d n'a pas de domicile ou celui-ci ne correspond pas avec celui que rapporte le régistre civil.", etablissementPrincipal.getNumero()));
+			throw new MetierServiceException(String.format("L'établissement principal %s n'a pas de domicile ou celui-ci ne correspond pas avec celui que rapporte le régistre civil.", FormatNumeroHelper.numeroCTBToDisplay(etablissementPrincipal.getNumero())));
 		}
 
 		// Traitement minimum des établissements secondaires (vérifier si déjà connu et ne pas ajouter aux listes)
@@ -219,7 +226,7 @@ public class MetierServicePMImpl implements MetierServicePM {
 					result.addEtablissementRattache(etablissementSecondaire);
 				}
 				else {
-					throw new MetierServiceException(String.format("L'établissement secondaire %d est connu au civil mais son numéro ne correspond à aucun des établissements civil!", etablissementSecondaire.getNumeroEtablissement()));
+					throw new MetierServiceException(String.format("L'établissement secondaire %s est connu au civil mais son numéro ne correspond à aucun des établissements civil!", FormatNumeroHelper.numeroCTBToDisplay(etablissementSecondaire.getNumeroEtablissement())));
 				}
 			} else {
 				result.addEtablissementNonRattache(etablissementSecondaire);
@@ -235,5 +242,17 @@ public class MetierServicePMImpl implements MetierServicePM {
 		return result;
 	}
 
-
+	private <T extends DateRange> T getAssertLast(List<T> entites, RegDate date) throws MetierServiceException {
+		if (entites != null && !entites.isEmpty()) {
+			T lastRange = CollectionsUtils.getLastElement(entites);
+			if (lastRange == null) {
+				throw new MetierServiceException(String.format("Erreur de données: null trouvé dans une collection de périodes %s", entites.getClass()));
+			}
+			if (lastRange.getDateDebut().isAfter(date)) {
+				throw new MetierServiceException(String.format("La période valide à la date demandée %s n'est pas la dernière de l'historique!", RegDateHelper.dateToDisplayString(date)));
+			}
+			return lastRange;
+		}
+		return null;
+	}
 }

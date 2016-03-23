@@ -20,6 +20,7 @@ import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.common.CollectionsUtils;
+import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.common.StringRenderer;
 import ch.vd.uniregctb.data.DataEventService;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
@@ -62,10 +63,10 @@ import ch.vd.uniregctb.metier.RattachementOrganisationResult;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.tiers.Entreprise;
-import ch.vd.uniregctb.tiers.Etablissement;
 import ch.vd.uniregctb.tiers.OrganisationNotFoundException;
 import ch.vd.uniregctb.tiers.PlusieursEntreprisesAvecMemeNumeroOrganisationException;
 import ch.vd.uniregctb.tiers.RaisonSocialeFiscaleEntreprise;
+import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersService;
 
@@ -77,17 +78,17 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(EvenementOrganisationTranslatorImpl.class);
 
-	private static final StringRenderer<Etablissement> ETABLISSEMENT_RENDERER = new StringRenderer<Etablissement>() {
+	private static final StringRenderer<Tiers> TIERS_NO_RENDERER = new StringRenderer<Tiers>() {
 		@Override
-		public String toString(Etablissement etablissement) {
-			return String.format("n°%s", etablissement.getNumero());
+		public String toString(Tiers tiers) {
+			return String.format("n°%s", FormatNumeroHelper.numeroCTBToDisplay(tiers.getNumero()));
 		}
 	};
 
 	private static final StringRenderer<SiteOrganisation> SITE_RENDERER = new StringRenderer<SiteOrganisation>() {
 		@Override
 		public String toString(SiteOrganisation site) {
-			return String.format("n°%s", site.getNumeroSite());
+			return String.format("n°%d", site.getNumeroSite());
 		}
 	};
 
@@ -358,11 +359,20 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 		try {
 			RattachementOrganisationResult result = metierServicePM.rattacheOrganisationEntreprise(organisation, entreprise, event.getDateEvenement());
 			if (result.isPartiel()) {
-				String etablissementsNonRattaches = CollectionsUtils.toString(result.getEtablissementsNonRattaches(), ETABLISSEMENT_RENDERER, "");
-				String sitesNonRattaches = CollectionsUtils.toString(result.getSitesNonRattaches(), SITE_RENDERER, "");
+				String messageEtablissementsNonRattaches = null;
+				if (!result.getEtablissementsNonRattaches().isEmpty()) {
+				String etablissementsNonRattaches = CollectionsUtils.toString(result.getEtablissementsNonRattaches(), TIERS_NO_RENDERER, "");
+					messageEtablissementsNonRattaches = String.format(" Cependant, certains établissements n'ont pas trouvé d'équivalent civil: %s.", etablissementsNonRattaches);
+				}
+				String messageSitesNonRattaches = null;
+				if (!result.getSitesNonRattaches().isEmpty()) {
+					String sitesNonRattaches = CollectionsUtils.toString(result.getSitesNonRattaches(), SITE_RENDERER, "");
+					messageSitesNonRattaches = String.format(" Aussi des sites civils secondaires n'ont pas pu être rattachés et seront créés: %s", sitesNonRattaches);
+				}
+
 				return new MessageSuivi(event, organisation, entreprise, context, options,
-						String.format("Organisation civile n°%d rattachée à l'entreprise n°%d. Cependant, certains établissements n'ont pas trouvé d'équivalent civil: %s. Aussi des sites civils secondaires n'ont pas pu être rattachés et seront créés: %s",
-						              organisation.getNumeroOrganisation(), entreprise.getNumero(), etablissementsNonRattaches, sitesNonRattaches));
+						String.format("Organisation civile n°%d rattachée à l'entreprise n°%d.%s%s",
+						              organisation.getNumeroOrganisation(), entreprise.getNumero(), messageEtablissementsNonRattaches == null ? "" : messageEtablissementsNonRattaches, messageSitesNonRattaches == null ? "" : messageSitesNonRattaches));
 			} else {
 				return new MessageSuivi(event, organisation, entreprise, context, options,
 						String.format("Organisation civile n°%d rattachée avec succès à l'entreprise n°%d, avec tous ses établissements.",

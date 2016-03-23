@@ -23,6 +23,7 @@ import ch.vd.unireg.interfaces.organisation.mock.data.MockOrganisation;
 import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockOrganisationFactory;
 import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockSiteOrganisationFactory;
 import ch.vd.uniregctb.adresse.AdresseService;
+import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.data.DataEventService;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalDAO;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
@@ -513,7 +514,7 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 		{
 			Assert.assertTrue(listEvtInterne.get(1) instanceof MessageSuivi);
 			String message = getMessageFromMessageSuivi((MessageSuivi) listEvtInterne.get(1));
-			Assert.assertEquals(String.format("Organisation civile n°%d rattachée avec succès à l'entreprise n°%d, avec tous ses établissements.", noOrganisation, noEntreprise), message);
+			Assert.assertEquals(String.format("Organisation civile n°%d rattachée avec succès à l'entreprise n°%s, avec tous ses établissements.", noOrganisation, FormatNumeroHelper.numeroCTBToDisplay(noEntreprise)), message);
 		}
 		Assert.assertTrue(listEvtInterne.get(2) instanceof InformationComplementaire);
 		Assert.assertTrue(listEvtInterne.get(3) instanceof Indexation);
@@ -648,8 +649,8 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 			Assert.assertTrue(listEvtInterne.get(1) instanceof MessageSuivi);
 			String message = getMessageFromMessageSuivi((MessageSuivi) listEvtInterne.get(1));
 			Assert.assertEquals(
-					String.format("Organisation civile n°%d rattachée à l'entreprise n°%d. Cependant, certains établissements n'ont pas trouvé d'équivalent civil: n°%d. Aussi des sites civils secondaires n'ont pas pu être rattachés et seront créés: n°%d",
-					              noOrganisation, noEntreprise, etablissement3Id, noSite2), message);
+					String.format("Organisation civile n°%d rattachée à l'entreprise n°%d. Cependant, certains établissements n'ont pas trouvé d'équivalent civil: n°%s. Aussi des sites civils secondaires n'ont pas pu être rattachés et seront créés: n°%d",
+					              noOrganisation, noEntreprise, FormatNumeroHelper.numeroCTBToDisplay(etablissement3Id), noSite2), message);
 		}
 		Assert.assertTrue(listEvtInterne.get(3) instanceof InformationComplementaire);
 		Assert.assertTrue(listEvtInterne.get(4) instanceof Indexation);

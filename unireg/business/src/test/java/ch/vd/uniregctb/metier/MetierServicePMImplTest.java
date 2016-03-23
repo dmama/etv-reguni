@@ -22,6 +22,7 @@ import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockOrganisationFa
 import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockSiteOrganisationFactory;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.common.CollectionsUtils;
+import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.tiers.DomicileEtablissement;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.Etablissement;
@@ -428,7 +429,8 @@ public class MetierServicePMImplTest extends BusinessTest {
 			                             }
 			);
 		} catch (RuntimeException e) {
-			Assert.assertEquals(String.format("ch.vd.uniregctb.metier.MetierServiceException: L'établissement principal %d n'a pas de domicile ou celui-ci ne correspond pas avec celui que rapporte le régistre civil.", etablissementId), e.getMessage());
+			Assert.assertEquals(String.format("ch.vd.uniregctb.metier.MetierServiceException: L'établissement principal %s n'a pas de domicile ou celui-ci ne correspond pas avec celui que rapporte le régistre civil.",
+			                                  FormatNumeroHelper.numeroCTBToDisplay(etablissementId)), e.getMessage());
 		}
 
 		// Vérification du traitement de l'événement
