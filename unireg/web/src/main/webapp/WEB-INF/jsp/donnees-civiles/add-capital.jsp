@@ -46,7 +46,10 @@
 						</td>
 						<td><fmt:message key="label.date.fermeture" />&nbsp;:</td>
 						<td>
-							<unireg:regdate regdate="${command.dateFin}"/>
+							<jsp:include page="/WEB-INF/jsp/include/inputCalendar.jsp">
+								<jsp:param name="path" value="dateFin" />
+								<jsp:param name="id" value="dateFin" />
+							</jsp:include>
 						</td>
 					</tr>
 				</table>

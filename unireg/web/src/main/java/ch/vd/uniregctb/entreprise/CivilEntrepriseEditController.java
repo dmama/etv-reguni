@@ -460,7 +460,7 @@ public class CivilEntrepriseEditController {
 				return "donnees-civiles/edit-capital";
 			}
 
-			tiersService.updateCapitalFiscal(capital, view.getMontant(), view.getDateFin());
+			tiersService.updateCapitalFiscal(capital, view.getMontant(), view.getMonnaie(), view.getDateFin());
 		}
 
 		return "redirect:/civil/entreprise/edit.do?id=" + entreprise.getNumero();// + buildHighlightForParam(newFor);

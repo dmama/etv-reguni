@@ -30,7 +30,8 @@
 						</td>
 						<td width="20%"><fmt:message key="label.capital.monnaie"/>&nbsp;:</td>
 						<td>
-							${command.monnaie}
+							<input id="monnaie" name="monnaie" value="${command.monnaie}" size="3" maxlength="${lengthmonnaie}"/>
+							<form:errors path="monnaie" cssClass="error" />
 						</td>
 					</tr>
 					<tr class="<unireg:nextRowClass/>" >

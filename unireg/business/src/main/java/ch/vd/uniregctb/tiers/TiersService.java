@@ -1885,7 +1885,7 @@ public interface TiersService {
 	 * @param montant un nouveau montant
 	 * @param dateFin une nouvelle date de fin
 	 */
-	void updateCapitalFiscal(CapitalFiscalEntreprise cf, Long montant, RegDate dateFin) throws TiersException;
+	void updateCapitalFiscal(CapitalFiscalEntreprise cf, Long montant, String monnaie, RegDate dateFin) throws TiersException;
 
 	/**
 	 * Ferme le capital à la date indiquée

@@ -253,10 +253,8 @@
 				<c:if test="${page == 'edit' }">
 					<c:if test="${!capital.annule}">
 						<unireg:linkTo name="" action="/civil/entreprise/capital/edit.do" method="GET" params="{capitalId:${capital.id}}" link_class="edit" title="Edition du capital" />
-						<c:if test="${capital.dernierElement}">
-							<unireg:linkTo name="" action="/civil/entreprise/capital/cancel.do" method="POST" params="{capitalId:${capital.id}}" link_class="delete"
-							               title="Annulation d'un capital" confirm="Voulez-vous vraiment annuler ce capital ?"/>
-						</c:if>
+						<unireg:linkTo name="" action="/civil/entreprise/capital/cancel.do" method="POST" params="{capitalId:${capital.id}}" link_class="delete"
+						               title="Annulation d'un capital" confirm="Voulez-vous vraiment annuler ce capital ?"/>
 					</c:if>
 				</c:if>
 			</c:if>

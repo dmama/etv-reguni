@@ -5725,10 +5725,10 @@ public class TiersServiceImpl implements TiersService {
 	}
 
 	@Override
-	public void updateCapitalFiscal(CapitalFiscalEntreprise cf, Long montant, RegDate dateFin) throws TiersException {
+	public void updateCapitalFiscal(CapitalFiscalEntreprise cf, Long montant, String monnaie, RegDate dateFin) throws TiersException {
 		checkEditionAutorisee(cf.getEntreprise());
 		cf.setAnnule(true);
-		addCapitalFiscal(cf.getEntreprise(), montant, cf.getMontant().getMonnaie(), cf.getDateDebut(), cf.getDateFin());
+		addCapitalFiscal(cf.getEntreprise(), montant, monnaie, cf.getDateDebut(), cf.getDateFin());
 	}
 
 	@Override
@@ -5753,8 +5753,6 @@ public class TiersServiceImpl implements TiersService {
 			final CapitalFiscalEntreprise reouvert = new CapitalFiscalEntreprise(precedent.getDateDebut(), null, precedent.getMontant());
 			precedent.setAnnule(true);
 			tiersDAO.addAndSave(capital.getEntreprise(), reouvert);
-		} else {
-			throw new ValidationException(capital, "Impossible d'annuler l'unique forme juridique.");
 		}
 	}
 
@@ -6146,7 +6144,8 @@ public class TiersServiceImpl implements TiersService {
 			}
 		}
 
-		final List<T> result = DateRangeHelper.override(donneesCiviles, nonAnnulees, new GentilDateRangeExtendedAdapterCallback<T>());
+		final List<T> result = new ArrayList<>(); // Nécessaire car la collection retournée sera en lecture seule si elle est vide.
+		result.addAll(DateRangeHelper.override(donneesCiviles, nonAnnulees, new GentilDateRangeExtendedAdapterCallback<T>()));
 		result.addAll(annulees);
 		return result;
 	}
