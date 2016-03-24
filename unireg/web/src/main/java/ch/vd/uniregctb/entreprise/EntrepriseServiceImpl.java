@@ -79,7 +79,9 @@ public class EntrepriseServiceImpl implements EntrepriseService {
 
 			final DonneesRC donneesRC = organisation.getSitePrincipal(null).getPayload().getDonneesRC();
 			entrepriseView.setDateInscriptionRC(getLastElementPayload(donneesRC.getDateInscription()));
+			entrepriseView.setDateInscriptionRCVD(getLastElementPayload(donneesRC.getDateInscriptionVd()));
 			entrepriseView.setStatusRC(donneesRC.getStatusInscription(null));
+			entrepriseView.setDateRadiationRCVD(getLastElementPayload(donneesRC.getDateRadiationVd()));
 			entrepriseView.setDateRadiationRC(getLastElementPayload(donneesRC.getDateRadiation()));
 
 			final DonneesRegistreIDE donneesRegistreIDE = organisation.getSitePrincipal(null).getPayload().getDonneesRegistreIDE();

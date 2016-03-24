@@ -265,55 +265,76 @@
 
 </fieldset>
 
-<fieldset>
-	<legend><span><fmt:message key="label.rc"/></span></legend>
+<c:if test="${page == 'visu'}">
+	<fieldset>
+		<legend><span><fmt:message key="label.rc"/></span></legend>
 
-	<unireg:nextRowClass reset="1"/>
-	<table>
-		<tr class="<unireg:nextRowClass/>" >
-			<td width="20%"><fmt:message key="label.date.inscription"/>&nbsp;:</td>
-			<td>
-				<unireg:regdate regdate="${entreprise.dateInscriptionRC}"/>
-			</td>
-		</tr>
-		<tr class="<unireg:nextRowClass/>" >
-			<td width="20%"><fmt:message key="label.status"/>&nbsp;:</td>
-			<td>
-				<c:if test="${! empty entreprise.statusRC}">
-					<fmt:message key="option.statut.rc.${entreprise.statusRC}"/>
-				</c:if>
-			</td>
-		</tr>
-		<tr class="<unireg:nextRowClass/>" >
-			<td width="20%"><fmt:message key="label.date.radiation"/>&nbsp;:</td>
-			<td>
-				<unireg:regdate regdate="${entreprise.dateRadiationRC}"/>
-			</td>
-		</tr>
-	</table>
-</fieldset>
+		<unireg:nextRowClass reset="1"/>
+		<table>
+			<tr class="<unireg:nextRowClass/>" >
+				<td width="10%"><fmt:message key="label.date.inscription"/>&nbsp;:</td>
+				<td width="10%"><fmt:message key="label.vaud"/>&nbsp;:</td>
+				<td>
+					<unireg:regdate regdate="${entreprise.dateInscriptionRCVD}"/>
+				</td>
+			</tr>
+			<tr class="<unireg:nextRowClass/>" >
+				<td width="10%">&nbsp;</td>
+				<td width="10%"><fmt:message key="label.suisse"/>&nbsp;:</td>
+				<td>
+					<unireg:regdate regdate="${entreprise.dateInscriptionRC}"/>
+				</td>
+			</tr>
+			<tr class="<unireg:nextRowClass/>" >
+				<td width="10%"><fmt:message key="label.status"/>&nbsp;:</td>
+				<td width="10%">&nbsp;</td>
+				<td>
+					<c:if test="${! empty entreprise.statusRC}">
+						<fmt:message key="option.statut.rc.${entreprise.statusRC}"/>
+					</c:if>
+				</td>
+			</tr>
+			<c:if test="${!empty entreprise.dateRadiationRCVD || !empty entreprise.dateRadiationRC}">
+				<tr class="<unireg:nextRowClass/>" >
+					<td width="10%"><fmt:message key="label.date.radiation"/>&nbsp;:</td>
+					<td width="10%"><fmt:message key="label.vaud"/>&nbsp;:</td>
+					<td>
+						<unireg:regdate regdate="${entreprise.dateRadiationRCVD}"/>
+					</td>
+				</tr>
+				<tr class="<unireg:nextRowClass/>" >
+					<td width="10%">&nbsp;</td>
+					<td width="10%"><fmt:message key="label.suisse"/>&nbsp;:</td>
+					<td>
+						<unireg:regdate regdate="${entreprise.dateRadiationRC}"/>
+					</td>
+				</tr>
+			</c:if>
+		</table>
+	</fieldset>
 
-<fieldset>
-	<legend><span><fmt:message key="label.ide"/></span></legend>
+	<fieldset>
+		<legend><span><fmt:message key="label.ide"/></span></legend>
 
-	<unireg:nextRowClass reset="1"/>
-	<table>
-		<tr class="<unireg:nextRowClass/>" >
-			<td width="20%"><fmt:message key="label.date.inscription"/>&nbsp;:</td>
-			<td>
-				<unireg:regdate regdate="${entreprise.dateInscriptionIde}"/>
-			</td>
-		</tr>
-		<tr class="<unireg:nextRowClass/>" >
-			<td width="20%"><fmt:message key="label.status"/>&nbsp;:</td>
-			<td>
-				<c:if test="${! empty entreprise.statusIde}">
-					<fmt:message key="option.statut.ide.${entreprise.statusIde}"/><span class="jTip formInfo" title="<c:url value="/htm/statutIDE.htm"/>" id="statutIDE">?</span>
-				</c:if>
-			</td>
-		</tr>
-	</table>
-</fieldset>
+		<unireg:nextRowClass reset="1"/>
+		<table>
+			<tr class="<unireg:nextRowClass/>" >
+				<td width="20%"><fmt:message key="label.date.inscription"/>&nbsp;:</td>
+				<td>
+					<unireg:regdate regdate="${entreprise.dateInscriptionIde}"/>
+				</td>
+			</tr>
+			<tr class="<unireg:nextRowClass/>" >
+				<td width="20%"><fmt:message key="label.status"/>&nbsp;:</td>
+				<td>
+					<c:if test="${! empty entreprise.statusIde}">
+						<fmt:message key="option.statut.ide.${entreprise.statusIde}"/><span class="jTip formInfo" title="<c:url value="/htm/statutIDE.htm"/>" id="statutIDE">?</span>
+					</c:if>
+				</td>
+			</tr>
+		</table>
+	</fieldset>
+</c:if>
 
 <c:if test="${page == 'visu' }">
 	<script type="text/javascript">

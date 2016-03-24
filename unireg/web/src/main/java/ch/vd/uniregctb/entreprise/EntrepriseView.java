@@ -23,8 +23,10 @@ public class EntrepriseView {
 	private String numerosIDE;
 
 	private RegDate dateInscriptionRC;
+	private RegDate dateInscriptionRCVD;
 	private StatusInscriptionRC statusRC;
 	private RegDate dateRadiationRC;
+	private RegDate dateRadiationRCVD;
 
 	private RegDate dateInscriptionIde;
 	private StatusRegistreIDE statusIde;
@@ -117,12 +119,28 @@ public class EntrepriseView {
 		this.dateInscriptionRC = dateInscriptionRC;
 	}
 
+	public RegDate getDateInscriptionRCVD() {
+		return dateInscriptionRCVD;
+	}
+
+	public void setDateInscriptionRCVD(RegDate dateInscriptionRCVD) {
+		this.dateInscriptionRCVD = dateInscriptionRCVD;
+	}
+
 	public RegDate getDateRadiationRC() {
 		return dateRadiationRC;
 	}
 
 	public void setDateRadiationRC(RegDate dateRadiationRC) {
 		this.dateRadiationRC = dateRadiationRC;
+	}
+
+	public RegDate getDateRadiationRCVD() {
+		return dateRadiationRCVD;
+	}
+
+	public void setDateRadiationRCVD(RegDate dateRadiationRCVD) {
+		this.dateRadiationRCVD = dateRadiationRCVD;
 	}
 
 	public RegDate getDateInscriptionIde() {
