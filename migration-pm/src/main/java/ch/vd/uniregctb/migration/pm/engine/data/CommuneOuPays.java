@@ -5,7 +5,6 @@ import java.util.function.Supplier;
 import org.jetbrains.annotations.NotNull;
 
 import ch.vd.uniregctb.migration.pm.engine.AbstractEntityMigrator;
-import ch.vd.uniregctb.migration.pm.regpm.RegpmCanton;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmCommune;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmForPrincipal;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
@@ -27,7 +26,7 @@ public final class CommuneOuPays {
 		final RegpmCommune commune = communeSupplier.get();
 		if (commune != null) {
 			this.numeroOfsAutoriteFiscale = AbstractEntityMigrator.NO_OFS_COMMUNE_EXTRACTOR.apply(commune);
-			this.typeAutoriteFiscale = commune.getCanton() == RegpmCanton.VD ? TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD : TypeAutoriteFiscale.COMMUNE_HC;
+			this.typeAutoriteFiscale = AbstractEntityMigrator.TAF_COMMUNE_EXTRACTOR.apply(commune);
 		}
 		else {
 			this.numeroOfsAutoriteFiscale = noOfsPaysSupplier.get();

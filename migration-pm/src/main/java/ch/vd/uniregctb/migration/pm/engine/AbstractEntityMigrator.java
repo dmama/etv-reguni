@@ -47,6 +47,7 @@ import ch.vd.uniregctb.migration.pm.log.LogLevel;
 import ch.vd.uniregctb.migration.pm.mapping.IdMapping;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmAppartenanceGroupeProprietaire;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmBlocNotes;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmCanton;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmCommune;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmCoordonneesFinancieres;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmEntity;
@@ -97,6 +98,12 @@ public abstract class AbstractEntityMigrator<T extends RegpmEntity> implements E
 	 */
 	public static final Function<RegpmCommune, Integer> NO_OFS_COMMUNE_EXTRACTOR =
 			commune -> commune.getNoOfs() == null || commune.getNoOfs() == 0 ? commune.getId().intValue() : commune.getNoOfs();
+
+	/**
+	 * Extracteur du type d'autorité fiscale d'une commune
+	 */
+	public static final Function<RegpmCommune, TypeAutoriteFiscale> TAF_COMMUNE_EXTRACTOR =
+			commune -> commune.getCanton() == RegpmCanton.VD ? TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD : TypeAutoriteFiscale.COMMUNE_HC;
 
 	/**
 	 * Remplit l'ensemble donné en paramètre avec les communes concernées par l'immeuble, en évitant la récursivité infinie

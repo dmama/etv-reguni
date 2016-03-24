@@ -98,6 +98,11 @@ public enum LogCategory {
 	/**
 	 * Liste des entreprises migrée sans réelle donnée fiscale car les formes juridiques de RCEnt et RegPM sont incompatible (au sens du SIFISC-18378)
 	 */
-	FORMES_JURIDIQUES_INCOMPATIBLES
+	FORMES_JURIDIQUES_INCOMPATIBLES,
+
+	/**
+	 * Liste des appariements d'établissements secondaires
+	 */
+	APPARIEMENTS_ETABLISSEMENTS_SECONDAIRES
 
 }

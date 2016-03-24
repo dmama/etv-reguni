@@ -3,6 +3,7 @@ package ch.vd.uniregctb.migration.pm.engine.helpers;
 import java.util.Map;
 import java.util.TreeMap;
 
+import ch.vd.unireg.interfaces.organisation.ServiceOrganisationRaw;
 import ch.vd.unireg.interfaces.organisation.WrongOrganisationReceivedException;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.uniregctb.interfaces.service.ServiceOrganisationService;
@@ -85,6 +86,14 @@ public class OrganisationServiceAccessor {
 		}
 
 		return service.getOrganisationPourSite(idCantonalSite);
+	}
+
+	public ServiceOrganisationRaw.Identifiers getOrganisationByNoIde(String noide) {
+		if (!rcentEnabled) {
+			return null;
+		}
+
+		return service.getOrganisationByNoIde(noide);
 	}
 
 	public boolean isRcentEnabled() {

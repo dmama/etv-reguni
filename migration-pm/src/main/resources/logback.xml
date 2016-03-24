@@ -218,6 +218,17 @@
 		<appender-ref ref="FORMES_JURIDIQUES_INCOMPATIBLES"/>
 	</logger>
 
+	<appender name="APPARIEMENTS_ETABLISSEMENTS_SECONDAIRES" class="ch.qos.logback.core.FileAppender">
+		<file>log/appariements-etablissements-secondaires.csv</file>
+		<append>true</append>
+		<encoder>
+			<pattern>%msg%n</pattern>
+		</encoder>
+	</appender>
+	<logger name="ch.vd.uniregctb.migration.pm.log.LogCategory.APPARIEMENTS_ETABLISSEMENTS_SECONDAIRES" additivity="false">
+		<appender-ref ref="APPARIEMENTS_ETABLISSEMENTS_SECONDAIRES"/>
+	</logger>
+
 	<appender name="EXCEPTIONS" class="ch.qos.logback.core.FileAppender">
 		<file>log/exceptions.log</file>
 		<append>true</append>

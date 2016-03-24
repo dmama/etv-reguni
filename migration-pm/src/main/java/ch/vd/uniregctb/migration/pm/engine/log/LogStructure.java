@@ -12,6 +12,7 @@ import org.jetbrains.annotations.NotNull;
 
 import ch.vd.uniregctb.migration.pm.log.AdresseLoggedElement;
 import ch.vd.uniregctb.migration.pm.log.AdressePermanenteLoggedElement;
+import ch.vd.uniregctb.migration.pm.log.AppariementEtablissementLoggedElement;
 import ch.vd.uniregctb.migration.pm.log.DifferencesDonneesCivilesLoggedElement;
 import ch.vd.uniregctb.migration.pm.log.EmptyValuedLoggedElement;
 import ch.vd.uniregctb.migration.pm.log.EntrepriseLoggedElement;
@@ -74,6 +75,7 @@ public abstract class LogStructure {
 		final Function<LogContexte, LoggedElement> donneesDifferencesDonneesCiviles = new FromContextInformationSource(DifferencesDonneesCivilesLoggedElement.class, DifferencesDonneesCivilesLoggedElement.EMPTY);
 		final Function<LogContexte, LoggedElement> donneesMappingRegimeFiscal = new FromContextInformationSource(RegimeFiscalMappingLoggedElement.class, RegimeFiscalMappingLoggedElement.EMPTY);
 		final Function<LogContexte, LoggedElement> donneesFormesJuridiquesIncompatibles = new FromContextInformationSource(FormesJuridiquesIncompatiblesLoggedElement.class, FormesJuridiquesIncompatiblesLoggedElement.EMPTY);
+		final Function<LogContexte, LoggedElement> donneesAppariementEtablissement = new FromContextInformationSource(AppariementEtablissementLoggedElement.class, AppariementEtablissementLoggedElement.EMPTY);
 
 		final Map<LogCategory, List<Function<LogContexte, LoggedElement>>> map = new EnumMap<>(LogCategory.class);
 
@@ -130,6 +132,9 @@ public abstract class LogStructure {
 
 		// Liste des entreprises migrée sans réelle donnée fiscale car les formes juridiques de RCEnt et RegPM sont incompatible (au sens du SIFISC-18378)
 		map.put(LogCategory.FORMES_JURIDIQUES_INCOMPATIBLES, Arrays.asList(donneesNiveau, donneesEntreprise, donneesFormesJuridiquesIncompatibles));
+
+		// Liste des appariements d'établissements
+		map.put(LogCategory.APPARIEMENTS_ETABLISSEMENTS_SECONDAIRES, Arrays.asList(donneesNiveau, donneesEntreprise, donneesEtablissement, donneesAppariementEtablissement));
 
 		// Dans le log des erreurs, on ne met aucun contexte -> seul le texte sera affiché
 		map.put(LogCategory.EXCEPTIONS, Collections.singletonList(donneesNiveau));

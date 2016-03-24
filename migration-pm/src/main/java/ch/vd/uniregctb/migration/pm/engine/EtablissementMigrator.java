@@ -42,6 +42,7 @@ import ch.vd.uniregctb.migration.pm.MigrationResultProduction;
 import ch.vd.uniregctb.migration.pm.engine.collector.EntityLinkCollector;
 import ch.vd.uniregctb.migration.pm.engine.collector.NeutralizedLinkAction;
 import ch.vd.uniregctb.migration.pm.engine.data.DonneesCiviles;
+import ch.vd.uniregctb.migration.pm.engine.data.DonneesCivilesAppariementEtablissements;
 import ch.vd.uniregctb.migration.pm.engine.data.DonneesMandats;
 import ch.vd.uniregctb.migration.pm.engine.data.FlagFormesJuridiquesIncompatiblesData;
 import ch.vd.uniregctb.migration.pm.engine.helpers.StringRenderers;
@@ -60,6 +61,7 @@ import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.DomicileEtablissement;
 import ch.vd.uniregctb.tiers.Etablissement;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
+import ch.vd.uniregctb.tiers.IdentificationEntreprise;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.MotifFor;
@@ -440,72 +442,17 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 	 * @param mr le collecteur de messages de suivi et manipulateur de contexte de log
 	 * @return les données civiles collectées (peut être <code>null</code> si ni l'établissement ni son entreprise n'a pas de pendant civil)
 	 */
+	@Nullable
 	private DonneesCiviles extractDonneesCiviles(RegpmEtablissement etablissement, MigrationResultContextManipulation mr, IdMapping idMapper) {
-		return doInCompleteLogContext(etablissement, mr, idMapper, () -> {
-
-			final Long idCantonal = etablissement.getNumeroCantonal();
-			if (idCantonal == null) {
-				mr.addMessage(LogCategory.SUIVI, LogLevel.INFO, "Pas de numéro cantonal assigné sur l'établissement, pas de lien vers le civil.");
-			}
-
-			// on recherche également par l'entreprise, si jamais...
-			final RegpmEntreprise entreprise = etablissement.getEntreprise();
-			Organisation donneesEntreprise = null;
-			if (entreprise != null) {
-				final EntityKey entrepriseKey = buildEntrepriseKey(entreprise);
-				final DonneesCiviles dce = mr.getExtractedData(DonneesCiviles.class, entrepriseKey);
-				donneesEntreprise = dce != null ? dce.getOrganisation() : null;
-			}
-
-			// si j'ai un identifiant cantonal, je peux demander l'info à RCEnt
-			SiteOrganisation donneesEtablissement = null;
-			if (idCantonal != null) {
-
-				// si j'ai déjà les données de l'entreprise, je vais directement chercher les données là...
-				if (donneesEntreprise != null) {
-					donneesEtablissement = extractLocationInOrganisation(donneesEntreprise, idCantonal);
-				}
-				else {
-					// pas de données d'entreprise, donc il faut demander à RCEnt les données de l'entreprise en passant par l'établissement
-					// (ici, on récupère sciemment une organisation partielle depuis le numéro d'établissement... et on rappelle ensuite pour
-					// obtenir l'entreprise complète)
-					try {
-						final Long partielleCantonalId = migrationContexte.getOrganisationService().getOrganisationPourSite(idCantonal);
-						if (partielleCantonalId == null) {
-							mr.addMessage(LogCategory.SUIVI, LogLevel.ERROR, "Aucune donnée renvoyée par RCEnt pour cet établissement.");
-						}
-						else {
-							mr.addMessage(LogCategory.SUIVI, LogLevel.INFO, String.format("Etablissement lié à l'organisation RCEnt %d.", partielleCantonalId));
-
-							// on a une organisation partielle -> il faut rappeler RCEnt pour avoir une vue complète
-							try {
-								final Organisation complete = migrationContexte.getOrganisationService().getOrganisation(partielleCantonalId, mr);
-								if (complete == null) {
-									mr.addMessage(LogCategory.SUIVI, LogLevel.ERROR, String.format("Aucune donnée renvoyée par RCEnt pour l'organisation %d.", partielleCantonalId));
-								}
-								else {
-									donneesEntreprise = complete;
-									donneesEtablissement = extractLocationInOrganisation(complete, idCantonal);
-								}
-							}
-							catch (Exception e) {
-								mr.addMessage(LogCategory.SUIVI, LogLevel.ERROR, String.format("Erreur rencontrée lors de l'interrogation de RCEnt pour l'organisation %d.", partielleCantonalId));
-								LOGGER.error("Exception lancée lors de l'interrogation de RCEnt pour l'organisation dont l'ID cantonal est " + partielleCantonalId, e);
-							}
-						}
-					}
-					catch (Exception e) {
-						mr.addMessage(LogCategory.SUIVI, LogLevel.ERROR, "Erreur rencontrée lors de l'interrogation de RCEnt pour l'établissement.");
-						LOGGER.error("Exception lancée lors de l'interrogation de RCEnt pour l'établissement dont l'ID cantonal est " + idCantonal, e);
-					}
-				}
-			}
-
-			// si on a des données, on les renvoie
-			// on ne peut avoir des données d'établissement que si on a des données d'entreprise
-			// il suffit donc de tester les données d'entreprise pour savoir si on a des données tout court
-			return donneesEntreprise != null ? new DonneesCiviles(donneesEntreprise, donneesEtablissement) : null;
-		});
+		// on recherche au travers de l'entreprise
+		final RegpmEntreprise entreprise = etablissement.getEntreprise();
+		final DonneesCivilesAppariementEtablissements donneesAppariement = entreprise != null ? mr.getExtractedData(DonneesCivilesAppariementEtablissements.class, buildEntrepriseKey(entreprise)) : null;
+		if (donneesAppariement != null) {
+			return new DonneesCiviles(donneesAppariement.getOrganisation(), donneesAppariement.getSites().get(etablissement.getId()));
+		}
+		else {
+			return null;
+		}
 	}
 
 	/**
@@ -741,6 +688,13 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 		unireg.setRaisonSociale(extractRaisonSociale(regpm));
 		unireg.setNumeroEtablissement(rcent != null ? rcent.getNumeroSite() : null);
 
+		// numéro IDE (seulement en cas d'absence de lien avec RCEnt)
+		if (rcent == null && regpm.getNumeroIDE() != null) {
+			final IdentificationEntreprise ide = new IdentificationEntreprise();
+			ide.setNumeroIde(StringRenderers.NUMERO_IDE_CANONICAL_RENDERER.toString(regpm.getNumeroIDE()));
+			unireg.addIdentificationEntreprise(ide);
+		}
+
 		// domiciles de l'établissement
 		migrateDomiciles(regpm, rcent, unireg, mr);
 
@@ -916,7 +870,7 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 					domicile.setDateDebut(range.getDateDebut());
 					domicile.setDateFin(RegDateHelper.minimum(range.getDateFin(), dateFinValiditeDonneesFiscales, NullDateBehavior.LATEST));
 
-					domicile.setTypeAutoriteFiscale(commune.getCanton() == RegpmCanton.VD ? TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD : TypeAutoriteFiscale.COMMUNE_HC);
+					domicile.setTypeAutoriteFiscale(TAF_COMMUNE_EXTRACTOR.apply(commune));
 					domicile.setNumeroOfsAutoriteFiscale(NO_OFS_COMMUNE_EXTRACTOR.apply(commune));
 					checkFractionCommuneVaudoise(domicile, mr, LogCategory.ETABLISSEMENTS);
 					return domicile;

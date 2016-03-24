@@ -2,6 +2,7 @@ package ch.vd.uniregctb.migration.pm.engine;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -51,11 +52,13 @@ import ch.vd.unireg.common.NomPrenom;
 import ch.vd.unireg.interfaces.common.Adresse;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.infra.data.Pays;
+import ch.vd.unireg.interfaces.organisation.ServiceOrganisationRaw;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
 import ch.vd.unireg.interfaces.organisation.data.Domicile;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
+import ch.vd.unireg.interfaces.organisation.data.TypeDeSite;
 import ch.vd.uniregctb.adresse.AdresseCivileAdapter;
 import ch.vd.uniregctb.adresse.AdresseGenerique;
 import ch.vd.uniregctb.adresse.AdresseGeneriqueAdapter;
@@ -95,12 +98,15 @@ import ch.vd.uniregctb.migration.pm.engine.collector.EntityLinkCollector;
 import ch.vd.uniregctb.migration.pm.engine.data.CommuneOuPays;
 import ch.vd.uniregctb.migration.pm.engine.data.DonneesAdministrateurs;
 import ch.vd.uniregctb.migration.pm.engine.data.DonneesCiviles;
+import ch.vd.uniregctb.migration.pm.engine.data.DonneesCivilesAppariementEtablissements;
 import ch.vd.uniregctb.migration.pm.engine.data.DonneesMandats;
 import ch.vd.uniregctb.migration.pm.engine.data.FlagFormesJuridiquesIncompatiblesData;
+import ch.vd.uniregctb.migration.pm.engine.data.LocalisationFiscale;
 import ch.vd.uniregctb.migration.pm.engine.data.RegimesFiscauxHistoData;
 import ch.vd.uniregctb.migration.pm.engine.helpers.StringRenderers;
 import ch.vd.uniregctb.migration.pm.extractor.IbanExtractor;
 import ch.vd.uniregctb.migration.pm.log.AdressePermanenteLoggedElement;
+import ch.vd.uniregctb.migration.pm.log.AppariementEtablissementLoggedElement;
 import ch.vd.uniregctb.migration.pm.log.DifferencesDonneesCivilesLoggedElement;
 import ch.vd.uniregctb.migration.pm.log.ForFiscalIgnoreAbsenceAssujettissementLoggedElement;
 import ch.vd.uniregctb.migration.pm.log.ForPrincipalOuvertApresFinAssujettissementLoggedElement;
@@ -123,9 +129,11 @@ import ch.vd.uniregctb.migration.pm.regpm.RegpmCodeContribution;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmCommune;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmCritereSegmentation;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmDemandeDelaiSommation;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmDomicileEtablissement;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmDossierFiscal;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmEntreprise;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmEnvironnementTaxation;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmEtablissement;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmEtatEntreprise;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmExerciceCommercial;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmFinFaillite;
@@ -481,6 +489,12 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		// les données qui viennent du civil
 		mr.registerDataExtractor(DonneesCiviles.class,
 		                         e -> extractDonneesCiviles(e, mr, idMapper),
+		                         null,
+		                         null);
+
+		// les données d'appariement des établissements de l'entreprise
+		mr.registerDataExtractor(DonneesCivilesAppariementEtablissements.class,
+		                         e -> extractDonneesAppariementEtablissements(e, mr, idMapper),
 		                         null,
 		                         null);
 
@@ -1294,6 +1308,368 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 
 			// rien trouvé -> on ignore les erreurs RCEnt
 			return null;
+		});
+	}
+
+	@Nullable
+	private DonneesCivilesAppariementEtablissements extractDonneesAppariementEtablissements(RegpmEntreprise e, MigrationResultContextManipulation mr, IdMapping idMapper) {
+		final EntityKey entrepriseKey = buildEntrepriseKey(e);
+		final DonneesCiviles donneesCiviles = mr.getExtractedData(DonneesCiviles.class, entrepriseKey);
+		if (donneesCiviles == null || donneesCiviles.getOrganisation() == null) {
+			// rien du tout...
+			return null;
+		}
+
+		final Organisation organisation = donneesCiviles.getOrganisation();
+		return doInLogContext(entrepriseKey, mr, idMapper, () -> {
+
+			// au travail, maintenant.. il faut apparier tous les établissements connus dans RegPM
+			// (on fait une copie de la collection ici car l'algorithme d'appariement en plusieurs phases plus bas va modifier la collection,
+			// ce que l'on ne veut bien-sûr pas faire sur les vraies données...)
+			final List<RegpmEtablissement> etablissementsAApparier = new ArrayList<>(e.getEtablissements());
+			if (etablissementsAApparier.isEmpty()) {
+				// pas d'établissements connus, rien à apparier...
+				return new DonneesCivilesAppariementEtablissements(organisation);
+			}
+
+			// construisons un ensemble des sites secondaires connus dans RCEnt (la clé dans cette map est l'identifiant cantonal du site)
+			// (cet ensemble sera réduit au fur et à mesure que les sites seront appariés)
+			final Map<Long, Pair<SiteOrganisation, List<DateRange>>> sitesDisponiblesAuCivil = organisation.getDonneesSites().stream()
+					.map(site -> {
+						final List<DateRange> datesSecondaires = site.getTypeDeSite().stream()
+								.filter(type -> type.getPayload() == TypeDeSite.ETABLISSEMENT_SECONDAIRE)
+								.map(DateRangeHelper.Range::new)
+								.collect(Collectors.toList());
+						if (datesSecondaires.isEmpty()) {
+							return null;
+						}
+						return Pair.of(site, DateRangeHelper.merge(datesSecondaires));
+					})
+					.filter(Objects::nonNull)
+					.collect(Collectors.toMap(pair -> pair.getLeft().getNumeroSite(),
+					                          Function.identity()));
+
+			// construisons ensuite une map des sites par numéro IDE
+			final Map<String, List<SiteOrganisation>> sitesParNumeroIDE = sitesDisponiblesAuCivil.values().stream()
+					.map(Pair::getLeft)
+					.map(site -> Optional.ofNullable(site.getNumeroIDE()).orElseGet(Collections::emptyList).stream()
+							.map(DateRanged::getPayload)
+							.map(ide -> Pair.of(site, ide))
+							.distinct())
+					.flatMap(Function.identity())
+					.collect(Collectors.toMap(Pair::getRight,
+					                          pair -> new LinkedList<>(Collections.singletonList(pair.getLeft())),      // il faut avoir une collection editable ici
+					                          (l1, l2) -> Stream.concat(l1.stream(), l2.stream()).collect(Collectors.toCollection(LinkedList::new))));
+
+			// map de sortie, la clé représente ici le numéro de l'établissement dans RegPM
+			final Map<Long, SiteOrganisation> appariements = new HashMap<>(etablissementsAApparier.size());
+
+			// première phase : appariement selon le numéro IDE renseigné dans RegPM
+			final Iterator<RegpmEtablissement> iteratorPhase1 = etablissementsAApparier.iterator();
+			while (iteratorPhase1.hasNext()) {
+				final RegpmEtablissement etablissement = iteratorPhase1.next();
+				if (etablissement.getNumeroIDE() != null) {
+
+					// mise en place du contexte de log... puisqu'on est en train de traiter un établissement particulier
+					doInLogContext(buildEtablissementKey(etablissement), mr, idMapper, () -> {
+						final String ide = StringRenderers.NUMERO_IDE_CANONICAL_RENDERER.toString(etablissement.getNumeroIDE());
+						final List<SiteOrganisation> sitesPourIde = sitesParNumeroIDE.get(ide);
+						if (sitesPourIde == null || sitesPourIde.isEmpty()) {
+
+							// on essaie de détecter un cas beaucoup plus violent (= erreur de saisie manifeste),
+							// où ce numéro serait connu de RCEnt mais pour une toute autre entreprise...
+
+							final ServiceOrganisationRaw.Identifiers identifiants = migrationContexte.getOrganisationService().getOrganisationByNoIde(ide);
+							if (identifiants == null) {
+								mr.addMessage(LogCategory.ETABLISSEMENTS, LogLevel.WARN, "Numéro IDE présent dans RegPM, mais aucun site secondaire d'organisation de RCEnt n'arbore ce même numéro.");
+							}
+							else if (identifiants.idCantonalOrganisation != organisation.getNumeroOrganisation()) {
+								mr.addMessage(LogCategory.ETABLISSEMENTS, LogLevel.ERROR,
+								              String.format("Numéro IDE présent dans RegPM connu dans RCEnt mais lié au site %d d'une autre organisation (%d).",
+								                            identifiants.idCantonalSite,
+								                            identifiants.idCantonalOrganisation));
+							}
+							else if (sitesDisponiblesAuCivil.containsKey(identifiants.idCantonalSite)) {
+								// RCEnt m'indique un site par le numéro IDE, mais ce même site n'affiche pas le numéro IDE... bizarre !!!
+								mr.addMessage(LogCategory.ETABLISSEMENTS, LogLevel.ERROR,
+								              String.format("Site %d de l'organisation de RCEnt pointé du doigt (à son insu) par la recherche par numéro IDE.",
+								                            identifiants.idCantonalSite));
+							}
+							else if (organisation.getSiteForNo(identifiants.idCantonalSite) != null) {
+								// RCEnt m'indique un site, mais celui-ci n'est pas un site secondaire
+								mr.addMessage(LogCategory.ETABLISSEMENTS, LogLevel.ERROR,
+								              String.format("Site %d de l'organisation de RCEnt indiqué par la recherche par numéro IDE correspond au site principal de l'organisation.",
+								                            identifiants.idCantonalSite));
+							}
+							else {
+								// RCEnt indique un site qui n'est carrément pas renvoyé dans les données complètes de l'organisation
+								mr.addMessage(LogCategory.ETABLISSEMENTS, LogLevel.ERROR,
+								              String.format("Site %d de l'organisation de RCEnt indiqué par la recherche par numéro IDE absent des données renvoyée pour l'organisation.",
+								                            identifiants.idCantonalSite));
+							}
+						}
+						else if (sitesPourIde.size() > 1) {
+							mr.addMessage(LogCategory.ETABLISSEMENTS, LogLevel.WARN,
+							              String.format("Plusieurs sites de l'organisation dans RCEnt arborent le numéro IDE présent dans RegPM (sites : %s).",
+							                            sitesPourIde.stream()
+									                            .mapToLong(SiteOrganisation::getNumeroSite)
+									                            .sorted()
+							                                    .mapToObj(String::valueOf)
+									                            .collect(Collectors.joining(", "))));
+						}
+						else {
+							// un seul site secondaire de RCEnt correspond au numéro IDE présent dans RegPM -> appariement
+							final SiteOrganisation vainqueur = sitesPourIde.get(0);
+
+							// un peu de log
+							mr.addMessage(LogCategory.ETABLISSEMENTS, LogLevel.INFO,
+							              String.format("Etablissement apparié au site %d de RCEnt par le biais du numéro IDE.", vainqueur.getNumeroSite()));
+
+							// on garde le mapping trouvé et on s'assure que ni l'établissement de RegPM ni le site de RCEnt ne seront
+							// ré-utilisés pour un autre appariement
+							appariements.put(etablissement.getId(), vainqueur);
+							sitesDisponiblesAuCivil.remove(vainqueur.getNumeroSite());
+							iteratorPhase1.remove();
+
+							// nettoyage également de la structure de recherche par numéro IDE
+							final Iterator<Map.Entry<String, List<SiteOrganisation>>> iteratorSitesParNumeroIde = sitesParNumeroIDE.entrySet().iterator();
+							while (iteratorSitesParNumeroIde.hasNext()) {
+								final Map.Entry<String, List<SiteOrganisation>> entry = iteratorSitesParNumeroIde.next();
+								final Iterator<SiteOrganisation> iteratorSites = entry.getValue().iterator();
+								while (iteratorSites.hasNext()) {
+									final SiteOrganisation site = iteratorSites.next();
+									if (site == vainqueur) {
+										iteratorSites.remove();
+									}
+								}
+								if (entry.getValue().isEmpty()) {
+									iteratorSitesParNumeroIde.remove();
+								}
+							}
+						}
+					});
+				}
+			}
+
+			// seconde phase : tentative d'appariement selon les communes de domicile
+
+			// regroupement des sites civils par dernière localisation fiscale (le booléen porte l'information 'site fermé')
+			final Map<LocalisationFiscale, List<Pair<SiteOrganisation, Boolean>>> sitesCivilsParLocalisation = sitesDisponiblesAuCivil.entrySet().stream()
+					.map(entry -> {
+						final Pair<SiteOrganisation, List<DateRange>> value = entry.getValue();
+						final RegDate derniereDate = value.getRight().stream()
+								.max(Comparator.comparing(DateRange::getDateFin, NullDateBehavior.LATEST::compare))
+								.map(DateRange::getDateFin)
+								.orElse(null);
+						final SiteOrganisation site = value.getLeft();
+						final LocalisationFiscale localisation = Optional.ofNullable(site.getDomicile(derniereDate))
+								.map(domicile -> new LocalisationFiscale(domicile.getTypeAutoriteFiscale(), domicile.getNoOfs()))
+								.orElse(null);
+						if (localisation == null) {
+							return null;
+						}
+						return Pair.of(localisation, Pair.of(site, derniereDate != null));
+					})
+					.filter(Objects::nonNull)
+					.collect(Collectors.toMap(Pair::getLeft,
+					                          pair -> Collections.singletonList(pair.getRight()),
+					                          (l1, l2) -> Stream.concat(l1.stream(), l2.stream()).collect(Collectors.toList())));
+
+			// regroupement des établissements de RegPM par dernière localisation fiscale
+			final Map<LocalisationFiscale, List<RegpmEtablissement>> etablissementsParLocalisation = etablissementsAApparier.stream()
+					.map(etb -> {
+						final RegpmDomicileEtablissement dernierDomicile = etb.getDomicilesEtablissements().stream()
+								.filter(domicile -> !domicile.isRectifiee())
+								.max(Comparator.comparing(RegpmDomicileEtablissement::getDateValidite, NullDateBehavior.EARLIEST::compare))
+								.orElse(null);
+						if (dernierDomicile == null) {
+							return null;
+						}
+						final RegpmCommune commune = dernierDomicile.getCommune();
+						final LocalisationFiscale localisation = new LocalisationFiscale(TAF_COMMUNE_EXTRACTOR.apply(commune), NO_OFS_COMMUNE_EXTRACTOR.apply(commune));
+						return Pair.of(localisation, etb);
+					})
+					.filter(Objects::nonNull)
+					.collect(Collectors.toMap(Pair::getLeft,
+					                          pair -> Collections.singletonList(pair.getRight()),
+					                          (l1, l2) -> Stream.concat(l1.stream(), l2.stream()).collect(Collectors.toList())));
+
+			// nous allons faire une boucle sur toutes les localisations pour lesquelles nous avons un domicile connu dans RegPM
+			// (les autres ne feront de toute façon pas l'objet d'appariement, puisque nous ne créons pas de nouveaux établissements secondaires
+			// d'après les données civiles dans la migration)
+			for (Map.Entry<LocalisationFiscale, List<RegpmEtablissement>> entry : etablissementsParLocalisation.entrySet()) {
+				final LocalisationFiscale localisationFiscale = entry.getKey();
+				final List<Pair<SiteOrganisation, Boolean>> sitesDansLocalisation = sitesCivilsParLocalisation.get(localisationFiscale);
+				if (sitesDansLocalisation != null && !sitesDansLocalisation.isEmpty()) {
+					final List<RegpmEtablissement> etablissements = entry.getValue();
+
+					// contrôle d'activité (la clé correspond à 'établissement fermé') sur les établissements
+					final Map<Boolean, List<RegpmEtablissement>> etablissementsParFermeture = etablissements.stream()
+							.map(etb -> {
+								final boolean isOuvert = etb.getEtablissementsStables().stream()
+										.filter(etbStable -> etbStable.getDateFin() == null)
+										.findAny()
+										.isPresent();
+								return Pair.of(!isOuvert, etb);
+							})
+							.collect(Collectors.toMap(Pair::getLeft,
+							                          pair -> Collections.singletonList(pair.getRight()),
+							                          (l1, l2) -> Stream.concat(l1.stream(), l2.stream()).collect(Collectors.toList())));
+
+					// contrôle d'activité (la clé correspond à 'site fermé') sur les sites civils (cette collection
+					// pourra être mise-à-jour au fur et à mesure des appariements, d'où la nécessité d'avoir des collections modifiables)
+					final Map<Boolean, List<SiteOrganisation>> sitesParFermeture = sitesDansLocalisation.stream()
+							.collect(Collectors.toMap(Pair::getRight,
+							                          pair -> new LinkedList<>(Collections.singletonList(pair.getLeft())),
+							                          (l1, l2) -> Stream.concat(l1.stream(), l2.stream()).collect(Collectors.toCollection(LinkedList::new))));
+
+					// calculs séparés pour les ouverts et les fermés
+					for (Boolean ferme : Arrays.asList(Boolean.TRUE, Boolean.FALSE)) {
+						final List<RegpmEtablissement> etablissementsCandidats = Optional.of(ferme)
+								.map(etablissementsParFermeture::get)
+								.filter(list -> !list.isEmpty())
+								.orElse(null);
+						final List<SiteOrganisation> sitesCandidats = Optional.of(ferme)
+								.map(sitesParFermeture::get)
+								.filter(list -> !list.isEmpty())
+								.orElse(null);
+						final String activityFlagDisplayString = ferme ? "inactif" : "actif";
+
+						// rien à dire si tout est vide
+						if (etablissementsCandidats != null && sitesCandidats != null) {
+							if (etablissementsCandidats.size() == 1 && sitesCandidats.size() == 1) {
+								// identification facile, quelles que soient les raisons sociales
+								final RegpmEtablissement etb = etablissementsCandidats.get(0);
+								final SiteOrganisation site = sitesCandidats.get(0);
+								appariements.put(etb.getId(), site);
+
+								doInLogContext(buildEtablissementKey(etb), mr, idMapper, () -> {
+									mr.addMessage(LogCategory.ETABLISSEMENTS, LogLevel.INFO,
+									              String.format("Etablissement apparié au site %d %s de RCEnt par le biais de son domicile (%s).",
+									                            site.getNumeroSite(),
+									                            activityFlagDisplayString,
+									                            localisationFiscale));
+								});
+
+								// pas la peine de faire le nettoyage dans les listes car c'était de toute façon le seul
+							}
+							else {
+								// il faut tenter un matching sur la raison sociale...
+
+								// faisons des groupes de raisons sociales
+								final Map<String, List<RegpmEtablissement>> etablissementsParRaisonSociale = etablissementsCandidats.stream()
+										.collect(Collectors.toMap(etb -> extractRaisonSociale(etb.getRaisonSociale1(), etb.getRaisonSociale2(), etb.getRaisonSociale3()),
+										                          Collections::singletonList,
+										                          (l1, l2) -> Stream.concat(l1.stream(), l2.stream()).collect(Collectors.toList())));
+
+								final Map<String, List<SiteOrganisation>> sitesParRaisonSociale = sitesCandidats.stream()
+										.map(site -> site.getNom().stream()
+												.max(Comparator.comparing(DateRange::getDateDebut))
+												.map(DateRanged::getPayload)
+												.map(nom -> Pair.of(nom, site))
+												.orElse(null))
+										.filter(Objects::nonNull)
+										.collect(Collectors.toMap(Pair::getLeft,
+										                          pair -> Collections.singletonList(pair.getRight()),
+										                          (l1, l2) -> Stream.concat(l1.stream(), l2.stream()).collect(Collectors.toList())));
+
+								// une nouvelle boucle sur les raisons sociales
+								for (Map.Entry<String, List<RegpmEtablissement>> entryEtablissementsPourRaisonSociale : etablissementsParRaisonSociale.entrySet()) {
+									final List<RegpmEtablissement> etbsRaisonSociale = entryEtablissementsPourRaisonSociale.getValue();
+									final String raisonSociale = entryEtablissementsPourRaisonSociale.getKey();
+									final List<SiteOrganisation> sitesAvecRaisonSociale = sitesParRaisonSociale.get(raisonSociale);
+									if (sitesAvecRaisonSociale != null) {
+										if (etbsRaisonSociale.size() == 1 && sitesAvecRaisonSociale.size() == 1) {
+											// même commune, même nom, même flag d'activité -> c'est le bon
+											final RegpmEtablissement etb = etbsRaisonSociale.get(0);
+											final SiteOrganisation siteUtilise = sitesAvecRaisonSociale.get(0);
+											appariements.put(etb.getId(), siteUtilise);
+
+											doInLogContext(buildEtablissementKey(etb), mr, idMapper,
+											               () -> mr.addMessage(LogCategory.ETABLISSEMENTS, LogLevel.INFO,
+											                                   String.format("Etablissement apparié au site %d %s de RCEnt par le biais de son domicile (%s) et de sa raison sociale (%s).",
+											                                                 siteUtilise.getNumeroSite(),
+											                                                 activityFlagDisplayString,
+											                                                 localisationFiscale,
+											                                                 raisonSociale)));
+
+											// il faut maintenant écarter le site des sites potentiels dans une prochaine boucle
+											final Iterator<SiteOrganisation> iteratorSitesCandidats = sitesCandidats.iterator();
+											while (iteratorSitesCandidats.hasNext()) {
+												final SiteOrganisation site = iteratorSitesCandidats.next();
+												if (site == siteUtilise) {
+													iteratorSitesCandidats.remove();
+												}
+											}
+										}
+										else {
+											// pas de match parfait...
+											etbsRaisonSociale.forEach(etb -> doInLogContext(buildEtablissementKey(etb), mr, idMapper,
+											                                                () -> mr.addMessage(LogCategory.ETABLISSEMENTS, LogLevel.WARN,
+											                                                                    String.format("Etablissement non-apparié à un site RCEnt car il existe plusieurs sites %ss (%s) au même endroit (%s) avec la même raison sociale (%s).",
+											                                                                                  activityFlagDisplayString,
+											                                                                                  sitesAvecRaisonSociale.stream()
+													                                                                                  .map(SiteOrganisation::getNumeroSite)
+													                                                                                  .map(String::valueOf)
+													                                                                                  .collect(Collectors.joining(", ")),
+											                                                                                  localisationFiscale,
+											                                                                                  raisonSociale))));
+										}
+									}
+									else {
+										// aucun site civil avec la même raison sociale... tant pis !
+										etbsRaisonSociale.forEach(etb -> doInLogContext(buildEtablissementKey(etb), mr, idMapper,
+										                                                () -> mr.addMessage(LogCategory.ETABLISSEMENTS, LogLevel.WARN,
+										                                                                    String.format("Etablissement non-apparié à un site RCEnt car il n'existe aucun site %s sur %s avec la raison sociale '%s'.",
+										                                                                                  activityFlagDisplayString,
+										                                                                                  localisationFiscale,
+										                                                                                  raisonSociale))));
+									}
+								}
+							}
+						}
+						else if (etablissementsCandidats != null) {
+							// aucun site candidat sur la même commune avec le même flag "fermé"
+							// (si nous sommes ici, c'est qu'il y a au moins un site civil, et que tous ont le flag opposé)
+							etablissementsCandidats.forEach(etb -> doInLogContext(buildEtablissementKey(etb), mr, idMapper,
+							                                                      () -> mr.addMessage(LogCategory.ETABLISSEMENTS, LogLevel.WARN,
+							                                                                          String.format("Etablissement non-apparié à un site RCEnt car il n'existe aucun site %s sur %s.",
+							                                                                                        activityFlagDisplayString,
+							                                                                                        localisationFiscale))));
+						}
+					}
+				}
+			}
+
+			// on veut une liste des établissements appariés avec leur raison sociale
+			appariements.entrySet().stream()
+					.map(entry -> Pair.of(mr.getCurrentGraphe().getEtablissements().get(entry.getKey()), entry.getValue()))
+					.forEach(pair -> doInLogContext(buildEtablissementKey(pair.getLeft()), mr, idMapper,
+					                                () -> {
+						                                final RegpmEtablissement etablissement = pair.getLeft();
+						                                final SiteOrganisation site = pair.getRight();
+						                                final String regpmRaisonSociale = extractRaisonSociale(etablissement.getRaisonSociale1(), etablissement.getRaisonSociale2(), etablissement.getRaisonSociale3());
+						                                final String rcentRaisonSociale = site.getNom().stream()
+								                                .max(Comparator.comparing(DateRange::getDateDebut))
+								                                .map(DateRanged::getPayload)
+								                                .orElse(null);
+
+						                                mr.pushContextValue(AppariementEtablissementLoggedElement.class, new AppariementEtablissementLoggedElement(site.getNumeroSite(),
+						                                                                                                                                           regpmRaisonSociale,
+						                                                                                                                                           rcentRaisonSociale));
+						                                try {
+							                                final LogLevel logLevel = areEqual(regpmRaisonSociale, rcentRaisonSociale, String::equalsIgnoreCase) ? LogLevel.INFO : LogLevel.WARN;
+							                                mr.addMessage(LogCategory.APPARIEMENTS_ETABLISSEMENTS_SECONDAIRES, logLevel, StringUtils.EMPTY);
+						                                }
+						                                finally {
+							                                mr.popContexteValue(AppariementEtablissementLoggedElement.class);
+						                                }
+					                                })
+
+					);
+
+			// c'est fini, on renvoie ce qu'on a trouvé
+			return new DonneesCivilesAppariementEtablissements(organisation, appariements);
 		});
 	}
 
@@ -2143,7 +2519,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 			}
 
 			// dans ce cas, on reprend le numéro IDE dans Unireg
-			final String noIde = String.format("%3s%09d", regpm.getNumeroIDE().getCategorie(), regpm.getNumeroIDE().getNumero());
+			final String noIde = StringRenderers.NUMERO_IDE_CANONICAL_RENDERER.toString(regpm.getNumeroIDE());
 			if (NumeroIDEHelper.isValid(noIde)) {
 				final IdentificationEntreprise ide = new IdentificationEntreprise();
 				ide.setNumeroIde(noIde);
@@ -2873,7 +3249,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 					.map(RegpmTypeFormeJuridique::getCode);
 			final String regpmCodeFormeJuridique = regpmFormeJuridique.map(EntrepriseMigrator::toFormeJuridique).map(FormeJuridiqueEntreprise::getCodeECH).orElse(null);
 			final String regpmRaisonSociale = regpmRaisonsSociales.lastEntry().getValue();
-			final String regpmNumeroIde = Optional.ofNullable(regpm.getNumeroIDE()).map(ide -> String.format("%s%09d", ide.getCategorie(), ide.getNumero())).orElse(null);
+			final String regpmNumeroIde = Optional.ofNullable(regpm.getNumeroIDE()).map(StringRenderers.NUMERO_IDE_CANONICAL_RENDERER::toString).orElse(null);
 			final CommuneOuPays regpmSiege = Optional.of(mr.getExtractedData(SiegesHistoData.class, key).histo)
 					.map(NavigableMap::lastEntry)
 					.map(Map.Entry::getValue)

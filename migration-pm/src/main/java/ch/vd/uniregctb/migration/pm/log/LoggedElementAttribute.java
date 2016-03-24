@@ -1,6 +1,8 @@
 package ch.vd.uniregctb.migration.pm.log;
 
+import java.util.Objects;
 import java.util.function.BinaryOperator;
+import java.util.stream.Stream;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -9,6 +11,7 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.uniregctb.common.StringRenderer;
 import ch.vd.uniregctb.migration.pm.engine.collector.EntityLinkCollector;
+import ch.vd.uniregctb.migration.pm.engine.helpers.StringRenderers;
 import ch.vd.uniregctb.migration.pm.regpm.NumeroIDE;
 import ch.vd.uniregctb.tiers.RegimeFiscal;
 import ch.vd.uniregctb.type.MotifRattachement;
@@ -34,7 +37,7 @@ public enum LoggedElementAttribute {
 
 	ENTREPRISE_ID(Number.class, Object::toString, LoggedElementHelper.<Number>exceptionThrowing()),
 	ENTREPRISE_FLAG_ACTIF(Boolean.class, b -> b ? "Active" : "Inactive", LoggedElementHelper.<Boolean>exceptionThrowing()),
-	ENTREPRISE_NO_IDE(NumeroIDE.class, no -> String.format("%s%09d", no.getCategorie(), no.getNumero()), LoggedElementHelper.<NumeroIDE>exceptionThrowing()),
+	ENTREPRISE_NO_IDE(NumeroIDE.class, StringRenderers.NUMERO_IDE_CANONICAL_RENDERER, LoggedElementHelper.<NumeroIDE>exceptionThrowing()),
 	ENTREPRISE_ID_CANTONAL(Number.class, Object::toString, LoggedElementHelper.<Number>exceptionThrowing()),
 
 	//
@@ -45,8 +48,8 @@ public enum LoggedElementAttribute {
 	ETABLISSEMENT_ID_UNIREG(Number.class, Object::toString, LoggedElementHelper.<Number>exceptionThrowing()),
 	ETABLISSEMENT_ENTREPRISE_ID(Number.class, Object::toString, LoggedElementHelper.<Number>exceptionThrowing()),
 	ETABLISSEMENT_INDIVIDU_ID(Number.class, Object::toString, LoggedElementHelper.<Number>exceptionThrowing()),
-	ETABLISSEMENT_NO_IDE(NumeroIDE.class, no -> String.format("%s%d", no.getCategorie(), no.getNumero()), LoggedElementHelper.<NumeroIDE>exceptionThrowing()),
-	ETABLISSEMENT_ID_CANTONAL(Number.class, Object::toString, LoggedElementHelper.<Number>exceptionThrowing()),
+	ETABLISSEMENT_NO_IDE(NumeroIDE.class, StringRenderers.NUMERO_IDE_CANONICAL_RENDERER, LoggedElementHelper.<NumeroIDE>exceptionThrowing()),
+	ETABLISSEMENT_ID_CANTONAL(Number.class, Object::toString, (id1, id2) -> Stream.of(id1, id2).filter(Objects::nonNull).findAny().orElse(null)),
 
 	//
 	// spécifiques aux individus

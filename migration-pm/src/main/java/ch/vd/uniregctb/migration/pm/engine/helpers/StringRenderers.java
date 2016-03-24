@@ -5,7 +5,9 @@ import org.apache.commons.lang3.StringUtils;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.common.StringRenderer;
+import ch.vd.uniregctb.migration.pm.regpm.NumeroIDE;
 import ch.vd.uniregctb.migration.pm.utils.EntityWrapper;
 import ch.vd.uniregctb.tiers.LocalizedDateRange;
 import ch.vd.uniregctb.tiers.MontantMonetaire;
@@ -47,4 +49,14 @@ public abstract class StringRenderers {
 	 * Entité qui permet de dumper des valeurs de {@link MontantMonetaire}
 	 */
 	public static final StringRenderer<MontantMonetaire> MONTANT_MONETAIRE_RENDERER = mm -> String.format("%d %s", mm.getMontant(), mm.getMonnaie());
+
+	/**
+	 * Dump d'un {@link NumeroIDE} sous sa forme canonique LLLCCCCCCCCC
+	 */
+	public static final StringRenderer<NumeroIDE> NUMERO_IDE_CANONICAL_RENDERER = ide -> String.format("%s%09d", ide.getCategorie(), ide.getNumero());
+
+	/**
+	 * Dump d'un {@link NumeroIDE} sous sa forme affichable LLL-CCC.CCC.CCC
+	 */
+	public static final StringRenderer<NumeroIDE> NUMERO_IDE_RENDERER = ide -> FormatNumeroHelper.formatNumIDE(NUMERO_IDE_CANONICAL_RENDERER.toString(ide));
 }
