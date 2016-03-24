@@ -28,14 +28,13 @@ import org.xml.sax.SAXException;
 
 import ch.vd.evd0022.v3.OrganisationData;
 import ch.vd.evd0023.v3.ObjectFactory;
+import ch.vd.unireg.interfaces.organisation.ServiceOrganisationRaw;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.wsclient.rcent.RcEntClient;
 import ch.vd.unireg.wsclient.rcent.RcEntClientImpl;
 import ch.vd.unireg.xml.tools.ClasspathCatalogResolver;
 import ch.vd.uniregctb.common.BusinessItTest;
 import ch.vd.uniregctb.interfaces.service.ServiceOrganisationService;
-
-import static org.junit.Assert.assertNotNull;
 
 @SuppressWarnings({"JavaDoc"})
 public class ServiceOrganisationRCEntItTest extends BusinessItTest {
@@ -48,16 +47,21 @@ public class ServiceOrganisationRCEntItTest extends BusinessItTest {
 	};
 
 	private static final String BASE_PATH_ORGANISATION = "/organisation/CT.VD.PARTY";
+	private static final String BASE_PATH_ORGANISATIONS_OF_NOTICE = "/organisationsOfNotice";
 
 	// Organisation cible sur RCEnt
 	private static final long ID_BCV = 101544776L;
 	private static final String NOM_BCV = "Banque Cantonale Vaudoise";
-	private static final String BASE_PATH_ORGANISATIONS_OF_NOTICE = "/organisationsOfNotice";
 
 	// Evénement cible sur RCEnt
 	private static final long ID_EVT = 4466328L;
 	private static final long ID_ORGANISATION_EVT = 101584800L;
 	private static final String ID_NOM_EVT = "Global Health Consulting Sàrl";
+
+	// Entreprise avec succursale avec numéro IDE dans RCEnt
+	private static final long ID_SUCC = 101067201L;
+	private static final long ID_ORGANISATION_SUCC = 101671015L;
+	private static final String IDE_SUCC = "CHE169212759";
 
 	// Organisation de l'échantillon fichier
 	private static final long ID_BOMACO = 101636326L;
@@ -84,7 +88,7 @@ public class ServiceOrganisationRCEntItTest extends BusinessItTest {
 	@Test
 	public void testGetOrganisation() throws Exception {
 		Organisation org = service.getOrganisationHistory(ID_BCV);
-		assertNotNull(org);
+		Assert.assertNotNull(org);
 		assertContains(NOM_BCV, org.getNom().get(0).getPayload());
 	}
 
@@ -92,8 +96,16 @@ public class ServiceOrganisationRCEntItTest extends BusinessItTest {
 	@Test
 	public void testGetPseudoOrganisationHistory() throws Exception {
 		Organisation org = service.getPseudoOrganisationHistory(ID_EVT).get(ID_ORGANISATION_EVT);
-		assertNotNull(org);
+		Assert.assertNotNull(org);
 		assertContains(ID_NOM_EVT, org.getNom().get(0).getPayload());
+	}
+
+	@Test
+	public void testGetOrganisationByNoIde() throws Exception {
+		final ServiceOrganisationRaw.Identifiers ids = service.getOrganisationByNoIde(IDE_SUCC);
+		Assert.assertNotNull(ids);
+		Assert.assertEquals(ID_ORGANISATION_SUCC, ids.idCantonalOrganisation);
+		Assert.assertEquals(ID_SUCC, ids.idCantonalSite);
 	}
 
 	@Test

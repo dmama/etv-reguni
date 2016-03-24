@@ -41,7 +41,14 @@ public class ProxyServiceOrganisation implements ServiceOrganisationService, Ser
 
 	@Override
 	public Map<Long, Organisation> getPseudoOrganisationHistory(long noEvenement) throws ServiceOrganisationException {
+		assertTargetNotNull();
 		return service.getPseudoOrganisationHistory(noEvenement);
+	}
+
+	@Override
+	public ServiceOrganisationRaw.Identifiers getOrganisationByNoIde(String noide) throws ServiceOrganisationException {
+		assertTargetNotNull();
+		return service.getOrganisationByNoIde(noide);
 	}
 
 	@Override

@@ -105,6 +105,36 @@ public class ServiceOrganisationTracing implements ServiceOrganisationRaw, Initi
 	}
 
 	@Override
+	public Identifiers getOrganisationByNoIde(final String noide) throws ServiceOrganisationException {
+		Throwable t = null;
+		int items = 0;
+		final long time = tracing.start();
+		try {
+			final Identifiers ids = target.getOrganisationByNoIde(noide);
+			if (ids != null) {
+				items = 1;
+			}
+			return ids;
+		}
+		catch (ServiceCivilException e) {
+			t = e;
+			throw e;
+		}
+		catch (RuntimeException | Error e) {
+			t = e;
+			throw e;
+		}
+		finally {
+			tracing.end(time, t, "getOrganisationByNoIde", items, new Object() {
+				@Override
+				public String toString() {
+					return String.format("ide=%s", noide);
+				}
+			});
+		}
+	}
+
+	@Override
 	public Map<Long, Organisation> getPseudoOrganisationHistory(final long noEvenement) throws ServiceOrganisationException {
 		Throwable t = null;
 		int items = 0;

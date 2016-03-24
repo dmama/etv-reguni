@@ -55,6 +55,11 @@ public class ServiceOrganisationImpl implements ServiceOrganisationService {
 	}
 
 	@Override
+	public ServiceOrganisationRaw.Identifiers getOrganisationByNoIde(String noide) throws ServiceOrganisationException {
+		return target.getOrganisationByNoIde(noide);
+	}
+
+	@Override
 	public Long getOrganisationPourSite(Long noSite) throws ServiceOrganisationException {
 		return target.getOrganisationPourSite(noSite);
 	}

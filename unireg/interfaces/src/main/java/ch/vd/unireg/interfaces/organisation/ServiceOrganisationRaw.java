@@ -1,10 +1,28 @@
 package ch.vd.unireg.interfaces.organisation;
 
+import java.io.Serializable;
 import java.util.Map;
 
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 
 public interface ServiceOrganisationRaw {
+
+	/**
+	 * Container des identifiants d'une organisation et de l'un de ses sites
+	 * (qui peut être principal ou pas)
+	 */
+	class Identifiers implements Serializable {
+
+		private static final long serialVersionUID = 348072279122408475L;
+
+		public final long idCantonalOrganisation;
+		public final long idCantonalSite;
+
+		public Identifiers(long idCantonalOrganisation, long idCantonalSite) {
+			this.idCantonalOrganisation = idCantonalOrganisation;
+			this.idCantonalSite = idCantonalSite;
+		}
+	}
 
 	String SERVICE_NAME = "ServiceOrganisation";
 
@@ -26,6 +44,12 @@ public interface ServiceOrganisationRaw {
 	 */
 	Long getOrganisationPourSite(Long noSite) throws ServiceOrganisationException;
 
+	/**
+	 * @param noide numéro IDE (sous la forme sans point ni tiret)
+	 * @return les identifiants de l'organisation et de son site qui correspondent à ce numéro IDE
+	 * @throws ServiceOrganisationException en cas de souci quelque part
+	 */
+	Identifiers getOrganisationByNoIde(String noide) throws ServiceOrganisationException;
 
 	/**
 	 * Recherche les états avant et après de l'événement et contruit ls pseudo historique correspondant.

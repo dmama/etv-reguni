@@ -104,6 +104,36 @@ public class RcEntClientTracing implements RcEntClient, InitializingBean, Dispos
 	}
 
 	@Override
+	public OrganisationData getOrganisationByNoIDE(final String noide, final RegDate referenceDate, final boolean withHistory) throws RcEntClientException {
+		Throwable t = null;
+		int items = 0;
+		final long time = tracing.start();
+		try {
+			final OrganisationData data = target.getOrganisationByNoIDE(noide, referenceDate, withHistory);
+			if (data != null) {
+				items = 1;
+			}
+			return data;
+		}
+		catch (RcEntClientException e) {
+			t = e;
+			throw e;
+		}
+		catch (RuntimeException | Error e) {
+			t = e;
+			throw e;
+		}
+		finally {
+			tracing.end(time, t, "getOrganisationByNoIDE", items, new Object() {
+				@Override
+				public String toString() {
+					return String.format("ide=%s, referenceDate=%s, withHistory=%s", noide, ServiceTracing.toString(referenceDate), withHistory);
+				}
+			});
+		}
+	}
+
+	@Override
 	public void ping() throws RcEntClientException {
 		Throwable t = null;
 		final long time = tracing.start();

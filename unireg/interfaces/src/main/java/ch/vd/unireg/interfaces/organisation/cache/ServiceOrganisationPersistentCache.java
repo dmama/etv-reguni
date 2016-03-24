@@ -191,7 +191,14 @@ public class ServiceOrganisationPersistentCache implements ServiceOrganisationRa
 	}
 
 	@Override
+	public Identifiers getOrganisationByNoIde(String noide) throws ServiceOrganisationException {
+		// pas caché pour le moment...
+		return target.getOrganisationByNoIde(noide);
+	}
+
+	@Override
 	public Map<Long, Organisation> getPseudoOrganisationHistory(long noEvenement) throws ServiceOrganisationException {
+		// aucun intérêt à cacher ce genre d'information
 		return target.getPseudoOrganisationHistory(noEvenement);
 	}
 

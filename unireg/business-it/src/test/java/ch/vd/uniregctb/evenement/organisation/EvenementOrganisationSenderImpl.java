@@ -27,6 +27,7 @@ import ch.vd.evd0022.v3.TypeOfNotice;
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.EsbMessageFactory;
 import ch.vd.technical.esb.jms.AbstractEsbJmsTemplate;
+import ch.vd.unireg.interfaces.organisation.data.OrganisationConstants;
 import ch.vd.uniregctb.common.BusinessItTest;
 import ch.vd.uniregctb.jms.EsbMessageValidator;
 import ch.vd.uniregctb.type.TypeEvenementOrganisation;
@@ -84,7 +85,7 @@ public class EvenementOrganisationSenderImpl implements EvenementOrganisationSen
 		notice.setTypeOfNotice(convertNoticeType(evt.getType()));
 
 		final NamedOrganisationId identifier = new NamedOrganisationId();
-		identifier.setOrganisationIdCategory("CH.IDE");
+		identifier.setOrganisationIdCategory(OrganisationConstants.CLE_IDE);
 		identifier.setOrganisationId("65465465164");
 
 		final Identification ident = new Identification();
@@ -159,7 +160,7 @@ public class EvenementOrganisationSenderImpl implements EvenementOrganisationSen
 
 		for (Long noCantonal : nos) {
 			final NamedOrganisationId identifier = new NamedOrganisationId();
-			identifier.setOrganisationIdCategory("CH.IDE");
+			identifier.setOrganisationIdCategory(OrganisationConstants.CLE_IDE);
 			identifier.setOrganisationId("4321" + noCantonal);
 
 			final Identification ident = new Identification();

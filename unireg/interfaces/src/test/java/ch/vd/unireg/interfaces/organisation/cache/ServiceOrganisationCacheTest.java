@@ -102,6 +102,11 @@ public class ServiceOrganisationCacheTest extends WithoutSpringTest {
 		}
 
 		@Override
+		public Identifiers getOrganisationByNoIde(String noide) throws ServiceOrganisationException {
+			return target.getOrganisationByNoIde(noide);
+		}
+
+		@Override
 		public Map<Long, Organisation> getPseudoOrganisationHistory(long noEvenement) throws ServiceOrganisationException {
 			return target.getPseudoOrganisationHistory(noEvenement);
 		}

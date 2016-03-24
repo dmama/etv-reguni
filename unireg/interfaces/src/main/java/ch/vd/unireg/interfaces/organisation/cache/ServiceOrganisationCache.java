@@ -242,6 +242,52 @@ public class ServiceOrganisationCache implements ServiceOrganisationRaw, UniregC
 		return (Long) element.getObjectValue();
 	}
 
+	private static class GetOrganisationByNoIdeKey implements Serializable {
+
+		private static final long serialVersionUID = 630591634651995670L;
+
+		private final String noide;
+
+		public GetOrganisationByNoIdeKey(String noide) {
+			this.noide = noide;
+		}
+
+		@Override
+		public boolean equals(Object o) {
+			if (this == o) return true;
+			if (o == null || getClass() != o.getClass()) return false;
+
+			final GetOrganisationByNoIdeKey that = (GetOrganisationByNoIdeKey) o;
+			return noide != null ? noide.equals(that.noide) : that.noide == null;
+		}
+
+		@Override
+		public int hashCode() {
+			return noide != null ? noide.hashCode() : 0;
+		}
+
+		@Override
+		public String toString() {
+			return "GetOrganisationByNoIdeKey{" +
+					"noide='" + noide + '\'' +
+					'}';
+		}
+	}
+
+	@Override
+	public Identifiers getOrganisationByNoIde(String noide) throws ServiceOrganisationException {
+		final GetOrganisationByNoIdeKey key = new GetOrganisationByNoIdeKey(noide);
+		final Element element = cache.get(key);
+		if (element == null) {
+			final Identifiers ids = target.getOrganisationByNoIde(noide);
+			cache.put(new Element(key, ids));
+			return ids;
+		}
+		else {
+			return (Identifiers) element.getValue();
+		}
+	}
+
 	@Override
 	public Map<Long, Organisation> getPseudoOrganisationHistory(long noEvenement) throws ServiceOrganisationException {
 		return target.getPseudoOrganisationHistory(noEvenement);

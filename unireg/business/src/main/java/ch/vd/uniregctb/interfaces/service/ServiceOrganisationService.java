@@ -6,6 +6,7 @@ import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.organisation.ServiceOrganisationException;
+import ch.vd.unireg.interfaces.organisation.ServiceOrganisationRaw;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.uniregctb.interfaces.model.AdressesCivilesHistoriques;
 
@@ -30,6 +31,13 @@ public interface ServiceOrganisationService {
 	 * @throws ServiceOrganisationException
 	 */
 	Map<Long, Organisation> getPseudoOrganisationHistory(long noEvenement) throws ServiceOrganisationException;
+
+	/**
+	 * @param noide numéro IDE (sous la forme sans point ni tiret)
+	 * @return les identifiants de l'organisation et de son site qui correspondent à ce numéro IDE
+	 * @throws ServiceOrganisationException en cas de souci quelque part
+	 */
+	ServiceOrganisationRaw.Identifiers getOrganisationByNoIde(String noide) throws ServiceOrganisationException;
 
 	/**
 	 * Obtenir un numéro d'organisation à partir d'un numéro de site.

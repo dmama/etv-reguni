@@ -9,6 +9,7 @@ import org.junit.Test;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.organisation.ServiceOrganisationException;
+import ch.vd.unireg.interfaces.organisation.ServiceOrganisationRaw;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.StatusInscriptionRC;
@@ -44,6 +45,11 @@ public class FailliteConcordatStrategyTest extends WithoutSpringTest {
 
 		@Override
 		public Map<Long, Organisation> getPseudoOrganisationHistory(long noEvenement) throws ServiceOrganisationException {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public ServiceOrganisationRaw.Identifiers getOrganisationByNoIde(String noide) throws ServiceOrganisationException {
 			throw new UnsupportedOperationException();
 		}
 

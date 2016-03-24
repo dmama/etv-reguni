@@ -11,6 +11,7 @@ import ch.vd.unireg.interfaces.infra.mock.MockLocalite;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.unireg.interfaces.organisation.ServiceOrganisationException;
 import ch.vd.unireg.interfaces.organisation.ServiceOrganisationRaw;
+import ch.vd.unireg.interfaces.organisation.data.DateRanged;
 import ch.vd.unireg.interfaces.organisation.data.DonneesRC;
 import ch.vd.unireg.interfaces.organisation.data.DonneesRegistreIDE;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
@@ -45,7 +46,23 @@ public abstract class MockServiceOrganisation implements ServiceOrganisationRaw 
 		for (Map.Entry<Long, MockOrganisation> organisation : organisationMap.entrySet()) {
 			for (SiteOrganisation site : organisation.getValue().getDonneesSites()) {
 				if (site.getNumeroSite() == noSite) {
-					return organisation.getValue().getNumeroOrganisation();
+					return organisation.getKey();
+				}
+			}
+		}
+		return null;
+	}
+
+	@Override
+	public Identifiers getOrganisationByNoIde(String noide) throws ServiceOrganisationException {
+		for (Map.Entry<Long, MockOrganisation> organisation : organisationMap.entrySet()) {
+			for (SiteOrganisation site : organisation.getValue().getDonneesSites()) {
+				if (site.getNumeroIDE() != null) {
+					for (DateRanged<String> candidat : site.getNumeroIDE()) {
+						if (noide != null && noide.equals(candidat.getPayload())) {
+							return new Identifiers(organisation.getKey(), site.getNumeroSite());
+						}
+					}
 				}
 			}
 		}

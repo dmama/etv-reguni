@@ -54,6 +54,17 @@ public class ServiceOrganisationEndPoint implements ServiceOrganisationRaw, Deta
 	}
 
 	@Override
+	public Identifiers getOrganisationByNoIde(String noide) throws ServiceOrganisationException {
+		loadMeter.start(new MethodCallDescriptor("getOrganisationByNoIde", "noide", noide));
+		try {
+			return target.getOrganisationByNoIde(noide);
+		}
+		finally {
+			loadMeter.end();
+		}
+	}
+
+	@Override
 	public List<LoadDetail> getLoadDetails() {
 		return loadMeter.getLoadDetails();
 	}
