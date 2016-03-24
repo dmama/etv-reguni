@@ -51,14 +51,14 @@
 								<c:when test="${empty transitionDisponibles}">
 									<span style="padding: 2px; display: block">
 										<c:choose>
-											<c:when test="${command.dateObtention != null && command.previousDate.isAfter(command.dateObtention)}">
+											<c:when test="${previousDateAfterDateObtention}">
 												<fmt:message key="label.etats.aucun.dispo.date">
 													<fmt:param><unireg:date date="${command.previousDate}"/></fmt:param>
 												</fmt:message>
 											</c:when>
-											<c:when test="${command.dateObtention != null && command.previousDate.isBeforeOrEqual(command.dateObtention)}">
+											<c:otherwise>
 												<fmt:message key="label.etats.aucun.dispo.courant"/>
-											</c:when>
+											</c:otherwise>
 										</c:choose>
 									</span>
 								</c:when>
@@ -74,7 +74,7 @@
 					<tr class="<unireg:nextRowClass/>" >
 						<td><fmt:message key="label.date.obtention" />&nbsp;:</td>
 						<td>
-							<c:if test="${! (command.dateObtention != null && command.previousDate.isBeforeOrEqual(command.dateObtention) && empty transitionDisponibles)}">
+							<c:if test="${! (!previousDateAfterDateObtention && empty transitionDisponibles)}">
 								<jsp:include page="/WEB-INF/jsp/include/inputCalendar.jsp">
 									<jsp:param name="path" value="dateObtention" />
 									<jsp:param name="id" value="dateObtention" />
@@ -90,7 +90,7 @@
 				<tr>
 					<td width="25%">&nbsp;</td>
 
-					<c:if test="${empty transitionDisponibles || (command.dateObtention != null && command.previousDate.isAfter(command.dateObtention))}">
+					<c:if test="${empty transitionDisponibles || previousDateAfterDateObtention}">
 						<c:set var="disabled" value="disabled='true'"/>
 					</c:if>
 					<td width="25%"><input type="submit" value="<fmt:message key="label.bouton.ajouter" />" ${disabled}></td>

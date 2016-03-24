@@ -14,7 +14,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.DelegatingValidator;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
@@ -39,6 +41,7 @@ import ch.vd.uniregctb.utils.RegDateEditor;
 public class EtatEntrepriseEditController {
 
 	private static final String TRANSITIONS_DISPONIBLES = "transitionDisponibles";
+	private static final String PREVIOUS_DATE_AFTER_DATE_OBTENTION = "previousDateAfterDateObtention";
 
 	private TiersDAO tiersDAO;
 	private TiersMapHelper tiersMapHelper;
@@ -143,6 +146,7 @@ public class EtatEntrepriseEditController {
 				tiersService.getTransitionsEtatEntrepriseDisponibles(entreprise, view.getDateObtention(), TypeGenerationEtatEntreprise.MANUELLE);
 
 		model.addAttribute(TRANSITIONS_DISPONIBLES, tiersMapHelper.getMapForTypeEtatEntreprise(transitionDisponibles));
+		model.addAttribute(PREVIOUS_DATE_AFTER_DATE_OBTENTION, RegDateHelper.isAfter(view.getPreviousDate(), view.getDateObtention(), NullDateBehavior.EARLIEST));
 		return "etats/add-etat-entreprise";
 	}
 
@@ -173,6 +177,7 @@ public class EtatEntrepriseEditController {
 
 			model.addAttribute("command", view);
 			model.addAttribute(TRANSITIONS_DISPONIBLES, tiersMapHelper.getMapForTypeEtatEntreprise(transitionDisponibles));
+			model.addAttribute(PREVIOUS_DATE_AFTER_DATE_OBTENTION, RegDateHelper.isAfter(view.getPreviousDate(), view.getDateObtention(), NullDateBehavior.EARLIEST));
 			return "etats/add-etat-entreprise";
 		}
 
