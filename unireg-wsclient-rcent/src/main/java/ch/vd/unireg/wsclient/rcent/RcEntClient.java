@@ -1,5 +1,7 @@
 package ch.vd.unireg.wsclient.rcent;
 
+import java.util.List;
+
 import ch.vd.evd0022.v3.OrganisationData;
 import ch.vd.evd0022.v3.OrganisationsOfNotice;
 import ch.vd.registre.base.date.RegDate;
@@ -48,6 +50,15 @@ public interface RcEntClient {
 	 * @throws RcEntClientException en cas de problème
 	 */
 	OrganisationsOfNotice getOrganisationsOfNotice(long noticeId, OrganisationState when) throws RcEntClientException;
+
+	/**
+	 * @param noide numéro IDE au format canonique (= sans point ni tirets, juste les 3 lettres et les 9 chiffres)
+	 * @param referenceDate une date de référence (ignorée si l'historique est demandé, date du jour si non-assignée et historique non-demandé)
+	 * @param withHistory <code>true</code> pour obtenir les historiques des organisations trouvées
+	 * @return les données retournées par RCEnt
+	 * @throws RcEntClientException en cas de problème
+	 */
+	OrganisationData getOrganisationByNoIDE(String noide, RegDate referenceDate, boolean withHistory) throws RcEntClientException;
 
 	/**
 	 * Envoi un message de ping dans le tuyau, afin de s'assurer que RCEnt est bien là...

@@ -37,6 +37,7 @@ public class RcEntClientImpl implements RcEntClient, InitializingBean {
 	private String organisationPath = "organisation/CT.VD.PARTY";
 	private String organisationsOfNoticePath = "organisationsOfNotice";
 	private String pingPath = "infrastructure/ping";
+	private String findByNoIDEPath = "organisation/CH.IDE";
 
 	public void setBaseUrl(String url) {
 		this.wcPool.setBaseUrl(url);
@@ -62,6 +63,10 @@ public class RcEntClientImpl implements RcEntClient, InitializingBean {
 		this.pingPath = pingPath;
 	}
 
+	public void setFindByNoIDEPath(String findByNoIDEPath) {
+		this.findByNoIDEPath = findByNoIDEPath;
+	}
+
 	public void setValidationEnabled(boolean enableValidation) {
 		this.wcPool.setEnableValidation(enableValidation);
 	}
@@ -84,6 +89,33 @@ public class RcEntClientImpl implements RcEntClient, InitializingBean {
 		try {
 			wc.path(organisationPath);
 			wc.path(Long.toString(id));
+
+			if (withHistory) {
+				wc.query("history", "true");
+			}
+			else {
+				final RegDate effectiveReferenceDate = referenceDate == null ? RegDate.get() : referenceDate;
+				wc.query("date", RegDateHelper.dateToDisplayString(effectiveReferenceDate));
+			}
+
+			try {
+				return wc.get(OrganisationData.class);
+			}
+			catch (ServerWebApplicationException e) {
+				throw new RcEntClientException(e, parseErrors(e.getMessage()));
+			}
+		}
+		finally {
+			wcPool.returnClient(wc);
+		}
+	}
+
+	@Override
+	public OrganisationData getOrganisationByNoIDE(String noide, RegDate referenceDate, boolean withHistory) throws RcEntClientException {
+		final WebClient wc = wcPool.borrowClient(RECEIVE_TIMEOUT);
+		try {
+			wc.path(findByNoIDEPath);
+			wc.path(noide);
 
 			if (withHistory) {
 				wc.query("history", "true");
