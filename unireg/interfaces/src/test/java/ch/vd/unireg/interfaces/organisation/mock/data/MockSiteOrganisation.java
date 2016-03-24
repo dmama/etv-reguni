@@ -217,7 +217,7 @@ public class MockSiteOrganisation implements SiteOrganisation {
 
 	@Override
 	public boolean isSuccursale(RegDate date) {
-		return getTypeDeSite(date) == TypeDeSite.ETABLISSEMENT_SECONDAIRE && isInscritAuRC(date);
+		return OrganisationHelper.isSuccursale(this, date);
 	}
 
 	@Override

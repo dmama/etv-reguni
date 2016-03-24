@@ -328,6 +328,18 @@ public abstract class OrganisationHelper {
 	}
 
 	/**
+	 * Un site est réputé être une succursale à la date fournie s'il est inscrit au RC, si son statut n'est
+	 * ni INCONNU, ni NON_INSCRIT et qu'il n'est pas radié du RC.
+	 *
+	 * @param site le site
+	 * @param date la date pour laquelle on veut connaitre l'état de succursale
+	 * @return
+	 */
+	public static boolean isSuccursale(SiteOrganisation site, RegDate date) {
+		return site.getTypeDeSite(date) == TypeDeSite.ETABLISSEMENT_SECONDAIRE && isInscritAuRC(site, date) && !isRadieDuRC(site, date);
+	}
+
+	/**
 	 * Une organisation est réputée radiée du RC à la date fournie si le statut de son site principal RADIE.
 	 *
 	 * @param organisation l'organisation

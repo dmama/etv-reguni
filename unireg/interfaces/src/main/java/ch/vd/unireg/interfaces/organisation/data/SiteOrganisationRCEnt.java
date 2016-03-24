@@ -153,7 +153,7 @@ public class SiteOrganisationRCEnt implements Serializable, SiteOrganisation {
 
 	@Override
 	public boolean isSuccursale(RegDate date) {
-		return getTypeDeSite(date) == TypeDeSite.ETABLISSEMENT_SECONDAIRE && isInscritAuRC(date) && !isRadieDuRC(date);
+		return OrganisationHelper.isSuccursale(this, date);
 	}
 
 	@Override
