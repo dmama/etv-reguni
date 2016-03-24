@@ -66,6 +66,29 @@ public class RCEntAdapter {
 	}
 
 	/**
+	 * Récupère l'état à la date indiquée de l'entreprise connue par son numéro IDE
+	 * @param noide le numéro IDE en question (format sans points ni tiret)
+	 * @param date date de référence (on prendra la date du jour si <code>null</code>)
+	 * @return les données retournées par RCEnt (<b>attention !</b> si le numéro IDE est spécifique à un établissement secondaire de l'entreprise dans RCEnt,
+	 *         alors l'organisation retournée ne comprendra pas les autres établissements secondaires de l'entreprise)
+	 */
+	public Organisation getOrganisationByNoIde(String noide, RegDate date) {
+		final OrganisationData data = rcentClient.getOrganisationByNoIDE(noide, date, false);
+		return historizer.mapOrganisation(data.getOrganisationSnapshot());
+	}
+
+	/**
+	 * Récupère l'historique des états de l'entreprise connue par son numéro IDE
+	 * @param noide le numéro IDE en question (format sans points ni tiret)
+	 * @return les données retournées par RCEnt (<b>attention !</b> si le numéro IDE est spécifique à un établissement secondaire de l'entreprise dans RCEnt,
+	 *         alors l'organisation retournée ne comprendra pas les autres établissements secondaires de l'entreprise)
+	 */
+	public Organisation getOrganisationHistoryByNoIde(String noide) {
+		final OrganisationData data = rcentClient.getOrganisationByNoIDE(noide, null, true);
+		return historizer.mapOrganisation(data.getOrganisationSnapshot());
+	}
+
+	/**
 	 * Recherche les états avant et après de l'événement RCEnt et contruit le pseudo historique correspondant.
 	 *
  	 * @param eventId Identifiant de l'événement RCEnt
