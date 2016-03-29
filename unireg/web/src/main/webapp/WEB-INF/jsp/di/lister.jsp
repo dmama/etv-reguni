@@ -15,7 +15,7 @@
 				<authz:authorize ifAnyGranted="ROLE_DI_EMIS_PP">
 					<table border="0">
 						<tr><td>
-							<unireg:linkTo name="Ajouter" action="/di/choisir-pp.do" method="get" params="{tiersId:${command.ctbId}}" title="Ajouter une déclaration" link_class="add noprint"/>
+							<unireg:linkTo name="Ajouter" action="/di/choisir-pp.do" method="get" params="{tiersId:${command.ctbId},url_memorize:false}" title="Ajouter une déclaration" link_class="add noprint"/>
 						</td></tr>
 					</table>
 				</authz:authorize>
@@ -24,7 +24,7 @@
 				<authz:authorize ifAnyGranted="ROLE_DI_EMIS_PM">
 					<table border="0">
 						<tr><td>
-							<unireg:linkTo name="Ajouter" action="/di/choisir-pm.do" method="get" params="{tiersId:${command.ctbId}}" title="Ajouter une déclaration" link_class="add noprint"/>
+							<unireg:linkTo name="Ajouter" action="/di/choisir-pm.do" method="get" params="{tiersId:${command.ctbId},url_memorize:false}" title="Ajouter une déclaration" link_class="add noprint"/>
 						</td></tr>
 					</table>
 				</authz:authorize>
