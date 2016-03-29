@@ -177,7 +177,7 @@ public class PeriodeImpositionPersonnesMoralesCalculator implements PeriodeImpos
 		case SP:
 			return null;            // TODO si une SP est ici, c'est qu'elle est assujettie...
 		default:
-			throw new IllegalArgumentException("Type de catégorie d'entreprise non-supportée dans le calculateur de périodes d'imposition des personnes morales : " + categorie);
+			throw new AssujettissementException("Type de catégorie d'entreprise non-supportée dans le calculateur de périodes d'imposition des personnes morales : " + categorie);
 		}
 	}
 
