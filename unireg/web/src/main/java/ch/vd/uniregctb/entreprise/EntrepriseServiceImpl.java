@@ -6,7 +6,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.collections4.comparators.ReverseComparator;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -33,8 +32,6 @@ import ch.vd.uniregctb.tiers.view.EtatEntrepriseView;
 
 /**
  * Re-organisation des informations de l'entreprise pour l'affichage Web
- *
- * @author xcifde
  */
 public class EntrepriseServiceImpl implements EntrepriseService {
 
@@ -190,7 +187,7 @@ public class EntrepriseServiceImpl implements EntrepriseService {
 		for (CapitalHisto capital : capitaux) {
 			views.add(new CapitalView(capital));
 		}
-		Collections.sort(views, new AnnulableHelper.AnnulesApresWrappingComparator<>(new ReverseComparator<>(new DateRangeComparator<CapitalView>())));
+		Collections.sort(views, new AnnulableHelper.AnnulesApresWrappingComparator<>(new DateRangeComparator<CapitalView>(DateRangeComparator.CompareOrder.DESCENDING)));
 		if (AnnulableHelper.sansElementsAnnules(views).size() > 1) {
 			views.get(0).setDernierElement(true);
 		}
@@ -205,7 +202,7 @@ public class EntrepriseServiceImpl implements EntrepriseService {
 		for (FormeLegaleHisto formeLegale : formesLegale) {
 			list.add(new FormeJuridiqueView(formeLegale));
 		}
-		Collections.sort(list, new AnnulableHelper.AnnulesApresWrappingComparator<>(new ReverseComparator<>(new DateRangeComparator<FormeJuridiqueView>())));
+		Collections.sort(list, new AnnulableHelper.AnnulesApresWrappingComparator<>(new DateRangeComparator<FormeJuridiqueView>(DateRangeComparator.CompareOrder.DESCENDING)));
 		if (AnnulableHelper.sansElementsAnnules(list).size() > 1) {
 			list.get(0).setDernierElement(true);
 		}
@@ -220,7 +217,7 @@ public class EntrepriseServiceImpl implements EntrepriseService {
 		for (RaisonSocialeHisto raisonSociale : raisonsSociales) {
 			list.add(new RaisonSocialeView(raisonSociale, false));
 		}
-		Collections.sort(list, new AnnulableHelper.AnnulesApresWrappingComparator<>(new ReverseComparator<>(new DateRangeComparator<RaisonSocialeView>())));
+		Collections.sort(list, new AnnulableHelper.AnnulesApresWrappingComparator<>(new DateRangeComparator<RaisonSocialeView>(DateRangeComparator.CompareOrder.DESCENDING)));
 		if (AnnulableHelper.sansElementsAnnules(list).size() > 1) {
 			list.get(0).setDernierElement(true);
 		}
@@ -235,8 +232,7 @@ public class EntrepriseServiceImpl implements EntrepriseService {
 		for (DomicileHisto siege : sieges) {
 			list.add(new SiegeView(siege));
 		}
-		Collections.sort(list, new AnnulableHelper.AnnulesApresWrappingComparator<>(new ReverseComparator<>(new DateRangeComparator<SiegeView>())));
-		Collections.reverse(list);
+		Collections.sort(list, new AnnulableHelper.AnnulesApresWrappingComparator<>(new DateRangeComparator<SiegeView>(DateRangeComparator.CompareOrder.DESCENDING)));
 		if (AnnulableHelper.sansElementsAnnules(list).size() > 1) {
 			list.get(0).setDernierElement(true);
 		}
@@ -251,7 +247,7 @@ public class EntrepriseServiceImpl implements EntrepriseService {
 		for (DomicileHisto siege : domiciles) {
 			list.add(new DomicileEtablissementView(siege));
 		}
-		Collections.sort(list, new AnnulableHelper.AnnulesApresWrappingComparator<>(new ReverseComparator<>(new DateRangeComparator<DomicileEtablissementView>())));
+		Collections.sort(list, new AnnulableHelper.AnnulesApresWrappingComparator<>(new DateRangeComparator<DomicileEtablissementView>(DateRangeComparator.CompareOrder.DESCENDING)));
 		if (AnnulableHelper.sansElementsAnnules(list).size() > 1) {
 			list.get(0).setDernierElement(true);
 		}
