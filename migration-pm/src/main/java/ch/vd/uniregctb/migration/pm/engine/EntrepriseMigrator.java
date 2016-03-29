@@ -4377,7 +4377,13 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 					final TypeLettreBienvenue typeLettre;
 					switch (tfj.getCategorie()) {
 					case APM:
-						typeLettre = TypeLettreBienvenue.APM_VD_NON_RC;
+						// [SIFISC-18514] Si l'APM est (ou a été) inscrite au RC, il faut en tenir compte dans le type de lettre de bienvenue migrée
+						if (regpm.getDateInscriptionRC() != null) {
+							typeLettre = TypeLettreBienvenue.VD_RC;
+						}
+						else {
+							typeLettre = TypeLettreBienvenue.APM_VD_NON_RC;
+						}
 						break;
 					case PM:
 						typeLettre = TypeLettreBienvenue.VD_RC;

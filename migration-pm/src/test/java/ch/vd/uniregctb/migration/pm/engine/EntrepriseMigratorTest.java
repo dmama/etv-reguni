@@ -165,6 +165,7 @@ import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeEtatDeclaration;
 import ch.vd.uniregctb.type.TypeEtatEntreprise;
 import ch.vd.uniregctb.type.TypeFlagEntreprise;
+import ch.vd.uniregctb.type.TypeLettreBienvenue;
 import ch.vd.uniregctb.type.TypeMandat;
 
 public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
@@ -6550,7 +6551,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 	}
 
 	@Test
-	public void testMigrationLettreBienvenue() throws Exception {
+	public void testMigrationLettreBienvenuePM() throws Exception {
 
 		final long noEntreprise = 74984L;
 		final RegDate dateDebut = RegDate.get(2010, 5, 3);
@@ -6588,6 +6589,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 			Assert.assertEquals(dateEnvoiLettreBienvenue, lb.getDateEnvoi());
 			Assert.assertEquals(dateEnvoiLettreBienvenue.addDays(20), lb.getDateRetour());
 			Assert.assertEquals(dateEnvoiLettreBienvenue.addDays(30), lb.getDelaiRetour());
+			Assert.assertEquals(TypeLettreBienvenue.VD_RC, lb.getType());
 			Assert.assertNull(lb.getDateRappel());
 			Assert.assertFalse(lb.isAnnule());
 		});
@@ -6602,6 +6604,125 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 			Assert.assertEquals("Entreprise sans exercice commercial ni date de bouclement futur.", textes.get(1));
 			Assert.assertEquals("Ajout d'un régime fiscal VD de type '01' sur la période [03.05.2010 -> ?] pour couvrir les fors de l'entreprise.", textes.get(2));
 			Assert.assertEquals("Ajout d'un régime fiscal CH de type '01' sur la période [03.05.2010 -> ?] pour couvrir les fors de l'entreprise.", textes.get(3));
+			Assert.assertEquals("Pas de siège associé dans les données fiscales, pas d'établissement principal créé à partir des données fiscales.", textes.get(4));
+			Assert.assertEquals("Entreprise migrée : 749.84.", textes.get(5));
+		}
+	}
+
+	@Test
+	public void testMigrationLettreBienvenueAPMNonInscriteRC() throws Exception {
+
+		final long noEntreprise = 74984L;
+		final RegDate dateDebut = RegDate.get(2010, 5, 3);
+		final RegDate dateEnvoiLettreBienvenue = RegDate.get(2010, 6, 1);
+
+		final RegpmEntreprise e = buildEntreprise(noEntreprise);
+		addRaisonSociale(e, dateDebut, "Turlututu", null, null, true);
+		addFormeJuridique(e, dateDebut, createTypeFormeJuridique("ASS", RegpmCategoriePersonneMorale.APM));
+		addForPrincipalSuisse(e, dateDebut, RegpmTypeForPrincipal.SIEGE, Commune.ECHALLENS);
+		final RegpmAssujettissement assujettissement = addAssujettissement(e, dateDebut, null, RegpmTypeAssujettissement.LILIC);
+		assujettissement.setDateEnvoiLettre(dateEnvoiLettreBienvenue);
+
+		final MockGraphe graphe = new MockGraphe(Collections.singletonList(e),
+		                                         null,
+		                                         null);
+		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
+		final EntityLinkCollector linkCollector = new EntityLinkCollector();
+		final IdMapper idMapper = new IdMapper();
+		migrator.initMigrationResult(mr, idMapper);
+		migrate(e, migrator, mr, linkCollector, idMapper);
+
+		// vérification de la présence d'une lettre de bienvenue au 3 mai 2010
+		doInUniregTransaction(true, status -> {
+			final Entreprise entreprise = uniregStore.getEntityFromDb(Entreprise.class, noEntreprise);
+			Assert.assertNotNull(entreprise);
+
+			final Set<AutreDocumentFiscal> adfs = entreprise.getAutresDocumentsFiscaux();
+			Assert.assertNotNull(adfs);
+			Assert.assertEquals(1, adfs.size());
+
+			final AutreDocumentFiscal adf = adfs.iterator().next();
+			Assert.assertNotNull(adf);
+			Assert.assertEquals(LettreBienvenue.class, adf.getClass());
+			final LettreBienvenue lb = (LettreBienvenue) adf;
+			Assert.assertEquals(dateEnvoiLettreBienvenue, lb.getDateEnvoi());
+			Assert.assertEquals(dateEnvoiLettreBienvenue.addDays(20), lb.getDateRetour());
+			Assert.assertEquals(dateEnvoiLettreBienvenue.addDays(30), lb.getDelaiRetour());
+			Assert.assertEquals(TypeLettreBienvenue.APM_VD_NON_RC, lb.getType());
+			Assert.assertNull(lb.getDateRappel());
+			Assert.assertFalse(lb.isAnnule());
+		});
+
+		// vérification des messages dans le contexte "SUIVI"
+		{
+			final List<MigrationResultCollector.Message> messages = mr.getMessages().get(LogCategory.SUIVI);
+			Assert.assertNotNull(messages);
+			final List<String> textes = messages.stream().map(msg -> msg.text).collect(Collectors.toList());
+			Assert.assertEquals(6, textes.size());
+			Assert.assertEquals("L'entreprise n'existait pas dans Unireg avec ce numéro de contribuable.", textes.get(0));
+			Assert.assertEquals("Entreprise sans exercice commercial ni date de bouclement futur.", textes.get(1));
+			Assert.assertEquals("Ajout d'un régime fiscal VD de type '70' sur la période [03.05.2010 -> ?] pour couvrir les fors de l'entreprise.", textes.get(2));
+			Assert.assertEquals("Ajout d'un régime fiscal CH de type '70' sur la période [03.05.2010 -> ?] pour couvrir les fors de l'entreprise.", textes.get(3));
+			Assert.assertEquals("Pas de siège associé dans les données fiscales, pas d'établissement principal créé à partir des données fiscales.", textes.get(4));
+			Assert.assertEquals("Entreprise migrée : 749.84.", textes.get(5));
+		}
+	}
+
+	@Test
+	public void testMigrationLettreBienvenueAPMInscriteRC() throws Exception {
+
+		final long noEntreprise = 74984L;
+		final RegDate dateDebut = RegDate.get(2010, 5, 3);
+		final RegDate dateEnvoiLettreBienvenue = RegDate.get(2010, 6, 1);
+
+		final RegpmEntreprise e = buildEntreprise(noEntreprise);
+		addRaisonSociale(e, dateDebut, "Turlututu", null, null, true);
+		addFormeJuridique(e, dateDebut, createTypeFormeJuridique("ASS", RegpmCategoriePersonneMorale.APM));
+		addForPrincipalSuisse(e, dateDebut, RegpmTypeForPrincipal.SIEGE, Commune.ECHALLENS);
+		final RegpmAssujettissement assujettissement = addAssujettissement(e, dateDebut, null, RegpmTypeAssujettissement.LILIC);
+		assujettissement.setDateEnvoiLettre(dateEnvoiLettreBienvenue);
+		e.setDateInscriptionRC(dateDebut);
+
+		final MockGraphe graphe = new MockGraphe(Collections.singletonList(e),
+		                                         null,
+		                                         null);
+		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
+		final EntityLinkCollector linkCollector = new EntityLinkCollector();
+		final IdMapper idMapper = new IdMapper();
+		migrator.initMigrationResult(mr, idMapper);
+		migrate(e, migrator, mr, linkCollector, idMapper);
+
+		// vérification de la présence d'une lettre de bienvenue au 3 mai 2010
+		doInUniregTransaction(true, status -> {
+			final Entreprise entreprise = uniregStore.getEntityFromDb(Entreprise.class, noEntreprise);
+			Assert.assertNotNull(entreprise);
+
+			final Set<AutreDocumentFiscal> adfs = entreprise.getAutresDocumentsFiscaux();
+			Assert.assertNotNull(adfs);
+			Assert.assertEquals(1, adfs.size());
+
+			final AutreDocumentFiscal adf = adfs.iterator().next();
+			Assert.assertNotNull(adf);
+			Assert.assertEquals(LettreBienvenue.class, adf.getClass());
+			final LettreBienvenue lb = (LettreBienvenue) adf;
+			Assert.assertEquals(dateEnvoiLettreBienvenue, lb.getDateEnvoi());
+			Assert.assertEquals(dateEnvoiLettreBienvenue.addDays(20), lb.getDateRetour());
+			Assert.assertEquals(dateEnvoiLettreBienvenue.addDays(30), lb.getDelaiRetour());
+			Assert.assertEquals(TypeLettreBienvenue.VD_RC, lb.getType());
+			Assert.assertNull(lb.getDateRappel());
+			Assert.assertFalse(lb.isAnnule());
+		});
+
+		// vérification des messages dans le contexte "SUIVI"
+		{
+			final List<MigrationResultCollector.Message> messages = mr.getMessages().get(LogCategory.SUIVI);
+			Assert.assertNotNull(messages);
+			final List<String> textes = messages.stream().map(msg -> msg.text).collect(Collectors.toList());
+			Assert.assertEquals(6, textes.size());
+			Assert.assertEquals("L'entreprise n'existait pas dans Unireg avec ce numéro de contribuable.", textes.get(0));
+			Assert.assertEquals("Entreprise sans exercice commercial ni date de bouclement futur.", textes.get(1));
+			Assert.assertEquals("Ajout d'un régime fiscal VD de type '70' sur la période [03.05.2010 -> ?] pour couvrir les fors de l'entreprise.", textes.get(2));
+			Assert.assertEquals("Ajout d'un régime fiscal CH de type '70' sur la période [03.05.2010 -> ?] pour couvrir les fors de l'entreprise.", textes.get(3));
 			Assert.assertEquals("Pas de siège associé dans les données fiscales, pas d'établissement principal créé à partir des données fiscales.", textes.get(4));
 			Assert.assertEquals("Entreprise migrée : 749.84.", textes.get(5));
 		}
