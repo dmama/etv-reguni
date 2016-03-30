@@ -60,5 +60,10 @@ public enum ConsolidationPhase {
 	/**
 	 * Le contrôle et la mise à jour des régimes fiscaux VD/CH en présence de for principal non-annulé de genre BENEFICE_CAPITAL
 	 */
-	COUVERTURE_REGIMES_FISCAUX
+	COUVERTURE_REGIMES_FISCAUX,
+
+	/**
+	 * Ajout des remarques collectées
+	 */
+	AJOUT_REMARQUES
 }

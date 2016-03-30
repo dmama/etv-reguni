@@ -14,6 +14,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -123,8 +124,10 @@ import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RaisonSocialeFiscaleEntreprise;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.tiers.RegimeFiscal;
+import ch.vd.uniregctb.tiers.Remarque;
 import ch.vd.uniregctb.tiers.SocieteDirection;
 import ch.vd.uniregctb.tiers.TiersDAO;
+import ch.vd.uniregctb.tiers.dao.RemarqueDAO;
 import ch.vd.uniregctb.type.DayMonth;
 import ch.vd.uniregctb.type.FormeJuridiqueEntreprise;
 import ch.vd.uniregctb.type.GenreImpot;
@@ -146,10 +149,13 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 	private static final ActivityManager ALL_ACTIVE = entreprise -> true;
 	private static final ActivityManager ALL_BUT_ONE_ACTIVE = entreprise -> INACTIVE_ENTREPRISE_ID != entreprise.getId();
 
+	private static final AppariementsMultiplesManager NO_REUSE = idCantonal -> Collections.emptySet();
+
 	private GrapheMigrator grapheMigrator;
 	private ValidationService validationService;
 	private UniregStore uniregStore;
 	private ActivityManagerProxy activityManager;
+	private AppariementsMultiplesManagerProxy appariementsMultiplesManager;
 	private ProxyServiceOrganisation organisationService;
 	private MigrationContexte migrationContexte;
 
@@ -176,8 +182,10 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		nonHabitantIndex.overwriteIndex();
 
 		activityManager = new ActivityManagerProxy();
+		appariementsMultiplesManager = new AppariementsMultiplesManagerProxy();
 		migrationContexte = new MigrationContexte(uniregStore,
 		                                          activityManager,
+		                                          appariementsMultiplesManager,
 		                                          getBean(ServiceInfrastructureService.class, "serviceInfrastructureService"),
 		                                          getBean(FusionCommunesProvider.class, "fusionCommunesProvider"),
 		                                          getBean(FractionsCommuneProvider.class, "fractionsCommuneProvider"),
@@ -192,6 +200,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		                                          getBean(DoublonProvider.class, "doublonProvider"),
 		                                          getBean(RegimeFiscalHelper.class, "regimeFiscalHelper"),
 		                                          getBean(TiersDAO.class, "tiersDAO"),
+		                                          getBean(RemarqueDAO.class, "remarqueDAO"),
 		                                          getBean(RcPersClient.class, "rcpersClient"),
 		                                          nonHabitantIndex);
 
@@ -238,6 +247,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		                                     null);
 
 		activityManager.setup(ALL_ACTIVE);
+		appariementsMultiplesManager.setup(NO_REUSE);
 
 		// Bidouille : on ajoute temporairement un validateur sur les entreprises
 		// Ce validateur va causer une erreur sur l'entreprise mandante si celle-ci a des liens (elle doit en avoir, c'est bien, c'est juste pour pouvoir s'envoyer un message qui décrit ces liens...)
@@ -339,6 +349,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		EntrepriseMigratorTest.addMandat(mandant, mandataire, RegpmTypeMandat.GENERAL, null, RegDate.get(2010, 1, 1), null);
 
 		activityManager.setup(ALL_ACTIVE);
+		appariementsMultiplesManager.setup(NO_REUSE);
 
 		final Graphe graphe = new MockGraphe(Arrays.asList(mandant, entrepriseMandataire),
 		                                     Collections.singletonList(mandataire),
@@ -640,6 +651,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		EtablissementMigratorTest.addEtablissementStable(etablissement2, RegDate.get(2002, 7, 14), RegDate.get(2010, 11, 25));
 
 		activityManager.setup(ALL_ACTIVE);
+		appariementsMultiplesManager.setup(NO_REUSE);
 
 		final Graphe graphe = new MockGraphe(Collections.singletonList(entreprise),
 		                                     Arrays.asList(etablissement1, etablissement2),
@@ -919,6 +931,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		EntrepriseMigratorTest.addAssujettissement(entreprise, RegDate.get(1999, 5, 12), null, RegpmTypeAssujettissement.LILIC);
 
 		activityManager.setup(ALL_ACTIVE);
+		appariementsMultiplesManager.setup(NO_REUSE);
 
 		final Graphe graphe = new MockGraphe(Collections.singletonList(entreprise),
 		                                     Arrays.asList(etablissement1, etablissement2),
@@ -1145,6 +1158,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		EntrepriseMigratorTest.addAssujettissement(e, debut, null, RegpmTypeAssujettissement.LILIC);
 
 		activityManager.setup(ALL_ACTIVE);
+		appariementsMultiplesManager.setup(NO_REUSE);
 
 		final Graphe graphe = new MockGraphe(Collections.singletonList(e),
 		                                     null,
@@ -1206,6 +1220,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		EtablissementMigratorTest.addDomicileEtablissement(etb, debut, Commune.Fraction.LE_BRASSUS, false);
 
 		activityManager.setup(ALL_ACTIVE);
+		appariementsMultiplesManager.setup(NO_REUSE);
 
 		final Graphe graphe = new MockGraphe(Collections.singletonList(e),
 		                                     Collections.singletonList(etb),
@@ -1273,6 +1288,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		EntrepriseMigratorTest.addRattachementProprietaire(regpm, dateAchatImmeuble2, null, immeuble2);
 
 		activityManager.setup(ALL_ACTIVE);
+		appariementsMultiplesManager.setup(NO_REUSE);
 
 		final Graphe graphe = new MockGraphe(Collections.singletonList(regpm),
 		                                     null,
@@ -1404,6 +1420,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		EntrepriseMigratorTest.addRattachementProprietaire(regpm, dateAchatImmeuble2, null, immeuble2);
 
 		activityManager.setup(ALL_ACTIVE);
+		appariementsMultiplesManager.setup(NO_REUSE);
 
 		final Graphe graphe = new MockGraphe(Collections.singletonList(regpm),
 		                                     null,
@@ -1559,6 +1576,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		EntrepriseMigratorTest.addRattachementProprietaire(regpm, dateAchatImmeuble, dateVenteImmeuble, immeuble1);
 
 		activityManager.setup(ALL_ACTIVE);
+		appariementsMultiplesManager.setup(NO_REUSE);
 
 		final Graphe graphe = new MockGraphe(Collections.singletonList(regpm),
 		                                     null,
@@ -1690,6 +1708,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		EntrepriseMigratorTest.addRegimeFiscalCH(regpm, dateDebutForPrincipal, null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
 
 		activityManager.setup(ALL_ACTIVE);
+		appariementsMultiplesManager.setup(NO_REUSE);
 
 		final Graphe graphe = new MockGraphe(Collections.singletonList(regpm),
 		                                     null,
@@ -1794,6 +1813,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		EtablissementMigratorTest.addDomicileEtablissement(etablissement, RegDate.get(2005, 3, 12), Commune.LAUSANNE, false);
 
 		activityManager.setup(ALL_ACTIVE);
+		appariementsMultiplesManager.setup(NO_REUSE);
 
 		final MockGraphe graphe = new MockGraphe(Collections.singletonList(entreprise),
 		                                         Collections.singletonList(etablissement),
@@ -1865,6 +1885,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		EtablissementMigratorTest.addRattachementProprietaire(groupe2, RegDate.get(2004, 7, 1), null, immeuble2);
 
 		activityManager.setup(ALL_ACTIVE);
+		appariementsMultiplesManager.setup(NO_REUSE);
 
 		final Graphe graphe = new MockGraphe(Collections.singletonList(entreprise),
 		                                     Collections.singletonList(etablissement),
@@ -2067,6 +2088,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		EtablissementMigratorTest.addRattachementProprietaire(groupe2, RegDate.get(2004, 7, 1), null, immeuble2);
 
 		activityManager.setup(ALL_ACTIVE);
+		appariementsMultiplesManager.setup(NO_REUSE);
 
 		final Graphe graphe = new MockGraphe(Collections.singletonList(entreprise),
 		                                     Collections.singletonList(etablissement),
@@ -2205,6 +2227,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		EntrepriseMigratorTest.addRegimeFiscalCH(entreprise, RegDate.get(1990, 1, 1), null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
 
 		activityManager.setup(ALL_ACTIVE);
+		appariementsMultiplesManager.setup(NO_REUSE);
 
 		final Graphe graphe = new MockGraphe(Collections.singletonList(entreprise),
 		                                     null,
@@ -2231,6 +2254,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		EntrepriseMigratorTest.addRegimeFiscalCH(entreprise, RegDate.get(1990, 1, 1), null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
 
 		activityManager.setup(ALL_ACTIVE);
+		appariementsMultiplesManager.setup(NO_REUSE);
 
 		// avec le calcul Unireg, cela donne un assujettissement VD puis un assujettissement HS (qui donnent tous les deux lieu à de l'ICC)
 		// alors que dans RegPM, il n'y avait qu'une seule période... si seuls les périodes couvertes nous intéressent, alors les deux doivent
@@ -2260,6 +2284,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		EntrepriseMigratorTest.addRegimeFiscalCH(entreprise, RegDate.get(1990, 1, 1), null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
 
 		activityManager.setup(ALL_ACTIVE);
+		appariementsMultiplesManager.setup(NO_REUSE);
 
 		final Graphe graphe = new MockGraphe(Collections.singletonList(entreprise),
 		                                     null,
@@ -2287,6 +2312,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		EntrepriseMigratorTest.addRegimeFiscalCH(entreprise, RegDate.get(1990, 1, 1), null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
 
 		activityManager.setup(ALL_ACTIVE);
+		appariementsMultiplesManager.setup(NO_REUSE);
 
 		final Graphe graphe = new MockGraphe(Collections.singletonList(entreprise),
 		                                     null,
@@ -2315,6 +2341,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 
 		// cette entreprise est inactive (à cause de cet identifiant "magique"), mais a un for principal vaudois ouvert après 2015... -> ERREUR
 		activityManager.setup(ALL_BUT_ONE_ACTIVE);
+		appariementsMultiplesManager.setup(NO_REUSE);
 
 		final Graphe graphe = new MockGraphe(Collections.singletonList(entreprise),
 		                                     null,
@@ -2341,6 +2368,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 
 		// cette entreprise est inactive (à cause de cet identifiant "magique"), mais a un for principal vaudois ouvert après 2015... -> ERREUR
 		activityManager.setup(ALL_BUT_ONE_ACTIVE);
+		appariementsMultiplesManager.setup(NO_REUSE);
 
 		final Graphe graphe = new MockGraphe(Collections.singletonList(entreprise),
 		                                     null,
@@ -2412,6 +2440,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		EntrepriseMigratorTest.addRegimeFiscalCH(entreprise, RegDate.get(1991, 3, 14), null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
 
 		activityManager.setup(ALL_ACTIVE);
+		appariementsMultiplesManager.setup(NO_REUSE);
 
 		final Graphe graphe = new MockGraphe(Collections.singletonList(entreprise),
 		                                     null,
@@ -2476,6 +2505,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		EntrepriseMigratorTest.addRegimeFiscalCH(entreprise, RegDate.get(1998, 4, 12), null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
 
 		activityManager.setup(ALL_ACTIVE);
+		appariementsMultiplesManager.setup(NO_REUSE);
 
 		final Graphe graphe = new MockGraphe(Collections.singletonList(entreprise),
 		                                     null,
@@ -2552,6 +2582,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		EntrepriseMigratorTest.addRegimeFiscalCH(entreprise, RegDate.get(2000, 1, 1), null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
 
 		activityManager.setup(ALL_ACTIVE);
+		appariementsMultiplesManager.setup(NO_REUSE);
 
 		final Graphe graphe = new MockGraphe(Collections.singletonList(entreprise),
 		                                     null,
@@ -2717,6 +2748,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		EntrepriseMigratorTest.addRattachementProprietaire(entreprise, RegDate.get(2011, 1, 1), null, createImmeuble(Commune.MORGES));
 
 		activityManager.setup(ALL_ACTIVE);
+		appariementsMultiplesManager.setup(NO_REUSE);
 
 		final Graphe graphe = new MockGraphe(Collections.singletonList(entreprise),
 		                                     null,
@@ -2850,6 +2882,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		EntrepriseMigratorTest.addFormeJuridique(entreprise, dateDebut, EntrepriseMigratorTest.createTypeFormeJuridique("S.A.", RegpmCategoriePersonneMorale.PM));
 
 		activityManager.setup(ALL_ACTIVE);
+		appariementsMultiplesManager.setup(NO_REUSE);
 
 		final Graphe graphe = new MockGraphe(Collections.singletonList(entreprise),
 		                                     null,
@@ -2917,6 +2950,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		entreprise.setDateRequisitionRadiation(dateRequisitionRadiation);
 
 		activityManager.setup(ALL_ACTIVE);
+		appariementsMultiplesManager.setup(NO_REUSE);
 
 		final Graphe graphe = new MockGraphe(Collections.singletonList(entreprise),
 		                                     null,
@@ -2984,6 +3018,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		EntrepriseMigratorTest.addCapital(entreprise, dateDebut, 45678134L);
 
 		activityManager.setup(ALL_ACTIVE);
+		appariementsMultiplesManager.setup(NO_REUSE);
 
 		final Graphe graphe = new MockGraphe(Collections.singletonList(entreprise),
 		                                     null,
@@ -3079,6 +3114,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		EtablissementMigratorTest.addEtablissementStable(etablissement, dateDebut3, dateFin3);
 
 		activityManager.setup(ALL_ACTIVE);
+		appariementsMultiplesManager.setup(NO_REUSE);
 
 		final Graphe graphe = new MockGraphe(Collections.singletonList(entreprise),
 		                                     Collections.singletonList(etablissement),
@@ -3320,6 +3356,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		EntrepriseMigratorTest.addFusion(avant2, apres, dateBilanFusion);
 
 		activityManager.setup(ALL_ACTIVE);
+		appariementsMultiplesManager.setup(NO_REUSE);
 
 		final Graphe graphe = new MockGraphe(Arrays.asList(avant1, avant2, apres),
 		                                     null,
@@ -3449,6 +3486,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		});
 
 		activityManager.setup(ALL_ACTIVE);
+		appariementsMultiplesManager.setup(NO_REUSE);
 
 		final Graphe graphe = new MockGraphe(Collections.singletonList(entreprise),
 		                                     null,
@@ -3595,6 +3633,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		});
 
 		activityManager.setup(ALL_ACTIVE);
+		appariementsMultiplesManager.setup(NO_REUSE);
 
 		final Graphe graphe = new MockGraphe(Collections.singletonList(entreprise),
 		                                     null,
@@ -3726,6 +3765,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		EntrepriseMigratorTest.addForPrincipalSuisse(e, dateDebut, RegpmTypeForPrincipal.SIEGE, Commune.LAUSANNE);
 
 		activityManager.setup(ALL_ACTIVE);
+		appariementsMultiplesManager.setup(NO_REUSE);
 
 		final MockGraphe graphe = new MockGraphe(Collections.singletonList(e),
 		                                         null,
@@ -3804,6 +3844,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		e.setDateDissolution(dateFinAssujettissement);
 
 		activityManager.setup(ALL_ACTIVE);
+		appariementsMultiplesManager.setup(NO_REUSE);
 
 		final MockGraphe graphe = new MockGraphe(Collections.singletonList(e),
 		                                         null,
@@ -3932,6 +3973,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		EntrepriseMigratorTest.addRattachementProprietaire(e, RegDate.get(2006, 5, 1), RegDate.get(2010, 12, 31), immeuble);
 
 		activityManager.setup(ALL_ACTIVE);
+		appariementsMultiplesManager.setup(NO_REUSE);
 
 		final MockGraphe graphe = new MockGraphe(Collections.singletonList(e),
 		                                         Collections.singletonList(etablissement),
@@ -4139,6 +4181,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		EntrepriseMigratorTest.addRegimeFiscalCH(entreprise, RegDate.get(1995, 5, 17), null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
 
 		activityManager.setup(ALL_ACTIVE);
+		appariementsMultiplesManager.setup(NO_REUSE);
 
 		final Graphe graphe = new MockGraphe(Collections.singletonList(entreprise),
 		                                     null,
@@ -4174,6 +4217,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		EntrepriseMigratorTest.addPrononceFaillite(e, datePrononceFaillite, RegpmTypeEtatEntreprise.EN_FAILLITE, datePrononceFaillite);
 
 		activityManager.setup(ALL_ACTIVE);
+		appariementsMultiplesManager.setup(NO_REUSE);
 
 		final MockGraphe graphe = new MockGraphe(Collections.singletonList(e),
 		                                         null,
@@ -4251,6 +4295,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		                                         null);
 
 		activityManager.setup(ALL_ACTIVE);
+		appariementsMultiplesManager.setup(NO_REUSE);
 
 		final LoggedMessages lms = grapheMigrator.migrate(graphe);
 		Assert.assertNotNull(lms);
@@ -4301,6 +4346,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		                                         null);
 
 		activityManager.setup(ALL_ACTIVE);
+		appariementsMultiplesManager.setup(NO_REUSE);
 
 		final LoggedMessages lms = grapheMigrator.migrate(graphe);
 		Assert.assertNotNull(lms);
@@ -4364,6 +4410,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		                                         null);
 
 		activityManager.setup(ALL_ACTIVE);
+		appariementsMultiplesManager.setup(NO_REUSE);
 
 		final LoggedMessages lms = grapheMigrator.migrate(graphe);
 		Assert.assertNotNull(lms);
@@ -4445,6 +4492,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		                                         null);
 
 		activityManager.setup(ALL_ACTIVE);
+		appariementsMultiplesManager.setup(NO_REUSE);
 
 		final LoggedMessages lms = grapheMigrator.migrate(graphe);
 		Assert.assertNotNull(lms);
@@ -4534,6 +4582,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		                                         null);
 
 		activityManager.setup(ALL_ACTIVE);
+		appariementsMultiplesManager.setup(NO_REUSE);
 
 		final LoggedMessages lms = grapheMigrator.migrate(graphe);
 		Assert.assertNotNull(lms);
@@ -4715,6 +4764,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		                                         null);
 
 		activityManager.setup(ALL_ACTIVE);
+		appariementsMultiplesManager.setup(NO_REUSE);
 
 		final LoggedMessages lms = grapheMigrator.migrate(graphe);
 		Assert.assertNotNull(lms);
@@ -4787,6 +4837,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		                                         null);
 
 		activityManager.setup(ALL_ACTIVE);
+		appariementsMultiplesManager.setup(NO_REUSE);
 
 		final LoggedMessages lms = grapheMigrator.migrate(graphe);
 		Assert.assertNotNull(lms);
@@ -4944,6 +4995,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		                                         null);
 
 		activityManager.setup(ALL_ACTIVE);
+		appariementsMultiplesManager.setup(NO_REUSE);
 
 		final LoggedMessages lms = grapheMigrator.migrate(graphe);
 		Assert.assertNotNull(lms);
@@ -5071,6 +5123,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		                                         null);
 
 		activityManager.setup(ALL_ACTIVE);
+		appariementsMultiplesManager.setup(NO_REUSE);
 
 		final LoggedMessages lms = grapheMigrator.migrate(graphe);
 		Assert.assertNotNull(lms);
@@ -5138,6 +5191,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		                                         null);
 
 		activityManager.setup(ALL_ACTIVE);
+		appariementsMultiplesManager.setup(NO_REUSE);
 
 		final LoggedMessages lms = grapheMigrator.migrate(graphe);
 		Assert.assertNotNull(lms);
@@ -5213,6 +5267,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		                                         null);
 
 		activityManager.setup(ALL_ACTIVE);
+		appariementsMultiplesManager.setup(NO_REUSE);
 
 		final LoggedMessages lms = grapheMigrator.migrate(graphe);
 		Assert.assertNotNull(lms);
@@ -5291,6 +5346,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		                                         null);
 
 		activityManager.setup(ALL_ACTIVE);
+		appariementsMultiplesManager.setup(NO_REUSE);
 
 		final LoggedMessages lms = grapheMigrator.migrate(graphe);
 		Assert.assertNotNull(lms);
@@ -5393,6 +5449,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		                                         null);
 
 		activityManager.setup(ALL_ACTIVE);
+		appariementsMultiplesManager.setup(NO_REUSE);
 
 		final LoggedMessages lms = grapheMigrator.migrate(graphe);
 		Assert.assertNotNull(lms);
@@ -5473,6 +5530,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		                                         null);
 
 		activityManager.setup(ALL_ACTIVE);
+		appariementsMultiplesManager.setup(NO_REUSE);
 
 		final LoggedMessages lms = grapheMigrator.migrate(graphe);
 		Assert.assertNotNull(lms);
@@ -5547,6 +5605,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		                                         Collections.singletonList(administrateur));
 
 		activityManager.setup(ALL_ACTIVE);
+		appariementsMultiplesManager.setup(NO_REUSE);
 
 		// mise en place fiscale de l'administrateur
 		final long ppId = doInUniregTransaction(false, status -> {
@@ -5621,6 +5680,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		                                         Collections.singletonList(administrateur));
 
 		activityManager.setup(ALL_ACTIVE);
+		appariementsMultiplesManager.setup(NO_REUSE);
 
 		// mise en place fiscale de l'administrateur
 		final long ppId = doInUniregTransaction(false, status -> {
@@ -5695,6 +5755,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		                                         Collections.singletonList(administrateur));
 
 		activityManager.setup(ALL_ACTIVE);
+		appariementsMultiplesManager.setup(NO_REUSE);
 
 		// mise en place fiscale de l'administrateur
 		final long ppId = doInUniregTransaction(false, status -> {
@@ -5759,6 +5820,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		                                         Collections.singletonList(administrateur));
 
 		activityManager.setup(ALL_ACTIVE);
+		appariementsMultiplesManager.setup(NO_REUSE);
 
 		// mise en place fiscale de l'administrateur
 		final long ppId = doInUniregTransaction(false, status -> {
@@ -5820,6 +5882,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		                                         null);
 
 		activityManager.setup(ALL_ACTIVE);
+		appariementsMultiplesManager.setup(NO_REUSE);
 
 		organisationService.setUp(new MockServiceOrganisation() {
 			@Override
@@ -5929,6 +5992,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		                                         null);
 
 		activityManager.setup(ALL_ACTIVE);
+		appariementsMultiplesManager.setup(NO_REUSE);
 
 		organisationService.setUp(new MockServiceOrganisation() {
 			@Override
@@ -6053,6 +6117,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		                                         Collections.singletonList(individu));
 
 		activityManager.setup(ALL_ACTIVE);
+		appariementsMultiplesManager.setup(NO_REUSE);
 
 		final LoggedMessages lms = grapheMigrator.migrate(graphe);
 		Assert.assertNotNull(lms);
@@ -6137,6 +6202,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		                                         Collections.singletonList(individu));
 
 		activityManager.setup(ALL_ACTIVE);
+		appariementsMultiplesManager.setup(NO_REUSE);
 
 		final LoggedMessages lms = grapheMigrator.migrate(graphe);
 		Assert.assertNotNull(lms);
@@ -6233,6 +6299,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		                                         null);
 
 		activityManager.setup(ALL_ACTIVE);
+		appariementsMultiplesManager.setup(NO_REUSE);
 
 		final LoggedMessages lms = grapheMigrator.migrate(graphe);
 		Assert.assertNotNull(lms);
@@ -6323,6 +6390,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		                                         null);
 
 		activityManager.setup(ALL_ACTIVE);
+		appariementsMultiplesManager.setup(NO_REUSE);
 
 		final LoggedMessages lms = grapheMigrator.migrate(graphe);
 		Assert.assertNotNull(lms);
@@ -6414,6 +6482,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		                                         null);
 
 		activityManager.setup(ALL_ACTIVE);
+		appariementsMultiplesManager.setup(NO_REUSE);
 
 		organisationService.setUp(new MockServiceOrganisation() {
 			@Override
@@ -6567,6 +6636,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		                                         null);
 
 		activityManager.setup(ALL_ACTIVE);
+		appariementsMultiplesManager.setup(NO_REUSE);
 
 		final LoggedMessages lms = grapheMigrator.migrate(graphe);
 		Assert.assertNotNull(lms);
@@ -6627,6 +6697,98 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 	}
 
 	/**
+	 * [SIFISC-18274] vérification de la non-création d'un lien civil pour les entreprises dont le numéro cantonal est en fait
+	 * utilisé pour plusieurs entreprises...
+	 */
+	@Test
+	public void testAppariementsMultiplesSurMemeNumeroCantonal() throws Exception {
+
+		final long idEntreprise = 4352L;
+		final long idEntrepriseAvecMemeNumeroCantonal = 24562L;
+		final long noCantonal = 4545851696L;
+		final RegDate dateDebut = RegDate.get(2009, 1, 1);
+
+		final RegpmEntreprise regpm = EntrepriseMigratorTest.buildEntreprise(idEntreprise);
+		regpm.setNumeroCantonal(noCantonal);
+		EntrepriseMigratorTest.addRaisonSociale(regpm, dateDebut, "Toto & Cie", null, null, true);
+		EntrepriseMigratorTest.addFormeJuridique(regpm, dateDebut, EntrepriseMigratorTest.createTypeFormeJuridique("S.A.R.L.", RegpmCategoriePersonneMorale.PM));
+		EntrepriseMigratorTest.addForPrincipalSuisse(regpm, dateDebut, RegpmTypeForPrincipal.SIEGE, Commune.LAUSANNE);
+		EntrepriseMigratorTest.addSiegeSuisse(regpm, dateDebut, Commune.LAUSANNE);
+		EntrepriseMigratorTest.addAssujettissement(regpm, dateDebut, null, RegpmTypeAssujettissement.LILIC);
+		EntrepriseMigratorTest.addRegimeFiscalVD(regpm, dateDebut, null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
+		EntrepriseMigratorTest.addRegimeFiscalCH(regpm, dateDebut, null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
+		regpm.setDateBouclementFutur(RegDate.get(2016, 12, 31));
+
+		// pas la peine de mettre en place le proxy du service organisation, il ne devrait pas être appelé...
+
+		final MockGraphe graphe = new MockGraphe(Collections.singletonList(regpm),
+		                                         null,
+		                                         null);
+
+		activityManager.setup(ALL_ACTIVE);
+		appariementsMultiplesManager.setup(idCantonal -> {
+			if (noCantonal == idCantonal) {
+				return new TreeSet<>(Arrays.asList(idEntreprise, idEntrepriseAvecMemeNumeroCantonal));      // pour être certain de l'ordre dans le message de log
+			}
+			return Collections.emptySet();
+		});
+
+		final LoggedMessages lms = grapheMigrator.migrate(graphe);
+		Assert.assertNotNull(lms);
+
+		// vérification en base (= la remarque, et l'absence de lien civil)
+		final Mutable<Long> idEtablissementPrincipal = new MutableObject<>();
+		doInUniregTransaction(true, status -> {
+			final Entreprise entreprise = uniregStore.getEntityFromDb(Entreprise.class, idEntreprise);
+			Assert.assertNotNull(entreprise);
+			Assert.assertNull(entreprise.getNumeroEntreprise());
+
+			final Set<Remarque> remarques = entreprise.getRemarques();
+			Assert.assertNotNull(remarques);
+			Assert.assertEquals(1, remarques.size());
+
+			final Remarque remarque = remarques.iterator().next();
+			Assert.assertNotNull(remarque);
+			final String texte = String.format("Contribuable migré sans lien avec RCEnt malgré la présence du numéro cantonal %d, associé à plusieurs entreprises (%s, %s).",
+			                                   noCantonal,
+			                                   FormatNumeroHelper.numeroCTBToDisplay(idEntreprise),
+			                                   FormatNumeroHelper.numeroCTBToDisplay(idEntrepriseAvecMemeNumeroCantonal));
+			Assert.assertEquals(texte, remarque.getTexte());
+
+			final List<Etablissement> etablissements = uniregStore.getEntitiesFromDb(Etablissement.class, null);
+			Assert.assertNotNull(etablissements);
+			Assert.assertEquals(1, etablissements.size());
+
+			final Etablissement etb = etablissements.get(0);
+			Assert.assertNotNull(etb);
+			Assert.assertNull(etb.getNumeroEtablissement());
+			idEtablissementPrincipal.setValue(etb.getNumero());
+		});
+
+		// vérification des messages de log
+		final Map<LogCategory, List<String>> messages = buildTextualMessages(lms);
+		{
+			// vérification des messages dans le contexte "SUIVI"
+			final List<String> msgs = messages.get(LogCategory.SUIVI);
+			Assert.assertEquals(14, msgs.size());
+			Assert.assertEquals("WARN;" + idEntreprise + ";Active;;" + noCantonal + ";;;;;;;;;;;;;L'entreprise n'existait pas dans Unireg avec ce numéro de contribuable.", msgs.get(0));
+			Assert.assertEquals("ERROR;" + idEntreprise + ";Active;;" + noCantonal + ";;;;;;;;;;;;;Numéro cantonal connu pour être utilisé sur plusieurs entreprises de RegPM (43.52, 245.62). Aucun lien vers le civil ne sera créé.", msgs.get(1));
+			Assert.assertEquals("WARN;" + idEntreprise + ";Active;;" + noCantonal + ";;;;;;;;;;;;;Ajout d'une date de bouclement estimée au 31.12.2015 pour combler l'absence d'exercice commercial dans RegPM sur la période [01.01.2009 -> 31.12.2016].", msgs.get(2));
+			Assert.assertEquals("WARN;" + idEntreprise + ";Active;;" + noCantonal + ";;;;;;;;;;;;;Ajout d'une date de bouclement estimée au 31.12.2014 pour combler l'absence d'exercice commercial dans RegPM sur la période [01.01.2009 -> 31.12.2016].", msgs.get(3));
+			Assert.assertEquals("WARN;" + idEntreprise + ";Active;;" + noCantonal + ";;;;;;;;;;;;;Ajout d'une date de bouclement estimée au 31.12.2013 pour combler l'absence d'exercice commercial dans RegPM sur la période [01.01.2009 -> 31.12.2016].", msgs.get(4));
+			Assert.assertEquals("WARN;" + idEntreprise + ";Active;;" + noCantonal + ";;;;;;;;;;;;;Ajout d'une date de bouclement estimée au 31.12.2012 pour combler l'absence d'exercice commercial dans RegPM sur la période [01.01.2009 -> 31.12.2016].", msgs.get(5));
+			Assert.assertEquals("WARN;" + idEntreprise + ";Active;;" + noCantonal + ";;;;;;;;;;;;;Ajout d'une date de bouclement estimée au 31.12.2011 pour combler l'absence d'exercice commercial dans RegPM sur la période [01.01.2009 -> 31.12.2016].", msgs.get(6));
+			Assert.assertEquals("WARN;" + idEntreprise + ";Active;;" + noCantonal + ";;;;;;;;;;;;;Ajout d'une date de bouclement estimée au 31.12.2010 pour combler l'absence d'exercice commercial dans RegPM sur la période [01.01.2009 -> 31.12.2016].", msgs.get(7));
+			Assert.assertEquals("WARN;" + idEntreprise + ";Active;;" + noCantonal + ";;;;;;;;;;;;;Ajout d'une date de bouclement estimée au 31.12.2009 pour combler l'absence d'exercice commercial dans RegPM sur la période [01.01.2009 -> 31.12.2016].", msgs.get(8));
+			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;" + noCantonal + ";;;;;;;;;;;;;Cycle de bouclements créé, applicable dès le 01.12.2009 : tous les 12 mois, à partir du premier 31.12.", msgs.get(9));
+			Assert.assertEquals("ERROR;" + idEntreprise + ";Active;;" + noCantonal + ";;;;;;;;;;;;;Aucune date d'envoi de lettre de bienvenue trouvée malgré la présence d'assujettissement(s).", msgs.get(10));
+			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;" + noCantonal + ";;;;;;;;;;;;;Création de l'établissement principal " + FormatNumeroHelper.numeroCTBToDisplay(idEtablissementPrincipal.getValue()) + ".", msgs.get(11));
+			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;" + noCantonal + ";;;;;;;;;;;;;Domicile de l'établissement principal " + FormatNumeroHelper.numeroCTBToDisplay(idEtablissementPrincipal.getValue()) + " : [01.01.2009 -> ?] sur COMMUNE_OU_FRACTION_VD/5586.", msgs.get(12));
+			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;" + noCantonal + ";;;;;;;;;;;;;Entreprise migrée : " + FormatNumeroHelper.numeroCTBToDisplay(idEntreprise) + ".", msgs.get(13));
+		}
+	}
+
+	/**
 	 * Ceci est un test utile au debugging, on charge un graphe depuis un fichier sur disque (identique à ce que
 	 * l'on peut envoyer dans la vraie migration) et on tente la migration du graphe en question
 	 */
@@ -6650,6 +6812,9 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		                                                                                                 RegDate.get(1900, 1, 1),
 		                                                                                                 RegDate.get(2008, 1, 1)));
 		this.activityManager.setup(activityManager);
+
+		// le manager des appariements multiples doit être le vrai
+		this.appariementsMultiplesManager.setup(getBean(AppariementsMultiplesManager.class, "appariementsMultiplesManager"));
 
 		// utilisation du véritable service rcent
 		organisationService.setUp(getBean(ServiceOrganisationRaw.class, "serviceOrganisationRCEnt"));

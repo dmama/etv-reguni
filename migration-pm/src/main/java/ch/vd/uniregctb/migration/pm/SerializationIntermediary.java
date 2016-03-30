@@ -21,16 +21,21 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
+import java.util.TreeSet;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.io.filefilter.RegexFileFilter;
 import org.apache.commons.lang3.StringUtils;
 
+import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.common.GentilIterator;
 import ch.vd.uniregctb.migration.pm.engine.probe.ProgressMeasurementProbe;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmEntreprise;
 import ch.vd.uniregctb.migration.pm.regpm.WithLongId;
 
 /**
@@ -38,9 +43,30 @@ import ch.vd.uniregctb.migration.pm.regpm.WithLongId;
  */
 public class SerializationIntermediary implements Worker, Feeder {
 
+	/**
+	 * Répertoire de base des fichiers utilisés
+	 */
 	private Path fsDirectory;
+
+	/**
+	 * Compteur pour les noms de fichiers
+	 */
 	private final AtomicInteger index = new AtomicInteger(0);
-	private final Map<File, Ids> map = new TreeMap<>();
+
+	/**
+	 * Map (clé = fichier, valeur = identifiants des objets contenus dans le graphe du fichier) qui permet, au final, de générer le fichier index.txt en fin de DUMP
+	 */
+	private final Map<File, Ids> fileMap = new TreeMap<>();
+
+	/**
+	 * Map (clé = numéro cantonal, valeur = identifiants des entreprises appariées à ce numéro cantonal) qui permet de détecter les numéros cantonaux
+	 * d'entreprise utilisés plusieurs fois dans l'appariement, et de générer, au final, le fichier appariements.csv, en fin de DUMP
+	 */
+	private final Map<Long, Set<Long>> idCantonalMap = new TreeMap<>();
+
+	/**
+	 * Sonde de mesure de l'avancement du travail de sérialisation (= DUMP) ou de dé-sérialisation (= FROM_DUMP)
+	 */
 	private ProgressMeasurementProbe progressMonitor;
 
 	private static class Ids {
@@ -190,8 +216,20 @@ public class SerializationIntermediary implements Worker, Feeder {
 		final File file = buildNewFile();
 		serialize(graphe, file);
 
-		// on garde trace de tout ça
-		map.put(file, new Ids(graphe));
+		// on garde trace de tout ça pour savoir ce que contient chaque fichier dumpé
+		fileMap.put(file, new Ids(graphe));
+
+		// [SIFISC-18274] on conserve les données de l'appariement des entreprises
+		final Map<Long, Set<Long>> map = graphe.getEntreprises().values().stream()
+				.filter(e -> e.getNumeroCantonal() != null)
+				.collect(Collectors.toMap(RegpmEntreprise::getNumeroCantonal,
+				                          e -> Collections.singleton(e.getId()),
+				                          (s1, s2) -> Stream.concat(s1.stream(), s2.stream()).collect(Collectors.toSet()),
+				                          TreeMap::new));
+		map.entrySet().forEach(entry -> {
+			final Set<Long> set = idCantonalMap.computeIfAbsent(entry.getKey(), key -> new TreeSet<>());
+			set.addAll(entry.getValue());
+		});
 	}
 
 	@Override
@@ -202,8 +240,22 @@ public class SerializationIntermediary implements Worker, Feeder {
 		     PrintStream ps = new PrintStream(fos, false, "UTF-8")) {
 
 			// dump de toutes les entrées
-			map.entrySet().stream()
+			fileMap.entrySet().stream()
 					.map(entry -> String.format("%s : %s", entry.getKey().getName(), entry.getValue()))
+					.forEach(ps::println);
+		}
+
+		// et dump d'un fichier des appariements d'entreprises
+		final File appariementFile = fsDirectory.resolve("appariements.csv").toFile();
+		try (FileOutputStream fos = new FileOutputStream(appariementFile);
+			 PrintStream ps = new PrintStream(fos, false, "UTF-8")) {
+
+			// dump des noms des colonnes, d'abord...
+			ps.println("NO_CANTONAL;NB_ENTREPRISES;NOS_ENTREPRISES");
+
+			// dump de tous les appariements, sur trois colonnes
+			idCantonalMap.entrySet().stream()
+					.map(entry -> String.format("%d;%d;%s", entry.getKey(), entry.getValue().size(), CollectionsUtils.toString(entry.getValue(), String::valueOf, ",")))
 					.forEach(ps::println);
 		}
 	}

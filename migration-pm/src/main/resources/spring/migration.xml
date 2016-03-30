@@ -16,6 +16,7 @@
 	<bean id="migrationContexte" class="ch.vd.uniregctb.migration.pm.engine.MigrationContexte">
 		<constructor-arg name="uniregStore" ref="uniregStore"/>
 		<constructor-arg name="activityManager" ref="activityManager"/>
+		<constructor-arg name="appariementsMultiplesManager" ref="appariementsMultiplesManager"/>
 		<constructor-arg name="infraService" ref="serviceInfrastructureService"/>
 		<constructor-arg name="fusionCommunesProvider" ref="fusionCommunesProvider"/>
 		<constructor-arg name="fractionsCommuneProvider" ref="fractionsCommuneProvider"/>
@@ -30,6 +31,7 @@
 		<constructor-arg name="doublonProvider" ref="doublonProvider"/>
 		<constructor-arg name="regimeFiscalHelper" ref="regimeFiscalHelper"/>
 		<constructor-arg name="tiersDAO" ref="tiersDAO"/>
+		<constructor-arg name="remarqueDAO" ref="remarqueDAO"/>
 		<constructor-arg name="rcpersClient" ref="rcpersClient"/>
 		<constructor-arg name="nonHabitantIndex" ref="nonHabitantIndex"/>
 	</bean>
@@ -75,6 +77,10 @@
 
 	<bean id="doublonProvider" class="ch.vd.uniregctb.migration.pm.engine.helpers.DoublonProviderImpl">
 		<property name="nomFichierSource" value="${doublons.file}"/>
+	</bean>
+
+	<bean id="appariementsMultiplesManager" class="ch.vd.uniregctb.migration.pm.engine.AppariementsMultiplesManagerImpl">
+		<constructor-arg name="filename" value="${appariements.file}"/>
 	</bean>
 
 	<bean id="activityManager" class="ch.vd.uniregctb.migration.pm.engine.ActivityManagerImpl">

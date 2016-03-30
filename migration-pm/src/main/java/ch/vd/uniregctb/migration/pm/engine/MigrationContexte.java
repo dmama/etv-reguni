@@ -17,11 +17,13 @@ import ch.vd.uniregctb.migration.pm.store.UniregStore;
 import ch.vd.uniregctb.migration.pm.utils.DatesParticulieres;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.tiers.TiersDAO;
+import ch.vd.uniregctb.tiers.dao.RemarqueDAO;
 
 public class MigrationContexte {
 
 	private final UniregStore uniregStore;
 	private final ActivityManager activityManager;
+	private final AppariementsMultiplesManager appariementsMultiplesManager;
 	private final ServiceInfrastructureService infraService;
 	private final FusionCommunesProvider fusionCommunesProvider;
 	private final FractionsCommuneProvider fractionsCommuneProvider;
@@ -36,15 +38,17 @@ public class MigrationContexte {
 	private final DoublonProvider doublonProvider;
 	private final RegimeFiscalHelper regimeFiscalHelper;
 	private final TiersDAO tiersDAO;
+	private final RemarqueDAO remarqueDAO;
 	private final RcPersClient rcpersClient;
 	private final NonHabitantIndex nonHabitantIndex;
 
-	public MigrationContexte(UniregStore uniregStore, ActivityManager activityManager, ServiceInfrastructureService infraService, FusionCommunesProvider fusionCommunesProvider,
+	public MigrationContexte(UniregStore uniregStore, ActivityManager activityManager, AppariementsMultiplesManager appariementsMultiplesManager, ServiceInfrastructureService infraService, FusionCommunesProvider fusionCommunesProvider,
 	                         FractionsCommuneProvider fractionsCommuneProvider, DateHelper dateHelper, DatesParticulieres datesParticulieres, AdresseHelper adresseHelper, BouclementService bouclementService,
 	                         AssujettissementService assujettissementService, PeriodeImpositionService periodeImpositionService, ParametreAppService parametreAppService, OrganisationServiceAccessor organisationService,
-	                         DoublonProvider doublonProvider, RegimeFiscalHelper regimeFiscalHelper, TiersDAO tiersDAO, RcPersClient rcpersClient, NonHabitantIndex nonHabitantIndex) {
+	                         DoublonProvider doublonProvider, RegimeFiscalHelper regimeFiscalHelper, TiersDAO tiersDAO, RemarqueDAO remarqueDAO, RcPersClient rcpersClient, NonHabitantIndex nonHabitantIndex) {
 		this.uniregStore = uniregStore;
 		this.activityManager = activityManager;
+		this.appariementsMultiplesManager = appariementsMultiplesManager;
 		this.infraService = infraService;
 		this.fusionCommunesProvider = fusionCommunesProvider;
 		this.fractionsCommuneProvider = fractionsCommuneProvider;
@@ -59,6 +63,7 @@ public class MigrationContexte {
 		this.doublonProvider = doublonProvider;
 		this.regimeFiscalHelper = regimeFiscalHelper;
 		this.tiersDAO = tiersDAO;
+		this.remarqueDAO = remarqueDAO;
 		this.rcpersClient = rcpersClient;
 		this.nonHabitantIndex = nonHabitantIndex;
 	}
@@ -69,6 +74,10 @@ public class MigrationContexte {
 
 	public ActivityManager getActivityManager() {
 		return activityManager;
+	}
+
+	public AppariementsMultiplesManager getAppariementsMultiplesManager() {
+		return appariementsMultiplesManager;
 	}
 
 	public ServiceInfrastructureService getInfraService() {
@@ -125,6 +134,10 @@ public class MigrationContexte {
 
 	public TiersDAO getTiersDAO() {
 		return tiersDAO;
+	}
+
+	public RemarqueDAO getRemarqueDAO() {
+		return remarqueDAO;
 	}
 
 	public RcPersClient getRcpersClient() {

@@ -71,6 +71,7 @@ import ch.vd.uniregctb.common.DonneesCivilesException;
 import ch.vd.uniregctb.common.Duplicable;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.common.HibernateDateRangeEntity;
+import ch.vd.uniregctb.common.LengthConstants;
 import ch.vd.uniregctb.common.MovingWindow;
 import ch.vd.uniregctb.common.NumeroIDEHelper;
 import ch.vd.uniregctb.common.StringRenderer;
@@ -197,7 +198,9 @@ import ch.vd.uniregctb.tiers.MontantMonetaire;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RaisonSocialeFiscaleEntreprise;
 import ch.vd.uniregctb.tiers.RegimeFiscal;
+import ch.vd.uniregctb.tiers.Remarque;
 import ch.vd.uniregctb.tiers.Tiers;
+import ch.vd.uniregctb.tiers.dao.RemarqueDAO;
 import ch.vd.uniregctb.type.DayMonth;
 import ch.vd.uniregctb.type.EtatDelaiDeclaration;
 import ch.vd.uniregctb.type.FormeJuridiqueEntreprise;
@@ -292,6 +295,31 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 			this.regpm = regpm;
 			this.dossiersFiscauxNonAssignes = dossiersFiscauxNonAssignes;
 			this.entrepriseSupplier = entrepriseSupplier;
+		}
+	}
+
+	private static final class AjoutRemarqueData {
+		private final KeyedSupplier<Entreprise> entrepriseSupplier;
+		private final List<String> remarques;
+
+		private AjoutRemarqueData(KeyedSupplier<Entreprise> entrepriseSupplier, @Nullable List<String> remarques) {
+			this.entrepriseSupplier = entrepriseSupplier;
+			this.remarques = Optional.ofNullable(remarques)
+					.map(List::stream)
+					.map(stream -> stream.collect(Collectors.toCollection(LinkedList::new)))
+					.orElseGet(LinkedList::new);
+		}
+
+		public AjoutRemarqueData(KeyedSupplier<Entreprise> entrepriseSupplier, String remarque) {
+			this(entrepriseSupplier, Collections.singletonList(remarque));
+		}
+
+		public AjoutRemarqueData merge(List<String> remarques) {
+			final List<String> all = new LinkedList<>(this.remarques);
+			if (remarques != null) {
+				all.addAll(remarques);
+			}
+			return new AjoutRemarqueData(entrepriseSupplier, all);
 		}
 	}
 
@@ -469,6 +497,13 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		                                        k -> k.entrepriseSupplier,
 		                                        (d1, d2) -> { throw new IllegalArgumentException("une seule donnée par entreprise, donc pas de raison d'appeler le merger..."); },
 		                                        d -> comparaisonAssujettissements(d, mr, idMapper));
+
+		// callback pour l'ajout des remarques collectées au cours du traitement
+		mr.registerPreTransactionCommitCallback(AjoutRemarqueData.class,
+		                                        ConsolidationPhase.AJOUT_REMARQUES,
+		                                        k -> k.entrepriseSupplier,
+		                                        (ard1, ard2) -> ard1.merge(ard2.remarques),
+		                                        this::ajoutRemarques);
 
 		//
 		// données "cachées" sur les entreprises
@@ -1292,6 +1327,21 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 				return null;
 			}
 
+			// [SIFISC-18274] si le même numéro cantonal a été utilisé pour plusieurs entreprises, il ne faut l'utiliser sur aucune d'entre elles
+			final Set<Long> identifiantsEntrepriseLies = migrationContexte.getAppariementsMultiplesManager().getIdentifiantsEntreprisesAvecMemeAppariement(idCantonal);
+			if (identifiantsEntrepriseLies.size() > 1) {
+				final String ids = CollectionsUtils.toString(identifiantsEntrepriseLies, FormatNumeroHelper::numeroCTBToDisplay, ", ");
+				mr.addMessage(LogCategory.SUIVI, LogLevel.ERROR,
+				              String.format("Numéro cantonal connu pour être utilisé sur plusieurs entreprises de RegPM (%s). Aucun lien vers le civil ne sera créé.", ids));
+
+				// enregistrement d'une remarque
+				final String remarque = String.format("Contribuable migré sans lien avec RCEnt malgré la présence du numéro cantonal %d, associé à plusieurs entreprises (%s).", idCantonal, ids);
+				mr.addPreTransactionCommitData(new AjoutRemarqueData(new KeyedSupplier<>(entrepriseKey, getEntrepriseByRegpmIdSupplier(idMapper, e.getId())), remarque));
+
+				// absence de lien civil
+				return null;
+			}
+
 			try {
 				final Organisation org = migrationContexte.getOrganisationService().getOrganisation(idCantonal, mr);
 				if (org != null) {
@@ -2038,6 +2088,24 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 			return debut1 != null && debut2 != null && (debut1.getOneDayAfter() == debut2 || debut1.getOneDayBefore() == debut2);
 		}
 		return false;
+	}
+
+	/**
+	 * Des remarques ont été enregistrées pour une entreprise... il est maintenant temps de les ajouter..
+	 * @param data données des remarques collectées
+	 */
+	private void ajoutRemarques(AjoutRemarqueData data) {
+		final Entreprise entreprise = data.entrepriseSupplier.get();
+		final RemarqueDAO remarqueDAO = migrationContexte.getRemarqueDAO();
+		data.remarques.stream()
+				.map(texte -> texte.length() > LengthConstants.TIERS_REMARQUE ? texte.substring(0, LengthConstants.TIERS_REMARQUE - 1) : texte)
+				.map(texte -> {
+					final Remarque remarque = new Remarque();
+					remarque.setTexte(texte);
+					remarque.setTiers(entreprise);
+					return remarque;
+				})
+				.forEach(remarqueDAO::save);
 	}
 
 	/**

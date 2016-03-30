@@ -46,6 +46,7 @@ import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TypeTiers;
+import ch.vd.uniregctb.tiers.dao.RemarqueDAO;
 import ch.vd.uniregctb.type.Sexe;
 
 public class IndividuMigratorTest extends AbstractEntityMigratorTest {
@@ -61,6 +62,7 @@ public class IndividuMigratorTest extends AbstractEntityMigratorTest {
 
 		final MigrationContexte contexte = new MigrationContexte(getBean(UniregStore.class, "uniregStore"),
 		                                                         entreprise -> true,                // tout le monde est actif dans ces tests!!
+		                                                         idCantonal -> Collections.<Long>emptySet(),      // les numéros cantonaux d'organisation ne sont jamais utilisés plusieurs fois dans ces tests
 		                                                         getBean(ServiceInfrastructureService.class, "serviceInfrastructureService"),
 		                                                         getBean(FusionCommunesProvider.class, "fusionCommunesProvider"),
 		                                                         getBean(FractionsCommuneProvider.class, "fractionsCommuneProvider"),
@@ -75,6 +77,7 @@ public class IndividuMigratorTest extends AbstractEntityMigratorTest {
 		                                                         getBean(DoublonProvider.class, "doublonProvider"),
 		                                                         getBean(RegimeFiscalHelper.class, "regimeFiscalHelper"),
 		                                                         getBean(TiersDAO.class, "tiersDAO"),
+		                                                         getBean(RemarqueDAO.class, "remarqueDAO"),
 		                                                         getBean(RcPersClient.class, "rcpersClient"),
 		                                                         getBean(NonHabitantIndex.class, "nonHabitantIndex"));
 

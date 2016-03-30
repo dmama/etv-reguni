@@ -153,7 +153,9 @@ import ch.vd.uniregctb.tiers.RaisonSocialeFiscaleEntreprise;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.tiers.RegimeFiscal;
 import ch.vd.uniregctb.tiers.Remarque;
+import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TypeTiers;
+import ch.vd.uniregctb.tiers.dao.RemarqueDAO;
 import ch.vd.uniregctb.type.DayMonth;
 import ch.vd.uniregctb.type.EtatDelaiDeclaration;
 import ch.vd.uniregctb.type.FormeJuridiqueEntreprise;
@@ -191,7 +193,8 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 	private EntrepriseMigrator buildMigrator(boolean rcentEnabled) {
 		final OrganisationServiceAccessor organisationServiceAccessor = new OrganisationServiceAccessor(organisationService, rcentEnabled, 1);
 		final MigrationContexte contexte = new MigrationContexte(uniregStore,
-		                                                         entreprise -> true,                // tout le monde est actif dans ces tests!!
+		                                                         entreprise -> true,                        // tout le monde est actif dans ces tests!!
+		                                                         idCantonal -> Collections.<Long>emptySet(),      // les numéros cantonaux d'organisation ne sont jamais utilisés plusieurs fois dans ces tests
 		                                                         getBean(ServiceInfrastructureService.class, "serviceInfrastructureService"),
 		                                                         getBean(FusionCommunesProvider.class, "fusionCommunesProvider"),
 		                                                         getBean(FractionsCommuneProvider.class, "fractionsCommuneProvider"),
@@ -205,7 +208,8 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		                                                         organisationServiceAccessor,
 		                                                         getBean(DoublonProvider.class, "doublonProvider"),
 		                                                         getBean(RegimeFiscalHelper.class, "regimeFiscalHelper"),
-		                                                         null,
+		                                                         getBean(TiersDAO.class, "tiersDAO"),
+		                                                         getBean(RemarqueDAO.class, "remarqueDAO"),
 		                                                         null,
 		                                                         null);
 
