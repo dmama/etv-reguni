@@ -84,18 +84,23 @@
 				</bean>
 			</array>
 		</constructor-arg>
-		<property name="filterProcessesUrl" value="/logout"/>
+		<property name="logoutRequestMatcher">
+			<bean class="org.springframework.security.web.util.matcher.RegexRequestMatcher">
+				<constructor-arg value="/logout"/>
+				<constructor-arg value="GET"/>
+			</bean>
+		</property>
 	</bean>
 
 	<!-- ===================== HTTP REQUEST SECURITY ==================== -->
 
 	<!-- the fourth item in the chain: securityEnforcementFilter -->
 	<bean id="exceptionTranslationFilter" class="org.springframework.security.web.access.ExceptionTranslationFilter">
-		<property name="authenticationEntryPoint">
+		<constructor-arg>
 			<bean class="org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint">
-				<property name="loginFormUrl" value="/authenticationFailed.do" />
+				<constructor-arg value="/authenticationFailed.do" />
 			</bean>
-		</property>
+		</constructor-arg>
 		<property name="accessDeniedHandler">
 			<bean class="org.springframework.security.web.access.AccessDeniedHandlerImpl">
 				<property name="errorPage" value="/403.do"/>
