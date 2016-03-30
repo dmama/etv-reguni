@@ -7,9 +7,16 @@
 	<c:choose>
 		<c:when test="${membre == 'principal'}">
 			<c:if test="${command.exceptionAdresseCiviles == null}">
-				<display:table name="${command.historiqueAdressesCiviles}" id="adresseCivile" pagesize="10" requestURI="${url}" class="display" decorator="ch.vd.uniregctb.decorator.TableAdresseCivileDecorator">
+				<display:table name="${command.historiqueAdressesCiviles}" id="adresseCivile" pagesize="10" requestURI="${url}" class="display" decorator="ch.vd.uniregctb.decorator.TableAdresseCivileDecorator" sort="list">
 					<display:column  sortable ="true" titleKey="label.utilisationAdresse" class="usage">
-						<fmt:message key="option.usage.civil.${adresseCivile.usageCivil}" />
+						<c:choose>
+							<c:when test="${command.natureTiers == 'Entreprise' || command.natureTiers == 'Etablissement'}">
+								<fmt:message key="option.usage.civil.entreprise.${adresseCivile.usageCivil}" />
+							</c:when>
+							<c:otherwise>
+								<fmt:message key="option.usage.civil.${adresseCivile.usageCivil}" />
+							</c:otherwise>
+						</c:choose>
 					</display:column>
 					<display:column sortable ="false" titleKey="label.provenance">
 						<unireg:localisation localisation="${adresseCivile.localisationPrecedente}" showVD="true"/>
@@ -53,7 +60,7 @@
 		</c:when>
 		<c:when test="${membre == 'conjoint'}">
 			<c:if test="${command.exceptionAdresseCivilesConjoint == null}">
-				<display:table name="${command.historiqueAdressesCivilesConjoint}" id="adresseCivileConjoint" pagesize="10" requestURI="${url}" class="display" decorator="ch.vd.uniregctb.decorator.TableAdresseCivileDecorator">
+				<display:table name="${command.historiqueAdressesCivilesConjoint}" id="adresseCivileConjoint" pagesize="10" requestURI="${url}" class="display" decorator="ch.vd.uniregctb.decorator.TableAdresseCivileDecorator" sort="list">
 					<display:column  sortable ="true" titleKey="label.utilisationAdresse" class="usage">
 						<fmt:message key="option.usage.civil.${adresseCivileConjoint.usageCivil}" />
 					</display:column>
