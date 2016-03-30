@@ -2,11 +2,6 @@
 <%@ include file="/WEB-INF/jsp/include/common.jsp" %>
 <%@page import="ch.vd.uniregctb.common.LengthConstants"%>
 
-<!-- Debut Adresse -->
-<form:form name="formAddAdresse" id="formAddAdresse">
-
-<form:hidden path="mode"/>
-<form:hidden path="index"/>
 
 <tiles:insert template="/WEB-INF/jsp/templates/template.jsp">
   	<tiles:put name="title">
@@ -41,19 +36,25 @@
 
 	<tiles:put name="body">
 
-	<fieldset>
+		<!-- Debut Adresse -->
+		<form:form name="formAddAdresse" id="formAddAdresse" commandName="editCommand">
+		<form:hidden path="mode"/>
+		<form:hidden path="index"/>
+		<input name="numCTB" type="hidden" value="${editCommand.numCTB}" />
+
+		<fieldset>
 		<legend><span><fmt:message key="label.adresse.caracteristique" /></span></legend>
 		<table>
 			<tr class="<unireg:nextRowClass/>" >
 				<td width="25%"><fmt:message key="label.adresse.utilisation" />:</td>
 				<td width="75%">
 				<c:choose>
-						<c:when test="${command.id !=null}">
-						<form:select disabled="true" path="usage"  items="${typeAdresseFiscaleTiers}"  />
+						<c:when test="${editCommand.id != null}">
+							<form:select disabled="true" path="usage" items="${typeAdresseFiscaleTiers}" />
 						</c:when>
 						<c:otherwise>
-						<form:select  path="usage"  items="${typeAdresseFiscaleTiers}"  />
-						<form:errors path="usage" cssClass="error"/>
+							<form:select path="usage" items="${typeAdresseFiscaleTiers}" />
+							<form:errors path="usage" cssClass="error"/>
 						</c:otherwise>
 				</c:choose>
 				</td>
@@ -62,14 +63,14 @@
 				<td width="25%"><fmt:message key="label.date.ouverture" />&nbsp;:</td>
 				<td width="75%">
 					<c:choose>
-						<c:when test="${command.id !=null}">
+						<c:when test="${editCommand.id != null}">
 							<form:input disabled="true" path="dateDebut"  id="dateDebut" cssErrorClass="input-with-errors" size ="10" />
 						</c:when>
 						<c:otherwise>
-						<jsp:include page="/WEB-INF/jsp/include/inputCalendar.jsp">
-							<jsp:param  name="path" value="dateDebut" />
-							<jsp:param name="id" value="dateDebut" />
-						</jsp:include>
+							<jsp:include page="/WEB-INF/jsp/include/inputCalendar.jsp">
+								<jsp:param  name="path" value="dateDebut" />
+								<jsp:param name="id" value="dateDebut" />
+							</jsp:include>
 						</c:otherwise>
 					</c:choose>
 				</td>
@@ -88,21 +89,20 @@
 					<td width="30em"></td>
 					<td>
 						<div style="margin-left:1em">
-							<c:if test="${command.id != null}">
-								<form:radiobutton path="typeLocalite" onclick="selectLocalite('localite_suisse');" value="suisse" disabled="true"/>
-							</c:if>
-							<c:if test="${command.id == null}">
-								<form:radiobutton path="typeLocalite" onclick="selectLocalite('localite_suisse');" value="suisse" disabled="false"/>
-							</c:if>
-							<label for="typeLocalite1"><fmt:message key="label.suisse" /></label><br>
-
-							<c:if test="${command.id != null}">
-								<form:radiobutton path="typeLocalite" onclick="selectLocalite('pays');" value="pays"  disabled="true" />
-							</c:if>
-							<c:if test="${command.id == null}">
-								<form:radiobutton path="typeLocalite" onclick="selectLocalite('pays');" value="pays"  disabled="false" />
-							</c:if>
-							<label for="typeLocalite2"><fmt:message key="label.etranger" /></label>
+							<c:choose>
+								<c:when test="${editCommand.id != null}">
+									<form:radiobutton path="typeLocalite" onclick="selectLocalite('localite_suisse');" value="suisse" disabled="true"/>
+									<label for="typeLocalite"><fmt:message key="label.suisse" /></label><br>
+									<form:radiobutton path="typeLocalite" onclick="selectLocalite('pays');" value="pays"  disabled="true" />
+									<label for="typeLocalite"><fmt:message key="label.etranger" /></label>
+								</c:when>
+								<c:otherwise>
+									<form:radiobutton path="typeLocalite" onclick="selectLocalite('localite_suisse');" value="suisse" disabled="false"/>
+									<label for="typeLocalite"><fmt:message key="label.suisse" /></label><br>
+									<form:radiobutton path="typeLocalite" onclick="selectLocalite('pays');" value="pays"  disabled="false" />
+									<label for="typeLocalite"><fmt:message key="label.etranger" /></label>
+								</c:otherwise>
+							</c:choose>
 						</div>
 					</td>
 					<td></td>
@@ -225,18 +225,10 @@
 					</td>
 				</tr>
 				<tr class="<unireg:nextRowClass/>" >
-					<td><fmt:message key="label.numero.appartement" />&nbsp;:</td>
-					<td colspan="3">
-						<form:input path="numeroAppartement" id="numeroAppartement" cssErrorClass="input-with-errors"
-						            size ="5" maxlength="${lengthadrnum}" />
-						<form:errors path="numeroAppartement" cssClass="error"/>
-					</td>
-				</tr>
-				<tr class="<unireg:nextRowClass/>" >
 					<td><fmt:message key="label.texte.case.postale" />&nbsp;:</td>
 					<td>
 						<form:select path="texteCasePostale" id="texteCasePostale">
-							<form:option value="" ></form:option>
+							<form:option value=""/>
 							<form:options items="${textesCasePostale}" />
 						</form:select>
 					</td>
@@ -272,25 +264,25 @@
 
 		<table border="0">
 		<authz:authorize ifAnyGranted="ROLE_ADR_PP_C_DCD">
-		<c:if test="${command.etatSuccessoral.numeroPrincipalDecede != null || command.etatSuccessoral.numeroConjointDecede != null}">
+		<c:if test="${editCommand.etatSuccessoral.numeroPrincipalDecede != null || editCommand.etatSuccessoral.numeroConjointDecede != null}">
 			<tr>
 				<td colspan="4">
 					<div id="adresseSuccessoral">
 						<image src="<c:url value="/css/x/info.png"/>" style="position:relative; top:5px"/>
-						<c:if test="${command.etatSuccessoral.numeroPrincipalDecede != null && command.etatSuccessoral.numeroConjointDecede != null}">
+						<c:if test="${editCommand.etatSuccessoral.numeroPrincipalDecede != null && editCommand.etatSuccessoral.numeroConjointDecede != null}">
 							<fmt:message key="label.adresse.successorale.tous.decedes"/> :<br/>
-							<div class="vignette"><unireg:bandeauTiers numero="${command.etatSuccessoral.numeroPrincipalDecede}" titre="Personne principale" showValidation="false" showEvenementsCivils="false" showLinks="false"/></div>
-							<div class="vignette"><unireg:bandeauTiers numero="${command.etatSuccessoral.numeroConjointDecede}" titre="Conjoint" showValidation="false" showEvenementsCivils="false" showLinks="false"/></div><br/>
+							<div class="vignette"><unireg:bandeauTiers numero="${editCommand.etatSuccessoral.numeroPrincipalDecede}" titre="Personne principale" showValidation="false" showEvenementsCivils="false" showLinks="false"/></div>
+							<div class="vignette"><unireg:bandeauTiers numero="${editCommand.etatSuccessoral.numeroConjointDecede}" titre="Conjoint" showValidation="false" showEvenementsCivils="false" showLinks="false"/></div><br/>
 							<fmt:message key="label.adresse.successorale.tous.decedes.question"/>
 						</c:if>
-						<c:if test="${command.etatSuccessoral.numeroConjointDecede == null}">
+						<c:if test="${editCommand.etatSuccessoral.numeroConjointDecede == null}">
 							<fmt:message key="label.adresse.successorale.principal.decede"/> :<br/>
-							<div class="vignette"><unireg:bandeauTiers numero="${command.etatSuccessoral.numeroPrincipalDecede}" titre="Personne principale" showValidation="false" showEvenementsCivils="false" showLinks="false"/></div><br/>
+							<div class="vignette"><unireg:bandeauTiers numero="${editCommand.etatSuccessoral.numeroPrincipalDecede}" titre="Personne principale" showValidation="false" showEvenementsCivils="false" showLinks="false"/></div><br/>
 							<fmt:message key="label.adresse.successorale.un.decede.question"/>
 						</c:if>
-						<c:if test="${command.etatSuccessoral.numeroPrincipalDecede == null}">
+						<c:if test="${editCommand.etatSuccessoral.numeroPrincipalDecede == null}">
 							<fmt:message key="label.adresse.successorale.conjoint.decede"/> :<br/>
-							<div class="vignette"><unireg:bandeauTiers numero="${command.etatSuccessoral.numeroConjointDecede}" titre="Conjoint" showValidation="false" showEvenementsCivils="false" showLinks="false"/></div><br/>
+							<div class="vignette"><unireg:bandeauTiers numero="${editCommand.etatSuccessoral.numeroConjointDecede}" titre="Conjoint" showValidation="false" showEvenementsCivils="false" showLinks="false"/></div><br/>
 							<fmt:message key="label.adresse.successorale.un.decede.question"/>
 						</c:if>
 						<div class="radioSelectIdent">
@@ -308,7 +300,7 @@
 			<td width="25%"></td>
 			<td width="25%">
 				<c:choose>
-					<c:when test="${command.id !=null}">
+					<c:when test="${editCommand.id !=null}">
 						<input type="submit" id="maj" name="update" value="<fmt:message key="label.bouton.mettre.a.jour" />">
 					</c:when>
 					<c:otherwise>
@@ -316,19 +308,17 @@
 					</c:otherwise>
 				</c:choose>
 			</td>
-			<td width="25%"><input type="button" name="cancel" value="<fmt:message key="label.bouton.retour" />" onClick="document.location.href='../adresses/edit.do?id=${command.numCTB}'" /></td>
+			<td width="25%"><input type="button" name="cancel" value="<fmt:message key="label.bouton.retour" />" onClick="document.location.href='../adresses/edit.do?id=${editCommand.numCTB}'" /></td>
 			<td width="25%"></td>
 		</tr>
 		</table>
 	</div>
 
+	</form:form>
+	<!-- Fin Adresse -->
+
 	</tiles:put>
 </tiles:insert>
-
-<input name="numCTB" type="hidden"  value="${command.numCTB}" />
-
-</form:form>
-<!-- Fin Adresse -->
 
 
 <script type="text/javascript" language="Javascript.1.3">

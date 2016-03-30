@@ -17,10 +17,10 @@
 			<fmt:message key="option.usage.${adresse.usage}" />
 		</display:column>
 		<display:column sortable ="true" titleKey="label.date.debut" sortProperty="dateDebut">
-			<fmt:formatDate value="${adresse.dateDebut}" pattern="dd.MM.yyyy"/>
+			<unireg:regdate regdate="${adresse.dateDebut}"/>
 		</display:column>
 		<display:column sortable ="true" titleKey="label.date.fin" sortProperty="dateFin">
-			<fmt:formatDate value="${adresse.dateFin}" pattern="dd.MM.yyyy"/>
+			<unireg:regdate regdate="${adresse.dateFin}"/>
 		</display:column>
 		<display:column sortable="true" titleKey="label.adresse.complement">
 			<c:out value="${adresse.complements}"/>
@@ -32,8 +32,8 @@
 			</c:if>
 			<c:if test="${adresse.egid != null || adresse.ewid != null}">
 				<authz:authorize ifAnyGranted="ROLE_VISU_ALL">
-					<a href="#" class="consult staticTip" id="fis-${adresse.usage}-<fmt:formatDate value="${adresse.dateDebut}" pattern="yyyyMMdd"/>-<fmt:formatDate value="${adresse.dateFin}" pattern="yyyyMMdd"/>">&nbsp;</a>
-					<div id="fis-${adresse.usage}-<fmt:formatDate value="${adresse.dateDebut}" pattern="yyyyMMdd"/>-<fmt:formatDate value="${adresse.dateFin}" pattern="yyyyMMdd"/>-tooltip" style="display: none;">
+					<a href="#" class="consult staticTip" id="fis-${adresse.usage}-<unireg:regdate regdate="${adresse.dateDebut}" format="yyyyMMdd"/>-<unireg:regdate regdate="${adresse.dateFin}" format="yyyyMMdd"/>">&nbsp;</a>
+					<div id="fis-${adresse.usage}-<unireg:regdate regdate="${adresse.dateDebut}" format="yyyyMMdd"/>-<unireg:regdate regdate="${adresse.dateFin}" format="yyyyMMdd"/>-tooltip" style="display: none;">
 						<b>EGID&nbsp;</b>: <c:choose><c:when test="${adresse.egid != null}"><c:out value="${adresse.egid}"/></c:when><c:otherwise>-</c:otherwise></c:choose><br/>
 						<b>EWID&nbsp;</b>: <c:choose><c:when test="${adresse.ewid != null}"><c:out value="${adresse.ewid}"/></c:when><c:otherwise>-</c:otherwise></c:choose><br/>
 					</div>
@@ -45,7 +45,7 @@
 		</display:column>
 		<display:column sortable ="true" titleKey="label.pays" >
 			<c:if test="${adresse.paysOFS != null }">
-				<unireg:pays ofs="${adresse.paysOFS}" displayProperty="nomCourt" date="${adresse.regDateDebut}"/>
+				<unireg:pays ofs="${adresse.paysOFS}" displayProperty="nomCourt" date="${adresse.dateDebut}"/>
 			</c:if>
 		</display:column>
 		<display:column sortable ="true" titleKey="label.adresse.permanente" >
@@ -128,11 +128,7 @@
 <script>
 	function annulerAdresse(idAdresse) {
 		if (confirm('Voulez-vous vraiment annuler cette adresse surchargée ?')) {
-			var form = $('<form method="POST" action="' + App.curl('/adresses/edit.do') + '">' +
-				'<input type="hidden" name="__TARGET__" value="annulerAdresse"/>' +
-				'<input type="hidden" name="__EVENT_ARGUMENT__" value="' + idAdresse + '"/></form>');
-			form.appendTo('body');
-			form.submit();
+			Form.dynamicSubmit('post', App.curl('/adresses/cancel.do'), {id:idAdresse,idTiers:${command.tiersGeneral.numero}});
 		}
 	}
 

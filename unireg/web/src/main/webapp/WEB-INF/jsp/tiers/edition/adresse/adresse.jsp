@@ -11,7 +11,7 @@
 		<table border="0">
 			<tr>
 				<td>
-					<unireg:raccourciAjouter link="adresse.do?numero=${command.tiers.numero}" tooltip="Ajouter Adresse" display="label.bouton.ajouter"/>
+					<unireg:raccourciAjouter link="adresse-add.do?numero=${command.tiers.numero}" tooltip="Ajouter Adresse" display="label.bouton.ajouter"/>
 				</td>
 			</tr>
 		</table>

@@ -696,9 +696,9 @@ public class TiersManager implements MessageSourceAware {
 			Collections.sort(views, new AnnulableHelper.AnnulesApresWrappingComparator<>(new Comparator<AdresseMandataireView>() {
 				@Override
 				public int compare(AdresseMandataireView o1, AdresseMandataireView o2) {
-					int comparison = -NullDateBehavior.LATEST.compare(o1.getRegDateFin(), o2.getRegDateFin());
+					int comparison = -NullDateBehavior.LATEST.compare(o1.getDateFin(), o2.getDateFin());
 					if (comparison == 0) {
-						comparison = -NullDateBehavior.EARLIEST.compare(o1.getRegDateDebut(), o2.getRegDateDebut());
+						comparison = -NullDateBehavior.EARLIEST.compare(o1.getDateDebut(), o2.getDateDebut());
 					}
 					return comparison;
 				}

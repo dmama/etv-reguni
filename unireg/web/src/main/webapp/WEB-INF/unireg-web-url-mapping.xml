@@ -100,14 +100,11 @@
 				<!-- Tiers - display -->
 				<entry key="/tiers/launchcat.do" value-ref="tiersLaunchCatController" />
 				<entry key="/tiers/visu.do" value-ref="tiersVisuController" />
-				<entry key="/adresses/adresse.do" value-ref="tiersAdresseController" />
 				<entry key="/tiers/rapport.do" value-ref="tiersRapportController" />
 				<entry key="/fiscal/situation-famille.do" value-ref="tiersSituationFamilleController" />
 
 				<entry key="/fiscal/edit.do" value-ref="fiscalEditController" />
 				<entry key="/fiscal/edit-for-debiteur.do" value-ref="fiscalEditForDebiteurController" />
-				<entry key="/adresses/edit.do" value-ref="adressesEditController" />
-				<entry key="/adresses/adresse-close.do" value-ref="closeAdressesController" />
 				<entry key="/dossiers-apparentes/edit.do" value-ref="dossiersApparentesEditController" />
 				<entry key="/rapports-prestation/edit.do" value-ref="rapportsPrestationEditController" />
 				<entry key="/rapports-prestation/list.do" value-ref="rapportsPrestationListController" />

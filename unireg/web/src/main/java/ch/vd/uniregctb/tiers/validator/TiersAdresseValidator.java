@@ -31,6 +31,8 @@ import ch.vd.uniregctb.security.SecurityProviderInterface;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
+import ch.vd.uniregctb.tiers.Entreprise;
+import ch.vd.uniregctb.tiers.Etablissement;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.NatureTiers;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
@@ -136,7 +138,7 @@ public class TiersAdresseValidator implements Validator {
 		}
 
 
-		final RegDate dateDebut = adresseView.getRegDateDebut();
+		final RegDate dateDebut = adresseView.getDateDebut();
 		final TypeAdresseTiers usage = adresseView.getUsage();
 		final Tiers tiers = tiersService.getTiers(adresseView.getNumCTB());
 
@@ -296,6 +298,9 @@ public class TiersAdresseValidator implements Validator {
 				else {
 					return SecurityHelper.isGranted(securityProvider, Role.MODIF_VD_ORD);
 				}
+			}
+			else if (tiers instanceof Entreprise || tiers instanceof Etablissement) {
+				return SecurityHelper.isGranted(securityProvider, Role.MODIF_PM);
 			}
 			else {
 				// pas de rôle particulier pour avoir le droit de modifier les PM en général

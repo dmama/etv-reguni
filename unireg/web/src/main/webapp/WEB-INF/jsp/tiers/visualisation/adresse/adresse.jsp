@@ -37,12 +37,12 @@
 	<legend>
 		<span>
 			<c:choose>
-				<c:when test="${command.natureTiers != 'MenageCommun'}" >
-					<fmt:message key="label.adresse.civiles" />
-				</c:when>
 				<c:when test="${command.natureTiers == 'MenageCommun'}" >
 					<fmt:message key="label.adresse.civiles.membre.couple" /><c:out value=" ${command.nomPrenomPrincipal}"/>
 				</c:when>
+				<c:otherwise>
+					<fmt:message key="label.adresse.civiles" />
+				</c:otherwise>
 			</c:choose>
 		</span>
 	</legend>

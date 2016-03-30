@@ -9,8 +9,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.interfaces.common.Adresse;
+import ch.vd.unireg.interfaces.common.CasePostale;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.Localite;
 import ch.vd.unireg.interfaces.infra.data.Pays;
@@ -22,6 +24,7 @@ import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdresseGenerique;
 import ch.vd.uniregctb.adresse.AdresseSuisse;
 import ch.vd.uniregctb.adresse.AdresseSupplementaire;
+import ch.vd.uniregctb.adresse.AdresseSupplementaireAdapter;
 import ch.vd.uniregctb.adresse.AdresseTiers;
 import ch.vd.uniregctb.adresse.AdressesCiviles;
 import ch.vd.uniregctb.adresse.TypeAdresseRepresentant;
@@ -256,7 +259,7 @@ public class AdresseManagerImpl extends TiersManager implements AdresseManager {
 		if ("reprise".equals(adresseView.getMode())) {
 
 			AdresseAutreTiers addAutreTiers = new AdresseAutreTiers();
-			addAutreTiers.setDateDebut(adresseView.getRegDateDebut());
+			addAutreTiers.setDateDebut(adresseView.getDateDebut());
 			addAutreTiers.setUsage(adresseView.getUsage());
 			addAutreTiers.setType(TypeAdresseTiers.REPRESENTATION);
 
@@ -270,7 +273,7 @@ public class AdresseManagerImpl extends TiersManager implements AdresseManager {
 		else if ("repriseCivil".equals(adresseView.getMode())) {
 
 			AdresseCivile addCivil = new AdresseCivile();
-			addCivil.setDateDebut(adresseView.getRegDateDebut());
+			addCivil.setDateDebut(adresseView.getDateDebut());
 			addCivil.setUsage(adresseView.getUsage());
 			addCivil.setType(addDisponibleView.getTypeAdresse());
 
@@ -311,7 +314,7 @@ public class AdresseManagerImpl extends TiersManager implements AdresseManager {
 	 */
 	private void updateAdresseEtrangere(AdresseView source, AdresseEtrangere target) {
 		if (target.getId() == null) {
-			target.setDateDebut(source.getRegDateDebut());
+			target.setDateDebut(source.getDateDebut());
 		}
 		target.setUsage(source.getUsage());
 		target.setNumeroMaison(source.getNumeroMaison());
@@ -336,7 +339,7 @@ public class AdresseManagerImpl extends TiersManager implements AdresseManager {
 	private void updateAdresseSuisse(AdresseView source, AdresseSuisse target) {
 
 		if (target.getId() == null) {
-			target.setDateDebut(source.getRegDateDebut());
+			target.setDateDebut(source.getDateDebut());
 		}
 		target.setUsage(source.getUsage());
 		target.setNumeroMaison(source.getNumeroMaison());
@@ -361,45 +364,47 @@ public class AdresseManagerImpl extends TiersManager implements AdresseManager {
 	 */
 	private AdresseView enrichiAdresseView(AdresseTiers adresse) {
 
-		AdresseView adresseView = new AdresseView();
+		final AdresseView adresseView = new AdresseView();
 		adresseView.setNumCTB(adresse.getTiers().getNumero());
 		adresseView.setId(adresse.getId());
 		adresseView.setAnnule(adresse.isAnnule());
 		if (adresse instanceof AdresseSupplementaire) {
 
-			// TODO (FDE) supprimer tout ce code copié-collé et utiliser un AdresseSupplementaireAdapter (voir aussi createAdresseView sur TiersEditManagerImpl)
-			AdresseSupplementaire adresseSupp = (AdresseSupplementaire) adresse;
+			final AdresseSupplementaireAdapter adapter = new AdresseSupplementaireAdapter((AdresseSupplementaire) adresse, adresse.getTiers(), false, serviceInfrastructureService);
+			adresseView.setDateDebut(adapter.getDateDebut());
+			adresseView.setDateFin(adapter.getDateFin());
+			adresseView.setUsage(adresse.getUsage());
+			adresseView.setNumeroMaison(adapter.getNumero());
+			adresseView.setComplements(adapter.getComplement());
+			adresseView.setNumeroAppartement(adapter.getNumeroAppartement());
 
-			adresseView.setDateDebut(adresseSupp.getDateDebut());
-			adresseView.setUsage(adresseSupp.getUsage());
-			adresseView.setNumeroMaison(adresseSupp.getNumeroMaison());
-			adresseView.setComplements(adresseSupp.getComplement());
-			adresseView.setNumeroAppartement(adresseSupp.getNumeroAppartement());
-			adresseView.setNumeroCasePostale(adresseSupp.getNumeroCasePostale());
-			adresseView.setRue(adresseSupp.getRue());
-			adresseView.setTexteCasePostale(adresseSupp.getTexteCasePostale());
-			adresseView.setComplements(adresseSupp.getComplement());
-			adresseView.setPermanente(adresseSupp.isPermanente());
+			final CasePostale casePostale = adapter.getCasePostale();
+			if (casePostale != null) {
+				adresseView.setNpaCasePostale(casePostale.getNpa());
+				adresseView.setNumeroCasePostale(casePostale.getNumero());
+				adresseView.setTexteCasePostale(casePostale.getType());
+			}
+
+			adresseView.setRue(adapter.getRue());
+			adresseView.setNumeroRue(adapter.getNumeroRue());
+			adresseView.setPermanente(adapter.isPermanente());
 
 			if (adresse instanceof AdresseSuisse) {
-
-				AdresseSuisse adresseSuisse = (AdresseSuisse) adresse;
-
-				adresseView.setTypeLocalite("suisse");
-				Localite localite = getLocalite(adresseSuisse);
+				final AdresseSuisse adresseSuisse = (AdresseSuisse) adresse;
+				adresseView.setTypeLocalite(TYPE_LOCALITE_SUISSE);
+				final Localite localite = getLocalite(adresseSuisse);
 				if (localite != null) {
 					adresseView.setLocaliteSuisse(localite.getNom());
 					adresseView.setNumeroOrdrePoste(localite.getNoOrdre().toString());
 					adresseView.setNumCommune(localite.getNoCommune().toString());
 				}
-				adresseView.setNpaCasePostale(adresseSuisse.getNpaCasePostale());
 			}
 			else if (adresse instanceof AdresseEtrangere) {
 
-				AdresseEtrangere adresseEtrangere = (AdresseEtrangere) adresse;
+				final AdresseEtrangere adresseEtrangere = (AdresseEtrangere) adresse;
+				adresseView.setTypeLocalite(TYPE_LOCALITE_PAYS);
 
-				adresseView.setTypeLocalite("pays");
-				Pays pays = getPays(adresseEtrangere);
+				final Pays pays = getPays(adresseEtrangere);
 				adresseView.setPaysNpa(pays.getNomCourt());
 				adresseView.setPaysOFS(pays.getNoOFS());
 				adresseView.setLocaliteNpa(adresseEtrangere.getNumeroPostalLocalite());
@@ -411,21 +416,15 @@ public class AdresseManagerImpl extends TiersManager implements AdresseManager {
 		}
 
 		if (adresse instanceof AdresseCivile) {
-
-			AdresseCivile adressecivil = (AdresseCivile) adresse;
-
+			final AdresseCivile adressecivil = (AdresseCivile) adresse;
 			adresseView.setDateDebut(adressecivil.getDateDebut());
 			adresseView.setUsage(adressecivil.getUsage());
-
 		}
 
 		if (adresse instanceof AdresseAutreTiers) {
-
-			AdresseAutreTiers adresseAutreTiers = (AdresseAutreTiers) adresse;
-
+			final AdresseAutreTiers adresseAutreTiers = (AdresseAutreTiers) adresse;
 			adresseView.setDateDebut(adresseAutreTiers.getDateDebut());
 			adresseView.setUsage(adresseAutreTiers.getUsage());
-
 		}
 
 		return adresseView;
@@ -444,10 +443,11 @@ public class AdresseManagerImpl extends TiersManager implements AdresseManager {
 	}
 
 	@Override
-	public void fermerAdresse(AdresseView bean){
-		AdresseTiers adresseTiers = getAdresseTiersDAO().get(bean.getId());
+	@Transactional(rollbackFor = Throwable.class)
+	public void fermerAdresse(Long idAdresse, RegDate dateFin) {
+		final AdresseTiers adresseTiers = getAdresseTiersDAO().get(idAdresse);
 		if (adresseTiers != null) {
-			getAdresseService().fermerAdresse(adresseTiers,bean.getRegDateFin());
+			getAdresseService().fermerAdresse(adresseTiers, dateFin);
 		}
 	}
 

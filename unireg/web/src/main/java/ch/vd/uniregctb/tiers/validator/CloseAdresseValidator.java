@@ -10,14 +10,12 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.security.SecurityHelper;
 import ch.vd.uniregctb.security.SecurityProviderInterface;
-import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.NatureTiers;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersService;
-import ch.vd.uniregctb.tiers.view.AdresseView;
-import ch.vd.uniregctb.tiers.view.TiersEditView;
+import ch.vd.uniregctb.tiers.view.CloseAdresseView;
 import ch.vd.uniregctb.type.Niveau;
 import ch.vd.uniregctb.type.TypeAdresseTiers;
 
@@ -40,10 +38,8 @@ public class CloseAdresseValidator implements Validator {
 	 * @see org.springframework.validation.Validator#supports(Class)
 	 */
 	@Override
-	@SuppressWarnings("unchecked")
-	public boolean supports(Class clazz) {
-		return Tiers.class.equals(clazz) || DebiteurPrestationImposable.class.equals(clazz) || TiersEditView.class.equals(clazz)
-				|| AdresseView.class.equals(clazz);
+	public boolean supports(Class<?> clazz) {
+		return CloseAdresseView.class.equals(clazz);
 	}
 
 	/**
@@ -57,10 +53,10 @@ public class CloseAdresseValidator implements Validator {
 			return;
 		}
 
-		final AdresseView adresseView = (AdresseView) obj;
-		final RegDate dateFin = adresseView.getRegDateFin();
+		final CloseAdresseView adresseView = (CloseAdresseView) obj;
+		final RegDate dateFin = adresseView.getDateFin();
 		final TypeAdresseTiers usage = adresseView.getUsage();
-		final Tiers tiers = tiersService.getTiers(adresseView.getNumCTB());
+		final Tiers tiers = tiersService.getTiers(adresseView.getIdTiers());
 
 		final Niveau acces = SecurityHelper.getDroitAcces(securityProvider, tiers);
 		if (acces == null || acces == Niveau.LECTURE) {
@@ -71,15 +67,11 @@ public class CloseAdresseValidator implements Validator {
 		if (dateFin == null) {
 			errors.rejectValue("dateFin", "error.date.fin.vide");
 		}
-		else if (dateFin.isBefore(adresseView.getRegDateDebut())) {
-
-				errors.rejectValue("dateFin", "error.date.fin.avant.debut");
-
+		else if (dateFin.isBefore(adresseView.getDateDebut())) {
+			errors.rejectValue("dateFin", "error.date.fin.avant.debut");
 		}
 		else if (dateFin.isAfter(RegDate.get())) {
-
-				errors.rejectValue("dateFin", "error.date.fin.dans.futur");
-
+			errors.rejectValue("dateFin", "error.date.fin.dans.futur");
 		}
 
 		//gestion des droits de fermeture d'une adresse
@@ -123,16 +115,13 @@ public class CloseAdresseValidator implements Validator {
 					}
 					break;
 				case DOMICILE :
-					if(SecurityHelper.isGranted(securityProvider, Role.ADR_PP_D))
-						isAllowed = true;
+					isAllowed = SecurityHelper.isGranted(securityProvider, Role.ADR_PP_D);
 					break;
 				case POURSUITE :
-					if(SecurityHelper.isGranted(securityProvider, Role.ADR_P))
-						isAllowed = true;
+					isAllowed = SecurityHelper.isGranted(securityProvider, Role.ADR_P);
 					break;
 				case REPRESENTATION :
-					if(SecurityHelper.isGranted(securityProvider, Role.ADR_PP_B))
-						isAllowed = true;
+					isAllowed = SecurityHelper.isGranted(securityProvider, Role.ADR_PP_B);
 					break;
 			}
 		}
@@ -148,31 +137,22 @@ public class CloseAdresseValidator implements Validator {
 			//PM
 			switch (usage) {
 				case COURRIER :
-					if(SecurityHelper.isGranted(securityProvider, Role.ADR_PM_C))
-						isAllowed = true;
+					isAllowed = SecurityHelper.isGranted(securityProvider, Role.ADR_PM_C);
 					break;
 				case DOMICILE :
-					if(SecurityHelper.isGranted(securityProvider, Role.ADR_PM_D))
-						isAllowed = true;
+					isAllowed = SecurityHelper.isGranted(securityProvider, Role.ADR_PM_D);
 					break;
 				case POURSUITE :
-					if(SecurityHelper.isGranted(securityProvider, Role.ADR_P))
-						isAllowed = true;
+					isAllowed = SecurityHelper.isGranted(securityProvider, Role.ADR_P);
 					break;
 				case REPRESENTATION :
-					if(SecurityHelper.isGranted(securityProvider, Role.ADR_PM_B))
-						isAllowed = true;
+					isAllowed = SecurityHelper.isGranted(securityProvider, Role.ADR_PM_B);
 					break;
 			}
 		}
 
-		if(!isAllowed){
-			if (adresseView.getId() == null) {//création
-				errors.rejectValue("usage", "error.usage.interdit");
-			}
-			else {//édition (il ne devrait plus y avoir d'édition d'adresse à terme)
-				errors.reject("error.tiers.interdit");
-			}
+		if (!isAllowed) {
+			errors.rejectValue("usage", "error.usage.interdit");
 		}
 	}
 }

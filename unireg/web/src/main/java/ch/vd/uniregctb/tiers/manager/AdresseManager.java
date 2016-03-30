@@ -2,6 +2,7 @@ package ch.vd.uniregctb.tiers.manager;
 
 import org.springframework.transaction.annotation.Transactional;
 
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdressesResolutionException;
@@ -24,12 +25,9 @@ public interface AdresseManager {
 	 * @return
 	 */
 	@Transactional(readOnly = true)
-	public abstract AdresseView getAdresseView(Long id);
+	AdresseView getAdresseView(Long id);
 
-
-	public AdresseView getAdresseView(TiersEditView tiers,Long numero);
-
-
+	AdresseView getAdresseView(TiersEditView tiers,Long numero);
 
 	/**
 	 * Cree une nouvelle vue AdresseView pour une nouvelle adresse
@@ -38,7 +36,7 @@ public interface AdresseManager {
 	 * @return
 	 */
 	@Transactional(readOnly = true)
-	public abstract AdresseView create(Long numeroCtb);
+	AdresseView create(Long numeroCtb);
 
 	/**
 	 * Sauvegarde de l'adresse en base de donnees
@@ -46,7 +44,7 @@ public interface AdresseManager {
 	 * @param adresseView
 	 */
 	@Transactional(rollbackFor = Throwable.class)
-	public abstract void save(AdresseView adresseView) throws AccessDeniedException;
+	void save(AdresseView adresseView) throws AccessDeniedException;
 
 	/**
 	 * Annule une adresse
@@ -54,16 +52,13 @@ public interface AdresseManager {
 	 * @param idAdresse
 	 */
 	@Transactional(rollbackFor = Throwable.class)
-	public void annulerAdresse(Long idAdresse);
+	void annulerAdresse(Long idAdresse);
 
-
-/**
-	 * ferme une adresse
-	 *
-	 * @param bean
+	/**
+	 * Ferme une adresse à la date demandée
 	 */
 	@Transactional(rollbackFor = Throwable.class)
-	public void fermerAdresse(AdresseView bean);
+	void fermerAdresse(Long idAdresse, RegDate dateFin);
 
 	/**
 	 * Sauvegarde d'une reprise d'adresse
@@ -71,7 +66,7 @@ public interface AdresseManager {
 	 * @param adresseView
 	 */
 	@Transactional(rollbackFor = Throwable.class)
-	public abstract void saveReprise(AdresseView adresseView);
+	void saveReprise(AdresseView adresseView);
 
 	/**
 	 * Charge les informations dans TiersView
@@ -82,6 +77,6 @@ public interface AdresseManager {
 	 * @throws ServiceInfrastructureException
 	 */
 	@Transactional(readOnly = true)
-	public TiersEditView getView(Long numero) throws ServiceInfrastructureException, AdresseException;
+	TiersEditView getView(Long numero) throws ServiceInfrastructureException, AdresseException;
 
 }
