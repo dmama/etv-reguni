@@ -44,9 +44,9 @@
 					<c:when test="${etablissement.connueAuCivil}">
 						<fmt:message key="label.connue.civil.rcent"/>
 					</c:when>
-					<c:when test="${!etablissement.connueAuCivil}">
+					<c:otherwise>
 						<fmt:message key="label.inconnue.civil.rcent"/>
-					</c:when>
+					</c:otherwise>
 				</c:choose>
 			</td>
 		</tr>
