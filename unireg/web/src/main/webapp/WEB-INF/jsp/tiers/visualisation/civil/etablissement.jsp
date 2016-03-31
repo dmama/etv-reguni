@@ -40,12 +40,14 @@
 		<tr class="<unireg:nextRowClass/>">
 			<td width="20%"><fmt:message key="label.civil.registre"/>&nbsp;:</td>
 			<td>
-				<c:if test=" ${etablissement.connueAuCivil}">
-					<fmt:message key="label.connue.civil.rcent"/>
-				</c:if>
-				<c:if test="${! etablissement.connueAuCivil}">
-					<fmt:message key="label.inconnue.civil.rcent"/>
-				</c:if>
+				<c:choose>
+					<c:when test="${etablissement.connueAuCivil}">
+						<fmt:message key="label.connue.civil.rcent"/>
+					</c:when>
+					<c:when test="${!etablissement.connueAuCivil}">
+						<fmt:message key="label.inconnue.civil.rcent"/>
+					</c:when>
+				</c:choose>
 			</td>
 		</tr>
 	</table>

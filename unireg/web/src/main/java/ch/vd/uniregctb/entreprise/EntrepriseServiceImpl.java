@@ -148,6 +148,7 @@ public class EntrepriseServiceImpl implements EntrepriseService {
 
 		etablissementView.setDomiciles(getDomiciles(tiersService.getDomiciles(etablissement, true)));
 
+		etablissementView.setConnueAuCivil(etablissement.isConnuAuCivil());
 		return etablissementView;
 	}
 
