@@ -403,10 +403,10 @@
 		table.find('tr:visible:odd').addClass('odd');
 	}
 
-	<c:if test="${command.typeLocalite == 'suisse'}">
+	<c:if test="${editCommand.typeLocalite == 'suisse'}">
 		selectLocalite('localite_suisse');
 	</c:if>
-	<c:if test="${command.typeLocalite == 'pays'}">
+	<c:if test="${editCommand.typeLocalite == 'pays'}">
 		selectLocalite('pays');
 	</c:if>
 </script>
