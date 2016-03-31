@@ -6,7 +6,7 @@
 <tiles:insert template="/WEB-INF/jsp/templates/template.jsp">
   	<tiles:put name="title">
   		<fmt:message key="title.creation.adresse">
-  			<fmt:param><unireg:numCTB numero="${command.numCTB}"/></fmt:param>
+  			<fmt:param><unireg:numCTB numero="${editCommand.numCTB}"/></fmt:param>
   		</fmt:message>
   	</tiles:put>
 
