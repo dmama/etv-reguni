@@ -25,6 +25,7 @@ import ch.vd.uniregctb.security.AccessDeniedException;
 import ch.vd.uniregctb.tiers.CapitalFiscalEntreprise;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.FormeJuridiqueFiscaleEntreprise;
+import ch.vd.uniregctb.tiers.MontantMonetaire;
 import ch.vd.uniregctb.tiers.RaisonSocialeFiscaleEntreprise;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
@@ -386,7 +387,7 @@ public class CivilEntrepriseEditController {
 			throw new AccessDeniedException("Vous ne possédez pas les droits IfoSec de création de capital.");
 		}
 
-		model.addAttribute("command", new AddCapitalView(entreprise.getNumero(), RegDate.get(), null, null, null));
+		model.addAttribute("command", new AddCapitalView(entreprise.getNumero(), RegDate.get(), null, null, MontantMonetaire.CHF));
 		return "donnees-civiles/add-capital";
 	}
 
@@ -411,7 +412,7 @@ public class CivilEntrepriseEditController {
 			return "donnees-civiles/add-capital";
 		}
 
-		tiersService.addCapitalFiscal(entreprise, view.getMontant(), view.getMonnaie(), view.getDateDebut(), view.getDateFin());
+		tiersService.addCapitalFiscal(entreprise, view.getMontant(), StringUtils.upperCase(view.getMonnaie()), view.getDateDebut(), view.getDateFin());
 
 		return "redirect:/civil/entreprise/edit.do?id=" + tiersId;// + buildHighlightForParam(newFor); plus tard
 	}
