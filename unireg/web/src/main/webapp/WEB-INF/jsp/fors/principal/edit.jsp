@@ -120,7 +120,14 @@
 				var motifsDebut = '${command.motifDebut}';
 				var dateDebut = '<unireg:regdate regdate="${command.dateDebut}" />';
 				var motifsFin = $('#motifFin').val();
-				var dateFin = $('#dateFin').val();
+				<c:choose>
+					<c:when test="${command.dateFinEditable}">
+						var dateFin = $('#dateFin').val();
+					</c:when>
+					<c:otherwise>
+						var dateFin = '<unireg:regdate regdate="${command.dateFin}"/>';
+					</c:otherwise>
+				</c:choose>
 
 				var noOfsAut = $('#noAutoriteFiscale').val();
 				noOfsAut = noOfsAut.replace(/[^\d]/g, "");
@@ -143,7 +150,7 @@
 						$('#actions_list').html(Fors.buildActionTableHtml(results));
 						$('#actions_column').show();
 					}
-				}, 'json').error(Ajax.notifyErrorHandler("simulation des changements"));
+				}, 'json');
 			}
 
 			// on initialise les motifs au chargement de la page

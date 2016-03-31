@@ -60,7 +60,8 @@ public class EditForDebiteurValidator extends EditForAvecMotifsValidator {
 		}
 
 		// validation du motif de fin
-		if (view.getMotifFin() != null) {
+		// [SIFISC-14390] on veut pouvoir conserver le motif de fermeture déjà présent sur le for, même si celui-ci n'est normalement pas accessible à la main
+		if (view.getMotifFin() != null && fdpi.getMotifFermeture() != view.getMotifFin()) {
 			final NatureTiers natureTiers = fdpi.getTiers().getNatureTiers();
 			final MotifsForHelper.TypeFor typeFor = new MotifsForHelper.TypeFor(natureTiers, GenreImpot.DEBITEUR_PRESTATION_IMPOSABLE, null);
 			ForValidatorHelper.validateMotifFin(typeFor, view.getMotifFin(), errors);

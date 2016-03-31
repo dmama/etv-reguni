@@ -1,7 +1,6 @@
 package ch.vd.uniregctb.tiers.validator;
 
 import java.util.EnumSet;
-import java.util.List;
 import java.util.Set;
 
 import org.junit.Assert;
@@ -19,7 +18,7 @@ public class MotifsForHelperTest extends WithoutSpringTest {
 	public void testMotifsOuvertureSurTousMotifsRattachement() throws Exception {
 		for (MotifRattachement motifRattachement : MotifRattachement.values()) {
 			final MotifsForHelper.TypeFor type = new MotifsForHelper.TypeFor(NatureTiers.Habitant, GenreImpot.REVENU_FORTUNE, motifRattachement);
-			final List<MotifFor> motifsOuverture = MotifsForHelper.getMotifsOuverture(type);
+			final Set<MotifFor> motifsOuverture = MotifsForHelper.getMotifsOuverture(type);
 			Assert.assertNotNull("Rattachement " + motifRattachement, motifsOuverture);
 			Assert.assertTrue("Rattachement " + motifRattachement, !motifsOuverture.isEmpty());
 		}
@@ -29,7 +28,7 @@ public class MotifsForHelperTest extends WithoutSpringTest {
 	public void testMotifsFermetureSurTousMotifsRattachement() throws Exception {
 		for (MotifRattachement motifRattachement : MotifRattachement.values()) {
 			final MotifsForHelper.TypeFor type = new MotifsForHelper.TypeFor(NatureTiers.Habitant, GenreImpot.REVENU_FORTUNE, motifRattachement);
-			final List<MotifFor> motifsFermeture = MotifsForHelper.getMotifsFermeture(type);
+			final Set<MotifFor> motifsFermeture = MotifsForHelper.getMotifsFermeture(type);
 			Assert.assertNotNull("Rattachement " + motifRattachement, motifsFermeture);
 			Assert.assertTrue("Rattachement " + motifRattachement, !motifsFermeture.isEmpty());
 		}
@@ -42,17 +41,17 @@ public class MotifsForHelperTest extends WithoutSpringTest {
 	public void testMotifsFermetureDomicile() throws Exception {
 		{
 			final MotifsForHelper.TypeFor type = new MotifsForHelper.TypeFor(NatureTiers.Habitant, GenreImpot.REVENU_FORTUNE, MotifRattachement.DOMICILE);
-			final Set<MotifFor> motifsFermeture = EnumSet.copyOf(MotifsForHelper.getMotifsFermeture(type));
+			final Set<MotifFor> motifsFermeture = MotifsForHelper.getMotifsFermeture(type);
 			Assert.assertEquals(EnumSet.of(MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MotifFor.FUSION_COMMUNES), motifsFermeture);
 		}
 		{
 			final MotifsForHelper.TypeFor type = new MotifsForHelper.TypeFor(NatureTiers.NonHabitant, GenreImpot.REVENU_FORTUNE, MotifRattachement.DOMICILE);
-			final Set<MotifFor> motifsFermeture = EnumSet.copyOf(MotifsForHelper.getMotifsFermeture(type));
+			final Set<MotifFor> motifsFermeture = MotifsForHelper.getMotifsFermeture(type);
 			Assert.assertEquals(EnumSet.of(MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MotifFor.FUSION_COMMUNES), motifsFermeture);
 		}
 		{
 			final MotifsForHelper.TypeFor type = new MotifsForHelper.TypeFor(NatureTiers.MenageCommun, GenreImpot.REVENU_FORTUNE, MotifRattachement.DOMICILE);
-			final Set<MotifFor> motifsFermeture = EnumSet.copyOf(MotifsForHelper.getMotifsFermeture(type));
+			final Set<MotifFor> motifsFermeture = MotifsForHelper.getMotifsFermeture(type);
 			Assert.assertEquals(EnumSet.of(MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MotifFor.FUSION_COMMUNES, MotifFor.VEUVAGE_DECES), motifsFermeture);
 		}
 	}

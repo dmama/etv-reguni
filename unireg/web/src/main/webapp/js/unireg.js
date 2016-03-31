@@ -592,6 +592,9 @@ var Fors = {
 		if (rattachement != null) {
 			url += '&rattachement=' + rattachement;
 		}
+		if (StringUtils.isNotBlank(motifFermeture)) {
+			url += '&oldMotif=' + motifFermeture;
+		}
 
 		// appels ajax pour mettre-à-jour les motifs de fermeture
 		$.get(url + '&' + new Date().getTime(), function(motifs) {

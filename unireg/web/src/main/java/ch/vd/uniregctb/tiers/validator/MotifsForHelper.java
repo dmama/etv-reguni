@@ -1,9 +1,8 @@
 package ch.vd.uniregctb.tiers.validator;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
+import java.util.EnumSet;
+import java.util.Set;
 
 import ch.vd.uniregctb.tiers.NatureTiers;
 import ch.vd.uniregctb.type.GenreImpot;
@@ -30,7 +29,7 @@ public class MotifsForHelper {
 		}
 	}
 
-	public static List<MotifFor> getMotifsOuverture(TypeFor type) {
+	public static Set<MotifFor> getMotifsOuverture(TypeFor type) {
 		if (GenreImpot.REVENU_FORTUNE == type.genreImpot && isPersonnePhysique(type.natureTiers)) {
 			return getMotifsOuvertureRevenuFortune(type);
 		}
@@ -40,12 +39,12 @@ public class MotifsForHelper {
 		else if (isPersonneMorale(type.natureTiers)) {
 			return getMotifsOuvertureEntreprise(type);
 		}
-		return Collections.emptyList();
+		return Collections.emptySet();
 	}
 
-	private static List<MotifFor> getMotifsOuvertureEntreprise(TypeFor type) {
+	private static Set<MotifFor> getMotifsOuvertureEntreprise(TypeFor type) {
 
-		final List<MotifFor> motifs = new ArrayList<>();
+		final Set<MotifFor> motifs = EnumSet.noneOf(MotifFor.class);
 		switch (type.rattachement) {
 		case DOMICILE:
 			motifs.add(MotifFor.DEBUT_EXPLOITATION);
@@ -72,13 +71,13 @@ public class MotifsForHelper {
 		return motifs;
 	}
 
-	private static List<MotifFor> getMotifsOuvertureDebiteursPrestationsImposables() {
-		return Arrays.asList(MotifFor.DEBUT_PRESTATION_IS,
-		                     MotifFor.FUSION_COMMUNES,
-		                     MotifFor.DEMENAGEMENT_SIEGE);
+	private static Set<MotifFor> getMotifsOuvertureDebiteursPrestationsImposables() {
+		return EnumSet.of(MotifFor.DEBUT_PRESTATION_IS,
+		                  MotifFor.FUSION_COMMUNES,
+		                  MotifFor.DEMENAGEMENT_SIEGE);
 	}
 
-	private static List<MotifFor> getMotifsOuvertureRevenuFortune(TypeFor type) {
+	private static Set<MotifFor> getMotifsOuvertureRevenuFortune(TypeFor type) {
 
 		// Motifs interdits depuis la GUI
 		// motifs.add(MotifFor.CHGT_MODE_IMPOSITION);
@@ -87,7 +86,7 @@ public class MotifsForHelper {
 		// motifs.add(MotifFor.VENTE_IMMOBILIER);
 		// motifs.add(MotifFor.FIN_EXPLOITATION);
 
-		final List<MotifFor> motifs = new ArrayList<>();
+		final Set<MotifFor> motifs = EnumSet.noneOf(MotifFor.class);
 
 		switch (type.rattachement) {
 		case DIPLOMATE_SUISSE:
@@ -173,7 +172,7 @@ public class MotifsForHelper {
 		return nature == NatureTiers.Entreprise;
 	}
 
-	public static List<MotifFor> getMotifsFermeture(TypeFor type) {
+	public static Set<MotifFor> getMotifsFermeture(TypeFor type) {
 		if (GenreImpot.REVENU_FORTUNE == type.genreImpot && isPersonnePhysique(type.natureTiers)) {
 			return getMotifsFermetureRevenuFortune(type);
 		}
@@ -183,11 +182,11 @@ public class MotifsForHelper {
 		else if (isPersonneMorale(type.natureTiers)) {
 			return getMotifsFermetureEntreprise(type);
 		}
-		return Collections.emptyList();
+		return Collections.emptySet();
 	}
 
-	private static List<MotifFor> getMotifsFermetureEntreprise(TypeFor type) {
-		final List<MotifFor> motifs = new ArrayList<>();
+	private static Set<MotifFor> getMotifsFermetureEntreprise(TypeFor type) {
+		final Set<MotifFor> motifs = EnumSet.noneOf(MotifFor.class);
 		switch (type.rattachement) {
 		case DOMICILE:
 			motifs.add(MotifFor.CESSATION_ACTIVITE);
@@ -210,14 +209,14 @@ public class MotifsForHelper {
 		return motifs;
 	}
 
-	private static List<MotifFor> getMotifsFermetureDebiteursPrestationsImposables() {
-		return Arrays.asList(MotifFor.FIN_PRESTATION_IS,
-		                     MotifFor.CESSATION_ACTIVITE_FUSION_FAILLITE,
-		                     MotifFor.FUSION_COMMUNES,
-		                     MotifFor.DEMENAGEMENT_SIEGE);
+	private static Set<MotifFor> getMotifsFermetureDebiteursPrestationsImposables() {
+		return EnumSet.of(MotifFor.FIN_PRESTATION_IS,
+		                  MotifFor.CESSATION_ACTIVITE_FUSION_FAILLITE,
+		                  MotifFor.FUSION_COMMUNES,
+		                  MotifFor.DEMENAGEMENT_SIEGE);
 	}
 
-	private static List<MotifFor> getMotifsFermetureRevenuFortune(TypeFor type) {
+	private static Set<MotifFor> getMotifsFermetureRevenuFortune(TypeFor type) {
 
 		// Motifs interdits depuis la GUI
 		// motifs.add(MotifFor.CHGT_MODE_IMPOSITION);
@@ -235,7 +234,7 @@ public class MotifsForHelper {
 		// motifs.add(MotifFor.DEBUT_EXPLOITATION);
 		// motifs.add(MotifFor.MAJORITE);
 
-		final List<MotifFor> motifs = new ArrayList<>();
+		final Set<MotifFor> motifs = EnumSet.noneOf(MotifFor.class);
 
 		switch (type.rattachement) {
 		case DIPLOMATE_SUISSE:

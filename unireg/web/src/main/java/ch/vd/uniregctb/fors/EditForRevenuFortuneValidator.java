@@ -44,7 +44,8 @@ public abstract class EditForRevenuFortuneValidator extends EditForAvecMotifsVal
 		}
 
 		// validation du motif de fin
-		if (view.getMotifFin() != null) {
+		// [SIFISC-14390] on veut pouvoir conserver le motif de fermeture déjà présent sur le for, même si celui-ci n'est normalement pas accessible à la main
+		if (view.getMotifFin() != null && ffrf.getMotifFermeture() != view.getMotifFin()) {
 			final NatureTiers natureTiers = ffrf.getTiers().getNatureTiers();
 			final MotifsForHelper.TypeFor typeFor = new MotifsForHelper.TypeFor(natureTiers, GenreImpot.REVENU_FORTUNE, ffrf.getMotifRattachement());
 			ForValidatorHelper.validateMotifFin(typeFor, view.getMotifFin(), errors);

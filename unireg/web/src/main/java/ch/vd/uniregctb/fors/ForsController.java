@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
@@ -150,8 +151,9 @@ public class ForsController {
 		final NatureTiers natureTiers = tiers.getNatureTiers();
 		final MotifsForHelper.TypeFor typeFor = new MotifsForHelper.TypeFor(natureTiers, genreImpot, rattachement);
 
-		final List<MotifForView> list = new ArrayList<>();
-		for (MotifFor motifFor : MotifsForHelper.getMotifsOuverture(typeFor)) {
+		final Set<MotifFor> motifsOuverture = MotifsForHelper.getMotifsOuverture(typeFor);
+		final List<MotifForView> list = new ArrayList<>(motifsOuverture.size());
+		for (MotifFor motifFor : motifsOuverture) {
 			list.add(new MotifForView(motifFor, getLabelOuverture(motifFor)));
 		}
 
@@ -175,7 +177,8 @@ public class ForsController {
 	@ResponseBody
 	public List<MotifForView> motifsFermeture(@RequestParam(value = "tiersId", required = true) Long tiersId,
 	                                          @RequestParam(value = "genreImpot", required = true) GenreImpot genreImpot,
-	                                          @RequestParam(value = "rattachement", required = false) MotifRattachement rattachement) {
+	                                          @RequestParam(value = "rattachement", required = false) MotifRattachement rattachement,
+	                                          @RequestParam(value = "oldMotif", required = false) MotifFor oldMotif) {
 
 		final Tiers tiers = tiersDAO.get(tiersId);
 		if (tiers == null) {
@@ -185,9 +188,15 @@ public class ForsController {
 		final NatureTiers natureTiers = tiers.getNatureTiers();
 		final MotifsForHelper.TypeFor typeFor = new MotifsForHelper.TypeFor(natureTiers, genreImpot, rattachement);
 
-		final List<MotifForView> list = new ArrayList<>();
-		for (MotifFor motifFor : MotifsForHelper.getMotifsFermeture(typeFor)) {
+		final Set<MotifFor> motifsFermeture = MotifsForHelper.getMotifsFermeture(typeFor);
+		final List<MotifForView> list = new ArrayList<>(motifsFermeture.size() + 1);
+		for (MotifFor motifFor : motifsFermeture) {
 			list.add(new MotifForView(motifFor, getLabelFermeture(motifFor)));
+		}
+
+		// [SIFISC-14390] on veut pouvoir conserver le motif de fermeture déjà présent sur le for, même si celui-ci n'est normalement pas accessible à la main
+		if (oldMotif != null && !motifsFermeture.contains(oldMotif)) {
+			list.add(new MotifForView(oldMotif, getLabelFermeture(oldMotif)));
 		}
 
 		Collections.sort(list, new Comparator<MotifForView>() {
