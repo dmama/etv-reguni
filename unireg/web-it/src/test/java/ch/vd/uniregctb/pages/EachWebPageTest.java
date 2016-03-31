@@ -108,12 +108,17 @@ public class EachWebPageTest extends WebitTest {
 	// Page de visualisation d'une adresse
 	@Test
 	public void testTiersEditAdresse() throws Exception {
-		assertPage("/adresses/adresse.do?idAdresse=1", "Création d'une adresse sur le tiers 129.000.01");
+		assertPage("/adresses/adresse-close.do?idAdresse=1", "Fermeture d'une adresse sur le tiers 129.000.01");
 	}
 
 	@Test
-	public void testTiersEditAdresseInexistant() throws Exception {
-		assertPage("/adresses/adresse.do?idAdresse=12345678", "Page d'erreur", "L'adresse spécifiée n'existe pas");
+	public void testTiersEditAdresseInexistante() throws Exception {
+		assertPage("/adresses/adresse-close.do?idAdresse=12345678", "Page d'erreur", "L'adresse spécifiée n'existe pas");
+	}
+
+	@Test
+	public void testTiersAddAdresse() throws Exception {
+		assertPage("/adresses/adresse-add.do?numero=12900001", "Création d'une adresse sur le tiers 129.000.01");
 	}
 
 	// Page de visualisation d'un rapport
