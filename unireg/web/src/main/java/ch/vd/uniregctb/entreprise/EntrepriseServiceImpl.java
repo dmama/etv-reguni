@@ -101,16 +101,17 @@ public class EntrepriseServiceImpl implements EntrepriseService {
 
 		// les états
 		final List<EtatEntreprise> etats = new ArrayList<>(entreprise.getEtats());
-		Collections.sort(etats, new Comparator<EtatEntreprise>() {
+		Collections.sort(etats, new AnnulableHelper.AnnulesApresWrappingComparator<>(new Comparator<EtatEntreprise>() {
 			@Override
 			public int compare(EtatEntreprise o1, EtatEntreprise o2) {
-				int comparison = Boolean.compare(o1.isAnnule(), o2.isAnnule());     // false < true
+				int comparison = - o1.getDateObtention().compareTo(o2.getDateObtention());       // les plus récents d'abord
 				if (comparison == 0) {
-					comparison = - o1.getDateObtention().compareTo(o2.getDateObtention());       // les plus récents d'abord
+					// à dates d'obtention équivalentes, il faut trier par identifiant technique décroissant (pour avoir le plus récent d'abord)
+					comparison = - Long.compare(o1.getId(), o2.getId());
 				}
 				return comparison;
 			}
-		});
+		}));
 		entrepriseView.setEtats(getEtats(etats));
 
 		return entrepriseView;
