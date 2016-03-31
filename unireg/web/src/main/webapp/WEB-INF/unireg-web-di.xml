@@ -59,6 +59,12 @@
 		<property name="parametreAppService" ref="parametreAppService"/>
 		<property name="bouclementService" ref="bouclementService"/>
 		<property name="hibernateTemplate" ref="hibernateTemplate"/>
+		<property name="exerciceCommercialHelper" ref="exerciceCommercialWebHelper"/>
+	</bean>
+
+	<bean id="exerciceCommercialWebHelper" class="ch.vd.uniregctb.tiers.ExerciceCommercialWebHelper">
+		<constructor-arg ref="tiersService"/>
+		<constructor-arg ref="assujettissementService"/>
 	</bean>
 
 </beans>

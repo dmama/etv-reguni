@@ -61,6 +61,7 @@ public class ExerciceCommercialController {
 	private ParametreAppService parametreAppService;
 	private BouclementService bouclementService;
 	private HibernateTemplate hibernateTemplate;
+	private ExerciceCommercialWebHelper exerciceCommercialHelper;
 
 	public void setTiersService(TiersService tiersService) {
 		this.tiersService = tiersService;
@@ -90,6 +91,10 @@ public class ExerciceCommercialController {
 		this.hibernateTemplate = hibernateTemplate;
 	}
 
+	public void setExerciceCommercialHelper(ExerciceCommercialWebHelper exerciceCommercialHelper) {
+		this.exerciceCommercialHelper = exerciceCommercialHelper;
+	}
+
 	@InitBinder
 	protected void initBinder(WebDataBinder binder) {
 		binder.registerCustomEditor(RegDate.class, new RegDateEditor(true, false, false));
@@ -117,7 +122,7 @@ public class ExerciceCommercialController {
 
 	private List<ExerciceCommercialView> getViewExercicesCommerciaux(Entreprise entreprise, boolean reversed) {
 		final List<DeclarationImpotOrdinairePM> dis = getDeclarationsNonAnnuleesTriees(entreprise);
-		final List<ExerciceCommercial> liste = tiersService.getExercicesCommerciaux(entreprise);
+		final List<ExerciceCommercial> liste = exerciceCommercialHelper.getExercicesCommerciauxAffichables(entreprise);
 		final List<ExerciceCommercialView> views = new ArrayList<>(liste.size());
 		boolean first = true;
 		for (ExerciceCommercial exercice : liste) {

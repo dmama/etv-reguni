@@ -26,15 +26,18 @@
 				</tr>
 				<c:set var="exerciceCommercialCourant" value="${command.exerciceCommercialCourant}"/>
 				<tr class="<unireg:nextRowClass/>">
-					<td><fmt:message key="label.exercice.commercial.courant"/>&nbsp;:</td>
+					<td><fmt:message key="label.date.bouclement.futur"/>&nbsp;:</td>
 					<td>
-						<c:if test="${exerciceCommercialCourant != null}">
-							<unireg:regdate regdate="${exerciceCommercialCourant.dateDebut}"/> - <unireg:regdate regdate="${exerciceCommercialCourant.dateFin}"/>
-							&nbsp;
-						</c:if>
-						<c:if test="${fn:length(command.exercicesCommerciaux) > 1}">
-							<unireg:raccourciDetail tooltip="Détails des exercices commerciaux" onClick="ExercicesCommerciaux.openList(${entreprise.id});"/>
-						</c:if>
+						<c:choose>
+							<c:when test="${exerciceCommercialCourant != null}">
+								<unireg:regdate regdate="${exerciceCommercialCourant.dateFin}"/>
+							</c:when>
+							<c:otherwise>
+								<span style="font-style: italic;"><fmt:message key="label.aucune.date.connue"/></span>
+							</c:otherwise>
+						</c:choose>
+						&nbsp;
+						<unireg:raccourciDetail tooltip="Détails des exercices commerciaux" onClick="ExercicesCommerciaux.openList(${entreprise.id});"/>
 					</td>
 				</tr>
 			</table>

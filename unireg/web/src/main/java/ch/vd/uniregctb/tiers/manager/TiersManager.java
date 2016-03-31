@@ -93,6 +93,7 @@ import ch.vd.uniregctb.tiers.DomicileHisto;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.Etablissement;
+import ch.vd.uniregctb.tiers.ExerciceCommercialWebHelper;
 import ch.vd.uniregctb.tiers.FlagEntreprise;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
@@ -179,6 +180,8 @@ public class TiersManager implements MessageSourceAware {
 	protected IbanValidator ibanValidator;
 	private AutorisationManager autorisationManager;
 	protected SecurityProviderInterface securityProvider;
+
+	protected ExerciceCommercialWebHelper exerciceCommercialHelper;
 
 	/**
 	 * Recupere l'individu correspondant au tiers
@@ -614,7 +617,7 @@ public class TiersManager implements MessageSourceAware {
 		}
 
 		// les exercices commerciaux
-		final List<ExerciceCommercial> exercices = tiersService.getExercicesCommerciaux(entreprise);
+		final List<ExerciceCommercial> exercices = exerciceCommercialHelper.getExercicesCommerciauxAffichables(entreprise);
 		tiersView.setExercicesCommerciaux(exercices);
 
 		// les flags d'entreprise
@@ -1380,6 +1383,10 @@ public class TiersManager implements MessageSourceAware {
 
 	public void setServiceOrganisationService(ServiceOrganisationService serviceOrganisationService) {
 		this.serviceOrganisationService = serviceOrganisationService;
+	}
+
+	public void setExerciceCommercialHelper(ExerciceCommercialWebHelper exerciceCommercialHelper) {
+		this.exerciceCommercialHelper = exerciceCommercialHelper;
 	}
 }
 
