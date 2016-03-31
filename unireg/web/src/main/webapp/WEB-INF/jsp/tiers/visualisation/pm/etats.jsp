@@ -9,21 +9,17 @@
 <fieldset>
 	<legend><span><fmt:message key="label.etats.pm"/></span></legend>
 
-	<c:if test="${empty command.entreprise.etats}">
-		<fmt:message key="no.data" />
+	<c:if test="${autorisations.etatsPM}">
+		<table border="0">
+			<tr>
+				<td>
+					<unireg:raccourciModifier link="../entreprise/etats/edit.do?id=${command.entreprise.id}" tooltip="Modifier l'état" display="label.bouton.modifier"/>
+				</td>
+			</tr>
+		</table>
 	</c:if>
 
 	<c:if test="${not empty command.entreprise.etats}">
-		<c:if test="${autorisations.etatsPM}">
-			<table border="0">
-				<tr>
-					<td>
-						<unireg:raccourciModifier link="../entreprise/etats/edit.do?id=${command.entreprise.id}" tooltip="Modifier l'état" display="label.bouton.modifier"/>
-					</td>
-				</tr>
-			</table>
-		</c:if>
-
 		<display:table name="${command.entreprise.etats}" id="etatPM" requestURI="visu.do" class="display" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator">
 			<display:column titleKey="label.date.obtention">
 				<unireg:regdate regdate="${etatPM.dateObtention}"/>
@@ -38,7 +34,6 @@
 				<unireg:consulterLog entityNature="EtatEntreprise" entityId="${etatPM.id}"/>
 			</display:column>
 		</display:table>
-
 	</c:if>
 
 </fieldset>

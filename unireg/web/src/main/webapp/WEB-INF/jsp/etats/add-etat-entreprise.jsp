@@ -11,31 +11,33 @@
   	</tiles:put>
 	<tiles:put name="body">
 
-		<unireg:bandeauTiers numero="${command.tiersId}" showLinks="false" showComplements="false" showEvenementsCivils="false" showValidation="false" showAvatar="false" titre="Caractéristiques de l'entreprise"/>
+		<unireg:bandeauTiers numero="${command.tiersId}" showLinks="false" showComplements="false" showEvenementsCivils="false" showValidation="false" showAvatar="false"/>
 
 		<form:form id="AddEtatEntrepriseForm" commandName="command" action="add.do">
-			<fieldset>
-				<legend><span><fmt:message key="label.etat.actuel" /></span></legend>
 
-				<!-- Debut Etat PM -->
-				<table border="0">
-					<unireg:nextRowClass reset="0"/>
-					<tr class="<unireg:nextRowClass/>" >
-						<td width="20%"><fmt:message key="label.type"/>&nbsp;:</td>
-						<td>
-							<c:if test="${! empty command.previousType}">
+			<c:if test="${! empty command.previousType}">
+				<fieldset>
+					<legend><span><fmt:message key="label.etat.actuel" /></span></legend>
+
+					<!-- Debut Etat PM -->
+					<table border="0">
+						<unireg:nextRowClass reset="0"/>
+						<tr class="<unireg:nextRowClass/>" >
+							<td width="20%"><fmt:message key="label.type"/>&nbsp;:</td>
+							<td>
 								<fmt:message key="option.etat.entreprise.${command.previousType}"/>
-							</c:if>
-						</td>
-					</tr>
-					<tr class="<unireg:nextRowClass/>" >
-						<td><fmt:message key="label.date.obtention" />&nbsp;:</td>
-						<td>
-							<unireg:date date="${command.previousDate}"/>
-						</td>
-					</tr>
-				</table>
-			</fieldset>
+							</td>
+						</tr>
+						<tr class="<unireg:nextRowClass/>" >
+							<td><fmt:message key="label.date.obtention" />&nbsp;:</td>
+							<td>
+								<unireg:date date="${command.previousDate}"/>
+							</td>
+						</tr>
+					</table>
+				</fieldset>
+			</c:if>
+
 			<fieldset>
 				<legend><span><fmt:message key="label.etat.nouveau" /></span></legend>
 
@@ -62,14 +64,14 @@
 										</c:choose>
 									</span>
 								</c:when>
-								<c:when test="${! empty transitionDisponibles}">
+								<c:otherwise>
 									<form:select path="type" name="type">
 										<form:option value="" />
 										<form:options items="${transitionDisponibles}"/>
 									</form:select>
-								</c:when>
+									<form:errors path="type" cssClass="error" />
+								</c:otherwise>
 							</c:choose>
-							<form:errors path="type" cssClass="error" />
 					</tr>
 					<tr class="<unireg:nextRowClass/>" >
 						<td><fmt:message key="label.date.obtention" />&nbsp;:</td>

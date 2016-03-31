@@ -31,10 +31,6 @@
 				</table>
 			</c:if>
 
-			<c:if test="${empty command.etats}">
-				<fmt:message key="no.data" />
-			</c:if>
-
 			<c:if test="${not empty command.etats}">
 				<display:table name="${command.etats}" id="etatPM" requestURI="visu.do" class="display" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator">
 					<display:column titleKey="label.date.obtention">
