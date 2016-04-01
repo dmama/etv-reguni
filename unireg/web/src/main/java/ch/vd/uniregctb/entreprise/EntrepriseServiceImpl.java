@@ -174,8 +174,9 @@ public class EntrepriseServiceImpl implements EntrepriseService {
 			                                                       etat.isAnnule());
 			views.add(view);
 		}
-		if (AnnulableHelper.sansElementsAnnules(views).size() > 1) {
-			views.get(0).setDernierElement(true);
+		final List<EtatEntrepriseView> listeSansAnnules = AnnulableHelper.sansElementsAnnules(views);
+		if (listeSansAnnules.size() > 1) {
+			listeSansAnnules.get(0).setDernierElement(true);
 		}
 		return views;
 	}
@@ -190,8 +191,9 @@ public class EntrepriseServiceImpl implements EntrepriseService {
 			views.add(new CapitalView(capital));
 		}
 		Collections.sort(views, new AnnulableHelper.AnnulesApresWrappingComparator<>(new DateRangeComparator<CapitalView>(DateRangeComparator.CompareOrder.DESCENDING)));
-		if (AnnulableHelper.sansElementsAnnules(views).size() > 1) {
-			views.get(0).setDernierElement(true);
+		final List<CapitalView> listeSansAnnules = AnnulableHelper.sansElementsAnnules(views);
+		if (listeSansAnnules.size() > 1) {
+			listeSansAnnules.get(0).setDernierElement(true);
 		}
 		return views;
 	}
@@ -205,8 +207,9 @@ public class EntrepriseServiceImpl implements EntrepriseService {
 			list.add(new FormeJuridiqueView(formeLegale));
 		}
 		Collections.sort(list, new AnnulableHelper.AnnulesApresWrappingComparator<>(new DateRangeComparator<FormeJuridiqueView>(DateRangeComparator.CompareOrder.DESCENDING)));
-		if (AnnulableHelper.sansElementsAnnules(list).size() > 1) {
-			list.get(0).setDernierElement(true);
+		final List<FormeJuridiqueView> listeSansAnnules = AnnulableHelper.sansElementsAnnules(list);
+		if (listeSansAnnules.size() > 1) {
+			listeSansAnnules.get(0).setDernierElement(true);
 		}
 		return list;
 	}
@@ -220,8 +223,9 @@ public class EntrepriseServiceImpl implements EntrepriseService {
 			list.add(new RaisonSocialeView(raisonSociale, false));
 		}
 		Collections.sort(list, new AnnulableHelper.AnnulesApresWrappingComparator<>(new DateRangeComparator<RaisonSocialeView>(DateRangeComparator.CompareOrder.DESCENDING)));
-		if (AnnulableHelper.sansElementsAnnules(list).size() > 1) {
-			list.get(0).setDernierElement(true);
+		final List<RaisonSocialeView> listeSansAnnules = AnnulableHelper.sansElementsAnnules(list);
+		if (listeSansAnnules.size() > 1) {
+			listeSansAnnules.get(0).setDernierElement(true);
 		}
 		return list;
 	}
@@ -235,8 +239,9 @@ public class EntrepriseServiceImpl implements EntrepriseService {
 			list.add(new SiegeView(siege));
 		}
 		Collections.sort(list, new AnnulableHelper.AnnulesApresWrappingComparator<>(new DateRangeComparator<SiegeView>(DateRangeComparator.CompareOrder.DESCENDING)));
-		if (AnnulableHelper.sansElementsAnnules(list).size() > 1) {
-			list.get(0).setDernierElement(true);
+		final List<SiegeView> listeSansAnnules = AnnulableHelper.sansElementsAnnules(list);
+		if (listeSansAnnules.size() > 1) {
+			listeSansAnnules.get(0).setDernierElement(true);
 		}
 		return list;
 	}
