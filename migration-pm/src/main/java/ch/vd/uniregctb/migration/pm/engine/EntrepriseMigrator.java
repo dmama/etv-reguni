@@ -3265,7 +3265,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 				&& areEqual(adresse1.getComplement(), adresse2.getComplement(), String::equalsIgnoreCase)
 				&& areEqual(adresse1.getLocaliteComplete(), adresse2.getLocaliteComplete(), String::equalsIgnoreCase)
 				&& areEqual(adresse1.getNoOfsPays(), adresse2.getNoOfsPays(), Object::equals)
-				&& areEqual(adresse1.getNumero(), adresse2.getNumero(), Object::equals)
+				&& areEqual(adresse1.getNumero(), adresse2.getNumero(), String::equalsIgnoreCase)
 				&& areEqual(adresse1.getNumeroOrdrePostal(), adresse2.getNumeroOrdrePostal(), Object::equals)
 				&& areEqual(adresse1.getNumeroPostal(), adresse2.getNumeroPostal(), Object::equals)
 				&& areEqual(adresse1.getRue(), adresse2.getRue(), String::equalsIgnoreCase);
