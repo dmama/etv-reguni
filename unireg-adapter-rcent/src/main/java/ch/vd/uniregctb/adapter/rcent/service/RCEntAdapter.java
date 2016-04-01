@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.jetbrains.annotations.Nullable;
+
 import ch.vd.evd0022.v3.NoticeOrganisation;
 import ch.vd.evd0022.v3.OrganisationData;
 import ch.vd.evd0022.v3.OrganisationSnapshot;
@@ -72,9 +74,10 @@ public class RCEntAdapter {
 	 * @return les données retournées par RCEnt (<b>attention !</b> si le numéro IDE est spécifique à un établissement secondaire de l'entreprise dans RCEnt,
 	 *         alors l'organisation retournée ne comprendra pas les autres établissements secondaires de l'entreprise)
 	 */
+	@Nullable
 	public Organisation getOrganisationByNoIde(String noide, RegDate date) {
 		final OrganisationData data = rcentClient.getOrganisationByNoIDE(noide, date, false);
-		return historizer.mapOrganisation(data.getOrganisationSnapshot());
+		return data != null ? historizer.mapOrganisation(data.getOrganisationSnapshot()) : null;
 	}
 
 	/**
@@ -83,9 +86,10 @@ public class RCEntAdapter {
 	 * @return les données retournées par RCEnt (<b>attention !</b> si le numéro IDE est spécifique à un établissement secondaire de l'entreprise dans RCEnt,
 	 *         alors l'organisation retournée ne comprendra pas les autres établissements secondaires de l'entreprise)
 	 */
+	@Nullable
 	public Organisation getOrganisationHistoryByNoIde(String noide) {
 		final OrganisationData data = rcentClient.getOrganisationByNoIDE(noide, null, true);
-		return historizer.mapOrganisation(data.getOrganisationSnapshot());
+		return data != null ? historizer.mapOrganisation(data.getOrganisationSnapshot()) : null;
 	}
 
 	/**
