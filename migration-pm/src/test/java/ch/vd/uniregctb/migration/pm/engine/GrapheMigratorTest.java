@@ -127,6 +127,7 @@ import ch.vd.uniregctb.tiers.RegimeFiscal;
 import ch.vd.uniregctb.tiers.Remarque;
 import ch.vd.uniregctb.tiers.SocieteDirection;
 import ch.vd.uniregctb.tiers.TiersDAO;
+import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.tiers.dao.RemarqueDAO;
 import ch.vd.uniregctb.type.DayMonth;
 import ch.vd.uniregctb.type.FormeJuridiqueEntreprise;
@@ -199,6 +200,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		                                          organisationServiceAccessor,
 		                                          getBean(DoublonProvider.class, "doublonProvider"),
 		                                          getBean(RegimeFiscalHelper.class, "regimeFiscalHelper"),
+		                                          getBean(TiersService.class, "tiersService"),
 		                                          getBean(TiersDAO.class, "tiersDAO"),
 		                                          getBean(RemarqueDAO.class, "remarqueDAO"),
 		                                          getBean(RcPersClient.class, "rcpersClient"),
@@ -5279,42 +5281,26 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 
 			final Set<RegimeFiscal> regimesFiscaux = entreprise.getRegimesFiscaux();
 			Assert.assertNotNull(regimesFiscaux);
-			Assert.assertEquals(2, regimesFiscaux.size());
+			Assert.assertEquals(0, regimesFiscaux.size());      // pas de régime fiscal généré car tous les fors sont REVENU_FORTUNE
 
-			final Map<RegimeFiscal.Portee, RegimeFiscal> mapRegimes = regimesFiscaux.stream()
-					.collect(Collectors.toMap(RegimeFiscal::getPortee, Function.identity()));
-
-			{
-				final RegimeFiscal regime = mapRegimes.get(RegimeFiscal.Portee.VD);
-				Assert.assertNotNull(regime);
-				Assert.assertFalse(regime.isAnnule());
-				Assert.assertEquals(dateAchatImmeuble1, regime.getDateDebut());
-				Assert.assertNull(regime.getDateFin());
-				Assert.assertEquals("01", regime.getCode());
-			}
-			{
-				final RegimeFiscal regime = mapRegimes.get(RegimeFiscal.Portee.CH);
-				Assert.assertNotNull(regime);
-				Assert.assertFalse(regime.isAnnule());
-				Assert.assertEquals(dateAchatImmeuble1, regime.getDateDebut());
-				Assert.assertNull(regime.getDateFin());
-				Assert.assertEquals("01", regime.getCode());
-			}
+			Assert.assertEquals(3, entreprise.getForsFiscaux().size());     // 1 principal, et 2 secondaires
+			entreprise.getForsFiscaux().stream()
+					.filter(ff -> ff.getGenreImpot() != GenreImpot.REVENU_FORTUNE)
+					.findAny()
+					.ifPresent(ff -> Assert.fail("For fiscal généré avec le genre d'impôt " + ff.getGenreImpot()));
 		});
 
 		final Map<LogCategory, List<String>> messages = buildTextualMessages(lms);
 		{
 			// vérification des messages dans le contexte "SUIVI"
 			final List<String> msgs = messages.get(LogCategory.SUIVI);
-			Assert.assertEquals(8, msgs.size());
+			Assert.assertEquals(6, msgs.size());
 			Assert.assertEquals("WARN;" + noEntreprise + ";Active;;;;;;;;;;;;;;;L'entreprise n'existait pas dans Unireg avec ce numéro de contribuable.", msgs.get(0));
 			Assert.assertEquals("ERROR;" + noEntreprise + ";Active;;;;;;;;;;;;;;;Pas de numéro cantonal assigné sur l'entreprise, pas de lien vers le civil.", msgs.get(1));
 			Assert.assertEquals("WARN;" + noEntreprise + ";Active;;;;;;;;;;;;;;;Entreprise sans exercice commercial ni date de bouclement futur.", msgs.get(2));
 			Assert.assertEquals("ERROR;" + noEntreprise + ";Active;;;;;;;;;;;;;;;Aucune date d'envoi de lettre de bienvenue trouvée malgré la présence d'assujettissement(s).", msgs.get(3));
 			Assert.assertEquals("WARN;" + noEntreprise + ";Active;;;;;;;;;;;;;;;Pas de siège associé dans les données fiscales, pas d'établissement principal créé à partir des données fiscales.", msgs.get(4));
 			Assert.assertEquals("INFO;" + noEntreprise + ";Active;;;;;;;;;;;;;;;Entreprise migrée : " + FormatNumeroHelper.numeroCTBToDisplay(noEntreprise) + ".", msgs.get(5));
-			Assert.assertEquals("WARN;" + noEntreprise + ";Active;;;;;;;;;;;;;;;Ajout d'un régime fiscal VD de type '01' sur la période [01.05.2011 -> ?] pour couvrir les fors de l'entreprise.", msgs.get(6));
-			Assert.assertEquals("WARN;" + noEntreprise + ";Active;;;;;;;;;;;;;;;Ajout d'un régime fiscal CH de type '01' sur la période [01.05.2011 -> ?] pour couvrir les fors de l'entreprise.", msgs.get(7));
 		}
 	}
 

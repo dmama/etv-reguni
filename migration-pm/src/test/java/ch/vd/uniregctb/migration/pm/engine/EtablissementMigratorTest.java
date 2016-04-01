@@ -58,6 +58,7 @@ import ch.vd.uniregctb.tiers.DomicileEtablissement;
 import ch.vd.uniregctb.tiers.Etablissement;
 import ch.vd.uniregctb.tiers.Remarque;
 import ch.vd.uniregctb.tiers.TiersDAO;
+import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.tiers.TypeTiers;
 import ch.vd.uniregctb.tiers.dao.RemarqueDAO;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
@@ -92,6 +93,7 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 		                                                         organisationServiceAccessor,
 		                                                         getBean(DoublonProvider.class, "doublonProvider"),
 		                                                         getBean(RegimeFiscalHelper.class, "regimeFiscalHelper"),
+		                                                         getBean(TiersService.class, "tiersService"),
 		                                                         getBean(TiersDAO.class, "tiersDAO"),
 		                                                         getBean(RemarqueDAO.class, "remarqueDAO"),
 		                                                         null,

@@ -2522,7 +2522,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 								final ForFiscalSecondaire ffs = new ForFiscalSecondaire();
 								ffs.setDateDebut(range.getDateDebut());
 								ffs.setDateFin(range.getDateFin());
-								ffs.setGenreImpot(GenreImpot.BENEFICE_CAPITAL);
+								ffs.setGenreImpot(getGenreImpotPourForSecondaire(entiteJuridique, range));
 								ffs.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
 								ffs.setNumeroOfsAutoriteFiscale(noOfsCommune);
 								ffs.setMotifRattachement(MotifRattachement.IMMEUBLE_PRIVE);

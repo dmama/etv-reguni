@@ -17,6 +17,7 @@ import ch.vd.uniregctb.migration.pm.store.UniregStore;
 import ch.vd.uniregctb.migration.pm.utils.DatesParticulieres;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.tiers.TiersDAO;
+import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.tiers.dao.RemarqueDAO;
 
 public class MigrationContexte {
@@ -37,6 +38,7 @@ public class MigrationContexte {
 	private final OrganisationServiceAccessor organisationService;
 	private final DoublonProvider doublonProvider;
 	private final RegimeFiscalHelper regimeFiscalHelper;
+	private final TiersService tiersService;
 	private final TiersDAO tiersDAO;
 	private final RemarqueDAO remarqueDAO;
 	private final RcPersClient rcpersClient;
@@ -45,7 +47,7 @@ public class MigrationContexte {
 	public MigrationContexte(UniregStore uniregStore, ActivityManager activityManager, AppariementsMultiplesManager appariementsMultiplesManager, ServiceInfrastructureService infraService, FusionCommunesProvider fusionCommunesProvider,
 	                         FractionsCommuneProvider fractionsCommuneProvider, DateHelper dateHelper, DatesParticulieres datesParticulieres, AdresseHelper adresseHelper, BouclementService bouclementService,
 	                         AssujettissementService assujettissementService, PeriodeImpositionService periodeImpositionService, ParametreAppService parametreAppService, OrganisationServiceAccessor organisationService,
-	                         DoublonProvider doublonProvider, RegimeFiscalHelper regimeFiscalHelper, TiersDAO tiersDAO, RemarqueDAO remarqueDAO, RcPersClient rcpersClient, NonHabitantIndex nonHabitantIndex) {
+	                         DoublonProvider doublonProvider, RegimeFiscalHelper regimeFiscalHelper, TiersService tiersService, TiersDAO tiersDAO, RemarqueDAO remarqueDAO, RcPersClient rcpersClient, NonHabitantIndex nonHabitantIndex) {
 		this.uniregStore = uniregStore;
 		this.activityManager = activityManager;
 		this.appariementsMultiplesManager = appariementsMultiplesManager;
@@ -62,6 +64,7 @@ public class MigrationContexte {
 		this.organisationService = organisationService;
 		this.doublonProvider = doublonProvider;
 		this.regimeFiscalHelper = regimeFiscalHelper;
+		this.tiersService = tiersService;
 		this.tiersDAO = tiersDAO;
 		this.remarqueDAO = remarqueDAO;
 		this.rcpersClient = rcpersClient;
@@ -130,6 +133,10 @@ public class MigrationContexte {
 
 	public RegimeFiscalHelper getRegimeFiscalHelper() {
 		return regimeFiscalHelper;
+	}
+
+	public TiersService getTiersService() {
+		return tiersService;
 	}
 
 	public TiersDAO getTiersDAO() {

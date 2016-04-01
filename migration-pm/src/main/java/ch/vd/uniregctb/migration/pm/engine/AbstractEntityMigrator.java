@@ -60,6 +60,7 @@ import ch.vd.uniregctb.migration.pm.regpm.RegpmRattachementProprietaire;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeMandat;
 import ch.vd.uniregctb.migration.pm.utils.EntityKey;
 import ch.vd.uniregctb.migration.pm.utils.KeyedSupplier;
+import ch.vd.uniregctb.tiers.CategorieEntrepriseHisto;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.CoordonneesFinancieres;
 import ch.vd.uniregctb.tiers.Entreprise;
@@ -69,6 +70,8 @@ import ch.vd.uniregctb.tiers.LocalisationDatee;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.Remarque;
 import ch.vd.uniregctb.tiers.Tiers;
+import ch.vd.uniregctb.type.CategorieEntreprise;
+import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
@@ -1138,5 +1141,24 @@ public abstract class AbstractEntityMigrator<T extends RegpmEntity> implements E
 		else {
 			return null;
 		}
+	}
+
+	/**
+	 * @param tiers le tiers à qui on veut ajouter un for secondaire, là, maintenant...
+	 * @param rangeFor la période de validité du for secondaire prévu
+	 * @return {@link GenreImpot#BENEFICE_CAPITAL} s'il s'agit d'une entreprise non-'société de personnes' dans la période du for, ou sinon {@link GenreImpot#REVENU_FORTUNE}
+	 */
+	@NotNull
+	protected GenreImpot getGenreImpotPourForSecondaire(Tiers tiers, DateRange rangeFor) {
+		if (tiers instanceof Entreprise) {
+			final List<CategorieEntrepriseHisto> categories = migrationContexte.getTiersService().getCategoriesEntrepriseHisto((Entreprise) tiers);
+			final List<DateRange> rangesSP = categories.stream()
+					.filter(cat -> cat.getCategorie() == CategorieEntreprise.SP)
+					.collect(Collectors.toList());
+			if (!DateRangeHelper.isFullyCovered(rangeFor, rangesSP)) {
+				return GenreImpot.BENEFICE_CAPITAL;
+			}
+		}
+		return GenreImpot.REVENU_FORTUNE;
 	}
 }

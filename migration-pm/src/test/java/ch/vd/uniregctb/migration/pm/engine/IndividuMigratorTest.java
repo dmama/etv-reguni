@@ -45,6 +45,7 @@ import ch.vd.uniregctb.migration.pm.utils.EntityKey;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.TiersDAO;
+import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.tiers.TypeTiers;
 import ch.vd.uniregctb.tiers.dao.RemarqueDAO;
 import ch.vd.uniregctb.type.Sexe;
@@ -76,6 +77,7 @@ public class IndividuMigratorTest extends AbstractEntityMigratorTest {
 		                                                         null,
 		                                                         getBean(DoublonProvider.class, "doublonProvider"),
 		                                                         getBean(RegimeFiscalHelper.class, "regimeFiscalHelper"),
+		                                                         getBean(TiersService.class, "tiersService"),
 		                                                         getBean(TiersDAO.class, "tiersDAO"),
 		                                                         getBean(RemarqueDAO.class, "remarqueDAO"),
 		                                                         getBean(RcPersClient.class, "rcpersClient"),

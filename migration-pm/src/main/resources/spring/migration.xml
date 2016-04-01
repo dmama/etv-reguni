@@ -30,6 +30,7 @@
 		<constructor-arg name="parametreAppService" ref="parametreAppService"/>
 		<constructor-arg name="doublonProvider" ref="doublonProvider"/>
 		<constructor-arg name="regimeFiscalHelper" ref="regimeFiscalHelper"/>
+		<constructor-arg name="tiersService" ref="tiersService"/>
 		<constructor-arg name="tiersDAO" ref="tiersDAO"/>
 		<constructor-arg name="remarqueDAO" ref="remarqueDAO"/>
 		<constructor-arg name="rcpersClient" ref="rcpersClient"/>

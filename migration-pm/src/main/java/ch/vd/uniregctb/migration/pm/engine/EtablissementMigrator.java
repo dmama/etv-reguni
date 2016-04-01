@@ -63,7 +63,6 @@ import ch.vd.uniregctb.tiers.Etablissement;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
 import ch.vd.uniregctb.tiers.IdentificationEntreprise;
 import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.TypeAdresseTiers;
@@ -221,7 +220,7 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 					               ffs.setAnnule(true);
 					               ffs.setDateDebut(jour);
 					               ffs.setDateFin(jour);
-					               ffs.setGenreImpot(GenreImpot.BENEFICE_CAPITAL);
+					               ffs.setGenreImpot(getGenreImpotPourForSecondaire(data.entiteJuridiqueSupplier.get(), new DateRangeHelper.Range(jour, jour)));
 					               ffs.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
 					               ffs.setNumeroOfsAutoriteFiscale(domicile.getCommune().getNoOfs());
 					               ffs.setMotifRattachement(MotifRattachement.ETABLISSEMENT_STABLE);
@@ -491,7 +490,7 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 								final ForFiscalSecondaire ffs = new ForFiscalSecondaire();
 								ffs.setDateDebut(range.getDateDebut());
 								ffs.setDateFin(range.getDateFin());
-								ffs.setGenreImpot(GenreImpot.BENEFICE_CAPITAL);
+								ffs.setGenreImpot(getGenreImpotPourForSecondaire(entiteJuridique, range));
 								ffs.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
 								ffs.setNumeroOfsAutoriteFiscale(noOfsCommune);
 								ffs.setMotifRattachement(MotifRattachement.ETABLISSEMENT_STABLE);

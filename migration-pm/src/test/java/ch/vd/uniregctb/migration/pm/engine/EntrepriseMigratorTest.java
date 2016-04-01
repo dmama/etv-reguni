@@ -154,6 +154,7 @@ import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.tiers.RegimeFiscal;
 import ch.vd.uniregctb.tiers.Remarque;
 import ch.vd.uniregctb.tiers.TiersDAO;
+import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.tiers.TypeTiers;
 import ch.vd.uniregctb.tiers.dao.RemarqueDAO;
 import ch.vd.uniregctb.type.DayMonth;
@@ -208,6 +209,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		                                                         organisationServiceAccessor,
 		                                                         getBean(DoublonProvider.class, "doublonProvider"),
 		                                                         getBean(RegimeFiscalHelper.class, "regimeFiscalHelper"),
+		                                                         getBean(TiersService.class, "tiersService"),
 		                                                         getBean(TiersDAO.class, "tiersDAO"),
 		                                                         getBean(RemarqueDAO.class, "remarqueDAO"),
 		                                                         null,
