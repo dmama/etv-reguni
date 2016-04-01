@@ -5035,6 +5035,74 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 			Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ff.getTypeAutoriteFiscale());
 			Assert.assertEquals(Commune.RENENS.getNoOfs(), ff.getNumeroOfsAutoriteFiscale());
 		});
+
+		// et dans les messages de migration des fors ?
+		{
+			final List<MigrationResultCollector.Message> messages = mr.getMessages().get(LogCategory.FORS);
+			Assert.assertNotNull(messages);
+			final List<String> textes = messages.stream().map(msg -> msg.text).collect(Collectors.toList());
+			Assert.assertEquals(2, textes.size());
+			Assert.assertEquals("La date de début du for principal ForFiscalPrincipalPM [27.08.2004 -> ?] sur COMMUNE_OU_FRACTION_VD/5591 doit être avancée au 12.07.2004 pour couvrir la période d'exploitation de la société de personnes ([12.07.2004 -> ?]).", textes.get(0));
+			Assert.assertEquals("For principal COMMUNE_OU_FRACTION_VD/5591 [12.07.2004 -> ?] généré.", textes.get(1));
+		}
+	}
+
+	/**
+	 * [SIFISC-18118] Cas de SNC avec plusieurs fors, certains complètement hors de la période d'exploitation de la SNC
+	 */
+	@Test
+	public void testMigrationForsSocieteDePersonnesAvecPeriodeExploitation() throws Exception {
+
+		final long noEntreprise = 2623L;
+		final RegDate dateDebut = RegDate.get(2004, 8, 27);
+		final RegDate dateDebutSocietePersonnes = RegDate.get(2010, 7, 12);
+
+		final RegpmEntreprise e = buildEntreprise(noEntreprise);
+		addRaisonSociale(e, dateDebut, "Ma société à moi", "tout seul", "si si vraiment", true);
+		addFormeJuridique(e, dateDebut, createTypeFormeJuridique("S.N.C.", RegpmCategoriePersonneMorale.SP));
+		addAdresse(e, RegpmTypeAdresseEntreprise.COURRIER, RegDate.get(2010, 7, 22), null, LocalitePostale.RENENS, "Rue des étangs", "24", null, null);
+		addForPrincipalSuisse(e, dateDebut, RegpmTypeForPrincipal.SIEGE, Commune.BALE);
+		addForPrincipalSuisse(e, dateDebutSocietePersonnes.addDays(-10), RegpmTypeForPrincipal.SIEGE, Commune.RENENS);
+		e.setDateDebutSocietePersonnes(dateDebutSocietePersonnes);
+
+		final MockGraphe graphe = new MockGraphe(Collections.singletonList(e),
+		                                         null,
+		                                         null);
+		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
+		final EntityLinkCollector linkCollector = new EntityLinkCollector();
+		final IdMapper idMapper = new IdMapper();
+		migrator.initMigrationResult(mr, idMapper);
+		migrate(e, migrator, mr, linkCollector, idMapper);
+
+		doInUniregTransaction(true, status -> {
+			final Entreprise entreprise = uniregStore.getEntityFromDb(Entreprise.class, noEntreprise);
+			Assert.assertNotNull(entreprise);
+
+			final Set<ForFiscal> forsFiscaux = entreprise.getForsFiscaux();
+			Assert.assertNotNull(forsFiscaux);
+			Assert.assertEquals(1, forsFiscaux.size());
+
+			final ForFiscal ff = forsFiscaux.iterator().next();
+			Assert.assertNotNull(ff);
+			Assert.assertFalse(ff.isAnnule());
+			Assert.assertEquals(GenreImpot.REVENU_FORTUNE, ff.getGenreImpot());
+			Assert.assertEquals(dateDebutSocietePersonnes, ff.getDateDebut());
+			Assert.assertNull(ff.getDateFin());
+			Assert.assertEquals(ForFiscalPrincipalPM.class, ff.getClass());
+			Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ff.getTypeAutoriteFiscale());
+			Assert.assertEquals(Commune.RENENS.getNoOfs(), ff.getNumeroOfsAutoriteFiscale());
+		});
+
+		// et dans les messages de migration des fors ?
+		{
+			final List<MigrationResultCollector.Message> messages = mr.getMessages().get(LogCategory.FORS);
+			Assert.assertNotNull(messages);
+			final List<String> textes = messages.stream().map(msg -> msg.text).collect(Collectors.toList());
+			Assert.assertEquals(3, textes.size());
+			Assert.assertEquals("Le for principal ForFiscalPrincipalPM [27.08.2004 -> 01.07.2010] sur COMMUNE_HC/2701 normalement généré est finalement ignoré car en dehors de la période d'exploitation de la société de personnes ([12.07.2010 -> ?]).", textes.get(0));
+			Assert.assertEquals("Le for principal ForFiscalPrincipalPM [02.07.2010 -> ?] sur COMMUNE_OU_FRACTION_VD/5591 doit être tronqué à [12.07.2010 -> ?] pour ne pas dépasser de la période d'exploitation de la société de personnes ([12.07.2010 -> ?]).", textes.get(1));
+			Assert.assertEquals("For principal COMMUNE_OU_FRACTION_VD/5591 [12.07.2010 -> ?] généré.", textes.get(2));
+		}
 	}
 
 	@Test

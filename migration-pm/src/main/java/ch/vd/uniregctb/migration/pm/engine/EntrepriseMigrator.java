@@ -5031,7 +5031,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		// qu'à partir de la date du premier immeuble...
 		final List<Pair<ForFiscalPrincipalPM, Boolean>> donneesForsAGenerer;
 		if (!forsRegpm.isEmpty()) {
-			donneesForsAGenerer = generationDonneesMigrationForsPrincipaux(regpm, forsRegpm, hasSP, dateDebutPremierImmeubleDP, mr);
+			donneesForsAGenerer = generationDonneesMigrationForsPrincipaux(forsRegpm, hasSP, dateDebutPremierImmeubleDP, mr);
 		}
 		else {
 			// ok, pas de fors principaux dans RegPM... mais si nous n'avons pas affaire à une administration de droit
@@ -5039,21 +5039,64 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 			donneesForsAGenerer = generationDonneesForsPrincipauxDepuisSieges(regpm, hasSP, dateDebutPremierImmeubleDP, mr);
 		}
 
+		// prend en compte, pour le calcul de la fin d'activité des SP, la date de fin d'exploitation si elle existe
+		final RegDate dateFinActiviteSP;
+		if (hasSP && regpm.getDateFinSocietePersonnes() != null) {
+			if (dateFinActivite == null || dateFinActivite.isAfter(regpm.getDateFinSocietePersonnes())) {
+				mr.addMessage(LogCategory.FORS, LogLevel.WARN,
+				              String.format("Pour le calcul de la date de fin des fors de la société de personnes, la date du %s est prise en compte.",
+				                            StringRenderers.DATE_RENDERER.toString(regpm.getDateFinSocietePersonnes())));
+				dateFinActiviteSP = regpm.getDateFinSocietePersonnes();
+			}
+			else {
+				dateFinActiviteSP = dateFinActivite;
+			}
+		}
+		else {
+			dateFinActiviteSP = dateFinActivite;
+		}
+
+		// élimination des données de fors postérieurs à la fin d'activité
+		final List<Pair<ForFiscalPrincipalPM, Boolean>> donneesForsAGenererElagueesADroiteSP = donneesForsAGenerer.stream()
+				.filter(pair -> {
+					final ForFiscalPrincipalPM ffp = pair.getLeft();
+					if (hasSP && RegDateHelper.isAfter(ffp.getDateDebut(), dateFinActiviteSP, NullDateBehavior.LATEST)) {
+						mr.addMessage(LogCategory.FORS, LogLevel.WARN,
+						              String.format("Le for principal %s normalement généré est finalement ignoré car il commence après la fin de la période d'exploitation de la société de personnes (%s).",
+						                            StringRenderers.LOCALISATION_DATEE_RENDERER.toString(ffp),
+						                            StringRenderers.DATE_RENDERER.toString(dateFinActiviteSP)));
+						return false;
+					}
+					return true;
+				})
+				.sorted(Comparator.comparing(Pair::getLeft, Comparator.comparing(ForFiscalPrincipal::getDateDebut)))
+				.collect(Collectors.toList());
+
+		// assignation des dates de fin
+		assigneDatesFin(dateFinActiviteSP, donneesForsAGenererElagueesADroiteSP, Pair::getLeft);
+
+		// [SIFISC-18118] dans le cas des sociétés de personnes, il faut prendre en compte les dates ad'hoc pour les fors
+		// troncatures, extensions... pour convenir aux dates d'exploitation des SP, le cas échéant
+		final List<Pair<ForFiscalPrincipalPM, Boolean>> donneesForsAGenereesCorrigeesSP;
+		if (hasSP && regpm.getDateDebutSocietePersonnes() != null) {
+			final DateRange rangeSP = new DateRangeHelper.Range(regpm.getDateDebutSocietePersonnes(), regpm.getDateFinSocietePersonnes());
+			donneesForsAGenereesCorrigeesSP = fixForsSocietePersonnes(donneesForsAGenererElagueesADroiteSP, rangeSP, mr);
+		}
+		else {
+			donneesForsAGenereesCorrigeesSP = donneesForsAGenererElagueesADroiteSP;
+		}
+
 		// ici, on va collecter les fors qui sont issus d'une décision ACI (= administration effective)
 		// afin de générer les entités Unireg 'DecisionACI'
-		final List<ForFiscalPrincipalPM> listeIssueDeDecisionAci = new ArrayList<>(donneesForsAGenerer.size());
-		final List<ForFiscalPrincipalPM> liste = donneesForsAGenerer.stream()
+		final List<ForFiscalPrincipalPM> listeIssueDeDecisionAci = new ArrayList<>(donneesForsAGenereesCorrigeesSP.size());
+		final List<ForFiscalPrincipalPM> liste = donneesForsAGenereesCorrigeesSP.stream()
 				.peek(pair -> {
 					if (pair.getRight()) {
 						listeIssueDeDecisionAci.add(pair.getLeft());
 					}
 				})
 				.map(Pair::getLeft)
-				.sorted(Comparator.comparing(ForFiscalPrincipal::getDateDebut))
 				.collect(Collectors.toList());
-
-		// assignation des dates de fin
-		assigneDatesFin(hasSP ? regpm.getDateFinSocietePersonnes() : dateFinActivite, liste);
 
 		// corrections dues aux fusions de communes passées
 		final List<CollatableForPrincipalPM> listeAvecTraitementFusions = liste.stream()
@@ -5159,7 +5202,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 			datePremierSiegeAPrendre = sieges.firstKey();
 		}
 
-		final List<Pair<ForFiscalPrincipalPM, Boolean>> donneesFors = sieges.tailMap(datePremierSiegeAPrendre, true).entrySet().stream()
+		return sieges.tailMap(datePremierSiegeAPrendre, true).entrySet().stream()
 				.map(entry -> {
 					final ForFiscalPrincipalPM ffp = new ForFiscalPrincipalPM();
 					final RegpmSiegeEntreprise siege = entry.getValue();
@@ -5205,28 +5248,17 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 				})
 				.map(ff -> Pair.of(ff, Boolean.FALSE))
 				.collect(Collectors.toList());
-
-		// [SIFISC-18118] dans le cas des sociétés de personnes, il faut prendre en compte les dates ad'hoc pour les fors
-		if (societeDePersonnes && regpm.getDateDebutSocietePersonnes() != null) {
-			final DateRange rangeSP = new DateRangeHelper.Range(regpm.getDateDebutSocietePersonnes(), regpm.getDateFinSocietePersonnes());
-			return fixForsSocietePersonnes(donneesFors, rangeSP, mr);
-		}
-		else {
-			return donneesFors;
-		}
 	}
 
 	/**
 	 * Génération des données servant à la migration des fors principaux existants en fors principaux pour Unireg
-	 * @param regpm entreprise de RegPM
 	 * @param forsRegpm les fors principaux retenus dans RegPM
 	 * @param societeDePersonnes <code>vrai</code> si l'entreprise a toujours été une société de personne, <code>false</code> si elle ne l'a jamais été (le cas hybride doit être traité en amont...)
 	 * @param dateDebutPremierImmeubleDP si non-<code>null</code>, nous sommes en présence d'une DP avec immeuble... il ne faut reprendre les fors principaux qu'à partir de cette date
 	 * @param mr collecteur de messages de suivi
 	 * @return une liste de données pour la création de fors (sans date de fin pour le moment) associés à un booléen qui indique si le for est une administration effective
 	 */
-	private List<Pair<ForFiscalPrincipalPM, Boolean>> generationDonneesMigrationForsPrincipaux(RegpmEntreprise regpm,
-	                                                                                           List<RegpmForPrincipal> forsRegpm,
+	private List<Pair<ForFiscalPrincipalPM, Boolean>> generationDonneesMigrationForsPrincipaux(List<RegpmForPrincipal> forsRegpm,
 	                                                                                           boolean societeDePersonnes,
 	                                                                                           @Nullable RegDate dateDebutPremierImmeubleDP,
 	                                                                                           MigrationResultProduction mr) {
@@ -5292,18 +5324,9 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 			datePremierForAPrendre = mapFors.firstKey();
 		}
 
-		final List<Pair<ForFiscalPrincipalPM, Boolean>> donneesFors = mapFors.tailMap(datePremierForAPrendre, true).values().stream()
+		return mapFors.tailMap(datePremierForAPrendre, true).values().stream()
 				.map(mapper)
 				.collect(Collectors.toList());
-
-		// [SIFISC-18118] dans le cas des sociétés de personnes, il faut prendre en compte les dates ad'hoc pour les fors
-		if (societeDePersonnes && regpm.getDateDebutSocietePersonnes() != null) {
-			final DateRange rangeSP = new DateRangeHelper.Range(regpm.getDateDebutSocietePersonnes(), regpm.getDateFinSocietePersonnes());
-			return fixForsSocietePersonnes(donneesFors, rangeSP, mr);
-		}
-		else {
-			return donneesFors;
-		}
 	}
 
 	private static List<Pair<ForFiscalPrincipalPM, Boolean>> fixForsSocietePersonnes(List<Pair<ForFiscalPrincipalPM, Boolean>> source, DateRange rangeSP, MigrationResultProduction mr) {
@@ -5341,7 +5364,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 			final Pair<ForFiscalPrincipalPM, Boolean> first = donneesForsCorrigeesSP.get(0);
 			if (first.getLeft().getDateDebut() != rangeSP.getDateDebut()) {
 				mr.addMessage(LogCategory.FORS, LogLevel.WARN,
-				              String.format("Le date de début du for principal %s doit être avancée au %s pour couvrir la période d'exploitation de la société de personnes (%s).",
+				              String.format("La date de début du for principal %s doit être avancée au %s pour couvrir la période d'exploitation de la société de personnes (%s).",
 				                            StringRenderers.LOCALISATION_DATEE_RENDERER.toString(first.getLeft()),
 				                            StringRenderers.DATE_RENDERER.toString(rangeSP.getDateDebut()),
 				                            StringRenderers.DATE_RANGE_RENDERER.toString(rangeSP)));
@@ -5355,7 +5378,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 			final Pair<ForFiscalPrincipalPM, Boolean> last = donneesForsCorrigeesSP.get(donneesForsCorrigeesSP.size() - 1);
 			if (last.getLeft().getDateFin() != rangeSP.getDateFin()) {
 				mr.addMessage(LogCategory.FORS, LogLevel.WARN,
-				              String.format("Le date de fin du for principal %s doit être repoussée au %s pour couvrir la période d'exploitation de la société de personnes (%s).",
+				              String.format("La date de fin du for principal %s doit être repoussée au %s pour couvrir la période d'exploitation de la société de personnes (%s).",
 				                            StringRenderers.LOCALISATION_DATEE_RENDERER.toString(first.getLeft()),
 				                            StringRenderers.DATE_RENDERER.toString(rangeSP.getDateFin()),
 				                            StringRenderers.DATE_RANGE_RENDERER.toString(rangeSP)));
@@ -5460,8 +5483,24 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 	 * @param <T> type des éléments de la liste
 	 */
 	private static <T extends HibernateDateRangeEntity> void assigneDatesFin(@Nullable RegDate derniereDateFin, List<T> listeTriee) {
+		assigneDatesFin(derniereDateFin, listeTriee, Function.identity());
+	}
+
+	/**
+	 * Attribution des dates de fin en suivant les principes que
+	 * <ul>
+	 *     <li>la liste des éléments est triée dans l'ordre chronologique des dates de début</li>
+	 *     <li>les éléments ne se chevauchent pas</li>
+	 * </ul>
+	 * @param derniereDateFin date de fin à appliquer au dernier éléments de la liste
+	 * @param listeTriee liste dont les éléments doivent se voir assigner une date de fin
+	 * @param entityExtractor extracteur des éléments datés depuis les éléments de la liste
+	 * @param <T> type des éléments de la liste
+	 */
+	private static <T> void assigneDatesFin(@Nullable RegDate derniereDateFin, List<T> listeTriee, Function<? super T, ? extends HibernateDateRangeEntity> entityExtractor) {
 		RegDate dateFinCourante = derniereDateFin;
-		for (T entity : CollectionsUtils.revertedOrder(listeTriee)) {
+		for (T element : CollectionsUtils.revertedOrder(listeTriee)) {
+			final HibernateDateRangeEntity entity = entityExtractor.apply(element);
 			entity.setDateFin(dateFinCourante);
 			dateFinCourante = entity.getDateDebut().getOneDayBefore();
 		}
