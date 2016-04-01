@@ -22,6 +22,7 @@ import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.common.BusinessTestingConstants;
 import ch.vd.uniregctb.declaration.Declaration;
+import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePM;
 import ch.vd.uniregctb.declaration.ModeleDocument;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.evenement.cedi.DossierElectroniqueHandler;
@@ -51,6 +52,7 @@ import ch.vd.uniregctb.type.TypeEtatTache;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 @SuppressWarnings({"JavaDoc"})
@@ -498,6 +500,84 @@ public class TacheSynchronizerInterceptorTest extends BusinessTest {
 				assertFalse(declaration.isAnnule());
 				assertEquals(dateDebut.addDays(1), declaration.getDateDebut());
 				assertEquals(date(thisYear, 11, 30), declaration.getDateFin());
+			}
+		});
+	}
+
+	/**
+	 * [SIFISC-18579] Adaptation des dates de DI entre 2009 (date de début du calcul des périodes d'imposition) et la première
+	 * période fiscale d'envoi des DI elles-mêmes
+	 */
+	@Test
+	public void testRealignementDatesDeclarationEntrepriseAvant2016() throws Exception {
+
+		final int year = 2011;
+		final RegDate dateDebut = date(year, 1, 1);
+
+		// PM avec DI 2011 avec mauvaise date
+		final long pmId = doInNewTransactionAndSessionUnderSwitch(tacheSynchronizer, false, new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+				addRaisonSociale(entreprise, dateDebut, null, "Truc machin SA");
+				addFormeJuridique(entreprise, dateDebut, null, FormeJuridiqueEntreprise.SA);
+				addBouclement(entreprise, dateDebut, DayMonth.get(12, 31), 12);
+				addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addRegimeFiscalCH(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+
+				final PeriodeFiscale pf = addPeriodeFiscale(year);
+				addDeclarationImpot(entreprise, pf, dateDebut.addDays(15), date(year, 12, 31), dateDebut.addDays(15), date(year, 12, 31), null, null, null);
+				return entreprise.getNumero();
+			}
+		});
+
+
+		// maintenant on ajoute le for fiscal avec la bonne date de début
+		doInNewTransactionAndSessionUnderSwitch(tacheSynchronizer, true, new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final Entreprise entreprise = (Entreprise) tiersDAO.get(pmId);
+				assertNotNull(entreprise);
+				addForPrincipal(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
+			}
+		});
+
+		// vérification des tâches générées (normalement aucune avant la première période de DI - 2013 dans ces tests) et les dates de la DI pré-existante
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final Entreprise entreprise = (Entreprise) tiersDAO.get(pmId);
+				assertNotNull(entreprise);
+
+				// seules les tâches récentes doivent avoir été générées
+				final List<Tache> taches = tacheDAO.find(pmId);
+				assertNotNull(taches);
+				assertEquals(RegDate.get().year() - 2013, taches.size());
+				for (Tache tache : taches) {
+					assertNotNull(tache);
+					assertFalse(tache.isAnnule());
+					assertEquals(TypeEtatTache.EN_INSTANCE, tache.getEtat());
+					assertEquals(TacheEnvoiDeclarationImpotPM.class, tache.getClass());
+
+					final TacheEnvoiDeclarationImpotPM tacheEnvoi = (TacheEnvoiDeclarationImpotPM) tache;
+					assertTrue(Integer.toString(tacheEnvoi.getDateFinExercice().year()), tacheEnvoi.getDateFinExercice().year() >= 2013);
+				}
+
+				// pourtant, les dates de la déclaration 2011 doivent avoir été modifiées...
+				final List<DeclarationImpotOrdinairePM> dipms = entreprise.getDeclarationsTriees(DeclarationImpotOrdinairePM.class, true);
+				assertNotNull(dipms);
+				assertEquals(1, dipms.size());
+
+				final DeclarationImpotOrdinairePM di = dipms.get(0);
+				assertNotNull(di);
+				assertFalse(di.isAnnule());
+				assertEquals((Integer) year, di.getPeriode().getAnnee());
+				assertEquals(dateDebut, di.getDateDebut());
+				assertEquals(dateDebut, di.getDateDebutExerciceCommercial());
+				assertEquals(date(year, 12, 31), di.getDateFin());
+				assertEquals(date(year, 12, 31), di.getDateFinExerciceCommercial());
+				assertEquals(TypeContribuable.VAUDOIS_ORDINAIRE, di.getTypeContribuable());     // mis à jour en même temps que les dates
+				assertNull(di.getTypeDeclaration());
 			}
 		});
 	}

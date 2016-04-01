@@ -7,6 +7,7 @@ import ch.vd.uniregctb.tiers.Tache;
 import ch.vd.uniregctb.tiers.TacheAnnulationDeclarationImpot;
 import ch.vd.uniregctb.tiers.TacheAnnulationQuestionnaireSNC;
 import ch.vd.uniregctb.tiers.TacheControleDossier;
+import ch.vd.uniregctb.tiers.TacheEnvoiDeclarationImpot;
 import ch.vd.uniregctb.tiers.TacheEnvoiDeclarationImpotPM;
 import ch.vd.uniregctb.tiers.TacheEnvoiDeclarationImpotPP;
 import ch.vd.uniregctb.tiers.TacheEnvoiQuestionnaireSNC;
@@ -17,7 +18,8 @@ import ch.vd.uniregctb.type.TypeContribuable;
 /**
  * Action permettant d'annuler une tâche devenue obsolète.
  */
-public class AnnuleTache extends SynchronizeAction {
+public class AnnuleTache implements TacheSynchronizeAction {
+
 	public final Tache tache;
 
 	public AnnuleTache(Tache tache) {
@@ -32,6 +34,26 @@ public class AnnuleTache extends SynchronizeAction {
 	@Override
 	public boolean willChangeEntity() {
 		return false;
+	}
+
+	@Override
+	public int getPeriodeFiscale() {
+		if (tache instanceof TacheAnnulationDeclarationImpot) {
+			return ((TacheAnnulationDeclarationImpot) tache).getDeclaration().getPeriode().getAnnee();
+		}
+		else if (tache instanceof TacheAnnulationQuestionnaireSNC) {
+			return ((TacheAnnulationQuestionnaireSNC) tache).getDeclaration().getPeriode().getAnnee();
+		}
+		else if (tache instanceof TacheEnvoiDeclarationImpot) {
+			return ((TacheEnvoiDeclarationImpot) tache).getDateFin().year();
+		}
+		else if (tache instanceof TacheEnvoiQuestionnaireSNC) {
+			return ((TacheEnvoiQuestionnaireSNC) tache).getDateFin().year();
+		}
+		else {
+			// qu'est-ce qu'on fait-là, en fait ?
+			throw new IllegalArgumentException("Type de tâche non associée à une période fiscale : " + tache.getTypeTache());
+		}
 	}
 
 	private static String toString(TypeContribuable typeContribuable) {

@@ -50,7 +50,7 @@ public class AddDIPM extends AddDI<PeriodeImpositionPersonnesMorales> {
 	@Override
 	public String toString() {
 		return String.format("création d'une tâche d'émission de %s %s couvrant la période du %s au %s",
-		                     periodeImposition.getTypeDocumentDeclaration().getDescription(),
+		                     periodeImposition.getTypeDocumentDeclaration() != null ? periodeImposition.getTypeDocumentDeclaration().getDescription() : "vieille déclaration d'impôt entreprise",
 		                     periodeImposition.getTypeContribuable().description(),
 		                     RegDateHelper.dateToDisplayString(periodeImposition.getDateDebut()),
 		                     RegDateHelper.dateToDisplayString(periodeImposition.getDateFin()));

@@ -8,7 +8,7 @@ import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImposition;
 import ch.vd.uniregctb.type.TypeContribuable;
 
-public abstract class UpdateDI<P extends PeriodeImposition, D extends DeclarationImpotOrdinaire> extends SynchronizeAction {
+public abstract class UpdateDI<P extends PeriodeImposition, D extends DeclarationImpotOrdinaire> implements SynchronizeAction {
 
 	public final P periodeImposition;
 	public final Long diId;
@@ -42,7 +42,7 @@ public abstract class UpdateDI<P extends PeriodeImposition, D extends Declaratio
 		declaration.setDateFin(periodeImposition.getDateFin());
 		declaration.setTypeContribuable(periodeImposition.getTypeContribuable());
 
-		// [UNIREG-2735] Une DI qui s'est adapté à une période d'imposition existante n'est plus une DI libre
+		// [UNIREG-2735] Une DI qui s'est adaptée à une période d'imposition existante n'est plus une DI libre
 		declaration.setLibre(false);
 	}
 

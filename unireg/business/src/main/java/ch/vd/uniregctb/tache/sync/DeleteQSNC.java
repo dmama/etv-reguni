@@ -10,7 +10,7 @@ import ch.vd.uniregctb.type.TypeEtatTache;
 /**
  * Action de synchronisation qui consiste à annuler un questionnaire SNC
  */
-public class DeleteQSNC extends SynchronizeAction {
+public class DeleteQSNC implements TacheSynchronizeAction {
 
 	public final long questionnaireId;
 	private final RegDate dateDebut;
@@ -32,6 +32,11 @@ public class DeleteQSNC extends SynchronizeAction {
 	@Override
 	public boolean willChangeEntity() {
 		return false;
+	}
+
+	@Override
+	public int getPeriodeFiscale() {
+		return dateFin.year();
 	}
 
 	@Override

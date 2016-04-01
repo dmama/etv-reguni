@@ -9,7 +9,7 @@ import ch.vd.uniregctb.tiers.TacheEnvoiDeclarationImpot;
  * @param <T> classe de la tâche d'envoi de déclaration d'impôt
  * @param <P> classe de la période d'imposition calculée
  */
-public abstract class UpdateTacheEnvoiDI<T extends TacheEnvoiDeclarationImpot, P extends PeriodeImposition> extends SynchronizeAction {
+public abstract class UpdateTacheEnvoiDI<T extends TacheEnvoiDeclarationImpot, P extends PeriodeImposition> implements TacheSynchronizeAction {
 
 	public final T tacheEnvoi;
 	public final AddDI<P> addAction;
@@ -22,5 +22,10 @@ public abstract class UpdateTacheEnvoiDI<T extends TacheEnvoiDeclarationImpot, P
 	@Override
 	public boolean willChangeEntity() {
 		return false;
+	}
+
+	@Override
+	public int getPeriodeFiscale() {
+		return tacheEnvoi.getDateFin().year();
 	}
 }

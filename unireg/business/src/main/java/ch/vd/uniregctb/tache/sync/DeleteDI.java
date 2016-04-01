@@ -8,7 +8,7 @@ import ch.vd.uniregctb.type.TypeContribuable;
  * Classe de base des actions d'annulation de DI
  * @param <D> type concret de la déclaration
  */
-public abstract class DeleteDI<D extends DeclarationImpotOrdinaire> extends SynchronizeAction {
+public abstract class DeleteDI<D extends DeclarationImpotOrdinaire> implements TacheSynchronizeAction {
 
 	public final Long diId;
 
@@ -27,5 +27,10 @@ public abstract class DeleteDI<D extends DeclarationImpotOrdinaire> extends Sync
 	@Override
 	public boolean willChangeEntity() {
 		return false;
+	}
+
+	@Override
+	public int getPeriodeFiscale() {
+		return dateFin.year();
 	}
 }

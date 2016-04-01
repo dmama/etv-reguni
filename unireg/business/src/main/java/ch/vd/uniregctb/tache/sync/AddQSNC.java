@@ -11,7 +11,7 @@ import ch.vd.uniregctb.type.TypeEtatTache;
 /**
  * Action de synchronization pour l'ajout d'un nouveau questionnaire SNC
  */
-public class AddQSNC extends SynchronizeAction {
+public class AddQSNC implements TacheSynchronizeAction {
 
 	public final DateRange range;
 
@@ -44,6 +44,11 @@ public class AddQSNC extends SynchronizeAction {
 	@Override
 	public boolean willChangeEntity() {
 		return false;
+	}
+
+	@Override
+	public int getPeriodeFiscale() {
+		return range.getDateFin().year();
 	}
 
 	@Override

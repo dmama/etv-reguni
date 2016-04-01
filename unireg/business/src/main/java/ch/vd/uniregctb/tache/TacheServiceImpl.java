@@ -65,6 +65,7 @@ import ch.vd.uniregctb.tache.sync.DeleteDIPM;
 import ch.vd.uniregctb.tache.sync.DeleteDIPP;
 import ch.vd.uniregctb.tache.sync.DeleteQSNC;
 import ch.vd.uniregctb.tache.sync.SynchronizeAction;
+import ch.vd.uniregctb.tache.sync.TacheSynchronizeAction;
 import ch.vd.uniregctb.tache.sync.UpdateDI;
 import ch.vd.uniregctb.tache.sync.UpdateDIPM;
 import ch.vd.uniregctb.tache.sync.UpdateDIPP;
@@ -980,6 +981,13 @@ public class TacheServiceImpl implements TacheService {
 				// sur lesquelles l'algorithme de calcul automatique est applicable
 				return declarations;
 			}
+
+			@Override
+			public <T extends SynchronizeAction> List<T> filtrerActions(List<T> actions, ParametreAppService paramService) {
+				// il n'y a pas, pour les personnes physiques, de différence entre les périodes calculées et celles
+				// sur lesquelles l'algorithme de calcul automatique est applicable
+				return actions;
+			}
 		},
 
 		PERSONNES_MORALES {
@@ -1027,7 +1035,7 @@ public class TacheServiceImpl implements TacheService {
 			@Override
 			public List<PeriodeImposition> filtrerPeriodes(List<PeriodeImposition> periodes, ParametreAppService paramService) {
 				final List<PeriodeImposition> apresFiltre = new ArrayList<>(periodes.size());
-				final int premierePeriode = paramService.getPremierePeriodeFiscaleDeclarationsPersonnesMorales();
+				final int premierePeriode = paramService.getPremierePeriodeFiscalePersonnesMorales();
 				for (PeriodeImposition pi : periodes) {
 					if (pi.getPeriodeFiscale() >= premierePeriode) {
 						apresFiltre.add(pi);
@@ -1039,10 +1047,29 @@ public class TacheServiceImpl implements TacheService {
 			@Override
 			public List<DeclarationImpotOrdinaire> filtrerDeclarations(List<DeclarationImpotOrdinaire> declarations, ParametreAppService paramService) {
 				final List<DeclarationImpotOrdinaire> apresFiltre = new ArrayList<>(declarations.size());
-				final int premierePeriode = paramService.getPremierePeriodeFiscaleDeclarationsPersonnesMorales();
+				final int premierePeriode = paramService.getPremierePeriodeFiscalePersonnesMorales();
 				for (DeclarationImpotOrdinaire di : declarations) {
 					if (di.getPeriode().getAnnee() >= premierePeriode) {
 						apresFiltre.add(di);
+					}
+				}
+				return apresFiltre;
+			}
+
+			/**
+			 * Les actions sur les tâches doivent n'avoir lieu qu'à partir de la période fiscale où on commence à envoyer les DI
+			 * @param actions une liste d'actions brutes
+			 * @param paramService le services des paramètres applicatifs
+			 * @param <T> le type d'action
+			 * @return une nouvelle liste filtrée
+			 */
+			@Override
+			public <T extends SynchronizeAction> List<T> filtrerActions(List<T> actions, ParametreAppService paramService) {
+				final List<T> apresFiltre = new ArrayList<>(actions.size());
+				final int premierePeriode = paramService.getPremierePeriodeFiscaleDeclarationsPersonnesMorales();
+				for (T action : actions) {
+					if (action.willChangeEntity() || !(action instanceof TacheSynchronizeAction) || ((TacheSynchronizeAction) action).getPeriodeFiscale() >= premierePeriode)  {
+						apresFiltre.add(action);
 					}
 				}
 				return apresFiltre;
@@ -1083,7 +1110,7 @@ public class TacheServiceImpl implements TacheService {
 		 * des données contenue dans la période d'imposition
 		 * @param pi la période d'imposition
 		 * @param di la déclaration d'impôt
-		 * @return
+		 * @return une nouvelle action de modification de DI
 		 */
 		public abstract UpdateDI<?, ?> newUpdateDI(PeriodeImposition pi, DeclarationImpotOrdinaire di);
 
@@ -1117,6 +1144,13 @@ public class TacheServiceImpl implements TacheService {
 		 * @return une liste des déclarations utiles pour le calcul des tâches d'envoi/annulation de DI
 		 */
 		public abstract List<DeclarationImpotOrdinaire> filtrerDeclarations(List<DeclarationImpotOrdinaire> declarations, ParametreAppService paramService);
+
+		/**
+		 * @param actions une liste d'actions brutes
+		 * @param paramService le services des paramètres applicatifs
+		 * @return une liste d'actions à appliquer effectivement
+		 */
+		public abstract <T extends SynchronizeAction> List<T> filtrerActions(List<T> actions, ParametreAppService paramService);
 	}
 
 	@NotNull
@@ -1290,11 +1324,11 @@ public class TacheServiceImpl implements TacheService {
 		}
 		else {
 			final List<SynchronizeAction> actions = new ArrayList<>(size);
-			actions.addAll(addActions);
-			actions.addAll(updateActions);
-			actions.addAll(deleteActions);
-			actions.addAll(annuleActions);
-			actions.addAll(updateTacheActions);
+			actions.addAll(domaine.filtrerActions(addActions, parametres));
+			actions.addAll(domaine.filtrerActions(updateActions, parametres));
+			actions.addAll(domaine.filtrerActions(deleteActions, parametres));
+			actions.addAll(domaine.filtrerActions(annuleActions, parametres));
+			actions.addAll(domaine.filtrerActions(updateTacheActions, parametres));
 			return actions;
 		}
 	}

@@ -8,7 +8,7 @@ import ch.vd.uniregctb.declaration.QuestionnaireSNC;
 /**
  * Action de synchronisation qui consiste à modifier le questionnaire existant (les dates...)
  */
-public class UpdateQSNC extends SynchronizeAction {
+public class UpdateQSNC implements SynchronizeAction {
 
 	private final DateRange newRange;
 	public final long questionnaireId;
