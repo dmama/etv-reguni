@@ -1621,7 +1621,7 @@ public interface TiersService {
     boolean isSousInfluenceDecisions(Contribuable ctb);
 
 	/**
-	 * Crée un domicile sur l'établissement passé en paramètre, avec les informations fournies
+	 * Crée un domicile sur l'établissement passé en paramètre, avec les informations fournies sans effectuer de contrôle.
 	 * @param etb l'établissement destinataire
 	 * @param typeAutoriteFiscale le type d'autorité fiscale du domicile
 	 * @param numeroAutoriteFiscale le numéro d'autorité fiscale du domicile
@@ -1867,6 +1867,51 @@ public interface TiersService {
 	 * @param raisonSociale la forme juridique à annuler
 	 */
 	void annuleFormeJuridiqueFiscale(FormeJuridiqueFiscaleEntreprise formeJuridique) throws TiersException;
+
+	/**
+	 * Crée un domicile pour l'établissement passé en paramètre. Si d'autre domicile sont présent, vérifie que
+	 * le nouveau domicile est débute après le dernier et ferme celui-ci s'il y a lieu.
+	 *
+	 * @param etablissement l'établissement concerné
+	 * @param typeAutorite le type d'autorité fiscale du domicile
+	 * @param noOfs le numéro OFS de la commune ou pays
+	 * @param dateDebut la date de début de validité du nouveau domicile
+	 * @param dateFin la date de fin optionnelle du nouveau domicile
+	 * @return le domicile créé
+	 */
+	DomicileEtablissement addDomicileFiscal(Etablissement etablissement, TypeAutoriteFiscale typeAutorite, Integer noOfs, RegDate dateDebut, RegDate dateFin) throws TiersException;
+
+	/**
+	 * Met à jour le domicile fiscal
+	 * @param domicile le domicile visé
+	 * @param typeAutorite le nouveau type d'autorité fiscale
+	 * @param noOfs le nouveau numéro OFS de la commune ou du pays
+	 * @return le (nouveau) domicile fiscal représentant le domicile édité
+	 */
+	DomicileEtablissement updateDomicileFiscal(DomicileEtablissement domicile, TypeAutoriteFiscale typeAutorite, Integer noOfs) throws TiersException;
+
+	/**
+	 * Met à jour le domicile fiscal, avec une date de fin. Cette opération n'est permise que sur le dernier domicile.
+	 * @param domicile le domicile visé
+	 * @param dateFin la nouvelle date de fin
+	 * @param typeAutorite le nouveau type d'autorité fiscale
+	 * @param noOfs le nouveau numéro OFS de la commune ou du pays
+	 * @return le (nouveau) domicile fiscal représentant le domicile édité
+	 */
+	DomicileEtablissement updateDomicileFiscal(DomicileEtablissement domicile, TypeAutoriteFiscale typeAutorite, Integer noOfs, RegDate dateFin) throws TiersException;
+
+	/**
+	 * Ferme le domicile fiscal à la date indiquée. Contrôle qu'il s'agit bien du dernier.
+ 	 * @param domicile le domicile visé
+	 * @param dateFin le dernier jour de validité
+	 */
+	void closeDomicileFiscal(DomicileEtablissement domicile, RegDate dateFin) throws TiersException;
+
+	/**
+	 * Annule le domicile fiscal
+	 * @param domicile le domicile à annuler
+	 */
+	void annuleDomicileFiscal(DomicileEtablissement domicile) throws TiersException;
 
 	/**
 	 * Crée un nouveau capital pour l'entreprise passée en paramètre.

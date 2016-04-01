@@ -5697,6 +5697,81 @@ public class TiersServiceImpl implements TiersService {
 	}
 
 	@Nullable
+	private static DomicileEtablissement getDernierDomicileFiscal(Etablissement eta) {
+		final List<DomicileEtablissement> tous = eta.getSortedDomiciles(false);
+		if (tous.isEmpty()) {
+			return null;
+		}
+		return CollectionsUtils.getLastElement(tous);
+	}
+
+	@Override
+	public DomicileEtablissement addDomicileFiscal(Etablissement etablissement, TypeAutoriteFiscale typeAutorite, Integer noOfs, RegDate dateDebut, RegDate dateFin) throws TiersException {
+		checkEditionAutorisee(etablissement);
+
+		DomicileEtablissement existing = getDernierDomicileFiscal(etablissement);
+
+		if (existing != null) {
+			if (existing.getDateFin() == null) {
+				if (dateFin == null || dateFin.isAfter(existing.getDateDebut())) {
+					closeDomicileFiscal(existing, dateDebut.getOneDayBefore());
+				}
+			}
+		}
+
+		return addDomicileEtablissement(etablissement, typeAutorite, noOfs, dateDebut, dateFin);
+	}
+
+	@Override
+	public DomicileEtablissement updateDomicileFiscal(DomicileEtablissement domicile, TypeAutoriteFiscale typeAutorite, Integer noOfs) throws TiersException {
+		checkEditionAutorisee(domicile.getEtablissement());
+		domicile.setAnnule(true);
+		return addDomicileFiscal(domicile.getEtablissement(), typeAutorite, noOfs, domicile.getDateDebut(), domicile.getDateFin());
+	}
+
+	@Override
+	public DomicileEtablissement updateDomicileFiscal(DomicileEtablissement domicile, TypeAutoriteFiscale typeAutorite, Integer noOfs, RegDate dateFin) throws TiersException {
+		Assert.notNull(domicile);
+		checkEditionAutorisee(domicile.getEtablissement());
+		final DomicileEtablissement dernier = getDernierDomicileFiscal(domicile.getEtablissement());
+		if (dernier != domicile && domicile.getDateFin() != dateFin) {
+			throw new ValidationException(domicile, "Seul le dernier domicile peut avoir sa date de fin changée.");
+		}
+		domicile.setAnnule(true);
+		return addDomicileFiscal(domicile.getEtablissement(), typeAutorite, noOfs, domicile.getDateDebut(), dateFin);
+	}
+
+	@Override
+	public void closeDomicileFiscal(DomicileEtablissement domicile, RegDate dateFin) throws TiersException {
+		checkEditionAutorisee(domicile.getEtablissement());
+		final DomicileEtablissement dernier = getDernierDomicileFiscal(domicile.getEtablissement());
+		if (dernier != domicile) {
+			throw new ValidationException(domicile, "Seul le dernier domicile peut être fermé.");
+		}
+		closeDomicileEtablissement(domicile, dateFin);
+	}
+
+	@Override
+	public void annuleDomicileFiscal(DomicileEtablissement domicile) throws TiersException {
+		checkEditionAutorisee(domicile.getEtablissement());
+		final DomicileEtablissement dernier = getDernierDomicileFiscal(domicile.getEtablissement());
+		if (dernier != domicile) {
+			throw new ValidationException(domicile, "Seul le dernier domicile peut être annulée.");
+		}
+		domicile.setAnnule(true);
+
+		// On ré-ouvre la précédente
+		final DomicileEtablissement precedent = getDernierDomicileFiscal(domicile.getEtablissement());
+		if (precedent != null) {
+			final DomicileEtablissement reouvert = new DomicileEtablissement(precedent.getDateDebut(), null, precedent.getTypeAutoriteFiscale(), precedent.getNumeroOfsAutoriteFiscale(), domicile.getEtablissement());
+			precedent.setAnnule(true);
+			tiersDAO.addAndSave(domicile.getEtablissement(), reouvert);
+		} else {
+			throw new ValidationException(domicile, "Impossible d'annuler l'unique domicile.");
+		}
+	}
+
+	@Nullable
 	private static CapitalFiscalEntreprise getDernierCapitalFiscal(Entreprise e) {
 		final List<CapitalFiscalEntreprise> tous = e.getCapitauxNonAnnulesTries();
 		if (tous.isEmpty()) {

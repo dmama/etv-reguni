@@ -16,18 +16,24 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.AuthenticationHelper;
+import ch.vd.uniregctb.common.ControllerUtils;
 import ch.vd.uniregctb.common.DelegatingValidator;
+import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.common.TiersNotFoundException;
+import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.security.AccessDeniedException;
+import ch.vd.uniregctb.tiers.DomicileEtablissement;
 import ch.vd.uniregctb.tiers.Etablissement;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersException;
+import ch.vd.uniregctb.tiers.TiersMapHelper;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.tiers.manager.AutorisationManager;
 import ch.vd.uniregctb.tiers.manager.Autorisations;
 import ch.vd.uniregctb.tiers.validator.ContribuableInfosEntrepriseViewValidator;
 import ch.vd.uniregctb.tiers.view.ContribuableInfosEntrepriseView;
+import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.utils.RegDateEditor;
 
 @Controller
@@ -43,6 +49,9 @@ public class CivilEtablissementEditController {
 	private TiersService tiersService;
 	private AutorisationManager autorisationManager;
 	private EntrepriseService entrepriseService;
+	private TiersMapHelper tiersMapHelper;
+	private ControllerUtils controllerUtils;
+	private HibernateTemplate hibernateTemplate;
 
 	public void setTiersDAO(TiersDAO tiersDAO) {
 		this.tiersDAO = tiersDAO;
@@ -60,18 +69,32 @@ public class CivilEtablissementEditController {
 		this.autorisationManager = autorisationManager;
 	}
 
-	private static class CivilEditValidator extends DelegatingValidator {
-		private CivilEditValidator() {
+	public void setTiersMapHelper(TiersMapHelper tiersMapHelper) {
+		this.tiersMapHelper = tiersMapHelper;
+	}
+
+	public void setControllerUtils(ControllerUtils controllerUtils) {
+		this.controllerUtils = controllerUtils;
+	}
+
+	public void setHibernateTemplate(HibernateTemplate hibernateTemplate) {
+		this.hibernateTemplate = hibernateTemplate;
+	}
+
+	private static class CivilEtablissementEditValidator extends DelegatingValidator {
+		private CivilEtablissementEditValidator() {
 			addSubValidator(EtablissementView.class, new DummyValidator<>(EtablissementView.class));
 			addSubValidator(AddRaisonSocialeView.class, new AddRaisonSocialeViewValidator());
 			addSubValidator(EditRaisonEnseigneEtablissementView.class, new EditRaisonEnseigneEtablissementViewValidator());
 			addSubValidator(ContribuableInfosEntrepriseView.class, new ContribuableInfosEntrepriseViewValidator());
+			addSubValidator(AddDomicileView.class, new AddDomicileViewValidator());
+			addSubValidator(EditDomicileView.class, new EditDomicileViewValidator());
 		}
 	}
 
 	@InitBinder
 	public void initBinder(WebDataBinder binder) {
-		binder.setValidator(new CivilEditValidator());
+		binder.setValidator(new CivilEtablissementEditValidator());
 		binder.registerCustomEditor(RegDate.class, new RegDateEditor(true, false, false));
 	}
 
@@ -198,6 +221,144 @@ public class CivilEtablissementEditController {
 		}
 
 		return "redirect:/civil/etablissement/edit.do?id=" + id;
+	}
+
+	/* Domicile */
+
+	@RequestMapping(value = "/domicile/add.do", method = RequestMethod.GET)
+	@Transactional(readOnly = true, rollbackFor = Throwable.class)
+	public String addDomicile(@RequestParam(value = "tiersId", required = true) long tiersId, Model model) {
+
+		final Etablissement etablissement = (Etablissement) tiersDAO.get(tiersId);
+		if (etablissement == null) {
+			throw new TiersNotFoundException(tiersId);
+		}
+
+		final Autorisations auth = getAutorisations(etablissement);
+		if (!auth.isDonneesCiviles()) {
+			throw new AccessDeniedException("Vous ne possédez pas les droits IfoSec de création de domiciles.");
+		}
+
+		controllerUtils.checkAccesDossierEnEcriture(tiersId);
+
+		model.addAttribute("typesDomicileFiscal", tiersMapHelper.getMapTypeAutoriteFiscale());
+		model.addAttribute("command", new AddDomicileView(etablissement.getNumero(), RegDate.get(), null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, null));
+		return "donnees-civiles/add-domicile";
+	}
+
+	@Transactional(rollbackFor = Throwable.class)
+	@RequestMapping(value = "/domicile/add.do", method = RequestMethod.POST)
+	public String addDomicile(@Valid @ModelAttribute("command") final AddDomicileView view, BindingResult result, Model model) throws TiersException {
+
+		final long tiersId = view.getTiersId();
+
+		final Etablissement etablissement = (Etablissement) tiersDAO.get(tiersId);
+		if (etablissement == null) {
+			throw new TiersNotFoundException(tiersId);
+		}
+
+		final Autorisations auth = getAutorisations(etablissement);
+		if (!auth.isDonneesCiviles()) {
+			throw new AccessDeniedException("Vous ne possédez pas les droits IfoSec de création de domiciles.");
+		}
+
+		if (result.hasErrors()) {
+			model.addAttribute("command", view);
+			return "donnees-civiles/add-domicile";
+		}
+
+		controllerUtils.checkAccesDossierEnEcriture(tiersId);
+
+		tiersService.addDomicileFiscal(etablissement, view.getTypeAutoriteFiscale(), view.getNoAutoriteFiscale(), view.getDateDebut(), view.getDateFin());
+
+		return "redirect:/civil/etablissement/edit.do?id=" + tiersId;
+	}
+
+	@RequestMapping(value = "/domicile/edit.do", method = RequestMethod.GET)
+	@Transactional(readOnly = true, rollbackFor = Throwable.class)
+	public String editDomicile(@RequestParam(value = "domicileId", required = true) long domicileId, @RequestParam(value = "peutEditerDateFin", required = true) boolean peutEditerDateFin, Model model) {
+
+		final DomicileEtablissement domicile = hibernateTemplate.get(DomicileEtablissement.class, domicileId);
+		if (domicile == null) {
+			throw new ObjectNotFoundException("Le domicile avec l'id = " + domicileId + " n'existe pas.");
+		}
+
+		final Autorisations auth = getAutorisations(domicile.getEtablissement());
+		if (!auth.isDonneesCiviles()) {
+			throw new AccessDeniedException("Vous ne possédez pas les droits IfoSec d'édition de domiciles.");
+		}
+		controllerUtils.checkAccesDossierEnEcriture(domicile.getEtablissement().getNumero());
+
+		model.addAttribute("command", new EditDomicileView(domicile, peutEditerDateFin));
+		model.addAttribute("peutEditerDateFin", peutEditerDateFin);
+		model.addAttribute("typesDomicileFiscal", tiersMapHelper.getMapTypeAutoriteFiscale());
+		return "donnees-civiles/edit-domicile";
+	}
+
+	@Transactional(rollbackFor = Throwable.class)
+	@RequestMapping(value = "/domicile/edit.do", method = RequestMethod.POST)
+	public String editDomicile(@Valid @ModelAttribute("command") final EditDomicileView view, BindingResult result, Model model) throws TiersException {
+
+		final DomicileEtablissement domicile = hibernateTemplate.get(DomicileEtablissement.class, view.getId());
+		if (domicile == null) {
+			throw new ObjectNotFoundException("Le domicile avec l'id = " + view.getId() + " n'existe pas.");
+		}
+
+		final Etablissement etablissement = domicile.getEtablissement();
+
+		final Autorisations auth = getAutorisations(etablissement);
+		if (!auth.isDonneesCiviles()) {
+			throw new AccessDeniedException("Vous ne possédez pas les droits IfoSec d'édition de domiciles.");
+		}
+
+		if (!domicile.getNumeroOfsAutoriteFiscale().equals(view.getNoAutoriteFiscale()) || domicile.getDateFin() != view.getDateFin()) {
+
+			final long ctbId = etablissement.getNumero();
+			controllerUtils.checkAccesDossierEnEcriture(ctbId);
+
+			if (result.hasErrors()) {
+				model.addAttribute("peutEditerDateFin", view.isPeutEditerDateFin());
+				model.addAttribute("typesDomicileFiscal", tiersMapHelper.getMapTypeAutoriteFiscale());
+				return "donnees-civiles/edit-domicile";
+			}
+
+			final RegDate dateFermeture = view.getDateFin();
+			if (dateFermeture == domicile.getDateFin()) {
+				tiersService.updateDomicileFiscal(domicile, view.getTypeAutoriteFiscale(), view.getNoAutoriteFiscale());
+			} else {
+				if (domicile.getDateFin() == null
+						&& domicile.getTypeAutoriteFiscale().equals(view.getTypeAutoriteFiscale())
+						&& domicile.getNumeroOfsAutoriteFiscale().equals(view.getNoAutoriteFiscale())) {
+					tiersService.closeDomicileEtablissement(domicile, dateFermeture);
+				} else {
+					tiersService.updateDomicileFiscal(domicile, view.getTypeAutoriteFiscale(), view.getNoAutoriteFiscale(), view.getDateFin());
+				}
+			}
+		}
+
+		return "redirect:/civil/etablissement/edit.do?id=" + etablissement.getNumero();
+	}
+
+	@Transactional(rollbackFor = Throwable.class)
+	@RequestMapping(value = "/domicile/cancel.do", method = RequestMethod.POST)
+	public String cancelDomicile(long domicileId) throws TiersException {
+
+		final DomicileEtablissement domicile = hibernateTemplate.get(DomicileEtablissement.class, domicileId);
+		if (domicile == null) {
+			throw new ObjectNotFoundException("Le domicile avec l'id = " + domicileId + " n'existe pas.");
+		}
+		final Etablissement etablissement = domicile.getEtablissement();
+
+		final Autorisations auth = getAutorisations(etablissement);
+		if (!auth.isDonneesCiviles()) {
+			throw new AccessDeniedException("Vous ne possédez pas les droits IfoSec de suppression de domiciles.");
+		}
+
+		controllerUtils.checkAccesDossierEnEcriture(etablissement.getNumero());
+
+		tiersService.annuleDomicileFiscal(domicile);
+
+		return "redirect:/civil/etablissement/edit.do?id=" + etablissement.getId();
 	}
 
 }

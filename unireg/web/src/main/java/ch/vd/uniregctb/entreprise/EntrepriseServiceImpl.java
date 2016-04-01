@@ -250,9 +250,11 @@ public class EntrepriseServiceImpl implements EntrepriseService {
 			list.add(new DomicileEtablissementView(siege));
 		}
 		Collections.sort(list, new AnnulableHelper.AnnulesApresWrappingComparator<>(new DateRangeComparator<DomicileEtablissementView>(DateRangeComparator.CompareOrder.DESCENDING)));
-		if (AnnulableHelper.sansElementsAnnules(list).size() > 1) {
-			list.get(0).setDernierElement(true);
+		final List<DomicileEtablissementView> listeSansAnnules = AnnulableHelper.sansElementsAnnules(list);
+		if (listeSansAnnules.size() > 1) {
+			listeSansAnnules.get(0).setDernierElement(true);
 		}
+		listeSansAnnules.get(0).setPeutEditerDateFin(true);
 		return list;
 	}
 }

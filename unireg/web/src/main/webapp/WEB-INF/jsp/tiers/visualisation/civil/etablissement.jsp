@@ -82,7 +82,6 @@
 		<input class="noprint" id="showDomicilesHisto" type="checkbox" onclick="refreshDomicilesTable(this);" />
 		<label class="noprint" for="showDomicilesHisto"><fmt:message key="label.historique" /></label>
 	</c:if>
-<%--
 	<c:if test="${page == 'edit' && autorisations.donneesCiviles}">
 		<table border="0">
 			<tr>
@@ -92,9 +91,8 @@
 			</tr>
 		</table>
 	</c:if>
---%>
 
-	<display:table name="${etablissement.domiciles}" id="domicile" requestURI="edit.do" class="display" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator">
+	<display:table name="${etablissement.domiciles}" id="domicile" requestURI="${page}.do" class="display" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator">
 		<display:column style="width:10%" sortable="true" titleKey="label.date.debut" sortProperty="dateDebut">
 			<unireg:regdate regdate="${domicile.dateDebut}"/>
 		</display:column>
@@ -119,34 +117,34 @@
 				<c:if test="${page == 'visu' }">
 					<unireg:consulterLog entityNature="DomicileEtablissement" entityId="${domicile.id}"/>
 				</c:if>
-<%--
 				<c:if test="${page == 'edit' }">
 					<c:if test="${!domicile.annule}">
-						<unireg:linkTo name="" action="/civil/etablissement/domicile/edit.do" method="GET" params="{domicileId:${domicile.id}}" link_class="edit" title="Edition du domicile" />
+						<unireg:linkTo name="" action="/civil/etablissement/domicile/edit.do" method="GET" params="{domicileId:${domicile.id}, peutEditerDateFin:${domicile.peutEditerDateFin}}" link_class="edit" title="Edition du domicile" />
 						<c:if test="${domicile.dernierElement}">
-							<unireg:linkTo name="" action="/civil/etablissement/cancel.do" method="POST" params="{domicileId:${domicile.id}}" link_class="delete"
+							<unireg:linkTo name="" action="/civil/etablissement/domicile/cancel.do" method="POST" params="{domicileId:${domicile.id}}" link_class="delete"
 							               title="Annulation du domicile" confirm="Voulez-vous vraiment annuler ce domicile ?"/>
 						</c:if>
 					</c:if>
 				</c:if>
---%>
 			</c:if>
 		</display:column>
 	</display:table>
 </fieldset>
 
-<script type="text/javascript">
+<c:if test="${page == 'visu' }">
+	<script type="text/javascript">
 
-	/**
-	 * Affiche ou filtre les données historiques de la table des capitaux
-	 */
-	function refreshDomicilesTable(checkbox) {
-		var showHisto = $(checkbox).attr('checked');
-		var table = $('#domicile');
-		Histo.refreshHistoTable(showHisto, table, 1);
-	}
+		/**
+		 * Affiche ou filtre les données historiques de la table des capitaux
+		 */
+		function refreshDomicilesTable(checkbox) {
+			var showHisto = $(checkbox).attr('checked');
+			var table = $('#domicile');
+			Histo.refreshHistoTable(showHisto, table, 1);
+		}
 
-	// on rafraîchit toutes les tables une première fois à l'affichage de la page
-	refreshDomicilesTable($('#showDomicilesHisto'));
+		// on rafraîchit toutes les tables une première fois à l'affichage de la page
+		refreshDomicilesTable($('#showDomicilesHisto'));
 
-</script>
+	</script>
+</c:if>

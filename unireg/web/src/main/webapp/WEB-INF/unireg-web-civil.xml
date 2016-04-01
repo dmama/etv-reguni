@@ -26,6 +26,9 @@
 		<property name="tiersService" ref="tiersService"/>
 		<property name="entrepriseService" ref="entrepriseService"/>
 		<property name="autorisationManager" ref="autorisationManager"/>
+		<property name="tiersMapHelper" ref="tiersMapHelper"/>
+		<property name="controllerUtils" ref="controllerUtils"/>
+		<property name="hibernateTemplate" ref="hibernateTemplate"/>
 	</bean>
 
 </beans>
