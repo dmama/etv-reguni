@@ -1086,6 +1086,7 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 		final Criteria crit = getCurrentSession().createCriteria(Entreprise.class);
 		crit.add(Restrictions.eq("numeroEntreprise", numeroOrganisation));
 		crit.add(Restrictions.isNull("annulationDate"));
+		crit.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
 
 		List<Entreprise> result = crit.list();
 
@@ -1113,6 +1114,7 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 		final Criteria crit = getCurrentSession().createCriteria(Etablissement.class);
 		crit.add(Restrictions.eq("numeroEtablissement", numeroSite));
 		crit.add(Restrictions.isNull("annulationDate"));
+		crit.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
 
 		List<Etablissement> result = crit.list();
 
