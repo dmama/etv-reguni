@@ -41,7 +41,7 @@ public class PeriodeImpositionPersonnesMorales extends PeriodeImposition {
 		if (next instanceof PeriodeImpositionPersonnesMorales) {
 			final PeriodeImpositionPersonnesMorales nextPeriode = (PeriodeImpositionPersonnesMorales) next;
 			return typeDocument == nextPeriode.typeDocument
-					&& typeContribuable == nextPeriode.typeContribuable
+					&& categorieEntreprise == nextPeriode.categorieEntreprise       // [SIFISC-18529] plutôt que le type de contribuable, c'est la catégorie d'entreprise qui doit être conservée
 					&& getExerciceCommercial().isValidAt(next.getDateDebut());      // pas de changement d'exercice commercial
 		}
 		return false;
@@ -102,7 +102,7 @@ public class PeriodeImpositionPersonnesMorales extends PeriodeImposition {
 		                                             nextPeriode.getCauseFermeture(),
 		                                             getCodeSegment(),
 		                                             exercicesCommerciaux,
-		                                             typeContribuable,
+		                                             nextPeriode.getTypeContribuable(),
 		                                             typeDocument,
 		                                             categorieEntreprise);
 	}

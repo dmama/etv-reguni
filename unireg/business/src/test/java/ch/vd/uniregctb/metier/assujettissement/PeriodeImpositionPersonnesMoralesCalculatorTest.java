@@ -708,14 +708,15 @@ public class PeriodeImpositionPersonnesMoralesCalculatorTest extends MetierTest 
 		addBouclement(e, date(2012, 3, 31), DayMonth.get(3, 31), 12);       // bouclements tous les 31.03 depuis le 31.03.2012
 		addBouclement(e, date(2014, 4, 1), DayMonth.get(9, 30), 12);       // bouclements tous les 30.09 depuis le 30.09.2014
 
+		// [SIFISC-18529] un départ de siège vers HS avec conservation de l'assujettissement ne doit pas couper les périodes d'imposition
+
 		final List<PeriodeImposition> periodes = determine(e);
 		Assert.assertNotNull(periodes);
-		Assert.assertEquals(5, periodes.size());
+		Assert.assertEquals(4, periodes.size());
 		assertPeriodeImpositionPersonnesMorales(dateCreationEntreprise, date(2013, 3, 31), false, TypeContribuable.VAUDOIS_ORDINAIRE, false, false, false, periodes.get(0));
 		assertPeriodeImpositionPersonnesMorales(date(2013, 4, 1), date(2014, 3, 31), false, TypeContribuable.VAUDOIS_ORDINAIRE, false, false, false, periodes.get(1));
-		assertPeriodeImpositionPersonnesMorales(date(2014, 4, 1), dateDepartSiege, false, TypeContribuable.VAUDOIS_ORDINAIRE, false, false, false, periodes.get(2));
-		assertPeriodeImpositionPersonnesMorales(dateDepartSiege.getOneDayAfter(), date(2014, 9, 30), false, TypeContribuable.HORS_SUISSE, false, false, false, periodes.get(3));
-		assertPeriodeImpositionPersonnesMorales(date(2014, 10, 1), dateVente, false, TypeContribuable.HORS_SUISSE, false, false, true, periodes.get(4));
+		assertPeriodeImpositionPersonnesMorales(date(2014, 4, 1), date(2014, 9, 30), false, TypeContribuable.HORS_SUISSE, false, false, false, periodes.get(2));
+		assertPeriodeImpositionPersonnesMorales(date(2014, 10, 1), dateVente, false, TypeContribuable.HORS_SUISSE, false, false, true, periodes.get(3));
 	}
 
 	@Test
@@ -738,14 +739,15 @@ public class PeriodeImpositionPersonnesMoralesCalculatorTest extends MetierTest 
 		addBouclement(e, date(2012, 3, 31), DayMonth.get(3, 31), 12);       // bouclements tous les 31.03 depuis le 31.03.2012
 		addBouclement(e, date(2014, 4, 1), DayMonth.get(9, 30), 12);       // bouclements tous les 30.09 depuis le 30.09.2014
 
+		// [SIFISC-18529] un départ de siège vers HS avec conservation de l'assujettissement ne doit pas couper les périodes d'imposition
+
 		final List<PeriodeImposition> periodes = determine(e);
 		Assert.assertNotNull(periodes);
-		Assert.assertEquals(5, periodes.size());
+		Assert.assertEquals(4, periodes.size());
 		assertPeriodeImpositionPersonnesMorales(dateCreationEntreprise, date(2013, 3, 31), false, TypeContribuable.VAUDOIS_ORDINAIRE, false, false, false, periodes.get(0));
 		assertPeriodeImpositionPersonnesMorales(date(2013, 4, 1), date(2014, 3, 31), false, TypeContribuable.VAUDOIS_ORDINAIRE, false, false, false, periodes.get(1));
-		assertPeriodeImpositionPersonnesMorales(date(2014, 4, 1), dateDepartSiege, false, TypeContribuable.VAUDOIS_ORDINAIRE, false, false, false, periodes.get(2));
-		assertPeriodeImpositionPersonnesMorales(dateDepartSiege.getOneDayAfter(), date(2014, 9, 30), false, TypeContribuable.HORS_SUISSE, false, false, false, periodes.get(3));
-		assertPeriodeImpositionPersonnesMorales(date(2014, 10, 1), dateFinActivite, false, TypeContribuable.HORS_SUISSE, false, false, true, periodes.get(4));
+		assertPeriodeImpositionPersonnesMorales(date(2014, 4, 1), date(2014, 9, 30), false, TypeContribuable.HORS_SUISSE, false, false, false, periodes.get(2));
+		assertPeriodeImpositionPersonnesMorales(date(2014, 10, 1), dateFinActivite, false, TypeContribuable.HORS_SUISSE, false, false, true, periodes.get(3));
 	}
 
 	/**
@@ -1020,14 +1022,15 @@ public class PeriodeImpositionPersonnesMoralesCalculatorTest extends MetierTest 
 		addBouclement(e, date(2014, 4, 1), DayMonth.get(6, 30), 3);         // bouclements tous les 3 mois depuis le 30.06.2014
 		addBouclement(e, date(2014, 10, 1), DayMonth.get(9, 30), 12);       // bouclements tous les 30.09 depuis le 30.09.2015
 
+		// [SIFISC-18529] un départ de siège vers HS avec conservation de l'assujettissement ne doit pas couper les périodes d'imposition
+
 		final List<PeriodeImposition> periodes = determine(e);
 		Assert.assertNotNull(periodes);
-		Assert.assertEquals(5, periodes.size());
+		Assert.assertEquals(4, periodes.size());
 		assertPeriodeImpositionPersonnesMorales(dateCreationEntreprise, date(2014, 3, 31), false, TypeContribuable.VAUDOIS_ORDINAIRE, false, false, false, periodes.get(0));
-		assertPeriodeImpositionPersonnesMorales(date(2014, 4, 1), dateDepartSiege, false, TypeContribuable.VAUDOIS_ORDINAIRE, false, false, false, periodes.get(1));
-		assertPeriodeImpositionPersonnesMorales(dateDepartSiege.getOneDayAfter(), date(2014, 6, 30), false, TypeContribuable.HORS_SUISSE, false, false, false, periodes.get(2));
-		assertPeriodeImpositionPersonnesMorales(date(2014, 7, 1), dateFinForSecondaire, false, TypeContribuable.HORS_SUISSE, false, false, true, periodes.get(3));
-		assertPeriodeImpositionPersonnesMorales(dateRetourSiege, dateDissolutionEntreprise, false, TypeContribuable.VAUDOIS_ORDINAIRE, false, false, false, periodes.get(4));
+		assertPeriodeImpositionPersonnesMorales(date(2014, 4, 1), date(2014, 6, 30), false, TypeContribuable.HORS_SUISSE, false, false, false, periodes.get(1));
+		assertPeriodeImpositionPersonnesMorales(date(2014, 7, 1), dateFinForSecondaire, false, TypeContribuable.HORS_SUISSE, false, false, true, periodes.get(2));
+		assertPeriodeImpositionPersonnesMorales(dateRetourSiege, dateDissolutionEntreprise, false, TypeContribuable.VAUDOIS_ORDINAIRE, false, false, false, periodes.get(3));
 	}
 
 	/**
