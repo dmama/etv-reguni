@@ -7,6 +7,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.net.HttpURLConnection;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -110,6 +111,7 @@ public class RcEntClientImpl implements RcEntClient, InitializingBean {
 		}
 	}
 
+	@Nullable
 	@Override
 	public OrganisationData getOrganisationByNoIDE(String noide, RegDate referenceDate, boolean withHistory) throws RcEntClientException {
 		final WebClient wc = wcPool.borrowClient(RECEIVE_TIMEOUT);
@@ -129,6 +131,12 @@ public class RcEntClientImpl implements RcEntClient, InitializingBean {
 				return wc.get(OrganisationData.class);
 			}
 			catch (ServerWebApplicationException e) {
+				// au contraire de la récupération par numéro cantonal, la récupération par
+				// numéro IDE peut ne pas aboutir, et ce de manière tout-à-fait légitime
+				// (en particulier car les numéros IDE peuvent être/avoir été saisis à la main dans Unireg/RegPM)
+				if (e.getStatus() == HttpURLConnection.HTTP_NOT_FOUND) {
+					return null;
+				}
 				throw new RcEntClientException(e, parseErrors(e.getMessage()));
 			}
 		}

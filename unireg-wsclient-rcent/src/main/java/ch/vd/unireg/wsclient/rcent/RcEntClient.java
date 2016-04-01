@@ -2,6 +2,8 @@ package ch.vd.unireg.wsclient.rcent;
 
 import java.util.List;
 
+import org.jetbrains.annotations.Nullable;
+
 import ch.vd.evd0022.v3.OrganisationData;
 import ch.vd.evd0022.v3.OrganisationsOfNotice;
 import ch.vd.registre.base.date.RegDate;
@@ -55,9 +57,10 @@ public interface RcEntClient {
 	 * @param noide numéro IDE au format canonique (= sans point ni tirets, juste les 3 lettres et les 9 chiffres)
 	 * @param referenceDate une date de référence (ignorée si l'historique est demandé, date du jour si non-assignée et historique non-demandé)
 	 * @param withHistory <code>true</code> pour obtenir les historiques des organisations trouvées
-	 * @return les données retournées par RCEnt
+	 * @return les données retournées par RCEnt (une erreur 404 renvoyée par RCEnt est mappée en un retour de <code>null</code>)
 	 * @throws RcEntClientException en cas de problème
 	 */
+	@Nullable
 	OrganisationData getOrganisationByNoIDE(String noide, RegDate referenceDate, boolean withHistory) throws RcEntClientException;
 
 	/**
