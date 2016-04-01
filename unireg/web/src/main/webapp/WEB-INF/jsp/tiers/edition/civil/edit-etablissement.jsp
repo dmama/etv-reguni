@@ -13,6 +13,7 @@
 		</li>
 	</tiles:put>
 	<tiles:put name="body">
+		<unireg:bandeauTiers numero="${tiersId}" showLinks="false" showComplements="false" showEvenementsCivils="false" showValidation="false" showAvatar="true"/>
 
 		<unireg:setAuth var="autorisations" tiersId="${tiersId}"/>
 		<c:if test="${autorisations.donneesCiviles}">
