@@ -6301,7 +6301,19 @@ public class TiersServiceImpl implements TiersService {
 			final List<DomicileEtablissement> domiciles = new ArrayList<>(principaux.size());
 			for (DateRanged<Etablissement> principal : principaux) {
 
-				List<DomicileEtablissement> extractedDomiciles = DateRangeHelper.extract(principal.getPayload().getSortedDomiciles(aussiAnnules),
+				final List<DomicileEtablissement> sortedDomiciles = principal.getPayload().getSortedDomiciles(aussiAnnules);
+
+				List<DomicileEtablissement> nonAnnulees = new ArrayList<>();
+				List<DomicileEtablissement> annulees = new ArrayList<>();
+				for (DomicileEtablissement domicile : sortedDomiciles) {
+					if (domicile.isAnnule()) {
+						annulees.add(domicile);
+					} else {
+						nonAnnulees.add(domicile);
+					}
+				}
+
+				List<DomicileEtablissement> extractedDomiciles = DateRangeHelper.extract(nonAnnulees,
 				                                                                         principal.getDateDebut(),
 				                                                                         principal.getDateFin(),
 				                                                                         new DateRangeHelper.AdapterCallback<DomicileEtablissement>() {
@@ -6318,6 +6330,7 @@ public class TiersServiceImpl implements TiersService {
 				                                                                         });
 
 				domiciles.addAll(extractedDomiciles);
+				domiciles.addAll(annulees);
 			}
 			return domiciles;
 		}
