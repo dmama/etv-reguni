@@ -2438,7 +2438,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 				Assert.assertEquals(AllegementFiscalCommune.class, a.getClass());
 				Assert.assertNull(a.getAnnulationDate());
 				Assert.assertEquals(RegDate.get(1950, 1, 1), a.getDateDebut());
-				Assert.assertNull(a.getDateFin());
+				Assert.assertEquals(RegDate.get(2020, 3, 31), a.getDateFin());          // [SIFISC-18616] la date de fin future a été conservée
 				Assert.assertEquals("Expected: 12, actual: " + a.getPourcentageAllegement(), 0, BigDecimal.valueOf(12L).compareTo(a.getPourcentageAllegement()));
 				Assert.assertEquals(AllegementFiscal.TypeCollectivite.COMMUNE, a.getTypeCollectivite());
 				Assert.assertEquals(AllegementFiscal.TypeImpot.CAPITAL, a.getTypeImpot());
@@ -2452,15 +2452,14 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		final List<MigrationResultCollector.Message> messages = mr.getMessages().get(LogCategory.SUIVI);
 		Assert.assertNotNull(messages);
 		final List<String> textes = messages.stream().map(msg -> msg.text).collect(Collectors.toList());
-		Assert.assertEquals(8, textes.size());
+		Assert.assertEquals(7, textes.size());
 		Assert.assertEquals("L'entreprise n'existait pas dans Unireg avec ce numéro de contribuable.", textes.get(0));
-		Assert.assertEquals("Date de fin (31.03.2020) de l'allègement fiscal 1 ignorée (date future).", textes.get(1));
-		Assert.assertEquals("Allègement fiscal généré [01.01.1950 -> ?], collectivité COMMUNE, type CAPITAL : 12%.", textes.get(2));
-		Assert.assertEquals("Allègement fiscal 2 ignoré en raison de sa date de début dans le futur (01.04.2020).", textes.get(3));
-		Assert.assertEquals("Entreprise sans exercice commercial ni for principal.", textes.get(4));
-		Assert.assertEquals("Entreprise sans exercice commercial ni date de bouclement futur.", textes.get(5));
-		Assert.assertEquals("Pas de siège associé dans les données fiscales, pas d'établissement principal créé à partir des données fiscales.", textes.get(6));
-		Assert.assertEquals("Entreprise migrée : 426.13.", textes.get(7));
+		Assert.assertEquals("Allègement fiscal généré [01.01.1950 -> 31.03.2020], collectivité COMMUNE, type CAPITAL : 12%.", textes.get(1));
+		Assert.assertEquals("Allègement fiscal 2 ignoré en raison de sa date de début dans le futur (01.04.2020).", textes.get(2));
+		Assert.assertEquals("Entreprise sans exercice commercial ni for principal.", textes.get(3));
+		Assert.assertEquals("Entreprise sans exercice commercial ni date de bouclement futur.", textes.get(4));
+		Assert.assertEquals("Pas de siège associé dans les données fiscales, pas d'établissement principal créé à partir des données fiscales.", textes.get(5));
+		Assert.assertEquals("Entreprise migrée : 426.13.", textes.get(6));
 	}
 
 	@Test
@@ -2499,7 +2498,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 				Assert.assertEquals(AllegementFiscalCommune.class, a.getClass());
 				Assert.assertNull(a.getAnnulationDate());
 				Assert.assertEquals(RegDate.get(1950, 1, 1), a.getDateDebut());
-				Assert.assertNull(a.getDateFin());
+				Assert.assertEquals(RegDate.get(2020, 3, 31), a.getDateFin());          // [SIFISC-18616] la date de fin future a été conservée
 				Assert.assertEquals("Expected: 12, actual: " + a.getPourcentageAllegement(), 0, BigDecimal.valueOf(12L).compareTo(a.getPourcentageAllegement()));
 				Assert.assertEquals(AllegementFiscal.TypeCollectivite.COMMUNE, a.getTypeCollectivite());
 				Assert.assertEquals(AllegementFiscal.TypeImpot.CAPITAL, a.getTypeImpot());
@@ -2526,15 +2525,14 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		final List<MigrationResultCollector.Message> messages = mr.getMessages().get(LogCategory.SUIVI);
 		Assert.assertNotNull(messages);
 		final List<String> textes = messages.stream().map(msg -> msg.text).collect(Collectors.toList());
-		Assert.assertEquals(8, textes.size());
+		Assert.assertEquals(7, textes.size());
 		Assert.assertEquals("L'entreprise n'existait pas dans Unireg avec ce numéro de contribuable.", textes.get(0));
-		Assert.assertEquals("Date de fin (31.03.2020) de l'allègement fiscal 1 ignorée (date future).", textes.get(1));
-		Assert.assertEquals("Allègement fiscal généré [01.01.1950 -> ?], collectivité COMMUNE, type CAPITAL : 12%.", textes.get(2));
-		Assert.assertEquals("Allègement fiscal généré [01.04.1974 -> ?], collectivité CONFEDERATION, type CAPITAL : 50%.", textes.get(3));
-		Assert.assertEquals("Entreprise sans exercice commercial ni for principal.", textes.get(4));
-		Assert.assertEquals("Entreprise sans exercice commercial ni date de bouclement futur.", textes.get(5));
-		Assert.assertEquals("Pas de siège associé dans les données fiscales, pas d'établissement principal créé à partir des données fiscales.", textes.get(6));
-		Assert.assertEquals("Entreprise migrée : 438.35.", textes.get(7));
+		Assert.assertEquals("Allègement fiscal généré [01.01.1950 -> 31.03.2020], collectivité COMMUNE, type CAPITAL : 12%.", textes.get(1));
+		Assert.assertEquals("Allègement fiscal généré [01.04.1974 -> ?], collectivité CONFEDERATION, type CAPITAL : 50%.", textes.get(2));
+		Assert.assertEquals("Entreprise sans exercice commercial ni for principal.", textes.get(3));
+		Assert.assertEquals("Entreprise sans exercice commercial ni date de bouclement futur.", textes.get(4));
+		Assert.assertEquals("Pas de siège associé dans les données fiscales, pas d'établissement principal créé à partir des données fiscales.", textes.get(5));
+		Assert.assertEquals("Entreprise migrée : 438.35.", textes.get(6));
 	}
 
 	/**
