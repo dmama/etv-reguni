@@ -42,7 +42,7 @@
 	</logger>
 
 	<appender name="ADRESSES_PERMANENTES" class="ch.qos.logback.core.FileAppender">
-		<file>log/adresses_permanentes.csv</file>
+		<file>log/adresses-permanentes.csv</file>
 		<append>true</append>
 		<encoder>
 			<pattern>%msg%n</pattern>
