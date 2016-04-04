@@ -120,34 +120,30 @@ public class EntrepriseServiceImpl implements EntrepriseService {
 	@Override
 	public EtablissementView getEtablissement(Etablissement etablissement) {
 
-		EtablissementView etablissementView = new EtablissementView();
+		final EtablissementView etablissementView = new EtablissementView();
 		etablissementView.setId(etablissement.getNumero());
 
 		if (etablissement.isConnuAuCivil()) {
-			SiteOrganisation site = tiersService.getSiteOrganisationPourEtablissement(etablissement);
-
+			final SiteOrganisation site = tiersService.getSiteOrganisationPourEtablissement(etablissement);
 			etablissementView.setRaisonSociale(site.getNom(null));
 
-			List<DateRanged<String>> noIdeList = site.getNumeroIDE();
+			final List<DateRanged<String>> noIdeList = site.getNumeroIDE();
 			if (noIdeList != null && noIdeList.size() > 0) {
-				DateRanged<String> noIdeRange = noIdeList.get(0);
+				final DateRanged<String> noIdeRange = noIdeList.get(0);
 				if (noIdeRange != null) {
 					etablissementView.setNumerosIDE(Collections.singletonList(noIdeRange.getPayload()));
 				}
 			}
-
-		} else {
+		}
+		else {
 			final Set<IdentificationEntreprise> identificationsEntreprise = etablissement.getIdentificationsEntreprise();
 			final List<String> numerosIDE = getNumerosIDE(identificationsEntreprise);
 			etablissementView.setNumerosIDE(numerosIDE);
-
 			etablissementView.setRaisonSociale(etablissement.getRaisonSociale());
 		}
 
 		etablissementView.setEnseigne(etablissement.getEnseigne());
-
 		etablissementView.setDomiciles(getDomiciles(tiersService.getDomiciles(etablissement, true)));
-
 		etablissementView.setConnueAuCivil(etablissement.isConnuAuCivil());
 		return etablissementView;
 	}

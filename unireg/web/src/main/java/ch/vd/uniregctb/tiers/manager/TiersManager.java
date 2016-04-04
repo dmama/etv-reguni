@@ -86,6 +86,7 @@ import ch.vd.uniregctb.tiers.AllegementFiscal;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.ContactImpotSource;
 import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.DecisionAci;
 import ch.vd.uniregctb.tiers.DecisionAciView;
@@ -971,13 +972,13 @@ public class TiersManager implements MessageSourceAware {
 	/**
 	 * recuperation des adresses civiles historiques
 	 *
-	 * @param tiers                un tiers
+	 * @param tiers                un tiers PP
 	 * @param adressesHistoCiviles <b>vrai</b> si l'on vient l'historique complet des adresses; <b>faux</b> si l'on s'intéresse uniquement aux adresses actives aujourd'hui
 	 * @return une liste d'adresses
 	 * @throws ch.vd.uniregctb.common.DonneesCivilesException
 	 *          si une adresse possède des données incohérentes (date de fin avant date de début, par exemple)
 	 */
-	public List<AdresseCivilView> getAdressesHistoriquesCiviles(Tiers tiers, boolean adressesHistoCiviles) throws DonneesCivilesException {
+	public List<AdresseCivilView> getAdressesHistoriquesCiviles(ContribuableImpositionPersonnesPhysiques tiers, boolean adressesHistoCiviles) throws DonneesCivilesException {
 
 		final Long noIndividu = tiersService.extractNumeroIndividuPrincipal(tiers);
 		final List<AdresseCivilView> adresses = new ArrayList<>();
@@ -1010,30 +1011,42 @@ public class TiersManager implements MessageSourceAware {
 		final List<AdresseCivilView> adresses = new ArrayList<>();
 		if (entreprise.isConnueAuCivil()) {
 			final AdressesCivilesHistoriques histo = serviceOrganisationService.getAdressesOrganisationHisto(entreprise.getNumeroEntreprise());
-			if (histo != null) {
-				// on remplit tous les types d'adresse
-				for (TypeAdresseCivil type : TYPES_ADRESSES_CIVILES) {
-					if (addressesHistoCiviles) {
-						fillAdressesHistoCivilesView(adresses, histo, type);
-					}
-					else {
-						final List<Adresse> typed = histo.ofType(type);
-						if (typed != null && !typed.isEmpty()) {
-							for (Adresse a : typed) {
-								if (a.isValidAt(RegDate.get())) {
-									adresses.add(new AdresseCivilView(a, type));
-								}
+			fillAdressesCivilesViews(adresses, histo, addressesHistoCiviles);
+			Collections.sort(adresses, new AdresseCivilViewComparator());
+		}
+		return adresses;
+	}
+
+	public List<AdresseCivilView> getAdressesHistoriquesCiviles(Etablissement etb, boolean addressesHistoCiviles) throws DonneesCivilesException {
+		final List<AdresseCivilView> adresses = new ArrayList<>();
+		if (etb.isConnuAuCivil()) {
+			final AdressesCivilesHistoriques histo = serviceOrganisationService.getAdressesSiteOrganisationHisto(etb.getNumeroEtablissement());
+			fillAdressesCivilesViews(adresses, histo, addressesHistoCiviles);
+			Collections.sort(adresses, new AdresseCivilViewComparator());
+		}
+		return adresses;
+	}
+
+	private void fillAdressesCivilesViews(List<AdresseCivilView> dest, AdressesCivilesHistoriques histo, boolean withHisto) throws DonneesCivilesException {
+		if (histo != null) {
+			// on remplit tous les types d'adresse
+			for (TypeAdresseCivil type : TYPES_ADRESSES_CIVILES) {
+				if (withHisto) {
+					fillAdressesHistoCivilesView(dest, histo, type);
+				}
+				else {
+					final List<Adresse> typed = histo.ofType(type);
+					if (typed != null && !typed.isEmpty()) {
+						for (Adresse a : typed) {
+							if (a.isValidAt(RegDate.get())) {
+								dest.add(new AdresseCivilView(a, type));
 							}
 						}
 					}
 				}
 			}
 		}
-
-		Collections.sort(adresses, new AdresseCivilViewComparator());
-		return adresses;
 	}
-
 	/**
 	 * [UNIREG-3153] Résoud les adresses fiscales et met-à-disposition la liste des vues sur ces adresses. Cette méthode gère gracieusement les exceptions dans la résolution des adresses.
 	 *

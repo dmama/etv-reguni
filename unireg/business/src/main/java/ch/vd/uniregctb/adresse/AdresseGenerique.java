@@ -63,7 +63,11 @@ public interface AdresseGenerique extends DateRange, Loggable, AdresseAvecCommun
 		/**
 		 * Cas du mandataire
 		 */
-		MANDATAIRE(false);
+		MANDATAIRE(false),
+		/**
+		 * Cas de l'établissement principal de l'entreprise
+		 */
+		ETABLISSEMENT_PRINCIPAL(false);
 
 		private final boolean representation;
 

@@ -4,6 +4,7 @@ public enum AdresseCouche {
 	CIVILE("Civil"),
 	PRINCIPAL("Principal Ménage"),
 	CONTRIBUABLE("Contribuable associé"),
+	ETABLISSEMENT_PRINCIPAL("Etablissement principal"),
 	DEFAUTS_CIVILES("Défauts adresses civiles"),
 	REPRESENTANT("Représentation conventionnelle"),
 	CONSEIL_LEGAL("Conseil légal"),

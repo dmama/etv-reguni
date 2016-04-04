@@ -544,6 +544,22 @@ public class AutorisationManagerImpl implements AutorisationManager {
 			if (SecurityHelper.isGranted(securityProvider, Role.MODIF_PM, visa, oid)) {
 				map.put(MODIF_CIVIL, Boolean.TRUE);
 				map.put(MODIF_IDE, Boolean.TRUE);
+				if (SecurityHelper.isGranted(securityProvider, Role.ADR_PM_D, visa, oid)) {
+					map.put(MODIF_ADRESSE, Boolean.TRUE);
+					map.put(ADR_D, Boolean.TRUE);
+				}
+				if (SecurityHelper.isGranted(securityProvider, Role.ADR_PM_B, visa, oid)) {
+					map.put(MODIF_ADRESSE, Boolean.TRUE);
+					map.put(ADR_B, Boolean.TRUE);
+				}
+				if (SecurityHelper.isGranted(securityProvider, Role.ADR_PM_C, visa, oid)) {
+					map.put(MODIF_ADRESSE, Boolean.TRUE);
+					map.put(ADR_C, Boolean.TRUE);
+				}
+				if (SecurityHelper.isGranted(securityProvider, Role.ADR_P, visa, oid)) {
+					map.put(MODIF_ADRESSE, Boolean.TRUE);
+					map.put(ADR_P, Boolean.TRUE);
+				}
 			}
 			if (SecurityHelper.isGranted(securityProvider, Role.ETAT_PM, visa, oid)) {
 				map.put(MODIF_ETATS_PM, Boolean.TRUE);
@@ -588,6 +604,23 @@ public class AutorisationManagerImpl implements AutorisationManager {
 			if (SecurityHelper.isGranted(securityProvider, Role.MODIF_PM, visa, oid)) {
 				map.put(MODIF_CIVIL, Boolean.TRUE);
 				map.put(MODIF_IDE, Boolean.TRUE);
+
+				if (SecurityHelper.isGranted(securityProvider, Role.ADR_PM_D, visa, oid)) {
+					map.put(MODIF_ADRESSE, Boolean.TRUE);
+					map.put(ADR_D, Boolean.TRUE);
+				}
+				if (SecurityHelper.isGranted(securityProvider, Role.ADR_PM_B, visa, oid)) {
+					map.put(MODIF_ADRESSE, Boolean.TRUE);
+					map.put(ADR_B, Boolean.TRUE);
+				}
+				if (SecurityHelper.isGranted(securityProvider, Role.ADR_PM_C, visa, oid)) {
+					map.put(MODIF_ADRESSE, Boolean.TRUE);
+					map.put(ADR_C, Boolean.TRUE);
+				}
+				if (SecurityHelper.isGranted(securityProvider, Role.ADR_P, visa, oid)) {
+					map.put(MODIF_ADRESSE, Boolean.TRUE);
+					map.put(ADR_P, Boolean.TRUE);
+				}
 			}
 		}
 

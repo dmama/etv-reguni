@@ -22,14 +22,15 @@
 
 		<div id="legend">
 			<table >
-				<tr><td class="civile">Lausanne</td><td>Adresse en provenance du registre civil</td></tr>
+				<tr><td class="civile_pers">Lausanne</td><td>Adresse en provenance du registre civil des personnes</td></tr>
+				<tr><td class="civile_org">Lausanne</td><td>Adresse en provenance du registre civil des entreprises</td></tr>
 				<tr><td class="fiscale">Lausanne</td><td>Adresse en provenance du registre fiscal</td></tr>
 				<tr><td class="representation">Lausanne</td><td>Adresse résultant d'une représentation conventionnelle</td></tr>
 				<tr><td class="tutelle">Lausanne</td><td>Adresse résultant d'une représentation légale (tutelle, curatelle ou conseil légal)</td></tr>
 				<tr><td class="principal">Lausanne</td><td>Adresse du principal dans le cas d'un ménage commun</td></tr>
 				<tr><td class="conjoint">Lausanne</td><td>Adresse du conjoint dans le cas d'un ménage commun</td></tr>
-				<tr><td class="pm">Lausanne</td><td>Adresse en provenance du registre des personnes morales</td></tr>
-				<tr><td class="contribuable">Lausanne</td><td>Adresse du contribuable associé à une débiteur</td></tr>
+				<tr><td class="contribuable">Lausanne</td><td>Adresse du contribuable associé à un débiteur</td></tr>
+				<tr><td class="etablissement_principal">Lausanne</td><td>Adresse de l'établissement principal d'une entreprise</td></tr>
 			</table>
 		</div>
 

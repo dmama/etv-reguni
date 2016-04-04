@@ -178,12 +178,12 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 
 			if (tiers instanceof ContribuableImpositionPersonnesPhysiques) {
 				try {
-					tiersVisuView.setHistoriqueAdressesCiviles(getAdressesHistoriquesCiviles(tiers, true));
+					tiersVisuView.setHistoriqueAdressesCiviles(getAdressesHistoriquesCiviles((ContribuableImpositionPersonnesPhysiques) tiers, true));
 				}
 				catch (DonneesCivilesException e) {
 					tiersVisuView.setExceptionAdresseCiviles(e.getMessage());
 				}
-				final Tiers conjoint = tiersVisuView.getTiersConjoint();
+				final PersonnePhysique conjoint = tiersVisuView.getTiersConjoint();
 				if (conjoint != null) {
 					try {
 						tiersVisuView.setHistoriqueAdressesCivilesConjoint(getAdressesHistoriquesCiviles(conjoint, true));
@@ -191,6 +191,14 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 					catch (DonneesCivilesException e) {
 						tiersVisuView.setExceptionAdresseCivilesConjoint(e.getMessage());
 					}
+				}
+			}
+			else if (tiers instanceof Etablissement) {
+				try {
+					tiersVisuView.setHistoriqueAdressesCiviles(getAdressesHistoriquesCiviles((Etablissement) tiers, true));
+				}
+				catch (DonneesCivilesException e) {
+					tiersVisuView.setExceptionAdresseCiviles(e.getMessage());
 				}
 			}
 			else if (tiers instanceof Entreprise) {

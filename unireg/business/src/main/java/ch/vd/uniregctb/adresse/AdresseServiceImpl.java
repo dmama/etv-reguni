@@ -43,6 +43,7 @@ import ch.vd.uniregctb.interfaces.model.AdressesCivilesHistoriques;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.ServiceOrganisationService;
+import ch.vd.uniregctb.tiers.ActiviteEconomique;
 import ch.vd.uniregctb.tiers.AutreCommunaute;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.Contribuable;
@@ -64,6 +65,7 @@ import ch.vd.uniregctb.type.FormulePolitesse;
 import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypeAdresseTiers;
+import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 
 public class AdresseServiceImpl implements AdresseService {
 
@@ -1097,6 +1099,16 @@ public class AdresseServiceImpl implements AdresseService {
 				adresses.domicile.addCouche(AdresseCouche.CONTRIBUABLE, adressesContribuable.domicile, source, true);
 			}
 		}
+		else if (tiers instanceof Entreprise) {
+			// Dans le cas de l'entreprise, les adresses fiscales de l'établissement principal associé sont utilisées comme premier défaut
+			final AdressesFiscalesHisto adressesEtb = getAdressesFiscalesEtablissementsPrincipauxHistoPourEntreprise((Entreprise) tiers, callDepth + 1, strict);
+			if (adressesEtb != null) {
+				adresses.courrier.addCouche(AdresseCouche.ETABLISSEMENT_PRINCIPAL, adressesEtb.courrier, null, null);
+				adresses.representation.addCouche(AdresseCouche.ETABLISSEMENT_PRINCIPAL, adressesEtb.representation, null, null);
+				adresses.poursuite.addCouche(AdresseCouche.ETABLISSEMENT_PRINCIPAL, adressesEtb.poursuite, null, null);
+				adresses.domicile.addCouche(AdresseCouche.ETABLISSEMENT_PRINCIPAL, adressesEtb.domicile, null, null);
+			}
+		}
 
 		// Applique les défauts sur les adresses issues de la couche civile, de manière à avoir une adresse valide pour chaque type d'adresse
 		adresses.appliqueDefauts(AdresseCouche.DEFAUTS_CIVILES);
@@ -1436,6 +1448,58 @@ public class AdresseServiceImpl implements AdresseService {
 		return adresses;
 	}
 
+	private AdressesFiscalesHisto getAdressesFiscalesEtablissementsPrincipauxHistoPourEntreprise(Entreprise entreprise, int callDepth, boolean strict) throws AdresseException {
+
+		final AdressesFiscalesHisto adresses = new AdressesFiscalesHisto();
+		adresses.courrier = new ArrayList<>();
+		adresses.domicile = new ArrayList<>();
+		adresses.poursuite = new ArrayList<>();
+		adresses.representation = new ArrayList<>();
+		adresses.poursuiteAutreTiers = new ArrayList<>();
+
+		final List<RapportEntreTiers> rapports = TiersHelper.getRapportSujetHistoOfType(entreprise, TypeRapportEntreTiers.ACTIVITE_ECONOMIQUE);
+		if (rapports != null) {
+			for (RapportEntreTiers rapport : rapports) {
+				if (rapport.isAnnule()) {
+					continue;
+				}
+
+				final ActiviteEconomique ae = (ActiviteEconomique) rapport;
+				if (!ae.isPrincipal()) {
+					continue;
+				}
+
+				final Long etablissementId = ae.getObjetId();
+				if (etablissementId == null) {
+					continue;
+				}
+
+				final Etablissement etb = (Etablissement) tiersDAO.get(etablissementId);
+
+				// on va maintenant rechercher les adresses fiscales de l'établissement principal
+				// (seulement les adresses non-défaut purement fiscales = surcharges) que
+				// l'on tronque ensuite à la bonne période
+				final int nextDepth = oneLevelDeeper(callDepth, entreprise, etb, null);
+				final AdressesFiscalesHisto adressesEtb = getAdressesFiscalHisto(etb, false, nextDepth, strict);
+				if (adressesEtb != null) {
+					for (TypeAdresseFiscale type : TypeAdresseFiscale.values()) {
+						final List<AdresseGenerique> pourType = adressesEtb.ofType(type);
+						if (pourType != null && !pourType.isEmpty()) {
+							for (AdresseGenerique candidate : pourType) {
+								final DateRange intersection = DateRangeHelper.intersection(candidate, rapport);
+								if (intersection != null && !candidate.isDefault() && candidate.getSource().getType() == SourceType.FISCALE) {
+									final AdresseGenerique redated = new AdresseGeneriqueAdapter(candidate, intersection.getDateDebut(), intersection.getDateFin(), new AdresseGenerique.Source(SourceType.ETABLISSEMENT_PRINCIPAL, etb), Boolean.FALSE);
+									adresses.add(type, redated);
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		return adresses;
+	}
+
 	/**
 	 * Vérifie que toutes les adresses données ont au moins une date de début de validité (à l'exception de la première qui peut être nulle), et que les dates de validités (si début et fin sont
 	 * présentes) sont dans le bon ordre
@@ -1499,11 +1563,13 @@ public class AdresseServiceImpl implements AdresseService {
 		}
 
 		final AdressesFiscalesHisto adressesHisto = getAdressesFiscalHisto(tiers, true, callDepth, strict);
-		final List<AdresseGenerique> adresses = adressesHisto.ofType(type);
-		if (adresses != null) {
-			for (AdresseGenerique a : adresses) {
-				if (a.isValidAt(date)) {
-					return a;
+		if (adressesHisto != null) {
+			final List<AdresseGenerique> adresses = adressesHisto.ofType(type);
+			if (adresses != null) {
+				for (AdresseGenerique a : adresses) {
+					if (a.isValidAt(date)) {
+						return a;
+					}
 				}
 			}
 		}

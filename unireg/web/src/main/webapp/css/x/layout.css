@@ -627,8 +627,12 @@ table.timeline {
 	background-color: #dddd00
 }
 
-.timeline td.civile, #legend td.civile {
+.timeline td.civile_pers, #legend td.civile_pers {
 	background-color: #99FF66;
+}
+
+.timeline td.civile_org, #legend td.civile_org {
+	background-color: #99ffbb;
 }
 
 .timeline td.fiscale, #legend td.fiscale {
@@ -652,7 +656,7 @@ table.timeline {
 	background-color: #BA55D3;
 }
 
-.timeline td.pm, #legend td.pm {
+.timeline td.etablissement_principal, #legend td.etablissement_principal {
 	background-color: #CCDD99;
 }
 

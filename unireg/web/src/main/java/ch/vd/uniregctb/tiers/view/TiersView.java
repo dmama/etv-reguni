@@ -32,6 +32,7 @@ import ch.vd.uniregctb.tiers.DecisionAciView;
 import ch.vd.uniregctb.tiers.Etablissement;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.NatureTiers;
+import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
@@ -51,16 +52,13 @@ public class TiersView {
 
 	private Tiers tiers;
 
-	private Tiers tiersPrincipal;
-
-	private Tiers tiersConjoint;
+	private PersonnePhysique tiersPrincipal;
+	private PersonnePhysique tiersConjoint;
 
 	private String nomPrenomPrincipal;
-
 	private String nomPrenomConjoint;
 
 	private IndividuView individu;
-
 	private IndividuView individuConjoint;
 
 	private List<AdresseView> historiqueAdresses;
@@ -212,11 +210,11 @@ public class TiersView {
 		return result;
 	}
 
-	public Tiers getTiersConjoint() {
+	public PersonnePhysique getTiersConjoint() {
 		return tiersConjoint;
 	}
 
-	public void setTiersConjoint(Tiers tiersConjoint) {
+	public void setTiersConjoint(PersonnePhysique tiersConjoint) {
 		this.tiersConjoint = tiersConjoint;
 	}
 
@@ -264,11 +262,11 @@ public class TiersView {
 		return null;
 	}
 
-	public Tiers getTiersPrincipal() {
+	public PersonnePhysique getTiersPrincipal() {
 		return tiersPrincipal;
 	}
 
-	public void setTiersPrincipal(Tiers tiersPrincipal) {
+	public void setTiersPrincipal(PersonnePhysique tiersPrincipal) {
 		this.tiersPrincipal = tiersPrincipal;
 	}
 
