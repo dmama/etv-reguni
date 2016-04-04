@@ -40,7 +40,15 @@ public class DemenagementArriveeDepartVD extends Demenagement {
 		if (getSiegeAvant().getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_HC &&
 				getSiegeApres().getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
 			motifFor = MotifFor.ARRIVEE_HC;
-			dateDebutNouveauSiege = getDateApres();
+			if (getSitePrincipalApres().isInscritAuRC(getDateApres())) {
+				final RegDate dateInscriptionRCVd = getSitePrincipalApres().getDateInscriptionRCVd(getDateApres());
+				if (dateInscriptionRCVd == null) {
+					throw new EvenementOrganisationException("Date d'inscription au régistre vaudois du commerce introuvable pour l'établissement principal en arrivée.");
+				}
+				dateDebutNouveauSiege = dateInscriptionRCVd;
+			} else {
+				dateDebutNouveauSiege = getDateApres();
+			}
 			if (getEntreprise().getDernierForFiscalPrincipal() == null) {
 				regleDateDebutPremierExerciceCommercial(getEntreprise(), getDateApres(), suivis);
 			}
