@@ -334,10 +334,15 @@ PMP21101_aaaammjj.xml</xs:documentation>
     </xs:complexType>
     <xs:complexType name="CTypeInfoDocument">
         <xs:sequence>
-            <xs:element name="versionXSD" type="STypeVersionXSD">
+            <xs:element name="versionXSD">
                 <xs:annotation>
                     <xs:documentation>EDITIQUE : Incrémenter cette valeur à chaque diffusion de la XSD !!!</xs:documentation>
                 </xs:annotation>
+                <xs:simpleType>
+                    <xs:restriction base="STypeVersionXSD">
+                        <xs:enumeration value="16.4"/>
+                    </xs:restriction>
+                </xs:simpleType>
             </xs:element>
             <xs:element name="prefixe" type="STypePrefixeDOCUM">
                 <xs:annotation>
@@ -483,6 +488,7 @@ U1P8ADASDOCUM
 </xs:documentation>
                 </xs:annotation>
             </xs:element>
+            <xs:element name="srvExp" type="xs:string" minOccurs="0"/>
         </xs:sequence>
     </xs:complexType>
     <xs:complexType name="CTypeDestinataire">
@@ -825,7 +831,7 @@ U1P8ADASROUTE
     </xs:simpleType>
     <xs:simpleType name="STypeVersionXSD">
         <xs:restriction base="xs:string">
-            <xs:enumeration value="16.3"/>
+            <xs:enumeration value="16.4"/>
         </xs:restriction>
     </xs:simpleType>
 </xs:schema>
