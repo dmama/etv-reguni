@@ -202,7 +202,7 @@ public class ImpressionDeclarationImpotPersonnesMoralesHelperImpl extends Editiq
 		final CTypeInfoDocument infoDoc = new CTypeInfoDocument();
 
 		final Pair<STypeZoneAffranchissement, String> infoAffranchissement = getInformationsAffranchissement(adresseContribuable, false, ServiceInfrastructureService.noOIPM);
-		infoDoc.setIdEnvoi(infoAffranchissement.getRight());
+		assigneIdEnvoi(infoDoc, declaration.getTiers(), infoAffranchissement);
 		infoDoc.setAffranchissement(new CTypeAffranchissement(infoAffranchissement.getLeft(), null));
 		infoDoc.setVersionXSD(VERSION_XSD);
 

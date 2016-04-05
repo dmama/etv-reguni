@@ -39,11 +39,14 @@ import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.common.NumeroIDEHelper;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesMorales;
 import ch.vd.uniregctb.tiers.Entreprise;
+import ch.vd.uniregctb.tiers.ForFiscalPrincipalPM;
 import ch.vd.uniregctb.tiers.Mandat;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersService;
+import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.TypeMandat;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 
@@ -116,6 +119,33 @@ public abstract class EditiqueAbstractHelperImpl implements EditiqueAbstractHelp
 		}
 
 		return Pair.of(zoneAffranchissement, idEnvoi);
+	}
+
+	/**
+	 * Assigne la valeur du champ idEnvoi dans la structure {@link CTypeInfoDocument} passée en paramètre selon les critères suivants :
+	 * <ul>
+	 *     <li>si l'IdEnvoi dans les informations d'affranchissement est renseigné, c'est lui</li>
+	 *     <li>sinon, si le contribuable a son dernier for principal fermé pour motif "FAILLITE", alors on y met la valeur de l'OIPM (21)</li>
+	 * </ul>
+	 * @param infoDocument structure qui va recevoir la valeur de l'IdEnvoi
+	 * @param contribuable contribuable concerné par le document envoyé
+	 * @param infoAffranchissement information calculée préalablement par un appel à {@link #getInformationsAffranchissement(AdresseEnvoiDetaillee, boolean, int)}
+	 */
+	protected static void assigneIdEnvoi(CTypeInfoDocument infoDocument, ContribuableImpositionPersonnesMorales contribuable, Pair<STypeZoneAffranchissement, String> infoAffranchissement) {
+		final String idEnvoi;
+		if (StringUtils.isNotBlank(infoAffranchissement.getRight())) {
+			idEnvoi = infoAffranchissement.getRight();
+		}
+		else {
+			final ForFiscalPrincipalPM dernierForPrincipal = contribuable.getDernierForFiscalPrincipal();
+			if (dernierForPrincipal != null && dernierForPrincipal.getDateFin() != null && dernierForPrincipal.getMotifFermeture() == MotifFor.FAILLITE) {
+				idEnvoi = String.valueOf(ServiceInfrastructureService.noOIPM);
+			}
+			else {
+				idEnvoi = null;
+			}
+		}
+		infoDocument.setIdEnvoi(idEnvoi);
 	}
 
 	protected AdresseEnvoiDetaillee getAdresseEnvoi(Tiers tiers) throws AdresseException {

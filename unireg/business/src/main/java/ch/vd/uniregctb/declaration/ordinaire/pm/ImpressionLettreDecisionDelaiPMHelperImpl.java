@@ -95,7 +95,7 @@ public class ImpressionLettreDecisionDelaiPMHelperImpl extends EditiqueAbstractH
 			final DeclarationImpotOrdinairePM declaration = params.getDi();
 			final ContribuableImpositionPersonnesMorales tiers = declaration.getTiers();
 			final TypeDocumentEditique typeDocument = getTypeDocumentEditique(params);
-			final CTypeInfoDocument infoDocument = buildInfoDocument(getAdresseEnvoi(tiers), typeDocument, getCodeDocument(params));
+			final CTypeInfoDocument infoDocument = buildInfoDocument(getAdresseEnvoi(tiers), tiers, typeDocument, getCodeDocument(params));
 			final CTypeInfoArchivage infoArchivage = buildInfoArchivage(typeDocument, cleArchivage, tiers.getNumero(), params.getDateTraitement());
 
 			final String titre = String.format("IMPÔT SUR LE BÉNÉFICE ET LE CAPITAL %d (du %s au %s)",
@@ -116,11 +116,11 @@ public class ImpressionLettreDecisionDelaiPMHelperImpl extends EditiqueAbstractH
 		}
 	}
 
-	private static CTypeInfoDocument buildInfoDocument(AdresseEnvoiDetaillee adresseEnvoi, TypeDocumentEditique typeDocument, String codeDocument) {
+	private static CTypeInfoDocument buildInfoDocument(AdresseEnvoiDetaillee adresseEnvoi, ContribuableImpositionPersonnesMorales contribuable, TypeDocumentEditique typeDocument, String codeDocument) {
 		final CTypeInfoDocument infoDoc = new CTypeInfoDocument();
 
 		final Pair<STypeZoneAffranchissement, String> infosAffranchissement = getInformationsAffranchissement(adresseEnvoi, false, ServiceInfrastructureService.noOIPM);
-		infoDoc.setIdEnvoi(infosAffranchissement.getRight());
+		assigneIdEnvoi(infoDoc, contribuable, infosAffranchissement);
 		infoDoc.setAffranchissement(new CTypeAffranchissement(infosAffranchissement.getLeft(), null));
 		infoDoc.setVersionXSD(VERSION_XSD);
 

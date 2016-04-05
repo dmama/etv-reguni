@@ -47,7 +47,7 @@ public class ImpressionSommationDeclarationImpotPersonnesMoralesHelperImpl exten
 	public FichierImpression.Document buildDocument(DeclarationImpotOrdinairePM declaration, RegDate dateSommation, boolean batch) throws EditiqueException {
 		try {
 			final ContribuableImpositionPersonnesMorales tiers = declaration.getTiers();
-			final CTypeInfoDocument infoDocument = buildInfoDocument(getAdresseEnvoi(tiers));
+			final CTypeInfoDocument infoDocument = buildInfoDocument(getAdresseEnvoi(tiers), tiers);
 			final CTypeInfoArchivage infoArchivage = buildInfoArchivage(getTypeDocumentEditique(), construitCleArchivageDocument(declaration), tiers.getNumero(), dateSommation);
 
 			final String titre = String.format("INVITATION À DÉPOSER LA DÉCLARATION %d - SOMMATION (du %s au %s)",
@@ -64,11 +64,11 @@ public class ImpressionSommationDeclarationImpotPersonnesMoralesHelperImpl exten
 		}
 	}
 
-	private static CTypeInfoDocument buildInfoDocument(AdresseEnvoiDetaillee adresseEnvoi) {
+	private static CTypeInfoDocument buildInfoDocument(AdresseEnvoiDetaillee adresseEnvoi, ContribuableImpositionPersonnesMorales contribuable) {
 		final CTypeInfoDocument infoDoc = new CTypeInfoDocument();
 
 		final Pair<STypeZoneAffranchissement, String> infosAffranchissement = getInformationsAffranchissement(adresseEnvoi, false, ServiceInfrastructureService.noOIPM);
-		infoDoc.setIdEnvoi(infosAffranchissement.getRight());
+		assigneIdEnvoi(infoDoc, contribuable, infosAffranchissement);
 		infoDoc.setAffranchissement(new CTypeAffranchissement(infosAffranchissement.getLeft(), null));
 		infoDoc.setVersionXSD(VERSION_XSD);
 
