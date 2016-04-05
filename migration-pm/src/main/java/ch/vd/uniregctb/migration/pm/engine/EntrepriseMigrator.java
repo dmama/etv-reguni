@@ -3281,7 +3281,6 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 	private static void migrateDonneesCiviles(RegpmEntreprise regpm, @Nullable Organisation rcent, Entreprise unireg, MigrationResultContextManipulation mr) {
 
 		final EntityKey key = buildEntrepriseKey(regpm);
-		final RegDate dateFinActivite = mr.getExtractedData(DateFinActiviteData.class, key).date;
 
 		// historique des raisons sociales
 		final NavigableMap<RegDate, String> regpmRaisonsSociales = mr.getExtractedData(RaisonSocialeHistoData.class, key).histo;
@@ -3317,7 +3316,9 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 					.map(RegpmTypeFormeJuridique::getCode);
 			final String regpmCodeFormeJuridique = regpmFormeJuridique.map(EntrepriseMigrator::toFormeJuridique).map(FormeJuridiqueEntreprise::getCodeECH).orElse(null);
 			final String regpmRaisonSociale = regpmRaisonsSociales.lastEntry().getValue();
-			final String regpmNumeroIde = Optional.ofNullable(regpm.getNumeroIDE()).map(StringRenderers.NUMERO_IDE_CANONICAL_RENDERER::toString).orElse(null);
+			final String regpmNumeroIde = Optional.ofNullable(regpm.getNumeroIDE())
+					.map(StringRenderers.NUMERO_IDE_CANONICAL_RENDERER::toString)
+					.orElse(null);
 			final CommuneOuPays regpmSiege = Optional.of(mr.getExtractedData(SiegesHistoData.class, key).histo)
 					.map(NavigableMap::lastEntry)
 					.map(Map.Entry::getValue)
@@ -3372,26 +3373,15 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 
 		final RegDate dateFinHistoireFiscale;
 		if (rcent == null) {
-			final RegDate dateDerniereRaisonSociale = regpmRaisonsSociales.isEmpty() ? null : regpmRaisonsSociales.lastKey();
-			final RegDate dateDerniereFormeJuridique = regpmFormesJuridiques.isEmpty() ? null : regpmFormesJuridiques.lastKey();
-			if (dateFinActivite != null && (RegDateHelper.isAfter(dateDerniereFormeJuridique, dateFinActivite, NullDateBehavior.EARLIEST) || RegDateHelper.isAfter(dateDerniereRaisonSociale, dateFinActivite, NullDateBehavior.EARLIEST))) {
-				dateFinHistoireFiscale = null;
-				final RegDate dateQuiDepasse = RegDateHelper.maximum(dateDerniereFormeJuridique, dateDerniereRaisonSociale, NullDateBehavior.EARLIEST);
-				mr.addMessage(LogCategory.DONNEES_CIVILES_REGPM, LogLevel.ERROR,
-				              String.format("Date de début d'une donnée de raison sociale et/ou de forme juridique (%s) postérieure à la date de fin d'activité calculée (%s), cette dernière est donc ignorée ici.",
-				                            StringRenderers.DATE_RENDERER.toString(dateQuiDepasse),
-				                            StringRenderers.DATE_RENDERER.toString(dateFinActivite)));
-			}
-			else {
-				dateFinHistoireFiscale = dateFinActivite;
-			}
+			// [SIFISC-18104] en absence de lien civil, les données civiles en provenance de RegPM ne doivent plus être terminées
+			dateFinHistoireFiscale = null;
 		}
 		else {
 			// on s'arrête à la veille de la première date de raison sociale (= obligatoire) connue de RCEnt
 			final RegDate dateDebutHistoireCivile = OrganisationDataHelper.getFirstKnownDate(rcent.getNom());
 			dateFinHistoireFiscale = Optional.ofNullable(dateDebutHistoireCivile)
 					.map(RegDate::getOneDayBefore)
-					.orElse(dateFinActivite);
+					.orElse(null);
 
 			if (dateDebutHistoireCivile != null) {
 				mr.addMessage(LogCategory.DONNEES_CIVILES_REGPM, LogLevel.INFO,
@@ -3448,16 +3438,8 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 
 		final RegDate dateFinActiviteCapitaux;
 		if (rcent == null) {
-			if (dateFinActivite != null && !regpmCapitaux.isEmpty() && regpmCapitaux.lastKey().isAfter(dateFinActivite)) {
-				dateFinActiviteCapitaux = null;
-				mr.addMessage(LogCategory.DONNEES_CIVILES_REGPM, LogLevel.ERROR,
-				              String.format("Date de début d'une donnée de capital (%s) postérieure à la date de fin d'activité calculée (%s), cette dernière est donc ignorée ici.",
-				                            StringRenderers.DATE_RENDERER.toString(regpmCapitaux.lastKey()),
-				                            StringRenderers.DATE_RENDERER.toString(dateFinActivite)));
-			}
-			else {
-				dateFinActiviteCapitaux = dateFinActivite;
-			}
+			// [SIFISC-18104] en absence de lien civil, les données civiles en provenance de RegPM ne doivent plus être terminées
+			dateFinActiviteCapitaux = null;
 		}
 		else {
 			dateFinActiviteCapitaux = dateFinHistoireFiscale;
@@ -3629,7 +3611,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 	 * @return le tout premier établissement (historiquement) principal connu dans le registre civil (= celui auquel on rattachera l'historique issu de RegPM)
 	 */
 	private Etablissement generateEtablissementPrincipalSelonDonneesCiviles(RegpmEntreprise regpm, Map<Long, List<DateRanged<SiteOrganisation>>> validiteSitesPrincipaux, EntityLinkCollector linkCollector,
-	                                                               IdMapping idMapper, MigrationResultProduction mr) {
+	                                                                        IdMapping idMapper, MigrationResultProduction mr) {
 		final KeyedSupplier<Entreprise> entrepriseSupplier = getEntrepriseSupplier(idMapper, regpm);
 
 		// identifiant cantonal du tout premier établissement principal connu
@@ -3778,7 +3760,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 
 			// date de fin d'activité de l'entreprise
 			final RegDate dateFinActivite = mr.getExtractedData(DateFinActiviteData.class, moi).date;
-			final RegDate dateFinDonneesFiscales = RegDateHelper.minimum(dateFinEtablissementFiscal, dateFinActivite, NullDateBehavior.LATEST);
+			final RegDate dateFinDonneesFiscales;
 
 			final Etablissement etbPrincipal;
 			if (premierEtablissementLieAvecCivil != null) {
@@ -3787,6 +3769,14 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 				// un peu de log pour indiquer la ré-utilisation de l'établissement créé pour les données civiles
 				mr.addMessage(LogCategory.SUIVI, LogLevel.INFO, String.format("Ré-utilisation de l'établissement principal %s identifié par son numéro cantonal.",
 				                                                              FormatNumeroHelper.numeroCTBToDisplay(etbPrincipal.getNumero())));
+
+				if (RegDateHelper.isAfter(dateFinActivite, dateFinEtablissementFiscal, NullDateBehavior.LATEST)) {
+					dateFinDonneesFiscales = dateFinEtablissementFiscal;
+				}
+				else {
+					// [SIFISC-18104] le lien vers le dernier établissement principal ne doit pas être fermé
+ 					dateFinDonneesFiscales = null;
+				}
 			}
 			else {
 				etbPrincipal = migrationContexte.getUniregStore().saveEntityToDb(new Etablissement());
@@ -3802,6 +3792,9 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 				mr.addMessage(LogCategory.SUIVI, LogLevel.INFO, String.format("Création de l'établissement principal %s%s.",
 				                                                              FormatNumeroHelper.numeroCTBToDisplay(etbPrincipal.getNumero()),
 				                                                              etbPrincipal.isAnnule() ? " (annulé)" : StringUtils.EMPTY));
+
+				// [SIFISC-18104] le lien vers le dernier établissement principal ne doit pas être fermé
+				dateFinDonneesFiscales = null;
 			}
 
 			// lien entre l'établissement principal et son entreprise

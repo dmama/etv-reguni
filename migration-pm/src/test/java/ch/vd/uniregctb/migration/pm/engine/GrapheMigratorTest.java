@@ -689,7 +689,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 				final ActiviteEconomique ae = activitesEconomiques.get(0);
 				Assert.assertNotNull(ae);
 				Assert.assertEquals(RegDate.get(1990, 1, 1), ae.getDateDebut());
-				Assert.assertEquals(RegDate.get(2010, 11, 25), ae.getDateFin());
+				Assert.assertNull(ae.getDateFin());     // [SIFISC-18104] le lien vers le dernier établissement principal ne doit pas être fermé
 				Assert.assertEquals((Long) idEntreprise, ae.getSujetId());
 
 				idEtbPrn = ae.getObjetId();
@@ -747,7 +747,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 				final DomicileEtablissement domicile = domiciles.iterator().next();
 				Assert.assertNotNull(domicile);
 				Assert.assertEquals(RegDate.get(1990, 1, 1), domicile.getDateDebut());
-				Assert.assertEquals(RegDate.get(2010, 11, 25), domicile.getDateFin());
+				Assert.assertNull(domicile.getDateFin());          // [SIFISC-18104] le domicile du dernier établissement principal ne doit pas être fermé
 				Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_HC, domicile.getTypeAutoriteFiscale());
 				Assert.assertEquals((Integer) MockCommune.Bale.getNoOFS(), domicile.getNumeroOfsAutoriteFiscale());
 				Assert.assertFalse(domicile.isAnnule());
@@ -837,7 +837,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 			Assert.assertEquals("WARN;" + idEntreprise + ";Active;;;;;;;;;;;;;;;Entreprise sans exercice commercial ni date de bouclement futur.", msgs.get(5));
 			Assert.assertEquals("ERROR;" + idEntreprise + ";Active;;;;;;;;;;;;;;;Aucune date d'envoi de lettre de bienvenue trouvée malgré la présence d'assujettissement(s).", msgs.get(6));
 			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;;;;;;;;;;;;;Création de l'établissement principal " + FormatNumeroHelper.numeroCTBToDisplay(noContribuableEtablissementPrincipalCree.longValue()) + ".", msgs.get(7));
-			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;;;;;;;;;;;;;Domicile de l'établissement principal " + FormatNumeroHelper.numeroCTBToDisplay(noContribuableEtablissementPrincipalCree.longValue()) + " : [01.01.1990 -> 25.11.2010] sur COMMUNE_HC/2701.", msgs.get(8));
+			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;;;;;;;;;;;;;Domicile de l'établissement principal " + FormatNumeroHelper.numeroCTBToDisplay(noContribuableEtablissementPrincipalCree.longValue()) + " : [01.01.1990 -> ?] sur COMMUNE_HC/2701.", msgs.get(8));
 			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;;;;;;;;;;;;;Entreprise migrée : " + FormatNumeroHelper.numeroCTBToDisplay(idEntreprise) + ".", msgs.get(9));
 		}
 		{
@@ -880,7 +880,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 			Assert.assertEquals(3, msgs.size());
 			Assert.assertEquals("INFO;ETABLISSEMENT_ENTITE_JURIDIQUE;1999-05-12;2006-10-31;;" + idEtablissement1 + ";;" + noContribuableEtablissementSecondaire1.longValue() + ";" + idEntreprise + ";;;" + idEntreprise + ";", msgs.get(0));
 			Assert.assertEquals("INFO;ETABLISSEMENT_ENTITE_JURIDIQUE;2002-07-14;2010-11-25;;" + idEtablissement2 + ";;" + noContribuableEtablissementSecondaire2.longValue() + ";" + idEntreprise + ";;;" + idEntreprise + ";", msgs.get(1));
-			Assert.assertEquals("INFO;ETABLISSEMENT_ENTITE_JURIDIQUE;1990-01-01;2010-11-25;;;;" + noContribuableEtablissementPrincipalCree.longValue() + ";" + idEntreprise+ ";;;" + idEntreprise + ";", msgs.get(2));
+			Assert.assertEquals("INFO;ETABLISSEMENT_ENTITE_JURIDIQUE;1990-01-01;;;;;" + noContribuableEtablissementPrincipalCree.longValue() + ";" + idEntreprise+ ";;;" + idEntreprise + ";", msgs.get(2));
 		}
 		{
 			final List<String> msgs = messages.get(LogCategory.DONNEES_CIVILES_REGPM);
@@ -2977,13 +2977,13 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 			final RaisonSocialeFiscaleEntreprise rs = (RaisonSocialeFiscaleEntreprise) map.get(RaisonSocialeFiscaleEntreprise.class);
 			Assert.assertNotNull(rs);
 			Assert.assertEquals(dateDebut, rs.getDateDebut());
-			Assert.assertEquals(dateRequisitionRadiation, rs.getDateFin());
+			Assert.assertNull(rs.getDateFin());     // [SIFISC-18104] on laisse ouvert
 			Assert.assertEquals("Billards & co", rs.getRaisonSociale());
 
 			final FormeJuridiqueFiscaleEntreprise fj = (FormeJuridiqueFiscaleEntreprise) map.get(FormeJuridiqueFiscaleEntreprise.class);
 			Assert.assertNotNull(fj);
 			Assert.assertEquals(dateDebut, fj.getDateDebut());
-			Assert.assertEquals(dateRequisitionRadiation, fj.getDateFin());
+			Assert.assertNull(fj.getDateFin());     // [SIFISC-18104] on laisse ouvert
 			Assert.assertEquals(FormeJuridiqueEntreprise.SA, fj.getFormeJuridique());
 		});
 
@@ -3003,8 +3003,8 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		{
 			final List<String> msgs = messages.get(LogCategory.DONNEES_CIVILES_REGPM);
 			Assert.assertEquals(2, msgs.size());
-			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;;;;;;;Donnée de raison sociale migrée : sur la période [28.09.2010 -> 27.12.2014], 'Billards & co'.", msgs.get(0));
-			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;;;;;;;Donnée de forme juridique migrée : sur la période [28.09.2010 -> 27.12.2014], SA.", msgs.get(1));
+			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;;;;;;;Donnée de raison sociale migrée : sur la période [28.09.2010 -> ?], 'Billards & co'.", msgs.get(0));
+			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;;;;;;;Donnée de forme juridique migrée : sur la période [28.09.2010 -> ?], SA.", msgs.get(1));
 		}
 	}
 
@@ -3744,9 +3744,9 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		{
 			final List<String> msgs = messages.get(LogCategory.DONNEES_CIVILES_REGPM);
 			Assert.assertEquals(3, msgs.size());
-			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;;;;;;;Donnée de raison sociale migrée : sur la période [01.01.2013 -> 31.12.2013], 'Toto SA'.", msgs.get(0));
-			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;;;;;;;Donnée de forme juridique migrée : sur la période [01.01.2013 -> 31.12.2013], SA.", msgs.get(1));
-			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;;;;;;;Donnée de capital migrée : sur la période [01.01.2013 -> 31.12.2013], 10000 CHF.", msgs.get(2));
+			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;;;;;;;Donnée de raison sociale migrée : sur la période [01.01.2013 -> ?], 'Toto SA'.", msgs.get(0));
+			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;;;;;;;Donnée de forme juridique migrée : sur la période [01.01.2013 -> ?], SA.", msgs.get(1));
+			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;;;;;;;Donnée de capital migrée : sur la période [01.01.2013 -> ?], 10000 CHF.", msgs.get(2));
 		}
 		{
 			final List<String> msgs = messages.get(LogCategory.MAPPINGS_REGIMES_FISCAUX);
@@ -3896,7 +3896,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 			final DomicileEtablissement domicile = domiciles.iterator().next();
 			Assert.assertNotNull(domicile);
 			Assert.assertEquals(dateCreationFor, domicile.getDateDebut());
-			Assert.assertEquals(dateFinAssujettissement, domicile.getDateFin());
+			Assert.assertNull(domicile.getDateFin());
 			Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, domicile.getTypeAutoriteFiscale());
 			Assert.assertEquals(Commune.LAUSANNE.getNoOfs(), domicile.getNumeroOfsAutoriteFiscale());
 			Assert.assertFalse(domicile.isAnnule());
@@ -3921,7 +3921,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 			Assert.assertEquals("WARN;" + noEntreprise + ";Active;;;;;;;;;;;;;;;Entreprise sans exercice commercial ni date de bouclement futur.", msgs.get(3));
 			Assert.assertEquals("ERROR;" + noEntreprise + ";Active;;;;;;;;;;;;;;;Aucune date d'envoi de lettre de bienvenue trouvée malgré la présence d'assujettissement(s).", msgs.get(4));
 			Assert.assertEquals("INFO;" + noEntreprise + ";Active;;;;;;;;;;;;;;;Création de l'établissement principal " + FormatNumeroHelper.numeroCTBToDisplay(noEtablissementPrincipal.longValue()) + ".", msgs.get(5));
-			Assert.assertEquals("INFO;" + noEntreprise + ";Active;;;;;;;;;;;;;;;Domicile de l'établissement principal " + FormatNumeroHelper.numeroCTBToDisplay(noEtablissementPrincipal.longValue()) + " : [01.02.2005 -> 12.06.2006] sur COMMUNE_OU_FRACTION_VD/5586.", msgs.get(6));
+			Assert.assertEquals("INFO;" + noEntreprise + ";Active;;;;;;;;;;;;;;;Domicile de l'établissement principal " + FormatNumeroHelper.numeroCTBToDisplay(noEtablissementPrincipal.longValue()) + " : [01.02.2005 -> ?] sur COMMUNE_OU_FRACTION_VD/5586.", msgs.get(6));
 			Assert.assertEquals("INFO;" + noEntreprise + ";Active;;;;;;;;;;;;;;;Entreprise migrée : 26.23.", msgs.get(7));
 		}
 		{
@@ -3933,13 +3933,13 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		{
 			final List<String> msgs = messages.get(LogCategory.DONNEES_CIVILES_REGPM);
 			Assert.assertEquals(2, msgs.size());
-			Assert.assertEquals("INFO;" + noEntreprise + ";Active;;;;;;;;;Donnée de raison sociale migrée : sur la période [01.02.2005 -> 12.06.2006], 'Ma Petite Entreprise'.", msgs.get(0));
-			Assert.assertEquals("INFO;" + noEntreprise + ";Active;;;;;;;;;Donnée de forme juridique migrée : sur la période [01.02.2005 -> 12.06.2006], SA.", msgs.get(1));
+			Assert.assertEquals("INFO;" + noEntreprise + ";Active;;;;;;;;;Donnée de raison sociale migrée : sur la période [01.02.2005 -> ?], 'Ma Petite Entreprise'.", msgs.get(0));
+			Assert.assertEquals("INFO;" + noEntreprise + ";Active;;;;;;;;;Donnée de forme juridique migrée : sur la période [01.02.2005 -> ?], SA.", msgs.get(1));
 		}
 		{
 			final List<String> msgs = messages.get(LogCategory.RAPPORTS_ENTRE_TIERS);
 			Assert.assertEquals(1, msgs.size());
-			Assert.assertEquals("INFO;ETABLISSEMENT_ENTITE_JURIDIQUE;2005-02-01;2006-06-12;;;;" + noEtablissementPrincipal.longValue() + ";" + noEntreprise + ";;;" + noEntreprise + ";", msgs.get(0));
+			Assert.assertEquals("INFO;ETABLISSEMENT_ENTITE_JURIDIQUE;2005-02-01;;;;;" + noEtablissementPrincipal.longValue() + ";" + noEntreprise + ";;;" + noEntreprise + ";", msgs.get(0));
 		}
 		{
 			final List<String> msgs = messages.get(LogCategory.FORS_OUVERTS_APRES_FIN_ASSUJETTISSEMENT);
@@ -4071,7 +4071,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 				final DomicileEtablissement domicile = domiciles.iterator().next();
 				Assert.assertNotNull(domicile);
 				Assert.assertEquals(dateCreationFor, domicile.getDateDebut());
-				Assert.assertEquals(dateDissolution, domicile.getDateFin());
+				Assert.assertNull(domicile.getDateFin());       // [SIFISC-18104] le domicile du dernier établissement principal ne doit pas être fermé
 				Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, domicile.getTypeAutoriteFiscale());
 				Assert.assertEquals(Commune.LAUSANNE.getNoOfs(), domicile.getNumeroOfsAutoriteFiscale());
 				Assert.assertFalse(domicile.isAnnule());
@@ -4117,7 +4117,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 			Assert.assertEquals("WARN;" + noEntreprise + ";Active;;;;;;;;;;;;;;;Ajout d'un régime fiscal VD de type '01' sur la période [01.01.2009 -> ?] pour couvrir les fors de l'entreprise.", msgs.get(5));
 			Assert.assertEquals("WARN;" + noEntreprise + ";Active;;;;;;;;;;;;;;;Ajout d'un régime fiscal CH de type '01' sur la période [01.01.2009 -> ?] pour couvrir les fors de l'entreprise.", msgs.get(6));
 			Assert.assertEquals("INFO;" + noEntreprise + ";Active;;;;;;;;;;;;;;;Création de l'établissement principal " + FormatNumeroHelper.numeroCTBToDisplay(noEtablissementPrincipal.longValue()) + ".", msgs.get(7));
-			Assert.assertEquals("INFO;" + noEntreprise + ";Active;;;;;;;;;;;;;;;Domicile de l'établissement principal " + FormatNumeroHelper.numeroCTBToDisplay(noEtablissementPrincipal.longValue()) + " : [01.02.2005 -> 12.06.2011] sur COMMUNE_OU_FRACTION_VD/5586.", msgs.get(8));
+			Assert.assertEquals("INFO;" + noEntreprise + ";Active;;;;;;;;;;;;;;;Domicile de l'établissement principal " + FormatNumeroHelper.numeroCTBToDisplay(noEtablissementPrincipal.longValue()) + " : [01.02.2005 -> ?] sur COMMUNE_OU_FRACTION_VD/5586.", msgs.get(8));
 			Assert.assertEquals("INFO;" + noEntreprise + ";Active;;;;;;;;;;;;;;;Entreprise migrée : 26.23.", msgs.get(9));
 		}
 		{
@@ -4145,14 +4145,14 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		{
 			final List<String> msgs = messages.get(LogCategory.DONNEES_CIVILES_REGPM);
 			Assert.assertEquals(2, msgs.size());
-			Assert.assertEquals("INFO;" + noEntreprise + ";Active;;;;;;;;;Donnée de raison sociale migrée : sur la période [01.02.2005 -> 12.06.2011], 'Ma Petite Entreprise'.", msgs.get(0));
-			Assert.assertEquals("INFO;" + noEntreprise + ";Active;;;;;;;;;Donnée de forme juridique migrée : sur la période [01.02.2005 -> 12.06.2011], SA.", msgs.get(1));
+			Assert.assertEquals("INFO;" + noEntreprise + ";Active;;;;;;;;;Donnée de raison sociale migrée : sur la période [01.02.2005 -> ?], 'Ma Petite Entreprise'.", msgs.get(0));
+			Assert.assertEquals("INFO;" + noEntreprise + ";Active;;;;;;;;;Donnée de forme juridique migrée : sur la période [01.02.2005 -> ?], SA.", msgs.get(1));
 		}
 		{
 			final List<String> msgs = messages.get(LogCategory.RAPPORTS_ENTRE_TIERS);
 			Assert.assertEquals(2, msgs.size());
 			Assert.assertEquals("INFO;ETABLISSEMENT_ENTITE_JURIDIQUE;2005-02-01;2011-06-12;;" + idEtablissement + ";;" + noEtablissementSecondaire.longValue() + ";" + noEntreprise + ";;;" + noEntreprise + ";", msgs.get(0));
-			Assert.assertEquals("INFO;ETABLISSEMENT_ENTITE_JURIDIQUE;2005-02-01;2011-06-12;;;;" + noEtablissementPrincipal.longValue() + ";" + noEntreprise + ";;;" + noEntreprise + ";", msgs.get(1));
+			Assert.assertEquals("INFO;ETABLISSEMENT_ENTITE_JURIDIQUE;2005-02-01;;;;;" + noEtablissementPrincipal.longValue() + ";" + noEntreprise + ";;;" + noEntreprise + ";", msgs.get(1));
 		}
 		{
 			final List<String> msgs = messages.get(LogCategory.FORS_IGNORES_AUCUN_ASSUJETTISSEMENT);
@@ -4273,8 +4273,8 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		{
 			final List<String> msgs = messages.get(LogCategory.DONNEES_CIVILES_REGPM);
 			Assert.assertEquals(2, msgs.size());
-			Assert.assertEquals("INFO;" + noEntreprise + ";Active;;;;;;;;;Donnée de raison sociale migrée : sur la période [01.02.2005 -> 02.06.2010], 'Titi'.", msgs.get(0));
-			Assert.assertEquals("INFO;" + noEntreprise + ";Active;;;;;;;;;Donnée de forme juridique migrée : sur la période [01.02.2005 -> 02.06.2010], SA.", msgs.get(1));
+			Assert.assertEquals("INFO;" + noEntreprise + ";Active;;;;;;;;;Donnée de raison sociale migrée : sur la période [01.02.2005 -> ?], 'Titi'.", msgs.get(0));
+			Assert.assertEquals("INFO;" + noEntreprise + ";Active;;;;;;;;;Donnée de forme juridique migrée : sur la période [01.02.2005 -> ?], SA.", msgs.get(1));
 		}
 	}
 
@@ -5090,6 +5090,16 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 			Assert.assertEquals("INFO;" + noEtablissementSecondaire + ";" + idEtablissementSecondaire.longValue() + ";CHE169212759;;" + noEntreprise + ";;Etablissement apparié au site " + noCantonalEtablissementSecondaire + " de RCEnt par le biais du numéro IDE.", msgs.get(0));
 			Assert.assertEquals("INFO;" + noEtablissementSecondaire + ";" + idEtablissementSecondaire.longValue() + ";CHE169212759;;" + noEntreprise + ";;Présence de données civiles dès le 01.08.2015, tous les domiciles stables ultérieurs de RegPM seront ignorés.", msgs.get(1));
 			Assert.assertEquals("INFO;" + noEtablissementSecondaire + ";" + idEtablissementSecondaire.longValue() + ";CHE169212759;;" + noEntreprise + ";;Domicile : [01.01.1986 -> 31.07.2015] sur COMMUNE_OU_FRACTION_VD/5642.", msgs.get(2));
+		}
+		{
+			// vérification des messages dans le contexte "DONNEES_CIVILES_REGPM"
+			final List<String> msgs = messages.get(LogCategory.DONNEES_CIVILES_REGPM);
+			Assert.assertEquals(5, msgs.size());
+			Assert.assertEquals("INFO;" + noEntreprise + ";Active;CHE106029161;" + noCantonalEntreprise + ";;;;;;;Données de forme juridique et/ou de raison sociale en provenance du registre civil dès le 01.08.2015 (les données ultérieures de RegPM seront ignorées).", msgs.get(0));
+			Assert.assertEquals("INFO;" + noEntreprise + ";Active;CHE106029161;" + noCantonalEntreprise + ";;;;;;;Donnée de raison sociale migrée : sur la période [01.01.1986 -> 31.07.2015], 'Toto SA'.", msgs.get(1));
+			Assert.assertEquals("INFO;" + noEntreprise + ";Active;CHE106029161;" + noCantonalEntreprise + ";;;;;;;Donnée de forme juridique migrée : sur la période [01.01.1986 -> 31.07.2015], SA.", msgs.get(2));
+			Assert.assertEquals("INFO;" + noEntreprise + ";Active;CHE106029161;" + noCantonalEntreprise + ";;;;;;;Les données de capital en provenance du registre civil font foi dès le 01.08.2015 (les données ultérieures de RegPM seront ignorées).", msgs.get(3));
+			Assert.assertEquals("INFO;" + noEntreprise + ";Active;CHE106029161;" + noCantonalEntreprise + ";;;;;;;Donnée de capital migrée : sur la période [01.01.1986 -> 31.07.2015], 10000 CHF.", msgs.get(4));
 		}
 		{
 			// vérification des messages dans le contexte "APPARIEMENTS_ETABLISSEMENTS_SECONDAIRES"
@@ -6633,17 +6643,14 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 			final Entreprise entreprise = uniregStore.getEntityFromDb(Entreprise.class, idEntreprise);
 			Assert.assertNotNull(entreprise);
 
-			final List<ActiviteEconomique> rapportsActiviteEconomique = entreprise.getRapportsSujet().stream()
-					.filter(ret -> ret.getType() == TypeRapportEntreTiers.ACTIVITE_ECONOMIQUE)
-					.map(ret -> (ActiviteEconomique) ret)
-					.collect(Collectors.toList());
+			final Collection<ActiviteEconomique> rapportsActiviteEconomique = AbstractEntityMigratorTest.getRapportsSujets(entreprise, ActiviteEconomique.class);
 			Assert.assertEquals(1, rapportsActiviteEconomique.size());
 
-			final ActiviteEconomique ae = rapportsActiviteEconomique.get(0);
+			final ActiviteEconomique ae = rapportsActiviteEconomique.iterator().next();
 			Assert.assertNotNull(ae);
 			Assert.assertFalse(ae.isAnnule());
 			Assert.assertEquals(dateDebut, ae.getDateDebut());
-			Assert.assertEquals(datePrononceFaillite, ae.getDateFin());
+			Assert.assertNull(ae.getDateFin());         // [SIFISC-18104] le lien vers le dernier établissement principal ne doit pas être fermé
 			Assert.assertTrue(ae.isPrincipal());
 			idEtablissementPrincipal.setValue(ae.getObjetId());
 
@@ -6670,7 +6677,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;" + noCantonalEntreprise + ";;;;;;;;;;;;;Données civiles d'établissement principal présentes dès le 05.12.2015, tous les sièges ultérieurs de RegPM seront ignorés.", msgs.get(9));
 			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;" + noCantonalEntreprise + ";;;;;;;;;;;;;Ré-utilisation de l'établissement principal " + FormatNumeroHelper.numeroCTBToDisplay(idEtablissementPrincipal.getValue()) + " identifié par son numéro cantonal.", msgs.get(10));
 			Assert.assertEquals("WARN;" + idEntreprise + ";Active;;" + noCantonalEntreprise + ";;;;;;;;;;;;;Entreprise clôturée fiscalement avant l'avènement des données RCEnt, pas de lien vers l'établissement principal généré après le 04.12.2015.", msgs.get(11));
-			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;" + noCantonalEntreprise + ";;;;;;;;;;;;;Domicile de l'établissement principal " + FormatNumeroHelper.numeroCTBToDisplay(idEtablissementPrincipal.getValue()) + " : [12.04.2005 -> 04.08.2009] sur COMMUNE_OU_FRACTION_VD/5586.", msgs.get(12));
+			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;" + noCantonalEntreprise + ";;;;;;;;;;;;;Domicile de l'établissement principal " + FormatNumeroHelper.numeroCTBToDisplay(idEtablissementPrincipal.getValue()) + " : [12.04.2005 -> ?] sur COMMUNE_OU_FRACTION_VD/5586.", msgs.get(12));
 			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;" + noCantonalEntreprise + ";;;;;;;;;;;;;Etat 'EN_FAILLITE' migré, dès le 04.08.2009.", msgs.get(13));
 			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;" + noCantonalEntreprise + ";;;;;;;;;;;;;Entreprise migrée : " + FormatNumeroHelper.numeroCTBToDisplay(idEntreprise) + ".", msgs.get(14));
 		}
@@ -6678,7 +6685,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 			// vérification des messages dans le contexte "RAPPORTS_ENTRE_TIERS"
 			final List<String> msgs = messages.get(LogCategory.RAPPORTS_ENTRE_TIERS);
 			Assert.assertEquals(1, msgs.size());
-			Assert.assertEquals("INFO;ETABLISSEMENT_ENTITE_JURIDIQUE;2005-04-12;2009-08-04;;;;" + idEtablissementPrincipal.getValue() + ";" + idEntreprise + ";;;" + idEntreprise + ";", msgs.get(0));
+			Assert.assertEquals("INFO;ETABLISSEMENT_ENTITE_JURIDIQUE;2005-04-12;;;;;" + idEtablissementPrincipal.getValue() + ";" + idEntreprise + ";;;" + idEntreprise + ";", msgs.get(0));
 		}
 	}
 

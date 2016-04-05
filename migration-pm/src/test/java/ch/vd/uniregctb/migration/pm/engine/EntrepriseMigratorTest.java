@@ -128,6 +128,7 @@ import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeRegimeFiscal;
 import ch.vd.uniregctb.migration.pm.store.UniregStore;
 import ch.vd.uniregctb.migration.pm.utils.DatesParticulieres;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
+import ch.vd.uniregctb.tiers.ActiviteEconomique;
 import ch.vd.uniregctb.tiers.AllegementFiscal;
 import ch.vd.uniregctb.tiers.AllegementFiscalCanton;
 import ch.vd.uniregctb.tiers.AllegementFiscalCantonCommune;
@@ -5732,7 +5733,40 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 				Assert.assertFalse(ffp.isAnnule());
 			}
 
-			noEtablissementPrincipal.setValue(uniregStore.getEntitiesFromDb(Etablissement.class, null).get(0).getNumero());
+			final List<Etablissement> etablissements = uniregStore.getEntitiesFromDb(Etablissement.class, null);
+			Assert.assertNotNull(etablissements);
+			Assert.assertEquals(1, etablissements.size());
+			final Etablissement etablissement = etablissements.get(0);
+			Assert.assertNotNull(etablissement);
+			Assert.assertNull(etablissement.getNumeroEtablissement());
+
+			// [SIFISC-18104] le lien vers l'établissement principal doit rester ouvert...
+			final List<EntityLinkCollector.EntityLink> links = linkCollector.getCollectedLinks();
+			Assert.assertEquals(1, links.size());
+			final EntityLinkCollector.EntityLink link = links.get(0);
+			Assert.assertNotNull(link);
+			Assert.assertEquals(EntityLinkCollector.EtablissementEntiteJuridiqueLink.class, link.getClass());
+
+			final ActiviteEconomique ae = (ActiviteEconomique) link.toRapportEntreTiers();
+			Assert.assertNotNull(ae);
+			Assert.assertEquals(dateDebut, ae.getDateDebut());
+			Assert.assertNull(ae.getDateFin());
+			Assert.assertEquals((Long) noEntreprise, ae.getSujetId());
+			Assert.assertTrue(ae.isPrincipal());
+
+			// [SIFISC-18104] le dernier domicile de l'établissement principal doit rester ouvert
+			final List<DomicileEtablissement> domiciles = etablissement.getSortedDomiciles(true);
+			Assert.assertNotNull(domiciles);
+			Assert.assertEquals(1, domiciles.size());
+			final DomicileEtablissement domicile = domiciles.get(0);
+			Assert.assertNotNull(domicile);
+			Assert.assertFalse(domicile.isAnnule());
+			Assert.assertEquals(dateDebut, domicile.getDateDebut());
+			Assert.assertNull(domicile.getDateFin());
+			Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, domicile.getTypeAutoriteFiscale());
+			Assert.assertEquals(Commune.ECHALLENS.getNoOfs(), domicile.getNumeroOfsAutoriteFiscale());
+
+			noEtablissementPrincipal.setValue(etablissement.getNumero());
 		});
 
 		// vérification des messages dans le contexte "FORS"
@@ -5755,7 +5789,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 			Assert.assertEquals("Aucune date d'envoi de lettre de bienvenue trouvée malgré la présence d'assujettissement(s).", textes.get(3));
 			Assert.assertEquals("Le siège 2 est ignoré car sa date de début de validité (28.08.2007) est postérieure à la date de fin d'activité de l'entreprise (27.08.2007).", textes.get(4));
 			Assert.assertEquals("Création de l'établissement principal " + FormatNumeroHelper.numeroCTBToDisplay(noEtablissementPrincipal.getValue()) + ".", textes.get(5));
-			Assert.assertEquals("Domicile de l'établissement principal " + FormatNumeroHelper.numeroCTBToDisplay(noEtablissementPrincipal.getValue()) + " : [27.08.2004 -> 27.08.2007] sur COMMUNE_OU_FRACTION_VD/5518.", textes.get(6));
+			Assert.assertEquals("Domicile de l'établissement principal " + FormatNumeroHelper.numeroCTBToDisplay(noEtablissementPrincipal.getValue()) + " : [27.08.2004 -> ?] sur COMMUNE_OU_FRACTION_VD/5518.", textes.get(6));
 			Assert.assertEquals("Entreprise migrée : 749.84.", textes.get(7));
 		}
 	}
