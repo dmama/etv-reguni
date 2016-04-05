@@ -162,7 +162,7 @@ public class ImpressionDeclarationImpotPersonnesMoralesHelperImpl extends Editiq
 				throw new IllegalArgumentException("Type de document non-supporté dans les DI des personnes morales : " + declaration.getTypeDeclaration());
 			}
 			document.setInfoDocument(buildInfoDocument(declaration, getAdresseEnvoi(declaration.getTiers())));
-			document.setInfoEnteteDocument(buildInfoEnteteDocument(declaration.getTiers(), declaration.getDateExpedition(), TRAITE_PAR, infraService.getACIOIPM()));
+			document.setInfoEnteteDocument(buildInfoEnteteDocument(declaration.getTiers(), declaration.getDateExpedition(), TRAITE_PAR, NOM_SERVICE_EXPEDITEUR, infraService.getACIOIPM(), infraService.getCAT()));
 			document.setInfoRoutage(null);
 			return document;
 		}

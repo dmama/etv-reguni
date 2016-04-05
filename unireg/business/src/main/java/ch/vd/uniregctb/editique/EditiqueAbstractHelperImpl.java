@@ -2,6 +2,7 @@ package ch.vd.uniregctb.editique;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ListIterator;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -22,6 +23,7 @@ import ch.vd.editique.unireg.FichierImpression;
 import ch.vd.editique.unireg.STypeZoneAffranchissement;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.unireg.interfaces.common.Adresse;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative;
 import ch.vd.uniregctb.adresse.AdresseEnvoi;
@@ -51,11 +53,13 @@ public abstract class EditiqueAbstractHelperImpl implements EditiqueAbstractHelp
 
 	public static final String IMPOT_BENEFICE_CAPITAL = "IMPÔT SUR LE BÉNÉFICE ET LE CAPITAL";
 	public static final String CODE_PORTE_ADRESSE_MANDATAIRE = "M";
-	public static final String VERSION_XSD = "16.3";
+	public static final String VERSION_XSD = "16.4";
 
 	public static final String TYPE_DOCUMENT_CO = "CO";     // pour "courrier", apparemment
 	public static final String TYPE_DOCUMENT_DI = "DI";
-	public static final String TRAITE_PAR = "Registre PM";
+
+	public static final String TRAITE_PAR = "CAT";
+	public static final String NOM_SERVICE_EXPEDITEUR = "Centre d'appels téléphoniques";
 
 	protected AdresseService adresseService;
 	protected TiersService tiersService;
@@ -132,10 +136,20 @@ public abstract class EditiqueAbstractHelperImpl implements EditiqueAbstractHelp
 	protected CTypeAdresse buildAdresse(AdresseEnvoi adresseEnvoi) {
 		final List<String> lignes = new ArrayList<>(6);
 		for (String ligne : adresseEnvoi.getLignes()) {
-			if (StringUtils.isNotBlank(ligne)) {
-				lignes.add(ligne);
+			lignes.add(StringUtils.trimToEmpty(ligne));
+		}
+
+		// suppression des dernières lignes si elles sont vides
+		final ListIterator<String> iterator = lignes.listIterator(lignes.size());
+		while (iterator.hasPrevious()) {
+			if (StringUtils.isBlank(iterator.previous())) {
+				iterator.remove();
+			}
+			else {
+				break;
 			}
 		}
+
 		return lignes.isEmpty() ? null : new CTypeAdresse(lignes);
 	}
 
@@ -154,16 +168,18 @@ public abstract class EditiqueAbstractHelperImpl implements EditiqueAbstractHelp
 	}
 
 	protected CTypeInfoEnteteDocument buildInfoEnteteDocument(Tiers destinataire, RegDate dateExpedition,
-	                                                          String traitePar, CollectiviteAdministrative expediteur) throws ServiceInfrastructureException, AdresseException {
-		return buildInfoEnteteDocument(destinataire, dateExpedition, traitePar, expediteur, IMPOT_BENEFICE_CAPITAL);
+	                                                          String traitePar, String nomServiceExpediteur,
+	                                                          CollectiviteAdministrative expediteurPourAdresse, CollectiviteAdministrative expediteurPourTelFaxMail) throws ServiceInfrastructureException, AdresseException {
+		return buildInfoEnteteDocument(destinataire, dateExpedition, traitePar, nomServiceExpediteur, expediteurPourAdresse, expediteurPourTelFaxMail, IMPOT_BENEFICE_CAPITAL);
 	}
 
 	protected CTypeInfoEnteteDocument buildInfoEnteteDocument(Tiers destinataire, RegDate dateExpedition,
-	                                                          String traitePar, CollectiviteAdministrative expediteur,
+	                                                          String traitePar, String nomServiceExpediteur,
+	                                                          CollectiviteAdministrative expediteurPourAdresse, CollectiviteAdministrative expediteurPourTelFaxMail,
 	                                                          String libelleTitre) throws ServiceInfrastructureException, AdresseException {
 		final CTypeInfoEnteteDocument entete = new CTypeInfoEnteteDocument();
 		entete.setDestinataire(buildDestinataire(destinataire));
-		entete.setExpediteur(buildExpediteur(expediteur, dateExpedition, traitePar));
+		entete.setExpediteur(buildExpediteur(expediteurPourAdresse, expediteurPourTelFaxMail, dateExpedition, traitePar, nomServiceExpediteur));
 		entete.setLigReference(null);
 		entete.setPorteAdresse(null);
 		entete.setLibelleTitre(libelleTitre);
@@ -183,18 +199,28 @@ public abstract class EditiqueAbstractHelperImpl implements EditiqueAbstractHelp
 		return destinataire;
 	}
 
-	private CTypeExpediteur buildExpediteur(CollectiviteAdministrative ca, RegDate dateExpedition, String traitePar) throws ServiceInfrastructureException, AdresseException {
+	private CTypeExpediteur buildExpediteur(CollectiviteAdministrative expediteurPourAdresse, CollectiviteAdministrative expediteurPourTelFaxMail,
+	                                        RegDate dateExpedition, String traitePar, String nomServiceExpediteur) throws ServiceInfrastructureException, AdresseException {
 		final CTypeExpediteur expediteur = new CTypeExpediteur();
-		final CTypeAdresse adresse = buildAdresse(ca);
-		expediteur.setAdresse(adresse);
-		expediteur.setAdrMes(ca.getAdresseEmail());
+
+		final Adresse adresse = expediteurPourAdresse.getAdresse();
+		final AdresseEnvoi adresseEnvoi = new AdresseEnvoi();
+		adresseEnvoi.addLine(expediteurPourAdresse.getNomComplet1());
+		adresseEnvoi.addLine(expediteurPourAdresse.getNomComplet2());
+		adresseEnvoi.addLine(expediteurPourAdresse.getNomComplet3());
+		adresseEnvoi.addLine(adresse.getRue());
+		adresseEnvoi.addLine(adresse.getNumeroPostal() + ' ' + adresse.getLocalite());
+
+		expediteur.setAdresse(buildAdresse(adresseEnvoi));
+		expediteur.setAdrMes(expediteurPourTelFaxMail.getAdresseEmail());
 		expediteur.setDateExpedition(RegDateHelper.toIndexString(dateExpedition));
-		expediteur.setLocaliteExpedition(ca.getAdresse().getLocalite());
-		expediteur.setNumCCP(ca.getNoCCP());
-		expediteur.setNumFax(ca.getNoFax());
+		expediteur.setLocaliteExpedition(expediteurPourAdresse.getAdresse().getLocalite());
+		expediteur.setNumCCP(expediteurPourAdresse.getNoCCP());
+		expediteur.setNumFax(expediteurPourTelFaxMail.getNoFax());
 		expediteur.setNumIBAN(null);
-		expediteur.setNumTelephone(ca.getNoTelephone());
+		expediteur.setNumTelephone(expediteurPourTelFaxMail.getNoTelephone());
 		expediteur.setTraitePar(traitePar);
+		expediteur.setSrvExp(nomServiceExpediteur);
 		return expediteur;
 	}
 
