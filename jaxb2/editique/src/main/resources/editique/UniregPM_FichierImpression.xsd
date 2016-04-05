@@ -334,15 +334,10 @@ PMP21101_aaaammjj.xml</xs:documentation>
     </xs:complexType>
     <xs:complexType name="CTypeInfoDocument">
         <xs:sequence>
-            <xs:element name="versionXSD">
+            <xs:element name="versionXSD" type="STypeVersionXSD">
                 <xs:annotation>
                     <xs:documentation>EDITIQUE : Incrémenter cette valeur à chaque diffusion de la XSD !!!</xs:documentation>
                 </xs:annotation>
-                <xs:simpleType>
-                    <xs:restriction base="STypeVersionXSD">
-                        <xs:enumeration value="16.4"/>
-                    </xs:restriction>
-                </xs:simpleType>
             </xs:element>
             <xs:element name="prefixe" type="STypePrefixeDOCUM">
                 <xs:annotation>
