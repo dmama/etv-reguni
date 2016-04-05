@@ -393,8 +393,10 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 	private static final class DateFinActiviteData {
 		@Nullable
 		private final RegDate date;
-		public DateFinActiviteData(@Nullable RegDate date) {
+		private final boolean seulementApplicableSurForsVaudois;
+		public DateFinActiviteData(@Nullable RegDate date, boolean seulementApplicableSurForsVaudois) {
 			this.date = date;
+			this.seulementApplicableSurForsVaudois = seulementApplicableSurForsVaudois;
 		}
 	}
 
@@ -688,6 +690,9 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 					})
 					.collect(Collectors.toList());
 
+			// [SIFISC-18657]
+			boolean seulementApplicableSurForsVaudois = false;
+
 			// aurions-nous plusieurs candidats ?
 			if (finsActivite.size() > 1) {
 				// on va logguer ça...
@@ -711,6 +716,9 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 						else {
 							// on insère cette date dans le flot afin qu'elle soit prise en compte (il n'y a qu'elle...)
 							finsActivite.add(Pair.of(dateFin, "fin d'assujettissement ICC"));
+
+							// [SIFISC-18657] c'est une fin d'assujettissement vaudois -> seulement applicable sur les fors vaudois
+							seulementApplicableSurForsVaudois = true;
 						}
 					}
 				}
@@ -748,12 +756,12 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 					                            StringRenderers.DATE_RENDERER.toString(finActivite.getLeft()),
 					                            apresFin.getId().getSeqNo(),
 					                            StringRenderers.DATE_RENDERER.toString(apresFin.getDateValidite())));
-					return new DateFinActiviteData(null);
+					return new DateFinActiviteData(null, seulementApplicableSurForsVaudois);
 				}
 			}
 
 			// ça y est, on s'est tous mis d'accord sur une date
-			return new DateFinActiviteData(finActivite != null ? finActivite.getLeft() : null);
+			return new DateFinActiviteData(finActivite != null ? finActivite.getLeft() : null, seulementApplicableSurForsVaudois);
 		});
 	}
 
@@ -4945,7 +4953,8 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 
 		// récupération des fors principaux valides
 		final List<RegpmForPrincipal> forsRegpm = mr.getExtractedData(ForsPrincipauxData.class, entrepriseKey).liste;
-		final RegDate dateFinActivite = mr.getExtractedData(DateFinActiviteData.class, entrepriseKey).date;
+		final DateFinActiviteData dateFinActiviteData = mr.getExtractedData(DateFinActiviteData.class, entrepriseKey);
+		final RegDate dateFinActivite = dateFinActiviteData.date;
 
 		// plusieurs catégories différentes dont SP -> migration manuelle (~10 cas...)
 		if (hasSP && (hasPMorAPMnonDP || hasDP)) {
@@ -5034,19 +5043,23 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 
 		// prend en compte, pour le calcul de la fin d'activité des SP, la date de fin d'exploitation si elle existe
 		final RegDate dateFinActiviteSP;
+		final boolean finActiviteSeulementActiveSurForsVaudois;
 		if (hasSP && regpm.getDateFinSocietePersonnes() != null) {
 			if (dateFinActivite == null || dateFinActivite.isAfter(regpm.getDateFinSocietePersonnes())) {
 				mr.addMessage(LogCategory.FORS, LogLevel.WARN,
 				              String.format("Pour le calcul de la date de fin des fors de la société de personnes, la date du %s est prise en compte.",
 				                            StringRenderers.DATE_RENDERER.toString(regpm.getDateFinSocietePersonnes())));
 				dateFinActiviteSP = regpm.getDateFinSocietePersonnes();
+				finActiviteSeulementActiveSurForsVaudois = false;
 			}
 			else {
 				dateFinActiviteSP = dateFinActivite;
+				finActiviteSeulementActiveSurForsVaudois = dateFinActiviteData.seulementApplicableSurForsVaudois;
 			}
 		}
 		else {
 			dateFinActiviteSP = dateFinActivite;
+			finActiviteSeulementActiveSurForsVaudois = dateFinActiviteData.seulementApplicableSurForsVaudois;
 		}
 
 		// élimination des données de fors postérieurs à la fin d'activité
@@ -5066,7 +5079,16 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 				.collect(Collectors.toList());
 
 		// assignation des dates de fin
-		assigneDatesFin(dateFinActiviteSP, donneesForsAGenererElagueesADroiteSP, Pair::getLeft);
+		if (!donneesForsAGenererElagueesADroiteSP.isEmpty()) {
+			final RegDate dateFinActiviteFors;
+			if (!finActiviteSeulementActiveSurForsVaudois || CollectionsUtils.getLastElement(donneesForsAGenererElagueesADroiteSP).getLeft().getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
+				dateFinActiviteFors = dateFinActiviteSP;
+			}
+			else {
+				dateFinActiviteFors = null;
+			}
+			assigneDatesFin(dateFinActiviteFors, donneesForsAGenererElagueesADroiteSP, Pair::getLeft);
+		}
 
 		// [SIFISC-18118] dans le cas des sociétés de personnes, il faut prendre en compte les dates ad'hoc pour les fors
 		// troncatures, extensions... pour convenir aux dates d'exploitation des SP, le cas échéant
