@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.entreprise;
 
 import javax.validation.Valid;
+import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Controller;
@@ -15,7 +16,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.interfaces.organisation.data.DateRanged;
 import ch.vd.uniregctb.common.AuthenticationHelper;
+import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.common.ControllerUtils;
 import ch.vd.uniregctb.common.DelegatingValidator;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
@@ -23,7 +26,9 @@ import ch.vd.uniregctb.common.TiersNotFoundException;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.security.AccessDeniedException;
 import ch.vd.uniregctb.tiers.CapitalFiscalEntreprise;
+import ch.vd.uniregctb.tiers.DomicileEtablissement;
 import ch.vd.uniregctb.tiers.Entreprise;
+import ch.vd.uniregctb.tiers.Etablissement;
 import ch.vd.uniregctb.tiers.FormeJuridiqueFiscaleEntreprise;
 import ch.vd.uniregctb.tiers.MontantMonetaire;
 import ch.vd.uniregctb.tiers.RaisonSocialeFiscaleEntreprise;
@@ -36,6 +41,7 @@ import ch.vd.uniregctb.tiers.manager.AutorisationManager;
 import ch.vd.uniregctb.tiers.manager.Autorisations;
 import ch.vd.uniregctb.tiers.validator.ContribuableInfosEntrepriseViewValidator;
 import ch.vd.uniregctb.tiers.view.ContribuableInfosEntrepriseView;
+import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.utils.RegDateEditor;
 
 @Controller
@@ -94,6 +100,8 @@ public class CivilEntrepriseEditController {
 			addSubValidator(AddCapitalView.class, new AddCapitalViewValidator());
 			addSubValidator(EditCapitalView.class, new EditCapitalViewValidator());
 			addSubValidator(ContribuableInfosEntrepriseView.class, new ContribuableInfosEntrepriseViewValidator());
+			addSubValidator(AddSiegeView.class, new AddSiegeViewValidator());
+			addSubValidator(EditSiegeView.class, new EditSiegeViewValidator());
 		}
 	}
 
@@ -533,4 +541,146 @@ public class CivilEntrepriseEditController {
 
 		return "redirect:/civil/entreprise/edit.do?id=" + id;
 	}
+
+	/* Siège */
+
+	@RequestMapping(value = "/siege/add.do", method = RequestMethod.GET)
+	@Transactional(readOnly = true, rollbackFor = Throwable.class)
+	public String addSiege(@RequestParam(value = "tiersId", required = true) long tiersId, Model model) {
+
+		final Entreprise entreprise = (Entreprise) tiersDAO.get(tiersId);
+		final List<DateRanged<Etablissement>> etablissementsPrincipauxEntreprise = tiersService.getEtablissementsPrincipauxEntreprise(entreprise);
+		if (etablissementsPrincipauxEntreprise.isEmpty() || CollectionsUtils.getLastElement(etablissementsPrincipauxEntreprise) == null) {
+			throw new TiersNotFoundException(entreprise.getNumero());
+		}
+		DateRanged<Etablissement> etablissementPrincipalRange = CollectionsUtils.getLastElement(etablissementsPrincipauxEntreprise);
+		final Etablissement etablissement = etablissementPrincipalRange.getPayload();
+
+		final Autorisations auth = getAutorisations(etablissement);
+		if (!auth.isDonneesCiviles()) {
+			throw new AccessDeniedException("Vous ne possédez pas les droits IfoSec de création de sieges.");
+		}
+
+		controllerUtils.checkAccesDossierEnEcriture(tiersId);
+
+		model.addAttribute("typesDomicileFiscal", tiersMapHelper.getMapTypeAutoriteFiscale());
+		model.addAttribute("command", new AddSiegeView(etablissement.getNumero(), entreprise.getNumero(), RegDate.get(), null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, null));
+		return "donnees-civiles/add-siege";
+	}
+
+	@Transactional(rollbackFor = Throwable.class)
+	@RequestMapping(value = "/siege/add.do", method = RequestMethod.POST)
+	public String addSiege(@Valid @ModelAttribute("command") final AddSiegeView view, BindingResult result, Model model) throws TiersException {
+
+		final long tiersId = view.getTiersId();
+
+		final Etablissement etablissement = (Etablissement) tiersDAO.get(tiersId);
+		if (etablissement == null) {
+			throw new TiersNotFoundException(tiersId);
+		}
+
+		final Autorisations auth = getAutorisations(etablissement);
+		if (!auth.isDonneesCiviles()) {
+			throw new AccessDeniedException("Vous ne possédez pas les droits IfoSec de création de sieges.");
+		}
+
+		if (result.hasErrors()) {
+			model.addAttribute("command", view);
+			return "donnees-civiles/add-siege";
+		}
+
+		controllerUtils.checkAccesDossierEnEcriture(tiersId);
+
+		tiersService.addDomicileFiscal(etablissement, view.getTypeAutoriteFiscale(), view.getNoAutoriteFiscale(), view.getDateDebut(), view.getDateFin());
+
+		return "redirect:/civil/entreprise/edit.do?id=" + view.getEntrepriseId();
+	}
+
+	@RequestMapping(value = "/siege/edit.do", method = RequestMethod.GET)
+	@Transactional(readOnly = true, rollbackFor = Throwable.class)
+	public String editSiege(@RequestParam(value = "domicileId", required = true) long domicileId, @RequestParam(value = "entrepriseId", required = true) long entrepriseId, @RequestParam(value = "peutEditerDateFin", required = true) boolean peutEditerDateFin, Model model) {
+
+		final DomicileEtablissement domicile = hibernateTemplate.get(DomicileEtablissement.class, domicileId);
+		if (domicile == null) {
+			throw new ObjectNotFoundException("Le siege avec l'id = " + domicileId + " n'existe pas.");
+		}
+
+		final Autorisations auth = getAutorisations(domicile.getEtablissement());
+		if (!auth.isDonneesCiviles()) {
+			throw new AccessDeniedException("Vous ne possédez pas les droits IfoSec d'édition de sieges.");
+		}
+		controllerUtils.checkAccesDossierEnEcriture(domicile.getEtablissement().getNumero());
+
+		model.addAttribute("command", new EditSiegeView(domicile, entrepriseId, peutEditerDateFin));
+		model.addAttribute("peutEditerDateFin", peutEditerDateFin);
+		model.addAttribute("typesDomicileFiscal", tiersMapHelper.getMapTypeAutoriteFiscale());
+		return "donnees-civiles/edit-siege";
+	}
+
+	@Transactional(rollbackFor = Throwable.class)
+	@RequestMapping(value = "/siege/edit.do", method = RequestMethod.POST)
+	public String editSiege(@Valid @ModelAttribute("command") final EditSiegeView view, BindingResult result, Model model) throws TiersException {
+
+		final DomicileEtablissement domicile = hibernateTemplate.get(DomicileEtablissement.class, view.getId());
+		if (domicile == null) {
+			throw new ObjectNotFoundException("Le siege avec l'id = " + view.getId() + " n'existe pas.");
+		}
+
+		final Etablissement etablissement = domicile.getEtablissement();
+
+		final Autorisations auth = getAutorisations(etablissement);
+		if (!auth.isDonneesCiviles()) {
+			throw new AccessDeniedException("Vous ne possédez pas les droits IfoSec d'édition de sieges.");
+		}
+
+		if (!domicile.getNumeroOfsAutoriteFiscale().equals(view.getNoAutoriteFiscale()) || domicile.getDateFin() != view.getDateFin()) {
+
+			final long ctbId = etablissement.getNumero();
+			controllerUtils.checkAccesDossierEnEcriture(ctbId);
+
+			if (result.hasErrors()) {
+				model.addAttribute("peutEditerDateFin", view.isPeutEditerDateFin());
+				model.addAttribute("typesDomicileFiscal", tiersMapHelper.getMapTypeAutoriteFiscale());
+				return "donnees-civiles/edit-siege";
+			}
+
+			final RegDate dateFermeture = view.getDateFin();
+			if (dateFermeture == domicile.getDateFin()) {
+				tiersService.updateDomicileFiscal(domicile, view.getTypeAutoriteFiscale(), view.getNoAutoriteFiscale());
+			} else {
+				if (domicile.getDateFin() == null
+						&& domicile.getTypeAutoriteFiscale().equals(view.getTypeAutoriteFiscale())
+						&& domicile.getNumeroOfsAutoriteFiscale().equals(view.getNoAutoriteFiscale())) {
+					tiersService.closeDomicileEtablissement(domicile, dateFermeture);
+				} else {
+					tiersService.updateDomicileFiscal(domicile, view.getTypeAutoriteFiscale(), view.getNoAutoriteFiscale(), view.getDateFin());
+				}
+			}
+		}
+
+		return "redirect:/civil/entreprise/edit.do?id=" + view.getEntrepriseId();
+	}
+
+	@Transactional(rollbackFor = Throwable.class)
+	@RequestMapping(value = "/siege/cancel.do", method = RequestMethod.POST)
+	public String cancelSiege(long domicileId, long entrepriseId) throws TiersException {
+
+		final DomicileEtablissement domicile = hibernateTemplate.get(DomicileEtablissement.class, domicileId);
+		if (domicile == null) {
+			throw new ObjectNotFoundException("Le siege avec l'id = " + domicileId + " n'existe pas.");
+		}
+		final Etablissement etablissement = domicile.getEtablissement();
+
+		final Autorisations auth = getAutorisations(etablissement);
+		if (!auth.isDonneesCiviles()) {
+			throw new AccessDeniedException("Vous ne possédez pas les droits IfoSec de suppression de sieges.");
+		}
+
+		controllerUtils.checkAccesDossierEnEcriture(etablissement.getNumero());
+
+		tiersService.annuleDomicileFiscal(domicile);
+
+		return "redirect:/civil/entreprise/edit.do?id=" + entrepriseId;
+	}
+
 }

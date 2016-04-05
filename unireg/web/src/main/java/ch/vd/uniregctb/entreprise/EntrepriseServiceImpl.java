@@ -239,6 +239,9 @@ public class EntrepriseServiceImpl implements EntrepriseService {
 		if (listeSansAnnules.size() > 1) {
 			listeSansAnnules.get(0).setDernierElement(true);
 		}
+		if (!listeSansAnnules.isEmpty()) {
+			listeSansAnnules.get(0).setPeutEditerDateFin(true);
+		}
 		return list;
 	}
 

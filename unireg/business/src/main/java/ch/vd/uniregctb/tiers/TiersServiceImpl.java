@@ -6319,13 +6319,15 @@ public class TiersServiceImpl implements TiersService {
 				                                                                         new DateRangeHelper.AdapterCallback<DomicileEtablissement>() {
 					                                                                         @Override
 					                                                                         public DomicileEtablissement adapt(DomicileEtablissement domicile, RegDate debut, RegDate fin) {
-						                                                                         return new DomicileEtablissement(debut != null ? debut : domicile.getDateDebut(),
-						                                                                                                          fin != null ? fin : domicile.getDateFin(),
-						                                                                                                          domicile.getTypeAutoriteFiscale(),
-						                                                                                                          domicile.getNumeroOfsAutoriteFiscale(),
-						                                                                                                          domicile.getEtablissement()
-
-						                                                                         );
+						                                                                         final DomicileEtablissement domicileEtablissement =
+								                                                                         new DomicileEtablissement(debut != null ? debut : domicile.getDateDebut(),
+								                                                                                                   fin != null ? fin : domicile.getDateFin(),
+								                                                                                                   domicile.getTypeAutoriteFiscale(),
+								                                                                                                   domicile.getNumeroOfsAutoriteFiscale(),
+								                                                                                                   domicile.getEtablissement()
+								                                                                         );
+						                                                                         domicileEtablissement.setId(domicile.getId());
+						                                                                         return domicileEtablissement;
 					                                                                         }
 				                                                                         });
 

@@ -139,6 +139,16 @@
 		<label class="noprint" for="showSiegesHisto"><fmt:message key="label.historique" /></label>
 	</c:if>
 
+	<c:if test="${page == 'edit' && autorisations.donneesCiviles}">
+		<table border="0">
+			<tr>
+				<td>
+					<unireg:linkTo name="Ajouter" title="Ajouter un siège social" action="/civil/entreprise/siege/add.do" params="{tiersId:${entreprise.id}}" link_class="add"/>
+				</td>
+			</tr>
+		</table>
+	</c:if>
+
 	<display:table name="${entreprise.sieges}" id="sieges" requestURI="${page}.do" class="display" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator">
 		<display:column style="width:10%" sortable="true" titleKey="label.date.debut" sortProperty="dateDebut">
 			<unireg:regdate regdate="${sieges.dateDebut}"/>
@@ -159,7 +169,22 @@
 		<display:column style="width:10%" titleKey="label.source">
 			<fmt:message key="option.entreprise.source.${sieges.source}"/>
 		</display:column>
-		<display:column style="width:10%">&nbsp;</display:column>
+		<display:column style="width:10%">
+			<c:if test="${sieges.source == 'FISCALE'}" >
+				<c:if test="${page == 'visu' }">
+					<unireg:consulterLog entityNature="DomicileEtablissement" entityId="${sieges.id}"/>
+				</c:if>
+				<c:if test="${page == 'edit' }">
+					<c:if test="${!sieges.annule}">
+						<unireg:linkTo name="" action="/civil/entreprise/siege/edit.do" method="GET" params="{domicileId:${sieges.id}, peutEditerDateFin:${sieges.peutEditerDateFin}, entrepriseId:${entreprise.id}}" link_class="edit" title="Edition du siège" />
+						<c:if test="${sieges.dernierElement}">
+							<unireg:linkTo name="" action="/civil/entreprise/siege/cancel.do" method="POST" params="{domicileId:${sieges.id}, entrepriseId:${entreprise.id}}" link_class="delete"
+							               title="Annulation du siège" confirm="Voulez-vous vraiment annuler ce siège ?"/>
+						</c:if>
+					</c:if>
+				</c:if>
+			</c:if>
+		</display:column>
 	</display:table>
 </fieldset>
 
