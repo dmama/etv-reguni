@@ -130,9 +130,9 @@ public interface EditiqueCompositionService {
 	 * <p/>
 	 *
 	 * @param declaration   la déclaration d'impôt ordinaire dont la sommation est à imprimer
-	 * @param dateEvenement la date d'impression
+	 * @param dateTraitement la date d'impression
 	 */
-	void imprimeSommationDIForBatch(DeclarationImpotOrdinairePM declaration, RegDate dateEvenement) throws EditiqueException;
+	void imprimeSommationDIForBatch(DeclarationImpotOrdinairePM declaration, RegDate dateTraitement, RegDate dateOfficielleEnvoi) throws EditiqueException;
 
 	/**
 	 * Imprime la sommation pour la LR spécifiée pour un envoi en masse. Cette méthode retourne immédiatement et du moment que la transaction est committée, il est de la responsabilité d'éditique
@@ -158,11 +158,11 @@ public interface EditiqueCompositionService {
 	 * Imprime la sommation pour la déclaration d'impôt PM spécifiée on-line.
 	 *
 	 * @param declaration
-	 * @param dateEvenement
+	 * @param dateTraitement
 	 * @return l'id du document
 	 * @throws EditiqueException
 	 */
-	EditiqueResultat imprimeSommationDIOnline(DeclarationImpotOrdinairePM declaration, RegDate dateEvenement) throws EditiqueException, JMSException;
+	EditiqueResultat imprimeSommationDIOnline(DeclarationImpotOrdinairePM declaration, RegDate dateTraitement, RegDate dateOfficielleEnvoi) throws EditiqueException, JMSException;
 
 	/**
 	 * Imprime la sommation pour la lr spécifiée on-line.

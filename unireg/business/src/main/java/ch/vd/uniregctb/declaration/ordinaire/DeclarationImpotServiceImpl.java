@@ -491,14 +491,14 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 	}
 
 	@Override
-	public void envoiSommationDIPMForBatch(DeclarationImpotOrdinairePM declaration, RegDate dateEvenement) throws DeclarationException {
+	public void envoiSommationDIPMForBatch(DeclarationImpotOrdinairePM declaration, RegDate dateTraitement, RegDate dateExpedition) throws DeclarationException {
 		try {
-			editiqueCompositionService.imprimeSommationDIForBatch(declaration, dateEvenement);
+			editiqueCompositionService.imprimeSommationDIForBatch(declaration, dateTraitement, dateExpedition);
 		}
 		catch (EditiqueException e) {
 			throw new DeclarationException(e);
 		}
-		evenementFiscalService.publierEvenementFiscalSommationDeclarationImpot(declaration, dateEvenement);
+		evenementFiscalService.publierEvenementFiscalSommationDeclarationImpot(declaration, dateTraitement);
 	}
 
 	/**

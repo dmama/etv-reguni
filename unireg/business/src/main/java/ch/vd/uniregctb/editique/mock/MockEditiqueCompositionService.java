@@ -75,7 +75,7 @@ public class MockEditiqueCompositionService implements EditiqueCompositionServic
 	}
 
 	@Override
-	public void imprimeSommationDIForBatch(DeclarationImpotOrdinairePM declaration, RegDate dateEvenement) throws EditiqueException {
+	public void imprimeSommationDIForBatch(DeclarationImpotOrdinairePM declaration, RegDate dateTraitement, RegDate dateOfficielleEnvoi) throws EditiqueException {
 	}
 
 	@Override
@@ -88,7 +88,7 @@ public class MockEditiqueCompositionService implements EditiqueCompositionServic
 	}
 
 	@Override
-	public EditiqueResultat imprimeSommationDIOnline(DeclarationImpotOrdinairePM declaration, RegDate dateEvenement) throws EditiqueException, JMSException {
+	public EditiqueResultat imprimeSommationDIOnline(DeclarationImpotOrdinairePM declaration, RegDate dateTraitement, RegDate dateOfficielleEnvoi) throws EditiqueException, JMSException {
 		return dummyResultat();
 	}
 

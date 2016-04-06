@@ -23,7 +23,7 @@ public class MockImpressionSommationDIPersonnesMoralesHelper implements Impressi
 	}
 
 	@Override
-	public FichierImpression.Document buildDocument(DeclarationImpotOrdinairePM declaration, RegDate dateSommation, boolean batch) throws EditiqueException {
+	public FichierImpression.Document buildDocument(DeclarationImpotOrdinairePM declaration, RegDate dateSommation, RegDate dateOfficielleEnvoi, boolean batch) throws EditiqueException {
 		throw new IllegalArgumentException("no meant to be called");
 	}
 

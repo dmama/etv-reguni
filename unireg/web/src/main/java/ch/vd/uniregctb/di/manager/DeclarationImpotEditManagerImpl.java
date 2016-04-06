@@ -934,7 +934,7 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 			if (!(declaration instanceof DeclarationImpotOrdinairePM)) {
 				throw new DeclarationException("Cette déclaration n'est pas une déclaration d'impôt de personne morales.");
 			}
-			return editiqueCompositionService.imprimeSommationDIOnline((DeclarationImpotOrdinairePM) declaration, date);
+			return editiqueCompositionService.imprimeSommationDIOnline((DeclarationImpotOrdinairePM) declaration, date, date);
 		}
 	}
 

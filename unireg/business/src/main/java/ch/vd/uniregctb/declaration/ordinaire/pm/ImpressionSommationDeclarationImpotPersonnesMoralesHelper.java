@@ -14,7 +14,7 @@ public interface ImpressionSommationDeclarationImpotPersonnesMoralesHelper exten
 	/**
 	 * Construction du document à envoyer à l'éditique
 	 */
-	FichierImpression.Document buildDocument(DeclarationImpotOrdinairePM declaration, RegDate dateSommation, boolean batch) throws EditiqueException;
+	FichierImpression.Document buildDocument(DeclarationImpotOrdinairePM declaration, RegDate dateSommation, RegDate dateOfficielleEnvoi, boolean batch) throws EditiqueException;
 
 	/**
 	 * Construit le champ idDocument pour la sommation de la déclaration donnée

@@ -232,7 +232,7 @@ public class EnvoiSommationsDIsPMProcessor {
 		etat.setAnnule(false);
 		di.addEtat(etat);
 
-		diService.envoiSommationDIPMForBatch(di, dateTraitement);
+		diService.envoiSommationDIPMForBatch(di, dateTraitement, dateExpedition);
 	}
 
 	/**

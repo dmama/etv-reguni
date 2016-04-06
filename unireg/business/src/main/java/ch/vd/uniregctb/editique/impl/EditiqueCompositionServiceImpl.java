@@ -363,10 +363,10 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 	}
 
 	@Override
-	public void imprimeSommationDIForBatch(DeclarationImpotOrdinairePM declaration, RegDate dateEvenement) throws EditiqueException {
+	public void imprimeSommationDIForBatch(DeclarationImpotOrdinairePM declaration, RegDate dateTraitement, RegDate dateOfficielleEnvoi) throws EditiqueException {
 		final TypeDocumentEditique typeDocument = impressionSommationDIPMHelper.getTypeDocumentEditique();
 		final FichierImpression root = new FichierImpression();
-		final FichierImpression.Document original = impressionSommationDIPMHelper.buildDocument(declaration, dateEvenement, true);
+		final FichierImpression.Document original = impressionSommationDIPMHelper.buildDocument(declaration, dateTraitement, dateOfficielleEnvoi, true);
 		final FichierImpression.Document copieMandataire = impressionSommationDIPMHelper.buildCopieMandataire(original, declaration.getTiers(), RegDate.get());
 		root.getDocument().add(original);
 		if (copieMandataire != null) {
@@ -400,11 +400,11 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 	}
 
 	@Override
-	public EditiqueResultat imprimeSommationDIOnline(DeclarationImpotOrdinairePM declaration, RegDate dateEvenement) throws EditiqueException, JMSException {
+	public EditiqueResultat imprimeSommationDIOnline(DeclarationImpotOrdinairePM declaration, RegDate dateTraitement, RegDate dateOfficielleEnvoi) throws EditiqueException, JMSException {
 		final TypeDocumentEditique typeDocument = impressionSommationDIPMHelper.getTypeDocumentEditique();
 
 		final FichierImpression root = new FichierImpression();
-		final FichierImpression.Document original = impressionSommationDIPMHelper.buildDocument(declaration, dateEvenement, false);
+		final FichierImpression.Document original = impressionSommationDIPMHelper.buildDocument(declaration, dateTraitement, dateOfficielleEnvoi, false);
 		final FichierImpression.Document copieMandataire = impressionSommationDIPMHelper.buildCopieMandataire(original, declaration.getTiers(), RegDate.get());
 		root.getDocument().add(original);
 		if (copieMandataire != null) {

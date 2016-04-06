@@ -189,9 +189,10 @@ public interface DeclarationImpotService {
 	 * il est de la responsabilité d'éditique d'imprimer la déclaration.
 	 *
 	 * @param declaration           la déclaration d'impôt ordinaire à imprimer
-	 * @param dateEvenement         la date d'impression
+	 * @param dateTraitement        la date d'impression
+	 * @param dateExpedition        la date d'expédition
 	 */
-	void envoiSommationDIPMForBatch(DeclarationImpotOrdinairePM declaration, RegDate dateEvenement) throws DeclarationException;
+	void envoiSommationDIPMForBatch(DeclarationImpotOrdinairePM declaration, RegDate dateTraitement, RegDate dateExpedition) throws DeclarationException;
 
 	/**
 	 * Fait passer la déclaration à l'état <i>échu</i>, et envoie un événement fiscal correspondant.
