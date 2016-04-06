@@ -27,7 +27,7 @@ public class AddSiegeViewValidator implements Validator {
 				errors.rejectValue("typeAutoriteFiscale", "error.tiers.type.autorite.vide");
 			}
 			if (view.getNoAutoriteFiscale() == null) {
-				errors.rejectValue("autoriteFiscale", "error.tiers.autorite.vide");
+				errors.rejectValue("noAutoriteFiscale", "error.tiers.autorite.vide");
 			}
 		}
 	}
