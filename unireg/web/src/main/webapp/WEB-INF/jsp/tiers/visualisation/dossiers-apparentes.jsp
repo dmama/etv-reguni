@@ -306,7 +306,7 @@
                     html += DossiersApparentes.buildEtablissementsOptions(etablissementsPage.page, etablissementsPage.showHisto, etablissementsPage.sortField, etablissementsPage.sortOrder);
                     html += DossiersApparentes.buildEtablissementsPagination(etablissementsPage.page, 10, etablissementsPage.totalCount);
                     if (etablissementsPage.totalCount > 0) {
-                        html += DossiersApparentes.buildEtablissementsTable(etablissementsPage.rapports, 'ret-', true) + '\n';
+                        html += DossiersApparentes.buildEtablissementsTable(etablissementsPage.rapports, 'etb-', true) + '\n';
                     }
                     html += '</fieldset>\n';
                     $('#etablissementsDiv').html(html);
