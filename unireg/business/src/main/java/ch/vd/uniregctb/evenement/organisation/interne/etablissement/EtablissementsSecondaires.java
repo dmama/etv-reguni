@@ -69,16 +69,16 @@ public class EtablissementsSecondaires extends EvenementOrganisationInterneDeTra
 				Ne pas créer les établissements secondaires non succursales
 			 */
 			if (!aCreer.isSuccursale(getDateEvt())) {
-				suivis.addSuivi(String.format("L'établissement secondaire civil %d n'est pas une succursale et ne sera donc pas créé dans Unireg.", aCreer.getNumeroSite()));
+				suivis.addSuivi(String.format("L'établissement secondaire civil %d n'est pas une succursale ou est une succursale radiée du RC et ne sera donc pas créé dans Unireg.", aCreer.getNumeroSite()));
 				continue;
 			}
 
 			// Contrôle du cas ou on va crée un établissement existant mais qu'on ne connaissait pas. On le crée quand même mais on avertit.
 			Domicile ancienDomicile = aCreer.getDomicile(dateAvant);
 			if (ancienDomicile != null) {
-				warnings.addWarning(String.format("Vérification manuelle requise: découverte de l'établissement secondaire (n°%s civil) préexistant au civil mais inconnu d'Unireg à ce jour. " +
-						                                  "Sa date de création doit probablement être ajustée à la main.",
-				                                  aCreer.getNumeroSite()));
+				warnings.addWarning(String.format("Vérification manuelle requise: l'établissement secondaire (n°%s civil) est préexistant au civil mais inconnu d'Unireg à ce jour. " +
+						                                  "La date du rapport entre tiers (%s) doit probablement être ajustée à la main.",
+				                                  aCreer.getNumeroSite(), dateApres));
 			}
 			addEtablissementSecondaire(aCreer, dateApres, warnings, suivis);
 		}
