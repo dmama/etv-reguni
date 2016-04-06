@@ -20,6 +20,7 @@ import ch.vd.uniregctb.hibernate.HibernateCallback;
 import ch.vd.uniregctb.indexer.GlobalIndex;
 import ch.vd.uniregctb.indexer.IndexerException;
 import ch.vd.uniregctb.indexer.async.MassTiersIndexer;
+import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
 import ch.vd.uniregctb.stats.StatsService;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.TiersCriteria;
@@ -272,6 +273,7 @@ public class GlobalTiersIndexerTest extends BusinessTest {
 		indexer.setTiersDAO(tiersDAO);
 		indexer.setTiersSearcher(globalTiersSearcher);
 		indexer.setTiersService(tiersService);
+		indexer.setAssujettissementService(getBean(AssujettissementService.class, "assujettissementService"));
 		indexer.setTransactionManager(transactionManager);
 		indexer.afterPropertiesSet();
 

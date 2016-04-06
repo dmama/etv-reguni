@@ -12,6 +12,7 @@ import ch.vd.uniregctb.avatar.AvatarService;
 import ch.vd.uniregctb.indexer.IndexerException;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.ServiceOrganisationService;
+import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
 import ch.vd.uniregctb.tiers.Etablissement;
 import ch.vd.uniregctb.tiers.OrganisationNotFoundException;
 import ch.vd.uniregctb.tiers.SiteOrganisationNotFoundException;
@@ -23,9 +24,9 @@ public class EtablissementIndexable extends ContribuableIndexable<Etablissement>
 
 	private final SiteOrganisation site;
 
-	public EtablissementIndexable(AdresseService adresseService, TiersService tiersService, ServiceInfrastructureService serviceInfra, ServiceOrganisationService serviceOrganisation,
-	                              AvatarService avatarService, Etablissement etablissement) throws IndexerException {
-		super(adresseService, tiersService, serviceInfra, avatarService, etablissement);
+	public EtablissementIndexable(AdresseService adresseService, TiersService tiersService, AssujettissementService assujettissementService, ServiceInfrastructureService serviceInfra,
+	                              ServiceOrganisationService serviceOrganisation, AvatarService avatarService, Etablissement etablissement) throws IndexerException {
+		super(adresseService, tiersService, assujettissementService, serviceInfra, avatarService, etablissement);
 
 		if (etablissement.isConnuAuCivil()) {
 			final Long noOrganisation = serviceOrganisation.getOrganisationPourSite(etablissement.getNumeroEtablissement());

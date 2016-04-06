@@ -17,6 +17,7 @@ import ch.vd.uniregctb.indexer.GlobalIndex;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer.Mode;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexerImpl;
 import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
+import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.Tiers;
@@ -63,6 +64,7 @@ public class MassTiersIndexerTest extends BusinessTest {
 		gti.setTiersDAO(tiersDAO);
 		gti.setTiersSearcher(globalTiersSearcher);
 		gti.setTiersService(tiersService);
+		gti.setAssujettissementService(getBean(AssujettissementService.class, "assujettissementService"));
 		gti.setTransactionManager(transactionManager);
 		gti.setAvatarService(getBean(AvatarService.class, "avatarService"));
 

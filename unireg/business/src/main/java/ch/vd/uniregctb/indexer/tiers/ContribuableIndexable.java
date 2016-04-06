@@ -1,26 +1,44 @@
 package ch.vd.uniregctb.indexer.tiers;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import ch.vd.registre.base.date.DateRange;
+import ch.vd.registre.base.date.DateRangeHelper;
+import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.avatar.AvatarService;
+import ch.vd.uniregctb.common.AnnulableHelper;
+import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.indexer.IndexerException;
 import ch.vd.uniregctb.indexer.IndexerFormatHelper;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
+import ch.vd.uniregctb.metier.assujettissement.Assujettissement;
+import ch.vd.uniregctb.metier.assujettissement.AssujettissementException;
+import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
 import ch.vd.uniregctb.tiers.IdentificationEntreprise;
 import ch.vd.uniregctb.tiers.TiersService;
+import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
 public abstract class ContribuableIndexable<T extends Contribuable> extends TiersIndexable<T> {
 
-	// private static final Logger LOGGER = LoggerFactory.getLogger(ContribuableIndexable.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(ContribuableIndexable.class);
 
-	public ContribuableIndexable(AdresseService adresseService, TiersService tiersService, ServiceInfrastructureService serviceInfra, AvatarService avatarService, T contribuable) throws IndexerException {
+	private final AssujettissementService assujettissementService;
+
+	public ContribuableIndexable(AdresseService adresseService, TiersService tiersService, AssujettissementService assujettissementService, ServiceInfrastructureService serviceInfra, AvatarService avatarService, T contribuable) throws IndexerException {
 		super(adresseService, tiersService, serviceInfra, avatarService, contribuable);
+		this.assujettissementService = assujettissementService;
 	}
 
 	@Override
@@ -84,18 +102,39 @@ public abstract class ContribuableIndexable<T extends Contribuable> extends Tier
 			}
 		}
 
-		// Fors vaudois
-		RegDate dateOuvertureForVd = null;
-		RegDate dateFermetureForVd = null;
-		ForFiscal premierVd = tiers.getPremierForFiscalVd();
-		if (premierVd != null) {
-			dateOuvertureForVd = premierVd.getDateDebut();
-		}
-		ForFiscal dernierVd = tiers.getDernierForFiscalVd();
-		if (dernierVd != null) {
-			dateFermetureForVd = dernierVd.getDateFin();
-		}
+		// [SIFISC-17806] on veut trouver les fors vaudois correspondant à la dernière période d'assujettissement continue
+		RegDate dateDebutForVaudois;
+		RegDate dateFinForVaudois;
+		try {
+			final List<Assujettissement> assujettissements = assujettissementService.determine(tiers);
+			final List<DateRange> continuums = DateRangeHelper.merge(assujettissements);
+			if (continuums != null && !continuums.isEmpty()) {
+				final DateRange dernierePeriodeAssujettissementContinu = CollectionsUtils.getLastElement(continuums);
 
+				// on va construire une collection de tous les fors vaudois qui intersectent cette période
+				final List<ForFiscal> forsNonAnnules = AnnulableHelper.sansElementsAnnules(fors);
+				final List<ForFiscal> forsVaudoisInteressants = new ArrayList<>(forsNonAnnules.size());
+				for (ForFiscal forNonAnnule : forsNonAnnules) {
+					if (forNonAnnule.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD && DateRangeHelper.intersect(forNonAnnule, dernierePeriodeAssujettissementContinu)) {
+						forsVaudoisInteressants.add(forNonAnnule);
+					}
+				}
+
+				// ce sont la première date de début et la dernière date de fin de ces fors qui m'intéressent
+				dateDebutForVaudois = RegDateHelper.getLateDate();
+				dateFinForVaudois = RegDateHelper.getEarlyDate();
+				for (ForFiscal forVaudois : forsVaudoisInteressants) {
+					dateDebutForVaudois = RegDateHelper.minimum(dateDebutForVaudois, forVaudois.getDateDebut(), NullDateBehavior.EARLIEST);
+					dateFinForVaudois = RegDateHelper.maximum(dateFinForVaudois, forVaudois.getDateFin(), NullDateBehavior.LATEST);
+				}
+
+				data.setDateOuvertureForVd(IndexerFormatHelper.dateToString(dateDebutForVaudois, IndexerFormatHelper.DateStringMode.STORAGE));
+				data.setDateFermtureForVd(IndexerFormatHelper.dateToString(dateFinForVaudois, IndexerFormatHelper.DateStringMode.STORAGE));
+			}
+		}
+		catch (AssujettissementException e) {
+			LOGGER.warn("Impossible de calculer l'assujettissement du tiers " + tiers.getNumero(), e);
+		}
 
 		data.setNoOfsForPrincipal(noOfsFfpActif);
 		data.setTypeOfsForPrincipal(typeAutFfpActif);
@@ -103,8 +142,6 @@ public abstract class ContribuableIndexable<T extends Contribuable> extends Tier
 		data.setForPrincipal(communeDernierFfp);
 		data.setDateOuvertureFor(IndexerFormatHelper.dateToString(dateOuvertureFor, IndexerFormatHelper.DateStringMode.STORAGE));
 		data.setDateFermtureFor(IndexerFormatHelper.dateToString(dateFermetureFor, IndexerFormatHelper.DateStringMode.STORAGE));
-		data.setDateOuvertureForVd(IndexerFormatHelper.dateToString(dateOuvertureForVd, IndexerFormatHelper.DateStringMode.STORAGE));
-		data.setDateFermtureForVd(IndexerFormatHelper.dateToString(dateFermetureForVd, IndexerFormatHelper.DateStringMode.STORAGE));
 	}
 }
 

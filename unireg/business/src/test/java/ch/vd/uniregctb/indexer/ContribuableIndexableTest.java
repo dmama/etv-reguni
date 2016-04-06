@@ -74,6 +74,7 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 	private static final long noIndPhilippeMaillard = 3333L;
 	private static final long noIndGladysMaillard = 3334L;
 
+	private AssujettissementServiceImpl assujettissementService;
 	private AdresseServiceImpl adresseService;
 	private TiersServiceImpl tiersService;
 	private AvatarServiceImpl avatarService;
@@ -127,7 +128,7 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 		warmer.setServiceCivilService(serviceCivil);
 		warmer.setTiersDAO(tiersDAO);
 
-		final AssujettissementServiceImpl assujettissementService = new AssujettissementServiceImpl();
+		assujettissementService = new AssujettissementServiceImpl();
 		assujettissementService.setTiersService(tiersService);
 		assujettissementService.setValidationService(new ValidationServiceImpl());
 		assujettissementService.afterPropertiesSet();
@@ -164,7 +165,7 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 		mc.setNumero(2345L);
 		addTiers(mc, hab1, RegDate.get(2001, 2, 23));
 
-		MenageCommunIndexable indexable = new MenageCommunIndexable(adresseService, tiersService, serviceCivil, serviceInfra, avatarService, mc);
+		MenageCommunIndexable indexable = new MenageCommunIndexable(adresseService, tiersService, assujettissementService, serviceCivil, serviceInfra, avatarService, mc);
 
 		final TiersIndexableData values = (TiersIndexableData) indexable.getIndexableData();
 
@@ -198,7 +199,7 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 		adresses.add(a);
 		nonHab.setAdressesTiers(adresses);
 
-		NonHabitantIndexable indexable = new NonHabitantIndexable(adresseService, tiersService, serviceInfra, avatarService, nonHab);
+		NonHabitantIndexable indexable = new NonHabitantIndexable(adresseService, tiersService, assujettissementService, serviceInfra, avatarService, nonHab);
 
 		assertEquals(TiersIndexable.TYPE, indexable.getType());
 		assertEquals(NonHabitantIndexable.SUB_TYPE, indexable.getSubType());
@@ -218,7 +219,7 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 		hab.setNumero(12348L);
 		hab.setNumeroIndividu(individu.getNoTechnique());
 
-		HabitantIndexable indexable = new HabitantIndexable(adresseService, tiersService, serviceInfra, avatarService, hab, individu);
+		HabitantIndexable indexable = new HabitantIndexable(adresseService, tiersService, assujettissementService, serviceInfra, avatarService, hab, individu);
 
 		assertEquals(TiersIndexable.TYPE, indexable.getType());
 		assertEquals(HabitantIndexable.SUB_TYPE, indexable.getSubType());
@@ -250,7 +251,7 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 		ff.setNumeroOfsAutoriteFiscale(5586);
 		hab.addForFiscal(ff);
 
-		HabitantIndexable indexable = new HabitantIndexable(adresseService, tiersService, serviceInfra, avatarService, hab, individu);
+		HabitantIndexable indexable = new HabitantIndexable(adresseService, tiersService, assujettissementService, serviceInfra, avatarService, hab, individu);
 
 		assertEquals(TiersIndexable.TYPE, indexable.getType());
 		assertEquals(HabitantIndexable.SUB_TYPE, indexable.getSubType());
@@ -288,7 +289,7 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 		hab.addRapportSujet(contact);
 		dpi.addRapportObjet(contact);
 
-		DebiteurPrestationImposableIndexable indexable = new DebiteurPrestationImposableIndexable(adresseService, tiersService, serviceCivil, serviceOrganisation, serviceInfra, avatarService, dpi);
+		DebiteurPrestationImposableIndexable indexable = new DebiteurPrestationImposableIndexable(adresseService, tiersService, assujettissementService, serviceCivil, serviceOrganisation, serviceInfra, avatarService, dpi);
 
 		assertEquals(TiersIndexable.TYPE, indexable.getType());
 		assertEquals(DebiteurPrestationImposableIndexable.SUB_TYPE, indexable.getSubType());
@@ -329,7 +330,7 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 		nhab.addRapportSujet(contact);
 		dpi.addRapportObjet(contact);
 
-		DebiteurPrestationImposableIndexable indexable = new DebiteurPrestationImposableIndexable(adresseService, tiersService, serviceCivil, serviceOrganisation, serviceInfra, avatarService, dpi);
+		DebiteurPrestationImposableIndexable indexable = new DebiteurPrestationImposableIndexable(adresseService, tiersService, assujettissementService, serviceCivil, serviceOrganisation, serviceInfra, avatarService, dpi);
 
 		assertEquals(TiersIndexable.TYPE, indexable.getType());
 		assertEquals(DebiteurPrestationImposableIndexable.SUB_TYPE, indexable.getSubType());
@@ -368,7 +369,7 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 		entreprise.addRapportSujet(contact);
 		dpi.addRapportObjet(contact);
 
-		final DebiteurPrestationImposableIndexable indexable = new DebiteurPrestationImposableIndexable(adresseService, tiersService, serviceCivil, serviceOrganisation, serviceInfra, avatarService, dpi);
+		final DebiteurPrestationImposableIndexable indexable = new DebiteurPrestationImposableIndexable(adresseService, tiersService, assujettissementService, serviceCivil, serviceOrganisation, serviceInfra, avatarService, dpi);
 		assertEquals(TiersIndexable.TYPE, indexable.getType());
 		assertEquals(DebiteurPrestationImposableIndexable.SUB_TYPE, indexable.getSubType());
 
@@ -406,7 +407,7 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 		ac.addRapportSujet(contact);
 		dpi.addRapportObjet(contact);
 
-		DebiteurPrestationImposableIndexable indexable = new DebiteurPrestationImposableIndexable(adresseService, tiersService, serviceCivil, serviceOrganisation, serviceInfra, avatarService, dpi);
+		DebiteurPrestationImposableIndexable indexable = new DebiteurPrestationImposableIndexable(adresseService, tiersService, assujettissementService, serviceCivil, serviceOrganisation, serviceInfra, avatarService, dpi);
 
 		assertEquals(TiersIndexable.TYPE, indexable.getType());
 		assertEquals(DebiteurPrestationImposableIndexable.SUB_TYPE, indexable.getSubType());
@@ -481,7 +482,7 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 			nonHab.addForFiscal(forF);
 		}
 
-		NonHabitantIndexable indexable = new NonHabitantIndexable(adresseService, tiersService, serviceInfra, avatarService, nonHab);
+		NonHabitantIndexable indexable = new NonHabitantIndexable(adresseService, tiersService, assujettissementService, serviceInfra, avatarService, nonHab);
 
 		final TiersIndexableData values = (TiersIndexableData) indexable.getIndexableData();
 
@@ -523,7 +524,7 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 			nonHab.addForFiscal(forF);
 		}
 
-		NonHabitantIndexable indexable = new NonHabitantIndexable(adresseService, tiersService, serviceInfra, avatarService, nonHab);
+		NonHabitantIndexable indexable = new NonHabitantIndexable(adresseService, tiersService, assujettissementService, serviceInfra, avatarService, nonHab);
 
 		final TiersIndexableData values = (TiersIndexableData) indexable.getIndexableData();
 
@@ -597,7 +598,7 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 
 		nonHab.setAdressesTiers(adrs);
 
-		NonHabitantIndexable indexable = new NonHabitantIndexable(adresseService, tiersService, serviceInfra, avatarService, nonHab);
+		NonHabitantIndexable indexable = new NonHabitantIndexable(adresseService, tiersService, assujettissementService, serviceInfra, avatarService, nonHab);
 
 		final TiersIndexableData values = (TiersIndexableData) indexable.getIndexableData();
 
@@ -662,7 +663,7 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 
 		nonHab.setAdressesTiers(adrs);
 
-		NonHabitantIndexable indexable = new NonHabitantIndexable(adresseService, tiersService, serviceInfra, avatarService, nonHab);
+		NonHabitantIndexable indexable = new NonHabitantIndexable(adresseService, tiersService, assujettissementService, serviceInfra, avatarService, nonHab);
 
 		final TiersIndexableData values = (TiersIndexableData) indexable.getIndexableData();
 
@@ -712,7 +713,7 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 		}
 		nonHab.setAdressesTiers(adrs);
 
-		NonHabitantIndexable indexable = new NonHabitantIndexable(adresseService, tiersService, serviceInfra, avatarService, nonHab);
+		NonHabitantIndexable indexable = new NonHabitantIndexable(adresseService, tiersService, assujettissementService, serviceInfra, avatarService, nonHab);
 
 		final TiersIndexableData values = (TiersIndexableData) indexable.getIndexableData();
 
@@ -751,7 +752,7 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 		}
 		hab.setAdressesTiers(adrs);
 
-		HabitantIndexable indexable = new HabitantIndexable(adresseService, tiersService, serviceInfra, avatarService, hab, individu);
+		HabitantIndexable indexable = new HabitantIndexable(adresseService, tiersService, assujettissementService, serviceInfra, avatarService, hab, individu);
 
 		final TiersIndexableData values = (TiersIndexableData) indexable.getIndexableData();
 
@@ -780,7 +781,7 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 		addTiers(mc, hab1, RegDate.get(2001, 2, 23));
 		addTiers(mc, hab2, RegDate.get(2001, 2, 23));
 
-		MenageCommunIndexable indexable = new MenageCommunIndexable(adresseService, tiersService, serviceCivil, serviceInfra, avatarService, mc);
+		MenageCommunIndexable indexable = new MenageCommunIndexable(adresseService, tiersService, assujettissementService, serviceCivil, serviceInfra, avatarService, mc);
 
 		final TiersIndexableData values = (TiersIndexableData) indexable.getIndexableData();
 
@@ -831,7 +832,7 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 		addTiers(mc, nhab1, RegDate.get(2001, 2, 23));
 		addTiers(mc, nhab2, RegDate.get(2001, 2, 23));
 
-		MenageCommunIndexable indexable = new MenageCommunIndexable(adresseService, tiersService, serviceCivil, serviceInfra, avatarService, mc);
+		MenageCommunIndexable indexable = new MenageCommunIndexable(adresseService, tiersService, assujettissementService, serviceCivil, serviceInfra, avatarService, mc);
 
 		final TiersIndexableData values = (TiersIndexableData) indexable.getIndexableData();
 
@@ -871,7 +872,7 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 		adresse.setTiers(pp);
 		pp.addAdresseTiers(adresse);
 
-		final NonHabitantIndexable indexable = new NonHabitantIndexable(adresseService, tiersService, serviceInfra, avatarService, pp);
+		final NonHabitantIndexable indexable = new NonHabitantIndexable(adresseService, tiersService, assujettissementService, serviceInfra, avatarService, pp);
 		final TiersIndexableData values = (TiersIndexableData) indexable.getIndexableData();
 		assertEquals("1032", values.getNpaCourrier());
 		assertEquals("1032", values.getNpaTous());      // courrier, domicile (absent car défaut), poursuite (absent car défaut), représentation (absent car défaut)
@@ -915,7 +916,7 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 		hab.setNumero(1234L);
 		hab.setNumeroIndividu(noIndividu);
 
-		final HabitantIndexable indexable = new HabitantIndexable(adresseService, tiersService, serviceInfra, avatarService, hab, serviceCivil.getIndividu(noIndividu, null));
+		final HabitantIndexable indexable = new HabitantIndexable(adresseService, tiersService, assujettissementService, serviceInfra, avatarService, hab, serviceCivil.getIndividu(noIndividu, null));
 		final TiersIndexableData values = (TiersIndexableData) indexable.getIndexableData();
 		assertEquals("Beretta", values.getNomRaison());
 		assertEquals("Tim Timothée Philibert Beretta", values.getAutresNom());  // prénom usuel, tous prénoms, nom, nom de naissance (absent)
@@ -930,7 +931,7 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 		pp.setPrenomUsuel("Lolo");
 		pp.setTousPrenoms("Laurent Philippe");
 
-		final NonHabitantIndexable indexable = new NonHabitantIndexable(adresseService, tiersService, serviceInfra, avatarService, pp);
+		final NonHabitantIndexable indexable = new NonHabitantIndexable(adresseService, tiersService, assujettissementService, serviceInfra, avatarService, pp);
 		final TiersIndexableData values = (TiersIndexableData) indexable.getIndexableData();
 		assertEquals("Ruth", values.getNomRaison());
 		assertEquals("Lolo Laurent Philippe Ruth", values.getAutresNom());  // prénom usuel, tous prénoms, nom

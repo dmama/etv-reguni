@@ -5,6 +5,7 @@ import ch.vd.uniregctb.avatar.AvatarService;
 import ch.vd.uniregctb.indexer.IndexerException;
 import ch.vd.uniregctb.indexer.IndexerFormatHelper;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
+import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
 import ch.vd.uniregctb.tiers.AutreCommunaute;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.NatureJuridique;
@@ -17,8 +18,9 @@ public class AutreCommunauteIndexable extends ContribuableIndexable<AutreCommuna
 
 	public static final String SUB_TYPE = "autrecommunaute";
 
-	public AutreCommunauteIndexable(AdresseService adresseService, TiersService tiersService, ServiceInfrastructureService serviceInfra, AvatarService avatarService, AutreCommunaute autreCommunaute) throws IndexerException {
-		super(adresseService, tiersService, serviceInfra, avatarService, autreCommunaute);
+	public AutreCommunauteIndexable(AdresseService adresseService, TiersService tiersService, AssujettissementService assujettissementService,
+	                                ServiceInfrastructureService serviceInfra, AvatarService avatarService, AutreCommunaute autreCommunaute) throws IndexerException {
+		super(adresseService, tiersService, assujettissementService, serviceInfra, avatarService, autreCommunaute);
 	}
 
 	@Override

@@ -9,6 +9,7 @@ import ch.vd.uniregctb.avatar.AvatarService;
 import ch.vd.uniregctb.indexer.IndexerException;
 import ch.vd.uniregctb.indexer.IndexerFormatHelper;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
+import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
 import ch.vd.uniregctb.tiers.IdentificationPersonne;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.TiersService;
@@ -18,8 +19,9 @@ public class NonHabitantIndexable extends PersonnePhysiqueIndexable {
 
 	public static final String SUB_TYPE = "nonhabitant";
 
-	public NonHabitantIndexable(AdresseService adresseService, TiersService tiersService, ServiceInfrastructureService serviceInfra, AvatarService avatarService, PersonnePhysique nonHabitant) throws IndexerException {
-		super(adresseService, tiersService, serviceInfra, avatarService, nonHabitant);
+	public NonHabitantIndexable(AdresseService adresseService, TiersService tiersService, AssujettissementService assujettissementService,
+	                            ServiceInfrastructureService serviceInfra, AvatarService avatarService, PersonnePhysique nonHabitant) throws IndexerException {
+		super(adresseService, tiersService, assujettissementService, serviceInfra, avatarService, nonHabitant);
 	}
 
 	@Override

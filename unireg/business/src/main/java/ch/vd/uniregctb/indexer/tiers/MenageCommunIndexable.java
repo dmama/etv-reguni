@@ -16,6 +16,7 @@ import ch.vd.uniregctb.avatar.AvatarService;
 import ch.vd.uniregctb.indexer.IndexerException;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
+import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.IndividuNotFoundException;
 import ch.vd.uniregctb.tiers.MenageCommun;
@@ -37,13 +38,14 @@ public class MenageCommunIndexable extends ContribuableImpositionPersonnesPhysiq
 
 	public static final String SUB_TYPE = "menagecommun";
 
-	public MenageCommunIndexable(AdresseService adresseService, TiersService tiersService, ServiceCivilService serviceCivil, ServiceInfrastructureService serviceInfra, AvatarService avatarService, MenageCommun menage) throws IndexerException {
-		super(adresseService, tiersService, serviceInfra, avatarService, menage);
+	public MenageCommunIndexable(AdresseService adresseService, TiersService tiersService, AssujettissementService assujettissementService, ServiceCivilService serviceCivil,
+	                             ServiceInfrastructureService serviceInfra, AvatarService avatarService, MenageCommun menage) throws IndexerException {
+		super(adresseService, tiersService, assujettissementService, serviceInfra, avatarService, menage);
 
 		final EnsembleTiersCouple ensemble = extractEnsembleForIndexation(tiersService, menage);
-		ppIndexable1 = getPPIndexable(adresseService, tiersService, serviceCivil, serviceInfra, avatarService, ensemble.getPrincipal());
+		ppIndexable1 = getPPIndexable(adresseService, tiersService, assujettissementService, serviceCivil, serviceInfra, avatarService, ensemble.getPrincipal());
 		if (ensemble.getConjoint() != null) {
-			ppIndexable2 = getPPIndexable(adresseService, tiersService, serviceCivil, serviceInfra, avatarService, ensemble.getConjoint());
+			ppIndexable2 = getPPIndexable(adresseService, tiersService, assujettissementService, serviceCivil, serviceInfra, avatarService, ensemble.getConjoint());
 		}
 		else {
 			ppIndexable2 = null;//marié seul => pas d'indexation du conjoint
@@ -145,18 +147,18 @@ public class MenageCommunIndexable extends ContribuableImpositionPersonnesPhysiq
 		}
 	}
 
-	private static PersonnePhysiqueIndexable getPPIndexable(AdresseService adresseService, TiersService tiersService, ServiceCivilService serviceCivil, ServiceInfrastructureService serviceInfra,
+	private static PersonnePhysiqueIndexable getPPIndexable(AdresseService adresseService, TiersService tiersService, AssujettissementService assujettissementService, ServiceCivilService serviceCivil, ServiceInfrastructureService serviceInfra,
 	                                                        AvatarService avatarService, PersonnePhysique pp) {
 		PersonnePhysiqueIndexable ppIndexable = null;
 		if (pp != null && !pp.isHabitantVD()) {
-			ppIndexable = new NonHabitantIndexable(adresseService, tiersService, serviceInfra, avatarService, pp);
+			ppIndexable = new NonHabitantIndexable(adresseService, tiersService, assujettissementService, serviceInfra, avatarService, pp);
 		}
 		else if (pp != null) {
 			final Individu ind = serviceCivil.getIndividu(pp.getNumeroIndividu(), null, AttributeIndividu.ADRESSES);
 			if (ind == null) {
 				throw new IndividuNotFoundException(pp);
 			}
-			ppIndexable = new HabitantIndexable(adresseService, tiersService, serviceInfra, avatarService, pp, ind);
+			ppIndexable = new HabitantIndexable(adresseService, tiersService, assujettissementService, serviceInfra, avatarService, pp, ind);
 		}
 		return ppIndexable;
 	}

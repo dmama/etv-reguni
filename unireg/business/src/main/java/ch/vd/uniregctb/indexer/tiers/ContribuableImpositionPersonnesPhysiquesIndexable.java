@@ -5,15 +5,16 @@ import ch.vd.uniregctb.avatar.AvatarService;
 import ch.vd.uniregctb.indexer.IndexerException;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.metier.assujettissement.Assujettissement;
+import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
 import ch.vd.uniregctb.metier.assujettissement.TypeAssujettissement;
 import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
 import ch.vd.uniregctb.tiers.TiersService;
 
 public abstract class ContribuableImpositionPersonnesPhysiquesIndexable<T extends ContribuableImpositionPersonnesPhysiques> extends ContribuableIndexable<T> {
 
-	protected ContribuableImpositionPersonnesPhysiquesIndexable(AdresseService adresseService, TiersService tiersService,
+	protected ContribuableImpositionPersonnesPhysiquesIndexable(AdresseService adresseService, TiersService tiersService, AssujettissementService assujettissementService,
 	                                                            ServiceInfrastructureService serviceInfra, AvatarService avatarService, T contribuable) throws IndexerException {
-		super(adresseService, tiersService, serviceInfra, avatarService, contribuable);
+		super(adresseService, tiersService, assujettissementService, serviceInfra, avatarService, contribuable);
 	}
 
 	@Override

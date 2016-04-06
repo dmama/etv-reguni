@@ -11,6 +11,7 @@ import ch.vd.uniregctb.indexer.IndexerException;
 import ch.vd.uniregctb.indexer.IndexerFormatHelper;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.ServiceOrganisationService;
+import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
 import ch.vd.uniregctb.tiers.CategorieEntrepriseHelper;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.FormeLegaleHisto;
@@ -25,9 +26,9 @@ public class EntrepriseIndexable extends ContribuableIndexable<Entreprise> {
 
 	private final Organisation organisation;
 
-	public EntrepriseIndexable(AdresseService adresseService, TiersService tiersService, ServiceInfrastructureService serviceInfra, ServiceOrganisationService serviceOrganisationService,
-	                           AvatarService avatarService, Entreprise entreprise) throws IndexerException {
-		super(adresseService, tiersService, serviceInfra, avatarService, entreprise);
+	public EntrepriseIndexable(AdresseService adresseService, TiersService tiersService, AssujettissementService assujettissementService, ServiceInfrastructureService serviceInfra,
+	                           ServiceOrganisationService serviceOrganisationService, AvatarService avatarService, Entreprise entreprise) throws IndexerException {
+		super(adresseService, tiersService, assujettissementService, serviceInfra, avatarService, entreprise);
 		if (entreprise.isConnueAuCivil()) {
 			this.organisation = serviceOrganisationService.getOrganisationHistory(entreprise.getNumeroEntreprise());
 			if (this.organisation == null) {

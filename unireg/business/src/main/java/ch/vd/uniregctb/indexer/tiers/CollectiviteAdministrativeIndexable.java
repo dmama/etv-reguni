@@ -9,6 +9,7 @@ import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.avatar.AvatarService;
 import ch.vd.uniregctb.indexer.IndexerException;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
+import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.TiersService;
 
@@ -18,9 +19,9 @@ public class CollectiviteAdministrativeIndexable extends ContribuableIndexable<C
 
 	public static final String SUB_TYPE = "collectiviteadministrative";
 
-	public CollectiviteAdministrativeIndexable(AdresseService adresseService, TiersService tiersService,
+	public CollectiviteAdministrativeIndexable(AdresseService adresseService, TiersService tiersService, AssujettissementService assujettissementService,
 	                                           ServiceInfrastructureService serviceInfra, AvatarService avatarService, CollectiviteAdministrative collectivite) throws IndexerException {
-		super(adresseService, tiersService, serviceInfra, avatarService, collectivite);
+		super(adresseService, tiersService, assujettissementService, serviceInfra, avatarService, collectivite);
 	}
 
 	@Override

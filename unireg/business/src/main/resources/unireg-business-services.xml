@@ -12,6 +12,7 @@
 		<property name="serviceInfra" ref="serviceInfrastructureService" />
 		<property name="adresseService" ref="adresseService" />
 		<property name="tiersService" ref="tiersService" />
+		<property name="assujettissementService" ref="assujettissementService" />
 		<property name="avatarService" ref="avatarService" />
 		<property name="serviceOrganisationService" ref="serviceOrganisationService"/>
 		<property name="transactionManager" ref="transactionManager" />

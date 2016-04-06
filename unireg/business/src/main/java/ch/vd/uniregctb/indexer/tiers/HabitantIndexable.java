@@ -9,6 +9,7 @@ import ch.vd.uniregctb.avatar.AvatarService;
 import ch.vd.uniregctb.indexer.IndexerException;
 import ch.vd.uniregctb.indexer.IndexerFormatHelper;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
+import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.TiersService;
 
@@ -22,8 +23,9 @@ public class HabitantIndexable extends PersonnePhysiqueIndexable {
 
 	private final Individu individu;
 
-	public HabitantIndexable(AdresseService adresseService, TiersService tiersService, ServiceInfrastructureService serviceInfra, AvatarService avatarService, PersonnePhysique hab, Individu individu) throws IndexerException {
-		super(adresseService, tiersService, serviceInfra, avatarService, hab);
+	public HabitantIndexable(AdresseService adresseService, TiersService tiersService, AssujettissementService assujettissementService,
+	                         ServiceInfrastructureService serviceInfra, AvatarService avatarService, PersonnePhysique hab, Individu individu) throws IndexerException {
+		super(adresseService, tiersService, assujettissementService, serviceInfra, avatarService, hab);
 		Assert.notNull(individu);
 		this.individu = individu;
 	}
