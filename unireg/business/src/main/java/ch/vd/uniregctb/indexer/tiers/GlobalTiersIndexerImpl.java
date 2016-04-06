@@ -599,7 +599,7 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingB
         }
         else if (tiers instanceof Etablissement) {
 	        final Etablissement etablissement = (Etablissement) tiers;
-	        indexable = new EtablissementIndexable(adresseService, tiersService, serviceInfra, serviceOrganisationService, serviceCivilService, avatarService, etablissement);
+	        indexable = new EtablissementIndexable(adresseService, tiersService, serviceInfra, serviceOrganisationService, avatarService, etablissement);
         }
         else {
             final String message = "Le Tiers " + tiers.getNatureTiers() + " n'est pas connu de l'indexation!!!";
