@@ -35,7 +35,7 @@ public class ImpressionRappelHelperImpl extends EditiqueAbstractHelperImpl imple
 	public FichierImpression.Document buildDocument(LettreBienvenue lettre, RegDate dateTraitement, boolean batch) throws EditiqueException {
 		try {
 			final Entreprise entreprise = lettre.getEntreprise();
-			final CTypeInfoDocument infoDocument = buildInfoDocument(getAdresseEnvoi(entreprise));
+			final CTypeInfoDocument infoDocument = buildInfoDocument(getAdresseEnvoi(entreprise), entreprise);
 			final CTypeInfoArchivage infoArchivage = buildInfoArchivage(getTypeDocumentEditique(), construitCleArchivage(lettre), entreprise.getNumero(), dateTraitement);
 			final CTypeInfoEnteteDocument infoEnteteDocument = buildInfoEnteteDocument(entreprise, lettre.getDateRappel(), TRAITE_PAR, NOM_SERVICE_EXPEDITEUR, infraService.getACIOIPM(), infraService.getCAT());
 			final FichierImpression.Document.LettreRappel rappel = new FichierImpression.Document.LettreRappel(STypeLettreRappel.LETTRE_BIENVENUE);
@@ -46,11 +46,11 @@ public class ImpressionRappelHelperImpl extends EditiqueAbstractHelperImpl imple
 		}
 	}
 
-	private static CTypeInfoDocument buildInfoDocument(AdresseEnvoiDetaillee adresseEnvoi) {
+	private static CTypeInfoDocument buildInfoDocument(AdresseEnvoiDetaillee adresseEnvoi, Entreprise entreprise) {
 		final CTypeInfoDocument infoDoc = new CTypeInfoDocument();
 
 		final Pair<STypeZoneAffranchissement, String> infosAffranchissement = getInformationsAffranchissement(adresseEnvoi, false, ServiceInfrastructureService.noOIPM);
-		infoDoc.setIdEnvoi(infosAffranchissement.getRight());
+		assigneIdEnvoi(infoDoc, entreprise, infosAffranchissement);
 		infoDoc.setAffranchissement(new CTypeAffranchissement(infosAffranchissement.getLeft(), null));
 		infoDoc.setVersionXSD(VERSION_XSD);
 
