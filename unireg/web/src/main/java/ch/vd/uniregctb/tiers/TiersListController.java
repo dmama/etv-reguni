@@ -154,7 +154,12 @@ public class TiersListController implements MessageSourceAware {
 			 result = helper.search(criteria);
 		}
 		catch (TooManyResultsIndexerException e) {
-			model.addAttribute(ERROR_MESSAGE_ATTRIBUTE_NAME, getMessage("error.preciser.recherche"));
+			if (e.getNbResults() > 0) {
+				model.addAttribute(ERROR_MESSAGE_ATTRIBUTE_NAME, getMessage("error.preciser.recherche.trouves", String.valueOf(e.getNbResults())));
+			}
+			else {
+				model.addAttribute(ERROR_MESSAGE_ATTRIBUTE_NAME, getMessage("error.preciser.recherche"));
+			}
 		}
 		catch (EmptySearchCriteriaException e) {
 			// rien de spécial...
@@ -166,8 +171,8 @@ public class TiersListController implements MessageSourceAware {
 		return show(model, session, criteria, result);
 	}
 
-	private String getMessage(String key) {
-		return messageSource.getMessage(key, null, WebContextUtils.getDefaultLocale());
+	private String getMessage(String key, Object... args) {
+		return messageSource.getMessage(key, args, WebContextUtils.getDefaultLocale());
 	}
 
 	private String show(Model model, HttpSession session, TiersCriteriaView criteria, @Nullable List<TiersIndexedDataView> results) {

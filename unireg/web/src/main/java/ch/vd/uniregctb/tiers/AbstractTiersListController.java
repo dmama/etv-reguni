@@ -84,9 +84,16 @@ public abstract class AbstractTiersListController extends AbstractTiersControlle
 					try {
 						final List<TiersIndexedDataView> displaysTiers = searchTiers(bean);
 						mav.addObject(listAttributeName, displaysTiers);
-					} catch (TooManyResultsIndexerException ee) {
-						errors.reject("error.preciser.recherche");
-					} catch (IndexerException e) {
+					}
+					catch (TooManyResultsIndexerException ee) {
+						if (ee.getNbResults() > 0) {
+							errors.reject("error.preciser.recherche.trouves", new Object[] {String.valueOf(ee.getNbResults())}, null);
+						}
+						else {
+							errors.reject("error.preciser.recherche");
+						}
+					}
+					catch (IndexerException e) {
 						LOGGER.error("Exception dans l'indexer: " + e.getMessage(), e);
 						errors.reject("error.recherche");
 					}

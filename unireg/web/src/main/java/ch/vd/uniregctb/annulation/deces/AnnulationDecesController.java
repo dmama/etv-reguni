@@ -121,7 +121,12 @@ public class AnnulationDecesController {
 				model.addAttribute("list", list);
 			}
 			catch (TooManyResultsIndexerException ee) {
-				result.reject("error.preciser.recherche");
+				if (ee.getNbResults() > 0) {
+					result.reject("error.preciser.recherche.trouves", new Object[] {String.valueOf(ee.getNbResults())}, null);
+				}
+				else {
+					result.reject("error.preciser.recherche");
+				}
 			}
 			catch (IndexerException e) {
 				result.reject("error.recherche");

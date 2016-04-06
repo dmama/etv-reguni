@@ -86,7 +86,12 @@ public class DecesListController extends  AbstractTiersListController {
 					}
 					catch (TooManyResultsIndexerException ee) {
 						LOGGER.error("Exception dans l'indexer: " + ee.getMessage(), ee);
-						errors.reject("error.preciser.recherche");
+						if (ee.getNbResults() > 0) {
+							errors.reject("error.preciser.recherche.trouves", new Object[] {String.valueOf(ee.getNbResults())}, null);
+						}
+						else {
+							errors.reject("error.preciser.recherche");
+						}
 					}
 					catch (IndexerException e) {
 						LOGGER.error("Exception dans l'indexer: " + e.getMessage(), e);
