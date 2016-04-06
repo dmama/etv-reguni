@@ -41,7 +41,7 @@ import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesMorales;
 import ch.vd.uniregctb.tiers.Entreprise;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipalPM;
+import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.Mandat;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.tiers.Tiers;
@@ -122,6 +122,15 @@ public abstract class EditiqueAbstractHelperImpl implements EditiqueAbstractHelp
 	}
 
 	/**
+	 * @param contribuable un contribuable entreprise
+	 * @return si le dernier for fiscal principal de l'entreprise est fermé pour motif FAILLITE
+	 */
+	private static boolean isEnFaillite(Contribuable contribuable) {
+		final ForFiscalPrincipal dernierForPrincipal = contribuable.getDernierForFiscalPrincipal();
+		return dernierForPrincipal != null && dernierForPrincipal.getDateFin() != null && dernierForPrincipal.getMotifFermeture() == MotifFor.FAILLITE;
+	}
+
+	/**
 	 * Assigne la valeur du champ idEnvoi dans la structure {@link CTypeInfoDocument} passée en paramètre selon les critères suivants :
 	 * <ul>
 	 *     <li>si l'IdEnvoi dans les informations d'affranchissement est renseigné, c'est lui</li>
@@ -136,14 +145,11 @@ public abstract class EditiqueAbstractHelperImpl implements EditiqueAbstractHelp
 		if (StringUtils.isNotBlank(infoAffranchissement.getRight())) {
 			idEnvoi = infoAffranchissement.getRight();
 		}
+		else if (isEnFaillite(contribuable)) {
+			idEnvoi = String.valueOf(ServiceInfrastructureService.noOIPM);
+		}
 		else {
-			final ForFiscalPrincipalPM dernierForPrincipal = contribuable.getDernierForFiscalPrincipal();
-			if (dernierForPrincipal != null && dernierForPrincipal.getDateFin() != null && dernierForPrincipal.getMotifFermeture() == MotifFor.FAILLITE) {
-				idEnvoi = String.valueOf(ServiceInfrastructureService.noOIPM);
-			}
-			else {
-				idEnvoi = null;
-			}
+			idEnvoi = null;
 		}
 		infoDocument.setIdEnvoi(idEnvoi);
 	}
@@ -257,6 +263,12 @@ public abstract class EditiqueAbstractHelperImpl implements EditiqueAbstractHelp
 	@Override
 	@Nullable
 	public FichierImpression.Document buildCopieMandataire(FichierImpression.Document original, Contribuable destinataire, RegDate dateReference) throws EditiqueException {
+
+		// [SIFISC-18705] si le contribuable est en faillite, on ne fait jamais de copie mandataire
+		if (isEnFaillite(destinataire)) {
+			return null;
+		}
+
 		// y a-t-il un mandataire général à la date de référence ?
 		final AdresseEnvoiDetaillee adresse;
 
