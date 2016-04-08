@@ -25,7 +25,7 @@
 					<tr class="<unireg:nextRowClass/>" >
 						<td width="20%"><fmt:message key="label.raison.sociale"/>&nbsp;:</td>
 						<td>
-							<input id="raisonSociale" name="raisonSociale" value="${command.raisonSociale}" size="25" ></td>
+							<input id="raisonSociale" name="raisonSociale" value="${command.raisonSociale}" size="80" ></td>
 							<form:errors path="raisonSociale" cssClass="error" />
 						</td>
 						<td width="20%"></td>

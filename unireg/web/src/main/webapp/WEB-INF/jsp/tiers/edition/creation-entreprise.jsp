@@ -80,7 +80,7 @@
 								<td><fmt:message key="label.raison.sociale" />&nbsp;:</td>
 								<td colspan="3">
 									<form:input path="civil.raisonSociale" tabindex="2" id="raisonSociale"
-									            size="20" maxlength="${lengthRaisonSociale}" />
+									            size="80" maxlength="${lengthRaisonSociale}" />
 									<font COLOR="#FF0000">*</font>
 									<form:errors path="civil.raisonSociale" cssClass="error" />
 								</td>
@@ -140,7 +140,7 @@
 									<fmt:message key="label.numero.ide"/>&nbsp;:
 								</td>
 								<td colspan="3">
-									<form:input id="numeroIde" path="civil.numeroIde" tabindex="8" maxlength="${length_numeroIDE}" />
+									<form:input size="25" id="numeroIde" path="civil.numeroIde" tabindex="8" maxlength="${length_numeroIDE}" />
 									<span style="margin-left: 2em;">
 										<form:errors path="civil.numeroIde" cssClass="error" />
 									</span>
