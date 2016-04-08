@@ -5,7 +5,8 @@ import ch.vd.uniregctb.type.EtatEvenementOrganisation;
 public enum HandleStatus {
 
 	/**
-	 * L'événement a été bien traité et les données d'Unireg ont été modifiées en conséquences.
+	 * L'événement a été bien traité. N'implique pas nécessairement la modification des données d'Unireg. On devrait
+	 * toujours ressortir dans cet état, à moins qu'on ait déterminé que l'on est en redondance.
 	 */
 	TRAITE(1) {
 		@Override

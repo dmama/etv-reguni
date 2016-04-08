@@ -20,7 +20,8 @@ public enum EtatEvenementOrganisation {
 	EN_ATTENTE(false),
 
 	/**
-	 * Evénement complétement traité sans erreur
+	 * Evénement complétement traité sans erreur. Inclue les événements d'indexation pure et les événements qui n'ont finallement nécessité
+	 * aucune modification d'états en base. Ne pas confondre ces derniers avec redondant.
 	 */
 	TRAITE(true),
 
@@ -40,7 +41,9 @@ public enum EtatEvenementOrganisation {
 	FORCE(true),
 
 	/**
-	 * Evénement dont l'effet sur Unireg a été null car les données étaient déjà dans l'état voulu.
+	 * Evénement dont l'effet sur Unireg a été nul car les données étaient déjà dans l'état voulu. (Des modifications en base ou d'autres
+	 * actions avec impact fiscal étaient nécessaire, mais on ne les a pas faites, car on à trouvé la base dans l'état recherché ou les actions
+	 * avaient déjà été accomplies)
 	 */
 	REDONDANT(true);
 
