@@ -15,7 +15,7 @@ import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 /**
  * @author Raphaël Marmier, 2016-01-07, <raphael.marmier@vd.ch>
  */
-public class DomicileHisto implements Sourced<Source>, CollatableDateRange, Duplicable<DomicileHisto>, Annulable, Rerangeable<DomicileHisto> {
+public class DomicileHisto implements Sourced<Source>, CollatableDateRange, Duplicable<DomicileHisto>, Annulable, Rerangeable<DomicileHisto>, LocalizedDateRange {
 
 	private final Long id;
 	private final boolean annule;
@@ -47,11 +47,13 @@ public class DomicileHisto implements Sourced<Source>, CollatableDateRange, Dupl
 		return id;
 	}
 
+	@Override
 	public TypeAutoriteFiscale getTypeAutoriteFiscale() {
 		return typeAutoriteFiscale;
 	}
 
-	public int getNoOfs() {
+	@Override
+	public Integer getNumeroOfsAutoriteFiscale() {
 		return noOfs;
 	}
 

@@ -20,11 +20,13 @@ import org.springframework.web.util.HtmlUtils;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.uniregctb.adresse.AdresseEnvoiDetaillee;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
 import ch.vd.uniregctb.avatar.AvatarService;
 import ch.vd.uniregctb.avatar.TypeAvatar;
+import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.declaration.Periodicite;
 import ch.vd.uniregctb.security.Role;
@@ -36,6 +38,7 @@ import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.Etablissement;
 import ch.vd.uniregctb.tiers.EvenementsCivilsNonTraites;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
+import ch.vd.uniregctb.tiers.FormeLegaleHisto;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.Tiers;
@@ -502,6 +505,37 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 				s.append("\t<td width=\"25%\">").append(message("label.numero.telephone.fixe")).append("&nbsp;:</td>\n");
 				final String numeroTelephonePrive = dpi.getNumeroTelephonePrive();
 				s.append("\t<td width=\"50%\">").append(HtmlUtils.htmlEscape(StringUtils.trimToEmpty(numeroTelephonePrive))).append("</td>\n");
+				s.append("\t<td width=\"25%\">&nbsp;</td>\n");
+				s.append("</tr>\n");
+			}
+			else if (tiers instanceof Entreprise) {
+				final Entreprise entreprise = (Entreprise) tiers;
+
+				// numéro IDE
+				final String numeroIDE = tiersService.getNumeroIDE(entreprise);
+				s.append("<tr class=\"").append(nextRowClass()).append("\">\n");
+				s.append("\t<td width=\"25%\">").append(message("label.numero.ide")).append("&nbsp;:</td>\n");
+				s.append("\t<td width=\"50%\">").append(FormatNumeroHelper.formatNumIDE(numeroIDE)).append("</td>\n");
+				s.append("\t<td width=\"25%\">&nbsp;</td>\n");
+				s.append("</tr>\n");
+
+				// forme juridique
+				final List<FormeLegaleHisto> formesJuridiques = tiersService.getFormesLegales(entreprise, false);
+				final FormeLegale formeJuridique = formesJuridiques != null && !formesJuridiques.isEmpty() ? CollectionsUtils.getLastElement(formesJuridiques).getFormeLegale() : null;
+				s.append("<tr class=\"").append(nextRowClass()).append("\">\n");
+				s.append("\t<td width=\"25%\">").append(message("label.forme.juridique")).append("&nbsp;:</td>\n");
+				s.append("\t<td width=\"50%\">").append(formeJuridique != null ? formeJuridique.toString() : StringUtils.EMPTY).append("</td>\n");
+				s.append("\t<td width=\"25%\">&nbsp;</td>\n");
+				s.append("</tr>\n");
+			}
+			else if (tiers instanceof Etablissement) {
+				final Etablissement etablissement = (Etablissement) tiers;
+
+				// numéro IDE
+				final String numeroIDE = tiersService.getNumeroIDE(etablissement);
+				s.append("<tr class=\"").append(nextRowClass()).append("\">\n");
+				s.append("\t<td width=\"25%\">").append(message("label.numero.ide")).append("&nbsp;:</td>\n");
+				s.append("\t<td width=\"50%\">").append(FormatNumeroHelper.formatNumIDE(numeroIDE)).append("</td>\n");
 				s.append("\t<td width=\"25%\">&nbsp;</td>\n");
 				s.append("</tr>\n");
 			}

@@ -3,21 +3,25 @@ package ch.vd.uniregctb.indexer.tiers;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.lucene.document.Document;
 
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.avatar.TypeAvatar;
+import ch.vd.uniregctb.common.StringParser;
 import ch.vd.uniregctb.indexer.lucene.DocumentExtractorHelper;
 import ch.vd.uniregctb.indexer.lucene.LuceneHelper;
 import ch.vd.uniregctb.metier.assujettissement.TypeAssujettissement;
 import ch.vd.uniregctb.type.CategorieImpotSource;
+import ch.vd.uniregctb.type.FormeJuridiqueEntreprise;
 import ch.vd.uniregctb.type.ModeCommunication;
+import ch.vd.uniregctb.type.TypeEtatEntreprise;
 
 public class TiersIndexedData implements Serializable {
 
-	private static final long serialVersionUID = 1549012269648391839L;
+	private static final long serialVersionUID = -6497510265480092708L;
 
 	//private static final Logger LOGGER = LoggerFactory.getLogger(TiersIndexableData.class);
 
@@ -52,6 +56,10 @@ public class TiersIndexedData implements Serializable {
 	private final Long ancienNumeroSourcier;
 	private final List<String> numerosIDE;
 	private final TypeAvatar typeAvatar;
+	private final TypeEtatEntreprise etatEntreprise;
+	private final Set<TypeEtatEntreprise> tousEtatsEntreprise;
+	private final String domicileEtablissementPrincipal;
+	private final FormeJuridiqueEntreprise formeJuridique;
 
 	public TiersIndexedData(Document doc) {
 		tiersType = DocumentExtractorHelper.getDocValue(LuceneHelper.F_DOCSUBTYPE, doc);
@@ -85,6 +93,15 @@ public class TiersIndexedData implements Serializable {
 		assujettissementPP = DocumentExtractorHelper.getEnumValue(TiersIndexableData.ASSUJETTISSEMENT_PP, doc, TypeAssujettissement.class);
 		numerosIDE = DocumentExtractorHelper.getList(DocumentExtractorHelper.getDocValue(TiersIndexableData.IDE, doc));
 		typeAvatar = DocumentExtractorHelper.getEnumValue(TiersIndexableData.AVATAR, doc, TypeAvatar.class);
+		etatEntreprise = DocumentExtractorHelper.getEnumValue(TiersIndexableData.ETAT_ENTREPRISE_COURANT, doc, TypeEtatEntreprise.class);
+		tousEtatsEntreprise = DocumentExtractorHelper.getEnumSet(DocumentExtractorHelper.getDocValues(TiersIndexableData.ETATS_ENTREPRISE, doc), TypeEtatEntreprise.class);
+		formeJuridique = DocumentExtractorHelper.getValue(TiersIndexableData.FORME_JURIDIQUE, doc, new StringParser<FormeJuridiqueEntreprise>() {
+			@Override
+			public FormeJuridiqueEntreprise parse(String string) throws IllegalArgumentException {
+				return FormeJuridiqueEntreprise.fromCode(string);
+			}
+		});
+		domicileEtablissementPrincipal = DocumentExtractorHelper.getDocValue(TiersIndexableData.DOMICILE_ETABLISSEMENT_PRINCIPAL, doc);
 	}
 
 	private static RegDate indexStringToDateNaissanceInscriptionRC(String dateNaissance, String tiersType) {
@@ -243,5 +260,33 @@ public class TiersIndexedData implements Serializable {
 	 */
 	public TypeAvatar getTypeAvatar() {
 		return typeAvatar;
+	}
+
+	/**
+	 * @return l'état courant de l'entreprise (<b>null</b> pour les autres types de tiers)
+	 */
+	public TypeEtatEntreprise getEtatEntreprise() {
+		return etatEntreprise;
+	}
+
+	/**
+	 * @return l'ensemble des états d'entreprise par lesquels l'entreprise est passée (vide pour les autres types de tiers)
+	 */
+	public Set<TypeEtatEntreprise> getTousEtatsEntreprise() {
+		return tousEtatsEntreprise;
+	}
+
+	/**
+	 * @return le nom de la commune/du pays du domicile de l'établissement principal de l'entreprise (= siège)
+	 */
+	public String getDomicileEtablissementPrincipal() {
+		return domicileEtablissementPrincipal;
+	}
+
+	/**
+	 * @return le nom de la forme juridique de l'entreprise
+	 */
+	public FormeJuridiqueEntreprise getFormeJuridique() {
+		return formeJuridique;
 	}
 }

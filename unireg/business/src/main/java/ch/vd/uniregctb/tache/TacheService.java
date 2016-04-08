@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.shared.batchtemplate.StatusManager;
@@ -28,7 +27,6 @@ public interface TacheService {
 	 * @param forFiscal            le for principal ouvert
 	 * @param ancienModeImposition le mode d'imposition de l'ancien for principal actif
 	 */
-	@Transactional(rollbackFor = Throwable.class)
 	void genereTacheDepuisOuvertureForPrincipal(Contribuable contribuable, ForFiscalPrincipal forFiscal, @Nullable ModeImposition ancienModeImposition);
 
 	/**
@@ -37,7 +35,6 @@ public interface TacheService {
 	 * @param contribuable le contribuable sur lequel un for secondaire a été ouvert
 	 * @param forFiscal    le for secondaire ouvert
 	 */
-	@Transactional(rollbackFor = Throwable.class)
 	void genereTacheDepuisOuvertureForSecondaire(Contribuable contribuable, ForFiscalSecondaire forFiscal);
 
 	/**
@@ -46,7 +43,6 @@ public interface TacheService {
 	 * @param contribuable le contribuable sur lequel un for principal a été fermé
 	 * @param forFiscal    le for principal fermé
 	 */
-	@Transactional(rollbackFor = Throwable.class)
 	void genereTacheDepuisFermetureForPrincipal(Contribuable contribuable, ForFiscalPrincipal forFiscal);
 
 	/**
@@ -55,7 +51,6 @@ public interface TacheService {
 	 * @param contribuable le contribuable sur lequel un for secondaire a été fermé
 	 * @param forFiscal    le for secondaire fermé
 	 */
-	@Transactional(rollbackFor = Throwable.class)
 	void genereTacheDepuisFermetureForSecondaire(Contribuable contribuable, ForFiscalSecondaire forFiscal);
 
 
@@ -64,8 +59,13 @@ public interface TacheService {
 	 *
 	 * @param contribuable dont le for a été annulé
 	 */
-	@Transactional(rollbackFor = Throwable.class)
 	void genereTachesDepuisAnnulationDeFor(Contribuable contribuable);
+
+	/**
+	 * Génère une tâche de contrôle de dossier sur le contribuable indiqué (s'il n'en existe pas déjà une encore en instance)
+	 * @param contribuable sur lequel une tâche de contrôle de dossier doit être ajoutée
+	 */
+	void genereTacheControleDossier(Contribuable contribuable);
 
 	/**
 	 * @param oid l'id de l'office d'impôt courant de l'utilisateur

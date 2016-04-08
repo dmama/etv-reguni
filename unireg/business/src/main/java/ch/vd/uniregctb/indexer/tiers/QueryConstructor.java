@@ -25,6 +25,7 @@ import ch.vd.uniregctb.tiers.TiersCriteria.TypeTiers;
 import ch.vd.uniregctb.tiers.TiersCriteria.TypeVisualisation;
 import ch.vd.uniregctb.tiers.TiersFilter;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
+import ch.vd.uniregctb.type.TypeEtatEntreprise;
 
 public class QueryConstructor {
 
@@ -355,7 +356,7 @@ public class QueryConstructor {
 		}
 	}
 
-	public static void addLimitation(BooleanQuery fullQuery, TiersFilter filter) {
+	public static void addContrainteVisualisationLimitee(BooleanQuery fullQuery, TiersFilter filter) {
 		if (filter.getTypeVisualisation() == TypeVisualisation.LIMITEE) {
 			BooleanQuery query = new BooleanQuery();
 			// restriction des DPI
@@ -370,6 +371,26 @@ public class QueryConstructor {
 			query = new BooleanQuery();
 			query.add(new TermQuery(new Term(TiersIndexableData.DEBITEUR_INACTIF, Constants.NON)), must);
 			fullQuery.add(query, must);
+		}
+	}
+
+	public void addContrainteEtatsEntrepriseInterdits(BooleanQuery fullQuery) {
+		if (criteria.getEtatsEntrepriseInterdits() != null && !criteria.getEtatsEntrepriseInterdits().isEmpty()) {
+			final BooleanQuery query = new BooleanQuery();
+			for (TypeEtatEntreprise etat : criteria.getEtatsEntrepriseInterdits()) {
+				query.add(new TermQuery(new Term(TiersIndexableData.ETATS_ENTREPRISE, etat.name())), should);
+			}
+			fullQuery.add(query, mustNot);
+		}
+	}
+
+	public void addContrainteEtatCourantEntrepriseInterdit(BooleanQuery fullQuery) {
+		if (criteria.getEtatsEntrepriseCourantsInterdits() != null && !criteria.getEtatsEntrepriseCourantsInterdits().isEmpty()) {
+			final BooleanQuery query = new BooleanQuery();
+			for (TypeEtatEntreprise etat : criteria.getEtatsEntrepriseCourantsInterdits()) {
+				query.add(new TermQuery(new Term(TiersIndexableData.ETAT_ENTREPRISE_COURANT, etat.name())), should);
+			}
+			fullQuery.add(query, mustNot);
 		}
 	}
 
@@ -505,7 +526,9 @@ public class QueryConstructor {
 		}
 
 		addTypeTiers(fullQuery, typesTiers);
-		addLimitation(fullQuery, criteria);
+		addContrainteVisualisationLimitee(fullQuery, criteria);
+		addContrainteEtatsEntrepriseInterdits(fullQuery);
+		addContrainteEtatCourantEntrepriseInterdit(fullQuery);
 
 		final BooleanClause[] clauses = fullQuery.getClauses();
 		if (clauses != null && clauses.length > 0) {

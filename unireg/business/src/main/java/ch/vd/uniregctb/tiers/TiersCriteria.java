@@ -15,6 +15,7 @@ import ch.vd.uniregctb.type.CategorieImpotSource;
 import ch.vd.uniregctb.type.FormeJuridiqueEntreprise;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.Sexe;
+import ch.vd.uniregctb.type.TypeEtatEntreprise;
 
 /**
  * Critères de recherche pour les tiers.
@@ -42,7 +43,7 @@ public class TiersCriteria implements Serializable, TiersFilter {
 		}
 	}
 
-	private static final long serialVersionUID = 4997424146812883522L;
+	private static final long serialVersionUID = 6417025939078838133L;
 
 	public enum TypeRecherche {
 		CONTIENT,
@@ -256,6 +257,18 @@ public class TiersCriteria implements Serializable, TiersFilter {
 	 * Numéro IDE assotié au tiers
 	 */
 	private String numeroIDE;
+
+	/**
+	 * Types d'états entreprise non-présents (si présent, ce critère excluera de la liste de résultats toutes les
+	 * entreprises dont l'un des états non-annulés est l'un des états du critère)
+	 */
+	private Set<TypeEtatEntreprise> etatsEntrepriseInterdits;
+
+	/**
+	 * Types d'états entreprise interdits en tant qu'état courant (si présent, ce critère excluera de la liste des résultats
+	 * toutes les entreprises dont l'état courant est cité)
+	 */
+	private Set<TypeEtatEntreprise> etatsEntrepriseCourantsInterdits;
 
 	/**
 	 * @return true si aucun paramètre de recherche n'est renseigné. false
@@ -672,5 +685,21 @@ public class TiersCriteria implements Serializable, TiersFilter {
 
 	public void setNumeroIDE(String numeroIDE) {
 		this.numeroIDE = numeroIDE;
+	}
+
+	public Set<TypeEtatEntreprise> getEtatsEntrepriseInterdits() {
+		return etatsEntrepriseInterdits;
+	}
+
+	public void setEtatsEntrepriseInterdits(Set<TypeEtatEntreprise> etatsEntrepriseInterdits) {
+		this.etatsEntrepriseInterdits = etatsEntrepriseInterdits;
+	}
+
+	public Set<TypeEtatEntreprise> getEtatsEntrepriseCourantsInterdits() {
+		return etatsEntrepriseCourantsInterdits;
+	}
+
+	public void setEtatsEntrepriseCourantsInterdits(Set<TypeEtatEntreprise> etatsEntrepriseCourantsInterdits) {
+		this.etatsEntrepriseCourantsInterdits = etatsEntrepriseCourantsInterdits;
 	}
 }

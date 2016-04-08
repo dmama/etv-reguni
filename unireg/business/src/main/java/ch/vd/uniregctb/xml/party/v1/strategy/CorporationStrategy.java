@@ -156,7 +156,7 @@ public class CorporationStrategy extends TaxPayerStrategy<Corporation> {
 				final LegalSeat seat = new LegalSeat();
 				seat.setDateFrom(DataHelper.coreToXMLv1(siege.getDateDebut()));
 				seat.setDateTo(DataHelper.coreToXMLv1(siege.getDateFin()));
-				seat.setFsoId(siege.getNoOfs());
+				seat.setFsoId(siege.getNumeroOfsAutoriteFiscale());
 				seat.setType(EnumHelper.coreToXMLLegalSeatv1(siege.getTypeAutoriteFiscale()));
 				liste.add(seat);
 			}

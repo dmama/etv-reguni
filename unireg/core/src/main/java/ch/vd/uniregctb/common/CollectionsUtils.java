@@ -118,7 +118,7 @@ public abstract class CollectionsUtils {
 	 * @param <T> type des éléments des collections
 	 * @return itérable sur une liste virtuelle vue comme la composition des deux listes données
 	 */
-	public static <T> Iterable<T> merged(List<T> first, List<T> second) {
+	public static <T> Iterable<T> merged(Iterable<T> first, Iterable<T> second) {
 		final Iterator<T> iterFirst = first.iterator();
 		final Iterator<T> iterSecond = second.iterator();
 		final Iterator<T> merged = new Iterator<T>() {

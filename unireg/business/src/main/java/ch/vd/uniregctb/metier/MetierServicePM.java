@@ -31,4 +31,13 @@ public interface MetierServicePM {
 	 * @return le résultat de l'opération de rattachement
 	 */
 	RattachementOrganisationResult rattacheOrganisationEntreprise(Organisation organisation, Entreprise entreprise, RegDate date) throws MetierServiceException;
+
+	/**
+	 * Opération de faillite
+	 * @param entreprise l'entreprise qui part en faillite
+	 * @param datePrononceFaillite date du prononcé de faillite
+	 * @param remarqueAssociee [optionnelle] éventuelle remarque à ajouter à l'entreprise en même temps
+	 * @throws MetierServiceException en cas de problème
+	 */
+	void faillite(Entreprise entreprise, RegDate datePrononceFaillite, String remarqueAssociee) throws MetierServiceException;
 }

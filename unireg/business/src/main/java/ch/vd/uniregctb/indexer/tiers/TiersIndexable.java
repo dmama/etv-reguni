@@ -17,7 +17,7 @@ import ch.vd.uniregctb.indexer.IndexableData;
 import ch.vd.uniregctb.indexer.IndexerException;
 import ch.vd.uniregctb.indexer.IndexerFormatHelper;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.tiers.ForFiscal;
+import ch.vd.uniregctb.tiers.LocalizedDateRange;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
@@ -66,7 +66,7 @@ public abstract class TiersIndexable<T extends Tiers> implements Indexable {
 		data.setDebiteurInactif(IndexerFormatHelper.booleanToString(tiers.isDebiteurInactif()));
 		data.setAnnule(IndexerFormatHelper.booleanToString(tiers.isDesactive(null)));
 		data.setRoleLigne1(tiers.getRoleLigne1());
-		data.setTypeAvatar(IndexerFormatHelper.enumToString(avatarService.getTypeAvatar(tiers)));
+		data.setTypeAvatar(avatarService.getTypeAvatar(tiers));
 
 		final Long millisecondes = DateHelper.getCurrentDate().getTime();
 		data.setIndexationDate(IndexerFormatHelper.numberToString(millisecondes));
@@ -148,46 +148,37 @@ public abstract class TiersIndexable<T extends Tiers> implements Indexable {
 		data.setNoOfsDomicileVd(IndexerFormatHelper.numberToString(noOfsCommuneVD));
 	}
 
-	protected String getForCommuneAsString(ForFiscal forF) throws IndexerException {
+	protected String getLocalisationAsString(LocalizedDateRange localisation, Tiers tiers) throws IndexerException {
 
-		String forStr= "";
-
+		String str = StringUtils.EMPTY;
 		try {
-			TypeAutoriteFiscale typeForFiscal = forF.getTypeAutoriteFiscale();
+			final TypeAutoriteFiscale taf = localisation.getTypeAutoriteFiscale();
 
-			// Commune vaudoise
-			if (typeForFiscal == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
-					Commune com = serviceInfra.getCommuneByNumeroOfs(forF.getNumeroOfsAutoriteFiscale(), forF.getDateFin());
-					if (com == null) {
-						throw new IndexerException("Commune pas trouvée: noOfs=" + forF.getNumeroOfsAutoriteFiscale());
-					}
-					forStr = com.getNomOfficiel();
-			}
-			// Commune suisse
-			else if (typeForFiscal == TypeAutoriteFiscale.COMMUNE_HC) {
-					Commune com = serviceInfra.getCommuneByNumeroOfs(forF.getNumeroOfsAutoriteFiscale(), forF.getDateFin());
-					if (com == null) {
-						throw new IndexerException("Commune pas trouvée: noOfs=" + forF.getNumeroOfsAutoriteFiscale());
-					}
-					forStr = com.getNomOfficiel();
+			// Commune, vaudoise ou pas
+			if (taf == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD || taf == TypeAutoriteFiscale.COMMUNE_HC) {
+				final Commune com = serviceInfra.getCommuneByNumeroOfs(localisation.getNumeroOfsAutoriteFiscale(), localisation.getDateFin());
+				if (com == null) {
+					throw new IndexerException("Commune pas trouvée: noOfs=" + localisation.getNumeroOfsAutoriteFiscale());
+				}
+				str = com.getNomOfficiel();
 			}
 			// Pays
-			else if (typeForFiscal == TypeAutoriteFiscale.PAYS_HS) {
-					Pays p = serviceInfra.getPays(forF.getNumeroOfsAutoriteFiscale(), forF.getDateDebut());
+			else if (taf == TypeAutoriteFiscale.PAYS_HS) {
+					Pays p = serviceInfra.getPays(localisation.getNumeroOfsAutoriteFiscale(), localisation.getDateDebut());
 					if (p == null) {
-						throw new IndexerException("Pays pas trouvé: noOfs=" + forF.getNumeroOfsAutoriteFiscale() + " à la date " + forF.getDateDebut());
+						throw new IndexerException("Pays pas trouvé: noOfs=" + localisation.getNumeroOfsAutoriteFiscale() + " à la date " + localisation.getDateDebut());
 					}
-					forStr = p.getNomCourt();
+					str = p.getNomCourt();
 			}
 			else {
-				ch.vd.registre.base.utils.Assert.fail("Le Type du For doit toujours etre présent");
+				ch.vd.registre.base.utils.Assert.fail("Le type d'autorité fiscale doit toujours etre présent");
 			}
 		}
 		catch (ServiceInfrastructureException e) {
-			throw new IndexerException(forF.getTiers(), e);
+			throw new IndexerException(tiers, e);
 		}
 
-		return forStr;
+		return str;
 	}
 
 	protected static StringBuilder addValue(StringBuilder s, String value) {

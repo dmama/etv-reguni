@@ -1,7 +1,12 @@
 package ch.vd.uniregctb.type;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public enum FormeJuridiqueEntreprise {
 
@@ -48,6 +53,20 @@ public enum FormeJuridiqueEntreprise {
 	private final TypeFormeJuridique type;
 	private final boolean creable;
 
+	private static final Map<String, FormeJuridiqueEntreprise> BY_CODE = buildByCodeMap();
+
+	@NotNull
+	private static Map<String, FormeJuridiqueEntreprise> buildByCodeMap() {
+		final Map<String, FormeJuridiqueEntreprise> map = new HashMap<>(values().length);
+		for (FormeJuridiqueEntreprise fj : values()) {
+			final FormeJuridiqueEntreprise old = map.put(fj.getCodeECH(), fj);
+			if (old != null) {
+				throw new IllegalArgumentException("Les formes juridiques d'entreprise " + old + " et " + fj + " utilisent le même code ECH...");
+			}
+		}
+		return Collections.unmodifiableMap(map);
+	}
+
 	FormeJuridiqueEntreprise(String libelle, String codeECH, TypeFormeJuridique type, boolean creable) {
 		if (StringUtils.isBlank(codeECH)) {
 			throw new IllegalArgumentException("Toute forme juridique utilisée ici doit avoir une codification selon eCH-0097.");
@@ -77,5 +96,10 @@ public enum FormeJuridiqueEntreprise {
 
 	public boolean isCreable() {
 		return creable;
+	}
+
+	@Nullable
+	public static FormeJuridiqueEntreprise fromCode(String codeECH) {
+		return BY_CODE.get(codeECH);
 	}
 }

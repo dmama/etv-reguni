@@ -130,7 +130,7 @@ public class GlobalTiersSearcherImpl implements GlobalTiersSearcher, Initializin
 
 		if (filter != null) {
 			QueryConstructor.addTypeTiers(query, filter.getTypesTiers());
-			QueryConstructor.addLimitation(query, filter);
+			QueryConstructor.addContrainteVisualisationLimitee(query, filter);
 			QueryConstructor.addAnnule(query, filter);
 			QueryConstructor.addActif(query, filter);
 			QueryConstructor.addDebiteurInactif(query, filter);

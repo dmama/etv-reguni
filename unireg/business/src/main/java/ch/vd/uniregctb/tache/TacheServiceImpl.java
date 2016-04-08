@@ -20,7 +20,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.DateRange;
@@ -284,7 +283,6 @@ public class TacheServiceImpl implements TacheService {
 	 * @param forPrincipal le for fiscal principal qui vient d'être fermé
 	 */
 	@Override
-	@Transactional(rollbackFor = Throwable.class)
 	public void genereTacheDepuisFermetureForPrincipal(Contribuable contribuable, ForFiscalPrincipal forPrincipal) {
 
 		final RegDate dateFermeture = forPrincipal.getDateFin();
@@ -359,7 +357,6 @@ public class TacheServiceImpl implements TacheService {
 	 * @param forSecondaire le for secondaire qui vient d'être fermé.
 	 */
 	@Override
-	@Transactional(rollbackFor = Throwable.class)
 	public void genereTacheDepuisFermetureForSecondaire(Contribuable contribuable, ForFiscalSecondaire forSecondaire) {
 
 		final RegDate dateFermeture = forSecondaire.getDateFin();
@@ -387,7 +384,7 @@ public class TacheServiceImpl implements TacheService {
 	 *
 	 * @param contribuable le contribuable sur lequel un tâche de contrôle de dossier doit être générée.
 	 */
-	private void genereTacheControleDossier(Contribuable contribuable) {
+	public void genereTacheControleDossier(Contribuable contribuable) {
 		genereTacheControleDossier(contribuable, null);
 	}
 
@@ -418,7 +415,6 @@ public class TacheServiceImpl implements TacheService {
 	 * @param ancienModeImposition nécessaire en cas d'ouverture de for pour motif "CHGT_MODE_IMPOSITION"
 	 */
 	@Override
-	@Transactional(rollbackFor = Throwable.class)
 	public void genereTacheDepuisOuvertureForPrincipal(Contribuable contribuable, ForFiscalPrincipal forFiscal, ModeImposition ancienModeImposition) {
 
 		final MotifFor motifOuverture = forFiscal.getMotifOuverture();
@@ -506,7 +502,6 @@ public class TacheServiceImpl implements TacheService {
 	 * {@inheritDoc}
 	 */
 	@Override
-	@Transactional(rollbackFor = Throwable.class)
 	public void genereTachesDepuisAnnulationDeFor(Contribuable contribuable) {
 		// [UNIREG-2322] appelé de manière automatique par le TacheSynchronizerInterceptor
 	}
@@ -1703,7 +1698,6 @@ public class TacheServiceImpl implements TacheService {
 	 * @param forFiscal    le for fiscal secondaire qui vient d'être ouvert
 	 */
 	@Override
-	@Transactional(rollbackFor = Throwable.class)
 	public void genereTacheDepuisOuvertureForSecondaire(Contribuable contribuable, ForFiscalSecondaire forFiscal) {
 
 		ForFiscalPrincipal forPrincipal = contribuable.getForFiscalPrincipalAt(null);

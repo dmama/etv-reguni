@@ -3,7 +3,9 @@ package ch.vd.uniregctb.indexer.lucene;
 import java.text.ParseException;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.lucene.document.Document;
@@ -33,6 +35,7 @@ public abstract class DocumentExtractorHelper {
 
 	/**
 	 * Renvoie la valeur dans le document Lucene Ou chaine vide si non trouvé Ne renvoie jamais NULL
+	 * (en cas de champ multivalué, seule la première valeur sera retournée)
 	 *
 	 * @param key clé de la valeur recherchée
 	 * @param document document Lucene
@@ -42,6 +45,18 @@ public abstract class DocumentExtractorHelper {
 	public static String getDocValue(String key, Document document) {
 		final String str = document.get(key);
 		return isBlank(str) ? StringUtils.EMPTY : str;
+	}
+
+	/**
+	 * Renvoie les valeurs dans le document Lucene (utile pour les champs multivalués)
+	 *
+	 * @param key clé de la valeur recherchée
+	 * @param document document Lucene
+	 * @return les valeurs présentes pour la clé donnée dans le document Lucene
+	 */
+	@NotNull
+	public static String[] getDocValues(String key, Document document) {
+		return document.getValues(key);
 	}
 
 	/**
@@ -110,5 +125,17 @@ public abstract class DocumentExtractorHelper {
 
 		final String[] splitted = StringUtils.split(str);
 		return Arrays.asList(splitted);
+	}
+
+	public static <T extends Enum<T>> Set<T> getEnumSet(String[] array, Class<T> clazz) {
+		if (array == null || array.length == 0) {
+			return Collections.emptySet();
+		}
+
+		final Set<T> set = EnumSet.noneOf(clazz);
+		for (String elt : array) {
+			set.add(Enum.valueOf(clazz, elt));
+		}
+		return set;
 	}
 }

@@ -41,6 +41,10 @@ public class MockTacheService implements TacheService {
 	}
 
 	@Override
+	public void genereTacheControleDossier(Contribuable contribuable) {
+	}
+
+	@Override
 	public int getTachesEnInstanceCount(Integer oid) {
 		return 0;
 	}

@@ -117,6 +117,8 @@
 		<property name="validationInterceptor" ref="validationInterceptor" />
 		<property name="eFactureService" ref="efactureService" />
 		<property name="parametreAppService" ref="parametreAppService" />
+		<property name="evenementFiscalService" ref="evenementFiscalService"/>
+		<property name="tacheService" ref="tacheService"/>
 	</bean>
 
 	<bean id="adresseService" class="ch.vd.uniregctb.adresse.AdresseServiceImpl">

@@ -138,7 +138,7 @@ public class ControllerUtilsImpl implements ControllerUtils {
 	}
 
 	@Override
-	@Transactional
+	@Transactional(readOnly = true)
 	public void checkTraitementContribuableAvecDecisionAci(Long tiersId) throws ObjectNotFoundException, AccessDeniedException {
 		if (tiersId != null) {
 			Tiers tiers = tiersService.getTiers(tiersId);

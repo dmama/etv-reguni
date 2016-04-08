@@ -7,13 +7,16 @@ import ch.vd.unireg.interfaces.organisation.data.DateRanged;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.avatar.AvatarService;
+import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.indexer.IndexerException;
 import ch.vd.uniregctb.indexer.IndexerFormatHelper;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.ServiceOrganisationService;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
 import ch.vd.uniregctb.tiers.CategorieEntrepriseHelper;
+import ch.vd.uniregctb.tiers.DomicileHisto;
 import ch.vd.uniregctb.tiers.Entreprise;
+import ch.vd.uniregctb.tiers.EtatEntreprise;
 import ch.vd.uniregctb.tiers.FormeLegaleHisto;
 import ch.vd.uniregctb.tiers.OrganisationNotFoundException;
 import ch.vd.uniregctb.tiers.RaisonSocialeHisto;
@@ -81,6 +84,24 @@ public class EntrepriseIndexable extends ContribuableIndexable<Entreprise> {
 		if (organisation != null) {
 			final RegDate inscriptionRC = organisation.getSitePrincipal(null).getPayload().getDateInscriptionRC(null);
 			data.setDateInscriptionRc(inscriptionRC);
+		}
+
+		// le siège (= domicile de l'établissement principal)
+		final List<DomicileHisto> sieges = tiersService.getSieges(tiers, false);
+		if (sieges != null && !sieges.isEmpty()) {
+			final DomicileHisto dernier = CollectionsUtils.getLastElement(sieges);
+			data.setDomicileEtablissementPrincipal(getLocalisationAsString(dernier, tiers));
+		}
+
+		// les états de l'entreprise (état actuel + états historiques)
+		final EtatEntreprise etatActuel = tiers.getEtatActuel();
+		if (etatActuel != null) {
+			data.setEtatEntrepriseCourant(etatActuel.getType());
+		}
+		for (EtatEntreprise etat : tiers.getEtatsNonAnnulesTries()) {
+			if (etat != null) {
+				data.addEtatEntreprise(etat.getType());
+			}
 		}
 	}
 

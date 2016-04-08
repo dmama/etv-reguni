@@ -12,13 +12,14 @@ import ch.vd.uniregctb.type.CategorieEntreprise;
 import ch.vd.uniregctb.type.CategorieImpotSource;
 import ch.vd.uniregctb.type.FormeJuridiqueEntreprise;
 import ch.vd.uniregctb.type.ModeImposition;
+import ch.vd.uniregctb.type.TypeEtatEntreprise;
 
 /**
  * Critères de recherche pour les tiers.
  */
 public class TiersCriteriaView implements Serializable {
 
-	private static final long serialVersionUID = -1194729108396598302L;
+	private static final long serialVersionUID = 8628815118649206529L;
 
 	// Valeurs utilisées en sortie seulement
 	private Long numeroSourcier;
@@ -307,6 +308,21 @@ public class TiersCriteriaView implements Serializable {
 		criteria.setNumeroIDE(numeroIDE);
 	}
 
+	public Set<TypeEtatEntreprise> getEtatsEntrepriseInterdits() {
+		return criteria.getEtatsEntrepriseInterdits();
+	}
+
+	public void setEtatsEntrepriseInterdits(Set<TypeEtatEntreprise> etatsEntrepriseInterdits) {
+		criteria.setEtatsEntrepriseInterdits(etatsEntrepriseInterdits);
+	}
+
+	public Set<TypeEtatEntreprise> getEtatsEntrepriseCourantsInterdits() {
+		return criteria.getEtatsEntrepriseCourantsInterdits();
+	}
+
+	public void setEtatsEntrepriseCourantsInterdits(Set<TypeEtatEntreprise> etatsEntrepriseCourantsInterdits) {
+		criteria.setEtatsEntrepriseCourantsInterdits(etatsEntrepriseCourantsInterdits);
+	}
 	public boolean isEmpty() {
 		return criteria.isEmpty() && StringUtils.isBlank(this.numeroFormatte);
 	}

@@ -9,7 +9,7 @@ import ch.vd.uniregctb.security.AccessDeniedException;
  */
 public interface ControllerUtils {
 
-	static final String PARAMETER_MODIFIER = "__MODIFIER__";
+	String PARAMETER_MODIFIER = "__MODIFIER__";
 
 	/**
 	 * Vérifie que l'opérateur courant possède les droits d'accès en lecture et écriture sur le <b>dossier</b> du tiers spécifié.

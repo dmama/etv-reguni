@@ -88,7 +88,7 @@ public abstract class ContribuableIndexable<T extends Contribuable> extends Tier
 		RegDate dateFermetureFor = null;
 		final ForFiscalPrincipal dernierPrincipal = tiers.getDernierForFiscalPrincipal();
 		if (dernierPrincipal != null) {
-			communeDernierFfp = getForCommuneAsString(dernierPrincipal);
+			communeDernierFfp = getLocalisationAsString(dernierPrincipal, tiers);
 			dateOuvertureFor = dernierPrincipal.getDateDebut();
 			dateFermetureFor = dernierPrincipal.getDateFin();
 		}

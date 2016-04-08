@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import ch.vd.registre.base.date.DateRange;
@@ -16,24 +17,37 @@ import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
+import ch.vd.uniregctb.common.LengthConstants;
 import ch.vd.uniregctb.efacture.EFactureService;
+import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalInformationComplementaire;
+import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.ServiceOrganisationService;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
+import ch.vd.uniregctb.tache.TacheService;
+import ch.vd.uniregctb.tiers.ActiviteEconomique;
 import ch.vd.uniregctb.tiers.CapitalFiscalEntreprise;
 import ch.vd.uniregctb.tiers.DomicileEtablissement;
 import ch.vd.uniregctb.tiers.DomicileHisto;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.Etablissement;
+import ch.vd.uniregctb.tiers.EtatEntreprise;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
 import ch.vd.uniregctb.tiers.FormeJuridiqueFiscaleEntreprise;
+import ch.vd.uniregctb.tiers.ForsParTypeAt;
+import ch.vd.uniregctb.tiers.Mandat;
 import ch.vd.uniregctb.tiers.RaisonSocialeFiscaleEntreprise;
+import ch.vd.uniregctb.tiers.RapportEntreTiers;
+import ch.vd.uniregctb.tiers.Remarque;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.tiers.dao.RemarqueDAO;
+import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
+import ch.vd.uniregctb.type.TypeEtatEntreprise;
+import ch.vd.uniregctb.type.TypeGenerationEtatEntreprise;
 import ch.vd.uniregctb.validation.ValidationInterceptor;
 import ch.vd.uniregctb.validation.ValidationService;
 
@@ -51,6 +65,8 @@ public class MetierServicePMImpl implements MetierServicePM {
 	private ValidationInterceptor validationInterceptor;
 	private EFactureService eFactureService;
 	private ParametreAppService parametreAppService;
+	private EvenementFiscalService evenementFiscalService;
+	private TacheService tacheService;
 
 	public void setTransactionManager(PlatformTransactionManager transactionManager) {
 		this.transactionManager = transactionManager;
@@ -111,6 +127,14 @@ public class MetierServicePMImpl implements MetierServicePM {
 		this.eFactureService = eFactureService;
 	}
 
+	public void setEvenementFiscalService(EvenementFiscalService evenementFiscalService) {
+		this.evenementFiscalService = evenementFiscalService;
+	}
+
+	public void setTacheService(TacheService tacheService) {
+		this.tacheService = tacheService;
+	}
+
 	/**
 	 * Méthode qui parcoure les établissements de l'entreprise et qui ajuste les fors secondaires en prenant soin d'éviter
 	 * les chevauchements. Elle crée les fors nécessaires, ferme ceux qui se terminent et annule ceux qui sont devenus redondants.
@@ -137,10 +161,10 @@ public class MetierServicePMImpl implements MetierServicePM {
 					if (domicile.getTypeAutoriteFiscale() != TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
 						continue; // On ne crée des fors secondaires que pour VD
 					}
-					List<DomicileHisto> histoPourCommune = tousLesDomicilesVD.get(domicile.getNoOfs());
+					List<DomicileHisto> histoPourCommune = tousLesDomicilesVD.get(domicile.getNumeroOfsAutoriteFiscale());
 					if (histoPourCommune == null) {
 						histoPourCommune = new ArrayList<>();
-						tousLesDomicilesVD.put(domicile.getNoOfs(), histoPourCommune);
+						tousLesDomicilesVD.put(domicile.getNumeroOfsAutoriteFiscale(), histoPourCommune);
 					}
 					histoPourCommune.add(domicile);
 				}
@@ -254,5 +278,61 @@ public class MetierServicePMImpl implements MetierServicePM {
 			return lastRange;
 		}
 		return null;
+	}
+
+	@Override
+	public void faillite(Entreprise entreprise, RegDate datePrononceFaillite, String remarqueAssociee) throws MetierServiceException {
+
+		// pas de for principal ouvert -> pas possible d'aller plus loin
+		final ForsParTypeAt forsParType = entreprise.getForsParTypeAt(null, false);
+		if (forsParType.principal == null) {
+			throw new MetierServiceException("Tous les fors fiscaux de l'entreprise sont déjà fermés.");
+		}
+
+		// 1. on ferme tous les rapports entre tiers ouvert (mandats et établissements secondaires)
+
+		for (RapportEntreTiers ret : CollectionsUtils.merged(entreprise.getRapportsSujet(), entreprise.getRapportsObjet())) {
+			if (!ret.isAnnule() && ret.getDateFin() == null) {
+				final boolean aFermer = (ret instanceof ActiviteEconomique && !((ActiviteEconomique) ret).isPrincipal()) || (ret instanceof Mandat);
+				if (aFermer) {
+					ret.setDateFin(datePrononceFaillite);
+				}
+			}
+		}
+
+		// 2. on ferme les fors ouverts avec le motif FAILLITE
+
+		// on traite d'abord les fors secondaires, puis seulement ensuite le for principal
+		boolean hasImmeuble = false;
+		for (ForFiscalSecondaire fs : forsParType.secondaires) {
+			hasImmeuble |= fs.getMotifRattachement() == MotifRattachement.IMMEUBLE_PRIVE;
+			tiersService.closeForFiscalSecondaire(entreprise, fs, datePrononceFaillite, MotifFor.FAILLITE);
+		}
+		tiersService.closeForFiscalPrincipal(forsParType.principal, datePrononceFaillite, MotifFor.FAILLITE);
+
+		// 3. si for immeuble fermé, on crée une tâche de contrôle de dossier
+
+		if (hasImmeuble) {
+			tacheService.genereTacheControleDossier(entreprise);
+		}
+
+		// 4. nouvel état fiscal
+
+		entreprise.addEtat(new EtatEntreprise(datePrononceFaillite, TypeEtatEntreprise.EN_FAILLITE, TypeGenerationEtatEntreprise.MANUELLE));
+
+		// 5. publication de l'événement fiscal de faillite et appel aux créanciers
+
+		evenementFiscalService.publierEvenementFiscalInformationComplementaire(entreprise,
+		                                                                       EvenementFiscalInformationComplementaire.TypeInformationComplementaire.PUBLICATION_FAILLITE_APPEL_CREANCIERS,
+		                                                                       datePrononceFaillite);
+
+		// 6. éventuellement ajout d'une remarque sur l'entreprise
+
+		if (StringUtils.isNotBlank(remarqueAssociee)) {
+			final Remarque remarque = new Remarque();
+			remarque.setTexte(StringUtils.abbreviate(remarqueAssociee, LengthConstants.TIERS_REMARQUE));
+			remarque.setTiers(entreprise);
+			remarqueDAO.save(remarque);
+		}
 	}
 }

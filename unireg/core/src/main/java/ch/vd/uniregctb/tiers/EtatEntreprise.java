@@ -34,6 +34,15 @@ public class EtatEntreprise extends HibernateEntity implements LinkedEntity, Com
 	private TypeGenerationEtatEntreprise generation;
 	private Entreprise entreprise;
 
+	public EtatEntreprise() {
+	}
+
+	public EtatEntreprise(RegDate dateObtention, TypeEtatEntreprise type, TypeGenerationEtatEntreprise generation) {
+		this.dateObtention = dateObtention;
+		this.type = type;
+		this.generation = generation;
+	}
+
 	@Transient
 	@Override
 	public Long getKey() {

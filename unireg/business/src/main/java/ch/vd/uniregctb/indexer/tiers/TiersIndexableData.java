@@ -1,7 +1,9 @@
 package ch.vd.uniregctb.indexer.tiers;
 
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -13,14 +15,28 @@ import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.uniregctb.avatar.TypeAvatar;
+import ch.vd.uniregctb.common.StringRenderer;
 import ch.vd.uniregctb.indexer.IndexableData;
 import ch.vd.uniregctb.indexer.IndexerFormatHelper;
 import ch.vd.uniregctb.metier.assujettissement.TypeAssujettissement;
 import ch.vd.uniregctb.type.ModeCommunication;
 import ch.vd.uniregctb.type.Sexe;
+import ch.vd.uniregctb.type.TypeEtatEntreprise;
 
 @SuppressWarnings({"UnusedDeclaration"})
 public class TiersIndexableData extends IndexableData {
+
+	/**
+	 * La différence entre ce {@link StringRenderer} et {@link IndexerFormatHelper#DEFAULT_RENDERER} est que, en cas de valeur absente,
+	 * nous renvoyons ici {@link StringUtils#EMPTY} tandis que {@link IndexerFormatHelper#DEFAULT_RENDERER} renvoie {@link IndexerFormatHelper#nullValue()}.
+	 */
+	private static final StringRenderer<Enum<?>> ENUM_RENDERER = new StringRenderer<Enum<?>>() {
+		@Override
+		public String toString(Enum<?> modality) {
+			return modality == null ? StringUtils.EMPTY : modality.name();
+		}
+	};
 
 	// champs de recherche
 	public static final String NUMEROS = "S_NUMEROS";
@@ -48,6 +64,8 @@ public class TiersIndexableData extends IndexableData {
 	public static final String TIERS_ACTIF = "S_TIERS_ACTIF";
 	public static final String IDE = "S_IDE";
 	public static final String TOUT = "S_TOUT";
+	public static final String ETAT_ENTREPRISE_COURANT = "S_ETAT_ENTREPRISE_COURANT";
+	public static final String ETATS_ENTREPRISE = "S_ETATS_ENTREPRISE";
 
 	// champs de stockage (pas recherchables)
 	public static final String NOM1 = "D_NOM1";
@@ -72,6 +90,7 @@ public class TiersIndexableData extends IndexableData {
 	public static final String D_DATE_NAISSANCE = "D_DATE_NAISSANCE";
 	public static final String ASSUJETTISSEMENT_PP = "D_ASSUJETTISSEMENT_PP";
 	public static final String AVATAR = "D_AVATAR";
+	public static final String DOMICILE_ETABLISSEMENT_PRINCIPAL = "D_DOMICILE_ETABLISSEMENT_PRINCIPAL";
 
 	// champs de recherche
 	private String numeros;
@@ -98,6 +117,8 @@ public class TiersIndexableData extends IndexableData {
 	private String annule;
 	private String debiteurInactif;
 	private String ide;                     // identifiant d'entreprise [SIFISC-11689]
+	private TypeEtatEntreprise etatEntrepriseCourant;
+	private Set<TypeEtatEntreprise> etatsEntreprise;
 
 	// champs de stockage (pas recherchables)
 	private String nom1;
@@ -118,9 +139,10 @@ public class TiersIndexableData extends IndexableData {
 	private String domicileVd;
 	private String noOfsDomicileVd;
 	private String indexationDate;
-	private String modeCommunication;   // uniquement renseigné sur les débiteurs (SIFISC-6587)
-	private String assujettissementPP;  // seulement sur les PP/MC (SIFISC-11102)
-	private String typeAvatar;
+	private ModeCommunication modeCommunication;   // uniquement renseigné sur les débiteurs (SIFISC-6587)
+	private TypeAssujettissement assujettissementPP;  // seulement sur les PP/MC (SIFISC-11102)
+	private TypeAvatar typeAvatar;
+	private String domicileEtablissementPrincipal;
 
 	public TiersIndexableData(Long id, String type, String subType) {
 		super(id, type, subType);
@@ -158,6 +180,8 @@ public class TiersIndexableData extends IndexableData {
 		addNotAnalyzedValue(d, TiersIndexableData.ANNULE, annule);
 		addNotAnalyzedValue(d, TiersIndexableData.DEBITEUR_INACTIF, debiteurInactif);
 		addAnalyzedValue(d, TiersIndexableData.IDE, ide);
+		addNotAnalyzedValue(d, TiersIndexableData.ETAT_ENTREPRISE_COURANT, etatEntrepriseCourant, ENUM_RENDERER);
+		addMultiValuedNotAnalyzedValue(d, TiersIndexableData.ETATS_ENTREPRISE, etatsEntreprise, ENUM_RENDERER);
 
 		// on aggrège tous les valeurs utiles dans un seul champ pour une recherche de type google
 		addToutValues(d, numeros, nomRaison, autresNom, toSearchString(datesNaissanceInscriptionRC), forPrincipal, rue, npaCourrier, localiteEtPays, natureJuridique, navs11, navs13, ancienNumeroSourcier, categorieDebiteurIs, noSymic, ide);
@@ -181,10 +205,11 @@ public class TiersIndexableData extends IndexableData {
 		addStoredValue(d, TiersIndexableData.DOMICILE_VD, domicileVd);
 		addStoredValue(d, TiersIndexableData.NO_OFS_DOMICILE_VD, noOfsDomicileVd);
 		addStoredValue(d, TiersIndexableData.INDEXATION_DATE, indexationDate);
-		addStoredValue(d, TiersIndexableData.MODE_COMMUNICATION, modeCommunication);
+		addStoredValue(d, TiersIndexableData.MODE_COMMUNICATION, modeCommunication, ENUM_RENDERER);
 		addStoredValue(d, TiersIndexableData.D_DATE_NAISSANCE, IndexerFormatHelper.dateCollectionToString(datesNaissanceInscriptionRC, IndexerFormatHelper.DateStringMode.STORAGE));
-		addStoredValue(d, TiersIndexableData.ASSUJETTISSEMENT_PP, assujettissementPP);
-		addStoredValue(d, TiersIndexableData.AVATAR, typeAvatar);
+		addStoredValue(d, TiersIndexableData.ASSUJETTISSEMENT_PP, assujettissementPP, ENUM_RENDERER);
+		addStoredValue(d, TiersIndexableData.AVATAR, typeAvatar, IndexerFormatHelper.DEFAULT_RENDERER);
+		addStoredValue(d, TiersIndexableData.DOMICILE_ETABLISSEMENT_PRINCIPAL, domicileEtablissementPrincipal);
 
 		return d;
 	}
@@ -617,11 +642,11 @@ public class TiersIndexableData extends IndexableData {
 	}
 
 	public void setModeCommunication(ModeCommunication modeCommunication) {
-		this.modeCommunication = (modeCommunication == null ? StringUtils.EMPTY : modeCommunication.name());
+		this.modeCommunication = modeCommunication;
 	}
 
 	public void setAssujettissementPP(TypeAssujettissement assujettissement) {
-		this.assujettissementPP = (assujettissement == null ? StringUtils.EMPTY : assujettissement.name());
+		this.assujettissementPP = assujettissement;
 	}
 
 	public String getIde() {
@@ -636,6 +661,33 @@ public class TiersIndexableData extends IndexableData {
 		this.ide = add(this.ide, IndexerFormatHelper.noIdeToString(ide));
 	}
 
+	public TypeEtatEntreprise getEtatEntrepriseCourant() {
+		return etatEntrepriseCourant;
+	}
+
+	public void setEtatEntrepriseCourant(TypeEtatEntreprise etatEntrepriseCourant) {
+		this.etatEntrepriseCourant = etatEntrepriseCourant;
+	}
+
+	public Set<TypeEtatEntreprise> getEtatsEntreprise() {
+		return etatsEntreprise;
+	}
+
+	public void addEtatEntreprise(TypeEtatEntreprise etat) {
+		if (etatsEntreprise == null) {
+			etatsEntreprise = EnumSet.noneOf(TypeEtatEntreprise.class);
+		}
+		etatsEntreprise.add(etat);
+	}
+
+	public String getDomicileEtablissementPrincipal() {
+		return domicileEtablissementPrincipal;
+	}
+
+	public void setDomicileEtablissementPrincipal(String domicileEtablissementPrincipal) {
+		this.domicileEtablissementPrincipal = domicileEtablissementPrincipal;
+	}
+
 	private static String add(String left, String right) {
 		if (StringUtils.isBlank(left)) {
 			return StringUtils.trimToEmpty(right);
@@ -648,7 +700,7 @@ public class TiersIndexableData extends IndexableData {
 		}
 	}
 
-	public void setTypeAvatar(String typeAvatar) {
+	public void setTypeAvatar(TypeAvatar typeAvatar) {
 		this.typeAvatar = typeAvatar;
 	}
 }

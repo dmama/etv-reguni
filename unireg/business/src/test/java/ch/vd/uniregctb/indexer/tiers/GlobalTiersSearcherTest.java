@@ -1,8 +1,10 @@
 package ch.vd.uniregctb.indexer.tiers;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -46,6 +48,8 @@ import ch.vd.uniregctb.type.PeriodiciteDecompte;
 import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypeAdresseTiers;
+import ch.vd.uniregctb.type.TypeEtatEntreprise;
+import ch.vd.uniregctb.type.TypeGenerationEtatEntreprise;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -1672,6 +1676,103 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 			final List<TiersIndexedData> res = globalTiersSearcher.search(criteria);
 			assertEquals(0, res.size());
 		}
+	}
+
+	@Test
+	public void testEntrepriseSaufEtatEntreprisePasse() throws Exception {
+
+		final class Ids {
+			long pm1;
+			long pm2;
+			long pm3;
+			long pm4;
+		}
+
+		// mise en place fiscale
+		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
+			@Override
+			public Ids doInTransaction(TransactionStatus status) {
+				final Entreprise e1 = addEntrepriseInconnueAuCivil();
+				addRaisonSociale(e1, date(2000, 1, 1), null, "Toto fondée");
+				addEtatEntreprise(e1, date(2000, 1, 1), TypeEtatEntreprise.FONDEE, TypeGenerationEtatEntreprise.MANUELLE);
+
+				final Entreprise e2 = addEntrepriseInconnueAuCivil();
+				addRaisonSociale(e2, date(2000, 1, 1), null, "Toto inscrite RC");
+				addEtatEntreprise(e2, date(2000, 1, 1), TypeEtatEntreprise.FONDEE, TypeGenerationEtatEntreprise.MANUELLE);
+				addEtatEntreprise(e2, date(2000, 1, 1).addDays(3), TypeEtatEntreprise.INSCRITE_RC, TypeGenerationEtatEntreprise.MANUELLE);
+
+				final Entreprise e3 = addEntrepriseInconnueAuCivil();
+				addRaisonSociale(e3, date(2000, 1, 1), null, "Toto Radiée RC");
+				addEtatEntreprise(e3, date(2000, 1, 1), TypeEtatEntreprise.FONDEE, TypeGenerationEtatEntreprise.MANUELLE);
+				addEtatEntreprise(e3, date(2000, 1, 1).addDays(3), TypeEtatEntreprise.INSCRITE_RC, TypeGenerationEtatEntreprise.MANUELLE);
+				addEtatEntreprise(e3, date(2010, 1, 1), TypeEtatEntreprise.RADIEE_RC, TypeGenerationEtatEntreprise.MANUELLE);
+
+				final Entreprise e4 = addEntrepriseInconnueAuCivil();
+				addRaisonSociale(e4, date(2000, 1, 1), null, "Toto Absorbée Radiée RC");
+				addEtatEntreprise(e4, date(2000, 1, 1), TypeEtatEntreprise.FONDEE, TypeGenerationEtatEntreprise.MANUELLE);
+				addEtatEntreprise(e4, date(2000, 1, 1).addDays(3), TypeEtatEntreprise.INSCRITE_RC, TypeGenerationEtatEntreprise.MANUELLE);
+				addEtatEntreprise(e4, date(2009, 10, 1), TypeEtatEntreprise.ABSORBEE, TypeGenerationEtatEntreprise.MANUELLE);
+				addEtatEntreprise(e4, date(2010, 1, 1), TypeEtatEntreprise.RADIEE_RC, TypeGenerationEtatEntreprise.MANUELLE);
+
+				final Ids ids = new Ids();
+				ids.pm1 = e1.getNumero();
+				ids.pm2 = e2.getNumero();
+				ids.pm3 = e3.getNumero();
+				ids.pm4 = e4.getNumero();
+				return ids;
+			}
+		});
+
+		// on attend la fin de l'indexation des nouveaux contribuables
+		globalTiersIndexer.sync();
+
+		// recherche de base sur le nom -> tous les 4 s'appellent "toto"
+		{
+			final TiersCriteria tiersCriteria = new TiersCriteria();
+			tiersCriteria.setNomRaison("toto");
+
+			final List<TiersIndexedData> results = globalTiersSearcher.search(tiersCriteria);
+			assertNotNull(results);
+			assertEquals(4, results.size());
+			final Set<Long> idsRetrouves = new HashSet<>(results.size());
+			for (TiersIndexedData data : results) {
+				idsRetrouves.add(data.getNumero());
+			}
+			assertEquals(new HashSet<>(Arrays.asList(ids.pm1, ids.pm2, ids.pm3, ids.pm4)), idsRetrouves);
+		}
+
+		// recherche de base sur le nom, mais on ne veut pas les INSCRITE_RC -> 1 seul résultat
+		{
+			final TiersCriteria tiersCriteria = new TiersCriteria();
+			tiersCriteria.setNomRaison("toto");
+			tiersCriteria.setEtatsEntrepriseInterdits(EnumSet.of(TypeEtatEntreprise.INSCRITE_RC));
+
+			final List<TiersIndexedData> results = globalTiersSearcher.search(tiersCriteria);
+			assertNotNull(results);
+			assertEquals(1, results.size());
+			final Set<Long> idsRetrouves = new HashSet<>(results.size());
+			for (TiersIndexedData data : results) {
+				idsRetrouves.add(data.getNumero());
+			}
+			assertEquals(new HashSet<>(Collections.singletonList(ids.pm1)), idsRetrouves);
+		}
+
+		// recherche de base sur le nom mais on ne veut pas les radiées/dissoutes -> 2 résultats
+		{
+			final TiersCriteria tiersCriteria = new TiersCriteria();
+			tiersCriteria.setNomRaison("toto");
+			tiersCriteria.setEtatsEntrepriseInterdits(EnumSet.of(TypeEtatEntreprise.RADIEE_RC, TypeEtatEntreprise.DISSOUTE));
+
+			final List<TiersIndexedData> results = globalTiersSearcher.search(tiersCriteria);
+			assertNotNull(results);
+			assertEquals(2, results.size());
+			final Set<Long> idsRetrouves = new HashSet<>(results.size());
+			for (TiersIndexedData data : results) {
+				idsRetrouves.add(data.getNumero());
+			}
+			assertEquals(new HashSet<>(Arrays.asList(ids.pm1, ids.pm2)), idsRetrouves);
+		}
+
 	}
 
 }

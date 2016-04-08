@@ -1,5 +1,7 @@
 package ch.vd.uniregctb.indexer;
 
+import java.util.Collection;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
@@ -10,6 +12,7 @@ import org.apache.lucene.document.StringField;
 import org.apache.lucene.document.TextField;
 
 import ch.vd.registre.simpleindexer.LuceneData;
+import ch.vd.uniregctb.common.StringRenderer;
 import ch.vd.uniregctb.indexer.lucene.LuceneHelper;
 
 /**
@@ -63,6 +66,10 @@ public abstract class IndexableData implements LuceneData {
 		d.add(new StoredField(name, toString(value)));
 	}
 
+	protected static <T> void addStoredValue(Document d, String name, T value, StringRenderer<? super T> renderer) {
+		addStoredValue(d, name, toString(value, renderer));
+	}
+
 	protected static void addNumber(Document d, String name, Integer number) {
 		final Field field;
 		if (number != null) {
@@ -89,8 +96,28 @@ public abstract class IndexableData implements LuceneData {
 		d.add(new TextField(name, toString(value), Field.Store.YES));
 	}
 
+	protected static <T> void addAnalyzedValue(Document d, String name, T value, StringRenderer<? super T> renderer) {
+		addAnalyzedValue(d, name, toString(value, renderer));
+	}
+
 	protected static void addNotAnalyzedValue(Document d, String name, String value) {
 		d.add(new StringField(name, toString(value), Field.Store.YES));
+	}
+
+	protected static <T> void addNotAnalyzedValue(Document d, String name, T value, StringRenderer<? super T> renderer) {
+		addNotAnalyzedValue(d, name, toString(value, renderer));
+	}
+
+	protected static <T> void addMultiValuedNotAnalyzedValue(Document d, String name, Collection<T> items, StringRenderer<? super T> renderer) {
+		if (items != null && !items.isEmpty()) {
+			for (T item : items) {
+				addNotAnalyzedValue(d, name, item, renderer);
+			}
+		}
+	}
+
+	protected static <T> String toString(T value, StringRenderer<? super T> renderer) {
+		return toString(renderer.toString(value));
 	}
 
 	protected static String toString(String value) {

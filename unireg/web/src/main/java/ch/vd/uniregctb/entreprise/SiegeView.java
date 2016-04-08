@@ -27,7 +27,7 @@ public class SiegeView implements Sourced<Source>, DateRange, Annulable {
 		this.id = siege.getId();
 		this.dateDebut = siege.getDateDebut();
 		this.dateFin = siege.getDateFin();
-		this.noOfsSiege = siege.getNoOfs();
+		this.noOfsSiege = siege.getNumeroOfsAutoriteFiscale();
 		this.type = siege.getTypeAutoriteFiscale() == TypeAutoriteFiscale.PAYS_HS ? TypeNoOfs.PAYS_HS : TypeNoOfs.COMMUNE_CH;
 		this.annule = siege.isAnnule();
 		this.source = siege.getSource();

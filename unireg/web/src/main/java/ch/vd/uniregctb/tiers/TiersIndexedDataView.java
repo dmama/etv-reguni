@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.tiers;
 
 import java.util.Date;
+import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -8,6 +9,8 @@ import ch.vd.uniregctb.avatar.TypeAvatar;
 import ch.vd.uniregctb.common.Annulable;
 import ch.vd.uniregctb.indexer.tiers.MenageCommunIndexable;
 import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
+import ch.vd.uniregctb.type.FormeJuridiqueEntreprise;
+import ch.vd.uniregctb.type.TypeEtatEntreprise;
 
 public class TiersIndexedDataView implements Annulable {
 
@@ -121,5 +124,22 @@ public class TiersIndexedDataView implements Annulable {
 
 	public TypeAvatar getTypeAvatar() {
 		return data.getTypeAvatar();
+	}
+
+	public String getNumeroIDE() {
+		final List<String> numerosIDE = data.getNumerosIDE();
+		return numerosIDE != null && !numerosIDE.isEmpty() ? numerosIDE.get(0) : null;
+	}
+
+	public String getDomicileEtablissementPrincipal() {
+		return data.getDomicileEtablissementPrincipal();
+	}
+
+	public FormeJuridiqueEntreprise getFormeJuridique() {
+		return data.getFormeJuridique();
+	}
+
+	public TypeEtatEntreprise getEtatEntreprise() {
+		return data.getEtatEntreprise();
 	}
 }

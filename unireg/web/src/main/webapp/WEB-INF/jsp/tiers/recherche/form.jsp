@@ -12,6 +12,17 @@
 		</c:otherwise>
 	</c:choose>
 </c:set>
+<c:choose>
+	<c:when test="${typeRecherche == 'principale' || typeRecherche == 'rt-debiteur' || typeRecherche == 'activation'}">
+		<c:set var="typeContribuableRecherche" value="ppoupm"/>       <%-- pm ou pp --%>
+	</c:when>
+	<c:when test="${typeRecherche == 'faillite'}">
+		<c:set var="typeContribuableRecherche" value="pmonly"/>      <%-- pm seulement --%>
+	</c:when>
+	<c:otherwise>
+		<c:set var="typeContribuableRecherche" value="pponly"/>      <%-- pp seulement (historique) --%>
+	</c:otherwise>
+</c:choose>
 
 <table>
 	<tr class="<unireg:nextRowClass/>" >
@@ -30,17 +41,14 @@
 	</tr>
 	<tr class="<unireg:nextRowClass/>" >
 		<td>
-			<c:if test="${typeRecherche == 'principale' || typeRecherche == 'rt-debiteur' || typeRecherche == 'activation'}">
-				<fmt:message key="label.nom.raison" />&nbsp;:
-			</c:if>
-			<c:if test="${		typeRecherche == 'couple' || typeRecherche == 'deces' 
-							|| 	typeRecherche == 'separation' || typeRecherche == 'rt-sourcier'
-							|| 	typeRecherche == 'annulationCouple' || 	typeRecherche == 'annulationDeces'
-							|| 	typeRecherche == 'annulationSeparation' || typeRecherche == 'fusion-non-habitant'
-							|| 	typeRecherche == 'fusion-habitant' || typeRecherche == 'rapport' 
-							|| typeRecherche == 'acces' || typeRecherche == 'identification'}">
-				<fmt:message key="label.nom.prenom" />&nbsp;:
-			</c:if>
+			<c:choose>
+				<c:when test="${typeContribuableRecherche == 'pponly'}">
+					<fmt:message key="label.nom.prenom" />&nbsp;:
+				</c:when>
+				<c:otherwise>
+					<fmt:message key="label.nom.raison" />&nbsp;:
+				</c:otherwise>
+			</c:choose>
 		</td>
 		<td>
 			<form:select path="typeRechercheDuNom" items="${typesRechercheNom}" />
@@ -86,18 +94,37 @@
 		</tr>
 	</c:if>
 	<c:if test="${typeRecherche != 'couple'}">
-	<tr class="<unireg:nextRowClass/>" >
-		<td width="25%"><fmt:message key="label.date.naissance.ou.rc" />&nbsp;:</td>
-		<td width="25%">
-			<jsp:include page="/WEB-INF/jsp/include/inputCalendar.jsp">
-				<jsp:param name="path" value="dateNaissanceInscriptionRC" />
-				<jsp:param name="id" value="dateNaissanceInscriptionRC" />
-			</jsp:include>
-		</td>
-		<td width="25%"><fmt:message key="label.numero.avs" />&nbsp;:</td>
-		<td width="25%"><form:input path="numeroAVS" id="numeroAVS" />
-		<span class="jTip formInfo" title="<c:url value="/htm/critereNAVS.htm?width=375"/>" id="numeroAVS2">?</span></td>
-	</tr>
+		<tr class="<unireg:nextRowClass/>" >
+			<td width="25%">
+				<c:choose>
+					<c:when test="${typeContribuableRecherche == 'pponly'}">
+						<fmt:message key="label.date.naissance" />&nbsp;:
+					</c:when>
+					<c:when test="${typeContribuableRecherche == 'pmonly'}">
+						<fmt:message key="label.date.inscription.rc"/>&nbsp;:
+					</c:when>
+					<c:otherwise>
+						<fmt:message key="label.date.naissance.ou.rc" />&nbsp;:
+					</c:otherwise>
+				</c:choose>
+			</td>
+			<td width="25%">
+				<jsp:include page="/WEB-INF/jsp/include/inputCalendar.jsp">
+					<jsp:param name="path" value="dateNaissanceInscriptionRC" />
+					<jsp:param name="id" value="dateNaissanceInscriptionRC" />
+				</jsp:include>
+			</td>
+			<c:choose>
+				<c:when test="${typeContribuableRecherche == 'pponly' || typeContribuableRecherche == 'ppoupm'}">
+					<td width="25%"><fmt:message key="label.numero.avs" />&nbsp;:</td>
+					<td width="25%"><form:input path="numeroAVS" id="numeroAVS" />
+						<span class="jTip formInfo" title="<c:url value="/htm/critereNAVS.htm?width=375"/>" id="numeroAVS2">?</span></td>
+				</c:when>
+				<c:otherwise>
+					<td colspan="2">&nbsp;</td>
+				</c:otherwise>
+			</c:choose>
+		</tr>
 	</c:if>
 	<c:if test="${typeRecherche == 'principale' }">
 		<tr class="<unireg:nextRowClass/>" >
@@ -142,20 +169,28 @@
 					}
 					typeTiers_onChange(document.getElementById("selectTypeTiers"));
 			</script>
-
 		</tr>
+	</c:if>
+	<c:if test="${typeRecherche == 'principale' || typeContribuableRecherche == 'pmonly'}">
 		<tr class="<unireg:nextRowClass/>" >
 			<td width="25%"><fmt:message key="label.numero.ide" />&nbsp;:</td>
 			<td width="25%">
 				<form:input path="numeroIDE" id="numeroIDE" />
 			</td>
-			<td width="25%"><fmt:message key="label.mode.imposition" />&nbsp;:</td>
-			<td width="25%">
-				<form:select path="modeImposition">
-					<form:option value="" />
-					<form:options items="${modesImpositionEnum}"/>
-				</form:select>
-			</td>
+			<c:choose>
+				<c:when test="${typeRecherche == 'principale'}">
+					<td width="25%"><fmt:message key="label.mode.imposition" />&nbsp;:</td>
+					<td width="25%">
+						<form:select path="modeImposition">
+							<form:option value="" />
+							<form:options items="${modesImpositionEnum}"/>
+						</form:select>
+					</td>
+				</c:when>
+				<c:otherwise>
+					<td colspan="2">&nbsp;</td>
+				</c:otherwise>
+			</c:choose>
 		</tr>
 		<tr class="<unireg:nextRowClass/>" >
 			<td width="25%"><fmt:message key="label.forme.juridique" />&nbsp;:</td>
@@ -173,6 +208,8 @@
 				</form:select>
 			</td>
 		</tr>
+	</c:if>
+	<c:if test="${typeRecherche == 'principale'}">
 		<tr class="<unireg:nextRowClass/>" >
 			<authz:authorize ifAnyGranted="ROLE_VISU_ALL">
 			<td width="25%"><fmt:message key="label.origine.i107" />&nbsp;:</td>
