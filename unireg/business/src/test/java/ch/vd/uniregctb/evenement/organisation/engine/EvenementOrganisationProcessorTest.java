@@ -675,6 +675,155 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 		return (String) suiviField.get(msgSuivi);
 	}
 
+	@Test(timeout = 1000000L)
+	public void testEntrepriseNonRapprocheeIdentifieeCorrectementAvecESPartiel() throws Exception {
+
+		// Mise en place service mock
+		final RegDate dateDebut = date(2010, 6, 26);
+		final String nom = "Synergy SA";
+		final String nom2 = "Synergy Renens SA";
+		final String nom3 = "Synergy Aubonne SA";
+		final Long noOrganisation = 101202100L;
+		final Long noSite = noOrganisation + 1000000;
+		final Long noSite2 = noOrganisation + 1000001;
+
+		final MockOrganisation organisation = MockOrganisationFactory.createOrganisation(noOrganisation, noSite, nom, dateDebut, null, FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE,
+		                                                                                 TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF,
+		                                                                                 date(2010, 6, 24),
+		                                                                                 StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE);
+		MockSiteOrganisationFactory.addSite(noSite2, organisation, date(2015, 7, 5), null, nom2, FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE, false,
+		                                    TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Renens.getNoOFS(), StatusInscriptionRC.ACTIF, date(2010, 6, 24),
+		                                    StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE);
+		serviceOrganisation.setUp(new MockServiceOrganisation() {
+			@Override
+			protected void init() {
+				addOrganisation(organisation);
+
+			}
+		});
+
+		// Création de l'entreprise
+		// mise en place des données fiscales
+		final long etablissementId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final Etablissement etablissement = addEtablissement();
+				etablissement.setRaisonSociale(nom + "Etab");
+				addDomicileEtablissement(etablissement, dateDebut.getOneDayAfter(), null, MockCommune.Lausanne);
+
+				return etablissement.getNumero();
+			}
+		});
+		final long etablissement2Id = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final Etablissement etablissement = addEtablissement();
+				etablissement.setRaisonSociale(nom2 + "Etab");
+				addDomicileEtablissement(etablissement, dateDebut.getOneDayAfter(), null, MockCommune.Renens);
+
+				return etablissement.getNumero();
+			}
+		});
+		final long etablissement3Id = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final Etablissement etablissement = addEtablissement();
+				etablissement.setRaisonSociale(nom3 + "Etab");
+				addDomicileEtablissement(etablissement, dateDebut.getOneDayAfter(), null, MockCommune.Aubonne);
+
+				return etablissement.getNumero();
+			}
+		});
+		final long noEntreprise = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+
+				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+				addRaisonSocialeFiscaleEntreprise(entreprise, dateDebut.getOneDayAfter(), null, nom);
+				addFormeJuridique(entreprise, dateDebut.getOneDayAfter(), null, FormeJuridiqueEntreprise.SARL);
+
+				final Etablissement etablissement = (Etablissement) tiersDAO.get(etablissementId);
+				tiersService.addActiviteEconomique(etablissement, entreprise, dateDebut.getOneDayAfter(), true);
+
+				final Etablissement etablissement2 = (Etablissement) tiersDAO.get(etablissement2Id);
+				tiersService.addActiviteEconomique(etablissement2, entreprise, dateDebut.getOneDayAfter(), false);
+
+				final Etablissement etablissement3 = (Etablissement) tiersDAO.get(etablissement3Id);
+				tiersService.addActiviteEconomique(etablissement3, entreprise, dateDebut.getOneDayAfter(), false);
+
+				addRegimeFiscalVD(entreprise, dateDebut.getOneDayAfter(), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addRegimeFiscalCH(entreprise, dateDebut.getOneDayAfter(), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addForPrincipal(entreprise, dateDebut.getOneDayAfter(), MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne, MotifRattachement.DOMICILE);
+				return entreprise.getNumero();
+			}
+		});
+		globalTiersIndexer.sync();
+
+		// Création de l'événement
+		final Long noEvenement = 12344321L;
+
+		// Persistence événement
+		doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus transactionStatus) {
+				final EvenementOrganisation event = createEvent(noEvenement, noOrganisation, TypeEvenementOrganisation.FOSC_AVIS_PREALABLE_OUVERTURE_FAILLITE, date(2015, 7, 5), A_TRAITER);
+				return hibernateTemplate.merge(event).getId();
+			}
+		});
+
+		// Mise en place Translator "espion"
+		SpyEvenementOrganisationTranslatorImpl translator = new SpyEvenementOrganisationTranslatorImpl();
+
+		translator.setServiceOrganisationService(serviceOrganisation);
+		translator.setServiceInfrastructureService(getBean(ProxyServiceInfrastructureService.class, "serviceInfrastructureService"));
+		translator.setTiersDAO(getBean(TiersDAO.class, "tiersDAO"));
+		translator.setDataEventService(getBean(DataEventService.class, "dataEventService"));
+		translator.setTiersService(getBean(TiersService.class, "tiersService"));
+		translator.setMetierServicePM(getBean(MetierServicePM.class, "metierServicePM"));
+		translator.setAdresseService(getBean(AdresseService.class, "adresseService"));
+		translator.setIndexer(getBean(GlobalTiersIndexer.class, "globalTiersIndexer"));
+		translator.setIdentCtbService(getBean(IdentificationContribuableService.class, "identCtbService"));
+		translator.setEvenementFiscalService(getBean(EvenementFiscalService.class, "evenementFiscalService"));
+		translator.setParametreAppService(getBean(ParametreAppService.class, "parametreAppService"));
+		translator.setUseOrganisationsOfNotice(false);
+		translator.afterPropertiesSet();
+
+		buildProcessor(translator);
+
+		// Traitement synchrone de l'événement
+		traiterEvenements(noOrganisation);
+
+		// Verification de l'événement interne créé
+		List<EvenementOrganisationInterne> listEvtInterne = getListeEvtInternesCrees(translator);
+		Assert.assertEquals(5, listEvtInterne.size());
+		{
+			Assert.assertTrue(listEvtInterne.get(0) instanceof MessageSuivi);
+			String message = getMessageFromMessageSuivi((MessageSuivi) listEvtInterne.get(0));
+			Assert.assertEquals(String.format("Entreprise n°%d (%s) identifiée sur la base de ses attributs civils [%s].", noEntreprise, nom, nom), message);
+		}
+		{
+			Assert.assertTrue(listEvtInterne.get(1) instanceof MessageSuivi);
+			String message = getMessageFromMessageSuivi((MessageSuivi) listEvtInterne.get(1));
+			Assert.assertEquals(
+					String.format("Organisation civile n°%d rattachée à l'entreprise n°%d. Cependant, certains établissements n'ont pas trouvé d'équivalent civil: n°%s.",
+					              noOrganisation, noEntreprise, FormatNumeroHelper.numeroCTBToDisplay(etablissement3Id)), message);
+		}
+		Assert.assertTrue(listEvtInterne.get(3) instanceof InformationComplementaire);
+		Assert.assertTrue(listEvtInterne.get(4) instanceof Indexation);
+
+		// Vérification du traitement de l'événement
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			                             @Override
+			                             public Object doInTransaction(TransactionStatus status) {
+				                             final EvenementOrganisation evt = getUniqueEvent(noEvenement);
+				                             Assert.assertNotNull(evt);
+				                             Assert.assertEquals(EtatEvenementOrganisation.TRAITE, evt.getEtat());
+				                             return null;
+			                             }
+		                             }
+		);
+	}
+
 	@Test(timeout = 10000L)
 	public void testEntrepriseNonRapprocheePlusieursPossibles() throws Exception {
 

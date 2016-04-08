@@ -12,7 +12,7 @@ import ch.vd.uniregctb.tiers.Etablissement;
  * n'ont pas pu être rapprochés, isPartiel() renvoie true et deux listes sont renseignées. La
  * liste des sitesNonRattaches contient les établissements RCEnt que l'on n'a pu rapprocher d'une
  * part. D'autre part, la liste des etablissementsNonRapproches contient les établissements en
- * base qui n'ont trouvés d'équivalent civil.
+ * base qui n'ont pas trouvé d'équivalent civil.
  *
  * @author Raphaël Marmier, 2016-03-21, <raphael.marmier@vd.ch>
  */

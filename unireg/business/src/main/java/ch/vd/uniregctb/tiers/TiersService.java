@@ -88,6 +88,14 @@ public interface TiersService {
     List<DateRanged<Etablissement>> getEtablissementsSecondairesEntreprise(Entreprise entreprise);
 
 	/**
+	 * Retourne la liste des établissements présents et passés de l'entreprise, c'est-à-dire INDEPENDAMENT
+	 * de/des plage(s) de validité de rapport économique.
+	 * @param entreprise l'entreprise dont on veut connaître les établissements.
+	 * @return
+	 */
+	List<Etablissement> getEtablissementsSecondairesEntrepriseSansRange(Entreprise entreprise);
+
+	/**
 	 * @param entreprise l'entreprise ciblée
 	 * @param date la date de valeur, si null la date du jour est utilisée
 	 * @return la liste des établissements secondaires associés à l'entreprise et valides à la date de valeur

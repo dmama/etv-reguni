@@ -567,7 +567,7 @@ public abstract class EvenementOrganisationInterne {
 		Assert.notNull(dateDebut);
 
 		// L'établissement
-		Etablissement etablissement = (Etablissement) context.getTiersDAO().save(createEtablissement(numeroSite));
+		Etablissement etablissement = context.getTiersService().createEtablissement(numeroSite);
 		// L'activité économique
 		getContext().getTiersService().addRapport(new ActiviteEconomique(dateDebut, null, entreprise, etablissement, principal), getEntreprise(), etablissement);
 
@@ -602,12 +602,6 @@ public abstract class EvenementOrganisationInterne {
 		                              nouvelleCommune,
 		                              nouveauDomicile.getNoOfs(),
 		                              RegDateHelper.dateToDisplayString(dateDebut)));
-	}
-
-	private Etablissement createEtablissement(Long numeroSite) {
-		final Etablissement etablissement = new Etablissement();
-		etablissement.setNumeroEtablissement(numeroSite);
-		return (Etablissement) context.getTiersDAO().save(etablissement);
 	}
 
 	/**

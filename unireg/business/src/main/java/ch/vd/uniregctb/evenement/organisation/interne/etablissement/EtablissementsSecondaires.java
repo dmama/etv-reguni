@@ -10,6 +10,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.organisation.data.Domicile;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
+import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationContext;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationException;
@@ -33,6 +34,8 @@ public class EtablissementsSecondaires extends EvenementOrganisationInterneDeTra
 	private final RegDate dateAvant;
 	private final RegDate dateApres;
 
+	private List<Etablissement> etablissementsPresentsEtPasses;
+
 	private List<Etablissement> etablissementsAFermer;
 	private List<SiteOrganisation> sitesACreer;
 
@@ -48,6 +51,8 @@ public class EtablissementsSecondaires extends EvenementOrganisationInterneDeTra
 
 		dateApres = evenement.getDateEvenement();
 		dateAvant = dateApres.getOneDayBefore();
+
+		this.etablissementsPresentsEtPasses = context.getTiersService().getEtablissementsSecondairesEntrepriseSansRange(entreprise);
 
 		this.etablissementsAFermer = etablissementsAFermer;
 		this.sitesACreer = sitesACreer;
@@ -82,7 +87,15 @@ public class EtablissementsSecondaires extends EvenementOrganisationInterneDeTra
 						                                  "La date du rapport entre tiers (%s) doit probablement être ajustée à la main.",
 				                                  aCreer.connuAuCivilDepuis(), aCreer.getNumeroSite(), dateApres));
 			}
-			addEtablissementSecondaire(aCreer, dateApres, warnings, suivis);
+
+			// Vérifier que le site à créer n'existe pas déjà.
+			final Etablissement etablissement = getContext().getTiersDAO().getEtablissementByNumeroSite(aCreer.getNumeroSite());
+			if (etablissement == null) {
+				addEtablissementSecondaire(aCreer, dateApres, warnings, suivis);
+			} else {
+				suivis.addSuivi(String.format("Nouvel établissement secondaire civil %d déjà connu de Unireg en tant que tiers %s. Ne sera pas créé.",
+				                              aCreer.getNumeroSite(), FormatNumeroHelper.numeroCTBToDisplay(etablissement.getNumero())));
+			}
 		}
 		for (EtablissementsSecondaires.Demenagement demenagement : demenagements) {
 			signaleDemenagement(demenagement.etablissement, demenagement.getAncienDomicile(), demenagement.getNouveauDomicile(), demenagement.getDate(), suivis);
@@ -110,12 +123,6 @@ public class EtablissementsSecondaires extends EvenementOrganisationInterneDeTra
 			Assert.isTrue(aFermer.isConnuAuCivil(), "L'établissement secondaire ne peut être fermé: il n'est pas connu au civil.");
 			final RapportEntreTiers rapportSujet = aFermer.getRapportObjetValidAt(dateApres, TypeRapportEntreTiers.ACTIVITE_ECONOMIQUE);
 			Assert.notNull(rapportSujet, "L'établissement secondaire ne peut être fermé: il n'y a déjà plus de rapport à la date demandée.");
-		}
-
-		// Vérifier que les sites à créer n'existent pas déjà (la redondance, ce sera pour plus tard, c'est du travail)
-		for (SiteOrganisation site : sitesACreer) {
-			final Etablissement etablissement = getContext().getTiersDAO().getEtablissementByNumeroSite(site.getNumeroSite());
-			Assert.isNull(etablissement, "L'établissement secondaire à créer existe déjà!");
 		}
 	}
 

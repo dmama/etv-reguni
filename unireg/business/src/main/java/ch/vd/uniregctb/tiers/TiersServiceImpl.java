@@ -314,6 +314,19 @@ public class TiersServiceImpl implements TiersService {
 	}
 
 	@Override
+	public List<Etablissement> getEtablissementsSecondairesEntrepriseSansRange(Entreprise entreprise) {
+		final List<DateRanged<Etablissement>> etablissementsRanges = getEtablissementsSecondairesEntreprise(entreprise);
+		Set<Etablissement> etablissements = new HashSet<>(etablissementsRanges.size());
+		if (!etablissementsRanges.isEmpty()) {
+			for (DateRanged<Etablissement> range : etablissementsRanges) {
+				etablissements.add(range.getPayload());
+			}
+		}
+		return new ArrayList<>(etablissements);
+	}
+
+
+	@Override
 	public List<Etablissement> getEtablissementsSecondairesEntreprise(Entreprise entreprise, final RegDate date) {
 		final List<DateRanged<Etablissement>> etablissementsEntreprise = getEtablissementsEntreprise(entreprise, true, new Predicate<ActiviteEconomique>() {
 			@Override
