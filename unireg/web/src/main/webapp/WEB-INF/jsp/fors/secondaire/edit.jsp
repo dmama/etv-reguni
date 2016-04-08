@@ -136,7 +136,7 @@
 
 			// on initialise l'auto-completion de l'autorité fiscale
 			$('#autoriteFiscale').val('<unireg:commune ofs="${command.noAutoriteFiscale}" displayProperty="nomOfficiel" escapeMode="javascript"/>');
-			Fors.autoCompleteCommunesVD('#autoriteFiscale', '#noAutoriteFiscale', updateSyncActions);
+			Fors.autoCompleteCommunesVD('#autoriteFiscale', '#noAutoriteFiscale', function(item) { updateSyncActions(); });
 
 			// on initialise les motifs au chargement de la page
 			Fors.updateMotifsOuverture($('#motifDebut'), '${command.tiersId}', 'REVENU_FORTUNE', '${command.motifRattachement}', '${command.motifDebut}');

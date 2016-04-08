@@ -9,6 +9,7 @@ public class DemenagementSiegeView {
 	private RegDate dateDebutNouveauSiege;
 	private TypeAutoriteFiscale typeAutoriteFiscale;
 	private Integer noAutoriteFiscale;
+	private String nomAutoriteFiscale;
 
 	public DemenagementSiegeView() {
 	}
@@ -48,5 +49,13 @@ public class DemenagementSiegeView {
 
 	public void setNoAutoriteFiscale(Integer noAutoriteFiscale) {
 		this.noAutoriteFiscale = noAutoriteFiscale;
+	}
+
+	public String getNomAutoriteFiscale() {
+		return nomAutoriteFiscale;
+	}
+
+	public void setNomAutoriteFiscale(String nomAutoriteFiscale) {
+		this.nomAutoriteFiscale = nomAutoriteFiscale;
 	}
 }

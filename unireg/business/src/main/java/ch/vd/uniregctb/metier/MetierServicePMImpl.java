@@ -41,6 +41,7 @@ import ch.vd.uniregctb.tiers.Mandat;
 import ch.vd.uniregctb.tiers.RaisonSocialeFiscaleEntreprise;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.tiers.Remarque;
+import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.tiers.dao.RemarqueDAO;
@@ -329,12 +330,7 @@ public class MetierServicePMImpl implements MetierServicePM {
 
 		// 6. éventuellement ajout d'une remarque sur l'entreprise
 
-		if (StringUtils.isNotBlank(remarqueAssociee)) {
-			final Remarque remarque = new Remarque();
-			remarque.setTexte(StringUtils.abbreviate(remarqueAssociee, LengthConstants.TIERS_REMARQUE));
-			remarque.setTiers(entreprise);
-			remarqueDAO.save(remarque);
-		}
+		addRemarque(entreprise, remarqueAssociee);
 	}
 
 	@Override
@@ -406,7 +402,61 @@ public class MetierServicePMImpl implements MetierServicePM {
 				// pas d'établissement principal ?? bizarre, non ?
 				throw new MetierServiceException("Etablissement principal introuvable sur une entreprise inconnue du registre civil.");
 			}
+		}
+	}
 
+	@Override
+	public void finActivite(Entreprise entreprise, RegDate dateFinActivite, String remarqueAssociee) throws MetierServiceException {
+
+		// pas de for principal ouvert -> pas possible d'aller plus loin
+		final ForsParTypeAt forsParType = entreprise.getForsParTypeAt(null, false);
+		if (forsParType.principal == null) {
+			throw new MetierServiceException("Tous les fors fiscaux de l'entreprise sont déjà fermés.");
+		}
+
+		// 1. on ferme tous les rapports entre tiers ouvert (mandats et établissements secondaires)
+
+		for (RapportEntreTiers ret : CollectionsUtils.merged(entreprise.getRapportsSujet(), entreprise.getRapportsObjet())) {
+			if (!ret.isAnnule() && ret.getDateFin() == null) {
+				final boolean aFermer = (ret instanceof ActiviteEconomique && !((ActiviteEconomique) ret).isPrincipal()) || (ret instanceof Mandat);
+				if (aFermer) {
+					ret.setDateFin(dateFinActivite);
+				}
+			}
+		}
+
+		// 2. on ferme les fors ouverts avec le motif CESSATION_ACTIVITE
+
+		// on traite d'abord les fors secondaires, puis seulement ensuite le for principal
+		boolean hasImmeuble = false;
+		for (ForFiscalSecondaire fs : forsParType.secondaires) {
+			hasImmeuble |= fs.getMotifRattachement() == MotifRattachement.IMMEUBLE_PRIVE;
+			tiersService.closeForFiscalSecondaire(entreprise, fs, dateFinActivite, MotifFor.CESSATION_ACTIVITE);
+		}
+		tiersService.closeForFiscalPrincipal(forsParType.principal, dateFinActivite, MotifFor.CESSATION_ACTIVITE);
+
+		// 3. si for immeuble fermé, on crée une tâche de contrôle de dossier
+
+		if (hasImmeuble) {
+			tacheService.genereTacheControleDossier(entreprise);
+		}
+
+		// 4. nouvel état fiscal (seulement si l'entreprise n'est pas inscrite au RC)
+		if (!tiersService.isInscriteRC(entreprise, dateFinActivite)) {
+			entreprise.addEtat(new EtatEntreprise(dateFinActivite, TypeEtatEntreprise.DISSOUTE, TypeGenerationEtatEntreprise.MANUELLE));
+		}
+
+		// 6. éventuellement ajout d'une remarque sur l'entreprise
+
+		addRemarque(entreprise, remarqueAssociee);
+	}
+
+	private void addRemarque(Tiers tiers, String texteRemarque) {
+		if (StringUtils.isNotBlank(texteRemarque)) {
+			final Remarque remarque = new Remarque();
+			remarque.setTexte(StringUtils.abbreviate(texteRemarque, LengthConstants.TIERS_REMARQUE));
+			remarque.setTiers(tiers);
+			remarqueDAO.save(remarque);
 		}
 	}
 }

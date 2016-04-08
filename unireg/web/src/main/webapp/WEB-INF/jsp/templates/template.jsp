@@ -107,7 +107,7 @@
 						<li><a href="<c:url value='/lr/list.do'/>"><fmt:message key="title.lr" /></a></li>
 					</authz:authorize>
 
-					<authz:authorize ifAnyGranted="ROLE_FAILLITE_ENTREPRISE, ROLE_DEMENAGEMENT_SIEGE_ENTREPRISE">
+					<authz:authorize ifAnyGranted="ROLE_FAILLITE_ENTREPRISE, ROLE_DEMENAGEMENT_SIEGE_ENTREPRISE, ROLE_FIN_ACTIVITE_ENTREPRISE">
 					<li><fmt:message key="label.action.processus.complexes.entreprises"/>
 						<ul>
 							<authz:authorize ifAnyGranted="ROLE_FAILLITE_ENTREPRISE">
@@ -115,6 +115,9 @@
 							</authz:authorize>
 							<authz:authorize ifAnyGranted="ROLE_DEMENAGEMENT_SIEGE_ENTREPRISE">
 								<li><a href="<c:url value="/processuscomplexe/demenagement/list.do"/>"><fmt:message key="title.demenagement.siege"/></a></li>
+							</authz:authorize>
+							<authz:authorize ifAnyGranted="ROLE_FIN_ACTIVITE_ENTREPRISE">
+								<li><a href="<c:url value="/processuscomplexe/finactivite/list.do"/>"><fmt:message key="title.fin.activite"/></a></li>
 							</authz:authorize>
 						</ul>
 					</li>

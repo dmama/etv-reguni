@@ -633,7 +633,7 @@ var Fors = {
 		Autocomplete.infra('communeVD', $(textInput), true, function(item) {
 			$(noOfsInput).val(item ? item.id1 : null);
 			if (onChangeCallback) {
-				onChangeCallback();
+				onChangeCallback(item);
 			}
 		});
 	},
@@ -642,7 +642,7 @@ var Fors = {
 		Autocomplete.infra('communeHC', $(textInput), true, function(item) {
 			$(noOfsInput).val(item ? item.id1 : null);
 			if (onChangeCallback) {
-				onChangeCallback();
+				onChangeCallback(item);
 			}
 		});
 	},
@@ -651,7 +651,7 @@ var Fors = {
 		Autocomplete.infra('etat', $(textInput), true, function(item) {
 			$(noOfsInput).val(item ? item.id1 : null);
 			if (onChangeCallback) {
-				onChangeCallback();
+				onChangeCallback(item);
 			}
 		});
 	},

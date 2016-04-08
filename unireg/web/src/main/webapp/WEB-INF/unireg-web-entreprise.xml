@@ -16,5 +16,6 @@
 
 	<bean id="failliteController" class="ch.vd.uniregctb.entreprise.complexe.FailliteController" parent="abstractProcessusComplexeEntrepriseController"/>
 	<bean id="demenagementSiegeController" class="ch.vd.uniregctb.entreprise.complexe.DemenagementSiegeController" parent="abstractProcessusComplexeEntrepriseController"/>
+	<bean id="finActiviteController" class="ch.vd.uniregctb.entreprise.complexe.FinActiviteController" parent="abstractProcessusComplexeEntrepriseController"/>
 
 </beans>

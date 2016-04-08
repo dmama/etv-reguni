@@ -47,30 +47,45 @@
 
 			<script type="application/javascript">
 
-				function selectAutoriteFiscale(name) {
+				function selectAutoriteFiscale(name, reset) {
 					if (name == 'COMMUNE_OU_FRACTION_VD') {
 						$('#siege_commune_vd_label').show();
 						$('#siege_commune_hc_label').hide();
 						$('#siege_pays_label').hide();
-						$('#autoriteFiscale').val(null);
-						$('#noAutoriteFiscale').val(null);
-						Fors.autoCompleteCommunesVD('#autoriteFiscale', '#noAutoriteFiscale');
+						if (reset) {
+							$('#autoriteFiscale').val(null);
+							$('#noAutoriteFiscale').val(null);
+							$('#nomAutoriteFiscale').val(null);
+						}
+						Fors.autoCompleteCommunesVD('#autoriteFiscale', '#noAutoriteFiscale', function(item) {
+							$('#nomAutoriteFiscale').val(item ? item.label : null);
+						});
 					}
 					else if (name == 'COMMUNE_HC') {
 						$('#siege_commune_vd_label').hide();
 						$('#siege_commune_hc_label').show();
 						$('#siege_pays_label').hide();
-						$('#autoriteFiscale').val(null);
-						$('#noAutoriteFiscale').val(null);
-						Fors.autoCompleteCommunesHC('#autoriteFiscale', '#noAutoriteFiscale');
+						if (reset) {
+							$('#autoriteFiscale').val(null);
+							$('#noAutoriteFiscale').val(null);
+							$('#nomAutoriteFiscale').val(null);
+						}
+						Fors.autoCompleteCommunesHC('#autoriteFiscale', '#noAutoriteFiscale', function(item) {
+							$('#nomAutoriteFiscale').val(item ? item.label : null);
+						});
 					}
 					else if (name == 'PAYS_HS') {
 						$('#siege_commune_vd_label').hide();
 						$('#siege_commune_hc_label').hide();
 						$('#siege_pays_label').show();
-						$('#autoriteFiscale').val(null);
-						$('#noAutoriteFiscale').val(null);
-						Fors.autoCompletePaysHS('#autoriteFiscale', '#noAutoriteFiscale');
+						if (reset) {
+							$('#autoriteFiscale').val(null);
+							$('#noAutoriteFiscale').val(null);
+							$('#nomAutoriteFiscale').val(null);
+						}
+						Fors.autoCompletePaysHS('#autoriteFiscale', '#noAutoriteFiscale', function(item) {
+							$('#nomAutoriteFiscale').val(item ? item.label : null);
+						});
 					}
 				}
 
@@ -97,7 +112,7 @@
 							<div id="select_type_siege">
 								<%--@elvariable id="typesAutoriteFiscale" type="java.util.Map<TypeAutoriteFiscale, String>"--%>
 								<form:select path="typeAutoriteFiscale" items="${typesAutoriteFiscale}" id="optionTypeAutoriteFiscale"
-								             onchange="selectAutoriteFiscale(this.options[this.selectedIndex].value);" />
+								             onchange="selectAutoriteFiscale(this.options[this.selectedIndex].value, true);" />
 							</div>
 							<div id="mandatory_type_siege" style="display: none;"></div>
 						</td>
@@ -112,9 +127,10 @@
 							</label>
 						</td>
 						<td>
-							<input id="autoriteFiscale" size="25" />
+							<input id="autoriteFiscale" size="25" value="${command.nomAutoriteFiscale}"/>
 							<form:errors path="noAutoriteFiscale" cssClass="error" />
 							<form:hidden path="noAutoriteFiscale" />
+							<form:hidden path="nomAutoriteFiscale" />
 						</td>
 					</tr>
 
@@ -131,7 +147,7 @@
 
 		<script type="application/javascript">
 			$(function() {
-				selectAutoriteFiscale('${command.typeAutoriteFiscale}');
+				selectAutoriteFiscale('${command.typeAutoriteFiscale}', false);
 			});
 		</script>
 

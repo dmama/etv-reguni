@@ -158,15 +158,15 @@
 
 			<c:if test="${command.typeAutoriteFiscale == 'COMMUNE_OU_FRACTION_VD'}">
 				$('#autoriteFiscale').val('<unireg:commune ofs="${command.noAutoriteFiscale}" displayProperty="nomOfficiel" date="${command.dateDebut}" escapeMode="javascript"/>');
-				Fors.autoCompleteCommunesVD('#autoriteFiscale', '#noAutoriteFiscale', updateSyncActions);
+				Fors.autoCompleteCommunesVD('#autoriteFiscale', '#noAutoriteFiscale', function(item) { updateSyncActions(); });
 			</c:if>
 			<c:if test="${command.typeAutoriteFiscale == 'COMMUNE_HC'}">
 				$('#autoriteFiscale').val('<unireg:commune ofs="${command.noAutoriteFiscale}" displayProperty="nomOfficiel" date="${command.dateDebut}" escapeMode="javascript"/>');
-				Fors.autoCompleteCommunesHC('#autoriteFiscale', '#noAutoriteFiscale', updateSyncActions);
+				Fors.autoCompleteCommunesHC('#autoriteFiscale', '#noAutoriteFiscale', function(item) { updateSyncActions(); });
 			</c:if>
 			<c:if test="${command.typeAutoriteFiscale == 'PAYS_HS'}">
 				$('#autoriteFiscale').val('<unireg:pays ofs="${command.noAutoriteFiscale}" displayProperty="nomCourt" date="${command.dateDebut}" escapeMode="javascript"/>');
-				Fors.autoCompletePaysHS('#autoriteFiscale', '#noAutoriteFiscale', updateSyncActions);
+				Fors.autoCompletePaysHS('#autoriteFiscale', '#noAutoriteFiscale', function(item) { updateSyncActions(); });
 			</c:if>
 		</script>
 

@@ -10,10 +10,8 @@ public class ProcessusComplexeValidator extends DelegatingValidator {
 		// recherche de tiers
 		addSubValidator(TiersCriteriaView.class, new TiersCriteriaValidator());
 
-		// faillite
-		addSubValidator(FailliteView.class, new FailliteViewValidator());
-
-		// déménagement de siège
-		addSubValidator(DemenagementSiegeView.class, new DemenagementSiegeViewValidator());
+		addSubValidator(FailliteView.class, new FailliteViewValidator());                       // faillite
+		addSubValidator(DemenagementSiegeView.class, new DemenagementSiegeViewValidator());     // déménagement de siège
+		addSubValidator(FinActiviteView.class, new FinActiviteViewValidator());                 // fin d'activité
 	}
 }

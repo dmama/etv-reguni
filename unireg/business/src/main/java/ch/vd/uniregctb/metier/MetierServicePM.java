@@ -51,4 +51,13 @@ public interface MetierServicePM {
 	 * @throws MetierServiceException en cas de problème
 	 */
 	void demenageSiege(Entreprise entreprise, RegDate dateDebutNouveauSiege, TypeAutoriteFiscale taf, int noOfs) throws MetierServiceException;
+
+	/**
+	 * Opération de fin d'activité
+	 * @param entreprise l'entreprise qui cesse son activité
+	 * @param dateFinActivite date de la fin d'activité
+	 * @param remarqueAssociee [optionnelle] éventuelle remarque à ajouter à l'entreprise en même temps
+	 * @throws MetierServiceException en cas de problème
+	 */
+	void finActivite(Entreprise entreprise, RegDate dateFinActivite, String remarqueAssociee) throws MetierServiceException;
 }
