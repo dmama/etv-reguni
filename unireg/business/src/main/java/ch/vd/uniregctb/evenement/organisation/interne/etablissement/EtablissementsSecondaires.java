@@ -18,6 +18,7 @@ import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationErreurC
 import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationSuiviCollector;
 import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationWarningCollector;
 import ch.vd.uniregctb.evenement.organisation.interne.EvenementOrganisationInterneDeTraitement;
+import ch.vd.uniregctb.evenement.organisation.interne.HandleStatus;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.Etablissement;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
@@ -70,15 +71,16 @@ public class EtablissementsSecondaires extends EvenementOrganisationInterneDeTra
 			 */
 			if (!aCreer.isSuccursale(getDateEvt())) {
 				suivis.addSuivi(String.format("L'établissement secondaire civil %d n'est pas une succursale ou est une succursale radiée du RC et ne sera donc pas créé dans Unireg.", aCreer.getNumeroSite()));
+				raiseStatusTo(HandleStatus.TRAITE);
 				continue;
 			}
 
 			// Contrôle du cas ou on va crée un établissement existant mais qu'on ne connaissait pas. On le crée quand même mais on avertit.
 			Domicile ancienDomicile = aCreer.getDomicile(dateAvant);
 			if (ancienDomicile != null) {
-				warnings.addWarning(String.format("Vérification manuelle requise: l'établissement secondaire (n°%s civil) est préexistant au civil mais inconnu d'Unireg à ce jour. " +
+				warnings.addWarning(String.format("Vérification manuelle requise: l'établissement secondaire (n°%s civil) est préexistant au civil (depuis le %s) mais inconnu d'Unireg à ce jour. " +
 						                                  "La date du rapport entre tiers (%s) doit probablement être ajustée à la main.",
-				                                  aCreer.getNumeroSite(), dateApres));
+				                                  aCreer.connuAuCivilDepuis(), aCreer.getNumeroSite(), dateApres));
 			}
 			addEtablissementSecondaire(aCreer, dateApres, warnings, suivis);
 		}

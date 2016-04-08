@@ -217,12 +217,22 @@ public class SiteOrganisationRCEnt implements Serializable, SiteOrganisation {
 		return publications.get(date);
 	}
 
+	@Override
+	public RegDate connuAuCivilDepuis() {
+		return OrganisationHelper.connuAuCivilDepuis(this);
+	}
+
 	/**
 	 * Indique si un l'organisation est inscrite au RC à la date indiquée. Si la date est nulle, la date du jour est utilisée.
 	 */
 	@Override
 	public boolean isInscritAuRC(RegDate date) {
 		return OrganisationHelper.isInscritAuRC(this, date);
+	}
+
+	@Override
+	public boolean isActif(RegDate date) {
+		return OrganisationHelper.isActif(this, date);
 	}
 
 	/**

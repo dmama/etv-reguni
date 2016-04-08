@@ -247,12 +247,13 @@ public class MetierServicePMImpl implements MetierServicePM {
 
 		for (Etablissement etablissementSecondaire : tiersService.getEtablissementsSecondairesEntreprise(entreprise, date)) {
 			if (etablissementSecondaire.isConnuAuCivil()) {
-				if (matches.get(etablissementSecondaire.getNumeroEtablissement()) != null) {
-					matches.remove(etablissementSecondaire.getNumeroEtablissement());
+				final Long numeroEtablissement = etablissementSecondaire.getNumeroEtablissement();
+				if (matches.get(numeroEtablissement) != null && matches.remove(numeroEtablissement) != null) {
 					result.addEtablissementRattache(etablissementSecondaire);
 				}
 				else {
-					throw new MetierServiceException(String.format("L'établissement secondaire %s est connu au civil mais son numéro ne correspond à aucun des établissements civil!", FormatNumeroHelper.numeroCTBToDisplay(etablissementSecondaire.getNumeroEtablissement())));
+					throw new MetierServiceException(String.format("L'établissement secondaire %s est censé être connu au civil mais son numéro ne correspond à aucun des établissements civil RCEnt de l'organisation %d!",
+					                                               FormatNumeroHelper.numeroCTBToDisplay(numeroEtablissement), entreprise.getNumeroEntreprise()));
 				}
 			} else {
 				result.addEtablissementNonRattache(etablissementSecondaire);

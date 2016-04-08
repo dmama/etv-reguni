@@ -95,9 +95,24 @@ public interface SiteOrganisation {
 	List<PublicationBusiness>  getPublications(RegDate date);
 
 	/**
+	 * Détermine la date de premier snapshot du site. C'est à dire à partir de quand le site
+	 * est connu au civil.
+	 * @return la date du premier snapshot
+	 */
+	RegDate connuAuCivilDepuis();
+
+	/**
 	 * @return true si le site est inscrit au RC à une date donnée. Si la date est nulle, la date du jour est utilisée.
 	 */
 	boolean isInscritAuRC(RegDate date);
+
+	/**
+	 * @return true si le site est globallement actif à à une date donnée, c'est à dire qu'il a une existence active chez au moins
+	 * un fournisseur (RC, IDE, REE ...). Etre actif signifie être inscrit et non radié.
+	 * .
+	 * Si la date est nulle, la date du jour est utilisée.
+	 */
+	boolean isActif(RegDate date);
 
 	/**
 	 * @return true si le site est radié au RC à à une date donnée. Si la date est nulle, la date du jour est utilisée.

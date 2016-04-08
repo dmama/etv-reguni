@@ -64,8 +64,8 @@ public class EtablissementsSecondairesStrategy extends AbstractOrganisationStrat
 			return null; // On n'existait pas hier, en fait.
 		} else {
 
-			List<SiteOrganisation> sitesVDAvant = uniquementSitesVD(organisation.getSitesSecondaires(dateAvant), dateAvant);
-			List<SiteOrganisation> sitesVDApres = uniquementSitesVD(organisation.getSitesSecondaires(dateApres), dateApres);
+			List<SiteOrganisation> sitesVDAvant = uniquementSitesVDActifs(organisation.getSitesSecondaires(dateAvant), dateAvant);
+			List<SiteOrganisation> sitesVDApres = uniquementSitesVDActifs(organisation.getSitesSecondaires(dateApres), dateApres);
 
 			determineChangementsEtablissements(sitesVDAvant, sitesVDApres, etablissementsAFermer, sitesACreer, context);
 
@@ -81,11 +81,13 @@ public class EtablissementsSecondairesStrategy extends AbstractOrganisationStrat
 		return null;
 	}
 
-	private List<SiteOrganisation> uniquementSitesVD(List<SiteOrganisation> sitesSecondaires, RegDate date) {
+	private List<SiteOrganisation> uniquementSitesVDActifs(List<SiteOrganisation> sitesSecondaires, RegDate date) {
 		List<SiteOrganisation> filtre = new ArrayList<>(sitesSecondaires.size());
 		for (SiteOrganisation site : sitesSecondaires) {
 			Domicile domicile = site.getDomicile(date);
-			if (domicile != null && domicile.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
+			if (domicile != null
+					&& domicile.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD
+					&& site.isActif(date)) {
 				filtre.add(site);
 			}
 		}

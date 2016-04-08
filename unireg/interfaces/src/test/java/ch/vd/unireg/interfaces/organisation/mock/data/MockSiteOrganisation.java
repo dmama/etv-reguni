@@ -266,8 +266,18 @@ public class MockSiteOrganisation implements SiteOrganisation {
 	}
 
 	@Override
+	public RegDate connuAuCivilDepuis() {
+		return OrganisationHelper.connuAuCivilDepuis(this);
+	}
+
+	@Override
 	public boolean isInscritAuRC(RegDate date) {
 		return OrganisationHelper.isInscritAuRC(this, date);
+	}
+
+	@Override
+	public boolean isActif(RegDate date) {
+		return OrganisationHelper.isActif(this, date);
 	}
 
 	@Override

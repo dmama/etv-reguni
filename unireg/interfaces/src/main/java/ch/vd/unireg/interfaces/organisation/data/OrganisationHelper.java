@@ -299,6 +299,18 @@ public abstract class OrganisationHelper {
 	}
 
 	/**
+	 * Détermine la date de premier snapshot du site. C'est à dire à partir de quand le site
+	 * est connu au civil.
+	 * @param site le site visé
+	 * @return la date du premier snapshot
+	 */
+	public static RegDate connuAuCivilDepuis(SiteOrganisation site) {
+		final List<DateRanged<String>> nom = site.getNom();
+		Collections.sort(nom, new DateRangeComparator<>());
+		return nom.get(0).getDateDebut();
+	}
+
+	/**
 	 * Une organisation est réputée inscrite au RC à la date fournie si le statut de son site principal n'est ni INCONNU, ni NON_INSCRIT.
 	 *
  	 * @param organisation l'organisation
@@ -328,6 +340,22 @@ public abstract class OrganisationHelper {
 	}
 
 	/**
+	 * Un site est réputé inscrit à l'IDE à la date fournie si son statut n'est ni AUTRE, ni ANNULE.
+	 *
+	 * @param site le site
+	 * @param date la date pour laquelle on veut connaitre la situation à l'IDE
+	 * @return true si inscrite, false sinon
+	 */
+	public static boolean isInscritIDE(SiteOrganisation site, RegDate date) {
+		final DonneesRegistreIDE donneesIDE = site.getDonneesRegistreIDE();
+		if (donneesIDE == null) {
+			return false;
+		}
+		final StatusRegistreIDE statusInscription = donneesIDE.getStatus(defaultDate(date));
+		return statusInscription != null && !(statusInscription == StatusRegistreIDE.AUTRE || statusInscription == StatusRegistreIDE.ANNULE);
+	}
+
+	/**
 	 * Un site est réputé être une succursale à la date fournie s'il est inscrit au RC, si son statut n'est
 	 * ni INCONNU, ni NON_INSCRIT et qu'il n'est pas radié du RC.
 	 *
@@ -353,11 +381,29 @@ public abstract class OrganisationHelper {
 	}
 
 	/**
+	 * Dire si un site est globallement actif, c'est à dire qu'il a une existence à la date fournie chez au
+	 * moins un fournisseur primaire (RC, IDE). Etre actif signifie être inscrit et non radié.
+	 *
+	 * @param site le site
+	 * @param date la date pour laquelle on veut connaitre la situation du site
+	 * @return true si actif, false sinon
+	 */
+	public static boolean isActif(SiteOrganisation site, RegDate date) {
+		if (isInscritAuRC(site, date) && !isRadieDuRC(site, date)) {
+			return true;
+		}
+		else if (isInscritIDE(site, date) && !isRadieIDE(site, date)) {
+			return true;
+		}
+		return false;
+	}
+
+	/**
 	 * Un site est réputé radié du RC à la date fournie si son statut est RADIE
 	 *
 	 * @param site le site
 	 * @param date la date pour laquelle on veut connaitre la situation au RC
-	 * @return true si inscrite, false sinon
+	 * @return true si radié, false sinon
 	 */
 	public static boolean isRadieDuRC(SiteOrganisation site, RegDate date) {
 		final DonneesRC donneesRC = site.getDonneesRC();
@@ -372,7 +418,7 @@ public abstract class OrganisationHelper {
 	 *
 	 * @param organisation l'organisation
 	 * @param date la date pour laquelle on veut connaitre la situation au RC
-	 * @return true si inscrite, false sinon
+	 * @return true si radié, false sinon
 	 */
 	public static boolean isRadieIDE(Organisation organisation, RegDate date) {
 		final RegDate dateEffective = defaultDate(date);
@@ -385,7 +431,7 @@ public abstract class OrganisationHelper {
 	 *
 	 * @param site le site
 	 * @param date la date pour laquelle on veut connaitre la situation au RC
-	 * @return true si inscrite, false sinon
+	 * @return true si radié, false sinon
 	 */
 	public static boolean isRadieIDE(SiteOrganisation site, RegDate date) {
 		final DonneesRegistreIDE donneesIDE = site.getDonneesRegistreIDE();
