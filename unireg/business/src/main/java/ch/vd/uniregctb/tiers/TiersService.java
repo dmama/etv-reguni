@@ -172,12 +172,12 @@ public interface TiersService {
 	List<RaisonSocialeHisto> getRaisonsSociales(@NotNull Entreprise entreprise, boolean avecAnnulees);
 
 	/**
-	 * @return la liste des sièges de l'entreprise, c'est-à-dire la liste des lieus de domicile des établissements PRINCIPAUX successifs.
+	 * @return la liste des sièges de l'entreprise, c'est-à-dire la liste des lieux de domicile des établissements PRINCIPAUX successifs.
 	 */
 	List<DomicileHisto> getSieges(@NotNull Entreprise entreprise, boolean aussiAnnules);
 
 	/**
-	 * @return la liste des lieus successifs de domicile d'un établissement
+	 * @return la liste des lieux successifs de domicile d'un établissement
 	 */
 	List<DomicileHisto> getDomiciles(@NotNull Etablissement etablissement, boolean aussiAnnules);
 

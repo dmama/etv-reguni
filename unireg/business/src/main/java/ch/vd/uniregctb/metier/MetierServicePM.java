@@ -3,6 +3,7 @@ package ch.vd.uniregctb.metier;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.uniregctb.tiers.Entreprise;
+import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
 /**
  * Ensemble de services métiers de haut niveau, incluant toutes les régles fiscales nécessaires pour maintenir la cohérence des données.
@@ -40,4 +41,14 @@ public interface MetierServicePM {
 	 * @throws MetierServiceException en cas de problème
 	 */
 	void faillite(Entreprise entreprise, RegDate datePrononceFaillite, String remarqueAssociee) throws MetierServiceException;
+
+	/**
+	 * Opération de déménagement de siège
+	 * @param entreprise l'entreprise qui déménage
+	 * @param dateDebutNouveauSiege date de début de validité du nouveau siège
+	 * @param taf type d'autorité fiscale du nouveau siège
+	 * @param noOfs numéro OFS de la commune/du pays du nouveau siège
+	 * @throws MetierServiceException en cas de problème
+	 */
+	void demenageSiege(Entreprise entreprise, RegDate dateDebutNouveauSiege, TypeAutoriteFiscale taf, int noOfs) throws MetierServiceException;
 }

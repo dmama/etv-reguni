@@ -12,5 +12,8 @@ public class ProcessusComplexeValidator extends DelegatingValidator {
 
 		// faillite
 		addSubValidator(FailliteView.class, new FailliteViewValidator());
+
+		// déménagement de siège
+		addSubValidator(DemenagementSiegeView.class, new DemenagementSiegeViewValidator());
 	}
 }

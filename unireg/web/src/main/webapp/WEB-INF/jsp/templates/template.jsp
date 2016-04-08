@@ -107,15 +107,17 @@
 						<li><a href="<c:url value='/lr/list.do'/>"><fmt:message key="title.lr" /></a></li>
 					</authz:authorize>
 
-					<authz:authorize ifAnyGranted="ROLE_FAILLITE_ENTREPRISE">
-						<li>
-							<fmt:message key="label.action.processus.complexes.entreprises"/>
-							<ul>
-								<authz:authorize ifAnyGranted="ROLE_FAILLITE_ENTREPRISE">
-									<li><a href="<c:url value="/processuscomplexe/faillite/list.do"/>"><fmt:message key="title.faillite"/></a></li>
-								</authz:authorize>
-							</ul>
-						</li>
+					<authz:authorize ifAnyGranted="ROLE_FAILLITE_ENTREPRISE, ROLE_DEMENAGEMENT_SIEGE_ENTREPRISE">
+					<li><fmt:message key="label.action.processus.complexes.entreprises"/>
+						<ul>
+							<authz:authorize ifAnyGranted="ROLE_FAILLITE_ENTREPRISE">
+								<li><a href="<c:url value="/processuscomplexe/faillite/list.do"/>"><fmt:message key="title.faillite"/></a></li>
+							</authz:authorize>
+							<authz:authorize ifAnyGranted="ROLE_DEMENAGEMENT_SIEGE_ENTREPRISE">
+								<li><a href="<c:url value="/processuscomplexe/demenagement/list.do"/>"><fmt:message key="title.demenagement.siege"/></a></li>
+							</authz:authorize>
+						</ul>
+					</li>
 					</authz:authorize>
 
 					<authz:authorize ifAnyGranted="ROLE_EVEN, ROLE_EVEN_PM">

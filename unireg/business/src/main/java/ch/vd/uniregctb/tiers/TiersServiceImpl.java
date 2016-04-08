@@ -1789,7 +1789,7 @@ public class TiersServiceImpl implements TiersService {
     }
 
 	/**
-	 * Ouvre un nouveau for fiscal principal sur un contribuable soumis au régime des personnes physiques
+	 * Ouvre un nouveau for fiscal principal sur un contribuable soumis au régime des personnes morales
 	 * <b>Note:</b> pour ajouter un for fiscal fermé voir la méthode {@link #addForPrincipal(ContribuableImpositionPersonnesMorales, ch.vd.registre.base.date.RegDate, ch.vd.uniregctb.type.MotifFor,
 	 * ch.vd.registre.base.date.RegDate, ch.vd.uniregctb.type.MotifFor, ch.vd.uniregctb.type.MotifRattachement, int, ch.vd.uniregctb.type.TypeAutoriteFiscale, GenreImpot)}
 	 *
