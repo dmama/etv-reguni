@@ -243,7 +243,7 @@ public class ImpressionDeclarationImpotPersonnesMoralesHelperImpl extends Editiq
 	private String getNomCommuneOuPays(LocalisationDatee localisationDatee) {
 		if (localisationDatee != null && localisationDatee.getTypeAutoriteFiscale() == TypeAutoriteFiscale.PAYS_HS) {
 			final Pays pays = infraService.getPays(localisationDatee.getNumeroOfsAutoriteFiscale(), localisationDatee.getDateFin());
-			return String.format("Etranger (%s)", pays != null ? pays.getNomOfficiel() : "?");
+			return String.format("Etranger (%s)", pays != null ? pays.getNomCourt() : "?");
 		}
 		else if (localisationDatee != null && localisationDatee.getTypeAutoriteFiscale() != null) {
 			final Commune commune = infraService.getCommuneByNumeroOfs(localisationDatee.getNumeroOfsAutoriteFiscale(), localisationDatee.getDateFin());
