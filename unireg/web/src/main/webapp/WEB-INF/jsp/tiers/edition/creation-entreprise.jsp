@@ -20,20 +20,35 @@
 
 			<script type="text/javascript">
 
-				function selectAutoriteFiscale(name) {
+				function selectAutoriteFiscale(name, firstLoad) {
 					if (name == 'COMMUNE_HC') {
 						$('#for_commune_hc_label').show();
 						$('#for_pays_label').hide();
-						$('#nomSiege').val(null);
-						$('#numeroOfsSiege').val(null);
-						Fors.autoCompleteCommunesHC('#nomSiege', '#numeroOfsSiege');
+						if (!firstLoad) {
+							alert($('#siege').val());
+							$('#siege').val(null);
+							$('#nomSiege').val(null);
+							$('#numeroOfsSiege').val(null);
+							alert($('#siege').val());
+						}
+						Autocomplete.infra('communeHC', '#siege', true, function(item) {
+							$('#numeroOfsSiege').val(item ? item.id1 : null);
+							$('#nomSiege').val(item ? item.label : null);
+						});
 					}
 					else if (name == 'PAYS_HS') {
 						$('#for_commune_hc_label').hide();
 						$('#for_pays_label').show();
-						$('#nomSiege').val(null);
-						$('#numeroOfsSiege').val(null);
-						Fors.autoCompletePaysHS('#nomSiege', '#numeroOfsSiege');
+						if (!firstLoad) {
+							$('#siege').val(null);
+							$('#nomSiege').val(null);
+							$('#numeroOfsSiege').val(null);
+							alert($('#siege').val());
+						}
+						Autocomplete.infra('etat', '#siege', true, function(item) {
+							$('#numeroOfsSiege').val(item ? item.id1 : null);
+							$('#nomSiege').val(item ? item.label : null);
+						});
 					}
 				}
 			</script>
@@ -91,7 +106,7 @@
 								<td>
 									<div id="select_type_for">
 										<form:select path="civil.typeAutoriteFiscale" items="${typesAutoritesFiscales}" id="optionTypeAutoriteFiscale" tabindex="3"
-										             onchange="selectAutoriteFiscale(this.options[this.selectedIndex].value);" />
+										             onchange="selectAutoriteFiscale(this.options[this.selectedIndex].value, false);" />
 									</div>
 									<div id="mandatory_type_for" style="display: none;"></div>
 								</td>
@@ -104,11 +119,11 @@
 									</label>
 								</td>
 								<td>
-									<input id="nomSiege" path="civil.nomSiege" size="25" />
+									<input tabindex="4" id="siege" size="25" value="${data.civil.nomSiege}" />
 									<font COLOR="#FF0000">*</font>
 									<form:errors path="civil.numeroOfsSiege" cssClass="error" />
-									<form:hidden path="civil.numeroOfsSiege" id="numeroOfsSiege" tabindex="4" />
-									<%--<form:hidden path="civil.nomSiege" />--%>
+									<form:hidden path="civil.numeroOfsSiege" id="numeroOfsSiege" />
+									<form:hidden path="civil.nomSiege" id="nomSiege" />
 								</td>
 							</tr>
 
@@ -307,7 +322,7 @@
 
 		<script type="text/javascript">
 			// on initialise l'auto-completion de l'autorité fiscale
-			selectAutoriteFiscale('${data.civil.typeAutoriteFiscale}')
+			selectAutoriteFiscale('${data.civil.typeAutoriteFiscale}', true)
 		</script>
 
 		<script type="text/javascript">

@@ -240,7 +240,7 @@ public class TiersCreateController {
 
 		// Capital
 		if (civilView.getCapitalLibere() != null) {
-			tiersService.addCapitalFiscal(saved, Long.valueOf(civilView.getCapitalLibere()), civilView.getDevise(), civilView.getDateCreation(), null);
+			tiersService.addCapitalFiscal(saved, civilView.getCapitalLibere().longValue(), civilView.getDevise(), civilView.getDateCreation(), null);
 		}
 
 		// Raison sociale
