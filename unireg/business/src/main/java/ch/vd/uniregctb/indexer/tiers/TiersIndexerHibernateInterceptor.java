@@ -5,6 +5,7 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 
 import org.hibernate.CallbackException;
 import org.hibernate.SQLQuery;
@@ -20,15 +21,14 @@ import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
-import ch.vd.uniregctb.adresse.AdresseTiers;
 import ch.vd.uniregctb.common.BatchIterator;
+import ch.vd.uniregctb.common.EntityKey;
 import ch.vd.uniregctb.common.HibernateEntity;
 import ch.vd.uniregctb.common.StandardBatchIterator;
 import ch.vd.uniregctb.common.Switchable;
 import ch.vd.uniregctb.hibernate.interceptor.ModificationInterceptor;
 import ch.vd.uniregctb.hibernate.interceptor.ModificationSubInterceptor;
-import ch.vd.uniregctb.tiers.ForFiscal;
-import ch.vd.uniregctb.tiers.RapportEntreTiers;
+import ch.vd.uniregctb.tiers.LinkedEntity;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.transaction.TransactionTemplate;
 
@@ -57,25 +57,25 @@ public class TiersIndexerHibernateInterceptor implements ModificationSubIntercep
 	                        Type[] types, boolean isAnnulation) throws CallbackException {
 
 		if (entity instanceof Tiers) {
-			Tiers tiers = (Tiers) entity;
+			final Tiers tiers = (Tiers) entity;
 			addModifiedTiers(tiers);
 		}
-		else if (entity instanceof ForFiscal) {
-			ForFiscal ff = (ForFiscal) entity;
-			Tiers tiers = ff.getTiers();
-			addModifiedTiers(tiers);
-		}
-		else if (entity instanceof AdresseTiers) {
-			AdresseTiers adr = (AdresseTiers) entity;
-			Tiers tiers = adr.getTiers();
-			addModifiedTiers(tiers);
-		}
-		else if (entity instanceof RapportEntreTiers) {
-			RapportEntreTiers ret = (RapportEntreTiers) entity;
-			Long tiersId1 = ret.getObjetId();
-			addModifiedTiers(tiersId1);
-			Long tiersId2 = ret.getSujetId();
-			addModifiedTiers(tiersId2);
+		else if (entity instanceof LinkedEntity) {
+			final LinkedEntity linked = (LinkedEntity) entity;
+			final List<?> linkedEntities = linked.getLinkedEntities(true);
+			if (linkedEntities != null && !linkedEntities.isEmpty()) {
+				for (Object linkedEntity : linkedEntities) {
+					if (linkedEntity instanceof Tiers) {
+						addModifiedTiers((Tiers) linkedEntity);
+					}
+					else if (linkedEntity instanceof EntityKey) {
+						final EntityKey key = (EntityKey) linkedEntity;
+						if (Tiers.class.isAssignableFrom(key.getClazz())) {
+							addModifiedTiers((Long) key.getId());           // la clé des Tiers est un Long
+						}
+					}
+				}
+			}
 		}
 
 		return false; // aucun tiers n'a été immédiatement modifié

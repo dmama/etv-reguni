@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.indexer.tiers;
 
+import java.util.EnumSet;
 import java.util.List;
 
 import org.junit.Test;
@@ -9,22 +10,30 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.tx.TxCallbackWithoutResult;
 import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
+import ch.vd.unireg.interfaces.infra.mock.MockTypeRegimeFiscal;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.indexer.GlobalIndexInterface;
+import ch.vd.uniregctb.tiers.Entreprise;
+import ch.vd.uniregctb.tiers.EtatEntreprise;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersCriteria;
 import ch.vd.uniregctb.tiers.TiersDAO;
+import ch.vd.uniregctb.type.DayMonth;
+import ch.vd.uniregctb.type.FormeJuridiqueEntreprise;
 import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
+import ch.vd.uniregctb.type.TypeEtatEntreprise;
+import ch.vd.uniregctb.type.TypeGenerationEtatEntreprise;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -67,9 +76,8 @@ public class TiersIndexerHibernateInterceptorTest extends BusinessTest {
 
 	}
 
-	private ForFiscalPrincipal createForPrincipal(int ofs, RegDate date) {
-
-		ForFiscalPrincipalPP ffp = new ForFiscalPrincipalPP();
+	private ForFiscalPrincipalPP createForPrincipal(int ofs, RegDate date) {
+		final ForFiscalPrincipalPP ffp = new ForFiscalPrincipalPP();
 		ffp.setDateDebut(date);
 		ffp.setNumeroOfsAutoriteFiscale(ofs); // Lausanne
 		ffp.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
@@ -82,21 +90,20 @@ public class TiersIndexerHibernateInterceptorTest extends BusinessTest {
 
 	private PersonnePhysique createAndSaveNonHabitant() throws Exception {
 
-		PersonnePhysique nh = new PersonnePhysique(false);
+		final PersonnePhysique nh = new PersonnePhysique(false);
 		nh.setNom("Bla");
 		nh.setPrenomUsuel("Blo");
 		nh.setDateNaissance(dateNaissance1);
 
-		ForFiscalPrincipal ffp = createForPrincipal(5586, RegDate.get(2008, 3, 3));
+		final ForFiscalPrincipal ffp = createForPrincipal(5586, RegDate.get(2008, 3, 3));
 		nh.addForFiscal(ffp);
 
-		return (PersonnePhysique)tiersDAO.save(nh);
+		return (PersonnePhysique) tiersDAO.save(nh);
 	}
+
 	private PersonnePhysique createAndSaveHabitant(long noInd) throws Exception {
-
-		PersonnePhysique h = new PersonnePhysique(true);
+		final PersonnePhysique h = new PersonnePhysique(true);
 		h.setNumeroIndividu(noInd);
-
 		return (PersonnePhysique)tiersDAO.save(h);
 	}
 
@@ -417,6 +424,92 @@ public class TiersIndexerHibernateInterceptorTest extends BusinessTest {
 		}
 
 		LOGGER.info("==== testIndexationOnModifyFor END ====");
+	}
+
+	@Test(timeout = 120000)
+	@Transactional(rollbackFor = Throwable.class)
+	public void testIndexationOnModificationEtatEntreprise() throws Exception {
+
+		final long id = doInNewTransaction(new TxCallback<Long>() {
+			@Override
+			public Long execute(TransactionStatus status) throws Exception {
+				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+				final RegDate dateDebut = date(2009, 1, 1);
+				addRaisonSociale(entreprise, dateDebut, null, "Bla");
+				addFormeJuridique(entreprise, dateDebut, null, FormeJuridiqueEntreprise.FONDATION);
+				addRegimeFiscalCH(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_APM);
+				addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_APM);
+				addBouclement(entreprise, dateDebut, DayMonth.get(12, 31), 12);     // tous les 31.12 depuis 2009
+				addForPrincipal(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne);
+				addEtatEntreprise(entreprise, dateDebut, TypeEtatEntreprise.FONDEE, TypeGenerationEtatEntreprise.AUTOMATIQUE);
+				addEtatEntreprise(entreprise, dateDebut, TypeEtatEntreprise.INSCRITE_RC, TypeGenerationEtatEntreprise.AUTOMATIQUE);
+
+				// Ne doit pas trouver le tiers (l'indexation ne se fait qu'au commit de la transaction)
+				{
+					final TiersCriteria criteria = new TiersCriteria();
+					criteria.setNomRaison("bla");
+					final List<TiersIndexedData> list = searcher.search(criteria);
+					assertEquals(0, list.size());
+				}
+
+				return entreprise.getNumero();
+			}
+		});
+
+		globalTiersIndexer.sync();
+
+		// On doit trouver le tiers
+		{
+			final TiersCriteria criteria = new TiersCriteria();
+			criteria.setNomRaison("bla");
+			final List<TiersIndexedData> list = searcher.search(criteria);
+			assertEquals(1, list.size());
+
+			final TiersIndexedData data = list.get(0);
+			assertNotNull(data);
+			assertEquals(TypeEtatEntreprise.INSCRITE_RC, data.getEtatEntreprise());
+			assertEquals(EnumSet.of(TypeEtatEntreprise.INSCRITE_RC, TypeEtatEntreprise.FONDEE), data.getTousEtatsEntreprise());
+		}
+		// Il ne doit pas être dirty
+		{
+			final Tiers tiers = tiersDAO.get(id);
+			assertNotNull(tiers);
+			assertFalse(tiers.isDirty());
+		}
+
+		// Annulation de l'état INSCRITE_RC
+		doInNewTransaction(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus status) throws Exception {
+				final Entreprise entreprise = (Entreprise) tiersDAO.get(id);
+				final EtatEntreprise etatActuel = entreprise.getEtatActuel();
+				assertNotNull(etatActuel);
+				assertEquals(TypeEtatEntreprise.INSCRITE_RC, etatActuel.getType());
+				assertFalse(etatActuel.isAnnule());
+
+				etatActuel.setAnnule(true);
+			}
+		});
+
+		globalTiersIndexer.sync();
+
+		{
+			final TiersCriteria criteria = new TiersCriteria();
+			criteria.setNomRaison("bla");
+			final List<TiersIndexedData> list = searcher.search(criteria);
+			assertEquals(1, list.size());
+
+			final TiersIndexedData data = list.get(0);
+			assertNotNull(data);
+			assertEquals(TypeEtatEntreprise.FONDEE, data.getEtatEntreprise());
+			assertEquals(EnumSet.of(TypeEtatEntreprise.FONDEE), data.getTousEtatsEntreprise());
+		}
+		// Il ne doit pas être dirty
+		{
+			Tiers tiers = tiersDAO.get(id);
+			assertNotNull(tiers);
+			assertFalse(tiers.isDirty());
+		}
 	}
 
 	/**
