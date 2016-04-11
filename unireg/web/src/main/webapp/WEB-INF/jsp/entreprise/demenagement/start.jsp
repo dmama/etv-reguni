@@ -13,6 +13,7 @@
 
 	<tiles:put name="body">
 		<unireg:bandeauTiers numero="${command.idEntreprise}" showAvatar="true" showValidation="false" showEvenementsCivils="false" showLinks="false" showComplements="true"/>
+		<unireg:nextRowClass reset="0"/>
 
 		<fieldset>
 			<legend><span><fmt:message key="label.caracteristiques.siege.actuel"/></span></legend>
@@ -91,7 +92,7 @@
 
 			</script>
 
-
+			<unireg:nextRowClass reset="0"/>
 			<fieldset>
 				<legend><span><fmt:message key="label.caracteristiques.demenagement" /></span></legend>
 				<table>

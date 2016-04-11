@@ -13,6 +13,7 @@
 
 	<tiles:put name="body">
 		<unireg:bandeauTiers numero="${command.idEntreprise}" showAvatar="true" showValidation="false" showEvenementsCivils="false" showLinks="false" showComplements="true"/>
+		<unireg:nextRowClass reset="0"/>
 
 		<form:form method="post" id="recapFaillite" name="recapFaillite">
 			<form:hidden path="idEntreprise"/>
