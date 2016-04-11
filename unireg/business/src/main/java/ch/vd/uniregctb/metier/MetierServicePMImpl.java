@@ -320,7 +320,7 @@ public class MetierServicePMImpl implements MetierServicePM {
 
 		/* Finalisation du résultat */
 
-		/* Ajout des établissements qu'on n'a vraiment pas pu rattacher. Non je ne créerai pas de méthode addAll ;) */
+		/* Ajout des établissements qu'on n'a vraiment pas pu rattacher. */
 		for (Etablissement etabNonRattache : etablissementsNonEncoreRattaches) {
 			result.addEtablissementNonRattache(etabNonRattache);
 		}
@@ -362,8 +362,8 @@ public class MetierServicePMImpl implements MetierServicePM {
 
 	@Nullable
 	private DomicileStatutKey createSiteKey(RegDate date, SiteOrganisation site) {
-		final Domicile domicile2 = site.getDomicile(date);
-		return domicile2 == null ? null : new DomicileStatutKey(domicile2.getNoOfs(), site.isActif(date));
+		final Domicile domicile = site.getDomicile(date);
+		return domicile == null ? null : new DomicileStatutKey(domicile.getNoOfs(), domicile.getTypeAutoriteFiscale(), site.isActif(date));
 	}
 
 	private DomicileStatutKey createEtablissementKey(RegDate date, Etablissement etablissement) throws MetierServiceException {
@@ -372,25 +372,26 @@ public class MetierServicePMImpl implements MetierServicePM {
 		if (domicileEtablissement == null) {
 			return null;
 		}
-		Integer domicile = domicileEtablissement.getNumeroOfsAutoriteFiscale();
 
-		/* Déterminer le statut */
+		/* Déterminer le active */
 		final RapportEntreTiers rapport = etablissement.getRapportObjetValidAt(date, TypeRapportEntreTiers.ACTIVITE_ECONOMIQUE);
-		boolean statut = rapport.isValidAt(date);
+		boolean active = rapport.isValidAt(date);
 
-		return new DomicileStatutKey(domicile, statut);
+		return new DomicileStatutKey(domicileEtablissement.getNumeroOfsAutoriteFiscale(), domicileEtablissement.getTypeAutoriteFiscale(), active);
 	}
 
 	/**
-	 * Classe implémentant une clé bi-valeur sur le numéro OFS du domicile civil de
+	 * Classe implémentant une clé représentant le couple domicile civil - activite de l'établissement
 	 */
 	private static class DomicileStatutKey {
-		private int domicile;
-		private boolean statut;
+		private int noOfsAutirteFiscale;
+		private TypeAutoriteFiscale typeAutoriteFiscale;
+		private boolean active;
 
-		public DomicileStatutKey(int domicile, boolean statut) {
-			this.domicile = domicile;
-			this.statut = statut;
+		public DomicileStatutKey(int noOfsAutirteFiscale, TypeAutoriteFiscale typeAutoriteFiscale, boolean active) {
+			this.noOfsAutirteFiscale = noOfsAutirteFiscale;
+			this.typeAutoriteFiscale = typeAutoriteFiscale;
+			this.active = active;
 		}
 
 		@Override
@@ -400,24 +401,30 @@ public class MetierServicePMImpl implements MetierServicePM {
 
 			final DomicileStatutKey that = (DomicileStatutKey) o;
 
-			if (getDomicile() != that.getDomicile()) return false;
-			return isStatut() == that.isStatut();
+			if (getNoOfsAutirteFiscale() != that.getNoOfsAutirteFiscale()) return false;
+			if (isActive() != that.isActive()) return false;
+			return getTypeAutoriteFiscale() == that.getTypeAutoriteFiscale();
 
 		}
 
 		@Override
 		public int hashCode() {
-			int result = getDomicile();
-			result = 31 * result + (isStatut() ? 1 : 0);
+			int result = getNoOfsAutirteFiscale();
+			result = 31 * result + getTypeAutoriteFiscale().hashCode();
+			result = 31 * result + (isActive() ? 1 : 0);
 			return result;
 		}
 
-		public int getDomicile() {
-			return domicile;
+		public int getNoOfsAutirteFiscale() {
+			return noOfsAutirteFiscale;
 		}
 
-		public boolean isStatut() {
-			return statut;
+		public TypeAutoriteFiscale getTypeAutoriteFiscale() {
+			return typeAutoriteFiscale;
+		}
+
+		public boolean isActive() {
+			return active;
 		}
 	}
 
@@ -440,7 +447,7 @@ public class MetierServicePMImpl implements MetierServicePM {
 				throw new MetierServiceException(String.format("Erreur de données: null trouvé dans une collection de périodes %s", entites.getClass()));
 			}
 			if (lastRange.getDateDebut() == null) {
-				throw new MetierServiceException("Erreur de données: la date de début de la dernière périodes est nulle");
+				throw new MetierServiceException("Erreur de données: la date de début de la dernière période est nulle");
 			}
 			if (lastRange.getDateDebut().isAfter(date)) {
 				throw new MetierServiceException(String.format("La période valide à la date demandée %s n'est pas la dernière de l'historique!", RegDateHelper.dateToDisplayString(date)));
