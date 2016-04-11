@@ -1,7 +1,5 @@
 package ch.vd.uniregctb.tiers.view;
 
-import java.math.BigDecimal;
-
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.tiers.MontantMonetaire;
 import ch.vd.uniregctb.type.FormeJuridiqueEntreprise;
@@ -16,7 +14,7 @@ public class EntrepriseCivilView {
 	private Integer numeroOfsSiege;
 	private String nomSiege;
 	private FormeJuridiqueEntreprise formeJuridique;
-	private BigDecimal capitalLibere;
+	private Long capitalLibere;
 	private String devise;
 	private String numeroIde;
 	private boolean inscriteRC;
@@ -82,11 +80,11 @@ public class EntrepriseCivilView {
 		this.formeJuridique = formeJuridique;
 	}
 
-	public BigDecimal getCapitalLibere() {
+	public Long getCapitalLibere() {
 		return capitalLibere;
 	}
 
-	public void setCapitalLibere(BigDecimal capitalLibere) {
+	public void setCapitalLibere(Long capitalLibere) {
 		this.capitalLibere = capitalLibere;
 	}
 
