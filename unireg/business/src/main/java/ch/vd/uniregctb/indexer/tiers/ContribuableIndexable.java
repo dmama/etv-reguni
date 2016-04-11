@@ -44,20 +44,23 @@ public abstract class ContribuableIndexable<T extends Contribuable> extends Tier
 	@Override
 	protected void fillBaseData(TiersIndexableData data) {
 		super.fillBaseData(data);
+		fillTiersActif(data);
+		fillIdeData(data);
+	}
 
+	private void fillTiersActif(TiersIndexableData data) {
 		final ForFiscalPrincipal ffp = tiers.getDernierForFiscalPrincipal();
+		final boolean isActif;
 		if (ffp != null) {
-			final boolean isActif = ffp.isValidAt(null);
+			isActif = ffp.isValidAt(null);
 			if (ffp instanceof ForFiscalPrincipalPP) {
 				data.setModeImposition(IndexerFormatHelper.enumToString(((ForFiscalPrincipalPP) ffp).getModeImposition()));
 			}
-			data.setTiersActif(IndexerFormatHelper.booleanToString(isActif));
 		}
 		else {
-			data.setTiersActif(IndexerFormatHelper.booleanToString(false));
+			isActif = false;
 		}
-
-		fillIdeData(data);
+		data.setTiersActif(IndexerFormatHelper.booleanToString(isActif));
 	}
 
 	protected void fillIdeData(TiersIndexableData data) {

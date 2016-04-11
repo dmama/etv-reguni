@@ -91,7 +91,7 @@ public class DemenagementSiegeController extends AbstractProcessusComplexeContro
 				criteria.setNumeroIDE(NumeroIDEHelper.normalize(criteria.getNumeroIDE()));
 			}
 
-			criteria.setForPrincipalActif(true);
+			criteria.setTiersActif(Boolean.TRUE);
 			criteria.setTypeTiersImperatif(TiersCriteria.TypeTiers.ENTREPRISE);
 			model.addAttribute(LIST, searchTiers(criteria, model, ERROR_MESSAGE));
 		}

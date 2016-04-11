@@ -82,7 +82,7 @@ public class FinActiviteController extends AbstractProcessusComplexeController {
 				criteria.setNumeroIDE(NumeroIDEHelper.normalize(criteria.getNumeroIDE()));
 			}
 
-			criteria.setForPrincipalActif(true);
+			criteria.setTiersActif(Boolean.TRUE);
 			criteria.setTypeTiersImperatif(TiersCriteria.TypeTiers.ENTREPRISE);
 			criteria.setEtatsEntrepriseInterdits(EnumSet.of(TypeEtatEntreprise.ABSORBEE, TypeEtatEntreprise.DISSOUTE));
 			model.addAttribute(LIST, searchTiers(criteria, model, ERROR_MESSAGE));

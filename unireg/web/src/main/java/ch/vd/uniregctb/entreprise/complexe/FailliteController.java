@@ -82,7 +82,7 @@ public class FailliteController extends AbstractProcessusComplexeController {
 				criteria.setNumeroIDE(NumeroIDEHelper.normalize(criteria.getNumeroIDE()));
 			}
 
-			criteria.setForPrincipalActif(true);
+			criteria.setTiersActif(Boolean.TRUE);
 			criteria.setTypeTiersImperatif(TiersCriteria.TypeTiers.ENTREPRISE);
 			criteria.setEtatsEntrepriseInterdits(EnumSet.of(TypeEtatEntreprise.ABSORBEE, TypeEtatEntreprise.DISSOUTE, TypeEtatEntreprise.RADIEE_RC));
 			criteria.setEtatsEntrepriseCourantsInterdits(EnumSet.of(TypeEtatEntreprise.EN_FAILLITE));
