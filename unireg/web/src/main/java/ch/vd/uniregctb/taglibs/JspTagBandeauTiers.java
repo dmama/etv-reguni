@@ -6,7 +6,9 @@ import javax.servlet.jsp.JspWriter;
 import javax.servlet.jsp.tagext.BodyTagSupport;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -36,6 +38,7 @@ import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.Etablissement;
+import ch.vd.uniregctb.tiers.EtatEntreprise;
 import ch.vd.uniregctb.tiers.EvenementsCivilsNonTraites;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.FormeLegaleHisto;
@@ -48,6 +51,7 @@ import ch.vd.uniregctb.transaction.TransactionTemplate;
 import ch.vd.uniregctb.type.PeriodeDecompte;
 import ch.vd.uniregctb.type.PeriodiciteDecompte;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
+import ch.vd.uniregctb.type.TypeEtatEntreprise;
 import ch.vd.uniregctb.utils.WebContextUtils;
 
 /**
@@ -84,6 +88,11 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 		list.add(new AnnulerCouple());
 		list.add(new AnnulerSeparation());
 		list.add(new AnnulerDeces());
+
+		list.add(new TraiterFaillite());
+		list.add(new DemenagerSiege());
+		list.add(new TerminerActivite());
+
 		list.add(new AnnulerTiers());
 		list.add(new Exporter());
 
@@ -938,6 +947,109 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 		@Override
 		public String getActionUrl() {
 			return "post:/admin/refreshFlagHabitant.do?id=";
+		}
+	}
+
+	/**
+	 * @param entreprise entreprise à tester
+	 * @param etat type d'état à vérifier
+	 * @return <code>true</code> si l'état actuel de l'entreprise est du type donné
+	 */
+	private static boolean isEtatCourant(Entreprise entreprise, TypeEtatEntreprise etat) {
+		final EtatEntreprise etatActuel = entreprise.getEtatActuel();
+		return etatActuel != null && etatActuel.getType() == etat;
+	}
+
+	/**
+	 * @param entreprise entreprise à tester
+	 * @param etats types d'état à vérifier
+	 * @return <code>true</code> si l'entreprise a eu au moins un état non-annulé d'un des types donnés
+	 */
+	private static boolean hadEtatOnce(Entreprise entreprise, Set<TypeEtatEntreprise> etats) {
+		final Set<EtatEntreprise> tousEtats = entreprise.getEtats();
+		if (tousEtats != null && !tousEtats.isEmpty()) {
+			for (EtatEntreprise etatEntreprise : tousEtats) {
+				if (!etatEntreprise.isAnnule() && etats.contains(etatEntreprise.getType())) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	private static class TraiterFaillite implements Action {
+		@Override
+		public boolean isGranted() {
+			return SecurityHelper.isAnyGranted(securityProvider, Role.FAILLITE_ENTREPRISE);
+		}
+
+		@Override
+		public boolean isValide(Tiers tiers) {
+			return !tiers.isAnnule()
+					&& tiers instanceof Entreprise
+					&& tiersService.isInscriteRC((Entreprise) tiers, null)
+					&& !isEtatCourant((Entreprise) tiers, TypeEtatEntreprise.EN_FAILLITE)
+					&& !hadEtatOnce((Entreprise) tiers, EnumSet.of(TypeEtatEntreprise.ABSORBEE, TypeEtatEntreprise.DISSOUTE, TypeEtatEntreprise.RADIEE_RC))
+					&& tiers.getForFiscalPrincipalAt(null) != null;
+		}
+
+		@Override
+		public String getLabel() {
+			return "Traiter la faillite";
+		}
+
+		@Override
+		public String getActionUrl() {
+			return "goto:/processuscomplexe/faillite/start.do?id=";
+		}
+	}
+
+	private static class DemenagerSiege implements Action {
+		@Override
+		public boolean isGranted() {
+			return SecurityHelper.isAnyGranted(securityProvider, Role.DEMENAGEMENT_SIEGE_ENTREPRISE);
+		}
+
+		@Override
+		public boolean isValide(Tiers tiers) {
+			return !tiers.isAnnule()
+					&& tiers instanceof Entreprise
+					&& tiers.getForFiscalPrincipalAt(null) != null;
+		}
+
+		@Override
+		public String getLabel() {
+			return "Déménager le siège";
+		}
+
+		@Override
+		public String getActionUrl() {
+			return "goto:/processuscomplexe/demenagement/start.do?id=";
+		}
+	}
+
+	private static class TerminerActivite implements Action {
+		@Override
+		public boolean isGranted() {
+			return SecurityHelper.isAnyGranted(securityProvider, Role.FIN_ACTIVITE_ENTREPRISE);
+		}
+
+		@Override
+		public boolean isValide(Tiers tiers) {
+			return !tiers.isAnnule()
+					&& tiers instanceof Entreprise
+					&& !hadEtatOnce((Entreprise) tiers, EnumSet.of(TypeEtatEntreprise.ABSORBEE, TypeEtatEntreprise.DISSOUTE))
+					&& tiers.getForFiscalPrincipalAt(null) != null;
+		}
+
+		@Override
+		public String getLabel() {
+			return "Mettre fin à l'activité de l'entreprise";
+		}
+
+		@Override
+		public String getActionUrl() {
+			return "goto:/processuscomplexe/finactivite/start.do?id=";
 		}
 	}
 }

@@ -312,7 +312,7 @@ public abstract class OrganisationHelper {
 
 	/**
 	 * Une organisation est réputée inscrite au RC à la date fournie si le statut de son site principal n'est ni INCONNU, ni NON_INSCRIT.
-	 *
+	 * (<i>inscrite</i> doit être comprise dans le sens de <i>possède une inscription</i>, quelle qu'elle soit)
  	 * @param organisation l'organisation
 	 * @param date la date pour laquelle on veut connaitre la situation au RC
 	 * @return true si inscrite, false sinon
@@ -325,7 +325,7 @@ public abstract class OrganisationHelper {
 
 	/**
 	 * Un site est réputé inscrit au RC à la date fournie si son statut n'est ni INCONNU, ni NON_INSCRIT.
-	 *
+	 * (<i>inscrit</i> doit être comprise dans le sens de <i>possède une inscription</i>, quelle qu'elle soit)
 	 * @param site le site
 	 * @param date la date pour laquelle on veut connaitre la situation au RC
 	 * @return true si inscrite, false sinon
