@@ -11,8 +11,6 @@ import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TermQuery;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.uniregctb.common.Constants;
@@ -394,6 +392,26 @@ public class QueryConstructor {
 		}
 	}
 
+	public void addEtatInscriptionRC(BooleanQuery fullQuery) {
+		final TiersCriteria.TypeInscriptionRC etatInscriptionRC = criteria.getEtatInscriptionRC();
+		if (etatInscriptionRC != null) {
+			if (etatInscriptionRC == TiersCriteria.TypeInscriptionRC.INSCRIT_ACTIF) {
+				final Query q = new TermQuery(new Term(TiersIndexableData.INSCRIPTION_RC, TypeEtatInscriptionRC.ACTIVE.name()));
+				fullQuery.add(q, must);
+			}
+			else if (etatInscriptionRC == TiersCriteria.TypeInscriptionRC.INSCRIT_RADIE) {
+				final Query q = new TermQuery(new Term(TiersIndexableData.INSCRIPTION_RC, TypeEtatInscriptionRC.RADIEE.name()));
+				fullQuery.add(q, must);
+			}
+			else {
+				final BooleanQuery q = new BooleanQuery();
+				q.add(new TermQuery(new Term(TiersIndexableData.INSCRIPTION_RC, TypeEtatInscriptionRC.ACTIVE.name())), should);
+				q.add(new TermQuery(new Term(TiersIndexableData.INSCRIPTION_RC, TypeEtatInscriptionRC.RADIEE.name())), should);
+				fullQuery.add(q, etatInscriptionRC == TiersCriteria.TypeInscriptionRC.AVEC_INSCRIPTION ? must : mustNot);
+			}
+		}
+	}
+
 	public static void addAnnule(BooleanQuery fullQuery, TiersFilter filter) throws IndexerException {
 
 		if (!filter.isInclureTiersAnnules()) {
@@ -467,12 +485,6 @@ public class QueryConstructor {
 		}
 	}
 
-	private static void merge(@NotNull Set<TypeTiers> inout, @Nullable Set<TypeTiers> addition) {
-		if (addition != null) {
-			inout.addAll(addition);
-		}
-	}
-
 	public Query constructQuery() throws IndexerException {
 
 		final BooleanQuery fullQuery = new BooleanQuery();
@@ -529,6 +541,7 @@ public class QueryConstructor {
 		addContrainteVisualisationLimitee(fullQuery, criteria);
 		addContrainteEtatsEntrepriseInterdits(fullQuery);
 		addContrainteEtatCourantEntrepriseInterdit(fullQuery);
+		addEtatInscriptionRC(fullQuery);
 
 		final BooleanClause[] clauses = fullQuery.getClauses();
 		if (clauses != null && clauses.length > 0) {

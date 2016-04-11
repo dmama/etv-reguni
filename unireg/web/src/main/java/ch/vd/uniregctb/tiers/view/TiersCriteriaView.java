@@ -323,6 +323,15 @@ public class TiersCriteriaView implements Serializable {
 	public void setEtatsEntrepriseCourantsInterdits(Set<TypeEtatEntreprise> etatsEntrepriseCourantsInterdits) {
 		criteria.setEtatsEntrepriseCourantsInterdits(etatsEntrepriseCourantsInterdits);
 	}
+
+	public TiersCriteria.TypeInscriptionRC getEtatInscriptionRC() {
+		return criteria.getEtatInscriptionRC();
+	}
+
+	public void setEtatInscriptionRC(TiersCriteria.TypeInscriptionRC etatInscriptionRC) {
+		criteria.setEtatInscriptionRC(etatInscriptionRC);
+	}
+
 	public boolean isEmpty() {
 		return criteria.isEmpty() && StringUtils.isBlank(this.numeroFormatte);
 	}

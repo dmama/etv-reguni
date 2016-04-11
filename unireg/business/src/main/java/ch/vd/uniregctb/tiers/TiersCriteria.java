@@ -43,7 +43,7 @@ public class TiersCriteria implements Serializable, TiersFilter {
 		}
 	}
 
-	private static final long serialVersionUID = 6417025939078838133L;
+	private static final long serialVersionUID = -7308576998435975891L;
 
 	public enum TypeRecherche {
 		CONTIENT,
@@ -106,6 +106,28 @@ public class TiersCriteria implements Serializable, TiersFilter {
 	public enum TypeVisualisation {
 		LIMITEE,
 		COMPLETE
+	}
+
+	public enum TypeInscriptionRC {
+		/**
+		 * Retrouve les entreprises qui possèdent une inscription au RC, quelle qu'elle soit
+		 */
+		AVEC_INSCRIPTION,
+
+		/**
+		 * Retrouve les entreprises qui ne possèdent aucune inscription au RC, quelle qu'elle soit
+		 */
+		SANS_INSCRIPTION,
+
+		/**
+		 * Retrouve les entreprises dont l'inscription au RC les décrit comme actives
+		 */
+		INSCRIT_ACTIF,
+
+		/**
+		 * Retrouve les entreprises dont l'inscription au RC les décrit comme radiées
+		 */
+		INSCRIT_RADIE
 	}
 
 	/**
@@ -271,6 +293,11 @@ public class TiersCriteria implements Serializable, TiersFilter {
 	private Set<TypeEtatEntreprise> etatsEntrepriseCourantsInterdits;
 
 	/**
+	 * Etat courant vis-à-vis du Registre du Commerce
+	 */
+	private TypeInscriptionRC etatInscriptionRC;
+
+	/**
 	 * @return true si aucun paramètre de recherche n'est renseigné. false
 	 *         autrement.
 	 */
@@ -295,7 +322,8 @@ public class TiersCriteria implements Serializable, TiersFilter {
 				&& categorieDebiteurIs == null
 				&& tiersActif == null
 				&& ancienNumeroSourcier == null
-				&& StringUtils.isBlank(numeroIDE);
+				&& StringUtils.isBlank(numeroIDE)
+				&& etatInscriptionRC == null;
 	}
 
 	/**
@@ -701,5 +729,13 @@ public class TiersCriteria implements Serializable, TiersFilter {
 
 	public void setEtatsEntrepriseCourantsInterdits(Set<TypeEtatEntreprise> etatsEntrepriseCourantsInterdits) {
 		this.etatsEntrepriseCourantsInterdits = etatsEntrepriseCourantsInterdits;
+	}
+
+	public TypeInscriptionRC getEtatInscriptionRC() {
+		return etatInscriptionRC;
+	}
+
+	public void setEtatInscriptionRC(TypeInscriptionRC etatInscriptionRC) {
+		this.etatInscriptionRC = etatInscriptionRC;
 	}
 }

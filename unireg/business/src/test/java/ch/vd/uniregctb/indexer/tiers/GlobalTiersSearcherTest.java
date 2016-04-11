@@ -1775,4 +1775,132 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 
 	}
 
+	@Test
+	public void testEntrepriseSelonEtatVisAVisRC() throws Exception {
+
+		final class Ids {
+			long pm1;
+			long pm2;
+			long pm3;
+			long pm4;
+		}
+
+		// mise en place fiscale
+		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
+			@Override
+			public Ids doInTransaction(TransactionStatus status) {
+				final Entreprise e1 = addEntrepriseInconnueAuCivil();
+				addRaisonSociale(e1, date(2000, 1, 1), null, "Toto fondée");
+				addEtatEntreprise(e1, date(2000, 1, 1), TypeEtatEntreprise.FONDEE, TypeGenerationEtatEntreprise.MANUELLE);
+
+				final Entreprise e2 = addEntrepriseInconnueAuCivil();
+				addRaisonSociale(e2, date(2000, 1, 1), null, "Toto inscrite RC");
+				addEtatEntreprise(e2, date(2000, 1, 1), TypeEtatEntreprise.FONDEE, TypeGenerationEtatEntreprise.MANUELLE);
+				addEtatEntreprise(e2, date(2000, 1, 1).addDays(3), TypeEtatEntreprise.INSCRITE_RC, TypeGenerationEtatEntreprise.MANUELLE);
+
+				final Entreprise e3 = addEntrepriseInconnueAuCivil();
+				addRaisonSociale(e3, date(2000, 1, 1), null, "Toto Radiée RC");
+				addEtatEntreprise(e3, date(2000, 1, 1), TypeEtatEntreprise.FONDEE, TypeGenerationEtatEntreprise.MANUELLE);
+				addEtatEntreprise(e3, date(2000, 1, 1).addDays(3), TypeEtatEntreprise.INSCRITE_RC, TypeGenerationEtatEntreprise.MANUELLE);
+				addEtatEntreprise(e3, date(2010, 1, 1), TypeEtatEntreprise.RADIEE_RC, TypeGenerationEtatEntreprise.MANUELLE);
+
+				final Entreprise e4 = addEntrepriseInconnueAuCivil();
+				addRaisonSociale(e4, date(2000, 1, 1), null, "Toto Absorbée Radiée RC");
+				addEtatEntreprise(e4, date(2000, 1, 1), TypeEtatEntreprise.FONDEE, TypeGenerationEtatEntreprise.MANUELLE);
+				addEtatEntreprise(e4, date(2000, 1, 1).addDays(3), TypeEtatEntreprise.INSCRITE_RC, TypeGenerationEtatEntreprise.MANUELLE);
+				addEtatEntreprise(e4, date(2009, 10, 1), TypeEtatEntreprise.ABSORBEE, TypeGenerationEtatEntreprise.MANUELLE);
+				addEtatEntreprise(e4, date(2010, 1, 1), TypeEtatEntreprise.RADIEE_RC, TypeGenerationEtatEntreprise.MANUELLE);
+
+				final Ids ids = new Ids();
+				ids.pm1 = e1.getNumero();
+				ids.pm2 = e2.getNumero();
+				ids.pm3 = e3.getNumero();
+				ids.pm4 = e4.getNumero();
+				return ids;
+			}
+		});
+
+		// on attend la fin de l'indexation des nouveaux contribuables
+		globalTiersIndexer.sync();
+
+		// recherche de base sur le nom -> tous les 4 s'appellent "toto"
+		{
+			final TiersCriteria tiersCriteria = new TiersCriteria();
+			tiersCriteria.setNomRaison("toto");
+
+			final List<TiersIndexedData> results = globalTiersSearcher.search(tiersCriteria);
+			assertNotNull(results);
+			assertEquals(4, results.size());
+			final Set<Long> idsRetrouves = new HashSet<>(results.size());
+			for (TiersIndexedData data : results) {
+				idsRetrouves.add(data.getNumero());
+			}
+			assertEquals(new HashSet<>(Arrays.asList(ids.pm1, ids.pm2, ids.pm3, ids.pm4)), idsRetrouves);
+		}
+
+		// recherche de base sur le nom, mais on ne veut que celles qui ont une inscription RC (inscrite ou radiée, peu importe)
+		{
+			final TiersCriteria tiersCriteria = new TiersCriteria();
+			tiersCriteria.setNomRaison("toto");
+			tiersCriteria.setEtatInscriptionRC(TiersCriteria.TypeInscriptionRC.AVEC_INSCRIPTION);
+
+			final List<TiersIndexedData> results = globalTiersSearcher.search(tiersCriteria);
+			assertNotNull(results);
+			assertEquals(3, results.size());
+			final Set<Long> idsRetrouves = new HashSet<>(results.size());
+			for (TiersIndexedData data : results) {
+				idsRetrouves.add(data.getNumero());
+			}
+			assertEquals(new HashSet<>(Arrays.asList(ids.pm2, ids.pm3, ids.pm4)), idsRetrouves);
+		}
+
+		// recherche de base sur le nom, mais on ne veut que celles qui ont une inscription RC actuellement active
+		{
+			final TiersCriteria tiersCriteria = new TiersCriteria();
+			tiersCriteria.setNomRaison("toto");
+			tiersCriteria.setEtatInscriptionRC(TiersCriteria.TypeInscriptionRC.INSCRIT_ACTIF);
+
+			final List<TiersIndexedData> results = globalTiersSearcher.search(tiersCriteria);
+			assertNotNull(results);
+			assertEquals(1, results.size());
+			final Set<Long> idsRetrouves = new HashSet<>(results.size());
+			for (TiersIndexedData data : results) {
+				idsRetrouves.add(data.getNumero());
+			}
+			assertEquals(new HashSet<>(Collections.singletonList(ids.pm2)), idsRetrouves);
+		}
+
+		// recherche de base sur le nom, mais on ne veut que celles qui ont une inscription RC actuellement radiée
+		{
+			final TiersCriteria tiersCriteria = new TiersCriteria();
+			tiersCriteria.setNomRaison("toto");
+			tiersCriteria.setEtatInscriptionRC(TiersCriteria.TypeInscriptionRC.INSCRIT_RADIE);
+
+			final List<TiersIndexedData> results = globalTiersSearcher.search(tiersCriteria);
+			assertNotNull(results);
+			assertEquals(2, results.size());
+			final Set<Long> idsRetrouves = new HashSet<>(results.size());
+			for (TiersIndexedData data : results) {
+				idsRetrouves.add(data.getNumero());
+			}
+			assertEquals(new HashSet<>(Arrays.asList(ids.pm3, ids.pm4)), idsRetrouves);
+		}
+
+		// recherche de base sur le nom, mais on ne veut que celles qui n'ont aucune inscription RC
+		{
+			final TiersCriteria tiersCriteria = new TiersCriteria();
+			tiersCriteria.setNomRaison("toto");
+			tiersCriteria.setEtatInscriptionRC(TiersCriteria.TypeInscriptionRC.SANS_INSCRIPTION);
+
+			final List<TiersIndexedData> results = globalTiersSearcher.search(tiersCriteria);
+			assertNotNull(results);
+			assertEquals(1, results.size());
+			final Set<Long> idsRetrouves = new HashSet<>(results.size());
+			for (TiersIndexedData data : results) {
+				idsRetrouves.add(data.getNumero());
+			}
+			assertEquals(new HashSet<>(Collections.singletonList(ids.pm1)), idsRetrouves);
+		}
+
+	}
 }

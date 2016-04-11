@@ -22,6 +22,7 @@ import ch.vd.uniregctb.tiers.OrganisationNotFoundException;
 import ch.vd.uniregctb.tiers.RaisonSocialeHisto;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.NatureJuridique;
+import ch.vd.uniregctb.type.TypeEtatEntreprise;
 
 public class EntrepriseIndexable extends ContribuableIndexable<Entreprise> {
 
@@ -94,13 +95,26 @@ public class EntrepriseIndexable extends ContribuableIndexable<Entreprise> {
 		}
 
 		// les états de l'entreprise (état actuel + états historiques)
-		final EtatEntreprise etatActuel = tiers.getEtatActuel();
+		final List<EtatEntreprise> etatsEntreprise = tiers.getEtatsNonAnnulesTries();
+		final EtatEntreprise etatActuel = etatsEntreprise.isEmpty() ? null : CollectionsUtils.getLastElement(etatsEntreprise);
 		if (etatActuel != null) {
 			data.setEtatEntrepriseCourant(etatActuel.getType());
 		}
-		for (EtatEntreprise etat : tiers.getEtatsNonAnnulesTries()) {
+		for (EtatEntreprise etat : etatsEntreprise) {
 			if (etat != null) {
 				data.addEtatEntreprise(etat.getType());
+			}
+		}
+
+		// les spécificités du RC pour les états : on veut pouvoir rechercher sur l'état actuel de l'inscription RC
+		for (EtatEntreprise etat : CollectionsUtils.revertedOrder(etatsEntreprise)) {
+			if (etat.getType() == TypeEtatEntreprise.RADIEE_RC) {
+				data.setEtatInscriptionRC(TypeEtatInscriptionRC.RADIEE);
+				break;
+			}
+			if (etat.getType() == TypeEtatEntreprise.INSCRITE_RC) {
+				data.setEtatInscriptionRC(TypeEtatInscriptionRC.ACTIVE);
+				break;
 			}
 		}
 	}

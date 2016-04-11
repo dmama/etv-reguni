@@ -66,6 +66,7 @@ public class TiersIndexableData extends IndexableData {
 	public static final String TOUT = "S_TOUT";
 	public static final String ETAT_ENTREPRISE_COURANT = "S_ETAT_ENTREPRISE_COURANT";
 	public static final String ETATS_ENTREPRISE = "S_ETATS_ENTREPRISE";
+	public static final String INSCRIPTION_RC = "S_INSCRIPTION_RC";
 
 	// champs de stockage (pas recherchables)
 	public static final String NOM1 = "D_NOM1";
@@ -119,6 +120,7 @@ public class TiersIndexableData extends IndexableData {
 	private String ide;                     // identifiant d'entreprise [SIFISC-11689]
 	private TypeEtatEntreprise etatEntrepriseCourant;
 	private Set<TypeEtatEntreprise> etatsEntreprise;
+	private TypeEtatInscriptionRC etatInscriptionRC;
 
 	// champs de stockage (pas recherchables)
 	private String nom1;
@@ -182,6 +184,7 @@ public class TiersIndexableData extends IndexableData {
 		addAnalyzedValue(d, TiersIndexableData.IDE, ide);
 		addNotAnalyzedValue(d, TiersIndexableData.ETAT_ENTREPRISE_COURANT, etatEntrepriseCourant, ENUM_RENDERER);
 		addMultiValuedNotAnalyzedValue(d, TiersIndexableData.ETATS_ENTREPRISE, etatsEntreprise, ENUM_RENDERER);
+		addNotAnalyzedValue(d, TiersIndexableData.INSCRIPTION_RC, etatInscriptionRC, ENUM_RENDERER);
 
 		// on aggrège tous les valeurs utiles dans un seul champ pour une recherche de type google
 		addToutValues(d, numeros, nomRaison, autresNom, toSearchString(datesNaissanceInscriptionRC), forPrincipal, rue, npaCourrier, localiteEtPays, natureJuridique, navs11, navs13, ancienNumeroSourcier, categorieDebiteurIs, noSymic, ide);
@@ -678,6 +681,14 @@ public class TiersIndexableData extends IndexableData {
 			etatsEntreprise = EnumSet.noneOf(TypeEtatEntreprise.class);
 		}
 		etatsEntreprise.add(etat);
+	}
+
+	public TypeEtatInscriptionRC getEtatInscriptionRC() {
+		return etatInscriptionRC;
+	}
+
+	public void setEtatInscriptionRC(TypeEtatInscriptionRC etat) {
+		etatInscriptionRC = etat;
 	}
 
 	public String getDomicileEtablissementPrincipal() {
