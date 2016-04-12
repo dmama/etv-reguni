@@ -13,6 +13,8 @@ public interface DonneesRegistreIDE {
 
 	List<AdresseEffectiveRCEnt> getAdresseEffective();
 
+	AdresseEffectiveRCEnt getAdresseEffective(RegDate date);
+
 	List<DateRanged<RaisonDeRadiationRegistreIDE>> getRaisonDeLiquidation();
 
 	List<DateRanged<StatusRegistreIDE>> getStatus();

@@ -53,6 +53,11 @@ public class DonneesRCRCEnt implements DonneesRC, Serializable {
 	}
 
 	@Override
+	public AdresseLegaleRCEnt getAdresseLegale(RegDate date) {
+		return OrganisationHelper.dateRangeForDate(adresseLegale, date);
+	}
+
+	@Override
 	public List<Capital> getCapital() {
 		return capital;
 	}

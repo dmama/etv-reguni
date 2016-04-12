@@ -68,6 +68,11 @@ public class MockDonneesRC implements DonneesRC {
 	}
 
 	@Override
+	public AdresseLegaleRCEnt getAdresseLegale(RegDate date) {
+		return OrganisationHelper.dateRangeForDate(getAdresseLegale(), date);
+	}
+
+	@Override
 	public List<Capital> getCapital() {
 		return new ArrayList<>(capital.values());
 	}
