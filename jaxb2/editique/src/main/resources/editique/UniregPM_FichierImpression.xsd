@@ -212,7 +212,16 @@
     <xs:complexType name="CTypeAdresse">
         <xs:sequence>
             <xs:element maxOccurs="6" minOccurs="1" name="adresseLigne" nillable="false"
-                type="xs:string"/>
+                type="xs:string">
+                <xs:annotation>
+                    <xs:documentation>adresseLigne1 : nom de l'Office ligne 1 (gras)
+adresseLigne2 : nom de l'Office ligne 2 (gras)
+adresseLigne3 : nom de l'Office ligne 3 (gras)
+adresseLigne4 : adresse de l'Office ligne 1
+adresseLigne5 : adresse de l'Office ligne 2
+adresseLigne6 : adresse de l'Office ligne 3</xs:documentation>
+                </xs:annotation>
+            </xs:element>
         </xs:sequence>
     </xs:complexType>
     <xs:complexType name="CTypeCleRgp">
@@ -416,7 +425,7 @@ U1P8ADASDOCUM
     </xs:complexType>
     <xs:complexType name="CTypeExpediteur">
         <xs:sequence>
-            <xs:element name="adresse" type="CTypeAdresse"> </xs:element>
+            <xs:element name="adresse" type="CTypeAdresse"/>
             <xs:element name="adrMes" type="xs:string" minOccurs="0">
                 <xs:annotation>
                     <xs:documentation>adresse messagerie</xs:documentation>
