@@ -44,6 +44,11 @@ public class DonneesRegistreIDERCEnt implements DonneesRegistreIDE, Serializable
 	}
 
 	@Override
+	public AdresseEffectiveRCEnt getAdresseEffective(RegDate date) {
+		return OrganisationHelper.dateRangeForDate(adresseEffective, date);
+	}
+
+	@Override
 	public List<DateRanged<RaisonDeRadiationRegistreIDE>> getRaisonDeLiquidation() {
 		return raisonDeLiquidation;
 	}

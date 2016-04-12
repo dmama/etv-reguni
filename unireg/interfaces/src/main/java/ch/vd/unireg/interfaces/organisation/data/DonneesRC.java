@@ -11,6 +11,8 @@ public interface DonneesRC {
 
 	List<AdresseLegaleRCEnt> getAdresseLegale();
 
+	AdresseLegaleRCEnt getAdresseLegale(RegDate date);
+
 	List<Capital> getCapital();
 
 	List<DateRanged<StatusInscriptionRC>> getStatusInscription();

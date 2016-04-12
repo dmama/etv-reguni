@@ -85,6 +85,11 @@ public class MockDonneesRegistreIDE implements DonneesRegistreIDE {
 	}
 
 	@Override
+	public AdresseEffectiveRCEnt getAdresseEffective(RegDate date) {
+		return OrganisationHelper.dateRangeForDate(getAdresseEffective(), date);
+	}
+
+	@Override
 	public List<DateRanged<RaisonDeRadiationRegistreIDE>> getRaisonDeLiquidation() {
 		return MockOrganisationHelper.getHisto(raisonDeLiquidation);
 	}
