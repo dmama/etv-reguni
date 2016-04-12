@@ -9,13 +9,13 @@ import org.apache.lucene.document.Document;
 
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.uniregctb.avatar.TypeAvatar;
 import ch.vd.uniregctb.common.StringParser;
 import ch.vd.uniregctb.indexer.lucene.DocumentExtractorHelper;
 import ch.vd.uniregctb.indexer.lucene.LuceneHelper;
 import ch.vd.uniregctb.metier.assujettissement.TypeAssujettissement;
 import ch.vd.uniregctb.type.CategorieImpotSource;
-import ch.vd.uniregctb.type.FormeJuridiqueEntreprise;
 import ch.vd.uniregctb.type.ModeCommunication;
 import ch.vd.uniregctb.type.TypeEtatEntreprise;
 
@@ -59,7 +59,7 @@ public class TiersIndexedData implements Serializable {
 	private final TypeEtatEntreprise etatEntreprise;
 	private final Set<TypeEtatEntreprise> tousEtatsEntreprise;
 	private final String domicileEtablissementPrincipal;
-	private final FormeJuridiqueEntreprise formeJuridique;
+	private final FormeLegale formeJuridique;
 
 	public TiersIndexedData(Document doc) {
 		tiersType = DocumentExtractorHelper.getDocValue(LuceneHelper.F_DOCSUBTYPE, doc);
@@ -95,10 +95,10 @@ public class TiersIndexedData implements Serializable {
 		typeAvatar = DocumentExtractorHelper.getEnumValue(TiersIndexableData.AVATAR, doc, TypeAvatar.class);
 		etatEntreprise = DocumentExtractorHelper.getEnumValue(TiersIndexableData.ETAT_ENTREPRISE_COURANT, doc, TypeEtatEntreprise.class);
 		tousEtatsEntreprise = DocumentExtractorHelper.getEnumSet(DocumentExtractorHelper.getDocValues(TiersIndexableData.ETATS_ENTREPRISE, doc), TypeEtatEntreprise.class);
-		formeJuridique = DocumentExtractorHelper.getValue(TiersIndexableData.FORME_JURIDIQUE, doc, new StringParser<FormeJuridiqueEntreprise>() {
+		formeJuridique = DocumentExtractorHelper.getValue(TiersIndexableData.FORME_JURIDIQUE, doc, new StringParser<FormeLegale>() {
 			@Override
-			public FormeJuridiqueEntreprise parse(String string) throws IllegalArgumentException {
-				return FormeJuridiqueEntreprise.fromCode(string);
+			public FormeLegale parse(String string) throws IllegalArgumentException {
+				return FormeLegale.fromCode(string);
 			}
 		});
 		domicileEtablissementPrincipal = DocumentExtractorHelper.getDocValue(TiersIndexableData.DOMICILE_ETABLISSEMENT_PRINCIPAL, doc);
@@ -286,7 +286,7 @@ public class TiersIndexedData implements Serializable {
 	/**
 	 * @return le nom de la forme juridique de l'entreprise
 	 */
-	public FormeJuridiqueEntreprise getFormeJuridique() {
+	public FormeLegale getFormeJuridique() {
 		return formeJuridique;
 	}
 }

@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.metier;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -8,16 +9,26 @@ import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.unireg.interfaces.common.CasePostale;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
 import ch.vd.unireg.interfaces.organisation.data.Domicile;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
+import ch.vd.uniregctb.adresse.AdresseEnvoiDetaillee;
+import ch.vd.uniregctb.adresse.AdresseEtrangere;
+import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdresseService;
+import ch.vd.uniregctb.adresse.AdresseSuisse;
+import ch.vd.uniregctb.adresse.AdresseSupplementaire;
+import ch.vd.uniregctb.adresse.AdresseTiers;
+import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
 import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.common.LengthConstants;
@@ -40,6 +51,7 @@ import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
 import ch.vd.uniregctb.tiers.FormeJuridiqueFiscaleEntreprise;
 import ch.vd.uniregctb.tiers.ForsParTypeAt;
+import ch.vd.uniregctb.tiers.FusionEntreprises;
 import ch.vd.uniregctb.tiers.IdentificationEntreprise;
 import ch.vd.uniregctb.tiers.Mandat;
 import ch.vd.uniregctb.tiers.RaisonSocialeFiscaleEntreprise;
@@ -51,6 +63,7 @@ import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.tiers.dao.RemarqueDAO;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
+import ch.vd.uniregctb.type.TypeAdresseTiers;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeEtatEntreprise;
 import ch.vd.uniregctb.type.TypeGenerationEtatEntreprise;
@@ -59,6 +72,8 @@ import ch.vd.uniregctb.validation.ValidationInterceptor;
 import ch.vd.uniregctb.validation.ValidationService;
 
 public class MetierServicePMImpl implements MetierServicePM {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(MetierServicePMImpl.class);
 
 	private PlatformTransactionManager transactionManager;
 	private HibernateTemplate hibernateTemplate;
@@ -634,5 +649,102 @@ public class MetierServicePMImpl implements MetierServicePM {
 			remarque.setTiers(tiers);
 			remarqueDAO.save(remarque);
 		}
+	}
+
+	@Override
+	public void fusionne(Entreprise absorbante, List<Entreprise> absorbees, RegDate dateContratFusion, RegDate dateBilanFusion) throws MetierServiceException {
+
+		// création de rapports entre tiers de type fusion
+		for (Entreprise absorbee : absorbees) {
+			final FusionEntreprises fusion = new FusionEntreprises(dateBilanFusion, null, absorbee, absorbante);
+			tiersService.addRapport(fusion, absorbee, absorbante);
+		}
+
+		// envoi d'un événement fiscal sur toutes les entreprises concernées
+		for (Entreprise entreprise : CollectionsUtils.merged(Collections.singletonList(absorbante), absorbees)) {
+			evenementFiscalService.publierEvenementFiscalInformationComplementaire(entreprise,
+			                                                                       EvenementFiscalInformationComplementaire.TypeInformationComplementaire.FUSION,
+			                                                                       dateBilanFusion);
+		}
+
+		// récupération de l'adresse de la société absorbante pour répercussion sur les absorbées
+		final AdresseEnvoiDetaillee adresseAbsorbante;
+		try {
+			adresseAbsorbante = adresseService.getAdresseEnvoi(absorbante, null, TypeAdresseFiscale.COURRIER, false);
+		}
+		catch (AdresseException e) {
+			LOGGER.error(e.getMessage(), e);
+			throw new MetierServiceException(e);
+		}
+		if (adresseAbsorbante == null) {
+			throw new MetierServiceException("L'entreprise absorbante n'a pas d'adresse 'courrier' valide.");
+		}
+
+		// fermeture de tous les fors fiscaux des entreprises absorbées, surcharges d'adresse
+		for (Entreprise absorbee : absorbees) {
+
+			// on traite d'abord les fors secondaires, puis seulement ensuite le for principal
+			final ForsParTypeAt forsParType = absorbee.getForsParTypeAt(null, false);
+			boolean hasImmeuble = false;
+			for (ForFiscalSecondaire fs : forsParType.secondaires) {
+				hasImmeuble |= fs.getMotifRattachement() == MotifRattachement.IMMEUBLE_PRIVE;
+				tiersService.closeForFiscalSecondaire(absorbee, fs, dateBilanFusion, MotifFor.FUSION_ENTREPRISES);
+			}
+			tiersService.closeForFiscalPrincipal(forsParType.principal, dateBilanFusion, MotifFor.FUSION_ENTREPRISES);
+
+			// tâche de contrôle de dossier si propriétaire d'immeuble
+			if (hasImmeuble) {
+				tacheService.genereTacheControleDossier(absorbee);
+			}
+
+			// surcharge d'adresse
+			final AdresseTiers surchargeAdresse = surchargeAdresseSuiteAFusion(adresseAbsorbante, dateContratFusion);
+			adresseService.addAdresse(absorbee, surchargeAdresse);
+		}
+	}
+
+	/**
+	 * @param adresse adresse de l'entreprise absorbante
+	 * @param dateDebutValidite date de début de validité de la surcharge souhaitée
+	 * @return une adresse courrier surchargée à placer sur l'entreprise absorbée
+	 */
+	private AdresseTiers surchargeAdresseSuiteAFusion(AdresseEnvoiDetaillee adresse, RegDate dateDebutValidite) {
+		final AdresseSupplementaire adresseTiers;
+		if (adresse.isSuisse()) {
+			final AdresseSuisse adresseSuisse = new AdresseSuisse();
+			adresseSuisse.setNumeroOrdrePoste(adresse.getNumeroOrdrePostal());
+			if (adresse.getNumeroTechniqueRue() != null) {
+				adresseSuisse.setNumeroRue(adresse.getNumeroTechniqueRue());
+			}
+			else {
+				adresseSuisse.setRue(adresse.getRueEtNumero().getRue());
+			}
+			final CasePostale casePostale = adresse.getCasePostale();
+			if (casePostale != null) {
+				adresseSuisse.setNpaCasePostale(casePostale.getNpa());
+			}
+
+			adresseTiers = adresseSuisse;
+		}
+		else {
+			final AdresseEtrangere adresseEtrangere = new AdresseEtrangere();
+			adresseEtrangere.setNumeroOfsPays(adresse.getPays().getNoOFS());
+			adresseEtrangere.setNumeroPostalLocalite(adresse.getNpaEtLocalite().toString());
+			adresseTiers = adresseEtrangere;
+		}
+
+		final CasePostale casePostale = adresse.getCasePostale();
+		if (casePostale != null) {
+			adresseTiers.setTexteCasePostale(casePostale.getType());
+			adresseTiers.setNumeroCasePostale(casePostale.getNumero());
+		}
+
+		adresseTiers.setDateDebut(dateDebutValidite);
+		adresseTiers.setUsage(TypeAdresseTiers.COURRIER);
+		adresseTiers.setComplement("p.a. " + CollectionsUtils.concat(adresse.getNomsPrenomsOuRaisonsSociales(), ", "));
+		adresseTiers.setNumeroAppartement(adresse.getNumeroAppartement());
+		adresseTiers.setNumeroMaison(adresse.getRueEtNumero().getNumero());
+		adresseTiers.setPermanente(true);
+		return adresseTiers;
 	}
 }

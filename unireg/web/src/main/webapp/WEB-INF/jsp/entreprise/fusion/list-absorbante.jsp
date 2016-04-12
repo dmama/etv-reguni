@@ -4,7 +4,7 @@
 <tiles:insert template="/WEB-INF/jsp/templates/template.jsp">
 
   	<tiles:put name="title">
-		<fmt:message key="title.fin.activite.entreprise.recherche" />
+		<fmt:message key="title.fusion.entreprises.recherche.absorbante" />
   	</tiles:put>
   	<tiles:put name="body">
 	    <form:form method="post" id="formRecherche">
@@ -19,20 +19,20 @@
 				<form:hidden path="typeTiers"/>
 				<unireg:nextRowClass reset="0"/>
 				<jsp:include page="../../tiers/recherche/form.jsp">
-					<jsp:param name="typeRecherche" value="finActivite" />
-					<jsp:param name="prefixeEffacer" value="/processuscomplexe/finactivite"/>
+					<jsp:param name="typeRecherche" value="fusionEntreprises" />
+					<jsp:param name="prefixeEffacer" value="/processuscomplexe/fusion/absorbante"/>
 				</jsp:include>
 			</fieldset>
 		</form:form>
 
-		<display:table name="list" id="row" pagesize="25" requestURI="/processuscomplexe/finactivite/list.do" class="display" sort="list">
+		<display:table name="list" id="row" pagesize="25" requestURI="/processuscomplexe/fusion/list.do" class="display" sort="list">
 			<display:setProperty name="paging.banner.no_items_found"><span class="pagebanner"><fmt:message key="banner.auncune.entreprise.trouvee" /></span></display:setProperty>
 			<display:setProperty name="paging.banner.one_item_found"><span class="pagebanner">1 <fmt:message key="banner.entreprise.trouvee" /></span></display:setProperty>
 			<display:setProperty name="paging.banner.some_items_found"><span class="pagebanner">{0} <fmt:message key="banner.entreprises.trouvees" /></span></display:setProperty>
 			<display:setProperty name="paging.banner.all_items_found"><span class="pagebanner">{0} <fmt:message key="banner.entreprises.trouvees" /></span></display:setProperty>
 
 			<display:column sortable="true" titleKey="label.numero.contribuable" sortProperty="numero" >
-				<a href="<c:url value="/processuscomplexe/finactivite/start.do"/>?id=${row.numero}"><unireg:numCTB numero="${row.numero}" /></a>
+				<a href="<c:url value="/processuscomplexe/fusion/choix-dates.do"/>?absorbante=${row.numero}"><unireg:numCTB numero="${row.numero}" /></a>
 			</display:column>
 			<display:column sortable="true" titleKey="label.numero.ide" sortProperty="numeroIDE">
 				<unireg:numIDE numeroIDE="${row.numeroIDE}"/>
