@@ -182,7 +182,7 @@ public abstract class AbstractProcessusComplexeController implements MessageSour
 	}
 
 	@NotNull
-	private List<TiersIndexedDataView> _searchTiers(TiersCriteriaView criteriaView) throws IndexerException {
+	protected List<TiersIndexedDataView> _searchTiers(TiersCriteriaView criteriaView) throws IndexerException {
 		final List<TiersIndexedData> results = tiersService.search(criteriaView.asCore());
 		Assert.notNull(results);
 

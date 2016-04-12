@@ -5,11 +5,11 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 
+import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.uniregctb.avatar.TypeAvatar;
 import ch.vd.uniregctb.common.Annulable;
 import ch.vd.uniregctb.indexer.tiers.MenageCommunIndexable;
 import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
-import ch.vd.uniregctb.type.FormeJuridiqueEntreprise;
 import ch.vd.uniregctb.type.TypeEtatEntreprise;
 
 public class TiersIndexedDataView implements Annulable {
@@ -135,7 +135,7 @@ public class TiersIndexedDataView implements Annulable {
 		return data.getDomicileEtablissementPrincipal();
 	}
 
-	public FormeJuridiqueEntreprise getFormeJuridique() {
+	public FormeLegale getFormeJuridique() {
 		return data.getFormeJuridique();
 	}
 

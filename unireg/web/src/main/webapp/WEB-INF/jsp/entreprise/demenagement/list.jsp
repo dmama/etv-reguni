@@ -44,7 +44,7 @@
 			<display:column sortable="true" titleKey="label.siege" property="domicileEtablissementPrincipal"/>
 			<display:column sortable="true" titleKey="label.forme.juridique" sortProperty="formeJuridique.codeECH">
 				<c:if test="${row.formeJuridique != null}">
-					<fmt:message key="option.forme.juridique.entreprise.${row.formeJuridique}"/>
+					<c:out value="${row.formeJuridique}"/>
 				</c:if>
 			</display:column>
 			<display:column sortable="true" titleKey="label.etat.entreprise.actuel">

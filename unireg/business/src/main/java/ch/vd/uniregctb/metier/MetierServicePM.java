@@ -1,5 +1,9 @@
 package ch.vd.uniregctb.metier;
 
+import java.util.List;
+
+import org.jetbrains.annotations.Nullable;
+
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.uniregctb.tiers.Entreprise;
@@ -68,7 +72,7 @@ public interface MetierServicePM {
 	 * @param remarqueAssociee [optionnelle] éventuelle remarque à ajouter à l'entreprise en même temps
 	 * @throws MetierServiceException en cas de problème
 	 */
-	void faillite(Entreprise entreprise, RegDate datePrononceFaillite, String remarqueAssociee) throws MetierServiceException;
+	void faillite(Entreprise entreprise, RegDate datePrononceFaillite, @Nullable String remarqueAssociee) throws MetierServiceException;
 
 	/**
 	 * Opération de déménagement de siège
@@ -87,5 +91,15 @@ public interface MetierServicePM {
 	 * @param remarqueAssociee [optionnelle] éventuelle remarque à ajouter à l'entreprise en même temps
 	 * @throws MetierServiceException en cas de problème
 	 */
-	void finActivite(Entreprise entreprise, RegDate dateFinActivite, String remarqueAssociee) throws MetierServiceException;
+	void finActivite(Entreprise entreprise, RegDate dateFinActivite, @Nullable String remarqueAssociee) throws MetierServiceException;
+
+	/**
+	 * Opération de fusion d'entreprises
+	 * @param absorbante l'entreprise absorbante
+	 * @param absorbees les entreprises absorbées
+	 * @param dateContratFusion la date de contrat de fusion
+	 * @param dateBilanFusion la date de bilan de fusion
+	 * @throws MetierServiceException en cas de problème
+	 */
+	void fusionne(Entreprise absorbante, List<Entreprise> absorbees, RegDate dateContratFusion, RegDate dateBilanFusion) throws MetierServiceException;
 }
