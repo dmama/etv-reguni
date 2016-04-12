@@ -263,8 +263,13 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingB
 				final DeltaIds deltaIds;
 				switch (mode) {
 				case FULL:
-					deltaIds = new DeltaIds(tiersDAO.getAllIds());
+				{
+					// JDE : on traite les identifiants dans l'ordre décroissant pour traiter les PP d'abord...
+					final List<Long> allIds = new ArrayList<>(tiersDAO.getAllIds());
+					Collections.sort(allIds, Collections.<Long>reverseOrder());
+					deltaIds = new DeltaIds(allIds);
 					break;
+				}
 
 				case DIRTY_ONLY:
 					deltaIds = new DeltaIds(tiersDAO.getDirtyIds());
