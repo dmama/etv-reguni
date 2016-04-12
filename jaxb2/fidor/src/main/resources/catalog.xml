@@ -1,0 +1,18 @@
+<catalog xmlns="urn:oasis:names:tc:entity:xmlns:xml:catalog" prefer="public">
+
+	<system systemId="http://evd.vd.ch/xmlns/eVD-0007/1/eVD-0007-1-0.xsd" uri="eVD-0007-1-0.xsd" />
+	<system systemId="http://evd.vd.ch/xmlns/eVD-0012/1/eVD-0012-1-1.xsd" uri="eVD-0012-1-1.xsd" />
+
+	<system systemId="http://www.vd.ch/fiscalite/fidor/common/1/fidor-common-1.xsd" uri="fidor-common-1.xsd"/>
+	<system systemId="http://www.vd.ch/fiscalite/fidor/post/1/fidor-post-1.xsd" uri="fidor-post-1.xsd"/>
+
+	<system systemId="http://www.vd.ch/fiscalite/fidor/ws/postallocalities/5/fidor-postallocalities-5.xsd" uri="fidor-postallocalities-5.xsd"/>
+	<system systemId="http://www.vd.ch/fiscalite/fidor/ws/postallocality/5/fidor-postallocality-5.xsd" uri="fidor-postallocality-5.xsd"/>
+	<system systemId="http://www.vd.ch/fiscalite/fidor/ws/streets/5/fidor-streets-5.xsd" uri="fidor-streets-5.xsd"/>
+
+	<system systemId="http://www.vd.ch/fiscalite/fidor/ws/regimesfiscaux/5/fidor-regimesfiscaux-5.xsd" uri="fidor-regimesfiscaux-5.xsd" />
+	<system systemId="http://www.vd.ch/fiscalite/fidor/ws/regimefiscal/5/fidor-regimefiscal-5.xsd" uri="fidor-regimefiscal-5.xsd" />
+
+	<delegateSystem systemIdStartString="http://www.ech.ch/xmlns/" catalog="../../../../ech/src/main/resources/catalog.xml" />
+
+</catalog>

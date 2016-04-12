@@ -1,0 +1,57 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dataset>
+  <table name="TIERS">
+    <column>LOG_MDATE</column>
+    <column>NUMERO</column>
+    <column>TIERS_TYPE</column>
+    <column>NUMERO_INDIVIDU</column>
+    <column>DEBITEUR_INACTIF</column>
+    <column>PP_HABITANT</column>
+    <row>
+      <value>2008-01-01</value>
+      <value>6789</value>
+      <value>PersonnePhysique</value>
+      <value>12345</value>
+      <value>0</value>
+      <value>1</value>
+    </row>
+    <row>
+      <value>2008-01-01</value>
+      <value>5678</value>
+      <value>PersonnePhysique</value>
+      <value>23456</value>
+      <value>0</value>
+      <value>1</value>
+    </row>
+  </table>
+  <table name="EVENEMENT_CIVIL">
+    <column>LOG_MDATE</column>
+    <column>ID</column>
+    <column>TYPE</column>
+    <column>DATE_EVENEMENT</column>
+    <column>NUMERO_OFS_ANNONCE</column>
+    <column>ETAT</column>
+    <column>NO_INDIVIDU_PRINCIPAL</column>
+    <column>NO_INDIVIDU_CONJOINT</column>
+    <row>
+      <value>2008-01-01</value>
+      <value>9001</value>
+      <value>MARIAGE</value>
+      <value>19851025</value>
+      <value>1010</value>
+      <value>TRAITE</value>
+      <value>12345</value>
+      <value>23456</value>
+    </row>
+    <row>
+      <value>2008-01-01</value>
+      <value>9002</value>
+      <value>SEPARATION</value>
+      <value>19891025</value>
+      <value>2020</value>
+      <value>A_TRAITER</value>
+      <value>12345</value>
+      <value>23456</value>
+    </row>
+  </table>
+</dataset>

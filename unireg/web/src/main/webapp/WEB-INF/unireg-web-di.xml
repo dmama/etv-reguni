@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+
+	<!-- Partie réellement "DI" -->
+
+	<bean id="declarationImpotControllerValidator" class="ch.vd.uniregctb.di.DeclarationImpotControllerValidator">
+		<property name="manager" ref="diEditManager"/>
+		<property name="tiersDAO" ref="tiersDAO"/>
+		<property name="diDAO" ref="diDAO"/>
+		<property name="delaiDeclarationDAO" ref="delaiDeclarationDAO" />
+		<property name="tiersService" ref="tiersService" />
+	</bean>
+
+	<bean id="declarationImpotController" class="ch.vd.uniregctb.di.DeclarationImpotController">
+		<property name="hibernateTemplate" ref="hibernateTemplate" />
+		<property name="messageSource" ref="messageSource" />
+		<property name="diService" ref="diService" />
+		<property name="manager" ref="diEditManager"/>
+		<property name="diDAO" ref="diDAO"/>
+		<property name="periodeFiscaleDAO" ref="periodeFiscaleDAO"/>
+		<property name="parametreAppService" ref="parametreAppService"/>
+		<property name="delaisService" ref="delaisService" />
+		<property name="tiersMapHelper" ref="tiersMapHelper" />
+		<property name="retourEditiqueControllerHelper" ref="retourEditiqueControllerHelper"/>
+		<property name="transactionManager" ref="transactionManager"/>
+		<property name="validator" ref="declarationImpotControllerValidator"/>
+		<property name="modeleDocumentDAO" ref="modeleDocumentDAO"/>
+		<property name="periodeImpositionService" ref="periodeImpositionService" />
+		<property name="controllerUtils" ref="controllerUtils"/>
+		<property name="securityProvider" ref="securityProviderInterface"/>
+		<property name="ticketService" ref="ticketService"/>
+	</bean>
+
+	<bean id="diEditManager" class="ch.vd.uniregctb.di.manager.DeclarationImpotEditManagerImpl" >
+		<property name="diDAO" ref="diDAO" />
+		<property name="periodeFiscaleDAO" ref="periodeFiscaleDAO" />
+		<property name="tiersDAO" ref="tiersDAO" />
+		<property name="tacheDAO" ref="tacheDAO" />
+		<property name="tiersService" ref="tiersService" />
+		<property name="diService" ref="diService" />
+		<property name="editiqueCompositionService" ref="editiqueCompositionService" />
+		<property name="evenementFiscalService" ref="evenementFiscalService" />
+		<property name="modeleDocumentDAO" ref="modeleDocumentDAO" />
+		<property name="parametres" ref="parametreAppService" />
+		<property name="delaiDeclarationDAO" ref="delaiDeclarationDAO" />
+		<property name="validationService" ref="validationService" />
+		<property name="bamMessageSender" ref="bamMessageSender" />
+		<property name="periodeImpositionService" ref="periodeImpositionService" />
+	</bean>
+
+	<!-- Excercices commerciaux -->
+
+	<bean id="exerciceCommercialController" class="ch.vd.uniregctb.tiers.ExerciceCommercialController">
+		<property name="tiersDAO" ref="tiersDAO"/>
+		<property name="tiersService" ref="tiersService"/>
+		<property name="controllerUtils" ref="controllerUtils"/>
+		<property name="securityProvider" ref="securityProviderInterface"/>
+		<property name="parametreAppService" ref="parametreAppService"/>
+		<property name="bouclementService" ref="bouclementService"/>
+		<property name="hibernateTemplate" ref="hibernateTemplate"/>
+		<property name="exerciceCommercialHelper" ref="exerciceCommercialWebHelper"/>
+	</bean>
+
+	<bean id="exerciceCommercialWebHelper" class="ch.vd.uniregctb.tiers.ExerciceCommercialWebHelper">
+		<constructor-arg ref="tiersService"/>
+		<constructor-arg ref="assujettissementService"/>
+	</bean>
+
+</beans>

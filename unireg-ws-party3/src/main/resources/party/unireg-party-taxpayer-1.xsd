@@ -1,0 +1,263 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- v1.2-SNAPSHOT - 15 décembre 2011 - rendu la documentation compatible avec la javadoc -->
+<!-- v1.0beta4 - 13 octobre 2011 - ajouté les immovableProperties sur le taxpayerType -->
+<!-- v1.0beta3 - 27 septembre 2011 - renommé ordinaryTaxLiabilities en taxLiabilities -->
+<!-- v1.0beta0 - 29 juillet 2011 - hand-edited by Manuel Siggen -->
+<xs:schema targetNamespace="http://www.vd.ch/fiscalite/unireg/party/taxpayer/1" elementFormDefault="qualified"
+		   xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:taxpayer="http://www.vd.ch/fiscalite/unireg/party/taxpayer/1"
+		   xmlns:common="http://www.vd.ch/fiscalite/unireg/common/1" xmlns:party="http://www.vd.ch/fiscalite/unireg/party/party/1"
+		   xmlns:taxresidence="http://www.vd.ch/fiscalite/unireg/party/taxresidence/1" xmlns:immo="http://www.vd.ch/fiscalite/unireg/party/immovableproperty/1"
+		   xmlns:jxb="http://java.sun.com/xml/ns/jaxb" jxb:version="2.0">
+
+	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/common/1" schemaLocation="../unireg-common-1.xsd" />
+	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/party/party/1" schemaLocation="unireg-party-1.xsd" />
+	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/party/taxresidence/1" schemaLocation="unireg-party-taxresidence-1.xsd" />
+	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/party/immovableproperty/1" schemaLocation="unireg-party-immovableproperty-1.xsd" />
+
+	<xs:complexType abstract="true" name="taxpayerType">
+		<xs:annotation>
+			<xs:appinfo>
+				<jxb:class>
+					<jxb:javadoc>Classe de base pour les contribuables. Les collections sont renseignées en fonction des parts demandées lors de l'appel au service.
+					</jxb:javadoc>
+				</jxb:class>
+			</xs:appinfo>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="party:partyType">
+				<xs:sequence>
+					<xs:element maxOccurs="unbounded" minOccurs="0" name="familyStatuses" type="taxpayer:familyStatusType">
+						<xs:annotation>
+							<xs:appinfo>
+								<jxb:property>
+									<jxb:javadoc>L'historique complet des situations de famille du contribuable.
+										Attention ! Cette collection n'est renseignée qui si la part FAMILY_STATUSES est demandée.
+									</jxb:javadoc>
+								</jxb:property>
+							</xs:appinfo>
+						</xs:annotation>
+					</xs:element>
+					<xs:element maxOccurs="unbounded" minOccurs="0" name="taxLiabilities" type="taxresidence:taxLiabilityType">
+						<xs:annotation>
+							<xs:appinfo>
+								<jxb:property>
+									<jxb:javadoc>L'historique complet des assujettissements du contribuable (en cas de conflit entre l'assujettissement source et ordinaire, l'assujettissement
+										ordinaire est privilégié).
+										Attention ! Cette collection n'est renseignée qui si la part TAX_LIABILITIES est demandée.
+									</jxb:javadoc>
+								</jxb:property>
+							</xs:appinfo>
+						</xs:annotation>
+					</xs:element>
+					<xs:element maxOccurs="unbounded" minOccurs="0" name="simplifiedTaxLiabilityVD" type="taxresidence:simplifiedTaxLiabilityType">
+						<xs:annotation>
+							<xs:appinfo>
+								<jxb:property>
+									<jxb:javadoc>La liste des périodes d'assujettissement au niveau cantonal (LIC) du contribuable. Cette liste peut être vide si le tiers n'est pas assujetti.
+										Attention ! Cette collection n'est renseignée qui si la part SIMPLIFIED_TAX_LIABILITIES est demandée.
+									</jxb:javadoc>
+								</jxb:property>
+							</xs:appinfo>
+						</xs:annotation>
+					</xs:element>
+					<xs:element maxOccurs="unbounded" minOccurs="0" name="simplifiedTaxLiabilityCH" type="taxresidence:simplifiedTaxLiabilityType">
+						<xs:annotation>
+							<xs:appinfo>
+								<jxb:property>
+									<jxb:javadoc>La liste des périodes d'assujettissement au niveau fédéral (LIFD) du contribuable. Cette liste peut être vide si le tiers n'est pas assujetti.
+										Attention ! Cette collection n'est renseignée qui si la part SIMPLIFIED_TAX_LIABILITIES est demandée.
+									</jxb:javadoc>
+								</jxb:property>
+							</xs:appinfo>
+						</xs:annotation>
+					</xs:element>
+					<xs:element maxOccurs="unbounded" minOccurs="0" name="taxationPeriods" type="taxresidence:taxationPeriodType">
+						<xs:annotation>
+							<xs:appinfo>
+								<jxb:property>
+									<jxb:javadoc>La liste des périodes d'imposition. Cette liste peut être vide si le tiers n'est pas assujetti.
+										Attention ! Cette collection n'est renseignée qui si la part TAXATION_PERIODS est demandée.
+									</jxb:javadoc>
+								</jxb:property>
+							</xs:appinfo>
+						</xs:annotation>
+					</xs:element>
+					<xs:element maxOccurs="unbounded" minOccurs="0" name="immovableProperties" type="immo:immovablePropertyType">
+						<xs:annotation>
+							<xs:appinfo>
+								<jxb:property>
+									<jxb:javadoc>La liste des immeubles. Cette liste peut être vide si le tiers ne possède pas d'immeuble.
+										Attention ! Cette collection n'est renseignée qui si la part IMMOVABLE_PROPERTIES est demandée.
+									</jxb:javadoc>
+								</jxb:property>
+							</xs:appinfo>
+						</xs:annotation>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="familyStatusType">
+		<xs:annotation>
+			<xs:appinfo>
+				<jxb:class>
+					<jxb:javadoc>Contient la situation familliale d'un contribuable d'un point de vue fiscal.</jxb:javadoc>
+				</jxb:class>
+			</xs:appinfo>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="dateFrom" type="common:dateType">
+				<xs:annotation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>La date de début de la situation.</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
+			<xs:element minOccurs="0" name="dateTo" type="common:dateType">
+				<xs:annotation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>La date de fin de la situation. Si elle est toujours active, cette date n'est pas renseignée.</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
+			<xs:element minOccurs="0" name="cancellationDate" type="common:dateType">
+				<xs:annotation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>Date à laquelle la situation de famille a été annulée, ou non-renseigné si elle n'est pas annulée.</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
+			<xs:element minOccurs="0" name="numberOfChildren" type="xs:int">
+				<xs:annotation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>Le nombre d'enfants à charge du contribuable, ou non-renseigné si cette information n'est pas connue ou inapplicable.</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
+			<xs:element minOccurs="0" name="applicableTariff" type="taxpayer:withholdingTaxTariffType">
+				<xs:annotation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>Tarif impôt source applicable.
+								Attention ! Ce champ est renseigné uniquement dans le cas où le contribuable associé est:
+								- un ménage commun
+								- composé uniquement de sourciers
+								Il est null dans tous les autres cas.
+							</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
+			<xs:element minOccurs="0" name="mainTaxpayerNumber" type="common:partyNumberType">
+				<xs:annotation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>Numéro du contribuable principal d'un couple sourcier.
+								Attention ! Ce champ est renseigné uniquement dans le cas où le contribuable associé est:
+								- un ménage commun
+								- composé uniquement de sourciers
+								Il est null dans tous les autres cas.
+							</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="maritalStatus" type="taxpayer:maritalStatusType">
+				<xs:annotation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>Etat civil admis par l’ACI et imprimé sur la déclaration d’impôt, qui peut différer de celui connu par le contrôle des habitants.</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
+			<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax" />
+		</xs:sequence>
+	</xs:complexType>
+	<xs:simpleType name="maritalStatusType">
+		<xs:annotation>
+			<xs:appinfo>
+				<jxb:typesafeEnumClass>
+					<jxb:javadoc>L'état-civil d'une personne physique.</jxb:javadoc>
+				</jxb:typesafeEnumClass>
+			</xs:appinfo>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="SINGLE">
+				<xs:annotation>
+					<xs:documentation>Célibataire.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="MARRIED">
+				<xs:annotation>
+					<xs:documentation>Marié.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="WIDOWED">
+				<xs:annotation>
+					<xs:documentation>Veuf.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="REGISTERED_PARTNER">
+				<xs:annotation>
+					<xs:documentation>Lié par partenariat enregistré.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="NOT_MARRIED">
+				<xs:annotation>
+					<xs:documentation>Non marié.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="PARTNERSHIP_ABOLISHED_BY_LAW">
+				<xs:annotation>
+					<xs:documentation>Partenariat dissous judiciairement.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="DIVORCED">
+				<xs:annotation>
+					<xs:documentation>Divorcé.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="SEPARATED">
+				<xs:annotation>
+					<xs:documentation>Séparé.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="PARTNERSHIP_ABOLISHED_BY_DEATH">
+				<xs:annotation>
+					<xs:documentation>Partenariat dissous pour cause de décès.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="withholdingTaxTariffType">
+		<xs:annotation>
+			<xs:appinfo>
+				<jxb:typesafeEnumClass>
+					<jxb:javadoc>Le tarif impôt-source d'un sourcier.</jxb:javadoc>
+				</jxb:typesafeEnumClass>
+			</xs:appinfo>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="NORMAL">
+				<xs:annotation>
+					<xs:documentation>Normal.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="DOUBLE_REVENUE">
+				<xs:annotation>
+					<xs:documentation>Double-gain.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+		</xs:restriction>
+	</xs:simpleType>
+
+</xs:schema>

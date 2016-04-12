@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+
+	<bean id="processusComplexeEntrepriseValidator" class="ch.vd.uniregctb.entreprise.complexe.ProcessusComplexeValidator"/>
+
+	<bean id="abstractProcessusComplexeEntrepriseController" abstract="true" class="ch.vd.uniregctb.entreprise.complexe.AbstractProcessusComplexeController">
+		<property name="tiersService" ref="tiersService"/>
+		<property name="tiersMapHelper" ref="tiersMapHelper"/>
+		<property name="controllerUtils" ref="controllerUtils"/>
+		<property name="securityProvider" ref="securityProviderInterface"/>
+		<property name="validator" ref="processusComplexeEntrepriseValidator"/>
+		<property name="transactionManager" ref="transactionManager"/>
+		<property name="metierService" ref="metierServicePM"/>
+	</bean>
+
+	<bean id="failliteController" class="ch.vd.uniregctb.entreprise.complexe.FailliteController" parent="abstractProcessusComplexeEntrepriseController"/>
+	<bean id="demenagementSiegeController" class="ch.vd.uniregctb.entreprise.complexe.DemenagementSiegeController" parent="abstractProcessusComplexeEntrepriseController"/>
+	<bean id="finActiviteController" class="ch.vd.uniregctb.entreprise.complexe.FinActiviteController" parent="abstractProcessusComplexeEntrepriseController"/>
+
+</beans>
