@@ -40,7 +40,7 @@ public class ExerciceCommercialWebHelper {
 		else {
 			final List<ExerciceCommercial> affichables = new ArrayList<>(all.size());
 			for (ExerciceCommercial exercice : all) {
-				if (RegDateHelper.isBeforeOrEqual(exercice.getDateFin(), dateFinAssujettissement, NullDateBehavior.LATEST)) {
+				if (RegDateHelper.isBeforeOrEqual(exercice.getDateDebut(), dateFinAssujettissement, NullDateBehavior.LATEST)) {
 					affichables.add(exercice);
 				}
 			}
