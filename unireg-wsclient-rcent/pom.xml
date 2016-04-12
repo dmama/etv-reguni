@@ -10,17 +10,17 @@
 	<artifactId>unireg-wsclient-rcent</artifactId>
 	<packaging>jar</packaging>
         <!-- BEGIN_LVERSION -->
-	<version>1.5-SNAPSHOT</version>
+	<version>1.5</version>
 	<!-- END_LVERSION -->
 
-	<name>Unireg - Client WS RCEnt v1</name>
-	<description>Unireg - Client Java pour le web-service d'échange de données v1 de RCEnt</description>
+	<name>Unireg - Client WS RCEnt v3</name>
+	<description>Unireg - Client Java pour le web-service d'échange de données v3 de RCEnt</description>
 	
 	<dependencies>
 		<dependency>
 			<groupId>ch.vd.uniregctb</groupId>
 			<artifactId>unireg-jaxb2-rcent</artifactId>
-			<version>4.8</version>
+			<version>4.9</version>
 		</dependency>
 		<dependency>
 			<groupId>ch.vd.shared</groupId>
