@@ -196,8 +196,8 @@ public class ExerciceCommercialController {
 		if (premierExerciceCommercial != null) {
 			anciennePremiereDateDebutExerciceCommercial = premierExerciceCommercial.getDateDebut();
 			if (view.getNouvelleDate().isAfterOrEqual(premierExerciceCommercial.getDateDebut())) {
-				Flash.message("La nouvelle date de début doit être inférieure à celle du premier exercice commercial.", 4000);
-				return "redirect:/exercices/edit.do?pmId=" + view.getPmId();
+				throw new ActionException(String.format("La nouvelle date de début (%s) doit être inférieure à celle du premier exercice commercial.",
+				                                        RegDateHelper.dateToDisplayString(view.getNouvelleDate())));
 			}
 		}
 
@@ -223,7 +223,7 @@ public class ExerciceCommercialController {
 		final List<Bouclement> nouveauxBouclements = bouclementService.extractBouclementsDepuisDates(nouvellesDatesBouclement, 12);
 
 		// 4. comparaison avant/après et application des différences
-		compareAnciensNouveauxBouclements(entreprise, bouclements, nouveauxBouclements);
+		gestionNouveauxBouclements(entreprise, bouclements, nouveauxBouclements);
 
 		// 5. contrôle final des dates de bouclements
 		controleDatesBouclements(view, anciensExercicesCommerciaux, nouvellesDatesBouclement);
@@ -359,7 +359,7 @@ public class ExerciceCommercialController {
 		final List<Bouclement> nouveauxBouclements = bouclementService.extractBouclementsDepuisDates(nouvellesDatesBouclement, 12);
 
 		// 4. comparaison avant/après et application des différences
-		compareAnciensNouveauxBouclements(entreprise, bouclements, nouveauxBouclements);
+		gestionNouveauxBouclements(entreprise, bouclements, nouveauxBouclements);
 
 		// 5. contrôle final des dates de bouclements
 		controleDatesBouclements(view, anciensExercicesCommerciaux, nouvellesDatesBouclement);
@@ -379,7 +379,7 @@ public class ExerciceCommercialController {
 			dateDebutAjoutable = true;
 			// Cas spécial du 1er exercice commercial (de plus d'une année)
 			// On ne peut pas ajouter une nouvelle date de début d'exercice commercial
-			// s'il n'existe pas au moins un exercice commercial par année civile
+			// s'il n'existe pas au moins une date de bouclement par année civile
 			ExerciceCommercialView premierEC = viewExercicesCommerciaux.get(viewExercicesCommerciaux.size()-1);
 			if (premierEC.getDateDebut().getOneDayBefore().year() < premierEC.getDateFin().year() - 1) {
 				dateDebutAjoutable = false;
@@ -388,7 +388,7 @@ public class ExerciceCommercialController {
 		return dateDebutAjoutable;
 	}
 
-	private void compareAnciensNouveauxBouclements(Entreprise entreprise, Set<Bouclement> bouclements, List<Bouclement> nouveauxBouclements) {
+	private void gestionNouveauxBouclements(Entreprise entreprise, Set<Bouclement> bouclements, List<Bouclement> nouveauxBouclements) {
 		final Map<RegDate, Bouclement> indexAnciensBouclements = indexBouclementsParDateDebut(AnnulableHelper.sansElementsAnnules(bouclements));
 		final Map<RegDate, Bouclement> indexNouveauxBouclements = indexBouclementsParDateDebut(nouveauxBouclements);
 		final SortedSet<RegDate> datesDebut = new TreeSet<>();
