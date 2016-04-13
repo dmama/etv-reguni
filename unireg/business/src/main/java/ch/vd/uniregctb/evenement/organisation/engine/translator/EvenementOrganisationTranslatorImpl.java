@@ -42,6 +42,7 @@ import ch.vd.uniregctb.evenement.organisation.interne.demenagement.DemenagementS
 import ch.vd.uniregctb.evenement.organisation.interne.dissolution.DissolutionStrategy;
 import ch.vd.uniregctb.evenement.organisation.interne.dissolution.FusionScissionStrategy;
 import ch.vd.uniregctb.evenement.organisation.interne.dissolution.LiquidationStrategy;
+import ch.vd.uniregctb.evenement.organisation.interne.donneeinvalide.FormeJuridiqueInvalideStrategy;
 import ch.vd.uniregctb.evenement.organisation.interne.doublon.DoublonEntrepriseStrategy;
 import ch.vd.uniregctb.evenement.organisation.interne.doublon.DoublonEtablissementStrategy;
 import ch.vd.uniregctb.evenement.organisation.interne.etablissement.EtablissementsSecondairesStrategy;
@@ -132,6 +133,7 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 		/*
 			L'ordre des stratégies est important.
 		 */
+		strategies.add(new FormeJuridiqueInvalideStrategy());
 		strategies.add(new DecisionAciStrategy());
 		strategies.add(new CreateOrganisationStrategy());
 		strategies.add(new EtablissementsSecondairesStrategy());
