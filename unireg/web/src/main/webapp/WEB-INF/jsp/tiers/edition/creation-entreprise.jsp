@@ -25,11 +25,9 @@
 						$('#for_commune_hc_label').show();
 						$('#for_pays_label').hide();
 						if (!firstLoad) {
-							alert($('#siege').val());
 							$('#siege').val(null);
 							$('#nomSiege').val(null);
 							$('#numeroOfsSiege').val(null);
-							alert($('#siege').val());
 						}
 						Autocomplete.infra('communeHC', '#siege', true, function(item) {
 							$('#numeroOfsSiege').val(item ? item.id1 : null);
@@ -43,7 +41,6 @@
 							$('#siege').val(null);
 							$('#nomSiege').val(null);
 							$('#numeroOfsSiege').val(null);
-							alert($('#siege').val());
 						}
 						Autocomplete.infra('etat', '#siege', true, function(item) {
 							$('#numeroOfsSiege').val(item ? item.id1 : null);
