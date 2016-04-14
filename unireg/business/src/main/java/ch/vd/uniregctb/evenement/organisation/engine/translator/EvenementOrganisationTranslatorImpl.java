@@ -182,7 +182,7 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 	public EvenementOrganisationInterne toInterne(EvenementOrganisation event, EvenementOrganisationOptions options) throws EvenementOrganisationException {
 		Organisation organisation;
 		if (useOrganisationsOfNotice) {
-			organisation = serviceOrganisationService.getPseudoOrganisationHistory(event.getNoEvenement()).get(event.getNoOrganisation());
+			organisation = serviceOrganisationService.getOrganisationEvent(event.getNoEvenement()).get(event.getNoOrganisation()).getPseudoHistory();
 			if (organisation == null) {
 				throw new EvenementOrganisationException(String.format("Fatal: le service n'a pas renvoyé d'organisation pour l'événement %d.", event.getNoEvenement()));
 			}

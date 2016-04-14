@@ -7,6 +7,7 @@ import org.springframework.beans.factory.InitializingBean;
 
 import ch.vd.unireg.interfaces.civil.ServiceCivilException;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
+import ch.vd.unireg.interfaces.organisation.data.ServiceOrganisationEvent;
 import ch.vd.uniregctb.stats.ServiceTracing;
 import ch.vd.uniregctb.stats.StatsService;
 
@@ -135,12 +136,12 @@ public class ServiceOrganisationTracing implements ServiceOrganisationRaw, Initi
 	}
 
 	@Override
-	public Map<Long, Organisation> getPseudoOrganisationHistory(final long noEvenement) throws ServiceOrganisationException {
+	public Map<Long, ServiceOrganisationEvent> getOrganisationEvent(final long noEvenement) throws ServiceOrganisationException {
 		Throwable t = null;
 		int items = 0;
 		final long time = tracing.start();
 		try {
-			final Map<Long, Organisation> organisations = target.getPseudoOrganisationHistory(noEvenement);
+			final Map<Long, ServiceOrganisationEvent> organisations = target.getOrganisationEvent(noEvenement);
 			if (organisations != null) {
 				items = 1;
 			}

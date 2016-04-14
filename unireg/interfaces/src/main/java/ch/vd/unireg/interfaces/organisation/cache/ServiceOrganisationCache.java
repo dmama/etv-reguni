@@ -19,6 +19,7 @@ import ch.vd.unireg.interfaces.organisation.ServiceOrganisationException;
 import ch.vd.unireg.interfaces.organisation.ServiceOrganisationRaw;
 import ch.vd.unireg.interfaces.organisation.ServiceOrganisationServiceWrapper;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
+import ch.vd.unireg.interfaces.organisation.data.ServiceOrganisationEvent;
 import ch.vd.uniregctb.cache.CacheHelper;
 import ch.vd.uniregctb.cache.CacheStats;
 import ch.vd.uniregctb.cache.EhCacheStats;
@@ -289,8 +290,8 @@ public class ServiceOrganisationCache implements ServiceOrganisationRaw, UniregC
 	}
 
 	@Override
-	public Map<Long, Organisation> getPseudoOrganisationHistory(long noEvenement) throws ServiceOrganisationException {
-		return target.getPseudoOrganisationHistory(noEvenement);
+	public Map<Long, ServiceOrganisationEvent> getOrganisationEvent(long noEvenement) throws ServiceOrganisationException {
+		return target.getOrganisationEvent(noEvenement);
 	}
 
 	@Override

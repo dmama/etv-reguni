@@ -1,6 +1,8 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ include file="/WEB-INF/jsp/include/common.jsp" %>
 
+<%--@elvariable id="command" type="ch.vd.uniregctb.evenement.organisation.view.EvenementOrganisationDetailView"--%>
+
 <tiles:insert template="/WEB-INF/jsp/templates/template.jsp">
 <tiles:put name="title"><fmt:message key="label.caracteristiques.evenement.organisation"/></tiles:put>
 <tiles:put name="fichierAide">
@@ -105,6 +107,28 @@
 </c:if>
 --%>
 <!-- Fin visualisation grappe -->
+
+<!-- Debut FOSC -->
+<c:if test="${command.foscNumero != null}">
+	<fieldset>
+		<legend><span><fmt:message key="label.fosc.publication"/></span></legend>
+		<table>
+			<tr class="<unireg:nextRowClass/>">
+				<td width="50%"><fmt:message key="label.fosc.publication.numero"/> :</td>
+				<td width="50%"><c:out value="${command.foscNumero}"/></td>
+			</tr>
+			<tr class="<unireg:nextRowClass/>">
+				<td width="50%"><fmt:message key="label.fosc.publication.date"/> :</td>
+				<td width="50%"><unireg:regdate regdate="${command.foscDate}"/></td>
+			</tr>
+			<tr class="<unireg:nextRowClass/>">
+				<td><fmt:message key="label.fosc.publication.lien"/>&nbsp;:</td>
+				<td width="50%"><a href="${command.foscLienDirect}" target="_blank" title="Ouvrir l'original dans une fenêtre séparée (fosc.ch)" accesskey="f"><fmt:message key="label.fosc.publication"/></a></td>
+			</tr>
+		</table>
+	</fieldset>
+</c:if>
+<!-- Fin FOSC -->
 
 <!-- Debut Organisation -->
 <fieldset>

@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Map;
 
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
+import ch.vd.unireg.interfaces.organisation.data.ServiceOrganisationEvent;
 
 public interface ServiceOrganisationRaw {
 
@@ -52,13 +53,16 @@ public interface ServiceOrganisationRaw {
 	Identifiers getOrganisationByNoIde(String noide) throws ServiceOrganisationException;
 
 	/**
-	 * Recherche les états avant et après de l'événement et contruit ls pseudo historique correspondant.
+	 * Recherche les données de l'événement, en particulier des états avant et après pour chaque organisation touchée.
+	 *
+	 * L'objet retourné contient, en plus de la pseudo histoire correspondant à chaque organisation, les
+	 * métadonnées éventuellement disponibles (RC et FOSC).
 	 *
 	 * @param noEvenement Identifiant de l'événement organisation
-	 * @return les données retournées par RCEnt sous forme de map indexée par no cantonal.
+	 * @return les données de l'événement sous forme de map indexée par no cantonal.
 	 * @throws ServiceOrganisationException
 	 */
-	Map<Long, Organisation> getPseudoOrganisationHistory(long noEvenement) throws ServiceOrganisationException;
+	Map<Long, ServiceOrganisationEvent> getOrganisationEvent(long noEvenement) throws ServiceOrganisationException;
 
 	/**
 	 * Méthode qui permet de tester que le service organisation répond bien. Cette méthode est insensible aux caches.

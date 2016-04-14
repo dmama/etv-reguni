@@ -95,7 +95,7 @@ public class ServiceOrganisationRCEntItTest extends BusinessItTest {
 //	@Ignore
 	@Test
 	public void testGetPseudoOrganisationHistory() throws Exception {
-		Organisation org = service.getPseudoOrganisationHistory(ID_EVT).get(ID_ORGANISATION_EVT);
+		Organisation org = service.getOrganisationEvent(ID_EVT).get(ID_ORGANISATION_EVT).getPseudoHistory();
 		Assert.assertNotNull(org);
 		assertContains(ID_NOM_EVT, org.getNom().get(0).getPayload());
 	}

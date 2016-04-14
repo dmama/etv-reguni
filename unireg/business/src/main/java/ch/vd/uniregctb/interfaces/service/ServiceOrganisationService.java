@@ -8,6 +8,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.organisation.ServiceOrganisationException;
 import ch.vd.unireg.interfaces.organisation.ServiceOrganisationRaw;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
+import ch.vd.unireg.interfaces.organisation.data.ServiceOrganisationEvent;
 import ch.vd.uniregctb.interfaces.model.AdressesCivilesHistoriques;
 
 public interface ServiceOrganisationService {
@@ -24,13 +25,16 @@ public interface ServiceOrganisationService {
 	Organisation getOrganisationHistory(long noOrganisation) throws ServiceOrganisationException;
 
 	/**
-	 * Recherche les états avant et après de l'événement et contruit la pseudo histoire correspondante.
+	 * Recherche les données de l'événement, en particulier des états avant et après pour chaque organisation touchée.
+	 *
+	 * L'objet retourné contient, en plus de la pseudo histoire correspondant à chaque organisation, les
+	 * métadonnées éventuellement disponibles (RC et FOSC).
 	 *
 	 * @param noEvenement Identifiant de l'événement organisation
-	 * @return les données retournées par RCEnt sous forme de map indexée par no cantonal.
+	 * @return les données de l'événement sous forme de map indexée par no cantonal.
 	 * @throws ServiceOrganisationException
 	 */
-	Map<Long, Organisation> getPseudoOrganisationHistory(long noEvenement) throws ServiceOrganisationException;
+	Map<Long, ServiceOrganisationEvent> getOrganisationEvent(long noEvenement) throws ServiceOrganisationException;
 
 	/**
 	 * @param noide numéro IDE (sous la forme sans point ni tiret)
