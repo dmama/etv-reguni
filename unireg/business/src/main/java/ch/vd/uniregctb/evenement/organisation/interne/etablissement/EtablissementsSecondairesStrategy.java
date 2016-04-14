@@ -17,6 +17,7 @@ import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationException;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationOptions;
 import ch.vd.uniregctb.evenement.organisation.interne.AbstractOrganisationStrategy;
 import ch.vd.uniregctb.evenement.organisation.interne.EvenementOrganisationInterne;
+import ch.vd.uniregctb.evenement.organisation.interne.TraitementManuel;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.Etablissement;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
@@ -67,13 +68,27 @@ public class EtablissementsSecondairesStrategy extends AbstractOrganisationStrat
 			List<SiteOrganisation> sitesVDAvant = uniquementSitesVDActifs(organisation.getSitesSecondaires(dateAvant), dateAvant);
 			List<SiteOrganisation> sitesVDApres = uniquementSitesVDActifs(organisation.getSitesSecondaires(dateApres), dateApres);
 
-			determineChangementsEtablissements(sitesVDAvant, sitesVDApres, etablissementsAFermer, sitesACreer, context);
+			try {
+				determineChangementsEtablissements(sitesVDAvant, sitesVDApres, etablissementsAFermer, sitesACreer, context);
+			} catch (EvenementOrganisationException e) {
+				return new TraitementManuel(event, organisation, entreprise, context, options,
+				                            String.format("Erreur lors de la determination des changements d'établissements secondaires de l'entreprise %s (civil: %s): %s",
+				                                          entreprise.getNumero(), organisation.getNumeroOrganisation(), e.getMessage())
+				);
+			}
 
-			List<EtablissementsSecondaires.Demenagement> demenagements = determineChangementsDomiciles(sitesVDAvant, sitesVDApres, dateApres, context);
+			try {
+				List<EtablissementsSecondaires.Demenagement> demenagements = determineChangementsDomiciles(sitesVDAvant, sitesVDApres, dateApres, context);
 
-			if (!etablissementsAFermer.isEmpty() || !sitesACreer.isEmpty() || !demenagements.isEmpty()) {
-				LOGGER.info(String.format("Modification des établissements secondaires de l'entreprise %s (civil: %s).", entreprise.getNumero(), organisation.getNumeroOrganisation()));
-				return new EtablissementsSecondaires(event, organisation, entreprise, context, options, etablissementsAFermer, sitesACreer, demenagements);
+				if (!etablissementsAFermer.isEmpty() || !sitesACreer.isEmpty() || !demenagements.isEmpty()) {
+					LOGGER.info(String.format("Modification des établissements secondaires de l'entreprise %s (civil: %s).", entreprise.getNumero(), organisation.getNumeroOrganisation()));
+					return new EtablissementsSecondaires(event, organisation, entreprise, context, options, etablissementsAFermer, sitesACreer, demenagements);
+				}
+			} catch (EvenementOrganisationException e) {
+				return new TraitementManuel(event, organisation, entreprise, context, options,
+				                            String.format("Erreur lors de la determination des changements de domicile des établissements secondaires de l'entreprise %s (civil: %s): %s",
+				                                          entreprise.getNumero(), organisation.getNumeroOrganisation(), e.getMessage())
+				);
 			}
 		}
 

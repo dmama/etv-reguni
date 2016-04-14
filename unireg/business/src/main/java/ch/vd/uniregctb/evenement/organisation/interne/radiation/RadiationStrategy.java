@@ -55,9 +55,7 @@ public class RadiationStrategy extends AbstractOrganisationStrategy {
 		final RegDate dateAvant = event.getDateEvenement().getOneDayBefore();
 
 		final SiteOrganisation sitePrincipalAvant = getSitePrincipal(organisation, dateAvant);
-		if (sitePrincipalAvant == null) {
-			return new TraitementManuel(event, organisation, entreprise, context, options, "Organisation nouvelle au civil mais déjà connue d'Unireg. Impossible de déterminer automatiquement ce qu'il faut faire.");
-		} else {
+		if (sitePrincipalAvant != null) {
 
 			final SiteOrganisation sitePrincipalApres = getSitePrincipal(organisation, dateApres);
 
@@ -69,7 +67,7 @@ public class RadiationStrategy extends AbstractOrganisationStrategy {
 			try {
 				if (enCoursDeRadiationIDE) {
 					if (!sitePrincipalApres.isRadieDuRC(dateApres)) {
-						throw new EvenementOrganisationException(String.format("L'entreprise %s est radiée de l'IDE mais pas du RC!", entreprise));
+						return new TraitementManuel(event, organisation, entreprise, context, options, String.format("L'entreprise %s est radiée de l'IDE mais pas du RC!", entreprise));
 					}
 
 					if (isAssujetti(entreprise, dateApres, context)) {
@@ -101,7 +99,8 @@ public class RadiationStrategy extends AbstractOrganisationStrategy {
 				}
 			}
 			catch (AssujettissementException e) {
-				throw new EvenementOrganisationException(String.format("Impossible de déterminer si l'entreprise %s est assujettie: %s", entreprise.getNumero(), e.getMessage()), e);
+				return new TraitementManuel(event, organisation, entreprise, context, options,
+				                            String.format("Impossible de déterminer si l'entreprise %s est assujettie: %s. Une erreur est survenue: %s", entreprise.getNumero(), e.getMessage(), e));
 			}
 		}
 

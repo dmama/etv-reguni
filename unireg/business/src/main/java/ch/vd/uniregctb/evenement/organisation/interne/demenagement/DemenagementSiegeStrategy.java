@@ -12,6 +12,7 @@ import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationException;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationOptions;
 import ch.vd.uniregctb.evenement.organisation.interne.AbstractOrganisationStrategy;
 import ch.vd.uniregctb.evenement.organisation.interne.EvenementOrganisationInterne;
+import ch.vd.uniregctb.evenement.organisation.interne.TraitementManuel;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
@@ -21,8 +22,6 @@ import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 public class DemenagementSiegeStrategy extends AbstractOrganisationStrategy {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(DemenagementSiegeStrategy.class);
-
-	private static final String MESSAGE_HORS_SUISSE = "Les changements de siège impliquant un/des sièges hors Suisse ne sont pas pris en charge. Veuillez traiter manuellement.";
 
 	/**
 	 * Détecte les mutations pour lesquelles la création d'un événement interne est pertinente.
@@ -54,12 +53,20 @@ public class DemenagementSiegeStrategy extends AbstractOrganisationStrategy {
 
 
 		if (communeDeSiegeApres == null) {
-			throw new EvenementOrganisationException(MESSAGE_HORS_SUISSE);
+			return new TraitementManuel(event, organisation, null, context, options,
+			                            String.format(
+					                            "Autorité fiscale (siège) introuvable l'organisation %s %s. On est peut-être en présence d'un déménagement vers l'étranger.",
+					                            organisation.getNumeroOrganisation(), organisation.getNom(dateApres))
+			);
 		}
 
 		if (communeDeSiegeAvant == null) {
 			if (isExisting(organisation, dateApres)) {
-				throw new EvenementOrganisationException(MESSAGE_HORS_SUISSE);
+				return new TraitementManuel(event, organisation, null, context, options,
+				                            String.format(
+						                            "Autorité fiscale (siège) introuvable l'organisation %s %s. On est peut-être en présence d'un déménagement depuis l'étranger.",
+						                            organisation.getNumeroOrganisation(), organisation.getNom(dateApres))
+				);
 			} else {
 				LOGGER.info("Pas de déménagement trouvé car l'organisation n'était pas connue avant au civil.");
 				return null; // On n'existait pas hier, en fait.

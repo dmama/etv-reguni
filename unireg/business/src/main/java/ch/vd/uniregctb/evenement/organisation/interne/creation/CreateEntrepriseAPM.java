@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.evenement.organisation.interne.creation;
 
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
@@ -26,8 +27,10 @@ public class CreateEntrepriseAPM extends CreateEntreprise {
 
 	protected CreateEntrepriseAPM(EvenementOrganisation evenement, Organisation organisation, Entreprise entreprise,
 	                              EvenementOrganisationContext context,
-	                              EvenementOrganisationOptions options) throws EvenementOrganisationException {
-		super(evenement, organisation, entreprise, context, options);
+	                              EvenementOrganisationOptions options,
+	                              RegDate dateDeCreation,
+	                              boolean isCreation) throws EvenementOrganisationException {
+		super(evenement, organisation, entreprise, context, options, dateDeCreation, isCreation);
 	}
 
 	@Override
@@ -42,7 +45,7 @@ public class CreateEntrepriseAPM extends CreateEntreprise {
 		// Ouverture du For principal seulement si inscrit au RC (certaines APM ne sont pas au RC)
 		if (inscritAuRC()) {
 
-			MotifFor motifOuverture = determineMotifOuvertureFor();
+			MotifFor motifOuverture = determineMotifOuvertureFor(isCreation());
 
 			openForFiscalPrincipal(getDateDeCreation(),
 			                       getAutoriteFiscalePrincipale(),

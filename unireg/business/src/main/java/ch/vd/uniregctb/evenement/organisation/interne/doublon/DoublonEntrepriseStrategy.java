@@ -51,9 +51,7 @@ public class DoublonEntrepriseStrategy extends AbstractOrganisationStrategy {
 		final RegDate dateApres = event.getDateEvenement();
 
 		final DateRanged<SiteOrganisation> sitePrincipalAvantRange = organisation.getSitePrincipal(dateAvant);
-		if (sitePrincipalAvantRange == null) {
-			return new TraitementManuel(event, organisation, entreprise, context, options, "Organisation nouvelle au civil mais déjà connue d'Unireg. Impossible de déterminer automatiquement ce qu'il faut faire.");
-		} else {
+		if (sitePrincipalAvantRange != null) {
 
 			final Long remplaceParAvant = sitePrincipalAvantRange.getPayload().getIdeRemplacePar(dateAvant);
 			final Long remplaceParApres = organisation.getSitePrincipal(dateApres).getPayload().getIdeRemplacePar(dateApres);

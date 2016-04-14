@@ -2,6 +2,7 @@ package ch.vd.uniregctb.evenement.organisation.interne.creation;
 
 import org.springframework.util.Assert;
 
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.organisation.data.Domicile;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
@@ -27,26 +28,29 @@ import ch.vd.uniregctb.type.MotifRattachement;
  */
 public class CreateEntrepriseHorsVD extends EvenementOrganisationInterneDeTraitement {
 
+	RegDate dateDeCreation;
+	boolean isCreation;
+
 	final private CategorieEntreprise category;
 	final private SiteOrganisation sitePrincipal;
 	final private Domicile autoriteFiscalePrincipale;
 
 	protected CreateEntrepriseHorsVD(EvenementOrganisation evenement, Organisation organisation, Entreprise entreprise,
 	                                 EvenementOrganisationContext context,
-	                                 EvenementOrganisationOptions options) throws EvenementOrganisationException {
+	                                 EvenementOrganisationOptions options,
+	                                 RegDate dateDeCreation,
+	                                 boolean isCreation) throws EvenementOrganisationException {
 		super(evenement, organisation, entreprise, context, options);
+
+		this.dateDeCreation = dateDeCreation;
+		this.isCreation = isCreation;
 
 		sitePrincipal = organisation.getSitePrincipal(getDateEvt()).getPayload();
 
 		autoriteFiscalePrincipale = sitePrincipal.getDomicile(getDateEvt());
-		if (autoriteFiscalePrincipale == null) { // Indique un établissement "probablement" à l'étranger. Nous ne savons pas traiter ce cas pour l'instant.
-			throw new EvenementOrganisationException(
-					String.format(
-							"Autorité fiscale (siège) introuvable pour le site principal %s de l'organisation %s %s. Site probablement à l'étranger. Impossible de créer le domicile de l'établissement principal.",
-							sitePrincipal.getNumeroSite(), getNoOrganisation(), getOrganisation().getNom(getDateEvt())));
-		}
 
 		category = CategorieEntrepriseHelper.getCategorieEntreprise(getOrganisation(), getDateEvt());
+
 	}
 
 	@Override
@@ -87,7 +91,7 @@ public class CreateEntrepriseHorsVD extends EvenementOrganisationInterneDeTraite
 					                       warnings, suivis);
 
 					// Création du bouclement
-					createAddBouclement(getDateEvt(), isCreation(), suivis);
+					createAddBouclement(getDateEvt(), isCreation, suivis);
 
 					// Ajoute les for secondaires
 					adapteForsSecondairesPourEtablissementsVD(getEntreprise(), getDateEvt(), warnings, suivis);
@@ -104,7 +108,7 @@ public class CreateEntrepriseHorsVD extends EvenementOrganisationInterneDeTraite
 				                       warnings, suivis);
 
 				// Création du bouclement
-				createAddBouclement(getDateEvt(), isCreation(), suivis);
+				createAddBouclement(getDateEvt(), isCreation, suivis);
 
 				// Ajoute les for secondaires
 				adapteForsSecondairesPourEtablissementsVD(getEntreprise(), getDateEvt(), warnings, suivis);

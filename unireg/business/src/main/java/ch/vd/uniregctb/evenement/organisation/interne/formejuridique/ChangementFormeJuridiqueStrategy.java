@@ -56,23 +56,21 @@ public class ChangementFormeJuridiqueStrategy extends AbstractOrganisationStrate
 		}
 
 		final DateRanged<SiteOrganisation> sitePrincipalAvantRange = organisation.getSitePrincipal(dateAvant);
-		if (sitePrincipalAvantRange == null) {
-			return new TraitementManuel(event, organisation, entreprise, context, options, "Organisation nouvelle au civil mais déjà connue d'Unireg. Impossible de déterminer automatiquement ce qu'il faut faire.");
-		} else {
+		if (sitePrincipalAvantRange != null) {
 
 			final FormeLegale formeLegaleAvant = organisation.getFormeLegale(dateAvant);
 			final FormeLegale formeLegaleApres = organisation.getFormeLegale(dateApres);
 
 			if (formeLegaleAvant == null) {
 				if (isExisting(organisation, dateApres)) {
-					throw new EvenementOrganisationException(
+					return new TraitementManuel(event, organisation, entreprise, context, options,
 							String.format(MESSAGE_FORME_JURIDIQUE_MANQUANTE, organisation.getNumeroOrganisation(), RegDateHelper.dateToDisplayString(dateAvant)));
 				}
 				LOGGER.info("Organisation nouvellement connue au civil. Pas de changement de catégorie.");
 				return null;
 			}
 			else if (formeLegaleApres == null) {
-				throw new EvenementOrganisationException(
+				return new TraitementManuel(event, organisation, entreprise, context, options,
 						String.format(MESSAGE_FORME_JURIDIQUE_MANQUANTE, organisation.getNumeroOrganisation(), RegDateHelper.dateToDisplayString(dateApres)));
 			}
 			else if (formeLegaleAvant != formeLegaleApres) {

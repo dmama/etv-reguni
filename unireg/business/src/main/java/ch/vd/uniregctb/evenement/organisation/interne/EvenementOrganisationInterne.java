@@ -49,7 +49,6 @@ import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeEtatEntreprise;
-import ch.vd.uniregctb.type.TypeEvenementOrganisation;
 import ch.vd.uniregctb.type.TypeGenerationEtatEntreprise;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 
@@ -260,10 +259,10 @@ public abstract class EvenementOrganisationInterne {
 	}
 
 	@NotNull
-	protected MotifFor determineMotifOuvertureFor() throws EvenementOrganisationException {
+	protected MotifFor determineMotifOuvertureFor(boolean isCreation) throws EvenementOrganisationException {
 		final MotifFor motifOuverture;
 		Domicile siegePrecedant = OrganisationHelper.siegePrincipalPrecedant(getOrganisation(), getDateEvt());
-		if (isCreation()) {
+		if (isCreation) {
 			motifOuverture = MotifFor.DEBUT_EXPLOITATION;
 		} else {
 			if (siegePrecedant == null) {
@@ -859,150 +858,6 @@ public abstract class EvenementOrganisationInterne {
 				));
 			}
 		}
-	}
-
-	protected boolean isCreation() {
-		TypeEvenementOrganisation typeEvt = evenement.getType();
-		switch (typeEvt) {
-		case FOSC_NOUVELLE_ENTREPRISE:
-			return nouveauAuRc();
-		case FOSC_NOUVELLE_SUCCURSALE:
-			return nouveauAuRc();
-		case FOSC_DISSOLUTION_ENTREPRISE:
-			return false;
-		case FOSC_RADIATION_ENTREPRISE:
-			return false;
-		case FOSC_RADIATION_SUCCURSALE:
-			return false;
-		case FOSC_REVOCATION_DISSOLUTION_ENTREPRISE:
-			return false;
-		case FOSC_REINSCRIPTION_ENTREPRISE:
-			return false;
-		case FOSC_AUTRE_MUTATION:
-			return false;
-		case IMPORTATION_ENTREPRISE:
-			return false;
-		case FOSC_AVIS_PREALABLE_OUVERTURE_FAILLITE:
-			return false;
-		case FOSC_PUBLICATION_FAILLITE_ET_APPEL_AUX_CREANCIERS:
-			return false;
-		case FOSC_SUSPENSION_FAILLITE:
-			return false;
-		case FOSC_ETAT_DE_COLLOCATION_ET_INVENTAIRE_DANS_FAILLITE:
-			return false;
-		case FOSC_TABLEAU_DE_DISTRIBUTION_ET_DECOMPTE_FINAL_DANS_FAILLITE:
-			return false;
-		case FOSC_CLOTURE_DE_LA_FAILLITE:
-			return false;
-		case FOSC_REVOCATION_DE_LA_FAILLITE:
-			return false;
-		case FOSC_VENTE_AUX_ENCHERES_FORCEE_IMMEUBLES_DANS_FAILLITE:
-			return false;
-		case FOSC_ETAT_DES_CHARGES_DANS_FAILLITE:
-			return false;
-		case FOSC_COMMUNICATION_DANS_FAILLITE:
-			return false;
-		case FOSC_DEMANDE_SURSIS_CONCORDATAIRE:
-			return false;
-		case FOSC_SURSIS_CONCORDATAIRE_PROVISOIRE:
-			return false;
-		case FOSC_SURSIS_CONCORDATAIRE:
-			return false;
-		case FOSC_APPEL_AUX_CREANCIERS_DANS_CONCORDAT:
-			return false;
-		case FOSC_AUDIENCE_DE_LIQUIDATION_PAR_ABANDON_ACTIF:
-			return false;
-		case FOSC_PROLONGATION_SURSIS_CONCORDATAIRE:
-			return false;
-		case FOSC_ANNULATION_SURSIS_CONCORDATAIRE:
-			return false;
-		case FOSC_CONVOCATION_A_ASSEMBLEE_DES_CREANCIERS:
-			return false;
-		case FOSC_HOMOLOGATION_DU_CONCORDAT:
-			return false;
-		case FOSC_REFUS_HOMOLOGATION_DU_CONCORDAT:
-			return false;
-		case FOSC_REVOCATION_DU_CONCORDAT:
-			return false;
-		case FOSC_ETAT_DE_COLLOCATION_DANS_CONCORDAT_PAR_ABANDON_D_ACTIF:
-			return false;
-		case FOSC_TABLEAU_DE_DISTRIBUTION_ET_DECOMPTE_FINAL_DANS_CONCORDAT_PAR_ABANDON_D_ACTIF:
-			return false;
-		case FOSC_CONCORDAT_DE_BANQUE_ET_DE_CAISSE_EPARGNE:
-			return false;
-		case FOSC_COMMUNICATION_DANS_LE_CONCORDAT:
-			return false;
-		case FOSC_VENTE_AUX_ENCHERES_FORCEE_IMMEUBLES_DANS_POURSUITE:
-			return false;
-		case FOSC_COMMANDEMENT_DE_PAYER:
-			return false;
-		case FOSC_PROCES_VERBAL_SEQUESTRE:
-			return false;
-		case FOSC_PROCES_VERBAL_SAISIE:
-			return false;
-		case FOSC_COMMUNICATION_DANS_LA_POURSUITE:
-			return false;
-		case FOSC_APPEL_AUX_CREANCIERS_SUITE_FUSION_OU_SCISSION:
-			return false;
-		case FOSC_APPEL_AUX_CREANCIERS_SUITE_LIQUIDATION:
-			return false;
-		case FOSC_APPEL_AUX_CREANCIERS_SUITE_REDUCTION_CAPITAL:
-			return false;
-		case FOSC_APPEL_AUX_CREANCIERS_SUITE_TRANSFORMATION_SA_EN_SARL:
-			return false;
-		case FOSC_APPEL_AUX_CREANCIERS_SUITE_TRANSFERT_ETRANGER:
-			return false;
-		case IDE_NOUVELLE_INSCRIPTION:
-			return !organisation.isInscritAuRC(getDateEvt()) || nouveauAuRc();
-		case IDE_MUTATION:
-			return false;
-		case IDE_RADIATION:
-			return false;
-		case IDE_REACTIVATION:
-			return false;
-		case IDE_ANNULATION:
-			return false;
-		case RCPERS_DECES:
-			return false;
-		case RCPERS_ANNULATION_DECES:
-			return false;
-		case RCPERS_DEPART:
-			return false;
-		case RCPERS_ANNULATION_DEPART:
-			return false;
-		case RCPERS_CORRECTION_DONNEES:
-			return false;
-		case REE_NOUVELLE_INSCRIPTION:
-			return !organisation.isInscritAuRC(getDateEvt()) || nouveauAuRc();
-		case REE_MUTATION:
-			return false;
-		case REE_SUPPRESSION:
-			return false;
-		case REE_RADIATION:
-			return false;
-		case REE_TRANSFERT_ETABLISSEMENT:
-			return false;
-		case REE_REACTIVATION:
-			return false;
-		default:
-			throw new IllegalArgumentException("TypeEvenementOrganisation non supporté. Impossible de déterminer la création d'entreprise: " + typeEvt.name());
-		}
-	}
-
-	/**
-	 * @return Vrai si la date d'inscription au RC se situe dans les 7 jours précédant la date de publication.
-	 */
-	private boolean nouveauAuRc() {
-		if (organisation.isInscritAuRC(getDateEvt())) {
-			// TODO: Refactor, mais là ce n'est pas vraiment le moment.
-			final SiteOrganisation sitePrincipal = organisation.getSitePrincipal(getDateEvt()).getPayload();
-			final RegDate dateInscriptionCh = sitePrincipal.getDonneesRC().getDateInscription(getDateEvt());
-			final RegDate dateInscriptionVd = sitePrincipal.getDonneesRC().getDateInscriptionVd(getDateEvt());
-			if (dateInscriptionVd == dateInscriptionCh) {
-				return true;
-			}
-		}
-		return false;
 	}
 
 	private boolean isPremierSnapshot() {

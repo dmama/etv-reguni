@@ -14,6 +14,7 @@ import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationException;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationOptions;
 import ch.vd.uniregctb.evenement.organisation.interne.AbstractOrganisationStrategy;
 import ch.vd.uniregctb.evenement.organisation.interne.EvenementOrganisationInterne;
+import ch.vd.uniregctb.evenement.organisation.interne.TraitementManuel;
 import ch.vd.uniregctb.tiers.Entreprise;
 
 /**
@@ -54,8 +55,8 @@ public class ReinscriptionStrategy extends AbstractOrganisationStrategy {
 
 		if (sitePrincipalAvantRange == null) {
 			if (isExisting(organisation, dateApres)) {
-				throw new EvenementOrganisationException(
-						String.format("Site principal introuvable sur organisation %s en date du %s", organisation.getNumeroOrganisation(), RegDateHelper.dateToDisplayString(dateAvant)));
+				return new TraitementManuel(event, organisation, entreprise, context, options,
+				                            String.format("Site principal introuvable sur organisation %s en date du %s", organisation.getNumeroOrganisation(), RegDateHelper.dateToDisplayString(dateAvant)));
 			}
 		} else {
 			final SiteOrganisation sitePrincipalAvant = sitePrincipalAvantRange.getPayload();

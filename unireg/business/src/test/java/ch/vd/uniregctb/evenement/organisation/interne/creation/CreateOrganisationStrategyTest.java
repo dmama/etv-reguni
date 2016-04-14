@@ -206,7 +206,7 @@ public class CreateOrganisationStrategyTest extends AbstractEvenementOrganisatio
 		// TODO: A bien vérifier ce qu'on doit faire lorsque le siege n'est pas connu.
 		// Avec commune inconnue (pas de no ofs dans le siege)
 		addOrg(MockOrganisationFactory.createOrganisation(222222002L, 222222002L + 1000000, "abcdef", RegDate.get(2015, 9, 7), null, FormeLegale.N_0106_SOCIETE_ANONYME, null, null, null, null, null, null));
-		tryCreationAndExpectNull(222222002L);
+		tryCreationEventAndCheckResult(222222002L, TraitementManuel.class);
 
 		// Cas hors Vaud aucun site sur Vaud
 		addOrg(MockOrganisationFactory.createOrganisationAvecSiteSecondaire(222222004L, 222222004L + 1000000, 222222004L + 2000000, "abcdef", RegDate.get(2015, 9, 7), null, FormeLegale.N_0106_SOCIETE_ANONYME,

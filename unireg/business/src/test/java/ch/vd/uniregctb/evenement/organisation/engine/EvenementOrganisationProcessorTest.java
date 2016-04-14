@@ -1027,90 +1027,6 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 		return (String) messageField.get(msg);
 	}
 
-	@Test(timeout = 1000000L)
-	public void testEntrepriseConnueMaisNouvelleAuCivil() throws Exception {
-
-		// Mise en place service mock
-		final RegDate dateEvt = date(2015, 6, 26);
-		final String nom = "Synergy SA";
-		final Long noOrganisation = 101202100L;
-		final Long noSite = noOrganisation + 1000000;
-
-		serviceOrganisation.setUp(new MockServiceOrganisation() {
-			@Override
-			protected void init() {
-				addOrganisation(MockOrganisationFactory.createOrganisation(noOrganisation, noSite, nom, dateEvt, null, FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE,
-				                                                           TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF, date(2010, 6, 24),
-				                                                           StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE));
-
-			}
-		});
-
-		// Création de l'entreprise
-
-		long noEntreprise = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus transactionStatus) {
-
-				final Entreprise entreprise = addEntrepriseConnueAuCivil(noOrganisation);
-				addRaisonSocialeFiscaleEntreprise(entreprise, dateEvt, null, nom);
-				return entreprise.getNumero();
-			}
-		});
-		globalTiersIndexer.sync();
-
-		// Création de l'événement
-		final Long noEvenement = 12344321L;
-
-		// Persistence événement
-		doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus transactionStatus) {
-				final EvenementOrganisation event = createEvent(noEvenement, noOrganisation, TypeEvenementOrganisation.FOSC_AUTRE_MUTATION, dateEvt, A_TRAITER);
-				return hibernateTemplate.merge(event).getId();
-			}
-		});
-
-		// Mise en place Translator "espion"
-		SpyEvenementOrganisationTranslatorImpl translator = new SpyEvenementOrganisationTranslatorImpl();
-
-		translator.setServiceOrganisationService(serviceOrganisation);
-		translator.setServiceInfrastructureService(getBean(ProxyServiceInfrastructureService.class, "serviceInfrastructureService"));
-		translator.setTiersDAO(getBean(TiersDAO.class, "tiersDAO"));
-		translator.setDataEventService(getBean(DataEventService.class, "dataEventService"));
-		translator.setTiersService(getBean(TiersService.class, "tiersService"));
-		translator.setMetierServicePM(getBean(MetierServicePM.class, "metierServicePM"));
-		translator.setAdresseService(getBean(AdresseService.class, "adresseService"));
-		translator.setIndexer(getBean(GlobalTiersIndexer.class, "globalTiersIndexer"));
-		translator.setIdentCtbService(getBean(IdentificationContribuableService.class, "identCtbService"));
-		translator.setEvenementFiscalService(getBean(EvenementFiscalService.class, "evenementFiscalService"));
-		translator.setParametreAppService(getBean(ParametreAppService.class, "parametreAppService"));
-		translator.setUseOrganisationsOfNotice(false);
-		translator.afterPropertiesSet();
-
-		buildProcessor(translator);
-
-		// Traitement synchrone de l'événement
-		traiterEvenements(noOrganisation);
-
-		// Verification de l'événement interne créé
-		List<EvenementOrganisationInterne> listEvtInterne = getListeEvtInternesCrees(translator);
-		Assert.assertTrue(listEvtInterne.size() > 2);
-		Assert.assertTrue(listEvtInterne.get(2) instanceof TraitementManuel);
-
-		// Vérification du traitement de l'événement
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			                             @Override
-			                             public Object doInTransaction(TransactionStatus status) {
-				                             final EvenementOrganisation evt = getUniqueEvent(noEvenement);
-				                             Assert.assertNotNull(evt);
-				                             Assert.assertEquals(EtatEvenementOrganisation.EN_ERREUR, evt.getEtat());
-				                             return null;
-			                             }
-		                             }
-		);
-	}
-
 	@Test(timeout = 10000L)
 	public void testPlusieursEntreprisesRapprochees() throws Exception {
 
@@ -1126,7 +1042,6 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 				addOrganisation(MockOrganisationFactory.createOrganisation(noOrganisation, noSite, nom, dateDeDebut, null, FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE,
 				                                                           TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF, date(2010, 6, 24),
 				                                                           StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE));
-
 			}
 		});
 

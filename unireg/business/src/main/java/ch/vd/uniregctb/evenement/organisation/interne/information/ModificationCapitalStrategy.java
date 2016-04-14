@@ -15,7 +15,6 @@ import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationException;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationOptions;
 import ch.vd.uniregctb.evenement.organisation.interne.AbstractOrganisationStrategy;
 import ch.vd.uniregctb.evenement.organisation.interne.EvenementOrganisationInterne;
-import ch.vd.uniregctb.evenement.organisation.interne.TraitementManuel;
 import ch.vd.uniregctb.tiers.Entreprise;
 
 import static ch.vd.uniregctb.evenement.fiscal.EvenementFiscalInformationComplementaire.TypeInformationComplementaire;
@@ -55,9 +54,7 @@ public class ModificationCapitalStrategy extends AbstractOrganisationStrategy {
 		final RegDate dateApres = event.getDateEvenement();
 
 		final DateRanged<SiteOrganisation> sitePrincipalAvantRange = organisation.getSitePrincipal(dateAvant);
-		if (sitePrincipalAvantRange == null) {
-			return new TraitementManuel(event, organisation, entreprise, context, options, "Organisation nouvelle au civil mais déjà connue d'Unireg. Impossible de déterminer automatiquement ce qu'il faut faire.");
-		} else {
+		if (sitePrincipalAvantRange != null) {
 
 			final Capital capitalAvant = organisation.getCapital(dateAvant);
 			final Capital capitalApres = organisation.getCapital(dateApres);
