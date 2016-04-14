@@ -94,6 +94,14 @@ public interface MetierServicePM {
 	void demenageSiege(Entreprise entreprise, RegDate dateDebutNouveauSiege, TypeAutoriteFiscale taf, int noOfs) throws MetierServiceException;
 
 	/**
+	 * Opération d'annulation d'un déménagement de siège
+	 * @param entreprise l'entreprise dont on veut annuler le dernier déménagement
+	 * @param dateDernierDemenagement la date du dernier déménagement (= date de début de validité du siège courant)
+	 * @throws MetierServiceException en cas de problème
+	 */
+	void annuleDemenagement(Entreprise entreprise, RegDate dateDernierDemenagement) throws MetierServiceException;
+
+	/**
 	 * Opération de fin d'activité
 	 * @param entreprise l'entreprise qui cesse son activité
 	 * @param dateFinActivite date de la fin d'activité

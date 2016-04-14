@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import ch.vd.registre.base.date.DateRange;
+import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.interfaces.common.CasePostale;
@@ -49,6 +50,7 @@ import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.Etablissement;
 import ch.vd.uniregctb.tiers.EtatEntreprise;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
+import ch.vd.uniregctb.tiers.ForFiscalPrincipalPM;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
 import ch.vd.uniregctb.tiers.FormeJuridiqueFiscaleEntreprise;
 import ch.vd.uniregctb.tiers.ForsParTypeAt;
@@ -622,6 +624,73 @@ public class MetierServicePMImpl implements MetierServicePM {
 
 				tiersService.closeDomicileEtablissement(dernierDomicile, dateDebutNouveauSiege.getOneDayBefore());
 				tiersService.addDomicileEtablissement(etbPrincipal, taf, noOfs, dateDebutNouveauSiege, null);
+			}
+			else {
+				// pas d'établissement principal ?? bizarre, non ?
+				throw new MetierServiceException("Etablissement principal introuvable sur une entreprise inconnue du registre civil.");
+			}
+		}
+	}
+
+	@Override
+	public void annuleDemenagement(Entreprise entreprise, RegDate dateDernierDemenagement) throws MetierServiceException {
+
+		// le dernier for fiscal principal de l'entreprise doit être encore ouvert et démarrer à la date donnée
+		final ForFiscalPrincipalPM dernierFor = entreprise.getDernierForFiscalPrincipal();
+		if (dernierFor == null || dernierFor.getDateFin() != null || dernierFor.getDateDebut() != dateDernierDemenagement) {
+			throw new MetierServiceException("Entreprise sans for principal actif, ou dont le for principal actif ne commence pas à la date annoncée.");
+		}
+		else if (entreprise.getForFiscalPrincipalAt(dateDernierDemenagement.getOneDayBefore()) == null) {
+			throw new MetierServiceException("Entreprise sans for principal immédiatement précédant le for actif : nous ne sommes pas en présence d'un déménagement.");
+		}
+
+		// 1. on ré-ouvre le for principal précédent
+		tiersService.annuleForFiscal(dernierFor);
+
+		// 2. si l'entreprise n'est pas liée au civil, il faut faire la même chose sur le domicile de l'établissement principal
+		if (!entreprise.isConnueAuCivil()) {
+
+			// récupération de l'établissement principal courant
+			final List<DateRanged<Etablissement>> etbsPrincipaux = tiersService.getEtablissementsPrincipauxEntreprise(entreprise);
+			if (etbsPrincipaux != null && !etbsPrincipaux.isEmpty()) {
+				final DateRanged<Etablissement> etbPrincipalCourant = CollectionsUtils.getLastElement(etbsPrincipaux);
+				if (etbPrincipalCourant == null) {
+					// pas d'établissement principal ?? bizarre, non ?
+					throw new MetierServiceException("Etablissement principal introuvable sur une entreprise inconnue du registre civil.");
+				}
+				else if (etbPrincipalCourant.getDateFin() != null) {
+					throw new MetierServiceException("Le lien vers l'établissement principal est fermé.");
+				}
+
+				// il faut trouver le dernier domicile de cet établissement
+				final Etablissement etbPrincipal = etbPrincipalCourant.getPayload();
+				final List<DomicileEtablissement> domiciles = etbPrincipal.getSortedDomiciles(false);
+				if (domiciles.isEmpty()) {
+					throw new MetierServiceException(String.format("Aucun domicile connu sur l'établissement principal de l'entreprise (%s)", FormatNumeroHelper.numeroCTBToDisplay(etbPrincipal.getNumero())));
+				}
+
+				final DomicileEtablissement dernierDomicile = CollectionsUtils.getLastElement(domiciles);
+				if (dernierDomicile.getDateFin() != null) {
+					throw new MetierServiceException(String.format("Le dernier domicile connu sur l'établissement principal (%s) de l'entreprise est déjà fermé.",
+					                                               FormatNumeroHelper.numeroCTBToDisplay(etbPrincipal.getNumero())));
+				}
+				else if (dernierDomicile.getDateDebut() != dateDernierDemenagement) {
+					throw new MetierServiceException(String.format("Le dernier domicile connu sur l'établissement principal (%s) de l'entreprise ne débute pas à la date annoncée.",
+					                                               FormatNumeroHelper.numeroCTBToDisplay(etbPrincipal.getNumero())));
+				}
+				else {
+					final DomicileEtablissement domicilePrecedent = DateRangeHelper.rangeAt(domiciles, dateDernierDemenagement.getOneDayBefore());
+					if (domicilePrecedent == null) {
+						throw new MetierServiceException(String.format("Aucun domicile connu sur l'établissement principal (%s) de l'entreprise juste avant le %s.",
+						                                               FormatNumeroHelper.numeroCTBToDisplay(etbPrincipal.getNumero()),
+						                                               RegDateHelper.dateToDisplayString(dateDernierDemenagement)));
+					}
+
+					// copie + annulations
+					dernierDomicile.setAnnule(true);
+					domicilePrecedent.setAnnule(true);
+					tiersService.addDomicileEtablissement(etbPrincipal, domicilePrecedent.getTypeAutoriteFiscale(), domicilePrecedent.getNumeroOfsAutoriteFiscale(), domicilePrecedent.getDateDebut(), null);
+				}
 			}
 			else {
 				// pas d'établissement principal ?? bizarre, non ?

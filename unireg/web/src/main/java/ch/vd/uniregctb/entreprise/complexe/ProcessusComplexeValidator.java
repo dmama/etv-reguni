@@ -14,5 +14,7 @@ public class ProcessusComplexeValidator extends DelegatingValidator {
 		addSubValidator(DemenagementSiegeView.class, new DemenagementSiegeViewValidator());     // déménagement de siège
 		addSubValidator(FinActiviteView.class, new FinActiviteViewValidator());                 // fin d'activité
 		addSubValidator(FusionEntreprisesView.class, new FusionEntreprisesViewValidator());     // fusion d'entreprises
+
+		addSubValidator(AnnulationDemenagementSiegeView.class, new AnnulationDemenagementSiegeViewValidator());     // annulation de déménagement de siège
 	}
 }
