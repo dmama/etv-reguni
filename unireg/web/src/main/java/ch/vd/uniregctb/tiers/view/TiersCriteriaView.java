@@ -19,7 +19,7 @@ import ch.vd.uniregctb.type.TypeEtatEntreprise;
  */
 public class TiersCriteriaView implements Serializable {
 
-	private static final long serialVersionUID = 8628815118649206529L;
+	private static final long serialVersionUID = -2678813893617737329L;
 
 	// Valeurs utilisées en sortie seulement
 	private Long numeroSourcier;
@@ -330,6 +330,14 @@ public class TiersCriteriaView implements Serializable {
 
 	public void setEtatInscriptionRC(TiersCriteria.TypeInscriptionRC etatInscriptionRC) {
 		criteria.setEtatInscriptionRC(etatInscriptionRC);
+	}
+
+	public TypeEtatEntreprise getEtatEntrepriseCourant() {
+		return criteria.getEtatEntrepriseCourant();
+	}
+
+	public void setEtatEntrepriseCourant(TypeEtatEntreprise type) {
+		criteria.setEtatEntrepriseCourant(type);
 	}
 
 	public boolean isEmpty() {

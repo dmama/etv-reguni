@@ -43,6 +43,7 @@ import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeEtatEntreprise;
 import ch.vd.uniregctb.type.TypeFlagEntreprise;
 import ch.vd.uniregctb.type.TypeGenerationEtatEntreprise;
+import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 
 /**
  * Fournit les differents services d'accès aux données du Tiers.
@@ -722,6 +723,16 @@ public interface TiersService {
      * @param dateReactivation  la date à laquelle les rapports doivent être ré-ouverts
      */
     void reopenRapportsPrestation(DebiteurPrestationImposable debiteur, RegDate dateDesactivation, RegDate dateReactivation);
+
+	/**
+	 * Ré-ouvre les rapports entre tiers fermés à la date donnée et de types donnés
+	 *
+	 * @param tiers le tiers sujet ou objet des rapports à ré-ouvrir
+	 * @param dateFermeture date de fermeture critique
+	 * @param typesRapportsSujet types des rapports à ré-ouvrir pour lesquels le tiers est sujet
+	 * @param typesRapportsObjet types des rapports à ré-ouvrir pour lesquels le tiers est objet
+	 */
+	void reopenRapportsEntreTiers(Tiers tiers, RegDate dateFermeture, Set<TypeRapportEntreTiers> typesRapportsSujet, Set<TypeRapportEntreTiers> typesRapportsObjet);
 
     /**
      * Ferme le for fiscal principal d'un contribuable.

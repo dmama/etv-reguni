@@ -12,6 +12,7 @@ import org.springframework.context.MessageSourceAware;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.ui.Model;
 import org.springframework.validation.Validator;
@@ -150,6 +151,17 @@ public abstract class AbstractProcessusComplexeController implements MessageSour
 		template.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
 		template.setReadOnly(true);
 		template.execute(callback);
+	}
+
+	/**
+	 * Lance le traitement du callback dans une transaction en lecture seule
+	 * @param callback traitement à exécuter dans le contexte de la transaction
+	 */
+	protected final <T> T doInReadOnlyTransaction(TransactionCallback<T> callback) {
+		final TransactionTemplate template = new TransactionTemplate(transactionManager);
+		template.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
+		template.setReadOnly(true);
+		return template.execute(callback);
 	}
 
 	/**

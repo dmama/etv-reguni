@@ -1675,7 +1675,10 @@ public class MetierServiceImpl implements MetierService {
 		/*
 		 * Réouverture des rapports tiers-ménage
 		 */
-		reopenRapportsObjetAt(menage, date.getOneDayBefore(), EnumSet.allOf(TypeRapportEntreTiers.class));
+		tiersService.reopenRapportsEntreTiers(menage,
+		                                      date.getOneDayBefore(),
+		                                      Collections.<TypeRapportEntreTiers>emptySet(),
+		                                      EnumSet.allOf(TypeRapportEntreTiers.class));
 
 		/*
 		 * Réouverture des fors du ménage commun
@@ -2249,66 +2252,7 @@ public class MetierServiceImpl implements MetierService {
 	 * @param typesConcernes types de rapports concernés par la ré-ouverture
 	 */
 	private void reopenRapportsEntreTiers(Tiers tiers, RegDate date, Set<TypeRapportEntreTiers> typesConcernes) {
-		reopenRapportsSujetAt(tiers, date, typesConcernes);
-		reopenRapportsObjetAt(tiers, date, typesConcernes);
-	}
-
-	/**
-	 * Réouvre tous les rapports de certains types qui sont fermés à la date spécifiée.
-	 * @param rapports les rapports à inspecter
-	 * @param date     la date de fermeture des rapports qu'il faut réouvrir.
-	 * @param typesConcernes types de rapports concernés par la ré-ouverture
-	 */
-	private void reopenRapportsAt(Set<RapportEntreTiers> rapports, RegDate date, Set<TypeRapportEntreTiers> typesConcernes) {
-
-		final List<RapportEntreTiers> rapportsAOuvrir = new ArrayList<>();
-		final List<RapportEntreTiers> rapportsAAnnuler = new ArrayList<>();
-
-		// On analyse les rapports en question
-		for (RapportEntreTiers rapport : rapports) {
-			if (!rapport.isAnnule() && rapport.getDateFin() == date && typesConcernes.contains(rapport.getType())) {
-				// duplique le rapport et réouvre le nouveau
-				final RapportEntreTiers nouveauRapport = rapport.duplicate();
-				nouveauRapport.setDateFin(null);
-				// ajout à la liste des rapports à ajouter
-				rapportsAOuvrir.add(nouveauRapport);
-				rapportsAAnnuler.add(rapport);
-			}
-		}
-
-		// On ajoute tous les nouveaux rapports
-		for (RapportEntreTiers rapport : rapportsAOuvrir) {
-			final Tiers sujet = tiersDAO.get(rapport.getSujetId());
-			final Tiers objet = tiersDAO.get(rapport.getObjetId());
-			tiersService.addRapport(rapport, sujet, objet);
-		}
-
-		// On annule tous les anciens rapports (maintenant remplacés par des nouveaux rapports réouverts)
-		for (RapportEntreTiers rapport : rapportsAAnnuler) {
-			rapport.setAnnule(true);
-		}
-	}
-
-	/**
-	 * Réouvre tous les rapports-objet qui sont fermés à la date spécifiée.
-	 *
-	 * @param tiers le tiers dont on veut réouvrir des rapports objet
-	 * @param date  la date de fermeture des rapports qu'il faut réouvrir.
-	 * @param typesConcernes types de rapports concernés par la ré-ouverture
-	 */
-	private void reopenRapportsObjetAt(Tiers tiers, RegDate date, Set<TypeRapportEntreTiers> typesConcernes) {
-		reopenRapportsAt(tiers.getRapportsObjet(), date, typesConcernes);
-	}
-
-	/**
-	 * Réouvre tous les rapports-sujet qui sont fermés à la date spécifiée.
-	 *
-	 * @param tiers le tiers dont on veut réouvrir des rapports sujet
-	 * @param date  la date de fermeture des rapports qu'il faut réouvrir.
-	 * @param typesConcernes types de rapports concernés par la ré-ouverture
-	 */
-	private void reopenRapportsSujetAt(Tiers tiers, RegDate date, Set<TypeRapportEntreTiers> typesConcernes) {
-		reopenRapportsAt(tiers.getRapportsSujet(), date, typesConcernes);
+		tiersService.reopenRapportsEntreTiers(tiers, date, typesConcernes, typesConcernes);
 	}
 
 	@Override

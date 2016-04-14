@@ -392,6 +392,13 @@ public class QueryConstructor {
 		}
 	}
 
+	public void addEtatEntrepriseCourant(BooleanQuery fullQuery) {
+		if (criteria.getEtatEntrepriseCourant() != null) {
+			final TermQuery q = new TermQuery(new Term(TiersIndexableData.ETAT_ENTREPRISE_COURANT, criteria.getEtatEntrepriseCourant().name()));
+			fullQuery.add(q, must);
+		}
+	}
+
 	public void addEtatInscriptionRC(BooleanQuery fullQuery) {
 		final TiersCriteria.TypeInscriptionRC etatInscriptionRC = criteria.getEtatInscriptionRC();
 		if (etatInscriptionRC != null) {
@@ -542,6 +549,7 @@ public class QueryConstructor {
 		addContrainteEtatsEntrepriseInterdits(fullQuery);
 		addContrainteEtatCourantEntrepriseInterdit(fullQuery);
 		addEtatInscriptionRC(fullQuery);
+		addEtatEntrepriseCourant(fullQuery);
 
 		final BooleanClause[] clauses = fullQuery.getClauses();
 		if (clauses != null && clauses.length > 0) {

@@ -19,4 +19,6 @@
 	<bean id="finActiviteController" class="ch.vd.uniregctb.entreprise.complexe.FinActiviteController" parent="abstractProcessusComplexeEntrepriseController"/>
 	<bean id="fusionEntreprisesController" class="ch.vd.uniregctb.entreprise.complexe.FusionEntreprisesController" parent="abstractProcessusComplexeEntrepriseController"/>
 
+	<bean id="annulationFailliteController" class="ch.vd.uniregctb.entreprise.complexe.AnnulationFailliteController" parent="abstractProcessusComplexeEntrepriseController"/>
+
 </beans>
