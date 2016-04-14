@@ -2686,7 +2686,41 @@ public class TiersServiceImpl implements TiersService {
 	    debiteur.getRapportsObjet().addAll(nouveaux);
     }
 
-    /**
+	@Override
+	public void reopenRapportsEntreTiers(Tiers tiers, RegDate dateFermeture, Set<TypeRapportEntreTiers> typesRapportsSujet, Set<TypeRapportEntreTiers> typesRapportsObjet) {
+		reopenRapportsEntreTiers(dateFermeture, typesRapportsSujet, tiers.getRapportsSujet());
+		reopenRapportsEntreTiers(dateFermeture, typesRapportsObjet, tiers.getRapportsObjet());
+	}
+
+	private void reopenRapportsEntreTiers(RegDate dateFermeture, Set<TypeRapportEntreTiers> typesRapports, Set<RapportEntreTiers> rapports) {
+
+		// constitution des données
+		final List<RapportEntreTiers> aOuvrir = new ArrayList<>(rapports.size());
+		final List<RapportEntreTiers> aAnnuler = new ArrayList<>(rapports.size());
+		for (RapportEntreTiers rapport : rapports) {
+			if (!rapport.isAnnule() && rapport.getDateFin() == dateFermeture && typesRapports.contains(rapport.getType())) {
+				final RapportEntreTiers copie = rapport.duplicate();
+				copie.setDateFin(null);
+
+				aOuvrir.add(copie);
+				aAnnuler.add(rapport);
+			}
+		}
+
+		// ajout des nouveaux rapports
+		for (RapportEntreTiers rapport : aOuvrir) {
+			final Tiers sujet = tiersDAO.get(rapport.getSujetId());
+			final Tiers objet = tiersDAO.get(rapport.getObjetId());
+			addRapport(rapport, sujet, objet);
+		}
+
+		// annulation des rapports maintenant remplacés par les autres
+		for (RapportEntreTiers rapport : aAnnuler) {
+			rapport.setAnnule(true);
+		}
+	}
+
+	/**
      * Supprime la date de fermeture des rapports ayant comme date de fin la date passéeé en paramètre
      *
      * @param debiteur          sur lequel les rapports doivent être réouverts
@@ -2720,28 +2754,28 @@ public class TiersServiceImpl implements TiersService {
      */
     @Override
     public void reopenForsClosedAt(RegDate date, MotifFor motifFermeture, Tiers tiers) {
-        List<ForFiscal> openFors = new ArrayList<>();
-        for (ForFiscal forFiscal : tiers.getForsFiscaux()) {
+	    final Set<ForFiscal> allFors = tiers.getForsFiscaux();
+	    final List<ForFiscal> openFors = new ArrayList<>(allFors.size());
+	    for (ForFiscal forFiscal : allFors) {
             if (!forFiscal.isAnnule() && date.equals(forFiscal.getDateFin())) {
                 /*
-				 *  La remise à nul de la date de fin du For ne génère pas d'événement fiscal.
 				 *  La bonne méthode consiste à recréer un nouveau For en reprenant les données de l'ancien,
 				 *  annuler ce dernier, mettre la date de fin du nouveau For à nul et l'assigner au tiers.
 				 */
-                boolean isForFiscalRevenuFortune = forFiscal instanceof ForFiscalRevenuFortune;
-                boolean isForFiscalAutreImpot = forFiscal instanceof ForFiscalAutreImpot;
+                final boolean isForFiscalAvecMotif = forFiscal instanceof ForFiscalAvecMotifs;
+                final boolean isForFiscalAutreImpot = forFiscal instanceof ForFiscalAutreImpot;
 
-                if (isForFiscalAutreImpot ||
-                        (isForFiscalRevenuFortune && motifFermeture == ((ForFiscalRevenuFortune) forFiscal).getMotifFermeture())) {
-                    // Duplication du for
-                    ForFiscal nouveauForFiscal = forFiscal.duplicate();
-                    // réouvrir le nouveau For
+                if (isForFiscalAutreImpot || (isForFiscalAvecMotif && motifFermeture == ((ForFiscalAvecMotifs) forFiscal).getMotifFermeture())) {
+                    // duplication du for à annuler
+                    final ForFiscal nouveauForFiscal = forFiscal.duplicate();
+	                forFiscal.setAnnule(true);
+	                evenementFiscalService.publierEvenementFiscalAnnulationFor(forFiscal);
+
+	                // effacement des information de fermeture sur la copie
                     nouveauForFiscal.setDateFin(null);
-                    if (isForFiscalRevenuFortune) {
-                        ((ForFiscalRevenuFortune) nouveauForFiscal).setMotifFermeture(null);
+                    if (isForFiscalAvecMotif) {
+                        ((ForFiscalAvecMotifs) nouveauForFiscal).setMotifFermeture(null);
                     }
-                    // annuler l'ancien For
-                    forFiscal.setAnnule(true);
                     openFors.add(nouveauForFiscal);
                 }
             }
@@ -2756,11 +2790,11 @@ public class TiersServiceImpl implements TiersService {
     /**
      * @param tiers          tiers auquel les fors sont associés
      * @param reopenedFors   listes des fors à sauver
-     * @param forsPrincipaux si <code>true</code>, ne s'occupe que des fors principaux, et si <code>false</code>, que des fors secondaires
+     * @param forsPrincipaux si <code>true</code>, ne s'occupe que des fors principaux, et si <code>false</code>, que des autres
      */
     private void addAndSaveReopenedFors(Tiers tiers, List<ForFiscal> reopenedFors, boolean forsPrincipaux) {
         for (ForFiscal reopenedFor : reopenedFors) {
-            if ((forsPrincipaux && reopenedFor instanceof ForFiscalPrincipal) || (!forsPrincipaux && reopenedFor instanceof ForFiscalSecondaire)) {
+	        if (forsPrincipaux == reopenedFor.isPrincipal()) {
                 reopenedFor = tiersDAO.addAndSave(tiers, reopenedFor);
                 // exécution des règles événements fiscaux
                 if (validationService.validate(tiers).errorsCount() == 0) {

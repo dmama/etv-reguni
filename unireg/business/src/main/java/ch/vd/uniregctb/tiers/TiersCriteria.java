@@ -293,6 +293,12 @@ public class TiersCriteria implements Serializable, TiersFilter {
 	private Set<TypeEtatEntreprise> etatsEntrepriseCourantsInterdits;
 
 	/**
+	 * Type d'état entreprise recherché comme état courant (en principe, donc, mettre une valeur ici qui est également
+	 * dans le champ {@link #etatsEntrepriseCourantsInterdits} causera une liste de résultats vide)
+	 */
+	private TypeEtatEntreprise etatEntrepriseCourant;
+
+	/**
 	 * Etat courant vis-à-vis du Registre du Commerce
 	 */
 	private TypeInscriptionRC etatInscriptionRC;
@@ -323,7 +329,8 @@ public class TiersCriteria implements Serializable, TiersFilter {
 				&& tiersActif == null
 				&& ancienNumeroSourcier == null
 				&& StringUtils.isBlank(numeroIDE)
-				&& etatInscriptionRC == null;
+				&& etatInscriptionRC == null
+				&& etatEntrepriseCourant == null;
 	}
 
 	/**
@@ -737,5 +744,13 @@ public class TiersCriteria implements Serializable, TiersFilter {
 
 	public void setEtatInscriptionRC(TypeInscriptionRC etatInscriptionRC) {
 		this.etatInscriptionRC = etatInscriptionRC;
+	}
+
+	public TypeEtatEntreprise getEtatEntrepriseCourant() {
+		return etatEntrepriseCourant;
+	}
+
+	public void setEtatEntrepriseCourant(TypeEtatEntreprise etatEntrepriseCourant) {
+		this.etatEntrepriseCourant = etatEntrepriseCourant;
 	}
 }

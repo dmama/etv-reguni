@@ -2,6 +2,7 @@ package ch.vd.uniregctb.metier;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -520,6 +521,39 @@ public class MetierServicePMImpl implements MetierServicePM {
 		                                                                       datePrononceFaillite);
 
 		// 6. éventuellement ajout d'une remarque sur l'entreprise
+
+		addRemarque(entreprise, remarqueAssociee);
+	}
+
+	@Override
+	public void annuleFaillite(Entreprise entreprise, RegDate datePrononceFaillite, @Nullable String remarqueAssociee) throws MetierServiceException {
+
+		// 1. état fiscal courant différent de "EN_FAILLITE" -> on saute !
+
+		final EtatEntreprise etat = entreprise.getEtatActuel();
+		if (etat == null || etat.getType() != TypeEtatEntreprise.EN_FAILLITE) {
+			throw new MetierServiceException("L'entreprise n'est pas/plus en faillite.");
+		}
+		else if (etat.getDateObtention() != datePrononceFaillite) {
+			throw new MetierServiceException("La date de prononcé de faillite fournie ne correspond pas à la date actuellement connue.");
+		}
+
+		// 2. annulation de l'état en question
+
+		etat.setAnnule(true);
+
+		// 3. ré-ouverture de tous les fors fiscaux fermés à la date du prononcé de faillite
+
+		tiersService.reopenForsClosedAt(datePrononceFaillite, MotifFor.FAILLITE, entreprise);
+
+		// 4. ré-ouverture des rapports entre tiers fermés à la date du prononcé de faillite
+
+		tiersService.reopenRapportsEntreTiers(entreprise,
+		                                      datePrononceFaillite,
+		                                      EnumSet.of(TypeRapportEntreTiers.MANDAT, TypeRapportEntreTiers.ACTIVITE_ECONOMIQUE),
+		                                      EnumSet.of(TypeRapportEntreTiers.MANDAT));
+
+		// 5. éventuellement, ajoute une nouvelle remarque sur le tiers
 
 		addRemarque(entreprise, remarqueAssociee);
 	}

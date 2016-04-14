@@ -75,6 +75,15 @@ public interface MetierServicePM {
 	void faillite(Entreprise entreprise, RegDate datePrononceFaillite, @Nullable String remarqueAssociee) throws MetierServiceException;
 
 	/**
+	 * Opération d'annulation de faillite
+	 * @param entreprise l'entreprise dont on veut annuler la faillite
+	 * @param datePrononceFaillite ancienne date du prononcé de faillite
+	 * @param remarqueAssociee [optionnelle] éventuelle remarque à ajouter à l'entreprise en même temps
+	 * @throws MetierServiceException en cas de problème
+	 */
+	void annuleFaillite(Entreprise entreprise, RegDate datePrononceFaillite, @Nullable String remarqueAssociee) throws MetierServiceException;
+
+	/**
 	 * Opération de déménagement de siège
 	 * @param entreprise l'entreprise qui déménage
 	 * @param dateDebutNouveauSiege date de début de validité du nouveau siège
