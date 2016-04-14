@@ -14,6 +14,7 @@ import ch.vd.unireg.interfaces.organisation.ServiceOrganisationRaw;
 import ch.vd.unireg.interfaces.organisation.data.Domicile;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
+import ch.vd.unireg.interfaces.organisation.data.ServiceOrganisationEvent;
 import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 import ch.vd.uniregctb.common.DonneesOrganisationException;
 import ch.vd.uniregctb.interfaces.model.AdressesCivilesHistoriques;
@@ -50,8 +51,8 @@ public class ServiceOrganisationImpl implements ServiceOrganisationService {
 	}
 
 	@Override
-	public Map<Long, Organisation> getPseudoOrganisationHistory(long noEvenement) throws ServiceOrganisationException {
-		return target.getPseudoOrganisationHistory(noEvenement);
+	public Map<Long, ServiceOrganisationEvent> getOrganisationEvent(long noEvenement) throws ServiceOrganisationException {
+		return target.getOrganisationEvent(noEvenement);
 	}
 
 	@Override

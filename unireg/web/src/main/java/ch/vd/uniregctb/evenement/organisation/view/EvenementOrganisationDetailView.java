@@ -36,6 +36,10 @@ public class EvenementOrganisationDetailView implements Serializable {
 	private String evtCommentaireTraitement;
 	private List<ErreurEvenementOrganisationView> evtErreurs = new ArrayList<>();
 
+	private Long foscNumero;
+	private RegDate foscDate;
+	private String foscLienDirect;
+
 	private Long noOrganisation;
 	private OrganisationView organisation;
 	private String organisationError;
@@ -171,6 +175,30 @@ public class EvenementOrganisationDetailView implements Serializable {
 
 	public void setNoOrganisation(Long noOrganisation) {
 		this.noOrganisation = noOrganisation;
+	}
+
+	public Long getFoscNumero() {
+		return foscNumero;
+	}
+
+	public void setFoscNumero(Long foscNumero) {
+		this.foscNumero = foscNumero;
+	}
+
+	public RegDate getFoscDate() {
+		return foscDate;
+	}
+
+	public void setFoscDate(RegDate foscDate) {
+		this.foscDate = foscDate;
+	}
+
+	public String getFoscLienDirect() {
+		return foscLienDirect;
+	}
+
+	public void setFoscLienDirect(String foscLienDirect) {
+		this.foscLienDirect = foscLienDirect;
 	}
 
 	public OrganisationView getOrganisation() {

@@ -18,6 +18,7 @@ import ch.vd.unireg.interfaces.infra.data.Pays;
 import ch.vd.unireg.interfaces.organisation.ServiceOrganisationException;
 import ch.vd.unireg.interfaces.organisation.data.Domicile;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
+import ch.vd.unireg.interfaces.organisation.data.ServiceOrganisationEvent;
 import ch.vd.uniregctb.adresse.AdresseEnvoi;
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdresseGenerique;
@@ -111,6 +112,8 @@ public class EvenementOrganisationManagerImpl implements EvenementOrganisationMa
 	}
 
 	private EvenementOrganisationDetailView buildDetailView(EvenementOrganisation evt) {
+		final String foscPublicationDirectLinkFormat = "https://www.fosc.ch/shabforms/servlet/Search/1925485.pdf?EID=7&DOCID=%d";
+
 		final EvenementOrganisationDetailView evtView = new EvenementOrganisationDetailView();
 
 		evtView.setEvtCommentaireTraitement(evt.getCommentaireTraitement());
@@ -133,7 +136,15 @@ public class EvenementOrganisationManagerImpl implements EvenementOrganisationMa
 		final Long numeroOrganisation = evt.getNoOrganisation();
 		evtView.setNoOrganisation(numeroOrganisation);
 		try {
-			evtView.setOrganisation(new OrganisationView(retrieveOrganisation(numeroOrganisation), evt.getDateEvenement()));
+			final ServiceOrganisationEvent organisationEvent = retrieveOrganisation(evt.getNoEvenement(), numeroOrganisation);
+
+			evtView.setFoscNumero(organisationEvent.getNumeroDocumentFOSC());
+			evtView.setFoscDate(organisationEvent.getDatePublicationFOSC());
+			if (organisationEvent.getNumeroDocumentFOSC() != null) {
+				evtView.setFoscLienDirect(String.format(foscPublicationDirectLinkFormat, organisationEvent.getNumeroDocumentFOSC()));
+			}
+
+			evtView.setOrganisation(new OrganisationView(organisationEvent.getPseudoHistory(), evt.getDateEvenement()));
 			evtView.setAdresse(retrieveAdresse(numeroOrganisation));
 			retrieveTiersAssocie(evt.getNoEvenement(), numeroOrganisation, evtView);
 		}
@@ -416,11 +427,11 @@ public class EvenementOrganisationManagerImpl implements EvenementOrganisationMa
 		return null;
 	}
 
-	protected Organisation retrieveOrganisation(Long numeroOrganisation) {
-		final Organisation organisation = serviceOrganisationService.getOrganisationHistory(numeroOrganisation);
-		if (organisation == null) {
-			throw new ObjectNotFoundException(this.messageSource.getMessage("error.organisation.inexistant", new Object[] {Long.toString(numeroOrganisation)},  WebContextUtils.getDefaultLocale()));
+	protected ServiceOrganisationEvent retrieveOrganisation(Long noEvenement, Long numeroOrganisation) {
+		final ServiceOrganisationEvent organisationEvent = serviceOrganisationService.getOrganisationEvent(noEvenement).get(numeroOrganisation);
+		if (organisationEvent == null) {
+			throw new ObjectNotFoundException(this.messageSource.getMessage("error.organisation.introuvable", new Object[] {Long.toString(numeroOrganisation)},  WebContextUtils.getDefaultLocale()));
 		}
-		return organisation;
+		return organisationEvent;
 	}
 }

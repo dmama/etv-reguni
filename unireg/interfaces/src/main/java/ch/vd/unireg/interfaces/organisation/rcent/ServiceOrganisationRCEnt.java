@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.cxf.common.util.StringUtils;
+
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
 import ch.vd.unireg.interfaces.organisation.ServiceOrganisationException;
@@ -12,8 +14,10 @@ import ch.vd.unireg.interfaces.organisation.ServiceOrganisationRaw;
 import ch.vd.unireg.interfaces.organisation.WrongOrganisationReceivedException;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.OrganisationConstants;
+import ch.vd.unireg.interfaces.organisation.data.ServiceOrganisationEvent;
 import ch.vd.unireg.wsclient.rcent.RcEntClient;
 import ch.vd.unireg.wsclient.rcent.RcEntClientException;
+import ch.vd.uniregctb.adapter.rcent.model.OrganisationEvent;
 import ch.vd.uniregctb.adapter.rcent.service.RCEntAdapter;
 
 public class ServiceOrganisationRCEnt implements ServiceOrganisationRaw {
@@ -71,14 +75,26 @@ public class ServiceOrganisationRCEnt implements ServiceOrganisationRaw {
 	}
 
 	@Override
-	public Map<Long, Organisation> getPseudoOrganisationHistory(long noEvenement) throws ServiceOrganisationException {
-		final Map<Long, ch.vd.uniregctb.adapter.rcent.model.Organisation> received = adapter.getPseudoHistoryForEvent(noEvenement);
+	public Map<Long, ServiceOrganisationEvent> getOrganisationEvent(long noEvenement) throws ServiceOrganisationException {
+		final Map<Long, ch.vd.uniregctb.adapter.rcent.model.OrganisationEvent> received = adapter.getOrganisationEvent(noEvenement);
 		if (received == null || received.isEmpty()) {
 			return Collections.emptyMap();
 		}
-		final Map<Long, Organisation> result = new HashMap<>(received.size());
-		for (Map.Entry<Long, ch.vd.uniregctb.adapter.rcent.model.Organisation> orgEntry : received.entrySet()) {
-			result.put(orgEntry.getKey(), RCEntOrganisationHelper.get(orgEntry.getValue(), infraService));
+		final Map<Long, ServiceOrganisationEvent> result = new HashMap<>(received.size());
+		for (Map.Entry<Long, ch.vd.uniregctb.adapter.rcent.model.OrganisationEvent> orgEntry : received.entrySet()) {
+			final OrganisationEvent organisationEvent = orgEntry.getValue();
+			final ServiceOrganisationEvent serviceOrganisationEvent = new ServiceOrganisationEvent(
+					organisationEvent.getEventNumber(),
+			        organisationEvent.getTargetLocationId(),
+					RCEntOrganisationHelper.get(organisationEvent.getPseudoHistory(), infraService)
+			);
+			serviceOrganisationEvent.setNumeroEntreeJournalRC(organisationEvent.getCommercialRegisterEntryNumber());
+			serviceOrganisationEvent.setDateEntreeJournalRC(organisationEvent.getCommercialRegisterEntryDate());
+			if (!StringUtils.isEmpty(organisationEvent.getDocumentNumberFOSC())) {
+				serviceOrganisationEvent.setNumeroDocumentFOSC(Long.parseLong(organisationEvent.getDocumentNumberFOSC()));
+			}
+			serviceOrganisationEvent.setDatePublicationFOSC(organisationEvent.getPublicationDateFOSC());
+			result.put(orgEntry.getKey(), serviceOrganisationEvent);
 		}
 		return result;
 	}

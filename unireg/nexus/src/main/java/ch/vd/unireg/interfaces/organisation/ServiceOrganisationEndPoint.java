@@ -5,6 +5,7 @@ import java.util.Map;
 
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
+import ch.vd.unireg.interfaces.organisation.data.ServiceOrganisationEvent;
 import ch.vd.uniregctb.load.DetailedLoadMeter;
 import ch.vd.uniregctb.load.DetailedLoadMonitorable;
 import ch.vd.uniregctb.load.LoadDetail;
@@ -43,10 +44,10 @@ public class ServiceOrganisationEndPoint implements ServiceOrganisationRaw, Deta
 	}
 
 	@Override
-	public Map<Long, Organisation> getPseudoOrganisationHistory(long noEvenement) throws ServiceOrganisationException {
+	public Map<Long, ServiceOrganisationEvent> getOrganisationEvent(long noEvenement) throws ServiceOrganisationException {
 		loadMeter.start(new MethodCallDescriptor("getPseudoOrganisationHistory", "noEvenement", noEvenement));
 		try {
-			return target.getPseudoOrganisationHistory(noEvenement);
+			return target.getOrganisationEvent(noEvenement);
 		}
 		finally {
 			loadMeter.end();

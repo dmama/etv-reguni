@@ -10,6 +10,7 @@ import ch.vd.unireg.interfaces.organisation.ServiceOrganisationException;
 import ch.vd.unireg.interfaces.organisation.ServiceOrganisationRaw;
 import ch.vd.unireg.interfaces.organisation.ServiceOrganisationServiceWrapper;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
+import ch.vd.unireg.interfaces.organisation.data.ServiceOrganisationEvent;
 import ch.vd.uniregctb.interfaces.model.AdressesCivilesHistoriques;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.ServiceOrganisationImpl;
@@ -40,9 +41,9 @@ public class ProxyServiceOrganisation implements ServiceOrganisationService, Ser
 	}
 
 	@Override
-	public Map<Long, Organisation> getPseudoOrganisationHistory(long noEvenement) throws ServiceOrganisationException {
+	public Map<Long, ServiceOrganisationEvent> getOrganisationEvent(long noEvenement) throws ServiceOrganisationException {
 		assertTargetNotNull();
-		return service.getPseudoOrganisationHistory(noEvenement);
+		return service.getOrganisationEvent(noEvenement);
 	}
 
 	@Override

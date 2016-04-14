@@ -48,12 +48,18 @@ public abstract class CreateEntreprise extends EvenementOrganisationInterneDeTra
 			if (isCreation()) {
 				if (sitePrincipal.getDomicile(getDateEvt()).getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
 					dateDeCreation = sitePrincipal.getDateInscriptionRCVd(getDateEvt()).getOneDayAfter();
+					if (dateDeCreation == null) {
+						throw new EvenementOrganisationException("Date d'inscription au régistre vaudois du commerce introuvable pour l'établissement principal en création.");
+					}
 				}
 				else {
 					dateDeCreation = sitePrincipal.getDateInscriptionRC(getDateEvt()).getOneDayAfter();
 				}
 			} else { // Une arrivée
 				dateDeCreation = sitePrincipal.getDateInscriptionRCVd(getDateEvt());
+				if (dateDeCreation == null) {
+					throw new EvenementOrganisationException("Date d'inscription au régistre vaudois du commerce introuvable pour l'établissement principal en création.");
+				}
 			}
 		} else {
 			if (isCreation()) {
