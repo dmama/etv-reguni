@@ -20,7 +20,6 @@ import ch.vd.uniregctb.evenement.organisation.interne.EvenementOrganisationInter
 import ch.vd.uniregctb.tiers.CategorieEntrepriseHelper;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.type.CategorieEntreprise;
-import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
 /**
  * Classe de base implémentant la création d'une entreprise et de son établissement principal dans Unireg.
@@ -30,55 +29,25 @@ import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 public abstract class CreateEntreprise extends EvenementOrganisationInterneDeTraitement {
 
 	final private RegDate dateDeCreation;
+	final private boolean isCreation;
 	final private CategorieEntreprise category;
 	final private SiteOrganisation sitePrincipal;
 	final private Domicile autoriteFiscalePrincipale;
 
 	protected CreateEntreprise(EvenementOrganisation evenement, Organisation organisation, Entreprise entreprise,
 	                           EvenementOrganisationContext context,
-	                           EvenementOrganisationOptions options) throws EvenementOrganisationException {
+	                           EvenementOrganisationOptions options,
+	                           RegDate dateDeCreation,
+	                           boolean isCreation) throws EvenementOrganisationException {
 		super(evenement, organisation, entreprise, context, options);
 
 		sitePrincipal = organisation.getSitePrincipal(getDateEvt()).getPayload();
-
-		/*
-		  Demande du métier: date de référence pour la création à la date de l'événement + 1 jour
-		  */
-		if (organisation.isInscritAuRC(getDateEvt())) {
-			if (isCreation()) {
-				if (sitePrincipal.getDomicile(getDateEvt()).getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
-					dateDeCreation = sitePrincipal.getDateInscriptionRCVd(getDateEvt()).getOneDayAfter();
-					if (dateDeCreation == null) {
-						throw new EvenementOrganisationException("Date d'inscription au régistre vaudois du commerce introuvable pour l'établissement principal en création.");
-					}
-				}
-				else {
-					dateDeCreation = sitePrincipal.getDateInscriptionRC(getDateEvt()).getOneDayAfter();
-				}
-			} else { // Une arrivée
-				dateDeCreation = sitePrincipal.getDateInscriptionRCVd(getDateEvt());
-				if (dateDeCreation == null) {
-					throw new EvenementOrganisationException("Date d'inscription au régistre vaudois du commerce introuvable pour l'établissement principal en création.");
-				}
-			}
-		} else {
-			if (isCreation()) {
-				dateDeCreation = getDateEvt().getOneDayAfter();
-			} else {
-				dateDeCreation = getDateEvt();
-			}
-		}
+		this.dateDeCreation = dateDeCreation;
+		this.isCreation = isCreation;
 
 		category = CategorieEntrepriseHelper.getCategorieEntreprise(getOrganisation(), getDateEvt());
 
 		autoriteFiscalePrincipale = sitePrincipal.getDomicile(getDateEvt());
-
-		if (autoriteFiscalePrincipale == null) { // Indique un établissement "probablement" à l'étranger. Nous ne savons pas traiter ce cas pour l'instant.
-			throw new EvenementOrganisationException(
-					String.format(
-							"Autorité fiscale (siège) introuvable pour le site principal %s de l'organisation %s %s. Site probablement à l'étranger. Impossible de créer le domicile de l'établissement principal.",
-							sitePrincipal.getNumeroSite(), getNoOrganisation(), getOrganisation().getNom(getDateEvt())));
-		}
 
 		// TODO: Ecrire plus de tests?
 
@@ -90,6 +59,10 @@ public abstract class CreateEntreprise extends EvenementOrganisationInterneDeTra
 	@NotNull
 	public RegDate getDateDeCreation() {
 		return dateDeCreation;
+	}
+
+	public boolean isCreation() {
+		return isCreation;
 	}
 
 	public CategorieEntreprise getCategory() {

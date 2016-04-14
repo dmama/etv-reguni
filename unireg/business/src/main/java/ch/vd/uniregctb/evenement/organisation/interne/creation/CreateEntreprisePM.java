@@ -2,6 +2,7 @@ package ch.vd.uniregctb.evenement.organisation.interne.creation;
 
 import org.springframework.util.Assert;
 
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.interfaces.organisation.data.Domicile;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
@@ -28,8 +29,10 @@ public class CreateEntreprisePM extends CreateEntreprise {
 
 	protected CreateEntreprisePM(EvenementOrganisation evenement, Organisation organisation, Entreprise entreprise,
 	                             EvenementOrganisationContext context,
-	                             EvenementOrganisationOptions options) throws EvenementOrganisationException {
-		super(evenement, organisation, entreprise, context, options);
+	                             EvenementOrganisationOptions options,
+	                             RegDate dateDeCreation,
+	                             boolean isCreation) throws EvenementOrganisationException {
+		super(evenement, organisation, entreprise, context, options, dateDeCreation, isCreation);
 	}
 
 	@Override
@@ -44,7 +47,7 @@ public class CreateEntreprisePM extends CreateEntreprise {
 
 		Domicile autoriteFiscalePrincipale = getAutoriteFiscalePrincipale();
 
-		MotifFor motifOuverture = determineMotifOuvertureFor();
+		MotifFor motifOuverture = determineMotifOuvertureFor(isCreation());
 
 		openForFiscalPrincipal(getDateDeCreation(),
 		                       autoriteFiscalePrincipale,

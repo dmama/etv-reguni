@@ -4,7 +4,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.interfaces.organisation.data.Domicile;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
+import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationContext;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationException;
@@ -15,6 +17,7 @@ import ch.vd.uniregctb.evenement.organisation.interne.TraitementManuel;
 import ch.vd.uniregctb.tiers.CategorieEntrepriseHelper;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.type.CategorieEntreprise;
+import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
 /**
  * @author Raphaël Marmier, 2015-09-02
@@ -52,6 +55,49 @@ public class CreateOrganisationStrategy extends AbstractOrganisationStrategy {
 		}
 
 		final RegDate dateEvenement = event.getDateEvenement();
+		SiteOrganisation sitePrincipal = organisation.getSitePrincipal(dateEvenement).getPayload();
+
+		final Domicile siege = sitePrincipal.getDomicile(dateEvenement);
+		if (siege == null) {
+			return new TraitementManuel(event, organisation, null, context, options,
+			                            String.format(
+					                            "Autorité fiscale (siège) introuvable pour le site principal %s de l'organisation %s %s. Site probablement à l'étranger. Impossible de créer le domicile de l'établissement principal.",
+					                            sitePrincipal.getNumeroSite(), organisation.getNumeroOrganisation(), organisation.getNom(dateEvenement))
+			);
+		}
+		final boolean isVaudoise = siege.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD;
+		final boolean inscritAuRC = organisation.isInscritAuRC(dateEvenement);
+		final RegDate dateInscriptionRCVd;
+		final RegDate dateInscriptionRC;
+		RegDate dateDeCreation;
+		final boolean isCreation;
+		if (inscritAuRC) {
+			dateInscriptionRCVd = sitePrincipal.getDateInscriptionRCVd(dateEvenement);
+			if (isVaudoise && dateInscriptionRCVd == null) {
+				return new TraitementManuel(event, organisation, null, context, options, "Date d'inscription au régistre vaudois du commerce introuvable pour l'établissement principal vaudois.");
+			}
+			dateInscriptionRC = sitePrincipal.getDateInscriptionRC(dateEvenement);
+			isCreation = isCreation(event.getType(), organisation, dateEvenement); // On ne peut pas l'appeler avant car on doit d'abord s'assurer que l'inscription RC VD existe si on est inscrit au RC et vaudois.
+			if (isCreation) { // FIXME: Insuffisant: isCreation() repond 'non' a une creation HC (nouvelle entr. a ZH pas ex.), car elle compare avec la date d'inscription VD
+				if (isVaudoise) {
+					dateDeCreation = dateInscriptionRCVd.getOneDayAfter();
+				}
+				else {
+					dateDeCreation = dateInscriptionRC.getOneDayAfter();
+				}
+			} else { // Une arrivée
+				dateDeCreation = dateInscriptionRCVd;
+			}
+		} else {
+			isCreation = isCreation(event.getType(), organisation, dateEvenement);
+			if (isCreation) {
+				dateDeCreation = dateEvenement.getOneDayAfter();
+			} else {
+				dateDeCreation = dateEvenement;
+			}
+		}
+
+		// Determiner si on est inscrit au RC
 
 		// On doit connaître la catégorie pour continuer en mode automatique
 		CategorieEntreprise category = CategorieEntrepriseHelper.getCategorieEntreprise(organisation, dateEvenement);
@@ -70,26 +116,26 @@ public class CreateOrganisationStrategy extends AbstractOrganisationStrategy {
 				// Sociétés de personnes
 				case SP:
 					LOGGER.info("L'entité organisation {} est installée sur Vaud. Catégorie [{}] -> Création.", organisation.getNumeroOrganisation(), category);
-					return new CreateEntrepriseSP(event, organisation, null, context, options);
+					return new CreateEntrepriseSP(event, organisation, null, context, options, dateDeCreation, isCreation);
 
 				// Personnes morales
 				case PM:
 					LOGGER.info("L'entité organisation {} est installée sur Vaud. Catégorie [{}] -> Création.", organisation.getNumeroOrganisation(), category);
-					return new CreateEntreprisePM(event, organisation, null, context, options);
+					return new CreateEntreprisePM(event, organisation, null, context, options, dateDeCreation, isCreation);
 				// Associations personne morale
 				case APM:
 					LOGGER.info("L'entité organisation {} est installée sur Vaud. Catégorie [{}] -> Création.", organisation.getNumeroOrganisation(), category);
-					return new CreateEntrepriseAPM(event, organisation, null, context, options);
+					return new CreateEntrepriseAPM(event, organisation, null, context, options, dateDeCreation, isCreation);
 
 				// Fonds de placements
 				case FP:
 					LOGGER.info("L'entité organisation {} est installée sur Vaud. Catégorie [{}] -> Création.", organisation.getNumeroOrganisation(), category);
-					return new CreateEntrepriseFDSPLAC(event, organisation, null, context, options);
+					return new CreateEntrepriseFDSPLAC(event, organisation, null, context, options, dateDeCreation, isCreation);
 
 				// Personnes morales de droit public
 				case DPPM:
 					LOGGER.info("L'entité organisation {} est installée sur Vaud. Catégorie [{}] -> Création.", organisation.getNumeroOrganisation(), category);
-					return new CreateEntrepriseDPPM(event, organisation, null, context, options);
+					return new CreateEntrepriseDPPM(event, organisation, null, context, options, dateDeCreation, isCreation);
 
 				// Catégories qu'on ne peut pas traiter automatiquement, catégories éventuellement inconnues.
 				case DPAPM:
@@ -107,7 +153,7 @@ public class CreateOrganisationStrategy extends AbstractOrganisationStrategy {
 					return null;
 				default:
 					LOGGER.info("L'entité organisation {} a une présence secondaire sur Vaud. Catégorie [{}] -> Création.", organisation.getNumeroOrganisation(), category);
-					return new CreateEntrepriseHorsVD(event, organisation, null, context, options);
+					return new CreateEntrepriseHorsVD(event, organisation, null, context, options, dateDeCreation, isCreation);
 				}
 			} else {
 				LOGGER.info("L'entité organisation {} n'a pas de présence connue sur Vaud. Catégorie [{}] -> Pas de création.", organisation.getNumeroOrganisation(), category);
