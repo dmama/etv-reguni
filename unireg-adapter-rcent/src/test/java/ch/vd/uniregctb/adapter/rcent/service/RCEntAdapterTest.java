@@ -42,6 +42,7 @@ import ch.vd.unireg.wsclient.rcent.RcEntClientException;
 import ch.vd.unireg.xml.tools.ClasspathCatalogResolver;
 import ch.vd.uniregctb.adapter.rcent.historizer.OrganisationHistorizer;
 import ch.vd.uniregctb.adapter.rcent.model.Organisation;
+import ch.vd.uniregctb.adapter.rcent.model.OrganisationEvent;
 import ch.vd.uniregctb.adapter.rcent.model.OrganisationFunction;
 import ch.vd.uniregctb.adapter.rcent.model.OrganisationLocation;
 
@@ -425,9 +426,9 @@ public class RCEntAdapterTest {
 
 		final Long noOrganisation = 101704297L;
 
-		final Map<Long, Organisation> historyMap = service.getPseudoHistoryForEvent(noticeId);
+		final Map<Long, OrganisationEvent> historyMap = service.getOrganisationEvent(noticeId);
 
-		final Organisation organisation = historyMap.get(noOrganisation);
+		final Organisation organisation = historyMap.get(noOrganisation).getPseudoHistory();
 		assertThat(organisation.getCantonalId(), equalTo(noOrganisation));
 
 		final OrganisationLocation organisationLocation = organisation.getLocationData().get(0);
@@ -456,9 +457,9 @@ public class RCEntAdapterTest {
 
 		final Long noOrganisation = 101704297L;
 
-		final Map<Long, Organisation> historyMap = service.getPseudoHistoryForEvent(eventId);
+		final Map<Long, OrganisationEvent> historyMap = service.getOrganisationEvent(eventId);
 
-		final Organisation organisation = historyMap.get(noOrganisation);
+		final Organisation organisation = historyMap.get(noOrganisation).getPseudoHistory();
 		assertThat(organisation.getCantonalId(), equalTo(noOrganisation));
 
 		final OrganisationLocation organisationLocation = organisation.getLocationData().get(0);
@@ -499,10 +500,10 @@ public class RCEntAdapterTest {
 		when(client.getOrganisationsOfNotice(eventId, RcEntClient.OrganisationState.AFTER)).thenReturn(orgOfNoticeAfter.getValue());
 		when(client.getOrganisationsOfNotice(eventId, RcEntClient.OrganisationState.BEFORE)).thenReturn(orgOfNoticeBefore.getValue());
 
-		final Map<Long, Organisation> historyMap = service.getPseudoHistoryForEvent(eventId);
+		final Map<Long, OrganisationEvent> historyMap = service.getOrganisationEvent(eventId);
 
 		{
-			final Organisation organisation = historyMap.get(201704297L);
+			final Organisation organisation = historyMap.get(201704297L).getPseudoHistory();
 			assertThat(organisation.getCantonalId(), equalTo(201704297L));
 
 			final OrganisationLocation organisationLocation = organisation.getLocationData().get(0);
@@ -518,7 +519,7 @@ public class RCEntAdapterTest {
 		}
 
 		{
-			final Organisation organisation = historyMap.get(101704297L);
+			final Organisation organisation = historyMap.get(101704297L).getPseudoHistory();
 			assertThat(organisation.getCantonalId(), equalTo(101704297L));
 
 			final OrganisationLocation organisationLocation = organisation.getLocationData().get(0);
@@ -562,7 +563,7 @@ public class RCEntAdapterTest {
 		when(client.getOrganisationsOfNotice(noticeId, RcEntClient.OrganisationState.BEFORE)).thenThrow(rcEntClientException);
 
 		try {
-			final Map<Long, Organisation> historyMap = service.getPseudoHistoryForEvent(noticeId);
+			final Map<Long, OrganisationEvent> historyMap = service.getOrganisationEvent(noticeId);
 			fail("Une RcEntClientException aurait du être lancée.");
 		}
 		catch (RcEntClientException e) {

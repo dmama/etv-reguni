@@ -1,13 +1,16 @@
 package ch.vd.uniregctb.adapter.rcent.service;
 
 
-import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.jetbrains.annotations.Nullable;
 
+import ch.vd.evd0022.v3.BusinessPublication;
+import ch.vd.evd0022.v3.CommercialRegisterDiaryEntry;
 import ch.vd.evd0022.v3.NoticeOrganisation;
 import ch.vd.evd0022.v3.OrganisationData;
 import ch.vd.evd0022.v3.OrganisationSnapshot;
@@ -18,6 +21,7 @@ import ch.vd.unireg.wsclient.rcent.RcEntClientErrorMessage;
 import ch.vd.unireg.wsclient.rcent.RcEntClientException;
 import ch.vd.uniregctb.adapter.rcent.historizer.OrganisationHistorizer;
 import ch.vd.uniregctb.adapter.rcent.model.Organisation;
+import ch.vd.uniregctb.adapter.rcent.model.OrganisationEvent;
 
 /**
  * Adapteur / abstraction de service pour RC-ENT. Expose les requêtes dont nous avons besoin.
@@ -94,18 +98,21 @@ public class RCEntAdapter {
 
 	/**
 	 * Recherche les états avant et après de l'événement RCEnt et contruit le pseudo historique correspondant.
+	 * les pseudo historiques des organisations touchées par l'événement, indexés par no cantonal d'organisation
 	 *
  	 * @param eventId Identifiant de l'événement RCEnt
-	 * @return les pseudo historiques des organisations touchées par l'événement, indexés par no cantonal d'organisation
+	 * @return
 	 */
-	public Map<Long, Organisation> getPseudoHistoryForEvent(long eventId) {
-		Map<Long, Organisation> resultMap = new HashMap<>();
+	public Map<Long, OrganisationEvent> getOrganisationEvent(long eventId) {
+		Map<Long, OrganisationEvent> resultMap = new HashMap<>();
 		Map<Long, NoticeOrganisation> beforeMap = new HashMap<>();
 		Map<Long, NoticeOrganisation> afterMap = new HashMap<>();
 
 		OrganisationsOfNotice before;
 		OrganisationsOfNotice after = rcentClient.getOrganisationsOfNotice(eventId, RcEntClient.OrganisationState.AFTER);
 		RegDate evtDate = after.getNotice().getNoticeDate();
+		Long targetLocationId = after.getOrganisation().get(0).getOrganisationLocationIdentification().getCantonalId().longValue();
+
 		/*
 		 Si on recoit une ou plusieurs erreur 9, on ignore car cela indique une absence de données due à l'arrivée dans RCEnt.
 		  */
@@ -127,7 +134,7 @@ public class RCEntAdapter {
 			}
 		}
 
-		// Collecter les identifiants de toutes les organisations touchées
+		// Collecter les snapshots et les identifiants de toutes les organisations touchées
 		if (before != null) {
 			for (NoticeOrganisation noticeOrg : before.getOrganisation()) {
 				final long cantonalId = noticeOrg.getOrganisation().getCantonalId().longValue();
@@ -140,18 +147,61 @@ public class RCEntAdapter {
 			resultMap.put(cantonalId, null);
 			afterMap.put(cantonalId, noticeOrg);
 		}
-		// Pour chaque organisation, passer les données avant/après dans l'historizer
+
+		// Pour chaque organisation, passer les données avant/après dans l'historizer et créer l'objet de résultat avec les metadonnées
 		for (Long cantonalId : resultMap.keySet()) {
-			List<OrganisationSnapshot> pseudoSnapshots = new ArrayList<>();
-			OrganisationSnapshot snapBefore;
+			// Génération du snapshot "avant", si applicable
+			OrganisationSnapshot snapBefore = null;
 			final NoticeOrganisation noticeOrganisationBefore = beforeMap.get(cantonalId);
 			if (noticeOrganisationBefore != null) {
 				snapBefore = new OrganisationSnapshot(evtDate.getOneDayBefore(), noticeOrganisationBefore.getOrganisation());
-				pseudoSnapshots.add(snapBefore);
 			}
+			// Génération du snapshot "après"
 			OrganisationSnapshot snapAfter = new OrganisationSnapshot(evtDate, afterMap.get(cantonalId).getOrganisation());
-			pseudoSnapshots.add(snapAfter);
-			resultMap.put(cantonalId, historizer.mapOrganisation(pseudoSnapshots));
+
+			// Constitution de la liste de snapshot, analogue à ce que renvoie le WS Organisation
+			List<OrganisationSnapshot> pseudoSnapshots = snapBefore == null ? Collections.singletonList(snapAfter) : Arrays.asList(snapBefore, snapAfter);
+			// Passage à travers l'historizer et récupération de l'historique généré. Ce n'est qu'un historique très partiel centré autour de l'événement.
+			final Organisation pseudoHistory = historizer.mapOrganisation(pseudoSnapshots);
+
+			// Constitution de l'objet représentant l'événement pour cet organisation
+			final OrganisationEvent eventResult = new OrganisationEvent(eventId, targetLocationId, pseudoHistory);
+			// Ajout des métadonnées. NOTE: actuellement, l'établissement cible est unique pour un evt. RCEnt. Donc il touche potentiellement un
+			// qui fait partie d'une autre organisation!
+
+			// Da'bord trouver l'établissement concerné et s'assurer qu'on a bien zero ou une et une seule entrée au RC.
+			for (NoticeOrganisation org : after.getOrganisation()) {
+				for (ch.vd.evd0022.v3.OrganisationLocation location : org.getOrganisation().getOrganisationLocation()) {
+					if (location.getCantonalId().longValue() == targetLocationId) {
+						if (location.getCommercialRegisterData().getDiaryEntry() != null && !location.getCommercialRegisterData().getDiaryEntry().isEmpty()) {
+							if (location.getCommercialRegisterData().getDiaryEntry().size() > 1) {
+								throw new RCEntAdapterException(
+										String.format("Trouvé plus d'une entrée de journal du RC pour un seul événement! Evénement: %d, organisation: %d, location: %d.",
+										              eventId, org.getOrganisation().getCantonalId(), location.getCantonalId()));
+							}
+							// On a bien trouvé une entrée au journal du RC, on peut prendre les valeurs
+							CommercialRegisterDiaryEntry logEntryRC = location.getCommercialRegisterData().getDiaryEntry().iterator().next();
+							eventResult.setCommercialRegisterEntryNumber(logEntryRC.getDiaryEntryNumber().longValue());
+							eventResult.setCommercialRegisterEntryDate(logEntryRC.getDiaryEntryDate());
+							eventResult.setDocumentNumberFOSC(logEntryRC.getSwissGazetteOfCommercePublication().getDocumentNumber());
+							eventResult.setPublicationDateFOSC(logEntryRC.getSwissGazetteOfCommercePublication().getPublicationDate());
+							break;
+						}
+						else if (location.getBusinessPublication() != null && !location.getBusinessPublication().isEmpty()) {
+							if (location.getBusinessPublication().size() > 1) {
+								throw new RCEntAdapterException(
+										String.format("Trouvé plus d'une business publication pour un seul événement! Evénement: %d, organisation: %d, location: %d.",
+										              eventId, org.getOrganisation().getCantonalId(), location.getCantonalId()));
+							}
+							final BusinessPublication businessPublication = location.getBusinessPublication().iterator().next();
+							eventResult.setDocumentNumberFOSC(businessPublication.getSwissGazetteOfCommercePublication().getDocumentNumber());
+							eventResult.setPublicationDateFOSC(businessPublication.getSwissGazetteOfCommercePublication().getPublicationDate());
+							break;
+						}
+					}
+				}
+			}
+			resultMap.put(cantonalId, eventResult);
 		}
 
 		return resultMap;
