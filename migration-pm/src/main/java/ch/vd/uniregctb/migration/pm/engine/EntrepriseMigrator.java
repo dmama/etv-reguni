@@ -1477,31 +1477,59 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 						}
 						else {
 							// un seul site secondaire de RCEnt correspond au numéro IDE présent dans RegPM -> appariement
-							final SiteOrganisation vainqueur = sitesPourIde.get(0);
+							// [SIFISC-18759] ... sauf si les communes de domicile ne matchent pas
+							final SiteOrganisation dernierEnLice = sitesPourIde.get(0);
 
-							// un peu de log
-							mr.addMessage(LogCategory.ETABLISSEMENTS, LogLevel.INFO,
-							              String.format("Etablissement apparié au site %d de RCEnt par le biais du numéro IDE.", vainqueur.getNumeroSite()));
+							// extraction de la localisation fiscale du site civil
+							final LocalisationFiscale localisationSite = sitesDisponiblesAuCivil.get(dernierEnLice.getNumeroSite()).getRight().stream()
+									.max(Comparator.comparing(DateRange::getDateFin, NullDateBehavior.LATEST::compare))
+									.map(range -> dernierEnLice.getDomicile(range.getDateFin()))
+									.map(domicile -> new LocalisationFiscale(domicile.getTypeAutoriteFiscale(), domicile.getNoOfs()))
+									.orElse(null);
 
-							// on garde le mapping trouvé et on s'assure que ni l'établissement de RegPM ni le site de RCEnt ne seront
-							// ré-utilisés pour un autre appariement
-							appariements.put(etablissement.getId(), vainqueur);
-							sitesDisponiblesAuCivil.remove(vainqueur.getNumeroSite());
-							iteratorPhase1.remove();
+							// extraction de la localisation fiscale du site fiscal
+							final LocalisationFiscale localisationEtablissement = etablissement.getDomicilesEtablissements().stream()
+									.filter(domicile -> !domicile.isRectifiee())
+									.max(Comparator.comparing(RegpmDomicileEtablissement::getDateValidite, NullDateBehavior.EARLIEST::compare))
+									.map(RegpmDomicileEtablissement::getCommune)
+									.map(commune -> new LocalisationFiscale(TAF_COMMUNE_EXTRACTOR.apply(commune), NO_OFS_COMMUNE_EXTRACTOR.apply(commune)))
+									.orElse(null);
 
-							// nettoyage également de la structure de recherche par numéro IDE
-							final Iterator<Map.Entry<String, List<SiteOrganisation>>> iteratorSitesParNumeroIde = sitesParNumeroIDE.entrySet().iterator();
-							while (iteratorSitesParNumeroIde.hasNext()) {
-								final Map.Entry<String, List<SiteOrganisation>> entry = iteratorSitesParNumeroIde.next();
-								final Iterator<SiteOrganisation> iteratorSites = entry.getValue().iterator();
-								while (iteratorSites.hasNext()) {
-									final SiteOrganisation site = iteratorSites.next();
-									if (site == vainqueur) {
-										iteratorSites.remove();
+							if (!areEqual(localisationEtablissement, localisationSite, Objects::equals)) {
+								// et non, les communes ne sont pas les mêmes... l'appariement est donc finalement refusé
+								mr.addMessage(LogCategory.ETABLISSEMENTS, LogLevel.WARN,
+								              String.format("Le numéro IDE de l'établissement correspond au site %d de RCEnt mais les deux domiciles ne correspondent pas (RegPM : %s vs. RCEnt : %s).",
+								                            dernierEnLice.getNumeroSite(),
+								                            Optional.ofNullable(localisationEtablissement).map(Object::toString).orElse("?"),
+								                            Optional.ofNullable(localisationSite).map(Object::toString).orElse("?")));
+							}
+							else {
+								// nous avons un vainqueur !!!
+
+								// un peu de log
+								mr.addMessage(LogCategory.ETABLISSEMENTS, LogLevel.INFO,
+								              String.format("Etablissement apparié au site %d de RCEnt par le biais du numéro IDE.", dernierEnLice.getNumeroSite()));
+
+								// on garde le mapping trouvé et on s'assure que ni l'établissement de RegPM ni le site de RCEnt ne seront
+								// ré-utilisés pour un autre appariement
+								appariements.put(etablissement.getId(), dernierEnLice);
+								sitesDisponiblesAuCivil.remove(dernierEnLice.getNumeroSite());
+								iteratorPhase1.remove();
+
+								// nettoyage également de la structure de recherche par numéro IDE
+								final Iterator<Map.Entry<String, List<SiteOrganisation>>> iteratorSitesParNumeroIde = sitesParNumeroIDE.entrySet().iterator();
+								while (iteratorSitesParNumeroIde.hasNext()) {
+									final Map.Entry<String, List<SiteOrganisation>> entry = iteratorSitesParNumeroIde.next();
+									final Iterator<SiteOrganisation> iteratorSites = entry.getValue().iterator();
+									while (iteratorSites.hasNext()) {
+										final SiteOrganisation site = iteratorSites.next();
+										if (site == dernierEnLice) {
+											iteratorSites.remove();
+										}
 									}
-								}
-								if (entry.getValue().isEmpty()) {
-									iteratorSitesParNumeroIde.remove();
+									if (entry.getValue().isEmpty()) {
+										iteratorSitesParNumeroIde.remove();
+									}
 								}
 							}
 						}
