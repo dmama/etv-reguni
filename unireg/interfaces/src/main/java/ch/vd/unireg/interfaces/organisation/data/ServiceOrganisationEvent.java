@@ -28,6 +28,18 @@ public class ServiceOrganisationEvent {
 		return noEvenement;
 	}
 
+	/**
+	 * <p>
+	 *     Renvoie le numéro cantonal du site (établissement) ciblé par l'événement.
+	 * </p>
+	 *
+	 * <p>
+	 *     <strong>ATTENTION</strong>: ce site peut ne pas faire partie de l'organisation renvoyée par getPseudoHistory()! Il peut être membre d'une autre organisation
+	 *     ciblée par le même événement RCEnt.
+	 * </p>
+	 *
+	 * @return le numéro cantonal de la site (établissement) ciblé par l'événement.
+	 */
 	public Long getSiteCible() {
 		return siteCible;
 	}
