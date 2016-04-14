@@ -13,6 +13,9 @@
 	<!-- Filtre qui permet de bypasser en développement la sécurité IAM/IFOSec en fonction des paramètres du fichier unireg.properties -->
 	<bean id="bypassSecurityFilter" class="ch.vd.uniregctb.security.DevSecurityBypassProcessingFilter" />
 
+	<!-- Bean qui permet d'utiliser le champ 'access' dans les tags authz:authorize -->
+	<bean id="webexpressionHandler" class="org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler" />
+
 	<!-- Récupère les paramètres renseignés par IAM et les stocke dans le context de sécurité -->
 	<bean id="iamAuthFilter" class="ch.vd.uniregctb.security.IAMAuthenticationProcessingFilter">
 		<property name="detailsClass" value="ch.vd.uniregctb.security.UniregSecurityDetails" />

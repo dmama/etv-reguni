@@ -63,7 +63,10 @@
 
 					</authz:authorize>
 
-					<authz:authorize ifAnyGranted="ROLE_CREATE_NONHAB, ROLE_CREATE_AC, ROLE_MODIF_VD_ORD, ROLE_MODIF_VD_SOURC, ROLE_MODIF_HC_HS, ROLE_MODIF_HAB_DEBPUR, ROLE_MODIF_NONHAB_DEBPUR, ROLE_MODIF_NONHAB_INACTIF">
+					<authz:authorize var="creation" access="hasAnyRole('ROLE_CREATE_NONHAB', 'ROLE_CREATE_AC', 'ROLE_CREATE_ENTREPRISE')"/>
+					<authz:authorize var="modifpp" access="hasAnyRole('ROLE_MODIF_VD_ORD', 'ROLE_MODIF_VD_SOURC', 'ROLE_MODIF_HC_HS', 'ROLE_MODIF_HAB_DEBPUR', 'ROLE_MODIF_NONHAB_DEBPUR')"/>
+					<authz:authorize var="annultiers" access="hasRole('ROLE_ANNUL_TIERS') and (${modifpp} or hasRole('ROLE_MODIF_PM'))"/>
+					<c:if test="${creation || modifpp || annultiers}">
 						<li><fmt:message key="label.action.creation" />
 							<ul>
 								<authz:authorize ifAnyGranted="ROLE_CREATE_NONHAB">
@@ -75,34 +78,32 @@
 								<authz:authorize ifAnyGranted="ROLE_CREATE_AC">
 									<li><a href="<c:url value='/tiers/autrecommunaute/create.do'/>"><fmt:message key="title.inconnu.pm" /></a></li>
 								</authz:authorize>
-								<c:if test="${false}"><!-- La fusion est désactivée -->
-								<authz:authorize ifAnyGranted="ROLE_MODIF_VD_ORD, ROLE_MODIF_VD_SOURC, ROLE_MODIF_HC_HS, ROLE_MODIF_HAB_DEBPUR, ROLE_MODIF_NONHAB_DEBPUR, ROLE_MODIF_NONHAB_INACTIF">
-									<li><a href="<c:url value='/fusion/list-non-habitant.do'/>"><fmt:message key="title.fusion" /></a></li>
-								</authz:authorize>
-								</c:if>
-								<authz:authorize ifAnyGranted="ROLE_MODIF_VD_ORD, ROLE_MODIF_VD_SOURC, ROLE_MODIF_HC_HS, ROLE_MODIF_HAB_DEBPUR, ROLE_MODIF_NONHAB_DEBPUR">
+								<c:if test="${modifpp}">
 									<li><a href="<c:url value='/couple/create.do'/>"><fmt:message key="title.couple" /></a></li>
 									<li><a href="<c:url value='/separation/list.do'/>"><fmt:message key="title.separation" /></a></li>
 									<li><a href="<c:url value='/deces/list.do'/>"><fmt:message key="title.deces" /></a></li>
-									<authz:authorize ifAnyGranted="ROLE_ANNUL_TIERS">
-										<li><a href="<c:url value='/activation/list.do?activation=reactivation'/>"><fmt:message key="title.reactivation.tiers" /></a></li>
-									</authz:authorize>
-								</authz:authorize>
+								</c:if>
+								<c:if test="${annultiers}">
+									<li><a href="<c:url value='/activation/list.do?activation=reactivation'/>"><fmt:message key="title.reactivation.tiers" /></a></li>
+								</c:if>
 							</ul>
 						</li>
-						<authz:authorize ifAnyGranted="ROLE_MODIF_VD_ORD, ROLE_MODIF_VD_SOURC, ROLE_MODIF_HC_HS, ROLE_MODIF_HAB_DEBPUR, ROLE_MODIF_NONHAB_DEBPUR">
-							<li><fmt:message key="label.action.annulation" />
-								<ul>
+					</c:if>
+					<c:if test="${modifpp || annultiers}">
+						<li><fmt:message key="label.action.annulation" />
+							<ul>
+								<c:if test="${modifpp}">
 									<li><a href="<c:url value='/annulation/couple/list.do'/>"><fmt:message key="title.couple" /></a></li>
 									<li><a href="<c:url value='/annulation/separation/list.do'/>"><fmt:message key="title.separation" /></a></li>
 									<li><a href="<c:url value='/annulation/deces/list.do'/>"><fmt:message key="title.deces" /></a></li>
-									<authz:authorize ifAnyGranted="ROLE_ANNUL_TIERS">
-										<li><a href="<c:url value='/activation/list.do?activation=annulation'/>"><fmt:message key="title.tiers" /></a></li>
-									</authz:authorize>
-								</ul>
-							</li>
-						</authz:authorize>
-					</authz:authorize>
+								</c:if>
+								<c:if test="${annultiers}">
+									<li><a href="<c:url value='/activation/list.do?activation=annulation'/>"><fmt:message key="title.tiers" /></a></li>
+								</c:if>
+							</ul>
+						</li>
+					</c:if>
+
 					<authz:authorize ifAnyGranted="ROLE_LR">
 						<li><a href="<c:url value='/lr/list.do'/>"><fmt:message key="title.lr" /></a></li>
 					</authz:authorize>
