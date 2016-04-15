@@ -43,7 +43,7 @@ public class TiersCriteria implements Serializable, TiersFilter {
 		}
 	}
 
-	private static final long serialVersionUID = -7308576998435975891L;
+	private static final long serialVersionUID = -2380124450588100517L;
 
 	public enum TypeRecherche {
 		CONTIENT,
@@ -302,6 +302,12 @@ public class TiersCriteria implements Serializable, TiersFilter {
 	 * Etat courant vis-à-vis du Registre du Commerce
 	 */
 	private TypeInscriptionRC etatInscriptionRC;
+
+	/**
+	 * <code>true</code> si on ne veut que les entreprises qui ont un jour absorbé une autre entreprise, <code>false</code> si on ne veut que
+	 * les entreprises qui n'ont jamais rien absorbé, et <code>null</code> si cela n'a pas d'importance
+	 */
+	private Boolean isCorporationMergeResult;
 
 	/**
 	 * @return true si aucun paramètre de recherche n'est renseigné. false
@@ -752,5 +758,13 @@ public class TiersCriteria implements Serializable, TiersFilter {
 
 	public void setEtatEntrepriseCourant(TypeEtatEntreprise etatEntrepriseCourant) {
 		this.etatEntrepriseCourant = etatEntrepriseCourant;
+	}
+
+	public Boolean getCorporationMergeResult() {
+		return isCorporationMergeResult;
+	}
+
+	public void setCorporationMergeResult(Boolean corporationMergeResult) {
+		isCorporationMergeResult = corporationMergeResult;
 	}
 }

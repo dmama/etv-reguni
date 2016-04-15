@@ -55,8 +55,8 @@ public class TiersIndexableDataTest extends WithoutSpringTest {
 
 	private static TiersIndexableData newIndexableData() {
 		final TiersIndexableData data = new TiersIndexableData(ID, "test", "test");
-		data.setAnnule(IndexerFormatHelper.booleanToString(false));
-		data.setDebiteurInactif(IndexerFormatHelper.booleanToString(false));
+		data.setAnnule(Boolean.FALSE);
+		data.setDebiteurInactif(Boolean.FALSE);
 		return data;
 	}
 
@@ -92,8 +92,8 @@ public class TiersIndexableDataTest extends WithoutSpringTest {
 		// création et indexation des données
 		final TiersIndexableData data = new TiersIndexableData(10760550L, "test", "test");
 		data.setNumeros("10760550");
-		data.setAnnule(IndexerFormatHelper.booleanToString(false));
-		data.setDebiteurInactif(IndexerFormatHelper.booleanToString(false));
+		data.setAnnule(Boolean.FALSE);
+		data.setDebiteurInactif(Boolean.FALSE);
 		globalIndex.indexEntity(data);
 
 		// recherche avec numéro non-formatté
@@ -612,7 +612,7 @@ public class TiersIndexableDataTest extends WithoutSpringTest {
 
 		// création et indexation des données
 		final TiersIndexableData data = newIndexableData();
-		data.setTiersActif(IndexerFormatHelper.booleanToString(false));
+		data.setDebiteurInactif(Boolean.FALSE);
 		globalIndex.indexEntity(data);
 
 		// recherche des données (OK)
@@ -636,7 +636,7 @@ public class TiersIndexableDataTest extends WithoutSpringTest {
 
 		// création et indexation des données
 		final TiersIndexableData data = newIndexableData();
-		data.setAnnule(IndexerFormatHelper.booleanToString(true));
+		data.setAnnule(Boolean.TRUE);
 		data.setNomRaison("bouh");
 		globalIndex.indexEntity(data);
 
@@ -681,7 +681,7 @@ public class TiersIndexableDataTest extends WithoutSpringTest {
 
 		// création et indexation des données
 		final TiersIndexableData data = newIndexableData();
-		data.setDebiteurInactif(IndexerFormatHelper.booleanToString(true));
+		data.setDebiteurInactif(Boolean.TRUE);
 		data.setNomRaison("bouh");
 		globalIndex.indexEntity(data);
 

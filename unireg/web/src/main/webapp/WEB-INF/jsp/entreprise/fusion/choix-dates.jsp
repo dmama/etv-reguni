@@ -20,21 +20,21 @@
 				<legend><span><fmt:message key="label.caracteristiques.fusion.entreprises" /></span></legend>
 				<table>
 					<tr class="<unireg:nextRowClass/>" >
-						<td width="25%"><fmt:message key="label.date.contrat.fusion" />&nbsp;:</td>
-						<td width="75%">
-							<jsp:include page="/WEB-INF/jsp/include/inputCalendar.jsp">
-								<jsp:param name="path" value="dateContratFusion" />
-								<jsp:param name="id" value="dateContratFusion" />
-							</jsp:include>
-							<FONT COLOR="#FF0000">*</FONT>
-						</td>
-					</tr>
-					<tr class="<unireg:nextRowClass/>" >
 						<td width="25%"><fmt:message key="label.date.bilan.fusion" />&nbsp;:</td>
 						<td width="75%">
 							<jsp:include page="/WEB-INF/jsp/include/inputCalendar.jsp">
 								<jsp:param name="path" value="dateBilanFusion" />
 								<jsp:param name="id" value="dateBilanFusion" />
+							</jsp:include>
+							<FONT COLOR="#FF0000">*</FONT>
+						</td>
+					</tr>
+					<tr class="<unireg:nextRowClass/>" >
+						<td width="25%"><fmt:message key="label.date.contrat.fusion" />&nbsp;:</td>
+						<td width="75%">
+							<jsp:include page="/WEB-INF/jsp/include/inputCalendar.jsp">
+								<jsp:param name="path" value="dateContratFusion" />
+								<jsp:param name="id" value="dateContratFusion" />
 							</jsp:include>
 							<FONT COLOR="#FF0000">*</FONT>
 						</td>

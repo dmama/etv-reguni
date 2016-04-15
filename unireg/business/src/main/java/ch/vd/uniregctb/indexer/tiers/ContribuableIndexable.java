@@ -60,7 +60,7 @@ public abstract class ContribuableIndexable<T extends Contribuable> extends Tier
 		else {
 			isActif = false;
 		}
-		data.setTiersActif(IndexerFormatHelper.booleanToString(isActif));
+		data.setTiersActif(isActif);
 	}
 
 	protected void fillIdeData(TiersIndexableData data) {

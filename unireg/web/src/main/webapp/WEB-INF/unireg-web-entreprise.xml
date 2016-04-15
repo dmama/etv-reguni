@@ -21,5 +21,6 @@
 
 	<bean id="annulationFailliteController" class="ch.vd.uniregctb.entreprise.complexe.AnnulationFailliteController" parent="abstractProcessusComplexeEntrepriseController"/>
 	<bean id="annulationDemenagementSiegeController" class="ch.vd.uniregctb.entreprise.complexe.AnnulationDemenagementSiegeController" parent="abstractProcessusComplexeEntrepriseController"/>
+	<bean id="annulationFusionController" class="ch.vd.uniregctb.entreprise.complexe.AnnulationFusionEntreprisesController" parent="abstractProcessusComplexeEntrepriseController"/>
 
 </beans>

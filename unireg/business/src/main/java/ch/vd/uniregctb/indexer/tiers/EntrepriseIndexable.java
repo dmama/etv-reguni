@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.indexer.tiers;
 
 import java.util.List;
+import java.util.Set;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
@@ -20,9 +21,11 @@ import ch.vd.uniregctb.tiers.EtatEntreprise;
 import ch.vd.uniregctb.tiers.FormeLegaleHisto;
 import ch.vd.uniregctb.tiers.OrganisationNotFoundException;
 import ch.vd.uniregctb.tiers.RaisonSocialeHisto;
+import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.NatureJuridique;
 import ch.vd.uniregctb.type.TypeEtatEntreprise;
+import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 
 public class EntrepriseIndexable extends ContribuableIndexable<Entreprise> {
 
@@ -117,6 +120,17 @@ public class EntrepriseIndexable extends ContribuableIndexable<Entreprise> {
 				break;
 			}
 		}
+
+		// particularité... cette entreprise a-t-elle absorbé d'autres entreprises par le passé ?
+		final Set<RapportEntreTiers> rapportsObjets = tiers.getRapportsObjet();
+		boolean isMergeResult = false;
+		for (RapportEntreTiers rapport : rapportsObjets) {
+			if (!rapport.isAnnule() && rapport.getType() == TypeRapportEntreTiers.FUSION_ENTREPRISES) {
+				isMergeResult = true;
+				break;
+			}
+		}
+		data.setCorporationMergeResult(isMergeResult);
 	}
 
 	@Override
