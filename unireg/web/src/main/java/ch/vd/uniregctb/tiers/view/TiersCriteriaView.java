@@ -235,6 +235,10 @@ public class TiersCriteriaView implements Serializable {
 		criteria.setTypeTiersImperatif(typeTiers);
 	}
 
+	public void setTypesTiersImperatifs(Set<TiersCriteria.TypeTiers> typesTiers) {
+		criteria.setTypesTiersImperatifs(typesTiers);
+	}
+
 	public boolean isInclureI107() {
 		return criteria.isInclureI107();
 	}

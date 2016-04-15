@@ -3,8 +3,10 @@ package ch.vd.uniregctb.activation;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.Predicate;
@@ -18,7 +20,10 @@ import ch.vd.uniregctb.activation.manager.TiersActivationListManager;
 import ch.vd.uniregctb.activation.view.TiersActivationListView;
 import ch.vd.uniregctb.indexer.IndexerException;
 import ch.vd.uniregctb.indexer.TooManyResultsIndexerException;
+import ch.vd.uniregctb.security.Role;
+import ch.vd.uniregctb.security.SecurityHelper;
 import ch.vd.uniregctb.tiers.AbstractTiersListController;
+import ch.vd.uniregctb.tiers.TiersCriteria;
 import ch.vd.uniregctb.tiers.TiersIndexedDataView;
 
 public class TiersActivationListController extends AbstractTiersListController {
@@ -90,6 +95,21 @@ public class TiersActivationListController extends AbstractTiersListController {
 				try {
 					final boolean isAnnulation = isAnnulation(request);
 					final boolean isReactivation = isReactivation(request);
+
+					// [SIFISC-18536] validation du type de tiers à rechercher en fonction des droits
+					final Set<TiersCriteria.TypeTiers> typesTiersAutorises = EnumSet.noneOf(TiersCriteria.TypeTiers.class);
+					if (SecurityHelper.isAnyGranted(securityProvider, Role.MODIF_PM)) {
+						typesTiersAutorises.add(TiersCriteria.TypeTiers.ENTREPRISE);
+						typesTiersAutorises.add(TiersCriteria.TypeTiers.ETABLISSEMENT);
+					}
+					if (SecurityHelper.isAnyGranted(securityProvider, Role.MODIF_VD_ORD, Role.MODIF_VD_SOURC, Role.MODIF_HC_HS, Role.MODIF_HAB_DEBPUR, Role.MODIF_NONHAB_DEBPUR)) {
+						typesTiersAutorises.add(TiersCriteria.TypeTiers.DEBITEUR_PRESTATION_IMPOSABLE);
+						typesTiersAutorises.add(TiersCriteria.TypeTiers.AUTRE_COMMUNAUTE);
+						typesTiersAutorises.add(TiersCriteria.TypeTiers.COLLECTIVITE_ADMINISTRATIVE);
+						typesTiersAutorises.add(TiersCriteria.TypeTiers.CONTRIBUABLE_PP);
+					}
+					bean.setTypesTiersImperatifs(typesTiersAutorises);
+
 					final List<TiersIndexedDataView> results = searchTiers(bean);
 					if (isAnnulation) {
 						filterOutAnnules(results);
