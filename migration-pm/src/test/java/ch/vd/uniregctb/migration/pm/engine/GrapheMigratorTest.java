@@ -3465,7 +3465,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 				final ForFiscalPrincipalPM ffp = fpt.principauxPM.get(0);
 				Assert.assertNotNull(ffp);
 				Assert.assertFalse(ffp.isAnnule());
-				Assert.assertEquals(dateBilanFusion, ffp.getDateDebut());           // date reprise du for du mainframe, même si je pense que l'on devrait trouver le lendemain...
+				Assert.assertEquals(dateBilanFusion, ffp.getDateDebut());
 				Assert.assertNull(ffp.getDateFin());
 				Assert.assertEquals(MotifFor.FUSION_ENTREPRISES, ffp.getMotifOuverture());
 				Assert.assertNull(ffp.getMotifFermeture());
@@ -3488,7 +3488,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 			{
 				final RapportEntreTiers fusion = fusions.get(0);
 				Assert.assertNotNull(fusion);
-				Assert.assertEquals(dateBilanFusion.getOneDayAfter(), fusion.getDateDebut());
+				Assert.assertEquals(dateBilanFusion, fusion.getDateDebut());
 				Assert.assertNull(fusion.getDateFin());
 				Assert.assertEquals((Long) idEntrepriseAvantFusion1, fusion.getSujetId());
 				Assert.assertEquals((Long) idEntrepriseApresFusion, fusion.getObjetId());
@@ -3496,7 +3496,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 			{
 				final RapportEntreTiers fusion = fusions.get(1);
 				Assert.assertNotNull(fusion);
-				Assert.assertEquals(dateBilanFusion.getOneDayAfter(), fusion.getDateDebut());
+				Assert.assertEquals(dateBilanFusion, fusion.getDateDebut());
 				Assert.assertNull(fusion.getDateFin());
 				Assert.assertEquals((Long) idEntrepriseAvantFusion2, fusion.getSujetId());
 				Assert.assertEquals((Long) idEntrepriseApresFusion, fusion.getObjetId());

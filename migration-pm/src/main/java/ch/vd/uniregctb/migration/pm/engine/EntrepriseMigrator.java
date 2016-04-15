@@ -1184,7 +1184,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 	 * @return date à prendre en compte pour l'ouverture du for principal de l'entreprise après fusion
 	 */
 	private static RegDate extractDateOuvertureForApresFusion(RegpmFusion fusion) {
-		return fusion.getDateBilan().getOneDayAfter();
+		return fusion.getDateBilan();
 	}
 
 	/**
