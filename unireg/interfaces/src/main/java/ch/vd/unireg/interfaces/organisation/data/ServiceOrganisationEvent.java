@@ -1,11 +1,15 @@
 package ch.vd.unireg.interfaces.organisation.data;
 
+import java.io.Serializable;
+
 import ch.vd.registre.base.date.RegDate;
 
 /**
  * @author Raphaël Marmier, 2016-04-13, <raphael.marmier@vd.ch>
  */
-public class ServiceOrganisationEvent {
+public class ServiceOrganisationEvent implements Serializable {
+
+	private static final long serialVersionUID = 8598759066120296877L;
 
 	private long noEvenement;
 
@@ -22,6 +26,7 @@ public class ServiceOrganisationEvent {
 	public ServiceOrganisationEvent(long noEvenement, Long siteCible, Organisation pseudoHistory) {
 		this.noEvenement = noEvenement;
 		this.pseudoHistory = pseudoHistory;
+		this.siteCible = siteCible;
 	}
 
 	public long getNoEvenement() {
