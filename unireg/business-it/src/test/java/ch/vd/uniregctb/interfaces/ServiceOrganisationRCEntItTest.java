@@ -54,9 +54,9 @@ public class ServiceOrganisationRCEntItTest extends BusinessItTest {
 	private static final String NOM_BCV = "Banque Cantonale Vaudoise";
 
 	// Evénement cible sur RCEnt
-	private static final long ID_EVT = 4466328L;
-	private static final long ID_ORGANISATION_EVT = 101584800L;
-	private static final String ID_NOM_EVT = "Global Health Consulting Sàrl";
+	private static final long ID_EVT = 507495L;
+	private static final long ID_ORGANISATION_EVT = 101529808L;
+	private static final String ID_NOM_EVT = "gd transports Sàrl";
 
 	// Entreprise avec succursale avec numéro IDE dans RCEnt
 	private static final long ID_SUCC = 101067201L;
