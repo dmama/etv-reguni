@@ -92,6 +92,8 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 		list.add(new TraiterFaillite());
 		list.add(new DemenagerSiege());
 		list.add(new TerminerActivite());
+		list.add(new AnnulerFaillite());
+		list.add(new AnnulerDemenagementSiege());
 
 		list.add(new AnnulerTiers());
 		list.add(new Exporter());
@@ -1004,6 +1006,33 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 		}
 	}
 
+	private static class AnnulerFaillite implements Action {
+		@Override
+		public boolean isGranted() {
+			return SecurityHelper.isAnyGranted(securityProvider, Role.FAILLITE_ENTREPRISE);
+		}
+
+		@Override
+		public boolean isValide(Tiers tiers) {
+			return !tiers.isAnnule()
+					&& tiers instanceof Entreprise
+					&& tiersService.isInscriteRC((Entreprise) tiers, null)
+					&& isEtatCourant((Entreprise) tiers, TypeEtatEntreprise.EN_FAILLITE)
+					&& !hadEtatOnce((Entreprise) tiers, EnumSet.of(TypeEtatEntreprise.ABSORBEE, TypeEtatEntreprise.DISSOUTE))
+					&& tiers.getForFiscalPrincipalAt(null) == null;
+		}
+
+		@Override
+		public String getLabel() {
+			return "Annuler la faillite";
+		}
+
+		@Override
+		public String getActionUrl() {
+			return "goto:/processuscomplexe/annulation/faillite/start.do?id=";
+		}
+	}
+
 	private static class DemenagerSiege implements Action {
 		@Override
 		public boolean isGranted() {
@@ -1025,6 +1054,30 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 		@Override
 		public String getActionUrl() {
 			return "goto:/processuscomplexe/demenagement/start.do?id=";
+		}
+	}
+
+	private static class AnnulerDemenagementSiege implements Action {
+		@Override
+		public boolean isGranted() {
+			return SecurityHelper.isAnyGranted(securityProvider, Role.DEMENAGEMENT_SIEGE_ENTREPRISE);
+		}
+
+		@Override
+		public boolean isValide(Tiers tiers) {
+			return !tiers.isAnnule()
+					&& tiers instanceof Entreprise
+					&& tiers.getForFiscalPrincipalAt(null) != null;
+		}
+
+		@Override
+		public String getLabel() {
+			return "Annuler le dernier déménagement de siège";
+		}
+
+		@Override
+		public String getActionUrl() {
+			return "goto:/processuscomplexe/annulation/demenagement/start.do?id=";
 		}
 	}
 
