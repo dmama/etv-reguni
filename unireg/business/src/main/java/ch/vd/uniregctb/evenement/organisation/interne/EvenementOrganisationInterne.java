@@ -597,7 +597,7 @@ public abstract class EvenementOrganisationInterne {
 		suivis.addSuivi(String.format("L'établissement %s a déménagé. Ancien domicile  %s (ofs: %s). Nouveau domicile %s (ofs: %s), à partir du %s.",
 		                              etablissement.getNumero(),
 		                              ancienneCommune,
-		                              nouveauDomicile.getNoOfs(),
+		                              ancienDomicile.getNoOfs(),
 		                              nouvelleCommune,
 		                              nouveauDomicile.getNoOfs(),
 		                              RegDateHelper.dateToDisplayString(dateDebut)));
