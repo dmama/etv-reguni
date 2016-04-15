@@ -3,7 +3,6 @@ package ch.vd.uniregctb.evenement.organisation.interne;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationContext;
-import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationException;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationOptions;
 import ch.vd.uniregctb.tiers.Entreprise;
 
@@ -20,7 +19,7 @@ import ch.vd.uniregctb.tiers.Entreprise;
 public abstract class EvenementOrganisationInterneDeTraitement extends EvenementOrganisationInterne {
 
 	protected EvenementOrganisationInterneDeTraitement(EvenementOrganisation evenement, Organisation organisation, Entreprise entreprise, EvenementOrganisationContext context,
-	                                                   EvenementOrganisationOptions options) throws EvenementOrganisationException {
+	                                                   EvenementOrganisationOptions options) {
 		super(evenement, organisation, entreprise, context, options);
 	}
 

@@ -13,6 +13,7 @@ import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationException;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationOptions;
 import ch.vd.uniregctb.evenement.organisation.interne.AbstractOrganisationStrategy;
 import ch.vd.uniregctb.evenement.organisation.interne.EvenementOrganisationInterne;
+import ch.vd.uniregctb.evenement.organisation.interne.TraitementManuel;
 import ch.vd.uniregctb.tiers.Entreprise;
 
 /**
@@ -57,7 +58,7 @@ public class DissolutionStrategy extends AbstractOrganisationStrategy {
 			case CARENCE_DANS_ORGANISATION:
 				return new Dissolution(event, organisation, entreprise, context, options);
 			default:
-				throw new EvenementOrganisationException("Type de dissolution inconnu: " + raisonDeDissolution);
+				return new TraitementManuel(event, organisation, entreprise, context, options, String.format("Type de dissolution inconnu: %s", raisonDeDissolution));
 			}
 		}
 		LOGGER.info("Pas de dissolution.");

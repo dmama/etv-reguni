@@ -33,7 +33,7 @@ public class ChangementCategorieAPMVersPM extends EvenementOrganisationInterneDe
 
 	public ChangementCategorieAPMVersPM(EvenementOrganisation evenement, Organisation organisation, Entreprise entreprise,
 	                                    EvenementOrganisationContext context,
-	                                    EvenementOrganisationOptions options) throws EvenementOrganisationException {
+	                                    EvenementOrganisationOptions options) {
 		super(evenement, organisation, entreprise, context, options);
 
 		dateApres = evenement.getDateEvenement();
