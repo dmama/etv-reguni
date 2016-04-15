@@ -28,6 +28,7 @@
 	<bean id="tiersAnnulationRecapManager" class="ch.vd.uniregctb.activation.manager.TiersAnnulationRecapManagerImpl">
 		<property name="tiersService" ref="tiersService" />
 		<property name="activationService" ref="activationService" />
+		<property name="securityProvider" ref="securityProviderInterface"/>
 	</bean>
 	
 	<bean id="tiersAnnulationRecapValidator" class="ch.vd.uniregctb.activation.validator.TiersAnnulationRecapValidator" >
@@ -48,6 +49,7 @@
 		<property name="tiersGeneralManager" ref="tiersGeneralManager" />
 		<property name="tiersService" ref="tiersService" />
 		<property name="activationService" ref="activationService" />
+		<property name="securityProvider" ref="securityProviderInterface"/>
 	</bean>
 	
 	<bean id="tiersReactivationRecapValidator" class="ch.vd.uniregctb.activation.validator.TiersReactivationRecapValidator" >

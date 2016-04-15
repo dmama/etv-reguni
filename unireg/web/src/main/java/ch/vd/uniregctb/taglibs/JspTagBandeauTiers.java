@@ -43,6 +43,7 @@ import ch.vd.uniregctb.tiers.EvenementsCivilsNonTraites;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.FormeLegaleHisto;
 import ch.vd.uniregctb.tiers.MenageCommun;
+import ch.vd.uniregctb.tiers.NatureTiers;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
@@ -800,7 +801,15 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 
 		@Override
 		public boolean isValide(Tiers tiers) {
-			return tiers.isDesactive(null);
+			final boolean droitOk;
+			final NatureTiers nature = tiers.getNatureTiers();
+			if (nature == NatureTiers.Etablissement || nature == NatureTiers.Entreprise) {
+				droitOk = SecurityHelper.isGranted(securityProvider, Role.MODIF_PM);
+			}
+			else {
+				droitOk = SecurityHelper.isAnyGranted(securityProvider, Role.MODIF_VD_ORD, Role.MODIF_VD_SOURC, Role.MODIF_HC_HS, Role.MODIF_HAB_DEBPUR, Role.MODIF_NONHAB_DEBPUR);
+			}
+			return droitOk && tiers.isDesactive(null);
 		}
 
 		@Override
@@ -892,7 +901,15 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 
 		@Override
 		public boolean isValide(Tiers tiers) {
-			return !tiers.isDesactive(null);
+			final boolean droitOk;
+			final NatureTiers nature = tiers.getNatureTiers();
+			if (nature == NatureTiers.Etablissement || nature == NatureTiers.Entreprise) {
+				droitOk = SecurityHelper.isGranted(securityProvider, Role.MODIF_PM);
+			}
+			else {
+				droitOk = SecurityHelper.isAnyGranted(securityProvider, Role.MODIF_VD_ORD, Role.MODIF_VD_SOURC, Role.MODIF_HC_HS, Role.MODIF_HAB_DEBPUR, Role.MODIF_NONHAB_DEBPUR);
+			}
+			return droitOk && !tiers.isDesactive(null);
 		}
 
 		@Override
