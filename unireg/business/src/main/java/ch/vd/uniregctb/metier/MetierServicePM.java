@@ -119,4 +119,14 @@ public interface MetierServicePM {
 	 * @throws MetierServiceException en cas de problème
 	 */
 	void fusionne(Entreprise absorbante, List<Entreprise> absorbees, RegDate dateContratFusion, RegDate dateBilanFusion) throws MetierServiceException;
+
+	/**
+	 * Opération d'annulation de fusion d'entreprises
+	 * @param absorbante l'entreprise absorbante
+	 * @param absorbees les entreprises absorbées
+	 * @param dateContratFusion la date de contrat de fusion
+	 * @param dateBilanFusion la date de bilan de fusion
+	 * @throws MetierServiceException en cas de problème
+	 */
+	void annuleFusionEntreprises(Entreprise absorbante, List<Entreprise> absorbees, RegDate dateContratFusion, RegDate dateBilanFusion) throws MetierServiceException;
 }

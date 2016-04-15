@@ -803,6 +803,9 @@ public class MetierServicePMImpl implements MetierServicePM {
 			// surcharge d'adresse
 			final AdresseTiers surchargeAdresse = surchargeAdresseSuiteAFusion(adresseAbsorbante, dateContratFusion);
 			adresseService.addAdresse(absorbee, surchargeAdresse);
+
+			// ajout de l'état absorbé sur l'entreprise
+			absorbee.addEtat(new EtatEntreprise(dateContratFusion, TypeEtatEntreprise.ABSORBEE, TypeGenerationEtatEntreprise.MANUELLE));
 		}
 	}
 
@@ -849,5 +852,39 @@ public class MetierServicePMImpl implements MetierServicePM {
 		adresseTiers.setNumeroMaison(adresse.getRueEtNumero().getNumero());
 		adresseTiers.setPermanente(true);
 		return adresseTiers;
+	}
+
+	@Override
+	public void annuleFusionEntreprises(Entreprise absorbante, List<Entreprise> absorbees, RegDate dateContratFusion, RegDate dateBilanFusion) throws MetierServiceException {
+
+		// annulation des rappors entre tiers entre l'absorbante et les absorbées à la date de bilan de fusion
+		for (RapportEntreTiers ret : absorbante.getRapportsObjet()) {
+			if (!ret.isAnnule() && ret.getType() == TypeRapportEntreTiers.FUSION_ENTREPRISES && ret.getDateDebut() == dateBilanFusion) {
+				ret.setAnnule(true);
+			}
+		}
+
+		// réouverture des fors, annulation de la surcharge d'adresse, de l'état absorbé...
+		for (Entreprise absorbee : absorbees) {
+
+			// réouverture des fors fermés
+			tiersService.reopenForsClosedAt(dateBilanFusion, MotifFor.FUSION_ENTREPRISES, absorbee);
+
+			// annulation de l'état absorbé à la date de contrat
+			for (EtatEntreprise etat : absorbee.getEtats()) {
+				if (!etat.isAnnule() && etat.getType() == TypeEtatEntreprise.ABSORBEE && etat.getDateObtention() == dateContratFusion) {
+					etat.setAnnule(true);
+				}
+			}
+
+			// annulation de la surcharge d'adresse courrier
+			final List<AdresseTiers> surchargesCourrier = absorbee.getAdressesTiersSorted(TypeAdresseTiers.COURRIER);
+			if (surchargesCourrier != null && !surchargesCourrier.isEmpty()) {
+				final AdresseTiers derniereSurcharge = CollectionsUtils.getLastElement(surchargesCourrier);
+				if (derniereSurcharge.getDateDebut() == dateContratFusion) {
+					adresseService.annulerAdresse(derniereSurcharge);
+				}
+			}
+		}
 	}
 }

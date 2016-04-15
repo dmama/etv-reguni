@@ -121,7 +121,7 @@ public class DebiteurPrestationImposableIndexable extends TiersIndexable<Debiteu
 
 		final ForDebiteurPrestationImposable fdpi = tiers.getDernierForDebiteur();
 		final boolean isActif = (fdpi != null && fdpi.isValidAt(null));
-		data.setTiersActif(IndexerFormatHelper.booleanToString(isActif));
+		data.setTiersActif(isActif);
 	}
 
 	@Override

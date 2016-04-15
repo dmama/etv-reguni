@@ -38,6 +38,17 @@ public class TiersIndexableData extends IndexableData {
 		}
 	};
 
+	/**
+	 * La différence entre ce {@link StringRenderer} et {@link IndexerFormatHelper#BOOLEAN_RENDERER} est que, en cas de valeur absente,
+	 * nous renvoyons ici {@link StringUtils#EMPTY} tandis que {@link IndexerFormatHelper#BOOLEAN_RENDERER} renvoie {@link IndexerFormatHelper#nullValue()}.
+	 */
+	private static final StringRenderer<Boolean> BOOLEAN_RENDERER = new StringRenderer<Boolean>() {
+		@Override
+		public String toString(Boolean object) {
+			return object == null ? StringUtils.EMPTY : IndexerFormatHelper.booleanToString(object);
+		}
+	};
+
 	// champs de recherche
 	public static final String NUMEROS = "S_NUMEROS";
 	public static final String NOM_RAISON = "S_NOM_RAISON";
@@ -67,6 +78,7 @@ public class TiersIndexableData extends IndexableData {
 	public static final String ETAT_ENTREPRISE_COURANT = "S_ETAT_ENTREPRISE_COURANT";
 	public static final String ETATS_ENTREPRISE = "S_ETATS_ENTREPRISE";
 	public static final String INSCRIPTION_RC = "S_INSCRIPTION_RC";
+	public static final String IS_CORPORATION_MERGE_RESULT = "S_CORP_MERGE_RESULT";
 
 	// champs de stockage (pas recherchables)
 	public static final String NOM1 = "D_NOM1";
@@ -114,13 +126,14 @@ public class TiersIndexableData extends IndexableData {
 	private String categorieDebiteurIs;
 	private String modeImposition;
 	private String noSymic;
-	private String tiersActif;
-	private String annule;
-	private String debiteurInactif;
+	private Boolean tiersActif;
+	private Boolean annule;
+	private Boolean debiteurInactif;
 	private String ide;                     // identifiant d'entreprise [SIFISC-11689]
 	private TypeEtatEntreprise etatEntrepriseCourant;
 	private Set<TypeEtatEntreprise> etatsEntreprise;
 	private TypeEtatInscriptionRC etatInscriptionRC;
+	private Boolean corporationMergeResult;     // vrai si l'entreprise a été par le passé le résultat d'une fusion d'entreprises
 
 	// champs de stockage (pas recherchables)
 	private String nom1;
@@ -178,13 +191,14 @@ public class TiersIndexableData extends IndexableData {
 		addNotAnalyzedValue(d, TiersIndexableData.CATEGORIE_DEBITEUR_IS, categorieDebiteurIs);
 		addNotAnalyzedValue(d, TiersIndexableData.MODE_IMPOSITION, modeImposition);
 		addNotAnalyzedValue(d, TiersIndexableData.NO_SYMIC, noSymic);
-		addNotAnalyzedValue(d, TiersIndexableData.TIERS_ACTIF, tiersActif);
-		addNotAnalyzedValue(d, TiersIndexableData.ANNULE, annule);
-		addNotAnalyzedValue(d, TiersIndexableData.DEBITEUR_INACTIF, debiteurInactif);
+		addNotAnalyzedValue(d, TiersIndexableData.TIERS_ACTIF, tiersActif, BOOLEAN_RENDERER);
+		addNotAnalyzedValue(d, TiersIndexableData.ANNULE, annule, BOOLEAN_RENDERER);
+		addNotAnalyzedValue(d, TiersIndexableData.DEBITEUR_INACTIF, debiteurInactif, BOOLEAN_RENDERER);
 		addAnalyzedValue(d, TiersIndexableData.IDE, ide);
 		addNotAnalyzedValue(d, TiersIndexableData.ETAT_ENTREPRISE_COURANT, etatEntrepriseCourant, ENUM_RENDERER);
 		addMultiValuedNotAnalyzedValue(d, TiersIndexableData.ETATS_ENTREPRISE, etatsEntreprise, ENUM_RENDERER);
 		addNotAnalyzedValue(d, TiersIndexableData.INSCRIPTION_RC, etatInscriptionRC, ENUM_RENDERER);
+		addNotAnalyzedValue(d, TiersIndexableData.IS_CORPORATION_MERGE_RESULT, corporationMergeResult, BOOLEAN_RENDERER);
 
 		// on aggrège tous les valeurs utiles dans un seul champ pour une recherche de type google
 		addToutValues(d, numeros, nomRaison, autresNom, toSearchString(datesNaissanceInscriptionRC), forPrincipal, rue, npaCourrier, localiteEtPays, natureJuridique, navs11, navs13, ancienNumeroSourcier, categorieDebiteurIs, noSymic, ide);
@@ -472,27 +486,27 @@ public class TiersIndexableData extends IndexableData {
 		this.noSymic = noSymic;
 	}
 
-	public String getTiersActif() {
+	public Boolean getTiersActif() {
 		return tiersActif;
 	}
 
-	public void setTiersActif(String tiersActif) {
+	public void setTiersActif(Boolean tiersActif) {
 		this.tiersActif = tiersActif;
 	}
 
-	public String getAnnule() {
+	public Boolean getAnnule() {
 		return annule;
 	}
 
-	public void setAnnule(String annule) {
+	public void setAnnule(Boolean annule) {
 		this.annule = annule;
 	}
 
-	public String getDebiteurInactif() {
+	public Boolean getDebiteurInactif() {
 		return debiteurInactif;
 	}
 
-	public void setDebiteurInactif(String debiteurInactif) {
+	public void setDebiteurInactif(Boolean debiteurInactif) {
 		this.debiteurInactif = debiteurInactif;
 	}
 
@@ -713,5 +727,13 @@ public class TiersIndexableData extends IndexableData {
 
 	public void setTypeAvatar(TypeAvatar typeAvatar) {
 		this.typeAvatar = typeAvatar;
+	}
+
+	public Boolean getCorporationMergeResult() {
+		return corporationMergeResult;
+	}
+
+	public void setCorporationMergeResult(Boolean corporationMergeResult) {
+		this.corporationMergeResult = corporationMergeResult;
 	}
 }

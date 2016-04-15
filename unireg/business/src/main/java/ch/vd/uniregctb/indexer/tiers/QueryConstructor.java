@@ -399,6 +399,13 @@ public class QueryConstructor {
 		}
 	}
 
+	public void addContrainteAbsorptionEntreprisePassee(BooleanQuery fullQuery) {
+		if (criteria.getCorporationMergeResult() != null) {
+			final TermQuery q = new TermQuery(new Term(TiersIndexableData.IS_CORPORATION_MERGE_RESULT, criteria.getCorporationMergeResult() ? Constants.OUI : Constants.NON));
+			fullQuery.add(q, must);
+		}
+	}
+
 	public void addEtatInscriptionRC(BooleanQuery fullQuery) {
 		final TiersCriteria.TypeInscriptionRC etatInscriptionRC = criteria.getEtatInscriptionRC();
 		if (etatInscriptionRC != null) {
@@ -550,6 +557,7 @@ public class QueryConstructor {
 		addContrainteEtatCourantEntrepriseInterdit(fullQuery);
 		addEtatInscriptionRC(fullQuery);
 		addEtatEntrepriseCourant(fullQuery);
+		addContrainteAbsorptionEntreprisePassee(fullQuery);
 
 		final BooleanClause[] clauses = fullQuery.getClauses();
 		if (clauses != null && clauses.length > 0) {

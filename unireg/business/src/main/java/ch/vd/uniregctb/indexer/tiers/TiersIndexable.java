@@ -63,8 +63,8 @@ public abstract class TiersIndexable<T extends Tiers> implements Indexable {
 	protected void fillBaseData(TiersIndexableData data) {
 
 		data.setNumeros(IndexerFormatHelper.numberToString(tiers.getNumero()));
-		data.setDebiteurInactif(IndexerFormatHelper.booleanToString(tiers.isDebiteurInactif()));
-		data.setAnnule(IndexerFormatHelper.booleanToString(tiers.isDesactive(null)));
+		data.setDebiteurInactif(tiers.isDebiteurInactif());
+		data.setAnnule(tiers.isDesactive(null));
 		data.setRoleLigne1(tiers.getRoleLigne1());
 		data.setTypeAvatar(avatarService.getTypeAvatar(tiers));
 
