@@ -612,7 +612,7 @@ public class TiersIndexableDataTest extends WithoutSpringTest {
 
 		// création et indexation des données
 		final TiersIndexableData data = newIndexableData();
-		data.setDebiteurInactif(Boolean.FALSE);
+		data.setTiersActif(Boolean.FALSE);
 		globalIndex.indexEntity(data);
 
 		// recherche des données (OK)
