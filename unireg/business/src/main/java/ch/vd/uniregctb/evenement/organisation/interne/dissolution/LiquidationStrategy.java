@@ -18,6 +18,7 @@ import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationException;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationOptions;
 import ch.vd.uniregctb.evenement.organisation.interne.AbstractOrganisationStrategy;
 import ch.vd.uniregctb.evenement.organisation.interne.EvenementOrganisationInterne;
+import ch.vd.uniregctb.evenement.organisation.interne.TraitementManuel;
 import ch.vd.uniregctb.tiers.Entreprise;
 
 /**
@@ -73,7 +74,7 @@ public class LiquidationStrategy extends AbstractOrganisationStrategy {
 					case SOCIETE_COMMANDITE_PAR_ACTION:
 						return new Liquidation(event, organisation, entreprise, context, options);
 					default:
-						throw new EvenementOrganisationException("Type de liquidation inconnu: " + publication.getTypeDeLiquidation());
+						return new TraitementManuel(event, organisation, entreprise, context, options, String.format("Type de liquidation inconnu: %s", publication.getTypeDeLiquidation()));
 					}
 				}
 			}

@@ -15,6 +15,7 @@ import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationException;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationOptions;
 import ch.vd.uniregctb.evenement.organisation.interne.AbstractOrganisationStrategy;
 import ch.vd.uniregctb.evenement.organisation.interne.EvenementOrganisationInterne;
+import ch.vd.uniregctb.evenement.organisation.interne.TraitementManuel;
 import ch.vd.uniregctb.tiers.Entreprise;
 
 /**
@@ -66,7 +67,7 @@ public class FusionScissionStrategy extends AbstractOrganisationStrategy {
 					case SCISSION_SUISSE_VERS_ETRANGER:
 						return new Scission(event, organisation, entreprise, context, options);
 					default:
-						throw new EvenementOrganisationException("Type de fusion inconnu: " + publication.getTypeDeFusion());
+						return new TraitementManuel(event, organisation, entreprise, context, options, String.format("Type de fusion inconnu: %s", publication.getTypeDeFusion()));
 					}
 				}
 			}

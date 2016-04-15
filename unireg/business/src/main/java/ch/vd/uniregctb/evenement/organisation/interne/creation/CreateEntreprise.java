@@ -38,7 +38,7 @@ public abstract class CreateEntreprise extends EvenementOrganisationInterneDeTra
 	                           EvenementOrganisationContext context,
 	                           EvenementOrganisationOptions options,
 	                           RegDate dateDeCreation,
-	                           boolean isCreation) throws EvenementOrganisationException {
+	                           boolean isCreation) {
 		super(evenement, organisation, entreprise, context, options);
 
 		sitePrincipal = organisation.getSitePrincipal(getDateEvt()).getPayload();

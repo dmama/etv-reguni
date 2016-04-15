@@ -42,7 +42,7 @@ public class Adresse extends EvenementOrganisationInterneDeTraitement {
 	public Adresse(EvenementOrganisation evenement, Organisation organisation, Entreprise entreprise,
 	               EvenementOrganisationContext context,
 	               EvenementOrganisationOptions options,
-	               AdresseEffectiveRCEnt nouvelleAdresseEffective, AdresseLegaleRCEnt nouvelleAdresseLegale) throws EvenementOrganisationException {
+	               AdresseEffectiveRCEnt nouvelleAdresseEffective, AdresseLegaleRCEnt nouvelleAdresseLegale) {
 		super(evenement, organisation, entreprise, context, options);
 
 		dateApres = evenement.getDateEvenement();

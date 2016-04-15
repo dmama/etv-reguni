@@ -22,7 +22,7 @@ public class ChangementNeutreFormeJuridique extends EvenementOrganisationInterne
 
 	protected ChangementNeutreFormeJuridique(EvenementOrganisation evenement, Organisation organisation,
 	                                         Entreprise entreprise, EvenementOrganisationContext context,
-	                                         EvenementOrganisationOptions options) throws EvenementOrganisationException {
+	                                         EvenementOrganisationOptions options) {
 		super(evenement, organisation, entreprise, context, options);
 		typeInfo = TypeInformationComplementaire.CHANGEMENT_FORME_JURIDIQUE_MEME_CATEGORIE;
 	}

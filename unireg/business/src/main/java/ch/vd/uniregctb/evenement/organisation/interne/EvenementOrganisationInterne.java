@@ -119,7 +119,7 @@ public abstract class EvenementOrganisationInterne {
 	private final EvenementOrganisationContext context;
 	private final EvenementOrganisationOptions options;
 
-	protected EvenementOrganisationInterne(EvenementOrganisation evenement, Organisation organisation, Entreprise entreprise, EvenementOrganisationContext context, EvenementOrganisationOptions options) throws EvenementOrganisationException {
+	protected EvenementOrganisationInterne(EvenementOrganisation evenement, Organisation organisation, Entreprise entreprise, EvenementOrganisationContext context, EvenementOrganisationOptions options) {
 		this.context = context;
 		this.options = options;
 
