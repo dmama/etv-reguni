@@ -25,7 +25,7 @@
 			</fieldset>
 		</form:form>
 
-		<display:table name="list" id="row" pagesize="25" requestURI="/processuscomplexe/fusion/list.do" class="display" sort="list">
+		<display:table name="list" id="row" pagesize="25" requestURI="/processuscomplexe/fusion/absorbante/list.do" class="display" sort="list">
 			<display:setProperty name="paging.banner.no_items_found"><span class="pagebanner"><fmt:message key="banner.auncune.entreprise.trouvee" /></span></display:setProperty>
 			<display:setProperty name="paging.banner.one_item_found"><span class="pagebanner">1 <fmt:message key="banner.entreprise.trouvee" /></span></display:setProperty>
 			<display:setProperty name="paging.banner.some_items_found"><span class="pagebanner">{0} <fmt:message key="banner.entreprises.trouvees" /></span></display:setProperty>
