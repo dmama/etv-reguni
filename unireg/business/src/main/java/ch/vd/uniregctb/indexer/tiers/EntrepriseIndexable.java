@@ -124,10 +124,12 @@ public class EntrepriseIndexable extends ContribuableIndexable<Entreprise> {
 		// particularité... cette entreprise a-t-elle absorbé d'autres entreprises par le passé ?
 		final Set<RapportEntreTiers> rapportsObjets = tiers.getRapportsObjet();
 		boolean isMergeResult = false;
-		for (RapportEntreTiers rapport : rapportsObjets) {
-			if (!rapport.isAnnule() && rapport.getType() == TypeRapportEntreTiers.FUSION_ENTREPRISES) {
-				isMergeResult = true;
-				break;
+		if (rapportsObjets != null) {
+			for (RapportEntreTiers rapport : rapportsObjets) {
+				if (!rapport.isAnnule() && rapport.getType() == TypeRapportEntreTiers.FUSION_ENTREPRISES) {
+					isMergeResult = true;
+					break;
+				}
 			}
 		}
 		data.setCorporationMergeResult(isMergeResult);
