@@ -117,10 +117,11 @@ public class AnnulationMariageTest extends AbstractEvenementCivilInterneTest {
 		
 		/*
 		 * Evénements fiscaux devant être générés :
+		 *  - annulation du for fermé
 		 *  - réouverture for fiscal principal de Pierre
 		 */
-		assertEquals(1, eventSender.count);
-		assertEquals(1, getEvenementFiscalService().getEvenementsFiscaux(pierre).size());
+		assertEquals(2, eventSender.count);
+		assertEquals(2, getEvenementFiscalService().getEvenementsFiscaux(pierre).size());
 	}
 	
 	@Test
@@ -171,12 +172,13 @@ public class AnnulationMariageTest extends AbstractEvenementCivilInterneTest {
 		
 		/*
 		 * Evénements fiscaux devant être générés :
+		 *  - annulation des fors fermés (1 pour chacun)
 		 *  - réouverture for fiscal principal de Maurice
 		 *  - réouverture for fiscal principal de Béatrice
 		 */
-		assertEquals(2, eventSender.count);
-		assertEquals(1, getEvenementFiscalService().getEvenementsFiscaux(momo).size());
-		assertEquals(1, getEvenementFiscalService().getEvenementsFiscaux(bea).size());
+		assertEquals(4, eventSender.count);
+		assertEquals(2, getEvenementFiscalService().getEvenementsFiscaux(momo).size());
+		assertEquals(2, getEvenementFiscalService().getEvenementsFiscaux(bea).size());
 	}
 
 	private AnnulationMariage createAnnulationMariage(long noIndividu, RegDate date) {
