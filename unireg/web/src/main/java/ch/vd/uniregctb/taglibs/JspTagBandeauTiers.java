@@ -23,6 +23,7 @@ import org.springframework.web.util.HtmlUtils;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
+import ch.vd.uniregctb.activation.ActivationDesactivationHelper;
 import ch.vd.uniregctb.adresse.AdresseEnvoiDetaillee;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
@@ -43,7 +44,6 @@ import ch.vd.uniregctb.tiers.EvenementsCivilsNonTraites;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.FormeLegaleHisto;
 import ch.vd.uniregctb.tiers.MenageCommun;
-import ch.vd.uniregctb.tiers.NatureTiers;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
@@ -801,14 +801,7 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 
 		@Override
 		public boolean isValide(Tiers tiers) {
-			final boolean droitOk;
-			final NatureTiers nature = tiers.getNatureTiers();
-			if (nature == NatureTiers.Etablissement || nature == NatureTiers.Entreprise) {
-				droitOk = SecurityHelper.isGranted(securityProvider, Role.MODIF_PM);
-			}
-			else {
-				droitOk = SecurityHelper.isAnyGranted(securityProvider, Role.MODIF_VD_ORD, Role.MODIF_VD_SOURC, Role.MODIF_HC_HS, Role.MODIF_HAB_DEBPUR, Role.MODIF_NONHAB_DEBPUR);
-			}
+			final boolean droitOk = ActivationDesactivationHelper.isActivationDesactivationAllowed(tiers.getNatureTiers(), securityProvider);
 			return droitOk && tiers.isDesactive(null);
 		}
 
@@ -901,14 +894,7 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 
 		@Override
 		public boolean isValide(Tiers tiers) {
-			final boolean droitOk;
-			final NatureTiers nature = tiers.getNatureTiers();
-			if (nature == NatureTiers.Etablissement || nature == NatureTiers.Entreprise) {
-				droitOk = SecurityHelper.isGranted(securityProvider, Role.MODIF_PM);
-			}
-			else {
-				droitOk = SecurityHelper.isAnyGranted(securityProvider, Role.MODIF_VD_ORD, Role.MODIF_VD_SOURC, Role.MODIF_HC_HS, Role.MODIF_HAB_DEBPUR, Role.MODIF_NONHAB_DEBPUR);
-			}
+			final boolean droitOk = ActivationDesactivationHelper.isActivationDesactivationAllowed(tiers.getNatureTiers(), securityProvider);
 			return droitOk && !tiers.isDesactive(null);
 		}
 

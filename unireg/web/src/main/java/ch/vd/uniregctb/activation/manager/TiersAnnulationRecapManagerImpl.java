@@ -4,15 +4,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 
+import ch.vd.uniregctb.activation.ActivationDesactivationHelper;
 import ch.vd.uniregctb.activation.ActivationService;
 import ch.vd.uniregctb.activation.ActivationServiceException;
 import ch.vd.uniregctb.activation.view.TiersAnnulationRecapView;
 import ch.vd.uniregctb.common.ActionException;
 import ch.vd.uniregctb.security.AccessDeniedException;
-import ch.vd.uniregctb.security.Role;
-import ch.vd.uniregctb.security.SecurityHelper;
 import ch.vd.uniregctb.security.SecurityProviderInterface;
-import ch.vd.uniregctb.tiers.NatureTiers;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersService;
 
@@ -87,16 +85,9 @@ public class TiersAnnulationRecapManagerImpl implements TiersAnnulationRecapMana
 		try {
 			final Tiers tiers = tiersService.getTiers(tiersAnnulationRecapView.getNumeroTiers());
 
-			final boolean droitOk;
-			final NatureTiers nature = tiers.getNatureTiers();
-			if (nature == NatureTiers.Etablissement || nature == NatureTiers.Entreprise) {
-				droitOk = SecurityHelper.isGranted(securityProvider, Role.MODIF_PM);
-			}
-			else {
-				droitOk = SecurityHelper.isAnyGranted(securityProvider, Role.MODIF_VD_ORD, Role.MODIF_VD_SOURC, Role.MODIF_HC_HS, Role.MODIF_HAB_DEBPUR, Role.MODIF_NONHAB_DEBPUR);
-			}
+			final boolean droitOk = ActivationDesactivationHelper.isActivationDesactivationAllowed(tiers.getNatureTiers(), securityProvider);
 			if (!droitOk) {
-				throw new AccessDeniedException("Vous ne possédez pas les droit IfoSec d'annulation/désactivation des tiers de nature " + nature);
+				throw new AccessDeniedException("Vous ne possédez pas les droit IfoSec d'annulation/désactivation des tiers de nature " + tiers.getNatureTiers());
 			}
 
 			if (tiersAnnulationRecapView.getNumeroTiersRemplacant() != null) {
