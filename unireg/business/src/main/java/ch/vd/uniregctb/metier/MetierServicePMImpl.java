@@ -579,6 +579,47 @@ public class MetierServicePMImpl implements MetierServicePM {
 	}
 
 	@Override
+	public void revoqueFaillite(Entreprise entreprise, RegDate datePrononceFaillite, @Nullable String remarqueAssociee) throws MetierServiceException {
+
+		// 1. état fiscal courant différent de "EN_FAILLITE" -> on saute !
+
+		final EtatEntreprise etat = entreprise.getEtatActuel();
+		if (etat == null || etat.getType() != TypeEtatEntreprise.EN_FAILLITE) {
+			throw new MetierServiceException("L'entreprise n'est pas/plus en faillite.");
+		}
+		else if (etat.getDateObtention() != datePrononceFaillite) {
+			throw new MetierServiceException("La date de prononcé de faillite fournie ne correspond pas à la date actuellement connue.");
+		}
+
+		// 2. annulation de l'état en question
+
+		etat.setAnnule(true);
+
+		// 3. ré-ouverture du for fiscal principal fermé à la date du prononcé de faillite
+
+		final ForFiscalPrincipal ffp = entreprise.getDernierForFiscalPrincipal();
+		if (ffp == null) {
+			throw new MetierServiceException("L'entreprise n'a aucun for principal non-annulé.");
+		}
+		else if (ffp.getDateFin() != datePrononceFaillite || ffp.getMotifFermeture() != MotifFor.FAILLITE) {
+			throw new MetierServiceException("Le dernier for principal de l'entreprise n'est soit pas fermé à la date du prononcé de faillite, soit fermé avec un motif de fermeture incompatible avec une faillite.");
+		}
+		ffp.setAnnule(true);
+		tiersService.reopenFor(ffp, entreprise);
+
+		// 4. envoi d'un événement fiscal de révocation de faillite (+ annulation du for avant ré-ouverture)
+
+		evenementFiscalService.publierEvenementFiscalAnnulationFor(ffp);
+		evenementFiscalService.publierEvenementFiscalInformationComplementaire(entreprise,
+		                                                                       EvenementFiscalInformationComplementaire.TypeInformationComplementaire.REVOCATION_FAILLITE,
+		                                                                       RegDate.get());
+
+		// 5. éventuellement, ajoute une nouvelle remarque sur le tiers
+
+		addRemarque(entreprise, remarqueAssociee);
+	}
+
+	@Override
 	public void demenageSiege(Entreprise entreprise, RegDate dateDebutNouveauSiege, TypeAutoriteFiscale taf, int noOfs) throws MetierServiceException {
 
 		// pas de for principal ouvert -> pas possible d'aller plus loin

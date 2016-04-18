@@ -113,6 +113,7 @@
 						<ul>
 							<authz:authorize ifAnyGranted="ROLE_FAILLITE_ENTREPRISE">
 								<li><a href="<c:url value="/processuscomplexe/faillite/list.do"/>"><fmt:message key="title.faillite"/></a></li>
+								<li><a href="<c:url value="/processuscomplexe/revocation/faillite/list.do"/>"><fmt:message key="title.revocation.faillite"/></a></li>
 							</authz:authorize>
 							<authz:authorize ifAnyGranted="ROLE_DEMENAGEMENT_SIEGE_ENTREPRISE">
 								<li><a href="<c:url value="/processuscomplexe/demenagement/list.do"/>"><fmt:message key="title.demenagement.siege"/></a></li>
