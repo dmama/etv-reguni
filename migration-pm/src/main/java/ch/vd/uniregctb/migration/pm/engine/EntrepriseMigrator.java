@@ -4397,6 +4397,10 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		if (regpm.getDateRetour() != null) {
 			etats.add(new EtatDeclarationRetournee(regpm.getDateRetour(), MigrationConstants.SOURCE_RETOUR_QSNC_MIGRE));
 		}
+		else if (regpm.getDateDecision() != null && regpm.getEtat() == RegpmTypeEtatQuestionnaireSNC.TAXE) {
+			// [SIFISC-16862] on ajoute un état bidon "ECHUE" à la date de décision pour éviter les rappels
+			etats.add(new EtatDeclarationEchue(regpm.getDateDecision()));
+		}
 
 		// un peu de traçabilité sur le travail accompli ici
 		etats.forEach(etat -> mr.addMessage(LogCategory.DECLARATIONS, LogLevel.INFO,
