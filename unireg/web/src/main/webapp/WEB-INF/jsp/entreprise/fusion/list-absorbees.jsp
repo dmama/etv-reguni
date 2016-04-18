@@ -19,12 +19,12 @@
 		    <legend><span><fmt:message key="label.caracteristiques.fusion.entreprises" /></span></legend>
 		    <table>
 			    <tr class="<unireg:nextRowClass/>" >
-				    <td width="25%"><fmt:message key="label.date.contrat.fusion" />&nbsp;:</td>
-				    <td width="75%"><unireg:regdate regdate="${fusion.dateContratFusion}"/></td>
-			    </tr>
-			    <tr class="<unireg:nextRowClass/>" >
 				    <td width="25%"><fmt:message key="label.date.bilan.fusion" />&nbsp;:</td>
 				    <td width="75%"><unireg:regdate regdate="${fusion.dateBilanFusion}"/></td>
+			    </tr>
+			    <tr class="<unireg:nextRowClass/>" >
+				    <td width="25%"><fmt:message key="label.date.contrat.fusion" />&nbsp;:</td>
+				    <td width="75%"><unireg:regdate regdate="${fusion.dateContratFusion}"/></td>
 			    </tr>
 		    </table>
 	    </fieldset>
