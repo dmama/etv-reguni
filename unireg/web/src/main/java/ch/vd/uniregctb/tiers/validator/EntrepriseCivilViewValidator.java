@@ -58,6 +58,12 @@ public class EntrepriseCivilViewValidator implements Validator {
 					errors.rejectValue("numeroIde", "error.ide");
 				}
 			}
+
+			if (view.getCapitalLibere() != null) {
+				if (StringUtils.isBlank(view.getDevise())) {
+					errors.rejectValue("devise", "error.devise.obligatoire");
+				}
+			}
 		}
 	}
 }
