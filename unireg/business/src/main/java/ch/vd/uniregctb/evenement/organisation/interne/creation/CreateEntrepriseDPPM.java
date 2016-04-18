@@ -62,8 +62,8 @@ public class CreateEntrepriseDPPM extends CreateEntreprise {
 	}
 
 	@Override
-	protected void validateSpecific(EvenementOrganisationErreurCollector erreurs, EvenementOrganisationWarningCollector warnings) throws EvenementOrganisationException {
-		super.validateSpecific(erreurs, warnings);
+	protected void validateSpecific(EvenementOrganisationErreurCollector erreurs, EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) throws EvenementOrganisationException {
+		super.validateSpecific(erreurs, warnings, suivis);
 
 		if (getCategory() == null) {
 			FormeLegale formeLegale = getOrganisation().getFormeLegale(getDateDeCreation());

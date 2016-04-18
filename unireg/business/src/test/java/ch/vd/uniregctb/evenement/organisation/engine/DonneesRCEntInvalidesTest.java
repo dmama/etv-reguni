@@ -89,7 +89,7 @@ public class DonneesRCEntInvalidesTest extends AbstractEvenementOrganisationProc
 				                             Assert.assertEquals(EtatEvenementOrganisation.EN_ERREUR, evt.getEtat());
 
 				                             Assert.assertEquals(String.format("L'organisation n°%s, nom: Synergy SA, est en fait une succursale au RC rapportée de manière erronée comme une entreprise par RCEnt. Elle ne peut aboutir à la création d'un contribuable PM.", noOrganisation),
-				                                                 evt.getErreurs().get(0).getMessage());
+				                                                 evt.getErreurs().get(1).getMessage());
 				                             return null;
 			                             }
 		                             }
@@ -151,7 +151,7 @@ public class DonneesRCEntInvalidesTest extends AbstractEvenementOrganisationProc
 
 				                             Assert.assertEquals(String.format("L'organisation n°%s, nom: Synergy SA, est en fait une succursale au RC rapportée de manière erronée comme une entreprise par RCEnt. Elle est pourtant associée à l'entreprise n°%s. Ce cas doit être corrigé.",
 				                                                               noOrganisation, FormatNumeroHelper.numeroCTBToDisplay(entrepriseId)),
-				                                                 evt.getErreurs().get(0).getMessage());
+				                                                 evt.getErreurs().get(1).getMessage());
 				                             return null;
 			                             }
 		                             }

@@ -33,7 +33,7 @@ import ch.vd.uniregctb.evenement.organisation.interne.EvenementOrganisationInter
 import ch.vd.uniregctb.evenement.organisation.interne.EvenementOrganisationInterneComposite;
 import ch.vd.uniregctb.evenement.organisation.interne.Indexation;
 import ch.vd.uniregctb.evenement.organisation.interne.IndexationPure;
-import ch.vd.uniregctb.evenement.organisation.interne.MessageSuivi;
+import ch.vd.uniregctb.evenement.organisation.interne.MessagePreExecution;
 import ch.vd.uniregctb.evenement.organisation.interne.TraitementManuel;
 import ch.vd.uniregctb.evenement.organisation.interne.adresse.AdresseStrategy;
 import ch.vd.uniregctb.evenement.organisation.interne.creation.CreateOrganisationStrategy;
@@ -221,12 +221,14 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 			                                     noIdeCivil != null ? ", IDE: " + noIdeCivil : "",
 			                                     organisation.getNumeroOrganisation());
 			Audit.info(event.getNoEvenement(), message);
-			evenements.add(new MessageSuivi(event, organisation, entreprise, context, options, message));
+			evenements.add(new MessagePreExecution(event, organisation, entreprise, context, options, message));
 
 		}
 		/* L'entreprise n'a pas été retrouvée par identifiant cantonal, on utilise le service d'identification pour tenter de la retrouver
 		 si elle existe quand même sans avoir été rapprochée. */
 		else {
+			Tiers tiers = null;
+
 			final CriteresEntreprise criteres = new CriteresEntreprise();
 			criteres.setRaisonSociale(raisonSocialeCivile);
 			criteres.setIde(noIdeCivil);
@@ -235,21 +237,10 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 
 				// L'identificatione est un succès
 				if (found.size() == 1) {
-					entreprise = (Entreprise) tiersDAO.get(found.get(0));
-					if (entreprise == null) {
+					tiers = tiersDAO.get(found.get(0));
+					if (tiers == null) {
 						panicNotFoundAfterIdent(found.get(0), organisationDescription);
 					}
-
-					final String derniereRaisonSocialeFiscale = getDerniereRaisonSocialeFiscale(entreprise);
-
-					final String message = String.format("%s%s identifiée sur la base de ses attributs civils [%s].",
-					                                     entreprise.toString(),
-					                                     StringUtils.isNotBlank(derniereRaisonSocialeFiscale) ? " (" + derniereRaisonSocialeFiscale + ")" : "",
-					                                     attributsCivilsAffichage(raisonSocialeCivile, noIdeCivil));
-					Audit.info(event.getNoEvenement(), message);
-					evenements.add(new MessageSuivi(event, organisation, entreprise, context, options, message));
-					evenements.add(rattacheOrganisation(event, organisation, entreprise, context, options));
-
 				}
 				// L'identificatione est un échec: selon toute vraisemblance, on connait le tiers mais on n'arrive pas à l'identifier avec certitude.
 				else if (found.size() > 1) {
@@ -269,13 +260,37 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 				Audit.info(event.getNoEvenement(), message);
 				return new TraitementManuel(event, organisation, null, context, options, message);
 			}
+			// L'identification a retourné un tiers. Reste à savoir si c'est un candidat acceptable.
+			if (tiers != null) {
+				if (tiers instanceof Entreprise) {
+					entreprise = (Entreprise) tiers;
+					final String derniereRaisonSocialeFiscale = getDerniereRaisonSocialeFiscale(entreprise);
+
+					final String message = String.format("%s%s identifiée sur la base de ses attributs civils [%s].",
+					                                     entreprise.toString(),
+					                                     StringUtils.isNotBlank(derniereRaisonSocialeFiscale) ? " (" + derniereRaisonSocialeFiscale + ")" : "",
+					                                     attributsCivilsAffichage(raisonSocialeCivile, noIdeCivil));
+					Audit.info(event.getNoEvenement(), message);
+					evenements.add(new MessagePreExecution(event, organisation, entreprise, context, options, message));
+					evenements.add(rattacheOrganisation(event, organisation, entreprise, context, options));
+				} else {
+					final String message = String.format("Le tiers [%s] n° %d identifié grâce aux attributs civils [%s] n'est pas une entreprise et sera ignoré. " +
+							                                     "Un nouveau tiers sera créé, le cas échéant, pour l'organisation civile n°%d.",
+					                                     tiers.getType().getDescription(),
+					                                     tiers.getNumero(),
+					                                     attributsCivilsAffichage(raisonSocialeCivile, noIdeCivil),
+					                                     organisation.getNumeroOrganisation());
+							Audit.info(event.getNoEvenement(), message);
+					evenements.add(new MessagePreExecution(event, organisation, null, context, options, message));
+				}
+			}
 			// L'identification n'a rien retourné. Cela veut dire qu'on ne connait pas déjà le tiers. On rapporte simplement cet état de fait.
-			if (entreprise == null) {
+			else {
 				final String message = String.format("Aucune entreprise identifiée pour le numéro civil %s ou les attributs civils [%s].",
 				                                     organisation.getNumeroOrganisation(),
 				                                     attributsCivilsAffichage(raisonSocialeCivile, noIdeCivil));
 				Audit.info(event.getNoEvenement(), message);
-				evenements.add(new MessageSuivi(event, organisation, null, context, options, message));
+				evenements.add(new MessagePreExecution(event, organisation, null, context, options, message));
 			}
 		}
 
@@ -374,12 +389,12 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 					messageSitesNonRattaches = String.format(" Aussi des sites civils secondaires n'ont pas pu être rattachés et seront créés: %s", sitesNonRattaches);
 				}
 
-				return new MessageSuivi(event, organisation, entreprise, context, options,
-						String.format("Organisation civile n°%d rattachée à l'entreprise n°%d.%s%s",
+				return new MessagePreExecution(event, organisation, entreprise, context, options,
+				                               String.format("Organisation civile n°%d rattachée à l'entreprise n°%d.%s%s",
 						              organisation.getNumeroOrganisation(), entreprise.getNumero(), messageEtablissementsNonRattaches == null ? "" : messageEtablissementsNonRattaches, messageSitesNonRattaches == null ? "" : messageSitesNonRattaches));
 			} else {
-				return new MessageSuivi(event, organisation, entreprise, context, options,
-						String.format("Organisation civile n°%d rattachée avec succès à l'entreprise n°%d, avec tous ses établissements.",
+				return new MessagePreExecution(event, organisation, entreprise, context, options,
+				                               String.format("Organisation civile n°%d rattachée avec succès à l'entreprise n°%d, avec tous ses établissements.",
 						              organisation.getNumeroOrganisation(), entreprise.getNumero()));
 			}
 		}

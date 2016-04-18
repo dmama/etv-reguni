@@ -132,10 +132,10 @@ public abstract class EvenementOrganisationInterne {
 		this.organisationDescription = context.getServiceOrganisation().createOrganisationDescription(organisation, getDateEvt());
 	}
 
-	public final void validate(EvenementOrganisationErreurCollector erreurs, EvenementOrganisationWarningCollector warnings) throws EvenementOrganisationException {
+	public final void validate(EvenementOrganisationErreurCollector erreurs, EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) throws EvenementOrganisationException {
 		validateCommon(erreurs);
 		if (!erreurs.hasErreurs()) {
-			validateSpecific(erreurs, warnings);
+			validateSpecific(erreurs, warnings, suivis);
 		}
 	}
 
@@ -143,7 +143,7 @@ public abstract class EvenementOrganisationInterne {
 	 * Effectue le traitement métier voulu pour l'événement organisation courant.
 	 * <p>
 	 * Cette méthode lève une exception en cas d'erreur inattendue dans le traitement (la majorité des erreurs prévisibles devraient avoir été traitées
-	 * dans la méthode {@link #validate(EvenementOrganisationErreurCollector, EvenementOrganisationWarningCollector)}).
+	 * dans la méthode {@link #validate(EvenementOrganisationErreurCollector, EvenementOrganisationWarningCollector, EvenementOrganisationSuiviCollector suivis)}).
 	 * </p><p/>
 	 * Les éventuels avertissement sont renseignés dans la
 	 * collection de warnings passée en paramètre. Cette méthode retourne un status qui permet de savoir si l'événement est redondant ou non.
@@ -306,7 +306,7 @@ public abstract class EvenementOrganisationInterne {
 		return range != null && range.getDateFin() == null;
 	}
 
-	protected abstract void validateSpecific(EvenementOrganisationErreurCollector erreurs, EvenementOrganisationWarningCollector warnings) throws EvenementOrganisationException;
+	protected abstract void validateSpecific(EvenementOrganisationErreurCollector erreurs, EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) throws EvenementOrganisationException;
 
 	protected void validateCommon(EvenementOrganisationErreurCollector erreurs) {
 

@@ -30,7 +30,7 @@ public class InformationComplementaireAVerifier extends InformationComplementair
 	}
 
 	@Override
-	protected void validateSpecific(EvenementOrganisationErreurCollector erreurs, EvenementOrganisationWarningCollector warnings) throws EvenementOrganisationException {
-		super.validateSpecific(erreurs, warnings);
+	protected void validateSpecific(EvenementOrganisationErreurCollector erreurs, EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) throws EvenementOrganisationException {
+		super.validateSpecific(erreurs, warnings, suivis);
 	}
 }

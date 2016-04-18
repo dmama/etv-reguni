@@ -111,7 +111,7 @@ public class DoublonsProcessorTest extends AbstractEvenementOrganisationProcesso
 				                             Assert.assertEquals(0, evtsFiscaux.size());
 
 				                             Assert.assertEquals(String.format("Traitement manuel requis pour la gestion de doublon d’entreprises: Organisation remplacée (civil): %d, remplaçante: %d.", noOrganisation, noOrganisationRamplacante),
-				                                                 evt.getErreurs().get(0).getMessage());
+				                                                 evt.getErreurs().get(1).getMessage());
 				                             return null;
 			                             }
 		                             }
@@ -180,7 +180,7 @@ public class DoublonsProcessorTest extends AbstractEvenementOrganisationProcesso
 				                             Assert.assertEquals(0, evtsFiscaux.size());
 
 				                             Assert.assertEquals(String.format("Traitement manuel requis: Situation de doublon d'organisation détectée. Etablissement remplacé (civil): %d, remplaçant: %d.", noSite, noSiteRemplacant),
-				                                                 evt.getErreurs().get(1).getMessage());
+				                                                 evt.getErreurs().get(2).getMessage());
 				                             return null;
 			                             }
 		                             }

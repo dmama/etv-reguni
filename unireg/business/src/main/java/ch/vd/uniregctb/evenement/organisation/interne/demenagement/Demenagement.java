@@ -112,7 +112,7 @@ public abstract class Demenagement extends EvenementOrganisationInterneDeTraitem
 	}
 
 	@Override
-	protected void validateSpecific(EvenementOrganisationErreurCollector erreurs, EvenementOrganisationWarningCollector warnings) throws EvenementOrganisationException {
+	protected void validateSpecific(EvenementOrganisationErreurCollector erreurs, EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) throws EvenementOrganisationException {
 		/*
 		 Erreurs techniques fatale
 		  */

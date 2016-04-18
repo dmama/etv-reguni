@@ -32,8 +32,8 @@ public class DemenagementSansChangementDeTypeAutoriteFiscale extends Demenagemen
 	}
 
 	@Override
-	protected void validateSpecific(EvenementOrganisationErreurCollector erreurs, EvenementOrganisationWarningCollector warnings) throws EvenementOrganisationException {
-		super.validateSpecific(erreurs, warnings);
+	protected void validateSpecific(EvenementOrganisationErreurCollector erreurs, EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) throws EvenementOrganisationException {
+		super.validateSpecific(erreurs, warnings, suivis);
 
 		/*
 		 Erreurs techniques fatale

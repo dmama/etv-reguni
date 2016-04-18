@@ -296,7 +296,7 @@ public class RadiationProcessorTest extends AbstractEvenementOrganisationProcess
 				                             Assert.assertEquals(0, evtsFiscaux.size());
 
 				                             Assert.assertEquals("Traitement manuel requis pour le contrôle de la radiation d’une entreprise encore assujettie.",
-				                                                 evt.getErreurs().get(0).getMessage());
+				                                                 evt.getErreurs().get(1).getMessage());
 				                             return null;
 			                             }
 		                             }
@@ -385,7 +385,7 @@ public class RadiationProcessorTest extends AbstractEvenementOrganisationProcess
 				                             Assert.assertEquals(0, evtsFiscaux.size());
 
 				                             Assert.assertEquals(String.format("L'entreprise Entreprise n°%d est radiée de l'IDE mais pas du RC!", tiersId),
-				                                                 evt.getErreurs().get(0).getMessage());
+				                                                 evt.getErreurs().get(1).getMessage());
 				                             return null;
 			                             }
 		                             }
@@ -567,7 +567,7 @@ public class RadiationProcessorTest extends AbstractEvenementOrganisationProcess
 				                             Assert.assertEquals(0, evtsFiscaux.size());
 
 				                             Assert.assertEquals(String.format("Entreprise %d non APM radiée du RC mais pourtant toujours présente à l'IDE.", tiersId),
-				                                                 evt.getErreurs().get(0).getMessage());
+				                                                 evt.getErreurs().get(1).getMessage());
 				                             return null;
 			                             }
 		                             }
@@ -655,7 +655,7 @@ public class RadiationProcessorTest extends AbstractEvenementOrganisationProcess
 				                             Assert.assertEquals(0, evtsFiscaux.size());
 
 				                             Assert.assertEquals(String.format("Le status de l'entreprise %d est radiée du RC, mais indéterminé à l'IDE.", tiersId),
-				                                                 evt.getErreurs().get(0).getMessage());
+				                                                 evt.getErreurs().get(1).getMessage());
 				                             return null;
 			                             }
 		                             }
