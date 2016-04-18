@@ -26,6 +26,7 @@ import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 import ch.vd.uniregctb.adresse.AdresseEnvoiDetaillee;
 import ch.vd.uniregctb.adresse.AdresseEtrangere;
 import ch.vd.uniregctb.adresse.AdresseException;
+import ch.vd.uniregctb.adresse.AdresseMandataire;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.adresse.AdresseSuisse;
 import ch.vd.uniregctb.adresse.AdresseSupplementaire;
@@ -496,6 +497,13 @@ public class MetierServicePMImpl implements MetierServicePM {
 			}
 		}
 
+		// 1'. [SIFISC-18810] on ferme également les adresses mandataires...
+		for (AdresseMandataire adresse : entreprise.getAdressesMandataires()) {
+			if (!adresse.isAnnule() && adresse.getDateFin() == null) {
+				adresse.setDateFin(datePrononceFaillite);
+			}
+		}
+
 		// 2. on ferme les fors ouverts avec le motif FAILLITE
 
 		// on traite d'abord les fors secondaires, puis seulement ensuite le for principal
@@ -554,6 +562,16 @@ public class MetierServicePMImpl implements MetierServicePM {
 		                                      datePrononceFaillite,
 		                                      EnumSet.of(TypeRapportEntreTiers.MANDAT, TypeRapportEntreTiers.ACTIVITE_ECONOMIQUE),
 		                                      EnumSet.of(TypeRapportEntreTiers.MANDAT));
+
+		// 4'. [SIFISC-18810] ré-ouverture des adresses mandataires fermées à la date du prononcé de faillite
+		for (AdresseMandataire adresse : entreprise.getAdressesMandataires()) {
+			if (!adresse.isAnnule() && adresse.getDateFin() == datePrononceFaillite) {
+				final AdresseMandataire copie = adresse.duplicate();
+				adresse.setAnnule(true);
+				copie.setDateFin(null);
+				entreprise.addAdresseMandataire(copie);
+			}
+		}
 
 		// 5. éventuellement, ajoute une nouvelle remarque sur le tiers
 
@@ -716,6 +734,13 @@ public class MetierServicePMImpl implements MetierServicePM {
 				if (aFermer) {
 					ret.setDateFin(dateFinActivite);
 				}
+			}
+		}
+
+		// 1'. [SIFISC-18810] on ferme également les adresses mandataires...
+		for (AdresseMandataire adresse : entreprise.getAdressesMandataires()) {
+			if (!adresse.isAnnule() && adresse.getDateFin() == null) {
+				adresse.setDateFin(dateFinActivite);
 			}
 		}
 
