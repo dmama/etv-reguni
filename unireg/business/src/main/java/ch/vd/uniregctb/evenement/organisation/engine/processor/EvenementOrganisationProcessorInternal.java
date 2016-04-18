@@ -409,7 +409,7 @@ public class EvenementOrganisationProcessorInternal implements ProcessorInternal
 
 			// validation et traitement
 			final EtatEvenementOrganisation etat;
-			evtInterne.validate(erreurs, warnings);
+			evtInterne.validate(erreurs, warnings, suivis);
 			if (erreurs.hasErreurs()) {
 				etat = EtatEvenementOrganisation.EN_ERREUR;
 			}

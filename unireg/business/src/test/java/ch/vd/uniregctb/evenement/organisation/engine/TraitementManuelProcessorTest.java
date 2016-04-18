@@ -67,7 +67,7 @@ public class TraitementManuelProcessorTest extends AbstractEvenementOrganisation
 				                             final EvenementOrganisation evt = getUniqueEvent(noEvenement);
 				                             Assert.assertNotNull(evt);
 				                             Assert.assertEquals(EtatEvenementOrganisation.EN_ERREUR, evt.getEtat());
-				                             Assert.assertEquals("Traitement manuel requis pour nouvelle DP/APM ou organisation sans catégorie d’entreprise avec siège VD.", evt.getErreurs().iterator().next().getMessage());
+				                             Assert.assertEquals("Traitement manuel requis pour nouvelle DP/APM ou organisation sans catégorie d’entreprise avec siège VD.", evt.getErreurs().get(1).getMessage());
 				                             return null;
 			                             }
 		                             }

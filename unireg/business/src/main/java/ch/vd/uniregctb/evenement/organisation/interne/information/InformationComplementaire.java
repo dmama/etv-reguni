@@ -45,7 +45,7 @@ public class InformationComplementaire extends EvenementOrganisationInterneInfor
 	}
 
 	@Override
-	protected void validateSpecific(EvenementOrganisationErreurCollector erreurs, EvenementOrganisationWarningCollector warnings) throws EvenementOrganisationException {
+	protected void validateSpecific(EvenementOrganisationErreurCollector erreurs, EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) throws EvenementOrganisationException {
 		Assert.notNull(typeInfo);
 	}
 }

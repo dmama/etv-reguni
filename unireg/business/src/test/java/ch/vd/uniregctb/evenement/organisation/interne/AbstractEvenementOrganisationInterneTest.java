@@ -60,7 +60,7 @@ public abstract class AbstractEvenementOrganisationInterneTest extends BusinessT
 	}
 
 	protected void launchEvent(final EvenementOrganisationInterne evtOrganisation, final EvenementOrganisationErreurCollector erreurs, final EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) throws Exception {
-		evtOrganisation.validate(erreurs, warnings);
+		evtOrganisation.validate(erreurs, warnings, suivis);
 		if (!erreurs.hasErreurs()) {
 			evtOrganisation.handle(warnings, suivis);
 		}

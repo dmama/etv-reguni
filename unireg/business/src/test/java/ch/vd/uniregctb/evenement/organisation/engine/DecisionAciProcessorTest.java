@@ -100,7 +100,7 @@ public class DecisionAciProcessorTest extends AbstractEvenementOrganisationProce
 				                             Assert.assertEquals(EtatEvenementOrganisation.EN_ERREUR, evt.getEtat());
 
 				                             Assert.assertEquals(String.format("Entreprise n°%d est sous le coup d'une décision ACI. Cet événement doit être traité à la main.", tiersId),
-				                                                 evt.getErreurs().get(0).getMessage());
+				                                                 evt.getErreurs().get(1).getMessage());
 				                             return null;
 			                             }
 		                             }

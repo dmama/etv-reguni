@@ -76,9 +76,9 @@ public final class EvenementOrganisationInterneComposite extends EvenementOrgani
 	}
 
 	@Override
-	protected void validateSpecific(EvenementOrganisationErreurCollector erreurs, EvenementOrganisationWarningCollector warnings) throws EvenementOrganisationException {
+	protected void validateSpecific(EvenementOrganisationErreurCollector erreurs, EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) throws EvenementOrganisationException {
 		for (EvenementOrganisationInterne evt : listEvtOrganisation) {
-			evt.validateSpecific(erreurs, warnings);
+			evt.validateSpecific(erreurs, warnings, suivis);
 		}
 	}
 }

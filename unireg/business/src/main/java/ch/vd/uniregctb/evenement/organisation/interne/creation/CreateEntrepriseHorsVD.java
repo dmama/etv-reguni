@@ -131,7 +131,7 @@ public class CreateEntrepriseHorsVD extends EvenementOrganisationInterneDeTraite
 	}
 
 	@Override
-	protected void validateSpecific(EvenementOrganisationErreurCollector erreurs, EvenementOrganisationWarningCollector warnings) throws EvenementOrganisationException {
+	protected void validateSpecific(EvenementOrganisationErreurCollector erreurs, EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) throws EvenementOrganisationException {
 
 		if (category != null) {
 			Assert.state(category != CategorieEntreprise.PP, String.format("Catégorie d'entreprise non supportée! %s", category));
