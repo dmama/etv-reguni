@@ -6429,7 +6429,40 @@ public class TiersServiceImpl implements TiersService {
 	@Override
 	public boolean isInscriteRC(@NotNull Entreprise entreprise, RegDate dateReference) {
 		final Organisation organisation = getOrganisation(entreprise);
-		return organisation != null && OrganisationHelper.isInscritAuRC(organisation, dateReference);
+		if (organisation != null) {
+			return OrganisationHelper.isInscritAuRC(organisation, dateReference);
+		}
+		else {
+			final List<EtatEntreprise> etats = entreprise.getEtatsNonAnnulesTries();
+			for (EtatEntreprise etat : etats) {
+				if (etat.getType() == TypeEtatEntreprise.INSCRITE_RC && RegDateHelper.isBeforeOrEqual(etat.getDateObtention(), dateReference, NullDateBehavior.LATEST)) {
+					return true;
+				}
+			}
+			return false;
+		}
+	}
+
+	@Override
+	public boolean hasInscriptionActiveRC(@NotNull Entreprise entreprise, RegDate dateReference) {
+		final Organisation organisation = getOrganisation(entreprise);
+		if (organisation != null) {
+			return OrganisationHelper.isInscritAuRC(organisation, dateReference) && !OrganisationHelper.isRadieDuRC(organisation, dateReference);
+		}
+		else {
+			final List<EtatEntreprise> etats = entreprise.getEtatsNonAnnulesTries();
+			for (EtatEntreprise etat : CollectionsUtils.revertedOrder(etats)) {
+				if (RegDateHelper.isBeforeOrEqual(etat.getDateObtention(), dateReference, NullDateBehavior.LATEST)) {
+					if (etat.getType() == TypeEtatEntreprise.INSCRITE_RC) {
+						return true;
+					}
+					else if (etat.getType() == TypeEtatEntreprise.RADIEE_RC) {
+						return false;
+					}
+				}
+			}
+			return false;
+		}
 	}
 
 	@Override

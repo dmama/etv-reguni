@@ -198,6 +198,13 @@ public interface TiersService {
 	boolean isInscriteRC(@NotNull Entreprise entreprise, RegDate dateReference);
 
 	/**
+	 * @param entreprise une entreprise
+	 * @param dateReference une date de référence (si <code>null</code>, on prendra la dernier état connu)
+	 * @return si oui ou non cette entreprise est inscrite au RC à la date de référence donnée (dans le sens de <i>possède une inscription <strong>active</strong></i>, i.e. <i>non-radiée</i>)
+	 */
+	boolean hasInscriptionActiveRC(@NotNull Entreprise entreprise, RegDate dateReference);
+
+	/**
 	 * Renvoie la liste des types de changements d'état d'entreprise disponibles pour une date donnée en fonction des conditions règnant à la date,
 	 * et si l'historique existant le permet.
 	 *
