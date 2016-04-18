@@ -74,6 +74,7 @@ import ch.vd.uniregctb.common.HibernateDateRangeEntity;
 import ch.vd.uniregctb.common.LengthConstants;
 import ch.vd.uniregctb.common.MovingWindow;
 import ch.vd.uniregctb.common.NumeroIDEHelper;
+import ch.vd.uniregctb.common.StringComparator;
 import ch.vd.uniregctb.common.StringRenderer;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePM;
@@ -3288,6 +3289,24 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 	}
 
 	/**
+	 * [SIFISC-18611] les chaînes de caractères doivent être comparées de manière un peu plus laxiste vis-à-vis des caractères spéciaux
+	 * @param one une chaîne de caractères
+	 * @param two une autre chaîne de caractères
+	 * @return <code>true</code> si les deux chaînes de caractères peuvent être considérées comme équivalentes, <code>false</code> sinon
+	 */
+	private static boolean areStringsEquivalent(@Nullable String one, @Nullable String two) {
+		return areEqual(one, two, (s1, s2) -> {
+			final String canonical1 = removeSpecialChars(StringComparator.toLowerCaseWithoutAccent(s1));
+			final String canonical2 = removeSpecialChars(StringComparator.toLowerCaseWithoutAccent(s2));
+			return areEqual(canonical1, canonical2, Objects::equals);
+		});
+	}
+
+	private static String removeSpecialChars(@Nullable String s) {
+		return s == null ? StringUtils.EMPTY : s.replaceAll("[ ,;.:_!\\?'\"\\(\\){}\\[\\]-]", StringUtils.EMPTY);
+	}
+
+	/**
 	 * @param adresse1 une adresse civile
 	 * @param adresse2 une adresse fiscale
 	 * @return <code>true</code> si les deux adresses pointent vers le même endroit (les dates n'ont pas d'importance ici)
@@ -3296,15 +3315,15 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 
 		// [SIFISC-18273] on ne compare pas les numéros postaux complémentaires qui ne sont de toute façon pas placés sur l'enveloppe...
 
-		return areEqual(adresse1.getLocalite(), adresse2.getLocalite(), String::equalsIgnoreCase)
+		return areStringsEquivalent(adresse1.getLocalite(), adresse2.getLocalite())
 				&& areEqual(adresse1.getCasePostale(), adresse2.getCasePostale(), Object::equals)
-				&& areEqual(adresse1.getComplement(), adresse2.getComplement(), String::equalsIgnoreCase)
-				&& areEqual(adresse1.getLocaliteComplete(), adresse2.getLocaliteComplete(), String::equalsIgnoreCase)
+				&& areStringsEquivalent(adresse1.getComplement(), adresse2.getComplement())
+				&& areStringsEquivalent(adresse1.getLocaliteComplete(), adresse2.getLocaliteComplete())
 				&& areEqual(adresse1.getNoOfsPays(), adresse2.getNoOfsPays(), Object::equals)
-				&& areEqual(adresse1.getNumero(), adresse2.getNumero(), String::equalsIgnoreCase)
+				&& areStringsEquivalent(adresse1.getNumero(), adresse2.getNumero())
 				&& areEqual(adresse1.getNumeroOrdrePostal(), adresse2.getNumeroOrdrePostal(), Object::equals)
 				&& areEqual(adresse1.getNumeroPostal(), adresse2.getNumeroPostal(), Object::equals)
-				&& areEqual(adresse1.getRue(), adresse2.getRue(), String::equalsIgnoreCase);
+				&& areStringsEquivalent(adresse1.getRue(), adresse2.getRue());
 	}
 
 	/**
