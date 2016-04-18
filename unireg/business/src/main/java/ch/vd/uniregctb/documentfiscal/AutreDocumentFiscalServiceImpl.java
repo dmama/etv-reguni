@@ -111,7 +111,7 @@ public class AutreDocumentFiscalServiceImpl implements AutreDocumentFiscalServic
 
 		final TypeLettreBienvenue type;
 		if (taf == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
-			if (tiersService.isInscriteRC(e, dateTraitement)) {
+			if (tiersService.hasInscriptionActiveRC(e, dateTraitement)) {
 				type = TypeLettreBienvenue.VD_RC;
 			}
 			else {

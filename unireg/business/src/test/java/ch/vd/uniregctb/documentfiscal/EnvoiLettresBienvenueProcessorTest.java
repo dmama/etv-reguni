@@ -33,6 +33,8 @@ import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeEtatAutreDocumentFiscal;
+import ch.vd.uniregctb.type.TypeEtatEntreprise;
+import ch.vd.uniregctb.type.TypeGenerationEtatEntreprise;
 import ch.vd.uniregctb.type.TypeLettreBienvenue;
 
 public class EnvoiLettresBienvenueProcessorTest extends BusinessTest {
@@ -447,6 +449,68 @@ public class EnvoiLettresBienvenueProcessorTest extends BusinessTest {
 	}
 
 	@Test
+	public void testNouvelAssujettissementAPMManuelleInscriteRC() throws Exception {
+
+		final RegDate dateDebut = date(2016, 1, 4);
+
+		// mise en place fiscale
+		final long pmId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+				addFormeJuridique(entreprise, dateDebut, null, FormeJuridiqueEntreprise.ASSOCIATION);
+				addRaisonSociale(entreprise, dateDebut, null, "Titi");
+				addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_APM);
+				addRegimeFiscalCH(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_APM);
+				addForPrincipal(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne);
+				addBouclement(entreprise, dateDebut, DayMonth.get(12, 31), 12);
+				addEtatEntreprise(entreprise, dateDebut, TypeEtatEntreprise.INSCRITE_RC, TypeGenerationEtatEntreprise.MANUELLE);
+				return entreprise.getNumero();
+			}
+		});
+
+		// lancement du processeur
+		final RegDate dateTraitement = RegDate.get();
+		final EnvoiLettresBienvenueResults results = processor.run(dateTraitement, 0, null);
+		Assert.assertNotNull(results);
+		Assert.assertEquals(0, results.getErreurs().size());
+		Assert.assertEquals(0, results.getIgnores().size());
+		Assert.assertEquals(1, results.getTraites().size());
+
+		{
+			final EnvoiLettresBienvenueResults.Traite traite = results.getTraites().get(0);
+			Assert.assertNotNull(traite);
+			Assert.assertEquals(pmId, traite.noCtb);
+			Assert.assertEquals(TypeLettreBienvenue.VD_RC, traite.typeLettreEnvoyee);
+		}
+
+		// vérification de l'émission de lettre
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final Entreprise entreprise = (Entreprise) tiersDAO.get(pmId);
+				Assert.assertNotNull(entreprise);
+
+				final Set<AutreDocumentFiscal> adfs = entreprise.getAutresDocumentsFiscaux();
+				Assert.assertNotNull(adfs);
+				Assert.assertEquals(1, adfs.size());
+
+				final AutreDocumentFiscal adf = adfs.iterator().next();
+				Assert.assertNotNull(adf);
+				Assert.assertEquals(LettreBienvenue.class, adf.getClass());
+
+				final LettreBienvenue lb = (LettreBienvenue) adf;
+				Assert.assertEquals(TypeLettreBienvenue.VD_RC, lb.getType());
+				Assert.assertEquals(addJours(dateTraitement, 3), lb.getDateEnvoi());
+				Assert.assertEquals(addJours(dateTraitement, 3).addDays(30), lb.getDelaiRetour());
+				Assert.assertNull(lb.getDateRappel());
+				Assert.assertNull(lb.getDateRetour());
+				Assert.assertEquals(TypeEtatAutreDocumentFiscal.EMIS, lb.getEtat());
+			}
+		});
+	}
+
+	@Test
 	public void testNouvelAssujettissementAPMVDNonInscriteRC() throws Exception {
 
 		final long noOrganisation = 4327324L;
@@ -470,6 +534,67 @@ public class EnvoiLettresBienvenueProcessorTest extends BusinessTest {
 			@Override
 			public Long doInTransaction(TransactionStatus status) {
 				final Entreprise entreprise = addEntrepriseConnueAuCivil(noOrganisation);
+				addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_APM);
+				addRegimeFiscalCH(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_APM);
+				addForPrincipal(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne);
+				addBouclement(entreprise, dateDebut, DayMonth.get(12, 31), 12);
+				return entreprise.getNumero();
+			}
+		});
+
+		// lancement du processeur
+		final RegDate dateTraitement = RegDate.get();
+		final EnvoiLettresBienvenueResults results = processor.run(dateTraitement, 0, null);
+		Assert.assertNotNull(results);
+		Assert.assertEquals(0, results.getErreurs().size());
+		Assert.assertEquals(0, results.getIgnores().size());
+		Assert.assertEquals(1, results.getTraites().size());
+
+		{
+			final EnvoiLettresBienvenueResults.Traite traite = results.getTraites().get(0);
+			Assert.assertNotNull(traite);
+			Assert.assertEquals(pmId, traite.noCtb);
+			Assert.assertEquals(TypeLettreBienvenue.APM_VD_NON_RC, traite.typeLettreEnvoyee);
+		}
+
+		// vérification de l'émission de lettre
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final Entreprise entreprise = (Entreprise) tiersDAO.get(pmId);
+				Assert.assertNotNull(entreprise);
+
+				final Set<AutreDocumentFiscal> adfs = entreprise.getAutresDocumentsFiscaux();
+				Assert.assertNotNull(adfs);
+				Assert.assertEquals(1, adfs.size());
+
+				final AutreDocumentFiscal adf = adfs.iterator().next();
+				Assert.assertNotNull(adf);
+				Assert.assertEquals(LettreBienvenue.class, adf.getClass());
+
+				final LettreBienvenue lb = (LettreBienvenue) adf;
+				Assert.assertEquals(TypeLettreBienvenue.APM_VD_NON_RC, lb.getType());
+				Assert.assertEquals(addJours(dateTraitement, 3), lb.getDateEnvoi());
+				Assert.assertEquals(addJours(dateTraitement, 3).addDays(30), lb.getDelaiRetour());
+				Assert.assertNull(lb.getDateRappel());
+				Assert.assertNull(lb.getDateRetour());
+				Assert.assertEquals(TypeEtatAutreDocumentFiscal.EMIS, lb.getEtat());
+			}
+		});
+	}
+
+	@Test
+	public void testNouvelAssujettissementAPMManuelleNonInscriteRC() throws Exception {
+
+		final RegDate dateDebut = date(2016, 1, 4);
+
+		// mise en place fiscale
+		final long pmId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+				addFormeJuridique(entreprise, dateDebut, null, FormeJuridiqueEntreprise.ASSOCIATION);
+				addRaisonSociale(entreprise, dateDebut, null, "Titi");
 				addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_APM);
 				addRegimeFiscalCH(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_APM);
 				addForPrincipal(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne);
