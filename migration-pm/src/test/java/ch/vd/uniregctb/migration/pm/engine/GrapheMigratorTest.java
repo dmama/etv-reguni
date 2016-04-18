@@ -6190,6 +6190,81 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 	}
 
 	/**
+	 * [SIFISC-18611] Comparaison des textes de l'adresse
+	 */
+	@Test
+	public void testMigrationAdressesTresLegerementDifferentes() throws Exception {
+
+		final long noEntreprise = 35623L;
+		final long noCantonalEntreprise = 272462L;
+		final long noCantonalEtablissementPrincipal = 3627472L;
+		final RegDate dateDebut = RegDate.get(1995, 6, 12);
+		final RegDate dateSnapshotRCEnt = RegDate.get(2016, 2, 5);
+
+		final RegpmEntreprise e = EntrepriseMigratorTest.buildEntreprise(noEntreprise);
+		EntrepriseMigratorTest.addRaisonSociale(e, dateDebut, "Tarlatata SARL", null, null, true);
+		EntrepriseMigratorTest.addFormeJuridique(e, dateDebut, EntrepriseMigratorTest.createTypeFormeJuridique("S.A.R.L.", RegpmCategoriePersonneMorale.PM));
+		EntrepriseMigratorTest.addRegimeFiscalCH(e, dateDebut, null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
+		EntrepriseMigratorTest.addRegimeFiscalVD(e, dateDebut, null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
+		EntrepriseMigratorTest.addAdresse(e, RegpmTypeAdresseEntreprise.COURRIER, dateDebut.addMonths(4), null, LocalitePostale.RENENS, "A,v;e.n:ü-e_D!E?l'o n\"g(e)m{a}l[le] ", "1BIS", null, null);
+		e.setNumeroCantonal(noCantonalEntreprise);
+
+		final MockGraphe graphe = new MockGraphe(Collections.singletonList(e),
+		                                         null,
+		                                         null);
+
+		activityManager.setup(ALL_ACTIVE);
+		appariementsMultiplesManager.setup(NO_REUSE);
+
+		organisationService.setUp(new MockServiceOrganisation() {
+			@Override
+			protected void init() {
+				final MockOrganisation org = addOrganisation(noCantonalEntreprise);
+				final MockSiteOrganisation sitePrincipal = addSite(org, noCantonalEtablissementPrincipal, dateSnapshotRCEnt, new MockDonneesRegistreIDE(), new MockDonneesRC());
+				sitePrincipal.changeTypeDeSite(dateSnapshotRCEnt, TypeDeSite.ETABLISSEMENT_PRINCIPAL);
+				sitePrincipal.changeNom(dateSnapshotRCEnt, "Tarlatata S.A.R.L.");
+				sitePrincipal.changeFormeLegale(dateSnapshotRCEnt, FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE);
+				final MockAdresse adresse = new MockAdresse(TypeAdresseCivil.COURRIER, null, "Avenue de Longemalle", MockLocalite.Renens, dateSnapshotRCEnt, null);
+				adresse.setNumero("1bis");
+				org.addAdresse(adresse);
+				addNumeroIDE(org, "CHE123456788", RegDate.get(2009, 1, 1), null);
+			}
+		});
+
+		final LoggedMessages lms = grapheMigrator.migrate(graphe);
+		Assert.assertNotNull(lms);
+
+		// vérification de l'adresse courrier migrée (avant la date du snapshot RCEnt seulement, puisqu'après elles devraient avoir été identifiées comme identiques
+		doInUniregTransaction(true, status -> {
+			final Entreprise entreprise = uniregStore.getEntityFromDb(Entreprise.class, noEntreprise);
+			Assert.assertNotNull(entreprise);
+			final Set<AdresseTiers> adresses = entreprise.getAdressesTiers();
+			Assert.assertNotNull(adresses);
+			Assert.assertEquals(1, adresses.size());
+
+			final AdresseTiers adresse = adresses.iterator().next();
+			Assert.assertNotNull(adresse);
+			Assert.assertFalse(adresse.isAnnule());
+			Assert.assertEquals(dateDebut.addMonths(4), adresse.getDateDebut());
+			Assert.assertEquals(dateSnapshotRCEnt.getOneDayBefore(), adresse.getDateFin());
+			Assert.assertEquals(TypeAdresseTiers.COURRIER, adresse.getUsage());
+		});
+
+		final Map<LogCategory, List<String>> messages = buildTextualMessages(lms);
+		Assert.assertNotNull(messages);
+
+		{
+			final List<String> msgs = messages.get(LogCategory.ADRESSES);
+			Assert.assertNotNull(msgs);
+			Assert.assertEquals(2, msgs.size());
+
+			// dans le CSV, les ";" présents dans l'adresse sont transformés en ","
+			Assert.assertEquals("WARN;" + noEntreprise + ";Active;;" + noCantonalEntreprise + ";;;;;;;;;;;;;A,v,e.n:ü-e_D!E?l'o n\"g(e)m{a}l[le] ;1BIS;;Renens (VD);;Adresse 'A,v,e.n:ü-e_D!E?l'o n\"g(e)m{a}l[le]' à 'Renens (VD)' conservée en texte libre.", msgs.get(0));
+			Assert.assertEquals("INFO;" + noEntreprise + ";Active;;" + noCantonalEntreprise + ";;;;;;;;;;;;;;;;;;Adresse fiscale de courrier migrée sur la période [12.10.1995 -> 04.02.2016].", msgs.get(1));
+		}
+	}
+
+	/**
 	 * [SIFISC-18360] Surcharge des adresses de représentation
 	 */
 	@Test
