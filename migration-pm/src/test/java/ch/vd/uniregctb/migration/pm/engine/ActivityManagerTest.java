@@ -137,7 +137,7 @@ public class ActivityManagerTest {
 		final RegpmTypeFormeJuridique typeFormeJuridique = EntrepriseMigratorTest.createTypeFormeJuridique("S.N.C", RegpmCategoriePersonneMorale.SP);
 		final RegpmEntreprise e = EntrepriseMigratorTest.buildEntreprise(1243L);
 		EntrepriseMigratorTest.addFormeJuridique(e, null, typeFormeJuridique);
-		EntrepriseMigratorTest.addQuestionnaireSNC(e, 2015, RegpmTypeEtatQuestionnaireSNC.RECU, RegDate.get(2016, 2, 1), RegDate.get(2016, 9, 30), RegDate.get(2016, 2, 10), null);
+		EntrepriseMigratorTest.addQuestionnaireSNC(e, 2015, RegpmTypeEtatQuestionnaireSNC.RECU, RegDate.get(2016, 2, 1), RegDate.get(2016, 9, 30), RegDate.get(2016, 2, 10), null, null);
 		Assert.assertTrue(mgr.isActive(e));         // on a quand-même reconnu la catégorie SP malgré sa date nulle !
 	}
 
@@ -155,7 +155,7 @@ public class ActivityManagerTest {
 			for (RegpmTypeEtatQuestionnaireSNC etatQuestionnaire : RegpmTypeEtatQuestionnaireSNC.values()) {
 				final RegpmEntreprise e = EntrepriseMigratorTest.buildEntreprise(1243L);
 				EntrepriseMigratorTest.addFormeJuridique(e, RegDate.get(2000, 1, 1), typeFormeJuridique);
-				EntrepriseMigratorTest.addQuestionnaireSNC(e, 2014, etatQuestionnaire, RegDate.get(2015, 2, 1), RegDate.get(2015, 9, 30), null, null);
+				EntrepriseMigratorTest.addQuestionnaireSNC(e, 2014, etatQuestionnaire, RegDate.get(2015, 2, 1), RegDate.get(2015, 9, 30), null, null, null);
 				Assert.assertFalse(String.format("%s / %s", typeFormeJuridique, etatQuestionnaire), mgr.isActive(e));         // questionnaire trop vieux !
 			}
 		}
@@ -175,7 +175,7 @@ public class ActivityManagerTest {
 			for (RegpmTypeEtatQuestionnaireSNC etatQuestionnaire : RegpmTypeEtatQuestionnaireSNC.values()) {
 				final RegpmEntreprise e = EntrepriseMigratorTest.buildEntreprise(1243L);
 				EntrepriseMigratorTest.addFormeJuridique(e, RegDate.get(2000, 1, 1), typeFormeJuridique);
-				EntrepriseMigratorTest.addQuestionnaireSNC(e, 2015, etatQuestionnaire, RegDate.get(2016, 2, 1), RegDate.get(2016, 9, 30), RegDate.get(2016, 2, 10), null);
+				EntrepriseMigratorTest.addQuestionnaireSNC(e, 2015, etatQuestionnaire, RegDate.get(2016, 2, 1), RegDate.get(2016, 9, 30), RegDate.get(2016, 2, 10), null, null);
 				Assert.assertEquals(String.format("%s / %s", typeFormeJuridique, etatQuestionnaire),
 				                    typeFormeJuridique.getCategorie() == RegpmCategoriePersonneMorale.SP && etatQuestionnaire != RegpmTypeEtatQuestionnaireSNC.ANNULE,
 				                    mgr.isActive(e));

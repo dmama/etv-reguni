@@ -39,6 +39,7 @@ import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePM;
 import ch.vd.uniregctb.declaration.DelaiDeclaration;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
+import ch.vd.uniregctb.declaration.EtatDeclarationEchue;
 import ch.vd.uniregctb.declaration.EtatDeclarationEmise;
 import ch.vd.uniregctb.declaration.EtatDeclarationRappelee;
 import ch.vd.uniregctb.declaration.EtatDeclarationRetournee;
@@ -396,7 +397,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		return dt;
 	}
 
-	static RegpmQuestionnaireSNC addQuestionnaireSNC(RegpmEntreprise e, int annee, RegpmTypeEtatQuestionnaireSNC etat, RegDate dateEnvoi, RegDate delaiRetour, @Nullable RegDate dateRetour, @Nullable RegDate dateRappel) {
+	static RegpmQuestionnaireSNC addQuestionnaireSNC(RegpmEntreprise e, int annee, RegpmTypeEtatQuestionnaireSNC etat, RegDate dateEnvoi, RegDate delaiRetour, @Nullable RegDate dateRetour, @Nullable RegDate dateRappel, @Nullable RegDate dateDecision) {
 		final RegpmQuestionnaireSNC questionnaire = new RegpmQuestionnaireSNC();
 		questionnaire.setId(new RegpmQuestionnaireSNC.PK(computeNewSeqNo(e.getQuestionnairesSNC(), x -> x.getId().getSeqNo()), e.getId()));
 		assignMutationVisa(questionnaire, REGPM_VISA, REGPM_MODIF);
@@ -409,6 +410,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		questionnaire.setDelaiRetour(delaiRetour);
 		questionnaire.setDateRetour(dateRetour);
 		questionnaire.setDateRappel(dateRappel);
+		questionnaire.setDateDecision(dateDecision);
 
 		final List<RegpmQuestionnaireSNC> questionnairesMemeAnnee = e.getQuestionnairesSNC().stream()
 				.filter(q -> q.getAnneeFiscale() == annee)
@@ -6483,7 +6485,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		addRaisonSociale(e, dateDebut, "Notre groupe d'amis", null, null, true);
 		addFormeJuridique(e, dateDebut, createTypeFormeJuridique("S.N.C.", RegpmCategoriePersonneMorale.SP));
 		addForPrincipalSuisse(e, dateDebut, RegpmTypeForPrincipal.SIEGE, Commune.ECHALLENS);
-		addQuestionnaireSNC(e, 2010, RegpmTypeEtatQuestionnaireSNC.TAXE, dateEnvoi, delaiRetour, dateRetour, dateRappel);
+		addQuestionnaireSNC(e, 2010, RegpmTypeEtatQuestionnaireSNC.TAXE, dateEnvoi, delaiRetour, dateRetour, dateRappel, null);
 
 		// on crée d'abord la PF en base
 		doInUniregTransaction(false, status -> {
@@ -6563,6 +6565,103 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 			Assert.assertEquals("Etat 'EMISE' migré au 10.02.2011.", textes.get(2));
 			Assert.assertEquals("Etat 'RAPPELEE' migré au 10.12.2011.", textes.get(3));
 			Assert.assertEquals("Etat 'RETOURNEE' migré au 25.12.2011.", textes.get(4));
+		}
+	}
+
+	@Test
+	public void testMigrationQuestionnairesSNCEtatTaxeAvecDateDecision() throws Exception {
+
+		final long noEntreprise = 74984L;
+		final RegDate dateDebut = RegDate.get(2010, 1, 1);
+		final RegDate dateEnvoi = RegDate.get(2011, 2, 10);
+		final RegDate delaiRetour = RegDate.get(2011, 9, 30);
+		final RegDate dateRappel = RegDate.get(2011, 12, 10);
+		final RegDate dateDecision = RegDate.get(2011, 12, 25);
+
+		final RegpmEntreprise e = buildEntreprise(noEntreprise);
+		addRaisonSociale(e, dateDebut, "Notre groupe d'amis", null, null, true);
+		addFormeJuridique(e, dateDebut, createTypeFormeJuridique("S.N.C.", RegpmCategoriePersonneMorale.SP));
+		addForPrincipalSuisse(e, dateDebut, RegpmTypeForPrincipal.SIEGE, Commune.ECHALLENS);
+		addQuestionnaireSNC(e, 2010, RegpmTypeEtatQuestionnaireSNC.TAXE, dateEnvoi, delaiRetour, null, dateRappel, dateDecision);
+
+		// on crée d'abord la PF en base
+		doInUniregTransaction(false, status -> {
+			addPeriodeFiscale(2010);
+			return null;
+		});
+
+		final MockGraphe graphe = new MockGraphe(Collections.singletonList(e),
+		                                         null,
+		                                         null);
+		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
+		final EntityLinkCollector linkCollector = new EntityLinkCollector();
+		final IdMapper idMapper = new IdMapper();
+		migrator.initMigrationResult(mr, idMapper);
+		migrate(e, migrator, mr, linkCollector, idMapper);
+
+		// la date du for principal de l'entreprise ne doit pas avoir été modifiée
+		doInUniregTransaction(true, status -> {
+			final Entreprise entreprise = uniregStore.getEntityFromDb(Entreprise.class, noEntreprise);
+			Assert.assertNotNull(entreprise);
+
+			final List<Declaration> declarations = entreprise.getDeclarationsTriees();
+			Assert.assertNotNull(declarations);
+			Assert.assertEquals(1, declarations.size());
+
+			final Declaration declaration = declarations.get(0);
+			Assert.assertNotNull(declaration);
+			Assert.assertFalse(declaration.isAnnule());
+			Assert.assertEquals(QuestionnaireSNC.class, declaration.getClass());
+
+			final QuestionnaireSNC questionnaire = (QuestionnaireSNC) declaration;
+			Assert.assertEquals(RegDate.get(2010, 1, 1), questionnaire.getDateDebut());
+			Assert.assertEquals(RegDate.get(2010, 12, 31), questionnaire.getDateFin());
+			Assert.assertEquals(TypeEtatDeclaration.ECHUE, questionnaire.getDernierEtat().getEtat());
+
+			final List<DelaiDeclaration> delais = questionnaire.getDelaisSorted();
+			Assert.assertNotNull(delais);
+			Assert.assertEquals(1, delais.size());
+			final DelaiDeclaration delai = delais.get(0);
+			Assert.assertFalse(delai.isAnnule());
+			Assert.assertEquals(delaiRetour, delai.getDelaiAccordeAu());
+			Assert.assertEquals(EtatDelaiDeclaration.ACCORDE, delai.getEtat());
+			Assert.assertEquals(dateEnvoi, delai.getDateDemande());
+			Assert.assertEquals(dateEnvoi, delai.getDateTraitement());
+
+			final List<EtatDeclaration> etats = questionnaire.getEtatsSorted();
+			Assert.assertNotNull(etats);
+			Assert.assertEquals(3, etats.size());
+			{
+				final EtatDeclaration etat = etats.get(0);
+				Assert.assertFalse(etat.isAnnule());
+				Assert.assertEquals(EtatDeclarationEmise.class, etat.getClass());
+				Assert.assertEquals(dateEnvoi, etat.getDateObtention());
+			}
+			{
+				final EtatDeclaration etat = etats.get(1);
+				Assert.assertFalse(etat.isAnnule());
+				Assert.assertEquals(EtatDeclarationRappelee.class, etat.getClass());
+				Assert.assertEquals(dateRappel, etat.getDateObtention());
+			}
+			{
+				final EtatDeclaration etat = etats.get(2);
+				Assert.assertFalse(etat.isAnnule());
+				Assert.assertEquals(EtatDeclarationEchue.class, etat.getClass());
+				Assert.assertEquals(dateDecision, etat.getDateObtention());
+			}
+		});
+
+		// vérification des messages dans le contexte "DECLARATIONS"
+		{
+			final List<MigrationResultCollector.Message> messages = mr.getMessages().get(LogCategory.DECLARATIONS);
+			Assert.assertNotNull(messages);
+			final List<String> textes = messages.stream().map(msg -> msg.text).collect(Collectors.toList());
+			Assert.assertEquals(5, textes.size());
+			Assert.assertEquals("Génération d'un questionnaire SNC sur la période fiscale 2010.", textes.get(0));
+			Assert.assertEquals("Délai initial fixé au 30.09.2011.", textes.get(1));
+			Assert.assertEquals("Etat 'EMISE' migré au 10.02.2011.", textes.get(2));
+			Assert.assertEquals("Etat 'RAPPELEE' migré au 10.12.2011.", textes.get(3));
+			Assert.assertEquals("Etat 'ECHUE' migré au 25.12.2011.", textes.get(4));
 		}
 	}
 
