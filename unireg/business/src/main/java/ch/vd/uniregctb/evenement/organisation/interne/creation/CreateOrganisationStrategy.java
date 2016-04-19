@@ -71,30 +71,42 @@ public class CreateOrganisationStrategy extends AbstractOrganisationStrategy {
 		final RegDate dateInscriptionRC;
 		RegDate dateDeCreation;
 		final boolean isCreation;
-		if (inscritAuRC) {
-			dateInscriptionRCVd = sitePrincipal.getDateInscriptionRCVd(dateEvenement);
-			if (isVaudoise && dateInscriptionRCVd == null) {
-				return new TraitementManuel(event, organisation, null, context, options, "Date d'inscription au régistre vaudois du commerce introuvable pour l'établissement principal vaudois.");
+		try {
+			if (inscritAuRC) {
+				dateInscriptionRCVd = sitePrincipal.getDateInscriptionRCVd(dateEvenement);
+				if (isVaudoise && dateInscriptionRCVd == null) {
+					return new TraitementManuel(event, organisation, null, context, options, "Date d'inscription au régistre vaudois du commerce introuvable pour l'établissement principal vaudois.");
+				}
+				dateInscriptionRC = sitePrincipal.getDateInscriptionRC(dateEvenement);
+				isCreation = isCreation(event.getType(), organisation,
+				                        dateEvenement); // On ne peut pas l'appeler avant car on doit d'abord s'assurer que l'inscription RC VD existe si on est inscrit au RC et vaudois.
+				if (isCreation) {
+					if (isVaudoise) {
+						dateDeCreation = dateInscriptionRCVd.getOneDayAfter();
+					}
+					else {
+						dateDeCreation = dateInscriptionRC.getOneDayAfter();
+					}
+				}
+				else { // Une arrivée
+					dateDeCreation = dateInscriptionRCVd;
+				}
 			}
-			dateInscriptionRC = sitePrincipal.getDateInscriptionRC(dateEvenement);
-			isCreation = isCreation(event.getType(), organisation, dateEvenement); // On ne peut pas l'appeler avant car on doit d'abord s'assurer que l'inscription RC VD existe si on est inscrit au RC et vaudois.
-			if (isCreation) { // FIXME: Insuffisant: isCreation() repond 'non' a une creation HC (nouvelle entr. a ZH pas ex.), car elle compare avec la date d'inscription VD
-				if (isVaudoise) {
-					dateDeCreation = dateInscriptionRCVd.getOneDayAfter();
+			else {
+				isCreation = isCreation(event.getType(), organisation, dateEvenement);
+				if (isCreation) {
+					dateDeCreation = dateEvenement.getOneDayAfter();
 				}
 				else {
-					dateDeCreation = dateInscriptionRC.getOneDayAfter();
+					dateDeCreation = dateEvenement;
 				}
-			} else { // Une arrivée
-				dateDeCreation = dateInscriptionRCVd;
 			}
-		} else {
-			isCreation = isCreation(event.getType(), organisation, dateEvenement);
-			if (isCreation) {
-				dateDeCreation = dateEvenement.getOneDayAfter();
-			} else {
-				dateDeCreation = dateEvenement;
-			}
+		} catch (EvenementOrganisationException e) {
+			return new TraitementManuel(event, organisation, null, context, options,
+			                            String.format(
+					                            "Une erreur grave est survenue lors de l'examen des données RCEnt pour l'organisation %s %s: %s",
+					                            organisation.getNumeroOrganisation(), organisation.getNom(dateEvenement), e.getMessage())
+			);
 		}
 
 		// Determiner si on est inscrit au RC

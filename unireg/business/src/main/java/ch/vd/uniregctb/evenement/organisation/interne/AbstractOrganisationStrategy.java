@@ -6,7 +6,6 @@ import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
-import ch.vd.unireg.interfaces.organisation.data.OrganisationHelper;
 import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationContext;
@@ -72,11 +71,7 @@ public abstract class AbstractOrganisationStrategy implements EvenementOrganisat
 		return assujettissement != null;
 	}
 
-	protected static boolean inscritAuRC(Organisation organisation, RegDate dateEvenement) {
-		return OrganisationHelper.isInscritAuRC(organisation, dateEvenement);
-	}
-
-	protected static boolean isCreation(TypeEvenementOrganisation type, Organisation organisation, RegDate date) {
+	protected static boolean isCreation(TypeEvenementOrganisation type, Organisation organisation, RegDate date) throws EvenementOrganisationException {
 		switch (type) {
 		case FOSC_NOUVELLE_ENTREPRISE:
 			return nouveauAuRc(organisation, date);
@@ -204,16 +199,51 @@ public abstract class AbstractOrganisationStrategy implements EvenementOrganisat
 	}
 
 	/**
-	 * @return Vrai si la date d'inscription au RC se situe dans les 7 jours précédant la date de publication.
+	 * @return Vrai si ... voir le code.
 	 */
-	private static boolean nouveauAuRc(Organisation organisation, RegDate date) {
+	private static boolean nouveauAuRc(Organisation organisation, RegDate date) throws EvenementOrganisationException {
 		if (organisation.isInscritAuRC(date)) {
-			// TODO: Refactor, mais là ce n'est pas vraiment le moment.
 			final SiteOrganisation sitePrincipal = organisation.getSitePrincipal(date).getPayload();
+			/* Les données avec lesquelles on travaille */
 			final RegDate dateInscriptionCh = sitePrincipal.getDonneesRC().getDateInscription(date);
 			final RegDate dateInscriptionVd = sitePrincipal.getDonneesRC().getDateInscriptionVd(date);
-			if (dateInscriptionVd == dateInscriptionCh) {
+
+			/* On travaille selon le postulat que toute date d'inscription éloignée de plus d'un certain nombre de jour (seuil) de la date d'événement
+			   indique que l'entreprise est pré-existante et qu'il n'y a donc pas de création à la date fournie. */
+			final int newnessThreshold = 7;
+			final RegDate newnessThresholdDate = date.addDays(newnessThreshold * -1);
+
+			/*
+			    NOTE: Nous devons tenir compte du fait que la date d'inscription au RC CH peut être nulle
+			          lorsque la date d'inscription au RC VD est renseignée par RCEnt. Problème RCEnt.
+			 */
+
+			/* Si la date d'inscription au RC est antérieure à la date de seuil, on considère que l'entreprise
+			   est pré-existante à la date de l'événement */
+			if (dateInscriptionCh != null && dateInscriptionCh.isBefore(newnessThresholdDate)) {
+				return false;
+			}
+
+			/* Idem pour la date Vd */
+			if (dateInscriptionVd != null && dateInscriptionVd.isBefore(newnessThresholdDate)) {
+				return false;
+			}
+
+			/* Nous sommes dans le délai pour une création hors canton. L'erreur est limité à quelque jours s'il ne s'agit en vérité pas d'une création. */
+			if (dateInscriptionVd == null && dateInscriptionCh != null){
 				return true;
+			}
+			/* Impossible de savoir avec certitude. La date au RC CH est peut-être très ancienne. */
+			else if (dateInscriptionVd != null && dateInscriptionCh == null) {
+				throw new EvenementOrganisationException("Date d'inscription au RC CH introuvable alors qu'on a une date au RC VD!");
+			}
+			/* Les deux dates sont nulles, les données de RCEnt sont invalides. */
+			else if (dateInscriptionVd == null) {
+				throw new EvenementOrganisationException("Date d'inscription au RC VD ou CH introuvable!");
+			}
+			/* Création si identique. */
+			else {
+				return dateInscriptionVd == dateInscriptionCh;
 			}
 		}
 		return false;
