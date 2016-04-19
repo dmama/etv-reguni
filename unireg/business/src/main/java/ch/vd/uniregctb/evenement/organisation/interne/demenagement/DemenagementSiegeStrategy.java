@@ -1,11 +1,17 @@
 package ch.vd.uniregctb.evenement.organisation.interne.demenagement;
 
+import java.util.ArrayList;
+import java.util.Set;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.interfaces.organisation.data.DateRanged;
 import ch.vd.unireg.interfaces.organisation.data.Domicile;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
+import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationContext;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationException;
@@ -13,8 +19,11 @@ import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationOptions;
 import ch.vd.uniregctb.evenement.organisation.interne.AbstractOrganisationStrategy;
 import ch.vd.uniregctb.evenement.organisation.interne.EvenementOrganisationInterne;
 import ch.vd.uniregctb.evenement.organisation.interne.TraitementManuel;
+import ch.vd.uniregctb.tiers.DomicileEtablissement;
 import ch.vd.uniregctb.tiers.Entreprise;
+import ch.vd.uniregctb.tiers.Etablissement;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
+import ch.vd.uniregctb.utils.RangeUtil;
 
 /**
  * @author Raphaël Marmier, 2015-09-02
@@ -48,7 +57,7 @@ public class DemenagementSiegeStrategy extends AbstractOrganisationStrategy {
 		final RegDate dateAvant = event.getDateEvenement().getOneDayBefore();
 		final RegDate dateApres = event.getDateEvenement();
 
-		final Domicile communeDeSiegeAvant = organisation.getSiegePrincipal(dateAvant);
+		Domicile communeDeSiegeAvant = organisation.getSiegePrincipal(dateAvant);
 		final Domicile communeDeSiegeApres = organisation.getSiegePrincipal(dateApres);
 
 
@@ -68,8 +77,17 @@ public class DemenagementSiegeStrategy extends AbstractOrganisationStrategy {
 						                            organisation.getNumeroOrganisation(), organisation.getNom(dateApres))
 				);
 			} else {
-				LOGGER.info("Pas de déménagement trouvé car l'organisation n'était pas connue avant au civil.");
-				return null; // On n'existait pas hier, en fait.
+				// On doit comparer avec ce que l'on a dans Unireg, car l'organisation vient seulement d'être connue au civil.
+				Audit.info("Entreprise connue d'Unireg mais nouvellement connue au civil. Utilisation des données fiscales d'Unireg.");
+
+				final DateRanged<Etablissement> etablissementPrincipalRange = RangeUtil.getAssertLast(context.getTiersService().getEtablissementsPrincipauxEntreprise(entreprise), dateAvant);
+				final Set<DomicileEtablissement> domiciles = etablissementPrincipalRange.getPayload().getDomiciles();
+				final DateRange domicilePrincipal = RangeUtil.getAssertLast(new ArrayList<DateRange>(domiciles), dateApres);
+
+				Integer noOfsAutoriteFiscale = ((DomicileEtablissement) domicilePrincipal).getNumeroOfsAutoriteFiscale();
+				TypeAutoriteFiscale typeAutoriteFiscale = ((DomicileEtablissement) domicilePrincipal).getTypeAutoriteFiscale();
+
+				communeDeSiegeAvant = new Domicile(domicilePrincipal.getDateDebut(), domicilePrincipal.getDateFin(), typeAutoriteFiscale, noOfsAutoriteFiscale);
 			}
 		}
 
@@ -81,19 +99,19 @@ public class DemenagementSiegeStrategy extends AbstractOrganisationStrategy {
 		}
 		else if (isDemenagementVD(communeDeSiegeAvant, communeDeSiegeApres)) {
 			LOGGER.info("Déménagement VD -> VD: commune {} vers commune {}.", communeDeSiegeAvant.getNoOfs(), communeDeSiegeApres.getNoOfs());
-			return new DemenagementVD(event, organisation, entreprise, context, options);
+			return new DemenagementVD(event, organisation, entreprise, context, options, communeDeSiegeAvant, communeDeSiegeApres);
 		}
 		else if (isDemenagementHC(communeDeSiegeAvant, communeDeSiegeApres)) {
 			LOGGER.info("Déménagement HC -> HC: commune {} vers commune {}.", communeDeSiegeAvant.getNoOfs(), communeDeSiegeApres.getNoOfs());
-			return new DemenagementHC(event, organisation, entreprise, context, options);
+			return new DemenagementHC(event, organisation, entreprise, context, options, communeDeSiegeAvant, communeDeSiegeApres);
 		}
 		else if (isDepart(communeDeSiegeAvant, communeDeSiegeApres)) {
 			LOGGER.info("Départ VD -> HC: commune {} vers commune {}.", communeDeSiegeAvant.getNoOfs(), communeDeSiegeApres.getNoOfs());
-			return new DemenagementDepart(event, organisation, entreprise, context, options);
+			return new DemenagementDepart(event, organisation, entreprise, context, options, communeDeSiegeAvant, communeDeSiegeApres);
 		}
 		else if (isArrivee(communeDeSiegeAvant, communeDeSiegeApres)) {
 			LOGGER.info("Arrivée HC -> VD: commune {} vers commune {}.", communeDeSiegeAvant.getNoOfs(), communeDeSiegeApres.getNoOfs());
-			return new DemenagementArrivee(event, organisation, entreprise, context, options);
+			return new DemenagementArrivee(event, organisation, entreprise, context, options, communeDeSiegeAvant, communeDeSiegeApres);
 		}
 		else {
 			throw new EvenementOrganisationException(

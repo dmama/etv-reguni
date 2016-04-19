@@ -2,6 +2,7 @@ package ch.vd.uniregctb.evenement.organisation.interne.demenagement;
 
 import org.springframework.util.Assert;
 
+import ch.vd.unireg.interfaces.organisation.data.Domicile;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationContext;
@@ -20,8 +21,10 @@ public class DemenagementSansChangementDeTypeAutoriteFiscale extends Demenagemen
 
 	public DemenagementSansChangementDeTypeAutoriteFiscale(EvenementOrganisation evenement, Organisation organisation, Entreprise entreprise,
 	                                                       EvenementOrganisationContext context,
-	                                                       EvenementOrganisationOptions options) throws EvenementOrganisationException {
-		super(evenement, organisation, entreprise, context, options);
+	                                                       EvenementOrganisationOptions options,
+	                                                       Domicile siegeAvant,
+	                                                       Domicile siegeApres) throws EvenementOrganisationException {
+		super(evenement, organisation, entreprise, context, options, siegeAvant, siegeApres);
 	}
 
 	@Override
@@ -39,8 +42,6 @@ public class DemenagementSansChangementDeTypeAutoriteFiscale extends Demenagemen
 		 Erreurs techniques fatale
 		  */
 
-		// On doit avoir deux sites
-		Assert.notNull(getSitePrincipalAvant());
 		Assert.notNull(getSitePrincipalApres());
 
 		// On doit avoir deux autorités fiscales

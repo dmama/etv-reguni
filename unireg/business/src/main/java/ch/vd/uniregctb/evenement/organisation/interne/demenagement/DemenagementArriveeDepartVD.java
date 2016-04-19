@@ -3,6 +3,7 @@ package ch.vd.uniregctb.evenement.organisation.interne.demenagement;
 import org.springframework.util.Assert;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.interfaces.organisation.data.Domicile;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationContext;
@@ -22,8 +23,10 @@ public class DemenagementArriveeDepartVD extends Demenagement {
 
 	public DemenagementArriveeDepartVD(EvenementOrganisation evenement, Organisation organisation, Entreprise entreprise,
 	                                   EvenementOrganisationContext context,
-	                                   EvenementOrganisationOptions options) throws EvenementOrganisationException {
-		super(evenement, organisation, entreprise, context, options);
+	                                   EvenementOrganisationOptions options,
+	                                   Domicile siegeAvant,
+	                                   Domicile siegeApres) throws EvenementOrganisationException {
+		super(evenement, organisation, entreprise, context, options, siegeAvant, siegeApres);
 	}
 
 	@Override
@@ -35,7 +38,7 @@ public class DemenagementArriveeDepartVD extends Demenagement {
 		if (getSiegeAvant().getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD &&
 				getSiegeApres().getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_HC) {
 			motifFor = MotifFor.DEPART_HC;
-			dateDebutNouveauSiege = getDateApres();
+			dateDebutNouveauSiege = getDateApres(); // FIXME: Doit etre la date de radiation RC VD [-1 ?]
 		} else {
 		if (getSiegeAvant().getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_HC &&
 				getSiegeApres().getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
@@ -69,7 +72,7 @@ public class DemenagementArriveeDepartVD extends Demenagement {
 
 		// On doit avoir deux sites
 		Assert.isTrue(
-				getSitePrincipalAvant() != null && getEtablissementPrincipalApres() != null
+				getEtablissementPrincipalApres() != null
 		);
 
 		// On doit avoir deux autorités fiscales

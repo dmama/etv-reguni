@@ -14,7 +14,6 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
@@ -66,6 +65,7 @@ import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeEtatEntreprise;
 import ch.vd.uniregctb.type.TypeGenerationEtatEntreprise;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
+import ch.vd.uniregctb.utils.RangeUtil;
 
 public class MetierServicePMImpl implements MetierServicePM {
 
@@ -154,17 +154,17 @@ public class MetierServicePMImpl implements MetierServicePM {
 		// Rapprochement de l'entreprise
 		entreprise.setNumeroEntreprise(organisation.getNumeroOrganisation());
 
-		final RaisonSocialeFiscaleEntreprise raisonSociale = getAssertLast(entreprise.getRaisonsSocialesNonAnnuleesTriees(), date);
+		final RaisonSocialeFiscaleEntreprise raisonSociale = RangeUtil.getAssertLast(entreprise.getRaisonsSocialesNonAnnuleesTriees(), date);
 		if (raisonSociale != null && raisonSociale.getDateFin() == null) {
 			tiersService.closeRaisonSocialeFiscale(raisonSociale, date.getOneDayBefore());
 		}
 
-		final FormeJuridiqueFiscaleEntreprise formeJuridique = getAssertLast(entreprise.getFormesJuridiquesNonAnnuleesTriees(), date);
+		final FormeJuridiqueFiscaleEntreprise formeJuridique = RangeUtil.getAssertLast(entreprise.getFormesJuridiquesNonAnnuleesTriees(), date);
 		if (formeJuridique != null && formeJuridique.getDateFin() == null) {
 			tiersService.closeFormeJuridiqueFiscale(formeJuridique, date.getOneDayBefore());
 		}
 
-		final CapitalFiscalEntreprise capital = getAssertLast(entreprise.getCapitauxNonAnnulesTries(), date);
+		final CapitalFiscalEntreprise capital = RangeUtil.getAssertLast(entreprise.getCapitauxNonAnnulesTries(), date);
 		if (capital != null && capital.getDateFin() == null) {
 			tiersService.closeCapitalFiscal(capital, date.getOneDayBefore());
 		}
@@ -188,7 +188,7 @@ public class MetierServicePMImpl implements MetierServicePM {
 		if (sortedDomiciles.isEmpty()) {
 			throw new MetierServiceException(String.format("L'établissement principal %d n'a pas de domicile en date du %s. Impossible de continuer le rapprochement.", organisation.getNumeroOrganisation(), RegDateHelper.dateToDisplayString(date)));
 		}
-		final DomicileEtablissement domicile = getAssertLast(sortedDomiciles, date);
+		final DomicileEtablissement domicile = RangeUtil.getAssertLast(sortedDomiciles, date);
 
 		if (domicile != null && domicile.getNumeroOfsAutoriteFiscale().equals(organisation.getSiegePrincipal(date).getNoOfs())) {
 			etablissementPrincipal.setNumeroEtablissement(sitePrincipal.getNumeroSite());
@@ -250,7 +250,7 @@ public class MetierServicePMImpl implements MetierServicePM {
 			final Set<IdentificationEntreprise> identificationsEntreprise = etablissementForKey.getIdentificationsEntreprise();
 			if (identificationsEntreprise != null && !identificationsEntreprise.isEmpty()) {
 				String noIdeEtablissement = identificationsEntreprise.iterator().next().getNumeroIde();
-				final DateRanged<String> noIdeSiteRange = getAssertLast(siteForKey.getNumeroIDE(), date);
+				final DateRanged<String> noIdeSiteRange = RangeUtil.getAssertLast(siteForKey.getNumeroIDE(), date);
 				if (noIdeEtablissement != null && noIdeSiteRange != null && !noIdeEtablissement.equals(noIdeSiteRange.getPayload())) {
 					continue;
 				}
@@ -385,30 +385,7 @@ public class MetierServicePMImpl implements MetierServicePM {
 	private static DomicileEtablissement extractDernierDomicileFiscal(Etablissement etablissement, RegDate date) throws MetierServiceException {
 		final ArrayList<DomicileEtablissement> domicileEtablissements = new ArrayList<>();
 		domicileEtablissements.addAll(etablissement.getDomiciles());
-		return getAssertLast(domicileEtablissements, date);
-	}
-
-	/**
-	 * Obtenir le dernier range, en s'assurant que la date fournie en fait partie. Cela permet de garantir qu'on
-	 * ne travail pas dans le passé lorsqu'on traite, par exemple, un événement organisation. Si une ou des périodes existes
-	 * ultérieurement à la date fournie, cela signifie que la situation a évolué depuis la date et qu'on ne peut plus opérer
-	 * sur la base de celle-ci.
-	 */
-	private static <T extends DateRange> T getAssertLast(List<T> entites, RegDate date) throws MetierServiceException {
-		if (entites != null && !entites.isEmpty()) {
-			T lastRange = CollectionsUtils.getLastElement(entites);
-			if (lastRange == null) {
-				throw new MetierServiceException(String.format("Erreur de données: null trouvé dans une collection de périodes %s", entites.getClass()));
-			}
-			if (lastRange.getDateDebut() == null) {
-				throw new MetierServiceException("Erreur de données: la date de début de la dernière période est nulle");
-			}
-			if (lastRange.getDateDebut().isAfter(date)) {
-				throw new MetierServiceException(String.format("La période valide à la date demandée %s n'est pas la dernière de l'historique!", RegDateHelper.dateToDisplayString(date)));
-			}
-			return lastRange;
-		}
-		return null;
+		return RangeUtil.getAssertLast(domicileEtablissements, date);
 	}
 
 
