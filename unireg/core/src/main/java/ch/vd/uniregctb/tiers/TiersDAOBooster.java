@@ -19,6 +19,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.adresse.AdresseMandataire;
 import ch.vd.uniregctb.adresse.AdresseTiers;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.Periodicite;
@@ -326,6 +327,11 @@ public class TiersDAOBooster implements TiersDAO, InitializingBean {
 	@Override
 	public AdresseTiers addAndSave(Tiers tiers, AdresseTiers adresse) {
 		return target.addAndSave(tiers, adresse);
+	}
+
+	@Override
+	public AdresseMandataire addAndSave(Contribuable contribuable, AdresseMandataire adresse) {
+		return target.addAndSave(contribuable, adresse);
 	}
 
 	@Override

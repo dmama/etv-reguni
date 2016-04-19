@@ -15,6 +15,7 @@ import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.NotImplementedException;
+import ch.vd.uniregctb.adresse.AdresseMandataire;
 import ch.vd.uniregctb.adresse.AdresseTiers;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.Periodicite;
@@ -291,6 +292,11 @@ public class MockTiersDAO implements TiersDAO {
 
 	@Override
 	public AdresseTiers addAndSave(Tiers tiers, AdresseTiers adresse) {
+		throw new NotImplementedException();
+	}
+
+	@Override
+	public AdresseMandataire addAndSave(Contribuable contribuable, AdresseMandataire adresse) {
 		throw new NotImplementedException();
 	}
 

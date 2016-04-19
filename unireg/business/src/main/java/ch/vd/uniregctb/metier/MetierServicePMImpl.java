@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -857,9 +858,51 @@ public class MetierServicePMImpl implements MetierServicePM {
 	@Override
 	public void annuleFusionEntreprises(Entreprise absorbante, List<Entreprise> absorbees, RegDate dateContratFusion, RegDate dateBilanFusion) throws MetierServiceException {
 
+		// vérification que toutes les entreprises absorbées ont bien connu une absorption par l'entreprise absorbante
+		// avec les données fournies (date de contrat ET date de bilan de fusion)
+		for (Entreprise absorbee : absorbees) {
+
+			// recherche du bon rapport entre tiers
+			boolean trouveBonRapportEntreTiers = false;
+			for (RapportEntreTiers ret : absorbee.getRapportsSujet()) {
+				if (!ret.isAnnule() && ret.getType() == TypeRapportEntreTiers.FUSION_ENTREPRISES && ret.getDateDebut() == dateBilanFusion && ret.getObjetId().equals(absorbante.getId())) {
+					trouveBonRapportEntreTiers = true;
+					break;
+				}
+			}
+			if (!trouveBonRapportEntreTiers) {
+				throw new MetierServiceException(String.format("L'entreprise %s n'est pas associée à une absorption par l'enteprise %s avec une date de bilan de fusion au %s.",
+				                                               FormatNumeroHelper.numeroCTBToDisplay(absorbee.getNumero()),
+				                                               FormatNumeroHelper.numeroCTBToDisplay(absorbante.getNumero()),
+				                                               RegDateHelper.dateToDisplayString(dateBilanFusion)));
+			}
+
+			// recherche de l'état absorbé à la date de contrat de fusion
+			final List<EtatEntreprise> etats = absorbee.getEtatsNonAnnulesTries();
+			boolean trouveBonEtat = false;
+			for (EtatEntreprise etat : CollectionsUtils.revertedOrder(etats)) {
+				if (etat.getType() == TypeEtatEntreprise.ABSORBEE && etat.getDateObtention() == dateContratFusion) {
+					trouveBonEtat = true;
+					break;
+				}
+			}
+			if (!trouveBonEtat) {
+				throw new MetierServiceException(String.format("L'entreprise %s n'est pas associée à une absorption par l'entreprise %s avec une date de contrat de fusion au %s.",
+				                                               FormatNumeroHelper.numeroCTBToDisplay(absorbee.getNumero()),
+				                                               FormatNumeroHelper.numeroCTBToDisplay(absorbante.getNumero()),
+				                                               RegDateHelper.dateToDisplayString(dateContratFusion)));
+			}
+		}
+
+		// identifiants des entreprises absorbées
+		final Set<Long> idsAbsorbees = new HashSet<>(absorbees.size());
+		for (Entreprise absorbee : absorbees) {
+			idsAbsorbees.add(absorbee.getNumero());
+		}
+
 		// annulation des rappors entre tiers entre l'absorbante et les absorbées à la date de bilan de fusion
 		for (RapportEntreTiers ret : absorbante.getRapportsObjet()) {
-			if (!ret.isAnnule() && ret.getType() == TypeRapportEntreTiers.FUSION_ENTREPRISES && ret.getDateDebut() == dateBilanFusion) {
+			if (!ret.isAnnule() && ret.getType() == TypeRapportEntreTiers.FUSION_ENTREPRISES && ret.getDateDebut() == dateBilanFusion && idsAbsorbees.contains(ret.getSujetId())) {
 				ret.setAnnule(true);
 			}
 		}
