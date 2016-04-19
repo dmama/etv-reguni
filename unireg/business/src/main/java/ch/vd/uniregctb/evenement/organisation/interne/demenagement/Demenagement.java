@@ -3,6 +3,7 @@ package ch.vd.uniregctb.evenement.organisation.interne.demenagement;
 import org.springframework.util.Assert;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.interfaces.organisation.data.DateRanged;
 import ch.vd.unireg.interfaces.organisation.data.Domicile;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
@@ -20,6 +21,7 @@ import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
+import ch.vd.uniregctb.utils.RangeUtil;
 
 /**
  * @author Raphaël Marmier, 2015-10-13
@@ -40,19 +42,26 @@ public abstract class Demenagement extends EvenementOrganisationInterneDeTraitem
 
 	public Demenagement(EvenementOrganisation evenement, Organisation organisation, Entreprise entreprise,
 	                    EvenementOrganisationContext context,
-	                    EvenementOrganisationOptions options) throws EvenementOrganisationException {
+	                    EvenementOrganisationOptions options,
+	                    Domicile siegeAvant,
+	                    Domicile siegeApres) throws EvenementOrganisationException {
 		super(evenement, organisation, entreprise, context, options);
 
 		dateApres = evenement.getDateEvenement();
 		dateAvant = dateApres.getOneDayBefore();
 
-		sitePrincipalAvant = organisation.getSitePrincipal(dateAvant).getPayload();
+		this.siegeAvant = siegeAvant;
+		this.siegeApres = siegeApres;
+
+		final DateRanged<SiteOrganisation> sitePrincipalRange = organisation.getSitePrincipal(dateAvant);
+		if (sitePrincipalRange != null) {
+			sitePrincipalAvant = sitePrincipalRange.getPayload();
+			etablissementPrincipalAvant = getEtablissementByNumeroSite(sitePrincipalAvant.getNumeroSite());
+		} else {
+			sitePrincipalAvant = null;
+			etablissementPrincipalAvant = RangeUtil.getAssertLast(context.getTiersService().getEtablissementsPrincipauxEntreprise(entreprise), dateAvant).getPayload();
+		}
 		sitePrincipalApres = organisation.getSitePrincipal(dateApres).getPayload();
-
-		siegeAvant = sitePrincipalAvant.getDomicile(dateAvant);
-		siegeApres = sitePrincipalApres.getDomicile(dateApres);
-
-		etablissementPrincipalAvant = getEtablissementByNumeroSite(sitePrincipalAvant.getNumeroSite());
 		etablissementPrincipalApres = getEtablissementByNumeroSite(sitePrincipalApres.getNumeroSite());
 	}
 
@@ -100,7 +109,7 @@ public abstract class Demenagement extends EvenementOrganisationInterneDeTraitem
 		}
 		// Ok, on connait le nouvel etablissement
 		else {
-			// On est sur le même établissement -> changer le domicile, fermer l'ancien for et ouvrir un nouveau
+			// On est sur le même établissement -> changer le domicile, fermer l'ancien for et ouvrir un nouveau (s'il n'y a pas d'établissement avant, on considère qu'il n'y a pas de changement)
 			if (getEtablissementPrincipalAvant().getNumero().equals(etablissementPrincipalApres.getNumero())) {
 				changeSiegeEtablissement(etablissementPrincipalApres, dateDebutNouveauSiege, motifFor, warnings, suivis);
 			}
@@ -129,6 +138,14 @@ public abstract class Demenagement extends EvenementOrganisationInterneDeTraitem
 		// Changement d'établissement non supporté actuellement.
 		Assert.state(getEtablissementPrincipalAvant().getNumero().equals(etablissementPrincipalApres.getNumero()),
 		             "Changement de siège avec changement d'établissement principal. Veuillez traiter l'événement manuellement.");
+
+		/* Si la période du domicile fiscal est n'est pas ouverte, c'est qu'on a un souci. On est peut-être en train de rejouer l'événement. */
+		if (getSitePrincipalAvant() == null && getSiegeAvant().getDateFin() != null) {
+			erreurs.addErreur(String.format("L'organisation %s %s, connue du régistre fiscal Unireg, a son domicile principal déjà fermé dans ce dernier. Sommes-nous en train de rejouer l'événement?",
+			                                getOrganisation().getNumeroOrganisation(), getOrganisation().getNom(dateApres))
+			);
+		}
+
 	}
 
 	public RegDate getDateAvant() {
