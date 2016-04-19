@@ -32,6 +32,8 @@ import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.uniregctb.adresse.AdresseAutreTiers;
 import ch.vd.uniregctb.adresse.AdresseCivile;
 import ch.vd.uniregctb.adresse.AdresseEtrangere;
+import ch.vd.uniregctb.adresse.AdresseMandataireEtrangere;
+import ch.vd.uniregctb.adresse.AdresseMandataireSuisse;
 import ch.vd.uniregctb.adresse.AdresseSuisse;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP;
@@ -101,6 +103,7 @@ import ch.vd.uniregctb.type.TypeAdresseTiers;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeContribuable;
 import ch.vd.uniregctb.type.TypeEtatDeclaration;
+import ch.vd.uniregctb.type.TypeMandat;
 import ch.vd.uniregctb.validation.ValidationInterceptor;
 
 import static org.junit.Assert.assertEquals;
@@ -692,7 +695,11 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
     }
 
     protected AdresseSuisse addAdresseSuisse(Tiers tiers, TypeAdresseTiers usage, RegDate debut, @Nullable RegDate fin, MockRue rue) {
-       return  addAdresseSuisse(tiers, usage, debut,fin,rue,null);
+       return addAdresseSuisse(tiers, usage, debut,fin,rue,null);
+    }
+
+    protected AdresseMandataireSuisse addAdresseMandataireSuisse(Contribuable ctb, RegDate debut, @Nullable RegDate fin, TypeMandat type, String nomMandataire, MockRue rue) {
+       return addAdresseMandataireSuisse(ctb, debut, fin, type, nomMandataire, rue, null);
     }
 
 	protected AdresseSuisse addAdresseSuisse(Tiers tiers, TypeAdresseTiers usage, RegDate debut, @Nullable RegDate fin, MockRue rue,CasePostale casePostale) {
@@ -711,6 +718,23 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
 		return adresse;
 	}
 
+	protected AdresseMandataireSuisse addAdresseMandataireSuisse(Contribuable ctb, RegDate debut, @Nullable RegDate fin, TypeMandat type, String nomMandataire, MockRue rue, CasePostale casePostale) {
+		AdresseMandataireSuisse adresse = new AdresseMandataireSuisse();
+		adresse.setDateDebut(debut);
+		adresse.setDateFin(fin);
+		adresse.setTypeMandat(type);
+		adresse.setNomDestinataire(nomMandataire);
+		adresse.setNumeroRue(rue.getNoRue());
+		if (casePostale != null) {
+			adresse.setTexteCasePostale(casePostale.getType());
+			adresse.setNumeroCasePostale(casePostale.getNumero());
+			adresse.setNpaCasePostale(casePostale.getNpa());
+		}
+		adresse.setNumeroOrdrePoste(rue.getLocalite().getNoOrdre());
+		adresse = (AdresseMandataireSuisse) tiersDAO.addAndSave(ctb, adresse);
+		return adresse;
+	}
+
 	// adresse suisse sans rue
 	protected AdresseSuisse addAdresseSuisse(Tiers tiers, TypeAdresseTiers usage, RegDate debut, @Nullable RegDate fin, Integer noOrdre,CasePostale casePostale) {
 		AdresseSuisse adresse = new AdresseSuisse();
@@ -726,6 +750,7 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
 		adresse = (AdresseSuisse) tiersDAO.addAndSave(tiers, adresse);
 		return adresse;
 	}
+
     protected AdresseCivile addAdresseCivil(Tiers tiers, TypeAdresseTiers usage, RegDate debut, @Nullable RegDate fin, TypeAdresseCivil type) {
 	    AdresseCivile adresse = new AdresseCivile();
         adresse.setDateDebut(debut);
@@ -736,9 +761,12 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
         return adresse;
     }
 
-    protected AdresseEtrangere addAdresseEtrangere(Tiers tiers, TypeAdresseTiers usage, RegDate debut, @Nullable RegDate fin, @Nullable String rue, @Nullable String numeroPostalEtLocalite,
-                                                   Pays pays) {
+    protected AdresseEtrangere addAdresseEtrangere(Tiers tiers, TypeAdresseTiers usage, RegDate debut, @Nullable RegDate fin, @Nullable String rue, @Nullable String numeroPostalEtLocalite, Pays pays) {
         return addAdresseEtrangere(tiers,usage,debut,fin,rue,numeroPostalEtLocalite,pays,null);
+    }
+
+    protected AdresseMandataireEtrangere addAdresseMandataireEtrangere(Contribuable ctb, RegDate debut, @Nullable RegDate fin, TypeMandat type, String nomMandataire, @Nullable String rue, @Nullable String numeroPostalEtLocalite, Pays pays) {
+        return addAdresseMandataireEtrangere(ctb, debut, fin, type, nomMandataire, rue, numeroPostalEtLocalite, pays, null);
     }
 
 	protected AdresseEtrangere addAdresseEtrangere(Tiers tiers, TypeAdresseTiers usage, RegDate debut, @Nullable RegDate fin, @Nullable String rue, @Nullable String numeroPostalEtLocalite,
@@ -755,6 +783,24 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
 		}
 		adresse.setNumeroOfsPays(pays.getNoOFS());
 		adresse = (AdresseEtrangere) tiersDAO.addAndSave(tiers, adresse);
+		return adresse;
+	}
+
+	protected AdresseMandataireEtrangere addAdresseMandataireEtrangere(Contribuable ctb, RegDate debut, @Nullable RegDate fin, TypeMandat type, String nomMandataire, @Nullable String rue, @Nullable String numeroPostalEtLocalite,
+	                                                                   Pays pays, CasePostale casePostale) {
+		AdresseMandataireEtrangere adresse = new AdresseMandataireEtrangere();
+		adresse.setDateDebut(debut);
+		adresse.setDateFin(fin);
+		adresse.setNomDestinataire(nomMandataire);
+		adresse.setTypeMandat(type);
+		adresse.setRue(rue);
+		adresse.setNumeroPostalLocalite(numeroPostalEtLocalite);
+		if (casePostale != null) {
+			adresse.setTexteCasePostale(casePostale.getType());
+			adresse.setNumeroCasePostale(casePostale.getNumero());
+		}
+		adresse.setNumeroOfsPays(pays.getNoOFS());
+		adresse = (AdresseMandataireEtrangere) tiersDAO.addAndSave(ctb, adresse);
 		return adresse;
 	}
 

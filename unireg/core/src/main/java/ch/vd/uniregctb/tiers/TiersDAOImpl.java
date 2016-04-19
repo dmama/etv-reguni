@@ -32,6 +32,7 @@ import org.slf4j.LoggerFactory;
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
+import ch.vd.uniregctb.adresse.AdresseMandataire;
 import ch.vd.uniregctb.adresse.AdresseTiers;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.BaseDAOImpl;
@@ -1441,6 +1442,29 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 	@Override
 	public AdresseTiers addAndSave(Tiers tiers, AdresseTiers adresse) {
 		return addAndSave(tiers, adresse, ADRESSE_TIERS_ACCESSOR);
+	}
+
+	private static final EntityAccessor<Contribuable, AdresseMandataire> ADRESSE_MANDATAIRE_ACCESSOR = new EntityAccessor<Contribuable, AdresseMandataire>() {
+		@Override
+		public Collection<? extends HibernateEntity> getEntities(Contribuable ctb) {
+			return ctb.getAdressesMandataires();
+		}
+
+		@Override
+		public void addEntity(Contribuable ctb, AdresseMandataire entity) {
+			ctb.addAdresseMandataire(entity);
+		}
+
+		@Override
+		public void assertSame(AdresseMandataire entity1, AdresseMandataire entity2) {
+			Assert.isSame(entity1.getDateDebut(), entity2.getDateDebut());
+			Assert.isSame(entity1.getDateFin(), entity2.getDateFin());
+		}
+	};
+
+	@Override
+	public AdresseMandataire addAndSave(Contribuable contribuable, AdresseMandataire adresse) {
+		return addAndSave(contribuable, adresse, ADRESSE_MANDATAIRE_ACCESSOR);
 	}
 
 	private static final EntityAccessor<PersonnePhysique, IdentificationPersonne> IDENTIFICATION_PERSONNE_ACCESSOR = new EntityAccessor<PersonnePhysique, IdentificationPersonne>() {

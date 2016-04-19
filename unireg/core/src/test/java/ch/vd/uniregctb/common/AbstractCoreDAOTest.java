@@ -97,6 +97,7 @@ import ch.vd.uniregctb.tiers.ForFiscalAutreImpot;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipalPM;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
+import ch.vd.uniregctb.tiers.FusionEntreprises;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.Parente;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
@@ -1043,6 +1044,14 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 		entreprise.addRapportSujet(rapport);
 		etb.addRapportObjet(rapport);
 		return rapport;
+	}
+
+	protected FusionEntreprises addFusionEntreprises(Entreprise absorbante, Entreprise absorbee, RegDate dateBilanFusion) {
+		FusionEntreprises fusion = new FusionEntreprises(dateBilanFusion, null, absorbee, absorbante);
+		fusion = merge(fusion);
+		absorbee.addRapportSujet(fusion);
+		absorbante.addRapportObjet(fusion);
+		return fusion;
 	}
 
 	protected AutreCommunaute addAutreCommunaute(String nom) {

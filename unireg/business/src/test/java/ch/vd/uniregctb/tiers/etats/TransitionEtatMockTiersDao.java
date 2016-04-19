@@ -11,6 +11,7 @@ import org.hibernate.FlushMode;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.adresse.AdresseMandataire;
 import ch.vd.uniregctb.adresse.AdresseTiers;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.Periodicite;
@@ -285,6 +286,11 @@ class TransitionEtatMockTiersDao extends TiersDAOImpl implements TiersDAO {
 	}
 
 	@Override
+	public AdresseMandataire addAndSave(Contribuable contribuable, AdresseMandataire adresse) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
 	public IdentificationPersonne addAndSave(PersonnePhysique pp, IdentificationPersonne ident) {
 		throw new UnsupportedOperationException();
 	}
@@ -300,7 +306,7 @@ class TransitionEtatMockTiersDao extends TiersDAOImpl implements TiersDAO {
 	}
 
 	@Override
-	public AllegementFiscal addAndSave(Entreprise entreprise, AllegementFiscal allegement) {
+	public 	<T extends AllegementFiscal> T addAndSave(Entreprise entreprise, T allegement) {
 		throw new UnsupportedOperationException();
 	}
 

@@ -10,6 +10,7 @@ import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.dao.GenericDAO;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.adresse.AdresseMandataire;
 import ch.vd.uniregctb.adresse.AdresseTiers;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.Periodicite;
@@ -342,6 +343,14 @@ public interface TiersDAO extends GenericDAO<Tiers, Long> {
 	 * @return une nouvelle instance de l'adresse avec son id renseigné.
 	 */
 	AdresseTiers addAndSave(Tiers tiers, AdresseTiers adresse);
+
+	/**
+	 * Ajoute une nouvelle adresse mandataire à un contribuable
+	 * @param contribuable le contribuable sur lequel on veut ajouter une adesse mandataire
+	 * @param adresse la nouvelle adresse
+	 * @return une nouvelle instance de l'adresse mandataire avec son id renseigné
+	 */
+	AdresseMandataire addAndSave(Contribuable contribuable, AdresseMandataire adresse);
 
 	/**
 	 * Ajoute une nouvelle identifiant de personne à une personne physique
