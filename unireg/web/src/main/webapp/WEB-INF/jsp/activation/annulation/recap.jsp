@@ -7,23 +7,7 @@
   	</tiles:put>
   	<tiles:put name="body">
 
-		<table>
-			<tr>
-				<td width="40%"><unireg:bandeauTiers numero="${command.numeroTiers}" titre="Tiers à annuler" showValidation="false" showEvenementsCivils="false" showLinks="false" showAvatar="true"/></td>
-				<td width="20%">
-					<table id="flecheRemplacement" style="display:none" cellpadding="0" cellspacing="0">
-						<tr>
-							<td style="width:1em;"/>
-							<td id="flecheGauche" class="fleche_droite_bord_gauche iepngfix"/>
-							<td id="flecheMilieu" class="fleche_milieu"><fmt:message key="label.tiers.annule.et.remplace.par"/></td>
-							<td id="flecheDroite" class="fleche_droite_bord_droit iepngfix"/>
-							<td style="width:1em;"/>
-						</tr>
-					</table>
-				</td>
-				<td width="40%"><div id="vignetteTiersRemplacant"/></td>
-			</tr>
-		</table>
+	    <unireg:bandeauTiers numero="${command.numeroTiers}" titre="Tiers à annuler" showValidation="false" showEvenementsCivils="false" showLinks="false" showAvatar="true"/>
 
 	  	<form:form method="post" id="formRecapAnnulation"  name="formRecapAnnulation">
 
@@ -33,14 +17,6 @@
 					<tr class="<unireg:nextRowClass/>" >
 						<td width="25%"><fmt:message key="label.tiers.a.annuler" />&nbsp;:</td>
 						<td width="75%"><unireg:numCTB numero="${command.numeroTiers}" /></td>
-					</tr>
-					<tr class="<unireg:nextRowClass/>" >
-						<td width="25%"><fmt:message key="label.tiers.remplacant" />&nbsp;:</td>
-						<td width="75%">
-							<form:input path="numeroTiersRemplacant" id="numeroTiersRemplacant"/>
-							<button id="button_numeroTiersRemplacant" onclick="return search_remplacant(this);">...</button>
-							<form:errors path="numeroTiersRemplacant" cssClass="error"/>
-						</td>
 					</tr>
 					<tr class="<unireg:nextRowClass/>" >
 						<td width="25%"><fmt:message key="label.date.annulation" />&nbsp;:</td>
@@ -58,7 +34,7 @@
 
 			<!-- Debut Boutons -->
 			<unireg:RetourButton link="../list.do?activation=annulation" message="Voulez-vous vraiment quitter cette page sans sauver ?"/>
-			<input type="submit" value="<fmt:message key="label.bouton.sauver"/>" onClick="javascript:return Page_SauverAnnulation(event || window.event);" />	
+			<input type="submit" value="<fmt:message key="label.bouton.sauver"/>" onClick="return Page_SauverAnnulation(event || window.event);" />
 			<!-- Fin Boutons -->
 		</form:form>
 
@@ -69,41 +45,6 @@
 			 	}
 			 	return true ;
 			}
-
-			function search_remplacant(button) {
-				return Dialog.open_tiers_picker_with_filter(button, 'tiersPickerFilterFactory', 'typeTiers:${command.typeTiers}', function(id) {
-					$('#numeroTiersRemplacant').val(id);
-					refresh_remplacant(id);
-				});
-			}
-
-			function refresh_remplacant(id) {
-				if (id) {
-					Tiers.loadVignette($('#vignetteTiersRemplacant'), id, {showAvatar : true, titre : 'Tiers remplaçant'});
-					$('#flecheRemplacement').show();
-				}
-				else {
-					$('#vignetteTiersRemplacant').html('');
-					$('#flecheRemplacement').hide();
-				}
-			}
-
-			$(function() {
-				var tiersRemplacant = $('#numeroTiersRemplacant');
-
-				// function pour mettre-à-jour la vignette lors de tout changement du numéro du tiers remplaçant
-				tiersRemplacant.change(function() {
-					var id = $(this).val();
-					id = id.replace(/[^0-9]*/g, ''); // remove non-numeric chars
-					refresh_remplacant(id);
-				});
-
-				// on force l'affichage de la vignette si le numéro de tiers remplaçant est renseigné lors du chargement de la page
-				if (tiersRemplacant.val()) {
-					tiersRemplacant.change();
-				}
-			});
-
 		</script>
 
 	</tiles:put>
