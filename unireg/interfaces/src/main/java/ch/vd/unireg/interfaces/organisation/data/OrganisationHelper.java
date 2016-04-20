@@ -82,7 +82,7 @@ public abstract class OrganisationHelper {
 	 */
 	@Nullable
 	public static List<DateRanged<String>> extractIdentifiant(Map<String, List<DateRanged<String>>> identifiants, String cle) {
-		final List<DateRanged<String>> extracted = identifiants.get(cle);
+		final List<DateRanged<String>> extracted = identifiants == null ? null : identifiants.get(cle);
 		return extracted == null || extracted.isEmpty() ? null : extracted;
 	}
 
