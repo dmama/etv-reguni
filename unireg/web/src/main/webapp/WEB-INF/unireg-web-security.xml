@@ -33,6 +33,9 @@
 	<!-- Filtre qui stocker la dernière URL valide pour utilisation dans le ActionExceptionResolver -->
 	<bean id="actionExceptionFilter" class="ch.vd.uniregctb.servlet.ActionExceptionFilter" />
 
+	<!-- Filtre qui loggue toutes les exceptions qui sortent directement des autres filtres... !-->
+	<bean id="lastChanceExceptionLoggingFilter" class="ch.vd.uniregctb.servlet.LastChanceExceptionLoggingFilter"/>
+
 	<!-- Filtre sur les adresses IP -->
 	<bean id="remoteHostSpringFilter" class="ch.vd.unireg.servlet.security.RemoteHostSpringFilter">
 		<property name="allowed" value="${extprop.remoteHostFilter.allow}" />
@@ -54,19 +57,19 @@
 	<!-- La chaine des filtres Spring à appliquer. -->
 	<bean id="filterChainProxy" class="org.springframework.security.web.FilterChainProxy">
 		<security:filter-chain-map path-type="ant">
-			<security:filter-chain pattern="/403.do" filters="securityContextPersistenceFilter" />
-			<security:filter-chain pattern="/404.do" filters="securityContextPersistenceFilter,remoteHostSpringFilter" />
-			<security:filter-chain pattern="/error.do" filters="securityContextPersistenceFilter,remoteHostSpringFilter" />
-			<security:filter-chain pattern="/logout.do" filters="securityContextPersistenceFilter,remoteHostSpringFilter" />
-			<security:filter-chain pattern="/logoutiam.do" filters="securityContextPersistenceFilter,remoteHostSpringFilter" />
-			<security:filter-chain pattern="/errors/**" filters="securityContextPersistenceFilter,remoteHostSpringFilter" />
-			<security:filter-chain pattern="/ws/**" filters="remoteHostSpringFilter" />
-			<security:filter-chain pattern="/remoting/**" filters="remoteHostSpringFilter" />
-			<security:filter-chain pattern="/chooseoid.do" filters="securityContextPersistenceFilter,remoteHostSpringFilter,bypassSecurityFilter,iamAuthFilter,accessLoggerFilter" />
-			<security:filter-chain pattern="/authenticationFailed.do" filters="securityContextPersistenceFilter,remoteHostSpringFilter" />
+			<security:filter-chain pattern="/403.do" filters="lastChanceExceptionLoggingFilter,securityContextPersistenceFilter" />
+			<security:filter-chain pattern="/404.do" filters="lastChanceExceptionLoggingFilter,securityContextPersistenceFilter,remoteHostSpringFilter" />
+			<security:filter-chain pattern="/error.do" filters="lastChanceExceptionLoggingFilter,securityContextPersistenceFilter,remoteHostSpringFilter" />
+			<security:filter-chain pattern="/logout.do" filters="lastChanceExceptionLoggingFilter,securityContextPersistenceFilter,remoteHostSpringFilter" />
+			<security:filter-chain pattern="/logoutiam.do" filters="lastChanceExceptionLoggingFilter,securityContextPersistenceFilter,remoteHostSpringFilter" />
+			<security:filter-chain pattern="/errors/**" filters="lastChanceExceptionLoggingFilter,securityContextPersistenceFilter,remoteHostSpringFilter" />
+			<security:filter-chain pattern="/ws/**" filters="lastChanceExceptionLoggingFilter,remoteHostSpringFilter" />
+			<security:filter-chain pattern="/remoting/**" filters="lastChanceExceptionLoggingFilter,remoteHostSpringFilter" />
+			<security:filter-chain pattern="/chooseoid.do" filters="lastChanceExceptionLoggingFilter,securityContextPersistenceFilter,remoteHostSpringFilter,bypassSecurityFilter,iamAuthFilter,accessLoggerFilter" />
+			<security:filter-chain pattern="/authenticationFailed.do" filters="lastChanceExceptionLoggingFilter,securityContextPersistenceFilter,remoteHostSpringFilter" />
 			<!-- Version IAM + IFOSEC -->
-			<security:filter-chain pattern="/**/*.do" filters="securityContextPersistenceFilter,remoteHostSpringFilter,logoutFilter,exceptionTranslationFilter,bypassSecurityFilter,iamAuthFilter,accessLoggerFilter,chooseOIDFilter,ifoSecProfileFilter,contextHolderAwareRequestFilter,actionExceptionFilter" />
-			<security:filter-chain pattern="/**" filters="securityContextPersistenceFilter" />
+			<security:filter-chain pattern="/**/*.do" filters="lastChanceExceptionLoggingFilter,securityContextPersistenceFilter,remoteHostSpringFilter,logoutFilter,exceptionTranslationFilter,bypassSecurityFilter,iamAuthFilter,accessLoggerFilter,chooseOIDFilter,ifoSecProfileFilter,contextHolderAwareRequestFilter,actionExceptionFilter" />
+			<security:filter-chain pattern="/**" filters="lastChanceExceptionLoggingFilter,securityContextPersistenceFilter" />
 		</security:filter-chain-map>
 	</bean>
 
