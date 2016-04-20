@@ -134,16 +134,19 @@ public class OrganisationLocationBuilder {
 				                                                                         uidPostalBoxAddresses.get(e.getKey()),
 				                                                                         uidLiquidationReason.get(e.getKey())
 				                                   ),
-				                                   MultivalueListConverter.toMapOfListsOfDateRangedValues(identifiers.get(e.getKey()), NamedOrganisationId::getOrganisationIdCategory,
-				                                                                                                NamedOrganisationId::getOrganisationId),
-				                                   additionalName.get(e.getKey()) == null ? null : additionalName.get(e.getKey()),
+				                                   identifiers.get(e.getKey()) == null
+						                                   ? null
+						                                   : MultivalueListConverter.toMapOfListsOfDateRangedValues(identifiers.get(e.getKey()), NamedOrganisationId::getOrganisationIdCategory, NamedOrganisationId::getOrganisationId),
+				                                   additionalName.get(e.getKey()),
 				                                   kindOfLocations.get(e.getKey()),
 				                                   legalForm.get(e.getKey()),
 				                                   seats.get(e.getKey()),
-				                                   businessPublication.get(e.getKey()) == null ? null : MultivalueListConverter
-						                                   .toMapOfListsOfDateRangedValues(businessPublication.get(e.getKey()), fosc -> fosc.getSwissGazetteOfCommercePublication().getPublicationDate(), java.util.function.Function.identity()),
-				                                   function.get(e.getKey()) == null ? null : MultivalueListConverter
-						                                   .toMapOfListsOfDateRangedValues(function.get(e.getKey()), f -> f.getParty().getPerson().getName(), OrganisationFunction::new),
+				                                   businessPublication.get(e.getKey()) == null
+						                                   ? null
+						                                   : MultivalueListConverter.toMapOfListsOfDateRangedValues(businessPublication.get(e.getKey()), fosc -> fosc.getSwissGazetteOfCommercePublication().getPublicationDate(), java.util.function.Function.identity()),
+				                                   function.get(e.getKey()) == null
+						                                   ? null
+						                                   : MultivalueListConverter.toMapOfListsOfDateRangedValues(function.get(e.getKey()), f -> f.getParty().getPerson().getName(), OrganisationFunction::new),
 				                                   burTransferTo.get(e.getKey()) == null ? null : DateRangedConvertor.convert(burTransferTo.get(e.getKey()), BigInteger::longValue),
 				                                   burTransferFrom.get(e.getKey()) == null ? null : DateRangedConvertor.convert(burTransferFrom.get(e.getKey()), BigInteger::longValue),
 				                                   uidReplacedBy.get(e.getKey()) == null ? null : DateRangedConvertor.convert(uidReplacedBy.get(e.getKey()), BigInteger::longValue),
