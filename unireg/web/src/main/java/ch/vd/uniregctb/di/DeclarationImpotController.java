@@ -1310,10 +1310,22 @@ public class DeclarationImpotController {
 		controllerUtils.checkAccesDossierEnEcriture(ctb.getId());
 
 		final boolean sursis = di.getDernierEtat() != null && di.getDernierEtat().getEtat() == TypeEtatDeclaration.SOMMEE;
-		final RegDate delaiAccordeAu = delaisService.getDateFinDelaiRetourDeclarationImpotPMEmiseManuellement(di.getDelaiAccordeAu());
+		final RegDate delaiAccordeAu = determineDateAccordDelaiPMParDefaut(sursis, di.getDelaiAccordeAu());
 		model.addAttribute("command", new NouvelleDemandeDelaiDeclarationView(di, delaiAccordeAu, sursis));
 		model.addAttribute("decisionsDelai", tiersMapHelper.getTypesEtatsDelaiDeclaration());
 		return "di/delai/ajouter-pm";
+	}
+
+	/**
+	 * [SIFISC-18869] en cas de sursis, la date par défaut du délai accordé ne doit de toute façon pas être dans le passé
+	 * (la spécification ne donne pas cette contrainte lors d'une demande de délai "normale")
+	 * @param sursis <code>true</code> si nous traitons une demande de sursis, <code>false</code> sinon
+	 * @param delaiPrecedent la date actuelle du délai accordé
+	 * @return la nouvelle date à proposer comme délai par défaut
+	 */
+	private RegDate determineDateAccordDelaiPMParDefaut(boolean sursis, RegDate delaiPrecedent) {
+		final RegDate delaiNormal = delaisService.getDateFinDelaiRetourDeclarationImpotPMEmiseManuellement(delaiPrecedent);
+		return sursis ? RegDateHelper.maximum(delaiNormal, RegDate.get(), NullDateBehavior.EARLIEST) : delaiNormal;
 	}
 
 	/**

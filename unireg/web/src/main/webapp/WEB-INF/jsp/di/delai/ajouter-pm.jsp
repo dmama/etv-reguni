@@ -121,6 +121,7 @@
 					}
 
 					$('#typeImpression').val(type);
+					$('.error').hide();         // [SIFISC-18869] il faut enlever les éventuels messages d'erreur de l'affichage
 					$(button).closest("form").submit();
 
 					// On desactive les boutons
