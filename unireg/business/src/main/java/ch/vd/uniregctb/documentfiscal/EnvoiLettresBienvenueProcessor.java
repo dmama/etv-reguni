@@ -191,7 +191,7 @@ public class EnvoiLettresBienvenueProcessor {
 	 */
 	private RegDate getDateOrigine() {
 		final Integer[] parts = parametreAppService.getDateDebutEnvoiLettresBienvenue();
-		return RegDate.get(parts[2], parts[1], parts[1]);
+		return RegDate.get(parts[2], parts[1], parts[0]);
 	}
 
 	private List<Long> fetchIds(final RegDate dateOrigine) {
