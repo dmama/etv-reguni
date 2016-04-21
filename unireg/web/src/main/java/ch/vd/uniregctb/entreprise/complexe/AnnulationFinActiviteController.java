@@ -13,7 +13,12 @@ public class AnnulationFinActiviteController extends AnnulationRepriseFinActivit
 	private static final String CRITERIA_NAME = "AnnulationFinActiviteCriteria";
 
 	public AnnulationFinActiviteController() {
-		super(CRITERIA_NAME, "d'annulation de fin d'activité", "annulation");
+		super("d'annulation de fin d'activité", "annulation");
+	}
+
+	@Override
+	protected String getSearchCriteriaSessionName() {
+		return CRITERIA_NAME;
 	}
 
 	@Override

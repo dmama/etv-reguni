@@ -13,7 +13,12 @@ public class RevocationFailliteController extends AnnulationRevocationFailliteCo
 	public static final String CRITERIA_NAME = "RevocationFailliteCriteria";
 
 	public RevocationFailliteController() {
-		super(CRITERIA_NAME, "de révocation", "revocation");
+		super("de révocation", "revocation");
+	}
+
+	@Override
+	protected String getSearchCriteriaSessionName() {
+		return CRITERIA_NAME;
 	}
 
 	@Override
