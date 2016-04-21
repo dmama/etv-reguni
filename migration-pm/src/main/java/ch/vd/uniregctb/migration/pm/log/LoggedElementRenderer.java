@@ -16,6 +16,7 @@ public final class LoggedElementRenderer implements StringRenderer<LoggedElement
 	public static final StringRenderer<LoggedElement> INSTANCE = new LoggedElementRenderer();
 
 	private static final String SEPARATOR = ";";
+	private static final String DOUBLE_QUOTE = "\"";
 
 	@Override
 	public String toString(LoggedElement element) {
@@ -34,7 +35,9 @@ public final class LoggedElementRenderer implements StringRenderer<LoggedElement
 		}
 
 		final StringRenderer<? super T> renderer = entry.getKey().getValueRenderer();
-		return renderer.toString(entry.getValue()).replaceAll(Pattern.quote(SEPARATOR), ",");
+		return renderer.toString(entry.getValue())
+				.replaceAll(Pattern.quote(SEPARATOR), ",")
+				.replaceAll(Pattern.quote(DOUBLE_QUOTE), "'");      // double quote -> simple quote
 	}
 
 	/**
