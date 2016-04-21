@@ -24,6 +24,7 @@ import org.springframework.core.io.ClassPathResource;
 import org.xml.sax.SAXException;
 
 import ch.vd.evd0022.v3.Notice;
+import ch.vd.evd0022.v3.NoticeRequestIdentification;
 import ch.vd.evd0022.v3.OrganisationsOfNotice;
 import ch.vd.evd0024.v3.ObjectFactory;
 import ch.vd.registre.base.date.RegDateHelper;
@@ -61,12 +62,13 @@ public class EvenementOrganisationEsbHandler implements EsbMessageHandler, Initi
 	private static final StringRenderer<OrganisationsOfNotice> RECEPTION_EVT_ORGANISATION_RENDERER = new StringRenderer<OrganisationsOfNotice>() {
 		@Override
 		public String toString(OrganisationsOfNotice message) {
-			Notice notice = message.getNotice();
+			final Notice notice = message.getNotice();
+			final NoticeRequestIdentification request = notice.getNoticeRequest();
 			return String.format("id=%d, type=%s, date=%s, reportingId=%s, noOrganisation=%d, nom='%s'",
 			                     notice.getNoticeId(),
 			                     notice.getTypeOfNotice(),
 			                     notice.getNoticeDate(),
-			                     notice.getNoticeRequest().getReportingApplication(),
+			                     request != null ? request.getReportingApplication() : "?",
 			                     message.getOrganisation().get(0).getOrganisation().getCantonalId(),
 			                     message.getOrganisation().get(0).getOrganisation().getOrganisationLocation().get(0).getName()
 			);
