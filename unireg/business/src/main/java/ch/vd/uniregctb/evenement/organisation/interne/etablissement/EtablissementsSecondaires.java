@@ -83,9 +83,9 @@ public class EtablissementsSecondaires extends EvenementOrganisationInterneDeTra
 			// Contrôle du cas ou on va crée un établissement existant mais qu'on ne connaissait pas. On le crée quand même mais on avertit.
 			Domicile ancienDomicile = aCreer.getDomicile(dateAvant);
 			if (ancienDomicile != null) {
-				warnings.addWarning(String.format("Vérification manuelle requise: l'établissement secondaire (n°%s civil) est préexistant au civil (depuis le %s) mais inconnu d'Unireg à ce jour. " +
+				warnings.addWarning(String.format("Vérification manuelle requise: l'établissement secondaire (n°%d civil) est préexistant au civil (depuis le %s) mais inconnu d'Unireg à ce jour. " +
 						                                  "La date du rapport entre tiers (%s) doit probablement être ajustée à la main.",
-				                                  aCreer.connuAuCivilDepuis(), aCreer.getNumeroSite(), dateApres));
+				                                  aCreer.getNumeroSite(), aCreer.connuAuCivilDepuis(), dateApres));
 			}
 
 			// Vérifier que le site à créer n'existe pas déjà.
