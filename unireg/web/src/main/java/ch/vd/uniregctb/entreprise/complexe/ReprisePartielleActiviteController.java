@@ -13,7 +13,12 @@ public class ReprisePartielleActiviteController extends AnnulationRepriseFinActi
 	private static final String CRITERIA_NAME = "ReprisePartielleActiviteCriteria";
 
 	public ReprisePartielleActiviteController() {
-		super(CRITERIA_NAME, "de reprise partielle d'activité", "reprise");
+		super("de reprise partielle d'activité", "reprise");
+	}
+
+	@Override
+	protected String getSearchCriteriaSessionName() {
+		return CRITERIA_NAME;
 	}
 
 	@Override
