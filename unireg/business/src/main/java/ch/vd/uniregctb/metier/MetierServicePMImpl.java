@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -476,14 +477,7 @@ public class MetierServicePMImpl implements MetierServicePM {
 		                                      EnumSet.of(TypeRapportEntreTiers.MANDAT));
 
 		// 4'. [SIFISC-18810] ré-ouverture des adresses mandataires fermées à la date du prononcé de faillite
-		for (AdresseMandataire adresse : entreprise.getAdressesMandataires()) {
-			if (!adresse.isAnnule() && adresse.getDateFin() == datePrononceFaillite) {
-				final AdresseMandataire copie = adresse.duplicate();
-				adresse.setAnnule(true);
-				copie.setDateFin(null);
-				entreprise.addAdresseMandataire(copie);
-			}
-		}
+		reouvreAdressesMandataireFermeesAu(entreprise, datePrononceFaillite);
 
 		// 5. éventuellement, ajoute une nouvelle remarque sur le tiers
 
@@ -723,12 +717,66 @@ public class MetierServicePMImpl implements MetierServicePM {
 		addRemarque(entreprise, remarqueAssociee);
 	}
 
+	@Override
+	public void annuleFinActivite(Entreprise entreprise, RegDate dateFinActivite, @Nullable String remarqueAssociee, boolean reouvertureComplete) throws MetierServiceException {
+
+		// 1. vérification que le dernier for principal de l'entreprise est bien fermé pour motif CESSATION_ACTIVITE
+		final ForFiscalPrincipalPM ffp = entreprise.getDernierForFiscalPrincipal();
+		if (ffp == null || ffp.getDateFin() == null || ffp.getDateFin() != dateFinActivite || ffp.getMotifFermeture() != MotifFor.CESSATION_ACTIVITE) {
+			throw new MetierServiceException(String.format("Le dernier for principal de l'entreprise n'est pas fermé au %s pour motif de '%s'.",
+			                                               RegDateHelper.dateToDisplayString(dateFinActivite),
+			                                               MotifFor.CESSATION_ACTIVITE.getDescription(false)));
+		}
+
+		// 2. ré-ouverture des fors fiscaux
+		if (reouvertureComplete) {
+			// tous les fors fermés au moment de la fin d'activité
+			tiersService.reopenForsClosedAt(dateFinActivite, MotifFor.CESSATION_ACTIVITE, entreprise);
+		}
+		else {
+			// seulement le for principal
+			ffp.setAnnule(true);
+			tiersService.reopenFor(ffp, entreprise);
+			evenementFiscalService.publierEvenementFiscalAnnulationFor(ffp);
+		}
+
+		// 2. ré-ouverture des rapports entre tiers (si demandé) et des éventuelles adresses de mandataire
+		if (reouvertureComplete) {
+			tiersService.reopenRapportsEntreTiers(entreprise,
+			                                      dateFinActivite,
+			                                      EnumSet.of(TypeRapportEntreTiers.MANDAT, TypeRapportEntreTiers.ACTIVITE_ECONOMIQUE),
+			                                      EnumSet.of(TypeRapportEntreTiers.MANDAT));
+
+			reouvreAdressesMandataireFermeesAu(entreprise, dateFinActivite);
+		}
+
+		// 3. annulation de l'état dissoute actuel s'il existe
+		final EtatEntreprise etatActuel = entreprise.getEtatActuel();
+		if (etatActuel != null && etatActuel.getDateObtention() == dateFinActivite && etatActuel.getType() == TypeEtatEntreprise.DISSOUTE) {
+			etatActuel.setAnnule(true);
+		}
+
+		// 4. la remarque ?
+		addRemarque(entreprise, remarqueAssociee);
+	}
+
 	private void addRemarque(Tiers tiers, String texteRemarque) {
 		if (StringUtils.isNotBlank(texteRemarque)) {
 			final Remarque remarque = new Remarque();
 			remarque.setTexte(StringUtils.abbreviate(texteRemarque, LengthConstants.TIERS_REMARQUE));
 			remarque.setTiers(tiers);
 			remarqueDAO.save(remarque);
+		}
+	}
+
+	private static void reouvreAdressesMandataireFermeesAu(Entreprise entreprise, @NotNull RegDate dateFermeture) {
+		for (AdresseMandataire adresse : entreprise.getAdressesMandataires()) {
+			if (!adresse.isAnnule() && adresse.getDateFin() == dateFermeture) {
+				final AdresseMandataire copie = adresse.duplicate();
+				adresse.setAnnule(true);
+				copie.setDateFin(null);
+				entreprise.addAdresseMandataire(copie);
+			}
 		}
 	}
 
