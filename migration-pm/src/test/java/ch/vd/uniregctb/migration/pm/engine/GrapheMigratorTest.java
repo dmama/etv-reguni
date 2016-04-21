@@ -6259,7 +6259,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 			Assert.assertEquals(2, msgs.size());
 
 			// dans le CSV, les ";" présents dans l'adresse sont transformés en ","
-			Assert.assertEquals("WARN;" + noEntreprise + ";Active;;" + noCantonalEntreprise + ";;;;;;;;;;;;;A,v,e.n:ü-e_D!E?l'o n\"g(e)m{a}l[le] ;1BIS;;Renens (VD);;Adresse 'A,v,e.n:ü-e_D!E?l'o n\"g(e)m{a}l[le]' à 'Renens (VD)' conservée en texte libre.", msgs.get(0));
+			Assert.assertEquals("WARN;" + noEntreprise + ";Active;;" + noCantonalEntreprise + ";;;;;;;;;;;;;A,v,e.n:ü-e_D!E?l'o n'g(e)m{a}l[le] ;1BIS;;Renens (VD);;Adresse 'A,v,e.n:ü-e_D!E?l'o n'g(e)m{a}l[le]' à 'Renens (VD)' conservée en texte libre.", msgs.get(0));
 			Assert.assertEquals("INFO;" + noEntreprise + ";Active;;" + noCantonalEntreprise + ";;;;;;;;;;;;;;;;;;Adresse fiscale de courrier migrée sur la période [12.10.1995 -> 04.02.2016].", msgs.get(1));
 		}
 	}
