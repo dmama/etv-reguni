@@ -1793,4 +1793,488 @@ public class MetierServicePMTest extends BusinessTest {
 			}
 		});
 	}
+
+	@Test
+	public void testFinActivite() throws Exception {
+
+		final RegDate dateCreationEntreprise = date(2000, 4, 1);
+		final RegDate dateCessationActivite = date(2010, 4, 13);
+
+		final class Ids {
+			long idEntreprise;
+			long idEtablissementPrincipal;
+			long idEtablissementSecondaire;
+		}
+
+		// mise en place fiscale
+		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
+			@Override
+			public Ids doInTransaction(TransactionStatus status) {
+
+				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+				addRaisonSociale(entreprise, dateCreationEntreprise, null, "Ma petite entreprise");
+				addFormeJuridique(entreprise, dateCreationEntreprise, null, FormeJuridiqueEntreprise.ASSOCIATION);
+				addRegimeFiscalCH(entreprise, dateCreationEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_APM);
+				addRegimeFiscalVD(entreprise, dateCreationEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_APM);
+				addBouclement(entreprise, dateCreationEntreprise, DayMonth.get(12, 31), 12);        // tous les 31.12 depuis 2000
+				addForPrincipal(entreprise, dateCreationEntreprise, MotifFor.DEBUT_EXPLOITATION, MockCommune.Grandson);
+				addForSecondaire(entreprise, dateCreationEntreprise, MotifFor.DEBUT_EXPLOITATION, MockCommune.ChateauDoex.getNoOFS(), MotifRattachement.ETABLISSEMENT_STABLE, GenreImpot.BENEFICE_CAPITAL);
+
+				addAdresseMandataireSuisse(entreprise, dateCreationEntreprise, null, TypeMandat.GENERAL, "Mon mandataire chéri", MockRue.Renens.QuatorzeAvril);
+
+				final Etablissement etablissementPrincipal = addEtablissement();
+				addDomicileEtablissement(etablissementPrincipal, dateCreationEntreprise, null, MockCommune.Grandson);
+				addActiviteEconomique(entreprise, etablissementPrincipal, dateCreationEntreprise, null, true);
+
+				final Etablissement etablissementSecondaire = addEtablissement();
+				addDomicileEtablissement(etablissementSecondaire, dateCreationEntreprise, null, MockCommune.ChateauDoex);
+				addActiviteEconomique(entreprise, etablissementSecondaire, dateCreationEntreprise, null, false);
+
+				addEtatEntreprise(entreprise, dateCreationEntreprise, TypeEtatEntreprise.FONDEE, TypeGenerationEtatEntreprise.AUTOMATIQUE);
+
+				final Ids ids = new Ids();
+				ids.idEntreprise = entreprise.getNumero();
+				ids.idEtablissementPrincipal = etablissementPrincipal.getNumero();
+				ids.idEtablissementSecondaire = etablissementSecondaire.getNumero();
+				return ids;
+			}
+		});
+
+		// traitement de la faillite
+		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus status) throws Exception {
+				final Entreprise entreprise = (Entreprise) tiersDAO.get(ids.idEntreprise);
+				Assert.assertNotNull(entreprise);
+				metierServicePM.finActivite(entreprise, dateCessationActivite, "Une jolie remarque toute belle...");
+			}
+		});
+
+		// vérification des résultats
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final Entreprise entreprise = (Entreprise) tiersDAO.get(ids.idEntreprise);
+				Assert.assertNotNull(entreprise);
+
+				// 1. les fors doivent être fermés pour motif FAILLITE
+				final Set<ForFiscal> forsFiscaux = entreprise.getForsFiscaux();
+				Assert.assertNotNull(forsFiscaux);
+				Assert.assertEquals(2, forsFiscaux.size());
+				for (ForFiscal ff : forsFiscaux) {
+					Assert.assertFalse(ff.isAnnule());
+					Assert.assertEquals(dateCreationEntreprise, ff.getDateDebut());
+					Assert.assertEquals(dateCessationActivite, ff.getDateFin());
+					Assert.assertTrue(ff.getClass().getName(), ff instanceof ForFiscalAvecMotifs);
+					Assert.assertEquals(MotifFor.CESSATION_ACTIVITE, ((ForFiscalAvecMotifs) ff).getMotifFermeture());
+				}
+
+				// 2. le rapport entre tiers vers l'établissement secondaire doit être fermé, pas l'autre
+				boolean principalTrouve = false;
+				boolean secondaireTrouve = false;
+				final Set<RapportEntreTiers> rapportsSujet = entreprise.getRapportsSujet();
+				Assert.assertNotNull(rapportsSujet);
+				Assert.assertEquals(2, rapportsSujet.size());
+				for (RapportEntreTiers ret : rapportsSujet) {
+					Assert.assertFalse(ret.isAnnule());
+					Assert.assertEquals(dateCreationEntreprise, ret.getDateDebut());
+					Assert.assertEquals(TypeRapportEntreTiers.ACTIVITE_ECONOMIQUE, ret.getType());
+
+					final ActiviteEconomique ae = (ActiviteEconomique) ret;
+					if (ae.isPrincipal()) {
+						Assert.assertFalse(principalTrouve);
+						Assert.assertNull(ae.getDateFin());
+						Assert.assertEquals((Long) ids.idEtablissementPrincipal, ae.getObjetId());
+						principalTrouve = true;
+					}
+					else {
+						Assert.assertFalse(secondaireTrouve);
+						Assert.assertEquals(dateCessationActivite, ae.getDateFin());
+						Assert.assertEquals((Long) ids.idEtablissementSecondaire, ae.getObjetId());
+						secondaireTrouve = true;
+					}
+				}
+				Assert.assertTrue(principalTrouve);
+				Assert.assertTrue(secondaireTrouve);
+
+				// 3. les adresses mandataires doivent être fermées
+				final Set<AdresseMandataire> adressesMandataires = entreprise.getAdressesMandataires();
+				Assert.assertNotNull(adressesMandataires);
+				Assert.assertEquals(1, adressesMandataires.size());
+				for (AdresseMandataire adresse : adressesMandataires) {
+					Assert.assertFalse(adresse.isAnnule());
+					Assert.assertEquals(dateCreationEntreprise, adresse.getDateDebut());
+					Assert.assertEquals(dateCessationActivite, adresse.getDateFin());
+				}
+
+				// 4. état DISSOUTE sur l'entreprise
+				final EtatEntreprise etatActuel = entreprise.getEtatActuel();
+				Assert.assertNotNull(etatActuel);
+				Assert.assertEquals(TypeEtatEntreprise.DISSOUTE, etatActuel.getType());
+				Assert.assertEquals(dateCessationActivite, etatActuel.getDateObtention());
+				Assert.assertEquals(TypeGenerationEtatEntreprise.MANUELLE, etatActuel.getGeneration());
+
+				// 5. et la remarque ?
+				final Set<Remarque> remarques = entreprise.getRemarques();
+				Assert.assertNotNull(remarques);
+				Assert.assertEquals(1, remarques.size());
+				final Remarque remarque = remarques.iterator().next();
+				Assert.assertNotNull(remarque);
+				Assert.assertFalse(remarque.isAnnule());
+				Assert.assertEquals("Une jolie remarque toute belle...", remarque.getTexte());
+
+				// 6. événements fiscaux
+				final Collection<EvenementFiscal> evts = evenementFiscalDAO.getEvenementsFiscaux(entreprise);
+				Assert.assertEquals(2, evts.size());        // 2 fermetures de for
+				for (EvenementFiscal ef : evts) {
+					Assert.assertEquals(EvenementFiscalFor.class, ef.getClass());
+					final EvenementFiscalFor eff = (EvenementFiscalFor) ef;
+					Assert.assertNotNull(eff);
+					Assert.assertFalse(eff.isAnnule());
+					Assert.assertEquals(dateCessationActivite, eff.getDateValeur());
+					Assert.assertEquals(EvenementFiscalFor.TypeEvenementFiscalFor.FERMETURE, eff.getType());
+				}
+			}
+		});
+	}
+
+	@Test
+	public void testAnnulationFinActivite() throws Exception {
+
+		final RegDate dateCreationEntreprise = date(2000, 4, 1);
+		final RegDate dateFinActivite = date(2010, 4, 13);
+
+		final class Ids {
+			long idEntreprise;
+			long idEtablissementPrincipal;
+			long idEtablissementSecondaire;
+		}
+
+		// mise en place fiscale
+		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
+			@Override
+			public Ids doInTransaction(TransactionStatus status) {
+
+				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+				addRaisonSociale(entreprise, dateCreationEntreprise, null, "Ma petite entreprise");
+				addFormeJuridique(entreprise, dateCreationEntreprise, null, FormeJuridiqueEntreprise.ASSOCIATION);
+				addRegimeFiscalCH(entreprise, dateCreationEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_APM);
+				addRegimeFiscalVD(entreprise, dateCreationEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_APM);
+				addBouclement(entreprise, dateCreationEntreprise, DayMonth.get(12, 31), 12);        // tous les 31.12 depuis 2000
+				addForPrincipal(entreprise, dateCreationEntreprise, MotifFor.DEBUT_EXPLOITATION, dateFinActivite, MotifFor.CESSATION_ACTIVITE, MockCommune.Grandson);
+				addForSecondaire(entreprise, dateCreationEntreprise, MotifFor.DEBUT_EXPLOITATION, dateFinActivite, MotifFor.CESSATION_ACTIVITE, MockCommune.ChateauDoex.getNoOFS(), MotifRattachement.ETABLISSEMENT_STABLE, GenreImpot.BENEFICE_CAPITAL);
+
+				addAdresseMandataireSuisse(entreprise, dateCreationEntreprise, dateFinActivite, TypeMandat.GENERAL, "Mon mandataire chéri", MockRue.Renens.QuatorzeAvril);
+
+				final Etablissement etablissementPrincipal = addEtablissement();
+				addDomicileEtablissement(etablissementPrincipal, dateCreationEntreprise, null, MockCommune.Grandson);
+				addActiviteEconomique(entreprise, etablissementPrincipal, dateCreationEntreprise, null, true);
+
+				final Etablissement etablissementSecondaire = addEtablissement();
+				addDomicileEtablissement(etablissementSecondaire, dateCreationEntreprise, null, MockCommune.ChateauDoex);
+				addActiviteEconomique(entreprise, etablissementSecondaire, dateCreationEntreprise, dateFinActivite, false);
+
+				addEtatEntreprise(entreprise, dateCreationEntreprise, TypeEtatEntreprise.FONDEE, TypeGenerationEtatEntreprise.AUTOMATIQUE);
+				addEtatEntreprise(entreprise, dateFinActivite, TypeEtatEntreprise.DISSOUTE, TypeGenerationEtatEntreprise.MANUELLE);
+
+				final Ids ids = new Ids();
+				ids.idEntreprise = entreprise.getNumero();
+				ids.idEtablissementPrincipal = etablissementPrincipal.getNumero();
+				ids.idEtablissementSecondaire = etablissementSecondaire.getNumero();
+				return ids;
+			}
+		});
+
+		// traitement de l'annulation de la fin d'activité
+		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus status) throws Exception {
+				final Entreprise entreprise = (Entreprise) tiersDAO.get(ids.idEntreprise);
+				Assert.assertNotNull(entreprise);
+				metierServicePM.annuleFinActivite(entreprise, dateFinActivite, "Une jolie remarque toute belle pour l'annulation...", true);
+			}
+		});
+
+		// vérification des résultats
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final Entreprise entreprise = (Entreprise) tiersDAO.get(ids.idEntreprise);
+				Assert.assertNotNull(entreprise);
+
+				// 1. les fors doivent être ré-ouverts
+				final Set<ForFiscal> forsFiscaux = entreprise.getForsFiscaux();
+				Assert.assertNotNull(forsFiscaux);
+				Assert.assertEquals(4, forsFiscaux.size());     // deux annulés, et deux ré-ouverts
+				final Map<Boolean, List<ForFiscal>> fors = segmenterAnnulables(forsFiscaux);
+				Assert.assertEquals(2, fors.get(Boolean.TRUE).size());
+				Assert.assertEquals(2, fors.get(Boolean.FALSE).size());
+				for (ForFiscal ff : fors.get(Boolean.TRUE)) {
+					Assert.assertEquals(dateCreationEntreprise, ff.getDateDebut());
+					Assert.assertEquals(dateFinActivite, ff.getDateFin());
+					Assert.assertTrue(ff.getClass().getName(), ff instanceof ForFiscalAvecMotifs);
+					Assert.assertEquals(MotifFor.CESSATION_ACTIVITE, ((ForFiscalAvecMotifs) ff).getMotifFermeture());
+				}
+				for (ForFiscal ff : fors.get(Boolean.FALSE)) {
+					Assert.assertEquals(dateCreationEntreprise, ff.getDateDebut());
+					Assert.assertNull(ff.getDateFin());
+					Assert.assertTrue(ff.getClass().getName(), ff instanceof ForFiscalAvecMotifs);
+					Assert.assertNull(((ForFiscalAvecMotifs) ff).getMotifFermeture());
+				}
+
+				// 2. le rapport entre tiers vers l'établissement secondaire doit être ré-ouvert
+				final Set<RapportEntreTiers> rapportsSujet = entreprise.getRapportsSujet();
+				Assert.assertNotNull(rapportsSujet);
+				Assert.assertEquals(3, rapportsSujet.size());           // 1 annulé, 2 ouverts
+				final Map<Boolean, List<RapportEntreTiers>> rets = segmenterAnnulables(rapportsSujet);
+				Assert.assertEquals(1, rets.get(Boolean.TRUE).size());
+				Assert.assertEquals(2, rets.get(Boolean.FALSE).size());
+				for (RapportEntreTiers ret : rets.get(Boolean.FALSE)) {
+					Assert.assertEquals(dateCreationEntreprise, ret.getDateDebut());
+					Assert.assertNull(ret.getDateFin());
+					Assert.assertEquals(TypeRapportEntreTiers.ACTIVITE_ECONOMIQUE, ret.getType());
+				}
+				for (RapportEntreTiers ret : rets.get(Boolean.TRUE)) {
+					Assert.assertEquals(dateCreationEntreprise, ret.getDateDebut());
+					Assert.assertEquals(dateFinActivite, ret.getDateFin());
+					Assert.assertEquals(TypeRapportEntreTiers.ACTIVITE_ECONOMIQUE, ret.getType());
+					Assert.assertFalse(((ActiviteEconomique) ret).isPrincipal());
+				}
+
+				// 3. les adresses mandataires doivent être ré-ouvertes
+				final Set<AdresseMandataire> adressesMandataires = entreprise.getAdressesMandataires();
+				Assert.assertNotNull(adressesMandataires);
+				Assert.assertEquals(2, adressesMandataires.size());     // une annulée et une ouverte
+				final Map<Boolean, List<AdresseMandataire>> ams = segmenterAnnulables(adressesMandataires);
+				Assert.assertEquals(1, ams.get(Boolean.TRUE).size());
+				Assert.assertEquals(1, ams.get(Boolean.FALSE).size());
+				for (AdresseMandataire adresse : ams.get(Boolean.TRUE)) {
+					Assert.assertEquals(dateCreationEntreprise, adresse.getDateDebut());
+					Assert.assertEquals(dateFinActivite, adresse.getDateFin());
+				}
+				for (AdresseMandataire adresse : ams.get(Boolean.FALSE)) {
+					Assert.assertEquals(dateCreationEntreprise, adresse.getDateDebut());
+					Assert.assertNull(adresse.getDateFin());
+				}
+
+				// 4. état DISSOUTE sur l'entreprise (annulé)
+				final EtatEntreprise etatActuel = entreprise.getEtatActuel();
+				Assert.assertNotNull(etatActuel);
+				Assert.assertEquals(TypeEtatEntreprise.FONDEE, etatActuel.getType());
+				Assert.assertEquals(dateCreationEntreprise, etatActuel.getDateObtention());
+				Assert.assertEquals(TypeGenerationEtatEntreprise.AUTOMATIQUE, etatActuel.getGeneration());
+
+				// 5. et la remarque ?
+				final Set<Remarque> remarques = entreprise.getRemarques();
+				Assert.assertNotNull(remarques);
+				Assert.assertEquals(1, remarques.size());
+				final Remarque remarque = remarques.iterator().next();
+				Assert.assertNotNull(remarque);
+				Assert.assertFalse(remarque.isAnnule());
+				Assert.assertEquals("Une jolie remarque toute belle pour l'annulation...", remarque.getTexte());
+
+				// 6. événements fiscaux
+				final Collection<EvenementFiscal> evts = evenementFiscalDAO.getEvenementsFiscaux(entreprise);
+				Assert.assertEquals(4, evts.size());        // 2 annulations de for + 2 ouvertures de for
+				final Map<EvenementFiscalFor.TypeEvenementFiscalFor, List<EvenementFiscal>> evtsParType = segmenter(evts, new Extractor<EvenementFiscal, EvenementFiscalFor.TypeEvenementFiscalFor>() {
+					@Override
+					public EvenementFiscalFor.TypeEvenementFiscalFor extract(EvenementFiscal source) {
+						Assert.assertTrue(source.getClass().getName(), source instanceof EvenementFiscalFor);
+						return ((EvenementFiscalFor) source).getType();
+					}
+				});
+				Assert.assertEquals(EnumSet.of(EvenementFiscalFor.TypeEvenementFiscalFor.OUVERTURE, EvenementFiscalFor.TypeEvenementFiscalFor.ANNULATION), evtsParType.keySet());
+				Assert.assertEquals(2, evtsParType.get(EvenementFiscalFor.TypeEvenementFiscalFor.OUVERTURE).size());
+				Assert.assertEquals(2, evtsParType.get(EvenementFiscalFor.TypeEvenementFiscalFor.ANNULATION).size());
+				for (EvenementFiscal ef : evtsParType.get(EvenementFiscalFor.TypeEvenementFiscalFor.OUVERTURE)) {
+					final EvenementFiscalFor eff = (EvenementFiscalFor) ef;
+					Assert.assertNotNull(eff);
+					Assert.assertFalse(eff.isAnnule());
+					Assert.assertEquals(dateCreationEntreprise, eff.getDateValeur());
+				}
+				for (EvenementFiscal ef : evtsParType.get(EvenementFiscalFor.TypeEvenementFiscalFor.ANNULATION)) {
+					final EvenementFiscalFor eff = (EvenementFiscalFor) ef;
+					Assert.assertNotNull(eff);
+					Assert.assertFalse(eff.isAnnule());
+					Assert.assertEquals(dateCreationEntreprise, eff.getDateValeur());
+				}
+			}
+		});
+	}
+
+	@Test
+	public void testReprisePartielleActivite() throws Exception {
+
+		final RegDate dateCreationEntreprise = date(2000, 4, 1);
+		final RegDate dateFinActivite = date(2010, 4, 13);
+
+		final class Ids {
+			long idEntreprise;
+			long idEtablissementPrincipal;
+			long idEtablissementSecondaire;
+		}
+
+		// mise en place fiscale
+		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
+			@Override
+			public Ids doInTransaction(TransactionStatus status) {
+
+				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+				addRaisonSociale(entreprise, dateCreationEntreprise, null, "Ma petite entreprise");
+				addFormeJuridique(entreprise, dateCreationEntreprise, null, FormeJuridiqueEntreprise.ASSOCIATION);
+				addRegimeFiscalCH(entreprise, dateCreationEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_APM);
+				addRegimeFiscalVD(entreprise, dateCreationEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_APM);
+				addBouclement(entreprise, dateCreationEntreprise, DayMonth.get(12, 31), 12);        // tous les 31.12 depuis 2000
+				addForPrincipal(entreprise, dateCreationEntreprise, MotifFor.DEBUT_EXPLOITATION, dateFinActivite, MotifFor.CESSATION_ACTIVITE, MockCommune.Grandson);
+				addForSecondaire(entreprise, dateCreationEntreprise, MotifFor.DEBUT_EXPLOITATION, dateFinActivite, MotifFor.CESSATION_ACTIVITE, MockCommune.ChateauDoex.getNoOFS(), MotifRattachement.ETABLISSEMENT_STABLE, GenreImpot.BENEFICE_CAPITAL);
+
+				addAdresseMandataireSuisse(entreprise, dateCreationEntreprise, dateFinActivite, TypeMandat.GENERAL, "Mon mandataire chéri", MockRue.Renens.QuatorzeAvril);
+
+				final Etablissement etablissementPrincipal = addEtablissement();
+				addDomicileEtablissement(etablissementPrincipal, dateCreationEntreprise, null, MockCommune.Grandson);
+				addActiviteEconomique(entreprise, etablissementPrincipal, dateCreationEntreprise, null, true);
+
+				final Etablissement etablissementSecondaire = addEtablissement();
+				addDomicileEtablissement(etablissementSecondaire, dateCreationEntreprise, null, MockCommune.ChateauDoex);
+				addActiviteEconomique(entreprise, etablissementSecondaire, dateCreationEntreprise, dateFinActivite, false);
+
+				addEtatEntreprise(entreprise, dateCreationEntreprise, TypeEtatEntreprise.FONDEE, TypeGenerationEtatEntreprise.AUTOMATIQUE);
+				addEtatEntreprise(entreprise, dateFinActivite, TypeEtatEntreprise.DISSOUTE, TypeGenerationEtatEntreprise.MANUELLE);
+
+				final Ids ids = new Ids();
+				ids.idEntreprise = entreprise.getNumero();
+				ids.idEtablissementPrincipal = etablissementPrincipal.getNumero();
+				ids.idEtablissementSecondaire = etablissementSecondaire.getNumero();
+				return ids;
+			}
+		});
+
+		// traitement de la reprise partielle d'activité
+		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus status) throws Exception {
+				final Entreprise entreprise = (Entreprise) tiersDAO.get(ids.idEntreprise);
+				Assert.assertNotNull(entreprise);
+				metierServicePM.annuleFinActivite(entreprise, dateFinActivite, "Une jolie remarque toute belle pour la reprise partielle...", false);
+			}
+		});
+
+		// vérification des résultats
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final Entreprise entreprise = (Entreprise) tiersDAO.get(ids.idEntreprise);
+				Assert.assertNotNull(entreprise);
+
+				// 1. le for principal doit être ré-ouvert
+				final Set<ForFiscal> forsFiscaux = entreprise.getForsFiscaux();
+				Assert.assertNotNull(forsFiscaux);
+				Assert.assertEquals(3, forsFiscaux.size());     // 1 annulé, et 1 ré-ouvert (et un laissé fermé, le secondaire)
+				final Map<Boolean, List<ForFiscal>> fors = segmenterAnnulables(forsFiscaux);
+				Assert.assertEquals(1, fors.get(Boolean.TRUE).size());
+				Assert.assertEquals(2, fors.get(Boolean.FALSE).size());
+				for (ForFiscal ff : fors.get(Boolean.TRUE)) {
+					Assert.assertEquals(dateCreationEntreprise, ff.getDateDebut());
+					Assert.assertEquals(dateFinActivite, ff.getDateFin());
+					Assert.assertTrue(ff.getClass().getName(), ff instanceof ForFiscalAvecMotifs);
+					Assert.assertEquals(MotifFor.CESSATION_ACTIVITE, ((ForFiscalAvecMotifs) ff).getMotifFermeture());
+					Assert.assertEquals(ForFiscalPrincipalPM.class, ff.getClass());
+				}
+				final Map<Class<?>, List<ForFiscal>> forsNonAnnulesParClasse = segmenterParClasse(fors.get(Boolean.FALSE));
+				Assert.assertEquals(new HashSet<>(Arrays.asList(ForFiscalPrincipalPM.class, ForFiscalSecondaire.class)), forsNonAnnulesParClasse.keySet());
+				Assert.assertEquals(1, forsNonAnnulesParClasse.get(ForFiscalPrincipalPM.class).size());
+				Assert.assertEquals(1, forsNonAnnulesParClasse.get(ForFiscalSecondaire.class).size());
+				for (ForFiscal ff : forsNonAnnulesParClasse.get(ForFiscalPrincipalPM.class)) {
+					Assert.assertEquals(dateCreationEntreprise, ff.getDateDebut());
+					Assert.assertNull(ff.getDateFin());
+					Assert.assertTrue(ff.getClass().getName(), ff instanceof ForFiscalAvecMotifs);
+					Assert.assertNull(((ForFiscalAvecMotifs) ff).getMotifFermeture());
+				}
+				for (ForFiscal ff : forsNonAnnulesParClasse.get(ForFiscalSecondaire.class)) {
+					Assert.assertEquals(dateCreationEntreprise, ff.getDateDebut());
+					Assert.assertEquals(dateFinActivite, ff.getDateFin());
+					Assert.assertTrue(ff.getClass().getName(), ff instanceof ForFiscalAvecMotifs);
+					Assert.assertEquals(MotifFor.CESSATION_ACTIVITE, ((ForFiscalAvecMotifs) ff).getMotifFermeture());
+				}
+
+				// 2. le rapport entre tiers vers l'établissement secondaire ne doit pas être ré-ouvert
+				final Set<RapportEntreTiers> rapportsSujet = entreprise.getRapportsSujet();
+				Assert.assertNotNull(rapportsSujet);
+				Assert.assertEquals(2, rapportsSujet.size());           // 1 ouvert, 1 fermé, comme avant la révocation
+				final Map<Boolean, List<RapportEntreTiers>> rets = segmenterAnnulables(rapportsSujet);
+				Assert.assertEquals(0, rets.get(Boolean.TRUE).size());
+				Assert.assertEquals(2, rets.get(Boolean.FALSE).size());
+				final Map<Boolean, List<RapportEntreTiers>> activitesEconomiques = segmenter(rets.get(Boolean.FALSE), new Extractor<RapportEntreTiers, Boolean>() {
+					@Override
+					public Boolean extract(RapportEntreTiers source) {
+						Assert.assertTrue(source.getClass().getName(), source instanceof ActiviteEconomique);
+						return ((ActiviteEconomique) source).isPrincipal();
+					}
+				});
+				Assert.assertEquals(1, activitesEconomiques.get(Boolean.TRUE).size());
+				Assert.assertEquals(1, activitesEconomiques.get(Boolean.FALSE).size());
+				for (RapportEntreTiers ret : activitesEconomiques.get(Boolean.FALSE)) {
+					Assert.assertEquals(dateCreationEntreprise, ret.getDateDebut());
+					Assert.assertEquals(dateFinActivite, ret.getDateFin());
+				}
+				for (RapportEntreTiers ret : activitesEconomiques.get(Boolean.TRUE)) {
+					Assert.assertEquals(dateCreationEntreprise, ret.getDateDebut());
+					Assert.assertNull(ret.getDateFin());
+				}
+
+				// 3. les adresses mandataires ne doivent pas être ré-ouvertes
+				final Set<AdresseMandataire> adressesMandataires = entreprise.getAdressesMandataires();
+				Assert.assertNotNull(adressesMandataires);
+				Assert.assertEquals(1, adressesMandataires.size());     // l'adresse fermée
+				final AdresseMandataire adresseMandataire = adressesMandataires.iterator().next();
+				Assert.assertNotNull(adresseMandataire);
+				Assert.assertFalse(adresseMandataire.isAnnule());
+				Assert.assertEquals(dateCreationEntreprise, adresseMandataire.getDateDebut());
+				Assert.assertEquals(dateFinActivite, adresseMandataire.getDateFin());
+
+				// 4. état DISSOUTE sur l'entreprise (annulé)
+				final EtatEntreprise etatActuel = entreprise.getEtatActuel();
+				Assert.assertNotNull(etatActuel);
+				Assert.assertEquals(TypeEtatEntreprise.FONDEE, etatActuel.getType());
+				Assert.assertEquals(dateCreationEntreprise, etatActuel.getDateObtention());
+				Assert.assertEquals(TypeGenerationEtatEntreprise.AUTOMATIQUE, etatActuel.getGeneration());
+
+				// 5. et la remarque ?
+				final Set<Remarque> remarques = entreprise.getRemarques();
+				Assert.assertNotNull(remarques);
+				Assert.assertEquals(1, remarques.size());
+				final Remarque remarque = remarques.iterator().next();
+				Assert.assertNotNull(remarque);
+				Assert.assertFalse(remarque.isAnnule());
+				Assert.assertEquals("Une jolie remarque toute belle pour la reprise partielle...", remarque.getTexte());
+
+				// 6. événements fiscaux
+				final Collection<EvenementFiscal> evts = evenementFiscalDAO.getEvenementsFiscaux(entreprise);
+				Assert.assertEquals(2, evts.size());        // 1 annulation de for + 1 ouverture de for
+				boolean annulationTrouvee = false;
+				boolean ouvertureTrouvee = false;
+				for (EvenementFiscal ef : evts) {
+					Assert.assertEquals(EvenementFiscalFor.class, ef.getClass());
+					final EvenementFiscalFor eff = (EvenementFiscalFor) ef;
+					Assert.assertNotNull(eff);
+					Assert.assertFalse(eff.isAnnule());
+					Assert.assertEquals(dateCreationEntreprise, eff.getDateValeur());
+					Assert.assertTrue(eff.getForFiscal().isPrincipal());
+					if (eff.getType() == EvenementFiscalFor.TypeEvenementFiscalFor.ANNULATION) {
+						Assert.assertFalse(annulationTrouvee);
+						annulationTrouvee = true;
+					}
+					else if (eff.getType() == EvenementFiscalFor.TypeEvenementFiscalFor.OUVERTURE) {
+						Assert.assertFalse(ouvertureTrouvee);
+						ouvertureTrouvee = true;
+					}
+					else {
+						Assert.fail("Type inattendu : " + eff.getType());
+					}
+				}
+				Assert.assertTrue(annulationTrouvee);
+				Assert.assertTrue(ouvertureTrouvee);
+			}
+		});
+	}
 }

@@ -120,6 +120,16 @@ public interface MetierServicePM {
 	void finActivite(Entreprise entreprise, RegDate dateFinActivite, @Nullable String remarqueAssociee) throws MetierServiceException;
 
 	/**
+	 * Opération d'annulation (potentiellement partielle) de fin d'activité
+	 * @param entreprise l'entreprise qui cesse finalement plus son activité
+	 * @param dateFinActivite date de la fin d'activité
+	 * @param remarqueAssociee [optionnelle] éventuelle remarque à ajouter à l'entreprise en même temps
+	 * @param reouvertureComplete <code>true</code> s'il faut ré-ouvrir les éventuels fors secondaires et rapports entre tiers fermés lors de la fin d'activité, <code>false</code> si seul le for principal doit être ré-ouvert
+	 * @throws MetierServiceException en cas de problème
+	 */
+	void annuleFinActivite(Entreprise entreprise, RegDate dateFinActivite, @Nullable String remarqueAssociee, boolean reouvertureComplete) throws MetierServiceException;
+
+	/**
 	 * Opération de fusion d'entreprises
 	 * @param absorbante l'entreprise absorbante
 	 * @param absorbees les entreprises absorbées

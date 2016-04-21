@@ -120,6 +120,7 @@
 							</authz:authorize>
 							<authz:authorize ifAnyGranted="ROLE_FIN_ACTIVITE_ENTREPRISE">
 								<li><a href="<c:url value="/processuscomplexe/finactivite/list.do"/>"><fmt:message key="title.fin.activite"/></a></li>
+								<li><a href="<c:url value="/processuscomplexe/repriseactivite/list.do"/>"><fmt:message key="title.reprise.partielle.activite"/></a></li>
 							</authz:authorize>
 							<authz:authorize ifAnyGranted="ROLE_FUSION_ENTREPRISES">
 								<li><a href="<c:url value="/processuscomplexe/fusion/absorbante/list.do"/>"><fmt:message key="title.fusion.entreprises"/></a></li>
@@ -133,6 +134,9 @@
 							</authz:authorize>
 							<authz:authorize ifAnyGranted="ROLE_DEMENAGEMENT_SIEGE_ENTREPRISE">
 								<li><a href="<c:url value="/processuscomplexe/annulation/demenagement/list.do"/>"><fmt:message key="title.demenagement.siege"/></a></li>
+							</authz:authorize>
+							<authz:authorize ifAnyGranted="ROLE_FIN_ACTIVITE_ENTREPRISE">
+								<li><a href="<c:url value="/processuscomplexe/annulation/finactivite/list.do"/>"><fmt:message key="title.fin.activite"/></a></li>
 							</authz:authorize>
 							<authz:authorize ifAnyGranted="ROLE_FUSION_ENTREPRISES">
 								<li><a href="<c:url value="/processuscomplexe/annulation/fusion/list.do"/>"><fmt:message key="title.fusion.entreprises"/></a></li>
