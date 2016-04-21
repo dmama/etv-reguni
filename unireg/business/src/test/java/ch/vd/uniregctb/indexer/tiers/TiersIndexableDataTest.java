@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.indexer.tiers;
 
+import java.util.EnumSet;
 import java.util.List;
 
 import org.apache.lucene.document.Document;
@@ -22,6 +23,7 @@ import ch.vd.uniregctb.type.CategorieImpotSource;
 import ch.vd.uniregctb.type.FormeJuridiqueEntreprise;
 import ch.vd.uniregctb.type.ModeCommunication;
 import ch.vd.uniregctb.type.ModeImposition;
+import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.NatureJuridique;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
@@ -701,5 +703,110 @@ public class TiersIndexableDataTest extends WithoutSpringTest {
 		// recherche des données (KO)
 		criteria.setInclureI107(false);
 		assertEmpty(globalTiersSearcher.search(criteria));
+	}
+
+	@Test
+	public void testIndexationMotifFermetureDernierForPrincipalAvecForFerme() throws Exception {
+
+		// création et indexation des données
+		final TiersIndexableData data = newIndexableData();
+		data.setMotifFermetureDernierForPrincipal(MotifFor.CESSATION_ACTIVITE);
+		globalIndex.indexEntity(data);
+
+		// recherche des données OK
+		{
+			final TiersCriteria criteria = new TiersCriteria();
+			criteria.setMotifsFermetureDernierForPrincipal(EnumSet.of(MotifFor.CESSATION_ACTIVITE));
+
+			final List<TiersIndexedData> resultats = globalTiersSearcher.search(criteria);
+			assertNotNull(resultats);
+			assertEquals(1, resultats.size());
+
+			final TiersIndexedData indexed = resultats.get(0);
+			assertEquals((Long) ID, indexed.getNumero());
+		}
+
+		// recherche des données OK
+		{
+			final TiersCriteria criteria = new TiersCriteria();
+			criteria.setMotifsFermetureDernierForPrincipal(EnumSet.of(MotifFor.CESSATION_ACTIVITE, MotifFor.FAILLITE));
+
+			final List<TiersIndexedData> resultats = globalTiersSearcher.search(criteria);
+			assertNotNull(resultats);
+			assertEquals(1, resultats.size());
+
+			final TiersIndexedData indexed = resultats.get(0);
+			assertEquals((Long) ID, indexed.getNumero());
+		}
+
+		// recherche des données KO
+		{
+			final TiersCriteria criteria = new TiersCriteria();
+
+			criteria.setMotifsFermetureDernierForPrincipal(EnumSet.of(MotifFor.FAILLITE));
+
+			final List<TiersIndexedData> resultats = globalTiersSearcher.search(criteria);
+			assertNotNull(resultats);
+			assertEquals(0, resultats.size());
+		}
+
+		// recherche des données KO
+		{
+			final TiersCriteria criteria = new TiersCriteria();
+
+			criteria.setMotifsFermetureDernierForPrincipal(EnumSet.noneOf(MotifFor.class));
+
+			final List<TiersIndexedData> resultats = globalTiersSearcher.search(criteria);
+			assertNotNull(resultats);
+			assertEquals(0, resultats.size());
+		}
+	}
+
+	@Test
+	public void testIndexationMotifFermetureDernierForPrincipalAvecForOuvert() throws Exception {
+
+		// création et indexation des données
+		final TiersIndexableData data = newIndexableData();
+		data.setMotifFermetureDernierForPrincipal(null);
+		data.setNomRaison("bouh");
+		globalIndex.indexEntity(data);
+
+		// recherche des données OK
+		{
+			final TiersCriteria criteria = new TiersCriteria();
+			criteria.setNomRaison("bouh");
+
+			final List<TiersIndexedData> resultats = globalTiersSearcher.search(criteria);
+			assertNotNull(resultats);
+			assertEquals(1, resultats.size());
+
+			final TiersIndexedData indexed = resultats.get(0);
+			assertEquals((Long) ID, indexed.getNumero());
+		}
+
+		// recherche des données OK
+		{
+			final TiersCriteria criteria = new TiersCriteria();
+			criteria.setNomRaison("bouh");
+			criteria.setMotifsFermetureDernierForPrincipal(EnumSet.noneOf(MotifFor.class));
+
+			final List<TiersIndexedData> resultats = globalTiersSearcher.search(criteria);
+			assertNotNull(resultats);
+			assertEquals(1, resultats.size());
+
+			final TiersIndexedData indexed = resultats.get(0);
+			assertEquals((Long) ID, indexed.getNumero());
+		}
+
+		// recherche des données KO
+		{
+			final TiersCriteria criteria = new TiersCriteria();
+			criteria.setNomRaison("bouh");
+			criteria.setMotifsFermetureDernierForPrincipal(EnumSet.of(MotifFor.FAILLITE));
+
+			final List<TiersIndexedData> resultats = globalTiersSearcher.search(criteria);
+			assertNotNull(resultats);
+			assertEquals(0, resultats.size());
+		}
 	}
 }

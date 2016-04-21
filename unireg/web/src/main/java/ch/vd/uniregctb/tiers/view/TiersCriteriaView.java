@@ -12,6 +12,7 @@ import ch.vd.uniregctb.type.CategorieEntreprise;
 import ch.vd.uniregctb.type.CategorieImpotSource;
 import ch.vd.uniregctb.type.FormeJuridiqueEntreprise;
 import ch.vd.uniregctb.type.ModeImposition;
+import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.TypeEtatEntreprise;
 
 /**
@@ -217,6 +218,14 @@ public class TiersCriteriaView implements Serializable {
 
 	public void setNoOfsFor(String noOfsFor) {
 		criteria.setNoOfsFor(noOfsFor);
+	}
+
+	public Set<MotifFor> getMotifsFermetureDernierForPrincipal() {
+		return criteria.getMotifsFermetureDernierForPrincipal();
+	}
+
+	public void setMotifFermetureDernierForPrincipal(MotifFor motifFermetureDernierForPrincipal) {
+		criteria.setMotifFermetureDernierForPrincipal(motifFermetureDernierForPrincipal);
 	}
 
 	public TiersCriteria.TypeTiers getTypeTiers() {

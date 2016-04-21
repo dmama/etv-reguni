@@ -22,6 +22,7 @@ import ch.vd.uniregctb.tiers.TiersCriteria;
 import ch.vd.uniregctb.tiers.TiersCriteria.TypeTiers;
 import ch.vd.uniregctb.tiers.TiersCriteria.TypeVisualisation;
 import ch.vd.uniregctb.tiers.TiersFilter;
+import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeEtatEntreprise;
 
@@ -406,6 +407,24 @@ public class QueryConstructor {
 		}
 	}
 
+	public void addContrainteMotifFermetureDernierForPrincipal(BooleanQuery fullQuery) {
+		final Set<MotifFor> motifsAttendus = criteria.getMotifsFermetureDernierForPrincipal();
+		if (motifsAttendus != null) {
+			final BooleanQuery q = new BooleanQuery();
+			if (motifsAttendus.isEmpty()) {
+				// moyen de chercher les fors non-fermés (est-ce vraiment nécessaire ? on ne sait pas distinguer les cas "sans for" des cas "for actif" avec ce critère seul, de toute façon)
+				q.add(new TermQuery(new Term(TiersIndexableData.MOTIF_FERMETURE_DERNIER_FOR_PRINCIPAL, IndexerFormatHelper.nullValue())), should);
+			}
+			else {
+				// on cherche l'un des motifs donnés
+				for (MotifFor motif : motifsAttendus) {
+					q.add(new TermQuery(new Term(TiersIndexableData.MOTIF_FERMETURE_DERNIER_FOR_PRINCIPAL, motif.name())), should);
+				}
+			}
+			fullQuery.add(q, must);
+		}
+	}
+
 	public void addEtatInscriptionRC(BooleanQuery fullQuery) {
 		final TiersCriteria.TypeInscriptionRC etatInscriptionRC = criteria.getEtatInscriptionRC();
 		if (etatInscriptionRC != null) {
@@ -558,6 +577,7 @@ public class QueryConstructor {
 		addEtatInscriptionRC(fullQuery);
 		addEtatEntrepriseCourant(fullQuery);
 		addContrainteAbsorptionEntreprisePassee(fullQuery);
+		addContrainteMotifFermetureDernierForPrincipal(fullQuery);
 
 		final BooleanClause[] clauses = fullQuery.getClauses();
 		if (clauses != null && clauses.length > 0) {

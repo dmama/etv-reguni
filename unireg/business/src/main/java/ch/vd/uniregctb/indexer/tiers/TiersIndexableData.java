@@ -21,6 +21,7 @@ import ch.vd.uniregctb.indexer.IndexableData;
 import ch.vd.uniregctb.indexer.IndexerFormatHelper;
 import ch.vd.uniregctb.metier.assujettissement.TypeAssujettissement;
 import ch.vd.uniregctb.type.ModeCommunication;
+import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeEtatEntreprise;
 
@@ -56,6 +57,7 @@ public class TiersIndexableData extends IndexableData {
 	public static final String NO_OFS_FOR_PRINCIPAL = "S_NO_OFS_FOR_PRINCIPAL";
 	public static final String TYPE_OFS_FOR_PRINCIPAL = "S_TYPE_OFS_FOR_PRINCIPAL";
 	public static final String NOS_OFS_AUTRES_FORS = "S_NOS_OFS_AUTRES_FORS";
+	public static final String MOTIF_FERMETURE_DERNIER_FOR_PRINCIPAL = "S_MOTIF_FERM_DERNIER_FFP";
 	public static final String LOCALITE_PAYS = "S_LOCALITE_PAYS";
 	public static final String NPA_COURRIER = "S_NPA_COURRIER";
 	public static final String NPA_TOUS = "S_NPA_TOUS";
@@ -114,6 +116,7 @@ public class TiersIndexableData extends IndexableData {
 	private String noOfsForPrincipal;
 	private String typeOfsForPrincipal;
 	private String nosOfsAutresFors;
+	private MotifFor motifFermetureDernierForPrincipal;
 	private String npaCourrier;
 	private String npaTous;
 	private String localiteEtPays;
@@ -179,6 +182,7 @@ public class TiersIndexableData extends IndexableData {
 		addNotAnalyzedValue(d, TiersIndexableData.NO_OFS_FOR_PRINCIPAL, noOfsForPrincipal);
 		addNotAnalyzedValue(d, TiersIndexableData.TYPE_OFS_FOR_PRINCIPAL, typeOfsForPrincipal);
 		addNotAnalyzedValue(d, TiersIndexableData.NOS_OFS_AUTRES_FORS, nosOfsAutresFors);
+		addNotAnalyzedValue(d, TiersIndexableData.MOTIF_FERMETURE_DERNIER_FOR_PRINCIPAL, IndexerFormatHelper.enumToString(motifFermetureDernierForPrincipal));
 		addNotAnalyzedValue(d, TiersIndexableData.NPA_COURRIER, npaCourrier);
 		addAnalyzedValue(d, TiersIndexableData.NPA_TOUS, npaTous);
 		addAnalyzedValue(d, TiersIndexableData.LOCALITE_PAYS, localiteEtPays);
@@ -372,6 +376,14 @@ public class TiersIndexableData extends IndexableData {
 
 	public void setNosOfsAutresFors(String nosOfsAutresFors) {
 		this.nosOfsAutresFors = nosOfsAutresFors;
+	}
+
+	public MotifFor getMotifFermetureDernierForPrincipal() {
+		return motifFermetureDernierForPrincipal;
+	}
+
+	public void setMotifFermetureDernierForPrincipal(MotifFor motifFermetureDernierForPrincipal) {
+		this.motifFermetureDernierForPrincipal = motifFermetureDernierForPrincipal;
 	}
 
 	public String getNpaCourrier() {

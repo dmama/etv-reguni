@@ -26,6 +26,7 @@ import ch.vd.uniregctb.tiers.IndividuNotFoundException;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.TiersService;
+import ch.vd.uniregctb.type.MotifFor;
 
 public class DebiteurPrestationImposableIndexable extends TiersIndexable<DebiteurPrestationImposable> {
 
@@ -137,15 +138,17 @@ public class DebiteurPrestationImposableIndexable extends TiersIndexable<Debiteu
 			noOfsFfpActif = principalActif.getNumeroOfsAutoriteFiscale().toString();
 		}
 
-		// For principal
+		// Dernier for principal
 		String communeDernierFfp = null;
 		RegDate dateOuvertureFor = null;
 		RegDate dateFermetureFor = null;
+		MotifFor motifFermetureDernierFor = null;
 		final ForDebiteurPrestationImposable dernierFor = tiers.getDernierForDebiteur();
 		if (dernierFor != null) {
 			communeDernierFfp =  getLocalisationAsString(dernierFor, tiers);
 			dateOuvertureFor = dernierFor.getDateDebut();
 			dateFermetureFor = dernierFor.getDateFin();
+			motifFermetureDernierFor = dernierFor.getMotifFermeture();
 		}
 
 		// Autre fors
@@ -177,5 +180,6 @@ public class DebiteurPrestationImposableIndexable extends TiersIndexable<Debiteu
 		data.setDateFermtureFor(IndexerFormatHelper.dateToString(dateFermetureFor, IndexerFormatHelper.DateStringMode.STORAGE));
 		data.setDateOuvertureForVd(IndexerFormatHelper.dateToString(dateOuvertureForVd, IndexerFormatHelper.DateStringMode.STORAGE));
 		data.setDateFermtureForVd(IndexerFormatHelper.dateToString(dateFermetureForVd, IndexerFormatHelper.DateStringMode.STORAGE));
+		data.setMotifFermetureDernierForPrincipal(motifFermetureDernierFor);
 	}
 }

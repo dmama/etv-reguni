@@ -14,6 +14,7 @@ import ch.vd.uniregctb.type.CategorieEntreprise;
 import ch.vd.uniregctb.type.CategorieImpotSource;
 import ch.vd.uniregctb.type.FormeJuridiqueEntreprise;
 import ch.vd.uniregctb.type.ModeImposition;
+import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeEtatEntreprise;
 
@@ -236,6 +237,11 @@ public class TiersCriteria implements Serializable, TiersFilter {
 	private boolean forPrincipalActif;
 
 	/**
+	 * Motifs de fermeture du dernier for principal
+	 */
+	private Set<MotifFor> motifsFermetureDernierForPrincipal;
+
+	/**
 	 * Mode imposition
 	 */
 	private ModeImposition modeImposition;
@@ -327,6 +333,7 @@ public class TiersCriteria implements Serializable, TiersFilter {
 				&& npaTous == null
 				&& StringUtils.isBlank(natureJuridique)
 				&& StringUtils.isBlank(noOfsFor)
+				&& motifsFermetureDernierForPrincipal == null
 				&& StringUtils.isBlank(noSymic)
 				&& formeJuridique == null
 				&& categorieEntreprise == null
@@ -590,6 +597,23 @@ public class TiersCriteria implements Serializable, TiersFilter {
 
 	public void setNoOfsFor(String noOfsFor) {
 		this.noOfsFor = noOfsFor;
+	}
+
+	public Set<MotifFor> getMotifsFermetureDernierForPrincipal() {
+		return motifsFermetureDernierForPrincipal;
+	}
+
+	public void setMotifsFermetureDernierForPrincipal(Set<MotifFor> motifsFermetureDernierForPrincipal) {
+		this.motifsFermetureDernierForPrincipal = motifsFermetureDernierForPrincipal;
+	}
+
+	public void setMotifFermetureDernierForPrincipal(MotifFor motifFermetureDernierForPrincipal) {
+		if (motifFermetureDernierForPrincipal == null) {
+			this.motifsFermetureDernierForPrincipal = null;
+		}
+		else {
+			this.motifsFermetureDernierForPrincipal = EnumSet.of(motifFermetureDernierForPrincipal);
+		}
 	}
 
 	@Override
