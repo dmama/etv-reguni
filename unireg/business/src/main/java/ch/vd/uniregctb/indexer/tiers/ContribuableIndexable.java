@@ -28,6 +28,7 @@ import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
 import ch.vd.uniregctb.tiers.IdentificationEntreprise;
 import ch.vd.uniregctb.tiers.TiersService;
+import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
 public abstract class ContribuableIndexable<T extends Contribuable> extends TiersIndexable<T> {
@@ -85,15 +86,17 @@ public abstract class ContribuableIndexable<T extends Contribuable> extends Tier
 			noOfsFfpActif = principalActif.getNumeroOfsAutoriteFiscale().toString();
 		}
 
-		// For principal
+		// Dernier for principal
 		String communeDernierFfp = null;
 		RegDate dateOuvertureFor = null;
 		RegDate dateFermetureFor = null;
+		MotifFor motifFermetureDernierFor = null;
 		final ForFiscalPrincipal dernierPrincipal = tiers.getDernierForFiscalPrincipal();
 		if (dernierPrincipal != null) {
 			communeDernierFfp = getLocalisationAsString(dernierPrincipal, tiers);
 			dateOuvertureFor = dernierPrincipal.getDateDebut();
 			dateFermetureFor = dernierPrincipal.getDateFin();
+			motifFermetureDernierFor = dernierPrincipal.getMotifFermeture();
 		}
 
 		// Autre fors
@@ -145,6 +148,7 @@ public abstract class ContribuableIndexable<T extends Contribuable> extends Tier
 		data.setForPrincipal(communeDernierFfp);
 		data.setDateOuvertureFor(IndexerFormatHelper.dateToString(dateOuvertureFor, IndexerFormatHelper.DateStringMode.STORAGE));
 		data.setDateFermtureFor(IndexerFormatHelper.dateToString(dateFermetureFor, IndexerFormatHelper.DateStringMode.STORAGE));
+		data.setMotifFermetureDernierForPrincipal(motifFermetureDernierFor);
 	}
 }
 
