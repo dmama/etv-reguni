@@ -407,6 +407,13 @@ public class QueryConstructor {
 		}
 	}
 
+	public void addContrainteConnuAuCivil(BooleanQuery fullQuery) {
+		if (criteria.getConnuAuCivil() != null) {
+			final TermQuery q = new TermQuery(new Term(TiersIndexableData.CONNU_CIVIL, criteria.getConnuAuCivil() ? Constants.OUI : Constants.NON));
+			fullQuery.add(q, must);
+		}
+	}
+
 	public void addContrainteMotifFermetureDernierForPrincipal(BooleanQuery fullQuery) {
 		final Set<MotifFor> motifsAttendus = criteria.getMotifsFermetureDernierForPrincipal();
 		if (motifsAttendus != null) {
@@ -578,6 +585,7 @@ public class QueryConstructor {
 		addEtatEntrepriseCourant(fullQuery);
 		addContrainteAbsorptionEntreprisePassee(fullQuery);
 		addContrainteMotifFermetureDernierForPrincipal(fullQuery);
+		addContrainteConnuAuCivil(fullQuery);
 
 		final BooleanClause[] clauses = fullQuery.getClauses();
 		if (clauses != null && clauses.length > 0) {

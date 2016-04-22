@@ -56,6 +56,7 @@ public class EntrepriseIndexable extends ContribuableIndexable<Entreprise> {
 	protected void fillBaseData(TiersIndexableData data) {
 		super.fillBaseData(data);
 		data.setNatureJuridique(IndexerFormatHelper.enumToString(NatureJuridique.PM));
+		data.setConnuAuCivil(tiers.isConnueAuCivil());
 
 		// les noms
 		final List<RaisonSocialeHisto> rss = tiersService.getRaisonsSociales(tiers, false);

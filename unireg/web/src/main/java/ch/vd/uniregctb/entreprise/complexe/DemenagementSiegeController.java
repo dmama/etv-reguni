@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -50,6 +51,7 @@ public class DemenagementSiegeController extends AbstractProcessusComplexeRecher
 	@Override
 	protected void fillCriteriaWithImplicitValues(TiersCriteriaView criteria) {
 		criteria.setTiersActif(Boolean.TRUE);
+		criteria.setConnuAuCivil(Boolean.FALSE);
 		criteria.setTypeTiersImperatif(TiersCriteria.TypeTiers.ENTREPRISE);
 	}
 
@@ -68,10 +70,15 @@ public class DemenagementSiegeController extends AbstractProcessusComplexeRecher
 	private String showStart(final Model model, final DemenagementSiegeView view) {
 		model.addAttribute(SearchTiersComponent.COMMAND, view);
 		model.addAttribute(TYPES_AUTORITE_FISCALE, tiersMapHelper.getMapTypeAutoriteFiscale());
-		doInReadOnlyTransaction(new TransactionCallbackWithoutResult() {
+		return doInReadOnlyTransaction(new TransactionCallback<String>() {
 			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
+			public String doInTransaction(TransactionStatus status) {
 				final Entreprise entreprise = getTiers(Entreprise.class, view.getIdEntreprise());
+				if (entreprise.isConnueAuCivil()) {
+					Flash.error("Cette opération n'est pas disponible pour les entreprises avec un lien vers RCEnt.");
+					return "redirect:list.do";
+				}
+
 				final List<DomicileHisto> sieges = tiersService.getSieges(entreprise, false);
 				if (sieges != null && !sieges.isEmpty()) {
 					final DomicileHisto dernierSiege = CollectionsUtils.getLastElement(sieges);
@@ -92,9 +99,10 @@ public class DemenagementSiegeController extends AbstractProcessusComplexeRecher
 					model.addAttribute(TYPE_AUTORITE_SIEGE_ACTUEL, dernierSiege.getTypeAutoriteFiscale());
 					model.addAttribute(OFS_SIEGE_ACTUEL, dernierSiege.getNumeroOfsAutoriteFiscale());
 				}
+
+				return "entreprise/demenagement/start";
 			}
 		});
-		return "entreprise/demenagement/start";
 	}
 
 	@RequestMapping(value = "/start.do", method = RequestMethod.POST)
@@ -110,6 +118,9 @@ public class DemenagementSiegeController extends AbstractProcessusComplexeRecher
 			@Override
 			protected void doExecute(TransactionStatus status) throws MetierServiceException {
 				final Entreprise entreprise = getTiers(Entreprise.class, view.getIdEntreprise());
+				if (entreprise.isConnueAuCivil()) {
+					throw new MetierServiceException("Cette opération n'est pas disponible pour les entreprises avec un lien vers RCEnt.");
+				}
 				metierService.demenageSiege(entreprise, view.getDateDebutNouveauSiege(), view.getTypeAutoriteFiscale(), view.getNoAutoriteFiscale());
 			}
 		});

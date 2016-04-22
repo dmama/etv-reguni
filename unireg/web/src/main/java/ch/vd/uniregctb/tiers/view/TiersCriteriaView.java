@@ -360,6 +360,14 @@ public class TiersCriteriaView implements Serializable {
 		criteria.setCorporationMergeResult(corporationMergeResult);
 	}
 
+	public Boolean getConnuAuCivil() {
+		return criteria.getConnuAuCivil();
+	}
+
+	public void setConnuAuCivil(Boolean connuAuCivil) {
+		criteria.setConnuAuCivil(connuAuCivil);
+	}
+
 	public boolean isEmpty() {
 		return criteria.isEmpty() && StringUtils.isBlank(this.numeroFormatte);
 	}

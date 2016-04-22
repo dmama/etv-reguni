@@ -316,6 +316,12 @@ public class TiersCriteria implements Serializable, TiersFilter {
 	private Boolean isCorporationMergeResult;
 
 	/**
+	 * <code>true</code> si on ne veut que les entreprises, personnes physiques et établissements connus au civil, <code>false</code> si on ne
+	 * veut que ces entités
+	 */
+	private Boolean isConnuAuCivil;
+
+	/**
 	 * @return true si aucun paramètre de recherche n'est renseigné. false
 	 *         autrement.
 	 */
@@ -790,5 +796,13 @@ public class TiersCriteria implements Serializable, TiersFilter {
 
 	public void setCorporationMergeResult(Boolean corporationMergeResult) {
 		isCorporationMergeResult = corporationMergeResult;
+	}
+
+	public Boolean getConnuAuCivil() {
+		return isConnuAuCivil;
+	}
+
+	public void setConnuAuCivil(Boolean connuAuCivil) {
+		isConnuAuCivil = connuAuCivil;
 	}
 }

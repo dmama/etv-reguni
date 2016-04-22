@@ -1078,6 +1078,7 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 		public boolean isValide(Tiers tiers) {
 			return !tiers.isAnnule()
 					&& tiers instanceof Entreprise
+					&& !((Entreprise) tiers).isConnueAuCivil()
 					&& tiers.getForFiscalPrincipalAt(null) != null;
 		}
 
@@ -1102,6 +1103,7 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 		public boolean isValide(Tiers tiers) {
 			return !tiers.isAnnule()
 					&& tiers instanceof Entreprise
+					&& !((Entreprise) tiers).isConnueAuCivil()
 					&& hasForPrincipalActifEtForPrecedent(tiers);
 		}
 
