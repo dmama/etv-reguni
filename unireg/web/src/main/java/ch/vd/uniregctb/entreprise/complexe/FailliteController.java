@@ -59,12 +59,12 @@ public class FailliteController extends AbstractProcessusComplexeRechercheContro
 	}
 
 	private String showStart(Model model, FailliteView view) {
-		model.addAttribute(COMMAND, view);
+		model.addAttribute(SearchTiersComponent.COMMAND, view);
 		return "entreprise/faillite/start";
 	}
 
 	@RequestMapping(value = "/start.do", method = RequestMethod.POST)
-	public String doFaillite(Model model, @Valid @ModelAttribute(value = COMMAND) final FailliteView view, BindingResult bindingResult) throws Exception {
+	public String doFaillite(Model model, @Valid @ModelAttribute(value = SearchTiersComponent.COMMAND) final FailliteView view, BindingResult bindingResult) throws Exception {
 		checkDroitAcces();
 		controllerUtils.checkAccesDossierEnEcriture(view.getIdEntreprise());
 		if (bindingResult.hasErrors()) {

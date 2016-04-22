@@ -1,12 +1,5 @@
 package ch.vd.uniregctb.entreprise.complexe;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
-import org.jetbrains.annotations.NotNull;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceAware;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -14,7 +7,6 @@ import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
-import org.springframework.ui.Model;
 import org.springframework.validation.Validator;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
@@ -23,13 +15,9 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.tx.TxCallback;
 import ch.vd.registre.base.tx.TxCallbackException;
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.common.ActionException;
 import ch.vd.uniregctb.common.ControllerUtils;
 import ch.vd.uniregctb.common.TiersNotFoundException;
-import ch.vd.uniregctb.indexer.IndexerException;
-import ch.vd.uniregctb.indexer.TooManyResultsIndexerException;
-import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
 import ch.vd.uniregctb.metier.MetierServiceException;
 import ch.vd.uniregctb.metier.MetierServicePM;
 import ch.vd.uniregctb.security.AccessDeniedException;
@@ -37,17 +25,12 @@ import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.security.SecurityHelper;
 import ch.vd.uniregctb.security.SecurityProviderInterface;
 import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.tiers.TiersIndexedDataView;
 import ch.vd.uniregctb.tiers.TiersMapHelper;
 import ch.vd.uniregctb.tiers.TiersService;
-import ch.vd.uniregctb.tiers.view.TiersCriteriaView;
 import ch.vd.uniregctb.transaction.TransactionTemplate;
 import ch.vd.uniregctb.utils.RegDateEditor;
-import ch.vd.uniregctb.utils.WebContextUtils;
 
 public abstract class AbstractProcessusComplexeController implements MessageSourceAware {
-
-	private static final Logger LOGGER = LoggerFactory.getLogger(AbstractProcessusComplexeController.class);
 
 	protected TiersService tiersService;
 	protected TiersMapHelper tiersMapHelper;
@@ -92,7 +75,7 @@ public abstract class AbstractProcessusComplexeController implements MessageSour
 		this.messageSource = messageSource;
 	}
 
-	@InitBinder(value = "command")
+	@InitBinder(value = SearchTiersComponent.COMMAND)
 	protected void initBinder(WebDataBinder binder) {
 		binder.setValidator(validator);
 		binder.registerCustomEditor(RegDate.class, new RegDateEditor(true, true, false, RegDateHelper.StringFormat.DISPLAY));
@@ -182,6 +165,53 @@ public abstract class AbstractProcessusComplexeController implements MessageSour
 	}
 
 	/**
+	 * Construit un composant de recherche
+	 * @param searchCriteriaBeanName le nom du bean en session pour les critères de recherche
+	 * @param searchViewPath le chemin d'accès à la jsp de visualisation du formulaire de recherche (et des résultats)
+	 * @param criteriaFiller callback de remplissage des critères additionnels de recherche (type de tiers, constraintes supplémentaires...)
+	 * @param modelFiller [optionnel] callback de remplissage du modèle à l'affichage de la page de recherche (avec ou sans résultats)
+	 * @param searchAdapter [optionnel] callback de transformation des résultats de recherche avant placement dans le modèle
+	 * @return un composant de recherche
+	 */
+	protected SearchTiersComponent buildSearchComponent(String searchCriteriaBeanName, String searchViewPath,
+	                                                    SearchTiersComponent.TiersCriteriaFiller criteriaFiller,
+	                                                    SearchTiersComponent.ModelFiller modelFiller,
+	                                                    SearchTiersComponent.TiersSearchAdapter<?> searchAdapter) {
+		return new SearchTiersComponent(tiersService, messageSource, tiersMapHelper,
+		                                searchCriteriaBeanName, searchViewPath,
+		                                criteriaFiller, modelFiller, searchAdapter);
+	}
+
+	/**
+	 * Construit un composant de recherche
+	 * @param searchCriteriaBeanName le nom du bean en session pour les critères de recherche
+	 * @param searchViewPath le chemin d'accès à la jsp de visualisation du formulaire de recherche (et des résultats)
+	 * @param criteriaFiller callback de remplissage des critères additionnels de recherche (type de tiers, constraintes supplémentaires...)
+	 * @param modelFiller [optionnel] callback de remplissage du modèle à l'affichage de la page de recherche (avec ou sans résultats)
+	 * @return un composant de recherche
+	 */
+	protected SearchTiersComponent buildSearchComponent(String searchCriteriaBeanName, String searchViewPath,
+	                                                    SearchTiersComponent.TiersCriteriaFiller criteriaFiller,
+	                                                    SearchTiersComponent.ModelFiller modelFiller) {
+		return new SearchTiersComponent(tiersService, messageSource, tiersMapHelper,
+		                                searchCriteriaBeanName, searchViewPath,
+		                                criteriaFiller, modelFiller);
+	}
+
+	/**
+	 * Construit un composant de recherche
+	 * @param searchCriteriaBeanName le nom du bean en session pour les critères de recherche
+	 * @param searchViewPath le chemin d'accès à la jsp de visualisation du formulaire de recherche (et des résultats)
+	 * @param criteriaFiller callback de remplissage des critères additionnels de recherche (type de tiers, constraintes supplémentaires...)
+	 * @return un composant de recherche
+	 */
+	protected SearchTiersComponent buildSearchComponent(String searchCriteriaBeanName, String searchViewPath,
+	                                                    SearchTiersComponent.TiersCriteriaFiller criteriaFiller) {
+		return new SearchTiersComponent(tiersService, messageSource, tiersMapHelper,
+		                                searchCriteriaBeanName, searchViewPath, criteriaFiller);
+	}
+
+	/**
 	 * Vérifie que l'un au moins des rôles passés en paramètre est possédé par l'utilisateur courant
 	 * @param messageErreur message à lancer en cas d'absence des droits requis
 	 * @param roles les rôles en question
@@ -191,48 +221,5 @@ public abstract class AbstractProcessusComplexeController implements MessageSour
 		if (!SecurityHelper.isAnyGranted(securityProvider, roles)) {
 			throw new AccessDeniedException(messageErreur);
 		}
-	}
-
-	@NotNull
-	protected List<TiersIndexedDataView> _searchTiers(TiersCriteriaView criteriaView) throws IndexerException {
-		final List<TiersIndexedData> results = tiersService.search(criteriaView.asCore());
-		Assert.notNull(results);
-
-		final List<TiersIndexedDataView> list = new ArrayList<>(results.size());
-		for (TiersIndexedData d : results) {
-			list.add(new TiersIndexedDataView(d));
-		}
-		return list;
-	}
-
-	/**
-	 * Recherche des tiers correspondant aux critères donnés
-	 * @param criteriaView les critères, justement
-	 * @param model le modéle (pour l'introduction d'un éventuel message d'erreur)
-	 * @param champModelMessageErreur le nom du champ à utiliser dans le modèle pour les éventuels messages d'erreur
-	 * @return la liste des tiers trouvés (vide si erreur)
-	 */
-	@NotNull
-	protected final List<TiersIndexedDataView> searchTiers(TiersCriteriaView criteriaView, Model model, String champModelMessageErreur) {
-		try {
-			return _searchTiers(criteriaView);
-		}
-		catch (TooManyResultsIndexerException e) {
-			LOGGER.error("Exception dans l'indexer: " + e.getMessage(), e);
-			final String msg;
-			if (e.getNbResults() > 0) {
-				msg = messageSource.getMessage("error.preciser.recherche.trouves", new Object[] {String.valueOf(e.getNbResults())}, WebContextUtils.getDefaultLocale());
-			}
-			else {
-				msg = messageSource.getMessage("error.preciser.recherche", null, WebContextUtils.getDefaultLocale());
-			}
-			model.addAttribute(champModelMessageErreur, msg);
-		}
-		catch (IndexerException e) {
-			LOGGER.error("Exception dans l'indexer: " + e.getMessage(), e);
-			model.addAttribute(champModelMessageErreur, messageSource.getMessage("error.recherche", null, WebContextUtils.getDefaultLocale()));
-		}
-
-		return Collections.emptyList();
 	}
 }

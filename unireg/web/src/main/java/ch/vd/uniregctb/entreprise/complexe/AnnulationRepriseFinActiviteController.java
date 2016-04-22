@@ -80,12 +80,12 @@ public abstract class AnnulationRepriseFinActiviteController extends AbstractPro
 	}
 
 	private String showStart(Model model, FinActiviteView view) {
-		model.addAttribute(COMMAND, view);
+		model.addAttribute(SearchTiersComponent.COMMAND, view);
 		return String.format("entreprise/%s-finactivite/start", viewPath);
 	}
 
 	@RequestMapping(value = "/start.do", method = RequestMethod.POST)
-	public String doFinActivite(Model model, @Valid @ModelAttribute(value = COMMAND) final FinActiviteView view, BindingResult bindingResult) throws Exception {
+	public String doFinActivite(Model model, @Valid @ModelAttribute(value = SearchTiersComponent.COMMAND) final FinActiviteView view, BindingResult bindingResult) throws Exception {
 		checkDroitAcces();
 		controllerUtils.checkAccesDossierEnEcriture(view.getIdEntreprise());
 		if (bindingResult.hasErrors()) {
