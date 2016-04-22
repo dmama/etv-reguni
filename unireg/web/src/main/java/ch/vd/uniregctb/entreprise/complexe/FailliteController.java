@@ -43,7 +43,6 @@ public class FailliteController extends AbstractProcessusComplexeRechercheContro
 		criteria.setTypeTiersImperatif(TiersCriteria.TypeTiers.ENTREPRISE);
 		criteria.setEtatsEntrepriseInterdits(EnumSet.of(TypeEtatEntreprise.ABSORBEE, TypeEtatEntreprise.DISSOUTE, TypeEtatEntreprise.RADIEE_RC));
 		criteria.setEtatsEntrepriseCourantsInterdits(EnumSet.of(TypeEtatEntreprise.EN_FAILLITE));
-		criteria.setEtatInscriptionRC(TiersCriteria.TypeInscriptionRC.INSCRIT_ACTIF);
 	}
 
 	@Override
