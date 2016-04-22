@@ -87,6 +87,7 @@ public class EtablissementIndexable extends ContribuableIndexable<Etablissement>
 	@Override
 	protected void fillBaseData(TiersIndexableData data) {
 		super.fillBaseData(data);
+		data.setConnuAuCivil(tiers.isConnuAuCivil());
 
 		if (site == null) {
 			data.addAutresNom(tiers.getEnseigne());

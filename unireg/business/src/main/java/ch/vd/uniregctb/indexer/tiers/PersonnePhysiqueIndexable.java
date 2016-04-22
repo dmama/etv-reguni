@@ -22,5 +22,6 @@ public abstract class PersonnePhysiqueIndexable extends ContribuableImpositionPe
 		super.fillBaseData(data);
 		data.setNatureJuridique(IndexerFormatHelper.enumToString(NatureJuridique.PP));
 		data.setAncienNumeroSourcier(IndexerFormatHelper.numberToString(tiers.getAncienNumeroSourcier()));
+		data.setConnuAuCivil(tiers.isConnuAuCivil());
 	}
 }

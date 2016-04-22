@@ -1,6 +1,8 @@
 package ch.vd.uniregctb.entreprise.complexe;
 
 import javax.validation.Valid;
+import java.util.EnumSet;
+import java.util.Set;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.TransactionStatus;
@@ -21,6 +23,7 @@ import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipalPM;
 import ch.vd.uniregctb.tiers.TiersCriteria;
 import ch.vd.uniregctb.tiers.view.TiersCriteriaView;
+import ch.vd.uniregctb.type.MotifFor;
 
 @Controller
 @RequestMapping("/processuscomplexe/annulation/demenagement")
@@ -50,6 +53,7 @@ public class AnnulationDemenagementSiegeController extends AbstractProcessusComp
 	@Override
 	protected void fillCriteriaWithImplicitValues(TiersCriteriaView criteria) {
 		criteria.setTiersActif(Boolean.TRUE);
+		criteria.setConnuAuCivil(Boolean.FALSE);
 		criteria.setTypeTiersImperatif(TiersCriteria.TypeTiers.ENTREPRISE);
 	}
 
@@ -84,9 +88,20 @@ public class AnnulationDemenagementSiegeController extends AbstractProcessusComp
 			@Override
 			public String doInTransaction(TransactionStatus status) {
 				final Entreprise entreprise = getTiers(Entreprise.class, view.getIdEntreprise());
+				if (entreprise.isConnueAuCivil()) {
+					Flash.error("Cette opération n'est pas disponible pour les entreprises avec un lien vers RCEnt.");
+					return "redirect:list.do";
+				}
+
 				final ForFiscalPrincipalPM forActuel = entreprise.getDernierForFiscalPrincipal();
 				if (forActuel == null || forActuel.getDateFin() != null) {
 					Flash.error("Le dernier for fiscal principal de cette entreprise est fermé.");
+					return "redirect:list.do";
+				}
+
+				final Set<MotifFor> motifsDemenagement = EnumSet.of(MotifFor.DEMENAGEMENT_VD, MotifFor.ARRIVEE_HC, MotifFor.ARRIVEE_HS, MotifFor.DEPART_HC, MotifFor.DEPART_HS);
+				if (!motifsDemenagement.contains(forActuel.getMotifOuverture())) {
+					Flash.error("Le for principal actif de cette entreprise n'a pas été ouvert pour un motif correspondant à un déménagement de siège.");
 					return "redirect:list.do";
 				}
 
@@ -123,6 +138,9 @@ public class AnnulationDemenagementSiegeController extends AbstractProcessusComp
 			@Override
 			protected void doExecute(TransactionStatus status) throws MetierServiceException {
 				final Entreprise entreprise = getTiers(Entreprise.class, view.getIdEntreprise());
+				if (entreprise.isConnueAuCivil()) {
+					throw new MetierServiceException("Cette opération n'est pas disponible pour les entreprises avec un lien vers RCEnt.");
+				}
 				metierService.annuleDemenagement(entreprise, view.getDateDebutSiegeActuel());
 			}
 		});

@@ -81,6 +81,7 @@ public class TiersIndexableData extends IndexableData {
 	public static final String ETATS_ENTREPRISE = "S_ETATS_ENTREPRISE";
 	public static final String INSCRIPTION_RC = "S_INSCRIPTION_RC";
 	public static final String IS_CORPORATION_MERGE_RESULT = "S_CORP_MERGE_RESULT";
+	public static final String CONNU_CIVIL = "S_CONNU_CIVIL";
 
 	// champs de stockage (pas recherchables)
 	public static final String NOM1 = "D_NOM1";
@@ -137,6 +138,7 @@ public class TiersIndexableData extends IndexableData {
 	private Set<TypeEtatEntreprise> etatsEntreprise;
 	private TypeEtatInscriptionRC etatInscriptionRC;
 	private Boolean corporationMergeResult;     // vrai si l'entreprise a été par le passé le résultat d'une fusion d'entreprises
+	private Boolean connuAuCivil;               // vrai si la personne physique, l'entreprise ou l'établissement est connu au civil, false sinon (vide si non-applicable)
 
 	// champs de stockage (pas recherchables)
 	private String nom1;
@@ -203,6 +205,7 @@ public class TiersIndexableData extends IndexableData {
 		addMultiValuedNotAnalyzedValue(d, TiersIndexableData.ETATS_ENTREPRISE, etatsEntreprise, ENUM_RENDERER);
 		addNotAnalyzedValue(d, TiersIndexableData.INSCRIPTION_RC, etatInscriptionRC, ENUM_RENDERER);
 		addNotAnalyzedValue(d, TiersIndexableData.IS_CORPORATION_MERGE_RESULT, corporationMergeResult, BOOLEAN_RENDERER);
+		addNotAnalyzedValue(d, TiersIndexableData.CONNU_CIVIL, connuAuCivil, BOOLEAN_RENDERER);
 
 		// on aggrège tous les valeurs utiles dans un seul champ pour une recherche de type google
 		addToutValues(d, numeros, nomRaison, autresNom, toSearchString(datesNaissanceInscriptionRC), forPrincipal, rue, npaCourrier, localiteEtPays, natureJuridique, navs11, navs13, ancienNumeroSourcier, categorieDebiteurIs, noSymic, ide);
@@ -747,5 +750,13 @@ public class TiersIndexableData extends IndexableData {
 
 	public void setCorporationMergeResult(Boolean corporationMergeResult) {
 		this.corporationMergeResult = corporationMergeResult;
+	}
+
+	public Boolean getConnuAuCivil() {
+		return connuAuCivil;
+	}
+
+	public void setConnuAuCivil(Boolean connuAuCivil) {
+		this.connuAuCivil = connuAuCivil;
 	}
 }
