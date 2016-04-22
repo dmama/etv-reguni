@@ -7,11 +7,10 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
@@ -28,7 +27,6 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.common.ActionException;
 import ch.vd.uniregctb.common.Flash;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
-import ch.vd.uniregctb.common.NumeroIDEHelper;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.indexer.IndexerException;
 import ch.vd.uniregctb.metier.MetierServiceException;
@@ -44,7 +42,7 @@ import ch.vd.uniregctb.utils.WebContextUtils;
 
 @Controller
 @RequestMapping("/processuscomplexe/fusion")
-public class FusionEntreprisesController extends AbstractProcessusComplexeController {
+public class FusionEntreprisesController extends AbstractProcessusComplexeController implements InitializingBean {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(FusionEntreprisesController.class);
 
@@ -52,18 +50,52 @@ public class FusionEntreprisesController extends AbstractProcessusComplexeContro
 	public static final String CRITERIA_NAME_ABSORBEE = "FusionEntreprisesCriteriaAbsorbee";
 	public static final String FUSION_NAME = "FusionEntreprises";
 
-	private static final String TYPES_RECHERCHE_NOM_ENUM = "typesRechercheNom";
-	private static final String TYPES_RECHERCHE_FJ_ENUM = "formesJuridiquesEnum";
-	private static final String TYPES_RECHERCHE_CAT_ENUM = "categoriesEntreprisesEnum";
-
-	private static final String LIST = "list";
-	private static final String COMMAND = "command";
 	private static final String FUSION = "fusion";
-	private static final String ERROR_MESSAGE = "errorMessage";
+
+	private SearchTiersComponent searchAbsorbanteComponent;
+	private SearchTiersComponent searchAbsorbeeComponent;
 
 	private void checkDroitAcces() throws AccessDeniedException {
 		checkAnyGranted("Vous ne possédez aucun droit IfoSec pour l'accès au processus complexe de fusion d'entreprises.",
 		                Role.FUSION_ENTREPRISES);
+	}
+
+	@Override
+	public void afterPropertiesSet() throws Exception {
+		this.searchAbsorbanteComponent = buildSearchComponent(CRITERIA_NAME_ABSORBANTE, "entreprise/fusion/list-absorbante",
+		                                                      new SearchTiersComponent.TiersCriteriaFiller() {
+			                                                      @Override
+			                                                      public void fill(TiersCriteriaView data) {
+				                                                      data.setTypeTiersImperatif(TiersCriteria.TypeTiers.ENTREPRISE);
+				                                                      data.setEtatsEntrepriseInterdits(EnumSet.of(TypeEtatEntreprise.ABSORBEE, TypeEtatEntreprise.DISSOUTE, TypeEtatEntreprise.RADIEE_RC));
+			                                                      }
+		                                                      });
+
+		this.searchAbsorbeeComponent = buildSearchComponent(CRITERIA_NAME_ABSORBEE, "entreprise/fusion/list-absorbees",
+		                                                    new SearchTiersComponent.TiersCriteriaFiller() {
+			                                                    @Override
+			                                                    public void fill(TiersCriteriaView data) {
+				                                                    fillCriteresImperatifsPourEntrepriseAbsorbee(data);
+			                                                    }
+		                                                    },
+		                                                    new SearchTiersComponent.ModelFiller() {
+			                                                    @Override
+			                                                    public void fill(Model model, HttpSession session) throws SearchTiersComponent.RedirectException {
+				                                                    final FusionEntrepriseSessionData sessionData = (FusionEntrepriseSessionData) session.getAttribute(FUSION_NAME);
+				                                                    if (sessionData == null) {
+					                                                    Flash.warning("La session a été invalidée. Veuillez recommencer votre saisie.");
+					                                                    throw new SearchTiersComponent.RedirectException("../absorbante/list.do");
+				                                                    }
+				                                                    model.addAttribute(FUSION, sessionData);
+			                                                    }
+		                                                    },
+		                                                    new SearchTiersComponent.TiersSearchAdapter<FusionEntreprisesAbsorbeeView>() {
+			                                                    @Override
+			                                                    public List<FusionEntreprisesAbsorbeeView> adaptSearchResult(List<TiersIndexedDataView> result, HttpSession session) {
+				                                                    final FusionEntrepriseSessionData sessionData = (FusionEntrepriseSessionData) session.getAttribute(FUSION_NAME);
+				                                                    return FusionEntreprisesController.this.adapteSearchResults(result, sessionData);
+			                                                    }
+		                                                    });
 	}
 
 	@RequestMapping(value = "/absorbante/list.do", method = RequestMethod.GET)
@@ -72,53 +104,19 @@ public class FusionEntreprisesController extends AbstractProcessusComplexeContro
 
 		// quand on arrive sur l'écran, on efface les données de la fusion précédente, au cas où il y en aurait encore...
 		session.removeAttribute(FUSION_NAME);
-
-		final TiersCriteriaView criteria = (TiersCriteriaView) session.getAttribute(CRITERIA_NAME_ABSORBANTE);
-		return showRechercheAbsorbante(model, criteria, false);
+		return searchAbsorbanteComponent.showFormulaireRecherche(model, session);
 	}
 
 	@RequestMapping(value = "/absorbante/reset-search.do", method = RequestMethod.GET)
 	public String resetCriteresRechercheAbsorbante(HttpSession session) {
 		checkDroitAcces();
-		session.removeAttribute(CRITERIA_NAME_ABSORBANTE);
-		return "redirect:list.do";
+		return searchAbsorbanteComponent.resetCriteresRecherche(session, "list.do");
 	}
 
 	@RequestMapping(value = "/absorbante/list.do", method = RequestMethod.POST)
-	public String doRechercheAbsorbante(@Valid @ModelAttribute(value = COMMAND) TiersCriteriaView view, BindingResult bindingResult, HttpSession session, Model model) {
+	public String doRechercheAbsorbante(@Valid @ModelAttribute(value = SearchTiersComponent.COMMAND) TiersCriteriaView view, BindingResult bindingResult, HttpSession session, Model model) {
 		checkDroitAcces();
-		if (bindingResult.hasErrors()) {
-			return showRechercheAbsorbante(model, view, true);
-		}
-		else {
-			session.setAttribute(CRITERIA_NAME_ABSORBANTE, view);
-		}
-		return "redirect:list.do";
-	}
-
-	private String showRechercheAbsorbante(Model model, @Nullable TiersCriteriaView criteria, boolean error) {
-		if (criteria == null) {
-			criteria = new TiersCriteriaView();
-			criteria.setTypeRechercheDuNom(TiersCriteria.TypeRecherche.EST_EXACTEMENT);
-		}
-		else if (!error) {
-			// lancement de la recherche selon les critères donnés
-
-			// reformattage du numéro IDE
-			if (StringUtils.isNotBlank(criteria.getNumeroIDE())) {
-				criteria.setNumeroIDE(NumeroIDEHelper.normalize(criteria.getNumeroIDE()));
-			}
-
-			criteria.setTypeTiersImperatif(TiersCriteria.TypeTiers.ENTREPRISE);
-			criteria.setEtatsEntrepriseInterdits(EnumSet.of(TypeEtatEntreprise.ABSORBEE, TypeEtatEntreprise.DISSOUTE, TypeEtatEntreprise.RADIEE_RC));
-			model.addAttribute(LIST, searchTiers(criteria, model, ERROR_MESSAGE));
-		}
-
-		model.addAttribute(COMMAND, criteria);
-		model.addAttribute(TYPES_RECHERCHE_NOM_ENUM, tiersMapHelper.getMapTypeRechercheNom());
-		model.addAttribute(TYPES_RECHERCHE_FJ_ENUM, tiersMapHelper.getMapFormeJuridiqueEntreprise());
-		model.addAttribute(TYPES_RECHERCHE_CAT_ENUM, tiersMapHelper.getMapCategoriesEntreprise());
-		return "entreprise/fusion/list-absorbante";
+		return searchAbsorbanteComponent.doRecherche(view, bindingResult, session, model, "list.do");
 	}
 
 	@RequestMapping(value = "/choix-dates.do", method = RequestMethod.GET)
@@ -145,12 +143,12 @@ public class FusionEntreprisesController extends AbstractProcessusComplexeContro
 	}
 
 	private String showStart(Model model, FusionEntreprisesView view) {
-		model.addAttribute(COMMAND, view);
+		model.addAttribute(SearchTiersComponent.COMMAND, view);
 		return "entreprise/fusion/choix-dates";
 	}
 
 	@RequestMapping(value = "/choix-dates.do", method = RequestMethod.POST)
-	public String doSetDates(Model model, @Valid @ModelAttribute(value = COMMAND) final FusionEntreprisesView view, BindingResult bindingResult, HttpSession session) throws Exception {
+	public String doSetDates(Model model, @Valid @ModelAttribute(value = SearchTiersComponent.COMMAND) final FusionEntreprisesView view, BindingResult bindingResult, HttpSession session) throws Exception {
 		checkDroitAcces();
 		controllerUtils.checkAccesDossierEnEcriture(view.getIdEntrepriseAbsorbante());
 		if (bindingResult.hasErrors()) {
@@ -180,54 +178,18 @@ public class FusionEntreprisesController extends AbstractProcessusComplexeContro
 	@RequestMapping(value = "/absorbees/list.do", method = RequestMethod.GET)
 	public String showFormulaireRechercheAbsorbee(Model model, HttpSession session) {
 		checkDroitAcces();
-		final TiersCriteriaView criteria = (TiersCriteriaView) session.getAttribute(CRITERIA_NAME_ABSORBEE);
-		return showRechercheAbsorbee(model, session, criteria, false);
+		return searchAbsorbeeComponent.showFormulaireRecherche(model, session);
 	}
 
 	@RequestMapping(value = "/absorbees/reset-search.do", method = RequestMethod.GET)
 	public String resetCriteresRechercheAbsorbee(HttpSession session) {
 		checkDroitAcces();
-		session.removeAttribute(CRITERIA_NAME_ABSORBEE);
-		return "redirect:list.do?searched=true";
+		return searchAbsorbeeComponent.resetCriteresRecherche(session, "list.do?searched=true");
 	}
 
 	private void fillCriteresImperatifsPourEntrepriseAbsorbee(TiersCriteriaView criteria) {
 		criteria.setTypeTiersImperatif(TiersCriteria.TypeTiers.ENTREPRISE);
 		criteria.setEtatsEntrepriseInterdits(EnumSet.of(TypeEtatEntreprise.ABSORBEE));
-	}
-
-	private String showRechercheAbsorbee(Model model, HttpSession session, @Nullable TiersCriteriaView criteria, boolean error) {
-
-		final FusionEntrepriseSessionData sessionData = (FusionEntrepriseSessionData) session.getAttribute(FUSION_NAME);
-		if (sessionData == null) {
-			Flash.warning("La session a été invalidée. Veuillez recommencer votre saisie.");
-			return "redirect:../absorbante/list.do";
-		}
-
-		if (criteria == null) {
-			criteria = new TiersCriteriaView();
-			criteria.setTypeRechercheDuNom(TiersCriteria.TypeRecherche.EST_EXACTEMENT);
-		}
-		else if (!error) {
-			// lancement de la recherche selon les critères donnés
-
-			// reformattage du numéro IDE
-			if (StringUtils.isNotBlank(criteria.getNumeroIDE())) {
-				criteria.setNumeroIDE(NumeroIDEHelper.normalize(criteria.getNumeroIDE()));
-			}
-
-			fillCriteresImperatifsPourEntrepriseAbsorbee(criteria);
-
-			final List<TiersIndexedDataView> searchResults = searchTiers(criteria, model, ERROR_MESSAGE);
-			model.addAttribute(LIST, adapteSearchResults(searchResults, sessionData));
-		}
-
-		model.addAttribute(COMMAND, criteria);
-		model.addAttribute(FUSION, sessionData);
-		model.addAttribute(TYPES_RECHERCHE_NOM_ENUM, tiersMapHelper.getMapTypeRechercheNom());
-		model.addAttribute(TYPES_RECHERCHE_FJ_ENUM, tiersMapHelper.getMapFormeJuridiqueEntreprise());
-		model.addAttribute(TYPES_RECHERCHE_CAT_ENUM, tiersMapHelper.getMapCategoriesEntreprise());
-		return "entreprise/fusion/list-absorbees";
 	}
 
 	private List<FusionEntreprisesAbsorbeeView> adapteSearchResults(final List<TiersIndexedDataView> searchResults, @NotNull final FusionEntrepriseSessionData sessionData) {
@@ -298,7 +260,7 @@ public class FusionEntreprisesController extends AbstractProcessusComplexeContro
 		criteria.setNumero(idAbsorbee);
 
 		try {
-			final List<TiersIndexedDataView> resultats = _searchTiers(criteria);
+			final List<TiersIndexedDataView> resultats = searchAbsorbeeComponent._searchTiers(criteria);
 			if (resultats.isEmpty()) {
 				Flash.error("Impossible de récupérer les données du tiers " + FormatNumeroHelper.numeroCTBToDisplay(idAbsorbee));
 				return "redirect:list.do";
@@ -337,15 +299,9 @@ public class FusionEntreprisesController extends AbstractProcessusComplexeContro
 	}
 
 	@RequestMapping(value = "/absorbees/list.do", method = RequestMethod.POST)
-	public String doRechercheAbsorbee(@Valid @ModelAttribute(value = COMMAND) TiersCriteriaView view, BindingResult bindingResult, HttpSession session, Model model) {
+	public String doRechercheAbsorbee(@Valid @ModelAttribute(value = SearchTiersComponent.COMMAND) TiersCriteriaView view, BindingResult bindingResult, HttpSession session, Model model) {
 		checkDroitAcces();
-		if (bindingResult.hasErrors()) {
-			return showRechercheAbsorbee(model, session, view, true);
-		}
-		else {
-			session.setAttribute(CRITERIA_NAME_ABSORBEE, view);
-		}
-		return "redirect:list.do?searched=true";
+		return searchAbsorbeeComponent.doRecherche(view, bindingResult, session, model, "list.do?searched=true");
 	}
 
 	@RequestMapping(value = "/fusionner.do", method = RequestMethod.POST)

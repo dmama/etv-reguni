@@ -66,7 +66,7 @@ public class DemenagementSiegeController extends AbstractProcessusComplexeRecher
 	}
 
 	private String showStart(final Model model, final DemenagementSiegeView view) {
-		model.addAttribute(COMMAND, view);
+		model.addAttribute(SearchTiersComponent.COMMAND, view);
 		model.addAttribute(TYPES_AUTORITE_FISCALE, tiersMapHelper.getMapTypeAutoriteFiscale());
 		doInReadOnlyTransaction(new TransactionCallbackWithoutResult() {
 			@Override
@@ -98,7 +98,7 @@ public class DemenagementSiegeController extends AbstractProcessusComplexeRecher
 	}
 
 	@RequestMapping(value = "/start.do", method = RequestMethod.POST)
-	public String doDemenagement(Model model, @Valid @ModelAttribute(value = COMMAND) final DemenagementSiegeView view, BindingResult bindingResult) throws Exception {
+	public String doDemenagement(Model model, @Valid @ModelAttribute(value = SearchTiersComponent.COMMAND) final DemenagementSiegeView view, BindingResult bindingResult) throws Exception {
 		checkDroitAcces();
 		controllerUtils.checkAccesDossierEnEcriture(view.getIdEntreprise());
 		if (bindingResult.hasErrors()) {
