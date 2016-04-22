@@ -5,17 +5,17 @@ import java.util.regex.Pattern;
 
 public class DiscriminantData implements WithEntrepriseId {
 
-	private static final Pattern PATTERN = Pattern.compile("([0-9]+);(.*)");
+	private static final Pattern PATTERN = Pattern.compile("[^;]+;([0-9]+);(.*)");
 
 	/**
 	 * Numéro de la colonne (0-based) de la ligne qui contient le discriminant
 	 */
-	private static final int noColonneTrigger = 16;
+	private static final int noColonneTrigger = 21;
 
 	/**
 	 * Pattern à faire passer sur la colonne du discriminant pour savoir si la ligne correspond à quelque chose qui doit être exporté
 	 */
-	private static final Pattern PATTERN_TRIGGER = Pattern.compile("NON");
+	private static final Pattern PATTERN_TRIGGER = Pattern.compile("OUI");
 
 	private final long noEntreprise;
 	private final String[] otherColumns;
