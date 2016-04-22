@@ -20,6 +20,7 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.web.util.HtmlUtils;
 
+import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
@@ -32,6 +33,7 @@ import ch.vd.uniregctb.avatar.TypeAvatar;
 import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.declaration.Periodicite;
+import ch.vd.uniregctb.entreprise.complexe.FusionEntreprisesHelper;
 import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.security.SecurityHelper;
 import ch.vd.uniregctb.security.SecurityProviderInterface;
@@ -49,6 +51,7 @@ import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.transaction.TransactionTemplate;
+import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.PeriodeDecompte;
 import ch.vd.uniregctb.type.PeriodiciteDecompte;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
@@ -60,7 +63,7 @@ import ch.vd.uniregctb.utils.WebContextUtils;
  */
 public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceAware {
 
-	private static final long serialVersionUID = -7103375494735633544L;
+	private static final long serialVersionUID = -1893258633180203901L;
 
 	private final Logger LOGGER = LoggerFactory.getLogger(JspTagBandeauTiers.class);
 
@@ -91,10 +94,15 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 		list.add(new AnnulerDeces());
 
 		list.add(new TraiterFaillite());
+		list.add(new RevoquerFaillite());
 		list.add(new DemenagerSiege());
 		list.add(new TerminerActivite());
+		list.add(new RepriseActivitePartielle());
+		list.add(new FusionEntreprises());
 		list.add(new AnnulerFaillite());
 		list.add(new AnnulerDemenagementSiege());
+		list.add(new AnnulerFinActivite());
+		list.add(new AnnulerFusionEntreprises());
 
 		list.add(new AnnulerTiers());
 		list.add(new Exporter());
@@ -338,7 +346,7 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 
 		// Numéro de contribuable
 		s.append("<tr class=\"").append(nextRowClass()).append("\">\n");
-		s.append("\t<td width=\"25%\" nowrap>").append(message("label.numero.tiers")).append("&nbsp;:&nbsp;</td>\n");
+		s.append("\t<td width=\"15%\" nowrap>").append(message("label.numero.tiers")).append("&nbsp;:&nbsp;</td>\n");
 		s.append("\t<td width=\"50%\">").append(FormatNumeroHelper.numeroCTBToDisplay(numero));
 		if (showLinks) {
 			final JspTagConsulterLog consulter = new JspTagConsulterLog();
@@ -348,18 +356,18 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 		}
 		s.append("</td>\n");
 		if (!tiers.isAnnule() && showLinks) {
-			s.append("\t<td width=\"25%\">\n");
+			s.append("\t<td width=\"35%\">\n");
 			s.append(buildVers(tiers));
 			s.append("\t</td>\n");
 		}
 		else {
-			s.append("\t<td width=\"25%\">&nbsp;</td>\n");
+			s.append("\t<td width=\"35%\">&nbsp;</td>\n");
 		}
 		s.append("</tr>\n");
 
 		// Rôle
 		s.append("<tr class=\"").append(nextRowClass()).append("\">\n");
-		s.append("\t<td width=\"25%\">").append(message("label.role")).append("&nbsp;:</td>\n");
+		s.append("\t<td width=\"15%\">").append(message("label.role")).append("&nbsp;:</td>\n");
 		s.append("\t<td width=\"50%\">");
 		s.append(HtmlUtils.htmlEscape(tiers.getRoleLigne1()));
 		final String roleLigne2 = tiersService.getRoleAssujettissement(tiers, RegDate.get());
@@ -380,10 +388,10 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 
 			if (actionsToDisplay.isEmpty()) {
 				// pas d'action à afficher
-				s.append("\t<td width=\"25%\">&nbsp;</td>\n");
+				s.append("\t<td width=\"35%\">&nbsp;</td>\n");
 			}
 			else {
-				s.append("\t<td width=\"25%\">\n");
+				s.append("\t<td width=\"35%\">\n");
 				s.append("\t<div style=\"float:right;margin-right:10px;text-align:right\">\n");
 				s.append("\t\t<span>").append(message("label.actions")).append(" : </span>\n");
 				s.append("\t\t<select onchange=\"return App.executeAction($(this).val() + ").append(tiers.getNumero()).append(");\">\n");
@@ -399,7 +407,7 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 			}
 		}
 		else {
-			s.append("\t<td width=\"25%\">&nbsp;</td>\n");
+			s.append("\t<td width=\"35%\">&nbsp;</td>\n");
 		}
 		s.append("</tr>\n");
 
@@ -409,10 +417,10 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 
 			// 1ère ligne
 			s.append("<tr class=\"").append(nextRowClass()).append("\">\n");
-			s.append("\t<td width=\"25%\">").append(message("label.adresse")).append("&nbsp;:</td>\n");
+			s.append("\t<td width=\"15%\">").append(message("label.adresse")).append("&nbsp;:</td>\n");
 			final String ligne1 = adresse.getLigne1();
 			if (StringUtils.isNotBlank(ligne1)) {
-				s.append("\t<td width=\"75%\" colspan=\"2\">").append(HtmlUtils.htmlEscape(ligne1)).append("</td>\n");
+				s.append("\t<td width=\"85%\" colspan=\"2\">").append(HtmlUtils.htmlEscape(ligne1)).append("</td>\n");
 			}
 			s.append("</tr>\n");
 
@@ -421,8 +429,8 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 				final String ligne = adresse.getLigne(i);
 				if (StringUtils.isNotBlank(ligne)) {
 					s.append("<tr class=\"").append(nextRowClass()).append("\">\n");
-					s.append("\t<td width=\"25%\">&nbsp;</td>\n");
-					s.append("\t<td width=\"75%\" colspan=\"2\">").append(HtmlUtils.htmlEscape(ligne)).append("</td>\n");
+					s.append("\t<td width=\"15%\">&nbsp;</td>\n");
+					s.append("\t<td width=\"85%\" colspan=\"2\">").append(HtmlUtils.htmlEscape(ligne)).append("</td>\n");
 					s.append("</tr>\n");
 				}
 			}
@@ -430,16 +438,16 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 		catch (Exception e) {
 			LOGGER.error(String.format("Une exception est survenue pendant le rendu du bandeau (%s): %s.", tiers.toString(), e.getMessage()), e);
 			s.append("<tr class=\"").append(nextRowClass()).append("\">\n");
-			s.append("\t<td width=\"25%\">").append(message("label.adresse")).append("&nbsp;:</td>\n");
-			s.append("\t<td width=\"75%\" colspan=\"2\" class=\"error\">").append(message("error.adresse.envoi.entete")).append("</td>\n");
+			s.append("\t<td width=\"15%\">").append(message("label.adresse")).append("&nbsp;:</td>\n");
+			s.append("\t<td width=\"85%\" colspan=\"2\" class=\"error\">").append(message("error.adresse.envoi.entete")).append("</td>\n");
 			s.append("</tr>\n");
 			s.append("<tr class=\"").append(nextRowClass()).append("\">\n");
-			s.append("\t<td width=\"25%\">&nbsp;</td>\n");
-			s.append("\t<td width=\"75%\"  colspan=\"2\" class=\"error\">=&gt;&nbsp;").append(HtmlUtils.htmlEscape(e.getMessage())).append("</td>\n");
+			s.append("\t<td width=\"15%\">&nbsp;</td>\n");
+			s.append("\t<td width=\"85%\"  colspan=\"2\" class=\"error\">=&gt;&nbsp;").append(HtmlUtils.htmlEscape(e.getMessage())).append("</td>\n");
 			s.append("</tr>\n");
 			s.append("<tr class=\"").append(nextRowClass()).append("\">\n");
-			s.append("\t<td width=\"25%\">&nbsp;</td>\n");
-			s.append("\t<td  width=\"75%\"  colspan=\"2\" class=\"error\">").append(message("error.adresse.envoi.remarque")).append("</td>\n");
+			s.append("\t<td width=\"15%\">&nbsp;</td>\n");
+			s.append("\t<td  width=\"85%\"  colspan=\"2\" class=\"error\">").append(message("error.adresse.envoi.remarque")).append("</td>\n");
 			s.append("</tr>\n");
 		}
 
@@ -449,25 +457,25 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 				final PersonnePhysique pp = (PersonnePhysique) tiers;
 				final RegDate dateNaissance = tiersService.getDateNaissance(pp);
 				s.append("<tr class=\"").append(nextRowClass()).append("\">\n");
-				s.append("\t<td width=\"25%\">").append(message("label.date.naissance")).append("&nbsp;:</td>\n");
+				s.append("\t<td width=\"15%\">").append(message("label.date.naissance")).append("&nbsp;:</td>\n");
 				s.append("\t<td width=\"50%\">").append(RegDateHelper.dateToDisplayString(dateNaissance)).append("</td>\n");
-				s.append("\t<td width=\"25%\">&nbsp;</td>\n");
+				s.append("\t<td width=\"35%\">&nbsp;</td>\n");
 				s.append("</tr>\n");
 
 				// Numéro AVS
 				final String numeroAssureSocial = tiersService.getNumeroAssureSocial(pp);
 				s.append("<tr class=\"").append(nextRowClass()).append("\">\n");
-				s.append("\t<td width=\"25%\">").append(message("label.nouveau.numero.avs")).append("&nbsp;:</td>\n");
+				s.append("\t<td width=\"15%\">").append(message("label.nouveau.numero.avs")).append("&nbsp;:</td>\n");
 				s.append("\t<td width=\"50%\">").append(FormatNumeroHelper.formatNumAVS(numeroAssureSocial)).append("</td>\n");
-				s.append("\t<td width=\"25%\">&nbsp;</td>\n");
+				s.append("\t<td width=\"35%\">&nbsp;</td>\n");
 				s.append("</tr>\n");
 
 				// Ancien numéro AVS
 				final String ancienNumeroAssureSocial = tiersService.getAncienNumeroAssureSocial(pp);
 				s.append("<tr class=\"").append(nextRowClass()).append("\">\n");
-				s.append("\t<td width=\"25%\">").append(message("label.ancien.numero.avs")).append("&nbsp;:</td>\n");
+				s.append("\t<td width=\"15%\">").append(message("label.ancien.numero.avs")).append("&nbsp;:</td>\n");
 				s.append("\t<td width=\"50%\">").append(FormatNumeroHelper.formatAncienNumAVS(ancienNumeroAssureSocial)).append("</td>\n");
-				s.append("\t<td width=\"25%\">&nbsp;</td>\n");
+				s.append("\t<td width=\"35%\">&nbsp;</td>\n");
 				s.append("</tr>\n");
 			}
 			else if (tiers instanceof DebiteurPrestationImposable) {
@@ -475,9 +483,9 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 
 				// Catégorie Impôt-source
 				s.append("<tr class=\"").append(nextRowClass()).append("\">\n");
-				s.append("\t<td width=\"25%\">").append(message("label.debiteur.is")).append("&nbsp;:</td>\n");
+				s.append("\t<td width=\"15%\">").append(message("label.debiteur.is")).append("&nbsp;:</td>\n");
 				s.append("\t<td width=\"50%\">").append(message("option.categorie.impot.source." + dpi.getCategorieImpotSource().name())).append("</td>\n");
-				s.append("\t<td width=\"25%\">&nbsp;</td>\n");
+				s.append("\t<td width=\"35%\">&nbsp;</td>\n");
 				s.append("</tr>\n");
 
 				// Périodicité
@@ -486,38 +494,38 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 					final PeriodiciteDecompte periodiciteDecompte = periodicite.getPeriodiciteDecompte();
 					final PeriodeDecompte periodeDecompte = periodicite.getPeriodeDecompte();
 					s.append("<tr class=\"").append(nextRowClass()).append("\">\n");
-					s.append("\t<td width=\"25%\">").append(message("label.periodicite")).append("&nbsp;:</td>\n");
+					s.append("\t<td width=\"15%\">").append(message("label.periodicite")).append("&nbsp;:</td>\n");
 					s.append("\t<td width=\"50%\">");
 					s.append(message("option.periodicite.decompte." + periodiciteDecompte.name()));
 					if (periodiciteDecompte == PeriodiciteDecompte.UNIQUE && periodeDecompte != null) {
 						s.append("&nbsp;(").append(message("option.periode.decompte." + periodeDecompte.name())).append(')');
 					}
 					s.append("</td>\n");
-					s.append("\t<td width=\"25%\">&nbsp;</td>\n");
+					s.append("\t<td width=\"35%\">&nbsp;</td>\n");
 					s.append("</tr>\n");
 				}
 
 				// Mode de communication
 				s.append("<tr class=\"").append(nextRowClass()).append("\">\n");
-				s.append("\t<td width=\"25%\">").append(message("label.mode.communication")).append("&nbsp;:</td>\n");
+				s.append("\t<td width=\"15%\">").append(message("label.mode.communication")).append("&nbsp;:</td>\n");
 				s.append("\t<td width=\"50%\">").append(message("option.mode.communication." + dpi.getModeCommunication())).append("</td>\n");
-				s.append("\t<td width=\"25%\">&nbsp;</td>\n");
+				s.append("\t<td width=\"35%\">&nbsp;</td>\n");
 				s.append("</tr>\n");
 
 				// Personne de contact
 				s.append("<tr class=\"").append(nextRowClass()).append("\">\n");
-				s.append("\t<td width=\"25%\">").append(message("label.personne.contact")).append("&nbsp;:</td>\n");
+				s.append("\t<td width=\"15%\">").append(message("label.personne.contact")).append("&nbsp;:</td>\n");
 				final String personneContact = dpi.getPersonneContact();
 				s.append("\t<td width=\"50%\">").append(HtmlUtils.htmlEscape(StringUtils.trimToEmpty(personneContact))).append("</td>\n");
-				s.append("\t<td width=\"25%\">&nbsp;</td>\n");
+				s.append("\t<td width=\"35%\">&nbsp;</td>\n");
 				s.append("</tr>\n");
 
 				// Numéro de téléphone fixe
 				s.append("<tr class=\"").append(nextRowClass()).append("\">\n");
-				s.append("\t<td width=\"25%\">").append(message("label.numero.telephone.fixe")).append("&nbsp;:</td>\n");
+				s.append("\t<td width=\"15%\">").append(message("label.numero.telephone.fixe")).append("&nbsp;:</td>\n");
 				final String numeroTelephonePrive = dpi.getNumeroTelephonePrive();
 				s.append("\t<td width=\"50%\">").append(HtmlUtils.htmlEscape(StringUtils.trimToEmpty(numeroTelephonePrive))).append("</td>\n");
-				s.append("\t<td width=\"25%\">&nbsp;</td>\n");
+				s.append("\t<td width=\"35%\">&nbsp;</td>\n");
 				s.append("</tr>\n");
 			}
 			else if (tiers instanceof Entreprise) {
@@ -526,18 +534,18 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 				// numéro IDE
 				final String numeroIDE = tiersService.getNumeroIDE(entreprise);
 				s.append("<tr class=\"").append(nextRowClass()).append("\">\n");
-				s.append("\t<td width=\"25%\">").append(message("label.numero.ide")).append("&nbsp;:</td>\n");
+				s.append("\t<td width=\"15%\">").append(message("label.numero.ide")).append("&nbsp;:</td>\n");
 				s.append("\t<td width=\"50%\">").append(FormatNumeroHelper.formatNumIDE(numeroIDE)).append("</td>\n");
-				s.append("\t<td width=\"25%\">&nbsp;</td>\n");
+				s.append("\t<td width=\"35%\">&nbsp;</td>\n");
 				s.append("</tr>\n");
 
 				// forme juridique
 				final List<FormeLegaleHisto> formesJuridiques = tiersService.getFormesLegales(entreprise, false);
 				final FormeLegale formeJuridique = formesJuridiques != null && !formesJuridiques.isEmpty() ? CollectionsUtils.getLastElement(formesJuridiques).getFormeLegale() : null;
 				s.append("<tr class=\"").append(nextRowClass()).append("\">\n");
-				s.append("\t<td width=\"25%\">").append(message("label.forme.juridique")).append("&nbsp;:</td>\n");
+				s.append("\t<td width=\"15%\">").append(message("label.forme.juridique")).append("&nbsp;:</td>\n");
 				s.append("\t<td width=\"50%\">").append(formeJuridique != null ? formeJuridique.toString() : StringUtils.EMPTY).append("</td>\n");
-				s.append("\t<td width=\"25%\">&nbsp;</td>\n");
+				s.append("\t<td width=\"35%\">&nbsp;</td>\n");
 				s.append("</tr>\n");
 			}
 			else if (tiers instanceof Etablissement) {
@@ -546,9 +554,9 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 				// numéro IDE
 				final String numeroIDE = tiersService.getNumeroIDE(etablissement);
 				s.append("<tr class=\"").append(nextRowClass()).append("\">\n");
-				s.append("\t<td width=\"25%\">").append(message("label.numero.ide")).append("&nbsp;:</td>\n");
+				s.append("\t<td width=\"15%\">").append(message("label.numero.ide")).append("&nbsp;:</td>\n");
 				s.append("\t<td width=\"50%\">").append(FormatNumeroHelper.formatNumIDE(numeroIDE)).append("</td>\n");
-				s.append("\t<td width=\"25%\">&nbsp;</td>\n");
+				s.append("\t<td width=\"35%\">&nbsp;</td>\n");
 				s.append("</tr>\n");
 			}
 		}
@@ -999,7 +1007,7 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 
 		@Override
 		public String getLabel() {
-			return "Traiter la faillite";
+			return "Traiter la faillite de l'entreprise";
 		}
 
 		@Override
@@ -1025,12 +1033,38 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 
 		@Override
 		public String getLabel() {
-			return "Annuler la faillite";
+			return "Annuler la faillite de l'entreprise";
 		}
 
 		@Override
 		public String getActionUrl() {
 			return "goto:/processuscomplexe/annulation/faillite/start.do?id=";
+		}
+	}
+
+	private static class RevoquerFaillite implements Action {
+		@Override
+		public boolean isGranted() {
+			return SecurityHelper.isAnyGranted(securityProvider, Role.FAILLITE_ENTREPRISE);
+		}
+
+		@Override
+		public boolean isValide(Tiers tiers) {
+			return !tiers.isAnnule()
+					&& tiers instanceof Entreprise
+					&& isEtatCourant((Entreprise) tiers, TypeEtatEntreprise.EN_FAILLITE)
+					&& !hadEtatOnce((Entreprise) tiers, EnumSet.of(TypeEtatEntreprise.ABSORBEE, TypeEtatEntreprise.DISSOUTE))
+					&& tiers.getForFiscalPrincipalAt(null) == null;
+		}
+
+		@Override
+		public String getLabel() {
+			return "Révoquer la faillite de l'entreprise";
+		}
+
+		@Override
+		public String getActionUrl() {
+			return "goto:/processuscomplexe/revocation/faillite/start.do?id=";
 		}
 	}
 
@@ -1049,7 +1083,7 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 
 		@Override
 		public String getLabel() {
-			return "Déménager le siège";
+			return "Déménager le siège de l'entreprise";
 		}
 
 		@Override
@@ -1068,12 +1102,21 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 		public boolean isValide(Tiers tiers) {
 			return !tiers.isAnnule()
 					&& tiers instanceof Entreprise
-					&& tiers.getForFiscalPrincipalAt(null) != null;
+					&& hasForPrincipalActifEtForPrecedent(tiers);
+		}
+
+		private static boolean hasForPrincipalActifEtForPrecedent(Tiers tiers) {
+			final List<? extends ForFiscalPrincipal> forsPrincipaux = tiers.getForsFiscauxPrincipauxActifsSorted();
+			final ForFiscalPrincipal actif = DateRangeHelper.rangeAt(forsPrincipaux, null);
+			final Set<MotifFor> motifsDemenagement = EnumSet.of(MotifFor.DEMENAGEMENT_VD, MotifFor.ARRIVEE_HC, MotifFor.ARRIVEE_HS, MotifFor.DEPART_HC, MotifFor.DEPART_HS);
+			return actif != null
+					&& DateRangeHelper.rangeAt(forsPrincipaux, actif.getDateDebut().getOneDayBefore()) != null
+					&& motifsDemenagement.contains(actif.getMotifOuverture());
 		}
 
 		@Override
 		public String getLabel() {
-			return "Annuler le dernier déménagement de siège";
+			return "Annuler le dernier déménagement de siège de l'entreprise";
 		}
 
 		@Override
@@ -1104,6 +1147,114 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 		@Override
 		public String getActionUrl() {
 			return "goto:/processuscomplexe/finactivite/start.do?id=";
+		}
+	}
+
+	private static class RepriseActivitePartielle implements Action {
+		@Override
+		public boolean isGranted() {
+			return SecurityHelper.isAnyGranted(securityProvider, Role.FIN_ACTIVITE_ENTREPRISE);
+		}
+
+		@Override
+		public boolean isValide(Tiers tiers) {
+			return !tiers.isAnnule()
+					&& tiers instanceof Entreprise
+					&& !hadEtatOnce((Entreprise) tiers, EnumSet.of(TypeEtatEntreprise.ABSORBEE))
+					&& isDernierForPrincipalFermePourFinActivite(tiers);
+		}
+
+		private static boolean isDernierForPrincipalFermePourFinActivite(Tiers tiers) {
+			final ForFiscalPrincipal dernierFor = tiers.getDernierForFiscalPrincipal();
+			return dernierFor != null && dernierFor.getDateFin() != null && dernierFor.getMotifFermeture() == MotifFor.CESSATION_ACTIVITE;
+		}
+
+		@Override
+		public String getLabel() {
+			return "Reprendre une activité partielle pour l'entreprise";
+		}
+
+		@Override
+		public String getActionUrl() {
+			return "goto:/processuscomplexe/repriseactivite/start.do?id=";
+		}
+	}
+
+	private static class AnnulerFinActivite implements Action {
+		@Override
+		public boolean isGranted() {
+			return SecurityHelper.isAnyGranted(securityProvider, Role.FIN_ACTIVITE_ENTREPRISE);
+		}
+
+		@Override
+		public boolean isValide(Tiers tiers) {
+			return !tiers.isAnnule()
+					&& tiers instanceof Entreprise
+					&& !hadEtatOnce((Entreprise) tiers, EnumSet.of(TypeEtatEntreprise.ABSORBEE))
+					&& isDernierForPrincipalFermePourFinActivite(tiers);
+		}
+
+		private static boolean isDernierForPrincipalFermePourFinActivite(Tiers tiers) {
+			final ForFiscalPrincipal dernierFor = tiers.getDernierForFiscalPrincipal();
+			return dernierFor != null && dernierFor.getDateFin() != null && dernierFor.getMotifFermeture() == MotifFor.CESSATION_ACTIVITE;
+		}
+
+		@Override
+		public String getLabel() {
+			return "Annuler la fin d'activité de l'entreprise";
+		}
+
+		@Override
+		public String getActionUrl() {
+			return "goto:/processuscomplexe/annulation/finactivite/start.do?id=";
+		}
+	}
+
+	private static class FusionEntreprises implements Action {
+		@Override
+		public boolean isGranted() {
+			return SecurityHelper.isAnyGranted(securityProvider, Role.FUSION_ENTREPRISES);
+		}
+
+		@Override
+		public boolean isValide(Tiers tiers) {
+			return !tiers.isAnnule()
+					&& tiers instanceof Entreprise
+					&& !hadEtatOnce((Entreprise) tiers, EnumSet.of(TypeEtatEntreprise.ABSORBEE, TypeEtatEntreprise.DISSOUTE, TypeEtatEntreprise.RADIEE_RC));
+		}
+
+		@Override
+		public String getLabel() {
+			return "Absorber une ou plusieurs autres entreprises";
+		}
+
+		@Override
+		public String getActionUrl() {
+			return "goto:/processuscomplexe/fusion/choix-dates.do?absorbante=";
+		}
+	}
+
+	private static class AnnulerFusionEntreprises implements Action {
+		@Override
+		public boolean isGranted() {
+			return SecurityHelper.isAnyGranted(securityProvider, Role.FUSION_ENTREPRISES);
+		}
+
+		@Override
+		public boolean isValide(Tiers tiers) {
+			return !tiers.isAnnule()
+					&& tiers instanceof Entreprise
+					&& !FusionEntreprisesHelper.getAbsorptions((Entreprise) tiers, tiersService).isEmpty();
+		}
+
+		@Override
+		public String getLabel() {
+			return "Annuler une absorption d'entreprise(s)";
+		}
+
+		@Override
+		public String getActionUrl() {
+			return "goto:/processuscomplexe/annulation/fusion/choix-dates.do?absorbante=";
 		}
 	}
 }
