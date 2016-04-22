@@ -1000,7 +1000,6 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 		public boolean isValide(Tiers tiers) {
 			return !tiers.isAnnule()
 					&& tiers instanceof Entreprise
-					&& tiersService.isInscriteRC((Entreprise) tiers, null)
 					&& !isEtatCourant((Entreprise) tiers, TypeEtatEntreprise.EN_FAILLITE)
 					&& !hadEtatOnce((Entreprise) tiers, EnumSet.of(TypeEtatEntreprise.ABSORBEE, TypeEtatEntreprise.DISSOUTE, TypeEtatEntreprise.RADIEE_RC))
 					&& tiers.getForFiscalPrincipalAt(null) != null;
@@ -1027,7 +1026,6 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 		public boolean isValide(Tiers tiers) {
 			return !tiers.isAnnule()
 					&& tiers instanceof Entreprise
-					&& tiersService.isInscriteRC((Entreprise) tiers, null)
 					&& isEtatCourant((Entreprise) tiers, TypeEtatEntreprise.EN_FAILLITE)
 					&& !hadEtatOnce((Entreprise) tiers, EnumSet.of(TypeEtatEntreprise.ABSORBEE, TypeEtatEntreprise.DISSOUTE))
 					&& tiers.getForFiscalPrincipalAt(null) == null;
