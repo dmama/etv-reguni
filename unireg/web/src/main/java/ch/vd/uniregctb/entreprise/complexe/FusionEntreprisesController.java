@@ -165,7 +165,7 @@ public class FusionEntreprisesController extends AbstractProcessusComplexeContro
 		// on conserve les données de la fusion en session
 		final FusionEntrepriseSessionData newSessionData = new FusionEntrepriseSessionData(view.getIdEntrepriseAbsorbante(), dateContratFusion, dateBilanFusion);;
 		final FusionEntrepriseSessionData oldSessionData = (FusionEntrepriseSessionData) session.getAttribute(FUSION_NAME);
-		if (oldSessionData != null) {
+		if (oldSessionData != null && newSessionData.getIdEntrepriseAbsorbante() == oldSessionData.getIdEntrepriseAbsorbante()) {
 			for (FusionEntrepriseSessionData.EntrepriseAbsorbee oldAbsorbee : oldSessionData.getEntreprisesAbsorbees()) {
 				newSessionData.addEntrepriseAbsorbee(oldAbsorbee);
 			}

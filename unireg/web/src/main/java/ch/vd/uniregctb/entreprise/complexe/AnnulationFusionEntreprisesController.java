@@ -13,7 +13,6 @@ import java.util.Set;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -35,12 +34,8 @@ import ch.vd.uniregctb.metier.MetierServiceException;
 import ch.vd.uniregctb.security.AccessDeniedException;
 import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.tiers.Entreprise;
-import ch.vd.uniregctb.tiers.EtatEntreprise;
-import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.tiers.TiersCriteria;
 import ch.vd.uniregctb.tiers.view.TiersCriteriaView;
-import ch.vd.uniregctb.type.TypeEtatEntreprise;
-import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 
 @Controller
 @RequestMapping("/processuscomplexe/annulation/fusion")
@@ -143,17 +138,10 @@ public class AnnulationFusionEntreprisesController extends AbstractProcessusComp
 	 */
 	@NotNull
 	private Map<RegDate, Set<RegDate>> getDatesContratsParDateBilan(Entreprise absorbante) {
-		final Map<RegDate, Set<RegDate>> map = new HashMap<>();
-		for (RapportEntreTiers ret : absorbante.getRapportsObjet()) {
-			if (!ret.isAnnule() && ret.getType() == TypeRapportEntreTiers.FUSION_ENTREPRISES) {
-				final RegDate dateBilan = ret.getDateDebut();
-				final Entreprise absorbee = getTiers(Entreprise.class, ret.getSujetId());
-				final EtatEntreprise dd = getEtatAbsorbee(absorbee);
-				if (dd != null) {
-					final RegDate dateContrat = dd.getDateObtention();
-					addCoupleDatesFusion(map, dateBilan, dateContrat);
-				}
-			}
+		final Set<FusionEntreprisesHelper.DatesFusion> datesFusions = FusionEntreprisesHelper.getAbsorptions(absorbante, tiersService).keySet();
+		final Map<RegDate, Set<RegDate>> map = new HashMap<>(datesFusions.size());
+		for (FusionEntreprisesHelper.DatesFusion datesFusion : datesFusions) {
+			addCoupleDatesFusion(map, datesFusion.dateBilan, datesFusion.dateContrat);
 		}
 		return map;
 	}
@@ -165,17 +153,6 @@ public class AnnulationFusionEntreprisesController extends AbstractProcessusComp
 			datesContratsParDateBilan.put(dateBilan, contrats);
 		}
 		contrats.add(dateContrat);
-	}
-
-	@Nullable
-	private static EtatEntreprise getEtatAbsorbee(Entreprise entreprise) {
-		final Set<EtatEntreprise> etats = entreprise.getEtats();
-		for (EtatEntreprise etat : etats) {
-			if (!etat.isAnnule() && etat.getType() == TypeEtatEntreprise.ABSORBEE) {
-				return etat;
-			}
-		}
-		return null;
 	}
 
 	@Override
@@ -226,16 +203,11 @@ public class AnnulationFusionEntreprisesController extends AbstractProcessusComp
 				controllerUtils.checkAccesDossierEnEcriture(view.getIdEntrepriseAbsorbante());
 				controllerUtils.checkTraitementContribuableAvecDecisionAci(view.getIdEntrepriseAbsorbante());
 
-				final Set<RapportEntreTiers> rapports = absorbante.getRapportsObjet();
-				final List<Entreprise> absorbees = new ArrayList<>(rapports.size());
-				for (RapportEntreTiers ret : rapports) {
-					if (!ret.isAnnule() && ret.getDateDebut() == view.getDateBilanFusion() && ret.getType() == TypeRapportEntreTiers.FUSION_ENTREPRISES) {
-						final Entreprise absorbee = getTiers(Entreprise.class, ret.getSujetId());
-						final EtatEntreprise etat = getEtatAbsorbee(absorbee);
-						if (etat != null && etat.getDateObtention() == view.getDateContratFusion()) {
-							absorbees.add(absorbee);
-						}
-					}
+				final Map<FusionEntreprisesHelper.DatesFusion, List<Entreprise>> absorptions = FusionEntreprisesHelper.getAbsorptions(absorbante, tiersService);
+				final FusionEntreprisesHelper.DatesFusion key = new FusionEntreprisesHelper.DatesFusion(view.getDateBilanFusion(), view.getDateContratFusion());
+				final List<Entreprise> absorbees = absorptions.get(key);
+				if (absorbees == null || absorbees.isEmpty()) {
+					throw new MetierServiceException("Aucune entreprise absorbée trouvée!");
 				}
 
 				// petite boucle pour vérifier les droits d'accès sur les absorbées aussi
