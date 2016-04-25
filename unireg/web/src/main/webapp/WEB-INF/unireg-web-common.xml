@@ -63,11 +63,12 @@
 		<property name="suffix" value=".jsp" />
 	</bean>
 
+
 	<bean id="webCivilService" class="ch.vd.uniregctb.individu.WebCivilServiceImpl">
 		<property name="serviceCivilService" ref="serviceCivilService" />
 	</bean>
 
-	<bean id="entrepriseManager" class="ch.vd.uniregctb.entreprise.EntrepriseServiceImpl">
+	<bean id="entrepriseService" class="ch.vd.uniregctb.entreprise.EntrepriseServiceImpl">
 		<property name="serviceOrganisationService" ref="serviceOrganisationService" />
 		<property name="tiersService" ref="tiersService" />
 	</bean>
