@@ -105,9 +105,6 @@ public abstract class CreateEntreprise extends EvenementOrganisationInterneDeTra
 		// Vérifier qu'il n'y a pas d'entreprise préexistante en base ? (Ca ne devrait pas se produire ici)
 		Assert.isNull(getEntreprise());
 
-		// TODO: Vérifier que la date de l'événement correspond bien à la date d'inscription au RC?
-		// Devrait être superflu, cette exigeance étant une règle métier de RCEnt.
-
 		/*
 		 Problèmes métiers empêchant la progression
 		  */
