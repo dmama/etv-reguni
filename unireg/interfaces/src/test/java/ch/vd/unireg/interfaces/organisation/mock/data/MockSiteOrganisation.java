@@ -17,8 +17,6 @@ import ch.vd.unireg.interfaces.common.Adresse;
 import ch.vd.unireg.interfaces.infra.mock.MockAdresse;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
 import ch.vd.unireg.interfaces.organisation.data.Domicile;
-import ch.vd.unireg.interfaces.organisation.data.DonneesRC;
-import ch.vd.unireg.interfaces.organisation.data.DonneesRegistreIDE;
 import ch.vd.unireg.interfaces.organisation.data.FonctionOrganisation;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.interfaces.organisation.data.OrganisationHelper;
@@ -54,13 +52,13 @@ public class MockSiteOrganisation implements SiteOrganisation {
 	private final NavigableMap<RegDate, TypeDeSite> typeDeSite = new TreeMap<>();
 	private final NavigableMap<RegDate, FormeLegale> formeLegale = new TreeMap<>();
 	private final NavigableMap<RegDate, List<PublicationBusiness>> publicationsBusiness = new TreeMap<>();
-	private final DonneesRegistreIDE donneesRegistreIDE;
-	private final DonneesRC donneesRC;
+	private final MockDonneesRegistreIDE donneesRegistreIDE;
+	private final MockDonneesRC donneesRC;
 	private final NavigableMap<RegDate, Long> ideRemplacePar = new TreeMap<>();
 	private final NavigableMap<RegDate, Long> ideEnRemplacementDe = new TreeMap<>();
 	private final List<Adresse> adresses = new ArrayList<>();
 
-	public MockSiteOrganisation(long numeroSite, DonneesRegistreIDE donneesRegistreIDE, DonneesRC donneesRC) {
+	public MockSiteOrganisation(long numeroSite, MockDonneesRegistreIDE donneesRegistreIDE, MockDonneesRC donneesRC) {
 		this.numeroSite = numeroSite;
 		this.donneesRegistreIDE = donneesRegistreIDE;
 		this.donneesRC = donneesRC;
@@ -111,7 +109,7 @@ public class MockSiteOrganisation implements SiteOrganisation {
 	}
 
 	public void changeDomicile(RegDate date, TypeAutoriteFiscale typeAutoriteFiscale, Integer ofs) {
-		Pair payload = null;
+		Pair<TypeAutoriteFiscale, Integer> payload = null;
 		if (typeAutoriteFiscale != null && ofs != null) {
 			payload = Pair.of(typeAutoriteFiscale, ofs);
 		}
@@ -161,7 +159,7 @@ public class MockSiteOrganisation implements SiteOrganisation {
 	}
 
 	@Override
-	public DonneesRegistreIDE getDonneesRegistreIDE() {
+	public MockDonneesRegistreIDE getDonneesRegistreIDE() {
 		return donneesRegistreIDE;
 	}
 
@@ -186,7 +184,7 @@ public class MockSiteOrganisation implements SiteOrganisation {
 	}
 
 	@Override
-	public DonneesRC getDonneesRC() {
+	public MockDonneesRC getDonneesRC() {
 		return donneesRC;
 	}
 
