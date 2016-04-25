@@ -138,14 +138,6 @@ public abstract class Demenagement extends EvenementOrganisationInterneDeTraitem
 		// Changement d'établissement non supporté actuellement.
 		Assert.state(getEtablissementPrincipalAvant().getNumero().equals(etablissementPrincipalApres.getNumero()),
 		             "Changement de siège avec changement d'établissement principal. Veuillez traiter l'événement manuellement.");
-
-		/* Si la période du domicile fiscal est n'est pas ouverte, c'est qu'on a un souci. On est peut-être en train de rejouer l'événement. */
-		if (getSitePrincipalAvant() == null && getSiegeAvant().getDateFin() != null) {
-			erreurs.addErreur(String.format("L'organisation %s %s, connue du régistre fiscal Unireg, a son domicile principal déjà fermé dans ce dernier. Sommes-nous en train de rejouer l'événement?",
-			                                getOrganisation().getNumeroOrganisation(), getOrganisation().getNom(dateApres))
-			);
-		}
-
 	}
 
 	public RegDate getDateAvant() {

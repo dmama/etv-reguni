@@ -1352,7 +1352,7 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 	}
 
 	/**
-	 * Supprime toutes les personnes dont la date de naissances ne correspond pas avec celle spécifié dans le message
+	 * Supprime toutes les personnes dont la date de naissances ne correspond pas à celle spécifié dans le message
 	 *
 	 * @param list     la liste des personnes à fitrer
 	 * @param criteres les critères de filtre

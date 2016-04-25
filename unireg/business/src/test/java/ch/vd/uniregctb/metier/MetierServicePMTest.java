@@ -450,7 +450,7 @@ public class MetierServicePMTest extends BusinessTest {
 			Assert.fail("Une exception aurait dû sauter");
 		}
 		catch (RuntimeException e) {
-			Assert.assertEquals(String.format("ch.vd.uniregctb.metier.MetierServiceException: L'établissement principal %s n'a pas de domicile ou celui-ci ne correspond pas avec celui que rapporte le régistre civil.",
+			Assert.assertEquals(String.format("ch.vd.uniregctb.metier.MetierServiceException: L'établissement principal %s n'a pas de domicile ou celui-ci ne correspond pas à celui que rapporte le régistre civil.",
 			                                  FormatNumeroHelper.numeroCTBToDisplay(ids.etablissementId)), e.getMessage());
 		}
 

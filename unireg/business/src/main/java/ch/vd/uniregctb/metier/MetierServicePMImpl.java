@@ -191,13 +191,9 @@ public class MetierServicePMImpl implements MetierServicePM {
 		}
 		final DomicileEtablissement domicile = RangeUtil.getAssertLast(sortedDomiciles, date);
 
-		if (domicile != null && domicile.getNumeroOfsAutoriteFiscale().equals(organisation.getSiegePrincipal(date).getNoOfs())) {
-			etablissementPrincipal.setNumeroEtablissement(sitePrincipal.getNumeroSite());
-			tiersService.closeDomicileEtablissement(domicile, date.getOneDayBefore());
-			result.addEtablissementRattache(etablissementPrincipal);
-		} else {
-			throw new MetierServiceException(String.format("L'établissement principal %s n'a pas de domicile ou celui-ci ne correspond pas avec celui que rapporte le régistre civil.", FormatNumeroHelper.numeroCTBToDisplay(etablissementPrincipal.getNumero())));
-		}
+		etablissementPrincipal.setNumeroEtablissement(sitePrincipal.getNumeroSite());
+		tiersService.closeDomicileEtablissement(domicile, date.getOneDayBefore());
+		result.addEtablissementRattache(etablissementPrincipal);
 
 		// Eliminer les établissements secondaires déjà rattachés des listes.
 		Map<Long, SiteOrganisation> sitestoMatch = new HashMap<>();

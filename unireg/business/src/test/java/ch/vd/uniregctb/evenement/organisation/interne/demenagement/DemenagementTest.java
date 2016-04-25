@@ -502,7 +502,7 @@ public class DemenagementTest extends AbstractEvenementOrganisationProcessorTest
 				Etablissement etablissement = addEtablissement();
 				etablissement.setNumeroEtablissement(noSite);
 
-				addDomicileEtablissement(etablissement, RegDate.get(2010, 6, 24), null, MockCommune.Zurich);
+				addDomicileEtablissement(etablissement, RegDate.get(2010, 6, 24), RegDate.get(2015, 6, 23), MockCommune.Zurich);
 
 				addActiviteEconomique(entreprise, etablissement, RegDate.get(2010, 6, 24), null, true);
 
@@ -630,7 +630,6 @@ public class DemenagementTest extends AbstractEvenementOrganisationProcessorTest
 				MockDonneesRC rc = (MockDonneesRC) site.getDonneesRC();
 				rc.changeDateInscriptionVd(date(2015, 6, 24), date(2015, 6, 20));
 				addOrganisation(org);
-
 			}
 		});
 
@@ -639,9 +638,9 @@ public class DemenagementTest extends AbstractEvenementOrganisationProcessorTest
 		doInNewTransactionAndSession(new TransactionCallback<Entreprise>() {
 			@Override
 			public Entreprise doInTransaction(TransactionStatus transactionStatus) {
-				Entreprise entreprise = addEntrepriseConnueAuCivil(noOrganisation);
+				Entreprise entreprise = addEntrepriseInconnueAuCivil();
+				addRaisonSociale(entreprise, date(2010, 6, 24), null, "Synergy SA");
 				Etablissement etablissement = addEtablissement();
-				etablissement.setNumeroEtablissement(noSite);
 
 				addDomicileEtablissement(etablissement, RegDate.get(2010, 6, 24), null, MockCommune.Zurich);
 
@@ -655,6 +654,8 @@ public class DemenagementTest extends AbstractEvenementOrganisationProcessorTest
 				return entreprise;
 			}
 		});
+
+		globalTiersIndexer.sync();
 
 		// Création de l'événement
 		final Long noEvenement = 12344321L;
@@ -747,127 +748,6 @@ public class DemenagementTest extends AbstractEvenementOrganisationProcessorTest
 					                             Assert.assertEquals(date(2015, 6, 20), eff.getForFiscal().getDateDebut());
 				                             }
 
-				                             return null;
-			                             }
-		                             }
-		);
-	}
-
-	@Test(timeout = 1000000L)
-	public void testDemenagementArriveeNouveauRCEntFailDejaFerme() throws Exception {
-
-		/*
-		Cas de redondance
-		 */
-
-		// Mise en place service mock
-		final Long noOrganisation = 101202100L;
-		final Long noSite = noOrganisation + 1000000;
-
-		serviceOrganisation.setUp(new MockServiceOrganisation() {
-			@Override
-			protected void init() {
-				final MockOrganisation org = MockOrganisationFactory.createOrganisation(noOrganisation, noSite, "Synergy SA", RegDate.get(2015, 6, 24), null, FormeLegale.N_0106_SOCIETE_ANONYME,
-				                                                                        TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Morges.getNoOFS(), StatusInscriptionRC.ACTIF,  date(2010, 6, 24),
-				                                                                        StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE);
-
-				MockSiteOrganisation site = (MockSiteOrganisation) org.getSitePrincipaux().get(0).getPayload();
-				MockDonneesRC rc = (MockDonneesRC) site.getDonneesRC();
-				rc.changeDateInscriptionVd(date(2015, 6, 24), date(2015, 6, 20));
-				addOrganisation(org);
-
-			}
-		});
-
-		// Création de l'entreprise
-
-		doInNewTransactionAndSession(new TransactionCallback<Entreprise>() {
-			@Override
-			public Entreprise doInTransaction(TransactionStatus transactionStatus) {
-				Entreprise entreprise = addEntrepriseConnueAuCivil(noOrganisation);
-				Etablissement etablissement = addEtablissement();
-				etablissement.setNumeroEtablissement(noSite);
-
-				addDomicileEtablissement(etablissement, RegDate.get(2010, 6, 24), RegDate.get(2015, 6, 19), MockCommune.Zurich);
-
-				addActiviteEconomique(entreprise, etablissement, RegDate.get(2010, 6, 24), null, true);
-
-				addRegimeFiscalVD(entreprise, date(2010, 6, 24), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(entreprise, date(2010, 6, 24), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addBouclement(entreprise, date(2010, 6, 24), DayMonth.get(12, 31), 12);
-				addForPrincipal(entreprise, RegDate.get(2010, 6, 24), MotifFor.DEBUT_EXPLOITATION, RegDate.get(2015, 6, 19), MotifFor.ARRIVEE_HC,
-				                MockCommune.Zurich.getNoOFS(), TypeAutoriteFiscale.COMMUNE_HC, MotifRattachement.DOMICILE, GenreImpot.BENEFICE_CAPITAL);
-				addForPrincipal(entreprise, RegDate.get(2015, 6, 20), MotifFor.ARRIVEE_HC, null, null,
-				                MockCommune.Morges.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, GenreImpot.BENEFICE_CAPITAL);
-				return entreprise;
-			}
-		});
-
-		// Création de l'événement
-		final Long noEvenement = 12344321L;
-
-		// Persistence événement
-		doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus transactionStatus) {
-				final EvenementOrganisation event = createEvent(noEvenement, noOrganisation, TypeEvenementOrganisation.FOSC_NOUVELLE_ENTREPRISE, RegDate.get(2015, 6, 24), A_TRAITER);
-				return hibernateTemplate.merge(event).getId();
-			}
-		});
-
-		// Traitement synchrone de l'événement
-		traiterEvenements(noOrganisation);
-
-		// Vérification du traitement de l'événement
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			                             @Override
-			                             public Object doInTransaction(TransactionStatus status) {
-
-				                             final EvenementOrganisation evt = getUniqueEvent(noEvenement);
-				                             Assert.assertNotNull(evt);
-				                             Assert.assertEquals(EtatEvenementOrganisation.EN_ERREUR, evt.getEtat());
-
-				                             final Entreprise entreprise = tiersDAO.getEntrepriseByNumeroOrganisation(evt.getNoOrganisation());
-
-				                             final Etablissement etablissement = tiersService.getEtablissementsPrincipauxEntreprise(entreprise).get(0).getPayload();
-				                             Assert.assertNotNull(etablissement);
-
-				                             {
-					                             ForFiscalPrincipal forFiscalPrincipalPrecedant = (ForFiscalPrincipal) entreprise.getForsFiscauxValidAt(RegDate.get(2010, 6, 24)).get(0);
-					                             Assert.assertEquals(RegDate.get(2010, 6, 24), forFiscalPrincipalPrecedant.getDateDebut());
-					                             Assert.assertEquals(RegDate.get(2015, 6, 19), forFiscalPrincipalPrecedant.getDateFin());
-					                             Assert.assertEquals(GenreImpot.BENEFICE_CAPITAL, forFiscalPrincipalPrecedant.getGenreImpot());
-					                             Assert.assertEquals(MockCommune.Zurich.getNoOFS(), forFiscalPrincipalPrecedant.getNumeroOfsAutoriteFiscale().intValue());
-					                             Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_HC, forFiscalPrincipalPrecedant.getTypeAutoriteFiscale());
-					                             Assert.assertEquals(MotifFor.DEBUT_EXPLOITATION, forFiscalPrincipalPrecedant.getMotifOuverture());
-					                             Assert.assertEquals(MotifFor.ARRIVEE_HC, forFiscalPrincipalPrecedant.getMotifFermeture());
-				                             }
-				                             {
-					                             ForFiscalPrincipal forFiscalPrincipalNouveau = (ForFiscalPrincipal) entreprise.getForsFiscauxValidAt(RegDate.get(2015, 6, 24)).get(0);
-					                             Assert.assertEquals(RegDate.get(2015, 6, 20), forFiscalPrincipalNouveau.getDateDebut());
-					                             Assert.assertNull(forFiscalPrincipalNouveau.getDateFin());
-					                             Assert.assertEquals(GenreImpot.BENEFICE_CAPITAL, forFiscalPrincipalNouveau.getGenreImpot());
-					                             Assert.assertEquals(MockCommune.Morges.getNoOFS(), forFiscalPrincipalNouveau.getNumeroOfsAutoriteFiscale().intValue());
-					                             Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, forFiscalPrincipalNouveau.getTypeAutoriteFiscale());
-					                             Assert.assertEquals(MotifFor.ARRIVEE_HC, forFiscalPrincipalNouveau.getMotifOuverture());
-					                             Assert.assertNull(forFiscalPrincipalNouveau.getMotifFermeture());
-				                             }
-
-				                             final Bouclement bouclement = entreprise.getBouclements().iterator().next();
-				                             Assert.assertEquals(2010, bouclement.getDateDebut().year());
-				                             Assert.assertEquals(DayMonth.get(12, 31), bouclement.getAncrage());
-				                             Assert.assertEquals(12, bouclement.getPeriodeMois());
-
-				                             Assert.assertEquals(null, entreprise.getDateDebutPremierExerciceCommercial());
-
-				                             // vérification des événements fiscaux
-				                             final List<EvenementFiscal> evtsFiscaux = evtFiscalDAO.getAll();
-				                             Assert.assertNotNull(evtsFiscaux);
-				                             Assert.assertEquals(0, evtsFiscaux.size());
-
-				                             Assert.assertEquals(String.format("L'organisation %d Synergy SA, connue du régistre fiscal Unireg, a son domicile principal déjà fermé dans ce dernier. Sommes-nous en train de rejouer l'événement?",
-				                                                               noOrganisation),
-				                                                 evt.getErreurs().get(1).getMessage());
 				                             return null;
 			                             }
 		                             }

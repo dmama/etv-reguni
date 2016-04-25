@@ -35,6 +35,11 @@ public abstract class DonneeCivileEntreprise extends HibernateDateRangeEntity im
 		super(dateDebut, dateFin);
 	}
 
+	public DonneeCivileEntreprise(DonneeCivileEntreprise source) {
+		super(source.getDateDebut(), source.getDateFin());
+		this.setEntreprise(source.getEntreprise());
+	}
+
 	@Transient
 	@Override
 	public Object getKey() {

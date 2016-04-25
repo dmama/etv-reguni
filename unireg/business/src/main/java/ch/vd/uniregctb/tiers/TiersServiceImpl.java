@@ -6510,4 +6510,85 @@ public class TiersServiceImpl implements TiersService {
 		}
 		return null;
 	}
+
+	@Override
+	public void appliqueDonneesCivilesSurPeriode(Entreprise entreprise, DateRange range, RegDate dateValeur) throws TiersException {
+		Assert.isTrue(entreprise.isConnueAuCivil());
+		Assert.isTrue(range.getDateDebut() != null && range.getDateFin() != null);
+		Assert.isTrue(dateValeur != null);
+
+		/* Récupération des données civiles pour la date. */
+		final Organisation organisation = serviceOrganisationService.getOrganisationHistory(entreprise.getNumeroEntreprise());
+		final DateRanged<SiteOrganisation> sitePrincipal = organisation.getSitePrincipal(dateValeur);
+		if (sitePrincipal == null) {
+			throw new TiersException(String.format("L'organisation %d n'a pas de sitePrincipal principal à la date demandée %s.", organisation.getNumeroOrganisation(), RegDateHelper
+					.dateToDisplayString(dateValeur)));
+		}
+
+		final Etablissement etablissementPrincipal = tiersDAO.getEtablissementByNumeroSite(sitePrincipal.getPayload().getNumeroSite());
+
+		final Domicile domicileCivil = organisation.getSiegePrincipal(dateValeur);
+		final List<DomicileEtablissement> domicilesFiscaux = etablissementPrincipal.getSortedDomiciles(false);
+		Set<DomicileEtablissement> domicilesFiscauxASauver = SurchargeDonneesCivilesHelper.tronconneSurchargeFiscale(range, dateValeur, domicilesFiscaux, "domicile");
+		for (DomicileEtablissement domicile : domicilesFiscauxASauver) {
+			tiersDAO.addAndSave(etablissementPrincipal, domicile);
+		}
+		if (domicileCivil != null) {
+			tiersDAO.addAndSave(etablissementPrincipal, new DomicileEtablissement(range.getDateDebut(), range.getDateFin(), domicileCivil.getTypeAutoriteFiscale(), domicileCivil.getNoOfs(), etablissementPrincipal));
+		}
+
+		final String raisonSocialeCivile = organisation.getNom(dateValeur);
+		final List<RaisonSocialeFiscaleEntreprise> raisonsSocialesFiscales = entreprise.getRaisonsSocialesNonAnnuleesTriees();
+		Set<RaisonSocialeFiscaleEntreprise> raisonsSocialesASauver = SurchargeDonneesCivilesHelper.tronconneSurchargeFiscale(range, dateValeur, raisonsSocialesFiscales, "raison sociale");
+		for (RaisonSocialeFiscaleEntreprise raisonSociale : raisonsSocialesASauver) {
+			tiersDAO.addAndSave(entreprise, raisonSociale);
+		}
+		if (raisonSocialeCivile != null) {
+			tiersDAO.addAndSave(entreprise, new RaisonSocialeFiscaleEntreprise(range.getDateDebut(), range.getDateFin(), raisonSocialeCivile));
+		}
+
+		final FormeLegale formeLegaleCivile = organisation.getFormeLegale(dateValeur);
+		final List<FormeJuridiqueFiscaleEntreprise> formesJuridiquesFiscales = entreprise.getFormesJuridiquesNonAnnuleesTriees();
+		Set<FormeJuridiqueFiscaleEntreprise> formesJuridiquesASauver = SurchargeDonneesCivilesHelper.tronconneSurchargeFiscale(range, dateValeur, formesJuridiquesFiscales, "forme juridique");
+		for (FormeJuridiqueFiscaleEntreprise formeJuridique : formesJuridiquesASauver) {
+			tiersDAO.addAndSave(entreprise, formeJuridique);
+		}
+		if (formeLegaleCivile != null) {
+			tiersDAO.addAndSave(entreprise, new FormeJuridiqueFiscaleEntreprise(range.getDateDebut(), range.getDateFin(), FormeJuridiqueEntreprise.fromCode(formeLegaleCivile.getCode())));
+		}
+
+		final Capital capitalCivil = organisation.getCapital(dateValeur);
+		final List<CapitalFiscalEntreprise> capitaux = entreprise.getCapitauxNonAnnulesTries();
+		Set<CapitalFiscalEntreprise> capitauxASauver = SurchargeDonneesCivilesHelper.tronconneSurchargeFiscale(range, dateValeur, capitaux, "capital");
+		for (CapitalFiscalEntreprise capitalFiscal : capitauxASauver) {
+			tiersDAO.addAndSave(entreprise, capitalFiscal);
+		}
+		if (capitalCivil != null) {
+			tiersDAO.addAndSave(entreprise,
+			                    new CapitalFiscalEntreprise(range.getDateDebut(), range.getDateFin(), new MontantMonetaire(capitalCivil.getCapitalLibere().longValue(), capitalCivil.getDevise())));
+		}
+	}
+
+	@Override
+	public void appliqueDonneesCivilesSurPeriode(Etablissement etablissement, DateRange range, RegDate dateValeur) throws TiersException {
+		Assert.isTrue(etablissement.isConnuAuCivil());
+		Assert.isTrue(range.getDateDebut() != null && range.getDateFin() != null);
+		Assert.isTrue(dateValeur != null);
+
+		/* Récupération des données civiles pour la date. */
+		final Long noOrganisationPourSite = serviceOrganisationService.getOrganisationPourSite(etablissement.getNumeroEtablissement());
+		final Organisation organisation = serviceOrganisationService.getOrganisationHistory(noOrganisationPourSite);
+		final SiteOrganisation site = organisation.getSiteForNo(etablissement.getNumeroEtablissement());
+		if (site == null) {
+			throw new TiersException(String.format("Le site %d n'a pas été trouvé!", etablissement.getNumeroEtablissement()));
+		}
+
+		final Domicile domicileCivil = organisation.getSiegePrincipal(dateValeur);
+		final List<DomicileEtablissement> domicilesFiscaux = etablissement.getSortedDomiciles(false);
+		Set<DomicileEtablissement> domicilesFiscauxASauver = SurchargeDonneesCivilesHelper.tronconneSurchargeFiscale(range, dateValeur, domicilesFiscaux, "domicile");
+		for (DomicileEtablissement domicile : domicilesFiscauxASauver) {
+			tiersDAO.addAndSave(etablissement, domicile);
+		}
+		tiersDAO.addAndSave(etablissement, new DomicileEtablissement(range.getDateDebut(), range.getDateFin(), domicileCivil.getTypeAutoriteFiscale(), domicileCivil.getNoOfs(), etablissement));
+	}
 }
