@@ -39,7 +39,18 @@ public class DemenagementArriveeDepartVD extends Demenagement {
 		if (getSiegeAvant().getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD &&
 				getSiegeApres().getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_HC) {
 			motifFor = MotifFor.DEPART_HC;
-			dateDebutNouveauSiege = getDateApres(); // FIXME: Doit etre la date de radiation RC VD [-1 ?]
+			if (getSitePrincipalApres().isInscritAuRC(getDateApres())) {
+				final RegDate dateRadiationRCVd = getSitePrincipalApres().getDateRadiationRCVd(getDateApres());
+				if (dateRadiationRCVd == null) {
+					throw new EvenementOrganisationException("Date de radiation au régistre vaudois du commerce introuvable pour l'établissement principal en partance.");
+				}
+				dateDebutNouveauSiege = dateRadiationRCVd;
+			} else {
+				dateDebutNouveauSiege = getDateApres();
+			}
+			if (dateDebutNouveauSiege.isBefore(getDateEvt())) {
+				appliqueDonneesCivilesSurPeriode(getEntreprise(), new DateRangeHelper.Range(dateDebutNouveauSiege, getDateEvt().getOneDayBefore()), getDateEvt(), warnings, suivis);
+			}
 		} else {
 		if (getSiegeAvant().getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_HC &&
 				getSiegeApres().getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
@@ -56,13 +67,13 @@ public class DemenagementArriveeDepartVD extends Demenagement {
 			if (getEntreprise().getDernierForFiscalPrincipal() == null) {
 				regleDateDebutPremierExerciceCommercial(getEntreprise(), getDateApres(), suivis);
 			}
+			if (dateDebutNouveauSiege.isBefore(getDateEvt())) {
+				appliqueDonneesCivilesSurPeriode(getEntreprise(), new DateRangeHelper.Range(dateDebutNouveauSiege, getDateEvt().getOneDayBefore()), getDateEvt(), warnings, suivis);
+			}
 		} else
 			throw new EvenementOrganisationException(String.format("Une combinaison non supportée de déplacement de siège est survenue. type avant: %s, type après: %s", getSiegeAvant().getTypeAutoriteFiscale(), getSiegeApres().getTypeAutoriteFiscale()));
 		}
 
-		if (dateDebutNouveauSiege.isBefore(getDateEvt())) {
-			appliqueDonneesCivilesSurPeriode(getEntreprise(), new DateRangeHelper.Range(dateDebutNouveauSiege, getDateEvt().getOneDayBefore()), getDateEvt(), warnings, suivis);
-		}
 
 		effectueChangementSiege(motifFor, dateDebutNouveauSiege, warnings, suivis);
 	}
