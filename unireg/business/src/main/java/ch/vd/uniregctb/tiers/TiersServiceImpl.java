@@ -6529,7 +6529,7 @@ public class TiersServiceImpl implements TiersService {
 
 		final Domicile domicileCivil = organisation.getSiegePrincipal(dateValeur);
 		final List<DomicileEtablissement> domicilesFiscaux = etablissementPrincipal.getSortedDomiciles(false);
-		Set<DomicileEtablissement> domicilesFiscauxASauver = SurchargeDonneesCivilesHelper.tronconneSurchargeFiscale(range, dateValeur, domicilesFiscaux, "domicile");
+		Set<DomicileEtablissement> domicilesFiscauxASauver = SurchargeDonneesCivilesHelper.tronqueSurchargeFiscale(range, dateValeur, domicilesFiscaux, "domicile");
 		for (DomicileEtablissement domicile : domicilesFiscauxASauver) {
 			tiersDAO.addAndSave(etablissementPrincipal, domicile);
 		}
@@ -6539,7 +6539,7 @@ public class TiersServiceImpl implements TiersService {
 
 		final String raisonSocialeCivile = organisation.getNom(dateValeur);
 		final List<RaisonSocialeFiscaleEntreprise> raisonsSocialesFiscales = entreprise.getRaisonsSocialesNonAnnuleesTriees();
-		Set<RaisonSocialeFiscaleEntreprise> raisonsSocialesASauver = SurchargeDonneesCivilesHelper.tronconneSurchargeFiscale(range, dateValeur, raisonsSocialesFiscales, "raison sociale");
+		Set<RaisonSocialeFiscaleEntreprise> raisonsSocialesASauver = SurchargeDonneesCivilesHelper.tronqueSurchargeFiscale(range, dateValeur, raisonsSocialesFiscales, "raison sociale");
 		for (RaisonSocialeFiscaleEntreprise raisonSociale : raisonsSocialesASauver) {
 			tiersDAO.addAndSave(entreprise, raisonSociale);
 		}
@@ -6549,7 +6549,7 @@ public class TiersServiceImpl implements TiersService {
 
 		final FormeLegale formeLegaleCivile = organisation.getFormeLegale(dateValeur);
 		final List<FormeJuridiqueFiscaleEntreprise> formesJuridiquesFiscales = entreprise.getFormesJuridiquesNonAnnuleesTriees();
-		Set<FormeJuridiqueFiscaleEntreprise> formesJuridiquesASauver = SurchargeDonneesCivilesHelper.tronconneSurchargeFiscale(range, dateValeur, formesJuridiquesFiscales, "forme juridique");
+		Set<FormeJuridiqueFiscaleEntreprise> formesJuridiquesASauver = SurchargeDonneesCivilesHelper.tronqueSurchargeFiscale(range, dateValeur, formesJuridiquesFiscales, "forme juridique");
 		for (FormeJuridiqueFiscaleEntreprise formeJuridique : formesJuridiquesASauver) {
 			tiersDAO.addAndSave(entreprise, formeJuridique);
 		}
@@ -6559,7 +6559,7 @@ public class TiersServiceImpl implements TiersService {
 
 		final Capital capitalCivil = organisation.getCapital(dateValeur);
 		final List<CapitalFiscalEntreprise> capitaux = entreprise.getCapitauxNonAnnulesTries();
-		Set<CapitalFiscalEntreprise> capitauxASauver = SurchargeDonneesCivilesHelper.tronconneSurchargeFiscale(range, dateValeur, capitaux, "capital");
+		Set<CapitalFiscalEntreprise> capitauxASauver = SurchargeDonneesCivilesHelper.tronqueSurchargeFiscale(range, dateValeur, capitaux, "capital");
 		for (CapitalFiscalEntreprise capitalFiscal : capitauxASauver) {
 			tiersDAO.addAndSave(entreprise, capitalFiscal);
 		}
@@ -6585,7 +6585,7 @@ public class TiersServiceImpl implements TiersService {
 
 		final Domicile domicileCivil = organisation.getSiegePrincipal(dateValeur);
 		final List<DomicileEtablissement> domicilesFiscaux = etablissement.getSortedDomiciles(false);
-		Set<DomicileEtablissement> domicilesFiscauxASauver = SurchargeDonneesCivilesHelper.tronconneSurchargeFiscale(range, dateValeur, domicilesFiscaux, "domicile");
+		Set<DomicileEtablissement> domicilesFiscauxASauver = SurchargeDonneesCivilesHelper.tronqueSurchargeFiscale(range, dateValeur, domicilesFiscaux, "domicile");
 		for (DomicileEtablissement domicile : domicilesFiscauxASauver) {
 			tiersDAO.addAndSave(etablissement, domicile);
 		}

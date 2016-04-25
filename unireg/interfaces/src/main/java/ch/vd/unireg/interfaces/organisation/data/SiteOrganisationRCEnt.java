@@ -167,6 +167,16 @@ public class SiteOrganisationRCEnt implements Serializable, SiteOrganisation {
 	}
 
 	@Override
+	public RegDate getDateRadiationRC(RegDate date) {
+		return OrganisationHelper.valueForDate(this.getDonneesRC().getDateRadiation(), date);
+	}
+
+	@Override
+	public RegDate getDateRadiationRCVd(RegDate date) {
+		return OrganisationHelper.valueForDate(this.getDonneesRC().getDateRadiationVd(), date);
+	}
+
+	@Override
 	public List<Adresse> getAdresses() {
 		return OrganisationHelper.getAdressesPourSite(this);
 	}

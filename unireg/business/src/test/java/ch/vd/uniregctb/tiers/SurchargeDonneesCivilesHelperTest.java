@@ -28,7 +28,7 @@ public class SurchargeDonneesCivilesHelperTest extends WithoutSpringTest {
 		final RegDate dateValeur = date(2016, 4, 11);
 		final List<DomicileEtablissement> entites =  Collections.singletonList(new DomicileEtablissement(date(2016, 4, 1), date(2016, 4, 10), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, 119, null));
 
-		Set<DomicileEtablissement> aSauver = SurchargeDonneesCivilesHelper.tronconneSurchargeFiscale(range, dateValeur, entites, "domicile");
+		Set<DomicileEtablissement> aSauver = SurchargeDonneesCivilesHelper.tronqueSurchargeFiscale(range, dateValeur, entites, "domicile");
 
 		Assert.isTrue(entites.size() == 1);
 		Assert.isTrue(entites.get(0).isAnnule());
@@ -46,7 +46,7 @@ public class SurchargeDonneesCivilesHelperTest extends WithoutSpringTest {
 		final RegDate dateValeur = date(2016, 4, 11);
 		final List<DomicileEtablissement> entites =  Collections.singletonList(new DomicileEtablissement(date(2016, 4, 9), date(2016, 4, 10), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, 119, null));
 
-		Set<DomicileEtablissement> aSauver = SurchargeDonneesCivilesHelper.tronconneSurchargeFiscale(range, dateValeur, entites, "domicile");
+		Set<DomicileEtablissement> aSauver = SurchargeDonneesCivilesHelper.tronqueSurchargeFiscale(range, dateValeur, entites, "domicile");
 
 		Assert.isTrue(entites.size() == 1);
 		Assert.isTrue(entites.get(0).isAnnule());
@@ -64,7 +64,7 @@ public class SurchargeDonneesCivilesHelperTest extends WithoutSpringTest {
 		final RegDate dateValeur = date(2016, 4, 11);
 		final List<DomicileEtablissement> entites =  Collections.emptyList();
 
-		Set<DomicileEtablissement> aSauver = SurchargeDonneesCivilesHelper.tronconneSurchargeFiscale(range, dateValeur, entites, "domicile");
+		Set<DomicileEtablissement> aSauver = SurchargeDonneesCivilesHelper.tronqueSurchargeFiscale(range, dateValeur, entites, "domicile");
 
 		Assert.isTrue(entites.isEmpty());
 		Assert.isTrue(aSauver.isEmpty());
@@ -83,7 +83,7 @@ public class SurchargeDonneesCivilesHelperTest extends WithoutSpringTest {
 		final DomicileEtablissement domicile2 = new DomicileEtablissement(date(2016, 4, 9), date(2016, 4, 10), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, 119, null);
 		entites.add(domicile2);
 
-		Set<DomicileEtablissement> aSauver = SurchargeDonneesCivilesHelper.tronconneSurchargeFiscale(range, dateValeur, entites, "domicile");
+		Set<DomicileEtablissement> aSauver = SurchargeDonneesCivilesHelper.tronqueSurchargeFiscale(range, dateValeur, entites, "domicile");
 
 		Assert.isTrue(entites.size() == 2);
 		Assert.isEqual(date(2016, 4, 1), domicile1.getDateDebut());
@@ -112,7 +112,7 @@ public class SurchargeDonneesCivilesHelperTest extends WithoutSpringTest {
 		entites.add(domicile2);
 
 		try {
-			 SurchargeDonneesCivilesHelper.tronconneSurchargeFiscale(range, dateValeur, entites, "domicile");
+			 SurchargeDonneesCivilesHelper.tronqueSurchargeFiscale(range, dateValeur, entites, "domicile");
 		} catch (TiersException e) {
 			Assert.isEqual(
 					String.format("Impossible d'appliquer les données civiles car une surcharge fiscale de domicile présente en date du %s, après la plage demandée.",

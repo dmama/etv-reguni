@@ -11,6 +11,7 @@ import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.common.Duplicable;
 import ch.vd.uniregctb.common.HibernateDateRangeEntity;
 
@@ -19,16 +20,26 @@ import ch.vd.uniregctb.common.HibernateDateRangeEntity;
  */
 public class SurchargeDonneesCivilesHelper {
 
-	public static <T extends HibernateDateRangeEntity & Duplicable<T>> Set<T> tronconneSurchargeFiscale(DateRange range, RegDate dateValeur, List<T> entites, String descriptionType) throws TiersException {
+	/**
+	 * Tronque l'historique d'entités à la veille de la date de début du range. S'assure qu'il n'existe pas de données fiscales
+	 * en base ni à la date de valeur ni au lendemain de la date de fin du range.
+	 *
+	 * Les périodes incluses dans le range sont annulées et la période à cheval sur la date de début est tronquée à la veille.
+	 *
+	 * @return La liste des périodes à sauver (une seule en réalité avec cette méthode)
+	 */
+	public static <T extends HibernateDateRangeEntity & Duplicable<T>> Set<T> tronqueSurchargeFiscale(DateRange range, RegDate dateValeur, List<T> entites, String descriptionType) throws TiersException {
 		if (!entites.isEmpty()) {
+			Assert.isFalse(range.isValidAt(dateValeur));
 			/*
-			   Condition pour fonctionner: à la date, il n'y a pas d'override. On s'attend à en avoir jusqu'à la veille pour
+			   Condition pour fonctionner: à la date de valeur, il n'y a pas d'override. On s'attend à en avoir jusqu'à la veille pour
 			   les entreprises déjà connues d'Unireg.
 			 */
-			final T domicileFiscal = DateRangeHelper.rangeAt(entites, dateValeur);
-			if (domicileFiscal != null) {
+			final T domicileFiscalDateValeur = DateRangeHelper.rangeAt(entites, dateValeur);
+			final T domicileFiscalApres = DateRangeHelper.rangeAt(entites, range.getDateFin().getOneDayAfter());
+			if (domicileFiscalDateValeur != null || domicileFiscalApres != null) {
 				throw new TiersException(
-						String.format("Impossible d'appliquer les données civiles car une surcharge fiscale de %s présente en date du %s, après la plage demandée.",
+						String.format("Impossible d'appliquer les données civiles car une surcharge fiscale de %s présente en date du %s.",
 						              descriptionType,
 						              RegDateHelper.dateToDisplayString(dateValeur)));
 			}
@@ -40,10 +51,17 @@ public class SurchargeDonneesCivilesHelper {
 		return Collections.emptySet();
 	}
 
+	/**
+	 * Crée un espace  dans un historique de périodes. Les périodes à cheval sont recréées avant et après et les périodes incluses
+	 * sont annulées.
+	 */
 	@NotNull
 	private static <T extends HibernateDateRangeEntity & Duplicable<T>> Set<T> creeUnEspace(DateRange range, List<T> entites) {
 		final Set<T> aSauver = new HashSet<>();
 		final List<DateRange> intersectionsDomiciles = DateRangeHelper.intersections(range, entites);
+		if (intersectionsDomiciles == null) {
+			return Collections.emptySet();
+		}
 		for (DateRange intersection : intersectionsDomiciles) {
 		/* Récupérer l'original */
 			final T dom = DateRangeHelper.rangeAt(entites, intersection.getDateDebut());
