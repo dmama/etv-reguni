@@ -402,7 +402,7 @@ public class QueryConstructor {
 
 	public void addContrainteAbsorptionEntreprisePassee(BooleanQuery fullQuery) {
 		if (criteria.getCorporationMergeResult() != null) {
-			final TermQuery q = new TermQuery(new Term(TiersIndexableData.IS_CORPORATION_MERGE_RESULT, criteria.getCorporationMergeResult() ? Constants.OUI : Constants.NON));
+			final TermQuery q = new TermQuery(new Term(TiersIndexableData.CORPORATION_IS_MERGE_RESULT, criteria.getCorporationMergeResult() ? Constants.OUI : Constants.NON));
 			fullQuery.add(q, must);
 		}
 	}

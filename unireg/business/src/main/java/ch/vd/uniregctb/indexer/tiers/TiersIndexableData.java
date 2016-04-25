@@ -80,7 +80,9 @@ public class TiersIndexableData extends IndexableData {
 	public static final String ETAT_ENTREPRISE_COURANT = "S_ETAT_ENTREPRISE_COURANT";
 	public static final String ETATS_ENTREPRISE = "S_ETATS_ENTREPRISE";
 	public static final String INSCRIPTION_RC = "S_INSCRIPTION_RC";
-	public static final String IS_CORPORATION_MERGE_RESULT = "S_CORP_MERGE_RESULT";
+	public static final String CORPORATION_IS_MERGE_RESULT = "S_CORP_MERGE_RESULT";
+	public static final String CORPORATION_WAS_SPLIT = "S_CORP_SPLIT";
+	public static final String CORPORATION_TRANSFERED_PATRIMONY = "S_CORP_TRANSFERED_PATRIMONY";
 	public static final String CONNU_CIVIL = "S_CONNU_CIVIL";
 
 	// champs de stockage (pas recherchables)
@@ -139,6 +141,8 @@ public class TiersIndexableData extends IndexableData {
 	private TypeEtatInscriptionRC etatInscriptionRC;
 	private Boolean corporationMergeResult;     // vrai si l'entreprise a été par le passé le résultat d'une fusion d'entreprises
 	private Boolean connuAuCivil;               // vrai si la personne physique, l'entreprise ou l'établissement est connu au civil, false sinon (vide si non-applicable)
+	private Boolean corporationSplit;           // vrai si l'entreprise a subi une scission
+	private Boolean corporationTransferedPatrimony; // vrai si l'entreprise a émis (= transmis) du patrimoine à une autre entreprise
 
 	// champs de stockage (pas recherchables)
 	private String nom1;
@@ -204,8 +208,10 @@ public class TiersIndexableData extends IndexableData {
 		addNotAnalyzedValue(d, TiersIndexableData.ETAT_ENTREPRISE_COURANT, etatEntrepriseCourant, ENUM_RENDERER);
 		addMultiValuedNotAnalyzedValue(d, TiersIndexableData.ETATS_ENTREPRISE, etatsEntreprise, ENUM_RENDERER);
 		addNotAnalyzedValue(d, TiersIndexableData.INSCRIPTION_RC, etatInscriptionRC, ENUM_RENDERER);
-		addNotAnalyzedValue(d, TiersIndexableData.IS_CORPORATION_MERGE_RESULT, corporationMergeResult, BOOLEAN_RENDERER);
+		addNotAnalyzedValue(d, TiersIndexableData.CORPORATION_IS_MERGE_RESULT, corporationMergeResult, BOOLEAN_RENDERER);
 		addNotAnalyzedValue(d, TiersIndexableData.CONNU_CIVIL, connuAuCivil, BOOLEAN_RENDERER);
+		addNotAnalyzedValue(d, TiersIndexableData.CORPORATION_WAS_SPLIT, corporationSplit, BOOLEAN_RENDERER);
+		addNotAnalyzedValue(d, TiersIndexableData.CORPORATION_TRANSFERED_PATRIMONY, corporationTransferedPatrimony, BOOLEAN_RENDERER);
 
 		// on aggrège tous les valeurs utiles dans un seul champ pour une recherche de type google
 		addToutValues(d, numeros, nomRaison, autresNom, toSearchString(datesNaissanceInscriptionRC), forPrincipal, rue, npaCourrier, localiteEtPays, natureJuridique, navs11, navs13, ancienNumeroSourcier, categorieDebiteurIs, noSymic, ide);
@@ -750,6 +756,22 @@ public class TiersIndexableData extends IndexableData {
 
 	public void setCorporationMergeResult(Boolean corporationMergeResult) {
 		this.corporationMergeResult = corporationMergeResult;
+	}
+
+	public Boolean getCorporationSplit() {
+		return corporationSplit;
+	}
+
+	public void setCorporationSplit(Boolean corporationSplit) {
+		this.corporationSplit = corporationSplit;
+	}
+
+	public Boolean getCorporationTransferedPatrimony() {
+		return corporationTransferedPatrimony;
+	}
+
+	public void setCorporationTransferedPatrimony(Boolean corporationTransferedPatrimony) {
+		this.corporationTransferedPatrimony = corporationTransferedPatrimony;
 	}
 
 	public Boolean getConnuAuCivil() {

@@ -246,6 +246,8 @@ public abstract class PartyStrategy<T extends Party> {
 	                                                                                                                    TypeRapportEntreTiers.ASSUJETTISSEMENT_PAR_SUBSTITUTION,
 	                                                                                                                    TypeRapportEntreTiers.MANDAT,
 	                                                                                                                    TypeRapportEntreTiers.FUSION_ENTREPRISES,
+	                                                                                                                    TypeRapportEntreTiers.SCISSION_ENTREPRISE,
+	                                                                                                                    TypeRapportEntreTiers.TRANSFERT_PATRIMOINE,
 	                                                                                                                    TypeRapportEntreTiers.ADMINISTRATION_ENTREPRISE,
 	                                                                                                                    TypeRapportEntreTiers.SOCIETE_DIRECTION));
 

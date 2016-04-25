@@ -134,6 +134,27 @@ public class EntrepriseIndexable extends ContribuableIndexable<Entreprise> {
 			}
 		}
 		data.setCorporationMergeResult(isMergeResult);
+
+		// même chose pour les booléens "a été scindée" et "a transféré du patrimoine chez quelqu'un d'autre"
+		final Set<RapportEntreTiers> rapportsSujets = tiers.getRapportsSujet();
+		boolean isSplit = false;
+		boolean hasTransferedPatrimony = false;
+		if (rapportsSujets != null) {
+			for (RapportEntreTiers rapport : rapportsSujets) {
+				if (!rapport.isAnnule() && rapport.getType() == TypeRapportEntreTiers.SCISSION_ENTREPRISE) {
+					isSplit = true;
+				}
+				if (!rapport.isAnnule() && rapport.getType() == TypeRapportEntreTiers.TRANSFERT_PATRIMOINE) {
+					hasTransferedPatrimony = true;
+				}
+				if (isSplit && hasTransferedPatrimony) {
+					// plus vraiment de perpective de changement, ou bien ?
+					break;
+				}
+			}
+		}
+		data.setCorporationSplit(isSplit);
+		data.setCorporationTransferedPatrimony(hasTransferedPatrimony);
 	}
 
 	@Override
