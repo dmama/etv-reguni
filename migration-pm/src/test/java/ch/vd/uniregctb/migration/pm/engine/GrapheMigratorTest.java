@@ -6961,6 +6961,18 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 			final Etablissement etbPrincipal = uniregStore.getEntityFromDb(Etablissement.class, idEtablissementPrincipal.getValue());
 			Assert.assertNotNull(etbPrincipal);
 			Assert.assertEquals((Long) noCantonalEtablissementPrincipal, etbPrincipal.getNumeroEtablissement());
+
+			// mais le domicile doit l'être
+			final Set<DomicileEtablissement> domiciles = etbPrincipal.getDomiciles();
+			Assert.assertNotNull(domiciles);
+			Assert.assertEquals(1, domiciles.size());
+			final DomicileEtablissement domicile = domiciles.iterator().next();
+			Assert.assertNotNull(domicile);
+			Assert.assertFalse(domicile.isAnnule());
+			Assert.assertEquals(dateDebut, domicile.getDateDebut());
+			Assert.assertEquals(dateDebutDonneesCiviles.getOneDayBefore(), domicile.getDateFin());
+			Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, domicile.getTypeAutoriteFiscale());
+			Assert.assertEquals(Commune.LAUSANNE.getNoOfs(), domicile.getNumeroOfsAutoriteFiscale());
 		});
 
 		// vérification des messages de log
@@ -6981,7 +6993,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;" + noCantonalEntreprise + ";;;;;;;;;;;;;Données civiles d'établissement principal présentes dès le 05.12.2015, tous les sièges ultérieurs de RegPM seront ignorés.", msgs.get(9));
 			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;" + noCantonalEntreprise + ";;;;;;;;;;;;;Ré-utilisation de l'établissement principal " + FormatNumeroHelper.numeroCTBToDisplay(idEtablissementPrincipal.getValue()) + " identifié par son numéro cantonal.", msgs.get(10));
 			Assert.assertEquals("WARN;" + idEntreprise + ";Active;;" + noCantonalEntreprise + ";;;;;;;;;;;;;Entreprise clôturée fiscalement avant l'avènement des données RCEnt, pas de lien vers l'établissement principal généré après le 04.12.2015.", msgs.get(11));
-			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;" + noCantonalEntreprise + ";;;;;;;;;;;;;Domicile de l'établissement principal " + FormatNumeroHelper.numeroCTBToDisplay(idEtablissementPrincipal.getValue()) + " : [12.04.2005 -> ?] sur COMMUNE_OU_FRACTION_VD/5586.", msgs.get(12));
+			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;" + noCantonalEntreprise + ";;;;;;;;;;;;;Domicile de l'établissement principal " + FormatNumeroHelper.numeroCTBToDisplay(idEtablissementPrincipal.getValue()) + " : [12.04.2005 -> 04.12.2015] sur COMMUNE_OU_FRACTION_VD/5586.", msgs.get(12));
 			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;" + noCantonalEntreprise + ";;;;;;;;;;;;;Etat 'EN_FAILLITE' migré, dès le 04.08.2009.", msgs.get(13));
 			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;" + noCantonalEntreprise + ";;;;;;;;;;;;;Entreprise migrée : " + FormatNumeroHelper.numeroCTBToDisplay(idEntreprise) + ".", msgs.get(14));
 		}

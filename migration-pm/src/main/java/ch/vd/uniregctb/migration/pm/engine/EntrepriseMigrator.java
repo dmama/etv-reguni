@@ -3894,8 +3894,9 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 					.map(pair -> new DomicileEtablissement(pair.getLeft(), null, pair.getRight().getTypeAutoriteFiscale(), pair.getRight().getNumeroOfsAutoriteFiscale(), null))
 					.collect(Collectors.toList());
 
-			// ajout des dates de fin
-			assigneDatesFin(dateFinDonneesFiscales, domicilesBruts);
+			// ajout des dates de fin (même si le lien final n'est jamais fermé, le dernier domicile doit quand-même
+			// être fermé à la veille de l'apparition des données civiles)
+			assigneDatesFin(dateFinEtablissementFiscal, domicilesBruts);
 
 			// finalisation
 			domicilesBruts.stream()
