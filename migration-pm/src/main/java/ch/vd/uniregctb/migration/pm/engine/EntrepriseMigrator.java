@@ -53,6 +53,7 @@ import ch.vd.unireg.interfaces.common.Adresse;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.infra.data.Pays;
 import ch.vd.unireg.interfaces.organisation.ServiceOrganisationRaw;
+import ch.vd.unireg.interfaces.organisation.data.Capital;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
 import ch.vd.unireg.interfaces.organisation.data.Domicile;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
@@ -3497,7 +3498,24 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 			dateFinActiviteCapitaux = null;
 		}
 		else {
-			dateFinActiviteCapitaux = dateFinHistoireFiscale;
+			// [SIFISC-18948] si le civil fournit des données de capital, on laisse courrir la donnée fiscale de RegPM jusqu'à la veille de l'apparition de cette donnée
+			// (mais on laisse la veille de l'apparition des données de nom en absence totale de données de capital)
+			final RegDate veilleDateDebutCapitauxCivils;
+			final List<Capital> capitauxCivils = rcent.getCapitaux();
+			if (capitauxCivils != null) {
+				// trouvons la première date, et donc sa veille
+				veilleDateDebutCapitauxCivils = capitauxCivils.stream()
+						.map(Capital::getDateDebut)
+						.min(NullDateBehavior.EARLIEST::compare)
+						.map(RegDate::getOneDayBefore)
+						.orElse(null);
+			}
+			else {
+				// il n'y en a pas...
+				veilleDateDebutCapitauxCivils = null;
+			}
+
+			dateFinActiviteCapitaux = RegDateHelper.maximum(dateFinHistoireFiscale, veilleDateDebutCapitauxCivils, NullDateBehavior.EARLIEST);
 			if (dateFinActiviteCapitaux != null) {
 				mr.addMessage(LogCategory.DONNEES_CIVILES_REGPM, LogLevel.INFO,
 				              String.format("Les données de capital en provenance du registre civil font foi dès le %s (les données ultérieures de RegPM seront ignorées).",

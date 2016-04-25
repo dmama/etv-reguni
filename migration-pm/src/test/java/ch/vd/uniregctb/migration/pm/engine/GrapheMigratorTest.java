@@ -44,7 +44,6 @@ import ch.vd.unireg.interfaces.organisation.data.Capital;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.interfaces.organisation.data.TypeDeCapital;
 import ch.vd.unireg.interfaces.organisation.data.TypeDeSite;
-import ch.vd.unireg.interfaces.organisation.data.builder.DonneesRCBuilder;
 import ch.vd.unireg.interfaces.organisation.mock.MockServiceOrganisation;
 import ch.vd.unireg.interfaces.organisation.mock.data.MockDonneesRC;
 import ch.vd.unireg.interfaces.organisation.mock.data.MockDonneesRegistreIDE;
@@ -4610,9 +4609,8 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 			@Override
 			protected void init() {
 				final MockOrganisation org = addOrganisation(noCantonalEntreprise);
-				final MockSiteOrganisation site = addSite(org, noCantonalEtablissementPrincipal, dateChargementRCEnt, null, new DonneesRCBuilder()
-						.addCapital(new Capital(dateChargementRCEnt, null, TypeDeCapital.CAPITAL_SOCIAL, MontantMonetaire.CHF, BigDecimal.valueOf(400000L), "répartition ??"))
-						.build());
+				final MockSiteOrganisation site = addSite(org, noCantonalEtablissementPrincipal, dateChargementRCEnt, null, new MockDonneesRC());
+				site.getDonneesRC().addCapital(dateChargementRCEnt, null, new Capital(dateChargementRCEnt, null, TypeDeCapital.CAPITAL_SOCIAL, MontantMonetaire.CHF, BigDecimal.valueOf(400000L), "répartition ??"));
 				site.changeTypeDeSite(dateChargementRCEnt, TypeDeSite.ETABLISSEMENT_PRINCIPAL);
 				site.changeNom(dateChargementRCEnt, "Toto SA");
 				site.changeFormeLegale(dateChargementRCEnt, FormeLegale.N_0106_SOCIETE_ANONYME);
@@ -4859,9 +4857,8 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 			@Override
 			protected void init() {
 				final MockOrganisation org = addOrganisation(noCantonalEntreprise);
-				final MockSiteOrganisation sitePrincipal = addSite(org, noCantonalEtablissementPrincipal, dateChargementRCEnt, null, new DonneesRCBuilder()
-						.addCapital(new Capital(dateChargementRCEnt, null, TypeDeCapital.CAPITAL_SOCIAL, MontantMonetaire.CHF, BigDecimal.valueOf(400000L), "répartition ??"))
-						.build());
+				final MockSiteOrganisation sitePrincipal = addSite(org, noCantonalEtablissementPrincipal, dateChargementRCEnt, null, new MockDonneesRC());
+				sitePrincipal.getDonneesRC().addCapital(dateChargementRCEnt, null, new Capital(dateChargementRCEnt, null, TypeDeCapital.CAPITAL_SOCIAL, MontantMonetaire.CHF, BigDecimal.valueOf(400000L), "répartition ??"));
 				sitePrincipal.addSiege(dateChargementRCEnt, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Echallens.getNoOFS());
 				sitePrincipal.changeTypeDeSite(dateChargementRCEnt, TypeDeSite.ETABLISSEMENT_PRINCIPAL);
 				sitePrincipal.changeNom(dateChargementRCEnt, "Toto SA");
@@ -5016,9 +5013,8 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 			@Override
 			protected void init() {
 				final MockOrganisation org = addOrganisation(noCantonalEntreprise);
-				final MockSiteOrganisation sitePrincipal = addSite(org, noCantonalEtablissementPrincipal, dateChargementRCEnt, null, new DonneesRCBuilder()
-						.addCapital(new Capital(dateChargementRCEnt, null, TypeDeCapital.CAPITAL_SOCIAL, MontantMonetaire.CHF, BigDecimal.valueOf(400000L), "répartition ??"))
-						.build());
+				final MockSiteOrganisation sitePrincipal = addSite(org, noCantonalEtablissementPrincipal, dateChargementRCEnt, null, new MockDonneesRC());
+				sitePrincipal.getDonneesRC().addCapital(dateChargementRCEnt, null, new Capital(dateChargementRCEnt, null, TypeDeCapital.CAPITAL_SOCIAL, MontantMonetaire.CHF, BigDecimal.valueOf(400000L), "répartition ??"));
 				sitePrincipal.addSiege(dateChargementRCEnt, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Echallens.getNoOFS());
 				sitePrincipal.changeTypeDeSite(dateChargementRCEnt, TypeDeSite.ETABLISSEMENT_PRINCIPAL);
 				sitePrincipal.changeNom(dateChargementRCEnt, "Toto SA");
@@ -5197,9 +5193,8 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 			@Override
 			protected void init() {
 				final MockOrganisation org = addOrganisation(noCantonalEntreprise);
-				final MockSiteOrganisation sitePrincipal = addSite(org, noCantonalEtablissementPrincipal, dateChargementRCEnt, null, new DonneesRCBuilder()
-						.addCapital(new Capital(dateChargementRCEnt, null, TypeDeCapital.CAPITAL_SOCIAL, MontantMonetaire.CHF, BigDecimal.valueOf(400000L), "répartition ??"))
-						.build());
+				final MockSiteOrganisation sitePrincipal = addSite(org, noCantonalEtablissementPrincipal, dateChargementRCEnt, null, new MockDonneesRC());
+				sitePrincipal.getDonneesRC().addCapital(dateChargementRCEnt, null, new Capital(dateChargementRCEnt, null, TypeDeCapital.CAPITAL_SOCIAL, MontantMonetaire.CHF, BigDecimal.valueOf(400000L), "répartition ??"));
 				sitePrincipal.addSiege(dateChargementRCEnt, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Echallens.getNoOFS());
 				sitePrincipal.changeTypeDeSite(dateChargementRCEnt, TypeDeSite.ETABLISSEMENT_PRINCIPAL);
 				sitePrincipal.changeNom(dateChargementRCEnt, "Toto SA");
@@ -7094,6 +7089,210 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;" + noCantonal + ";;;;;;;;;;;;;Création de l'établissement principal " + FormatNumeroHelper.numeroCTBToDisplay(idEtablissementPrincipal.getValue()) + ".", msgs.get(11));
 			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;" + noCantonal + ";;;;;;;;;;;;;Domicile de l'établissement principal " + FormatNumeroHelper.numeroCTBToDisplay(idEtablissementPrincipal.getValue()) + " : [01.01.2009 -> ?] sur COMMUNE_OU_FRACTION_VD/5586.", msgs.get(12));
 			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;" + noCantonal + ";;;;;;;;;;;;;Entreprise migrée : " + FormatNumeroHelper.numeroCTBToDisplay(idEntreprise) + ".", msgs.get(13));
+		}
+	}
+
+	/**
+	 * [SIFISC-18948] si les données FOSC ne sont chargées dans RCEnt (28.03.2016, par exemple) que quelques mois après les données IDE (05.12.2015, toujours par exemple)
+	 * et que ce chargement FOSC apporte une valeur de capital, alors le capital en provenance de RegPM doit perdurer jusqu'à la veille de la date de chargement FOSC
+	 */
+	@Test
+	public void testDateChargementCapitalPosterieureADateChargementInitial() throws Exception {
+
+		final long idEntreprise = 34672L;
+		final long noCantonalEntreprise = 32671256123L;
+		final long noCantonalEtablissementPrincipal = 347823523L;
+		final RegDate dateDebut = RegDate.get(2005, 4, 23);
+		final RegDate dateChargementIDE = RegDate.get(2015, 12, 5);
+		final RegDate dateChargementFOSC = RegDate.get(2016, 3, 28);
+
+		// mise en place dans RegPM
+		final RegpmEntreprise regpm = EntrepriseMigratorTest.buildEntreprise(idEntreprise);
+		regpm.setNumeroCantonal(noCantonalEntreprise);
+		EntrepriseMigratorTest.addRaisonSociale(regpm, dateDebut, "Toto & Cie", null, null, true);
+		EntrepriseMigratorTest.addFormeJuridique(regpm, dateDebut, EntrepriseMigratorTest.createTypeFormeJuridique("S.A.R.L.", RegpmCategoriePersonneMorale.PM));
+		EntrepriseMigratorTest.addForPrincipalSuisse(regpm, dateDebut, RegpmTypeForPrincipal.SIEGE, Commune.LAUSANNE);
+		EntrepriseMigratorTest.addSiegeSuisse(regpm, dateDebut, Commune.LAUSANNE);
+		EntrepriseMigratorTest.addAssujettissement(regpm, dateDebut, null, RegpmTypeAssujettissement.LILIC);
+		EntrepriseMigratorTest.addRegimeFiscalVD(regpm, dateDebut, null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
+		EntrepriseMigratorTest.addRegimeFiscalCH(regpm, dateDebut, null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
+		EntrepriseMigratorTest.addCapital(regpm, dateDebut, 100000);
+		regpm.setDateBouclementFutur(RegDate.get(2016, 12, 31));
+
+		// mise en place dans RCEnt
+		organisationService.setUp(new MockServiceOrganisation() {
+			@Override
+			protected void init() {
+				final MockOrganisation org = addOrganisation(noCantonalEntreprise);
+				final MockSiteOrganisation sitePrincipal = addSite(org, noCantonalEtablissementPrincipal, dateChargementIDE, new MockDonneesRegistreIDE(), new MockDonneesRC());
+				sitePrincipal.changeTypeDeSite(dateChargementIDE, TypeDeSite.ETABLISSEMENT_PRINCIPAL);
+				sitePrincipal.changeNom(dateChargementIDE, "Toto & Cie");
+				sitePrincipal.changeFormeLegale(dateChargementIDE, FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE);
+				sitePrincipal.addSiege(dateChargementIDE, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS());
+				sitePrincipal.getDonneesRC().addCapital(dateChargementFOSC, null, new Capital(dateChargementFOSC, null, TypeDeCapital.CAPITAL_ACTIONS, MontantMonetaire.CHF, BigDecimal.valueOf(200000), null));
+			}
+		});
+
+		final MockGraphe graphe = new MockGraphe(Collections.singletonList(regpm),
+		                                         null,
+		                                         null);
+
+		activityManager.setup(ALL_ACTIVE);
+		appariementsMultiplesManager.setup(NO_REUSE);
+
+		final LoggedMessages lms = grapheMigrator.migrate(graphe);
+		Assert.assertNotNull(lms);
+
+		// vérification de la date de fin des données civiles migrées
+		doInUniregTransaction(true, status -> {
+			final Entreprise entreprise = uniregStore.getEntityFromDb(Entreprise.class, idEntreprise);
+			Assert.assertNotNull(entreprise);
+
+			final Set<DonneeCivileEntreprise> donneesCiviles = entreprise.getDonneesCiviles();
+			Assert.assertNotNull(donneesCiviles);
+			Assert.assertEquals(3, donneesCiviles.size());      // forme juridique, raison sociale et capital
+
+			final Map<Class<?>, DonneeCivileEntreprise> mapDonneesCiviles = donneesCiviles.stream()
+					.collect(Collectors.toMap(DonneeCivileEntreprise::getClass, Function.identity()));
+			Assert.assertTrue(mapDonneesCiviles.containsKey(FormeJuridiqueFiscaleEntreprise.class));
+			Assert.assertTrue(mapDonneesCiviles.containsKey(RaisonSocialeFiscaleEntreprise.class));
+			Assert.assertTrue(mapDonneesCiviles.containsKey(CapitalFiscalEntreprise.class));
+
+			{
+				final FormeJuridiqueFiscaleEntreprise elt = (FormeJuridiqueFiscaleEntreprise) mapDonneesCiviles.get(FormeJuridiqueFiscaleEntreprise.class);
+				Assert.assertNotNull(elt);
+				Assert.assertFalse(elt.isAnnule());
+				Assert.assertEquals(dateDebut, elt.getDateDebut());
+				Assert.assertEquals(dateChargementIDE.getOneDayBefore(), elt.getDateFin());
+			}
+			{
+				final RaisonSocialeFiscaleEntreprise elt = (RaisonSocialeFiscaleEntreprise) mapDonneesCiviles.get(RaisonSocialeFiscaleEntreprise.class);
+				Assert.assertNotNull(elt);
+				Assert.assertFalse(elt.isAnnule());
+				Assert.assertEquals(dateDebut, elt.getDateDebut());
+				Assert.assertEquals(dateChargementIDE.getOneDayBefore(), elt.getDateFin());
+			}
+			{
+				final CapitalFiscalEntreprise elt = (CapitalFiscalEntreprise) mapDonneesCiviles.get(CapitalFiscalEntreprise.class);
+				Assert.assertNotNull(elt);
+				Assert.assertFalse(elt.isAnnule());
+				Assert.assertEquals(dateDebut, elt.getDateDebut());
+				Assert.assertEquals(dateChargementFOSC.getOneDayBefore(), elt.getDateFin());
+			}
+		});
+
+		// vérification des messages de log
+		final Map<LogCategory, List<String>> messages = buildTextualMessages(lms);
+		Assert.assertNotNull(messages);
+		{
+			final List<String> msgs = messages.get(LogCategory.DONNEES_CIVILES_REGPM);
+			Assert.assertEquals(5, msgs.size());
+			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;" + noCantonalEntreprise + ";;;;;;;Données de forme juridique et/ou de raison sociale en provenance du registre civil dès le 05.12.2015 (les données ultérieures de RegPM seront ignorées).", msgs.get(0));
+			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;" + noCantonalEntreprise + ";;;;;;;Donnée de raison sociale migrée : sur la période [23.04.2005 -> 04.12.2015], 'Toto & Cie'.", msgs.get(1));
+			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;" + noCantonalEntreprise + ";;;;;;;Donnée de forme juridique migrée : sur la période [23.04.2005 -> 04.12.2015], SARL.", msgs.get(2));
+			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;" + noCantonalEntreprise + ";;;;;;;Les données de capital en provenance du registre civil font foi dès le 28.03.2016 (les données ultérieures de RegPM seront ignorées).", msgs.get(3));
+			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;" + noCantonalEntreprise + ";;;;;;;Donnée de capital migrée : sur la période [23.04.2005 -> 27.03.2016], 100000 CHF.", msgs.get(4));
+		}
+	}
+
+	/**
+	 * [SIFISC-18948] si les données FOSC ne sont chargées dans RCEnt (28.03.2016, par exemple) que quelques mois après les données IDE (05.12.2015, toujours par exemple)
+	 * et que ce chargement FOSC apporte une valeur de capital, alors le capital en provenance de RegPM doit perdurer jusqu'à la veille de la date de chargement FOSC
+	 */
+	@Test
+	public void testAucunCapitalDansDonneesCiviles() throws Exception {
+
+		final long idEntreprise = 34672L;
+		final long noCantonalEntreprise = 32671256123L;
+		final long noCantonalEtablissementPrincipal = 347823523L;
+		final RegDate dateDebut = RegDate.get(2005, 4, 23);
+		final RegDate dateChargementIDE = RegDate.get(2015, 12, 5);
+
+		// mise en place dans RegPM
+		final RegpmEntreprise regpm = EntrepriseMigratorTest.buildEntreprise(idEntreprise);
+		regpm.setNumeroCantonal(noCantonalEntreprise);
+		EntrepriseMigratorTest.addRaisonSociale(regpm, dateDebut, "Toto & Cie", null, null, true);
+		EntrepriseMigratorTest.addFormeJuridique(regpm, dateDebut, EntrepriseMigratorTest.createTypeFormeJuridique("S.A.R.L.", RegpmCategoriePersonneMorale.PM));
+		EntrepriseMigratorTest.addForPrincipalSuisse(regpm, dateDebut, RegpmTypeForPrincipal.SIEGE, Commune.LAUSANNE);
+		EntrepriseMigratorTest.addSiegeSuisse(regpm, dateDebut, Commune.LAUSANNE);
+		EntrepriseMigratorTest.addAssujettissement(regpm, dateDebut, null, RegpmTypeAssujettissement.LILIC);
+		EntrepriseMigratorTest.addRegimeFiscalVD(regpm, dateDebut, null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
+		EntrepriseMigratorTest.addRegimeFiscalCH(regpm, dateDebut, null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
+		EntrepriseMigratorTest.addCapital(regpm, dateDebut, 100000);
+		regpm.setDateBouclementFutur(RegDate.get(2016, 12, 31));
+
+		// mise en place dans RCEnt
+		organisationService.setUp(new MockServiceOrganisation() {
+			@Override
+			protected void init() {
+				final MockOrganisation org = addOrganisation(noCantonalEntreprise);
+				final MockSiteOrganisation sitePrincipal = addSite(org, noCantonalEtablissementPrincipal, dateChargementIDE, new MockDonneesRegistreIDE(), new MockDonneesRC());
+				sitePrincipal.changeTypeDeSite(dateChargementIDE, TypeDeSite.ETABLISSEMENT_PRINCIPAL);
+				sitePrincipal.changeNom(dateChargementIDE, "Toto & Cie");
+				sitePrincipal.changeFormeLegale(dateChargementIDE, FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE);
+				sitePrincipal.addSiege(dateChargementIDE, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS());
+			}
+		});
+
+		final MockGraphe graphe = new MockGraphe(Collections.singletonList(regpm),
+		                                         null,
+		                                         null);
+
+		activityManager.setup(ALL_ACTIVE);
+		appariementsMultiplesManager.setup(NO_REUSE);
+
+		final LoggedMessages lms = grapheMigrator.migrate(graphe);
+		Assert.assertNotNull(lms);
+
+		// vérification de la date de fin des données civiles migrées
+		doInUniregTransaction(true, status -> {
+			final Entreprise entreprise = uniregStore.getEntityFromDb(Entreprise.class, idEntreprise);
+			Assert.assertNotNull(entreprise);
+
+			final Set<DonneeCivileEntreprise> donneesCiviles = entreprise.getDonneesCiviles();
+			Assert.assertNotNull(donneesCiviles);
+			Assert.assertEquals(3, donneesCiviles.size());      // forme juridique, raison sociale et capital
+
+			final Map<Class<?>, DonneeCivileEntreprise> mapDonneesCiviles = donneesCiviles.stream()
+					.collect(Collectors.toMap(DonneeCivileEntreprise::getClass, Function.identity()));
+			Assert.assertTrue(mapDonneesCiviles.containsKey(FormeJuridiqueFiscaleEntreprise.class));
+			Assert.assertTrue(mapDonneesCiviles.containsKey(RaisonSocialeFiscaleEntreprise.class));
+			Assert.assertTrue(mapDonneesCiviles.containsKey(CapitalFiscalEntreprise.class));
+
+			{
+				final FormeJuridiqueFiscaleEntreprise elt = (FormeJuridiqueFiscaleEntreprise) mapDonneesCiviles.get(FormeJuridiqueFiscaleEntreprise.class);
+				Assert.assertNotNull(elt);
+				Assert.assertFalse(elt.isAnnule());
+				Assert.assertEquals(dateDebut, elt.getDateDebut());
+				Assert.assertEquals(dateChargementIDE.getOneDayBefore(), elt.getDateFin());
+			}
+			{
+				final RaisonSocialeFiscaleEntreprise elt = (RaisonSocialeFiscaleEntreprise) mapDonneesCiviles.get(RaisonSocialeFiscaleEntreprise.class);
+				Assert.assertNotNull(elt);
+				Assert.assertFalse(elt.isAnnule());
+				Assert.assertEquals(dateDebut, elt.getDateDebut());
+				Assert.assertEquals(dateChargementIDE.getOneDayBefore(), elt.getDateFin());
+			}
+			{
+				final CapitalFiscalEntreprise elt = (CapitalFiscalEntreprise) mapDonneesCiviles.get(CapitalFiscalEntreprise.class);
+				Assert.assertNotNull(elt);
+				Assert.assertFalse(elt.isAnnule());
+				Assert.assertEquals(dateDebut, elt.getDateDebut());
+				Assert.assertEquals(dateChargementIDE.getOneDayBefore(), elt.getDateFin());
+			}
+		});
+
+		// vérification des messages de log
+		final Map<LogCategory, List<String>> messages = buildTextualMessages(lms);
+		Assert.assertNotNull(messages);
+		{
+			final List<String> msgs = messages.get(LogCategory.DONNEES_CIVILES_REGPM);
+			Assert.assertEquals(5, msgs.size());
+			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;" + noCantonalEntreprise + ";;;;;;;Données de forme juridique et/ou de raison sociale en provenance du registre civil dès le 05.12.2015 (les données ultérieures de RegPM seront ignorées).", msgs.get(0));
+			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;" + noCantonalEntreprise + ";;;;;;;Donnée de raison sociale migrée : sur la période [23.04.2005 -> 04.12.2015], 'Toto & Cie'.", msgs.get(1));
+			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;" + noCantonalEntreprise + ";;;;;;;Donnée de forme juridique migrée : sur la période [23.04.2005 -> 04.12.2015], SARL.", msgs.get(2));
+			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;" + noCantonalEntreprise + ";;;;;;;Les données de capital en provenance du registre civil font foi dès le 05.12.2015 (les données ultérieures de RegPM seront ignorées).", msgs.get(3));
+			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;" + noCantonalEntreprise + ";;;;;;;Donnée de capital migrée : sur la période [23.04.2005 -> 04.12.2015], 100000 CHF.", msgs.get(4));
 		}
 	}
 
