@@ -27,6 +27,8 @@ public class RelationBetweenPartiesTypeTest extends EnumTest {
 		final Set<TypeRapportEntreTiers> notMapped = EnumSet.of(TypeRapportEntreTiers.PARENTE,
 		                                                        TypeRapportEntreTiers.ASSUJETTISSEMENT_PAR_SUBSTITUTION,
 		                                                        TypeRapportEntreTiers.MANDAT,
+		                                                        TypeRapportEntreTiers.SCISSION_ENTREPRISE,
+		                                                        TypeRapportEntreTiers.TRANSFERT_PATRIMOINE,
 		                                                        TypeRapportEntreTiers.ADMINISTRATION_ENTREPRISE,
 		                                                        TypeRapportEntreTiers.SOCIETE_DIRECTION);
 		for (TypeRapportEntreTiers tret : TypeRapportEntreTiers.values()) {

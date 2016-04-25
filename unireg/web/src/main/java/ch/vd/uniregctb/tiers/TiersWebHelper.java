@@ -73,13 +73,24 @@ public abstract class TiersWebHelper {
 			return String.format("L'assujettissement de %s se %s à celui de %s", nomObjet, fermeOuAnnule ? "substituait" : "substitue", nomSujet);
 		}
 		else if (rapport instanceof ActiviteEconomique) {
-			return String.format("%s %s une activité économique au travers de l'établissement %s", nomSujet, fermeOuAnnule ? "exerçait" : "exerce", nomObjet);
+			if (((ActiviteEconomique) rapport).isPrincipal()) {
+				return String.format("%s %s son activité économique principale au travers de l'établissement %s", nomSujet, fermeOuAnnule ? "exerçait" : "exerce", nomObjet);
+			}
+			else {
+				return String.format("%s %s une activité économique au travers de l'établissement %s", nomSujet, fermeOuAnnule ? "exerçait" : "exerce", nomObjet);
+			}
 		}
 		else if (rapport instanceof Mandat) {
 			return String.format("%s %s un mandat à %s", nomSujet, fermeOuAnnule ? "confiait" : "confie", nomObjet);
 		}
 		else if (rapport instanceof FusionEntreprises) {
-			return String.format("%s (n°%d) a fusionné pour donner %s (n°%d)", nomSujet, sujetId, nomObjet, objetId);
+			return String.format("%s (n°%d) %s fusionné pour donner %s (n°%d)", nomSujet, sujetId, fermeOuAnnule ? "avait" : "a", nomObjet, objetId);
+		}
+		else if (rapport instanceof ScissionEntreprise) {
+			return String.format("%s (n°%d) %s été scindée pour donner %s (n°%d)", nomSujet, sujetId, fermeOuAnnule ? "avait" : "a", nomObjet, objetId);
+		}
+		else if (rapport instanceof TransfertPatrimoine) {
+			return String.format("%s (n°%d) %s transféré du patrimoine vers %s (n°%d)", nomSujet, sujetId, fermeOuAnnule ? "avait" : "a", nomObjet, objetId);
 		}
 		else if (rapport instanceof AdministrationEntreprise) {
 			return String.format("L'entreprise '%s' %s administrée par %s", nomSujet, fermeOuAnnule ? "était" : "est", nomObjet);

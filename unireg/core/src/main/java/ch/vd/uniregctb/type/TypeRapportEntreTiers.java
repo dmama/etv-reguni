@@ -14,6 +14,7 @@ import ch.vd.uniregctb.tiers.Parente;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.tiers.RapportPrestationImposable;
 import ch.vd.uniregctb.tiers.RepresentationConventionnelle;
+import ch.vd.uniregctb.tiers.ScissionEntreprise;
 import ch.vd.uniregctb.tiers.SocieteDirection;
 import ch.vd.uniregctb.tiers.Tutelle;
 
@@ -176,6 +177,36 @@ public enum TypeRapportEntreTiers {
 	 * @since 6.0
 	 */
 	FUSION_ENTREPRISES {
+		@Override
+		public RapportEntreTiers newInstance() {
+			return new FusionEntreprises();
+		}
+
+		@Override
+		public Class<? extends RapportEntreTiers> getRapportClass() {
+			return FusionEntreprises.class;
+		}
+	},
+
+	/**
+	 * @since 6.0
+	 */
+	SCISSION_ENTREPRISE {
+		@Override
+		public RapportEntreTiers newInstance() {
+			return new ScissionEntreprise();
+		}
+
+		@Override
+		public Class<? extends RapportEntreTiers> getRapportClass() {
+			return ScissionEntreprise.class;
+		}
+	},
+
+	/**
+	 * @since 6.0
+	 */
+	TRANSFERT_PATRIMOINE {
 		@Override
 		public RapportEntreTiers newInstance() {
 			return new FusionEntreprises();

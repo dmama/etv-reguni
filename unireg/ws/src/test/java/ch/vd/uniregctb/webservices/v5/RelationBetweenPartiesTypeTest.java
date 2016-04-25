@@ -29,6 +29,8 @@ public class RelationBetweenPartiesTypeTest extends EnumTest {
 		                                                        TypeRapportEntreTiers.ACTIVITE_ECONOMIQUE,
 		                                                        TypeRapportEntreTiers.MANDAT,
 		                                                        TypeRapportEntreTiers.FUSION_ENTREPRISES,
+		                                                        TypeRapportEntreTiers.SCISSION_ENTREPRISE,
+		                                                        TypeRapportEntreTiers.TRANSFERT_PATRIMOINE,
 		                                                        TypeRapportEntreTiers.ADMINISTRATION_ENTREPRISE,
 		                                                        TypeRapportEntreTiers.SOCIETE_DIRECTION);
 		for (TypeRapportEntreTiers tret : TypeRapportEntreTiers.values()) {
