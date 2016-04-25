@@ -2,6 +2,7 @@ package ch.vd.uniregctb.evenement.organisation.interne.demenagement;
 
 import org.springframework.util.Assert;
 
+import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.organisation.data.Domicile;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
@@ -57,6 +58,10 @@ public class DemenagementArriveeDepartVD extends Demenagement {
 			}
 		} else
 			throw new EvenementOrganisationException(String.format("Une combinaison non supportée de déplacement de siège est survenue. type avant: %s, type après: %s", getSiegeAvant().getTypeAutoriteFiscale(), getSiegeApres().getTypeAutoriteFiscale()));
+		}
+
+		if (dateDebutNouveauSiege.isBefore(getDateEvt())) {
+			appliqueDonneesCivilesSurPeriode(getEntreprise(), new DateRangeHelper.Range(dateDebutNouveauSiege, getDateEvt().getOneDayBefore()), getDateEvt(), warnings, suivis);
 		}
 
 		effectueChangementSiege(motifFor, dateDebutNouveauSiege, warnings, suivis);

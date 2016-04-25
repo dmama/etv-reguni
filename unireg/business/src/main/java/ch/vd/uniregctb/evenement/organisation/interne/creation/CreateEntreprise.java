@@ -3,6 +3,7 @@ package ch.vd.uniregctb.evenement.organisation.interne.creation;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.util.Assert;
 
+import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.interfaces.organisation.data.Domicile;
@@ -87,6 +88,9 @@ public abstract class CreateEntreprise extends EvenementOrganisationInterneDeTra
 
 		// Création de l'établissement principal
 		createAddEtablissement(sitePrincipal.getNumeroSite(), autoriteFiscalePrincipale, true, dateDeCreation, suivis);
+		if (dateDeCreation.isBefore(getDateEvt())) {
+			appliqueDonneesCivilesSurPeriode(getEntreprise(), new DateRangeHelper.Range(dateDeCreation, getDateEvt().getOneDayBefore()), getDateEvt(), warnings, suivis);
+		}
 
 		// Création des établissement secondaires
 		for (SiteOrganisation site : getOrganisation().getSitesSecondaires(getDateEvt())) {

@@ -30,15 +30,19 @@ import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalFor;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalRegimeFiscal;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
 import ch.vd.uniregctb.tiers.Bouclement;
+import ch.vd.uniregctb.tiers.DomicileEtablissement;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.Etablissement;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipalPM;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
+import ch.vd.uniregctb.tiers.FormeJuridiqueFiscaleEntreprise;
+import ch.vd.uniregctb.tiers.RaisonSocialeFiscaleEntreprise;
 import ch.vd.uniregctb.tiers.RegimeFiscal;
 import ch.vd.uniregctb.type.DayMonth;
 import ch.vd.uniregctb.type.EtatEvenementOrganisation;
+import ch.vd.uniregctb.type.FormeJuridiqueEntreprise;
 import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
@@ -112,6 +116,18 @@ public class CreateEntreprisePMProcessorTest extends AbstractEvenementOrganisati
 				                             Assert.assertEquals(TypeEtatEntreprise.INSCRITE_RC, entreprise.getEtatActuel().getType());
 				                             Assert.assertEquals(2, entreprise.getRegimesFiscaux().size());
 
+				                             final RaisonSocialeFiscaleEntreprise surchargeRaisonSocialeFiscale = entreprise.getRaisonsSocialesNonAnnuleesTriees().get(0);
+				                             Assert.assertEquals(date(2015, 6, 25), surchargeRaisonSocialeFiscale.getDateDebut());
+				                             Assert.assertEquals(date(2015, 6, 26), surchargeRaisonSocialeFiscale.getDateFin());
+				                             Assert.assertEquals("Synergy SA", surchargeRaisonSocialeFiscale.getRaisonSociale());
+
+				                             final FormeJuridiqueFiscaleEntreprise surchargeFormeJuridiqueFiscale = entreprise.getFormesJuridiquesNonAnnuleesTriees().get(0);
+				                             Assert.assertEquals(date(2015, 6, 25), surchargeFormeJuridiqueFiscale.getDateDebut());
+				                             Assert.assertEquals(date(2015, 6, 26), surchargeFormeJuridiqueFiscale.getDateFin());
+				                             Assert.assertEquals(FormeJuridiqueEntreprise.SA, surchargeFormeJuridiqueFiscale.getFormeJuridique());
+
+				                             Assert.assertTrue(entreprise.getCapitauxNonAnnulesTries().isEmpty());
+
 				                             ForFiscalPrincipal forFiscalPrincipal = (ForFiscalPrincipal) entreprise.getForsFiscauxValidAt(RegDate.get(2015, 6, 25)).get(0);
 				                             Assert.assertEquals(RegDate.get(2015, 6, 25), forFiscalPrincipal.getDateDebut());
 				                             Assert.assertNull(forFiscalPrincipal.getDateFin());
@@ -128,7 +144,12 @@ public class CreateEntreprisePMProcessorTest extends AbstractEvenementOrganisati
 				                             {
 					                             final List<DateRanged<Etablissement>> etsbPrns = tiersService.getEtablissementsPrincipauxEntreprise(entreprise);
 					                             Assert.assertEquals(1, etsbPrns.size());
-					                             Assert.assertEquals(RegDate.get(2015, 6, 25), etsbPrns.get(0).getDateDebut());
+					                             final DateRanged<Etablissement> etablissementPrincipalRange = etsbPrns.get(0);
+					                             Assert.assertEquals(RegDate.get(2015, 6, 25), etablissementPrincipalRange.getDateDebut());
+					                             final DomicileEtablissement surchargeDomicileEtablissement = etablissementPrincipalRange.getPayload().getSortedDomiciles(false).get(0);
+					                             Assert.assertEquals(date(2015, 6, 25), surchargeDomicileEtablissement.getDateDebut());
+					                             Assert.assertEquals(date(2015, 6, 26), surchargeDomicileEtablissement.getDateFin());
+					                             Assert.assertEquals(MockCommune.Lausanne.getNoOFS(), surchargeDomicileEtablissement.getNumeroOfsAutoriteFiscale().intValue());
 				                             }
 				                             {
 					                             final List<DateRanged<Etablissement>> etbsSecs = tiersService.getEtablissementsSecondairesEntreprise(entreprise);

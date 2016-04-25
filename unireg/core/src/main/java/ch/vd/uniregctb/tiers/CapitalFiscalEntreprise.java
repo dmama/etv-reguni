@@ -8,11 +8,12 @@ import javax.persistence.Embedded;
 import javax.persistence.Entity;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.common.Duplicable;
 import ch.vd.uniregctb.common.LengthConstants;
 
 @Entity
 @DiscriminatorValue(value = "Capital")
-public class CapitalFiscalEntreprise extends DonneeCivileEntreprise {
+public class CapitalFiscalEntreprise extends DonneeCivileEntreprise implements Duplicable<CapitalFiscalEntreprise> {
 
 	private MontantMonetaire montant;
 
@@ -27,6 +28,11 @@ public class CapitalFiscalEntreprise extends DonneeCivileEntreprise {
 		this.montant = montant;
 	}
 
+	public CapitalFiscalEntreprise(CapitalFiscalEntreprise source) {
+		super(source.getDateDebut(), source.getDateFin());
+		this.montant = source.getMontant();
+	}
+
 	@Embedded
 	@AttributeOverrides({
 			@AttributeOverride(name = "montant", column = @Column(name = "CAP_MONTANT")),
@@ -37,5 +43,10 @@ public class CapitalFiscalEntreprise extends DonneeCivileEntreprise {
 
 	public void setMontant(MontantMonetaire montant) {
 		this.montant = montant;
+	}
+
+	@Override
+	public CapitalFiscalEntreprise duplicate() {
+		return new CapitalFiscalEntreprise(this);
 	}
 }

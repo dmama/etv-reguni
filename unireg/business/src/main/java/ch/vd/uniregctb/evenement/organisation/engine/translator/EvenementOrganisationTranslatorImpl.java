@@ -400,7 +400,9 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 		}
 		catch (MetierServiceException e) {
 			throw new EvenementOrganisationException(
-					String.format("Impossible de rattacher l'organisation civile n°%d à l'entreprise n°%d", organisation.getNumeroOrganisation(), entreprise.getNumero()),
+					String.format("Impossible de rattacher l'organisation civile n°%d à l'entreprise n°%d: %s",
+					              organisation.getNumeroOrganisation(),
+					              entreprise.getNumero(), e.getMessage()),
 					e);
 		}
 	}

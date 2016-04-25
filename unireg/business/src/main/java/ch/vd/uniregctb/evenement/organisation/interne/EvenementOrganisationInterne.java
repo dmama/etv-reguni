@@ -42,6 +42,7 @@ import ch.vd.uniregctb.tiers.ForFiscalPrincipalPM;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.tiers.RegimeFiscal;
+import ch.vd.uniregctb.tiers.TiersException;
 import ch.vd.uniregctb.type.CategorieEntreprise;
 import ch.vd.uniregctb.type.EtatEvenementOrganisation;
 import ch.vd.uniregctb.type.GenreImpot;
@@ -594,8 +595,8 @@ public abstract class EvenementOrganisationInterne {
 	protected void signaleDemenagement(Etablissement etablissement, Domicile ancienDomicile, Domicile nouveauDomicile, RegDate dateDebut, EvenementOrganisationSuiviCollector suivis) {
 		final String ancienneCommune = DateRangeHelper.rangeAt(context.getServiceInfra().getCommuneHistoByNumeroOfs(ancienDomicile.getNoOfs()), dateDebut.getOneDayBefore()).getNomOfficielAvecCanton();
 		final String nouvelleCommune = DateRangeHelper.rangeAt(context.getServiceInfra().getCommuneHistoByNumeroOfs(nouveauDomicile.getNoOfs()), dateDebut).getNomOfficielAvecCanton();
-		suivis.addSuivi(String.format("L'établissement %s a déménagé. Ancien domicile  %s (ofs: %s). Nouveau domicile %s (ofs: %s), à partir du %s.",
-		                              etablissement.getNumero(),
+		suivis.addSuivi(String.format("L'établissement %s a déménagé de %s (ofs: %d) à %s (ofs: %d), le %s.",
+		                              FormatNumeroHelper.numeroCTBToDisplay(etablissement.getNumero()),
 		                              ancienneCommune,
 		                              ancienDomicile.getNoOfs(),
 		                              nouvelleCommune,
@@ -620,8 +621,8 @@ public abstract class EvenementOrganisationInterne {
 
 		final Commune commune = context.getServiceInfra().getCommuneByNumeroOfs(autoriteFiscale.getNoOfs(), dateOuverture);
 		if (!commune.isPrincipale()) {
-			suivis.addSuivi(String.format("Ouverture d'un for fiscal principal pour l'entreprise no %s avec le no organisation civil %s, à partir de %s, motif ouverture %s, rattachement %s.",
-			                              entreprise.getNumero(), entreprise.getNumeroEntreprise(),
+			suivis.addSuivi(String.format("Ouverture d'un for fiscal principal pour l'entreprise no %s avec le no organisation civil %d, à partir du %s, motif ouverture %s, rattachement %s.",
+			                              FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()), entreprise.getNumeroEntreprise(),
 			                              RegDateHelper.dateToDisplayString(dateOuverture), motifOuverture, rattachement));
 			raiseStatusTo(HandleStatus.TRAITE);
 			return context.getTiersService().openForFiscalPrincipal(entreprise, dateOuverture, rattachement, autoriteFiscale.getNoOfs(), autoriteFiscale.getTypeAutoriteFiscale(), motifOuverture, genreImpot);
@@ -734,8 +735,8 @@ public abstract class EvenementOrganisationInterne {
 	 */
 	protected ForFiscalPrincipal closeForFiscalPrincipal(RegDate dateDeFermeture, MotifFor motifFermeture, EvenementOrganisationSuiviCollector suivis) {
 
-		suivis.addSuivi(String.format("Fermeture du for principal pour l'entreprise %s (civil: %s), en date du %s, motif fermeture %s",
-		                              entreprise.getNumero(), entreprise.getNumeroEntreprise(), RegDateHelper.dateToDisplayString(dateDeFermeture), motifFermeture));
+		suivis.addSuivi(String.format("Fermeture du for fiscal principal pour l'entreprise %s (civil: %d), en date du %s, motif fermeture %s",
+		                              FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()), entreprise.getNumeroEntreprise(), RegDateHelper.dateToDisplayString(dateDeFermeture), motifFermeture));
 
 		raiseStatusTo(HandleStatus.TRAITE);
 		return context.getTiersService().closeForFiscalPrincipal(entreprise, dateDeFermeture, motifFermeture);
@@ -867,6 +868,33 @@ public abstract class EvenementOrganisationInterne {
 	private boolean isForPrincipalExistantSurTouteLaPeriode(DateRange periode, List<ForFiscalPrincipalPM> forsFiscauxPrincipauxActifsSorted) {
 		final List<DateRange> intersections = DateRangeHelper.intersections(periode, forsFiscauxPrincipauxActifsSorted);
 		return intersections != null && intersections.size() == 1 && DateRangeHelper.within(periode, intersections.get(0)); // S'il devait y avoir des trous, cela voudrait dire qu'il n'y a pas une couverture continue par un for principal.
+	}
+
+	/**
+	 * <p>
+	 *     Applique la surcharge des données civiles sur la période indiquée avec les données civiles de RCEnt de la date de valeur indiquée.
+	 * </p>
+	 * <p>
+	 *     Les surcharges éventuellement présentes seront annulées et / ou terminées au jour précédant la période.
+	 * </p>
+	 *
+	 * @param entreprise l'entreprise concernée
+	 * @param range de quand à quand la surcharge doit être appliquée.
+	 * @param dateValeur la date pour laquelle il faut rechercher les valeurs civiles dans RCEnt
+	 * @throws EvenementOrganisationException En cas de problème, notamment lorsque la surcharge existante empiète ou dépasse la date de valeur
+	 */
+	protected void appliqueDonneesCivilesSurPeriode(Entreprise entreprise, DateRange range, RegDate dateValeur, EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) throws EvenementOrganisationException {
+		suivis.addSuivi(String.format("Application de la surcharge civile entre le %s et le %s avec les valeur du %s",
+		                              RegDateHelper.dateToDisplayString(range.getDateDebut()),
+		                              RegDateHelper.dateToDisplayString(range.getDateFin()),
+		                              RegDateHelper.dateToDisplayString(dateValeur)));
+		try {
+			getContext().getTiersService().appliqueDonneesCivilesSurPeriode(entreprise, range, dateValeur);
+		}
+		catch (TiersException e) {
+			throw new EvenementOrganisationException(String.format("Impossible d'appliquer la surcharge des données civiles: %s", e.getMessage()));
+		}
+		raiseStatusTo(HandleStatus.TRAITE);
 	}
 
 	protected boolean hasCapital(Organisation organisation, RegDate date) {

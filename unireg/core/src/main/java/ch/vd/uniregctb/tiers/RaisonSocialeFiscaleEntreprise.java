@@ -5,11 +5,12 @@ import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.common.Duplicable;
 import ch.vd.uniregctb.common.LengthConstants;
 
 @Entity
 @DiscriminatorValue(value = "RaisonSociale")
-public class RaisonSocialeFiscaleEntreprise extends DonneeCivileEntreprise {
+public class RaisonSocialeFiscaleEntreprise extends DonneeCivileEntreprise implements Duplicable<RaisonSocialeFiscaleEntreprise> {
 
 	private String raisonSociale;
 
@@ -24,6 +25,11 @@ public class RaisonSocialeFiscaleEntreprise extends DonneeCivileEntreprise {
 		this.raisonSociale = raisonSociale;
 	}
 
+	public RaisonSocialeFiscaleEntreprise(RaisonSocialeFiscaleEntreprise source) {
+		super(source);
+		this.setRaisonSociale(source.getRaisonSociale());
+	}
+
 	@Column(name = "RS_RAISON_SOCIALE", length = LengthConstants.TIERS_NOM)
 	public String getRaisonSociale() {
 		return raisonSociale;
@@ -31,5 +37,10 @@ public class RaisonSocialeFiscaleEntreprise extends DonneeCivileEntreprise {
 
 	public void setRaisonSociale(String raisonSociale) {
 		this.raisonSociale = raisonSociale;
+	}
+
+	@Override
+	public RaisonSocialeFiscaleEntreprise duplicate() {
+		return new RaisonSocialeFiscaleEntreprise(this);
 	}
 }
