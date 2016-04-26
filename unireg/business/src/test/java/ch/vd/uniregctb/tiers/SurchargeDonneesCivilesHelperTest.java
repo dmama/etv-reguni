@@ -23,7 +23,7 @@ public class SurchargeDonneesCivilesHelperTest extends WithoutSpringTest {
 		Cas nominal. On est en présence d'une surcharge qui s'arrête à la veille de notre date de valeur, typique d'une entreprise migrée.
 	 */
 	@Test
-	public void testTronconneSimplePeriode() throws Exception {
+	public void testTronqueSimplePeriode() throws Exception {
 		final DateRangeHelper.Range range = new DateRangeHelper.Range(date(2016, 4, 8), date(2016, 4, 10));
 		final RegDate dateValeur = date(2016, 4, 11);
 		final List<DomicileEtablissement> entites =  Collections.singletonList(new DomicileEtablissement(date(2016, 4, 1), date(2016, 4, 10), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, 119, null));
@@ -41,7 +41,7 @@ public class SurchargeDonneesCivilesHelperTest extends WithoutSpringTest {
 	 Cas simple. On est en présence d'une surcharge entièrement inclue dans notre prériode.
 	 */
 	@Test
-	public void testTronconneSimplePeriodeIncluse() throws Exception {
+	public void testTronqueSimplePeriodeIncluse() throws Exception {
 		final DateRangeHelper.Range range = new DateRangeHelper.Range(date(2016, 4, 8), date(2016, 4, 10));
 		final RegDate dateValeur = date(2016, 4, 11);
 		final List<DomicileEtablissement> entites =  Collections.singletonList(new DomicileEtablissement(date(2016, 4, 9), date(2016, 4, 10), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, 119, null));
@@ -59,7 +59,7 @@ public class SurchargeDonneesCivilesHelperTest extends WithoutSpringTest {
 		Cas simple. Pas de surcharge présente.
 	 */
 	@Test
-	public void testTronconneVide() throws Exception {
+	public void testTronqueVide() throws Exception {
 		final DateRangeHelper.Range range = new DateRangeHelper.Range(date(2016, 4, 8), date(2016, 4, 10));
 		final RegDate dateValeur = date(2016, 4, 11);
 		final List<DomicileEtablissement> entites =  Collections.emptyList();
@@ -74,7 +74,7 @@ public class SurchargeDonneesCivilesHelperTest extends WithoutSpringTest {
 	 Cas complexe. On est en présence d'une surcharge composée de plusieurs périodes.
 	 */
 	@Test
-	public void testTronconneComplexePeriode() throws Exception {
+	public void testTronqueComplexePeriode() throws Exception {
 		final DateRangeHelper.Range range = new DateRangeHelper.Range(date(2016, 4, 8), date(2016, 4, 10));
 		final RegDate dateValeur = date(2016, 4, 11);
 		final List<DomicileEtablissement> entites = new ArrayList<>();
@@ -102,7 +102,7 @@ public class SurchargeDonneesCivilesHelperTest extends WithoutSpringTest {
 	 Cas en erreur. On est en présence d'une surcharge complexe dont une des périodes s'étend pendant et/ou delà de notre date de valeur.
 	 */
 	@Test
-	public void testTronconneComplexePeriodeEnErreur() throws Exception {
+	public void testTronqueComplexePeriodeEnErreur() throws Exception {
 		final DateRangeHelper.Range range = new DateRangeHelper.Range(date(2016, 4, 8), date(2016, 4, 10));
 		final RegDate dateValeur = date(2016, 4, 11);
 		final List<DomicileEtablissement> entites = new ArrayList<>();
@@ -115,7 +115,7 @@ public class SurchargeDonneesCivilesHelperTest extends WithoutSpringTest {
 			 SurchargeDonneesCivilesHelper.tronqueSurchargeFiscale(range, dateValeur, entites, "domicile");
 		} catch (TiersException e) {
 			Assert.isEqual(
-					String.format("Impossible d'appliquer les données civiles car une surcharge fiscale de domicile présente en date du %s, après la plage demandée.",
+					String.format("Impossible d'appliquer les données civiles car une surcharge fiscale de domicile est présente en date du %s.",
 					              RegDateHelper.dateToDisplayString(dateValeur)), e.getMessage());
 			Assert.isTrue(entites.size() == 2);
 			Assert.isFalse(domicile1.isAnnule());
