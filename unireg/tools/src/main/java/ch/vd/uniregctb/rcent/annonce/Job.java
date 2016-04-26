@@ -23,7 +23,8 @@ import org.apache.commons.lang3.tuple.Pair;
  */
 public class Job {
 
-	private static final Charset CHARSET = Charset.forName("ISO-8859-1");
+	private static final Charset INPUT_CHARSET = Charset.forName("UTF-8");
+	private static final Charset OUTPUT_CHARSET = Charset.forName("ISO-8859-1");
 
 	private static final String adressesResourceName = "adresses.csv";
 	private static final String discriminantResourceName = "discriminant.csv";
@@ -43,7 +44,7 @@ public class Job {
 
 		// ouvrons le fichier de sortie
 		try (OutputStream os = new FileOutputStream(outputFilename);
-		     OutputStreamWriter osw = new OutputStreamWriter(os, CHARSET);
+		     OutputStreamWriter osw = new OutputStreamWriter(os, OUTPUT_CHARSET);
 		     BufferedWriter bw = new BufferedWriter(osw)) {
 
 			// la ligne décrivant les colonnes
@@ -114,7 +115,7 @@ public class Job {
 			throw new NoSuchMethodException("static valueOf returning " + clazz.getName());
 		}
 		try (InputStream is = Job.class.getResourceAsStream(resourceName);
-		     InputStreamReader isr = new InputStreamReader(is, CHARSET);
+		     InputStreamReader isr = new InputStreamReader(is, INPUT_CHARSET);
 		     BufferedReader br = new BufferedReader(isr)) {
 
 			final Map<Long, T> map = new LinkedHashMap<>();     // pour conserver l'ordre d'insertion lors d'une itération sur le set
