@@ -443,30 +443,6 @@ public class TiersIndexableDataTest extends WithoutSpringTest {
 	}
 
 	@Test
-	public void testIndexationDateInscriptionRC() throws Exception {
-
-		// création et indexation des données
-		final TiersIndexableData data = newIndexableData();
-		data.setDateInscriptionRc(date(2015, 6, 24));
-		globalIndex.indexEntity(data);
-
-		// recherche des données (OK)
-		final TiersCriteria criteria = new TiersCriteria();
-		criteria.setDateNaissanceInscriptionRC(date(2015, 6, 24));
-
-		final List<TiersIndexedData> resultats = globalTiersSearcher.search(criteria);
-		assertNotNull(resultats);
-		assertEquals(1, resultats.size());
-
-		final TiersIndexedData indexed = resultats.get(0);
-		assertEquals((Long) ID, indexed.getNumero());
-
-		// recherche des données (KO)
-		criteria.setDateNaissanceInscriptionRC(date(2010, 1, 1));
-		assertEmpty(globalTiersSearcher.search(criteria));
-	}
-
-	@Test
 	public void testIndexationNumeroAssureSocial11() throws Exception {
 
 		// création et indexation des données

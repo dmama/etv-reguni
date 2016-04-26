@@ -407,6 +407,13 @@ public class QueryConstructor {
 		}
 	}
 
+	public void addContrainteScissionEntreprisePassee(BooleanQuery fullQuery) {
+		if (criteria.getCorporationSplit() != null) {
+			final TermQuery q = new TermQuery(new Term(TiersIndexableData.CORPORATION_WAS_SPLIT, criteria.getCorporationSplit() ? Constants.OUI : Constants.NON));
+			fullQuery.add(q, must);
+		}
+	}
+
 	public void addContrainteConnuAuCivil(BooleanQuery fullQuery) {
 		if (criteria.getConnuAuCivil() != null) {
 			final TermQuery q = new TermQuery(new Term(TiersIndexableData.CONNU_CIVIL, criteria.getConnuAuCivil() ? Constants.OUI : Constants.NON));
@@ -584,6 +591,7 @@ public class QueryConstructor {
 		addEtatInscriptionRC(fullQuery);
 		addEtatEntrepriseCourant(fullQuery);
 		addContrainteAbsorptionEntreprisePassee(fullQuery);
+		addContrainteScissionEntreprisePassee(fullQuery);
 		addContrainteMotifFermetureDernierForPrincipal(fullQuery);
 		addContrainteConnuAuCivil(fullQuery);
 

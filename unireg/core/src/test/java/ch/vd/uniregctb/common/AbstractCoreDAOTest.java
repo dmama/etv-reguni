@@ -103,6 +103,7 @@ import ch.vd.uniregctb.tiers.Parente;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RaisonSocialeFiscaleEntreprise;
 import ch.vd.uniregctb.tiers.RepresentationConventionnelle;
+import ch.vd.uniregctb.tiers.ScissionEntreprise;
 import ch.vd.uniregctb.tiers.SituationFamilleMenageCommun;
 import ch.vd.uniregctb.tiers.TacheAnnulationDeclarationImpot;
 import ch.vd.uniregctb.tiers.TacheControleDossier;
@@ -1052,6 +1053,14 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 		absorbee.addRapportSujet(fusion);
 		absorbante.addRapportObjet(fusion);
 		return fusion;
+	}
+
+	protected ScissionEntreprise addScissionEntreprise(Entreprise scindee, Entreprise resultante, RegDate dateContratScission) {
+		ScissionEntreprise scission = new ScissionEntreprise(dateContratScission, null, scindee, resultante);
+		scission = merge(scission);
+		scindee.addRapportSujet(scission);
+		resultante.addRapportObjet(scission);
+		return scission;
 	}
 
 	protected AutreCommunaute addAutreCommunaute(String nom) {

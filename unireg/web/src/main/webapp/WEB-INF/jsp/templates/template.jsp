@@ -125,6 +125,9 @@
 							<authz:authorize ifAnyGranted="ROLE_FUSION_ENTREPRISES">
 								<li><a href="<c:url value="/processuscomplexe/fusion/absorbante/list.do"/>"><fmt:message key="title.fusion.entreprises"/></a></li>
 							</authz:authorize>
+							<authz:authorize ifAnyGranted="ROLE_SCISSION_ENTREPRISE">
+								<li><a href="<c:url value="/processuscomplexe/scission/scindee/list.do"/>"><fmt:message key="title.scission.entreprise"/></a></li>
+							</authz:authorize>
 						</ul>
 					</li>
 					<li><fmt:message key="label.action.annulation.processus.complexes.entreprises"/>
@@ -140,6 +143,9 @@
 							</authz:authorize>
 							<authz:authorize ifAnyGranted="ROLE_FUSION_ENTREPRISES">
 								<li><a href="<c:url value="/processuscomplexe/annulation/fusion/list.do"/>"><fmt:message key="title.fusion.entreprises"/></a></li>
+							</authz:authorize>
+							<authz:authorize ifAnyGranted="ROLE_SCISSION_ENTREPRISE">
+								<li><a href="<c:url value="/processuscomplexe/annulation/scission/list.do"/>"><fmt:message key="title.scission.entreprise"/></a></li>
 							</authz:authorize>
 						</ul>
 					</li>

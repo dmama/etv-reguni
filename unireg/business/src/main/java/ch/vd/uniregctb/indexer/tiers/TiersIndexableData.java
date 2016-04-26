@@ -359,10 +359,6 @@ public class TiersIndexableData extends IndexableData {
 		return null;
 	}
 
-	public void setDateInscriptionRc(RegDate dateInscriptionRc) {
-		addDateNaissance(dateInscriptionRc);
-	}
-
 	public String getNoOfsForPrincipal() {
 		return noOfsForPrincipal;
 	}
