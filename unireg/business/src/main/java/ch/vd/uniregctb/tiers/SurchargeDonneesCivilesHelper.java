@@ -39,7 +39,7 @@ public class SurchargeDonneesCivilesHelper {
 			final T domicileFiscalApres = DateRangeHelper.rangeAt(entites, range.getDateFin().getOneDayAfter());
 			if (domicileFiscalDateValeur != null || domicileFiscalApres != null) {
 				throw new TiersException(
-						String.format("Impossible d'appliquer les données civiles car une surcharge fiscale de %s présente en date du %s.",
+						String.format("Impossible d'appliquer les données civiles car une surcharge fiscale de %s est présente en date du %s.",
 						              descriptionType,
 						              RegDateHelper.dateToDisplayString(dateValeur)));
 			}
