@@ -34,6 +34,7 @@ import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.declaration.Periodicite;
 import ch.vd.uniregctb.entreprise.complexe.FusionEntreprisesHelper;
+import ch.vd.uniregctb.entreprise.complexe.ScissionEntrepriseHelper;
 import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.security.SecurityHelper;
 import ch.vd.uniregctb.security.SecurityProviderInterface;
@@ -63,7 +64,7 @@ import ch.vd.uniregctb.utils.WebContextUtils;
  */
 public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceAware {
 
-	private static final long serialVersionUID = -1893258633180203901L;
+	private static final long serialVersionUID = 7545284534993448401L;
 
 	private final Logger LOGGER = LoggerFactory.getLogger(JspTagBandeauTiers.class);
 
@@ -97,12 +98,14 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 		list.add(new RevoquerFaillite());
 		list.add(new DemenagerSiege());
 		list.add(new TerminerActivite());
-		list.add(new RepriseActivitePartielle());
-		list.add(new FusionEntreprises());
+		list.add(new ReprendreActivitePartielle());
+		list.add(new AbsorberEntreprises());
+		list.add(new ScinderEntreprise());
 		list.add(new AnnulerFaillite());
 		list.add(new AnnulerDemenagementSiege());
 		list.add(new AnnulerFinActivite());
 		list.add(new AnnulerFusionEntreprises());
+		list.add(new AnnulerScissionEntreprise());
 
 		list.add(new AnnulerTiers());
 		list.add(new Exporter());
@@ -1152,7 +1155,7 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 		}
 	}
 
-	private static class RepriseActivitePartielle implements Action {
+	private static class ReprendreActivitePartielle implements Action {
 		@Override
 		public boolean isGranted() {
 			return SecurityHelper.isAnyGranted(securityProvider, Role.FIN_ACTIVITE_ENTREPRISE);
@@ -1212,7 +1215,7 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 		}
 	}
 
-	private static class FusionEntreprises implements Action {
+	private static class AbsorberEntreprises implements Action {
 		@Override
 		public boolean isGranted() {
 			return SecurityHelper.isAnyGranted(securityProvider, Role.FUSION_ENTREPRISES);
@@ -1257,6 +1260,54 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 		@Override
 		public String getActionUrl() {
 			return "goto:/processuscomplexe/annulation/fusion/choix-dates.do?absorbante=";
+		}
+	}
+
+	private static class ScinderEntreprise implements Action {
+		@Override
+		public boolean isGranted() {
+			return SecurityHelper.isAnyGranted(securityProvider, Role.SCISSION_ENTREPRISE);
+		}
+
+		@Override
+		public boolean isValide(Tiers tiers) {
+			return !tiers.isAnnule()
+					&& tiers instanceof Entreprise
+					&& !hadEtatOnce((Entreprise) tiers, EnumSet.of(TypeEtatEntreprise.ABSORBEE, TypeEtatEntreprise.DISSOUTE, TypeEtatEntreprise.RADIEE_RC));
+		}
+
+		@Override
+		public String getLabel() {
+			return "Scinder l'entreprise";
+		}
+
+		@Override
+		public String getActionUrl() {
+			return "goto:/processuscomplexe/scission/choix-date.do?scindee=";
+		}
+	}
+
+	private static class AnnulerScissionEntreprise implements Action {
+		@Override
+		public boolean isGranted() {
+			return SecurityHelper.isAnyGranted(securityProvider, Role.SCISSION_ENTREPRISE);
+		}
+
+		@Override
+		public boolean isValide(Tiers tiers) {
+			return !tiers.isAnnule()
+					&& tiers instanceof Entreprise
+					&& !ScissionEntrepriseHelper.getScissions((Entreprise) tiers, tiersService).isEmpty();
+		}
+
+		@Override
+		public String getLabel() {
+			return "Annuler une scission d'entreprise";
+		}
+
+		@Override
+		public String getActionUrl() {
+			return "goto:/processuscomplexe/annulation/scission/choix-date.do?scindee=";
 		}
 	}
 }

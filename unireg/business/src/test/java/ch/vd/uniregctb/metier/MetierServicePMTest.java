@@ -62,6 +62,7 @@ import ch.vd.uniregctb.tiers.FusionEntreprises;
 import ch.vd.uniregctb.tiers.MontantMonetaire;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.tiers.Remarque;
+import ch.vd.uniregctb.tiers.ScissionEntreprise;
 import ch.vd.uniregctb.tiers.dao.RemarqueDAO;
 import ch.vd.uniregctb.type.DayMonth;
 import ch.vd.uniregctb.type.FormeJuridiqueEntreprise;
@@ -1218,7 +1219,7 @@ public class MetierServicePMTest extends BusinessTest {
 		final RegDate dateDebutAbsorbee1 = date(2005, 6, 13);
 		final RegDate dateDebutAbsorbee2 = date(2007, 9, 30);
 
-		final RegDate dateContratFusion = date(2016, 6, 2);
+		final RegDate dateContratFusion = date(2016, 4, 2);
 		final RegDate dateBilanFusion = date(2015, 12, 31);
 
 		final class Ids {
@@ -2194,6 +2195,455 @@ public class MetierServicePMTest extends BusinessTest {
 				}
 				Assert.assertTrue(annulationTrouvee);
 				Assert.assertTrue(ouvertureTrouvee);
+			}
+		});
+	}
+
+	@Test
+	public void testScissionEntreprise() throws Exception {
+
+		final RegDate dateDebutScindee = date(2000, 5, 12);
+		final RegDate dateDebutResultante1 = date(2005, 6, 13);
+		final RegDate dateDebutResultante2 = date(2007, 9, 30);
+
+		final RegDate dateContratScission = date(2016, 4, 2);
+
+		final class Ids {
+			long idScindee;
+			long idEtablissementPrincipalScindee;
+			long idResultante1;
+			long idEtablissementPrincipalResultante1;
+			long idResultante2;
+			long idEtablissementPrincipalResultante2;
+		}
+
+		// mise en place fiscale
+		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
+			@Override
+			public Ids doInTransaction(TransactionStatus status) {
+
+				final Entreprise scindee = addEntrepriseInconnueAuCivil();
+				addRaisonSociale(scindee, dateDebutScindee, null, "Ma grande entreprise");
+				addFormeJuridique(scindee, dateDebutScindee, null, FormeJuridiqueEntreprise.SA);
+				addRegimeFiscalCH(scindee, dateDebutScindee, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addRegimeFiscalVD(scindee, dateDebutScindee, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addBouclement(scindee, dateDebutScindee, DayMonth.get(12, 31), 12);        // tous les 31.12 depuis 2000
+				addForPrincipal(scindee, dateDebutScindee, MotifFor.DEBUT_EXPLOITATION, MockCommune.Grandson);
+				addForSecondaire(scindee, dateDebutScindee, MotifFor.DEBUT_EXPLOITATION, MockCommune.ChateauDoex.getNoOFS(), MotifRattachement.ETABLISSEMENT_STABLE, GenreImpot.BENEFICE_CAPITAL);
+
+				addAdresseMandataireSuisse(scindee, dateDebutScindee, null, TypeMandat.GENERAL, "Mon mandataire chéri", MockRue.Renens.QuatorzeAvril);
+				addAdresseSuisse(scindee, TypeAdresseTiers.COURRIER, dateDebutScindee, null, MockRue.Prilly.RueDesMetiers);
+
+				final Etablissement etablissementPrincipalScindee = addEtablissement();
+				addDomicileEtablissement(etablissementPrincipalScindee, dateDebutScindee, null, MockCommune.Grandson);
+				addActiviteEconomique(scindee, etablissementPrincipalScindee, dateDebutScindee, null, true);
+
+				addEtatEntreprise(scindee, dateDebutScindee, TypeEtatEntreprise.FONDEE, TypeGenerationEtatEntreprise.AUTOMATIQUE);
+
+
+				final Entreprise resultante1 = addEntrepriseInconnueAuCivil();
+				addRaisonSociale(resultante1, dateDebutResultante1, null, "Ma toute petite entreprise");
+				addFormeJuridique(resultante1, dateDebutResultante1, null, FormeJuridiqueEntreprise.SA);
+				addRegimeFiscalCH(resultante1, dateDebutResultante1, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addRegimeFiscalVD(resultante1, dateDebutResultante1, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addBouclement(resultante1, dateDebutResultante1, DayMonth.get(12, 31), 12);        // tous les 31.12 depuis 2005
+				addForPrincipal(resultante1, dateDebutResultante1, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne);
+
+				final Etablissement etablissementPrincipalResultante1 = addEtablissement();
+				addDomicileEtablissement(etablissementPrincipalResultante1, dateDebutResultante1, null, MockCommune.Lausanne);
+				addActiviteEconomique(resultante1, etablissementPrincipalResultante1, dateDebutResultante1, null, true);
+
+				addEtatEntreprise(resultante1, dateDebutResultante1, TypeEtatEntreprise.FONDEE, TypeGenerationEtatEntreprise.AUTOMATIQUE);
+
+
+				final Entreprise resultante2 = addEntrepriseInconnueAuCivil();
+				addRaisonSociale(resultante2, dateDebutResultante2, null, "Ma minuscule entreprise");
+				addFormeJuridique(resultante2, dateDebutResultante2, null, FormeJuridiqueEntreprise.SARL);
+				addRegimeFiscalCH(resultante2, dateDebutResultante2, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addRegimeFiscalVD(resultante2, dateDebutResultante2, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addBouclement(resultante2, dateDebutResultante2, DayMonth.get(12, 31), 12);        // tous les 31.12 depuis 2007
+				addForPrincipal(resultante2, dateDebutResultante2, MotifFor.DEBUT_EXPLOITATION, MockCommune.Prilly);
+
+				final Etablissement etablissementPrincipalResultante2 = addEtablissement();
+				addDomicileEtablissement(etablissementPrincipalResultante2, dateDebutResultante2, null, MockCommune.Prilly);
+				addActiviteEconomique(resultante2, etablissementPrincipalResultante2, dateDebutResultante2, null, true);
+
+				addEtatEntreprise(resultante2, dateDebutResultante2, TypeEtatEntreprise.FONDEE, TypeGenerationEtatEntreprise.AUTOMATIQUE);
+
+
+				final Ids ids = new Ids();
+				ids.idScindee = scindee.getNumero();
+				ids.idEtablissementPrincipalScindee = etablissementPrincipalScindee.getNumero();
+				ids.idResultante1 = resultante1.getNumero();
+				ids.idEtablissementPrincipalResultante1 = etablissementPrincipalResultante1.getNumero();
+				ids.idResultante2 = resultante2.getNumero();
+				ids.idEtablissementPrincipalResultante2 = etablissementPrincipalResultante2.getNumero();
+				return ids;
+			}
+		});
+
+		// lancement de la scission d'entreprise
+		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus status) throws Exception {
+				final Entreprise scindee = (Entreprise) tiersDAO.get(ids.idScindee);
+				final Entreprise resultante1 = (Entreprise) tiersDAO.get(ids.idResultante1);
+				final Entreprise resultante2 = (Entreprise) tiersDAO.get(ids.idResultante2);
+				metierServicePM.scinde(scindee, Arrays.asList(resultante1, resultante2), dateContratScission);
+			}
+		});
+
+		// vérification des résultats en base
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+
+				// 1. sur l'entreprise scindée
+				// 1.1. rien n'a changé sauf l'apparition de nouveaux rapports entre tiers
+				final Entreprise scindee = (Entreprise) tiersDAO.get(ids.idScindee);
+				Assert.assertNotNull(scindee);
+				Assert.assertEquals(2, scindee.getForsFiscaux().size());
+				final ForFiscalPrincipalPM ffp = scindee.getDernierForFiscalPrincipal();
+				Assert.assertNotNull(ffp);
+				Assert.assertNull(ffp.getDateFin());
+				Assert.assertEquals(dateDebutScindee, ffp.getDateDebut());
+				Assert.assertFalse(ffp.isAnnule());
+
+				final List<ScissionEntreprise> scissions = extractRapports(scindee.getRapportsSujet(), ScissionEntreprise.class, new Comparator<ScissionEntreprise>() {
+					@Override
+					public int compare(ScissionEntreprise o1, ScissionEntreprise o2) {
+						// ordre croissant des identifiants des entreprises résultantes
+						return Long.compare(o1.getObjetId(), o2.getObjetId());
+					}
+				});
+				Assert.assertNotNull(scissions);
+				Assert.assertEquals(2, scissions.size());
+				{
+					final ScissionEntreprise scission = scissions.get(0);
+					Assert.assertNotNull(scission);
+					Assert.assertFalse(scission.isAnnule());
+					Assert.assertEquals(dateContratScission, scission.getDateDebut());
+					Assert.assertNull(scission.getDateFin());
+					Assert.assertEquals((Long) ids.idResultante1, scission.getObjetId());
+				}
+				{
+					final ScissionEntreprise scission = scissions.get(1);
+					Assert.assertNotNull(scission);
+					Assert.assertFalse(scission.isAnnule());
+					Assert.assertEquals(dateContratScission, scission.getDateDebut());
+					Assert.assertNull(scission.getDateFin());
+					Assert.assertEquals((Long) ids.idResultante2, scission.getObjetId());
+				}
+
+				// 1.2  événement fiscal de scission
+				final Collection<EvenementFiscal> evtsFiscauxScindee = evenementFiscalDAO.getEvenementsFiscaux(scindee);
+				Assert.assertNotNull(evtsFiscauxScindee);
+				Assert.assertEquals(1, evtsFiscauxScindee.size());
+				final EvenementFiscal evtFiscalScindee = evtsFiscauxScindee.iterator().next();
+				Assert.assertNotNull(evtFiscalScindee);
+				Assert.assertFalse(evtFiscalScindee.isAnnule());
+				Assert.assertEquals(dateContratScission, evtFiscalScindee.getDateValeur());
+				Assert.assertEquals(EvenementFiscalInformationComplementaire.class, evtFiscalScindee.getClass());
+				Assert.assertEquals(EvenementFiscalInformationComplementaire.TypeInformationComplementaire.SCISSION, ((EvenementFiscalInformationComplementaire) evtFiscalScindee).getType());
+
+				// 1.3 état inchangé
+				final EtatEntreprise etatScindee = scindee.getEtatActuel();
+				Assert.assertNotNull(etatScindee);
+				Assert.assertFalse(etatScindee.isAnnule());
+				Assert.assertEquals(TypeEtatEntreprise.FONDEE, etatScindee.getType());
+				Assert.assertEquals(dateDebutScindee, etatScindee.getDateObtention());
+
+				// 1.4 adresse inchangée
+				final List<AdresseTiers> adressesScindee = scindee.getAdressesTiersSorted(TypeAdresseTiers.COURRIER);
+				Assert.assertNotNull(adressesScindee);
+				Assert.assertEquals(1, adressesScindee.size());
+				final AdresseTiers adresseScindee = adressesScindee.get(0);
+				Assert.assertNotNull(adresseScindee);
+				Assert.assertFalse(adresseScindee.isAnnule());
+				Assert.assertEquals(AdresseSuisse.class, adresseScindee.getClass());
+				final AdresseSuisse adresseSuisseScindee = (AdresseSuisse) adresseScindee;
+				Assert.assertEquals(MockRue.Prilly.RueDesMetiers.getNoRue(), adresseSuisseScindee.getNumeroRue());
+				Assert.assertEquals(dateDebutScindee, adresseScindee.getDateDebut());
+				Assert.assertNull(adresseScindee.getDateFin());
+
+				// 2. sur les entreprises résultantes
+				final Entreprise resultante1 = (Entreprise) tiersDAO.get(ids.idResultante1);
+				final Entreprise resultante2 = (Entreprise) tiersDAO.get(ids.idResultante2);
+				for (Entreprise resultante : Arrays.asList(resultante1, resultante2)) {
+
+					// 2.1 les rapports entre tiers "ScissionEntreprise" ont été testés plus haut
+
+					// 2.2 rien sur les fors fiscaux
+					final Set<ForFiscal> forsFiscaux = resultante.getForsFiscaux();
+					Assert.assertNotNull(forsFiscaux);
+					Assert.assertEquals(1, forsFiscaux.size());
+					final ForFiscal ff = forsFiscaux.iterator().next();
+					Assert.assertNotNull(ff);
+					Assert.assertEquals(ForFiscalPrincipalPM.class, ff.getClass());
+					Assert.assertFalse(ff.isAnnule());
+
+					// 2.3 pas de nouvel état fiscal
+					final EtatEntreprise etat = resultante.getEtatActuel();
+					Assert.assertNotNull(etat);
+					Assert.assertFalse(etat.isAnnule());
+					Assert.assertEquals(TypeEtatEntreprise.FONDEE, etat.getType());
+
+					// 2.4 pas de changement d'adresse
+					final List<AdresseTiers> adresses = resultante.getAdressesTiersSorted();
+					Assert.assertNotNull(adresses);
+					Assert.assertEquals(0, adresses.size());
+
+					// 2.5 événements fiscaux
+					final Collection<EvenementFiscal> evtsFiscaux = evenementFiscalDAO.getEvenementsFiscaux(resultante);
+					Assert.assertNotNull(evtsFiscaux);
+					Assert.assertEquals(1, evtsFiscaux.size());     // 1 information complémentaire
+
+					final EvenementFiscal evtFiscal = evtsFiscaux.iterator().next();
+					Assert.assertNotNull(evtFiscal);
+					Assert.assertFalse(evtFiscal.isAnnule());
+					Assert.assertEquals(EvenementFiscalInformationComplementaire.class, evtFiscal.getClass());
+					Assert.assertEquals(dateContratScission, evtFiscal.getDateValeur());
+					Assert.assertEquals(EvenementFiscalInformationComplementaire.TypeInformationComplementaire.SCISSION, ((EvenementFiscalInformationComplementaire) evtFiscal).getType());
+				}
+			}
+		});
+	}
+
+	@Test
+	public void testAnnulationScissionEntreprise() throws Exception {
+
+		// nous allons créer un cas un peu plus compliqué où il y a plusieurs dates de scission distinctes... il n'est pas question alors d'annuler les deux scissions d'un coup !
+
+		final RegDate dateDebutScindee = date(2000, 5, 12);
+		final RegDate dateDebutResultante1 = date(2005, 6, 13);
+		final RegDate dateDebutResultante2 = date(2007, 9, 30);
+
+		final RegDate dateContratScission1 = date(2016, 2, 2);
+		final RegDate dateContratScission2 = date(2016, 4, 2);
+
+		final class Ids {
+			long idScindee;
+			long idEtablissementPrincipalScindee;
+			long idResultante1;
+			long idEtablissementPrincipalResultante1;
+			long idResultante2;
+			long idEtablissementPrincipalResultante2;
+		}
+
+		// mise en place fiscale
+		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
+			@Override
+			public Ids doInTransaction(TransactionStatus status) {
+
+				final Entreprise scindee = addEntrepriseInconnueAuCivil();
+				addRaisonSociale(scindee, dateDebutScindee, null, "Ma grande entreprise");
+				addFormeJuridique(scindee, dateDebutScindee, null, FormeJuridiqueEntreprise.SA);
+				addRegimeFiscalCH(scindee, dateDebutScindee, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addRegimeFiscalVD(scindee, dateDebutScindee, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addBouclement(scindee, dateDebutScindee, DayMonth.get(12, 31), 12);        // tous les 31.12 depuis 2000
+				addForPrincipal(scindee, dateDebutScindee, MotifFor.DEBUT_EXPLOITATION, MockCommune.Grandson);
+				addForSecondaire(scindee, dateDebutScindee, MotifFor.DEBUT_EXPLOITATION, MockCommune.ChateauDoex.getNoOFS(), MotifRattachement.ETABLISSEMENT_STABLE, GenreImpot.BENEFICE_CAPITAL);
+
+				addAdresseMandataireSuisse(scindee, dateDebutScindee, null, TypeMandat.GENERAL, "Mon mandataire chéri", MockRue.Renens.QuatorzeAvril);
+				addAdresseSuisse(scindee, TypeAdresseTiers.COURRIER, dateDebutScindee, null, MockRue.Prilly.RueDesMetiers);
+
+				final Etablissement etablissementPrincipalScindee = addEtablissement();
+				addDomicileEtablissement(etablissementPrincipalScindee, dateDebutScindee, null, MockCommune.Grandson);
+				addActiviteEconomique(scindee, etablissementPrincipalScindee, dateDebutScindee, null, true);
+
+				addEtatEntreprise(scindee, dateDebutScindee, TypeEtatEntreprise.FONDEE, TypeGenerationEtatEntreprise.AUTOMATIQUE);
+
+
+				final Entreprise resultante1 = addEntrepriseInconnueAuCivil();
+				addRaisonSociale(resultante1, dateDebutResultante1, null, "Ma toute petite entreprise");
+				addFormeJuridique(resultante1, dateDebutResultante1, null, FormeJuridiqueEntreprise.SA);
+				addRegimeFiscalCH(resultante1, dateDebutResultante1, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addRegimeFiscalVD(resultante1, dateDebutResultante1, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addBouclement(resultante1, dateDebutResultante1, DayMonth.get(12, 31), 12);        // tous les 31.12 depuis 2005
+				addForPrincipal(resultante1, dateDebutResultante1, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne);
+
+				final Etablissement etablissementPrincipalResultante1 = addEtablissement();
+				addDomicileEtablissement(etablissementPrincipalResultante1, dateDebutResultante1, null, MockCommune.Lausanne);
+				addActiviteEconomique(resultante1, etablissementPrincipalResultante1, dateDebutResultante1, null, true);
+
+				addEtatEntreprise(resultante1, dateDebutResultante1, TypeEtatEntreprise.FONDEE, TypeGenerationEtatEntreprise.AUTOMATIQUE);
+
+
+				final Entreprise resultante2 = addEntrepriseInconnueAuCivil();
+				addRaisonSociale(resultante2, dateDebutResultante2, null, "Ma minuscule entreprise");
+				addFormeJuridique(resultante2, dateDebutResultante2, null, FormeJuridiqueEntreprise.SARL);
+				addRegimeFiscalCH(resultante2, dateDebutResultante2, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addRegimeFiscalVD(resultante2, dateDebutResultante2, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addBouclement(resultante2, dateDebutResultante2, DayMonth.get(12, 31), 12);        // tous les 31.12 depuis 2007
+				addForPrincipal(resultante2, dateDebutResultante2, MotifFor.DEBUT_EXPLOITATION, MockCommune.Prilly);
+
+				final Etablissement etablissementPrincipalResultante2 = addEtablissement();
+				addDomicileEtablissement(etablissementPrincipalResultante2, dateDebutResultante2, null, MockCommune.Prilly);
+				addActiviteEconomique(resultante2, etablissementPrincipalResultante2, dateDebutResultante2, null, true);
+
+				addEtatEntreprise(resultante2, dateDebutResultante2, TypeEtatEntreprise.FONDEE, TypeGenerationEtatEntreprise.AUTOMATIQUE);
+
+				addScissionEntreprise(scindee, resultante1, dateContratScission1);
+				addScissionEntreprise(scindee, resultante2, dateContratScission2);
+
+
+				final Ids ids = new Ids();
+				ids.idScindee = scindee.getNumero();
+				ids.idEtablissementPrincipalScindee = etablissementPrincipalScindee.getNumero();
+				ids.idResultante1 = resultante1.getNumero();
+				ids.idEtablissementPrincipalResultante1 = etablissementPrincipalResultante1.getNumero();
+				ids.idResultante2 = resultante2.getNumero();
+				ids.idEtablissementPrincipalResultante2 = etablissementPrincipalResultante2.getNumero();
+				return ids;
+			}
+		});
+
+		// annulation de la scission (avec erreur)
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final Entreprise scindee = (Entreprise) tiersDAO.get(ids.idScindee);
+				final Entreprise resultante1 = (Entreprise) tiersDAO.get(ids.idResultante1);
+				final Entreprise resultante2 = (Entreprise) tiersDAO.get(ids.idResultante2);
+
+				// attention, l'entreprise 2 a été mise là par erreur ou malveillance... on doit sauter!
+				try {
+					metierServicePM.annuleScission(scindee, Arrays.asList(resultante1, resultante2), dateContratScission1);
+					Assert.fail("Aurait-dû sauter car l'entreprise resultante2 n'a pas la bonne date du contrat de scission");
+				}
+				catch (MetierServiceException e) {
+					Assert.assertEquals(String.format("L'entreprise %s n'est pas associée à une scission depuis l'entreprise %s avec une date de contrat de scission au %s.",
+					                                  FormatNumeroHelper.numeroCTBToDisplay(ids.idResultante2),
+					                                  FormatNumeroHelper.numeroCTBToDisplay(ids.idScindee),
+					                                  RegDateHelper.dateToDisplayString(dateContratScission1)),
+					                    e.getMessage());
+
+					// ne rien mettre en base quoi qu'il arrive...
+					status.setRollbackOnly();
+				}
+			}
+		});
+
+		// annulation de la fusion (sans erreur cette fois)
+		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus status) throws Exception {
+				final Entreprise scindee = (Entreprise) tiersDAO.get(ids.idScindee);
+				final Entreprise resultante1 = (Entreprise) tiersDAO.get(ids.idResultante1);
+				metierServicePM.annuleScission(scindee, Collections.singletonList(resultante1), dateContratScission1);
+			}
+		});
+
+		// vérification des données en base
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+
+				// 1. sur l'entreprise scindée
+				// 1.1. rien n'a changé sauf l'annulation du rapport entre tiers "scission" existant avec l'entreprise resultante1
+				final Entreprise scindee = (Entreprise) tiersDAO.get(ids.idScindee);
+				Assert.assertNotNull(scindee);
+				Assert.assertFalse(scindee.isAnnule());
+				Assert.assertEquals(2, scindee.getForsFiscaux().size());
+				final ForFiscalPrincipalPM ffp = scindee.getDernierForFiscalPrincipal();
+				Assert.assertNotNull(ffp);
+				Assert.assertNull(ffp.getDateFin());
+				Assert.assertEquals(dateDebutScindee, ffp.getDateDebut());
+				Assert.assertFalse(ffp.isAnnule());
+
+				final List<ScissionEntreprise> scissions = extractRapports(scindee.getRapportsSujet(), ScissionEntreprise.class, new Comparator<ScissionEntreprise>() {
+					@Override
+					public int compare(ScissionEntreprise o1, ScissionEntreprise o2) {
+						// ordre croissant des identifiants des entreprises résultantes
+						return Long.compare(o1.getObjetId(), o2.getObjetId());
+					}
+				});
+				Assert.assertNotNull(scissions);
+				Assert.assertEquals(2, scissions.size());
+				{
+					final ScissionEntreprise scission = scissions.get(0);
+					Assert.assertNotNull(scission);
+					Assert.assertTrue(scission.isAnnule());
+					Assert.assertEquals(dateContratScission1, scission.getDateDebut());
+					Assert.assertNull(scission.getDateFin());
+					Assert.assertEquals((Long) ids.idResultante1, scission.getObjetId());
+				}
+				{
+					final ScissionEntreprise fusion = scissions.get(1);
+					Assert.assertNotNull(fusion);
+					Assert.assertFalse(fusion.isAnnule());
+					Assert.assertEquals(dateContratScission2, fusion.getDateDebut());
+					Assert.assertNull(fusion.getDateFin());
+					Assert.assertEquals((Long) ids.idResultante2, fusion.getObjetId());
+				}
+
+				// 1.3 état inchangé
+				final EtatEntreprise etatScindee = scindee.getEtatActuel();
+				Assert.assertNotNull(etatScindee);
+				Assert.assertFalse(etatScindee.isAnnule());
+				Assert.assertEquals(TypeEtatEntreprise.FONDEE, etatScindee.getType());
+				Assert.assertEquals(dateDebutScindee, etatScindee.getDateObtention());
+
+				// 1.4 adresse inchangée
+				final List<AdresseTiers> adressesScindee = scindee.getAdressesTiersSorted(TypeAdresseTiers.COURRIER);
+				Assert.assertNotNull(adressesScindee);
+				Assert.assertEquals(1, adressesScindee.size());
+				final AdresseTiers adresseScindee = adressesScindee.get(0);
+				Assert.assertNotNull(adresseScindee);
+				Assert.assertFalse(adresseScindee.isAnnule());
+				Assert.assertEquals(AdresseSuisse.class, adresseScindee.getClass());
+				final AdresseSuisse adresseSuisseScindee = (AdresseSuisse) adresseScindee;
+				Assert.assertEquals(MockRue.Prilly.RueDesMetiers.getNoRue(), adresseSuisseScindee.getNumeroRue());
+				Assert.assertEquals(dateDebutScindee, adresseScindee.getDateDebut());
+				Assert.assertNull(adresseScindee.getDateFin());
+
+				// 2. sur l'entreprise resultante1 dont la scission est effectivement annulée
+
+				final Entreprise resultante1 = (Entreprise) tiersDAO.get(ids.idResultante1);
+				Assert.assertNotNull(resultante1);
+				Assert.assertFalse(resultante1.isAnnule());
+
+				// 2.1 for inchangé
+				final ForFiscalPrincipalPM ffp1 = resultante1.getDernierForFiscalPrincipal();
+				Assert.assertNotNull(ffp1);
+				Assert.assertFalse(ffp1.isAnnule());
+				Assert.assertEquals(dateDebutResultante1, ffp1.getDateDebut());
+				Assert.assertNull(ffp1.getDateFin());
+				Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp1.getTypeAutoriteFiscale());
+				Assert.assertEquals((Integer) MockCommune.Lausanne.getNoOFS(), ffp1.getNumeroOfsAutoriteFiscale());
+
+				// 2.2 état actuel inchangé
+				final EtatEntreprise etatActuel1 = resultante1.getEtatActuel();
+				Assert.assertNotNull(etatActuel1);
+				Assert.assertEquals(TypeEtatEntreprise.FONDEE, etatActuel1.getType());
+				Assert.assertEquals(dateDebutResultante1, etatActuel1.getDateObtention());
+
+				// 2.3 rien sur les adresses
+				final List<AdresseTiers> adresses1 = resultante1.getAdressesTiersSorted();
+				Assert.assertNotNull(adresses1);
+				Assert.assertEquals(0, adresses1.size());
+
+				// 3. sur l'entreprise resultante2 dont la scission n'est finalement pas annulée
+
+				final Entreprise resultante2 = (Entreprise) tiersDAO.get(ids.idResultante2);
+				Assert.assertNotNull(resultante2);
+				Assert.assertFalse(resultante2.isAnnule());
+
+				// 3.1. pas d'impact sur les fors
+				final ForFiscalPrincipalPM ffp2 = resultante2.getDernierForFiscalPrincipal();
+				Assert.assertNotNull(ffp2);
+				Assert.assertFalse(ffp2.isAnnule());
+				Assert.assertEquals(dateDebutResultante2, ffp2.getDateDebut());
+				Assert.assertNull(ffp2.getDateFin());
+				Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp2.getTypeAutoriteFiscale());
+				Assert.assertEquals((Integer) MockCommune.Prilly.getNoOFS(), ffp2.getNumeroOfsAutoriteFiscale());
+
+				// 3.2. état fiscal inchangé
+				final EtatEntreprise etat2 = resultante2.getEtatActuel();
+				Assert.assertNotNull(etat2);
+				Assert.assertFalse(etat2.isAnnule());
+				Assert.assertEquals(TypeEtatEntreprise.FONDEE, etat2.getType());
+				Assert.assertEquals(dateDebutResultante2, etat2.getDateObtention());
 			}
 		});
 	}

@@ -20,10 +20,12 @@
 	<bean id="finActiviteController" class="ch.vd.uniregctb.entreprise.complexe.FinActiviteController" parent="abstractProcessusComplexeEntrepriseController"/>
 	<bean id="repriseActiviteController" class="ch.vd.uniregctb.entreprise.complexe.ReprisePartielleActiviteController" parent="abstractProcessusComplexeEntrepriseController"/>
 	<bean id="fusionEntreprisesController" class="ch.vd.uniregctb.entreprise.complexe.FusionEntreprisesController" parent="abstractProcessusComplexeEntrepriseController"/>
+	<bean id="scissionEntrepriseController" class="ch.vd.uniregctb.entreprise.complexe.ScissionEntrepriseController" parent="abstractProcessusComplexeEntrepriseController"/>
 
 	<bean id="annulationFailliteController" class="ch.vd.uniregctb.entreprise.complexe.AnnulationFailliteController" parent="abstractProcessusComplexeEntrepriseController"/>
 	<bean id="annulationDemenagementSiegeController" class="ch.vd.uniregctb.entreprise.complexe.AnnulationDemenagementSiegeController" parent="abstractProcessusComplexeEntrepriseController"/>
 	<bean id="annulationFinActiviteController" class="ch.vd.uniregctb.entreprise.complexe.AnnulationFinActiviteController" parent="abstractProcessusComplexeEntrepriseController"/>
 	<bean id="annulationFusionController" class="ch.vd.uniregctb.entreprise.complexe.AnnulationFusionEntreprisesController" parent="abstractProcessusComplexeEntrepriseController"/>
+	<bean id="annulationScissionController" class="ch.vd.uniregctb.entreprise.complexe.AnnulationScissionEntrepriseController" parent="abstractProcessusComplexeEntrepriseController"/>
 
 </beans>

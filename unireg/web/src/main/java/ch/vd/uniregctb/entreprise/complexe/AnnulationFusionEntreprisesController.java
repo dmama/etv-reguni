@@ -49,7 +49,7 @@ public class AnnulationFusionEntreprisesController extends AbstractProcessusComp
 
 	@Override
 	protected void checkDroitAcces() throws AccessDeniedException {
-		checkAnyGranted("Vous ne possédez aucun droit IfoSec pour l'accès au processus complexe de fusion d'entreprises.",
+		checkAnyGranted("Vous ne possédez aucun droit IfoSec pour l'accès au processus complexe d'annulation de fusion d'entreprises.",
 		                Role.FUSION_ENTREPRISES);
 	}
 

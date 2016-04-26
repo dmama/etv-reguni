@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.uniregctb.avatar.TypeAvatar;
 import ch.vd.uniregctb.common.Annulable;
@@ -59,6 +60,14 @@ public class TiersIndexedDataView implements Annulable {
 			return null;
 		}
 		return data.getDateNaissanceInscriptionRC();
+	}
+
+	public RegDate getRegDateNaissanceInscriptionRC() {
+		if (data.getTiersType().equals(MenageCommunIndexable.SUB_TYPE)) {
+			// [UNIREG-2633] on n'affiche pas de dates de naissance sur les ménages communs
+			return null;
+		}
+		return data.getRegDateNaissanceInscriptionRC();
 	}
 
 	public String getDateDeces() {

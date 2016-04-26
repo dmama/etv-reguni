@@ -148,4 +148,22 @@ public interface MetierServicePM {
 	 * @throws MetierServiceException en cas de problème
 	 */
 	void annuleFusionEntreprises(Entreprise absorbante, List<Entreprise> absorbees, RegDate dateContratFusion, RegDate dateBilanFusion) throws MetierServiceException;
+
+	/**
+	 * Opération de scission d'entreprise
+	 * @param scindee l'entreprise scindée
+	 * @param resultantes les entreprises résultantes (= réceptrices) de la scission
+	 * @param dateContratScission la date du contrat de scission
+	 * @throws MetierServiceException en cas de problème
+	 */
+	void scinde(Entreprise scindee, List<Entreprise> resultantes, RegDate dateContratScission) throws MetierServiceException;
+
+	/**
+	 * Opération d'annulation de scission d'entreprise
+	 * @param scindee l'entreprise scindée
+	 * @param resultantes les entreprises résultantes (= réceptrices) de la scission
+	 * @param dateContratScission la date du contrat de scission
+	 * @throws MetierServiceException en cas de problème
+	 */
+	void annuleScission(Entreprise scindee, List<Entreprise> resultantes, RegDate dateContratScission) throws MetierServiceException;
 }

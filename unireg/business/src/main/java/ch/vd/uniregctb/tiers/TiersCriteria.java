@@ -322,6 +322,12 @@ public class TiersCriteria implements Serializable, TiersFilter {
 	private Boolean isConnuAuCivil;
 
 	/**
+	 * <code>true</code> si on ne veut que les entreprises qui ont un jour subi une scission, <code>false</code> si on ne veut que celles qui n'ont pas subi
+	 * ce genre d'opération, et <code>null</code> si cela n'a pas d'importante
+	 */
+	private Boolean isCorporationSplit;
+
+	/**
 	 * @return true si aucun paramètre de recherche n'est renseigné. false
 	 *         autrement.
 	 */
@@ -796,6 +802,14 @@ public class TiersCriteria implements Serializable, TiersFilter {
 
 	public void setCorporationMergeResult(Boolean corporationMergeResult) {
 		isCorporationMergeResult = corporationMergeResult;
+	}
+
+	public Boolean getCorporationSplit() {
+		return isCorporationSplit;
+	}
+
+	public void setCorporationSplit(Boolean corporationSplit) {
+		isCorporationSplit = corporationSplit;
 	}
 
 	public Boolean getConnuAuCivil() {

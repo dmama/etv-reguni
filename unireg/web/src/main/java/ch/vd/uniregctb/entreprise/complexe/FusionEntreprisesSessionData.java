@@ -14,16 +14,16 @@ import ch.vd.uniregctb.type.TypeEtatEntreprise;
 /**
  * Structure de données posée en session sous le nom {@link FusionEntreprisesController#FUSION_NAME}
  */
-public class FusionEntrepriseSessionData implements Serializable {
+public class FusionEntreprisesSessionData implements Serializable {
 
-	private static final long serialVersionUID = 6556738210316484624L;
+	private static final long serialVersionUID = 2252075084359401280L;
 
 	private final long idEntrepriseAbsorbante;
 	private final RegDate dateContratFusion;
 	private final RegDate dateBilanFusion;
 	private final Map<Long, EntrepriseAbsorbee> entreprisesAbsorbees = new LinkedHashMap<>();
 
-	public FusionEntrepriseSessionData(long idEntrepriseAbsorbante, RegDate dateContratFusion, RegDate dateBilanFusion) {
+	public FusionEntreprisesSessionData(long idEntrepriseAbsorbante, RegDate dateContratFusion, RegDate dateBilanFusion) {
 		this.idEntrepriseAbsorbante = idEntrepriseAbsorbante;
 		this.dateBilanFusion = dateBilanFusion;
 		this.dateContratFusion = dateContratFusion;
@@ -64,7 +64,7 @@ public class FusionEntrepriseSessionData implements Serializable {
 		private final long id;
 		private final String numeroIDE;
 		private final String raisonSociale;
-		private final String dateInscription;
+		private final RegDate dateInscription;
 		private final String nomSiege;
 		private final FormeLegale formeJuridique;
 		private final TypeEtatEntreprise etatActuel;
@@ -73,7 +73,7 @@ public class FusionEntrepriseSessionData implements Serializable {
 			this.id = data.getNumero();
 			this.numeroIDE = data.getNumeroIDE();
 			this.raisonSociale = data.getNom1();
-			this.dateInscription = data.getDateNaissanceInscriptionRC();
+			this.dateInscription = data.getRegDateNaissanceInscriptionRC();
 			this.nomSiege = data.getDomicileEtablissementPrincipal();
 			this.formeJuridique = data.getFormeJuridique();
 			this.etatActuel = data.getEtatEntreprise();
@@ -91,7 +91,7 @@ public class FusionEntrepriseSessionData implements Serializable {
 			return raisonSociale;
 		}
 
-		public String getDateInscription() {
+		public RegDate getDateInscription() {
 			return dateInscription;
 		}
 

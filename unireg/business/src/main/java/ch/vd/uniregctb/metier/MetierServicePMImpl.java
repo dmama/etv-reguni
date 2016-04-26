@@ -56,6 +56,7 @@ import ch.vd.uniregctb.tiers.Mandat;
 import ch.vd.uniregctb.tiers.RaisonSocialeFiscaleEntreprise;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.tiers.Remarque;
+import ch.vd.uniregctb.tiers.ScissionEntreprise;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.tiers.dao.RemarqueDAO;
@@ -948,6 +949,59 @@ public class MetierServicePMImpl implements MetierServicePM {
 				if (derniereSurcharge.getDateDebut() == dateContratFusion) {
 					adresseService.annulerAdresse(derniereSurcharge);
 				}
+			}
+		}
+	}
+
+	@Override
+	public void scinde(Entreprise scindee, List<Entreprise> resultantes, RegDate dateContratScission) throws MetierServiceException {
+
+		// création de rapports entre tiers de type scission
+		for (Entreprise resultante : resultantes) {
+			final ScissionEntreprise scission = new ScissionEntreprise(dateContratScission, null, scindee, resultante);
+			tiersService.addRapport(scission, scindee, resultante);
+		}
+
+		// envoi d'un événement fiscal sur toutes les entreprises concernées
+		for (Entreprise entreprise : CollectionsUtils.merged(Collections.singletonList(scindee), resultantes)) {
+			evenementFiscalService.publierEvenementFiscalInformationComplementaire(entreprise,
+			                                                                       EvenementFiscalInformationComplementaire.TypeInformationComplementaire.SCISSION,
+			                                                                       dateContratScission);
+		}
+	}
+
+	@Override
+	public void annuleScission(Entreprise scindee, List<Entreprise> resultantes, RegDate dateContratScission) throws MetierServiceException {
+
+		// vérification que les entreprises résultantes ont bien un lien de scission avec l'entreprise scindée à la date de scission donnée
+		for (Entreprise resultante : resultantes) {
+			// recherche du rapport entre tiers
+			boolean trouveBonRapportEntreTiers = false;
+			for (RapportEntreTiers ret : resultante.getRapportsObjet()) {
+				if (!ret.isAnnule() && ret.getType() == TypeRapportEntreTiers.SCISSION_ENTREPRISE && ret.getDateDebut() == dateContratScission && ret.getSujetId().equals(scindee.getId())) {
+					trouveBonRapportEntreTiers = true;
+					break;
+				}
+			}
+			if (!trouveBonRapportEntreTiers) {
+				throw new MetierServiceException(String.format("L'entreprise %s n'est pas associée à une scission depuis l'entreprise %s avec une date de contrat de scission au %s.",
+				                                               FormatNumeroHelper.numeroCTBToDisplay(resultante.getNumero()),
+				                                               FormatNumeroHelper.numeroCTBToDisplay(scindee.getNumero()),
+				                                               RegDateHelper.dateToDisplayString(dateContratScission)));
+			}
+		}
+
+		// annulation des rapports entre tiers
+		// identifiants des entreprises absorbées
+		final Set<Long> idsResultantes = new HashSet<>(resultantes.size());
+		for (Entreprise resultante : resultantes) {
+			idsResultantes.add(resultante.getNumero());
+		}
+
+		// annulation des rapports entre tiers entre l'entreprise scindée et les entreprises résultantes à la date du contrat de scission
+		for (RapportEntreTiers ret : scindee.getRapportsSujet()) {
+			if (!ret.isAnnule() && ret.getType() == TypeRapportEntreTiers.SCISSION_ENTREPRISE && ret.getDateDebut() == dateContratScission && idsResultantes.contains(ret.getObjetId())) {
+				ret.setAnnule(true);
 			}
 		}
 	}

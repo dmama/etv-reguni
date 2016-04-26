@@ -2,18 +2,23 @@ package ch.vd.uniregctb.entreprise.complexe;
 
 import org.apache.commons.lang3.StringUtils;
 
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.uniregctb.common.Annulable;
 import ch.vd.uniregctb.tiers.TiersIndexedDataView;
 import ch.vd.uniregctb.type.TypeEtatEntreprise;
 
-public class FusionEntreprisesAbsorbeeView implements Annulable {
+/**
+ * Classe des données utilisées lors de la présentation d'une liste d'entreprises
+ * issues d'une recherche, dont certaines seulement sont sélectionnables
+ */
+public class SelectionEntrepriseView implements Annulable {
 
 	private final TiersIndexedDataView indexedData;
 	private final boolean selectionnable;
 	private final String explicationNonSelectionnable;
 
-	public FusionEntreprisesAbsorbeeView(TiersIndexedDataView data, String explicationNonSelectionnable) {
+	public SelectionEntrepriseView(TiersIndexedDataView data, String explicationNonSelectionnable) {
 		this.indexedData = data;
 		this.selectionnable = StringUtils.isBlank(explicationNonSelectionnable);
 		this.explicationNonSelectionnable = explicationNonSelectionnable;
@@ -40,8 +45,8 @@ public class FusionEntreprisesAbsorbeeView implements Annulable {
 		return indexedData.getForPrincipal();
 	}
 
-	public String getDateNaissanceInscriptionRC() {
-		return indexedData.getDateNaissanceInscriptionRC();
+	public RegDate getDateNaissanceInscriptionRC() {
+		return indexedData.getRegDateNaissanceInscriptionRC();
 	}
 
 	public String getNumeroIDE() {
