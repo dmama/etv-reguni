@@ -335,7 +335,10 @@ public class ServiceOrganisationCache implements ServiceOrganisationRaw, UniregC
 				remove = (ks.noSite == id);
 				if (!remove) {
 					final Element elt = cache.getQuiet(k);
-					remove = elt.getObjectValue().equals(id);
+					final Object value = elt != null ? elt.getObjectValue() : null;
+					if (value != null) {
+						remove = value.equals(id);
+					}
 				}
 			}
 			if (remove) {
