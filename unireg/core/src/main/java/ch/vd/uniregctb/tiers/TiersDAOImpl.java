@@ -1288,22 +1288,6 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
-	public List<MenageCommun> getMenagesCommuns(final List<Long> ids, Set<Parts> parts) {
-		final Session session = getCurrentSession();
-		final String hql = "select mc.numero from MenageCommun mc where mc.numero in (:ids)";
-		final Set<Long> set = new HashSet<>(ids);
-		final List<Long> idsMC = queryObjectsByIds(hql, set, session);
-
-		final List<Tiers> tiers = getBatch(idsMC, parts);
-		final List<MenageCommun> menages = new ArrayList<>(tiers.size());
-		for (Tiers t : tiers) {
-			menages.add((MenageCommun) t);
-		}
-		return menages;
-	}
-
-	@Override
 	@SuppressWarnings({"unchecked"})
 	public Contribuable getContribuable(final DebiteurPrestationImposable debiteur) {
 		final Session session = getCurrentSession();

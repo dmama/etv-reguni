@@ -33,7 +33,6 @@ import ch.vd.uniregctb.tiers.FlagEntreprise;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.IdentificationEntreprise;
 import ch.vd.uniregctb.tiers.IdentificationPersonne;
-import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.tiers.RegimeFiscal;
@@ -227,11 +226,6 @@ class TransitionEtatMockTiersDao extends TiersDAOImpl implements TiersDAO {
 
 	@Override
 	public Tiers getTiersForIndexation(long id) {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public List<MenageCommun> getMenagesCommuns(List<Long> ids, Set<Parts> parts) {
 		throw new UnsupportedOperationException();
 	}
 

@@ -275,11 +275,6 @@ public class TiersDAOBooster implements TiersDAO, InitializingBean {
 	}
 
 	@Override
-	public List<MenageCommun> getMenagesCommuns(List<Long> ids, Set<Parts> parts) {
-		return target.getMenagesCommuns(ids, parts);
-	}
-
-	@Override
 	public Contribuable getContribuable(DebiteurPrestationImposable debiteur) {
 		return target.getContribuable(debiteur);
 	}

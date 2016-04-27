@@ -113,7 +113,7 @@ public class DroitAccesDAOImpl extends BaseDAOImpl<DroitAcces, Long> implements 
 	 */
 	@Override
 	@SuppressWarnings("unchecked")
-	public List<DroitAcces> getDroitsAccessTiers(final List<Long> ids, final RegDate date) {
+	public List<DroitAcces> getDroitsAccessTiers(final Set<Long> ids, final RegDate date) {
 		if (ids == null || ids.isEmpty()) {
 			return Collections.emptyList();
 		}
@@ -133,12 +133,11 @@ public class DroitAccesDAOImpl extends BaseDAOImpl<DroitAcces, Long> implements 
 
 		final HashSet<Long> results = new HashSet<>();
 		final Session session = getCurrentSession();
+		final RegDate today = RegDate.get();
 
-		// récupère les ids des personnes physiques avec droits d'accès
+		// récupère les ids des contribuables avec droits d'accès directs
 		{
 			final String query = "select da.tiers.id from DroitAcces da where da.annulationDate is null and da.dateDebut <= :today and (da.dateFin is null or da.dateFin >= :today)";
-			final RegDate today = RegDate.get();
-
 			final Query queryObject = session.createQuery(query);
 			queryObject.setParameter("today", today);
 			results.addAll(queryObject.list());
@@ -147,8 +146,14 @@ public class DroitAccesDAOImpl extends BaseDAOImpl<DroitAcces, Long> implements 
 		// ajoute les ids des ménages communs ayant (ou ayant eu) pour membre une personne physique avec droits d'accès
 		{
 			final String query = "select am.objetId from AppartenanceMenage am, DroitAcces da where am.sujetId = da.tiers.id and am.annulationDate is null and da.annulationDate is null and da.dateDebut <= :today and (da.dateFin is null or da.dateFin >= :today)";
-			final RegDate today = RegDate.get();
+			final Query queryObject = session.createQuery(query);
+			queryObject.setParameter("today", today);
+			results.addAll(queryObject.list());
+		}
 
+		// ajoute les ids des établissements ayant (ou ayant eu) pour entité parente un contribuable avec droit d'accès
+		{
+			final String query = "select ae.objetId from ActiviteEconomique ae, DroitAcces da where ae.sujetId = da.tiers.id and ae.annulationDate is null and da.annulationDate is null and da.dateDebut <= :today and (da.dateFin is null or da.dateFin >= :today)";
 			final Query queryObject = session.createQuery(query);
 			queryObject.setParameter("today", today);
 			results.addAll(queryObject.list());

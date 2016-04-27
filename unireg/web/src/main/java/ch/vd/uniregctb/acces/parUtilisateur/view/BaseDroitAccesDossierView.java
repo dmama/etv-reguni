@@ -5,6 +5,7 @@ import ch.vd.uniregctb.adresse.AdresseEnvoiDetaillee;
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
+import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.TiersService;
 
@@ -15,10 +16,10 @@ public class BaseDroitAccesDossierView {
 	private final String localite;
 	private final RegDate dateNaissance;
 
-	public BaseDroitAccesDossierView(PersonnePhysique pp, TiersService tiersService, AdresseService adresseService) throws AdresseException {
-		this.numeroCTB = pp.getNumero();
+	public BaseDroitAccesDossierView(Contribuable ctb, TiersService tiersService, AdresseService adresseService) throws AdresseException {
+		this.numeroCTB = ctb.getNumero();
 
-		final AdresseEnvoiDetaillee adresse = adresseService.getAdresseEnvoi(pp, null, TypeAdresseFiscale.COURRIER, false);
+		final AdresseEnvoiDetaillee adresse = adresseService.getAdresseEnvoi(ctb, null, TypeAdresseFiscale.COURRIER, false);
 		if (adresse != null && adresse.getNpaEtLocalite() != null) {
 			this.localite = adresse.getNpaEtLocalite().toString();
 		}
@@ -26,8 +27,8 @@ public class BaseDroitAccesDossierView {
 			this.localite = null;
 		}
 
-		this.prenomNom = tiersService.getNomPrenom(pp);
-		this.dateNaissance = tiersService.getDateNaissance(pp);
+		this.prenomNom = tiersService.getNomRaisonSociale(ctb);
+		this.dateNaissance = ctb instanceof PersonnePhysique ? tiersService.getDateNaissance((PersonnePhysique) ctb) : null;
 	}
 
 	public Long getNumeroCTB() {

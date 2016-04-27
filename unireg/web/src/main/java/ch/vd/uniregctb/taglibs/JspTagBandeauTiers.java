@@ -53,6 +53,7 @@ import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.transaction.TransactionTemplate;
 import ch.vd.uniregctb.type.MotifFor;
+import ch.vd.uniregctb.type.Niveau;
 import ch.vd.uniregctb.type.PeriodeDecompte;
 import ch.vd.uniregctb.type.PeriodiciteDecompte;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
@@ -743,7 +744,10 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 
 		@Override
 		public boolean isValide(Tiers tiers) {
-			return !tiers.isAnnule() && tiers instanceof PersonnePhysique && !tiersService.isInMenageCommun((PersonnePhysique) tiers, null);
+			return !tiers.isAnnule()
+					&& tiers instanceof PersonnePhysique
+					&& !tiersService.isInMenageCommun((PersonnePhysique) tiers, null)
+					&& SecurityHelper.getDroitAcces(securityProvider, tiers) == Niveau.ECRITURE;
 		}
 
 		@Override
@@ -766,7 +770,10 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 
 		@Override
 		public boolean isValide(Tiers tiers) {
-			return !tiers.isAnnule() && tiers instanceof PersonnePhysique && tiersService.getDateDeces((PersonnePhysique) tiers) == null;
+			return !tiers.isAnnule()
+					&& tiers instanceof PersonnePhysique
+					&& tiersService.getDateDeces((PersonnePhysique) tiers) == null
+					&& SecurityHelper.getDroitAcces(securityProvider, tiers) == Niveau.ECRITURE;
 		}
 
 		@Override
@@ -789,7 +796,10 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 
 		@Override
 		public boolean isValide(Tiers tiers) {
-			return !tiers.isAnnule() && tiers instanceof MenageCommun && tiersService.isMenageActif((MenageCommun) tiers, null);
+			return !tiers.isAnnule()
+					&& tiers instanceof MenageCommun
+					&& tiersService.isMenageActif((MenageCommun) tiers, null)
+					&& SecurityHelper.getDroitAcces(securityProvider, tiers) == Niveau.ECRITURE;
 		}
 
 		@Override
@@ -812,7 +822,8 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 
 		@Override
 		public boolean isValide(Tiers tiers) {
-			final boolean droitOk = ActivationDesactivationHelper.isActivationDesactivationAllowed(tiers.getNatureTiers(), securityProvider);
+			final boolean droitOk = ActivationDesactivationHelper.isActivationDesactivationAllowed(tiers.getNatureTiers(), securityProvider)
+					&& SecurityHelper.getDroitAcces(securityProvider, tiers) == Niveau.ECRITURE;
 			return droitOk && tiers.isDesactive(null);
 		}
 
@@ -836,7 +847,10 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 
 		@Override
 		public boolean isValide(Tiers tiers) {
-			return !tiers.isAnnule() && tiers instanceof MenageCommun && tiersService.isMenageActif((MenageCommun) tiers, null);
+			return !tiers.isAnnule()
+					&& tiers instanceof MenageCommun
+					&& tiersService.isMenageActif((MenageCommun) tiers, null)
+					&& SecurityHelper.getDroitAcces(securityProvider, tiers) == Niveau.ECRITURE;
 		}
 
 		@Override
@@ -859,7 +873,10 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 
 		@Override
 		public boolean isValide(Tiers tiers) {
-			return !tiers.isAnnule() && tiers instanceof MenageCommun && tiersService.isDernierForFiscalPrincipalFermePourSeparation(tiers);
+			return !tiers.isAnnule()
+					&& tiers instanceof MenageCommun
+					&& tiersService.isDernierForFiscalPrincipalFermePourSeparation(tiers)
+					&& SecurityHelper.getDroitAcces(securityProvider, tiers) == Niveau.ECRITURE;
 		}
 
 		@Override
@@ -882,7 +899,10 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 
 		@Override
 		public boolean isValide(Tiers tiers) {
-			return !tiers.isAnnule() && tiers instanceof PersonnePhysique && tiersService.getDateDeces((PersonnePhysique) tiers) != null;
+			return !tiers.isAnnule()
+					&& tiers instanceof PersonnePhysique
+					&& tiersService.getDateDeces((PersonnePhysique) tiers) != null
+					&& SecurityHelper.getDroitAcces(securityProvider, tiers) == Niveau.ECRITURE;
 		}
 
 		@Override
@@ -905,7 +925,8 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 
 		@Override
 		public boolean isValide(Tiers tiers) {
-			final boolean droitOk = ActivationDesactivationHelper.isActivationDesactivationAllowed(tiers.getNatureTiers(), securityProvider);
+			final boolean droitOk = ActivationDesactivationHelper.isActivationDesactivationAllowed(tiers.getNatureTiers(), securityProvider)
+					&& SecurityHelper.getDroitAcces(securityProvider, tiers) == Niveau.ECRITURE;
 			return droitOk && !tiers.isDesactive(null);
 		}
 
@@ -1005,7 +1026,8 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 					&& tiers instanceof Entreprise
 					&& !isEtatCourant((Entreprise) tiers, TypeEtatEntreprise.EN_FAILLITE)
 					&& !hadEtatOnce((Entreprise) tiers, EnumSet.of(TypeEtatEntreprise.ABSORBEE, TypeEtatEntreprise.DISSOUTE, TypeEtatEntreprise.RADIEE_RC))
-					&& tiers.getForFiscalPrincipalAt(null) != null;
+					&& tiers.getForFiscalPrincipalAt(null) != null
+					&& SecurityHelper.getDroitAcces(securityProvider, tiers) == Niveau.ECRITURE;
 		}
 
 		@Override
@@ -1031,7 +1053,8 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 					&& tiers instanceof Entreprise
 					&& isEtatCourant((Entreprise) tiers, TypeEtatEntreprise.EN_FAILLITE)
 					&& !hadEtatOnce((Entreprise) tiers, EnumSet.of(TypeEtatEntreprise.ABSORBEE, TypeEtatEntreprise.DISSOUTE))
-					&& tiers.getForFiscalPrincipalAt(null) == null;
+					&& tiers.getForFiscalPrincipalAt(null) == null
+					&& SecurityHelper.getDroitAcces(securityProvider, tiers) == Niveau.ECRITURE;
 		}
 
 		@Override
@@ -1057,7 +1080,8 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 					&& tiers instanceof Entreprise
 					&& isEtatCourant((Entreprise) tiers, TypeEtatEntreprise.EN_FAILLITE)
 					&& !hadEtatOnce((Entreprise) tiers, EnumSet.of(TypeEtatEntreprise.ABSORBEE, TypeEtatEntreprise.DISSOUTE))
-					&& tiers.getForFiscalPrincipalAt(null) == null;
+					&& tiers.getForFiscalPrincipalAt(null) == null
+					&& SecurityHelper.getDroitAcces(securityProvider, tiers) == Niveau.ECRITURE;
 		}
 
 		@Override
@@ -1082,7 +1106,8 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 			return !tiers.isAnnule()
 					&& tiers instanceof Entreprise
 					&& !((Entreprise) tiers).isConnueAuCivil()
-					&& tiers.getForFiscalPrincipalAt(null) != null;
+					&& tiers.getForFiscalPrincipalAt(null) != null
+					&& SecurityHelper.getDroitAcces(securityProvider, tiers) == Niveau.ECRITURE;
 		}
 
 		@Override
@@ -1107,7 +1132,8 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 			return !tiers.isAnnule()
 					&& tiers instanceof Entreprise
 					&& !((Entreprise) tiers).isConnueAuCivil()
-					&& hasForPrincipalActifEtForPrecedent(tiers);
+					&& hasForPrincipalActifEtForPrecedent(tiers)
+					&& SecurityHelper.getDroitAcces(securityProvider, tiers) == Niveau.ECRITURE;
 		}
 
 		private static boolean hasForPrincipalActifEtForPrecedent(Tiers tiers) {
@@ -1141,7 +1167,8 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 			return !tiers.isAnnule()
 					&& tiers instanceof Entreprise
 					&& !hadEtatOnce((Entreprise) tiers, EnumSet.of(TypeEtatEntreprise.ABSORBEE, TypeEtatEntreprise.DISSOUTE))
-					&& tiers.getForFiscalPrincipalAt(null) != null;
+					&& tiers.getForFiscalPrincipalAt(null) != null
+					&& SecurityHelper.getDroitAcces(securityProvider, tiers) == Niveau.ECRITURE;
 		}
 
 		@Override
@@ -1166,7 +1193,8 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 			return !tiers.isAnnule()
 					&& tiers instanceof Entreprise
 					&& !hadEtatOnce((Entreprise) tiers, EnumSet.of(TypeEtatEntreprise.ABSORBEE))
-					&& isDernierForPrincipalFermePourFinActivite(tiers);
+					&& isDernierForPrincipalFermePourFinActivite(tiers)
+					&& SecurityHelper.getDroitAcces(securityProvider, tiers) == Niveau.ECRITURE;
 		}
 
 		private static boolean isDernierForPrincipalFermePourFinActivite(Tiers tiers) {
@@ -1196,7 +1224,8 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 			return !tiers.isAnnule()
 					&& tiers instanceof Entreprise
 					&& !hadEtatOnce((Entreprise) tiers, EnumSet.of(TypeEtatEntreprise.ABSORBEE))
-					&& isDernierForPrincipalFermePourFinActivite(tiers);
+					&& isDernierForPrincipalFermePourFinActivite(tiers)
+					&& SecurityHelper.getDroitAcces(securityProvider, tiers) == Niveau.ECRITURE;
 		}
 
 		private static boolean isDernierForPrincipalFermePourFinActivite(Tiers tiers) {
@@ -1225,7 +1254,8 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 		public boolean isValide(Tiers tiers) {
 			return !tiers.isAnnule()
 					&& tiers instanceof Entreprise
-					&& !hadEtatOnce((Entreprise) tiers, EnumSet.of(TypeEtatEntreprise.ABSORBEE, TypeEtatEntreprise.DISSOUTE, TypeEtatEntreprise.RADIEE_RC));
+					&& !hadEtatOnce((Entreprise) tiers, EnumSet.of(TypeEtatEntreprise.ABSORBEE, TypeEtatEntreprise.DISSOUTE, TypeEtatEntreprise.RADIEE_RC))
+					&& SecurityHelper.getDroitAcces(securityProvider, tiers) == Niveau.ECRITURE;
 		}
 
 		@Override
@@ -1249,7 +1279,8 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 		public boolean isValide(Tiers tiers) {
 			return !tiers.isAnnule()
 					&& tiers instanceof Entreprise
-					&& !FusionEntreprisesHelper.getAbsorptions((Entreprise) tiers, tiersService).isEmpty();
+					&& !FusionEntreprisesHelper.getAbsorptions((Entreprise) tiers, tiersService).isEmpty()
+					&& SecurityHelper.getDroitAcces(securityProvider, tiers) == Niveau.ECRITURE;
 		}
 
 		@Override
@@ -1273,7 +1304,8 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 		public boolean isValide(Tiers tiers) {
 			return !tiers.isAnnule()
 					&& tiers instanceof Entreprise
-					&& !hadEtatOnce((Entreprise) tiers, EnumSet.of(TypeEtatEntreprise.ABSORBEE, TypeEtatEntreprise.DISSOUTE, TypeEtatEntreprise.RADIEE_RC));
+					&& !hadEtatOnce((Entreprise) tiers, EnumSet.of(TypeEtatEntreprise.ABSORBEE, TypeEtatEntreprise.DISSOUTE, TypeEtatEntreprise.RADIEE_RC))
+					&& SecurityHelper.getDroitAcces(securityProvider, tiers) == Niveau.ECRITURE;
 		}
 
 		@Override
@@ -1297,7 +1329,8 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 		public boolean isValide(Tiers tiers) {
 			return !tiers.isAnnule()
 					&& tiers instanceof Entreprise
-					&& !ScissionEntrepriseHelper.getScissions((Entreprise) tiers, tiersService).isEmpty();
+					&& !ScissionEntrepriseHelper.getScissions((Entreprise) tiers, tiersService).isEmpty()
+					&& SecurityHelper.getDroitAcces(securityProvider, tiers) == Niveau.ECRITURE;
 		}
 
 		@Override

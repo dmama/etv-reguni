@@ -2128,7 +2128,7 @@ public class TiersDAOTest extends CoreDAOTest {
 	 * SIFISC-7271 : NPE qui sortait du getMenagesCommuns si l'un des IDs passés est null
 	 */
 	@Test
-	public void testGetMenagesCommunsWithNullId() throws Exception {
+	public void testGetBatchWithNullId() throws Exception {
 
 		// mise en place des contribuables
 		final long ppId = doInNewTransaction(new TransactionCallback<Long>() {
@@ -2139,30 +2139,34 @@ public class TiersDAOTest extends CoreDAOTest {
 			}
 		});
 
-		doInNewTransaction(new TransactionCallback<Object>() {
+		doInNewReadOnlyTransaction(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
-				@SuppressWarnings("ConstantConditions") final List<MenageCommun> mcs = tiersDAO.getMenagesCommuns(Arrays.asList((Long) null), EnumSet.of(Parts.FORS_FISCAUX));
-				Assert.assertNotNull(mcs);
-				Assert.assertEquals(0, mcs.size());
+				@SuppressWarnings("ConstantConditions") final List<Tiers> tiers = tiersDAO.getBatch(Collections.<Long>singletonList(null), EnumSet.of(Parts.FORS_FISCAUX));
+				Assert.assertNotNull(tiers);
+				Assert.assertEquals(0, tiers.size());
 				return null;
 			}
 		});
-		doInNewTransaction(new TransactionCallback<Object>() {
+		doInNewReadOnlyTransaction(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
-				final List<MenageCommun> mcs = tiersDAO.getMenagesCommuns(Arrays.asList(null, ppId), EnumSet.of(Parts.FORS_FISCAUX));
-				Assert.assertNotNull(mcs);
-				Assert.assertEquals(0, mcs.size());
+				final List<Tiers> tiers = tiersDAO.getBatch(Arrays.asList(null, ppId), EnumSet.of(Parts.FORS_FISCAUX));
+				Assert.assertNotNull(tiers);
+				Assert.assertEquals(1, tiers.size());
+				Assert.assertNotNull(tiers.get(0));
+				Assert.assertEquals((Long) ppId, tiers.get(0).getNumero());
 				return null;
 			}
 		});
-		doInNewTransaction(new TransactionCallback<Object>() {
+		doInNewReadOnlyTransaction(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
-				final List<MenageCommun> mcs = tiersDAO.getMenagesCommuns(Arrays.asList(ppId,  null), EnumSet.of(Parts.FORS_FISCAUX));
-				Assert.assertNotNull(mcs);
-				Assert.assertEquals(0, mcs.size());
+				final List<Tiers> tiers = tiersDAO.getBatch(Arrays.asList(ppId,  null), EnumSet.of(Parts.FORS_FISCAUX));
+				Assert.assertNotNull(tiers);
+				Assert.assertEquals(1, tiers.size());
+				Assert.assertNotNull(tiers.get(0));
+				Assert.assertEquals((Long) ppId, tiers.get(0).getNumero());
 				return null;
 			}
 		});
