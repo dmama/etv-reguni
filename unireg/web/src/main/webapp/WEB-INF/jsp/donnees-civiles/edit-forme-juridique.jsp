@@ -24,24 +24,23 @@
 					<unireg:nextRowClass reset="0"/>
 					<tr class="<unireg:nextRowClass/>" >
 						<td width="20%"><fmt:message key="label.forme.juridique"/>&nbsp;:</td>
-						<td>
+						<td colspan="3">
 							<form:select path="formeJuridique" name="formeJuridique">
 								<form:option value="" />
 								<form:options items="${formesJuridiquesEntrepriseEnum}"/>
 							</form:select>
 							<form:errors path="formeJuridique" cssClass="error" />
 						</td>
-						<td width="20%"></td>
-						<td>
-						</td>
 					</tr>
 					<tr class="<unireg:nextRowClass/>" >
-						<td><fmt:message key="label.date.ouverture" />&nbsp;:</td>
-						<td>
+						<td width="20%"><fmt:message key="label.date.ouverture" />&nbsp;:</td>
+						<td width="30%">
+							<form:hidden path="dateDebut"/>
 							<unireg:regdate regdate="${command.dateDebut}"/>
 						</td>
-						<td><fmt:message key="label.date.fermeture" />&nbsp;:</td>
-						<td>
+						<td width="20%"><fmt:message key="label.date.fermeture" />&nbsp;:</td>
+						<td width="30%">
+							<form:hidden path="dateFin"/>
 							<unireg:regdate regdate="${command.dateFin}"/>
 						</td>
 					</tr>

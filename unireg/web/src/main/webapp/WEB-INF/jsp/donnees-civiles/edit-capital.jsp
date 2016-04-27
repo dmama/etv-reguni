@@ -5,7 +5,7 @@
 
 <tiles:insert template="/WEB-INF/jsp/templates/template.jsp">
   	<tiles:put name="title">
-  		<fmt:message key="title.creation.civil.capital">
+  		<fmt:message key="title.edition.civil.capital">
   			<fmt:param><unireg:numCTB numero="${command.tiersId}"/></fmt:param>
   		</fmt:message>
   	</tiles:put>
@@ -24,23 +24,25 @@
 					<unireg:nextRowClass reset="0"/>
 					<tr class="<unireg:nextRowClass/>" >
 						<td width="20%"><fmt:message key="label.capital"/>&nbsp;:</td>
-						<td>
-							<input id="montant" name="montant" value="${command.montant}" size="25" />
+						<td width="30%">
+							<form:input path="montant" size="25"/>
 							<form:errors path="montant" cssClass="error" />
 						</td>
 						<td width="20%"><fmt:message key="label.capital.monnaie"/>&nbsp;:</td>
-						<td>
-							<input id="monnaie" name="monnaie" value="${command.monnaie}" size="3" maxlength="${lengthmonnaie}"/>
+						<td width="30%">
+							<form:input path="monnaie" size="3" maxlength="${lengthmonnaie}"/>
 							<form:errors path="monnaie" cssClass="error" />
 						</td>
 					</tr>
 					<tr class="<unireg:nextRowClass/>" >
 						<td><fmt:message key="label.date.ouverture" />&nbsp;:</td>
 						<td>
+							<form:hidden path="dateDebut"/>
 							<unireg:regdate regdate="${command.dateDebut}"/>
 						</td>
 						<td><fmt:message key="label.date.fermeture" />&nbsp;:</td>
 						<td>
+							<form:hidden path="dateFin"/>
 							<unireg:regdate regdate="${command.dateFin}"/>
 						</td>
 					</tr>

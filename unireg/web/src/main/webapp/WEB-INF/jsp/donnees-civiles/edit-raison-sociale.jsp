@@ -5,7 +5,7 @@
 
 <tiles:insert template="/WEB-INF/jsp/templates/template.jsp">
   	<tiles:put name="title">
-  		<fmt:message key="title.creation.civil.raison.sociale">
+  		<fmt:message key="title.edition.civil.raison.sociale">
   			<fmt:param><unireg:numCTB numero="${command.tiersId}"/></fmt:param>
   		</fmt:message>
   	</tiles:put>
@@ -24,21 +24,20 @@
 					<unireg:nextRowClass reset="0"/>
 					<tr class="<unireg:nextRowClass/>" >
 						<td width="20%"><fmt:message key="label.raison.sociale"/>&nbsp;:</td>
-						<td>
-							<input id="raisonSociale" name="raisonSociale" value="${command.raisonSociale}" size="80" ></td>
+						<td colspan="3">
+							<form:input path="raisonSociale" size="80"/>
 							<form:errors path="raisonSociale" cssClass="error" />
-						</td>
-						<td width="20%"></td>
-						<td>
 						</td>
 					</tr>
 					<tr class="<unireg:nextRowClass/>" >
-						<td><fmt:message key="label.date.ouverture" />&nbsp;:</td>
-						<td>
+						<td width="20%"><fmt:message key="label.date.ouverture" />&nbsp;:</td>
+						<td width="30%">
+							<form:hidden path="dateDebut"/>
 							<unireg:regdate regdate="${command.dateDebut}"/>
 						</td>
-						<td><fmt:message key="label.date.fermeture" />&nbsp;:</td>
-						<td>
+						<td width="20%"><fmt:message key="label.date.fermeture" />&nbsp;:</td>
+						<td width="30%">
+							<form:hidden path="dateFin"/>
 							<unireg:regdate regdate="${command.dateFin}"/>
 						</td>
 					</tr>
