@@ -109,6 +109,7 @@ public class ServiceOrganisationPersistentCache implements ServiceOrganisationRa
 	@Override
 	public void reset() {
 		cache.clear();
+		siteCache.clear();
 	}
 
 	private static class GetOrganisationHistoryKey implements ObjectKey {
