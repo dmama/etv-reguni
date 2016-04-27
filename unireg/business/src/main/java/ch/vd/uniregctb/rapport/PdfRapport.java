@@ -25,7 +25,6 @@ import org.apache.commons.lang3.StringUtils;
 
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.shared.batchtemplate.StatusManager;
-import ch.vd.unireg.common.NomPrenom;
 import ch.vd.uniregctb.common.AbstractJobResults;
 import ch.vd.uniregctb.common.ApplicationInfo;
 import ch.vd.uniregctb.common.AuthenticationHelper;
@@ -285,17 +284,12 @@ public abstract class PdfRapport extends Document {
 		return CsvHelper.asCsvField(lignes);
 	}
 
-	protected static String asCsvField(List<NomPrenom> nomsPrenoms) {
-		final StringBuilder sb = new StringBuilder();
-		boolean first = true;
-		for (NomPrenom np : nomsPrenoms) {
-			if (!first) {
-				sb.append("\n");
-			}
-			sb.append(np.getPrenom()).append(" ").append(np.getNom());
-			first = false;
-		}
-		return CsvHelper.asCsvField(sb.toString());
+	/**
+	 * Transforme les lignes spécifiées en une chaîne de caractère capable de tenir dans un champ d'un fichier CSV. Les retours de lignes sont préservés, mais les éventuels caractères interdits (" et ;)
+	 * sont supprimés.
+	 */
+	protected static String asCsvField(List<String> lignes) {
+		return CsvHelper.asCsvField(lignes);
 	}
 
 	protected static String formatTimestamp(final Date dateGeneration) {

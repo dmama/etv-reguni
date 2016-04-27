@@ -240,11 +240,6 @@ public class MockTiersDAO implements TiersDAO {
 	}
 
 	@Override
-	public List<MenageCommun> getMenagesCommuns(List<Long> ids, Set<Parts> parts) {
-		throw new NotImplementedException();
-	}
-
-	@Override
 	public Contribuable getContribuable(DebiteurPrestationImposable debiteur) {
 		final Long ctbId = debiteur.getContribuableId();
 		return (Contribuable) get(ctbId);

@@ -98,7 +98,7 @@ public class PdfListeDroitsAccesRapport extends PdfRapport {
 			public void fillHeader(CsvHelper.LineFiller b) {
 				b.append("NO_CTB").append(COMMA);
 				b.append("OID").append(COMMA);
-				b.append("NOMS_PRENOMS").append(COMMA);
+				b.append("NOM").append(COMMA);
 				b.append("ADRESSE_DOMICILE").append(COMMA);
 				b.append("TYPE_DROIT").append(COMMA);
 				b.append("NIVEAU_DROIT").append(COMMA);
@@ -110,7 +110,7 @@ public class PdfListeDroitsAccesRapport extends PdfRapport {
 			public boolean fillLine(CsvHelper.LineFiller b, ListeDroitsAccesResults.InfoDroitAcces elt) {
 				b.append(elt.getNoCtb()).append(COMMA);
 				b.append(elt.getOidGestion()).append(COMMA);
-				b.append(asCsvField(elt.getNomsPrenoms())).append(COMMA);
+				b.append(asCsvField(elt.getNomsRaisonsSociales())).append(COMMA);
 				b.append(asCsvField(elt.getAdresseEnvoi())).append(COMMA);
 				b.append(elt.getType()).append(COMMA);
 				b.append(elt.getNiveau()).append(COMMA);

@@ -1,11 +1,13 @@
 package ch.vd.uniregctb.security;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 import org.apache.commons.lang3.ArrayUtils;
@@ -16,12 +18,17 @@ import org.springframework.transaction.annotation.Transactional;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.securite.model.Operateur;
 import ch.vd.uniregctb.common.AuthenticationHelper;
+import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
+import ch.vd.uniregctb.common.StringRenderer;
 import ch.vd.uniregctb.common.TiersNotFoundException;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.ServiceSecuriteService;
 import ch.vd.uniregctb.tiers.DroitAcces;
+import ch.vd.uniregctb.tiers.Entreprise;
+import ch.vd.uniregctb.tiers.Etablissement;
 import ch.vd.uniregctb.tiers.MenageCommun;
+import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
@@ -124,13 +131,14 @@ public class SecuriteDossierServiceImpl implements SecuriteDossierService {
 	private Niveau getAcces(Operateur operateur, Tiers tiers) {
 
 		final Niveau acces;
-
 		if (tiers instanceof MenageCommun) {
-			final MenageCommun mc = (MenageCommun) tiers;
-			acces = getAccessForMC(operateur, mc);
+			acces = getAccessForMenage(operateur, (MenageCommun) tiers);
+		}
+		else if (tiers instanceof Etablissement) {
+			acces = getAccessForEtablissement(operateur, (Etablissement) tiers);
 		}
 		else {
-			acces = getAccessForPP(operateur, tiers.getNumero());
+			acces = getAccessDirect(operateur, tiers.getNumero());
 		}
 
 		if (LOGGER.isDebugEnabled()) {
@@ -140,57 +148,61 @@ public class SecuriteDossierServiceImpl implements SecuriteDossierService {
 		return acces;
 	}
 
+	private static <T extends Tiers> List<T> extract(Class<T> clazz, List<Tiers> source) {
+		final List<T> resultat = new ArrayList<>(source.size());
+		for (Tiers t : source) {
+			if (clazz.isAssignableFrom(t.getClass())) {
+				//noinspection unchecked
+				resultat.add((T) t);
+			}
+		}
+		return resultat;
+	}
+
+	private static <T extends Tiers> Map<Long, T> buildMapById(Collection<T> source) {
+		final Map<Long, T> map = new HashMap<>(source.size());
+		for (T tiers : source) {
+			map.put(tiers.getNumero(), tiers);
+		}
+		return map;
+	}
+
 	/**
-	 * @return calcul et retourne les niveaux d'accès alloué à un opérateur sur une liste de tiers (qui peuvent être des personnes physiques ou des ménages communs).
+	 * @return calcul et retourne les niveaux d'accès alloués à un opérateur sur une liste de tiers (qui peuvent être des personnes physiques, des ménages communs, des entreprises ou des établissements).
 	 */
 	private List<Niveau> getAcces(Operateur operateur, List<Long> ids) {
 
-		final List<Niveau> niveaux = new ArrayList<>(ids.size());
+		final List<Tiers> dossiers = tiersDAO.getBatch(ids, EnumSet.of(Parts.RAPPORTS_ENTRE_TIERS));
+		final Map<Long, MenageCommun> menagesCommuns = buildMapById(extract(MenageCommun.class, dossiers));
+		final Map<Long, Etablissement> etablissements = buildMapById(extract(Etablissement.class, dossiers));
+		final Map<Long, PersonnePhysique> personnesPhysiques = buildMapById(extract(PersonnePhysique.class, dossiers));
+		final Map<Long, Entreprise> entreprises = buildMapById(extract(Entreprise.class, dossiers));
+		final Map<Long, Tiers> remaining = buildMapById(dossiers);
+		remaining.keySet().removeAll(menagesCommuns.keySet());
+		remaining.keySet().removeAll(etablissements.keySet());
+		remaining.keySet().removeAll(personnesPhysiques.keySet());
+		remaining.keySet().removeAll(entreprises.keySet());
 
-		// Récupère la liste des ménages-commun existant dans la liste d'ids spécifiée.
-		final List<MenageCommun> menages = tiersDAO.getMenagesCommuns(ids, EnumSet.of(Parts.RAPPORTS_ENTRE_TIERS));
-		final Map<Long, MenageCommun> map = new HashMap<>(menages.size());
-		for (MenageCommun mc : menages) {
-			map.put(mc.getNumero(), mc);
-		}
-
-		// Calcul la liste des personnes physiques
-		final List<Long> idsPP = new ArrayList<>(ids.size() - menages.size());
-		for (Long id : ids) {
-			if (!map.containsKey(id)) {
-				idsPP.add(id);
-			}
-		}
-
-		// Pré-calcule le niveau d'accès pour toutes les personnes physiques (en une seule requête pour des raisons de perfs)
-		final Map<Long, Niveau> niveauxPP = getAccessForPP(operateur, idsPP);
-
-		// Pré-calcule le niveau d'accès pour tous les ménage communs (en une seule requête pour des raisons de perfs)
-		final Map<Long, Niveau> niveauxMC = getAccessForMC(operateur, menages);
+		// constitution d'une map des accès globaux
+		final Map<Long, Niveau> mapNiveaux = new HashMap<>(ids.size());
+		mapNiveaux.putAll(getAccessDirect(operateur, personnesPhysiques.keySet()));
+		mapNiveaux.putAll(getAccessDirect(operateur, entreprises.keySet()));
+		mapNiveaux.putAll(getAccessForMenages(operateur, menagesCommuns.values()));
+		mapNiveaux.putAll(getAccessForEtablissements(operateur, etablissements.values()));
+		mapNiveaux.putAll(getAccessDirect(operateur, remaining.keySet()));
 
 		// Calcule le niveau d'accès pour chaque id (en respectant l'ordre des ids)
+		final List<Niveau> niveaux = new ArrayList<>(ids.size());
 		for (Long id : ids) {
-
-			final Niveau niveau;
-
-			final MenageCommun mc = map.get(id);
-			if (mc != null) {
-				niveau = niveauxMC.get(id);
-			}
-			else {
-				niveau = niveauxPP.get(id);
-			}
-
-			niveaux.add(niveau);
+			niveaux.add(mapNiveaux.get(id));
 		}
-
 		return niveaux;
 	}
 
 	/**
 	 * @return le niveau d'accès alloué à un opérateur sur un ménage commun.
 	 */
-	private Niveau getAccessForMC(Operateur operateur, final MenageCommun mc) {
+	private Niveau getAccessForMenage(Operateur operateur, final MenageCommun mc) {
 
 		// extraction des composants du ménage historique
 		Set<Tiers> composants = new HashSet<>();
@@ -212,12 +224,12 @@ public class SecuriteDossierServiceImpl implements SecuriteDossierService {
 			if (t.isAnnule()) {
 				continue;
 			}
-			Niveau a = getAccessForPP(operateur, t.getNumero());
+			final Niveau a = getAccessDirect(operateur, t.getNumero());
 			if (a == null) {
 				accessMinimal = null;
 				break;
 			}
-			else if (accessMinimal != null && a == Niveau.LECTURE) {
+			else if (a == Niveau.LECTURE) {
 				accessMinimal = Niveau.LECTURE;
 			}
 		}
@@ -225,14 +237,14 @@ public class SecuriteDossierServiceImpl implements SecuriteDossierService {
 		return accessMinimal;
 	}
 
-	private Map<Long, Niveau> getAccessForMC(Operateur operateur, List<MenageCommun> menages) {
+	private Map<Long, Niveau> getAccessForMenages(Operateur operateur, Collection<MenageCommun> menages) {
 
 		final Set<Long> idsPP = new HashSet<>();
 		final Map<Long, List<Long>> idsPPparMC = new HashMap<>();
 
 		// extraction de tous les ids des personnes physiques composantes de tous les ménages (vue historique)
 		for (MenageCommun mc : menages) {
-			List<Long> idsComposants = new ArrayList<>();
+			final List<Long> idsComposants = new ArrayList<>();
 			idsPPparMC.put(mc.getNumero(), idsComposants);
 			for (RapportEntreTiers r : mc.getRapportsObjet()) {
 				if (!r.isAnnule() && TypeRapportEntreTiers.APPARTENANCE_MENAGE == r.getType()) {
@@ -244,23 +256,21 @@ public class SecuriteDossierServiceImpl implements SecuriteDossierService {
 		}
 
 		// récupération des niveaux des personnes physiques d'une seule requête
-		final Map<Long, Niveau> niveauxPP = getAccessForPP(operateur, new ArrayList<>(idsPP));
-
-		Map<Long, Niveau> results = new HashMap<>();
+		final Map<Long, Niveau> niveauxPP = getAccessDirect(operateur, idsPP);
 
 		// tri des personnes physiques et calcul du niveau d'accès minimal sur chaque ménage
+		final Map<Long, Niveau> results = new HashMap<>(menages.size());
 		for (MenageCommun mc : menages) {
 			final List<Long> idsComposants = idsPPparMC.get(mc.getNumero());
 
 			Niveau accessMinimal = Niveau.ECRITURE;
-
 			for (Long id : idsComposants) {
-				Niveau a = niveauxPP.get(id);
+				final Niveau a = niveauxPP.get(id);
 				if (a == null) {
 					accessMinimal = null;
 					break;
 				}
-				else if (accessMinimal != null && a == Niveau.LECTURE) {
+				else if (a == Niveau.LECTURE) {
 					accessMinimal = Niveau.LECTURE;
 				}
 			}
@@ -271,22 +281,104 @@ public class SecuriteDossierServiceImpl implements SecuriteDossierService {
 		return results;
 	}
 
+	private Map<Long, Niveau> getAccessForEtablissements(Operateur operateur, Collection<Etablissement> etablissements) {
+
+		final Set<Long> idsEntites = new HashSet<>();
+		final Map<Long, Set<Long>> idsEntiteParEtablissement = new HashMap<>();
+
+		// récupérons les identifiants des contribuables (entreprises et personnes physiques, peut-être...) concernées
+		for (Etablissement etablissement : etablissements) {
+			final Set<Long> idsPourEtablissement = new HashSet<>();
+			idsEntiteParEtablissement.put(etablissement.getNumero(), idsPourEtablissement);
+			for (RapportEntreTiers ret : etablissement.getRapportsObjet()) {
+				if (!ret.isAnnule() && ret.getType() == TypeRapportEntreTiers.ACTIVITE_ECONOMIQUE) {
+					final Long idEntite = ret.getSujetId();
+					idsEntites.add(idEntite);
+					idsPourEtablissement.add(idEntite);
+				}
+			}
+		}
+
+		// on va chercher les accès directs sur les entités en question
+		final Map<Long, Niveau> accesDirects = getAccessDirect(operateur, idsEntites);
+
+		// reconstitution de la map par établissement
+		final Map<Long, Niveau> parEtablissement = new HashMap<>(etablissements.size());
+		for (Etablissement etablissement : etablissements) {
+			final Set<Long> idsEntitesDeLEtablissement = idsEntiteParEtablissement.get(etablissement.getNumero());
+
+			// on commence par l'accès le plus large et on réduit au fur et à mesure que l'on trouve des contraintes supplémentaires
+			Niveau accesMinimal = Niveau.ECRITURE;
+			for (Long idEntite : idsEntitesDeLEtablissement) {
+				final Niveau direct = accesDirects.get(idEntite);
+				if (direct == null) {
+					accesMinimal = null;        // fini ! aucun accès autorisé !
+					break;
+				}
+				else if (direct == Niveau.LECTURE) {
+					accesMinimal = Niveau.LECTURE;
+				}
+			}
+			parEtablissement.put(etablissement.getNumero(), accesMinimal);
+		}
+
+		return parEtablissement;
+	}
+
+	private Niveau getAccessForEtablissement(Operateur operateur, Etablissement etablissement) {
+
+		// récupération des entités parentes de l'établissement
+		final Set<Tiers> entites = new HashSet<>();
+		for (RapportEntreTiers ret : etablissement.getRapportsObjet()) {
+			if (!ret.isAnnule() && ret.getType() == TypeRapportEntreTiers.ACTIVITE_ECONOMIQUE) {
+				final Tiers entite = tiersDAO.get(ret.getSujetId());
+				entites.add(entite);
+			}
+		}
+
+		if (LOGGER.isDebugEnabled()) {
+			final StringRenderer<Object> renderer = new StringRenderer<Object>() {
+				@Override
+				public String toString(Object object) {
+					return Objects.toString(object);
+				}
+			};
+			LOGGER.debug("Le dossier n° "  + etablissement.getNumero() + " est un établissement lié aux tiers " + CollectionsUtils.toString(entites, renderer, ", ", "(aucun)"));
+		}
+
+		// on commence par le droit le plus large et on restreint en fonction des contraintes trouvées
+		Niveau accesMininal = Niveau.ECRITURE;
+		for (Tiers entite : entites) {
+			if (entite.isAnnule()) {
+				continue;
+			}
+			final Niveau direct = getAccessDirect(operateur, entite.getNumero());
+			if (direct == null) {
+				accesMininal = null;        // fini, aucun droit !
+				break;
+			}
+			else if (direct == Niveau.LECTURE) {
+				accesMininal = Niveau.LECTURE;
+			}
+		}
+		return accesMininal;
+	}
+
 	/**
 	 * @return le niveau d'accès alloué à un opérateur sur une personne physique.
 	 */
-	private Niveau getAccessForPP(Operateur operateur, long ppId) {
-
+	private Niveau getAccessDirect(Operateur operateur, long ppId) {
 		final List<DroitAcces> droits = droitAccesDAO.getDroitsAccessTiers(ppId, RegDate.get());
-		return calculateAccesPP(operateur, droits, ppId);
+		return calculateAccesDirect(operateur, droits, ppId);
 	}
 
-	private Map<Long, Niveau> getAccessForPP(Operateur operateur, List<Long> idsPP) {
+	private Map<Long, Niveau> getAccessDirect(Operateur operateur, Set<Long> idsPP) {
 
 		// récupère tous les droits en UNE seule requête (perfs)
 		final List<DroitAcces> droitsAll = droitAccesDAO.getDroitsAccessTiers(idsPP, RegDate.get());
 
 		// trie les droits par contribuable
-		final Map<Long, List<DroitAcces>> map = new HashMap<>();
+		final Map<Long, List<DroitAcces>> map = new HashMap<>(idsPP.size());
 		for (DroitAcces d : droitsAll) {
 			List<DroitAcces> l = map.get(d.getTiers().getNumero());
 			if (l == null) {
@@ -305,7 +397,7 @@ public class SecuriteDossierServiceImpl implements SecuriteDossierService {
 				results.put(id, Niveau.ECRITURE);
 			}
 			else {
-				Niveau niveau = calculateAccesPP(operateur, l, id);
+				final Niveau niveau = calculateAccesDirect(operateur, l, id);
 				results.put(id, niveau);
 			}
 		}
@@ -313,7 +405,7 @@ public class SecuriteDossierServiceImpl implements SecuriteDossierService {
 		return results;
 	}
 
-	private Niveau calculateAccesPP(Operateur operateur, final List<DroitAcces> droits, long ppId) {
+	private Niveau calculateAccesDirect(Operateur operateur, final List<DroitAcces> droits, long ppId) {
 
 		// on récupère et analyse les droits d'accès au dossiers stockés dans Unireg
 		Niveau granted = null;

@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.database;
 
 import java.io.Serializable;
+import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -12,9 +13,9 @@ import ch.vd.uniregctb.common.HibernateEntity;
 import ch.vd.uniregctb.data.DataEventService;
 import ch.vd.uniregctb.hibernate.interceptor.ModificationInterceptor;
 import ch.vd.uniregctb.hibernate.interceptor.ModificationSubInterceptor;
+import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.DroitAcces;
 import ch.vd.uniregctb.tiers.LinkedEntity;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersService;
@@ -163,23 +164,23 @@ public class DatabaseChangeInterceptor implements ModificationSubInterceptor, In
 		else if (entity instanceof DroitAcces) {
 			// [UNIREG-1191] Un droit d'accès a été modifié en base => on purge tous les tiers impactés par le changement
 			final DroitAcces da = (DroitAcces) entity;
-			final PersonnePhysique pp = da.getTiers();
+			final Contribuable ctb = da.getTiers();
 
 			// le tiers lui-même
-			final Long numero = pp.getNumero();
+			final Long numero = ctb.getNumero();
 			if (numero != null) {
 				onDroitAccesChange(numero);
 			}
 
-			// tous les ménages communs auxquel il a pu appartenir
-			final Set<RapportEntreTiers> rapports = pp.getRapportsSujet();
+			// tous les ménages communs auxquel il a pu appartenir, ou les établissements liés
+			final Set<RapportEntreTiers> rapports = ctb.getRapportsSujet();
 			if (rapports != null) {
+				final Set<TypeRapportEntreTiers> typesPropages = EnumSet.of(TypeRapportEntreTiers.APPARTENANCE_MENAGE,
+				                                                            TypeRapportEntreTiers.ACTIVITE_ECONOMIQUE);
 				for (RapportEntreTiers r : rapports) {
-					if (r.isAnnule() || r.getType() != TypeRapportEntreTiers.APPARTENANCE_MENAGE) {
-						continue;
+					if (!r.isAnnule() && typesPropages.contains(r.getType())) {
+						onDroitAccesChange(r.getObjetId());
 					}
-					final Long mcId = r.getObjetId();
-					onDroitAccesChange(mcId);
 				}
 			}
 		}

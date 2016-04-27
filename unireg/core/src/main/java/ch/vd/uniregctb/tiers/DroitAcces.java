@@ -21,7 +21,7 @@ import ch.vd.uniregctb.type.TypeDroitAcces;
 
 /**
  * Représente l'autorisation ou l'interdiction d'accès entre un opérateur (représenté par son numéro d'individu) et un dossier (représenté
- * par son contribuable personne physique).
+ * par son contribuable personne physique ou d'entreprise).
  * <p>
  * La sécurité des dossiers est une couche spécialisée qui s'ajoute au contrôle d'accès fait par IFOSEC. IFOSEC gère le contrôle d'accès de
  * manière global sur l'application en fonction de l'opérateur connecté, alors que le contrôle des dossiers gère l'accès particuliers à
@@ -50,7 +50,7 @@ public class DroitAcces extends HibernateDateRangeEntity implements Duplicable<D
 	private long noIndividuOperateur;
 	private TypeDroitAcces type;
 	private Niveau niveau;
-	private PersonnePhysique tiers;
+	private Contribuable tiers;
 
 	public DroitAcces() {
 		// pour hibernate
@@ -114,11 +114,11 @@ public class DroitAcces extends HibernateDateRangeEntity implements Duplicable<D
 	// msi: pas de cascade, parce qu'on veut pouvoir ajouter un droit d'accès à un tiers sans automatiquement modifier celui-ci (perfs + audit)
 	@JoinColumn(name = "TIERS_ID", nullable = false)
 	@Index(name = "IDX_DA_TIERS_ID", columnNames = "TIERS_ID")
-	public PersonnePhysique getTiers() {
+	public Contribuable getTiers() {
 		return tiers;
 	}
 
-	public void setTiers(PersonnePhysique tiers) {
+	public void setTiers(Contribuable tiers) {
 		this.tiers = tiers;
 	}
 

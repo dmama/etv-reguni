@@ -128,7 +128,7 @@ public class ListeDroitsAccesJob extends JobDefinition {
 				return true;
 			}
 
-			private AdresseEnvoiDetaillee getAdresseDomicile(PersonnePhysique tiers) {
+			private AdresseEnvoiDetaillee getAdresseDomicile(Contribuable tiers) {
 				try {
 					return adresseService.getAdresseEnvoi(tiers, dateValeur, TypeAdresseFiscale.DOMICILE, false);
 				}
@@ -157,16 +157,16 @@ public class ListeDroitsAccesJob extends JobDefinition {
 	 * @param dateValeur la fate de référence;
 	 * @return le contribuable assujetti ou null si aucun assujetissement n'a été trouvé
 	 */
-	private Contribuable findPorteurAssujettissement(PersonnePhysique p, RegDate dateValeur){
+	private Contribuable findPorteurAssujettissement(Contribuable p, RegDate dateValeur){
 		Assujettissement assujettissement = tiersService.getAssujettissement(p, dateValeur);
-		if (assujettissement == null) {
-			final EnsembleTiersCouple ensembleTiersCouple = tiersService.getEnsembleTiersCouple(p, dateValeur);
+		if (assujettissement == null && p instanceof PersonnePhysique) {
+			final EnsembleTiersCouple ensembleTiersCouple = tiersService.getEnsembleTiersCouple((PersonnePhysique) p, dateValeur);
 			if (ensembleTiersCouple != null) {
 				assujettissement = tiersService.getAssujettissement(ensembleTiersCouple.getMenage(),dateValeur);
 			}
 
 		}
-		return assujettissement!=null?assujettissement.getContribuable():null;
+		return assujettissement != null ? assujettissement.getContribuable() : null;
 	}
 
 	public void setHibernateTemplate(HibernateTemplate hibernateTemplate) {

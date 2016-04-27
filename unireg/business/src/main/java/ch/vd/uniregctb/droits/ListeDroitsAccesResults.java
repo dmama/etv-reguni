@@ -5,7 +5,6 @@ import java.util.List;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.securite.model.Operateur;
-import ch.vd.unireg.common.NomPrenom;
 import ch.vd.uniregctb.adresse.AdresseEnvoiDetaillee;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.JobResults;
@@ -49,7 +48,7 @@ public class ListeDroitsAccesResults extends JobResults<Number, ListeDroitsAcces
 
 		private final long noCtb;
 		private final Integer oidGestion;
-		private final List<NomPrenom> nomsPrenoms = new ArrayList<>();
+		private final List<String> nomsRaisonsSociales = new ArrayList<>();
 		private String[] adresseEnvoi;
 		private final TypeDroitAcces type;
 		private final Niveau niveau;
@@ -59,7 +58,7 @@ public class ListeDroitsAccesResults extends JobResults<Number, ListeDroitsAcces
 			this.noCtb = noCtb;
 			this.oidGestion = oidGestion;
 			if (adresseEnvoi != null) {
-				this.nomsPrenoms.addAll(adresseEnvoi.getNomsPrenoms());
+				this.nomsRaisonsSociales.addAll(adresseEnvoi.getNomsPrenomsOuRaisonsSociales());
 				this.adresseEnvoi = adresseEnvoi.getLignes();
 			}
 			this.type = type;
@@ -71,8 +70,8 @@ public class ListeDroitsAccesResults extends JobResults<Number, ListeDroitsAcces
 			return noCtb;
 		}
 
-		public List<NomPrenom> getNomsPrenoms() {
-			return nomsPrenoms;
+		public List<String> getNomsRaisonsSociales() {
+			return nomsRaisonsSociales;
 		}
 
 		public String[] getAdresseEnvoi() {

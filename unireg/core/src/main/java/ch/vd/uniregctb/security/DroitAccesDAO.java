@@ -41,21 +41,21 @@ public interface DroitAccesDAO extends GenericDAO<DroitAcces, Long> {
 	/**
 	 * @return la liste de tous les droits d'accès existant sur le tiers spécifié.
 	 */
-	public List<DroitAcces> getDroitsAccessTiers(long tiersId);
+	List<DroitAcces> getDroitsAccessTiers(long tiersId);
 
 	/**
 	 * @param date
 	 *            date de validité des droits d'accès. Cette date est obligatoire.
 	 * @return la liste de tous les droits d'accès définis sur le tiers spécifié.
 	 */
-	public List<DroitAcces> getDroitsAccessTiers(long tiersId, RegDate date) ;
+	List<DroitAcces> getDroitsAccessTiers(long tiersId, RegDate date) ;
 
 	/**
 	 * @param date
 	 *            date de validité des droits d'accès. Cette date est obligatoire.
 	 * @return la liste de tous les droits d'accès définis sur les tiers spécifiés.
 	 */
-	public List<DroitAcces> getDroitsAccessTiers(List<Long> ids, RegDate date) ;
+	List<DroitAcces> getDroitsAccessTiers(Set<Long> ids, RegDate date) ;
 
 	/**
 	 * @return les ids des contribuables sur lesquels des autorisations ou des restrictions sont actives actuellement.
