@@ -162,13 +162,21 @@ public class CivilEntrepriseEditController {
 			throw new AccessDeniedException("Vous ne possédez pas les droits IfoSec de création de raison sociale.");
 		}
 
-		model.addAttribute("command", new AddRaisonSocialeView(entreprise.getNumero(), RegDate.get(), null, null));
+		return showAddRaisonSociale(model, new AddRaisonSocialeView(entreprise.getNumero(), RegDate.get(), null, null));
+	}
+
+	private String showAddRaisonSociale(Model model, AddRaisonSocialeView view) {
+		model.addAttribute("command", view);
 		return "donnees-civiles/add-raison-sociale";
 	}
 
 	@Transactional(rollbackFor = Throwable.class)
 	@RequestMapping(value = "/raisonsociale/add.do", method = RequestMethod.POST)
 	public String addRaisonSociale(@Valid @ModelAttribute("command") final AddRaisonSocialeView view, BindingResult result, Model model) throws TiersException {
+
+		if (result.hasErrors()) {
+			return showAddRaisonSociale(model, view);
+		}
 
 		final long tiersId = view.getTiersId();
 
@@ -180,11 +188,6 @@ public class CivilEntrepriseEditController {
 		final Autorisations auth = getAutorisations(entreprise);
 		if (!auth.isDonneesCiviles()) {
 			throw new AccessDeniedException("Vous ne possédez pas les droits IfoSec de création de raison sociale.");
-		}
-
-		if (result.hasErrors()) {
-			model.addAttribute("command", view);
-			return "donnees-civiles/add-raison-sociale";
 		}
 
 		tiersService.addRaisonSocialeFiscale(entreprise, view.getRaisonSociale(), view.getDateDebut(), view.getDateFin());
@@ -206,13 +209,21 @@ public class CivilEntrepriseEditController {
 			throw new AccessDeniedException("Vous ne possédez pas les droits IfoSec d'édition de raisons sociales.");
 		}
 
-		model.addAttribute("command", new EditRaisonSocialeView(raisonSociale));
+		return showEditRaisonSociale(model, new EditRaisonSocialeView(raisonSociale));
+	}
+
+	private String showEditRaisonSociale(Model model, EditRaisonSocialeView view) {
+		model.addAttribute("command", view);
 		return "donnees-civiles/edit-raison-sociale";
 	}
 
 	@Transactional(rollbackFor = Throwable.class)
 	@RequestMapping(value = "/raisonsociale/edit.do", method = RequestMethod.POST)
 	public String editRaisonSociale(@Valid @ModelAttribute("command") final EditRaisonSocialeView view, BindingResult result, Model model) throws TiersException {
+
+		if (result.hasErrors()) {
+			return showEditRaisonSociale(model, view);
+		}
 
 		final RaisonSocialeFiscaleEntreprise raisonSociale = hibernateTemplate.get(RaisonSocialeFiscaleEntreprise.class, view.getId());
 		if (raisonSociale == null) {
@@ -230,10 +241,6 @@ public class CivilEntrepriseEditController {
 
 			final long ctbId = entreprise.getNumero();
 			controllerUtils.checkAccesDossierEnEcriture(ctbId);
-
-			if (result.hasErrors()) {
-				return "donnees-civiles/edit-raison-sociale";
-			}
 
 			tiersService.updateRaisonSocialeFiscale(raisonSociale, view.getRaisonSociale());
 		}
@@ -277,7 +284,11 @@ public class CivilEntrepriseEditController {
 			throw new AccessDeniedException("Vous ne possédez pas les droits IfoSec de création de forme juridique.");
 		}
 
-		model.addAttribute("command", new AddFormeJuridiqueView(entreprise.getNumero(), RegDate.get(), null, null));
+		return showAddFormeJuridique(model, new AddFormeJuridiqueView(entreprise.getNumero(), RegDate.get(), null, null));
+	}
+
+	private String showAddFormeJuridique(Model model, AddFormeJuridiqueView view) {
+		model.addAttribute("command", view);
 		model.addAttribute(FORMES_JURIDIQUES_ENTREPRISE_NAME, tiersMapHelper.getMapFormeJuridiqueEntreprise());
 		return "donnees-civiles/add-forme-juridique";
 	}
@@ -285,6 +296,10 @@ public class CivilEntrepriseEditController {
 	@Transactional(rollbackFor = Throwable.class)
 	@RequestMapping(value = "/formejuridique/add.do", method = RequestMethod.POST)
 	public String addFormeJuridique(@Valid @ModelAttribute("command") final AddFormeJuridiqueView view, BindingResult result, Model model) throws TiersException {
+
+		if (result.hasErrors()) {
+			return showAddFormeJuridique(model, view);
+		}
 
 		final long tiersId = view.getTiersId();
 
@@ -296,12 +311,6 @@ public class CivilEntrepriseEditController {
 		final Autorisations auth = getAutorisations(entreprise);
 		if (!auth.isDonneesCiviles()) {
 			throw new AccessDeniedException("Vous ne possédez pas les droits IfoSec de création de forme juridique.");
-		}
-
-		if (result.hasErrors()) {
-			model.addAttribute("command", view);
-			model.addAttribute(FORMES_JURIDIQUES_ENTREPRISE_NAME, tiersMapHelper.getMapFormeJuridiqueEntreprise());
-			return "donnees-civiles/add-forme-juridique";
 		}
 
 		tiersService.addFormeJuridiqueFiscale(entreprise, view.getFormeJuridique(), view.getDateDebut(), view.getDateFin());
@@ -323,7 +332,11 @@ public class CivilEntrepriseEditController {
 			throw new AccessDeniedException("Vous ne possédez pas les droits IfoSec d'édition de formes juridiques.");
 		}
 
-		model.addAttribute("command", new EditFormeJuridiqueView(formeJuridique));
+		return showEditFormeJuridique(model, new EditFormeJuridiqueView(formeJuridique));
+	}
+
+	private String showEditFormeJuridique(Model model, EditFormeJuridiqueView view) {
+		model.addAttribute("command", view);
 		model.addAttribute(FORMES_JURIDIQUES_ENTREPRISE_NAME, tiersMapHelper.getMapFormeJuridiqueEntreprise());
 		return "donnees-civiles/edit-forme-juridique";
 	}
@@ -331,6 +344,10 @@ public class CivilEntrepriseEditController {
 	@Transactional(rollbackFor = Throwable.class)
 	@RequestMapping(value = "/formejuridique/edit.do", method = RequestMethod.POST)
 	public String editFormeJuridique(@Valid @ModelAttribute("command") final EditFormeJuridiqueView view, BindingResult result, Model model) throws TiersException {
+
+		if (result.hasErrors()) {
+			return showEditFormeJuridique(model, view);
+		}
 
 		final FormeJuridiqueFiscaleEntreprise formeJuridique = hibernateTemplate.get(FormeJuridiqueFiscaleEntreprise.class, view.getId());
 		if (formeJuridique == null) {
@@ -345,14 +362,8 @@ public class CivilEntrepriseEditController {
 		}
 
 		if (formeJuridique.getFormeJuridique() != null && ! formeJuridique.getFormeJuridique().equals(view.getFormeJuridique())) {
-
 			final long ctbId = entreprise.getNumero();
 			controllerUtils.checkAccesDossierEnEcriture(ctbId);
-
-			if (result.hasErrors()) {
-				return "donnees-civiles/edit-forme-juridique";
-			}
-
 			tiersService.updateFormeJuridiqueFiscale(formeJuridique, view.getFormeJuridique());
 		}
 
@@ -395,13 +406,21 @@ public class CivilEntrepriseEditController {
 			throw new AccessDeniedException("Vous ne possédez pas les droits IfoSec de création de capital.");
 		}
 
-		model.addAttribute("command", new AddCapitalView(entreprise.getNumero(), RegDate.get(), null, null, MontantMonetaire.CHF));
+		return showAddCapital(model, new AddCapitalView(entreprise.getNumero(), RegDate.get(), null, null, MontantMonetaire.CHF));
+	}
+
+	private String showAddCapital(Model model, AddCapitalView view) {
+		model.addAttribute("command", view);
 		return "donnees-civiles/add-capital";
 	}
 
 	@Transactional(rollbackFor = Throwable.class)
 	@RequestMapping(value = "/capital/add.do", method = RequestMethod.POST)
 	public String addCapital(@Valid @ModelAttribute("command") final AddCapitalView view, BindingResult result, Model model) throws TiersException {
+
+		if (result.hasErrors()) {
+			return showAddCapital(model, view);
+		}
 
 		final long tiersId = view.getTiersId();
 
@@ -413,11 +432,6 @@ public class CivilEntrepriseEditController {
 		final Autorisations auth = getAutorisations(entreprise);
 		if (!auth.isDonneesCiviles()) {
 			throw new AccessDeniedException("Vous ne possédez pas les droits IfoSec de création de capital.");
-		}
-
-		if (result.hasErrors()) {
-			model.addAttribute("command", view);
-			return "donnees-civiles/add-capital";
 		}
 
 		tiersService.addCapitalFiscal(entreprise, view.getMontant(), StringUtils.upperCase(view.getMonnaie()), view.getDateDebut(), view.getDateFin());
@@ -439,13 +453,21 @@ public class CivilEntrepriseEditController {
 			throw new AccessDeniedException("Vous ne possédez pas les droits IfoSec d'édition de capitaux.");
 		}
 
-		model.addAttribute("command", new EditCapitalView(capital));
+		return showEditCapital(model, new EditCapitalView(capital));
+	}
+
+	private String showEditCapital(Model model, EditCapitalView view) {
+		model.addAttribute("command", view);
 		return "donnees-civiles/edit-capital";
 	}
 
 	@Transactional(rollbackFor = Throwable.class)
 	@RequestMapping(value = "/capital/edit.do", method = RequestMethod.POST)
 	public String editCapital(@Valid @ModelAttribute("command") final EditCapitalView view, BindingResult result, Model model) throws TiersException {
+
+		if (result.hasErrors()) {
+			return showEditCapital(model, view);
+		}
 
 		final CapitalFiscalEntreprise capital = hibernateTemplate.get(CapitalFiscalEntreprise.class, view.getId());
 		if (capital == null) {
@@ -461,14 +483,8 @@ public class CivilEntrepriseEditController {
 		}
 
 		if (capital.getMontant() != null && ! (capital.getMontant().getMontant().equals(view.getMontant()) && capital.getMontant().getMonnaie().equals(view.getMonnaie()))) {
-
 			final long ctbId = entreprise.getNumero();
 			controllerUtils.checkAccesDossierEnEcriture(ctbId);
-
-			if (result.hasErrors()) {
-				return "donnees-civiles/edit-capital";
-			}
-
 			tiersService.updateCapitalFiscal(capital, view.getMontant(), view.getMonnaie(), view.getDateFin());
 		}
 
@@ -505,20 +521,26 @@ public class CivilEntrepriseEditController {
 			if (!auth.isDonneesCiviles() || !auth.isIdentificationEntreprise()) {
 				throw new AccessDeniedException("Vous ne possédez pas les droits IfoSec d'édition d'entreprises.");
 			}
-			final ContribuableInfosEntrepriseView view = new ContribuableInfosEntrepriseView((Entreprise) tiers);
-			model.addAttribute(DATA, view);
-			model.addAttribute(TIERS_ID, id);
-			return "/tiers/edition/civil/edit-ide";
+			return showEditIdeEntreprise(model, new ContribuableInfosEntrepriseView((Entreprise) tiers), id);
 		}
 		else {
 			throw new TiersNotFoundException(id);
 		}
 	}
 
+	private String showEditIdeEntreprise(Model model, ContribuableInfosEntrepriseView view, long id) {
+		model.addAttribute(DATA, view);
+		model.addAttribute(TIERS_ID, id);
+		return "/tiers/edition/civil/edit-ide";
+	}
+
 	@Transactional(rollbackFor = Throwable.class)
 	@RequestMapping(value = "/ide/edit.do", method = RequestMethod.POST)
-	public String editIdeEntreprise(@RequestParam(value = ID) long id, Model model, @Valid @ModelAttribute(DATA) ContribuableInfosEntrepriseView view, BindingResult bindingResult) throws
-			TiersException {
+	public String editIdeEntreprise(@RequestParam(value = ID) long id, Model model, @Valid @ModelAttribute(DATA) ContribuableInfosEntrepriseView view, BindingResult bindingResult) throws TiersException {
+
+		if (bindingResult.hasErrors()) {
+			return showEditIdeEntreprise(model, view, id);
+		}
 
 		final Tiers tiers = tiersDAO.get(id);
 		if (tiers != null && tiers instanceof Entreprise) {
@@ -529,12 +551,6 @@ public class CivilEntrepriseEditController {
 		}
 		else {
 			throw new TiersNotFoundException(id);
-		}
-
-		if (bindingResult.hasErrors()) {
-			model.addAttribute(DATA, view);
-			model.addAttribute(TIERS_ID, id);
-			return "/tiers/edition/civil/edit-ide";
 		}
 
 		tiersService.setIdentifiantEntreprise((Entreprise) tiers, StringUtils.trimToNull(view.getIde()));
@@ -549,11 +565,14 @@ public class CivilEntrepriseEditController {
 	public String addSiege(@RequestParam(value = "tiersId", required = true) long tiersId, Model model) {
 
 		final Entreprise entreprise = (Entreprise) tiersDAO.get(tiersId);
+		if (entreprise == null) {
+			throw new TiersNotFoundException(tiersId);
+		}
 		final List<DateRanged<Etablissement>> etablissementsPrincipauxEntreprise = tiersService.getEtablissementsPrincipauxEntreprise(entreprise);
 		if (etablissementsPrincipauxEntreprise.isEmpty() || CollectionsUtils.getLastElement(etablissementsPrincipauxEntreprise) == null) {
 			throw new TiersNotFoundException(entreprise.getNumero());
 		}
-		DateRanged<Etablissement> etablissementPrincipalRange = CollectionsUtils.getLastElement(etablissementsPrincipauxEntreprise);
+		final DateRanged<Etablissement> etablissementPrincipalRange = CollectionsUtils.getLastElement(etablissementsPrincipauxEntreprise);
 		final Etablissement etablissement = etablissementPrincipalRange.getPayload();
 
 		final Autorisations auth = getAutorisations(etablissement);
@@ -562,15 +581,22 @@ public class CivilEntrepriseEditController {
 		}
 
 		controllerUtils.checkAccesDossierEnEcriture(tiersId);
+		return showAddSiege(model, new AddSiegeView(etablissement.getNumero(), entreprise.getNumero(), RegDate.get(), null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, null, null));
+	}
 
+	private String showAddSiege(Model model, AddSiegeView view) {
 		model.addAttribute("typesDomicileFiscal", tiersMapHelper.getMapTypeAutoriteFiscale());
-		model.addAttribute("command", new AddSiegeView(etablissement.getNumero(), entreprise.getNumero(), RegDate.get(), null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, null));
+		model.addAttribute("command", view);
 		return "donnees-civiles/add-siege";
 	}
 
 	@Transactional(rollbackFor = Throwable.class)
 	@RequestMapping(value = "/siege/add.do", method = RequestMethod.POST)
 	public String addSiege(@Valid @ModelAttribute("command") final AddSiegeView view, BindingResult result, Model model) throws TiersException {
+
+		if (result.hasErrors()) {
+			return showAddSiege(model, view);
+		}
 
 		final long tiersId = view.getTiersId();
 
@@ -582,11 +608,6 @@ public class CivilEntrepriseEditController {
 		final Autorisations auth = getAutorisations(etablissement);
 		if (!auth.isDonneesCiviles()) {
 			throw new AccessDeniedException("Vous ne possédez pas les droits IfoSec de création de sieges.");
-		}
-
-		if (result.hasErrors()) {
-			model.addAttribute("command", view);
-			return "donnees-civiles/add-siege";
 		}
 
 		controllerUtils.checkAccesDossierEnEcriture(tiersId);
@@ -610,9 +631,11 @@ public class CivilEntrepriseEditController {
 			throw new AccessDeniedException("Vous ne possédez pas les droits IfoSec d'édition de sieges.");
 		}
 		controllerUtils.checkAccesDossierEnEcriture(domicile.getEtablissement().getNumero());
+		return showEditSiege(model, new EditSiegeView(domicile, entrepriseId, peutEditerDateFin));
+	}
 
-		model.addAttribute("command", new EditSiegeView(domicile, entrepriseId, peutEditerDateFin));
-		model.addAttribute("peutEditerDateFin", peutEditerDateFin);
+	private String showEditSiege(Model model, EditSiegeView view) {
+		model.addAttribute("command", view);
 		model.addAttribute("typesDomicileFiscal", tiersMapHelper.getMapTypeAutoriteFiscale());
 		return "donnees-civiles/edit-siege";
 	}
@@ -620,6 +643,10 @@ public class CivilEntrepriseEditController {
 	@Transactional(rollbackFor = Throwable.class)
 	@RequestMapping(value = "/siege/edit.do", method = RequestMethod.POST)
 	public String editSiege(@Valid @ModelAttribute("command") final EditSiegeView view, BindingResult result, Model model) throws TiersException {
+
+		if (result.hasErrors()) {
+			return showEditSiege(model, view);
+		}
 
 		final DomicileEtablissement domicile = hibernateTemplate.get(DomicileEtablissement.class, view.getId());
 		if (domicile == null) {
@@ -638,23 +665,17 @@ public class CivilEntrepriseEditController {
 			final long ctbId = etablissement.getNumero();
 			controllerUtils.checkAccesDossierEnEcriture(ctbId);
 
-			if (result.hasErrors()) {
-				model.addAttribute("peutEditerDateFin", view.isPeutEditerDateFin());
-				model.addAttribute("typesDomicileFiscal", tiersMapHelper.getMapTypeAutoriteFiscale());
-				return "donnees-civiles/edit-siege";
-			}
-
 			final RegDate dateFermeture = view.getDateFin();
 			if (dateFermeture == domicile.getDateFin()) {
 				tiersService.updateDomicileFiscal(domicile, view.getTypeAutoriteFiscale(), view.getNoAutoriteFiscale());
-			} else {
-				if (domicile.getDateFin() == null
-						&& domicile.getTypeAutoriteFiscale().equals(view.getTypeAutoriteFiscale())
-						&& domicile.getNumeroOfsAutoriteFiscale().equals(view.getNoAutoriteFiscale())) {
-					tiersService.closeDomicileEtablissement(domicile, dateFermeture);
-				} else {
-					tiersService.updateDomicileFiscal(domicile, view.getTypeAutoriteFiscale(), view.getNoAutoriteFiscale(), view.getDateFin());
-				}
+			}
+			else if (domicile.getDateFin() == null
+					&& domicile.getTypeAutoriteFiscale() == view.getTypeAutoriteFiscale()
+					&& domicile.getNumeroOfsAutoriteFiscale().equals(view.getNoAutoriteFiscale())) {
+				tiersService.closeDomicileEtablissement(domicile, dateFermeture);
+			}
+			else {
+				tiersService.updateDomicileFiscal(domicile, view.getTypeAutoriteFiscale(), view.getNoAutoriteFiscale(), view.getDateFin());
 			}
 		}
 

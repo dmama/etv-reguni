@@ -14,16 +14,19 @@ public class AddSiegeView implements DateRange {
 	private RegDate dateFin;
 	private TypeAutoriteFiscale typeAutoriteFiscale;
 	private Integer noAutoriteFiscale;
+	private String nomAutoriteFiscale;
 
-	public AddSiegeView() {}
+	public AddSiegeView() {
+	}
 
-	public AddSiegeView(Long tiersId, Long entrepriseId, RegDate dateDebut, RegDate dateFin, TypeAutoriteFiscale typeAutoriteFiscale, Integer noAutoriteFiscale) {
+	public AddSiegeView(Long tiersId, Long entrepriseId, RegDate dateDebut, RegDate dateFin, TypeAutoriteFiscale typeAutoriteFiscale, Integer noAutoriteFiscale, String nomAutoriteFiscale) {
 		this.tiersId = tiersId;
 		this.entrepriseId = entrepriseId;
 		this.dateDebut = dateDebut;
 		this.dateFin = dateFin;
 		this.typeAutoriteFiscale = typeAutoriteFiscale;
 		this.noAutoriteFiscale = noAutoriteFiscale;
+		this.nomAutoriteFiscale = nomAutoriteFiscale;
 	}
 
 	public Long getTiersId() {
@@ -74,6 +77,14 @@ public class AddSiegeView implements DateRange {
 
 	public void setNoAutoriteFiscale(Integer noAutoriteFiscale) {
 		this.noAutoriteFiscale = noAutoriteFiscale;
+	}
+
+	public String getNomAutoriteFiscale() {
+		return nomAutoriteFiscale;
+	}
+
+	public void setNomAutoriteFiscale(String nomAutoriteFiscale) {
+		this.nomAutoriteFiscale = nomAutoriteFiscale;
 	}
 
 	@Override

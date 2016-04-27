@@ -26,13 +26,13 @@
 					<unireg:nextRowClass reset="0"/>
 					<tr class="<unireg:nextRowClass/>" >
 						<td width="20%"><fmt:message key="label.capital"/>&nbsp;:</td>
-						<td>
-							<input id="montant" name="montant" value="${command.montant}" size="25" />
+						<td width="30%">
+							<form:input path="montant" size="25"/>
 							<form:errors path="montant" cssClass="error" />
 						</td>
 						<td width="20%"><fmt:message key="label.capital.monnaie"/>&nbsp;:</td>
-						<td>
-							<input id="monnaie" name="monnaie" value="${command.monnaie}" size="3" maxlength="${lengthmonnaie}"/>
+						<td width="30%">
+							<form:input path="monnaie" size="3" maxlength="${lengthmonnaie}"/>
 							<form:errors path="monnaie" cssClass="error" />
 						</td>
 					</tr>

@@ -4,11 +4,13 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
+import ch.vd.registre.base.date.RegDate;
+
 public class AddRaisonSocialeViewValidator implements Validator {
 
 	@Override
 	public boolean supports(Class<?> clazz) {
-		return EntrepriseView.class.isAssignableFrom(clazz);
+		return AddRaisonSocialeView.class.isAssignableFrom(clazz);
 	}
 
 	@Override
@@ -18,6 +20,24 @@ public class AddRaisonSocialeViewValidator implements Validator {
 
 			if (StringUtils.isBlank(view.getRaisonSociale())) {
 				errors.rejectValue("raisonSociale", "error.tiers.raison.sociale.vide");
+			}
+
+			if (view.getDateDebut() == null) {
+				errors.rejectValue("dateDebut", "error.date.debut.vide");
+			}
+			else {
+				final RegDate today = RegDate.get();
+				if (today.isBefore(view.getDateDebut())) {
+					errors.rejectValue("dateDebut", "error.date.debut.future");
+				}
+				if (view.getDateFin() != null) {
+					if (view.getDateFin().isBefore(view.getDateDebut())) {
+						errors.rejectValue("dateFin", "error.date.fin.avant.debut");
+					}
+					else if (today.isBefore(view.getDateFin())) {
+						errors.rejectValue("dateFin", "error.date.fin.future");
+					}
+				}
 			}
 		}
 	}

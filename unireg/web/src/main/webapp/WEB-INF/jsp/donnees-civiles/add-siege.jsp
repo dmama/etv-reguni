@@ -18,34 +18,49 @@
 				<legend><span><fmt:message key="label.entreprise.siege" /></span></legend>
 
 				<form:hidden path="tiersId"/>
-				<form:hidden path="entrepriseId" value="${command.entrepriseId}"/>
+				<form:hidden path="entrepriseId"/>
 
 				<script type="text/javascript">
 
-					function selectAutoriteFiscale(name) {
+					function selectAutoriteFiscale(name, reset) {
 						if (name == 'COMMUNE_OU_FRACTION_VD') {
 							$('#domicile_commune_vd_label').show();
 							$('#domicile_commune_hc_label').hide();
 							$('#domicile_pays_label').hide();
-							$('#autoriteFiscale').val(null);
-							$('#noAutoriteFiscale').val(null);
-							Fors.autoCompleteCommunesVD('#autoriteFiscale', '#noAutoriteFiscale');
+							if (reset) {
+								$('#autoriteFiscale').val(null);
+								$('#noAutoriteFiscale').val(null);
+								$('#nomAutoriteFiscale').val(null);
+							}
+							Fors.autoCompleteCommunesVD('#autoriteFiscale', '#noAutoriteFiscale', function(item) {
+								$('#nomAutoriteFiscale').val(item ? item.label : null);
+							});
 						}
 						else if (name == 'COMMUNE_HC') {
 							$('#domicile_commune_vd_label').hide();
 							$('#domicile_commune_hc_label').show();
 							$('#domicile_pays_label').hide();
-							$('#autoriteFiscale').val(null);
-							$('#noAutoriteFiscale').val(null);
-							Fors.autoCompleteCommunesHC('#autoriteFiscale', '#noAutoriteFiscale');
+							if (reset) {
+								$('#autoriteFiscale').val(null);
+								$('#noAutoriteFiscale').val(null);
+								$('#nomAutoriteFiscale').val(null);
+							}
+							Fors.autoCompleteCommunesHC('#autoriteFiscale', '#noAutoriteFiscale', function(item) {
+								$('#nomAutoriteFiscale').val(item ? item.label : null);
+							});
 						}
 						else if (name == 'PAYS_HS') {
 							$('#domicile_commune_vd_label').hide();
 							$('#domicile_commune_hc_label').hide();
 							$('#domicile_pays_label').show();
-							$('#autoriteFiscale').val(null);
-							$('#noAutoriteFiscale').val(null);
-							Fors.autoCompletePaysHS('#autoriteFiscale', '#noAutoriteFiscale');
+							if (reset) {
+								$('#autoriteFiscale').val(null);
+								$('#noAutoriteFiscale').val(null);
+								$('#nomAutoriteFiscale').val(null);
+							}
+							Fors.autoCompletePaysHS('#autoriteFiscale', '#noAutoriteFiscale', function(item) {
+								$('#nomAutoriteFiscale').val(item ? item.label : null);
+							});
 						}
 					}
 				</script>
@@ -54,15 +69,15 @@
 				<table border="0">
 					<unireg:nextRowClass reset="0"/>
 					<tr class="<unireg:nextRowClass/>" >
-						<td><fmt:message key="label.date.ouverture" />&nbsp;:</td>
-						<td>
+						<td width="20%"><fmt:message key="label.date.ouverture" />&nbsp;:</td>
+						<td width="30%">
 							<jsp:include page="/WEB-INF/jsp/include/inputCalendar.jsp">
 								<jsp:param name="path" value="dateDebut" />
 								<jsp:param name="id" value="dateDebut" />
 							</jsp:include>
 						</td>
-						<td><fmt:message key="label.date.fermeture" />&nbsp;:</td>
-						<td>
+						<td width="20%"><fmt:message key="label.date.fermeture" />&nbsp;:</td>
+						<td width="30%">
 							<jsp:include page="/WEB-INF/jsp/include/inputCalendar.jsp">
 								<jsp:param name="path" value="dateFin" />
 								<jsp:param name="id" value="dateFin" />
@@ -76,7 +91,7 @@
 							<div id="select_type_for">
 								<%--@elvariable id="typesDomicileFiscal" type="java.util.Map<TypeAutoriteFiscale, String>"--%>
 								<form:select path="typeAutoriteFiscale" items="${typesDomicileFiscal}" id="optionTypeAutoriteFiscale"
-								             onchange="selectAutoriteFiscale(this.options[this.selectedIndex].value);" />
+								             onchange="selectAutoriteFiscale(this.options[this.selectedIndex].value, true);" />
 							</div>
 						</td>
 						<td>
@@ -88,9 +103,10 @@
 							</label>
 						</td>
 						<td>
-							<input id="autoriteFiscale" size="25" />
+							<input id="autoriteFiscale" size="25" value="${command.nomAutoriteFiscale}"/>
 							<form:errors path="noAutoriteFiscale" cssClass="error" />
 							<form:hidden path="noAutoriteFiscale" />
+							<form:hidden path="nomAutoriteFiscale" />
 						</td>
 					</tr>
 
@@ -98,7 +114,7 @@
 
 				<script type="text/javascript">
 					// on initialise l'auto-completion de l'autorité fiscale
-					selectAutoriteFiscale('${command.typeAutoriteFiscale}');
+					selectAutoriteFiscale('${command.typeAutoriteFiscale}', false);
 				</script>
 			</fieldset>
 

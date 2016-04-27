@@ -30,9 +30,6 @@
 							</form:select>
 							<form:errors path="formeJuridique" cssClass="error" />
 						</td>
-						<td width="20%"></td>
-						<td>
-						</td>
 					</tr>
 					<tr class="<unireg:nextRowClass/>" >
 						<td><fmt:message key="label.date.ouverture" />&nbsp;:</td>
@@ -42,11 +39,6 @@
 								<jsp:param name="id" value="dateDebut" />
 							</jsp:include>
 						</td>
-						<td><fmt:message key="label.date.fermeture" />&nbsp;:</td>
-						<td>
-							<unireg:regdate regdate="${command.dateFin}"/>
-						</td>
-
 					</tr>
 				</table>
 			</fieldset>

@@ -16,9 +16,11 @@ public class EditSiegeView implements DateRange {
 	private Long entrepriseId;
 	private TypeAutoriteFiscale typeAutoriteFiscale;
 	private Integer noAutoriteFiscale;
+	private String nomAutoriteFiscale;
 	private boolean peutEditerDateFin;
 
-	public EditSiegeView() {}
+	public EditSiegeView() {
+	}
 
 	public EditSiegeView(DomicileEtablissement dom, Long entrepriseId, boolean peutEditerDateFin) {
 		this(dom.getId(), dom.getEtablissement().getNumero(), entrepriseId, dom.getDateDebut(), dom.getDateFin(), dom.getTypeAutoriteFiscale(), dom.getNumeroOfsAutoriteFiscale(), peutEditerDateFin);
@@ -33,6 +35,7 @@ public class EditSiegeView implements DateRange {
 		this.typeAutoriteFiscale = typeAutoriteFiscale;
 		this.noAutoriteFiscale = noAutoriteFiscale;
 		this.peutEditerDateFin = peutEditerDateFin;
+		this.nomAutoriteFiscale = null;
 	}
 
 	public Long getId() {
@@ -91,6 +94,14 @@ public class EditSiegeView implements DateRange {
 
 	public void setNoAutoriteFiscale(Integer noAutoriteFiscale) {
 		this.noAutoriteFiscale = noAutoriteFiscale;
+	}
+
+	public String getNomAutoriteFiscale() {
+		return nomAutoriteFiscale;
+	}
+
+	public void setNomAutoriteFiscale(String nomAutoriteFiscale) {
+		this.nomAutoriteFiscale = nomAutoriteFiscale;
 	}
 
 	@Override

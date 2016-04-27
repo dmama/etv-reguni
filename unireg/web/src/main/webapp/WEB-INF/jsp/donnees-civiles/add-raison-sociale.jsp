@@ -24,11 +24,8 @@
 					<tr class="<unireg:nextRowClass/>" >
 						<td width="20%"><fmt:message key="label.raison.sociale"/>&nbsp;:</td>
 						<td>
-							<input id="raisonSociale" name="raisonSociale" size="80" />
+							<form:input path="raisonSociale" size="80"/>
 							<form:errors path="raisonSociale" cssClass="error" />
-						</td>
-						<td width="20%"></td>
-						<td>
 						</td>
 					</tr>
 					<tr class="<unireg:nextRowClass/>" >
@@ -38,10 +35,6 @@
 								<jsp:param name="path" value="dateDebut" />
 								<jsp:param name="id" value="dateDebut" />
 							</jsp:include>
-						</td>
-						<td><fmt:message key="label.date.fermeture" />&nbsp;:</td>
-						<td>
-							<unireg:regdate regdate="${command.dateFin}"/>
 						</td>
 					</tr>
 				</table>
