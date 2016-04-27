@@ -100,11 +100,13 @@ import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionService;
 import ch.vd.uniregctb.metier.piis.PeriodeImpositionImpotSourceService;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
+import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.security.SecurityProviderInterface;
 import ch.vd.uniregctb.situationfamille.SituationFamilleService;
 import ch.vd.uniregctb.tiers.AutreCommunaute;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.Etablissement;
@@ -343,40 +345,49 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 			if (tiers == null) {
 				result.addCasTraite(key, AckStatus.ERROR_UNKNOWN_PARTY, null);
 			}
-			else if (tiers.isDebiteurInactif()) {
-				result.addCasTraite(key, AckStatus.ERROR_INACTIVE_DEBTOR, null);
-			}
-			else if (tiers.getDernierForFiscalPrincipal() == null) {
-				result.addCasTraite(key, AckStatus.ERROR_TAX_LIABILITY, "Aucun for principal.");
-			}
-			else if (tiers instanceof Contribuable) {
-				final Contribuable ctb = (Contribuable) tiers;
-				final DeclarationImpotOrdinaire di = findDeclaration(ctb, pf, noSeq);
-				if (di == null) {
-					result.addCasTraite(key, AckStatus.ERROR_UNKNOWN_TAX_DECLARATION, null);
+			else {
+				if (tiers instanceof ContribuableImpositionPersonnesPhysiques) {
+					WebServiceHelper.checkAccess(context.securityProvider, userLogin, Role.DI_QUIT_PP);
 				}
-				else if (di.isAnnule()) {
-					result.addCasTraite(key, AckStatus.ERROR_CANCELED_TAX_DECLARATION, null);
+				else if (tiers instanceof Entreprise) {
+					WebServiceHelper.checkAccess(context.securityProvider, userLogin, Role.DI_QUIT_PM);
 				}
-				else if (RegDateHelper.isBeforeOrEqual(dateRetour, di.getDateExpedition(), NullDateBehavior.EARLIEST)) {
-					result.addCasTraite(key, AckStatus.ERROR_INVALID_ACK_DATE, "Date donnée antérieure à la date d'émission de la déclaration.");
+
+				if (tiers.isDebiteurInactif()) {
+					result.addCasTraite(key, AckStatus.ERROR_INACTIVE_DEBTOR, null);
 				}
-				else if (RegDateHelper.isAfter(dateRetour, RegDate.get(), NullDateBehavior.LATEST)) {
-					result.addCasTraite(key, AckStatus.ERROR_INVALID_ACK_DATE, "Date donnée dans le futur de la date du jour.");
+				else if (tiers.getDernierForFiscalPrincipal() == null) {
+					result.addCasTraite(key, AckStatus.ERROR_TAX_LIABILITY, "Aucun for principal.");
+				}
+				else if (tiers instanceof Contribuable) {
+					final Contribuable ctb = (Contribuable) tiers;
+					final DeclarationImpotOrdinaire di = findDeclaration(ctb, pf, noSeq);
+					if (di == null) {
+						result.addCasTraite(key, AckStatus.ERROR_UNKNOWN_TAX_DECLARATION, null);
+					}
+					else if (di.isAnnule()) {
+						result.addCasTraite(key, AckStatus.ERROR_CANCELED_TAX_DECLARATION, null);
+					}
+					else if (RegDateHelper.isBeforeOrEqual(dateRetour, di.getDateExpedition(), NullDateBehavior.EARLIEST)) {
+						result.addCasTraite(key, AckStatus.ERROR_INVALID_ACK_DATE, "Date donnée antérieure à la date d'émission de la déclaration.");
+					}
+					else if (RegDateHelper.isAfter(dateRetour, RegDate.get(), NullDateBehavior.LATEST)) {
+						result.addCasTraite(key, AckStatus.ERROR_INVALID_ACK_DATE, "Date donnée dans le futur de la date du jour.");
+					}
+					else {
+						// envoie le quittancement au BAM
+						sendQuittancementToBam(di, dateRetour);
+
+						// procéde au quittancement
+						context.diService.quittancementDI(ctb, di, dateRetour, source, true);
+
+						// tout est bon...
+						result.addCasTraite(key, AckStatus.OK, null);
+					}
 				}
 				else {
-					// envoie le quittancement au BAM
-					sendQuittancementToBam(di, dateRetour);
-
-					// procéde au quittancement
-					context.diService.quittancementDI(ctb, di, dateRetour, source, true);
-
-					// tout est bon...
-					result.addCasTraite(key, AckStatus.OK, null);
+					result.addCasTraite(key, AckStatus.ERROR_WRONG_PARTY_TYPE, "Le tiers donné n'est pas un contribuable.");
 				}
-			}
-			else {
-				result.addCasTraite(key, AckStatus.ERROR_WRONG_PARTY_TYPE, "Le tiers donné n'est pas un contribuable.");
 			}
 		}
 		catch (AccessDeniedException e) {
@@ -454,65 +465,78 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 	}
 
 	@Override
-	public DeadlineResponse newOrdinaryTaxDeclarationDeadline(final int partyNo, final int pf, final int seqNo, UserLogin user, DeadlineRequest request) throws AccessDeniedException {
+	public DeadlineResponse newOrdinaryTaxDeclarationDeadline(final int partyNo, final int pf, final int seqNo, final UserLogin user, DeadlineRequest request) throws AccessDeniedException {
 		final RegDate nouveauDelai = ch.vd.uniregctb.xml.DataHelper.xmlToCore(request.getNewDeadline());
 		final RegDate dateObtention = ch.vd.uniregctb.xml.DataHelper.xmlToCore(request.getGrantedOn());
 		final RegDate today = RegDate.get();
 
-		return doInTransaction(false, new TransactionCallback<DeadlineResponse>() {
-			@Override
-			public DeadlineResponse doInTransaction(TransactionStatus status) {
+		try {
+			return doInTransaction(false, new TxCallback<DeadlineResponse>() {
+				@Override
+				public DeadlineResponse execute(TransactionStatus status) throws AccessDeniedException {
 
-				final Tiers tiers = context.tiersService.getTiers(partyNo);
-				if (tiers == null) {
-					throw new TiersNotFoundException(partyNo);
-				}
-				else if (tiers instanceof Contribuable) {
-					final Contribuable ctb = (Contribuable) tiers;
-					final DeclarationImpotOrdinaire di = findDeclaration(ctb, pf, seqNo);
-					if (di == null) {
-						throw new ObjectNotFoundException("Déclaration d'impôt inexistante.");
+					final Tiers tiers = context.tiersService.getTiers(partyNo);
+					if (tiers == null) {
+						throw new TiersNotFoundException(partyNo);
 					}
-					else {
-						final DeadlineResponse response;
-						if (di.isAnnule()) {
-							response = new DeadlineResponse(DeadlineStatus.ERROR_CANCELLED_DECLARATION, null);
+					else if (tiers instanceof Contribuable) {
+						final Contribuable ctb = (Contribuable) tiers;
+
+						if (ctb instanceof ContribuableImpositionPersonnesPhysiques) {
+							WebServiceHelper.checkAccess(context.securityProvider, user, Role.DI_DELAI_PP);
 						}
-						else if (di.getDernierEtat().getEtat() != TypeEtatDeclaration.EMISE) {
-							response = new DeadlineResponse(DeadlineStatus.ERROR_BAD_DECLARATION_STATUS, "La déclaration n'est pas dans l'état 'EMISE'.");
+						else if (ctb instanceof Entreprise) {
+							WebServiceHelper.checkAccess(context.securityProvider, user, Role.DI_DELAI_PM);
 						}
-						else if (RegDateHelper.isAfter(dateObtention, today, NullDateBehavior.LATEST)) {
-							response = new DeadlineResponse(DeadlineStatus.ERROR_INVALID_GRANTED_ON, "La date d'obtention du délai ne peut pas être dans le futur de la date du jour.");
-						}
-						else if (RegDateHelper.isBefore(nouveauDelai, today, NullDateBehavior.LATEST)) {
-							response = new DeadlineResponse(DeadlineStatus.ERROR_INVALID_DEADLINE, "Un nouveau délai ne peut pas être demandé dans le passé de la date du jour.");
+
+						final DeclarationImpotOrdinaire di = findDeclaration(ctb, pf, seqNo);
+						if (di == null) {
+							throw new ObjectNotFoundException("Déclaration d'impôt inexistante.");
 						}
 						else {
-							final RegDate delaiActuel = di.getDernierDelaiAccorde().getDelaiAccordeAu();
-							if (RegDateHelper.isBeforeOrEqual(nouveauDelai, delaiActuel, NullDateBehavior.LATEST)) {
-								response = new DeadlineResponse(DeadlineStatus.ERROR_INVALID_DEADLINE, "Un délai plus lointain existe déjà.");
+							final DeadlineResponse response;
+							if (di.isAnnule()) {
+								response = new DeadlineResponse(DeadlineStatus.ERROR_CANCELLED_DECLARATION, null);
+							}
+							else if (di.getDernierEtat().getEtat() != TypeEtatDeclaration.EMISE) {
+								response = new DeadlineResponse(DeadlineStatus.ERROR_BAD_DECLARATION_STATUS, "La déclaration n'est pas dans l'état 'EMISE'.");
+							}
+							else if (RegDateHelper.isAfter(dateObtention, today, NullDateBehavior.LATEST)) {
+								response = new DeadlineResponse(DeadlineStatus.ERROR_INVALID_GRANTED_ON, "La date d'obtention du délai ne peut pas être dans le futur de la date du jour.");
+							}
+							else if (RegDateHelper.isBefore(nouveauDelai, today, NullDateBehavior.LATEST)) {
+								response = new DeadlineResponse(DeadlineStatus.ERROR_INVALID_DEADLINE, "Un nouveau délai ne peut pas être demandé dans le passé de la date du jour.");
 							}
 							else {
-								final DelaiDeclaration delai = new DelaiDeclaration();
-								delai.setEtat(EtatDelaiDeclaration.ACCORDE);
-								delai.setDateTraitement(RegDate.get());
-								delai.setCleArchivageCourrier(null);
-								delai.setDateDemande(dateObtention);
-								delai.setDelaiAccordeAu(nouveauDelai);
-								di.addDelai(delai);
+								final RegDate delaiActuel = di.getDernierDelaiAccorde().getDelaiAccordeAu();
+								if (RegDateHelper.isBeforeOrEqual(nouveauDelai, delaiActuel, NullDateBehavior.LATEST)) {
+									response = new DeadlineResponse(DeadlineStatus.ERROR_INVALID_DEADLINE, "Un délai plus lointain existe déjà.");
+								}
+								else {
+									final DelaiDeclaration delai = new DelaiDeclaration();
+									delai.setEtat(EtatDelaiDeclaration.ACCORDE);
+									delai.setDateTraitement(RegDate.get());
+									delai.setCleArchivageCourrier(null);
+									delai.setDateDemande(dateObtention);
+									delai.setDelaiAccordeAu(nouveauDelai);
+									di.addDelai(delai);
 
-								response = new DeadlineResponse(DeadlineStatus.OK, null);
+									response = new DeadlineResponse(DeadlineStatus.OK, null);
+								}
 							}
-						}
 
-						return response;
+							return response;
+						}
+					}
+					else {
+						throw new ObjectNotFoundException("Le tiers donné n'est pas un contribuable.");
 					}
 				}
-				else {
-					throw new ObjectNotFoundException("Le tiers donné n'est pas un contribuable.");
-				}
-			}
-		});
+			});
+		}
+		catch (TxCallbackException e) {
+			throw (AccessDeniedException) e.getCause();
+		}
 	}
 
 	@Override

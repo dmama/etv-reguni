@@ -64,13 +64,13 @@ public class BusinessWebServiceAccessChecker implements BusinessWebService {
 
 	@Override
 	public OrdinaryTaxDeclarationAckResponse ackOrdinaryTaxDeclarations(UserLogin user, OrdinaryTaxDeclarationAckRequest request) throws AccessDeniedException {
-		WebServiceHelper.checkAccess(securityProvider, user, Role.DI_QUIT_PP);
+		// le droit PP/PM dépend du type de contribuable, le check est donc fait plus bas (en plus, ici, il peut y en avoir plusieurs...)
 		return target.ackOrdinaryTaxDeclarations(user, request);
 	}
 
 	@Override
 	public DeadlineResponse newOrdinaryTaxDeclarationDeadline(int partyNo, int pf, int seqNo, UserLogin user, DeadlineRequest request) throws AccessDeniedException {
-		WebServiceHelper.checkAccess(securityProvider, user, Role.DI_DELAI_PP);
+		// le droit PP/PM dépend du type de contribuable, le check est donc fait plus bas...
 		return target.newOrdinaryTaxDeclarationDeadline(partyNo, pf, seqNo, user, request);
 	}
 
