@@ -30,6 +30,7 @@ public class StatistiquesEvenementsJob extends JobDefinition {
 	public static final String NAME = "StatistiquesEvenementsJob";
 
 	private static final String EVTS_CIVILS = "EVTS_CIVILS";
+	private static final String EVTS_ORG = "EVTS_ORG";
 	private static final String EVTS_EXTERNES = "EVTS_EXTERNES";
 	private static final String EVTS_IDENT_CTB = "EVTS_IDENT_CTB";
 	private static final String EVTS_NOTAIRES = "EVTS_NOTAIRES";
@@ -40,8 +41,17 @@ public class StatistiquesEvenementsJob extends JobDefinition {
 
 		{
 			final JobParam param = new JobParam();
-			param.setDescription("Evénements civils");
+			param.setDescription("Evénements civils (personnes)");
 			param.setName(EVTS_CIVILS);
+			param.setMandatory(false);
+			param.setType(new JobParamBoolean());
+			addParameterDefinition(param, Boolean.FALSE);
+		}
+
+		{
+			final JobParam param = new JobParam();
+			param.setDescription("Evénements civils (organisations)");
+			param.setName(EVTS_ORG);
 			param.setMandatory(false);
 			param.setType(new JobParamBoolean());
 			addParameterDefinition(param, Boolean.FALSE);
@@ -101,6 +111,7 @@ public class StatistiquesEvenementsJob extends JobDefinition {
 
 		// allons chercher les paramètres
 		final boolean civils = getBooleanValue(params, EVTS_CIVILS);
+		final boolean organisations = getBooleanValue(params, EVTS_ORG);
 		final boolean externes = getBooleanValue(params, EVTS_EXTERNES);
 		final boolean identCtb = getBooleanValue(params, EVTS_IDENT_CTB);
 		final boolean notaires = getBooleanValue(params, EVTS_NOTAIRES);
@@ -108,37 +119,11 @@ public class StatistiquesEvenementsJob extends JobDefinition {
 		final RegDate debutActivite = RegDate.get().addDays(- dureeReference);
 
 		// lancement des extractions
-		final StatsEvenementsCivilsEchResults resultatsCivilsEch;
-		if (civils) {
-			resultatsCivilsEch = service.getStatistiquesEvenementsCivilsEch(debutActivite);
-		}
-		else {
-			resultatsCivilsEch = null;
-		}
-
-		final StatsEvenementsExternesResults resultatsExternes;
-		if (externes) {
-			resultatsExternes = service.getStatistiquesEvenementsExternes();
-		}
-		else {
-			resultatsExternes = null;
-		}
-
-		final StatsEvenementsIdentificationContribuableResults resultatsIdentCtb;
-		if (identCtb) {
-			resultatsIdentCtb = service.getStatistiquesEvenementsIdentificationContribuable(debutActivite);
-		}
-		else {
-			resultatsIdentCtb = null;
-		}
-
-		final StatsEvenementsNotairesResults resultatsNotaires;
-		if (notaires) {
-			resultatsNotaires = service.getStatistiquesEvenementsNotaires(debutActivite);
-		}
-		else {
-			resultatsNotaires = null;
-		}
+		final StatsEvenementsCivilsPersonnesResults resultatsCivilsPersonnes = civils ? service.getStatistiquesEvenementsCivilsPersonnes(debutActivite) : null;
+		final StatsEvenementsCivilsOrganisationsResults resultatsOrganisations = organisations ? service.getStatistiquesEvenementsCivilsOrganisations(debutActivite) : null;
+		final StatsEvenementsExternesResults resultatsExternes = externes ? service.getStatistiquesEvenementsExternes() : null;
+		final StatsEvenementsIdentificationContribuableResults resultatsIdentCtb = identCtb ? service.getStatistiquesEvenementsIdentificationContribuable(debutActivite) : null;
+		final StatsEvenementsNotairesResults resultatsNotaires = notaires ? service.getStatistiquesEvenementsNotaires(debutActivite) : null;
 
 		// Produit le rapport dans une transaction read-write
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
@@ -146,7 +131,7 @@ public class StatistiquesEvenementsJob extends JobDefinition {
 		final StatistiquesEvenementsRapport rapport = template.execute(new TransactionCallback<StatistiquesEvenementsRapport>() {
 			@Override
 			public StatistiquesEvenementsRapport doInTransaction(TransactionStatus status) {
-				return rapportService.generateRapport(resultatsCivilsEch, resultatsExternes, resultatsIdentCtb, resultatsNotaires, debutActivite, getStatusManager());
+				return rapportService.generateRapport(resultatsCivilsPersonnes, resultatsOrganisations, resultatsExternes, resultatsIdentCtb, resultatsNotaires, debutActivite, getStatusManager());
 			}
 		});
 

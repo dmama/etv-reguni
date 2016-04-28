@@ -100,7 +100,8 @@ import ch.vd.uniregctb.role.ProduireRolesCommunesResults;
 import ch.vd.uniregctb.role.ProduireRolesOIDsResults;
 import ch.vd.uniregctb.situationfamille.ComparerSituationFamilleResults;
 import ch.vd.uniregctb.situationfamille.ReinitialiserBaremeDoubleGainResults;
-import ch.vd.uniregctb.stats.evenements.StatsEvenementsCivilsEchResults;
+import ch.vd.uniregctb.stats.evenements.StatsEvenementsCivilsOrganisationsResults;
+import ch.vd.uniregctb.stats.evenements.StatsEvenementsCivilsPersonnesResults;
 import ch.vd.uniregctb.stats.evenements.StatsEvenementsExternesResults;
 import ch.vd.uniregctb.stats.evenements.StatsEvenementsIdentificationContribuableResults;
 import ch.vd.uniregctb.stats.evenements.StatsEvenementsNotairesResults;
@@ -376,8 +377,10 @@ public interface RapportService {
 	 * @param dateReference date que les requêtes du type "évolutions depuis le..." utilisent
 	 * @return le rapport
 	 */
-	StatistiquesEvenementsRapport generateRapport(StatsEvenementsCivilsEchResults civilsEch,
-	                                              StatsEvenementsExternesResults externes, StatsEvenementsIdentificationContribuableResults identCtb,
+	StatistiquesEvenementsRapport generateRapport(StatsEvenementsCivilsPersonnesResults civilsPersonnes,
+	                                              StatsEvenementsCivilsOrganisationsResults civilsOrganisations,
+	                                              StatsEvenementsExternesResults externes,
+	                                              StatsEvenementsIdentificationContribuableResults identCtb,
 	                                              StatsEvenementsNotairesResults notaires,
 	                                              RegDate dateReference, StatusManager statusManager);
 

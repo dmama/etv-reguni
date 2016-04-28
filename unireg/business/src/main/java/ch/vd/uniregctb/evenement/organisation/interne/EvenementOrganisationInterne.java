@@ -117,6 +117,8 @@ public abstract class EvenementOrganisationInterne {
 
 	private HandleStatus status = HandleStatus.REDONDANT;
 
+	public static final String PREFIXE_MUTATION_TRAITEE = "Mutation : ";
+
 	private final EvenementOrganisationContext context;
 	private final EvenementOrganisationOptions options;
 
@@ -198,10 +200,9 @@ public abstract class EvenementOrganisationInterne {
 	@NotNull
 	public final HandleStatus handle(EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) throws EvenementOrganisationException {
 
-		if (!(this instanceof EvenementOrganisationInterneComposite ||
-				this instanceof Indexation)) {
+		if (!(this instanceof EvenementOrganisationInterneComposite || this instanceof Indexation)) {
 			if (this.describe() != null) {
-				suivis.addSuivi(String.format("Mutation : %s", this.describe()));
+				suivis.addSuivi(String.format("%s%s", PREFIXE_MUTATION_TRAITEE, this.describe()));
 			}
 		}
 

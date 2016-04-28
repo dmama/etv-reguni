@@ -9,11 +9,18 @@ import ch.vd.registre.base.date.RegDate;
 public interface StatistiquesEvenementsService {
 
 	/**
-	 * Renvoie les statistiques sur les événements civils issus de RCPers (événements basés e-CH)
+	 * Renvoie les statistiques sur les événements civils issus de RCPers (personnes)
 	 * @param debutActivite date à partir de laquelle on liste les modifications récentes
 	 * @return les données nécessaires à l'établissement d'un rapport
 	 */
-	StatsEvenementsCivilsEchResults getStatistiquesEvenementsCivilsEch(RegDate debutActivite);
+	StatsEvenementsCivilsPersonnesResults getStatistiquesEvenementsCivilsPersonnes(RegDate debutActivite);
+
+	/**
+	 * Renvoie les statistiques sur les événements civils issus de RCEnt (organisations)
+	 * @param debutActivite date à partir de laquelle on liste les modifications récentes
+	 * @return les données nécessaires à l'établissement d'un rapport
+	 */
+	StatsEvenementsCivilsOrganisationsResults getStatistiquesEvenementsCivilsOrganisations(RegDate debutActivite);
 
 	/**
 	 * Renvoie les statistiques sur les événements externes
