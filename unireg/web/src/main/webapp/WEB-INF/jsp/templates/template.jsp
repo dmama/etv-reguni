@@ -108,7 +108,7 @@
 						<li><a href="<c:url value='/lr/list.do'/>"><fmt:message key="title.lr" /></a></li>
 					</authz:authorize>
 
-					<authz:authorize ifAnyGranted="ROLE_FAILLITE_ENTREPRISE, ROLE_DEMENAGEMENT_SIEGE_ENTREPRISE, ROLE_FIN_ACTIVITE_ENTREPRISE, ROLE_FUSION_ENTREPRISES">
+					<authz:authorize ifAnyGranted="ROLE_FAILLITE_ENTREPRISE, ROLE_DEMENAGEMENT_SIEGE_ENTREPRISE, ROLE_FIN_ACTIVITE_ENTREPRISE, ROLE_FUSION_ENTREPRISES, ROLE_SCISSION_ENTREPRISE">
 					<li><fmt:message key="label.action.processus.complexes.entreprises"/>
 						<ul>
 							<authz:authorize ifAnyGranted="ROLE_FAILLITE_ENTREPRISE">
