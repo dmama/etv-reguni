@@ -1,30 +1,36 @@
 package ch.vd.uniregctb.stats.evenements;
 
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.registre.base.utils.Pair;
 import ch.vd.unireg.common.NomPrenom;
 import ch.vd.uniregctb.evenement.externe.EtatEvenementExterne;
 import ch.vd.uniregctb.evenement.identification.contribuable.CriteresAdresse;
 import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuable;
+import ch.vd.uniregctb.evenement.organisation.interne.EvenementOrganisationInterne;
 import ch.vd.uniregctb.hibernate.HibernateCallback;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.reqdes.ErreurTraitement;
 import ch.vd.uniregctb.reqdes.EtatTraitement;
 import ch.vd.uniregctb.type.ActionEvenementCivilEch;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
+import ch.vd.uniregctb.type.EtatEvenementOrganisation;
 import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeEvenementCivilEch;
 
@@ -43,21 +49,21 @@ public class StatistiquesEvenementsServiceImpl implements StatistiquesEvenements
 	 * @return statistiques sur les événements civils e-CH
 	 */
 	@Override
-	public StatsEvenementsCivilsEchResults getStatistiquesEvenementsCivilsEch(RegDate debutActivite) {
-		final Map<EtatEvenementCivil, Integer> etats = getEtatsEvenementsCivilsEch(null);
-		final Map<EtatEvenementCivil, Integer> etatsNouveaux = getEtatsEvenementsCivilsEch(debutActivite);
+	public StatsEvenementsCivilsPersonnesResults getStatistiquesEvenementsCivilsPersonnes(RegDate debutActivite) {
+		final Map<EtatEvenementCivil, Integer> etats = getEtatsEvenementsCivilsPersonnes(null);
+		final Map<EtatEvenementCivil, Integer> etatsNouveaux = getEtatsEvenementsCivilsPersonnes(debutActivite);
 		final Map<Pair<TypeEvenementCivilEch, ActionEvenementCivilEch>, Integer> erreursParType = getNombreEvenementsCivilsEnErreurParTypeEch(null);
 		final Map<Pair<TypeEvenementCivilEch, ActionEvenementCivilEch>, Integer> erreursParTypeNouveaux = getNombreEvenementsCivilsEnErreurParTypeEch(debutActivite);
 		final Map<Pair<TypeEvenementCivilEch, ActionEvenementCivilEch>, Integer> forcesParType = getNombreEvenementsForcesParTypeEch(null);
 		final Map<Pair<TypeEvenementCivilEch, ActionEvenementCivilEch>, Integer> forcesRecemmentParType = getNombreEvenementsForcesParTypeEch(debutActivite);
-		final List<StatsEvenementsCivilsEchResults.EvenementCivilEnErreurInfo> toutesErreurs = getToutesErreursEvenementsCivilsEch();
-		final List<StatsEvenementsCivilsEchResults.EvenementCivilTraiteManuellementInfo> manipulationsManuelles = getManipulationsManuellesEch(debutActivite);
-		final List<StatsEvenementsCivilsEchResults.QueueAttenteInfo> queuesAttente = getQueuesAttente();
-		return new StatsEvenementsCivilsEchResults(etats, etatsNouveaux, erreursParType, erreursParTypeNouveaux, toutesErreurs,
-		                                           manipulationsManuelles, forcesParType, forcesRecemmentParType, queuesAttente);
+		final List<StatsEvenementsCivilsPersonnesResults.EvenementCivilEnErreurInfo> toutesErreurs = getToutesErreursEvenementsCivilsPersonnes();
+		final List<StatsEvenementsCivilsPersonnesResults.EvenementCivilTraiteManuellementInfo> manipulationsManuelles = getManipulationsManuellesEch(debutActivite);
+		final List<StatsEvenementsCivilsPersonnesResults.QueueAttenteInfo> queuesAttente = getQueuesAttente();
+		return new StatsEvenementsCivilsPersonnesResults(etats, etatsNouveaux, erreursParType, erreursParTypeNouveaux, toutesErreurs,
+		                                                 manipulationsManuelles, forcesParType, forcesRecemmentParType, queuesAttente);
 	}
 	
-	private Map<EtatEvenementCivil, Integer> getEtatsEvenementsCivilsEch(@Nullable RegDate debutActivite) {
+	private Map<EtatEvenementCivil, Integer> getEtatsEvenementsCivilsPersonnes(@Nullable RegDate debutActivite) {
 		final String sql;
 		final Map<String, Object> sqlParameters;
 		if (debutActivite != null) {
@@ -89,7 +95,7 @@ public class StatistiquesEvenementsServiceImpl implements StatistiquesEvenements
 			public Pair<TypeEvenementCivilEch, ActionEvenementCivilEch> buildKey(Object[] row) {
 				final TypeEvenementCivilEch type = TypeEvenementCivilEch.valueOf((String) row[0]);
 				final ActionEvenementCivilEch action = ActionEvenementCivilEch.valueOf((String) row[1]);
-				return new Pair<>(type, action);
+				return Pair.of(type, action);
 			}
 
 			@Override
@@ -120,7 +126,7 @@ public class StatistiquesEvenementsServiceImpl implements StatistiquesEvenements
 			public Pair<TypeEvenementCivilEch, ActionEvenementCivilEch> buildKey(Object[] row) {
 				final TypeEvenementCivilEch type = TypeEvenementCivilEch.valueOf((String) row[0]);
 				final ActionEvenementCivilEch action = ActionEvenementCivilEch.valueOf((String) row[1]);
-				return new Pair<>(type, action);
+				return Pair.of(type, action);
 			}
 
 			@Override
@@ -130,14 +136,14 @@ public class StatistiquesEvenementsServiceImpl implements StatistiquesEvenements
 		});
 	}
 	
-	private List<StatsEvenementsCivilsEchResults.EvenementCivilEnErreurInfo> getToutesErreursEvenementsCivilsEch() {
+	private List<StatsEvenementsCivilsPersonnesResults.EvenementCivilEnErreurInfo> getToutesErreursEvenementsCivilsPersonnes() {
 
 		final String sql = "SELECT R.ID, R.DATE_EVENEMENT, R.DATE_TRAITEMENT, R.ETAT, R.NO_INDIVIDU, R.TYPE, R.ACTION_EVT, E.MESSAGE, R.COMMENTAIRE_TRAITEMENT"
 				+ " FROM EVENEMENT_CIVIL_ECH R JOIN EVENEMENT_CIVIL_ECH_ERREUR E ON E.EVT_CIVIL_ID = R.ID WHERE R.ETAT NOT IN ('TRAITE','REDONDANT') ORDER BY R.ID, R.DATE_TRAITEMENT";
 
-		return executeSelect(sql, new SelectCallback<StatsEvenementsCivilsEchResults.EvenementCivilEnErreurInfo>() {
+		return executeSelect(sql, null, new SelectCallback<StatsEvenementsCivilsPersonnesResults.EvenementCivilEnErreurInfo>() {
 			@Override
-			public StatsEvenementsCivilsEchResults.EvenementCivilEnErreurInfo onRow(Object[] row) {
+			public StatsEvenementsCivilsPersonnesResults.EvenementCivilEnErreurInfo onRow(Object[] row) {
 
 				Assert.isEqual(9, row.length);
 
@@ -150,19 +156,19 @@ public class StatistiquesEvenementsServiceImpl implements StatistiquesEvenements
 				final ActionEvenementCivilEch action = ActionEvenementCivilEch.valueOf((String) row[6]);
 				final String message = (String) row[7];
 				final String commentaireStraitement = (String) row[8];
-				return new StatsEvenementsCivilsEchResults.EvenementCivilEnErreurInfo(id, type, action, dateEvenement, dateTraitement, etat, individu, commentaireStraitement, message);
+				return new StatsEvenementsCivilsPersonnesResults.EvenementCivilEnErreurInfo(id, type, action, dateEvenement, dateTraitement, etat, individu, commentaireStraitement, message);
 			}
 		});
 	}
 
-	private List<StatsEvenementsCivilsEchResults.EvenementCivilTraiteManuellementInfo> getManipulationsManuellesEch(RegDate debutActivite) {
+	private List<StatsEvenementsCivilsPersonnesResults.EvenementCivilTraiteManuellementInfo> getManipulationsManuellesEch(RegDate debutActivite) {
 
 		final String sql = "SELECT ID, LOG_CDATE, LOG_MDATE, LOG_MUSER, DATE_EVENEMENT, ETAT, NO_INDIVIDU, TYPE, ACTION_EVT, COMMENTAIRE_TRAITEMENT FROM EVENEMENT_CIVIL_ECH"
 				+ " WHERE LOG_MUSER LIKE '" + VISA_HUMAIN_TEMPLATE + "' AND LOG_MDATE > TO_DATE('" + debutActivite.index() + "', 'YYYYMMDD') ORDER BY ID";
 
-		return executeSelect(sql, new SelectCallback<StatsEvenementsCivilsEchResults.EvenementCivilTraiteManuellementInfo>() {
+		return executeSelect(sql, null, new SelectCallback<StatsEvenementsCivilsPersonnesResults.EvenementCivilTraiteManuellementInfo>() {
 			@Override
-			public StatsEvenementsCivilsEchResults.EvenementCivilTraiteManuellementInfo onRow(Object[] row) {
+			public StatsEvenementsCivilsPersonnesResults.EvenementCivilTraiteManuellementInfo onRow(Object[] row) {
 
 				Assert.isEqual(10, row.length);
 
@@ -176,28 +182,176 @@ public class StatistiquesEvenementsServiceImpl implements StatistiquesEvenements
 				final TypeEvenementCivilEch type = TypeEvenementCivilEch.valueOf((String) row[7]);
 				final ActionEvenementCivilEch action = ActionEvenementCivilEch.valueOf((String) row[8]);
 				final String commentaireTraitement = (String) row[9];
-				return new StatsEvenementsCivilsEchResults.EvenementCivilTraiteManuellementInfo(id, type, action, dateEvenement, etat, individu, commentaireTraitement, visaOperateur, dateReception, dateModification);
+				return new StatsEvenementsCivilsPersonnesResults.EvenementCivilTraiteManuellementInfo(id, type, action, dateEvenement, etat, individu, commentaireTraitement, visaOperateur, dateReception, dateModification);
 			}
 		});
 	}
 	
-	private List<StatsEvenementsCivilsEchResults.QueueAttenteInfo> getQueuesAttente() {
+	private List<StatsEvenementsCivilsPersonnesResults.QueueAttenteInfo> getQueuesAttente() {
 		final String sql = "SELECT NO_INDIVIDU, MIN(DATE_EVENEMENT), MAX(DATE_EVENEMENT), COUNT(*) FROM EVENEMENT_CIVIL_ECH WHERE ETAT IN ('EN_ERREUR', 'EN_ATTENTE') GROUP BY NO_INDIVIDU ORDER BY COUNT(*) DESC, NO_INDIVIDU ASC";
 		
-		return executeSelect(sql, new SelectCallback<StatsEvenementsCivilsEchResults.QueueAttenteInfo>() {
+		return executeSelect(sql, null, new SelectCallback<StatsEvenementsCivilsPersonnesResults.QueueAttenteInfo>() {
 			@Override
-			public StatsEvenementsCivilsEchResults.QueueAttenteInfo onRow(Object[] row) {
+			public StatsEvenementsCivilsPersonnesResults.QueueAttenteInfo onRow(Object[] row) {
 				Assert.isEqual(4, row.length);
 				if (row[0] != null) {
 					final long noIndividu = ((Number) row[0]).longValue();
 					final RegDate minDate = RegDate.fromIndex(((Number) row[1]).intValue(), false);
 					final RegDate maxDate = RegDate.fromIndex(((Number) row[2]).intValue(), false);
 					final int count = ((Number) row[3]).intValue();
-					return new StatsEvenementsCivilsEchResults.QueueAttenteInfo(noIndividu, minDate, maxDate, count);
+					return new StatsEvenementsCivilsPersonnesResults.QueueAttenteInfo(noIndividu, minDate, maxDate, count);
 				}
 				else {
 					return null;
 				}
+			}
+		});
+	}
+
+	@Override
+	public StatsEvenementsCivilsOrganisationsResults getStatistiquesEvenementsCivilsOrganisations(RegDate debutActivite) {
+		final Map<EtatEvenementOrganisation, Integer> etats = getEtatsEvenementsCivilsOrganisation(null);
+		final Map<EtatEvenementOrganisation, Integer> etatsRecents = getEtatsEvenementsCivilsOrganisation(debutActivite);
+		final Map<StatsEvenementsCivilsOrganisationsResults.MutationsTraiteesStatsKey, Integer> mutationsTraitees = getStatistiquesMutationsTraitees(null);
+		final Map<StatsEvenementsCivilsOrganisationsResults.MutationsTraiteesStatsKey, Integer> mutationsRecentesTraitees = getStatistiquesMutationsTraitees(debutActivite);
+		final List<StatsEvenementsCivilsOrganisationsResults.DetailMutationTraitee> detailsMutationsTraiteesRecentes = getMutationsTraiteesDepuis(debutActivite);
+		final List<StatsEvenementsCivilsOrganisationsResults.ErreurInfo> erreurs = getToutesErreursEvenementsCivilsOrganisations();
+		return new StatsEvenementsCivilsOrganisationsResults(etats, etatsRecents, mutationsTraitees, mutationsRecentesTraitees, detailsMutationsTraiteesRecentes, erreurs);
+	}
+
+	private Map<EtatEvenementOrganisation, Integer> getEtatsEvenementsCivilsOrganisation(@Nullable RegDate debutActivite) {
+		final String sql;
+		final Map<String, Object> sqlParameters;
+		if (debutActivite != null) {
+			sql = "SELECT ETAT, COUNT(*) FROM EVENEMENT_ORGANISATION WHERE LOG_CDATE > TO_DATE(:debutActivite, 'YYYYMMDD') GROUP BY ETAT";
+			sqlParameters = new HashMap<>(1);
+			sqlParameters.put("debutActivite", debutActivite.index());
+		}
+		else {
+			sql = "SELECT ETAT, COUNT(*) FROM EVENEMENT_ORGANISATION GROUP BY ETAT";
+			sqlParameters = null;
+		}
+		return getNombreParModalite(EtatEvenementOrganisation.class, sql, sqlParameters);
+	}
+
+	@Nullable
+	private Map<StatsEvenementsCivilsOrganisationsResults.MutationsTraiteesStatsKey, Integer> getStatistiquesMutationsTraitees(@Nullable RegDate debutActivite) {
+		final Map<String, Object> sqlParameters = new HashMap<>(2);
+		final String limitationDate;
+		if (debutActivite == null) {
+			limitationDate = StringUtils.EMPTY;
+		}
+		else {
+			limitationDate = " AND EVT.LOG_CDATE > TO_DATE(:debutActivite, 'YYYYMMDD')";
+			sqlParameters.put("debutActivite", debutActivite.index());
+		}
+
+		final String prefixe = EvenementOrganisationInterne.PREFIXE_MUTATION_TRAITEE;
+		final int prefixeLength = prefixe.length();
+		final String sql = String.format("SELECT EVT.ETAT, SUBSTR(MSG.MESSAGE, %d), COUNT(*) FROM EVENEMENT_ORGANISATION EVT JOIN EVENEMENT_ORGANISATION_ERREUR MSG ON MSG.EVT_ORGANISATION_ID=EVT.ID WHERE SUBSTR(MSG.MESSAGE,1,%d) = :prefixe%s GROUP BY EVT.ETAT, SUBSTR(MSG.MESSAGE, %d)",
+		                                 prefixeLength + 1,
+		                                 prefixeLength,
+		                                 limitationDate,
+		                                 prefixeLength + 1);
+		sqlParameters.put("prefixe", prefixe);
+
+		// extraction des lignes bruttes du resultSet (avec 'factorisation' des instances de String pour les descriptions)
+		final Map<String, String> descriptions = new TreeMap<>();
+		final List<Pair<StatsEvenementsCivilsOrganisationsResults.MutationsTraiteesStatsKey, Integer>> data = this.executeSelect(sql, sqlParameters, new SelectCallback<Pair<StatsEvenementsCivilsOrganisationsResults.MutationsTraiteesStatsKey, Integer>>() {
+			@Override
+			public Pair<StatsEvenementsCivilsOrganisationsResults.MutationsTraiteesStatsKey, Integer> onRow(Object[] row) {
+
+				Assert.isEqual(3, row.length);
+
+				final String description = (String) row[1];
+				final String uniqueDescription;
+				if (descriptions.containsKey(description)) {
+					uniqueDescription = descriptions.get(description);
+				}
+				else {
+					uniqueDescription = description;
+					descriptions.put(description, description);
+				}
+				final EtatEvenementOrganisation etat = EtatEvenementOrganisation.valueOf((String) row[0]);
+				final int nombre = ((Number) row[2]).intValue();
+				return Pair.of(new StatsEvenementsCivilsOrganisationsResults.MutationsTraiteesStatsKey(uniqueDescription, etat), nombre);
+			}
+		});
+
+		// constitution de la Map à partir des lignes bruttes
+		if (data != null) {
+			final Map<StatsEvenementsCivilsOrganisationsResults.MutationsTraiteesStatsKey, Integer> map = new TreeMap<>();
+			for (Pair<StatsEvenementsCivilsOrganisationsResults.MutationsTraiteesStatsKey, Integer> d : data) {
+				map.put(d.getLeft(), d.getRight());
+			}
+			return map;
+		}
+		else {
+			return null;
+		}
+	}
+
+	private List<StatsEvenementsCivilsOrganisationsResults.DetailMutationTraitee> getMutationsTraiteesDepuis(RegDate dateDebutActivite) {
+		final String prefixe = EvenementOrganisationInterne.PREFIXE_MUTATION_TRAITEE;
+		final int prefixeLength = prefixe.length();
+		final String sql = String.format("SELECT EVT.NO_ORGANISATION, EVT.DATE_EVENEMENT, EVT.NO_EVENEMENT, EVT.ETAT, SUBSTR(MSG.MESSAGE, %d), MSG.LOG_CDATE" +
+				                                 " FROM EVENEMENT_ORGANISATION EVT JOIN EVENEMENT_ORGANISATION_ERREUR MSG ON MSG.EVT_ORGANISATION_ID=EVT.ID" +
+				                                 " WHERE SUBSTR(MSG.MESSAGE,1,%d) = :prefixe AND MSG.LOG_CDATE > TO_DATE(:debutActivite, 'YYYYMMDD')" +
+				                                 " ORDER BY EVT.NO_ORGANISATION, EVT.DATE_TRAITEMENT, EVT.ID, MSG.LIST_INDEX",
+		                                 prefixeLength + 1,
+		                                 prefixeLength);
+		final Map<String, Object> sqlParameters = new HashMap<>(2);
+		sqlParameters.put("prefixe", prefixe);
+		sqlParameters.put("debutActivite", dateDebutActivite.index());
+
+		// extraction des lignes du resultSet (avec 'factorisation' des instances de String pour les descriptions)
+		final Map<String, String> descriptions = new TreeMap<>();
+		return executeSelect(sql, sqlParameters, new SelectCallback<StatsEvenementsCivilsOrganisationsResults.DetailMutationTraitee>() {
+			@Override
+			public StatsEvenementsCivilsOrganisationsResults.DetailMutationTraitee onRow(Object[] row) {
+
+				Assert.isEqual(6, row.length);
+
+				final long noOrganisation = ((Number) row[0]).longValue();
+				final RegDate dateEvenement = RegDateHelper.indexStringToDate(Integer.toString(((Number) row[1]).intValue()));
+				final long noEvenement = ((Number) row[2]).longValue();
+				final EtatEvenementOrganisation etat = EtatEvenementOrganisation.valueOf((String) row[3]);
+				final String description = (String) row[4];
+				final Timestamp date = (Timestamp) row[5];
+
+				final String uniqueDescription;
+				if (descriptions.containsKey(description)) {
+					uniqueDescription = descriptions.get(description);
+				}
+				else {
+					uniqueDescription = description;
+					descriptions.put(description, description);
+				}
+
+				return new StatsEvenementsCivilsOrganisationsResults.DetailMutationTraitee(noOrganisation, etat, uniqueDescription, noEvenement, dateEvenement, date);
+			}
+		});
+	}
+
+	private List<StatsEvenementsCivilsOrganisationsResults.ErreurInfo> getToutesErreursEvenementsCivilsOrganisations() {
+		final String sql = "SELECT R.ID, R.NO_EVENEMENT, R.DATE_EVENEMENT, R.DATE_TRAITEMENT, R.ETAT, R.NO_ORGANISATION, E.MESSAGE"
+				+ " FROM EVENEMENT_ORGANISATION R JOIN EVENEMENT_ORGANISATION_ERREUR E ON E.EVT_ORGANISATION_ID = R.ID WHERE R.ETAT NOT IN ('TRAITE','REDONDANT')"
+				+ " AND E.TYPE='ERROR' ORDER BY R.ID, R.DATE_TRAITEMENT";
+
+		return executeSelect(sql, null, new SelectCallback<StatsEvenementsCivilsOrganisationsResults.ErreurInfo>() {
+			@Override
+			public StatsEvenementsCivilsOrganisationsResults.ErreurInfo onRow(Object[] row) {
+
+				Assert.isEqual(7, row.length);
+
+				final long id = ((Number) row[0]).longValue();
+				final long noEvenement = ((Number) row[1]).longValue();
+				final RegDate dateEvenement = RegDate.fromIndex(((Number) row[2]).intValue(), false);
+				final Date dateTraitement = (Date) row[3];
+				final EtatEvenementOrganisation etat = EtatEvenementOrganisation.valueOf((String) row[4]);
+				final long noOrganisation = ((Number) row[5]).longValue();
+				final String message = (String) row[6];
+				return new StatsEvenementsCivilsOrganisationsResults.ErreurInfo(id, noOrganisation, noEvenement, dateEvenement, dateTraitement, etat, message);
 			}
 		});
 	}
@@ -216,7 +370,7 @@ public class StatistiquesEvenementsServiceImpl implements StatistiquesEvenements
 
 		final String sql = "SELECT ID, MESSAGE FROM EVENEMENT_EXTERNE WHERE ETAT='EN_ERREUR'";
 
-		return executeSelect(sql, new SelectCallback<StatsEvenementsExternesResults.EvenementExterneErreur>() {
+		return executeSelect(sql, null, new SelectCallback<StatsEvenementsExternesResults.EvenementExterneErreur>() {
 			@Override
 			public StatsEvenementsExternesResults.EvenementExterneErreur onRow(Object[] row) {
 
@@ -285,7 +439,7 @@ public class StatistiquesEvenementsServiceImpl implements StatistiquesEvenements
 		b.append(") ORDER BY DATE_DEMANDE");
 		final String sql = b.toString();
 
-		return executeSelect(sql, new SelectCallback<StatsEvenementsIdentificationContribuableResults.EvenementInfo>() {
+		return executeSelect(sql, null, new SelectCallback<StatsEvenementsIdentificationContribuableResults.EvenementInfo>() {
 			@Override
 			public StatsEvenementsIdentificationContribuableResults.EvenementInfo onRow(Object[] row) {
 
@@ -361,7 +515,7 @@ public class StatistiquesEvenementsServiceImpl implements StatistiquesEvenements
 		b.append(" WHERE NOT EXISTS (SELECT 1 FROM REQDES_PARTIE_PRENANTE PP WHERE PP.UNITE_TRAITEMENT_ID=UT.ID AND PP.ID<PP1.ID)");
 		b.append(" AND UT.ETAT='").append(EtatTraitement.EN_ERREUR).append("'");
 		final String sql = b.toString();
-		return executeSelect(sql, new SelectCallback<StatsEvenementsNotairesResults.UniteTraitementEnErreurInfo>() {
+		return executeSelect(sql, null, new SelectCallback<StatsEvenementsNotairesResults.UniteTraitementEnErreurInfo>() {
 			@Override
 			public StatsEvenementsNotairesResults.UniteTraitementEnErreurInfo onRow(Object[] row) {
 				final long id = ((Number) row[0]).longValue();
@@ -389,7 +543,7 @@ public class StatistiquesEvenementsServiceImpl implements StatistiquesEvenements
 		b.append(" WHERE NOT EXISTS (SELECT 1 FROM REQDES_PARTIE_PRENANTE PP WHERE PP.UNITE_TRAITEMENT_ID=UT.ID AND PP.ID<PP1.ID)");
 		b.append(" AND UT.ETAT='").append(EtatTraitement.FORCE).append("'");
 		final String sql = b.toString();
-		return executeSelect(sql, new SelectCallback<StatsEvenementsNotairesResults.UniteTraitementForceesInfo>() {
+		return executeSelect(sql, null, new SelectCallback<StatsEvenementsNotairesResults.UniteTraitementForceesInfo>() {
 			@Override
 			public StatsEvenementsNotairesResults.UniteTraitementForceesInfo onRow(Object[] row) {
 				final long id = ((Number) row[0]).longValue();
@@ -412,12 +566,12 @@ public class StatistiquesEvenementsServiceImpl implements StatistiquesEvenements
 	}
 
 	@SuppressWarnings({"unchecked"})
-	private <T> List<T> executeSelect(final String sql, final SelectCallback<T> callback) {
+	private <T> List<T> executeSelect(final String sql, @Nullable final Map<String, Object> sqlParameters, final SelectCallback<T> callback) {
 		return hibernateTemplate.executeWithNewSession(new HibernateCallback<List<T>>() {
-
 			@Override
 			public List<T> doInHibernate(Session session) throws HibernateException, SQLException {
 				final Query query = session.createSQLQuery(sql);
+				setParameters(query, sqlParameters);
 				final List<Object[]> results = query.list();
 				if (results != null && !results.isEmpty()) {
 					final List<T> liste = new ArrayList<>(results.size());
@@ -427,7 +581,7 @@ public class StatistiquesEvenementsServiceImpl implements StatistiquesEvenements
 							liste.add(element);
 						}
 					}
-					return liste;
+					return liste.isEmpty() ? null : liste;
 				}
 				else {
 					return null;
@@ -442,11 +596,7 @@ public class StatistiquesEvenementsServiceImpl implements StatistiquesEvenements
 			@Override
 			public Map<T, Integer> doInHibernate(Session session) throws HibernateException, SQLException {
 				final Query query = session.createSQLQuery(sql);
-				if (sqlParameters != null && !sqlParameters.isEmpty()) {
-					for (Map.Entry<String, Object> entry : sqlParameters.entrySet()) {
-						query.setParameter(entry.getKey(), entry.getValue());
-					}
-				}
+				setParameters(query, sqlParameters);
 				final List<Object[]> result = query.list();
 				if (result != null && !result.isEmpty()) {
 					final Map<T, Integer> map = new HashMap<>(result.size());
@@ -477,11 +627,7 @@ public class StatistiquesEvenementsServiceImpl implements StatistiquesEvenements
 			@Override
 			public Map<K, V> doInHibernate(Session session) throws HibernateException, SQLException {
 				final Query query = session.createSQLQuery(sql);
-				if (sqlParameters != null && !sqlParameters.isEmpty()) {
-					for (Map.Entry<String, Object> entry : sqlParameters.entrySet()) {
-						query.setParameter(entry.getKey(), entry.getValue());
-					}
-				}
+				setParameters(query, sqlParameters);
 				final List<Object[]> results = query.list();
 				if (results != null && !results.isEmpty()) {
 					final Map<K, V> map = new HashMap<>(results.size());
@@ -495,5 +641,13 @@ public class StatistiquesEvenementsServiceImpl implements StatistiquesEvenements
 				return null;
 			}
 		});
+	}
+
+	private static void setParameters(Query query, @Nullable final Map<String, Object> sqlParameters) {
+		if (sqlParameters != null && !sqlParameters.isEmpty()) {
+			for (Map.Entry<String, Object> entry : sqlParameters.entrySet()) {
+				query.setParameter(entry.getKey(), entry.getValue());
+			}
+		}
 	}
 }

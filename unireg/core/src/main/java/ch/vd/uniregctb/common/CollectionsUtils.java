@@ -2,12 +2,16 @@ package ch.vd.uniregctb.common;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Map;
 import java.util.RandomAccess;
 
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.utils.Assert;
 
@@ -205,5 +209,15 @@ public abstract class CollectionsUtils {
 
 	public static String concat(List<String> list, String separator) {
 		return toString(list, STRING_TRIMMER, separator);
+	}
+
+	@NotNull
+	public static <K, V> Map<K, V> unmodifiableNeverNull(@Nullable Map<? extends K, ? extends V> source) {
+		return source != null ? Collections.unmodifiableMap(source) : Collections.<K, V>emptyMap();
+	}
+
+	@NotNull
+	public static <T> List<T> unmodifiableNeverNull(@Nullable List<? extends T> source) {
+		return source != null ? Collections.unmodifiableList(source) : Collections.<T>emptyList();
 	}
 }
