@@ -35,7 +35,7 @@ public class EditRaisonSocialeViewValidator implements Validator {
 						errors.rejectValue("dateFin", "error.date.fin.avant.debut");
 					}
 					else if (today.isBefore(view.getDateFin())) {
-						errors.rejectValue("dateFin", "error.date.fin.future");
+						errors.rejectValue("dateFin", "error.date.fin.dans.futur");
 					}
 				}
 			}
