@@ -7297,16 +7297,17 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 	}
 
 	/**
-	 * Ceci est un test utile au debugging, on charge un graphe depuis un fichier sur disque (identique à ce que
-	 * l'on peut envoyer dans la vraie migration) et on tente la migration du graphe en question
+	 * Ceci est un test utile au debugging, on charge un ou plusieurs graphes depuis un fichier sur disque (identique à ce que
+	 * l'on peut envoyer dans la vraie migration) et on tente la migration des graphes en question
 	 */
 	@Ignore
 	@Test
 	public void testMigrationGrapheSerialise() throws Exception {
 
-		final String grapheFilename = "/home/jacob/migration-pm/dump-regpm/00052898.data";
-		final File file = new File(grapheFilename);
-		final Graphe graphe = SerializationIntermediary.deserialize(file);
+		final String[] grapheFilenames = {
+				"/home/jacob/migration-pm/dump-regpm/00000861.data",
+				"/home/jacob/migration-pm/dump-regpm/00000934.data",
+		};
 
 		// ajout de toutes les périodes fiscales
 		doInUniregTransaction(false, status -> {
@@ -7327,24 +7328,31 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		// utilisation du véritable service rcent
 		organisationService.setUp(getBean(ServiceOrganisationRaw.class, "serviceOrganisationRCEnt"));
 
-		// lancement de la migration du graphe (de la même façon, en ce qui concerne la gestion des exception, que ce qui est fait dans le MigrationWorker)
-		LoggedMessages mr;
-		try {
-			mr = grapheMigrator.migrate(graphe);
-			Assert.assertNotNull(mr);
-		}
-		catch (MigrationException e) {
-			final Long[] idsEntreprises = graphe.getEntreprises().keySet().toArray(new Long[graphe.getEntreprises().size()]);
-			final MessageLoggedElement elt = new MessageLoggedElement(LogLevel.ERROR,
-			                                                          String.format("Les entreprises %s n'ont pas pu être migrées : %s",
-			                                                                        Arrays.toString(idsEntreprises),
-			                                                                        MigrationWorker.dump(e)));
-			mr = LoggedMessages.singleton(LogCategory.EXCEPTIONS, elt.resolve());
-		}
+		for (String filename : grapheFilenames) {
+			final File file = new File(filename);
+			final Graphe graphe = SerializationIntermediary.deserialize(file);
 
-		// dump sur la sortie standard
-		final String summary = mr.toString();
-		System.out.println(summary);
+			// lancement de la migration du graphe (de la même façon, en ce qui concerne la gestion des exception, que ce qui est fait dans le MigrationWorker)
+			LoggedMessages mr;
+			try {
+				mr = grapheMigrator.migrate(graphe);
+				Assert.assertNotNull(mr);
+			}
+			catch (MigrationException e) {
+				final Long[] idsEntreprises = graphe.getEntreprises().keySet().toArray(new Long[graphe.getEntreprises().size()]);
+				final MessageLoggedElement elt = new MessageLoggedElement(LogLevel.ERROR,
+				                                                          String.format("Les entreprises %s n'ont pas pu être migrées : %s",
+				                                                                        Arrays.toString(idsEntreprises),
+				                                                                        MigrationWorker.dump(e)));
+				mr = LoggedMessages.singleton(LogCategory.EXCEPTIONS, elt.resolve());
+			}
+
+			// dump sur la sortie standard
+			final String summary = mr.toString();
+			System.out.println("+++++ Graphe " + filename);
+			System.out.println(summary);
+			System.out.println();
+		}
 
 		// on ouvre une session hibernate pour vérifier visuellement le contenu
 		doInUniregTransaction(true, status ->  {

@@ -13,6 +13,7 @@ import ch.vd.uniregctb.migration.pm.regpm.RegpmEtablissement;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmIndividu;
 import ch.vd.uniregctb.migration.pm.regpm.WithLongId;
 import ch.vd.uniregctb.migration.pm.store.UniregStore;
+import ch.vd.uniregctb.migration.pm.utils.EntityKey;
 import ch.vd.uniregctb.migration.pm.utils.LockHelper;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.Entreprise;
@@ -205,6 +206,20 @@ public class IdMapper implements IdMapping {
 	@Override
 	public boolean hasMappingForIndividu(long idRegpm) {
 		return hasMapping(individus, idRegpm, reference != null ? reference::hasMappingForIndividu : null);
+	}
+
+	@Override
+	public boolean hasLocalMappingForEntity(EntityKey key) {
+		switch (key.getType()) {
+		case ENTREPRISE:
+			return hasMapping(entreprises, key.getId(), null);
+		case ETABLISSEMENT:
+			return hasMapping(etablissements, key.getId(), null);
+		case INDIVIDU:
+			return hasMapping(individus, key.getId(), null);
+		default:
+			throw new IllegalArgumentException("Invalid entity key type : " + key.getType());
+		}
 	}
 
 	private static String buildPersistedMappingErrorText(String categorieEntite, long regpmId, long oldUniregId, long newUniregId) {
