@@ -898,6 +898,33 @@ public abstract class EvenementOrganisationInterne {
 		raiseStatusTo(HandleStatus.TRAITE);
 	}
 
+	/**
+	 * <p>
+	 *     Applique la surcharge des données civiles sur la période indiquée avec les données civiles de RCEnt de la date de valeur indiquée.
+	 * </p>
+	 * <p>
+	 *     Les surcharges éventuellement présentes seront annulées et / ou terminées au jour précédant la période.
+	 * </p>
+	 *
+	 * @param etablissement l'etablissement concerné
+	 * @param range de quand à quand la surcharge doit être appliquée.
+	 * @param dateValeur la date pour laquelle il faut rechercher les valeurs civiles dans RCEnt
+	 * @throws EvenementOrganisationException En cas de problème, notamment lorsque la surcharge existante empiète ou dépasse la date de valeur
+	 */
+	protected void appliqueDonneesCivilesSurPeriode(Etablissement etablissement, DateRange range, RegDate dateValeur, EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) throws EvenementOrganisationException {
+		suivis.addSuivi(String.format("Application de la surcharge civile entre le %s et le %s avec les valeur du %s",
+		                              RegDateHelper.dateToDisplayString(range.getDateDebut()),
+		                              RegDateHelper.dateToDisplayString(range.getDateFin()),
+		                              RegDateHelper.dateToDisplayString(dateValeur)));
+		try {
+			getContext().getTiersService().appliqueDonneesCivilesSurPeriode(etablissement, range, dateValeur);
+		}
+		catch (TiersException e) {
+			throw new EvenementOrganisationException(String.format("Impossible d'appliquer la surcharge des données civiles: %s", e.getMessage()));
+		}
+		raiseStatusTo(HandleStatus.TRAITE);
+	}
+
 	protected boolean hasCapital(Organisation organisation, RegDate date) {
 		return organisation.getCapital(date) != null && organisation.getCapital(date).getCapitalLibere().longValue() > 0;
 	}

@@ -343,7 +343,7 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 			}
 			for (SiteOrganisation site : organisation.getDonneesSites()) {
 				String nom = site.getNom(dateEvenement); // Le nom (obligatoire de par le xsd) nous permet de déduire si le site est existant pour la date données.
-				if (nom != null && site.getDomicile(dateEvenement) == null) {
+				if (nom != null && site.getDomiciles().isEmpty()) {
 					champs.append(String.format("[Etablissement %s: seat] ", site.getNumeroSite()));
 				}
 			}

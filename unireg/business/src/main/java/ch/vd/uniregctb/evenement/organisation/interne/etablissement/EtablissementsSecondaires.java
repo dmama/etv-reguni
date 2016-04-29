@@ -6,9 +6,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
 
+import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.organisation.data.Domicile;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
+import ch.vd.unireg.interfaces.organisation.data.OrganisationHelper;
 import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
@@ -23,6 +25,7 @@ import ch.vd.uniregctb.evenement.organisation.interne.HandleStatus;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.Etablissement;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
+import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 
 /**
@@ -68,7 +71,27 @@ public class EtablissementsSecondaires extends EvenementOrganisationInterneDeTra
 	@Override
 	public void doHandle(EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) throws EvenementOrganisationException {
 		for (Etablissement aFermer : etablissementsAFermer) {
-			closeEtablissement(aFermer, dateAvant, warnings, suivis);
+			SiteOrganisation siteQuiFerme = getOrganisation().getSiteForNo(aFermer.getNumeroEtablissement());
+			RegDate dateFermeture = dateApres;
+
+			/* Si l'établissement est inscrit au RC, c'est la date de radiation du RC qui nous intéresse. A certaines conditions. */
+			if (siteQuiFerme.isInscritAuRC(dateApres)) {
+				RegDate dateRadiation = siteQuiFerme.getDateRadiationRC(dateApres); // Vaudois ou HC, il doit être radié au niveau global.
+
+				// exception APM
+
+				if (dateRadiation == null) {
+					throw new EvenementOrganisationException(
+							String.format("Impossible de déterminer la date de fin d'activité de l'établissement n°%d: la date de radiation au RC CH n'est pas disponible.",
+							              siteQuiFerme.getNumeroSite())
+					);
+				}
+				/* A-t-on à faire à une véritable fin d'activité, ou sommes-nous dans un cas de radiation autorisée? */
+				if (dateRadiation.isAfterOrEqual(dateApres.addDays(OrganisationHelper.RC_THRESHOLD_DATE * -1))) {
+					dateFermeture = dateRadiation;
+				}
+			}
+			closeEtablissement(aFermer, dateFermeture, warnings, suivis);
 		}
 		for (SiteOrganisation aCreer : sitesACreer) {
 			/*
@@ -80,25 +103,86 @@ public class EtablissementsSecondaires extends EvenementOrganisationInterneDeTra
 				continue;
 			}
 
-			// Contrôle du cas ou on va crée un établissement existant mais qu'on ne connaissait pas. On le crée quand même mais on avertit.
-			Domicile ancienDomicile = aCreer.getDomicile(dateAvant);
-			if (ancienDomicile != null) {
-				warnings.addWarning(String.format("Vérification manuelle requise: l'établissement secondaire (n°%d civil) est préexistant au civil (depuis le %s) mais inconnu d'Unireg à ce jour. " +
-						                                  "La date du rapport entre tiers (%s) doit probablement être ajustée à la main.",
-				                                  aCreer.getNumeroSite(), aCreer.connuAuCivilDepuis(), dateApres));
-			}
-
 			// Vérifier que le site à créer n'existe pas déjà.
 			final Etablissement etablissement = getContext().getTiersDAO().getEtablissementByNumeroSite(aCreer.getNumeroSite());
 			if (etablissement == null) {
-				addEtablissementSecondaire(aCreer, dateApres, warnings, suivis);
+				RegDate dateCreation = dateApres;
+				if (aCreer.isInscritAuRC(dateApres)) {
+					final RegDate dateInscriptionRCVd = aCreer.getDateInscriptionRCVd(dateApres);
+					if (dateInscriptionRCVd != null) {
+						dateCreation = dateInscriptionRCVd;
+					} else {
+						dateCreation = aCreer.getDateInscriptionRC(dateApres);
+					}
+				}
+				addEtablissementSecondaire(aCreer, dateCreation, warnings, suivis);
+				final Etablissement nouvelEtablissement = getContext().getTiersDAO().getEtablissementByNumeroSite(aCreer.getNumeroSite());
+				if (dateCreation.isBefore(dateApres)) {
+					appliqueDonneesCivilesSurPeriode(nouvelEtablissement, new DateRangeHelper.Range(dateCreation, dateApres.getOneDayBefore()), dateApres, warnings, suivis);
+				}
+				// Contrôle du cas ou on va crée un établissement existant mais qu'on ne connaissait pas. On le crée quand même mais on avertit.
+				String ancienNom = aCreer.getNom(dateAvant);
+				if (ancienNom != null) {
+					warnings.addWarning(String.format("Vérification manuelle requise: l'établissement secondaire (n°%d civil) est préexistant au civil (depuis le %s) mais inconnu d'Unireg à ce jour. " +
+							                                  "La date du rapport entre tiers (%s) doit probablement être ajustée à la main.",
+					                                  aCreer.getNumeroSite(), aCreer.connuAuCivilDepuis(), dateApres));
+				}
+
 			} else {
 				suivis.addSuivi(String.format("Nouvel établissement secondaire civil %d déjà connu de Unireg en tant que tiers %s. Ne sera pas créé.",
 				                              aCreer.getNumeroSite(), FormatNumeroHelper.numeroCTBToDisplay(etablissement.getNumero())));
 			}
 		}
-		for (EtablissementsSecondaires.Demenagement demenagement : demenagements) {
-			signaleDemenagement(demenagement.etablissement, demenagement.getAncienDomicile(), demenagement.getNouveauDomicile(), demenagement.getDate(), suivis);
+		for (Demenagement demenagement : demenagements) {
+			SiteOrganisation quiDemenage = getOrganisation().getSiteForNo(demenagement.getEtablissement().getNumeroEtablissement());
+			RegDate dateDemenagement = dateApres;
+			final Domicile ancienDomicile = demenagement.getAncienDomicile();
+			final Domicile nouveauDomicile = demenagement.getNouveauDomicile();
+					/* Départ VD */
+			if (ancienDomicile.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD
+					&& !(nouveauDomicile.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD)) {
+				throw new EvenementOrganisationException("Le déménagement HC/HS d'une succursale n'est pas censé se produire.");
+			}
+					/* Arrivee HC */
+			else if (!(ancienDomicile.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD)
+						&& nouveauDomicile.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
+				throw new EvenementOrganisationException("L'arrivée HC/HS d'une succursale n'est pas censé se produire.");
+			}
+/* Si des fois ça peut quand même se produire, le code pour l'application des surcharges est là.
+			if (quiDemenage.isInscritAuRC(dateApres)) {
+
+				if (ancienDomicile.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD
+						&& !(nouveauDomicile.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD)) {
+					final RegDate dateRadiationRCVd = quiDemenage.getDateRadiationRCVd(dateApres);
+					if (dateRadiationRCVd != null) {
+						dateDemenagement = dateRadiationRCVd;
+					} else {
+						throw new EvenementOrganisationException(String.format("Date de radiation du RC VD introuvable pour l'établissement %d.",
+						                                                       quiDemenage.getNumeroSite())
+						);
+					}
+					if (dateDemenagement.isBefore(dateApres)) {
+						appliqueDonneesCivilesSurPeriode(demenagement.getEtablissement(), new DateRangeHelper.Range(dateDemenagement, dateApres.getOneDayBefore()), dateApres, warnings, suivis);
+					}
+				}
+
+				else if (!(ancienDomicile.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD)
+						&& nouveauDomicile.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
+					final RegDate dateInscriptionRCVd = quiDemenage.getDateInscriptionRCVd(dateApres);
+					if (dateInscriptionRCVd != null) {
+						dateDemenagement = dateInscriptionRCVd;
+					} else {
+						throw new EvenementOrganisationException(String.format("Date d'inscription au RC VD introuvable pour l'établissement %d.",
+						                                                       quiDemenage.getNumeroSite())
+						);
+					}
+					if (dateDemenagement.isBefore(dateApres)) {
+						appliqueDonneesCivilesSurPeriode(demenagement.getEtablissement(), new DateRangeHelper.Range(dateDemenagement, dateApres.getOneDayBefore()), dateApres, warnings, suivis);
+					}
+				}
+			}
+*/
+			signaleDemenagement(demenagement.etablissement, demenagement.getAncienDomicile(), demenagement.getNouveauDomicile(), dateDemenagement, suivis);
 		}
 
 		adapteForsSecondairesPourEtablissementsVD(getEntreprise(), null, warnings, suivis);

@@ -117,22 +117,42 @@ public class MetierServicePMImpl implements MetierServicePM {
 		List<DateRanged<Etablissement>> etablissements = tiersService.getEtablissementsSecondairesEntreprise(entreprise);
 
 		// Les domiciles VD classés par commune
-		final Map<Integer, List<DomicileHisto>> tousLesDomicilesVD = new HashMap<>();
+		final Map<Integer, List<Domicile>> tousLesDomicilesVD = new HashMap<>();
 		for (DateRanged<Etablissement> etablissement : etablissements) {
-			final List<DomicileHisto> domiciles = tiersService.getDomiciles(etablissement.getPayload(), false);
+			final List<DomicileHisto> domiciles = tiersService.getDomicilesEnActivite(etablissement.getPayload(), false);
 			if (domiciles != null && !domiciles.isEmpty()) {
+				boolean first = true;
+				DomicileHisto lastDomicile = CollectionsUtils.getLastElement(domiciles);
 				for (DomicileHisto domicile : domiciles) {
 					if (domicile.getTypeAutoriteFiscale() != TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
 						continue; // On ne crée des fors secondaires que pour VD
 					}
-					List<DomicileHisto> histoPourCommune = tousLesDomicilesVD.get(domicile.getNumeroOfsAutoriteFiscale());
+					List<Domicile> histoPourCommune = tousLesDomicilesVD.get(domicile.getNumeroOfsAutoriteFiscale());
 					if (histoPourCommune == null) {
 						histoPourCommune = new ArrayList<>();
 						tousLesDomicilesVD.put(domicile.getNumeroOfsAutoriteFiscale(), histoPourCommune);
 					}
-					histoPourCommune.add(domicile);
+					/* Lorsqu'on est en présence d'un nouvel établissement, on ouvre le premier for le lendemain de la fondation. */
+					if (first) {
+						if (domicile.getDateFin() == null || domicile.getDateDebut().getOneDayAfter().isBeforeOrEqual(domicile.getDateFin())) {
+							histoPourCommune.add(
+									new Domicile(domicile.getDateDebut().getOneDayAfter(), domicile.getDateFin(), domicile.getTypeAutoriteFiscale(), domicile.getNumeroOfsAutoriteFiscale())
+							);
+						}
+					}
+					else {
+						histoPourCommune.add(
+								new Domicile(domicile.getDateDebut(), domicile.getDateFin(), domicile.getTypeAutoriteFiscale(), domicile.getNumeroOfsAutoriteFiscale())
+						);
+					}
+					first = false;
 				}
 			}
+		}
+
+		for (Map.Entry<Integer, List<Domicile>> domicilesCommune : tousLesDomicilesVD.entrySet()) {
+			tousLesDomicilesVD.put(domicilesCommune.getKey(), DateRangeHelper.collate(domicilesCommune.getValue()));
+
 		}
 
 		// Charger les historiques de fors secondaire établissement stables existant pour chaque commune

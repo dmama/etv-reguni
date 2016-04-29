@@ -13,7 +13,7 @@ import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.uniregctb.tiers.DomicileHisto;
+import ch.vd.unireg.interfaces.organisation.data.Domicile;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
@@ -25,14 +25,14 @@ import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 public class AjustementForsSecondairesHelper {
 
 	@NotNull
-	public static AjustementForsSecondairesResult getResultatAjustementForsSecondaires(Map<Integer, List<DomicileHisto>> tousLesDomicilesVD,
+	public static AjustementForsSecondairesResult getResultatAjustementForsSecondaires(Map<Integer, List<Domicile>> tousLesDomicilesVD,
 	                                                                                   Map<Integer, List<ForFiscalSecondaire>> tousLesForsFiscauxSecondairesParCommune, RegDate dateAuPlusTot) throws
 			MetierServiceException {
 		final List<ForFiscalSecondaire> aAnnulerResultat = new ArrayList<>();
 		final List<AjustementForsSecondairesResult.ForAFermer> aFermerResultat = new ArrayList<>();
 		final List<ForFiscalSecondaire> aCreerResultat = new ArrayList<>();
 
-		// On ne coupe rien qui existe déjà! Sécurité.
+		/* Lors d'une création, une date au plus tôt signifie qu'on ne doit rien couper qui existe déjà! Sécurité -> à revoir l'utilité. */
 		if (dateAuPlusTot != null) {
 			for (Map.Entry<Integer, List<ForFiscalSecondaire>> entry : tousLesForsFiscauxSecondairesParCommune.entrySet()) {
 				final ForFiscalSecondaire existant = DateRangeHelper.rangeAt(entry.getValue(), dateAuPlusTot);
@@ -57,7 +57,7 @@ public class AjustementForsSecondairesHelper {
 
 		for (Integer noOfsCommune : communes) {
 
-			List<DomicileHisto> domiciles = tousLesDomicilesVD.get(noOfsCommune);
+			List<Domicile> domiciles = tousLesDomicilesVD.get(noOfsCommune);
 
 			/*
 			   Fusion des ranges qui se chevauchent pour obtenir la liste des ranges tels qu'on les veut, les candidats.

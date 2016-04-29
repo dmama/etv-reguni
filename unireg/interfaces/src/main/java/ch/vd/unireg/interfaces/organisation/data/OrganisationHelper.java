@@ -1,18 +1,22 @@
 package ch.vd.unireg.interfaces.organisation.data;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.common.Adresse;
+import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
 /**
@@ -23,6 +27,17 @@ import ch.vd.uniregctb.type.TypeAutoriteFiscale;
  * Utiliser la méthode defaultDate(RegDate date) pour gérer la date automatiquement.
  */
 public abstract class OrganisationHelper {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(OrganisationHelper.class);
+
+	/*
+		Nombre de jour servant à calculer le seuil de proximité requis pour considérer une date d'inscription ou de
+		radiation du RC comme étant liés à l'événement de création ou d'arrivée/départ en cours.
+
+		Ex.: une date d'inscription au RC Suisse plus ancienne que RC_THRESHOLD_DATE par rapport à un événement de
+		     nouvelle entreprise signale une entreprise existante, mais nouvellement connue de RCEnt.
+	 */
+	public static final int RC_THRESHOLD_DATE = 15;
 
 	/**
 	 * Détermine les valeurs en cours à une date donnée, ou la date du jour si pas de date fournie.
@@ -128,7 +143,6 @@ public abstract class OrganisationHelper {
 		return sitePrincipaux;
 	}
 
-	// TODO: A générer dans l'adapter?
 	/**
 	 * Liste des sites secondaire pour une date donnée. Si la date est nulle, la date du jour est utilisée.
 	 * @param date La date pour laquelle on désire la liste des sites secondaires
@@ -384,6 +398,8 @@ public abstract class OrganisationHelper {
 	 * Dire si un site est globallement actif, c'est à dire qu'il a une existence à la date fournie chez au
 	 * moins un fournisseur primaire (RC, IDE). Etre actif signifie être inscrit et non radié.
 	 *
+	 * NOTE: Le REE n'est pas encore supporté. Les éventuels établissements strictement REE sont rapporté comme inactifs.
+	 *
 	 * @param site le site
 	 * @param date la date pour laquelle on veut connaitre la situation du site
 	 * @return true si actif, false sinon
@@ -471,6 +487,144 @@ public abstract class OrganisationHelper {
 			}
 		}
 		return false;
+	}
+
+	/**
+	 * Donne l'historique des domiciles réels, c'est à dire qui se termine lorsque le site ferme.
+	 */
+	public static List<Domicile> getDomicilesReels(SiteOrganisation site, List<Domicile> domiciles) {
+		final List<DateRange> activite = activite(site);
+		if (domiciles == null || domiciles.isEmpty() || activite == null || activite.isEmpty()) {
+			return Collections.emptyList();
+		}
+		final Domicile premierDomicile = domiciles.get(0);
+		final RegDate debutDomiciles = premierDomicile.getDateDebut();
+		final RegDate debutActivite = activite.get(0).getDateDebut();
+		final Domicile[] domicilesDebutCorrige = domiciles.toArray(new Domicile[domiciles.size()]);
+		if (debutActivite.isBefore(debutDomiciles)) {
+			domicilesDebutCorrige[0] = new Domicile(debutActivite, premierDomicile.getDateFin(), premierDomicile.getTypeAutoriteFiscale(), premierDomicile.getNoOfs());
+		}
+
+		final List<Domicile> domciles = DateRangeHelper.extract(Arrays.asList(domicilesDebutCorrige), activite, new DateRangeHelper.AdapterCallback<Domicile>() {
+			@Override
+			public Domicile adapt(Domicile range, RegDate debut, RegDate fin) {
+				return new Domicile(debut != null ? debut : range.getDateDebut(),
+				                    fin != null ? fin : range.getDateFin(),
+				                    range.getTypeAutoriteFiscale(),
+				                    range.getNoOfs());
+			}
+		});
+		return DateRangeHelper.collate(domciles);
+	}
+
+	/**
+	 * <p>
+	 *     Détermine la plage d'activité d'une organisation, c'est à dire la période à laquelle on la considère en
+	 *     existence au sens de "non radiée" RC et/ou IDE.
+	 * </p>
+	 * <p>
+	 *     NOTES:
+	 *     <ul>
+	 *         <li>
+	 *             Les organisations radiée puis réinscrite sont considérées comme actives durant toutes la période ou elles
+	 *             on été radiées.
+	 *         </li>
+	 *         <li>
+	 *             Lorsque la radiation du RC est liée à celle de l'IDE (c'est à dire que l'IDE ne fait qu'enregistrer l'état de fait
+	 *             au RC), c'est la date du RC qui est utilisée. Actuellement, le seuil RC_XXXXX est utilisé pour déterminer cela.
+	 *         </li>
+	 *         <li>
+	 *             Le REE n'est pas encore supporté. Les éventuels établissements REE ne "meurent" pas.
+	 *         </li>
+	 *     </ul>
+	 * </p>
+	 *
+	 * @param site le site concernée
+	 * @return la période où le site a été en activité (sous forme de liste, mais il ne devrait y en avoir qu'une)
+	 */
+	public static List<DateRange> activite (SiteOrganisation site) {
+		RegDate dateCreation = site.getNom().get(0).getDateDebut();
+		final List<DateRanged<RegDate>> datesInscription = site.getDonneesRC().getDateInscription();
+		if (datesInscription != null && !datesInscription.isEmpty()) {
+			RegDate dateInscription = datesInscription.get(0).getPayload();
+			if (dateInscription.isBefore(dateCreation)) {
+				dateCreation = dateInscription; // L'inscription RC peut être survenue plus tard. Cas des APM.
+			}
+		} else {
+			/* Cas de la date RC vide quand la date RC VD est renseignée. Impossible de déterminer quoi que ce soit dans ce cas. */
+			final List<DateRanged<RegDate>> datesInscriptionVd = site.getDonneesRC().getDateInscriptionVd();
+			if (datesInscriptionVd != null && !datesInscriptionVd.isEmpty()) {
+				throw new RuntimeException(String.format("Impossible de trouver la date d'inscription au RC pour le site %s", site.getNumeroSite()));
+			}
+		}
+
+		/* Une période théorique d'activité continue non terminée. */
+		final DateRange activite = new DateRangeHelper.Range(dateCreation, null);
+
+/*  == On peut omettre, car les inscrites au RC sont obligatoirement à l'IDE et la date est gérée avec ce dernier. ==
+
+		final List<DateRange> datesRadiation = new ArrayList<>();
+		List<DateRange> nonRadiation = Collections.emptyList();
+		if (!site.getDonneesRC().getDateRadiation().isEmpty()) {
+			for (DateRanged<RegDate> dateRadiation : site.getDonneesRC().getDateRadiation()) {
+				final RegDate dateEffective = dateRadiation.getPayload();
+				if (dateEffective != dateRadiation.getDateDebut()) {
+					datesRadiation.add(new DateRangeHelper.Range(dateEffective, dateRadiation.getDateFin()));
+				} else {
+					datesRadiation.add(dateRadiation);
+				}
+			}
+			nonRadiation = DateRangeHelper.subtract(activite, datesRadiation);
+		}
+
+		final List<DateRange> datesRadiationVd = new ArrayList<>();
+		List<DateRange> nonRadiationVd = Collections.emptyList();
+		if (!site.getDonneesRC().getDateRadiationVd().isEmpty()) {
+			for (DateRanged<RegDate> dateRadiationVd : site.getDonneesRC().getDateRadiationVd()) {
+				final RegDate dateEffectiveVd = dateRadiationVd.getPayload();
+				if (dateEffectiveVd != dateRadiationVd.getDateDebut()) {
+					datesRadiationVd.add(new DateRangeHelper.Range(dateEffectiveVd, dateRadiationVd.getDateFin()));
+				} else {
+					datesRadiationVd.add(dateRadiationVd);
+				}
+			}
+			nonRadiationVd = DateRangeHelper.subtract(activite, datesRadiationVd);
+		}
+*/
+
+		final List<DateRanged<StatusRegistreIDE>> periodesStatusIde = site.getDonneesRegistreIDE().getStatus();
+		final List<DateRange> datesRadieIde = new ArrayList<>();
+		List<DateRange> nonRadiationIde = Collections.emptyList();
+		if (!periodesStatusIde.isEmpty()) {
+			final DateRanged<StatusRegistreIDE> dernierePeriode = CollectionsUtils.getLastElement(periodesStatusIde);
+			final StatusRegistreIDE status = dernierePeriode.getPayload();
+			if (dernierePeriode.getDateFin() == null && (status == StatusRegistreIDE.RADIE || status == StatusRegistreIDE.DEFINITIVEMENT_RADIE)) {
+				final RegDate dateRadiationRC = site.getDateRadiationRC(dernierePeriode.getDateDebut());
+				if (dateRadiationRC != null && !dateRadiationRC.isBefore(dernierePeriode.getDateDebut().addDays(RC_THRESHOLD_DATE * -1))) {
+					datesRadieIde.add(new DateRangeHelper.Range(dateRadiationRC.getOneDayAfter(), dernierePeriode.getDateFin()));
+				} else {
+					datesRadieIde.add(dernierePeriode);
+				}
+			}
+			nonRadiationIde = DateRangeHelper.subtract(activite, datesRadieIde);
+		}
+
+		// TODO FIXME Inclure la notion de mort par transfert! Cas du changement de propriétaire remonté par Madame Viquerat.
+
+		// Infrastructure nécessaire pour ajouter le support de la mort REE
+		final List<DateRange> tousActivite = new ArrayList<>();
+		if (nonRadiationIde.isEmpty()) {
+			tousActivite.add(activite);
+		} else {
+			tousActivite.addAll(nonRadiationIde);
+		}
+
+		final List<DateRange> combinesNonRadies = DateRangeHelper.merge(tousActivite);
+
+		if (combinesNonRadies.size() > 1) {
+			LOGGER.warn(String.format("Le calcul de l'activité pour le site RCEnt %d a retourné plus d'une période.", site.getNumeroSite()));
+		}
+		return combinesNonRadies;
 	}
 
 	private static RegDate defaultDate(RegDate date) {

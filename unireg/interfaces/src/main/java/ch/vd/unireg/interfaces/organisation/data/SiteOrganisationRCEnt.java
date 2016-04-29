@@ -137,6 +137,11 @@ public class SiteOrganisationRCEnt implements Serializable, SiteOrganisation {
 	}
 
 	@Override
+	public List<Domicile> getDomicilesEnActivite() {
+		return OrganisationHelper.getDomicilesReels(this, domicile);
+	}
+
+	@Override
 	public List<DateRanged<TypeDeSite>> getTypeDeSite() {
 		return typeDeSite;
 	}

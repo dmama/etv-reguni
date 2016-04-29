@@ -6,6 +6,7 @@ import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
+import ch.vd.unireg.interfaces.organisation.data.OrganisationHelper;
 import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationContext;
@@ -25,6 +26,15 @@ import ch.vd.uniregctb.type.TypeEvenementOrganisation;
  * @author Raphaël Marmier, 2015-10-02
  */
 public abstract class AbstractOrganisationStrategy implements EvenementOrganisationTranslationStrategy {
+
+	/*
+		Nombre de jour servant à calculer le seuil de proximité requis pour considérer une date d'inscription ou de
+		radiation du RC comme étant liés à l'événement de création ou d'arrivée/départ en cours.
+
+		Ex.: une date d'inscription au RC Suisse plus ancienne que RC_THRESHOLD_DATE par rapport à un événement de
+		     nouvelle entreprise signale une entreprise existante, mais nouvellement connue de RCEnt.
+	 */
+	public static final int RC_THRESHOLD_DATE = 15;
 
 	/**
 	 * Détecte les mutations pour lesquelles la création d'un événement interne {@link CreateEntreprise} est
@@ -210,8 +220,7 @@ public abstract class AbstractOrganisationStrategy implements EvenementOrganisat
 
 			/* On travaille selon le postulat que toute date d'inscription éloignée de plus d'un certain nombre de jour (seuil) de la date d'événement
 			   indique que l'entreprise est pré-existante et qu'il n'y a donc pas de création à la date fournie. */
-			final int newnessThreshold = 15;
-			final RegDate newnessThresholdDate = date.addDays(newnessThreshold * -1);
+			final RegDate newnessThresholdDate = date.addDays(OrganisationHelper.RC_THRESHOLD_DATE * -1);
 
 			/*
 			    NOTE: Nous devons tenir compte du fait que la date d'inscription au RC CH peut être nulle

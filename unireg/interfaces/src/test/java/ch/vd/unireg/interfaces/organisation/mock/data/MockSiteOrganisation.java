@@ -199,6 +199,11 @@ public class MockSiteOrganisation implements SiteOrganisation {
 	}
 
 	@Override
+	public List<Domicile> getDomicilesEnActivite() {
+		return OrganisationHelper.getDomicilesReels(this, getDomiciles());
+	}
+
+	@Override
 	public List<DateRanged<TypeDeSite>> getTypeDeSite() {
 		return MockOrganisationHelper.getHisto(typeDeSite);
 	}
