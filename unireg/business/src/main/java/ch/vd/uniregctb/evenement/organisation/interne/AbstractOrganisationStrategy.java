@@ -27,15 +27,6 @@ import ch.vd.uniregctb.type.TypeEvenementOrganisation;
  */
 public abstract class AbstractOrganisationStrategy implements EvenementOrganisationTranslationStrategy {
 
-	/*
-		Nombre de jour servant à calculer le seuil de proximité requis pour considérer une date d'inscription ou de
-		radiation du RC comme étant liés à l'événement de création ou d'arrivée/départ en cours.
-
-		Ex.: une date d'inscription au RC Suisse plus ancienne que RC_THRESHOLD_DATE par rapport à un événement de
-		     nouvelle entreprise signale une entreprise existante, mais nouvellement connue de RCEnt.
-	 */
-	public static final int RC_THRESHOLD_DATE = 15;
-
 	/**
 	 * Détecte les mutations pour lesquelles la création d'un événement interne {@link CreateEntreprise} est
 	 * pertinente.
