@@ -55,6 +55,25 @@ public abstract class MockSiteOrganisationFactory {
 	                                           @Nullable TypeOrganisationRegistreIDE typeIde,
 	                                           @Nullable BigDecimal capitalAmount,
 	                                           @Nullable String capitalCurrency) {
+		MockSiteOrganisation mockSite =  mockSite(cantonalId, dateDebut, dateFin, nom, formeLegale, principal, typeAutoriteFiscaleDomicile, noOfsDomicile, statusInscriptionRC, dateInscriptionRC, statusIde, typeIde, capitalAmount, capitalCurrency);
+		organisation.addDonneesSite(mockSite);
+		return mockSite;
+	}
+
+	public static MockSiteOrganisation mockSite(long cantonalId,
+	                                           RegDate dateDebut,
+	                                           RegDate dateFin,
+	                                           String nom,
+	                                           FormeLegale formeLegale,
+	                                           @Nullable Boolean principal,
+	                                           @Nullable TypeAutoriteFiscale typeAutoriteFiscaleDomicile,
+	                                           @Nullable Integer noOfsDomicile,
+	                                           @Nullable StatusInscriptionRC statusInscriptionRC,
+	                                           @Nullable RegDate dateInscriptionRC,
+	                                           @Nullable StatusRegistreIDE statusIde,
+	                                           @Nullable TypeOrganisationRegistreIDE typeIde,
+	                                           @Nullable BigDecimal capitalAmount,
+	                                           @Nullable String capitalCurrency) {
 
 		final MockDonneesRC donneesRC = new MockDonneesRC();
 		if (statusInscriptionRC != null) {
@@ -82,7 +101,6 @@ public abstract class MockSiteOrganisationFactory {
 		}
 
 		final MockSiteOrganisation mock = new MockSiteOrganisation(cantonalId, donneesRegistreIDE, donneesRC);
-		organisation.addDonneesSite(mock);
 		mock.changeNom(dateDebut, nom);
 		if (dateFin != null) {
 			mock.changeNom(dateFin.getOneDayAfter(), null);

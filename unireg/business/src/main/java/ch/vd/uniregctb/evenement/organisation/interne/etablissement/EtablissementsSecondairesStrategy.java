@@ -11,6 +11,7 @@ import ch.vd.unireg.interfaces.organisation.data.DateRanged;
 import ch.vd.unireg.interfaces.organisation.data.Domicile;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
+import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationContext;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationException;
@@ -20,7 +21,6 @@ import ch.vd.uniregctb.evenement.organisation.interne.EvenementOrganisationInter
 import ch.vd.uniregctb.evenement.organisation.interne.TraitementManuel;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.Etablissement;
-import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
 /**
  * Modification des établissement secondaires
@@ -61,12 +61,12 @@ public class EtablissementsSecondairesStrategy extends AbstractOrganisationStrat
 
 		final DateRanged<SiteOrganisation> sitePrincipalAvantRange = organisation.getSitePrincipal(dateAvant);
 		if (sitePrincipalAvantRange == null) {
-			LOGGER.info("Organisation nouvelle au civil mais déjà connue d'Unireg.");
-			return null; // On n'existait pas hier, en fait.
+			Audit.info("Organisation nouvelle au civil mais déjà connue d'Unireg. Des établissements secondaires ont peut-être changés.");
+			return null; // TODO: Gérer les cas en comparant avec Unireg
 		} else {
 
-			List<SiteOrganisation> sitesVDAvant = uniquementSitesVDActifs(organisation.getSitesSecondaires(dateAvant), dateAvant);
-			List<SiteOrganisation> sitesVDApres = uniquementSitesVDActifs(organisation.getSitesSecondaires(dateApres), dateApres);
+			List<SiteOrganisation> sitesVDAvant = uniquementSitesActifs(organisation.getSitesSecondaires(dateAvant), dateAvant);
+			List<SiteOrganisation> sitesVDApres = uniquementSitesActifs(organisation.getSitesSecondaires(dateApres), dateApres);
 
 			try {
 				determineChangementsEtablissements(sitesVDAvant, sitesVDApres, etablissementsAFermer, sitesACreer, context);
@@ -96,12 +96,11 @@ public class EtablissementsSecondairesStrategy extends AbstractOrganisationStrat
 		return null;
 	}
 
-	private List<SiteOrganisation> uniquementSitesVDActifs(List<SiteOrganisation> sitesSecondaires, RegDate date) {
+	private List<SiteOrganisation> uniquementSitesActifs(List<SiteOrganisation> sitesSecondaires, RegDate date) {
 		List<SiteOrganisation> filtre = new ArrayList<>(sitesSecondaires.size());
 		for (SiteOrganisation site : sitesSecondaires) {
 			Domicile domicile = site.getDomicile(date);
 			if (domicile != null
-					&& domicile.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD
 					&& site.isActif(date)) {
 				filtre.add(site);
 			}

@@ -191,6 +191,11 @@ public interface TiersService {
 	List<DomicileHisto> getDomiciles(@NotNull Etablissement etablissement, boolean aussiAnnules);
 
 	/**
+	 * @return la liste des lieux successifs de domicile d'un établissement durant sa période d'activité
+	 */
+	List<DomicileHisto> getDomicilesEnActivite(@NotNull Etablissement etablissement, boolean aussiAnnules);
+
+	/**
 	 * @param entreprise une entreprise
 	 * @param dateReference une date de référence (si <code>null</code>, on prendra la dernier état connu)
 	 * @return si oui ou non cette entreprise est inscrite au RC à la date de référence donnée (dans le sens de <i>possède une inscription</i>)

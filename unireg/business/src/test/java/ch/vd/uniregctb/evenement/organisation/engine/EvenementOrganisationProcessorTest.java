@@ -537,6 +537,7 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 
 		// Mise en place service mock
 		final RegDate dateDebut = date(2010, 6, 26);
+		final RegDate dateRC = date(2010, 6, 24);
 		final String nom = "Synergy SA";
 		final String nom2 = "Synergy Renens SA";
 		final String nom3 = "Synergy Aubonne SA";
@@ -546,10 +547,10 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 
 		final MockOrganisation organisation = MockOrganisationFactory.createOrganisation(noOrganisation, noSite, nom, dateDebut, null, FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE,
 		                                                                                 TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF,
-		                                                                                 date(2010, 6, 24),
+		                                                                                 dateRC,
 		                                                                                 StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE);
 		MockSiteOrganisationFactory.addSite(noSite2, organisation, date(2015, 7, 5), null, nom2, FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE, false,
-		                                    TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Renens.getNoOFS(), StatusInscriptionRC.ACTIF, date(2010, 6, 24),
+		                                    TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Renens.getNoOFS(), StatusInscriptionRC.ACTIF, dateRC,
 		                                    StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE);
 		serviceOrganisation.setUp(new MockServiceOrganisation() {
 			@Override
@@ -566,7 +567,7 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 			public Long doInTransaction(TransactionStatus status) {
 				final Etablissement etablissement = addEtablissement();
 				etablissement.setRaisonSociale(nom + "Etab");
-				addDomicileEtablissement(etablissement, dateDebut.getOneDayAfter(), null, MockCommune.Lausanne);
+				addDomicileEtablissement(etablissement, dateRC.getOneDayAfter(), null, MockCommune.Lausanne);
 
 				return etablissement.getNumero();
 			}
@@ -576,7 +577,7 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 			public Long doInTransaction(TransactionStatus status) {
 				final Etablissement etablissement = addEtablissement();
 				etablissement.setRaisonSociale(nom3 + "Etab");
-				addDomicileEtablissement(etablissement, dateDebut.getOneDayAfter(), null, MockCommune.Aubonne);
+				addDomicileEtablissement(etablissement, dateRC.getOneDayAfter(), null, MockCommune.Aubonne);
 
 				return etablissement.getNumero();
 			}
@@ -586,18 +587,18 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 			public Long doInTransaction(TransactionStatus status) {
 
 				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addRaisonSocialeFiscaleEntreprise(entreprise, dateDebut.getOneDayAfter(), null, nom);
-				addFormeJuridique(entreprise, dateDebut.getOneDayAfter(), null, FormeJuridiqueEntreprise.SARL);
+				addRaisonSocialeFiscaleEntreprise(entreprise, dateRC.getOneDayAfter(), null, nom);
+				addFormeJuridique(entreprise, dateRC.getOneDayAfter(), null, FormeJuridiqueEntreprise.SARL);
 
 				final Etablissement etablissement = (Etablissement) tiersDAO.get(etablissementId);
-				tiersService.addActiviteEconomique(etablissement, entreprise, dateDebut.getOneDayAfter(), true);
+				tiersService.addActiviteEconomique(etablissement, entreprise, dateRC.getOneDayAfter(), true);
 
 				final Etablissement etablissement3 = (Etablissement) tiersDAO.get(etablissement3Id);
-				tiersService.addActiviteEconomique(etablissement3, entreprise, dateDebut.getOneDayAfter(), false);
+				tiersService.addActiviteEconomique(etablissement3, entreprise, dateRC.getOneDayAfter(), false);
 
-				addRegimeFiscalVD(entreprise, dateDebut.getOneDayAfter(), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(entreprise, dateDebut.getOneDayAfter(), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addForPrincipal(entreprise, dateDebut.getOneDayAfter(), MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne, MotifRattachement.DOMICILE);
+				addRegimeFiscalVD(entreprise, dateRC.getOneDayAfter(), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addRegimeFiscalCH(entreprise, dateRC.getOneDayAfter(), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addForPrincipal(entreprise, dateRC.getOneDayAfter(), MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne, MotifRattachement.DOMICILE);
 				return entreprise.getNumero();
 			}
 		});
@@ -680,6 +681,7 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 
 		// Mise en place service mock
 		final RegDate dateDebut = date(2010, 6, 26);
+		final RegDate dateRC = date(2010, 6, 24);
 		final String nom = "Synergy SA";
 		final String nom2 = "Synergy Renens SA";
 		final String nom3 = "Synergy Aubonne SA";
@@ -689,10 +691,10 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 
 		final MockOrganisation organisation = MockOrganisationFactory.createOrganisation(noOrganisation, noSite, nom, dateDebut, null, FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE,
 		                                                                                 TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF,
-		                                                                                 date(2010, 6, 24),
+		                                                                                 dateRC,
 		                                                                                 StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE);
 		MockSiteOrganisationFactory.addSite(noSite2, organisation, date(2015, 7, 5), null, nom2, FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE, false,
-		                                    TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Renens.getNoOFS(), StatusInscriptionRC.ACTIF, date(2010, 6, 24),
+		                                    TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Renens.getNoOFS(), StatusInscriptionRC.ACTIF, dateRC,
 		                                    StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE);
 		serviceOrganisation.setUp(new MockServiceOrganisation() {
 			@Override
@@ -709,7 +711,7 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 			public Long doInTransaction(TransactionStatus status) {
 				final Etablissement etablissement = addEtablissement();
 				etablissement.setRaisonSociale(nom + "Etab");
-				addDomicileEtablissement(etablissement, dateDebut.getOneDayAfter(), null, MockCommune.Lausanne);
+				addDomicileEtablissement(etablissement, dateRC.getOneDayAfter(), null, MockCommune.Lausanne);
 
 				return etablissement.getNumero();
 			}
@@ -719,7 +721,7 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 			public Long doInTransaction(TransactionStatus status) {
 				final Etablissement etablissement = addEtablissement();
 				etablissement.setRaisonSociale(nom2 + "Etab");
-				addDomicileEtablissement(etablissement, dateDebut.getOneDayAfter(), null, MockCommune.Renens);
+				addDomicileEtablissement(etablissement, dateRC.getOneDayAfter(), null, MockCommune.Renens);
 
 				return etablissement.getNumero();
 			}
@@ -729,7 +731,7 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 			public Long doInTransaction(TransactionStatus status) {
 				final Etablissement etablissement = addEtablissement();
 				etablissement.setRaisonSociale(nom3 + "Etab");
-				addDomicileEtablissement(etablissement, dateDebut.getOneDayAfter(), null, MockCommune.Aubonne);
+				addDomicileEtablissement(etablissement, dateRC.getOneDayAfter(), null, MockCommune.Aubonne);
 
 				return etablissement.getNumero();
 			}
@@ -739,21 +741,21 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 			public Long doInTransaction(TransactionStatus status) {
 
 				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addRaisonSocialeFiscaleEntreprise(entreprise, dateDebut.getOneDayAfter(), null, nom);
-				addFormeJuridique(entreprise, dateDebut.getOneDayAfter(), null, FormeJuridiqueEntreprise.SARL);
+				addRaisonSocialeFiscaleEntreprise(entreprise, dateRC.getOneDayAfter(), null, nom);
+				addFormeJuridique(entreprise, dateRC.getOneDayAfter(), null, FormeJuridiqueEntreprise.SARL);
 
 				final Etablissement etablissement = (Etablissement) tiersDAO.get(etablissementId);
-				tiersService.addActiviteEconomique(etablissement, entreprise, dateDebut.getOneDayAfter(), true);
+				tiersService.addActiviteEconomique(etablissement, entreprise, dateRC.getOneDayAfter(), true);
 
 				final Etablissement etablissement2 = (Etablissement) tiersDAO.get(etablissement2Id);
-				tiersService.addActiviteEconomique(etablissement2, entreprise, dateDebut.getOneDayAfter(), false);
+				tiersService.addActiviteEconomique(etablissement2, entreprise, dateRC.getOneDayAfter(), false);
 
 				final Etablissement etablissement3 = (Etablissement) tiersDAO.get(etablissement3Id);
-				tiersService.addActiviteEconomique(etablissement3, entreprise, dateDebut.getOneDayAfter(), false);
+				tiersService.addActiviteEconomique(etablissement3, entreprise, dateRC.getOneDayAfter(), false);
 
-				addRegimeFiscalVD(entreprise, dateDebut.getOneDayAfter(), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(entreprise, dateDebut.getOneDayAfter(), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addForPrincipal(entreprise, dateDebut.getOneDayAfter(), MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne, MotifRattachement.DOMICILE);
+				addRegimeFiscalVD(entreprise, dateRC.getOneDayAfter(), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addRegimeFiscalCH(entreprise, dateRC.getOneDayAfter(), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addForPrincipal(entreprise, dateRC.getOneDayAfter(), MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne, MotifRattachement.DOMICILE);
 				return entreprise.getNumero();
 			}
 		});
@@ -829,6 +831,7 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 
 		// Mise en place service mock
 		final RegDate dateDeDebut = date(2010, 6, 26);
+		final RegDate dateRC = date(2010, 6, 24);
 		final String nom = "Synergy SA";
 		final Long noOrganisation = 101202100L;
 		final Long noSite = noOrganisation + 1000000;
@@ -837,7 +840,8 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 			@Override
 			protected void init() {
 				addOrganisation(MockOrganisationFactory.createOrganisation(noOrganisation, noSite, nom, dateDeDebut, null, FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE,
-				                                                           TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF, date(2010, 6, 24),
+				                                                           TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(),
+				                                                           StatusInscriptionRC.ACTIF, dateRC,
 				                                                           StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE));
 
 			}
@@ -850,7 +854,7 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 			public Long doInTransaction(TransactionStatus transactionStatus) {
 
 				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addRaisonSocialeFiscaleEntreprise(entreprise, dateDeDebut, null, "Synergy truc bidule");
+				addRaisonSocialeFiscaleEntreprise(entreprise, dateRC, null, "Synergy truc bidule");
 				return entreprise.getNumero();
 			}
 		});
@@ -860,7 +864,7 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 			public Long doInTransaction(TransactionStatus transactionStatus) {
 
 				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addRaisonSocialeFiscaleEntreprise(entreprise, dateDeDebut, null, "Synergy machin chose");
+				addRaisonSocialeFiscaleEntreprise(entreprise, dateRC, null, "Synergy machin chose");
 				return entreprise.getNumero();
 			}
 		});

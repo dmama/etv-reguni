@@ -54,6 +54,11 @@ public interface SiteOrganisation {
 	List<Domicile> getDomiciles();
 
 	/**
+	 * @return l'historique des sièges du site (= commune ou pays) durant la période active de l'entreprise
+	 */
+	List<Domicile> getDomicilesEnActivite();
+
+	/**
 	 * @return les valeurs historisées du type de site (principal / secondaire)
 	 */
 	List<DateRanged<TypeDeSite>> getTypeDeSite();

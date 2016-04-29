@@ -11,7 +11,6 @@ import org.junit.Test;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.organisation.data.Domicile;
 import ch.vd.uniregctb.common.WithoutSpringTest;
-import ch.vd.uniregctb.tiers.DomicileHisto;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
@@ -31,7 +30,7 @@ import static org.junit.Assert.assertTrue;
  */
 public class AjustementForsSecondairesHelperTest extends WithoutSpringTest {
 
-	private Map<Integer, List<DomicileHisto>> tousLesDomicilesVD;
+	private Map<Integer, List<Domicile>> tousLesDomicilesVD;
 	private Map<Integer, List<ForFiscalSecondaire>> tousLesForsFiscauxSecondairesParCommune;
 
 	@Before
@@ -164,15 +163,15 @@ public class AjustementForsSecondairesHelperTest extends WithoutSpringTest {
 		assertEquals(0, resultatAjustementForsSecondaires.getACreer().size());
 	}
 
-	protected DomicileHisto addDomicile(RegDate dateDebut, RegDate dateFin, TypeAutoriteFiscale typeAutoriteFiscale, Integer noOfs) {
-		List<DomicileHisto> domicileHistos = tousLesDomicilesVD.get(noOfs);
+	protected Domicile addDomicile(RegDate dateDebut, RegDate dateFin, TypeAutoriteFiscale typeAutoriteFiscale, Integer noOfs) {
+		List<Domicile> domicileHistos = tousLesDomicilesVD.get(noOfs);
 		if (domicileHistos == null) {
 			domicileHistos = new ArrayList<>();
 			tousLesDomicilesVD.put(noOfs, domicileHistos);
 		}
-		final DomicileHisto domicileHisto = new DomicileHisto(new Domicile(dateDebut, dateFin, typeAutoriteFiscale, noOfs));
-		domicileHistos.add(domicileHisto);
-		return domicileHisto;
+		final Domicile domicile = new Domicile(dateDebut, dateFin, typeAutoriteFiscale, noOfs);
+		domicileHistos.add(domicile);
+		return domicile;
 	}
 
 	protected ForFiscalSecondaire addFor(RegDate dateDebut, MotifFor motifOuverture, RegDate dateFin, MotifFor motifFermeture, Integer noOfs, TypeAutoriteFiscale typeAutoriteFiscale, MotifRattachement motifRattachement) {

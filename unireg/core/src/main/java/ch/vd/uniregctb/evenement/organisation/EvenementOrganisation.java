@@ -24,8 +24,10 @@ import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.common.HibernateEntity;
 import ch.vd.uniregctb.common.LengthConstants;
+import ch.vd.uniregctb.common.StringRenderer;
 import ch.vd.uniregctb.type.EtatEvenementOrganisation;
 import ch.vd.uniregctb.type.TypeEvenementOrganisation;
 
@@ -184,5 +186,14 @@ public class EvenementOrganisation extends HibernateEntity {
 	@Override
 	public String toString() {
 		return String.format("Evt Org n°%d, rcent:%d, orga: %d, du %s", getId(), getNoEvenement(), getNoOrganisation(), RegDateHelper.dateToDisplayString(getDateEvenement()));
+	}
+
+	public String rapportErreurs() {
+		return CollectionsUtils.toString(this.getErreurs(), new StringRenderer<EvenementOrganisationErreur>() {
+			@Override
+			public String toString(EvenementOrganisationErreur object) {
+				return object.getMessage();
+			}
+		}, "\n");
 	}
 }

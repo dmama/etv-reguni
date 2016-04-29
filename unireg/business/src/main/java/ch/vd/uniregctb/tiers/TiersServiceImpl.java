@@ -6388,19 +6388,32 @@ public class TiersServiceImpl implements TiersService {
 
 	@Override
 	public List<DomicileHisto> getDomiciles(@NotNull Etablissement etablissement, boolean aussiAnnules) {
-		final List<DomicileHisto> donneesCiviles = extractDomicilesCivilsEtablissement(etablissement);
+		final List<DomicileHisto> donneesCiviles = extractDomicilesCivilsEtablissement(etablissement, false);
 		final List<DomicileHisto> donneesFiscales = extractDomicilesFiscauxEtablissement(etablissement, aussiAnnules);
 
 		return surchargeDonneesHisto(donneesCiviles, donneesFiscales);
 	}
 
-	private List<DomicileHisto> extractDomicilesCivilsEtablissement(Etablissement etablissement) {
+	@Override
+	public List<DomicileHisto> getDomicilesEnActivite(@NotNull Etablissement etablissement, boolean aussiAnnules) {
+		final List<DomicileHisto> donneesCiviles = extractDomicilesCivilsEtablissement(etablissement, true);
+		final List<DomicileHisto> donneesFiscales = extractDomicilesFiscauxEtablissement(etablissement, aussiAnnules);
+
+		return surchargeDonneesHisto(donneesCiviles, donneesFiscales);
+	}
+
+	private List<DomicileHisto> extractDomicilesCivilsEtablissement(Etablissement etablissement, boolean enActivite) {
 		SiteOrganisation siteOrganisation = getSiteOrganisationPourEtablissement(etablissement);
 		if (siteOrganisation == null) {
 			return Collections.emptyList();
 		}
 		final List<DomicileHisto> domiciles = new ArrayList<>();
-		List<Domicile> domicilesCivils = siteOrganisation.getDomiciles();
+		List<Domicile> domicilesCivils;
+		if (enActivite) {
+			domicilesCivils = siteOrganisation.getDomicilesEnActivite();
+		} else {
+			domicilesCivils = siteOrganisation.getDomiciles();
+		}
 		if (domicilesCivils == null) {
 			return Collections.emptyList();
 		}
@@ -6583,7 +6596,7 @@ public class TiersServiceImpl implements TiersService {
 			throw new TiersException(String.format("Le site %d n'a pas été trouvé!", etablissement.getNumeroEtablissement()));
 		}
 
-		final Domicile domicileCivil = organisation.getSiegePrincipal(dateValeur);
+		final Domicile domicileCivil = site.getDomicile(dateValeur);
 		final List<DomicileEtablissement> domicilesFiscaux = etablissement.getSortedDomiciles(false);
 		Set<DomicileEtablissement> domicilesFiscauxASauver = SurchargeDonneesCivilesHelper.tronqueSurchargeFiscale(range, dateValeur, domicilesFiscaux, "domicile");
 		for (DomicileEtablissement domicile : domicilesFiscauxASauver) {
