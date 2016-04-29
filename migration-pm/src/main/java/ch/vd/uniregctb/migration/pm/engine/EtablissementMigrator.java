@@ -191,6 +191,14 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 			return;
 		}
 
+		// [SIFISC-17356]/2 on ne va créer ce for annulé que si l'entité juridique est migrée dans le graphe courant (et pas seulement "vue" alors qu'elle a déjà été migrée dans un graphe précédent...)
+		// Tout ceci fonctionne car cette méthode n'est appelée qu'en toute fin de traitement d'un graphe, alors que toutes les entités du graphe ont été prises en compte (ce qui signifie
+		// qu'une entité effectivement migrée dans ce graphe sera dans la partie "locale" de l'IdMapper, alors qu'une entité non-migrée dans ce graphe (= déjà migrée, donc) ne sera présente
+		// que dans la partie "non-locale" de l'IdMapper...
+		if (!idMapper.hasLocalMappingForEntity(keyEntiteJuridique)) {
+			return;
+		}
+
 		doInLogContext(keyEntiteJuridique,
 		               mr,
 		               idMapper,

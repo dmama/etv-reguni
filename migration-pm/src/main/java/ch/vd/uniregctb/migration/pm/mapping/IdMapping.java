@@ -3,6 +3,7 @@ package ch.vd.uniregctb.migration.pm.mapping;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmEntreprise;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmEtablissement;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmIndividu;
+import ch.vd.uniregctb.migration.pm.utils.EntityKey;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.Etablissement;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
@@ -83,4 +84,10 @@ public interface IdMapping {
 	 * @return <code>true</code> si un mapping est connu pour l'individu RegPM identifié
 	 */
 	boolean hasMappingForIndividu(long idRegpm);
+
+	/**
+	 * @param key la clé d'une entité (entreprise, établissement ou individu)
+	 * @return <code>true</code> si un mapping <strong>local</strong> est connu pour l'entité identifiée
+	 */
+	boolean hasLocalMappingForEntity(EntityKey key);
 }
