@@ -210,7 +210,7 @@ public abstract class AbstractOrganisationStrategy implements EvenementOrganisat
 
 			/* On travaille selon le postulat que toute date d'inscription éloignée de plus d'un certain nombre de jour (seuil) de la date d'événement
 			   indique que l'entreprise est pré-existante et qu'il n'y a donc pas de création à la date fournie. */
-			final int newnessThreshold = 7;
+			final int newnessThreshold = 15;
 			final RegDate newnessThresholdDate = date.addDays(newnessThreshold * -1);
 
 			/*
