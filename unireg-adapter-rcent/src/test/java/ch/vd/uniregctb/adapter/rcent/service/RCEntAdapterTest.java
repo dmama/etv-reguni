@@ -445,6 +445,34 @@ public class RCEntAdapterTest {
 	}
 
 	@Test
+	public void testGetOrgaOfNoticeNouvelleOrganisationNonRC() throws JAXBException {
+		final long noticeId = 383321L;
+		final File xmlBefore = new File("src/test/resources/samples/organisationsOfNotice/evt-383321-before.xml");
+		final File xmlAfter = new File("src/test/resources/samples/organisationsOfNotice/evt-383321-after-no-rc.xml");
+		final JAXBElement<OrganisationsOfNotice> orgOfNoticeAfter = (JAXBElement<OrganisationsOfNotice>) unmarshaller.unmarshal(xmlAfter);
+		when(client.getOrganisationsOfNotice(noticeId, RcEntClient.OrganisationState.AFTER)).thenReturn(orgOfNoticeAfter.getValue());
+
+		final Errors orgOfNoticeBeforeErrors = (Errors) errorunmarshaller.unmarshal(xmlBefore);
+		final Error error = orgOfNoticeBeforeErrors.getError().get(0);
+		final RcEntClientException rcEntClientException = new RcEntClientException(new ServerWebApplicationException(), Collections.singletonList(new RcEntClientErrorMessage(error)));
+		when(client.getOrganisationsOfNotice(noticeId, RcEntClient.OrganisationState.BEFORE)).thenThrow(rcEntClientException);
+
+		final Long noOrganisation = 101704297L;
+
+		final Map<Long, OrganisationEvent> historyMap = service.getOrganisationEvent(noticeId);
+
+		final Organisation organisation = historyMap.get(noOrganisation).getPseudoHistory();
+		assertThat(organisation.getCantonalId(), equalTo(noOrganisation));
+
+		final OrganisationLocation organisationLocation = organisation.getLocationData().get(0);
+
+		final List<DateRangeHelper.Ranged<String>> locationName = organisationLocation.getName();
+		assertEquals(RegDate.get(2008, 9, 4), locationName.get(0).getDateDebut());
+		assertNull(locationName.get(0).getDateFin());
+		assertEquals("Agades perso", locationName.get(0).getPayload());
+	}
+
+	@Test
 	public void testGetOrgaOfNoticeOrganisationExistante() throws JAXBException {
 		final long eventId = 383322L;
 		final File xmlBefore = new File("src/test/resources/samples/organisationsOfNotice/evt-383322-before.xml");

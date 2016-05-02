@@ -172,7 +172,7 @@ public class RCEntAdapter {
 			// Da'bord trouver l'établissement concerné et s'assurer qu'on a bien zero ou une et une seule entrée au RC.
 			for (NoticeOrganisation org : after.getOrganisation()) {
 				for (ch.vd.evd0022.v3.OrganisationLocation location : org.getOrganisation().getOrganisationLocation()) {
-					if (location.getCantonalId().longValue() == targetLocationId) {
+					if (location.getCantonalId().longValue() == targetLocationId && location.getCommercialRegisterData() != null) {
 						if (location.getCommercialRegisterData().getDiaryEntry() != null && !location.getCommercialRegisterData().getDiaryEntry().isEmpty()) {
 							if (location.getCommercialRegisterData().getDiaryEntry().size() > 1) {
 								throw new RCEntAdapterException(
