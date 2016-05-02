@@ -6,14 +6,17 @@ import org.slf4j.LoggerFactory;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
+import ch.vd.unireg.interfaces.organisation.data.DonneesRC;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
+import ch.vd.unireg.interfaces.organisation.data.StatusInscriptionRC;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationContext;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationException;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationOptions;
 import ch.vd.uniregctb.evenement.organisation.interne.AbstractOrganisationStrategy;
 import ch.vd.uniregctb.evenement.organisation.interne.EvenementOrganisationInterne;
+import ch.vd.uniregctb.evenement.organisation.interne.MessagePreExecution;
 import ch.vd.uniregctb.evenement.organisation.interne.TraitementManuel;
 import ch.vd.uniregctb.tiers.Entreprise;
 
@@ -62,12 +65,21 @@ public class ReinscriptionStrategy extends AbstractOrganisationStrategy {
 			final SiteOrganisation sitePrincipalAvant = sitePrincipalAvantRange.getPayload();
 			final SiteOrganisation sitePrincipalApres = organisation.getSitePrincipal(dateApres).getPayload();
 
-			final RegDate dateRadiationRCAvant = sitePrincipalAvant.getDonneesRC().getDateRadiation(dateAvant);
+			final DonneesRC donneesRC = sitePrincipalAvant.getDonneesRC();
+			final RegDate dateRadiationRCAvant = donneesRC.getDateRadiation(dateAvant);
 			final RegDate dateRadiationRCApres = sitePrincipalApres.getDonneesRC().getDateRadiation(dateApres);
+			final StatusInscriptionRC statusInscriptionAvant = donneesRC.getStatusInscription(dateAvant);
+			final StatusInscriptionRC statusInscriptionApres = donneesRC.getStatusInscription(dateApres);
 
-			if (dateRadiationRCAvant != null && dateRadiationRCApres == null) {
-				LOGGER.info(String.format("Réinscription au RC de l'entreprise %s (civil: %s).", entreprise.getNumero(), organisation.getNumeroOrganisation()));
-				return new Reinscription(event, organisation, entreprise, context, options);
+			if (statusInscriptionAvant == StatusInscriptionRC.RADIE && (statusInscriptionApres == StatusInscriptionRC.ACTIF || statusInscriptionApres == StatusInscriptionRC.EN_LIQUIDATION)) {
+				if (dateRadiationRCAvant != null && dateRadiationRCApres == null) {
+					LOGGER.info(String.format("Réinscription au RC de l'entreprise %s (civil: %s).", entreprise.getNumero(), organisation.getNumeroOrganisation()));
+					return new Reinscription(event, organisation, entreprise, context, options);
+				}
+				else if (dateRadiationRCApres != null) {
+					return new MessagePreExecution(event, organisation, entreprise, context, options,
+					                               String.format("L'organisation %d n'est plus radiée du RC mais a toujours une date de radiation!", organisation.getNumeroOrganisation()));
+				}
 			}
 		}
 		LOGGER.info("Pas de réinscription au RC de l'entreprise.");
