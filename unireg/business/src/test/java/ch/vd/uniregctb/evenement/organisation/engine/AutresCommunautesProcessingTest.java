@@ -42,7 +42,7 @@ public class AutresCommunautesProcessingTest extends AbstractEvenementOrganisati
 		return true;
 	}
 
-	@Test(timeout = 1000000L)
+	@Test(timeout = 10000L)
 	public void testAutreCommunauteTraitementManuel() throws Exception {
 
 		// Mise en place service mock

@@ -1056,7 +1056,7 @@ public class EtablissementsSecondairesProcessorTest extends AbstractEvenementOrg
 				                             Assert.assertEquals(EtatEvenementOrganisation.EN_ERREUR, evt.getEtat());
 				                             Assert.assertEquals("L'arrivée HC/HS d'une succursale n'est pas censé se produire.", evt.getErreurs().get(0).getMessage());
 
-/*
+/* Code conservé dans l'éventualité que finallement, cette situation se produit bel et bien.
 
 				                             final Entreprise entreprise = tiersDAO.getEntrepriseByNumeroOrganisation(evt.getNoOrganisation());
 
@@ -1085,9 +1085,8 @@ public class EtablissementsSecondairesProcessorTest extends AbstractEvenementOrg
 					                             Assert.assertEquals(MockCommune.CheseauxSurLausanne.getNoOFS(), forFiscalSecondaire.getNumeroOfsAutoriteFiscale().intValue());
 					                             Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, forFiscalSecondaire.getTypeAutoriteFiscale());
 					                             Assert.assertEquals(MotifRattachement.ETABLISSEMENT_STABLE, forFiscalSecondaire.getMotifRattachement());
-					                             */
-/* FIXME: Devrait être ARRIVEE_HC *//*
 
+											     FIXME: Devrait être ARRIVEE_HC
 					                             Assert.assertEquals(MotifFor.DEBUT_EXPLOITATION, forFiscalSecondaire.getMotifOuverture());
 				                             }
 
@@ -1123,7 +1122,7 @@ public class EtablissementsSecondairesProcessorTest extends AbstractEvenementOrg
 		);
 	}
 
-	@Test(timeout = 1000000L)
+	@Test(timeout = 10000L)
 	public void testESDepartInscritRC() throws Exception {
 
 		// Mise en place service mock
@@ -1200,7 +1199,8 @@ public class EtablissementsSecondairesProcessorTest extends AbstractEvenementOrg
 				                             Assert.assertNotNull(evt);
 				                             Assert.assertEquals(EtatEvenementOrganisation.EN_ERREUR, evt.getEtat());
 				                             Assert.assertEquals("Le déménagement HC/HS d'une succursale n'est pas censé se produire.", evt.getErreurs().get(0).getMessage());
-/*
+
+/* Code conservé dans l'éventualité que finallement, cette situation se produit bel et bien.
 				                             final Entreprise entreprise = tiersDAO.getEntrepriseByNumeroOrganisation(evt.getNoOrganisation());
 
 				                             final Etablissement etablissementPrincipal = tiersService.getEtablissementsPrincipauxEntreprise(entreprise).get(0).getPayload();
@@ -1229,13 +1229,10 @@ public class EtablissementsSecondairesProcessorTest extends AbstractEvenementOrg
 					                             Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, forFiscalSecondaire.getTypeAutoriteFiscale());
 					                             Assert.assertEquals(MotifRattachement.ETABLISSEMENT_STABLE, forFiscalSecondaire.getMotifRattachement());
 					                             Assert.assertEquals(MotifFor.DEBUT_EXPLOITATION, forFiscalSecondaire.getMotifOuverture());
-					                             */
-/* FIXME: Devrait être DEPART_HC *//*
 
+												 FIXME: Devrait être DEPART_HC
 					                             Assert.assertEquals(MotifFor.FIN_EXPLOITATION, forFiscalSecondaire.getMotifFermeture());
 				                             }
-*/
-/*
 
 
 				                             // vérification des événements fiscaux

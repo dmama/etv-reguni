@@ -134,9 +134,10 @@ public class MetierServicePMImpl implements MetierServicePM {
 					}
 					/* Lorsqu'on est en présence d'un nouvel établissement, on ouvre le premier for le lendemain de la fondation. */
 					if (first) {
-						if (domicile.getDateFin() == null || domicile.getDateDebut().getOneDayAfter().isBeforeOrEqual(domicile.getDateFin())) {
+						final RegDate debutFor = domicile.getDateDebut().getOneDayAfter();
+						if (domicile.getDateFin() == null || debutFor.isBeforeOrEqual(domicile.getDateFin())) {
 							histoPourCommune.add(
-									new Domicile(domicile.getDateDebut().getOneDayAfter(), domicile.getDateFin(), domicile.getTypeAutoriteFiscale(), domicile.getNumeroOfsAutoriteFiscale())
+									new Domicile(debutFor, domicile.getDateFin(), domicile.getTypeAutoriteFiscale(), domicile.getNumeroOfsAutoriteFiscale())
 							);
 						}
 					}

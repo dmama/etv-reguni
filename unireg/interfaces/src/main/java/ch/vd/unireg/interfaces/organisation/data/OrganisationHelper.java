@@ -34,10 +34,10 @@ public abstract class OrganisationHelper {
 		Nombre de jour servant à calculer le seuil de proximité requis pour considérer une date d'inscription ou de
 		radiation du RC comme étant liés à l'événement de création ou d'arrivée/départ en cours.
 
-		Ex.: une date d'inscription au RC Suisse plus ancienne que RC_THRESHOLD_DATE par rapport à un événement de
-		     nouvelle entreprise signale une entreprise existante, mais nouvellement connue de RCEnt.
+		Ex.: une date d'inscription au RC Suisse antérieur de plus de NB_JOURS_TOLERANCE_DE_DECALAGE_RC par rapport à la date
+		     d'événement de nouvelle entreprise signale une entreprise existante, mais nouvellement connue de RCEnt.
 	 */
-	public static final int RC_THRESHOLD_DATE = 15;
+	public static final int NB_JOURS_TOLERANCE_DE_DECALAGE_RC = 15;
 
 	/**
 	 * Détermine les valeurs en cours à une date donnée, ou la date du jour si pas de date fournie.
@@ -505,7 +505,7 @@ public abstract class OrganisationHelper {
 			domicilesDebutCorrige[0] = new Domicile(debutActivite, premierDomicile.getDateFin(), premierDomicile.getTypeAutoriteFiscale(), premierDomicile.getNoOfs());
 		}
 
-		final List<Domicile> domciles = DateRangeHelper.extract(Arrays.asList(domicilesDebutCorrige), activite, new DateRangeHelper.AdapterCallback<Domicile>() {
+		final List<Domicile> domicilesResult = DateRangeHelper.extract(Arrays.asList(domicilesDebutCorrige), activite, new DateRangeHelper.AdapterCallback<Domicile>() {
 			@Override
 			public Domicile adapt(Domicile range, RegDate debut, RegDate fin) {
 				return new Domicile(debut != null ? debut : range.getDateDebut(),
@@ -514,7 +514,7 @@ public abstract class OrganisationHelper {
 				                    range.getNoOfs());
 			}
 		});
-		return DateRangeHelper.collate(domciles);
+		return DateRangeHelper.collate(domicilesResult);
 	}
 
 	/**
@@ -526,12 +526,13 @@ public abstract class OrganisationHelper {
 	 *     NOTES:
 	 *     <ul>
 	 *         <li>
-	 *             Les organisations radiée puis réinscrite sont considérées comme actives durant toutes la période ou elles
+	 *             Les organisations radiées puis réinscrites sont considérées comme actives durant toutes la période ou elles
 	 *             on été radiées.
 	 *         </li>
 	 *         <li>
 	 *             Lorsque la radiation du RC est liée à celle de l'IDE (c'est à dire que l'IDE ne fait qu'enregistrer l'état de fait
-	 *             au RC), c'est la date du RC qui est utilisée. Actuellement, le seuil RC_XXXXX est utilisé pour déterminer cela.
+	 *             au RC), c'est la date du RC qui est utilisée. Actuellement, le seuil {@link OrganisationHelper#NB_JOURS_TOLERANCE_DE_DECALAGE_RC} est
+	 *             utilisé pour déterminer cela.
 	 *         </li>
 	 *         <li>
 	 *             Le REE n'est pas encore supporté. Les éventuels établissements REE ne "meurent" pas.
@@ -600,7 +601,7 @@ public abstract class OrganisationHelper {
 			final StatusRegistreIDE status = dernierePeriode.getPayload();
 			if (dernierePeriode.getDateFin() == null && (status == StatusRegistreIDE.RADIE || status == StatusRegistreIDE.DEFINITIVEMENT_RADIE)) {
 				final RegDate dateRadiationRC = site.getDateRadiationRC(dernierePeriode.getDateDebut());
-				if (dateRadiationRC != null && !dateRadiationRC.isBefore(dernierePeriode.getDateDebut().addDays(RC_THRESHOLD_DATE * -1))) {
+				if (dateRadiationRC != null && !dateRadiationRC.isBefore(dernierePeriode.getDateDebut().addDays( - NB_JOURS_TOLERANCE_DE_DECALAGE_RC))) {
 					datesRadieIde.add(new DateRangeHelper.Range(dateRadiationRC.getOneDayAfter(), dernierePeriode.getDateFin()));
 				} else {
 					datesRadieIde.add(dernierePeriode);
