@@ -676,7 +676,7 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 		return (String) suiviField.get(msgSuivi);
 	}
 
-	@Test(timeout = 1000000L)
+	@Test(timeout = 10000L)
 	public void testEntrepriseNonRapprocheeIdentifieeCorrectementAvecESPartiel() throws Exception {
 
 		// Mise en place service mock

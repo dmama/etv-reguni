@@ -211,7 +211,7 @@ public abstract class AbstractOrganisationStrategy implements EvenementOrganisat
 
 			/* On travaille selon le postulat que toute date d'inscription éloignée de plus d'un certain nombre de jour (seuil) de la date d'événement
 			   indique que l'entreprise est pré-existante et qu'il n'y a donc pas de création à la date fournie. */
-			final RegDate newnessThresholdDate = date.addDays(OrganisationHelper.RC_THRESHOLD_DATE * -1);
+			final RegDate newnessThresholdDate = date.addDays( - OrganisationHelper.NB_JOURS_TOLERANCE_DE_DECALAGE_RC);
 
 			/*
 			    NOTE: Nous devons tenir compte du fait que la date d'inscription au RC CH peut être nulle

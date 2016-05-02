@@ -8,6 +8,7 @@ import org.springframework.util.Assert;
 
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.interfaces.organisation.data.Domicile;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.OrganisationHelper;
@@ -87,7 +88,7 @@ public class EtablissementsSecondaires extends EvenementOrganisationInterneDeTra
 					);
 				}
 				/* A-t-on à faire à une véritable fin d'activité, ou sommes-nous dans un cas de radiation autorisée? */
-				if (dateRadiation.isAfterOrEqual(dateApres.addDays(OrganisationHelper.RC_THRESHOLD_DATE * -1))) {
+				if (dateRadiation.isAfterOrEqual(dateApres.addDays( - OrganisationHelper.NB_JOURS_TOLERANCE_DE_DECALAGE_RC))) {
 					dateFermeture = dateRadiation;
 				}
 			}
@@ -98,7 +99,8 @@ public class EtablissementsSecondaires extends EvenementOrganisationInterneDeTra
 				Ne pas créer les établissements secondaires non succursales
 			 */
 			if (!aCreer.isSuccursale(getDateEvt())) {
-				suivis.addSuivi(String.format("L'établissement secondaire civil %d n'est pas une succursale ou est une succursale radiée du RC et ne sera donc pas créé dans Unireg.", aCreer.getNumeroSite()));
+				suivis.addSuivi(String.format("L'établissement secondaire civil %d n'est pas une succursale ou est une succursale radiée du RC et ne sera donc pas créé dans Unireg.",
+				                              aCreer.getNumeroSite()));
 				raiseStatusTo(HandleStatus.TRAITE);
 				continue;
 			}
@@ -125,7 +127,7 @@ public class EtablissementsSecondaires extends EvenementOrganisationInterneDeTra
 				if (ancienNom != null) {
 					warnings.addWarning(String.format("Vérification manuelle requise: l'établissement secondaire (n°%d civil) est préexistant au civil (depuis le %s) mais inconnu d'Unireg à ce jour. " +
 							                                  "La date du rapport entre tiers (%s) doit probablement être ajustée à la main.",
-					                                  aCreer.getNumeroSite(), aCreer.connuAuCivilDepuis(), dateApres));
+					                                  aCreer.getNumeroSite(), aCreer.connuAuCivilDepuis(), RegDateHelper.dateToDisplayString(dateApres)));
 				}
 
 			} else {
@@ -134,21 +136,21 @@ public class EtablissementsSecondaires extends EvenementOrganisationInterneDeTra
 			}
 		}
 		for (Demenagement demenagement : demenagements) {
-			SiteOrganisation quiDemenage = getOrganisation().getSiteForNo(demenagement.getEtablissement().getNumeroEtablissement());
 			RegDate dateDemenagement = dateApres;
 			final Domicile ancienDomicile = demenagement.getAncienDomicile();
 			final Domicile nouveauDomicile = demenagement.getNouveauDomicile();
-					/* Départ VD */
+			/* Départ VD */
 			if (ancienDomicile.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD
-					&& !(nouveauDomicile.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD)) {
+					&& nouveauDomicile.getTypeAutoriteFiscale() != TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
 				throw new EvenementOrganisationException("Le déménagement HC/HS d'une succursale n'est pas censé se produire.");
 			}
-					/* Arrivee HC */
-			else if (!(ancienDomicile.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD)
-						&& nouveauDomicile.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
+			/* Arrivee HC */
+			else if (ancienDomicile.getTypeAutoriteFiscale() != TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD
+					&& nouveauDomicile.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
 				throw new EvenementOrganisationException("L'arrivée HC/HS d'une succursale n'est pas censé se produire.");
 			}
 /* Si des fois ça peut quand même se produire, le code pour l'application des surcharges est là.
+			SiteOrganisation quiDemenage = getOrganisation().getSiteForNo(demenagement.getEtablissement().getNumeroEtablissement());
 			if (quiDemenage.isInscritAuRC(dateApres)) {
 
 				if (ancienDomicile.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD

@@ -61,7 +61,7 @@ public class EtablissementsSecondairesStrategy extends AbstractOrganisationStrat
 
 		final DateRanged<SiteOrganisation> sitePrincipalAvantRange = organisation.getSitePrincipal(dateAvant);
 		if (sitePrincipalAvantRange == null) {
-			Audit.info("Organisation nouvelle au civil mais déjà connue d'Unireg. Des établissements secondaires ont peut-être changés.");
+			Audit.info("Organisation nouvelle au civil mais déjà connue d'Unireg. Des établissements secondaires ont peut-être changé.");
 			return null; // TODO: Gérer les cas en comparant avec Unireg
 		} else {
 
