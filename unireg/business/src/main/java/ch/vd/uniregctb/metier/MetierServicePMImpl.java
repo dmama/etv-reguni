@@ -59,6 +59,7 @@ import ch.vd.uniregctb.tiers.Remarque;
 import ch.vd.uniregctb.tiers.ScissionEntreprise;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersService;
+import ch.vd.uniregctb.tiers.TransfertPatrimoine;
 import ch.vd.uniregctb.tiers.dao.RemarqueDAO;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
@@ -1022,6 +1023,60 @@ public class MetierServicePMImpl implements MetierServicePM {
 		// annulation des rapports entre tiers entre l'entreprise scindée et les entreprises résultantes à la date du contrat de scission
 		for (RapportEntreTiers ret : scindee.getRapportsSujet()) {
 			if (!ret.isAnnule() && ret.getType() == TypeRapportEntreTiers.SCISSION_ENTREPRISE && ret.getDateDebut() == dateContratScission && idsResultantes.contains(ret.getObjetId())) {
+				ret.setAnnule(true);
+			}
+		}
+	}
+
+	@Override
+	public void transferePatrimoine(Entreprise emettrice, List<Entreprise> receptrices, RegDate dateTransfert) throws MetierServiceException {
+
+		// création de rapports entre tiers de type transfert de patrimoine
+		for (Entreprise receptrice : receptrices) {
+			final TransfertPatrimoine transfert = new TransfertPatrimoine(dateTransfert, null, emettrice, receptrice);
+			tiersService.addRapport(transfert, emettrice, receptrice);
+		}
+
+		// TODO à faire dès que l'événement fiscal pour transfert de patrimoine aura été créé
+		// envoi d'un événement fiscal sur toutes les entreprises concernées
+//		for (Entreprise entreprise : CollectionsUtils.merged(Collections.singletonList(emettrice), receptrices)) {
+//			evenementFiscalService.publierEvenementFiscalInformationComplementaire(entreprise,
+//			                                                                       EvenementFiscalInformationComplementaire.TypeInformationComplementaire.TRANSFERT_PATRIMOINE,
+//			                                                                       dateTransfert);
+//		}
+	}
+
+	@Override
+	public void annuleTransfertPatrimoine(Entreprise emettrice, List<Entreprise> receptrices, RegDate dateTransfert) throws MetierServiceException {
+
+		// vérification que les entreprises réceptrices annoncées ont bien un lien de transfert de patrimoine avec l'entreprise émettrice à la date de transfert donnée
+		for (Entreprise receptrice : receptrices) {
+			// recherche du rapport entre tiers
+			boolean trouveBonRapportEntreTiers = false;
+			for (RapportEntreTiers ret : receptrice.getRapportsObjet()) {
+				if (!ret.isAnnule() && ret.getType() == TypeRapportEntreTiers.TRANSFERT_PATRIMOINE && ret.getDateDebut() == dateTransfert && ret.getSujetId().equals(emettrice.getId())) {
+					trouveBonRapportEntreTiers = true;
+					break;
+				}
+			}
+			if (!trouveBonRapportEntreTiers) {
+				throw new MetierServiceException(String.format("L'entreprise %s n'est pas associée à un transfert de patrimoine depuis l'entreprise %s au %s.",
+				                                               FormatNumeroHelper.numeroCTBToDisplay(receptrice.getNumero()),
+				                                               FormatNumeroHelper.numeroCTBToDisplay(emettrice.getNumero()),
+				                                               RegDateHelper.dateToDisplayString(dateTransfert)));
+			}
+		}
+
+		// annulation des rapports entre tiers
+		// identifiants des entreprises réceptrices
+		final Set<Long> idsReceptrices = new HashSet<>(receptrices.size());
+		for (Entreprise receptrice : receptrices) {
+			idsReceptrices.add(receptrice.getNumero());
+		}
+
+		// annulation des rapports entre tiers entre l'entreprise émettrice et les entreprises réceptrices de patrimoine à la date donnée
+		for (RapportEntreTiers ret : emettrice.getRapportsSujet()) {
+			if (!ret.isAnnule() && ret.getType() == TypeRapportEntreTiers.TRANSFERT_PATRIMOINE && ret.getDateDebut() == dateTransfert && idsReceptrices.contains(ret.getObjetId())) {
 				ret.setAnnule(true);
 			}
 		}

@@ -20,7 +20,7 @@ import ch.vd.uniregctb.type.TypeEtatEntreprise;
  */
 public class TiersCriteriaView implements Serializable {
 
-	private static final long serialVersionUID = -6480653769224861750L;
+	private static final long serialVersionUID = 4657272958620368484L;
 
 	// Valeurs utilisées en sortie seulement
 	private Long numeroSourcier;
@@ -366,6 +366,14 @@ public class TiersCriteriaView implements Serializable {
 
 	public void setCorporationSplit(Boolean corporationSplit) {
 		criteria.setCorporationSplit(corporationSplit);
+	}
+
+	public Boolean hasCorporationTransferedPatrimony() {
+		return criteria.hasCorporationTransferedPatrimony();
+	}
+
+	public void setCorporationTransferedPatrimony(Boolean hasCorporationTransferedPatrimony) {
+		criteria.setCorporationTransferedPatrimony(hasCorporationTransferedPatrimony);
 	}
 
 	public Boolean getConnuAuCivil() {

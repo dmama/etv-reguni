@@ -44,7 +44,7 @@ public class TiersCriteria implements Serializable, TiersFilter {
 		}
 	}
 
-	private static final long serialVersionUID = -2380124450588100517L;
+	private static final long serialVersionUID = 6605993235524782552L;
 
 	public enum TypeRecherche {
 		CONTIENT,
@@ -323,9 +323,15 @@ public class TiersCriteria implements Serializable, TiersFilter {
 
 	/**
 	 * <code>true</code> si on ne veut que les entreprises qui ont un jour subi une scission, <code>false</code> si on ne veut que celles qui n'ont pas subi
-	 * ce genre d'opération, et <code>null</code> si cela n'a pas d'importante
+	 * ce genre d'opération, et <code>null</code> si cela n'a pas d'importance
 	 */
 	private Boolean isCorporationSplit;
+
+	/**
+	 * <code>true</code> si on ne veut que les entreprises qui ont un jour transféré (= émis) du patrimoine vers une ou plusieurs autres entreprises, <code>false</code>
+	 * si on ne veut justement pas ces entreprises, et <code>null</code> si cela n'a aucune importance
+	 */
+	private Boolean hasCorporationTransferedPatrimony;
 
 	/**
 	 * @return true si aucun paramètre de recherche n'est renseigné. false
@@ -810,6 +816,14 @@ public class TiersCriteria implements Serializable, TiersFilter {
 
 	public void setCorporationSplit(Boolean corporationSplit) {
 		isCorporationSplit = corporationSplit;
+	}
+
+	public Boolean hasCorporationTransferedPatrimony() {
+		return hasCorporationTransferedPatrimony;
+	}
+
+	public void setCorporationTransferedPatrimony(Boolean hasCorporationTransferedPatrimony) {
+		this.hasCorporationTransferedPatrimony = hasCorporationTransferedPatrimony;
 	}
 
 	public Boolean getConnuAuCivil() {

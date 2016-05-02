@@ -35,6 +35,7 @@ import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.declaration.Periodicite;
 import ch.vd.uniregctb.entreprise.complexe.FusionEntreprisesHelper;
 import ch.vd.uniregctb.entreprise.complexe.ScissionEntrepriseHelper;
+import ch.vd.uniregctb.entreprise.complexe.TransfertPatrimoineHelper;
 import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.security.SecurityHelper;
 import ch.vd.uniregctb.security.SecurityProviderInterface;
@@ -102,11 +103,13 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 		list.add(new ReprendreActivitePartielle());
 		list.add(new AbsorberEntreprises());
 		list.add(new ScinderEntreprise());
+		list.add(new TransfererPatrimoine());
 		list.add(new AnnulerFaillite());
 		list.add(new AnnulerDemenagementSiege());
 		list.add(new AnnulerFinActivite());
 		list.add(new AnnulerFusionEntreprises());
 		list.add(new AnnulerScissionEntreprise());
+		list.add(new AnnulerTransfertPatrimoine());
 
 		list.add(new AnnulerTiers());
 		list.add(new Exporter());
@@ -1341,6 +1344,56 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 		@Override
 		public String getActionUrl() {
 			return "goto:/processuscomplexe/annulation/scission/choix-date.do?scindee=";
+		}
+	}
+
+	private static class TransfererPatrimoine implements Action {
+		@Override
+		public boolean isGranted() {
+			return SecurityHelper.isAnyGranted(securityProvider, Role.TRANSFERT_PATRIMOINE_ENTREPRISE);
+		}
+
+		@Override
+		public boolean isValide(Tiers tiers) {
+			return !tiers.isAnnule()
+					&& tiers instanceof Entreprise
+					&& !hadEtatOnce((Entreprise) tiers, EnumSet.of(TypeEtatEntreprise.ABSORBEE, TypeEtatEntreprise.DISSOUTE, TypeEtatEntreprise.RADIEE_RC, TypeEtatEntreprise.EN_FAILLITE))
+					&& SecurityHelper.getDroitAcces(securityProvider, tiers) == Niveau.ECRITURE;
+		}
+
+		@Override
+		public String getLabel() {
+			return "Transférer du patrimoine";
+		}
+
+		@Override
+		public String getActionUrl() {
+			return "goto:/processuscomplexe/transfertpatrimoine/choix-date.do?emettrice=";
+		}
+	}
+
+	private static class AnnulerTransfertPatrimoine implements Action {
+		@Override
+		public boolean isGranted() {
+			return SecurityHelper.isAnyGranted(securityProvider, Role.TRANSFERT_PATRIMOINE_ENTREPRISE);
+		}
+
+		@Override
+		public boolean isValide(Tiers tiers) {
+			return !tiers.isAnnule()
+					&& tiers instanceof Entreprise
+					&& !TransfertPatrimoineHelper.getTransferts((Entreprise) tiers, tiersService).isEmpty()
+					&& SecurityHelper.getDroitAcces(securityProvider, tiers) == Niveau.ECRITURE;
+		}
+
+		@Override
+		public String getLabel() {
+			return "Annuler un transfert de patrimoine";
+		}
+
+		@Override
+		public String getActionUrl() {
+			return "goto:/processuscomplexe/annulation/transfertpatrimoine/choix-date.do?emettrice=";
 		}
 	}
 }

@@ -16,6 +16,7 @@ import ch.vd.uniregctb.tiers.RapportPrestationImposable;
 import ch.vd.uniregctb.tiers.RepresentationConventionnelle;
 import ch.vd.uniregctb.tiers.ScissionEntreprise;
 import ch.vd.uniregctb.tiers.SocieteDirection;
+import ch.vd.uniregctb.tiers.TransfertPatrimoine;
 import ch.vd.uniregctb.tiers.Tutelle;
 
 /**
@@ -209,12 +210,12 @@ public enum TypeRapportEntreTiers {
 	TRANSFERT_PATRIMOINE {
 		@Override
 		public RapportEntreTiers newInstance() {
-			return new FusionEntreprises();
+			return new TransfertPatrimoine();
 		}
 
 		@Override
 		public Class<? extends RapportEntreTiers> getRapportClass() {
-			return FusionEntreprises.class;
+			return TransfertPatrimoine.class;
 		}
 	},
 

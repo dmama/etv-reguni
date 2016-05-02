@@ -166,4 +166,22 @@ public interface MetierServicePM {
 	 * @throws MetierServiceException en cas de problème
 	 */
 	void annuleScission(Entreprise scindee, List<Entreprise> resultantes, RegDate dateContratScission) throws MetierServiceException;
+
+	/**
+	 * Opération de transfert de patrimoine depuis une entreprise émettrice vers une ou plusieurs entreprises réceptrices
+	 * @param emettrice l'entreprise émettrice
+	 * @param receptrices les entreprises réceptrices du patrimoine transféré
+	 * @param dateTransfert la date du transfert
+	 * @throws MetierServiceException en cas de problème
+	 */
+	void transferePatrimoine(Entreprise emettrice, List<Entreprise> receptrices, RegDate dateTransfert) throws MetierServiceException;
+
+	/**
+	 * Opération d'annulation d'un transfert de patrimoine depuis une entreprise émettrice vers une ou plusieurs entreprises réceptrices
+	 * @param emettrice l'entreprise émettrice
+	 * @param receptrices les entreprises réceptrices du patrimoine transféré
+	 * @param dateTransfert la date du transfert
+	 * @throws MetierServiceException en cas de problème
+	 */
+	void annuleTransfertPatrimoine(Entreprise emettrice, List<Entreprise> receptrices, RegDate dateTransfert) throws MetierServiceException;
 }

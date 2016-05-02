@@ -16,7 +16,7 @@
 	<c:when test="${typeRecherche == 'principale' || typeRecherche == 'rt-debiteur' || typeRecherche == 'activation'}">
 		<c:set var="typeContribuableRecherche" value="ppoupm"/>       <%-- pm ou pp --%>
 	</c:when>
-	<c:when test="${typeRecherche == 'faillite' || typeRecherche == 'demenagementSiege' || typeRecherche == 'finActivite' || typeRecherche == 'fusionEntreprises' || typeRecherche == 'scissionEntreprise'}">
+	<c:when test="${typeRecherche == 'faillite' || typeRecherche == 'demenagementSiege' || typeRecherche == 'finActivite' || typeRecherche == 'fusionEntreprises' || typeRecherche == 'scissionEntreprise' || typeRecherche == 'transfertPatrimoine'}">
 		<c:set var="typeContribuableRecherche" value="pmonly"/>      <%-- pm seulement --%>
 	</c:when>
 	<c:otherwise>

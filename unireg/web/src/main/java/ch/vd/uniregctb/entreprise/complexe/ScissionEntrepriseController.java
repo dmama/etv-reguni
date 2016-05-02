@@ -59,6 +59,11 @@ public class ScissionEntrepriseController extends AbstractProcessusComplexeContr
 		                Role.SCISSION_ENTREPRISE);
 	}
 
+	@Nullable
+	private static ScissionEntrepriseSessionData getSessionData(HttpSession session) {
+		return (ScissionEntrepriseSessionData) session.getAttribute(SCISSION_NAME);
+	}
+
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		this.searchScindeeComponent = buildSearchComponent(CRITERIA_NAME_SCINDEE, "entreprise/scission/list-scindee",
@@ -72,29 +77,29 @@ public class ScissionEntrepriseController extends AbstractProcessusComplexeContr
 
 		this.searchResultanteComponent = buildSearchComponent(CRITERIA_NAME_RESULTANTE, "entreprise/scission/list-resultantes",
 		                                                      new SearchTiersComponent.TiersCriteriaFiller() {
-			                                                    @Override
-			                                                    public void fill(TiersCriteriaView data) {
-				                                                    fillCriteresImperatifsPourEntrepriseResultante(data);
-			                                                    }
-		                                                    },
+			                                                      @Override
+			                                                      public void fill(TiersCriteriaView data) {
+				                                                      fillCriteresImperatifsPourEntrepriseResultante(data);
+			                                                      }
+		                                                      },
 		                                                      new SearchTiersComponent.ModelFiller() {
-			                                                    @Override
-			                                                    public void fill(Model model, HttpSession session) throws SearchTiersComponent.RedirectException {
-				                                                    final ScissionEntrepriseSessionData sessionData = (ScissionEntrepriseSessionData) session.getAttribute(SCISSION_NAME);
-				                                                    if (sessionData == null) {
-					                                                    Flash.warning("La session a été invalidée. Veuillez recommencer votre saisie.");
-					                                                    throw new SearchTiersComponent.RedirectException("../scindee/list.do");
-				                                                    }
-				                                                    model.addAttribute(SCISSION, sessionData);
-			                                                    }
-		                                                    },
+			                                                      @Override
+			                                                      public void fill(Model model, HttpSession session) throws SearchTiersComponent.RedirectException {
+				                                                      final ScissionEntrepriseSessionData sessionData = getSessionData(session);
+				                                                      if (sessionData == null) {
+					                                                      Flash.warning("La session a été invalidée. Veuillez recommencer votre saisie.");
+					                                                      throw new SearchTiersComponent.RedirectException("../scindee/list.do");
+				                                                      }
+				                                                      model.addAttribute(SCISSION, sessionData);
+			                                                      }
+		                                                      },
 		                                                      new SearchTiersComponent.TiersSearchAdapter<SelectionEntrepriseView>() {
-			                                                    @Override
-			                                                    public List<SelectionEntrepriseView> adaptSearchResult(List<TiersIndexedDataView> result, HttpSession session) {
-				                                                    final ScissionEntrepriseSessionData sessionData = (ScissionEntrepriseSessionData) session.getAttribute(SCISSION_NAME);
-				                                                    return ScissionEntrepriseController.this.adapteSearchResults(result, sessionData);
-			                                                    }
-		                                                    });
+			                                                      @Override
+			                                                      public List<SelectionEntrepriseView> adaptSearchResult(List<TiersIndexedDataView> result, HttpSession session) {
+				                                                      final ScissionEntrepriseSessionData sessionData = getSessionData(session);
+				                                                      return ScissionEntrepriseController.this.adapteSearchResults(result, sessionData);
+			                                                      }
+		                                                      });
 	}
 
 	@RequestMapping(value = "/scindee/list.do", method = RequestMethod.GET)
@@ -129,7 +134,7 @@ public class ScissionEntrepriseController extends AbstractProcessusComplexeContr
 	public String showRetourStart(Model model, HttpSession session) {
 		checkDroitAcces();
 
-		final ScissionEntrepriseSessionData sessionData = (ScissionEntrepriseSessionData) session.getAttribute(SCISSION_NAME);
+		final ScissionEntrepriseSessionData sessionData = getSessionData(session);
 		if (sessionData == null) {
 			Flash.warning("La session a été invalidée. Veuillez recommencer votre saisie.");
 			return "redirect:scindee/list.do";
@@ -155,7 +160,7 @@ public class ScissionEntrepriseController extends AbstractProcessusComplexeContr
 
 		// on conserve les données de la scission en session
 		final ScissionEntrepriseSessionData newSessionData = new ScissionEntrepriseSessionData(view.getIdEntrepriseScindee(), view.getDateContratScission());;
-		final ScissionEntrepriseSessionData oldSessionData = (ScissionEntrepriseSessionData) session.getAttribute(SCISSION_NAME);
+		final ScissionEntrepriseSessionData oldSessionData = getSessionData(session);
 		if (oldSessionData != null && newSessionData.getIdEntrepriseScindee() == oldSessionData.getIdEntrepriseScindee()) {
 			for (ScissionEntrepriseSessionData.EntrepriseResultante oldResultante : oldSessionData.getEntreprisesResultantes()) {
 				newSessionData.addEntrepriseResultante(oldResultante);
@@ -251,7 +256,7 @@ public class ScissionEntrepriseController extends AbstractProcessusComplexeContr
 			}
 
 			// ajout de la donnée
-			final ScissionEntrepriseSessionData sessionData = (ScissionEntrepriseSessionData) session.getAttribute(SCISSION_NAME);
+			final ScissionEntrepriseSessionData sessionData = getSessionData(session);
 			if (sessionData == null) {
 				Flash.warning("La session a été invalidée. Veuillez recommencer votre saisie.");
 				return "redirect:../scindee/list.do";
@@ -272,7 +277,7 @@ public class ScissionEntrepriseController extends AbstractProcessusComplexeContr
 		checkDroitAcces();
 
 		// retrait de la donnée
-		final ScissionEntrepriseSessionData sessionData = (ScissionEntrepriseSessionData) session.getAttribute(SCISSION_NAME);
+		final ScissionEntrepriseSessionData sessionData = getSessionData(session);
 		if (sessionData == null) {
 			Flash.warning("La session a été invalidée. Veuillez recommencer votre saisie.");
 			return "redirect:../scindee/list.do";
@@ -293,7 +298,7 @@ public class ScissionEntrepriseController extends AbstractProcessusComplexeContr
 		checkDroitAcces();
 
 		// récupération des données de scission
-		final ScissionEntrepriseSessionData sessionData = (ScissionEntrepriseSessionData) session.getAttribute(SCISSION_NAME);
+		final ScissionEntrepriseSessionData sessionData = getSessionData(session);
 		if (sessionData == null) {
 			Flash.warning("La session a été invalidée. Veuillez recommencer votre saisie.");
 			return "redirect:scindee/list.do";

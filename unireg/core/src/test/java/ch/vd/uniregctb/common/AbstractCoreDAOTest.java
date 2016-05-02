@@ -114,6 +114,7 @@ import ch.vd.uniregctb.tiers.TacheNouveauDossier;
 import ch.vd.uniregctb.tiers.TacheTransmissionDossier;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
+import ch.vd.uniregctb.tiers.TransfertPatrimoine;
 import ch.vd.uniregctb.tiers.Tutelle;
 import ch.vd.uniregctb.type.CategorieEntreprise;
 import ch.vd.uniregctb.type.DayMonth;
@@ -1061,6 +1062,14 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 		scindee.addRapportSujet(scission);
 		resultante.addRapportObjet(scission);
 		return scission;
+	}
+
+	protected TransfertPatrimoine addTransfertPatrimoine(Entreprise emettrice, Entreprise receptrice, RegDate dateTransfert) {
+		TransfertPatrimoine transfert = new TransfertPatrimoine(dateTransfert, null, emettrice, receptrice);
+		transfert = merge(transfert);
+		emettrice.addRapportSujet(transfert);
+		receptrice.addRapportObjet(transfert);
+		return transfert;
 	}
 
 	protected AutreCommunaute addAutreCommunaute(String nom) {

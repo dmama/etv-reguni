@@ -128,6 +128,9 @@
 							<authz:authorize ifAnyGranted="ROLE_SCISSION_ENTREPRISE">
 								<li><a href="<c:url value="/processuscomplexe/scission/scindee/list.do"/>"><fmt:message key="title.scission.entreprise"/></a></li>
 							</authz:authorize>
+							<authz:authorize ifAnyGranted="ROLE_TRANSFERT_PATRIMOINE_ENTREPRISE">
+								<li><a href="<c:url value="/processuscomplexe/transfertpatrimoine/emettrice/list.do"/>"><fmt:message key="title.transfert.patrimoine"/></a></li>
+							</authz:authorize>
 						</ul>
 					</li>
 					<li><fmt:message key="label.action.annulation.processus.complexes.entreprises"/>
@@ -146,6 +149,9 @@
 							</authz:authorize>
 							<authz:authorize ifAnyGranted="ROLE_SCISSION_ENTREPRISE">
 								<li><a href="<c:url value="/processuscomplexe/annulation/scission/list.do"/>"><fmt:message key="title.scission.entreprise"/></a></li>
+							</authz:authorize>
+							<authz:authorize ifAnyGranted="ROLE_TRANSFERT_PATRIMOINE_ENTREPRISE">
+								<li><a href="<c:url value="/processuscomplexe/annulation/transfertpatrimoine/list.do"/>"><fmt:message key="title.transfert.patrimoine"/></a></li>
 							</authz:authorize>
 						</ul>
 					</li>

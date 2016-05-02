@@ -63,6 +63,7 @@ import ch.vd.uniregctb.tiers.MontantMonetaire;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.tiers.Remarque;
 import ch.vd.uniregctb.tiers.ScissionEntreprise;
+import ch.vd.uniregctb.tiers.TransfertPatrimoine;
 import ch.vd.uniregctb.tiers.dao.RemarqueDAO;
 import ch.vd.uniregctb.type.DayMonth;
 import ch.vd.uniregctb.type.FormeJuridiqueEntreprise;
@@ -2569,12 +2570,12 @@ public class MetierServicePMTest extends BusinessTest {
 					Assert.assertEquals((Long) ids.idResultante1, scission.getObjetId());
 				}
 				{
-					final ScissionEntreprise fusion = scissions.get(1);
-					Assert.assertNotNull(fusion);
-					Assert.assertFalse(fusion.isAnnule());
-					Assert.assertEquals(dateContratScission2, fusion.getDateDebut());
-					Assert.assertNull(fusion.getDateFin());
-					Assert.assertEquals((Long) ids.idResultante2, fusion.getObjetId());
+					final ScissionEntreprise scission = scissions.get(1);
+					Assert.assertNotNull(scission);
+					Assert.assertFalse(scission.isAnnule());
+					Assert.assertEquals(dateContratScission2, scission.getDateDebut());
+					Assert.assertNull(scission.getDateFin());
+					Assert.assertEquals((Long) ids.idResultante2, scission.getObjetId());
 				}
 
 				// 1.3 état inchangé
@@ -2644,6 +2645,458 @@ public class MetierServicePMTest extends BusinessTest {
 				Assert.assertFalse(etat2.isAnnule());
 				Assert.assertEquals(TypeEtatEntreprise.FONDEE, etat2.getType());
 				Assert.assertEquals(dateDebutResultante2, etat2.getDateObtention());
+			}
+		});
+	}
+
+	@Test
+	public void testTransfertPatrimoine() throws Exception {
+
+		final RegDate dateDebutEmettrice = date(2000, 5, 12);
+		final RegDate dateDebutReceptrice1 = date(2005, 6, 13);
+		final RegDate dateDebutReceptrice2 = date(2007, 9, 30);
+
+		final RegDate dateTransfert = date(2016, 4, 2);
+
+		final class Ids {
+			long idEmettrice;
+			long idEtablissementPrincipalEmettrice;
+			long idReceptrice1;
+			long idEtablissementPrincipalReceptrice1;
+			long idReceptrice2;
+			long idEtablissementPrincipalReceptrice2;
+		}
+
+		// mise en place fiscale
+		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
+			@Override
+			public Ids doInTransaction(TransactionStatus status) {
+
+				final Entreprise emettrice = addEntrepriseInconnueAuCivil();
+				addRaisonSociale(emettrice, dateDebutEmettrice, null, "Ma grande entreprise");
+				addFormeJuridique(emettrice, dateDebutEmettrice, null, FormeJuridiqueEntreprise.SA);
+				addRegimeFiscalCH(emettrice, dateDebutEmettrice, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addRegimeFiscalVD(emettrice, dateDebutEmettrice, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addBouclement(emettrice, dateDebutEmettrice, DayMonth.get(12, 31), 12);        // tous les 31.12 depuis 2000
+				addForPrincipal(emettrice, dateDebutEmettrice, MotifFor.DEBUT_EXPLOITATION, MockCommune.Grandson);
+				addForSecondaire(emettrice, dateDebutEmettrice, MotifFor.DEBUT_EXPLOITATION, MockCommune.ChateauDoex.getNoOFS(), MotifRattachement.ETABLISSEMENT_STABLE, GenreImpot.BENEFICE_CAPITAL);
+
+				addAdresseMandataireSuisse(emettrice, dateDebutEmettrice, null, TypeMandat.GENERAL, "Mon mandataire chéri", MockRue.Renens.QuatorzeAvril);
+				addAdresseSuisse(emettrice, TypeAdresseTiers.COURRIER, dateDebutEmettrice, null, MockRue.Prilly.RueDesMetiers);
+
+				final Etablissement etablissementPrincipalEmettrice = addEtablissement();
+				addDomicileEtablissement(etablissementPrincipalEmettrice, dateDebutEmettrice, null, MockCommune.Grandson);
+				addActiviteEconomique(emettrice, etablissementPrincipalEmettrice, dateDebutEmettrice, null, true);
+
+				addEtatEntreprise(emettrice, dateDebutEmettrice, TypeEtatEntreprise.FONDEE, TypeGenerationEtatEntreprise.AUTOMATIQUE);
+
+
+				final Entreprise receptrice1 = addEntrepriseInconnueAuCivil();
+				addRaisonSociale(receptrice1, dateDebutReceptrice1, null, "Ma toute petite entreprise");
+				addFormeJuridique(receptrice1, dateDebutReceptrice1, null, FormeJuridiqueEntreprise.SA);
+				addRegimeFiscalCH(receptrice1, dateDebutReceptrice1, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addRegimeFiscalVD(receptrice1, dateDebutReceptrice1, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addBouclement(receptrice1, dateDebutReceptrice1, DayMonth.get(12, 31), 12);        // tous les 31.12 depuis 2005
+				addForPrincipal(receptrice1, dateDebutReceptrice1, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne);
+
+				final Etablissement etablissementPrincipalReceptrice1 = addEtablissement();
+				addDomicileEtablissement(etablissementPrincipalReceptrice1, dateDebutReceptrice1, null, MockCommune.Lausanne);
+				addActiviteEconomique(receptrice1, etablissementPrincipalReceptrice1, dateDebutReceptrice1, null, true);
+
+				addEtatEntreprise(receptrice1, dateDebutReceptrice1, TypeEtatEntreprise.FONDEE, TypeGenerationEtatEntreprise.AUTOMATIQUE);
+
+
+				final Entreprise receptrice2 = addEntrepriseInconnueAuCivil();
+				addRaisonSociale(receptrice2, dateDebutReceptrice2, null, "Ma minuscule entreprise");
+				addFormeJuridique(receptrice2, dateDebutReceptrice2, null, FormeJuridiqueEntreprise.SARL);
+				addRegimeFiscalCH(receptrice2, dateDebutReceptrice2, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addRegimeFiscalVD(receptrice2, dateDebutReceptrice2, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addBouclement(receptrice2, dateDebutReceptrice2, DayMonth.get(12, 31), 12);        // tous les 31.12 depuis 2007
+				addForPrincipal(receptrice2, dateDebutReceptrice2, MotifFor.DEBUT_EXPLOITATION, MockCommune.Prilly);
+
+				final Etablissement etablissementPrincipalReceptrice2 = addEtablissement();
+				addDomicileEtablissement(etablissementPrincipalReceptrice2, dateDebutReceptrice2, null, MockCommune.Prilly);
+				addActiviteEconomique(receptrice2, etablissementPrincipalReceptrice2, dateDebutReceptrice2, null, true);
+
+				addEtatEntreprise(receptrice2, dateDebutReceptrice2, TypeEtatEntreprise.FONDEE, TypeGenerationEtatEntreprise.AUTOMATIQUE);
+
+
+				final Ids ids = new Ids();
+				ids.idEmettrice = emettrice.getNumero();
+				ids.idEtablissementPrincipalEmettrice = etablissementPrincipalEmettrice.getNumero();
+				ids.idReceptrice1 = receptrice1.getNumero();
+				ids.idEtablissementPrincipalReceptrice1 = etablissementPrincipalReceptrice1.getNumero();
+				ids.idReceptrice2 = receptrice2.getNumero();
+				ids.idEtablissementPrincipalReceptrice2 = etablissementPrincipalReceptrice2.getNumero();
+				return ids;
+			}
+		});
+
+		// lancement du transfert de patrimoine
+		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus status) throws Exception {
+				final Entreprise emettrice = (Entreprise) tiersDAO.get(ids.idEmettrice);
+				final Entreprise receptrice1 = (Entreprise) tiersDAO.get(ids.idReceptrice1);
+				final Entreprise receptrice2 = (Entreprise) tiersDAO.get(ids.idReceptrice2);
+				metierServicePM.transferePatrimoine(emettrice, Arrays.asList(receptrice1, receptrice2), dateTransfert);
+			}
+		});
+
+		// vérification des résultats en base
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+
+				// 1. sur l'entreprise émettrice
+				// 1.1. rien n'a changé sauf l'apparition de nouveaux rapports entre tiers
+				final Entreprise emettrice = (Entreprise) tiersDAO.get(ids.idEmettrice);
+				Assert.assertNotNull(emettrice);
+				Assert.assertEquals(2, emettrice.getForsFiscaux().size());
+				final ForFiscalPrincipalPM ffp = emettrice.getDernierForFiscalPrincipal();
+				Assert.assertNotNull(ffp);
+				Assert.assertNull(ffp.getDateFin());
+				Assert.assertEquals(dateDebutEmettrice, ffp.getDateDebut());
+				Assert.assertFalse(ffp.isAnnule());
+
+				final List<TransfertPatrimoine> transferts = extractRapports(emettrice.getRapportsSujet(), TransfertPatrimoine.class, new Comparator<TransfertPatrimoine>() {
+					@Override
+					public int compare(TransfertPatrimoine o1, TransfertPatrimoine o2) {
+						// ordre croissant des identifiants des entreprises réceptrices
+						return Long.compare(o1.getObjetId(), o2.getObjetId());
+					}
+				});
+				Assert.assertNotNull(transferts);
+				Assert.assertEquals(2, transferts.size());
+				{
+					final TransfertPatrimoine transfert = transferts.get(0);
+					Assert.assertNotNull(transfert);
+					Assert.assertFalse(transfert.isAnnule());
+					Assert.assertEquals(dateTransfert, transfert.getDateDebut());
+					Assert.assertNull(transfert.getDateFin());
+					Assert.assertEquals((Long) ids.idReceptrice1, transfert.getObjetId());
+				}
+				{
+					final TransfertPatrimoine transfert = transferts.get(1);
+					Assert.assertNotNull(transfert);
+					Assert.assertFalse(transfert.isAnnule());
+					Assert.assertEquals(dateTransfert, transfert.getDateDebut());
+					Assert.assertNull(transfert.getDateFin());
+					Assert.assertEquals((Long) ids.idReceptrice2, transfert.getObjetId());
+				}
+
+				// TODO pas pour le moment...
+				// 1.2  événement fiscal de transfert de patrimoine
+				final Collection<EvenementFiscal> evtsFiscauxEmettrice = evenementFiscalDAO.getEvenementsFiscaux(emettrice);
+				Assert.assertNotNull(evtsFiscauxEmettrice);
+				Assert.assertEquals(0, evtsFiscauxEmettrice.size());
+//				Assert.assertEquals(1, evtsFiscauxEmettrice.size());
+//				final EvenementFiscal evtFiscalEmettrice = evtsFiscauxEmettrice.iterator().next();
+//				Assert.assertNotNull(evtFiscalEmettrice);
+//				Assert.assertFalse(evtFiscalEmettrice.isAnnule());
+//				Assert.assertEquals(dateTransfert, evtFiscalEmettrice.getDateValeur());
+//				Assert.assertEquals(EvenementFiscalInformationComplementaire.class, evtFiscalEmettrice.getClass());
+//				Assert.assertEquals(EvenementFiscalInformationComplementaire.TypeInformationComplementaire.TRANSFERT_PATRIMOINE, ((EvenementFiscalInformationComplementaire) evtFiscalEmettrice).getType());
+
+				// 1.3 état inchangé
+				final EtatEntreprise etatEmettrice = emettrice.getEtatActuel();
+				Assert.assertNotNull(etatEmettrice);
+				Assert.assertFalse(etatEmettrice.isAnnule());
+				Assert.assertEquals(TypeEtatEntreprise.FONDEE, etatEmettrice.getType());
+				Assert.assertEquals(dateDebutEmettrice, etatEmettrice.getDateObtention());
+
+				// 1.4 adresse inchangée
+				final List<AdresseTiers> adressesEmettrice = emettrice.getAdressesTiersSorted(TypeAdresseTiers.COURRIER);
+				Assert.assertNotNull(adressesEmettrice);
+				Assert.assertEquals(1, adressesEmettrice.size());
+				final AdresseTiers adresseEmettrice = adressesEmettrice.get(0);
+				Assert.assertNotNull(adresseEmettrice);
+				Assert.assertFalse(adresseEmettrice.isAnnule());
+				Assert.assertEquals(AdresseSuisse.class, adresseEmettrice.getClass());
+				final AdresseSuisse adresseSuisseEmettrice = (AdresseSuisse) adresseEmettrice;
+				Assert.assertEquals(MockRue.Prilly.RueDesMetiers.getNoRue(), adresseSuisseEmettrice.getNumeroRue());
+				Assert.assertEquals(dateDebutEmettrice, adresseEmettrice.getDateDebut());
+				Assert.assertNull(adresseEmettrice.getDateFin());
+
+				// 2. sur les entreprises réceptrices
+				final Entreprise receptrice1 = (Entreprise) tiersDAO.get(ids.idReceptrice1);
+				final Entreprise receptrice2 = (Entreprise) tiersDAO.get(ids.idReceptrice2);
+				for (Entreprise receptrice : Arrays.asList(receptrice1, receptrice2)) {
+
+					// 2.1 les rapports entre tiers "TransfertPatrimoine" ont été testés plus haut
+
+					// 2.2 rien sur les fors fiscaux
+					final Set<ForFiscal> forsFiscaux = receptrice.getForsFiscaux();
+					Assert.assertNotNull(forsFiscaux);
+					Assert.assertEquals(1, forsFiscaux.size());
+					final ForFiscal ff = forsFiscaux.iterator().next();
+					Assert.assertNotNull(ff);
+					Assert.assertEquals(ForFiscalPrincipalPM.class, ff.getClass());
+					Assert.assertFalse(ff.isAnnule());
+
+					// 2.3 pas de nouvel état fiscal
+					final EtatEntreprise etat = receptrice.getEtatActuel();
+					Assert.assertNotNull(etat);
+					Assert.assertFalse(etat.isAnnule());
+					Assert.assertEquals(TypeEtatEntreprise.FONDEE, etat.getType());
+
+					// 2.4 pas de changement d'adresse
+					final List<AdresseTiers> adresses = receptrice.getAdressesTiersSorted();
+					Assert.assertNotNull(adresses);
+					Assert.assertEquals(0, adresses.size());
+
+					// TODO pas pour le moment
+					// 2.5 événements fiscaux
+					final Collection<EvenementFiscal> evtsFiscaux = evenementFiscalDAO.getEvenementsFiscaux(receptrice);
+					Assert.assertNotNull(evtsFiscaux);
+					Assert.assertEquals(0, evtsFiscaux.size());
+//					Assert.assertEquals(1, evtsFiscaux.size());     // 1 information complémentaire
+//					final EvenementFiscal evtFiscal = evtsFiscaux.iterator().next();
+//					Assert.assertNotNull(evtFiscal);
+//					Assert.assertFalse(evtFiscal.isAnnule());
+//					Assert.assertEquals(EvenementFiscalInformationComplementaire.class, evtFiscal.getClass());
+//					Assert.assertEquals(dateTransfert, evtFiscal.getDateValeur());
+//					Assert.assertEquals(EvenementFiscalInformationComplementaire.TypeInformationComplementaire.TRANSFERT_PATRIMOINE, ((EvenementFiscalInformationComplementaire) evtFiscal).getType());
+				}
+			}
+		});
+	}
+
+	@Test
+	public void testAnnulationTransfertPatrimoine() throws Exception {
+
+		// nous allons créer un cas un peu plus compliqué où il y a plusieurs dates de transfert distinctes... il n'est pas question alors d'annuler les deux transferts d'un coup !
+
+		final RegDate dateDebutEmettrice = date(2000, 5, 12);
+		final RegDate dateDebutReceptrice1 = date(2005, 6, 13);
+		final RegDate dateDebutReceptrice2 = date(2007, 9, 30);
+
+		final RegDate dateTransfert1 = date(2016, 2, 2);
+		final RegDate dateTransfert2 = date(2016, 4, 2);
+
+		final class Ids {
+			long idEmettrice;
+			long idEtablissementPrincipalEmettrice;
+			long idReceptrice1;
+			long idEtablissementPrincipalReceptrice1;
+			long idReceptrice2;
+			long idEtablissementPrincipalReceptrice2;
+		}
+
+		// mise en place fiscale
+		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
+			@Override
+			public Ids doInTransaction(TransactionStatus status) {
+
+				final Entreprise emettrice = addEntrepriseInconnueAuCivil();
+				addRaisonSociale(emettrice, dateDebutEmettrice, null, "Ma grande entreprise");
+				addFormeJuridique(emettrice, dateDebutEmettrice, null, FormeJuridiqueEntreprise.SA);
+				addRegimeFiscalCH(emettrice, dateDebutEmettrice, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addRegimeFiscalVD(emettrice, dateDebutEmettrice, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addBouclement(emettrice, dateDebutEmettrice, DayMonth.get(12, 31), 12);        // tous les 31.12 depuis 2000
+				addForPrincipal(emettrice, dateDebutEmettrice, MotifFor.DEBUT_EXPLOITATION, MockCommune.Grandson);
+				addForSecondaire(emettrice, dateDebutEmettrice, MotifFor.DEBUT_EXPLOITATION, MockCommune.ChateauDoex.getNoOFS(), MotifRattachement.ETABLISSEMENT_STABLE, GenreImpot.BENEFICE_CAPITAL);
+
+				addAdresseMandataireSuisse(emettrice, dateDebutEmettrice, null, TypeMandat.GENERAL, "Mon mandataire chéri", MockRue.Renens.QuatorzeAvril);
+				addAdresseSuisse(emettrice, TypeAdresseTiers.COURRIER, dateDebutEmettrice, null, MockRue.Prilly.RueDesMetiers);
+
+				final Etablissement etablissementPrincipalEmettrice = addEtablissement();
+				addDomicileEtablissement(etablissementPrincipalEmettrice, dateDebutEmettrice, null, MockCommune.Grandson);
+				addActiviteEconomique(emettrice, etablissementPrincipalEmettrice, dateDebutEmettrice, null, true);
+
+				addEtatEntreprise(emettrice, dateDebutEmettrice, TypeEtatEntreprise.FONDEE, TypeGenerationEtatEntreprise.AUTOMATIQUE);
+
+
+				final Entreprise receptrice1 = addEntrepriseInconnueAuCivil();
+				addRaisonSociale(receptrice1, dateDebutReceptrice1, null, "Ma toute petite entreprise");
+				addFormeJuridique(receptrice1, dateDebutReceptrice1, null, FormeJuridiqueEntreprise.SA);
+				addRegimeFiscalCH(receptrice1, dateDebutReceptrice1, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addRegimeFiscalVD(receptrice1, dateDebutReceptrice1, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addBouclement(receptrice1, dateDebutReceptrice1, DayMonth.get(12, 31), 12);        // tous les 31.12 depuis 2005
+				addForPrincipal(receptrice1, dateDebutReceptrice1, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne);
+
+				final Etablissement etablissementPrincipalReceptrice1 = addEtablissement();
+				addDomicileEtablissement(etablissementPrincipalReceptrice1, dateDebutReceptrice1, null, MockCommune.Lausanne);
+				addActiviteEconomique(receptrice1, etablissementPrincipalReceptrice1, dateDebutReceptrice1, null, true);
+
+				addEtatEntreprise(receptrice1, dateDebutReceptrice1, TypeEtatEntreprise.FONDEE, TypeGenerationEtatEntreprise.AUTOMATIQUE);
+
+
+				final Entreprise receptrice2 = addEntrepriseInconnueAuCivil();
+				addRaisonSociale(receptrice2, dateDebutReceptrice2, null, "Ma minuscule entreprise");
+				addFormeJuridique(receptrice2, dateDebutReceptrice2, null, FormeJuridiqueEntreprise.SARL);
+				addRegimeFiscalCH(receptrice2, dateDebutReceptrice2, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addRegimeFiscalVD(receptrice2, dateDebutReceptrice2, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addBouclement(receptrice2, dateDebutReceptrice2, DayMonth.get(12, 31), 12);        // tous les 31.12 depuis 2007
+				addForPrincipal(receptrice2, dateDebutReceptrice2, MotifFor.DEBUT_EXPLOITATION, MockCommune.Prilly);
+
+				final Etablissement etablissementPrincipalReceptrice2 = addEtablissement();
+				addDomicileEtablissement(etablissementPrincipalReceptrice2, dateDebutReceptrice2, null, MockCommune.Prilly);
+				addActiviteEconomique(receptrice2, etablissementPrincipalReceptrice2, dateDebutReceptrice2, null, true);
+
+				addEtatEntreprise(receptrice2, dateDebutReceptrice2, TypeEtatEntreprise.FONDEE, TypeGenerationEtatEntreprise.AUTOMATIQUE);
+
+				addTransfertPatrimoine(emettrice, receptrice1, dateTransfert1);
+				addTransfertPatrimoine(emettrice, receptrice2, dateTransfert2);
+
+
+				final Ids ids = new Ids();
+				ids.idEmettrice = emettrice.getNumero();
+				ids.idEtablissementPrincipalEmettrice = etablissementPrincipalEmettrice.getNumero();
+				ids.idReceptrice1 = receptrice1.getNumero();
+				ids.idEtablissementPrincipalReceptrice1 = etablissementPrincipalReceptrice1.getNumero();
+				ids.idReceptrice2 = receptrice2.getNumero();
+				ids.idEtablissementPrincipalReceptrice2 = etablissementPrincipalReceptrice2.getNumero();
+				return ids;
+			}
+		});
+
+		// annulation du transfert (avec erreur)
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final Entreprise emettrice = (Entreprise) tiersDAO.get(ids.idEmettrice);
+				final Entreprise receptrice1 = (Entreprise) tiersDAO.get(ids.idReceptrice1);
+				final Entreprise receptrice2 = (Entreprise) tiersDAO.get(ids.idReceptrice2);
+
+				// attention, l'entreprise 2 a été mise là par erreur ou malveillance... on doit sauter!
+				try {
+					metierServicePM.annuleTransfertPatrimoine(emettrice, Arrays.asList(receptrice1, receptrice2), dateTransfert1);
+					Assert.fail("Aurait-dû sauter car l'entreprise receptrice2 n'a pas la bonne date du contrat de scission");
+				}
+				catch (MetierServiceException e) {
+					Assert.assertEquals(String.format("L'entreprise %s n'est pas associée à un transfert de patrimoine depuis l'entreprise %s au %s.",
+					                                  FormatNumeroHelper.numeroCTBToDisplay(ids.idReceptrice2),
+					                                  FormatNumeroHelper.numeroCTBToDisplay(ids.idEmettrice),
+					                                  RegDateHelper.dateToDisplayString(dateTransfert1)),
+					                    e.getMessage());
+
+					// ne rien mettre en base quoi qu'il arrive...
+					status.setRollbackOnly();
+				}
+			}
+		});
+
+		// annulation du transfert (sans erreur cette fois)
+		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus status) throws Exception {
+				final Entreprise emettrice = (Entreprise) tiersDAO.get(ids.idEmettrice);
+				final Entreprise receptrice1 = (Entreprise) tiersDAO.get(ids.idReceptrice1);
+				metierServicePM.annuleTransfertPatrimoine(emettrice, Collections.singletonList(receptrice1), dateTransfert1);
+			}
+		});
+
+		// vérification des données en base
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+
+				// 1. sur l'entreprise émettrice
+				// 1.1. rien n'a changé sauf l'annulation du rapport entre tiers "transfert de patrimoine" existant avec l'entreprise receptrice1
+				final Entreprise emettrice = (Entreprise) tiersDAO.get(ids.idEmettrice);
+				Assert.assertNotNull(emettrice);
+				Assert.assertFalse(emettrice.isAnnule());
+				Assert.assertEquals(2, emettrice.getForsFiscaux().size());
+				final ForFiscalPrincipalPM ffp = emettrice.getDernierForFiscalPrincipal();
+				Assert.assertNotNull(ffp);
+				Assert.assertNull(ffp.getDateFin());
+				Assert.assertEquals(dateDebutEmettrice, ffp.getDateDebut());
+				Assert.assertFalse(ffp.isAnnule());
+
+				final List<TransfertPatrimoine> transferts = extractRapports(emettrice.getRapportsSujet(), TransfertPatrimoine.class, new Comparator<TransfertPatrimoine>() {
+					@Override
+					public int compare(TransfertPatrimoine o1, TransfertPatrimoine o2) {
+						// ordre croissant des identifiants des entreprises réceptrices
+						return Long.compare(o1.getObjetId(), o2.getObjetId());
+					}
+				});
+				Assert.assertNotNull(transferts);
+				Assert.assertEquals(2, transferts.size());
+				{
+					final TransfertPatrimoine transfert = transferts.get(0);
+					Assert.assertNotNull(transfert);
+					Assert.assertTrue(transfert.isAnnule());
+					Assert.assertEquals(dateTransfert1, transfert.getDateDebut());
+					Assert.assertNull(transfert.getDateFin());
+					Assert.assertEquals((Long) ids.idReceptrice1, transfert.getObjetId());
+				}
+				{
+					final TransfertPatrimoine transfert = transferts.get(1);
+					Assert.assertNotNull(transfert);
+					Assert.assertFalse(transfert.isAnnule());
+					Assert.assertEquals(dateTransfert2, transfert.getDateDebut());
+					Assert.assertNull(transfert.getDateFin());
+					Assert.assertEquals((Long) ids.idReceptrice2, transfert.getObjetId());
+				}
+
+				// 1.3 état inchangé
+				final EtatEntreprise etatEmettrice = emettrice.getEtatActuel();
+				Assert.assertNotNull(etatEmettrice);
+				Assert.assertFalse(etatEmettrice.isAnnule());
+				Assert.assertEquals(TypeEtatEntreprise.FONDEE, etatEmettrice.getType());
+				Assert.assertEquals(dateDebutEmettrice, etatEmettrice.getDateObtention());
+
+				// 1.4 adresse inchangée
+				final List<AdresseTiers> adressesEmettrice = emettrice.getAdressesTiersSorted(TypeAdresseTiers.COURRIER);
+				Assert.assertNotNull(adressesEmettrice);
+				Assert.assertEquals(1, adressesEmettrice.size());
+				final AdresseTiers adresseEmettrice = adressesEmettrice.get(0);
+				Assert.assertNotNull(adresseEmettrice);
+				Assert.assertFalse(adresseEmettrice.isAnnule());
+				Assert.assertEquals(AdresseSuisse.class, adresseEmettrice.getClass());
+				final AdresseSuisse adresseSuisseEmettrice = (AdresseSuisse) adresseEmettrice;
+				Assert.assertEquals(MockRue.Prilly.RueDesMetiers.getNoRue(), adresseSuisseEmettrice.getNumeroRue());
+				Assert.assertEquals(dateDebutEmettrice, adresseEmettrice.getDateDebut());
+				Assert.assertNull(adresseEmettrice.getDateFin());
+
+				// 2. sur l'entreprise receptrice1 pour laquelle le transfert est effectivement annulé
+
+				final Entreprise receptrice1 = (Entreprise) tiersDAO.get(ids.idReceptrice1);
+				Assert.assertNotNull(receptrice1);
+				Assert.assertFalse(receptrice1.isAnnule());
+
+				// 2.1 for inchangé
+				final ForFiscalPrincipalPM ffp1 = receptrice1.getDernierForFiscalPrincipal();
+				Assert.assertNotNull(ffp1);
+				Assert.assertFalse(ffp1.isAnnule());
+				Assert.assertEquals(dateDebutReceptrice1, ffp1.getDateDebut());
+				Assert.assertNull(ffp1.getDateFin());
+				Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp1.getTypeAutoriteFiscale());
+				Assert.assertEquals((Integer) MockCommune.Lausanne.getNoOFS(), ffp1.getNumeroOfsAutoriteFiscale());
+
+				// 2.2 état actuel inchangé
+				final EtatEntreprise etatActuel1 = receptrice1.getEtatActuel();
+				Assert.assertNotNull(etatActuel1);
+				Assert.assertEquals(TypeEtatEntreprise.FONDEE, etatActuel1.getType());
+				Assert.assertEquals(dateDebutReceptrice1, etatActuel1.getDateObtention());
+
+				// 2.3 rien sur les adresses
+				final List<AdresseTiers> adresses1 = receptrice1.getAdressesTiersSorted();
+				Assert.assertNotNull(adresses1);
+				Assert.assertEquals(0, adresses1.size());
+
+				// 3. sur l'entreprise receptrice2 pour laquelle le transfert n'est finalement pas annulé
+
+				final Entreprise receptrice2 = (Entreprise) tiersDAO.get(ids.idReceptrice2);
+				Assert.assertNotNull(receptrice2);
+				Assert.assertFalse(receptrice2.isAnnule());
+
+				// 3.1. pas d'impact sur les fors
+				final ForFiscalPrincipalPM ffp2 = receptrice2.getDernierForFiscalPrincipal();
+				Assert.assertNotNull(ffp2);
+				Assert.assertFalse(ffp2.isAnnule());
+				Assert.assertEquals(dateDebutReceptrice2, ffp2.getDateDebut());
+				Assert.assertNull(ffp2.getDateFin());
+				Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp2.getTypeAutoriteFiscale());
+				Assert.assertEquals((Integer) MockCommune.Prilly.getNoOFS(), ffp2.getNumeroOfsAutoriteFiscale());
+
+				// 3.2. état fiscal inchangé
+				final EtatEntreprise etat2 = receptrice2.getEtatActuel();
+				Assert.assertNotNull(etat2);
+				Assert.assertFalse(etat2.isAnnule());
+				Assert.assertEquals(TypeEtatEntreprise.FONDEE, etat2.getType());
+				Assert.assertEquals(dateDebutReceptrice2, etat2.getDateObtention());
 			}
 		});
 	}

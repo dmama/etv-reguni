@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -60,6 +61,11 @@ public class FusionEntreprisesController extends AbstractProcessusComplexeContro
 		                Role.FUSION_ENTREPRISES);
 	}
 
+	@Nullable
+	private static FusionEntreprisesSessionData getSessionData(HttpSession session) {
+		return (FusionEntreprisesSessionData) session.getAttribute(FUSION_NAME);
+	}
+
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		this.searchAbsorbanteComponent = buildSearchComponent(CRITERIA_NAME_ABSORBANTE, "entreprise/fusion/list-absorbante",
@@ -81,7 +87,7 @@ public class FusionEntreprisesController extends AbstractProcessusComplexeContro
 		                                                    new SearchTiersComponent.ModelFiller() {
 			                                                    @Override
 			                                                    public void fill(Model model, HttpSession session) throws SearchTiersComponent.RedirectException {
-				                                                    final FusionEntreprisesSessionData sessionData = (FusionEntreprisesSessionData) session.getAttribute(FUSION_NAME);
+				                                                    final FusionEntreprisesSessionData sessionData = getSessionData(session);
 				                                                    if (sessionData == null) {
 					                                                    Flash.warning("La session a été invalidée. Veuillez recommencer votre saisie.");
 					                                                    throw new SearchTiersComponent.RedirectException("../absorbante/list.do");
@@ -92,7 +98,7 @@ public class FusionEntreprisesController extends AbstractProcessusComplexeContro
 		                                                    new SearchTiersComponent.TiersSearchAdapter<SelectionEntrepriseView>() {
 			                                                    @Override
 			                                                    public List<SelectionEntrepriseView> adaptSearchResult(List<TiersIndexedDataView> result, HttpSession session) {
-				                                                    final FusionEntreprisesSessionData sessionData = (FusionEntreprisesSessionData) session.getAttribute(FUSION_NAME);
+				                                                    final FusionEntreprisesSessionData sessionData = getSessionData(session);
 				                                                    return FusionEntreprisesController.this.adapteSearchResults(result, sessionData);
 			                                                    }
 		                                                    });
@@ -130,7 +136,7 @@ public class FusionEntreprisesController extends AbstractProcessusComplexeContro
 	public String showRetourStart(Model model, HttpSession session) {
 		checkDroitAcces();
 
-		final FusionEntreprisesSessionData sessionData = (FusionEntreprisesSessionData) session.getAttribute(FUSION_NAME);
+		final FusionEntreprisesSessionData sessionData = getSessionData(session);
 		if (sessionData == null) {
 			Flash.warning("La session a été invalidée. Veuillez recommencer votre saisie.");
 			return "redirect:absorbante/list.do";
@@ -164,7 +170,7 @@ public class FusionEntreprisesController extends AbstractProcessusComplexeContro
 
 		// on conserve les données de la fusion en session
 		final FusionEntreprisesSessionData newSessionData = new FusionEntreprisesSessionData(view.getIdEntrepriseAbsorbante(), dateContratFusion, dateBilanFusion);;
-		final FusionEntreprisesSessionData oldSessionData = (FusionEntreprisesSessionData) session.getAttribute(FUSION_NAME);
+		final FusionEntreprisesSessionData oldSessionData = getSessionData(session);
 		if (oldSessionData != null && newSessionData.getIdEntrepriseAbsorbante() == oldSessionData.getIdEntrepriseAbsorbante()) {
 			for (FusionEntreprisesSessionData.EntrepriseAbsorbee oldAbsorbee : oldSessionData.getEntreprisesAbsorbees()) {
 				newSessionData.addEntrepriseAbsorbee(oldAbsorbee);
@@ -267,7 +273,7 @@ public class FusionEntreprisesController extends AbstractProcessusComplexeContro
 			}
 
 			// ajout de la donnée
-			final FusionEntreprisesSessionData sessionData = (FusionEntreprisesSessionData) session.getAttribute(FUSION_NAME);
+			final FusionEntreprisesSessionData sessionData = getSessionData(session);
 			if (sessionData == null) {
 				Flash.warning("La session a été invalidée. Veuillez recommencer votre saisie.");
 				return "redirect:../absorbante/list.do";
@@ -288,7 +294,7 @@ public class FusionEntreprisesController extends AbstractProcessusComplexeContro
 		checkDroitAcces();
 
 		// retrait de la donnée
-		final FusionEntreprisesSessionData sessionData = (FusionEntreprisesSessionData) session.getAttribute(FUSION_NAME);
+		final FusionEntreprisesSessionData sessionData = getSessionData(session);
 		if (sessionData == null) {
 			Flash.warning("La session a été invalidée. Veuillez recommencer votre saisie.");
 			return "redirect:../absorbante/list.do";
@@ -309,7 +315,7 @@ public class FusionEntreprisesController extends AbstractProcessusComplexeContro
 		checkDroitAcces();
 
 		// récupération des données de fusion
-		final FusionEntreprisesSessionData sessionData = (FusionEntreprisesSessionData) session.getAttribute(FUSION_NAME);
+		final FusionEntreprisesSessionData sessionData = getSessionData(session);
 		if (sessionData == null) {
 			Flash.warning("La session a été invalidée. Veuillez recommencer votre saisie.");
 			return "redirect:absorbante/list.do";
