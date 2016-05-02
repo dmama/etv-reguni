@@ -17,7 +17,7 @@
 			<fieldset>
 				<legend><span><fmt:message key="label.entreprise.siege" /></span></legend>
 
-				<form:hidden path="tiersId"/>
+				<form:hidden path="etablissementId"/>
 				<form:hidden path="entrepriseId"/>
 
 				<script type="text/javascript">

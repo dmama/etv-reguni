@@ -129,7 +129,7 @@
 									<%--@elvariable id="typesDomicileFiscal" type="java.util.Map<TypeAutoriteFiscale, String>"--%>
 									<form:select path="typeAutoriteFiscale" items="${typesDomicileFiscal}" id="optionTypeAutoriteFiscale"
 									             onchange="selectAutoriteFiscale(this.options[this.selectedIndex].value, true);" />
-										<form:errors path="typeAutoriteFiscale" cssClass="error" />
+									<form:errors path="typeAutoriteFiscale" cssClass="error" />
 								</div>
 							</td>
 							<td>

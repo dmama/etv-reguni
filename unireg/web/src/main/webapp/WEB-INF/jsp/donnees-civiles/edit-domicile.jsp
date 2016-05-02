@@ -21,35 +21,80 @@
 					<legend><span><fmt:message key="label.etablissement.domicile" /></span></legend>
 
 					<form:hidden path="id"/>
-					<form:hidden path="tiersId" value="${command.tiersId}"/>
-					<form:hidden path="dateDebut" value="${RegDateHelper.StringFormat.DISPLAY(command.dateDebut)}"/>
+					<form:hidden path="tiersId"/>
+					<form:hidden path="dateDebut"/>
+					<form:hidden path="peutEditerDateFin"/>
 
 					<script type="text/javascript">
-
-						function selectAutoriteFiscale(name) {
+						function selectAutoriteFiscale(name, reset) {
 							if (name == 'COMMUNE_OU_FRACTION_VD') {
 								$('#domicile_commune_vd_label').show();
 								$('#domicile_commune_hc_label').hide();
 								$('#domicile_pays_label').hide();
-								$('#autoriteFiscale').val(null);
-								$('#noAutoriteFiscale').val(null);
-								Fors.autoCompleteCommunesVD('#autoriteFiscale', '#noAutoriteFiscale');
+								if (reset) {
+									<c:choose>
+										<c:when test="${command.typeAutoriteFiscale == 'COMMUNE_OU_FRACTION_VD'}">
+											var nom = '<unireg:commune ofs="${command.noAutoriteFiscale}" displayProperty="nomOfficiel" date="${command.dateDebut}" escapeMode="javascript"/>';
+											$('#autoriteFiscale').val(nom);
+											$('#noAutoriteFiscale').val(${command.noAutoriteFiscale});
+											$('#nomAutoriteFiscale').val(nom);
+										</c:when>
+										<c:otherwise>
+											$('#autoriteFiscale').val(null);
+											$('#noAutoriteFiscale').val(null);
+											$('#nomAutoriteFiscale').val(null);
+										</c:otherwise>
+									</c:choose>
+								}
+								Fors.autoCompleteCommunesVD('#autoriteFiscale', '#noAutoriteFiscale', function(item) {
+									$('#nomAutoriteFiscale').val(item ? item.label : null);
+								});
 							}
 							else if (name == 'COMMUNE_HC') {
 								$('#domicile_commune_vd_label').hide();
 								$('#domicile_commune_hc_label').show();
 								$('#domicile_pays_label').hide();
-								$('#autoriteFiscale').val(null);
-								$('#noAutoriteFiscale').val(null);
-								Fors.autoCompleteCommunesHC('#autoriteFiscale', '#noAutoriteFiscale');
+								if (reset) {
+									<c:choose>
+										<c:when test="${command.typeAutoriteFiscale == 'COMMUNE_HC'}">
+											var nom = '<unireg:commune ofs="${command.noAutoriteFiscale}" displayProperty="nomOfficiel" date="${command.dateDebut}" escapeMode="javascript"/>';
+											$('#autoriteFiscale').val(nom);
+											$('#noAutoriteFiscale').val(${command.noAutoriteFiscale});
+											$('#nomAutoriteFiscale').val(nom);
+										</c:when>
+										<c:otherwise>
+											$('#autoriteFiscale').val(null);
+											$('#noAutoriteFiscale').val(null);
+											$('#nomAutoriteFiscale').val(null);
+										</c:otherwise>
+									</c:choose>
+								}
+								Fors.autoCompleteCommunesHC('#autoriteFiscale', '#noAutoriteFiscale', function(item) {
+									$('#nomAutoriteFiscale').val(item ? item.label : null);
+								});
 							}
 							else if (name == 'PAYS_HS') {
 								$('#domicile_commune_vd_label').hide();
 								$('#domicile_commune_hc_label').hide();
 								$('#domicile_pays_label').show();
-								$('#autoriteFiscale').val(null);
-								$('#noAutoriteFiscale').val(null);
-								Fors.autoCompletePaysHS('#autoriteFiscale', '#noAutoriteFiscale');
+								if (reset) {
+									<c:choose>
+										<c:when test="${command.typeAutoriteFiscale == 'PAYS_HS'}">
+											var nom = '<unireg:pays ofs="${command.noAutoriteFiscale}" displayProperty="nomCourt" date="${command.dateDebut}" escapeMode="javascript"/>';
+											$('#autoriteFiscale').val(nom);
+											$('#noAutoriteFiscale').val(${command.noAutoriteFiscale});
+											$('#nomAutoriteFiscale').val(nom);
+										</c:when>
+										<c:otherwise>
+											$('#autoriteFiscale').val(null);
+											$('#noAutoriteFiscale').val(null);
+											$('#nomAutoriteFiscale').val(null);
+										</c:otherwise>
+									</c:choose>
+								}
+								Fors.autoCompletePaysHS('#autoriteFiscale', '#noAutoriteFiscale', function(item) {
+									$('#nomAutoriteFiscale').val(item ? item.label : null);
+								});
 							}
 						}
 					</script>
@@ -63,15 +108,15 @@
 							<td><fmt:message key="label.date.fermeture" />&nbsp;:</td>
 							<td>
 								<c:choose>
-									<c:when test="${peutEditerDateFin}">
+									<c:when test="${command.peutEditerDateFin}">
 										<jsp:include page="/WEB-INF/jsp/include/inputCalendar.jsp">
 											<jsp:param name="path" value="dateFin" />
 											<jsp:param name="id" value="dateFin" />
 										</jsp:include>
 									</c:when>
 									<c:otherwise>
+										<form:hidden path="dateFin"/>
 										<unireg:regdate regdate="${command.dateFin}"/>
-										<form:hidden path="dateFin" value="${RegDateHelper.StringFormat.DISPLAY(command.dateFin)}"/>
 									</c:otherwise>
 								</c:choose>
 							</td>
@@ -83,8 +128,8 @@
 								<div id="select_type_for">
 									<%--@elvariable id="typesDomicileFiscal" type="java.util.Map<TypeAutoriteFiscale, String>"--%>
 									<form:select path="typeAutoriteFiscale" items="${typesDomicileFiscal}" id="optionTypeAutoriteFiscale"
-									             onchange="selectAutoriteFiscale(this.options[this.selectedIndex].value);" />
-										<form:errors path="typeAutoriteFiscale" cssClass="error" />
+									             onchange="selectAutoriteFiscale(this.options[this.selectedIndex].value, true);" />
+									<form:errors path="typeAutoriteFiscale" cssClass="error" />
 								</div>
 							</td>
 							<td>
@@ -99,6 +144,7 @@
 								<input id="autoriteFiscale" size="25" />
 								<form:errors path="noAutoriteFiscale" cssClass="error" />
 								<form:hidden path="noAutoriteFiscale" />
+								<form:hidden path="nomAutoriteFiscale" />
 							</td>
 						</tr>
 					</table>
@@ -106,7 +152,7 @@
 
 				<script type="text/javascript">
 					// on initialise l'auto-completion de l'autorité fiscale
-		 			selectAutoriteFiscale('${command.typeAutoriteFiscale}');
+		 			selectAutoriteFiscale('${command.typeAutoriteFiscale}', true);
 				</script>
 
 				<table border="0">
@@ -124,21 +170,6 @@
 			<div id="actions_list"></div>
 		</td>
 		</tr></table>
-
-		<script type="text/javascript">
-			<c:if test="${command.typeAutoriteFiscale == 'COMMUNE_OU_FRACTION_VD'}">
-				$('#autoriteFiscale').val('<unireg:commune ofs="${command.noAutoriteFiscale}" displayProperty="nomOfficiel" date="${command.dateDebut}" escapeMode="javascript"/>');
-				Fors.autoCompleteCommunesVD('#autoriteFiscale', '#noAutoriteFiscale');
-			</c:if>
-			<c:if test="${command.typeAutoriteFiscale == 'COMMUNE_HC'}">
-				$('#autoriteFiscale').val('<unireg:commune ofs="${command.noAutoriteFiscale}" displayProperty="nomOfficiel" date="${command.dateDebut}" escapeMode="javascript"/>');
-				Fors.autoCompleteCommunesHC('#autoriteFiscale', '#noAutoriteFiscale');
-			</c:if>
-			<c:if test="${command.typeAutoriteFiscale == 'PAYS_HS'}">
-				$('#autoriteFiscale').val('<unireg:pays ofs="${command.noAutoriteFiscale}" displayProperty="nomCourt" date="${command.dateDebut}" escapeMode="javascript"/>');
-				Fors.autoCompletePaysHS('#autoriteFiscale', '#noAutoriteFiscale');
-			</c:if>
-		</script>
 
 	</tiles:put>
 </tiles:insert>
