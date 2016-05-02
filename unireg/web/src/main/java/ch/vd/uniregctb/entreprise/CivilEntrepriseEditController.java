@@ -598,7 +598,7 @@ public class CivilEntrepriseEditController {
 			return showAddSiege(model, view);
 		}
 
-		final long tiersId = view.getTiersId();
+		final long tiersId = view.getEtablissementId();
 
 		final Etablissement etablissement = (Etablissement) tiersDAO.get(tiersId);
 		if (etablissement == null) {

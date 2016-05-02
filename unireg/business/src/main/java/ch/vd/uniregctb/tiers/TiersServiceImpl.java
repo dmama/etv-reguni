@@ -5676,10 +5676,13 @@ public class TiersServiceImpl implements TiersService {
 		// On ré-ouvre la précédente
 		final RaisonSocialeFiscaleEntreprise precedente = getDerniereRaisonSocialeFiscale(raisonSociale.getEntreprise());
 		if (precedente != null) {
-			final RaisonSocialeFiscaleEntreprise reouverte = new RaisonSocialeFiscaleEntreprise(precedente.getDateDebut(), null, precedente.getRaisonSociale());
-			precedente.setAnnule(true);
-			tiersDAO.addAndSave(raisonSociale.getEntreprise(), reouverte);
-		} else {
+			if (precedente.getDateFin() == raisonSociale.getDateDebut().getOneDayBefore()) {
+				final RaisonSocialeFiscaleEntreprise reouverte = new RaisonSocialeFiscaleEntreprise(precedente.getDateDebut(), null, precedente.getRaisonSociale());
+				precedente.setAnnule(true);
+				tiersDAO.addAndSave(raisonSociale.getEntreprise(), reouverte);
+			}
+		}
+		else {
 			throw new ValidationException(raisonSociale, "Impossible d'annuler l'unique raison sociale.");
 		}
 	}
@@ -5735,10 +5738,13 @@ public class TiersServiceImpl implements TiersService {
 		// On ré-ouvre la précédente
 		final FormeJuridiqueFiscaleEntreprise precedente = getDerniereFormeJuridiqueFiscale(formeJuridique.getEntreprise());
 		if (precedente != null) {
-			final FormeJuridiqueFiscaleEntreprise reouverte = new FormeJuridiqueFiscaleEntreprise(precedente.getDateDebut(), null, precedente.getFormeJuridique());
-			precedente.setAnnule(true);
-			tiersDAO.addAndSave(formeJuridique.getEntreprise(), reouverte);
-		} else {
+			if (precedente.getDateFin() == formeJuridique.getDateDebut().getOneDayBefore()) {
+				final FormeJuridiqueFiscaleEntreprise reouverte = new FormeJuridiqueFiscaleEntreprise(precedente.getDateDebut(), null, precedente.getFormeJuridique());
+				precedente.setAnnule(true);
+				tiersDAO.addAndSave(formeJuridique.getEntreprise(), reouverte);
+			}
+		}
+		else {
 			throw new ValidationException(formeJuridique, "Impossible d'annuler l'unique forme juridique.");
 		}
 	}
@@ -5807,13 +5813,16 @@ public class TiersServiceImpl implements TiersService {
 		}
 		domicile.setAnnule(true);
 
-		// On ré-ouvre la précédente
+		// On ré-ouvre la précédente si les domiciles se touchaient
 		final DomicileEtablissement precedent = getDernierDomicileFiscal(domicile.getEtablissement());
 		if (precedent != null) {
-			final DomicileEtablissement reouvert = new DomicileEtablissement(precedent.getDateDebut(), null, precedent.getTypeAutoriteFiscale(), precedent.getNumeroOfsAutoriteFiscale(), domicile.getEtablissement());
-			precedent.setAnnule(true);
-			tiersDAO.addAndSave(domicile.getEtablissement(), reouvert);
-		} else {
+			if (precedent.getDateFin() == domicile.getDateDebut().getOneDayBefore()) {
+				final DomicileEtablissement reouvert = new DomicileEtablissement(precedent.getDateDebut(), null, precedent.getTypeAutoriteFiscale(), precedent.getNumeroOfsAutoriteFiscale(), domicile.getEtablissement());
+				precedent.setAnnule(true);
+				tiersDAO.addAndSave(domicile.getEtablissement(), reouvert);
+			}
+		}
+		else {
 			throw new ValidationException(domicile, "Impossible d'annuler l'unique domicile.");
 		}
 	}
@@ -5871,7 +5880,7 @@ public class TiersServiceImpl implements TiersService {
 
 		// On ré-ouvre le précédent
 		final CapitalFiscalEntreprise precedent = getDernierCapitalFiscal(capital.getEntreprise());
-		if (precedent != null) {
+		if (precedent != null && precedent.getDateFin() == capital.getDateDebut().getOneDayBefore()) {
 			final CapitalFiscalEntreprise reouvert = new CapitalFiscalEntreprise(precedent.getDateDebut(), null, precedent.getMontant());
 			precedent.setAnnule(true);
 			tiersDAO.addAndSave(capital.getEntreprise(), reouvert);

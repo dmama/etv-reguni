@@ -8,7 +8,7 @@ import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
 public class AddSiegeView implements DateRange {
 
-	private Long tiersId;
+	private Long etablissementId;
 	private Long entrepriseId;
 	private RegDate dateDebut;
 	private RegDate dateFin;
@@ -19,8 +19,8 @@ public class AddSiegeView implements DateRange {
 	public AddSiegeView() {
 	}
 
-	public AddSiegeView(Long tiersId, Long entrepriseId, RegDate dateDebut, RegDate dateFin, TypeAutoriteFiscale typeAutoriteFiscale, Integer noAutoriteFiscale, String nomAutoriteFiscale) {
-		this.tiersId = tiersId;
+	public AddSiegeView(Long etablissementId, Long entrepriseId, RegDate dateDebut, RegDate dateFin, TypeAutoriteFiscale typeAutoriteFiscale, Integer noAutoriteFiscale, String nomAutoriteFiscale) {
+		this.etablissementId = etablissementId;
 		this.entrepriseId = entrepriseId;
 		this.dateDebut = dateDebut;
 		this.dateFin = dateFin;
@@ -29,12 +29,12 @@ public class AddSiegeView implements DateRange {
 		this.nomAutoriteFiscale = nomAutoriteFiscale;
 	}
 
-	public Long getTiersId() {
-		return tiersId;
+	public Long getEtablissementId() {
+		return etablissementId;
 	}
 
-	public void setTiersId(Long tiersId) {
-		this.tiersId = tiersId;
+	public void setEtablissementId(Long etablissementId) {
+		this.etablissementId = etablissementId;
 	}
 
 	public Long getEntrepriseId() {

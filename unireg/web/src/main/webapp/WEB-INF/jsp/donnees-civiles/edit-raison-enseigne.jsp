@@ -24,14 +24,14 @@
 					<tr class="<unireg:nextRowClass/>" >
 						<td width="20%"><fmt:message key="label.raison.sociale"/>&nbsp;:</td>
 						<td>
-							<input id="raisonSociale" name="raisonSociale" value="${command.raisonSociale}" size="25" />
+							<form:input path="raisonSociale" size="80" />
 							<form:errors path="raisonSociale" cssClass="error" />
 						</td>
 					</tr>
 					<tr class="<unireg:nextRowClass/>" >
 						<td><fmt:message key="label.enseigne" />&nbsp;:</td>
 						<td>
-							<input id="enseigne" name="enseigne" value="${command.enseigne}" size="25" />
+							<form:input path="enseigne" size="80" />
 							<form:errors path="enseigne" cssClass="error" />
 						</td>
 					</tr>

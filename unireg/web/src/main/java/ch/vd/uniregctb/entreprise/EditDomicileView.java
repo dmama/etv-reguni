@@ -15,6 +15,7 @@ public class EditDomicileView implements DateRange {
 	private Long tiersId;
 	private TypeAutoriteFiscale typeAutoriteFiscale;
 	private Integer noAutoriteFiscale;
+	private String nomAutoriteFiscale;
 	private boolean peutEditerDateFin;
 
 	public EditDomicileView() {}
@@ -31,6 +32,7 @@ public class EditDomicileView implements DateRange {
 		this.typeAutoriteFiscale = typeAutoriteFiscale;
 		this.noAutoriteFiscale = noAutoriteFiscale;
 		this.peutEditerDateFin = peutEditerDateFin;
+		this.nomAutoriteFiscale = null;
 	}
 
 	public Long getId() {
@@ -94,5 +96,13 @@ public class EditDomicileView implements DateRange {
 
 	public void setPeutEditerDateFin(boolean peutEditerDateFin) {
 		this.peutEditerDateFin = peutEditerDateFin;
+	}
+
+	public String getNomAutoriteFiscale() {
+		return nomAutoriteFiscale;
+	}
+
+	public void setNomAutoriteFiscale(String nomAutoriteFiscale) {
+		this.nomAutoriteFiscale = nomAutoriteFiscale;
 	}
 }
