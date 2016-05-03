@@ -31,6 +31,8 @@ import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationSuiviCo
 import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationWarningCollector;
 import ch.vd.uniregctb.metier.AjustementForsSecondairesResult;
 import ch.vd.uniregctb.metier.MetierServiceException;
+import ch.vd.uniregctb.metier.assujettissement.Assujettissement;
+import ch.vd.uniregctb.metier.assujettissement.AssujettissementException;
 import ch.vd.uniregctb.tiers.ActiviteEconomique;
 import ch.vd.uniregctb.tiers.Bouclement;
 import ch.vd.uniregctb.tiers.CategorieEntrepriseHelper;
@@ -308,6 +310,22 @@ public abstract class EvenementOrganisationInterne {
 		return range != null && range.getDateFin() == null;
 	}
 
+	protected boolean determineAssujettie(Entreprise entreprise, RegDate date) throws EvenementOrganisationException {
+		final boolean assujettie;
+		try {
+			assujettie = isAssujetti(entreprise, date);
+		}
+		catch (AssujettissementException exception) {
+			throw new EvenementOrganisationException(
+					String.format("Impossible de déterminer si l'entreprise %s est assujettie. Une erreur est survenue: %s",
+					              FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()),
+					              exception.getMessage())
+					, exception
+			);
+		}
+		return assujettie;
+	}
+
 	protected abstract void validateSpecific(EvenementOrganisationErreurCollector erreurs, EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) throws EvenementOrganisationException;
 
 	protected void validateCommon(EvenementOrganisationErreurCollector erreurs) {
@@ -389,6 +407,18 @@ public abstract class EvenementOrganisationInterne {
 		} else {
 			status = HandleStatus.REDONDANT.raiseTo(nouveau);
 		}
+	}
+
+	/**
+	 * @return true si une entreprise est assujettie pour une certaine date.
+	 */
+	protected boolean isAssujetti(Entreprise entreprise, RegDate date) throws AssujettissementException {
+		List<Assujettissement> assujettissements = context.getAssujettissementService().determine(entreprise);
+		Assujettissement assujettissement = null;
+		if (assujettissements != null && !assujettissements.isEmpty()) {
+			assujettissement = DateRangeHelper.rangeAt(assujettissements, date);
+		}
+		return assujettissement != null;
 	}
 
 	protected Etablissement getEtablissementByNumeroSite(long numeroSite) {

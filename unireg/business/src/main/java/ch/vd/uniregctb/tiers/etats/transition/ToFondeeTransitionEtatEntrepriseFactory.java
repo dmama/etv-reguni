@@ -29,6 +29,7 @@ public class ToFondeeTransitionEtatEntrepriseFactory extends BaseTransitionEtatE
 		switch (actuel.getType()) {
 		case INSCRITE_RC:
 		case EN_FAILLITE:
+		case RADIEE_RC: // Nécessaire pour les cas de radiation APM sans dissolution
 			return new ToFondeeTransitionEtatEntreprise(getTiersDAO(), entreprise, date, generation);
 		default:
 			return null;

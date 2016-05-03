@@ -7,7 +7,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
-import ch.vd.unireg.interfaces.organisation.data.StatusRegistreIDE;
+import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationContext;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationException;
@@ -15,7 +15,6 @@ import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationOptions;
 import ch.vd.uniregctb.evenement.organisation.interne.AbstractOrganisationStrategy;
 import ch.vd.uniregctb.evenement.organisation.interne.EvenementOrganisationInterne;
 import ch.vd.uniregctb.evenement.organisation.interne.TraitementManuel;
-import ch.vd.uniregctb.metier.assujettissement.AssujettissementException;
 import ch.vd.uniregctb.tiers.CategorieEntrepriseHelper;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.type.CategorieEntreprise;
@@ -59,57 +58,39 @@ public class RadiationStrategy extends AbstractOrganisationStrategy {
 
 			final SiteOrganisation sitePrincipalApres = getSitePrincipal(organisation, dateApres);
 
-			final StatusRegistreIDE statusRegistreIDEApres = getStatusIde(sitePrincipalApres, dateApres);
-
 			final boolean enCoursDeRadiationRC = sitePrincipalAvant.isInscritAuRC(dateAvant) && !sitePrincipalAvant.isRadieDuRC(dateAvant) && sitePrincipalApres.isRadieDuRC(dateApres);
-			final boolean enCoursDeRadiationIDE = !sitePrincipalAvant.isRadieIDE(dateAvant) && sitePrincipalApres.isRadieIDE(dateApres);
 
-			try {
-				if (enCoursDeRadiationIDE) {
-					if (!sitePrincipalApres.isRadieDuRC(dateApres)) {
-						return new TraitementManuel(event, organisation, entreprise, context, options, String.format("L'entreprise %s est radiée de l'IDE mais pas du RC!", entreprise));
-					}
-
-					if (isAssujetti(entreprise, dateApres, context)) {
-						LOGGER.info(String.format("Entreprise %s %s %sradiée de l'IDE, mais encore assujettie.",
-						                          entreprise.getNumero(), enCoursDeRadiationRC ? "radiée du RC, " : "", sitePrincipalAvant.isInscritAuRC(dateAvant) ? "" : "non inscrite au RC "));
-						return new TraitementManuel(event, organisation, entreprise, context, options,
-						                            "Traitement manuel requis pour le contrôle de la radiation d’une entreprise encore assujettie.");
-					}
-					LOGGER.info(String.format("Entreprise %s radiée %sde l'IDE.", entreprise.getNumero(), enCoursDeRadiationRC ? "du RC et " : ""));
-					return new Radiation(event, organisation, entreprise, context, options);
-
-				}
-				else if (statusRegistreIDEApres == null && enCoursDeRadiationRC) {
-					String message = String.format("Le status de l'entreprise %s est radiée du RC, mais indéterminé à l'IDE.%s",
-					                               entreprise.getNumero(), isAssujetti(entreprise, dateApres, context) ? " De plus, l'entreprise est toujours assujettie." : "");
-					LOGGER.info(message);
-					return new TraitementManuel(event, organisation, entreprise, context, options, message);
-
-				}
-				else if (enCoursDeRadiationRC) {
-					if (CategorieEntrepriseHelper.getCategorieEntreprise(organisation, dateApres) != CategorieEntreprise.APM) {
-						final String message = String.format("Entreprise %s non APM radiée du RC mais pourtant toujours présente à l'IDE.", entreprise.getNumero());
-						LOGGER.info(message);
-						return new TraitementManuel(event, organisation, entreprise, context, options, message);
-					}
-					LOGGER.info(String.format("Entreprise %s de type APM radiée du RC mais qui reste à l'IDE.", entreprise.getNumero()));
-					return new Radiation(event, organisation, entreprise, context, options);
-
-				}
-			}
-			catch (AssujettissementException e) {
+			final CategorieEntreprise categorieEntreprise = CategorieEntrepriseHelper.getCategorieEntreprise(organisation, dateApres);
+			if (categorieEntreprise == null) {
 				return new TraitementManuel(event, organisation, entreprise, context, options,
-				                            String.format("Impossible de déterminer si l'entreprise %s est assujettie: %s. Une erreur est survenue: %s", entreprise.getNumero(), e.getMessage(), e));
+				                            String.format("Traitement manuel requis: Impossible de déterminer la catégorie de l'entreprise %s!",
+				                                          FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()))
+				);
+			}
+
+			if (enCoursDeRadiationRC) {
+				final RegDate dateRadiation = sitePrincipalApres.getDonneesRC().getDateRadiation(dateApres);
+				if (dateRadiation == null) {
+					return new TraitementManuel(event, organisation, entreprise, context, options,
+					                            String.format("Traitement manuel requis: l'entreprise %s est radiée du RC mais la date de radiation est introuvable!",
+					                                          FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()))
+					);
+				}
+				else {
+					if (categorieEntreprise == CategorieEntreprise.APM) {
+						LOGGER.info(String.format("Radiation de l'association %s (%s).", FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()), CategorieEntreprise.APM.getLibelle()));
+						return new RadiationAPM(event, organisation, entreprise, context, options, dateRadiation);
+					}
+					else {
+						LOGGER.info(String.format("Radiation de l'entreprise %s (%s).", FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()), categorieEntreprise.getLibelle()));
+						return new Radiation(event, organisation, entreprise, context, options, dateRadiation);
+					}
+				}
 			}
 		}
 
 		LOGGER.info("Pas de radiation de l'entreprise.");
 		return null;
-	}
-
-	protected StatusRegistreIDE getStatusIde(SiteOrganisation sitePrincipalAvant, RegDate dateAvant) {
-		return sitePrincipalAvant == null ? null : sitePrincipalAvant.getDonneesRegistreIDE().getStatus(dateAvant);
 	}
 
 	protected SiteOrganisation getSitePrincipal(Organisation organisation, RegDate dateAvant) {

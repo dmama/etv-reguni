@@ -1,8 +1,5 @@
 package ch.vd.uniregctb.evenement.organisation.interne;
 
-import java.util.List;
-
-import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
@@ -14,8 +11,6 @@ import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationException;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationOptions;
 import ch.vd.uniregctb.evenement.organisation.engine.translator.EvenementOrganisationTranslationStrategy;
 import ch.vd.uniregctb.evenement.organisation.interne.creation.CreateEntreprise;
-import ch.vd.uniregctb.metier.assujettissement.Assujettissement;
-import ch.vd.uniregctb.metier.assujettissement.AssujettissementException;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.type.TypeEvenementOrganisation;
 
@@ -61,15 +56,6 @@ public abstract class AbstractOrganisationStrategy implements EvenementOrganisat
 					              organisation.getNumeroOrganisation(), RegDateHelper.dateToDisplayString(date)));
 		}
 		return organisation.getNom(date.getOneDayBefore()) != null;
-	}
-
-	protected static boolean isAssujetti(Entreprise entreprise, RegDate date, EvenementOrganisationContext context) throws AssujettissementException {
-		List<Assujettissement> assujettissements = context.getAssujettissementService().determine(entreprise);
-		Assujettissement assujettissement = null;
-		if (assujettissements != null && !assujettissements.isEmpty()) {
-			assujettissement = DateRangeHelper.rangeAt(assujettissements, date);
-		}
-		return assujettissement != null;
 	}
 
 	protected static boolean isCreation(TypeEvenementOrganisation type, Organisation organisation, RegDate date) throws EvenementOrganisationException {

@@ -76,11 +76,12 @@ public class TransitionEtatEntrepriseServiceTest extends WithoutSpringTest {
 		Map<TypeEtatEntreprise, TransitionEtatEntreprise> disponibles = service.getTransitionsDisponibles(entreprise, date(2015, 12, 31), TypeGenerationEtatEntreprise.MANUELLE);
 
 		Assert.assertNotNull(disponibles);
-		Assert.assertTrue(disponibles.size() == 4);
+		Assert.assertTrue(disponibles.size() == 5);
 		assertTransition(disponibles, TypeEtatEntreprise.EN_FAILLITE, ToEnFailliteTransitionEtatEntreprise.class);
 		assertTransition(disponibles, TypeEtatEntreprise.EN_LIQUIDATION, ToEnLiquidationTransitionEtatEntreprise.class);
 		assertTransition(disponibles, TypeEtatEntreprise.ABSORBEE, ToAbsorbeeTransitionEtatEntreprise.class);
 		assertTransition(disponibles, TypeEtatEntreprise.FONDEE, ToFondeeTransitionEtatEntreprise.class);
+		assertTransition(disponibles, TypeEtatEntreprise.RADIEE_RC, ToRadieeRCTransitionEtatEntreprise.class);
 	}
 
 	@Test
@@ -249,8 +250,10 @@ public class TransitionEtatEntrepriseServiceTest extends WithoutSpringTest {
 		Map<TypeEtatEntreprise, TransitionEtatEntreprise> disponibles = service.getTransitionsDisponibles(entreprise, date(2015, 12, 31), TypeGenerationEtatEntreprise.MANUELLE);
 
 		Assert.assertNotNull(disponibles);
-		Assert.assertTrue(disponibles.size() == 1);
+		Assert.assertTrue(disponibles.size() == 3);
 		assertTransition(disponibles, TypeEtatEntreprise.INSCRITE_RC, ToInscriteRCTransitionEtatEntreprise.class);
+		assertTransition(disponibles, TypeEtatEntreprise.FONDEE, ToFondeeTransitionEtatEntreprise.class);
+		assertTransition(disponibles, TypeEtatEntreprise.EN_FAILLITE, ToEnFailliteTransitionEtatEntreprise.class);
 	}
 
 	@Test
