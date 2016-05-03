@@ -27,6 +27,7 @@ public class ToEnFailliteTransitionEtatEntrepriseFactory extends BaseTransitionE
 		case INSCRITE_RC:
 		case FONDEE:
 		case EN_LIQUIDATION:
+		case RADIEE_RC: // Nécessaire pour les cas de radiation APM sans dissolution
 			return new ToEnFailliteTransitionEtatEntreprise(getTiersDAO(), entreprise, date, generation);
 		default:
 			return null;

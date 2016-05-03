@@ -27,6 +27,7 @@ public class ToRadieeRCTransitionEtatEntrepriseFactory extends BaseTransitionEta
 		case EN_LIQUIDATION:
 		case EN_FAILLITE:
 		case ABSORBEE:
+		case INSCRITE_RC: // Nécessaire pour les cas de radiation APM sans dissolution
 			return new ToRadieeRCTransitionEtatEntreprise(getTiersDAO(), entreprise, date, generation);
 		default:
 			return null;

@@ -21,16 +21,16 @@ import ch.vd.uniregctb.type.TypeEtatEntreprise;
 /**
  * @author Raphaël Marmier, 2015-11-10
  */
-public class Radiation extends EvenementOrganisationInterneDeTraitement {
+public class RadiationAPM extends EvenementOrganisationInterneDeTraitement {
 
 	private final RegDate dateApres;
 	private final RegDate dateRadiation;
 	final CategorieEntreprise categorieEntreprise;
 
-	protected Radiation(EvenementOrganisation evenement, Organisation organisation,
-	                    Entreprise entreprise, EvenementOrganisationContext context,
-	                    EvenementOrganisationOptions options,
-	                    RegDate dateRadiation) throws EvenementOrganisationException {
+	protected RadiationAPM(EvenementOrganisation evenement, Organisation organisation,
+	                       Entreprise entreprise, EvenementOrganisationContext context,
+	                       EvenementOrganisationOptions options,
+	                       RegDate dateRadiation) throws EvenementOrganisationException {
 		super(evenement, organisation, entreprise, context, options);
 
 		this.dateRadiation = dateRadiation;
@@ -43,7 +43,7 @@ public class Radiation extends EvenementOrganisationInterneDeTraitement {
 
 	@Override
 	public String describe() {
-		return "Radiation";
+		return "Radiation APM";
 	}
 
 
@@ -51,11 +51,20 @@ public class Radiation extends EvenementOrganisationInterneDeTraitement {
 	public void doHandle(EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) throws EvenementOrganisationException {
 		boolean assujettie = determineAssujettie(getEntreprise(), dateRadiation);
 
-		changeEtatEntreprise(getEntreprise(), TypeEtatEntreprise.RADIEE_RC, dateRadiation, suivis);
-		if (assujettie) {
-			warnings.addWarning("Vérification requise pour la radiation de l'entreprise encore assujettie.");
+		if (getEntreprise().getEtatActuel().getType() == TypeEtatEntreprise.INSCRITE_RC) {
+			suivis.addSuivi("On considère que l'association / fondation reste en activité puisqu'une radiation arrive alors qu'elle est simplement inscrite.");
+			changeEtatEntreprise(getEntreprise(), TypeEtatEntreprise.RADIEE_RC, dateRadiation, suivis);
+			changeEtatEntreprise(getEntreprise(), TypeEtatEntreprise.FONDEE, dateRadiation, suivis);
+			warnings.addWarning(String.format("Vérification requise pour la radiation de l'association / fondation %ssortie du RC.", assujettie ? "encore assujettie " : ""));
+		}
+		else if (assujettie && getEntreprise().getEtatActuel().getType() == TypeEtatEntreprise.EN_FAILLITE) {
+			changeEtatEntreprise(getEntreprise(), TypeEtatEntreprise.RADIEE_RC, dateRadiation, suivis);
+			changeEtatEntreprise(getEntreprise(), TypeEtatEntreprise.EN_FAILLITE, dateRadiation, suivis);
+			suivis.addSuivi("On considère que l'association / fondation reste en activité puisqu'elle est toujours assujettie, bien qu'elle soit en faillite.");
+			warnings.addWarning("Vérification requise pour la radiation de l'association / fondation encore assujettie sortie du RC, qui reste en faillite.");
 		} else {
-			suivis.addSuivi("L'entreprise a été radiée du régistre du commerce.");
+			changeEtatEntreprise(getEntreprise(), TypeEtatEntreprise.RADIEE_RC, dateRadiation, suivis);
+			warnings.addWarning(String.format("Vérification requise pour l'association / fondation radiée du RC %s.", assujettie ? "encore assujettie" : ""));
 		}
 
 		raiseStatusTo(HandleStatus.TRAITE);
@@ -66,6 +75,6 @@ public class Radiation extends EvenementOrganisationInterneDeTraitement {
 		Assert.isTrue(getOrganisation().isRadieRC(dateApres), "L'organisation n'est pas radiée du RC!");
 		Assert.notNull(dateRadiation, "Date de radiation introuvable!");
 
-		Assert.isTrue(categorieEntreprise != CategorieEntreprise.APM, String.format("Mauvaise catégorie d'entreprise: %s (erreur de programmation).", categorieEntreprise.getLibelle()));
+		Assert.isTrue(categorieEntreprise == CategorieEntreprise.APM, String.format("Mauvaise catégorie d'entreprise: %s (erreur de programmation).", categorieEntreprise.getLibelle()));
 	}
 }

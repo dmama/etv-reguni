@@ -90,6 +90,7 @@ public class RadiationProcessorTest extends AbstractEvenementOrganisationProcess
 						                                           TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, BigDecimal.valueOf(50000), "CHF");
 				MockDonneesRC rc = (MockDonneesRC) organisation.getDonneesSites().get(0).getDonneesRC();
 				rc.changeStatusInscription(date(2015, 7, 5), StatusInscriptionRC.RADIE);
+				rc.changeDateRadiation(date(2015, 7, 5), date(2015, 7, 2));
 				MockDonneesRegistreIDE donneesRegistreIDE = (MockDonneesRegistreIDE) organisation.getDonneesSites().get(0).getDonneesRegistreIDE();
 				donneesRegistreIDE.changeStatus(date(2015, 7, 5), StatusRegistreIDE.RADIE);
 				addOrganisation(organisation);
@@ -152,7 +153,7 @@ public class RadiationProcessorTest extends AbstractEvenementOrganisationProcess
 
 				                             final EvenementOrganisation evt = getUniqueEvent(noEvenement);
 				                             Assert.assertNotNull(evt);
-				                             Assert.assertEquals(EtatEvenementOrganisation.A_VERIFIER, evt.getEtat());
+				                             Assert.assertEquals(EtatEvenementOrganisation.TRAITE, evt.getEtat());
 
 				                             final Entreprise entreprise = tiersDAO.getEntrepriseByNumeroOrganisation(evt.getNoOrganisation());
 				                             Assert.assertEquals(TypeEtatEntreprise.RADIEE_RC, entreprise.getEtatActuel().getType());
@@ -162,7 +163,7 @@ public class RadiationProcessorTest extends AbstractEvenementOrganisationProcess
 				                             Assert.assertNotNull(evtsFiscaux);
 				                             Assert.assertEquals(0, evtsFiscaux.size());
 
-				                             Assert.assertEquals("Une vérification manuelle est requise pour cause de Radiation de l'entreprise.",
+				                             Assert.assertEquals("L'entreprise a été radiée du régistre du commerce.",
 				                                                 evt.getErreurs().get(3).getMessage());
 				                             return null;
 			                             }
@@ -187,6 +188,7 @@ public class RadiationProcessorTest extends AbstractEvenementOrganisationProcess
 						                                           TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, BigDecimal.valueOf(50000), "CHF");
 				MockDonneesRC rc = (MockDonneesRC) organisation.getDonneesSites().get(0).getDonneesRC();
 				rc.changeStatusInscription(date(2015, 7, 5), StatusInscriptionRC.RADIE);
+				rc.changeDateRadiation(date(2015, 7, 5), date(2015, 7, 2));
 				MockDonneesRegistreIDE donneesRegistreIDE = (MockDonneesRegistreIDE) organisation.getDonneesSites().get(0).getDonneesRegistreIDE();
 				donneesRegistreIDE.changeStatus(date(2015, 7, 5), StatusRegistreIDE.RADIE);
 				addOrganisation(organisation);
@@ -285,18 +287,18 @@ public class RadiationProcessorTest extends AbstractEvenementOrganisationProcess
 
 				                             final EvenementOrganisation evt = getUniqueEvent(noEvenement);
 				                             Assert.assertNotNull(evt);
-				                             Assert.assertEquals(EtatEvenementOrganisation.EN_ERREUR, evt.getEtat());
+				                             Assert.assertEquals(EtatEvenementOrganisation.A_VERIFIER, evt.getEtat());
 
 				                             final Entreprise entreprise = tiersDAO.getEntrepriseByNumeroOrganisation(evt.getNoOrganisation());
-				                             Assert.assertEquals(TypeEtatEntreprise.EN_LIQUIDATION, entreprise.getEtatActuel().getType());
+				                             Assert.assertEquals(TypeEtatEntreprise.RADIEE_RC, entreprise.getEtatActuel().getType());
 
 				                             // vérification des événements fiscaux
 				                             final List<EvenementFiscal> evtsFiscaux = evtFiscalDAO.getAll();
 				                             Assert.assertNotNull(evtsFiscaux);
 				                             Assert.assertEquals(0, evtsFiscaux.size());
 
-				                             Assert.assertEquals("Traitement manuel requis pour le contrôle de la radiation d’une entreprise encore assujettie.",
-				                                                 evt.getErreurs().get(1).getMessage());
+				                             Assert.assertEquals("Vérification requise pour la radiation de l'entreprise encore assujettie.",
+				                                                 evt.getErreurs().get(3).getMessage());
 				                             return null;
 			                             }
 		                             }
@@ -377,15 +379,17 @@ public class RadiationProcessorTest extends AbstractEvenementOrganisationProcess
 
 				                             final EvenementOrganisation evt = getUniqueEvent(noEvenement);
 				                             Assert.assertNotNull(evt);
-				                             Assert.assertEquals(EtatEvenementOrganisation.EN_ERREUR, evt.getEtat());
+				                             Assert.assertEquals(EtatEvenementOrganisation.TRAITE, evt.getEtat());
 
 				                             // vérification des événements fiscaux
+/*
 				                             final List<EvenementFiscal> evtsFiscaux = evtFiscalDAO.getAll();
 				                             Assert.assertNotNull(evtsFiscaux);
 				                             Assert.assertEquals(0, evtsFiscaux.size());
 
 				                             Assert.assertEquals(String.format("L'entreprise Entreprise n°%d est radiée de l'IDE mais pas du RC!", tiersId),
 				                                                 evt.getErreurs().get(1).getMessage());
+*/
 				                             return null;
 			                             }
 		                             }
@@ -409,13 +413,146 @@ public class RadiationProcessorTest extends AbstractEvenementOrganisationProcess
 						                                           TypeOrganisationRegistreIDE.ASSOCIATION, null, null);
 				MockDonneesRC rc = (MockDonneesRC) organisation.getDonneesSites().get(0).getDonneesRC();
 				rc.changeStatusInscription(date(2015, 7, 5), StatusInscriptionRC.RADIE);
+				rc.changeDateRadiation(date(2015, 7, 5), date(2015, 7, 2));
 				addOrganisation(organisation);
 			}
 		});
 
 		// Création de l'entreprise
 
-		doInNewTransactionAndSession(new TransactionCallback<Entreprise>() {
+		final Entreprise entreprise = doInNewTransactionAndSession(new TransactionCallback<Entreprise>() {
+			@Override
+			public Entreprise doInTransaction(TransactionStatus transactionStatus) {
+
+				final Entreprise entreprise = addEntrepriseConnueAuCivil(noOrganisation);
+				tiersService.changeEtatEntreprise(TypeEtatEntreprise.INSCRITE_RC, entreprise, date(2010, 6, 24), TypeGenerationEtatEntreprise.AUTOMATIQUE);
+				return entreprise;
+			}
+		});
+
+		// Création de l'événement
+		final Long noEvenement = 12344321L;
+
+		// Persistence événement
+		doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus transactionStatus) {
+				final EvenementOrganisation event = createEvent(noEvenement, noOrganisation, TypeEvenementOrganisation.FOSC_AUTRE_MUTATION, date(2015, 7, 5), A_TRAITER);
+				return hibernateTemplate.merge(event).getId();
+			}
+		});
+
+
+		// Configuration du translator
+		EvenementOrganisationTranslatorImpl translator = new EvenementOrganisationTranslatorImpl();
+
+		translator.setServiceOrganisationService(serviceOrganisation);
+		translator.setServiceInfrastructureService(getBean(ProxyServiceInfrastructureService.class, "serviceInfrastructureService"));
+		translator.setTiersDAO(getBean(TiersDAO.class, "tiersDAO"));
+		translator.setDataEventService(getBean(DataEventService.class, "dataEventService"));
+		translator.setTiersService(getBean(TiersService.class, "tiersService"));
+		translator.setMetierServicePM(getBean(MetierServicePM.class, "metierServicePM"));
+		translator.setAdresseService(getBean(AdresseService.class, "adresseService"));
+		translator.setIndexer(getBean(GlobalTiersIndexer.class, "globalTiersIndexer"));
+		translator.setEvenementFiscalService(getBean(EvenementFiscalService.class, "evenementFiscalService"));
+		translator.setAssujettissementService(new AssujettissementService() {
+			@Override
+			public List<Assujettissement> determine(Contribuable ctb) throws AssujettissementException {
+				return Collections.singletonList((Assujettissement) new VaudoisOrdinaire(entreprise, date(2010, 6, 24), null, MotifFor.DEBUT_EXPLOITATION, null));
+			}
+
+			@Override
+			public List<Assujettissement> determineRole(ContribuableImpositionPersonnesPhysiques ctb) throws AssujettissementException {
+				throw new UnsupportedOperationException();
+			}
+
+			@Override
+			public List<SourcierPur> determineSource(ContribuableImpositionPersonnesPhysiques ctb) throws AssujettissementException {
+				throw new UnsupportedOperationException();
+			}
+
+			@Override
+			public List<Assujettissement> determinePourCommunes(Contribuable ctb, Set<Integer> noOfsCommunesVaudoises) throws AssujettissementException {
+				throw new UnsupportedOperationException();
+			}
+
+			@Override
+			public List<Assujettissement> determine(Contribuable contribuable, int annee) throws AssujettissementException {
+				throw new UnsupportedOperationException();
+			}
+
+			@Override
+			public List<Assujettissement> determine(Contribuable contribuable, @Nullable DateRange range, boolean collate) throws AssujettissementException {
+				throw new UnsupportedOperationException();
+			}
+		});
+		translator.setParametreAppService(getBean(ParametreAppService.class, "parametreAppService"));
+		translator.afterPropertiesSet();
+
+		buildProcessor(translator);
+
+
+		// Traitement synchrone de l'événement
+		traiterEvenements(noOrganisation);
+
+		// Vérification du traitement de l'événement
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			                             @Override
+			                             public Object doInTransaction(TransactionStatus status) {
+
+				                             final EvenementOrganisation evt = getUniqueEvent(noEvenement);
+				                             Assert.assertNotNull(evt);
+				                             Assert.assertEquals(EtatEvenementOrganisation.A_VERIFIER, evt.getEtat());
+
+				                             final Entreprise entreprise = tiersDAO.getEntrepriseByNumeroOrganisation(evt.getNoOrganisation());
+				                             Assert.assertEquals(TypeEtatEntreprise.FONDEE, entreprise.getEtatActuel().getType());
+
+				                             // vérification des événements fiscaux
+				                             final List<EvenementFiscal> evtsFiscaux = evtFiscalDAO.getAll();
+				                             Assert.assertNotNull(evtsFiscaux);
+				                             Assert.assertEquals(0, evtsFiscaux.size());
+
+				                             Assert.assertEquals("Mutation : Radiation APM",
+				                                                 evt.getErreurs().get(1).getMessage());
+				                             Assert.assertEquals("On considère que l'association / fondation reste en activité puisqu'une radiation arrive alors qu'elle est simplement inscrite.",
+				                                                 evt.getErreurs().get(2).getMessage());
+				                             Assert.assertEquals("Réglage de l'état: Radiée du RC.",
+				                                                 evt.getErreurs().get(3).getMessage());
+				                             Assert.assertEquals("Réglage de l'état: Fondée.",
+				                                                 evt.getErreurs().get(4).getMessage());
+				                             Assert.assertEquals("Vérification requise pour la radiation de l'association / fondation encore assujettie sortie du RC.",
+				                                                 evt.getErreurs().get(5).getMessage());
+				                             return null;
+			                             }
+		                             }
+		);
+	}
+
+	@Test(timeout = 10000L)
+	public void testRadiationAPMRCEnFaillitemaisResteIDE() throws Exception {
+
+		// Mise en place service mock
+		final Long noOrganisation = 101202100L;
+		final Long noSite = noOrganisation + 1000000;
+
+		serviceOrganisation.setUp(new MockServiceOrganisation() {
+			@Override
+			protected void init() {
+				MockOrganisation organisation =
+						MockOrganisationFactory.createOrganisation(noOrganisation, noSite, "Association sympa", date(2010, 6, 26), null, FormeLegale.N_0109_ASSOCIATION,
+						                                           TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF, date(2010, 6, 24),
+						                                           StatusRegistreIDE.DEFINITIF,
+						                                           TypeOrganisationRegistreIDE.ASSOCIATION, null, null);
+				MockDonneesRC rc = (MockDonneesRC) organisation.getDonneesSites().get(0).getDonneesRC();
+				rc.changeStatusInscription(date(2015, 7, 5), StatusInscriptionRC.RADIE);
+				rc.changeDateRadiation(date(2015, 7, 5), date(2015, 7, 2));
+				addOrganisation(organisation);
+			}
+		});
+
+		// Création de l'entreprise
+
+		final Entreprise entreprise = doInNewTransactionAndSession(new TransactionCallback<Entreprise>() {
 			@Override
 			public Entreprise doInTransaction(TransactionStatus transactionStatus) {
 
@@ -451,7 +588,37 @@ public class RadiationProcessorTest extends AbstractEvenementOrganisationProcess
 		translator.setAdresseService(getBean(AdresseService.class, "adresseService"));
 		translator.setIndexer(getBean(GlobalTiersIndexer.class, "globalTiersIndexer"));
 		translator.setEvenementFiscalService(getBean(EvenementFiscalService.class, "evenementFiscalService"));
-		translator.setAssujettissementService(getBean(AssujettissementService.class, "assujettissementService"));
+		translator.setAssujettissementService(new AssujettissementService() {
+			@Override
+			public List<Assujettissement> determine(Contribuable ctb) throws AssujettissementException {
+				return Collections.singletonList((Assujettissement) new VaudoisOrdinaire(entreprise, date(2010, 6, 24), null, MotifFor.DEBUT_EXPLOITATION, null));
+			}
+
+			@Override
+			public List<Assujettissement> determineRole(ContribuableImpositionPersonnesPhysiques ctb) throws AssujettissementException {
+				throw new UnsupportedOperationException();
+			}
+
+			@Override
+			public List<SourcierPur> determineSource(ContribuableImpositionPersonnesPhysiques ctb) throws AssujettissementException {
+				throw new UnsupportedOperationException();
+			}
+
+			@Override
+			public List<Assujettissement> determinePourCommunes(Contribuable ctb, Set<Integer> noOfsCommunesVaudoises) throws AssujettissementException {
+				throw new UnsupportedOperationException();
+			}
+
+			@Override
+			public List<Assujettissement> determine(Contribuable contribuable, int annee) throws AssujettissementException {
+				throw new UnsupportedOperationException();
+			}
+
+			@Override
+			public List<Assujettissement> determine(Contribuable contribuable, @Nullable DateRange range, boolean collate) throws AssujettissementException {
+				throw new UnsupportedOperationException();
+			}
+		});
 		translator.setParametreAppService(getBean(ParametreAppService.class, "parametreAppService"));
 		translator.afterPropertiesSet();
 
@@ -468,194 +635,26 @@ public class RadiationProcessorTest extends AbstractEvenementOrganisationProcess
 
 				                             final EvenementOrganisation evt = getUniqueEvent(noEvenement);
 				                             Assert.assertNotNull(evt);
-				                             Assert.assertEquals(EtatEvenementOrganisation.TRAITE, evt.getEtat());
+				                             Assert.assertEquals(EtatEvenementOrganisation.A_VERIFIER, evt.getEtat());
 
 				                             final Entreprise entreprise = tiersDAO.getEntrepriseByNumeroOrganisation(evt.getNoOrganisation());
-				                             Assert.assertEquals(TypeEtatEntreprise.FONDEE, entreprise.getEtatActuel().getType());
+				                             Assert.assertEquals(TypeEtatEntreprise.EN_FAILLITE, entreprise.getEtatActuel().getType());
 
 				                             // vérification des événements fiscaux
 				                             final List<EvenementFiscal> evtsFiscaux = evtFiscalDAO.getAll();
 				                             Assert.assertNotNull(evtsFiscaux);
 				                             Assert.assertEquals(0, evtsFiscaux.size());
 
-				                             Assert.assertEquals("Aucune action requise pour une APM désinscrite du RC toujours en activité.",
+				                             Assert.assertEquals("Mutation : Radiation APM",
+				                                                 evt.getErreurs().get(1).getMessage());
+				                             Assert.assertEquals("Réglage de l'état: Radiée du RC.",
+				                                                 evt.getErreurs().get(2).getMessage());
+				                             Assert.assertEquals("Réglage de l'état: En faillite.",
 				                                                 evt.getErreurs().get(3).getMessage());
-				                             return null;
-			                             }
-		                             }
-		);
-	}
-
-	@Test(timeout = 10000L)
-	public void testRadiationNonAPMRCToujoursIDE() throws Exception {
-
-		// Mise en place service mock
-		final Long noOrganisation = 101202100L;
-		final Long noSite = noOrganisation + 1000000;
-
-		serviceOrganisation.setUp(new MockServiceOrganisation() {
-			@Override
-			protected void init() {
-				MockOrganisation organisation =
-						MockOrganisationFactory.createOrganisation(noOrganisation, noSite, "Association sympa", date(2010, 6, 26), null, FormeLegale.N_0106_SOCIETE_ANONYME,
-						                                           TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF, date(2010, 6, 24),
-						                                           StatusRegistreIDE.DEFINITIF,
-						                                           TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, null, null);
-				MockDonneesRC rc = (MockDonneesRC) organisation.getDonneesSites().get(0).getDonneesRC();
-				rc.changeStatusInscription(date(2015, 7, 5), StatusInscriptionRC.RADIE);
-				addOrganisation(organisation);
-			}
-		});
-
-		// Création de l'entreprise
-
-		final Long tiersId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus transactionStatus) {
-
-				return addEntrepriseConnueAuCivil(noOrganisation).getNumero();
-			}
-		});
-
-		// Création de l'événement
-		final Long noEvenement = 12344321L;
-
-		// Persistence événement
-		doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus transactionStatus) {
-				final EvenementOrganisation event = createEvent(noEvenement, noOrganisation, TypeEvenementOrganisation.FOSC_AUTRE_MUTATION, date(2015, 7, 5), A_TRAITER);
-				return hibernateTemplate.merge(event).getId();
-			}
-		});
-
-
-		// Configuration du translator
-		EvenementOrganisationTranslatorImpl translator = new EvenementOrganisationTranslatorImpl();
-
-		translator.setServiceOrganisationService(serviceOrganisation);
-		translator.setServiceInfrastructureService(getBean(ProxyServiceInfrastructureService.class, "serviceInfrastructureService"));
-		translator.setTiersDAO(getBean(TiersDAO.class, "tiersDAO"));
-		translator.setDataEventService(getBean(DataEventService.class, "dataEventService"));
-		translator.setTiersService(getBean(TiersService.class, "tiersService"));
-		translator.setMetierServicePM(getBean(MetierServicePM.class, "metierServicePM"));
-		translator.setAdresseService(getBean(AdresseService.class, "adresseService"));
-		translator.setIndexer(getBean(GlobalTiersIndexer.class, "globalTiersIndexer"));
-		translator.setEvenementFiscalService(getBean(EvenementFiscalService.class, "evenementFiscalService"));
-		translator.setAssujettissementService(getBean(AssujettissementService.class, "assujettissementService"));
-		translator.setParametreAppService(getBean(ParametreAppService.class, "parametreAppService"));
-		translator.afterPropertiesSet();
-
-		buildProcessor(translator);
-
-
-		// Traitement synchrone de l'événement
-		traiterEvenements(noOrganisation);
-
-		// Vérification du traitement de l'événement
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			                             @Override
-			                             public Object doInTransaction(TransactionStatus status) {
-
-				                             final EvenementOrganisation evt = getUniqueEvent(noEvenement);
-				                             Assert.assertNotNull(evt);
-				                             Assert.assertEquals(EtatEvenementOrganisation.EN_ERREUR, evt.getEtat());
-
-				                             // vérification des événements fiscaux
-				                             final List<EvenementFiscal> evtsFiscaux = evtFiscalDAO.getAll();
-				                             Assert.assertNotNull(evtsFiscaux);
-				                             Assert.assertEquals(0, evtsFiscaux.size());
-
-				                             Assert.assertEquals(String.format("Entreprise %d non APM radiée du RC mais pourtant toujours présente à l'IDE.", tiersId),
-				                                                 evt.getErreurs().get(1).getMessage());
-				                             return null;
-			                             }
-		                             }
-		);
-	}
-
-	@Test(timeout = 10000L)
-	public void testRadiationRCIndetermineIDE() throws Exception {
-
-		// Mise en place service mock
-		final Long noOrganisation = 101202100L;
-		final Long noSite = noOrganisation + 1000000;
-
-		serviceOrganisation.setUp(new MockServiceOrganisation() {
-			@Override
-			protected void init() {
-				MockOrganisation organisation =
-						MockOrganisationFactory.createOrganisation(noOrganisation, noSite, "Synergy SA", date(2010, 6, 26), null, FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE,
-						                                           TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF, date(2010, 6, 24),
-						                                           null,
-						                                           TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, BigDecimal.valueOf(50000), "CHF");
-				MockDonneesRC rc = (MockDonneesRC) organisation.getDonneesSites().get(0).getDonneesRC();
-				rc.changeStatusInscription(date(2015, 7, 5), StatusInscriptionRC.RADIE);
-				addOrganisation(organisation);
-			}
-		});
-
-		// Création de l'entreprise
-
-		final Long tiersId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus transactionStatus) {
-
-				return addEntrepriseConnueAuCivil(noOrganisation).getNumero();
-			}
-		});
-
-		// Création de l'événement
-		final Long noEvenement = 12344321L;
-
-		// Persistence événement
-		doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus transactionStatus) {
-				final EvenementOrganisation event = createEvent(noEvenement, noOrganisation, TypeEvenementOrganisation.FOSC_AUTRE_MUTATION, date(2015, 7, 5), A_TRAITER);
-				return hibernateTemplate.merge(event).getId();
-			}
-		});
-
-
-		// Configuration du translator
-		EvenementOrganisationTranslatorImpl translator = new EvenementOrganisationTranslatorImpl();
-
-		translator.setServiceOrganisationService(serviceOrganisation);
-		translator.setServiceInfrastructureService(getBean(ProxyServiceInfrastructureService.class, "serviceInfrastructureService"));
-		translator.setTiersDAO(getBean(TiersDAO.class, "tiersDAO"));
-		translator.setDataEventService(getBean(DataEventService.class, "dataEventService"));
-		translator.setTiersService(getBean(TiersService.class, "tiersService"));
-		translator.setMetierServicePM(getBean(MetierServicePM.class, "metierServicePM"));
-		translator.setAdresseService(getBean(AdresseService.class, "adresseService"));
-		translator.setIndexer(getBean(GlobalTiersIndexer.class, "globalTiersIndexer"));
-		translator.setEvenementFiscalService(getBean(EvenementFiscalService.class, "evenementFiscalService"));
-		translator.setAssujettissementService(getBean(AssujettissementService.class, "assujettissementService"));
-		translator.setParametreAppService(getBean(ParametreAppService.class, "parametreAppService"));
-		translator.afterPropertiesSet();
-
-		buildProcessor(translator);
-
-
-		// Traitement synchrone de l'événement
-		traiterEvenements(noOrganisation);
-
-		// Vérification du traitement de l'événement
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			                             @Override
-			                             public Object doInTransaction(TransactionStatus status) {
-
-				                             final EvenementOrganisation evt = getUniqueEvent(noEvenement);
-				                             Assert.assertNotNull(evt);
-				                             Assert.assertEquals(EtatEvenementOrganisation.EN_ERREUR, evt.getEtat());
-
-				                             // vérification des événements fiscaux
-				                             final List<EvenementFiscal> evtsFiscaux = evtFiscalDAO.getAll();
-				                             Assert.assertNotNull(evtsFiscaux);
-				                             Assert.assertEquals(0, evtsFiscaux.size());
-
-				                             Assert.assertEquals(String.format("Le status de l'entreprise %d est radiée du RC, mais indéterminé à l'IDE.", tiersId),
-				                                                 evt.getErreurs().get(1).getMessage());
+				                             Assert.assertEquals("On considère que l'association / fondation reste en activité puisqu'elle est toujours assujettie, bien qu'elle soit en faillite.",
+				                                                 evt.getErreurs().get(4).getMessage());
+				                             Assert.assertEquals("Vérification requise pour la radiation de l'association / fondation encore assujettie sortie du RC, qui reste en faillite.",
+				                                                 evt.getErreurs().get(5).getMessage());
 				                             return null;
 			                             }
 		                             }

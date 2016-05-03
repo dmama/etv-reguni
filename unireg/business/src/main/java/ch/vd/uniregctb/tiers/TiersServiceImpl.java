@@ -6502,7 +6502,7 @@ public class TiersServiceImpl implements TiersService {
 		}
 		final TransitionEtatEntreprise transition = transitionEtatEntrepriseService.getTransitionVersEtat(type, entreprise, date, generation);
 		if (transition == null) {
-			throw new IllegalArgumentException(String.format("La transition vers l'état demandé (%s) n'est pas possible. Etat actuel: %s.", type, etatActuel != null ? etatActuel.getKey() : null));
+			throw new IllegalArgumentException(String.format("La transition vers l'état demandé (%s) n'est pas possible. Etat actuel: %s.", type, etatActuel != null ? etatActuel.getType() : null));
 		}
 		return transition.apply();
 	}
