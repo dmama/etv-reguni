@@ -19,6 +19,7 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
+import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.tx.TxCallbackWithoutResult;
@@ -3097,6 +3098,105 @@ public class MetierServicePMTest extends BusinessTest {
 				Assert.assertFalse(etat2.isAnnule());
 				Assert.assertEquals(TypeEtatEntreprise.FONDEE, etat2.getType());
 				Assert.assertEquals(dateDebutReceptrice2, etat2.getDateObtention());
+			}
+		});
+	}
+
+	@Test
+	public void testReinscriptionRC() throws Exception {
+
+		final RegDate dateDebutEntreprise = date(2003, 5, 12);
+		final RegDate dateRadiationRC = date(2010, 4, 1);
+		final RegDate dateFaillite = date(2010, 3, 1);
+
+		// mise en place fiscale
+		final long idpm = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+				addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma grande entreprise");
+				addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SA);
+				addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addBouclement(entreprise, dateDebutEntreprise, DayMonth.get(12, 31), 12);        // tous les 31.12 depuis 2000
+				addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, dateFaillite, MotifFor.FAILLITE, MockCommune.Grandson);
+
+				addAdresseMandataireSuisse(entreprise, dateDebutEntreprise, null, TypeMandat.GENERAL, "Mon mandataire chéri", MockRue.Renens.QuatorzeAvril);
+				addAdresseSuisse(entreprise, TypeAdresseTiers.COURRIER, dateDebutEntreprise, null, MockRue.Prilly.RueDesMetiers);
+
+				final Etablissement etablissementPrincipalEmettrice = addEtablissement();
+				addDomicileEtablissement(etablissementPrincipalEmettrice, dateDebutEntreprise, null, MockCommune.Grandson);
+				addActiviteEconomique(entreprise, etablissementPrincipalEmettrice, dateDebutEntreprise, null, true);
+
+				addEtatEntreprise(entreprise, dateDebutEntreprise, TypeEtatEntreprise.INSCRITE_RC, TypeGenerationEtatEntreprise.AUTOMATIQUE);
+				addEtatEntreprise(entreprise, dateFaillite, TypeEtatEntreprise.EN_FAILLITE, TypeGenerationEtatEntreprise.AUTOMATIQUE);
+				addEtatEntreprise(entreprise, dateRadiationRC, TypeEtatEntreprise.RADIEE_RC, TypeGenerationEtatEntreprise.AUTOMATIQUE);
+				return entreprise.getNumero();
+			}
+		});
+
+		// lancement de la ré-inscription au RC
+		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus status) throws Exception {
+				final Entreprise entreprise = (Entreprise) tiersDAO.get(idpm);
+				Assert.assertNotNull(entreprise);
+				metierServicePM.reinscritRC(entreprise, dateRadiationRC, "Une remarque...");
+			}
+		});
+
+		// vérification du résultat
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final Entreprise entreprise = (Entreprise) tiersDAO.get(idpm);
+				Assert.assertNotNull(entreprise);
+				final List<EtatEntreprise> tousEtats = new ArrayList<>(entreprise.getEtats());
+				Assert.assertEquals(3, tousEtats.size());
+				Collections.sort(tousEtats, new Comparator<EtatEntreprise>() {
+					@Override
+					public int compare(EtatEntreprise o1, EtatEntreprise o2) {
+						return NullDateBehavior.LATEST.compare(o1.getDateObtention(), o2.getDateObtention());
+					}
+				});
+				{
+					final EtatEntreprise etat = tousEtats.get(0);
+					Assert.assertNotNull(etat);
+					Assert.assertFalse(etat.isAnnule());
+					Assert.assertEquals(TypeEtatEntreprise.INSCRITE_RC, etat.getType());
+					Assert.assertEquals(dateDebutEntreprise, etat.getDateObtention());
+				}
+				{
+					final EtatEntreprise etat = tousEtats.get(1);
+					Assert.assertNotNull(etat);
+					Assert.assertTrue(etat.isAnnule());
+					Assert.assertEquals(TypeEtatEntreprise.EN_FAILLITE, etat.getType());
+					Assert.assertEquals(dateFaillite, etat.getDateObtention());
+				}
+				{
+					final EtatEntreprise etat = tousEtats.get(2);
+					Assert.assertNotNull(etat);
+					Assert.assertTrue(etat.isAnnule());
+					Assert.assertEquals(TypeEtatEntreprise.RADIEE_RC, etat.getType());
+					Assert.assertEquals(dateRadiationRC, etat.getDateObtention());
+				}
+
+				final ForFiscalPrincipalPM ffp = entreprise.getDernierForFiscalPrincipal();
+				Assert.assertNotNull(ffp);
+				Assert.assertFalse(ffp.isAnnule());
+				Assert.assertNull(ffp.getDateFin());
+				Assert.assertNull(ffp.getMotifFermeture());
+				Assert.assertEquals(dateDebutEntreprise, ffp.getDateDebut());
+				Assert.assertEquals(MotifFor.DEBUT_EXPLOITATION, ffp.getMotifOuverture());
+
+				// et la remarque ?
+				final Set<Remarque> remarques = entreprise.getRemarques();
+				Assert.assertNotNull(remarques);
+				Assert.assertEquals(1, remarques.size());
+				final Remarque remarque = remarques.iterator().next();
+				Assert.assertNotNull(remarque);
+				Assert.assertFalse(remarque.isAnnule());
+				Assert.assertEquals("Une remarque...", remarque.getTexte());
 			}
 		});
 	}

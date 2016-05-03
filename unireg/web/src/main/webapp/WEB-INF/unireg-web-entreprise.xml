@@ -22,6 +22,7 @@
 	<bean id="fusionEntreprisesController" class="ch.vd.uniregctb.entreprise.complexe.FusionEntreprisesController" parent="abstractProcessusComplexeEntrepriseController"/>
 	<bean id="scissionEntrepriseController" class="ch.vd.uniregctb.entreprise.complexe.ScissionEntrepriseController" parent="abstractProcessusComplexeEntrepriseController"/>
 	<bean id="transfertPatrimoineEntrepriseController" class="ch.vd.uniregctb.entreprise.complexe.TransfertPatrimoineController" parent="abstractProcessusComplexeEntrepriseController"/>
+	<bean id="reinscriptionRCController" class="ch.vd.uniregctb.entreprise.complexe.ReinscriptionRCController" parent="abstractProcessusComplexeEntrepriseController"/>
 
 	<bean id="annulationFailliteController" class="ch.vd.uniregctb.entreprise.complexe.AnnulationFailliteController" parent="abstractProcessusComplexeEntrepriseController"/>
 	<bean id="annulationDemenagementSiegeController" class="ch.vd.uniregctb.entreprise.complexe.AnnulationDemenagementSiegeController" parent="abstractProcessusComplexeEntrepriseController"/>

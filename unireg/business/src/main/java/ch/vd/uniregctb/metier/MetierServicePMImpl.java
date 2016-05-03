@@ -15,6 +15,7 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
@@ -1080,5 +1081,59 @@ public class MetierServicePMImpl implements MetierServicePM {
 				ret.setAnnule(true);
 			}
 		}
+	}
+
+	@Override
+	public void reinscritRC(Entreprise entreprise, RegDate dateRadiation, @Nullable String remarqueAssociee) throws MetierServiceException {
+
+		// 1. on retrouve l'état radié de l'entreprise et on le compare à la date de radiation fournie
+		final EtatEntreprise etatRadie = entreprise.getEtatActuel();
+		if (etatRadie == null || etatRadie.getType() != TypeEtatEntreprise.RADIEE_RC || etatRadie.getDateObtention() != dateRadiation) {
+			throw new MetierServiceException(String.format("Le dernier état fiscal de l'entreprise n'est pas 'Radiée au RC' au %s.",
+			                                               RegDateHelper.dateToDisplayString(dateRadiation)));
+		}
+
+		// 2. on annule l'état "radié"
+		etatRadie.setAnnule(true);
+
+		// 3. si on a un état "faillite" juste avant, il faut l'annuler aussi
+		final EtatEntreprise etatPrecedent = entreprise.getEtatActuel();
+		if (etatPrecedent != null && etatPrecedent.getType() == TypeEtatEntreprise.EN_FAILLITE) {
+			etatPrecedent.setAnnule(true);
+		}
+
+		// 4. ré-ouverture du dernier for principal fermé (s'il existe)
+		final ForFiscalPrincipalPM dernierForFiscal = entreprise.getDernierForFiscalPrincipal();
+		final Set<MotifFor> motifsReouverts = EnumSet.of(MotifFor.CESSATION_ACTIVITE, MotifFor.FAILLITE);
+		if (dernierForFiscal != null && dernierForFiscal.getDateFin() != null && motifsReouverts.contains(dernierForFiscal.getMotifFermeture())) {
+			dernierForFiscal.setAnnule(true);
+			tiersService.reopenFor(dernierForFiscal, entreprise);
+			evenementFiscalService.publierEvenementFiscalAnnulationFor(dernierForFiscal);
+		}
+
+		// 5. le rapport d'activité économique principale doit être ré-ouvert s'il a été fermé...
+		final Set<RapportEntreTiers> rapports = entreprise.getRapportsSujet();
+		final List<ActiviteEconomique> activitesEconomiquesPrincipales = new ArrayList<>(rapports.size());
+		for (RapportEntreTiers ret : rapports) {
+			if (!ret.isAnnule() && ret.getType() == TypeRapportEntreTiers.ACTIVITE_ECONOMIQUE && ((ActiviteEconomique) ret).isPrincipal()) {
+				activitesEconomiquesPrincipales.add((ActiviteEconomique) ret);
+			}
+		}
+		if (activitesEconomiquesPrincipales.isEmpty()) {
+			throw new MetierServiceException("Impossible de traiter la ré-inscription de l'entreprise au RC car aucun établissement principal ne lui est connu.");
+		}
+
+		// on met le dernier rapport d'activité en premier dans la collection
+		Collections.sort(activitesEconomiquesPrincipales, new DateRangeComparator<>(DateRangeComparator.CompareOrder.DESCENDING));
+		final ActiviteEconomique dernierLienActiviteEconomique = activitesEconomiquesPrincipales.get(0);
+		if (dernierLienActiviteEconomique.getDateFin() == null) {
+			final RapportEntreTiers reouvert = dernierLienActiviteEconomique.duplicate();
+			reouvert.setDateFin(null);
+			dernierLienActiviteEconomique.setAnnule(true);
+			tiersService.addRapport(reouvert, entreprise, tiersService.getTiers(reouvert.getObjetId()));
+		}
+
+		// 6. et la remarque
+		addRemarque(entreprise, remarqueAssociee);
 	}
 }

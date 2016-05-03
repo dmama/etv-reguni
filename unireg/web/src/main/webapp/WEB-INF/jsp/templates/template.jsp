@@ -108,7 +108,7 @@
 						<li><a href="<c:url value='/lr/list.do'/>"><fmt:message key="title.lr" /></a></li>
 					</authz:authorize>
 
-					<authz:authorize ifAnyGranted="ROLE_FAILLITE_ENTREPRISE, ROLE_DEMENAGEMENT_SIEGE_ENTREPRISE, ROLE_FIN_ACTIVITE_ENTREPRISE, ROLE_FUSION_ENTREPRISES, ROLE_SCISSION_ENTREPRISE">
+					<authz:authorize ifAnyGranted="ROLE_FAILLITE_ENTREPRISE, ROLE_DEMENAGEMENT_SIEGE_ENTREPRISE, ROLE_FIN_ACTIVITE_ENTREPRISE, ROLE_FUSION_ENTREPRISES, ROLE_SCISSION_ENTREPRISE, ROLE_TRANSFERT_PATRIMOINE_ENTREPRISE, ROLE_REINSCRIPTION_RC_ENTREPRISE">
 					<li><fmt:message key="label.action.processus.complexes.entreprises"/>
 						<ul>
 							<authz:authorize ifAnyGranted="ROLE_FAILLITE_ENTREPRISE">
@@ -131,8 +131,13 @@
 							<authz:authorize ifAnyGranted="ROLE_TRANSFERT_PATRIMOINE_ENTREPRISE">
 								<li><a href="<c:url value="/processuscomplexe/transfertpatrimoine/emettrice/list.do"/>"><fmt:message key="title.transfert.patrimoine"/></a></li>
 							</authz:authorize>
+							<authz:authorize ifAnyGranted="ROLE_REINSCRIPTION_RC_ENTREPRISE">
+								<li><a href="<c:url value="/processuscomplexe/reinscriptionrc/list.do"/>"><fmt:message key="title.reinscription.rc"/></a></li>
+							</authz:authorize>
 						</ul>
 					</li>
+					</authz:authorize>
+					<authz:authorize ifAnyGranted="ROLE_FAILLITE_ENTREPRISE, ROLE_DEMENAGEMENT_SIEGE_ENTREPRISE, ROLE_FIN_ACTIVITE_ENTREPRISE, ROLE_FUSION_ENTREPRISES, ROLE_SCISSION_ENTREPRISE, ROLE_TRANSFERT_PATRIMOINE_ENTREPRISE">
 					<li><fmt:message key="label.action.annulation.processus.complexes.entreprises"/>
 						<ul>
 							<authz:authorize ifAnyGranted="ROLE_FAILLITE_ENTREPRISE">

@@ -184,4 +184,13 @@ public interface MetierServicePM {
 	 * @throws MetierServiceException en cas de problème
 	 */
 	void annuleTransfertPatrimoine(Entreprise emettrice, List<Entreprise> receptrices, RegDate dateTransfert) throws MetierServiceException;
+
+	/**
+	 * Opération de ré-inscription de l'entreprise radiée au RC
+	 * @param entreprise l'entreprise radiée à ré-inscrire
+	 * @param dateRadiation la date de radiation
+	 * @param remarqueAssociee [optionnelle] une éventuelle remarque à associer à l'entreprise ré-inscrite
+	 * @throws MetierServiceException en cas de problème
+	 */
+	void reinscritRC(Entreprise entreprise, RegDate dateRadiation, @Nullable String remarqueAssociee) throws MetierServiceException;
 }
