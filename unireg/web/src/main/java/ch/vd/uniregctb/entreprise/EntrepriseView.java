@@ -13,12 +13,12 @@ public class EntrepriseView {
 	private Long id;
 	private boolean connueAuCivil = false;
 
-	private List<RaisonSocialeView> raisonsSociales;
+	private List<ShowRaisonSocialeView> raisonsSociales;
 	private List<DateRanged<String>> nomsAdditionnels;
 
-	private List<SiegeView> sieges;
-	private List<FormeJuridiqueView> formesJuridiques;
-	private List<CapitalView> capitaux;
+	private List<ShowSiegeView> sieges;
+	private List<ShowFormeJuridiqueView> formesJuridiques;
+	private List<ShowCapitalView> capitaux;
 	private List<EtatEntrepriseView> etats;
 	private String numerosIDE;
 
@@ -47,11 +47,11 @@ public class EntrepriseView {
 		this.connueAuCivil = connueAuCivil;
 	}
 
-	public List<RaisonSocialeView> getRaisonsSociales() {
+	public List<ShowRaisonSocialeView> getRaisonsSociales() {
 		return raisonsSociales;
 	}
 
-	public void setRaisonsSociales(List<RaisonSocialeView> raisonsSociales) {
+	public void setRaisonsSociales(List<ShowRaisonSocialeView> raisonsSociales) {
 		this.raisonsSociales = raisonsSociales;
 	}
 
@@ -63,27 +63,27 @@ public class EntrepriseView {
 		this.nomsAdditionnels = nomsAdditionnels;
 	}
 
-	public List<SiegeView> getSieges() {
+	public List<ShowSiegeView> getSieges() {
 		return sieges;
 	}
 
-	public void setSieges(List<SiegeView> sieges) {
+	public void setSieges(List<ShowSiegeView> sieges) {
 		this.sieges = sieges;
 	}
 
-	public List<FormeJuridiqueView> getFormesJuridiques() {
+	public List<ShowFormeJuridiqueView> getFormesJuridiques() {
 		return formesJuridiques;
 	}
 
-	public void setFormesJuridiques(List<FormeJuridiqueView> formesJuridiques) {
+	public void setFormesJuridiques(List<ShowFormeJuridiqueView> formesJuridiques) {
 		this.formesJuridiques = formesJuridiques;
 	}
 
-	public List<CapitalView> getCapitaux() {
+	public List<ShowCapitalView> getCapitaux() {
 		return capitaux;
 	}
 
-	public void setCapitaux(List<CapitalView> capitaux) {
+	public void setCapitaux(List<ShowCapitalView> capitaux) {
 		this.capitaux = capitaux;
 	}
 

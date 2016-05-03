@@ -1,59 +1,36 @@
 package ch.vd.uniregctb.entreprise;
 
-import org.jetbrains.annotations.Nullable;
-
-import ch.vd.registre.base.date.CollatableDateRange;
 import ch.vd.registre.base.date.DateRange;
-import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.uniregctb.common.Annulable;
-import ch.vd.uniregctb.common.MontantMonetaireView;
-import ch.vd.uniregctb.tiers.CapitalHisto;
-import ch.vd.uniregctb.tiers.MontantMonetaire;
-import ch.vd.uniregctb.tiers.Source;
-import ch.vd.uniregctb.tiers.Sourced;
+import ch.vd.uniregctb.tiers.CapitalFiscalEntreprise;
 
-public class CapitalView implements Sourced<Source>, Annulable, CollatableDateRange {
+public abstract class CapitalView implements DateRange {
 
-	private final Long id;
-	private final RegDate dateDebut;
-	private final RegDate dateFin;
-	private final MontantMonetaireView capitalLibere;
-	private final Source source;
-	private final boolean annule;
-	private boolean dernierElement;
+	private Long tiersId;
+	private RegDate dateDebut;
+	private RegDate dateFin;
+	private Long montant;
+	private String monnaie;
 
-
-	public CapitalView(CapitalHisto capital) {
-		this(capital.getId(), capital.isAnnule(), capital.getDateDebut(), capital.getDateFin(), capital.getMontant(), capital.getSource());
+	public CapitalView() {
 	}
 
-	private CapitalView(Long id, boolean annule, RegDate dateDebut, RegDate dateFin, MontantMonetaire capitalLibere, Source source) {
-		this(id, annule, dateDebut, dateFin, buildMontantMonetaire(capitalLibere), source);
-	}
-
-	private CapitalView(Long id, boolean annule, RegDate dateDebut, RegDate dateFin, MontantMonetaireView capitalLibere, Source source) {
-		this.id = id;
+	public CapitalView(Long tiersId, RegDate dateDebut, RegDate dateFin, Long montant, String monnaie) {
+		this.tiersId = tiersId;
 		this.dateDebut = dateDebut;
 		this.dateFin = dateFin;
-		this.capitalLibere = capitalLibere;
-		this.source = source;
-		this.annule = annule;
-		this.dernierElement = false;
+		this.montant = montant;
+		this.monnaie = monnaie;
 	}
 
-	@Nullable
-	private static MontantMonetaireView buildMontantMonetaire(MontantMonetaire mm) {
-		if (mm == null) {
-			return null;
-		}
-		return new MontantMonetaireView(mm);
+	public Long getTiersId() {
+		return tiersId;
 	}
 
-	public Long getId() {
-		return id;
+	public void setTiersId(Long tiersId) {
+		this.tiersId = tiersId;
 	}
 
 	@Override
@@ -61,56 +38,76 @@ public class CapitalView implements Sourced<Source>, Annulable, CollatableDateRa
 		return dateDebut;
 	}
 
+	public void setDateDebut(RegDate dateDebut) {
+		this.dateDebut = dateDebut;
+	}
+
 	@Override
 	public RegDate getDateFin() {
 		return dateFin;
 	}
 
-	public MontantMonetaireView getCapitalLibere() {
-		return capitalLibere;
+	public void setDateFin(RegDate dateFin) {
+		this.dateFin = dateFin;
 	}
 
-	public Source getSource() {
-		return source;
+	public Long getMontant() {
+		return montant;
+	}
+
+	public void setMontant(Long montant) {
+		this.montant = montant;
+	}
+
+	public String getMonnaie() {
+		return monnaie;
+	}
+
+	public void setMonnaie(String monnaie) {
+		this.monnaie = monnaie;
 	}
 
 	@Override
 	public boolean isValidAt(RegDate date) {
-		return !isAnnule() && RegDateHelper.isBetween(date, dateDebut, dateFin, NullDateBehavior.LATEST);
+		return RegDateHelper.isBetween(date, dateDebut, dateFin, NullDateBehavior.LATEST);
 	}
 
-	@Override
-	public boolean isCollatable(DateRange next) {
-		return DateRangeHelper.isCollatable(this, next)
-				&& next instanceof CapitalView
-				&& isSameValue(id, ((CapitalView) next).id)
-				&& isSameValue(capitalLibere, ((CapitalView) next).capitalLibere)
-				&& annule == ((CapitalView) next).annule
-				&& source == ((CapitalView) next).source;
-	}
-
-	private static <T> boolean isSameValue(T one, T two) {
-		return one == two || (one != null && two != null && one.equals(two));
-	}
-
-	@Override
-	public CapitalView collate(DateRange next) {
-		if (!isCollatable(next)) {
-			throw new IllegalArgumentException("Ranges are not collatable!");
+	/**
+	 * Classe concrète pour l'ajout de capital
+	 */
+	public static final class Add extends CapitalView {
+		public Add() {
 		}
-		return new CapitalView(id, annule, dateDebut, next.getDateFin(), capitalLibere, source);
+
+		public Add(Long tiersId, RegDate dateDebut, RegDate dateFin, Long montant, String monnaie) {
+			super(tiersId, dateDebut, dateFin, montant, monnaie);
+		}
 	}
 
-	@Override
-	public boolean isAnnule() {
-		return annule;
-	}
+	/**
+	 * Classe concrète pour l'édition de capital
+	 */
+	public static final class Edit extends CapitalView {
+		private long id;
 
-	public boolean isDernierElement() {
-		return dernierElement;
-	}
+		public Edit() {
+		}
 
-	public void setDernierElement(boolean dernierElement) {
-		this.dernierElement = dernierElement;
+		public Edit(CapitalFiscalEntreprise cf) {
+			this(cf.getId(), cf.getEntreprise().getNumero(), cf.getDateDebut(), cf.getDateFin(), cf.getMontant().getMontant(), cf.getMontant().getMonnaie());
+		}
+
+		public Edit(long id, Long tiersId, RegDate dateDebut, RegDate dateFin, Long montant, String monnaie) {
+			super(tiersId, dateDebut, dateFin, montant, monnaie);
+			this.id = id;
+		}
+
+		public long getId() {
+			return id;
+		}
+
+		public void setId(long id) {
+			this.id = id;
+		}
 	}
 }

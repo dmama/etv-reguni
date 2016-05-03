@@ -4,38 +4,32 @@ import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
-import ch.vd.uniregctb.common.Annulable;
-import ch.vd.uniregctb.tiers.FormeLegaleHisto;
-import ch.vd.uniregctb.tiers.Source;
-import ch.vd.uniregctb.tiers.Sourced;
+import ch.vd.uniregctb.tiers.FormeJuridiqueFiscaleEntreprise;
+import ch.vd.uniregctb.type.FormeJuridiqueEntreprise;
 
-public class FormeJuridiqueView implements Sourced<Source>, Annulable, DateRange {
+public abstract class FormeJuridiqueView implements DateRange {
 
-	private final Long id;
-	private final RegDate dateDebut;
-	private final RegDate dateFin;
-	private final FormeLegale type;
-	private final Source source;
-	private final boolean annule;
-	private boolean dernierElement;
+	private Long tiersId;
+	private RegDate dateDebut;
+	private RegDate dateFin;
+	private FormeJuridiqueEntreprise formeJuridique;
 
-	public FormeJuridiqueView(FormeLegaleHisto forme) {
-		this(forme.getId(), forme.isAnnule(), forme.getDateDebut(), forme.getDateFin(), forme.getFormeLegale(), forme.getSource());
+	public FormeJuridiqueView() {
 	}
 
-	private FormeJuridiqueView(Long id, boolean annule, RegDate dateDebut, RegDate dateFin, FormeLegale type, Source source) {
-		this.id = id;
+	public FormeJuridiqueView(Long tiersId, RegDate dateDebut, RegDate dateFin, FormeJuridiqueEntreprise formeJuridique) {
+		this.tiersId = tiersId;
 		this.dateDebut = dateDebut;
 		this.dateFin = dateFin;
-		this.type = type;
-		this.annule = annule;
-		this.source = source;
-		this.dernierElement = false;
+		this.formeJuridique = formeJuridique;
 	}
 
-	public Long getId() {
-		return id;
+	public Long getTiersId() {
+		return tiersId;
+	}
+
+	public void setTiersId(Long tiersId) {
+		this.tiersId = tiersId;
 	}
 
 	@Override
@@ -43,35 +37,69 @@ public class FormeJuridiqueView implements Sourced<Source>, Annulable, DateRange
 		return dateDebut;
 	}
 
+	public void setDateDebut(RegDate dateDebut) {
+		this.dateDebut = dateDebut;
+	}
+
 	@Override
 	public RegDate getDateFin() {
 		return dateFin;
 	}
 
-	public FormeLegale getType() {
-		return type;
+	public void setDateFin(RegDate dateFin) {
+		this.dateFin = dateFin;
+	}
+
+	public FormeJuridiqueEntreprise getFormeJuridique() {
+		return formeJuridique;
+	}
+
+	public void setFormeJuridique(FormeJuridiqueEntreprise formeJuridique) {
+		this.formeJuridique = formeJuridique;
 	}
 
 	@Override
 	public boolean isValidAt(RegDate date) {
-		return !isAnnule() && RegDateHelper.isBetween(date, dateDebut, dateFin, NullDateBehavior.LATEST);
+		return RegDateHelper.isBetween(date, dateDebut, dateFin, NullDateBehavior.LATEST);
 	}
 
-	@Override
-	public boolean isAnnule() {
-		return annule;
+	/**
+	 * Classe concrète pour l'ajout
+	 */
+	public static final class Add extends FormeJuridiqueView {
+		public Add() {
+		}
+
+		public Add(Long tiersId, RegDate dateDebut, RegDate dateFin, FormeJuridiqueEntreprise formeJuridique) {
+			super(tiersId, dateDebut, dateFin, formeJuridique);
+		}
 	}
 
-	@Override
-	public Source getSource() {
-		return source;
+	/**
+	 * Classe concrète pour l'édition
+	 */
+	public static final class Edit extends FormeJuridiqueView {
+		private Long id;
+
+		public Edit() {
+		}
+
+		public Edit(FormeJuridiqueFiscaleEntreprise fj) {
+			this(fj.getId(), fj.getEntreprise().getNumero(), fj.getDateDebut(), fj.getDateFin(), fj.getFormeJuridique());
+		}
+
+		public Edit(Long id, Long tiersId, RegDate dateDebut, RegDate dateFin, FormeJuridiqueEntreprise formeJuridique) {
+			super(tiersId, dateDebut, dateFin, formeJuridique);
+			this.id = id;
+		}
+
+		public Long getId() {
+			return id;
+		}
+
+		public void setId(Long id) {
+			this.id = id;
+		}
 	}
 
-	public boolean isDernierElement() {
-		return dernierElement;
-	}
-
-	public void setDernierElement(boolean dernierElement) {
-		this.dernierElement = dernierElement;
-	}
 }

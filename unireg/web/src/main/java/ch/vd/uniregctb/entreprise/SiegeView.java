@@ -4,39 +4,46 @@ import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.uniregctb.common.Annulable;
-import ch.vd.uniregctb.interfaces.model.TypeNoOfs;
-import ch.vd.uniregctb.tiers.DomicileHisto;
-import ch.vd.uniregctb.tiers.Source;
-import ch.vd.uniregctb.tiers.Sourced;
+import ch.vd.uniregctb.tiers.DomicileEtablissement;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
-public class SiegeView implements Sourced<Source>, DateRange, Annulable {
+public abstract class SiegeView implements DateRange {
 
-	private final Long id;
-	private final boolean annule;
-	private final RegDate dateDebut;
-	private final RegDate dateFin;
-	private final int noOfsSiege;
-	private final TypeNoOfs type;
-	private final Source source;
-	private boolean dernierElement;
-	private boolean peutEditerDateFin;
+	private Long etablissementId;
+	private Long entrepriseId;
+	private RegDate dateDebut;
+	private RegDate dateFin;
+	private TypeAutoriteFiscale typeAutoriteFiscale;
+	private Integer noAutoriteFiscale;
+	private String nomAutoriteFiscale;
 
-	public SiegeView(DomicileHisto siege) {
-		this.id = siege.getId();
-		this.dateDebut = siege.getDateDebut();
-		this.dateFin = siege.getDateFin();
-		this.noOfsSiege = siege.getNumeroOfsAutoriteFiscale();
-		this.type = siege.getTypeAutoriteFiscale() == TypeAutoriteFiscale.PAYS_HS ? TypeNoOfs.PAYS_HS : TypeNoOfs.COMMUNE_CH;
-		this.annule = siege.isAnnule();
-		this.source = siege.getSource();
-		this.dernierElement = false;
-		this.peutEditerDateFin = false;
+	public SiegeView() {
 	}
 
-	public Long getId() {
-		return id;
+	public SiegeView(Long etablissementId, Long entrepriseId, RegDate dateDebut, RegDate dateFin, TypeAutoriteFiscale typeAutoriteFiscale, Integer noAutoriteFiscale, String nomAutoriteFiscale) {
+		this.etablissementId = etablissementId;
+		this.entrepriseId = entrepriseId;
+		this.dateDebut = dateDebut;
+		this.dateFin = dateFin;
+		this.typeAutoriteFiscale = typeAutoriteFiscale;
+		this.noAutoriteFiscale = noAutoriteFiscale;
+		this.nomAutoriteFiscale = nomAutoriteFiscale;
+	}
+
+	public Long getEtablissementId() {
+		return etablissementId;
+	}
+
+	public void setEtablissementId(Long etablissementId) {
+		this.etablissementId = etablissementId;
+	}
+
+	public Long getEntrepriseId() {
+		return entrepriseId;
+	}
+
+	public void setEntrepriseId(Long entrepriseId) {
+		this.entrepriseId = entrepriseId;
 	}
 
 	@Override
@@ -44,47 +51,94 @@ public class SiegeView implements Sourced<Source>, DateRange, Annulable {
 		return dateDebut;
 	}
 
+	public void setDateDebut(RegDate dateDebut) {
+		this.dateDebut = dateDebut;
+	}
+
 	@Override
 	public RegDate getDateFin() {
 		return dateFin;
 	}
 
-	public int getNoOfsSiege() {
-		return noOfsSiege;
+	public void setDateFin(RegDate dateFin) {
+		this.dateFin = dateFin;
 	}
 
-	public TypeNoOfs getType() {
-		return type;
+	public TypeAutoriteFiscale getTypeAutoriteFiscale() {
+		return typeAutoriteFiscale;
+	}
+
+	public void setTypeAutoriteFiscale(TypeAutoriteFiscale typeAutoriteFiscale) {
+		this.typeAutoriteFiscale = typeAutoriteFiscale;
+	}
+
+	public Integer getNoAutoriteFiscale() {
+		return noAutoriteFiscale;
+	}
+
+	public void setNoAutoriteFiscale(Integer noAutoriteFiscale) {
+		this.noAutoriteFiscale = noAutoriteFiscale;
+	}
+
+	public String getNomAutoriteFiscale() {
+		return nomAutoriteFiscale;
+	}
+
+	public void setNomAutoriteFiscale(String nomAutoriteFiscale) {
+		this.nomAutoriteFiscale = nomAutoriteFiscale;
 	}
 
 	@Override
 	public boolean isValidAt(RegDate date) {
-		return !annule && RegDateHelper.isBetween(date, dateDebut, dateFin, NullDateBehavior.LATEST);
+		return RegDateHelper.isBetween(date, dateDebut, dateFin, NullDateBehavior.LATEST);
 	}
 
-	@Override
-	public boolean isAnnule() {
-		return annule;
+	/**
+	 * Classe concrète pour l'ajout
+	 */
+	public static final class Add extends SiegeView {
+		public Add() {
+		}
+
+		public Add(Long etablissementId, Long entrepriseId, RegDate dateDebut, RegDate dateFin, TypeAutoriteFiscale typeAutoriteFiscale, Integer noAutoriteFiscale, String nomAutoriteFiscale) {
+			super(etablissementId, entrepriseId, dateDebut, dateFin, typeAutoriteFiscale, noAutoriteFiscale, nomAutoriteFiscale);
+		}
 	}
 
-	@Override
-	public Source getSource() {
-		return source;
-	}
+	/**
+	 * Classe concrète pour l'édition
+	 */
+	public static final class Edit extends SiegeView {
+		private Long id;
+		private boolean peutEditerDateFin;
 
-	public boolean isDernierElement() {
-		return dernierElement;
-	}
+		public Edit() {
+		}
 
-	public void setDernierElement(boolean dernierElement) {
-		this.dernierElement = dernierElement;
-	}
+		public Edit(DomicileEtablissement dom, Long entrepriseId, boolean peutEditerDateFin) {
+			this(dom.getId(), dom.getEtablissement().getNumero(), entrepriseId, dom.getDateDebut(), dom.getDateFin(), dom.getTypeAutoriteFiscale(), dom.getNumeroOfsAutoriteFiscale(), peutEditerDateFin);
+		}
 
-	public boolean isPeutEditerDateFin() {
-		return peutEditerDateFin;
-	}
+		public Edit(Long id, Long tiersId, Long entrepriseId, RegDate dateDebut, RegDate dateFin, TypeAutoriteFiscale typeAutoriteFiscale, Integer noAutoriteFiscale, boolean peutEditerDateFin) {
+			super(tiersId, entrepriseId, dateDebut, dateFin, typeAutoriteFiscale, noAutoriteFiscale, null);
+			this.id = id;
+			this.peutEditerDateFin = peutEditerDateFin;
+		}
 
-	public void setPeutEditerDateFin(boolean peutEditerDateFin) {
-		this.peutEditerDateFin = peutEditerDateFin;
+		public Long getId() {
+			return id;
+		}
+
+		public void setId(Long id) {
+			this.id = id;
+		}
+
+		public boolean isPeutEditerDateFin() {
+			return peutEditerDateFin;
+		}
+
+		public void setPeutEditerDateFin(boolean peutEditerDateFin) {
+			this.peutEditerDateFin = peutEditerDateFin;
+		}
 	}
 }

@@ -4,39 +4,30 @@ import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.uniregctb.common.Annulable;
-import ch.vd.uniregctb.tiers.RaisonSocialeHisto;
-import ch.vd.uniregctb.tiers.Source;
-import ch.vd.uniregctb.tiers.Sourced;
+import ch.vd.uniregctb.tiers.RaisonSocialeFiscaleEntreprise;
 
-public class RaisonSocialeView implements Sourced<Source>, Annulable, DateRange {
+public abstract class RaisonSocialeView implements DateRange {
 
-	private Long id;
+	private Long tiersId;
 	private RegDate dateDebut;
 	private RegDate dateFin;
 	private String raisonSociale;
-	private Source source;
-	private boolean annule;
-	private boolean dernierElement;
 
 	public RaisonSocialeView() {}
 
-	public RaisonSocialeView(RaisonSocialeHisto nom, boolean dernierElement) {
-		this(nom.getId(), nom.isAnnule(), nom.getDateDebut(), nom.getDateFin(), nom.getRaisonSociale(), nom.getSource(), dernierElement);
-	}
-
-	public RaisonSocialeView(Long id, boolean annule, RegDate dateDebut, RegDate dateFin, String raisonSociale, Source source, boolean dernierElement) {
-		this.id = id;
+	public RaisonSocialeView(Long tiersId, RegDate dateDebut, RegDate dateFin, String raisonSociale) {
+		this.tiersId = tiersId;
 		this.dateDebut = dateDebut;
 		this.dateFin = dateFin;
 		this.raisonSociale = raisonSociale;
-		this.source = source;
-		this.annule = annule;
-		this.dernierElement = dernierElement;
 	}
 
-	public Long getId() {
-		return id;
+	public Long getTiersId() {
+		return tiersId;
+	}
+
+	public void setTiersId(Long tiersId) {
+		this.tiersId = tiersId;
 	}
 
 	@Override
@@ -44,39 +35,68 @@ public class RaisonSocialeView implements Sourced<Source>, Annulable, DateRange 
 		return dateDebut;
 	}
 
+	public void setDateDebut(RegDate dateDebut) {
+		this.dateDebut = dateDebut;
+	}
+
 	@Override
 	public RegDate getDateFin() {
 		return dateFin;
+	}
+
+	public void setDateFin(RegDate dateFin) {
+		this.dateFin = dateFin;
 	}
 
 	public String getRaisonSociale() {
 		return raisonSociale;
 	}
 
+	public void setRaisonSociale(String raisonSociale) {
+		this.raisonSociale = raisonSociale;
+	}
+
 	@Override
 	public boolean isValidAt(RegDate date) {
-		return !isAnnule() && RegDateHelper.isBetween(date, dateDebut, dateFin, NullDateBehavior.LATEST);
+		return RegDateHelper.isBetween(date, dateDebut, dateFin, NullDateBehavior.LATEST);
 	}
 
-	private static <T> boolean isSameValue(T one, T two) {
-		return one == two || (one != null && two != null && one.equals(two));
+	/**
+	 * Classe concrète pour l'ajout
+	 */
+	public static final class Add extends RaisonSocialeView {
+		public Add() {
+		}
+
+		public Add(Long tiersId, RegDate dateDebut, RegDate dateFin, String raisonSociale) {
+			super(tiersId, dateDebut, dateFin, raisonSociale);
+		}
 	}
 
-	@Override
-	public boolean isAnnule() {
-		return annule;
-	}
+	/**
+	 * Classe concrète pour l'édition
+	 */
+	public static final class Edit extends RaisonSocialeView {
+		private Long id;
 
-	@Override
-	public Source getSource() {
-		return source;
-	}
+		public Edit() {
+		}
 
-	public boolean isDernierElement() {
-		return dernierElement;
-	}
+		public Edit(RaisonSocialeFiscaleEntreprise rs) {
+			this(rs.getId(), rs.getEntreprise().getNumero(), rs.getDateDebut(), rs.getDateFin(), rs.getRaisonSociale());
+		}
 
-	public void setDernierElement(boolean dernierElement) {
-		this.dernierElement = dernierElement;
+		public Edit(Long id, Long tiersId, RegDate dateDebut, RegDate dateFin, String raisonSociale) {
+			super(tiersId, dateDebut, dateFin, raisonSociale);
+			this.id = id;
+		}
+
+		public Long getId() {
+			return id;
+		}
+
+		public void setId(Long id) {
+			this.id = id;
+		}
 	}
 }

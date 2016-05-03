@@ -1,8 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="/WEB-INF/jsp/include/common.jsp" %>
 
-<%--@elvariable id="command" type="ch.vd.uniregctb.entreprise.EditDomicileView"--%>
-<%--@elvariable id="peutEditerDateFin" type="boolean"--%>
+<%--@elvariable id="command" type="ch.vd.uniregctb.entreprise.DomicileView.Edit"--%>
 
 <tiles:insert template="/WEB-INF/jsp/templates/template.jsp">
   	<tiles:put name="title">

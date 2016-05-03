@@ -93,15 +93,15 @@ public class CivilEntrepriseEditController {
 	private static class CivilEditValidator extends DelegatingValidator {
 		private CivilEditValidator() {
 			addSubValidator(EntrepriseView.class, new DummyValidator<>(EntrepriseView.class));
-			addSubValidator(AddRaisonSocialeView.class, new AddRaisonSocialeViewValidator());
-			addSubValidator(EditRaisonSocialeView.class, new EditRaisonSocialeViewValidator());
-			addSubValidator(AddFormeJuridiqueView.class, new AddFormeJuridiqueViewValidator());
-			addSubValidator(EditFormeJuridiqueView.class, new EditFormeJuridiqueViewValidator());
-			addSubValidator(AddCapitalView.class, new AddCapitalViewValidator());
-			addSubValidator(EditCapitalView.class, new EditCapitalViewValidator());
+			addSubValidator(RaisonSocialeView.Add.class, new RaisonSocialeViewValidator());
+			addSubValidator(RaisonSocialeView.Edit.class, new RaisonSocialeViewValidator());
+			addSubValidator(FormeJuridiqueView.Add.class, new FormeJuridiqueViewValidator());
+			addSubValidator(FormeJuridiqueView.Edit.class, new FormeJuridiqueViewValidator());
+			addSubValidator(CapitalView.Add.class, new CapitalViewValidator());
+			addSubValidator(CapitalView.Edit.class, new CapitalViewValidator());
 			addSubValidator(ContribuableInfosEntrepriseView.class, new ContribuableInfosEntrepriseViewValidator());
-			addSubValidator(AddSiegeView.class, new AddSiegeViewValidator());
-			addSubValidator(EditSiegeView.class, new EditSiegeViewValidator());
+			addSubValidator(SiegeView.Add.class, new SiegeViewValidator());
+			addSubValidator(SiegeView.Edit.class, new SiegeViewValidator());
 		}
 	}
 
@@ -162,17 +162,17 @@ public class CivilEntrepriseEditController {
 			throw new AccessDeniedException("Vous ne possédez pas les droits IfoSec de création de raison sociale.");
 		}
 
-		return showAddRaisonSociale(model, new AddRaisonSocialeView(entreprise.getNumero(), RegDate.get(), null, null));
+		return showAddRaisonSociale(model, new RaisonSocialeView.Add(entreprise.getNumero(), RegDate.get(), null, null));
 	}
 
-	private String showAddRaisonSociale(Model model, AddRaisonSocialeView view) {
+	private String showAddRaisonSociale(Model model, RaisonSocialeView.Add view) {
 		model.addAttribute("command", view);
 		return "donnees-civiles/add-raison-sociale";
 	}
 
 	@Transactional(rollbackFor = Throwable.class)
 	@RequestMapping(value = "/raisonsociale/add.do", method = RequestMethod.POST)
-	public String addRaisonSociale(@Valid @ModelAttribute("command") final AddRaisonSocialeView view, BindingResult result, Model model) throws TiersException {
+	public String addRaisonSociale(@Valid @ModelAttribute("command") final RaisonSocialeView.Add view, BindingResult result, Model model) throws TiersException {
 
 		if (result.hasErrors()) {
 			return showAddRaisonSociale(model, view);
@@ -209,17 +209,17 @@ public class CivilEntrepriseEditController {
 			throw new AccessDeniedException("Vous ne possédez pas les droits IfoSec d'édition de raisons sociales.");
 		}
 
-		return showEditRaisonSociale(model, new EditRaisonSocialeView(raisonSociale));
+		return showEditRaisonSociale(model, new RaisonSocialeView.Edit(raisonSociale));
 	}
 
-	private String showEditRaisonSociale(Model model, EditRaisonSocialeView view) {
+	private String showEditRaisonSociale(Model model, RaisonSocialeView.Edit view) {
 		model.addAttribute("command", view);
 		return "donnees-civiles/edit-raison-sociale";
 	}
 
 	@Transactional(rollbackFor = Throwable.class)
 	@RequestMapping(value = "/raisonsociale/edit.do", method = RequestMethod.POST)
-	public String editRaisonSociale(@Valid @ModelAttribute("command") final EditRaisonSocialeView view, BindingResult result, Model model) throws TiersException {
+	public String editRaisonSociale(@Valid @ModelAttribute("command") final RaisonSocialeView.Edit view, BindingResult result, Model model) throws TiersException {
 
 		if (result.hasErrors()) {
 			return showEditRaisonSociale(model, view);
@@ -284,10 +284,10 @@ public class CivilEntrepriseEditController {
 			throw new AccessDeniedException("Vous ne possédez pas les droits IfoSec de création de forme juridique.");
 		}
 
-		return showAddFormeJuridique(model, new AddFormeJuridiqueView(entreprise.getNumero(), RegDate.get(), null, null));
+		return showAddFormeJuridique(model, new FormeJuridiqueView.Add(entreprise.getNumero(), RegDate.get(), null, null));
 	}
 
-	private String showAddFormeJuridique(Model model, AddFormeJuridiqueView view) {
+	private String showAddFormeJuridique(Model model, FormeJuridiqueView.Add view) {
 		model.addAttribute("command", view);
 		model.addAttribute(FORMES_JURIDIQUES_ENTREPRISE_NAME, tiersMapHelper.getMapFormeJuridiqueEntreprise());
 		return "donnees-civiles/add-forme-juridique";
@@ -295,7 +295,7 @@ public class CivilEntrepriseEditController {
 
 	@Transactional(rollbackFor = Throwable.class)
 	@RequestMapping(value = "/formejuridique/add.do", method = RequestMethod.POST)
-	public String addFormeJuridique(@Valid @ModelAttribute("command") final AddFormeJuridiqueView view, BindingResult result, Model model) throws TiersException {
+	public String addFormeJuridique(@Valid @ModelAttribute("command") final FormeJuridiqueView.Add view, BindingResult result, Model model) throws TiersException {
 
 		if (result.hasErrors()) {
 			return showAddFormeJuridique(model, view);
@@ -332,10 +332,10 @@ public class CivilEntrepriseEditController {
 			throw new AccessDeniedException("Vous ne possédez pas les droits IfoSec d'édition de formes juridiques.");
 		}
 
-		return showEditFormeJuridique(model, new EditFormeJuridiqueView(formeJuridique));
+		return showEditFormeJuridique(model, new FormeJuridiqueView.Edit(formeJuridique));
 	}
 
-	private String showEditFormeJuridique(Model model, EditFormeJuridiqueView view) {
+	private String showEditFormeJuridique(Model model, FormeJuridiqueView.Edit view) {
 		model.addAttribute("command", view);
 		model.addAttribute(FORMES_JURIDIQUES_ENTREPRISE_NAME, tiersMapHelper.getMapFormeJuridiqueEntreprise());
 		return "donnees-civiles/edit-forme-juridique";
@@ -343,7 +343,7 @@ public class CivilEntrepriseEditController {
 
 	@Transactional(rollbackFor = Throwable.class)
 	@RequestMapping(value = "/formejuridique/edit.do", method = RequestMethod.POST)
-	public String editFormeJuridique(@Valid @ModelAttribute("command") final EditFormeJuridiqueView view, BindingResult result, Model model) throws TiersException {
+	public String editFormeJuridique(@Valid @ModelAttribute("command") final FormeJuridiqueView.Edit view, BindingResult result, Model model) throws TiersException {
 
 		if (result.hasErrors()) {
 			return showEditFormeJuridique(model, view);
@@ -406,17 +406,17 @@ public class CivilEntrepriseEditController {
 			throw new AccessDeniedException("Vous ne possédez pas les droits IfoSec de création de capital.");
 		}
 
-		return showAddCapital(model, new AddCapitalView(entreprise.getNumero(), RegDate.get(), null, null, MontantMonetaire.CHF));
+		return showAddCapital(model, new CapitalView.Add(entreprise.getNumero(), RegDate.get(), null, null, MontantMonetaire.CHF));
 	}
 
-	private String showAddCapital(Model model, AddCapitalView view) {
+	private String showAddCapital(Model model, CapitalView.Add view) {
 		model.addAttribute("command", view);
 		return "donnees-civiles/add-capital";
 	}
 
 	@Transactional(rollbackFor = Throwable.class)
 	@RequestMapping(value = "/capital/add.do", method = RequestMethod.POST)
-	public String addCapital(@Valid @ModelAttribute("command") final AddCapitalView view, BindingResult result, Model model) throws TiersException {
+	public String addCapital(@Valid @ModelAttribute("command") final CapitalView.Add view, BindingResult result, Model model) throws TiersException {
 
 		if (result.hasErrors()) {
 			return showAddCapital(model, view);
@@ -453,17 +453,17 @@ public class CivilEntrepriseEditController {
 			throw new AccessDeniedException("Vous ne possédez pas les droits IfoSec d'édition de capitaux.");
 		}
 
-		return showEditCapital(model, new EditCapitalView(capital));
+		return showEditCapital(model, new CapitalView.Edit(capital));
 	}
 
-	private String showEditCapital(Model model, EditCapitalView view) {
+	private String showEditCapital(Model model, CapitalView.Edit view) {
 		model.addAttribute("command", view);
 		return "donnees-civiles/edit-capital";
 	}
 
 	@Transactional(rollbackFor = Throwable.class)
 	@RequestMapping(value = "/capital/edit.do", method = RequestMethod.POST)
-	public String editCapital(@Valid @ModelAttribute("command") final EditCapitalView view, BindingResult result, Model model) throws TiersException {
+	public String editCapital(@Valid @ModelAttribute("command") final CapitalView.Edit view, BindingResult result, Model model) throws TiersException {
 
 		if (result.hasErrors()) {
 			return showEditCapital(model, view);
@@ -581,10 +581,10 @@ public class CivilEntrepriseEditController {
 		}
 
 		controllerUtils.checkAccesDossierEnEcriture(tiersId);
-		return showAddSiege(model, new AddSiegeView(etablissement.getNumero(), entreprise.getNumero(), RegDate.get(), null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, null, null));
+		return showAddSiege(model, new SiegeView.Add(etablissement.getNumero(), entreprise.getNumero(), RegDate.get(), null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, null, null));
 	}
 
-	private String showAddSiege(Model model, AddSiegeView view) {
+	private String showAddSiege(Model model, SiegeView.Add view) {
 		model.addAttribute("typesDomicileFiscal", tiersMapHelper.getMapTypeAutoriteFiscale());
 		model.addAttribute("command", view);
 		return "donnees-civiles/add-siege";
@@ -592,7 +592,7 @@ public class CivilEntrepriseEditController {
 
 	@Transactional(rollbackFor = Throwable.class)
 	@RequestMapping(value = "/siege/add.do", method = RequestMethod.POST)
-	public String addSiege(@Valid @ModelAttribute("command") final AddSiegeView view, BindingResult result, Model model) throws TiersException {
+	public String addSiege(@Valid @ModelAttribute("command") final SiegeView.Add view, BindingResult result, Model model) throws TiersException {
 
 		if (result.hasErrors()) {
 			return showAddSiege(model, view);
@@ -631,10 +631,10 @@ public class CivilEntrepriseEditController {
 			throw new AccessDeniedException("Vous ne possédez pas les droits IfoSec d'édition de sieges.");
 		}
 		controllerUtils.checkAccesDossierEnEcriture(domicile.getEtablissement().getNumero());
-		return showEditSiege(model, new EditSiegeView(domicile, entrepriseId, peutEditerDateFin));
+		return showEditSiege(model, new SiegeView.Edit(domicile, entrepriseId, peutEditerDateFin));
 	}
 
-	private String showEditSiege(Model model, EditSiegeView view) {
+	private String showEditSiege(Model model, SiegeView.Edit view) {
 		model.addAttribute("command", view);
 		model.addAttribute("typesDomicileFiscal", tiersMapHelper.getMapTypeAutoriteFiscale());
 		return "donnees-civiles/edit-siege";
@@ -642,7 +642,7 @@ public class CivilEntrepriseEditController {
 
 	@Transactional(rollbackFor = Throwable.class)
 	@RequestMapping(value = "/siege/edit.do", method = RequestMethod.POST)
-	public String editSiege(@Valid @ModelAttribute("command") final EditSiegeView view, BindingResult result, Model model) throws TiersException {
+	public String editSiege(@Valid @ModelAttribute("command") final SiegeView.Edit view, BindingResult result, Model model) throws TiersException {
 
 		if (result.hasErrors()) {
 			return showEditSiege(model, view);

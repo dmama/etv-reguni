@@ -7,7 +7,7 @@ public class AddEtatEntrepriseViewValidator implements Validator {
 
 	@Override
 	public boolean supports(Class<?> clazz) {
-		return EntrepriseView.class.isAssignableFrom(clazz);
+		return AddEtatEntrepriseView.class.isAssignableFrom(clazz);
 	}
 
 	@Override

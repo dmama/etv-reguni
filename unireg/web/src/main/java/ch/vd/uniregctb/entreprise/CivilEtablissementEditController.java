@@ -84,11 +84,11 @@ public class CivilEtablissementEditController {
 	private static class CivilEtablissementEditValidator extends DelegatingValidator {
 		private CivilEtablissementEditValidator() {
 			addSubValidator(EtablissementView.class, new DummyValidator<>(EtablissementView.class));
-			addSubValidator(AddRaisonSocialeView.class, new AddRaisonSocialeViewValidator());
+			addSubValidator(RaisonSocialeView.class, new RaisonSocialeViewValidator());
 			addSubValidator(EditRaisonEnseigneEtablissementView.class, new EditRaisonEnseigneEtablissementViewValidator());
 			addSubValidator(ContribuableInfosEntrepriseView.class, new ContribuableInfosEntrepriseViewValidator());
-			addSubValidator(AddDomicileView.class, new AddDomicileViewValidator());
-			addSubValidator(EditDomicileView.class, new EditDomicileViewValidator());
+			addSubValidator(DomicileView.Add.class, new DomicileViewValidator());
+			addSubValidator(DomicileView.Edit.class, new DomicileViewValidator());
 		}
 	}
 
@@ -247,10 +247,10 @@ public class CivilEtablissementEditController {
 		}
 
 		controllerUtils.checkAccesDossierEnEcriture(tiersId);
-		return showAddDomicile(model, new AddDomicileView(etablissement.getNumero(), RegDate.get(), null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, null, null));
+		return showAddDomicile(model, new DomicileView.Add(etablissement.getNumero(), RegDate.get(), null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, null, null));
 	}
 
-	private String showAddDomicile(Model model, AddDomicileView view) {
+	private String showAddDomicile(Model model, DomicileView.Add view) {
 		model.addAttribute("typesDomicileFiscal", tiersMapHelper.getMapTypeAutoriteFiscale());
 		model.addAttribute("command", view);
 		return "donnees-civiles/add-domicile";
@@ -258,7 +258,7 @@ public class CivilEtablissementEditController {
 
 	@Transactional(rollbackFor = Throwable.class)
 	@RequestMapping(value = "/domicile/add.do", method = RequestMethod.POST)
-	public String addDomicile(@Valid @ModelAttribute("command") final AddDomicileView view, BindingResult result, Model model) throws TiersException {
+	public String addDomicile(@Valid @ModelAttribute("command") final DomicileView.Add view, BindingResult result, Model model) throws TiersException {
 
 		if (result.hasErrors()) {
 			return showAddDomicile(model, view);
@@ -295,10 +295,10 @@ public class CivilEtablissementEditController {
 			throw new AccessDeniedException("Vous ne possédez pas les droits IfoSec d'édition de domiciles.");
 		}
 		controllerUtils.checkAccesDossierEnEcriture(domicile.getEtablissement().getNumero());
-		return showEditDomicile(model, new EditDomicileView(domicile, peutEditerDateFin));
+		return showEditDomicile(model, new DomicileView.Edit(domicile, peutEditerDateFin));
 	}
 
-	private String showEditDomicile(Model model, EditDomicileView view) {
+	private String showEditDomicile(Model model, DomicileView.Edit view) {
 		model.addAttribute("command", view);
 		model.addAttribute("typesDomicileFiscal", tiersMapHelper.getMapTypeAutoriteFiscale());
 		return "donnees-civiles/edit-domicile";
@@ -306,7 +306,7 @@ public class CivilEtablissementEditController {
 
 	@Transactional(rollbackFor = Throwable.class)
 	@RequestMapping(value = "/domicile/edit.do", method = RequestMethod.POST)
-	public String editDomicile(@Valid @ModelAttribute("command") final EditDomicileView view, BindingResult result, Model model) throws TiersException {
+	public String editDomicile(@Valid @ModelAttribute("command") final DomicileView.Edit view, BindingResult result, Model model) throws TiersException {
 
 		if (result.hasErrors()) {
 			return showEditDomicile(model, view);

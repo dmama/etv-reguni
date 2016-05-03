@@ -7,43 +7,24 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.tiers.DomicileEtablissement;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
-public class EditSiegeView implements DateRange {
+public abstract class DomicileView implements DateRange {
 
-	private Long id;
+	private Long tiersId;
 	private RegDate dateDebut;
 	private RegDate dateFin;
-	private Long tiersId;
-	private Long entrepriseId;
 	private TypeAutoriteFiscale typeAutoriteFiscale;
 	private Integer noAutoriteFiscale;
 	private String nomAutoriteFiscale;
-	private boolean peutEditerDateFin;
 
-	public EditSiegeView() {
-	}
+	public DomicileView() {}
 
-	public EditSiegeView(DomicileEtablissement dom, Long entrepriseId, boolean peutEditerDateFin) {
-		this(dom.getId(), dom.getEtablissement().getNumero(), entrepriseId, dom.getDateDebut(), dom.getDateFin(), dom.getTypeAutoriteFiscale(), dom.getNumeroOfsAutoriteFiscale(), peutEditerDateFin);
-	}
-
-	public EditSiegeView(Long id, Long tiersId, Long entrepriseId, RegDate dateDebut, RegDate dateFin, TypeAutoriteFiscale typeAutoriteFiscale, Integer noAutoriteFiscale, boolean peutEditerDateFin) {
-		this.id = id;
+	public DomicileView(Long tiersId, RegDate dateDebut, RegDate dateFin, TypeAutoriteFiscale typeAutoriteFiscale, Integer noAutoriteFiscale, String nomAutoriteFiscale) {
+		this.tiersId = tiersId;
 		this.dateDebut = dateDebut;
 		this.dateFin = dateFin;
-		this.tiersId = tiersId;
-		this.entrepriseId = entrepriseId;
 		this.typeAutoriteFiscale = typeAutoriteFiscale;
 		this.noAutoriteFiscale = noAutoriteFiscale;
-		this.peutEditerDateFin = peutEditerDateFin;
-		this.nomAutoriteFiscale = null;
-	}
-
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
+		this.nomAutoriteFiscale = nomAutoriteFiscale;
 	}
 
 	public Long getTiersId() {
@@ -52,14 +33,6 @@ public class EditSiegeView implements DateRange {
 
 	public void setTiersId(Long tiersId) {
 		this.tiersId = tiersId;
-	}
-
-	public Long getEntrepriseId() {
-		return entrepriseId;
-	}
-
-	public void setEntrepriseId(Long entrepriseId) {
-		this.entrepriseId = entrepriseId;
 	}
 
 	@Override
@@ -109,11 +82,52 @@ public class EditSiegeView implements DateRange {
 		return RegDateHelper.isBetween(date, dateDebut, dateFin, NullDateBehavior.LATEST);
 	}
 
-	public boolean isPeutEditerDateFin() {
-		return peutEditerDateFin;
+	/**
+	 * Classe concrète pour l'ajout
+	 */
+	public static final class Add extends DomicileView {
+		public Add() {
+		}
+
+		public Add(Long tiersId, RegDate dateDebut, RegDate dateFin, TypeAutoriteFiscale typeAutoriteFiscale, Integer noAutoriteFiscale, String nomAutoriteFiscale) {
+			super(tiersId, dateDebut, dateFin, typeAutoriteFiscale, noAutoriteFiscale, nomAutoriteFiscale);
+		}
 	}
 
-	public void setPeutEditerDateFin(boolean peutEditerDateFin) {
-		this.peutEditerDateFin = peutEditerDateFin;
+	/**
+	 * Classe concrète pour l'édition
+	 */
+	public static final class Edit extends DomicileView {
+		private Long id;
+		private boolean peutEditerDateFin;
+
+		public Edit() {
+		}
+
+		public Edit(DomicileEtablissement dom, boolean peutEditerDateFin) {
+			this(dom.getId(), dom.getEtablissement().getNumero(), dom.getDateDebut(), dom.getDateFin(), dom.getTypeAutoriteFiscale(), dom.getNumeroOfsAutoriteFiscale(), peutEditerDateFin);
+		}
+
+		public Edit(Long id, Long tiersId, RegDate dateDebut, RegDate dateFin, TypeAutoriteFiscale typeAutoriteFiscale, Integer noAutoriteFiscale, boolean peutEditerDateFin) {
+			super(tiersId, dateDebut, dateFin, typeAutoriteFiscale, noAutoriteFiscale, null);
+			this.id = id;
+			this.peutEditerDateFin = peutEditerDateFin;
+		}
+
+		public Long getId() {
+			return id;
+		}
+
+		public void setId(Long id) {
+			this.id = id;
+		}
+
+		public boolean isPeutEditerDateFin() {
+			return peutEditerDateFin;
+		}
+
+		public void setPeutEditerDateFin(boolean peutEditerDateFin) {
+			this.peutEditerDateFin = peutEditerDateFin;
+		}
 	}
 }

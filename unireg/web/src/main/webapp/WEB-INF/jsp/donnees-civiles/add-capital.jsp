@@ -2,7 +2,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="/WEB-INF/jsp/include/common.jsp" %>
 
-<%--@elvariable id="command" type="ch.vd.uniregctb.entreprise.AddCapitalView"--%>
+<%--@elvariable id="command" type="ch.vd.uniregctb.entreprise.CapitalView.Add"--%>
 
 <c:set var="lengthmonnaie" value="<%=LengthConstants.MONNAIE_ISO%>" scope="request" />
 

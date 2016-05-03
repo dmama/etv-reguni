@@ -1,7 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="/WEB-INF/jsp/include/common.jsp" %>
 
-<%--@elvariable id="command" type="ch.vd.uniregctb.entreprise.EditSiegeView"--%>
+<%--@elvariable id="command" type="ch.vd.uniregctb.entreprise.SiegeView.Edit"--%>
 
 <tiles:insert template="/WEB-INF/jsp/templates/template.jsp">
   	<tiles:put name="title">
@@ -20,7 +20,7 @@
 					<legend><span><fmt:message key="label.entreprise.siege" /></span></legend>
 
 					<form:hidden path="id"/>
-					<form:hidden path="tiersId"/>
+					<form:hidden path="etablissementId"/>
 					<form:hidden path="entrepriseId"/>
 					<form:hidden path="dateDebut"/>
 					<form:hidden path="peutEditerDateFin"/>

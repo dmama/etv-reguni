@@ -177,65 +177,65 @@ public class EntrepriseServiceImpl implements EntrepriseService {
 		return views;
 	}
 
-	private static List<CapitalView> extractCapitaux(List<CapitalHisto> capitaux) {
+	private static List<ShowCapitalView> extractCapitaux(List<CapitalHisto> capitaux) {
 		if (capitaux == null || capitaux.isEmpty()) {
 			return Collections.emptyList();
 		}
 
-		final List<CapitalView> views = new ArrayList<>(capitaux.size());
+		final List<ShowCapitalView> views = new ArrayList<>(capitaux.size());
 		for (CapitalHisto capital : capitaux) {
-			views.add(new CapitalView(capital));
+			views.add(new ShowCapitalView(capital));
 		}
-		Collections.sort(views, new AnnulableHelper.AnnulesApresWrappingComparator<>(new DateRangeComparator<CapitalView>(DateRangeComparator.CompareOrder.DESCENDING)));
-		final List<CapitalView> listeSansAnnules = AnnulableHelper.sansElementsAnnules(views);
+		Collections.sort(views, new AnnulableHelper.AnnulesApresWrappingComparator<>(new DateRangeComparator<ShowCapitalView>(DateRangeComparator.CompareOrder.DESCENDING)));
+		final List<ShowCapitalView> listeSansAnnules = AnnulableHelper.sansElementsAnnules(views);
 		if (listeSansAnnules.size() > 1) {
 			listeSansAnnules.get(0).setDernierElement(true);
 		}
 		return views;
 	}
 
-	private static List<FormeJuridiqueView> getFormesJuridiques(List<FormeLegaleHisto> formesLegale) {
+	private static List<ShowFormeJuridiqueView> getFormesJuridiques(List<FormeLegaleHisto> formesLegale) {
 		if (formesLegale == null) {
 			return null;
 		}
-		final List<FormeJuridiqueView> list = new ArrayList<>(formesLegale.size());
+		final List<ShowFormeJuridiqueView> list = new ArrayList<>(formesLegale.size());
 		for (FormeLegaleHisto formeLegale : formesLegale) {
-			list.add(new FormeJuridiqueView(formeLegale));
+			list.add(new ShowFormeJuridiqueView(formeLegale));
 		}
-		Collections.sort(list, new AnnulableHelper.AnnulesApresWrappingComparator<>(new DateRangeComparator<FormeJuridiqueView>(DateRangeComparator.CompareOrder.DESCENDING)));
-		final List<FormeJuridiqueView> listeSansAnnules = AnnulableHelper.sansElementsAnnules(list);
+		Collections.sort(list, new AnnulableHelper.AnnulesApresWrappingComparator<>(new DateRangeComparator<ShowFormeJuridiqueView>(DateRangeComparator.CompareOrder.DESCENDING)));
+		final List<ShowFormeJuridiqueView> listeSansAnnules = AnnulableHelper.sansElementsAnnules(list);
 		if (listeSansAnnules.size() > 1) {
 			listeSansAnnules.get(0).setDernierElement(true);
 		}
 		return list;
 	}
 
-	private static List<RaisonSocialeView> getRaisonSociale(List<RaisonSocialeHisto> raisonsSociales) {
+	private static List<ShowRaisonSocialeView> getRaisonSociale(List<RaisonSocialeHisto> raisonsSociales) {
 		if (raisonsSociales == null) {
 			return null;
 		}
-		final List<RaisonSocialeView> list = new ArrayList<>(raisonsSociales.size());
+		final List<ShowRaisonSocialeView> list = new ArrayList<>(raisonsSociales.size());
 		for (RaisonSocialeHisto raisonSociale : raisonsSociales) {
-			list.add(new RaisonSocialeView(raisonSociale, false));
+			list.add(new ShowRaisonSocialeView(raisonSociale, false));
 		}
-		Collections.sort(list, new AnnulableHelper.AnnulesApresWrappingComparator<>(new DateRangeComparator<RaisonSocialeView>(DateRangeComparator.CompareOrder.DESCENDING)));
-		final List<RaisonSocialeView> listeSansAnnules = AnnulableHelper.sansElementsAnnules(list);
+		Collections.sort(list, new AnnulableHelper.AnnulesApresWrappingComparator<>(new DateRangeComparator<ShowRaisonSocialeView>(DateRangeComparator.CompareOrder.DESCENDING)));
+		final List<ShowRaisonSocialeView> listeSansAnnules = AnnulableHelper.sansElementsAnnules(list);
 		if (listeSansAnnules.size() > 1) {
 			listeSansAnnules.get(0).setDernierElement(true);
 		}
 		return list;
 	}
 
-	private static List<SiegeView> getSieges(List<DomicileHisto> sieges) {
+	private static List<ShowSiegeView> getSieges(List<DomicileHisto> sieges) {
 		if (sieges == null) {
 			return null;
 		}
-		final List<SiegeView> list = new ArrayList<>(sieges.size());
+		final List<ShowSiegeView> list = new ArrayList<>(sieges.size());
 		for (DomicileHisto siege : sieges) {
-			list.add(new SiegeView(siege));
+			list.add(new ShowSiegeView(siege));
 		}
-		Collections.sort(list, new AnnulableHelper.AnnulesApresWrappingComparator<>(new DateRangeComparator<SiegeView>(DateRangeComparator.CompareOrder.DESCENDING)));
-		final List<SiegeView> listeSansAnnules = AnnulableHelper.sansElementsAnnules(list);
+		Collections.sort(list, new AnnulableHelper.AnnulesApresWrappingComparator<>(new DateRangeComparator<ShowSiegeView>(DateRangeComparator.CompareOrder.DESCENDING)));
+		final List<ShowSiegeView> listeSansAnnules = AnnulableHelper.sansElementsAnnules(list);
 		if (listeSansAnnules.size() > 1) {
 			listeSansAnnules.get(0).setDernierElement(true);
 		}
