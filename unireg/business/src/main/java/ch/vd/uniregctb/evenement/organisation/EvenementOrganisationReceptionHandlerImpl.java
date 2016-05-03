@@ -132,11 +132,11 @@ public class EvenementOrganisationReceptionHandlerImpl implements EvenementOrgan
 			public List<EvenementOrganisation> doInTransaction(TransactionStatus status) {
 				List<EvenementOrganisation> saved = new ArrayList<>();
 
-				// si un événement organnisation existe déjà avec l'ID donné, on log un warning et on s'arrête là...
+				// si un événement organisation existe déjà avec l'ID donné, on log un warning et on s'arrête là...
 				final long noEvenement = events.get(0).getNoEvenement();
 				List<EvenementOrganisation> existing = evtOrganisationDAO.getEvenementsForNoEvenement(noEvenement);
 				if (!existing.isEmpty()) {
-					Audit.warn(noEvenement, String.format("L'événement organnisation %d existe déjà en base : cette nouvelle réception est donc ignorée!", noEvenement));
+					Audit.warn(noEvenement, String.format("L'événement organisation %d existe déjà en base : cette nouvelle réception est donc ignorée!", noEvenement));
 					return null;
 				}
 
@@ -164,7 +164,7 @@ public class EvenementOrganisationReceptionHandlerImpl implements EvenementOrgan
 	public void afterPropertiesSet() throws Exception {
 		if (statsService != null) {
 
-			// façade de monitoring sur la queue d'attente de traitement des événements organnisation
+			// façade de monitoring sur la queue d'attente de traitement des événements organisation
 			// où la charge est définie comme le nombre d'organisations en attente de traitement
 			final LoadMonitorable service = new LoadMonitorable() {
 				@Override
