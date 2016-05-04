@@ -51,20 +51,21 @@ public class RadiationAPM extends EvenementOrganisationInterneDeTraitement {
 	public void doHandle(EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) throws EvenementOrganisationException {
 		boolean assujettie = determineAssujettie(getEntreprise(), dateRadiation);
 
-		if (getEntreprise().getEtatActuel().getType() == TypeEtatEntreprise.INSCRITE_RC) {
-			suivis.addSuivi("On considère que l'association / fondation reste en activité puisqu'une radiation arrive alors qu'elle est simplement inscrite.");
-			changeEtatEntreprise(getEntreprise(), TypeEtatEntreprise.RADIEE_RC, dateRadiation, suivis);
-			changeEtatEntreprise(getEntreprise(), TypeEtatEntreprise.FONDEE, dateRadiation, suivis);
-			warnings.addWarning(String.format("Vérification requise pour la radiation de l'association / fondation %ssortie du RC.", assujettie ? "encore assujettie " : ""));
-		}
-		else if (assujettie && getEntreprise().getEtatActuel().getType() == TypeEtatEntreprise.EN_FAILLITE) {
-			changeEtatEntreprise(getEntreprise(), TypeEtatEntreprise.RADIEE_RC, dateRadiation, suivis);
-			changeEtatEntreprise(getEntreprise(), TypeEtatEntreprise.EN_FAILLITE, dateRadiation, suivis);
-			suivis.addSuivi("On considère que l'association / fondation reste en activité puisqu'elle est toujours assujettie, bien qu'elle soit en faillite.");
-			warnings.addWarning("Vérification requise pour la radiation de l'association / fondation encore assujettie sortie du RC, qui reste en faillite.");
+		if (assujettie) {
+			if (getEntreprise().getEtatActuel().getType() == TypeEtatEntreprise.INSCRITE_RC) {
+				changeEtatEntreprise(getEntreprise(), TypeEtatEntreprise.RADIEE_RC, dateRadiation, suivis);
+				changeEtatEntreprise(getEntreprise(), TypeEtatEntreprise.FONDEE, dateRadiation, suivis);
+				warnings.addWarning("Vérification requise pour la radiation de l'association / fondation encore assujettie sortie du RC.");
+			}
+			else if (getEntreprise().getEtatActuel().getType() == TypeEtatEntreprise.EN_FAILLITE) {
+				changeEtatEntreprise(getEntreprise(), TypeEtatEntreprise.RADIEE_RC, dateRadiation, suivis);
+				changeEtatEntreprise(getEntreprise(), TypeEtatEntreprise.EN_FAILLITE, dateRadiation, suivis);
+				suivis.addSuivi("On considère que l'association / fondation reste en activité puisqu'elle est toujours assujettie, bien qu'elle soit en faillite.");
+				warnings.addWarning("Vérification requise pour la radiation de l'association / fondation encore assujettie sortie du RC, qui reste en faillite.");
+			}
 		} else {
 			changeEtatEntreprise(getEntreprise(), TypeEtatEntreprise.RADIEE_RC, dateRadiation, suivis);
-			warnings.addWarning(String.format("Vérification requise pour l'association / fondation radiée du RC %s.", assujettie ? "encore assujettie" : ""));
+			warnings.addWarning("Vérification requise pour l'association / fondation radiée du RC.");
 		}
 
 		raiseStatusTo(HandleStatus.TRAITE);
