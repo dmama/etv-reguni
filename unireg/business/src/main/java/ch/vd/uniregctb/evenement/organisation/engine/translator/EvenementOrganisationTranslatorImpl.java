@@ -380,12 +380,12 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 			if (result.isPartiel()) {
 				String messageEtablissementsNonRattaches = null;
 				if (!result.getEtablissementsNonRattaches().isEmpty()) {
-				String etablissementsNonRattaches = CollectionsUtils.toString(result.getEtablissementsNonRattaches(), TIERS_NO_RENDERER, "");
+				String etablissementsNonRattaches = CollectionsUtils.toString(result.getEtablissementsNonRattaches(), TIERS_NO_RENDERER, ", ");
 					messageEtablissementsNonRattaches = String.format(" Cependant, certains établissements n'ont pas trouvé d'équivalent civil: %s.", etablissementsNonRattaches);
 				}
 				String messageSitesNonRattaches = null;
 				if (!result.getSitesNonRattaches().isEmpty()) {
-					String sitesNonRattaches = CollectionsUtils.toString(result.getSitesNonRattaches(), SITE_RENDERER, "");
+					String sitesNonRattaches = CollectionsUtils.toString(result.getSitesNonRattaches(), SITE_RENDERER, ", ");
 					messageSitesNonRattaches = String.format(" Aussi des sites civils secondaires n'ont pas pu être rattachés et seront créés: %s", sitesNonRattaches);
 				}
 
