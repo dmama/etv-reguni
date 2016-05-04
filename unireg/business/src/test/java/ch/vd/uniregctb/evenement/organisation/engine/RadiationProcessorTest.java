@@ -397,7 +397,7 @@ public class RadiationProcessorTest extends AbstractEvenementOrganisationProcess
 	}
 
 	@Test(timeout = 10000L)
-	public void testRadiationAPMRCmaisResteIDE() throws Exception {
+	public void testRadiationAPMRCmaisResteVivante() throws Exception {
 
 		// Mise en place service mock
 		final Long noOrganisation = 101202100L;
@@ -514,14 +514,12 @@ public class RadiationProcessorTest extends AbstractEvenementOrganisationProcess
 
 				                             Assert.assertEquals("Mutation : Radiation APM",
 				                                                 evt.getErreurs().get(1).getMessage());
-				                             Assert.assertEquals("On considère que l'association / fondation reste en activité puisqu'une radiation arrive alors qu'elle est simplement inscrite.",
-				                                                 evt.getErreurs().get(2).getMessage());
 				                             Assert.assertEquals("Réglage de l'état: Radiée du RC.",
-				                                                 evt.getErreurs().get(3).getMessage());
+				                                                 evt.getErreurs().get(2).getMessage());
 				                             Assert.assertEquals("Réglage de l'état: Fondée.",
-				                                                 evt.getErreurs().get(4).getMessage());
+				                                                 evt.getErreurs().get(3).getMessage());
 				                             Assert.assertEquals("Vérification requise pour la radiation de l'association / fondation encore assujettie sortie du RC.",
-				                                                 evt.getErreurs().get(5).getMessage());
+				                                                 evt.getErreurs().get(4).getMessage());
 				                             return null;
 			                             }
 		                             }
@@ -529,7 +527,135 @@ public class RadiationProcessorTest extends AbstractEvenementOrganisationProcess
 	}
 
 	@Test(timeout = 10000L)
-	public void testRadiationAPMRCEnFaillitemaisResteIDE() throws Exception {
+	public void testRadiationAPMRCNonAssujettie() throws Exception {
+
+		// Mise en place service mock
+		final Long noOrganisation = 101202100L;
+		final Long noSite = noOrganisation + 1000000;
+
+		serviceOrganisation.setUp(new MockServiceOrganisation() {
+			@Override
+			protected void init() {
+				MockOrganisation organisation =
+						MockOrganisationFactory.createOrganisation(noOrganisation, noSite, "Association sympa", date(2010, 6, 26), null, FormeLegale.N_0109_ASSOCIATION,
+						                                           TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF, date(2010, 6, 24),
+						                                           StatusRegistreIDE.DEFINITIF,
+						                                           TypeOrganisationRegistreIDE.ASSOCIATION, null, null);
+				MockDonneesRC rc = (MockDonneesRC) organisation.getDonneesSites().get(0).getDonneesRC();
+				rc.changeStatusInscription(date(2015, 7, 5), StatusInscriptionRC.RADIE);
+				rc.changeDateRadiation(date(2015, 7, 5), date(2015, 7, 2));
+				addOrganisation(organisation);
+			}
+		});
+
+		// Création de l'entreprise
+
+		final Entreprise entreprise = doInNewTransactionAndSession(new TransactionCallback<Entreprise>() {
+			@Override
+			public Entreprise doInTransaction(TransactionStatus transactionStatus) {
+
+				final Entreprise entreprise = addEntrepriseConnueAuCivil(noOrganisation);
+				tiersService.changeEtatEntreprise(TypeEtatEntreprise.INSCRITE_RC, entreprise, date(2010, 6, 24), TypeGenerationEtatEntreprise.AUTOMATIQUE);
+				return entreprise;
+			}
+		});
+
+		// Création de l'événement
+		final Long noEvenement = 12344321L;
+
+		// Persistence événement
+		doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus transactionStatus) {
+				final EvenementOrganisation event = createEvent(noEvenement, noOrganisation, TypeEvenementOrganisation.FOSC_AUTRE_MUTATION, date(2015, 7, 5), A_TRAITER);
+				return hibernateTemplate.merge(event).getId();
+			}
+		});
+
+
+		// Configuration du translator
+		EvenementOrganisationTranslatorImpl translator = new EvenementOrganisationTranslatorImpl();
+
+		translator.setServiceOrganisationService(serviceOrganisation);
+		translator.setServiceInfrastructureService(getBean(ProxyServiceInfrastructureService.class, "serviceInfrastructureService"));
+		translator.setTiersDAO(getBean(TiersDAO.class, "tiersDAO"));
+		translator.setDataEventService(getBean(DataEventService.class, "dataEventService"));
+		translator.setTiersService(getBean(TiersService.class, "tiersService"));
+		translator.setMetierServicePM(getBean(MetierServicePM.class, "metierServicePM"));
+		translator.setAdresseService(getBean(AdresseService.class, "adresseService"));
+		translator.setIndexer(getBean(GlobalTiersIndexer.class, "globalTiersIndexer"));
+		translator.setEvenementFiscalService(getBean(EvenementFiscalService.class, "evenementFiscalService"));
+		translator.setAssujettissementService(new AssujettissementService() {
+			@Override
+			public List<Assujettissement> determine(Contribuable ctb) throws AssujettissementException {
+				return Collections.emptyList();
+			}
+
+			@Override
+			public List<Assujettissement> determineRole(ContribuableImpositionPersonnesPhysiques ctb) throws AssujettissementException {
+				throw new UnsupportedOperationException();
+			}
+
+			@Override
+			public List<SourcierPur> determineSource(ContribuableImpositionPersonnesPhysiques ctb) throws AssujettissementException {
+				throw new UnsupportedOperationException();
+			}
+
+			@Override
+			public List<Assujettissement> determinePourCommunes(Contribuable ctb, Set<Integer> noOfsCommunesVaudoises) throws AssujettissementException {
+				throw new UnsupportedOperationException();
+			}
+
+			@Override
+			public List<Assujettissement> determine(Contribuable contribuable, int annee) throws AssujettissementException {
+				throw new UnsupportedOperationException();
+			}
+
+			@Override
+			public List<Assujettissement> determine(Contribuable contribuable, @Nullable DateRange range, boolean collate) throws AssujettissementException {
+				throw new UnsupportedOperationException();
+			}
+		});
+		translator.setParametreAppService(getBean(ParametreAppService.class, "parametreAppService"));
+		translator.afterPropertiesSet();
+
+		buildProcessor(translator);
+
+
+		// Traitement synchrone de l'événement
+		traiterEvenements(noOrganisation);
+
+		// Vérification du traitement de l'événement
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			                             @Override
+			                             public Object doInTransaction(TransactionStatus status) {
+
+				                             final EvenementOrganisation evt = getUniqueEvent(noEvenement);
+				                             Assert.assertNotNull(evt);
+				                             Assert.assertEquals(EtatEvenementOrganisation.A_VERIFIER, evt.getEtat());
+
+				                             final Entreprise entreprise = tiersDAO.getEntrepriseByNumeroOrganisation(evt.getNoOrganisation());
+				                             Assert.assertEquals(TypeEtatEntreprise.RADIEE_RC, entreprise.getEtatActuel().getType());
+
+				                             // vérification des événements fiscaux
+				                             final List<EvenementFiscal> evtsFiscaux = evtFiscalDAO.getAll();
+				                             Assert.assertNotNull(evtsFiscaux);
+				                             Assert.assertEquals(0, evtsFiscaux.size());
+
+				                             Assert.assertEquals("Mutation : Radiation APM",
+				                                                 evt.getErreurs().get(1).getMessage());
+				                             Assert.assertEquals("Réglage de l'état: Radiée du RC.",
+				                                                 evt.getErreurs().get(2).getMessage());
+				                             Assert.assertEquals("Vérification requise pour l'association / fondation radiée du RC.",
+				                                                 evt.getErreurs().get(3).getMessage());
+				                             return null;
+			                             }
+		                             }
+		);
+	}
+
+	@Test(timeout = 10000L)
+	public void testRadiationAPMRCEnFaillitemaisResteVivante() throws Exception {
 
 		// Mise en place service mock
 		final Long noOrganisation = 101202100L;
