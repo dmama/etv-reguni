@@ -48,11 +48,11 @@ public class FormeJuridiqueInvalideStrategy extends AbstractOrganisationStrategy
 			final String message;
 			if (entreprise == null) {
 				message = String.format(
-						"L'organisation n°%s, nom: %s, est en fait une succursale au RC rapportée de manière erronée comme une entreprise par RCEnt. Elle ne peut aboutir à la création d'un contribuable PM.",
+						"L'organisation n°%d, nom: %s, est en fait une succursale au RC rapportée de manière erronée comme une entreprise par RCEnt. Elle ne peut aboutir à la création d'un contribuable PM.",
 						organisation.getNumeroOrganisation(), organisation.getNom(dateApres));
 			} else {
 				message = String.format(
-						"L'organisation n°%s, nom: %s, est en fait une succursale au RC rapportée de manière erronée comme une entreprise par RCEnt. Elle est pourtant associée à l'entreprise n°%s. Ce cas doit être corrigé.",
+						"L'organisation n°%d, nom: %s, est en fait une succursale au RC rapportée de manière erronée comme une entreprise par RCEnt. Elle est pourtant associée à l'entreprise n°%s. Ce cas doit être corrigé.",
 						organisation.getNumeroOrganisation(), organisation.getNom(dateApres), FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()));
 			}
 			return new TraitementManuel(event, organisation, entreprise, context, options, message);

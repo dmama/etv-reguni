@@ -114,12 +114,12 @@ public abstract class CreateEntreprise extends EvenementOrganisationInterneDeTra
 		  */
 
 		if (sitePrincipal == null) {
-			erreurs.addErreur(String.format("Aucun établissement principal trouvé pour la date du %s. [no organisation: %s]",
+			erreurs.addErreur(String.format("Aucun établissement principal trouvé pour la date du %s. [no organisation: %d]",
 			                                RegDateHelper.dateToDisplayString(getDateDeCreation()), getOrganisation().getNumeroOrganisation()));
 		}
 
 		if (autoriteFiscalePrincipale == null) {
-			erreurs.addErreur(String.format("Autorité fiscale introuvable pour la date du %s. [no organisation: %s]",
+			erreurs.addErreur(String.format("Autorité fiscale introuvable pour la date du %s. [no organisation: %d]",
 			                                RegDateHelper.dateToDisplayString(getDateDeCreation()), getOrganisation().getNumeroOrganisation()));
 		}
 

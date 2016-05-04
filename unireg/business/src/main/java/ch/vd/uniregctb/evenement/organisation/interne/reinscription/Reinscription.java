@@ -5,9 +5,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 import ch.vd.unireg.interfaces.organisation.data.StatusInscriptionRC;
+import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationContext;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationException;
@@ -69,8 +71,8 @@ public class Reinscription extends EvenementOrganisationInterneDeTraitement {
 		ForFiscalPrincipalPM dernierForPrincipal = getEntreprise().getDernierForFiscalPrincipal();
 		if (dernierForPrincipal != null) {
 			if (dernierForPrincipal.isValidAt(dateApres)) {
-				LOGGER.info(String.format("Réinscription RC de l'entreprise %s: un for actif est déjà présent en date du %s",
-				                          getEntreprise().getNumero(), dateApres));
+				LOGGER.info(String.format("Réinscription RC de l'entreprise n°%s: un for actif est déjà présent en date du %s",
+				                          FormatNumeroHelper.numeroCTBToDisplay(getEntreprise().getNumero()), RegDateHelper.dateToDisplayString(dateApres)));
 			} else {
 				reopenForFiscalPrincipal(dernierForPrincipal, suivis);
 			}
@@ -78,7 +80,7 @@ public class Reinscription extends EvenementOrganisationInterneDeTraitement {
 			warnings.addWarning("Une vérification manuelle est requise pour la réinscription au RC d’une entreprise radiée.");
 		} else {
 			changeEtatEntreprise(getEntreprise(), TypeEtatEntreprise.INSCRITE_RC, dateApres, suivis);
-			LOGGER.info(String.format("Réinscription RC de l'entreprise %s: aucun for trouvé. Pas de changement.", getEntreprise().getNumero()));
+			LOGGER.info(String.format("Réinscription RC de l'entreprise n°%s: aucun for trouvé. Pas de changement.", FormatNumeroHelper.numeroCTBToDisplay(getEntreprise().getNumero())));
 			raiseStatusTo(HandleStatus.TRAITE);
 		}
 	}

@@ -70,7 +70,7 @@ class ProcessorThread extends PollingThread<EvenementOrganisationNotificationQue
 		int pointer = 0;
 		final long start = System.nanoTime();
 		try {
-			LOGGER.info(String.format("Lancement du traitement d'un lot de %d événement(s) pour l'organisation %d", evts.size(), noOrganisation));
+			LOGGER.info(String.format("Lancement du traitement d'un lot de %d événement(s) pour l'organisation n°%d", evts.size(), noOrganisation));
 			for (EvenementOrganisationBasicInfo evt : evts) {
 				if (!shouldStop()) {
 					if (!processor.processEventAndDoPostProcessingOnError(evt, evts, pointer)) {
@@ -81,7 +81,7 @@ class ProcessorThread extends PollingThread<EvenementOrganisationNotificationQue
 			}
 		}
 		catch (Exception e) {
-			LOGGER.error(String.format("Erreur lors du traitement de l'événement organisation %d (rcent: %d)", evts.get(pointer).getId(), evts.get(pointer).getNoEvenement()), e);
+			LOGGER.error(String.format("Erreur lors du traitement de l'événement organisation n°%d (rcent: %d)", evts.get(pointer).getId(), evts.get(pointer).getNoEvenement()), e);
 		}
 		finally {
 			final long end = System.nanoTime();

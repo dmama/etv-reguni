@@ -60,7 +60,7 @@ public class DoublonEtablissementStrategy extends AbstractOrganisationStrategy {
 			final Long remplaceParApres = site.getIdeRemplacePar(dateApres);
 
 			if (remplaceParAvant == null && remplaceParApres!= null) {
-				final String message = String.format("Situation de doublon d'organisation détectée. Etablissement remplacé (civil): %s, remplaçant: %s.",
+				final String message = String.format("Situation de doublon d'organisation détectée. Etablissement remplacé (civil): %d, remplaçant: %d.",
 				                                     site.getNumeroSite(), remplaceParApres);
 				doublons.add(new TraitementManuel(event, organisation, entreprise, context, options, "Traitement manuel requis: " + message));
 			}
@@ -71,7 +71,7 @@ public class DoublonEtablissementStrategy extends AbstractOrganisationStrategy {
 				LOGGER.info("Un doublon d'établissement détecté.");
 				return doublons.get(0);
 			} else {
-				LOGGER.info(String.format("%s doublons d'établissement détectés.", doublons.size()));
+				LOGGER.info(String.format("%d doublons d'établissement détectés.", doublons.size()));
 				return new EvenementOrganisationInterneComposite(event, organisation, entreprise, context, options, doublons);
 			}
 		}

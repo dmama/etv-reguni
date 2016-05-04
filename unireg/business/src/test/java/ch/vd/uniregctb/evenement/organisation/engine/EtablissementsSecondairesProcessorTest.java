@@ -316,7 +316,7 @@ public class EtablissementsSecondairesProcessorTest extends AbstractEvenementOrg
 
 				                             final List<EvenementOrganisationErreur> evtErreurs = evt.getErreurs();
 				                             Assert.assertEquals(3, evtErreurs.size());
-				                             Assert.assertEquals(String.format("Nouvel établissement secondaire civil %d déjà connu de Unireg en tant que tiers %s. Ne sera pas créé.",
+				                             Assert.assertEquals(String.format("Nouvel établissement secondaire civil n°%d déjà connu de Unireg en tant que tiers n°%s. Ne sera pas créé.",
 				                                                               noSite2, FormatNumeroHelper.numeroCTBToDisplay(etablissement2Id)),
 				                                                 evtErreurs.get(2).getMessage());
 

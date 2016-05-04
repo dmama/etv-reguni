@@ -317,7 +317,7 @@ public abstract class EvenementOrganisationInterne {
 		}
 		catch (AssujettissementException exception) {
 			throw new EvenementOrganisationException(
-					String.format("Impossible de déterminer si l'entreprise %s est assujettie. Une erreur est survenue: %s",
+					String.format("Impossible de déterminer si l'entreprise n°%s est assujettie. Une erreur est survenue: %s",
 					              FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()),
 					              exception.getMessage())
 					, exception
@@ -426,7 +426,7 @@ public abstract class EvenementOrganisationInterne {
 	}
 
 	protected void programmeReindexation(Entreprise pm, EvenementOrganisationSuiviCollector suivis) {
-		Audit.info(getNumeroEvenement(), String.format("Déclenchement de la réindexation pour l'entreprise %s.", pm.getNumero()));
+		Audit.info(getNumeroEvenement(), String.format("Déclenchement de la réindexation pour l'entreprise n°%s.", FormatNumeroHelper.numeroCTBToDisplay(pm.getNumero())));
 		context.getIndexer().schedule(pm.getNumero());
 	}
 
@@ -446,7 +446,7 @@ public abstract class EvenementOrganisationInterne {
 		Assert.notNull(dateDebut);
 
 		final Entreprise entreprise = createEntreprise(getNoOrganisation());
-		suivis.addSuivi(String.format("Entreprise créée avec le numéro de contribuable %s pour l'organisation %s", entreprise.getNumero(), getNoOrganisation()));
+		suivis.addSuivi(String.format("Entreprise créée avec le numéro de contribuable %s pour l'organisation n°%d", FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()), getNoOrganisation()));
 		setEntreprise(entreprise);
 		raiseStatusTo(HandleStatus.TRAITE);
 
@@ -520,10 +520,10 @@ public abstract class EvenementOrganisationInterne {
 			context.getTiersService().openRegimeFiscal(entreprise, RegimeFiscal.Portee.CH, typeRegimeFiscal, dateDebut);
 			context.getTiersService().openRegimeFiscal(entreprise, RegimeFiscal.Portee.VD, typeRegimeFiscal, dateDebut);
 			suivis.addSuivi(
-					String.format("Régimes fiscaux ordinaires VD et CH ouverts pour l'entreprise %s (civil: %d)", FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()), getNoOrganisation()));
+					String.format("Régimes fiscaux ordinaires VD et CH ouverts pour l'entreprise n°%s (civil: %d)", FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()), getNoOrganisation()));
 		}
 		else {
-			suivis.addSuivi(String.format("Aucun régime fiscal ouvert pour l'entreprise %s (civil: %d)", FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()), getNoOrganisation()));
+			suivis.addSuivi(String.format("Aucun régime fiscal ouvert pour l'entreprise n°%s (civil: %d)", FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()), getNoOrganisation()));
 		}
 		raiseStatusTo(HandleStatus.TRAITE);
 	}
@@ -533,7 +533,7 @@ public abstract class EvenementOrganisationInterne {
 		context.getTiersService().closeRegimeFiscal(regimeFiscalCH, dateFin);
 		context.getTiersService().closeRegimeFiscal(regimeFiscalVD, dateFin);
 
-		suivis.addSuivi(String.format("Régimes fiscaux VD et CH fermés pour l'entreprise numéro %s (civil: %s)", entreprise.getNumero(), getNoOrganisation()));
+		suivis.addSuivi(String.format("Régimes fiscaux VD et CH fermés pour l'entreprise n°%s (civil: %d)", FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()), getNoOrganisation()));
 		raiseStatusTo(HandleStatus.TRAITE);
 	}
 
@@ -545,8 +545,8 @@ public abstract class EvenementOrganisationInterne {
 	private void setEntreprise(Entreprise entreprise) {
 		if (this.entreprise != null) {
 			throw new IllegalStateException(
-					String.format("Refus d'écraser l'instance d'entreprise existante [no: %s, no organisation: %s]. Arrêt du traitement de l'événement.",
-					              entreprise.getNumero(),
+					String.format("Refus d'écraser l'instance d'entreprise existante [no: %s, no organisation: %d]. Arrêt du traitement de l'événement.",
+					              FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()),
 					              entreprise.getNumeroEntreprise())
 			);
 		}
@@ -568,7 +568,7 @@ public abstract class EvenementOrganisationInterne {
 		Etablissement etablissement = getEtablissementByNumeroSite(numeroSite);
 		if (etablissement != null) {
 			throw new EvenementOrganisationException(
-					String.format("%s existe déjà pour l'organisation en création %s(%s). Impossible de continuer.",
+					String.format("%s existe déjà pour l'organisation en création n°%d(%s). Impossible de continuer.",
 					              etablissement, getNoOrganisation(), getOrganisation().getNom(dateDebut)));
 		}
 
@@ -576,7 +576,7 @@ public abstract class EvenementOrganisationInterne {
 		if (autoriteFiscale == null) {
 			throw new EvenementOrganisationException(
 					String.format(
-							"Autorité fiscale (siège) introuvable pour le site secondaire %s de l'organisation %s %s. Impossible de créer le domicile de l'établissement secondaire.",
+							"Autorité fiscale (siège) introuvable pour le site secondaire %d de l'organisation n°%d %s. Impossible de créer le domicile de l'établissement secondaire.",
 							site.getNumeroSite(), getNoOrganisation(), getOrganisation().getNom(getDateEvt())));
 		}
 
@@ -604,9 +604,9 @@ public abstract class EvenementOrganisationInterne {
 
 		final String commune = DateRangeHelper.rangeAt(context.getServiceInfra().getCommuneHistoByNumeroOfs(autoriteFiscale.getNoOfs()), dateDebut).getNomOfficielAvecCanton();
 
-		suivis.addSuivi(String.format("Etablissement %s créé avec le numéro %s pour le site %s, domicile %s (ofs: %s), à partir du %s",
+		suivis.addSuivi(String.format("Etablissement %s créé avec le numéro %s pour le site %d, domicile %s (ofs: %d), à partir du %s",
 		                              principal ? "principal" : "secondaire",
-		                              etablissement.getNumero(),
+		                              FormatNumeroHelper.numeroCTBToDisplay(etablissement.getNumero()),
 		                              numeroSite,
 		                              commune,
 		                              autoriteFiscale.getNoOfs(),
@@ -652,9 +652,9 @@ public abstract class EvenementOrganisationInterne {
 
 		final Commune commune = context.getServiceInfra().getCommuneByNumeroOfs(autoriteFiscale.getNoOfs(), dateOuverture);
 		if (!commune.isPrincipale()) {
-			suivis.addSuivi(String.format("Ouverture d'un for fiscal principal pour l'entreprise no %s avec le no organisation civil %d, à partir du %s, motif ouverture %s, rattachement %s.",
+			suivis.addSuivi(String.format("Ouverture d'un for fiscal principal pour l'entreprise n°%s (civil: %d), à partir du %s, motif ouverture %s, rattachement %s.",
 			                              FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()), entreprise.getNumeroEntreprise(),
-			                              RegDateHelper.dateToDisplayString(dateOuverture), motifOuverture, rattachement));
+			                              RegDateHelper.dateToDisplayString(dateOuverture), motifOuverture.getDescription(true), rattachement));
 			raiseStatusTo(HandleStatus.TRAITE);
 			return context.getTiersService().openForFiscalPrincipal(entreprise, dateOuverture, rattachement, autoriteFiscale.getNoOfs(), autoriteFiscale.getTypeAutoriteFiscale(), motifOuverture, genreImpot);
 		} else {
@@ -680,9 +680,9 @@ public abstract class EvenementOrganisationInterne {
 		final Commune commune = context.getServiceInfra().getCommuneByNumeroOfs(autoriteFiscale.getNoOfs(), dateOuverture);
 		if (!commune.isPrincipale()) {
 			Assert.notNull(motifOuverture, "Le motif d'ouverture est obligatoire sur un for secondaire dans le canton"); // TODO: is it?
-			suivis.addSuivi(String.format("Ouverture d'un for fiscal secondaire pour l'entreprise no %s avec le no organisation civil %s, à partir de %s, motif ouverture %s, rattachement %s.",
-			                              entreprise.getNumero(), entreprise.getNumeroEntreprise(),
-			                              RegDateHelper.dateToDisplayString(dateOuverture), motifOuverture, rattachement));
+			suivis.addSuivi(String.format("Ouverture d'un for fiscal secondaire pour l'entreprise n°%s (civil: %d), à partir de %s, motif ouverture %s, rattachement %s.",
+			                              FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()), entreprise.getNumeroEntreprise(),
+			                              RegDateHelper.dateToDisplayString(dateOuverture), motifOuverture.getDescription(true), rattachement));
 			raiseStatusTo(HandleStatus.TRAITE);
 			return context.getTiersService().openForFiscalSecondaire(entreprise, dateOuverture, rattachement, autoriteFiscale.getNoOfs(), autoriteFiscale.getTypeAutoriteFiscale(),
 			                                                      motifOuverture, GenreImpot.BENEFICE_CAPITAL);
@@ -714,11 +714,12 @@ public abstract class EvenementOrganisationInterne {
 		final Commune commune = context.getServiceInfra().getCommuneByNumeroOfs(numeroOfsAutoriteFiscale, dateOuverture);
 		if (!commune.isPrincipale()) {
 			Assert.notNull(motifOuverture, "Le motif d'ouverture est obligatoire sur un for secondaire dans le canton"); // TODO: is it?
-			suivis.addSuivi(String.format("Création d'un for fiscal secondaire pour l'entreprise no %s avec le no organisation civil %s, à partir de %s (%s)%s, rattachement %s.",
-			                              entreprise.getNumero(), entreprise.getNumeroEntreprise(),
+			suivis.addSuivi(String.format("Création d'un for fiscal secondaire pour l'entreprise n°%s (civil: %d), à partir de %s (%s)%s, rattachement %s.",
+			                              FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()), entreprise.getNumeroEntreprise(),
 			                              RegDateHelper.dateToDisplayString(dateOuverture),
-			                              motifOuverture,
-			                              dateFermeture != null ? ", finissant le " + RegDateHelper.dateToDisplayString(dateFermeture) + (motifFermeture != null ? " (" + motifFermeture + ")" : "") : "",
+			                              motifOuverture.getDescription(true),
+			                              dateFermeture != null ? ", finissant le " + RegDateHelper.dateToDisplayString(dateFermeture) +
+					                              (motifFermeture != null ? " (" + motifFermeture.getDescription(false) + ")" : "") : "",
 			                              motifRattachement));
 			raiseStatusTo(HandleStatus.TRAITE);
 			return context.getTiersService().addForSecondaire(entreprise, dateOuverture, dateFermeture, motifRattachement, numeroOfsAutoriteFiscale, typeAutoriteFiscale,
@@ -741,17 +742,17 @@ public abstract class EvenementOrganisationInterne {
 	 */
 	protected ForFiscalSecondaire closeForFiscalSecondaire(RegDate dateDeFermeture, ForFiscalSecondaire forAFermer, MotifFor motifFermeture, EvenementOrganisationSuiviCollector suivis) {
 
-		suivis.addSuivi(String.format("Fermeture d'un for secondaire pour l'entreprise %s (civil: %s), en date du %s, motif fermeture %s",
-		                              entreprise.getNumero(), entreprise.getNumeroEntreprise(), RegDateHelper.dateToDisplayString(dateDeFermeture), motifFermeture));
+		suivis.addSuivi(String.format("Fermeture d'un for secondaire pour l'entreprise n°%s (civil: %d), en date du %s, motif fermeture %s",
+		                              FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()), entreprise.getNumeroEntreprise(), RegDateHelper.dateToDisplayString(dateDeFermeture), motifFermeture.getDescription(false)));
 
 		raiseStatusTo(HandleStatus.TRAITE);
 		return context.getTiersService().closeForFiscalSecondaire(entreprise, forAFermer, dateDeFermeture, motifFermeture);
 	}
 
 	protected void annulerForFiscalSecondaire(final ForFiscalSecondaire forAAnnuler, EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) {
-		suivis.addSuivi(String.format("Annulation d'un for fiscal secondaire pour l'entreprise no %s avec le no organisation civil %s, date de début %s, motif ouverture %s, rattachement %s.",
-		                              entreprise.getNumero(), entreprise.getNumeroEntreprise(),
-		                              RegDateHelper.dateToDisplayString(forAAnnuler.getDateDebut()), forAAnnuler.getMotifOuverture(), forAAnnuler.getMotifRattachement()));
+		suivis.addSuivi(String.format("Annulation d'un for fiscal secondaire pour l'entreprise n°%s (civil: %d), date de début %s, motif ouverture %s, rattachement %s.",
+		                              FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()), entreprise.getNumeroEntreprise(),
+		                              RegDateHelper.dateToDisplayString(forAAnnuler.getDateDebut()), forAAnnuler.getMotifOuverture().getDescription(true), forAAnnuler.getMotifRattachement()));
 		context.getTiersService().annuleForFiscal(forAAnnuler);
 		raiseStatusTo(HandleStatus.TRAITE);
 	}
@@ -766,18 +767,19 @@ public abstract class EvenementOrganisationInterne {
 	 */
 	protected ForFiscalPrincipal closeForFiscalPrincipal(RegDate dateDeFermeture, MotifFor motifFermeture, EvenementOrganisationSuiviCollector suivis) {
 
-		suivis.addSuivi(String.format("Fermeture du for fiscal principal pour l'entreprise %s (civil: %d), en date du %s, motif fermeture %s",
-		                              FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()), entreprise.getNumeroEntreprise(), RegDateHelper.dateToDisplayString(dateDeFermeture), motifFermeture));
+		suivis.addSuivi(String.format("Fermeture du for fiscal principal pour l'entreprise n°%s (civil: %d), en date du %s, motif fermeture %s",
+		                              FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()), entreprise.getNumeroEntreprise(),
+		                              RegDateHelper.dateToDisplayString(dateDeFermeture), motifFermeture.getDescription(false)));
 
 		raiseStatusTo(HandleStatus.TRAITE);
 		return context.getTiersService().closeForFiscalPrincipal(entreprise, dateDeFermeture, motifFermeture);
 	}
 
 	protected void reopenForFiscalPrincipal(ForFiscalPrincipal forFiscalPrincipal, EvenementOrganisationSuiviCollector suivis) {
-		suivis.addSuivi(String.format("Réouverture du for principal pour l'entreprise %s (civil: %s), qui commençait le %s%s.",
-		                              entreprise.getNumero(), entreprise.getNumeroEntreprise(),
-		                              forFiscalPrincipal.getDateDebut(),
-		                              forFiscalPrincipal.getDateFin() != null ? ", et terminait le " + forFiscalPrincipal.getDateFin() : ""));
+		suivis.addSuivi(String.format("Réouverture du for principal pour l'entreprise n°%s (civil: %s), qui commençait le %s%s.",
+		                              FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()), entreprise.getNumeroEntreprise(),
+		                              RegDateHelper.dateToDisplayString(forFiscalPrincipal.getDateDebut()),
+		                              forFiscalPrincipal.getDateFin() != null ? ", et terminait le " + RegDateHelper.dateToDisplayString(forFiscalPrincipal.getDateFin()) : ""));
 		context.getTiersService().annuleForFiscal(forFiscalPrincipal);
 		context.getTiersService().reopenFor(forFiscalPrincipal, forFiscalPrincipal.getTiers());
 		raiseStatusTo(HandleStatus.TRAITE);
@@ -799,25 +801,26 @@ public abstract class EvenementOrganisationInterne {
 		bouclement.setEntreprise(entreprise);
 		context.getTiersDAO().addAndSave(entreprise, bouclement);
 		RegDate premierBouclement = RegDate.get(bouclement.getDateDebut().year(), bouclement.getAncrage().month(), bouclement.getAncrage().day());
-		suivis.addSuivi(String.format("Bouclement créé avec une périodicité de %s mois à partir du %s",
+		suivis.addSuivi(String.format("Bouclement créé avec une périodicité de %d mois à partir du %s",
 		                              bouclement.getPeriodeMois(), RegDateHelper.dateToDisplayString(premierBouclement)));
 		raiseStatusTo(HandleStatus.TRAITE);
 	}
 
 	protected void regleDateDebutPremierExerciceCommercial(Entreprise entreprise, RegDate dateDebut, EvenementOrganisationSuiviCollector suivis) {
 		final RegDate dateDebutPremierExerciceCommercial = RegDate.get(dateDebut.year(), 1, 1);
-		suivis.addSuivi(String.format("Réglage de la date de début du premier exercice commercial au %s", dateDebutPremierExerciceCommercial));
+		suivis.addSuivi(String.format("Réglage de la date de début du premier exercice commercial au %s", RegDateHelper.dateToDisplayString(dateDebutPremierExerciceCommercial)));
 		entreprise.setDateDebutPremierExerciceCommercial(dateDebutPremierExerciceCommercial);
 	}
 
 	protected void closeEtablissement(Etablissement etablissement, RegDate dateFin,  EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) throws
 			EvenementOrganisationException {
-		suivis.addSuivi(String.format("Fermeture de l'établissement %s pour le %s", etablissement.getNumero(), RegDateHelper.dateToDisplayString(dateFin)));
+		suivis.addSuivi(String.format("Fermeture de l'établissement n°%s pour le %s", FormatNumeroHelper.numeroCTBToDisplay(etablissement.getNumero()), RegDateHelper.dateToDisplayString(dateFin)));
 		final List<DomicileEtablissement> sortedDomiciles = etablissement.getSortedDomiciles(false);
 		final DomicileEtablissement domicile = DateRangeHelper.rangeAt(sortedDomiciles, dateFin);
 		if (domicile != null) {
 			if (!DateRangeHelper.equals(domicile, CollectionsUtils.getLastElement(sortedDomiciles))) {
-				throw new EvenementOrganisationException(String.format("L'établissement %s a déménagé depuis la date pour laquelle on cherche à le fermer!", etablissement.getNumero()));
+				throw new EvenementOrganisationException(String.format("L'établissement n°%s a déménagé depuis la date pour laquelle on cherche à le fermer!",
+				                                                       FormatNumeroHelper.numeroCTBToDisplay(etablissement.getNumero())));
 			}
 
 			context.getTiersService().closeDomicileEtablissement(domicile, dateFin);
