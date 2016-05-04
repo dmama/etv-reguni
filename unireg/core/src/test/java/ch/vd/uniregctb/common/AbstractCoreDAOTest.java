@@ -50,6 +50,7 @@ import org.xml.sax.InputSource;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.shared.hibernate.config.DescriptiveSessionFactoryBean;
 import ch.vd.uniregctb.declaration.Declaration;
+import ch.vd.uniregctb.declaration.DeclarationAvecNumeroSequence;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePM;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP;
@@ -65,6 +66,7 @@ import ch.vd.uniregctb.declaration.EtatDeclarationSuspendue;
 import ch.vd.uniregctb.declaration.ModeleDocument;
 import ch.vd.uniregctb.declaration.ModeleFeuilleDocument;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
+import ch.vd.uniregctb.declaration.QuestionnaireSNC;
 import ch.vd.uniregctb.documentfiscal.LettreBienvenue;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.rf.GenrePropriete;
@@ -106,10 +108,12 @@ import ch.vd.uniregctb.tiers.RepresentationConventionnelle;
 import ch.vd.uniregctb.tiers.ScissionEntreprise;
 import ch.vd.uniregctb.tiers.SituationFamilleMenageCommun;
 import ch.vd.uniregctb.tiers.TacheAnnulationDeclarationImpot;
+import ch.vd.uniregctb.tiers.TacheAnnulationQuestionnaireSNC;
 import ch.vd.uniregctb.tiers.TacheControleDossier;
 import ch.vd.uniregctb.tiers.TacheEnvoiDeclarationImpot;
 import ch.vd.uniregctb.tiers.TacheEnvoiDeclarationImpotPM;
 import ch.vd.uniregctb.tiers.TacheEnvoiDeclarationImpotPP;
+import ch.vd.uniregctb.tiers.TacheEnvoiQuestionnaireSNC;
 import ch.vd.uniregctb.tiers.TacheNouveauDossier;
 import ch.vd.uniregctb.tiers.TacheTransmissionDossier;
 import ch.vd.uniregctb.tiers.Tiers;
@@ -789,7 +793,7 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 		return assignerNumeroSequenceEtSaveDeclarationImpot(tiers, d);
 	}
 
-	protected <T extends DeclarationImpotOrdinaire> T assignerNumeroSequenceEtSaveDeclarationImpot(Contribuable ctb, T di) {
+	protected <T extends DeclarationAvecNumeroSequence> T assignerNumeroSequenceEtSaveDeclarationImpot(Contribuable ctb, T di) {
 
 		int numero = 0;
 		final int annee = di.getPeriode().getAnnee();
@@ -832,6 +836,20 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 		return addDeclarationImpot(pm, periode, debut, fin, debut, fin, retourCollectiviteAdministrative, typeContribuable, modele);
 	}
 
+	protected QuestionnaireSNC addQuestionnaireSNC(Entreprise entreprise, PeriodeFiscale periode, RegDate dateDebut, RegDate dateFin) {
+		final QuestionnaireSNC qsnc = new QuestionnaireSNC();
+		qsnc.setPeriode(periode);
+		qsnc.setDateDebut(dateDebut);
+		qsnc.setDateFin(dateFin);
+		return assignerNumeroSequenceEtSaveDeclarationImpot(entreprise, qsnc);
+	}
+
+	protected QuestionnaireSNC addQuestionnaireSNC(Entreprise entreprise, PeriodeFiscale periode) {
+		final RegDate debut = RegDate.get(periode.getAnnee(), 1, 1);
+		final RegDate fin = RegDate.get(periode.getAnnee(), 12, 31);
+		return addQuestionnaireSNC(entreprise, periode, debut, fin);
+	}
+
 	/**
 	 * Ajoute une tâche d'envoi de déclaration d'impôt PP avec les paramètres spécifiés.
 	 */
@@ -861,6 +879,25 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 		TacheAnnulationDeclarationImpot tache = new TacheAnnulationDeclarationImpot(etat, dateEcheance, contribuable, declaration, colAdm);
 		tache = merge(tache);
 		return tache;
+	}
+
+	/**
+	 * Ajoute une tâche d'envoi de questionnaire SNC avec les paramètres spécifiés
+	 */
+	protected TacheEnvoiQuestionnaireSNC addTacheEnvoiQuestionnaireSNC(TypeEtatTache etat, RegDate dateEcheance, RegDate dateDebut, RegDate dateFin,
+	                                                                   CategorieEntreprise categorieEntreprise, Entreprise contribuable,
+	                                                                   @Nullable CollectiviteAdministrative colAdm) {
+		final TacheEnvoiQuestionnaireSNC tache = new TacheEnvoiQuestionnaireSNC(etat, dateEcheance, contribuable, dateDebut, dateFin, categorieEntreprise, colAdm);
+		return merge(tache);
+	}
+
+	/**
+	 * Ajoute une tâche d'annulation de questionnaire SNC avec les paramètres spécifiés
+	 */
+	protected TacheAnnulationQuestionnaireSNC addTacheAnnulationQuestionnaireSNC(TypeEtatTache etat, RegDate dateEcheance, QuestionnaireSNC questionnaire,
+	                                                                             Entreprise entreprise, CollectiviteAdministrative colAdm) {
+		final TacheAnnulationQuestionnaireSNC tache = new TacheAnnulationQuestionnaireSNC(etat, dateEcheance, entreprise, questionnaire, colAdm);
+		return merge(tache);
 	}
 
 	/**

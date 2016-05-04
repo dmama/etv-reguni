@@ -20,6 +20,7 @@ import ch.vd.uniregctb.declaration.ordinaire.pp.ListeDIsPPNonEmises;
 import ch.vd.uniregctb.declaration.ordinaire.pp.ListeNoteResults;
 import ch.vd.uniregctb.declaration.ordinaire.pp.StatistiquesCtbs;
 import ch.vd.uniregctb.declaration.ordinaire.pp.StatistiquesDIs;
+import ch.vd.uniregctb.declaration.snc.DeterminationQuestionnairesSNCResults;
 import ch.vd.uniregctb.declaration.source.DeterminerLRsEchuesResults;
 import ch.vd.uniregctb.declaration.source.EnvoiLRsResults;
 import ch.vd.uniregctb.declaration.source.EnvoiSommationLRsResults;
@@ -33,6 +34,7 @@ import ch.vd.uniregctb.document.CorrectionFlagHabitantRapport;
 import ch.vd.uniregctb.document.DemandeDelaiCollectiveRapport;
 import ch.vd.uniregctb.document.DeterminationDIsPMRapport;
 import ch.vd.uniregctb.document.DeterminationDIsPPRapport;
+import ch.vd.uniregctb.document.DeterminationQuestionnairesSNCRapport;
 import ch.vd.uniregctb.document.DeterminerLRsEchuesRapport;
 import ch.vd.uniregctb.document.DeterminerMouvementsDossiersEnMasseRapport;
 import ch.vd.uniregctb.document.DumpPeriodesImpositionImpotSourceRapport;
@@ -556,4 +558,12 @@ public interface RapportService {
 	 * @return le rapport
 	 */
 	RappelLettresBienvenueRapport generateRapport(RappelLettresBienvenueResults results, StatusManager status);
+
+	/**
+	 * Génère le rapport d'exécution du batch qui génére les tâches d'envoi des questionnaires SNC pour une PF donnée
+	 * @param results le résultat du batch
+	 * @param status  le status manager
+	 * @return le raport
+	 */
+	DeterminationQuestionnairesSNCRapport generateRapport(DeterminationQuestionnairesSNCResults results, StatusManager status);
 }

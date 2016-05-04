@@ -56,14 +56,11 @@ public abstract class JobResults<E, R extends JobResults<E, R>> extends Abstract
 	 * Retourne le nom et le prénom ou la désignation du tiers spécifié.
 	 * S'il s'agit d'un contribuable ménage commun et que les deux parties sont connues, la liste retournée contient les deux noms des parties.
 	 *
-	 * @param noTiers le numéro du tiers
-	 * @return une liste avec 1 nom (majorité des cas) ou 2 noms (contribuables ménage commun); ou plus pour les tiers débiteur
+	 * @param tiers le tiers
+	 * @return une liste avec 1 nom (majorité des cas) ou 2 noms (contribuables ménage commun); ou plus pour les tiers débiteurs / entreprises
 	 */
-	private List<String> getNoms(long noTiers) {
-
+	private List<String> getNoms(Tiers tiers) {
 		List<String> noms;
-
-		final Tiers tiers = tiersService.getTiers(noTiers);
 		if (tiers == null) {
 			noms = Collections.emptyList();
 		}
@@ -87,14 +84,26 @@ public abstract class JobResults<E, R extends JobResults<E, R>> extends Abstract
 	 * @return le nom et le prénom, ou la désignation du tiers.
 	 */
 	protected String getNom(@Nullable Long noTiers) {
-
 		if (noTiers == null) {
 			return StringUtils.EMPTY;
 		}
+		final Tiers tiers = tiersService.getTiers(noTiers);
+		return getNom(tiers);
+	}
 
+	/**
+	 * Retourne le nom et prénom ou la désignation du tiers (ou des deux parties dans le cas d'un ménage commun)
+	 *
+	 * @param tiers le tiers
+	 * @return le nom et le prénom, ou la désignation du tiers.
+	 */
+	protected String getNom(@Nullable Tiers tiers) {
+		if (tiers == null) {
+			return StringUtils.EMPTY;
+		}
 		final String nom;
 
-		final List<String> noms = getNoms(noTiers);
+		final List<String> noms = getNoms(tiers);
 		if (noms.size() == 1) { // 90% des cas
 			nom = noms.get(0);
 		}

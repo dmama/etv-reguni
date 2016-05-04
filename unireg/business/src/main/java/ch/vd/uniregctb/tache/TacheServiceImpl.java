@@ -99,6 +99,7 @@ import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.transaction.TransactionTemplate;
 import ch.vd.uniregctb.type.CategorieEntreprise;
 import ch.vd.uniregctb.type.DayMonth;
+import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
@@ -864,7 +865,7 @@ public class TacheServiceImpl implements TacheService {
 		final List<ForFiscal> forsFiscaux = entreprise.getForsFiscauxNonAnnules(true);
 		final List<ForFiscal> forsVaudois = new ArrayList<>(forsFiscaux.size());
 		for (ForFiscal ff : forsFiscaux) {
-			if (ff.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
+			if (ff.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD && ff.getGenreImpot() == GenreImpot.REVENU_FORTUNE) {
 				forsVaudois.add(ff);
 			}
 		}
@@ -881,18 +882,10 @@ public class TacheServiceImpl implements TacheService {
 
 		// découpons maintenant par année civile ce qui nous reste
 		final List<DateRange> ranges = new LinkedList<>();
-		for (DateRange r : spVaudois) {
-			final RegDate dateFin = r.getDateFin() == null ? RegDate.get(RegDate.get().year(), 12, 31) : r.getDateFin();
-			final RegDate dateDebut = r.getDateDebut();
-			if (dateFin.year() == dateDebut.year()) {
-				ranges.add(new DateRangeHelper.Range(dateDebut, dateFin));
-			}
-			else {
-				ranges.add(new DateRangeHelper.Range(dateDebut, RegDate.get(dateDebut.year(), 12, 31)));
-				for (int year = dateDebut.year() + 1; year < dateFin.year() ; ++ year) {
-					ranges.add(new DateRangeHelper.Range(RegDate.get(year, 1, 1), RegDate.get(year, 12, 31)));
-				}
-				ranges.add(new DateRangeHelper.Range(RegDate.get(dateFin.year(), 1, 1), dateFin));
+		for (int annee = periodeGestionUnireg.getDateDebut().year() ; annee <= RegDate.get().year() ; ++ annee) {
+			final DateRange anneeCivile = new DateRangeHelper.Range(RegDate.get(annee, 1, 1), RegDate.get(annee, 12, 31));
+			if (DateRangeHelper.intersect(anneeCivile, spVaudois)) {
+				ranges.add(anneeCivile);
 			}
 		}
 		return ranges;

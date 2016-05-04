@@ -270,7 +270,7 @@
         <property name="rapportService" ref="rapportService"/>
     </bean>
 
-    <bean id="determinesDIsPMJob" parent="schedulerJob" class="ch.vd.uniregctb.declaration.ordinaire.pm.DeterminerDIsPMJob">
+    <bean id="determineDIsPMJob" parent="schedulerJob" class="ch.vd.uniregctb.declaration.ordinaire.pm.DeterminerDIsPMJob">
         <constructor-arg value="450"/>
         <constructor-arg value="Déterminer les déclarations d'impôt PM à envoyer et créer des tâches en instance"/>
         <property name="service" ref="diService"/>
@@ -297,6 +297,13 @@
         <property name="declarationImpotService" ref="diService"/>
         <property name="rapportService" ref="rapportService"/>
     </bean>
+
+	<bean id="determineQuestionnairesSNCJob" parent="schedulerJob" class="ch.vd.uniregctb.declaration.snc.DeterminerQuestionnairesSNCJob">
+		<constructor-arg value="460"/>
+		<constructor-arg value="Déterminer les questionnaires SNC à envoyer et créer des tâches en instance"/>
+		<property name="questionnaireService" ref="qsncService"/>
+		<property name="rapportService" ref="rapportService"/>
+	</bean>
 
 	<bean id="envoiLettresBienvenueJob" parent="schedulerJob" class="ch.vd.uniregctb.documentfiscal.EnvoiLettresBienvenueJob">
 		<constructor-arg value="475"/>

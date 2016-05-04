@@ -29,6 +29,7 @@ import ch.vd.uniregctb.declaration.ordinaire.pp.ListeDIsPPNonEmises;
 import ch.vd.uniregctb.declaration.ordinaire.pp.ListeNoteResults;
 import ch.vd.uniregctb.declaration.ordinaire.pp.StatistiquesCtbs;
 import ch.vd.uniregctb.declaration.ordinaire.pp.StatistiquesDIs;
+import ch.vd.uniregctb.declaration.snc.DeterminationQuestionnairesSNCResults;
 import ch.vd.uniregctb.declaration.source.DeterminerLRsEchuesResults;
 import ch.vd.uniregctb.declaration.source.EnvoiLRsResults;
 import ch.vd.uniregctb.declaration.source.EnvoiSommationLRsResults;
@@ -42,6 +43,7 @@ import ch.vd.uniregctb.document.CorrectionFlagHabitantRapport;
 import ch.vd.uniregctb.document.DemandeDelaiCollectiveRapport;
 import ch.vd.uniregctb.document.DeterminationDIsPMRapport;
 import ch.vd.uniregctb.document.DeterminationDIsPPRapport;
+import ch.vd.uniregctb.document.DeterminationQuestionnairesSNCRapport;
 import ch.vd.uniregctb.document.DeterminerLRsEchuesRapport;
 import ch.vd.uniregctb.document.DeterminerMouvementsDossiersEnMasseRapport;
 import ch.vd.uniregctb.document.DocumentService;
@@ -1366,6 +1368,29 @@ public class RapportServiceImpl implements RapportService {
 				@Override
 				public void writeDoc(RappelLettresBienvenueRapport doc, OutputStream os) throws Exception {
 					final PdfRappelLettresBienvenueRapport document = new PdfRappelLettresBienvenueRapport();
+					document.write(results, nom, description, dateGeneration, os, status);
+				}
+			});
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	@Override
+	public DeterminationQuestionnairesSNCRapport generateRapport(final DeterminationQuestionnairesSNCResults results, StatusManager s) {
+
+		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
+
+		final String nom = "RapportDetermSQNC";
+		final String description = "Rapport d'exécution du job qui génère les tâches d'envoi des questionnaires SNC.";
+		final Date dateGeneration = DateHelper.getCurrentDate();
+
+		try {
+			return docService.newDoc(DeterminationQuestionnairesSNCRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<DeterminationQuestionnairesSNCRapport>() {
+				@Override
+				public void writeDoc(DeterminationQuestionnairesSNCRapport doc, OutputStream os) throws Exception {
+					final PdfDeterminationQuestionnairesSNCRapport document = new PdfDeterminationQuestionnairesSNCRapport();
 					document.write(results, nom, description, dateGeneration, os, status);
 				}
 			});

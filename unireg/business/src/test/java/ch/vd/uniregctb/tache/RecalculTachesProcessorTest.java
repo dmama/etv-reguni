@@ -21,6 +21,7 @@ import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.Tache;
 import ch.vd.uniregctb.tiers.TacheDAO;
+import ch.vd.uniregctb.tiers.TacheEnvoiQuestionnaireSNC;
 import ch.vd.uniregctb.type.DayMonth;
 import ch.vd.uniregctb.type.FormeJuridiqueEntreprise;
 import ch.vd.uniregctb.type.GenreImpot;
@@ -301,10 +302,10 @@ public class RecalculTachesProcessorTest extends BusinessTest {
 			final TacheSyncResults.ActionInfo info = resFull.getActions().get(0);
 			assertNotNull(info);
 			assertEquals(pmId, info.ctbId);
-			assertEquals(String.format("création d'une tâche d'émission de questionnaire SNC couvrant la période du %s au 31.12.%d", RegDateHelper.dateToDisplayString(dateDebutExploitation), year - 1), info.actionMsg);
+			assertEquals(String.format("création d'une tâche d'émission de questionnaire SNC couvrant la période du 01.01.%d au 31.12.%d", year - 1, year - 1), info.actionMsg);
 		}
 
-		// vérification que la tâche d'envoi de DI est bien là
+		// vérification que la tâche d'envoi de questionnaire SNC est bien là
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
@@ -316,6 +317,8 @@ public class RecalculTachesProcessorTest extends BusinessTest {
 				assertNotNull(tache);
 				assertEquals(TypeTache.TacheEnvoiQuestionnaireSNC, tache.getTypeTache());
 				assertFalse(tache.isAnnule());
+				assertEquals(date(year - 1, 1, 1), ((TacheEnvoiQuestionnaireSNC) tache).getDateDebut());
+				assertEquals(date(year - 1, 12, 31), ((TacheEnvoiQuestionnaireSNC) tache).getDateFin());
 				return null;
 			}
 		});
@@ -564,6 +567,7 @@ public class RecalculTachesProcessorTest extends BusinessTest {
 		});
 
 		// vérification que la tâche d'envoi de questionnaire SNC est bien là
+		// (parce que l'intercepteur était enclenché ici)
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
@@ -591,6 +595,7 @@ public class RecalculTachesProcessorTest extends BusinessTest {
 		});
 
 		// vérification que la tâche d'envoi de questionnaire est bien toujours là, non-annulée
+		// (parce que l'intercepteur n'est pas enclenché !!)
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
@@ -616,7 +621,7 @@ public class RecalculTachesProcessorTest extends BusinessTest {
 			final TacheSyncResults.ActionInfo info = res.getActions().get(0);
 			assertNotNull(info);
 			assertEquals(pmId, info.ctbId);
-			assertEquals(String.format("annulation de la tâche d'envoi du questionnaire SNC couvrant la période du %s au 31.12.%d", RegDateHelper.dateToDisplayString(dateDebutExploitation), year - 1), info.actionMsg);
+			assertEquals(String.format("annulation de la tâche d'envoi du questionnaire SNC couvrant la période du 01.01.%d au 31.12.%d", year - 1, year - 1), info.actionMsg);
 		}
 
 		// vérification que la tâche d'envoi est maintenant annulée
@@ -631,6 +636,8 @@ public class RecalculTachesProcessorTest extends BusinessTest {
 				assertNotNull(tache);
 				assertEquals(TypeTache.TacheEnvoiQuestionnaireSNC, tache.getTypeTache());
 				assertTrue(tache.isAnnule());
+				assertEquals(date(year - 1, 1, 1), ((TacheEnvoiQuestionnaireSNC) tache).getDateDebut());
+				assertEquals(date(year - 1, 12, 31), ((TacheEnvoiQuestionnaireSNC) tache).getDateFin());
 				return null;
 			}
 		});
@@ -879,6 +886,7 @@ public class RecalculTachesProcessorTest extends BusinessTest {
 		});
 
 		// vérification que la tâche d'envoi est bien là
+		// (parce que l'intercepteur était enclenché)
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
@@ -890,6 +898,8 @@ public class RecalculTachesProcessorTest extends BusinessTest {
 				assertNotNull(tache);
 				assertEquals(TypeTache.TacheEnvoiQuestionnaireSNC, tache.getTypeTache());
 				assertFalse(tache.isAnnule());
+				assertEquals(date(year - 1, 1, 1), ((TacheEnvoiQuestionnaireSNC) tache).getDateDebut());
+				assertEquals(date(year - 1, 12, 31), ((TacheEnvoiQuestionnaireSNC) tache).getDateFin());
 				return null;
 			}
 		});
@@ -906,6 +916,7 @@ public class RecalculTachesProcessorTest extends BusinessTest {
 		});
 
 		// vérification que la tâche d'envoi est bien toujours là, non-annulée
+		// (parce que l'intercepteur n'était pas enclenché)
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
@@ -917,6 +928,8 @@ public class RecalculTachesProcessorTest extends BusinessTest {
 				assertNotNull(tache);
 				assertEquals(TypeTache.TacheEnvoiQuestionnaireSNC, tache.getTypeTache());
 				assertFalse(tache.isAnnule());
+				assertEquals(date(year - 1, 1, 1), ((TacheEnvoiQuestionnaireSNC) tache).getDateDebut());
+				assertEquals(date(year - 1, 12, 31), ((TacheEnvoiQuestionnaireSNC) tache).getDateFin());
 				return null;
 			}
 		});
@@ -931,7 +944,7 @@ public class RecalculTachesProcessorTest extends BusinessTest {
 			final TacheSyncResults.ActionInfo info = res.getActions().get(0);
 			assertNotNull(info);
 			assertEquals(pmId, info.ctbId);
-			assertEquals(String.format("annulation de la tâche d'envoi du questionnaire SNC couvrant la période du %s au 31.12.%d", RegDateHelper.dateToDisplayString(dateDebutExploitation), year - 1), info.actionMsg);
+			assertEquals(String.format("annulation de la tâche d'envoi du questionnaire SNC couvrant la période du 01.01.%d au 31.12.%d", year - 1, year - 1), info.actionMsg);
 		}
 
 		// vérification que la tâche d'envoi de DI est maintenant annulée
@@ -946,6 +959,8 @@ public class RecalculTachesProcessorTest extends BusinessTest {
 				assertNotNull(tache);
 				assertEquals(TypeTache.TacheEnvoiQuestionnaireSNC, tache.getTypeTache());
 				assertTrue(tache.isAnnule());
+				assertEquals(date(year - 1, 1, 1), ((TacheEnvoiQuestionnaireSNC) tache).getDateDebut());
+				assertEquals(date(year - 1, 12, 31), ((TacheEnvoiQuestionnaireSNC) tache).getDateFin());
 				return null;
 			}
 		});
@@ -1132,6 +1147,7 @@ public class RecalculTachesProcessorTest extends BusinessTest {
 		});
 
 		// vérification que la tâche d'envoi est bien là -> on l'annule
+		// (elle a été créée car l'intecepteur était enclenché)
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
@@ -1143,12 +1159,15 @@ public class RecalculTachesProcessorTest extends BusinessTest {
 				assertNotNull(tache);
 				assertEquals(TypeTache.TacheEnvoiQuestionnaireSNC, tache.getTypeTache());
 				assertFalse(tache.isAnnule());
+				assertEquals(date(year - 1, 1, 1), ((TacheEnvoiQuestionnaireSNC) tache).getDateDebut());
+				assertEquals(date(year - 1, 12, 31), ((TacheEnvoiQuestionnaireSNC) tache).getDateFin());
 				tache.setAnnule(true);
 				return null;
 			}
 		});
 
 		// vérification que la tâche d'envoi est bien annulée
+		// (l'intercepteur n'a rien modifié, vu qu'il n'était pas enclenché)
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {

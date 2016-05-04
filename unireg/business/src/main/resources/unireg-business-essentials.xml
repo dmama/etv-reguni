@@ -179,6 +179,17 @@
 		<property name="sourcesMonoQuittancement" ref="sourcesMonoQuittancementDi"/>
 	</bean>
 
+	<bean id="qsncService" class="ch.vd.uniregctb.declaration.snc.QuestionnaireSNCServiceImpl">
+		<property name="adresseService" ref="adresseService"/>
+		<property name="hibernateTemplate" ref="hibernateTemplate"/>
+		<property name="parametreAppService" ref="parametreAppService"/>
+		<property name="periodeDAO" ref="periodeFiscaleDAO"/>
+		<property name="tacheDAO" ref="tacheDAO"/>
+		<property name="tiersService" ref="tiersService"/>
+		<property name="transactionManager" ref="transactionManager"/>
+		<property name="validationService" ref="validationService"/>
+	</bean>
+
 	<bean id="statsService" class="ch.vd.uniregctb.stats.StatsServiceImpl" />
 
 	<bean id="jmsStatsService" class="ch.vd.uniregctb.stats.StatsServiceGroup">
@@ -356,6 +367,7 @@
 	<bean id="tacheEnvoiDeclarationImpotValidator" class="ch.vd.uniregctb.validation.tache.TacheEnvoiDeclarationImpotValidator" abstract="true" parent="tacheEnvoiDocumentValidator"/>
 	<bean id="tacheEnvoiDeclarationImpotPPValidator" class="ch.vd.uniregctb.validation.tache.TacheEnvoiDeclarationImpotPPValidator" parent="tacheEnvoiDeclarationImpotValidator" />
 	<bean id="tacheEnvoiDeclarationImpotPMValidator" class="ch.vd.uniregctb.validation.tache.TacheEnvoiDeclarationImpotPMValidator" parent="tacheEnvoiDeclarationImpotValidator" />
+	<bean id="tacheEnvoiQuestionnaireSNCValidator" class="ch.vd.uniregctb.validation.tache.TacheEnvoiQuestionnaireSNCValidator" parent="tacheEnvoiDocumentValidator" />
 
 	<bean id="adresseTiersValidator" class="ch.vd.uniregctb.validation.adresse.AdresseTiersValidator" abstract="true" parent="dateRangeEntityValidator" />
 	<bean id="adresseCivileValidator" class="ch.vd.uniregctb.validation.adresse.AdresseCivileValidator" parent="adresseTiersValidator" />

@@ -35,7 +35,7 @@ import ch.vd.uniregctb.adresse.AdresseEtrangere;
 import ch.vd.uniregctb.adresse.AdresseMandataireEtrangere;
 import ch.vd.uniregctb.adresse.AdresseMandataireSuisse;
 import ch.vd.uniregctb.adresse.AdresseSuisse;
-import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
+import ch.vd.uniregctb.declaration.DeclarationAvecNumeroSequence;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP;
 import ch.vd.uniregctb.declaration.DeclarationImpotSource;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
@@ -626,12 +626,28 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
     }
 
     /**
+     * Ajoute un for principal fermé sur une commune Suisse (rattachement = DOMICILE) sur le contribuable spécifié.
+     */
+    protected ForFiscalPrincipalPM addForPrincipal(ContribuableImpositionPersonnesMorales contribuable, RegDate ouverture, @Nullable MotifFor motifOuverture,
+                                                   @Nullable RegDate fermeture, @Nullable MotifFor motifFermeture, MockCommune commune, GenreImpot genreImpot) {
+        return addForPrincipal(contribuable, ouverture, motifOuverture, fermeture, motifFermeture, commune, MotifRattachement.DOMICILE, genreImpot);
+    }
+
+    /**
      * Ajoute un for principal fermé sur une commune Suisse sur le contribuable spécifié.
      */
     protected ForFiscalPrincipalPM addForPrincipal(ContribuableImpositionPersonnesMorales contribuable, RegDate ouverture, MotifFor motifOuverture,
                                                    @Nullable RegDate fermeture, @Nullable MotifFor motifFermeture, MockCommune commune, MotifRattachement motifRattachement) {
+	    return addForPrincipal(contribuable, ouverture, motifOuverture, fermeture, motifFermeture, commune, motifRattachement, GenreImpot.BENEFICE_CAPITAL);
+    }
+
+    /**
+     * Ajoute un for principal fermé sur une commune Suisse sur le contribuable spécifié.
+     */
+    protected ForFiscalPrincipalPM addForPrincipal(ContribuableImpositionPersonnesMorales contribuable, RegDate ouverture, MotifFor motifOuverture,
+                                                   @Nullable RegDate fermeture, @Nullable MotifFor motifFermeture, MockCommune commune, MotifRattachement motifRattachement, GenreImpot genreImpot) {
         final TypeAutoriteFiscale type = (commune.isVaudoise() ? TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD : TypeAutoriteFiscale.COMMUNE_HC);
-        return addForPrincipal(contribuable, ouverture, motifOuverture, fermeture, motifFermeture, commune.getNoOFS(), type, motifRattachement, GenreImpot.BENEFICE_CAPITAL);
+        return addForPrincipal(contribuable, ouverture, motifOuverture, fermeture, motifFermeture, commune.getNoOFS(), type, motifRattachement, genreImpot);
     }
 
     /**
@@ -955,7 +971,7 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
     }
 
     @Override
-    protected <T extends DeclarationImpotOrdinaire> T assignerNumeroSequenceEtSaveDeclarationImpot(Contribuable ctb, T di) {
+    protected <T extends DeclarationAvecNumeroSequence> T assignerNumeroSequenceEtSaveDeclarationImpot(Contribuable ctb, T di) {
         if (useTiersServiceToCreateDeclarationImpot()) {
             //noinspection unchecked
             return (T) tiersDAO.addAndSave(ctb, di);

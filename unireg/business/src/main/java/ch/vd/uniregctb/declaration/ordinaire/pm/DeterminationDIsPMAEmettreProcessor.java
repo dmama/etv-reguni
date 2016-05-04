@@ -674,8 +674,7 @@ public class DeterminationDIsPMAEmettreProcessor {
 				return hibernateTemplate.execute(new HibernateCallback<List<Long>>() {
 					@Override
 					public List<Long> doInHibernate(Session session) throws HibernateException, SQLException {
-						final String hql =
-								"select distinct ff.tiers.id from ForFiscalRevenuFortune as ff where ff.tiers.class in (Entreprise) and ff.annulationDate is null and ff.typeAutoriteFiscale = 'COMMUNE_OU_FRACTION_VD' order by ff.tiers.id";
+						final String hql = "select distinct ff.tiers.id from ForFiscalRevenuFortune as ff where ff.tiers.class in (Entreprise) and ff.annulationDate is null and ff.typeAutoriteFiscale = 'COMMUNE_OU_FRACTION_VD' and ff.genreImpot = 'BENEFICE_CAPITAL' order by ff.tiers.id";
 						final Query query = session.createQuery(hql);
 						//noinspection unchecked
 						return query.list();
@@ -703,7 +702,7 @@ public class DeterminationDIsPMAEmettreProcessor {
 
 		// il faudrait tout de même que la période fiscale ait une chance, i.e. soit commencée au moins
 		if (anneePeriodeFiscale > dateTraitement.year()) {
-			throw new DeclarationException(String.format("La période fiscale %d n'est même pas commencée a la date de traitement [%s].",
+			throw new DeclarationException(String.format("La période fiscale %d n'est même pas commencée à la date de traitement [%s].",
 			                                             anneePeriodeFiscale,
 			                                             RegDateHelper.dateToDisplayString(dateTraitement)));
 		}
