@@ -13,6 +13,7 @@ import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationException;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationOptions;
 import ch.vd.uniregctb.evenement.organisation.interne.AbstractOrganisationStrategy;
 import ch.vd.uniregctb.evenement.organisation.interne.EvenementOrganisationInterne;
+import ch.vd.uniregctb.evenement.organisation.interne.MessagePreExecution;
 import ch.vd.uniregctb.evenement.organisation.interne.TraitementManuel;
 import ch.vd.uniregctb.tiers.CategorieEntrepriseHelper;
 import ch.vd.uniregctb.tiers.Entreprise;
@@ -122,31 +123,32 @@ public class CreateOrganisationStrategy extends AbstractOrganisationStrategy {
 
 				// On ne crée pas d'entreprise pour les entreprises individuelles
 				case PP:
-					LOGGER.info("L'entité organisation {} est installée sur Vaud. Catégorie [{}] -> Pas de création.", organisation.getNumeroOrganisation(), category);
-					return null;
+					LOGGER.info("L'organisation n°{} est installée sur Vaud. Catégorie [{}] -> Pas de création.", organisation.getNumeroOrganisation(), category);
+					return new MessagePreExecution(event, organisation, null, context, options,
+					                               String.format("L'organisation n°%d est une entreprise individuelle vaudoise. Pas de traitement.", organisation.getNumeroOrganisation()));
 
 				// Sociétés de personnes
 				case SP:
-					LOGGER.info("L'entité organisation {} est installée sur Vaud. Catégorie [{}] -> Création.", organisation.getNumeroOrganisation(), category);
+					LOGGER.info("L'organisation n°{} est installée sur Vaud. Catégorie [{}] -> Création.", organisation.getNumeroOrganisation(), category);
 					return new CreateEntrepriseSP(event, organisation, null, context, options, dateDeCreation, isCreation);
 
 				// Personnes morales
 				case PM:
-					LOGGER.info("L'entité organisation {} est installée sur Vaud. Catégorie [{}] -> Création.", organisation.getNumeroOrganisation(), category);
+					LOGGER.info("L'organisation n°{} est installée sur Vaud. Catégorie [{}] -> Création.", organisation.getNumeroOrganisation(), category);
 					return new CreateEntreprisePM(event, organisation, null, context, options, dateDeCreation, isCreation);
 				// Associations personne morale
 				case APM:
-					LOGGER.info("L'entité organisation {} est installée sur Vaud. Catégorie [{}] -> Création.", organisation.getNumeroOrganisation(), category);
+					LOGGER.info("L'organisation n°{} est installée sur Vaud. Catégorie [{}] -> Création.", organisation.getNumeroOrganisation(), category);
 					return new CreateEntrepriseAPM(event, organisation, null, context, options, dateDeCreation, isCreation);
 
 				// Fonds de placements
 				case FP:
-					LOGGER.info("L'entité organisation {} est installée sur Vaud. Catégorie [{}] -> Création.", organisation.getNumeroOrganisation(), category);
+					LOGGER.info("L'organisation n°{} est installée sur Vaud. Catégorie [{}] -> Création.", organisation.getNumeroOrganisation(), category);
 					return new CreateEntrepriseFDSPLAC(event, organisation, null, context, options, dateDeCreation, isCreation);
 
 				// Personnes morales de droit public
 				case DPPM:
-					LOGGER.info("L'entité organisation {} est installée sur Vaud. Catégorie [{}] -> Création.", organisation.getNumeroOrganisation(), category);
+					LOGGER.info("L'organisation n°{} est installée sur Vaud. Catégorie [{}] -> Création.", organisation.getNumeroOrganisation(), category);
 					return new CreateEntrepriseDPPM(event, organisation, null, context, options, dateDeCreation, isCreation);
 
 				// Catégories qu'on ne peut pas traiter automatiquement, catégories éventuellement inconnues.
@@ -154,27 +156,29 @@ public class CreateOrganisationStrategy extends AbstractOrganisationStrategy {
 					return new TraitementManuel(event, organisation, null, context, options,
 					                            "Traitement manuel requis pour nouvelle DP/APM ou organisation sans catégorie d’entreprise avec siège VD.");
 				default:
-					LOGGER.info("L'entité organisation {} est installée sur Vaud. Catégorie [{}] -> Traitement manuel.", organisation.getNumeroOrganisation(), category);
+					LOGGER.info("L'organisation n°{} est installée sur Vaud. Catégorie [{}] -> Traitement manuel.", organisation.getNumeroOrganisation(), category);
 					return new TraitementManuel(event, organisation, null, context, options, MSG_CREATION_AUTOMATIQUE_IMPOSSIBLE);
 				}
 			} else if (organisation.hasSiteVD(dateEvenement)) {
 				switch (category) {
 
 				case PP:
-					LOGGER.info("L'entité organisation {} a une présence secondaire sur Vaud. Catégorie [{}] -> Pas de création.", organisation.getNumeroOrganisation(), category);
-					return null;
+					LOGGER.info("L'organisation n°{} a une présence secondaire sur Vaud. Catégorie [{}] -> Pas de création.", organisation.getNumeroOrganisation(), category);
+					return new MessagePreExecution(event, organisation, null, context, options,
+					                               String.format("L'organisation n°%d est une entreprise individuelle hors canton avec une présence sur Vaud. Pas de traitement.", organisation.getNumeroOrganisation()));
 				default:
-					LOGGER.info("L'entité organisation {} a une présence secondaire sur Vaud. Catégorie [{}] -> Création.", organisation.getNumeroOrganisation(), category);
+					LOGGER.info("L'organisation n°{} a une présence secondaire sur Vaud. Catégorie [{}] -> Création.", organisation.getNumeroOrganisation(), category);
 					return new CreateEntrepriseHorsVD(event, organisation, null, context, options, dateDeCreation, isCreation);
 				}
 			} else {
-				LOGGER.info("L'entité organisation {} n'a pas de présence connue sur Vaud. Catégorie [{}] -> Pas de création.", organisation.getNumeroOrganisation(), category);
-				return null;
+				LOGGER.info("L'organisation n°{} n'a pas de présence connue sur Vaud. Catégorie [{}] -> Pas de création.", organisation.getNumeroOrganisation(), category);
+				return new MessagePreExecution(event, organisation, null, context, options,
+				                               String.format("L'organisation n°%d (%s) n'a pas de présence sur Vaud. Pas de traitement.", organisation.getNumeroOrganisation(), category));
 			}
 		}
 
 		// Catchall traitement manuel
-		LOGGER.info("L'entité organisation {} est de catégorie indéterminée. Traitement manuel.", organisation.getNumeroOrganisation());
+		LOGGER.info("L'organisation n°{} est de catégorie indéterminée. Traitement manuel.", organisation.getNumeroOrganisation());
 		return new TraitementManuel(event, organisation, null, context, options, MSG_CREATION_AUTOMATIQUE_IMPOSSIBLE);
 	}
 }
