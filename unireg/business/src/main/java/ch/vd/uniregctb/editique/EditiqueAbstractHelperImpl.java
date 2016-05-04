@@ -308,14 +308,13 @@ public abstract class EditiqueAbstractHelperImpl implements EditiqueAbstractHelp
 		final CTypeInfoDocument originalInfoDocument = original.getInfoDocument();
 
 		// calcul des lignes de "copie à"
-		final List<String> texteCopieAChezMandadaire = buildCopieA(originalInfoEnteteDocument.getDestinataire().getAdresse());
-		final List<String> texteCopieAChezDestinataire = buildCopieA(adresseEditique);
+		final List<String> texteCopieA = buildCopieA(adresseEditique);
 
 		// il faut donc générer un double du document original pour le mandataire...
 		final CTypeInfoDocument copieInfoDocument = new CTypeInfoDocument(originalInfoDocument.getVersionXSD(),
 		                                                                  originalInfoDocument.getPrefixe(),
 		                                                                  CODE_PORTE_ADRESSE_MANDATAIRE,
-		                                                                  texteCopieAChezMandadaire,
+		                                                                  texteCopieA,
 		                                                                  affranchissement.getRight(),
 		                                                                  originalInfoDocument.getTypDoc(),
 		                                                                  originalInfoDocument.getCodDoc(),
@@ -325,7 +324,7 @@ public abstract class EditiqueAbstractHelperImpl implements EditiqueAbstractHelp
 		                                                                  originalInfoDocument.isBrouillon());
 
 		// le "copie à" doit apparaître aussi dans le document original
-		originalInfoDocument.getTxtCopieMandataire().addAll(texteCopieAChezDestinataire);
+		originalInfoDocument.getTxtCopieMandataire().addAll(texteCopieA);
 
 		final CTypeInfoEnteteDocument copieInfoEnteteDocument = new CTypeInfoEnteteDocument(originalInfoEnteteDocument.getExpediteur(),
 		                                                                                    originalInfoEnteteDocument.getDestinataire(),
