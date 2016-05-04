@@ -36,6 +36,7 @@ import ch.vd.uniregctb.evenement.organisation.interne.Indexation;
 import ch.vd.uniregctb.evenement.organisation.interne.IndexationPure;
 import ch.vd.uniregctb.evenement.organisation.interne.MessagePreExecution;
 import ch.vd.uniregctb.evenement.organisation.interne.TraitementManuel;
+import ch.vd.uniregctb.evenement.organisation.interne.WarningPreExecution;
 import ch.vd.uniregctb.evenement.organisation.interne.adresse.AdresseStrategy;
 import ch.vd.uniregctb.evenement.organisation.interne.creation.CreateOrganisationStrategy;
 import ch.vd.uniregctb.evenement.organisation.interne.decisionaci.DecisionAciStrategy;
@@ -300,7 +301,11 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 		for (EvenementOrganisationTranslationStrategy strategy : strategies) {
 			EvenementOrganisationInterne e = strategy.matchAndCreate(event, organisation, entreprise, context, options);
 			if (e != null) {
-				resultatEvaluationStrategies.add(e);
+				if (e instanceof MessagePreExecution || e instanceof WarningPreExecution) {
+					evenements.add(e);
+				} else {
+					resultatEvaluationStrategies.add(e);
+				}
 			}
 		}
 
