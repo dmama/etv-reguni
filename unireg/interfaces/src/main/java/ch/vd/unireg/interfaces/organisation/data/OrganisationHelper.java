@@ -596,7 +596,7 @@ public abstract class OrganisationHelper {
 		final List<DateRanged<StatusRegistreIDE>> periodesStatusIde = site.getDonneesRegistreIDE().getStatus();
 		final List<DateRange> datesRadieIde = new ArrayList<>();
 		List<DateRange> nonRadiationIde = Collections.emptyList();
-		if (!periodesStatusIde.isEmpty()) {
+		if (periodesStatusIde != null && !periodesStatusIde.isEmpty()) {
 			final DateRanged<StatusRegistreIDE> dernierePeriode = CollectionsUtils.getLastElement(periodesStatusIde);
 			final StatusRegistreIDE status = dernierePeriode.getPayload();
 			if (dernierePeriode.getDateFin() == null && (status == StatusRegistreIDE.RADIE || status == StatusRegistreIDE.DEFINITIVEMENT_RADIE)) {
