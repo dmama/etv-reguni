@@ -671,9 +671,10 @@ public class TacheServiceImpl implements TacheService {
 			}
 
 			// ... puis éventuellement les tâches autour des questionnaires SNC
-			if (tiers instanceof Entreprise) {
-				actions.addAll(determineSynchronizeActionsForQSNCs((Entreprise) tiers));
-			}
+			// TODO à réactiver, a priori en 16R3
+//			if (tiers instanceof Entreprise) {
+//				actions.addAll(determineSynchronizeActionsForQSNCs((Entreprise) tiers));
+//			}
 
 			// si quelque action a été collectée, on la garde pour plus tard
 			if (!actions.isEmpty()) {
