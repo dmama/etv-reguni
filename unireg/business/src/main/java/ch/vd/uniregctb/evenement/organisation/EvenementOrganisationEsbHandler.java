@@ -67,7 +67,7 @@ public class EvenementOrganisationEsbHandler implements EsbMessageHandler, Initi
 			return String.format("id=%d, type=%s, date=%s, reportingId=%s, noOrganisation=%d, nom='%s'",
 			                     notice.getNoticeId(),
 			                     notice.getTypeOfNotice(),
-			                     notice.getNoticeDate(),
+			                     RegDateHelper.dateToDisplayString(notice.getNoticeDate()),
 			                     request != null ? request.getReportingApplication() : "?",
 			                     message.getOrganisation().get(0).getOrganisation().getCantonalId(),
 			                     message.getOrganisation().get(0).getOrganisation().getOrganisationLocation().get(0).getName()

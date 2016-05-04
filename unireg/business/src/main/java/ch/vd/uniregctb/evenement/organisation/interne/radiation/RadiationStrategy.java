@@ -63,7 +63,7 @@ public class RadiationStrategy extends AbstractOrganisationStrategy {
 			final CategorieEntreprise categorieEntreprise = CategorieEntrepriseHelper.getCategorieEntreprise(organisation, dateApres);
 			if (categorieEntreprise == null) {
 				return new TraitementManuel(event, organisation, entreprise, context, options,
-				                            String.format("Traitement manuel requis: Impossible de déterminer la catégorie de l'entreprise %s!",
+				                            String.format("Traitement manuel requis: Impossible de déterminer la catégorie de l'entreprise n°%s!",
 				                                          FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()))
 				);
 			}
@@ -72,17 +72,17 @@ public class RadiationStrategy extends AbstractOrganisationStrategy {
 				final RegDate dateRadiation = sitePrincipalApres.getDonneesRC().getDateRadiation(dateApres);
 				if (dateRadiation == null) {
 					return new TraitementManuel(event, organisation, entreprise, context, options,
-					                            String.format("Traitement manuel requis: l'entreprise %s est radiée du RC mais la date de radiation est introuvable!",
+					                            String.format("Traitement manuel requis: l'entreprise n°%s est radiée du RC mais la date de radiation est introuvable!",
 					                                          FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()))
 					);
 				}
 				else {
 					if (categorieEntreprise == CategorieEntreprise.APM) {
-						LOGGER.info(String.format("Radiation de l'association %s (%s).", FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()), CategorieEntreprise.APM.getLibelle()));
+						LOGGER.info(String.format("Radiation de l'association n°%s (%s).", FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()), CategorieEntreprise.APM.getLibelle()));
 						return new RadiationAPM(event, organisation, entreprise, context, options, dateRadiation);
 					}
 					else {
-						LOGGER.info(String.format("Radiation de l'entreprise %s (%s).", FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()), categorieEntreprise.getLibelle()));
+						LOGGER.info(String.format("Radiation de l'entreprise n°%s (%s).", FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()), categorieEntreprise.getLibelle()));
 						return new Radiation(event, organisation, entreprise, context, options, dateRadiation);
 					}
 				}

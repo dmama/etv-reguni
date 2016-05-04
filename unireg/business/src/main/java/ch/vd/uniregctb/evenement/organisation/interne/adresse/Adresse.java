@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.interfaces.organisation.data.AdresseEffectiveRCEnt;
 import ch.vd.unireg.interfaces.organisation.data.AdresseLegaleRCEnt;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
@@ -127,7 +128,7 @@ public class Adresse extends EvenementOrganisationInterneDeTraitement {
 		final AdresseTiers adresseTiers = CollectionsUtils.getLastElement(adressesTiersSorted);
 		if (adresseTiers != null) {
 			if (adresseTiers.getDateDebut().isAfter(date)) {
-				throw new EvenementOrganisationException(String.format("L'adresse valide à la date demandée %s n'est pas la dernière de l'historique!", date));
+				throw new EvenementOrganisationException(String.format("L'adresse valide à la date demandée %s n'est pas la dernière de l'historique!", RegDateHelper.dateToDisplayString(date)));
 			}
 			if (adresseTiers instanceof AdresseSupplementaire) {
 				return (AdresseSupplementaire) adresseTiers;

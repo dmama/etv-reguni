@@ -64,7 +64,7 @@ public class DemenagementSiegeStrategy extends AbstractOrganisationStrategy {
 		if (communeDeSiegeApres == null) {
 			return new TraitementManuel(event, organisation, null, context, options,
 			                            String.format(
-					                            "Autorité fiscale (siège) introuvable l'organisation %s %s. On est peut-être en présence d'un déménagement vers l'étranger.",
+					                            "Autorité fiscale (siège) introuvable l'organisation n°%s %s. On est peut-être en présence d'un déménagement vers l'étranger.",
 					                            organisation.getNumeroOrganisation(), organisation.getNom(dateApres))
 			);
 		}
@@ -73,7 +73,7 @@ public class DemenagementSiegeStrategy extends AbstractOrganisationStrategy {
 			if (isExisting(organisation, dateApres)) {
 				return new TraitementManuel(event, organisation, null, context, options,
 				                            String.format(
-						                            "Autorité fiscale (siège) introuvable l'organisation %s %s. On est peut-être en présence d'un déménagement depuis l'étranger.",
+						                            "Autorité fiscale (siège) introuvable l'organisation n°%s %s. On est peut-être en présence d'un déménagement depuis l'étranger.",
 						                            organisation.getNumeroOrganisation(), organisation.getNom(dateApres))
 				);
 			} else {

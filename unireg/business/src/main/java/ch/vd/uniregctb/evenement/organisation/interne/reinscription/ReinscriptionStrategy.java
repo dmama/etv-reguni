@@ -10,6 +10,7 @@ import ch.vd.unireg.interfaces.organisation.data.DonneesRC;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 import ch.vd.unireg.interfaces.organisation.data.StatusInscriptionRC;
+import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationContext;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationException;
@@ -59,7 +60,7 @@ public class ReinscriptionStrategy extends AbstractOrganisationStrategy {
 		if (sitePrincipalAvantRange == null) {
 			if (isExisting(organisation, dateApres)) {
 				return new TraitementManuel(event, organisation, entreprise, context, options,
-				                            String.format("Site principal introuvable sur organisation %s en date du %s", organisation.getNumeroOrganisation(), RegDateHelper.dateToDisplayString(dateAvant)));
+				                            String.format("Site principal introuvable sur organisation n°%s en date du %s", organisation.getNumeroOrganisation(), RegDateHelper.dateToDisplayString(dateAvant)));
 			}
 		} else {
 			final SiteOrganisation sitePrincipalAvant = sitePrincipalAvantRange.getPayload();
@@ -73,12 +74,12 @@ public class ReinscriptionStrategy extends AbstractOrganisationStrategy {
 
 			if (statusInscriptionAvant == StatusInscriptionRC.RADIE && (statusInscriptionApres == StatusInscriptionRC.ACTIF || statusInscriptionApres == StatusInscriptionRC.EN_LIQUIDATION)) {
 				if (dateRadiationRCAvant != null && dateRadiationRCApres == null) {
-					LOGGER.info(String.format("Réinscription au RC de l'entreprise %s (civil: %s).", entreprise.getNumero(), organisation.getNumeroOrganisation()));
+					LOGGER.info(String.format("Réinscription au RC de l'entreprise n°%s (civil: %d).", FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()), organisation.getNumeroOrganisation()));
 					return new Reinscription(event, organisation, entreprise, context, options);
 				}
 				else if (dateRadiationRCApres != null) {
 					return new MessagePreExecution(event, organisation, entreprise, context, options,
-					                               String.format("L'organisation %d n'est plus radiée du RC mais a toujours une date de radiation!", organisation.getNumeroOrganisation()));
+					                               String.format("L'organisation n°%d n'est plus radiée du RC mais a toujours une date de radiation!", organisation.getNumeroOrganisation()));
 				}
 			}
 		}

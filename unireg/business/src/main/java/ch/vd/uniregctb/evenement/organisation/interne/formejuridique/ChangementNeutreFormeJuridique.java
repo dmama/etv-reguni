@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.evenement.organisation.interne.formejuridique;
 
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
+import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationContext;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationException;
@@ -34,8 +35,8 @@ public class ChangementNeutreFormeJuridique extends EvenementOrganisationInterne
 
 	@Override
 	public void doHandle(EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) throws EvenementOrganisationException {
-		String message = String.format("Envoi d'un événement d'information: %s. Changement neutre de forme juridique. Entreprise %s (civil: %s).",  typeInfo.toString(), getEntreprise().getNumero(),
-		                               getNoOrganisation());
+		String message = String.format("Envoi d'un événement d'information: %s. Changement neutre de forme juridique. Entreprise n°%s (civil: %d.",
+		                               typeInfo.toString(), FormatNumeroHelper.numeroCTBToDisplay(getEntreprise().getNumero()), getNoOrganisation());
 
 		emetEvtFiscalInformation(getDateEvt(), getEntreprise(), typeInfo, message, suivis);
 	}

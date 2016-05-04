@@ -127,11 +127,11 @@ public class EtablissementsSecondaires extends EvenementOrganisationInterneDeTra
 				if (ancienNom != null) {
 					warnings.addWarning(String.format("Vérification manuelle requise: l'établissement secondaire (n°%d civil) est préexistant au civil (depuis le %s) mais inconnu d'Unireg à ce jour. " +
 							                                  "La date du rapport entre tiers (%s) doit probablement être ajustée à la main.",
-					                                  aCreer.getNumeroSite(), aCreer.connuAuCivilDepuis(), RegDateHelper.dateToDisplayString(dateApres)));
+					                                  aCreer.getNumeroSite(), RegDateHelper.dateToDisplayString(aCreer.connuAuCivilDepuis()), RegDateHelper.dateToDisplayString(dateApres)));
 				}
 
 			} else {
-				suivis.addSuivi(String.format("Nouvel établissement secondaire civil %d déjà connu de Unireg en tant que tiers %s. Ne sera pas créé.",
+				suivis.addSuivi(String.format("Nouvel établissement secondaire civil n°%d déjà connu de Unireg en tant que tiers n°%s. Ne sera pas créé.",
 				                              aCreer.getNumeroSite(), FormatNumeroHelper.numeroCTBToDisplay(etablissement.getNumero())));
 			}
 		}

@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.StringsUtils;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
@@ -215,7 +216,7 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 
 		/* L'entreprise est retrouvé grâce au numéro cantonal. Pas de doute possible. */
 		if (entreprise != null) {
-			final String message = String.format("%s (%s%s) identifiée sur la base du numéro civil %s (numéro cantonal).",
+			final String message = String.format("%s (%s%s) identifiée sur la base du numéro civil %d (numéro cantonal).",
 			                                     entreprise.toString(),
 			                                     raisonSocialeCivile,
 			                                     noIdeCivil != null ? ", IDE: " + noIdeCivil : "",
@@ -274,10 +275,10 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 					evenements.add(new MessagePreExecution(event, organisation, entreprise, context, options, message));
 					evenements.add(rattacheOrganisation(event, organisation, entreprise, context, options));
 				} else {
-					final String message = String.format("Le tiers [%s] n° %d identifié grâce aux attributs civils [%s] n'est pas une entreprise et sera ignoré. " +
+					final String message = String.format("Le tiers [%s] n°%s identifié grâce aux attributs civils [%s] n'est pas une entreprise et sera ignoré. " +
 							                                     "Un nouveau tiers sera créé, le cas échéant, pour l'organisation civile n°%d.",
 					                                     tiers.getType().getDescription(),
-					                                     tiers.getNumero(),
+					                                     FormatNumeroHelper.numeroCTBToDisplay(tiers.getNumero()),
 					                                     attributsCivilsAffichage(raisonSocialeCivile, noIdeCivil),
 					                                     organisation.getNumeroOrganisation());
 							Audit.info(event.getNoEvenement(), message);
@@ -286,7 +287,7 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 			}
 			// L'identification n'a rien retourné. Cela veut dire qu'on ne connait pas déjà le tiers. On rapporte simplement cet état de fait.
 			else {
-				final String message = String.format("Aucune entreprise identifiée pour le numéro civil %s ou les attributs civils [%s].",
+				final String message = String.format("Aucune entreprise identifiée pour le numéro civil %d ou les attributs civils [%s].",
 				                                     organisation.getNumeroOrganisation(),
 				                                     attributsCivilsAffichage(raisonSocialeCivile, noIdeCivil));
 				Audit.info(event.getNoEvenement(), message);
@@ -333,8 +334,9 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 		if (noms.size() > 0) {
 			if (dateEvenement.isBefore(noms.get(0).getDateDebut())) {
 				throw new EvenementOrganisationException(
-						String.format("Erreur fatale: la date de l'événement %s (%s) est antérieure à la date de création (%s) de l'organisation telle que rapportée par RCEnt. No civil: %s, nom: %s.",
-						              event.getNoEvenement(), dateEvenement, noms.get(0).getDateDebut(), organisation.getNumeroOrganisation(), noms.get(0).getPayload()));
+						String.format("Erreur fatale: la date de l'événement %d (%s) est antérieure à la date de création (%s) de l'organisation telle que rapportée par RCEnt. No civil: %d, nom: %s.",
+						              event.getNoEvenement(), RegDateHelper.dateToDisplayString(dateEvenement),
+						              RegDateHelper.dateToDisplayString(noms.get(0).getDateDebut()), organisation.getNumeroOrganisation(), noms.get(0).getPayload()));
 			}
 			StringBuilder champs = new StringBuilder();
 			FormeLegale formeLegale = organisation.getFormeLegale(dateEvenement);
@@ -344,7 +346,7 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 			for (SiteOrganisation site : organisation.getDonneesSites()) {
 				String nom = site.getNom(dateEvenement); // Le nom (obligatoire de par le xsd) nous permet de déduire si le site est existant pour la date données.
 				if (nom != null && site.getDomiciles().isEmpty()) {
-					champs.append(String.format("[Etablissement %s: seat] ", site.getNumeroSite()));
+					champs.append(String.format("[Etablissement n°%d: seat] ", site.getNumeroSite()));
 				}
 			}
 			if (champs.length() > 0) {
@@ -352,7 +354,7 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 			}
 		} else {
 			throw new EvenementOrganisationException(
-					String.format("Donnée RCEnt invalide: Champ obligatoire 'nom' pas trouvé pour l'organisation no civil: %s",
+					String.format("Donnée RCEnt invalide: Champ obligatoire 'nom' pas trouvé pour l'organisation no civil: %d",
 					              organisation.getNumeroOrganisation()));
 		}
 	}
@@ -390,19 +392,19 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 				}
 
 				return new MessagePreExecution(event, organisation, entreprise, context, options,
-				                               String.format("Organisation civile n°%d rattachée à l'entreprise n°%d.%s%s",
-						              organisation.getNumeroOrganisation(), entreprise.getNumero(), messageEtablissementsNonRattaches == null ? "" : messageEtablissementsNonRattaches, messageSitesNonRattaches == null ? "" : messageSitesNonRattaches));
+				                               String.format("Organisation civile n°%d rattachée à l'entreprise n°%s.%s%s",
+						              organisation.getNumeroOrganisation(), FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()), messageEtablissementsNonRattaches == null ? "" : messageEtablissementsNonRattaches, messageSitesNonRattaches == null ? "" : messageSitesNonRattaches));
 			} else {
 				return new MessagePreExecution(event, organisation, entreprise, context, options,
-				                               String.format("Organisation civile n°%d rattachée avec succès à l'entreprise n°%d, avec tous ses établissements.",
-						              organisation.getNumeroOrganisation(), entreprise.getNumero()));
+				                               String.format("Organisation civile n°%d rattachée avec succès à l'entreprise n°%s, avec tous ses établissements.",
+						              organisation.getNumeroOrganisation(), FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero())));
 			}
 		}
 		catch (MetierServiceException e) {
 			throw new EvenementOrganisationException(
-					String.format("Impossible de rattacher l'organisation civile n°%d à l'entreprise n°%d: %s",
+					String.format("Impossible de rattacher l'organisation civile n°%d à l'entreprise n°%s: %s",
 					              organisation.getNumeroOrganisation(),
-					              entreprise.getNumero(), e.getMessage()),
+					              FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()), e.getMessage()),
 					e);
 		}
 	}

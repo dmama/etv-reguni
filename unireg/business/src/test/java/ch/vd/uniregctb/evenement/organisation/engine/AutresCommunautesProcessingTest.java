@@ -14,6 +14,7 @@ import ch.vd.unireg.interfaces.organisation.data.TypeOrganisationRegistreIDE;
 import ch.vd.unireg.interfaces.organisation.mock.MockServiceOrganisation;
 import ch.vd.unireg.interfaces.organisation.mock.data.MockOrganisation;
 import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockOrganisationFactory;
+import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationErreur;
 import ch.vd.uniregctb.tiers.AutreCommunaute;
@@ -100,10 +101,10 @@ public class AutresCommunautesProcessingTest extends AbstractEvenementOrganisati
 				                             Assert.assertEquals(EtatEvenementOrganisation.EN_ERREUR, evt.getEtat());
 
 				                             final EvenementOrganisationErreur evtErreur0 = evt.getErreurs().get(0);
-				                             Assert.assertEquals(String.format("Le tiers [%s] n° %d identifié grâce aux attributs civils [Correia Pinto, Jardinage et Paysagisme] n'est pas une entreprise et sera ignoré. " +
+				                             Assert.assertEquals(String.format("Le tiers [%s] n°%s identifié grâce aux attributs civils [Correia Pinto, Jardinage et Paysagisme] n'est pas une entreprise et sera ignoré. " +
 						                                                               "Un nouveau tiers sera créé, le cas échéant, pour l'organisation civile n°%d.",
 				                                                               TypeTiers.AUTRE_COMMUNAUTE.getDescription(),
-				                                                               tiersId,
+				                                                               FormatNumeroHelper.numeroCTBToDisplay(tiersId),
 				                                                               noOrganisation),
 				                                                 evtErreur0.getMessage());
 				                             final EvenementOrganisationErreur evtErreur1 = evt.getErreurs().get(1);
