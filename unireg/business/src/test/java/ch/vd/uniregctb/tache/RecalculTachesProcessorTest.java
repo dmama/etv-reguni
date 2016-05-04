@@ -2,6 +2,7 @@ package ch.vd.uniregctb.tache;
 
 import java.util.List;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.TransactionStatus;
@@ -237,6 +238,7 @@ public class RecalculTachesProcessorTest extends BusinessTest {
 		});
 	}
 
+	@Ignore("Puisque le recalcul automatique a été désactivé pour le moment...")
 	@Test
 	public void testCreationTacheSNC() throws Exception {
 
@@ -528,6 +530,7 @@ public class RecalculTachesProcessorTest extends BusinessTest {
 		});
 	}
 
+	@Ignore("Puisque le recalcul automatique a été désactivé pour le moment...")
 	@Test
 	public void testCleanupSNC() throws Exception {
 
@@ -843,6 +846,7 @@ public class RecalculTachesProcessorTest extends BusinessTest {
 		});
 	}
 
+	@Ignore("Puisque le recalcul automatique a été désactivé pour le moment...")
 	@Test
 	public void testCleanupModeFullSNC() throws Exception {
 
@@ -1096,6 +1100,7 @@ public class RecalculTachesProcessorTest extends BusinessTest {
 		}
 	}
 
+	@Ignore("Puisque le recalcul automatique a été désactivé pour le moment...")
 	@Test
 	public void testTacheDejaAnnuleeSNC() throws Exception {
 
