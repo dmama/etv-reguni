@@ -56,8 +56,9 @@ public class CreateOrganisationStrategy extends AbstractOrganisationStrategy {
 		}
 
 		final RegDate dateEvenement = event.getDateEvenement();
-		SiteOrganisation sitePrincipal = organisation.getSitePrincipal(dateEvenement).getPayload();
 
+		// On veut s'arrêter si on tombe sur un cas de siège vide.
+		SiteOrganisation sitePrincipal = organisation.getSitePrincipal(dateEvenement).getPayload();
 		final Domicile siege = sitePrincipal.getDomicile(dateEvenement);
 		if (siege == null) {
 			return new TraitementManuel(event, organisation, null, context, options,
@@ -66,51 +67,9 @@ public class CreateOrganisationStrategy extends AbstractOrganisationStrategy {
 					                            sitePrincipal.getNumeroSite(), organisation.getNumeroOrganisation(), organisation.getNom(dateEvenement))
 			);
 		}
-		final boolean isVaudoise = siege.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD;
-		final boolean inscritAuRC = organisation.isInscritAuRC(dateEvenement);
-		final RegDate dateInscriptionRCVd;
-		final RegDate dateInscriptionRC;
-		RegDate dateDeCreation;
-		final boolean isCreation;
-		try {
-			if (inscritAuRC) {
-				dateInscriptionRCVd = sitePrincipal.getDateInscriptionRCVd(dateEvenement);
-				if (isVaudoise && dateInscriptionRCVd == null) {
-					return new TraitementManuel(event, organisation, null, context, options, "Date d'inscription au régistre vaudois du commerce introuvable pour l'établissement principal vaudois.");
-				}
-				dateInscriptionRC = sitePrincipal.getDateInscriptionRC(dateEvenement);
-				isCreation = isCreation(event.getType(), organisation,
-				                        dateEvenement); // On ne peut pas l'appeler avant car on doit d'abord s'assurer que l'inscription RC VD existe si on est inscrit au RC et vaudois.
-				if (isCreation) {
-					if (isVaudoise) {
-						dateDeCreation = dateInscriptionRCVd.getOneDayAfter();
-					}
-					else {
-						dateDeCreation = dateInscriptionRC.getOneDayAfter();
-					}
-				}
-				else { // Une arrivée
-					dateDeCreation = dateInscriptionRCVd;
-				}
-			}
-			else {
-				isCreation = isCreation(event.getType(), organisation, dateEvenement);
-				if (isCreation) {
-					dateDeCreation = dateEvenement.getOneDayAfter();
-				}
-				else {
-					dateDeCreation = dateEvenement;
-				}
-			}
-		} catch (EvenementOrganisationException e) {
-			return new TraitementManuel(event, organisation, null, context, options,
-			                            String.format(
-					                            "Une erreur grave est survenue lors de l'examen des données RCEnt pour l'organisation n°%s %s: %s",
-					                            organisation.getNumeroOrganisation(), organisation.getNom(dateEvenement), e.getMessage())
-			);
-		}
 
-		// Determiner si on est inscrit au RC
+		final InformationDeDateEtDeCreation info;
+		try {
 
 		// On doit connaître la catégorie pour continuer en mode automatique
 		CategorieEntreprise category = CategorieEntrepriseHelper.getCategorieEntreprise(organisation, dateEvenement);
@@ -130,26 +89,31 @@ public class CreateOrganisationStrategy extends AbstractOrganisationStrategy {
 				// Sociétés de personnes
 				case SP:
 					LOGGER.info("L'organisation n°{} est installée sur Vaud. Catégorie [{}] -> Création.", organisation.getNumeroOrganisation(), category);
-					return new CreateEntrepriseSP(event, organisation, null, context, options, dateDeCreation, isCreation);
+					info = extraireInformationDeDateEtDeCreation(event, organisation);
+					return new CreateEntrepriseSP(event, organisation, null, context, options, info.dateDeCreation, info.isCreation);
 
 				// Personnes morales
 				case PM:
 					LOGGER.info("L'organisation n°{} est installée sur Vaud. Catégorie [{}] -> Création.", organisation.getNumeroOrganisation(), category);
-					return new CreateEntreprisePM(event, organisation, null, context, options, dateDeCreation, isCreation);
+					info = extraireInformationDeDateEtDeCreation(event, organisation);
+					return new CreateEntreprisePM(event, organisation, null, context, options, info.dateDeCreation, info.isCreation);
 				// Associations personne morale
 				case APM:
 					LOGGER.info("L'organisation n°{} est installée sur Vaud. Catégorie [{}] -> Création.", organisation.getNumeroOrganisation(), category);
-					return new CreateEntrepriseAPM(event, organisation, null, context, options, dateDeCreation, isCreation);
+					info = extraireInformationDeDateEtDeCreation(event, organisation);
+					return new CreateEntrepriseAPM(event, organisation, null, context, options, info.dateDeCreation, info.isCreation);
 
 				// Fonds de placements
 				case FP:
 					LOGGER.info("L'organisation n°{} est installée sur Vaud. Catégorie [{}] -> Création.", organisation.getNumeroOrganisation(), category);
-					return new CreateEntrepriseFDSPLAC(event, organisation, null, context, options, dateDeCreation, isCreation);
+					info = extraireInformationDeDateEtDeCreation(event, organisation);
+					return new CreateEntrepriseFDSPLAC(event, organisation, null, context, options, info.dateDeCreation, info.isCreation);
 
 				// Personnes morales de droit public
 				case DPPM:
 					LOGGER.info("L'organisation n°{} est installée sur Vaud. Catégorie [{}] -> Création.", organisation.getNumeroOrganisation(), category);
-					return new CreateEntrepriseDPPM(event, organisation, null, context, options, dateDeCreation, isCreation);
+					info = extraireInformationDeDateEtDeCreation(event, organisation);
+					return new CreateEntrepriseDPPM(event, organisation, null, context, options, info.dateDeCreation, info.isCreation);
 
 				// Catégories qu'on ne peut pas traiter automatiquement, catégories éventuellement inconnues.
 				case DPAPM:
@@ -168,7 +132,8 @@ public class CreateOrganisationStrategy extends AbstractOrganisationStrategy {
 					                               String.format("L'organisation n°%d est une entreprise individuelle hors canton avec une présence sur Vaud. Pas de traitement.", organisation.getNumeroOrganisation()));
 				default:
 					LOGGER.info("L'organisation n°{} a une présence secondaire sur Vaud. Catégorie [{}] -> Création.", organisation.getNumeroOrganisation(), category);
-					return new CreateEntrepriseHorsVD(event, organisation, null, context, options, dateDeCreation, isCreation);
+					info = extraireInformationDeDateEtDeCreation(event, organisation);
+					return new CreateEntrepriseHorsVD(event, organisation, null, context, options, info.dateDeCreation, info.isCreation);
 				}
 			} else {
 				LOGGER.info("L'organisation n°{} n'a pas de présence connue sur Vaud. Catégorie [{}] -> Pas de création.", organisation.getNumeroOrganisation(), category);
@@ -176,9 +141,69 @@ public class CreateOrganisationStrategy extends AbstractOrganisationStrategy {
 				                               String.format("L'organisation n°%d (%s) n'a pas de présence sur Vaud. Pas de traitement.", organisation.getNumeroOrganisation(), category));
 			}
 		}
+		} catch (EvenementOrganisationException e) {
+			return new TraitementManuel(event, organisation, null, context, options,
+			                            String.format(
+					                            "Une erreur grave est survenue lors de l'examen des données RCEnt: %s",
+					                            e.getMessage())
+			);
+		}
 
 		// Catchall traitement manuel
 		LOGGER.info("L'organisation n°{} est de catégorie indéterminée. Traitement manuel.", organisation.getNumeroOrganisation());
 		return new TraitementManuel(event, organisation, null, context, options, MSG_CREATION_AUTOMATIQUE_IMPOSSIBLE);
+	}
+
+	private InformationDeDateEtDeCreation extraireInformationDeDateEtDeCreation(EvenementOrganisation event, Organisation organisation) throws EvenementOrganisationException {
+		final RegDate dateEvenement = event.getDateEvenement();
+
+		SiteOrganisation sitePrincipal = organisation.getSitePrincipal(dateEvenement).getPayload();
+		final Domicile siege = sitePrincipal.getDomicile(dateEvenement);
+		final boolean isVaudoise = siege.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD;
+		final boolean inscritAuRC = organisation.isInscritAuRC(dateEvenement);
+		final RegDate dateInscriptionRCVd;
+		final RegDate dateInscriptionRC;
+		final RegDate dateDeCreation;
+		final boolean isCreation;
+		if (inscritAuRC) {
+			dateInscriptionRCVd = sitePrincipal.getDateInscriptionRCVd(dateEvenement);
+			if (isVaudoise && dateInscriptionRCVd == null) {
+				throw new EvenementOrganisationException("Date d'inscription au régistre vaudois du commerce introuvable pour l'établissement principal vaudois.");
+			}
+			dateInscriptionRC = sitePrincipal.getDateInscriptionRC(dateEvenement);
+			isCreation = isCreation(event.getType(), organisation,
+			                        dateEvenement); // On ne peut pas l'appeler avant car on doit d'abord s'assurer que l'inscription RC VD existe si on est inscrit au RC et vaudois.
+			if (isCreation) {
+				if (isVaudoise) {
+					dateDeCreation = dateInscriptionRCVd.getOneDayAfter();
+				}
+				else {
+					dateDeCreation = dateInscriptionRC.getOneDayAfter();
+				}
+			}
+			else { // Une arrivée
+				dateDeCreation = dateInscriptionRCVd;
+			}
+		}
+		else {
+			isCreation = isCreation(event.getType(), organisation, dateEvenement);
+			if (isCreation) {
+				dateDeCreation = dateEvenement.getOneDayAfter();
+			}
+			else {
+				dateDeCreation = dateEvenement;
+			}
+		}
+		return new InformationDeDateEtDeCreation(dateDeCreation, isCreation);
+	}
+
+	private static class InformationDeDateEtDeCreation {
+		RegDate dateDeCreation;
+		boolean isCreation;
+
+		public InformationDeDateEtDeCreation(RegDate dateDeCreation, boolean isCreation) {
+			this.dateDeCreation = dateDeCreation;
+			this.isCreation = isCreation;
+		}
 	}
 }

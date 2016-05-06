@@ -39,10 +39,13 @@ public abstract class CreateEntreprise extends EvenementOrganisationInterneDeTra
 	                           EvenementOrganisationContext context,
 	                           EvenementOrganisationOptions options,
 	                           RegDate dateDeCreation,
-	                           boolean isCreation) {
+	                           boolean isCreation) throws EvenementOrganisationException {
 		super(evenement, organisation, entreprise, context, options);
 
 		sitePrincipal = organisation.getSitePrincipal(getDateEvt()).getPayload();
+		if (dateDeCreation == null) {
+			throw new EvenementOrganisationException("Date nulle pour la création d'une entreprise. Probablement une erreur de programmation à ce stade..");
+		}
 		this.dateDeCreation = dateDeCreation;
 		this.isCreation = isCreation;
 
