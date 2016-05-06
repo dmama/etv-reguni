@@ -140,9 +140,7 @@ public class EntrepriseValidator extends ContribuableImpositionPersonnesMoralesV
 
 		// ... puis entre elles (il ne doit y avoir, à tout moment, au plus qu'une seule instance active de chaque type)
 		checkOverlaps(entreprise.getRaisonsSocialesNonAnnuleesTriees(), "raison sociale", vr);
-		checkContinuous(entreprise.getRaisonsSocialesNonAnnuleesTriees(), "raison sociale", vr);
 		checkOverlaps(entreprise.getFormesJuridiquesNonAnnuleesTriees(), "forme juridique", vr);
-		checkContinuous(entreprise.getFormesJuridiquesNonAnnuleesTriees(), "forme juridique", vr);
 		checkOverlaps(entreprise.getCapitauxNonAnnulesTries(), "capital", vr);
 
 		return vr;
