@@ -46,6 +46,7 @@ import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.OrganisationNotFoundException;
 import ch.vd.uniregctb.tiers.Tiers;
+import ch.vd.uniregctb.tiers.TiersException;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.EtatEvenementOrganisation;
 import ch.vd.uniregctb.utils.WebContextUtils;
@@ -265,7 +266,7 @@ public class EvenementOrganisationManagerImpl implements EvenementOrganisationMa
 	 */
 	@Transactional
 	@Override
-	public Entreprise creerEntreprisePourEvenementOrganisation(Long id) {
+	public Entreprise creerEntreprisePourEvenementOrganisation(Long id) throws TiersException {
 		EvenementOrganisation evt = evenementService.get(id);
 		return tiersService.createEntreprisePourEvenementOrganisation(evt);
 	}

@@ -378,24 +378,36 @@ public class TiersServiceImpl implements TiersService {
 	 * @return L'entreprise créé
 	 */
 	@Override
-	public Entreprise createEntreprisePourEvenementOrganisation(EvenementOrganisation evt) {
-		final RegDate dateDebut = evt.getDateEvenement().getOneDayAfter();
+	public Entreprise createEntreprisePourEvenementOrganisation(EvenementOrganisation evt) throws TiersException {
+		final RegDate dateEvt = evt.getDateEvenement();
+		final RegDate dateCreation;
 
 		final long noOrganisation = evt.getNoOrganisation();
 		final Organisation organisation = serviceOrganisationService.getOrganisationHistory(noOrganisation);
-		final SiteOrganisation sitePrincipal = organisation.getSitePrincipal(dateDebut).getPayload();
+		final SiteOrganisation sitePrincipal = organisation.getSitePrincipal(dateEvt).getPayload();
+
+		final RegDate dateInscriptionVd = sitePrincipal.getDonneesRC().getDateInscriptionVd(dateEvt);
+		if (dateInscriptionVd != null && dateInscriptionVd.isAfter(dateEvt.addDays(- OrganisationHelper.NB_JOURS_TOLERANCE_DE_DECALAGE_RC))) {
+			dateCreation = dateInscriptionVd.getOneDayAfter();
+		} else {
+			dateCreation = dateEvt.getOneDayAfter();
+		}
 
 		final Entreprise entreprise = createEntreprise(noOrganisation);
-		if (organisation.isInscritAuRC(dateDebut)) {
-			changeEtatEntreprise(TypeEtatEntreprise.INSCRITE_RC, entreprise, dateDebut, TypeGenerationEtatEntreprise.MANUELLE);
+		if (organisation.isInscritAuRC(dateCreation)) {
+			changeEtatEntreprise(TypeEtatEntreprise.INSCRITE_RC, entreprise, dateCreation, TypeGenerationEtatEntreprise.MANUELLE);
 		} else {
-			changeEtatEntreprise(TypeEtatEntreprise.FONDEE, entreprise, dateDebut, TypeGenerationEtatEntreprise.MANUELLE);
+			changeEtatEntreprise(TypeEtatEntreprise.FONDEE, entreprise, dateCreation, TypeGenerationEtatEntreprise.MANUELLE);
 		}
 
 		final Etablissement etablissement = createEtablissement(sitePrincipal.getNumeroSite());
 
 		// L'activité économique
-		addRapport(new ActiviteEconomique(dateDebut, null, entreprise, etablissement, true), entreprise, etablissement);
+		addRapport(new ActiviteEconomique(dateCreation, null, entreprise, etablissement, true), entreprise, etablissement);
+
+		if (dateInscriptionVd != null) {
+			appliqueDonneesCivilesSurPeriode(entreprise, new DateRangeHelper.Range(dateInscriptionVd, dateEvt.getOneDayBefore()), dateEvt);
+		}
 
 		final EvenementOrganisationErreur evtErreur = new EvenementOrganisationErreur();
 		evtErreur.setType(TypeEvenementErreur.SUIVI);
