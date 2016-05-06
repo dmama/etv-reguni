@@ -275,7 +275,7 @@ public abstract class EvenementOrganisationInterne {
 				switch (siegePrecedant.getTypeAutoriteFiscale()) {
 				case COMMUNE_OU_FRACTION_VD:
 					throw new EvenementOrganisationException(
-							"L'organisation a un précédent siège sur Vaud. C'est donc une organisation existante inconnue jusque là (association nouvellement inscrite au RC?) Veuillez traiter le cas manuellement.");
+							"Tentative d'ouvrir un for pour une entreprise déjà vaudoise mais inconnue d'Unireg jusque là. Ce cas n'est pas censé pouvoir se produire autrement que si des événements précédant ont été manqués (non arrivés ou forcés). Veuillez traiter ce cas manuellement.");
 				case COMMUNE_HC:
 					motifOuverture = MotifFor.ARRIVEE_HC;
 					break;
