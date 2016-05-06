@@ -269,7 +269,7 @@
 <!-- Début de la liste des événements dans un état non final sur ce même individu -->
 <c:if test="${fn:length(command.nonTraitesSurMemeOrganisation) > 0}">
 	<fieldset>
-		<legend><span><fmt:message key="label.evenements.non.traites"/></span></legend>
+		<legend><span><fmt:message key="label.evenements.non.traites.entreprise"/></span></legend>
 		<display:table name="command.nonTraitesSurMemeOrganisation" id="aTraiter">
 			<display:column style="width: 3em; text-align: center;">
 				<c:if test="${aTraiter.id == command.evtId}">
