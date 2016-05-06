@@ -133,21 +133,6 @@ public class EntrepriseValidatorTest extends AbstractValidatorTest<Entreprise> {
 	}
 
 	@Test
-	public void testDonneesCivilesRaisonSocialeTrouee() throws Exception {
-
-		final Entreprise entreprise = new Entreprise();
-		entreprise.addDonneeCivile(new RaisonSocialeFiscaleEntreprise(date(2005, 1, 1), date(2010, 12, 31), "Ma grande entreprise"));
-		entreprise.addDonneeCivile(new RaisonSocialeFiscaleEntreprise(date(2011, 6, 1), date(2015, 1, 1), "Ma très grande entreprise")); // Il y a un trou du 1.1.2011 au 31.5.2011
-
-		final ValidationResults vr = validate(entreprise);
-		Assert.assertTrue(vr.hasErrors());
-		Assert.assertEquals(1, vr.errorsCount());
-
-		final List<String> errors = vr.getErrors();
-		Assert.assertEquals("Rupture de continuité: période vide [01.01.2011 ; 31.05.2011] dans la valeur de raison sociale", errors.get(0));
-	}
-
-	@Test
 	public void testDonneesCivilesFormeJuridiqueInvalides() throws Exception {
 
 		final Entreprise entreprise = new Entreprise();
@@ -159,21 +144,6 @@ public class EntrepriseValidatorTest extends AbstractValidatorTest<Entreprise> {
 
 		final List<String> errors = vr.getErrors();
 		Assert.assertEquals("La forme juridique FormeJuridiqueFiscaleEntreprise (01.01.2010 - 31.12.2005) possède une date de début qui est après la date de fin: début = 01.01.2010, fin = 31.12.2005", errors.get(0));
-	}
-
-	@Test
-	public void testDonneesCivilesFormeJuridiqueTrouee() throws Exception {
-
-		final Entreprise entreprise = new Entreprise();
-		entreprise.addDonneeCivile(new FormeJuridiqueFiscaleEntreprise(date(2005, 1, 1), date(2010, 12, 31), FormeJuridiqueEntreprise.SA));
-		entreprise.addDonneeCivile(new FormeJuridiqueFiscaleEntreprise(date(2011, 6, 1), date(2015, 1, 1), FormeJuridiqueEntreprise.SA)); // Il y a un trou du 1.1.2011 au 31.5.2011
-
-		final ValidationResults vr = validate(entreprise);
-		Assert.assertTrue(vr.hasErrors());
-		Assert.assertEquals(1, vr.errorsCount());
-
-		final List<String> errors = vr.getErrors();
-		Assert.assertEquals("Rupture de continuité: période vide [01.01.2011 ; 31.05.2011] dans la valeur de forme juridique", errors.get(0));
 	}
 
 	@Test
