@@ -40,6 +40,7 @@ import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.transaction.TransactionTemplate;
 import ch.vd.uniregctb.type.EtatEvenementOrganisation;
+import ch.vd.uniregctb.type.TypeEvenementErreur;
 
 /**
  * @author Raphaël Marmier, 2015-07-27
@@ -276,7 +277,17 @@ public class EvenementOrganisationProcessorInternal implements ProcessorInternal
 	private void cleanupAvantTraitement(EvenementOrganisation evt) {
 		if (!evt.getEtat().isTraite()) {
 			evt.setCommentaireTraitement(null);
-			evt.getErreurs().clear();
+			/* On efface que si on ne trouve pas d'erreur. Si on en trouve une, c'est qu'on n'a pas vraiment traité (il y a eu rollback)
+			   et on est intéressé à garder l'historique. C'est un peu grosse ficelle mais, il n'y a pas de moyen simple en l'état du modèle. */
+			boolean hasErreur = false;
+			for (EvenementOrganisationErreur erreur : evt.getErreurs()) {
+				if (erreur.getType() == TypeEvenementErreur.ERROR) {
+					hasErreur = true;
+				}
+			}
+			if (!hasErreur) {
+				evt.getErreurs().clear();
+			}
 		}
 	}
 
@@ -307,6 +318,9 @@ public class EvenementOrganisationProcessorInternal implements ProcessorInternal
 		// Si on est en forçage, inscrire un message de suivi. Forcer inconditionnellement si c'est un A_VERIFIER car dans ce cas, il n'y a rien de plus à faire.
 		if (force) {
 			collector.addSuivi("Forçage de l'événement RCEnt.");
+		}
+		else if (!event.getErreurs().isEmpty()) {
+			collector.addSuivi("Début du recyclage de l'événement RCEnt.");
 		}
 
 		final EtatEvenementOrganisation etat;
