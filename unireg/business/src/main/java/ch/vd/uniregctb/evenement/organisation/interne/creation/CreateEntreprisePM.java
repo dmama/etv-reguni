@@ -31,7 +31,7 @@ public class CreateEntreprisePM extends CreateEntreprise {
 	                             EvenementOrganisationContext context,
 	                             EvenementOrganisationOptions options,
 	                             RegDate dateDeCreation,
-	                             boolean isCreation) {
+	                             boolean isCreation) throws EvenementOrganisationException {
 		super(evenement, organisation, entreprise, context, options, dateDeCreation, isCreation);
 	}
 
