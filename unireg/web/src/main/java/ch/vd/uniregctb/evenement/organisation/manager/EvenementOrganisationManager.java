@@ -10,6 +10,7 @@ import ch.vd.uniregctb.evenement.organisation.view.EvenementOrganisationCriteria
 import ch.vd.uniregctb.evenement.organisation.view.EvenementOrganisationDetailView;
 import ch.vd.uniregctb.evenement.organisation.view.EvenementOrganisationElementListeRechercheView;
 import ch.vd.uniregctb.tiers.Entreprise;
+import ch.vd.uniregctb.tiers.TiersException;
 
 /**
  * Classe qui permet de collecter les informations nécessaires à l'affichage
@@ -72,5 +73,5 @@ public interface EvenementOrganisationManager {
 	 * @param id Le numéro de l'événement
 	 * @return L'entreprise créée.
 	 */
-	Entreprise creerEntreprisePourEvenementOrganisation(Long id);
+	Entreprise creerEntreprisePourEvenementOrganisation(Long id) throws TiersException;
 }

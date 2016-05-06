@@ -103,7 +103,7 @@ public interface TiersService {
 	 */
 	List<Etablissement> getEtablissementsSecondairesEntreprise(Entreprise entreprise, RegDate date);
 
-	Entreprise createEntreprisePourEvenementOrganisation(EvenementOrganisation evt);
+	Entreprise createEntreprisePourEvenementOrganisation(EvenementOrganisation evt) throws TiersException;
 
     /**
      * Créer une entreprise pour le numéro d'organisation fourni. La méthode refuse de la créer si une entreprise est déjà associée à l'organisation.
