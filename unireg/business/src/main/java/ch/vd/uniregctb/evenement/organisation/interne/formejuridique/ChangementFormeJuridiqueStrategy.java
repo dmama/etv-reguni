@@ -94,6 +94,7 @@ public class ChangementFormeJuridiqueStrategy extends AbstractOrganisationStrate
 				);
 			}
 			LOGGER.info("La forme juridique n'a pas changée. Avant: {}, après: {}. Pas de changement de catégorie.", formeLegaleAvant, formeLegaleApres);
+			return null;
 		}
 
 		LOGGER.info("La forme juridique n'a pas changée.");
