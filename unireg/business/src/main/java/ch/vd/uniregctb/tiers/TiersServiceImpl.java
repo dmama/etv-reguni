@@ -384,7 +384,6 @@ public class TiersServiceImpl implements TiersService {
 		final long noOrganisation = evt.getNoOrganisation();
 		final Organisation organisation = serviceOrganisationService.getOrganisationHistory(noOrganisation);
 		final SiteOrganisation sitePrincipal = organisation.getSitePrincipal(dateDebut).getPayload();
-		final Domicile autoriteFiscale = sitePrincipal.getDomicile(dateDebut);
 
 		final Entreprise entreprise = createEntreprise(noOrganisation);
 		if (organisation.isInscritAuRC(dateDebut)) {
@@ -394,7 +393,6 @@ public class TiersServiceImpl implements TiersService {
 		}
 
 		final Etablissement etablissement = createEtablissement(sitePrincipal.getNumeroSite());
-		tiersDAO.addAndSave(etablissement, new DomicileEtablissement(dateDebut, null, autoriteFiscale.getTypeAutoriteFiscale(), autoriteFiscale.getNoOfs(), etablissement));
 
 		// L'activité économique
 		addRapport(new ActiviteEconomique(dateDebut, null, entreprise, etablissement, true), entreprise, etablissement);
