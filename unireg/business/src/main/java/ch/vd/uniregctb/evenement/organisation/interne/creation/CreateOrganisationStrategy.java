@@ -144,7 +144,7 @@ public class CreateOrganisationStrategy extends AbstractOrganisationStrategy {
 		} catch (EvenementOrganisationException e) {
 			return new TraitementManuel(event, organisation, null, context, options,
 			                            String.format(
-					                            "Une erreur grave est survenue lors de l'examen des données RCEnt: %s",
+					                            "Erreur lors de l'examen des données RCEnt: %s",
 					                            e.getMessage())
 			);
 		}
