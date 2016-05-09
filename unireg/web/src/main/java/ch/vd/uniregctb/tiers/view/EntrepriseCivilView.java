@@ -7,13 +7,24 @@ import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
 public class EntrepriseCivilView {
 
-	private String sDateCreation;
-	private RegDate dateCreation;
+	public enum TypeDefautDate {
+		DEFAULT,
+		EXPLICT
+	}
+
+	private RegDate dateOuverture;
 	private String raisonSociale;
 	private TypeAutoriteFiscale typeAutoriteFiscale;
 	private Integer numeroOfsSiege;
 	private String nomSiege;
 	private FormeJuridiqueEntreprise formeJuridique;
+
+	private TypeDefautDate typeDateDebutExerciceCommercial;
+	private RegDate dateDebutExerciceCommercial;
+
+	private TypeDefautDate typeDateFondation;
+	private RegDate dateFondation;
+
 	private Long capitalLibere;
 	private String devise;
 	private String numeroIde;
@@ -22,22 +33,16 @@ public class EntrepriseCivilView {
 	public EntrepriseCivilView() {
 		this.typeAutoriteFiscale = TypeAutoriteFiscale.COMMUNE_HC;
 		this.devise = MontantMonetaire.CHF;
+		this.typeDateDebutExerciceCommercial = TypeDefautDate.DEFAULT;
+		this.typeDateFondation = TypeDefautDate.DEFAULT;
 	}
 
-	public String getsDateCreation() {
-		return sDateCreation;
+	public RegDate getDateOuverture() {
+		return dateOuverture;
 	}
 
-	public void setsDateCreation(String sDateCreation) {
-		this.sDateCreation = sDateCreation;
-	}
-
-	public RegDate getDateCreation() {
-		return dateCreation;
-	}
-
-	public void setDateCreation(RegDate dateCreation) {
-		this.dateCreation = dateCreation;
+	public void setDateOuverture(RegDate dateOuverture) {
+		this.dateOuverture = dateOuverture;
 	}
 
 	public String getRaisonSociale() {
@@ -78,6 +83,38 @@ public class EntrepriseCivilView {
 
 	public void setFormeJuridique(FormeJuridiqueEntreprise formeJuridique) {
 		this.formeJuridique = formeJuridique;
+	}
+
+	public TypeDefautDate getTypeDateDebutExerciceCommercial() {
+		return typeDateDebutExerciceCommercial;
+	}
+
+	public void setTypeDateDebutExerciceCommercial(TypeDefautDate typeDateDebutExerciceCommercial) {
+		this.typeDateDebutExerciceCommercial = typeDateDebutExerciceCommercial;
+	}
+
+	public RegDate getDateDebutExerciceCommercial() {
+		return dateDebutExerciceCommercial;
+	}
+
+	public void setDateDebutExerciceCommercial(RegDate dateDebutExerciceCommercial) {
+		this.dateDebutExerciceCommercial = dateDebutExerciceCommercial;
+	}
+
+	public TypeDefautDate getTypeDateFondation() {
+		return typeDateFondation;
+	}
+
+	public void setTypeDateFondation(TypeDefautDate typeDateFondation) {
+		this.typeDateFondation = typeDateFondation;
+	}
+
+	public RegDate getDateFondation() {
+		return dateFondation;
+	}
+
+	public void setDateFondation(RegDate dateFondation) {
+		this.dateFondation = dateFondation;
 	}
 
 	public Long getCapitalLibere() {

@@ -2,7 +2,9 @@ package ch.vd.uniregctb.tiers;
 
 import javax.validation.Valid;
 import java.util.Arrays;
+import java.util.EnumSet;
 import java.util.HashSet;
+import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Controller;
@@ -20,7 +22,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
-import ch.vd.uniregctb.common.BouclementHelper;
 import ch.vd.uniregctb.common.DelegatingValidator;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.common.NumeroIDEHelper;
@@ -53,6 +54,7 @@ import ch.vd.uniregctb.tiers.view.EtablissementCivilView;
 import ch.vd.uniregctb.tiers.view.IdentificationPersonneView;
 import ch.vd.uniregctb.tiers.view.NonHabitantCivilView;
 import ch.vd.uniregctb.type.CategorieEntreprise;
+import ch.vd.uniregctb.type.DayMonth;
 import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
@@ -218,13 +220,13 @@ public class TiersCreateController {
 			return showCreateEntreprise(model, view);
 		}
 
-		final Entreprise entreprise = new Entreprise();
+		final Entreprise entreprise = (Entreprise) tiersDAO.save(new Entreprise());
 		final EntrepriseCivilView civilView = view.getCivil();
 
 		// Numéro IDE
 		final String normalizedIde = NumeroIDEHelper.normalize(civilView.getNumeroIde());
 		if (StringUtils.isNotBlank(normalizedIde)) {
-			IdentificationEntreprise ident = new IdentificationEntreprise();
+			final IdentificationEntreprise ident = new IdentificationEntreprise();
 			ident.setNumeroIde(normalizedIde);
 			entreprise.addIdentificationEntreprise(ident);
 		}
@@ -233,58 +235,69 @@ public class TiersCreateController {
 		setComplementCommunication(entreprise, view.getComplementCommunication());
 		setComplementCoordFinanciere(entreprise, view.getComplementCoordFinanciere());
 
-		final Entreprise saved = (Entreprise) tiersDAO.save(entreprise);
+		final RegDate dateOuverture = civilView.getDateOuverture();
+		final RegDate dateDebutExerciceCommercial = civilView.getTypeDateDebutExerciceCommercial() == EntrepriseCivilView.TypeDefautDate.DEFAULT
+				? RegDate.get(dateOuverture.year(), 1, 1)
+				: civilView.getDateDebutExerciceCommercial();
+		final RegDate dateFondation = civilView.getTypeDateFondation() == EntrepriseCivilView.TypeDefautDate.DEFAULT
+				? dateOuverture
+				: civilView.getDateFondation();
 
 		// Forme juridique
-		tiersService.addFormeJuridiqueFiscale(saved, civilView.getFormeJuridique(), civilView.getDateCreation(), null);
+		tiersService.addFormeJuridiqueFiscale(entreprise, civilView.getFormeJuridique(), dateOuverture, null);
 
 		// Capital
 		if (civilView.getCapitalLibere() != null) {
-			tiersService.addCapitalFiscal(saved, civilView.getCapitalLibere(), civilView.getDevise(), civilView.getDateCreation(), null);
+			tiersService.addCapitalFiscal(entreprise, civilView.getCapitalLibere(), civilView.getDevise(), dateOuverture, null);
 		}
 
 		// Raison sociale
-		tiersService.addRaisonSocialeFiscale(saved, civilView.getRaisonSociale(), civilView.getDateCreation(), null);
+		tiersService.addRaisonSocialeFiscale(entreprise, civilView.getRaisonSociale(), dateOuverture, null);
 
 		// Siège (établissement)
-		Etablissement etablissement = new Etablissement();
-		etablissement.setRaisonSociale(civilView.getRaisonSociale());
-		final Etablissement savedEtablissement = (Etablissement) tiersDAO.save(etablissement);
-		tiersService.addDomicileEtablissement(savedEtablissement, civilView.getTypeAutoriteFiscale(), civilView.getNumeroOfsSiege(), civilView.getDateCreation(), null);
+		final Etablissement etablissementPrincipal;
+		{
+			final Etablissement etablissement = new Etablissement();
+			etablissement.setRaisonSociale(civilView.getRaisonSociale());
+			etablissementPrincipal = (Etablissement) tiersDAO.save(etablissement);
+		}
+		tiersService.addDomicileEtablissement(etablissementPrincipal, civilView.getTypeAutoriteFiscale(), civilView.getNumeroOfsSiege(), dateOuverture, null);
 
 		// Rapport entre entreprise et établissement principal
-		tiersService.addActiviteEconomique(savedEtablissement, saved, civilView.getDateCreation(), true);
+		tiersService.addActiviteEconomique(etablissementPrincipal, entreprise, dateFondation, true);
 
 		// Régimes fiscaux + For principal (différents en fonction de la forme juridique/catégorie entreprise)
-		CategorieEntreprise categorieEntreprise = CategorieEntrepriseHelper.map(civilView.getFormeJuridique());
-		if (categorieEntreprise == CategorieEntreprise.PM || categorieEntreprise == CategorieEntreprise.DPPM
-			|| categorieEntreprise == CategorieEntreprise.APM || categorieEntreprise == CategorieEntreprise.DPAPM) {
-
+		final CategorieEntreprise categorieEntreprise = CategorieEntrepriseHelper.map(civilView.getFormeJuridique());
+		final Set<CategorieEntreprise> pmApm = EnumSet.of(CategorieEntreprise.PM, CategorieEntreprise.DPPM, CategorieEntreprise.APM, CategorieEntreprise.DPAPM);
+		if (pmApm.contains(categorieEntreprise)) {
 			// Récupération du type de régime fiscal
-			TypeRegimeFiscal trf = tiersService.getTypeRegimeFiscalParDefault(categorieEntreprise);
-
-			tiersService.addRegimeFiscal(saved, RegimeFiscal.Portee.CH, trf, civilView.getDateCreation(), null);
-			tiersService.addRegimeFiscal(saved, RegimeFiscal.Portee.VD, trf, civilView.getDateCreation(), null);
+			final TypeRegimeFiscal trf = tiersService.getTypeRegimeFiscalParDefault(categorieEntreprise);
+			tiersService.addRegimeFiscal(entreprise, RegimeFiscal.Portee.CH, trf, dateOuverture, null);
+			tiersService.addRegimeFiscal(entreprise, RegimeFiscal.Portee.VD, trf, dateOuverture, null);
 
 			// Bouclement et premier exercice commercial
-			Bouclement bouclement = BouclementHelper.createBouclement3112SelonSemestre(civilView.getDateCreation());
-			saved.addBouclement(bouclement);
-			saved.setDateDebutPremierExerciceCommercial(RegDate.get(civilView.getDateCreation().year(), 1, 1));
+			entreprise.setDateDebutPremierExerciceCommercial(dateDebutExerciceCommercial);
+			final RegDate dateBouclement = dateDebutExerciceCommercial.addYears(1).getOneDayBefore();
+			final Bouclement bouclement = new Bouclement();
+			bouclement.setAncrage(DayMonth.get(dateBouclement));
+			bouclement.setDateDebut(dateBouclement.addDays(- dateBouclement.day() + 1));        // = le premier jour du mois du bouclement
+			bouclement.setPeriodeMois(12);
+			entreprise.addBouclement(bouclement);
 
 			// For principal
-			tiersService.addForPrincipal(saved, civilView.getDateCreation(), MotifFor.DEBUT_EXPLOITATION, null, null, MotifRattachement.DOMICILE, civilView.getNumeroOfsSiege(), civilView.getTypeAutoriteFiscale(), GenreImpot.BENEFICE_CAPITAL);
-
-		} else if (categorieEntreprise == CategorieEntreprise.SP) {
+			tiersService.addForPrincipal(entreprise, dateOuverture, null, null, null, MotifRattachement.DOMICILE, civilView.getNumeroOfsSiege(), civilView.getTypeAutoriteFiscale(), GenreImpot.BENEFICE_CAPITAL);
+		}
+		else if (categorieEntreprise == CategorieEntreprise.SP) {
 			// Pas de régime fiscal (et donc pas de bouclement)
 			// For principal
-			tiersService.addForPrincipal(saved, civilView.getDateCreation(), MotifFor.DEBUT_EXPLOITATION, null, null, MotifRattachement.DOMICILE, civilView.getNumeroOfsSiege(), civilView.getTypeAutoriteFiscale(), GenreImpot.REVENU_FORTUNE);
+			tiersService.addForPrincipal(entreprise, dateOuverture, null, null, null, MotifRattachement.DOMICILE, civilView.getNumeroOfsSiege(), civilView.getTypeAutoriteFiscale(), GenreImpot.REVENU_FORTUNE);
 		}
 
 		// Etat fiscal
-		TypeEtatEntreprise typeEtatEntreprise = (civilView.isInscriteRC()) ? TypeEtatEntreprise.INSCRITE_RC : TypeEtatEntreprise.FONDEE;
-		tiersService.changeEtatEntreprise(typeEtatEntreprise, saved, civilView.getDateCreation(), TypeGenerationEtatEntreprise.MANUELLE);
+		final TypeEtatEntreprise typeEtatEntreprise = civilView.isInscriteRC() ? TypeEtatEntreprise.INSCRITE_RC : TypeEtatEntreprise.FONDEE;
+		tiersService.changeEtatEntreprise(typeEtatEntreprise, entreprise, dateFondation, TypeGenerationEtatEntreprise.MANUELLE);
 
-		return "redirect:/tiers/visu.do?id=" + saved.getNumero();
+		return "redirect:/tiers/visu.do?id=" + entreprise.getNumero();
 	}
 
 	@RequestMapping(value = "/autrecommunaute/create.do", method = RequestMethod.GET)

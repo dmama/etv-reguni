@@ -66,24 +66,14 @@
 						<table border="0">
 
 							<tr class="<unireg:nextRowClass/>">
-								<td><fmt:message key="label.date.creation" />&nbsp;:</td>
+								<td><fmt:message key="label.date.ouverture" />&nbsp;:</td>
 								<td colspan="3">
-
-									<script type="text/javascript">
-										function dateCreation_OnChange( element) {
-											if ( element)
-												$("#dateCreationFormate").val(element.value);
-										}
-									</script>
-									<form:hidden path="civil.sDateCreation" id="dateCreationFormate" />
 									<jsp:include page="/WEB-INF/jsp/include/inputCalendar.jsp">
-										<jsp:param name="path" value="civil.dateCreation" />
-										<jsp:param name="id" value="dateCreation"  />
-										<jsp:param name="onChange" value="dateCreation_OnChange"/>
+										<jsp:param name="path" value="civil.dateOuverture" />
+										<jsp:param name="id" value="dateOuverture"  />
 										<jsp:param name="tabindex" value="1"/>
 									</jsp:include>
 									<font COLOR="#FF0000">*</font>
-									<form:errors path="civil.sDateCreation" cssClass="error" />
 								</td>
 							</tr>
 
@@ -93,8 +83,8 @@
 								<td colspan="3">
 									<form:input path="civil.raisonSociale" tabindex="2" id="raisonSociale"
 									            size="80" maxlength="${lengthRaisonSociale}" />
-									<font COLOR="#FF0000">*</font>
 									<form:errors path="civil.raisonSociale" cssClass="error" />
+									<font COLOR="#FF0000">*</font>
 								</td>
 							</tr>
 
@@ -117,8 +107,8 @@
 								</td>
 								<td>
 									<input tabindex="4" id="siege" size="25" value="${data.civil.nomSiege}" />
-									<font COLOR="#FF0000">*</font>
 									<form:errors path="civil.numeroOfsSiege" cssClass="error" />
+									<font COLOR="#FF0000">*</font>
 									<form:hidden path="civil.numeroOfsSiege" id="numeroOfsSiege" />
 									<form:hidden path="civil.nomSiege" id="nomSiege" />
 								</td>
@@ -127,7 +117,48 @@
 							<tr class="<unireg:nextRowClass/>">
 								<td><fmt:message key="label.forme.juridique" />&nbsp;:</td>
 								<td colspan="3">
-									<form:select path="civil.formeJuridique" items="${formesJuridiquesEntreprise}" tabindex="5" />
+									<form:select path="civil.formeJuridique" tabindex="5">
+										<form:option value=""/>
+										<form:options items="${formesJuridiquesEntreprise}"/>
+									</form:select>
+									<form:errors path="civil.formeJuridique" cssClass="error"/>
+									<font COLOR="#FF0000">*</font>
+								</td>
+							</tr>
+
+							<tr class="<unireg:nextRowClass/>">
+								<td><fmt:message key="label.date.debut.exercice.commercial"/></td>
+								<td colspan="3">
+									<div style="float: left; margin-right: 2em; width: 20%;">
+										<form:radiobutton path="civil.typeDateDebutExerciceCommercial" value="DEFAULT" onclick="CreateEntreprise.onDateDebutExerciceDefautChange(true);" tabindex="6"/><fmt:message key="label.debut.annee.ouverture"/><br/>
+										<form:radiobutton path="civil.typeDateDebutExerciceCommercial" value="EXPLICT" onclick="CreateEntreprise.onDateDebutExerciceDefautChange(false);" tabindex="7"/><fmt:message key="label.valeur.explicite"/>
+									</div>
+									<div style="margin-top: 1em; display: none;" id="specificDateDebutExercice">
+										<jsp:include page="/WEB-INF/jsp/include/inputCalendar.jsp">
+											<jsp:param name="path" value="civil.dateDebutExerciceCommercial" />
+											<jsp:param name="id" value="dateDebutExerciceCommercial"  />
+											<jsp:param name="tabindex" value="8"/>
+										</jsp:include>
+										<font COLOR="#FF0000">*</font>
+									</div>
+								</td>
+							</tr>
+
+							<tr class="<unireg:nextRowClass/>">
+								<td><fmt:message key="label.date.fondation"/></td>
+								<td colspan="3">
+									<div style="float: left; margin-right: 2em; width: 20%;">
+										<form:radiobutton path="civil.typeDateFondation" value="DEFAULT" onclick="CreateEntreprise.onDateFondationDefautChange(true);" tabindex="9"/><fmt:message key="label.identique.date.ouverture"/><br/>
+										<form:radiobutton path="civil.typeDateFondation" value="EXPLICT" onclick="CreateEntreprise.onDateFondationDefautChange(false);" tabindex="10"/><fmt:message key="label.valeur.explicite"/>
+									</div>
+									<div style="margin-top: 1em; display: none;" id="specificDateFondation">
+										<jsp:include page="/WEB-INF/jsp/include/inputCalendar.jsp">
+											<jsp:param name="path" value="civil.dateFondation" />
+											<jsp:param name="id" value="dateFondation"  />
+											<jsp:param name="tabindex" value="11"/>
+										</jsp:include>
+										<font COLOR="#FF0000">*</font>
+									</div>
 								</td>
 							</tr>
 
@@ -135,13 +166,13 @@
 							<tr class="<unireg:nextRowClass/>">
 								<td><fmt:message key="label.capital.libere" />&nbsp;:</td>
 								<td>
-									<form:input path="civil.capitalLibere" tabindex="6" id="capitalLibere"
+									<form:input path="civil.capitalLibere" tabindex="12" id="capitalLibere"
 									            size="25" />
 									<form:errors path="civil.capitalLibere" cssClass="error" />
 								</td>
 								<td width="20%"><fmt:message key="label.capital.monnaie"/>&nbsp;:</td>
 								<td>
-									<form:input id="devise" path="civil.devise" size="3" maxlength="${lengthmonnaie}" tabindex="7" />
+									<form:input id="devise" path="civil.devise" size="3" maxlength="${lengthmonnaie}" tabindex="13" />
 									<form:errors path="civil.devise" cssClass="error" />
 								</td>
 							</tr>
@@ -152,7 +183,7 @@
 									<fmt:message key="label.numero.ide"/>&nbsp;:
 								</td>
 								<td colspan="3">
-									<form:input size="25" id="numeroIde" path="civil.numeroIde" tabindex="8" maxlength="${length_numeroIDE}" />
+									<form:input size="25" id="numeroIde" path="civil.numeroIde" tabindex="14" maxlength="${length_numeroIDE}" />
 									<span style="margin-left: 2em;">
 										<form:errors path="civil.numeroIde" cssClass="error" />
 									</span>
@@ -164,7 +195,7 @@
 									<label for="inscriteRC"><fmt:message key="label.inscrite.rc" /></label>&nbsp;:
 								</td>
 								<td colspan="3">
-									<form:checkbox path="civil.inscriteRC" id="inscriteRC" tabindex="9" />
+									<form:checkbox path="civil.inscriteRC" id="inscriteRC" tabindex="15" />
 								</td>
 							</tr>
 						</table>
@@ -283,12 +314,6 @@
 				</div>
 			</div>
 
-			<script type="text/javascript">
-				$(function() {
-					$("#tiersCreationTabs").tabs();
-				});
-			</script>
-
 			<!-- Fin onglets -->
 
 			<!-- Debut Boutons -->
@@ -309,6 +334,22 @@
 						if (confirm('${confirmationMessageSauvegarde}')) {
 							myform.submit();
 						}
+					},
+					onDateFondationDefautChange: function(value) {
+						if (value) {
+							$('#specificDateFondation').hide();
+						}
+						else {
+							$('#specificDateFondation').show();
+						}
+					},
+					onDateDebutExerciceDefautChange: function(value) {
+						if (value) {
+							$('#specificDateDebutExercice').hide();
+						}
+						else {
+							$('#specificDateDebutExercice').show();
+						}
 					}
 				}
 			</script>
@@ -318,8 +359,15 @@
 		</form:form>
 
 		<script type="text/javascript">
-			// on initialise l'auto-completion de l'autorité fiscale
-			selectAutoriteFiscale('${data.civil.typeAutoriteFiscale}', true)
+			$(function() {
+				$("#tiersCreationTabs").tabs();
+
+				// on initialise l'auto-completion de l'autorité fiscale
+				selectAutoriteFiscale('${data.civil.typeAutoriteFiscale}', true);
+
+				CreateEntreprise.onDateFondationDefautChange(${data.civil.typeDateFondation == 'DEFAULT'});
+				CreateEntreprise.onDateDebutExerciceDefautChange(${data.civil.typeDateDebutExerciceCommercial == 'DEFAULT'});
+			});
 		</script>
 
 		<script type="text/javascript">
