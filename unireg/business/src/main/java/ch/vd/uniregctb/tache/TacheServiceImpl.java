@@ -689,7 +689,7 @@ public class TacheServiceImpl implements TacheService {
 
 		// le critère de présence d'un questionnaire SNC est l'existence d'un for vaudois ouvert sur une année civile
 		final List<DateRange> periodesSNC = getPeriodesQuestionnaireSNC(entreprise);
-		final List<QuestionnaireSNC> questionnairesExistants = getQuestionnairesSNCExistants(entreprise);
+		final List<QuestionnaireSNC> questionnairesExistants = filterQuestionnairesSNC(getQuestionnairesSNCExistants(entreprise));
 		final List<TacheEnvoiQuestionnaireSNC> tachesEnvoi = getTachesEnvoiQuestionnairesSNCEnInstance(entreprise);
 		final List<TacheAnnulationQuestionnaireSNC> tachesAnnulation = getTachesAnnulationQuestionnairesSNCEnInstance(entreprise);
 
@@ -700,7 +700,7 @@ public class TacheServiceImpl implements TacheService {
 			return Collections.emptyList();
 		}
 
-		// ok, l'une au moins des deux collections n'est pas vide... ça devient intéressant.
+		// ok, l'une au moins des collections n'est pas vide... ça devient intéressant.
 
 		final List<AddQSNC> adds = new ArrayList<>(periodesSNC.size());
 		final List<DeleteQSNC> deletes = new ArrayList<>(questionnairesExistants.size());
@@ -819,11 +819,22 @@ public class TacheServiceImpl implements TacheService {
 		}
 	}
 
+	private List<QuestionnaireSNC> filterQuestionnairesSNC(List<QuestionnaireSNC> all) {
+		final int premierePeriode = parametres.getPremierePeriodeFiscaleDeclarationsPersonnesMorales();
+		final List<QuestionnaireSNC> filtree = new ArrayList<>(all.size());
+		for (QuestionnaireSNC q : all) {
+			if (q.getPeriode().getAnnee() >= premierePeriode) {
+				filtree.add(q);
+			}
+		}
+		return filtree;
+	}
+
 	/**
 	 * @param entreprise Une entreprise
 	 * @return la liste des questionnaires SNC existants, non-annulés, triés
 	 */
-	private List<QuestionnaireSNC> getQuestionnairesSNCExistants(Entreprise entreprise) {
+	private static List<QuestionnaireSNC> getQuestionnairesSNCExistants(Entreprise entreprise) {
 		return entreprise.getDeclarationsTriees(QuestionnaireSNC.class, false);
 	}
 

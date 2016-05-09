@@ -15,6 +15,8 @@ import ch.vd.unireg.interfaces.infra.mock.MockTypeRegimeFiscal;
 import ch.vd.unireg.interfaces.organisation.mock.MockServiceOrganisation;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.common.BusinessTestingConstants;
+import ch.vd.uniregctb.declaration.PeriodeFiscale;
+import ch.vd.uniregctb.declaration.PeriodeFiscaleDAO;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
@@ -46,12 +48,16 @@ public class RecalculTachesProcessorTest extends BusinessTest {
 
 	private RecalculTachesProcessor processor;
 	private TacheDAO tacheDAO;
+	private PeriodeFiscaleDAO periodeFiscaleDAO;
+
+	private static final int PREMIERE_PERIODE_DECLARATIONS_PM = 2014;
 
 	@Override
 	protected void runOnSetUp() throws Exception {
 		super.runOnSetUp();
 
 		tacheDAO = getBean(TacheDAO.class, "tacheDAO");
+		periodeFiscaleDAO = getBean(PeriodeFiscaleDAO.class, "periodeFiscaleDAO");
 
 		final TacheService tacheService = getBean(TacheService.class, "tacheService");
 		processor = new RecalculTachesProcessor(transactionManager, hibernateTemplate, tacheService, tacheSynchronizer);
@@ -68,7 +74,7 @@ public class RecalculTachesProcessorTest extends BusinessTest {
 
 		paramAppService = getBean(ParametreAppService.class, "parametreAppService");
 		premierePeriodeFiscaleDeclarationPM = paramAppService.getPremierePeriodeFiscaleDeclarationsPersonnesMorales();
-		paramAppService.setPremierePeriodeFiscaleDeclarationsPersonnesMorales(2014);
+		paramAppService.setPremierePeriodeFiscaleDeclarationsPersonnesMorales(PREMIERE_PERIODE_DECLARATIONS_PM);
 	}
 
 	@Override
@@ -1387,5 +1393,132 @@ public class RecalculTachesProcessorTest extends BusinessTest {
 				return null;
 			}
 		});
+	}
+
+	/**
+	 * [SIFISC-18732] Cas de questionnaires SNC existants (= migrés depuis RegPM) avant 2016 (donc 2014 dans ces tests)
+	 * pour lesquels la mécanique de recalcul des tâches générait des tâches d'annulation (alors que les tâches ne doivent
+	 * rien gérer - ni émission ni annulation - avant la période 2016...)
+	 */
+	@Test
+	public void testNonAnnulationQuestionnaireSNCAvantPremierePeriodeDeclarationPM() throws Exception {
+
+		final int year = PREMIERE_PERIODE_DECLARATIONS_PM - 1;
+		final RegDate dateDebutExploitation = date(year - 1, 3, 12);
+		final RegDate dateFinExploitation = date(PREMIERE_PERIODE_DECLARATIONS_PM, 5, 3);
+
+		// mise en place civile -> personne !
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				// un monde vierge...
+			}
+		});
+
+		// y compris au niveau des entreprises...
+		serviceOrganisation.setUp(new MockServiceOrganisation() {
+			@Override
+			protected void init() {
+				// ... complètement vierge...
+			}
+		});
+
+		// mise en place fiscale en générant la tâche qui va bien
+		final long pmId = doInNewTransactionAndSessionUnderSwitch(tacheSynchronizer, true, new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final Entreprise e = addEntrepriseInconnueAuCivil();
+				addRaisonSociale(e, dateDebutExploitation, null, "Megatrucs");
+				addFormeJuridique(e, dateDebutExploitation, null, FormeJuridiqueEntreprise.SC);
+				addBouclement(e, dateDebutExploitation, DayMonth.get(12, 31), 12);
+				addForPrincipal(e, dateDebutExploitation, MotifFor.DEBUT_EXPLOITATION, dateFinExploitation, MotifFor.CESSATION_ACTIVITE, MockCommune.Bex.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, GenreImpot.REVENU_FORTUNE);
+
+				final PeriodeFiscale pfAvant = periodeFiscaleDAO.getPeriodeFiscaleByYear(year);
+				addQuestionnaireSNC(e, pfAvant);
+				return e.getNumero();
+			}
+		});
+
+		// vérification que la tâche d'envoi est bien là
+		// (parce que l'intercepteur était enclenché)
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final List<Tache> taches = tacheDAO.find(pmId);
+				assertNotNull(taches);
+				assertEquals(1, taches.size());         // tâche d'émission, pas de tâche d'annulation
+
+				final Tache tache = taches.get(0);
+				assertNotNull(tache);
+				assertEquals(TypeTache.TacheEnvoiQuestionnaireSNC, tache.getTypeTache());
+				assertFalse(tache.isAnnule());
+				assertEquals(date(year + 1, 1, 1), ((TacheEnvoiQuestionnaireSNC) tache).getDateDebut());
+				assertEquals(date(year + 1, 12, 31), ((TacheEnvoiQuestionnaireSNC) tache).getDateFin());
+				return null;
+			}
+		});
+
+		// annulation du for fiscal
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final Entreprise e = (Entreprise) tiersDAO.get(pmId);
+				final ForFiscalPrincipal ffp = e.getDernierForFiscalPrincipal();
+				ffp.setAnnule(true);
+				return null;
+			}
+		});
+
+		// vérification que la tâche d'envoi est bien toujours là, non-annulée
+		// (parce que l'intercepteur n'était pas enclenché)
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final List<Tache> taches = tacheDAO.find(pmId);
+				assertNotNull(taches);
+				assertEquals(1, taches.size());
+
+				final Tache tache = taches.get(0);
+				assertNotNull(tache);
+				assertEquals(TypeTache.TacheEnvoiQuestionnaireSNC, tache.getTypeTache());
+				assertFalse(tache.isAnnule());
+				assertEquals(date(year + 1, 1, 1), ((TacheEnvoiQuestionnaireSNC) tache).getDateDebut());
+				assertEquals(date(year + 1, 12, 31), ((TacheEnvoiQuestionnaireSNC) tache).getDateFin());
+				return null;
+			}
+		});
+
+		// utilisation du processeur (mode full)
+		{
+			final TacheSyncResults res = processor.run(false, 1, RecalculTachesProcessor.Scope.PM, null);
+			assertNotNull(res);
+			assertEquals(0, res.getExceptions().size());
+			assertEquals(1, res.getActions().size());
+
+			final TacheSyncResults.ActionInfo info = res.getActions().get(0);
+			assertNotNull(info);
+			assertEquals(pmId, info.ctbId);
+			assertEquals(String.format("annulation de la tâche d'envoi du questionnaire SNC couvrant la période du 01.01.%d au 31.12.%d", year + 1, year + 1), info.actionMsg);
+		}
+
+		// vérification que la tâche d'envoi de DI est maintenant annulée
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final List<Tache> taches = tacheDAO.find(pmId);
+				assertNotNull(taches);
+				assertEquals(1, taches.size());
+
+				final Tache tache = taches.get(0);
+				assertNotNull(tache);
+				assertEquals(TypeTache.TacheEnvoiQuestionnaireSNC, tache.getTypeTache());
+				assertTrue(tache.isAnnule());
+				assertEquals(date(year + 1, 1, 1), ((TacheEnvoiQuestionnaireSNC) tache).getDateDebut());
+				assertEquals(date(year + 1, 12, 31), ((TacheEnvoiQuestionnaireSNC) tache).getDateFin());
+				return null;
+			}
+		});
+
+
 	}
 }
