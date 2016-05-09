@@ -275,7 +275,7 @@ public abstract class EvenementOrganisationInterne {
 				switch (siegePrecedant.getTypeAutoriteFiscale()) {
 				case COMMUNE_OU_FRACTION_VD:
 					throw new EvenementOrganisationException(
-							"Tentative d'ouvrir un for pour une entreprise déjà vaudoise mais inconnue d'Unireg jusque là. Ce cas n'est pas censé pouvoir se produire autrement que si des événements précédant ont été manqués (non arrivés ou forcés). Veuillez traiter ce cas manuellement.");
+							"Tentative d'ouvrir un for pour une entreprise vaudoise pas nouvelle mais inconnue d'Unireg jusque là. Ceci indique qu'un ou plusieurs événements précédant ont été manqués (soit non reçus, soit forcés). Il faut traiter ce cas manuellement.");
 				case COMMUNE_HC:
 					motifOuverture = MotifFor.ARRIVEE_HC;
 					break;
