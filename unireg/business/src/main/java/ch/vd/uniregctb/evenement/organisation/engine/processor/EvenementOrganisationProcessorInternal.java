@@ -409,14 +409,14 @@ public class EvenementOrganisationProcessorInternal implements ProcessorInternal
 
 			// validation et traitement
 			final EtatEvenementOrganisation etat;
-			evtInterne.validate(erreurs, warnings, suivis);
+			toProcess.validate(erreurs, warnings, suivis);
 			if (erreurs.hasErreurs()) {
 				etat = EtatEvenementOrganisation.EN_ERREUR;
 			}
 			else {
 				etat = toProcess.handle(warnings, suivis).toEtat();
 			}
-			if (StringUtils.isNotBlank(event.getCommentaireTraitement()) && evtInterne.shouldResetCommentaireTraitement(etat, event.getCommentaireTraitement())) {
+			if (StringUtils.isNotBlank(event.getCommentaireTraitement()) && toProcess.shouldResetCommentaireTraitement(etat, event.getCommentaireTraitement())) {
 				event.setCommentaireTraitement(null);
 			}
 			return etat;
