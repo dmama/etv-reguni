@@ -153,7 +153,7 @@ public class EvenementOrganisationManagerImpl implements EvenementOrganisationMa
 			evtView.setOrganisationError(e.getMessage());
 		}
 
-		if (!evt.isAnnule() && !evt.getEtat().isTraite()) {
+		if (!evt.isAnnule()) {
 			try {
 				final List<EvenementOrganisationBasicInfo> list = evenementService.buildLotEvenementsOrganisationNonTraites(numeroOrganisation);
 				evtView.setNonTraitesSurMemeOrganisation(list);

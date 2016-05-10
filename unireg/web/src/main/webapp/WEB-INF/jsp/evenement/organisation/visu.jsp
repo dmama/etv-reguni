@@ -281,7 +281,7 @@
 					<c:out value="${aTraiter.noEvenement}"/>
 				</c:if>
 				<c:if test="${aTraiter.id != command.evtId}">
-					<a href="visu.do?id=<c:out value='${aTraiter.noEvenement}'/>"><c:out value="${aTraiter.noEvenement}"/></a>
+					<a href="visu.do?id=<c:out value='${aTraiter.id}'/>"><c:out value="${aTraiter.noEvenement}"/></a>
 				</c:if>
 			</display:column>
 			<display:column titleKey="label.type.evenement">
