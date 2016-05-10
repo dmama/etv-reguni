@@ -108,7 +108,7 @@ public class AutresCommunautesProcessingTest extends AbstractEvenementOrganisati
 				                                                               noOrganisation),
 				                                                 evtErreur0.getMessage());
 				                             final EvenementOrganisationErreur evtErreur1 = evt.getErreurs().get(1);
-				                             Assert.assertEquals("Création automatique non prise en charge.",
+				                             Assert.assertEquals("L'organisation n°101202100 (AUTRE) est installée sur Vaud. Création automatique non prise en charge.",
 				                                                 evtErreur1.getMessage());
 				                             return null;
 			                             }

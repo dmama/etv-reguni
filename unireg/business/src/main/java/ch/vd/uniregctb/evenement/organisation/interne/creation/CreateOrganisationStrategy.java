@@ -118,10 +118,11 @@ public class CreateOrganisationStrategy extends AbstractOrganisationStrategy {
 				// Catégories qu'on ne peut pas traiter automatiquement, catégories éventuellement inconnues.
 				case DPAPM:
 					return new TraitementManuel(event, organisation, null, context, options,
-					                            "Traitement manuel requis pour nouvelle DP/APM ou organisation sans catégorie d’entreprise avec siège VD.");
+					                            "Traitement manuel requis pour nouvelle DP/APM avec siège VD.");
 				default:
-					LOGGER.info("L'organisation n°{} est installée sur Vaud. Catégorie [{}] -> Traitement manuel.", organisation.getNumeroOrganisation(), category);
-					return new TraitementManuel(event, organisation, null, context, options, MSG_CREATION_AUTOMATIQUE_IMPOSSIBLE);
+					final String message = String.format("L'organisation n°%s (%s) est installée sur Vaud. %s", organisation.getNumeroOrganisation(), category, MSG_CREATION_AUTOMATIQUE_IMPOSSIBLE);
+					LOGGER.info(message);
+					return new TraitementManuel(event, organisation, null, context, options, message);
 				}
 			} else if (organisation.hasSiteVD(dateEvenement)) {
 				switch (category) {
@@ -150,8 +151,9 @@ public class CreateOrganisationStrategy extends AbstractOrganisationStrategy {
 		}
 
 		// Catchall traitement manuel
-		LOGGER.info("L'organisation n°{} est de catégorie indéterminée. Traitement manuel.", organisation.getNumeroOrganisation());
-		return new TraitementManuel(event, organisation, null, context, options, MSG_CREATION_AUTOMATIQUE_IMPOSSIBLE);
+		final String message = String.format("L'organisation n°%s est de catégorie indéterminée. %s", organisation.getNumeroOrganisation(), MSG_CREATION_AUTOMATIQUE_IMPOSSIBLE);
+		LOGGER.info(message);
+		return new TraitementManuel(event, organisation, null, context, options, message);
 	}
 
 	private InformationDeDateEtDeCreation extraireInformationDeDateEtDeCreation(EvenementOrganisation event, Organisation organisation) throws EvenementOrganisationException {
