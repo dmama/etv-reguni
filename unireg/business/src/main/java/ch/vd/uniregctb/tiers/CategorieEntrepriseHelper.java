@@ -40,6 +40,7 @@ public class CategorieEntrepriseHelper {
 			case N_0106_SOCIETE_ANONYME:
 			case N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE:
 			case N_0108_SOCIETE_COOPERATIVE:
+			case N_0111_FILIALE_ETRANGERE_AU_RC:
 				return CategorieEntreprise.PM;
 			/* Association et Fondation */
 			case N_0109_ASSOCIATION:
@@ -94,6 +95,7 @@ public class CategorieEntrepriseHelper {
 		case SA:
 		case SARL:
 		case SCOOP:
+		case FILIALE_HS_RC:
 			return CategorieEntreprise.PM;
 		case ASSOCIATION:
 		case FONDATION:
