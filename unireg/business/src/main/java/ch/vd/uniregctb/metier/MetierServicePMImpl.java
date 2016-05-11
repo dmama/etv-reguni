@@ -33,6 +33,7 @@ import ch.vd.uniregctb.adresse.AdresseSuisse;
 import ch.vd.uniregctb.adresse.AdresseSupplementaire;
 import ch.vd.uniregctb.adresse.AdresseTiers;
 import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
+import ch.vd.uniregctb.common.AnnulableHelper;
 import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.common.LengthConstants;
@@ -966,8 +967,8 @@ public class MetierServicePMImpl implements MetierServicePM {
 			}
 
 			// annulation de la surcharge d'adresse courrier
-			final List<AdresseTiers> surchargesCourrier = absorbee.getAdressesTiersSorted(TypeAdresseTiers.COURRIER);
-			if (surchargesCourrier != null && !surchargesCourrier.isEmpty()) {
+			final List<AdresseTiers> surchargesCourrier = AnnulableHelper.sansElementsAnnules(absorbee.getAdressesTiersSorted(TypeAdresseTiers.COURRIER));
+			if (!surchargesCourrier.isEmpty()) {
 				final AdresseTiers derniereSurcharge = CollectionsUtils.getLastElement(surchargesCourrier);
 				if (derniereSurcharge.getDateDebut() == dateContratFusion) {
 					adresseService.annulerAdresse(derniereSurcharge);
