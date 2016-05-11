@@ -586,7 +586,7 @@ public class AutorisationManagerImpl implements AutorisationManager {
 				map.put(FISCAL_FOR_SEC, Boolean.TRUE);
 				map.put(MODIF_FISCAL, Boolean.TRUE);
 			}
-			if (ctbModifiableSelonRoleEtDecision && SecurityHelper.isGranted(securityProvider, Role.BOUCLEMENTS_PM, visa, oid)) {
+			if (SecurityHelper.isGranted(securityProvider, Role.BOUCLEMENTS_PM, visa, oid)) {
 				map.put(MODIF_BOUCLEMENTS, Boolean.TRUE);
 			}
 
