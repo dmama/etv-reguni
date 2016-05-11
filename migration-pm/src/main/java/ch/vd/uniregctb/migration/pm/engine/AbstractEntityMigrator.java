@@ -67,13 +67,16 @@ import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.Etablissement;
 import ch.vd.uniregctb.tiers.ForFiscalAvecMotifs;
 import ch.vd.uniregctb.tiers.LocalisationDatee;
+import ch.vd.uniregctb.tiers.Mandat;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
+import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.tiers.Remarque;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.type.CategorieEntreprise;
 import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
+import ch.vd.uniregctb.type.TypeMandat;
 
 public abstract class AbstractEntityMigrator<T extends RegpmEntity> implements EntityMigrator<T> {
 
@@ -1097,6 +1100,29 @@ public abstract class AbstractEntityMigrator<T extends RegpmEntity> implements E
 
 			return new DonneesMandats(rolesMandant, rolesMandataire);
 		});
+	}
+
+	/**
+	 * <strong>Attention !</strong> Cette méthode ne doit être appelée qu'après que les liens (au moins les liens de
+	 * mandataires) ont été générés sur les entités Unireg
+	 * @param mandant mandant
+	 * @param typeMandat type de mandat intéressant
+	 * @return la liste (non-triée) des liens de mandats du type demandé pour le mandant fourni
+	 */
+	@NotNull
+	protected static List<Mandat> getLiensMandatairesNonAnnules(Tiers mandant, TypeMandat typeMandat) {
+		final Set<RapportEntreTiers> rapportsSujet = mandant.getRapportsSujet();
+		if (rapportsSujet != null && !rapportsSujet.isEmpty()) {
+			return rapportsSujet.stream()
+					.filter(ret -> !ret.isAnnule())
+					.filter(ret -> ret instanceof Mandat)
+					.map(ret -> (Mandat) ret)
+					.filter(mandat -> mandat.getTypeMandat() == typeMandat)
+					.collect(Collectors.toList());
+		}
+		else {
+			return Collections.emptyList();
+		}
 	}
 
 	/**

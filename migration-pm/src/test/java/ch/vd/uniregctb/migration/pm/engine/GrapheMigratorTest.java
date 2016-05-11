@@ -137,6 +137,7 @@ import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypeAdresseTiers;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
+import ch.vd.uniregctb.type.TypeMandat;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 import ch.vd.uniregctb.validation.EntityValidator;
 import ch.vd.uniregctb.validation.ValidationService;
@@ -6464,6 +6465,103 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 			final List<String> msgs = messages.get(LogCategory.ADRESSES);
 			Assert.assertEquals(1, msgs.size());
 			Assert.assertEquals("INFO;" + noEntrepriseMandante + ";Active;;;" + noEtablissementMandataire + ";;;;;" + noIndividu + ";;;;;;;Avenue de Longemalle;;;Renens (VD);8100;Adresse 'Avenue de Longemalle' à 'Renens (VD)' mappée sur l'estrid 1134510.", msgs.get(0));
+		}
+		{
+			// vérification des messages dans le contexte "ETABLISSEMENTS"
+			final List<String> msgs = messages.get(LogCategory.ETABLISSEMENTS);
+			Assert.assertEquals(1, msgs.size());
+			Assert.assertEquals("WARN;" + noEtablissementMandataire + ";;;;;" + noIndividu + ";Etablissement avec un lien vers un individu, donc non-migré en tant qu'établissement (au mieux en tant qu'adresses de mandataire).", msgs.get(0));
+		}
+	}
+
+	/**
+	 * [SIFISC-18552] Cas d'un mandataire établissement directement lié à une personne physique avec un mandant pour lequel il existe par ailleurs un lien mandataire non-annulé
+	 */
+	@Test
+	public void testMandataireActiviteIndependanteAvecAutreLienMandataireNonAnnule() throws Exception {
+
+		final long noIndividu = 234672L;
+		final long noEntrepriseMandante = 32132L;
+		final long noEtablissementMandataire = 432128L;
+		final long noEntrepriseMandataireLiee = 484517L;
+		final RegDate debutMandat = RegDate.get(2009, 5, 1);
+		final RegDate finMandat = RegDate.get(2015, 8, 12);
+		final RegDate dateDebut = RegDate.get(1990, 1, 1);
+
+		final RegpmIndividu individu = IndividuMigratorTest.buildBaseIndividu(noIndividu, "Bollomittet", "Alphonse", RegDate.get(1954, 5, 12), Sexe.MASCULIN);
+		final RegpmEtablissement etablissement = EtablissementMigratorTest.buildEtablissement(noEtablissementMandataire, individu);
+		etablissement.setRaisonSociale1("Bollomittet consulting");
+		etablissement.setRue(Rue.LONGEMALLE_RENENS);
+		final RegpmEntreprise entreprise = EntrepriseMigratorTest.buildEntreprise(noEntrepriseMandante);
+		EntrepriseMigratorTest.addRaisonSociale(entreprise, dateDebut, "Turlututu SA", null, null, true);
+		EntrepriseMigratorTest.addFormeJuridique(entreprise, dateDebut, EntrepriseMigratorTest.createTypeFormeJuridique("S.A.", RegpmCategoriePersonneMorale.PM));
+		EntrepriseMigratorTest.addMandat(entreprise, etablissement, RegpmTypeMandat.GENERAL, null, debutMandat, finMandat);
+
+		final RegpmEntreprise mandataireLie = EntrepriseMigratorTest.buildEntreprise(noEntrepriseMandataireLiee);
+		EntrepriseMigratorTest.addRaisonSociale(mandataireLie, dateDebut, "Mandataire & Cie", null, null, true);
+		EntrepriseMigratorTest.addFormeJuridique(mandataireLie, dateDebut, EntrepriseMigratorTest.createTypeFormeJuridique("S.A.", RegpmCategoriePersonneMorale.PM));
+		EntrepriseMigratorTest.addMandat(entreprise, mandataireLie, RegpmTypeMandat.GENERAL, null, debutMandat.addYears(-1), debutMandat.getOneDayBefore());
+
+		final MockGraphe graphe = new MockGraphe(Arrays.asList(entreprise, mandataireLie),
+		                                         Collections.singletonList(etablissement),
+		                                         Collections.singletonList(individu));
+
+		activityManager.setup(ALL_ACTIVE);
+		appariementsMultiplesManager.setup(NO_REUSE);
+
+		final LoggedMessages lms = grapheMigrator.migrate(graphe);
+		Assert.assertNotNull(lms);
+
+		// vérification de la présence d'une adresse mandataire en base
+		doInUniregTransaction(true, status -> {
+			final Entreprise e = uniregStore.getEntityFromDb(Entreprise.class, noEntrepriseMandante);
+			Assert.assertNotNull(e);
+
+			// adresses mandataire -> 0
+			final Set<AdresseMandataire> adresses = e.getAdressesMandataires();
+			Assert.assertNotNull(adresses);
+			Assert.assertEquals(0, adresses.size());
+
+			// lien de mandat
+			final List<Mandat> liensMandat = e.getRapportsSujet().stream()
+					.filter(lien -> lien.getType() == TypeRapportEntreTiers.MANDAT)
+					.map(lien -> (Mandat) lien)
+					.collect(Collectors.toList());
+			Assert.assertNotNull(liensMandat);
+			Assert.assertEquals(1, liensMandat.size());
+
+			final Mandat lienMandat = liensMandat.get(0);
+			Assert.assertNotNull(lienMandat);
+			Assert.assertFalse(lienMandat.isAnnule());
+			Assert.assertEquals(debutMandat.addYears(-1), lienMandat.getDateDebut());
+			Assert.assertEquals(debutMandat.getOneDayBefore(), lienMandat.getDateFin());
+			Assert.assertEquals(TypeMandat.GENERAL, lienMandat.getTypeMandat());
+			Assert.assertEquals((Long) noEntrepriseMandataireLiee, lienMandat.getObjetId());
+		});
+
+		final Map<LogCategory, List<String>> messages = buildTextualMessages(lms);
+		{
+			// vérification des messages dans le contexte "SUIVI"
+			final List<String> msgs = messages.get(LogCategory.SUIVI);
+			Assert.assertEquals(13, msgs.size());
+			Assert.assertEquals("WARN;" + noEntrepriseMandante + ";Active;;;;;;;;;;;;;;;L'entreprise n'existait pas dans Unireg avec ce numéro de contribuable.", msgs.get(0));
+			Assert.assertEquals("ERROR;" + noEntrepriseMandante + ";Active;;;;;;;;;;;;;;;Pas de numéro cantonal assigné sur l'entreprise, pas de lien vers le civil.", msgs.get(1));
+			Assert.assertEquals("WARN;" + noEntrepriseMandante + ";Active;;;;;;;;;;;;;;;Entreprise sans exercice commercial ni for principal.", msgs.get(2));
+			Assert.assertEquals("WARN;" + noEntrepriseMandante + ";Active;;;;;;;;;;;;;;;Entreprise sans exercice commercial ni date de bouclement futur.", msgs.get(3));
+			Assert.assertEquals("WARN;" + noEntrepriseMandante + ";Active;;;;;;;;;;;;;;;Pas de siège associé dans les données fiscales, pas d'établissement principal créé à partir des données fiscales.", msgs.get(4));
+			Assert.assertEquals("INFO;" + noEntrepriseMandante + ";Active;;;;;;;;;;;;;;;Entreprise migrée : " + FormatNumeroHelper.numeroCTBToDisplay(noEntrepriseMandante) + ".", msgs.get(5));
+			Assert.assertEquals("WARN;" + noEntrepriseMandataireLiee + ";Active;;;;;;;;;;;;;;;L'entreprise n'existait pas dans Unireg avec ce numéro de contribuable.", msgs.get(6));
+			Assert.assertEquals("ERROR;" + noEntrepriseMandataireLiee + ";Active;;;;;;;;;;;;;;;Pas de numéro cantonal assigné sur l'entreprise, pas de lien vers le civil.", msgs.get(7));
+			Assert.assertEquals("WARN;" + noEntrepriseMandataireLiee + ";Active;;;;;;;;;;;;;;;Entreprise sans exercice commercial ni for principal.", msgs.get(8));
+			Assert.assertEquals("WARN;" + noEntrepriseMandataireLiee + ";Active;;;;;;;;;;;;;;;Entreprise sans exercice commercial ni date de bouclement futur.", msgs.get(9));
+			Assert.assertEquals("WARN;" + noEntrepriseMandataireLiee + ";Active;;;;;;;;;;;;;;;Pas de siège associé dans les données fiscales, pas d'établissement principal créé à partir des données fiscales.", msgs.get(10));
+			Assert.assertEquals("INFO;" + noEntrepriseMandataireLiee + ";Active;;;;;;;;;;;;;;;Entreprise migrée : " + FormatNumeroHelper.numeroCTBToDisplay(noEntrepriseMandataireLiee) + ".", msgs.get(11));
+			Assert.assertEquals("WARN;" + noEntrepriseMandante + ";Active;;;" + noEtablissementMandataire + ";;;;;" + noIndividu + ";;;;;;;Mandat GENERAL vers l'établissement 'activité indépendante' finalement non repris même comme simple adresse mandataire en raison de la présence de liens mandataires de type GENERAL non-annulés.", msgs.get(12));
+		}
+		{
+			// vérification des messages dans le contexte "ADRESSES"
+			final List<String> msgs = messages.get(LogCategory.ADRESSES);
+			Assert.assertNull(msgs);
 		}
 		{
 			// vérification des messages dans le contexte "ETABLISSEMENTS"

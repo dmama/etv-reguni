@@ -62,11 +62,13 @@ import ch.vd.uniregctb.tiers.DomicileEtablissement;
 import ch.vd.uniregctb.tiers.Etablissement;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
 import ch.vd.uniregctb.tiers.IdentificationEntreprise;
+import ch.vd.uniregctb.tiers.Mandat;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.TypeAdresseTiers;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
+import ch.vd.uniregctb.type.TypeMandat;
 
 public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablissement> {
 
@@ -716,6 +718,7 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 			if (link.getType() == EntityLinkCollector.LinkType.MANDANT_MANDATAIRE && !neutralizationReason.isSourceNeutralisee()) {
 				// c'est donc que nous sommes sur une relation mandant/mandataire dont seul le mandataire a été neutralisé
 				final Contribuable mandant = (Contribuable) link.resolveSource();
+				final TypeMandat typeMandat = ((EntityLinkCollector.MandantMandataireLink) link).getTypeMandat();
 
 				// on pose un contexte de log car ce code ne sera exécuté que beaucoup plus tard, hors de toute migration individuelle identifiée
 				doInLogContext(buildEtablissementKey(regpm),
@@ -725,12 +728,26 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 				                                    mr,
 				                                    idMapper,
 				                                    () -> {
+					                                    // [SIFISC-18552] les adresses mandataires avec une date de fin ne sont migrées
+					                                    // que s'il n'existe aucun lien de mandat "général" non-annulé (fermé ou pas)
+					                                    if (typeMandat == TypeMandat.GENERAL && link.getDateFin() != null) {
+						                                    final List<Mandat> liens = getLiensMandatairesNonAnnules(mandant, TypeMandat.GENERAL);
+						                                    if (!liens.isEmpty()) {
+							                                    // il existe donc des liens non-annulés -> on ne reprend pas l'adresse...
+							                                    mr.addMessage(LogCategory.SUIVI, LogLevel.WARN,
+							                                                  String.format("Mandat %s vers l'établissement 'activité indépendante' finalement non repris même comme simple adresse mandataire en raison de la présence de liens mandataires de type %s non-annulés.",
+							                                                                typeMandat,
+							                                                                typeMandat));
+							                                    return;
+						                                    }
+					                                    }
+
 					                                    final AdresseMandataire adresse = migrationContexte.getAdresseHelper().buildAdresseMandataire(regpm.getAdresse(link), mr, null);
 					                                    if (adresse == null) {
 						                                    mr.addMessage(LogCategory.SUIVI, LogLevel.ERROR, "Aucune adresse retrouvée pour le mandat vers l'activité indépendante représentée par l'établissement.");
 					                                    }
 					                                    else {
-						                                    adresse.setTypeMandat(((EntityLinkCollector.MandantMandataireLink) link).getTypeMandat());
+						                                    adresse.setTypeMandat(typeMandat);
 						                                    adresse.setNomDestinataire(extractRaisonSociale(regpm));
 
 						                                    mr.addMessage(LogCategory.SUIVI, LogLevel.INFO,
