@@ -46,8 +46,10 @@ import ch.vd.uniregctb.migration.pm.regpm.RegpmIndividu;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeAdresseIndividu;
 import ch.vd.uniregctb.migration.pm.utils.EntityKey;
 import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.tiers.Mandat;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.Sexe;
+import ch.vd.uniregctb.type.TypeMandat;
 
 public class IndividuMigrator extends AbstractEntityMigrator<RegpmIndividu> {
 
@@ -316,6 +318,7 @@ public class IndividuMigrator extends AbstractEntityMigrator<RegpmIndividu> {
 			if (link.getType() == EntityLinkCollector.LinkType.MANDANT_MANDATAIRE && !neutralizationReason.isSourceNeutralisee()) {
 				// c'est donc que nous sommes sur une relation mandant/mandataire dont seul le mandataire a été neutralisé
 				final Contribuable mandant = (Contribuable) link.resolveSource();
+				final TypeMandat typeMandat = ((EntityLinkCollector.MandantMandataireLink) link).getTypeMandat();
 
 				// on pose un contexte de log car ce code ne sera exécuté que beaucoup plus tard, hors de toute migration individuelle identifiée
 				doInLogContext(buildIndividuKey(regpm),
@@ -339,11 +342,27 @@ public class IndividuMigrator extends AbstractEntityMigrator<RegpmIndividu> {
 							                                    return am;
 						                                    })
 						                                    .filter(Objects::nonNull)
+						                                    .filter(am -> {
+							                                    // [SIFISC-18552] les adresses mandataires avec une date de fin ne sont migrées
+							                                    // que s'il n'existe aucun lien de mandat "général" non-annulé (fermé ou pas)
+							                                    if (typeMandat == TypeMandat.GENERAL && link.getDateFin() != null) {
+								                                    final List<Mandat> liens = getLiensMandatairesNonAnnules(mandant, TypeMandat.GENERAL);
+								                                    if (!liens.isEmpty()) {
+									                                    // il existe donc des liens non-annulés -> on ne reprend pas l'adresse...
+									                                    mr.addMessage(LogCategory.SUIVI, LogLevel.WARN,
+									                                                  String.format("Mandat %s vers l'individu non repris même comme simple adresse mandataire en raison de la présence de liens mandataires de type %s non-annulés.",
+									                                                                typeMandat,
+									                                                                typeMandat));
+									                                    return false;
+								                                    }
+							                                    }
+							                                    return true;
+						                                    })
 						                                    .forEach(am -> {
 							                                    am.setDateDebut(link.getDateDebut());
 							                                    am.setDateFin(link.getDateFin());
 							                                    am.setNomDestinataire(new NomPrenom(regpm.getNom(), regpm.getPrenom()).getNomPrenom());
-							                                    am.setTypeMandat(((EntityLinkCollector.MandantMandataireLink) link).getTypeMandat());
+							                                    am.setTypeMandat(typeMandat);
 
 							                                    mr.addMessage(LogCategory.SUIVI, LogLevel.INFO,
 							                                                  String.format("Mandat vers l'individu migré en tant que simple adresse mandataire sur la période %s.",
