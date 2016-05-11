@@ -168,7 +168,8 @@ public class EvenementOrganisationManagerImpl implements EvenementOrganisationMa
 			catch (Exception e) {
 				evtView.setOrganisationError(e.getMessage());
 			}
-        } else if (evt.getEtat().isTraite() && evt.getEtat() == EtatEvenementOrganisation.A_VERIFIER) {
+        }
+		if (evt.getEtat().isTraite() && evt.getEtat() == EtatEvenementOrganisation.A_VERIFIER) {
 			evtView.setForcable(true);
 		}
 		return evtView;
