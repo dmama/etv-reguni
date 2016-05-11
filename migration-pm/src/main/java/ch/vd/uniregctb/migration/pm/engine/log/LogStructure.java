@@ -13,6 +13,7 @@ import org.jetbrains.annotations.NotNull;
 import ch.vd.uniregctb.migration.pm.log.AdresseLoggedElement;
 import ch.vd.uniregctb.migration.pm.log.AdressePermanenteLoggedElement;
 import ch.vd.uniregctb.migration.pm.log.AppariementEtablissementLoggedElement;
+import ch.vd.uniregctb.migration.pm.log.AppariementRejetePourCauseFormeJuridiqueLoggedElement;
 import ch.vd.uniregctb.migration.pm.log.DifferencesDonneesCivilesLoggedElement;
 import ch.vd.uniregctb.migration.pm.log.EmptyValuedLoggedElement;
 import ch.vd.uniregctb.migration.pm.log.EntrepriseLoggedElement;
@@ -76,6 +77,7 @@ public abstract class LogStructure {
 		final Function<LogContexte, LoggedElement> donneesMappingRegimeFiscal = new FromContextInformationSource(RegimeFiscalMappingLoggedElement.class, RegimeFiscalMappingLoggedElement.EMPTY);
 		final Function<LogContexte, LoggedElement> donneesFormesJuridiquesIncompatibles = new FromContextInformationSource(FormesJuridiquesIncompatiblesLoggedElement.class, FormesJuridiquesIncompatiblesLoggedElement.EMPTY);
 		final Function<LogContexte, LoggedElement> donneesAppariementEtablissement = new FromContextInformationSource(AppariementEtablissementLoggedElement.class, AppariementEtablissementLoggedElement.EMPTY);
+		final Function<LogContexte, LoggedElement> donneesAppariementRejeteFormeJuridique = new FromContextInformationSource(AppariementRejetePourCauseFormeJuridiqueLoggedElement.class, AppariementRejetePourCauseFormeJuridiqueLoggedElement.EMPTY);
 
 		final Map<LogCategory, List<Function<LogContexte, LoggedElement>>> map = new EnumMap<>(LogCategory.class);
 
@@ -135,6 +137,9 @@ public abstract class LogStructure {
 
 		// Liste des appariements d'établissements
 		map.put(LogCategory.APPARIEMENTS_ETABLISSEMENTS_SECONDAIRES, Arrays.asList(donneesNiveau, donneesEntreprise, donneesEtablissement, donneesAppariementEtablissement));
+
+		// Liste des appariements rejetés
+		map.put(LogCategory.APPARIEMENTS_REJETES_FORME_JURIDIQUE, Arrays.asList(donneesNiveau, donneesEntreprise, donneesAppariementRejeteFormeJuridique));
 
 		// Dans le log des erreurs, on ne met aucun contexte -> seul le texte sera affiché
 		map.put(LogCategory.EXCEPTIONS, Collections.singletonList(donneesNiveau));
