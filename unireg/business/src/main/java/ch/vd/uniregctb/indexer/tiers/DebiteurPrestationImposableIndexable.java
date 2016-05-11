@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Set;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
 import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.uniregctb.adresse.AdresseService;
@@ -20,6 +19,7 @@ import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.Entreprise;
+import ch.vd.uniregctb.tiers.Etablissement;
 import ch.vd.uniregctb.tiers.ForDebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.IndividuNotFoundException;
@@ -32,7 +32,7 @@ public class DebiteurPrestationImposableIndexable extends TiersIndexable<Debiteu
 
 	public static final String SUB_TYPE = "debiteurprestationimposable";
 
-	private ContribuableIndexable ctbIndexable;
+	private final ContribuableIndexable ctbIndexable;
 
 	public DebiteurPrestationImposableIndexable(AdresseService adresseService, TiersService tiersService, AssujettissementService assujettissementService, ServiceCivilService serviceCivil, ServiceOrganisationService serviceOrganisation,
 	                                            ServiceInfrastructureService serviceInfra, AvatarService avatarService, DebiteurPrestationImposable dpi) throws IndexerException {
@@ -54,8 +54,11 @@ public class DebiteurPrestationImposableIndexable extends TiersIndexable<Debiteu
 				}
 			}
 			else if (ctb instanceof Entreprise) {
-				final Entreprise entreprise = (Entreprise) ctb;
-				ctbIndexable = new EntrepriseIndexable(adresseService, tiersService, assujettissementService, serviceInfra, serviceOrganisation, avatarService, entreprise);			}
+				ctbIndexable = new EntrepriseIndexable(adresseService, tiersService, assujettissementService, serviceInfra, serviceOrganisation, avatarService, (Entreprise) ctb);
+			}
+			else if (ctb instanceof Etablissement) {
+				ctbIndexable = new EtablissementIndexable(adresseService, tiersService, assujettissementService, serviceInfra, serviceOrganisation, avatarService, (Etablissement) ctb);
+			}
 			else if (ctb instanceof AutreCommunaute) {
 				ctbIndexable = new AutreCommunauteIndexable(adresseService, tiersService, assujettissementService, serviceInfra, avatarService, (AutreCommunaute) ctb);
 			}
@@ -66,8 +69,11 @@ public class DebiteurPrestationImposableIndexable extends TiersIndexable<Debiteu
 				ctbIndexable = new MenageCommunIndexable(adresseService, tiersService, assujettissementService, serviceCivil, serviceInfra, avatarService, ((MenageCommun) ctb));
 			}
 			else {
-				Assert.fail("Type de contribuable inconnu = " + ctb.getNatureTiers());
+				throw new IllegalArgumentException("Type de contribuable inconnu = " + ctb.getNatureTiers());
 			}
+		}
+		else {
+			ctbIndexable = null;
 		}
 	}
 
