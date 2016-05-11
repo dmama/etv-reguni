@@ -117,6 +117,7 @@ import ch.vd.uniregctb.tiers.ForFiscalRevenuFortune;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
 import ch.vd.uniregctb.tiers.FormeJuridiqueFiscaleEntreprise;
 import ch.vd.uniregctb.tiers.ForsParType;
+import ch.vd.uniregctb.tiers.IdentificationEntreprise;
 import ch.vd.uniregctb.tiers.Mandat;
 import ch.vd.uniregctb.tiers.MontantMonetaire;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
@@ -7391,6 +7392,141 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;" + noCantonalEntreprise + ";;;;;;;Donnée de forme juridique migrée : sur la période [23.04.2005 -> 04.12.2015], SARL.", msgs.get(2));
 			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;" + noCantonalEntreprise + ";;;;;;;Les données de capital en provenance du registre civil font foi dès le 05.12.2015 (les données ultérieures de RegPM seront ignorées).", msgs.get(3));
 			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;" + noCantonalEntreprise + ";;;;;;;Donnée de capital migrée : sur la période [23.04.2005 -> 04.12.2015], 100000 CHF.", msgs.get(4));
+		}
+	}
+
+	/**
+	 * [SIFISC-19173] problème avec les entreprises dont RCEnt nous indique qu'elles ont une forme juridique 111 (succursale au RC d'une entreprise étrangère) ou 151 (succursale au RC d'une entreprise suisse)
+	 */
+	@Test
+	public void testAppariementRejetePourCauseDeFormeJuridiqueRCEntSuccursale() throws Exception {
+
+		final long idEntreprise = 34672L;
+		final long noCantonalEntreprise = 32671256123L;
+		final long noCantonalEtablissementPrincipal = 347823523L;
+		final RegDate dateDebut = RegDate.get(2005, 4, 23);
+		final RegDate dateChargementIDE = RegDate.get(2015, 12, 5);
+		final RegDate dateChargementFOSC = RegDate.get(2016, 3, 28);
+
+		// mise en place dans RegPM
+		final RegpmEntreprise regpm = EntrepriseMigratorTest.buildEntreprise(idEntreprise);
+		regpm.setNumeroCantonal(noCantonalEntreprise);
+		regpm.setNumeroIDE(EntrepriseMigratorTest.buildNumeroIDE("CHE", 105968205L));
+		EntrepriseMigratorTest.addRaisonSociale(regpm, dateDebut, "Toto & Cie", null, null, true);
+		EntrepriseMigratorTest.addFormeJuridique(regpm, dateDebut, EntrepriseMigratorTest.createTypeFormeJuridique("S.A.R.L.", RegpmCategoriePersonneMorale.PM));
+		EntrepriseMigratorTest.addForPrincipalSuisse(regpm, dateDebut, RegpmTypeForPrincipal.SIEGE, Commune.LAUSANNE);
+		EntrepriseMigratorTest.addSiegeSuisse(regpm, dateDebut, Commune.LAUSANNE);
+		EntrepriseMigratorTest.addAssujettissement(regpm, dateDebut, null, RegpmTypeAssujettissement.LILIC);
+		EntrepriseMigratorTest.addRegimeFiscalVD(regpm, dateDebut, null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
+		EntrepriseMigratorTest.addRegimeFiscalCH(regpm, dateDebut, null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
+		EntrepriseMigratorTest.addCapital(regpm, dateDebut, 100000);
+		regpm.setDateBouclementFutur(RegDate.get(2016, 12, 31));
+
+		// mise en place dans RCEnt
+		organisationService.setUp(new MockServiceOrganisation() {
+			@Override
+			protected void init() {
+				final MockOrganisation org = addOrganisation(noCantonalEntreprise);
+				final MockSiteOrganisation sitePrincipal = addSite(org, noCantonalEtablissementPrincipal, dateChargementIDE, new MockDonneesRegistreIDE(), new MockDonneesRC());
+				sitePrincipal.changeTypeDeSite(dateChargementIDE, TypeDeSite.ETABLISSEMENT_PRINCIPAL);
+				sitePrincipal.changeNom(dateChargementIDE, "Toto & Cie");
+				sitePrincipal.changeFormeLegale(dateChargementIDE, FormeLegale.N_0111_FILIALE_ETRANGERE_AU_RC);
+				sitePrincipal.addSiege(dateChargementIDE, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS());
+				sitePrincipal.getDonneesRC().addCapital(dateChargementFOSC, null, new Capital(dateChargementFOSC, null, TypeDeCapital.CAPITAL_ACTIONS, MontantMonetaire.CHF, BigDecimal.valueOf(200000), null));
+			}
+		});
+
+		final MockGraphe graphe = new MockGraphe(Collections.singletonList(regpm),
+		                                         null,
+		                                         null);
+
+		activityManager.setup(ALL_ACTIVE);
+		appariementsMultiplesManager.setup(NO_REUSE);
+
+		final LoggedMessages lms = grapheMigrator.migrate(graphe);
+		Assert.assertNotNull(lms);
+
+		// vérification de la liaison avec RCEnt
+		doInUniregTransaction(true, status -> {
+			final Entreprise entreprise = uniregStore.getEntityFromDb(Entreprise.class, idEntreprise);
+			Assert.assertNotNull(entreprise);
+			Assert.assertFalse(entreprise.isConnueAuCivil());       // l'appariement a été rejeté
+
+			final Set<DonneeCivileEntreprise> donneesCiviles = entreprise.getDonneesCiviles();
+			Assert.assertNotNull(donneesCiviles);
+			Assert.assertEquals(3, donneesCiviles.size());      // forme juridique, raison sociale et capital
+
+			final Map<Class<?>, DonneeCivileEntreprise> mapDonneesCiviles = donneesCiviles.stream()
+					.collect(Collectors.toMap(DonneeCivileEntreprise::getClass, Function.identity()));
+			Assert.assertTrue(mapDonneesCiviles.containsKey(FormeJuridiqueFiscaleEntreprise.class));
+			Assert.assertTrue(mapDonneesCiviles.containsKey(RaisonSocialeFiscaleEntreprise.class));
+			Assert.assertTrue(mapDonneesCiviles.containsKey(CapitalFiscalEntreprise.class));
+
+			{
+				final FormeJuridiqueFiscaleEntreprise elt = (FormeJuridiqueFiscaleEntreprise) mapDonneesCiviles.get(FormeJuridiqueFiscaleEntreprise.class);
+				Assert.assertNotNull(elt);
+				Assert.assertFalse(elt.isAnnule());
+				Assert.assertEquals(dateDebut, elt.getDateDebut());
+				Assert.assertNull(elt.getDateFin());
+			}
+			{
+				final RaisonSocialeFiscaleEntreprise elt = (RaisonSocialeFiscaleEntreprise) mapDonneesCiviles.get(RaisonSocialeFiscaleEntreprise.class);
+				Assert.assertNotNull(elt);
+				Assert.assertFalse(elt.isAnnule());
+				Assert.assertEquals(dateDebut, elt.getDateDebut());
+				Assert.assertNull(elt.getDateFin());
+			}
+			{
+				final CapitalFiscalEntreprise elt = (CapitalFiscalEntreprise) mapDonneesCiviles.get(CapitalFiscalEntreprise.class);
+				Assert.assertNotNull(elt);
+				Assert.assertFalse(elt.isAnnule());
+				Assert.assertEquals(dateDebut, elt.getDateDebut());
+				Assert.assertNull(elt.getDateFin());
+			}
+
+			// le numéro IDE doit avoir été migré avec...
+			final Set<IdentificationEntreprise> identificationsEntreprise = entreprise.getIdentificationsEntreprise();
+			Assert.assertNotNull(identificationsEntreprise);
+			Assert.assertEquals(1, identificationsEntreprise.size());
+			final IdentificationEntreprise identification = identificationsEntreprise.iterator().next();
+			Assert.assertNotNull(identification);
+			Assert.assertFalse(identification.isAnnule());
+			Assert.assertEquals("CHE105968205", identification.getNumeroIde());
+		});
+
+		// vérification des messages de log
+		final Map<LogCategory, List<String>> messages = buildTextualMessages(lms);
+		Assert.assertNotNull(messages);
+		{
+			final List<String> msgs = messages.get(LogCategory.SUIVI);
+			Assert.assertEquals(18, msgs.size());
+			Assert.assertEquals("WARN;" + idEntreprise + ";Active;CHE105968205;" + noCantonalEntreprise + ";;;;;;;;;;;;;L'entreprise n'existait pas dans Unireg avec ce numéro de contribuable.", msgs.get(0));
+			Assert.assertEquals("ERROR;" + idEntreprise + ";Active;CHE105968205;" + noCantonalEntreprise + ";;;;;;;;;;;;;Appariement avec RCEnt ignoré en raison d'une forme juridique 'succursale' (en fait : N_0111_FILIALE_ETRANGERE_AU_RC) présente dans l'établissement principal de l'organisation renvoyée.", msgs.get(1));
+			Assert.assertEquals("WARN;" + idEntreprise + ";Active;CHE105968205;" + noCantonalEntreprise + ";;;;;;;;;;;;;Ajout d'une date de bouclement estimée au 31.12.2015 pour combler l'absence d'exercice commercial dans RegPM sur la période [23.04.2005 -> 31.12.2016].", msgs.get(2));
+			Assert.assertEquals("WARN;" + idEntreprise + ";Active;CHE105968205;" + noCantonalEntreprise + ";;;;;;;;;;;;;Ajout d'une date de bouclement estimée au 31.12.2014 pour combler l'absence d'exercice commercial dans RegPM sur la période [23.04.2005 -> 31.12.2016].", msgs.get(3));
+			Assert.assertEquals("WARN;" + idEntreprise + ";Active;CHE105968205;" + noCantonalEntreprise + ";;;;;;;;;;;;;Ajout d'une date de bouclement estimée au 31.12.2013 pour combler l'absence d'exercice commercial dans RegPM sur la période [23.04.2005 -> 31.12.2016].", msgs.get(4));
+			Assert.assertEquals("WARN;" + idEntreprise + ";Active;CHE105968205;" + noCantonalEntreprise + ";;;;;;;;;;;;;Ajout d'une date de bouclement estimée au 31.12.2012 pour combler l'absence d'exercice commercial dans RegPM sur la période [23.04.2005 -> 31.12.2016].", msgs.get(5));
+			Assert.assertEquals("WARN;" + idEntreprise + ";Active;CHE105968205;" + noCantonalEntreprise + ";;;;;;;;;;;;;Ajout d'une date de bouclement estimée au 31.12.2011 pour combler l'absence d'exercice commercial dans RegPM sur la période [23.04.2005 -> 31.12.2016].", msgs.get(6));
+			Assert.assertEquals("WARN;" + idEntreprise + ";Active;CHE105968205;" + noCantonalEntreprise + ";;;;;;;;;;;;;Ajout d'une date de bouclement estimée au 31.12.2010 pour combler l'absence d'exercice commercial dans RegPM sur la période [23.04.2005 -> 31.12.2016].", msgs.get(7));
+			Assert.assertEquals("WARN;" + idEntreprise + ";Active;CHE105968205;" + noCantonalEntreprise + ";;;;;;;;;;;;;Ajout d'une date de bouclement estimée au 31.12.2009 pour combler l'absence d'exercice commercial dans RegPM sur la période [23.04.2005 -> 31.12.2016].", msgs.get(8));
+			Assert.assertEquals("WARN;" + idEntreprise + ";Active;CHE105968205;" + noCantonalEntreprise + ";;;;;;;;;;;;;Ajout d'une date de bouclement estimée au 31.12.2008 pour combler l'absence d'exercice commercial dans RegPM sur la période [23.04.2005 -> 31.12.2016].", msgs.get(9));
+			Assert.assertEquals("WARN;" + idEntreprise + ";Active;CHE105968205;" + noCantonalEntreprise + ";;;;;;;;;;;;;Ajout d'une date de bouclement estimée au 31.12.2007 pour combler l'absence d'exercice commercial dans RegPM sur la période [23.04.2005 -> 31.12.2016].", msgs.get(10));
+			Assert.assertEquals("WARN;" + idEntreprise + ";Active;CHE105968205;" + noCantonalEntreprise + ";;;;;;;;;;;;;Ajout d'une date de bouclement estimée au 31.12.2006 pour combler l'absence d'exercice commercial dans RegPM sur la période [23.04.2005 -> 31.12.2016].", msgs.get(11));
+			Assert.assertEquals("WARN;" + idEntreprise + ";Active;CHE105968205;" + noCantonalEntreprise + ";;;;;;;;;;;;;Ajout d'une date de bouclement estimée au 31.12.2005 pour combler l'absence d'exercice commercial dans RegPM sur la période [23.04.2005 -> 31.12.2016].", msgs.get(12));
+			Assert.assertEquals("INFO;" + idEntreprise + ";Active;CHE105968205;" + noCantonalEntreprise + ";;;;;;;;;;;;;Cycle de bouclements créé, applicable dès le 01.12.2005 : tous les 12 mois, à partir du premier 31.12.", msgs.get(13));
+			// .. bla bla..
+		}
+		{
+			final List<String> msgs = messages.get(LogCategory.DONNEES_CIVILES_REGPM);
+			Assert.assertEquals(3, msgs.size());
+			Assert.assertEquals("INFO;" + idEntreprise + ";Active;CHE105968205;" + noCantonalEntreprise + ";;;;;;;Donnée de raison sociale migrée : sur la période [23.04.2005 -> ?], 'Toto & Cie'.", msgs.get(0));
+			Assert.assertEquals("INFO;" + idEntreprise + ";Active;CHE105968205;" + noCantonalEntreprise + ";;;;;;;Donnée de forme juridique migrée : sur la période [23.04.2005 -> ?], SARL.", msgs.get(1));
+			Assert.assertEquals("INFO;" + idEntreprise + ";Active;CHE105968205;" + noCantonalEntreprise + ";;;;;;;Donnée de capital migrée : sur la période [23.04.2005 -> ?], 100000 CHF.", msgs.get(2));
+		}
+		{
+			final List<String> msgs = messages.get(LogCategory.APPARIEMENTS_REJETES_FORME_JURIDIQUE);
+			Assert.assertEquals(1, msgs.size());
+			Assert.assertEquals("ERROR;" + idEntreprise + ";Active;CHE105968205;" + noCantonalEntreprise + ";N_0111_FILIALE_ETRANGERE_AU_RC;", msgs.get(0));
 		}
 	}
 

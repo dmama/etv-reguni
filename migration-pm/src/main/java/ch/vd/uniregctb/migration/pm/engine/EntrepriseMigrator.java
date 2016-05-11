@@ -58,6 +58,7 @@ import ch.vd.unireg.interfaces.organisation.data.DateRanged;
 import ch.vd.unireg.interfaces.organisation.data.Domicile;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
+import ch.vd.unireg.interfaces.organisation.data.OrganisationHelper;
 import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 import ch.vd.unireg.interfaces.organisation.data.TypeDeSite;
 import ch.vd.uniregctb.adresse.AdresseCivileAdapter;
@@ -110,6 +111,7 @@ import ch.vd.uniregctb.migration.pm.engine.helpers.StringRenderers;
 import ch.vd.uniregctb.migration.pm.extractor.IbanExtractor;
 import ch.vd.uniregctb.migration.pm.log.AdressePermanenteLoggedElement;
 import ch.vd.uniregctb.migration.pm.log.AppariementEtablissementLoggedElement;
+import ch.vd.uniregctb.migration.pm.log.AppariementRejetePourCauseFormeJuridiqueLoggedElement;
 import ch.vd.uniregctb.migration.pm.log.DifferencesDonneesCivilesLoggedElement;
 import ch.vd.uniregctb.migration.pm.log.ForFiscalIgnoreAbsenceAssujettissementLoggedElement;
 import ch.vd.uniregctb.migration.pm.log.ForPrincipalOuvertApresFinAssujettissementLoggedElement;
@@ -1355,7 +1357,36 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 			try {
 				final Organisation org = migrationContexte.getOrganisationService().getOrganisation(idCantonal, mr);
 				if (org != null) {
-					return new DonneesCiviles(org);
+
+					// [SIFISC-19173] on ne prend pas en compte les appariements qui donnent des formes juridiques "succursales" aux établissements principaux
+					final Set<FormeLegale> formesLegalesInterdites = EnumSet.of(FormeLegale.N_0111_FILIALE_ETRANGERE_AU_RC,
+					                                                            FormeLegale.N_0151_SUCCURSALE_SUISSE_AU_RC);
+
+					final Map<Long, SiteOrganisation> map = org.getDonneesSites().stream()
+							.collect(Collectors.toMap(SiteOrganisation::getNumeroSite, Function.identity()));
+					final Set<FormeLegale> formesLegalesInterditesVues = OrganisationHelper.getFormesLegalesPrincipaux(map).stream()
+							.map(DateRanged::getPayload)
+							.filter(formesLegalesInterdites::contains)
+							.collect(Collectors.toCollection(() -> EnumSet.noneOf(FormeLegale.class)));
+					if (!formesLegalesInterditesVues.isEmpty()) {
+						mr.addMessage(LogCategory.SUIVI, LogLevel.ERROR,
+						              String.format("Appariement avec RCEnt ignoré en raison d'une forme juridique 'succursale' (en fait : %s) présente dans l'établissement principal de l'organisation renvoyée.",
+						                            CollectionsUtils.toString(formesLegalesInterditesVues, FormeLegale::name, ", ")));
+
+						// constituons une liste séparée
+						mr.pushContextValue(AppariementRejetePourCauseFormeJuridiqueLoggedElement.class, new AppariementRejetePourCauseFormeJuridiqueLoggedElement(formesLegalesInterditesVues.iterator().next()));
+						try {
+							mr.addMessage(LogCategory.APPARIEMENTS_REJETES_FORME_JURIDIQUE, LogLevel.ERROR, StringUtils.EMPTY);
+						}
+						finally {
+							mr.popContexteValue(AppariementRejetePourCauseFormeJuridiqueLoggedElement.class);
+						}
+
+						return null;
+					}
+					else {
+						return new DonneesCiviles(org);
+					}
 				}
 
 				mr.addMessage(LogCategory.SUIVI, LogLevel.ERROR, "Aucune donnée renvoyée par RCEnt pour cette entreprise.");

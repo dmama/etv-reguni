@@ -229,6 +229,17 @@
 		<appender-ref ref="APPARIEMENTS_ETABLISSEMENTS_SECONDAIRES"/>
 	</logger>
 
+	<appender name="APPARIEMENTS_REJETES_FORME_JURIDIQUE" class="ch.qos.logback.core.FileAppender">
+		<file>log/appariements-rejetes-forme-juridique.csv</file>
+		<append>true</append>
+		<encoder>
+			<pattern>%msg%n</pattern>
+		</encoder>
+	</appender>
+	<logger name="ch.vd.uniregctb.migration.pm.log.LogCategory.APPARIEMENTS_REJETES_FORME_JURIDIQUE" additivity="false">
+		<appender-ref ref="APPARIEMENTS_REJETES_FORME_JURIDIQUE"/>
+	</logger>
+
 	<appender name="EXCEPTIONS" class="ch.qos.logback.core.FileAppender">
 		<file>log/exceptions.log</file>
 		<append>true</append>

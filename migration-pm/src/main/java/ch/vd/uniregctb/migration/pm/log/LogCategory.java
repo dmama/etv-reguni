@@ -96,13 +96,18 @@ public enum LogCategory {
 	ADRESSES_PERMANENTES,
 
 	/**
-	 * Liste des entreprises migrée sans réelle donnée fiscale car les formes juridiques de RCEnt et RegPM sont incompatible (au sens du SIFISC-18378)
+	 * Liste des entreprises migrées sans réelle donnée fiscale car les formes juridiques de RCEnt et RegPM sont incompatible (au sens du SIFISC-18378)
 	 */
 	FORMES_JURIDIQUES_INCOMPATIBLES,
 
 	/**
 	 * Liste des appariements d'établissements secondaires
 	 */
-	APPARIEMENTS_ETABLISSEMENTS_SECONDAIRES
+	APPARIEMENTS_ETABLISSEMENTS_SECONDAIRES,
+
+	/**
+	 * Liste des entreprises pour lesquels l'appariement fourni en entrée a été rejeté (= migration sans lien vers le civil)
+	 */
+	APPARIEMENTS_REJETES_FORME_JURIDIQUE
 
 }
