@@ -55,7 +55,7 @@
 				</c:if>
 			</display:column>
 			<display:column sortable ="true" titleKey="label.date.naissance.ou.rc" sortProperty="dateNaissanceInscriptionRC">
-				<unireg:date date="${row.dateNaissanceInscriptionRC}"></unireg:date>
+				<unireg:date date="${row.dateNaissanceInscriptionRC}"/>
 			</display:column>
 			<display:column property="localiteOuPays" sortable ="true" titleKey="label.localitePays"  />
 			<display:column sortable ="true" titleKey="label.for.principal" >

@@ -53,16 +53,11 @@
 			</c:if>
 		</display:column>
 
-		<display:column style="action">
-			<c:if test="${page == 'visu' }">
+		<c:if test="${page == 'visu'}">
+			<display:column style="action">
 				<unireg:consulterLog entityNature="RapportEntreTiers" entityId="${rapportEtablissement.id}"/>
-			</c:if>
-			<c:if test="${page == 'edit' }">
-				<c:if test="${rapportEtablissement.etablissementAnnulable}">
-					<unireg:raccourciAnnuler onClick="javascript:Rapport.annulerRapport(${rapportEtablissement.id})" tooltip="Annuler"/>
-				</c:if>
-			</c:if>
-		</display:column>
+			</display:column>
+		</c:if>
 		<display:setProperty name="paging.banner.all_items_found" value=""/>
 		<display:setProperty name="paging.banner.one_item_found" value=""/>
 	</display:table>

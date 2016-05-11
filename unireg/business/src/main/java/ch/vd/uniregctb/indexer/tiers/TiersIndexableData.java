@@ -84,6 +84,7 @@ public class TiersIndexableData extends IndexableData {
 	public static final String CORPORATION_WAS_SPLIT = "S_CORP_SPLIT";
 	public static final String CORPORATION_TRANSFERED_PATRIMONY = "S_CORP_TRANSFERED_PATRIMONY";
 	public static final String CONNU_CIVIL = "S_CONNU_CIVIL";
+	public static final String TYPE_ETABLISSEMENT = "S_TYPE_ETB";
 
 	// champs de stockage (pas recherchables)
 	public static final String NOM1 = "D_NOM1";
@@ -143,6 +144,7 @@ public class TiersIndexableData extends IndexableData {
 	private Boolean connuAuCivil;               // vrai si la personne physique, l'entreprise ou l'établissement est connu au civil, false sinon (vide si non-applicable)
 	private Boolean corporationSplit;           // vrai si l'entreprise a subi une scission
 	private Boolean corporationTransferedPatrimony; // vrai si l'entreprise a émis (= transmis) du patrimoine à une autre entreprise
+	private Set<TypeEtablissement> typesEtablissement;
 
 	// champs de stockage (pas recherchables)
 	private String nom1;
@@ -212,6 +214,7 @@ public class TiersIndexableData extends IndexableData {
 		addNotAnalyzedValue(d, TiersIndexableData.CONNU_CIVIL, connuAuCivil, BOOLEAN_RENDERER);
 		addNotAnalyzedValue(d, TiersIndexableData.CORPORATION_WAS_SPLIT, corporationSplit, BOOLEAN_RENDERER);
 		addNotAnalyzedValue(d, TiersIndexableData.CORPORATION_TRANSFERED_PATRIMONY, corporationTransferedPatrimony, BOOLEAN_RENDERER);
+		addMultiValuedNotAnalyzedValue(d, TiersIndexableData.TYPE_ETABLISSEMENT, typesEtablissement, ENUM_RENDERER);
 
 		// on aggrège tous les valeurs utiles dans un seul champ pour une recherche de type google
 		addToutValues(d, numeros, nomRaison, autresNom, toSearchString(datesNaissanceInscriptionRC), forPrincipal, rue, npaCourrier, localiteEtPays, natureJuridique, navs11, navs13, ancienNumeroSourcier, categorieDebiteurIs, noSymic, ide);
@@ -776,5 +779,16 @@ public class TiersIndexableData extends IndexableData {
 
 	public void setConnuAuCivil(Boolean connuAuCivil) {
 		this.connuAuCivil = connuAuCivil;
+	}
+
+	public Set<TypeEtablissement> getTypesEtablissement() {
+		return typesEtablissement;
+	}
+
+	public void addTypeEtablissement(TypeEtablissement type) {
+		if (typesEtablissement == null) {
+			typesEtablissement = EnumSet.noneOf(TypeEtablissement.class);
+		}
+		typesEtablissement.add(type);
 	}
 }

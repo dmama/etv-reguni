@@ -100,7 +100,7 @@ public class TiersActivationListController extends AbstractTiersListController {
 					final Set<TiersCriteria.TypeTiers> typesTiersAutorises = EnumSet.noneOf(TiersCriteria.TypeTiers.class);
 					if (SecurityHelper.isAnyGranted(securityProvider, Role.MODIF_PM)) {
 						typesTiersAutorises.add(TiersCriteria.TypeTiers.ENTREPRISE);
-						typesTiersAutorises.add(TiersCriteria.TypeTiers.ETABLISSEMENT);
+						typesTiersAutorises.add(TiersCriteria.TypeTiers.ETABLISSEMENT_SECONDAIRE);
 					}
 					if (SecurityHelper.isAnyGranted(securityProvider, Role.MODIF_VD_ORD, Role.MODIF_VD_SOURC, Role.MODIF_HC_HS, Role.MODIF_HAB_DEBPUR, Role.MODIF_NONHAB_DEBPUR)) {
 						typesTiersAutorises.add(TiersCriteria.TypeTiers.DEBITEUR_PRESTATION_IMPOSABLE);

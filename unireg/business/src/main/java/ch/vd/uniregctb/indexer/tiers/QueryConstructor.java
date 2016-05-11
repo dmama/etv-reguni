@@ -83,6 +83,14 @@ public class QueryConstructor {
 				case ETABLISSEMENT:
 					query.add(new TermQuery(new Term(LuceneHelper.F_DOCSUBTYPE, EtablissementIndexable.SUB_TYPE)), should);
 					break;
+				case ETABLISSEMENT_PRINCIPAL:
+				case ETABLISSEMENT_SECONDAIRE: {
+					final BooleanQuery subQuery = new BooleanQuery();
+					subQuery.add(new TermQuery(new Term(LuceneHelper.F_DOCSUBTYPE, EtablissementIndexable.SUB_TYPE)), must);
+					subQuery.add(new TermQuery(new Term(TiersIndexableData.TYPE_ETABLISSEMENT, typeTiers == TypeTiers.ETABLISSEMENT_PRINCIPAL ? TypeEtablissement.PRINCIPAL.name() : TypeEtablissement.SECONDAIRE.name())), must);
+					query.add(subQuery, should);
+					break;
+				}
 				case COLLECTIVITE_ADMINISTRATIVE:
 					query.add(new TermQuery(new Term(LuceneHelper.F_DOCSUBTYPE, CollectiviteAdministrativeIndexable.SUB_TYPE)), should);
 					break;
