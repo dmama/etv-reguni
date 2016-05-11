@@ -497,6 +497,7 @@ public class ActivationServiceTest extends BusinessTest {
 				}
 				catch (ActivationServiceException e) {
 					Assert.assertEquals("Il est interdit d'annuler un tiers pour lequel il existe encore des déclarations couvrant une période postérieure à la date d'annulation souhaitée.", e.getMessage());
+					status.setRollbackOnly();           // suite à cette exception, la transaction doit être annulée
 				}
 				return null;
 			}
@@ -557,6 +558,7 @@ public class ActivationServiceTest extends BusinessTest {
 				}
 				catch (ActivationServiceException e) {
 					Assert.assertEquals("Il est interdit d'annuler un tiers pour lequel il existe encore des déclarations couvrant une période postérieure à la date d'annulation souhaitée.", e.getMessage());
+					status.setRollbackOnly();           // suite à cette exception, la transaction doit être annulée
 				}
 				return null;
 			}
@@ -644,6 +646,7 @@ public class ActivationServiceTest extends BusinessTest {
 					Assert.assertEquals("Il est interdit d'annuler un tiers pour lequel il existe des fors dont la date d'ouverture ou de fermeture est postérieure à la date d'annulation souhaitée.", e.getMessage());
 				}
 
+				status.setRollbackOnly();           // suite aux exceptions attendues, la transaction doit être annulée
 				return null;
 			}
 		});
@@ -733,6 +736,7 @@ public class ActivationServiceTest extends BusinessTest {
 				}
 				catch (ActivationServiceException e) {
 					Assert.assertEquals("Il est interdit d'annuler un tiers pour lequel il existe des fors dont la date d'ouverture ou de fermeture est postérieure à la date d'annulation souhaitée.", e.getMessage());
+					status.setRollbackOnly();           // suite à cette exception, la transaction doit être annulée
 				}
 				return null;
 			}
