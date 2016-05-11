@@ -112,7 +112,7 @@ public class EvenementOrganisationProcessorFacade implements EvenementOrganisati
 	public void forceEvenement(EvenementOrganisationBasicInfo evt) {
 		Audit.info(evt.getNoEvenement(),
 		           String.format("Forçage manuel de l'événement organisation %s.",
-		                         evt.toString()));
+		                         evt.getNoEvenement()));
 		internalProcessor.forceEvent(evt);
 	}
 }
