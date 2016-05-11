@@ -772,7 +772,7 @@ public class MetierServicePMImpl implements MetierServicePM {
 
 		// 3. annulation de l'état dissoute actuel s'il existe
 		final EtatEntreprise etatActuel = entreprise.getEtatActuel();
-		if (etatActuel != null && etatActuel.getDateObtention() == dateFinActivite && etatActuel.getType() == TypeEtatEntreprise.DISSOUTE) {
+		if (etatActuel != null && etatActuel.getType() == TypeEtatEntreprise.DISSOUTE) {
 			etatActuel.setAnnule(true);
 		}
 
