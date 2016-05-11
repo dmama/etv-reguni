@@ -13,8 +13,10 @@ import ch.vd.uniregctb.indexer.IndexerException;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.ServiceOrganisationService;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
+import ch.vd.uniregctb.tiers.ActiviteEconomique;
 import ch.vd.uniregctb.tiers.Etablissement;
 import ch.vd.uniregctb.tiers.OrganisationNotFoundException;
+import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.tiers.SiteOrganisationNotFoundException;
 import ch.vd.uniregctb.tiers.TiersService;
 
@@ -100,6 +102,13 @@ public class EtablissementIndexable extends ContribuableIndexable<Etablissement>
 				data.addNomRaison(nom.getPayload());
 			}
 			data.addNom1(noms.get(noms.size() - 1).getPayload());
+		}
+
+		// qualification du type principal/secondaire (attention ! même les rapports annulés sont pris en compte !)
+		for (RapportEntreTiers ret : tiers.getRapportsObjet()) {
+			if (ret instanceof ActiviteEconomique) {
+				data.addTypeEtablissement(((ActiviteEconomique) ret).isPrincipal() ? TypeEtablissement.PRINCIPAL : TypeEtablissement.SECONDAIRE);
+			}
 		}
 	}
 }

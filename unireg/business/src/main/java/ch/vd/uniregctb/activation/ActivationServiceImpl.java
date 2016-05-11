@@ -1,15 +1,21 @@
 package ch.vd.uniregctb.activation;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeComparator;
+import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
@@ -57,49 +63,105 @@ public class ActivationServiceImpl implements ActivationService {
 	 */
 	@Override
 	public void desactiveTiers(Tiers tiers, RegDate dateAnnulation) throws ActivationServiceException {
+		if (tiers instanceof Entreprise) {
+			_desactiveEntreprise((Entreprise) tiers, dateAnnulation);
+		}
+		else if (tiers instanceof Etablissement) {
+			_desactiveEtablissement((Etablissement) tiers, dateAnnulation, false);
+		}
+		else if (tiers instanceof DebiteurPrestationImposable) {
+			_desactiveDebiteurPrestationImposable((DebiteurPrestationImposable) tiers, dateAnnulation);
+		}
+		else if (tiers instanceof Contribuable) {
+			_desactiveContribuable((Contribuable) tiers, dateAnnulation);
+		}
+		else {
+			_desactiveTiers(tiers, dateAnnulation);
+		}
+	}
 
+	private void _desactiveTiers(@NotNull Tiers tiers, RegDate dateAnnulation) throws ActivationServiceException {
 		// [UNIREG-2340] On ne doit pas pouvoir désactiver un tiers s'il possède des déclarations non-annulées qui couvrent des périodes postérieures à la désactivation
 		checkDeclarationsEnConflitAvecDesactivation(tiers, dateAnnulation);
 
 		// [UNIREG-2381] L'existence de certains fors doit également bloquer la désactivation du tiers
 		checkForsEnConflitAvecDesactivation(tiers, dateAnnulation);
 
-		if (tiers instanceof Contribuable) {
-			final Contribuable contribuable = (Contribuable) tiers;
-			tiersService.closeAllForsFiscaux(contribuable, dateAnnulation, MotifFor.ANNULATION);
-
-			// s'il existe un for fiscal principal fermé justement à la date d'annulation pour
-			// un autre motif, alors on change son motif de fermeture !
-			final ForFiscalPrincipal ffp = tiers.getForFiscalPrincipalAt(dateAnnulation);
-			if (ffp != null && ffp.getMotifFermeture() != MotifFor.ANNULATION && ffp.getDateFin() == dateAnnulation) {
-				ffp.setMotifFermeture(MotifFor.ANNULATION);
-			}
-
-			// [SIFISC-18773] si nous traitons une entreprise, il faut également désactiver (= annuler, puisqu'ils ne portent jamais de fors)
-			// les établissements de tous types
-			if (tiers instanceof Entreprise) {
-				for (RapportEntreTiers rapportSujet : tiers.getRapportsSujet()) {
-					if (rapportSujet.isValidAt(dateAnnulation) && rapportSujet.getType() == TypeRapportEntreTiers.ACTIVITE_ECONOMIQUE) {
-						final Etablissement etablissement = (Etablissement) tiersService.getTiers(rapportSujet.getObjetId());
-						if (!etablissement.isAnnule()) {
-							desactiveTiers(etablissement, dateAnnulation);
-						}
-					}
-				}
-			}
-		}
-
-		if (tiers instanceof DebiteurPrestationImposable) {
-			final DebiteurPrestationImposable debiteur = (DebiteurPrestationImposable) tiers;
-			final ForDebiteurPrestationImposable forDebiteurPrestationImposable = debiteur.getForDebiteurPrestationImposableAt(dateAnnulation);
-			tiersService.closeForDebiteurPrestationImposable(debiteur, forDebiteurPrestationImposable, dateAnnulation, MotifFor.ANNULATION, true);
-		}
-
 		// s'il n'y a pas de for actif à la date de désactivation, il faut carrément annuler le tiers complètement
 		final List<ForFiscal> forsFiscauxValides = tiers.getForsFiscauxValidAt(dateAnnulation);
 		if (forsFiscauxValides == null || forsFiscauxValides.isEmpty()) {
 			tiers.setAnnule(true);
 		}
+	}
+
+	private void _desactiveContribuable(@NotNull Contribuable ctb, RegDate dateAnnulation) throws ActivationServiceException {
+		tiersService.closeAllForsFiscaux(ctb, dateAnnulation, MotifFor.ANNULATION);
+
+		// s'il existe un for fiscal principal fermé justement à la date d'annulation pour
+		// un autre motif, alors on change son motif de fermeture !
+		final ForFiscalPrincipal ffp = ctb.getForFiscalPrincipalAt(dateAnnulation);
+		if (ffp != null && ffp.getMotifFermeture() != MotifFor.ANNULATION && ffp.getDateFin() == dateAnnulation) {
+			ffp.setMotifFermeture(MotifFor.ANNULATION);
+		}
+
+		_desactiveTiers(ctb, dateAnnulation);
+	}
+
+	private void _desactiveDebiteurPrestationImposable(@NotNull DebiteurPrestationImposable dpi, RegDate dateAnnulation) throws ActivationServiceException {
+		final ForDebiteurPrestationImposable forDebiteurPrestationImposable = dpi.getForDebiteurPrestationImposableAt(dateAnnulation);
+		tiersService.closeForDebiteurPrestationImposable(dpi, forDebiteurPrestationImposable, dateAnnulation, MotifFor.ANNULATION, true);
+
+		_desactiveTiers(dpi, dateAnnulation);
+	}
+
+	private void _desactiveEntreprise(@NotNull Entreprise entreprise, RegDate dateAnnulation) throws ActivationServiceException {
+		final DateRange rangeInterdit = new DateRangeHelper.Range(dateAnnulation.getOneDayAfter(), null);
+
+		// [SIFISC-18536] dans le cas d'une entreprise, s'il existe des liens vers des établissements secondaires ouverts après la date d'annulation,
+		// on refuse la désactivation de l'entreprise
+		for (RapportEntreTiers ret : entreprise.getRapportsSujet()) {
+			if (!ret.isAnnule() && ret instanceof ActiviteEconomique && DateRangeHelper.intersect(ret, rangeInterdit)) {
+				final ActiviteEconomique ae = (ActiviteEconomique) ret;
+				if (ae.isPrincipal()) {
+					// on annule l'établissement principal qui est derrière
+					final Etablissement etablissement = (Etablissement) tiersService.getTiers(ret.getObjetId());
+					if (!etablissement.isAnnule()) {
+						_desactiveEtablissement(etablissement, dateAnnulation, true);
+					}
+				}
+				else {
+					// Stop !! on arrête tout, il ne devrait plus y avoir de lien secondaire ouvert !!
+					throw new ActivationServiceException("L'entreprise possède des liens vers des établissements secondaires encore valides après la date d'annulation demandée.");
+				}
+			}
+		}
+
+		_desactiveContribuable(entreprise, dateAnnulation);
+	}
+
+	private void _desactiveEtablissement(Etablissement etablissement, RegDate dateAnnulation, boolean principal) throws ActivationServiceException {
+		final DateRange rangeInterdit = new DateRangeHelper.Range(dateAnnulation.getOneDayAfter(), null);
+
+		for (RapportEntreTiers ret : etablissement.getRapportsObjet()) {
+			if (!ret.isAnnule() && ret instanceof ActiviteEconomique && DateRangeHelper.intersect(ret, rangeInterdit)) {
+				final ActiviteEconomique ae = (ActiviteEconomique) ret;
+				if (ae.isPrincipal() != principal) {
+					// on a un problème... on nous demande de désactiver l'établissement "principal" ou "secondaire" selon le flag
+					// "principal" passé en paramètre, mais il se trouve que l'établissement a également un rôle opposé après la date d'annulation...
+					throw new ActivationServiceException(String.format("L'établissement %s possède à la fois les rôles d'établissement principal et secondaire après le %s. Traitement non-supporté.",
+					                                                   FormatNumeroHelper.numeroCTBToDisplay(etablissement.getNumero()),
+					                                                   RegDateHelper.dateToDisplayString(dateAnnulation)));
+				}
+
+				// pour l'établissement principal, rien de spécial à faire
+				// (mais il faut annuler le rapport entre tiers entre un établissement secondaire annulé et son entreprise)
+				if (!principal) {
+					ae.setAnnule(true);
+				}
+			}
+		}
+
+		_desactiveContribuable(etablissement, dateAnnulation);
 	}
 
 	/**
@@ -245,14 +307,14 @@ public class ActivationServiceImpl implements ActivationService {
 
 			// aucun établissement principal trouvé (tous les liens seraient-ils annulés ?)... bizarre, mais bon...
 			if (rapportsEtbsPrincipaux.isEmpty()) {
-				LOGGER.warn(String.format("Réactivation d'une entreprise (%s) dont tous les liens existants vers un établissements principal ont été annulé... Pas de réactivation de l'établissement principal correspondant.",
+				LOGGER.warn(String.format("Réactivation d'une entreprise (%s) dont tous les liens existants vers un établissements principal ont été annulés... Pas de réactivation de l'établissement principal correspondant.",
 				                          FormatNumeroHelper.numeroCTBToDisplay(tiers.getNumero())));
 			}
 			else {
 				final ActiviteEconomique aReactiver = rapportsEtbsPrincipaux.last();
 				final Etablissement etablissementPrincipal = (Etablissement) tiersService.getTiers(aReactiver.getObjetId());
 				try {
-					reactiveTiers(etablissementPrincipal, dateReactivation);
+					_reactiveEtablissement(etablissementPrincipal, dateReactivation, true);
 				}
 				catch (TiersNonDesactiveException e) {
 					// l'établissement principal n'avait pas été annulé ? ou alors on a déjà commencé le boulot de réactivation à la main...
@@ -262,7 +324,23 @@ public class ActivationServiceImpl implements ActivationService {
 					                          FormatNumeroHelper.numeroCTBToDisplay(tiers.getNumero())));
 				}
 			}
+
+			_reactiveTiers(tiers, dateReactivation);
 		}
+
+		// [SIFISC-18536] si nous sommes sur un établissement, il faut différencier les cas "principal" et "secondaire"
+		// (parce que le cas de l'établissement principal n'est pas sensé passer par ici...)
+		else if (tiers instanceof Etablissement) {
+			// on ne s'intéresse donc qu'aux établissements secondaires...
+			_reactiveEtablissement((Etablissement) tiers, dateReactivation, false);
+		}
+		else {
+			// cas général
+			_reactiveTiers(tiers, dateReactivation);
+		}
+	}
+
+	private void _reactiveTiers(@NotNull Tiers tiers, @NotNull RegDate dateReactivation) throws ActivationServiceException {
 
 		final RegDate derniereDateDesactivation = tiers.getDateDesactivation();
 		if (tiers.isAnnule()) {
@@ -346,5 +424,58 @@ public class ActivationServiceImpl implements ActivationService {
 				annuleEtRemplace.setDateFin(finRemplacement);
 			}
 		}
+	}
+
+	private void _reactiveEtablissement(@NotNull  Etablissement etablissement, @NotNull RegDate dateReactivation, boolean principal) throws ActivationServiceException {
+
+		final Set<Long> idsEntreprisesTousLiens = new HashSet<>();
+		final Set<Long> idsEntreprisesLiensNonAnnules = new HashSet<>();
+		final List<ActiviteEconomique> liensNonAnnules = new ArrayList<>();
+		for (RapportEntreTiers ret : etablissement.getRapportsObjet()) {
+			if (ret instanceof ActiviteEconomique) {
+				final ActiviteEconomique ae = (ActiviteEconomique) ret;
+				if (!ae.isAnnule() && !principal && RegDateHelper.isAfterOrEqual(ae.getDateFin(), dateReactivation, NullDateBehavior.LATEST)) {
+					throw new ActivationServiceException(String.format("L'établissement %s possède déjà un rapport d'activité économique non-annulé valide après la date de réactivation demandée...",
+					                                                   FormatNumeroHelper.numeroCTBToDisplay(etablissement.getNumero())));
+				}
+
+				if (!ae.isAnnule()) {
+					idsEntreprisesLiensNonAnnules.add(ae.getSujetId());
+					liensNonAnnules.add(ae);
+				}
+				idsEntreprisesTousLiens.add(ae.getSujetId());
+			}
+		}
+
+		// si y a eu plusieurs entreprises connues...
+		if ((principal && idsEntreprisesLiensNonAnnules.size() > 1) || (!principal && idsEntreprisesTousLiens.size() > 1)) {
+			throw new ActivationServiceException(String.format("L'établissement %s a des liens vers plusieurs entreprises distinctes, impossible de réactiver...",
+			                                                   FormatNumeroHelper.numeroCTBToDisplay(etablissement.getNumero())));
+		}
+		else if (idsEntreprisesTousLiens.isEmpty()) {
+			throw new ActivationServiceException(String.format("L'établissement %s n'a aucun lien connu vers une entreprise, impossible de réactiver...",
+			                                                   FormatNumeroHelper.numeroCTBToDisplay(etablissement.getNumero())));
+		}
+		else if (!principal) {
+			// il n'y a rien à faire sur les liens principaux, qui existent normalement toujours sans être annulés
+
+			// plage de valeur du lien re-créé
+			final DateRange plageNouveauLien = new DateRangeHelper.Range(dateReactivation, null);
+
+			// on valide que le nouveau lien ne serait pas en conflit avec un lien existant...
+			Collections.sort(liensNonAnnules, new DateRangeComparator<>());
+			final List<DateRange> plageLiensNonAnnules = DateRangeHelper.merge(liensNonAnnules);
+			if (plageLiensNonAnnules != null && DateRangeHelper.intersect(plageNouveauLien, plageLiensNonAnnules)) {
+				throw new ActivationServiceException(String.format("La date de réactivation au %s entre en conflit avec un lien d'activité économique non-annulé existant.",
+				                                                   RegDateHelper.dateToDisplayString(dateReactivation)));
+			}
+
+			// et finalement on re-crée le lien d'activité économique
+			final Entreprise entreprise = (Entreprise) tiersService.getTiers(idsEntreprisesTousLiens.iterator().next());
+			final ActiviteEconomique nouveauLien = new ActiviteEconomique(plageNouveauLien.getDateDebut(), plageNouveauLien.getDateFin(), entreprise, etablissement, false);
+			tiersService.addRapport(nouveauLien, entreprise, etablissement);
+		}
+
+		_reactiveTiers(etablissement, dateReactivation);
 	}
 }
