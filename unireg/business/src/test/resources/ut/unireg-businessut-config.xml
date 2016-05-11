@@ -17,7 +17,7 @@
 	<!-- Identification des PM -->
 
 	<bean id="motsReservesIdentificationPM" class="ch.vd.uniregctb.common.TokenSetFactoryBean$StringSet">
-		<property name="elements" value="de la l le du sa sàrl gmbh ag"/>
+		<property name="elements" value="de, la, l, le, du, sa, sàrl, gmbh, ag, en liquidation"/>
 	</bean>
 
 	<bean id="caracteresSpeciauxIdentificationPM" class="ch.vd.uniregctb.common.TokenSetFactoryBean$StringSet">
