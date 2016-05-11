@@ -1,5 +1,7 @@
 package ch.vd.uniregctb.indexer.tiers;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 
@@ -15,10 +17,13 @@ import ch.vd.uniregctb.declaration.Periodicite;
 import ch.vd.uniregctb.tiers.AutreCommunaute;
 import ch.vd.uniregctb.tiers.ContactImpotSource;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
+import ch.vd.uniregctb.tiers.Entreprise;
+import ch.vd.uniregctb.tiers.Etablissement;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.TiersCriteria;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.type.CategorieImpotSource;
+import ch.vd.uniregctb.type.FormeJuridiqueEntreprise;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.PeriodiciteDecompte;
 import ch.vd.uniregctb.type.TypeAdresseTiers;
@@ -131,7 +136,6 @@ public class DebiteurPrestationImposableIndexableTest extends BusinessTest {
 	}
 
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testIndexationDebiteurEtEntreprise() throws Exception {
 
 		/* Création d'un contribuable et d'un débiteur lié au contribuable */
@@ -139,108 +143,245 @@ public class DebiteurPrestationImposableIndexableTest extends BusinessTest {
 			Long noCtbEnt;
 			Long noCtbDpi;
 		}
-		final Numeros numeros = new Numeros();
-		doInNewTransaction(new TxCallback<Object>() {
+
+		final Numeros numeros = doInNewTransaction(new TxCallback<Numeros>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Numeros execute(TransactionStatus status) throws Exception {
 
-				DebiteurPrestationImposable dpi = new DebiteurPrestationImposable();
-				dpi.addPeriodicite(new Periodicite(PeriodiciteDecompte.MENSUEL,null,date(2000,1,1),null));
-				dpi = (DebiteurPrestationImposable) dao.save(dpi);
-				numeros.noCtbDpi = dpi.getNumero();
+				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.ADMINISTRATEURS, PeriodiciteDecompte.MENSUEL, date(2011, 1, 1));
 
-				AutreCommunaute ent = new AutreCommunaute();
-				ent.setNom("Nestle");
-				ent.setComplementNom("Orbe");
-				ent = (AutreCommunaute) dao.save(ent);
-				numeros.noCtbEnt = ent.getNumero();
+				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+				addRaisonSociale(entreprise, date(2011, 1, 1), null, "Toto SA");
+				addFormeJuridique(entreprise, date(2011, 1, 1), null, FormeJuridiqueEntreprise.SA);
 
-				ContactImpotSource contact = new ContactImpotSource(RegDate.get(), null, ent, dpi);
+				final ContactImpotSource contact = new ContactImpotSource(RegDate.get(), null, entreprise, dpi);
 				hibernateTemplate.merge(contact);
 
-				return null;
+				final Numeros numeros = new Numeros();
+				numeros.noCtbDpi = dpi.getNumero();
+				numeros.noCtbEnt = entreprise.getNumero();
+				return numeros;
 			}
 		});
-
-		{
-			final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) dao.get(numeros.noCtbDpi);
-			assertNotNull(dpi);		
-			assertEquals(PeriodiciteDecompte.MENSUEL, dpi.getPeriodiciteAt(RegDate.get()).getPeriodiciteDecompte());
-			assertNotNull(tiersService.getContribuable(dpi));
-
-			final AutreCommunaute ac = (AutreCommunaute) dao.get(numeros.noCtbEnt);
-			assertNotNull(ac);
-			assertEquals("Nestle", ac.getNom());
-			assertEquals("Orbe", ac.getComplementNom());
-
-			final Set<DebiteurPrestationImposable> debiteurs = tiersService.getDebiteursPrestationImposable(ac);
-			assertEquals(1, debiteurs.size());
-
-			final DebiteurPrestationImposable debiteur = debiteurs.iterator().next();
-			assertSame(dpi, debiteur);
-		}
 
 		globalTiersIndexer.sync();
 
-		/* On vérifie que le débiteur et le contribuables sont bien indexés */
+		// On vérifie que le débiteur et le contribuables sont bien indexés
 		{
-			TiersCriteria criteria = new TiersCriteria();
-			criteria.setNomRaison("Nestle");
+			final TiersCriteria criteria = new TiersCriteria();
+			criteria.setNomRaison("Toto");
 			final List<TiersIndexedData> resultats = globalTiersSearcher.search(criteria);
 			assertNotNull(resultats);
 			assertEquals(2, resultats.size());
+			Collections.sort(resultats, new Comparator<TiersIndexedData>() {
+				@Override
+				public int compare(TiersIndexedData o1, TiersIndexedData o2) {
+					return Long.compare(o1.getNumero(), o2.getNumero());
+				}
+			});
 
-			TiersIndexedData data0 = resultats.get(0);
-			TiersIndexedData data1;
-			if (data0.getNumero().equals(numeros.noCtbDpi)) {
-				data0 = resultats.get(0);
-				data1 = resultats.get(1);
-			}
-			else {
-				data0 = resultats.get(1);
-				data1 = resultats.get(0);
-			}
-			assertNotNull(data0);
-			assertNotNull(data1);
-
-			final TiersIndexedData dataNh = (data0.getNumero().equals(numeros.noCtbEnt) ? data0 : data1);
-			final TiersIndexedData dataDpi = (data0.getNumero().equals(numeros.noCtbEnt) ? data1 : data0);
-			assertEquals(numeros.noCtbEnt, dataNh.getNumero());
+			final TiersIndexedData dataEnt = resultats.get(0);
+			final TiersIndexedData dataDpi = resultats.get(1);
+			assertEquals(numeros.noCtbEnt, dataEnt.getNumero());
 			assertEquals(numeros.noCtbDpi, dataDpi.getNumero());
 		}
 
-		/* On vérifie que les liens sont bien établis */
-		/*
-		doInNewTransaction(new TxCallback() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-		return null;
-			}
-		});
-		*/
-
-		/// On modifie l'AutreCommunaute et on cherche sur la modif => 2 hits
+		// On modifie l'entreprise et on cherche sur la modif => 2 hits
 		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				final AutreCommunaute ac = (AutreCommunaute) dao.get(numeros.noCtbEnt);
-				assertNotNull(ac);
-				ac.setComplementNom("Vevey");
+				final Entreprise entreprise = (Entreprise) dao.get(numeros.noCtbEnt);
+				assertNotNull(entreprise);
+				tiersService.addRaisonSocialeFiscale(entreprise, "Tata SA", date(2016, 1, 1), null);
 				return null;
 			}
 		});
 
 		globalTiersIndexer.sync();
 		
-		/* On vérifie que le débiteur et le contribuables sont bien indexés */
+		// On vérifie que le débiteur et le contribuable sont bien indexés
 		{
-			TiersCriteria criteria = new TiersCriteria();
-			criteria.setNomRaison("Vevey");
+			final TiersCriteria criteria = new TiersCriteria();
+			criteria.setNomRaison("Tata");
 			final List<TiersIndexedData> resultats = globalTiersSearcher.search(criteria);
 			assertNotNull(resultats);
 			assertEquals(2, resultats.size());
 		}
+	}
 
+	@Test
+	public void testIndexationDebiteurEtEtablissementPrincipal() throws Exception {
+
+		/* Création d'un contribuable et d'un débiteur lié au contribuable */
+		final class Numeros {
+			Long noCtbEnt;
+			Long noCtbEtb;
+			Long noCtbDpi;
+		}
+		final Numeros numeros = doInNewTransaction(new TxCallback<Numeros>() {
+			@Override
+			public Numeros execute(TransactionStatus status) throws Exception {
+
+				final RegDate dateDebut = date(2011, 1, 1);
+				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.CONFERENCIERS_ARTISTES_SPORTIFS, PeriodiciteDecompte.MENSUEL, dateDebut);
+
+				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+				addRaisonSociale(entreprise, dateDebut, null, "Toto SA");
+				addFormeJuridique(entreprise, dateDebut, null, FormeJuridiqueEntreprise.SA);
+
+				final Etablissement principal = addEtablissement();
+				principal.setRaisonSociale("Toto SA");
+				addDomicileEtablissement(principal, dateDebut, null, MockCommune.Lausanne);
+				addActiviteEconomique(entreprise, principal, dateDebut, null, true);
+
+				ContactImpotSource contact = new ContactImpotSource(RegDate.get(), null, principal, dpi);
+				hibernateTemplate.merge(contact);
+
+				final Numeros numeros = new Numeros();
+				numeros.noCtbDpi = dpi.getNumero();
+				numeros.noCtbEnt = entreprise.getNumero();
+				numeros.noCtbEtb = principal.getNumero();
+				return numeros;
+			}
+		});
+
+		globalTiersIndexer.sync();
+
+		/* On vérifie que le débiteur et le contribuables sont bien indexés */
+		{
+			final TiersCriteria criteria = new TiersCriteria();
+			criteria.setNomRaison("Toto");
+			final List<TiersIndexedData> resultats = globalTiersSearcher.search(criteria);
+			assertNotNull(resultats);
+			assertEquals(3, resultats.size());
+			Collections.sort(resultats, new Comparator<TiersIndexedData>() {
+				@Override
+				public int compare(TiersIndexedData o1, TiersIndexedData o2) {
+					return Long.compare(o1.getNumero(), o2.getNumero());
+				}
+			});
+
+			final TiersIndexedData dataEntreprise = resultats.get(0);
+			final TiersIndexedData dataDpi = resultats.get(1);
+			final TiersIndexedData dataEtablissement = resultats.get(2);
+			assertEquals(numeros.noCtbEnt, dataEntreprise.getNumero());
+			assertEquals(numeros.noCtbEtb, dataEtablissement.getNumero());
+			assertEquals(numeros.noCtbDpi, dataDpi.getNumero());
+		}
+
+		// On modifie l'établissement et on cherche sur la modif => 2 hits
+		doInNewTransaction(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final Etablissement etablissement = (Etablissement) dao.get(numeros.noCtbEtb);
+				assertNotNull(etablissement);
+				etablissement.setRaisonSociale("Tata SA");
+				return null;
+			}
+		});
+
+		globalTiersIndexer.sync();
+
+		/* On vérifie que le débiteur et le contribuables sont bien indexés */
+		{
+			TiersCriteria criteria = new TiersCriteria();
+			criteria.setNomRaison("Tata");
+			final List<TiersIndexedData> resultats = globalTiersSearcher.search(criteria);
+			assertNotNull(resultats);
+			assertEquals(2, resultats.size());
+		}
+	}
+
+	@Test
+	public void testIndexationDebiteurEtEtablissementSecondaire() throws Exception {
+
+		/* Création d'un contribuable et d'un débiteur lié au contribuable */
+		final class Numeros {
+			Long noCtbEnt;
+			Long noCtbEtbPrn;
+			Long noCtbEtbSec;
+			Long noCtbDpi;
+		}
+		final Numeros numeros = doInNewTransaction(new TxCallback<Numeros>() {
+			@Override
+			public Numeros execute(TransactionStatus status) throws Exception {
+
+				final RegDate dateDebut = date(2011, 1, 1);
+				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.CONFERENCIERS_ARTISTES_SPORTIFS, PeriodiciteDecompte.MENSUEL, dateDebut);
+
+				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+				addRaisonSociale(entreprise, dateDebut, null, "Toto SA");
+				addFormeJuridique(entreprise, dateDebut, null, FormeJuridiqueEntreprise.SA);
+
+				final Etablissement principal = addEtablissement();
+				principal.setRaisonSociale("Toto SA");
+				addDomicileEtablissement(principal, dateDebut, null, MockCommune.Lausanne);
+				addActiviteEconomique(entreprise, principal, dateDebut, null, true);
+
+				final Etablissement secondaire = addEtablissement();
+				secondaire.setRaisonSociale("Toto SA, Orbe");
+				addDomicileEtablissement(secondaire, dateDebut, null, MockCommune.Orbe);
+				addActiviteEconomique(entreprise, secondaire, dateDebut, null, false);
+
+				ContactImpotSource contact = new ContactImpotSource(RegDate.get(), null, secondaire, dpi);
+				hibernateTemplate.merge(contact);
+
+				final Numeros numeros = new Numeros();
+				numeros.noCtbDpi = dpi.getNumero();
+				numeros.noCtbEnt = entreprise.getNumero();
+				numeros.noCtbEtbPrn = principal.getNumero();
+				numeros.noCtbEtbSec = secondaire.getNumero();
+				return numeros;
+			}
+		});
+
+		globalTiersIndexer.sync();
+
+		/* On vérifie que le débiteur et le contribuables sont bien indexés */
+		{
+			final TiersCriteria criteria = new TiersCriteria();
+			criteria.setNomRaison("Toto");
+			final List<TiersIndexedData> resultats = globalTiersSearcher.search(criteria);
+			assertNotNull(resultats);
+			assertEquals(4, resultats.size());
+			Collections.sort(resultats, new Comparator<TiersIndexedData>() {
+				@Override
+				public int compare(TiersIndexedData o1, TiersIndexedData o2) {
+					return Long.compare(o1.getNumero(), o2.getNumero());
+				}
+			});
+
+			final TiersIndexedData dataEntreprise = resultats.get(0);
+			final TiersIndexedData dataDpi = resultats.get(1);
+			final TiersIndexedData dataEtablissementPrincipal = resultats.get(2);
+			final TiersIndexedData dataEtablissementSecondaire = resultats.get(3);
+			assertEquals(numeros.noCtbEnt, dataEntreprise.getNumero());
+			assertEquals(numeros.noCtbEtbPrn, dataEtablissementPrincipal.getNumero());
+			assertEquals(numeros.noCtbEtbSec, dataEtablissementSecondaire.getNumero());
+			assertEquals(numeros.noCtbDpi, dataDpi.getNumero());
+		}
+
+		// On modifie l'établissement et on cherche sur la modif => 2 hits
+		doInNewTransaction(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final Etablissement etablissement = (Etablissement) dao.get(numeros.noCtbEtbSec);
+				assertNotNull(etablissement);
+				etablissement.setRaisonSociale("Tata SA");
+				return null;
+			}
+		});
+
+		globalTiersIndexer.sync();
+
+		/* On vérifie que le débiteur et le contribuables sont bien indexés */
+		{
+			TiersCriteria criteria = new TiersCriteria();
+			criteria.setNomRaison("Tata");
+			final List<TiersIndexedData> resultats = globalTiersSearcher.search(criteria);
+			assertNotNull(resultats);
+			assertEquals(2, resultats.size());
+		}
 	}
 
 	/**
