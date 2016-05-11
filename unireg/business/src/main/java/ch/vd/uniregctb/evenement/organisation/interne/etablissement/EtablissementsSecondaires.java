@@ -95,6 +95,13 @@ public class EtablissementsSecondaires extends EvenementOrganisationInterneDeTra
 			closeEtablissement(aFermer, dateFermeture, warnings, suivis);
 		}
 		for (SiteOrganisation aCreer : sitesACreer) {
+			final Domicile domicile = aCreer.getDomicile(dateApres);
+			/* On ne traite que des établissements VD. SIFISC-19086 */
+			if (domicile.getTypeAutoriteFiscale() != TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
+				suivis.addSuivi(String.format("L'établissement secondaire civil %d est hors canton et ne sera donc pas créé dans Unireg.",
+				                              aCreer.getNumeroSite()));
+				continue;
+			}
 			/*
 				Ne pas créer les établissements secondaires non succursales
 			 */
@@ -149,6 +156,10 @@ public class EtablissementsSecondaires extends EvenementOrganisationInterneDeTra
 					&& nouveauDomicile.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
 				throw new EvenementOrganisationException("L'arrivée HC/HS d'une succursale n'est pas censé se produire.");
 			}
+			/* On ne traite que des établissements VD. SIFISC-19086 */
+			if (ancienDomicile.getTypeAutoriteFiscale() != TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
+				continue;
+			}
 /* Si des fois ça peut quand même se produire, le code pour l'application des surcharges est là.
 			SiteOrganisation quiDemenage = getOrganisation().getSiteForNo(demenagement.getEtablissement().getNumeroEtablissement());
 			if (quiDemenage.isInscritAuRC(dateApres)) {
@@ -188,6 +199,8 @@ public class EtablissementsSecondaires extends EvenementOrganisationInterneDeTra
 		}
 
 		adapteForsSecondairesPourEtablissementsVD(getEntreprise(), null, warnings, suivis);
+
+		raiseStatusTo(HandleStatus.TRAITE);
 	}
 
 	@Override
