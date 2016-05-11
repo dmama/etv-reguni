@@ -89,6 +89,13 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 		}
 	};
 
+	private static final StringRenderer<String> NO_IDE_RENDERER = new StringRenderer<String>() {
+		@Override
+		public String toString(String ide) {
+			return FormatNumeroHelper.formatNumIDE(ide);
+		}
+	};
+
 	private static final StringRenderer<SiteOrganisation> SITE_RENDERER = new StringRenderer<SiteOrganisation>() {
 		@Override
 		public String toString(SiteOrganisation site) {
@@ -220,7 +227,7 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 			final String message = String.format("%s (%s%s) identifiée sur la base du numéro civil %d (numéro cantonal).",
 			                                     entreprise.toString(),
 			                                     raisonSocialeCivile,
-			                                     noIdeCivil != null ? ", IDE: " + noIdeCivil : "",
+			                                     noIdeCivil != null ? ", IDE: " + NO_IDE_RENDERER.toString(noIdeCivil) : StringUtils.EMPTY,
 			                                     organisation.getNumeroOrganisation());
 			Audit.info(event.getNoEvenement(), message);
 			evenements.add(new MessagePreExecution(event, organisation, entreprise, context, options, message));
@@ -324,7 +331,7 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 	}
 
 	private String attributsCivilsAffichage(@NotNull String raisonSociale, @Nullable String noIde) {
-		return String.format("%s%s", raisonSociale, noIde != null ? ", IDE: " + noIde : "");
+		return String.format("%s%s", raisonSociale, noIde != null ? ", IDE: " + NO_IDE_RENDERER.toString(noIde) : StringUtils.EMPTY);
 	}
 	private void panicNotFoundAfterIdent(Long found, String organisationDescription) throws EvenementOrganisationException {
 		throw new EvenementOrganisationException(String.format("L'identifiant de tiers %s retourné par le service d'identification ne correspond à aucun tiers! Organisation recherchée: %s",

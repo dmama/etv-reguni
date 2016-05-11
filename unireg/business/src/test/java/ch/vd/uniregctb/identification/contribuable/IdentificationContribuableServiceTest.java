@@ -65,6 +65,7 @@ import ch.vd.uniregctb.tiers.TiersCriteria;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.CategorieIdentifiant;
+import ch.vd.uniregctb.type.FormeJuridiqueEntreprise;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
@@ -162,7 +163,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		service.setTransactionManager(transactionManager);
 		service.setServiceUpi(serviceUpi);
 		service.setCaracteresSpeciauxIdentificationEntreprise(new LinkedHashSet<>(Arrays.asList(",", ";", ".", ",", "-")));
-		service.setMotsReservesIdentificationEntreprise(new LinkedHashSet<>(Arrays.asList("de", "du", "des", "le", "la", "les", "sa", "sàrl", "gmbh", "ag")));
+		service.setMotsReservesIdentificationEntreprise(new LinkedHashSet<>(Arrays.asList("de", "du", "des", "le", "la", "les", "sa", "sàrl", "gmbh", "ag", "en liquidation")));
 
 		messageHandler = new TestMessageHandler();
 		service.setMessageHandler(messageHandler);
@@ -5198,6 +5199,89 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 					Assert.assertNotNull(found);
 					Assert.assertEquals(Collections.singletonList(pmId), found);
 				}
+			}
+		});
+	}
+
+	/**
+	 * [SIFISC-18740] bon numéro IDE, mais raison sociale connue dans Unireg "TOTO", alors que "TOTO en liquidation" vient de l'extérieur...
+	 */
+	@Test
+	public void testIdentificationParNumeroIdeMaisRaisonSocialeEnLiquidation() throws Exception {
+
+		final RegDate dateDebut = date(2005, 4, 21);
+		final String raisonSocialeConnueUnireg = "RNJ";
+		final String raisonSocialeExterieure = "RNJ Sàrl en liquidation";       // "SARL" et "en liquidation" sont enlevés tous les deux
+		final String numeroIDE = "CHE113343438";
+
+		// mise en place fiscale
+		final long pmId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+				addRaisonSociale(entreprise, dateDebut, null, raisonSocialeConnueUnireg);
+				addFormeJuridique(entreprise, dateDebut, null, FormeJuridiqueEntreprise.SARL);
+				addIdentificationEntreprise(entreprise, numeroIDE);
+				return entreprise.getNumero();
+			}
+		});
+
+		// on laisse le temps à l'indexation de faire son travail
+		globalTiersIndexer.sync();
+
+		// demande d'identification
+		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus status) throws Exception {
+				final CriteresEntreprise criteres = new CriteresEntreprise();
+				criteres.setRaisonSociale(raisonSocialeExterieure);
+				criteres.setIde(numeroIDE);
+
+				final List<Long> resultat = service.identifieEntreprise(criteres);
+				Assert.assertNotNull(resultat);
+				Assert.assertEquals(1, resultat.size());
+				Assert.assertEquals((Long) pmId, resultat.get(0));
+			}
+		});
+	}
+
+	/**
+	 * [SIFISC-18740] bon numéro IDE, mais raison sociale connue dans Unireg "TOTO", alors que "TOTO en liquidation" vient de l'extérieur...
+	 */
+	@Test
+	public void testIdentificationParNumeroIdeMaisRaisonSocialeAvecLiquidation() throws Exception {
+
+		final RegDate dateDebut = date(2005, 4, 21);
+		final String raisonSocialeConnueUnireg = "RNJ";
+		final String raisonSocialeExterieure = "RNJ liquidation";       // "liquidation" tout seul ne doit pas être enlevé
+		final String numeroIDE = "CHE113343438";
+
+		// mise en place fiscale
+		final long pmId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+				addRaisonSociale(entreprise, dateDebut, null, raisonSocialeConnueUnireg);
+				addFormeJuridique(entreprise, dateDebut, null, FormeJuridiqueEntreprise.SARL);
+				addIdentificationEntreprise(entreprise, numeroIDE);
+				return entreprise.getNumero();
+			}
+		});
+
+		// on laisse le temps à l'indexation de faire son travail
+		globalTiersIndexer.sync();
+
+		// demande d'identification
+		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus status) throws Exception {
+				final CriteresEntreprise criteres = new CriteresEntreprise();
+				criteres.setRaisonSociale(raisonSocialeExterieure);
+				criteres.setIde(numeroIDE);
+
+				final List<Long> resultat = service.identifieEntreprise(criteres);
+				Assert.assertNotNull(resultat);
+				Assert.assertEquals(0, resultat.size());
 			}
 		});
 	}

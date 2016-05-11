@@ -48,6 +48,7 @@ import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.common.DefaultThreadFactory;
 import ch.vd.uniregctb.common.DefaultThreadNameGenerator;
+import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.common.NumeroCtbStringRenderer;
 import ch.vd.uniregctb.common.ParamPagination;
 import ch.vd.uniregctb.common.StringComparator;
@@ -362,10 +363,14 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 		final List<TiersIndexedData> indexedIde = findByIde(criteres);
 		if (indexedIde != null && indexedIde.size() == 1) {
 			// 1 seul résultat -> c'est peut-être lui
+			LOGGER.info("L'identification par numéro IDE a fourni un résultat : " + FormatNumeroHelper.numeroCTBToDisplay(indexedIde.get(0).getNumero()));
 			if (checkRaisonSocialeEntreprise(criteres.getRaisonSociale(), indexedIde.get(0))) {
 				// c'est lui !
 				LOGGER.info("Indentification par phase IDE réussie.");
 				return buildIdListFromIndex(indexedIde);
+			}
+			else {
+				LOGGER.info("Identification par numéro IDE rejetée pour cause de raisons sociales différentes");
 			}
 		}
 
@@ -407,19 +412,23 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 		return knownRaisonSociale != null && containedIn(knownRaisonSociale, askedRaisonSociale);
 	}
 
-	private static boolean containedIn(String container, String containee) {
+	private boolean containedIn(String container, String containee) {
 		final String normalizedContainer = normalize(container);
 		final String normalizedContainee = normalize(containee);
 		return normalizedContainer.contains(normalizedContainee);
 	}
 
+	/**
+	 * @param str chaîne de caractères source
+	 * @return chaîne de caractères dans laquelle tout est en minuscules, sans espaces multiples ni caractères accentués
+	 */
 	@NotNull
-	private static String normalize(String str) {
-		// on enlève les accents, on met tout en minuscules, et on enlèves les espaces multiples
+	private String normalize(String str) {
 		if (str == null) {
 			return StringUtils.EMPTY;
 		}
-		final String lowercases = StringComparator.toLowerCaseWithoutAccent(str);
+		final String strippedDown = enleverMotsReserves(franciser(enleverCaracteresSpeciaux(str, null), null), null);
+		final String lowercases = StringComparator.toLowerCaseWithoutAccent(strippedDown);
 		return lowercases.replaceAll("\\s+", " ").trim();
 	}
 

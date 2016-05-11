@@ -16,7 +16,7 @@ public abstract class TokenSetFactoryBean<T> implements FactoryBean<Set<T>>, Ini
 
 	private final Class<T> elementClass;
 
-	private String separatorRegExp = "[\\s,;]+";
+	private String separatorRegExp = "[,;]+";
 	private String elementString;
 	private Set<T> elements;
 
@@ -88,7 +88,7 @@ public abstract class TokenSetFactoryBean<T> implements FactoryBean<Set<T>>, Ini
 
 		@Override
 		protected String buildToken(Class<String> clazz, String token) {
-			return token;
+			return StringUtils.trimToEmpty(token);
 		}
 	}
 
@@ -103,7 +103,7 @@ public abstract class TokenSetFactoryBean<T> implements FactoryBean<Set<T>>, Ini
 
 		@Override
 		protected T buildToken(Class<T> clazz, String token) {
-			return Enum.valueOf(clazz, token);
+			return Enum.valueOf(clazz, StringUtils.trimToEmpty(token));
 		}
 	}
 }

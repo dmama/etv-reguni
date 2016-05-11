@@ -58,10 +58,10 @@ public class TokenSetFactoryBeanTest extends WithoutSpringTest {
 		check(new String[] {"TOTO"}, getStringSet(" ,TOTO"));
 		check(new String[] {"TOTO"}, getStringSet(" ;TOTO, , "));
 
-		check(new String[] {"TOTO", "TATA"}, getStringSet("TOTO TATA"));
 		check(new String[] {"TOTO", "TATA"}, getStringSet("TOTO,TATA"));
 		check(new String[] {"TOTO", "TATA"}, getStringSet("TOTO;TATA"));
 		check(new String[] {"TOTO", "TATA"}, getStringSet(" ;TOTO, , TATA, "));
+		check(new String[] {"TOTO", "TATA"}, getStringSet(" ;TOTO , , TATA, "));
 	}
 
 	public enum PourTest {
@@ -94,10 +94,10 @@ public class TokenSetFactoryBeanTest extends WithoutSpringTest {
 		check(new PourTest[] {PourTest.ONE}, getEnumSet(PourTest.class, " ,ONE"));
 		check(new PourTest[] {PourTest.ONE}, getEnumSet(PourTest.class, " ;ONE, , "));
 
-		check(new PourTest[] {PourTest.ONE, PourTest.THREE}, getEnumSet(PourTest.class, "THREE ONE"));
+		check(new PourTest[] {PourTest.ONE, PourTest.THREE}, getEnumSet(PourTest.class, "THREE, ONE"));
 		check(new PourTest[] {PourTest.ONE, PourTest.THREE}, getEnumSet(PourTest.class, "ONE,THREE"));
 		check(new PourTest[] {PourTest.ONE, PourTest.THREE}, getEnumSet(PourTest.class, "THREE;ONE"));
-		check(new PourTest[] {PourTest.ONE, PourTest.THREE}, getEnumSet(PourTest.class, ",, ;THREE ONE;"));
+		check(new PourTest[] {PourTest.ONE, PourTest.THREE}, getEnumSet(PourTest.class, ",, ; THREE ; ONE;"));
 
 		try {
 			getEnumSet(PourTest.class, "FOUR");
