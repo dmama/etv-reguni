@@ -51,23 +51,26 @@ public class FusionScissionStrategy extends AbstractOrganisationStrategy {
 
 		final Map<RegDate, List<PublicationBusiness>> publications = organisation.getSitePrincipal(dateApres).getPayload().getPublications();
 		if (publications != null && !publications.isEmpty()) {
-			for (PublicationBusiness publication : publications.get(event.getDateEvenement())) {
-				if (publication.getTypeDeFusion() != null) {
-					switch (publication.getTypeDeFusion()) {
-					case FUSION_SOCIETES_COOPERATIVES:
-					case FUSION_SOCIETES_ANONYMES:
-					case FUSION_SOCIETES_ANONYMES_ET_COMMANDITE_PAR_ACTIONS:
-					case AUTRE_FUSION:
-					case FUSION_INTERNATIONALE:
-					case FUSION_ART_25_LFUS:
-					case FUSION_INSTITUTIONS_DE_PREVOYANCE:
-					case FUSION_SUISSE_VERS_ETRANGER:
-						return new Fusion(event, organisation, entreprise, context, options);
-					case SCISSION_ART_45_LFUS:
-					case SCISSION_SUISSE_VERS_ETRANGER:
-						return new Scission(event, organisation, entreprise, context, options);
-					default:
-						return new TraitementManuel(event, organisation, entreprise, context, options, String.format("Type de fusion inconnu: %s", publication.getTypeDeFusion()));
+			final List<PublicationBusiness> publicationBusinessesPourDate = publications.get(event.getDateEvenement());
+			if (publicationBusinessesPourDate != null) {
+				for (PublicationBusiness publication : publicationBusinessesPourDate) {
+					if (publication.getTypeDeFusion() != null) {
+						switch (publication.getTypeDeFusion()) {
+						case FUSION_SOCIETES_COOPERATIVES:
+						case FUSION_SOCIETES_ANONYMES:
+						case FUSION_SOCIETES_ANONYMES_ET_COMMANDITE_PAR_ACTIONS:
+						case AUTRE_FUSION:
+						case FUSION_INTERNATIONALE:
+						case FUSION_ART_25_LFUS:
+						case FUSION_INSTITUTIONS_DE_PREVOYANCE:
+						case FUSION_SUISSE_VERS_ETRANGER:
+							return new Fusion(event, organisation, entreprise, context, options);
+						case SCISSION_ART_45_LFUS:
+						case SCISSION_SUISSE_VERS_ETRANGER:
+							return new Scission(event, organisation, entreprise, context, options);
+						default:
+							return new TraitementManuel(event, organisation, entreprise, context, options, String.format("Type de fusion inconnu: %s", publication.getTypeDeFusion()));
+						}
 					}
 				}
 			}
