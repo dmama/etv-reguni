@@ -191,9 +191,10 @@ public interface TiersService {
 	List<DomicileHisto> getDomiciles(@NotNull Etablissement etablissement, boolean aussiAnnules);
 
 	/**
-	 * @return la liste des lieux successifs de domicile d'un établissement durant sa période d'activité
+	 * Calcul la liste des lieux successifs de domicile d'un établissement durant sa période d'activité, en prenant soin
+	 * de marquer comme CIVILs les périodes qui sont des surcharges correctives des données civiles.
 	 */
-	List<DomicileHisto> getDomicilesEnActivite(@NotNull Etablissement etablissement, boolean aussiAnnules);
+	List<DomicileHisto> getDomicilesEnActiviteSourceReelle(@NotNull Etablissement etablissement, boolean aussiAnnules);
 
 	/**
 	 * @param entreprise une entreprise

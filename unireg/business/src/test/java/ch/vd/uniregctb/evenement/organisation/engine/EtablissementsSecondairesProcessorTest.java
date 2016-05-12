@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -31,11 +32,16 @@ import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalDAO;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalFor;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationErreur;
+import ch.vd.uniregctb.tiers.CapitalFiscalEntreprise;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.Etablissement;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
+import ch.vd.uniregctb.tiers.FormeJuridiqueFiscaleEntreprise;
+import ch.vd.uniregctb.tiers.MontantMonetaire;
+import ch.vd.uniregctb.tiers.RaisonSocialeFiscaleEntreprise;
 import ch.vd.uniregctb.type.EtatEvenementOrganisation;
+import ch.vd.uniregctb.type.FormeJuridiqueEntreprise;
 import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
@@ -576,6 +582,7 @@ public class EtablissementsSecondairesProcessorTest extends AbstractEvenementOrg
 				donneesRC.changeDateRadiation(date(2015, 7, 8), date(2015, 7, 5));
 				final MockDonneesRegistreIDE donneesRegistreIDE = nouveauSiteSecondaire.getDonneesRegistreIDE();
 				donneesRegistreIDE.changeStatus(date(2015, 7, 8), StatusRegistreIDE.RADIE);
+
 				MockSiteOrganisation nouveauSiteSecondaire2 = MockSiteOrganisationFactory.addSite(noSite3, org, date(2015, 7, 8), null, "Synergy Distribution Lausanne SA",
 				                                                                                  FormeLegale.N_0106_SOCIETE_ANONYME, false, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
 				                                                                                  MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF, date(2015, 7, 5),
@@ -2050,6 +2057,189 @@ public class EtablissementsSecondairesProcessorTest extends AbstractEvenementOrg
 				                             final List<EvenementFiscal> evtsFiscaux = evtFiscalDAO.getAll();
 				                             Assert.assertNotNull(evtsFiscaux);
 				                             Assert.assertEquals(0, evtsFiscaux.size()); // aucun for secondaire créé
+
+				                             return null;
+			                             }
+		                             }
+		);
+	}
+
+	/*
+		JIRA SIFISC-19165 : cas réel de problème de gestion des fors secondaires.
+	 */
+	@Test(timeout = 1000000L)
+	public void testPATPhotogrammetrieChgmtEtab() throws Exception {
+
+		// Mise en place service mock
+		final Long noOrganisation = 101671614L;
+		final Long noSite = 101392713L;
+		final Long noSite2 = 101043478L;
+
+		serviceOrganisation.setUp(new MockServiceOrganisation() {
+			@Override
+			protected void init() {
+				final MockOrganisation org =
+						MockOrganisationFactory.createOrganisation(noOrganisation, noSite, "PAT Photogrammétrie SA", date(2015, 12, 5), null, FormeLegale.N_0106_SOCIETE_ANONYME,
+						                                           TypeAutoriteFiscale.COMMUNE_HC, MockCommune.Sion.getNoOFS(),
+						                                           StatusInscriptionRC.ACTIF, date(1990, 11, 8),
+						                                           StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE);
+
+				MockSiteOrganisation siteSecondaire = MockSiteOrganisationFactory.addSite(noSite2, org, date(2015, 12, 5), null, "PAT Photogrammétrie S.A. succursale de Prilly",
+				                                                                                 FormeLegale.N_0151_SUCCURSALE_SUISSE_AU_RC, false,
+				                                                                                 TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Prilly.getNoOFS(),
+				                                                                                 StatusInscriptionRC.ACTIF, date(1992, 6, 15),
+				                                                                                 StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE);
+				siteSecondaire.changeNom(date(2016, 4, 5), "PAT Photogrammétrie SA succursale vaudoise");
+				siteSecondaire.changeDomicile(date(2016, 4, 5), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.JouxtensMezery.getNoOFS());
+				addOrganisation(org);
+
+			}
+		});
+
+		// Création de l'entreprise
+
+		doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus transactionStatus) {
+				// Entreprise et établissement principal VS
+				Entreprise entreprise = addEntrepriseConnueAuCivil(noOrganisation);
+				entreprise.addDonneeCivile(new RaisonSocialeFiscaleEntreprise(date(1990, 11, 9), date(2015, 12, 4), "PAT Photogrammétrie SA"));
+				entreprise.addDonneeCivile(new FormeJuridiqueFiscaleEntreprise(date(1990, 11, 9), date(2015, 12, 4), FormeJuridiqueEntreprise.SA));
+				entreprise.addDonneeCivile(new CapitalFiscalEntreprise(date(1990, 11, 9), date(2015, 12, 4), new MontantMonetaire(150000L, "CHF")));
+
+				Etablissement ePrincipal = addEtablissement();
+				ePrincipal.setNumeroEtablissement(noSite);
+
+				addDomicileEtablissement(ePrincipal, date(1990, 11, 9),  date(2008, 12, 17), MockCommune.Conthey);
+				addDomicileEtablissement(ePrincipal, date(2008, 12, 18), date(2015, 12, 4), MockCommune.Sion);
+
+				addActiviteEconomique(entreprise, ePrincipal, date(1990, 11, 9), null, true);
+
+				addRegimeFiscalVD(entreprise, date(1990, 11, 9), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addRegimeFiscalCH(entreprise, date(1990, 11, 9), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+
+				addForPrincipal(entreprise, date(1990, 11, 9), MotifFor.DEBUT_EXPLOITATION, date(2008, 12, 17), MotifFor.DEMENAGEMENT_SIEGE,
+				                MockCommune.Conthey.getNoOFS(), TypeAutoriteFiscale.COMMUNE_HC, MotifRattachement.DOMICILE, GenreImpot.BENEFICE_CAPITAL);
+				addForPrincipal(entreprise, date(2008, 12, 18), MotifFor.DEMENAGEMENT_SIEGE, null, null,
+				                MockCommune.Sion.getNoOFS(), TypeAutoriteFiscale.COMMUNE_HC, MotifRattachement.DOMICILE, GenreImpot.BENEFICE_CAPITAL);
+
+				// Etablissements secondaires VD
+
+				// Dans les données issues de la migration, on a l'établissement qui est doublonné.
+
+				// D'abord l'ancien
+				Etablissement eSecondaire = addEtablissement();
+				eSecondaire.setRaisonSociale("PAT Photogrammétrie S.A. succursale de Pully");
+
+				addDomicileEtablissement(eSecondaire, date(1992, 6, 15), date(2000, 9, 6), MockCommune.Pully);
+
+				addActiviteEconomique(entreprise, eSecondaire, date(1992, 6, 15), null, false);
+
+				addForSecondaire(entreprise, date(1992, 6, 15), MotifFor.DEBUT_EXPLOITATION, date(2000, 9, 6), MotifFor.FIN_EXPLOITATION,
+				                 MockCommune.Pully.getNoOFS(), MotifRattachement.ETABLISSEMENT_STABLE, GenreImpot.BENEFICE_CAPITAL);
+
+				// Ensuite le nouveau. Les gens de l'ACI on créé un doublon lors
+				Etablissement eSecondaire2 = addEtablissement();
+				eSecondaire2.setNumeroEtablissement(noSite2);
+				eSecondaire2.setRaisonSociale("PAT Photogrammétrie S.A. succursale de Prilly");
+
+				addDomicileEtablissement(eSecondaire2, date(2000, 9, 6), date(2015, 12, 4), MockCommune.Prilly);
+
+				addActiviteEconomique(entreprise, eSecondaire2, date(2000, 9, 6), null, false);
+
+				addForSecondaire(entreprise, date(2000, 9, 6), MotifFor.DEBUT_EXPLOITATION,
+				                 MockCommune.Prilly.getNoOFS(), MotifRattachement.ETABLISSEMENT_STABLE, GenreImpot.BENEFICE_CAPITAL);
+
+				return entreprise.getNumero();
+			}
+		});
+
+		// Création de l'événement
+		final Long noEvenement = 508002L;
+
+		// Persistence événement
+		doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus transactionStatus) {
+				final EvenementOrganisation event = createEvent(noEvenement, noOrganisation, TypeEvenementOrganisation.IDE_RADIATION, date(2016, 4, 5), A_TRAITER);
+				return hibernateTemplate.merge(event).getId();
+			}
+		});
+
+		// Traitement synchrone de l'événement
+		traiterEvenements(noOrganisation);
+
+		// Vérification du traitement de l'événement
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			                             @Override
+			                             public Object doInTransaction(TransactionStatus status) {
+
+				                             final EvenementOrganisation evt = getUniqueEvent(noEvenement);
+				                             Assert.assertNotNull(evt);
+				                             Assert.assertEquals(EtatEvenementOrganisation.TRAITE, evt.getEtat());
+
+				                             final Entreprise entreprise = tiersDAO.getEntrepriseByNumeroOrganisation(evt.getNoOrganisation());
+
+				                             final Etablissement etablissementPrincipal = tiersService.getEtablissementsPrincipauxEntreprise(entreprise).get(0).getPayload();
+				                             Assert.assertNotNull(etablissementPrincipal);
+				                             Assert.assertEquals(date(1990, 11, 9), etablissementPrincipal.getRapportObjetValidAt(date(1990, 11, 9), TypeRapportEntreTiers.ACTIVITE_ECONOMIQUE).getDateDebut());
+				                             final Etablissement etablissementSecondaire = tiersService.getEtablissementsSecondairesEntreprise(entreprise).get(0).getPayload();
+				                             Assert.assertNotNull(etablissementSecondaire);
+
+				                             {
+					                             ForFiscalPrincipal forFiscalPrincipal = entreprise.getDernierForFiscalPrincipal();
+					                             Assert.assertEquals(date(2008, 12, 18), forFiscalPrincipal.getDateDebut());
+					                             Assert.assertEquals(null, forFiscalPrincipal.getDateFin());
+					                             Assert.assertEquals(GenreImpot.BENEFICE_CAPITAL, forFiscalPrincipal.getGenreImpot());
+					                             Assert.assertEquals(MockCommune.Sion.getNoOFS(), forFiscalPrincipal.getNumeroOfsAutoriteFiscale().intValue());
+					                             Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_HC, forFiscalPrincipal.getTypeAutoriteFiscale());
+					                             Assert.assertEquals(MotifRattachement.DOMICILE, forFiscalPrincipal.getMotifRattachement());
+					                             Assert.assertEquals(MotifFor.DEMENAGEMENT_SIEGE, forFiscalPrincipal.getMotifOuverture());
+				                             }
+				                             {
+					                             final Map<Integer, List<ForFiscalSecondaire>> forsFiscauxSecondairesActifsSortedMapped = entreprise.getForsFiscauxSecondairesActifsSortedMapped();
+
+					                             final List<ForFiscalSecondaire> forFiscalSecondairesPully = forsFiscauxSecondairesActifsSortedMapped.get(MockCommune.Pully.getNoOFS());
+					                             {
+						                             ForFiscalSecondaire forFiscalSecondaire = forFiscalSecondairesPully.get(0);
+						                             Assert.assertEquals(date(1992, 6, 15), forFiscalSecondaire.getDateDebut());
+						                             Assert.assertEquals(date(2000, 9, 6), forFiscalSecondaire.getDateFin());
+						                             Assert.assertEquals(GenreImpot.BENEFICE_CAPITAL, forFiscalSecondaire.getGenreImpot());
+						                             Assert.assertEquals(MockCommune.Pully.getNoOFS(), forFiscalSecondaire.getNumeroOfsAutoriteFiscale().intValue());
+						                             Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, forFiscalSecondaire.getTypeAutoriteFiscale());
+						                             Assert.assertEquals(MotifRattachement.ETABLISSEMENT_STABLE, forFiscalSecondaire.getMotifRattachement());
+						                             Assert.assertEquals(MotifFor.DEBUT_EXPLOITATION, forFiscalSecondaire.getMotifOuverture());
+						                             Assert.assertEquals(MotifFor.FIN_EXPLOITATION, forFiscalSecondaire.getMotifFermeture());
+					                             }
+					                             final List<ForFiscalSecondaire> forFiscalSecondairesPrilly = forsFiscauxSecondairesActifsSortedMapped.get(MockCommune.Prilly.getNoOFS());
+					                             {
+						                             ForFiscalSecondaire forFiscalSecondaire = forFiscalSecondairesPrilly.get(0);
+						                             Assert.assertEquals(date(2000, 9, 6), forFiscalSecondaire.getDateDebut());
+						                             Assert.assertEquals(date(2016, 4, 4), forFiscalSecondaire.getDateFin());
+						                             Assert.assertEquals(GenreImpot.BENEFICE_CAPITAL, forFiscalSecondaire.getGenreImpot());
+						                             Assert.assertEquals(MockCommune.Prilly.getNoOFS(), forFiscalSecondaire.getNumeroOfsAutoriteFiscale().intValue());
+						                             Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, forFiscalSecondaire.getTypeAutoriteFiscale());
+						                             Assert.assertEquals(MotifRattachement.ETABLISSEMENT_STABLE, forFiscalSecondaire.getMotifRattachement());
+						                             Assert.assertEquals(MotifFor.DEBUT_EXPLOITATION, forFiscalSecondaire.getMotifOuverture());
+						                             Assert.assertEquals(MotifFor.FIN_EXPLOITATION, forFiscalSecondaire.getMotifFermeture());
+					                             }
+					                             final List<ForFiscalSecondaire> forFiscalSecondairesJouxtensMezery = forsFiscauxSecondairesActifsSortedMapped.get(MockCommune.JouxtensMezery.getNoOFS());
+					                             {
+						                             ForFiscalSecondaire forFiscalSecondaire = forFiscalSecondairesJouxtensMezery.get(0);
+						                             Assert.assertEquals(date(2016, 4, 5), forFiscalSecondaire.getDateDebut());
+						                             Assert.assertEquals(null, forFiscalSecondaire.getDateFin());
+						                             Assert.assertEquals(GenreImpot.BENEFICE_CAPITAL, forFiscalSecondaire.getGenreImpot());
+						                             Assert.assertEquals(MockCommune.JouxtensMezery.getNoOFS(), forFiscalSecondaire.getNumeroOfsAutoriteFiscale().intValue());
+						                             Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, forFiscalSecondaire.getTypeAutoriteFiscale());
+						                             Assert.assertEquals(MotifRattachement.ETABLISSEMENT_STABLE, forFiscalSecondaire.getMotifRattachement());
+						                             Assert.assertEquals(MotifFor.DEBUT_EXPLOITATION, forFiscalSecondaire.getMotifOuverture());
+					                             }
+				                             }
+
+				                             // vérification des événements fiscaux
+				                             final List<EvenementFiscal> evtsFiscaux = evtFiscalDAO.getAll();
+				                             Assert.assertNotNull(evtsFiscaux);
+				                             Assert.assertEquals(2, evtsFiscaux.size());
 
 				                             return null;
 			                             }

@@ -46,6 +46,8 @@ import ch.vd.uniregctb.type.EtatEvenementOrganisation;
  */
 public class EvenementOrganisationProcessorInternal implements ProcessorInternal, InitializingBean {
 
+	public static final String EVT_ORGANISATION_PRINCIPAL = "EvtOrganisation";
+
 	private static final Logger LOGGER = LoggerFactory.getLogger(EvenementOrganisationProcessorInternal.class);
 
 	private static final EvenementOrganisationErreurFactory ERREUR_FACTORY = new EvenementOrganisationErreurFactory();
@@ -93,7 +95,7 @@ public class EvenementOrganisationProcessorInternal implements ProcessorInternal
 	 * {@inheritDoc}
 	 */
 	public boolean processEventAndDoPostProcessingOnError(EvenementOrganisationBasicInfo evt, List<EvenementOrganisationBasicInfo> evts, int pointer) {
-		AuthenticationHelper.pushPrincipal(String.format("EvtOrganisation-%d", evt.getNoEvenement()));
+		AuthenticationHelper.pushPrincipal(String.format(EVT_ORGANISATION_PRINCIPAL + "-%d", evt.getNoEvenement()));
 		try {
 			final boolean success = processEvent(evt, false);
 			if (!success) {

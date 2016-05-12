@@ -51,6 +51,7 @@ public class MockCommune extends MockEntityOFS implements Commune {
 	public static final MockCommune Moudon = new MockCommune(5678, "Moudon", VAUD, MockDistrict.Moudon);
 	public static final MockCommune Pully = new MockCommune(5590, "Pully", VAUD, MockDistrict.Lavaux);
 	public static final MockCommune Prilly = new MockCommune(5589, "Prilly", VAUD, MockDistrict.Lausanne);
+	public static final MockCommune JouxtensMezery = new MockCommune(5585, "Jouxtens-Mézery", VAUD, MockDistrict.Lausanne);
 	public static final MockCommune Nyon = new MockCommune(5724, "Nyon", VAUD, MockDistrict.Nyon);
 	public static final MockCommune Aigle = new MockCommune(5401, "Aigle", VAUD, MockDistrict.Aigle);
 	public static final MockCommune Grandson = new MockCommune(5561, "Grandson", VAUD, MockDistrict.Grandson);
@@ -145,6 +146,8 @@ public class MockCommune extends MockEntityOFS implements Commune {
 	public static final MockCommune Geneve = new MockCommune(6621, "Genève", GENEVE, null);
 	public static final MockCommune Bale = new MockCommune(2701, "Basel", BALE, null);
 	public static final MockCommune Sierre = new MockCommune(6248, "Sierre", VALAIS, null);
+	public static final MockCommune Sion = new MockCommune(6266, "Sion", VALAIS, null);
+	public static final MockCommune Conthey = new MockCommune(6023, "Conthey", VALAIS, null);
 	public static final MockCommune Chur = new MockCommune(3901, "Chur", GRISONS, null);
 
 	/**

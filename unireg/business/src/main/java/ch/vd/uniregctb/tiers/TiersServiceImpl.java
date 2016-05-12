@@ -99,6 +99,7 @@ import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPPDAO;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationErreur;
+import ch.vd.uniregctb.evenement.organisation.engine.processor.EvenementOrganisationProcessorInternal;
 import ch.vd.uniregctb.hibernate.HibernateCallback;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.indexer.IndexerException;
@@ -6414,9 +6415,9 @@ public class TiersServiceImpl implements TiersService {
 	}
 
 	@Override
-	public List<DomicileHisto> getDomicilesEnActivite(@NotNull Etablissement etablissement, boolean aussiAnnules) {
+	public List<DomicileHisto> getDomicilesEnActiviteSourceReelle(@NotNull Etablissement etablissement, boolean aussiAnnules) {
 		final List<DomicileHisto> donneesCiviles = extractDomicilesCivilsEtablissement(etablissement, true);
-		final List<DomicileHisto> donneesFiscales = extractDomicilesFiscauxEtablissement(etablissement, aussiAnnules);
+		final List<DomicileHisto> donneesFiscales = extractDomicilesIssusDuFiscal(etablissement, aussiAnnules);
 
 		return surchargeDonneesHisto(donneesCiviles, donneesFiscales);
 	}
@@ -6452,6 +6453,34 @@ public class TiersServiceImpl implements TiersService {
 		for (DomicileEtablissement domicile: domicileEtablissement) {
 			if (!domicile.isAnnule() || aussiAnnules) {
 				domiciles.add(new DomicileHisto(domicile));
+			}
+		}
+		Collections.sort(domiciles, new DateRangeComparator<DomicileHisto>());
+		return domiciles;
+	}
+
+	private List<DomicileHisto> extractDomicilesIssusDuFiscal(Etablissement etablissement, boolean aussiAnnules) {
+		final Set<DomicileEtablissement> domicileEtablissement = etablissement.getDomiciles();
+		if (domicileEtablissement == null) {
+			return Collections.emptyList();
+		}
+		final List<DomicileHisto> domiciles = new ArrayList<>(domicileEtablissement.size());
+		for (DomicileEtablissement domicile: domicileEtablissement) {
+			if (!domicile.isAnnule() || aussiAnnules) {
+				/*
+					Le seul moyen, actuellement, de savoir si on est en présence d'une surcharge corrective des données civiles, c'est
+					de regarder quel utilisateur l'a créé. Une telle surcharge est nécessairement créée pendant le traitement automatique
+					et ce dernier n'a pas d'autre occasion de créer des surcharges de domicile.
+				 */
+				if (domicile.getLogCreationUser() != null && domicile.getLogCreationUser().startsWith(EvenementOrganisationProcessorInternal.EVT_ORGANISATION_PRINCIPAL)) {
+					final Commune commune = serviceInfra.getCommuneByNumeroOfs(domicile.getNumeroOfsAutoriteFiscale(), domicile.getDateDebut());
+					final Domicile pseudoCivil =
+							new Domicile(domicile.getDateFin(), domicile.getDateFin(), commune);
+					domiciles.add(new DomicileHisto(pseudoCivil));
+				} else {
+					domiciles.add(new DomicileHisto(domicile));
+
+				}
 			}
 		}
 		Collections.sort(domiciles, new DateRangeComparator<DomicileHisto>());

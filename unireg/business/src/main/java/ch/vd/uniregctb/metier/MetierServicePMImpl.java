@@ -58,6 +58,7 @@ import ch.vd.uniregctb.tiers.RaisonSocialeFiscaleEntreprise;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.tiers.Remarque;
 import ch.vd.uniregctb.tiers.ScissionEntreprise;
+import ch.vd.uniregctb.tiers.Source;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.tiers.dao.RemarqueDAO;
@@ -120,7 +121,7 @@ public class MetierServicePMImpl implements MetierServicePM {
 		// Les domiciles VD classés par commune
 		final Map<Integer, List<Domicile>> tousLesDomicilesVD = new HashMap<>();
 		for (DateRanged<Etablissement> etablissement : etablissements) {
-			final List<DomicileHisto> domiciles = tiersService.getDomicilesEnActivite(etablissement.getPayload(), false);
+			final List<DomicileHisto> domiciles = tiersService.getDomicilesEnActiviteSourceReelle(etablissement.getPayload(), false);
 			if (domiciles != null && !domiciles.isEmpty()) {
 				boolean first = true;
 				DomicileHisto lastDomicile = CollectionsUtils.getLastElement(domiciles);
@@ -133,9 +134,19 @@ public class MetierServicePMImpl implements MetierServicePM {
 						histoPourCommune = new ArrayList<>();
 						tousLesDomicilesVD.put(domicile.getNumeroOfsAutoriteFiscale(), histoPourCommune);
 					}
-					/* Lorsqu'on est en présence d'un nouvel établissement, on ouvre le premier for le lendemain de la fondation. */
+					/* Lorsqu'on est en présence d'un nouvel établissement, on cherche à ce que le premier for soit ouvert
+					   le lendemain de la fondation. Deux alternatives se présentent:
+					     a. la première période de domicile est civile. On applique la règle du +1 jour.
+					     b. la première période de domicile est fiscale. La règle a déjà été appliquée lors de l'enregistrement
+					        du domicile fiscal. On prend la date de début telle quelle.
+					   */
 					if (first) {
-						final RegDate debutFor = domicile.getDateDebut().getOneDayAfter();
+						final RegDate debutFor;
+						if (domicile.getSource() == Source.CIVILE) {
+							debutFor = domicile.getDateDebut().getOneDayAfter();
+						} else {
+							debutFor = domicile.getDateDebut();
+						}
 						if (domicile.getDateFin() == null || debutFor.isBeforeOrEqual(domicile.getDateFin())) {
 							histoPourCommune.add(
 									new Domicile(debutFor, domicile.getDateFin(), domicile.getTypeAutoriteFiscale(), domicile.getNumeroOfsAutoriteFiscale())
