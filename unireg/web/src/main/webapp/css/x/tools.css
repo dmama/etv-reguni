@@ -51,7 +51,7 @@ a.notes,
 a.replay,
 a.moveUp,
 a.moveDown,
-a.reOpenFor,
+a.reOpen,
 .button_placeholder,
 a.padding,
 a.pdf,
@@ -91,7 +91,7 @@ a.notes:hover,
 a.replay:hover,
 a.moveUp:hover,
 a.moveDown:hover,
-a.reOpenFor:hover,
+a.reOpen:hover,
 .button_placeholder:hover,
 a.padding:hover,
 a.pdf:hover,
@@ -329,11 +329,11 @@ a.moveDown {
 	background-image: url(movedown.gif);
 }
 
-a.reOpenFor {
-	background-image: url(key_off.png);
+a.reOpen {
+	background-image: url(reopen_off.png);
 }
-a.reOpenFor:hover {
-	background-image: url(key_on.png);
+a.reOpen:hover {
+	background-image: url(reopen_on.png);
 }
 
 .margin_right_10 {

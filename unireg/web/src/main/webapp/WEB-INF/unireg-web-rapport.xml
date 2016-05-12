@@ -142,4 +142,11 @@
 	<bean id="contribuableAssocieEditManager" class="ch.vd.uniregctb.contribuableAssocie.manager.ContribuableAssocieEditManagerImpl" parent="tiersManager">
 	</bean>
 
+	<bean id="activiteEconomiqueEditController" class="ch.vd.uniregctb.tiers.ActiviteEconomiqueEditController">
+		<property name="tiersService" ref="tiersService"/>
+		<property name="adresseService" ref="adresseService"/>
+		<property name="hibernateTemplate" ref="hibernateTemplate"/>
+		<property name="autorisationManager" ref="autorisationManager"/>
+	</bean>
+
 </beans>
