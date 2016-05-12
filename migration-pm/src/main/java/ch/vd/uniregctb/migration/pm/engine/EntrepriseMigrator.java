@@ -1360,7 +1360,8 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 
 					// [SIFISC-19173] on ne prend pas en compte les appariements qui donnent des formes juridiques "succursales" aux établissements principaux
 					final Set<FormeLegale> formesLegalesInterdites = EnumSet.of(FormeLegale.N_0111_FILIALE_ETRANGERE_AU_RC,
-					                                                            FormeLegale.N_0151_SUCCURSALE_SUISSE_AU_RC);
+					                                                            FormeLegale.N_0151_SUCCURSALE_SUISSE_AU_RC,
+					                                                            FormeLegale.N_0312_FILIALE_ETRANGERE_NON_AU_RC);
 
 					final Map<Long, SiteOrganisation> map = org.getDonneesSites().stream()
 							.collect(Collectors.toMap(SiteOrganisation::getNumeroSite, Function.identity()));
