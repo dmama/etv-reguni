@@ -37,8 +37,8 @@
 		<c:if test="${forFiscal.dateFermeture != null}">
 			<c:if test="${page == 'edit' }">
 				<c:if test="${forFiscal.dernierForPrincipalOuDebiteur}">
-					<unireg:linkTo name="" action="/fors/debiteur/reopen.do" method="POST" params="{forId:${forFiscal.id}}" link_class="reOpenFor"
-					               title="Ré-ouvrir de for" confirm="Voulez-vous vraiment ré-ouvrir ce for fiscal ?" />
+					<unireg:linkTo name="" action="/fors/debiteur/reopen.do" method="POST" params="{forId:${forFiscal.id}}" link_class="reOpen"
+					               title="Ré-ouvrir le for" confirm="Voulez-vous vraiment ré-ouvrir ce for fiscal ?" />
 				</c:if>
 			</c:if>
 		</c:if>

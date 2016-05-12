@@ -37,7 +37,7 @@
 
 		<display:column sortable ="true" titleKey="label.numero.tiers" sortProperty="numero" >
 			<c:if test="${rapportEtablissement.numero != null}">
-				<a href="../tiers/visu.do?id=${rapportEtablissement.numero}&rid=${tiersGeneral.numero}"><unireg:numCTB numero="${rapportEtablissement.numero}"></unireg:numCTB></a>
+				<a href="../tiers/visu.do?id=${rapportEtablissement.numero}&rid=${tiersGeneral.numero}"><unireg:numCTB numero="${rapportEtablissement.numero}"/></a>
 			</c:if>
 			<c:if test="${rapportEtablissement.numero == null && rapportEtablissement.messageNumeroAbsent != null}">
 				<div class="flash-warning"><c:out value="${rapportEtablissement.messageNumeroAbsent}"/></div>
@@ -53,16 +53,29 @@
 			</c:if>
 		</display:column>
 
-		<c:if test="${page == 'visu'}">
-			<display:column style="action">
+		<display:column style="action">
+			<c:if test="${page == 'visu'}">
 				<unireg:consulterLog entityNature="RapportEntreTiers" entityId="${rapportEtablissement.id}"/>
-			</display:column>
-		</c:if>
+			</c:if>
+			<c:if test="${page == 'edit'}">
+				<c:if test="${!rapportEtablissement.activiteEconomiquePrincipale && !rapportEtablissement.annule}">
+					<c:choose>
+						<c:when test="${rapportEtablissement.dateFin == null}">
+							<unireg:raccourciModifier tooltip="Fermer le rapport" link="activite-economique/close.do?id=${rapportEtablissement.id}"/>
+						</c:when>
+						<c:otherwise>
+							<unireg:linkTo name="" action="/dossiers-apparentes/activite-economique/reopen.do" method="POST" params="{idRapport:${rapportEtablissement.id}}" link_class="reOpen"
+							               title="Ré-ouvrir le rapport" confirm="Voulez-vous vraiment ré-ouvrir ce rapport entre tiers ?" />
+						</c:otherwise>
+					</c:choose>
+				</c:if>
+			</c:if>
+		</display:column>
 		<display:setProperty name="paging.banner.all_items_found" value=""/>
 		<display:setProperty name="paging.banner.one_item_found" value=""/>
 	</display:table>
 
-	<script>
+	<script type="application/javascript">
 		$(function() {
 			Tooltips.activate_static_tooltips();
 		});

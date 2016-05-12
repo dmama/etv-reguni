@@ -1281,8 +1281,8 @@
 
 	<tag>
 		<description>Affiche une icône pour reouvrir un for Debiteur</description>
-		<name>raccourciReOpenForDebiteur</name>
-		<tag-class>ch.vd.uniregctb.taglibs.JspTagRaccourci$ReOpenForDebiteur</tag-class>
+		<name>raccourciReOpen</name>
+		<tag-class>ch.vd.uniregctb.taglibs.JspTagRaccourci$ReOpen</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<description>Valeur du lien</description>
