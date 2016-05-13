@@ -83,6 +83,13 @@ public interface TiersService {
     List<DateRanged<Etablissement>> getEtablissementsPrincipauxEntreprise(Entreprise entreprise);
 
     /**
+     * <p>
+     * Calcul la liste avec périodes des établissements secondaires d'une entreprise.
+     * </p>
+     * <p>
+     * NOTE: Un établissement qui aurait été cédé puis repris apparaîtra deux fois car il est rattaché sur deux
+     *       périodes différentes.
+     * </p>
      * @param entreprise l'entreprise ciblée
      * @return la liste des établissements secondaires (avec leurs dates de validité) associés à l'entreprise
      */

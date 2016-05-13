@@ -35,6 +35,7 @@ import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
 import ch.vd.uniregctb.common.AnnulableHelper;
 import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
+import ch.vd.uniregctb.common.GentilDateRangeExtendedAdapterCallback;
 import ch.vd.uniregctb.common.LengthConstants;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalInformationComplementaire;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
@@ -58,7 +59,6 @@ import ch.vd.uniregctb.tiers.RaisonSocialeFiscaleEntreprise;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.tiers.Remarque;
 import ch.vd.uniregctb.tiers.ScissionEntreprise;
-import ch.vd.uniregctb.tiers.Source;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.tiers.dao.RemarqueDAO;
@@ -124,8 +124,18 @@ public class MetierServicePMImpl implements MetierServicePM {
 			final List<DomicileHisto> domiciles = tiersService.getDomicilesEnActiviteSourceReelle(etablissement.getPayload(), false);
 			if (domiciles != null && !domiciles.isEmpty()) {
 				boolean first = true;
-				DomicileHisto lastDomicile = CollectionsUtils.getLastElement(domiciles);
-				for (DomicileHisto domicile : domiciles) {
+				/* Tenir compte de la période où l'établissement est rattaché à l'entreprise.
+				   Les rattachements multiples d'établissements sont pris en compte par des apparitions multiples à des périodes différentes.
+
+				   a. On n'est pas censé recevoir des établissements RCEnt avec plusieurs appartenances, donc on devrait ne jamais être en présence de
+				      domiciles qui dépassent de la période de rapport économique.
+
+				   b. CEPENDANT: La date de début du rapport entre tiers tient déjà compte de la règle du jour +1 qui doit être appliquée
+				                 à la création d'un tiers entreprise dans Unireg. Extraire le domicile effectif au moyen de la période du rapport
+				                 entre tiers nous fournit donc le point de départ exact sans qu'on n'ait besoin de le calculer nous-même.
+				   */
+				final List<DomicileHisto> domicilesEffectifs = DateRangeHelper.extract(domiciles, etablissement.getDateDebut(), etablissement.getDateFin(), new GentilDateRangeExtendedAdapterCallback<DomicileHisto>());
+				for (DomicileHisto domicile : domicilesEffectifs) {
 					if (domicile.getTypeAutoriteFiscale() != TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
 						continue; // On ne crée des fors secondaires que pour VD
 					}
@@ -134,19 +144,8 @@ public class MetierServicePMImpl implements MetierServicePM {
 						histoPourCommune = new ArrayList<>();
 						tousLesDomicilesVD.put(domicile.getNumeroOfsAutoriteFiscale(), histoPourCommune);
 					}
-					/* Lorsqu'on est en présence d'un nouvel établissement, on cherche à ce que le premier for soit ouvert
-					   le lendemain de la fondation. Deux alternatives se présentent:
-					     a. la première période de domicile est civile. On applique la règle du +1 jour.
-					     b. la première période de domicile est fiscale. La règle a déjà été appliquée lors de l'enregistrement
-					        du domicile fiscal. On prend la date de début telle quelle.
-					   */
 					if (first) {
-						final RegDate debutFor;
-						if (domicile.getSource() == Source.CIVILE) {
-							debutFor = domicile.getDateDebut().getOneDayAfter();
-						} else {
-							debutFor = domicile.getDateDebut();
-						}
+						final RegDate debutFor = domicile.getDateDebut();
 						if (domicile.getDateFin() == null || debutFor.isBeforeOrEqual(domicile.getDateFin())) {
 							histoPourCommune.add(
 									new Domicile(debutFor, domicile.getDateFin(), domicile.getTypeAutoriteFiscale(), domicile.getNumeroOfsAutoriteFiscale())

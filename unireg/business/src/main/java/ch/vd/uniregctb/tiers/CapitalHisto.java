@@ -39,7 +39,7 @@ public class CapitalHisto implements Sourced<Source>, CollatableDateRange, Dupli
 
 	@Override
 	public CapitalHisto rerange(DateRange range) {
-		return new CapitalHisto(id, annule, range.getDateDebut(), range.getDateFin(), montant, source);
+		return new CapitalHisto(id, annule, range.getDateDebut() != null ? range.getDateDebut() : dateDebut, range.getDateFin() != null ? range.getDateFin() : dateFin, montant, source);
 	}
 
 	@Override
