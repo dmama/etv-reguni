@@ -96,7 +96,7 @@ public class RaisonSocialeHisto implements Sourced<Source>, CollatableDateRange,
 
 	@Override
 	public RaisonSocialeHisto rerange(DateRange range) {
-		return new RaisonSocialeHisto(id, annule, range.getDateDebut(), range.getDateFin(), raisonSociale, source);
+		return new RaisonSocialeHisto(id, annule, range.getDateDebut() != null ? range.getDateDebut() : dateDebut, range.getDateFin() != null ? range.getDateFin() : dateFin, raisonSociale, source);
 	}
 
 	@Override

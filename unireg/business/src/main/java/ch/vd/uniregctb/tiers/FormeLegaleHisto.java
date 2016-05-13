@@ -97,7 +97,7 @@ public class FormeLegaleHisto implements Sourced<Source>, CollatableDateRange, D
 
 	@Override
 	public FormeLegaleHisto rerange(DateRange range) {
-		return new FormeLegaleHisto(id, annule, range.getDateDebut(), range.getDateFin(), formeLegale, source);
+		return new FormeLegaleHisto(id, annule, range.getDateDebut() != null ? range.getDateDebut() : dateDebut, range.getDateFin() != null ? range.getDateFin() : dateFin, formeLegale, source);
 	}
 
 	@Override

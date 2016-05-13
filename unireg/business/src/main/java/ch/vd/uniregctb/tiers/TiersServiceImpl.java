@@ -343,6 +343,10 @@ public class TiersServiceImpl implements TiersService {
 		return etablissements;
 	}
 
+	/**
+	 * NOTE: un établissement peut apparaître plusieurs fois dans la liste, en fonction de son historique
+	 * de rattachement à l'entreprise.
+	 */
 	private List<DateRanged<Etablissement>> getEtablissementsEntreprise(Entreprise entreprise, boolean avecTri, Predicate<ActiviteEconomique> filtre) {
 		final Set<RapportEntreTiers> sujets = entreprise.getRapportsSujet();
 		final List<DateRanged<Etablissement>> etablissements = new LinkedList<>();

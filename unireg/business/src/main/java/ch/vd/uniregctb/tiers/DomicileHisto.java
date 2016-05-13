@@ -106,7 +106,7 @@ public class DomicileHisto implements Sourced<Source>, CollatableDateRange, Dupl
 
 	@Override
 	public DomicileHisto rerange(DateRange range) {
-		return new DomicileHisto(id, annule, range.getDateDebut(), range.getDateFin(), typeAutoriteFiscale, noOfs, source);
+		return new DomicileHisto(id, annule, range.getDateDebut() != null ? range.getDateDebut() : dateDebut, range.getDateFin() != null ? range.getDateFin() : dateFin, typeAutoriteFiscale, noOfs, source);
 	}
 
 	@Override
