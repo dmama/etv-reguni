@@ -19,8 +19,8 @@ import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationException;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationOptions;
 import ch.vd.uniregctb.evenement.organisation.interne.AbstractOrganisationStrategy;
 import ch.vd.uniregctb.evenement.organisation.interne.EvenementOrganisationInterne;
+import ch.vd.uniregctb.evenement.organisation.interne.MessageWarningPreExectution;
 import ch.vd.uniregctb.evenement.organisation.interne.TraitementManuel;
-import ch.vd.uniregctb.evenement.organisation.interne.WarningPreExecution;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.Etablissement;
 
@@ -65,8 +65,8 @@ public class EtablissementsSecondairesStrategy extends AbstractOrganisationStrat
 		if (sitePrincipalAvantRange == null) {
 			Audit.info("Organisation nouvelle au civil mais déjà connue d'Unireg. Des établissements secondaires ont peut-être changé.");
 			// FIXME: Cela pose la question de savoir si on ne devrait pas utiliser Unireg comme "avant" dans ces cas là?
-			return new WarningPreExecution(event, organisation, null, context, options,
-			                               String.format("L'organisation n°%d est déjà connue d'Unireg, mais nouvelle au civil. Veuillez vérifier la transition entre les données du régistre " +
+			return new MessageWarningPreExectution(event, organisation, null, context, options,
+			                                       String.format("L'organisation n°%d est déjà connue d'Unireg, mais nouvelle au civil. Veuillez vérifier la transition entre les données du régistre " +
 					                                             "fiscal et du régistre civil, notamment les établissements secondaires.", organisation.getNumeroOrganisation()));
 		} else {
 

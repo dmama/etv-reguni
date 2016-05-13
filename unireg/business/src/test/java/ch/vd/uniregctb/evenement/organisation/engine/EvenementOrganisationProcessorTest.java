@@ -35,7 +35,7 @@ import ch.vd.uniregctb.evenement.organisation.engine.translator.EvenementOrganis
 import ch.vd.uniregctb.evenement.organisation.interne.EvenementOrganisationInterne;
 import ch.vd.uniregctb.evenement.organisation.interne.EvenementOrganisationInterneComposite;
 import ch.vd.uniregctb.evenement.organisation.interne.Indexation;
-import ch.vd.uniregctb.evenement.organisation.interne.MessagePreExecution;
+import ch.vd.uniregctb.evenement.organisation.interne.MessageSuiviPreExecution;
 import ch.vd.uniregctb.evenement.organisation.interne.TraitementManuel;
 import ch.vd.uniregctb.evenement.organisation.interne.information.InformationComplementaire;
 import ch.vd.uniregctb.identification.contribuable.IdentificationContribuableService;
@@ -155,7 +155,7 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 		// Verification de l'événement interne créé
 		List<EvenementOrganisationInterne> listEvtInterne = getListeEvtInternesCrees(translator);
 		Assert.assertEquals(2, listEvtInterne.size());
-		Assert.assertTrue(listEvtInterne.get(0) instanceof MessagePreExecution);
+		Assert.assertTrue(listEvtInterne.get(0) instanceof MessageSuiviPreExecution);
 		Assert.assertTrue(listEvtInterne.get(1) instanceof Indexation);
 
 		// Vérification du traitement de l'événement
@@ -243,7 +243,7 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 		// Verification de l'événement interne créé
 		List<EvenementOrganisationInterne> listEvtInterne = getListeEvtInternesCrees(translator);
 		Assert.assertEquals(2, listEvtInterne.size());
-		Assert.assertTrue(listEvtInterne.get(0) instanceof MessagePreExecution);
+		Assert.assertTrue(listEvtInterne.get(0) instanceof MessageSuiviPreExecution);
 		Assert.assertTrue(listEvtInterne.get(1) instanceof Indexation);
 
 		// Vérification du traitement de l'événement
@@ -507,13 +507,13 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 		List<EvenementOrganisationInterne> listEvtInterne = getListeEvtInternesCrees(translator);
 		Assert.assertEquals(4, listEvtInterne.size());
 		{
-			Assert.assertTrue(listEvtInterne.get(0) instanceof MessagePreExecution);
-			String message = getMessageFromMessageSuiviStrategie((MessagePreExecution) listEvtInterne.get(0));
+			Assert.assertTrue(listEvtInterne.get(0) instanceof MessageSuiviPreExecution);
+			String message = getMessageFromMessageSuiviStrategie((MessageSuiviPreExecution) listEvtInterne.get(0));
 			Assert.assertEquals(String.format("Entreprise n°%d (%s) identifiée sur la base de ses attributs civils [%s].", noEntreprise, nom, nom), message);
 		}
 		{
-			Assert.assertTrue(listEvtInterne.get(1) instanceof MessagePreExecution);
-			String message = getMessageFromMessageSuiviStrategie((MessagePreExecution) listEvtInterne.get(1));
+			Assert.assertTrue(listEvtInterne.get(1) instanceof MessageSuiviPreExecution);
+			String message = getMessageFromMessageSuiviStrategie((MessageSuiviPreExecution) listEvtInterne.get(1));
 			Assert.assertEquals(String.format("Organisation civile n°%d rattachée avec succès à l'entreprise n°%s, avec tous ses établissements.", noOrganisation, FormatNumeroHelper.numeroCTBToDisplay(noEntreprise)), message);
 		}
 		Assert.assertTrue(listEvtInterne.get(2) instanceof InformationComplementaire);
@@ -642,13 +642,13 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 		List<EvenementOrganisationInterne> listEvtInterne = getListeEvtInternesCrees(translator);
 		Assert.assertEquals(5, listEvtInterne.size());
 		{
-			Assert.assertTrue(listEvtInterne.get(0) instanceof MessagePreExecution);
-			String message = getMessageFromMessageSuiviStrategie((MessagePreExecution) listEvtInterne.get(0));
+			Assert.assertTrue(listEvtInterne.get(0) instanceof MessageSuiviPreExecution);
+			String message = getMessageFromMessageSuiviStrategie((MessageSuiviPreExecution) listEvtInterne.get(0));
 			Assert.assertEquals(String.format("Entreprise n°%d (%s) identifiée sur la base de ses attributs civils [%s].", noEntreprise, nom, nom), message);
 		}
 		{
-			Assert.assertTrue(listEvtInterne.get(1) instanceof MessagePreExecution);
-			String message = getMessageFromMessageSuiviStrategie((MessagePreExecution) listEvtInterne.get(1));
+			Assert.assertTrue(listEvtInterne.get(1) instanceof MessageSuiviPreExecution);
+			String message = getMessageFromMessageSuiviStrategie((MessageSuiviPreExecution) listEvtInterne.get(1));
 			Assert.assertEquals(
 					String.format("Organisation civile n°%d rattachée à l'entreprise n°%d. Cependant, certains établissements n'ont pas trouvé d'équivalent civil: n°%s. Aussi des sites civils secondaires n'ont pas pu être rattachés et seront créés: n°%d",
 					              noOrganisation, noEntreprise, FormatNumeroHelper.numeroCTBToDisplay(etablissement3Id), noSite2), message);
@@ -669,7 +669,7 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 		);
 	}
 
-	private String getMessageFromMessageSuiviStrategie(MessagePreExecution msgSuivi) throws NoSuchFieldException, IllegalAccessException {
+	private String getMessageFromMessageSuiviStrategie(MessageSuiviPreExecution msgSuivi) throws NoSuchFieldException, IllegalAccessException {
 		Class<?> spyClass = msgSuivi.getClass();
 		Field suiviField = spyClass.getDeclaredField("suivi");
 		suiviField.setAccessible(true);
@@ -799,13 +799,13 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 		List<EvenementOrganisationInterne> listEvtInterne = getListeEvtInternesCrees(translator);
 		Assert.assertEquals(5, listEvtInterne.size());
 		{
-			Assert.assertTrue(listEvtInterne.get(0) instanceof MessagePreExecution);
-			String message = getMessageFromMessageSuiviStrategie((MessagePreExecution) listEvtInterne.get(0));
+			Assert.assertTrue(listEvtInterne.get(0) instanceof MessageSuiviPreExecution);
+			String message = getMessageFromMessageSuiviStrategie((MessageSuiviPreExecution) listEvtInterne.get(0));
 			Assert.assertEquals(String.format("Entreprise n°%d (%s) identifiée sur la base de ses attributs civils [%s].", noEntreprise, nom, nom), message);
 		}
 		{
-			Assert.assertTrue(listEvtInterne.get(1) instanceof MessagePreExecution);
-			String message = getMessageFromMessageSuiviStrategie((MessagePreExecution) listEvtInterne.get(1));
+			Assert.assertTrue(listEvtInterne.get(1) instanceof MessageSuiviPreExecution);
+			String message = getMessageFromMessageSuiviStrategie((MessageSuiviPreExecution) listEvtInterne.get(1));
 			Assert.assertEquals(
 					String.format("Organisation civile n°%d rattachée à l'entreprise n°%d. Cependant, certains établissements n'ont pas trouvé d'équivalent civil: n°%s.",
 					              noOrganisation, noEntreprise, FormatNumeroHelper.numeroCTBToDisplay(etablissement3Id)), message);
@@ -1005,8 +1005,8 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 		// Verification de l'événement interne créé
 		List<EvenementOrganisationInterne> listEvtInterne = getListeEvtInternesCrees(translator);
 		Assert.assertEquals(3, listEvtInterne.size());
-		Assert.assertTrue(listEvtInterne.get(0) instanceof MessagePreExecution);
-		String message = getMessageFromMessageSuiviStrategie((MessagePreExecution) listEvtInterne.get(0));
+		Assert.assertTrue(listEvtInterne.get(0) instanceof MessageSuiviPreExecution);
+		String message = getMessageFromMessageSuiviStrategie((MessageSuiviPreExecution) listEvtInterne.get(0));
 		Assert.assertEquals(String.format("Aucune entreprise identifiée pour le numéro civil %s ou les attributs civils [%s].",
 		                                  noOrganisation, nom),
 		                    message);
