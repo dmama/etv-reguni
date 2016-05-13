@@ -362,7 +362,7 @@ public class MetierServicePMImpl implements MetierServicePM {
 
 		/* Déterminer le active */
 		final RapportEntreTiers rapport = etablissement.getRapportObjetValidAt(date, TypeRapportEntreTiers.ACTIVITE_ECONOMIQUE);
-		boolean active = rapport.isValidAt(date);
+		boolean active = rapport != null;
 
 		return new DomicileStatutKey(domicileEtablissement.getNumeroOfsAutoriteFiscale(), domicileEtablissement.getTypeAutoriteFiscale(), active);
 	}
