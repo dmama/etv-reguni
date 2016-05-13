@@ -101,11 +101,13 @@ public class AutresCommunautesProcessingTest extends AbstractEvenementOrganisati
 				                             Assert.assertEquals(EtatEvenementOrganisation.EN_ERREUR, evt.getEtat());
 
 				                             final EvenementOrganisationErreur evtErreur0 = evt.getErreurs().get(0);
-				                             Assert.assertEquals(String.format("Le tiers [%s] n°%s identifié grâce aux attributs civils [Correia Pinto, Jardinage et Paysagisme] n'est pas une entreprise et sera ignoré. " +
-						                                                               "Un nouveau tiers sera créé, le cas échéant, pour l'organisation civile n°%d.",
-				                                                               TypeTiers.AUTRE_COMMUNAUTE.getDescription(),
+				                             Assert.assertEquals(String.format("Attention: le tiers n°%s identifié grâce aux attributs civils [Correia Pinto, Jardinage et Paysagisme] n'est pas une entreprise (%s) et sera ignoré. " +
+						                                                               "Si nécessaire, un tiers Entreprise sera créé pour l'organisation civile n°%d, en doublon du tiers n°%s (%s).",
 				                                                               FormatNumeroHelper.numeroCTBToDisplay(tiersId),
-				                                                               noOrganisation),
+				                                                               TypeTiers.AUTRE_COMMUNAUTE.getDescription(),
+				                                                               noOrganisation,
+				                                                               FormatNumeroHelper.numeroCTBToDisplay(tiersId),
+				                                                               TypeTiers.AUTRE_COMMUNAUTE.getDescription()),
 				                                                 evtErreur0.getMessage());
 				                             final EvenementOrganisationErreur evtErreur1 = evt.getErreurs().get(1);
 				                             Assert.assertEquals("L'organisation n°101202100 (AUTRE) est installée sur Vaud. Création automatique non prise en charge.",

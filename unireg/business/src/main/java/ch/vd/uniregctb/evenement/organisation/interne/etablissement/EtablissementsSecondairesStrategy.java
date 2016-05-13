@@ -25,7 +25,7 @@ import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.Etablissement;
 
 /**
- * Modification des établissement secondaires
+ * Modification des établissements secondaires
  *
  * @author Raphaël Marmier, 2016-02-26.
  */
