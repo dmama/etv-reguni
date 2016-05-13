@@ -13,7 +13,7 @@ import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationException;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationOptions;
 import ch.vd.uniregctb.evenement.organisation.interne.AbstractOrganisationStrategy;
 import ch.vd.uniregctb.evenement.organisation.interne.EvenementOrganisationInterne;
-import ch.vd.uniregctb.evenement.organisation.interne.MessagePreExecution;
+import ch.vd.uniregctb.evenement.organisation.interne.MessageSuiviPreExecution;
 import ch.vd.uniregctb.evenement.organisation.interne.TraitementManuel;
 import ch.vd.uniregctb.tiers.CategorieEntrepriseHelper;
 import ch.vd.uniregctb.tiers.Entreprise;
@@ -83,8 +83,8 @@ public class CreateOrganisationStrategy extends AbstractOrganisationStrategy {
 				// On ne crée pas d'entreprise pour les entreprises individuelles
 				case PP:
 					LOGGER.info("L'organisation n°{} est installée sur Vaud. Catégorie [{}] -> Pas de création.", organisation.getNumeroOrganisation(), category);
-					return new MessagePreExecution(event, organisation, null, context, options,
-					                               String.format("L'organisation n°%d est une entreprise individuelle vaudoise. Pas de traitement.", organisation.getNumeroOrganisation()));
+					return new MessageSuiviPreExecution(event, organisation, null, context, options,
+					                                    String.format("L'organisation n°%d est une entreprise individuelle vaudoise. Pas de traitement.", organisation.getNumeroOrganisation()));
 
 				// Sociétés de personnes
 				case SP:
@@ -128,8 +128,8 @@ public class CreateOrganisationStrategy extends AbstractOrganisationStrategy {
 
 				case PP:
 					LOGGER.info("L'organisation n°{} a une présence secondaire sur Vaud. Catégorie [{}] -> Pas de création.", organisation.getNumeroOrganisation(), category);
-					return new MessagePreExecution(event, organisation, null, context, options,
-					                               String.format("L'organisation n°%d est une entreprise individuelle hors canton avec une présence sur Vaud. Pas de traitement.", organisation.getNumeroOrganisation()));
+					return new MessageSuiviPreExecution(event, organisation, null, context, options,
+					                                    String.format("L'organisation n°%d est une entreprise individuelle hors canton avec une présence sur Vaud. Pas de traitement.", organisation.getNumeroOrganisation()));
 				default:
 					LOGGER.info("L'organisation n°{} a une présence secondaire sur Vaud. Catégorie [{}] -> Création.", organisation.getNumeroOrganisation(), category);
 					info = extraireInformationDeDateEtDeCreation(event, organisation);
@@ -137,8 +137,8 @@ public class CreateOrganisationStrategy extends AbstractOrganisationStrategy {
 				}
 			} else {
 				LOGGER.info("L'organisation n°{} n'a pas de présence connue sur Vaud. Catégorie [{}] -> Pas de création.", organisation.getNumeroOrganisation(), category);
-				return new MessagePreExecution(event, organisation, null, context, options,
-				                               String.format("L'organisation n°%d (%s) n'a pas de présence sur Vaud. Pas de traitement.", organisation.getNumeroOrganisation(), category));
+				return new MessageSuiviPreExecution(event, organisation, null, context, options,
+				                                    String.format("L'organisation n°%d (%s) n'a pas de présence sur Vaud. Pas de traitement.", organisation.getNumeroOrganisation(), category));
 			}
 		}
 		} catch (EvenementOrganisationException e) {

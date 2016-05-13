@@ -16,7 +16,7 @@ import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationContext;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationException;
 import ch.vd.uniregctb.evenement.organisation.interne.AbstractEvenementOrganisationInterneTest;
 import ch.vd.uniregctb.evenement.organisation.interne.EvenementOrganisationInterne;
-import ch.vd.uniregctb.evenement.organisation.interne.MessagePreExecution;
+import ch.vd.uniregctb.evenement.organisation.interne.MessageSuiviPreExecution;
 import ch.vd.uniregctb.evenement.organisation.interne.TraitementManuel;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.MockTiersDAO;
@@ -79,7 +79,7 @@ public class CreateOrganisationStrategyTest extends AbstractEvenementOrganisatio
 
 		// Création et contrôle pour chaque type d'entreprise
 		createAddOrg(101220101L, RegDate.get(2015, 9, 7), FormeLegale.N_0101_ENTREPRISE_INDIVIDUELLE, Lausanne);
-		tryCreationEventAndCheckResult(101220101L, MessagePreExecution.class);
+		tryCreationEventAndCheckResult(101220101L, MessageSuiviPreExecution.class);
 
 		createAddOrg(101220103L, RegDate.get(2015, 9, 7), FormeLegale.N_0103_SOCIETE_NOM_COLLECTIF, Lausanne);
 		tryCreationEventAndCheckResult(101220103L, CreateEntrepriseSP.class);
@@ -213,7 +213,7 @@ public class CreateOrganisationStrategyTest extends AbstractEvenementOrganisatio
 		addOrg(MockOrganisationFactory.createOrganisationAvecSiteSecondaire(222222004L, 222222004L + 1000000, 222222004L + 2000000, "abcdef", RegDate.get(2015, 9, 7), null, FormeLegale.N_0106_SOCIETE_ANONYME,
 		                                                                    TypeAutoriteFiscale.COMMUNE_HC, Zurich.getNoOFS(), TypeAutoriteFiscale.COMMUNE_HC, Zurich.getNoOFS(),
 		                                                                    null, null, null, null, null, null, null, null));
-		tryCreationEventAndCheckResult(222222004L, MessagePreExecution.class);
+		tryCreationEventAndCheckResult(222222004L, MessageSuiviPreExecution.class);
 
 	}
 

@@ -17,7 +17,7 @@ import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationException;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationOptions;
 import ch.vd.uniregctb.evenement.organisation.interne.AbstractOrganisationStrategy;
 import ch.vd.uniregctb.evenement.organisation.interne.EvenementOrganisationInterne;
-import ch.vd.uniregctb.evenement.organisation.interne.MessagePreExecution;
+import ch.vd.uniregctb.evenement.organisation.interne.MessageSuiviPreExecution;
 import ch.vd.uniregctb.evenement.organisation.interne.TraitementManuel;
 import ch.vd.uniregctb.tiers.Entreprise;
 
@@ -78,8 +78,8 @@ public class ReinscriptionStrategy extends AbstractOrganisationStrategy {
 					return new Reinscription(event, organisation, entreprise, context, options);
 				}
 				else if (dateRadiationRCApres != null) {
-					return new MessagePreExecution(event, organisation, entreprise, context, options,
-					                               String.format("L'organisation n°%d n'est plus radiée du RC mais a toujours une date de radiation!", organisation.getNumeroOrganisation()));
+					return new MessageSuiviPreExecution(event, organisation, entreprise, context, options,
+					                                    String.format("L'organisation n°%d n'est plus radiée du RC mais a toujours une date de radiation!", organisation.getNumeroOrganisation()));
 				}
 			}
 		}

@@ -34,9 +34,9 @@ import ch.vd.uniregctb.evenement.organisation.interne.EvenementOrganisationInter
 import ch.vd.uniregctb.evenement.organisation.interne.EvenementOrganisationInterneComposite;
 import ch.vd.uniregctb.evenement.organisation.interne.Indexation;
 import ch.vd.uniregctb.evenement.organisation.interne.IndexationPure;
-import ch.vd.uniregctb.evenement.organisation.interne.MessagePreExecution;
+import ch.vd.uniregctb.evenement.organisation.interne.MessageSuiviPreExecution;
+import ch.vd.uniregctb.evenement.organisation.interne.MessageWarningPreExectution;
 import ch.vd.uniregctb.evenement.organisation.interne.TraitementManuel;
-import ch.vd.uniregctb.evenement.organisation.interne.WarningPreExecution;
 import ch.vd.uniregctb.evenement.organisation.interne.adresse.AdresseStrategy;
 import ch.vd.uniregctb.evenement.organisation.interne.creation.CreateOrganisationStrategy;
 import ch.vd.uniregctb.evenement.organisation.interne.decisionaci.DecisionAciStrategy;
@@ -230,7 +230,7 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 			                                     noIdeCivil != null ? ", IDE: " + NO_IDE_RENDERER.toString(noIdeCivil) : StringUtils.EMPTY,
 			                                     organisation.getNumeroOrganisation());
 			Audit.info(event.getNoEvenement(), message);
-			evenements.add(new MessagePreExecution(event, organisation, entreprise, context, options, message));
+			evenements.add(new MessageSuiviPreExecution(event, organisation, entreprise, context, options, message));
 
 		}
 		/* L'entreprise n'a pas été retrouvée par identifiant cantonal, on utilise le service d'identification pour tenter de la retrouver
@@ -280,17 +280,20 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 					                                     StringUtils.isNotBlank(derniereRaisonSocialeFiscale) ? " (" + derniereRaisonSocialeFiscale + ")" : "",
 					                                     attributsCivilsAffichage(raisonSocialeCivile, noIdeCivil));
 					Audit.info(event.getNoEvenement(), message);
-					evenements.add(new MessagePreExecution(event, organisation, entreprise, context, options, message));
+					evenements.add(new MessageSuiviPreExecution(event, organisation, entreprise, context, options, message));
 					evenements.add(rattacheOrganisation(event, organisation, entreprise, context, options));
 				} else {
-					final String message = String.format("Le tiers [%s] n°%s identifié grâce aux attributs civils [%s] n'est pas une entreprise et sera ignoré. " +
-							                                     "Un nouveau tiers sera créé, le cas échéant, pour l'organisation civile n°%d.",
-					                                     tiers.getType().getDescription(),
+					final String message = String.format("Attention: le tiers n°%s identifié grâce aux attributs civils [%s] n'est pas une entreprise (%s) " +
+							                                     "et sera ignoré. Si nécessaire, un tiers Entreprise sera créé pour l'organisation civile n°%d, en doublon du " +
+							                                     "tiers n°%s (%s).\n",
 					                                     FormatNumeroHelper.numeroCTBToDisplay(tiers.getNumero()),
 					                                     attributsCivilsAffichage(raisonSocialeCivile, noIdeCivil),
-					                                     organisation.getNumeroOrganisation());
+					                                     tiers.getType().getDescription(),
+					                                     organisation.getNumeroOrganisation(),
+					                                     FormatNumeroHelper.numeroCTBToDisplay(tiers.getNumero()),
+					                                     tiers.getType().getDescription());
 							Audit.info(event.getNoEvenement(), message);
-					evenements.add(new MessagePreExecution(event, organisation, null, context, options, message));
+					evenements.add(new MessageWarningPreExectution(event, organisation, null, context, options, message));
 				}
 			}
 			// L'identification n'a rien retourné. Cela veut dire qu'on ne connait pas déjà le tiers. On rapporte simplement cet état de fait.
@@ -299,7 +302,7 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 				                                     organisation.getNumeroOrganisation(),
 				                                     attributsCivilsAffichage(raisonSocialeCivile, noIdeCivil));
 				Audit.info(event.getNoEvenement(), message);
-				evenements.add(new MessagePreExecution(event, organisation, null, context, options, message));
+				evenements.add(new MessageSuiviPreExecution(event, organisation, null, context, options, message));
 			}
 		}
 
@@ -308,7 +311,7 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 		for (EvenementOrganisationTranslationStrategy strategy : strategies) {
 			EvenementOrganisationInterne e = strategy.matchAndCreate(event, organisation, entreprise, context, options);
 			if (e != null) {
-				if (e instanceof MessagePreExecution || e instanceof WarningPreExecution) {
+				if (e instanceof MessageSuiviPreExecution || e instanceof MessageWarningPreExectution) {
 					evenements.add(e);
 				} else {
 					resultatEvaluationStrategies.add(e);
@@ -403,12 +406,12 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 					messageSitesNonRattaches = String.format(" Aussi des sites civils secondaires n'ont pas pu être rattachés et seront créés: %s", sitesNonRattaches);
 				}
 
-				return new MessagePreExecution(event, organisation, entreprise, context, options,
-				                               String.format("Organisation civile n°%d rattachée à l'entreprise n°%s.%s%s",
+				return new MessageSuiviPreExecution(event, organisation, entreprise, context, options,
+				                                    String.format("Organisation civile n°%d rattachée à l'entreprise n°%s.%s%s",
 						              organisation.getNumeroOrganisation(), FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()), messageEtablissementsNonRattaches == null ? "" : messageEtablissementsNonRattaches, messageSitesNonRattaches == null ? "" : messageSitesNonRattaches));
 			} else {
-				return new MessagePreExecution(event, organisation, entreprise, context, options,
-				                               String.format("Organisation civile n°%d rattachée avec succès à l'entreprise n°%s, avec tous ses établissements.",
+				return new MessageSuiviPreExecution(event, organisation, entreprise, context, options,
+				                                    String.format("Organisation civile n°%d rattachée avec succès à l'entreprise n°%s, avec tous ses établissements.",
 						              organisation.getNumeroOrganisation(), FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero())));
 			}
 		}

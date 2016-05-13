@@ -14,27 +14,25 @@ import ch.vd.uniregctb.tiers.Entreprise;
 
 /**
  * <p>
- *     Evénement interne sans effet servant publier un message en tant que warning <strong>avant</strong> le début de l'exécution proprement dite.
- *     Cet événement interne a deux effets: 1) l'ajout d'une ligne dans les messages affichés à l'utilisateur,
- *     2) le status "à vérifier" à la fin du traitement.
+ *     Evénement interne sans effet servant publier un message en tant que suivi <strong>avant</strong> le début de l'exécution proprement dite.
+ *     Cet événement interne a pour unique conséquence l'ajout d'une ligne dans les messages affichés à l'utilisateur.
  * </p>
  * <p>
  *     Cette classe d'événement est utile pour communiquer avec l'utilisateur des informations importantes en lien avec
- *     la détermination des événements internes par les stratégies. Mais à la différence de {@link MessageSuivi},
- *     cet événement impose le status "vérifier" d'entrée de jeu. Il doit donc servir à attirer l'attention de l'utilisateur sur
- *     une situation qui requiert potentiellement son intervention.
+ *     la détermination des événements internes par les stratégies. Notamment pour communiquer des décisions prises qui
+ *     ont un impact sur le résultat final mais qui ne sont pas raportées par ailleurs.
  * </p>
  * <p>
  *     Les messages sont ajoutés au cours de l'étape de validation préliminaire et non en cours d'execution [handle()].
  *     De cette manière, les messages sont toujours affichés même lorsque l'exécution des traitements n'est pas possible.
  * </p>
  */
-public class WarningPreExecution extends EvenementOrganisationInterneDeTraitement {
+public class MessageSuiviPreExecution extends EvenementOrganisationInterneDeTraitement {
 
 	private String suivi = null;
 
-	public WarningPreExecution(EvenementOrganisation evenement, Organisation organisation, Entreprise entreprise, EvenementOrganisationContext context,
-	                           EvenementOrganisationOptions options, String suivi) throws EvenementOrganisationException {
+	public MessageSuiviPreExecution(EvenementOrganisation evenement, Organisation organisation, Entreprise entreprise, EvenementOrganisationContext context,
+	                                EvenementOrganisationOptions options, String suivi) throws EvenementOrganisationException {
 		super(evenement, organisation, entreprise, context, options);
 		this.suivi = suivi;
 	}
@@ -46,7 +44,6 @@ public class WarningPreExecution extends EvenementOrganisationInterneDeTraitemen
 
 	@Override
 	public void doHandle(EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) throws EvenementOrganisationException {
-		raiseStatusTo(HandleStatus.TRAITE);
 	}
 
 	@Override
