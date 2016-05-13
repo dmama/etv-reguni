@@ -158,7 +158,7 @@ public class RcEntClientImpl implements RcEntClient, InitializingBean {
 			}
 			return messages;
 		}
-		catch (JAXBException e) {
+		catch (JAXBException | RuntimeException e) {
 			LOGGER.error("Impossible de parser le message d'erreur revenu en tant que eVD-0004", e);
 			return null;
 		}

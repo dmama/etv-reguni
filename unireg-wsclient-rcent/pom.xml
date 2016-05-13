@@ -10,7 +10,7 @@
 	<artifactId>unireg-wsclient-rcent</artifactId>
 	<packaging>jar</packaging>
         <!-- BEGIN_LVERSION -->
-	<version>1.5</version>
+	<version>1.6</version>
 	<!-- END_LVERSION -->
 
 	<name>Unireg - Client WS RCEnt v3</name>
@@ -25,7 +25,7 @@
 		<dependency>
 			<groupId>ch.vd.shared</groupId>
 			<artifactId>shared-date</artifactId>
-			<version>2.1.0</version>
+			<version>2.1.2</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.cxf</groupId>
@@ -102,7 +102,7 @@
 	
 	<properties>
 		<!-- Application settings -->
-		<copyright.year>2015</copyright.year>
+		<copyright.year>2016</copyright.year>
 		<amp.genericCore>true</amp.genericCore>
 		<amp.fullSource>false</amp.fullSource>
 		<spring.version>3.2.13.RELEASE</spring.version>
