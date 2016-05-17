@@ -35,6 +35,7 @@ import ch.vd.uniregctb.tiers.Etablissement;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.type.DayMonth;
 import ch.vd.uniregctb.type.EtatEvenementOrganisation;
+import ch.vd.uniregctb.type.FormeJuridiqueEntreprise;
 import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
@@ -743,7 +744,7 @@ public class DemenagementTest extends AbstractEvenementOrganisationProcessorTest
 		);
 	}
 
-	@Test(timeout = 10000L)
+	@Test(timeout = 1000000L)
 	public void testDemenagementArriveeNouveauRCEnt() throws Exception {
 
 		// Mise en place service mock
@@ -771,6 +772,8 @@ public class DemenagementTest extends AbstractEvenementOrganisationProcessorTest
 			public Entreprise doInTransaction(TransactionStatus transactionStatus) {
 				Entreprise entreprise = addEntrepriseInconnueAuCivil();
 				addRaisonSociale(entreprise, date(2010, 6, 24), null, "Synergy SA");
+				addFormeJuridique(entreprise, date(2010, 6, 24), null, FormeJuridiqueEntreprise.SA);
+
 				Etablissement etablissement = addEtablissement();
 
 				addDomicileEtablissement(etablissement, RegDate.get(2010, 6, 24), null, MockCommune.Zurich);
@@ -909,6 +912,8 @@ public class DemenagementTest extends AbstractEvenementOrganisationProcessorTest
 			public Entreprise doInTransaction(TransactionStatus transactionStatus) {
 				Entreprise entreprise = addEntrepriseInconnueAuCivil();
 				addRaisonSociale(entreprise, date(2010, 6, 24), null, "Mon assoc");
+				addFormeJuridique(entreprise, date(2010, 6, 24), null, FormeJuridiqueEntreprise.ASSOCIATION);
+
 				Etablissement etablissement = addEtablissement();
 
 				addDomicileEtablissement(etablissement, RegDate.get(2010, 6, 24), null, MockCommune.Zurich);

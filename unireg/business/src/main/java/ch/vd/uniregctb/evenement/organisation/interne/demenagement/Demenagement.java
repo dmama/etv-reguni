@@ -132,12 +132,21 @@ public abstract class Demenagement extends EvenementOrganisationInterneDeTraitem
 		// Vérifier qu'il y a bien une entreprise préexistante en base ? (Ca ne devrait pas se produire ici)
 		Assert.notNull(getEntreprise());
 
-		// Nouvel établissement
-		Assert.notNull(etablissementPrincipalApres ,"Changement de siège avec création d'un nouvel établissement principal. Veuillez traiter l'événement manuellement.");
+		// On doit avoir deux autorités fiscales
+		Assert.isTrue(
+				(getSiegeAvant() != null && getSiegeApres() != null)
+		);
 
-		// Changement d'établissement non supporté actuellement.
-		Assert.state(getEtablissementPrincipalAvant().getNumero().equals(etablissementPrincipalApres.getNumero()),
-		             "Changement de siège avec changement d'établissement principal. Veuillez traiter l'événement manuellement.");
+		Assert.notNull(getEtablissementPrincipalAvant().getNumeroEtablissement(), "L'établissement principal ne semble pas rattaché à son pendant civil RCEnt!");
+		Assert.notNull(getEtablissementPrincipalApres().getNumeroEtablissement(), "L'établissement principal ne semble pas rattaché à son pendant civil RCEnt!");
+
+		// Ce serait étrange de ne pas avoir de changement finalement
+		Assert.isTrue(getSiegeAvant() != getSiegeApres(), "Pas un déménagement de siège, la commune n'a pas changé!");
+
+		// Si on n'a pas d'établissement principal après, c'est qu'on ne l'a pas trouvé en recherchant avec le numéro de site principal après, donc ce dernier est nouveau.
+		if (!getEtablissementPrincipalAvant().getNumeroEtablissement().equals(sitePrincipalApres.getNumeroSite())) {
+			erreurs.addErreur("Changement de siège avec changement d'établissement principal. Veuillez traiter l'événement manuellement.");
+		}
 	}
 
 	public RegDate getDateAvant() {
