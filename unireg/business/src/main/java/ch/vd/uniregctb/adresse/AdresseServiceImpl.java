@@ -332,7 +332,8 @@ public class AdresseServiceImpl implements AdresseService {
 				// Il y a un pour adresse dès que le destinataire est différent de la destination, sauf :
 				//  - dans le cas d'un débiteur avec un contribuable associé.
 				//  - dans le cas d'un couple dont le principal est sous tutelle et dont l'adresse du conjoint est utilisée
-				avecPourAdresse = (tiers != destination && sourceType != SourceType.CONTRIBUABLE && sourceType != SourceType.CONJOINT);
+				//  - dans le cas d'une entreprise avec l'établissement principal
+				avecPourAdresse = (tiers != destination && sourceType != SourceType.CONTRIBUABLE && sourceType != SourceType.CONJOINT && sourceType != SourceType.ETABLISSEMENT_PRINCIPAL);
 			}
 		}
 
@@ -840,6 +841,10 @@ public class AdresseServiceImpl implements AdresseService {
 		else if (tiers instanceof Entreprise) {
 			final Entreprise entreprise = (Entreprise) tiers;
 			line = POUR_ADRESSE + ' ' + getRaisonSociale(entreprise);
+		}
+		else if (tiers instanceof Etablissement) {
+			final Etablissement etablissement = (Etablissement) tiers;
+			line = POUR_ADRESSE + ' ' + getRaisonSociale(etablissement);
 		}
 		else {
 			throw new NotImplementedException("Type de tiers [" + tiers.getNatureTiers() + "] non-implémenté");
