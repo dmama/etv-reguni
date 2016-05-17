@@ -67,6 +67,7 @@ import ch.vd.uniregctb.metier.RattachementOrganisationResult;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.tiers.Entreprise;
+import ch.vd.uniregctb.tiers.FormeJuridiqueFiscaleEntreprise;
 import ch.vd.uniregctb.tiers.OrganisationNotFoundException;
 import ch.vd.uniregctb.tiers.PlusieursEntreprisesAvecMemeNumeroOrganisationException;
 import ch.vd.uniregctb.tiers.RaisonSocialeFiscaleEntreprise;
@@ -281,7 +282,30 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 					                                     attributsCivilsAffichage(raisonSocialeCivile, noIdeCivil));
 					Audit.info(event.getNoEvenement(), message);
 					evenements.add(new MessageSuiviPreExecution(event, organisation, entreprise, context, options, message));
-					evenements.add(rattacheOrganisation(event, organisation, entreprise, context, options));
+
+					if (checkFormesJuridiquesCompatibles(event, organisation, entreprise)) {
+						evenements.add(rattacheOrganisation(event, organisation, entreprise, context, options));
+					} else {
+						final List<FormeJuridiqueFiscaleEntreprise> formesJuridiquesNonAnnuleesTriees = entreprise.getFormesJuridiquesNonAnnuleesTriees();
+						FormeJuridiqueFiscaleEntreprise formeJuridiqueFiscaleEntreprise = null;
+						if (!formesJuridiquesNonAnnuleesTriees.isEmpty()) {
+							formeJuridiqueFiscaleEntreprise = CollectionsUtils.getLastElement(entreprise.getFormesJuridiquesNonAnnuleesTriees());
+						}
+
+						final FormeLegale formeLegale = organisation.getFormeLegale(event.getDateEvenement());
+						return new TraitementManuel(event, organisation, entreprise, context, options,
+						                            String.format("Impossible de rattacher l'organisation n°%d%s à l'entreprise n°%s%s%s " +
+								                                          "identifiée sur la base de ses attributs civils [%s]: les formes juridiques ne correspondent pas. Arrêt du traitement.",
+						                                          organisation.getNumeroOrganisation(),
+						                                          formeLegale != null ? " (" + formeLegale + ")" : "",
+						                                          entreprise.getNumero(),
+						                                          StringUtils.isNotBlank(derniereRaisonSocialeFiscale) ? " (" + derniereRaisonSocialeFiscale + ")" : "",
+						                                          formeJuridiqueFiscaleEntreprise != null ? " (" + formeJuridiqueFiscaleEntreprise.getFormeJuridique().getLibelle() + ")" : "",
+						                                          attributsCivilsAffichage(raisonSocialeCivile, noIdeCivil)
+						                            )
+
+						);
+					}
 				} else {
 					final String message = String.format("Attention: le tiers n°%s identifié grâce aux attributs civils [%s] n'est pas une entreprise (%s) " +
 							                                     "et sera ignoré. Si nécessaire, un tiers Entreprise sera créé pour l'organisation civile n°%d, en doublon du " +
@@ -331,6 +355,20 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 			evenements.add(new Indexation(event, organisation, entreprise, context, options));
 		}
 		return new EvenementOrganisationInterneComposite(event, organisation, evenements.get(0).getEntreprise(), context, options, evenements);
+	}
+
+	private boolean checkFormesJuridiquesCompatibles(EvenementOrganisation event, Organisation organisation, Entreprise entreprise) {
+		final List<FormeJuridiqueFiscaleEntreprise> formesJuridiquesNonAnnuleesTriees = entreprise.getFormesJuridiquesNonAnnuleesTriees();
+		if (!formesJuridiquesNonAnnuleesTriees.isEmpty()) {
+			final FormeJuridiqueFiscaleEntreprise formeJuridiqueFiscaleEntreprise = CollectionsUtils.getLastElement(formesJuridiquesNonAnnuleesTriees);
+			final FormeLegale formeLegaleEntreprise = FormeLegale.fromCode(formeJuridiqueFiscaleEntreprise.getFormeJuridique().getCodeECH());
+			if (formeLegaleEntreprise != null && formeLegaleEntreprise == organisation.getFormeLegale(event.getDateEvenement())) {
+				return true;
+			}
+		} else {
+			return false;
+		}
+		return false;
 	}
 
 	private String attributsCivilsAffichage(@NotNull String raisonSociale, @Nullable String noIde) {

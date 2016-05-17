@@ -508,12 +508,12 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 		Assert.assertEquals(4, listEvtInterne.size());
 		{
 			Assert.assertTrue(listEvtInterne.get(0) instanceof MessageSuiviPreExecution);
-			String message = getMessageFromMessageSuiviStrategie((MessageSuiviPreExecution) listEvtInterne.get(0));
+			String message = getMessageFromMessageSuiviPreExecution((MessageSuiviPreExecution) listEvtInterne.get(0));
 			Assert.assertEquals(String.format("Entreprise n°%d (%s) identifiée sur la base de ses attributs civils [%s].", noEntreprise, nom, nom), message);
 		}
 		{
 			Assert.assertTrue(listEvtInterne.get(1) instanceof MessageSuiviPreExecution);
-			String message = getMessageFromMessageSuiviStrategie((MessageSuiviPreExecution) listEvtInterne.get(1));
+			String message = getMessageFromMessageSuiviPreExecution((MessageSuiviPreExecution) listEvtInterne.get(1));
 			Assert.assertEquals(String.format("Organisation civile n°%d rattachée avec succès à l'entreprise n°%s, avec tous ses établissements.", noOrganisation, FormatNumeroHelper.numeroCTBToDisplay(noEntreprise)), message);
 		}
 		Assert.assertTrue(listEvtInterne.get(2) instanceof InformationComplementaire);
@@ -643,12 +643,12 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 		Assert.assertEquals(5, listEvtInterne.size());
 		{
 			Assert.assertTrue(listEvtInterne.get(0) instanceof MessageSuiviPreExecution);
-			String message = getMessageFromMessageSuiviStrategie((MessageSuiviPreExecution) listEvtInterne.get(0));
+			String message = getMessageFromMessageSuiviPreExecution((MessageSuiviPreExecution) listEvtInterne.get(0));
 			Assert.assertEquals(String.format("Entreprise n°%d (%s) identifiée sur la base de ses attributs civils [%s].", noEntreprise, nom, nom), message);
 		}
 		{
 			Assert.assertTrue(listEvtInterne.get(1) instanceof MessageSuiviPreExecution);
-			String message = getMessageFromMessageSuiviStrategie((MessageSuiviPreExecution) listEvtInterne.get(1));
+			String message = getMessageFromMessageSuiviPreExecution((MessageSuiviPreExecution) listEvtInterne.get(1));
 			Assert.assertEquals(
 					String.format("Organisation civile n°%d rattachée à l'entreprise n°%d. Cependant, certains établissements n'ont pas trouvé d'équivalent civil: n°%s. Aussi des sites civils secondaires n'ont pas pu être rattachés et seront créés: n°%d",
 					              noOrganisation, noEntreprise, FormatNumeroHelper.numeroCTBToDisplay(etablissement3Id), noSite2), message);
@@ -669,7 +669,7 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 		);
 	}
 
-	private String getMessageFromMessageSuiviStrategie(MessageSuiviPreExecution msgSuivi) throws NoSuchFieldException, IllegalAccessException {
+	private String getMessageFromMessageSuiviPreExecution(MessageSuiviPreExecution msgSuivi) throws NoSuchFieldException, IllegalAccessException {
 		Class<?> spyClass = msgSuivi.getClass();
 		Field suiviField = spyClass.getDeclaredField("suivi");
 		suiviField.setAccessible(true);
@@ -800,12 +800,12 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 		Assert.assertEquals(5, listEvtInterne.size());
 		{
 			Assert.assertTrue(listEvtInterne.get(0) instanceof MessageSuiviPreExecution);
-			String message = getMessageFromMessageSuiviStrategie((MessageSuiviPreExecution) listEvtInterne.get(0));
+			String message = getMessageFromMessageSuiviPreExecution((MessageSuiviPreExecution) listEvtInterne.get(0));
 			Assert.assertEquals(String.format("Entreprise n°%d (%s) identifiée sur la base de ses attributs civils [%s].", noEntreprise, nom, nom), message);
 		}
 		{
 			Assert.assertTrue(listEvtInterne.get(1) instanceof MessageSuiviPreExecution);
-			String message = getMessageFromMessageSuiviStrategie((MessageSuiviPreExecution) listEvtInterne.get(1));
+			String message = getMessageFromMessageSuiviPreExecution((MessageSuiviPreExecution) listEvtInterne.get(1));
 			Assert.assertEquals(
 					String.format("Organisation civile n°%d rattachée à l'entreprise n°%d. Cependant, certains établissements n'ont pas trouvé d'équivalent civil: n°%s.",
 					              noOrganisation, noEntreprise, FormatNumeroHelper.numeroCTBToDisplay(etablissement3Id)), message);
@@ -1006,7 +1006,7 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 		List<EvenementOrganisationInterne> listEvtInterne = getListeEvtInternesCrees(translator);
 		Assert.assertEquals(3, listEvtInterne.size());
 		Assert.assertTrue(listEvtInterne.get(0) instanceof MessageSuiviPreExecution);
-		String message = getMessageFromMessageSuiviStrategie((MessageSuiviPreExecution) listEvtInterne.get(0));
+		String message = getMessageFromMessageSuiviPreExecution((MessageSuiviPreExecution) listEvtInterne.get(0));
 		Assert.assertEquals(String.format("Aucune entreprise identifiée pour le numéro civil %s ou les attributs civils [%s].",
 		                                  noOrganisation, nom),
 		                    message);
@@ -1114,6 +1114,116 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 		Assert.assertEquals(String.format("Plusieurs entreprises non-annulées partagent le même numéro d'organisation 101202100: ([%d, %d])",
 		                                  noEntrerpise1, noEntrerpise2),
 		                    message);
+
+		// Vérification du traitement de l'événement
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			                             @Override
+			                             public Object doInTransaction(TransactionStatus status) {
+				                             final EvenementOrganisation evt = getUniqueEvent(noEvenement);
+				                             Assert.assertNotNull(evt);
+				                             Assert.assertEquals(EtatEvenementOrganisation.EN_ERREUR, evt.getEtat());
+				                             return null;
+			                             }
+		                             }
+		);
+	}
+
+	@Test(timeout = 10000L)
+	public void testEntrepriseIdentCorrectFormeJurIncompatible() throws Exception {
+
+		// Mise en place service mock
+		final RegDate dateDebut = date(2010, 6, 26);
+		final String nom = "Synergy SA";
+		final Long noOrganisation = 101202100L;
+		final Long noSite = noOrganisation + 1000000;
+
+		serviceOrganisation.setUp(new MockServiceOrganisation() {
+			@Override
+			protected void init() {
+				addOrganisation(MockOrganisationFactory.createOrganisation(noOrganisation, noSite, nom, dateDebut, null, FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE,
+				                                                           TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF, date(2010, 6, 24),
+				                                                           StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE));
+
+			}
+		});
+
+		// Création de l'entreprise
+		// mise en place des données fiscales
+		final long etablissementId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final Etablissement etablissement = addEtablissement();
+				etablissement.setRaisonSociale(nom + "Etab");
+				addDomicileEtablissement(etablissement, dateDebut, null, MockCommune.Lausanne);
+
+				return etablissement.getNumero();
+			}
+		});
+		final long noEntreprise = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+
+				final Etablissement etablissement = (Etablissement) tiersDAO.get(etablissementId);
+
+				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+				addRaisonSocialeFiscaleEntreprise(entreprise, dateDebut, null, nom);
+				addFormeJuridique(entreprise, dateDebut, null, FormeJuridiqueEntreprise.EI);
+				tiersService.addActiviteEconomique(etablissement, entreprise, dateDebut, true);
+
+				return entreprise.getNumero();
+			}
+		});
+		globalTiersIndexer.sync();
+
+		// Création de l'événement
+		final Long noEvenement = 12344321L;
+
+		// Persistence événement
+		doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus transactionStatus) {
+				final EvenementOrganisation event = createEvent(noEvenement, noOrganisation, TypeEvenementOrganisation.FOSC_AVIS_PREALABLE_OUVERTURE_FAILLITE, date(2015, 7, 5), A_TRAITER);
+				return hibernateTemplate.merge(event).getId();
+			}
+		});
+
+		// Mise en place Translator "espion"
+		SpyEvenementOrganisationTranslatorImpl translator = new SpyEvenementOrganisationTranslatorImpl();
+
+		translator.setServiceOrganisationService(serviceOrganisation);
+		translator.setServiceInfrastructureService(getBean(ProxyServiceInfrastructureService.class, "serviceInfrastructureService"));
+		translator.setTiersDAO(getBean(TiersDAO.class, "tiersDAO"));
+		translator.setDataEventService(getBean(DataEventService.class, "dataEventService"));
+		translator.setTiersService(getBean(TiersService.class, "tiersService"));
+		translator.setMetierServicePM(getBean(MetierServicePM.class, "metierServicePM"));
+		translator.setAdresseService(getBean(AdresseService.class, "adresseService"));
+		translator.setIndexer(getBean(GlobalTiersIndexer.class, "globalTiersIndexer"));
+		translator.setIdentCtbService(getBean(IdentificationContribuableService.class, "identCtbService"));
+		translator.setEvenementFiscalService(getBean(EvenementFiscalService.class, "evenementFiscalService"));
+		translator.setParametreAppService(getBean(ParametreAppService.class, "parametreAppService"));
+		translator.setUseOrganisationsOfNotice(false);
+		translator.afterPropertiesSet();
+
+		buildProcessor(translator);
+
+		// Traitement synchrone de l'événement
+		traiterEvenements(noOrganisation);
+
+		// Verification de l'événement interne créé
+		List<EvenementOrganisationInterne> listEvtInterne = getListeEvtInternesCrees(translator);
+		Assert.assertEquals(1, listEvtInterne.size());
+		{
+			Assert.assertTrue(listEvtInterne.get(0) instanceof TraitementManuel);
+			String message = getMessageFromTraitementManuel((TraitementManuel) listEvtInterne.get(0));
+			Assert.assertEquals(String.format("Impossible de rattacher l'organisation n°%d (%s) à l'entreprise n°%s (%s) (%s) " +
+					                                  "identifiée sur la base de ses attributs civils [%s]: les formes juridiques ne correspondent pas. Arrêt du traitement.",
+			                                  noOrganisation,
+			                                  FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE,
+			                                  noEntreprise,
+			                                  nom,
+			                                  FormeJuridiqueEntreprise.EI.getLibelle(),
+			                                  nom), message);
+		}
 
 		// Vérification du traitement de l'événement
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {

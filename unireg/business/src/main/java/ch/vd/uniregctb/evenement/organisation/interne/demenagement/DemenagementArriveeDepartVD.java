@@ -1,7 +1,5 @@
 package ch.vd.uniregctb.evenement.organisation.interne.demenagement;
 
-import org.springframework.util.Assert;
-
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.organisation.data.Domicile;
@@ -81,22 +79,5 @@ public class DemenagementArriveeDepartVD extends Demenagement {
 	@Override
 	protected void validateSpecific(EvenementOrganisationErreurCollector erreurs, EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) throws EvenementOrganisationException {
 		super.validateSpecific(erreurs, warnings, suivis);
-
-		/*
-		 Erreurs techniques fatale
-		  */
-
-		// On doit avoir deux sites
-		Assert.isTrue(
-				getEtablissementPrincipalApres() != null
-		);
-
-		// On doit avoir deux autorités fiscales
-		Assert.isTrue(
-				(getSiegeAvant() != null && getSiegeApres() != null)
-		);
-
-		// Quelque conditions non valides
-		Assert.isTrue(getSiegeAvant() != getSiegeApres(), "Pas un déménagement de siège, la commune n'a pas changé!");
 	}
 }
