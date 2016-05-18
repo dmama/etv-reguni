@@ -208,12 +208,18 @@ public class EvenementOrganisationProcessorInternal implements ProcessorInternal
 				addDateTraitement(evt);
 
 				// c'est un cas spécial, on veut conserver les messages...
+				final boolean keepStack;
 				if (e instanceof EvenementOrganisationConservationMessagesException) {
-					final EvenementOrganisationMessageCollector<EvenementOrganisationErreur> messageCollector = ((EvenementOrganisationConservationMessagesException) e).getMessageCollector();
+					final EvenementOrganisationConservationMessagesException ex = (EvenementOrganisationConservationMessagesException) e;
+					final EvenementOrganisationMessageCollector<EvenementOrganisationErreur> messageCollector = ex.getMessageCollector();
+					keepStack = ex.keepStack();
 					evt.getErreurs().addAll(messageCollector.getEntrees());
 				}
+				else {
+					keepStack = true;
+				}
 
-				final EvenementOrganisationErreur erreur = ERREUR_FACTORY.createErreur(e);
+				final EvenementOrganisationErreur erreur = keepStack ? ERREUR_FACTORY.createErreur(e) : ERREUR_FACTORY.createErreur(e.getMessage());
 				evt.getErreurs().add(erreur);
 
 				assignerEtatApresTraitement(EtatEvenementOrganisation.EN_ERREUR, evt);
@@ -331,7 +337,7 @@ public class EvenementOrganisationProcessorInternal implements ProcessorInternal
 			}
 			catch (CappingEnErreur.CappingException e) {
 				// cas spécial où le traitement n'était pas en erreur mais a été cappé...
-				throw new EvenementOrganisationConservationMessagesException(e.getMessage(), collector);
+				throw new EvenementOrganisationConservationMessagesException(e.getMessage(), collector, false);
 			}
 		}
 
