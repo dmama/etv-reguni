@@ -57,6 +57,7 @@ import ch.vd.uniregctb.evenement.organisation.interne.information.ModificationCa
 import ch.vd.uniregctb.evenement.organisation.interne.information.ModificationStatutsStrategy;
 import ch.vd.uniregctb.evenement.organisation.interne.inscription.InscriptionStrategy;
 import ch.vd.uniregctb.evenement.organisation.interne.radiation.RadiationStrategy;
+import ch.vd.uniregctb.evenement.organisation.interne.raisonsociale.RaisonSocialeStrategy;
 import ch.vd.uniregctb.evenement.organisation.interne.reinscription.ReinscriptionStrategy;
 import ch.vd.uniregctb.identification.contribuable.IdentificationContribuableService;
 import ch.vd.uniregctb.identification.contribuable.TooManyIdentificationPossibilitiesException;
@@ -150,6 +151,7 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 		strategies.add(new DecisionAciStrategy());
 		strategies.add(new CreateOrganisationStrategy());
 		strategies.add(new EtablissementsSecondairesStrategy());
+		strategies.add(new RaisonSocialeStrategy());
 		strategies.add(new InscriptionStrategy());
 		strategies.add(new ReinscriptionStrategy());
 		strategies.add(new ChangementFormeJuridiqueStrategy());
