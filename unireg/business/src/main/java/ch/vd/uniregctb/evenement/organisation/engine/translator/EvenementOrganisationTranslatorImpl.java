@@ -30,6 +30,8 @@ import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationContext;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationException;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationOptions;
+import ch.vd.uniregctb.evenement.organisation.interne.CappingAVerifier;
+import ch.vd.uniregctb.evenement.organisation.interne.CappingEnErreur;
 import ch.vd.uniregctb.evenement.organisation.interne.EvenementOrganisationInterne;
 import ch.vd.uniregctb.evenement.organisation.interne.EvenementOrganisationInterneComposite;
 import ch.vd.uniregctb.evenement.organisation.interne.Indexation;
@@ -117,6 +119,7 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 	private AssujettissementService assujettissementService;
 	private ParametreAppService parametreAppService;
 	private boolean useOrganisationsOfNotice;
+	private NiveauCappingEtat niveauCappingEtatEvenement;
 
 	/*
 	 * Non injecté mais créé ci-dessous dans afterPropertiesSet()
@@ -190,7 +193,7 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 	 */
 	@Override
 	public EvenementOrganisationInterne toInterne(EvenementOrganisation event, EvenementOrganisationOptions options) throws EvenementOrganisationException {
-		Organisation organisation;
+		final Organisation organisation;
 		if (useOrganisationsOfNotice) {
 			organisation = serviceOrganisationService.getOrganisationEvent(event.getNoEvenement()).get(event.getNoOrganisation()).getPseudoHistory();
 			if (organisation == null) {
@@ -204,7 +207,7 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 			}
 		}
 
-		// Sanity check. Pourquoi ici? Pour ne pas courir le risque d'ignorer des entreprise (passer à TRAITE) sur la foi d'information manquantes.
+		// Sanity check. Pourquoi ici? Pour ne pas courir le risque d'ignorer des entreprises (passer à TRAITE) sur la foi d'information manquantes.
 		sanityCheck(event, organisation);
 
 		final String organisationDescription = serviceOrganisationService.createOrganisationDescription(organisation, event.getDateEvenement());
@@ -333,7 +336,7 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 		/* Essayer chaque stratégie. Chacune est responsable de détecter l'événement dans les données. */
 		final List<EvenementOrganisationInterne> resultatEvaluationStrategies = new ArrayList<>();
 		for (EvenementOrganisationTranslationStrategy strategy : strategies) {
-			EvenementOrganisationInterne e = strategy.matchAndCreate(event, organisation, entreprise, context, options);
+			final EvenementOrganisationInterne e = strategy.matchAndCreate(event, organisation, entreprise, context, options);
 			if (e != null) {
 				if (e instanceof MessageSuiviPreExecution || e instanceof MessageWarningPreExectution) {
 					evenements.add(e);
@@ -354,7 +357,24 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 			LOGGER.info("L'entité sera (re)indexée.");
 			evenements.add(new Indexation(event, organisation, entreprise, context, options));
 		}
+
+		// [SIFISC-19214] blindage "capping" de l'état final de l'événement organisation
+		if (niveauCappingEtatEvenement != null) {
+			evenements.add(buildEvenementInterneCapping(event, organisation, entreprise, context, options));
+		}
+
 		return new EvenementOrganisationInterneComposite(event, organisation, evenements.get(0).getEntreprise(), context, options, evenements);
+	}
+
+	private EvenementOrganisationInterne buildEvenementInterneCapping(EvenementOrganisation event, Organisation organisation, Entreprise entreprise, EvenementOrganisationContext context, EvenementOrganisationOptions options) {
+		switch (niveauCappingEtatEvenement) {
+		case A_VERIFIER:
+			return new CappingAVerifier(event, organisation, entreprise, context, options);
+		case EN_ERREUR:
+			return new CappingEnErreur(event, organisation, entreprise, context, options);
+		default:
+			throw new IllegalArgumentException("Valeur du niveau de capping non-supportée : " + niveauCappingEtatEvenement);
+		}
 	}
 
 	private boolean checkFormesJuridiquesCompatibles(EvenementOrganisation event, Organisation organisation, Entreprise entreprise) {
@@ -374,16 +394,17 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 	private String attributsCivilsAffichage(@NotNull String raisonSociale, @Nullable String noIde) {
 		return String.format("%s%s", raisonSociale, noIde != null ? ", IDE: " + NO_IDE_RENDERER.toString(noIde) : StringUtils.EMPTY);
 	}
-	private void panicNotFoundAfterIdent(Long found, String organisationDescription) throws EvenementOrganisationException {
+
+	private static void panicNotFoundAfterIdent(Long found, String organisationDescription) throws EvenementOrganisationException {
 		throw new EvenementOrganisationException(String.format("L'identifiant de tiers %s retourné par le service d'identification ne correspond à aucun tiers! Organisation recherchée: %s",
 		                                                       found, organisationDescription));
 	}
 
 	// Selon SIFISC-16998 : mise en erreur des annonces sans données obligatoires
-	private void sanityCheck(EvenementOrganisation event, Organisation organisation) throws EvenementOrganisationException {
+	private static void sanityCheck(EvenementOrganisation event, Organisation organisation) throws EvenementOrganisationException {
 		final RegDate dateEvenement = event.getDateEvenement();
 
-		List<DateRanged<String>> noms = organisation.getNom();
+		final List<DateRanged<String>> noms = organisation.getNom();
 		if (noms.size() > 0) {
 			if (dateEvenement.isBefore(noms.get(0).getDateDebut())) {
 				throw new EvenementOrganisationException(
@@ -522,7 +543,13 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 		this.parametreAppService = parametreAppService;
 	}
 
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setUseOrganisationsOfNotice(boolean useOrganisationsOfNotice) {
 		this.useOrganisationsOfNotice = useOrganisationsOfNotice;
+	}
+
+	@SuppressWarnings({"UnusedDeclaration"})
+	public void setNiveauCappingEtatEvenement(NiveauCappingEtat niveauCappingEtatEvenement) {
+		this.niveauCappingEtatEvenement = niveauCappingEtatEvenement;
 	}
 }

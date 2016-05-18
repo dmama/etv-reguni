@@ -32,6 +32,9 @@ import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationErreur;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationException;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationOptions;
 import ch.vd.uniregctb.evenement.organisation.engine.translator.EvenementOrganisationTranslatorImpl;
+import ch.vd.uniregctb.evenement.organisation.engine.translator.NiveauCappingEtat;
+import ch.vd.uniregctb.evenement.organisation.interne.CappingAVerifier;
+import ch.vd.uniregctb.evenement.organisation.interne.CappingEnErreur;
 import ch.vd.uniregctb.evenement.organisation.interne.EvenementOrganisationInterne;
 import ch.vd.uniregctb.evenement.organisation.interne.EvenementOrganisationInterneComposite;
 import ch.vd.uniregctb.evenement.organisation.interne.Indexation;
@@ -165,6 +168,174 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 				                             final EvenementOrganisation evt = getUniqueEvent(noEvenement);
 				                             Assert.assertNotNull(evt);
 				                             Assert.assertEquals(EtatEvenementOrganisation.TRAITE, evt.getEtat());
+				                             return null;
+			                             }
+		                             }
+		);
+	}
+
+	@Test(timeout = 10000L)
+	public void testEvenementNeutreAvecCappingAVerifier() throws Exception {
+
+		// Mise en place service mock
+		final Long noOrganisation = 101202100L;
+
+		serviceOrganisation.setUp(new MockServiceOrganisation() {
+			@Override
+			protected void init() {
+				addOrganisation(
+						MockOrganisationFactory.createSimpleEntrepriseRC(noOrganisation, noOrganisation + 1000000, "Synergy SA", RegDate.get(2000, 1, 1), null, FormeLegale.N_0106_SOCIETE_ANONYME, MockCommune.Lausanne));
+			}
+		});
+
+		final long idEntreprise = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus transactionStatus) {
+				final Entreprise entreprise = addEntrepriseConnueAuCivil(noOrganisation);
+				return entreprise.getNumero();
+			}
+		});
+
+		// Mise en place Translator "espion"
+		final SpyEvenementOrganisationTranslatorImpl translator = new SpyEvenementOrganisationTranslatorImpl();
+
+		translator.setServiceOrganisationService(serviceOrganisation);
+		translator.setServiceInfrastructureService(getBean(ProxyServiceInfrastructureService.class, "serviceInfrastructureService"));
+		translator.setTiersDAO(getBean(TiersDAO.class, "tiersDAO"));
+		translator.setDataEventService(getBean(DataEventService.class, "dataEventService"));
+		translator.setTiersService(getBean(TiersService.class, "tiersService"));
+		translator.setMetierServicePM(getBean(MetierServicePM.class, "metierServicePM"));
+		translator.setAdresseService(getBean(AdresseService.class, "adresseService"));
+		translator.setIndexer(getBean(GlobalTiersIndexer.class, "globalTiersIndexer"));
+		translator.setIdentCtbService(getBean(IdentificationContribuableService.class, "identCtbService"));
+		translator.setEvenementFiscalService(getBean(EvenementFiscalService.class, "evenementFiscalService"));
+		translator.setParametreAppService(getBean(ParametreAppService.class, "parametreAppService"));
+		translator.setUseOrganisationsOfNotice(false);
+		translator.setNiveauCappingEtatEvenement(NiveauCappingEtat.A_VERIFIER);
+		translator.afterPropertiesSet();
+
+		buildProcessor(translator);
+
+		// Création de l'événement
+		final Long noEvenement = 12344321L;
+
+		final EvenementOrganisation event = createEvent(noEvenement, noOrganisation, FOSC_COMMUNICATION_DANS_FAILLITE, RegDate.get(2015, 6, 24), A_TRAITER);
+
+		// Persistence événement
+		doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus transactionStatus) {
+				return hibernateTemplate.merge(event).getId();
+			}
+		});
+
+		// Traitement synchrone de l'événement
+		traiterEvenements(noOrganisation);
+
+		// Verification de l'événement interne créé
+		final List<EvenementOrganisationInterne> listEvtInterne = getListeEvtInternesCrees(translator);
+		Assert.assertEquals(3, listEvtInterne.size());
+		Assert.assertTrue(listEvtInterne.get(0) instanceof MessageSuiviPreExecution);
+		Assert.assertTrue(listEvtInterne.get(1) instanceof Indexation);
+		Assert.assertTrue(listEvtInterne.get(2) instanceof CappingAVerifier);
+
+		// Vérification du traitement de l'événement
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			                             @Override
+			                             public Object doInTransaction(TransactionStatus status) {
+				                             final EvenementOrganisation evt = getUniqueEvent(noEvenement);
+				                             Assert.assertNotNull(evt);
+				                             Assert.assertEquals(EtatEvenementOrganisation.A_VERIFIER, evt.getEtat());
+
+				                             final List<EvenementOrganisationErreur> messages = evt.getErreurs();
+				                             Assert.assertNotNull(messages);
+				                             Assert.assertEquals(2, messages.size());
+				                             Assert.assertEquals(String.format("Entreprise n°%s (Synergy SA) identifiée sur la base du numéro civil %d (numéro cantonal).", FormatNumeroHelper.numeroCTBToDisplay(idEntreprise), noOrganisation), messages.get(0).getMessage());
+				                             Assert.assertEquals("Evénement explicitement placé 'à vérifier' par configuration applicative.", messages.get(1).getMessage());
+				                             return null;
+			                             }
+		                             }
+		);
+	}
+
+	@Test(timeout = 10000L)
+	public void testEvenementNeutreAvecCappingEnErreur() throws Exception {
+
+		// Mise en place service mock
+		final Long noOrganisation = 101202100L;
+
+		serviceOrganisation.setUp(new MockServiceOrganisation() {
+			@Override
+			protected void init() {
+				addOrganisation(
+						MockOrganisationFactory.createSimpleEntrepriseRC(noOrganisation, noOrganisation + 1000000, "Synergy SA", RegDate.get(2000, 1, 1), null, FormeLegale.N_0106_SOCIETE_ANONYME, MockCommune.Lausanne));
+			}
+		});
+
+		final long idEntreprise = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus transactionStatus) {
+				final Entreprise entreprise = addEntrepriseConnueAuCivil(noOrganisation);
+				return entreprise.getNumero();
+			}
+		});
+
+		// Mise en place Translator "espion"
+		final SpyEvenementOrganisationTranslatorImpl translator = new SpyEvenementOrganisationTranslatorImpl();
+
+		translator.setServiceOrganisationService(serviceOrganisation);
+		translator.setServiceInfrastructureService(getBean(ProxyServiceInfrastructureService.class, "serviceInfrastructureService"));
+		translator.setTiersDAO(getBean(TiersDAO.class, "tiersDAO"));
+		translator.setDataEventService(getBean(DataEventService.class, "dataEventService"));
+		translator.setTiersService(getBean(TiersService.class, "tiersService"));
+		translator.setMetierServicePM(getBean(MetierServicePM.class, "metierServicePM"));
+		translator.setAdresseService(getBean(AdresseService.class, "adresseService"));
+		translator.setIndexer(getBean(GlobalTiersIndexer.class, "globalTiersIndexer"));
+		translator.setIdentCtbService(getBean(IdentificationContribuableService.class, "identCtbService"));
+		translator.setEvenementFiscalService(getBean(EvenementFiscalService.class, "evenementFiscalService"));
+		translator.setParametreAppService(getBean(ParametreAppService.class, "parametreAppService"));
+		translator.setUseOrganisationsOfNotice(false);
+		translator.setNiveauCappingEtatEvenement(NiveauCappingEtat.EN_ERREUR);
+		translator.afterPropertiesSet();
+
+		buildProcessor(translator);
+
+		// Création de l'événement
+		final Long noEvenement = 12344321L;
+
+		final EvenementOrganisation event = createEvent(noEvenement, noOrganisation, FOSC_COMMUNICATION_DANS_FAILLITE, RegDate.get(2015, 6, 24), A_TRAITER);
+
+		// Persistence événement
+		doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus transactionStatus) {
+				return hibernateTemplate.merge(event).getId();
+			}
+		});
+
+		// Traitement synchrone de l'événement
+		traiterEvenements(noOrganisation);
+
+		// Verification de l'événement interne créé
+		final List<EvenementOrganisationInterne> listEvtInterne = getListeEvtInternesCrees(translator);
+		Assert.assertEquals(3, listEvtInterne.size());
+		Assert.assertTrue(listEvtInterne.get(0) instanceof MessageSuiviPreExecution);
+		Assert.assertTrue(listEvtInterne.get(1) instanceof Indexation);
+		Assert.assertTrue(listEvtInterne.get(2) instanceof CappingEnErreur);
+
+		// Vérification du traitement de l'événement
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			                             @Override
+			                             public Object doInTransaction(TransactionStatus status) {
+				                             final EvenementOrganisation evt = getUniqueEvent(noEvenement);
+				                             Assert.assertNotNull(evt);
+				                             Assert.assertEquals(EtatEvenementOrganisation.EN_ERREUR, evt.getEtat());
+
+				                             final List<EvenementOrganisationErreur> messages = evt.getErreurs();
+				                             Assert.assertNotNull(messages);
+				                             Assert.assertEquals(2, messages.size());
+				                             Assert.assertEquals(String.format("Entreprise n°%s (Synergy SA) identifiée sur la base du numéro civil %d (numéro cantonal).", FormatNumeroHelper.numeroCTBToDisplay(idEntreprise), noOrganisation), messages.get(0).getMessage());
+				                             Assert.assertEquals("Evénement explicitement placé 'en erreur' par configuration applicative.", messages.get(1).getMessage());
 				                             return null;
 			                             }
 		                             }
