@@ -72,7 +72,9 @@
 		<display:column style="width:10%" sortable="true" titleKey="label.date.fin" sortProperty="dateFin">
 			<unireg:regdate regdate="${raisonSociale.dateFin}"/>
 		</display:column>
-		<display:column style="width:60%" sortable="true" titleKey="label.raison.sociale" property="raisonSociale"/>
+		<display:column style="width:60%" sortable="true" titleKey="label.raison.sociale" sortProperty="raisonSociale">
+			<c:out value="${raisonSociale.raisonSociale}"/>
+		</display:column>
 		<display:column style="width:10%" titleKey="label.source">
 			<fmt:message key="option.entreprise.source.${raisonSociale.source}"/>
 		</display:column>

@@ -183,7 +183,8 @@ public class CappingEnErrorProcessorTest extends AbstractEvenementOrganisationPr
 				                             {
 					                             final EvenementOrganisationErreur erreur = evt.getErreurs().get(9);
 					                             Assert.assertEquals(TypeEvenementErreur.ERROR, erreur.getType());
-					                             Assert.assertEquals("Evénement explicitement placé 'en erreur' par configuration applicative.", erreur.getMessage());
+					                             Assert.assertEquals("Evénement explicitement placé 'en erreur' par configuration applicative. Toutes les modifications apportées pendant le traitement sont abandonnées.", erreur.getMessage());
+					                             Assert.assertNull(erreur.getCallstack());
 				                             }
 
 				                             // mais en fait, rien n'a été créé...

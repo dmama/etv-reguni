@@ -61,7 +61,7 @@
 			<c:forEach items="${command.evtErreurs}" var="entry">
 				<tr class="<unireg:nextRowClass/>" >
 					<c:if test="${empty entry.callstack}">
-						<td>${entry.message}</td>
+						<td><c:out value="${entry.message}"/></td>
 					</c:if>
 					<c:if test="${not empty entry.callstack}">
 						<td><span class="error"><unireg:callstack headerMessage="${entry.message}" callstack="${entry.callstack}"/></span></td>
@@ -189,7 +189,7 @@
 		        <td class="error"><c:out value="${command.organisationError}"/></td>
 	        </c:if>
 	        <c:if test="${command.organisation != null}">
-		        <td>${command.organisation.formeJuridique}</td>
+		        <td><c:out value="${command.organisation.formeJuridique}"/></td>
 	        </c:if>
         </tr>
         <tr class="<unireg:nextRowClass/>">
@@ -198,7 +198,7 @@
 		        <td class="error"><c:out value="${command.organisationError}"/></td>
 	        </c:if>
 	        <c:if test="${command.organisation != null}">
-		        <td>${command.organisation.categorie} (<fmt:message key="option.categorie.entreprise.${command.organisation.categorie}"/>)</td>
+		        <td><c:out value="${command.organisation.categorie}"/> (<fmt:message key="option.categorie.entreprise.${command.organisation.categorie}"/>)</td>
 	        </c:if>
         </tr>
         <tr class="<unireg:nextRowClass/>">
@@ -249,9 +249,9 @@
                 <unireg:numCTB numero="${tiersAssocie.numero}"/>
             </display:column>
             <display:column titleKey="label.raison.sociale">
-                ${tiersAssocie.nomCourrier1}
+                <c:out value="${tiersAssocie.nomCourrier1}"/>
                 <c:if test="${tiersAssocie.nomCourrier2 != null }">
-                    <br>${tiersAssocie.nomCourrier2}
+                    <br><c:out value="${tiersAssocie.nomCourrier2}"/>
                 </c:if>
             </display:column>
             <display:column property="localiteOuPays" titleKey="label.localitePays"/>

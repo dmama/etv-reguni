@@ -40,6 +40,6 @@ public class CappingEnErreur extends EvenementOrganisationInterneDeTraitement {
 	public void doHandle(EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) throws EvenementOrganisationException {
 		// et boom !!
 		// il faut faire sauter la transaction mais essayer de conserver les messages récupérés jusque là... (d'où la classe spécifique d'exception lancée)
-		throw new CappingException("Evénement explicitement placé 'en erreur' par configuration applicative.");
+		throw new CappingException("Evénement explicitement placé 'en erreur' par configuration applicative. Toutes les modifications apportées pendant le traitement sont abandonnées.");
 	}
 }

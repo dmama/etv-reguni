@@ -335,7 +335,7 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 				                             Assert.assertNotNull(messages);
 				                             Assert.assertEquals(2, messages.size());
 				                             Assert.assertEquals(String.format("Entreprise n°%s (Synergy SA) identifiée sur la base du numéro civil %d (numéro cantonal).", FormatNumeroHelper.numeroCTBToDisplay(idEntreprise), noOrganisation), messages.get(0).getMessage());
-				                             Assert.assertEquals("Evénement explicitement placé 'en erreur' par configuration applicative.", messages.get(1).getMessage());
+				                             Assert.assertEquals("Evénement explicitement placé 'en erreur' par configuration applicative. Toutes les modifications apportées pendant le traitement sont abandonnées.", messages.get(1).getMessage());
 				                             return null;
 			                             }
 		                             }
