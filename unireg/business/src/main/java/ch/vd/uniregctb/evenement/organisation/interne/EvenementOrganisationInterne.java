@@ -919,7 +919,7 @@ public abstract class EvenementOrganisationInterne {
 	 * @throws EvenementOrganisationException En cas de problème, notamment lorsque la surcharge existante empiète ou dépasse la date de valeur
 	 */
 	protected void appliqueDonneesCivilesSurPeriode(Entreprise entreprise, DateRange range, RegDate dateValeur, EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) throws EvenementOrganisationException {
-		suivis.addSuivi(String.format("Application de la surcharge civile entre le %s et le %s avec les valeur du %s",
+		suivis.addSuivi(String.format("Application de la surcharge civile entre le %s et le %s avec les valeurs du %s",
 		                              RegDateHelper.dateToDisplayString(range.getDateDebut()),
 		                              RegDateHelper.dateToDisplayString(range.getDateFin()),
 		                              RegDateHelper.dateToDisplayString(dateValeur)));
@@ -946,7 +946,7 @@ public abstract class EvenementOrganisationInterne {
 	 * @throws EvenementOrganisationException En cas de problème, notamment lorsque la surcharge existante empiète ou dépasse la date de valeur
 	 */
 	protected void appliqueDonneesCivilesSurPeriode(Etablissement etablissement, DateRange range, RegDate dateValeur, EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) throws EvenementOrganisationException {
-		suivis.addSuivi(String.format("Application de la surcharge civile entre le %s et le %s avec les valeur du %s",
+		suivis.addSuivi(String.format("Application de la surcharge civile entre le %s et le %s avec les valeurs du %s",
 		                              RegDateHelper.dateToDisplayString(range.getDateDebut()),
 		                              RegDateHelper.dateToDisplayString(range.getDateFin()),
 		                              RegDateHelper.dateToDisplayString(dateValeur)));

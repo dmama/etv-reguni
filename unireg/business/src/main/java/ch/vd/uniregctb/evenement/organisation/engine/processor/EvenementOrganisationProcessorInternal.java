@@ -22,6 +22,7 @@ import ch.vd.uniregctb.data.DataEventService;
 import ch.vd.uniregctb.evenement.EvenementCivilHelper;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationBasicInfo;
+import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationConservationMessagesException;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationDAO;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationErreur;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationErreurFactory;
@@ -34,6 +35,7 @@ import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationWarning
 import ch.vd.uniregctb.evenement.organisation.engine.ErrorPostProcessingMiseEnAttenteStrategy;
 import ch.vd.uniregctb.evenement.organisation.engine.ErrorPostProcessingStrategy;
 import ch.vd.uniregctb.evenement.organisation.engine.translator.EvenementOrganisationTranslator;
+import ch.vd.uniregctb.evenement.organisation.interne.CappingEnErreur;
 import ch.vd.uniregctb.evenement.organisation.interne.EvenementOrganisationInterne;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer;
 import ch.vd.uniregctb.tiers.Entreprise;
@@ -199,13 +201,21 @@ public class EvenementOrganisationProcessorInternal implements ProcessorInternal
 		doInNewTransaction(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
-				final EvenementOrganisationErreur erreur = ERREUR_FACTORY.createErreur(e);
 				final EvenementOrganisation evt = fetchDatabaseEvent(info);
 				if (!force) {
 					cleanupAvantTraitement(evt);
 				}
 				addDateTraitement(evt);
+
+				// c'est un cas spécial, on veut conserver les messages...
+				if (e instanceof EvenementOrganisationConservationMessagesException) {
+					final EvenementOrganisationMessageCollector<EvenementOrganisationErreur> messageCollector = ((EvenementOrganisationConservationMessagesException) e).getMessageCollector();
+					evt.getErreurs().addAll(messageCollector.getEntrees());
+				}
+
+				final EvenementOrganisationErreur erreur = ERREUR_FACTORY.createErreur(e);
 				evt.getErreurs().add(erreur);
+
 				assignerEtatApresTraitement(EtatEvenementOrganisation.EN_ERREUR, evt);
 				return null;
 			}
@@ -314,8 +324,15 @@ public class EvenementOrganisationProcessorInternal implements ProcessorInternal
 		final EtatEvenementOrganisation etat;
 		if (force && event.getEtat() == EtatEvenementOrganisation.A_VERIFIER) {
 			etat = EtatEvenementOrganisation.FORCE;
-		} else {
-			etat = processEventAndCollectMessages(event, collector, collector, collector, force);
+		}
+		else {
+			try {
+				etat = processEventAndCollectMessages(event, collector, collector, collector, force);
+			}
+			catch (CappingEnErreur.CappingException e) {
+				// cas spécial où le traitement n'était pas en erreur mais a été cappé...
+				throw new EvenementOrganisationConservationMessagesException(e.getMessage(), collector);
+			}
 		}
 
 		addDateTraitement(event);

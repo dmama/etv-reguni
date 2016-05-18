@@ -7,6 +7,7 @@
 
 	<bean id="evenementOrganisationTranslator" class="ch.vd.uniregctb.evenement.organisation.engine.translator.EvenementOrganisationTranslatorImpl">
 		<property name="useOrganisationsOfNotice" value="${extprop.evtOrganisation.useEventWS}" />
+		<property name="niveauCappingEtatEvenement" value="${extprop.evtOrganisation.capping}"/>
 		<property name="serviceOrganisationService" ref="serviceOrganisationService" />
 		<property name="serviceInfrastructureService" ref="serviceInfrastructureService" />
 		<property name="tiersDAO" ref="tiersDAO" />
