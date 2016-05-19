@@ -435,7 +435,10 @@ public class TiersCreateController {
 
 		final Etablissement saved = (Etablissement) tiersDAO.save(etablissement);
 		final Entreprise entreprise = (Entreprise) tiersDAO.get(noCtbAssocie);
-		tiersService.addActiviteEconomique(saved, entreprise, civilView.getDateDebut(), false);
+		final RapportEntreTiers activiteEconomique = tiersService.addActiviteEconomique(saved, entreprise, civilView.getDateDebut(), false);
+		if (civilView.getDateFin() != null && civilView.getDateFin().isAfterOrEqual(civilView.getDateDebut())) {
+			tiersService.closeRapportEntreTiers(activiteEconomique, civilView.getDateFin());
+		}
 
 		// Calcul des éléments fiscaux
 		final AjustementForsSecondairesResult ajustementForsSecondaires = metierServicePM.calculAjustementForsSecondairesPourEtablissementsVD(entreprise, null);

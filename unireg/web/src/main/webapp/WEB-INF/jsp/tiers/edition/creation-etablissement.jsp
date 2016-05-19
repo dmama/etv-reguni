@@ -3,6 +3,9 @@
 <%@ page import="ch.vd.uniregctb.common.LengthConstants" %>
 <c:set var="id" value="${param.id}" />
 
+<%--@elvariable id="data" type="ch.vd.uniregctb.tiers.view.CreateEtablissementView"--%>
+<%--@elvariable id="ctbAssocie" type="java.lang.Long"--%>
+
 <tiles:insert template="/WEB-INF/jsp/templates/template.jsp">
 	<tiles:put name="title">
 		<fmt:message key="title.creation.etablissement.secondaire" />
@@ -47,7 +50,7 @@
 									<td>
 										<div id="choixCommune">
 											<div style="float: left;">
-												<input id="commune" size="25" value="${command.nomCommune}" tabindex="2" />
+												<input id="commune" size="25" value="${data.civil.nomCommune}" tabindex="2" />
 												<span style="color: red;">&nbsp;*</span>
 											</div>
 											<div style="float: left; margin-left: 2em;">

@@ -68,6 +68,8 @@ public class EtablissementCivilViewValidator implements Validator {
 					errors.rejectValue("sDateFin", "error.date.fin.invalide");
 				} else if (dateFin.isBefore(dateDebut)) {
 					errors.rejectValue("sDateFin", "error.date.fin.avant.debut");
+				} else if (dateFin.isAfter(RegDate.get())) {
+					errors.rejectValue("sDateFin", "error.date.fin.dans.futur");
 				}
 			}
 
