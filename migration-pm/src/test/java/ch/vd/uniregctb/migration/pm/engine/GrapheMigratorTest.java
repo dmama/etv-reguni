@@ -7501,7 +7501,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 			final List<String> msgs = messages.get(LogCategory.SUIVI);
 			Assert.assertEquals(18, msgs.size());
 			Assert.assertEquals("WARN;" + idEntreprise + ";Active;CHE105968205;" + noCantonalEntreprise + ";;;;;;;;;;;;;L'entreprise n'existait pas dans Unireg avec ce numéro de contribuable.", msgs.get(0));
-			Assert.assertEquals("ERROR;" + idEntreprise + ";Active;CHE105968205;" + noCantonalEntreprise + ";;;;;;;;;;;;;Appariement avec RCEnt ignoré en raison d'une forme juridique 'succursale' (en fait : N_0111_FILIALE_ETRANGERE_AU_RC) présente dans l'établissement principal de l'organisation renvoyée.", msgs.get(1));
+			Assert.assertEquals("ERROR;" + idEntreprise + ";Active;CHE105968205;" + noCantonalEntreprise + ";;;;;;;;;;;;;Appariement avec RCEnt ignoré en raison d'une forme juridique non-supportée (N_0111_FILIALE_ETRANGERE_AU_RC) présente dans l'établissement principal de l'organisation renvoyée.", msgs.get(1));
 			Assert.assertEquals("WARN;" + idEntreprise + ";Active;CHE105968205;" + noCantonalEntreprise + ";;;;;;;;;;;;;Ajout d'une date de bouclement estimée au 31.12.2015 pour combler l'absence d'exercice commercial dans RegPM sur la période [23.04.2005 -> 31.12.2016].", msgs.get(2));
 			Assert.assertEquals("WARN;" + idEntreprise + ";Active;CHE105968205;" + noCantonalEntreprise + ";;;;;;;;;;;;;Ajout d'une date de bouclement estimée au 31.12.2014 pour combler l'absence d'exercice commercial dans RegPM sur la période [23.04.2005 -> 31.12.2016].", msgs.get(3));
 			Assert.assertEquals("WARN;" + idEntreprise + ";Active;CHE105968205;" + noCantonalEntreprise + ";;;;;;;;;;;;;Ajout d'une date de bouclement estimée au 31.12.2013 pour combler l'absence d'exercice commercial dans RegPM sur la période [23.04.2005 -> 31.12.2016].", msgs.get(4));
@@ -7527,6 +7527,90 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 			final List<String> msgs = messages.get(LogCategory.APPARIEMENTS_REJETES_FORME_JURIDIQUE);
 			Assert.assertEquals(1, msgs.size());
 			Assert.assertEquals("ERROR;" + idEntreprise + ";Active;CHE105968205;" + noCantonalEntreprise + ";N_0111_FILIALE_ETRANGERE_AU_RC;", msgs.get(0));
+		}
+	}
+
+	/**
+	 * SIFISC-19233
+	 * Cas de l'entreprise 744.27, SNC depuis le 4.4.2016 dans RegPM, et existant sous la forme d'une société simple (0302) dans RCEnt depuis le 15.02.2016
+	 */
+	@Test
+	public void testDonneesCivilesPresentesAvantDonneesFiscalesEtFormeJuridiqueCivileSocieteSimple() throws Exception {
+
+		final long idEntreprise = 74427;
+		final long noCantonalOrganisation = 101701241L;
+		final long noCantonalEtablissementPrincipal = 101701242L;
+		final String noide = "CHE144973925";
+		final RegDate dateDebutRegpm = RegDate.get(2016, 4, 4);
+		final RegDate dateDebutRcent = RegDate.get(2016, 2, 15);
+		final RegDate dateDebutSocietePersonnes = dateDebutRegpm.addDays(1 - dateDebutRegpm.day());     // premier jour du mois
+
+		// mise en place dans RegPM
+		final RegpmEntreprise regpm = EntrepriseMigratorTest.buildEntreprise(idEntreprise);
+		regpm.setNumeroCantonal(noCantonalOrganisation);
+		regpm.setNumeroIDE(EntrepriseMigratorTest.buildNumeroIDE(noide.substring(0, 3), Long.parseLong(noide.substring(3))));
+		regpm.setDateDebutSocietePersonnes(dateDebutSocietePersonnes);
+		EntrepriseMigratorTest.addFormeJuridique(regpm, dateDebutRegpm, EntrepriseMigratorTest.createTypeFormeJuridique("S.N.C.", RegpmCategoriePersonneMorale.SP));
+		EntrepriseMigratorTest.addRaisonSociale(regpm, dateDebutRegpm, "Hostellerie Machin", null, null, true);
+		EntrepriseMigratorTest.addForPrincipalSuisse(regpm, dateDebutRegpm, RegpmTypeForPrincipal.SIEGE, Commune.GRANDSON);
+		EntrepriseMigratorTest.addEtatEntreprise(regpm, dateDebutRegpm, RegpmTypeEtatEntreprise.INSCRITE_AU_RC);
+
+		// mise en place dans RCEnt
+		organisationService.setUp(new MockServiceOrganisation() {
+			@Override
+			protected void init() {
+				final MockOrganisation org = addOrganisation(noCantonalOrganisation);
+				final MockSiteOrganisation sitePrincipal = addSite(org, noCantonalEtablissementPrincipal, dateDebutRcent, new MockDonneesRegistreIDE(), new MockDonneesRC());
+				sitePrincipal.changeTypeDeSite(dateDebutRcent, TypeDeSite.ETABLISSEMENT_PRINCIPAL);
+				sitePrincipal.changeNom(dateDebutRcent, "Hostellerie Machin");
+				sitePrincipal.changeFormeLegale(dateDebutRcent, FormeLegale.N_0302_SOCIETE_SIMPLE);
+				sitePrincipal.addSiege(dateDebutRcent, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Grandson.getNoOFS());
+			}
+		});
+
+		final MockGraphe graphe = new MockGraphe(Collections.singletonList(regpm),
+		                                         null,
+		                                         null);
+
+		activityManager.setup(ALL_ACTIVE);
+		appariementsMultiplesManager.setup(NO_REUSE);
+
+		final LoggedMessages lms = grapheMigrator.migrate(graphe);
+		Assert.assertNotNull(lms);
+
+		// ce qui est attendu dans ce cas, c'est qu'on oublie l'appariement
+		doInUniregTransaction(true, status -> {
+			final Entreprise entreprise = uniregStore.getEntityFromDb(Entreprise.class, idEntreprise);
+			Assert.assertNotNull(entreprise);
+			Assert.assertNull(entreprise.getNumeroEntreprise());        // appariement oublié
+
+			final ForsParType fpt = entreprise.getForsParType(true);
+			Assert.assertNotNull(fpt);
+			Assert.assertEquals(0, fpt.principauxPP.size());
+			Assert.assertEquals(1, fpt.principauxPM.size());
+			Assert.assertEquals(0, fpt.secondaires.size());
+			Assert.assertEquals(0, fpt.dpis.size());
+			Assert.assertEquals(0, fpt.autresImpots.size());
+			Assert.assertEquals(0, fpt.autreElementImpot.size());
+
+			final ForFiscalPrincipalPM ffp = fpt.principauxPM.get(0);
+			Assert.assertNotNull(ffp);
+			Assert.assertEquals(dateDebutSocietePersonnes, ffp.getDateDebut());
+			Assert.assertNull(ffp.getDateFin());
+			Assert.assertFalse(ffp.isAnnule());
+			Assert.assertEquals(MotifFor.INDETERMINE, ffp.getMotifOuverture());
+			Assert.assertEquals(MotifRattachement.DOMICILE, ffp.getMotifRattachement());
+			Assert.assertEquals(GenreImpot.REVENU_FORTUNE, ffp.getGenreImpot());
+			Assert.assertNull(ffp.getMotifFermeture());
+		});
+
+		// vérification que nous sommes bien passés par un appariement rejeté
+		final Map<LogCategory, List<String>> messages = buildTextualMessages(lms);
+		Assert.assertNotNull(messages);
+		{
+			final List<String> msgs = messages.get(LogCategory.APPARIEMENTS_REJETES_FORME_JURIDIQUE);
+			Assert.assertEquals(1, msgs.size());
+			Assert.assertEquals("ERROR;" + idEntreprise + ";Active;" + noide + ";" + noCantonalOrganisation + ";N_0302_SOCIETE_SIMPLE;", msgs.get(0));
 		}
 	}
 
