@@ -128,6 +128,8 @@ public class RCEntAdapter {
 						break;
 					}
 				}
+			} else {
+				throw e;
 			}
 			if (real_error) {
 				throw e;

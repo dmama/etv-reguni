@@ -598,4 +598,24 @@ public class RCEntAdapterTest {
 			assertEquals("Status 500 (100: Grosse erreur: 383324)", e.getMessage());
 		}
 	}
+
+	@Test
+	public void testGetOrgaOfNoticeErreurGraveSansMessage() throws JAXBException {
+		final long noticeId = 383324L;
+		final File xmlAfter = new File("src/test/resources/samples/organisationsOfNotice/evt-383324-after.xml");
+		final JAXBElement<OrganisationsOfNotice> orgOfNoticeAfter = (JAXBElement<OrganisationsOfNotice>) unmarshaller.unmarshal(xmlAfter);
+		when(client.getOrganisationsOfNotice(noticeId, RcEntClient.OrganisationState.AFTER)).thenReturn(orgOfNoticeAfter.getValue());
+
+		final RcEntClientException rcEntClientException = new RcEntClientException(new ServerWebApplicationException(), null);
+		when(client.getOrganisationsOfNotice(noticeId, RcEntClient.OrganisationState.BEFORE)).thenThrow(rcEntClientException);
+
+		try {
+			final Map<Long, OrganisationEvent> historyMap = service.getOrganisationEvent(noticeId);
+			fail("Une RcEntClientException aurait du être lancée.");
+		}
+		catch (RcEntClientException e) {
+			assertEquals("Status 500", e.getMessage());
+		}
+	}
+
 }
