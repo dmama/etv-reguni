@@ -1359,8 +1359,11 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 				if (org != null) {
 
 					// [SIFISC-19173] on ne prend pas en compte les appariements qui donnent des formes juridiques "succursales" aux établissements principaux
+					// [SIFISC-19233] on ne prend pas en compte non-plus ceux qui parlent d'une société simple (0302) ou d'une "forme juridique particulière" (0113)
 					final Set<FormeLegale> formesLegalesInterdites = EnumSet.of(FormeLegale.N_0111_FILIALE_ETRANGERE_AU_RC,
+					                                                            FormeLegale.N_0113_FORME_JURIDIQUE_PARTICULIERE,
 					                                                            FormeLegale.N_0151_SUCCURSALE_SUISSE_AU_RC,
+					                                                            FormeLegale.N_0302_SOCIETE_SIMPLE,
 					                                                            FormeLegale.N_0312_FILIALE_ETRANGERE_NON_AU_RC);
 
 					final Map<Long, SiteOrganisation> map = org.getDonneesSites().stream()
@@ -1371,7 +1374,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 							.collect(Collectors.toCollection(() -> EnumSet.noneOf(FormeLegale.class)));
 					if (!formesLegalesInterditesVues.isEmpty()) {
 						mr.addMessage(LogCategory.SUIVI, LogLevel.ERROR,
-						              String.format("Appariement avec RCEnt ignoré en raison d'une forme juridique 'succursale' (en fait : %s) présente dans l'établissement principal de l'organisation renvoyée.",
+						              String.format("Appariement avec RCEnt ignoré en raison d'une forme juridique non-supportée (%s) présente dans l'établissement principal de l'organisation renvoyée.",
 						                            CollectionsUtils.toString(formesLegalesInterditesVues, FormeLegale::name, ", ")));
 
 						// constituons une liste séparée
