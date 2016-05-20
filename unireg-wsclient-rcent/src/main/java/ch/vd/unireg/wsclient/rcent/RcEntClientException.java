@@ -1,11 +1,10 @@
 package ch.vd.unireg.wsclient.rcent;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.cxf.jaxrs.client.ServerWebApplicationException;
 import org.jetbrains.annotations.Nullable;
-
-import ch.vd.evd0004.v3.Error;
 
 public class RcEntClientException extends RuntimeException {
 
@@ -74,7 +73,13 @@ public class RcEntClientException extends RuntimeException {
 		return cause != null ? cause : super.getCause();
 	}
 
+	/**
+	 * @return la liste des erreurs rapportées, ou {@link Collections#emptyList()} s'il n'y en a pas.
+	 */
 	public List<RcEntClientErrorMessage> getErrors() {
+		if (errors == null) {
+			return Collections.emptyList();
+		}
 		return errors;
 	}
 }

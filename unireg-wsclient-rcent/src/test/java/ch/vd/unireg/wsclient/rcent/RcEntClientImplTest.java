@@ -3,13 +3,11 @@ package ch.vd.unireg.wsclient.rcent;
 import java.util.Arrays;
 import java.util.List;
 
-import ch.ech.ech0010.v6.AddressInformation;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import ch.vd.evd0004.v3.Error;
 import ch.vd.evd0022.v3.OrganisationData;
 
 /**
@@ -115,4 +113,10 @@ public class RcEntClientImplTest {
 		}
 	}
 
+	@Test
+	public void testExceptionPasErreurEmptyList() {
+		final RcEntClientException exception = new RcEntClientException("Exception de test", null);
+		Assert.assertNotNull(exception.getErrors());
+		Assert.assertEquals(0, exception.getErrors().size());
+	}
 }
