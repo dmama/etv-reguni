@@ -5,6 +5,7 @@ import java.net.URL;
 import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import org.apache.log4j.Logger;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.junit.Assert.assertNotNull;
@@ -17,6 +18,7 @@ public class WatchDogUniregValidationTest extends WatchDogTest {
 
 	private static final Logger LOGGER = Logger.getLogger(WatchDogUniregValidationTest.class);
 
+	@Ignore("Tant que l'on n'aura pas résolu l'identification dans le nouvel IAM")
 	@Test(timeout = WatchDogTest.TIMEOUT)
 	public void testValidation() throws Exception {
 		LOGGER.info("Vérification de Unireg en validation...");

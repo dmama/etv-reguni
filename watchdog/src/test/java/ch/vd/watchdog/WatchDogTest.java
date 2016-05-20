@@ -204,14 +204,14 @@ public abstract class WatchDogTest {
 		if (loginPage.getTitleText().contains("Page de Login")) {
 			LOGGER.debug("Login IAM avec username = " + IAM_USERNAME);
 
-			final HtmlTextInput utilisateur = loginPage.getHtmlElementById("IDToken1");
-			final HtmlPasswordInput password = loginPage.getHtmlElementById("IDToken2");
+			final HtmlTextInput utilisateur = loginPage.getHtmlElementById("txt_callbackItem_NameCallback_IDToken1");
+			final HtmlPasswordInput password = loginPage.getHtmlElementById("txt_callbackItem_PasswordCallback_IDToken2");
 
 			utilisateur.setValueAttribute(IAM_USERNAME);
 			password.setValueAttribute(IAM_PASSWORD);
 
 			webClient.preventExceptionThrowingOnWrongStatusCode = true;
-			final ScriptResult resultat = loginPage.executeJavaScript("javascript:LoginSubmit('Log In')");
+			final ScriptResult resultat = loginPage.executeJavaScript("javascript:LoginSubmit('Connexion')");
 			final HtmlPage page = (HtmlPage) resultat.getNewPage();
 			assertNotNull(page);
 			webClient.preventExceptionThrowingOnWrongStatusCode = false;

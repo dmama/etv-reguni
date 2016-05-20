@@ -9,6 +9,7 @@ import java.util.Set;
 import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import org.apache.log4j.Logger;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.junit.Assert.assertNotNull;
@@ -21,6 +22,7 @@ public class WatchDogUniregIntegrationPostProductionTest extends WatchDogTest {
 
 	private static final Logger LOGGER = Logger.getLogger(WatchDogUniregIntegrationPostProductionTest.class);
 
+	@Ignore("Tant que l'on n'aura pas résolu l'identification dans le nouvel IAM")
 	@Test(timeout = WatchDogTest.TIMEOUT)
 	public void testIntegrationPostProduction() throws Exception {
 		LOGGER.info("Vérification de Unireg en intégration de post-production...");
