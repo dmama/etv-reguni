@@ -1,5 +1,7 @@
 package ch.vd.uniregctb.evenement.organisation.engine;
 
+import java.util.List;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
@@ -54,7 +56,7 @@ public class AutresCommunautesProcessingTest extends AbstractEvenementOrganisati
 			@Override
 			protected void init() {
 				MockOrganisation organisation =
-						MockOrganisationFactory.createOrganisation(noOrganisation, noSite, "Correia Pinto, Jardinage et Paysagisme", date(2010, 6, 26), null, FormeLegale.N_0302_SOCIETE_SIMPLE,
+						MockOrganisationFactory.createOrganisation(noOrganisation, noSite, "Correia Pinto, Jardinage et Paysagisme", date(2010, 6, 26), null, FormeLegale.N_0101_ENTREPRISE_INDIVIDUELLE,
 						                                           TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF, date(2010, 6, 24),
 						                                           StatusRegistreIDE.DEFINITIF,
 						                                           TypeOrganisationRegistreIDE.ENTREPRISE_INDIVIDUELLE, null, null);
@@ -98,9 +100,13 @@ public class AutresCommunautesProcessingTest extends AbstractEvenementOrganisati
 
 				                             final EvenementOrganisation evt = getUniqueEvent(noEvenement);
 				                             Assert.assertNotNull(evt);
-				                             Assert.assertEquals(EtatEvenementOrganisation.EN_ERREUR, evt.getEtat());
+				                             Assert.assertEquals(EtatEvenementOrganisation.A_VERIFIER, evt.getEtat());
 
-				                             final EvenementOrganisationErreur evtErreur0 = evt.getErreurs().get(0);
+				                             final List<EvenementOrganisationErreur> erreurs = evt.getErreurs();
+				                             Assert.assertNotNull(erreurs);
+				                             Assert.assertEquals(2, erreurs.size());
+
+				                             final EvenementOrganisationErreur evtErreur0 = erreurs.get(0);
 				                             Assert.assertEquals(String.format("Attention: le tiers n°%s identifié grâce aux attributs civils [Correia Pinto, Jardinage et Paysagisme] n'est pas une entreprise (%s) et sera ignoré. " +
 						                                                               "Si nécessaire, un tiers Entreprise sera créé pour l'organisation civile n°%d, en doublon du tiers n°%s (%s).",
 				                                                               FormatNumeroHelper.numeroCTBToDisplay(tiersId),
@@ -109,8 +115,9 @@ public class AutresCommunautesProcessingTest extends AbstractEvenementOrganisati
 				                                                               FormatNumeroHelper.numeroCTBToDisplay(tiersId),
 				                                                               TypeTiers.AUTRE_COMMUNAUTE.getDescription()),
 				                                                 evtErreur0.getMessage());
+
 				                             final EvenementOrganisationErreur evtErreur1 = evt.getErreurs().get(1);
-				                             Assert.assertEquals("Création automatique non prise en charge.",
+				                             Assert.assertEquals(String.format("L'organisation n°%d est une entreprise individuelle vaudoise. Pas de traitement.", noOrganisation),
 				                                                 evtErreur1.getMessage());
 				                             return null;
 			                             }
