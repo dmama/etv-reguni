@@ -33,6 +33,19 @@
 	    </li>
 	</tiles:put>
   	<tiles:put name="body">
+
+	    <c:choose>
+		    <c:when test="${capping == 'EN_ERREUR'}">
+			    <div class="flash-error"><fmt:message key="label.traitement.systematique.erreur"/></div>
+		    </c:when>
+		    <c:when test="${capping == 'A_VERIFIER'}">
+			    <div class="flash-warning"><fmt:message key="label.traitement.systematique.aVerifier"/></div>
+		    </c:when>
+		    <c:otherwise>
+			    <!-- rien à afficher -->
+		    </c:otherwise>
+	    </c:choose>
+
 		<unireg:nextRowClass reset="1"/>
 	    <form:form method="get" id="formRechercheEvenements" commandName="evenementOrganisationCriteria">
 			<fieldset>
