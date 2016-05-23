@@ -575,6 +575,8 @@ public class TiersMapHelper extends CommonMapHelper {
 			                                         TypeDocument.DECLARATION_IMPOT_DEPENSE,
 			                                         TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE,
 			                                         TypeDocument.DECLARATION_IMPOT_VAUDTAX,
+			                                         TypeDocument.DECLARATION_IMPOT_APM_BATCH,
+			                                         TypeDocument.DECLARATION_IMPOT_PM_BATCH,
 			                                         TypeDocument.QUESTIONNAIRE_SNC,
 			                                         TypeDocument.E_FACTURE_ATTENTE_CONTACT,
 			                                         TypeDocument.E_FACTURE_ATTENTE_SIGNATURE);
