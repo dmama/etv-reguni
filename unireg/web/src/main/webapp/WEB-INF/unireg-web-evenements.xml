@@ -35,6 +35,7 @@
 	<bean id="evtOrganisationController" class="ch.vd.uniregctb.evenement.organisation.EvenementOrganisationController" parent="evtCivController">
 		<property name="validator" ref="evtOrganisationCriteriaValidator" />
 		<property name="manager" ref="evtOrganisationManager" />
+		<property name="capping" value="${extprop.evtOrganisation.capping}"/>
 	</bean>
 
 	<bean id="evtCivRegPPManager" class="ch.vd.uniregctb.evenement.regpp.manager.EvenementCivilRegPPManagerImpl" parent="evtCivManager">

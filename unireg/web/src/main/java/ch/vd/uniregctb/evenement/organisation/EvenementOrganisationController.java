@@ -35,6 +35,7 @@ import ch.vd.uniregctb.common.Flash;
 import ch.vd.uniregctb.common.ParamPagination;
 import ch.vd.uniregctb.common.WebParamPagination;
 import ch.vd.uniregctb.evenement.common.AbstractEvenementCivilController;
+import ch.vd.uniregctb.evenement.organisation.engine.translator.NiveauCappingEtat;
 import ch.vd.uniregctb.evenement.organisation.manager.EvenementOrganisationManager;
 import ch.vd.uniregctb.evenement.organisation.view.EvenementOrganisationCriteriaView;
 import ch.vd.uniregctb.evenement.organisation.view.EvenementOrganisationElementListeRechercheView;
@@ -57,22 +58,29 @@ public class EvenementOrganisationController extends AbstractEvenementCivilContr
 	private static final WebParamPagination INITIAL_PAGINATION = new WebParamPagination(1, PAGE_SIZE, DEFAULT_FIELD, false);
 
 	private TiersMapHelper tiersMapHelper;
+	private EvenementOrganisationManager manager;
+	private Validator validator;
+	private NiveauCappingEtat capping;
+
+	@SuppressWarnings("UnusedDeclaration")
 	public void setTiersMapHelper(TiersMapHelper tiersMapHelper) {
 		this.tiersMapHelper = tiersMapHelper;
 	}
 
-	private EvenementOrganisationManager manager;
 	@SuppressWarnings("UnusedDeclaration")
 	public void setManager(EvenementOrganisationManager manager) {
 		this.manager = manager;
 	}
 
-	private  Validator validator;
 	@SuppressWarnings("UnusedDeclaration")
 	public void setValidator(Validator validator) {
 		this.validator = validator;
 	}
 
+	@SuppressWarnings("UnusedDeclaration")
+	public void setCapping(NiveauCappingEtat capping) {
+		this.capping = capping;
+	}
 
 	@InitBinder("evenementOrganisationCriteria")
 	protected final void initBinder(HttpServletRequest request, WebDataBinder binder) {
@@ -96,6 +104,7 @@ public class EvenementOrganisationController extends AbstractEvenementCivilContr
 		model.put("typesRechercheNom", tiersMapHelper.getMapTypeRechercheNom());
 		model.put("typesEvenementOrganisation", tiersMapHelper.getMapTypeEvenementOrganisation());
 		model.put("etatsEvenement", tiersMapHelper.getMapEtatsEvenementOrganisation());
+		model.put("capping", capping);
 		return model;
 	}
 
