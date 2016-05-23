@@ -4,8 +4,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.interfaces.infra.data.Commune;
+import ch.vd.unireg.interfaces.organisation.data.DateRanged;
 import ch.vd.unireg.interfaces.organisation.data.Domicile;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
+import ch.vd.unireg.interfaces.organisation.data.OrganisationHelper;
 import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationContext;
@@ -66,6 +69,24 @@ public class CreateOrganisationStrategy extends AbstractOrganisationStrategy {
 					                            "Autorité fiscale (siège) introuvable pour le site principal %s de l'organisation %s %s. Site probablement à l'étranger. Impossible de créer le domicile de l'établissement principal.",
 					                            sitePrincipal.getNumeroSite(), organisation.getNumeroOrganisation(), organisation.getNom(dateEvenement))
 			);
+		}
+
+		// On contrôle si on existe avant, où et depuis quand. Si cela fait trop longtemps sur Vaud, c'est qu'on a un problème d'identification.
+		final RegDate datePasseeTropAncienne = dateEvenement.getOneDayBefore().addDays(- OrganisationHelper.NB_JOURS_TOLERANCE_DE_DECALAGE_RC);
+		final DateRanged<SiteOrganisation> sitePrincipalAvantRange = organisation.getSitePrincipal(datePasseeTropAncienne);
+		if (sitePrincipalAvantRange != null) {
+			SiteOrganisation sitePrincipalAvant = sitePrincipalAvantRange.getPayload();
+			final Domicile domicilePasse = sitePrincipalAvant.getDomicile(datePasseeTropAncienne);
+			if (domicilePasse != null) {
+				if (domicilePasse.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
+					final Commune commune = context.getServiceInfra().getCommuneByNumeroOfs(domicilePasse.getNoOfs(), datePasseeTropAncienne);
+					return new TraitementManuel(event, organisation, null, context, options,
+					                            String.format(
+							                            "L'organisation n°%d est présente sur Vaud (%s) depuis plus de %d jours et devrait être déjà connue d'Unireg. Il est très probable que l'identification n'ait pas fonctionné. Veuillez traiter le cas à la main.",
+							                            organisation.getNumeroOrganisation(), commune != null ? commune.getNomOfficielAvecCanton() : "", OrganisationHelper.NB_JOURS_TOLERANCE_DE_DECALAGE_RC)
+					);
+				}
+			}
 		}
 
 		final InformationDeDateEtDeCreation info;
