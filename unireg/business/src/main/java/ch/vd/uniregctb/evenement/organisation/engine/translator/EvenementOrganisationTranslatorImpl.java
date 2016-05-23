@@ -17,6 +17,7 @@ import ch.vd.registre.base.utils.StringsUtils;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
+import ch.vd.unireg.interfaces.organisation.data.ServiceOrganisationEvent;
 import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.audit.Audit;
@@ -197,10 +198,13 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 	public EvenementOrganisationInterne toInterne(EvenementOrganisation event, EvenementOrganisationOptions options) throws EvenementOrganisationException {
 		final Organisation organisation;
 		if (useOrganisationsOfNotice) {
-			organisation = serviceOrganisationService.getOrganisationEvent(event.getNoEvenement()).get(event.getNoOrganisation()).getPseudoHistory();
-			if (organisation == null) {
-				throw new EvenementOrganisationException(String.format("Fatal: le service n'a pas renvoyé d'organisation pour l'événement %d.", event.getNoEvenement()));
+			final ServiceOrganisationEvent serviceOrganisationEvent = serviceOrganisationService.getOrganisationEvent(event.getNoEvenement()).get(event.getNoOrganisation());
+			if (serviceOrganisationEvent == null) {
+				throw new EvenementOrganisationException(
+						String.format("Fatal: l'événement %d ne contient pas de données pour l'organisation %d!", event.getNoEvenement(), event.getNoOrganisation())
+				);
 			}
+			organisation = serviceOrganisationEvent.getPseudoHistory();
 		} else {
 			LOGGER.warn("Utilisation du service RCEnt WS Organisation à la place du WS OrganisationsOfNotice! Traitements à double possibles.");
 			organisation = serviceOrganisationService.getOrganisationHistory(event.getNoOrganisation());
