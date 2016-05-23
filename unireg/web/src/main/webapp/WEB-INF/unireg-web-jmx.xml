@@ -27,6 +27,7 @@
 				<entry key="ch.vd.uniregctb-web:type=Monitoring,name=Caches" value-ref="uniregCacheManager" />
 				<entry key="ch.vd.uniregctb-web:type=Monitoring,name=Jobs" value-ref="batchScheduler" />
 				<entry key="ch.vd.uniregctb-web:type=Monitoring,name=EvenementsCivils" value-ref="evenementsCivilsEchJmxBean" />
+				<entry key="ch.vd.uniregctb-web:type=Monitoring,name=EvenementsOrganisation" value-ref="evenementsOrganisationJmxBean" />
 				<entry key="ch.vd.uniregctb-web:type=Monitoring,name=RetourImpression" value-ref="retourImpressionJmxBean" />
 				<entry key="ch.vd.uniregctb-web:type=Monitoring,name=IndexationOnTheFly" value-ref="onTheFlyTiersIndexerJmxBean"/>
 				<entry key="ch.vd.uniregctb-web:type=Monitoring,name=ExtractionsAsynchrones" value-ref="extractionServiceJmxBean" />
@@ -102,6 +103,11 @@
 	<bean name="evenementsCivilsEchJmxBean" class="ch.vd.uniregctb.jmx.EvenementsCivilsEchJmxBeanImpl">
 		<property name="monitor" ref="evtCivilEchReceptionHandler"/>
 		<property name="processor" ref="evtCivilEchProcessor"/>
+	</bean>
+
+	<bean name="evenementsOrganisationJmxBean" class="ch.vd.uniregctb.jmx.EvenementsOrganisationJmxBeanImpl">
+		<property name="monitor" ref="evtOrganisationReceptionHandler"/>
+		<property name="processor" ref="evtOrganisationProcessor"/>
 	</bean>
 
 	<bean name="retourImpressionJmxBean" class="ch.vd.uniregctb.jmx.RetourImpressionJmxBeanImpl">
