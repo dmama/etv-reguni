@@ -318,13 +318,6 @@ public class ExerciceCommercialController {
 			return "redirect:/exercices/edit.do?pmId=" + view.getPmId();
 		}
 
-		final ForFiscalPrincipalPM dernierForFiscalPrincipal = entreprise.getDernierForFiscalPrincipal();
-		if (dernierForFiscalPrincipal != null && RegDateHelper.isBefore(dernierForFiscalPrincipal.getDateFin(), view.getNouvelleDate(), NullDateBehavior.LATEST)) {
-			throw new ActionException(String.format("Le déplacement de la date de bouclement du %s au %s est impossible car le dernier for fiscal principal est fermé avant cette date.",
-			                                        RegDateHelper.dateToDisplayString(view.getAncienneDate()),
-			                                        RegDateHelper.dateToDisplayString(view.getNouvelleDate())));
-		}
-
 		// premier contrôle : s'il y a une DI non-annulée qui intersecte la période entre les deux dates, on refuse la modification
 		final List<DeclarationImpotOrdinairePM> dis = getDeclarationsNonAnnuleesTriees(entreprise);
 		final DateRange deplacement = new DateRangeHelper.Range(RegDateHelper.minimum(view.getAncienneDate(), view.getNouvelleDate(), NullDateBehavior.LATEST),
