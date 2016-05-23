@@ -675,7 +675,21 @@ public class DeclarationImpotController {
 		}
 
 		if (typeDocument == null) {
-			typeDocument = periode.getTypeDocumentDeclaration();
+			final TypeDocument typeDocumentDeclaration = periode.getTypeDocumentDeclaration();
+			if (typeDocumentDeclaration != null) {
+				switch (typeDocumentDeclaration) {
+				case DECLARATION_IMPOT_APM_BATCH:
+				case DECLARATION_IMPOT_APM_LOCAL:
+					typeDocument = TypeDocument.DECLARATION_IMPOT_APM_LOCAL;
+					break;
+				case DECLARATION_IMPOT_PM_BATCH:
+				case DECLARATION_IMPOT_PM_LOCAL:
+					typeDocument = TypeDocument.DECLARATION_IMPOT_PM_LOCAL;
+					break;
+				default:
+				    throw new ActionException("Type de document invalide : " + typeDocumentDeclaration);
+				}
+			}
 		}
 
 		view.setPeriode(periode);
