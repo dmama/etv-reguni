@@ -3399,6 +3399,11 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 					.max(Comparator.comparing(Domicile::getDateDebut))
 					.map(domicile -> new CommuneOuPays(domicile.getNoOfs(), domicile.getTypeAutoriteFiscale()))
 					.orElse(null);
+			final MontantMonetaire rcentCapital = rcent.getCapitaux().stream()
+					.filter(capital -> capital.getCapitalLibere() != null)
+					.max(Comparator.comparing(Capital::getDateDebut))
+					.map(capital -> new MontantMonetaire(capital.getCapitalLibere().longValue(), capital.getDevise()))
+					.orElse(null);
 
 			final Optional<String> regpmFormeJuridique = Optional.of(regpmFormesJuridiques)
 					.filter(map -> !map.isEmpty())
@@ -3415,17 +3420,25 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 					.map(Map.Entry::getValue)
 					.map(siege -> new CommuneOuPays(siege::getCommune, siege::getNoOfsPays))
 					.orElse(null);
+			final MontantMonetaire regpmCapital = Optional.of(regpmCapitaux)
+					.filter(map -> !map.isEmpty())
+					.map(NavigableMap::lastEntry)
+					.map(Map.Entry::getValue)
+					.map(valeur -> new MontantMonetaire(valeur.longValue(), MontantMonetaire.CHF))
+					.orElse(null);
 
 			final boolean differenceFormeJuridique = areDifferent(rcentCodeFormeJuridique, regpmCodeFormeJuridique, Objects::equals);
 			final boolean differenceRaisonSociale = areDifferent(rcentRaisonSociale, regpmRaisonSociale, Objects::equals);
 			final boolean differenceNumeroIde = areDifferent(rcentNumeroIde, regpmNumeroIde, Objects::equals);
 			final boolean differenceSiege = areDifferent(rcentSiege, regpmSiege, Objects::equals);
+			final boolean differenceCapital = areDifferent(rcentCapital, regpmCapital, (mm1, mm2) -> !areDifferent(mm1.getMontant(), mm2.getMontant(), Objects::equals) && !areDifferent(mm1.getMonnaie(), mm2.getMonnaie(), Objects::equals));
 
-			if (differenceFormeJuridique || differenceNumeroIde || differenceRaisonSociale || differenceSiege) {
+			if (differenceFormeJuridique || differenceNumeroIde || differenceRaisonSociale || differenceSiege || differenceCapital) {
 				mr.pushContextValue(DifferencesDonneesCivilesLoggedElement.class, new DifferencesDonneesCivilesLoggedElement(regpmRaisonSociale, rcentRaisonSociale, differenceRaisonSociale,
 				                                                                                                             regpmFormeJuridique.orElse(null), rcentFormeJuridique.orElse(null), differenceFormeJuridique,
 				                                                                                                             regpmNumeroIde, rcentNumeroIde, differenceNumeroIde,
-				                                                                                                             regpmSiege, rcentSiege, differenceSiege));
+				                                                                                                             regpmSiege, rcentSiege, differenceSiege,
+				                                                                                                             regpmCapital, rcentCapital, differenceCapital));
 				try {
 					mr.addMessage(LogCategory.DIFFERENCES_DONNEES_CIVILES, LogLevel.INFO, StringUtils.EMPTY);
 				}

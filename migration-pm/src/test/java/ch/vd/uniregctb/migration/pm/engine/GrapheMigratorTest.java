@@ -4493,7 +4493,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		{
 			final List<String> msgs = messages.get(LogCategory.DIFFERENCES_DONNEES_CIVILES);
 			Assert.assertEquals(1, msgs.size());
-			Assert.assertEquals("INFO;" + noEntreprise + ";Active;CHE123456788;" + noCantonalEntreprise + ";Toto SA;Pittet Levage S.A.R.L.;Différentes;S.A.;N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE;Différentes;CHE123456788;CHE123456788;Identiques;COMMUNE_OU_FRACTION_VD/5561;COMMUNE_OU_FRACTION_VD/5561;Identiques;", msgs.get(0));
+			Assert.assertEquals("INFO;" + noEntreprise + ";Active;CHE123456788;" + noCantonalEntreprise + ";Toto SA;Pittet Levage S.A.R.L.;Différentes;S.A.;N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE;Différentes;CHE123456788;CHE123456788;Identiques;COMMUNE_OU_FRACTION_VD/5561;COMMUNE_OU_FRACTION_VD/5561;Identiques;;;Identiques;", msgs.get(0));
 		}
 	}
 
@@ -4575,7 +4575,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		{
 			final List<String> msgs = messages.get(LogCategory.DIFFERENCES_DONNEES_CIVILES);
 			Assert.assertEquals(1, msgs.size());
-			Assert.assertEquals("INFO;" + noEntreprise + ";Active;CHE123456788;" + noCantonalEntreprise + ";Toto SA;Toto SA;Identiques;S.A.;N_0106_SOCIETE_ANONYME;Identiques;CHE123456788;CHE123456788;Identiques;COMMUNE_OU_FRACTION_VD/5561;COMMUNE_OU_FRACTION_VD/5938;Différents;", msgs.get(0));
+			Assert.assertEquals("INFO;" + noEntreprise + ";Active;CHE123456788;" + noCantonalEntreprise + ";Toto SA;Toto SA;Identiques;S.A.;N_0106_SOCIETE_ANONYME;Identiques;CHE123456788;CHE123456788;Identiques;COMMUNE_OU_FRACTION_VD/5561;COMMUNE_OU_FRACTION_VD/5938;Différents;;;Identiques;", msgs.get(0));
 		}
 	}
 
@@ -5016,7 +5016,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 			protected void init() {
 				final MockOrganisation org = addOrganisation(noCantonalEntreprise);
 				final MockSiteOrganisation sitePrincipal = addSite(org, noCantonalEtablissementPrincipal, dateChargementRCEnt, null, new MockDonneesRC());
-				sitePrincipal.getDonneesRC().addCapital(dateChargementRCEnt, null, new Capital(dateChargementRCEnt, null, TypeDeCapital.CAPITAL_SOCIAL, MontantMonetaire.CHF, BigDecimal.valueOf(400000L), "répartition ??"));
+				sitePrincipal.getDonneesRC().addCapital(dateChargementRCEnt, null, new Capital(dateChargementRCEnt, null, TypeDeCapital.CAPITAL_SOCIAL, null, null, null));
 				sitePrincipal.addSiege(dateChargementRCEnt, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Echallens.getNoOFS());
 				sitePrincipal.changeTypeDeSite(dateChargementRCEnt, TypeDeSite.ETABLISSEMENT_PRINCIPAL);
 				sitePrincipal.changeNom(dateChargementRCEnt, "Toto SA");
@@ -5115,6 +5115,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		                               LogCategory.DONNEES_CIVILES_REGPM,
 		                               LogCategory.RAPPORTS_ENTRE_TIERS,
 		                               LogCategory.MAPPINGS_REGIMES_FISCAUX,
+		                               LogCategory.DIFFERENCES_DONNEES_CIVILES,
 		                               LogCategory.APPARIEMENTS_ETABLISSEMENTS_SECONDAIRES),
 		                    messages.keySet());
 
@@ -5155,6 +5156,12 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 			final List<String> msgs = messages.get(LogCategory.APPARIEMENTS_ETABLISSEMENTS_SECONDAIRES);
 			Assert.assertEquals(1, msgs.size());
 			Assert.assertEquals("INFO;" + noEntreprise + ";Active;CHE106029161;" + noCantonalEntreprise + ";" + noEtablissementSecondaire + ";" + idEtablissementSecondaire.longValue() + ";CHE169212759;" + noCantonalEtablissementSecondaire + ";" + noEntreprise + ";;Toto SA, succursale de Morges;Toto SA, succursale de Morges;", msgs.get(0));
+		}
+		{
+			// vérification des messages dans le contexte "DIFFERENCES_DONNEES_CIVILES"
+			final List<String> msgs = messages.get(LogCategory.DIFFERENCES_DONNEES_CIVILES);
+			Assert.assertEquals(1, msgs.size());
+			Assert.assertEquals("INFO;" + noEntreprise + ";Active;CHE106029161;" + noCantonalEntreprise + ";Toto SA;Toto SA;Identiques;S.A.;N_0106_SOCIETE_ANONYME;Identiques;CHE106029161;CHE106029161;Identiques;COMMUNE_OU_FRACTION_VD/5518;COMMUNE_OU_FRACTION_VD/5518;Identiques;10000 CHF;;Différents;", msgs.get(0));
 		}
 	}
 
@@ -5299,6 +5306,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		                               LogCategory.FORS,
 		                               LogCategory.DONNEES_CIVILES_REGPM,
 		                               LogCategory.RAPPORTS_ENTRE_TIERS,
+		                               LogCategory.DIFFERENCES_DONNEES_CIVILES,
 		                               LogCategory.MAPPINGS_REGIMES_FISCAUX),
 		                    messages.keySet());
 
@@ -5332,6 +5340,12 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 			Assert.assertEquals("INFO;" + noEntreprise + ";Active;CHE106029161;" + noCantonalEntreprise + ";;;;;;;Donnée de forme juridique migrée : sur la période [01.01.1986 -> 31.07.2015], SA.", msgs.get(2));
 			Assert.assertEquals("INFO;" + noEntreprise + ";Active;CHE106029161;" + noCantonalEntreprise + ";;;;;;;Les données de capital en provenance du registre civil font foi dès le 01.08.2015 (les données ultérieures de RegPM seront ignorées).", msgs.get(3));
 			Assert.assertEquals("INFO;" + noEntreprise + ";Active;CHE106029161;" + noCantonalEntreprise + ";;;;;;;Donnée de capital migrée : sur la période [01.01.1986 -> 31.07.2015], 10000 CHF.", msgs.get(4));
+		}
+		{
+			// vérification des messages dans le contexte "DIFFERENCES_DONNEES_CIVILES"
+			final List<String> msgs = messages.get(LogCategory.DIFFERENCES_DONNEES_CIVILES);
+			Assert.assertEquals(1, msgs.size());
+			Assert.assertEquals("INFO;" + noEntreprise + ";Active;CHE106029161;" + noCantonalEntreprise + ";Toto SA;Toto SA;Identiques;S.A.;N_0106_SOCIETE_ANONYME;Identiques;CHE106029161;CHE106029161;Identiques;COMMUNE_OU_FRACTION_VD/5518;COMMUNE_OU_FRACTION_VD/5518;Identiques;10000 CHF;400000 CHF;Différents;", msgs.get(0));
 		}
 	}
 
@@ -6959,7 +6973,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 			// vérification des messages dans le contexte "DIFFERENCES_DONNEES_CIVILES"
 			final List<String> msgs = messages.get(LogCategory.DIFFERENCES_DONNEES_CIVILES);
 			Assert.assertEquals(1, msgs.size());
-			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;" + noCantonalEntreprise + ";Notre petite entreprise devenue grande;Tarlatata;Différentes;S.A.;N_0101_ENTREPRISE_INDIVIDUELLE;Différentes;;CHE123456788;Différents;;;Identiques;", msgs.get(0));
+			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;" + noCantonalEntreprise + ";Notre petite entreprise devenue grande;Tarlatata;Différentes;S.A.;N_0101_ENTREPRISE_INDIVIDUELLE;Différentes;;CHE123456788;Différents;;;Identiques;;;Identiques;", msgs.get(0));
 		}
 		{
 			// vérification des messages dans le contexte "FORMES_JURIDIQUES_INCOMPATIBLES"

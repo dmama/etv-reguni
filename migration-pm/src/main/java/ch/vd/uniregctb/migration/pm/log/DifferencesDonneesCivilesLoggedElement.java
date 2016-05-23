@@ -10,6 +10,7 @@ import org.jetbrains.annotations.NotNull;
 
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.uniregctb.migration.pm.engine.data.CommuneOuPays;
+import ch.vd.uniregctb.tiers.MontantMonetaire;
 
 public class DifferencesDonneesCivilesLoggedElement implements LoggedElement {
 
@@ -24,7 +25,10 @@ public class DifferencesDonneesCivilesLoggedElement implements LoggedElement {
 	                                                                                                     LoggedElementAttribute.IDE_DIFF_FLAG,
 	                                                                                                     LoggedElementAttribute.SIEGE_REGPM,
 	                                                                                                     LoggedElementAttribute.SIEGE_RCENT,
-	                                                                                                     LoggedElementAttribute.SIEGE_DIFF_FLAG));
+	                                                                                                     LoggedElementAttribute.SIEGE_DIFF_FLAG,
+	                                                                                                     LoggedElementAttribute.CAPITAL_REGPM,
+	                                                                                                     LoggedElementAttribute.CAPITAL_RCENT,
+	                                                                                                     LoggedElementAttribute.CAPITAL_DIFF_FLAG));
 
 	public static final LoggedElement EMPTY = new EmptyValuedLoggedElement(NAMES);
 
@@ -33,19 +37,22 @@ public class DifferencesDonneesCivilesLoggedElement implements LoggedElement {
 	public DifferencesDonneesCivilesLoggedElement(String regpmRaisonSociale, String rcentRaisonSociale, boolean raisonSocialeDifferente,
 	                                              String regpmFormeJuridique, FormeLegale rcentFormeJuridique, boolean formeJuridiqueDifferente,
 	                                              String regpmNumeroIde, String rcentNumeroIde, boolean ideDifferent,
-	                                              CommuneOuPays regpmSiege, CommuneOuPays rcentSiege, boolean siegeDifferent) {
+	                                              CommuneOuPays regpmSiege, CommuneOuPays rcentSiege, boolean siegeDifferent,
+	                                              MontantMonetaire regpmCapital, MontantMonetaire rcentCapital, boolean capitalDifferent) {
 
 		this.values = buildItemValues(regpmRaisonSociale, rcentRaisonSociale, raisonSocialeDifferente,
 		                              regpmFormeJuridique, rcentFormeJuridique, formeJuridiqueDifferente,
 		                              regpmNumeroIde, rcentNumeroIde, ideDifferent,
-		                              regpmSiege, rcentSiege, siegeDifferent);
+		                              regpmSiege, rcentSiege, siegeDifferent,
+		                              regpmCapital, rcentCapital, capitalDifferent);
 	}
 
 	@NotNull
 	private static Map<LoggedElementAttribute, Object> buildItemValues(String regpmRaisonSociale, String rcentRaisonSociale, boolean raisonSocialeDifferente,
 	                                                                   String regpmFormeJuridique, FormeLegale rcentFormeJuridique, boolean formeJuridiqueDifferente,
 	                                                                   String regpmNumeroIde, String rcentNumeroIde, boolean ideDifferent,
-	                                                                   CommuneOuPays regpmSiege, CommuneOuPays rcentSiege, boolean siegeDifferent) {
+	                                                                   CommuneOuPays regpmSiege, CommuneOuPays rcentSiege, boolean siegeDifferent,
+	                                                                   MontantMonetaire regpmCapital, MontantMonetaire rcentCapital, boolean capitalDifferent) {
 
 		final Map<LoggedElementAttribute, Object> map = new EnumMap<>(LoggedElementAttribute.class);
 		LoggedElementHelper.addValue(map, LoggedElementAttribute.RAISON_SOCIALE_REGPM, regpmRaisonSociale);
@@ -60,6 +67,9 @@ public class DifferencesDonneesCivilesLoggedElement implements LoggedElement {
 		LoggedElementHelper.addValue(map, LoggedElementAttribute.SIEGE_REGPM, regpmSiege != null ? regpmSiege.toString() : null);
 		LoggedElementHelper.addValue(map, LoggedElementAttribute.SIEGE_RCENT, rcentSiege != null ? rcentSiege.toString() : null);
 		LoggedElementHelper.addValue(map, LoggedElementAttribute.SIEGE_DIFF_FLAG, siegeDifferent);
+		LoggedElementHelper.addValue(map, LoggedElementAttribute.CAPITAL_REGPM, regpmCapital);
+		LoggedElementHelper.addValue(map, LoggedElementAttribute.CAPITAL_RCENT, rcentCapital);
+		LoggedElementHelper.addValue(map, LoggedElementAttribute.CAPITAL_DIFF_FLAG, capitalDifferent);
 		return Collections.unmodifiableMap(map);
 	}
 
