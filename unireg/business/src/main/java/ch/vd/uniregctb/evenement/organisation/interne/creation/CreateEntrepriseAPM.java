@@ -42,9 +42,6 @@ public class CreateEntrepriseAPM extends CreateEntreprise {
 	public void doHandle(EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) throws EvenementOrganisationException {
 		super.doHandle(warnings, suivis);
 
-		// Ouverture du For principal seulement si inscrit au RC (certaines APM ne sont pas au RC)
-		if (inscritAuRC()) {
-
 			MotifFor motifOuverture = determineMotifOuvertureFor(isCreation());
 
 			openForFiscalPrincipal(getDateDeCreation(),
@@ -58,9 +55,6 @@ public class CreateEntrepriseAPM extends CreateEntreprise {
 			createAddBouclement(getDateDeCreation(), isCreation(), suivis);
 			// Ajoute les for secondaires
 			adapteForsSecondairesPourEtablissementsVD(getEntreprise(), getDateDeCreation(), warnings, suivis);
-		} else {
-			warnings.addWarning("Le traitement manuel est requis pour nouvelle entreprise de type APM non inscrite au RC.");
-		}
 	}
 
 	@Override

@@ -142,12 +142,16 @@ public class CreateEntrepriseAPMProcessorTest extends AbstractEvenementOrganisat
 
 				                             final EvenementOrganisation evt = getUniqueEvent(noEvenement);
 				                             Assert.assertNotNull(evt);
-				                             Assert.assertEquals(EtatEvenementOrganisation.A_VERIFIER, evt.getEtat());
+				                             Assert.assertEquals(EtatEvenementOrganisation.TRAITE, evt.getEtat());
 
 				                             final Entreprise entreprise = tiersDAO.getEntrepriseByNumeroOrganisation(evt.getNoOrganisation());
 				                             Assert.assertEquals(2, entreprise.getRegimesFiscaux().size());
 
-				                             Assert.assertTrue(entreprise.getForsFiscauxValidAt(RegDate.get(2015, 6, 25)).size() == 0);
+				                             ForFiscalPrincipal forFiscalPrincipal = (ForFiscalPrincipal) entreprise.getForsFiscauxValidAt(RegDate.get(2015, 6, 25)).get(0);
+				                             Assert.assertEquals(RegDate.get(2015, 6, 25), forFiscalPrincipal.getDateDebut());
+				                             Assert.assertNull(forFiscalPrincipal.getDateFin());
+				                             Assert.assertEquals(GenreImpot.BENEFICE_CAPITAL, forFiscalPrincipal.getGenreImpot());
+				                             Assert.assertEquals(MockCommune.Lausanne.getNoOFS(), forFiscalPrincipal.getNumeroOfsAutoriteFiscale().intValue());
 
 				                             {
 					                             final List<DateRanged<Etablissement>> etbsPrns = tiersService.getEtablissementsPrincipauxEntreprise(entreprise);
@@ -173,7 +177,7 @@ public class CreateEntrepriseAPMProcessorTest extends AbstractEvenementOrganisat
 
 		final MockOrganisation org = MockOrganisationFactory.createOrganisation(noOrganisation, noOrganisation + 1000000, "Synergy Assoc", RegDate.get(2015, 6, 26), null, FormeLegale.N_0109_ASSOCIATION,
 		                                                                        TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), null, null,
-		                                                                        StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE);
+		                                                                        StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.ASSOCIATION);
 		serviceOrganisation.setUp(new MockServiceOrganisation() {
 			@Override
 			protected void init() {
@@ -204,21 +208,26 @@ public class CreateEntrepriseAPMProcessorTest extends AbstractEvenementOrganisat
 
 				                             final EvenementOrganisation evt = getUniqueEvent(noEvenement);
 				                             Assert.assertNotNull(evt);
-				                             Assert.assertEquals(EtatEvenementOrganisation.A_VERIFIER, evt.getEtat());
+				                             Assert.assertEquals(EtatEvenementOrganisation.TRAITE, evt.getEtat());
 
 				                             final Entreprise entreprise = tiersDAO.getEntrepriseByNumeroOrganisation(evt.getNoOrganisation());
 				                             Assert.assertEquals(2, entreprise.getRegimesFiscaux().size());
 
+				                             ForFiscalPrincipal forFiscalPrincipal = (ForFiscalPrincipal) entreprise.getForsFiscauxValidAt(RegDate.get(2015, 6, 26)).get(0);
+				                             Assert.assertEquals(RegDate.get(2015, 6, 26), forFiscalPrincipal.getDateDebut());
+				                             Assert.assertNull(forFiscalPrincipal.getDateFin());
+				                             Assert.assertEquals(GenreImpot.BENEFICE_CAPITAL, forFiscalPrincipal.getGenreImpot());
+				                             Assert.assertEquals(MockCommune.Lausanne.getNoOFS(), forFiscalPrincipal.getNumeroOfsAutoriteFiscale().intValue());
+
 				                             {
 					                             final List<DateRanged<Etablissement>> etbsPrns = tiersService.getEtablissementsPrincipauxEntreprise(entreprise);
 					                             Assert.assertEquals(1, etbsPrns.size());
-					                             Assert.assertEquals(date(2015, 6, 26), etbsPrns.get(0).getDateDebut());
+					                             Assert.assertEquals(RegDate.get(2015, 6, 26), etbsPrns.get(0).getDateDebut());
 				                             }
 				                             {
 					                             final List<DateRanged<Etablissement>> etbsSecs = tiersService.getEtablissementsSecondairesEntreprise(entreprise);
 					                             Assert.assertEquals(0, etbsSecs.size());
 				                             }
-
 
 				                             return null;
 			                             }
