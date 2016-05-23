@@ -13,6 +13,7 @@ import ch.vd.uniregctb.common.StringRenderer;
 import ch.vd.uniregctb.migration.pm.engine.collector.EntityLinkCollector;
 import ch.vd.uniregctb.migration.pm.engine.helpers.StringRenderers;
 import ch.vd.uniregctb.migration.pm.regpm.NumeroIDE;
+import ch.vd.uniregctb.tiers.MontantMonetaire;
 import ch.vd.uniregctb.tiers.RegimeFiscal;
 import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.Sexe;
@@ -119,6 +120,9 @@ public enum LoggedElementAttribute {
 	SIEGE_REGPM(String.class, s -> s, LoggedElementHelper.<String>exceptionThrowing()),
 	SIEGE_RCENT(String.class, s -> s, LoggedElementHelper.<String>exceptionThrowing()),
 	SIEGE_DIFF_FLAG(Boolean.class, b -> b ? "Différents" : "Identiques", LoggedElementHelper.<Boolean>exceptionThrowing()),
+	CAPITAL_REGPM(MontantMonetaire.class, StringRenderers.MONTANT_MONETAIRE_RENDERER, LoggedElementHelper.<MontantMonetaire>exceptionThrowing()),
+	CAPITAL_RCENT(MontantMonetaire.class, StringRenderers.MONTANT_MONETAIRE_RENDERER, LoggedElementHelper.<MontantMonetaire>exceptionThrowing()),
+	CAPITAL_DIFF_FLAG(Boolean.class, b -> b ? "Différents" : "Identiques", LoggedElementHelper.<Boolean>exceptionThrowing()),
 
 	DATE_DEBUT_RF(RegDate.class, RegDateHelper::dateToDashString, LoggedElementHelper.<RegDate>exceptionThrowing()),
 	PORTEE_RF(RegimeFiscal.Portee.class, Enum::name, LoggedElementHelper.<RegimeFiscal.Portee>exceptionThrowing()),
