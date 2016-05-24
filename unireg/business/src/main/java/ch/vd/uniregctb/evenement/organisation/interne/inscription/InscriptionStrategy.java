@@ -56,7 +56,7 @@ public class InscriptionStrategy extends AbstractOrganisationStrategy {
 		RegDate dateRadiationRCAvant = null;
 
 		final DateRanged<SiteOrganisation> sitePrincipalAvantRange = organisation.getSitePrincipal(dateAvant);
-		if (sitePrincipalAvantRange != null) {
+		if (sitePrincipalAvantRange != null && !organisation.isInscritAuRC(dateAvant)) {
 
 			SiteOrganisation sitePrincipalAvant = sitePrincipalAvantRange.getPayload();
 			dateInscriptionRCAvant = sitePrincipalAvant.getDonneesRC().getDateInscription(dateAvant);
