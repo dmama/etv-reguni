@@ -9,7 +9,7 @@
 	<groupId>ch.vd.uniregctb</groupId>
 	<artifactId>uniregctb</artifactId>
 	<!-- BEGIN_LVERSION -->
-	<version>6.0.10</version>
+	<version>6.0.11-SNAPSHOT</version>
 	<!-- END_LVERSION -->
 	<packaging>pom</packaging>
 
