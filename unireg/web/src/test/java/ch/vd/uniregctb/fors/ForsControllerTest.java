@@ -1118,14 +1118,24 @@ public class ForsControllerTest extends WebTestSpring3 {
 				assertNotNull(secondForPrincipal);
 				assertTrue(secondForPrincipal.isAnnule());
 
-				// vérification que le premier for est bien ré-ouvert
+				// vérification que le premier for est bien annulé aussi,,,
 				final ForFiscalPrincipal premierForPrincipal = hibernateTemplate.get(ForFiscalPrincipal.class, ids.premierForPrincipalId);
 				assertNotNull(premierForPrincipal);
+				assertTrue(premierForPrincipal.isAnnule());
 				assertEquals(date(1983, 4, 13), premierForPrincipal.getDateDebut());
 				assertEquals(MotifFor.MAJORITE, premierForPrincipal.getMotifOuverture());
-				assertNull(premierForPrincipal.getDateFin());
-				assertNull(premierForPrincipal.getMotifFermeture());
-				assertFalse(premierForPrincipal.isAnnule());
+				assertEquals(date(2008, 3, 31), premierForPrincipal.getDateFin());
+				assertEquals(MotifFor.DEMENAGEMENT_VD, premierForPrincipal.getMotifFermeture());
+
+				// ... et remplacé par un nouveau for ré-ouvert
+				final PersonnePhysique eric = (PersonnePhysique) tiersDAO.get(ids.ericId);
+				final ForFiscalPrincipal reouvert = eric.getDernierForFiscalPrincipal();
+				assertNotNull(reouvert);
+				assertFalse(reouvert.isAnnule());
+				assertEquals(date(1983, 4, 13), reouvert.getDateDebut());
+				assertEquals(MotifFor.MAJORITE, reouvert.getMotifOuverture());
+				assertNull(reouvert.getDateFin());
+				assertNull(reouvert.getMotifFermeture());
 			}
 		});
 	}

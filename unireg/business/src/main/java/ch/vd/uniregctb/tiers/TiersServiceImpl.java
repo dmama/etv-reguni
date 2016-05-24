@@ -17,7 +17,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
@@ -25,6 +24,7 @@ import java.util.TreeSet;
 
 import org.apache.commons.collections4.Predicate;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.SQLQuery;
@@ -1764,18 +1764,6 @@ public class TiersServiceImpl implements TiersService {
 		this.evenementCivilEchDAO = evenementCivilEchDAO;
 	}
 
-	private ForFiscalPrincipal reopenForFiscalPrincipal(ForFiscalPrincipal forFiscalPrincipal) {
-        forFiscalPrincipal.setDateFin(null);
-        forFiscalPrincipal.setMotifFermeture(null);
-		return forFiscalPrincipal;
-	}
-
-    private ForDebiteurPrestationImposable reopenForDebiteur(ForDebiteurPrestationImposable forDebiteur) {
-        forDebiteur.setDateFin(null);
-	    forDebiteur.setMotifFermeture(null);
-        return forDebiteur;
-    }
-
     /**
      * Ouvre un nouveau for fiscal principal sur un contribuable.
      *
@@ -2841,6 +2829,22 @@ public class TiersServiceImpl implements TiersService {
             afterForAdded(nouveauForFiscal);
         }
     }
+
+	private <T extends ForFiscal> T reopenForFiscal(T ff) {
+		//noinspection unchecked
+		final T reouvert = (T) ff.duplicate();
+		ff.setAnnule(true);
+		reouvert.setAnnule(false);
+		reouvert.setDateFin(null);
+		if (reouvert instanceof ForFiscalAvecMotifs) {
+			((ForFiscalAvecMotifs) reouvert).setMotifFermeture(null);
+		}
+		final T saved = tiersDAO.addAndSave(ff.getTiers(), reouvert);
+		if (validationService.validate(ff.getTiers()).errorsCount() == 0) {
+			afterForAdded(saved);
+		}
+		return saved;
+	}
 
     private void afterForAdded(ForFiscal forFiscal) {
         if (forFiscal instanceof ForFiscalPrincipalPP) {
@@ -3998,79 +4002,69 @@ public class TiersServiceImpl implements TiersService {
         final Tiers tiers = forFiscal.getTiers();
         Assert.notNull(tiers, "le for fiscal doit être rattaché à un tiers");
 
+	    // Récupération des données valides avant annulation
+	    final ForsParType fpt = forFiscal.getTiers().getForsParType(true);
+
         //
         // Annulation du for
         //
 
-        if (forFiscal instanceof ForFiscalPrincipal) {
-            final ForFiscalPrincipal forPrincipal = (ForFiscalPrincipal) forFiscal;
-            final List<? extends ForFiscalPrincipal> fors = tiers.getForsFiscauxPrincipauxActifsSorted();
+	    forFiscal.setAnnule(true);
 
-            // [UNIREG-2607] Apparemment, quelqu'un a réussi à arriver dans un cas où cette collection
-            // était vide... le seul scénario auquel je pense est si cette méthode est appelée deux fois
-            // (double-click sur le bouton d'annulation, concurrence entre deux sessions...)
-            if (fors.isEmpty()) {
-                throw new ValidationException(forPrincipal, "Tous les fors principaux sont déjà annulés.");
-            }
+	    //
+	    // Envoi d'un événement fiscal
+	    //
+	    evenementFiscalService.publierEvenementFiscalAnnulationFor(forFiscal);
 
-            // le for principal doit être le plus récent
-            final ForFiscalPrincipal dernierFor = fors.get(fors.size() - 1);
-            if (forPrincipal != dernierFor) {
-                throw new ValidationException(forPrincipal, "Seul le dernier for fiscal principal peut être annulé.");
-            }
+	    //
+	    // Ré-ouverture éventuelle du for précédent
+	    //
 
-            // réouvre le for précédent si nécessaire
-            ForFiscalPrincipal forPrecedent = null;
-            for (ForFiscalPrincipal f : fors) {
-                if (f.getDateFin() == forPrincipal.getDateDebut().getOneDayBefore()) {
-                    forPrecedent = f;
-                    break;
-                }
-            }
-            if (forPrecedent != null) {
-	            forReouvert = reopenForFiscalPrincipal(forPrecedent);
-            }
-        }
-        else if (forFiscal instanceof ForDebiteurPrestationImposable) {
-            final ForDebiteurPrestationImposable forDPI = (ForDebiteurPrestationImposable) forFiscal;
-            final ForsParType fors = tiers.getForsParType(true);
-            if (fors.dpis.isEmpty()) {
-                throw new ValidationException(forDPI, "Tous les fors débiteurs sont déjà annulés.");
-            }
+	    final List<? extends ForFiscal> fors;
+	    final Pair<String, String> singPlur;
+	    if (forFiscal instanceof ForFiscalPrincipalPM) {
+		    fors = fpt.principauxPM;
+		    singPlur = Pair.of("for fiscal principal", "fors principaux");
+	    }
+	    else if (forFiscal instanceof ForFiscalPrincipalPP) {
+		    fors = fpt.principauxPP;
+		    singPlur = Pair.of("for fiscal principal", "fors principaux");
+	    }
+	    else if (forFiscal instanceof ForDebiteurPrestationImposable) {
+		    fors = fpt.dpis;
+		    singPlur = Pair.of("for débiteur", "fors débiteurs");
+	    }
+	    else {
+		    fors = null;
+		    singPlur = null;
+	    }
 
-            // trouvons le for débiteur (non-annulé) le plus récent
-            ForDebiteurPrestationImposable dernierFor = null;
-            final ListIterator<ForDebiteurPrestationImposable> iterator = fors.dpis.listIterator(fors.dpis.size());
-            while (iterator.hasPrevious()) {
-                final ForDebiteurPrestationImposable forCandidat = iterator.previous();
-                if (!forCandidat.isAnnule()) {
-                    dernierFor = forCandidat;
-                    break;
-                }
-            }
-            if (forDPI != dernierFor) {
-                throw new ValidationException(forDPI, "Seul le dernier for débiteur peut être annulé.");
-            }
+	    if (fors != null) {
+		    // [UNIREG-2607] Apparemment, quelqu'un a réussi à arriver dans un cas où cette collection
+		    // était vide... le seul scénario auquel je pense est si cette méthode est appelée deux fois
+		    // (double-click sur le bouton d'annulation, concurrence entre deux sessions...)
+		    if (fors.isEmpty()) {
+			    throw new ValidationException(forFiscal, String.format("Tous les %s sont déjà annulés.", singPlur.getRight()));
+		    }
 
-            // réouvre le for précédent si nécessaire
-            ForDebiteurPrestationImposable forPrecedent = null;
-            while (iterator.hasPrevious()) {
-                final ForDebiteurPrestationImposable forCandidat = iterator.previous();
-                if (!forCandidat.isAnnule()) {
-                    forPrecedent = forCandidat;
-                    break;
-                }
-            }
-            if (forPrecedent != null && forPrecedent.getDateFin() == forDPI.getDateDebut().getOneDayBefore()) {
-	            forReouvert = reopenForDebiteur(forPrecedent);
-            }
-        }
-        forFiscal.setAnnule(true);
+		    // seul le dernier for principal/débiteur peut être annulé
+		    final ForFiscal dernierFor = CollectionsUtils.getLastElement(fors);
+		    if (dernierFor != forFiscal) {
+			    throw new ValidationException(forFiscal, String.format("Seul le dernier %s peut être annulé.", singPlur.getLeft()));
+		    }
 
-        //
-        // Envoi d'un événement fiscal
-        //
-        evenementFiscalService.publierEvenementFiscalAnnulationFor(forFiscal);
+		    // ré-ouvre le for précédent si nécessaire
+		    ForFiscal forPrecedent = null;
+		    for (ForFiscal f : fors) {
+			    if (f.getDateFin() == forFiscal.getDateDebut().getOneDayBefore()) {
+				    forPrecedent = f;
+				    break;
+			    }
+		    }
+		    if (forPrecedent != null) {
+			    forReouvert = reopenForFiscal(forPrecedent);
+		    }
+	    }
 
         //
         // Création des tâches
@@ -5213,8 +5207,8 @@ public class TiersServiceImpl implements TiersService {
     @Override
     public void reouvrirForDebiteur(@NotNull ForDebiteurPrestationImposable forDebiteur) {
 	    final RegDate dateFin = forDebiteur.getDateFin();
-	    reopenForDebiteur(forDebiteur);
-	    DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) forDebiteur.getTiers();
+	    reopenForFiscal(forDebiteur);
+	    final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) forDebiteur.getTiers();
 	    reopenRapportsPrestationImposableFermesAt(dpi, dateFin);
     }
 
@@ -5489,7 +5483,7 @@ public class TiersServiceImpl implements TiersService {
 		if (domicile.getDateDebut().isAfter(dateFin)) {
 			throw new ValidationException(domicile, "La date de fermeture (" + RegDateHelper.dateToDisplayString(dateFin) + ") est avant la date de début (" +
 					RegDateHelper.dateToDisplayString(domicile.getDateDebut())
-					+ ") de la décision");
+					+ ") du domicile de l'établissement");
 		}
 
 		domicile.setDateFin(dateFin);

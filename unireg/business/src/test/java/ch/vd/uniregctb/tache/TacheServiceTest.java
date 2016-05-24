@@ -3672,8 +3672,6 @@ public class TacheServiceTest extends BusinessTest {
 
 		class Ids {
 			long ctb;
-			long ffp1;
-			long ffp2;
 			List<Long> dis = new ArrayList<>();
 		}
 		final Ids ids = new Ids();
@@ -3699,8 +3697,6 @@ public class TacheServiceTest extends BusinessTest {
 				}
 
 				ids.ctb = pp.getId();
-				ids.ffp1 = ffp1.getId();
-				ids.ffp2 = ffp2.getId();
 				return null;
 			}
 		});
@@ -3720,7 +3716,8 @@ public class TacheServiceTest extends BusinessTest {
 		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				final ForFiscal ffp2 = hibernateTemplate.get(ForFiscal.class, ids.ffp2);
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.ctb);
+				final ForFiscal ffp2 = pp.getDernierForFiscalPrincipal();
 				assertNotNull(ffp2);
 				tiersService.annuleForFiscal(ffp2);
 				return null;
@@ -3742,7 +3739,8 @@ public class TacheServiceTest extends BusinessTest {
 		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				final ForFiscal ffp1 = hibernateTemplate.get(ForFiscal.class, ids.ffp1);
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.ctb);
+				final ForFiscal ffp1 = pp.getDernierForFiscalPrincipal();
 				assertNotNull(ffp1);
 				tiersService.annuleForFiscal(ffp1);
 				return null;

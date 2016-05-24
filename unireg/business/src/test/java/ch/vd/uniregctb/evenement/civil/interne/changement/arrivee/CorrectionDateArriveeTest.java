@@ -391,23 +391,29 @@ public class CorrectionDateArriveeTest extends AbstractEvenementCivilInterneTest
 				final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(ppId);
 				final List<ForFiscal> ff = pp.getForsFiscauxSorted();
 				Assert.assertNotNull(ff);
-				Assert.assertEquals(3, ff.size());
+				Assert.assertEquals(4, ff.size());
 
 				// annulé d'abord car sa date de début est antérieure à la date de début du for après correction
 
-				final ForFiscalPrincipal ffPrecedent = (ForFiscalPrincipal) ff.get(0);
+				final ForFiscalPrincipal ffPrecedentAnnule = (ForFiscalPrincipal) ff.get(0);
+				Assert.assertTrue(ffPrecedentAnnule.isAnnule());
+				Assert.assertEquals(DATE_EVT.addYears(-4), ffPrecedentAnnule.getDateDebut());
+				Assert.assertEquals(DATE_EVT.addDays(-11), ffPrecedentAnnule.getDateFin());
+				Assert.assertEquals(MockCommune.Echallens.getNoOFS(), (int) ffPrecedentAnnule.getNumeroOfsAutoriteFiscale());
+
+				final ForFiscalPrincipal ffPrecedent = (ForFiscalPrincipal) ff.get(1);
 				Assert.assertFalse(ffPrecedent.isAnnule());
 				Assert.assertEquals(DATE_EVT.addYears(-4), ffPrecedent.getDateDebut());
 				Assert.assertEquals(DATE_EVT.getOneDayBefore(), ffPrecedent.getDateFin());
 				Assert.assertEquals(MockCommune.Echallens.getNoOFS(), (int) ffPrecedent.getNumeroOfsAutoriteFiscale());
 
-				final ForFiscalPrincipal ffAnnule = (ForFiscalPrincipal) ff.get(1);
+				final ForFiscalPrincipal ffAnnule = (ForFiscalPrincipal) ff.get(2);
 				Assert.assertTrue(ffAnnule.isAnnule());
 				Assert.assertEquals(DATE_EVT.addDays(-10), ffAnnule.getDateDebut());
 				Assert.assertNull(ffAnnule.getDateFin());
 				Assert.assertEquals(MockCommune.Cossonay.getNoOFS(), (int) ffAnnule.getNumeroOfsAutoriteFiscale());
 
-				final ForFiscalPrincipal ffRestant = (ForFiscalPrincipal) ff.get(2);
+				final ForFiscalPrincipal ffRestant = (ForFiscalPrincipal) ff.get(3);
 				Assert.assertFalse(ffRestant.isAnnule());
 				Assert.assertEquals(DATE_EVT, ffRestant.getDateDebut());
 				Assert.assertNull(ffRestant.getDateFin());

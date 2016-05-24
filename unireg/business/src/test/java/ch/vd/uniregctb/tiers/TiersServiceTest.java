@@ -1302,52 +1302,61 @@ public class TiersServiceTest extends BusinessTest {
 	 * Case JIRA UNIREG-586: l'annulation d'un for fiscal principal doit réouvrir le for précédent s'il celui-ci est adjacent.
 	 */
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testAnnuleForPrincipalAvecPrecedentAdjacent() throws Exception {
 
 		class Ids {
 			Long premierForPrincipalId;
 			Long secondForPrincipalId;
 		}
-		final Ids ids = new Ids();
 
-		doInNewTransaction(new TxCallback<Object>() {
+		final Ids ids = doInNewTransaction(new TxCallback<Ids>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Ids execute(TransactionStatus status) throws Exception {
 
 				// Un contribuable avec deux fors principaux adjacent
-				PersonnePhysique eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
+				final PersonnePhysique eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
 
-				ForFiscalPrincipal premierForPrincipal = addForPrincipal(eric, date(1983, 4, 13), MotifFor.MAJORITE, date(2008, 3, 31),
-						MotifFor.DEMENAGEMENT_VD, MockCommune.Lausanne);
-				ids.premierForPrincipalId = premierForPrincipal.getId();
+				final ForFiscalPrincipal premierForPrincipal = addForPrincipal(eric, date(1983, 4, 13), MotifFor.MAJORITE, date(2008, 3, 31), MotifFor.DEMENAGEMENT_VD, MockCommune.Lausanne);
 				premierForPrincipal.setTiers(eric);
 
-				ForFiscalPrincipal secondForPrincipal = addForPrincipal(eric, date(2008, 4, 1), MotifFor.DEMENAGEMENT_VD,
-						MockCommune.Cossonay);
-				ids.secondForPrincipalId = secondForPrincipal.getId();
+				final ForFiscalPrincipal secondForPrincipal = addForPrincipal(eric, date(2008, 4, 1), MotifFor.DEMENAGEMENT_VD, MockCommune.Cossonay);
 				secondForPrincipal.setTiers(eric);
-				return null;
+
+				final Ids ids = new Ids();
+				ids.premierForPrincipalId = premierForPrincipal.getId();
+				ids.secondForPrincipalId = secondForPrincipal.getId();
+				return ids;
 			}
 		});
 
-		final ForFiscalPrincipal secondForPrincipal = hibernateTemplate.get(ForFiscalPrincipal.class, ids.secondForPrincipalId);
-		assertNotNull(secondForPrincipal);
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
 
-		// annulation du second for principal
-		tiersService.annuleForFiscal(secondForPrincipal);
+				final ForFiscalPrincipal secondForPrincipal = hibernateTemplate.get(ForFiscalPrincipal.class, ids.secondForPrincipalId);
+				assertNotNull(secondForPrincipal);
 
-		// vérification que le second for est bien annulé
-		assertTrue(secondForPrincipal.isAnnule());
+				// annulation du second for principal
+				final ForFiscal reouvert = tiersService.annuleForFiscal(secondForPrincipal);
 
-		// vérification que le premier for est bien ré-ouvert
-		final ForFiscalPrincipal premierForPrincipal = hibernateTemplate.get(ForFiscalPrincipal.class, ids.premierForPrincipalId);
-		assertNotNull(premierForPrincipal);
-		assertEquals(date(1983, 4, 13), premierForPrincipal.getDateDebut());
-		assertEquals(MotifFor.MAJORITE, premierForPrincipal.getMotifOuverture());
-		assertNull(premierForPrincipal.getDateFin());
-		assertNull(premierForPrincipal.getMotifFermeture());
-		assertFalse(premierForPrincipal.isAnnule());
+				// vérification que le second for est bien annulé
+				assertTrue(secondForPrincipal.isAnnule());
+
+				// vérification que le premier for est bien annulé aussi ...
+				final ForFiscalPrincipal premierForPrincipal = hibernateTemplate.get(ForFiscalPrincipal.class, ids.premierForPrincipalId);
+				assertNotNull(premierForPrincipal);
+				assertTrue(premierForPrincipal.isAnnule());
+
+				// ... et remplacé par un for principal ré-ouvert
+				assertNotNull(reouvert);
+				assertEquals(ForFiscalPrincipalPP.class, reouvert.getClass());
+				assertFalse(reouvert.isAnnule());
+				assertEquals(date(1983, 4, 13), reouvert.getDateDebut());
+				assertEquals(MotifFor.MAJORITE, ((ForFiscalPrincipalPP) reouvert).getMotifOuverture());
+				assertNull(reouvert.getDateFin());
+				assertNull(((ForFiscalPrincipalPP) reouvert).getMotifFermeture());
+			}
+		});
 	}
 
 	/**
@@ -1494,63 +1503,77 @@ public class TiersServiceTest extends BusinessTest {
 	 * L'annulation d'un for fiscal principal alors qu'il n'est pas le dernier doit lever un exception
 	 */
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testAnnuleForPrincipalAvecSuivant() throws Exception {
 
 		class Ids {
 			Long premierForPrincipalId;
 			Long secondForPrincipalId;
 		}
-		final Ids ids = new Ids();
 
-		doInNewTransaction(new TxCallback<Object>() {
+		final Ids ids = doInNewTransaction(new TxCallback<Ids>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Ids execute(TransactionStatus status) throws Exception {
 
 				// Un contribuable avec deux fors principaux adjacent
-				PersonnePhysique eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
+				final PersonnePhysique eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
 
-				ForFiscalPrincipal premierForPrincipal = addForPrincipal(eric, date(1983, 4, 13), MotifFor.MAJORITE, date(2008, 3, 31),
-						MotifFor.DEMENAGEMENT_VD, MockCommune.Lausanne);
-				ids.premierForPrincipalId = premierForPrincipal.getId();
+				final ForFiscalPrincipal premierForPrincipal = addForPrincipal(eric, date(1983, 4, 13), MotifFor.MAJORITE, date(2008, 3, 31), MotifFor.DEMENAGEMENT_VD, MockCommune.Lausanne);
 				premierForPrincipal.setTiers(eric);
 
-				ForFiscalPrincipal secondForPrincipal = addForPrincipal(eric, date(2008, 4, 1), MotifFor.DEMENAGEMENT_VD,
-						MockCommune.Cossonay);
-				ids.secondForPrincipalId = secondForPrincipal.getId();
+				final ForFiscalPrincipal secondForPrincipal = addForPrincipal(eric, date(2008, 4, 1), MotifFor.DEMENAGEMENT_VD, MockCommune.Cossonay);
 				secondForPrincipal.setTiers(eric);
-				return null;
+
+				final Ids ids = new Ids();
+				ids.secondForPrincipalId = secondForPrincipal.getId();
+				ids.premierForPrincipalId = premierForPrincipal.getId();
+				return ids;
 			}
 		});
 
-		final ForFiscalPrincipal premierForPrincipal = hibernateTemplate.get(ForFiscalPrincipal.class, ids.premierForPrincipalId);
-		assertNotNull(premierForPrincipal);
-		final ForFiscalPrincipal secondForPrincipal = hibernateTemplate.get(ForFiscalPrincipal.class, ids.secondForPrincipalId);
-		assertNotNull(secondForPrincipal);
-
-		// annulation du premier for principal
 		try {
-			tiersService.annuleForFiscal(premierForPrincipal);
+			doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+				@Override
+				protected void doInTransactionWithoutResult(TransactionStatus status) {
+					final ForFiscalPrincipal premierForPrincipal = hibernateTemplate.get(ForFiscalPrincipal.class, ids.premierForPrincipalId);
+					assertNotNull(premierForPrincipal);
+
+					// l'annulation doit sauter...
+					tiersService.annuleForFiscal(premierForPrincipal);
+				}
+			});
 			fail();
 		}
-		catch (ValidationException ignored) {
-			// ok
+		catch (ValidationException e) {
+			// effectivement, ça saute...
+			assertTrue(e.getMessage().contains("Seul le dernier for fiscal principal peut être annulé"));
 		}
 
-		// vérification que le premier for n'est pas annulé
-		assertNotNull(premierForPrincipal);
-		assertEquals(date(1983, 4, 13), premierForPrincipal.getDateDebut());
-		assertEquals(MotifFor.MAJORITE, premierForPrincipal.getMotifOuverture());
-		assertEquals(date(2008, 3, 31), premierForPrincipal.getDateFin());
-		assertEquals(MotifFor.DEMENAGEMENT_VD, premierForPrincipal.getMotifFermeture());
-		assertFalse(premierForPrincipal.isAnnule());
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
 
-		// vérification que le second for n'est pas changé
-		assertEquals(date(2008, 4, 1), secondForPrincipal.getDateDebut());
-		assertEquals(MotifFor.DEMENAGEMENT_VD, secondForPrincipal.getMotifOuverture());
-		assertNull(secondForPrincipal.getDateFin());
-		assertNull(secondForPrincipal.getMotifFermeture());
-		assertFalse(secondForPrincipal.isAnnule());
+				final ForFiscalPrincipal premierForPrincipal = hibernateTemplate.get(ForFiscalPrincipal.class, ids.premierForPrincipalId);
+				assertNotNull(premierForPrincipal);
+				final ForFiscalPrincipal secondForPrincipal = hibernateTemplate.get(ForFiscalPrincipal.class, ids.secondForPrincipalId);
+				assertNotNull(secondForPrincipal);
+
+				// vérification que le premier for n'est pas annulé
+				assertNotNull(premierForPrincipal);
+				assertEquals(date(1983, 4, 13), premierForPrincipal.getDateDebut());
+				assertEquals(MotifFor.MAJORITE, premierForPrincipal.getMotifOuverture());
+				assertEquals(date(2008, 3, 31), premierForPrincipal.getDateFin());
+				assertEquals(MotifFor.DEMENAGEMENT_VD, premierForPrincipal.getMotifFermeture());
+				assertFalse(premierForPrincipal.isAnnule());
+
+				// vérification que le second for n'est pas changé
+				assertEquals(date(2008, 4, 1), secondForPrincipal.getDateDebut());
+				assertEquals(MotifFor.DEMENAGEMENT_VD, secondForPrincipal.getMotifOuverture());
+				assertNull(secondForPrincipal.getDateFin());
+				assertNull(secondForPrincipal.getMotifFermeture());
+				assertFalse(secondForPrincipal.isAnnule());
+
+			}
+		});
 	}
 
 	@Test
