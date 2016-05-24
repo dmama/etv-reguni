@@ -45,7 +45,7 @@
 
 	<tiles:put name="body">
 		<div class="about">
-			<div>Unireg est le registre des contribuables de l'Etat de Vaud. Copyright (c) 2009-2015, Etat-de-Vaud.</div>
+			<div>Unireg est le registre des contribuables de l'Etat de Vaud. Copyright (c) 2009-2016, Etat-de-Vaud.</div>
 			<div>
 				<fieldset>
 					<table>
@@ -82,12 +82,14 @@
 				<ul>
 					<li>Baba Issa Ngom</li>
 					<li>Jacob Deker</li>
+					<li>Mickaël Zanoli</li>
 					<li>Raphaël Marmier</li>
 				</ul>
 
 				<h4>Assurance qualité :</h4>
 				<ul>
 					<li>John Gibson</li>
+					<li>Martin Croteau</li>
 				</ul>
 
 				<h3>Personnes ayant contribué à Unireg par le passé</h3>
