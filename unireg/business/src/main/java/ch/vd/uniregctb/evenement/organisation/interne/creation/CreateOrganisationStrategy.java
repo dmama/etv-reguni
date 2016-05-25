@@ -71,19 +71,21 @@ public class CreateOrganisationStrategy extends AbstractOrganisationStrategy {
 			);
 		}
 
-		// On contrôle si on existe avant, où et depuis quand. Si cela fait trop longtemps sur Vaud, c'est qu'on a un problème d'identification.
+		// SIFISC-19332 - On contrôle si on existe avant, où et depuis quand. Si cela fait trop longtemps sur Vaud, c'est qu'on a un problème d'identification.
 		final RegDate datePasseeTropAncienne = dateEvenement.getOneDayBefore().addDays(- OrganisationHelper.NB_JOURS_TOLERANCE_DE_DECALAGE_RC);
-		final DateRanged<SiteOrganisation> sitePrincipalAvantRange = organisation.getSitePrincipal(datePasseeTropAncienne);
+		// On a besoin du vrai historique pour savoir cela.
+		final Organisation organisationHistory = context.getServiceOrganisation().getOrganisationHistory(organisation.getNumeroOrganisation());
+		final DateRanged<SiteOrganisation> sitePrincipalAvantRange = organisationHistory.getSitePrincipal(datePasseeTropAncienne);
 		if (sitePrincipalAvantRange != null) {
 			SiteOrganisation sitePrincipalAvant = sitePrincipalAvantRange.getPayload();
 			final Domicile domicilePasse = sitePrincipalAvant.getDomicile(datePasseeTropAncienne);
 			if (domicilePasse != null) {
 				if (domicilePasse.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
 					final Commune commune = context.getServiceInfra().getCommuneByNumeroOfs(domicilePasse.getNoOfs(), datePasseeTropAncienne);
-					return new TraitementManuel(event, organisation, null, context, options,
+					return new TraitementManuel(event, organisationHistory, null, context, options,
 					                            String.format(
 							                            "L'organisation n°%d est présente sur Vaud (%s) depuis plus de %d jours et devrait être déjà connue d'Unireg. Il est très probable que l'identification n'ait pas fonctionné. Veuillez traiter le cas à la main.",
-							                            organisation.getNumeroOrganisation(), commune != null ? commune.getNomOfficielAvecCanton() : "", OrganisationHelper.NB_JOURS_TOLERANCE_DE_DECALAGE_RC)
+							                            organisationHistory.getNumeroOrganisation(), commune != null ? commune.getNomOfficielAvecCanton() : "", OrganisationHelper.NB_JOURS_TOLERANCE_DE_DECALAGE_RC)
 					);
 				}
 			}
