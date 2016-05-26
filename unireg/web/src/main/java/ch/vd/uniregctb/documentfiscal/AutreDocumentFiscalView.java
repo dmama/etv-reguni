@@ -3,10 +3,11 @@ package ch.vd.uniregctb.documentfiscal;
 import org.springframework.context.MessageSource;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.common.Annulable;
 import ch.vd.uniregctb.type.TypeEtatAutreDocumentFiscal;
 import ch.vd.uniregctb.utils.WebContextUtils;
 
-public class AutreDocumentFiscalView {
+public class AutreDocumentFiscalView implements Annulable {
 
 	private final long id;
 	private final long tiersId;
@@ -17,6 +18,7 @@ public class AutreDocumentFiscalView {
 	private final RegDate dateRappel;
 	private final String libelleTypeDocument;
 	private final String libelleSousType;
+	private final boolean annule;
 
 	public static AutreDocumentFiscalView of(AutreDocumentFiscal document, MessageSource messageSource) {
 		if (document == null) {
@@ -40,6 +42,7 @@ public class AutreDocumentFiscalView {
 		this.dateRappel = lettreBienvenue.getDateRappel();
 		this.libelleTypeDocument = messageSource.getMessage("label.autre.document.fiscal.lettre.bienvenue", null, WebContextUtils.getDefaultLocale());
 		this.libelleSousType = messageSource.getMessage("label.autre.document.fiscal.lettre.bienvenue.type." + lettreBienvenue.getType(), null, WebContextUtils.getDefaultLocale());
+		this.annule = lettreBienvenue.isAnnule();
 	}
 
 	public long getId() {
@@ -76,5 +79,10 @@ public class AutreDocumentFiscalView {
 
 	public String getLibelleSousType() {
 		return libelleSousType;
+	}
+
+	@Override
+	public boolean isAnnule() {
+		return annule;
 	}
 }
