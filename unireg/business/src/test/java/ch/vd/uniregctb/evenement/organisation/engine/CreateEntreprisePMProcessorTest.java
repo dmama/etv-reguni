@@ -754,6 +754,7 @@ public class CreateEntreprisePMProcessorTest extends AbstractEvenementOrganisati
 		);
 	}
 
+	// SIFISC-19332 - accepter la création d'une entreprise que si l'organisation VD n'est pas connue de RCEnt depuis plus de 15 jours.
 	@Test(timeout = 10000L)
 	public void testEntrepriseVDDejaConnueRCEntNonIdentifiee() throws Exception {
 
@@ -806,6 +807,7 @@ public class CreateEntreprisePMProcessorTest extends AbstractEvenementOrganisati
 		);
 	}
 
+	// SIFISC-19332 - accepter la création d'une entreprise que si l'organisation VD n'est pas connue de RCEnt depuis plus de 15 jours.
 	@Test(timeout = 10000L)
 	public void testEntrepriseVDDejaConnueRCEntMaisRecent() throws Exception {
 

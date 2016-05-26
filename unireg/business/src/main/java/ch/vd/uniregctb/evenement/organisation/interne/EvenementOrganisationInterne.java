@@ -274,6 +274,13 @@ public abstract class EvenementOrganisationInterne {
 			} else {
 				switch (siegePrecedant.getTypeAutoriteFiscale()) {
 				case COMMUNE_OU_FRACTION_VD:
+					/*
+					 SIFISC-19332 - Si on est ici, c'est qu'on existe déjà dans RCEnt mais pas depuis plus de 15 jours et qu'on n'est pas en création. Ce qui peut se produire dans les cas suivant:
+					  a) On a faussement détecté l'entreprise comme n'étant pas en création, ce qui devrait ne se produire qu'avec les Non-RC
+					  b) Une non RC ne devrait pas poser de problème de création sur le premier événement, donc ne devrait pas obliger à sauter le premier événement.
+					 Conclusion: le cas ne devrait pas se produire, sauf en cas de problème grave avec les données, et là c'est souhaitable.
+					  */
+
 					throw new EvenementOrganisationException(
 							"Tentative d'ouvrir un for pour une entreprise vaudoise pas nouvelle mais inconnue d'Unireg jusque là. Ceci indique qu'un ou plusieurs événements précédant ont été manqués (soit non reçus, soit forcés). Il faut traiter ce cas manuellement.");
 				case COMMUNE_HC:
