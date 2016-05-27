@@ -21,7 +21,10 @@ import ch.vd.shared.batchtemplate.SimpleProgressMonitor;
 import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.common.BatchTransactionTemplateWithResults;
 import ch.vd.uniregctb.common.LoggingStatusManager;
+import ch.vd.uniregctb.common.TicketService;
+import ch.vd.uniregctb.common.TicketTimeoutException;
 import ch.vd.uniregctb.declaration.DeclarationException;
+import ch.vd.uniregctb.declaration.DeclarationGenerationOperation;
 import ch.vd.uniregctb.declaration.DelaiDeclaration;
 import ch.vd.uniregctb.declaration.EtatDeclarationEmise;
 import ch.vd.uniregctb.declaration.ParametrePeriodeFiscaleSNC;
@@ -57,15 +60,17 @@ public class EnvoiQuestionnairesSNCEnMasseProcessor {
 	private final TacheDAO tacheDAO;
 	private final QuestionnaireSNCService questionnaireService;
 	private final PeriodeFiscaleDAO periodeFiscaleDAO;
+	private final TicketService ticketService;
 
 	public EnvoiQuestionnairesSNCEnMasseProcessor(PlatformTransactionManager transactionManager, HibernateTemplate hibernateTemplate, TiersService tiersService, TacheDAO tacheDAO,
-	                                              QuestionnaireSNCService questionnaireService, PeriodeFiscaleDAO periodeFiscaleDAO) {
+	                                              QuestionnaireSNCService questionnaireService, PeriodeFiscaleDAO periodeFiscaleDAO, TicketService ticketService) {
 		this.transactionManager = transactionManager;
 		this.hibernateTemplate = hibernateTemplate;
 		this.tiersService = tiersService;
 		this.tacheDAO = tacheDAO;
 		this.questionnaireService = questionnaireService;
 		this.periodeFiscaleDAO = periodeFiscaleDAO;
+		this.ticketService = ticketService;
 	}
 
 	public EnvoiQuestionnairesSNCEnMasseResults run(final int periodeFiscale, final RegDate dateTraitement, @Nullable final Integer nbMaxEnvois, @Nullable StatusManager s) {
@@ -101,13 +106,25 @@ public class EnvoiQuestionnairesSNCEnMasseProcessor {
 							rapport.addErrorWrongPartyType(idContribuable);
 							continue;
 						}
-						traiterContribuable((Entreprise) tiers, pf, dateTraitement, rapport);
+						final DeclarationGenerationOperation operation = new DeclarationGenerationOperation(tiers.getNumero());
+						try {
+							final TicketService.Ticket ticket = ticketService.getTicket(operation, 500);
+							try {
+								traiterContribuable((Entreprise) tiers, pf, dateTraitement, rapport);
+							}
+							finally {
+								ticket.release();
+							}
+						}
+						catch (TicketTimeoutException e) {
+							throw new DeclarationException("Un questionnaire SNC est déjà en cours de génération sur cette entreprise.");
+						}
 						if ((nbMaxEnvois != null && nbMaxEnvois <= nbEnvoyesAvant + rapport.getNombreEnvoyes()) || status.interrupted()) {
-							break;
+							return false;
 						}
 					}
 				}
-				return !status.interrupted() && (nbMaxEnvois == null || nbMaxEnvois > nbEnvoyesAvant + rapport.getNombreEnvoyes());
+				return !status.interrupted();
 			}
 
 			@Override

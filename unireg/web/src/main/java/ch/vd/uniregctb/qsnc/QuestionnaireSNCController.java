@@ -32,9 +32,12 @@ import ch.vd.uniregctb.common.EditiqueErrorHelper;
 import ch.vd.uniregctb.common.Flash;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.common.RetourEditiqueControllerHelper;
+import ch.vd.uniregctb.common.TicketService;
+import ch.vd.uniregctb.common.TicketTimeoutException;
 import ch.vd.uniregctb.common.TiersNotFoundException;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationException;
+import ch.vd.uniregctb.declaration.DeclarationGenerationOperation;
 import ch.vd.uniregctb.declaration.DelaiDeclaration;
 import ch.vd.uniregctb.declaration.EtatDeclarationEmise;
 import ch.vd.uniregctb.declaration.EtatDeclarationRetournee;
@@ -80,6 +83,7 @@ public class QuestionnaireSNCController {
 	private RetourEditiqueControllerHelper retourEditiqueControllerHelper;
 	private PeriodeFiscaleDAO periodeFiscaleDAO;
 	private TacheDAO tacheDAO;
+	private TicketService ticketService;
 
 	public void setHibernateTemplate(HibernateTemplate hibernateTemplate) {
 		this.hibernateTemplate = hibernateTemplate;
@@ -119,6 +123,10 @@ public class QuestionnaireSNCController {
 
 	public void setTacheDAO(TacheDAO tacheDAO) {
 		this.tacheDAO = tacheDAO;
+	}
+
+	public void setTicketService(TicketService ticketService) {
+		this.ticketService = ticketService;
 	}
 
 	private void checkEditRight(boolean emission, boolean rappel, boolean duplicata, boolean quittancement) throws AccessDeniedException {
@@ -286,13 +294,30 @@ public class QuestionnaireSNCController {
 	}
 
 	@RequestMapping(value = "/add.do", method = RequestMethod.POST)
-	public String printNewQuestionnaire(Model model, HttpServletResponse response, @Valid@ModelAttribute("added")final QuestionnaireSNCAddView view, BindingResult bindingResult) throws IOException {
+	public String printNewQuestionnaire(Model model, HttpServletResponse response, @Valid@ModelAttribute("added")final QuestionnaireSNCAddView view, BindingResult bindingResult) throws Exception {
 		if (bindingResult.hasErrors()) {
 			return showAdd(model, view);
 		}
 
 		// il faut le droit d'émission pour arriver ici
 		checkEditRight(true, false, false, false);
+
+		try {
+			final DeclarationGenerationOperation operation = new DeclarationGenerationOperation(view.getEntrepriseId());
+			final TicketService.Ticket ticket = ticketService.getTicket(operation, 500);
+			try {
+				return printNewQuestionnaire(response, view);
+			}
+			finally {
+				ticket.release();
+			}
+		}
+		catch (TicketTimeoutException e) {
+			throw new ActionException("Un questionnaire SNC est actuellement en cours d'impression pour ce contribuable. Veuillez ré-essayer ultérieurement.", e);
+		}
+	}
+
+	private String printNewQuestionnaire(HttpServletResponse response, final QuestionnaireSNCAddView view) throws IOException {
 
 		// création du nouveau questionnaire, impression locale...
 		final EditiqueResultat retourEditique = doInTransaction(new TransactionHelper.ExceptionThrowingCallback<EditiqueResultat, DeclarationException>() {

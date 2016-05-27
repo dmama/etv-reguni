@@ -14,6 +14,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.common.BusinessTestingConstants;
+import ch.vd.uniregctb.common.TicketService;
 import ch.vd.uniregctb.declaration.DelaiDeclaration;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
@@ -50,7 +51,8 @@ public class EnvoiQuestionnairesSNCEnMasseProcessorTest extends BusinessTest {
 		tacheDAO = getBean(TacheDAO.class, "tacheDAO");
 		final QuestionnaireSNCService questionnaireSNCService = getBean(QuestionnaireSNCService.class, "qsncService");
 		final PeriodeFiscaleDAO periodeFiscaleDAO = getBean(PeriodeFiscaleDAO.class, "periodeFiscaleDAO");
-		processor = new EnvoiQuestionnairesSNCEnMasseProcessor(transactionManager, hibernateTemplate, tiersService, tacheDAO, questionnaireSNCService, periodeFiscaleDAO);
+		final TicketService ticketService = getBean(TicketService.class, "ticketService");
+		processor = new EnvoiQuestionnairesSNCEnMasseProcessor(transactionManager, hibernateTemplate, tiersService, tacheDAO, questionnaireSNCService, periodeFiscaleDAO, ticketService);
 	}
 
 	@Test

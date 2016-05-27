@@ -13,6 +13,7 @@
 		<property name="retourEditiqueControllerHelper" ref="retourEditiqueControllerHelper"/>
 		<property name="periodeFiscaleDAO" ref="periodeFiscaleDAO"/>
 		<property name="tacheDAO" ref="tacheDAO"/>
+		<property name="ticketService" ref="ticketService"/>
 	</bean>
 
 </beans>
