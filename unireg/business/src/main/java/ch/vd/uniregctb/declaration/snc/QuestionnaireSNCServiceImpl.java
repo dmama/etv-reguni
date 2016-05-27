@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import ch.vd.registre.base.date.DateRange;
@@ -45,6 +46,7 @@ public class QuestionnaireSNCServiceImpl implements QuestionnaireSNCService {
 	private AdresseService adresseService;
 	private ValidationService validationService;
 	private TacheDAO tacheDAO;
+	private PeriodeFiscaleDAO periodeFiscaleDAO;
 
 	public void setParametreAppService(ParametreAppService parametreAppService) {
 		this.parametreAppService = parametreAppService;
@@ -78,11 +80,21 @@ public class QuestionnaireSNCServiceImpl implements QuestionnaireSNCService {
 		this.tacheDAO = tacheDAO;
 	}
 
+	public void setPeriodeFiscaleDAO(PeriodeFiscaleDAO periodeFiscaleDAO) {
+		this.periodeFiscaleDAO = periodeFiscaleDAO;
+	}
+
 	@Override
 	public DeterminationQuestionnairesSNCResults determineQuestionnairesAEmettre(int periodeFiscale, RegDate dateTraitement, int nbThreads, StatusManager statusManager) throws DeclarationException {
 		final DeterminationQuestionnairesSNCAEmettreProcessor processor = new DeterminationQuestionnairesSNCAEmettreProcessor(parametreAppService, transactionManager, periodeDAO, hibernateTemplate, tiersService,
 		                                                                                                                      adresseService, validationService, tacheDAO);
 		return processor.run(periodeFiscale, dateTraitement, nbThreads, statusManager);
+	}
+
+	@Override
+	public EnvoiQuestionnairesSNCEnMasseResults envoiQuestionnairesSNCEnMasse(int periodeFiscale, RegDate dateTraitement, @Nullable Integer nbMaxEnvois, StatusManager statusManager) throws DeclarationException {
+		final EnvoiQuestionnairesSNCEnMasseProcessor processor = new EnvoiQuestionnairesSNCEnMasseProcessor(transactionManager, hibernateTemplate, tiersService, tacheDAO, this, periodeFiscaleDAO);
+		return processor.run(periodeFiscale, dateTraitement, nbMaxEnvois, statusManager);
 	}
 
 	@NotNull
@@ -154,6 +166,12 @@ public class QuestionnaireSNCServiceImpl implements QuestionnaireSNCService {
 		// TODO envoi à l'éditique (et inbox si pas de retour)
 		// TODO envoi d'un événement fiscal ?
 		return new EditiqueResultatTimeoutImpl("IDBIDON");
+	}
+
+	@Override
+	public void envoiQuestionnaireSNCForBatch(QuestionnaireSNC questionnaire) throws DeclarationException {
+		// TODO envoi à l'éditique
+		// TODO envoi d'un événement fiscal ?
 	}
 
 	@Override

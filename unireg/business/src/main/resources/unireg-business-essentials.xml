@@ -188,6 +188,7 @@
 		<property name="tiersService" ref="tiersService"/>
 		<property name="transactionManager" ref="transactionManager"/>
 		<property name="validationService" ref="validationService"/>
+		<property name="periodeFiscaleDAO" ref="periodeFiscaleDAO"/>
 	</bean>
 
 	<bean id="statsService" class="ch.vd.uniregctb.stats.StatsServiceImpl" />

@@ -121,20 +121,19 @@ public class EnvoiDIsPMJob extends JobDefinition {
 		final int pf = getIntegerValue(params, PERIODE_FISCALE);
 		final CategorieEnvoiDIPM categorieEnvoi = getEnumValue(params, TYPE_DI, CategorieEnvoiDIPM.class);
 		final Integer nbMaxEnvois = getOptionalIntegerValue(params, NB_MAX_ENVOIS);
-		final RegDate dateTraitement = getRegDateValue(params, DATE_TRAITEMENT);
+		final RegDate dateTraitement = getDateTraitement(params);
 		final RegDate dateLimiteBouclements = getRegDateValue(params, DATE_LIMITE_BOUCLEMENT);
 		final int nbThreads = getStrictlyPositiveIntegerValue(params, NB_THREADS);
 
-		final RegDate now = dateTraitement == null ? RegDate.get() : dateTraitement;
-		if (now.isBefore(dateLimiteBouclements)) {
+		if (dateTraitement.isBefore(dateLimiteBouclements)) {
 			throw new IllegalArgumentException(String.format("La valeur du paramètre '%s' (%s) doit être antérieure à la date de traitement (%s).",
 			                                                 DATE_LIMITE_BOUCLEMENT,
 			                                                 RegDateHelper.dateToDisplayString(dateLimiteBouclements),
-			                                                 RegDateHelper.dateToDisplayString(now)));
+			                                                 RegDateHelper.dateToDisplayString(dateTraitement)));
 		}
 
 		final StatusManager status = getStatusManager();
-		final EnvoiDIsPMResults results = service.envoyerDIsPMEnMasse(pf, categorieEnvoi, dateLimiteBouclements, nbMaxEnvois, now, nbThreads, status);
+		final EnvoiDIsPMResults results = service.envoyerDIsPMEnMasse(pf, categorieEnvoi, dateLimiteBouclements, nbMaxEnvois, dateTraitement, nbThreads, status);
 		final EnvoiDIsPMRapport rapport = rapportService.generateRapport(results, status);
 
 		setLastRunReport(rapport);
@@ -145,7 +144,7 @@ public class EnvoiDIsPMJob extends JobDefinition {
 		builder.append(" et la type de document ");
 		builder.append(categorieEnvoi.name());
 		builder.append(" à la date du ");
-		builder.append(RegDateHelper.dateToDisplayString(now));
+		builder.append(RegDateHelper.dateToDisplayString(dateTraitement));
 		builder.append(" est terminé.");
 		Audit.success(builder.toString(), rapport);
 

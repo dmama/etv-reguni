@@ -168,8 +168,7 @@ public class TacheDAOImpl extends BaseDAOImpl<Tache, Long> implements TacheDAO {
 				params.put("dateFin", dateFinPeriode);
 			}
 			else if (typeTache == TypeTache.TacheAnnulationDeclarationImpot || typeTache == TypeTache.TacheAnnulationQuestionnaireSNC) {
-				clause += " and tache.declaration.dateDebut >= :dateDebut";
-				clause += " and tache.declaration.dateFin <= :dateFin";
+				clause += " and tache.declaration.dateFin between :dateDebut and :dateFin";
 				params.put("dateDebut", dateDebutPeriode);
 				params.put("dateFin", dateFinPeriode);
 			}

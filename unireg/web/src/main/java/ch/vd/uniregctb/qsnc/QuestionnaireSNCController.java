@@ -53,11 +53,17 @@ import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.security.SecurityHelper;
 import ch.vd.uniregctb.security.SecurityProviderInterface;
 import ch.vd.uniregctb.tiers.Entreprise;
+import ch.vd.uniregctb.tiers.Tache;
+import ch.vd.uniregctb.tiers.TacheCriteria;
+import ch.vd.uniregctb.tiers.TacheDAO;
+import ch.vd.uniregctb.tiers.TacheEnvoiQuestionnaireSNC;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.manager.AutorisationManager;
 import ch.vd.uniregctb.tiers.manager.Autorisations;
 import ch.vd.uniregctb.transaction.TransactionHelper;
 import ch.vd.uniregctb.type.EtatDelaiDeclaration;
+import ch.vd.uniregctb.type.TypeEtatTache;
+import ch.vd.uniregctb.type.TypeTache;
 import ch.vd.uniregctb.utils.RegDateEditor;
 
 @Controller
@@ -73,6 +79,7 @@ public class QuestionnaireSNCController {
 	private TransactionHelper transactionHelper;
 	private RetourEditiqueControllerHelper retourEditiqueControllerHelper;
 	private PeriodeFiscaleDAO periodeFiscaleDAO;
+	private TacheDAO tacheDAO;
 
 	public void setHibernateTemplate(HibernateTemplate hibernateTemplate) {
 		this.hibernateTemplate = hibernateTemplate;
@@ -108,6 +115,10 @@ public class QuestionnaireSNCController {
 
 	public void setPeriodeFiscaleDAO(PeriodeFiscaleDAO periodeFiscaleDAO) {
 		this.periodeFiscaleDAO = periodeFiscaleDAO;
+	}
+
+	public void setTacheDAO(TacheDAO tacheDAO) {
+		this.tacheDAO = tacheDAO;
 	}
 
 	private void checkEditRight(boolean emission, boolean rappel, boolean duplicata, boolean quittancement) throws AccessDeniedException {
@@ -313,8 +324,26 @@ public class QuestionnaireSNCController {
 				delai.setDelaiAccordeAu(view.getDelaiAccorde());
 				delai.setEtat(EtatDelaiDeclaration.ACCORDE);
 				questionnaire.addDelai(delai);
+				questionnaire.setDelaiRetourImprime(view.getDelaiAccorde());
 
 				entreprise.addDeclaration(questionnaire);
+
+				// s'il y avait une tâche d'envoi en instance, il faut la traiter
+				final TacheCriteria tacheCriterion = new TacheCriteria();
+				tacheCriterion.setAnnee(periodeFiscale.getAnnee());
+				tacheCriterion.setEtatTache(TypeEtatTache.EN_INSTANCE);
+				tacheCriterion.setInclureTachesAnnulees(false);
+				tacheCriterion.setNumeroCTB(entreprise.getNumero());
+				tacheCriterion.setTypeTache(TypeTache.TacheEnvoiQuestionnaireSNC);
+				final List<Tache> tachesATraiter = tacheDAO.find(tacheCriterion);
+				if (tachesATraiter != null && !tachesATraiter.isEmpty()) {
+					// on marque la première comme traitée, et les (éventuelles) suivantes seront annulées par la synchronisation des tâches
+					final TacheEnvoiQuestionnaireSNC tacheTraitee = (TacheEnvoiQuestionnaireSNC) tachesATraiter.get(0);
+					tacheTraitee.setEtat(TypeEtatTache.TRAITE);
+					tacheTraitee.setDateDebut(questionnaire.getDateDebut());        // éventuel ré-alignement
+					tacheTraitee.setDateFin(questionnaire.getDateFin());
+				}
+
 				return qsncService.envoiQuestionnaireSNCOnline(questionnaire, dateTraitement);
 			}
 		});

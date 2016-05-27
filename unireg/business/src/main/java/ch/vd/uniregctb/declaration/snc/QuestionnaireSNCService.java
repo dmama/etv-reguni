@@ -3,6 +3,7 @@ package ch.vd.uniregctb.declaration.snc;
 import java.util.Set;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.shared.batchtemplate.StatusManager;
@@ -27,6 +28,14 @@ public interface QuestionnaireSNCService {
 	DeterminationQuestionnairesSNCResults determineQuestionnairesAEmettre(int periodeFiscale, RegDate dateTraitement, int nbThreads, StatusManager statusManager) throws DeclarationException;
 
 	/**
+	 * @param periodeFiscale la période fiscale à considérer pour la génération des tâches
+	 * @param dateTraitement la date de traitement (doit être postérieure à la fin de la période fiscale)
+	 * @param statusManager status manager
+	 * @return un résumé des actions accomplies
+	 */
+	EnvoiQuestionnairesSNCEnMasseResults envoiQuestionnairesSNCEnMasse(int periodeFiscale, RegDate dateTraitement, @Nullable Integer nbMaxEnvois, StatusManager statusManager) throws DeclarationException;
+
+	/**
 	 * @param entreprise une entreprise
 	 * @param pourEmissionAutoSeulement <code>true</code> si on ne veut que les périodes qui doivent générer des tâches automatique, <code>false</code> sinon
 	 * @return la liste des périodes pour lesquelles il serait de bon ton d'avoir un questionnaire SNC
@@ -35,13 +44,20 @@ public interface QuestionnaireSNCService {
 	Set<Integer> getPeriodesFiscalesTheoriquementCouvertes(Entreprise entreprise, boolean pourEmissionAutoSeulement);
 
 	/**
-	 * Création d'un nouveau questionnaire SNC + envoi pour impression locale
+	 * Envoi d'un questionnaire SNC pour impression locale
 	 * @param questionnaire nouveau questionnaire à envoyer
 	 * @param dateEvenement date de traitement
 	 * @return données du document imprimé
 	 * @throws DeclarationException en cas de souci
 	 */
 	EditiqueResultat envoiQuestionnaireSNCOnline(QuestionnaireSNC questionnaire, RegDate dateEvenement) throws DeclarationException;
+
+	/**
+	 * Envoi d'un questionnaire SNC pour impression batch
+	 * @param questionnaire nouveau questionnaire à envoyer
+	 * @throws DeclarationException en cas de souci
+	 */
+	void envoiQuestionnaireSNCForBatch(QuestionnaireSNC questionnaire) throws DeclarationException;
 
 	/**
 	 * Envoi pour impression locale d'un duplicata du questionnaire SNC
