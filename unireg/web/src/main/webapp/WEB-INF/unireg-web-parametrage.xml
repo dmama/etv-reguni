@@ -35,6 +35,7 @@
 	<!-- Les validators -->
 	<bean id="parametrePeriodeFiscalePPValidator" class="ch.vd.uniregctb.param.validator.ParametrePeriodeFiscalePPValidator" />
 	<bean id="parametrePeriodeFiscalePMValidator" class="ch.vd.uniregctb.param.validator.ParametrePeriodeFiscalePMValidator" />
+	<bean id="parametrePeriodeFiscaleSNCValidator" class="ch.vd.uniregctb.param.validator.ParametrePeriodeFiscaleSNCValidator" />
 	<bean id="modeleFeuilleDocumentValidator" class="ch.vd.uniregctb.param.validator.ModeleFeuilleDocumentValidator">
 		<property name="modeleDocumentDAO" ref="modeleDocumentDAO" />
 	</bean>
@@ -52,6 +53,7 @@
 			<util:list>
 				<ref bean="parametrePeriodeFiscalePPValidator"/>
 				<ref bean="parametrePeriodeFiscalePMValidator"/>
+				<ref bean="parametrePeriodeFiscaleSNCValidator"/>
 				<ref bean="modeleDocumentValidator"/>
 			</util:list>
 		</property>

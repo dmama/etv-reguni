@@ -35,6 +35,11 @@ public enum ParametreEnum {
 	delaiEcheanceSommationDeclarationImpotPM("30", Type.delaisEnJour, true),
 	dateLimiteEnvoiMasseDeclarationsUtilitePublique("31.01", Type.jourDansAnnee, true),
 
+	delaiRetourQuestionnaireSNCEmisManuellement("60", Type.delaisEnJour, true),
+	delaiMinimalRetourQuestionnaireSNC("3", Type.delaisEnMois, true),
+	delaiEnvoiRappelQuestionnaireSNC("15", Type.delaisEnJour, true),
+	delaiCadevImpressionQuestionnaireSNC("3", Type.delaisEnJour, true),
+
 	dateDebutEnvoiLettresBienvenue("11.06.2016", Type.date, true),
 	delaiRetourLettreBienvenue("30", Type.delaisEnJour, true),
 	delaiCadevImpressionLettreBienvenue("3", Type.delaisEnJour, true),

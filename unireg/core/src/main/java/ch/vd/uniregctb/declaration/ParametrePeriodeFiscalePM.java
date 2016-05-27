@@ -11,7 +11,7 @@ import ch.vd.uniregctb.type.TypeContribuable;
 
 @Entity
 @DiscriminatorValue(value = "PM")
-public class ParametrePeriodeFiscalePM extends ParametrePeriodeFiscale {
+public class ParametrePeriodeFiscalePM extends ParametrePeriodeFiscaleDI {
 
 	/**
 	 * Date de référence à prende en compte pour le délai initial

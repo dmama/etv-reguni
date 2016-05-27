@@ -8,11 +8,13 @@ import ch.vd.uniregctb.declaration.ModeleDocument;
 import ch.vd.uniregctb.declaration.ModeleFeuilleDocument;
 import ch.vd.uniregctb.declaration.ParametrePeriodeFiscalePM;
 import ch.vd.uniregctb.declaration.ParametrePeriodeFiscalePP;
+import ch.vd.uniregctb.declaration.ParametrePeriodeFiscaleSNC;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.param.view.ModeleDocumentView;
 import ch.vd.uniregctb.param.view.ModeleFeuilleDocumentView;
 import ch.vd.uniregctb.param.view.ParametrePeriodeFiscalePMEditView;
 import ch.vd.uniregctb.param.view.ParametrePeriodeFiscalePPEditView;
+import ch.vd.uniregctb.param.view.ParametrePeriodeFiscaleSNCEditView;
 import ch.vd.uniregctb.type.ModeleFeuille;
 
 public interface ParamPeriodeManager {
@@ -96,6 +98,13 @@ public interface ParamPeriodeManager {
 	ParametrePeriodeFiscalePM getPMUtilitePubliqueByPeriodeFiscale(PeriodeFiscale periodeFiscale);
 
 	/**
+	 * @param periodeFiscale la période fiscale
+	 * @return les paramètres de période fiscale pour les questionnaires SNC, pour une période donnée
+	 */
+	@Transactional(readOnly = true)
+	ParametrePeriodeFiscaleSNC getSNCByPeriodeFiscale(PeriodeFiscale periodeFiscale);
+
+	/**
 	 * Initialise la nouvelle période fiscale
 	 * @return true si la nouvelle période est bien initialisée
 	 */
@@ -123,10 +132,22 @@ public interface ParamPeriodeManager {
 	ParametrePeriodeFiscalePMEditView createParametrePeriodeFiscalePMEditView(Long idPeriode);
 
 	/**
-	 * Sauvegarde le formulaire d'édition des paramètres PP de de période fiscale
+	 * Sauvegarde le formulaire d'édition des paramètres PM de de période fiscale
 	 */
 	@Transactional(rollbackFor = Throwable.class)
 	void saveParametrePeriodeFiscaleView(ParametrePeriodeFiscalePMEditView command);
+
+	/**
+	 * @param idPeriode l'identifiant technique de la période fiscale
+	 * @return une instance de {@link ParametrePeriodeFiscaleSNCEditView} pour la période fiscale indiquée
+	 */
+	ParametrePeriodeFiscaleSNCEditView createParametrePeriodeFiscaleSNCEditView(Long idPeriode);
+
+	/**
+	 * Sauvegarde les données en base
+	 */
+	@Transactional(rollbackFor = Throwable.class)
+	void saveParametrePeriodeFiscaleView(ParametrePeriodeFiscaleSNCEditView command);
 
 	/**
 	 * Créer un objet {@link ModeleDocumentView} en vu d'un ajout.

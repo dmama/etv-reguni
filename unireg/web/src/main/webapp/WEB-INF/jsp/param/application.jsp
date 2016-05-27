@@ -94,6 +94,7 @@
 		            </td>
 					<td><sf:errors path="premierePeriodeFiscaleDeclarationPersonnesMorales" cssClass="erreur"/></td>
 		        </tr>
+
 		        <tr class="separator"><th colspan="4" ></th></tr>
 		        <tr class="<unireg:nextRowClass/>">
 		            <td><fmt:message key="label.param.noel"/></td>
@@ -125,7 +126,9 @@
 		                <sf:input path="feteNationale" cssClass="valeur date" cssErrorClass="valeur input-with-errors date" maxlength="5" readonly="true"/>
 		            </td>
 					<td><sf:errors path="feteNationale" cssClass="erreur"/></td>
-				</tr><tr class="separator"><th colspan="4" ></th></tr>
+				</tr>
+
+			    <tr class="separator"><th colspan="4" ></th></tr>
 		        <tr class="<unireg:nextRowClass/>">
 		            <td><fmt:message key="label.param.nbMaxParListe"/></td>
 					<%--@elvariable id="nbMaxParListeParDefaut" type="java.lang.String"--%>
@@ -143,7 +146,9 @@
 		                <sf:input path="nbMaxParPage" cssClass="valeur nombre" cssErrorClass="valeur input-with-errors nombre" maxlength="3"/>
 		            </td>
 					<td><sf:errors path="nbMaxParPage" cssClass="erreur"/></td>
-				</tr><tr class="separator"><th colspan="4" ></th></tr>
+				</tr>
+
+			    <tr class="separator"><th colspan="4" ></th></tr>
 		        <tr class="<unireg:nextRowClass/>">
 		            <td><fmt:message key="label.param.delaiAttenteDeclarationImpotPersonneDecedee"/></td>
 					<%--@elvariable id="delaiAttenteDeclarationImpotPersonneDecedeeParDefaut" type="java.lang.String"--%>
@@ -262,13 +267,13 @@
 					<td><sf:errors path="delaiRetourSommationListeRecapitulative" cssClass="erreur"/></td>
 		        </tr>
 		        <tr class="<unireg:nextRowClass/>">
-		            <td><fmt:message key="label.param.delaiEcheanceSommationListeRecapitualtive"/></td>
-		            <%--@elvariable id="delaiEcheanceSommationListeRecapitualtiveParDefaut" type="java.lang.String"--%>
-					<td class="nombre">${delaiEcheanceSommationListeRecapitualtiveParDefaut}</td>
+		            <td><fmt:message key="label.param.delaiEcheanceSommationListeRecapitulative"/></td>
+		            <%--@elvariable id="delaiEcheanceSommationListeRecapitulativeParDefaut" type="java.lang.String"--%>
+					<td class="nombre">${delaiEcheanceSommationListeRecapitulativeParDefaut}</td>
 		            <td class="valeur">
-		                <sf:input path="delaiEcheanceSommationListeRecapitualtive" cssClass="valeur nombre" cssErrorClass="valeur input-with-errors nombre" maxlength="3"/>
+		                <sf:input path="delaiEcheanceSommationListeRecapitulative" cssClass="valeur nombre" cssErrorClass="valeur input-with-errors nombre" maxlength="3"/>
 		            </td>
-					<td><sf:errors path="delaiEcheanceSommationListeRecapitualtive" cssClass="erreur"/></td>
+					<td><sf:errors path="delaiEcheanceSommationListeRecapitulative" cssClass="erreur"/></td>
 		        </tr>
 		        <tr class="<unireg:nextRowClass/>">
 		            <td><fmt:message key="label.param.delaiRetentionRapportTravailInactif"/></td>
@@ -293,10 +298,49 @@
 		            <%--@elvariable id="dateLimiteEnvoiMasseDeclarationsUtilitePubliqueParDefaut" type="java.lang.String"--%>
 					<td class="nombre">${dateLimiteEnvoiMasseDeclarationsUtilitePubliqueParDefaut}</td>
 		            <td class="valeur">
-		                <sf:input path="dateLimiteEnvoiMasseDeclarationsUtilitePublique" cssClass="valeur date" cssErrorClass="valeur input-with-errors date" maxlength="3"/>
+		                <sf:input path="dateLimiteEnvoiMasseDeclarationsUtilitePublique" cssClass="valeur date" cssErrorClass="valeur input-with-errors date" maxlength="5"/>
 		            </td>
 				    <td><sf:errors path="dateLimiteEnvoiMasseDeclarationsUtilitePublique" cssClass="erreur"/></td>
 		        </tr>
+
+			    <tr class="separator"><th colspan="4" ></th></tr>
+			    <tr class="<unireg:nextRowClass/>">
+				    <td><fmt:message key="label.param.delaiRetourQuestionnaireSNCEmisManuellement"/></td>
+					    <%--@elvariable id="delaiRetourQuestionnaireSNCEmisManuellementParDefaut" type="java.lang.String"--%>
+				    <td class="nombre">${delaiRetourQuestionnaireSNCEmisManuellementParDefaut}</td>
+				    <td class="valeur">
+					    <sf:input path="delaiRetourQuestionnaireSNCEmisManuellement" cssClass="valeur nombre" cssErrorClass="valeur input-with-errors nombre" maxlength="3"/>
+				    </td>
+				    <td><sf:errors path="delaiRetourQuestionnaireSNCEmisManuellement" cssClass="erreur"/></td>
+			    </tr>
+			    <tr class="<unireg:nextRowClass/>">
+				    <td><fmt:message key="label.param.delaiCadevImpressionQuestionnaireSNC"/></td>
+					    <%--@elvariable id="delaiCadevImpressionQuestionnaireSNCParDefaut" type="java.lang.String"--%>
+				    <td class="nombre">${delaiCadevImpressionQuestionnaireSNCParDefaut}</td>
+				    <td class="valeur">
+					    <sf:input path="delaiCadevImpressionQuestionnaireSNC" cssClass="valeur nombre" cssErrorClass="valeur input-with-errors nombre" maxlength="3"/>
+				    </td>
+				    <td><sf:errors path="delaiCadevImpressionQuestionnaireSNC" cssClass="erreur"/></td>
+			    </tr>
+			    <tr class="<unireg:nextRowClass/>">
+				    <td><fmt:message key="label.param.delaiEnvoiRappelQuestionnaireSNC"/></td>
+					    <%--@elvariable id="delaiEnvoiRappelQuestionnaireSNCParDefaut" type="java.lang.String"--%>
+				    <td class="nombre">${delaiEnvoiRappelQuestionnaireSNCParDefaut}</td>
+				    <td class="valeur">
+					    <sf:input path="delaiEnvoiRappelQuestionnaireSNC" cssClass="valeur nombre" cssErrorClass="valeur input-with-errors nombre" maxlength="3"/>
+				    </td>
+				    <td><sf:errors path="delaiEnvoiRappelQuestionnaireSNC" cssClass="erreur"/></td>
+			    </tr>
+			    <tr class="<unireg:nextRowClass/>">
+				    <td><fmt:message key="label.param.delaiMinimalRetourQuestionnaireSNC"/></td>
+					    <%--@elvariable id="delaiMinimalRetourQuestionnaireSNCParDefaut" type="java.lang.String"--%>
+				    <td class="nombre">${delaiMinimalRetourQuestionnaireSNCParDefaut}</td>
+				    <td class="valeur">
+					    <sf:input path="delaiMinimalRetourQuestionnaireSNC" cssClass="valeur nombre" cssErrorClass="valeur input-with-errors nombre" maxlength="3"/>
+				    </td>
+				    <td><sf:errors path="delaiMinimalRetourQuestionnaireSNC" cssClass="erreur"/></td>
+			    </tr>
+
 			    <tr class="separator"><th colspan="4" ></th></tr>
 		        <tr class="<unireg:nextRowClass/>">
 		            <td><fmt:message key="label.param.dateDebutEnvoiLettresBienvenue"/></td>
@@ -342,7 +386,9 @@
 		                <sf:input path="delaiEnvoiRappelLettreBienvenue" cssClass="valeur nombre" cssErrorClass="valeur input-with-errors nombre" maxlength="4"/>
 		            </td>
 					<td><sf:errors path="delaiEnvoiRappelLettreBienvenue" cssClass="erreur"/></td>
-		        </tr><tr class="separator"><th colspan="4" ></th></tr>
+		        </tr>
+
+			    <tr class="separator"><th colspan="4" ></th></tr>
 		        <tr class="<unireg:nextRowClass/>">
 		            <td><fmt:message key="label.param.dateExclusionDecedeEnvoiDI"/></td>
 		            <%--@elvariable id="dateExclusionDecedeEnvoiDIParDefaut" type="java.lang.String"--%>
@@ -351,7 +397,9 @@
 		                <sf:input path="dateExclusionDecedeEnvoiDI" cssClass="valeur date" cssErrorClass="valeur input-with-errors date" maxlength="5"/>
 		            </td>
 			        <td><sf:errors path="dateExclusionDecedeEnvoiDI" cssClass="erreur"/></td>
-		        </tr><tr class="separator"><th colspan="4" ></th></tr>
+		        </tr>
+
+			    <tr class="separator"><th colspan="4" ></th></tr>
 		        <tr class="<unireg:nextRowClass/>">
 		            <td><fmt:message key="label.param.anneeMinimaleForDebiteur"/></td>
 		            <%--@elvariable id="anneeMinimaleForDebiteurParDefaut" type="java.lang.String"--%>
@@ -360,26 +408,29 @@
 		                <sf:input path="anneeMinimaleForDebiteur" cssClass="valeur nombre" cssErrorClass="valeur input-with-errors nombre" maxlength="4"/>
 		            </td>
 					<td><sf:errors path="anneeMinimaleForDebiteur" cssClass="erreur"/></td>
-		        </tr><tr class="separator"><th colspan="4" ></th></tr>
-				 <tr class="<unireg:nextRowClass/>">
-					<td><fmt:message key="label.param.ageRentierHomme"/></td>
-					<%--@elvariable id="ageRentierHommeParDefaut" type="java.lang.String"--%>
-					<td class="nombre">${ageRentierHommeParDefaut}</td>
-					<td class="valeur">
-						 <sf:input path="ageRentierHomme" cssClass="valeur nombre" cssErrorClass="valeur input-with-errors nombre" maxlength="2"/>
-					</td>
-					<td><sf:errors path="ageRentierHomme" cssClass="erreur"/> </td>
-				 </tr>
-				 <tr class="<unireg:nextRowClass/>">
-					<td><fmt:message key="label.param.ageRentierFemme"/></td>
-					<%--@elvariable id="ageRentierFemmeParDefaut" type="java.lang.String"--%>
-					<td class="nombre">${ageRentierFemmeParDefaut}</td>
-					<td class="valeur">
-						 <sf:input path="ageRentierFemme" cssClass="valeur nombre" cssErrorClass="valeur input-with-errors nombre" maxlength="2"/>
-					</td>
-					<td><sf:errors path="ageRentierFemme" cssClass="erreur"/></td>
-				 </tr>
-				 <tr class="separator"><th colspan="4" ></th></tr>
+		        </tr>
+
+			    <tr class="separator"><th colspan="4" ></th></tr>
+			    <tr class="<unireg:nextRowClass/>">
+				    <td><fmt:message key="label.param.ageRentierHomme"/></td>
+					    <%--@elvariable id="ageRentierHommeParDefaut" type="java.lang.String"--%>
+				    <td class="nombre">${ageRentierHommeParDefaut}</td>
+				    <td class="valeur">
+					    <sf:input path="ageRentierHomme" cssClass="valeur nombre" cssErrorClass="valeur input-with-errors nombre" maxlength="2"/>
+				    </td>
+				    <td><sf:errors path="ageRentierHomme" cssClass="erreur"/> </td>
+			    </tr>
+			    <tr class="<unireg:nextRowClass/>">
+				    <td><fmt:message key="label.param.ageRentierFemme"/></td>
+					    <%--@elvariable id="ageRentierFemmeParDefaut" type="java.lang.String"--%>
+				    <td class="nombre">${ageRentierFemmeParDefaut}</td>
+				    <td class="valeur">
+					    <sf:input path="ageRentierFemme" cssClass="valeur nombre" cssErrorClass="valeur input-with-errors nombre" maxlength="2"/>
+				    </td>
+				    <td><sf:errors path="ageRentierFemme" cssClass="erreur"/></td>
+			    </tr>
+
+			    <tr class="separator"><th colspan="4" ></th></tr>
  			</table>
  			<input type="submit" id="save" value="<fmt:message key="label.param.action.save"/>"/>
  			<input type="submit" id="reset" value="<fmt:message key="label.param.action.reset"/>" />

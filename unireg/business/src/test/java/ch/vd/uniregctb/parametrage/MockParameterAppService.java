@@ -48,6 +48,11 @@ public final class MockParameterAppService implements ParametreAppService {
 	}
 
 	@Override
+	public Integer getDelaiCadevImpressionQuestionnaireSNC() {
+		return container.getDelaiCadevImpressionQuestionnaireSNC();
+	}
+
+	@Override
 	public Integer getDelaiEcheanceSommationDeclarationImpotPP() {
 		return container.getDelaiEcheanceSommationDeclarationImpotPP();
 	}
@@ -58,8 +63,8 @@ public final class MockParameterAppService implements ParametreAppService {
 	}
 
 	@Override
-	public Integer getDelaiEcheanceSommationListeRecapitualtive() {
-		return container.getDelaiEcheanceSommationListeRecapitualtive();
+	public Integer getDelaiEcheanceSommationListeRecapitulative() {
+		return container.getDelaiEcheanceSommationListeRecapitulative();
 	}
 
 	@Override
@@ -198,6 +203,21 @@ public final class MockParameterAppService implements ParametreAppService {
 	}
 
 	@Override
+	public Integer getDelaiEnvoiRappelQuestionnaireSNC() {
+		return container.getDelaiEnvoiRappelQuestionnaireSNC();
+	}
+
+	@Override
+	public Integer getDelaiMinimalRetourQuestionnaireSNC() {
+		return container.getDelaiMinimalRetourQuestionnaireSNC();
+	}
+
+	@Override
+	public Integer getDelaiRetourQuestionnaireSNCEmisManuellement() {
+		return container.getDelaiRetourQuestionnaireSNCEmisManuellement();
+	}
+
+	@Override
 	public void reset() {
 		container.reset();
 	}
@@ -235,6 +255,11 @@ public final class MockParameterAppService implements ParametreAppService {
 	@Override
 	public void setDelaiCadevImpressionLettreBienvenue(Integer val) {
 		container.setDelaiCadevImpressionLettreBienvenue(val);
+	}
+
+	@Override
+	public void setDelaiCadevImpressionQuestionnaireSNC(Integer val) {
+		container.setDelaiCadevImpressionQuestionnaireSNC(val);
 	}
 
 	@Override
@@ -385,5 +410,20 @@ public final class MockParameterAppService implements ParametreAppService {
 	@Override
 	public void setDateLimiteEnvoiMasseDeclarationsUtilitePublique(Integer[] val) {
 		container.setDateLimiteEnvoiMasseDeclarationsUtilitePublique(val);
+	}
+
+	@Override
+	public void setDelaiRetourQuestionnaireSNCEmisManuellement(Integer val) {
+		container.setDelaiRetourQuestionnaireSNCEmisManuellement(val);
+	}
+
+	@Override
+	public void setDelaiMinimalRetourQuestionnaireSNC(Integer val) {
+		container.setDelaiMinimalRetourQuestionnaireSNC(val);
+	}
+
+	@Override
+	public void setDelaiEnvoiRappelQuestionnaireSNC(Integer val) {
+		container.setDelaiEnvoiRappelQuestionnaireSNC(val);
 	}
 }

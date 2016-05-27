@@ -146,6 +146,11 @@ class ParametreAppContainer implements ParametreAppAccessor {
 	}
 
 	@Override
+	public Integer getDelaiCadevImpressionQuestionnaireSNC() {
+		return Integer.parseInt(get(ParametreEnum.delaiCadevImpressionQuestionnaireSNC));
+	}
+
+	@Override
 	public Integer getDelaiEcheanceSommationDeclarationImpotPP() {
 		return Integer.parseInt(get(ParametreEnum.delaiEcheanceSommationDeclarationImpotPP));
 	}
@@ -156,7 +161,7 @@ class ParametreAppContainer implements ParametreAppAccessor {
 	}
 
 	@Override
-	public Integer getDelaiEcheanceSommationListeRecapitualtive() {
+	public Integer getDelaiEcheanceSommationListeRecapitulative() {
 		return Integer.parseInt(get(ParametreEnum.delaiEcheanceSommationListeRecapitualtive));
 	}
 
@@ -173,6 +178,21 @@ class ParametreAppContainer implements ParametreAppAccessor {
 	@Override
 	public Integer[] getDateLimiteEnvoiMasseDeclarationsUtilitePublique() {
 		return getValeurPourParametreDeTypeJoursDansAnnee(ParametreEnum.dateLimiteEnvoiMasseDeclarationsUtilitePublique);
+	}
+
+	@Override
+	public Integer getDelaiEnvoiRappelQuestionnaireSNC() {
+		return Integer.parseInt(get(ParametreEnum.delaiEnvoiRappelQuestionnaireSNC));
+	}
+
+	@Override
+	public Integer getDelaiMinimalRetourQuestionnaireSNC() {
+		return Integer.parseInt(get(ParametreEnum.delaiMinimalRetourQuestionnaireSNC));
+	}
+
+	@Override
+	public Integer getDelaiRetourQuestionnaireSNCEmisManuellement() {
+		return Integer.parseInt(get(ParametreEnum.delaiRetourQuestionnaireSNCEmisManuellement));
 	}
 
 	@Override
@@ -361,6 +381,11 @@ class ParametreAppContainer implements ParametreAppAccessor {
 	}
 
 	@Override
+	public void setDelaiCadevImpressionQuestionnaireSNC(Integer val) {
+		setValeur(ParametreEnum.delaiCadevImpressionQuestionnaireSNC, val.toString());
+	}
+
+	@Override
 	public void setDelaiEcheanceSommationDeclarationImpotPP(Integer val) {
 		setValeur(ParametreEnum.delaiEcheanceSommationDeclarationImpotPP, val.toString());
 	}
@@ -374,6 +399,21 @@ class ParametreAppContainer implements ParametreAppAccessor {
 	public void setDateLimiteEnvoiMasseDeclarationsUtilitePublique(Integer[] val) {
 		Assert.isEqual(2, val.length);
 		setValeur(ParametreEnum.dateLimiteEnvoiMasseDeclarationsUtilitePublique, String.valueOf(val[0]) + '.' + val[1]);
+	}
+
+	@Override
+	public void setDelaiRetourQuestionnaireSNCEmisManuellement(Integer val) {
+		setValeur(ParametreEnum.delaiRetourQuestionnaireSNCEmisManuellement, val.toString());
+	}
+
+	@Override
+	public void setDelaiMinimalRetourQuestionnaireSNC(Integer val) {
+		setValeur(ParametreEnum.delaiMinimalRetourQuestionnaireSNC, val.toString());
+	}
+
+	@Override
+	public void setDelaiEnvoiRappelQuestionnaireSNC(Integer val) {
+		setValeur(ParametreEnum.delaiEnvoiRappelQuestionnaireSNC, val.toString());
 	}
 
 	@Override

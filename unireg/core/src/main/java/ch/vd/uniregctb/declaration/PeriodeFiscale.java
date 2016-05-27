@@ -31,7 +31,7 @@ public class PeriodeFiscale extends HibernateEntity {
 	private Integer annee;
 	private Set<ModeleDocument> modelesDocument;
 	private Set<ParametrePeriodeFiscale> parametrePeriodeFiscale;
-	private boolean showCodeControleSommationDeclaration = false;
+	private boolean showCodeControleSommationDeclarationPP = false;
 
 	@Transient
 	@Override
@@ -101,11 +101,12 @@ public class PeriodeFiscale extends HibernateEntity {
 	/**
 	 * @return le {@link ParametrePeriodeFiscalePP} en fonction du {@link TypeContribuable} pour la période
 	 */
+	@Transient
 	@Nullable
 	public ParametrePeriodeFiscalePP getParametrePeriodeFiscalePP(TypeContribuable typeContribuable) {
 		assert typeContribuable != null : "typeContribuable ne peut être null";
 		for (ParametrePeriodeFiscale ppf : parametrePeriodeFiscale) {
-			if (ppf instanceof ParametrePeriodeFiscalePP && typeContribuable == ppf.getTypeContribuable()) {
+			if (ppf instanceof ParametrePeriodeFiscalePP && typeContribuable == ((ParametrePeriodeFiscalePP) ppf).getTypeContribuable()) {
 				return (ParametrePeriodeFiscalePP) ppf;
 			}
 		}
@@ -115,24 +116,36 @@ public class PeriodeFiscale extends HibernateEntity {
 	/**
 	 * @return le {@link ParametrePeriodeFiscalePM} en fonction du {@link TypeContribuable} pour la période
 	 */
+	@Transient
 	@Nullable
 	public ParametrePeriodeFiscalePM getParametrePeriodeFiscalePM(TypeContribuable typeContribuable) {
 		assert typeContribuable != null : "typeContribuable ne peut être null";
 		for (ParametrePeriodeFiscale ppf : parametrePeriodeFiscale) {
-			if (ppf instanceof ParametrePeriodeFiscalePM && typeContribuable == ppf.getTypeContribuable()) {
+			if (ppf instanceof ParametrePeriodeFiscalePM && typeContribuable == ((ParametrePeriodeFiscalePM) ppf).getTypeContribuable()) {
 				return (ParametrePeriodeFiscalePM) ppf;
 			}
 		}
 		return null;
 	}
 
-	@Column(name = "CODE_CTRL_SOMM_DI_PP", nullable = false)
-	public boolean isShowCodeControleSommationDeclaration() {
-		return showCodeControleSommationDeclaration;
+	@Transient
+	@Nullable
+	public ParametrePeriodeFiscaleSNC getParametrePeriodeFiscaleSNC() {
+		for (ParametrePeriodeFiscale ppf : parametrePeriodeFiscale) {
+			if (ppf instanceof ParametrePeriodeFiscaleSNC) {
+				return (ParametrePeriodeFiscaleSNC) ppf;
+			}
+		}
+		return null;
 	}
 
-	public void setShowCodeControleSommationDeclaration(boolean showCodeControleSommationDeclaration) {
-		this.showCodeControleSommationDeclaration = showCodeControleSommationDeclaration;
+	@Column(name = "CODE_CTRL_SOMM_DI_PP", nullable = false)
+	public boolean isShowCodeControleSommationDeclarationPP() {
+		return showCodeControleSommationDeclarationPP;
+	}
+
+	public void setShowCodeControleSommationDeclarationPP(boolean showCodeControleSommationDeclarationPP) {
+		this.showCodeControleSommationDeclarationPP = showCodeControleSommationDeclarationPP;
 	}
 
 	/**
@@ -205,6 +218,8 @@ public class PeriodeFiscale extends HibernateEntity {
 		);
 		addPeriodeFiscaleParametrePM(6, false, 75, false, ParametrePeriodeFiscalePM.ReferencePourDelai.FIN_PERIODE, TypeContribuable.HORS_CANTON, TypeContribuable.HORS_SUISSE, TypeContribuable.VAUDOIS_ORDINAIRE);
 		addPeriodeFiscaleParametrePM(24, false, 15, false, ParametrePeriodeFiscalePM.ReferencePourDelai.EMISSION, TypeContribuable.UTILITE_PUBLIQUE);
+		addPeriodeFiscaleParametreSNC(RegDate.get(this.getAnnee() + 1, 3, 15),      // valeur par défaut du terme réglementaire au 15 mars
+		                              RegDate.get(this.getAnnee() + 1, 8, 31));     // valeur par défaut du terme effectif au 31 août
 	}
 
 	/**
@@ -236,6 +251,10 @@ public class PeriodeFiscale extends HibernateEntity {
 		for (TypeContribuable typeContribuable : typesContribuable) {
 			addParametrePeriodeFiscale(new ParametrePeriodeFiscalePM(typeContribuable, delaiImprimeMois, delaiImprimeRepousseFinDeMois, toleranceJours, delaiTolereRepousseFinDeMois, referenceDelaiInitial, this));
 		}
+	}
+
+	public void addPeriodeFiscaleParametreSNC(RegDate dateRappelReglementaire, RegDate dateRappelEffectif) {
+		addParametrePeriodeFiscale(new ParametrePeriodeFiscaleSNC(this, dateRappelReglementaire, dateRappelEffectif));
 	}
 
 	public boolean possedeTypeDocument(TypeDocument typeDocument) {

@@ -86,4 +86,15 @@ public class ParametrePeriodeFiscaleDAOImpl extends BaseDAOImpl<ParametrePeriode
 	public ParametrePeriodeFiscalePM getPMUtilitePubliqueByPeriodeFiscale(PeriodeFiscale periodeFiscale) {
 		return getPMByPeriodeFiscaleAndTypeContribuable(periodeFiscale, TypeContribuable.UTILITE_PUBLIQUE);
 	}
+
+	@Override
+	public ParametrePeriodeFiscaleSNC getSNCByPeriodeFiscale(PeriodeFiscale periodeFiscale) {
+		final List<ParametrePeriodeFiscaleSNC> list = find("FROM ParametrePeriodeFiscaleSNC p WHERE p.periodefiscale = :pf",
+		                                                   buildNamedParameters(Pair.<String, Object>of("pf", periodeFiscale)),
+		                                                   null);
+		if (list == null || list.isEmpty()) {
+			return null;
+		}
+		return list.get(0);
+	}
 }

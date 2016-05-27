@@ -131,7 +131,7 @@ public class DelaisServiceImpl implements DelaisService {
 
 	@Override
 	public RegDate getDateFinDelaiEcheanceSommationListeRecapitualtive(RegDate dateDebut){
-		return getFinDelai(dateDebut, parametreAppService.getDelaiEcheanceSommationListeRecapitualtive());
+		return getFinDelai(dateDebut, parametreAppService.getDelaiEcheanceSommationListeRecapitulative());
 	}
 
 	@Override

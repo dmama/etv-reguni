@@ -33,6 +33,7 @@ import ch.vd.uniregctb.param.manager.ParamPeriodeManager;
 import ch.vd.uniregctb.param.view.ModeleDocumentView;
 import ch.vd.uniregctb.param.view.ParametrePeriodeFiscalePMEditView;
 import ch.vd.uniregctb.param.view.ParametrePeriodeFiscalePPEditView;
+import ch.vd.uniregctb.param.view.ParametrePeriodeFiscaleSNCEditView;
 import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.security.SecurityCheck;
 import ch.vd.uniregctb.tiers.TiersMapHelper;
@@ -113,7 +114,7 @@ public class ParamPeriodeController {
 		final PeriodeFiscale periodeSelectionnee = periodeDemandee != null ? periodeDemandee : periodes.get(0);
 		model.addAttribute("periodeSelectionnee", periodeSelectionnee);
 
-		model.addAttribute("codeControleSurSommationDIPP", periodeSelectionnee.isShowCodeControleSommationDeclaration());
+		model.addAttribute("codeControleSurSommationDIPP", periodeSelectionnee.isShowCodeControleSommationDeclarationPP());
 		model.addAttribute("parametrePeriodeFiscalePPVaud", manager.getPPVaudByPeriodeFiscale(periodeSelectionnee));
 		model.addAttribute("parametrePeriodeFiscalePPDepense", manager.getPPDepenseByPeriodeFiscale(periodeSelectionnee));
 		model.addAttribute("parametrePeriodeFiscalePPHorsCanton", manager.getPPHorsCantonByPeriodeFiscale(periodeSelectionnee));
@@ -124,6 +125,8 @@ public class ParamPeriodeController {
 		model.addAttribute("parametrePeriodeFiscalePMHorsCanton", manager.getPMHorsCantonByPeriodeFiscale(periodeSelectionnee));
 		model.addAttribute("parametrePeriodeFiscalePMHorsSuisse", manager.getPMHorsSuisseByPeriodeFiscale(periodeSelectionnee));
 		model.addAttribute("parametrePeriodeFiscalePMUtilitePublique", manager.getPMUtilitePubliqueByPeriodeFiscale(periodeSelectionnee));
+
+		model.addAttribute("parametrePeriodeFiscaleSNC", manager.getSNCByPeriodeFiscale(periodeSelectionnee));
 
 		final List<ModeleDocument> modeles = new ArrayList<>(manager.getModeleDocuments(periodeSelectionnee));
 		Collections.sort(modeles, new Comparator<ModeleDocument>() {
@@ -203,12 +206,12 @@ public class ParamPeriodeController {
 	@SecurityCheck(rolesToCheck = {Role.PARAM_PERIODE}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
 	public String showEditPeriodPM(Model model, @RequestParam(value = PARAMETER_PERIODE_ID) Long pfId) {
 		final ParametrePeriodeFiscalePMEditView view = manager.createParametrePeriodeFiscalePMEditView(pfId);
-		model.addAttribute("referencesPourDelais", tiersMapHelper.getMapReferencesPourDelai());
 		return showEditPeriodPM(model, view);
 	}
 
 	private String showEditPeriodPM(Model model, ParametrePeriodeFiscalePMEditView view) {
 		model.addAttribute("command", view);
+		model.addAttribute("referencesPourDelais", tiersMapHelper.getMapReferencesPourDelai());
 		return "param/parametres-pf-pm-edit";
 	}
 
@@ -216,11 +219,32 @@ public class ParamPeriodeController {
 	@SecurityCheck(rolesToCheck = {Role.PARAM_PERIODE}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
 	public String commitEditPeriodPM(Model model, @Valid @ModelAttribute("command") ParametrePeriodeFiscalePMEditView view, BindingResult bindingResult) {
 		if (bindingResult.hasErrors()) {
-			model.addAttribute("referencesPourDelais", tiersMapHelper.getMapReferencesPourDelai());
 			return showEditPeriodPM(model, view);
 		}
 		manager.saveParametrePeriodeFiscaleView(view);
 		return "redirect:/param/periode/list.do?pf=" + view.getIdPeriodeFiscale();
+	}
+
+	@RequestMapping(value = "/pf-edit-snc.do", method = RequestMethod.GET)
+	@SecurityCheck(rolesToCheck = {Role.PARAM_PERIODE}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
+	public String showEditPeriodSNC(Model model, @RequestParam(value = PARAMETER_PERIODE_ID) Long pfId) {
+		final ParametrePeriodeFiscaleSNCEditView view = manager.createParametrePeriodeFiscaleSNCEditView(pfId);
+		return showEditPeriodSNC(model, view);
+	}
+
+	private String showEditPeriodSNC(Model model, ParametrePeriodeFiscaleSNCEditView view) {
+		model.addAttribute("command", view);
+		return "param/parametres-pf-snc-edit";
+	}
+
+	@RequestMapping(value = "/pf-edit-snc.do", method = RequestMethod.POST)
+	@SecurityCheck(rolesToCheck = {Role.PARAM_PERIODE}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
+	public String commitEditPeriodSNC(Model model, @Valid @ModelAttribute("command") ParametrePeriodeFiscaleSNCEditView view, BindingResult bindingResult) {
+		if (bindingResult.hasErrors()) {
+			return showEditPeriodSNC(model, view);
+		}
+		manager.saveParametrePeriodeFiscaleView(view);
+		return "redirect:/param/periode/list.do?pf=" + view.getAnneePeriodeFiscale();
 	}
 
 	@RequestMapping(value = "/modele-add.do", method = RequestMethod.GET)

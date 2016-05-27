@@ -71,4 +71,10 @@ public interface ParametrePeriodeFiscaleDAO extends GenericDAO<ParametrePeriodeF
 	 * @return les parametres de période fiscale pour un contribuable PM reconnu d'utilité publique, pour une période donnée
 	 */
 	ParametrePeriodeFiscalePM getPMUtilitePubliqueByPeriodeFiscale(PeriodeFiscale periodeFiscale);
+
+	/**
+	 * @param periodeFiscale la période fiscale
+	 * @return les paramètres de période fiscale pour les questionnaires SNC, pour une période donnée
+	 */
+	ParametrePeriodeFiscaleSNC getSNCByPeriodeFiscale(PeriodeFiscale periodeFiscale);
 }

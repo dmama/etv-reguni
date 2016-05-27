@@ -12,7 +12,7 @@ import ch.vd.uniregctb.type.TypeContribuable;
 
 @Entity
 @DiscriminatorValue(value = "PP")
-public class ParametrePeriodeFiscalePP extends ParametrePeriodeFiscale implements Duplicable<ParametrePeriodeFiscalePP> {
+public class ParametrePeriodeFiscalePP extends ParametrePeriodeFiscaleDI implements Duplicable<ParametrePeriodeFiscalePP> {
 
 	private RegDate dateFinEnvoiMasseDI;
 	private RegDate termeGeneralSommationReglementaire;

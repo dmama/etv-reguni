@@ -297,7 +297,7 @@ public class ImpressionSommationDeclarationImpotPersonnesPhysiquesHelperImpl ext
 			lettreSom.setCivil(formuleAppel);
 			lettreSom.setPeriodeFiscal(pfStr);
 			lettreSom.setDateEnrg(RegDateHelper.toIndexString(params.getDateTraitement()));
-			if (pf.isShowCodeControleSommationDeclaration() && StringUtils.isNotBlank(di.getCodeControle())) {
+			if (pf.isShowCodeControleSommationDeclarationPP() && StringUtils.isNotBlank(di.getCodeControle())) {
 				lettreSom.setCodeValidation(di.getCodeControle());
 			}
 		}

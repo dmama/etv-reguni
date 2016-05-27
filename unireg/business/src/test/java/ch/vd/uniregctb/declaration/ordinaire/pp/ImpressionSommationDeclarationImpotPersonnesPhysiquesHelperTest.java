@@ -325,11 +325,11 @@ public class ImpressionSommationDeclarationImpotPersonnesPhysiquesHelperTest ext
 			@Override
 			public Ids doInTransaction(TransactionStatus status) {
 				final PeriodeFiscale pfSans = addPeriodeFiscale(2011);
-				pfSans.setShowCodeControleSommationDeclaration(false);
+				pfSans.setShowCodeControleSommationDeclarationPP(false);
 				final ModeleDocument mdSans = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, pfSans);
 
 				final PeriodeFiscale pfAvec = addPeriodeFiscale(2012);
-				pfAvec.setShowCodeControleSommationDeclaration(true);
+				pfAvec.setShowCodeControleSommationDeclarationPP(true);
 				final ModeleDocument mdAvec = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, pfAvec);
 
 				final PersonnePhysique pp = addNonHabitant("Gudule", "Tsichorée", date(1979, 8, 25), Sexe.FEMININ);

@@ -16,17 +16,25 @@ public interface ParametreAppAccessor {
 
 	Integer getDelaiCadevImpressionLettreBienvenue();
 
+	Integer getDelaiCadevImpressionQuestionnaireSNC();
+
 	Integer getDelaiEcheanceSommationDeclarationImpotPP();
 
 	Integer getDelaiEcheanceSommationDeclarationImpotPM();
 
-	Integer getDelaiEcheanceSommationListeRecapitualtive();
+	Integer getDelaiEcheanceSommationListeRecapitulative();
 
 	Integer getDelaiEnvoiSommationDeclarationImpotPP();
 
 	Integer getDelaiEnvoiSommationDeclarationImpotPM();
 
 	Integer[] getDateLimiteEnvoiMasseDeclarationsUtilitePublique();
+
+	Integer getDelaiRetourQuestionnaireSNCEmisManuellement();
+
+	Integer getDelaiMinimalRetourQuestionnaireSNC();
+
+	Integer getDelaiEnvoiRappelQuestionnaireSNC();
 
 	Integer getDelaiEnvoiSommationListeRecapitulative();
 
@@ -92,6 +100,8 @@ public interface ParametreAppAccessor {
 
 	void setDelaiCadevImpressionLettreBienvenue(Integer val);
 
+	void setDelaiCadevImpressionQuestionnaireSNC(Integer val);
+
 	void setDelaiEcheanceSommationDeclarationImpotPP(Integer val);
 
 	void setDelaiEcheanceSommationDeclarationImpotPM(Integer val);
@@ -103,6 +113,12 @@ public interface ParametreAppAccessor {
 	void setDelaiEnvoiSommationDeclarationImpotPM(Integer val);
 
 	void setDateLimiteEnvoiMasseDeclarationsUtilitePublique(Integer[] val);
+
+	void setDelaiRetourQuestionnaireSNCEmisManuellement(Integer val);
+
+	void setDelaiMinimalRetourQuestionnaireSNC(Integer val);
+
+	void setDelaiEnvoiRappelQuestionnaireSNC(Integer val);
 
 	void setDelaiEnvoiSommationListeRecapitulative(Integer val);
 

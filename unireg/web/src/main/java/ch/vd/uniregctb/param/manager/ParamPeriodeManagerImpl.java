@@ -1,7 +1,5 @@
 package ch.vd.uniregctb.param.manager;
 
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -18,12 +16,14 @@ import ch.vd.uniregctb.declaration.ParametrePeriodeFiscale;
 import ch.vd.uniregctb.declaration.ParametrePeriodeFiscaleDAO;
 import ch.vd.uniregctb.declaration.ParametrePeriodeFiscalePM;
 import ch.vd.uniregctb.declaration.ParametrePeriodeFiscalePP;
+import ch.vd.uniregctb.declaration.ParametrePeriodeFiscaleSNC;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.declaration.PeriodeFiscaleDAO;
 import ch.vd.uniregctb.param.view.ModeleDocumentView;
 import ch.vd.uniregctb.param.view.ModeleFeuilleDocumentView;
 import ch.vd.uniregctb.param.view.ParametrePeriodeFiscalePMEditView;
 import ch.vd.uniregctb.param.view.ParametrePeriodeFiscalePPEditView;
+import ch.vd.uniregctb.param.view.ParametrePeriodeFiscaleSNCEditView;
 import ch.vd.uniregctb.parametrage.PeriodeFiscaleService;
 import ch.vd.uniregctb.type.ModeleFeuille;
 import ch.vd.uniregctb.type.TypeContribuable;
@@ -64,20 +64,6 @@ public class ParamPeriodeManagerImpl implements ParamPeriodeManager {
 		return modeleFeuilleDocumentDAO.getByModeleDocument(modeleDocument);
 	}
 
-	public List<ParametrePeriodeFiscale> getParametrePeriodeFiscales(PeriodeFiscale periodeFiscale) {
-		List<ParametrePeriodeFiscale> list = parametrePeriodeFiscaleDAO.getByPeriodeFiscale(periodeFiscale);
-		Collections.sort(
-			list,
-			new Comparator<ParametrePeriodeFiscale>() {
-				@Override
-				public int compare(ParametrePeriodeFiscale o1, ParametrePeriodeFiscale o2) {
-					return o1.getTypeContribuable().compareTo(o2.getTypeContribuable());
-				}
-			}
-		);
-		return list;
-	}
-
 	@Override
 	@Transactional(rollbackFor = Throwable.class)
 	public PeriodeFiscale initNouvellePeriodeFiscale() {
@@ -111,6 +97,12 @@ public class ParamPeriodeManagerImpl implements ParamPeriodeManager {
 
 	@Override
 	@Transactional(readOnly = true)
+	public ParametrePeriodeFiscalePP getPPVaudByPeriodeFiscale(PeriodeFiscale periodeFiscale) {
+		return parametrePeriodeFiscaleDAO.getPPVaudByPeriodeFiscale(periodeFiscale);
+	}
+
+	@Override
+	@Transactional(readOnly = true)
 	public ParametrePeriodeFiscalePM getPMVaudByPeriodeFiscale(PeriodeFiscale periodeFiscale) {
 		return parametrePeriodeFiscaleDAO.getPMVaudByPeriodeFiscale(periodeFiscale);
 	}
@@ -128,14 +120,14 @@ public class ParamPeriodeManagerImpl implements ParamPeriodeManager {
 	}
 
 	@Override
-	public ParametrePeriodeFiscalePM getPMUtilitePubliqueByPeriodeFiscale(PeriodeFiscale periodeFiscale) {
-		return parametrePeriodeFiscaleDAO.getPMUtilitePubliqueByPeriodeFiscale(periodeFiscale);
+	@Transactional(readOnly = true)
+	public ParametrePeriodeFiscaleSNC getSNCByPeriodeFiscale(PeriodeFiscale periodeFiscale) {
+		return parametrePeriodeFiscaleDAO.getSNCByPeriodeFiscale(periodeFiscale);
 	}
 
 	@Override
-	@Transactional(readOnly = true)
-	public ParametrePeriodeFiscalePP getPPVaudByPeriodeFiscale(PeriodeFiscale periodeFiscale) {
-		return parametrePeriodeFiscaleDAO.getPPVaudByPeriodeFiscale(periodeFiscale);
+	public ParametrePeriodeFiscalePM getPMUtilitePubliqueByPeriodeFiscale(PeriodeFiscale periodeFiscale) {
+		return parametrePeriodeFiscaleDAO.getPMUtilitePubliqueByPeriodeFiscale(periodeFiscale);
 	}
 
 	public void setPeriodeFiscaleDAO(PeriodeFiscaleDAO periodeFiscaleDAO) {
@@ -166,7 +158,7 @@ public class ParamPeriodeManagerImpl implements ParamPeriodeManager {
 
 		ppfv.setIdPeriodeFiscale(pf.getId());
 		ppfv.setAnneePeriodeFiscale(pf.getAnnee());
-		ppfv.setCodeControleSurSommationDI(pf.isShowCodeControleSommationDeclaration());
+		ppfv.setCodeControleSurSommationDI(pf.isShowCodeControleSommationDeclarationPP());
 
 		ppfv.setFinEnvoiMasseDIDepense(pf.getParametrePeriodeFiscalePPDepense().getDateFinEnvoiMasseDI());
 		ppfv.setFinEnvoiMasseDIDiplomate(pf.getParametrePeriodeFiscalePPDiplomateSuisse().getDateFinEnvoiMasseDI());
@@ -238,6 +230,23 @@ public class ParamPeriodeManagerImpl implements ParamPeriodeManager {
 	}
 
 	@Override
+	@Transactional(readOnly = true)
+	public ParametrePeriodeFiscaleSNCEditView createParametrePeriodeFiscaleSNCEditView(Long idPeriode) {
+		final ParametrePeriodeFiscaleSNCEditView view = new ParametrePeriodeFiscaleSNCEditView();
+		final PeriodeFiscale pf = retrievePeriodeFromDAO(idPeriode);
+
+		view.setIdPeriodeFiscale(pf.getId());
+		view.setAnneePeriodeFiscale(pf.getAnnee());
+
+		final ParametrePeriodeFiscaleSNC data = pf.getParametrePeriodeFiscaleSNC();
+		if (data != null) {
+			view.setRappelReglementaire(data.getTermeGeneralRappelImprime());
+			view.setRappelEffectif(data.getTermeGeneralRappelEffectif());
+		}
+		return view;
+	}
+
+	@Override
 	public ModeleDocumentView createModeleDocumentViewAdd(Long idPeriode) {
 		ModeleDocumentView mdv = new ModeleDocumentView();
 		PeriodeFiscale pf = retrievePeriodeFromDAO(idPeriode);
@@ -278,7 +287,7 @@ public class ParamPeriodeManagerImpl implements ParamPeriodeManager {
 		// ATTENTION : L'ordre des elements dans les tableaux est primordiale pour le bon fonctionnement de l'algo
 
 		final PeriodeFiscale pf = periodeFiscaleDAO.get(ppfv.getIdPeriodeFiscale());
-		pf.setShowCodeControleSommationDeclaration(ppfv.isCodeControleSurSommationDI());
+		pf.setShowCodeControleSommationDeclarationPP(ppfv.isCodeControleSurSommationDI());
 
 		final ParametrePeriodeFiscalePP[] ppfs = new ParametrePeriodeFiscalePP[] {
 				pf.getParametrePeriodeFiscalePPVaudoisOrdinaire(),
@@ -372,6 +381,18 @@ public class ParamPeriodeManagerImpl implements ParamPeriodeManager {
 			ppfs[i].setDelaiTolereRepousseFinDeMois(reportsFinDeMois[i][1]);
 			ppfs[i].setReferenceDelaiInitial(refDelais[i]);
 		}
+	}
+
+	@Override
+	@Transactional(rollbackFor = Throwable.class)
+	public void saveParametrePeriodeFiscaleView(ParametrePeriodeFiscaleSNCEditView view) {
+		final PeriodeFiscale pf = periodeFiscaleDAO.get(view.getIdPeriodeFiscale());
+		final ParametrePeriodeFiscaleSNC data = pf.getParametrePeriodeFiscaleSNC();
+		if (data == null) {
+			throw new ObjectNotFoundException("Impossible de retrouver les paramètres SNC pour la période fiscale " + pf.getAnnee());
+		}
+		data.setTermeGeneralRappelEffectif(view.getRappelEffectif());
+		data.setTermeGeneralRappelImprime(view.getRappelReglementaire());
 	}
 
 	@Override

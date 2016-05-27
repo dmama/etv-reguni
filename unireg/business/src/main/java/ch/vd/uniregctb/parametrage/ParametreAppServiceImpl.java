@@ -137,6 +137,11 @@ public class ParametreAppServiceImpl implements ParametreAppService, Initializin
 	}
 
 	@Override
+	public Integer getDelaiCadevImpressionQuestionnaireSNC() {
+		return container.getDelaiCadevImpressionQuestionnaireSNC();
+	}
+
+	@Override
 	public Integer getDelaiEcheanceSommationDeclarationImpotPP() {
 		return container.getDelaiEcheanceSommationDeclarationImpotPP();
 	}
@@ -147,8 +152,8 @@ public class ParametreAppServiceImpl implements ParametreAppService, Initializin
 	}
 
 	@Override
-	public Integer getDelaiEcheanceSommationListeRecapitualtive() {
-		return container.getDelaiEcheanceSommationListeRecapitualtive();
+	public Integer getDelaiEcheanceSommationListeRecapitulative() {
+		return container.getDelaiEcheanceSommationListeRecapitulative();
 	}
 
 	@Override
@@ -287,6 +292,21 @@ public class ParametreAppServiceImpl implements ParametreAppService, Initializin
 	}
 
 	@Override
+	public Integer getDelaiEnvoiRappelQuestionnaireSNC() {
+		return container.getDelaiEnvoiRappelQuestionnaireSNC();
+	}
+
+	@Override
+	public Integer getDelaiMinimalRetourQuestionnaireSNC() {
+		return container.getDelaiMinimalRetourQuestionnaireSNC();
+	}
+
+	@Override
+	public Integer getDelaiRetourQuestionnaireSNCEmisManuellement() {
+		return container.getDelaiRetourQuestionnaireSNCEmisManuellement();
+	}
+
+	@Override
 	public void setDelaiAttenteDeclarationImpotPersonneDecedee(Integer val) {
 		container.setDelaiAttenteDeclarationImpotPersonneDecedee(val);
 	}
@@ -304,6 +324,11 @@ public class ParametreAppServiceImpl implements ParametreAppService, Initializin
 	@Override
 	public void setDelaiCadevImpressionDeclarationImpot(Integer val) {
 		container.setDelaiCadevImpressionDeclarationImpot(val);
+	}
+
+	@Override
+	public void setDelaiCadevImpressionQuestionnaireSNC(Integer val) {
+		container.setDelaiCadevImpressionQuestionnaireSNC(val);
 	}
 
 	@Override
@@ -464,5 +489,20 @@ public class ParametreAppServiceImpl implements ParametreAppService, Initializin
 	@Override
 	public void setDateLimiteEnvoiMasseDeclarationsUtilitePublique(Integer[] val) {
 		container.setDateLimiteEnvoiMasseDeclarationsUtilitePublique(val);
+	}
+
+	@Override
+	public void setDelaiRetourQuestionnaireSNCEmisManuellement(Integer val) {
+		container.setDelaiRetourQuestionnaireSNCEmisManuellement(val);
+	}
+
+	@Override
+	public void setDelaiMinimalRetourQuestionnaireSNC(Integer val) {
+		container.setDelaiMinimalRetourQuestionnaireSNC(val);
+	}
+
+	@Override
+	public void setDelaiEnvoiRappelQuestionnaireSNC(Integer val) {
+		container.setDelaiEnvoiRappelQuestionnaireSNC(val);
 	}
 }
