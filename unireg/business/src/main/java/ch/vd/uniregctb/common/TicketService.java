@@ -1,5 +1,7 @@
 package ch.vd.uniregctb.common;
 
+import org.jetbrains.annotations.NotNull;
+
 /**
  * Manager général de "tickets" applicatifs, qui peuvent servir par exemple à gérer des sections critiques au niveau applicatif (on ne devrait
  * pas pouvoir être plusieurs à générer des LR/DI pour un même tiers en même temps, par exemple...)
@@ -7,9 +9,13 @@ package ch.vd.uniregctb.common;
 public interface TicketService {
 
 	/**
-	 * Interface des tickets renvoyés par la méthode {@link #getTicket(Object, long)} et utilisés par la méthode {@link #releaseTicket(ch.vd.uniregctb.common.TicketService.Ticket)}.
+	 * Interface des tickets renvoyés par la méthode {@link #getTicket(Object, long)}
 	 */
 	interface Ticket {
+		/**
+		 * Release the ticket
+		 */
+		void release();
 	}
 
 	/**
@@ -21,11 +27,6 @@ public interface TicketService {
 	 * @throws java.lang.InterruptedException in case the thread is interrupted during wait
 	 * @throws java.lang.NullPointerException if the key is <code>null</code>
 	 */
+	@NotNull
 	Ticket getTicket(Object key, long timeout) throws TicketTimeoutException, InterruptedException;
-
-	/**
-	 * Release the ticket gotten from the {@link #getTicket(Object, long)} method
-	 * @param ticket the ticket to release
-	 */
-	void releaseTicket(Ticket ticket);
 }

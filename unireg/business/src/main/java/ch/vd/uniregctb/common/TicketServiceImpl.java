@@ -7,6 +7,8 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
+import org.jetbrains.annotations.NotNull;
+
 public class TicketServiceImpl implements TicketService {
 
 	private static final AtomicLong SEQUENCE = new AtomicLong(0L);
@@ -14,8 +16,23 @@ public class TicketServiceImpl implements TicketService {
 	/**
 	 * Implémentation des tickets présentés à l'extérieur
 	 */
-	private static final class TicketImpl implements Ticket {
+	private final class TicketImpl implements Ticket {
+
 		private final long id = SEQUENCE.incrementAndGet();
+
+		@Override
+		public void release() {
+			synchronized (heldKeys) {
+				final Object key = tickets.remove(id);
+				if (key == null) {
+					// puisque la clé ne peut pas être nulle à l'insertion dans cette map, une valeur nulle ici signifie
+					// que le mapping est absent -> double release ?
+					throw new IllegalStateException("Already released!");
+				}
+				heldKeys.remove(key);
+				heldKeys.notifyAll();
+			}
+		}
 	}
 
 	/**
@@ -32,6 +49,7 @@ public class TicketServiceImpl implements TicketService {
 		return TimeUnit.NANOSECONDS.toMillis(System.nanoTime());
 	}
 
+	@NotNull
 	@Override
 	public Ticket getTicket(Object key, long timeout) throws TicketTimeoutException, InterruptedException {
 		if (key == null) {
@@ -56,28 +74,6 @@ public class TicketServiceImpl implements TicketService {
 			heldKeys.add(key);
 			tickets.put(ticket.id, key);
 			return ticket;
-		}
-	}
-
-	@Override
-	public void releaseTicket(Ticket ticket) {
-		if (ticket == null) {
-			throw new NullPointerException("ticket");
-		}
-		if (! (ticket instanceof TicketImpl)) {
-			throw new IllegalArgumentException("Wrong ticket!");
-		}
-
-		synchronized (heldKeys) {
-			final Long id = ((TicketImpl) ticket).id;
-			final Object key = tickets.remove(id);
-			if (key == null) {
-				// puisque la clé ne peut pas être nulle à l'insertion dans cette map, une valeur nulle ici signifie
-				// que le mapping est absent -> double release ?
-				throw new IllegalStateException("Already released!");
-			}
-			heldKeys.remove(key);
-			heldKeys.notifyAll();
 		}
 	}
 }

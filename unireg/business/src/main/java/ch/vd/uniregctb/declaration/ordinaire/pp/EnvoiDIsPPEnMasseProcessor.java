@@ -412,7 +412,7 @@ public class EnvoiDIsPPEnMasseProcessor {
 				return traiterTache(tache, (ContribuableImpositionPersonnesPhysiques) contribuable, dateTraitement, rapport, cache, dcache, simul);
 			}
 			finally {
-				ticketService.releaseTicket(ticket);
+				ticket.release();
 			}
 		}
 		catch (TicketTimeoutException e) {

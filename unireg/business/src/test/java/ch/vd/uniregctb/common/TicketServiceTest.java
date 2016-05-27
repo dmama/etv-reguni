@@ -26,8 +26,8 @@ public class TicketServiceTest extends WithoutSpringTest {
 		final TicketService.Ticket ticket2 = ticketService.getTicket(keyOther, 0);
 		Assert.assertNotNull(ticket2);
 
-		ticketService.releaseTicket(ticket1);
-		ticketService.releaseTicket(ticket2);
+		ticket1.release();
+		ticket2.release();
 	}
 
 	@Test(timeout = 1000)
@@ -52,27 +52,6 @@ public class TicketServiceTest extends WithoutSpringTest {
 		Assert.assertTrue(Long.toString(ts2 - ts1), ts2 - ts1 > TimeUnit.MILLISECONDS.toNanos(300));
 	}
 
-	@Test
-	public void testWrongTicket() throws Exception {
-		// ticket bidon venu d'ailleurs!
-		final TicketService.Ticket ticket = new TicketService.Ticket() {};
-		try {
-			ticketService.releaseTicket(ticket);
-			Assert.fail("Aurait dû échouer...");
-		}
-		catch (IllegalArgumentException e) {
-			Assert.assertEquals("Wrong ticket!", e.getMessage());
-		}
-
-		try {
-			ticketService.releaseTicket(null);
-			Assert.fail("Aurait dû échouer...");
-		}
-		catch (NullPointerException e) {
-			Assert.assertEquals("ticket", e.getMessage());
-		}
-	}
-
 	@Test(timeout = 1000)
 	public void testNullKey() throws Exception {
 		try {
@@ -94,11 +73,11 @@ public class TicketServiceTest extends WithoutSpringTest {
 		Assert.assertNotNull(ticket);
 
 		// je le relâche
-		ticketService.releaseTicket(ticket);
+		ticket.release();
 
 		// ... et encore une fois
 		try {
-			ticketService.releaseTicket(ticket);
+			ticket.release();
 			Assert.fail("Aurait dû échouer...");
 		}
 		catch (IllegalStateException e) {

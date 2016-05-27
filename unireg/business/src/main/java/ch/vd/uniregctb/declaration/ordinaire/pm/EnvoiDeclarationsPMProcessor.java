@@ -197,7 +197,7 @@ public class EnvoiDeclarationsPMProcessor {
 				traiterTache(tache, pm, rapport, dateLimiteBouclements, dateTraitement, informationsFiscales);
 			}
 			finally {
-				ticketService.releaseTicket(ticket);
+				ticket.release();
 			}
 		}
 		catch (TicketTimeoutException e) {

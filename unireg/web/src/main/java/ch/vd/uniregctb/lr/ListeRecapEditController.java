@@ -127,7 +127,7 @@ public class ListeRecapEditController extends AbstractListeRecapController {
 						traiteRetourEditique(resultat, response, "lr", null, null, erreur);
 					}
 					finally {
-						ticketService.releaseTicket(ticket);
+						ticket.release();
 					}
 				}
 				catch (TicketTimeoutException e) {

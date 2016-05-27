@@ -778,7 +778,7 @@ public class DeclarationImpotController {
 				}
 			}
 			finally {
-				ticketService.releaseTicket(ticket);
+				ticket.release();
 			}
 		}
 		catch (TicketTimeoutException e) {
