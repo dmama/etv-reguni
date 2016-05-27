@@ -36,6 +36,7 @@ import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.TiersCriteria;
 import ch.vd.uniregctb.tiers.view.TiersCriteriaView;
+import ch.vd.uniregctb.transaction.TransactionHelper;
 
 @Controller
 @RequestMapping("/processuscomplexe/annulation/fusion")
@@ -195,9 +196,9 @@ public class AnnulationFusionEntreprisesController extends AbstractProcessusComp
 			return showStart(model, view);
 		}
 
-		doInTransaction(new MetierServiceExceptionAwareWithoutResultCallback() {
+		doInTransaction(new TransactionHelper.ExceptionThrowingCallbackWithoutResult<MetierServiceException>() {
 			@Override
-			protected void doExecute(TransactionStatus status) throws MetierServiceException {
+			public void execute(TransactionStatus status) throws MetierServiceException {
 				// récupération des données et vérification des droits d'accès
 				final Entreprise absorbante = getTiers(Entreprise.class, view.getIdEntrepriseAbsorbante());
 				controllerUtils.checkAccesDossierEnEcriture(view.getIdEntrepriseAbsorbante());

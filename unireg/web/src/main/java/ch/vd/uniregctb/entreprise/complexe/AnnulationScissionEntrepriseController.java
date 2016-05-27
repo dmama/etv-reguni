@@ -26,6 +26,7 @@ import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.TiersCriteria;
 import ch.vd.uniregctb.tiers.view.TiersCriteriaView;
+import ch.vd.uniregctb.transaction.TransactionHelper;
 
 @Controller
 @RequestMapping("/processuscomplexe/annulation/scission")
@@ -101,9 +102,9 @@ public class AnnulationScissionEntrepriseController extends AbstractProcessusCom
 			return showStart(model, view);
 		}
 
-		doInTransaction(new MetierServiceExceptionAwareWithoutResultCallback() {
+		doInTransaction(new TransactionHelper.ExceptionThrowingCallbackWithoutResult<MetierServiceException>() {
 			@Override
-			protected void doExecute(TransactionStatus status) throws MetierServiceException {
+			public void execute(TransactionStatus status) throws MetierServiceException {
 				// récupération des données et vérification des droits d'accès
 				final Entreprise scindee = getTiers(Entreprise.class, view.getIdEntrepriseScindee());
 				controllerUtils.checkAccesDossierEnEcriture(view.getIdEntrepriseScindee());

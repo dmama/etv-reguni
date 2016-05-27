@@ -21,6 +21,7 @@ import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.EtatEntreprise;
 import ch.vd.uniregctb.tiers.TiersCriteria;
 import ch.vd.uniregctb.tiers.view.TiersCriteriaView;
+import ch.vd.uniregctb.transaction.TransactionHelper;
 import ch.vd.uniregctb.type.TypeEtatEntreprise;
 
 @Controller
@@ -85,9 +86,9 @@ public class ReinscriptionRCController extends AbstractProcessusComplexeRecherch
 		}
 		controllerUtils.checkTraitementContribuableAvecDecisionAci(view.getIdEntreprise());
 
-		doInTransaction(new MetierServiceExceptionAwareWithoutResultCallback() {
+		doInTransaction(new TransactionHelper.ExceptionThrowingCallbackWithoutResult<MetierServiceException>() {
 			@Override
-			protected void doExecute(TransactionStatus status) throws MetierServiceException {
+			public void execute(TransactionStatus status) throws MetierServiceException {
 				final Entreprise entreprise = getTiers(Entreprise.class, view.getIdEntreprise());
 				metierService.reinscritRC(entreprise, view.getDateRadiationRC(), view.getRemarque());
 			}

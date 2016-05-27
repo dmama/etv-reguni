@@ -20,6 +20,7 @@ import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipalPM;
 import ch.vd.uniregctb.tiers.TiersCriteria;
 import ch.vd.uniregctb.tiers.view.TiersCriteriaView;
+import ch.vd.uniregctb.transaction.TransactionHelper;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.TypeEtatEntreprise;
 
@@ -93,9 +94,9 @@ public abstract class AnnulationRepriseFinActiviteController extends AbstractPro
 		}
 		controllerUtils.checkTraitementContribuableAvecDecisionAci(view.getIdEntreprise());
 
-		doInTransaction(new MetierServiceExceptionAwareWithoutResultCallback() {
+		doInTransaction(new TransactionHelper.ExceptionThrowingCallbackWithoutResult<MetierServiceException>() {
 			@Override
-			protected void doExecute(TransactionStatus status) throws MetierServiceException {
+			public void execute(TransactionStatus status) throws MetierServiceException {
 				final Entreprise entreprise = getTiers(Entreprise.class, view.getIdEntreprise());
 				doJob(entreprise, view);
 			}

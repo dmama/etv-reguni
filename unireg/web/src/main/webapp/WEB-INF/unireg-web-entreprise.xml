@@ -10,7 +10,7 @@
 		<property name="controllerUtils" ref="controllerUtils"/>
 		<property name="securityProvider" ref="securityProviderInterface"/>
 		<property name="validator" ref="processusComplexeEntrepriseValidator"/>
-		<property name="transactionManager" ref="transactionManager"/>
+		<property name="transactionHelper" ref="transactionHelper"/>
 		<property name="metierService" ref="metierServicePM"/>
 	</bean>
 

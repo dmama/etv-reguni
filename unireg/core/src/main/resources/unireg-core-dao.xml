@@ -89,6 +89,10 @@
 
 	<bean id="domicileEtablissementDAO" class="ch.vd.uniregctb.tiers.dao.DomicileEtablissementDAOImpl" parent="hibernateDao"/>
 
+	<bean id="transactionHelper" class="ch.vd.uniregctb.transaction.TransactionHelper">
+		<constructor-arg ref="transactionManager"/>
+	</bean>
+
 	<!-- Gestionnaire de transaction base sur les annotations @Transactional -->
 	<tx:annotation-driven transaction-manager="transactionManager" />
 

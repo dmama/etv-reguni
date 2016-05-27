@@ -24,6 +24,7 @@ import ch.vd.uniregctb.tiers.DomicileHisto;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.TiersCriteria;
 import ch.vd.uniregctb.tiers.view.TiersCriteriaView;
+import ch.vd.uniregctb.transaction.TransactionHelper;
 
 @Controller
 @RequestMapping("/processuscomplexe/demenagement")
@@ -114,9 +115,9 @@ public class DemenagementSiegeController extends AbstractProcessusComplexeRecher
 		}
 		controllerUtils.checkTraitementContribuableAvecDecisionAci(view.getIdEntreprise());
 
-		doInTransaction(new MetierServiceExceptionAwareWithoutResultCallback() {
+		doInTransaction(new TransactionHelper.ExceptionThrowingCallbackWithoutResult<MetierServiceException>() {
 			@Override
-			protected void doExecute(TransactionStatus status) throws MetierServiceException {
+			public void execute(TransactionStatus status) throws MetierServiceException {
 				final Entreprise entreprise = getTiers(Entreprise.class, view.getIdEntreprise());
 				if (entreprise.isConnueAuCivil()) {
 					throw new MetierServiceException("Cette opération n'est pas disponible pour les entreprises avec un lien vers RCEnt.");

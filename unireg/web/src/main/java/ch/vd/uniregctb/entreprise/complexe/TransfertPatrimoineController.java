@@ -34,6 +34,7 @@ import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.TiersCriteria;
 import ch.vd.uniregctb.tiers.TiersIndexedDataView;
 import ch.vd.uniregctb.tiers.view.TiersCriteriaView;
+import ch.vd.uniregctb.transaction.TransactionHelper;
 import ch.vd.uniregctb.type.TypeEtatEntreprise;
 import ch.vd.uniregctb.utils.WebContextUtils;
 
@@ -296,9 +297,9 @@ public class TransfertPatrimoineController extends AbstractProcessusComplexeCont
 		}
 
 		// on récupère les données des entreprises et on envoie tout ça dans le moteur
-		doInTransaction(new MetierServiceExceptionAwareWithoutResultCallback() {
+		doInTransaction(new TransactionHelper.ExceptionThrowingCallbackWithoutResult<MetierServiceException>() {
 			@Override
-			protected void doExecute(TransactionStatus status) throws MetierServiceException {
+			public void execute(TransactionStatus status) throws MetierServiceException {
 				final Entreprise emettrice = getTiers(Entreprise.class, sessionData.getIdEntrepriseEmettrice());
 				final Set<Long> idsEntreprisesReceptrices = sessionData.getIdsEntreprisesReceptrices();
 				final List<Entreprise> receptrices = new ArrayList<>(idsEntreprisesReceptrices.size());
