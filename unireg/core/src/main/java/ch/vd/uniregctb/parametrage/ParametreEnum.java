@@ -35,8 +35,7 @@ public enum ParametreEnum {
 	delaiEcheanceSommationDeclarationImpotPM("30", Type.delaisEnJour, true),
 	dateLimiteEnvoiMasseDeclarationsUtilitePublique("31.01", Type.jourDansAnnee, true),
 
-	delaiRetourQuestionnaireSNCEmisManuellement("60", Type.delaisEnJour, true),
-	delaiMinimalRetourQuestionnaireSNC("3", Type.delaisEnMois, true),
+	delaiRetourQuestionnaireSNCEmisManuellement("90", Type.delaisEnJour, true),
 	delaiEnvoiRappelQuestionnaireSNC("15", Type.delaisEnJour, true),
 	delaiCadevImpressionQuestionnaireSNC("3", Type.delaisEnJour, true),
 

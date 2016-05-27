@@ -6,6 +6,15 @@
 <unireg:setAuth var="autorisations" tiersId="${command.entreprise.id}"/>
 
 <span><%-- span vide pour que IE8 calcul correctement la hauteur du fieldset (voir fieldsets-workaround.jsp) --%></span>
+<c:if test="${!command.tiers.annule && autorisations.questionnairesSNC}">
+	<table border="0">
+		<tr><td>
+			<c:if test="${empty param['message'] && empty param['retour']}">
+				<unireg:raccourciModifier link="../qsnc/list.do?tiersId=${command.entreprise.id}" tooltip="Modifier les questionnaires SNC" display="label.bouton.modifier"/>
+			</c:if>
+		</td></tr>
+	</table>
+</c:if>
 <fieldset>
 	<legend><span><fmt:message key="label.questionnaires.snc"/></span></legend>
 
@@ -32,6 +41,9 @@
 				</c:if>
 			</display:column>
 			<display:column class="action">
+				<c:if test="${!questionnaire.annule}">
+					<a href="#" class="detail" title="Détails du questionnaire SNC" onclick="Decl.open_details_qsnc(<c:out value="${questionnaire.id}"/>, false); return false;">&nbsp;</a>
+				</c:if>
 				<unireg:consulterLog entityNature="QSNC" entityId="${questionnaire.id}"/>
 			</display:column>
 		</display:table>

@@ -176,6 +176,7 @@
 		<property name="hibernateTemplate" ref="hibernateTemplate"/>
 		<property name="diService" ref="diService"/>
 		<property name="lrService" ref="lrService"/>
+		<property name="qsncService" ref="qsncService"/>
 		<property name="editiqueService" ref="editiqueService"/>
 	</bean>
 

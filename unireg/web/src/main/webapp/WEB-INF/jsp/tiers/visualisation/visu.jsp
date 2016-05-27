@@ -128,9 +128,11 @@
 							</li>
 						</c:if>
 						<c:if test="${command.natureTiers == 'Entreprise'}">
-							<li id="qsncTab">
-								<a href="#tabContent_qsncTab"><fmt:message key="label.questionnaires.snc"/></a>
-							</li>
+							<c:if test="${command.entreprise.isOrWasSocieteDePersonnes || not empty command.questionnairesSNC}">
+								<li id="qsncTab">
+									<a href="#tabContent_qsncTab"><fmt:message key="label.questionnaires.snc"/></a>
+								</li>
+							</c:if>
 							<li id="autresDocumentsFiscauxTab">
 								<a href="#tabContent_autresDocumentsTab"><fmt:message key="label.autres.documents.fiscaux"/></a>
 							</li>
@@ -227,9 +229,11 @@
 						</div>
 					</c:if>
 					<c:if test="${command.natureTiers == 'Entreprise'}">
-						<div id="tabContent_qsncTab" class="visuTiers">
-							<jsp:include page="pm/qsnc.jsp"/>
-						</div>
+						<c:if test="${command.entreprise.isOrWasSocieteDePersonnes || not empty command.questionnairesSNC}">
+							<div id="tabContent_qsncTab" class="visuTiers">
+								<jsp:include page="pm/qsnc.jsp"/>
+							</div>
+						</c:if>
 						<div id="tabContent_autresDocumentsTab" class="visuTiers">
 							<jsp:include page="pm/autresdocs.jsp"/>
 						</div>

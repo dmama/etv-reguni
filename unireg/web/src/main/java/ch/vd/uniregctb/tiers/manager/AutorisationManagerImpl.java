@@ -53,6 +53,7 @@ public class AutorisationManagerImpl implements AutorisationManager {
 	static final String MODIF_DOSSIER = "DOS";
 	static final String MODIF_DEBITEUR = "DBT";
 	static final String MODIF_DI = "DI";
+	static final String MODIF_QSNC = "QSNC";
 	static final String MODIF_BOUCLEMENTS = "BOUCLEMENTS";
 	static final String MODIF_ETATS_PM = "ETATS_PM";
 	static final String MODIF_REGIMES_FISCAUX = "REGIMES_FISCAUX";
@@ -100,12 +101,17 @@ public class AutorisationManagerImpl implements AutorisationManager {
 			return false;
 		}
 
-		if (tiers instanceof PersonnePhysique || tiers instanceof MenageCommun) {
-			return isEditAllowedPP(tiers);
+		if (tiers instanceof ContribuableImpositionPersonnesPhysiques) {
+			return isEditAllowedPP((ContribuableImpositionPersonnesPhysiques) tiers);
 		}
-		else //noinspection SimplifiableIfStatement
-			if (tiers instanceof CollectiviteAdministrative) {
+		else if (tiers instanceof CollectiviteAdministrative) {
 			return isEditAllowedCA((CollectiviteAdministrative) tiers);
+		}
+		else if (tiers instanceof Entreprise) {
+			return isEditAllowedEntreprise((Entreprise) tiers);
+		}
+		else if (tiers instanceof Etablissement) {
+			return isEditAllowedEtablissement((Etablissement) tiers);
 		}
 		else {
 			return false;
@@ -113,29 +119,31 @@ public class AutorisationManagerImpl implements AutorisationManager {
 	}
 
 	@Override
-	public boolean isEditAllowedPP(Tiers tiers) {
+	public boolean isEditAllowedPP(ContribuableImpositionPersonnesPhysiques tiers) {
 		return isEditAllowedPP(tiers, AuthenticationHelper.getCurrentPrincipal(), AuthenticationHelper.getCurrentOID());
 	}
 
-	private boolean isEditAllowedPP(Tiers tiers, String visa, int oid) {
+	private boolean isEditAllowedPP(ContribuableImpositionPersonnesPhysiques tiers, String visa, int oid) {
 		boolean isHabitant = false;
-		Tiers tiersAssujetti;
+		final ContribuableImpositionPersonnesPhysiques tiersAssujetti;
 
 		if (tiers instanceof PersonnePhysique) {
-			PersonnePhysique pp = (PersonnePhysique) tiers;
-			MenageCommun menage = tiersService.findMenageCommun(pp, null);
+			final PersonnePhysique pp = (PersonnePhysique) tiers;
+			final MenageCommun menage = tiersService.findMenageCommun(pp, null);
 			if (menage != null) {
 				tiersAssujetti = menage;
 			}
-			else tiersAssujetti = tiers;
+			else {
+				tiersAssujetti = pp;
+			}
 			if (pp.isHabitantVD()) {
 				isHabitant = true;
 			}
 		}
 		else if (tiers instanceof MenageCommun) {
-			tiersAssujetti = tiers;
 			//les ménages n'ont jamais les onglets civil et rapport prestation
 			final MenageCommun menageCommun = (MenageCommun) tiers;
+			tiersAssujetti = menageCommun;
 			for (PersonnePhysique pp : tiersService.getPersonnesPhysiques(menageCommun)) {
 				if (pp.isHabitantVD()) {
 					isHabitant = true;
@@ -175,15 +183,15 @@ public class AutorisationManagerImpl implements AutorisationManager {
 	}
 
 	@NotNull
-	private static TypeCtb getTypeCtb(@NotNull Tiers tiers) {
+	private static TypeCtb getTypeCtb(@NotNull ContribuableImpositionPersonnesPhysiques tiers) {
 
 		TypeCtb typeCtb = TypeCtb.NON_ASSUJETTI; //0 non assujetti, 1 HC/HS, 2 VD ordinaire, 3 VD sourcier pur, 4 VD sourcier mixte
 
-		final ForFiscalPrincipal ffp = tiers.getForFiscalPrincipalAt(null);
-		if (ffp instanceof ForFiscalPrincipalPP) {
+		final ForFiscalPrincipalPP ffp = tiers.getForFiscalPrincipalAt(null);
+		if (ffp != null) {
 			final TypeAutoriteFiscale typeFor = ffp.getTypeAutoriteFiscale();
 			if (typeFor == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
-				final ModeImposition modeImp = ((ForFiscalPrincipalPP) ffp).getModeImposition();
+				final ModeImposition modeImp = ffp.getModeImposition();
 				switch (modeImp) {
 				case SOURCE:
 					typeCtb = TypeCtb.SOURCIER;
@@ -215,6 +223,16 @@ public class AutorisationManagerImpl implements AutorisationManager {
 	@Override
 	public boolean isEditAllowedCA(CollectiviteAdministrative tiers) {
 		return SecurityHelper.isAnyGranted(securityProvider, Role.CREATE_CA, Role.MODIF_CA);
+	}
+
+	@Override
+	public boolean isEditAllowedEntreprise(Entreprise tiers) {
+		return SecurityHelper.isAnyGranted(securityProvider, Role.MODIF_PM, Role.CREATE_ENTREPRISE);
+	}
+
+	@Override
+	public boolean isEditAllowedEtablissement(Etablissement tiers) {
+		return SecurityHelper.isAnyGranted(securityProvider, Role.MODIF_PM, Role.ETABLISSEMENTS);
 	}
 
 	@NotNull
@@ -376,6 +394,7 @@ public class AutorisationManagerImpl implements AutorisationManager {
 			map.put(DOSSIER_TRAVAIL, Boolean.FALSE);
 			map.put(DOSSIER_NO_TRAVAIL, Boolean.FALSE);
 			map.put(MODIF_DI, Boolean.FALSE);
+			map.put(MODIF_QSNC, Boolean.FALSE);
 			map.put(FISCAL_DECISION_ACI, Boolean.FALSE);
 			map.put(MODIF_BOUCLEMENTS, Boolean.FALSE);
 			map.put(MODIF_ETATS_PM, Boolean.FALSE);
@@ -407,6 +426,7 @@ public class AutorisationManagerImpl implements AutorisationManager {
 				map.put(MODIF_ETABLISSEMENT, Boolean.FALSE);
 				map.put(MODIF_FISCAL, Boolean.FALSE);
 				map.put(MODIF_DI, Boolean.FALSE);
+				map.put(MODIF_QSNC, Boolean.FALSE);
 				map.put(MODIF_IDE, Boolean.FALSE);
 				if (SecurityHelper.isGranted(securityProvider, Role.ADR_PP_D, visa, oid)) {
 					map.put(MODIF_ADRESSE, Boolean.TRUE);
@@ -468,6 +488,8 @@ public class AutorisationManagerImpl implements AutorisationManager {
 			if (SecurityHelper.isGranted(securityProvider,Role.GEST_DECISION_ACI,visa,oid)) {
 				map.put(FISCAL_DECISION_ACI, Boolean.TRUE);
 			}
+
+			map.put(MODIF_QSNC, Boolean.FALSE);
 		}
 
 		if (tiers instanceof PersonnePhysique) {
@@ -568,8 +590,11 @@ public class AutorisationManagerImpl implements AutorisationManager {
 				map.put(MODIF_ETABLISSEMENT, Boolean.TRUE);
 			}
 
-			if (SecurityHelper.isAnyGranted(securityProvider, visa, oid,  Role.DI_EMIS_PM, Role.DI_DELAI_PM, Role.DI_DUPLIC_PM, Role.DI_QUIT_PM, Role.DI_SOM_PM, Role.DI_SUSPENDRE_PM, Role.DI_DESUSPENDRE_PM, Role.DI_DESANNUL_PM)) {
+			if (SecurityHelper.isAnyGranted(securityProvider, visa, oid, Role.DI_EMIS_PM, Role.DI_DELAI_PM, Role.DI_DUPLIC_PM, Role.DI_QUIT_PM, Role.DI_SOM_PM, Role.DI_SUSPENDRE_PM, Role.DI_DESUSPENDRE_PM, Role.DI_DESANNUL_PM)) {
 				map.put(MODIF_DI, Boolean.TRUE);
+			}
+			if (SecurityHelper.isAnyGranted(securityProvider, visa, oid, Role.QSNC_EMISSION, Role.QSNC_DUPLICATA, Role.QSNC_QUITTANCEMENT, Role.QSNC_RAPPEL)) {
+				map.put(MODIF_QSNC, Boolean.TRUE);
 			}
 
 			if (SecurityHelper.isGranted(securityProvider, Role.GEST_DECISION_ACI, visa, oid)) {

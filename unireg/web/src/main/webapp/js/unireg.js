@@ -2600,6 +2600,42 @@ var Decl = {
 		.error(Ajax.notifyErrorHandler("affichage des détails de la déclaration"));
 	},
 
+	/**
+	 * Cette méthode ouvre une fenêtre popup avec les détails (read-only) du questionnaire SNC dont l'ID est passé en paramètre
+	 * @param id l'identifiant du questionnaire à afficher
+	 */
+	open_details_qsnc: function(id) {
+
+		$.getJSON(App.curl("/qsnc/details.do?id=") + id + "&" + new Date().getTime(), function(qsnc) {
+			if (qsnc) {
+				var info = '<fieldset class="information"><legend><span>Caractéristiques du questionnaire SNC</span></legend>';
+				info += '<table><tr class="odd"><td width="50%">Date début période&nbsp;:</td><td width="50%">' + RegDate.format(qsnc.dateDebut) + '</td></tr>';
+				info += '<tr class="even"><td width="50%">Date fin période&nbsp;:</td><td width="50%">' + RegDate.format(qsnc.dateFin) + '</td></tr></table></fieldset>\n';
+
+				var delais = Decl._buildDelaisPPISTable(qsnc.delais);
+				var etats = Decl._buidlEtatsTable(qsnc.etats, true);
+
+				var dialog = Dialog.create_dialog_div('details-di-dialog');
+				dialog.html(info + delais + etats);
+
+				dialog.dialog({
+					              title: "Détails du questionnaire SNC",
+					              width: 650,
+					              modal: true,
+					              buttons: {
+						              Ok: function() {
+							              dialog.dialog("close");
+						              }
+					              }
+				              });
+			}
+			else {
+				alert("Le questionnaire n'existe pas.");
+			}
+		})
+		.error(Ajax.notifyErrorHandler("affichage des détails du questionnaire SNC"));
+	},
+
 	_buildDelaisPPISTable: function (delais) {
 		var html = '';
 		if (delais) {
@@ -2693,12 +2729,20 @@ var Decl = {
 				/** @namespace e.etat */
 				html += '<tr class="' + (i % 2 == 0 ? 'even' : 'odd') + (e.annule ? ' strike' : '') + '">';
 				html += '<td>' + RegDate.format(e.dateObtention);
-				if (!e.annule && e.etat == 'SOMMEE') {
+				if (!e.annule && (e.etat == 'SOMMEE' || e.etat == 'RAPPELEE')) {
 					html += '&nbsp;(' + StringUtils.escapeHTML(e.dateEnvoiCourrierMessage) + ')';
 				}
 				html += '</td><td>' + StringUtils.escapeHTML(e.etatMessage);
-				if (!e.annule && e.etat == 'SOMMEE') {
-					html += '&nbsp;' + '<a href="' + App.curl('/declaration/copie-conforme-sommation.do?idEtat=') + e.id + '&url_memorize=false" class="pdf" id="copie-sommation-' + e.id +
+				if (!e.annule && (e.etat == 'SOMMEE' || e.etat == 'RAPPELEE')) {
+					var url;
+					if (e.etat == 'RAPPELEE') {
+						url = App.curl('/declaration/copie-conforme-rappel.do?idEtat=') + e.id;
+					}
+					else {
+						url = App.curl('/declaration/copie-conforme-sommation.do?idEtat=') + e.id;
+					}
+
+					html += '&nbsp;' + '<a href="' + url + '&url_memorize=false" class="pdf" id="copie-sommation-' + e.id +
 						'" onclick="Link.tempSwap(this, \'#disabled-copie-sommation-' + e.id + '\');">&nbsp;</a>';
 					html += '<span class="pdf-grayed" id="disabled-copie-sommation-' + e.id + '" style="display:none;">&nbsp;</span>';
 				}

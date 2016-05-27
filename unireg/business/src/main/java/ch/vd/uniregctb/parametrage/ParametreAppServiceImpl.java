@@ -297,11 +297,6 @@ public class ParametreAppServiceImpl implements ParametreAppService, Initializin
 	}
 
 	@Override
-	public Integer getDelaiMinimalRetourQuestionnaireSNC() {
-		return container.getDelaiMinimalRetourQuestionnaireSNC();
-	}
-
-	@Override
 	public Integer getDelaiRetourQuestionnaireSNCEmisManuellement() {
 		return container.getDelaiRetourQuestionnaireSNCEmisManuellement();
 	}
@@ -494,11 +489,6 @@ public class ParametreAppServiceImpl implements ParametreAppService, Initializin
 	@Override
 	public void setDelaiRetourQuestionnaireSNCEmisManuellement(Integer val) {
 		container.setDelaiRetourQuestionnaireSNCEmisManuellement(val);
-	}
-
-	@Override
-	public void setDelaiMinimalRetourQuestionnaireSNC(Integer val) {
-		container.setDelaiMinimalRetourQuestionnaireSNC(val);
 	}
 
 	@Override

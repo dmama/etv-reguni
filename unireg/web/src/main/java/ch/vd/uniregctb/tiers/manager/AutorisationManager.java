@@ -5,6 +5,9 @@ import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
+import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
+import ch.vd.uniregctb.tiers.Entreprise;
+import ch.vd.uniregctb.tiers.Etablissement;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifRattachement;
@@ -26,7 +29,7 @@ public interface AutorisationManager {
 	 * @param tiers (uniquement PP ou ménage)
 	 * @return <b>true</b> si l'édition du tiers est autorisée; <b>false</b> autrement.
 	 */
-	boolean isEditAllowedPP(Tiers tiers);
+	boolean isEditAllowedPP(ContribuableImpositionPersonnesPhysiques tiers);
 
 	/**
 	 * Vérifie si l'utilisateur est autorisé à éditer la collectivité administrative spécifiée.
@@ -35,6 +38,10 @@ public interface AutorisationManager {
 	 * @return <b>true</b> si l'édition du tiers est autorisée; <b>false</b> autrement.
 	 */
 	boolean isEditAllowedCA(CollectiviteAdministrative tiers);
+
+	boolean isEditAllowedEntreprise(Entreprise tiers);
+
+	boolean isEditAllowedEtablissement(Etablissement tiers);
 
 	/**
 	 * Détermine et retourne les autorisations d'un utilisateur sur le tiers spécifié.

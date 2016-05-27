@@ -208,11 +208,6 @@ public final class MockParameterAppService implements ParametreAppService {
 	}
 
 	@Override
-	public Integer getDelaiMinimalRetourQuestionnaireSNC() {
-		return container.getDelaiMinimalRetourQuestionnaireSNC();
-	}
-
-	@Override
 	public Integer getDelaiRetourQuestionnaireSNCEmisManuellement() {
 		return container.getDelaiRetourQuestionnaireSNCEmisManuellement();
 	}
@@ -415,11 +410,6 @@ public final class MockParameterAppService implements ParametreAppService {
 	@Override
 	public void setDelaiRetourQuestionnaireSNCEmisManuellement(Integer val) {
 		container.setDelaiRetourQuestionnaireSNCEmisManuellement(val);
-	}
-
-	@Override
-	public void setDelaiMinimalRetourQuestionnaireSNC(Integer val) {
-		container.setDelaiMinimalRetourQuestionnaireSNC(val);
 	}
 
 	@Override

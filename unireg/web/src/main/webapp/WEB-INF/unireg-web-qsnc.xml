@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+
+	<bean id="questionnaireSncController" class="ch.vd.uniregctb.qsnc.QuestionnaireSNCController">
+		<property name="hibernateTemplate" ref="hibernateTemplate"/>
+		<property name="messageSource" ref="messageSource"/>
+		<property name="qsncService" ref="qsncService"/>
+		<property name="securityProvider" ref="securityProviderInterface"/>
+		<property name="autorisationManager" ref="autorisationManager"/>
+		<property name="delaisService" ref="delaisService"/>
+		<property name="transactionHelper" ref="transactionHelper"/>
+		<property name="retourEditiqueControllerHelper" ref="retourEditiqueControllerHelper"/>
+		<property name="periodeFiscaleDAO" ref="periodeFiscaleDAO"/>
+	</bean>
+
+</beans>

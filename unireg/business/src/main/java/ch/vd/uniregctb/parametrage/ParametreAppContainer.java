@@ -186,11 +186,6 @@ class ParametreAppContainer implements ParametreAppAccessor {
 	}
 
 	@Override
-	public Integer getDelaiMinimalRetourQuestionnaireSNC() {
-		return Integer.parseInt(get(ParametreEnum.delaiMinimalRetourQuestionnaireSNC));
-	}
-
-	@Override
 	public Integer getDelaiRetourQuestionnaireSNCEmisManuellement() {
 		return Integer.parseInt(get(ParametreEnum.delaiRetourQuestionnaireSNCEmisManuellement));
 	}
@@ -404,11 +399,6 @@ class ParametreAppContainer implements ParametreAppAccessor {
 	@Override
 	public void setDelaiRetourQuestionnaireSNCEmisManuellement(Integer val) {
 		setValeur(ParametreEnum.delaiRetourQuestionnaireSNCEmisManuellement, val.toString());
-	}
-
-	@Override
-	public void setDelaiMinimalRetourQuestionnaireSNC(Integer val) {
-		setValeur(ParametreEnum.delaiMinimalRetourQuestionnaireSNC, val.toString());
 	}
 
 	@Override

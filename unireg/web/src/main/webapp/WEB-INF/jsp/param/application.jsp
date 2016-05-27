@@ -331,15 +331,6 @@
 				    </td>
 				    <td><sf:errors path="delaiEnvoiRappelQuestionnaireSNC" cssClass="erreur"/></td>
 			    </tr>
-			    <tr class="<unireg:nextRowClass/>">
-				    <td><fmt:message key="label.param.delaiMinimalRetourQuestionnaireSNC"/></td>
-					    <%--@elvariable id="delaiMinimalRetourQuestionnaireSNCParDefaut" type="java.lang.String"--%>
-				    <td class="nombre">${delaiMinimalRetourQuestionnaireSNCParDefaut}</td>
-				    <td class="valeur">
-					    <sf:input path="delaiMinimalRetourQuestionnaireSNC" cssClass="valeur nombre" cssErrorClass="valeur input-with-errors nombre" maxlength="3"/>
-				    </td>
-				    <td><sf:errors path="delaiMinimalRetourQuestionnaireSNC" cssClass="erreur"/></td>
-			    </tr>
 
 			    <tr class="separator"><th colspan="4" ></th></tr>
 		        <tr class="<unireg:nextRowClass/>">

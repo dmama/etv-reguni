@@ -47,6 +47,18 @@ public interface DelaisService {
 	RegDate getDateFinDelaiRetourDeclarationImpotPMEmiseManuellement(RegDate dateDebut);
 
 	/**
+	 * Determine la date d'échéance du délai de retour pour questionnaire SNC émis manuellement.<br>
+	 * <br>
+	 * Les jours fériés sont comptés dans le délai.<br>
+	 * Le délai est repoussé au premier jour ouvrable s'il tombe sur un jour non-ouvré.<br>
+	 *
+	 * @param dateDebut date
+	 *
+	 * @return la date d'échéance du délai
+	 */
+	RegDate getDateFinDelaiRetourQuestionnaireSNCEmisManuellement(RegDate dateDebut);
+
+	/**
 	 * Determine la date d'échéance du délai technique d’impression par la CADEV des déclarations d’impôt.<br>
 	 * <br>
 	 * Les jours fériés sont comptés dans le délai.<br>

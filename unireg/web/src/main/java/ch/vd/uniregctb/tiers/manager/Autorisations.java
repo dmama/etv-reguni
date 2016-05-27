@@ -17,6 +17,7 @@ public class Autorisations {
 	private final boolean forsAutresElementsImposables;
 	private final boolean forsAutresImpots;
 	private final boolean declarationImpots;
+	private final boolean questionnairesSNC;
 	private final boolean identificationEntreprise;
 	private final boolean decisionsAci;
 
@@ -63,6 +64,7 @@ public class Autorisations {
 		this.forsAutresElementsImposables = false;
 		this.forsAutresImpots = false;
 		this.declarationImpots = false;
+		this.questionnairesSNC = false;
 		this.identificationEntreprise = false;
 		this.decisionsAci = false;
 
@@ -101,6 +103,7 @@ public class Autorisations {
 		this.forsAutresElementsImposables = isAllowed(map, AutorisationManagerImpl.FISCAL_FOR_AUTRE);
 		this.forsAutresImpots = isAllowed(map, AutorisationManagerImpl.FISCAL_FOR_AUTRE);
 		this.declarationImpots = isAllowed(map, AutorisationManagerImpl.MODIF_DI);
+		this.questionnairesSNC = isAllowed(map, AutorisationManagerImpl.MODIF_QSNC);
 		this.identificationEntreprise = isAllowed(map, AutorisationManagerImpl.MODIF_IDE);
 		this.decisionsAci = isAllowed(map,AutorisationManagerImpl.FISCAL_DECISION_ACI);
 
@@ -145,7 +148,7 @@ public class Autorisations {
 				|| (adresses && (adressesDomicile || adressesCourrier || adressesRepresentation || adressesPoursuite))
 				|| (complements && (complementsCommunications || complementsCoordonneesFinancieres))
 				|| (rapports && (rapportsEtablissements || rapportsDePrestations || rapportsDeTravail || autresRapports))
-				|| declarationImpots || bouclements || donneesCiviles || debiteurs || mouvements || situationsFamille
+				|| declarationImpots || questionnairesSNC || bouclements || donneesCiviles || debiteurs || mouvements || situationsFamille
 				|| etatsPM || regimesFiscaux || allegementsFiscaux || flagsPM;
 	}
 
@@ -171,6 +174,10 @@ public class Autorisations {
 
 	public boolean isDeclarationImpots() {
 		return declarationImpots;
+	}
+
+	public boolean isQuestionnairesSNC() {
+		return questionnairesSNC;
 	}
 
 	public boolean isBouclements() {
@@ -285,6 +292,7 @@ public class Autorisations {
 				", forsAutresElementsImposables=" + forsAutresElementsImposables +
 				", forsAutresImpots=" + forsAutresImpots +
 				", declarationImpots=" + declarationImpots +
+				", questionnairesSNC=" + questionnairesSNC +
 				", adresses=" + adresses +
 				", adressesDomicile=" + adressesDomicile +
 				", adressesCourrier=" + adressesCourrier +

@@ -44,6 +44,8 @@ import ch.vd.uniregctb.tiers.TacheAnnulationDeclarationImpot;
 import ch.vd.uniregctb.tiers.TacheCriteria;
 import ch.vd.uniregctb.tiers.TacheDAO;
 import ch.vd.uniregctb.tiers.TacheEnvoiDeclarationImpot;
+import ch.vd.uniregctb.tiers.TacheEnvoiDocument;
+import ch.vd.uniregctb.tiers.TacheEnvoiQuestionnaireSNC;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.TypeEtatTache;
 import ch.vd.uniregctb.type.TypeTache;
@@ -156,16 +158,26 @@ public class TacheListManagerImpl implements TacheListManager {
 			tacheView.setTypeTache(tache.getClass().getSimpleName());
 			tacheView.setEtatTache(tache.getEtat());
 
-			if (tache instanceof TacheEnvoiDeclarationImpot) {
-				final TacheEnvoiDeclarationImpot tedi = (TacheEnvoiDeclarationImpot) tache;
-				final int annee = tedi.getDateDebut().year();
-				tacheView.setAnnee(annee);
-				tacheView.setDateDebutImposition(tedi.getDateDebut());
-				tacheView.setDateFinImposition(tedi.getDateFin());
-				tacheView.setLongueurPeriodeImposition(FiscalDateHelper.getLongueurEnJoursOuNullSiPasPossible(tedi));
-				tacheView.setTypeContribuable(tedi.getTypeContribuable());
-				tacheView.setTypeDocument(tedi.getTypeDocument());
-				tacheView.setDelaiRetourEnJours(DELAI_RETOUR_DI);       // TODO pour les PM aussi ???
+			if (tache instanceof TacheEnvoiDocument) {
+				final TacheEnvoiDocument ted = (TacheEnvoiDocument) tache;
+				tacheView.setTypeDocument(ted.getTypeDocument());
+				if (tache instanceof TacheEnvoiDeclarationImpot) {
+					final TacheEnvoiDeclarationImpot tedi = (TacheEnvoiDeclarationImpot) tache;
+					final int annee = tedi.getDateFin().year();
+					tacheView.setAnnee(annee);
+					tacheView.setDateDebutImposition(tedi.getDateDebut());
+					tacheView.setDateFinImposition(tedi.getDateFin());
+					tacheView.setLongueurPeriodeImposition(FiscalDateHelper.getLongueurEnJoursOuNullSiPasPossible(tedi));
+					tacheView.setTypeContribuable(tedi.getTypeContribuable());
+					tacheView.setDelaiRetourEnJours(DELAI_RETOUR_DI);       // TODO pour les PM aussi ???
+				}
+				else if (tache instanceof TacheEnvoiQuestionnaireSNC) {
+					final TacheEnvoiQuestionnaireSNC teqsnc = (TacheEnvoiQuestionnaireSNC) tache;
+					final int annee = teqsnc.getDateFin().year();
+					tacheView.setAnnee(annee);
+					tacheView.setDateDebutImposition(teqsnc.getDateDebut());
+					tacheView.setDateFinImposition(teqsnc.getDateFin());
+				}
 			}
 			else if (tache instanceof TacheAnnulationDeclaration) {
 				final TacheAnnulationDeclaration<?> tad = (TacheAnnulationDeclaration<?>) tache;

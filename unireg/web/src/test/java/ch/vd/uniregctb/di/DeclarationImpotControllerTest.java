@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.decl;
+package ch.vd.uniregctb.di;
 
 import javax.servlet.http.HttpSession;
 import java.util.List;

@@ -62,7 +62,6 @@ public class ParamApplicationView {
 	private String dateDebutEnvoiLettresBienvenue;
 	private String dateLimiteEnvoiMasseDeclarationsUtilitePublique;
 	private String delaiRetourQuestionnaireSNCEmisManuellement;
-	private String delaiMinimalRetourQuestionnaireSNC;
 	private String delaiEnvoiRappelQuestionnaireSNC;
 
 	public ParamApplicationView() {}
@@ -105,7 +104,6 @@ public class ParamApplicationView {
 		this.dateDebutEnvoiLettresBienvenue = ParametreEnum.dateDebutEnvoiLettresBienvenue.convertirValeurTypeeVersString(service.getDateDebutEnvoiLettresBienvenue());
 		this.dateLimiteEnvoiMasseDeclarationsUtilitePublique = ParametreEnum.dateLimiteEnvoiMasseDeclarationsUtilitePublique.convertirValeurTypeeVersString(service.getDateLimiteEnvoiMasseDeclarationsUtilitePublique());
 		this.delaiRetourQuestionnaireSNCEmisManuellement = ParametreEnum.delaiRetourQuestionnaireSNCEmisManuellement.convertirValeurTypeeVersString(service.getDelaiRetourQuestionnaireSNCEmisManuellement());
-		this.delaiMinimalRetourQuestionnaireSNC = ParametreEnum.delaiMinimalRetourQuestionnaireSNC.convertirValeurTypeeVersString(service.getDelaiMinimalRetourQuestionnaireSNC());
 		this.delaiEnvoiRappelQuestionnaireSNC = ParametreEnum.delaiEnvoiRappelQuestionnaireSNC.convertirValeurTypeeVersString(service.getDelaiEnvoiRappelQuestionnaireSNC());
 	}
 
@@ -147,7 +145,6 @@ public class ParamApplicationView {
 		service.setDateDebutEnvoiLettresBienvenue((Integer[]) ParametreEnum.dateDebutEnvoiLettresBienvenue.convertirStringVersValeurTypee(this.dateDebutEnvoiLettresBienvenue));
 		service.setDateLimiteEnvoiMasseDeclarationsUtilitePublique((Integer[]) ParametreEnum.dateLimiteEnvoiMasseDeclarationsUtilitePublique.convertirStringVersValeurTypee(this.dateLimiteEnvoiMasseDeclarationsUtilitePublique));
 		service.setDelaiRetourQuestionnaireSNCEmisManuellement((Integer) ParametreEnum.delaiRetourQuestionnaireSNCEmisManuellement.convertirStringVersValeurTypee(this.delaiRetourQuestionnaireSNCEmisManuellement));
-		service.setDelaiMinimalRetourQuestionnaireSNC((Integer) ParametreEnum.delaiMinimalRetourQuestionnaireSNC.convertirStringVersValeurTypee(this.delaiMinimalRetourQuestionnaireSNC));
 		service.setDelaiEnvoiRappelQuestionnaireSNC((Integer) ParametreEnum.delaiEnvoiRappelQuestionnaireSNC.convertirStringVersValeurTypee(this.delaiEnvoiRappelQuestionnaireSNC));
 	}
 
@@ -445,14 +442,6 @@ public class ParamApplicationView {
 
 	public void setDelaiRetourQuestionnaireSNCEmisManuellement(String delaiRetourQuestionnaireSNCEmisManuellement) {
 		this.delaiRetourQuestionnaireSNCEmisManuellement = delaiRetourQuestionnaireSNCEmisManuellement;
-	}
-
-	public String getDelaiMinimalRetourQuestionnaireSNC() {
-		return delaiMinimalRetourQuestionnaireSNC;
-	}
-
-	public void setDelaiMinimalRetourQuestionnaireSNC(String delaiMinimalRetourQuestionnaireSNC) {
-		this.delaiMinimalRetourQuestionnaireSNC = delaiMinimalRetourQuestionnaireSNC;
 	}
 
 	public String getDelaiEnvoiRappelQuestionnaireSNC() {

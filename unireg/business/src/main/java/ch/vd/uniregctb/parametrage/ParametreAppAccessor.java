@@ -32,8 +32,6 @@ public interface ParametreAppAccessor {
 
 	Integer getDelaiRetourQuestionnaireSNCEmisManuellement();
 
-	Integer getDelaiMinimalRetourQuestionnaireSNC();
-
 	Integer getDelaiEnvoiRappelQuestionnaireSNC();
 
 	Integer getDelaiEnvoiSommationListeRecapitulative();
@@ -115,8 +113,6 @@ public interface ParametreAppAccessor {
 	void setDateLimiteEnvoiMasseDeclarationsUtilitePublique(Integer[] val);
 
 	void setDelaiRetourQuestionnaireSNCEmisManuellement(Integer val);
-
-	void setDelaiMinimalRetourQuestionnaireSNC(Integer val);
 
 	void setDelaiEnvoiRappelQuestionnaireSNC(Integer val);
 

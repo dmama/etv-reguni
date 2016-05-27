@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
@@ -42,6 +43,7 @@ import ch.vd.uniregctb.declaration.PeriodeFiscaleDAO;
 import ch.vd.uniregctb.declaration.QuestionnaireSNC;
 import ch.vd.uniregctb.declaration.QuestionnaireSNCDAO;
 import ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotService;
+import ch.vd.uniregctb.declaration.snc.QuestionnaireSNCService;
 import ch.vd.uniregctb.hibernate.HibernateCallback;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
@@ -71,7 +73,6 @@ import ch.vd.uniregctb.tache.sync.UpdateDIPP;
 import ch.vd.uniregctb.tache.sync.UpdateQSNC;
 import ch.vd.uniregctb.tache.sync.UpdateTacheEnvoiDI;
 import ch.vd.uniregctb.tache.sync.UpdateTacheEnvoiDIPM;
-import ch.vd.uniregctb.tiers.CategorieEntrepriseHisto;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesMorales;
@@ -97,9 +98,7 @@ import ch.vd.uniregctb.tiers.TacheNouveauDossier;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.transaction.TransactionTemplate;
-import ch.vd.uniregctb.type.CategorieEntreprise;
 import ch.vd.uniregctb.type.DayMonth;
-import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
@@ -119,6 +118,7 @@ public class TacheServiceImpl implements TacheService {
 	private QuestionnaireSNCDAO qsncDAO;
 	private PeriodeFiscaleDAO pfDAO;
 	private DeclarationImpotService diService;
+	private QuestionnaireSNCService qsncService;
 	private ParametreAppService parametres;
 	private HibernateTemplate hibernateTemplate;
 	private ServiceInfrastructureService serviceInfra;
@@ -160,6 +160,10 @@ public class TacheServiceImpl implements TacheService {
 
 	public void setAdresseService(AdresseService adresseService) {
 		this.adresseService = adresseService;
+	}
+
+	public void setQsncService(QuestionnaireSNCService qsncService) {
+		this.qsncService = qsncService;
 	}
 
 	@Override
@@ -844,60 +848,10 @@ public class TacheServiceImpl implements TacheService {
 	 */
 	@NotNull
 	private List<DateRange> getPeriodesQuestionnaireSNC(Entreprise entreprise) {
-
-		// allons donc chercher les périodes de couverture des fors vaudois qui intersectent :
-		// 1. les années civiles pour lesquelles Unireg doit envoyer les questionnaires SNC (entre la première PF de déclaration PM et l'année courante)
-		// 2. les périodes pendant lesquelles l'entreprise a une forme juridique de type SP
-
-		// quand a-t-on du SP ?
-		final List<CategorieEntrepriseHisto> categories = tiersService.getCategoriesEntrepriseHisto(entreprise);
-		final List<DateRange> rangesSP = new ArrayList<>(categories.size());
-		for (CategorieEntrepriseHisto cat : categories) {
-			if (cat.getCategorie() == CategorieEntreprise.SP) {
-				rangesSP.add(cat);
-			}
-		}
-
-		// y en a-t-il ?
-		if (rangesSP.isEmpty()) {
-			return Collections.emptyList();
-		}
-
-		// quand génère-t-on des questionnaires SNC ?
-		final DateRange periodeGestionUnireg = new DateRangeHelper.Range(RegDate.get(parametres.getPremierePeriodeFiscaleDeclarationsPersonnesMorales(), 1, 1), null);
-
-		// a-t-on des catégories d'entreprise SP dans la période de gestion par Unireg ?
-		final List<DateRange> spDansPeriodeGestion = DateRangeHelper.intersections(periodeGestionUnireg, rangesSP);
-		if (spDansPeriodeGestion == null || spDansPeriodeGestion.isEmpty()) {
-			return Collections.emptyList();
-		}
-
-		// couverture des fors vaudois ?
-		final List<ForFiscal> forsFiscaux = entreprise.getForsFiscauxNonAnnules(true);
-		final List<ForFiscal> forsVaudois = new ArrayList<>(forsFiscaux.size());
-		for (ForFiscal ff : forsFiscaux) {
-			if (ff.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD && ff.getGenreImpot() == GenreImpot.REVENU_FORTUNE) {
-				forsVaudois.add(ff);
-			}
-		}
-		final List<DateRange> couvertureVaudoiseFors = DateRangeHelper.merge(forsVaudois);
-		if (couvertureVaudoiseFors == null || couvertureVaudoiseFors.isEmpty()) {
-			return Collections.emptyList();
-		}
-
-		// couverture des fors vaudois pendant les périodes SP intéressantes ?
-		final List<DateRange> spVaudois = DateRangeHelper.intersections(couvertureVaudoiseFors, spDansPeriodeGestion);
-		if (spVaudois == null || spVaudois.isEmpty()) {
-			return Collections.emptyList();
-		}
-
-		// découpons maintenant par année civile ce qui nous reste
-		final List<DateRange> ranges = new LinkedList<>();
-		for (int annee = periodeGestionUnireg.getDateDebut().year() ; annee <= RegDate.get().year() ; ++ annee) {
-			final DateRange anneeCivile = new DateRangeHelper.Range(RegDate.get(annee, 1, 1), RegDate.get(annee, 12, 31));
-			if (DateRangeHelper.intersect(anneeCivile, spVaudois)) {
-				ranges.add(anneeCivile);
-			}
+		final Set<Integer> periodesTheoriques = qsncService.getPeriodesFiscalesTheoriquementCouvertes(entreprise, true);
+		final List<DateRange> ranges = new ArrayList<>(periodesTheoriques.size());
+		for (int pf : periodesTheoriques) {
+			ranges.add(new DateRangeHelper.Range(RegDate.get(pf, 1, 1), RegDate.get(pf, 12, 31)));
 		}
 		return ranges;
 	}
@@ -1355,13 +1309,8 @@ public class TacheServiceImpl implements TacheService {
 			return true;
 		}
 
-		if (isQuestionnaireToBeUpdated(updates, questionnaire)) { // [SIFISC-1288]
-			// le questionnaire existant va être mise-à-jour, la tâche est donc invalide
-			return false;
-		}
-
-		// la tâche est valide
-		return true;
+		// la tâche est invalide
+		return false;
 	}
 
 	/**

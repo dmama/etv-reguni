@@ -67,6 +67,12 @@
 							<c:when test="${tache.typeTache == 'TacheAnnulationDeclarationImpot'}">
 								<a href="../di/editer.do?id=${tache.idDI}&tacheId=${tache.id}"><unireg:numCTB numero="${tache.numero}" /></a>
 							</c:when>
+							<c:when test="${tache.typeTache == 'TacheEnvoiQuestionnaireSNC'}">
+								<a href="../qsnc/add.do?depuisTache=true&tiersId=${tache.numero}&pf=${tache.annee}"><unireg:numCTB numero="${tache.numero}" /></a>
+							</c:when>
+							<c:when test="${tache.typeTache == 'TacheAnnulationQuestionnaireSNC'}">
+								<a href="../qsnc/editer.do?depuisTache=true&id=${tache.idDI}"><unireg:numCTB numero="${tache.numero}"/></a>
+							</c:when>
 							<c:otherwise>
 								<unireg:numCTB numero="${tache.numero}" />
 							</c:otherwise>

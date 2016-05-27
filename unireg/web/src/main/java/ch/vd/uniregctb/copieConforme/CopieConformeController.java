@@ -116,6 +116,16 @@ public class CopieConformeController {
 		});
 	}
 
+	@RequestMapping(value = "/declaration/copie-conforme-rappel.do", method = RequestMethod.GET)
+	public String getDocumentRappel(HttpServletRequest request, HttpServletResponse response, @RequestParam(value = ID_ETAT, required = true) final Long idEtat) throws Exception {
+		return getDocumentCopieConforme(request, response, "copieRappel", "Aucun archivage trouvé pour le rappel demandé !", new CopieConformeGetter() {
+			@Override
+			public EditiqueResultat getCopieConforme() throws EditiqueException {
+				return copieConformeManager.getPdfCopieConformeRappel(idEtat);
+			}
+		});
+	}
+
 	@RequestMapping(value = "/copie-conforme.do", method = RequestMethod.GET)
 	public String getDocument(HttpServletRequest request, HttpServletResponse response,
 	                          @RequestParam(value = NOCTB, required = true) final long noCtb,
