@@ -157,6 +157,7 @@
 		<value>ch.vd.uniregctb.document.ListeTachesEnIsntanceParOIDRapport</value>
 		<value>ch.vd.uniregctb.document.EnvoiSommationsDIsPPRapport</value>
 		<value>ch.vd.uniregctb.document.EnvoiSommationsDIsPMRapport</value>
+		<value>ch.vd.uniregctb.document.EnvoiRappelsQuestionnairesSNCRapport</value>
 		<value>ch.vd.uniregctb.document.ValidationJobRapport</value>
 		<value>ch.vd.uniregctb.document.EnvoiLRsRapport</value>
 		<value>ch.vd.uniregctb.document.EnvoiSommationLRsRapport</value>

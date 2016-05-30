@@ -120,6 +120,11 @@ public class DelaisServiceImpl implements DelaisService {
 	}
 
 	@Override
+	public RegDate getDateFinDelaiCadevImpressionQuestionnaireSNC(RegDate dateDebut) {
+		return getFinDelai(dateDebut, parametreAppService.getDelaiCadevImpressionQuestionnaireSNC());
+	}
+
+	@Override
 	public RegDate getDateFinDelaiCadevImpressionLettreBienvenue(RegDate dateDebut) {
 		return getFinDelai(dateDebut, parametreAppService.getDelaiCadevImpressionLettreBienvenue());
 	}
@@ -152,6 +157,11 @@ public class DelaisServiceImpl implements DelaisService {
 	@Override
 	public RegDate getDateFinDelaiEnvoiSommationListeRecapitulative(RegDate dateDebut){
 		return getFinDelai(dateDebut, parametreAppService.getDelaiEnvoiSommationListeRecapitulative());
+	}
+
+	@Override
+	public RegDate getDateFinDelaiEnvoiRappelQuestionnaireSNC(RegDate dateDebut) {
+		return getFinDelai(dateDebut, parametreAppService.getDelaiEnvoiRappelQuestionnaireSNC());
 	}
 
 	@Override

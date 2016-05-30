@@ -312,6 +312,13 @@
 		<property name="rapportService" ref="rapportService"/>
 	</bean>
 
+	<bean id="rappelQuestionnairesSNCJob" parent="schedulerJob" class="ch.vd.uniregctb.declaration.snc.EnvoiRappelsQuestionnairesSNCJob">
+		<constructor-arg value="462"/>
+		<constructor-arg value="Envoyer à l'impression les rappels des questionnaires SNC"/>
+		<property name="questionnaireService" ref="qsncService"/>
+		<property name="rapportService" ref="rapportService"/>
+	</bean>
+
 	<bean id="envoiLettresBienvenueJob" parent="schedulerJob" class="ch.vd.uniregctb.documentfiscal.EnvoiLettresBienvenueJob">
 		<constructor-arg value="475"/>
 		<constructor-arg value="Envoyer les lettres de bienvenue PM"/>

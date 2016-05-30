@@ -83,6 +83,18 @@ public interface DelaisService {
 	RegDate getDateFinDelaiCadevImpressionListesRecapitulatives(RegDate dateDebut);
 
 	/**
+	 * Determine la date d'échéance du délai technique d’impression par la CADEV des questionnaires SNC.<br>
+	 * <br>
+	 * Les jours fériés sont comptés dans le délai.<br>
+	 * Le délai est repoussé au premier jour ouvrable s'il tombe sur un jour non-ouvré.<br>
+	 *
+	 * @param dateDebut date
+	 *
+	 * @return la date d'échéance du délai
+	 */
+	RegDate getDateFinDelaiCadevImpressionQuestionnaireSNC(RegDate dateDebut);
+
+	/**
 	 * Determine la date d'échéance du délai technique d’impression par la CADEV lettres de bienvenue PM.<br>
 	 * <br>
 	 * Les jours fériés sont comptés dans le délai.<br>
@@ -165,6 +177,16 @@ public interface DelaisService {
 	 * @return la date d'échéance du délai
 	 */	
 	RegDate getDateFinDelaiEnvoiSommationListeRecapitulative(RegDate dateDebut);
+
+	/**
+	 * Détermine la date d'échéance du délai administratif avant l'envoi d'un rappel de questionnaire SNC.<br/>
+	 * <br>
+	 * Les jours fériés sont comptés dans le délai.<br>
+	 * Le délai est repoussé au premier jour ouvrable s'il tombe sur un jour non-ouvré.<br>
+	 * @param dateDebut date
+	 * @return la date d'échéance du délai
+	 */
+	RegDate getDateFinDelaiEnvoiRappelQuestionnaireSNC(RegDate dateDebut);
 
 	/**
 	 * Determine la date d'échéance du délai de rétention des rapports de travail inactifs.<br>

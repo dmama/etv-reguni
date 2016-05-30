@@ -1,12 +1,8 @@
 package ch.vd.uniregctb.declaration;
 
-import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 
-import ch.vd.registre.base.dao.GenericDAO;
-
-public interface DeclarationImpotOrdinaireDAO extends GenericDAO<DeclarationImpotOrdinaire, Long> {
+public interface DeclarationImpotOrdinaireDAO extends DeclarationDAO<DeclarationImpotOrdinaire> {
 
 	/**
 	 * Recherche des declarations d'impot ordinaire selon des criteres
@@ -33,14 +29,4 @@ public interface DeclarationImpotOrdinaireDAO extends GenericDAO<DeclarationImpo
 	 * @return
 	 */
 	EtatDeclaration findDerniereDiEnvoyee(Long numeroCtb) ;
-
-	/**
-	 * @return un ensemble de DIs PP avec les délais et les états préinitialisés.
-	 */
-	Set<DeclarationImpotOrdinairePP> getDeclarationsImpotPPForSommation(Collection<Long> idsDI);
-
-	/**
-	 * @return un ensemble de DIs PM avec les délais et les états préinitialisés.
-	 */
-	Set<DeclarationImpotOrdinairePM> getDeclarationsImpotPMForSommation(Collection<Long> idsDI);
 }

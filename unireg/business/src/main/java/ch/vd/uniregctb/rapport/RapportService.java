@@ -22,6 +22,7 @@ import ch.vd.uniregctb.declaration.ordinaire.pp.StatistiquesCtbs;
 import ch.vd.uniregctb.declaration.ordinaire.pp.StatistiquesDIs;
 import ch.vd.uniregctb.declaration.snc.DeterminationQuestionnairesSNCResults;
 import ch.vd.uniregctb.declaration.snc.EnvoiQuestionnairesSNCEnMasseResults;
+import ch.vd.uniregctb.declaration.snc.EnvoiRappelsQuestionnairesSNCResults;
 import ch.vd.uniregctb.declaration.source.DeterminerLRsEchuesResults;
 import ch.vd.uniregctb.declaration.source.EnvoiLRsResults;
 import ch.vd.uniregctb.declaration.source.EnvoiSommationLRsResults;
@@ -47,6 +48,7 @@ import ch.vd.uniregctb.document.EnvoiDIsPPRapport;
 import ch.vd.uniregctb.document.EnvoiLRsRapport;
 import ch.vd.uniregctb.document.EnvoiLettresBienvenueRapport;
 import ch.vd.uniregctb.document.EnvoiQuestionnairesSNCRapport;
+import ch.vd.uniregctb.document.EnvoiRappelsQuestionnairesSNCRapport;
 import ch.vd.uniregctb.document.EnvoiSommationLRsRapport;
 import ch.vd.uniregctb.document.EnvoiSommationsDIsPMRapport;
 import ch.vd.uniregctb.document.EnvoiSommationsDIsPPRapport;
@@ -576,4 +578,12 @@ public interface RapportService {
 	 * @return le rapport
 	 */
 	EnvoiQuestionnairesSNCRapport generateRapport(EnvoiQuestionnairesSNCEnMasseResults results, StatusManager status);
+
+	/**
+	 * Génère le rapport d'exécution du batch qui envoie les rappels des questionnaires SNC en masse
+	 * @param results le résultat du batch
+	 * @param status  le status manager
+	 * @return le rapport
+	 */
+	EnvoiRappelsQuestionnairesSNCRapport generateRapport(EnvoiRappelsQuestionnairesSNCResults results, StatusManager status);
 }

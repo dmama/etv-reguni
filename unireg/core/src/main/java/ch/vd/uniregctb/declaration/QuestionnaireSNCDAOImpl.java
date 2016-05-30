@@ -1,8 +1,6 @@
 package ch.vd.uniregctb.declaration;
 
-import ch.vd.uniregctb.common.BaseDAOImpl;
-
-public class QuestionnaireSNCDAOImpl extends BaseDAOImpl<QuestionnaireSNC, Long> implements QuestionnaireSNCDAO {
+public class QuestionnaireSNCDAOImpl extends DeclarationDAOImpl<QuestionnaireSNC> implements QuestionnaireSNCDAO {
 
 	public QuestionnaireSNCDAOImpl() {
 		super(QuestionnaireSNC.class);

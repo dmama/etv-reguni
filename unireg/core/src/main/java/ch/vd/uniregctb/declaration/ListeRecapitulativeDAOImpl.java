@@ -16,7 +16,6 @@ import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.uniregctb.common.BaseDAOImpl;
 import ch.vd.uniregctb.common.ParamPagination;
 import ch.vd.uniregctb.dbutils.QueryFragment;
 import ch.vd.uniregctb.type.CategorieImpotSource;
@@ -24,7 +23,7 @@ import ch.vd.uniregctb.type.ModeCommunication;
 import ch.vd.uniregctb.type.PeriodiciteDecompte;
 import ch.vd.uniregctb.type.TypeEtatDeclaration;
 
-public class ListeRecapitulativeDAOImpl extends BaseDAOImpl< DeclarationImpotSource, Long> implements  ListeRecapitulativeDAO {
+public class ListeRecapitulativeDAOImpl extends DeclarationDAOImpl<DeclarationImpotSource> implements  ListeRecapitulativeDAO {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(ListeRecapitulativeDAOImpl.class);
 

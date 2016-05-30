@@ -137,7 +137,7 @@ public class EnvoiSommationsDIsPPProcessor {
 			@Override
 			public boolean doInTransaction(List<IdentifiantDeclaration> batch, EnvoiSommationsDIsPPResults r) {
 				final List<Long> numerosDis = getListNumerosDis(batch);
-				final Set<DeclarationImpotOrdinairePP> declarations = declarationImpotOrdinaireDAO.getDeclarationsImpotPPForSommation(numerosDis);
+				final Set<DeclarationImpotOrdinairePP> declarations = declarationImpotOrdinaireDAO.getDeclarationsAvecDelaisEtEtats(DeclarationImpotOrdinairePP.class, numerosDis);
 				final Iterator<DeclarationImpotOrdinairePP> iter = declarations.iterator();
 				while (iter.hasNext() && ! status.interrupted() && (nombreMax == 0 || (rapportFinal.getTotalDisSommees()  + r.getTotalDisSommees()) < nombreMax)) {
 					final DeclarationImpotOrdinairePP di = iter.next();

@@ -21,11 +21,13 @@ import ch.vd.uniregctb.declaration.EtatDeclarationRappelee;
 import ch.vd.uniregctb.declaration.EtatDeclarationRetournee;
 import ch.vd.uniregctb.declaration.PeriodeFiscaleDAO;
 import ch.vd.uniregctb.declaration.QuestionnaireSNC;
+import ch.vd.uniregctb.declaration.QuestionnaireSNCDAO;
 import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.EditiqueResultat;
 import ch.vd.uniregctb.editique.impl.EditiqueResultatReroutageInboxImpl;
 import ch.vd.uniregctb.editique.impl.EditiqueResultatTimeoutImpl;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
+import ch.vd.uniregctb.parametrage.DelaisService;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.tiers.CategorieEntrepriseHisto;
 import ch.vd.uniregctb.tiers.Entreprise;
@@ -49,6 +51,8 @@ public class QuestionnaireSNCServiceImpl implements QuestionnaireSNCService {
 	private TacheDAO tacheDAO;
 	private PeriodeFiscaleDAO periodeFiscaleDAO;
 	private TicketService ticketService;
+	private QuestionnaireSNCDAO questionnaireSNCDAO;
+	private DelaisService delaisService;
 
 	public void setParametreAppService(ParametreAppService parametreAppService) {
 		this.parametreAppService = parametreAppService;
@@ -90,6 +94,14 @@ public class QuestionnaireSNCServiceImpl implements QuestionnaireSNCService {
 		this.ticketService = ticketService;
 	}
 
+	public void setQuestionnaireSNCDAO(QuestionnaireSNCDAO questionnaireSNCDAO) {
+		this.questionnaireSNCDAO = questionnaireSNCDAO;
+	}
+
+	public void setDelaisService(DelaisService delaisService) {
+		this.delaisService = delaisService;
+	}
+
 	@Override
 	public DeterminationQuestionnairesSNCResults determineQuestionnairesAEmettre(int periodeFiscale, RegDate dateTraitement, int nbThreads, StatusManager statusManager) throws DeclarationException {
 		final DeterminationQuestionnairesSNCAEmettreProcessor processor = new DeterminationQuestionnairesSNCAEmettreProcessor(parametreAppService, transactionManager, periodeDAO, hibernateTemplate, tiersService,
@@ -101,6 +113,12 @@ public class QuestionnaireSNCServiceImpl implements QuestionnaireSNCService {
 	public EnvoiQuestionnairesSNCEnMasseResults envoiQuestionnairesSNCEnMasse(int periodeFiscale, RegDate dateTraitement, @Nullable Integer nbMaxEnvois, StatusManager statusManager) throws DeclarationException {
 		final EnvoiQuestionnairesSNCEnMasseProcessor processor = new EnvoiQuestionnairesSNCEnMasseProcessor(transactionManager, hibernateTemplate, tiersService, tacheDAO, this, periodeFiscaleDAO, ticketService);
 		return processor.run(periodeFiscale, dateTraitement, nbMaxEnvois, statusManager);
+	}
+
+	@Override
+	public EnvoiRappelsQuestionnairesSNCResults envoiRappelsQuestionnairesSNCEnMasse(RegDate dateTraitement, @Nullable Integer nbMaxEnvois, StatusManager statusManager) throws DeclarationException {
+		final EnvoiRappelsQuestionnairesSNCProcessor processor = new EnvoiRappelsQuestionnairesSNCProcessor(transactionManager, hibernateTemplate, questionnaireSNCDAO, delaisService, this);
+		return processor.run(dateTraitement, nbMaxEnvois, statusManager);
 	}
 
 	@NotNull
@@ -194,6 +212,14 @@ public class QuestionnaireSNCServiceImpl implements QuestionnaireSNCService {
 		// TODO envoi à l'éditique (avec archivage... + envoi en inbox si pas de retour assez rapide)
 		// TODO envoi d'un événement fiscal ?
 		return new EditiqueResultatTimeoutImpl("IDBIDON");
+	}
+
+	@Override
+	public void envoiRappelQuestionnaireSNCForBatch(QuestionnaireSNC questionnaire, RegDate dateTraitement, RegDate dateExpedition) throws DeclarationException {
+		questionnaire.addEtat(new EtatDeclarationRappelee(dateTraitement, dateExpedition));
+
+		// TODO envoi à l'éditique
+		// TODO envoi d'un événement fiscal ?
 	}
 
 	@Override

@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.jetbrains.annotations.Nullable;
 
-import ch.vd.registre.base.dao.GenericDAO;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.uniregctb.common.ParamPagination;
 
@@ -12,7 +11,7 @@ import ch.vd.uniregctb.common.ParamPagination;
 /*
  * @hidden
  */
-public interface ListeRecapitulativeDAO extends GenericDAO<DeclarationImpotSource, Long> {
+public interface ListeRecapitulativeDAO extends DeclarationDAO<DeclarationImpotSource> {
 
 
 	/**
@@ -21,7 +20,7 @@ public interface ListeRecapitulativeDAO extends GenericDAO<DeclarationImpotSourc
 	 * @param criterion
 	 * @return
 	 */
-	public List<DeclarationImpotSource> find(ListeRecapCriteria criterion, @Nullable ParamPagination paramPagination) ;
+	List<DeclarationImpotSource> find(ListeRecapCriteria criterion, @Nullable ParamPagination paramPagination) ;
 
 	/**
 	 * Recherche toutes les LR en fonction du numero de debiteur
@@ -29,22 +28,22 @@ public interface ListeRecapitulativeDAO extends GenericDAO<DeclarationImpotSourc
 	 * @param numero
 	 * @return
 	 */
-	public List<DeclarationImpotSource> findByNumero(Long numero);
+	List<DeclarationImpotSource> findByNumero(Long numero);
 
 	/**
 	 * Retourne le dernier EtatPeriodeDeclaration retournee
 	 *
-	 * @param lrId
+	 * @param numeroDpi
 	 * @return
 	 */
-	public EtatDeclaration findDerniereLrEnvoyee(Long numeroDpi) ;
+	EtatDeclaration findDerniereLrEnvoyee(Long numeroDpi) ;
 
 	/**
 	 * Retourne le nombre de LR associées aux critères donnés
 	 * @param criterion
 	 * @return
 	 */
-	public int count(ListeRecapCriteria criterion);
+	int count(ListeRecapCriteria criterion);
 
 	/**
 	 * Retourne une liste de date ranges représentant des LR qui intersectent
@@ -54,6 +53,6 @@ public interface ListeRecapitulativeDAO extends GenericDAO<DeclarationImpotSourc
 	 * @param range
 	 * @return
 	 */
-	public List<DateRange> findIntersection(long numeroDpi, DateRange range);
+	List<DateRange> findIntersection(long numeroDpi, DateRange range);
 
 }

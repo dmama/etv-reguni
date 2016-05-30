@@ -190,6 +190,8 @@
 		<property name="validationService" ref="validationService"/>
 		<property name="periodeFiscaleDAO" ref="periodeFiscaleDAO"/>
 		<property name="ticketService" ref="ticketService"/>
+		<property name="delaisService" ref="delaisService"/>
+		<property name="questionnaireSNCDAO" ref="questionnaireSNCDAO"/>
 	</bean>
 
 	<bean id="statsService" class="ch.vd.uniregctb.stats.StatsServiceImpl" />

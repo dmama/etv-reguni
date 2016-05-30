@@ -2,28 +2,20 @@ package ch.vd.uniregctb.declaration;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
-import org.hibernate.Criteria;
-import org.hibernate.FetchMode;
 import org.hibernate.FlushMode;
-import org.hibernate.Session;
-import org.hibernate.criterion.Restrictions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Pair;
-import ch.vd.uniregctb.common.BaseDAOImpl;
 import ch.vd.uniregctb.type.TypeEtatDeclaration;
 
-public class DeclarationImpotOrdinaireDAOImpl extends BaseDAOImpl<DeclarationImpotOrdinaire, Long> implements DeclarationImpotOrdinaireDAO {
+public class DeclarationImpotOrdinaireDAOImpl extends DeclarationDAOImpl<DeclarationImpotOrdinaire> implements DeclarationImpotOrdinaireDAO {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(DeclarationImpotOrdinaireDAOImpl.class);
 
@@ -137,36 +129,5 @@ public class DeclarationImpotOrdinaireDAOImpl extends BaseDAOImpl<DeclarationImp
 		}
 
 		return etat;
-	}
-
-	@Override
-	@SuppressWarnings("unchecked")
-	public Set<DeclarationImpotOrdinairePP> getDeclarationsImpotPPForSommation(Collection<Long> idsDI) {
-		return getDeclarationsImpotForSommation(DeclarationImpotOrdinairePP.class, idsDI);
-	}
-
-	@Override
-	@SuppressWarnings("unchecked")
-	public Set<DeclarationImpotOrdinairePM> getDeclarationsImpotPMForSommation(Collection<Long> idsDI) {
-		return getDeclarationsImpotForSommation(DeclarationImpotOrdinairePM.class, idsDI);
-	}
-
-	private <T extends DeclarationImpotOrdinaire> Set<T> getDeclarationsImpotForSommation(Class<T> clazz, Collection<Long> ids) {
-		final Session session = getCurrentSession();
-		final Criteria crit = session.createCriteria(clazz);
-		crit.add(Restrictions.in("id", ids));
-		crit.setFetchMode("etats", FetchMode.JOIN);
-		crit.setFetchMode("delais", FetchMode.JOIN);
-		crit.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
-
-		final FlushMode mode = session.getFlushMode();
-		try {
-			session.setFlushMode(FlushMode.MANUAL);
-			//noinspection unchecked
-			return new HashSet<>(crit.list());
-		}
-		finally {
-			session.setFlushMode(mode);
-		}
 	}
 }
