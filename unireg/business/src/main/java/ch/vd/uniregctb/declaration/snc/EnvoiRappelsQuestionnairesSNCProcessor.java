@@ -1,6 +1,8 @@
 package ch.vd.uniregctb.declaration.snc;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 
@@ -45,6 +47,19 @@ public class EnvoiRappelsQuestionnairesSNCProcessor {
 	private final DelaisService delaisService;
 	private final QuestionnaireSNCService qsncService;
 
+	/**
+	 * Pour les tests de limitations, on aime bien que les questionnaires soient toujours traités dans le même ordre,
+	 * (= le même ordre que celui des données d'entrée)
+	 */
+	private static final Comparator<QuestionnaireSNC> SNC_COMPARATOR = new Comparator<QuestionnaireSNC>() {
+		@Override
+		public int compare(QuestionnaireSNC o1, QuestionnaireSNC o2) {
+			final IdentifiantDeclaration id1 = new IdentifiantDeclaration(o1, null);
+			final IdentifiantDeclaration id2 = new IdentifiantDeclaration(o2, null);
+			return IdentifiantDeclaration.COMPARATOR_NATUREL.compare(id1, id2);
+		}
+	};
+
 	public EnvoiRappelsQuestionnairesSNCProcessor(PlatformTransactionManager transactionManager, HibernateTemplate hibernateTemplate, QuestionnaireSNCDAO questionnaireSNCDAO, DelaisService delaisService, QuestionnaireSNCService qsncService) {
 		this.transactionManager = transactionManager;
 		this.hibernateTemplate = hibernateTemplate;
@@ -72,7 +87,13 @@ public class EnvoiRappelsQuestionnairesSNCProcessor {
 				final List<Long> identifiantsQuestionnaires = extractIdentifiants(batch);
 				final Set<QuestionnaireSNC> questionnaires = questionnaireSNCDAO.getDeclarationsAvecDelaisEtEtats(identifiantsQuestionnaires);
 				status.setMessage("Traitement des rappels...", progressMonitor.getProgressInPercent());
-				for (QuestionnaireSNC questionnaire : questionnaires) {
+
+				// pour les tests de limitations, on aime bien que les questionnaires soient toujours traités dans le même ordre,
+				// (= le même ordre que celui des données d'entrée)
+				final List<QuestionnaireSNC> questionnairesTries = new ArrayList<>(questionnaires);
+				Collections.sort(questionnairesTries, SNC_COMPARATOR);
+
+				for (QuestionnaireSNC questionnaire : questionnairesTries) {
 					traiterQuestionnaire(questionnaire, dateTraitement, rapport);
 					if (limite > 0 && rapportFinal.getNombreRappelsEmis() + rapport.getNombreRappelsEmis() >= limite) {
 						return false;

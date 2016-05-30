@@ -13,7 +13,18 @@ public final class IdentifiantDeclaration {
 	public static final Comparator<IdentifiantDeclaration> COMPARATOR_BY_DECL_ID = new Comparator<IdentifiantDeclaration>() {
 		@Override
 		public int compare(IdentifiantDeclaration o1, IdentifiantDeclaration o2) {
-			return o1.idDeclaration < o2.idDeclaration ? -1 : (o1.idDeclaration > o2.idDeclaration ? 1 : 0);
+			return Long.compare(o1.idDeclaration, o2.idDeclaration);
+		}
+	};
+
+	public static final Comparator<IdentifiantDeclaration> COMPARATOR_NATUREL = new Comparator<IdentifiantDeclaration>() {
+		@Override
+		public int compare(IdentifiantDeclaration o1, IdentifiantDeclaration o2) {
+			int comparison = Long.compare(o1.numeroTiers, o2.numeroTiers);
+			if (comparison == 0) {
+				comparison = Long.compare(o1.idDeclaration, o2.idDeclaration);
+			}
+			return comparison;
 		}
 	};
 
@@ -29,6 +40,10 @@ public final class IdentifiantDeclaration {
 		this.numeroTiers = numeroTiers;
 		this.idDeclaration = idDeclaration;
 		this.numeroOID = numeroOID;
+	}
+
+	public IdentifiantDeclaration(Declaration declaration, @Nullable Integer numeroOID) {
+		this(declaration.getId(), declaration.getTiers().getNumero(), numeroOID);
 	}
 
 	public long getIdDeclaration() {
