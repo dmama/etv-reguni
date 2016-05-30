@@ -1,15 +1,20 @@
 package ch.vd.uniregctb.evenement.civil.engine.ech;
 
+import org.jetbrains.annotations.NotNull;
+
 import ch.vd.registre.base.utils.NotImplementedException;
 
 public class MockEvenementCivilEvenementProcessor implements EvenementCivilEchProcessor {
+
+	@NotNull
 	@Override
 	public ListenerHandle registerListener(Listener listener) {
-		return null;
-	}
-
-	@Override
-	public void unregisterListener(ListenerHandle handle) {
+		return new ListenerHandle() {
+			@Override
+			public void unregister() {
+				// rien à faire...
+			}
+		};
 	}
 
 	@Override

@@ -130,14 +130,25 @@ public class EvenementReqDesProcessorImpl implements EvenementReqDesProcessor, I
 	private AssujettissementService assujettissementService;
 	private MetierService metierService;
 
+	private static final AtomicLong SEQUENCE = new AtomicLong(0L);
+
 	/**
 	 * Handle utilisé pour les listeners de traitement
 	 */
-	private static class HandleImpl implements ListenerHandle {
-		private static final AtomicLong SEQUENCE = new AtomicLong(0L);
+	private class HandleImpl implements ListenerHandle {
 		private final long id;
+
 		private HandleImpl() {
 			id = SEQUENCE.getAndIncrement();
+		}
+
+		@Override
+		public void unregister() {
+			synchronized (listeners) {
+				if (listeners.remove(id) == null) {
+					throw new IllegalStateException("Unknown - or already unregistered - handle");
+				}
+			}
 		}
 	}
 
@@ -228,6 +239,7 @@ public class EvenementReqDesProcessorImpl implements EvenementReqDesProcessor, I
 		return System.nanoTime();
 	}
 
+	@NotNull
 	@Override
 	public ListenerHandle registerListener(Listener listener) {
 		if (listener == null) {
@@ -239,18 +251,6 @@ public class EvenementReqDesProcessorImpl implements EvenementReqDesProcessor, I
 			listeners.put(handle.id, listener);
 		}
 		return handle;
-	}
-
-	@Override
-	public void unregisterListener(ListenerHandle handle) {
-		if (!(handle instanceof HandleImpl)) {
-			throw new IllegalArgumentException("Invalid handle");
-		}
-		synchronized (listeners) {
-			if (listeners.remove(((HandleImpl) handle).id) == null) {
-				throw new IllegalArgumentException("Unknown handle");
-			}
-		}
 	}
 
 	/**

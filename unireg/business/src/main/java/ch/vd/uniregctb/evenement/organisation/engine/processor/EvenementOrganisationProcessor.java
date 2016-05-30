@@ -1,5 +1,7 @@
 package ch.vd.uniregctb.evenement.organisation.engine.processor;
 
+import org.jetbrains.annotations.NotNull;
+
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationBasicInfo;
 
 /**
@@ -25,20 +27,22 @@ public interface EvenementOrganisationProcessor {
 	}
 
 	/**
-	 * Interface de marquage du handle servant à identifier un listener
+	 * Interface du handle servant à identifier un listener (et à le déconnecter)
 	 */
-	interface ListenerHandle {}
+	interface ListenerHandle {
+		/**
+		 * Méthode à appeler pour désactiver les notifications (un seul appel est permis)
+		 * @throws IllegalStateException si plus d'un appel est fait sur cette méthode
+		 */
+		void unregister();
+	}
 
 	/**
 	 * @param listener nouveau listener qui veut être notifié
-	 * @return un handle qui devra être fourni à la méthode {@link #unregisterListener} à la fin de la période de notification
+	 * @return un handle qui doit servir à désactiver les notifications une fois les traitements terminés
 	 */
+	@NotNull
 	ListenerHandle registerListener(Listener listener);
-
-	/**
-	 * @param handle handle retourné au moment de l'enregistrement du listener qui ne veut plus être notifié
-	 */
-	void unregisterListener(ListenerHandle handle);
 
 	/**
 	 * Redémarre le thread de processing des événements organisation

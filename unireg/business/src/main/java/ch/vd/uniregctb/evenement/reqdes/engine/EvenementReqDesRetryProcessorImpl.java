@@ -90,7 +90,7 @@ public class EvenementReqDesRetryProcessorImpl implements EvenementReqDesRetryPr
 				LOGGER.warn("Interrupted thread", e);
 			}
 			finally {
-				mainProcessor.unregisterListener(handle);
+				handle.unregister();
 			}
 		}
 	}

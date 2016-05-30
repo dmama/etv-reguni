@@ -43,7 +43,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 @SuppressWarnings("JavaDoc")
 public class EvenementCivilEchProcessorTest extends AbstractEvenementCivilEchProcessorTest {
@@ -682,24 +681,6 @@ public class EvenementCivilEchProcessorTest extends AbstractEvenementCivilEchPro
 	
 	@Test(timeout = 10000L)
 	public void testListenerHandleUsage() throws Exception {
-		// handle null
-		try {
-			processor.unregisterListener(null);
-			fail("Aurait dû être considéré comme invalide");
-		}
-		catch (IllegalArgumentException e) {
-			assertEquals("Invalid handle", e.getMessage());
-		}
-
-		// handle non null mais bidon
-		try {
-			processor.unregisterListener(new EvenementCivilEchProcessor.ListenerHandle() {});
-			fail("Aurait dû être considéré comme invalide");
-		}
-		catch (IllegalArgumentException e) {
-			assertEquals("Invalid handle", e.getMessage());
-		}
-		
 		// handle obtenu normalement
 		final EvenementCivilEchProcessor.Listener listener = new EvenementCivilEchProcessor.Listener() {
 			@Override
@@ -711,7 +692,17 @@ public class EvenementCivilEchProcessorTest extends AbstractEvenementCivilEchPro
 			}
 		};
 		final EvenementCivilEchProcessor.ListenerHandle handle = processor.registerListener(listener);
-		processor.unregisterListener(handle);
+		handle.unregister();
+
+		try {
+			// deuxième appel -> boom !
+			handle.unregister();
+			Assert.fail();
+		}
+		catch (IllegalStateException e) {
+			// ok, tout va bien
+		}
+
 	}
 
 	@Test(timeout = 10000L)
@@ -753,7 +744,7 @@ public class EvenementCivilEchProcessorTest extends AbstractEvenementCivilEchPro
 
 		// après désactivation du listener, il ne devrait plus rien recevoir
 		recu.setValue(false);
-		processor.unregisterListener(handle);
+		handle.unregister();
 		assertFalse(recu.booleanValue());
 		traiterEvenements(noIndividu);
 		assertFalse(recu.booleanValue());

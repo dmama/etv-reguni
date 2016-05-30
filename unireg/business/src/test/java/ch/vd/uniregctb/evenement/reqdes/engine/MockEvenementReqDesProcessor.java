@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.InitializingBean;
 
 import ch.vd.registre.base.utils.NotImplementedException;
@@ -28,13 +29,9 @@ public class MockEvenementReqDesProcessor implements EvenementReqDesProcessor, I
 		collectedUniteTraitementIds.addAll(ids);
 	}
 
+	@NotNull
 	@Override
 	public ListenerHandle registerListener(Listener listener) {
-		throw new NotImplementedException();
-	}
-
-	@Override
-	public void unregisterListener(ListenerHandle handle) {
 		throw new NotImplementedException();
 	}
 

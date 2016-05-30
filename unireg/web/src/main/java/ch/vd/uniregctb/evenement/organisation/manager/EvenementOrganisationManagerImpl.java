@@ -200,7 +200,7 @@ public class EvenementOrganisationManagerImpl implements EvenementOrganisationMa
                 organisationRecycle = processorListener.donneUneChanceAuTraitementDeSeTerminer();
             }
             finally {
-                evenementProcessor.unregisterListener(handle);
+                handle.unregister();
             }
         }
         else {

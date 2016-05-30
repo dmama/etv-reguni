@@ -131,7 +131,7 @@ public abstract class AbstractEvenementOrganisationProcessorTest extends Busines
 			}
 		}
 		finally {
-			processor.unregisterListener(handle);
+			handle.unregister();
 		}
 	}
 

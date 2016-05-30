@@ -105,7 +105,7 @@ public class EvenementOrganisationRetryProcessorImpl implements EvenementOrganis
 				status.setMessage(msg, getProgress(initialSize, remaining.size()));
 			}
 			finally {
-				processor.unregisterListener(handle);
+				handle.unregister();
 			}
 		}
 	}

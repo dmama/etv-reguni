@@ -137,7 +137,7 @@ public abstract class AbstractEvenementCivilEchProcessorTest extends BusinessTes
 			}
 		}
 		finally {
-			processor.unregisterListener(handle);
+			handle.unregister();
 		}
 	}
 }

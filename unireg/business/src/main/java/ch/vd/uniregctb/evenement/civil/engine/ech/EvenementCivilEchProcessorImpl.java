@@ -250,13 +250,23 @@ public class EvenementCivilEchProcessorImpl implements EvenementCivilEchProcesso
 	/**
 	 * Classe interne des handles utilisés lors de l'enregistrement de listeners
 	 */
-	private static final class ListenerHandleImpl implements ListenerHandle {
+	private final class ListenerHandleImpl implements ListenerHandle {
 		private final long id;
 		private ListenerHandleImpl(long id) {
 			this.id = id;
 		}
+
+		@Override
+		public void unregister() {
+			synchronized (listeners) {
+				if (listeners.remove(id) == null) {
+					throw new IllegalStateException("Already unregistered!");
+				};
+			}
+		}
 	}
 
+	@NotNull
 	@Override
 	public ListenerHandle registerListener(Listener listener) {
 		if (listener == null) {
@@ -267,16 +277,6 @@ public class EvenementCivilEchProcessorImpl implements EvenementCivilEchProcesso
 			listeners.put(id, listener);
 		}
 		return new ListenerHandleImpl(id);
-	}
-
-	@Override
-	public void unregisterListener(ListenerHandle handle) {
-		if (!(handle instanceof ListenerHandleImpl)) {
-			throw new IllegalArgumentException("Invalid handle");
-		}
-		synchronized (listeners) {
-			listeners.remove(((ListenerHandleImpl) handle).id);
-		}
 	}
 
 	/**

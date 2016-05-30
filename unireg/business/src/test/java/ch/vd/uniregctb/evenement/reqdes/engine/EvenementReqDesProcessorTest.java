@@ -140,7 +140,7 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 			}
 		}
 		finally {
-			processor.unregisterListener(handle);
+			handle.unregister();
 		}
 	}
 

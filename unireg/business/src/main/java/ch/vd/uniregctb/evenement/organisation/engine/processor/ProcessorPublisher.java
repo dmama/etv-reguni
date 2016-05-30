@@ -4,6 +4,8 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 
+import org.jetbrains.annotations.NotNull;
+
 /**
  * @author Raphaël Marmier, 2015-07-27
  */
@@ -29,6 +31,15 @@ public class ProcessorPublisher {
 		private final long id;
 		private ListenerHandleImpl(long id) {
 			this.id = id;
+		}
+
+		@Override
+		public void unregister() {
+			synchronized (listeners) {
+				if (listeners.remove(id) == null) {
+					throw new IllegalStateException("Already unregistered!");
+				}
+			}
 		}
 	}
 
@@ -69,6 +80,7 @@ public class ProcessorPublisher {
 		}
 	}
 
+	@NotNull
 	protected EvenementOrganisationProcessor.ListenerHandle registerListener(EvenementOrganisationProcessor.Listener listener) {
 		if (listener == null) {
 			throw new NullPointerException("listener");
@@ -79,15 +91,4 @@ public class ProcessorPublisher {
 		}
 		return new ListenerHandleImpl(id);
 	}
-
-	protected void unregisterListener(EvenementOrganisationProcessor.ListenerHandle handle) {
-		if (!(handle instanceof ListenerHandleImpl)) {
-			throw new IllegalArgumentException("Invalid handle");
-		}
-		synchronized (listeners) {
-			listeners.remove(((ListenerHandleImpl) handle).id);
-		}
-	}
-
-
 }

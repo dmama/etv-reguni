@@ -113,7 +113,7 @@ public class EvenementCivilEchRetryProcessorImpl implements EvenementCivilEchRet
 				status.setMessage(msg, getProgress(initialSize, remaining.size()));
 			}
 			finally {
-				processor.unregisterListener(handle);
+				handle.unregister();
 			}
 		}
 	}

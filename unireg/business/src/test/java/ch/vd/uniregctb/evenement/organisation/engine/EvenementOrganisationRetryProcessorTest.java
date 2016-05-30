@@ -7,8 +7,9 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
-import org.apache.commons.lang3.mutable.MutableInt;
+import org.jetbrains.annotations.NotNull;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
@@ -90,30 +91,22 @@ public class EvenementOrganisationRetryProcessorTest extends BusinessTest {
 			}
 		});
 
-		final class MyHandle implements EvenementOrganisationProcessor.ListenerHandle {
-			public final int value;
-
-			MyHandle(int value) {
-				this.value = value;
-			}
-		}
-
-		final MutableInt pointer = new MutableInt(0);
-		final Map<EvenementOrganisationProcessor.ListenerHandle, EvenementOrganisationProcessor.Listener> listeners = new HashMap<>();
+		final AtomicInteger pointer = new AtomicInteger(0);
+		final Map<Integer, EvenementOrganisationProcessor.Listener> listeners = new HashMap<>();
 
 		final class IntegratedQueueAndProcessor implements EvenementOrganisationProcessor, EvenementOrganisationNotificationQueue {
+			@NotNull
 			@Override
 			public ListenerHandle registerListener(Listener listener) {
-				pointer.increment();
-				final MyHandle handle = new MyHandle(pointer.intValue());
-				listeners.put(handle, listener);
+				final int id = pointer.incrementAndGet();
+				final ListenerHandle handle = new ListenerHandle() {
+					@Override
+					public void unregister() {
+						listeners.remove(id);
+					}
+				};
+				listeners.put(id, listener);
 				return handle;
-			}
-
-			@Override
-			public void unregisterListener(ListenerHandle handle) {
-				Assert.assertTrue(handle instanceof MyHandle);
-				listeners.remove(handle);
 			}
 
 			@Override
@@ -218,11 +211,14 @@ public class EvenementOrganisationRetryProcessorTest extends BusinessTest {
 			public void onStop() {
 			}
 		});
-		Assert.assertTrue(handleRemaining instanceof MyHandle);
-		
+
 		// lancement des travaux
-		retry.retraiteEvenements(null);
-		queueProcessor.unregisterListener(handleRemaining);
+		try {
+			retry.retraiteEvenements(null);
+		}
+		finally {
+			handleRemaining.unregister();
+		}
 		
 		// au final : il ne doit plus rester que le noOrganisationSans dans la liste remaining, et tous les listeners doivent avoir été dés-enregistrés
 		Assert.assertEquals(1, remaining.size());

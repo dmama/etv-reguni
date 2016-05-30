@@ -183,7 +183,7 @@ public class EvenementCivilEchManagerImpl extends EvenementCivilManagerImpl impl
                 individuRecycle = processorListener.donneUneChanceAuTraitementDeSeTerminer();
             }
             finally {
-                evenementProcessor.unregisterListener(handle);
+                handle.unregister();
             }
         }
         else {

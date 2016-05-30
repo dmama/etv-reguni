@@ -242,7 +242,7 @@ public class EvenementReqDesController {
 			// rien de spécial à faire, on verra bien plus bas si le traitement a été fait ou pas...
 		}
 		finally {
-			processor.unregisterListener(handle);
+			handle.unregister();
 		}
 
 		// traitement terminé ?

@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.evenement.organisation.engine.processor;
 
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.SmartLifecycle;
@@ -75,14 +76,10 @@ public class EvenementOrganisationProcessorFacade implements EvenementOrganisati
 		this.notificationQueue = notificationQueue;
 	}
 
+	@NotNull
 	@Override
 	public ListenerHandle registerListener(Listener listener) {
 		return publisher.registerListener(listener);
-	}
-
-	@Override
-	public void unregisterListener(ListenerHandle handle) {
-		publisher.unregisterListener(handle);
 	}
 
 	@Override
