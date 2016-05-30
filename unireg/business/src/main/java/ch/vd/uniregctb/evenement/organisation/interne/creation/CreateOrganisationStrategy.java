@@ -94,76 +94,76 @@ public class CreateOrganisationStrategy extends AbstractOrganisationStrategy {
 		final InformationDeDateEtDeCreation info;
 		try {
 
-		// On doit connaître la catégorie pour continuer en mode automatique
-		CategorieEntreprise category = CategorieEntrepriseHelper.getCategorieEntreprise(organisation, dateEvenement);
-		if (category != null) {
+			// On doit connaître la catégorie pour continuer en mode automatique
+			CategorieEntreprise category = CategorieEntrepriseHelper.getCategorieEntreprise(organisation, dateEvenement);
+			if (category != null) {
 
-			// On crée une entreprise pour les organisations ayant un siège dans la canton de VD
-			if (organisation.hasSitePrincipalVD(dateEvenement)) {
+				// On crée une entreprise pour les organisations ayant un siège dans la canton de VD
+				if (organisation.hasSitePrincipalVD(dateEvenement)) {
 
-				switch (category) {
+					switch (category) {
 
-				// On ne crée pas d'entreprise pour les entreprises individuelles
-				case PP:
-					LOGGER.info("L'organisation n°{} est installée sur Vaud. Catégorie [{}] -> Pas de création.", organisation.getNumeroOrganisation(), category);
+					// On ne crée pas d'entreprise pour les entreprises individuelles
+					case PP:
+						LOGGER.info("L'organisation n°{} est installée sur Vaud. Catégorie [{}] -> Pas de création.", organisation.getNumeroOrganisation(), category);
+						return new MessageSuiviPreExecution(event, organisation, null, context, options,
+						                                    String.format("L'organisation n°%d est une entreprise individuelle vaudoise. Pas de traitement.", organisation.getNumeroOrganisation()));
+
+					// Sociétés de personnes
+					case SP:
+						LOGGER.info("L'organisation n°{} est installée sur Vaud. Catégorie [{}] -> Création.", organisation.getNumeroOrganisation(), category);
+						info = extraireInformationDeDateEtDeCreation(event, organisation);
+						return new CreateEntrepriseSP(event, organisation, null, context, options, info.dateDeCreation, info.dateOuvertureFiscale, info.isCreation);
+
+					// Personnes morales
+					case PM:
+						LOGGER.info("L'organisation n°{} est installée sur Vaud. Catégorie [{}] -> Création.", organisation.getNumeroOrganisation(), category);
+						info = extraireInformationDeDateEtDeCreation(event, organisation);
+						return new CreateEntreprisePM(event, organisation, null, context, options, info.dateDeCreation, info.dateOuvertureFiscale, info.isCreation);
+					// Associations personne morale
+					case APM:
+						LOGGER.info("L'organisation n°{} est installée sur Vaud. Catégorie [{}] -> Création.", organisation.getNumeroOrganisation(), category);
+						info = extraireInformationDeDateEtDeCreation(event, organisation);
+						return new CreateEntrepriseAPM(event, organisation, null, context, options, info.dateDeCreation, info.dateOuvertureFiscale, info.isCreation);
+
+					// Fonds de placements
+					case FP:
+						LOGGER.info("L'organisation n°{} est installée sur Vaud. Catégorie [{}] -> Création.", organisation.getNumeroOrganisation(), category);
+						info = extraireInformationDeDateEtDeCreation(event, organisation);
+						return new CreateEntrepriseFDSPLAC(event, organisation, null, context, options, info.dateDeCreation, info.dateOuvertureFiscale, info.isCreation);
+
+					// Personnes morales de droit public
+					case DPPM:
+						LOGGER.info("L'organisation n°{} est installée sur Vaud. Catégorie [{}] -> Création.", organisation.getNumeroOrganisation(), category);
+						info = extraireInformationDeDateEtDeCreation(event, organisation);
+						return new CreateEntrepriseDPPM(event, organisation, null, context, options, info.dateDeCreation, info.dateOuvertureFiscale, info.isCreation);
+
+					// Catégories qu'on ne peut pas traiter automatiquement, catégories éventuellement inconnues.
+					case DPAPM:
+						return new TraitementManuel(event, organisation, null, context, options,
+						                            "Traitement manuel requis pour nouvelle DP/APM ou organisation sans catégorie d’entreprise avec siège VD.");
+					default:
+						LOGGER.info("L'organisation n°{} est installée sur Vaud. Catégorie [{}] -> Traitement manuel.", organisation.getNumeroOrganisation(), category);
+						return new TraitementManuel(event, organisation, null, context, options, MSG_CREATION_AUTOMATIQUE_IMPOSSIBLE);
+					}
+				} else if (organisation.hasSiteVD(dateEvenement)) {
+					switch (category) {
+
+					case PP:
+						LOGGER.info("L'organisation n°{} a une présence secondaire sur Vaud. Catégorie [{}] -> Pas de création.", organisation.getNumeroOrganisation(), category);
+						return new MessageSuiviPreExecution(event, organisation, null, context, options,
+						                                    String.format("L'organisation n°%d est une entreprise individuelle hors canton avec une présence sur Vaud. Pas de traitement.", organisation.getNumeroOrganisation()));
+					default:
+						LOGGER.info("L'organisation n°{} a une présence secondaire sur Vaud. Catégorie [{}] -> Création.", organisation.getNumeroOrganisation(), category);
+						info = extraireInformationDeDateEtDeCreation(event, organisation);
+						return new CreateEntrepriseHorsVD(event, organisation, null, context, options, info.isCreation);
+					}
+				} else {
+					LOGGER.info("L'organisation n°{} n'a pas de présence connue sur Vaud. Catégorie [{}] -> Pas de création.", organisation.getNumeroOrganisation(), category);
 					return new MessageSuiviPreExecution(event, organisation, null, context, options,
-					                                    String.format("L'organisation n°%d est une entreprise individuelle vaudoise. Pas de traitement.", organisation.getNumeroOrganisation()));
-
-				// Sociétés de personnes
-				case SP:
-					LOGGER.info("L'organisation n°{} est installée sur Vaud. Catégorie [{}] -> Création.", organisation.getNumeroOrganisation(), category);
-					info = extraireInformationDeDateEtDeCreation(event, organisation);
-					return new CreateEntrepriseSP(event, organisation, null, context, options, info.dateDeCreation, info.isCreation);
-
-				// Personnes morales
-				case PM:
-					LOGGER.info("L'organisation n°{} est installée sur Vaud. Catégorie [{}] -> Création.", organisation.getNumeroOrganisation(), category);
-					info = extraireInformationDeDateEtDeCreation(event, organisation);
-					return new CreateEntreprisePM(event, organisation, null, context, options, info.dateDeCreation, info.isCreation);
-				// Associations personne morale
-				case APM:
-					LOGGER.info("L'organisation n°{} est installée sur Vaud. Catégorie [{}] -> Création.", organisation.getNumeroOrganisation(), category);
-					info = extraireInformationDeDateEtDeCreation(event, organisation);
-					return new CreateEntrepriseAPM(event, organisation, null, context, options, info.dateDeCreation, info.isCreation);
-
-				// Fonds de placements
-				case FP:
-					LOGGER.info("L'organisation n°{} est installée sur Vaud. Catégorie [{}] -> Création.", organisation.getNumeroOrganisation(), category);
-					info = extraireInformationDeDateEtDeCreation(event, organisation);
-					return new CreateEntrepriseFDSPLAC(event, organisation, null, context, options, info.dateDeCreation, info.isCreation);
-
-				// Personnes morales de droit public
-				case DPPM:
-					LOGGER.info("L'organisation n°{} est installée sur Vaud. Catégorie [{}] -> Création.", organisation.getNumeroOrganisation(), category);
-					info = extraireInformationDeDateEtDeCreation(event, organisation);
-					return new CreateEntrepriseDPPM(event, organisation, null, context, options, info.dateDeCreation, info.isCreation);
-
-				// Catégories qu'on ne peut pas traiter automatiquement, catégories éventuellement inconnues.
-				case DPAPM:
-					return new TraitementManuel(event, organisation, null, context, options,
-					                            "Traitement manuel requis pour nouvelle DP/APM ou organisation sans catégorie d’entreprise avec siège VD.");
-				default:
-					LOGGER.info("L'organisation n°{} est installée sur Vaud. Catégorie [{}] -> Traitement manuel.", organisation.getNumeroOrganisation(), category);
-					return new TraitementManuel(event, organisation, null, context, options, MSG_CREATION_AUTOMATIQUE_IMPOSSIBLE);
+					                                    String.format("L'organisation n°%d (%s) n'a pas de présence sur Vaud. Pas de traitement.", organisation.getNumeroOrganisation(), category));
 				}
-			} else if (organisation.hasSiteVD(dateEvenement)) {
-				switch (category) {
-
-				case PP:
-					LOGGER.info("L'organisation n°{} a une présence secondaire sur Vaud. Catégorie [{}] -> Pas de création.", organisation.getNumeroOrganisation(), category);
-					return new MessageSuiviPreExecution(event, organisation, null, context, options,
-					                                    String.format("L'organisation n°%d est une entreprise individuelle hors canton avec une présence sur Vaud. Pas de traitement.", organisation.getNumeroOrganisation()));
-				default:
-					LOGGER.info("L'organisation n°{} a une présence secondaire sur Vaud. Catégorie [{}] -> Création.", organisation.getNumeroOrganisation(), category);
-					info = extraireInformationDeDateEtDeCreation(event, organisation);
-					return new CreateEntrepriseHorsVD(event, organisation, null, context, options, info.dateDeCreation, info.isCreation);
-				}
-			} else {
-				LOGGER.info("L'organisation n°{} n'a pas de présence connue sur Vaud. Catégorie [{}] -> Pas de création.", organisation.getNumeroOrganisation(), category);
-				return new MessageSuiviPreExecution(event, organisation, null, context, options,
-				                                    String.format("L'organisation n°%d (%s) n'a pas de présence sur Vaud. Pas de traitement.", organisation.getNumeroOrganisation(), category));
 			}
-		}
 		} catch (EvenementOrganisationException e) {
 			return new TraitementManuel(event, organisation, null, context, options,
 			                            String.format(
@@ -187,6 +187,7 @@ public class CreateOrganisationStrategy extends AbstractOrganisationStrategy {
 		final RegDate dateInscriptionRCVd;
 		final RegDate dateInscriptionRC;
 		final RegDate dateDeCreation;
+		final RegDate dateOuvertureFiscale;
 		final boolean isCreation;
 		if (inscritAuRC) {
 			dateInscriptionRCVd = sitePrincipal.getDateInscriptionRCVd(dateEvenement);
@@ -198,34 +199,41 @@ public class CreateOrganisationStrategy extends AbstractOrganisationStrategy {
 			                        dateEvenement); // On ne peut pas l'appeler avant car on doit d'abord s'assurer que l'inscription RC VD existe si on est inscrit au RC et vaudois.
 			if (isCreation) {
 				if (isVaudoise) {
-					dateDeCreation = dateInscriptionRCVd.getOneDayAfter();
+					dateDeCreation = dateInscriptionRCVd;
+					dateOuvertureFiscale = dateInscriptionRCVd.getOneDayAfter();
 				}
 				else {
-					dateDeCreation = dateInscriptionRC.getOneDayAfter();
+					dateDeCreation = dateInscriptionRC;
+					dateOuvertureFiscale = dateInscriptionRC;
 				}
 			}
 			else { // Une arrivée
 				dateDeCreation = dateInscriptionRCVd;
+				dateOuvertureFiscale = dateInscriptionRCVd;
 			}
 		}
 		else {
 			isCreation = isCreation(event.getType(), organisation, dateEvenement);
-			if (isCreation) {
-				dateDeCreation = dateEvenement.getOneDayAfter();
+			if (isCreation && isVaudoise) {
+				dateDeCreation = dateEvenement;
+				dateOuvertureFiscale = dateEvenement.getOneDayAfter();
 			}
 			else {
 				dateDeCreation = dateEvenement;
+				dateOuvertureFiscale = dateEvenement;
 			}
 		}
-		return new InformationDeDateEtDeCreation(dateDeCreation, isCreation);
+		return new InformationDeDateEtDeCreation(dateDeCreation, dateOuvertureFiscale, isCreation);
 	}
 
 	private static class InformationDeDateEtDeCreation {
 		RegDate dateDeCreation;
+		RegDate dateOuvertureFiscale;
 		boolean isCreation;
 
-		public InformationDeDateEtDeCreation(RegDate dateDeCreation, boolean isCreation) {
+		public InformationDeDateEtDeCreation(RegDate dateDeCreation, RegDate dateOuvertureFiscale, boolean isCreation) {
 			this.dateDeCreation = dateDeCreation;
+			this.dateOuvertureFiscale = dateOuvertureFiscale;
 			this.isCreation = isCreation;
 		}
 	}
