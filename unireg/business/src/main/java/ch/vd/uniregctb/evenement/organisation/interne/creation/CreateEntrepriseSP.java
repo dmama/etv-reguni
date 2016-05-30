@@ -30,8 +30,9 @@ public class CreateEntrepriseSP extends CreateEntreprise {
 	                             EvenementOrganisationContext context,
 	                             EvenementOrganisationOptions options,
 	                             RegDate dateDeCreation,
+	                             RegDate dateOuvertureFiscale,
 	                             boolean isCreation) throws EvenementOrganisationException {
-		super(evenement, organisation, entreprise, context, options, dateDeCreation, isCreation);
+		super(evenement, organisation, entreprise, context, options, dateDeCreation, dateOuvertureFiscale, isCreation);
 	}
 
 	@Override
@@ -46,7 +47,9 @@ public class CreateEntrepriseSP extends CreateEntreprise {
 
 		MotifFor motifOuverture = determineMotifOuvertureFor(isCreation());
 
-		openForFiscalPrincipal(getDateDeCreation(),
+		openRegimesFiscauxOrdinairesCHVD(getEntreprise(), getOrganisation(), getDateOuvertureFiscale(), suivis);
+
+		openForFiscalPrincipal(getDateOuvertureFiscale(),
 		                       getAutoriteFiscalePrincipale(),
 		                       MotifRattachement.DOMICILE,
 		                       motifOuverture,

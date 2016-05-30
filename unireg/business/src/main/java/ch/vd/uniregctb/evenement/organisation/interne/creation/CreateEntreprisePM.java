@@ -31,8 +31,9 @@ public class CreateEntreprisePM extends CreateEntreprise {
 	                             EvenementOrganisationContext context,
 	                             EvenementOrganisationOptions options,
 	                             RegDate dateDeCreation,
+	                             RegDate dateOuvertureFiscale,
 	                             boolean isCreation) throws EvenementOrganisationException {
-		super(evenement, organisation, entreprise, context, options, dateDeCreation, isCreation);
+		super(evenement, organisation, entreprise, context, options, dateDeCreation, dateOuvertureFiscale, isCreation);
 	}
 
 	@Override
@@ -45,11 +46,13 @@ public class CreateEntreprisePM extends CreateEntreprise {
 	public void doHandle(EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) throws EvenementOrganisationException {
 		super.doHandle(warnings, suivis);
 
+		openRegimesFiscauxOrdinairesCHVD(getEntreprise(), getOrganisation(), getDateOuvertureFiscale(), suivis);
+
 		Domicile autoriteFiscalePrincipale = getAutoriteFiscalePrincipale();
 
 		MotifFor motifOuverture = determineMotifOuvertureFor(isCreation());
 
-		openForFiscalPrincipal(getDateDeCreation(),
+		openForFiscalPrincipal(getDateOuvertureFiscale(),
 		                       autoriteFiscalePrincipale,
 		                       MotifRattachement.DOMICILE,
 		                       motifOuverture,
@@ -57,10 +60,10 @@ public class CreateEntreprisePM extends CreateEntreprise {
 		                       warnings, suivis);
 
 		// Création du bouclement
-		createAddBouclement(getDateDeCreation(), isCreation(), suivis);
+		createAddBouclement(getDateOuvertureFiscale(), isCreation(), suivis);
 
 		// Ajoute les for secondaires
-		adapteForsSecondairesPourEtablissementsVD(getEntreprise(), getDateDeCreation(), warnings, suivis);
+		adapteForsSecondairesPourEtablissementsVD(getEntreprise(), warnings, suivis);
 	}
 
 	@Override

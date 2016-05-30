@@ -103,22 +103,20 @@ public class MetierServicePMImpl implements MetierServicePM {
 		this.tacheService = tacheService;
 	}
 
-	/**
-	 * Méthode qui parcoure les établissements de l'entreprise et qui ajuste les fors secondaires en prenant soin d'éviter
-	 * les chevauchements. Elle crée les fors nécessaires, ferme ceux qui se terminent et annule ceux qui sont devenus redondants.
-	 *
-	 * La méthode gère les fors secondaires uniquement sur VD
-	 *
-	 * On peut passer une date de coupure qui "tranche" le début d'historique des fors secondaire à créer. Sert à faire démarrer le for secondaire d'une nouvelle entreprise à j + 1 comme
-	 * le for principal. Laisser vide dans les cas non création.
-	 *
-	 * @param entreprise l'entreprise concernée
-	 * @param dateAuPlusTot la date de coupure pour la création d'entreprise.
-	 */
 	@Override
-	public AjustementForsSecondairesResult calculAjustementForsSecondairesPourEtablissementsVD(Entreprise entreprise, RegDate dateAuPlusTot) throws MetierServiceException {
+	public AjustementForsSecondairesResult calculAjustementForsSecondairesPourEtablissementsVD(Entreprise entreprise) throws MetierServiceException {
 
 		List<DateRanged<Etablissement>> etablissements = tiersService.getEtablissementsSecondairesEntreprise(entreprise);
+
+		/*
+			Détection du début effectif des données fiscales. Règle de la date + 1 lors d'une fondation d'entreprise VD.
+		 */
+		RegDate dateAuPlusTot = null;
+		final ForFiscalPrincipalPM premierForFiscalPrincipal = entreprise.getPremierForFiscalPrincipal();
+		if (premierForFiscalPrincipal.getMotifOuverture() == MotifFor.DEBUT_EXPLOITATION &&
+				premierForFiscalPrincipal.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
+			dateAuPlusTot = premierForFiscalPrincipal.getDateDebut();
+		}
 
 		// Les domiciles VD classés par commune
 		final Map<Integer, List<Domicile>> tousLesDomicilesVD = new HashMap<>();
@@ -129,12 +127,9 @@ public class MetierServicePMImpl implements MetierServicePM {
 				/* Tenir compte de la période où l'établissement est rattaché à l'entreprise.
 				   Les rattachements multiples d'établissements sont pris en compte par des apparitions multiples à des périodes différentes.
 
-				   a. On n'est pas censé recevoir des établissements RCEnt avec plusieurs appartenances, donc on devrait ne jamais être en présence de
-				      domiciles qui dépassent de la période de rapport économique.
+				   On n'est pas censé recevoir des établissements RCEnt avec plusieurs appartenances, donc on devrait ne jamais être en présence de
+				   domiciles qui dépassent de la période de rapport économique.
 
-				   b. CEPENDANT: La date de début du rapport entre tiers tient déjà compte de la règle du jour +1 qui doit être appliquée
-				                 à la création d'un tiers entreprise dans Unireg. Extraire le domicile effectif au moyen de la période du rapport
-				                 entre tiers nous fournit donc le point de départ exact sans qu'on n'ait besoin de le calculer nous-même.
 				   */
 				final List<DomicileHisto> domicilesEffectifs = DateRangeHelper.extract(domiciles, etablissement.getDateDebut(), etablissement.getDateFin(), new GentilDateRangeExtendedAdapterCallback<DomicileHisto>());
 				for (DomicileHisto domicile : domicilesEffectifs) {
@@ -166,7 +161,6 @@ public class MetierServicePMImpl implements MetierServicePM {
 
 		for (Map.Entry<Integer, List<Domicile>> domicilesCommune : tousLesDomicilesVD.entrySet()) {
 			tousLesDomicilesVD.put(domicilesCommune.getKey(), DateRangeHelper.collate(domicilesCommune.getValue()));
-
 		}
 
 		// Charger les historiques de fors secondaire établissement stables existant pour chaque commune

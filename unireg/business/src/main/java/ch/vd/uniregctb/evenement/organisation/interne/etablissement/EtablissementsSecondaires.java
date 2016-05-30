@@ -197,7 +197,7 @@ public class EtablissementsSecondaires extends EvenementOrganisationInterneDeTra
 			signaleDemenagement(demenagement.etablissement, demenagement.getAncienDomicile(), demenagement.getNouveauDomicile(), dateDemenagement, suivis);
 		}
 
-		adapteForsSecondairesPourEtablissementsVD(getEntreprise(), null, warnings, suivis);
+		adapteForsSecondairesPourEtablissementsVD(getEntreprise(), warnings, suivis);
 
 		raiseStatusTo(HandleStatus.TRAITE);
 	}

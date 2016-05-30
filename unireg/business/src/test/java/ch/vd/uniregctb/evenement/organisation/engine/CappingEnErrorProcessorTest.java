@@ -149,26 +149,26 @@ public class CappingEnErrorProcessorTest extends AbstractEvenementOrganisationPr
 					                             Assert.assertEquals("Réglage de l'état: Inscrite au RC.", erreur.getMessage());
 				                             }
 				                             {
-					                             final EvenementOrganisationErreur erreur = evt.getErreurs().get(4);
+					                             final EvenementOrganisationErreur erreur = evt.getErreurs().get(6);
 					                             Assert.assertEquals(TypeEvenementErreur.SUIVI, erreur.getType());
 					                             Assert.assertEquals("Régimes fiscaux ordinaires VD et CH ouverts pour l'entreprise n°" + FormatNumeroHelper.numeroCTBToDisplay(idEntreprise) + " (civil: " + noOrganisation + ")", erreur.getMessage());
 				                             }
 
 				                             final long idEtablissementPrincipal;
 				                             {
-					                             final EvenementOrganisationErreur erreur = evt.getErreurs().get(5);
+					                             final EvenementOrganisationErreur erreur = evt.getErreurs().get(4);
 					                             Assert.assertEquals(TypeEvenementErreur.SUIVI, erreur.getType());
 
-					                             final Pattern pattern = Pattern.compile("Etablissement principal créé avec le numéro ([0-9.]+) pour le site " + noSitePrincipal + Pattern.quote(", domicile Lausanne (VD) (ofs: 5586), à partir du 25.06.2015"));
+					                             final Pattern pattern = Pattern.compile("Etablissement principal créé avec le numéro ([0-9.]+) pour le site " + noSitePrincipal + Pattern.quote(", domicile Lausanne (VD) (ofs: 5586), à partir du 24.06.2015"));
 					                             final Matcher matcher = pattern.matcher(erreur.getMessage());
 					                             Assert.assertTrue(matcher.matches());
 
 					                             idEtablissementPrincipal = Long.parseLong(matcher.group(1).replaceAll("\\.", StringUtils.EMPTY));
 				                             }
 				                             {
-					                             final EvenementOrganisationErreur erreur = evt.getErreurs().get(6);
+					                             final EvenementOrganisationErreur erreur = evt.getErreurs().get(5);
 					                             Assert.assertEquals(TypeEvenementErreur.SUIVI, erreur.getType());
-					                             Assert.assertEquals("Application de la surcharge civile entre le 25.06.2015 et le 26.06.2015 avec les valeurs du 27.06.2015", erreur.getMessage());
+					                             Assert.assertEquals("Application de la surcharge civile entre le 24.06.2015 et le 26.06.2015 avec les valeurs du 27.06.2015", erreur.getMessage());
 				                             }
 				                             {
 					                             final EvenementOrganisationErreur erreur = evt.getErreurs().get(7);

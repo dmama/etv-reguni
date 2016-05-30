@@ -24,6 +24,15 @@ import ch.vd.uniregctb.type.TypeAutoriteFiscale;
  */
 public class AjustementForsSecondairesHelper {
 
+	/**
+	 * Recalcul les fors secondaires en fonction des domiciles et fourni un résultat relatif aux for existant.
+	 *
+	 * @param tousLesDomicilesVD les domiciles vaudois à considérer dans le calcul
+	 * @param tousLesForsFiscauxSecondairesParCommune les fors secondaires existant
+	 * @param dateAuPlusTot une date de commencement au plus tôt, qui coupe s'il le faut les débuts des fors secondaires calculés.
+	 * @return les ajustements résultant du calcul
+	 * @throws MetierServiceException
+	 */
 	@NotNull
 	public static AjustementForsSecondairesResult getResultatAjustementForsSecondaires(Map<Integer, List<Domicile>> tousLesDomicilesVD,
 	                                                                                   Map<Integer, List<ForFiscalSecondaire>> tousLesForsFiscauxSecondairesParCommune, RegDate dateAuPlusTot) throws
@@ -35,9 +44,9 @@ public class AjustementForsSecondairesHelper {
 		/* Lors d'une création, une date au plus tôt signifie qu'on ne doit rien couper qui existe déjà! Sécurité -> à revoir l'utilité. */
 		if (dateAuPlusTot != null) {
 			for (Map.Entry<Integer, List<ForFiscalSecondaire>> entry : tousLesForsFiscauxSecondairesParCommune.entrySet()) {
-				final ForFiscalSecondaire existant = DateRangeHelper.rangeAt(entry.getValue(), dateAuPlusTot);
+				final ForFiscalSecondaire existant = DateRangeHelper.rangeAt(entry.getValue(), dateAuPlusTot.getOneDayBefore());
 				if (existant != null) {
-					throw new MetierServiceException(String.format("Une date au plus tôt %s est précisée pour le recalcul des fors secondaires, indiquant qu'on est en mode création. Mais " +
+					throw new MetierServiceException(String.format("Une date au plus tôt %s est précisée pour le recalcul des fors secondaires. Mais " +
 							                                                       "au moins un for secondaire valide débutant antiérieurement a été trouvé sur la commune %s. " +
 							                                                       "Début %s%s. Impossible de continuer. Veuillez signaler l'erreur.",
 					                                                       RegDateHelper.dateToDisplayString(dateAuPlusTot),

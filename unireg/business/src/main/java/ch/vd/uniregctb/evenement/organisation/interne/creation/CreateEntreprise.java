@@ -31,6 +31,7 @@ import ch.vd.uniregctb.type.CategorieEntreprise;
 public abstract class CreateEntreprise extends EvenementOrganisationInterneDeTraitement {
 
 	final private RegDate dateDeCreation;
+	final private RegDate dateOuvertureFiscale;
 	final private boolean isCreation;
 	final private CategorieEntreprise category;
 	final private SiteOrganisation sitePrincipal;
@@ -40,6 +41,7 @@ public abstract class CreateEntreprise extends EvenementOrganisationInterneDeTra
 	                           EvenementOrganisationContext context,
 	                           EvenementOrganisationOptions options,
 	                           RegDate dateDeCreation,
+	                           RegDate dateOuvertureFiscale,
 	                           boolean isCreation) throws EvenementOrganisationException {
 		super(evenement, organisation, entreprise, context, options);
 
@@ -48,6 +50,7 @@ public abstract class CreateEntreprise extends EvenementOrganisationInterneDeTra
 			throw new EvenementOrganisationException("Date nulle pour la création d'une entreprise. Probablement une erreur de programmation à ce stade..");
 		}
 		this.dateDeCreation = dateDeCreation;
+		this.dateOuvertureFiscale = dateOuvertureFiscale;
 		this.isCreation = isCreation;
 
 		category = CategorieEntrepriseHelper.getCategorieEntreprise(getOrganisation(), getDateEvt());
@@ -64,6 +67,10 @@ public abstract class CreateEntreprise extends EvenementOrganisationInterneDeTra
 	@NotNull
 	public RegDate getDateDeCreation() {
 		return dateDeCreation;
+	}
+
+	public RegDate getDateOuvertureFiscale() {
+		return dateOuvertureFiscale;
 	}
 
 	public boolean isCreation() {

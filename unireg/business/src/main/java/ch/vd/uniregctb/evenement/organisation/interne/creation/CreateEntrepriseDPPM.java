@@ -30,8 +30,9 @@ public class CreateEntrepriseDPPM extends CreateEntreprise {
 	                               EvenementOrganisationContext context,
 	                               EvenementOrganisationOptions options,
 	                               RegDate dateDeCreation,
+	                               RegDate dateOuvertureFiscale,
 	                               boolean isCreation) throws EvenementOrganisationException {
-		super(evenement, organisation, entreprise, context, options, dateDeCreation, isCreation);
+		super(evenement, organisation, entreprise, context, options, dateDeCreation, dateOuvertureFiscale, isCreation);
 	}
 
 	@Override
@@ -45,7 +46,9 @@ public class CreateEntrepriseDPPM extends CreateEntreprise {
 
 		MotifFor motifOuverture = determineMotifOuvertureFor(isCreation());
 
-		openForFiscalPrincipal(getDateDeCreation(),
+		openRegimesFiscauxOrdinairesCHVD(getEntreprise(), getOrganisation(), getDateOuvertureFiscale(), suivis);
+
+		openForFiscalPrincipal(getDateOuvertureFiscale(),
 		                       getAutoriteFiscalePrincipale(),
 		                       MotifRattachement.DOMICILE,
 		                       motifOuverture,
@@ -53,10 +56,10 @@ public class CreateEntrepriseDPPM extends CreateEntreprise {
 		                       warnings, suivis);
 
 		// Création du bouclement
-		createAddBouclement(getDateDeCreation(), isCreation(), suivis);
+		createAddBouclement(getDateOuvertureFiscale(), isCreation(), suivis);
 
 		// Ajoute les for secondaires
-		adapteForsSecondairesPourEtablissementsVD(getEntreprise(), getDateDeCreation(), warnings, suivis);
+		adapteForsSecondairesPourEtablissementsVD(getEntreprise(), warnings, suivis);
 
 		warnings.addWarning("Une vérification manuelle est requise pour nouvelle entreprise de type DP/PM.");
 	}

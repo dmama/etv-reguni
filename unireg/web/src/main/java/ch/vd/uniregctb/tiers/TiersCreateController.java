@@ -441,7 +441,7 @@ public class TiersCreateController {
 		}
 
 		// Calcul des éléments fiscaux
-		final AjustementForsSecondairesResult ajustementForsSecondaires = metierServicePM.calculAjustementForsSecondairesPourEtablissementsVD(entreprise, null);
+		final AjustementForsSecondairesResult ajustementForsSecondaires = metierServicePM.calculAjustementForsSecondairesPourEtablissementsVD(entreprise);
 
 		for (ForFiscalSecondaire forAAnnuler : ajustementForsSecondaires.getAAnnuler()) {
 			tiersService.annuleForFiscal(forAAnnuler);

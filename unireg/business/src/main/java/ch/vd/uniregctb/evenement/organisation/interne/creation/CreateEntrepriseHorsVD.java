@@ -38,11 +38,9 @@ public class CreateEntrepriseHorsVD extends EvenementOrganisationInterneDeTraite
 	protected CreateEntrepriseHorsVD(EvenementOrganisation evenement, Organisation organisation, Entreprise entreprise,
 	                                 EvenementOrganisationContext context,
 	                                 EvenementOrganisationOptions options,
-	                                 RegDate dateDeCreation,
 	                                 boolean isCreation) {
 		super(evenement, organisation, entreprise, context, options);
 
-		this.dateDeCreation = dateDeCreation;
 		this.isCreation = isCreation;
 
 		sitePrincipal = organisation.getSitePrincipal(getDateEvt()).getPayload();
@@ -71,6 +69,8 @@ public class CreateEntrepriseHorsVD extends EvenementOrganisationInterneDeTraite
 		// Création de l'entreprise
 		createEntreprise(getDateEvt(), suivis);
 
+		openRegimesFiscauxOrdinairesCHVD(getEntreprise(), getOrganisation(), getDateEvt(), suivis);
+
 		// Création de l'établissement principal
 		createAddEtablissement(sitePrincipal.getNumeroSite(), autoriteFiscalePrincipale, true, getDateEvt(), suivis);
 
@@ -94,7 +94,7 @@ public class CreateEntrepriseHorsVD extends EvenementOrganisationInterneDeTraite
 					createAddBouclement(getDateEvt(), isCreation, suivis);
 
 					// Ajoute les for secondaires
-					adapteForsSecondairesPourEtablissementsVD(getEntreprise(), getDateEvt(), warnings, suivis);
+					adapteForsSecondairesPourEtablissementsVD(getEntreprise(), warnings, suivis);
 					warnings.addWarning(String.format(messageWarning , category.getLibelle() + " (capital non nul)"));
 				}
 				break;
@@ -111,7 +111,7 @@ public class CreateEntrepriseHorsVD extends EvenementOrganisationInterneDeTraite
 				createAddBouclement(getDateEvt(), isCreation, suivis);
 
 				// Ajoute les for secondaires
-				adapteForsSecondairesPourEtablissementsVD(getEntreprise(), getDateEvt(), warnings, suivis);
+				adapteForsSecondairesPourEtablissementsVD(getEntreprise(), warnings, suivis);
 				break;
 			case SP:
 				openForFiscalPrincipal(getDateEvt(),

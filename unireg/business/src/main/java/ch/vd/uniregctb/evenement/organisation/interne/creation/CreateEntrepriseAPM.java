@@ -30,8 +30,9 @@ public class CreateEntrepriseAPM extends CreateEntreprise {
 	                              EvenementOrganisationContext context,
 	                              EvenementOrganisationOptions options,
 	                              RegDate dateDeCreation,
+	                              RegDate dateOuvertureFiscale,
 	                              boolean isCreation) throws EvenementOrganisationException {
-		super(evenement, organisation, entreprise, context, options, dateDeCreation, isCreation);
+		super(evenement, organisation, entreprise, context, options, dateDeCreation, dateOuvertureFiscale, isCreation);
 	}
 
 	@Override
@@ -45,7 +46,9 @@ public class CreateEntrepriseAPM extends CreateEntreprise {
 
 		MotifFor motifOuverture = determineMotifOuvertureFor(isCreation());
 
-		openForFiscalPrincipal(getDateDeCreation(),
+		openRegimesFiscauxOrdinairesCHVD(getEntreprise(), getOrganisation(), getDateOuvertureFiscale(), suivis);
+
+		openForFiscalPrincipal(getDateOuvertureFiscale(),
 		                       getAutoriteFiscalePrincipale(),
 		                       MotifRattachement.DOMICILE,
 		                       motifOuverture,
@@ -53,9 +56,9 @@ public class CreateEntrepriseAPM extends CreateEntreprise {
 		                       warnings, suivis);
 
 		// Création du bouclement
-		createAddBouclement(getDateDeCreation(), isCreation(), suivis);
+		createAddBouclement(getDateOuvertureFiscale(), isCreation(), suivis);
 		// Ajoute les for secondaires
-		adapteForsSecondairesPourEtablissementsVD(getEntreprise(), getDateDeCreation(), warnings, suivis);
+		adapteForsSecondairesPourEtablissementsVD(getEntreprise(), warnings, suivis);
 
 		// SIFISC-19335 - mettre à l'état "a vérifier" les annoces de créations d'APM
 		warnings.addWarning(String.format("Vérification requise après la création de l'APM n°%s.", FormatNumeroHelper.numeroCTBToDisplay(getEntreprise().getNumero())));

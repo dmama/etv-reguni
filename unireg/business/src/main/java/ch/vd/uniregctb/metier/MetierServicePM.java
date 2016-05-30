@@ -14,7 +14,19 @@ import ch.vd.uniregctb.type.TypeAutoriteFiscale;
  */
 public interface MetierServicePM {
 
-	AjustementForsSecondairesResult calculAjustementForsSecondairesPourEtablissementsVD(Entreprise entreprise, RegDate dateAuPlusTot) throws MetierServiceException;
+	/**
+	 * <p>
+	 *     Méthode qui parcoure les établissements de l'entreprise et qui ajuste les fors secondaires en prenant soin d'éviter
+	 *     les chevauchements. Elle crée les fors nécessaires, ferme ceux qui se terminent et annule ceux qui sont devenus redondants.
+	 * </p>
+	 *
+	 * <p>
+	 *     La méthode gère les fors secondaires uniquement sur VD
+	 * </p>
+	 *
+	 * @param entreprise l'entreprise concernée
+	 */
+	AjustementForsSecondairesResult calculAjustementForsSecondairesPourEtablissementsVD(Entreprise entreprise) throws MetierServiceException;
 
 	/**
 	 * <p>
