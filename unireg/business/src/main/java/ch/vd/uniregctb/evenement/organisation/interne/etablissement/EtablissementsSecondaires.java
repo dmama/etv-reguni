@@ -124,8 +124,7 @@ public class EtablissementsSecondaires extends EvenementOrganisationInterneDeTra
 						dateCreation = aCreer.getDateInscriptionRC(dateApres);
 					}
 				}
-				addEtablissementSecondaire(aCreer, dateCreation, warnings, suivis);
-				final Etablissement nouvelEtablissement = getContext().getTiersDAO().getEtablissementByNumeroSite(aCreer.getNumeroSite());
+				final Etablissement nouvelEtablissement = addEtablissementSecondaire(aCreer, dateCreation, warnings, suivis);
 				if (dateCreation.isBefore(dateApres)) {
 					appliqueDonneesCivilesSurPeriode(nouvelEtablissement, new DateRangeHelper.Range(dateCreation, dateApres.getOneDayBefore()), dateApres, warnings, suivis);
 				}

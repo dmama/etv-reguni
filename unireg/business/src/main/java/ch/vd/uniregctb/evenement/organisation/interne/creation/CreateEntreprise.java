@@ -20,6 +20,7 @@ import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationWarning
 import ch.vd.uniregctb.evenement.organisation.interne.EvenementOrganisationInterneDeTraitement;
 import ch.vd.uniregctb.tiers.CategorieEntrepriseHelper;
 import ch.vd.uniregctb.tiers.Entreprise;
+import ch.vd.uniregctb.tiers.Etablissement;
 import ch.vd.uniregctb.type.CategorieEntreprise;
 
 /**
@@ -97,7 +98,10 @@ public abstract class CreateEntreprise extends EvenementOrganisationInterneDeTra
 
 		// Création des établissement secondaires
 		for (SiteOrganisation site : getOrganisation().getSitesSecondaires(getDateEvt())) {
-			addEtablissementSecondaire(site, dateDeCreation, warnings, suivis);
+			Etablissement etablissementSecondaire = addEtablissementSecondaire(site, dateDeCreation, warnings, suivis);
+			if (dateDeCreation.isBefore(getDateEvt())) {
+				appliqueDonneesCivilesSurPeriode(etablissementSecondaire, new DateRangeHelper.Range(dateDeCreation, getDateEvt().getOneDayBefore()), getDateEvt(), warnings, suivis);
+			}
 		}
 	}
 

@@ -568,9 +568,10 @@ public abstract class EvenementOrganisationInterne {
 	 * @param site
 	 * @param warnings
 	 * @param suivis
+	 * @return l'établissement créé
 	 * @throws EvenementOrganisationException
 	 */
-	protected void addEtablissementSecondaire(SiteOrganisation site, RegDate dateDebut, EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) throws EvenementOrganisationException {
+	protected Etablissement addEtablissementSecondaire(SiteOrganisation site, RegDate dateDebut, EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) throws EvenementOrganisationException {
 		long numeroSite = site.getNumeroSite();
 		Etablissement etablissement = getEtablissementByNumeroSite(numeroSite);
 		if (etablissement != null) {
@@ -587,7 +588,7 @@ public abstract class EvenementOrganisationInterne {
 							site.getNumeroSite(), getNoOrganisation(), getOrganisation().getNom(getDateEvt())));
 		}
 
-		createAddEtablissement(site.getNumeroSite(), autoriteFiscale, false, dateDebut, suivis);
+		return createAddEtablissement(site.getNumeroSite(), autoriteFiscale, false, dateDebut, suivis);
 	}
 
 	/**
@@ -598,8 +599,9 @@ public abstract class EvenementOrganisationInterne {
 	 * @param principal Si l'établissement est principal ou secondaire
 	 * @param suivis       Le collector pour le suivi
 	 * @param dateDebut Date de début
+	 * @return l'établissement créé
 	 */
-	protected void createAddEtablissement(Long numeroSite, Domicile autoriteFiscale, boolean principal, RegDate dateDebut, EvenementOrganisationSuiviCollector suivis) {
+	protected Etablissement createAddEtablissement(Long numeroSite, Domicile autoriteFiscale, boolean principal, RegDate dateDebut, EvenementOrganisationSuiviCollector suivis) {
 		Assert.notNull(numeroSite);
 		Assert.notNull(autoriteFiscale);
 		Assert.notNull(dateDebut);
@@ -619,6 +621,7 @@ public abstract class EvenementOrganisationInterne {
 		                              autoriteFiscale.getNoOfs(),
 		                              RegDateHelper.dateToDisplayString(dateDebut)));
 		raiseStatusTo(HandleStatus.TRAITE);
+		return etablissement;
 	}
 
 	/**
