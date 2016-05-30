@@ -556,7 +556,7 @@ public class EtablissementsSecondairesProcessorTest extends AbstractEvenementOrg
 		);
 	}
 
-	@Test(timeout = 10000000L)
+	@Test(timeout = 10000L)
 	public void testFinES1DebutES2CommuneForPrincipal() throws Exception {
 
 		// Mise en place service mock
@@ -729,7 +729,7 @@ public class EtablissementsSecondairesProcessorTest extends AbstractEvenementOrg
 		);
 	}
 
-	@Test(timeout = 100000L)
+	@Test(timeout = 10000L)
 	public void testNouveauESAnterieurESCommuneForPrincipal() throws Exception {
 
 		/*
@@ -1376,7 +1376,7 @@ public class EtablissementsSecondairesProcessorTest extends AbstractEvenementOrg
 		);
 	}
 
-	@Test(timeout = 100000L)
+	@Test(timeout = 10000L)
 	public void testDemenageESAnterieurESCommuneForPrincipal() throws Exception {
 
 		/*
@@ -1569,7 +1569,7 @@ public class EtablissementsSecondairesProcessorTest extends AbstractEvenementOrg
 		);
 	}
 
-	@Test(timeout = 100000L)
+	@Test(timeout = 10000L)
 	public void testDemenageESEnDoubleForAFermerPlusTard() throws Exception {
 
 		/*
@@ -2067,7 +2067,7 @@ public class EtablissementsSecondairesProcessorTest extends AbstractEvenementOrg
 	/*
 		JIRA SIFISC-19165 : cas réel de problème de gestion des fors secondaires.
 	 */
-	@Test(timeout = 1000000L)
+	@Test(timeout = 10000L)
 	public void testPATPhotogrammetrieChgmtEtab() throws Exception {
 
 		// Mise en place service mock

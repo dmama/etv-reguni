@@ -744,7 +744,7 @@ public class DemenagementTest extends AbstractEvenementOrganisationProcessorTest
 		);
 	}
 
-	@Test(timeout = 1000000L)
+	@Test(timeout = 10000L)
 	public void testDemenagementArriveeNouveauRCEnt() throws Exception {
 
 		// Mise en place service mock
