@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2005 rel. 3 U (http://www.altova.com) by Etat de Vaud (Etat de Vaud) -->
+<!--Version  0.0.1  - 21.04.09 : JVO - Première version de spec Confirmation de delai-->
+<!--Version  0.0.2  - 14.07.09 : JVO - Ajout de la balise <OFS>-->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:include schemaLocation="DonneesTechniques.xsd"/>
+	<xs:element name="ConfirmationDelai">
+		<xs:annotation>
+			<xs:documentation>RGPC0801</xs:documentation>
+		</xs:annotation>
+		<!-- Description du schema pour l'impression du document BVR-->
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="Periode" type="typPeriode"/>
+				<xs:element name="OFS" type="xs:string"/>
+				<xs:element name="Civil" type="xs:string"/>
+				<xs:element name="DateAccord" type="typDatAAAAMMJJ"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

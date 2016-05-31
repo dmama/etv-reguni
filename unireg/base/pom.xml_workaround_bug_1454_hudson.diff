@@ -1,0 +1,16 @@
+Index: base/pom.xml
+===================================================================
+--- base/pom.xml	(revision 11611)
++++ base/pom.xml	(working copy)
+@@ -23,6 +23,11 @@
+ 		<module>../core</module>
+ 		<module>../business</module>
+ 		<module>../web</module>
++		<!-- Note: Hudson plante si ces modules sont inclus par un profile activé par une propriété (le -Pit) : 
++		           je les mets à la main ici, en attendant de la résolution du bug (https://hudson.dev.java.net/issues/show_bug.cgi?id=1454) -->
++                <module>../ubr</module>
++		<module>../business-it</module>
++		<module>../web-it</module>
+ 	</modules>
+ 
+ 	<developers>
