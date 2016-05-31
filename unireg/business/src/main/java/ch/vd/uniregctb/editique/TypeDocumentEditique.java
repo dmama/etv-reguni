@@ -30,6 +30,13 @@ public enum TypeDocumentEditique {
 	SURSIS("U1P8ADAS", "405", "sursis"),                 // ADAS = Accord de Délai Après Sommation
 
 	//
+	// Autour des questionnaires SNC
+	//
+
+	QSNC("U1PQQSNC", null, "impressionQSNC"),
+	RAPPEL_SQNC("U1PRQSNC", "999", "rappelQSNC"),       // TODO 999 à remplacer
+
+	//
 	// Autour des listes récapitulatives IS
 	//
 

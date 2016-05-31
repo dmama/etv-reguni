@@ -43,6 +43,8 @@
 		<property name="impressionEfactureHelper" ref="impressionEfactureHelper" />
 		<property name="impressionLettreBienvenueHelper" ref="impressionLettreBienvenueHelper"/>
 		<property name="impressionRappelHelper" ref="impressionRappelHelper"/>
+		<property name="impressionQSNCHelper" ref="impressionQSNCHelper"/>
+		<property name="impressionRappelQSNCHelper" ref="impressionRappelQSNCHelper"/>
 	</bean>
 
 </beans>

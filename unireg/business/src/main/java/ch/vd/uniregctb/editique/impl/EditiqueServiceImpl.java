@@ -101,6 +101,19 @@ public final class EditiqueServiceImpl implements EditiqueService, InitializingB
 		});
 	}
 
+	@Override
+	public EditiqueResultat creerDocumentImmediatementSynchroneOuRien(final String nomDocument, final TypeDocumentEditique typeDocument, FormatDocumentEditique typeFormat, FichierImpression document, boolean archive) throws EditiqueException {
+		return creerDocumentImmediatement(nomDocument, typeDocument, typeFormat, document, archive, syncReceiveTimeout, new TimeoutManager() {
+			@Override
+			public EditiqueResultat onTimeout(EditiqueResultatTimeout src) {
+				if (LOGGER.isDebugEnabled()) {
+					LOGGER.debug(String.format("Retour d'impression locale non-reçu pour document %s (%s) : Time-out", nomDocument, typeDocument));
+				}
+				return src;
+			}
+		});
+	}
+
 	/**
 	 * Sérialise au format XML et transmet l'object en paramètre au service Editique JMS d'impression directe. La gestion du timeout
 	 * est faite par le timeoutManager passé en paramètre

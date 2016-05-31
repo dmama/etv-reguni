@@ -8,6 +8,7 @@ import javax.persistence.Transient;
 import org.hibernate.annotations.Type;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesMorales;
 
 @Entity
 @DiscriminatorValue(value = "QSNC")
@@ -25,6 +26,12 @@ public class QuestionnaireSNC extends DeclarationAvecNumeroSequence {
 	@Override
 	public boolean isRappelable() {
 		return true;
+	}
+
+	@Transient
+	@Override
+	public ContribuableImpositionPersonnesMorales getTiers() {
+		return (ContribuableImpositionPersonnesMorales) super.getTiers();
 	}
 
 	/**

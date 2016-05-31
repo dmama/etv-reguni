@@ -155,7 +155,6 @@
 		<property name="transactionManager" ref="transactionManager" />
 		<property name="editiqueCompositionService" ref="editiqueCompositionService" />
 		<property name="editiqueService" ref="editiqueService" />
-		<property name="impressionDIPPHelper" ref="impressionDIPPHelper" />
 		<property name="impressionSommationDIPPHelper" ref="impressionSommationDIPPHelper" />
 		<property name="impressionSommationDIPMHelper" ref="impressionSommationDIPMHelper" />
 		<property name="periodeDAO" ref="periodeFiscaleDAO" />
@@ -172,7 +171,6 @@
 		<property name="validationService" ref="validationService" />
 		<property name="evenementDeclarationPPSender" ref="evenementDeclarationPPSender" />
 		<property name="evenementDeclarationPMSender" ref="evenementDeclarationPMSender" />
-		<property name="impressionConfirmationDelaiPPHelper" ref="impressionConfirmationDelaiPPHelper" />
 		<property name="assujettissementService" ref="assujettissementService" />
 		<property name="periodeImpositionService" ref="periodeImpositionService" />
 		<property name="ticketService" ref="ticketService"/>
@@ -192,6 +190,9 @@
 		<property name="ticketService" ref="ticketService"/>
 		<property name="delaisService" ref="delaisService"/>
 		<property name="questionnaireSNCDAO" ref="questionnaireSNCDAO"/>
+		<property name="editiqueCompositionService" ref="editiqueCompositionService"/>
+		<property name="editiqueService" ref="editiqueService"/>
+		<property name="impressionRappelHelper" ref="impressionRappelQSNCHelper"/>
 	</bean>
 
 	<bean id="statsService" class="ch.vd.uniregctb.stats.StatsServiceImpl" />

@@ -60,8 +60,6 @@ import ch.vd.uniregctb.declaration.ordinaire.pp.EnvoiSommationsDIsPPProcessor;
 import ch.vd.uniregctb.declaration.ordinaire.pp.EnvoiSommationsDIsPPResults;
 import ch.vd.uniregctb.declaration.ordinaire.pp.ImportCodesSegmentProcessor;
 import ch.vd.uniregctb.declaration.ordinaire.pp.ImportCodesSegmentResults;
-import ch.vd.uniregctb.declaration.ordinaire.pp.ImpressionConfirmationDelaiPPHelper;
-import ch.vd.uniregctb.declaration.ordinaire.pp.ImpressionDeclarationImpotPersonnesPhysiquesHelper;
 import ch.vd.uniregctb.declaration.ordinaire.pp.ImpressionSommationDeclarationImpotPersonnesPhysiquesHelper;
 import ch.vd.uniregctb.declaration.ordinaire.pp.InformationsDocumentAdapter;
 import ch.vd.uniregctb.declaration.ordinaire.pp.ListeDIsPPNonEmises;
@@ -126,7 +124,6 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 	private DelaisService delaisService;
 	private ServiceInfrastructureService infraService;
 	private AdresseService adresseService;
-	private ImpressionDeclarationImpotPersonnesPhysiquesHelper impressionDIPPHelper;
 	private ImpressionSommationDeclarationImpotPersonnesPhysiquesHelper impressionSommationDIPPHelper;
 	private ImpressionSommationDeclarationImpotPersonnesMoralesHelper impressionSommationDIPMHelper;
 	private ServiceCivilCacheWarmer serviceCivilCacheWarmer;
@@ -135,7 +132,6 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 	private ValidationService validationService;
 	private EvenementDeclarationPPSender evenementDeclarationPPSender;
 	private EvenementDeclarationPMSender evenementDeclarationPMSender;
-	private ImpressionConfirmationDelaiPPHelper impressionConfirmationDelaiPPHelper;
 	private PeriodeImpositionService periodeImpositionService;
 	private AssujettissementService assujettissementService;
 	private TicketService ticketService;
@@ -149,7 +145,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 
 	public DeclarationImpotServiceImpl(EditiqueCompositionService editiqueCompositionService, HibernateTemplate hibernateTemplate, PeriodeFiscaleDAO periodeDAO,
 	                                   TacheDAO tacheDAO, ModeleDocumentDAO modeleDAO, DelaisService delaisService, ServiceInfrastructureService infraService,
-	                                   TiersService tiersService, ImpressionDeclarationImpotPersonnesPhysiquesHelper impressionDIPPHelper, PlatformTransactionManager transactionManager,
+	                                   TiersService tiersService, PlatformTransactionManager transactionManager,
 	                                   ParametreAppService parametres, ServiceCivilCacheWarmer serviceCivilCacheWarmer, ValidationService validationService,
 	                                   EvenementFiscalService evenementFiscalService, EvenementDeclarationPPSender evenementDeclarationPPSender, PeriodeImpositionService periodeImpositionService,
 	                                   AssujettissementService assujettissementService, TicketService ticketService) {
@@ -161,7 +157,6 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 		this.delaisService = delaisService;
 		this.infraService = infraService;
 		this.tiersService = tiersService;
-		this.impressionDIPPHelper = impressionDIPPHelper;
 		this.transactionManager = transactionManager;
 		this.parametres = parametres;
 		this.serviceCivilCacheWarmer = serviceCivilCacheWarmer;
@@ -210,14 +205,6 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 		this.infraService = infraService;
 	}
 
-	public ImpressionDeclarationImpotPersonnesPhysiquesHelper getImpressionDIPPHelper() {
-		return impressionDIPPHelper;
-	}
-
-	public void setImpressionDIPPHelper(ImpressionDeclarationImpotPersonnesPhysiquesHelper impressionDIPPHelper) {
-		this.impressionDIPPHelper = impressionDIPPHelper;
-	}
-
 	public void setTiersService(TiersService tiersService) {
 		this.tiersService = tiersService;
 	}
@@ -256,10 +243,6 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 
 	public void setEvenementDeclarationPMSender(EvenementDeclarationPMSender evenementDeclarationPMSender) {
 		this.evenementDeclarationPMSender = evenementDeclarationPMSender;
-	}
-
-	public void setImpressionConfirmationDelaiPPHelper(ImpressionConfirmationDelaiPPHelper impressionConfirmationDelaiPPHelper) {
-		this.impressionConfirmationDelaiPPHelper = impressionConfirmationDelaiPPHelper;
 	}
 
 	public void setAssujettissementService(AssujettissementService assujettissementService) {

@@ -14,9 +14,11 @@ import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP;
 import ch.vd.uniregctb.declaration.DeclarationImpotSource;
 import ch.vd.uniregctb.declaration.DelaiDeclaration;
 import ch.vd.uniregctb.declaration.ModeleFeuilleDocument;
+import ch.vd.uniregctb.declaration.QuestionnaireSNC;
 import ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotService;
 import ch.vd.uniregctb.declaration.ordinaire.common.ModeleFeuilleDocumentEditique;
 import ch.vd.uniregctb.declaration.ordinaire.pp.InformationsDocumentAdapter;
+import ch.vd.uniregctb.declaration.snc.QuestionnaireSNCService;
 import ch.vd.uniregctb.documentfiscal.LettreBienvenue;
 import ch.vd.uniregctb.mouvement.BordereauMouvementDossier;
 import ch.vd.uniregctb.tiers.Contribuable;
@@ -48,6 +50,16 @@ public interface EditiqueCompositionService {
 	EditiqueResultat imprimeDIOnline(DeclarationImpotOrdinairePM declaration) throws EditiqueException, JMSException;
 
 	/**
+	 * Imprime le questionnaire SNC spécifié pour une visualisation online, et retourne le document imprimé. Il n'y a pas d'envoi vers l'inbox si c'est trop lent.
+	 * <p/>
+	 * <b>Note:</b> cette méthode n'envoie pas d'événement fiscal et ne devrait pas être appelée directement. Il faut utiliser la méthode {@link
+	 * QuestionnaireSNCService#envoiQuestionnaireSNCOnline(QuestionnaireSNC, RegDate)}.
+	 * @param questionnaire le questionnaire SNC à imprimer
+	 * @return le document imprimé
+	 */
+	EditiqueResultat imprimeQuestionnaireSNCOnline(QuestionnaireSNC questionnaire) throws EditiqueException, JMSException;
+
+	/**
 	 * Imprime la déclaration PP spécifiée pour une visualisation on-line et retourne le document imprimé (ou le fait envoyer dans l'inbox si c'est trop lent)
 	 * <p/>
 	 * <b>Note:</b> cette méthode n'envoie pas d'événement fiscal et ne devrait pas être appelée directement. Il faut utiliser la méthode
@@ -64,13 +76,23 @@ public interface EditiqueCompositionService {
 	 * Imprime la déclaration PM spécifiée pour une visualisation on-line et retourne le document imprimé (ou le fait envoyer dans l'inbox si c'est trop lent)
 	 * <p/>
 	 * <b>Note:</b> cette méthode n'envoie pas d'événement fiscal et ne devrait pas être appelée directement. Il faut utiliser la méthode
-	 * {@link DeclarationImpotService#envoiDuplicataDIOnline(DeclarationImpotOrdinairePM)}.
+	 * {@link DeclarationImpotService#envoiDuplicataDIOnline(DeclarationImpotOrdinairePM, List)}.
 	 *
 	 * @param declaration   la déclaration d'impôt ordinaire à imprimer
 	 * @param annexes       la liste des annexes
 	 * @return le document imprimé
 	 */
 	EditiqueResultat imprimeDuplicataDIOnline(DeclarationImpotOrdinairePM declaration, List<ModeleFeuilleDocumentEditique> annexes) throws EditiqueException, JMSException;
+
+	/**
+	 * Imprime le questionnaire SNC spécifié pour une visualisation online, et retourne le document imprimé (ou le fait envoyer dans l'inbox si c'est trop lent)
+	 * <p/>
+	 * <b>Note:</b> cette méthode n'envoie pas d'événement fiscal et ne devrait pas être appelée directement. Il faut utiliser la méthode {@link
+	 * QuestionnaireSNCService#envoiDuplicataQuestionnaireSNCOnline(QuestionnaireSNC)}.
+	 * @param questionnaire le questionnaire SNC à imprimer
+	 * @return le document imprimé
+	 */
+	EditiqueResultat imprimeDuplicataQuestionnaireSNCOnline(QuestionnaireSNC questionnaire) throws EditiqueException, JMSException;
 
 	/**
 	 * Imprime la déclaration PP spécifiée pour un envoi en masse. Cette méthode retourne immédiatement et du moment que la transaction est committée, il est de la responsabilité d'éditique d'imprimer la
@@ -93,6 +115,17 @@ public interface EditiqueCompositionService {
 	 * @param declaration   la déclaration d'impôt ordinaire à imprimer
 	 */
 	void imprimeDIForBatch(DeclarationImpotOrdinairePM declaration) throws EditiqueException;
+
+	/**
+	 * Imprime le questionnaire SNC spécifié pour un envoi en masse. Cette méthode retourne immédiatement, et du moment que la transaction est committée, il est de la responsabilité
+	 * d'éditique d'imprimer le questionnaire
+	 * <p/>
+	 * <b>Note:</b> cette méthode n'envoie pas d'événement fiscal et ne devrait pas être appelée directement. Il faut utiliser la méthode {@link
+	 * QuestionnaireSNCService#envoiQuestionnaireSNCOnline(QuestionnaireSNC, RegDate)}.
+	 * @param questionnaire le questionnaire SNC à imprimer
+	 * @return le document imprimé
+	 */
+	void imprimerQuestionnaireSNCForBatch(QuestionnaireSNC questionnaire) throws EditiqueException;
 
 	/**
 	 * Imprime la lr spécifiée pour un envoi en masse. Cette méthode retourne immédiatement et du moment que la transaction est committée, il est de la responsabilité d'éditique d'imprimer la
@@ -145,6 +178,16 @@ public interface EditiqueCompositionService {
 	void imprimeSommationLRForBatch(DeclarationImpotSource lr, RegDate dateEvenement) throws EditiqueException;
 
 	/**
+	 * Imprime le rappel pour le questionnaire SNC spécifié pour un envoi en masse. Cette méthode retourne immédiatement et du moment que la transaction est committée, il est de la responsabilité
+	 * d'éditique d'imprimer la déclaration
+	 * @param questionnaire le questionnaire dont on veut envoyer le rappel
+	 * @param dateTraitement date de traitement
+	 * @param dateOfficielleEnvoi date à placer sur le courrier comme date officielle d'envoi
+	 * @throws EditiqueException en cas de souci
+	 */
+	void imprimeRappelQuestionnaireSNCForBatch(QuestionnaireSNC questionnaire, RegDate dateTraitement, RegDate dateOfficielleEnvoi) throws EditiqueException;
+
+	/**
 	 * Imprime la sommation pour la déclaration d'impôt PP spécifiée on-line.
 	 *
 	 * @param declaration
@@ -173,6 +216,16 @@ public interface EditiqueCompositionService {
 	 * @throws EditiqueException
 	 */
 	EditiqueResultat imprimeSommationLROnline(DeclarationImpotSource lr, RegDate dateEvenement) throws EditiqueException, JMSException;
+
+	/**
+	 * Imprime le rappel pour le questionnaire SNC spécifié pour un envoi en masse. Cette méthode retourne immédiatement et du moment que la transaction est committée, il est de la responsabilité
+	 * d'éditique d'imprimer la déclaration
+	 * @param questionnaire le questionnaire dont on veut envoyer le rappel
+	 * @param dateTraitement date de traitement
+	 * @return le document imprimé
+	 * @throws EditiqueException en cas de souci
+	 */
+	EditiqueResultat imprimeRappelQuestionnaireSNCOnline(QuestionnaireSNC questionnaire, RegDate dateTraitement) throws EditiqueException, JMSException;
 
 	/**
 	 * Imprime la confirmation de délai pour la {@link DeclarationImpotOrdinairePP} et le {@link ch.vd.uniregctb.declaration.DelaiDeclaration} spécifié

@@ -244,6 +244,8 @@
 		<property name="ibanValidator" ref="ibanValidator"/>
 	</bean>
 
+	<bean id="impressionQSNCHelper" parent="editiqueAbstractHelper" class="ch.vd.uniregctb.declaration.snc.ImpressionQuestionnaireSNCHelperImpl"/>
+
 	<bean id="impressionSommationDIPPHelper" parent="editiqueAbstractLegacyHelper" class="ch.vd.uniregctb.declaration.ordinaire.pp.ImpressionSommationDeclarationImpotPersonnesPhysiquesHelperImpl">
 		<property name="serviceInfrastructureService" ref="serviceInfrastructureService" />
 		<property name="delaisService" ref="delaisService" />		 
@@ -252,6 +254,8 @@
 	<bean id="impressionSommationDIPMHelper" parent="editiqueAbstractHelper" class="ch.vd.uniregctb.declaration.ordinaire.pm.ImpressionSommationDeclarationImpotPersonnesMoralesHelperImpl">
 		<property name="delaisService" ref="delaisService" />
 	</bean>
+
+	<bean id="impressionRappelQSNCHelper" parent="editiqueAbstractHelper" class="ch.vd.uniregctb.declaration.snc.ImpressionRappelQuestionnaireSNCHelperImpl"/>
 
     <bean id="impressionConfirmationDelaiPPHelper" parent="editiqueAbstractLegacyHelper" class="ch.vd.uniregctb.declaration.ordinaire.pp.ImpressionConfirmationDelaiPPHelperImpl"/>
 

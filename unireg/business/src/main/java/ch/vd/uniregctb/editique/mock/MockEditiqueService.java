@@ -19,6 +19,11 @@ public class MockEditiqueService implements EditiqueService {
 	}
 
 	@Override
+	public EditiqueResultat creerDocumentImmediatementSynchroneOuRien(String nomDocument, TypeDocumentEditique typeDocument, FormatDocumentEditique typeFormat, FichierImpression document, boolean archive) throws EditiqueException {
+		return null;
+	}
+
+	@Override
 	public EditiqueResultat creerDocumentImmediatementSynchroneOuInbox(String nomDocument, TypeDocumentEditique typeDocument, FormatDocumentEditique typeFormat, XmlObject document, boolean archive, String description) throws EditiqueException {
 		return null;
 	}

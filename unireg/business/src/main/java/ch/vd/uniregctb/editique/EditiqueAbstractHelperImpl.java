@@ -26,6 +26,8 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.interfaces.common.Adresse;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative;
+import ch.vd.unireg.interfaces.infra.data.Commune;
+import ch.vd.unireg.interfaces.infra.data.Pays;
 import ch.vd.uniregctb.adresse.AdresseEnvoi;
 import ch.vd.uniregctb.adresse.AdresseEnvoiDetaillee;
 import ch.vd.uniregctb.adresse.AdresseException;
@@ -42,11 +44,13 @@ import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesMorales;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
+import ch.vd.uniregctb.tiers.LocalisationDatee;
 import ch.vd.uniregctb.tiers.Mandat;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.MotifFor;
+import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeMandat;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 
@@ -56,7 +60,8 @@ public abstract class EditiqueAbstractHelperImpl implements EditiqueAbstractHelp
 
 	public static final String IMPOT_BENEFICE_CAPITAL = "IMPÔT SUR LE BÉNÉFICE ET LE CAPITAL";
 	public static final String CODE_PORTE_ADRESSE_MANDATAIRE = "M";
-	public static final String VERSION_XSD = "16.4";
+
+	public static final String VERSION_XSD = "16.5";
 
 	public static final String TYPE_DOCUMENT_CO = "CO";     // pour "courrier", apparemment
 	public static final String TYPE_DOCUMENT_DI = "DI";
@@ -344,6 +349,8 @@ public abstract class EditiqueAbstractHelperImpl implements EditiqueAbstractHelp
 		                                      original.getAccordDelaiApresSommation(),
 		                                      original.getLettreBienvenue(),
 		                                      original.getLettreRappel(),
+		                                      original.getQuestSNC(),
+		                                      original.getQuestSNCRappel(),
 		                                      original.getInfoRoutage());
 	}
 
@@ -393,5 +400,20 @@ public abstract class EditiqueAbstractHelperImpl implements EditiqueAbstractHelp
 			}
 		}
 		return lignesCopiesA;
+	}
+
+	@NotNull
+	protected final String getNomCommuneOuPays(LocalisationDatee localisationDatee) {
+		if (localisationDatee != null && localisationDatee.getTypeAutoriteFiscale() == TypeAutoriteFiscale.PAYS_HS) {
+			final Pays pays = infraService.getPays(localisationDatee.getNumeroOfsAutoriteFiscale(), localisationDatee.getDateFin());
+			return String.format("Etranger (%s)", pays != null ? pays.getNomCourt() : "?");
+		}
+		else if (localisationDatee != null && localisationDatee.getTypeAutoriteFiscale() != null) {
+			final Commune commune = infraService.getCommuneByNumeroOfs(localisationDatee.getNumeroOfsAutoriteFiscale(), localisationDatee.getDateFin());
+			return commune != null ? commune.getNomOfficielAvecCanton() : "Suisse (?)";
+		}
+		else {
+			return "-";
+		}
 	}
 }

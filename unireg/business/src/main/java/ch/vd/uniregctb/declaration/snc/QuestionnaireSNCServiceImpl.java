@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.declaration.snc;
 
+import javax.jms.JMSException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashSet;
@@ -22,10 +23,10 @@ import ch.vd.uniregctb.declaration.EtatDeclarationRetournee;
 import ch.vd.uniregctb.declaration.PeriodeFiscaleDAO;
 import ch.vd.uniregctb.declaration.QuestionnaireSNC;
 import ch.vd.uniregctb.declaration.QuestionnaireSNCDAO;
+import ch.vd.uniregctb.editique.EditiqueCompositionService;
 import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.EditiqueResultat;
-import ch.vd.uniregctb.editique.impl.EditiqueResultatReroutageInboxImpl;
-import ch.vd.uniregctb.editique.impl.EditiqueResultatTimeoutImpl;
+import ch.vd.uniregctb.editique.EditiqueService;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.parametrage.DelaisService;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
@@ -53,6 +54,9 @@ public class QuestionnaireSNCServiceImpl implements QuestionnaireSNCService {
 	private TicketService ticketService;
 	private QuestionnaireSNCDAO questionnaireSNCDAO;
 	private DelaisService delaisService;
+	private EditiqueCompositionService editiqueCompositionService;
+	private EditiqueService editiqueService;
+	private ImpressionRappelQuestionnaireSNCHelper impressionRappelHelper;
 
 	public void setParametreAppService(ParametreAppService parametreAppService) {
 		this.parametreAppService = parametreAppService;
@@ -100,6 +104,18 @@ public class QuestionnaireSNCServiceImpl implements QuestionnaireSNCService {
 
 	public void setDelaisService(DelaisService delaisService) {
 		this.delaisService = delaisService;
+	}
+
+	public void setEditiqueCompositionService(EditiqueCompositionService editiqueCompositionService) {
+		this.editiqueCompositionService = editiqueCompositionService;
+	}
+
+	public void setEditiqueService(EditiqueService editiqueService) {
+		this.editiqueService = editiqueService;
+	}
+
+	public void setImpressionRappelHelper(ImpressionRappelQuestionnaireSNCHelper impressionRappelHelper) {
+		this.impressionRappelHelper = impressionRappelHelper;
 	}
 
 	@Override
@@ -187,47 +203,64 @@ public class QuestionnaireSNCServiceImpl implements QuestionnaireSNCService {
 
 	@Override
 	public EditiqueResultat envoiQuestionnaireSNCOnline(QuestionnaireSNC questionnaire, RegDate dateEvenement) throws DeclarationException {
-		// TODO envoi à l'éditique (et inbox si pas de retour)
 		// TODO envoi d'un événement fiscal ?
-		return new EditiqueResultatTimeoutImpl("IDBIDON");
+		try {
+			return editiqueCompositionService.imprimeQuestionnaireSNCOnline(questionnaire);
+		}
+		catch (EditiqueException | JMSException e) {
+			throw new DeclarationException(e);
+		}
 	}
 
 	@Override
 	public void envoiQuestionnaireSNCForBatch(QuestionnaireSNC questionnaire) throws DeclarationException {
-		// TODO envoi à l'éditique
 		// TODO envoi d'un événement fiscal ?
+		try {
+			editiqueCompositionService.imprimerQuestionnaireSNCForBatch(questionnaire);
+		}
+		catch (EditiqueException e) {
+			throw new DeclarationException(e);
+		}
 	}
 
 	@Override
 	public EditiqueResultat envoiDuplicataQuestionnaireSNCOnline(QuestionnaireSNC questionnaire) throws DeclarationException {
-		// TODO envoi à l'éditique (et inbox si pas de retour)
-		return new EditiqueResultatReroutageInboxImpl("IDBIDON");
+		try {
+			return editiqueCompositionService.imprimeDuplicataQuestionnaireSNCOnline(questionnaire);
+		}
+		catch (EditiqueException | JMSException e) {
+			throw new DeclarationException(e);
+		}
 	}
 
 	@Override
 	public EditiqueResultat envoiRappelQuestionnaireSNCOnline(QuestionnaireSNC questionnaire, RegDate dateTraitement) throws DeclarationException {
-		final EtatDeclarationRappelee rappel = new EtatDeclarationRappelee(dateTraitement, dateTraitement);
-		questionnaire.addEtat(rappel);
-
-		// TODO envoi à l'éditique (avec archivage... + envoi en inbox si pas de retour assez rapide)
 		// TODO envoi d'un événement fiscal ?
-		return new EditiqueResultatTimeoutImpl("IDBIDON");
+		questionnaire.addEtat(new EtatDeclarationRappelee(dateTraitement, dateTraitement));
+		try {
+			return editiqueCompositionService.imprimeRappelQuestionnaireSNCOnline(questionnaire, dateTraitement);
+		}
+		catch (EditiqueException | JMSException e) {
+			throw new DeclarationException(e);
+		}
 	}
 
 	@Override
 	public void envoiRappelQuestionnaireSNCForBatch(QuestionnaireSNC questionnaire, RegDate dateTraitement, RegDate dateExpedition) throws DeclarationException {
-		questionnaire.addEtat(new EtatDeclarationRappelee(dateTraitement, dateExpedition));
-
-		// TODO envoi à l'éditique
 		// TODO envoi d'un événement fiscal ?
+		questionnaire.addEtat(new EtatDeclarationRappelee(dateTraitement, dateExpedition));
+		try {
+			editiqueCompositionService.imprimeRappelQuestionnaireSNCForBatch(questionnaire, dateTraitement, dateExpedition);
+		}
+		catch (EditiqueException e) {
+			throw new DeclarationException(e);
+		}
 	}
 
 	@Override
 	public EditiqueResultat getCopieConformeRappelQuestionnaireSNC(QuestionnaireSNC questionnaire) throws EditiqueException {
-		// TODO demande de copie conforme à l'éditique
-		return new EditiqueResultatTimeoutImpl("IDBIDON");
-//		final String cleArchivage = impressionSommationDIPMHelper.construitCleArchivageDocument(di);
-//		return editiqueService.getPDFDeDocumentDepuisArchive(di.getTiers().getNumero(), impressionSommationDIPMHelper.getTypeDocumentEditique(), cleArchivage);
+		final String cleArchivage = impressionRappelHelper.construitCleArchivageDocument(questionnaire);
+		return editiqueService.getPDFDeDocumentDepuisArchive(questionnaire.getTiers().getNumero(), impressionRappelHelper.getTypeDocumentEditique(questionnaire), cleArchivage);
 	}
 
 	@Override

@@ -30,6 +30,7 @@ import ch.vd.uniregctb.declaration.DelaiDeclaration;
 import ch.vd.uniregctb.declaration.ModeleDocument;
 import ch.vd.uniregctb.declaration.ModeleFeuilleDocument;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
+import ch.vd.uniregctb.declaration.QuestionnaireSNC;
 import ch.vd.uniregctb.declaration.ordinaire.common.ModeleFeuilleDocumentEditique;
 import ch.vd.uniregctb.declaration.ordinaire.pm.ImpressionDeclarationImpotPersonnesMoralesHelper;
 import ch.vd.uniregctb.declaration.ordinaire.pm.ImpressionLettreDecisionDelaiPMHelper;
@@ -41,6 +42,8 @@ import ch.vd.uniregctb.declaration.ordinaire.pp.ImpressionDeclarationImpotPerson
 import ch.vd.uniregctb.declaration.ordinaire.pp.ImpressionSommationDIHelperParams;
 import ch.vd.uniregctb.declaration.ordinaire.pp.ImpressionSommationDeclarationImpotPersonnesPhysiquesHelper;
 import ch.vd.uniregctb.declaration.ordinaire.pp.InformationsDocumentAdapter;
+import ch.vd.uniregctb.declaration.snc.ImpressionQuestionnaireSNCHelper;
+import ch.vd.uniregctb.declaration.snc.ImpressionRappelQuestionnaireSNCHelper;
 import ch.vd.uniregctb.declaration.source.ImpressionListeRecapHelper;
 import ch.vd.uniregctb.declaration.source.ImpressionSommationLRHelper;
 import ch.vd.uniregctb.documentfiscal.ImpressionLettreBienvenueHelper;
@@ -86,6 +89,8 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 	private ImpressionDocumentEfactureHelper impressionEfactureHelper;
 	private ImpressionLettreBienvenueHelper impressionLettreBienvenueHelper;
 	private ImpressionRappelHelper impressionRappelHelper;
+	private ImpressionQuestionnaireSNCHelper impressionQSNCHelper;
+	private ImpressionRappelQuestionnaireSNCHelper impressionRappelQSNCHelper;
 
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setEditiqueService(EditiqueService editiqueService) {
@@ -159,6 +164,16 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setImpressionRappelHelper(ImpressionRappelHelper impressionRappelHelper) {
 		this.impressionRappelHelper = impressionRappelHelper;
+	}
+
+	@SuppressWarnings({"UnusedDeclaration"})
+	public void setImpressionQSNCHelper(ImpressionQuestionnaireSNCHelper impressionQSNCHelper) {
+		this.impressionQSNCHelper = impressionQSNCHelper;
+	}
+
+	@SuppressWarnings({"UnusedDeclaration"})
+	public void setImpressionRappelQSNCHelper(ImpressionRappelQuestionnaireSNCHelper impressionRappelQSNCHelper) {
+		this.impressionRappelQSNCHelper = impressionRappelQSNCHelper;
 	}
 
 	private static List<ModeleFeuilleDocumentEditique> buildDefaultAnnexes(DeclarationImpotOrdinaire di) {
@@ -583,5 +598,72 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 		final String nomDocument = impressionEfactureHelper.construitIdDocument(params);
 		editiqueService.creerDocumentParBatch(nomDocument, prefixe, document, true);
 		return impressionEfactureHelper.construitIdArchivageDocument(params);
+	}
+
+	@Override
+	public EditiqueResultat imprimeQuestionnaireSNCOnline(QuestionnaireSNC questionnaire) throws EditiqueException, JMSException {
+		final FichierImpression root = new FichierImpression();
+		final FichierImpression.Document document = impressionQSNCHelper.buildDocument(questionnaire);
+		root.getDocument().add(document);
+		final TypeDocumentEditique typeDocument = impressionQSNCHelper.getTypeDocumentEditique(questionnaire);
+		final String nomDocument = impressionQSNCHelper.getIdDocument(questionnaire);
+		return editiqueService.creerDocumentImmediatementSynchroneOuRien(nomDocument, typeDocument, FormatDocumentEditique.PCL, root, false);
+	}
+
+	@Override
+	public EditiqueResultat imprimeDuplicataQuestionnaireSNCOnline(QuestionnaireSNC questionnaire) throws EditiqueException, JMSException {
+		final FichierImpression root = new FichierImpression();
+		final FichierImpression.Document document = impressionQSNCHelper.buildDocument(questionnaire);
+		root.getDocument().add(document);
+		final TypeDocumentEditique typeDocument = impressionQSNCHelper.getTypeDocumentEditique(questionnaire);
+		final String nomDocument = impressionQSNCHelper.getIdDocument(questionnaire);
+
+		final String description = String.format("Questionnaire SNC %d du contribuable %s",
+		                                         questionnaire.getPeriode().getAnnee(),
+		                                         FormatNumeroHelper.numeroCTBToDisplay(questionnaire.getTiers().getNumero()));
+
+		return editiqueService.creerDocumentImmediatementSynchroneOuInbox(nomDocument, typeDocument, FormatDocumentEditique.PCL, root, false, description);
+	}
+
+	@Override
+	public void imprimerQuestionnaireSNCForBatch(QuestionnaireSNC questionnaire) throws EditiqueException {
+		final FichierImpression root = new FichierImpression();
+		final FichierImpression.Document document = impressionQSNCHelper.buildDocument(questionnaire);
+		root.getDocument().add(document);
+		final TypeDocumentEditique typeDocument = impressionQSNCHelper.getTypeDocumentEditique(questionnaire);
+		final String nomDocument = impressionQSNCHelper.getIdDocument(questionnaire);
+		editiqueService.creerDocumentParBatch(nomDocument, typeDocument, root, false);
+	}
+
+	@Override
+	public void imprimeRappelQuestionnaireSNCForBatch(QuestionnaireSNC questionnaire, RegDate dateTraitement, RegDate dateOfficielleEnvoi) throws EditiqueException {
+		final FichierImpression root = new FichierImpression();
+		final FichierImpression.Document original = impressionRappelQSNCHelper.buildDocument(questionnaire, dateTraitement, dateOfficielleEnvoi);
+		final FichierImpression.Document copieMandataire = impressionRappelQSNCHelper.buildCopieMandataire(original, questionnaire.getTiers(), RegDate.get());
+		root.getDocument().add(original);
+		if (copieMandataire != null) {
+			root.getDocument().add(copieMandataire);
+		}
+		final TypeDocumentEditique typeDocument = impressionRappelQSNCHelper.getTypeDocumentEditique(questionnaire);
+		final String nomDocument = impressionRappelQSNCHelper.getIdDocument(questionnaire);
+		editiqueService.creerDocumentParBatch(nomDocument, typeDocument, root, true);
+	}
+
+	@Override
+	public EditiqueResultat imprimeRappelQuestionnaireSNCOnline(QuestionnaireSNC questionnaire, RegDate dateTraitement) throws EditiqueException {
+		final FichierImpression root = new FichierImpression();
+		final FichierImpression.Document original = impressionRappelQSNCHelper.buildDocument(questionnaire, dateTraitement, dateTraitement);
+		final FichierImpression.Document copieMandataire = impressionRappelQSNCHelper.buildCopieMandataire(original, questionnaire.getTiers(), RegDate.get());
+		root.getDocument().add(original);
+		if (copieMandataire != null) {
+			root.getDocument().add(copieMandataire);
+		}
+		final TypeDocumentEditique typeDocument = impressionRappelQSNCHelper.getTypeDocumentEditique(questionnaire);
+		final String nomDocument = impressionRappelQSNCHelper.getIdDocument(questionnaire);
+
+		final String description = String.format("Rappel du questionnaire SNC %d du contribuable %s",
+		                                         questionnaire.getPeriode().getAnnee(),
+		                                         FormatNumeroHelper.numeroCTBToDisplay(questionnaire.getTiers().getNumero()));
+		return editiqueService.creerDocumentImmediatementSynchroneOuInbox(nomDocument, typeDocument, FormatDocumentEditique.PDF, root, true, description);
 	}
 }

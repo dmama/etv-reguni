@@ -32,8 +32,6 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.interfaces.common.Adresse;
 import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative;
-import ch.vd.unireg.interfaces.infra.data.Commune;
-import ch.vd.unireg.interfaces.infra.data.Pays;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
 import ch.vd.uniregctb.adresse.AdresseEnvoi;
 import ch.vd.uniregctb.adresse.AdresseEnvoiDetaillee;
@@ -58,10 +56,8 @@ import ch.vd.uniregctb.tiers.DomicileEtablissement;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.Etablissement;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipalPM;
-import ch.vd.uniregctb.tiers.LocalisationDatee;
 import ch.vd.uniregctb.type.GroupeTypesDocumentBatchLocal;
 import ch.vd.uniregctb.type.ModeleFeuille;
-import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeDocument;
 
 public class ImpressionDeclarationImpotPersonnesMoralesHelperImpl extends EditiqueAbstractHelperImpl implements ImpressionDeclarationImpotPersonnesMoralesHelper {
@@ -237,21 +233,6 @@ public class ImpressionDeclarationImpotPersonnesMoralesHelperImpl extends Editiq
 		lignes.add(cedi.getNomCourt() + ' ' + ServiceInfrastructureService.noOIPM);
 		lignes.add(adresse.getNumeroPostal() + ' ' + adresse.getLocalite());
 		return new CTypeAdresse(lignes);
-	}
-
-	@NotNull
-	private String getNomCommuneOuPays(LocalisationDatee localisationDatee) {
-		if (localisationDatee != null && localisationDatee.getTypeAutoriteFiscale() == TypeAutoriteFiscale.PAYS_HS) {
-			final Pays pays = infraService.getPays(localisationDatee.getNumeroOfsAutoriteFiscale(), localisationDatee.getDateFin());
-			return String.format("Etranger (%s)", pays != null ? pays.getNomCourt() : "?");
-		}
-		else if (localisationDatee != null && localisationDatee.getTypeAutoriteFiscale() != null) {
-			final Commune commune = infraService.getCommuneByNumeroOfs(localisationDatee.getNumeroOfsAutoriteFiscale(), localisationDatee.getDateFin());
-			return commune != null ? commune.getNomOfficielAvecCanton() : "Suisse (?)";
-		}
-		else {
-			return "-";
-		}
 	}
 
 	/**
