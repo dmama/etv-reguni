@@ -14,5 +14,6 @@
 	<bean id="impressionSommationDIPMHelper" class="ch.vd.uniregctb.declaration.ordinaire.pm.MockImpressionSommationDIPersonnesMoralesHelper" />
 	<bean id="impressionSommationLRHelper" class="ch.vd.uniregctb.declaration.source.MockImpressionSommationLRHelper" />
 	<bean id="impressionConfirmationDelaiPPHelper" class="ch.vd.uniregctb.declaration.ordinaire.pp.MockImpressionConfirmationDelaiPPHelper" />
+	<bean id="impressionRappelQSNCHelper" class="ch.vd.uniregctb.declaration.snc.MockImpressionRappelQuestionnaireSNCHelper"/>
 
 </beans>
