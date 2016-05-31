@@ -416,4 +416,8 @@ public abstract class EditiqueAbstractHelperImpl implements EditiqueAbstractHelp
 			return "-";
 		}
 	}
+
+	protected final String getNomRaisonSociale(Tiers tiers) {
+		return tiersService.getNomRaisonSociale(tiers);
+	}
 }

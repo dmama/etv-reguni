@@ -62,7 +62,8 @@ public class ImpressionRappelQuestionnaireSNCHelperImpl extends EditiqueAbstract
 		final Integer annee = questionnaire.getPeriode().getAnnee();
 		final ForFiscalPrincipal ffp = getForPrincipalInteressant(questionnaire.getTiers(), annee);
 		final String siege = getNomCommuneOuPays(ffp);
-		return new CTypeQuestSNCRappel(XmlUtils.regdate2xmlcal(RegDate.get(annee)), siege);
+		final String raisonSociale = getNomRaisonSociale(questionnaire.getTiers());
+		return new CTypeQuestSNCRappel(XmlUtils.regdate2xmlcal(RegDate.get(annee)), raisonSociale, siege);
 	}
 
 	@Nullable
