@@ -101,6 +101,7 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 		list.add(new DemenagerSiege());
 		list.add(new TerminerActivite());
 		list.add(new ReprendreActivitePartielle());
+		list.add(new ReinscriptionRegistreCommerce());
 		list.add(new AbsorberEntreprises());
 		list.add(new ScinderEntreprise());
 		list.add(new TransfererPatrimoine());
@@ -1394,6 +1395,32 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 		@Override
 		public String getActionUrl() {
 			return "goto:/processuscomplexe/annulation/transfertpatrimoine/choix-date.do?emettrice=";
+		}
+	}
+
+	private static class ReinscriptionRegistreCommerce implements Action {
+		@Override
+		public boolean isGranted() {
+			return SecurityHelper.isAnyGranted(securityProvider, Role.REINSCRIPTION_RC_ENTREPRISE);
+		}
+
+		@Override
+		public boolean isValide(Tiers tiers) {
+			return !tiers.isAnnule()
+					&& tiers instanceof Entreprise
+					&& ((Entreprise) tiers).getEtatActuel() != null
+					&& ((Entreprise) tiers).getEtatActuel().getType() == TypeEtatEntreprise.RADIEE_RC
+					&& SecurityHelper.getDroitAcces(securityProvider, tiers) == Niveau.ECRITURE;
+		}
+
+		@Override
+		public String getLabel() {
+			return "Traiter une ré-inscription au RC";
+		}
+
+		@Override
+		public String getActionUrl() {
+			return "goto:/processuscomplexe/reinscriptionrc/start.do?id=";
 		}
 	}
 }
