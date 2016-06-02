@@ -129,11 +129,11 @@
 							<tr class="<unireg:nextRowClass/>">
 								<td><fmt:message key="label.date.debut.exercice.commercial"/></td>
 								<td colspan="3">
-									<div style="float: left; margin-right: 2em; width: 20%;">
-										<form:radiobutton path="civil.typeDateDebutExerciceCommercial" value="DEFAULT" onclick="CreateEntreprise.onDateDebutExerciceDefautChange(true);" tabindex="6"/><fmt:message key="label.debut.annee.ouverture"/><br/>
-										<form:radiobutton path="civil.typeDateDebutExerciceCommercial" value="EXPLICT" onclick="CreateEntreprise.onDateDebutExerciceDefautChange(false);" tabindex="7"/><fmt:message key="label.valeur.explicite"/>
+									<div style="float: left; margin-right: 2em; width: 30%;">
+										<form:radiobutton id="debutExComm_DEFAULT" path="civil.typeDateDebutExerciceCommercial" value="DEFAULT" onclick="CreateEntreprise.onDateDebutExerciceDefautChange(true);" tabindex="6"/><fmt:message key="label.debut.annee.ouverture"/><br/>
+										<form:radiobutton id="debutExComm_EXPLICIT" path="civil.typeDateDebutExerciceCommercial" value="EXPLICT" onclick="CreateEntreprise.onDateDebutExerciceDefautChange(false);" tabindex="7"/><fmt:message key="label.valeur.explicite"/>
 									</div>
-									<div style="margin-top: 1em; display: none;" id="specificDateDebutExercice">
+									<div style="margin-top: 0.5em; display: none;" id="specificDateDebutExercice">
 										<jsp:include page="/WEB-INF/jsp/include/inputCalendar.jsp">
 											<jsp:param name="path" value="civil.dateDebutExerciceCommercial" />
 											<jsp:param name="id" value="dateDebutExerciceCommercial"  />
@@ -147,11 +147,11 @@
 							<tr class="<unireg:nextRowClass/>">
 								<td><fmt:message key="label.date.fondation"/></td>
 								<td colspan="3">
-									<div style="float: left; margin-right: 2em; width: 20%;">
-										<form:radiobutton path="civil.typeDateFondation" value="DEFAULT" onclick="CreateEntreprise.onDateFondationDefautChange(true);" tabindex="9"/><fmt:message key="label.identique.date.ouverture"/><br/>
-										<form:radiobutton path="civil.typeDateFondation" value="EXPLICT" onclick="CreateEntreprise.onDateFondationDefautChange(false);" tabindex="10"/><fmt:message key="label.valeur.explicite"/>
+									<div style="float: left; margin-right: 2em; width: 30%;">
+										<form:radiobutton id="typeDateFondation_DEFAULT" path="civil.typeDateFondation" value="DEFAULT" onclick="CreateEntreprise.onDateFondationDefautChange(true);" tabindex="9"/><fmt:message key="label.identique.date.ouverture"/><br/>
+										<form:radiobutton id="typeDateFondation_EXPLICIT" path="civil.typeDateFondation" value="EXPLICT" onclick="CreateEntreprise.onDateFondationDefautChange(false);" tabindex="10"/><fmt:message key="label.valeur.explicite"/>
 									</div>
-									<div style="margin-top: 1em; display: none;" id="specificDateFondation">
+									<div style="margin-top: 0.5em; display: none;" id="specificDateFondation">
 										<jsp:include page="/WEB-INF/jsp/include/inputCalendar.jsp">
 											<jsp:param name="path" value="civil.dateFondation" />
 											<jsp:param name="id" value="dateFondation"  />
@@ -365,6 +365,8 @@
 				// on initialise l'auto-completion de l'autorité fiscale
 				selectAutoriteFiscale('${data.civil.typeAutoriteFiscale}', true);
 
+				$('#typeDateFondation_${data.civil.typeDateDebutExerciceCommercial}').prop('checked', true);
+				$('#debutExComm_${data.civil.typeDateDebutExerciceCommercial}').prop('checked', true);
 				CreateEntreprise.onDateFondationDefautChange(${data.civil.typeDateFondation == 'DEFAULT'});
 				CreateEntreprise.onDateDebutExerciceDefautChange(${data.civil.typeDateDebutExerciceCommercial == 'DEFAULT'});
 			});
