@@ -955,7 +955,60 @@ public class CreateEntreprisePMProcessorTest extends AbstractEvenementOrganisati
 				                             Assert.assertNull(tiersDAO.getEntrepriseByNumeroOrganisation(evt.getNoOrganisation()));
 
 				                             Assert.assertEquals(2, evt.getErreurs().size());
-				                             Assert.assertEquals(String.format("L'organisation n°%s est présente sur Vaud (Lausanne (VD)) depuis plus de 15 jours et devrait être déjà connue d'Unireg. Il est très probable que l'identification n'ait pas fonctionné. Veuillez traiter le cas à la main.",
+				                             Assert.assertEquals(String.format("L'organisation n°%s est présente sur Vaud (Lausanne (VD)) depuis plus de 15 jours et devrait être déjà connue d'Unireg. L'identification n'a probablement pas fonctionné. Veuillez traiter le cas à la main.",
+				                                                               noOrganisation),
+				                                                 evt.getErreurs().get(1).getMessage());
+
+				                             return null;
+			                             }
+		                             }
+		);
+	}
+
+	// SIFISC-19471 - Ne pas vérifier la présence antérieur d'une entreprise PP.
+	@Test(timeout = 10000L)
+	public void testEntrepriseVDDejaConnueRCEntNonIdentifieePP() throws Exception {
+
+		// Mise en place service mock
+		final Long noOrganisation = 101202100L;
+
+		serviceOrganisation.setUp(new MockServiceOrganisation() {
+			@Override
+			protected void init() {
+				addOrganisation(
+						MockOrganisationFactory.createSimpleEntrepriseRC(noOrganisation, noOrganisation + 1000000, "Synergy Jean Pierre", RegDate.get(2015, 12, 5), null, FormeLegale.N_0101_ENTREPRISE_INDIVIDUELLE,
+						                                                 MockCommune.Lausanne));
+			}
+		});
+
+		// Création de l'événement
+		final Long noEvenement = 12344321L;
+
+		// Persistence événement
+		doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus transactionStatus) {
+				final EvenementOrganisation event = createEvent(noEvenement, noOrganisation, TypeEvenementOrganisation.FOSC_NOUVELLE_ENTREPRISE, RegDate.get(2016, 5, 23), A_TRAITER);
+				return hibernateTemplate.merge(event).getId();
+			}
+		});
+
+		// Traitement synchrone de l'événement
+		traiterEvenements(noOrganisation);
+
+		// Vérification du traitement de l'événement
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			                             @Override
+			                             public Object doInTransaction(TransactionStatus status) {
+
+				                             final EvenementOrganisation evt = getUniqueEvent(noEvenement);
+				                             Assert.assertNotNull(evt);
+				                             Assert.assertEquals(EtatEvenementOrganisation.TRAITE, evt.getEtat());
+
+				                             Assert.assertNull(tiersDAO.getEntrepriseByNumeroOrganisation(evt.getNoOrganisation()));
+
+				                             Assert.assertEquals(2, evt.getErreurs().size());
+				                             Assert.assertEquals(String.format("L'organisation n°%s est une entreprise individuelle vaudoise. Pas de traitement.",
 				                                                               noOrganisation),
 				                                                 evt.getErreurs().get(1).getMessage());
 
