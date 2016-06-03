@@ -2,6 +2,7 @@ package ch.vd.uniregctb.evenement.organisation.interne;
 
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
+import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationAbortException;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationContext;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationException;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationOptions;
@@ -15,7 +16,7 @@ public class CappingEnErreur extends EvenementOrganisationInterneDeTraitement {
 	/**
 	 * Exception lancée dans le cadre du capping
 	 */
-	public static class CappingException extends EvenementOrganisationException {
+	public static class CappingException extends EvenementOrganisationAbortException {
 		public CappingException(String message) {
 			super(message);
 		}
@@ -39,7 +40,7 @@ public class CappingEnErreur extends EvenementOrganisationInterneDeTraitement {
 	@Override
 	public void doHandle(EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) throws EvenementOrganisationException {
 		// et boom !!
-		// il faut faire sauter la transaction mais essayer de conserver les messages récupérés jusque là... (d'où la classe spécifique d'exception lancée)
+		// il faut faire sauter la transaction mais conserver les messages récupérés jusque là... (d'où la classe spécifique d'exception lancée)
 		throw new CappingException("Evénement explicitement placé 'en erreur' par configuration applicative. Toutes les modifications apportées pendant le traitement sont abandonnées.");
 	}
 }

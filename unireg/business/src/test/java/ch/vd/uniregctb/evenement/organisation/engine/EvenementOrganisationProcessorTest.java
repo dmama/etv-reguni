@@ -157,9 +157,9 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 
 		// Verification de l'événement interne créé
 		List<EvenementOrganisationInterne> listEvtInterne = getListeEvtInternesCrees(translator);
-		Assert.assertEquals(2, listEvtInterne.size());
+		Assert.assertEquals(3, listEvtInterne.size());
 		Assert.assertTrue(listEvtInterne.get(0) instanceof MessageSuiviPreExecution);
-		Assert.assertTrue(listEvtInterne.get(1) instanceof Indexation);
+		Assert.assertTrue(listEvtInterne.get(2) instanceof Indexation);
 
 		// Vérification du traitement de l'événement
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
@@ -234,10 +234,10 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 
 		// Verification de l'événement interne créé
 		final List<EvenementOrganisationInterne> listEvtInterne = getListeEvtInternesCrees(translator);
-		Assert.assertEquals(3, listEvtInterne.size());
+		Assert.assertEquals(4, listEvtInterne.size());
 		Assert.assertTrue(listEvtInterne.get(0) instanceof MessageSuiviPreExecution);
-		Assert.assertTrue(listEvtInterne.get(1) instanceof Indexation);
-		Assert.assertTrue(listEvtInterne.get(2) instanceof CappingAVerifier);
+		Assert.assertTrue(listEvtInterne.get(2) instanceof Indexation);
+		Assert.assertTrue(listEvtInterne.get(3) instanceof CappingAVerifier);
 
 		// Vérification du traitement de l'événement
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
@@ -318,10 +318,10 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 
 		// Verification de l'événement interne créé
 		final List<EvenementOrganisationInterne> listEvtInterne = getListeEvtInternesCrees(translator);
-		Assert.assertEquals(3, listEvtInterne.size());
+		Assert.assertEquals(4, listEvtInterne.size());
 		Assert.assertTrue(listEvtInterne.get(0) instanceof MessageSuiviPreExecution);
-		Assert.assertTrue(listEvtInterne.get(1) instanceof Indexation);
-		Assert.assertTrue(listEvtInterne.get(2) instanceof CappingEnErreur);
+		Assert.assertTrue(listEvtInterne.get(2) instanceof Indexation);
+		Assert.assertTrue(listEvtInterne.get(3) instanceof CappingEnErreur);
 
 		// Vérification du traitement de l'événement
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
@@ -413,9 +413,9 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 
 		// Verification de l'événement interne créé
 		List<EvenementOrganisationInterne> listEvtInterne = getListeEvtInternesCrees(translator);
-		Assert.assertEquals(2, listEvtInterne.size());
+		Assert.assertEquals(3, listEvtInterne.size());
 		Assert.assertTrue(listEvtInterne.get(0) instanceof MessageSuiviPreExecution);
-		Assert.assertTrue(listEvtInterne.get(1) instanceof Indexation);
+		Assert.assertTrue(listEvtInterne.get(2) instanceof Indexation);
 
 		// Vérification du traitement de l'événement
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
@@ -676,7 +676,7 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 
 		// Verification de l'événement interne créé
 		List<EvenementOrganisationInterne> listEvtInterne = getListeEvtInternesCrees(translator);
-		Assert.assertEquals(4, listEvtInterne.size());
+		Assert.assertEquals(5, listEvtInterne.size());
 		{
 			Assert.assertTrue(listEvtInterne.get(0) instanceof MessageSuiviPreExecution);
 			String message = getMessageFromMessageSuiviPreExecution((MessageSuiviPreExecution) listEvtInterne.get(0));
@@ -687,8 +687,8 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 			String message = getMessageFromMessageSuiviPreExecution((MessageSuiviPreExecution) listEvtInterne.get(1));
 			Assert.assertEquals(String.format("Organisation civile n°%d rattachée avec succès à l'entreprise n°%s, avec tous ses établissements.", noOrganisation, FormatNumeroHelper.numeroCTBToDisplay(noEntreprise)), message);
 		}
-		Assert.assertTrue(listEvtInterne.get(2) instanceof InformationComplementaire);
-		Assert.assertTrue(listEvtInterne.get(3) instanceof Indexation);
+		Assert.assertTrue(listEvtInterne.get(3) instanceof InformationComplementaire);
+		Assert.assertTrue(listEvtInterne.get(4) instanceof Indexation);
 
 		// Vérification du traitement de l'événement
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
@@ -811,7 +811,7 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 
 		// Verification de l'événement interne créé
 		List<EvenementOrganisationInterne> listEvtInterne = getListeEvtInternesCrees(translator);
-		Assert.assertEquals(5, listEvtInterne.size());
+		Assert.assertEquals(6, listEvtInterne.size());
 		{
 			Assert.assertTrue(listEvtInterne.get(0) instanceof MessageSuiviPreExecution);
 			String message = getMessageFromMessageSuiviPreExecution((MessageSuiviPreExecution) listEvtInterne.get(0));
@@ -824,8 +824,8 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 					String.format("Organisation civile n°%d rattachée à l'entreprise n°%d. Cependant, certains établissements n'ont pas trouvé d'équivalent civil: n°%s. Aussi des sites civils secondaires n'ont pas pu être rattachés et seront créés: n°%d",
 					              noOrganisation, noEntreprise, FormatNumeroHelper.numeroCTBToDisplay(etablissement3Id), noSite2), message);
 		}
-		Assert.assertTrue(listEvtInterne.get(3) instanceof InformationComplementaire);
-		Assert.assertTrue(listEvtInterne.get(4) instanceof Indexation);
+		Assert.assertTrue(listEvtInterne.get(4) instanceof InformationComplementaire);
+		Assert.assertTrue(listEvtInterne.get(5) instanceof Indexation);
 
 		// Vérification du traitement de l'événement
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
@@ -968,7 +968,7 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 
 		// Verification de l'événement interne créé
 		List<EvenementOrganisationInterne> listEvtInterne = getListeEvtInternesCrees(translator);
-		Assert.assertEquals(5, listEvtInterne.size());
+		Assert.assertEquals(6, listEvtInterne.size());
 		{
 			Assert.assertTrue(listEvtInterne.get(0) instanceof MessageSuiviPreExecution);
 			String message = getMessageFromMessageSuiviPreExecution((MessageSuiviPreExecution) listEvtInterne.get(0));
@@ -981,8 +981,8 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 					String.format("Organisation civile n°%d rattachée à l'entreprise n°%d. Cependant, certains établissements n'ont pas trouvé d'équivalent civil: n°%s.",
 					              noOrganisation, noEntreprise, FormatNumeroHelper.numeroCTBToDisplay(etablissement3Id)), message);
 		}
-		Assert.assertTrue(listEvtInterne.get(3) instanceof InformationComplementaire);
-		Assert.assertTrue(listEvtInterne.get(4) instanceof Indexation);
+		Assert.assertTrue(listEvtInterne.get(4) instanceof InformationComplementaire);
+		Assert.assertTrue(listEvtInterne.get(5) instanceof Indexation);
 
 		// Vérification du traitement de l'événement
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
@@ -1175,7 +1175,7 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 
 		// Verification de l'événement interne créé
 		List<EvenementOrganisationInterne> listEvtInterne = getListeEvtInternesCrees(translator);
-		Assert.assertEquals(3, listEvtInterne.size());
+		Assert.assertEquals(4, listEvtInterne.size());
 		Assert.assertTrue(listEvtInterne.get(0) instanceof MessageSuiviPreExecution);
 		String message = getMessageFromMessageSuiviPreExecution((MessageSuiviPreExecution) listEvtInterne.get(0));
 		Assert.assertEquals(String.format("Aucune entreprise identifiée pour le numéro civil %s ou les attributs civils [%s].",

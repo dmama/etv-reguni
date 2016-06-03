@@ -40,6 +40,7 @@ import ch.vd.uniregctb.evenement.organisation.interne.IndexationPure;
 import ch.vd.uniregctb.evenement.organisation.interne.MessageSuiviPreExecution;
 import ch.vd.uniregctb.evenement.organisation.interne.MessageWarningPreExectution;
 import ch.vd.uniregctb.evenement.organisation.interne.TraitementManuel;
+import ch.vd.uniregctb.evenement.organisation.interne.ValideurDebutDeTraitement;
 import ch.vd.uniregctb.evenement.organisation.interne.adresse.AdresseStrategy;
 import ch.vd.uniregctb.evenement.organisation.interne.creation.CreateOrganisationStrategy;
 import ch.vd.uniregctb.evenement.organisation.interne.decisionaci.DecisionAciStrategy;
@@ -351,6 +352,12 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 				}
 			}
 		}
+
+		// SIFISC-19332 - SIFISC-19471 - Ne vérifier la présence antérieur d'une entreprise que si on a quelque chose à faire avec l'entité.
+		/*
+			Validation au début du traitement effectif.
+		 */
+		evenements.add(new ValideurDebutDeTraitement(event, organisation, entreprise, context, options));
 
 		/* Pas de véritable traitement à exécuter. Indexation seulement. Le status sera TRAITE. */
 		if (resultatEvaluationStrategies.size() == 0) {
