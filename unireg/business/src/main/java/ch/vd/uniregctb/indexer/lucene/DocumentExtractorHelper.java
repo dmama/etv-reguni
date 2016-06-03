@@ -12,6 +12,7 @@ import org.apache.lucene.document.Document;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import ch.vd.registre.base.date.DateConstants;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.common.Constants;
@@ -26,7 +27,7 @@ public abstract class DocumentExtractorHelper {
 
 	public static RegDate indexStringToDate(String date, boolean allowPartial) {
 		try {
-			return RegDateHelper.StringFormat.INDEX.fromString(date, allowPartial);
+			return RegDateHelper.StringFormat.INDEX.fromString(date, allowPartial, DateConstants.EXTENDED_VALIDITY_RANGE);
 		}
 		catch (ParseException e) {
 			return null;
