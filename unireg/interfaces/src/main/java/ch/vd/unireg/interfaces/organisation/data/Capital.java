@@ -9,6 +9,7 @@ import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.uniregctb.common.ComparisonHelper;
 
 public class Capital implements Serializable, DateRange, DateRangeLimitable<Capital> {
 
@@ -45,9 +46,16 @@ public class Capital implements Serializable, DateRange, DateRangeLimitable<Capi
 	 * @return
 	 */
 	public boolean identicalTo(@Nullable Capital capital) {
-		return this == capital ||
-				(capital != null && this.getCapitalLibere().equals(capital.getCapitalLibere()) && this.getDevise().equals(capital.getDevise()) &&
-				 this.getTypeDeCapital().equals(capital.getTypeDeCapital()) && this.getRepartition().equals(capital.getRepartition()));
+		if (capital == this) {
+			return true;
+		}
+		if (capital == null) {
+			return false;
+		}
+		return ComparisonHelper.areEqual(capitalLibere, capital.capitalLibere)
+				&& ComparisonHelper.areEqual(devise, capital.devise)
+				&& ComparisonHelper.areEqual(typeDeCapital, capital.typeDeCapital)
+				&& ComparisonHelper.areEqual(repartition, capital.repartition);
 	}
 
 	public BigDecimal getCapitalLibere() {

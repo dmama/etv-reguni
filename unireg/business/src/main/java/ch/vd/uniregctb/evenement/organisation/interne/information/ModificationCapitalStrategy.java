@@ -69,8 +69,8 @@ public class ModificationCapitalStrategy extends AbstractOrganisationStrategy {
 	}
 
 	private boolean changementCapital(@Nullable Capital capitalAvant, @Nullable Capital capitalApres) {
-		if (capitalAvant == null) {
-			return capitalApres != null;
+		if (capitalAvant == null || capitalApres == null) {
+			return capitalAvant != null || capitalApres != null;
 		}
 		return ! capitalAvant.identicalTo(capitalApres);
 	}

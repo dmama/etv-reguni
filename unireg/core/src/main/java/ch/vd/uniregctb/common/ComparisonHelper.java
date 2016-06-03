@@ -1,5 +1,7 @@
 package ch.vd.uniregctb.common;
 
+import java.math.BigDecimal;
+
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
@@ -15,6 +17,17 @@ public abstract class ComparisonHelper {
 	 */
 	public static <T> boolean areEqual(@Nullable T one, @Nullable T other) {
 		return one == other || (one != null && other != null && one.equals(other));
+	}
+
+	/**
+	 * Méthode utilitaire générique pour comparer deux nombres potentiellement nullables
+	 * @param one un premier nombre
+	 * @param other un autre nombre
+	 * @return <code>true</code> si les deux nombres sont soit tous deux nulls, soit identiques, soit égaux (au sens de {@link Comparable#compareTo(Object)})
+	 */
+	public static boolean areEqual(@Nullable BigDecimal one, @Nullable BigDecimal other) {
+		//noinspection NumberEquality
+		return one == other || (one != null && other != null && one.compareTo(other) == 0);
 	}
 
 	/**
