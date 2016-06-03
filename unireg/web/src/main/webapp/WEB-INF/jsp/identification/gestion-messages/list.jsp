@@ -34,7 +34,7 @@
 			</fieldset>
 			
 			<div id="desynchro" style="display:none;">
-				<FONT COLOR="#FF0000">Attention la recherche est désynchronisée après la suspension ou la soumission de messages</FONT>
+				<span style="color: red;">Attention la recherche est désynchronisée après la suspension ou la soumission de messages</span>
 			</div>
             <script type="text/javascript">
                 function traiterMessage(id,source) {

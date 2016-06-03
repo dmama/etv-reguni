@@ -16,7 +16,7 @@
 			<td><fmt:message key="label.nom" />&nbsp;:</td>
 			<td>
 				<form:input path="tiers.nom" id="tiers_nom1" cssErrorClass="input-with-errors" size ="65" maxlength="${lengthnom}" />
-				<FONT COLOR="#FF0000">*</FONT>
+				<span style="color: red;">*</span>
 				<form:errors path="tiers.nom" cssClass="error"/>
 			</td>
 		</tr>

@@ -41,7 +41,7 @@
 								<td><fmt:message key="label.nom" />&nbsp;:</td>
 								<td>
 									<form:input path="civil.nom" id="ac.nom" cssErrorClass="input-with-errors" size="65" maxlength="${length_nom}" tabindex="2"/>
-									<FONT COLOR="#FF0000">*</FONT>
+									<span style="color: red;">*</span>
 									<form:errors path="civil.nom" cssClass="error"/>
 								</td>
 							</tr>

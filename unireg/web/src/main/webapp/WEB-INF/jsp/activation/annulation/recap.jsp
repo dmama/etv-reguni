@@ -25,7 +25,7 @@
 								<jsp:param name="path" value="dateAnnulation" />
 								<jsp:param name="id" value="dateAnnulation" />
 							</jsp:include>
-							<FONT COLOR="#FF0000">*</FONT>
+							<span style="color: red;">*</span>
 						</td>
 					</tr>
 				</table>

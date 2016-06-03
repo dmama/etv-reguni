@@ -27,7 +27,7 @@
 								<jsp:param name="path" value="datePrononceFaillite" />
 								<jsp:param name="id" value="datePrononceFaillite" />
 							</jsp:include>
-							<FONT COLOR="#FF0000">*</FONT>
+							<span style="color: red;">*</span>
 						</td>
 					</tr>
 					<tr class="<unireg:nextRowClass/>">

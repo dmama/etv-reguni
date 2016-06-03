@@ -11,7 +11,7 @@
 					<jsp:param name="path" value="dateSeparation" />
 					<jsp:param name="id" value="dateSeparation" />
 				</jsp:include>
-				<FONT COLOR="#FF0000">*</FONT>
+				<span style="color: red;">*</span>
 			</td>
 		</tr>
 		<tr class="<unireg:nextRowClass/>" >

@@ -103,7 +103,7 @@
 								<jsp:param name="path" value="dateDebutNouveauSiege" />
 								<jsp:param name="id" value="dateDebutNouveauSiege" />
 							</jsp:include>
-							<FONT COLOR="#FF0000">*</FONT>
+							<span style="color: red;">*</span>
 						</td>
 					</tr>
 

@@ -30,7 +30,7 @@
 								<jsp:param name="path" value="dateTransfert" />
 								<jsp:param name="id" value="dateTransfert" />
 							</jsp:include>
-							<FONT COLOR="#FF0000">*</FONT>
+							<span style="color: red;">*</span>
 						</td>
 					</tr>
 				</table>

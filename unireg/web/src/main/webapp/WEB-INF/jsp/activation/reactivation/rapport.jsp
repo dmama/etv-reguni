@@ -11,7 +11,7 @@
 					<jsp:param name="path" value="dateReactivation" />
 					<jsp:param name="id" value="dateReactivation" />
 				</jsp:include>
-				<FONT COLOR="#FF0000">*</FONT>
+				<span style="color: red;">*</span>
 			</td>
 		</tr>
 	</table>

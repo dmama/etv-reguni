@@ -27,7 +27,7 @@
 								<jsp:param name="path" value="dateFinActivite" />
 								<jsp:param name="id" value="dateFinActivite" />
 							</jsp:include>
-							<FONT COLOR="#FF0000">*</FONT>
+							<span style="color: red;">*</span>
 						</td>
 					</tr>
 					<tr class="<unireg:nextRowClass/>">

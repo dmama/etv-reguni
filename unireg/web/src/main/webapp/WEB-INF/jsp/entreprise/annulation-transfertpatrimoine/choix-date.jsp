@@ -28,7 +28,7 @@
 						<td width="75%">
 							<%--@elvariable id="datesTransfert" type="java.util.Map<String, String>"--%>
 							<form:select path="dateTransfert" items="${datesTransfert}"/>
-							<FONT COLOR="#FF0000">*</FONT>
+							<span style="color: red;">*</span>
 						</td>
 					</tr>
 				</table>

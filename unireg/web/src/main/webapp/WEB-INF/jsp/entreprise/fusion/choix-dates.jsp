@@ -26,7 +26,7 @@
 								<jsp:param name="path" value="dateBilanFusion" />
 								<jsp:param name="id" value="dateBilanFusion" />
 							</jsp:include>
-							<FONT COLOR="#FF0000">*</FONT>
+							<span style="color: red;">*</span>
 						</td>
 					</tr>
 					<tr class="<unireg:nextRowClass/>" >
@@ -36,7 +36,7 @@
 								<jsp:param name="path" value="dateContratFusion" />
 								<jsp:param name="id" value="dateContratFusion" />
 							</jsp:include>
-							<FONT COLOR="#FF0000">*</FONT>
+							<span style="color: red;">*</span>
 						</td>
 					</tr>
 				</table>

@@ -11,7 +11,7 @@
 					<jsp:param name="path" value="dateDeces" />
 					<jsp:param name="id" value="dateDeces" />
 				</jsp:include>
-				<FONT COLOR="#FF0000">*</FONT>
+				<span style="color: red;">*</span>
 			</td>
 		</tr>
 		<c:if test="${command.marieSeul}">

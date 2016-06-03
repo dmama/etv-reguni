@@ -30,7 +30,7 @@
 						<jsp:param name="path" value="dateDemande" />
 						<jsp:param name="id" value="dateDemande" />
 					</jsp:include>
-					<FONT COLOR="#FF0000">*</FONT>
+					<span style="color: red;">*</span>
 				</td>
 				<td><fmt:message key="label.date.delai.accorde"/>&nbsp;:</td>
 				<td>
@@ -38,7 +38,7 @@
 						<jsp:param name="path" value="delaiAccordeAu" />
 						<jsp:param name="id" value="delaiAccordeAu" />
 					</jsp:include>
-					<FONT COLOR="#FF0000">*</FONT>
+					<span style="color: red;">*</span>
 				</td>
 			</tr>
 		</table>
