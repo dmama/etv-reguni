@@ -8,13 +8,13 @@
 
 <div id="remarques">
 
-    <authz:authorize ifAnyGranted="ROLE_REMARQUE_TIERS">
+    <c:if test="${autorisations.remarques}">
         <a id="addRemarque" class="add noprint" href="#">Ajouter une remarque</a>
         <div id="newRemarque" class="new_remarque" style="display:none;">
             <textarea cols="80" rows="3"></textarea><br>
             <input type="button" value="Ajouter"/>&nbsp;ou&nbsp;<a href="#">annuler</a>
         </div>
-    </authz:authorize>
+    </c:if>
 
     <div id="remarquesDiv">
         <img src="<c:url value="/images/loading.gif"/>"/>
@@ -31,11 +31,12 @@
     var Remarques = {
 
         refreshRemarques: function() {
-            $('#addRemarque').show();
-            var newRemarque = $('#newRemarque');
-            newRemarque.hide();
-            newRemarque.find('textarea').val('');
-
+            <c:if test="${autorisations.remarques}">
+                $('#addRemarque').show();
+                var newRemarque = $('#newRemarque');
+                newRemarque.hide();
+                newRemarque.find('textarea').val('');
+            </c:if>
             Remarques.loadRemarques(1);
         },
 
@@ -107,14 +108,14 @@
                 }
 
                 html += '<td style="width:2em;">';
-                <authz:authorize ifAnyGranted="ROLE_REMARQUE_TIERS">
+                <c:if test="${autorisations.remarques}">
                     if (!remarque.annule) {
                         html += '<a class="delete"';
                         html += ' onclick="if (!confirm(\'Voulez-vous vraiment annuler cette remarque ?\')) return false;';
                         html += 'Form.dynamicSubmit(\'POST\',\'<c:url value="/remarque/cancel.do"/>\',{\'remarqueId\':\'' + remarque.id + '\'}); return false;"';
                         html += ' title="Annulation de remarque" href="<c:url value="/remarque/cancel.do"/>"></a>&nbsp;';
                     }
-                </authz:authorize>
+                </c:if>
                 html += '<a href="#" class="consult" title="Consultation des logs" onclick="return Dialog.open_consulter_log(\'Remarque\', ' + remarque.id + ');">&nbsp;</a></td>';
                 html += '</tr>\n';
             }
@@ -138,28 +139,32 @@
             $('td #rq-short-' + index).hide();
             $('td #rq-long-' + index).show();
         }
-    }
+    };
 
-    $('#addRemarque').click(function() {
-        $('#addRemarque').hide();
-        $('#newRemarque').show();
-        return false;
-    });
+    <c:if test="${autorisations.remarques}">
 
-    $('#newRemarque').find('input').click(function() {
-        var text = $('#newRemarque').find('textarea').val();
-        $.post('<c:url value="/remarque/add.do"/>', {'tiersId': ${tiersId}, 'text': text}, function() {
-            // on success, refresh all
-            Remarques.refreshRemarques();
+        $('#addRemarque').click(function() {
+            $('#addRemarque').hide();
+            $('#newRemarque').show();
+            return false;
         });
-        return false;
-    });
 
-    $('#newRemarque').find('a').click(function() {
-        $('#addRemarque').show();
-        $('#newRemarque').hide();
-        return false;
-    });
+        $('#newRemarque').find('input').click(function() {
+            var text = $('#newRemarque').find('textarea').val();
+            $.post('<c:url value="/remarque/add.do"/>', {'tiersId': ${tiersId}, 'text': text}, function() {
+                // on success, refresh all
+                Remarques.refreshRemarques();
+            });
+            return false;
+        });
+
+        $('#newRemarque').find('a').click(function() {
+            $('#addRemarque').show();
+            $('#newRemarque').hide();
+            return false;
+        });
+
+    </c:if>
 
 </script>
 

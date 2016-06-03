@@ -57,6 +57,8 @@ public class Autorisations {
 	private final boolean mouvements;
 	private final boolean situationsFamille;
 
+	private final boolean remarques;
+
 	public Autorisations() {
 		this.donneesFiscales = false;
 		this.forsPrincipaux = false;
@@ -94,6 +96,8 @@ public class Autorisations {
 		this.debiteurs = false;
 		this.mouvements = false;
 		this.situationsFamille = false;
+
+		this.remarques = false;
 	}
 
 	public Autorisations(Map<String, Boolean> map) {
@@ -133,6 +137,8 @@ public class Autorisations {
 		this.debiteurs = isAllowed(map, AutorisationManagerImpl.MODIF_DEBITEUR);
 		this.mouvements = isAllowed(map, AutorisationManagerImpl.MODIF_MOUVEMENT);
 		this.situationsFamille = isAllowed(map, AutorisationManagerImpl.FISCAL_SIT_FAMILLLE);
+
+		this.remarques = isAllowed(map, AutorisationManagerImpl.MODIF_REMARQUES);
 	}
 
 	private static boolean isAllowed(Map<String, Boolean> map, String key) {
@@ -149,7 +155,7 @@ public class Autorisations {
 				|| (complements && (complementsCommunications || complementsCoordonneesFinancieres))
 				|| (rapports && (rapportsEtablissements || rapportsDePrestations || rapportsDeTravail || autresRapports))
 				|| declarationImpots || questionnairesSNC || bouclements || donneesCiviles || debiteurs || mouvements || situationsFamille
-				|| etatsPM || regimesFiscaux || allegementsFiscaux || flagsPM;
+				|| etatsPM || regimesFiscaux || allegementsFiscaux || flagsPM || remarques;
 	}
 
 	public boolean isDonneesFiscales() {
@@ -276,6 +282,10 @@ public class Autorisations {
 		return flagsPM;
 	}
 
+	public boolean isRemarques() {
+		return remarques;
+	}
+
 	@Override
 	public String toString() {
 		return "Autorisations{" +
@@ -310,6 +320,7 @@ public class Autorisations {
 				", debiteurs=" + debiteurs +
 				", mouvements=" + mouvements +
 				", situationsFamille=" + situationsFamille +
+				", remarques=" + remarques +
 				'}';
 	}
 }

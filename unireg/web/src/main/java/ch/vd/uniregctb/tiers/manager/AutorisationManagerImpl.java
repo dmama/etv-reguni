@@ -75,6 +75,7 @@ public class AutorisationManagerImpl implements AutorisationManager {
 	static final String DOSSIER_NO_TRAVAIL = "DOS_NO_TRA";
 	static final String FISCAL_DECISION_ACI = "DEC_ACI";
 	static final String MODIF_CTB_AVEC_DECISION_ACI = "CTB_DCI_ACI";
+	static final String MODIF_REMARQUES = "REMARQUES";
 	
 	private TiersService tiersService;
 	private ServiceCivilService serviceCivil;
@@ -368,7 +369,7 @@ public class AutorisationManagerImpl implements AutorisationManager {
 			}
 			map.put(MODIF_FISCAL, Boolean.TRUE); // pour la création de débiteur
 			return map;
-			}
+		}
 
 		final Niveau acces = SecurityHelper.getDroitAcces(securityProvider, visa, tiers.getNumero());
 		if (acces == null || acces == Niveau.LECTURE || !SecurityHelper.isGranted(securityProvider, Role.VISU_ALL)) {
@@ -401,8 +402,12 @@ public class AutorisationManagerImpl implements AutorisationManager {
 			map.put(MODIF_REGIMES_FISCAUX, Boolean.FALSE);
 			map.put(MODIF_ALLEGEMENTS_FISCAUX, Boolean.FALSE);
 			map.put(MODIF_FLAGS_PM, Boolean.FALSE);
-
+			map.put(MODIF_REMARQUES, Boolean.FALSE);
 			return map;
+		}
+
+		if (SecurityHelper.isGranted(securityProvider, Role.REMARQUE_TIERS, visa, oid)) {
+			map.put(MODIF_REMARQUES, Boolean.TRUE);
 		}
 
 		if (SecurityHelper.isGranted(securityProvider, Role.COOR_FIN, visa, oid)) {
