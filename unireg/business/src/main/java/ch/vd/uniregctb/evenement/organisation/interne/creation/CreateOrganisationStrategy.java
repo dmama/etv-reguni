@@ -4,11 +4,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.infra.data.Commune;
-import ch.vd.unireg.interfaces.organisation.data.DateRanged;
 import ch.vd.unireg.interfaces.organisation.data.Domicile;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
-import ch.vd.unireg.interfaces.organisation.data.OrganisationHelper;
 import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationContext;
@@ -77,28 +74,6 @@ public class CreateOrganisationStrategy extends AbstractOrganisationStrategy {
 			// On doit connaître la catégorie pour continuer en mode automatique
 			CategorieEntreprise category = CategorieEntrepriseHelper.getCategorieEntreprise(organisation, dateEvenement);
 			if (category != null) {
-				if (category != CategorieEntreprise.PP) { // SIFISC-19471 - Ne pas vérifier la présence antérieur d'une entreprise PP
-					// SIFISC-19332 - On contrôle si on existe avant, où et depuis quand. Si cela fait trop longtemps sur Vaud, c'est qu'on a un problème d'identification.
-					final RegDate datePasseeTropAncienne = dateEvenement.getOneDayBefore().addDays(-OrganisationHelper.NB_JOURS_TOLERANCE_DE_DECALAGE_RC);
-					// On a besoin du vrai historique pour savoir cela.
-					final Organisation organisationHistory = context.getServiceOrganisation().getOrganisationHistory(organisation.getNumeroOrganisation());
-					final DateRanged<SiteOrganisation> sitePrincipalAvantRange = organisationHistory.getSitePrincipal(datePasseeTropAncienne);
-					if (sitePrincipalAvantRange != null) {
-						SiteOrganisation sitePrincipalAvant = sitePrincipalAvantRange.getPayload();
-						final Domicile domicilePasse = sitePrincipalAvant.getDomicile(datePasseeTropAncienne);
-						if (domicilePasse != null) {
-							if (domicilePasse.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
-								final Commune commune = context.getServiceInfra().getCommuneByNumeroOfs(domicilePasse.getNoOfs(), datePasseeTropAncienne);
-								return new TraitementManuel(event, organisationHistory, null, context, options,
-								                            String.format(
-										                            "L'organisation n°%d est présente sur Vaud (%s) depuis plus de %d jours et devrait être déjà connue d'Unireg. L'identification n'a probablement pas fonctionné. Veuillez traiter le cas à la main.",
-										                            organisationHistory.getNumeroOrganisation(), commune != null ? commune.getNomOfficielAvecCanton() : "",
-										                            OrganisationHelper.NB_JOURS_TOLERANCE_DE_DECALAGE_RC)
-								);
-							}
-						}
-					}
-				}
 
 				// On crée une entreprise pour les organisations ayant un siège dans la canton de VD
 				if (organisation.hasSitePrincipalVD(dateEvenement)) {

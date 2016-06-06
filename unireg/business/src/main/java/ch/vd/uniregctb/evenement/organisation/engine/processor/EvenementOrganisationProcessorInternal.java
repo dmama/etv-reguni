@@ -21,6 +21,7 @@ import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.data.DataEventService;
 import ch.vd.uniregctb.evenement.EvenementCivilHelper;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
+import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationAbortException;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationBasicInfo;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationConservationMessagesException;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationDAO;
@@ -35,7 +36,6 @@ import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationWarning
 import ch.vd.uniregctb.evenement.organisation.engine.ErrorPostProcessingMiseEnAttenteStrategy;
 import ch.vd.uniregctb.evenement.organisation.engine.ErrorPostProcessingStrategy;
 import ch.vd.uniregctb.evenement.organisation.engine.translator.EvenementOrganisationTranslator;
-import ch.vd.uniregctb.evenement.organisation.interne.CappingEnErreur;
 import ch.vd.uniregctb.evenement.organisation.interne.EvenementOrganisationInterne;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer;
 import ch.vd.uniregctb.tiers.Entreprise;
@@ -335,8 +335,8 @@ public class EvenementOrganisationProcessorInternal implements ProcessorInternal
 			try {
 				etat = processEventAndCollectMessages(event, collector, collector, collector, force);
 			}
-			catch (CappingEnErreur.CappingException e) {
-				// cas spécial où le traitement n'était pas en erreur mais a été cappé...
+			catch (EvenementOrganisationAbortException e) {
+				// Le traitement a été interrompu volontairement et il faut conserver les messages accumulés jusque là.
 				throw new EvenementOrganisationConservationMessagesException(e.getMessage(), collector, false);
 			}
 		}
