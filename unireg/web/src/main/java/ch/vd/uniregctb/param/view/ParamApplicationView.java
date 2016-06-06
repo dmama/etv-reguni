@@ -50,7 +50,7 @@ public class ParamApplicationView {
 	private String delaiRetourListeRecapitulative;
 	private String delaiEnvoiSommationListeRecapitulative;
 	private String delaiRetourSommationListeRecapitulative;
-	private String delaiEcheanceSommationListeRecapitulative;
+	private String delaiEcheanceSommationListeRecapitualtive;
 	private String delaiRetentionRapportTravailInactif;
 	private String dateExclusionDecedeEnvoiDI;
 	private String ageRentierFemme;
@@ -90,7 +90,7 @@ public class ParamApplicationView {
 		this.delaiRetourListeRecapitulative = ParametreEnum.delaiRetourListeRecapitulative.convertirValeurTypeeVersString(service.getDelaiRetourListeRecapitulative());
 		this.delaiEnvoiSommationListeRecapitulative = ParametreEnum.delaiEnvoiSommationListeRecapitulative.convertirValeurTypeeVersString(service.getDelaiEnvoiSommationListeRecapitulative());
 		this.delaiRetourSommationListeRecapitulative = ParametreEnum.delaiRetourSommationListeRecapitulative.convertirValeurTypeeVersString(service.getDelaiRetourSommationListeRecapitulative());
-		this.delaiEcheanceSommationListeRecapitulative = ParametreEnum.delaiEcheanceSommationListeRecapitualtive.convertirValeurTypeeVersString(service.getDelaiEcheanceSommationListeRecapitulative());
+		this.delaiEcheanceSommationListeRecapitualtive = ParametreEnum.delaiEcheanceSommationListeRecapitualtive.convertirValeurTypeeVersString(service.getDelaiEcheanceSommationListeRecapitulative());
 		this.delaiRetentionRapportTravailInactif = ParametreEnum.delaiRetentionRapportTravailInactif.convertirValeurTypeeVersString(service.getDelaiRetentionRapportTravailInactif());
 		this.dateExclusionDecedeEnvoiDI = ParametreEnum.dateExclusionDecedeEnvoiDI.convertirValeurTypeeVersString(service.getDateExclusionDecedeEnvoiDI());
 		this.ageRentierFemme = ParametreEnum.ageRentierFemme.convertirValeurTypeeVersString(service.getAgeRentierFemme());
@@ -131,7 +131,7 @@ public class ParamApplicationView {
 		service.setDelaiRetourListeRecapitulative((Integer) ParametreEnum.delaiRetourListeRecapitulative.convertirStringVersValeurTypee(this.delaiRetourListeRecapitulative));
 		service.setDelaiEnvoiSommationListeRecapitulative((Integer) ParametreEnum.delaiEnvoiSommationListeRecapitulative.convertirStringVersValeurTypee(this.delaiEnvoiSommationListeRecapitulative));
 		service.setDelaiRetourSommationListeRecapitulative((Integer) ParametreEnum.delaiRetourSommationListeRecapitulative.convertirStringVersValeurTypee(this.delaiRetourSommationListeRecapitulative));
-		service.setDelaiEcheanceSommationListeRecapitualtive((Integer) ParametreEnum.delaiEcheanceSommationListeRecapitualtive.convertirStringVersValeurTypee(this.delaiEcheanceSommationListeRecapitulative));
+		service.setDelaiEcheanceSommationListeRecapitualtive((Integer) ParametreEnum.delaiEcheanceSommationListeRecapitualtive.convertirStringVersValeurTypee(this.delaiEcheanceSommationListeRecapitualtive));
 		service.setDelaiRetentionRapportTravailInactif((Integer) ParametreEnum.delaiRetentionRapportTravailInactif.convertirStringVersValeurTypee(this.delaiRetentionRapportTravailInactif));
 		service.setDateExclusionDecedeEnvoiDI((Integer[])ParametreEnum.dateExclusionDecedeEnvoiDI.convertirStringVersValeurTypee(this.dateExclusionDecedeEnvoiDI));
 		service.setAgeRentierFemme((Integer) ParametreEnum.ageRentierFemme.convertirStringVersValeurTypee(this.ageRentierFemme));
@@ -332,12 +332,12 @@ public class ParamApplicationView {
 		this.delaiRetourSommationListeRecapitulative = delaiRetourSommationListeRecapitulative;
 	}
 
-	public String getDelaiEcheanceSommationListeRecapitulative() {
-		return delaiEcheanceSommationListeRecapitulative;
+	public String getDelaiEcheanceSommationListeRecapitualtive() {
+		return delaiEcheanceSommationListeRecapitualtive;
 	}
 
-	public void setDelaiEcheanceSommationListeRecapitulative(String delaiEcheanceSommationListeRecapitulative) {
-		this.delaiEcheanceSommationListeRecapitulative = delaiEcheanceSommationListeRecapitulative;
+	public void setDelaiEcheanceSommationListeRecapitualtive(String delaiEcheanceSommationListeRecapitualtive) {
+		this.delaiEcheanceSommationListeRecapitualtive = delaiEcheanceSommationListeRecapitualtive;
 	}
 
 	public String getDelaiRetentionRapportTravailInactif() {

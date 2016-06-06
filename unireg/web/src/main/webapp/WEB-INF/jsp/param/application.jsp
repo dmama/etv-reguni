@@ -267,13 +267,13 @@
 					<td><sf:errors path="delaiRetourSommationListeRecapitulative" cssClass="erreur"/></td>
 		        </tr>
 		        <tr class="<unireg:nextRowClass/>">
-		            <td><fmt:message key="label.param.delaiEcheanceSommationListeRecapitulative"/></td>
-		            <%--@elvariable id="delaiEcheanceSommationListeRecapitulativeParDefaut" type="java.lang.String"--%>
-					<td class="nombre">${delaiEcheanceSommationListeRecapitulativeParDefaut}</td>
+		            <td><fmt:message key="label.param.delaiEcheanceSommationListeRecapitualtive"/></td>
+		            <%--@elvariable id="delaiEcheanceSommationListeRecapitualtiveParDefaut" type="java.lang.String"--%>
+					<td class="nombre">${delaiEcheanceSommationListeRecapitualtiveParDefaut}</td>
 		            <td class="valeur">
-		                <sf:input path="delaiEcheanceSommationListeRecapitulative" cssClass="valeur nombre" cssErrorClass="valeur input-with-errors nombre" maxlength="3"/>
+		                <sf:input path="delaiEcheanceSommationListeRecapitualtive" cssClass="valeur nombre" cssErrorClass="valeur input-with-errors nombre" maxlength="3"/>
 		            </td>
-					<td><sf:errors path="delaiEcheanceSommationListeRecapitulative" cssClass="erreur"/></td>
+					<td><sf:errors path="delaiEcheanceSommationListeRecapitualtive" cssClass="erreur"/></td>
 		        </tr>
 		        <tr class="<unireg:nextRowClass/>">
 		            <td><fmt:message key="label.param.delaiRetentionRapportTravailInactif"/></td>
