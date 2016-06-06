@@ -5,7 +5,7 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 
-import ch.vd.registre.base.utils.Assert;
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.activation.view.TiersAnnulationRecapView;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersService;
@@ -27,12 +27,12 @@ public class TiersAnnulationRecapValidator implements Validator {
 	@Override
 	@Transactional(readOnly = true)
 	public void validate(Object obj, Errors errors) {
-		Assert.isTrue(obj instanceof TiersAnnulationRecapView);
-
 		final TiersAnnulationRecapView tiersAnnulationRecapView = (TiersAnnulationRecapView) obj;
 		if (tiersAnnulationRecapView.getDateAnnulation() == null) {
 			ValidationUtils.rejectIfEmpty(errors, "dateAnnulation", "error.date.annulation.vide");
-			return;
+		}
+		else if (tiersAnnulationRecapView.getDateAnnulation().isAfter(RegDate.get())) {
+			errors.rejectValue("dateAnnulation", "error.date.annulation.future");
 		}
 
 		final Long numeroTiers = tiersAnnulationRecapView.getNumeroTiers();

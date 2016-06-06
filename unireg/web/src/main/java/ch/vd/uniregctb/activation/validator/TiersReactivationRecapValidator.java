@@ -4,11 +4,10 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 
-import ch.vd.registre.base.utils.Assert;
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.activation.view.TiersReactivationRecapView;
 
 public class TiersReactivationRecapValidator implements Validator {
-
 
 	@Override
 	@SuppressWarnings("unchecked")
@@ -18,11 +17,12 @@ public class TiersReactivationRecapValidator implements Validator {
 
 	@Override
 	public void validate(Object obj, Errors errors) {
-
-		Assert.isTrue(obj instanceof TiersReactivationRecapView);
-		TiersReactivationRecapView tiersReactivationRecapView = (TiersReactivationRecapView) obj;
+		final TiersReactivationRecapView tiersReactivationRecapView = (TiersReactivationRecapView) obj;
 		if (tiersReactivationRecapView.getDateReactivation() == null) {
 			ValidationUtils.rejectIfEmpty(errors, "dateReactivation", "error.date.reactivation.vide");
+		}
+		else if (tiersReactivationRecapView.getDateReactivation().isAfter(RegDate.get())) {
+			errors.rejectValue("dateReactivation", "error.date.reactivation.future");
 		}
 	}
 }
