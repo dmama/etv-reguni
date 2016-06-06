@@ -65,6 +65,11 @@ public class AssujettisParSubstitutionJob extends JobDefinition {
 
 	}
 
+	@Override
+	protected boolean isWebStartableInProductionMode() {
+		return true;
+	}
+
 	public void setHibernateTemplate(HibernateTemplate hibernateTemplate) {
 		this.hibernateTemplate = hibernateTemplate;
 	}
@@ -73,11 +78,9 @@ public class AssujettisParSubstitutionJob extends JobDefinition {
 		this.tiersService = tiersService;
 	}
 
-
 	public void setTransactionManager(PlatformTransactionManager transactionManager) {
 		this.transactionManager = transactionManager;
 	}
-
 
 	public void setRapportService(RapportService rapportService) {
 		this.rapportService = rapportService;

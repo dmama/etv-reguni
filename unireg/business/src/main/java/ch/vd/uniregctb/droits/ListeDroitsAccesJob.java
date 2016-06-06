@@ -51,7 +51,6 @@ public class ListeDroitsAccesJob extends JobDefinition {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ListeDroitsAccesJob.class);
 
 	public static final String NAME = "ListeDroitsAccesJob";
-	public static final String CATEGORIE = "Stats";
 	public static final String DATE_VALEUR = "DATE_VALEUR";
 
 	private HibernateTemplate hibernateTemplate;
@@ -70,6 +69,11 @@ public class ListeDroitsAccesJob extends JobDefinition {
 		param.setMandatory(true);
 		param.setType(new JobParamRegDate());
 		addParameterDefinition(param, null);
+	}
+
+	@Override
+	protected boolean isWebStartableInProductionMode() {
+		return true;
 	}
 
 	@Override

@@ -88,4 +88,8 @@ public class AcomptesJob  extends JobDefinition {
 		Audit.success("La production des populations pour les bases acomptes en date du " + dateTraitement + " est terminée.", rapport);
 	}
 
+	@Override
+	protected boolean isWebStartableInProductionMode() {
+		return true;
+	}
 }

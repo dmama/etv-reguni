@@ -34,7 +34,6 @@ import ch.vd.uniregctb.transaction.TransactionTemplate;
 public class DumpPeriodesImpositionImpotSourceJob extends JobDefinition {
 
 	private static final String NAME = "DumpPeriodesImpositionImpotSourceJob";
-	private static final String CATEGORIE = "Stats";
 
 	private static final String NB_THREADS = "NB_THREADS";
 
@@ -99,6 +98,11 @@ public class DumpPeriodesImpositionImpotSourceJob extends JobDefinition {
 
 		setLastRunReport(rapport);
 		Audit.success("Le dump des périodes d'imposition IS est terminé.", rapport);
+	}
+
+	@Override
+	protected boolean isWebStartableInProductionMode() {
+		return true;
 	}
 
 	private List<Long> getIdentifiantsATraiter(StatusManager sm) {

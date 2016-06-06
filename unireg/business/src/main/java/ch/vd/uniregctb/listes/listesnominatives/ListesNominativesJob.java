@@ -125,4 +125,8 @@ public class ListesNominativesJob extends JobDefinition {
 		Audit.success("La production des listes nominatives en date du " + dateTraitement + " est terminée.", rapport);
 	}
 
+	@Override
+	protected boolean isWebStartableInProductionMode() {
+		return true;
+	}
 }

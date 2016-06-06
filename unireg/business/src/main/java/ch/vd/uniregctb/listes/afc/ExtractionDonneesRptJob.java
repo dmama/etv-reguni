@@ -104,4 +104,9 @@ public class ExtractionDonneesRptJob extends JobDefinition {
 		setLastRunReport(rapport);
 		Audit.success(String.format("L'extraction des données de référence RPT (%s %d) en date du %s est terminée.", mode.getDescription(), pf, RegDateHelper.dateToDisplayString(dateTraitement)), rapport);
 	}
+
+	@Override
+	protected boolean isWebStartableInProductionMode() {
+		return true;
+	}
 }

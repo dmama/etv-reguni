@@ -37,6 +37,11 @@ public abstract class AbstractProduireRolesJob extends JobDefinition {
 		return param;
 	}
 
+	@Override
+	protected boolean isWebStartableInProductionMode() {
+		return true;
+	}
+
 	protected AbstractProduireRolesJob(String name, JobCategory categorie, int sortOrder, String description) {
 		super(name, categorie, sortOrder, description);
 	}
