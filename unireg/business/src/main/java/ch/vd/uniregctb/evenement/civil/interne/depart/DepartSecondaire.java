@@ -101,7 +101,7 @@ public class DepartSecondaire extends Depart {
 
 
 	@Override
-	protected RegDate doHandleFermetureFors(PersonnePhysique pp, ContribuableImpositionPersonnesPhysiques ctb, RegDate dateFermeture, MotifFor motifFermeture) throws EvenementCivilException {
+	protected RegDate doHandleFermetureFors(EvenementCivilWarningCollector warnings, PersonnePhysique pp, ContribuableImpositionPersonnesPhysiques ctb, RegDate dateFermeture, MotifFor motifFermeture) throws EvenementCivilException {
 		Audit.info(getNumeroEvenement(), "Traitement du départ secondaire");
 		handleDepartResidenceSecondaire(pp, ctb, dateFermeture, motifFermeture);
 		return dateFermeture;

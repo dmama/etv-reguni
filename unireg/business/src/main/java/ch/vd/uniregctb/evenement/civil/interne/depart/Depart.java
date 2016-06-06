@@ -125,7 +125,7 @@ public abstract class Depart extends Mouvement {
 
 	/**
 	 * Traitement spécifique du départ dans les fors
-	 *
+	 * @param warnings       collecteur des messages de warning
 	 * @param pp             personne physique désignée par l'événement civil
 	 * @param ctb            contribuable concerné par le départ
 	 * @param dateFermeture  date de fermeture des fors
@@ -133,7 +133,7 @@ public abstract class Depart extends Mouvement {
 	 * @return la date de fermeture effectivement prise en compte pour le for
 	 * @throws EvenementCivilException en cas de problème
 	 */
-	protected abstract RegDate doHandleFermetureFors(PersonnePhysique pp, ContribuableImpositionPersonnesPhysiques ctb, RegDate dateFermeture, MotifFor motifFermeture) throws EvenementCivilException;
+	protected abstract RegDate doHandleFermetureFors(EvenementCivilWarningCollector warnings, PersonnePhysique pp, ContribuableImpositionPersonnesPhysiques ctb, RegDate dateFermeture, MotifFor motifFermeture) throws EvenementCivilException;
 
 	@NotNull
 	@Override
@@ -154,7 +154,7 @@ public abstract class Depart extends Mouvement {
 		final RegDate dateFermeture = findDateFermeture(this, motifFermeture == MotifFor.DEMENAGEMENT_VD);
 		final ContribuableImpositionPersonnesPhysiques contribuable = findContribuable(dateFermeture, pp);
 
-		final RegDate dateFermetureEffective = doHandleFermetureFors(pp, contribuable, dateFermeture, motifFermeture);
+		final RegDate dateFermetureEffective = doHandleFermetureFors(warnings, pp, contribuable, dateFermeture, motifFermeture);
 
 		// [SIFISC-6841] on met-à-jour le flag habitant en fonction de ses adresses de résidence civiles
 		updateHabitantStatus(pp, dateFermetureEffective.getOneDayAfter());
@@ -510,6 +510,30 @@ public abstract class Depart extends Mouvement {
 		return getDate();
 	}
 
+	/**
+	 * @param dateDepartEffectif date de départ effective (= date de fermeture du for d'avant)
+	 * @return <code>true</code> si l'individu sur le départ est seul ou, s'il est en couple, si les types d'autorité fiscale des deux membres du couple au lendemain
+	 * du départ sont les mêmes (si marié seul ou si un des deux types d'autorité fiscale est absent, on dira que les deux sont identiques)
+	 */
+	protected boolean isToutLeMondeAvecLeMemeTypeAutoriteFiscaleApresDepartPrincipal(RegDate dateDepartEffectif) throws EvenementCivilException {
+		final PersonnePhysique partant = getPrincipalPP();
+		final RegDate lendemainDepart = dateDepartEffectif.getOneDayAfter();
+		final EnsembleTiersCouple couple = getService().getEnsembleTiersCouple(partant, lendemainDepart);
+		if (couple != null) {
+			final PersonnePhysique conjoint = couple.getConjoint(partant);
+			if (conjoint != null) {
+				final List<LieuResidence> lieuxResidencePrincipalePartant = getLieuxResidencePrincipale(partant);
+				final List<LieuResidence> lieuxResidencePrincipaleConjoint = getLieuxResidencePrincipale(conjoint);
+				final LieuResidence lieuResidencePartant = DateRangeHelper.rangeAt(lieuxResidencePrincipalePartant, lendemainDepart);
+				final LieuResidence lieuResidenceConjoint = DateRangeHelper.rangeAt(lieuxResidencePrincipaleConjoint, lendemainDepart);
+				if (lieuResidenceConjoint != null && lieuResidencePartant != null) {
+					return lieuResidenceConjoint.getTypeAutoriteFiscale() == lieuResidencePartant.getTypeAutoriteFiscale();
+				}
+			}
+		}
+		return true;
+	}
+
 	private RegDate getDateFromLieuxResidence(List<LieuResidence> lieuxResidenceConjoint) {
 		final LieuResidence residenceAuMomentDuDepart = DateRangeHelper.rangeAt(lieuxResidenceConjoint, getDate());
 		final RegDate dateDepartComplet;
@@ -522,7 +546,7 @@ public abstract class Depart extends Mouvement {
 		return dateDepartComplet;
 	}
 
-
+	@NotNull
 	private List<LieuResidence> getLieuxResidencePrincipale(PersonnePhysique pp) throws EvenementCivilException {
 		if (pp.isConnuAuCivil()) {
 			try {
@@ -538,6 +562,7 @@ public abstract class Depart extends Mouvement {
 		}
 	}
 
+	@NotNull
 	private List<LieuResidence> getLieuxResidenceSecondaire(PersonnePhysique pp) throws EvenementCivilException {
 		if (pp.isConnuAuCivil()) {
 			try {
@@ -625,6 +650,7 @@ public abstract class Depart extends Mouvement {
 			return typeAutoriteFiscale;
 		}
 	}
+
 	public Pays getPaysInconnu() {
 		return paysInconnu;
 	}

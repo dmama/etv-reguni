@@ -134,7 +134,7 @@ public class DepartPrincipal extends Depart {
 	}
 
 	@Override
-	protected RegDate doHandleFermetureFors(PersonnePhysique pp, ContribuableImpositionPersonnesPhysiques ctb, RegDate dateFermeture, MotifFor motifFermeture) throws EvenementCivilException {
+	protected RegDate doHandleFermetureFors(EvenementCivilWarningCollector warnings, PersonnePhysique pp, ContribuableImpositionPersonnesPhysiques ctb, RegDate dateFermeture, MotifFor motifFermeture) throws EvenementCivilException {
 		// [UNIREG-2701] si l'ancienne adresse est inconnue, et que le tiers n'a aucun for non-annulé -> on laisse passer
 		if (ancienneCommune == null) {
 
@@ -189,14 +189,15 @@ public class DepartPrincipal extends Depart {
 		}
 
 		handleDepartResidencePrincipale(this, ctb, dateFermetureEffective, motifFermeture, numeroOfsAutoriteFiscale);
+
+		// [SIFISC-18224] l'événement de départ doit passer dans l'état "A VERIFIER" si les deux conjoints ne se retrouvent pas
+		// dans le même type d'autorité fiscale
+		if (!isToutLeMondeAvecLeMemeTypeAutoriteFiscaleApresDepartPrincipal(dateFermetureEffective)) {
+			warnings.addWarning("Le type de destination entre les deux conjoints n'est pas identique (hors suisse / hors canton). Veuillez contrôler la destination du for principal.");
+		}
+
 		return dateFermetureEffective;
 	}
-
-
-
-
-
-
 
 	/**
 	 * @return <b>true</b> si l'habitant est celibataire, marié seul, ou marié et son conjoint est aussi parti; <b>false</b> autrement.
