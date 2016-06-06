@@ -18,7 +18,6 @@ import ch.vd.uniregctb.evenement.organisation.interne.TraitementManuel;
 import ch.vd.uniregctb.tiers.CategorieEntrepriseHelper;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.type.CategorieEntreprise;
-import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
 /**
  * @author Raphaël Marmier, 2015-09-02
@@ -90,30 +89,30 @@ public class CreateOrganisationStrategy extends AbstractOrganisationStrategy {
 					case SP:
 						LOGGER.info("L'organisation n°{} est installée sur Vaud. Catégorie [{}] -> Création.", organisation.getNumeroOrganisation(), category);
 						info = extraireInformationDeDateEtDeCreation(event, organisation);
-						return new CreateEntrepriseSP(event, organisation, null, context, options, info.dateDeCreation, info.dateOuvertureFiscale, info.isCreation);
+						return new CreateEntrepriseSP(event, organisation, null, context, options, info.getDateDeCreation(), info.getDateOuvertureFiscale(), info.isCreation());
 
 					// Personnes morales
 					case PM:
 						LOGGER.info("L'organisation n°{} est installée sur Vaud. Catégorie [{}] -> Création.", organisation.getNumeroOrganisation(), category);
 						info = extraireInformationDeDateEtDeCreation(event, organisation);
-						return new CreateEntreprisePM(event, organisation, null, context, options, info.dateDeCreation, info.dateOuvertureFiscale, info.isCreation);
+						return new CreateEntreprisePM(event, organisation, null, context, options, info.getDateDeCreation(), info.getDateOuvertureFiscale(), info.isCreation());
 					// Associations personne morale
 					case APM:
 						LOGGER.info("L'organisation n°{} est installée sur Vaud. Catégorie [{}] -> Création.", organisation.getNumeroOrganisation(), category);
 						info = extraireInformationDeDateEtDeCreation(event, organisation);
-						return new CreateEntrepriseAPM(event, organisation, null, context, options, info.dateDeCreation, info.dateOuvertureFiscale, info.isCreation);
+						return new CreateEntrepriseAPM(event, organisation, null, context, options, info.getDateDeCreation(), info.getDateOuvertureFiscale(), info.isCreation());
 
 					// Fonds de placements
 					case FP:
 						LOGGER.info("L'organisation n°{} est installée sur Vaud. Catégorie [{}] -> Création.", organisation.getNumeroOrganisation(), category);
 						info = extraireInformationDeDateEtDeCreation(event, organisation);
-						return new CreateEntrepriseFDSPLAC(event, organisation, null, context, options, info.dateDeCreation, info.dateOuvertureFiscale, info.isCreation);
+						return new CreateEntrepriseFDSPLAC(event, organisation, null, context, options, info.getDateDeCreation(), info.getDateOuvertureFiscale(), info.isCreation());
 
 					// Personnes morales de droit public
 					case DPPM:
 						LOGGER.info("L'organisation n°{} est installée sur Vaud. Catégorie [{}] -> Création.", organisation.getNumeroOrganisation(), category);
 						info = extraireInformationDeDateEtDeCreation(event, organisation);
-						return new CreateEntrepriseDPPM(event, organisation, null, context, options, info.dateDeCreation, info.dateOuvertureFiscale, info.isCreation);
+						return new CreateEntrepriseDPPM(event, organisation, null, context, options, info.getDateDeCreation(), info.getDateOuvertureFiscale(), info.isCreation());
 
 					// Catégories qu'on ne peut pas traiter automatiquement, catégories éventuellement inconnues.
 					case DPAPM:
@@ -133,7 +132,7 @@ public class CreateOrganisationStrategy extends AbstractOrganisationStrategy {
 					default:
 						LOGGER.info("L'organisation n°{} a une présence secondaire sur Vaud. Catégorie [{}] -> Création.", organisation.getNumeroOrganisation(), category);
 						info = extraireInformationDeDateEtDeCreation(event, organisation);
-						return new CreateEntrepriseHorsVD(event, organisation, null, context, options, info.isCreation);
+						return new CreateEntrepriseHorsVD(event, organisation, null, context, options, info.isCreation());
 					}
 				} else {
 					LOGGER.info("L'organisation n°{} n'a pas de présence connue sur Vaud. Catégorie [{}] -> Pas de création.", organisation.getNumeroOrganisation(), category);
@@ -154,64 +153,4 @@ public class CreateOrganisationStrategy extends AbstractOrganisationStrategy {
 		return new TraitementManuel(event, organisation, null, context, options, MSG_CREATION_AUTOMATIQUE_IMPOSSIBLE);
 	}
 
-	private InformationDeDateEtDeCreation extraireInformationDeDateEtDeCreation(EvenementOrganisation event, Organisation organisation) throws EvenementOrganisationException {
-		final RegDate dateEvenement = event.getDateEvenement();
-
-		SiteOrganisation sitePrincipal = organisation.getSitePrincipal(dateEvenement).getPayload();
-		final Domicile siege = sitePrincipal.getDomicile(dateEvenement);
-		final boolean isVaudoise = siege.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD;
-		final boolean inscritAuRC = organisation.isInscritAuRC(dateEvenement);
-		final RegDate dateInscriptionRCVd;
-		final RegDate dateInscriptionRC;
-		final RegDate dateDeCreation;
-		final RegDate dateOuvertureFiscale;
-		final boolean isCreation;
-		if (inscritAuRC) {
-			dateInscriptionRCVd = sitePrincipal.getDateInscriptionRCVd(dateEvenement);
-			if (isVaudoise && dateInscriptionRCVd == null) {
-				throw new EvenementOrganisationException("Date d'inscription au régistre vaudois du commerce introuvable pour l'établissement principal vaudois.");
-			}
-			dateInscriptionRC = sitePrincipal.getDateInscriptionRC(dateEvenement);
-			isCreation = isCreation(event.getType(), organisation,
-			                        dateEvenement); // On ne peut pas l'appeler avant car on doit d'abord s'assurer que l'inscription RC VD existe si on est inscrit au RC et vaudois.
-			if (isCreation) {
-				if (isVaudoise) {
-					dateDeCreation = dateInscriptionRCVd;
-					dateOuvertureFiscale = dateInscriptionRCVd.getOneDayAfter();
-				}
-				else {
-					dateDeCreation = dateInscriptionRC;
-					dateOuvertureFiscale = dateInscriptionRC;
-				}
-			}
-			else { // Une arrivée
-				dateDeCreation = dateInscriptionRCVd;
-				dateOuvertureFiscale = dateInscriptionRCVd;
-			}
-		}
-		else {
-			isCreation = isCreation(event.getType(), organisation, dateEvenement);
-			if (isCreation && isVaudoise) {
-				dateDeCreation = dateEvenement;
-				dateOuvertureFiscale = dateEvenement.getOneDayAfter();
-			}
-			else {
-				dateDeCreation = dateEvenement;
-				dateOuvertureFiscale = dateEvenement;
-			}
-		}
-		return new InformationDeDateEtDeCreation(dateDeCreation, dateOuvertureFiscale, isCreation);
-	}
-
-	private static class InformationDeDateEtDeCreation {
-		RegDate dateDeCreation;
-		RegDate dateOuvertureFiscale;
-		boolean isCreation;
-
-		public InformationDeDateEtDeCreation(RegDate dateDeCreation, RegDate dateOuvertureFiscale, boolean isCreation) {
-			this.dateDeCreation = dateDeCreation;
-			this.dateOuvertureFiscale = dateOuvertureFiscale;
-			this.isCreation = isCreation;
-		}
-	}
 }

@@ -414,6 +414,8 @@ public class TiersServiceImpl implements TiersService {
 			appliqueDonneesCivilesSurPeriode(entreprise, new DateRangeHelper.Range(dateInscriptionVd, dateEvt.getOneDayBefore()), dateEvt);
 		}
 
+		// NOTE: C'est volontaire si le domicile n'est pas créé. Ca permet de le différencier d'un établissement préexistant dans Unireg.
+
 		final EvenementOrganisationErreur evtErreur = new EvenementOrganisationErreur();
 		evtErreur.setType(TypeEvenementErreur.SUIVI);
 		evtErreur.setMessage(String.format("Entreprise créée manuellement avec le numéro de contribuable %s et l'état initial %s pour l'organisation %s", entreprise.getNumero(), entreprise.getEtatActuel(), noOrganisation));

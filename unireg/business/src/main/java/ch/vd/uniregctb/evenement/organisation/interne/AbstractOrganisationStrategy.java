@@ -2,6 +2,7 @@ package ch.vd.uniregctb.evenement.organisation.interne;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.unireg.interfaces.organisation.data.Domicile;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.OrganisationHelper;
 import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
@@ -12,6 +13,7 @@ import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationOptions;
 import ch.vd.uniregctb.evenement.organisation.engine.translator.EvenementOrganisationTranslationStrategy;
 import ch.vd.uniregctb.evenement.organisation.interne.creation.CreateEntreprise;
 import ch.vd.uniregctb.tiers.Entreprise;
+import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeEvenementOrganisation;
 
 /**
@@ -225,7 +227,7 @@ public abstract class AbstractOrganisationStrategy implements EvenementOrganisat
 			}
 			/* Les deux dates sont nulles, les données de RCEnt sont invalides. */
 			else if (dateInscriptionVd == null) {
-				throw new EvenementOrganisationException("Date d'inscription au RC VD ou CH introuvable!");
+				throw new PasDeDateInscriptionRCVD();
 			}
 			/* Création si identique. */
 			else {
@@ -233,5 +235,85 @@ public abstract class AbstractOrganisationStrategy implements EvenementOrganisat
 			}
 		}
 		return false;
+	}
+
+	protected InformationDeDateEtDeCreation extraireInformationDeDateEtDeCreation(EvenementOrganisation event, Organisation organisation) throws EvenementOrganisationException {
+		final RegDate dateEvenement = event.getDateEvenement();
+
+		SiteOrganisation sitePrincipal = organisation.getSitePrincipal(dateEvenement).getPayload();
+		final Domicile siege = sitePrincipal.getDomicile(dateEvenement);
+		final boolean isVaudoise = siege.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD;
+		final boolean inscritAuRC = organisation.isInscritAuRC(dateEvenement);
+		final RegDate dateInscriptionRCVd;
+		final RegDate dateInscriptionRC;
+		final RegDate dateDeCreation;
+		final RegDate dateOuvertureFiscale;
+		final boolean isCreation;
+		if (inscritAuRC) {
+			dateInscriptionRCVd = sitePrincipal.getDateInscriptionRCVd(dateEvenement);
+			if (isVaudoise && dateInscriptionRCVd == null) {
+				throw new PasDeDateInscriptionRCVD();
+			}
+			dateInscriptionRC = sitePrincipal.getDateInscriptionRC(dateEvenement);
+			isCreation = isCreation(event.getType(), organisation,
+			                        dateEvenement); // On ne peut pas l'appeler avant car on doit d'abord s'assurer que l'inscription RC VD existe si on est inscrit au RC et vaudois.
+			if (isCreation) {
+				if (isVaudoise) {
+					dateDeCreation = dateInscriptionRCVd;
+					dateOuvertureFiscale = dateInscriptionRCVd.getOneDayAfter();
+				}
+				else {
+					dateDeCreation = dateInscriptionRC;
+					dateOuvertureFiscale = dateInscriptionRC;
+				}
+			}
+			else { // Une arrivée
+				dateDeCreation = dateInscriptionRCVd;
+				dateOuvertureFiscale = dateInscriptionRCVd;
+			}
+		}
+		else {
+			isCreation = isCreation(event.getType(), organisation, dateEvenement);
+			if (isCreation && isVaudoise) {
+				dateDeCreation = dateEvenement;
+				dateOuvertureFiscale = dateEvenement.getOneDayAfter();
+			}
+			else {
+				dateDeCreation = dateEvenement;
+				dateOuvertureFiscale = dateEvenement;
+			}
+		}
+		return new InformationDeDateEtDeCreation(dateDeCreation, dateOuvertureFiscale, isCreation);
+	}
+
+	protected static class PasDeDateInscriptionRCVD extends EvenementOrganisationException {
+
+		public PasDeDateInscriptionRCVD() {
+			super("Date d'inscription au régistre vaudois du commerce introuvable pour l'établissement principal vaudois.");
+		}
+	}
+
+	protected static class InformationDeDateEtDeCreation {
+		RegDate dateDeCreation;
+		RegDate dateOuvertureFiscale;
+		boolean isCreation;
+
+		public InformationDeDateEtDeCreation(RegDate dateDeCreation, RegDate dateOuvertureFiscale, boolean isCreation) {
+			this.dateDeCreation = dateDeCreation;
+			this.dateOuvertureFiscale = dateOuvertureFiscale;
+			this.isCreation = isCreation;
+		}
+
+		public RegDate getDateDeCreation() {
+			return dateDeCreation;
+		}
+
+		public RegDate getDateOuvertureFiscale() {
+			return dateOuvertureFiscale;
+		}
+
+		public boolean isCreation() {
+			return isCreation;
+		}
 	}
 }
