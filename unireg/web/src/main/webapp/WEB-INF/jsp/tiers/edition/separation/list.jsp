@@ -20,7 +20,7 @@
 				<legend><span><fmt:message key="label.criteres.recherche"/></span></legend>
 				<form:errors  cssClass="error"/>
 				<jsp:include page="../../recherche/form.jsp">
-					<jsp:param name="typeRecherche" value="couple" />
+					<jsp:param name="typeRecherche" value="separation" />
 					<jsp:param name="prefixeEffacer" value="/separation" />
 				</jsp:include>
 			</fieldset>
