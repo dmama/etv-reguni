@@ -11,10 +11,10 @@
 
 	<c:if test="${not empty command.autresDocumentsFiscaux}">
 		<display:table name="${command.autresDocumentsFiscaux}" id="docFiscal" requestURI="visu.do" class="display" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator">
-			<display:column sortable="true" titleKey="label.type">
+			<display:column sortable="true" titleKey="label.autre.document.fiscal.type.document">
 				${docFiscal.libelleTypeDocument}
 			</display:column>
-			<display:column sortable="true" titleKey="label.type">
+			<display:column sortable="true" titleKey="label.autre.document.fiscal.soustype.document">
 				${docFiscal.libelleSousType}
 			</display:column>
 			<display:column sortable ="true" titleKey="label.date.envoi" sortProperty="dateEnvoi">
