@@ -721,6 +721,8 @@ public class CreateEntreprisePMProcessorTest extends AbstractEvenementOrganisati
 				                             final Entreprise entreprise = tiersDAO.getEntrepriseByNumeroOrganisation(evt.getNoOrganisation());
 				                             Assert.assertEquals(2, entreprise.getRegimesFiscaux().size());
 
+				                             Assert.assertEquals(date(2015, 1, 1), entreprise.getDateDebutPremierExerciceCommercial());
+
 				                             ForFiscalPrincipal forFiscalPrincipal = (ForFiscalPrincipal) entreprise.getForsFiscauxValidAt(date(2015, 6, 20)).get(0);
 				                             Assert.assertEquals(date(2015, 6, 20), forFiscalPrincipal.getDateDebut());
 

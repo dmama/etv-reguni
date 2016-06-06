@@ -110,6 +110,9 @@ public abstract class CreateEntreprise extends EvenementOrganisationInterneDeTra
 				appliqueDonneesCivilesSurPeriode(etablissementSecondaire, new DateRangeHelper.Range(dateDeCreation, getDateEvt().getOneDayBefore()), getDateEvt(), warnings, suivis);
 			}
 		}
+		if (!isCreation()) {
+			regleDateDebutPremierExerciceCommercial(getEntreprise(), dateDeCreation, suivis);
+		}
 	}
 
 	@Override
