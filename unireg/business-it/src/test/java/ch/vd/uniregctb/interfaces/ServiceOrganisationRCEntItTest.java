@@ -27,6 +27,8 @@ import org.springframework.util.ResourceUtils;
 import org.xml.sax.SAXException;
 
 import ch.vd.evd0022.v3.OrganisationData;
+import ch.vd.evd0022.v3.OrganisationLocation;
+import ch.vd.evd0022.v3.TypeOfLocation;
 import ch.vd.evd0023.v3.ObjectFactory;
 import ch.vd.unireg.interfaces.organisation.ServiceOrganisationRaw;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
@@ -114,7 +116,17 @@ public class ServiceOrganisationRCEntItTest extends BusinessItTest {
 		OrganisationData data = client.getOrganisation(ID_BCV, null, true);
 		Assert.assertNotNull(data);
 		Assert.assertEquals(ID_BCV, data.getOrganisationSnapshot().get(0).getOrganisation().getCantonalId().longValue());
-		Assert.assertEquals(NOM_BCV, data.getOrganisationSnapshot().get(0).getOrganisation().getOrganisationLocation().get(0).getName());
+
+		// la BCV possède maintenant, depuis le chargement REE, quelques établissements secondaires... il faut donc trouver l'établissement principal
+		boolean foundPrincipal = false;
+		for (OrganisationLocation location : data.getOrganisationSnapshot().get(0).getOrganisation().getOrganisationLocation()) {
+			if (location.getTypeOfLocation() == TypeOfLocation.ETABLISSEMENT_PRINCIPAL) {
+				Assert.assertFalse(foundPrincipal);     // on ne doit le trouver qu'une seule fois !
+				foundPrincipal = true;
+				Assert.assertEquals(NOM_BCV, location.getName());
+			}
+		}
+		Assert.assertTrue(foundPrincipal);
 	}
 
 	@Test
@@ -123,7 +135,17 @@ public class ServiceOrganisationRCEntItTest extends BusinessItTest {
 		OrganisationData data = client.getOrganisation(ID_BCV, null, true);
 		Assert.assertNotNull(data);
 		Assert.assertEquals(ID_BCV, data.getOrganisationSnapshot().get(0).getOrganisation().getCantonalId().longValue());
-		Assert.assertEquals(NOM_BCV, data.getOrganisationSnapshot().get(0).getOrganisation().getOrganisationLocation().get(0).getName());
+
+		// la BCV possède maintenant, depuis le chargement REE, quelques établissements secondaires... il faut donc trouver l'établissement principal
+		boolean foundPrincipal = false;
+		for (OrganisationLocation location : data.getOrganisationSnapshot().get(0).getOrganisation().getOrganisationLocation()) {
+			if (location.getTypeOfLocation() == TypeOfLocation.ETABLISSEMENT_PRINCIPAL) {
+				Assert.assertFalse(foundPrincipal);     // on ne doit le trouver qu'une seule fois !
+				foundPrincipal = true;
+				Assert.assertEquals(NOM_BCV, location.getName());
+			}
+		}
+		Assert.assertTrue(foundPrincipal);
 	}
 
 	@Test
@@ -133,7 +155,17 @@ public class ServiceOrganisationRCEntItTest extends BusinessItTest {
 		OrganisationData data = (OrganisationData) ((JAXBElement) createMarshaller(false).unmarshal(new StringReader(xml))).getValue();
 		Assert.assertNotNull(data);
 		Assert.assertEquals(ID_BCV, data.getOrganisationSnapshot().get(0).getOrganisation().getCantonalId().longValue());
-		Assert.assertEquals(NOM_BCV, data.getOrganisationSnapshot().get(0).getOrganisation().getOrganisationLocation().get(0).getName());
+
+		// la BCV possède maintenant, depuis le chargement REE, quelques établissements secondaires... il faut donc trouver l'établissement principal
+		boolean foundPrincipal = false;
+		for (OrganisationLocation location : data.getOrganisationSnapshot().get(0).getOrganisation().getOrganisationLocation()) {
+			if (location.getTypeOfLocation() == TypeOfLocation.ETABLISSEMENT_PRINCIPAL) {
+				Assert.assertFalse(foundPrincipal);     // on ne doit le trouver qu'une seule fois !
+				foundPrincipal = true;
+				Assert.assertEquals(NOM_BCV, location.getName());
+			}
+		}
+		Assert.assertTrue(foundPrincipal);
 	}
 
 	@Test
@@ -143,7 +175,17 @@ public class ServiceOrganisationRCEntItTest extends BusinessItTest {
 		OrganisationData data = (OrganisationData) ((JAXBElement) createMarshaller(true).unmarshal(new StringReader(xml))).getValue();
 		Assert.assertNotNull(data);
 		Assert.assertEquals(ID_BCV, data.getOrganisationSnapshot().get(0).getOrganisation().getCantonalId().longValue());
-		Assert.assertEquals(NOM_BCV, data.getOrganisationSnapshot().get(0).getOrganisation().getOrganisationLocation().get(0).getName());
+
+		// la BCV possède maintenant, depuis le chargement REE, quelques établissements secondaires... il faut donc trouver l'établissement principal
+		boolean foundPrincipal = false;
+		for (OrganisationLocation location : data.getOrganisationSnapshot().get(0).getOrganisation().getOrganisationLocation()) {
+			if (location.getTypeOfLocation() == TypeOfLocation.ETABLISSEMENT_PRINCIPAL) {
+				Assert.assertFalse(foundPrincipal);     // on ne doit le trouver qu'une seule fois !
+				foundPrincipal = true;
+				Assert.assertEquals(NOM_BCV, location.getName());
+			}
+		}
+		Assert.assertTrue(foundPrincipal);
 	}
 
 	@Test
