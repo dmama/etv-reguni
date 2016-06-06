@@ -46,7 +46,7 @@ public class DefaultCorrectionCivilEchTranslationStrategy implements EvenementCi
 
 	private static List<IndividuComparisonStrategy> buildStrategies(ServiceInfrastructureService serviceInfrastructureService) {
 		final List<IndividuComparisonStrategy> strategies = new ArrayList<>();
-		strategies.add(new AdresseContactComparisonStrategy());
+//		strategies.add(new AdresseContactComparisonStrategy());     // [SIFISC-18231] finalement enlevé...
 		strategies.add(new AdresseResidencePrincipaleComparisonStrategy(serviceInfrastructureService));
 		strategies.add(new AdresseResidenceSecondaireComparisonStrategy(serviceInfrastructureService));
 		strategies.add(new DateDecesComparisonStrategy());

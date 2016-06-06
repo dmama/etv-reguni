@@ -879,6 +879,9 @@ public class DefaultCorrectionCivilEchTranslationStrategyTest extends AbstractEv
 		});
 	}
 
+	/**
+	 * [SIFISC-18231] les modifications dans l'adresse de contact ne sont plus considérées comme problématique fiscalement
+	 */
 	@Test(timeout = 10000L)
 	public void testModificationAdresseContact() throws Exception {
 
@@ -934,15 +937,12 @@ public class DefaultCorrectionCivilEchTranslationStrategyTest extends AbstractEv
 			public Object doInTransaction(TransactionStatus status) {
 				final EvenementCivilEch evt = evtCivilDAO.get(idEvtCorrection);
 				Assert.assertNotNull(evt);
-				Assert.assertEquals(EtatEvenementCivil.EN_ERREUR, evt.getEtat());
-				Assert.assertEquals("L'élément suivant a été modifié par la correction : adresse de contact (apparition).", evt.getCommentaireTraitement());
+				Assert.assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
+				Assert.assertEquals("Événement traité sans modification Unireg.", evt.getCommentaireTraitement());
 
 				final Set<EvenementCivilEchErreur> erreurs = evt.getErreurs();
 				Assert.assertNotNull(erreurs);
-				Assert.assertEquals(1, erreurs.size());
-
-				final EvenementCivilEchErreur erreur = erreurs.iterator().next();
-				Assert.assertEquals("Traitement automatique non implémenté. Veuillez effectuer cette opération manuellement.", erreur.getMessage());
+				Assert.assertEquals(0, erreurs.size());
 				return null;
 			}
 		});
@@ -1358,7 +1358,7 @@ public class DefaultCorrectionCivilEchTranslationStrategyTest extends AbstractEv
 				final EvenementCivilEch evt = evtCivilDAO.get(idEvtCorrection);
 				Assert.assertNotNull(evt);
 				Assert.assertEquals(EtatEvenementCivil.EN_ERREUR, evt.getEtat());
-				Assert.assertEquals("Les éléments suivants ont été modifiés par la correction : adresse de contact (apparition), adresse de résidence principale (apparition), date de l'événement, date de naissance, état civil, nationalité (apparition), permis (apparition), relations (conj...", evt.getCommentaireTraitement());
+				Assert.assertEquals("Les éléments suivants ont été modifiés par la correction : adresse de résidence principale (apparition), date de l'événement, date de naissance, état civil, nationalité (apparition), permis (apparition), relations (conjoints (apparition)).", evt.getCommentaireTraitement());
 
 				final Set<EvenementCivilEchErreur> erreurs = evt.getErreurs();
 				Assert.assertNotNull(erreurs);
