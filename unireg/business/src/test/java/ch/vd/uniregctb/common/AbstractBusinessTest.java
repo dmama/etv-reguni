@@ -690,7 +690,7 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
         f.setDateFin(fin);
 	    f.setMotifFermeture(motifFermeture);
         f.setGenreImpot(GenreImpot.DEBITEUR_PRESTATION_IMPOSABLE);
-        f.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
+        f.setTypeAutoriteFiscale(commune.isVaudoise() ? TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD : TypeAutoriteFiscale.COMMUNE_HC);
         f.setNumeroOfsAutoriteFiscale(commune.getNoOFS());
         if (dpi.getDernierForDebiteur() == null) {
             tiersService.adaptPremierePeriodicite(dpi, debut);

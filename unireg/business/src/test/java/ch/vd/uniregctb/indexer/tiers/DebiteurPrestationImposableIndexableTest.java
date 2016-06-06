@@ -8,8 +8,10 @@ import java.util.Set;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.uniregctb.common.BusinessTest;
@@ -30,6 +32,7 @@ import ch.vd.uniregctb.type.TypeAdresseTiers;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 
 @SuppressWarnings({"JavaDoc"})
@@ -487,5 +490,43 @@ public class DebiteurPrestationImposableIndexableTest extends BusinessTest {
 			final TiersIndexedData dataDpi = resultats.get(0);
 			assertEquals(idDpi, dataDpi.getNumero());
 		}
+	}
+
+	/**
+	 * [SIFISC-19217] pour les DPI, ce qui est indexé comme date de premier for vaudois est en fait
+	 * la date de début de la dernière période d'activité vaudoise continue
+	 */
+	@Test
+	public void testDatesForsVaudois() throws Exception {
+
+		// création d'un DPI
+		final Long id = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2010, 1, 1));
+				addForDebiteur(dpi, date(2010, 1, 1), MotifFor.DEBUT_PRESTATION_IS, date(2010, 12, 31), MotifFor.DEMENAGEMENT_SIEGE, MockCommune.Lausanne);
+				addForDebiteur(dpi, date(2011, 1, 1), MotifFor.DEMENAGEMENT_SIEGE, date(2011, 10, 31), MotifFor.DEMENAGEMENT_SIEGE, MockCommune.YverdonLesBains);
+				addForDebiteur(dpi, date(2011, 11, 1), MotifFor.DEMENAGEMENT_SIEGE, date(2011, 12, 31), MotifFor.DEMENAGEMENT_SIEGE, MockCommune.Bern);
+				addForDebiteur(dpi, date(2012, 1, 1), MotifFor.DEMENAGEMENT_SIEGE, date(2012, 12, 31), MotifFor.DEMENAGEMENT_SIEGE, MockCommune.Cossonay);
+				addForDebiteur(dpi, date(2013, 1, 1), MotifFor.DEMENAGEMENT_SIEGE, null, null, MockCommune.Echallens);
+				return dpi.getNumero();
+			}
+		});
+
+		globalTiersIndexer.sync();
+
+		// vérification des dates stockées dans l'indexeur
+		final TiersCriteria criteria = new TiersCriteria();
+		criteria.setNumero(id);
+		final List<TiersIndexedData> resultats = globalTiersSearcher.search(criteria);
+		assertNotNull(resultats);
+		assertEquals(1, resultats.size());
+
+		final TiersIndexedData data = resultats.get(0);
+		assertEquals(id, data.getNumero());
+		assertEquals(date(2012, 1, 1), RegDateHelper.get(data.getDateOuvertureForVd()));
+		assertNull(data.getDateFermetureForVd());
+		assertEquals(date(2013, 1, 1), RegDateHelper.get(data.getDateOuvertureFor()));
+		assertNull(data.getDateFermetureFor());
 	}
 }

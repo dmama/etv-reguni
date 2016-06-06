@@ -1,13 +1,17 @@
 package ch.vd.uniregctb.indexer.tiers;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import ch.vd.registre.base.date.DateRange;
+import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
 import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.avatar.AvatarService;
+import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.indexer.IndexerException;
 import ch.vd.uniregctb.indexer.IndexerFormatHelper;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
@@ -27,6 +31,7 @@ import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.MotifFor;
+import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
 public class DebiteurPrestationImposableIndexable extends TiersIndexable<DebiteurPrestationImposable> {
 
@@ -169,13 +174,20 @@ public class DebiteurPrestationImposableIndexable extends TiersIndexable<Debiteu
 		// Fors vaudois
 		RegDate dateOuvertureForVd = null;
 		RegDate dateFermetureForVd = null;
-		ForFiscal premierVd = tiers.getPremierForFiscalVd();
-		if (premierVd != null) {
-			dateOuvertureForVd = premierVd.getDateDebut();
+
+		// [SIFISC-19217] ce qui nous intéresse pour les DPI, c'est la dernière présence vaudoise continue
+		final List<ForFiscal> tousForsNonAnnules = tiers.getForsFiscauxNonAnnules(true);
+		final List<ForFiscal> forsVaudois = new ArrayList<>(tousForsNonAnnules.size());
+		for (ForFiscal ff : tousForsNonAnnules) {
+			if (ff.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
+				forsVaudois.add(ff);
+			}
 		}
-		ForFiscal dernierVd = tiers.getDernierForFiscalVd();
-		if (dernierVd != null) {
-			dateFermetureForVd = dernierVd.getDateFin();
+		final List<DateRange> rangesVaudois = DateRangeHelper.merge(forsVaudois);
+		if (rangesVaudois != null && !rangesVaudois.isEmpty()) {
+			final DateRange lastRange = CollectionsUtils.getLastElement(rangesVaudois);
+			dateOuvertureForVd = lastRange.getDateDebut();
+			dateFermetureForVd = lastRange.getDateFin();
 		}
 
 		data.setNoOfsForPrincipal(noOfsFfpActif);
