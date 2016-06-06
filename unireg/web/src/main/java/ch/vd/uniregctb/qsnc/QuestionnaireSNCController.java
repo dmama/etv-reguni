@@ -258,7 +258,7 @@ public class QuestionnaireSNCController {
 
 		if (pfManquantes.isEmpty()) {
 			// si aucune pf n'est manquante, on ne peut en fait pas rajouter de questionnaire... retour à l'envoyeur
-			Flash.error("Tous les questionnaires ont déjà été envoyés.");
+			Flash.error("Aucune période fiscale (passée ou présente) identifiée pour l'envoi d'un nouveau questionnaire SNC.");
 			return "redirect:list.do?tiersId=" + tiersId;
 		}
 		else if (pfManquantes.size() == 1) {
