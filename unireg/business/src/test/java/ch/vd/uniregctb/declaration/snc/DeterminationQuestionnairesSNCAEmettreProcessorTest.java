@@ -53,8 +53,9 @@ public class DeterminationQuestionnairesSNCAEmettreProcessorTest extends Busines
 		final PeriodeFiscaleDAO periodeFiscaleDAO = getBean(PeriodeFiscaleDAO.class, "periodeFiscaleDAO");
 		final AdresseService adresseService = getBean(AdresseService.class, "adresseService");
 		final ValidationService validationService = getBean(ValidationService.class, "validationService");
+		final QuestionnaireSNCService qsncService = getBean(QuestionnaireSNCService.class, "qsncService");
 		tacheDAO = getBean(TacheDAO.class, "tacheDAO");
-		processor = new DeterminationQuestionnairesSNCAEmettreProcessor(parametreAppService, transactionManager, periodeFiscaleDAO, hibernateTemplate, tiersService, adresseService, validationService, tacheDAO);
+		processor = new DeterminationQuestionnairesSNCAEmettreProcessor(parametreAppService, transactionManager, periodeFiscaleDAO, hibernateTemplate, tiersService, adresseService, validationService, tacheDAO, qsncService);
 
 		// on place la première période d'envoi des questionnaires SNC en 2013 pour faciliter les tests
 		premierePeriodeEnvoi = parametreAppService.getPremierePeriodeFiscaleDeclarationsPersonnesMorales();
@@ -1092,17 +1093,17 @@ public class DeterminationQuestionnairesSNCAEmettreProcessorTest extends Busines
 		final DeterminationQuestionnairesSNCResults res = processor.run(pf, dateTraitement, 1, null);
 		Assert.assertNotNull(res);
 		Assert.assertEquals(1, res.getNbContribuablesInspectes());
-		Assert.assertEquals(1, res.getErreurs().size());
-		Assert.assertEquals(0, res.getIgnores().size());
+		Assert.assertEquals(0, res.getErreurs().size());
+		Assert.assertEquals(1, res.getIgnores().size());
 		Assert.assertEquals(0, res.getTraites().size());
 
-		// erreur en raison de la catégorie d'entreprise qui est mauvaise
-		final DeterminationQuestionnairesSNCResults.Erreur erreur = res.getErreurs().get(0);
-		Assert.assertNotNull(erreur);
-		Assert.assertEquals(pmId, erreur.noCtb);
-		Assert.assertEquals("Ma société de personnes", erreur.nomCtb);
-		Assert.assertEquals((Integer) ServiceInfrastructureService.noOIPM, erreur.officeImpotID);
-		Assert.assertEquals(DeterminationQuestionnairesSNCResults.ErreurType.MAUVAISE_CATEGORIE_ENTREPRISE, erreur.type);
-		Assert.assertEquals("[]", erreur.details);
+		// ignoré en raison de la catégorie d'entreprise qui est mauvaise
+		final DeterminationQuestionnairesSNCResults.Ignore ignore = res.getIgnores().get(0);
+		Assert.assertNotNull(ignore);
+		Assert.assertEquals(pmId, ignore.noCtb);
+		Assert.assertEquals("Ma société de personnes", ignore.nomCtb);
+		Assert.assertEquals((Integer) ServiceInfrastructureService.noOIPM, ignore.officeImpotID);
+		Assert.assertEquals(DeterminationQuestionnairesSNCResults.IgnoreType.AUCUN_QUESTIONNAIRE_REQUIS, ignore.type);
+		Assert.assertNull(ignore.details);
 	}
 }

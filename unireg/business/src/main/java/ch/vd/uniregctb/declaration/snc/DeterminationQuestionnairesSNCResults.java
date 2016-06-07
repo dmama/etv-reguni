@@ -1,10 +1,8 @@
 package ch.vd.uniregctb.declaration.snc;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
@@ -17,7 +15,6 @@ import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.TacheAnnulationQuestionnaireSNC;
 import ch.vd.uniregctb.tiers.TacheEnvoiQuestionnaireSNC;
 import ch.vd.uniregctb.tiers.TiersService;
-import ch.vd.uniregctb.type.CategorieEntreprise;
 
 public class DeterminationQuestionnairesSNCResults extends JobResults<Long, DeterminationQuestionnairesSNCResults> {
 
@@ -63,7 +60,6 @@ public class DeterminationQuestionnairesSNCResults extends JobResults<Long, Dete
 
 	public enum ErreurType {
 		CTB_INVALIDE("Le contribuable n'est pas valide"),
-		MAUVAISE_CATEGORIE_ENTREPRISE("Mauvaise catégorie d'entreprise"),
 		EXCEPTION(EXCEPTION_DESCRIPTION);
 
 		public final String description;
@@ -181,11 +177,6 @@ public class DeterminationQuestionnairesSNCResults extends JobResults<Long, Dete
 
 	public void addErrorCtbInvalide(Entreprise entreprise) {
 		erreurs.add(new Erreur(entreprise.getNumero(), getNom(entreprise), ErreurType.CTB_INVALIDE, null));
-	}
-
-	public void addErrorMauvaiseCategorieEntreprise(Entreprise entreprise, Set<CategorieEntreprise> categoriesTrouvees) {
-		final String msg = Arrays.toString(categoriesTrouvees.toArray(new CategorieEntreprise[categoriesTrouvees.size()]));
-		erreurs.add(new Erreur(entreprise.getNumero(), getNom(entreprise), ErreurType.MAUVAISE_CATEGORIE_ENTREPRISE, msg));
 	}
 
 	public void addTraiteAnnulationTacheAnnulation(Entreprise entreprise, TacheAnnulationQuestionnaireSNC tacheAnnulee) {
