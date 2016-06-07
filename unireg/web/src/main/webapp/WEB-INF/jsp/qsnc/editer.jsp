@@ -118,8 +118,19 @@
 			<!-- Bouton de rappel -->
 			<authz:authorize ifAnyGranted="ROLE_QSNC_RAPPEL">
 				<c:if test="${!depuisTache && !questionnaire.annule && questionnaire.rappelable}">
-					<unireg:buttonTo name="Envoyer rappel" confirm="Voulez-vous réellement générer le courrier de rappel ?"
-					                 action="/qsnc/rappel.do" method="post" params='{id:${questionnaire.id}}'/>
+					<input type="button" value="<fmt:message key="label.bouton.rappeler"/>" class="button_to" onclick="return EnvoiRappel.execute(${questionnaire.id});"/>
+					<script type="application/javascript">
+						var EnvoiRappel = {
+							execute: function(questionnaireId) {
+								if (!confirm('Voulez-vous réellement générer le courrier de rappel ?')) {
+									return false;
+								}
+								$(":button:not('#boutonRetour')").attr('disabled', true);
+								Form.dynamicSubmit('post', App.curl('/qsnc/rappel.do'), {id:questionnaireId});
+								return true;
+							}
+						};
+					</script>
 				</c:if>
 			</authz:authorize>
 
@@ -138,158 +149,6 @@
 				</c:if>
 			</authz:authorize>
 
-		<%--<c:if test="${!command.depuisTache}">--%>
-				<%--<unireg:buttonTo name="Retour" action="/qsnc/list.do" id="boutonRetour" method="get" params="{tiersId:${questionnaire.tiersId}}"/>--%>
-				<%--<c:if test="${command.allowedSommation && command.sommable}">--%>
-					<%--<input type="button" name="sommer" value="<fmt:message key="label.bouton.sommer" />"  onclick="return sommerDI(${command.id});" />--%>
-					<%--<script type="text/javascript">--%>
-						<%--function sommerDI(id) {--%>
-							<%--if(!confirm('Voulez-vous vraiment sommer cette déclaration d\'impôt ?')) {--%>
-								<%--return false;--%>
-							<%--}--%>
-							<%--$(":button:not('#boutonRetour')").attr('disabled', true);--%>
-							<%--Form.dynamicSubmit('post', App.curl('/di/sommer.do'), {id:id});--%>
-							<%--return true;--%>
-						<%--}--%>
-					<%--</script>--%>
-				<%--</c:if>--%>
-
-				<%--<!-- Duplicata DI -->--%>
-
-				<%--<c:if test="${command.allowedDuplicata}">--%>
-					<%--<c:choose>--%>
-
-						<%--<c:when test="${command.diPM}">--%>
-							<%--<input type="button" id="bouton_duplicata_pm" value="<fmt:message key="label.bouton.imprimer.duplicata" />" onclick="return open_imprime_di_pm(${command.id});">--%>
-							<%--<script type="text/javascript">--%>
-								<%--function open_imprime_di_pm(id) {--%>
-									<%--var dialog = Dialog.create_dialog_div('imprime-di-pm-dialog');--%>
-
-									<%--// charge le contenu de la boîte de dialogue--%>
-									<%--dialog.load(App.curl('/di/duplicata-pm.do') + '?id=' + id + '&' + new Date().getTime());--%>
-
-									<%--dialog.dialog({--%>
-										              <%--title: "Impression d'un duplicata",--%>
-										              <%--height: 350,--%>
-										              <%--width:  500,--%>
-										              <%--modal: true,--%>
-										              <%--buttons: {--%>
-											              <%--"Imprimer": function() {--%>
-												              <%--// les boutons ne font pas partie de la boîte de dialogue (au niveau du DOM), on peut donc utiliser le sélecteur jQuery normal--%>
-
-												              <%--// correction des nombres de feuilles invalides--%>
-												              <%--var form = dialog.find('#formImpression');--%>
-												              <%--var invalidNumbers = form.find(':text').filter(function() {return !(/^[0-9]+/.test(this.value));});--%>
-												              <%--invalidNumbers.val('0');--%>
-
-												              <%--// il doit y avoir au moins une feuille de demandée--%>
-												              <%--var nbtotal = 0;--%>
-												              <%--form.find(":text").each(function() {nbtotal += Number($(this).val());});--%>
-												              <%--if (nbtotal < 1) {--%>
-													              <%--alert("Il faut sélectionner au moins une feuille à imprimer !");--%>
-													              <%--return;--%>
-												              <%--}--%>
-
-												              <%--var buttons = $('.ui-button');--%>
-												              <%--buttons.each(function () {--%>
-													              <%--if ($(this).text() == 'Imprimer') {--%>
-														              <%--$(this).addClass('ui-state-disabled');--%>
-														              <%--$(this).attr('disabled', true);--%>
-													              <%--}--%>
-												              <%--});--%>
-
-												              <%--form.attr('action', App.curl('/di/duplicata-pm.do'));--%>
-												              <%--form.submit();--%>
-											              <%--},--%>
-											              <%--"Fermer": function() {--%>
-												              <%--dialog.dialog("close");--%>
-											              <%--}--%>
-										              <%--}--%>
-									              <%--});--%>
-								<%--}--%>
-							<%--</script>--%>
-						<%--</c:when>--%>
-
-						<%--<c:when test="${command.diPP}">--%>
-							<%--<input type="button" value="<fmt:message key="label.bouton.imprimer.duplicata" />" onclick="return open_imprime_di_pp(${command.id});">--%>
-							<%--<script type="text/javascript">--%>
-								<%--function open_imprime_di_pp(id) {--%>
-									<%--var dialog = Dialog.create_dialog_div('imprime-di-pp-dialog');--%>
-
-									<%--// charge le contenu de la boîte de dialogue--%>
-									<%--dialog.load(App.curl('/di/duplicata-pp.do') + '?id=' + id + '&' + new Date().getTime());--%>
-
-									<%--dialog.dialog({--%>
-										<%--title: "Impression d'un duplicata",--%>
-										<%--height: 350,--%>
-										<%--width:  500,--%>
-										<%--modal: true,--%>
-										<%--buttons: {--%>
-											<%--"Imprimer": function() {--%>
-												<%--// les boutons ne font pas partie de la boîte de dialogue (au niveau du DOM), on peut donc utiliser le sélecteur jQuery normal--%>
-
-												<%--var form = dialog.find('#formImpression');--%>
-												<%--var radiosave = form.find('input[id=radio-save]:checked').val();--%>
-												<%--var ischangetype = form.find('#changerType');--%>
-												<%--//si aucun bouton radio sélèctionné avec changement de type , on lève un message d'erreur--%>
-												<%--if (radiosave == null && ischangetype.attr("value") == 'true') {--%>
-													<%--alert('Veuillez préciser votre choix concernant la sauvegarde de type de document');--%>
-												<%--}--%>
-												<%--else {--%>
-
-													<%--// correction des nombres de feuilles invalides--%>
-													<%--var invalidNumbers = form.find(':text').filter(function() {return !(/^[0-9]+/.test(this.value));});--%>
-													<%--invalidNumbers.val('0');--%>
-
-													<%--// il doit y avoir au moins une feuille de demandée--%>
-													<%--var nbtotal = 0;--%>
-													<%--form.find(":text").each(function() {nbtotal += Number($(this).val());});--%>
-													<%--if (nbtotal < 1) {--%>
-														<%--alert("Il faut sélectionner au moins une feuille à imprimer !");--%>
-														<%--return;--%>
-													<%--}--%>
-
-													<%--var buttons = $('.ui-button');--%>
-													<%--buttons.each(function () {--%>
-														<%--if ($(this).text() == 'Imprimer') {--%>
-															<%--$(this).addClass('ui-state-disabled');--%>
-															<%--$(this).attr('disabled', true);--%>
-														<%--}--%>
-													<%--});--%>
-
-
-													<%--form.attr('action', App.curl('/di/duplicata-pp.do'));--%>
-													<%--form.submit();--%>
-												<%--}--%>
-
-											<%--},--%>
-											<%--"Fermer": function() {--%>
-												<%--dialog.dialog("close");--%>
-											<%--}--%>
-										<%--}--%>
-									<%--});--%>
-								<%--}--%>
-							<%--</script>--%>
-						<%--</c:when>--%>
-					<%--</c:choose>--%>
-				<%--</c:if>--%>
-			<%--</c:if>--%>
-
-			<%--<c:if test="${command.depuisTache}">--%>
-				<%--<unireg:buttonTo name="Retour" action="/tache/list.do" method="get" />--%>
-			<%--</c:if>--%>
-
-			<%--<!-- Annulation DI -->--%>
-			<%--<c:if test="${command.allowedSommation}">--%>
-				<%--<c:if test="${command.tacheId != null}">--%>
-					<%--<unireg:buttonTo name="Annuler déclaration" confirm="Voulez-vous vraiment annuler cette déclaration d'impôt ?"--%>
-					                 <%--action="/di/annuler.do" method="post" params='{id:${command.id},tacheId:${command.tacheId}}'/>--%>
-				<%--</c:if>--%>
-				<%--<c:if test="${command.tacheId == null}">--%>
-					<%--<unireg:buttonTo name="Annuler déclaration" confirm="Voulez-vous vraiment annuler cette déclaration d'impôt ?"--%>
-					                 <%--action="/di/annuler.do" method="post" params='{id:${command.id}}'/>--%>
-				<%--</c:if>--%>
-			<%--</c:if>--%>
 		</div>
 
 	</tiles:put>
