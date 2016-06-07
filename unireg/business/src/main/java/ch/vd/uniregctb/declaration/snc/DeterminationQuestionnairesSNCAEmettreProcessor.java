@@ -3,7 +3,6 @@ package ch.vd.uniregctb.declaration.snc;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -45,11 +44,8 @@ import ch.vd.uniregctb.hibernate.HibernateCallback;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
-import ch.vd.uniregctb.tiers.CategorieEntrepriseHisto;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.Entreprise;
-import ch.vd.uniregctb.tiers.ForFiscal;
-import ch.vd.uniregctb.tiers.ForFiscalRevenuFortune;
 import ch.vd.uniregctb.tiers.Tache;
 import ch.vd.uniregctb.tiers.TacheAnnulationQuestionnaireSNC;
 import ch.vd.uniregctb.tiers.TacheCriteria;
@@ -58,7 +54,6 @@ import ch.vd.uniregctb.tiers.TacheEnvoiQuestionnaireSNC;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.transaction.TransactionTemplate;
 import ch.vd.uniregctb.type.CategorieEntreprise;
-import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.TypeEtatTache;
 import ch.vd.uniregctb.type.TypeTache;
 import ch.vd.uniregctb.validation.ValidationService;
@@ -80,9 +75,10 @@ public class DeterminationQuestionnairesSNCAEmettreProcessor {
 	private final AdresseService adresseService;
 	private final ValidationService validationService;
 	private final TacheDAO tacheDAO;
+	private final QuestionnaireSNCService questionnaireSNCService;
 
 	public DeterminationQuestionnairesSNCAEmettreProcessor(ParametreAppService parametres, PlatformTransactionManager transactionManager, PeriodeFiscaleDAO periodeDAO, HibernateTemplate hibernateTemplate, TiersService tiersService,
-	                                                       AdresseService adresseService, ValidationService validationService, TacheDAO tacheDAO) {
+	                                                       AdresseService adresseService, ValidationService validationService, TacheDAO tacheDAO, QuestionnaireSNCService questionnaireSNCService) {
 		this.parametres = parametres;
 		this.transactionManager = transactionManager;
 		this.periodeDAO = periodeDAO;
@@ -91,6 +87,7 @@ public class DeterminationQuestionnairesSNCAEmettreProcessor {
 		this.adresseService = adresseService;
 		this.validationService = validationService;
 		this.tacheDAO = tacheDAO;
+		this.questionnaireSNCService = questionnaireSNCService;
 	}
 
 	public DeterminationQuestionnairesSNCResults run(final int periodeFiscale, final RegDate dateTraitement, final int nbThreads, StatusManager s) throws DeclarationException {
@@ -180,16 +177,8 @@ public class DeterminationQuestionnairesSNCAEmettreProcessor {
 
 		// un questionnaire SNC est dû dès qu'un for vaudois de genre d'impôt "IRF" est valide au moins un jour
 		// sur l'année civile de la période fiscale à traiter
-		final DateRange anneeCivile = new DateRangeHelper.Range(RegDate.get(periode.getAnnee(), 1, 1), RegDate.get(periode.getAnnee(), 12, 31));
-		final List<ForFiscal> fors = entreprise.getForsFiscauxNonAnnules(true);
-		final List<ForFiscal> forsVaudoisIRF = new ArrayList<>(fors.size());
-		for (ForFiscal ff : fors) {
-			if (ff instanceof ForFiscalRevenuFortune && ff.getGenreImpot() == GenreImpot.REVENU_FORTUNE && DateRangeHelper.intersect(anneeCivile, ff)) {
-				forsVaudoisIRF.add(ff);
-			}
-		}
-		final List<DateRange> ranges = DateRangeHelper.intersections(anneeCivile, DateRangeHelper.merge(forsVaudoisIRF));
-		final boolean hasVaudoisSurPeriode = ranges != null && !ranges.isEmpty();
+		final Set<Integer> periodesACouvrir = questionnaireSNCService.getPeriodesFiscalesTheoriquementCouvertes(entreprise, true);
+		final boolean hasVaudoisSurPeriode = periodesACouvrir.contains(periode.getAnnee());
 
 		// s'il faut une tâche
 		//      - s'il y a déjà un questionnaire, on ne fait pas de tâche
@@ -206,24 +195,7 @@ public class DeterminationQuestionnairesSNCAEmettreProcessor {
 
 		if (hasVaudoisSurPeriode) {
 			// il faut un questionnaire....
-
-			final List<CategorieEntrepriseHisto> categories = tiersService.getCategoriesEntrepriseHisto(entreprise);
-			final List<DateRange> rangesSocieteDePersonnes = new ArrayList<>(categories.size());
-			for (CategorieEntrepriseHisto categorie : categories) {
-				if (categorie.getCategorie() == CategorieEntreprise.SP) {
-					rangesSocieteDePersonnes.add(categorie);
-				}
-			}
-			if (!DateRangeHelper.intersect(anneeCivile, rangesSocieteDePersonnes)) {
-				final Set<CategorieEntreprise> trouvees = EnumSet.noneOf(CategorieEntreprise.class);
-				for (CategorieEntrepriseHisto trouvee : categories) {
-					if (DateRangeHelper.intersect(anneeCivile, trouvee)) {
-						trouvees.add(trouvee.getCategorie());
-					}
-				}
-				rapport.addErrorMauvaiseCategorieEntreprise(entreprise, trouvees);
-				return;
-			}
+			final DateRange anneeCivile = new DateRangeHelper.Range(RegDate.get(periode.getAnnee(), 1, 1), RegDate.get(periode.getAnnee(), 12, 31));
 
 			// si on a des tâches d'annulation, on les annule
 			annuleTout(tachesAnnulationExistantes, new Collector<TacheAnnulationQuestionnaireSNC>() {
@@ -242,7 +214,7 @@ public class DeterminationQuestionnairesSNCAEmettreProcessor {
 					                                                                        entreprise,
 					                                                                        anneeCivile.getDateDebut(),
 					                                                                        anneeCivile.getDateFin(),
-					                                                                        tiersService.getCategorieEntreprise(entreprise, ranges.get(ranges.size() - 1).getDateFin()),
+					                                                                        CategorieEntreprise.SP,
 					                                                                        oipm);
 					final TacheEnvoiQuestionnaireSNC saved = (TacheEnvoiQuestionnaireSNC) tacheDAO.save(envoi);
 

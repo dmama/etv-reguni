@@ -121,7 +121,7 @@ public class QuestionnaireSNCServiceImpl implements QuestionnaireSNCService {
 	@Override
 	public DeterminationQuestionnairesSNCResults determineQuestionnairesAEmettre(int periodeFiscale, RegDate dateTraitement, int nbThreads, StatusManager statusManager) throws DeclarationException {
 		final DeterminationQuestionnairesSNCAEmettreProcessor processor = new DeterminationQuestionnairesSNCAEmettreProcessor(parametreAppService, transactionManager, periodeDAO, hibernateTemplate, tiersService,
-		                                                                                                                      adresseService, validationService, tacheDAO);
+		                                                                                                                      adresseService, validationService, tacheDAO, this);
 		return processor.run(periodeFiscale, dateTraitement, nbThreads, statusManager);
 	}
 
