@@ -832,7 +832,7 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 			Assert.assertTrue(listEvtInterne.get(1) instanceof MessageSuiviPreExecution);
 			String message = getMessageFromMessageSuiviPreExecution((MessageSuiviPreExecution) listEvtInterne.get(1));
 			Assert.assertEquals(
-					String.format("Organisation civile n°%d rattachée à l'entreprise n°%d. Cependant, certains établissements n'ont pas trouvé d'équivalent civil: n°%s. Aussi des sites civils secondaires n'ont pas pu être rattachés et seront créés: n°%d",
+					String.format("Organisation civile n°%d rattachée à l'entreprise n°%d. Cependant, certains établissements n'ont pas trouvé d'équivalent civil: n°%s. Aussi des sites civils secondaires n'ont pas pu être rattachés et seront éventuellement créés: n°%d",
 					              noOrganisation, noEntreprise, FormatNumeroHelper.numeroCTBToDisplay(etablissement3Id), noSite2), message);
 		}
 		Assert.assertTrue(listEvtInterne.get(4) instanceof InformationComplementaire);
@@ -844,7 +844,10 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 			                             public Object doInTransaction(TransactionStatus status) {
 				                             final EvenementOrganisation evt = getUniqueEvent(noEvenement);
 				                             Assert.assertNotNull(evt);
-				                             Assert.assertEquals(EtatEvenementOrganisation.TRAITE, evt.getEtat());
+				                             Assert.assertEquals(EtatEvenementOrganisation.A_VERIFIER, evt.getEtat());
+
+				                             Assert.assertEquals("Refus de créer dans Unireg l'établissement Synergy Renens SA actuellement à Renens VD (n°102202101 civil) dont la fondation / déménagement remonte à 24.06.2010, 1837 jours avant la date de l'événement. La tolérance étant de 15 jours. Il y a probablement une erreur d'identification ou un problème de date.",
+				                                                 evt.getErreurs().get(3).getMessage());
 				                             return null;
 			                             }
 		                             }

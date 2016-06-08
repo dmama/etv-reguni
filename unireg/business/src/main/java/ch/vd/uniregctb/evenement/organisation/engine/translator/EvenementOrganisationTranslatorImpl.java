@@ -479,7 +479,7 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 				String messageSitesNonRattaches = null;
 				if (!result.getSitesNonRattaches().isEmpty()) {
 					String sitesNonRattaches = CollectionsUtils.toString(result.getSitesNonRattaches(), SITE_RENDERER, ", ");
-					messageSitesNonRattaches = String.format(" Aussi des sites civils secondaires n'ont pas pu être rattachés et seront créés: %s", sitesNonRattaches);
+					messageSitesNonRattaches = String.format(" Aussi des sites civils secondaires n'ont pas pu être rattachés et seront éventuellement créés: %s", sitesNonRattaches);
 				}
 
 				return new MessageSuiviPreExecution(event, organisation, entreprise, context, options,

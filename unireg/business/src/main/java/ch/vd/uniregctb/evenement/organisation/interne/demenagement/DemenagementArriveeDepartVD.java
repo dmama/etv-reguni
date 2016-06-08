@@ -1,9 +1,10 @@
 package ch.vd.uniregctb.evenement.organisation.interne.demenagement;
 
-import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.interfaces.organisation.data.Domicile;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
+import ch.vd.unireg.interfaces.organisation.data.OrganisationHelper;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationContext;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationException;
@@ -46,9 +47,6 @@ public class DemenagementArriveeDepartVD extends Demenagement {
 			} else {
 				dateDebutNouveauSiege = getDateApres();
 			}
-			if (dateDebutNouveauSiege.isBefore(getDateEvt())) {
-				appliqueDonneesCivilesSurPeriode(getEntreprise(), new DateRangeHelper.Range(dateDebutNouveauSiege, getDateEvt().getOneDayBefore()), getDateEvt(), warnings, suivis);
-			}
 		} else {
 		if (getSiegeAvant().getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_HC &&
 				getSiegeApres().getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
@@ -65,15 +63,30 @@ public class DemenagementArriveeDepartVD extends Demenagement {
 			if (getEntreprise().getDernierForFiscalPrincipal() == null) {
 				regleDateDebutPremierExerciceCommercial(getEntreprise(), getDateApres(), suivis);
 			}
-			if (dateDebutNouveauSiege.isBefore(getDateEvt())) {
-				appliqueDonneesCivilesSurPeriode(getEntreprise(), new DateRangeHelper.Range(dateDebutNouveauSiege, getDateEvt().getOneDayBefore()), getDateEvt(), warnings, suivis);
-			}
 		} else
 			throw new EvenementOrganisationException(String.format("Une combinaison non supportée de déplacement de siège est survenue. type avant: %s, type après: %s", getSiegeAvant().getTypeAutoriteFiscale(), getSiegeApres().getTypeAutoriteFiscale()));
 		}
 
+		// Création & vérification de la surcharge corrective s'il y a lieu
+		if (dateDebutNouveauSiege.isBefore(getDateEvt())) {
+			SurchargeCorrectiveRange surchargeCorrectiveRange = new SurchargeCorrectiveRange(dateDebutNouveauSiege, getDateEvt().getOneDayBefore());
+			verifieSurchargeAcceptable(dateDebutNouveauSiege, surchargeCorrectiveRange);
+			appliqueDonneesCivilesSurPeriode(getEntreprise(), surchargeCorrectiveRange, getDateEvt(), warnings, suivis);
+		}
 
 		effectueChangementSiege(motifFor, dateDebutNouveauSiege, warnings, suivis);
+	}
+
+	private void verifieSurchargeAcceptable(RegDate dateDebutNouveauSiege, SurchargeCorrectiveRange surchargeCorrectiveRange) throws EvenementOrganisationException {
+		if (!surchargeCorrectiveRange.isAcceptable()) {
+			throw new EvenementOrganisationException(
+					String.format("Refus de créer dans Unireg une entreprise dont le déménagement semble remonter à %s, %d jours avant la date de l'événement. La tolérance étant de %d jours. " +
+							              "Il y a probablement une erreur d'identification ou un problème de date.",
+					              RegDateHelper.dateToDisplayString(dateDebutNouveauSiege),
+					              surchargeCorrectiveRange.getEtendue(),
+					              OrganisationHelper.NB_JOURS_TOLERANCE_DE_DECALAGE_RC)
+			);
+		}
 	}
 
 	@Override

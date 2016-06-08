@@ -926,11 +926,14 @@ public abstract class EvenementOrganisationInterne {
 	 * @param dateValeur la date pour laquelle il faut rechercher les valeurs civiles dans RCEnt
 	 * @throws EvenementOrganisationException En cas de problème, notamment lorsque la surcharge existante empiète ou dépasse la date de valeur
 	 */
-	protected void appliqueDonneesCivilesSurPeriode(Entreprise entreprise, DateRange range, RegDate dateValeur, EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) throws EvenementOrganisationException {
+	protected void appliqueDonneesCivilesSurPeriode(Entreprise entreprise, SurchargeCorrectiveRange range, RegDate dateValeur, EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) throws EvenementOrganisationException {
 		suivis.addSuivi(String.format("Application de la surcharge civile entre le %s et le %s avec les valeurs du %s",
 		                              RegDateHelper.dateToDisplayString(range.getDateDebut()),
 		                              RegDateHelper.dateToDisplayString(range.getDateFin()),
 		                              RegDateHelper.dateToDisplayString(dateValeur)));
+
+		empecheSurchargeExcessive(range);
+
 		try {
 			getContext().getTiersService().appliqueDonneesCivilesSurPeriode(entreprise, range, dateValeur);
 		}
@@ -953,11 +956,14 @@ public abstract class EvenementOrganisationInterne {
 	 * @param dateValeur la date pour laquelle il faut rechercher les valeurs civiles dans RCEnt
 	 * @throws EvenementOrganisationException En cas de problème, notamment lorsque la surcharge existante empiète ou dépasse la date de valeur
 	 */
-	protected void appliqueDonneesCivilesSurPeriode(Etablissement etablissement, DateRange range, RegDate dateValeur, EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) throws EvenementOrganisationException {
+	protected void appliqueDonneesCivilesSurPeriode(Etablissement etablissement, SurchargeCorrectiveRange range, RegDate dateValeur, EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) throws EvenementOrganisationException {
 		suivis.addSuivi(String.format("Application de la surcharge civile entre le %s et le %s avec les valeurs du %s",
 		                              RegDateHelper.dateToDisplayString(range.getDateDebut()),
 		                              RegDateHelper.dateToDisplayString(range.getDateFin()),
 		                              RegDateHelper.dateToDisplayString(dateValeur)));
+
+		empecheSurchargeExcessive(range);
+
 		try {
 			getContext().getTiersService().appliqueDonneesCivilesSurPeriode(etablissement, range, dateValeur);
 		}
@@ -965,6 +971,44 @@ public abstract class EvenementOrganisationInterne {
 			throw new EvenementOrganisationException(String.format("Impossible d'appliquer la surcharge des données civiles: %s", e.getMessage()));
 		}
 		raiseStatusTo(HandleStatus.TRAITE);
+	}
+
+	protected static class SurchargeCorrectiveRange extends DateRangeHelper.Range {
+
+		public SurchargeCorrectiveRange(RegDate debut, RegDate fin) {
+			super(debut, fin);
+		}
+
+		/**
+		 * @return le nombre de jour d'une borne à l'autre incluses.
+		 */
+		public int getEtendue() {
+			return RegDateHelper.getDaysBetween(getDateDebut(), getDateFin()) + 1;
+		}
+
+		/**
+		 * @return si l'étendue de la surcharge est plus petite ou égale à la tolérance de décalage avec le RC {@link OrganisationHelper#NB_JOURS_TOLERANCE_DE_DECALAGE_RC}
+		 */
+		public boolean isAcceptable() {
+			final int tolerance = OrganisationHelper.NB_JOURS_TOLERANCE_DE_DECALAGE_RC;
+			return getEtendue() <= tolerance;
+		}
+	}
+
+	private void empecheSurchargeExcessive(SurchargeCorrectiveRange range) throws EvenementOrganisationException {
+		if (!range.isAcceptable()) {
+			throw new SurchageCorrectiveExcessiveException(
+					String.format("Refus d'appliquer la surcharge civile sur une période plus large (%d jours) que la tolérance admise de %d jours.",
+					              range.getEtendue(),
+					              OrganisationHelper.NB_JOURS_TOLERANCE_DE_DECALAGE_RC
+					));
+		}
+	}
+
+	protected static class SurchageCorrectiveExcessiveException extends EvenementOrganisationException {
+		public SurchageCorrectiveExcessiveException(String message) {
+			super(message);
+		}
 	}
 
 	protected boolean hasCapital(Organisation organisation, RegDate date) {

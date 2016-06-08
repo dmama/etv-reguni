@@ -6,7 +6,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
 
-import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.interfaces.organisation.data.Domicile;
@@ -124,10 +123,34 @@ public class EtablissementsSecondaires extends EvenementOrganisationInterneDeTra
 						dateCreation = aCreer.getDateInscriptionRC(dateApres);
 					}
 				}
-				final Etablissement nouvelEtablissement = addEtablissementSecondaire(aCreer, dateCreation, warnings, suivis);
-				if (dateCreation.isBefore(dateApres)) {
-					appliqueDonneesCivilesSurPeriode(nouvelEtablissement, new DateRangeHelper.Range(dateCreation, dateApres.getOneDayBefore()), dateApres, warnings, suivis);
+				// Création de la surcharge corrective s'il y a lieu
+				SurchargeCorrectiveRange surchargeCorrectiveRange = null;
+				if (dateCreation.isBefore(getDateEvt())) {
+					surchargeCorrectiveRange = new SurchargeCorrectiveRange(dateCreation, getDateEvt().getOneDayBefore());
 				}
+				// On a une surcharge corrective, vérifier avant de créer.
+				if (surchargeCorrectiveRange != null) {
+					if (surchargeCorrectiveRange.isAcceptable()) {
+						final Etablissement nouvelEtablissement = addEtablissementSecondaire(aCreer, dateCreation, warnings, suivis);
+						appliqueDonneesCivilesSurPeriode(nouvelEtablissement, surchargeCorrectiveRange, getDateEvt(), warnings, suivis);
+					} else {
+						String message = String.format("Refus de créer dans Unireg l'établissement %s actuellement à %s (n°%d civil) dont la fondation / déménagement remonte à %s, %d jours avant la date de l'événement. La tolérance étant de %d jours. " +
+								                               "Il y a probablement une erreur d'identification ou un problème de date.",
+						                               aCreer.getNom(getDateEvt()),
+						                               getContext().getServiceInfra().getCommuneByNumeroOfs(aCreer.getDomicile(getDateEvt()).getNoOfs(), getDateEvt()).getNomOfficielAvecCanton(),
+						                               aCreer.getNumeroSite(),
+						                               RegDateHelper.dateToDisplayString(dateCreation),
+						                               surchargeCorrectiveRange.getEtendue(),
+						                               OrganisationHelper.NB_JOURS_TOLERANCE_DE_DECALAGE_RC);
+
+						warnings.addWarning(message);
+					}
+				}
+				// On n'a pas de surcharge corrective.
+				else {
+					addEtablissementSecondaire(aCreer, dateCreation, warnings, suivis);
+				}
+
 				// Contrôle du cas ou on va crée un établissement existant mais qu'on ne connaissait pas. On le crée quand même mais on avertit.
 				String ancienNom = aCreer.getNom(dateAvant);
 				if (ancienNom != null) {

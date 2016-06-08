@@ -3,7 +3,6 @@ package ch.vd.uniregctb.evenement.organisation.interne.creation;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.util.Assert;
 
-import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.interfaces.organisation.data.Domicile;
@@ -93,21 +92,36 @@ public abstract class CreateEntreprise extends EvenementOrganisationInterneDeTra
 
 	@Override
 	public void doHandle(EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) throws EvenementOrganisationException {
+		// Création & vérification de la surcharge corrective s'il y a lieu
+		SurchargeCorrectiveRange surchargeCorrectiveRange = null;
+		if (dateDeCreation.isBefore(getDateEvt())) {
+			surchargeCorrectiveRange = new SurchargeCorrectiveRange(dateDeCreation, getDateEvt().getOneDayBefore());
+			if (!surchargeCorrectiveRange.isAcceptable()) {
+				throw new EvenementOrganisationException(
+						String.format("Refus de créer dans Unireg une entreprise dont la fondation remonte à %s, %d jours avant la date de l'événement. La tolérance étant de %d jours. " +
+								              "Il y a probablement une erreur d'identification ou un problème de date.",
+						              RegDateHelper.dateToDisplayString(dateDeCreation),
+						              surchargeCorrectiveRange.getEtendue(),
+						              OrganisationHelper.NB_JOURS_TOLERANCE_DE_DECALAGE_RC)
+				);
+			}
+		}
 
 		// Création de l'entreprise
 		createEntreprise(dateDeCreation, suivis);
 
 		// Création de l'établissement principal
 		createAddEtablissement(sitePrincipal.getNumeroSite(), autoriteFiscalePrincipale, true, dateDeCreation, suivis);
+
 		if (dateDeCreation.isBefore(getDateEvt())) {
-			appliqueDonneesCivilesSurPeriode(getEntreprise(), new DateRangeHelper.Range(dateDeCreation, getDateEvt().getOneDayBefore()), getDateEvt(), warnings, suivis);
+			appliqueDonneesCivilesSurPeriode(getEntreprise(), surchargeCorrectiveRange, getDateEvt(), warnings, suivis);
 		}
 
 		// Création des établissement secondaires
 		for (SiteOrganisation site : getOrganisation().getSitesSecondaires(getDateEvt())) {
 			Etablissement etablissementSecondaire = addEtablissementSecondaire(site, dateDeCreation, warnings, suivis);
 			if (dateDeCreation.isBefore(getDateEvt())) {
-				appliqueDonneesCivilesSurPeriode(etablissementSecondaire, new DateRangeHelper.Range(dateDeCreation, getDateEvt().getOneDayBefore()), getDateEvt(), warnings, suivis);
+				appliqueDonneesCivilesSurPeriode(etablissementSecondaire, surchargeCorrectiveRange, getDateEvt(), warnings, suivis);
 			}
 		}
 		if (!isCreation()) {
