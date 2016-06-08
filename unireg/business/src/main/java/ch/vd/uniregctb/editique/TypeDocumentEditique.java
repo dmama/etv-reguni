@@ -34,7 +34,7 @@ public enum TypeDocumentEditique {
 	//
 
 	QSNC("U1PQQSNC", null, "impressionQSNC"),
-	RAPPEL_SQNC("U1PRQSNC", "999", "rappelQSNC"),       // TODO 999 à remplacer
+	RAPPEL_SQNC("U1PRQSNC", "406", "rappelQSNC"),
 
 	//
 	// Autour des listes récapitulatives IS
