@@ -1,9 +1,15 @@
 #! /bin/bash -
 
-if [ -z "$1" ]; then
-	echo "Syntaxe : $(basename "$0") destinataire@domain.com ..." >&2
+if [ "$#" -lt 2 ]; then
+	echo "Syntaxe : $(basename "$0") threshold-days destinataire@domain.com ..." >&2
+	exit 1
+elif [[ ! "$1" =~ ^[1-9][0-9]*$ ]]; then
+	echo "Le seuil en jours doit être un nombre entier positif" >&2
 	exit 1
 fi
+
+THRESHOLD_DAYS=$1
+shift 1
 
 # cherchons le dernier rapport d'exécution du batch de statistiques des événements
 BASE_DIR=~/logs/PR/repository
@@ -39,9 +45,9 @@ LAST_REPORT=$(find_last_report)
 if [ -n "$LAST_REPORT" ]; then
 	if [ -r "$LAST_REPORT" ]; then
 		MODIF_TS=$(stat --format="%Y" "$LAST_REPORT")
-		A_WEEK_AGO=$(date --date="7 days ago" +"%s")
+		A_WEEK_AGO=$(date --date="$THRESHOLD_DAYS days ago" +"%s")
 		if [ "$MODIF_TS" -lt "$A_WEEK_AGO" ]; then
-			echo "Le fichier $LAST_REPORT est vieux de plus d'une semaine... Il n'a donc pas été envoyé."
+			echo "Le fichier $LAST_REPORT est vieux de plus de $THRESHOLD_DAYS jour(s)... Il n'a donc pas été envoyé."
 		else
 			mail_body | mutt -a "$LAST_REPORT" -s "Statistiques des événements reçus par UNIREG en production" -- "$@"
 			echo "Le fichier $LAST_REPORT a été envoyé à $(echo "$@" | xargs | sed -e 's/ /, /g')"
