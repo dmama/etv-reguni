@@ -44,7 +44,7 @@
 	<!-- Décommenter avant usage -->
 	<root>
 		<level value="ERROR" />
-		<!--<appender-ref ref="LOGFILE" />-->
-		<!--<appender-ref ref="CONSOLE" />-->
+		<appender-ref ref="LOGFILE" />
+		<appender-ref ref="CONSOLE" />
 	</root>
 </log4j:configuration>

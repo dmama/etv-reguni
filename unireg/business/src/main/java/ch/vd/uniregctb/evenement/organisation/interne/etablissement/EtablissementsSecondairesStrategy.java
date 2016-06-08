@@ -123,6 +123,7 @@ public class EtablissementsSecondairesStrategy extends AbstractOrganisationStrat
 			for (SiteOrganisation presentSite : sitesApres) {
 				if (ancienSite.getNumeroSite() == presentSite.getNumeroSite()) {
 					disparu = false;
+					break;
 				}
 			}
 			if (disparu) {
@@ -137,8 +138,7 @@ public class EtablissementsSecondairesStrategy extends AbstractOrganisationStrat
 			boolean nouveau = true;
 			for (SiteOrganisation ancienSite : sitesAvant) {
 				if (presentSite.getNumeroSite() == ancienSite.getNumeroSite()) {
-					Etablissement etablissement = context.getTiersDAO().getEtablissementByNumeroSite(ancienSite.getNumeroSite());
-					nouveau = etablissement == null;
+					nouveau = false;
 					break;
 				}
 			}
