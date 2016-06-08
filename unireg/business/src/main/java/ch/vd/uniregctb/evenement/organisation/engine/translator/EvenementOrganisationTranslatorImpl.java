@@ -28,6 +28,7 @@ import ch.vd.uniregctb.data.DataEventService;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
 import ch.vd.uniregctb.evenement.identification.contribuable.CriteresEntreprise;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
+import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationCappingLevelProvider;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationContext;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationException;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationOptions;
@@ -122,7 +123,7 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 	private AssujettissementService assujettissementService;
 	private ParametreAppService parametreAppService;
 	private boolean useOrganisationsOfNotice;
-	private NiveauCappingEtat niveauCappingEtatEvenement;
+	private EvenementOrganisationCappingLevelProvider cappingLevelProvider;
 
 	/*
 	 * Non injecté mais créé ci-dessous dans afterPropertiesSet()
@@ -372,21 +373,24 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 		}
 
 		// [SIFISC-19214] blindage "capping" de l'état final de l'événement organisation
-		if (niveauCappingEtatEvenement != null) {
-			evenements.add(buildEvenementInterneCapping(event, organisation, entreprise, context, options));
+		final NiveauCappingEtat etatCapping = cappingLevelProvider != null ? cappingLevelProvider.getNiveauCapping() : null;
+		if (etatCapping != null) {
+			evenements.add(buildEvenementInterneCapping(event, organisation, entreprise, context, options, etatCapping));
 		}
 
 		return new EvenementOrganisationInterneComposite(event, organisation, evenements.get(0).getEntreprise(), context, options, evenements);
 	}
 
-	private EvenementOrganisationInterne buildEvenementInterneCapping(EvenementOrganisation event, Organisation organisation, Entreprise entreprise, EvenementOrganisationContext context, EvenementOrganisationOptions options) {
-		switch (niveauCappingEtatEvenement) {
+	private static EvenementOrganisationInterne buildEvenementInterneCapping(EvenementOrganisation event, Organisation organisation, Entreprise entreprise,
+	                                                                         EvenementOrganisationContext context, EvenementOrganisationOptions options,
+	                                                                         @NotNull NiveauCappingEtat etatCapping) {
+		switch (etatCapping) {
 		case A_VERIFIER:
 			return new CappingAVerifier(event, organisation, entreprise, context, options);
 		case EN_ERREUR:
 			return new CappingEnErreur(event, organisation, entreprise, context, options);
 		default:
-			throw new IllegalArgumentException("Valeur du niveau de capping non-supportée : " + niveauCappingEtatEvenement);
+			throw new IllegalArgumentException("Valeur du niveau de capping non-supportée : " + etatCapping);
 		}
 	}
 
@@ -562,7 +566,7 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
-	public void setNiveauCappingEtatEvenement(NiveauCappingEtat niveauCappingEtatEvenement) {
-		this.niveauCappingEtatEvenement = niveauCappingEtatEvenement;
+	public void setCappingLevelProvider(EvenementOrganisationCappingLevelProvider cappingLevelProvider) {
+		this.cappingLevelProvider = cappingLevelProvider;
 	}
 }

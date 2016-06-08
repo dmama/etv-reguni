@@ -35,7 +35,6 @@ import ch.vd.uniregctb.common.Flash;
 import ch.vd.uniregctb.common.ParamPagination;
 import ch.vd.uniregctb.common.WebParamPagination;
 import ch.vd.uniregctb.evenement.common.AbstractEvenementCivilController;
-import ch.vd.uniregctb.evenement.organisation.engine.translator.NiveauCappingEtat;
 import ch.vd.uniregctb.evenement.organisation.manager.EvenementOrganisationManager;
 import ch.vd.uniregctb.evenement.organisation.view.EvenementOrganisationCriteriaView;
 import ch.vd.uniregctb.evenement.organisation.view.EvenementOrganisationElementListeRechercheView;
@@ -60,7 +59,7 @@ public class EvenementOrganisationController extends AbstractEvenementCivilContr
 	private TiersMapHelper tiersMapHelper;
 	private EvenementOrganisationManager manager;
 	private Validator validator;
-	private NiveauCappingEtat capping;
+	private EvenementOrganisationCappingLevelProvider cappingLevelProvider;
 
 	@SuppressWarnings("UnusedDeclaration")
 	public void setTiersMapHelper(TiersMapHelper tiersMapHelper) {
@@ -78,8 +77,8 @@ public class EvenementOrganisationController extends AbstractEvenementCivilContr
 	}
 
 	@SuppressWarnings("UnusedDeclaration")
-	public void setCapping(NiveauCappingEtat capping) {
-		this.capping = capping;
+	public void setCappingLevelProvider(EvenementOrganisationCappingSwitch cappingLevelProvider) {
+		this.cappingLevelProvider = cappingLevelProvider;
 	}
 
 	@InitBinder("evenementOrganisationCriteria")
@@ -104,7 +103,7 @@ public class EvenementOrganisationController extends AbstractEvenementCivilContr
 		model.put("typesRechercheNom", tiersMapHelper.getMapTypeRechercheNom());
 		model.put("typesEvenementOrganisation", tiersMapHelper.getMapTypeEvenementOrganisation());
 		model.put("etatsEvenement", tiersMapHelper.getMapEtatsEvenementOrganisation());
-		model.put("capping", capping);
+		model.put("capping", cappingLevelProvider.getNiveauCapping());
 		return model;
 	}
 

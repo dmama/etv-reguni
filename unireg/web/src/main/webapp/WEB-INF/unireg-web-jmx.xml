@@ -108,6 +108,7 @@
 	<bean name="evenementsOrganisationJmxBean" class="ch.vd.uniregctb.jmx.EvenementsOrganisationJmxBeanImpl">
 		<property name="monitor" ref="evtOrganisationReceptionHandler"/>
 		<property name="processor" ref="evtOrganisationProcessor"/>
+		<property name="cappingSwitch" ref="evenementOrganisationTraitementCapping"/>
 	</bean>
 
 	<bean name="retourImpressionJmxBean" class="ch.vd.uniregctb.jmx.RetourImpressionJmxBeanImpl">

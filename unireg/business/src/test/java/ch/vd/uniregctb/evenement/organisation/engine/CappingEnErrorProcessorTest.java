@@ -22,6 +22,7 @@ import ch.vd.uniregctb.evenement.fiscal.EvenementFiscal;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalDAO;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
+import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationCappingLevelProvider;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationErreur;
 import ch.vd.uniregctb.evenement.organisation.engine.translator.EvenementOrganisationTranslatorImpl;
 import ch.vd.uniregctb.evenement.organisation.engine.translator.NiveauCappingEtat;
@@ -104,7 +105,12 @@ public class CappingEnErrorProcessorTest extends AbstractEvenementOrganisationPr
 		translator.setEvenementFiscalService(getBean(EvenementFiscalService.class, "evenementFiscalService"));
 		translator.setParametreAppService(getBean(ParametreAppService.class, "parametreAppService"));
 		translator.setUseOrganisationsOfNotice(false);
-		translator.setNiveauCappingEtatEvenement(NiveauCappingEtat.EN_ERREUR);
+		translator.setCappingLevelProvider(new EvenementOrganisationCappingLevelProvider() {
+			@Override
+			public NiveauCappingEtat getNiveauCapping() {
+				return NiveauCappingEtat.EN_ERREUR;
+			}
+		});
 		translator.afterPropertiesSet();
 		buildProcessor(translator);
 

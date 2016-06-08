@@ -1,14 +1,15 @@
 package ch.vd.uniregctb.jmx;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.jmx.export.annotation.ManagedAttribute;
-import org.springframework.jmx.export.annotation.ManagedOperation;
 import org.springframework.jmx.export.annotation.ManagedResource;
 
+import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationCappingSwitch;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationProcessingMode;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationReceptionMonitor;
 import ch.vd.uniregctb.evenement.organisation.engine.processor.EvenementOrganisationProcessor;
+import ch.vd.uniregctb.evenement.organisation.engine.translator.NiveauCappingEtat;
 
 @ManagedResource
 public class EvenementsOrganisationJmxBeanImpl implements EvenementsOrganisationJmxBean {
@@ -16,8 +17,8 @@ public class EvenementsOrganisationJmxBeanImpl implements EvenementsOrganisation
 	private static final Logger LOGGER = LoggerFactory.getLogger(EvenementsOrganisationJmxBeanImpl.class);
 
 	private EvenementOrganisationReceptionMonitor monitor;
-
 	private EvenementOrganisationProcessor processor;
+	private EvenementOrganisationCappingSwitch cappingSwitch;
 
 	@SuppressWarnings("UnusedDeclaration")
 	public void setMonitor(EvenementOrganisationReceptionMonitor monitor) {
@@ -29,38 +30,37 @@ public class EvenementsOrganisationJmxBeanImpl implements EvenementsOrganisation
 		this.processor = processor;
 	}
 
+	@SuppressWarnings("UnusedDeclaration")
+	public void setCappingSwitch(EvenementOrganisationCappingSwitch cappingSwitch) {
+		this.cappingSwitch = cappingSwitch;
+	}
+
 	@Override
-	@ManagedAttribute
 	public int getNbMeaningfullEventsReceived() {
 		return monitor.getNombreEvenementsNonIgnores();
 	}
 
 	@Override
-	@ManagedAttribute
 	public int getNbOrganisationsAwaitingTreatment() {
 		return monitor.getNombreOrganisationsEnAttenteDeTraitement();
 	}
 
 	@Override
-	@ManagedAttribute
 	public int getNbOrganisationsAwaitingInBatchQueue() {
 		return monitor.getNombreOrganisationsEnAttenteDansLaQueueBatch();
 	}
 
 	@Override
-	@ManagedAttribute
 	public int getNbOrganisationsAwaitingInImmediateQueue() {
 		return monitor.getNombreOrganisationsEnAttenteDansLaQueueImmediate();
 	}
 
 	@Override
-	@ManagedAttribute
 	public int getNbOrganisationsMovingToFinalQueue() {
 		return monitor.getNombreOrganisationsEnTransitionVersLaQueueFinale();
 	}
 
 	@Override
-	@ManagedAttribute
 	public int getNbOrganisationsAwaitingInFinalQueue() {
 		return monitor.getNombreOrganisationsEnAttenteDansLaQueueFinale();
 	}
@@ -86,16 +86,32 @@ public class EvenementsOrganisationJmxBeanImpl implements EvenementsOrganisation
 	}
 
 	@Override
-	@ManagedOperation
 	public void treatOrganisationEvents(long noOrganisation) {
 		LOGGER.info("Demande de relance des événements civils de l'organisation " + noOrganisation + " par JMX");
 		monitor.demanderTraitementQueue(noOrganisation, EvenementOrganisationProcessingMode.IMMEDIATE);
 	}
 
 	@Override
-	@ManagedOperation
 	public void restartProcessingThread(boolean agressiveKill) {
 		LOGGER.info("Demande de redémarrage du thread de traitement des événements oganisation par JMX");
 		processor.restartProcessingThread(agressiveKill);
+	}
+
+	@Override
+	public String getProcessingCappingLevel() {
+		final NiveauCappingEtat niveau = cappingSwitch.getNiveauCapping();
+		return niveau != null ? niveau.name() : null;
+	}
+
+	@Override
+	public void setProcessingCappingLevel(String level) {
+		final NiveauCappingEtat niveau;
+		if (StringUtils.isBlank(level)) {
+			niveau = null;
+		}
+		else {
+			niveau = NiveauCappingEtat.valueOf(level);
+		}
+		cappingSwitch.setNiveauCapping(niveau);
 	}
 }
