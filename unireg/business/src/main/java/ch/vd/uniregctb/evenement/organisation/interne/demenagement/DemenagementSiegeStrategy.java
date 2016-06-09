@@ -140,7 +140,7 @@ public class DemenagementSiegeStrategy extends AbstractOrganisationStrategy {
 
 					// Quelques garde fous (expliqués dans le commentaire plus haut)
 					if (communeDeSiegeAvant.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
-						if (communeDeSiegeAvant.getTypeAutoriteFiscale() != TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
+						if (communeDeSiegeApres.getTypeAutoriteFiscale() != TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
 							return new TraitementManuel(event, organisation, entreprise, context, options,
 							                            String.format(
 									                            "L'entreprise %s vaudoise est rattachée à une organisation qui n'était pas connu de RCEnt avant aujourd'hui. RCEnt aurait du déjà la connaître." +
