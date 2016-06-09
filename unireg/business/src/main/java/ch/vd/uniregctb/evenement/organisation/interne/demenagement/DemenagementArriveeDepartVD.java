@@ -41,7 +41,7 @@ public class DemenagementArriveeDepartVD extends Demenagement {
 			if (getSitePrincipalApres().isInscritAuRC(getDateApres())) {
 				final RegDate dateRadiationRCVd = getSitePrincipalApres().getDateRadiationRCVd(getDateApres());
 				if (dateRadiationRCVd == null) {
-					throw new EvenementOrganisationException("Date de radiation au régistre vaudois du commerce introuvable pour l'établissement principal en partance.");
+					throw new EvenementOrganisationException("Date de radiation au registre vaudois du commerce introuvable pour l'établissement principal en partance.");
 				}
 				dateDebutNouveauSiege = dateRadiationRCVd;
 			} else {
@@ -54,7 +54,7 @@ public class DemenagementArriveeDepartVD extends Demenagement {
 			if (getSitePrincipalApres().isInscritAuRC(getDateApres())) {
 				final RegDate dateInscriptionRCVd = getSitePrincipalApres().getDateInscriptionRCVd(getDateApres());
 				if (dateInscriptionRCVd == null) {
-					throw new EvenementOrganisationException("Date d'inscription au régistre vaudois du commerce introuvable pour l'établissement principal en arrivée.");
+					throw new EvenementOrganisationException("Date d'inscription au registre vaudois du commerce introuvable pour l'établissement principal en arrivée.");
 				}
 				dateDebutNouveauSiege = dateInscriptionRCVd;
 			} else {

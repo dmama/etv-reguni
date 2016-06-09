@@ -967,7 +967,7 @@ public class DemenagementTest extends AbstractEvenementOrganisationProcessorTest
 				                             final Etablissement etablissement = tiersService.getEtablissementsPrincipauxEntreprise(entreprise).get(0).getPayload();
 				                             Assert.assertNotNull(etablissement);
 
-				                             Assert.assertEquals("Date d'inscription au régistre vaudois du commerce introuvable pour l'établissement principal vaudois.",
+				                             Assert.assertEquals("Date d'inscription au registre vaudois du commerce introuvable pour l'établissement principal vaudois.",
 				                                                 evt.getErreurs().get(3).getMessage());
 
 				                             return null;

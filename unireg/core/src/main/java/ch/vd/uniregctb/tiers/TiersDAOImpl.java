@@ -1075,7 +1075,7 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 	}
 
 	/**
-	 * Recherche l'Entreprise par son numéro d'organisation au régistre des entreprises.
+	 * Recherche l'Entreprise par son numéro d'organisation au registre des entreprises.
 	 *
 	 * <p>
 	 * Ne tiens pas compte des tiers entreprise annulés.
@@ -1102,7 +1102,7 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 	}
 
 	/**
-	 * Recherche l'établissement par son numéro de site au régistre des entreprises.
+	 * Recherche l'établissement par son numéro de site au registre des entreprises.
 	 *
 	 * <p>
 	 * Ne tiens pas compte des tiers etablissement annulés.

@@ -163,7 +163,7 @@ public class RadiationProcessorTest extends AbstractEvenementOrganisationProcess
 				                             Assert.assertNotNull(evtsFiscaux);
 				                             Assert.assertEquals(0, evtsFiscaux.size());
 
-				                             Assert.assertEquals("L'entreprise a été radiée du régistre du commerce.",
+				                             Assert.assertEquals("L'entreprise a été radiée du registre du commerce.",
 				                                                 evt.getErreurs().get(3).getMessage());
 				                             return null;
 			                             }

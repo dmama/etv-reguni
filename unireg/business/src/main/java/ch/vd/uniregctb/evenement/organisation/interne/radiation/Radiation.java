@@ -55,7 +55,7 @@ public class Radiation extends EvenementOrganisationInterneDeTraitement {
 		if (assujettie) {
 			warnings.addWarning("Vérification requise pour la radiation de l'entreprise encore assujettie.");
 		} else {
-			suivis.addSuivi("L'entreprise a été radiée du régistre du commerce.");
+			suivis.addSuivi("L'entreprise a été radiée du registre du commerce.");
 		}
 
 		raiseStatusTo(HandleStatus.TRAITE);

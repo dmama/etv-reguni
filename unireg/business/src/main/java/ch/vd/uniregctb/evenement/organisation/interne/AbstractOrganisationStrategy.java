@@ -289,7 +289,7 @@ public abstract class AbstractOrganisationStrategy implements EvenementOrganisat
 	protected static class PasDeDateInscriptionRCVD extends EvenementOrganisationException {
 
 		public PasDeDateInscriptionRCVD() {
-			super("Date d'inscription au régistre vaudois du commerce introuvable pour l'établissement principal vaudois.");
+			super("Date d'inscription au registre vaudois du commerce introuvable pour l'établissement principal vaudois.");
 		}
 	}
 
