@@ -66,8 +66,8 @@ public class EtablissementsSecondairesStrategy extends AbstractOrganisationStrat
 			Audit.info("Organisation nouvelle au civil mais déjà connue d'Unireg. Des établissements secondaires ont peut-être changé.");
 			// FIXME: Cela pose la question de savoir si on ne devrait pas utiliser Unireg comme "avant" dans ces cas là?
 			return new MessageWarningPreExectution(event, organisation, null, context, options,
-			                                       String.format("L'organisation n°%d est déjà connue d'Unireg, mais nouvelle au civil. Veuillez vérifier la transition entre les données du régistre " +
-					                                             "fiscal et du régistre civil, notamment les établissements secondaires.", organisation.getNumeroOrganisation()));
+			                                       String.format("L'organisation n°%d est déjà connue d'Unireg, mais nouvelle au civil. Veuillez vérifier la transition entre les données du registre " +
+					                                             "fiscal et du registre civil, notamment les établissements secondaires.", organisation.getNumeroOrganisation()));
 		} else {
 
 			List<SiteOrganisation> sitesVDAvant = uniquementSitesActifs(organisation.getSitesSecondaires(dateAvant), dateAvant);

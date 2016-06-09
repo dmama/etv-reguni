@@ -130,7 +130,7 @@ public class InscriptionProcessorTest extends AbstractEvenementOrganisationProce
 				                             Assert.assertNotNull(evtsFiscaux);
 				                             Assert.assertEquals(0, evtsFiscaux.size());
 
-				                             Assert.assertEquals("Une vérification manuelle est requise pour l'inscription au RC d’une entreprise déjà connue du régistre fiscale.",
+				                             Assert.assertEquals("Une vérification manuelle est requise pour l'inscription au RC d’une entreprise déjà connue du registre fiscale.",
 				                                                 evt.getErreurs().get(2).getMessage());
 
 				                             return null;
