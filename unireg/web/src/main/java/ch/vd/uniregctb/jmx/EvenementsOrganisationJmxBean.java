@@ -16,6 +16,9 @@ public interface EvenementsOrganisationJmxBean {
 	@ManagedAttribute(description = "Total number of organisations currently waiting in the batch queue")
 	int getNbOrganisationsAwaitingInBatchQueue();
 
+	@ManagedAttribute(description = "Total number of organisations currently waiting in the priority queue")
+	int getNbOrganisationsAwaitingInPriorityQueue();
+
 	@ManagedAttribute(description = "Total number of organisations currently waiting in the immediate queue")
 	int getNbOrganisationsAwaitingInImmediateQueue();
 
@@ -28,11 +31,17 @@ public interface EvenementsOrganisationJmxBean {
 	@ManagedAttribute(description = "Average waiting time (ms) in the batch queue during the last 5 minutes")
 	Long getSlidingAverageWaitingTimeInBatchQueue();
 
+	@ManagedAttribute(description = "Average waiting time (ms) in the priority queue during the last 5 minutes")
+	Long getSlidingAverageWaitingTimeInPriorityQueue();
+
 	@ManagedAttribute(description = "Average waiting time (ms) in the immediate queue during the last 5 minutes")
 	Long getSlidingAverageWaitingTimeInImmediateQueue();
 
 	@ManagedAttribute(description = "Overall average waiting time (ms) in the batch queue since application start")
 	Long getAverageWaitingTimeInBatchQueue();
+
+	@ManagedAttribute(description = "Overall average waiting time (ms) in the priority queue since application start")
+	Long getAverageWaitingTimeInPriorityQueue();
 
 	@ManagedAttribute(description = "Overall average waiting time (ms) in the immediate queue since application start")
 	Long getAverageWaitingTimeInImmediateQueue();

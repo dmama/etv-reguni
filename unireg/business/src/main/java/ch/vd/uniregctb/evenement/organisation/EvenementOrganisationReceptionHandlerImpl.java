@@ -72,13 +72,28 @@ public class EvenementOrganisationReceptionHandlerImpl implements EvenementOrgan
 	}
 
 	@Override
+	public int getNombreOrganisationsEnAttenteDansLaQueuePrioritaire() {
+		return notificationQueue.getInPriorityQueueCount();
+	}
+
+	@Override
 	public Long getMoyenneGlissanteDureeAttenteDansLaQueueBatch() {
 		return notificationQueue.getBulkQueueSlidingAverageAge();
 	}
 
 	@Override
+	public Long getMoyenneGlissanteDureeAttenteDansLaQueuePrioritaire() {
+		return notificationQueue.getPriorityQueueSlidingAverageAge();
+	}
+
+	@Override
 	public Long getMoyenneTotaleDureeAttenteDansLaQueueBatch() {
 		return notificationQueue.getBulkQueueGlobalAverageAge();
+	}
+
+	@Override
+	public Long getMoyenneTotaleDureeAttenteDansLaQueuePrioritaire() {
+		return notificationQueue.getPriorityQueueGlobalAverageAge();
 	}
 
 	@Override

@@ -165,6 +165,21 @@ public class EvenementOrganisationRetryProcessorTest extends BusinessTest {
 			}
 
 			@Override
+			public int getInPriorityQueueCount() {
+				throw new NotImplementedException();
+			}
+
+			@Override
+			public Long getPriorityQueueSlidingAverageAge() {
+				throw new NotImplementedException();
+			}
+
+			@Override
+			public Long getPriorityQueueGlobalAverageAge() {
+				throw new NotImplementedException();
+			}
+
+			@Override
 			public int getInImmediateQueueCount() {
 				throw new NotImplementedException();
 			}

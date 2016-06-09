@@ -27,6 +27,8 @@ public interface EvenementOrganisationReceptionMonitor {
 
 	int getNombreOrganisationsEnAttenteDansLaQueueBatch();
 
+	int getNombreOrganisationsEnAttenteDansLaQueuePrioritaire();
+
 	int getNombreOrganisationsEnTransitionVersLaQueueFinale();
 
 	int getNombreOrganisationsEnAttenteDansLaQueueFinale();
@@ -35,7 +37,11 @@ public interface EvenementOrganisationReceptionMonitor {
 
 	Long getMoyenneGlissanteDureeAttenteDansLaQueueBatch();
 
+	Long getMoyenneGlissanteDureeAttenteDansLaQueuePrioritaire();
+
 	Long getMoyenneTotaleDureeAttenteDansLaQueueImmediate();
 
 	Long getMoyenneTotaleDureeAttenteDansLaQueueBatch();
+
+	Long getMoyenneTotaleDureeAttenteDansLaQueuePrioritaire();
 }

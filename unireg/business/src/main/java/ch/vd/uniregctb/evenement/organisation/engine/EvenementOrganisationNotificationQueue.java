@@ -90,6 +90,21 @@ public interface EvenementOrganisationNotificationQueue {
 	Long getBulkQueueGlobalAverageAge();
 
 	/**
+	 * @return le nombre d'éléments actuellement en attente de traitement dans la queue interne "priority"
+	 */
+	int getInPriorityQueueCount();
+
+	/**
+	 * @return l'âge moyen (en millisecondes) d'un élément lorsqu'il passe de la queue interne "priority" à la queue finale sur les 5 dernières minutes
+	 */
+	Long getPriorityQueueSlidingAverageAge();
+
+	/**
+	 * @return l'âge moyen (en millisecondes) d'un élément lorsqu'il passe de la queue interne "priority" à la queue finale depuis le démarrage du service
+	 */
+	Long getPriorityQueueGlobalAverageAge();
+
+	/**
 	 * @return le nombre d'éléments actuellement en attente de traitement dans la queue interne "immediate"
 	 */
 	int getInImmediateQueueCount();

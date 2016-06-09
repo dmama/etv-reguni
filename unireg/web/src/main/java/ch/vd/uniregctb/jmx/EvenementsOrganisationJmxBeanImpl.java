@@ -51,6 +51,11 @@ public class EvenementsOrganisationJmxBeanImpl implements EvenementsOrganisation
 	}
 
 	@Override
+	public int getNbOrganisationsAwaitingInPriorityQueue() {
+		return monitor.getNombreOrganisationsEnAttenteDansLaQueuePrioritaire();
+	}
+
+	@Override
 	public int getNbOrganisationsAwaitingInImmediateQueue() {
 		return monitor.getNombreOrganisationsEnAttenteDansLaQueueImmediate();
 	}
@@ -73,6 +78,16 @@ public class EvenementsOrganisationJmxBeanImpl implements EvenementsOrganisation
 	@Override
 	public Long getAverageWaitingTimeInBatchQueue() {
 		return monitor.getMoyenneTotaleDureeAttenteDansLaQueueBatch();
+	}
+
+	@Override
+	public Long getSlidingAverageWaitingTimeInPriorityQueue() {
+		return monitor.getMoyenneGlissanteDureeAttenteDansLaQueuePrioritaire();
+	}
+
+	@Override
+	public Long getAverageWaitingTimeInPriorityQueue() {
+		return monitor.getMoyenneTotaleDureeAttenteDansLaQueuePrioritaire();
 	}
 
 	@Override

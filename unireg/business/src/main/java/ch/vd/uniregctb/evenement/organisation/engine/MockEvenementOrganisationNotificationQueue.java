@@ -43,6 +43,21 @@ public class MockEvenementOrganisationNotificationQueue implements EvenementOrga
 	}
 
 	@Override
+	public int getInPriorityQueueCount() {
+		return 0;
+	}
+
+	@Override
+	public Long getPriorityQueueSlidingAverageAge() {
+		return null;
+	}
+
+	@Override
+	public Long getPriorityQueueGlobalAverageAge() {
+		return null;
+	}
+
+	@Override
 	public int getInImmediateQueueCount() {
 		return 0;
 	}

@@ -302,6 +302,21 @@ import ch.vd.uniregctb.transaction.TransactionTemplate;
 	}
 
 	@Override
+	public int getInPriorityQueueCount() {
+		return priorityQueue.size();
+	}
+
+	@Override
+	public Long getPriorityQueueSlidingAverageAge() {
+		return mixer.getSlidingAverageAge(priorityQueue);
+	}
+
+	@Override
+	public Long getPriorityQueueGlobalAverageAge() {
+		return mixer.getGlobalAverageAge(priorityQueue);
+	}
+
+	@Override
 	public int getInImmediateQueueCount() {
 		return immediateQueue.size();
 	}
