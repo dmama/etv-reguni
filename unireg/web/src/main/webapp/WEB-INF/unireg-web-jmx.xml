@@ -47,7 +47,6 @@
 			<map>
 				<entry key="ch.vd.uniregctb-web:type=JmsListeners,name=EvenementsCivilsMasse" value-ref="evtCivilEchMasseEndpointManager"/>
 				<entry key="ch.vd.uniregctb-web:type=JmsListeners,name=EvenementsCivilsIndividuel" value-ref="evtCivilEchIndividuelEndpointManager"/>
-				<entry key="ch.vd.uniregctb-web:type=JmsListeners,name=EvenementsPM" value-ref="entrepriseEventEndpointManager"/>
 				<entry key="ch.vd.uniregctb-web:type=JmsListeners,name=RetourImpression" value-ref="evenementEditiqueEndpointManager"/>
 				<entry key="ch.vd.uniregctb-web:type=JmsListeners,name=EvenementsExternes" value-ref="evenementExterneEndpointManager"/>
 				<entry key="ch.vd.uniregctb-web:type=JmsListeners,name=EvenementsCedi" value-ref="evenementCediEndpointManager"/>
@@ -153,7 +152,6 @@
 			<map>
 				<entry key="EvenementsCivilsMasse" value-ref="evtCivilEchMasseListener"/>
 				<entry key="EvenementsCivilsIndividuel" value-ref="evtCivilEchIndividuelListener"/>
-				<entry key="EvenementsPM" value-ref="entrepriseEventListener"/>
 				<entry key="RetourImpression" value-ref="evenementEditiqueListener"/>
 				<entry key="EvenementsExternes" value-ref="evenementExterneListener"/>
 				<entry key="EvenementsCedi" value-ref="evenementCediListener"/>

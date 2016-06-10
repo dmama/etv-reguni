@@ -27,7 +27,7 @@ public class EvenementDeclarationPMSenderTest extends EvenementTest {
 	@Before
 	public void setUp() throws Exception {
 
-		OUTPUT_QUEUE = uniregProperties.getProperty("testprop.jms.queue.pm.event.input");
+		OUTPUT_QUEUE = uniregProperties.getProperty("testprop.jms.queue.evtDeclaration");
 
 		final RaftEsbStore esbStore = new RaftEsbStore();
 		esbStore.setEndpoint("TestRaftStore");

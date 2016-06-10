@@ -46,7 +46,6 @@
 			<map>
 				<entry key="evenementsCivilsMasse" value-ref="evtCivilEchMasseEndpointManager"/>
 				<entry key="evenementsCivilsIndividuel" value-ref="evtCivilEchIndividuelEndpointManager"/>
-				<entry key="evenementsPM" value-ref="entrepriseEventEndpointManager"/>
 				<entry key="retourImpression" value-ref="evenementEditiqueEndpointManager"/>
 				<entry key="evenementsExternes" value-ref="evenementExterneEndpointManager"/>
 				<entry key="evenementsCedi" value-ref="evenementCediEndpointManager"/>
