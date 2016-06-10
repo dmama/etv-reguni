@@ -5,6 +5,7 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 
@@ -285,8 +286,8 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 		final FichierImpression root = new FichierImpression();
 		final FichierImpression.Document document = impressionDIPMHelper.buildDocument(declaration, annexes);
 		root.getDocument().add(document);
-		if (!isDuplicata) {
-			// 2 exemplaires pour les envois originaux
+		if (!isDuplicata && impressionOrignalDoubleExemplaire(declaration)) {
+			// 2 exemplaires pour les envois originaux APM
 			root.getDocument().add(document);
 		}
 		final TypeDocumentEditique typeDocument = impressionDIPMHelper.getTypeDocumentEditique(declaration);
@@ -327,10 +328,28 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 		final FichierImpression root = new FichierImpression();
 		final FichierImpression.Document document = impressionDIPMHelper.buildDocument(declaration, buildDefaultAnnexesForBatch(declaration));
 		root.getDocument().add(document);
-		root.getDocument().add(document);       // 2 exemplaires pour les envois originaux
+		if (impressionOrignalDoubleExemplaire(declaration)) {
+			root.getDocument().add(document);       // 2 exemplaires pour les envois originaux
+		}
 		final TypeDocumentEditique typeDocument = impressionDIPMHelper.getTypeDocumentEditique(declaration);
 		final String nomDocument = impressionDIPMHelper.getIdDocument(declaration);
 		editiqueService.creerDocumentParBatch(nomDocument, typeDocument, root, false);
+	}
+
+	/**
+	 * Types des documents correspondant aux DI des entreprises pour lesquelle l'original doit être émis en double exemplaire
+	 */
+	private static final Set<TypeDocument> TYPES_DOCUMENT_DI_ENTREPRISE_ORIGNAL_DOUBLE_EXEMPLAIRE = EnumSet.of(TypeDocument.DECLARATION_IMPOT_APM_BATCH,
+	                                                                                                           TypeDocument.DECLARATION_IMPOT_APM_LOCAL);
+
+	/**
+	 * [SIFISC-19498] Les originaux de DI PM ne sont imprimés qu'en un seul exemplaire, alors que les originaux
+	 * de DI APM sont imprimés en deux exemplaires
+	 * @param declarationImpotOrdinairePM la déclaration à imprimer en original
+	 * @return <code>true</code> si l'impression doit se faire en deux exemplaires
+	 */
+	private static boolean impressionOrignalDoubleExemplaire(DeclarationImpotOrdinairePM declarationImpotOrdinairePM) {
+		return TYPES_DOCUMENT_DI_ENTREPRISE_ORIGNAL_DOUBLE_EXEMPLAIRE.contains(declarationImpotOrdinairePM.getTypeDeclaration());
 	}
 
 	@Override
