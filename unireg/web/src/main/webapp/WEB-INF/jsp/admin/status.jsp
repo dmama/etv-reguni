@@ -18,11 +18,22 @@
 
 		<fieldset class="info">
 			<legend><span><fmt:message key="title.info.data" /></span></legend>
-			<table>
-				<unireg:nextRowClass reset="1"/>
-				<tr class="<unireg:nextRowClass/>"><td><fmt:message key="label.info.db.nombre.tiers"/></td><td><span class="value"><c:out value="${tiersCount}"/></span></td></tr>
-				<tr class="<unireg:nextRowClass/>"><td><fmt:message key="label.info.indexer.nombre.docs"/></td><td><span class="value"><c:out value="${indexCount}"/></span></td></tr>
-			</table>
+			<fieldset class="info">
+				<legend><span><fmt:message key="label.info.tiers"/></span></legend>
+				<table>
+					<unireg:nextRowClass reset="1"/>
+					<tr class="<unireg:nextRowClass/>"><td style="width: 80%;"><fmt:message key="label.info.db.nombre.tiers"/></td><td><span class="value"><c:out value="${tiersCount}"/></span></td></tr>
+					<tr class="<unireg:nextRowClass/>"><td><fmt:message key="label.info.indexer.nombre.tiers"/></td><td><span class="value"><c:out value="${tiersIndexCount}"/></span></td></tr>
+				</table>
+			</fieldset>
+			<fieldset class="info">
+				<legend><span><fmt:message key="label.info.identifications"/></span></legend>
+				<table>
+					<unireg:nextRowClass reset="1"/>
+					<tr class="<unireg:nextRowClass/>"><td style="width: 80%;"><fmt:message key="label.info.db.nombre.identifications"/></td><td><span class="value"><c:out value="${identCount}"/></span></td></tr>
+					<tr class="<unireg:nextRowClass/>"><td><fmt:message key="label.info.indexer.nombre.identifications"/></td><td><span class="value"><c:out value="${identIndexCount}"/></span></td></tr>
+				</table>
+			</fieldset>
 		</fieldset>
 
 		<fieldset class="info">
@@ -30,7 +41,7 @@
 			<table class="display_table">
 				<thead>
 					<tr>
-						<th/><th>Etat</th>
+						<th>&nbsp;</th><th><fmt:message key="label.etat"/></th>
 					</tr>
 				</thead>
 				<tbody>
@@ -73,7 +84,7 @@
 			<c:out value="${cacheStatus}" escapeXml="false"/>
 		</fieldset>
 		
-		<script>
+		<script type="application/javascript">
 			$(function() {
 
 				// Chargement asynchrone des statuts des services

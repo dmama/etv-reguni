@@ -13,6 +13,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import ch.vd.registre.base.utils.ExceptionUtils;
 import ch.vd.uniregctb.checker.ServiceChecker;
 import ch.vd.uniregctb.common.HtmlHelper;
+import ch.vd.uniregctb.evenement.identification.contribuable.IdentCtbDAO;
+import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuable;
+import ch.vd.uniregctb.indexer.messageidentification.GlobalMessageIdentificationSearcher;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersSearcher;
 import ch.vd.uniregctb.stats.StatsService;
 import ch.vd.uniregctb.tiers.Tiers;
@@ -28,8 +31,12 @@ public class StatusController {
 
 	// private static final Logger LOGGER = LoggerFactory.getLogger(InfoController.class);
 
-	private TiersDAO dao;
-	private GlobalTiersSearcher globalSearcher;
+	private TiersDAO tiersDAO;
+	private GlobalTiersSearcher tiersSearcher;
+
+	private IdentCtbDAO identCtbDAO;
+	private GlobalMessageIdentificationSearcher identSearcher;
+
 	private CacheManager cacheManager;
 	private StatsService statsService;
 
@@ -41,12 +48,20 @@ public class StatusController {
 	private ServiceChecker serviceEFactureChecker;
 
 	@SuppressWarnings({"UnusedDeclaration"})
-	public void setGlobalSearcher(GlobalTiersSearcher globalSearcher) {
-		this.globalSearcher = globalSearcher;
+	public void setTiersSearcher(GlobalTiersSearcher tiersSearcher) {
+		this.tiersSearcher = tiersSearcher;
 	}
 
 	public void setTiersDAO(TiersDAO dao) {
-		this.dao = dao;
+		this.tiersDAO = dao;
+	}
+
+	public void setIdentCtbDAO(IdentCtbDAO identCtbDAO) {
+		this.identCtbDAO = identCtbDAO;
+	}
+
+	public void setIdentSearcher(GlobalMessageIdentificationSearcher identSearcher) {
+		this.identSearcher = identSearcher;
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
@@ -91,8 +106,10 @@ public class StatusController {
 	@Transactional(rollbackFor = Throwable.class, readOnly = true)
 	@RequestMapping(value = "/admin/status.do", method = RequestMethod.GET)
 	public String status(Model model) {
-		model.addAttribute("indexCount", getIndexCount());
+		model.addAttribute("tiersIndexCount", getTiersIndexCount());
 		model.addAttribute("tiersCount", getTiersCount());
+		model.addAttribute("identIndexCount", getIdentificationIndexCount());
+		model.addAttribute("identCount", getIdentificationCount());
 		model.addAttribute("cacheStatus", getCacheStatus());
 		model.addAttribute("serviceStats", getServiceStats());
 		return "/admin/status";
@@ -134,10 +151,10 @@ public class StatusController {
 		return new ServiceStatusView("serviceEFacture", serviceEFactureChecker);
 	}
 
-	private String getIndexCount() {
+	private String getTiersIndexCount() {
 		String indexCount;
 		try {
-			indexCount = String.valueOf(globalSearcher.getApproxDocCount());
+			indexCount = String.valueOf(tiersSearcher.getApproxDocCount());
 		}
 		catch (Exception e) {
 			indexCount = e.getMessage();
@@ -148,7 +165,29 @@ public class StatusController {
 	private String getTiersCount() {
 		String tiersCount;
 		try {
-			tiersCount = String.valueOf(dao.getCount(Tiers.class));
+			tiersCount = String.valueOf(tiersDAO.getCount(Tiers.class));
+		}
+		catch (Exception e) {
+			tiersCount = e.getMessage();
+		}
+		return tiersCount;
+	}
+
+	private String getIdentificationIndexCount() {
+		String indexCount;
+		try {
+			indexCount = String.valueOf(identSearcher.getApproxDocCount());
+		}
+		catch (Exception e) {
+			indexCount = e.getMessage();
+		}
+		return indexCount;
+	}
+
+	private String getIdentificationCount() {
+		String tiersCount;
+		try {
+			tiersCount = String.valueOf(identCtbDAO.getCount(IdentificationContribuable.class));
 		}
 		catch (Exception e) {
 			tiersCount = e.getMessage();

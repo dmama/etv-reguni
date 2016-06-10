@@ -3,8 +3,10 @@
 	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
 
 	<bean id="statusController" class="ch.vd.uniregctb.admin.status.StatusController">
-		<property name="globalSearcher" ref="globalTiersSearcher" />
+		<property name="tiersSearcher" ref="globalTiersSearcher" />
+		<property name="identSearcher" ref="globalMessageIdentificationSearcher"/>
 		<property name="tiersDAO" ref="tiersDAO" />
+		<property name="identCtbDAO" ref="identCtbDAO"/>
 		<property name="cacheManager" ref="ehCacheManager" />
 		<property name="statsService" ref="statsService" />
 		<property name="serviceCivilChecker" ref="serviceCivilChecker" />

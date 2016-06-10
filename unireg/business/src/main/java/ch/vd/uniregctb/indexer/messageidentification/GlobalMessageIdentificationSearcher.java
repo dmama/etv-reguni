@@ -30,4 +30,19 @@ public interface GlobalMessageIdentificationSearcher {
 	 * @return le nombre total de messages d'identification correspondant aux critères donnés
 	 */
 	int count(IdentificationContribuableCriteria criteria, @Nullable TypeDemande[] typesDemande, IdentificationContribuableEtatFilter etatFilter);
+
+	/**
+	 * La méthode docCount renvoie le nombre de documents dans l'index, qui comprend aussi les documents effacés et non-purgés
+	 *
+	 * @return le nombre de documents dans l'index, y compris les effacés
+	 */
+	int getApproxDocCount();
+
+	/**
+	 * La méthode docCount renvoie le nombre de documents dans l'index, qui comprend aussi les documents effacés et non-purgés
+	 * optimize() purge l'index donc si on fait un optimize() avant un docCount() on a le nombre de documents exact
+	 *
+	 * @return le nombre de documents dans l'index
+	 */
+	int getExactDocCount();
 }

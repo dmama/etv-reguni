@@ -133,4 +133,14 @@ public class GlobalMessageIdentificationSearcherImpl implements GlobalMessageIde
 		});
 		return counter.intValue();
 	}
+
+	@Override
+	public int getApproxDocCount() {
+		return globalIndex.getApproxDocCount();
+	}
+
+	@Override
+	public int getExactDocCount() {
+		return globalIndex.getExactDocCount();
+	}
 }
