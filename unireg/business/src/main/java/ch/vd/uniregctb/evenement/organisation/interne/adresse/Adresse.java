@@ -14,6 +14,7 @@ import ch.vd.unireg.interfaces.organisation.data.AdresseLegaleRCEnt;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.uniregctb.adresse.AdresseSupplementaire;
 import ch.vd.uniregctb.adresse.AdresseTiers;
+import ch.vd.uniregctb.common.AnnulableHelper;
 import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationContext;
@@ -121,12 +122,15 @@ public class Adresse extends EvenementOrganisationInterneDeTraitement {
 
 	@Nullable
 	private AdresseSupplementaire getAdresseTiers(TypeAdresseTiers type, RegDate date) throws EvenementOrganisationException {
-		final List<AdresseTiers> adressesTiersSorted = getEntreprise().getAdressesTiersSorted(type);
+		final List<AdresseTiers> adressesTiersSorted = AnnulableHelper.sansElementsAnnules(getEntreprise().getAdressesTiersSorted(type));
 		if (adressesTiersSorted.isEmpty()) {
 			return null;
 		}
 		final AdresseTiers adresseTiers = CollectionsUtils.getLastElement(adressesTiersSorted);
 		if (adresseTiers != null) {
+			if (adresseTiers.getDateFin() != null) {
+				return null;
+			}
 			if (adresseTiers.getDateDebut().isAfter(date)) {
 				throw new EvenementOrganisationException(String.format("L'adresse valide à la date demandée %s n'est pas la dernière de l'historique!", RegDateHelper.dateToDisplayString(date)));
 			}

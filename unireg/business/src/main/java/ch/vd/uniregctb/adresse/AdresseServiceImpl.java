@@ -2090,7 +2090,15 @@ public class AdresseServiceImpl implements AdresseService {
 	 */
 	@Override
 	public void fermerAdresse(AdresseTiers adresse, RegDate dateFin) {
-		adresse.setDateFin(dateFin);
+		if (adresse.getDateFin() == null) {
+				adresse.setDateFin(dateFin);
+		} else {
+			throw new ServiceAdresseException(
+					String.format("Impossible de fermer l'adresse en date du %s: elle est déjà fermée au %s.",
+					              RegDateHelper.dateToDisplayString(dateFin),
+					              RegDateHelper.dateToDisplayString(adresse.getDateFin())
+			                                                    ));
+		}
 	}
 
 	private static boolean notEmpty(final String string) {
