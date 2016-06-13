@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -616,6 +617,12 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 			fillView(e, v, context);
 			entities.add(v);
 		}
+		Collections.sort(entities, new Comparator<EntityView>() {
+			@Override
+			public int compare(EntityView o1, EntityView o2) {
+				return Long.compare(o1.getKey().getId(), o2.getKey().getId());
+			}
+		});
 
 		return entities;
 	}

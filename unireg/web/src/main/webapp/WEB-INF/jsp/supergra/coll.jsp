@@ -44,12 +44,16 @@
 							<c:set var="a" value="${entity.attributesMap[name]}"/>
 							<td>
 							<c:if test="${a != null}">
-								<c:if test="${a.name == coll.primaryKeyAtt}">
-									<a href="<c:url value="/supergra/entity/show.do?id=${a.value}&class=${coll.primaryKeyType}"/>"><c:out value="${a.value}"/></a>
-								</c:if>
-								<c:if test="${a.name != coll.primaryKeyAtt}">
-									<unireg:out id="attributes_${a_rowNum - 1}_${name}" value="${a.value}" clazz="${a.type}"/>
-								</c:if>
+								<c:choose>
+									<c:when test="${a.name == coll.primaryKeyAtt}">
+										<div style="float: right;">
+											<a href="<c:url value="/supergra/entity/show.do?id=${a.value}&class=${coll.primaryKeyType}"/>"><c:out value="${a.value}"/></a>
+										</div>
+									</c:when>
+									<c:otherwise>
+										<unireg:out id="attributes_${a_rowNum - 1}_${name}" value="${a.value}" clazz="${a.type}"/>
+									</c:otherwise>
+								</c:choose>
 							</c:if>
 							</td>
 						</c:forEach>
