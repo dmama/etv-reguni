@@ -60,11 +60,14 @@
 			<div class="team">
 				<h3>L'équipe Unireg actuelle</h3>
 
+				<h4>Cellule projet :</h4>
+				<ul>
+					<li>David Radelfinger</li>
+				</ul>
+
 				<h4>Cellule registre :</h4>
 				<ul>
 					<li>Antonio Rollo</li>
-					<li>David Radelfinger</li>
-					<li>Raphaël Carbo</li>
 				</ul>
 
 				<h4>OIPM :</h4>
@@ -112,6 +115,7 @@
 					<li>Ludovic Bertin</li>
 					<li>Manuel Siggen</li>
 					<li>Pavel Blanco</li>
+					<li>Raphaël Carbo</li>
 					<li>Smita Roy</li>
 					<li>Thierry Declercq</li>
 				</ul>
