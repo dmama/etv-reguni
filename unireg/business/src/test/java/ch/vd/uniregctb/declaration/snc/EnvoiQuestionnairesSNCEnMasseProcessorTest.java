@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.declaration.snc;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -20,6 +21,9 @@ import ch.vd.uniregctb.declaration.EtatDeclaration;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.declaration.PeriodeFiscaleDAO;
 import ch.vd.uniregctb.declaration.QuestionnaireSNC;
+import ch.vd.uniregctb.evenement.fiscal.EvenementFiscal;
+import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalDAO;
+import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalDeclarationRappelable;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.Entreprise;
@@ -43,11 +47,13 @@ public class EnvoiQuestionnairesSNCEnMasseProcessorTest extends BusinessTest {
 
 	private TacheDAO tacheDAO;
 	private EnvoiQuestionnairesSNCEnMasseProcessor processor;
+	private EvenementFiscalDAO evenementFiscalDAO;
 
 	@Override
 	protected void runOnSetUp() throws Exception {
 		super.runOnSetUp();
 
+		evenementFiscalDAO = getBean(EvenementFiscalDAO.class, "evenementFiscalDAO");
 		tacheDAO = getBean(TacheDAO.class, "tacheDAO");
 		final QuestionnaireSNCService questionnaireSNCService = getBean(QuestionnaireSNCService.class, "qsncService");
 		final PeriodeFiscaleDAO periodeFiscaleDAO = getBean(PeriodeFiscaleDAO.class, "periodeFiscaleDAO");
@@ -424,6 +430,18 @@ public class EnvoiQuestionnairesSNCEnMasseProcessorTest extends BusinessTest {
 				final TacheEnvoiQuestionnaireSNC tacheEnvoi = (TacheEnvoiQuestionnaireSNC) tache;
 				Assert.assertEquals(date(periode, 1, 1), tacheEnvoi.getDateDebut());
 				Assert.assertEquals(date(periode, 12, 31), tacheEnvoi.getDateFin());
+
+				// événement fiscal
+				final Collection<EvenementFiscal> evtsFiscaux = evenementFiscalDAO.getEvenementsFiscaux(entreprise);
+				Assert.assertNotNull(evtsFiscaux);
+				Assert.assertEquals(1, evtsFiscaux.size());
+				final EvenementFiscal evtFiscal = evtsFiscaux.iterator().next();
+				Assert.assertNotNull(evtFiscal);
+				Assert.assertEquals(EvenementFiscalDeclarationRappelable.class, evtFiscal.getClass());
+				final EvenementFiscalDeclarationRappelable evtFiscalDeclaration = (EvenementFiscalDeclarationRappelable) evtFiscal;
+				Assert.assertFalse(evtFiscalDeclaration.isAnnule());
+				Assert.assertEquals(dateTraitement, evtFiscalDeclaration.getDateValeur());
+				Assert.assertEquals(EvenementFiscalDeclarationRappelable.TypeAction.EMISSION, evtFiscalDeclaration.getTypeAction());
 			}
 		});
 	}

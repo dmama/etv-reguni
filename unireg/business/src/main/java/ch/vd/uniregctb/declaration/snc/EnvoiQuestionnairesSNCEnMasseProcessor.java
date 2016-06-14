@@ -23,6 +23,7 @@ import ch.vd.uniregctb.common.BatchTransactionTemplateWithResults;
 import ch.vd.uniregctb.common.LoggingStatusManager;
 import ch.vd.uniregctb.common.TicketService;
 import ch.vd.uniregctb.common.TicketTimeoutException;
+import ch.vd.uniregctb.declaration.DeclarationAvecNumeroSequence;
 import ch.vd.uniregctb.declaration.DeclarationException;
 import ch.vd.uniregctb.declaration.DeclarationGenerationOperation;
 import ch.vd.uniregctb.declaration.DelaiDeclaration;
@@ -170,13 +171,28 @@ public class EnvoiQuestionnairesSNCEnMasseProcessor {
 				questionnaire.setDateDebut(tacheATraiter.getDateDebut());
 				questionnaire.setDateFin(tacheATraiter.getDateFin());
 				questionnaire.setPeriode(pf);
-				questionnaire.addEtat(new EtatDeclarationEmise(dateTraitement));
-				addDelaiRetourInitial(questionnaire, dateTraitement, pf.getParametrePeriodeFiscaleSNC());
-				entreprise.addDeclaration(questionnaire);
-				questionnaireService.envoiQuestionnaireSNCForBatch(questionnaire, dateTraitement);
-				rapport.addQuestionnaireEnvoye(questionnaire);
+				questionnaire.setNumero(getNewSequenceNumber(entreprise, pf.getAnnee()));
+				questionnaire.setTiers(entreprise);
+				final QuestionnaireSNC saved = hibernateTemplate.merge(questionnaire);
+
+				saved.addEtat(new EtatDeclarationEmise(dateTraitement));
+				addDelaiRetourInitial(saved, dateTraitement, pf.getParametrePeriodeFiscaleSNC());
+				entreprise.addDeclaration(saved);
+				questionnaireService.envoiQuestionnaireSNCForBatch(saved, dateTraitement);
+				rapport.addQuestionnaireEnvoye(saved);
 			}
 		}
+	}
+
+	private static int getNewSequenceNumber(Entreprise entreprise, int pf) {
+		final List<DeclarationAvecNumeroSequence> declarations = entreprise.getDeclarationsDansPeriode(DeclarationAvecNumeroSequence.class, pf, true);
+		int max = 0;
+		if (declarations != null) {
+			for (DeclarationAvecNumeroSequence declaration : declarations) {
+				max = Math.max(max, declaration.getNumero());
+			}
+		}
+		return max + 1;
 	}
 
 	private void addDelaiRetourInitial(QuestionnaireSNC questionnaire, RegDate dateTraitement, ParametrePeriodeFiscaleSNC parametres) {
