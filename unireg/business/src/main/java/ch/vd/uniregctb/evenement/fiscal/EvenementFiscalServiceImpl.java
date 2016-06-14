@@ -6,9 +6,9 @@ import org.springframework.util.Assert;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DeclarationImpotSource;
+import ch.vd.uniregctb.declaration.QuestionnaireSNC;
 import ch.vd.uniregctb.documentfiscal.LettreBienvenue;
 import ch.vd.uniregctb.tiers.AllegementFiscal;
 import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
@@ -100,78 +100,74 @@ public class EvenementFiscalServiceImpl implements EvenementFiscalService {
 		saveAndPublish(new EvenementFiscalSituationFamille(date, ctb));
 	}
 
-	private void publierEvenementFiscalDeclaration(RegDate date, Declaration declaration, EvenementFiscalDeclaration.TypeAction type) {
-		saveAndPublish(new EvenementFiscalDeclaration(date, declaration, type));
-	}
-
-	private void publierEvenementFiscalEmissionDeclaration(RegDate date, Declaration declaration) {
-		publierEvenementFiscalDeclaration(date, declaration, EvenementFiscalDeclaration.TypeAction.EMISSION);
-	}
-
-	private void publierEvenementFiscalQuittancementDeclaration(RegDate date, Declaration declaration) {
-		publierEvenementFiscalDeclaration(date, declaration, EvenementFiscalDeclaration.TypeAction.QUITTANCEMENT);
-	}
-
-	private void publierEvenementFiscalSommationDeclaration(RegDate date, Declaration declaration) {
-		publierEvenementFiscalDeclaration(date, declaration, EvenementFiscalDeclaration.TypeAction.SOMMATION);
-	}
-
-	private void publierEvenementFiscalEcheanceDeclaration(RegDate date, Declaration declaration) {
-		publierEvenementFiscalDeclaration(date, declaration, EvenementFiscalDeclaration.TypeAction.ECHEANCE);
-	}
-
-	private void publierEvenementFiscalAnnulationDeclaration(RegDate date, Declaration declaration) {
-		publierEvenementFiscalDeclaration(date, declaration, EvenementFiscalDeclaration.TypeAction.ANNULATION);
-	}
-
 	@Override
 	public void publierEvenementFiscalEmissionListeRecapitulative(DeclarationImpotSource lr, RegDate dateEmission) {
-		publierEvenementFiscalEmissionDeclaration(dateEmission, lr);
+		saveAndPublish(new EvenementFiscalDeclarationSommable(dateEmission, lr, EvenementFiscalDeclarationSommable.TypeAction.EMISSION));
 	}
 
 	@Override
 	public void publierEvenementFiscalQuittancementListeRecapitulative(DeclarationImpotSource lr, RegDate dateQuittancement) {
-		publierEvenementFiscalQuittancementDeclaration(dateQuittancement, lr);
+		saveAndPublish(new EvenementFiscalDeclarationSommable(dateQuittancement, lr, EvenementFiscalDeclarationSommable.TypeAction.QUITTANCEMENT));
 	}
 
 	@Override
 	public void publierEvenementFiscalAnnulationListeRecapitulative(DeclarationImpotSource lr) {
-		publierEvenementFiscalAnnulationDeclaration(RegDateHelper.get(lr.getAnnulationDate()), lr);
+		saveAndPublish(new EvenementFiscalDeclarationSommable(RegDateHelper.get(lr.getAnnulationDate()), lr, EvenementFiscalDeclarationSommable.TypeAction.ANNULATION));
 	}
 
 	@Override
 	public void publierEvenementFiscalSommationListeRecapitulative(DeclarationImpotSource lr, RegDate dateSommation) {
-		publierEvenementFiscalSommationDeclaration(dateSommation, lr);
+		saveAndPublish(new EvenementFiscalDeclarationSommable(dateSommation, lr, EvenementFiscalDeclarationSommable.TypeAction.SOMMATION));
 	}
 
 	@Override
 	public void publierEvenementFiscalEcheanceListeRecapitulative(DeclarationImpotSource lr, RegDate dateEcheance) {
-		publierEvenementFiscalEcheanceDeclaration(dateEcheance, lr);
+		saveAndPublish(new EvenementFiscalDeclarationSommable(dateEcheance, lr, EvenementFiscalDeclarationSommable.TypeAction.ECHEANCE));
 	}
 
 	@Override
 	public void publierEvenementFiscalEmissionDeclarationImpot(DeclarationImpotOrdinaire di, RegDate dateEmission) {
-		publierEvenementFiscalEmissionDeclaration(dateEmission, di);
+		saveAndPublish(new EvenementFiscalDeclarationSommable(dateEmission, di, EvenementFiscalDeclarationSommable.TypeAction.EMISSION));
 	}
 
 	@Override
 	public void publierEvenementFiscalQuittancementDeclarationImpot(DeclarationImpotOrdinaire di, RegDate dateQuittance) {
-		publierEvenementFiscalQuittancementDeclaration(dateQuittance, di);
+		saveAndPublish(new EvenementFiscalDeclarationSommable(dateQuittance, di, EvenementFiscalDeclarationSommable.TypeAction.QUITTANCEMENT));
 	}
 
 	@Override
 	public void publierEvenementFiscalSommationDeclarationImpot(DeclarationImpotOrdinaire di, RegDate dateSommation) {
-		publierEvenementFiscalSommationDeclaration(dateSommation, di);
+		saveAndPublish(new EvenementFiscalDeclarationSommable(dateSommation, di, EvenementFiscalDeclarationSommable.TypeAction.SOMMATION));
 	}
 
 	@Override
 	public void publierEvenementFiscalEcheanceDeclarationImpot(DeclarationImpotOrdinaire di, RegDate dateEcheance) {
-		publierEvenementFiscalEcheanceDeclaration(dateEcheance, di);
+		saveAndPublish(new EvenementFiscalDeclarationSommable(dateEcheance, di, EvenementFiscalDeclarationSommable.TypeAction.ECHEANCE));
 	}
 
 	@Override
 	public void publierEvenementFiscalAnnulationDeclarationImpot(DeclarationImpotOrdinaire di) {
-		publierEvenementFiscalAnnulationDeclaration(RegDateHelper.get(di.getAnnulationDate()), di);
+		saveAndPublish(new EvenementFiscalDeclarationSommable(RegDateHelper.get(di.getAnnulationDate()), di, EvenementFiscalDeclarationSommable.TypeAction.ANNULATION));
+	}
+
+	@Override
+	public void publierEvenementFiscalEmissionQuestionnaireSNC(QuestionnaireSNC qsnc, RegDate dateEmission) {
+		saveAndPublish(new EvenementFiscalDeclarationRappelable(dateEmission, qsnc, EvenementFiscalDeclarationRappelable.TypeAction.EMISSION));
+	}
+
+	@Override
+	public void publierEvenementFiscalQuittancementQuestionnaireSNC(QuestionnaireSNC qsnc, RegDate dateQuittance) {
+		saveAndPublish(new EvenementFiscalDeclarationRappelable(dateQuittance, qsnc, EvenementFiscalDeclarationRappelable.TypeAction.QUITTANCEMENT));
+	}
+
+	@Override
+	public void publierEvenementFiscalRappelQuestionnaireSNC(QuestionnaireSNC qsnc, RegDate dateRappel) {
+		saveAndPublish(new EvenementFiscalDeclarationRappelable(dateRappel, qsnc, EvenementFiscalDeclarationRappelable.TypeAction.RAPPEL));
+	}
+
+	@Override
+	public void publierEvenementFiscalAnnulationQuestionnaireSNC(QuestionnaireSNC qsnc) {
+		saveAndPublish(new EvenementFiscalDeclarationRappelable(RegDateHelper.get(qsnc.getAnnulationDate()), qsnc, EvenementFiscalDeclarationRappelable.TypeAction.ANNULATION));
 	}
 
 	private void publierEvenementFiscalRegimeFiscal(RegDate date, RegimeFiscal rf, EvenementFiscalRegimeFiscal.TypeEvenementFiscalRegime type) {

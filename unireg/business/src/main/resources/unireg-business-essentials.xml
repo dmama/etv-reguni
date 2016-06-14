@@ -193,6 +193,7 @@
 		<property name="editiqueCompositionService" ref="editiqueCompositionService"/>
 		<property name="editiqueService" ref="editiqueService"/>
 		<property name="impressionRappelHelper" ref="impressionRappelQSNCHelper"/>
+		<property name="evenementFiscalService" ref="evenementFiscalService"/>
 	</bean>
 
 	<bean id="statsService" class="ch.vd.uniregctb.stats.StatsServiceImpl" />

@@ -46,6 +46,11 @@ public class EvenementFiscalInformationComplementaire extends EvenementFiscal {
 		SCISSION("Scission"),
 
 		/**
+		 * Type de l'événement fiscal émis lors d'un transfert de patrimoine entre entreprises.
+		 */
+		TRANSFERT_PATRIMOINE("Transfert de patrimoine"),
+
+		/**
 		 * Type de l'événement fiscal émis lors de la liquidation d'une entreprise.
 		 */
 		LIQUIDATION("Liquidation"),
@@ -143,7 +148,27 @@ public class EvenementFiscalInformationComplementaire extends EvenementFiscal {
 		/**
 		 * Type de l'événement fiscal émis lors de l'appel aux créanciers suite à un transfert à l'étranger.
 		 */
-		APPEL_CREANCIERS_TRANSFERT_HS("Appel aux créanciers en suite de transfert à l'étranger");
+		APPEL_CREANCIERS_TRANSFERT_HS("Appel aux créanciers en suite de transfert à l'étranger"),
+
+		/**
+		 * Type de l'événement fiscal émis lors de l'annulation d'une fusion d'entreprises (processus dit 'complexe')
+		 */
+		ANNULATION_FUSION("Annulation de fusion d'entreprises"),
+
+		/**
+		 * Type de l'événement fiscal émis lors de l'annulation d'une scission d'entreprise (processus dit 'complexe')
+		 */
+		ANNULATION_SCISSION("Annulation de scission d'entreprises"),
+
+		/**
+		 * Type de l'événement fiscal émis lors de l'annulation d'un transfert de patrimoine entre entreprises (processus dit 'complexe')
+		 */
+		ANNULATION_TRANFERT_PATRIMOINE("Annulation de transfert de patrimoine entre entreprises"),
+
+		/**
+		 * Type de l'événement fiscal émis lors de l'annulation d'une faillite d'entreprise (processus dit 'complexe')
+		 */
+		ANNULATION_FAILLITE("Annulation de faillite");
 
 		private final String libelle;
 

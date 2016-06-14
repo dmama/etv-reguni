@@ -27,6 +27,7 @@ import ch.vd.uniregctb.editique.EditiqueCompositionService;
 import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.EditiqueResultat;
 import ch.vd.uniregctb.editique.EditiqueService;
+import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.parametrage.DelaisService;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
@@ -57,6 +58,7 @@ public class QuestionnaireSNCServiceImpl implements QuestionnaireSNCService {
 	private EditiqueCompositionService editiqueCompositionService;
 	private EditiqueService editiqueService;
 	private ImpressionRappelQuestionnaireSNCHelper impressionRappelHelper;
+	private EvenementFiscalService evenementFiscalService;
 
 	public void setParametreAppService(ParametreAppService parametreAppService) {
 		this.parametreAppService = parametreAppService;
@@ -116,6 +118,10 @@ public class QuestionnaireSNCServiceImpl implements QuestionnaireSNCService {
 
 	public void setImpressionRappelHelper(ImpressionRappelQuestionnaireSNCHelper impressionRappelHelper) {
 		this.impressionRappelHelper = impressionRappelHelper;
+	}
+
+	public void setEvenementFiscalService(EvenementFiscalService evenementFiscalService) {
+		this.evenementFiscalService = evenementFiscalService;
 	}
 
 	@Override
@@ -203,9 +209,10 @@ public class QuestionnaireSNCServiceImpl implements QuestionnaireSNCService {
 
 	@Override
 	public EditiqueResultat envoiQuestionnaireSNCOnline(QuestionnaireSNC questionnaire, RegDate dateEvenement) throws DeclarationException {
-		// TODO envoi d'un événement fiscal ?
 		try {
-			return editiqueCompositionService.imprimeQuestionnaireSNCOnline(questionnaire);
+			final EditiqueResultat resultat = editiqueCompositionService.imprimeQuestionnaireSNCOnline(questionnaire);
+			evenementFiscalService.publierEvenementFiscalEmissionQuestionnaireSNC(questionnaire, dateEvenement);
+			return resultat;
 		}
 		catch (EditiqueException | JMSException e) {
 			throw new DeclarationException(e);
@@ -213,10 +220,10 @@ public class QuestionnaireSNCServiceImpl implements QuestionnaireSNCService {
 	}
 
 	@Override
-	public void envoiQuestionnaireSNCForBatch(QuestionnaireSNC questionnaire) throws DeclarationException {
-		// TODO envoi d'un événement fiscal ?
+	public void envoiQuestionnaireSNCForBatch(QuestionnaireSNC questionnaire, RegDate dateEvenement) throws DeclarationException {
 		try {
 			editiqueCompositionService.imprimerQuestionnaireSNCForBatch(questionnaire);
+			evenementFiscalService.publierEvenementFiscalEmissionQuestionnaireSNC(questionnaire, dateEvenement);
 		}
 		catch (EditiqueException e) {
 			throw new DeclarationException(e);
@@ -235,10 +242,11 @@ public class QuestionnaireSNCServiceImpl implements QuestionnaireSNCService {
 
 	@Override
 	public EditiqueResultat envoiRappelQuestionnaireSNCOnline(QuestionnaireSNC questionnaire, RegDate dateTraitement) throws DeclarationException {
-		// TODO envoi d'un événement fiscal ?
 		questionnaire.addEtat(new EtatDeclarationRappelee(dateTraitement, dateTraitement));
 		try {
-			return editiqueCompositionService.imprimeRappelQuestionnaireSNCOnline(questionnaire, dateTraitement);
+			final EditiqueResultat resultat = editiqueCompositionService.imprimeRappelQuestionnaireSNCOnline(questionnaire, dateTraitement);
+			evenementFiscalService.publierEvenementFiscalRappelQuestionnaireSNC(questionnaire, dateTraitement);
+			return resultat;
 		}
 		catch (EditiqueException | JMSException e) {
 			throw new DeclarationException(e);
@@ -247,10 +255,10 @@ public class QuestionnaireSNCServiceImpl implements QuestionnaireSNCService {
 
 	@Override
 	public void envoiRappelQuestionnaireSNCForBatch(QuestionnaireSNC questionnaire, RegDate dateTraitement, RegDate dateExpedition) throws DeclarationException {
-		// TODO envoi d'un événement fiscal ?
 		questionnaire.addEtat(new EtatDeclarationRappelee(dateTraitement, dateExpedition));
 		try {
 			editiqueCompositionService.imprimeRappelQuestionnaireSNCForBatch(questionnaire, dateTraitement, dateExpedition);
+			evenementFiscalService.publierEvenementFiscalRappelQuestionnaireSNC(questionnaire, dateTraitement);
 		}
 		catch (EditiqueException e) {
 			throw new DeclarationException(e);
@@ -267,5 +275,13 @@ public class QuestionnaireSNCServiceImpl implements QuestionnaireSNCService {
 	public void quittancerQuestionnaire(QuestionnaireSNC questionnaire, RegDate dateRetour, String source) throws DeclarationException {
 		final EtatDeclarationRetournee retour = new EtatDeclarationRetournee(dateRetour, source);
 		questionnaire.addEtat(retour);
+
+		evenementFiscalService.publierEvenementFiscalQuittancementQuestionnaireSNC(questionnaire, dateRetour);
+	}
+
+	@Override
+	public void annulerQuestionnaire(QuestionnaireSNC questionnaire) throws DeclarationException {
+		questionnaire.setAnnule(true);
+		evenementFiscalService.publierEvenementFiscalAnnulationQuestionnaireSNC(questionnaire);
 	}
 }

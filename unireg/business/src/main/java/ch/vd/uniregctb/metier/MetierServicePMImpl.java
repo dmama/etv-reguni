@@ -502,11 +502,18 @@ public class MetierServicePMImpl implements MetierServicePM {
 		                                      EnumSet.of(TypeRapportEntreTiers.MANDAT));
 
 		// 4'. [SIFISC-18810] ré-ouverture des adresses mandataires fermées à la date du prononcé de faillite
+
 		reouvreAdressesMandataireFermeesAu(entreprise, datePrononceFaillite);
 
 		// 5. éventuellement, ajoute une nouvelle remarque sur le tiers
 
 		addRemarque(entreprise, remarqueAssociee);
+
+		// 6. envoi d'un événement fiscal
+
+		evenementFiscalService.publierEvenementFiscalInformationComplementaire(entreprise,
+		                                                                       EvenementFiscalInformationComplementaire.TypeInformationComplementaire.ANNULATION_FAILLITE,
+		                                                                       datePrononceFaillite);
 	}
 
 	@Override
@@ -979,6 +986,13 @@ public class MetierServicePMImpl implements MetierServicePM {
 				}
 			}
 		}
+
+		// envoi d'un événement fiscal sur toutes les entreprises concernées
+		for (Entreprise entreprise : CollectionsUtils.merged(Collections.singletonList(absorbante), absorbees)) {
+			evenementFiscalService.publierEvenementFiscalInformationComplementaire(entreprise,
+			                                                                       EvenementFiscalInformationComplementaire.TypeInformationComplementaire.ANNULATION_FUSION,
+			                                                                       dateBilanFusion);
+		}
 	}
 
 	@Override
@@ -1032,6 +1046,13 @@ public class MetierServicePMImpl implements MetierServicePM {
 				ret.setAnnule(true);
 			}
 		}
+
+		// envoi d'un événement fiscal sur toutes les entreprises concernées
+		for (Entreprise entreprise : CollectionsUtils.merged(Collections.singletonList(scindee), resultantes)) {
+			evenementFiscalService.publierEvenementFiscalInformationComplementaire(entreprise,
+			                                                                       EvenementFiscalInformationComplementaire.TypeInformationComplementaire.ANNULATION_SCISSION,
+			                                                                       dateContratScission);
+		}
 	}
 
 	@Override
@@ -1043,13 +1064,12 @@ public class MetierServicePMImpl implements MetierServicePM {
 			tiersService.addRapport(transfert, emettrice, receptrice);
 		}
 
-		// TODO à faire dès que l'événement fiscal pour transfert de patrimoine aura été créé
 		// envoi d'un événement fiscal sur toutes les entreprises concernées
-//		for (Entreprise entreprise : CollectionsUtils.merged(Collections.singletonList(emettrice), receptrices)) {
-//			evenementFiscalService.publierEvenementFiscalInformationComplementaire(entreprise,
-//			                                                                       EvenementFiscalInformationComplementaire.TypeInformationComplementaire.TRANSFERT_PATRIMOINE,
-//			                                                                       dateTransfert);
-//		}
+		for (Entreprise entreprise : CollectionsUtils.merged(Collections.singletonList(emettrice), receptrices)) {
+			evenementFiscalService.publierEvenementFiscalInformationComplementaire(entreprise,
+			                                                                       EvenementFiscalInformationComplementaire.TypeInformationComplementaire.TRANSFERT_PATRIMOINE,
+			                                                                       dateTransfert);
+		}
 	}
 
 	@Override
@@ -1085,6 +1105,13 @@ public class MetierServicePMImpl implements MetierServicePM {
 			if (!ret.isAnnule() && ret.getType() == TypeRapportEntreTiers.TRANSFERT_PATRIMOINE && ret.getDateDebut() == dateTransfert && idsReceptrices.contains(ret.getObjetId())) {
 				ret.setAnnule(true);
 			}
+		}
+
+		// envoi d'un événement fiscal d'annulation de transfert de patrimoine
+		for (Entreprise entreprise : CollectionsUtils.merged(Collections.singletonList(emettrice), receptrices)) {
+			evenementFiscalService.publierEvenementFiscalInformationComplementaire(entreprise,
+			                                                                       EvenementFiscalInformationComplementaire.TypeInformationComplementaire.ANNULATION_TRANFERT_PATRIMOINE,
+			                                                                       dateTransfert);
 		}
 	}
 

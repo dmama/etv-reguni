@@ -173,7 +173,7 @@ public class EnvoiQuestionnairesSNCEnMasseProcessor {
 				questionnaire.addEtat(new EtatDeclarationEmise(dateTraitement));
 				addDelaiRetourInitial(questionnaire, dateTraitement, pf.getParametrePeriodeFiscaleSNC());
 				entreprise.addDeclaration(questionnaire);
-				questionnaireService.envoiQuestionnaireSNCForBatch(questionnaire);
+				questionnaireService.envoiQuestionnaireSNCForBatch(questionnaire, dateTraitement);
 				rapport.addQuestionnaireEnvoye(questionnaire);
 			}
 		}

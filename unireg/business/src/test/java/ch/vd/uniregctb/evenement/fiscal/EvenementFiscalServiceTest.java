@@ -126,7 +126,7 @@ public class EvenementFiscalServiceTest extends BusinessTest {
 				// Vérifie que l'événement est dans la base
 				final List<EvenementFiscal> events = evenementFiscalDAO.getAll();
 				assertEquals(1, events.size());
-				assertDeclarationEvent(id, RegDate.get().addDays(-2), EvenementFiscalDeclaration.TypeAction.EMISSION, date(2009, 1, 1), date(2009, 12, 31), DeclarationImpotSource.class, events.get(0));
+				assertDeclarationEvent(id, RegDate.get().addDays(-2), EvenementFiscalDeclarationSommable.TypeAction.EMISSION, date(2009, 1, 1), date(2009, 12, 31), DeclarationImpotSource.class, events.get(0));
 			}
 		});
 	}
@@ -174,14 +174,14 @@ public class EvenementFiscalServiceTest extends BusinessTest {
 
 	private static void assertDeclarationEvent(Long tiersId,
 	                                           RegDate dateEvenement,
-	                                           EvenementFiscalDeclaration.TypeAction type,
+	                                           EvenementFiscalDeclarationSommable.TypeAction type,
 	                                           RegDate dateDebutPeriode,
 	                                           RegDate dateFinPeriode,
 	                                           Class<? extends Declaration> expectedDeclarationClass,
 	                                           EvenementFiscal event) {
-		assertEvent(tiersId, dateEvenement, EvenementFiscalDeclaration.class, event);
+		assertEvent(tiersId, dateEvenement, EvenementFiscalDeclarationSommable.class, event);
 
-		final EvenementFiscalDeclaration declaEvent = (EvenementFiscalDeclaration) event;
+		final EvenementFiscalDeclarationSommable declaEvent = (EvenementFiscalDeclarationSommable) event;
 		assertEquals(type, declaEvent.getTypeAction());
 
 		final Declaration declaration = declaEvent.getDeclaration();

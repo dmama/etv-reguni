@@ -18,34 +18,36 @@ import ch.vd.registre.base.utils.Assert;
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.EsbMessageFactory;
 import ch.vd.technical.esb.jms.EsbJmsTemplate;
-import ch.vd.unireg.xml.event.fiscal.v2.AnnulationAllegementFiscal;
-import ch.vd.unireg.xml.event.fiscal.v2.AnnulationFlagEntreprise;
-import ch.vd.unireg.xml.event.fiscal.v2.AnnulationFor;
-import ch.vd.unireg.xml.event.fiscal.v2.AnnulationRegimeFiscal;
-import ch.vd.unireg.xml.event.fiscal.v2.CategorieTiers;
-import ch.vd.unireg.xml.event.fiscal.v2.ChangementModeImposition;
-import ch.vd.unireg.xml.event.fiscal.v2.ChangementSituationFamille;
-import ch.vd.unireg.xml.event.fiscal.v2.DeclarationImpot;
-import ch.vd.unireg.xml.event.fiscal.v2.EnvoiLettreBienvenue;
-import ch.vd.unireg.xml.event.fiscal.v2.FermetureAllegementFiscal;
-import ch.vd.unireg.xml.event.fiscal.v2.FermetureFlagEntreprise;
-import ch.vd.unireg.xml.event.fiscal.v2.FermetureFor;
-import ch.vd.unireg.xml.event.fiscal.v2.FermetureRegimeFiscal;
-import ch.vd.unireg.xml.event.fiscal.v2.FinAutoriteParentale;
-import ch.vd.unireg.xml.event.fiscal.v2.InformationComplementaire;
-import ch.vd.unireg.xml.event.fiscal.v2.ListeRecapitulative;
-import ch.vd.unireg.xml.event.fiscal.v2.Naissance;
-import ch.vd.unireg.xml.event.fiscal.v2.ObjectFactory;
-import ch.vd.unireg.xml.event.fiscal.v2.OuvertureAllegementFiscal;
-import ch.vd.unireg.xml.event.fiscal.v2.OuvertureFlagEntreprise;
-import ch.vd.unireg.xml.event.fiscal.v2.OuvertureFor;
-import ch.vd.unireg.xml.event.fiscal.v2.OuvertureRegimeFiscal;
-import ch.vd.unireg.xml.event.fiscal.v2.TypeEvenementFiscalDeclaration;
-import ch.vd.unireg.xml.event.fiscal.v2.TypeInformationComplementaire;
+import ch.vd.unireg.xml.event.fiscal.v3.AnnulationAllegementFiscal;
+import ch.vd.unireg.xml.event.fiscal.v3.AnnulationFlagEntreprise;
+import ch.vd.unireg.xml.event.fiscal.v3.AnnulationFor;
+import ch.vd.unireg.xml.event.fiscal.v3.AnnulationRegimeFiscal;
+import ch.vd.unireg.xml.event.fiscal.v3.CategorieTiers;
+import ch.vd.unireg.xml.event.fiscal.v3.ChangementModeImposition;
+import ch.vd.unireg.xml.event.fiscal.v3.ChangementSituationFamille;
+import ch.vd.unireg.xml.event.fiscal.v3.DeclarationImpot;
+import ch.vd.unireg.xml.event.fiscal.v3.EnvoiLettreBienvenue;
+import ch.vd.unireg.xml.event.fiscal.v3.FermetureAllegementFiscal;
+import ch.vd.unireg.xml.event.fiscal.v3.FermetureFlagEntreprise;
+import ch.vd.unireg.xml.event.fiscal.v3.FermetureFor;
+import ch.vd.unireg.xml.event.fiscal.v3.FermetureRegimeFiscal;
+import ch.vd.unireg.xml.event.fiscal.v3.FinAutoriteParentale;
+import ch.vd.unireg.xml.event.fiscal.v3.InformationComplementaire;
+import ch.vd.unireg.xml.event.fiscal.v3.ListeRecapitulative;
+import ch.vd.unireg.xml.event.fiscal.v3.Naissance;
+import ch.vd.unireg.xml.event.fiscal.v3.ObjectFactory;
+import ch.vd.unireg.xml.event.fiscal.v3.OuvertureAllegementFiscal;
+import ch.vd.unireg.xml.event.fiscal.v3.OuvertureFlagEntreprise;
+import ch.vd.unireg.xml.event.fiscal.v3.OuvertureFor;
+import ch.vd.unireg.xml.event.fiscal.v3.OuvertureRegimeFiscal;
+import ch.vd.unireg.xml.event.fiscal.v3.TypeEvenementFiscalDeclarationRappelable;
+import ch.vd.unireg.xml.event.fiscal.v3.TypeEvenementFiscalDeclarationSommable;
+import ch.vd.unireg.xml.event.fiscal.v3.TypeInformationComplementaire;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DeclarationImpotSource;
+import ch.vd.uniregctb.declaration.QuestionnaireSNC;
 import ch.vd.uniregctb.jms.EsbMessageValidator;
 import ch.vd.uniregctb.tiers.AllegementFiscal;
 import ch.vd.uniregctb.tiers.AllegementFiscalCommune;
@@ -61,11 +63,11 @@ import ch.vd.uniregctb.xml.DataHelper;
 import ch.vd.uniregctb.xml.EnumHelper;
 
 /**
- * Bean qui permet d'envoyer des événements externes (en version 2).
+ * Bean qui permet d'envoyer des événements externes (en version 3).
  */
-public class EvenementFiscalV2SenderImpl implements EvenementFiscalSender, InitializingBean {
+public class EvenementFiscalV3SenderImpl implements EvenementFiscalSender, InitializingBean {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(EvenementFiscalV2SenderImpl.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(EvenementFiscalV3SenderImpl.class);
 
 	private String outputQueue;
 	private EsbJmsTemplate esbTemplate;
@@ -75,7 +77,7 @@ public class EvenementFiscalV2SenderImpl implements EvenementFiscalSender, Initi
 	private final ObjectFactory objectFactory = new ObjectFactory();
 	private JAXBContext jaxbContext;
 
-	private static final Map<Class<? extends EvenementFiscal>, OutputDataFactory<? extends EvenementFiscal, ? extends ch.vd.unireg.xml.event.fiscal.v2.EvenementFiscal>> FACTORIES = buildOutputDataFactories();
+	private static final Map<Class<? extends EvenementFiscal>, OutputDataFactory<? extends EvenementFiscal, ? extends ch.vd.unireg.xml.event.fiscal.v3.EvenementFiscal>> FACTORIES = buildOutputDataFactories();
 
 	/**
 	 * Exception lancée par les factories qui indique que l'événement fiscal n'est pas supporté pour le canal v2
@@ -83,22 +85,23 @@ public class EvenementFiscalV2SenderImpl implements EvenementFiscalSender, Initi
 	private static class NotSupportedInHereException extends Exception {
 	}
 
-	private interface OutputDataFactory<I extends EvenementFiscal, O extends ch.vd.unireg.xml.event.fiscal.v2.EvenementFiscal> {
+	private interface OutputDataFactory<I extends EvenementFiscal, O extends ch.vd.unireg.xml.event.fiscal.v3.EvenementFiscal> {
 		@NotNull
 		O build(@NotNull I evenementFiscal) throws NotSupportedInHereException;
 	}
 
-	private static <I extends EvenementFiscal, O extends ch.vd.unireg.xml.event.fiscal.v2.EvenementFiscal>
-	void registerOutputDataFactory(Map<Class<? extends EvenementFiscal>, OutputDataFactory<? extends EvenementFiscal, ? extends ch.vd.unireg.xml.event.fiscal.v2.EvenementFiscal>> map,
+	private static <I extends EvenementFiscal, O extends ch.vd.unireg.xml.event.fiscal.v3.EvenementFiscal>
+	void registerOutputDataFactory(Map<Class<? extends EvenementFiscal>, OutputDataFactory<? extends EvenementFiscal, ? extends ch.vd.unireg.xml.event.fiscal.v3.EvenementFiscal>> map,
 	                               Class<I> inputClass,
 	                               OutputDataFactory<? super I, O> factory) {
 		map.put(inputClass, factory);
 	}
 
-	private static Map<Class<? extends EvenementFiscal>, OutputDataFactory<? extends EvenementFiscal, ? extends ch.vd.unireg.xml.event.fiscal.v2.EvenementFiscal>> buildOutputDataFactories() {
-		final Map<Class<? extends EvenementFiscal>, OutputDataFactory<? extends EvenementFiscal, ? extends ch.vd.unireg.xml.event.fiscal.v2.EvenementFiscal>> map = new HashMap<>();
+	private static Map<Class<? extends EvenementFiscal>, OutputDataFactory<? extends EvenementFiscal, ? extends ch.vd.unireg.xml.event.fiscal.v3.EvenementFiscal>> buildOutputDataFactories() {
+		final Map<Class<? extends EvenementFiscal>, OutputDataFactory<? extends EvenementFiscal, ? extends ch.vd.unireg.xml.event.fiscal.v3.EvenementFiscal>> map = new HashMap<>();
 		registerOutputDataFactory(map, EvenementFiscalAllegementFiscal.class, new AllegementFactory());
-		registerOutputDataFactory(map, EvenementFiscalDeclarationSommable.class, new DeclarationFactory());
+		registerOutputDataFactory(map, EvenementFiscalDeclarationSommable.class, new DeclarationSommableFactory());
+		registerOutputDataFactory(map, EvenementFiscalDeclarationRappelable.class, new DeclarationRappelableFactory());
 		registerOutputDataFactory(map, EvenementFiscalFor.class, new ForFactory());
 		registerOutputDataFactory(map, EvenementFiscalInformationComplementaire.class, new InformationComplementaireFactory());
 		registerOutputDataFactory(map, EvenementFiscalParente.class, new ParenteFactory());
@@ -143,11 +146,11 @@ public class EvenementFiscalV2SenderImpl implements EvenementFiscalSender, Initi
 		final String principal = AuthenticationHelper.getCurrentPrincipal();
 		Assert.notNull(principal);
 
-		final ch.vd.unireg.xml.event.fiscal.v2.EvenementFiscal event = buildOutputData(evenement);
+		final ch.vd.unireg.xml.event.fiscal.v3.EvenementFiscal event = buildOutputData(evenement);
 		if (event == null) {
-			// mapping inexistant pour le canal v2 -> on abandonne
+			// mapping inexistant pour le canal v3 -> on abandonne
 			if (LOGGER.isDebugEnabled()) {
-				LOGGER.debug(String.format("Evenement fiscal %d (%s) sans équivalent dans le canal v2 -> ignoré pour celui-ci.", evenement.getId(), evenement.getClass().getSimpleName()));
+				LOGGER.debug(String.format("Evenement fiscal %d (%s) sans équivalent dans le canal v3 -> ignoré pour celui-ci.", evenement.getId(), evenement.getClass().getSimpleName()));
 			}
 			return;
 		}
@@ -164,8 +167,8 @@ public class EvenementFiscalV2SenderImpl implements EvenementFiscalSender, Initi
 			m.setBusinessId(String.valueOf(evenement.getId()));
 			m.setBusinessUser(principal);
 			m.setServiceDestination(serviceDestination);
-			m.setContext("evenementFiscal.v2");
-			m.addHeader(VERSION_ATTRIBUTE, "2");
+			m.setContext("evenementFiscal.v3");
+			m.addHeader(VERSION_ATTRIBUTE, "3");
 			m.addHeader("noCtb", String.valueOf(evenement.getTiers().getNumero()));
 			m.setBody(doc);
 
@@ -204,11 +207,11 @@ public class EvenementFiscalV2SenderImpl implements EvenementFiscalSender, Initi
 		return (int) l;
 	}
 
-	private static class AllegementFactory implements OutputDataFactory<EvenementFiscalAllegementFiscal, ch.vd.unireg.xml.event.fiscal.v2.EvenementFiscalAllegementFiscal> {
+	private static class AllegementFactory implements OutputDataFactory<EvenementFiscalAllegementFiscal, ch.vd.unireg.xml.event.fiscal.v3.EvenementFiscalAllegementFiscal> {
 		@NotNull
 		@Override
-		public ch.vd.unireg.xml.event.fiscal.v2.EvenementFiscalAllegementFiscal build(@NotNull EvenementFiscalAllegementFiscal evenementFiscal) {
-			final ch.vd.unireg.xml.event.fiscal.v2.EvenementFiscalAllegementFiscal instance = instanciate(evenementFiscal.getType());
+		public ch.vd.unireg.xml.event.fiscal.v3.EvenementFiscalAllegementFiscal build(@NotNull EvenementFiscalAllegementFiscal evenementFiscal) {
+			final ch.vd.unireg.xml.event.fiscal.v3.EvenementFiscalAllegementFiscal instance = instanciate(evenementFiscal.getType());
 			final Tiers tiers = evenementFiscal.getTiers();
 			instance.setNumeroTiers(safeLongIdToInt(tiers.getNumero()));
 			instance.setCategorieTiers(extractCategorieTiers(tiers));
@@ -221,7 +224,7 @@ public class EvenementFiscalV2SenderImpl implements EvenementFiscalSender, Initi
 		}
 	}
 
-	protected static ch.vd.unireg.xml.event.fiscal.v2.EvenementFiscalAllegementFiscal instanciate(EvenementFiscalAllegementFiscal.TypeEvenementFiscalAllegement type) {
+	protected static ch.vd.unireg.xml.event.fiscal.v3.EvenementFiscalAllegementFiscal instanciate(EvenementFiscalAllegementFiscal.TypeEvenementFiscalAllegement type) {
 		switch (type) {
 		case ANNULATION:
 			return new AnnulationAllegementFiscal();
@@ -234,12 +237,12 @@ public class EvenementFiscalV2SenderImpl implements EvenementFiscalSender, Initi
 		}
 	}
 
-	private static class DeclarationFactory implements OutputDataFactory<EvenementFiscalDeclarationSommable, ch.vd.unireg.xml.event.fiscal.v2.EvenementFiscalDeclaration> {
+	private static class DeclarationSommableFactory implements OutputDataFactory<EvenementFiscalDeclarationSommable, ch.vd.unireg.xml.event.fiscal.v3.EvenementFiscalDeclarationSommable> {
 		@NotNull
 		@Override
-		public ch.vd.unireg.xml.event.fiscal.v2.EvenementFiscalDeclaration build(@NotNull EvenementFiscalDeclarationSommable evenementFiscal) {
+		public ch.vd.unireg.xml.event.fiscal.v3.EvenementFiscalDeclarationSommable build(@NotNull EvenementFiscalDeclarationSommable evenementFiscal) {
 			final Declaration declaration = evenementFiscal.getDeclaration();
-			final ch.vd.unireg.xml.event.fiscal.v2.EvenementFiscalDeclaration instance = instanciate(declaration);
+			final ch.vd.unireg.xml.event.fiscal.v3.EvenementFiscalDeclarationSommable instance = instanciateSommable(declaration);
 			final Tiers tiers = evenementFiscal.getTiers();
 			instance.setNumeroTiers(safeLongIdToInt(tiers.getNumero()));
 			instance.setCategorieTiers(extractCategorieTiers(tiers));
@@ -250,7 +253,7 @@ public class EvenementFiscalV2SenderImpl implements EvenementFiscalSender, Initi
 			return instance;
 		}
 
-		private static ch.vd.unireg.xml.event.fiscal.v2.EvenementFiscalDeclaration instanciate(Declaration declaration) {
+		private static ch.vd.unireg.xml.event.fiscal.v3.EvenementFiscalDeclarationSommable instanciateSommable(Declaration declaration) {
 			if (declaration instanceof DeclarationImpotOrdinaire) {
 				return new DeclarationImpot();
 			}
@@ -261,28 +264,67 @@ public class EvenementFiscalV2SenderImpl implements EvenementFiscalSender, Initi
 		}
 	}
 
-	protected static TypeEvenementFiscalDeclaration mapType(EvenementFiscalDeclarationSommable.TypeAction type) {
+	protected static TypeEvenementFiscalDeclarationSommable mapType(EvenementFiscalDeclarationSommable.TypeAction type) {
 		switch (type) {
 		case ANNULATION:
-			return TypeEvenementFiscalDeclaration.ANNULATION;
+			return TypeEvenementFiscalDeclarationSommable.ANNULATION;
 		case ECHEANCE:
-			return TypeEvenementFiscalDeclaration.ECHEANCE;
+			return TypeEvenementFiscalDeclarationSommable.ECHEANCE;
 		case EMISSION:
-			return TypeEvenementFiscalDeclaration.EMISSION;
+			return TypeEvenementFiscalDeclarationSommable.EMISSION;
 		case QUITTANCEMENT:
-			return TypeEvenementFiscalDeclaration.QUITTANCEMENT;
+			return TypeEvenementFiscalDeclarationSommable.QUITTANCEMENT;
 		case SOMMATION:
-			return TypeEvenementFiscalDeclaration.SOMMATION;
+			return TypeEvenementFiscalDeclarationSommable.SOMMATION;
 		default:
-			throw new IllegalArgumentException("Type d'action sur une déclaration non-supporté : " + type);
+			throw new IllegalArgumentException("Type d'action sur une déclaration 'sommable' non-supporté : " + type);
 		}
 	}
 
-	private static class ForFactory implements OutputDataFactory<EvenementFiscalFor, ch.vd.unireg.xml.event.fiscal.v2.EvenementFiscalFor> {
+	private static class DeclarationRappelableFactory implements OutputDataFactory<EvenementFiscalDeclarationRappelable, ch.vd.unireg.xml.event.fiscal.v3.EvenementFiscalDeclarationRappelable> {
 		@NotNull
 		@Override
-		public ch.vd.unireg.xml.event.fiscal.v2.EvenementFiscalFor build(@NotNull EvenementFiscalFor evenementFiscal) {
-			final ch.vd.unireg.xml.event.fiscal.v2.EvenementFiscalFor instance = instanciate(evenementFiscal.getType());
+		public ch.vd.unireg.xml.event.fiscal.v3.EvenementFiscalDeclarationRappelable build(@NotNull EvenementFiscalDeclarationRappelable evenementFiscal) {
+			final Declaration declaration = evenementFiscal.getDeclaration();
+			final ch.vd.unireg.xml.event.fiscal.v3.EvenementFiscalDeclarationRappelable instance = instanciateRappelable(declaration);
+			final Tiers tiers = evenementFiscal.getTiers();
+			instance.setNumeroTiers(safeLongIdToInt(tiers.getNumero()));
+			instance.setCategorieTiers(extractCategorieTiers(tiers));
+			instance.setDate(DataHelper.coreToXMLv2(evenementFiscal.getDateValeur()));
+			instance.setDateFrom(DataHelper.coreToXMLv2(declaration.getDateDebut()));
+			instance.setDateTo(DataHelper.coreToXMLv2(declaration.getDateFin()));
+			instance.setType(mapType(evenementFiscal.getTypeAction()));
+			return instance;
+		}
+
+		private static ch.vd.unireg.xml.event.fiscal.v3.EvenementFiscalDeclarationRappelable instanciateRappelable(Declaration declaration) {
+			if (declaration instanceof QuestionnaireSNC) {
+				return new ch.vd.unireg.xml.event.fiscal.v3.QuestionnaireSNC();
+			}
+			throw new IllegalArgumentException("Type de déclaration non-supporté : " + declaration.getClass().getSimpleName());
+		}
+	}
+
+	protected static TypeEvenementFiscalDeclarationRappelable mapType(EvenementFiscalDeclarationRappelable.TypeAction type) {
+		switch (type) {
+		case ANNULATION:
+			return TypeEvenementFiscalDeclarationRappelable.ANNULATION;
+		case EMISSION:
+			return TypeEvenementFiscalDeclarationRappelable.EMISSION;
+		case QUITTANCEMENT:
+			return TypeEvenementFiscalDeclarationRappelable.QUITTANCEMENT;
+		case RAPPEL:
+			return TypeEvenementFiscalDeclarationRappelable.RAPPEL;
+		default:
+			throw new IllegalArgumentException("Type d'action sur une déclaration 'rappelable' non-supporté : " + type);
+		}
+	}
+
+	private static class ForFactory implements OutputDataFactory<EvenementFiscalFor, ch.vd.unireg.xml.event.fiscal.v3.EvenementFiscalFor> {
+		@NotNull
+		@Override
+		public ch.vd.unireg.xml.event.fiscal.v3.EvenementFiscalFor build(@NotNull EvenementFiscalFor evenementFiscal) {
+			final ch.vd.unireg.xml.event.fiscal.v3.EvenementFiscalFor instance = instanciate(evenementFiscal.getType());
 			final Tiers tiers = evenementFiscal.getTiers();
 			instance.setNumeroTiers(safeLongIdToInt(tiers.getNumero()));
 			instance.setCategorieTiers(extractCategorieTiers(tiers));
@@ -310,7 +352,7 @@ public class EvenementFiscalV2SenderImpl implements EvenementFiscalSender, Initi
 		}
 	}
 
-	protected static ch.vd.unireg.xml.event.fiscal.v2.EvenementFiscalFor instanciate(EvenementFiscalFor.TypeEvenementFiscalFor type) {
+	protected static ch.vd.unireg.xml.event.fiscal.v3.EvenementFiscalFor instanciate(EvenementFiscalFor.TypeEvenementFiscalFor type) {
 		switch (type) {
 		case ANNULATION:
 			return new AnnulationFor();
@@ -325,26 +367,30 @@ public class EvenementFiscalV2SenderImpl implements EvenementFiscalSender, Initi
 		}
 	}
 
-	private static class InformationComplementaireFactory implements OutputDataFactory<EvenementFiscalInformationComplementaire, ch.vd.unireg.xml.event.fiscal.v2.InformationComplementaire> {
+	private static class InformationComplementaireFactory implements OutputDataFactory<EvenementFiscalInformationComplementaire, InformationComplementaire> {
 		@NotNull
 		@Override
-		public InformationComplementaire build(@NotNull EvenementFiscalInformationComplementaire evenementFiscal) throws NotSupportedInHereException {
-			final TypeInformationComplementaire type = mapType(evenementFiscal.getType());
-			if (type == null) {
-				throw new NotSupportedInHereException();
-			}
+		public InformationComplementaire build(@NotNull EvenementFiscalInformationComplementaire evenementFiscal) {
 			final InformationComplementaire instance = new InformationComplementaire();
 			final Tiers tiers = evenementFiscal.getTiers();
 			instance.setNumeroTiers(safeLongIdToInt(tiers.getNumero()));
 			instance.setCategorieTiers(extractCategorieTiers(tiers));
 			instance.setDate(DataHelper.coreToXMLv2(evenementFiscal.getDateValeur()));
-			instance.setType(type);
+			instance.setType(mapType(evenementFiscal.getType()));
 			return instance;
 		}
 	}
 
 	protected static TypeInformationComplementaire mapType(EvenementFiscalInformationComplementaire.TypeInformationComplementaire type) {
 		switch (type) {
+		case ANNULATION_FAILLITE:
+			return TypeInformationComplementaire.ANNULATION_FAILLITE;
+		case ANNULATION_FUSION:
+			return TypeInformationComplementaire.ANNULATION_FUSION;
+		case ANNULATION_SCISSION:
+			return TypeInformationComplementaire.ANNULATION_SCISSION;
+		case ANNULATION_TRANFERT_PATRIMOINE:
+			return TypeInformationComplementaire.ANNULATION_TRANSFERT_PATRIMOINE;
 		case ANNULATION_SURSIS_CONCORDATAIRE:
 			return TypeInformationComplementaire.ANNULATION_SURSIS_CONCORDATAIRE;
 		case APPEL_CREANCIERS_CONCORDAT:
@@ -393,27 +439,22 @@ public class EvenementFiscalV2SenderImpl implements EvenementFiscalSender, Initi
 			return TypeInformationComplementaire.SUSPENSION_FAILLITE;
 		case TABLEAU_DISTRIBUTION_DECOMPTE_FINAL_CONCORDAT:
 			return TypeInformationComplementaire.TABLEAU_DISTRIBUTION_DECOMPTE_FINAL_CONCORDAT;
+		case TRANSFERT_PATRIMOINE:
+			return TypeInformationComplementaire.TRANSFERT_PATRIMOINE;
 		case VENTE_ENCHERES_FORCEE_IMMEUBLES_FAILLITE:
 			return TypeInformationComplementaire.VENTE_ENCHERES_FORCEE_IMMEUBLES_FAILLITE;
 		case VENTE_ENCHERES_FORCEE_IMMEUBLES_POURSUITE:
 			return TypeInformationComplementaire.VENTE_ENCHERES_FORCEE_IMMEUBLES_POURSUITE;
-		case ANNULATION_FAILLITE:
-		case ANNULATION_FUSION:
-		case ANNULATION_SCISSION:
-		case ANNULATION_TRANFERT_PATRIMOINE:
-		case TRANSFERT_PATRIMOINE:
-			// non-supporté dans le canal v2
-			return null;
 		default:
 			throw new IllegalArgumentException("Type d'information complémentaire non-supporté : " + type);
 		}
 	}
 
-	private static class ParenteFactory implements OutputDataFactory<EvenementFiscalParente, ch.vd.unireg.xml.event.fiscal.v2.EvenementFiscalParente> {
+	private static class ParenteFactory implements OutputDataFactory<EvenementFiscalParente, ch.vd.unireg.xml.event.fiscal.v3.EvenementFiscalParente> {
 		@NotNull
 		@Override
-		public ch.vd.unireg.xml.event.fiscal.v2.EvenementFiscalParente build(@NotNull EvenementFiscalParente evenementFiscal) {
-			final ch.vd.unireg.xml.event.fiscal.v2.EvenementFiscalParente instance = instanciate(evenementFiscal.getType());
+		public ch.vd.unireg.xml.event.fiscal.v3.EvenementFiscalParente build(@NotNull EvenementFiscalParente evenementFiscal) {
+			final ch.vd.unireg.xml.event.fiscal.v3.EvenementFiscalParente instance = instanciate(evenementFiscal.getType());
 			final Tiers tiers = evenementFiscal.getTiers();
 			instance.setNumeroTiers(safeLongIdToInt(tiers.getNumero()));
 			instance.setCategorieTiers(extractCategorieTiers(tiers));
@@ -423,7 +464,7 @@ public class EvenementFiscalV2SenderImpl implements EvenementFiscalSender, Initi
 		}
 	}
 
-	protected static ch.vd.unireg.xml.event.fiscal.v2.EvenementFiscalParente instanciate(EvenementFiscalParente.TypeEvenementFiscalParente type) {
+	protected static ch.vd.unireg.xml.event.fiscal.v3.EvenementFiscalParente instanciate(EvenementFiscalParente.TypeEvenementFiscalParente type) {
 		switch (type) {
 		case NAISSANCE:
 			return new Naissance();
@@ -434,11 +475,11 @@ public class EvenementFiscalV2SenderImpl implements EvenementFiscalSender, Initi
 		}
 	}
 
-	private static class RegimeFiscalFactory implements OutputDataFactory<EvenementFiscalRegimeFiscal, ch.vd.unireg.xml.event.fiscal.v2.EvenementFiscalRegimeFiscal> {
+	private static class RegimeFiscalFactory implements OutputDataFactory<EvenementFiscalRegimeFiscal, ch.vd.unireg.xml.event.fiscal.v3.EvenementFiscalRegimeFiscal> {
 		@NotNull
 		@Override
-		public ch.vd.unireg.xml.event.fiscal.v2.EvenementFiscalRegimeFiscal build(@NotNull EvenementFiscalRegimeFiscal evenementFiscal) {
-			final ch.vd.unireg.xml.event.fiscal.v2.EvenementFiscalRegimeFiscal instance = instanciate(evenementFiscal.getType());
+		public ch.vd.unireg.xml.event.fiscal.v3.EvenementFiscalRegimeFiscal build(@NotNull EvenementFiscalRegimeFiscal evenementFiscal) {
+			final ch.vd.unireg.xml.event.fiscal.v3.EvenementFiscalRegimeFiscal instance = instanciate(evenementFiscal.getType());
 			final Tiers tiers = evenementFiscal.getTiers();
 			instance.setNumeroTiers(safeLongIdToInt(tiers.getNumero()));
 			instance.setCategorieTiers(extractCategorieTiers(tiers));
@@ -448,7 +489,7 @@ public class EvenementFiscalV2SenderImpl implements EvenementFiscalSender, Initi
 		}
 	}
 
-	protected static ch.vd.unireg.xml.event.fiscal.v2.EvenementFiscalRegimeFiscal instanciate(EvenementFiscalRegimeFiscal.TypeEvenementFiscalRegime type) {
+	protected static ch.vd.unireg.xml.event.fiscal.v3.EvenementFiscalRegimeFiscal instanciate(EvenementFiscalRegimeFiscal.TypeEvenementFiscalRegime type) {
 		switch (type) {
 		case ANNULATION:
 			return new AnnulationRegimeFiscal();
@@ -474,11 +515,11 @@ public class EvenementFiscalV2SenderImpl implements EvenementFiscalSender, Initi
 		}
 	}
 
-	private static class FlagEntrepriseFactory implements OutputDataFactory<EvenementFiscalFlagEntreprise, ch.vd.unireg.xml.event.fiscal.v2.EvenementFiscalFlagEntreprise> {
+	private static class FlagEntrepriseFactory implements OutputDataFactory<EvenementFiscalFlagEntreprise, ch.vd.unireg.xml.event.fiscal.v3.EvenementFiscalFlagEntreprise> {
 		@NotNull
 		@Override
-		public ch.vd.unireg.xml.event.fiscal.v2.EvenementFiscalFlagEntreprise build(@NotNull EvenementFiscalFlagEntreprise evenementFiscal) {
-			final ch.vd.unireg.xml.event.fiscal.v2.EvenementFiscalFlagEntreprise instance = instanciate(evenementFiscal.getType());
+		public ch.vd.unireg.xml.event.fiscal.v3.EvenementFiscalFlagEntreprise build(@NotNull EvenementFiscalFlagEntreprise evenementFiscal) {
+			final ch.vd.unireg.xml.event.fiscal.v3.EvenementFiscalFlagEntreprise instance = instanciate(evenementFiscal.getType());
 			final Tiers tiers = evenementFiscal.getTiers();
 			instance.setNumeroTiers(safeLongIdToInt(tiers.getNumero()));
 			instance.setCategorieTiers(extractCategorieTiers(tiers));
@@ -488,7 +529,7 @@ public class EvenementFiscalV2SenderImpl implements EvenementFiscalSender, Initi
 		}
 	}
 
-	protected static ch.vd.unireg.xml.event.fiscal.v2.EvenementFiscalFlagEntreprise instanciate(EvenementFiscalFlagEntreprise.TypeEvenementFiscalFlagEntreprise type) {
+	protected static ch.vd.unireg.xml.event.fiscal.v3.EvenementFiscalFlagEntreprise instanciate(EvenementFiscalFlagEntreprise.TypeEvenementFiscalFlagEntreprise type) {
 		switch (type) {
 		case ANNULATION:
 			return new AnnulationFlagEntreprise();
@@ -515,9 +556,9 @@ public class EvenementFiscalV2SenderImpl implements EvenementFiscalSender, Initi
 	}
 
 	@Nullable
-	private static <T extends EvenementFiscal> ch.vd.unireg.xml.event.fiscal.v2.EvenementFiscal buildOutputData(T evt) {
+	private static <T extends EvenementFiscal> ch.vd.unireg.xml.event.fiscal.v3.EvenementFiscal buildOutputData(T evt) {
 		//noinspection unchecked
-		final OutputDataFactory<? super T, ? extends ch.vd.unireg.xml.event.fiscal.v2.EvenementFiscal> factory = (OutputDataFactory<? super T, ? extends ch.vd.unireg.xml.event.fiscal.v2.EvenementFiscal>) FACTORIES.get(evt.getClass());
+		final OutputDataFactory<? super T, ? extends ch.vd.unireg.xml.event.fiscal.v3.EvenementFiscal> factory = (OutputDataFactory<? super T, ? extends ch.vd.unireg.xml.event.fiscal.v3.EvenementFiscal>) FACTORIES.get(evt.getClass());
 		if (factory == null) {
 			return null;
 		}

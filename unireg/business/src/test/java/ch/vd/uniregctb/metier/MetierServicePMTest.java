@@ -555,11 +555,11 @@ public class MetierServicePMTest extends BusinessTest {
 		}, Boolean.TRUE, Boolean.FALSE);
 	}
 
-	private static <T> Map<Class<?>, List<T>> segmenterParClasse(Collection<T> elements) {
-		return segmenter(elements, new Extractor<T, Class<?>>() {
+	private static <T> Map<Class<? extends T>, List<T>> segmenterParClasse(Collection<T> elements) {
+		return segmenter(elements, new Extractor<T, Class<? extends T>>() {
 			@Override
-			public Class<?> extract(T source) {
-				return source.getClass();
+			public Class<? extends T> extract(T source) {
+				return (Class<? extends T>) source.getClass();
 			}
 		});
 	}
@@ -737,11 +737,15 @@ public class MetierServicePMTest extends BusinessTest {
 
 				// 6. événements fiscaux
 				final Collection<EvenementFiscal> evts = evenementFiscalDAO.getEvenementsFiscaux(entreprise);
-				Assert.assertEquals(4, evts.size());        // 2 annulations de for + 2 ouvertures de for
-				final Map<EvenementFiscalFor.TypeEvenementFiscalFor, List<EvenementFiscal>> evtsParType = segmenter(evts, new Extractor<EvenementFiscal, EvenementFiscalFor.TypeEvenementFiscalFor>() {
+				Assert.assertEquals(5, evts.size());        // 2 annulations de for + 2 ouvertures de for + une info complémentaire (annulation faillite)
+				final Map<Class<? extends EvenementFiscal>, List<EvenementFiscal>> evtsParClasse = segmenterParClasse(evts);
+				Assert.assertEquals(2, evtsParClasse.size());
+				Assert.assertTrue(evtsParClasse.containsKey(EvenementFiscalInformationComplementaire.class));
+				Assert.assertTrue(evtsParClasse.containsKey(EvenementFiscalFor.class));
+
+				final Map<EvenementFiscalFor.TypeEvenementFiscalFor, List<EvenementFiscal>> evtsParType = segmenter(evtsParClasse.get(EvenementFiscalFor.class), new Extractor<EvenementFiscal, EvenementFiscalFor.TypeEvenementFiscalFor>() {
 					@Override
 					public EvenementFiscalFor.TypeEvenementFiscalFor extract(EvenementFiscal source) {
-						Assert.assertTrue(source.getClass().getName(), source instanceof EvenementFiscalFor);
 						return ((EvenementFiscalFor) source).getType();
 					}
 				});
@@ -760,6 +764,14 @@ public class MetierServicePMTest extends BusinessTest {
 					Assert.assertFalse(eff.isAnnule());
 					Assert.assertEquals(dateCreationEntreprise, eff.getDateValeur());
 				}
+
+				final List<EvenementFiscal> evtsInfoComplementaire = evtsParClasse.get(EvenementFiscalInformationComplementaire.class);
+				Assert.assertNotNull(evtsInfoComplementaire);
+				Assert.assertEquals(1, evtsInfoComplementaire.size());
+				final EvenementFiscalInformationComplementaire infoComplementaire = (EvenementFiscalInformationComplementaire) evtsInfoComplementaire.get(0);
+				Assert.assertNotNull(infoComplementaire);
+				Assert.assertEquals(EvenementFiscalInformationComplementaire.TypeInformationComplementaire.ANNULATION_FAILLITE, infoComplementaire.getType());
+				Assert.assertEquals(datePrononceFaillite, infoComplementaire.getDateValeur());
 			}
 		});
 	}
@@ -842,7 +854,7 @@ public class MetierServicePMTest extends BusinessTest {
 					Assert.assertEquals(MotifFor.FAILLITE, ((ForFiscalAvecMotifs) ff).getMotifFermeture());
 					Assert.assertEquals(ForFiscalPrincipalPM.class, ff.getClass());
 				}
-				final Map<Class<?>, List<ForFiscal>> forsNonAnnulesParClasse = segmenterParClasse(fors.get(Boolean.FALSE));
+				final Map<Class<? extends ForFiscal>, List<ForFiscal>> forsNonAnnulesParClasse = segmenterParClasse(fors.get(Boolean.FALSE));
 				Assert.assertEquals(new HashSet<>(Arrays.asList(ForFiscalPrincipalPM.class, ForFiscalSecondaire.class)), forsNonAnnulesParClasse.keySet());
 				Assert.assertEquals(1, forsNonAnnulesParClasse.get(ForFiscalPrincipalPM.class).size());
 				Assert.assertEquals(1, forsNonAnnulesParClasse.get(ForFiscalSecondaire.class).size());
@@ -913,7 +925,7 @@ public class MetierServicePMTest extends BusinessTest {
 				// 6. événements fiscaux
 				final Collection<EvenementFiscal> evts = evenementFiscalDAO.getEvenementsFiscaux(entreprise);
 				Assert.assertEquals(3, evts.size());        // 1 annulation de for + 1 ouverture de for + 1 information complémentaire
-				final Map<Class<?>, List<EvenementFiscal>> evtsParClass = segmenterParClasse(evts);
+				final Map<Class<? extends EvenementFiscal>, List<EvenementFiscal>> evtsParClass = segmenterParClasse(evts);
 				Assert.assertEquals(new HashSet<>(Arrays.asList(EvenementFiscalFor.class, EvenementFiscalInformationComplementaire.class)), evtsParClass.keySet());
 				Assert.assertEquals(2, evtsParClass.get(EvenementFiscalFor.class).size());
 				Assert.assertEquals(1, evtsParClass.get(EvenementFiscalInformationComplementaire.class).size());
@@ -1426,7 +1438,7 @@ public class MetierServicePMTest extends BusinessTest {
 					final Collection<EvenementFiscal> evtsFiscaux = evenementFiscalDAO.getEvenementsFiscaux(absorbee);
 					Assert.assertNotNull(evtsFiscaux);
 					Assert.assertEquals(2, evtsFiscaux.size());     // 1 fermeture de for + 1 information complémentaire
-					final Map<Class<?>, List<EvenementFiscal>> evtsParClass = segmenterParClasse(evtsFiscaux);
+					final Map<Class<? extends EvenementFiscal>, List<EvenementFiscal>> evtsParClass = segmenterParClasse(evtsFiscaux);
 					Assert.assertEquals(new HashSet<>(Arrays.asList(EvenementFiscalFor.class, EvenementFiscalInformationComplementaire.class)), evtsParClass.keySet());
 					Assert.assertEquals(1, evtsParClass.get(EvenementFiscalFor.class).size());
 					Assert.assertEquals(1, evtsParClass.get(EvenementFiscalInformationComplementaire.class).size());
@@ -1645,6 +1657,17 @@ public class MetierServicePMTest extends BusinessTest {
 				Assert.assertEquals(dateDebutAbsorbante, adresseAbsorbante.getDateDebut());
 				Assert.assertNull(adresseAbsorbante.getDateFin());
 
+				// 2.4 événement fiscal
+				final Collection<EvenementFiscal> evtsFiscauxAbsorbante = evenementFiscalDAO.getEvenementsFiscaux(absorbante);
+				Assert.assertNotNull(evtsFiscauxAbsorbante);
+				Assert.assertEquals(1, evtsFiscauxAbsorbante.size());
+				final EvenementFiscal evtFiscalAbsorbante = evtsFiscauxAbsorbante.iterator().next();
+				Assert.assertNotNull(evtFiscalAbsorbante);
+				Assert.assertEquals(EvenementFiscalInformationComplementaire.class, evtFiscalAbsorbante.getClass());
+				final EvenementFiscalInformationComplementaire evtFiscalInfoAbsorbante = (EvenementFiscalInformationComplementaire) evtFiscalAbsorbante;
+				Assert.assertEquals(EvenementFiscalInformationComplementaire.TypeInformationComplementaire.ANNULATION_FUSION, evtFiscalInfoAbsorbante.getType());
+				Assert.assertEquals(dateBilanFusion, evtFiscalInfoAbsorbante.getDateValeur());
+
 				// 2. sur l'entreprise absorbée1 dont la fusion est effectivement annulée
 
 				final Entreprise absorbee1 = (Entreprise) tiersDAO.get(ids.idAbsorbee1);
@@ -1692,6 +1715,23 @@ public class MetierServicePMTest extends BusinessTest {
 				Assert.assertEquals(MockRue.Prilly.RueDesMetiers.getNoRue(), adresseSuisse.getNumeroRue());
 				Assert.assertEquals("p.a. Ma grande entreprise", adresseSuisse.getComplement());
 
+				// 2.4 événement fiscal
+				final Collection<EvenementFiscal> evtsFiscauxAbsorbee1 = evenementFiscalDAO.getEvenementsFiscaux(absorbee1);
+				Assert.assertNotNull(evtsFiscauxAbsorbee1);
+				Assert.assertEquals(3, evtsFiscauxAbsorbee1.size());    // une annulation de for, une ouverture de for, une info complémentaire
+
+				final Map<Class<? extends EvenementFiscal>, List<EvenementFiscal>> evtsFiscauxAbsorbee1ParClasse = segmenterParClasse(evtsFiscauxAbsorbee1);
+				Assert.assertEquals(2, evtsFiscauxAbsorbee1ParClasse.size());
+				Assert.assertTrue(evtsFiscauxAbsorbee1ParClasse.containsKey(EvenementFiscalFor.class));
+				Assert.assertTrue(evtsFiscauxAbsorbee1ParClasse.containsKey(EvenementFiscalInformationComplementaire.class));
+
+				final List<EvenementFiscal> evtsFiscauxInfoAbsorbee1 = evtsFiscauxAbsorbee1ParClasse.get(EvenementFiscalInformationComplementaire.class);
+				Assert.assertEquals(1, evtsFiscauxInfoAbsorbee1.size());
+				final EvenementFiscalInformationComplementaire evtFiscalInfoAbsorbee1 = (EvenementFiscalInformationComplementaire) evtsFiscauxInfoAbsorbee1.get(0);
+				Assert.assertNotNull(evtFiscalInfoAbsorbee1);
+				Assert.assertEquals(EvenementFiscalInformationComplementaire.TypeInformationComplementaire.ANNULATION_FUSION, evtFiscalInfoAbsorbee1.getType());
+				Assert.assertEquals(dateBilanFusion, evtFiscalInfoAbsorbee1.getDateValeur());
+
 				// 3. sur l'entreprise absorbee2 dont la fusion n'est finalement pas annulée
 
 				final Entreprise absorbee2 = (Entreprise) tiersDAO.get(ids.idAbsorbee2);
@@ -1713,6 +1753,11 @@ public class MetierServicePMTest extends BusinessTest {
 				Assert.assertFalse(etat2.isAnnule());
 				Assert.assertEquals(TypeEtatEntreprise.ABSORBEE, etat2.getType());
 				Assert.assertEquals(dateContratFusion2, etat2.getDateObtention());
+
+				// 3.3 pas d'événement fiscal
+				final Collection<EvenementFiscal> evtsFiscauxAbsorbee2 = evenementFiscalDAO.getEvenementsFiscaux(absorbee2);
+				Assert.assertNotNull(evtsFiscauxAbsorbee2);
+				Assert.assertEquals(0, evtsFiscauxAbsorbee2.size());
 			}
 		});
 	}
@@ -2103,7 +2148,7 @@ public class MetierServicePMTest extends BusinessTest {
 					Assert.assertEquals(MotifFor.CESSATION_ACTIVITE, ((ForFiscalAvecMotifs) ff).getMotifFermeture());
 					Assert.assertEquals(ForFiscalPrincipalPM.class, ff.getClass());
 				}
-				final Map<Class<?>, List<ForFiscal>> forsNonAnnulesParClasse = segmenterParClasse(fors.get(Boolean.FALSE));
+				final Map<Class<? extends ForFiscal>, List<ForFiscal>> forsNonAnnulesParClasse = segmenterParClasse(fors.get(Boolean.FALSE));
 				Assert.assertEquals(new HashSet<>(Arrays.asList(ForFiscalPrincipalPM.class, ForFiscalSecondaire.class)), forsNonAnnulesParClasse.keySet());
 				Assert.assertEquals(1, forsNonAnnulesParClasse.get(ForFiscalPrincipalPM.class).size());
 				Assert.assertEquals(1, forsNonAnnulesParClasse.get(ForFiscalSecondaire.class).size());
@@ -2599,6 +2644,17 @@ public class MetierServicePMTest extends BusinessTest {
 				Assert.assertEquals(dateDebutScindee, adresseScindee.getDateDebut());
 				Assert.assertNull(adresseScindee.getDateFin());
 
+				// 1.5 événement fiscal
+				final Collection<EvenementFiscal> evtsFiscauxScindee = evenementFiscalDAO.getEvenementsFiscaux(scindee);
+				Assert.assertNotNull(evtsFiscauxScindee);
+				Assert.assertEquals(1, evtsFiscauxScindee.size());
+				final EvenementFiscal evtFiscalScindee = evtsFiscauxScindee.iterator().next();
+				Assert.assertNotNull(evtFiscalScindee);
+				Assert.assertEquals(EvenementFiscalInformationComplementaire.class, evtFiscalScindee.getClass());
+				final EvenementFiscalInformationComplementaire evtFiscalInfoScindee = (EvenementFiscalInformationComplementaire) evtFiscalScindee;
+				Assert.assertEquals(EvenementFiscalInformationComplementaire.TypeInformationComplementaire.ANNULATION_SCISSION, evtFiscalInfoScindee.getType());
+				Assert.assertEquals(dateContratScission1, evtFiscalInfoScindee.getDateValeur());
+
 				// 2. sur l'entreprise resultante1 dont la scission est effectivement annulée
 
 				final Entreprise resultante1 = (Entreprise) tiersDAO.get(ids.idResultante1);
@@ -2625,6 +2681,17 @@ public class MetierServicePMTest extends BusinessTest {
 				Assert.assertNotNull(adresses1);
 				Assert.assertEquals(0, adresses1.size());
 
+				// 2.4 événement fiscal
+				final Collection<EvenementFiscal> evtsFiscauxResultante1 = evenementFiscalDAO.getEvenementsFiscaux(resultante1);
+				Assert.assertNotNull(evtsFiscauxResultante1);
+				Assert.assertEquals(1, evtsFiscauxResultante1.size());
+				final EvenementFiscal evtFiscalResultante1 = evtsFiscauxResultante1.iterator().next();
+				Assert.assertNotNull(evtFiscalResultante1);
+				Assert.assertEquals(EvenementFiscalInformationComplementaire.class, evtFiscalResultante1.getClass());
+				final EvenementFiscalInformationComplementaire evtFiscalInfoResultante1 = (EvenementFiscalInformationComplementaire) evtFiscalResultante1;
+				Assert.assertEquals(EvenementFiscalInformationComplementaire.TypeInformationComplementaire.ANNULATION_SCISSION, evtFiscalInfoResultante1.getType());
+				Assert.assertEquals(dateContratScission1, evtFiscalInfoResultante1.getDateValeur());
+
 				// 3. sur l'entreprise resultante2 dont la scission n'est finalement pas annulée
 
 				final Entreprise resultante2 = (Entreprise) tiersDAO.get(ids.idResultante2);
@@ -2646,6 +2713,11 @@ public class MetierServicePMTest extends BusinessTest {
 				Assert.assertFalse(etat2.isAnnule());
 				Assert.assertEquals(TypeEtatEntreprise.FONDEE, etat2.getType());
 				Assert.assertEquals(dateDebutResultante2, etat2.getDateObtention());
+
+				// 3.3. pas d'événement fiscal
+				final Collection<EvenementFiscal> evtsFiscauxResultante2 = evenementFiscalDAO.getEvenementsFiscaux(resultante2);
+				Assert.assertNotNull(evtsFiscauxResultante2);
+				Assert.assertEquals(0, evtsFiscauxResultante2.size());
 			}
 		});
 	}
@@ -2786,18 +2858,16 @@ public class MetierServicePMTest extends BusinessTest {
 					Assert.assertEquals((Long) ids.idReceptrice2, transfert.getObjetId());
 				}
 
-				// TODO pas pour le moment...
 				// 1.2  événement fiscal de transfert de patrimoine
 				final Collection<EvenementFiscal> evtsFiscauxEmettrice = evenementFiscalDAO.getEvenementsFiscaux(emettrice);
 				Assert.assertNotNull(evtsFiscauxEmettrice);
-				Assert.assertEquals(0, evtsFiscauxEmettrice.size());
-//				Assert.assertEquals(1, evtsFiscauxEmettrice.size());
-//				final EvenementFiscal evtFiscalEmettrice = evtsFiscauxEmettrice.iterator().next();
-//				Assert.assertNotNull(evtFiscalEmettrice);
-//				Assert.assertFalse(evtFiscalEmettrice.isAnnule());
-//				Assert.assertEquals(dateTransfert, evtFiscalEmettrice.getDateValeur());
-//				Assert.assertEquals(EvenementFiscalInformationComplementaire.class, evtFiscalEmettrice.getClass());
-//				Assert.assertEquals(EvenementFiscalInformationComplementaire.TypeInformationComplementaire.TRANSFERT_PATRIMOINE, ((EvenementFiscalInformationComplementaire) evtFiscalEmettrice).getType());
+				Assert.assertEquals(1, evtsFiscauxEmettrice.size());
+				final EvenementFiscal evtFiscalEmettrice = evtsFiscauxEmettrice.iterator().next();
+				Assert.assertNotNull(evtFiscalEmettrice);
+				Assert.assertFalse(evtFiscalEmettrice.isAnnule());
+				Assert.assertEquals(dateTransfert, evtFiscalEmettrice.getDateValeur());
+				Assert.assertEquals(EvenementFiscalInformationComplementaire.class, evtFiscalEmettrice.getClass());
+				Assert.assertEquals(EvenementFiscalInformationComplementaire.TypeInformationComplementaire.TRANSFERT_PATRIMOINE, ((EvenementFiscalInformationComplementaire) evtFiscalEmettrice).getType());
 
 				// 1.3 état inchangé
 				final EtatEntreprise etatEmettrice = emettrice.getEtatActuel();
@@ -2846,18 +2916,16 @@ public class MetierServicePMTest extends BusinessTest {
 					Assert.assertNotNull(adresses);
 					Assert.assertEquals(0, adresses.size());
 
-					// TODO pas pour le moment
 					// 2.5 événements fiscaux
 					final Collection<EvenementFiscal> evtsFiscaux = evenementFiscalDAO.getEvenementsFiscaux(receptrice);
 					Assert.assertNotNull(evtsFiscaux);
-					Assert.assertEquals(0, evtsFiscaux.size());
-//					Assert.assertEquals(1, evtsFiscaux.size());     // 1 information complémentaire
-//					final EvenementFiscal evtFiscal = evtsFiscaux.iterator().next();
-//					Assert.assertNotNull(evtFiscal);
-//					Assert.assertFalse(evtFiscal.isAnnule());
-//					Assert.assertEquals(EvenementFiscalInformationComplementaire.class, evtFiscal.getClass());
-//					Assert.assertEquals(dateTransfert, evtFiscal.getDateValeur());
-//					Assert.assertEquals(EvenementFiscalInformationComplementaire.TypeInformationComplementaire.TRANSFERT_PATRIMOINE, ((EvenementFiscalInformationComplementaire) evtFiscal).getType());
+					Assert.assertEquals(1, evtsFiscaux.size());     // 1 information complémentaire
+					final EvenementFiscal evtFiscal = evtsFiscaux.iterator().next();
+					Assert.assertNotNull(evtFiscal);
+					Assert.assertFalse(evtFiscal.isAnnule());
+					Assert.assertEquals(EvenementFiscalInformationComplementaire.class, evtFiscal.getClass());
+					Assert.assertEquals(dateTransfert, evtFiscal.getDateValeur());
+					Assert.assertEquals(EvenementFiscalInformationComplementaire.TypeInformationComplementaire.TRANSFERT_PATRIMOINE, ((EvenementFiscalInformationComplementaire) evtFiscal).getType());
 				}
 			}
 		});
@@ -3051,6 +3119,17 @@ public class MetierServicePMTest extends BusinessTest {
 				Assert.assertEquals(dateDebutEmettrice, adresseEmettrice.getDateDebut());
 				Assert.assertNull(adresseEmettrice.getDateFin());
 
+				// 1.5 événement fiscal
+				final Collection<EvenementFiscal> evtsFiscauxEmettrice = evenementFiscalDAO.getEvenementsFiscaux(emettrice);
+				Assert.assertNotNull(evtsFiscauxEmettrice);
+				Assert.assertEquals(1, evtsFiscauxEmettrice.size());
+				final EvenementFiscal evtFiscalEmettrice = evtsFiscauxEmettrice.iterator().next();
+				Assert.assertNotNull(evtFiscalEmettrice);
+				Assert.assertEquals(EvenementFiscalInformationComplementaire.class, evtFiscalEmettrice.getClass());
+				final EvenementFiscalInformationComplementaire evtFiscalInfoEmettrice = (EvenementFiscalInformationComplementaire) evtFiscalEmettrice;
+				Assert.assertEquals(EvenementFiscalInformationComplementaire.TypeInformationComplementaire.ANNULATION_TRANFERT_PATRIMOINE, evtFiscalInfoEmettrice.getType());
+				Assert.assertEquals(dateTransfert1, evtFiscalInfoEmettrice.getDateValeur());
+
 				// 2. sur l'entreprise receptrice1 pour laquelle le transfert est effectivement annulé
 
 				final Entreprise receptrice1 = (Entreprise) tiersDAO.get(ids.idReceptrice1);
@@ -3077,6 +3156,17 @@ public class MetierServicePMTest extends BusinessTest {
 				Assert.assertNotNull(adresses1);
 				Assert.assertEquals(0, adresses1.size());
 
+				// 2.4 événement fiscal
+				final Collection<EvenementFiscal> evtsFiscauxReceptrice1 = evenementFiscalDAO.getEvenementsFiscaux(receptrice1);
+				Assert.assertNotNull(evtsFiscauxReceptrice1);
+				Assert.assertEquals(1, evtsFiscauxReceptrice1.size());
+				final EvenementFiscal evtFiscalReceptrice1 = evtsFiscauxReceptrice1.iterator().next();
+				Assert.assertNotNull(evtFiscalReceptrice1);
+				Assert.assertEquals(EvenementFiscalInformationComplementaire.class, evtFiscalReceptrice1.getClass());
+				final EvenementFiscalInformationComplementaire evtFiscalInfoReceptrice1 = (EvenementFiscalInformationComplementaire) evtFiscalReceptrice1;
+				Assert.assertEquals(EvenementFiscalInformationComplementaire.TypeInformationComplementaire.ANNULATION_TRANFERT_PATRIMOINE, evtFiscalInfoReceptrice1.getType());
+				Assert.assertEquals(dateTransfert1, evtFiscalInfoReceptrice1.getDateValeur());
+
 				// 3. sur l'entreprise receptrice2 pour laquelle le transfert n'est finalement pas annulé
 
 				final Entreprise receptrice2 = (Entreprise) tiersDAO.get(ids.idReceptrice2);
@@ -3098,6 +3188,11 @@ public class MetierServicePMTest extends BusinessTest {
 				Assert.assertFalse(etat2.isAnnule());
 				Assert.assertEquals(TypeEtatEntreprise.FONDEE, etat2.getType());
 				Assert.assertEquals(dateDebutReceptrice2, etat2.getDateObtention());
+
+				// 3.3 pas d'événement fiscal
+				final Collection<EvenementFiscal> evtsFiscauxReceptrice2 = evenementFiscalDAO.getEvenementsFiscaux(receptrice2);
+				Assert.assertNotNull(evtsFiscauxReceptrice2);
+				Assert.assertEquals(0, evtsFiscauxReceptrice2.size());
 			}
 		});
 	}

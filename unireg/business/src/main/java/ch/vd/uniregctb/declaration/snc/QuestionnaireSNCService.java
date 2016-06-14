@@ -62,9 +62,10 @@ public interface QuestionnaireSNCService {
 	/**
 	 * Envoi d'un questionnaire SNC pour impression batch
 	 * @param questionnaire nouveau questionnaire à envoyer
+	 * @param dateEvenement date de traitement
 	 * @throws DeclarationException en cas de souci
 	 */
-	void envoiQuestionnaireSNCForBatch(QuestionnaireSNC questionnaire) throws DeclarationException;
+	void envoiQuestionnaireSNCForBatch(QuestionnaireSNC questionnaire, RegDate dateEvenement) throws DeclarationException;
 
 	/**
 	 * Envoi pour impression locale d'un duplicata du questionnaire SNC
@@ -108,5 +109,12 @@ public interface QuestionnaireSNCService {
 	 * @throws DeclarationException en cas de souci
 	 */
 	void quittancerQuestionnaire(QuestionnaireSNC questionnaire, RegDate dateRetour, String source) throws DeclarationException;
+
+	/**
+	 * Annule le questionnaire donné
+	 * @param questionnaire le questionnaire à annuler
+	 * @throws DeclarationException en cas de souci
+	 */
+	void annulerQuestionnaire(QuestionnaireSNC questionnaire) throws DeclarationException;
 
 }

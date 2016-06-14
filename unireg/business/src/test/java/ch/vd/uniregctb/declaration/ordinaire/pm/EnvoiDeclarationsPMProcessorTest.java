@@ -24,7 +24,7 @@ import ch.vd.uniregctb.declaration.PeriodeFiscaleDAO;
 import ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotService;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscal;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalDAO;
-import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalDeclaration;
+import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalDeclarationSommable;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
 import ch.vd.uniregctb.metier.assujettissement.CategorieEnvoiDIPM;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionService;
@@ -250,11 +250,11 @@ public class EnvoiDeclarationsPMProcessorTest extends BusinessTest {
 					Assert.assertNotNull(evtFiscal);
 					Assert.assertFalse(evtFiscal.isAnnule());
 					Assert.assertSame(evtFiscal.getTiers(), e);
-					Assert.assertEquals(EvenementFiscalDeclaration.class, evtFiscal.getClass());
+					Assert.assertEquals(EvenementFiscalDeclarationSommable.class, evtFiscal.getClass());
 
-					final EvenementFiscalDeclaration evtFiscalDeclaration = (EvenementFiscalDeclaration) evtFiscal;
+					final EvenementFiscalDeclarationSommable evtFiscalDeclaration = (EvenementFiscalDeclarationSommable) evtFiscal;
 					Assert.assertSame(declaration, evtFiscalDeclaration.getDeclaration());
-					Assert.assertEquals(EvenementFiscalDeclaration.TypeAction.EMISSION, evtFiscalDeclaration.getTypeAction());
+					Assert.assertEquals(EvenementFiscalDeclarationSommable.TypeAction.EMISSION, evtFiscalDeclaration.getTypeAction());
 				}
 			});
 		}
@@ -425,11 +425,11 @@ public class EnvoiDeclarationsPMProcessorTest extends BusinessTest {
 					Assert.assertNotNull(evtFiscal);
 					Assert.assertFalse(evtFiscal.isAnnule());
 					Assert.assertSame(evtFiscal.getTiers(), e);
-					Assert.assertEquals(EvenementFiscalDeclaration.class, evtFiscal.getClass());
+					Assert.assertEquals(EvenementFiscalDeclarationSommable.class, evtFiscal.getClass());
 
-					final EvenementFiscalDeclaration evtFiscalDeclaration = (EvenementFiscalDeclaration) evtFiscal;
+					final EvenementFiscalDeclarationSommable evtFiscalDeclaration = (EvenementFiscalDeclarationSommable) evtFiscal;
 					Assert.assertSame(declaration, evtFiscalDeclaration.getDeclaration());
-					Assert.assertEquals(EvenementFiscalDeclaration.TypeAction.EMISSION, evtFiscalDeclaration.getTypeAction());
+					Assert.assertEquals(EvenementFiscalDeclarationSommable.TypeAction.EMISSION, evtFiscalDeclaration.getTypeAction());
 				}
 			});
 		}
@@ -600,11 +600,11 @@ public class EnvoiDeclarationsPMProcessorTest extends BusinessTest {
 					Assert.assertNotNull(evtFiscal);
 					Assert.assertFalse(evtFiscal.isAnnule());
 					Assert.assertSame(evtFiscal.getTiers(), e);
-					Assert.assertEquals(EvenementFiscalDeclaration.class, evtFiscal.getClass());
+					Assert.assertEquals(EvenementFiscalDeclarationSommable.class, evtFiscal.getClass());
 
-					final EvenementFiscalDeclaration evtFiscalDeclaration = (EvenementFiscalDeclaration) evtFiscal;
+					final EvenementFiscalDeclarationSommable evtFiscalDeclaration = (EvenementFiscalDeclarationSommable) evtFiscal;
 					Assert.assertSame(declaration, evtFiscalDeclaration.getDeclaration());
-					Assert.assertEquals(EvenementFiscalDeclaration.TypeAction.EMISSION, evtFiscalDeclaration.getTypeAction());
+					Assert.assertEquals(EvenementFiscalDeclarationSommable.TypeAction.EMISSION, evtFiscalDeclaration.getTypeAction());
 				}
 			});
 		}

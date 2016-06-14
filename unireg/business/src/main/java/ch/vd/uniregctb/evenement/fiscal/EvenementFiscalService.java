@@ -5,6 +5,7 @@ import java.util.Collection;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DeclarationImpotSource;
+import ch.vd.uniregctb.declaration.QuestionnaireSNC;
 import ch.vd.uniregctb.documentfiscal.LettreBienvenue;
 import ch.vd.uniregctb.tiers.AllegementFiscal;
 import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
@@ -142,6 +143,33 @@ public interface EvenementFiscalService {
 	 * @param di la déclaration annulée
 	 */
 	void publierEvenementFiscalAnnulationDeclarationImpot(DeclarationImpotOrdinaire di);
+
+	/**
+	 * Publie un événement fiscal de type 'émission de questionnaire SNC'
+	 * @param qsnc le questionnaire SNC émis
+	 * @param dateEmission la date d'émission (en général la date du jour)
+	 */
+	void publierEvenementFiscalEmissionQuestionnaireSNC(QuestionnaireSNC qsnc, RegDate dateEmission);
+
+	/**
+	 * Publie un événement fiscal de type 'quittancement de questionnaire SNC'
+	 * @param qsnc le questionnaire quittancé
+	 * @param dateQuittance la date de quittance (qui peut ne pas être la date du jour car le quittancement nous vient d'une source externe qui indique sa propre date)
+	 */
+	void publierEvenementFiscalQuittancementQuestionnaireSNC(QuestionnaireSNC qsnc, RegDate dateQuittance);
+
+	/**
+	 * Publie un événement fiscal de type 'rappel de questionnaire SNC'
+	 * @param qsnc le questionnaire rappelé
+	 * @param dateRappel la date de rappel (en général la date du jour)
+	 */
+	void publierEvenementFiscalRappelQuestionnaireSNC(QuestionnaireSNC qsnc, RegDate dateRappel);
+
+	/**
+	 * Publie un événement fiscal de type 'annulation de questionnaire SNC'
+	 * @param qsnc le questionnaire SNC
+	 */
+	void publierEvenementFiscalAnnulationQuestionnaireSNC(QuestionnaireSNC qsnc);
 
 	/**
 	 * Publie un événement fiscal de type 'ouverture de régime fiscal'

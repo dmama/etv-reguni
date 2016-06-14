@@ -15,11 +15,18 @@
 		<property name="serviceDestination" value="${extprop.jms.queue.evtFiscal}" />
 	</bean>
 
+	<bean id="evenementFiscalV3Sender" class="ch.vd.uniregctb.evenement.fiscal.EvenementFiscalV3SenderImpl">
+		<property name="esbTemplate" ref="esbJmsTemplate" />
+		<property name="esbValidator" ref="esbMessageValidator"/>
+		<property name="serviceDestination" value="${extprop.jms.queue.evtFiscal}" />
+	</bean>
+
 	<bean id="evenementFiscalSendingPod" class="ch.vd.uniregctb.evenement.fiscal.EvenementFiscalSendingPod">
 		<property name="senders">
 			<array>
 				<ref bean="evenementFiscalV1Sender"/>
 				<ref bean="evenementFiscalV2Sender"/>
+				<ref bean="evenementFiscalV3Sender"/>
 			</array>
 		</property>
 		<property name="enabled" value="${extprop.jms.queue.evtFiscal.enabled}" />

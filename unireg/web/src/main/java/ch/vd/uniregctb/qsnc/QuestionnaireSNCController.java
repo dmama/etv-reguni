@@ -577,36 +577,40 @@ public class QuestionnaireSNCController {
 		return "redirect:editer.do?id=" + decla.getId();
 	}
 
-	@Transactional(rollbackFor = Throwable.class)
 	@RequestMapping(value = "/annuler.do", method = RequestMethod.POST)
-	public String annulerQuestionnaire(@RequestParam("id") long idQuestionnaire,
-	                                   @RequestParam(value = "depuisTache", defaultValue = "false") boolean depuisTache) {
+	public String annulerQuestionnaire(@RequestParam("id") final long idQuestionnaire,
+	                                   @RequestParam(value = "depuisTache", defaultValue = "false") final boolean depuisTache) {
 
 		// vérification des droits d'accès
 		checkEditRight(true, false, false, false);
 
-		// récupération du questionnaire
-		final QuestionnaireSNC questionnaire = hibernateTemplate.get(QuestionnaireSNC.class, idQuestionnaire);
-		if (questionnaire == null) {
-			throw new ObjectNotFoundException("Questionnaire SNC inconnu avec l'identifiant " + idQuestionnaire);
-		}
+		return doInTransaction(new TransactionHelper.ExceptionThrowingCallback<String, DeclarationException>() {
+			@Override
+			public String execute(TransactionStatus status) throws DeclarationException {
+				// récupération du questionnaire
+				final QuestionnaireSNC questionnaire = hibernateTemplate.get(QuestionnaireSNC.class, idQuestionnaire);
+				if (questionnaire == null) {
+					throw new ObjectNotFoundException("Questionnaire SNC inconnu avec l'identifiant " + idQuestionnaire);
+				}
 
-		// récupération de l'entreprise et vérification des droits de modification
-		final Tiers tiers = questionnaire.getTiers();
-		if (!(tiers instanceof Entreprise)) {
-			throw new ObjectNotFoundException("Questionnaire SNC sans lien vers une entreprise...");
-		}
-		final Entreprise entreprise = (Entreprise) tiers;
-		checkEditRightOnEntreprise(entreprise);
+				// récupération de l'entreprise et vérification des droits de modification
+				final Tiers tiers = questionnaire.getTiers();
+				if (!(tiers instanceof Entreprise)) {
+					throw new ObjectNotFoundException("Questionnaire SNC sans lien vers une entreprise...");
+				}
+				final Entreprise entreprise = (Entreprise) tiers;
+				checkEditRightOnEntreprise(entreprise);
 
-		// annulation du questionnaire
-		questionnaire.setAnnule(true);
-		if (depuisTache) {
-			return "redirect:/tache/list.do";
-		}
-		else {
-			return "redirect:list.do?tiersId=" + tiers.getNumero();
-		}
+				// annulation du questionnaire
+				qsncService.annulerQuestionnaire(questionnaire);
+				if (depuisTache) {
+					return "redirect:/tache/list.do";
+				}
+				else {
+					return "redirect:list.do?tiersId=" + tiers.getNumero();
+				}
+			}
+		});
 	}
 
 	@RequestMapping(value = "/rappel.do", method = RequestMethod.POST)

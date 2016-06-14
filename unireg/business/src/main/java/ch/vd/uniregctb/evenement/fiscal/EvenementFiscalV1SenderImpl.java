@@ -122,8 +122,8 @@ public final class EvenementFiscalV1SenderImpl implements EvenementFiscalSender 
 		else if (evenement instanceof EvenementFiscalFor) {
 			object = creerEvenementFiscal((EvenementFiscalFor) evenement);
 		}
-		else if (evenement instanceof EvenementFiscalDeclaration) {
-			object = creerEvenementFiscal((EvenementFiscalDeclaration) evenement);
+		else if (evenement instanceof EvenementFiscalDeclarationSommable) {
+			object = creerEvenementFiscal((EvenementFiscalDeclarationSommable) evenement);
 		}
 		else if (evenement instanceof EvenementFiscalParente) {
 			object = creerEvenementFiscal((EvenementFiscalParente) evenement);
@@ -302,7 +302,7 @@ public final class EvenementFiscalV1SenderImpl implements EvenementFiscalSender 
 		return document;
 	}
 
-	private static EvenementFiscalDIEnumType.Enum getCodeEvenementDI(EvenementFiscalDeclaration.TypeAction typeAction) {
+	private static EvenementFiscalDIEnumType.Enum getCodeEvenementDI(EvenementFiscalDeclarationSommable.TypeAction typeAction) {
 		switch (typeAction) {
 		case ANNULATION:
 			return EvenementFiscalDIEnumType.ANNULATION_DI;
@@ -319,7 +319,7 @@ public final class EvenementFiscalV1SenderImpl implements EvenementFiscalSender 
 		}
 	}
 
-	private static EvenementFiscalLREnumType.Enum getCodeEvenementLR(EvenementFiscalDeclaration.TypeAction typeAction) {
+	private static EvenementFiscalLREnumType.Enum getCodeEvenementLR(EvenementFiscalDeclarationSommable.TypeAction typeAction) {
 		switch (typeAction) {
 		case ANNULATION:
 			return EvenementFiscalLREnumType.ANNULATION_LR;
@@ -337,7 +337,7 @@ public final class EvenementFiscalV1SenderImpl implements EvenementFiscalSender 
 	}
 
 	@Nullable
-	private static XmlObject creerEvenementFiscal(EvenementFiscalDeclaration evenementDeclaration) {
+	private static XmlObject creerEvenementFiscal(EvenementFiscalDeclarationSommable evenementDeclaration) {
 		final Declaration declaration = evenementDeclaration.getDeclaration();
 		if (declaration == null) {
 			throw new NullPointerException("declaration");
@@ -354,7 +354,7 @@ public final class EvenementFiscalV1SenderImpl implements EvenementFiscalSender 
 	}
 
 	@Nullable
-	private static EvenementFiscalDIDocument creerEvenementFiscalDI(EvenementFiscalDeclaration evenementDeclaration) {
+	private static EvenementFiscalDIDocument creerEvenementFiscalDI(EvenementFiscalDeclarationSommable evenementDeclaration) {
 		final EvenementFiscalDIDocument document = EvenementFiscalDIDocument.Factory.newInstance();
 		final EvenementFiscalDIType evt = document.addNewEvenementFiscalDI();
 
@@ -376,7 +376,7 @@ public final class EvenementFiscalV1SenderImpl implements EvenementFiscalSender 
 	}
 
 	@Nullable
-	private static EvenementFiscalLRDocument creerEvenementFiscalLR(EvenementFiscalDeclaration evenementDeclaration) {
+	private static EvenementFiscalLRDocument creerEvenementFiscalLR(EvenementFiscalDeclarationSommable evenementDeclaration) {
 
 		final EvenementFiscalLRDocument document = EvenementFiscalLRDocument.Factory.newInstance();
 		final EvenementFiscalLRType evt = document.addNewEvenementFiscalLR();

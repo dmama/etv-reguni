@@ -65,7 +65,7 @@ public class EvenementFiscalSenderSpringItTest extends BusinessItTest {
 		while (esbTemplate.receive(queueName) != null) {}
 	}
 
-	@Test(timeout = 10000L)
+	@Test(timeout = 20000L)
 	public void testTransactionaliteSend() throws Exception {
 
 		// test positif : le message arrive bien
@@ -78,7 +78,7 @@ public class EvenementFiscalSenderSpringItTest extends BusinessItTest {
 
 			final Set<String> received = new HashSet<>();
 			esbTemplate.setReceiveTimeout(3000);        // On attend le message jusqu'à 3 secondes
-			for (int i = 0 ; i < 2 ; ++ i) {            // pour l'instant, les v1 et v2 sont envoyés (= 2 événements)
+			for (int i = 0 ; i < 3 ; ++ i) {            // pour l'instant, les v1, v2 et v3 sont envoyés (= 3 événements)
 				final EsbMessage msg = esbTemplate.receive(OUTPUT_QUEUE);
 				LOGGER.info("Message reçu ou timeout expiré");
 				Assert.assertNotNull(msg);
@@ -90,9 +90,10 @@ public class EvenementFiscalSenderSpringItTest extends BusinessItTest {
 				}
 				received.add(version);
 			}
-			Assert.assertEquals(2, received.size());
+			Assert.assertEquals(3, received.size());
 			Assert.assertTrue("v1 absent", received.contains("1"));
 			Assert.assertTrue("v2 absent", received.contains("2"));
+			Assert.assertTrue("v3 absent", received.contains("3"));
 
 			// la personne physique doit avoir été sauvegardée en base
 			doInNewTransactionAndSession(new TransactionCallback<Object>() {

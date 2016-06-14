@@ -1,5 +1,8 @@
 package ch.vd.uniregctb.evenement.fiscal;
 
+import java.util.EnumSet;
+import java.util.Set;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -136,8 +139,8 @@ public class EvenementFiscalV2SenderItTest extends EvenementTest {
 
 	@Test
 	public void testTypeActionEvenementDeclaration() throws Exception {
-		// on doit vérifier que types d'événement autour des déclarations sont acceptés par l'XSD des événements fiscaux v2
-		for (EvenementFiscalDeclaration.TypeAction type : EvenementFiscalDeclaration.TypeAction.values()) {
+		// on doit vérifier que types d'événement autour des déclarations (dites 'sommables') sont acceptés par l'XSD des événements fiscaux v2
+		for (EvenementFiscalDeclarationSommable.TypeAction type : EvenementFiscalDeclarationSommable.TypeAction.values()) {
 			final TypeEvenementFiscalDeclaration mapped = EvenementFiscalV2SenderImpl.mapType(type);
 			Assert.assertNotNull("type " + type + " inconnu dans la XSD des événements fiscaux v2", mapped);
 		}
@@ -154,10 +157,21 @@ public class EvenementFiscalV2SenderItTest extends EvenementTest {
 
 	@Test
 	public void testTypeInformationComplementaire() throws Exception {
+		final Set<EvenementFiscalInformationComplementaire.TypeInformationComplementaire> ignored = EnumSet.of(EvenementFiscalInformationComplementaire.TypeInformationComplementaire.ANNULATION_FAILLITE,
+		                                                                                                       EvenementFiscalInformationComplementaire.TypeInformationComplementaire.ANNULATION_FUSION,
+		                                                                                                       EvenementFiscalInformationComplementaire.TypeInformationComplementaire.ANNULATION_SCISSION,
+		                                                                                                       EvenementFiscalInformationComplementaire.TypeInformationComplementaire.ANNULATION_TRANFERT_PATRIMOINE,
+		                                                                                                       EvenementFiscalInformationComplementaire.TypeInformationComplementaire.TRANSFERT_PATRIMOINE);
+
 		// on doit vérifier que types d'événement autour des informations complémentaires sont acceptés par l'XSD des événements fiscaux v2
 		for (EvenementFiscalInformationComplementaire.TypeInformationComplementaire type : EvenementFiscalInformationComplementaire.TypeInformationComplementaire.values()) {
 			final TypeInformationComplementaire mapped = EvenementFiscalV2SenderImpl.mapType(type);
-			Assert.assertNotNull("type " + type + " inconnu dans la XSD des événements fiscaux v2", mapped);
+			if (ignored.contains(type)) {
+				Assert.assertNull("type " + type + " ne devrait pas être connu dans la XSD des événements fiscaux v2", mapped);
+			}
+			else {
+				Assert.assertNotNull("type " + type + " inconnu dans la XSD des événements fiscaux v2", mapped);
+			}
 		}
 	}
 
