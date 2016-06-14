@@ -3,13 +3,16 @@ package ch.vd.uniregctb.indexer.tiers;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import org.hibernate.SessionFactory;
 import org.hibernate.dialect.Dialect;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -508,58 +511,103 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingB
 
 
     private List<TiersIndexable> buildIndexables(Tiers tiers, boolean followDependents) {
-
         final List<TiersIndexable> indexables = new ArrayList<>();
-
         if (followDependents) {
-            List<Tiers> list = buildDependents(tiers);
+            final Collection<Tiers> list = buildDependents(tiers);
             for (Tiers t : list) {
                 indexables.add(buildIndexable(t));
             }
         }
         indexables.add(buildIndexable(tiers));
-
         return indexables;
     }
 
-    private List<Tiers> buildDependents(Tiers tiers) {
+	/**
+	 * @param tiers un tiers de départ
+	 * @return une collection des tiers dépendants du tiers de départ (celui-ci non-compris)
+	 */
+    private Collection<Tiers> buildDependents(Tiers tiers) {
+	    final Map<Long, Tiers> map = new HashMap<>();
 
-        List<Tiers> list = new ArrayList<>();
+	    // on commence par ajouter le tiers de départ pour gérer les boucles de récursion
+	    map.put(tiers.getNumero(), tiers);
 
-        // Debiteur prestation imposable
+	    // calcul récursif de dépendance
+	    fillDependentMap(tiers, map);
+
+	    // le tiers lui-même ne doit pas faire partie de la liste des dépendants...
+	    map.remove(tiers.getNumero());
+
+	    return map.values();
+    }
+
+	private void fillDependentMap(Tiers tiers, @NotNull Map<Long, Tiers> map) {
+
+		// une map locale pour les départs de récursion
+		final Map<Long, Tiers> mapNew = new HashMap<>();
+
+        // Personne physique
         if (tiers instanceof PersonnePhysique) {
-            // Habitant
-            List<RapportEntreTiers> rapports = TiersHelper.getRapportSujetHistoOfType(tiers, TypeRapportEntreTiers.APPARTENANCE_MENAGE);
+            final List<RapportEntreTiers> rapports = TiersHelper.getRapportSujetHistoOfType(tiers, TypeRapportEntreTiers.APPARTENANCE_MENAGE);
             if (rapports != null && !rapports.isEmpty()) {
                 for (RapportEntreTiers r : rapports) {
-                    MenageCommun menage = (MenageCommun) tiersDAO.get(r.getObjetId());
-                    list.add(menage);
+	                if (!map.containsKey(r.getObjetId())) {
+		                final MenageCommun menage = (MenageCommun) tiersDAO.get(r.getObjetId());
+		                map.put(r.getObjetId(), menage);
+		                mapNew.put(r.getObjetId(), menage);
+	                }
                 }
             }
         }
 
         // MenageCommun
         else if (tiers instanceof MenageCommun) {
-            List<RapportEntreTiers> rapports = TiersHelper.getRapportObjetHistoOfType(tiers, TypeRapportEntreTiers.APPARTENANCE_MENAGE);
+            final List<RapportEntreTiers> rapports = TiersHelper.getRapportObjetHistoOfType(tiers, TypeRapportEntreTiers.APPARTENANCE_MENAGE);
             if (rapports != null && !rapports.isEmpty()) {
                 for (RapportEntreTiers r : rapports) {
-                    PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(r.getSujetId());
-                    list.add(pp);
+	                if (!map.containsKey(r.getSujetId())) {
+		                final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(r.getSujetId());
+		                map.put(r.getSujetId(), pp);
+		                mapNew.put(r.getSujetId(), pp);
+	                }
                 }
             }
         }
 
         // Reindex les DPI si on a un CTB
         if (tiers instanceof Contribuable) {
-            Contribuable ctb = (Contribuable) tiers;
-            Set<DebiteurPrestationImposable> dpis = tiersService.getDebiteursPrestationImposable(ctb);
+            final Contribuable ctb = (Contribuable) tiers;
+            final Set<DebiteurPrestationImposable> dpis = tiersService.getDebiteursPrestationImposable(ctb);
             if (dpis != null) {
                 for (DebiteurPrestationImposable dpi : dpis) {
-                    list.add(dpi);
+	                if (!map.containsKey(dpi.getNumero())) {
+		                map.put(dpi.getNumero(), dpi);
+		                mapNew.put(dpi.getNumero(), dpi);
+	                }
                 }
             }
         }
-        return list;
+
+	    // [SIFISC-19632] Ré-indexe les établissements si on a une entreprise
+	    if (tiers instanceof Entreprise) {
+		    final List<RapportEntreTiers> rapports = TiersHelper.getRapportSujetHistoOfType(tiers, TypeRapportEntreTiers.ACTIVITE_ECONOMIQUE);
+		    if (rapports != null && !rapports.isEmpty()) {
+			    for (RapportEntreTiers ret : rapports) {
+				    if (!map.containsKey(ret.getObjetId())) {
+					    final Etablissement etb = (Etablissement) tiersDAO.get(ret.getObjetId());
+					    map.put(ret.getObjetId(), etb);
+					    mapNew.put(ret.getObjetId(), etb);
+				    }
+			    }
+		    }
+	    }
+
+		// un peu de récursivité sur les nouveaux ajoutés
+		// (premier cas utile de cette récursivité : DPI sur établissement, alors que c'est l'entreprise qui doit être indexée, à la base)
+		// (mais on pouvait déjà avoir le cas avant du DPI sur un ménage...)
+		for (Tiers nouveau : mapNew.values()) {
+			fillDependentMap(nouveau, map);
+		}
     }
 
     private TiersIndexable buildIndexable(Tiers tiers) {
