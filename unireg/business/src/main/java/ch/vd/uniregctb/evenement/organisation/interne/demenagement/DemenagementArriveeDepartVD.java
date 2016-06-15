@@ -1,10 +1,8 @@
 package ch.vd.uniregctb.evenement.organisation.interne.demenagement;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.interfaces.organisation.data.Domicile;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
-import ch.vd.unireg.interfaces.organisation.data.OrganisationHelper;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationContext;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationException;
@@ -75,18 +73,6 @@ public class DemenagementArriveeDepartVD extends Demenagement {
 		}
 
 		effectueChangementSiege(motifFor, dateDebutNouveauSiege, warnings, suivis);
-	}
-
-	private void verifieSurchargeAcceptable(RegDate dateDebutNouveauSiege, SurchargeCorrectiveRange surchargeCorrectiveRange) throws EvenementOrganisationException {
-		if (!surchargeCorrectiveRange.isAcceptable()) {
-			throw new EvenementOrganisationException(
-					String.format("Refus de créer dans Unireg une entreprise dont le déménagement semble remonter à %s, %d jours avant la date de l'événement. La tolérance étant de %d jours. " +
-							              "Il y a probablement une erreur d'identification ou un problème de date.",
-					              RegDateHelper.dateToDisplayString(dateDebutNouveauSiege),
-					              surchargeCorrectiveRange.getEtendue(),
-					              OrganisationHelper.NB_JOURS_TOLERANCE_DE_DECALAGE_RC)
-			);
-		}
 	}
 
 	@Override

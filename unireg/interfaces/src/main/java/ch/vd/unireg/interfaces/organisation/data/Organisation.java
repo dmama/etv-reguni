@@ -110,7 +110,7 @@ public interface Organisation {
 	/**
 	 * @return true si l'organisation est radiée au RC à à une date donnée. Si la date est nulle, la date du jour est utilisée.
 	 */
-	boolean isRadieRC(RegDate date);
+	boolean isRadieDuRC(RegDate date);
 
 	/**
 	 * @return true si l'organisation est radiée de l'IDE à à une date donnée. Si la date est nulle, la date du jour est utilisée.

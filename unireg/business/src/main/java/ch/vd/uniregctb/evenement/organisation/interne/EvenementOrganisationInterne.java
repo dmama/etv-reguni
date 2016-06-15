@@ -635,7 +635,7 @@ public abstract class EvenementOrganisationInterne {
 	protected void signaleDemenagement(Etablissement etablissement, Domicile ancienDomicile, Domicile nouveauDomicile, RegDate dateDebut, EvenementOrganisationSuiviCollector suivis) {
 		final String ancienneCommune = DateRangeHelper.rangeAt(context.getServiceInfra().getCommuneHistoByNumeroOfs(ancienDomicile.getNoOfs()), dateDebut.getOneDayBefore()).getNomOfficielAvecCanton();
 		final String nouvelleCommune = DateRangeHelper.rangeAt(context.getServiceInfra().getCommuneHistoByNumeroOfs(nouveauDomicile.getNoOfs()), dateDebut).getNomOfficielAvecCanton();
-		suivis.addSuivi(String.format("L'établissement %s a déménagé de %s (ofs: %d) à %s (ofs: %d), le %s.",
+		suivis.addSuivi(String.format("L'établissement n°%s a déménagé de %s (ofs: %d) à %s (ofs: %d), le %s.",
 		                              FormatNumeroHelper.numeroCTBToDisplay(etablissement.getNumero()),
 		                              ancienneCommune,
 		                              ancienDomicile.getNoOfs(),
@@ -957,7 +957,8 @@ public abstract class EvenementOrganisationInterne {
 	 * @throws EvenementOrganisationException En cas de problème, notamment lorsque la surcharge existante empiète ou dépasse la date de valeur
 	 */
 	protected void appliqueDonneesCivilesSurPeriode(Etablissement etablissement, SurchargeCorrectiveRange range, RegDate dateValeur, EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) throws EvenementOrganisationException {
-		suivis.addSuivi(String.format("Application de la surcharge civile entre le %s et le %s avec les valeurs du %s",
+		suivis.addSuivi(String.format("Application de la surcharge civile sur l'établissement n°%s entre le %s et le %s avec les valeurs du %s",
+		                              FormatNumeroHelper.numeroCTBToDisplay(etablissement.getNumero()),
 		                              RegDateHelper.dateToDisplayString(range.getDateDebut()),
 		                              RegDateHelper.dateToDisplayString(range.getDateFin()),
 		                              RegDateHelper.dateToDisplayString(dateValeur)));

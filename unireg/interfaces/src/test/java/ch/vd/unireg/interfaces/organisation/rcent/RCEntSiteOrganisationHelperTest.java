@@ -305,7 +305,7 @@ public class RCEntSiteOrganisationHelperTest extends WithoutSpringTest {
 			mockSite.getDonneesRC().addEntreeJournal(entreeJournalRC);
 		}
 
-		final List<EntreeJournalRC> entreesJournalPourDate = mockSite.getDonneesRC().getEntreesJournal(date(2012, 6, 1));
+		final List<EntreeJournalRC> entreesJournalPourDate = mockSite.getDonneesRC().getEntreesJournal(date(2012, 6, 5));
 
 		assertEquals(1, entreesJournalPourDate.size());
 		final EntreeJournalRC entreeJournalRC = entreesJournalPourDate.get(0);

@@ -231,7 +231,7 @@ public class OrganisationRCEnt implements Organisation, Serializable {
 	 * Indique si un l'organisation est radiée au RC à la date indiquée. Si la date est nulle, la date du jour est utilisée.
 	 */
 	@Override
-	public boolean isRadieRC(RegDate date) {
+	public boolean isRadieDuRC(RegDate date) {
 		return OrganisationHelper.isRadieDuRC(this, date);
 	}
 

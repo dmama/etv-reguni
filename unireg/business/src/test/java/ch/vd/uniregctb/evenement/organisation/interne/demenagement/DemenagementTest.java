@@ -15,8 +15,10 @@ import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockTypeRegimeFiscal;
+import ch.vd.unireg.interfaces.organisation.data.EntreeJournalRC;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.interfaces.organisation.data.OrganisationHelper;
+import ch.vd.unireg.interfaces.organisation.data.PublicationFOSC;
 import ch.vd.unireg.interfaces.organisation.data.StatusInscriptionRC;
 import ch.vd.unireg.interfaces.organisation.data.StatusRegistreIDE;
 import ch.vd.unireg.interfaces.organisation.data.TypeOrganisationRegistreIDE;
@@ -68,7 +70,7 @@ public class DemenagementTest extends AbstractEvenementOrganisationProcessorTest
 	}
 
 	@Test(timeout = 10000L)
-	public void testDemenagementVD() throws Exception {
+	public void testDemenagementVDNonRC() throws Exception {
 
 		// Mise en place service mock
 		final Long noOrganisation = 101202100L;
@@ -78,7 +80,7 @@ public class DemenagementTest extends AbstractEvenementOrganisationProcessorTest
 			@Override
 			protected void init() {
 				final MockOrganisation org = MockOrganisationFactory.createOrganisation(noOrganisation, noSite, "Synergy SA", RegDate.get(2010, 6, 26), null, FormeLegale.N_0106_SOCIETE_ANONYME,
-				                                                                        TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF, date(2010, 6, 24),
+				                                                                        TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), null, null,
 				                                                                        StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE);
 
 				MockSiteOrganisation site = (MockSiteOrganisation) org.getSitePrincipaux().get(0).getPayload();
@@ -199,9 +201,153 @@ public class DemenagementTest extends AbstractEvenementOrganisationProcessorTest
 		);
 	}
 
+	@Test(timeout = 10000L)
+	public void testDemenagementVDInscritAuRC() throws Exception {
+
+		// Mise en place service mock
+		final Long noOrganisation = 101202100L;
+		final Long noSite = noOrganisation + 1000000;
+
+		serviceOrganisation.setUp(new MockServiceOrganisation() {
+			@Override
+			protected void init() {
+				final MockOrganisation org = MockOrganisationFactory.createOrganisation(noOrganisation, noSite, "Synergy SA", RegDate.get(2010, 6, 26), null, FormeLegale.N_0106_SOCIETE_ANONYME,
+				                                                                        TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF, date(2010, 6, 24),
+				                                                                        StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE);
+
+				MockSiteOrganisation site = (MockSiteOrganisation) org.getSitePrincipaux().get(0).getPayload();
+				site.changeDomicile(RegDate.get(2015, 6, 24), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Morges.getNoOFS());
+
+				{
+					final PublicationFOSC publicationFOSC = new PublicationFOSC(date(2010, 6, 26), "77777", "Mutation au journal RC.");
+					site.getDonneesRC().addEntreeJournal(new EntreeJournalRC(EntreeJournalRC.TypeEntree.NORMAL, date(2010, 6, 24), 111111L, publicationFOSC));
+				}
+				{
+					final PublicationFOSC publicationFOSC = new PublicationFOSC(date(2012, 6, 5), "88888", "Mutation au journal RC.");
+					site.getDonneesRC().addEntreeJournal(new EntreeJournalRC(EntreeJournalRC.TypeEntree.NORMAL, date(2012, 6, 1), 222222L, publicationFOSC));
+				}
+				{
+					final PublicationFOSC publicationFOSC = new PublicationFOSC(date(2015, 6, 24), "99999", "Mutation au journal RC.");
+					site.getDonneesRC().addEntreeJournal(new EntreeJournalRC(EntreeJournalRC.TypeEntree.NORMAL, date(2015, 6, 21), 333333L, publicationFOSC));
+				}
+
+				addOrganisation(org);
+
+			}
+		});
+
+		// Création de l'entreprise
+
+		doInNewTransactionAndSession(new TransactionCallback<Entreprise>() {
+			@Override
+			public Entreprise doInTransaction(TransactionStatus transactionStatus) {
+				Entreprise entreprise = addEntrepriseConnueAuCivil(noOrganisation);
+				Etablissement etablissement = addEtablissement();
+				etablissement.setNumeroEtablissement(noSite);
+
+				addActiviteEconomique(entreprise, etablissement, RegDate.get(2010, 6, 24), null, true);
+
+				addRegimeFiscalVD(entreprise, date(2010, 6, 24), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addRegimeFiscalCH(entreprise, date(2010, 6, 24), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addForPrincipal(entreprise, RegDate.get(2010, 6, 24), MotifFor.DEBUT_EXPLOITATION, null, null,
+				                MockCommune.Lausanne.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, GenreImpot.BENEFICE_CAPITAL);
+				return entreprise;
+			}
+		});
+
+		// Création de l'événement
+		final Long noEvenement = 12344321L;
+
+		// Persistence événement
+		doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus transactionStatus) {
+				final EvenementOrganisation event = createEvent(noEvenement, noOrganisation, TypeEvenementOrganisation.FOSC_AUTRE_MUTATION, RegDate.get(2015, 6, 24), A_TRAITER);
+				return hibernateTemplate.merge(event).getId();
+			}
+		});
+
+		// Traitement synchrone de l'événement
+		traiterEvenements(noOrganisation);
+
+		// Vérification du traitement de l'événement
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			                             @Override
+			                             public Object doInTransaction(TransactionStatus status) {
+
+				                             final EvenementOrganisation evt = getUniqueEvent(noEvenement);
+				                             Assert.assertNotNull(evt);
+				                             Assert.assertEquals(EtatEvenementOrganisation.TRAITE, evt.getEtat());
+
+				                             final Entreprise entreprise = tiersDAO.getEntrepriseByNumeroOrganisation(evt.getNoOrganisation());
+
+				                             final Etablissement etablissement = tiersService.getEtablissementsPrincipauxEntreprise(entreprise).get(0).getPayload();
+				                             Assert.assertNotNull(etablissement);
+
+				                             {
+					                             ForFiscalPrincipal forFiscalPrincipalPrecedant = (ForFiscalPrincipal) entreprise.getForsFiscauxValidAt(RegDate.get(2015, 6, 20)).get(0);
+					                             Assert.assertEquals(RegDate.get(2010, 6, 24), forFiscalPrincipalPrecedant.getDateDebut());
+					                             Assert.assertEquals(RegDate.get(2015, 6, 20), forFiscalPrincipalPrecedant.getDateFin());
+					                             Assert.assertEquals(GenreImpot.BENEFICE_CAPITAL, forFiscalPrincipalPrecedant.getGenreImpot());
+					                             Assert.assertEquals(MockCommune.Lausanne.getNoOFS(), forFiscalPrincipalPrecedant.getNumeroOfsAutoriteFiscale().intValue());
+					                             Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, forFiscalPrincipalPrecedant.getTypeAutoriteFiscale());
+					                             Assert.assertEquals(MotifFor.DEBUT_EXPLOITATION, forFiscalPrincipalPrecedant.getMotifOuverture());
+					                             Assert.assertEquals(MotifFor.DEMENAGEMENT_VD, forFiscalPrincipalPrecedant.getMotifFermeture());
+				                             }
+				                             {
+					                             ForFiscalPrincipal forFiscalPrincipalNouveau = (ForFiscalPrincipal) entreprise.getForsFiscauxValidAt(RegDate.get(2015, 6, 21)).get(0);
+					                             Assert.assertEquals(RegDate.get(2015, 6, 21), forFiscalPrincipalNouveau.getDateDebut());
+					                             Assert.assertNull(forFiscalPrincipalNouveau.getDateFin());
+					                             Assert.assertEquals(GenreImpot.BENEFICE_CAPITAL, forFiscalPrincipalNouveau.getGenreImpot());
+					                             Assert.assertEquals(MockCommune.Morges.getNoOFS(), forFiscalPrincipalNouveau.getNumeroOfsAutoriteFiscale().intValue());
+					                             Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, forFiscalPrincipalNouveau.getTypeAutoriteFiscale());
+					                             Assert.assertEquals(MotifFor.DEMENAGEMENT_VD, forFiscalPrincipalNouveau.getMotifOuverture());
+					                             Assert.assertNull(forFiscalPrincipalNouveau.getMotifFermeture());
+				                             }
+
+				                             // vérification des événements fiscaux
+				                             final List<EvenementFiscal> evtsFiscaux = evtFiscalDAO.getAll();
+				                             Assert.assertNotNull(evtsFiscaux);
+				                             Assert.assertEquals(2, evtsFiscaux.size()); // deux pour le for principal (fermeture + ouverture du nouveau), on n'a pas créé les régimes lors du test.
+
+				                             final List<EvenementFiscal> evtsFiscauxTries = new ArrayList<>(evtsFiscaux);
+				                             Collections.sort(evtsFiscauxTries, new Comparator<EvenementFiscal>() {
+					                             @Override
+					                             public int compare(EvenementFiscal o1, EvenementFiscal o2) {
+						                             return Long.compare(o1.getId(), o2.getId());
+					                             }
+				                             });
+
+				                             {
+					                             final EvenementFiscal ef = evtsFiscauxTries.get(0);
+					                             Assert.assertNotNull(ef);
+					                             Assert.assertEquals(EvenementFiscalFor.class, ef.getClass());
+					                             Assert.assertEquals(date(2015, 6, 20), ef.getDateValeur());
+
+					                             final EvenementFiscalFor eff = (EvenementFiscalFor) ef;
+					                             Assert.assertEquals(EvenementFiscalFor.TypeEvenementFiscalFor.FERMETURE, eff.getType());
+					                             Assert.assertEquals(date(2015, 6, 20), eff.getForFiscal().getDateFin());
+				                             }
+				                             {
+					                             final EvenementFiscal ef = evtsFiscauxTries.get(1);
+					                             Assert.assertNotNull(ef);
+					                             Assert.assertEquals(EvenementFiscalFor.class, ef.getClass());
+					                             Assert.assertEquals(date(2015, 6, 21), ef.getDateValeur());
+
+					                             final EvenementFiscalFor eff = (EvenementFiscalFor) ef;
+					                             Assert.assertEquals(EvenementFiscalFor.TypeEvenementFiscalFor.OUVERTURE, eff.getType());
+					                             Assert.assertEquals(date(2015, 6, 21), eff.getForFiscal().getDateDebut());
+				                             }
+
+				                             return null;
+			                             }
+		                             }
+		);
+	}
+
 	@Ignore  // TODO: Verifier pour la redondance
 	@Test(timeout = 10000L)
-	public void testDemenagementVDRedondant() throws Exception {
+	public void testDemenagementVDNonRCRedondant() throws Exception {
 
 		// Mise en place service mock
 		final Long noOrganisation = 101202100L;

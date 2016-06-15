@@ -9,6 +9,7 @@ import org.springframework.util.Assert;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.interfaces.organisation.data.Domicile;
+import ch.vd.unireg.interfaces.organisation.data.EntreeJournalRC;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.OrganisationHelper;
 import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
@@ -165,7 +166,7 @@ public class EtablissementsSecondaires extends EvenementOrganisationInterneDeTra
 			}
 		}
 		for (Demenagement demenagement : demenagements) {
-			RegDate dateDemenagement = dateApres;
+
 			final Domicile ancienDomicile = demenagement.getAncienDomicile();
 			final Domicile nouveauDomicile = demenagement.getNouveauDomicile();
 			/* Départ VD */
@@ -217,6 +218,48 @@ public class EtablissementsSecondaires extends EvenementOrganisationInterneDeTra
 				}
 			}
 */
+			// On peut y aller
+
+			final SiteOrganisation site = demenagement.getSite();
+
+			RegDate dateDemenagement = null;
+			if (site.isInscritAuRC(getDateEvt()) && !site.isRadieDuRC(getDateEvt())) {
+				final List<EntreeJournalRC> entreesJournal = site.getDonneesRC().getEntreesJournal(getDateEvt());
+				if (entreesJournal.isEmpty()) {
+					throw new EvenementOrganisationException(
+							String.format("Entrée de journal au RC introuvable dans l'établissement n°%s (civil: %s). Impossible de traiter le déménagement VD.",
+							              FormatNumeroHelper.numeroCTBToDisplay(demenagement.getEtablissement().getNumero()), site.getNumeroSite()));
+				}
+				// On prend la première entrée qui vient car il devrait y en avoir qu'une seule. S'il devait vraiment y en avoir plusieurs, on considère qu'elles renverraient toutes vers le même jour.
+				dateDemenagement = entreesJournal.iterator().next().getDate();
+			} else {
+				dateDemenagement = getDateEvt();
+			}
+
+			// Création de la surcharge corrective s'il y a lieu
+			SurchargeCorrectiveRange surchargeCorrectiveRange = null;
+			if (dateDemenagement.isBefore(getDateEvt())) {
+				surchargeCorrectiveRange = new SurchargeCorrectiveRange(dateDemenagement, getDateEvt().getOneDayBefore());
+			}
+			// On a une surcharge corrective, vérifier avant d'ajouter la surcharge sur l'établissement.
+			if (surchargeCorrectiveRange != null) {
+				if (surchargeCorrectiveRange.isAcceptable()) {
+					appliqueDonneesCivilesSurPeriode(demenagement.getEtablissement(), surchargeCorrectiveRange, getDateEvt(), warnings, suivis);
+				} else {
+					String message = String.format("Refus de créer une surcharge corrective pour un établissement %s à %s (civil: %s) dont la date déménagement prétend remonter à %s, %d jours avant la date de l'événement. La tolérance étant de %d jours. " +
+							                               "Il y a probablement une erreur d'identification ou un problème de date.",
+					                               site.getNom(getDateEvt()),
+					                               getContext().getServiceInfra().getCommuneByNumeroOfs(site.getDomicile(getDateEvt()).getNoOfs(), getDateEvt()).getNomOfficielAvecCanton(),
+					                               site.getNumeroSite(),
+					                               RegDateHelper.dateToDisplayString(dateDemenagement),
+					                               surchargeCorrectiveRange.getEtendue(),
+					                               OrganisationHelper.NB_JOURS_TOLERANCE_DE_DECALAGE_RC);
+
+					warnings.addWarning(message);
+				}
+			}
+
+			// C'est un déménagement sur VD. On prend acte.
 			signaleDemenagement(demenagement.etablissement, demenagement.getAncienDomicile(), demenagement.getNouveauDomicile(), dateDemenagement, suivis);
 		}
 
@@ -269,12 +312,14 @@ public class EtablissementsSecondaires extends EvenementOrganisationInterneDeTra
 
 	public static class Demenagement {
 		private final Etablissement etablissement;
+		private final SiteOrganisation site;
 		private final Domicile ancienDomicile;
 		private final Domicile nouveauDomicile;
 		private final RegDate date;
 
-		public Demenagement(Etablissement etablissement, Domicile ancienDomicile, Domicile nouveauDomicile, RegDate date) {
+		public Demenagement(Etablissement etablissement, SiteOrganisation site, Domicile ancienDomicile, Domicile nouveauDomicile, RegDate date) {
 			this.etablissement = etablissement;
+			this.site = site;
 			this.ancienDomicile = ancienDomicile;
 			this.nouveauDomicile = nouveauDomicile;
 			this.date = date;
@@ -282,6 +327,10 @@ public class EtablissementsSecondaires extends EvenementOrganisationInterneDeTra
 
 		public Etablissement getEtablissement() {
 			return etablissement;
+		}
+
+		public SiteOrganisation getSite() {
+			return site;
 		}
 
 		public Domicile getAncienDomicile() {

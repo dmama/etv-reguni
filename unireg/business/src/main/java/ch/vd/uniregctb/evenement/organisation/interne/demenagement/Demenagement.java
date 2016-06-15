@@ -3,9 +3,11 @@ package ch.vd.uniregctb.evenement.organisation.interne.demenagement;
 import org.springframework.util.Assert;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
 import ch.vd.unireg.interfaces.organisation.data.Domicile;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
+import ch.vd.unireg.interfaces.organisation.data.OrganisationHelper;
 import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationContext;
@@ -117,6 +119,18 @@ public abstract class Demenagement extends EvenementOrganisationInterneDeTraitem
 			else {
 				throw new EvenementOrganisationException("Changement de siège avec changement d'établissement principal. Veuillez traiter l'événement manuellement.");
 			}
+		}
+	}
+
+	protected void verifieSurchargeAcceptable(RegDate dateDebutSurcharge, SurchargeCorrectiveRange surchargeCorrectiveRange) throws EvenementOrganisationException {
+		if (!surchargeCorrectiveRange.isAcceptable()) {
+			throw new EvenementOrganisationException(
+					String.format("Refus de créer dans Unireg surcharge corrective remontant à %s, %d jours avant la date de l'événement. La tolérance étant de %d jours. " +
+							              "Il y a probablement une erreur d'identification ou un problème de date.",
+					              RegDateHelper.dateToDisplayString(dateDebutSurcharge),
+					              surchargeCorrectiveRange.getEtendue(),
+					              OrganisationHelper.NB_JOURS_TOLERANCE_DE_DECALAGE_RC)
+			);
 		}
 	}
 

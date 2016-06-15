@@ -320,7 +320,7 @@ public abstract class OrganisationHelper {
 		}
 		List<EntreeJournalRC> entreesPourDate = new ArrayList<>();
 		for (EntreeJournalRC entreeJournalRC : entrees) {
-			if (entreeJournalRC.getDate().equals(defaultDate(date))) {
+			if (entreeJournalRC.getPublicationFOSC().getDate().equals(defaultDate(date))) {
 				entreesPourDate.add(entreeJournalRC);
 			}
 		}

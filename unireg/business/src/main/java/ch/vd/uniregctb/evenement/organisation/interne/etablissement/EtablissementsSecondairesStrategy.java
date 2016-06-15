@@ -165,7 +165,7 @@ public class EtablissementsSecondairesStrategy extends AbstractOrganisationStrat
 					// On considère qu'on est en présence d'un déménagement que si on connait déjà l'établissement dans Unireg.
 					Etablissement etablissement = context.getTiersDAO().getEtablissementByNumeroSite(ancienSite.getNumeroSite());
 					if (etablissement != null && domicileAvant.getNoOfs() != domicileApres.getNoOfs()) {
-						demenagements.add(new EtablissementsSecondaires.Demenagement(etablissement, domicileAvant, domicileApres, date));
+						demenagements.add(new EtablissementsSecondaires.Demenagement(etablissement, presentSite, domicileAvant, domicileApres, date));
 					}
 				}
 			}
