@@ -115,7 +115,7 @@ public class StatistiquesEvenementsJob extends JobDefinition {
 		final boolean externes = getBooleanValue(params, EVTS_EXTERNES);
 		final boolean identCtb = getBooleanValue(params, EVTS_IDENT_CTB);
 		final boolean notaires = getBooleanValue(params, EVTS_NOTAIRES);
-		final int dureeReference = getStrictlyPositiveIntegerValue(params, DUREE_REFERENCE);
+		final int dureeReference = getPositiveIntegerValue(params, DUREE_REFERENCE);
 		final RegDate debutActivite = RegDate.get().addDays(- dureeReference);
 
 		// lancement des extractions
