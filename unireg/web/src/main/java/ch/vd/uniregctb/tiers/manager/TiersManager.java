@@ -73,6 +73,7 @@ import ch.vd.uniregctb.lr.view.ListeRecapDetailView;
 import ch.vd.uniregctb.mandataire.AdresseMandataireView;
 import ch.vd.uniregctb.mandataire.LienMandataireView;
 import ch.vd.uniregctb.metier.bouclement.ExerciceCommercial;
+import ch.vd.uniregctb.metier.bouclement.ExerciceCommercialHelper;
 import ch.vd.uniregctb.rapport.SensRapportEntreTiers;
 import ch.vd.uniregctb.rapport.TypeRapportEntreTiersWeb;
 import ch.vd.uniregctb.rapport.view.RapportView;
@@ -94,7 +95,6 @@ import ch.vd.uniregctb.tiers.DomicileHisto;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.Etablissement;
-import ch.vd.uniregctb.tiers.ExerciceCommercialWebHelper;
 import ch.vd.uniregctb.tiers.FlagEntreprise;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
@@ -182,7 +182,7 @@ public class TiersManager implements MessageSourceAware {
 	private AutorisationManager autorisationManager;
 	protected SecurityProviderInterface securityProvider;
 
-	protected ExerciceCommercialWebHelper exerciceCommercialHelper;
+	protected ExerciceCommercialHelper exerciceCommercialHelper;
 
 	/**
 	 * Recupere l'individu correspondant au tiers
@@ -618,7 +618,7 @@ public class TiersManager implements MessageSourceAware {
 		}
 
 		// les exercices commerciaux
-		final List<ExerciceCommercial> exercices = exerciceCommercialHelper.getExercicesCommerciauxAffichables(entreprise);
+		final List<ExerciceCommercial> exercices = exerciceCommercialHelper.getExercicesCommerciauxExposables(entreprise);
 		tiersView.setExercicesCommerciaux(exercices);
 
 		// les flags d'entreprise
@@ -1398,7 +1398,7 @@ public class TiersManager implements MessageSourceAware {
 		this.serviceOrganisationService = serviceOrganisationService;
 	}
 
-	public void setExerciceCommercialHelper(ExerciceCommercialWebHelper exerciceCommercialHelper) {
+	public void setExerciceCommercialHelper(ExerciceCommercialHelper exerciceCommercialHelper) {
 		this.exerciceCommercialHelper = exerciceCommercialHelper;
 	}
 }

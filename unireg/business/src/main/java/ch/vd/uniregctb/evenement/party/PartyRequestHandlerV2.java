@@ -27,6 +27,7 @@ import ch.vd.uniregctb.interfaces.service.ServiceOrganisationService;
 import ch.vd.uniregctb.jms.BamMessageSender;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionService;
+import ch.vd.uniregctb.metier.bouclement.ExerciceCommercialHelper;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.security.SecurityProviderInterface;
@@ -65,6 +66,11 @@ public class PartyRequestHandlerV2 implements RequestHandlerV1<PartyRequest> {
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setAdresseService(AdresseService adresseService) {
 		context.adresseService = adresseService;
+	}
+
+	@SuppressWarnings({"UnusedDeclaration"})
+	public void setExerciceCommercialHelper(ExerciceCommercialHelper exerciceCommercialHelper) {
+		context.exerciceCommercialHelper = exerciceCommercialHelper;
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})

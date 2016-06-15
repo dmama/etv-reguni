@@ -40,6 +40,7 @@ import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePM;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.metier.bouclement.BouclementService;
 import ch.vd.uniregctb.metier.bouclement.ExerciceCommercial;
+import ch.vd.uniregctb.metier.bouclement.ExerciceCommercialHelper;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.security.AccessDeniedException;
 import ch.vd.uniregctb.security.Role;
@@ -61,7 +62,7 @@ public class ExerciceCommercialController {
 	private ParametreAppService parametreAppService;
 	private BouclementService bouclementService;
 	private HibernateTemplate hibernateTemplate;
-	private ExerciceCommercialWebHelper exerciceCommercialHelper;
+	private ExerciceCommercialHelper exerciceCommercialHelper;
 
 	public void setTiersService(TiersService tiersService) {
 		this.tiersService = tiersService;
@@ -91,7 +92,7 @@ public class ExerciceCommercialController {
 		this.hibernateTemplate = hibernateTemplate;
 	}
 
-	public void setExerciceCommercialHelper(ExerciceCommercialWebHelper exerciceCommercialHelper) {
+	public void setExerciceCommercialHelper(ExerciceCommercialHelper exerciceCommercialHelper) {
 		this.exerciceCommercialHelper = exerciceCommercialHelper;
 	}
 
@@ -122,7 +123,7 @@ public class ExerciceCommercialController {
 
 	private List<ExerciceCommercialView> getViewExercicesCommerciaux(Entreprise entreprise, boolean reversed) {
 		final List<DeclarationImpotOrdinairePM> dis = getDeclarationsNonAnnuleesTriees(entreprise);
-		final List<ExerciceCommercial> liste = exerciceCommercialHelper.getExercicesCommerciauxAffichables(entreprise);
+		final List<ExerciceCommercial> liste = exerciceCommercialHelper.getExercicesCommerciauxExposables(entreprise);
 		final List<ExerciceCommercialView> views = new ArrayList<>(liste.size());
 		boolean first = true;
 		for (ExerciceCommercial exercice : liste) {

@@ -98,6 +98,7 @@ import ch.vd.uniregctb.jms.BamMessageHelper;
 import ch.vd.uniregctb.jms.BamMessageSender;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionService;
+import ch.vd.uniregctb.metier.bouclement.ExerciceCommercialHelper;
 import ch.vd.uniregctb.metier.piis.PeriodeImpositionImpotSourceService;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.security.Role;
@@ -214,6 +215,10 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 
 	public void setAdresseService(AdresseService adresseService) {
 		context.adresseService = adresseService;
+	}
+
+	public void setExerciceCommercialHelper(ExerciceCommercialHelper exerciceCommercialHelper) {
+		context.exerciceCommercialHelper = exerciceCommercialHelper;
 	}
 
 	public void setIbanValidator(IbanValidator ibanValidator) {

@@ -193,7 +193,7 @@ public class CorporationStrategy extends TaxPayerStrategy<Corporation> {
 	}
 
 	private void initExercicesCommerciaux(Corporation corporation, Entreprise entreprise, Context context) {
-		final List<ExerciceCommercial> exercices = context.tiersService.getExercicesCommerciaux(entreprise);
+		final List<ExerciceCommercial> exercices = context.exerciceCommercialHelper.getExercicesCommerciauxExposables(entreprise);
 		for (ExerciceCommercial ex : exercices) {
 			corporation.getBusinessYears().add(BusinessYearBuilder.newBusinessYear(ex));
 		}

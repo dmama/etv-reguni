@@ -26,6 +26,7 @@ import ch.vd.uniregctb.jms.EsbBusinessCode;
 import ch.vd.uniregctb.jms.EsbBusinessException;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionService;
+import ch.vd.uniregctb.metier.bouclement.ExerciceCommercialHelper;
 import ch.vd.uniregctb.metier.piis.PeriodeImpositionImpotSourceService;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.security.Role;
@@ -61,6 +62,10 @@ public class PartyRequestHandlerV3 implements RequestHandlerV1<PartyRequest> {
 
 	public void setAdresseService(AdresseService adresseService) {
 		context.adresseService = adresseService;
+	}
+
+	public void setExerciceCommercialHelper(ExerciceCommercialHelper exerciceCommercialHelper) {
+		context.exerciceCommercialHelper = exerciceCommercialHelper;
 	}
 
 	public void setInfraService(ServiceInfrastructureService infraService) {

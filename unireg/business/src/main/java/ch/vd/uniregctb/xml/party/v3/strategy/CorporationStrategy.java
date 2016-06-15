@@ -56,7 +56,7 @@ public class CorporationStrategy extends TaxPayerStrategy<Corporation> {
 		to.setName1(raisonSociale);
 		to.setShortName(raisonSociale);
 
-		final List<ExerciceCommercial> exercices = context.tiersService.getExercicesCommerciaux(entreprise);
+		final List<ExerciceCommercial> exercices = context.exerciceCommercialHelper.getExercicesCommerciauxExposables(entreprise);
 		final ExerciceCommercial current = DateRangeHelper.rangeAt(exercices, RegDate.get());
 		final ExerciceCommercial previous;
 		if (current == null) {

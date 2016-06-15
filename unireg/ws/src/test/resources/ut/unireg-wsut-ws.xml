@@ -41,6 +41,7 @@
 		<property name="threadPool" ref="wsThreadPoolParty3" />
 		<property name="assujettissementService" ref="assujettissementService" />
 		<property name="periodeImpositionService" ref="periodeImpositionService" />
+		<property name="exerciceCommercialHelper" ref="exerciceCommercialHelper"/>
 	</bean>
 
 	<bean id="wsThreadPoolParty3" class="org.springframework.scheduling.concurrent.ThreadPoolExecutorFactoryBean">
@@ -84,6 +85,7 @@
 		<property name="threadPool" ref="wsThreadPoolParty4" />
 		<property name="assujettissementService" ref="assujettissementService" />
 		<property name="periodeImpositionService" ref="periodeImpositionService" />
+		<property name="exerciceCommercialHelper" ref="exerciceCommercialHelper"/>
 	</bean>
 
 	<bean id="wsThreadPoolParty4" class="org.springframework.scheduling.concurrent.ThreadPoolExecutorFactoryBean">
@@ -150,6 +152,7 @@
 		<property name="EFactureService" ref="efactureService"/>
 		<property name="threadPool" ref="wsThreadPoolv5"/>
 		<property name="avatarService" ref="avatarService"/>
+		<property name="exerciceCommercialHelper" ref="exerciceCommercialHelper"/>
 	</bean>
 
 	<!-- Beans du web-service v6 mais sans le end-point jaxrs -->
@@ -200,6 +203,7 @@
 		<property name="EFactureService" ref="efactureService"/>
 		<property name="threadPool" ref="wsThreadPoolv6"/>
 		<property name="avatarService" ref="avatarService"/>
+		<property name="exerciceCommercialHelper" ref="exerciceCommercialHelper"/>
 	</bean>
 
 </beans>

@@ -61,6 +61,7 @@
 		<property name="threadPool" ref="wsThreadPool" />
 		<property name="assujettissementService" ref="assujettissementService" />
 		<property name="periodeImpositionService" ref="periodeImpositionService" />
+		<property name="exerciceCommercialHelper" ref="exerciceCommercialHelper"/>
 	</bean>
 
 	<bean id="partyService3Cache" class="ch.vd.uniregctb.webservices.party3.cache.PartyWebServiceCache">
@@ -107,6 +108,7 @@
 		<property name="threadPool" ref="wsThreadPool" />
 		<property name="assujettissementService" ref="assujettissementService" />
 		<property name="periodeImpositionService" ref="periodeImpositionService" />
+		<property name="exerciceCommercialHelper" ref="exerciceCommercialHelper"/>
 	</bean>
 
 	<bean id="partyService4Cache" class="ch.vd.uniregctb.webservices.party4.cache.PartyWebServiceCache">
@@ -219,6 +221,7 @@
 		<property name="EFactureService" ref="efactureService"/>
 		<property name="threadPool" ref="wsThreadPool"/>
 		<property name="avatarService" ref="avatarService"/>
+		<property name="exerciceCommercialHelper" ref="exerciceCommercialHelper"/>
 	</bean>
 
 	<!-- WS REST v6 -->
@@ -305,6 +308,7 @@
 		<property name="EFactureService" ref="efactureService"/>
 		<property name="threadPool" ref="wsThreadPool"/>
 		<property name="avatarService" ref="avatarService"/>
+		<property name="exerciceCommercialHelper" ref="exerciceCommercialHelper"/>
 	</bean>
 
 </beans>
