@@ -6510,7 +6510,7 @@ public class TiersServiceImpl implements TiersService {
 				if (domicile.getLogCreationUser() != null && domicile.getLogCreationUser().startsWith(EvenementOrganisationProcessorInternal.EVT_ORGANISATION_PRINCIPAL)) {
 					final Commune commune = serviceInfra.getCommuneByNumeroOfs(domicile.getNumeroOfsAutoriteFiscale(), domicile.getDateDebut());
 					final Domicile pseudoCivil =
-							new Domicile(domicile.getDateFin(), domicile.getDateFin(), commune);
+							new Domicile(domicile.getDateDebut(), domicile.getDateFin(), commune);
 					domiciles.add(new DomicileHisto(pseudoCivil));
 				} else {
 					domiciles.add(new DomicileHisto(domicile));
