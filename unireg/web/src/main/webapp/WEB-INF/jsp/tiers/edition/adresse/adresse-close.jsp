@@ -53,7 +53,7 @@
 					<tr class="<unireg:nextRowClass/>" >
 						<td><fmt:message key="label.pays"/>&nbsp;:</td>
 						<td>
-							<unireg:pays ofs="${view.paysOFS}" displayProperty="nomCourt" date="${view.regDateDebut}"/>
+							<unireg:pays ofs="${view.paysOFS}" displayProperty="nomCourt" date="${view.dateDebut}"/>
 						</td>
 					</tr>
 				</c:if>
