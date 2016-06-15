@@ -13,6 +13,7 @@ import ch.vd.unireg.interfaces.organisation.rcent.converters.AddressConverters;
 import ch.vd.unireg.interfaces.organisation.rcent.converters.BusinessPublicationConverter;
 import ch.vd.unireg.interfaces.organisation.rcent.converters.CapitalConverter;
 import ch.vd.unireg.interfaces.organisation.rcent.converters.CapitalPredicate;
+import ch.vd.unireg.interfaces.organisation.rcent.converters.CommercialRegisterDiaryEntryConverter;
 import ch.vd.unireg.interfaces.organisation.rcent.converters.CommercialRegisterStatusConverter;
 import ch.vd.unireg.interfaces.organisation.rcent.converters.LegalFormConverter;
 import ch.vd.unireg.interfaces.organisation.rcent.converters.OrganisationFunctionConverter;
@@ -34,6 +35,7 @@ public class RCEntSiteOrganisationHelper {
 	private static final CommercialRegisterStatusConverter COMMERCIAL_REGISTER_STATUS_CONVERTER = new CommercialRegisterStatusConverter();
 	private static final RaisonDeDissolutionRCConverter RC_DISSOLUTION_REASON_CONVERTER = new RaisonDeDissolutionRCConverter();
 	private static final CapitalConverter CAPITAL_CONVERTER = new CapitalConverter();
+	private static final CommercialRegisterDiaryEntryConverter DIARY_ENTRY_CONVERTER = new CommercialRegisterDiaryEntryConverter();
 	private static final BusinessPublicationConverter BUSINESS_PUBLICATION_CONVERTER = new BusinessPublicationConverter();
 	private static final UidRegisterStatusConverter UID_REGISTER_STATUS_CONVERTER = new UidRegisterStatusConverter();
 	private static final UidRegisterTypeOfOrganisationConverter UID_REGISTER_TYPE_OF_ORGANISATION_CONVERTER = new UidRegisterTypeOfOrganisationConverter();
@@ -75,7 +77,9 @@ public class RCEntSiteOrganisationHelper {
 				RCEntHelper.convert(rc.getPurpose()),
 				RCEntHelper.convert(rc.getByLawsDate()),
 				RCEntHelper.convert(rc.getDeregistrationDate()),
-				RCEntHelper.convert(rc.getVdDeregistrationDate()));
+				RCEntHelper.convert(rc.getVdDeregistrationDate()),
+				RCEntHelper.convert(rc.getDiaryEntries(), DIARY_ENTRY_CONVERTER)
+		);
 	}
 
 	private static DonneesRegistreIDE createDonneesIDE(final OrganisationLocation.RCEntUIDData uid) {

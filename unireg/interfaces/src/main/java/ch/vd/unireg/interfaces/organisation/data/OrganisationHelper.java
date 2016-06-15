@@ -312,6 +312,21 @@ public abstract class OrganisationHelper {
 		});
 	}
 
+
+	@NotNull
+	public static List<EntreeJournalRC> getEntreesJournal(List<EntreeJournalRC> entrees, RegDate date) {
+		if (entrees.isEmpty()) {
+			return Collections.emptyList();
+		}
+		List<EntreeJournalRC> entreesPourDate = new ArrayList<>();
+		for (EntreeJournalRC entreeJournalRC : entrees) {
+			if (entreeJournalRC.getDate().equals(defaultDate(date))) {
+				entreesPourDate.add(entreeJournalRC);
+			}
+		}
+		return entreesPourDate;
+	}
+
 	/**
 	 * Détermine la date de premier snapshot du site. C'est à dire à partir de quand le site
 	 * est connu au civil.

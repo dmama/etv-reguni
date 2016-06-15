@@ -19,8 +19,10 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockServiceInfrastructureService;
 import ch.vd.unireg.interfaces.organisation.data.Domicile;
+import ch.vd.unireg.interfaces.organisation.data.EntreeJournalRC;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.interfaces.organisation.data.OrganisationHelper;
+import ch.vd.unireg.interfaces.organisation.data.PublicationFOSC;
 import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 import ch.vd.unireg.interfaces.organisation.data.StatusInscriptionRC;
 import ch.vd.unireg.interfaces.organisation.data.StatusRegistreIDE;
@@ -77,7 +79,7 @@ public class RCEntSiteOrganisationHelperTest extends WithoutSpringTest {
 		// Capital libéré correctement réglés, les autres champs sont optionels jusqu'à preuve du contraire.
 		capital.add(new Ranged<>(refDate, null, new Capital(null, null, null, BigDecimal.valueOf(100000), null)));
 
-		final OrganisationLocation.RCEntRCData rc = new OrganisationLocation.RCEntRCData(statusInscription, null, capital, null, null, null, null, null, null, null);
+		final OrganisationLocation.RCEntRCData rc = new OrganisationLocation.RCEntRCData(statusInscription, null, capital, null, null, null, null, null, null, null, null);
 
 		final List<Ranged<UidRegisterStatus>> statusIde = new ArrayList<>();
 		statusIde.add(new Ranged<>(refDate, null, UidRegisterStatus.DEFINITIF));
@@ -125,7 +127,7 @@ public class RCEntSiteOrganisationHelperTest extends WithoutSpringTest {
 		// Capital libéré et devise correctement réglés
 		capital.add(new Ranged<>(refDate, null, new Capital(null, null, BigDecimal.valueOf(100000), null, null)));
 
-		final OrganisationLocation.RCEntRCData rc = new OrganisationLocation.RCEntRCData(statusInscription, null, capital, null, null, null, null, null, null, null);
+		final OrganisationLocation.RCEntRCData rc = new OrganisationLocation.RCEntRCData(statusInscription, null, capital, null, null, null, null, null, null, null, null);
 
 		final List<Ranged<UidRegisterStatus>> statusIde = new ArrayList<>();
 		statusIde.add(new Ranged<>(refDate, null, UidRegisterStatus.DEFINITIF));
@@ -278,5 +280,41 @@ public class RCEntSiteOrganisationHelperTest extends WithoutSpringTest {
 		final DateRange periode1 = domiciles.get(0);
 		assertEquals(date(2010, 6, 24), periode1.getDateDebut());
 		assertEquals(date(2015, 7, 5), periode1.getDateFin());
+	}
+
+	@Test
+	public void testFiltrageEntreesJournalRC() {
+		final long noSite = 10000;
+		MockSiteOrganisation mockSite = MockSiteOrganisationFactory.mockSite(noSite, date(2010, 6, 27), null, "Synergy Conception Aubonne SA",
+		                                                                     FormeLegale.N_0106_SOCIETE_ANONYME, false, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
+		                                                                     MockCommune.Aubonne.getNoOFS(), StatusInscriptionRC.ACTIF, date(2010, 6, 24),
+		                                                                     StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, null, null);
+		{
+			final PublicationFOSC publicationFOSC = new PublicationFOSC(date(2010, 6, 27), "77777", "Nouvelle inscription journal RC.");
+			final EntreeJournalRC entreeJournalRC = new EntreeJournalRC(EntreeJournalRC.TypeEntree.NORMAL, date(2010, 6, 24), 111111L, publicationFOSC);
+			mockSite.getDonneesRC().addEntreeJournal(entreeJournalRC);
+		}
+		{
+			final PublicationFOSC publicationFOSC = new PublicationFOSC(date(2012, 6, 5), "88888", "Mutation au journal RC.");
+			final EntreeJournalRC entreeJournalRC = new EntreeJournalRC(EntreeJournalRC.TypeEntree.NORMAL, date(2012, 6, 1), 222222L, publicationFOSC);
+			mockSite.getDonneesRC().addEntreeJournal(entreeJournalRC);
+		}
+		{
+			final PublicationFOSC publicationFOSC = new PublicationFOSC(date(2015, 7, 8), "99999", "Encore une mutation au journal RC.");
+			final EntreeJournalRC entreeJournalRC = new EntreeJournalRC(EntreeJournalRC.TypeEntree.NORMAL, date(2015, 7, 5), 333333L, publicationFOSC);
+			mockSite.getDonneesRC().addEntreeJournal(entreeJournalRC);
+		}
+
+		final List<EntreeJournalRC> entreesJournalPourDate = mockSite.getDonneesRC().getEntreesJournal(date(2012, 6, 1));
+
+		assertEquals(1, entreesJournalPourDate.size());
+		final EntreeJournalRC entreeJournalRC = entreesJournalPourDate.get(0);
+		assertEquals(date(2012, 6, 1), entreeJournalRC.getDate());
+		assertEquals(222222, entreeJournalRC.getNumero().intValue());
+		assertEquals(EntreeJournalRC.TypeEntree.NORMAL, entreeJournalRC.getType());
+		final PublicationFOSC publicationFOSC = entreeJournalRC.getPublicationFOSC();
+		assertEquals(date(2012, 6, 5), publicationFOSC.getDate());
+		assertEquals("88888", publicationFOSC.getNumero());
+		assertEquals("Mutation au journal RC.", publicationFOSC.getTexte());
 	}
 }

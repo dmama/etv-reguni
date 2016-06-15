@@ -13,6 +13,7 @@ import ch.vd.unireg.interfaces.organisation.data.AdresseLegaleRCEnt;
 import ch.vd.unireg.interfaces.organisation.data.Capital;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
 import ch.vd.unireg.interfaces.organisation.data.DonneesRC;
+import ch.vd.unireg.interfaces.organisation.data.EntreeJournalRC;
 import ch.vd.unireg.interfaces.organisation.data.OrganisationHelper;
 import ch.vd.unireg.interfaces.organisation.data.RaisonDeDissolutionRC;
 import ch.vd.unireg.interfaces.organisation.data.StatusInscriptionRC;
@@ -32,6 +33,7 @@ public class MockDonneesRC implements DonneesRC {
 	private NavigableMap<RegDate, RegDate> dateStatus = new TreeMap<>();
 	private NavigableMap<RegDate, RegDate> dateRadiation = new TreeMap<>();
 	private NavigableMap<RegDate, RegDate> dateRadiationVd = new TreeMap<>();
+	private List<EntreeJournalRC> entreesJournal = new ArrayList<>();
 
 	public MockDonneesRC() {};
 
@@ -223,6 +225,20 @@ public class MockDonneesRC implements DonneesRC {
 
 	public void addDateRadiationVd(RegDate dateDebut, @Nullable RegDate dateFin, RegDate nouvelleDateRadiation) {
 		MockOrganisationHelper.addRangedData(dateRadiationVd, dateDebut, dateFin, nouvelleDateRadiation);
+	}
+
+	@Override
+	public List<EntreeJournalRC> getEntreesJournal() {
+		return entreesJournal;
+	}
+
+	@Override
+	public List<EntreeJournalRC> getEntreesJournal(RegDate date) {
+		return OrganisationHelper.getEntreesJournal(entreesJournal, date);
+	}
+
+	public void addEntreeJournal(EntreeJournalRC entreeJournal) {
+		this.entreesJournal.add(entreeJournal);
 	}
 
 }

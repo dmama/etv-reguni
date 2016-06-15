@@ -254,4 +254,10 @@ public class OrganisationRCEntTest {
 	public void testGetNoIDE() throws Exception {
 		Assert.assertEquals("CHE543257199", organisation.getNumeroIDE().get(0).getPayload());
 	}
+
+	@Test
+	public void testEntreeJournal() throws Exception {
+		Assert.assertEquals("CHE543257199", organisation.getNumeroIDE().get(0).getPayload());
+	}
+
 }

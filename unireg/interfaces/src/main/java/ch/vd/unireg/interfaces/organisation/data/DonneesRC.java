@@ -42,4 +42,8 @@ public interface DonneesRC {
 	List<DateRanged<RegDate>> getDateRadiationVd();
 
 	RegDate getDateRadiationVd(RegDate date);
+
+	List<EntreeJournalRC> getEntreesJournal();
+
+	List<EntreeJournalRC> getEntreesJournal(RegDate date);
 }

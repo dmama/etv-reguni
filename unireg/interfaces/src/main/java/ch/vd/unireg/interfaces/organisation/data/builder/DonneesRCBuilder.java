@@ -10,6 +10,7 @@ import ch.vd.unireg.interfaces.organisation.data.Capital;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
 import ch.vd.unireg.interfaces.organisation.data.DonneesRC;
 import ch.vd.unireg.interfaces.organisation.data.DonneesRCRCEnt;
+import ch.vd.unireg.interfaces.organisation.data.EntreeJournalRC;
 import ch.vd.unireg.interfaces.organisation.data.StatusInscriptionRC;
 
 public class DonneesRCBuilder implements DataBuilder<DonneesRC> {
@@ -23,6 +24,7 @@ public class DonneesRCBuilder implements DataBuilder<DonneesRC> {
 	private List<DateRanged<RegDate>> dateStatus;
 	private List<DateRanged<RegDate>> dateRadiation;
 	private List<DateRanged<RegDate>> dateRadiationVd;
+	private List<EntreeJournalRC> entreesJournalRC;
 
 	public DonneesRCBuilder() {}
 
@@ -34,7 +36,7 @@ public class DonneesRCBuilder implements DataBuilder<DonneesRC> {
 
 	@Override
 	public DonneesRCRCEnt build() {
-		return new DonneesRCRCEnt(adresseLegale, statusInscription, null, dateInscription, dateInscriptionVd, capital, buts, dateStatus, dateRadiation, dateRadiationVd);
+		return new DonneesRCRCEnt(adresseLegale, statusInscription, null, dateInscription, dateInscriptionVd, capital, buts, dateStatus, dateRadiation, dateRadiationVd, entreesJournalRC);
 	}
 
 	public DonneesRCBuilder addStatusInscription(@NotNull RegDate dateDebut, RegDate dateDeFin, @NotNull StatusInscriptionRC valeur) {
@@ -77,6 +79,11 @@ public class DonneesRCBuilder implements DataBuilder<DonneesRC> {
 		return this;
 	}
 
+	public DonneesRCBuilder addEntreeJournalRC(@NotNull EntreeJournalRC entree) {
+		this.entreesJournalRC = BuilderHelper.addValueToList(this.entreesJournalRC, entree);
+		return this;
+	}
+
 	public DonneesRCBuilder withAdresseLegale(List<AdresseLegaleRCEnt> adresseLegale) {
 		this.adresseLegale = adresseLegale;
 		return this;
@@ -94,6 +101,11 @@ public class DonneesRCBuilder implements DataBuilder<DonneesRC> {
 
 	public DonneesRCBuilder withDateInscription(List<DateRanged<RegDate>> dateInscription) {
 		this.dateInscription = dateInscription;
+		return this;
+	}
+
+	public DonneesRCBuilder entreesJournalRC(List<EntreeJournalRC> entreesJournalRC) {
+		this.entreesJournalRC = entreesJournalRC;
 		return this;
 	}
 

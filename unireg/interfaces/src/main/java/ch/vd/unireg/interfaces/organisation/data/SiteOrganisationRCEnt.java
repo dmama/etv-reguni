@@ -16,7 +16,7 @@ import ch.vd.unireg.interfaces.common.Adresse;
  */
 public class SiteOrganisationRCEnt implements Serializable, SiteOrganisation {
 
-	private static final long serialVersionUID = 4000453604399268480L;
+	private static final long serialVersionUID = -1541055814375872909L;
 
 	/**
 	 * Le numéro technique du site pour Unireg

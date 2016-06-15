@@ -13,7 +13,7 @@ import ch.vd.registre.base.date.RegDate;
  */
 public class DonneesRCRCEnt implements DonneesRC, Serializable {
 
-	private static final long serialVersionUID = 8809887249010115302L;
+	private static final long serialVersionUID = -6332558068487594901L;
 
 	private final List<DateRanged<StatusInscriptionRC>> statusInscription;
 	private final List<DateRanged<RaisonDeDissolutionRC>> raisonDeDissolutionVd;
@@ -25,6 +25,7 @@ public class DonneesRCRCEnt implements DonneesRC, Serializable {
 	private final List<DateRanged<RegDate>> dateStatuts;
 	private final List<DateRanged<RegDate>> dateRadiation;
 	private final List<DateRanged<RegDate>> dateRadiationVd;
+	private final List<EntreeJournalRC> entreesJournal;
 
 	public DonneesRCRCEnt(List<AdresseLegaleRCEnt> adresseLegale,
 	                      List<DateRanged<StatusInscriptionRC>> statusInscription,
@@ -34,7 +35,8 @@ public class DonneesRCRCEnt implements DonneesRC, Serializable {
 	                      List<Capital> capital, List<DateRanged<String>> buts,
 	                      List<DateRanged<RegDate>> dateStatuts,
 	                      List<DateRanged<RegDate>> dateRadiation,
-	                      List<DateRanged<RegDate>> dateRadiationVd) {
+	                      List<DateRanged<RegDate>> dateRadiationVd,
+	                      List<EntreeJournalRC> entreesJournal) {
 		this.adresseLegale = adresseLegale;
 		this.statusInscription = statusInscription;
 		this.raisonDeDissolutionVd = raisonDeDissolutionVd;
@@ -45,6 +47,7 @@ public class DonneesRCRCEnt implements DonneesRC, Serializable {
 		this.dateStatuts = dateStatuts;
 		this.dateRadiation = dateRadiation;
 		this.dateRadiationVd = dateRadiationVd;
+		this.entreesJournal = entreesJournal;
 	}
 
 	@Override
@@ -129,5 +132,15 @@ public class DonneesRCRCEnt implements DonneesRC, Serializable {
 	@Override
 	public RegDate getDateRadiationVd(RegDate date) {
 		return OrganisationHelper.valueForDate(dateRadiationVd, date);
+	}
+
+	@Override
+	public List<EntreeJournalRC> getEntreesJournal() {
+		return entreesJournal;
+	}
+
+	@Override
+	public List<EntreeJournalRC> getEntreesJournal(RegDate date) {
+		return OrganisationHelper.getEntreesJournal(entreesJournal, date);
 	}
 }

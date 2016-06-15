@@ -190,4 +190,18 @@ public class RCEntHelper {
 		}
 		return map;
 	}
+
+	public static <S, D> List<D> convert(List<S> entityList, Converter<? super S, ? extends D> mapper) {
+		if (entityList == null) {
+			return null;
+		}
+		final List<D> resultat = new ArrayList<>();
+		for (S element : entityList) {
+			final D converted = mapper.apply(element);
+			if (converted != null) {
+				resultat.add(converted);
+			}
+		}
+		return resultat;
+	}
 }
