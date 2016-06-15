@@ -84,6 +84,7 @@ import ch.vd.uniregctb.common.FiscalDateHelper;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.common.GentilDateRangeExtendedAdapterCallback;
 import ch.vd.uniregctb.common.HibernateEntity;
+import ch.vd.uniregctb.common.LengthConstants;
 import ch.vd.uniregctb.common.MovingWindow;
 import ch.vd.uniregctb.common.NationaliteHelper;
 import ch.vd.uniregctb.common.NumeroIDEHelper;
@@ -727,19 +728,53 @@ public class TiersServiceImpl implements TiersService {
 	        if (navs11.length() == 8) {
 		        navs11 = navs11.concat("000");
 	        }
-	        set.add(getOrCreateIdentifiantPersonne(nonHabitant, CategorieIdentifiant.CH_AHV_AVS, navs11));
+	        try {
+		        set.add(getOrCreateIdentifiantPersonne(nonHabitant, CategorieIdentifiant.CH_AHV_AVS, navs11));
+	        }
+	        catch (IdentifiantInvalideException e) {
+		        LOGGER.warn(String.format("Identifiant personne %s '%s'ignoré sur contribuable %s : %s.",
+		                                  CategorieIdentifiant.CH_AHV_AVS,
+		                                  navs11,
+		                                  FormatNumeroHelper.numeroCTBToDisplay(nonHabitant.getNumero()),
+		                                  e.getMessage()));
+	        }
         }
 
         // numéro du registre des étrangers
         if (StringUtils.isNotBlank(numRce) && !"0".equals(StringUtils.trimToEmpty(numRce))) {
-	        set.add(getOrCreateIdentifiantPersonne(nonHabitant, CategorieIdentifiant.CH_ZAR_RCE, numRce.trim()));
+	        try {
+		        set.add(getOrCreateIdentifiantPersonne(nonHabitant, CategorieIdentifiant.CH_ZAR_RCE, numRce.trim()));
+	        }
+	        catch (IdentifiantInvalideException e) {
+		        LOGGER.warn(String.format("Identifiant personne %s '%s'ignoré sur contribuable %s : %s.",
+		                                  CategorieIdentifiant.CH_ZAR_RCE,
+		                                  numRce,
+		                                  FormatNumeroHelper.numeroCTBToDisplay(nonHabitant.getNumero()),
+		                                  e.getMessage()));
+	        }
         }
 
         // assignation des identifiants
         nonHabitant.setIdentificationsPersonnes(set);
     }
 
-	private static IdentificationPersonne getOrCreateIdentifiantPersonne(PersonnePhysique nonHabitant, CategorieIdentifiant categorie, String nouvelleValeur) {
+	private static class IdentifiantInvalideException extends Exception {
+		public IdentifiantInvalideException(String message) {
+			super(message);
+		}
+	}
+
+	private static IdentificationPersonne getOrCreateIdentifiantPersonne(PersonnePhysique nonHabitant, CategorieIdentifiant categorie, String nouvelleValeur) throws IdentifiantInvalideException {
+		final String nouvelleValeurTrimmee = StringUtils.trimToNull(nouvelleValeur);
+		if (nouvelleValeurTrimmee == null) {
+			throw new IdentifiantInvalideException("identifiant vide");
+		}
+		if (nouvelleValeurTrimmee.length() > LengthConstants.IDENTPERSONNE_IDENTIFIANT) {
+			throw new IdentifiantInvalideException(String.format("identifiant trop long (%d là où seulement %d caractères sont acceptés)",
+			                                                     nouvelleValeurTrimmee.length(),
+			                                                     LengthConstants.IDENTPERSONNE_IDENTIFIANT));
+		}
+
 		final Set<IdentificationPersonne> ips = nonHabitant.getIdentificationsPersonnes();
 		if (ips != null) {
 			for (IdentificationPersonne ip : ips) {
