@@ -3,6 +3,7 @@ package ch.vd.uniregctb.adapter.rcent.historizer;
 import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -12,11 +13,13 @@ import ch.ech.ech0097.v2.NamedOrganisationId;
 import ch.vd.evd0022.v3.Address;
 import ch.vd.evd0022.v3.BusinessPublication;
 import ch.vd.evd0022.v3.Capital;
+import ch.vd.evd0022.v3.CommercialRegisterDiaryEntry;
 import ch.vd.evd0022.v3.CommercialRegisterStatus;
 import ch.vd.evd0022.v3.DissolutionReason;
 import ch.vd.evd0022.v3.KindOfUidEntity;
 import ch.vd.evd0022.v3.LegalForm;
 import ch.vd.evd0022.v3.Organisation;
+import ch.vd.evd0022.v3.OrganisationLocation;
 import ch.vd.evd0022.v3.OrganisationSnapshot;
 import ch.vd.evd0022.v3.TypeOfLocation;
 import ch.vd.evd0022.v3.UidDeregistrationReason;
@@ -216,9 +219,16 @@ public class OrganisationHistorizer {
 
 		));
 
+		// Données non historisées
+		//Map<BigInteger, List<CommercialRegisterDiaryEntry>> diaryEntries = new HashMap<>();
+		final Map.Entry<RegDate, Organisation> lastSnapshot = organisationMap.entrySet().stream()
+				.max(Comparator.comparing(Map.Entry::getKey)).orElse(null);
+		Map<BigInteger, List<CommercialRegisterDiaryEntry>> diaryEntries = lastSnapshot.getValue().getOrganisationLocation().stream()
+				.filter(l -> l.getCommercialRegisterData() != null)
+				.filter(l -> l.getCommercialRegisterData().getDiaryEntry() != null && ! l.getCommercialRegisterData().getDiaryEntry().isEmpty())
+				.collect(Collectors.toMap(OrganisationLocation::getCantonalId, l -> l.getCommercialRegisterData().getDiaryEntry()));
 
 		// Composition des
-
 		// Etablissement
 
 		OrganisationLocationBuilder locationBuilder = new OrganisationLocationBuilder(
@@ -246,6 +256,7 @@ public class OrganisationHistorizer {
 				locationRcCancellationDateCollector.getCollectedData(),
 				locationRcVdCancellationDateCollector.getCollectedData(),
 
+				diaryEntries,
 				locationUidStatus.getCollectedData(),
 				locationUidTypeOfOrganisation.getCollectedData(),
 				locationUidEffectiveAddressCollector.getCollectedData(),

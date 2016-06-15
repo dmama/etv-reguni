@@ -27,6 +27,7 @@ import ch.vd.evd0004.v3.Error;
 import ch.vd.evd0004.v3.Errors;
 import ch.vd.evd0022.v3.Address;
 import ch.vd.evd0022.v3.Capital;
+import ch.vd.evd0022.v3.CommercialRegisterDiaryEntry;
 import ch.vd.evd0022.v3.CommercialRegisterStatus;
 import ch.vd.evd0022.v3.LegalForm;
 import ch.vd.evd0022.v3.OrganisationData;
@@ -616,6 +617,30 @@ public class RCEntAdapterTest {
 		catch (RcEntClientException e) {
 			assertEquals("Status 500", e.getMessage());
 		}
+	}
+
+	@Test
+	public void testGetLastDiaryEntriesForEachLocation() throws JAXBException {
+		final File xml = new File("src/test/resources/samples/organisationData/org-101652437-Piguet_Galland_Cie_SA.xml");
+		final JAXBElement<OrganisationData> data = (JAXBElement<OrganisationData>) unmarshaller.unmarshal(xml);
+		when(client.getOrganisation(101652437L, null, true)).thenReturn(data.getValue());
+
+		final Organisation organisation = service.getOrganisationHistory(101652437L);
+		assertThat(organisation.getCantonalId(), equalTo(101652437L));
+
+		final OrganisationLocation mainLocation = (OrganisationLocation) organisation.getLocationData().stream()
+				.filter(l -> l.getTypeOfLocation().get(0).getPayload() == TypeOfLocation.ETABLISSEMENT_PRINCIPAL)
+				.findFirst().get();
+		final List<DateRangeHelper.Ranged<UidRegisterStatus>> ideStatus = mainLocation.getUid().getStatus();
+		assertNotNull(ideStatus);
+		assertEquals(UidRegisterStatus.DEFINITIF, ideStatus.get(0).getPayload());
+
+		final List<CommercialRegisterDiaryEntry> diaryEntries = mainLocation.getRc().getDiaryEntries();
+		assertNotNull(diaryEntries);
+		assertEquals(1, diaryEntries.size());
+
+		final List<DateRangeHelper.Ranged<String>> locationName = mainLocation.getName();
+		assertEquals("Piguet Galland & Cie SA", locationName.get(0).getPayload());
 	}
 
 }

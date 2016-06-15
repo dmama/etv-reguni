@@ -10,6 +10,7 @@ import ch.ech.ech0097.v2.NamedOrganisationId;
 import ch.vd.evd0022.v3.Address;
 import ch.vd.evd0022.v3.BusinessPublication;
 import ch.vd.evd0022.v3.Capital;
+import ch.vd.evd0022.v3.CommercialRegisterDiaryEntry;
 import ch.vd.evd0022.v3.CommercialRegisterStatus;
 import ch.vd.evd0022.v3.DissolutionReason;
 import ch.vd.evd0022.v3.Function;
@@ -50,7 +51,7 @@ public class OrganisationLocationBuilder {
 	private final Map<BigInteger, List<DateRangeHelper.Ranged<RegDate>>> byLawsDate;
 	private final Map<BigInteger, List<DateRangeHelper.Ranged<RegDate>>> cancellationDate;
 	private final Map<BigInteger, List<DateRangeHelper.Ranged<RegDate>>> vDCancellationDate;
-
+	private final Map<BigInteger, List<CommercialRegisterDiaryEntry>> diaryEntries;
 
 	private final Map<BigInteger, List<DateRangeHelper.Ranged<UidRegisterStatus>>> uidStatus;
 	private final Map<BigInteger, List<DateRangeHelper.Ranged<KindOfUidEntity>>> uidTypeOfOrganisation;
@@ -80,6 +81,7 @@ public class OrganisationLocationBuilder {
 	                                   Map<BigInteger, List<DateRangeHelper.Ranged<RegDate>>> byLawsDate,
 	                                   Map<BigInteger, List<DateRangeHelper.Ranged<RegDate>>> cancellationDate,
 	                                   Map<BigInteger, List<DateRangeHelper.Ranged<RegDate>>> vDCancellationDate,
+	                                   Map<BigInteger, List<CommercialRegisterDiaryEntry>> diaryEntries,
 	                                   Map<BigInteger, List<DateRangeHelper.Ranged<UidRegisterStatus>>> uidStatus,
 	                                   Map<BigInteger, List<DateRangeHelper.Ranged<KindOfUidEntity>>> uidTypeOfOrganisation,
 	                                   Map<BigInteger, List<DateRangeHelper.Ranged<Address>>> uidEffectiveAddesses,
@@ -93,6 +95,7 @@ public class OrganisationLocationBuilder {
 		this.rcVdDissolutionReason = rcVdDissolutionReason;
 		this.purpose = purpose;
 		this.byLawsDate = byLawsDate;
+		this.diaryEntries = diaryEntries;
 		this.uidTypeOfOrganisation = uidTypeOfOrganisation;
 		this.uidPostalBoxAddresses = uidPostalBoxAddresses;
 		this.identifiers = identifiers;
@@ -127,7 +130,8 @@ public class OrganisationLocationBuilder {
 				                                                                        purpose.get(e.getKey()),
 				                                                                        byLawsDate.get(e.getKey()),
 				                                                                        cancellationDate.get(e.getKey()),
-				                                                                        vDCancellationDate.get(e.getKey())),
+				                                                                        vDCancellationDate.get(e.getKey()),
+				                                                                        diaryEntries.get(e.getKey())),
 				                                   new OrganisationLocation.RCEntUIDData(uidEffectiveAddesses.get(e.getKey()),
 				                                                                         uidStatus.get(e.getKey()),
 				                                                                         uidTypeOfOrganisation.get(e.getKey()),

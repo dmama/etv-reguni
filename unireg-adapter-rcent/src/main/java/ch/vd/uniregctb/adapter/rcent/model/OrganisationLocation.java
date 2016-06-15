@@ -8,6 +8,7 @@ import org.jetbrains.annotations.NotNull;
 import ch.vd.evd0022.v3.Address;
 import ch.vd.evd0022.v3.BusinessPublication;
 import ch.vd.evd0022.v3.Capital;
+import ch.vd.evd0022.v3.CommercialRegisterDiaryEntry;
 import ch.vd.evd0022.v3.CommercialRegisterStatus;
 import ch.vd.evd0022.v3.DissolutionReason;
 import ch.vd.evd0022.v3.KindOfUidEntity;
@@ -172,13 +173,14 @@ public class OrganisationLocation {
 		private final List<DateRangeHelper.Ranged<RegDate>> byLawsDate;
 		private final List<DateRangeHelper.Ranged<RegDate>> deregistrationDate;
 		private final List<DateRangeHelper.Ranged<RegDate>> vDDeregistrationDate;
+		private final List<CommercialRegisterDiaryEntry> diaryEntries;
 
 		public RCEntRCData(List<DateRangeHelper.Ranged<CommercialRegisterStatus>> registrationStatus,
 		                   List<DateRangeHelper.Ranged<DissolutionReason>> vdDissolutionReason,
 		                   List<DateRangeHelper.Ranged<Capital>> capital, List<DateRangeHelper.Ranged<Address>> legalAddress,
 		                   List<DateRangeHelper.Ranged<RegDate>> registrationDate, List<DateRangeHelper.Ranged<RegDate>> vDRegistrationDate,
 		                   List<DateRangeHelper.Ranged<String>> purpose, List<DateRangeHelper.Ranged<RegDate>> byLawsDate,
-		                   List<DateRangeHelper.Ranged<RegDate>> deregistrationDate, List<DateRangeHelper.Ranged<RegDate>> vDDeregistrationDate) {
+		                   List<DateRangeHelper.Ranged<RegDate>> deregistrationDate, List<DateRangeHelper.Ranged<RegDate>> vDDeregistrationDate, List<CommercialRegisterDiaryEntry> diaryEntries) {
 			this.registrationStatus = registrationStatus;
 			this.vdDissolutionReason = vdDissolutionReason;
 			this.capital = capital;
@@ -189,6 +191,7 @@ public class OrganisationLocation {
 			this.byLawsDate = byLawsDate;
 			this.deregistrationDate = deregistrationDate;
 			this.vDDeregistrationDate = vDDeregistrationDate;
+			this.diaryEntries = diaryEntries;
 		}
 
 		public List<DateRangeHelper.Ranged<DissolutionReason>> getVdDissolutionReason() {
@@ -229,6 +232,10 @@ public class OrganisationLocation {
 
 		public List<DateRangeHelper.Ranged<RegDate>> getVdDeregistrationDate() {
 			return vDDeregistrationDate;
+		}
+
+		public List<CommercialRegisterDiaryEntry> getDiaryEntries() {
+			return diaryEntries;
 		}
 	}
 
