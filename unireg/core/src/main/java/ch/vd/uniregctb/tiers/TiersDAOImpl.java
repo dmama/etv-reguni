@@ -1075,60 +1075,159 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 	}
 
 	/**
-	 * Recherche l'Entreprise par son numéro d'organisation au registre des entreprises.
+	 * Recherche de tiers Entreprise ou Etablissement non annulés, non désactivés.
 	 *
-	 * <p>
-	 * Ne tiens pas compte des tiers entreprise annulés.
-	 * </p>
+	 * @param parametreTiers La classe qui apporte les éléments spécifiques au type de tiers recherché
+	 * @param numeroCantonal le numéro cantonal associé au tiers
+	 * @return le numéro du tiers
+	 */
+	@SuppressWarnings({"unchecked"})
+	private Long getNumeroTiersByNumeroCantonal(ParametreTiers parametreTiers, final long numeroCantonal) {
+
+		/**
+		 * Clone de la méthode ci-dessus pour les tiers PP. A la différence qu'on ne supporte pas la désactivation du flush.
+		 */
+
+		final StringBuilder b = new StringBuilder();
+		b.append("SELECT T.NUMERO, MAX(FF_A.DATE_FERMETURE) AS DATE_DESACTIVATION, MAX(FF_R.DATE_OUVERTURE) AS DATE_REACTIVATION");
+		b.append(" FROM TIERS T");
+		b.append(" LEFT OUTER JOIN FOR_FISCAL FF_A ON FF_A.TIERS_ID=T.NUMERO AND FF_A.ANNULATION_DATE IS NULL AND FF_A.MOTIF_FERMETURE='ANNULATION'");
+		b.append(" LEFT OUTER JOIN FOR_FISCAL FF_R ON FF_R.TIERS_ID=T.NUMERO AND FF_R.ANNULATION_DATE IS NULL AND FF_R.MOTIF_OUVERTURE='REACTIVATION'");
+		b.append(" WHERE T.TIERS_TYPE='");
+		b.append(parametreTiers.getTiersType());
+		b.append("'");
+		b.append(" AND T.");
+		b.append(parametreTiers.getIdProperty());
+		b.append("=:noCantonal AND T.ANNULATION_DATE IS NULL");
+		b.append(" GROUP BY T.NUMERO");
+		b.append(" ORDER BY T.NUMERO ASC");
+		final String sql = b.toString();
+
+		final Session session = getCurrentSession();
+
+		session.flush();
+
+		final List<Long> list;
+		final SQLQuery query = session.createSQLQuery(sql);
+		query.setParameter("noCantonal", numeroCantonal);
+
+		// tous les candidats sortent : il faut ensuite filtrer par rapport aux dates d'annulation et de réactivation...
+		final List<Object[]> rows = query.list();
+		if (rows != null && !rows.isEmpty()) {
+			final List<Long> res = new ArrayList<>(rows.size());
+			for (Object[] row : rows) {
+				final Number enId = (Number) row[0];
+				final Number indexDesactivation = (Number) row[1];
+				final Number indexReactivation = (Number) row[2];
+				if (indexDesactivation == null) {
+					res.add(enId.longValue());
+				}
+				else if (indexReactivation != null && indexReactivation.intValue() > indexDesactivation.intValue()) {
+					res.add(enId.longValue());
+				}
+			}
+			list = res;
+		}
+		else {
+			list = null;
+		}
+
+		if (list == null || list.isEmpty()) {
+			return null;
+		}
+
+		if (list.size() > 1) {
+			final long[] ids = new long[list.size()];
+			for (int i = 0; i < list.size(); ++i) {
+				ids[i] = list.get(i);
+			}
+			parametreTiers.throwMultipleTiersException(numeroCantonal, ids);
+		}
+
+		return list.get(0);
+	}
+
+	private interface ParametreTiers {
+		String getTiersType();
+		String getIdProperty();
+		void throwMultipleTiersException(long numeroOrganisation, long[] noEntreprises);
+	}
+
+	private static final ParametreTiers PARAMETRE_ENTREPRISE = new ParametreTiers() {
+		@Override
+		public String getTiersType() {
+			return "Entreprise";
+		}
+
+		@Override
+		public String getIdProperty() {
+			return "NUMERO_ENTREPRISE";
+		}
+
+		@Override
+		public void throwMultipleTiersException(long numeroOrganisation, long[] noEntreprises) {
+			throw new PlusieursEntreprisesAvecMemeNumeroOrganisationException(numeroOrganisation, noEntreprises);
+		}
+	};
+
+	/**
+	 * Recherche l'Entreprise par son numéro d'organisation au registre des entreprises qui
+	 * tient compte des annulations, désactivations et réactivations.
+	 *
 	 * @param numeroOrganisation Le numéro RCEnt
 	 * @return L'entreprise correspondant au numéro, ou null si aucune n'est trouvée.
 	 */
 	public Entreprise getEntrepriseByNumeroOrganisation(long numeroOrganisation) {
-		final Criteria crit = getCurrentSession().createCriteria(Entreprise.class);
-		crit.add(Restrictions.eq("numeroEntreprise", numeroOrganisation));
-		crit.add(Restrictions.isNull("annulationDate"));
-		crit.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
 
-		List<Entreprise> result = crit.list();
+		// on passe par le numéro de tiers pour pouvoir factoriser l'algorithme dans la recherche du tiers, en espérant que les performances n'en seront pas trop affectées
 
-		if (result.size() > 1) {
-			long[] noEntreprises = new long[result.size()];
-			for (int i = 0; i < result.size(); i++) {
-				noEntreprises[i] = result.get(i).getNumero();
-			}
-			throw new PlusieursEntreprisesAvecMemeNumeroOrganisationException(numeroOrganisation, noEntreprises);
+		final Long id = getNumeroTiersByNumeroCantonal(PARAMETRE_ENTREPRISE, numeroOrganisation);
+		final Entreprise entreprise;
+		if (id != null) {
+			entreprise = (Entreprise) get(id);
 		}
-		return result.size() == 0 ? null : result.get(0);
+		else {
+			entreprise = null;
+		}
+		return entreprise;
 	}
+
+	private static final ParametreTiers PARAMETRE_ETABLISSEMENT = new ParametreTiers() {
+		@Override
+		public String getTiersType() {
+			return "Etablissement";
+		}
+
+		@Override
+		public String getIdProperty() {
+			return "NUMERO_ETABLISSEMENT";
+		}
+
+		@Override
+		public void throwMultipleTiersException(long numeroOrganisation, long[] noEtablissement) {
+			throw new PlusieursEtablissementsAvecMemeNumeroSitesException(numeroOrganisation, noEtablissement);
+		}
+	};
 
 	/**
 	 * Recherche l'établissement par son numéro de site au registre des entreprises.
 	 *
-	 * <p>
-	 * Ne tiens pas compte des tiers etablissement annulés.
-	 * </p>
 	 * @param numeroSite Le numéro RCEnt
 	 * @return L'établissement correspondant au numéro, ou null si aucune n'est trouvée.
 	 */
 	@Override
 	public Etablissement getEtablissementByNumeroSite(long numeroSite) {
-		final Criteria crit = getCurrentSession().createCriteria(Etablissement.class);
-		crit.add(Restrictions.eq("numeroEtablissement", numeroSite));
-		crit.add(Restrictions.isNull("annulationDate"));
-		crit.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
+		// on passe par le numéro de tiers pour pouvoir factoriser l'algorithme dans la recherche du tiers, en espérant que les performances n'en seront pas trop affectées
 
-		List<Etablissement> result = crit.list();
-
-		if (result.size() > 1) {
-			long[] noEtablissements = new long[result.size()];
-			int i = 0;
-			for (Etablissement etablissement : result) { // Usage de l'itérateur. Performant quel que soit l'implémentation de List.
-				noEtablissements[i] = etablissement.getNumero();
-				++i;
-			}
-			throw new PlusieursEtablissementsAvecMemeNumeroSitesException(numeroSite, noEtablissements);
+		final Long id = getNumeroTiersByNumeroCantonal(PARAMETRE_ETABLISSEMENT, numeroSite);
+		final Etablissement etablissement;
+		if (id != null) {
+			etablissement = (Etablissement) get(id);
 		}
-		return result.size() == 0 ? null : result.get(0);
+		else {
+			etablissement = null;
+		}
+		return etablissement;
 	}
 
 	@Override
