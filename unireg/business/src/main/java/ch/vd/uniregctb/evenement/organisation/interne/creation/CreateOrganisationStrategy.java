@@ -1,9 +1,12 @@
 package ch.vd.uniregctb.evenement.organisation.interne.creation;
 
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.organisation.data.Domicile;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
@@ -83,7 +86,7 @@ public class CreateOrganisationStrategy extends AbstractOrganisationStrategy {
 					case PP:
 						LOGGER.info("L'organisation n°{} est installée sur Vaud. Catégorie [{}] -> Pas de création.", organisation.getNumeroOrganisation(), category);
 						return new MessageSuiviPreExecution(event, organisation, null, context, options,
-						                                    String.format("L'organisation n°%d est une entreprise individuelle vaudoise. Pas de traitement.", organisation.getNumeroOrganisation()));
+						                                    String.format("L'organisation n°%d est une entreprise individuelle vaudoise. Pas de création.", organisation.getNumeroOrganisation()));
 
 					// Sociétés de personnes
 					case SP:
@@ -122,7 +125,8 @@ public class CreateOrganisationStrategy extends AbstractOrganisationStrategy {
 						LOGGER.info("L'organisation n°{} est installée sur Vaud. Catégorie [{}] -> Traitement manuel.", organisation.getNumeroOrganisation(), category);
 						return new TraitementManuel(event, organisation, null, context, options, MSG_CREATION_AUTOMATIQUE_IMPOSSIBLE);
 					}
-				} else if (organisation.hasSiteVD(dateEvenement)) {
+				}
+				if (organisation.hasSiteVD(dateEvenement)) {
 					switch (category) {
 
 					case PP:
@@ -130,14 +134,24 @@ public class CreateOrganisationStrategy extends AbstractOrganisationStrategy {
 						return new MessageSuiviPreExecution(event, organisation, null, context, options,
 						                                    String.format("L'organisation n°%d est une entreprise individuelle hors canton avec une présence sur Vaud. Pas de traitement.", organisation.getNumeroOrganisation()));
 					default:
-						LOGGER.info("L'organisation n°{} a une présence secondaire sur Vaud. Catégorie [{}] -> Création.", organisation.getNumeroOrganisation(), category);
+						final List<SiteOrganisation> succursalesRCVD = organisation.getSuccursalesRCVD(dateEvenement);
+						// On ne crée l'entreprise que si elle a une présence vaudoise concrétisée par une succursale au RC VD active. Ceci pour éviter les établissements REE.
+						if (succursalesRCVD.isEmpty()) {
+							final String message =
+									String.format("L'organisation n°%d (catégorie: %s) n'a pas de succursale active au RC Vaud (inscrite et non radiée). Pas de création.", organisation.getNumeroOrganisation(), category);
+							LOGGER.info(message);
+							return new MessageSuiviPreExecution(event, organisation, null, context, options,
+							                                    message);
+						}
+						LOGGER.info("L'organisation n°{} a une ou plusieurs succursales sur Vaud. Catégorie [{}] -> Création.", organisation.getNumeroOrganisation(), category);
 						info = extraireInformationDeDateEtDeCreation(event, organisation);
-						return new CreateEntrepriseHorsVD(event, organisation, null, context, options, info.isCreation());
+						return new CreateEntrepriseHorsVD(event, organisation, null, context, options, info.isCreation(), succursalesRCVD);
 					}
 				} else {
-					LOGGER.info("L'organisation n°{} n'a pas de présence connue sur Vaud. Catégorie [{}] -> Pas de création.", organisation.getNumeroOrganisation(), category);
+					final String message = String.format("L'organisation n°%d (%s) n'a pas de présence sur Vaud. Pas de création.", organisation.getNumeroOrganisation(), category);
+					LOGGER.info(message);
 					return new MessageSuiviPreExecution(event, organisation, null, context, options,
-					                                    String.format("L'organisation n°%d (%s) n'a pas de présence sur Vaud. Pas de traitement.", organisation.getNumeroOrganisation(), category));
+					                                    message);
 				}
 			}
 		} catch (EvenementOrganisationException e) {
@@ -149,8 +163,21 @@ public class CreateOrganisationStrategy extends AbstractOrganisationStrategy {
 		}
 
 		// Catchall traitement manuel
-		LOGGER.info("L'organisation n°{} est de catégorie indéterminée. Traitement manuel.", organisation.getNumeroOrganisation());
+		final String message = String.format("L'organisation %s (civil: n°%d), domiciliée à %s, est de catégorie indéterminée (forme juridique inconnue). Traitement manuel.",
+		                                     organisation.getNom(dateEvenement),
+		                                     organisation.getNumeroOrganisation(),
+		                                     getCommuneDomicile(sitePrincipal, dateEvenement, context)
+		);
+		LOGGER.info(message);
 		return new TraitementManuel(event, organisation, null, context, options, MSG_CREATION_AUTOMATIQUE_IMPOSSIBLE);
+	}
+
+	private Commune getCommuneDomicile(SiteOrganisation site, RegDate dateEvenement, EvenementOrganisationContext context) {
+		final Domicile domicile = site.getDomicile(dateEvenement);
+		if (domicile != null) {
+			return context.getServiceInfra().getCommuneByNumeroOfs(domicile.getNoOfs(), dateEvenement);
+		}
+		return null;
 	}
 
 }

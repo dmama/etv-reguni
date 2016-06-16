@@ -258,4 +258,13 @@ public class OrganisationRCEnt implements Organisation, Serializable {
 	public boolean hasSiteVD(RegDate date) {
 		return OrganisationHelper.hasSiteVD(this, date);
 	}
+
+	/**
+	 * @return liste des sites de l'organisation domiciliés dans le canton de Vaud (principal ou secondaire), inscrit au RC
+	 * et non radiés
+	 */
+	@Override
+	public List<SiteOrganisation> getSuccursalesRCVD(RegDate date) {
+		return OrganisationHelper.getSuccursalesRCVD(this, date);
+	}
 }

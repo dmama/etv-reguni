@@ -487,6 +487,29 @@ public abstract class OrganisationHelper {
 	}
 
 	/**
+	 * Renvoie la liste des sites domiciliés sur Vaud (principal ou secondaires) qui sont
+	 * des succursales inscrites au RC et non radiées.
+	 *
+	 * Pour éviter les établissements REE, le critère est l'inscription au RC.
+	 *
+	 * @param organisation l'organisation
+	 * @param date la date pour laquelle on veut l'information
+	 * @return la liste des sites domiciliés sur Vaud inscrits au RC
+	 */
+	public static List<SiteOrganisation> getSuccursalesRCVD(Organisation organisation, RegDate date) {
+		List<SiteOrganisation> sitesVD = new ArrayList<>();
+		for (SiteOrganisation site : organisation.getDonneesSites()) {
+			final Domicile domicile = site.getDomicile(defaultDate(date));
+			if (domicile != null &&
+					domicile.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD &&
+					site.isSuccursale(date)) {
+				sitesVD.add(site);
+			}
+		}
+		return sitesVD;
+	}
+
+	/**
 	 * Détermine si l'organisation a un intérêt sur VD sous la forme d'un site principal ou secondaire
 	 * domicilié sur Vaud.
 	 *

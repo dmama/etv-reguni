@@ -235,4 +235,12 @@ public class MockOrganisation implements Organisation {
 	public boolean hasSiteVD(RegDate date) {
 		return OrganisationHelper.hasSiteVD(this, date);
 	}
+
+	/**
+	 * @return true si un site de l'organisation est domicilié dans le canton de Vaud (principal ou secondaire), false sinon
+	 */
+	@Override
+	public List<SiteOrganisation> getSuccursalesRCVD(RegDate date) {
+		return OrganisationHelper.getSuccursalesRCVD(this, date);
+	}
 }

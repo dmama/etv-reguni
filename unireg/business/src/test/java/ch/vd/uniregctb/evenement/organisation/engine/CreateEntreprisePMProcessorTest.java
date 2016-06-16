@@ -6,6 +6,7 @@ import java.util.Comparator;
 import java.util.List;
 
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -367,6 +368,7 @@ public class CreateEntreprisePMProcessorTest extends AbstractEvenementOrganisati
 	}
 
 
+	@Ignore // Cas non permis actuellement car on ne tolère que les établissements inscrits au RC afin d'ignorer ceux du REE.
 	@Test(timeout = 10000L)
 	public void testCreationPMHCNonRCAvecSiteSecondaireVD() throws Exception {
 
@@ -1063,7 +1065,7 @@ public class CreateEntreprisePMProcessorTest extends AbstractEvenementOrganisati
 				                             Assert.assertNull(tiersDAO.getEntrepriseByNumeroOrganisation(evt.getNoOrganisation()));
 
 				                             Assert.assertEquals(2, evt.getErreurs().size());
-				                             Assert.assertEquals(String.format("L'organisation n°%s est une entreprise individuelle vaudoise. Pas de traitement.",
+				                             Assert.assertEquals(String.format("L'organisation n°%s est une entreprise individuelle vaudoise. Pas de création.",
 				                                                               noOrganisation),
 				                                                 evt.getErreurs().get(1).getMessage());
 

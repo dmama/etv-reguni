@@ -117,7 +117,7 @@ public class AutresCommunautesProcessingTest extends AbstractEvenementOrganisati
 				                                                 evtErreur0.getMessage());
 
 				                             final EvenementOrganisationErreur evtErreur1 = evt.getErreurs().get(1);
-				                             Assert.assertEquals(String.format("L'organisation n°%d est une entreprise individuelle vaudoise. Pas de traitement.", noOrganisation),
+				                             Assert.assertEquals(String.format("L'organisation n°%d est une entreprise individuelle vaudoise. Pas de création.", noOrganisation),
 				                                                 evtErreur1.getMessage());
 				                             return null;
 			                             }

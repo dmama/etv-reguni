@@ -103,7 +103,7 @@ public class EtablissementsSecondaires extends EvenementOrganisationInterneDeTra
 				continue;
 			}
 			/*
-				Ne pas créer les établissements secondaires non succursales
+				Ne pas créer les établissements secondaires non succursales RC actifs. C'est le critère pour éviter les établissements REE.
 			 */
 			if (!aCreer.isSuccursale(getDateEvt())) {
 				suivis.addSuivi(String.format("L'établissement secondaire civil %d n'est pas une succursale ou est une succursale radiée du RC et ne sera donc pas créé dans Unireg.",

@@ -127,4 +127,10 @@ public interface Organisation {
 	 */
 	boolean hasSiteVD(RegDate date);
 
+	/**
+	 * @return liste des sites de l'organisation domiciliés dans le canton de Vaud (principal ou secondaire), inscrit au RC
+	 * et non radiés
+	 */
+	List<SiteOrganisation> getSuccursalesRCVD(RegDate date);
+
 }

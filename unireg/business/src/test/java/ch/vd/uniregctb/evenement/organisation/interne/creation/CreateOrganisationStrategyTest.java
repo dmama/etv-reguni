@@ -8,6 +8,9 @@ import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
+import ch.vd.unireg.interfaces.organisation.data.StatusInscriptionRC;
+import ch.vd.unireg.interfaces.organisation.data.StatusRegistreIDE;
+import ch.vd.unireg.interfaces.organisation.data.TypeOrganisationRegistreIDE;
 import ch.vd.unireg.interfaces.organisation.mock.MockServiceOrganisation;
 import ch.vd.unireg.interfaces.organisation.mock.data.MockOrganisation;
 import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockOrganisationFactory;
@@ -187,8 +190,9 @@ public class CreateOrganisationStrategyTest extends AbstractEvenementOrganisatio
 		// Cas hors Vaud avec un site secondaire sur Vaud
 		addOrg(MockOrganisationFactory.createOrganisationAvecSiteSecondaire(101220106L, 101220106L + 1000000, 101220106L + 2000000, "abcdef", RegDate.get(2015, 9, 7), null, FormeLegale.N_0106_SOCIETE_ANONYME,
 		                                                                    TypeAutoriteFiscale.COMMUNE_HC, Zurich.getNoOFS(),
-		                                                                    TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, Lausanne.getNoOFS(), null, null, null,
-		                                                                    null, null, null, null, null));
+		                                                                    TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF, date(2010, 1, 2),
+		                                                                    StatusInscriptionRC.ACTIF, date(2015, 9, 4), StatusRegistreIDE.DEFINITIF,
+		                                                                    StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE));
 		tryCreationEventAndCheckResult(101220106L, CreateEntrepriseHorsVD.class);
 	}
 
