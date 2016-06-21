@@ -6,6 +6,7 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 import ch.vd.unireg.xml.party.establishment.v2.Establishment;
 import ch.vd.unireg.xml.party.v5.PartyPart;
 import ch.vd.uniregctb.tiers.Etablissement;
@@ -39,12 +40,14 @@ public class EstablishmentStrategy extends TaxPayerStrategy<Establishment> {
 
 		final Etablissement etb = (Etablissement) from;
 		if (etb.isConnuAuCivil()) {
-			// TODO SIPM aller chercher les données dans RCEnt
+			final SiteOrganisation site = context.tiersService.getSiteOrganisationPourEtablissement(etb);
+			to.setName(site.getNom(null));
 		}
 		else {
 			to.setName(etb.getRaisonSociale());
-			to.setSign(etb.getEnseigne());
 		}
+
+		to.setSign(etb.getEnseigne());
 	}
 
 	@Override
