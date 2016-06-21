@@ -6,7 +6,7 @@
 
 	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/common/2" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/unireg-common-2.xsd" />
 
-	<xs:complexType name="relationBetweenPartiesType">
+	<xs:complexType name="relationBetweenPartiesType" abstract="true">
 		<xs:annotation>
 			<xs:appinfo>
 				<jxb:class>
@@ -15,15 +15,6 @@
 			</xs:appinfo>
 		</xs:annotation>
 		<xs:sequence>
-			<xs:element name="type" type="relation:relationBetweenPartiesTypeType">
-				<xs:annotation>
-					<xs:appinfo>
-						<jxb:property>
-							<jxb:javadoc>Le type de rapport entre tiers</jxb:javadoc>
-						</jxb:property>
-					</xs:appinfo>
-				</xs:annotation>
-			</xs:element>
 			<xs:element name="dateFrom" type="common:dateType">
 				<xs:annotation>
 					<xs:appinfo>
@@ -51,24 +42,6 @@
 					</xs:appinfo>
 				</xs:annotation>
 			</xs:element>
-			<xs:element minOccurs="0" name="endDateOfLastTaxableItem" type="common:dateType">
-				<xs:annotation>
-					<xs:appinfo>
-						<jxb:property>
-							<jxb:javadoc>Seulement valable pour le type = TAXABLE_REVENUE.</jxb:javadoc>
-						</jxb:property>
-					</xs:appinfo>
-				</xs:annotation>
-			</xs:element>
-			<xs:element minOccurs="0" name="extensionToForcedExecution" type="xs:boolean">
-				<xs:annotation>
-					<xs:appinfo>
-						<jxb:property>
-							<jxb:javadoc>Vrai si la représentation conventionnelle s'étend à l'exécution forcée; faux autrement. Seulement renseigné pour le type = REPRESENTATIVE.</jxb:javadoc>
-						</jxb:property>
-					</xs:appinfo>
-				</xs:annotation>
-			</xs:element>
 			<xs:element name="otherPartyNumber" type="common:partyNumberType">
 				<xs:annotation>
 					<xs:appinfo>
@@ -90,15 +63,425 @@
 					</xs:appinfo>
 				</xs:annotation>
 			</xs:element>
-			<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax" />
 		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="guardianType">
+		<xs:annotation>
+			<xs:appinfo>
+				<jxb:class>
+					<jxb:javadoc>Rapport de tutelle (du pupille vers le tuteur).</jxb:javadoc>
+				</jxb:class>
+			</xs:appinfo>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="relation:relationBetweenPartiesType">
+				<xs:sequence>
+					<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax" />
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="welfareAdvocateType">
+		<xs:annotation>
+			<xs:appinfo>
+				<jxb:class>
+					<jxb:javadoc>Rapport de curatelle (du pupille vers le curateur).</jxb:javadoc>
+				</jxb:class>
+			</xs:appinfo>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="relation:relationBetweenPartiesType">
+				<xs:sequence>
+					<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax" />
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="legalAdviserType">
+		<xs:annotation>
+			<xs:appinfo>
+				<jxb:class>
+					<jxb:javadoc>Rapport de conseil légal (du pupille vers le conseiller).</jxb:javadoc>
+				</jxb:class>
+			</xs:appinfo>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="relation:relationBetweenPartiesType">
+				<xs:sequence>
+					<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax" />
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="taxableRevenueType">
+		<xs:annotation>
+			<xs:appinfo>
+				<jxb:class>
+					<jxb:javadoc>Rapport de prestation imposable (= rapport de travail), entre un débiteur de prestations imposables et un contribuable.</jxb:javadoc>
+				</jxb:class>
+			</xs:appinfo>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="relation:relationBetweenPartiesType">
+				<xs:sequence>
+					<xs:element minOccurs="0" name="endDateOfLastTaxableItem" type="common:dateType">
+						<xs:annotation>
+							<xs:appinfo>
+								<jxb:property>
+									<jxb:javadoc>Date de dernier élément de taxation.</jxb:javadoc>
+								</jxb:property>
+							</xs:appinfo>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="padding" type="xs:int">
+						<xs:annotation>
+							<xs:appinfo>
+								<jxb:property>
+									<jxb:javadoc>Padding pour supporter l'élément xs:any ci-dessous. A ignorer.</jxb:javadoc>
+								</jxb:property>
+							</xs:appinfo>
+						</xs:annotation>
+					</xs:element>
+					<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax" />
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="householdMemberType">
+		<xs:annotation>
+			<xs:appinfo>
+				<jxb:property>
+					<jxb:javadoc>Rapport d'appartenance ménage (entre une personne physique et un ménage commun).</jxb:javadoc>
+				</jxb:property>
+			</xs:appinfo>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="relation:relationBetweenPartiesType">
+				<xs:sequence>
+					<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax" />
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="representativeType">
+		<xs:annotation>
+			<xs:appinfo>
+				<jxb:property>
+					<jxb:javadoc>Rapport de représentation conventionnelle (du représenté vers le représentant).</jxb:javadoc>
+				</jxb:property>
+			</xs:appinfo>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="relation:relationBetweenPartiesType">
+				<xs:sequence>
+					<xs:element minOccurs="0" name="extensionToForcedExecution" type="xs:boolean">
+						<xs:annotation>
+							<xs:appinfo>
+								<jxb:property>
+									<jxb:javadoc>Vrai si la représentation conventionnelle s'étend à l'exécution forcée; faux autrement.</jxb:javadoc>
+								</jxb:property>
+							</xs:appinfo>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="padding" type="xs:int">
+						<xs:annotation>
+							<xs:appinfo>
+								<jxb:property>
+									<jxb:javadoc>Padding pour supporter l'élément xs:any ci-dessous. A ignorer.</jxb:javadoc>
+								</jxb:property>
+							</xs:appinfo>
+						</xs:annotation>
+					</xs:element>
+					<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax" />
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="withholdingTaxContactType">
+		<xs:annotation>
+			<xs:appinfo>
+				<jxb:property>
+					<jxb:javadoc>Rapport de contact impôt source (entre un débiteur IS et le contribuable associé).</jxb:javadoc>
+				</jxb:property>
+			</xs:appinfo>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="relation:relationBetweenPartiesType">
+				<xs:sequence>
+					<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax" />
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="replacedByType">
+		<xs:annotation>
+			<xs:appinfo>
+				<jxb:property>
+					<jxb:javadoc>Rapport entre un tiers et celui qui le remplace (gestion des doublons, depuis l'annulé vers le remplaçant).</jxb:javadoc>
+				</jxb:property>
+			</xs:appinfo>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="relation:relationBetweenPartiesType">
+				<xs:sequence>
+					<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax" />
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="replacedType">
+		<xs:annotation>
+			<xs:appinfo>
+				<jxb:property>
+					<jxb:javadoc>Rapport entre un tiers et celui qui le remplace (gestion des doublons, depuis le remplaçant vers celui qu'il remplace).</jxb:javadoc>
+				</jxb:property>
+			</xs:appinfo>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="relation:relationBetweenPartiesType">
+				<xs:sequence>
+					<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax" />
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="childType">
+		<xs:annotation>
+			<xs:appinfo>
+				<jxb:property>
+					<jxb:javadoc>Rapport de filiation (du parent vers l'enfant). Uniquement présent si la part CHILDREN est demandée.</jxb:javadoc>
+				</jxb:property>
+			</xs:appinfo>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="relation:relationBetweenPartiesType">
+				<xs:sequence>
+					<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax" />
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="parentType">
+		<xs:annotation>
+			<xs:appinfo>
+				<jxb:property>
+					<jxb:javadoc>Rapport de filiation (de l'enfant vers le parent). Uniquement présent si la part PARENTS est demandée.</jxb:javadoc>
+				</jxb:property>
+			</xs:appinfo>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="relation:relationBetweenPartiesType">
+				<xs:sequence>
+					<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax" />
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="economicActivityType">
+		<xs:annotation>
+			<xs:appinfo>
+				<jxb:property>
+					<jxb:javadoc>Rapport d'activité économique (entre un contribuable - en général une entreprise - et un établissement).</jxb:javadoc>
+				</jxb:property>
+			</xs:appinfo>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="relation:relationBetweenPartiesType">
+				<xs:sequence>
+					<xs:element name="principal" type="xs:boolean">
+						<xs:annotation>
+							<xs:appinfo>
+								<jxb:property>
+									<jxb:javadoc>Booléen qui indique s'il s'agit d'un lien vers/depuis un établissement principal ou pas.</jxb:javadoc>
+								</jxb:property>
+							</xs:appinfo>
+						</xs:annotation>
+					</xs:element>
+					<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax" />
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="absorbedType">
+		<xs:annotation>
+			<xs:appinfo>
+				<jxb:property>
+					<jxb:javadoc>Rapport de fusion d'entreprises (depuis l'entreprise absorbante vers l'entreprise absorbée).</jxb:javadoc>
+				</jxb:property>
+			</xs:appinfo>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="relation:relationBetweenPartiesType">
+				<xs:sequence>
+					<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax" />
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="absorbingType">
+		<xs:annotation>
+			<xs:appinfo>
+				<jxb:property>
+					<jxb:javadoc>Rapport de fusion d'entreprises (depuis l'entreprise absorbée vers l'entreprise absorbante).</jxb:javadoc>
+				</jxb:property>
+			</xs:appinfo>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="relation:relationBetweenPartiesType">
+				<xs:sequence>
+					<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax" />
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="beforeSplitType">
+		<xs:annotation>
+			<xs:appinfo>
+				<jxb:property>
+					<jxb:javadoc>Rapport de scission d'entreprise (depuis l'entreprise scindée vers l'entreprise avant scission).</jxb:javadoc>
+				</jxb:property>
+			</xs:appinfo>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="relation:relationBetweenPartiesType">
+				<xs:sequence>
+					<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax" />
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="afterSplitType">
+		<xs:annotation>
+			<xs:appinfo>
+				<jxb:property>
+					<jxb:javadoc>Rapport de scission d'entreprise (depuis l'entreprise avant scission vers l'entreprise résultante (= morceau plus petit...)).</jxb:javadoc>
+				</jxb:property>
+			</xs:appinfo>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="relation:relationBetweenPartiesType">
+				<xs:sequence>
+					<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax" />
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="wealthTransferOriginatorType">
+		<xs:annotation>
+			<xs:appinfo>
+				<jxb:property>
+					<jxb:javadoc>Rapport de transfert de patrimoine (depuis l'entreprise réceptrice vers l'entreprise donnatrice).</jxb:javadoc>
+				</jxb:property>
+			</xs:appinfo>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="relation:relationBetweenPartiesType">
+				<xs:sequence>
+					<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax" />
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="wealthTransferRecipientType">
+		<xs:annotation>
+			<xs:appinfo>
+				<jxb:property>
+					<jxb:javadoc>Rapport de transfert de patrimoine (depuis l'entreprise donnatrice vers l'entreprise réceptrice).</jxb:javadoc>
+				</jxb:property>
+			</xs:appinfo>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="relation:relationBetweenPartiesType">
+				<xs:sequence>
+					<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax" />
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="administrationType">
+		<xs:annotation>
+			<xs:appinfo>
+				<jxb:property>
+					<jxb:javadoc>Rapport d'administration d'entreprise.</jxb:javadoc>
+				</jxb:property>
+			</xs:appinfo>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="relation:relationBetweenPartiesType">
+				<xs:sequence>
+					<xs:element name="chairman" type="xs:boolean">
+						<xs:annotation>
+							<xs:appinfo>
+								<jxb:property>
+									<jxb:javadoc>Booléen qui indique si l'administrateur est également président du conseil d'administration de l'entreprise.</jxb:javadoc>
+								</jxb:property>
+							</xs:appinfo>
+						</xs:annotation>
+					</xs:element>
+					<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax" />
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="managementCompanyType">
+		<xs:annotation>
+			<xs:appinfo>
+				<jxb:property>
+					<jxb:javadoc>Rapport de société de direction (depuis le fonds de placement vers la société de direction).</jxb:javadoc>
+				</jxb:property>
+			</xs:appinfo>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="relation:relationBetweenPartiesType">
+				<xs:sequence>
+					<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax" />
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="managedInvestmentFundType">
+		<xs:annotation>
+			<xs:appinfo>
+				<jxb:property>
+					<jxb:javadoc>Rapport de société de direction (depuis la société de direction vers son fonds de placement).</jxb:javadoc>
+				</jxb:property>
+			</xs:appinfo>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="relation:relationBetweenPartiesType">
+				<xs:sequence>
+					<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax" />
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
 	</xs:complexType>
 
 	<xs:simpleType name="relationBetweenPartiesTypeType">
 		<xs:annotation>
 			<xs:appinfo>
 				<jxb:typesafeEnumClass>
-					<jxb:javadoc>Les différents types de rapports-entre-tiers.</jxb:javadoc>
+					<jxb:javadoc>Les différents types de rapports-entre-tiers (ils ne servent pas directement dans les XML, mais seulement dans les expositions JSON).</jxb:javadoc>
 				</jxb:typesafeEnumClass>
 			</xs:appinfo>
 		</xs:annotation>
@@ -138,9 +521,14 @@
 					<xs:documentation>Rapport qui existe entre un débiteur et son contribuable lié.</xs:documentation>
 				</xs:annotation>
 			</xs:enumeration>
-			<xs:enumeration value="CANCELS_AND_REPLACES">
+			<xs:enumeration value="REPLACED_BY">
 				<xs:annotation>
-					<xs:documentation>Rapport qui existe lorsqu'un tiers à été annulé et remplacé par un autre tiers (correction de doublons)</xs:documentation>
+					<xs:documentation>Lien où l'autre tiers est un tiers qui remplace le tiers courant (correction de doublons)</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="REPLACED">
+				<xs:annotation>
+					<xs:documentation>Lien où l'autre tiers est un tiers remplacé par le tiers courant (correction de doublons)</xs:documentation>
 				</xs:annotation>
 			</xs:enumeration>
 			<xs:enumeration value="CHILD">
@@ -158,12 +546,12 @@
 					<xs:documentation>Lien qui existe entre un contribuable et les établissements stables qui représentent une activité économique.</xs:documentation>
 				</xs:annotation>
 			</xs:enumeration>
-			<xs:enumeration value="BEFORE_MERGER">
+			<xs:enumeration value="ABSORBED">
 				<xs:annotation>
 					<xs:documentation>Lien où l'autre tiers est une entreprise absorbée par l'entreprise courante au cours d'une fusion (= celle(s) qui existai(en)t avant la fusion).</xs:documentation>
 				</xs:annotation>
 			</xs:enumeration>
-			<xs:enumeration value="AFTER_MERGER">
+			<xs:enumeration value="ABSORBING">
 				<xs:annotation>
 					<xs:documentation>Lien où l'autre tiers est une entreprise qui a absorbé l'entreprise courante au cours d'une fusion (= celle qui existe après la fusion).</xs:documentation>
 				</xs:annotation>
@@ -178,14 +566,29 @@
 					<xs:documentation>Lien où l'autre tiers est une entreprise résultante de la scission de l'entreprise courante (= celle(s) qui existe(nt) après la scission).</xs:documentation>
 				</xs:annotation>
 			</xs:enumeration>
-			<xs:enumeration value="WEALTH_TRANSFER_SOURCE">
+			<xs:enumeration value="WEALTH_TRANSFER_ORIGINATOR">
 				<xs:annotation>
 					<xs:documentation>Lien où l'autre tiers est l'entreprise source d'un transfert de patrimoine dont l'entreprise courante a été bénéficiaire.</xs:documentation>
 				</xs:annotation>
 			</xs:enumeration>
-			<xs:enumeration value="WEALTH_TRANSFER_DESTINATION">
+			<xs:enumeration value="WEALTH_TRANSFER_RECIPIENT">
 				<xs:annotation>
 					<xs:documentation>Lien où l'autre tiers est une entreprise bénéficiaire d'un transfert de patrimoine dont l'entreprise courante est la source.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="ADMINISTRATION">
+				<xs:annotation>
+					<xs:documentation>Lien qui existe entre une entreprise et une personne physique pour indiquer un lien d'administration de l'entreprise.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="MANAGEMENT_COMPANY">
+				<xs:annotation>
+					<xs:documentation>Lien où l'autre tiers est la société de direction du tiers courant (= qui est un fonds de placement).</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="MANAGED_INVESTMENT_FUND">
+				<xs:annotation>
+					<xs:documentation>Lien où l'autre tiers est un fonds de placement dont l'entreprise courante est la société de direction.</xs:documentation>
 				</xs:annotation>
 			</xs:enumeration>
 		</xs:restriction>
