@@ -14,7 +14,7 @@
 	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/party/unireg-party-immovableproperty-2.xsd" uri="party/unireg-party-immovableproperty-2.xsd"/>
 	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/party/unireg-party-othercommunity-3.xsd" uri="party/unireg-party-othercommunity-3.xsd"/>
 	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/party/unireg-party-person-5.xsd" uri="party/unireg-party-person-5.xsd"/>
-	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/party/unireg-party-relation-3.xsd" uri="party/unireg-party-relation-3.xsd"/>
+	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/party/unireg-party-relation-4.xsd" uri="party/unireg-party-relation-4.xsd"/>
 	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/party/unireg-party-taxdeclaration-5.xsd" uri="party/unireg-party-taxdeclaration-5.xsd"/>
 	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/party/unireg-party-taxpayer-5.xsd" uri="party/unireg-party-taxpayer-5.xsd"/>
 	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/party/unireg-party-taxresidence-3.xsd" uri="party/unireg-party-taxresidence-3.xsd"/>

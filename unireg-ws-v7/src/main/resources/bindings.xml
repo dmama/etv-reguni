@@ -199,16 +199,16 @@
 		</jxb:bindings>
 	</jxb:bindings>
 
-	<jxb:bindings schemaLocation="party/unireg-party-relation-3.xsd">
+	<jxb:bindings schemaLocation="party/unireg-party-relation-4.xsd">
 		<jxb:schemaBindings>
-			<jxb:package name="ch.vd.unireg.xml.party.relation.v3" />
+			<jxb:package name="ch.vd.unireg.xml.party.relation.v4" />
 		</jxb:schemaBindings>
 		<jxb:bindings node="//xs:complexType[@name='relationBetweenPartiesType']">
 			<inheritance:implements>ch.vd.unireg.xml.common.v2.DateRange</inheritance:implements>
 			<inheritance:implements>ch.vd.unireg.xml.common.v2.Cancelable</inheritance:implements>
 		</jxb:bindings>
 		<jxb:bindings>
-			<namespace:prefix name="relation-3" />
+			<namespace:prefix name="relation-4" />
 		</jxb:bindings>
 	</jxb:bindings>
 

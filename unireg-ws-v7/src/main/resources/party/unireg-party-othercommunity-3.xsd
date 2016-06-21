@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- 5.0 : version initiale -->
 <xs:schema targetNamespace="http://www.vd.ch/fiscalite/unireg/party/othercommunity/3" elementFormDefault="qualified"
-		   xmlns:xs="http://www.w3.org/2001/XMLSchema"
-		   xmlns:taxpayer="http://www.vd.ch/fiscalite/unireg/party/taxpayer/5"
-		   xmlns:jxb="http://java.sun.com/xml/ns/jaxb" jxb:version="2.0">
+           xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns:taxpayer="http://www.vd.ch/fiscalite/unireg/party/taxpayer/5"
+           xmlns:jxb="http://java.sun.com/xml/ns/jaxb" jxb:version="2.0">
 
 	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/party/taxpayer/5" schemaLocation="unireg-party-taxpayer-5.xsd" />
 
