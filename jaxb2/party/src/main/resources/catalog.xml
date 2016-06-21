@@ -38,6 +38,7 @@
 	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/party/unireg-party-relation-1.xsd" uri="party/unireg-party-relation-1.xsd"/>
 	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/party/unireg-party-relation-2.xsd" uri="party/unireg-party-relation-2.xsd"/>
 	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/party/unireg-party-relation-3.xsd" uri="party/unireg-party-relation-3.xsd"/>
+	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/party/unireg-party-relation-4.xsd" uri="party/unireg-party-relation-4.xsd"/>
 	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/party/unireg-party-taxdeclaration-1.xsd" uri="party/unireg-party-taxdeclaration-1.xsd"/>
 	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/party/unireg-party-taxdeclaration-2.xsd" uri="party/unireg-party-taxdeclaration-2.xsd"/>
 	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/party/unireg-party-taxdeclaration-3.xsd" uri="party/unireg-party-taxdeclaration-3.xsd"/>

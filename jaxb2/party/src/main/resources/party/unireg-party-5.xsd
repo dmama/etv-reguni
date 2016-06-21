@@ -1,15 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- 5.0 : version initiale -->
 <xs:schema targetNamespace="http://www.vd.ch/fiscalite/unireg/party/party/5" elementFormDefault="qualified"
 		   xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:party="http://www.vd.ch/fiscalite/unireg/party/party/5"
 		   xmlns:common="http://www.vd.ch/fiscalite/unireg/common/2" xmlns:address="http://www.vd.ch/fiscalite/unireg/party/address/2"
-		   xmlns:relation="http://www.vd.ch/fiscalite/unireg/party/relation/3" xmlns:taxdeclaration="http://www.vd.ch/fiscalite/unireg/party/taxdeclaration/5"
+		   xmlns:relation="http://www.vd.ch/fiscalite/unireg/party/relation/4" xmlns:taxdeclaration="http://www.vd.ch/fiscalite/unireg/party/taxdeclaration/5"
 		   xmlns:taxresidence="http://www.vd.ch/fiscalite/unireg/party/taxresidence/3" xmlns:withholding="http://www.vd.ch/fiscalite/unireg/party/withholding/1"
 		   xmlns:eCH-0044="http://www.ech.ch/xmlns/eCH-0044/3" xmlns:jxb="http://java.sun.com/xml/ns/jaxb" jxb:version="2.0">
 
 	<xs:import namespace="http://www.ech.ch/xmlns/eCH-0044/3" schemaLocation="http://www.ech.ch/xmlns/eCH-0044/3/eCH-0044-3-0.xsd" />
 	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/common/2" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/unireg-common-2.xsd" />
 	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/party/address/2" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/party/unireg-party-address-2.xsd" />
-	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/party/relation/3" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/party/unireg-party-relation-3.xsd" />
+	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/party/relation/4" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/party/unireg-party-relation-4.xsd" />
 	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/party/taxdeclaration/5" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/party/unireg-party-taxdeclaration-5.xsd" />
 	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/party/taxresidence/3" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/party/unireg-party-taxresidence-3.xsd" />
 	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/party/withholding/1" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/party/unireg-party-withholding-1.xsd" />

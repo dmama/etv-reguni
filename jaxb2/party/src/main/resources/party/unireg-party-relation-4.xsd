@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- v4.1 : version initiale -->
-<xs:schema targetNamespace="http://www.vd.ch/fiscalite/unireg/party/relation/3" elementFormDefault="qualified"
-		   xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:relation="http://www.vd.ch/fiscalite/unireg/party/relation/3"
+<!-- 5.0 : version initiale -->
+<xs:schema targetNamespace="http://www.vd.ch/fiscalite/unireg/party/relation/4" elementFormDefault="qualified"
+		   xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:relation="http://www.vd.ch/fiscalite/unireg/party/relation/4"
 		   xmlns:common="http://www.vd.ch/fiscalite/unireg/common/2" xmlns:jxb="http://java.sun.com/xml/ns/jaxb" jxb:version="2.0">
 
-	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/common/2" schemaLocation="../unireg-common-2.xsd" />
+	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/common/2" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/unireg-common-2.xsd" />
 
 	<xs:complexType name="relationBetweenPartiesType">
 		<xs:annotation>
@@ -153,19 +153,39 @@
 					<xs:documentation>Lien de filiation où l'autre tiers est le parent du tiers courant. Les rapports de ce type ne sont renseignés que si la part PARENTS est demandée.</xs:documentation>
 				</xs:annotation>
 			</xs:enumeration>
-			<xs:enumeration value="AGENT">
-				<xs:annotation>
-					<xs:documentation>Lien de mandat où l'autre tiers est le mandataire du tiers courant.</xs:documentation>
-				</xs:annotation>
-			</xs:enumeration>
 			<xs:enumeration value="ECONOMIC_ACTIVITY">
 				<xs:annotation>
-					<xs:documentation>Rapport qui existe entre un contribuable et les établissements stables qui représentent une activité économique.</xs:documentation>
+					<xs:documentation>Lien qui existe entre un contribuable et les établissements stables qui représentent une activité économique.</xs:documentation>
 				</xs:annotation>
 			</xs:enumeration>
-			<xs:enumeration value="MERGE">
+			<xs:enumeration value="BEFORE_MERGER">
 				<xs:annotation>
-					<xs:documentation>Rapport qui existe entre entreprises lors d'une fusion.</xs:documentation>
+					<xs:documentation>Lien où l'autre tiers est une entreprise absorbée par l'entreprise courante au cours d'une fusion (= celle(s) qui existai(en)t avant la fusion).</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="AFTER_MERGER">
+				<xs:annotation>
+					<xs:documentation>Lien où l'autre tiers est une entreprise qui a absorbé l'entreprise courante au cours d'une fusion (= celle qui existe après la fusion).</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="BEFORE_SPLIT">
+				<xs:annotation>
+					<xs:documentation>Lien où l'autre tiers est l'entreprise dont l'entreprise courante est issue suite à une scission (= celle qui existait avant la scission).</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="AFTER_SPLIT">
+				<xs:annotation>
+					<xs:documentation>Lien où l'autre tiers est une entreprise résultante de la scission de l'entreprise courante (= celle(s) qui existe(nt) après la scission).</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="WEALTH_TRANSFER_SOURCE">
+				<xs:annotation>
+					<xs:documentation>Lien où l'autre tiers est l'entreprise source d'un transfert de patrimoine dont l'entreprise courante a été bénéficiaire.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="WEALTH_TRANSFER_DESTINATION">
+				<xs:annotation>
+					<xs:documentation>Lien où l'autre tiers est une entreprise bénéficiaire d'un transfert de patrimoine dont l'entreprise courante est la source.</xs:documentation>
 				</xs:annotation>
 			</xs:enumeration>
 		</xs:restriction>
