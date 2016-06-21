@@ -5,6 +5,7 @@ import java.util.Set;
 
 import ch.vd.unireg.interfaces.efacture.data.TypeEtatDestinataire;
 import ch.vd.unireg.ws.security.v6.AllowedAccess;
+import ch.vd.unireg.xml.party.corporation.v4.CorporationFlagType;
 import ch.vd.unireg.xml.party.corporation.v4.TaxSystemScope;
 import ch.vd.unireg.xml.party.ebilling.v1.EbillingStatusType;
 import ch.vd.unireg.xml.party.othercomm.v2.LegalForm;
@@ -48,6 +49,7 @@ import ch.vd.uniregctb.type.TarifImpotSource;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeDocument;
 import ch.vd.uniregctb.type.TypeEtatDeclaration;
+import ch.vd.uniregctb.type.TypeFlagEntreprise;
 import ch.vd.uniregctb.type.TypePermis;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 
@@ -214,5 +216,9 @@ public abstract class EnumHelper {
 
 	public static EbillingStatusType coreToWeb(TypeEtatDestinataire type) {
 		return ch.vd.uniregctb.xml.EnumHelper.coreToXMLv1(type);
+	}
+
+	public static CorporationFlagType coreToWeb(TypeFlagEntreprise type) {
+		return ch.vd.uniregctb.xml.EnumHelper.coreToXMLv4(type);
 	}
 }

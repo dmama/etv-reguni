@@ -27,7 +27,7 @@ import ch.vd.uniregctb.webservices.common.UserLogin;
 import ch.vd.uniregctb.xml.ServiceException;
 
 /**
- * Partie purement métier du traitement des appels web-service v5
+ * Partie purement métier du traitement des appels web-service v6
  */
 public interface BusinessWebService {
 

@@ -16,6 +16,9 @@
 			<list>
 				<ref bean="partyService3Cache"/>
 				<ref bean="partyService4Cache"/>
+				<ref bean="wsv5Cache"/>
+				<ref bean="wsv6Cache"/>
+				<ref bean="wsv7Cache"/>
 			</list>
         </property>
     </bean>

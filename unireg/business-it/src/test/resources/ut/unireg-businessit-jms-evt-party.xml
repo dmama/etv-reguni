@@ -32,7 +32,7 @@
 				<entry key="ch.vd.unireg.xml.event.party.party.v1.PartyRequest" value-ref="partyRequestHandlerV1" />
 				<entry key="ch.vd.unireg.xml.event.party.party.v2.PartyRequest" value-ref="partyRequestHandlerV2" />
 				<entry key="ch.vd.unireg.xml.event.party.party.v3.PartyRequest" value-ref="partyRequestHandlerV3" />
-				<entry key="ch.vd.unireg.xml.event.party.party.v4.PartyRequest" value-ref="partyRequestHandlerV4" />
+				<entry key="ch.vd.unireg.xml.event.party.party.v4.PartyRequest" value-ref="partyRequestHandlerV4" />    <!-- request v2 dès la v5 -->
 				<entry key="ch.vd.unireg.xml.event.party.nonresident.v1.CreateNonresidentRequest" value-ref="createNonresidentRequestHandlerV1" />
 				<entry key="ch.vd.unireg.xml.event.party.nonresident.v2.CreateNonresidentRequest" value-ref="createNonresidentRequestHandlerV2" />
 				<entry key="ch.vd.unireg.xml.event.party.taxliab.aperiodic.v2.AperiodicTaxLiabilityRequest" value-ref="aperiodicTaxLiabilityRequestHandlerV2" />
@@ -51,6 +51,7 @@
 		<property name="handlers">
 			<util:map>
 				<entry key="ch.vd.unireg.xml.event.party.advancepayment.corporation.v1.AdvancePaymentPopulationRequest" value-ref="advancePaymentCorporationsRequestHandler" />
+				<entry key="ch.vd.unireg.xml.event.party.party.v5.PartyRequest" value-ref="partyRequestHandlerV5"/>
 			</util:map>
 		</property>
 		<property name="esbTemplate" ref="esbJmsTemplate"/>
@@ -144,6 +145,28 @@
 	</bean>
 
 	<bean id="partyRequestHandlerV4" class="ch.vd.uniregctb.evenement.party.PartyRequestHandlerV4">
+		<property name="adresseService" ref="adresseService" />
+		<property name="tiersDAO" ref="tiersDAO" />
+		<property name="tiersService" ref="tiersService" />
+		<property name="infraService" ref="serviceInfrastructureService" />
+		<property name="situationService" ref="situationFamilleService" />
+		<property name="ibanValidator" ref="ibanValidator" />
+		<property name="parametreService" ref="parametreAppService" />
+		<property name="serviceCivil" ref="serviceCivilService" />
+		<property name="serviceOrganisation" ref="serviceOrganisationService" />
+		<property name="hibernateTemplate" ref="hibernateTemplate" />
+		<property name="transactionManager" ref="transactionManager" />
+		<property name="lrService" ref="lrService" />
+		<property name="diService" ref="diService" />
+		<property name="bamMessageSender" ref="bamMessageSender" />
+		<property name="assujettissementService" ref="assujettissementService" />
+		<property name="periodeImpositionService" ref="periodeImpositionService" />
+		<property name="periodeImpositionImpotSourceService" ref="periodeImpositionImpotSourceService" />
+		<property name="securityProvider" ref="securityProviderInterface"/>
+		<property name="exerciceCommercialHelper" ref="exerciceCommercialHelper"/>
+	</bean>
+
+	<bean id="partyRequestHandlerV5" class="ch.vd.uniregctb.evenement.party.PartyRequestHandlerV5">
 		<property name="adresseService" ref="adresseService" />
 		<property name="tiersDAO" ref="tiersDAO" />
 		<property name="tiersService" ref="tiersService" />

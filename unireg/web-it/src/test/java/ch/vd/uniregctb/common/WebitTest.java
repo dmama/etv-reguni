@@ -44,6 +44,7 @@ public abstract class WebitTest {
 	protected String party4Url;
 	protected String v5Url;
 	protected String v6Url;
+	protected String v7Url;
 
 	protected WebClient webClient;
 
@@ -93,6 +94,7 @@ public abstract class WebitTest {
 		party4Url = baseWsUrl + propsWebIT.getProperty("webservice.party4.serverurl");
 		v5Url = baseWsUrl + propsWebIT.getProperty("webservice.v5.serverurl");
 		v6Url = baseWsUrl + propsWebIT.getProperty("webservice.v6.serverurl");
+		v7Url = baseWsUrl + propsWebIT.getProperty("webservice.v7.serverurl");
 
 		LOGGER.debug("baseUrl: " + baseUrl);
 		LOGGER.debug("baseWsUrl: " + baseWsUrl);

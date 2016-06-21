@@ -30,6 +30,7 @@
 				<ref bean="partyService4CacheManager"/>
 				<ref bean="wsv5CacheEventListener"/>
 				<ref bean="wsv6CacheEventListener"/>
+				<ref bean="wsv7CacheEventListener"/>
 			</util:list>
 		</property>
 	</bean>
@@ -286,6 +287,93 @@
 	</bean>
 
 	<bean id="wsv6Business" class="ch.vd.uniregctb.webservices.v6.BusinessWebServiceImpl">
+		<property name="securityProvider" ref="securityProviderInterface"/>
+		<property name="transactionManager" ref="transactionManager"/>
+		<property name="tiersService" ref="tiersService"/>
+		<property name="tiersDAO" ref="tiersDAO" />
+		<property name="diService" ref="diService"/>
+		<property name="bamSender" ref="bamMessageSender"/>
+		<property name="infraService" ref="serviceInfrastructureService" />
+		<property name="lrService" ref="lrService"/>
+		<property name="tiersSearcher" ref="globalTiersSearcher"/>
+		<property name="adresseService" ref="adresseService" />
+		<property name="situationService" ref="situationFamilleService" />
+		<property name="ibanValidator" ref="ibanValidator" />
+		<property name="parametreService" ref="parametreAppService" />
+		<property name="serviceCivil" ref="serviceCivilService" />
+		<property name="serviceOrganisation" ref="serviceOrganisationService" />
+		<property name="hibernateTemplate" ref="hibernateTemplate" />
+		<property name="assujettissementService" ref="assujettissementService" />
+		<property name="periodeImpositionService" ref="periodeImpositionService" />
+		<property name="periodeImpositionImpotSourceService" ref="periodeImpositionImpotSourceService"/>
+		<property name="EFactureService" ref="efactureService"/>
+		<property name="threadPool" ref="wsThreadPool"/>
+		<property name="avatarService" ref="avatarService"/>
+		<property name="exerciceCommercialHelper" ref="exerciceCommercialHelper"/>
+	</bean>
+
+	<!-- WS REST v7 -->
+	<jaxrs:server address="/v7">
+		<jaxrs:serviceBeans>
+			<ref bean="wsv7EndPoint"/>
+		</jaxrs:serviceBeans>
+		<jaxrs:extensionMappings>
+			<entry key="xml" value="application/xml"/>
+		</jaxrs:extensionMappings>
+		<jaxrs:providers>
+			<bean class="org.apache.cxf.jaxrs.model.wadl.WadlGenerator">
+				<property name="addResourceAndMethodIds" value="false" />
+				<property name="applicationTitle" value="Unireg v7" />
+				<property name="schemaLocations">
+					<util:list>
+						<value>classpath:ws/unireg-ws-security-7.xsd</value>
+						<value>classpath:ws/unireg-ws-error-7.xsd</value>
+						<value>classpath:ws/unireg-ws-taxoffices-7.xsd</value>
+						<value>classpath:ws/unireg-ws-debtorinfo-7.xsd</value>
+						<value>classpath:ws/unireg-ws-modifiedtaxpayers-7.xsd</value>
+						<value>classpath:ws/unireg-ws-searchparty-7.xsd</value>
+						<value>classpath:ws/unireg-ws-parties-7.xsd</value>
+						<value>classpath:ws/unireg-ws-party-7.xsd</value>
+						<value>classpath:ws/unireg-ws-deadline-7.xsd</value>
+						<value>classpath:ws/unireg-ws-ack-7.xsd</value>
+					</util:list>
+				</property>
+			</bean>
+			<bean class="org.apache.cxf.jaxrs.impl.WebApplicationExceptionMapper">
+				<property name="printStackTrace" value="true" />
+			</bean>
+			<bean class="org.codehaus.jackson.jaxrs.JacksonJaxbJsonProvider"/>
+		</jaxrs:providers>
+	</jaxrs:server>
+
+	<bean id="wsv7EndPoint" class="ch.vd.uniregctb.webservices.v7.WebServiceEndPoint">
+		<property name="target" ref="wsv7Tracing"/>
+	</bean>
+
+	<bean id="wsv7Tracing" class="ch.vd.uniregctb.webservices.v7.BusinessWebServiceTracing">
+		<property name="target" ref="wsv7Access"/>
+		<property name="statsService" ref="statsService"/>
+	</bean>
+
+	<bean id="wsv7Access" class="ch.vd.uniregctb.webservices.v7.BusinessWebServiceAccessChecker">
+		<property name="securityProvider" ref="securityProviderInterface"/>
+		<property name="target" ref="wsv7Cache"/>
+	</bean>
+
+	<bean id="wsv7Cache" class="ch.vd.uniregctb.webservices.v7.cache.BusinessWebServiceCache">
+		<property name="target" ref="wsv7Business"/>
+		<property name="cacheManager" ref="ehCacheManager" />
+		<property name="cacheName" value="webService7" />
+		<property name="uniregCacheManager" ref="uniregCacheManager" />
+		<property name="statsService" ref="statsService" />
+		<property name="securityProvider" ref="securityProviderInterface"/>
+	</bean>
+
+	<bean id="wsv7CacheEventListener" class="ch.vd.uniregctb.webservices.v7.cache.BusinessWebServiceCacheEventListener">
+		<property name="cache" ref="wsv7Cache"/>
+	</bean>
+
+	<bean id="wsv7Business" class="ch.vd.uniregctb.webservices.v7.BusinessWebServiceImpl">
 		<property name="securityProvider" ref="securityProviderInterface"/>
 		<property name="transactionManager" ref="transactionManager"/>
 		<property name="tiersService" ref="tiersService"/>

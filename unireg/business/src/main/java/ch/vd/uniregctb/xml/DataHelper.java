@@ -497,6 +497,43 @@ public abstract class DataHelper {
 		return i;
 	}
 
+	public static ch.vd.unireg.xml.party.v5.PartyInfo coreToXMLv5(ch.vd.uniregctb.indexer.tiers.TiersIndexedData value) {
+		if (value == null) {
+			return null;
+		}
+
+		final ch.vd.unireg.xml.party.v5.PartyInfo i = new ch.vd.unireg.xml.party.v5.PartyInfo();
+		i.setNumber(value.getNumero().intValue());
+		i.setName1(value.getNom1());
+		i.setName2(value.getNom2());
+		i.setStreet(value.getRue());
+		i.setZipCode(value.getNpa());
+		i.setTown(value.getLocalite());
+		i.setCountry(value.getPays());
+		i.setDateOfBirth(DataHelper.coreToPartialDateXmlv2(value.getRegDateNaissanceInscriptionRC()));
+		i.setType(DataHelper.getPartyTypeV5(value));
+		i.setDebtorCategory(EnumHelper.coreToXMLv3(value.getCategorieImpotSource()));
+		i.setDebtorCommunicationMode(EnumHelper.coreToXMLv3(value.getModeCommunication()));
+		i.setLastTaxResidenceBeginDate(DataHelper.coreToXMLv2(value.getDateOuvertureFor()));
+		i.setLastTaxResidenceEndDate(DataHelper.coreToXMLv2(value.getDateFermetureFor()));
+		if (StringUtils.isNotBlank(value.getNavs13_1())) {
+			i.setVn1(Long.valueOf(value.getNavs13_1()));
+		}
+		if (StringUtils.isNotBlank(value.getNavs13_2())) {
+			i.setVn2(Long.valueOf(value.getNavs13_2()));
+		}
+		i.setIndividualTaxLiability(EnumHelper.coreToXMLv3(value.getAssujettissementPP()));
+		if (i.getType() == ch.vd.unireg.xml.party.v5.PartyType.NATURAL_PERSON) {
+			i.setNaturalPersonSubtype(DataHelper.getNaturalPersonSubtypeV5(value));
+		}
+
+		final List<String> numerosIDE = value.getNumerosIDE();
+		if (!numerosIDE.isEmpty()) {
+			i.setUidNumbers(new ch.vd.unireg.xml.party.v5.UidNumberList(numerosIDE));
+		}
+		return i;
+	}
+
 	/**
 	 * Retourne le numéro de la déclaration d'impôt associée avec une période d'imposition.
 	 *
@@ -578,6 +615,19 @@ public abstract class DataHelper {
 		}
 	};
 
+	private static final Map<String, ch.vd.unireg.xml.party.v5.PartyType> indexedData2TypeV5 = new HashMap<String, ch.vd.unireg.xml.party.v5.PartyType>() {
+		{
+			put(HabitantIndexable.SUB_TYPE, ch.vd.unireg.xml.party.v5.PartyType.NATURAL_PERSON);
+			put(NonHabitantIndexable.SUB_TYPE, ch.vd.unireg.xml.party.v5.PartyType.NATURAL_PERSON);
+			put(EntrepriseIndexable.SUB_TYPE, ch.vd.unireg.xml.party.v5.PartyType.CORPORATION);
+			put(MenageCommunIndexable.SUB_TYPE, ch.vd.unireg.xml.party.v5.PartyType.HOUSEHOLD);
+			put(AutreCommunauteIndexable.SUB_TYPE, ch.vd.unireg.xml.party.v5.PartyType.OTHER_COMMUNITY);
+			put(EntrepriseIndexable.SUB_TYPE, ch.vd.unireg.xml.party.v5.PartyType.CORPORATION);
+			put(DebiteurPrestationImposableIndexable.SUB_TYPE, ch.vd.unireg.xml.party.v5.PartyType.DEBTOR);
+			put(CollectiviteAdministrativeIndexable.SUB_TYPE, ch.vd.unireg.xml.party.v5.PartyType.ADMINISTRATIVE_AUTHORITY);
+		}
+	};
+
 	private static final Map<String, ch.vd.unireg.xml.party.v3.NaturalPersonSubtype> indexedData2NaturalPersonSubtypeV3 = new HashMap<String, ch.vd.unireg.xml.party.v3.NaturalPersonSubtype>() {
 		{
 			put(HabitantIndexable.SUB_TYPE, ch.vd.unireg.xml.party.v3.NaturalPersonSubtype.RESIDENT);
@@ -589,6 +639,13 @@ public abstract class DataHelper {
 		{
 			put(HabitantIndexable.SUB_TYPE, ch.vd.unireg.xml.party.v4.NaturalPersonSubtype.RESIDENT);
 			put(NonHabitantIndexable.SUB_TYPE, ch.vd.unireg.xml.party.v4.NaturalPersonSubtype.NON_RESIDENT);
+		}
+	};
+
+	private static final Map<String, ch.vd.unireg.xml.party.v5.NaturalPersonSubtype> indexedData2NaturalPersonSubtypeV5 = new HashMap<String, ch.vd.unireg.xml.party.v5.NaturalPersonSubtype>() {
+		{
+			put(HabitantIndexable.SUB_TYPE, ch.vd.unireg.xml.party.v5.NaturalPersonSubtype.RESIDENT);
+			put(NonHabitantIndexable.SUB_TYPE, ch.vd.unireg.xml.party.v5.NaturalPersonSubtype.NON_RESIDENT);
 		}
 	};
 
@@ -648,6 +705,17 @@ public abstract class DataHelper {
 		return indexedData2TypeV4.get(typeAsString);
 	}
 
+	public static ch.vd.unireg.xml.party.v5.PartyType getPartyTypeV5(ch.vd.uniregctb.indexer.tiers.TiersIndexedData tiers) {
+
+		final String typeAsString = tiers.getTiersType();
+
+		if (StringUtils.isEmpty(typeAsString)) {
+			return null;
+		}
+
+		return indexedData2TypeV5.get(typeAsString);
+	}
+
 	public static ch.vd.unireg.xml.party.v3.NaturalPersonSubtype getNaturalPersonSubtypeV3(ch.vd.uniregctb.indexer.tiers.TiersIndexedData tiers) {
 		final String typeAsString = tiers.getTiersType();
 
@@ -666,6 +734,16 @@ public abstract class DataHelper {
 		}
 
 		return indexedData2NaturalPersonSubtypeV4.get(typeAsString);
+	}
+
+	public static ch.vd.unireg.xml.party.v5.NaturalPersonSubtype getNaturalPersonSubtypeV5(ch.vd.uniregctb.indexer.tiers.TiersIndexedData tiers) {
+		final String typeAsString = tiers.getTiersType();
+
+		if (StringUtils.isEmpty(typeAsString)) {
+			return null;
+		}
+
+		return indexedData2NaturalPersonSubtypeV5.get(typeAsString);
 	}
 
 	public static Set<TiersDAO.Parts> xmlToCoreV1(Set<ch.vd.unireg.xml.party.v1.PartyPart> parts) {
@@ -879,6 +957,85 @@ public abstract class DataHelper {
 
 		final Set<TiersDAO.Parts> results = EnumSet.noneOf(TiersDAO.Parts.class);
 		for (ch.vd.unireg.xml.party.v4.PartyPart p : parts) {
+			switch (p) {
+			case ADDRESSES:
+				results.add(TiersDAO.Parts.ADRESSES);
+				results.add(TiersDAO.Parts.RAPPORTS_ENTRE_TIERS);
+				break;
+			case TAX_DECLARATIONS:
+			case TAX_DECLARATIONS_STATUSES:
+			case TAX_DECLARATIONS_DEADLINES:
+				results.add(TiersDAO.Parts.DECLARATIONS);
+				break;
+			case TAX_RESIDENCES:
+			case VIRTUAL_TAX_RESIDENCES:
+			case MANAGING_TAX_RESIDENCES:
+				results.add(TiersDAO.Parts.FORS_FISCAUX);
+				break;
+			case TAX_LIABILITIES:
+			case SIMPLIFIED_TAX_LIABILITIES:
+			case TAXATION_PERIODS:
+				results.add(TiersDAO.Parts.FORS_FISCAUX);
+				results.add(TiersDAO.Parts.BOUCLEMENTS);
+				break;
+			case WITHHOLDING_TAXATION_PERIODS:
+				results.add(TiersDAO.Parts.FORS_FISCAUX);
+				results.add(TiersDAO.Parts.RAPPORTS_ENTRE_TIERS);
+				break;
+			case CHILDREN:
+			case PARENTS:
+			case RELATIONS_BETWEEN_PARTIES:
+			case HOUSEHOLD_MEMBERS:
+			case BANK_ACCOUNTS:
+				results.add(TiersDAO.Parts.RAPPORTS_ENTRE_TIERS);
+				break;
+			case FAMILY_STATUSES:
+				results.add(TiersDAO.Parts.SITUATIONS_FAMILLE);
+				break;
+			case DEBTOR_PERIODICITIES:
+				results.add(TiersDAO.Parts.PERIODICITES);
+				break;
+			case IMMOVABLE_PROPERTIES:
+				results.add(TiersDAO.Parts.IMMEUBLES);
+				break;
+			case TAX_LIGHTENINGS:
+				results.add(TiersDAO.Parts.ALLEGEMENTS_FISCAUX);
+				break;
+			case CORPORATION_STATUSES:
+				results.add(TiersDAO.Parts.ETATS_FISCAUX);
+				break;
+			case CAPITALS:
+			case LEGAL_FORMS:
+				results.add(TiersDAO.Parts.DONNEES_CIVILES);
+				break;
+			case TAX_SYSTEMS:
+				results.add(TiersDAO.Parts.REGIMES_FISCAUX);
+				break;
+			case BUSINESS_YEARS:
+				results.add(TiersDAO.Parts.BOUCLEMENTS);
+				break;
+			case CORPORATION_FLAGS:
+			    results.add(TiersDAO.Parts.FLAGS);
+				break;
+			case LEGAL_SEATS:
+			case EBILLING_STATUSES:
+				// rien à faire
+				break;
+			default:
+				throw new IllegalArgumentException("Type de parts inconnue = [" + p + ']');
+			}
+		}
+
+		return results;
+	}
+	public static Set<TiersDAO.Parts> xmlToCoreV5(Set<ch.vd.unireg.xml.party.v5.PartyPart> parts) {
+
+		if (parts == null) {
+			return null;
+		}
+
+		final Set<TiersDAO.Parts> results = EnumSet.noneOf(TiersDAO.Parts.class);
+		for (ch.vd.unireg.xml.party.v5.PartyPart p : parts) {
 			switch (p) {
 			case ADDRESSES:
 				results.add(TiersDAO.Parts.ADRESSES);

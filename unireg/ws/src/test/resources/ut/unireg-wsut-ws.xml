@@ -12,6 +12,7 @@
 				<ref bean="partyService4CacheManager"/>
 				<ref bean="wsv5CacheEventListener"/>
 				<ref bean="wsv6CacheEventListener"/>
+				<ref bean="wsv7CacheEventListener"/>
 			</util:list>
 		</property>
 	</bean>
@@ -202,6 +203,57 @@
 		<property name="periodeImpositionImpotSourceService" ref="periodeImpositionImpotSourceService"/>
 		<property name="EFactureService" ref="efactureService"/>
 		<property name="threadPool" ref="wsThreadPoolv6"/>
+		<property name="avatarService" ref="avatarService"/>
+		<property name="exerciceCommercialHelper" ref="exerciceCommercialHelper"/>
+	</bean>
+
+	<!-- Beans du web-service v7 mais sans le end-point jaxrs -->
+
+	<bean id="wsThreadPoolv7" class="org.springframework.scheduling.concurrent.ThreadPoolExecutorFactoryBean">
+		<property name="corePoolSize" value="10"/> <!-- nombre minimum de threads -->
+		<property name="maxPoolSize" value="20"/> <!-- nombre maximum de threads -->
+	</bean>
+
+	<bean id="wsv7Access" class="ch.vd.uniregctb.webservices.v7.BusinessWebServiceAccessChecker">
+		<property name="securityProvider" ref="securityProviderInterface"/>
+		<property name="target" ref="wsv7Cache"/>
+	</bean>
+
+	<bean id="wsv7Cache" class="ch.vd.uniregctb.webservices.v7.cache.BusinessWebServiceCache">
+		<property name="target" ref="wsv7Business"/>
+		<property name="cacheManager" ref="ehCacheManager" />
+		<property name="cacheName" value="webService7" />
+		<property name="uniregCacheManager" ref="uniregCacheManager" />
+		<property name="statsService" ref="statsService" />
+		<property name="securityProvider" ref="securityProviderInterface"/>
+	</bean>
+
+	<bean id="wsv7CacheEventListener" class="ch.vd.uniregctb.webservices.v7.cache.BusinessWebServiceCacheEventListener">
+		<property name="cache" ref="wsv7Cache"/>
+	</bean>
+
+	<bean id="wsv7Business" class="ch.vd.uniregctb.webservices.v7.BusinessWebServiceImpl">
+		<property name="securityProvider" ref="securityProviderInterface"/>
+		<property name="transactionManager" ref="transactionManager"/>
+		<property name="tiersService" ref="tiersService"/>
+		<property name="tiersDAO" ref="tiersDAO" />
+		<property name="diService" ref="diService"/>
+		<property name="bamSender" ref="bamMessageSender"/>
+		<property name="infraService" ref="serviceInfrastructureService" />
+		<property name="lrService" ref="lrService"/>
+		<property name="tiersSearcher" ref="globalTiersSearcher" />
+		<property name="adresseService" ref="adresseService" />
+		<property name="situationService" ref="situationFamilleService" />
+		<property name="ibanValidator" ref="ibanValidator" />
+		<property name="parametreService" ref="parametreAppService" />
+		<property name="serviceCivil" ref="serviceCivilService" />
+		<property name="serviceOrganisation" ref="serviceOrganisationService" />
+		<property name="hibernateTemplate" ref="hibernateTemplate" />
+		<property name="assujettissementService" ref="assujettissementService" />
+		<property name="periodeImpositionService" ref="periodeImpositionService" />
+		<property name="periodeImpositionImpotSourceService" ref="periodeImpositionImpotSourceService"/>
+		<property name="EFactureService" ref="efactureService"/>
+		<property name="threadPool" ref="wsThreadPoolv7"/>
 		<property name="avatarService" ref="avatarService"/>
 		<property name="exerciceCommercialHelper" ref="exerciceCommercialHelper"/>
 	</bean>
